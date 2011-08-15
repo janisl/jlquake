@@ -75,7 +75,7 @@ cdlight_t *CL_AllocDlight (int key)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.time)
+		if (dl->die < cl.serverTimeFloat)
 		{
 			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
@@ -104,7 +104,7 @@ void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 	dl->origin[1] = y;
 	dl->origin[2] = z;
 	dl->radius = radius;
-	dl->die = cl.time + time;
+	dl->die = cl.serverTimeFloat + time;
 	if (type == 0) {
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
@@ -143,7 +143,7 @@ void CL_DecayLights (void)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.time || !dl->radius)
+		if (dl->die < cl.serverTimeFloat || !dl->radius)
 			continue;
 		
 		if (dl->radius > 0)
@@ -492,8 +492,8 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 		//dl->color[2] = .5 + cos(cl.time*7 + M_PI*4/3)*.5;
 		//dl->color[3] = 1.0;
 		VectorCopy (ent->origin,  dl->origin);
-		dl->radius = 200 + cos(cl.time*5)*100;
-		dl->die = cl.time + 0.001;
+		dl->radius = 200 + cos(cl.serverTimeFloat*5)*100;
+		dl->die = cl.serverTimeFloat + 0.001;
 
 		R_BrightFieldSource (ent->origin);
 	}
@@ -508,7 +508,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 		VectorMA(dl->origin, 18, ent->axis[0], dl->origin);
 		dl->radius = 200 + (rand()&31);
 		dl->minlight = 32;
-		dl->die = cl.time + 0.1;
+		dl->die = cl.serverTimeFloat + 0.1;
 	}
 	if (effects & EF_BRIGHTLIGHT)
 	{			
@@ -516,14 +516,14 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 		VectorCopy (ent->origin,  dl->origin);
 		dl->origin[2] += 16;
 		dl->radius = 400 + (rand()&31);
-		dl->die = cl.time + 0.001;
+		dl->die = cl.serverTimeFloat + 0.001;
 	}
 	if (effects & EF_DIMLIGHT)
 	{			
 		dl = CL_AllocDlight (number);
 		VectorCopy (ent->origin,  dl->origin);
 		dl->radius = 200 + (rand()&31);
-		dl->die = cl.time + 0.001;
+		dl->die = cl.serverTimeFloat + 0.001;
 	}
 /*	if (effects & EF_DARKLIGHT)
 	{			
@@ -538,7 +538,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 		dl = CL_AllocDlight (number);
 		VectorCopy (ent->origin,  dl->origin);
 		dl->radius = 200;
-		dl->die = cl.time + 0.001;
+		dl->die = cl.serverTimeFloat + 0.001;
 	}
 
 
@@ -550,7 +550,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	{
 		angleAdd[0] = 0;
 		angleAdd[1] = 0;
-		angleAdd[2] = 200 * cl.time;
+		angleAdd[2] = 200 * cl.serverTimeFloat;
 
 		rotateSet = 1;
 
@@ -570,7 +570,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	}
 	if (effects & EF_HAMMER_EFFECTS)
 	{
-		angleAdd[0] = 200 * cl.time;
+		angleAdd[0] = 200 * cl.serverTimeFloat;
 		angleAdd[1] = 0;
 		angleAdd[2] = 0;
 
@@ -622,7 +622,7 @@ void CL_LinkPacketEntities (void)
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
 
-	autorotate = AngleMod(100*cl.time);
+	autorotate = AngleMod(100*cl.serverTimeFloat);
 
 	f = 0;		// FIXME: no interpolation right now
 
@@ -749,7 +749,7 @@ void CL_LinkPacketEntities (void)
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 120 - (rand() % 20);
-			dl->die = cl.time + 0.01;
+			dl->die = cl.serverTimeFloat + 0.01;
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
 		{
@@ -761,7 +761,7 @@ void CL_LinkPacketEntities (void)
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = -120 - (rand() % 20);
-			dl->die = cl.time + 0.05;
+			dl->die = cl.serverTimeFloat + 0.05;
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
 		{

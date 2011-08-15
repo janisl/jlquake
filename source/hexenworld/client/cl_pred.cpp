@@ -109,9 +109,10 @@ void CL_PredictMove (void)
 	if (cl_pushlatency->value > 0)
 		Cvar_Set ("pushlatency", "0");
 
-	cl.time = realtime - cls.latency - cl_pushlatency->value*0.001;
-	if (cl.time > realtime)
-		cl.time = realtime;
+	cl.serverTimeFloat = realtime - cls.latency - cl_pushlatency->value*0.001;
+	if (cl.serverTimeFloat > realtime)
+		cl.serverTimeFloat = realtime;
+	cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 
 	if (cl.intermission)
 		return;
@@ -159,7 +160,7 @@ void CL_PredictMove (void)
 		to = &cl.frames[(cls.netchan.incoming_sequence+i) & UPDATE_MASK];
 		CL_PredictUsercmd (&from->playerstate[cl.playernum]
 			, &to->playerstate[cl.playernum], &to->cmd, cl.spectator);
-		if (to->senttime >= cl.time)
+		if (to->senttime >= cl.serverTimeFloat)
 			break;
 		from = to;
 	}
@@ -174,7 +175,7 @@ void CL_PredictMove (void)
 		f = 0;
 	else
 	{
-		f = (cl.time - from->senttime) / (to->senttime - from->senttime);
+		f = (cl.serverTimeFloat - from->senttime) / (to->senttime - from->senttime);
 
 		if (f < 0)
 			f = 0;

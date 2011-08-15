@@ -558,10 +558,10 @@ void CL_ParseFrame (void)
 	}
 
 	// clamp time 
-	if (cl.time > cl.frame.servertime)
-		cl.time = cl.frame.servertime;
-	else if (cl.time < cl.frame.servertime - 100)
-		cl.time = cl.frame.servertime - 100;
+	if (cl.serverTime > cl.frame.servertime)
+		cl.serverTime = cl.frame.servertime;
+	else if (cl.serverTime < cl.frame.servertime - 100)
+		cl.serverTime = cl.frame.servertime - 100;
 
 	// read areabits
 	len = net_message.ReadByte ();
@@ -630,10 +630,10 @@ void CL_AddPacketEntities(frame_t *frame)
 	unsigned int		effects, renderfx_old, renderfx;
 
 	// bonus items rotate at a fixed rate
-	autorotate = AngleMod(cl.time/10);
+	autorotate = AngleMod(cl.serverTime/10);
 
 	// brush models can auto animate their frames
-	autoanim = 2*cl.time/1000;
+	autoanim = 2*cl.serverTime/1000;
 
 	for (pnum = 0 ; pnum<frame->num_entities ; pnum++)
 	{
@@ -686,7 +686,7 @@ void CL_AddPacketEntities(frame_t *frame)
 		else if (effects & EF_ANIM_ALL)
 			ent.frame = autoanim;
 		else if (effects & EF_ANIM_ALLFAST)
-			ent.frame = cl.time / 100;
+			ent.frame = cl.serverTime / 100;
 		else
 			ent.frame = s1->frame;
 
@@ -822,7 +822,7 @@ void CL_AddPacketEntities(frame_t *frame)
 		else if (effects & EF_SPINNINGLIGHTS)
 		{
 			angles[0] = 0;
-			angles[1] = AngleMod(cl.time/2) + s1->angles[1];
+			angles[1] = AngleMod(cl.serverTime/2) + s1->angles[1];
 			angles[2] = 180;
 			{
 				vec3_t forward;
@@ -1115,7 +1115,7 @@ void CL_AddPacketEntities(frame_t *frame)
 				{
 					float intensity;
 
-					intensity = 50 + (500 * (sin(cl.time/500.0) + 1.0));
+					intensity = 50 + (500 * (sin(cl.serverTime/500.0) + 1.0));
 					R_AddLightToScene (ent.origin, intensity, -1.0, -1.0, -1.0);
 				}
 				else
@@ -1239,22 +1239,22 @@ static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t vie
 
 static void CL_CalcLerpFrac()
 {
-	if (cl.time > cl.frame.servertime)
+	if (cl.serverTime > cl.frame.servertime)
 	{
 		if (cl_showclamp->value)
-			Com_Printf ("high clamp %i\n", cl.time - cl.frame.servertime);
-		cl.time = cl.frame.servertime;
+			Com_Printf ("high clamp %i\n", cl.serverTime - cl.frame.servertime);
+		cl.serverTime = cl.frame.servertime;
 		cl.lerpfrac = 1.0;
 	}
-	else if (cl.time < cl.frame.servertime - 100)
+	else if (cl.serverTime < cl.frame.servertime - 100)
 	{
 		if (cl_showclamp->value)
-			Com_Printf ("low clamp %i\n", cl.frame.servertime-100 - cl.time);
-		cl.time = cl.frame.servertime - 100;
+			Com_Printf ("low clamp %i\n", cl.frame.servertime-100 - cl.serverTime);
+		cl.serverTime = cl.frame.servertime - 100;
 		cl.lerpfrac = 0;
 	}
 	else
-		cl.lerpfrac = 1.0 - (cl.frame.servertime - cl.time) * 0.01;
+		cl.lerpfrac = 1.0 - (cl.frame.servertime - cl.serverTime) * 0.01;
 
 	if (cl_timedemo->value)
 		cl.lerpfrac = 1.0;

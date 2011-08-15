@@ -195,7 +195,7 @@ void SCR_CenterPrint (char *str)
 
 	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.time;
+	scr_centertime_start = cl.serverTime;
 
 	// count the number of lines for centering
 	scr_center_lines = 1;

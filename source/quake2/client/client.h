@@ -117,8 +117,6 @@ struct client_state_t : clientActiveCommon_t
 	// and teleport direction changes
 	vec3_t		viewangles;
 
-	int			time;			// this is the time value that the client
-								// is rendering at.  always <= cls.realtime
 	float		lerpfrac;		// between oldframe and frame
 
 	refdef_t	refdef;

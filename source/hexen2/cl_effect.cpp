@@ -2050,7 +2050,7 @@ void CL_UpdateEffects(void)
 	if (cls.state == ca_disconnected)
 		return;
 
-	frametime = cl.time - cl.oldtime;
+	frametime = cl.serverTimeFloat - cl.oldtime;
 	if (!frametime) return;
 //	Con_Printf("Here at %f\n",cl.time);
 
@@ -2345,7 +2345,7 @@ void CL_UpdateEffects(void)
 				org[0] += sin(cl.Effects[index].RD.time_amount * 2 * M_PI) * 30;
 				org[1] += cos(cl.Effects[index].RD.time_amount * 2 * M_PI) * 30;
 
-				if (cl.Effects[index].RD.lifetime < cl.time)
+				if (cl.Effects[index].RD.lifetime < cl.serverTimeFloat)
 				{
 					CL_FreeEffect(index);
 				}

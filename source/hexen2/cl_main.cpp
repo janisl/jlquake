@@ -341,7 +341,7 @@ cdlight_t *CL_AllocDlight (int key)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.time)
+		if (dl->die < cl.serverTimeFloat)
 		{
 			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
@@ -368,12 +368,12 @@ void CL_DecayLights (void)
 	cdlight_t	*dl;
 	float		time;
 	
-	time = cl.time - cl.oldtime;
+	time = cl.serverTimeFloat - cl.oldtime;
 
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.time || !dl->radius)
+		if (dl->die < cl.serverTimeFloat || !dl->radius)
 			continue;
 		
 		if (dl->radius > 0)
@@ -408,7 +408,8 @@ float	CL_LerpPoint (void)
 	
 	if (!f || cl_nolerp->value || cls.timedemo || sv.active)
 	{
-		cl.time = cl.mtime[0];
+		cl.serverTimeFloat = cl.mtime[0];
+		cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 		return 1;
 	}
 		
@@ -417,13 +418,14 @@ float	CL_LerpPoint (void)
 		cl.mtime[1] = cl.mtime[0] - 0.1;
 		f = 0.1;
 	}
-	frac = (cl.time - cl.mtime[1]) / f;
+	frac = (cl.serverTimeFloat - cl.mtime[1]) / f;
 //Con_Printf ("frac: %f\n",frac);
 	if (frac < 0)
 	{
 		if (frac < -0.01)
 		{
-			cl.time = cl.mtime[1];
+			cl.serverTimeFloat = cl.mtime[1];
+			cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 //				Con_Printf ("low frac\n");
 		}
 		frac = 0;
@@ -432,7 +434,8 @@ float	CL_LerpPoint (void)
 	{
 		if (frac > 1.01)
 		{
-			cl.time = cl.mtime[0];
+			cl.serverTimeFloat = cl.mtime[0];
+			cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 //				Con_Printf ("high frac\n");
 		}
 		frac = 1;
@@ -597,7 +600,7 @@ void CL_RelinkEntities (void)
 				VectorMA (dl->origin, 18, fv, dl->origin);
 				dl->radius = 200 + (rand()&31);
 				dl->minlight = 32;
-				dl->die = cl.time + 0.1;
+				dl->die = cl.serverTimeFloat + 0.1;
 			}
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
@@ -608,7 +611,7 @@ void CL_RelinkEntities (void)
 				VectorCopy (ent->origin,  dl->origin);
 				dl->origin[2] += 16;
 				dl->radius = 400 + (rand()&31);
-				dl->die = cl.time + 0.001;
+				dl->die = cl.serverTimeFloat + 0.001;
 			}
 		}
 		if (ent->effects & EF_DIMLIGHT)
@@ -618,7 +621,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
 				dl->radius = 200 + (rand()&31);
-				dl->die = cl.time + 0.001;
+				dl->die = cl.serverTimeFloat + 0.001;
 			}
 		}
 		if (ent->effects & EF_DARKLIGHT)
@@ -628,7 +631,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
 				dl->radius = 200.0 + (rand()&31);
-				dl->die = cl.time + 0.001;
+				dl->die = cl.serverTimeFloat + 0.001;
 				dl->dark = true;
 			}
 		}
@@ -639,7 +642,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
 				dl->radius = 200;
-				dl->die = cl.time + 0.001;
+				dl->die = cl.serverTimeFloat + 0.001;
 			}
 		}
 
@@ -666,7 +669,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 120 - (rand() % 20);
-				dl->die = cl.time + 0.01;
+				dl->die = cl.serverTimeFloat + 0.01;
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ACIDBALL)
@@ -677,7 +680,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 120 - (rand() % 20);
-				dl->die = cl.time + 0.01;
+				dl->die = cl.serverTimeFloat + 0.01;
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
@@ -692,7 +695,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = -120 - (rand() % 20);
-				dl->die = cl.time + 0.05;
+				dl->die = cl.serverTimeFloat + 0.05;
 			}
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
@@ -780,8 +783,9 @@ int CL_ReadFromServer (void)
 {
 	int		ret;
 
-	cl.oldtime = cl.time;
-	cl.time += host_frametime;
+	cl.oldtime = cl.serverTimeFloat;
+	cl.serverTimeFloat += host_frametime;
+	cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 	
 	do
 	{
@@ -943,7 +947,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 		{
 			if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 			{
-				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
+				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.serverTimeFloat));
 			}
 			else
 			{
@@ -965,9 +969,9 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 		if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 		{
 			// Floating motion
-			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.serverTimeFloat * 3)) * 5.5;
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
-			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
+			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.serverTimeFloat * 3.8)) * 34;
 			drawflags |= MLS_ABSLIGHT;
 		}
 
@@ -1065,9 +1069,9 @@ void CL_AnimateLight(void)
 	int defaultLocus;
 	int locusHz[3];
 
-	defaultLocus = locusHz[0] = (int)(cl.time*10);
-	locusHz[1] = (int)(cl.time*20);
-	locusHz[2] = (int)(cl.time*30);
+	defaultLocus = locusHz[0] = (int)(cl.serverTimeFloat*10);
+	locusHz[1] = (int)(cl.serverTimeFloat*20);
+	locusHz[2] = (int)(cl.serverTimeFloat*30);
 	for(i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		if(!cl_lightstyle[i].length)

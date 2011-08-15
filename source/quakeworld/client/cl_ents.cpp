@@ -63,7 +63,7 @@ cdlight_t *CL_AllocDlight (int key)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.time)
+		if (dl->die < cl.serverTimeFloat)
 		{
 			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
@@ -92,7 +92,7 @@ void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 	dl->origin[1] = y;
 	dl->origin[2] = z;
 	dl->radius = radius;
-	dl->die = cl.time + time;
+	dl->die = cl.serverTimeFloat + time;
 	if (type == 0) {
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
@@ -131,7 +131,7 @@ void CL_DecayLights (void)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.time || !dl->radius)
+		if (dl->die < cl.serverTimeFloat || !dl->radius)
 			continue;
 		
 		dl->radius -= host_frametime*dl->decay;
@@ -431,7 +431,7 @@ void CL_LinkPacketEntities (void)
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
 
-	autorotate = AngleMod(100*cl.time);
+	autorotate = AngleMod(100*cl.serverTimeFloat);
 
 	f = 0;		// FIXME: no interpolation right now
 
@@ -538,7 +538,7 @@ void CL_LinkPacketEntities (void)
 			dl = CL_AllocDlight (s1->number);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 200;
-			dl->die = cl.time + 0.1;
+			dl->die = cl.serverTimeFloat + 0.1;
 		}
 		else if (ModelFlags & EF_GRENADE)
 			R_RocketTrail (old_origin, ent.origin, 1);

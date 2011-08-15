@@ -455,8 +455,8 @@ void Sbar_SoloScoreboard (void)
 	Sbar_DrawString (8, 12, str);
 
 // time
-	minutes = cl.time / 60;
-	seconds = cl.time - 60*minutes;
+	minutes = cl.serverTimeFloat / 60;
+	seconds = cl.serverTimeFloat - 60*minutes;
 	tens = seconds / 10;
 	units = seconds - 10*tens;
 	sprintf (str,"Time :%3i:%i%i", minutes, tens, units);
@@ -556,7 +556,7 @@ void Sbar_DrawInventory (void)
 		if (cl.items & (IT_SHOTGUN<<i) )
 		{
 			time = cl.item_gettime[i];
-			flashon = (int)((cl.time - time)*10);
+			flashon = (int)((cl.serverTimeFloat - time)*10);
 			if (flashon >= 10)
 			{
 				if ( cl.stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN<<i)  )
@@ -581,7 +581,7 @@ void Sbar_DrawInventory (void)
          if (cl.items & (1<<hipweapons[i]) )
          {
             time = cl.item_gettime[hipweapons[i]];
-            flashon = (int)((cl.time - time)*10);
+            flashon = (int)((cl.serverTimeFloat - time)*10);
             if (flashon >= 10)
             {
                if ( cl.stats[STAT_ACTIVEWEAPON] == (1<<hipweapons[i])  )
@@ -659,7 +659,7 @@ void Sbar_DrawInventory (void)
       if (cl.items & (1<<(17+i)))
       {
          time = cl.item_gettime[17+i];
-         if (!(time && time > cl.time - 2 && flashon ))
+         if (!(time && time > cl.serverTimeFloat - 2 && flashon ))
          {
          //MED 01/04/97 changed keys
             if (!hipnotic || (i>1))
@@ -676,7 +676,7 @@ void Sbar_DrawInventory (void)
          if (cl.items & (1<<(24+i)))
          {
             time = cl.item_gettime[24+i];
-            if (!(time && time > cl.time - 2 && flashon ))
+            if (!(time && time > cl.serverTimeFloat - 2 && flashon ))
             {
                Sbar_DrawPic (288 + i*16, -16, hsb_items[i]);
             }
@@ -692,7 +692,7 @@ void Sbar_DrawInventory (void)
 			{
 				time = cl.item_gettime[29+i];
 
-				if (!(time &&	time > cl.time - 2 && flashon ))
+				if (!(time &&	time > cl.serverTimeFloat - 2 && flashon ))
 				{
 					Sbar_DrawPic (288 + i*16, -16, rsb_items[i]);
 				}
@@ -707,7 +707,7 @@ void Sbar_DrawInventory (void)
 			if (cl.items & (1<<(28+i)))
 			{
 				time = cl.item_gettime[28+i];
-				if (!(time &&	time > cl.time - 2 && flashon ))
+				if (!(time &&	time > cl.serverTimeFloat - 2 && flashon ))
 					Sbar_DrawPic (320-32 + i*8, -16, sb_sigil[i]);
 			}
 		}
@@ -866,7 +866,7 @@ void Sbar_DrawFace (void)
 	else
 		f = cl.stats[STAT_HEALTH] / 20;
 
-	if (cl.time <= cl.faceanimtime)
+	if (cl.serverTimeFloat <= cl.faceanimtime)
 	{
 		anim = 1;
 	}

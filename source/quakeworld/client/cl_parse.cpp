@@ -1099,7 +1099,7 @@ void CL_SetStat (int stat, int value)
 	{	// set flash times
 		for (j=0 ; j<32 ; j++)
 			if ( (value & (1<<j)) && !(cl.stats[stat] & (1<<j)))
-				cl.item_gettime[j] = cl.time;
+				cl.item_gettime[j] = cl.serverTimeFloat;
 	}
 
 	cl.stats[stat] = value;
@@ -1131,7 +1131,7 @@ void CL_MuzzleFlash (void)
 	VectorMA (dl->origin, 18, fv, dl->origin);
 	dl->radius = 200 + (rand()&31);
 	dl->minlight = 32;
-	dl->die = cl.time + 0.1;
+	dl->die = cl.serverTimeFloat + 0.1;
 	dl->color[0] = 0.2;
 	dl->color[1] = 0.1;
 	dl->color[2] = 0.05;

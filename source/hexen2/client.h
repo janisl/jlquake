@@ -176,7 +176,7 @@ struct client_state_t : clientActiveCommon_t
 	int			completed_time;	// latched at intermission start
 	
 	double		mtime[2];		// the timestamp of last two messages	
-	double		time;			// clients view of time, should be between
+	double		serverTimeFloat;// clients view of time, should be between
 								// servertime and oldservertime to generate
 								// a lerp point for other data
 	double		oldtime;		// previous cl.time, time-oldtime is used

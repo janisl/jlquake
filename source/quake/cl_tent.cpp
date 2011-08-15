@@ -75,7 +75,7 @@ static void CL_ParseBeam(qhandle_t m)
 		{
 			b->entity = ent;
 			b->model = m;
-			b->endtime = cl.time + 0.2;
+			b->endtime = cl.serverTimeFloat + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			return;
@@ -84,11 +84,11 @@ static void CL_ParseBeam(qhandle_t m)
 // find a free beam
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTimeFloat)
 		{
 			b->entity = ent;
 			b->model = m;
-			b->endtime = cl.time + 0.2;
+			b->endtime = cl.serverTimeFloat + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			return;
@@ -182,7 +182,7 @@ void CL_ParseTEnt (void)
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.time + 0.5;
+		dl->die = cl.serverTimeFloat + 0.5;
 		dl->decay = 300;
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
@@ -238,7 +238,7 @@ void CL_ParseTEnt (void)
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.time + 0.5;
+		dl->die = cl.serverTimeFloat + 0.5;
 		dl->decay = 300;
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
@@ -266,7 +266,7 @@ void CL_UpdateTEnts (void)
 // update lightning
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTimeFloat)
 			continue;
 
 	// if coming from the player, update the start position

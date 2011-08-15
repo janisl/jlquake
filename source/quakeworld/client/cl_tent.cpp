@@ -94,7 +94,7 @@ explosion_t *CL_AllocExplosion (void)
 		if (!cl_explosions[i].model)
 			return &cl_explosions[i];
 // find the oldest explosion
-	time = cl.time;
+	time = cl.serverTimeFloat;
 	index = 0;
 
 	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
@@ -134,7 +134,7 @@ static void CL_ParseBeam (qhandle_t m)
 		{
 			b->entity = ent;
 			b->model = m;
-			b->endtime = cl.time + 0.2;
+			b->endtime = cl.serverTimeFloat + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			return;
@@ -143,11 +143,11 @@ static void CL_ParseBeam (qhandle_t m)
 // find a free beam
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTimeFloat)
 		{
 			b->entity = ent;
 			b->model = m;
-			b->endtime = cl.time + 0.2;
+			b->endtime = cl.serverTimeFloat + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			return;
@@ -239,7 +239,7 @@ void CL_ParseTEnt (void)
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.time + 0.5;
+		dl->die = cl.serverTimeFloat + 0.5;
 		dl->decay = 300;
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
@@ -252,7 +252,7 @@ void CL_ParseTEnt (void)
 	// sprite
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->origin);
-		ex->start = cl.time;
+		ex->start = cl.serverTimeFloat;
 		ex->model = R_RegisterModel("progs/s_explod.spr");
 		break;
 		
@@ -336,7 +336,7 @@ void CL_UpdateBeams (void)
 // update lightning
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTimeFloat)
 			continue;
 
 	// if coming from the player, update the start position
@@ -410,7 +410,7 @@ void CL_UpdateExplosions (void)
 	{
 		if (!ex->model)
 			continue;
-		f = 10*(cl.time - ex->start);
+		f = 10*(cl.serverTimeFloat - ex->start);
 		if (f >= R_ModelNumFrames(ex->model))
 		{
 			ex->model = 0;

@@ -123,7 +123,7 @@ static float V_CalcBob (void)
 	float	bob;
 	float	cycle;
 	
-	cycle = cl.time - (int)(cl.time/cl_bobcycle->value)*cl_bobcycle->value;
+	cycle = cl.serverTimeFloat - (int)(cl.serverTimeFloat/cl_bobcycle->value)*cl_bobcycle->value;
 	cycle /= cl_bobcycle->value;
 	if (cycle < cl_bobup->value)
 		cycle = M_PI * cycle / cl_bobup->value;
@@ -150,7 +150,7 @@ static float V_CalcBob (void)
 void V_StartPitchDrift (void)
 {
 #if 1
-	if (cl.laststop == cl.time)
+	if (cl.laststop == cl.serverTimeFloat)
 	{
 		return;		// something else is keeping it from drifting
 	}
@@ -165,7 +165,7 @@ void V_StartPitchDrift (void)
 
 void V_StopPitchDrift (void)
 {
-	cl.laststop = cl.time;
+	cl.laststop = cl.serverTimeFloat;
 	cl.nodrift = true;
 	cl.pitchvel = 0;
 }
@@ -278,7 +278,7 @@ void V_ParseDamage (void)
 	if (count < 10)
 		count = 10;
 
-	cl.faceanimtime = cl.time + 0.2;		// but sbar face into pain frame
+	cl.faceanimtime = cl.serverTimeFloat + 0.2;		// but sbar face into pain frame
 
 	cl.cshifts[CSHIFT_DAMAGE].percent += 3*count;
 	if (cl.cshifts[CSHIFT_DAMAGE].percent < 0)
@@ -526,9 +526,9 @@ static void CalcGunAngle(vec3_t viewangles)
 	cl.viewent.angles[YAW] = viewangles[YAW];
 	cl.viewent.angles[PITCH] = -viewangles[PITCH];
 
-	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
-	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
-	cl.viewent.angles[YAW] -= v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
+	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	cl.viewent.angles[YAW] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 /*
@@ -568,9 +568,9 @@ Idle swaying
 */
 static void V_AddIdle(vec3_t viewangles)
 {
-	viewangles[ROLL] += v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
-	viewangles[PITCH] += v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
-	viewangles[YAW] += v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
+	viewangles[ROLL] += v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	viewangles[PITCH] += v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	viewangles[YAW] += v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 
@@ -742,7 +742,7 @@ if (cl.onground && ent->origin[2] - oldz > 0)
 {
 	float steptime;
 	
-	steptime = cl.time - cl.oldtime;
+	steptime = cl.serverTimeFloat - cl.oldtime;
 	if (steptime < 0)
 //FIXME		I_Error ("steptime < 0");
 		steptime = 0;
@@ -843,7 +843,7 @@ void V_RenderScene()
 	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
 	V_CalcBlend();
 
-	r_refdef.time = (int)(cl.time * 1000);
+	r_refdef.time = cl.serverTime;
 
 	R_RenderScene(&r_refdef);
 
@@ -877,7 +877,7 @@ void V_RenderView (void)
 	cdlight_t* l = cl_dlights;
 	for (int i = 0; i < MAX_DLIGHTS; i++, l++)
 	{
-		if (l->die < cl.time || !l->radius)
+		if (l->die < cl.serverTimeFloat || !l->radius)
 		{
 			continue;
 		}

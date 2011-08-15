@@ -196,7 +196,7 @@ void CL_ParseTEnt(void)
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.time + 0.5;
+		dl->die = cl.serverTimeFloat + 0.5;
 		dl->decay = 300;
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
@@ -357,7 +357,7 @@ static void ParseStream(int type)
 	stream->models[1] = models[1];
 	stream->models[2] = models[2];
 	stream->models[3] = models[3];
-	stream->endTime = cl.time+duration;
+	stream->endTime = cl.serverTimeFloat+duration;
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
@@ -389,7 +389,7 @@ static stream_t *NewStream(int ent, int tag)
 	// Search for a free stream
 	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
 	{
-		if(!stream->models[0] || stream->endTime < cl.time)
+		if(!stream->models[0] || stream->endTime < cl.serverTimeFloat)
 		{
 			return stream;
 		}
@@ -422,15 +422,15 @@ void CL_UpdateTEnts(void)
 		{ // Inactive
 			continue;
 		}
-		if(stream->endTime < cl.time)
+		if(stream->endTime < cl.serverTimeFloat)
 		{ // Inactive
 			if(stream->type!=TE_STREAM_LIGHTNING&&stream->type!=TE_STREAM_LIGHTNING_SMALL)
 				continue;
-			else if(stream->endTime + 0.25 < cl.time)
+			else if(stream->endTime + 0.25 < cl.serverTimeFloat)
 				continue;
 		}
 
-		if(stream->flags&STREAM_ATTACHED&&stream->endTime >= cl.time)
+		if(stream->flags&STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
 		{ // Attach the start position to owner
 			VectorAdd(cl_entities[stream->entity].origin, stream->offset,
 				stream->source);
@@ -469,7 +469,7 @@ void CL_UpdateTEnts(void)
 		segmentCount = 0;
 		if(stream->type == TE_STREAM_ICECHUNKS)
 		{
-			offset = (int)(cl.time*40)%30;
+			offset = (int)(cl.serverTimeFloat*40)%30;
 			for(i = 0; i < 3; i++)
 			{
 				org[i] += dist[i]*offset;
@@ -493,7 +493,7 @@ void CL_UpdateTEnts(void)
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF1:
-				angles[2] = (int)(cl.time*10)%360;
+				angles[2] = (int)(cl.serverTimeFloat*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
@@ -504,21 +504,21 @@ void CL_UpdateTEnts(void)
 				ent.hModel = stream->models[1];
 				angles[0] = pitch;
 				angles[1] = yaw;
-				angles[2] = (int)(cl.time*50)%360;
+				angles[2] = (int)(cl.serverTimeFloat*50)%360;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF2:
-				angles[2] = (int)(cl.time*10)%360;
-				ent.frame = (int)(cl.time*10)%8;
+				angles[2] = (int)(cl.serverTimeFloat*10)%360;
+				ent.frame = (int)(cl.serverTimeFloat*10)%8;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING:
-				if (stream->endTime < cl.time)
+				if (stream->endTime < cl.serverTimeFloat)
 				{//fixme: keep last non-translucent frame and angle
 					angles[2] = 0;
-					CL_SetRefEntAxis(&ent, angles, 0, 0, 128 + (stream->endTime - cl.time) * 192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat) * 192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -529,10 +529,10 @@ void CL_UpdateTEnts(void)
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
-				if (stream->endTime < cl.time)
+				if (stream->endTime < cl.serverTimeFloat)
 				{
 					angles[2] = 0;
-					CL_SetRefEntAxis(&ent, angles, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -556,7 +556,7 @@ void CL_UpdateTEnts(void)
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
-				ent.frame = (int)(cl.time*40)%36;
+				ent.frame = (int)(cl.serverTimeFloat*40)%36;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
@@ -581,9 +581,9 @@ void CL_UpdateTEnts(void)
 		if (stream->type == TE_STREAM_SUNSTAFF1 ||
 			stream->type == TE_STREAM_SUNSTAFF2)
 		{
-			if (stream->lastTrailTime + 0.2 < cl.time)
+			if (stream->lastTrailTime + 0.2 < cl.serverTimeFloat)
 			{
-				stream->lastTrailTime = cl.time;
+				stream->lastTrailTime = cl.serverTimeFloat;
 				R_SunStaffTrail(stream->source, stream->dest);
 			}
 

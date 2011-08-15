@@ -562,7 +562,7 @@ void CL_ParseClientdata (int bits)
 	{	// set flash times
 		for (j=0 ; j<32 ; j++)
 			if ( (i & (1<<j)) && !(cl.items & (1<<j)))
-				cl.item_gettime[j] = cl.time;
+				cl.item_gettime[j] = cl.serverTimeFloat;
 		cl.items = i;
 	}
 		
@@ -908,18 +908,18 @@ void CL_ParseServerMessage (void)
 
 		case svc_intermission:
 			cl.intermission = 1;
-			cl.completed_time = cl.time;
+			cl.completed_time = cl.serverTimeFloat;
 			break;
 
 		case svc_finale:
 			cl.intermission = 2;
-			cl.completed_time = cl.time;
+			cl.completed_time = cl.serverTimeFloat;
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 
 		case svc_cutscene:
 			cl.intermission = 3;
-			cl.completed_time = cl.time;
+			cl.completed_time = cl.serverTimeFloat;
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 

@@ -238,7 +238,7 @@ explosion_t *CL_AllocExplosion (void)
 		}
 	}
 // find the oldest explosion
-	time = cl.time;
+	time = cl.serverTime;
 	index = 0;
 
 	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
@@ -321,7 +321,7 @@ static int CL_ParseBeam (qhandle_t model)
 		{
 			b->entity = ent;
 			b->model = model;
-			b->endtime = cl.time + 200;
+			b->endtime = cl.serverTime + 200;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorClear (b->offset);
@@ -331,11 +331,11 @@ static int CL_ParseBeam (qhandle_t model)
 // find a free beam
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
 			b->entity = ent;
 			b->model = model;
-			b->endtime = cl.time + 200;
+			b->endtime = cl.serverTime + 200;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorClear (b->offset);
@@ -373,7 +373,7 @@ static int CL_ParseBeam2 (qhandle_t model)
 		{
 			b->entity = ent;
 			b->model = model;
-			b->endtime = cl.time + 200;
+			b->endtime = cl.serverTime + 200;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorCopy (offset, b->offset);
@@ -383,11 +383,11 @@ static int CL_ParseBeam2 (qhandle_t model)
 // find a free beam
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
 			b->entity = ent;
 			b->model = model;
-			b->endtime = cl.time + 200;	
+			b->endtime = cl.serverTime + 200;	
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorCopy (offset, b->offset);
@@ -437,7 +437,7 @@ static int CL_ParsePlayerBeam (qhandle_t model)
 		{
 			b->entity = ent;
 			b->model = model;
-			b->endtime = cl.time + 200;
+			b->endtime = cl.serverTime + 200;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorCopy (offset, b->offset);
@@ -448,11 +448,11 @@ static int CL_ParsePlayerBeam (qhandle_t model)
 // find a free beam
 	for (i=0, b=cl_playerbeams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
 			b->entity = ent;
 			b->model = model;
-			b->endtime = cl.time + 100;		// PMM - this needs to be 100 to prevent multiple heatbeams
+			b->endtime = cl.serverTime + 100;		// PMM - this needs to be 100 to prevent multiple heatbeams
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorCopy (offset, b->offset);
@@ -486,11 +486,11 @@ static int CL_ParseLightning (qhandle_t model)
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 		if (b->entity == srcEnt && b->dest_entity == destEnt)
 		{
-//			Com_Printf("%d: OVERRIDE  %d -> %d\n", cl.time, srcEnt, destEnt);
+//			Com_Printf("%d: OVERRIDE  %d -> %d\n", cl.serverTime, srcEnt, destEnt);
 			b->entity = srcEnt;
 			b->dest_entity = destEnt;
 			b->model = model;
-			b->endtime = cl.time + 200;
+			b->endtime = cl.serverTime + 200;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorClear (b->offset);
@@ -500,13 +500,13 @@ static int CL_ParseLightning (qhandle_t model)
 // find a free beam
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
-//			Com_Printf("%d: NORMAL  %d -> %d\n", cl.time, srcEnt, destEnt);
+//			Com_Printf("%d: NORMAL  %d -> %d\n", cl.serverTime, srcEnt, destEnt);
 			b->entity = srcEnt;
 			b->dest_entity = destEnt;
 			b->model = model;
-			b->endtime = cl.time + 200;
+			b->endtime = cl.serverTime + 200;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			VectorClear (b->offset);
@@ -534,7 +534,7 @@ void CL_ParseLaser (int colors)
 
 	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
 	{
-		if (l->endtime < cl.time)
+		if (l->endtime < cl.serverTime)
 		{
 			l->ent.reType = RT_BEAM;
 			l->ent.renderfx = RF_TRANSLUCENT;
@@ -544,7 +544,7 @@ void CL_ParseLaser (int colors)
 			l->ent.skinNum = (colors >> ((rand() % 4)*8)) & 0xff;
 			l->ent.hModel = 0;
 			l->ent.frame = 4;
-			l->endtime = cl.time + 100;
+			l->endtime = cl.serverTime + 100;
 			return;
 		}
 	}
@@ -584,10 +584,10 @@ void CL_ParseSteam (void)
 			r = net_message.ReadByte ();
 			s->color = r & 0xff;
 			s->magnitude = net_message.ReadShort();
-			s->endtime = cl.time + net_message.ReadLong();
+			s->endtime = cl.serverTime + net_message.ReadLong();
 			s->think = CL_ParticleSteamEffect2;
 			s->thinkinterval = 100;
-			s->nextthink = cl.time;
+			s->nextthink = cl.serverTime;
 		}
 		else
 		{
@@ -635,10 +635,10 @@ void CL_ParseWidow (void)
 	{
 		s->id = id;
 		MSG_ReadPos (&net_message, s->org);
-		s->endtime = cl.time + 2100;
+		s->endtime = cl.serverTime + 2100;
 		s->think = CL_Widowbeamout;
 		s->thinkinterval = 1;
-		s->nextthink = cl.time;
+		s->nextthink = cl.serverTime;
 	}
 	else // no free sustains
 	{
@@ -666,10 +666,10 @@ void CL_ParseNuke (void)
 	{
 		s->id = 21000;
 		MSG_ReadPos (&net_message, s->org);
-		s->endtime = cl.time + 1000;
+		s->endtime = cl.serverTime + 1000;
 		s->think = CL_Nukeblast;
 		s->thinkinterval = 1;
-		s->nextthink = cl.time;
+		s->nextthink = cl.serverTime;
 	}
 	else // no free sustains
 	{
@@ -1240,7 +1240,7 @@ void CL_AddBeams (void)
 // update beams
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTime)
 			continue;
 
 		// if coming from the player, update the start position
@@ -1361,7 +1361,7 @@ void CL_AddBeams (void)
 //					b->start[2] = cl.refdef.vieworg[2];
 //				}
 
-//				Com_Printf ("Time:  %d %d %f\n", cl.time, cls.realtime, cls.frametime);
+//				Com_Printf ("Time:  %d %d %f\n", cl.serverTime, cls.realtime, cls.frametime);
 */
 
 extern Cvar *hand;
@@ -1408,7 +1408,7 @@ void CL_AddPlayerBeams (void)
 // update beams
 	for (i=0, b=cl_playerbeams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTime)
 			continue;
 
 		if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
@@ -1588,7 +1588,7 @@ void CL_AddPlayerBeams (void)
 				ent.radius = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
-				angles[2] = (cl.time) % 360;
+				angles[2] = (cl.serverTime) % 360;
 				ent.frame = framenum;
 			}
 			else if (b->model == cl_mod_lightning)
@@ -1634,7 +1634,7 @@ void CL_AddExplosions (void)
 	{
 		if (ex->type == ex_free)
 			continue;
-		frac = (cl.time - ex->start)/100.0;
+		frac = (cl.serverTime - ex->start)/100.0;
 		f = floor(frac);
 
 		ent = &ex->ent;
@@ -1734,7 +1734,7 @@ void CL_AddLasers (void)
 
 	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
 	{
-		if (l->endtime >= cl.time)
+		if (l->endtime >= cl.serverTime)
 			R_AddRefEntityToScene (&l->ent);
 	}
 }
@@ -1749,12 +1749,12 @@ void CL_ProcessSustain ()
 	{
 		if (s->id)
 		{
-			if ((s->endtime >= cl.time) && (cl.time >= s->nextthink))
+			if ((s->endtime >= cl.serverTime) && (cl.serverTime >= s->nextthink))
 			{
-//				Com_Printf ("think %d %d %d\n", cl.time, s->nextthink, s->thinkinterval);
+//				Com_Printf ("think %d %d %d\n", cl.serverTime, s->nextthink, s->thinkinterval);
 				s->think (s);
 			}
-			else if (s->endtime < cl.time)
+			else if (s->endtime < cl.serverTime)
 				s->id = 0;
 		}
 	}

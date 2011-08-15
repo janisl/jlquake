@@ -896,8 +896,8 @@ static void SoloScoreboard(void)
 	Sbar_DrawString (8, 12, str);
 
 	// draw time
-	minutes = cl.time / 60;
-	seconds = cl.time - 60*minutes;
+	minutes = cl.serverTimeFloat / 60;
+	seconds = cl.serverTimeFloat - 60*minutes;
 	tens = seconds / 10;
 	units = seconds - 10*tens;
 	sprintf (str,"Time :%3i:%i%i", minutes, tens, units);
@@ -1412,11 +1412,11 @@ void Sbar_SmallDeathmatchOverlay(void)
 		x-=4;
 		Draw_Character ( x , y, 142);//sundial
 		Draw_Character ( x+32 , y, 58);// ":"
-		if(cl_timelimit>cl.time+cl_server_time_offset)
+		if(cl_timelimit>cl.serverTimeFloat+cl_server_time_offset)
 		{
-			DrawTime(x,y,(int)(cl_timelimit - (cl.time + cl_server_time_offset)));
+			DrawTime(x,y,(int)(cl_timelimit - (cl.serverTimeFloat + cl_server_time_offset)));
 		}
-		else if((int)cl.time%2)
+		else if((int)cl.serverTimeFloat%2)
 		{//odd number, draw 00:00, this will make it flash every second
 			Sbar_DrawRedString ( x+16 , y, "00");
 			Sbar_DrawRedString ( x+40 , y, "00");
@@ -1546,7 +1546,7 @@ static void DrawActiveRings(void)
 
 	if(flag&RING_TURNING)
 	{
-		frame = 1+(int)(cl.time*16)%16;
+		frame = 1+(int)(cl.serverTimeFloat*16)%16;
 		sprintf(tempStr, "gfx/rngtrn%d.lmp", frame);
 		UI_DrawPic(viddef.width - 50, ring_row, R_CachePic(tempStr));
 		ring_row += 33;
@@ -1563,7 +1563,7 @@ static void DrawActiveRings(void)
 
 	if(flag&RING_WATER)
 	{
-		frame = 1+(int)(cl.time*16)%16;
+		frame = 1+(int)(cl.serverTimeFloat*16)%16;
 		sprintf(tempStr, "gfx/rngwtr%d.lmp", frame);
 		UI_DrawPic(viddef.width - 50, ring_row, R_CachePic(tempStr));
 		ring_row += 33;
@@ -1571,7 +1571,7 @@ static void DrawActiveRings(void)
 
 	if(flag&RING_FLIGHT)
 	{
-		frame = 1+(int)(cl.time*16)%16;
+		frame = 1+(int)(cl.serverTimeFloat*16)%16;
 		sprintf(tempStr, "gfx/rngfly%d.lmp", frame);
 		UI_DrawPic(viddef.width - 50, ring_row, R_CachePic(tempStr));
 		ring_row += 33;
@@ -1601,7 +1601,7 @@ static void DrawActiveArtifacts(void)
 	flag = (int)cl.v.artifact_active;
 	if (flag & ART_TOMEOFPOWER)
 	{
-		frame = 1+(int)(cl.time*16)%16;
+		frame = 1+(int)(cl.serverTimeFloat*16)%16;
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
 		UI_DrawPic(viddef.width-art_col, 1, R_CachePic(tempStr));
 		art_col += 50;
@@ -1609,7 +1609,7 @@ static void DrawActiveArtifacts(void)
 
 	if (flag & ART_HASTE)
 	{
-		frame = 1+(int)(cl.time*16)%16;
+		frame = 1+(int)(cl.serverTimeFloat*16)%16;
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
 		UI_DrawPic(viddef.width-art_col,1, R_CachePic(tempStr));
 		art_col += 50;
@@ -1617,7 +1617,7 @@ static void DrawActiveArtifacts(void)
 
 	if (flag & ART_INVINCIBILITY)
 	{
-		frame = 1+(int)(cl.time*16)%16;
+		frame = 1+(int)(cl.serverTimeFloat*16)%16;
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);
 		UI_DrawPic(viddef.width-art_col, 1, R_CachePic(tempStr));
 		art_col += 50;
@@ -1682,7 +1682,7 @@ static void DrawArtifactInventory(void)
 	int i;
 	int x, y;
 
-	if(InventoryHideTime < cl.time)
+	if(InventoryHideTime < cl.serverTimeFloat)
 	{
 		Inv_Update(false);
 		return;
@@ -1850,7 +1850,7 @@ static void InvLeft_f(void)
 		inv_flg = true;
 	}
 	S_StartLocalSound("misc/invmove.wav");
-	InventoryHideTime = cl.time+INVENTORY_DISPLAY_TIME;
+	InventoryHideTime = cl.serverTimeFloat+INVENTORY_DISPLAY_TIME;
 }
 
 //==========================================================================
@@ -1883,7 +1883,7 @@ static void InvRight_f(void)
 		inv_flg = true;
 	}
 	S_StartLocalSound("misc/invmove.wav");
-	InventoryHideTime = cl.time+INVENTORY_DISPLAY_TIME;
+	InventoryHideTime = cl.serverTimeFloat+INVENTORY_DISPLAY_TIME;
 }
 
 //==========================================================================

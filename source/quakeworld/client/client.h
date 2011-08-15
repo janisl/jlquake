@@ -240,7 +240,7 @@ struct client_state_t : clientActiveCommon_t
 	vec3_t		viewangles;
 
 // the client simulates or interpolates movement to get these values
-	double		time;			// this is the time value that the client
+	double		serverTimeFloat;// this is the time value that the client
 								// is rendering at.  allways <= realtime
 	vec3_t		simorg;
 	vec3_t		simvel;

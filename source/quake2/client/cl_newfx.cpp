@@ -76,7 +76,7 @@ void CL_Flashlight (int ent, vec3_t pos)
 	VectorCopy (pos,  dl->origin);
 	dl->radius = 400;
 	dl->minlight = 250;
-	dl->die = cl.time + 100;
+	dl->die = cl.serverTime + 100;
 	dl->color[0] = 1;
 	dl->color[1] = 1;
 	dl->color[2] = 1;
@@ -95,7 +95,7 @@ void CL_ColorFlash (vec3_t pos, int ent, int intensity, float r, float g, float 
 	VectorCopy (pos,  dl->origin);
 	dl->radius = intensity;
 	dl->minlight = 250;
-	dl->die = cl.time + 100;
+	dl->die = cl.serverTime + 100;
 	dl->color[0] = r;
 	dl->color[1] = g;
 	dl->color[2] = b;
@@ -143,7 +143,7 @@ void CL_DebugTrail (vec3_t start, vec3_t end)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		VectorClear (p->accel);
 		VectorClear (p->vel);
 		p->alpha = 1.0;
@@ -194,7 +194,7 @@ void CL_SmokeTrail (vec3_t start, vec3_t end, int colorStart, int colorRun, int 
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (1+frand()*0.5);
@@ -237,7 +237,7 @@ void CL_ForceWall (vec3_t start, vec3_t end, int color)
 			p->type = pt_q2static;
 			VectorClear (p->accel);
 			
-			p->time = cl.time;
+			p->time = cl.serverTime;
 
 			p->alpha = 1.0;
 			p->alphavel =  -1.0 / (3.0+frand()*0.5);
@@ -273,7 +273,7 @@ void CL_FlameEffects (centity_t *ent, vec3_t origin)
 		p->type = pt_q2static;
 		
 		VectorClear (p->accel);
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (1+frand()*0.2);
@@ -297,7 +297,7 @@ void CL_FlameEffects (centity_t *ent, vec3_t origin)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (1+frand()*0.5);
@@ -330,7 +330,7 @@ void CL_GenericParticleEffect (vec3_t org, vec3_t dir, int color, int count, int
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		if (numcolors > 1)
 			p->color = color + (rand() & numcolors);
 		else
@@ -384,7 +384,7 @@ void CL_BubbleTrail2 (vec3_t start, vec3_t end, int dist)
 		p->type = pt_q2static;
 
 		VectorClear (p->accel);
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (1+frand()*0.1);
@@ -433,7 +433,7 @@ void CL_Heatbeam (vec3_t start, vec3_t end)
 	VectorMA (move, -1, up, move);
 
 	VectorScale (vec, step, vec);
-	ltime = (float) cl.time/1000.0;
+	ltime = (float) cl.serverTime/1000.0;
 
 //	for (i=0 ; i<len ; i++)
 	for (i=0 ; i<len ; i+=step)
@@ -453,7 +453,7 @@ void CL_Heatbeam (vec3_t start, vec3_t end)
 
 			p->type = pt_q2static;
 			
-			p->time = cl.time;
+			p->time = cl.serverTime;
 			VectorClear (p->accel);
 
 			p->alpha = 0.5;
@@ -523,7 +523,7 @@ void CL_Heatbeam (vec3_t start, vec3_t forward)
 	VectorMA (move, -0.5, right, move);
 	VectorMA (move, -0.5, up, move);
 
-	ltime = (float) cl.time/1000.0;
+	ltime = (float) cl.serverTime/1000.0;
 	start_pt = fmod(ltime*96.0f,step);
 	VectorMA (move, start_pt, vec, move);
 
@@ -545,7 +545,7 @@ void CL_Heatbeam (vec3_t start, vec3_t forward)
 
 			p->type = pt_q2static;
 			
-			p->time = cl.time;
+			p->time = cl.serverTime;
 			VectorClear (p->accel);
 //			rot+= fmod(ltime, 12.0)*M_PI;
 //			c = cos(rot)/2.0;
@@ -619,7 +619,7 @@ void CL_Heatbeam (vec3_t start, vec3_t end)
 
 		p->type = pt_q2static;
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		VectorClear (p->accel);
 		
 		d = crand()*M_PI;
@@ -667,7 +667,7 @@ void CL_ParticleSteamEffect (vec3_t org, vec3_t dir, int color, int count, int m
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		p->color = color + (rand()&7);
 
 		for (j=0 ; j<3 ; j++)
@@ -711,7 +711,7 @@ void CL_ParticleSteamEffect2 (cl_sustain_t *self)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		p->color = self->color + (rand()&7);
 
 		for (j=0 ; j<3 ; j++)
@@ -772,7 +772,7 @@ void CL_TrackerTrail (vec3_t start, vec3_t end, int particleColor)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -2.0;
@@ -805,7 +805,7 @@ void CL_Tracker_Shell(vec3_t origin)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = INSTANT_PARTICLE;
@@ -834,7 +834,7 @@ void CL_MonsterPlasma_Shell(vec3_t origin)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = INSTANT_PARTICLE;
@@ -858,7 +858,7 @@ void CL_Widowbeamout (cl_sustain_t *self)
 	static int colortable[4] = {2*8,13*8,21*8,18*8};
 	float			ratio;
 
-	ratio = 1.0 - (((float)self->endtime - (float)cl.time)/2100.0);
+	ratio = 1.0 - (((float)self->endtime - (float)cl.serverTime)/2100.0);
 
 	for(i=0;i<300;i++)
 	{
@@ -868,7 +868,7 @@ void CL_Widowbeamout (cl_sustain_t *self)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = INSTANT_PARTICLE;
@@ -892,7 +892,7 @@ void CL_Nukeblast (cl_sustain_t *self)
 	static int colortable[4] = {110, 112, 114, 116};
 	float			ratio;
 
-	ratio = 1.0 - (((float)self->endtime - (float)cl.time)/1000.0);
+	ratio = 1.0 - (((float)self->endtime - (float)cl.serverTime)/1000.0);
 
 	for(i=0;i<700;i++)
 	{
@@ -902,7 +902,7 @@ void CL_Nukeblast (cl_sustain_t *self)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = INSTANT_PARTICLE;
@@ -932,7 +932,7 @@ void CL_WidowSplash (vec3_t org)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		p->color = colortable[rand()&3];
 
 		dir[0] = crand();
@@ -964,7 +964,7 @@ void CL_Tracker_Explode(vec3_t	origin)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0;
@@ -1014,7 +1014,7 @@ void CL_TagTrail (vec3_t start, vec3_t end, int color)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.8+frand()*0.2);
@@ -1047,7 +1047,7 @@ void CL_ColorExplosionParticles (vec3_t org, int color, int run)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		p->color = color + (rand() % run);
 
 		for (j=0 ; j<3 ; j++)
@@ -1085,7 +1085,7 @@ void CL_ParticleSmokeEffect (vec3_t org, vec3_t dir, int color, int count, int m
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		p->color = color + (rand()&7);
 
 		for (j=0 ; j<3 ; j++)
@@ -1128,7 +1128,7 @@ void CL_BlasterParticles2 (vec3_t org, vec3_t dir, unsigned int color)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.time;
+		p->time = cl.serverTime;
 		p->color = color + (rand()&7);
 
 		d = rand()&15;
@@ -1180,7 +1180,7 @@ void CL_BlasterTrail2 (vec3_t start, vec3_t end)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
-		p->time = cl.time;
+		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.3+frand()*0.2);

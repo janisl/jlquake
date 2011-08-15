@@ -126,7 +126,7 @@ void SCR_CenterPrint (const char *str)
 {
 	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.time;
+	scr_centertime_start = cl.serverTimeFloat;
 
 // count the number of lines for centering
 	scr_center_lines = 1;
@@ -149,7 +149,7 @@ void SCR_DrawCenterString (void)
 
 // the finale prints the characters one at a time
 	if (cl.intermission)
-		remaining = scr_printspeed->value * (cl.time - scr_centertime_start);
+		remaining = scr_printspeed->value * (cl.serverTimeFloat - scr_centertime_start);
 	else
 		remaining = 9999;
 

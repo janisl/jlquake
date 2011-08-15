@@ -449,7 +449,7 @@ void V_RenderView(float stereo_separation)
 	cl.refdef.width = scr_vrect.width;
 	cl.refdef.height = scr_vrect.height;
 	cl.refdef.fov_y = CalcFov (cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
-	cl.refdef.time = cl.time;
+	cl.refdef.time = cl.serverTime;
 
 	for (int i = 0; i < MAX_MAP_AREA_BYTES; i++)
 	{

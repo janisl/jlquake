@@ -158,7 +158,7 @@ void SCR_CenterPrint (char *str)
 {
 	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.time;
+	scr_centertime_start = cl.serverTimeFloat;
 
 	FindTextBreaks(scr_centerstring, 38);
 	scr_center_lines = lines;
@@ -173,7 +173,7 @@ void SCR_DrawCenterString (void)
 
 // the finale prints the characters one at a time
 	if (cl.intermission)
-		remaining = scr_printspeed->value * (cl.time - scr_centertime_start);
+		remaining = scr_printspeed->value * (cl.serverTimeFloat - scr_centertime_start);
 	else
 		remaining = 9999;
 
@@ -816,13 +816,13 @@ void SB_IntermissionOverlay(void)
 
 	if (cl.intermission >= 6 && cl.intermission <= 8)
 	{
-		elapsed = (cl.time - cl.completed_time) * 20;
+		elapsed = (cl.serverTimeFloat - cl.completed_time) * 20;
 		elapsed -= 50;
 		if (elapsed < 0) elapsed = 0;
 	}
 	else
 	{
-		elapsed = (cl.time - cl.completed_time) * 20;
+		elapsed = (cl.serverTimeFloat - cl.completed_time) * 20;
 	}
 
 	if (cl.intermission <= 4 && cl.intermission + 394 <= pr_string_count)
@@ -864,7 +864,7 @@ void SB_IntermissionOverlay(void)
 	if (i == lines && elapsed >= 300 && cl.intermission >= 6 && cl.intermission <= 7)
 	{
 		cl.intermission++;
-		cl.completed_time = cl.time;
+		cl.completed_time = cl.serverTimeFloat;
 	}
 //	Con_Printf("Time is %10.2f\n",elapsed);
 }

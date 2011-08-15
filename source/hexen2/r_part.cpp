@@ -82,7 +82,7 @@ void R_DarkFieldParticles (entity_t *ent)
 				if (!p)
 					return;
 		
-				p->die = cl.time + 0.2 + (rand()&7) * 0.02;
+				p->die = cl.serverTimeFloat + 0.2 + (rand()&7) * 0.02;
 				p->color = 150 + rand()%6;
 				p->type = pt_h2slowgrav;
 				
@@ -215,7 +215,7 @@ void R_ParticleExplosion (vec3_t org)
 		if (!p)
 			return;
 
-		p->die = cl.time + 5;
+		p->die = cl.serverTimeFloat + 5;
 		p->color = ramp1[0];
 		p->ramp = rand()&3;
 		if (i & 1)
@@ -258,7 +258,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 
 		if (count == 1024)
 		{	// rocket explosion
-			p->die = cl.time + 5;
+			p->die = cl.serverTimeFloat + 5;
 			p->color = ramp1[0];
 			p->ramp = rand()&3;
 			if (i & 1)
@@ -282,7 +282,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 		}
 		else
 		{
-			p->die = cl.time + 0.1*(rand()%5);
+			p->die = cl.serverTimeFloat + 0.1*(rand()%5);
 //			p->color = (color&~7) + (rand()&7);
 //			p->color = 265 + (rand() % 9);
 			p->color = 256 + 16 + 12 + (rand() & 3);
@@ -316,8 +316,7 @@ void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, ptyp
 		if (!p)
 			return;
 
-//		p->die = cl.time + 0.1*(rand()%5);
-		p->die = cl.time + 2;//0.1*(rand()%5);
+		p->die = cl.serverTimeFloat + 2;//0.1*(rand()%5);
 		p->color = color;
 		p->type = effect;
 		p->ramp = 0;
@@ -349,8 +348,7 @@ void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, in
 		if (!p)
 			return;
 
-//		p->die = cl.time + 0.1*(rand()%5);
-		p->die = cl.time + 2;//0.1*(rand()%5);
+		p->die = cl.serverTimeFloat + 2;//0.1*(rand()%5);
 		p->color = color;
 		p->type = effect;
 		p->ramp = 0;
@@ -383,8 +381,7 @@ void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, 
 			return;
 		}
 
-//		p->die = cl.time + 0.1*(rand()%5);
-		p->die = cl.time + 2;//0.1*(rand()%5);
+		p->die = cl.serverTimeFloat + 2;//0.1*(rand()%5);
 		p->color = color;
 		p->type = effect;
 		p->ramp = 0;
@@ -419,7 +416,7 @@ void R_LavaSplash (vec3_t org)
 				if (!p)
 					return;
 		
-				p->die = cl.time + 2 + (rand()&31) * 0.02;
+				p->die = cl.serverTimeFloat + 2 + (rand()&31) * 0.02;
 				p->color = 224 + (rand()&7);
 				p->type = pt_h2slowgrav;
 				
@@ -458,7 +455,7 @@ void R_TeleportSplash (vec3_t org)
 				if (!p)
 					return;
 		
-				p->die = cl.time + 0.2 + (rand()&7) * 0.02;
+				p->die = cl.serverTimeFloat + 0.2 + (rand()&7) * 0.02;
 				p->color = 7 + (rand()&7);
 				p->type = pt_h2slowgrav;
 				
@@ -494,7 +491,7 @@ void R_RunQuakeEffect (vec3_t org, float distance)
 		if (!p)
 			return;
 
-		p->die = cl.time + 0.3*(rand()%5);
+		p->die = cl.serverTimeFloat + 0.3*(rand()%5);
 		p->color = (rand() &3) + ((rand() % 3)*16) + (13 * 16) + 256 + 11;
 		p->type = pt_h2quake;
 		p->ramp = 0;
@@ -547,7 +544,7 @@ void R_SunStaffTrail(vec3_t source, vec3_t dest)
 			return;
 		}
 
-		p->die = cl.time+2;
+		p->die = cl.serverTimeFloat+2;
 
 		p->ramp = rand()&3;
 		p->color = ramp6[(int)(p->ramp)];
@@ -581,7 +578,7 @@ void RiderParticle(int count, vec3_t origin)
 		if (!p)
 			return;
 
-		p->die = cl.time + 4;
+		p->die = cl.serverTimeFloat + 4;
 		p->color = 256+16+15;
 		p->type = pt_h2rd;
 		p->ramp = 0;
@@ -616,7 +613,7 @@ void GravityWellParticle(int count, vec3_t origin, int color)
 		if (!p)
 			return;
 
-		p->die = cl.time + 4;
+		p->die = cl.serverTimeFloat + 4;
 		p->color = color + (rand() & 15);
 		p->type = pt_h2gravwell;
 		p->ramp = 0;
@@ -691,7 +688,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			return;
 		
 		VectorCopy (vec3_origin, p->vel);
-		p->die = cl.time + lifetime;
+		p->die = cl.serverTimeFloat + lifetime;
 
 		switch(type)
 		{
@@ -721,7 +718,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 			case rt_tracer:;
 			case rt_tracer2:;// tracer
-				p->die = cl.time + 0.5;
+				p->die = cl.serverTimeFloat + 0.5;
 				p->type = pt_h2static;
 				if (type == 3)
 					p->color = 130 + (rand() & 6);
@@ -763,7 +760,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_voor_trail:// voor trail
 				p->color = 9*16 + 8 + (rand()&3);
 				p->type = pt_h2static;
-				p->die = cl.time + 0.3;
+				p->die = cl.serverTimeFloat + 0.3;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&15)-8);
 				break;
@@ -784,7 +781,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				p->ramp = rand()&3;
 				p->color = ramp10[(int)(p->ramp)];
 				p->type = pt_h2acidball;
-				p->die = cl.time + 0.5;
+				p->die = cl.serverTimeFloat + 0.5;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);
 				p->org[2] += 2; // compensate for model
@@ -920,7 +917,7 @@ void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int c
 		
 		z_time = -(e_size[2]/p->vel[2]);
 		p->color = color;
-		p->die = cl.time + z_time;
+		p->die = cl.serverTimeFloat + z_time;
 		p->ramp = (rand()&3);
 		//p->veer = veer;
 		
@@ -976,7 +973,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		if(!(flags&SFL_NO_TRANS))//Start translucent
 			p->color += 256;
 
-		p->die = cl.time + 7;
+		p->die = cl.serverTimeFloat + 7;
 		p->ramp = (rand()&3);
 		//p->veer = veer;
 		p->type = pt_h2snow;
@@ -1023,7 +1020,7 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 		if (!p)
 			return;
 
-		p->die = cl.time + 3;
+		p->die = cl.serverTimeFloat + 3;
 		p->color = color;
 		p->ramp = (rand()&3);
 
@@ -1057,7 +1054,7 @@ void CL_AddParticles()
 {
 	for (cparticle_t* p = active_particles; p; p = p->next)
 	{
-		if (p->die < cl.time)
+		if (p->die < cl.serverTimeFloat)
 		{
 			continue;
 		}
@@ -1132,7 +1129,7 @@ void R_UpdateParticles (void)
 	if (cls.state == ca_disconnected)
 		return;
 
-	frametime = cl.time - cl.oldtime;
+	frametime = cl.serverTimeFloat - cl.oldtime;
 //	Con_Printf("%10.5f\n",frametime);
 	time4 = frametime * 20;
 	time3 = frametime * 15;
@@ -1146,7 +1143,7 @@ void R_UpdateParticles (void)
 	for ( ;; ) 
 	{
 		kill = active_particles;
-		if (kill && kill->die < cl.time)
+		if (kill && kill->die < cl.serverTimeFloat)
 		{
 			active_particles = kill->next;
 			kill->next = free_particles;
@@ -1161,7 +1158,7 @@ void R_UpdateParticles (void)
 		for ( ;; )
 		{
 			kill = p->next;
-			if (kill && kill->die < cl.time)
+			if (kill && kill->die < cl.serverTimeFloat)
 			{
 				p->next = kill->next;
 				kill->next = free_particles;

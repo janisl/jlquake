@@ -1424,7 +1424,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		{
 			if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 			{
-				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
+				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.serverTimeFloat));
 			}
 			else
 			{
@@ -1453,9 +1453,9 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 		{
 			// Floating motion
-			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.serverTimeFloat * 3)) * 5.5;
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
-			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
+			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.serverTimeFloat * 3.8)) * 34;
 			drawflags |= MLS_ABSLIGHT;
  		}
 
@@ -1546,9 +1546,9 @@ void CL_AnimateLight(void)
 	int defaultLocus;
 	int locusHz[3];
 
-	defaultLocus = locusHz[0] = (int)(cl.time*10);
-	locusHz[1] = (int)(cl.time*20);
-	locusHz[2] = (int)(cl.time*30);
+	defaultLocus = locusHz[0] = (int)(cl.serverTimeFloat*10);
+	locusHz[1] = (int)(cl.serverTimeFloat*20);
+	locusHz[2] = (int)(cl.serverTimeFloat*30);
 	for(i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		if(!cl_lightstyle[i].length)

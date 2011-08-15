@@ -85,7 +85,6 @@ struct clientActive_t : clientActiveCommon_t
 									// causing immediate disconnects on continue
 	clSnapshot_t	snap;			// latest received from server
 
-	int			serverTime;			// may be paused during play
 	int			oldServerTime;		// to prevent time from flowing bakcwards
 	int			oldFrameServerTime;	// to check tournament restarts
 	int			serverTimeDelta;	// cl.serverTime = cls.realtime + cl.serverTimeDelta

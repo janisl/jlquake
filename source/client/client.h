@@ -49,6 +49,7 @@ struct clientStaticCommon_t
 
 struct clientActiveCommon_t
 {
+	int			serverTime;			// may be paused during play
 };
 
 extern clientStaticCommon_t* cls_common;

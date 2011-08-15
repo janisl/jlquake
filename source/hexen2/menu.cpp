@@ -758,7 +758,7 @@ void M_Difficulty_Key (int key)
 		{
 			introTime = 0.0;
 			cl.intermission = 12;
-			cl.completed_time = cl.time;
+			cl.completed_time = cl.serverTimeFloat;
 			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 			cls.demonum = m_save_demonum;

@@ -308,7 +308,7 @@ explosion_t *CL_AllocExplosion (void)
 
 
 // find the oldest explosion
-	time = cl.time;
+	time = cl.serverTimeFloat;
 
 	if (!freeSlot)
 	{
@@ -361,7 +361,7 @@ void CL_ParseBeam (qhandle_t m)
 		{
 			b->entity = ent;
 			b->model = m;
-			b->endtime = cl.time + 0.2;
+			b->endtime = cl.serverTimeFloat + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			return;
@@ -370,11 +370,11 @@ void CL_ParseBeam (qhandle_t m)
 // find a free beam
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTimeFloat)
 		{
 			b->entity = ent;
 			b->model = m;
-			b->endtime = cl.time + 0.2;
+			b->endtime = cl.serverTimeFloat + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
 			return;
@@ -484,7 +484,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 	stream->models[1] = models[1];
 	stream->models[2] = models[2];
 	stream->models[3] = models[3];
-	stream->endTime = cl.time+duration;
+	stream->endTime = cl.serverTimeFloat+duration;
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
@@ -508,11 +508,11 @@ void CLTENT_SpawnDeathBubble(vec3_t pos)
 	ex=CL_AllocExplosion();
 	VectorCopy(pos,ex->origin);
 	VectorSet(ex->velocity,0,0,17);
-	ex->data=cl.time;
+	ex->data=cl.serverTimeFloat;
 	ex->scale=128;
 	ex->frameFunc = BubbleThink;
-	ex->startTime=cl.time;
-	ex->endTime=cl.time+15;
+	ex->startTime=cl.serverTimeFloat;
+	ex->endTime=cl.serverTimeFloat+15;
 	ex->model=R_RegisterModel ("models/s_bubble.spr");
 	ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 	ex->abslight=175;
@@ -533,8 +533,8 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 	ex->avel[2]=(rand()%500)+200;
 	ex->scale=10;
 	ex->frameFunc = MissileFlashThink;
-	ex->startTime=cl.time;
-	ex->endTime=cl.time+0.3;
+	ex->startTime=cl.serverTimeFloat;
+	ex->endTime=cl.serverTimeFloat+0.3;
 	ex->model=R_RegisterModel ("models/arrowhit.mdl");
 	ex->exflags = EXFLAG_ROTATE;
 	ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
@@ -551,8 +551,8 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 		ex->velocity[1] = 0.0;
 		ex->velocity[2] = 80.0;
 		vectoangles(vel,ex->angles);
-		ex->startTime=cl.time;
-		ex->endTime=cl.time+0.35;
+		ex->startTime=cl.serverTimeFloat;
+		ex->endTime=cl.serverTimeFloat+0.35;
 		ex->model=R_RegisterModel ("models/whtsmk1.spr");
 		ex->flags = DRF_TRANSLUCENT;
 
@@ -602,7 +602,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 					else 
 						ex->model = R_RegisterModel ("models/splnter4.mdl");
 
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + 4.0;
 				}
 			}
@@ -633,7 +633,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 
 					ex->model = R_RegisterModel ("models/arrow.mdl");
 
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + 4.0;
 			}
 		}
@@ -729,7 +729,7 @@ static void ParseStream(int type)
 	stream->models[1] = models[1];
 	stream->models[2] = models[2];
 	stream->models[3] = models[3];
-	stream->endTime = cl.time+duration;
+	stream->endTime = cl.serverTimeFloat+duration;
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
@@ -763,7 +763,7 @@ static stream_t *NewStream(int ent, int tag, int *isNew)
 		{
 			if(isNew)
 			{
-				if(stream->endTime > cl.time)
+				if(stream->endTime > cl.serverTimeFloat)
 				{
 					*isNew = 0;
 				}
@@ -778,7 +778,7 @@ static stream_t *NewStream(int ent, int tag, int *isNew)
 	// Search for a free stream
 	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
 	{
-		if(!stream->models[0] || stream->endTime < cl.time)
+		if(!stream->models[0] || stream->endTime < cl.serverTimeFloat)
 		{
 			if(isNew)*isNew = 1;
 			return stream;
@@ -872,7 +872,7 @@ void CL_ParseTEnt (void)
 
 			ex->model = R_RegisterModel("models/gen_expl.spr");
 
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 		
 		// sound
@@ -890,7 +890,7 @@ void CL_ParseTEnt (void)
 			dl = CL_AllocDlight (0);
 			VectorCopy (pos, dl->origin);
 			dl->radius = 350;
-			dl->die = cl.time + 0.5;
+			dl->die = cl.serverTimeFloat + 0.5;
 			dl->decay = 300;
 			dl->color[0] = 0.2;
 			dl->color[1] = 0.1;
@@ -984,7 +984,7 @@ void CL_ParseTEnt (void)
 
 			ex->model = R_RegisterModel("models/sm_expld.spr");
 
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			break;
 
@@ -1334,7 +1334,7 @@ void CL_ParseTEnt (void)
 					ex->skin = 0;
 				}
 
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + 4.0;
 			}
 			break;
@@ -1373,8 +1373,8 @@ void CL_ParseTEnt (void)
 			vectoangles(vel,ex->angles);
 			ex->avel[2]=(rand()%500)+200;
 			ex->scale=10;
-			ex->startTime=cl.time;
-			ex->endTime=cl.time+0.3;
+			ex->startTime=cl.serverTimeFloat;
+			ex->endTime=cl.serverTimeFloat+0.3;
 			ex->model=R_RegisterModel ("models/arrowhit.mdl");
 			ex->exflags = EXFLAG_ROTATE;
 			ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
@@ -1391,8 +1391,8 @@ void CL_ParseTEnt (void)
 				ex->velocity[1] = 0.0;
 				ex->velocity[2] = 80.0;
 				vectoangles(vel,ex->angles);
-				ex->startTime=cl.time;
-				ex->endTime=cl.time+0.35;
+				ex->startTime=cl.serverTimeFloat;
+				ex->endTime=cl.serverTimeFloat+0.35;
 				ex->model=R_RegisterModel ("models/whtsmk1.spr");
 				ex->flags = DRF_TRANSLUCENT;
 			}
@@ -1437,7 +1437,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				VectorScale(ex->avel, 4.0, ex->avel);
 
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + 4.0;
 			}
 			// make the actual explosion
@@ -1483,7 +1483,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 160 + rand()%64;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
-				ex->startTime = cl.time + (rand()%50 / 200.0);
+				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
 			}
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
@@ -1505,7 +1505,7 @@ void CL_ParseTEnt (void)
 			VectorMA(ex->origin, -6, movedir, ex->origin);
 			ex->data=250;
 			ex->model = R_RegisterModel("models/sm_expld.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			for(cnt2=0; cnt2<cnt; cnt2++)
 			{
@@ -1521,7 +1521,7 @@ void CL_ParseTEnt (void)
 				ex->model = R_RegisterModel("models/ghost.spr");
 				ex->abslight = 128;
 				ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			}			
 			for(cnt2=0; cnt2<20; cnt2++)
@@ -1542,7 +1542,7 @@ void CL_ParseTEnt (void)
 				VectorCopy(offset, ex->velocity);
 				ex->data=250;
 				ex->model = R_RegisterModel("models/boneshrd.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + rand() * 50 / 100;
 				ex->flags |= EXFLAG_ROTATE|EXFLAG_COLLIDE;
 				ex->angles[0] = rand() % 700;
@@ -1567,7 +1567,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 	
 			//sound
@@ -1593,14 +1593,14 @@ void CL_ParseTEnt (void)
 			ex->velocity[1] = 8;
 			ex->velocity[2] = -10;
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[2] = -10;
 			ex->model = R_RegisterModel("models/redsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 			ex = CL_AllocExplosion ();
@@ -1608,7 +1608,7 @@ void CL_ParseTEnt (void)
 			ex->velocity[1] = -8;
 			ex->velocity[2] = -10;
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 			
 			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
@@ -1622,7 +1622,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->velocity[2] = 8;
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 			ex = CL_AllocExplosion ();
@@ -1630,7 +1630,7 @@ void CL_ParseTEnt (void)
 			ex->origin[2] -= 5;
 			ex->velocity[2] = 8;
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 			ex = CL_AllocExplosion ();
@@ -1638,7 +1638,7 @@ void CL_ParseTEnt (void)
 			ex->origin[2] -= 10;
 			ex->velocity[2] = 8;
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravengo, 1, 1);
@@ -1690,7 +1690,7 @@ void CL_ParseTEnt (void)
 					ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
 					ex->abslight = 128;
 
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + 2.0;
 					if(cnt2 == 2)
 					{
@@ -1709,7 +1709,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/icehit.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 
 			// Add in the sound
@@ -1765,7 +1765,7 @@ void CL_ParseTEnt (void)
 						stream->entity = ent;
 						stream->skin = 0;
 						stream->models[0] = models[0];
-						stream->endTime = cl.time+0.3;
+						stream->endTime = cl.serverTimeFloat+0.3;
 						stream->lastTrailTime = 0;
 
 						VectorCopy(center, stream->source);
@@ -1796,7 +1796,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(vel, ex->angles);
 			ex->frameFunc = MissileFlashThink;
 			ex->model = R_RegisterModel("models/handfx.mdl");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + 2;
 			ex->exflags = EXFLAG_ROTATE;
 			ex->avel[2] = rand() * 360 + 360;
@@ -1870,7 +1870,7 @@ void CL_ParseTEnt (void)
 						stream->models[1] = models[1];
 						stream->models[2] = models[2];
 						stream->models[3] = models[3];
-						stream->endTime = cl.time+0.5;	// FIXME
+						stream->endTime = cl.serverTimeFloat+0.5;	// FIXME
 						stream->lastTrailTime = 0;
 
 						VectorCopy(points[i], stream->source);
@@ -1931,7 +1931,7 @@ void CL_ParseTEnt (void)
 						stream->entity = ent;
 						stream->skin = 0;
 						stream->models[0] = models[0];
-						stream->endTime = cl.time+0.5;
+						stream->endTime = cl.serverTimeFloat+0.5;
 						stream->lastTrailTime = 0;
 
 						VectorCopy(state->origin, stream->source);
@@ -1957,7 +1957,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->frameFunc = TeleportFlashThink;	
 			ex->model = R_RegisterModel("models/teleport.mdl");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + 2;
 			ex->avel[2] = rand() * 360 + 360;
 			ex->flags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
@@ -1971,7 +1971,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion ();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/telesmk2.spr");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + .5;
 				ex->velocity[0] = cosval;
 				ex->velocity[1] = sinval;
@@ -1981,7 +1981,7 @@ void CL_ParseTEnt (void)
 				VectorCopy(pos, ex->origin);
 				ex->origin[2] += 64;
 				ex->model = R_RegisterModel("models/telesmk2.spr");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + .5;
 				ex->velocity[0] = cosval;
 				ex->velocity[1] = sinval;
@@ -2031,7 +2031,7 @@ void CL_ParseTEnt (void)
 						stream->entity = ent;
 						stream->skin = 0;
 						stream->models[0] = models[0];
-						stream->endTime = cl.time+0.5;
+						stream->endTime = cl.serverTimeFloat+0.5;
 						stream->lastTrailTime = 0;
 
 						VectorCopy(pos, stream->source);
@@ -2046,7 +2046,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/vorpshok.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + 1.0;
 				ex->flags |= MLS_ABSLIGHT;
 				ex->abslight = 128;
@@ -2067,7 +2067,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/spark.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->flags |= MLS_ABSLIGHT;
 			ex->abslight = 128;
 			ex->skin = 0;
@@ -2117,7 +2117,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 160+rand()%24;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
-				ex->startTime = cl.time + (rand()%50 / 200.0);
+				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
@@ -2160,7 +2160,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 160+rand()%24;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
-				ex->startTime = cl.time + (rand()%50 / 200.0);
+				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
@@ -2179,7 +2179,7 @@ void CL_ParseTEnt (void)
 			ex->abslight = 128;
 			ex->skin = 0;
 			ex->scale = 1;
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + 1.0;
 			ex->frameFunc = fireBallUpdate;
 
@@ -2229,7 +2229,7 @@ void CL_ParseTEnt (void)
 					ex->abslight = 128;
 					ex->skin = 0;
 					ex->scale = 200;
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + .8;
 
 					ex->exflags = EXFLAG_ROTATE;
@@ -2269,7 +2269,7 @@ void CL_ParseTEnt (void)
 					stream->models[1] = models[1];
 					stream->models[2] = models[2];
 					stream->models[3] = models[3];
-					stream->endTime = cl.time+0.8;
+					stream->endTime = cl.serverTimeFloat+0.8;
 					stream->lastTrailTime = 0;
 
 					VectorCopy(vel, stream->source);
@@ -2291,7 +2291,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/xplod29.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->flags |= MLS_ABSLIGHT;
 			ex->abslight = 128;
 			ex->skin = 0;
@@ -2331,7 +2331,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 160 + rand()%64;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
-				ex->startTime = cl.time + (rand()%50 / 200.0);
+				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
 			}
 
@@ -2403,7 +2403,7 @@ void CL_ParseTEnt (void)
 					
 					ex->skin = 0;
 
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + 4.0;
 				}
 
@@ -2457,7 +2457,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(endPos, ex->origin);
 				ex->model = R_RegisterModel("models/fcircle.spr");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->flags |= MLS_ABSLIGHT;
 				ex->abslight = 128;
 				ex->skin = 0;
@@ -2479,7 +2479,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/bspark.spr");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->flags |= MLS_ABSLIGHT;
 				ex->abslight = 128;
 				ex->frameFunc = telEffectUpdate;
@@ -2535,7 +2535,7 @@ void CL_ParseTEnt (void)
 						ex->skin = 0;
 						ratio = (float)i/(float)distance;
 						ex->scale = 200-(int)(150.0*ratio);
-						ex->startTime = cl.time+ratio*0.75;
+						ex->startTime = cl.serverTimeFloat+ratio*0.75;
 						ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (0.025+FRANDOM()*0.01);
 
 						VectorAdd(curPos,distVec,curPos);
@@ -2565,7 +2565,7 @@ void CL_ParseTEnt (void)
 						ex->skin = 0;
 						ratio = (float)i/(float)distance;
 						ex->scale = 200-(int)(150.0*ratio);
-						ex->startTime = cl.time+ratio*0.75;
+						ex->startTime = cl.serverTimeFloat+ratio*0.75;
 						ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (0.025+FRANDOM()*0.01);
 
 						VectorAdd(curPos,distVec,curPos);
@@ -2586,7 +2586,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/null.spr");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + 0.4;
 				ex->frameFunc = MeteorCrushSpawnThink;
 				ex->data = maxDist;
@@ -2622,7 +2622,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 160+rand()%24;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
-				ex->startTime = cl.time + (rand()%50 / 200.0);
+				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
@@ -2668,7 +2668,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 1;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
-				ex->startTime = cl.time + (rand()%50 / 200.0);
+				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
@@ -2702,7 +2702,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				VectorScale(ex->avel, 4.0, ex->avel);
 
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + 4.0;
 			}
 
@@ -2726,7 +2726,7 @@ void CL_ParseTEnt (void)
 				dlx = CL_AllocDlight (0);
 				VectorCopy (pos,  dlx->origin);
 				dlx->radius = 200 + (rand()&31);
-				dlx->die = cl.time + 0.001;
+				dlx->die = cl.serverTimeFloat + 0.001;
 
 				VectorCopy(pos, endPos);
 				endPos[0] += cos(travelAng) * cos(travelPitch) * 450;
@@ -2753,7 +2753,7 @@ void CL_ParseTEnt (void)
 						ex->model = R_RegisterModel("models/firewal4.spr");
 						break;
 					}
-					ex->startTime = cl.time + .3/8.0 * i;
+					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
 					int PtContents;
@@ -2782,7 +2782,7 @@ void CL_ParseTEnt (void)
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)-3;
 					ex->model = R_RegisterModel("models/flamestr.spr");
-					ex->startTime = cl.time + .3/8.0 * i;
+					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
 
@@ -2806,7 +2806,7 @@ void CL_ParseTEnt (void)
 				ex->origin[1] += (rand()%32)-16;
 				ex->origin[2] += (rand()%32)-16;
 				ex->model = R_RegisterModel("models/fboom.spr");
-				ex->startTime = cl.time + ((rand()%150)/200);
+				ex->startTime = cl.serverTimeFloat + ((rand()%150)/200);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
@@ -2856,7 +2856,7 @@ void CL_ParseTEnt (void)
 				dlx = CL_AllocDlight (0);
 				VectorCopy (pos,  dlx->origin);
 				dlx->radius = 200 + (rand()&31);
-				dlx->die = cl.time + 0.001;
+				dlx->die = cl.serverTimeFloat + 0.001;
 
 				VectorCopy(pos, endPos);
 				endPos[0] += cos(travelAng) * cos(travelPitch) * 375;
@@ -2884,7 +2884,7 @@ void CL_ParseTEnt (void)
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)-3;
 					ex->model = R_RegisterModel("models/flamestr.spr");
-					ex->startTime = cl.time + .3/8.0 * i;
+					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
 
@@ -2902,7 +2902,7 @@ void CL_ParseTEnt (void)
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)-3;
 					ex->model = R_RegisterModel("models/flamestr.spr");
-					ex->startTime = cl.time + .3/8.0 * i;
+					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
 
@@ -2941,7 +2941,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/sucwp1p.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3/240.0;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -2962,7 +2962,7 @@ void CL_ParseTEnt (void)
 					VectorCopy(pos, ex->origin);
 					VectorMA(ex->origin, 7, right, ex->origin);
 					ex->model = R_RegisterModel("models/sucwp1p.mdl");
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + trailLen*.3/240.0;
 					ex->angles[0] = travelPitch*360/6.28;
 					ex->angles[1] = travelAng*360/6.28;
@@ -2975,7 +2975,7 @@ void CL_ParseTEnt (void)
 					VectorCopy(pos, ex->origin);
 					VectorMA(ex->origin, -7, right, ex->origin);
 					ex->model = R_RegisterModel("models/sucwp1p.mdl");
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + trailLen*.3/240.0;
 					ex->angles[0] = travelPitch*360/6.28;
 					ex->angles[1] = travelAng*360/6.28;
@@ -3009,7 +3009,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/axblade.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3019,7 +3019,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/axtail.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3053,7 +3053,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/drgnball.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3084,7 +3084,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/vorpshot.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3093,7 +3093,7 @@ void CL_ParseTEnt (void)
 				ex->frameFunc = updateSwordShot;
 				ex->scale = 100;
 				ex->exflags |= EXFLAG_STILL_FRAME;
-				ex->data = 16 + ((int)(cl.time * 20.0)%13);
+				ex->data = 16 + ((int)(cl.serverTimeFloat * 20.0)%13);
 			}
 			break;
 
@@ -3118,7 +3118,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/iceshot1.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3139,7 +3139,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/iceshot2.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3176,7 +3176,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/tempmetr.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3212,7 +3212,7 @@ void CL_ParseTEnt (void)
 				dl = CL_AllocDlight (0);
 				VectorCopy (pos, dl->origin);
 				dl->radius = 350;
-				dl->die = cl.time + 0.5;
+				dl->die = cl.serverTimeFloat + 0.5;
 				dl->decay = 300;
 				dl->color[0] = 0.2;
 				dl->color[1] = 0.1;
@@ -3226,7 +3226,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/lball.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.2;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3263,7 +3263,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/tempmetr.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3385,7 +3385,7 @@ void CL_ParseTEnt (void)
 					stream->entity = ent;
 					stream->skin = 0;
 					stream->models[0] = models[0];
-					stream->endTime = cl.time+0.5;
+					stream->endTime = cl.serverTimeFloat+0.5;
 					stream->lastTrailTime = 0;
 
 					tempAng = (rand()%628)/100.0;
@@ -3420,7 +3420,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/sucwp2p.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3450,7 +3450,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/sucwp2p.mdl");
-				ex->startTime = cl.time;
+				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
 				ex->angles[1] = travelAng*360/6.28;
@@ -3518,7 +3518,7 @@ void CL_ParseTEnt (void)
 					stream->entity = ent;
 					stream->skin = 0;
 					stream->models[0] = models[0];
-					stream->endTime = cl.time+0.3;
+					stream->endTime = cl.serverTimeFloat+0.3;
 					stream->lastTrailTime = 0;
 
 					VectorCopy(points[temp], stream->source);
@@ -3527,7 +3527,7 @@ void CL_ParseTEnt (void)
 					ex = CL_AllocExplosion();
 					VectorCopy(points[temp+1], ex->origin);
 					ex->model = R_RegisterModel("models/vorpshok.mdl");
-					ex->startTime = cl.time;
+					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + .3;
 					ex->flags |= MLS_ABSLIGHT;//|DRF_TRANSLUCENT;
 					//ex->abslight = 128;
@@ -3568,7 +3568,7 @@ void CL_UpdateBeams (void)
 // update lightning
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
-		if (!b->model || b->endtime < cl.time)
+		if (!b->model || b->endtime < cl.serverTimeFloat)
 			continue;
 
 	// if coming from the player, update the start position
@@ -3657,7 +3657,7 @@ void CL_UpdateExplosions (void)
 
 
 		// if we hit endTime, get rid of explosion (i assume endTime is greater than startTime, etc)
-		if (ex->endTime <= cl.time)
+		if (ex->endTime <= cl.serverTimeFloat)
 		{
 			if (ex->removeFunc)
 			{
@@ -3676,7 +3676,7 @@ void CL_UpdateExplosions (void)
 		}
 		else
 		{
-			f = (R_ModelNumFrames(ex->model) - 1) * (cl.time - ex->startTime) / (ex->endTime - ex->startTime);
+			f = (R_ModelNumFrames(ex->model) - 1) * (cl.serverTimeFloat - ex->startTime) / (ex->endTime - ex->startTime);
 		}
 
 		// apply velocity
@@ -3695,7 +3695,7 @@ void CL_UpdateExplosions (void)
 			VectorMA(ex->angles, host_frametime, ex->avel, ex->angles);
 		}
 		// you can set startTime to some point in the future to delay the explosion showing up or thinking; it'll still move, though
-		if (ex->startTime > cl.time)
+		if (ex->startTime > cl.serverTimeFloat)
 			continue;
 
 		if (ex->frameFunc)
@@ -3704,7 +3704,7 @@ void CL_UpdateExplosions (void)
 		}
 
 		// allow for the possibility for the frame func to reset startTime
-		if (ex->startTime > cl.time)
+		if (ex->startTime > cl.serverTimeFloat)
 			continue;
 
 		// just incase the frameFunc eliminates the thingy here.
@@ -3748,15 +3748,15 @@ void CL_UpdateStreams(void)
 			continue;
 		}
 
-		if(stream->endTime < cl.time)
+		if(stream->endTime < cl.serverTimeFloat)
 		{ // Inactive
 			if(stream->type!=TE_STREAM_LIGHTNING&&stream->type!=TE_STREAM_LIGHTNING_SMALL)
 				continue;
-			else if(stream->endTime + 0.25 < cl.time)
+			else if(stream->endTime + 0.25 < cl.serverTimeFloat)
 				continue;
 		}
 
-		if(stream->flags&STREAM_ATTACHED&&stream->endTime >= cl.time)
+		if(stream->flags&STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
 			{ // Attach the start position to owner
 			state = FindState(stream->entity);
 			if (state)
@@ -3803,17 +3803,17 @@ void CL_UpdateStreams(void)
 			discard[ROLL] = 0;
 			AngleVectors(discard, discard, right, up);
 
-			lifeTime = ((stream->endTime - cl.time)/.8);
-			cosTime = cos(cl.time*5);
-			sinTime = sin(cl.time*5);
-			cos2Time = cos(cl.time*5 + 3.14);
-			sin2Time = sin(cl.time*5 + 3.14);
+			lifeTime = ((stream->endTime - cl.serverTimeFloat)/.8);
+			cosTime = cos(cl.serverTimeFloat*5);
+			sinTime = sin(cl.serverTimeFloat*5);
+			cos2Time = cos(cl.serverTimeFloat*5 + 3.14);
+			sin2Time = sin(cl.serverTimeFloat*5 + 3.14);
 		}
 
 		segmentCount = 0;
 		if(stream->type == TE_STREAM_ICECHUNKS)
 		{
-			offset = (int)(cl.time*40)%30;
+			offset = (int)(cl.serverTimeFloat*40)%30;
 			for(i = 0; i < 3; i++)
 			{
 				org[i] += dist[i]*offset;
@@ -3837,9 +3837,9 @@ void CL_UpdateStreams(void)
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF1:
-				angles[2] = (int)(cl.time*10)%360;
+				angles[2] = (int)(cl.serverTimeFloat*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.time)/.3), 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.3), 0, 128, MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 
 				Com_Memset(&ent, 0, sizeof(ent));
@@ -3848,13 +3848,13 @@ void CL_UpdateStreams(void)
 				ent.hModel = stream->models[1];
 				angles[0] = pitch;
 				angles[1] = yaw;
-				angles[2] = (int)(cl.time*50)%360;
+				angles[2] = (int)(cl.serverTimeFloat*50)%360;
 				//stream->endTime = cl.time+0.3;	// FIXME
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.time)/.5), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.5), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF2:
-				angles[2] = (int)(cl.time*100)%360;
+				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
 				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
@@ -3866,7 +3866,7 @@ void CL_UpdateStreams(void)
 				ent.hModel = stream->models[0];
 				angles[0] = pitch;
 				angles[1] = yaw;
-				angles[2] = (int)(cl.time*100)%360;
+				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
 				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
@@ -3890,15 +3890,15 @@ void CL_UpdateStreams(void)
 					ent.hModel = stream->models[1];
 					angles[0] = pitch;
 					angles[1] = yaw;
-					angles[2] = (int)(cl.time*20)%360;
+					angles[2] = (int)(cl.serverTimeFloat*20)%360;
 					CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT);
 					R_AddRefEntityToScene(&ent);
 				}
 				break;
 			case TE_STREAM_LIGHTNING:
-				if(stream->endTime < cl.time)
+				if(stream->endTime < cl.serverTimeFloat)
 				{//fixme: keep last non-translucent frame and angle
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -3909,9 +3909,9 @@ void CL_UpdateStreams(void)
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
-				if(stream->endTime < cl.time)
+				if(stream->endTime < cl.serverTimeFloat)
 				{
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -3936,7 +3936,7 @@ void CL_UpdateStreams(void)
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
-				ent.frame = (int)(cl.time*40)%36;
+				ent.frame = (int)(cl.serverTimeFloat*40)%36;
 				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
@@ -3960,9 +3960,9 @@ void CL_UpdateStreams(void)
 		}
 		if(stream->type == TE_STREAM_SUNSTAFF1)
 		{
-			if(stream->lastTrailTime+0.2 < cl.time)
+			if(stream->lastTrailTime+0.2 < cl.serverTimeFloat)
 			{
-				stream->lastTrailTime = cl.time;
+				stream->lastTrailTime = cl.serverTimeFloat;
 				R_SunStaffTrail(stream->source, stream->dest);
 			}
 
@@ -4055,7 +4055,7 @@ void MultiGrenadeThink (explosion_t *ex)
 			missile->velocity[2]=0;//(rand()%100)+50;
 
 			ftemp = ( rand() / RAND_MAX * (0.5) );
-			missile->startTime = cl.time;// + 0.1 + ftemp - (ex->startTime - cl.time);
+			missile->startTime = cl.serverTimeFloat;// + 0.1 + ftemp - (ex->startTime - cl.time);
 			ftemp = ( rand() / RAND_MAX * (0.3) )-0.15;
 			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
 			break;
@@ -4066,7 +4066,7 @@ void MultiGrenadeThink (explosion_t *ex)
 			missile->velocity[2]=(rand()%150)+150;
 
 			ftemp = ( rand() / RAND_MAX  * (0.5) );
-			missile->startTime = cl.time;// + 0.1 + ftemp - (ex->startTime - cl.time);
+			missile->startTime = cl.serverTimeFloat;// + 0.1 + ftemp - (ex->startTime - cl.time);
 			ftemp = ( rand() / RAND_MAX  * (0.3) )-0.15;
 			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
 			break;
@@ -4077,7 +4077,7 @@ void MultiGrenadeThink (explosion_t *ex)
 			missile->origin[2]+=(rand()%50)-25;
 
 			ftemp = ( rand() / RAND_MAX * (0.2) );
-			missile->startTime = cl.time + ftemp;
+			missile->startTime = cl.serverTimeFloat + ftemp;
 			ftemp = ( rand() / RAND_MAX * (0.2) )-0.1;
 			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
 			break;
@@ -4107,10 +4107,10 @@ void MultiGrenadePieceThink (explosion_t *ex)
 		ex->data = 70;
 
 	ftemp = ( rand() / RAND_MAX * (0.2) )-0.1;
-	ex->startTime = cl.time + ((1-(ex->data-69)/180.0)+ftemp-0.3) * 1.25;
-	if (ex->startTime < cl.time)
+	ex->startTime = cl.serverTimeFloat + ((1-(ex->data-69)/180.0)+ftemp-0.3) * 1.25;
+	if (ex->startTime < cl.serverTimeFloat)
 	{
-		ex->startTime = cl.time;
+		ex->startTime = cl.serverTimeFloat;
 	}
 	ftemp = ( rand() / RAND_MAX * (0.4) )-0.4;
 	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1 + ftemp;
@@ -4151,7 +4151,7 @@ void MultiGrenadePieceThink (explosion_t *ex)
 
 		ftemp = ( rand() / RAND_MAX * (0.5) );
 
-		missile->startTime = cl.time+0.01;
+		missile->startTime = cl.serverTimeFloat+0.01;
 		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1;
     }
 }
@@ -4175,7 +4175,7 @@ void MultiGrenadePiece2Think (explosion_t *ex)
 	}
 
 	ftemp = 0;//( rand() / RAND_MAX * (0.2) )-0.1;
-	ex->startTime = cl.time + (((1 - (ex->data-69)/200.0)+ftemp)*1.5) - 0.2;
+	ex->startTime = cl.serverTimeFloat + (((1 - (ex->data-69)/200.0)+ftemp)*1.5) - 0.2;
 	ftemp = ( rand() / RAND_MAX * (0.4) )-0.2;
 	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1 + ftemp;
 
@@ -4209,7 +4209,7 @@ void MultiGrenadePiece2Think (explosion_t *ex)
 
 		ftemp = ( rand() / RAND_MAX * (0.5) );
 
-		missile->startTime = cl.time+0.01;
+		missile->startTime = cl.serverTimeFloat+0.01;
 		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1;
     }
 }
@@ -4257,12 +4257,12 @@ void ChunkThink(explosion_t *ex)
 		moving = 0;
 	}
 
-	if(cl.time + host_frametime * 5 > ex->endTime)
+	if(cl.serverTimeFloat + host_frametime * 5 > ex->endTime)
 	{	// chunk leaves in 5 frames about
 		switch((int)ex->data)
 		{
 		case THINGTYPE_METEOR:
-			if(cl.time + host_frametime * 4 < ex->endTime)
+			if(cl.serverTimeFloat + host_frametime * 4 < ex->endTime)
 			{	// just crossed the threshold
 				ex->abslight = 200;
 			}
@@ -4356,7 +4356,7 @@ void BubbleThink(explosion_t *ex)
 	{
 		//still in water
 
-		if (ex->data < cl.time)//change course
+		if (ex->data < cl.serverTimeFloat)//change course
 		{
 			ex->velocity[0] += rand()%20 - 10;
 			ex->velocity[1] += rand()%20 - 10;
@@ -4382,7 +4382,7 @@ void BubbleThink(explosion_t *ex)
 	}
 	else
 	{
-		ex->endTime= cl.time;
+		ex->endTime= cl.serverTimeFloat;
 	}
 
 }
@@ -4422,7 +4422,7 @@ void CreateRavenExplosions(vec3_t pos)
 	VectorCopy(pos, ex->origin);
 	ex->velocity[2] = 8;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 	ex = CL_AllocExplosion ();
@@ -4430,7 +4430,7 @@ void CreateRavenExplosions(vec3_t pos)
 	ex->origin[2] -= 5;
 	ex->velocity[2] = 8;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 	ex = CL_AllocExplosion ();
@@ -4438,7 +4438,7 @@ void CreateRavenExplosions(vec3_t pos)
 	ex->origin[2] -= 10;
 	ex->velocity[2] = 8;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 }
 
@@ -4451,14 +4451,14 @@ void CreateRavenDeath(vec3_t pos)
 	ex->velocity[1] = 8;
 	ex->velocity[2] = -10;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[2] = -10;
 	ex->model = R_RegisterModel("models/redsmk1.spr");
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 	ex = CL_AllocExplosion ();
@@ -4466,7 +4466,7 @@ void CreateRavenDeath(vec3_t pos)
 	ex->velocity[1] = -8;
 	ex->velocity[2] = -10;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	
 	S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
@@ -4478,7 +4478,7 @@ void CreateExplosionWithSound(vec3_t pos)
 
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
-	ex->startTime = cl.time;
+	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	ex->model = R_RegisterModel("models/sm_expld.spr");
 	
@@ -4487,8 +4487,8 @@ void CreateExplosionWithSound(vec3_t pos)
 
 void SwordFrameFunc(explosion_t *ex)
 {
-	ex->scale = (ex->endTime - cl.time)*150 + 1;
-	if(((int)(cl.time * 20.0))%2)
+	ex->scale = (ex->endTime - cl.serverTimeFloat)*150 + 1;
+	if(((int)(cl.serverTimeFloat * 20.0))%2)
 	{
 		ex->skin = 0;
 	}
@@ -4501,9 +4501,9 @@ void SwordFrameFunc(explosion_t *ex)
 
 void zapFrameFunc(explosion_t *ex)
 {
-	ex->scale = (ex->endTime - cl.time)*(150/.3) + 1;
+	ex->scale = (ex->endTime - cl.serverTimeFloat)*(150/.3) + 1;
 	//ex->abslight = (224/.3) * (ex->endTime - cl.time) + 1;
-	if(((int)(cl.time * 20.0))%2)
+	if(((int)(cl.serverTimeFloat * 20.0))%2)
 	{
 		ex->skin = 0;
 	}
@@ -4516,12 +4516,12 @@ void zapFrameFunc(explosion_t *ex)
 
 void fireBallUpdate(explosion_t *ex)
 {
-	ex->scale = (int)(((cl.time - ex->startTime) / 1.0) * 250)+1;
+	ex->scale = (int)(((cl.serverTimeFloat - ex->startTime) / 1.0) * 250)+1;
 }
 
 void sunBallUpdate(explosion_t *ex)
 {
-	ex->scale = 121 - (int)(((cl.time - ex->startTime) / .8) * 120);
+	ex->scale = 121 - (int)(((cl.serverTimeFloat - ex->startTime) / .8) * 120);
 }
 
 void sunPowerUpdate(explosion_t *ex)
@@ -4601,7 +4601,7 @@ void MeteorBlastThink(explosion_t *ex)
 			ex2->abslight = 160 + rand()%64;
 			ex2->skin = 0;
 			ex2->scale = 80 + rand()%40;
-			ex2->startTime = cl.time + (rand()%30 / 200.0);
+			ex2->startTime = cl.serverTimeFloat + (rand()%30 / 200.0);
 			ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.03;
 		}
 		if(rand()&1)
@@ -4610,7 +4610,7 @@ void MeteorBlastThink(explosion_t *ex)
 		}
 
 		ex->model = 0;
-		ex->endTime = cl.time;
+		ex->endTime = cl.serverTimeFloat;
 	}
 }
 
@@ -4643,7 +4643,7 @@ void MeteorCrushSpawnThink(explosion_t *ex)
 		ex2->origin[0] += (rand()%160) - 80;
 		ex2->origin[1] += (rand()%160) - 80;
 		ex2->model = R_RegisterModel("models/tempmetr.mdl");
-		ex2->startTime = cl.time;
+		ex2->startTime = cl.serverTimeFloat;
 		ex2->endTime = ex2->startTime + 2.0;
 		ex2->frameFunc = MeteorBlastThink;
 
@@ -4674,7 +4674,7 @@ void updateBloodRain(explosion_t *ex)
 	ex->scale -= host_frametime / .3 * 60;
 	if(ex->scale <= 0)
 	{
-		ex->endTime = cl.time - 1;
+		ex->endTime = cl.serverTimeFloat - 1;
 	}
 }
 
@@ -4699,7 +4699,7 @@ void updatePurify2(explosion_t *ex)
 		ex2 = CL_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/ring.mdl");
-		ex2->startTime = cl.time;
+		ex2->startTime = cl.serverTimeFloat;
 		ex2->endTime = ex2->startTime + 1.2;
 
 		ex2->scale = 150;
@@ -4723,12 +4723,12 @@ void updateSwordShot(explosion_t *ex)
 
 	R_RocketTrail (ex->oldorg, ex->origin, rt_vorpal);
 
-	ex->data = 16 + ((int)(cl.time * 20.0)%13);
+	ex->data = 16 + ((int)(cl.serverTimeFloat * 20.0)%13);
 
 	ex->flags |= MLS_ABSLIGHT;
 	ex->abslight = 128;
 
-	testVal = (int)(cl.time * 20.0);
+	testVal = (int)(cl.serverTimeFloat * 20.0);
 
 	if(testVal % 2)
 	{
@@ -4758,8 +4758,8 @@ void updateAcidBlob(explosion_t *ex)
 
 	R_RocketTrail (ex->oldorg, ex->origin, rt_acidball);
 
-	testVal = (int)(cl.time * 10.0);
-	testVal2 = (int)((cl.time - host_frametime)*10.0);
+	testVal = (int)(cl.serverTimeFloat * 10.0);
+	testVal2 = (int)((cl.serverTimeFloat - host_frametime)*10.0);
 
 	if(testVal != testVal2)
 	{
@@ -4768,7 +4768,7 @@ void updateAcidBlob(explosion_t *ex)
 			ex2 = CL_AllocExplosion();
 			VectorCopy(ex->origin, ex2->origin);
 			ex2->model = R_RegisterModel("models/muzzle1.spr");
-			ex2->startTime = cl.time;
+			ex2->startTime = cl.serverTimeFloat;
 			ex2->endTime = ex2->startTime + .4;
 
 			VectorCopy(ex->angles, ex2->angles);
@@ -4825,7 +4825,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 		ex = CL_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
 		ex->model = R_RegisterModel("models/grnsmk1.spr");
-		ex->startTime = cl.time;
+		ex->startTime = cl.serverTimeFloat;
 		ex->endTime = ex->startTime + .7 + (rand()%200)*.001;
 
 		ex->scale = 100;
@@ -4851,8 +4851,8 @@ void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 	explosion_t	*ex;
 	int testVal, testVal2;
 
-	testVal = (int)(cl.time * 10.0);
-	testVal2 = (int)((cl.time - host_frametime)*10.0);
+	testVal = (int)(cl.serverTimeFloat * 10.0);
+	testVal2 = (int)((cl.serverTimeFloat - host_frametime)*10.0);
 
 	if(testVal != testVal2)
 	{
@@ -4861,7 +4861,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 			ex = CL_AllocExplosion();
 			VectorCopy(ent->origin, ex->origin);
 			ex->model = R_RegisterModel("models/muzzle1.spr");
-			ex->startTime = cl.time;
+			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + .4;
 
 			ex->scale = 100;
@@ -4911,7 +4911,7 @@ void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 			break;
 		}
 		
-		ex->startTime = cl.time;
+		ex->startTime = cl.serverTimeFloat;
 		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
 		ex->scale = 100;
@@ -4946,7 +4946,7 @@ void PowerFlameBurnRemove(explosion_t *ex)
 		ex2->model = R_RegisterModel("models/pow.spr");
 		break;
 	}
-	ex2->startTime = cl.time;
+	ex2->startTime = cl.serverTimeFloat;
 	ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
 
 	ex2->scale = 100;
@@ -4971,7 +4971,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		ex->origin[1] += (rand()%120)-60;
 		ex->origin[2] += (rand()%120)-60+120;
 		ex->model = R_RegisterModel("models/sucwp1p.mdl");
-		ex->startTime = cl.time;
+		ex->startTime = cl.serverTimeFloat;
 		ex->endTime = ex->startTime + .25;
 		ex->removeFunc = PowerFlameBurnRemove;
 
@@ -4992,7 +4992,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		ex2 = CL_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/flamestr.spr");
-		ex2->startTime = cl.time;
+		ex2->startTime = cl.serverTimeFloat;
 		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
 		ex2->flags |= DRF_TRANSLUCENT;
 	}
@@ -5002,8 +5002,8 @@ void CL_UpdateHammer(refEntity_t *ent, int edict_num)
 {
 	int testVal, testVal2;
 	// do this every .3 seconds
-	testVal = (int)(cl.time * 10.0);
-	testVal2 = (int)((cl.time - host_frametime)*10.0);
+	testVal = (int)(cl.serverTimeFloat * 10.0);
+	testVal2 = (int)((cl.serverTimeFloat - host_frametime)*10.0);
 
 	if(testVal != testVal2)
 	{
@@ -5018,8 +5018,8 @@ void CL_UpdateHammer(refEntity_t *ent, int edict_num)
 void CL_UpdateBug(refEntity_t *ent)
 {
 	int testVal, testVal2;
-	testVal = (int)(cl.time * 10.0);
-	testVal2 = (int)((cl.time - host_frametime)*10.0);
+	testVal = (int)(cl.serverTimeFloat * 10.0);
+	testVal2 = (int)((cl.serverTimeFloat - host_frametime)*10.0);
 
 	if(testVal != testVal2)
 	{
@@ -5094,7 +5094,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 		ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
 		ex->abslight = 128;
 
-		ex->startTime = cl.time;
+		ex->startTime = cl.serverTimeFloat;
 		ex->endTime = ex->startTime + 2.0;
 	}
 }
@@ -5134,11 +5134,11 @@ void telEffectUpdate (explosion_t *ex)
 	int testVal, testVal2;
 	vec3_t tvec;
 
-	if (ex->endTime - cl.time <= 1.2)
+	if (ex->endTime - cl.serverTimeFloat <= 1.2)
 		ex->frameFunc = NULL;
 
-	testVal = (int)(cl.time * 10.0);
-	testVal2 = (int)((cl.time - host_frametime)*10.0);
+	testVal = (int)(cl.serverTimeFloat * 10.0);
+	testVal2 = (int)((cl.serverTimeFloat - host_frametime)*10.0);
 
 	if(testVal != testVal2)
 	{
@@ -5155,7 +5155,7 @@ void telEffectUpdate (explosion_t *ex)
 			VectorSubtract(ex->origin, ex2->origin, tvec);
 			VectorScale(tvec,20,tvec);
 			ex2->model = R_RegisterModel("models/sm_blue.spr");
-			ex2->startTime = cl.time;
+			ex2->startTime = cl.serverTimeFloat;
 			ex2->endTime = ex2->startTime + 3.2;
 
 			ex2->scale = 100;
@@ -5173,9 +5173,9 @@ void telEffectUpdate (explosion_t *ex)
 		}
 	}
 
-	if (ex->endTime > cl.time + 0.01)
+	if (ex->endTime > cl.serverTimeFloat + 0.01)
 	{
-		ex->startTime = cl.time+0.01;
+		ex->startTime = cl.serverTimeFloat+0.01;
 	}
 
 
@@ -5201,7 +5201,7 @@ void CL_UpdateTargetBall(void)
 
 	for(i = 0; i < MAX_EXPLOSIONS; i++)
 	{
-		if(cl_explosions[i].endTime > cl.time)
+		if(cl_explosions[i].endTime > cl.serverTimeFloat)
 		{	// make certain it's an active one
 			if(cl_explosions[i].model == iceMod)
 			{
@@ -5220,7 +5220,7 @@ void CL_UpdateTargetBall(void)
 	VectorCopy(cl.simorg, newOrg);
 	newOrg[0] += cos(v_targAngle*M_PI*2/256.0) * 50 * cos(v_targPitch*M_PI*2/256.0);
 	newOrg[1] += sin(v_targAngle*M_PI*2/256.0) * 50 * cos(v_targPitch*M_PI*2/256.0);
-	newOrg[2] += 44 + sin(v_targPitch*M_PI*2/256.0) * 50 + cos(cl.time*2)*5;
+	newOrg[2] += 44 + sin(v_targPitch*M_PI*2/256.0) * 50 + cos(cl.serverTimeFloat*2)*5;
 	if(v_targDist < 60)
 	{	// make it scale back down up close...
 		newScale = 172 - (172 * (1.0 - (v_targDist - 24.0)/36.0));
@@ -5244,13 +5244,13 @@ void CL_UpdateTargetBall(void)
 
 	VectorScale(ex1->origin, (.75 - host_frametime * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
 	VectorMA(ex1->origin, (.25 + host_frametime * 1.5), newOrg, ex1->origin);
-	ex1->startTime = cl.time;
+	ex1->startTime = cl.serverTimeFloat;
 	ex1->endTime = ex1->startTime + host_frametime + 0.2;
 	ex1->scale = (ex1->scale * (.75 - host_frametime * 1.5) + newScale * (.25 + host_frametime * 1.5));
 	ex1->angles[0] = v_targPitch*360/256.0;
 	ex1->angles[1] = v_targAngle*360/256.0;
-	ex1->angles[2] = cl.time * 240;
-	ex1->abslight = 96 + (32 * cos(cl.time*6.5)) + (64 * ((256.0 - v_targDist)/256.0));
+	ex1->angles[2] = cl.serverTimeFloat * 240;
+	ex1->abslight = 96 + (32 * cos(cl.serverTimeFloat*6.5)) + (64 * ((256.0 - v_targDist)/256.0));
 
 	if(v_targDist < 60)
 	{	// make it scale back down up close...
@@ -5272,28 +5272,28 @@ void CL_UpdateTargetBall(void)
 		ex2->scale = newScale;
 	}
 	VectorCopy(ex1->origin, ex2->origin);
-	ex2->startTime = cl.time;
+	ex2->startTime = cl.serverTimeFloat;
 	ex2->endTime = ex2->startTime + host_frametime + 0.2;
 	ex2->scale = (ex2->scale * (.75 - host_frametime * 1.5) + newScale * (.25 + host_frametime * 1.5));
 	ex2->angles[0] = ex1->angles[0];
 	ex2->angles[1] = ex1->angles[1];
-	ex2->angles[2] = cl.time * -360;
-	ex2->abslight = 96 + (128 * cos(cl.time*4.5));
+	ex2->angles[2] = cl.serverTimeFloat * -360;
+	ex2->abslight = 96 + (128 * cos(cl.serverTimeFloat*4.5));
 
 	R_TargetBallEffect (ex1->origin);
 }
 
 void SmokeRingFrameFunc(explosion_t *ex)
 {
-	if(cl.time - ex->startTime < .3)
+	if(cl.serverTimeFloat - ex->startTime < .3)
 	{
 		ex->skin = 0;
 	}
-	else if(cl.time - ex->startTime < .6)
+	else if(cl.serverTimeFloat - ex->startTime < .6)
 	{
 		ex->skin = 1;
 	}
-	else if(cl.time - ex->startTime < .9)
+	else if(cl.serverTimeFloat - ex->startTime < .9)
 	{
 		ex->skin = 2;
 	}

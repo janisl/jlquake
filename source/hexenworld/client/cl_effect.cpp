@@ -975,7 +975,7 @@ void CL_ParseEffect(void)
 			cl.Effects[index].Chain.owner &= 0x0fff;
 			cl.Effects[index].Chain.height = 16;//net_message.ReadByte ();
 
-			cl.Effects[index].Chain.sound_time = cl.time;
+			cl.Effects[index].Chain.sound_time = cl.serverTimeFloat;
 
 			cl.Effects[index].Chain.state = 0;//state 0: move slowly toward owner
 
@@ -1231,11 +1231,11 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 
 					if (takedamage)
 					{
-						cl.Effects[index].Xbow.gonetime[curEnt] = cl.time;
+						cl.Effects[index].Xbow.gonetime[curEnt] = cl.serverTimeFloat;
 					}
 					else
 					{
-						cl.Effects[index].Xbow.gonetime[curEnt] += cl.time;
+						cl.Effects[index].Xbow.gonetime[curEnt] += cl.serverTimeFloat;
 					}
 					
 					VectorCopy(cl.Effects[index].Xbow.vel[curEnt],forward);
@@ -1545,7 +1545,7 @@ void UpdateMissilePath(vec3_t oldorg, vec3_t neworg, vec3_t newvel, float time)
 	vec3_t endpos;	//the position it should be at currently
 	float delta;
 
-	delta = cl.time - time;
+	delta = cl.serverTimeFloat - time;
 	
 	VectorMA(neworg, delta, newvel, endpos); 
 	VectorCopy(neworg, oldorg);	//set orig, maybe vel too
@@ -1987,7 +1987,7 @@ void CL_UpdateEffects(void)
 				cl.Effects[index].Missile.time_amount += frametime;
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
 
-				if ((int)(cl.time) != (int)(cl.time - host_frametime))
+				if ((int)(cl.serverTimeFloat) != (int)(cl.serverTimeFloat - host_frametime))
 				{
 					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_drillaspin, 1, 1);
 				}
@@ -2026,7 +2026,7 @@ void CL_UpdateEffects(void)
 						{
 							if (cl.Effects[index].Xbow.state[i] == 0)//waiting to explode state
 							{
-								if (cl.Effects[index].Xbow.gonetime[i] > cl.time)//fiery bolts stick around for a while
+								if (cl.Effects[index].Xbow.gonetime[i] > cl.serverTimeFloat)//fiery bolts stick around for a while
 								{
 									ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 									CL_LinkEntity(ent);
@@ -2048,7 +2048,7 @@ void CL_UpdateEffects(void)
 									ent->frame = 0;
 
 									//set frame change counter
-									cl.Effects[index].Xbow.gonetime[i] = cl.time + HX_FRAME_TIME * 2;
+									cl.Effects[index].Xbow.gonetime[i] = cl.serverTimeFloat + HX_FRAME_TIME * 2;
 
 									//play explosion sound
 									S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
@@ -2061,7 +2061,7 @@ void CL_UpdateEffects(void)
 								ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 
 								//increment frame if it's time
-								while(cl.Effects[index].Xbow.gonetime[i] <= cl.time)
+								while(cl.Effects[index].Xbow.gonetime[i] <= cl.serverTimeFloat)
 								{
 									ent->frame++;
 									cl.Effects[index].Xbow.gonetime[i] += HX_FRAME_TIME * 0.75;
@@ -2135,9 +2135,9 @@ void CL_UpdateEffects(void)
 				{
 				case 0://zooming in toward owner
 					es = FindState(cl.Effects[index].Chain.owner);
-					if (cl.Effects[index].Chain.sound_time <= cl.time)
+					if (cl.Effects[index].Chain.sound_time <= cl.serverTimeFloat)
 					{
-						cl.Effects[index].Chain.sound_time = cl.time + 0.5;
+						cl.Effects[index].Chain.sound_time = cl.serverTimeFloat + 0.5;
 						S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabhome, 1, 1);
 					}
 					if (es)
