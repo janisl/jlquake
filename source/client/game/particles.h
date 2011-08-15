@@ -78,7 +78,7 @@ struct cparticle_t
 	byte			flags;
 	byte			count;
 
-	float			time;
+	int				time;
 	vec3_t			accel;
 	float			alpha;
 	float			alphavel;
