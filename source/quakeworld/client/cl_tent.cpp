@@ -177,7 +177,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 20, 30);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 20, 30);
 		S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 		break;
 		
@@ -185,7 +185,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 226, 20);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 226, 20);
 		S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 		break;
 		
@@ -193,7 +193,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 0, 10);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 0, 10);
 
 		if ( rand() % 5 )
 			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
@@ -212,7 +212,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 0, 20);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 0, 20);
 
 		if ( rand() % 5 )
 			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
@@ -233,7 +233,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_ParticleExplosion (pos);
+		CLQ1_ParticleExplosion (pos);
 		
 	// light
 		dl = CL_AllocDlight (0);
@@ -260,7 +260,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_BlobExplosion (pos);
+		CLQ1_BlobExplosion (pos);
 
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
@@ -281,14 +281,14 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_LavaSplash (pos);
+		CLQ1_LavaSplash (pos);
 		break;
 	
 	case TE_TELEPORT:
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_TeleportSplash (pos);
+		CLQ1_TeleportSplash (pos);
 		break;
 
 	case TE_GUNSHOT:			// bullet hitting wall
@@ -296,7 +296,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 0, 20*cnt);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 0, 20*cnt);
 		break;
 		
 	case TE_BLOOD:				// bullets hitting body
@@ -304,14 +304,14 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 73, 20*cnt);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 73, 20*cnt);
 		break;
 
 	case TE_LIGHTNINGBLOOD:		// lightning hitting body
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 225, 50);
+		CLQ1_RunParticleEffect (pos, vec3_origin, 225, 50);
 		break;
 
 	default:

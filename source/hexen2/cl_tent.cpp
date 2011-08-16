@@ -200,16 +200,6 @@ void CL_ParseTEnt(void)
 		dl->decay = 300;
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
-/*	//jfm:not used
-	case TE_TAREXPLOSION:			// tarbaby explosion
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		R_BlobExplosion (pos);
-
-		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
-		break;
-*/
 	case TE_LIGHTNING1:
 	case TE_LIGHTNING2:
 	case TE_LIGHTNING3:
@@ -247,22 +237,6 @@ void CL_ParseTEnt(void)
 		pos[2] = net_message.ReadCoord ();
 		R_TeleportSplash (pos);
 		break;
-/*	//jfm:not used
-	case TE_EXPLOSION2:				// color mapped explosion
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		colorStart = net_message.ReadByte ();
-		colorLength = net_message.ReadByte ();
-		R_ParticleExplosion2 (pos, colorStart, colorLength);
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 350;
-		dl->die = cl.time + 0.5;
-		dl->decay = 300;
-		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
-		break;
-*/
 	default:
 		Sys_Error ("CL_ParseTEnt: bad type");
 	}

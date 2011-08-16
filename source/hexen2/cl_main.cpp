@@ -582,8 +582,6 @@ void CL_RelinkEntities (void)
 
 
 		c++;
-//		if (ent->effects & EF_BRIGHTFIELD);
-//			R_EntityParticles (ent);
 		if (ent->effects & EF_DARKFIELD)
 			R_DarkFieldParticles (ent);
 		if (ent->effects & EF_MUZZLEFLASH)

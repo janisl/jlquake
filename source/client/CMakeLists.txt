@@ -3,6 +3,7 @@ set(CLIENT_FILES
 	cinematic/main.cpp
 	cinematic/pcx.cpp
 	cinematic/roq.cpp
+	game/quake/particle_effects.cpp
 	game/particles.cpp
 	input/keys.cpp
 	input/main.cpp

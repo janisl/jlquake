@@ -485,7 +485,6 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	// Effect Flags
 	if (effects & EF_BRIGHTFIELD)
 	{	// show that this guy is cool or something...
-		//R_EntityParticles (ent);
 		dl = CL_AllocDlight (number);
 		//dl->color[0] = .5 + cos(cl.time*7)*.5;
 		//dl->color[1] = .5 + cos(cl.time*7 + M_PI*2/3)*.5;

@@ -61,7 +61,6 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 
 void R_ParseParticleEffect (void);
 void R_ParticleExplosion (vec3_t org);
-void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength);
 void R_BlobExplosion (vec3_t org);
 void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count);
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, ptype_t effect, int count);
@@ -77,7 +76,6 @@ void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int c
 void R_RainEffect2 (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int count);
 void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter);
 
-void R_EntityParticles (entity_t *ent);
 void R_SuccubusInvincibleParticles (refEntity_t *ent);
 void R_BlobExplosion (vec3_t org);
 void R_ParticleExplosion (vec3_t org);

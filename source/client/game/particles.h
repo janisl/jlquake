@@ -91,5 +91,18 @@ extern cparticle_t* free_particles;
 extern Cvar* snow_flurry;
 extern Cvar* snow_active;
 
+extern int q1ramp1[8];
+extern int q1ramp2[8];
+extern int q1ramp3[8];
+
 void CL_ClearParticles();
 cparticle_t* CL_AllocParticle();
+
+void CLQ1_ParticleExplosion(const vec3_t origin);
+void CLQ1_ParticleExplosion2(const vec3_t origin, int colorStart, int colorLength);
+void CLQ1_BlobExplosion(const vec3_t origin);
+void CLQ1_RunParticleEffect(const vec3_t origin, const vec3_t direction, int colour, int count);
+void CLQ1_LavaSplash(const vec3_t origin);
+void CLQ1_TeleportSplash(const vec3_t origin);
+void CLQ1_BrightFieldParticles(const vec3_t origin);
+void CLQ1_TrailParticles(vec3_t start, const vec3_t end, int type);

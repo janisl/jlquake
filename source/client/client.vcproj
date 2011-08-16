@@ -1468,6 +1468,30 @@
 				RelativePath=".\game\particles.h"
 				>
 			</File>
+			<Filter
+				Name="quake"
+				>
+				<File
+					RelativePath=".\game\quake\particle_effects.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake\"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\client.h"

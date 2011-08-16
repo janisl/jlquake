@@ -87,70 +87,6 @@ void R_DarkFieldParticles (refEntity_t *ent)
 			}
 }
 
-/*
-===============
-R_EntityParticles
-===============
-*/
-
-vec3_t	avelocities[NUMVERTEXNORMALS];
-float	beamlength = 16;
-vec3_t	avelocity = {23, 7, 3};
-float	partstep = 0.01;
-float	timescale = 0.01;
-
-void R_EntityParticles (entity_t *ent)
-{
-	int			count;
-	int			i;
-	cparticle_t	*p;
-	float		angle;
-	float		sr, sp, sy, cr, cp, cy;
-	vec3_t		forward;
-	float		dist;
-	
-	dist = 64;
-	count = 50;
-
-	if (!avelocities[0][0])
-	{
-		for (i=0 ; i<NUMVERTEXNORMALS*3 ; i++)
-		{
-			avelocities[0][i] = (rand()&255) * 0.01;
-		}
-	}
-
-
-	for (i=0 ; i<NUMVERTEXNORMALS ; i++)
-	{
-		angle = cl.serverTimeFloat * avelocities[i][0];
-		sy = sin(angle);
-		cy = cos(angle);
-		angle = cl.serverTimeFloat * avelocities[i][1];
-		sp = sin(angle);
-		cp = cos(angle);
-		angle = cl.serverTimeFloat * avelocities[i][2];
-		sr = sin(angle);
-		cr = cos(angle);
-	
-		forward[0] = cp*cy;
-		forward[1] = cp*sy;
-		forward[2] = -sp;
-
-		p = CL_AllocParticle();
-		if (!p)
-			return;
-
-		p->die = cl.serverTime + 10;
-		p->color = 0x6f;
-		p->type = pt_h2explode;
-		
-		p->org[0] = ent->origin[0] + bytedirs[i][0]*dist + forward[0]*beamlength;			
-		p->org[1] = ent->origin[1] + bytedirs[i][1]*dist + forward[1]*beamlength;			
-		p->org[2] = ent->origin[2] + bytedirs[i][2]*dist + forward[2]*beamlength;			
-	}
-}
-
 void R_SuccubusInvincibleParticles (refEntity_t *ent)
 {
 	int			count;
@@ -363,37 +299,6 @@ void R_ParticleExplosion (vec3_t org)
 				p->org[j] = org[j] + ((rand()%32)-16);
 				p->vel[j] = (rand()%512)-256;
 			}
-		}
-	}
-}
-
-/*
-===============
-R_ParticleExplosion2
-
-===============
-*/
-void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength)
-{
-	int			i, j;
-	cparticle_t	*p;
-	int			colorMod = 0;
-
-	for (i=0; i<512; i++)
-	{
-		p = CL_AllocParticle();
-		if (!p)
-			return;
-
-		p->die = cl.serverTime + 300;
-		p->color = colorStart + (colorMod % colorLength);
-		colorMod++;
-
-		p->type = pt_h2blob;
-		for (j=0 ; j<3 ; j++)
-		{
-			p->org[j] = org[j] + ((rand()%32)-16);
-			p->vel[j] = (rand()%512)-256;
 		}
 	}
 }

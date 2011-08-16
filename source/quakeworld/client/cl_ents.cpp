@@ -534,24 +534,24 @@ void CL_LinkPacketEntities (void)
 			}
 		if (ModelFlags & EF_ROCKET)
 		{
-			R_RocketTrail (old_origin, ent.origin, 0);
+			CLQ1_TrailParticles (old_origin, ent.origin, 0);
 			dl = CL_AllocDlight (s1->number);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.serverTimeFloat + 0.1;
 		}
 		else if (ModelFlags & EF_GRENADE)
-			R_RocketTrail (old_origin, ent.origin, 1);
+			CLQ1_TrailParticles (old_origin, ent.origin, 1);
 		else if (ModelFlags & EF_GIB)
-			R_RocketTrail (old_origin, ent.origin, 2);
+			CLQ1_TrailParticles (old_origin, ent.origin, 2);
 		else if (ModelFlags & EF_ZOMGIB)
-			R_RocketTrail (old_origin, ent.origin, 4);
+			CLQ1_TrailParticles (old_origin, ent.origin, 4);
 		else if (ModelFlags & EF_TRACER)
-			R_RocketTrail (old_origin, ent.origin, 3);
+			CLQ1_TrailParticles (old_origin, ent.origin, 3);
 		else if (ModelFlags & EF_TRACER2)
-			R_RocketTrail (old_origin, ent.origin, 5);
+			CLQ1_TrailParticles (old_origin, ent.origin, 5);
 		else if (ModelFlags & EF_TRACER3)
-			R_RocketTrail (old_origin, ent.origin, 6);
+			CLQ1_TrailParticles (old_origin, ent.origin, 6);
 	}
 }
 

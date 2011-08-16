@@ -481,7 +481,7 @@ void CL_RelinkEntities (void)
 			ent->angles[1] = bobjrotate;
 
 		if (ent->effects & EF_BRIGHTFIELD)
-			R_EntityParticles (ent);
+			CLQ1_BrightFieldParticles(ent->origin);
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
 			vec3_t		fv, rv, uv;
@@ -513,25 +513,25 @@ void CL_RelinkEntities (void)
 		}
 
 		if (ModelFlags & EF_GIB)
-			R_RocketTrail (oldorg, ent->origin, 2);
+			CLQ1_TrailParticles (oldorg, ent->origin, 2);
 		else if (ModelFlags & EF_ZOMGIB)
-			R_RocketTrail (oldorg, ent->origin, 4);
+			CLQ1_TrailParticles (oldorg, ent->origin, 4);
 		else if (ModelFlags & EF_TRACER)
-			R_RocketTrail (oldorg, ent->origin, 3);
+			CLQ1_TrailParticles (oldorg, ent->origin, 3);
 		else if (ModelFlags & EF_TRACER2)
-			R_RocketTrail (oldorg, ent->origin, 5);
+			CLQ1_TrailParticles (oldorg, ent->origin, 5);
 		else if (ModelFlags & EF_ROCKET)
 		{
-			R_RocketTrail (oldorg, ent->origin, 0);
+			CLQ1_TrailParticles (oldorg, ent->origin, 0);
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.serverTimeFloat + 0.01;
 		}
 		else if (ModelFlags & EF_GRENADE)
-			R_RocketTrail (oldorg, ent->origin, 1);
+			CLQ1_TrailParticles (oldorg, ent->origin, 1);
 		else if (ModelFlags & EF_TRACER3)
-			R_RocketTrail (oldorg, ent->origin, 6);
+			CLQ1_TrailParticles (oldorg, ent->origin, 6);
 
 		ent->forcelink = false;
 
