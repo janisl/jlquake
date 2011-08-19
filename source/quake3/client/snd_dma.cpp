@@ -23,16 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 #include "../../client/sound/local.h"
 
-int S_GetClientFrameCount()
-{
-	return cls.framecount;
-}
-
-float S_GetClientFrameTime()
-{
-	return cls.frametime;
-}
-
 sfx_t *S_RegisterSexedSound(int entnum, char *base)
 {
 	return NULL;

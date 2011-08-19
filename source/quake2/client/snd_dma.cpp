@@ -76,16 +76,6 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 	return sfx;
 }
 
-int S_GetClientFrameCount()
-{
-	return cls.framecount;
-}
-
-float S_GetClientFrameTime()
-{
-	return cls.frametimeFloat;
-}
-
 int S_GetClFrameServertime()
 {
 	return cl.frame.servertime;

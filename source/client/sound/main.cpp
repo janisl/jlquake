@@ -64,8 +64,6 @@ struct loopSound_t
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-int S_GetClientFrameCount();
-float S_GetClientFrameTime();
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
 bool S_GetDisableScreen();
@@ -1112,7 +1110,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		lena = DistanceSquared(loopSounds[listener_number].origin, loopSounds[entityNum].origin);
 		VectorAdd(loopSounds[entityNum].origin, loopSounds[entityNum].velocity, out);
 		lenb = DistanceSquared(loopSounds[listener_number].origin, out);
-		if ((loopSounds[entityNum].framenum + 1) != S_GetClientFrameCount())
+		if ((loopSounds[entityNum].framenum + 1) != cls_common->framecount)
 		{
 			loopSounds[entityNum].oldDopplerScale = 1.0;
 		}
@@ -1127,7 +1125,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		}
 	}
 
-	loopSounds[entityNum].framenum = S_GetClientFrameCount();
+	loopSounds[entityNum].framenum = cls_common->framecount;
 }
 
 //==========================================================================
@@ -2008,7 +2006,7 @@ static void S_UpdateAmbientSounds()
 	// don't adjust volume too fast
 		if (chan->master_vol < vol)
 		{
-			chan->master_vol += S_GetClientFrameTime() * s_ambient_fade->value;
+			chan->master_vol += ((float)cls_common->frametime / 1000.0) * s_ambient_fade->value;
 			if (chan->master_vol > vol)
 			{
 				chan->master_vol = vol;
@@ -2016,7 +2014,7 @@ static void S_UpdateAmbientSounds()
 		}
 		else if (chan->master_vol > vol)
 		{
-			chan->master_vol -= S_GetClientFrameTime() * s_ambient_fade->value;
+			chan->master_vol -= ((float)cls_common->frametime / 1000.0) * s_ambient_fade->value;
 			if (chan->master_vol < vol)
 			{
 				chan->master_vol = vol;
