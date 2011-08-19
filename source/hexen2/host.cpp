@@ -587,6 +587,7 @@ qboolean Host_FilterTime (float time)
 			host_frametime = 0.001;
 	}
 	
+	cls.frametime = (int)(host_frametime * 1000);
 	return true;
 }
 
@@ -868,6 +869,7 @@ void _Host_Frame (float time)
 	}
 	
 	host_framecount++;
+	cls.framecount++;
 	fps_count++;
 }
 

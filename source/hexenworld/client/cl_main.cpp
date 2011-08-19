@@ -1203,6 +1203,7 @@ void Host_Frame (float time)
 	oldrealtime = realtime;
 	if (host_frametime > 0.2)
 		host_frametime = 0.2;
+	cls.frametime = (int)(host_frametime * 1000);
 		
 	// get new key events
 	Sys_SendKeyEvents ();
@@ -1272,6 +1273,7 @@ void Host_Frame (float time)
 	}
 
 	host_framecount++;
+	cls.framecount++;
 	fps_count++;
 	}
 	catch (Exception& e)

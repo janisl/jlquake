@@ -40,11 +40,14 @@ extern int color_offsets[MAX_PLAYER_CLASS];
 
 struct clientStaticCommon_t
 {
+	int framecount;
+	int frametime;			// msec since last frame
+
 	// rendering info
-	glconfig_t	glconfig;
-	qhandle_t	charSetShader;
-	qhandle_t	whiteShader;
-	qhandle_t	consoleShader;
+	glconfig_t glconfig;
+	qhandle_t charSetShader;
+	qhandle_t whiteShader;
+	qhandle_t consoleShader;
 };
 
 struct clientActiveCommon_t

@@ -260,9 +260,6 @@ struct clientStatic_t : clientStaticCommon_t
 	qboolean	uiStarted;
 	qboolean	cgameStarted;
 
-	int			framecount;
-	int			frametime;			// msec since last frame
-
 	int			realtime;			// ignores pause
 	int			realFrametime;		// ignoring pause, so console always works
 

@@ -1763,18 +1763,16 @@ void CL_Frame (int msec)
 	IN_Frame ();
 
 	// decide the simulation time
+	cls.frametime = extratime;
 	cls.frametimeFloat = extratime/1000.0;
 	cl.serverTime += extratime;
 	cls.realtime = curtime;
 
 	extratime = 0;
-#if 0
-	if (cls.frametime > (1.0 / cl_minfps->value))
-		cls.frametime = (1.0 / cl_minfps->value);
-#else
 	if (cls.frametimeFloat > (1.0 / 5))
 		cls.frametimeFloat = (1.0 / 5);
-#endif
+	if (cls.frametime > 200)
+		cls.frametime = 200;
 
 	// if in the debugger last frame, don't timeout
 	if (msec > 5000)
