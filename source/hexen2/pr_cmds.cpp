@@ -2094,7 +2094,6 @@ void PF_rain_go (void)
 	x_dir = dir[0];
 	y_dir = dir[1];
 	
-//	R_RainEffect(org,org2,x_dir,y_dir,color,count);	//DUH!
 //void SV_StartRainEffect (vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
 {
 	sv.datagram.WriteByte(svc_raineffect);

@@ -1024,7 +1024,7 @@ void CL_ParticleExplosion(void)
 	radius = net_message.ReadShort();
 	counter = net_message.ReadShort();
 
-	R_ColoredParticleExplosion(org,color,radius,counter);
+	CLH2_ColouredParticleExplosion(org,color,radius,counter);
 }
 
 void CL_ParseRainEffect(void)
@@ -1044,7 +1044,7 @@ void CL_ParseRainEffect(void)
 	color = net_message.ReadShort();
 	count = net_message.ReadShort();
 
-	R_RainEffect(org,e_size,x_dir,y_dir,color,count);
+	CLH2_RainEffect(org,e_size,x_dir,y_dir,color,count);
 }
 
 #define SHOWNET(x) if(cl_shownet->value==2)Con_Printf ("%3i:%s\n", net_message.readcount-1, x);

@@ -130,7 +130,7 @@ void CL_ParseTEnt(void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 20, 30);
+		CLH2_RunParticleEffect (pos, vec3_origin, 30);
 //		S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 		break;
 		
@@ -138,7 +138,7 @@ void CL_ParseTEnt(void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 226, 20);
+		CLH2_RunParticleEffect (pos, vec3_origin, 20);
 //		S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 		break;
 		
@@ -146,7 +146,7 @@ void CL_ParseTEnt(void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 0, 10);
+		CLH2_RunParticleEffect (pos, vec3_origin, 10);
 		if ( rand() % 5 )
 			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
 		else
@@ -164,7 +164,7 @@ void CL_ParseTEnt(void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 0, 20);
+		CLH2_RunParticleEffect (pos, vec3_origin, 20);
 
 		if ( rand() % 5 )
 			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
@@ -184,14 +184,14 @@ void CL_ParseTEnt(void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_RunParticleEffect (pos, vec3_origin, 0, 20);
+		CLH2_RunParticleEffect (pos, vec3_origin, 20);
 		break;
 		
 	case TE_EXPLOSION:			// rocket explosion
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_ParticleExplosion (pos);
+		CLH2_ParticleExplosion (pos);
 		break;
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -228,14 +228,14 @@ void CL_ParseTEnt(void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_LavaSplash (pos);
+		CLH2_LavaSplash (pos);
 		break;
 
 	case TE_TELEPORT:
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-		R_TeleportSplash (pos);
+		CLH2_TeleportSplash (pos);
 		break;
 	default:
 		Sys_Error ("CL_ParseTEnt: bad type");
@@ -558,7 +558,7 @@ void CL_UpdateTEnts(void)
 			if (stream->lastTrailTime + 0.2 < cl.serverTimeFloat)
 			{
 				stream->lastTrailTime = cl.serverTimeFloat;
-				R_SunStaffTrail(stream->source, stream->dest);
+				CLH2_SunStaffTrail(stream->source, stream->dest);
 			}
 
 			refEntity_t ent;

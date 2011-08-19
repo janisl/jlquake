@@ -811,7 +811,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 20, 30);
+			CLH2_RunParticleEffect (pos, vec3_origin, 30);
 //			S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 			break;
 			
@@ -819,7 +819,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 226, 20);
+			CLH2_RunParticleEffect (pos, vec3_origin, 20);
 //			S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 			break;
 			
@@ -827,7 +827,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 0, 10);
+			CLH2_RunParticleEffect (pos, vec3_origin, 10);
 
 			if ( rand() % 5 )
 				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
@@ -846,7 +846,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 0, 20);
+			CLH2_RunParticleEffect (pos, vec3_origin, 20);
 
 			if ( rand() % 5 )
 				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
@@ -884,7 +884,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_ParticleExplosion (pos);
+			CLH2_ParticleExplosion (pos);
 			
 		// light
 			dl = CL_AllocDlight (0);
@@ -905,7 +905,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_BlobExplosion (pos);
+			CLH2_BlobExplosion (pos);
 
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
 			break;
@@ -938,14 +938,14 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_LavaSplash (pos);
+			CLH2_LavaSplash (pos);
 			break;
 		
 		case TE_TELEPORT:
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_TeleportSplash (pos);
+			CLH2_TeleportSplash (pos);
 			break;
 
 		case TE_GUNSHOT:			// bullet hitting wall
@@ -953,7 +953,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 0, 20*cnt);
+			CLH2_RunParticleEffect (pos, vec3_origin, 20*cnt);
 			break;
 			
 		case TE_BLOOD:				// bullets hitting body
@@ -961,21 +961,21 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 73, 20*cnt);
+			CLH2_RunParticleEffect (pos, vec3_origin, 20*cnt);
 			break;
 
 		case TE_LIGHTNINGBLOOD:		// lightning hitting body
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos, vec3_origin, 225, 50);
+			CLH2_RunParticleEffect (pos, vec3_origin, 50);
 			break;
 
 		case TE_BIGGRENADE:	// effect for big grenade
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			R_RunParticleEffect (pos,pos,225,1024);
+			CLH2_ParticleExplosion(pos);
 			ex = CL_AllocExplosion();
 			VectorCopy(pos,ex->origin);
 			ex->frameFunc = MultiGrenadeThink;
@@ -1497,7 +1497,7 @@ void CL_ParseTEnt (void)
 			movedir[0] = net_message.ReadCoord ();
 			movedir[1] = net_message.ReadCoord ();
 			movedir[2] = net_message.ReadCoord ();
-			R_RunParticleEffect4 (pos, 50, 368 + rand() % 16, pt_h2grav, 10);
+			CLH2_RunParticleEffect4 (pos, 50, 368 + rand() % 16, pt_h2grav, 10);
 
 			// particle4 (50, rand(368-384), grav, 10);
 			ex = CL_AllocExplosion ();
@@ -1580,7 +1580,7 @@ void CL_ParseTEnt (void)
 				S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonewal, 1, 1);
 			}
 
-			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, 7);
+			CLH2_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, 7);
 //			particle4(self.origin,3,random(368,384),PARTICLETYPE_GRAV,self.dmg/2);
 			break;
 		case TE_HWRAVENDIE:
@@ -1702,8 +1702,8 @@ void CL_ParseTEnt (void)
 			{
 				vec3_t dmin = {-10, -10, -10};
 				vec3_t dmax = {10, 10, 10};
-				R_ColoredParticleExplosion(pos,14,10,10);
-				R_RunParticleEffect2 (pos, dmin, dmax, 145, pt_h2explode, 14);
+				CLH2_ColouredParticleExplosion(pos,14,10,10);
+				CLH2_RunParticleEffect2 (pos, dmin, dmax, 145, pt_h2explode, 14);
 			}
 			// make the actual explosion
 			ex = CL_AllocExplosion();
@@ -2448,8 +2448,8 @@ void CL_ParseTEnt (void)
 				endPos[1] = pos[1] + dist * sin(angle) * cos(pitch);
 				endPos[2] = pos[2] + dist * sin(pitch);
 
-				//R_RocketTrail (pos, endPos, rt_purify);
-				R_RocketTrail (pos, endPos, rt_purify);
+				//CLH2_TrailParticles (pos, endPos, rt_purify);
+				CLH2_TrailParticles (pos, endPos, rt_purify);
 
 				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_purify1_fire, 1, 1);
 				S_StartSound(endPos, TempSoundChannel(), 0, cl_sfx_purify1_hit, 1, 1);
@@ -2818,7 +2818,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord();
 			pos[2] = net_message.ReadCoord();
 			cnt = net_message.ReadByte ();
-			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, cnt);
+			CLH2_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, cnt);
 			rnd = rand() % 100;
 			if (rnd > 95)
 				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
@@ -3340,7 +3340,7 @@ void CL_ParseTEnt (void)
 					VectorSet(smokeDir,0,0,100);
 					S_StartSound(source, TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 					S_StartSound(dest, TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
-					R_SunStaffTrail(dest, source);
+					CLH2_SunStaffTrail(dest, source);
 					CreateStream(TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
 				}
 			}
@@ -3963,7 +3963,7 @@ void CL_UpdateStreams(void)
 			if(stream->lastTrailTime+0.2 < cl.serverTimeFloat)
 			{
 				stream->lastTrailTime = cl.serverTimeFloat;
-				R_SunStaffTrail(stream->source, stream->dest);
+				CLH2_SunStaffTrail(stream->source, stream->dest);
 			}
 
 			refEntity_t ent;
@@ -4230,7 +4230,7 @@ void ChunkThink(explosion_t *ex)
 			{	// hit, now make a splash of blood
 				vec3_t	dmin = {-40, -40, 10};
 				vec3_t	dmax = {40, 40, 40};
-				R_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_h2darken, 20);
+				CLH2_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_h2darken, 20);
 			}
 		}
 		else if((int)ex->data == THINGTYPE_ACID)
@@ -4291,7 +4291,7 @@ void ChunkThink(explosion_t *ex)
 	case THINGTYPE_METAL:
 		break;
 	case THINGTYPE_FLESH:
-		if(moving)R_RocketTrail (ex->oldorg, ex->origin, rt_blood);
+		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_blood);
 		break;
 	case THINGTYPE_FIRE:
 		break;
@@ -4322,14 +4322,14 @@ void ChunkThink(explosion_t *ex)
 		break;
 	case THINGTYPE_ICE:
 		ex->velocity[2] += host_frametime * movevars.gravity * 0.5; // lower gravity for ice chunks
-		if(moving)R_RocketTrail (ex->oldorg, ex->origin, rt_ice);
+		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_ice);
 		break;
 	case THINGTYPE_CLEARGLASS:
 		break;
 	case THINGTYPE_REDGLASS:
 		break;
 	case THINGTYPE_ACID:
-		if(moving)R_RocketTrail (ex->oldorg, ex->origin, 16);
+		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_grensmoke);
 		break;
 	case THINGTYPE_METEOR:
 		VectorCopy(ex->oldorg, oldorg);
@@ -4339,10 +4339,10 @@ void ChunkThink(explosion_t *ex)
 			oldorg[1] += rand()%7 - 3;
 			oldorg[2] += 16;
 		}
-		R_RocketTrail (oldorg, ex->origin, 1);
+		CLH2_TrailParticles (oldorg, ex->origin, rt_smoke);
 		break;
 	case THINGTYPE_GREENFLESH:
-		if(moving)R_RocketTrail (ex->oldorg, ex->origin, 16);
+		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_grensmoke);
 		break;
 
 	}
@@ -4531,8 +4531,8 @@ void sunPowerUpdate(explosion_t *ex)
 
 void purify1Update(explosion_t *ex)
 {
-	R_RocketTrail (ex->oldorg, ex->origin, rt_purify);
-	//R_RocketTrail (ex->oldorg, ex->origin, rt_setstaff);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_purify);
+	//CLH2_TrailParticles (ex->oldorg, ex->origin, rt_setstaff);
 }
 
 void MeteorBlastThink(explosion_t *ex)
@@ -4542,7 +4542,7 @@ void MeteorBlastThink(explosion_t *ex)
 	vec3_t		tempVect, oldPos;
 	int			hitWall = 0;
 
-	R_RocketTrail (ex->oldorg, ex->origin, rt_fireball);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_fireball);
 
 	ex->data -= 1600 * host_frametime; // decrease distance, roughly...
 
@@ -4669,7 +4669,7 @@ void MeteorCrushSpawnThink(explosion_t *ex)
 
 void updateBloodRain(explosion_t *ex)
 {
-	R_RocketTrail (ex->oldorg, ex->origin, rt_blood);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_blood);
 
 	ex->scale -= host_frametime / .3 * 60;
 	if(ex->scale <= 0)
@@ -4683,7 +4683,7 @@ void updatePurify2(explosion_t *ex)
 	explosion_t	*ex2;
 	int numSprites;
 
-	R_RocketTrail (ex->oldorg, ex->origin, rt_purify);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_purify);
 
 	if(host_frametime <= 0.05)
 	{
@@ -4721,7 +4721,7 @@ void updateSwordShot(explosion_t *ex)
 {
 	int testVal;
 
-	R_RocketTrail (ex->oldorg, ex->origin, rt_vorpal);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_vorpal);
 
 	ex->data = 16 + ((int)(cl.serverTimeFloat * 20.0)%13);
 
@@ -4743,12 +4743,12 @@ void updateSwordShot(explosion_t *ex)
 
 void updateIceShot(explosion_t *ex)
 {
-	R_RocketTrail (ex->oldorg, ex->origin, rt_ice);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_ice);
 }
 
 void updateMeteor(explosion_t *ex)
 {
-	R_RocketTrail (ex->oldorg, ex->origin, rt_smoke);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_smoke);
 }
 
 void updateAcidBlob(explosion_t *ex)
@@ -4756,7 +4756,7 @@ void updateAcidBlob(explosion_t *ex)
 	explosion_t	*ex2;
 	int testVal, testVal2;
 
-	R_RocketTrail (ex->oldorg, ex->origin, rt_acidball);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_acidball);
 
 	testVal = (int)(cl.serverTimeFloat * 10.0);
 	testVal2 = (int)((cl.serverTimeFloat - host_frametime)*10.0);
@@ -4788,7 +4788,7 @@ void updateAcidBlob(explosion_t *ex)
 
 void updateAcidBall(explosion_t *ex)
 {
-	R_RocketTrail (ex->oldorg, ex->origin, rt_acidball);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_acidball);
 }
 
 //*****************************************************************************
@@ -5048,7 +5048,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 		side1[0] -= 80;
 		side1[1] -= 80;
 		side1[2] += 104;
-		R_RainEffect2(side1, side2, rand()%400-200, rand()%400-200, rand()%15 + 9*16, (int)(30*20*host_frametime));
+		CLH2_RainEffect2(side1, side2, rand()%400-200, rand()%400-200, rand()%15 + 9*16, (int)(30*20*host_frametime));
 
 		playIceSound+=host_frametime;
 		if(playIceSound >= .6)
@@ -5120,7 +5120,7 @@ void telPuffMove (explosion_t *ex)
 	ex->velocity[0] += tvec2[0];
 	ex->velocity[1] += tvec2[1];
 
-	R_RocketTrail (ex->oldorg, ex->origin, rt_magicmissile);
+	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_magicmissile);
 
 //	ex->accel[0] = ex->velocity[1]*5;
 //	ex->accel[1] = -ex->velocity[0]*5;

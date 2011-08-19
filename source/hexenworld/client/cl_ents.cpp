@@ -497,7 +497,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 		R_BrightFieldSource (ent->origin);
 	}
 	if (effects & EF_DARKFIELD)
-		R_DarkFieldParticles (ent);
+		CLH2_DarkFieldParticles (ent->origin);
 	if (effects & EF_MUZZLEFLASH)
 	{
 		dl = CL_AllocDlight (number);
@@ -727,16 +727,16 @@ void CL_LinkPacketEntities (void)
 
 		// Model Flags
 		if (ModelFlags & H2MDLEF_GIB)
-			R_RocketTrail (old_origin, ent.origin, 2);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_blood);
 		else if (ModelFlags & H2MDLEF_ZOMGIB)
-			R_RocketTrail (old_origin, ent.origin, 4);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_slight_blood);
 		else if (ModelFlags & H2MDLEF_TRACER)
-			R_RocketTrail (old_origin, ent.origin, 3);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_tracer);
 		else if (ModelFlags & H2MDLEF_TRACER2)
-			R_RocketTrail (old_origin, ent.origin, 5);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_tracer2);
 		else if (ModelFlags & H2MDLEF_ROCKET)
 		{
-			R_RocketTrail (old_origin, ent.origin, 0);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_rocket_trail);
 /*			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
@@ -744,7 +744,7 @@ void CL_LinkPacketEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_FIREBALL)
 		{
-			R_RocketTrail (old_origin, ent.origin, rt_fireball);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_fireball);
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 120 - (rand() % 20);
@@ -752,11 +752,11 @@ void CL_LinkPacketEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
 		{
-			R_RocketTrail (old_origin, ent.origin, rt_ice);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_ice);
 		}
 		else if (ModelFlags & H2MDLEF_SPIT)
 		{
-			R_RocketTrail (old_origin, ent.origin, rt_spit);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_spit);
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = -120 - (rand() % 20);
@@ -764,36 +764,36 @@ void CL_LinkPacketEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
 		{
-			R_RocketTrail (old_origin, ent.origin, rt_spell);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_spell);
 		}
 		else if (ModelFlags & H2MDLEF_GRENADE)
 		{
-//			R_RunParticleEffect4(old_origin,3,284,pt_h2slowgrav,3);
-			R_RocketTrail (old_origin, ent.origin, rt_grensmoke);
+//			CLH2_RunParticleEffect4(old_origin,3,284,pt_h2slowgrav,3);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_grensmoke);
 		}
 		else if (ModelFlags & H2MDLEF_TRACER3)
-			R_RocketTrail (old_origin, ent.origin, 6);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_voor_trail);
 		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
 		{
-			R_RocketTrail (old_origin, ent.origin, rt_vorpal);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_vorpal);
 		}
 		else if (ModelFlags & H2MDLEF_SET_STAFF)
 		{
-			R_RocketTrail (old_origin, ent.origin,rt_setstaff);
+			CLH2_TrailParticles (old_origin, ent.origin,rt_setstaff);
 		}
 		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
-				R_RocketTrail (old_origin, ent.origin, rt_magicmissile);
+				CLH2_TrailParticles (old_origin, ent.origin, rt_magicmissile);
 		}
 		else if (ModelFlags & H2MDLEF_BONESHARD)
-			R_RocketTrail (old_origin, ent.origin, rt_boneshard);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_boneshard);
 		else if (ModelFlags & H2MDLEF_SCARAB)
-			R_RocketTrail (old_origin, ent.origin, rt_scarab);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_scarab);
 		else if (ModelFlags & H2MDLEF_ACIDBALL)
-			R_RocketTrail (old_origin, ent.origin, rt_acidball);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_acidball);
 		else if (ModelFlags & H2MDLEF_BLOODSHOT)
-			R_RocketTrail (old_origin, ent.origin, rt_bloodshot);
+			CLH2_TrailParticles (old_origin, ent.origin, rt_bloodshot);
 	}
 }
 
@@ -1009,7 +1009,7 @@ void CL_LinkMissiles (void)
 		}
 		if(rand() % 10 < 3)		
 		{
-			R_RunParticleEffect4 (ent.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
+			CLH2_RunParticleEffect4 (ent.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
 		}
 		R_AddRefEntityToScene(&ent);
 	}

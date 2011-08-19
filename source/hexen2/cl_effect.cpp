@@ -2031,10 +2031,6 @@ void CL_LinkEntity(entity_t *ent)
 	R_AddRefEntityToScene(&rent);
 }
 
-void R_RunQuakeEffect (vec3_t org, float distance);
-void RiderParticle(int count, vec3_t origin);
-void GravityWellParticle(int count, vec3_t origin, int color);
-
 void CL_UpdateEffects(void)
 {
 	int index,cur_frame;
@@ -2076,7 +2072,7 @@ void CL_UpdateEffects(void)
 				cl.Effects[index].Rain.next_time += frametime;
 				if (cl.Effects[index].Rain.next_time >= cl.Effects[index].Rain.wait)
 				{		
-					R_RainEffect(org,org2,x_dir,y_dir,cl.Effects[index].Rain.color,
+					CLH2_RainEffect(org,org2,x_dir,y_dir,cl.Effects[index].Rain.color,
 						cl.Effects[index].Rain.count);
 					cl.Effects[index].Rain.next_time = 0;
 				}
@@ -2103,7 +2099,7 @@ void CL_UpdateEffects(void)
 				//jfm:  fixme, check distance to player first
 				if (cl.Effects[index].Rain.next_time >= 0.10 && distance < 1024)
 				{		
-					R_SnowEffect(org,org2,cl.Effects[index].Rain.flags,alldir,
+					CLH2_SnowEffect(org,org2,cl.Effects[index].Rain.flags,alldir,
 								 cl.Effects[index].Rain.count);
 
 					cl.Effects[index].Rain.next_time = 0;
@@ -2137,7 +2133,7 @@ void CL_UpdateEffects(void)
 				mymax[1] *= 15;
 				mymax[2] *= 15;
 
-				R_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
+				CLH2_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
 					                  cl.Effects[index].Fountain.color,pt_h2fastgrav,cl.Effects[index].Fountain.cnt);
 
 /*				Com_Memset(&test,0,sizeof(test));
@@ -2146,7 +2142,7 @@ void CL_UpdateEffects(void)
 				break;
 
 			case CE_QUAKE:
-				R_RunQuakeEffect (cl.Effects[index].Quake.origin,cl.Effects[index].Quake.radius);
+				CLH2_RunQuakeEffect (cl.Effects[index].Quake.origin,cl.Effects[index].Quake.radius);
 				break;
 
 			case CE_WHITE_SMOKE:
@@ -2314,12 +2310,11 @@ void CL_UpdateEffects(void)
 				org[1] += cos(cl.Effects[index].RD.time_amount * 2 * M_PI) * 30;
 
 				if (cl.Effects[index].RD.stage <= 6)
-//					RiderParticle(cl.Effects[index].RD.stage+1,cl.Effects[index].RD.origin);
-					RiderParticle(cl.Effects[index].RD.stage+1,org);
+					CLH2_RiderParticles(cl.Effects[index].RD.stage+1,org);
 				else
 				{
 					// To set the rider's origin point for the particles
-					RiderParticle(0,org);
+					CLH2_RiderParticles(0,org);
 					if (cl.Effects[index].RD.stage == 7) 
 					{
 						cl.cshifts[CSHIFT_BONUS].destcolor[0] = 255;
@@ -2350,7 +2345,7 @@ void CL_UpdateEffects(void)
 					CL_FreeEffect(index);
 				}
 				else
-					GravityWellParticle(rand()%8,org, cl.Effects[index].RD.color);
+					CLH2_GravityWellParticle(rand()%8,org, cl.Effects[index].RD.color);
 
 				break;
 
@@ -2486,7 +2481,7 @@ void CL_UpdateEffects(void)
 						case THINGTYPE_METAL:
 							break;
 						case THINGTYPE_FLESH:
-							if(moving)R_RocketTrail (oldorg, ent->origin, 17);
+							if(moving)CLH2_TrailParticles (oldorg, ent->origin, rt_bloodshot);
 							break;
 						case THINGTYPE_FIRE:
 							break;
@@ -2516,20 +2511,20 @@ void CL_UpdateEffects(void)
 						case THINGTYPE_GLASS:
 							break;
 						case THINGTYPE_ICE:
-							if(moving)R_RocketTrail (oldorg, ent->origin, rt_ice);
+							if(moving)CLH2_TrailParticles (oldorg, ent->origin, rt_ice);
 							break;
 						case THINGTYPE_CLEARGLASS:
 							break;
 						case THINGTYPE_REDGLASS:
 							break;
 						case THINGTYPE_ACID:
-							if(moving)R_RocketTrail (oldorg, ent->origin, rt_acidball);
+							if(moving)CLH2_TrailParticles (oldorg, ent->origin, rt_acidball);
 							break;
 						case THINGTYPE_METEOR:
-							R_RocketTrail (oldorg, ent->origin, 1);
+							CLH2_TrailParticles (oldorg, ent->origin, rt_smoke);
 							break;
 						case THINGTYPE_GREENFLESH:
-							if(moving)R_RocketTrail (oldorg, ent->origin, rt_acidball);
+							if(moving)CLH2_TrailParticles (oldorg, ent->origin, rt_acidball);
 							break;
 
 						}

@@ -1013,7 +1013,7 @@ void CL_ParticleExplosion(void)
 	radius = net_message.ReadShort();
 	counter = net_message.ReadShort();
 
-	R_ColoredParticleExplosion(org,color,radius,counter);
+	CLH2_ColouredParticleExplosion(org,color,radius,counter);
 }
 
 

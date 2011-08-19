@@ -1492,6 +1492,30 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
+			<Filter
+				Name="hexen2"
+				>
+				<File
+					RelativePath=".\game\hexen2\particle_effects.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\hexen2\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\hexen2\"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\client.h"

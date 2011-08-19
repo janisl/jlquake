@@ -435,11 +435,11 @@ void CL_ParseEffect(void)
 				{
 					if(cl.Effects[index].Smoke.framelength==2)
 					{
-						R_SplashParticleEffect (cl.Effects[index].Smoke.origin, 200, 406+rand()%8, pt_h2slowgrav, 40);//splash
+						CLH2_SplashParticleEffect (cl.Effects[index].Smoke.origin, 200, 406+rand()%8, pt_h2slowgrav, 40);//splash
 						S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_splash, 1, 1);
 					}
 					else if(cl.Effects[index].Smoke.framelength==1)
-						R_SplashParticleEffect (cl.Effects[index].Smoke.origin, 100, 406+rand()%8, pt_h2slowgrav, 20);//splash
+						CLH2_SplashParticleEffect (cl.Effects[index].Smoke.origin, 100, 406+rand()%8, pt_h2slowgrav, 20);//splash
 					else
 						S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ripple, 1, 1);
 					cl.Effects[index].Smoke.framelength=0.05;
@@ -1158,7 +1158,7 @@ void XbowImpactPuff(vec3_t origin, int material)//hopefully can use this with xb
 		break;
 	}
 
-	R_RunParticleEffect4 (origin, 24, part_color, pt_h2fastgrav, 20);
+	CLH2_RunParticleEffect4 (origin, 24, part_color, pt_h2fastgrav, 20);
 }
 
 void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everything
@@ -1331,7 +1331,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					VectorNormalize(forward);
 					VectorScale(forward,dist,forward);
 					VectorAdd(cl.Effects[index].Xbow.origin[curEnt],forward,ent->origin);
-					R_ColoredParticleExplosion(ent->origin,(rand()%16)+144/*(144,159)*/,20,30);
+					CLH2_ColouredParticleExplosion(ent->origin,(rand()%16)+144/*(144,159)*/,20,30);
 				}
 			}
 			else//direction change
@@ -1625,9 +1625,6 @@ void CL_LinkEntity(entity_t *ent)
 	R_AddRefEntityToScene(&rent);
 }
 
-void R_RunQuakeEffect (vec3_t org, float distance);
-void RiderParticle(int count, vec3_t origin);
-
 void CL_UpdateEffects(void)
 {
 	int			index,cur_frame;
@@ -1668,7 +1665,7 @@ void CL_UpdateEffects(void)
 				cl.Effects[index].Rain.next_time += frametime;
 				if (cl.Effects[index].Rain.next_time >= cl.Effects[index].Rain.wait)
 				{		
-					R_RainEffect(org,org2,x_dir,y_dir,cl.Effects[index].Rain.color,
+					CLH2_RainEffect(org,org2,x_dir,y_dir,cl.Effects[index].Rain.color,
 						cl.Effects[index].Rain.count);
 					cl.Effects[index].Rain.next_time = 0;
 				}
@@ -1701,7 +1698,7 @@ void CL_UpdateEffects(void)
 				mymax[1] *= 15;
 				mymax[2] *= 15;
 
-				R_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
+				CLH2_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
 					                  cl.Effects[index].Fountain.color,pt_h2fastgrav,cl.Effects[index].Fountain.cnt);
 
 /*				Com_Memset(&test,0,sizeof(test));
@@ -1710,7 +1707,7 @@ void CL_UpdateEffects(void)
 				break;
 
 			case CE_QUAKE:
-				R_RunQuakeEffect (cl.Effects[index].Quake.origin,cl.Effects[index].Quake.radius);
+				CLH2_RunQuakeEffect (cl.Effects[index].Quake.origin,cl.Effects[index].Quake.radius);
 				break;
 
 			case CE_RIPPLE:
@@ -1908,12 +1905,12 @@ void CL_UpdateEffects(void)
 
 				if (cl.Effects[index].RD.stage <= 6)
 				{
-					RiderParticle(cl.Effects[index].RD.stage+1,org);
+					CLH2_RiderParticles(cl.Effects[index].RD.stage+1,org);
 				}
 				else
 				{
 					// To set the rider's origin point for the particles
-					RiderParticle(0,org);
+					CLH2_RiderParticles(0,org);
 					if (cl.Effects[index].RD.stage == 7) 
 					{
 						cl.cshifts[CSHIFT_BONUS].destcolor[0] = 255;
@@ -2002,7 +1999,7 @@ void CL_UpdateEffects(void)
 				ent->origin[1] += frametime * cl.Effects[index].Missile.velocity[1];
 				ent->origin[2] += frametime * cl.Effects[index].Missile.velocity[2];
 
-				R_RocketTrail (old_origin, ent->origin, rt_setstaff);
+				CLH2_TrailParticles (old_origin, ent->origin, rt_setstaff);
 
 				CL_LinkEntity(ent);
 				break;
@@ -2093,7 +2090,7 @@ void CL_UpdateEffects(void)
 							ent->origin[1] += frametime * cl.Effects[index].Xbow.vel[i][1];
 							ent->origin[2] += frametime * cl.Effects[index].Xbow.vel[i][2];
 
-							R_RunParticleEffect4(ent->origin,7,(rand()%15)+144,pt_h2explode2,(rand()%5)+1);
+							CLH2_RunParticleEffect4(ent->origin,7,(rand()%15)+144,pt_h2explode2,(rand()%5)+1);
 
 							CL_LinkEntity(ent);
 						}
@@ -2266,7 +2263,7 @@ void CL_UpdateEffects(void)
 				CL_LinkEntity(ent);
 				if(cl.Effects[index].type == CE_HWBONEBALL)
 				{
-					R_RunParticleEffect4 (ent->origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
+					CLH2_RunParticleEffect4 (ent->origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
 
 				}
 				break;
@@ -2326,7 +2323,7 @@ void CL_UpdateEffects(void)
 				}					
 				if(rand() % 10 < 3)		
 				{
-					R_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
+					CLH2_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
 				}
 				break;
 		}

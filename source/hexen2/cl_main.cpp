@@ -583,7 +583,7 @@ void CL_RelinkEntities (void)
 
 		c++;
 		if (ent->effects & EF_DARKFIELD)
-			R_DarkFieldParticles (ent);
+			CLH2_DarkFieldParticles (ent->origin);
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
 			vec3_t		fv, rv, uv;
@@ -646,22 +646,22 @@ void CL_RelinkEntities (void)
 
 		int ModelFlags = R_ModelFlags(ent->model);
 		if (ModelFlags & H2MDLEF_GIB)
-			R_RocketTrail (oldorg, ent->origin, 2);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_blood);
 		else if (ModelFlags & H2MDLEF_ZOMGIB)
-			R_RocketTrail (oldorg, ent->origin, 4);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_slight_blood);
 		else if (ModelFlags & H2MDLEF_BLOODSHOT)
-			R_RocketTrail (oldorg, ent->origin, 17);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_bloodshot);
 		else if (ModelFlags & H2MDLEF_TRACER)
-			R_RocketTrail (oldorg, ent->origin, 3);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_tracer);
 		else if (ModelFlags & H2MDLEF_TRACER2)
-			R_RocketTrail (oldorg, ent->origin, 5);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_tracer2);
 		else if (ModelFlags & H2MDLEF_ROCKET)
 		{
-			R_RocketTrail (oldorg, ent->origin, 0);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_rocket_trail);
 		}
 		else if (ModelFlags & H2MDLEF_FIREBALL)
 		{
-			R_RocketTrail (oldorg, ent->origin, rt_fireball);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_fireball);
 			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
@@ -672,7 +672,7 @@ void CL_RelinkEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_ACIDBALL)
 		{
-			R_RocketTrail (oldorg, ent->origin, rt_acidball);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_acidball);
 			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
@@ -683,11 +683,11 @@ void CL_RelinkEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
 		{
-			R_RocketTrail (oldorg, ent->origin, rt_ice);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_ice);
 		}
 		else if (ModelFlags & H2MDLEF_SPIT)
 		{
-			R_RocketTrail (oldorg, ent->origin, rt_spit);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_spit);
 			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
@@ -698,29 +698,29 @@ void CL_RelinkEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
 		{
-			R_RocketTrail (oldorg, ent->origin, rt_spell);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_spell);
 		}
 		else if (ModelFlags & H2MDLEF_GRENADE)
-			R_RocketTrail (oldorg, ent->origin, 1);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_smoke);
 		else if (ModelFlags & H2MDLEF_TRACER3)
-			R_RocketTrail (oldorg, ent->origin, 6);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_voor_trail);
 		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
 		{
-			R_RocketTrail (oldorg, ent->origin, rt_vorpal);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_vorpal);
 		}
 		else if (ModelFlags & H2MDLEF_SET_STAFF)
 		{
-			R_RocketTrail (oldorg, ent->origin,rt_setstaff);
+			CLH2_TrailParticles (oldorg, ent->origin,rt_setstaff);
 		}
 		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
-				R_RocketTrail (oldorg, ent->origin, rt_magicmissile);
+				CLH2_TrailParticles (oldorg, ent->origin, rt_magicmissile);
 		}
 		else if (ModelFlags & H2MDLEF_BONESHARD)
-			R_RocketTrail (oldorg, ent->origin, rt_boneshard);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_boneshard);
 		else if (ModelFlags & H2MDLEF_SCARAB)
-			R_RocketTrail (oldorg, ent->origin, rt_scarab);
+			CLH2_TrailParticles (oldorg, ent->origin, rt_scarab);
 
 		ent->forcelink = false;
 
