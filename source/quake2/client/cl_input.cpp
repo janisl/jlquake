@@ -251,9 +251,9 @@ void CL_AdjustAngles (void)
 	float	up, down;
 	
 	if (in_speed.state & 1)
-		speed = cls.frametime * cl_anglespeedkey->value;
+		speed = cls.frametimeFloat * cl_anglespeedkey->value;
 	else
-		speed = cls.frametime;
+		speed = cls.frametimeFloat;
 
 	if (!(in_strafe.state & 1))
 	{
@@ -394,7 +394,7 @@ void CL_FinishMove (usercmd_t *cmd)
 		cmd->buttons |= BUTTON_ANY;
 
 	// send milliseconds of time to apply the move
-	ms = cls.frametime * 1000;
+	ms = cls.frametimeFloat * 1000;
 	if (ms > 250)
 		ms = 100;		// time was unreasonable
 	cmd->msec = ms;

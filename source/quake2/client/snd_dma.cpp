@@ -83,7 +83,7 @@ int S_GetClientFrameCount()
 
 float S_GetClientFrameTime()
 {
-	return cls.frametime;
+	return cls.frametimeFloat;
 }
 
 int S_GetClFrameServertime()

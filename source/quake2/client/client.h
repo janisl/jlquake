@@ -183,7 +183,7 @@ struct client_static_t : clientStaticCommon_t
 
 	int			framecount;
 	int			realtime;			// always increasing, no clamping, etc
-	float		frametime;			// seconds since last frame
+	float		frametimeFloat;		// seconds since last frame
 
 // screen rendering information
 	float		disable_screen;		// showing loading plaque between levels
