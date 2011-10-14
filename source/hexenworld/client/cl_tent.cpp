@@ -5280,7 +5280,7 @@ void CL_UpdateTargetBall(void)
 	ex2->angles[2] = cl.serverTimeFloat * -360;
 	ex2->abslight = 96 + (128 * cos(cl.serverTimeFloat*4.5));
 
-	R_TargetBallEffect (ex1->origin);
+	CLHW_TargetBallEffectParticles (ex1->origin, v_targDist);
 }
 
 void SmokeRingFrameFunc(explosion_t *ex)

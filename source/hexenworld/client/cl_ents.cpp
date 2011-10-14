@@ -494,7 +494,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 		dl->radius = 200 + cos(cl.serverTimeFloat*5)*100;
 		dl->die = cl.serverTimeFloat + 0.001;
 
-		R_BrightFieldSource (ent->origin);
+		CLHW_BrightFieldParticles (ent->origin);
 	}
 	if (effects & EF_DARKFIELD)
 		CLH2_DarkFieldParticles (ent->origin);
@@ -583,7 +583,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	}
 	if (effects & EF_DARKLIGHT)//EF_INVINC_CIRC)
 	{
-		R_SuccubusInvincibleParticles (ent);
+		CLHW_SuccubusInvincibleParticles(ent->origin);
 	}
 
 	if(effects & EF_UPDATESOUND)

@@ -34,10 +34,6 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 
 void R_ParseParticleEffect (void);
 
-void R_SuccubusInvincibleParticles (refEntity_t *ent);
-void R_TargetBallEffect (vec3_t org);
-void R_BrightFieldSource (vec3_t org);
-
 void R_ParseParticleEffect2 (void);
 void R_ParseParticleEffect3 (void);
 void R_ParseParticleEffect4 (void);

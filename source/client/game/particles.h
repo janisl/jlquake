@@ -176,3 +176,6 @@ void CLH2_RainEffect2(const vec3_t origin, const vec3_t size, int xDirection, in
 void CLH2_SnowEffect(const vec3_t minOrigin, const vec3_t maxOrigin, int flags, const vec3_t direction, int count);
 void CLH2_ColouredParticleExplosion(const vec3_t origin, int colour, int radius, int count);
 void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type);
+void CLHW_BrightFieldParticles(vec3_t origin);
+void CLHW_SuccubusInvincibleParticles(vec3_t origin);
+void CLHW_TargetBallEffectParticles(vec3_t origin, float targetDistance);
