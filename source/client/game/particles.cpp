@@ -24,6 +24,8 @@ cparticle_t* free_particles;
 Cvar* snow_flurry;
 Cvar* snow_active;
 
+vec3_t avelocities[NUMVERTEXNORMALS];
+
 void CL_ClearParticles()
 {
 	if ((GGameType & GAME_Hexen2) && !(GGameType & GAME_HexenWorld))

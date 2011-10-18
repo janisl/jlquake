@@ -71,13 +71,6 @@ laser_t		cl_lasers[MAX_LASERS];
 cl_sustain_t	cl_sustains[MAX_SUSTAINS];
 //ROGUE
 
-//PGM
-extern void CL_TeleportParticles (vec3_t org);
-//PGM
-
-void CL_BlasterParticles (vec3_t org, vec3_t dir);
-void CL_ExplosionParticles (vec3_t org);
-void CL_BFGExplosionParticles (vec3_t org);
 // RAFAEL
 void CL_BlueBlasterParticles (vec3_t org, vec3_t dir);
 
@@ -295,7 +288,7 @@ void CL_ParseParticles (void)
 
 	count = net_message.ReadByte ();
 
-	CL_ParticleEffect (pos, dir, color, count);
+	CLQ2_ParticleEffect (pos, dir, color, count);
 }
 
 /*
@@ -609,7 +602,7 @@ void CL_ParseSteam (void)
 		r = net_message.ReadByte ();
 		magnitude = net_message.ReadShort();
 		color = r & 0xff;
-		CL_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
+		CLQ2_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
 //		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 	}
 }
@@ -708,7 +701,7 @@ void CL_ParseTEnt (void)
 	case TE_BLOOD:			// bullet hitting flesh
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		CL_ParticleEffect (pos, dir, 0xe8, 60);
+		CLQ2_ParticleEffect (pos, dir, 0xe8, 60);
 		break;
 
 	case TE_GUNSHOT:			// bullet hitting wall
@@ -717,9 +710,9 @@ void CL_ParseTEnt (void)
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
 		if (type == TE_GUNSHOT)
-			CL_ParticleEffect (pos, dir, 0, 40);
+			CLQ2_ParticleEffect (pos, dir, 0, 40);
 		else
-			CL_ParticleEffect (pos, dir, 0xe0, 6);
+			CLQ2_ParticleEffect (pos, dir, 0xe0, 6);
 
 		if (type != TE_SPARKS)
 		{
@@ -742,9 +735,9 @@ void CL_ParseTEnt (void)
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
 		if (type == TE_SCREEN_SPARKS)
-			CL_ParticleEffect (pos, dir, 0xd0, 40);
+			CLQ2_ParticleEffect (pos, dir, 0xd0, 40);
 		else
-			CL_ParticleEffect (pos, dir, 0xb0, 40);
+			CLQ2_ParticleEffect (pos, dir, 0xb0, 40);
 		//FIXME : replace or remove this sound
 		S_StartSound (pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
@@ -752,7 +745,7 @@ void CL_ParseTEnt (void)
 	case TE_SHOTGUN:			// bullet hitting wall
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		CL_ParticleEffect (pos, dir, 0, 20);
+		CLQ2_ParticleEffect (pos, dir, 0, 20);
 		CL_SmokeAndFlash(pos);
 		break;
 
@@ -765,7 +758,7 @@ void CL_ParseTEnt (void)
 			color = 0x00;
 		else
 			color = splash_color[r];
-		CL_ParticleEffect (pos, dir, color, cnt);
+		CLQ2_ParticleEffect (pos, dir, color, cnt);
 
 		if (r == SPLASH_SPARKS)
 		{
@@ -784,20 +777,20 @@ void CL_ParseTEnt (void)
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
 		color = net_message.ReadByte ();
-		CL_ParticleEffect2 (pos, dir, color, cnt);
+		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
 		break;
 
 	// RAFAEL
 	case TE_BLUEHYPERBLASTER:
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadPos (&net_message, dir);
-		CL_BlasterParticles (pos, dir);
+		CLQ2_BlasterParticles (pos, dir);
 		break;
 
 	case TE_BLASTER:			// blaster hitting wall
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		CL_BlasterParticles (pos, dir);
+		CLQ2_BlasterParticles (pos, dir);
 
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
@@ -829,7 +822,7 @@ void CL_ParseTEnt (void)
 	case TE_RAILTRAIL:			// railgun effect
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadPos (&net_message, pos2);
-		CL_RailTrail (pos, pos2);
+		CLQ2_RailTrail (pos, pos2);
 		S_StartSound (pos2, 0, 0, cl_sfx_railg, 1, ATTN_NORM, 0);
 		break;
 
@@ -855,7 +848,7 @@ void CL_ParseTEnt (void)
 		angles[1] = rand() % 360;
 		angles[2] = 0;
 		AnglesToAxis(angles, ex->ent.axis);
-		CL_ExplosionParticles (pos);
+		CLQ2_ExplosionParticles (pos);
 		if (type == TE_GRENADE_EXPLOSION_WATER)
 			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
 		else
@@ -883,7 +876,7 @@ void CL_ParseTEnt (void)
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
-		CL_ExplosionParticles (pos);
+		CLQ2_ExplosionParticles (pos);
 		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
 	
@@ -916,7 +909,7 @@ void CL_ParseTEnt (void)
 			ex->baseframe = 15;
 		ex->frames = 15;
 		if ((type != TE_EXPLOSION1_BIG) && (type != TE_EXPLOSION1_NP))		// PMM
-			CL_ExplosionParticles (pos);									// PMM
+			CLQ2_ExplosionParticles (pos);									// PMM
 		if (type == TE_ROCKET_EXPLOSION_WATER)
 			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
 		else
@@ -943,7 +936,7 @@ void CL_ParseTEnt (void)
 
 	case TE_BFG_BIGEXPLOSION:
 		MSG_ReadPos (&net_message, pos);
-		CL_BFGExplosionParticles (pos);
+		CLQ2_BFGExplosionParticles (pos);
 		break;
 
 	case TE_BFG_LASER:
@@ -953,7 +946,7 @@ void CL_ParseTEnt (void)
 	case TE_BUBBLETRAIL:
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadPos (&net_message, pos2);
-		CL_BubbleTrail (pos, pos2);
+		CLQ2_BubbleTrail (pos, pos2);
 		break;
 
 	case TE_PARASITE_ATTACK:
@@ -963,7 +956,7 @@ void CL_ParseTEnt (void)
 
 	case TE_BOSSTPORT:			// boss teleporting to station
 		MSG_ReadPos (&net_message, pos);
-		CL_BigTeleportParticles (pos);
+		CLQ2_BigTeleportParticles (pos);
 		S_StartSound (pos, 0, 0, S_RegisterSound ("misc/bigtele.wav"), 1, ATTN_NONE, 0);
 		break;
 
@@ -977,7 +970,7 @@ void CL_ParseTEnt (void)
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
 		color = net_message.ReadByte ();
-		CL_ParticleEffect2 (pos, dir, color, cnt);
+		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
 
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
@@ -997,7 +990,7 @@ void CL_ParseTEnt (void)
 	case TE_GREENBLOOD:
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		CL_ParticleEffect2 (pos, dir, 0xdf, 30);
+		CLQ2_ParticleEffect2 (pos, dir, 0xdf, 30);
 		break;
 
 	// RAFAEL
@@ -1006,7 +999,7 @@ void CL_ParseTEnt (void)
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
 		color = net_message.ReadByte ();
-		CL_ParticleEffect3 (pos, dir, color, cnt);
+		CLQ2_ParticleEffect3 (pos, dir, color, cnt);
 		break;
 
 //=============
@@ -1019,9 +1012,9 @@ void CL_ParseTEnt (void)
 		
 		// PMM
 		if (type == TE_BLASTER2)
-			CL_BlasterParticles2 (pos, dir, 0xd0);
+			CLQ2_BlasterParticles2 (pos, dir, 0xd0);
 		else
-			CL_BlasterParticles2 (pos, dir, 0x6f); // 75
+			CLQ2_BlasterParticles2 (pos, dir, 0x6f); // 75
 
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
@@ -1073,7 +1066,7 @@ void CL_ParseTEnt (void)
 	case TE_DEBUGTRAIL:
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadPos (&net_message, pos2);
-		CL_DebugTrail (pos, pos2);
+		CLQ2_DebugTrail (pos, pos2);
 		break;
 
 	case TE_PLAIN_EXPLOSION:
@@ -1113,7 +1106,7 @@ void CL_ParseTEnt (void)
 		MSG_ReadPos(&net_message, pos);
 		MSG_ReadPos(&net_message, pos2);
 		color = net_message.ReadByte ();
-		CL_ForceWall(pos, pos2, color);
+		CLQ2_ForceWall(pos, pos2, color);
 		break;
 
 	case TE_HEATBEAM:
@@ -1134,7 +1127,7 @@ void CL_ParseTEnt (void)
 		r = 8;
 		magnitude = 60;
 		color = r & 0xff;
-		CL_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
+		CLQ2_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
 	
@@ -1148,7 +1141,7 @@ void CL_ParseTEnt (void)
 //		color = r & 0xff;
 		color = 0xe0;
 		magnitude = 60;
-		CL_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
+		CLQ2_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
 
@@ -1161,27 +1154,27 @@ void CL_ParseTEnt (void)
 		cnt = 8;
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadPos (&net_message, pos2);
-		CL_BubbleTrail2 (pos, pos2, cnt);
+		CLQ2_BubbleTrail2 (pos, pos2, cnt);
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_MOREBLOOD:
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		CL_ParticleEffect (pos, dir, 0xe8, 250);
+		CLQ2_ParticleEffect (pos, dir, 0xe8, 250);
 		break;
 
 	case TE_CHAINFIST_SMOKE:
 		dir[0]=0; dir[1]=0; dir[2]=1;
 		MSG_ReadPos(&net_message, pos);
-		CL_ParticleSmokeEffect (pos, dir, 0, 20, 20);
+		CLQ2_ParticleSmokeEffect (pos, dir, 0, 20, 20);
 		break;
 
 	case TE_ELECTRIC_SPARKS:
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-//		CL_ParticleEffect (pos, dir, 109, 40);
-		CL_ParticleEffect (pos, dir, 0x75, 40);
+//		CLQ2_ParticleEffect (pos, dir, 109, 40);
+		CLQ2_ParticleEffect (pos, dir, 0x75, 40);
 		//FIXME : replace or remove this sound
 		S_StartSound (pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
@@ -1189,15 +1182,15 @@ void CL_ParseTEnt (void)
 	case TE_TRACKER_EXPLOSION:
 		MSG_ReadPos (&net_message, pos);
 		CL_ColorFlash (pos, 0, 150, -1, -1, -1);
-		CL_ColorExplosionParticles (pos, 0, 1);
-//		CL_Tracker_Explode (pos);
+		CLQ2_ColorExplosionParticles (pos, 0, 1);
+//		CLQ2_Tracker_Explode (pos);
 		S_StartSound (pos, 0, 0, cl_sfx_disrexp, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_TELEPORT_EFFECT:
 	case TE_DBALL_GOAL:
 		MSG_ReadPos (&net_message, pos);
-		CL_TeleportParticles (pos);
+		CLQ2_TeleportParticles (pos);
 		break;
 
 	case TE_WIDOWBEAMOUT:
@@ -1210,7 +1203,7 @@ void CL_ParseTEnt (void)
 
 	case TE_WIDOWSPLASH:
 		MSG_ReadPos (&net_message, pos);
-		CL_WidowSplash (pos);
+		CLQ2_WidowSplash (pos);
 		break;
 //PGM
 //==============
@@ -1519,7 +1512,7 @@ void CL_AddPlayerBeams (void)
 				else
 				{
 					// if it's a monster, do the particle effect
-					CL_MonsterPlasma_Shell(b->start);
+					CLQ2_MonsterPlasma_Shell(b->start);
 				}
 			}
 			else
@@ -1531,7 +1524,7 @@ void CL_AddPlayerBeams (void)
 		// if it's the heatbeam, draw the particle effect
 		if ((cl_mod_heatbeam && (b->model == cl_mod_heatbeam) && (b->entity == cl.playernum+1)))
 		{
-			CL_Heatbeam (org, dist);
+			CLQ2_HeatbeamPaticles (org, dist);
 		}
 
 	// add new entities for the beams

@@ -46,6 +46,7 @@
 #include "event_queue.h"
 #include "socket.h"
 #include "hexen2defs.h"
+#include "quake2defs.h"
 
 int Com_Milliseconds();
 

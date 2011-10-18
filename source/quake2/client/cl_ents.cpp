@@ -491,9 +491,9 @@ void CL_FireEntityEvents (frame_t *frame)
 		if (s1->event)
 			CL_EntityEvent (s1);
 
-		// EF_TELEPORTER acts like an event, but is not cleared each frame
-		if (s1->effects & EF_TELEPORTER)
-			CL_TeleporterParticles (s1);
+		// Q2EF_TELEPORTER acts like an event, but is not cleared each frame
+		if (s1->effects & Q2EF_TELEPORTER)
+			CLQ2_TeleporterParticles(s1->origin);
 	}
 }
 
@@ -679,44 +679,44 @@ void CL_AddPacketEntities(frame_t *frame)
 		}
 
 			// set frame
-		if (effects & EF_ANIM01)
+		if (effects & Q2EF_ANIM01)
 			ent.frame = autoanim & 1;
-		else if (effects & EF_ANIM23)
+		else if (effects & Q2EF_ANIM23)
 			ent.frame = 2 + (autoanim & 1);
-		else if (effects & EF_ANIM_ALL)
+		else if (effects & Q2EF_ANIM_ALL)
 			ent.frame = autoanim;
-		else if (effects & EF_ANIM_ALLFAST)
+		else if (effects & Q2EF_ANIM_ALLFAST)
 			ent.frame = cl.serverTime / 100;
 		else
 			ent.frame = s1->frame;
 
 		// quad and pent can do different things on client
-		if (effects & EF_PENT)
+		if (effects & Q2EF_PENT)
 		{
-			effects &= ~EF_PENT;
-			effects |= EF_COLOR_SHELL;
+			effects &= ~Q2EF_PENT;
+			effects |= Q2EF_COLOR_SHELL;
 			renderfx_old |= Q2RF_SHELL_RED;
 		}
 
-		if (effects & EF_QUAD)
+		if (effects & Q2EF_QUAD)
 		{
-			effects &= ~EF_QUAD;
-			effects |= EF_COLOR_SHELL;
+			effects &= ~Q2EF_QUAD;
+			effects |= Q2EF_COLOR_SHELL;
 			renderfx_old |= Q2RF_SHELL_BLUE;
 		}
 //======
 // PMM
-		if (effects & EF_DOUBLE)
+		if (effects & Q2EF_DOUBLE)
 		{
-			effects &= ~EF_DOUBLE;
-			effects |= EF_COLOR_SHELL;
+			effects &= ~Q2EF_DOUBLE;
+			effects |= Q2EF_COLOR_SHELL;
 			renderfx_old |= Q2RF_SHELL_DOUBLE;
 		}
 
-		if (effects & EF_HALF_DAMAGE)
+		if (effects & Q2EF_HALF_DAMAGE)
 		{
-			effects &= ~EF_HALF_DAMAGE;
-			effects |= EF_COLOR_SHELL;
+			effects &= ~Q2EF_HALF_DAMAGE;
+			effects |= Q2EF_COLOR_SHELL;
 			renderfx_old |= Q2RF_SHELL_HALF_DAM;
 		}
 // pmm
@@ -800,7 +800,7 @@ void CL_AddPacketEntities(frame_t *frame)
 			ent.shaderRGBA[3] = 178;
 
 		// render effects (fullbright, translucent, etc)
-		if ((effects & EF_COLOR_SHELL))
+		if ((effects & Q2EF_COLOR_SHELL))
 		{
 			// renderfx go on color shell entity
 			ent.renderfx = 0;
@@ -812,14 +812,14 @@ void CL_AddPacketEntities(frame_t *frame)
 
 		// calculate angles
 		vec3_t angles;
-		if (effects & EF_ROTATE)
+		if (effects & Q2EF_ROTATE)
 		{	// some bonus items auto-rotate
 			angles[0] = 0;
 			angles[1] = autorotate;
 			angles[2] = 0;
 		}
 		// RAFAEL
-		else if (effects & EF_SPINNINGLIGHTS)
+		else if (effects & Q2EF_SPINNINGLIGHTS)
 		{
 			angles[0] = 0;
 			angles[1] = AngleMod(cl.serverTime/2) + s1->angles[1];
@@ -851,13 +851,13 @@ void CL_AddPacketEntities(frame_t *frame)
 			ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 			// FIXME: still pass to refresh
 
-			if (effects & EF_FLAG1)
+			if (effects & Q2EF_FLAG1)
 				R_AddLightToScene (ent.origin, 225, 1.0, 0.1, 0.1);
-			else if (effects & EF_FLAG2)
+			else if (effects & Q2EF_FLAG2)
 				R_AddLightToScene (ent.origin, 225, 0.1, 0.1, 1.0);
-			else if (effects & EF_TAGTRAIL)						//PGM
+			else if (effects & Q2EF_TAGTRAIL)						//PGM
 				R_AddLightToScene (ent.origin, 225, 1.0, 1.0, 0.0);	//PGM
-			else if (effects & EF_TRACKERTRAIL)					//PGM
+			else if (effects & Q2EF_TRACKERTRAIL)					//PGM
 				R_AddLightToScene (ent.origin, 225, -1.0, -1.0, -1.0);	//PGM
 
 			continue;
@@ -867,24 +867,24 @@ void CL_AddPacketEntities(frame_t *frame)
 		if (!s1->modelindex)
 			continue;
 
-		if (effects & EF_BFG)
+		if (effects & Q2EF_BFG)
 		{
 			ent.renderfx |= RF_TRANSLUCENT;
 			ent.shaderRGBA[3] = 76;
 		}
 
 		// RAFAEL
-		if (effects & EF_PLASMA)
+		if (effects & Q2EF_PLASMA)
 		{
 			ent.renderfx |= RF_TRANSLUCENT;
 			ent.shaderRGBA[3] = 153;
 		}
 
-		if (effects & EF_SPHERETRANS)
+		if (effects & Q2EF_SPHERETRANS)
 		{
 			ent.renderfx |= RF_TRANSLUCENT;
 			// PMM - *sigh*  yet more EF overloading
-			if (effects & EF_TRACKERTRAIL)
+			if (effects & Q2EF_TRACKERTRAIL)
 				ent.shaderRGBA[3] = 153;
 			else
 				ent.shaderRGBA[3] = 76;
@@ -895,7 +895,7 @@ void CL_AddPacketEntities(frame_t *frame)
 		R_AddRefEntityToScene (&ent);
 
 		// color shells generate a seperate entity for the main model
-		if (effects & EF_COLOR_SHELL)
+		if (effects & Q2EF_COLOR_SHELL)
 		{
 			ent.renderfx = renderfx | RF_TRANSLUCENT | RF_COLOUR_SHELL;
 			// PMM - rewrote, reordered to handle new shells & mixing
@@ -1011,7 +1011,7 @@ void CL_AddPacketEntities(frame_t *frame)
 			R_AddRefEntityToScene (&ent);
 		}
 
-		if (effects & EF_POWERSCREEN)
+		if (effects & Q2EF_POWERSCREEN)
 		{
 			ent.hModel = cl_mod_powerscreen;
 			ent.oldframe = 0;
@@ -1025,57 +1025,57 @@ void CL_AddPacketEntities(frame_t *frame)
 		}
 
 		// add automatic particle trails
-		if ( (effects&~EF_ROTATE) )
+		if ( (effects&~Q2EF_ROTATE) )
 		{
-			if (effects & EF_ROCKET)
+			if (effects & Q2EF_ROCKET)
 			{
 				CL_RocketTrail (cent->lerp_origin, ent.origin, cent);
 				R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 			}
-			// PGM - Do not reorder EF_BLASTER and EF_HYPERBLASTER. 
-			// EF_BLASTER | EF_TRACKER is a special case for EF_BLASTER2... Cheese!
-			else if (effects & EF_BLASTER)
+			// PGM - Do not reorder Q2EF_BLASTER and Q2EF_HYPERBLASTER. 
+			// Q2EF_BLASTER | Q2EF_TRACKER is a special case for EF_BLASTER2... Cheese!
+			else if (effects & Q2EF_BLASTER)
 			{
-//				CL_BlasterTrail (cent->lerp_origin, ent.origin);
+//				CLQ2_BlasterTrail (cent->lerp_origin, ent.origin);
 //PGM
-				if (effects & EF_TRACKER)	// lame... problematic?
+				if (effects & Q2EF_TRACKER)	// lame... problematic?
 				{
-					CL_BlasterTrail2 (cent->lerp_origin, ent.origin);
+					CLQ2_BlasterTrail2 (cent->lerp_origin, ent.origin);
 					R_AddLightToScene (ent.origin, 200, 0, 1, 0);		
 				}
 				else
 				{
-					CL_BlasterTrail (cent->lerp_origin, ent.origin);
+					CLQ2_BlasterTrail (cent->lerp_origin, ent.origin);
 					R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 				}
 //PGM
 			}
-			else if (effects & EF_HYPERBLASTER)
+			else if (effects & Q2EF_HYPERBLASTER)
 			{
-				if (effects & EF_TRACKER)						// PGM	overloaded for blaster2.
+				if (effects & Q2EF_TRACKER)						// PGM	overloaded for blaster2.
 					R_AddLightToScene (ent.origin, 200, 0, 1, 0);		// PGM
 				else											// PGM
 					R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 			}
-			else if (effects & EF_GIB)
+			else if (effects & Q2EF_GIB)
 			{
-				CL_DiminishingTrail (cent->lerp_origin, ent.origin, cent, effects);
+				CLQ2_DiminishingTrail (cent->lerp_origin, ent.origin, cent, effects);
 			}
-			else if (effects & EF_GRENADE)
+			else if (effects & Q2EF_GRENADE)
 			{
-				CL_DiminishingTrail (cent->lerp_origin, ent.origin, cent, effects);
+				CLQ2_DiminishingTrail (cent->lerp_origin, ent.origin, cent, effects);
 			}
-			else if (effects & EF_FLIES)
+			else if (effects & Q2EF_FLIES)
 			{
 				CL_FlyEffect (cent, ent.origin);
 			}
-			else if (effects & EF_BFG)
+			else if (effects & Q2EF_BFG)
 			{
 				static int bfg_lightramp[6] = {300, 400, 600, 300, 150, 75};
 
-				if (effects & EF_ANIM_ALLFAST)
+				if (effects & Q2EF_ANIM_ALLFAST)
 				{
-					CL_BfgParticles (&ent);
+					CLQ2_BfgParticles (ent.origin);
 					i = 200;
 				}
 				else
@@ -1085,33 +1085,33 @@ void CL_AddPacketEntities(frame_t *frame)
 				R_AddLightToScene (ent.origin, i, 0, 1, 0);
 			}
 			// RAFAEL
-			else if (effects & EF_TRAP)
+			else if (effects & Q2EF_TRAP)
 			{
 				ent.origin[2] += 32;
-				CL_TrapParticles (&ent);
+				CLQ2_TrapParticles (ent.origin);
 				i = (rand()%100) + 100;
 				R_AddLightToScene (ent.origin, i, 1, 0.8, 0.1);
 			}
-			else if (effects & EF_FLAG1)
+			else if (effects & Q2EF_FLAG1)
 			{
-				CL_FlagTrail (cent->lerp_origin, ent.origin, 242);
+				CLQ2_FlagTrail (cent->lerp_origin, ent.origin, 242);
 				R_AddLightToScene (ent.origin, 225, 1, 0.1, 0.1);
 			}
-			else if (effects & EF_FLAG2)
+			else if (effects & Q2EF_FLAG2)
 			{
-				CL_FlagTrail (cent->lerp_origin, ent.origin, 115);
+				CLQ2_FlagTrail (cent->lerp_origin, ent.origin, 115);
 				R_AddLightToScene (ent.origin, 225, 0.1, 0.1, 1);
 			}
 //======
 //ROGUE
-			else if (effects & EF_TAGTRAIL)
+			else if (effects & Q2EF_TAGTRAIL)
 			{
-				CL_TagTrail (cent->lerp_origin, ent.origin, 220);
+				CLQ2_TagTrail (cent->lerp_origin, ent.origin, 220);
 				R_AddLightToScene (ent.origin, 225, 1.0, 1.0, 0.0);
 			}
-			else if (effects & EF_TRACKERTRAIL)
+			else if (effects & Q2EF_TRACKERTRAIL)
 			{
-				if (effects & EF_TRACKER)
+				if (effects & Q2EF_TRACKER)
 				{
 					float intensity;
 
@@ -1120,39 +1120,39 @@ void CL_AddPacketEntities(frame_t *frame)
 				}
 				else
 				{
-					CL_Tracker_Shell (cent->lerp_origin);
+					CLQ2_Tracker_Shell (cent->lerp_origin);
 					R_AddLightToScene (ent.origin, 155, -1.0, -1.0, -1.0);
 				}
 			}
-			else if (effects & EF_TRACKER)
+			else if (effects & Q2EF_TRACKER)
 			{
-				CL_TrackerTrail (cent->lerp_origin, ent.origin, 0);
+				CLQ2_TrackerTrail (cent->lerp_origin, ent.origin, 0);
 				R_AddLightToScene (ent.origin, 200, -1, -1, -1);
 			}
 //ROGUE
 //======
 			// RAFAEL
-			else if (effects & EF_GREENGIB)
+			else if (effects & Q2EF_GREENGIB)
 			{
-				CL_DiminishingTrail (cent->lerp_origin, ent.origin, cent, effects);				
+				CLQ2_DiminishingTrail (cent->lerp_origin, ent.origin, cent, effects);				
 			}
 			// RAFAEL
-			else if (effects & EF_IONRIPPER)
+			else if (effects & Q2EF_IONRIPPER)
 			{
-				CL_IonripperTrail (cent->lerp_origin, ent.origin);
+				CLQ2_IonripperTrail (cent->lerp_origin, ent.origin);
 				R_AddLightToScene (ent.origin, 100, 1, 0.5, 0.5);
 			}
 			// RAFAEL
-			else if (effects & EF_BLUEHYPERBLASTER)
+			else if (effects & Q2EF_BLUEHYPERBLASTER)
 			{
 				R_AddLightToScene (ent.origin, 200, 0, 0, 1);
 			}
 			// RAFAEL
-			else if (effects & EF_PLASMA)
+			else if (effects & Q2EF_PLASMA)
 			{
-				if (effects & EF_ANIM_ALLFAST)
+				if (effects & Q2EF_ANIM_ALLFAST)
 				{
-					CL_BlasterTrail (cent->lerp_origin, ent.origin);
+					CLQ2_BlasterTrail (cent->lerp_origin, ent.origin);
 				}
 				R_AddLightToScene (ent.origin, 130, 1, 0.5, 0.5);
 			}

@@ -909,16 +909,6 @@ byte	COM_BlockSequenceCRCByte (byte *base, int length, int sequence)
 
 //========================================================
 
-float	frand(void)
-{
-	return (rand()&32767)* (1.0/32767);
-}
-
-float	crand(void)
-{
-	return (rand()&32767)* (2.0/32767) - 1;
-}
-
 void Key_Init (void);
 void SCR_EndLoadingPlaque (void);
 

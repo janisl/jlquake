@@ -82,7 +82,7 @@ void SV_EmitProjectileUpdate (QMsg *msg)
 		bits[len++] = (y>>4);
 		bits[len++] = z;
 		bits[len++] = (z>>8);
-		if (ent->s.effects & EF_BLASTER)
+		if (ent->s.effects & Q2EF_BLASTER)
 			bits[len-1] |= 64;
 
 		if (ent->s.old_origin[0] != ent->s.origin[0] ||

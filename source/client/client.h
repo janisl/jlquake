@@ -63,4 +63,7 @@ char* Sys_GetClipboardData();	// note that this isn't journaled...
 //	Called by Windows driver.
 void Key_ClearStates();
 
+float frand();	// 0 to 1
+float crand();	// -1 to 1
+
 #endif

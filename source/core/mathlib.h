@@ -267,3 +267,5 @@ extern float			bytedirs[NUMVERTEXNORMALS][3];
 
 int DirToByte(vec3_t dir);
 void ByteToDir(int b, vec3_t dir);
+
+void vectoangles2(const vec3_t value1, vec3_t angles);

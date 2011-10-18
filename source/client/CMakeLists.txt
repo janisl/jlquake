@@ -5,6 +5,7 @@ set(CLIENT_FILES
 	cinematic/roq.cpp
 	game/hexen2/particle_effects.cpp
 	game/quake/particle_effects.cpp
+	game/quake2/particle_effects.cpp
 	game/particles.cpp
 	input/keys.cpp
 	input/main.cpp
@@ -63,6 +64,7 @@ set(CLIENT_FILES
 	ui/draw.cpp
 	client_main.cpp
 	system_unix.cpp
+	utils.cpp
 )
 
 set(CLIENT_ASM_FILES

@@ -418,9 +418,6 @@ void		Com_SetServerState (int state);
 
 byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
-float	frand(void);	// 0 ti 1
-float	crand(void);	// -1 to 1
-
 extern	Cvar	*developer;
 extern	Cvar	*host_speeds;
 extern	Cvar	*log_stats;

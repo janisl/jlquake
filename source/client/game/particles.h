@@ -14,7 +14,13 @@
 //**
 //**************************************************************************
 
-enum { MAX_PARTICLES = 7000 };
+enum
+{
+	MAX_PARTICLES = 7000,
+	PARTICLE_GRAVITY = 40,
+};
+
+#define INSTANT_PARTICLE	-10000.0
 
 enum ptype_t
 {
@@ -125,6 +131,7 @@ extern cparticle_t* active_particles;
 extern cparticle_t* free_particles;
 extern Cvar* snow_flurry;
 extern Cvar* snow_active;
+extern vec3_t avelocities[NUMVERTEXNORMALS];
 
 extern int q1ramp1[8];
 extern int q1ramp2[8];
@@ -164,7 +171,7 @@ void CLH2_RunParticleEffect(const vec3_t origin, const vec3_t direction, int cou
 void CLH2_RunParticleEffect2(const vec3_t origin, const vec3_t directionMin, const vec3_t directionMax, int colour, ptype_t effect, int count);
 void CLH2_RunParticleEffect3(const vec3_t origin, const vec3_t box, int colour, ptype_t effect, int count);
 void CLH2_RunParticleEffect4(const vec3_t origin, float radius, int colour, ptype_t effect, int count);
-void CLH2_SplashParticleEffect(const vec3_t origin, float radius, int color, ptype_t effect, int count);
+void CLH2_SplashParticleEffect(const vec3_t origin, float radius, int colour, ptype_t effect, int count);
 void CLH2_LavaSplash(const vec3_t origin);
 void CLH2_TeleportSplash(const vec3_t origin);
 void CLH2_RunQuakeEffect(const vec3_t origin, float distance);
@@ -179,3 +186,36 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type);
 void CLHW_BrightFieldParticles(vec3_t origin);
 void CLHW_SuccubusInvincibleParticles(vec3_t origin);
 void CLHW_TargetBallEffectParticles(vec3_t origin, float targetDistance);
+
+void CLQ2_ParticleEffect(vec3_t origin, vec3_t direction, int colour, int count);
+void CLQ2_ParticleEffect2(vec3_t origin, vec3_t direction, int colour, int count);
+void CLQ2_ParticleEffect3(vec3_t origin, vec3_t direction, int colour, int count);
+void CLQ2_TeleporterParticles(vec3_t origin);
+void CLQ2_PlayerSpawnParticles(vec3_t origin, int baseColour);
+void CLQ2_ItemRespawnParticles(vec3_t origin);
+void CLQ2_ExplosionParticles(vec3_t origin);
+void CLQ2_BigTeleportParticles(vec3_t origin);
+void CLQ2_BlasterParticles(vec3_t origin, vec3_t direction);
+void CLQ2_BlasterTrail(vec3_t start, vec3_t end);
+void CLQ2_FlagTrail(vec3_t start, vec3_t end, float colour);
+void CLQ2_RailTrail(vec3_t start, vec3_t end);
+void CLQ2_IonripperTrail(vec3_t start, vec3_t end);
+void CLQ2_BubbleTrail(vec3_t start, vec3_t end);
+void CLQ2_FlyParticles(vec3_t origin, int count);
+void CLQ2_BfgParticles(vec3_t origin);
+void CLQ2_BFGExplosionParticles(vec3_t origin);
+void CLQ2_TeleportParticles(vec3_t origin);
+void CLQ2_DebugTrail(vec3_t start, vec3_t end);
+void CLQ2_ForceWall(vec3_t start, vec3_t end, int colour);
+void CLQ2_BubbleTrail2(vec3_t start, vec3_t end, int distance);
+void CLQ2_ParticleSteamEffect(vec3_t origin, vec3_t direction, int colour, int count, int magnitude);
+void CLQ2_TrackerTrail(vec3_t start, vec3_t end, int particleColour);
+void CLQ2_Tracker_Shell(vec3_t origin);
+void CLQ2_MonsterPlasma_Shell(vec3_t origin);
+void CLQ2_WidowSplash(vec3_t origin);
+void CLQ2_Tracker_Explode(vec3_t origin);
+void CLQ2_TagTrail(vec3_t start, vec3_t end, int colour);
+void CLQ2_ColorExplosionParticles(vec3_t origin, int colour, int run);
+void CLQ2_ParticleSmokeEffect(vec3_t origin, vec3_t direction, int colour, int count, int magnitude);
+void CLQ2_BlasterParticles2(vec3_t origin, vec3_t direction, unsigned int colour);
+void CLQ2_BlasterTrail2(vec3_t start, vec3_t end);
