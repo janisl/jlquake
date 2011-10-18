@@ -295,7 +295,6 @@ void CL_ClearTEnts (void);
 // ========
 // PGM
 void CL_Flashlight (int ent, vec3_t pos);
-void CLQ2_HeatbeamPaticles (vec3_t start, vec3_t end);
 void CL_ColorFlash (vec3_t pos, int ent, int intensity, float r, float g, float b);
 // PGM
 // ========

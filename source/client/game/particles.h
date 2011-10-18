@@ -210,6 +210,7 @@ void CLQ2_TeleportParticles(vec3_t origin);
 void CLQ2_DebugTrail(vec3_t start, vec3_t end);
 void CLQ2_ForceWall(vec3_t start, vec3_t end, int colour);
 void CLQ2_BubbleTrail2(vec3_t start, vec3_t end, int distance);
+void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward);
 void CLQ2_ParticleSteamEffect(vec3_t origin, vec3_t direction, int colour, int count, int magnitude);
 void CLQ2_ParticleSteamEffect2(q2cl_sustain_t* self);
 void CLQ2_TrackerTrail(vec3_t start, vec3_t end, int particleColour);

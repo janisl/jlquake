@@ -1039,6 +1039,81 @@ void CLQ2_BubbleTrail2(vec3_t start, vec3_t end, int distance)
 	}
 }
 
+void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward)
+{
+	float step = 32.0;
+
+	vec3_t end;
+	VectorMA(start, 4096, forward, end);
+
+	vec3_t move;
+	VectorCopy(start, move);
+	vec3_t vec;
+	VectorSubtract(end, start, vec);
+	float len = VectorNormalize(vec);
+
+	vec3_t right;
+	VectorSubtract(vec3_origin, cl_common->refdef.viewaxis[1], right);
+	vec3_t up;
+	VectorCopy(cl_common->refdef.viewaxis[2], up);
+	VectorMA(move, -0.5, right, move);
+	VectorMA(move, -0.5, up, move);
+
+	float ltime = (float)cl_common->serverTime / 1000.0;
+	float start_pt = fmod(ltime * 96.0f, step);
+	VectorMA(move, start_pt, vec, move);
+
+	VectorScale(vec, step, vec);
+
+	float rstep = M_PI / 10.0;
+	for (int i = start_pt; i < len; i += step)
+	{
+		if (i > step * 5) // don't bother after the 5th ring
+		{
+			break;
+		}
+
+		for (float rot = 0; rot < M_PI * 2; rot += rstep)
+		{
+			cparticle_t* p = CL_AllocParticle();
+			if (!p)
+			{
+				return;
+			}
+
+			p->type = pt_q2static;
+			
+			VectorClear(p->accel);
+			float variance = 0.5;
+			float c = cos(rot) * variance;
+			float s = sin(rot) * variance;
+
+			// trim it so it looks like it's starting at the origin
+			vec3_t dir;
+			if (i < 10)
+			{
+				VectorScale(right, c * (i / 10.0), dir);
+				VectorMA(dir, s * (i / 10.0), up, dir);
+			}
+			else
+			{
+				VectorScale(right, c, dir);
+				VectorMA(dir, s, up, dir);
+			}
+
+			p->alpha = 0.5;
+			p->alphavel = -1000.0;
+			p->color = 223 - (rand() & 7);
+			for (int j = 0; j < 3; j++)
+			{
+				p->org[j] = move[j] + dir[j] * 3;
+				p->vel[j] = 0;
+			}
+		}
+		VectorAdd(move, vec, move);
+	}
+}
+
 //	Puffs with velocity along direction, with some randomness thrown in
 void CLQ2_ParticleSteamEffect(vec3_t org, vec3_t dir, int color, int count, int magnitude)
 {
