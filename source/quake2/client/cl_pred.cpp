@@ -75,7 +75,7 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 	int			i, x, zd, zu;
 	q2trace_t		trace;
 	float		*angles;
-	entity_state_t	*ent;
+	q2entity_state_t	*ent;
 	int			num;
 	clipHandle_t	cmodel;
 	vec3_t		bmins, bmaxs;
@@ -161,7 +161,7 @@ q2trace_t		CL_PMTrace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 int		CL_PMpointcontents (vec3_t point)
 {
 	int			i;
-	entity_state_t	*ent;
+	q2entity_state_t	*ent;
 	int			num;
 	clipHandle_t	cmodel;
 	int			contents;

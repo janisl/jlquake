@@ -87,7 +87,7 @@ CL_ParseDelta
 Can go from either a baseline or a previous packet_entity
 ==================
 */
-void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int number, int bits)
+void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits)
 {
 	// set everything to the state we are delta'ing from
 	*to = *from;
@@ -167,10 +167,10 @@ Parses deltas from the given base and adds the resulting entity
 to the current frame
 ==================
 */
-void CL_DeltaEntity (frame_t *frame, int newnum, entity_state_t *old, int bits)
+void CL_DeltaEntity (frame_t *frame, int newnum, q2entity_state_t *old, int bits)
 {
-	centity_t	*ent;
-	entity_state_t	*state;
+	q2centity_t	*ent;
+	q2entity_state_t	*state;
 
 	ent = &cl_entities[newnum];
 
@@ -232,7 +232,7 @@ void CL_ParsePacketEntities (frame_t *oldframe, frame_t *newframe)
 {
 	int			newnum;
 	unsigned int			bits;
-	entity_state_t	*oldstate;
+	q2entity_state_t	*oldstate;
 	int			oldindex, oldnum;
 
 	newframe->parse_entities = cl.parse_entities;
@@ -481,7 +481,7 @@ CL_FireEntityEvents
 */
 void CL_FireEntityEvents (frame_t *frame)
 {
-	entity_state_t		*s1;
+	q2entity_state_t		*s1;
 	int					pnum, num;
 
 	for (pnum = 0 ; pnum<frame->num_entities ; pnum++)
@@ -620,11 +620,11 @@ CL_AddPacketEntities
 void CL_AddPacketEntities(frame_t *frame)
 {
 	refEntity_t			ent;
-	entity_state_t		*s1;
+	q2entity_state_t		*s1;
 	float				autorotate;
 	int					i;
 	int					pnum;
-	centity_t			*cent;
+	q2centity_t			*cent;
 	int					autoanim;
 	clientinfo_t		*ci;
 	unsigned int		effects, renderfx_old, renderfx;
@@ -1271,7 +1271,7 @@ void CL_CalcViewValues (void)
 {
 	int			i;
 	float		lerp, backlerp;
-	centity_t	*ent;
+	q2centity_t	*ent;
 	frame_t		*oldframe;
 	player_state_t	*ps, *ops;
 
@@ -1361,7 +1361,7 @@ Called to get the sound spatialization origin
 */
 void CL_GetEntitySoundOrigin (int ent, vec3_t org)
 {
-	centity_t	*old;
+	q2centity_t	*old;
 
 	if (ent < 0 || ent >= MAX_EDICTS)
 		Com_Error (ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");

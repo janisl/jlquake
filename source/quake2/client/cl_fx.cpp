@@ -234,7 +234,7 @@ void CL_ParseMuzzleFlash (void)
 	vec3_t		fv, rv;
 	cdlight_t	*dl;
 	int			i, weapon;
-	centity_t	*pl;
+	q2centity_t	*pl;
 	int			silenced;
 	float		volume;
 	char		soundname[64];
@@ -851,7 +851,7 @@ CLQ2_DiminishingTrail
 
 ===============
 */
-void CLQ2_DiminishingTrail (vec3_t start, vec3_t end, centity_t *old, int flags)
+void CLQ2_DiminishingTrail (vec3_t start, vec3_t end, q2centity_t *old, int flags)
 {
 	vec3_t		move;
 	vec3_t		vec;
@@ -951,7 +951,7 @@ CL_RocketTrail
 
 ===============
 */
-void CL_RocketTrail (vec3_t start, vec3_t end, centity_t *old)
+void CL_RocketTrail (vec3_t start, vec3_t end, q2centity_t *old)
 {
 	vec3_t		move;
 	vec3_t		vec;
@@ -998,7 +998,7 @@ void CL_RocketTrail (vec3_t start, vec3_t end, centity_t *old)
 	}
 }
 
-void CL_FlyEffect (centity_t *ent, vec3_t origin)
+void CL_FlyEffect (q2centity_t *ent, vec3_t origin)
 {
 	int		n;
 	int		count;
@@ -1111,7 +1111,7 @@ the female events are there for backwards compatability
 */
 extern sfxHandle_t	cl_sfx_footsteps[4];
 
-void CL_EntityEvent (entity_state_t *ent)
+void CL_EntityEvent (q2entity_state_t *ent)
 {
 	switch (ent->event)
 	{

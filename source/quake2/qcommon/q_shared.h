@@ -225,7 +225,7 @@ typedef struct
 	int			(*pointcontents) (vec3_t point);
 } pmove_t;
 
-// entity_state_t->renderfx flags
+// q2entity_state_t->renderfx flags
 #define Q2RF_MINLIGHT		1		// allways have some light (viewmodel)
 #define Q2RF_VIEWERMODEL	2		// don't draw through eyes, only mirrors
 #define Q2RF_WEAPONMODEL	4		// only draw through eyes
@@ -749,7 +749,7 @@ ROGUE - VERSIONS
 //==============================================
 
 
-// entity_state_t->event values
+// q2entity_state_t->event values
 // ertity events are for effects that take place reletive
 // to an existing entities origin.  Very network efficient.
 // All muzzle flashes really should be converted to events...
@@ -764,32 +764,6 @@ typedef enum
 	EV_PLAYER_TELEPORT,
 	EV_OTHER_TELEPORT
 } entity_event_t;
-
-
-// entity_state_t is the information conveyed from the server
-// in an update message about entities that the client will
-// need to render in some way
-typedef struct entity_state_s
-{
-	int		number;			// edict index
-
-	vec3_t	origin;
-	vec3_t	angles;
-	vec3_t	old_origin;		// for lerping
-	int		modelindex;
-	int		modelindex2, modelindex3, modelindex4;	// weapons, CTF flags, etc
-	int		frame;
-	int		skinnum;
-	unsigned int		effects;		// PGM - we're filling it, so it needs to be unsigned
-	int		renderfx;
-	int		solid;			// for client side prediction, 8*(bits 0-4) is x/y radius
-							// 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
-							// gi.linkentity sets this properly
-	int		sound;			// for looping sounds, to guarantee shutoff
-	int		event;			// impulse events -- muzzle flashes, footsteps, etc
-							// events only go out for a single frame, they
-							// are automatically cleared each frame
-} entity_state_t;
 
 //==============================================
 

@@ -179,8 +179,8 @@ SV_Baselines_f
 void SV_Baselines_f (void)
 {
 	int		start;
-	entity_state_t	nullstate;
-	entity_state_t	*base;
+	q2entity_state_t	nullstate;
+	q2entity_state_t	*base;
 
 	Com_DPrintf ("Baselines() from %s\n", sv_client->name);
 

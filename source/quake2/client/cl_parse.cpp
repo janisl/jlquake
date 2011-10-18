@@ -332,10 +332,10 @@ CL_ParseBaseline
 */
 void CL_ParseBaseline (void)
 {
-	entity_state_t	*es;
+	q2entity_state_t	*es;
 	unsigned int				bits;
 	int				newnum;
-	entity_state_t	nullstate;
+	q2entity_state_t	nullstate;
 
 	Com_Memset(&nullstate, 0, sizeof(nullstate));
 

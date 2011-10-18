@@ -33,7 +33,7 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 
 	// determine what model the client is using
 	model[0] = 0;
-	entity_state_t *ent = &cl_entities[entnum].current;
+	q2entity_state_t *ent = &cl_entities[entnum].current;
 	n = CS_PLAYERSKINS + ent->number - 1;
 	if (cl.configstrings[n][0])
 	{

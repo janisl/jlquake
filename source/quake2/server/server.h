@@ -27,9 +27,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../qcommon/qcommon.h"
 #define cvar_t	Cvar
 #define trace_t	q2trace_t
+#define entity_state_t q2entity_state_t
 #include "../../../q2game/game/game.h"
 #undef cvar_t
 #undef trace_t
+#undef entity_state_t
 
 //=============================================================================
 
@@ -60,7 +62,7 @@ typedef struct
 	clipHandle_t	models[MAX_MODELS];
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
-	entity_state_t	baselines[MAX_EDICTS];
+	q2entity_state_t	baselines[MAX_EDICTS];
 
 	// the multicast buffer is used to send a message to a set of clients
 	// it is only used to marshall data until SV_Multicast is called
@@ -174,7 +176,7 @@ typedef struct
 	client_t	*clients;					// [maxclients->value];
 	int			num_client_entities;		// maxclients->value*UPDATE_BACKUP*MAX_PACKET_ENTITIES
 	int			next_client_entities;		// next client_entity to use
-	entity_state_t	*client_entities;		// [num_client_entities]
+	q2entity_state_t	*client_entities;		// [num_client_entities]
 
 	int			last_heartbeat;
 

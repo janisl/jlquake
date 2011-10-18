@@ -119,12 +119,12 @@ void SV_EmitProjectileUpdate (QMsg *msg)
 =============
 SV_EmitPacketEntities
 
-Writes a delta update of an entity_state_t list to the message.
+Writes a delta update of an q2entity_state_t list to the message.
 =============
 */
 void SV_EmitPacketEntities (client_frame_t *from, client_frame_t *to, QMsg *msg)
 {
-	entity_state_t	*oldent, *newent;
+	q2entity_state_t	*oldent, *newent;
 	int		oldindex, newindex;
 	int		oldnum, newnum;
 	int		from_num_entities;
@@ -526,7 +526,7 @@ void SV_BuildClientFrame (client_t *client)
 	edict_t	*ent;
 	edict_t	*clent;
 	client_frame_t	*frame;
-	entity_state_t	*state;
+	q2entity_state_t	*state;
 	int		l;
 	int		clientarea, clientcluster;
 	int		leafnum;
@@ -681,7 +681,7 @@ void SV_RecordDemoMessage (void)
 {
 	int			e;
 	edict_t		*ent;
-	entity_state_t	nostate;
+	q2entity_state_t	nostate;
 	QMsg	buf;
 	byte		buf_data[32768];
 	int			len;

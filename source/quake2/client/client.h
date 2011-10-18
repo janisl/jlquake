@@ -46,20 +46,6 @@ typedef struct
 	int				parse_entities;	// non-masked index into cl_parse_entities array
 } frame_t;
 
-typedef struct
-{
-	entity_state_t	baseline;		// delta from this if not from a previous frame
-	entity_state_t	current;
-	entity_state_t	prev;			// will always be valid, but might just be a copy of current
-
-	int			serverframe;		// if not current, this ent isn't in the frame
-
-	int			trailcount;			// for diminishing grenade trails
-	vec3_t		lerp_origin;		// for trails (variable hz)
-
-	int			fly_stoptime;
-} centity_t;
-
 #define MAX_CLIENTWEAPONMODELS		20		// PGM -- upped from 16 to fit the chainfist vwep
 
 typedef struct
@@ -278,14 +264,14 @@ typedef struct
 	float	minlight;			// don't add when contributing less
 } cdlight_t;
 
-extern	centity_t	cl_entities[MAX_EDICTS];
+extern	q2centity_t	cl_entities[MAX_EDICTS];
 extern	cdlight_t	cl_dlights[MAX_DLIGHTS];
 
 // the cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original 
 #define	MAX_PARSE_ENTITIES	1024
-extern	entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
+extern	q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
 //=============================================================================
 
@@ -336,7 +322,7 @@ void CL_Nukeblast (cl_sustain_t *self);
 // ========
 
 int CL_ParseEntityBits (unsigned *bits);
-void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int number, int bits);
+void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits);
 void CL_ParseFrame (void);
 
 void CL_ParseTEnt (void);
@@ -469,11 +455,11 @@ void CL_CheckPredictionError (void);
 // cl_fx.c
 //
 cdlight_t *CL_AllocDlight (int key);
-void CL_RocketTrail (vec3_t start, vec3_t end, centity_t *old);
-void CLQ2_DiminishingTrail (vec3_t start, vec3_t end, centity_t *old, int flags);
-void CL_FlyEffect (centity_t *ent, vec3_t origin);
+void CL_RocketTrail (vec3_t start, vec3_t end, q2centity_t *old);
+void CLQ2_DiminishingTrail (vec3_t start, vec3_t end, q2centity_t *old, int flags);
+void CL_FlyEffect (q2centity_t *ent, vec3_t origin);
 void CL_AddParticles (void);
-void CL_EntityEvent (entity_state_t *ent);
+void CL_EntityEvent (q2entity_state_t *ent);
 // RAFAEL
 void CLQ2_TrapParticles(vec3_t origin);
 

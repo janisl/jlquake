@@ -89,9 +89,9 @@ Cvar	*cl_vwep;
 client_static_t	cls;
 client_state_t	cl;
 
-centity_t		cl_entities[MAX_EDICTS];
+q2centity_t		cl_entities[MAX_EDICTS];
 
-entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
+q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
 extern	Cvar *allow_download;
 extern	Cvar *allow_download_players;
@@ -165,8 +165,8 @@ void CL_Record_f (void)
 	QMsg	buf;
 	int		i;
 	int		len;
-	entity_state_t	*ent;
-	entity_state_t	nullstate;
+	q2entity_state_t	*ent;
+	q2entity_state_t	nullstate;
 
 	if (Cmd_Argc() != 2)
 	{
@@ -1728,7 +1728,7 @@ void CL_UpdateSounds()
 	for (int i=0 ; i<cl.frame.num_entities ; i++)
 	{
 		int num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
-		entity_state_t* ent = &cl_parse_entities[num];
+		q2entity_state_t* ent = &cl_parse_entities[num];
 		if (!ent->sound)
 			continue;
 		S_AddLoopingSound(num, ent->origin, vec3_origin, cl.sound_precache[ent->sound]);

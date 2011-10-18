@@ -76,11 +76,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //============================================================================
 
 struct usercmd_s;
-struct entity_state_s;
 
 void MSG_WritePos (QMsg *sb, vec3_t pos);
 void MSG_WriteDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
-void MSG_WriteDeltaEntity (struct entity_state_s *from, struct entity_state_s *to, QMsg *msg, qboolean force, qboolean newentity);
+void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *msg, qboolean force, qboolean newentity);
 void MSG_WriteDir (QMsg *sb, vec3_t vector);
 
 
@@ -115,7 +114,7 @@ PROTOCOL
 
 //=========================================
 
-#define	UPDATE_BACKUP	16	// copies of entity_state_t to keep buffered
+#define	UPDATE_BACKUP	16	// copies of q2entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)
 
@@ -220,7 +219,7 @@ enum clc_ops_e
 
 //==============================================
 
-// entity_state_t communication
+// q2entity_state_t communication
 
 // try to pack the common update flags into the first byte
 #define	U_ORIGIN1	(1<<0)

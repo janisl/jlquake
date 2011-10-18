@@ -402,7 +402,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 	msg.InitOOB(msg_buf, sizeof(msg_buf));
 	msg.allowoverflow = true;
 
-	// send over all the relevant entity_state_t
+	// send over all the relevant q2entity_state_t
 	// and the player_state_t
 	SV_WriteFrameToClient (client, &msg);
 
