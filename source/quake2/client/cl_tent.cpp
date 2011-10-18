@@ -578,7 +578,7 @@ void CL_ParseSteam (void)
 			s->color = r & 0xff;
 			s->magnitude = net_message.ReadShort();
 			s->endtime = cl.serverTime + net_message.ReadLong();
-			s->think = CL_ParticleSteamEffect2;
+			s->think = CLQ2_ParticleSteamEffect2;
 			s->thinkinterval = 100;
 			s->nextthink = cl.serverTime;
 		}
@@ -629,7 +629,7 @@ void CL_ParseWidow (void)
 		s->id = id;
 		MSG_ReadPos (&net_message, s->org);
 		s->endtime = cl.serverTime + 2100;
-		s->think = CL_Widowbeamout;
+		s->think = CLQ2_Widowbeamout;
 		s->thinkinterval = 1;
 		s->nextthink = cl.serverTime;
 	}
@@ -660,7 +660,7 @@ void CL_ParseNuke (void)
 		s->id = 21000;
 		MSG_ReadPos (&net_message, s->org);
 		s->endtime = cl.serverTime + 1000;
-		s->think = CL_Nukeblast;
+		s->think = CLQ2_Nukeblast;
 		s->thinkinterval = 1;
 		s->nextthink = cl.serverTime;
 	}

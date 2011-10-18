@@ -285,7 +285,6 @@ qboolean	CL_CheckOrDownloadFile (char *filename);
 void CL_AddNetgraph (void);
 
 #define MAX_SUSTAINS		32
-void CL_ParticleSteamEffect2(q2cl_sustain_t *self);
 
 //=================================================
 
@@ -300,8 +299,6 @@ void CL_ClearTEnts (void);
 void CL_Flashlight (int ent, vec3_t pos);
 void CLQ2_HeatbeamPaticles (vec3_t start, vec3_t end);
 void CL_ColorFlash (vec3_t pos, int ent, int intensity, float r, float g, float b);
-void CL_Widowbeamout (q2cl_sustain_t *self);
-void CL_Nukeblast (q2cl_sustain_t *self);
 // PGM
 // ========
 
@@ -439,8 +436,6 @@ void CL_CheckPredictionError (void);
 // cl_fx.c
 //
 cdlight_t *CL_AllocDlight (int key);
-void CL_RocketTrail (vec3_t start, vec3_t end, q2centity_t *old);
-void CLQ2_DiminishingTrail (vec3_t start, vec3_t end, q2centity_t *old, int flags);
 void CL_FlyEffect (q2centity_t *ent, vec3_t origin);
 void CL_AddParticles (void);
 void CL_EntityEvent (q2entity_state_t *ent);

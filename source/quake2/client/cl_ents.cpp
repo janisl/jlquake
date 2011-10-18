@@ -1029,7 +1029,7 @@ void CL_AddPacketEntities(frame_t *frame)
 		{
 			if (effects & Q2EF_ROCKET)
 			{
-				CL_RocketTrail (cent->lerp_origin, ent.origin, cent);
+				CLQ2_RocketTrail (cent->lerp_origin, ent.origin, cent);
 				R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 			}
 			// PGM - Do not reorder Q2EF_BLASTER and Q2EF_HYPERBLASTER. 

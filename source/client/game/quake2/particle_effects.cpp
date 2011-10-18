@@ -353,6 +353,143 @@ void CLQ2_FlagTrail(vec3_t start, vec3_t end, float colour)
 	}
 }
 
+void CLQ2_DiminishingTrail(vec3_t start, vec3_t end, q2centity_t* old, int flags)
+{
+	vec3_t move;
+	VectorCopy(start, move);
+	vec3_t vec;
+	VectorSubtract(end, start, vec);
+	float len = VectorNormalize(vec);
+
+	float dec = 0.5;
+	VectorScale(vec, dec, vec);
+
+	float orgscale;
+	float velscale;
+	if (old->trailcount > 900)
+	{
+		orgscale = 4;
+		velscale = 15;
+	}
+	else if (old->trailcount > 800)
+	{
+		orgscale = 2;
+		velscale = 10;
+	}
+	else
+	{
+		orgscale = 1;
+		velscale = 5;
+	}
+
+	while (len > 0)
+	{
+		len -= dec;
+
+		// drop less particles as it flies
+		if ((rand() & 1023) < old->trailcount)
+		{
+			cparticle_t* p = CL_AllocParticle();
+			if (!p)
+			{
+				return;
+			}
+			p->type = pt_q2static;
+			VectorClear(p->accel);
+
+			if (flags & Q2EF_GIB)
+			{
+				p->alpha = 1.0;
+				p->alphavel = -1.0 / (1 + frand() * 0.4);
+				p->color = 0xe8 + (rand() & 7);
+				for (int j = 0; j < 3; j++)
+				{
+					p->org[j] = move[j] + crand() * orgscale;
+					p->vel[j] = crand() * velscale;
+					p->accel[j] = 0;
+				}
+				p->vel[2] -= PARTICLE_GRAVITY;
+			}
+			else if (flags & Q2EF_GREENGIB)
+			{
+				p->alpha = 1.0;
+				p->alphavel = -1.0 / (1 + frand() * 0.4);
+				p->color = 0xdb + (rand() & 7);
+				for (int j = 0; j < 3; j++)
+				{
+					p->org[j] = move[j] + crand() * orgscale;
+					p->vel[j] = crand() * velscale;
+					p->accel[j] = 0;
+				}
+				p->vel[2] -= PARTICLE_GRAVITY;
+			}
+			else
+			{
+				p->alpha = 1.0;
+				p->alphavel = -1.0 / (1 + frand() * 0.2);
+				p->color = 4 + (rand() & 7);
+				for (int j = 0; j < 3; j++)
+				{
+					p->org[j] = move[j] + crand() * orgscale;
+					p->vel[j] = crand() * velscale;
+				}
+				p->accel[2] = 20;
+			}
+		}
+
+		old->trailcount -= 5;
+		if (old->trailcount < 100)
+		{
+			old->trailcount = 100;
+		}
+		VectorAdd(move, vec, move);
+	}
+}
+
+void CLQ2_RocketTrail(vec3_t start, vec3_t end, q2centity_t* old)
+{
+	// smoke
+	CLQ2_DiminishingTrail(start, end, old, Q2EF_ROCKET);
+
+	// fire
+	vec3_t move;
+	VectorCopy(start, move);
+	vec3_t vec;
+	VectorSubtract(end, start, vec);
+	float len = VectorNormalize(vec);
+
+	float dec = 1;
+	VectorScale(vec, dec, vec);
+
+	while (len > 0)
+	{
+		len -= dec;
+
+		if ((rand() & 7) == 0)
+		{
+			cparticle_t* p = CL_AllocParticle();
+			if (!p)
+			{
+				return;
+			}
+			p->type = pt_q2static;
+			
+			VectorClear(p->accel);
+
+			p->alpha = 1.0;
+			p->alphavel = -1.0 / (1 + frand() * 0.2);
+			p->color = 0xdc + (rand() & 3);
+			for (int j = 0; j < 3; j++)
+			{
+				p->org[j] = move[j] + crand() * 5;
+				p->vel[j] = crand() * 20;
+			}
+			p->accel[2] = -PARTICLE_GRAVITY;
+		}
+		VectorAdd(move, vec, move);
+	}
+}
+
 void CLQ2_RailTrail(vec3_t start, vec3_t end)
 {
 	byte clr = 0x74;
@@ -937,6 +1074,43 @@ void CLQ2_ParticleSteamEffect(vec3_t org, vec3_t dir, int color, int count, int 
 	}
 }
 
+void CLQ2_ParticleSteamEffect2(q2cl_sustain_t* self)
+{
+	vec3_t dir;
+	VectorCopy(self->dir, dir);
+	vec3_t r, u;
+	MakeNormalVectors(dir, r, u);
+
+	for (int i = 0; i < self->count; i++)
+	{
+		cparticle_t* p = CL_AllocParticle();
+		if (!p)
+		{
+			return;
+		}
+		p->type = pt_q2static;
+
+		p->color = self->color + (rand() & 7);
+
+		for (int j = 0; j < 3; j++)
+		{
+			p->org[j] = self->org[j] + self->magnitude * 0.1 * crand();
+		}
+		VectorScale(dir, self->magnitude, p->vel);
+		float d = crand() * self->magnitude / 3;
+		VectorMA(p->vel, d, r, p->vel);
+		d = crand() * self->magnitude / 3;
+		VectorMA(p->vel, d, u, p->vel);
+
+		p->accel[0] = p->accel[1] = 0;
+		p->accel[2] = -PARTICLE_GRAVITY / 2;
+		p->alpha = 1.0;
+
+		p->alphavel = -1.0 / (0.5 + frand() * 0.3);
+	}
+	self->nextthink += self->thinkinterval;
+}
+
 void CLQ2_TrackerTrail(vec3_t start, vec3_t end, int particleColour)
 {
 	vec3_t move;
@@ -1033,6 +1207,66 @@ void CLQ2_MonsterPlasma_Shell(vec3_t origin)
 		VectorNormalize(dir);
 	
 		VectorMA(origin, 10, dir, p->org);
+	}
+}
+
+void CLQ2_Widowbeamout(q2cl_sustain_t* self)
+{
+	static int colortable[4] = {2 * 8, 13 * 8, 21 * 8, 18 * 8};
+
+	float ratio = 1.0 - (((float)self->endtime - (float)cl_common->serverTime) / 2100.0);
+
+	for (int i = 0; i < 300; i++)
+	{
+		cparticle_t* p = CL_AllocParticle();
+		if (!p)
+		{
+			return;
+		}
+		p->type = pt_q2static;
+		VectorClear(p->accel);
+
+		p->alpha = 1.0;
+		p->alphavel = INSTANT_PARTICLE;
+		p->color = colortable[rand() & 3];
+
+		vec3_t dir;
+		dir[0] = crand();
+		dir[1] = crand();
+		dir[2] = crand();
+		VectorNormalize(dir);
+	
+		VectorMA(self->org, (45.0 * ratio), dir, p->org);
+	}
+}
+
+void CLQ2_Nukeblast(q2cl_sustain_t* self)
+{
+	static int colortable[4] = {110, 112, 114, 116};
+
+	float ratio = 1.0 - (((float)self->endtime - (float)cl_common->serverTime) / 1000.0);
+
+	for (int i = 0; i < 700; i++)
+	{
+		cparticle_t* p = CL_AllocParticle();
+		if (!p)
+		{
+			return;
+		}
+		p->type = pt_q2static;
+		VectorClear(p->accel);
+
+		p->alpha = 1.0;
+		p->alphavel = INSTANT_PARTICLE;
+		p->color = colortable[rand() & 3];
+
+		vec3_t dir;
+		dir[0] = crand();
+		dir[1] = crand();
+		dir[2] = crand();
+		VectorNormalize(dir);
+	
+		VectorMA(self->org, (200.0 * ratio), dir, p->org);
 	}
 }
 
