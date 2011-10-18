@@ -53,7 +53,10 @@ struct clientStaticCommon_t
 
 struct clientActiveCommon_t
 {
-	int			serverTime;			// may be paused during play
+	int serverTime;			// may be paused during play
+
+	//	Not in Quake 3
+	refdef_t refdef;
 };
 
 extern clientStaticCommon_t* cls_common;

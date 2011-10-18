@@ -105,8 +105,6 @@ struct client_state_t : clientActiveCommon_t
 
 	float		lerpfrac;		// between oldframe and frame
 
-	refdef_t	refdef;
-
 	//
 	// transient data from server
 	//
