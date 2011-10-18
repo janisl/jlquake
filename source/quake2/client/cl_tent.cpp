@@ -68,7 +68,7 @@ typedef struct
 laser_t		cl_lasers[MAX_LASERS];
 
 //ROGUE
-cl_sustain_t	cl_sustains[MAX_SUSTAINS];
+q2cl_sustain_t	cl_sustains[MAX_SUSTAINS];
 //ROGUE
 
 // RAFAEL
@@ -553,7 +553,7 @@ void CL_ParseSteam (void)
 	int		cnt;
 	int		color;
 	int		magnitude;
-	cl_sustain_t	*s, *free_sustain;
+	q2cl_sustain_t	*s, *free_sustain;
 
 	id = net_message.ReadShort();		// an id of -1 is an instant effect
 	if (id != -1) // sustains
@@ -611,7 +611,7 @@ void CL_ParseWidow (void)
 {
 	vec3_t	pos;
 	int		id, i;
-	cl_sustain_t	*s, *free_sustain;
+	q2cl_sustain_t	*s, *free_sustain;
 
 	id = net_message.ReadShort();
 
@@ -644,7 +644,7 @@ void CL_ParseNuke (void)
 {
 	vec3_t	pos;
 	int		i;
-	cl_sustain_t	*s, *free_sustain;
+	q2cl_sustain_t	*s, *free_sustain;
 
 	free_sustain = NULL;
 	for (i=0, s=cl_sustains; i<MAX_SUSTAINS; i++, s++)
@@ -1735,7 +1735,7 @@ void CL_AddLasers (void)
 /* PMM - CL_Sustains */
 void CL_ProcessSustain ()
 {
-	cl_sustain_t	*s;
+	q2cl_sustain_t	*s;
 	int				i;
 
 	for (i=0, s=cl_sustains; i< MAX_SUSTAINS; i++, s++)

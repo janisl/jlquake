@@ -146,7 +146,7 @@ void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward)
 	}
 }
 
-void CL_ParticleSteamEffect2 (cl_sustain_t *self)
+void CL_ParticleSteamEffect2 (q2cl_sustain_t *self)
 //vec3_t org, vec3_t dir, int color, int count, int magnitude)
 {
 	int			i, j;
@@ -190,7 +190,7 @@ void CL_ParticleSteamEffect2 (cl_sustain_t *self)
 	self->nextthink += self->thinkinterval;
 }
 
-void CL_Widowbeamout (cl_sustain_t *self)
+void CL_Widowbeamout (q2cl_sustain_t *self)
 {
 	vec3_t			dir;
 	int				i;
@@ -222,7 +222,7 @@ void CL_Widowbeamout (cl_sustain_t *self)
 	}
 }
 
-void CL_Nukeblast (cl_sustain_t *self)
+void CL_Nukeblast (q2cl_sustain_t *self)
 {
 	vec3_t			dir;
 	int				i;
