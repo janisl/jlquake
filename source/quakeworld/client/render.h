@@ -57,14 +57,9 @@ struct entity_t
 };
 
 
-//
-// refresh
-//
-extern	refdef_t	r_refdef;
-
 void CL_InitRenderStuff (void);
-void V_RenderScene (void);		// must set r_refdef first
+void V_RenderScene (void);		// must set cl.refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
-								// called whenever r_refdef or vid change
+								// called whenever cl.refdef or vid change
 
 void R_ParseParticleEffect (void);

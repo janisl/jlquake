@@ -694,7 +694,7 @@ static void V_CalcIntermissionRefdef (void)
 // view is the weapon model
 	view = &cl.viewent;
 
-	VectorCopy (cl.simorg, r_refdef.vieworg);
+	VectorCopy (cl.simorg, cl.refdef.vieworg);
 	vec3_t viewangles;
 	VectorCopy(cl.simangles, viewangles);
 	view->model = 0;
@@ -703,7 +703,7 @@ static void V_CalcIntermissionRefdef (void)
 	old = v_idlescale->value;
 	v_idlescale->value = 1;
 	V_AddIdle(viewangles);
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
+	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 	v_idlescale->value = old;
 }
 
@@ -736,16 +736,16 @@ static void V_CalcRefdef (void)
 		bob = 1;
 
 // refresh position from simulated origin
-	VectorCopy (cl.simorg, r_refdef.vieworg);
+	VectorCopy (cl.simorg, cl.refdef.vieworg);
 
-	r_refdef.vieworg[2] += bob;
+	cl.refdef.vieworg[2] += bob;
 
 // never let it sit exactly on a node line, because a water plane can
 // dissapear when viewed with the eye exactly on it.
 // the server protocol only specifies to 1/8 pixel, so add 1/16 in each axis
-	r_refdef.vieworg[0] += 1.0/32;
-	r_refdef.vieworg[1] += 1.0/32;
-	r_refdef.vieworg[2] += 1.0/32;
+	cl.refdef.vieworg[0] += 1.0/32;
+	cl.refdef.vieworg[1] += 1.0/32;
+	cl.refdef.vieworg[2] += 1.0/32;
 
 	vec3_t viewangles;
 	VectorCopy (cl.simangles, viewangles);
@@ -754,16 +754,16 @@ static void V_CalcRefdef (void)
 
 	if (cl.spectator)
 	{
-		r_refdef.vieworg[2] += 50;	// view height
+		cl.refdef.vieworg[2] += 50;	// view height
 	}
 	else
 	{
 		if (view_message->flags & PF_CROUCH)
-			r_refdef.vieworg[2] += 24;	// gib view height
+			cl.refdef.vieworg[2] += 24;	// gib view height
 		else if (view_message->flags & PF_DEAD)
-			r_refdef.vieworg[2] += 8;	// corpse view height
+			cl.refdef.vieworg[2] += 8;	// corpse view height
 		else
-			r_refdef.vieworg[2] += 50;	// view height
+			cl.refdef.vieworg[2] += 50;	// view height
 
 		if (view_message->flags & PF_DEAD)		// PF_GIB will also set PF_DEAD
 			viewangles[ROLL] = 80;	// dead view angle
@@ -777,7 +777,7 @@ static void V_CalcRefdef (void)
 	
 	CalcGunAngle(viewangles);
 
-	VectorCopy (r_refdef.vieworg, view->origin);
+	VectorCopy (cl.refdef.vieworg, view->origin);
 //	view->origin[2] += 56;
 
 	for (i=0 ; i<3 ; i++)
@@ -814,7 +814,7 @@ static void V_CalcRefdef (void)
 
 // set up the refresh position
 	viewangles[PITCH] += cl.punchangle;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
+	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 // smooth out stair step ups
 	if ( (view_message->onground != -1) && (cl.simorg[2] - oldz > 0) )
@@ -828,7 +828,7 @@ static void V_CalcRefdef (void)
 			oldz = cl.simorg[2];
 		if (cl.simorg[2] - oldz > 12)
 			oldz = cl.simorg[2] - 12;
-		r_refdef.vieworg[2] += oldz - cl.simorg[2];
+		cl.refdef.vieworg[2] += oldz - cl.simorg[2];
 		view->origin[2] += oldz - cl.simorg[2];
 	}
 	else
@@ -899,14 +899,14 @@ static void R_PolyBlend (void)
 	if (!v_blend[3])
 		return;
 
-	R_Draw2DQuad(r_refdef.x, r_refdef.y, r_refdef.width, r_refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
+	R_Draw2DQuad(cl.refdef.x, cl.refdef.y, cl.refdef.width, cl.refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 }
 
 /*
 ================
 V_RenderScene
 
-r_refdef must be set before the first call
+cl.refdef must be set before the first call
 ================
 */
 void V_RenderScene()
@@ -923,12 +923,12 @@ void V_RenderScene()
 
 	CL_AnimateLight();
 
-	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
+	V_SetContentsColor(CM_PointContentsQ1(cl.refdef.vieworg, 0));
 	V_CalcBlend();
 
-	r_refdef.time = cl.serverTime;
+	cl.refdef.time = cl.serverTime;
 
-	R_RenderScene(&r_refdef);
+	R_RenderScene(&cl.refdef);
 
 	R_PolyBlend();
 }

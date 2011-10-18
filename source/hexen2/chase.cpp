@@ -50,21 +50,21 @@ void Chase_Update (void)
 
 	// calc exact destination
 	for (i=0 ; i<3 ; i++)
-		chase_dest[i] = r_refdef.vieworg[i] 
+		chase_dest[i] = cl.refdef.vieworg[i] 
 		- forward[i]*chase_back->value
 		- right[i]*chase_right->value;
-	chase_dest[2] = r_refdef.vieworg[2] + chase_up->value;
+	chase_dest[2] = cl.refdef.vieworg[2] + chase_up->value;
 
 	// find the spot the player is looking at
-	VectorMA (r_refdef.vieworg, 4096, forward, dest);
-	TraceLine (r_refdef.vieworg, dest, stop);
+	VectorMA (cl.refdef.vieworg, 4096, forward, dest);
+	TraceLine (cl.refdef.vieworg, dest, stop);
 
 	// calculate pitch to look at the same spot from camera
-	VectorSubtract(stop, r_refdef.vieworg, r_refdef.viewaxis[0]);
-	VectorNormalize(r_refdef.viewaxis[0]);
-	CrossProduct(r_refdef.viewaxis[2], r_refdef.viewaxis[0], r_refdef.viewaxis[1]);
+	VectorSubtract(stop, cl.refdef.vieworg, cl.refdef.viewaxis[0]);
+	VectorNormalize(cl.refdef.viewaxis[0]);
+	CrossProduct(cl.refdef.viewaxis[2], cl.refdef.viewaxis[0], cl.refdef.viewaxis[1]);
 
 	// move towards destination
-	VectorCopy (chase_dest, r_refdef.vieworg);
+	VectorCopy (chase_dest, cl.refdef.vieworg);
 }
 

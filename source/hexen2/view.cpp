@@ -622,19 +622,19 @@ static void V_BoundOffsets (void)
 // absolutely bound refresh reletive to entity clipping hull
 // so the view can never be inside a solid wall
 
-	if (r_refdef.vieworg[0] < ent->origin[0] - 14)
-		r_refdef.vieworg[0] = ent->origin[0] - 14;
-	else if (r_refdef.vieworg[0] > ent->origin[0] + 14)
-		r_refdef.vieworg[0] = ent->origin[0] + 14;
-	if (r_refdef.vieworg[1] < ent->origin[1] - 14)
-		r_refdef.vieworg[1] = ent->origin[1] - 14;
-	else if (r_refdef.vieworg[1] > ent->origin[1] + 14)
-		r_refdef.vieworg[1] = ent->origin[1] + 14;
+	if (cl.refdef.vieworg[0] < ent->origin[0] - 14)
+		cl.refdef.vieworg[0] = ent->origin[0] - 14;
+	else if (cl.refdef.vieworg[0] > ent->origin[0] + 14)
+		cl.refdef.vieworg[0] = ent->origin[0] + 14;
+	if (cl.refdef.vieworg[1] < ent->origin[1] - 14)
+		cl.refdef.vieworg[1] = ent->origin[1] - 14;
+	else if (cl.refdef.vieworg[1] > ent->origin[1] + 14)
+		cl.refdef.vieworg[1] = ent->origin[1] + 14;
 
-	if (r_refdef.vieworg[2] < ent->origin[2] - 0)
-		r_refdef.vieworg[2] = ent->origin[2] - 0;
-	else if (r_refdef.vieworg[2] > ent->origin[2] + 86)
-		r_refdef.vieworg[2] = ent->origin[2] + 86;
+	if (cl.refdef.vieworg[2] < ent->origin[2] - 0)
+		cl.refdef.vieworg[2] = ent->origin[2] - 0;
+	else if (cl.refdef.vieworg[2] > ent->origin[2] + 86)
+		cl.refdef.vieworg[2] = ent->origin[2] + 86;
 }
 
 /*
@@ -697,17 +697,17 @@ static void V_CalcIntermissionRefdef (void)
 // view is the weapon model (only visible from inside body)
 	view = &cl.viewent;
 
-	VectorCopy (ent->origin, r_refdef.vieworg);
+	VectorCopy (ent->origin, cl.refdef.vieworg);
 	vec3_t viewangles;
 	VectorCopy (ent->angles, viewangles);
 	view->model = 0;
-	r_refdef.vieworg[2] += cl.viewheight;
+	cl.refdef.vieworg[2] += cl.viewheight;
 
 // allways idle in intermission
 	old = v_idlescale->value;
 	v_idlescale->value = 1;
 	V_AddIdle(viewangles);
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
+	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 	v_idlescale->value = old;
 }
 
@@ -753,15 +753,15 @@ static void V_CalcRefdef (void)
 
 	
 // refresh position
-	VectorCopy (ent->origin, r_refdef.vieworg);
-	r_refdef.vieworg[2] += cl.viewheight + bob;
+	VectorCopy (ent->origin, cl.refdef.vieworg);
+	cl.refdef.vieworg[2] += cl.viewheight + bob;
 
 // never let it sit exactly on a node line, because a water plane can
 // dissapear when viewed with the eye exactly on it.
 // the server protocol only specifies to 1/16 pixel, so add 1/32 in each axis
-	r_refdef.vieworg[0] += 1.0/32;
-	r_refdef.vieworg[1] += 1.0/32;
-	r_refdef.vieworg[2] += 1.0/32;
+	cl.refdef.vieworg[0] += 1.0/32;
+	cl.refdef.vieworg[1] += 1.0/32;
+	cl.refdef.vieworg[2] += 1.0/32;
 
 	vec3_t viewangles;
 	VectorCopy (cl.viewangles, viewangles);
@@ -777,7 +777,7 @@ static void V_CalcRefdef (void)
 	AngleVectors (angles, forward, right, up);
 
 	for (i=0 ; i<3 ; i++)
-		r_refdef.vieworg[i] += scr_ofsx->value*forward[i]
+		cl.refdef.vieworg[i] += scr_ofsx->value*forward[i]
 			+ scr_ofsy->value*right[i]
 			+ scr_ofsz->value*up[i];
 	
@@ -824,7 +824,7 @@ static void V_CalcRefdef (void)
 
 // set up the refresh position
 	VectorAdd(viewangles, cl.punchangle, viewangles);
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
+	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 // smooth out stair step ups
 if (cl.onground && ent->origin[2] - oldz > 0)
@@ -841,7 +841,7 @@ if (cl.onground && ent->origin[2] - oldz > 0)
 		oldz = ent->origin[2];
 	if (ent->origin[2] - oldz > 12)
 		oldz = ent->origin[2] - 12;
-	r_refdef.vieworg[2] += oldz - ent->origin[2];
+	cl.refdef.vieworg[2] += oldz - ent->origin[2];
 	view->origin[2] += oldz - ent->origin[2];
 }
 else
@@ -903,14 +903,14 @@ static void R_PolyBlend (void)
 	if (!v_blend[3])
 		return;
 
-	R_Draw2DQuad(r_refdef.x, r_refdef.y, r_refdef.width, r_refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
+	R_Draw2DQuad(cl.refdef.x, cl.refdef.y, cl.refdef.width, cl.refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 }
 
 /*
 ================
 V_RenderScene
 
-r_refdef must be set before the first call
+cl.refdef must be set before the first call
 ================
 */
 void V_RenderScene()
@@ -930,12 +930,12 @@ void V_RenderScene()
 
 	CL_AnimateLight();
 
-	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
+	V_SetContentsColor(CM_PointContentsQ1(cl.refdef.vieworg, 0));
 	V_CalcBlend();
 
-	r_refdef.time = cl.serverTime;
+	cl.refdef.time = cl.serverTime;
 
-	R_RenderScene(&r_refdef);
+	R_RenderScene(&cl.refdef);
 
 	R_PolyBlend();
 }

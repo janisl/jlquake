@@ -98,11 +98,6 @@ qboolean        scr_disabled_for_loading;
 qboolean        scr_drawloading;
 float           scr_disabled_time;
 
-//
-// screen size info
-//
-refdef_t		r_refdef;
-
 void SCR_RSShot_f (void);
 
 /*
@@ -310,12 +305,12 @@ static void SCR_CalcRefdef (void)
 	else 
 		scr_vrect.y = (h - scr_vrect.height)/2;
 
-	r_refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
-	r_refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
-	r_refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
-	r_refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
-	r_refdef.fov_x = scr_fov->value;
-	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.width, r_refdef.height);
+	cl.refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
+	cl.refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
+	cl.refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
+	cl.refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
+	cl.refdef.fov_x = scr_fov->value;
+	cl.refdef.fov_y = CalcFov (cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
 }
 
 
@@ -364,7 +359,7 @@ static void R_TimeRefresh_f (void)
 	for (i=0 ; i<128 ; i++)
 	{
 		viewangles[1] = i/128.0*360.0;
-		AnglesToAxis(viewangles, r_refdef.viewaxis);
+		AnglesToAxis(viewangles, cl.refdef.viewaxis);
 		R_BeginFrame(STEREO_CENTER);
 		V_RenderScene ();
 		R_EndFrame(NULL, NULL);

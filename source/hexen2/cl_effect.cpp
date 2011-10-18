@@ -2089,9 +2089,9 @@ void CL_UpdateEffects(void)
 				snow_org[1] *= 0.5;
 				snow_org[2] *= 0.5;
 
-				snow_org[2] = r_refdef.vieworg[2];
+				snow_org[2] = cl.refdef.vieworg[2];
 
-				VectorSubtract(snow_org, r_refdef.vieworg, snow_org);
+				VectorSubtract(snow_org, cl.refdef.vieworg, snow_org);
 				
 				distance = VectorNormalize(snow_org);
 				
