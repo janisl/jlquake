@@ -154,6 +154,7 @@ extern vec3_t rider_origin;
 
 void CL_ClearParticles();
 cparticle_t* CL_AllocParticle();
+void CL_AddParticles();
 
 void CLQ1_ParticleExplosion(const vec3_t origin);
 void CLQ1_ParticleExplosion2(const vec3_t origin, int colorStart, int colorLength);

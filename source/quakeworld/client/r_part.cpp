@@ -22,34 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*
 ===============
-CL_AddParticles
-===============
-*/
-void CL_AddParticles()
-{
-	for (cparticle_t* p = active_particles; p; p = p->next)
-	{
-		if (p->die - cl.serverTime < 0)
-		{
-			continue;
-		}
-
-		byte* at = r_palette[p->color];
-		byte theAlpha;
-		if (p->type == pt_q1fire)
-		{
-			theAlpha = 255 * (6 - p->ramp) / 6;
-		}
-		else
-		{
-			theAlpha = 255;
-		}
-		R_AddParticleToScene(p->org, at[0], at[1], at[2], theAlpha, 1, PARTTEX_Default);
-	}
-}
-
-/*
-===============
 R_UpdateParticles
 ===============
 */

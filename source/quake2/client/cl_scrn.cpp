@@ -1253,6 +1253,8 @@ void SCR_UpdateScreen (void)
 	}
 
 	R_EndFrame(NULL, NULL);
+
+	CL_UpdateParticles();
 }
 
 /*

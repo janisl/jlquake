@@ -52,23 +52,6 @@ void R_ParseParticleEffect (void)
 
 /*
 ===============
-CL_AddParticles
-===============
-*/
-void CL_AddParticles()
-{
-	for (cparticle_t* p = active_particles; p; p = p->next)
-	{
-		if (p->die - cl.serverTime < 0)
-		{
-			continue;
-		}
-		R_AddParticleToScene(p->org, r_palette[p->color][0], r_palette[p->color][1], r_palette[p->color][2], 255, 1, PARTTEX_Default);
-	}
-}
-
-/*
-===============
 R_UpdateParticles
 ===============
 */

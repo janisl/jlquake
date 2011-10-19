@@ -434,7 +434,7 @@ void CL_CheckPredictionError (void);
 //
 cdlight_t *CL_AllocDlight (int key);
 void CL_FlyEffect (q2centity_t *ent, vec3_t origin);
-void CL_AddParticles (void);
+void CL_UpdateParticles();
 void CL_EntityEvent (q2entity_state_t *ent);
 // RAFAEL
 void CLQ2_TrapParticles(vec3_t origin);

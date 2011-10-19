@@ -84,8 +84,6 @@ static qboolean scr_needfull = false;
 
 int			total_loading_size, current_loading_size, loading_stage;
 
-unsigned	d_8to24TranslucentTable[256];
-
 float RTint[256],GTint[256],BTint[256];
 
 void Plaque_Draw (const char *message, qboolean AlwaysDraw);
@@ -1152,8 +1150,6 @@ void SCR_UpdateScreen (void)
 
 void VID_SetPalette()
 {
-	unsigned* table = d_8to24TranslucentTable;
-
 	for (int i = 0; i < 16; i++)
 	{
 		int c = ColorIndex[i];
@@ -1164,9 +1160,6 @@ void VID_SetPalette()
 
 		for (int p = 0; p < 16; p++)
 		{
-			int v = (ColorPercent[15 - p] << 24) + (r << 0) + (g << 8) + (b << 16);
-			*table++ = v;
-
 			RTint[i * 16 + p] = ((float)r) / ((float)ColorPercent[15 - p]) ;
 			GTint[i * 16 + p] = ((float)g) / ((float)ColorPercent[15 - p]);
 			BTint[i * 16 + p] = ((float)b) / ((float)ColorPercent[15 - p]);

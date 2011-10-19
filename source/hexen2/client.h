@@ -362,7 +362,6 @@ void SV_UpdateEffects(QMsg *sb);
 void CL_RemoveGIPFiles(const char *path);
 void CL_CopyFiles(const char* source, const char* ext, const char* dest);
 
-void CL_AddParticles();
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 
 extern qhandle_t	player_models[NUM_CLASSES];
