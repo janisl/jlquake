@@ -148,7 +148,7 @@ void R_UpdateParticles (void)
 	float			time1;
 	float			dvel;
 	float			frametime;
-	float			vel0, vel1, vel2;
+	float			vel0;
 	float			colindex;
 	vec3_t			diff;
 
@@ -169,22 +169,7 @@ void R_UpdateParticles (void)
 	
 	for (p=active_particles ; p ; p=p->next)
 	{
-		if (p->type==pt_h2rain)
-		{
-			vel0 = p->vel[0]*.001;
-			vel1 = p->vel[1]*.001;
-			vel2 = p->vel[2]*.001;
-			for(i=0;i<4;i++)
-			{
-				p->org[0] += vel0;
-				p->org[1] += vel1;
-				p->org[2] += vel2;
-			}
-			p->org[0] += p->vel[0]*(frametime-.004);
-			p->org[1] += p->vel[1]*(frametime-.004);
-			p->org[2] += p->vel[2]*(frametime-.004);
-		}
-		else if (p->type==pt_h2snow)
+		if (p->type==pt_h2snow)
 		{
 			if(p->vel[0]==0&&p->vel[1]==0&&p->vel[2]==0)
 			{//Stopped moving
