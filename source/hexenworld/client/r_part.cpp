@@ -161,7 +161,7 @@ R_UpdateParticles
 */
 void R_UpdateParticles (void)
 {
-	cparticle_t		*p, *kill;
+	cparticle_t		*p;
 	float			grav,grav2,percent;
 	int				i;
 	float			time2, time3, time4;
@@ -183,35 +183,8 @@ void R_UpdateParticles (void)
 	//	Time for particles that need to be killed ASAP.
 	int killTime = cl.serverTime - 1;
 
-	for ( ;; ) 
-	{
-		kill = active_particles;
-		if (kill && kill->die - cl.serverTime < 0)
-		{
-			active_particles = kill->next;
-			kill->next = free_particles;
-			free_particles = kill;
-			continue;
-		}
-		break;
-	}
-
 	for (p=active_particles ; p ; p=p->next)
 	{
-		for ( ;; )
-		{
-			kill = p->next;
-			if (kill && kill->die - cl.serverTime < 0)
-			{
-				p->next = kill->next;
-				kill->next = free_particles;
-				free_particles = kill;
-				continue;
-			}
-			break;
-		}
-
-
 		p->org[0] += p->vel[0]*frametime;
 		p->org[1] += p->vel[1]*frametime;
 		p->org[2] += p->vel[2]*frametime;
