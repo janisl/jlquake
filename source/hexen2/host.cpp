@@ -615,8 +615,6 @@ void Host_GetConsoleCommands (void)
 }
 
 
-//#define FPS_20
-
 void CL_UpdateEffects (void);
 
 /*
@@ -625,59 +623,6 @@ Host_ServerFrame
 
 ==================
 */
-#ifdef FPS_20
-
-void _Host_ServerFrame (void)
-{
-// run the world state	
-	pr_global_struct->frametime = host_frametime;
-
-// read client messages
-	SV_RunClients ();
-	
-// move things around and think
-// always pause in single player if in console or menus
-	if (!sv.paused && (svs.maxclients > 1 || in_keyCatchers == 0) )
-	{
-		SV_Physics ();
-
-		R_UpdateParticles ();
-		CL_UpdateEffects ();
-	}
-}
-
-void Host_ServerFrame (void)
-{
-	float	save_host_frametime;
-	float	temp_host_frametime;
-
-// run the world state	
-	pr_global_struct->frametime = host_frametime;
-
-// set the time and clear the general datagram
-	SV_ClearDatagram ();
-	
-// check for new clients
-	SV_CheckForNewClients ();
-
-	temp_host_frametime = save_host_frametime = host_frametime;
-	while(temp_host_frametime > (1.0/72.0))
-	{
-		if (temp_host_frametime > 0.05)
-			host_frametime = 0.05;
-		else
-			host_frametime = temp_host_frametime;
-		temp_host_frametime -= host_frametime;
-		_Host_ServerFrame ();
-	}
-	host_frametime = save_host_frametime;
-
-// send all messages to the clients
-	SV_SendClientMessages ();
-}
-
-#else
-
 void Host_ServerFrame (void)
 {
 // run the world state	
@@ -700,8 +645,6 @@ void Host_ServerFrame (void)
 // send all messages to the clients
 	SV_SendClientMessages ();
 }
-
-#endif
 
 /*
 ==================
@@ -716,9 +659,7 @@ void _Host_Frame (float time)
 	static double		time2 = 0;
 	static double		time3 = 0;
 	int			pass1, pass2, pass3;
-#if !defined(FPS_20)
 	double	save_host_frametime,total_host_frametime;
-#endif
 
 	if (setjmp (host_abortserver) )
 		return;			// something bad happened, or the server disconnected
@@ -755,32 +696,6 @@ void _Host_Frame (float time)
 
 // check for commands typed to the host
 	Host_GetConsoleCommands ();
-
-#ifdef FPS_20
-	
-	if (sv.active)
-		Host_ServerFrame ();
-
-//-------------------
-//
-// client operations
-//
-//-------------------
-
-// if running the server remotely, send intentions now after
-// the incoming messages have been read
-	if (!sv.active)
-		CL_SendCmd ();
-
-	host_time += host_frametime;
-
-// fetch results from server
-	if (cls.state == ca_connected)
-	{
-		CL_ReadFromServer ();
-	}
-
-#else
 
 	save_host_frametime = total_host_frametime = host_frametime;
 	if (sys_adaptive->value)
@@ -839,8 +754,6 @@ void _Host_Frame (float time)
 
 
 	host_frametime = save_host_frametime;
-
-#endif
 
 // update video
 	if (host_speeds->value)
