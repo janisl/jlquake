@@ -884,7 +884,6 @@ void CL_Init (void)
 	CL_SharedInit();
 
 	CL_InitInput ();
-	CL_InitTEnts ();
 
 	
 //

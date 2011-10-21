@@ -1037,7 +1037,6 @@ void CL_Init (void)
 	Info_SetValueForKey(cls.userinfo, "*ver", st, MAX_INFO_STRING, 64, 64, true, false);
 
 	CL_InitInput ();
-	CL_InitTEnts ();
 	CL_InitPrediction ();
 	CL_InitCam ();
 	Pmove_Init ();
@@ -1439,6 +1438,7 @@ void Host_Init (quakeparms_t *parms)
 	Draw_Init();
 	SCR_Init();
 	S_Init();
+	CL_InitTEnts ();
 	CDAudio_Init();
 	Sbar_Init();
 	
