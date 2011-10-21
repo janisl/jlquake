@@ -55,7 +55,6 @@ add_executable(jlqwcl
 	client/net_chan.cpp
 	client/pmove.cpp
 	client/pmovetst.cpp
-	client/r_part.cpp
 	client/sbar.cpp
 	client/skin.cpp
 	client/snd_dma.cpp

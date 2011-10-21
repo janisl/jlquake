@@ -31,11 +31,6 @@
 #define	MINIMUM_MEMORY_LEVELPAK	(MINIMUM_MEMORY + 0x100000)
 
 
-// Timing macros
-#define HX_FRAME_TIME		0.05
-#define HX_FPS				20
-
-
 #define	ON_EPSILON		0.1			// point on plane side epsilon
 
 //#define	MAX_MSGLEN		8000		// max length of a reliable message

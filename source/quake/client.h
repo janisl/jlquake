@@ -354,6 +354,4 @@ void V_ParseDamage (void);
 void CL_InitTEnts (void);
 void CL_SignonReply (void);
 
-void R_UpdateParticles (void);
-
 extern	image_t*	playertextures[16];

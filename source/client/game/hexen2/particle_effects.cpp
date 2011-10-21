@@ -101,12 +101,12 @@ void CLH2_BlobExplosion(const vec3_t origin)
 
 		if (i & 1)
 		{
-			p->type = pt_h2blob;
+			p->type = pt_h2blob_hw;
 			p->color = 66 + rand() % 6;
 		}
 		else
 		{
-			p->type = pt_h2blob2;
+			p->type = pt_h2blob2_hw;
 			p->color = 150 + rand() % 6;
 		}
 		for (int j = 0; j < 3; j++)

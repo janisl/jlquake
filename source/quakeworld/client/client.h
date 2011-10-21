@@ -486,7 +486,6 @@ void	Skin_NextDownload (void);
 
 extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
-void R_UpdateParticles (void);
 void R_TranslatePlayerSkin (int playernum);
 
 extern	image_t*	playertextures[MAX_CLIENTS];

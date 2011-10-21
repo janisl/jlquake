@@ -25,3 +25,6 @@
 #define CLASS_THEIF   				4
 #define CLASS_DEMON					5
 #define CLASS_DWARF					6
+
+// Timing macros
+#define HX_FRAME_TIME		0.05

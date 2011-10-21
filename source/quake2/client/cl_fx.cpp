@@ -876,23 +876,6 @@ void CL_FlyEffect (q2centity_t *ent, vec3_t origin)
 	CLQ2_FlyParticles (origin, count);
 }
 
-void CL_UpdateParticles()
-{
-	if (cls.state != ca_active || !cl.refresh_prepped || !cl.frame.valid)
-	{
-		return;
-	}
-
-	for (cparticle_t* p = active_particles; p; p = p->next)
-	{
-		if (p->alphavel == INSTANT_PARTICLE)
-		{
-			p->alphavel = 0.0;
-			p->alpha = 0.0;
-		}
-	}
-}
-
 /*
 ==============
 CL_EntityEvent

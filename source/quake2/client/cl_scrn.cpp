@@ -1254,7 +1254,10 @@ void SCR_UpdateScreen (void)
 
 	R_EndFrame(NULL, NULL);
 
-	CL_UpdateParticles();
+	if (cls.state == ca_active && cl.refresh_prepped && cl.frame.valid)
+	{
+		CL_UpdateParticles(800);
+	}
 }
 
 /*

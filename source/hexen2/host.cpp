@@ -19,6 +19,8 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 void Host_WriteConfiguration (const char *fname);
 
+extern	Cvar*	sv_gravity;
+
 quakeparms_t host_parms;
 
 qboolean	host_initialized;		// true if into command execution
@@ -615,7 +617,6 @@ void Host_GetConsoleCommands (void)
 
 //#define FPS_20
 
-void R_UpdateParticles (void);
 void CL_UpdateEffects (void);
 
 /*
@@ -815,10 +816,13 @@ void _Host_Frame (float time)
 		if (cls.state == ca_connected)
 		{
 			CL_ReadFromServer ();
+
+			if (cl.serverTimeFloat != cl.oldtime)
+			{
+				CL_UpdateParticles(sv_gravity->value);
+			}
 		}
 
-
-		R_UpdateParticles ();
 		CL_UpdateEffects ();
 
 		if (!sys_adaptive->value) break;

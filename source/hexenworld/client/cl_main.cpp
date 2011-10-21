@@ -1255,7 +1255,7 @@ void Host_Frame (float time)
 		S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
 		CL_DecayLights ();
 
-		R_UpdateParticles();
+		CL_UpdateParticles(movevars.gravity);
 	}
 
 	S_Update();

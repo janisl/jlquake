@@ -24,11 +24,6 @@
 #define	MINIMUM_MEMORY	0x550000
 
 
-// Timing macros
-#define HX_FRAME_TIME		0.05
-#define HX_FPS				20
-
-
 #define	MAX_SCOREBOARD		32		// max numbers of players
 
 #define	SOUND_CHANNELS		8

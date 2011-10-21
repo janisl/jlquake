@@ -44,6 +44,8 @@ enum ptype_t
 	pt_h2explode2,
 	pt_h2blob,
 	pt_h2blob2,
+	pt_h2blob_hw,
+	pt_h2blob2_hw,
 	pt_h2rain,
 	pt_h2c_explode,
 	pt_h2c_explode2,
@@ -155,6 +157,7 @@ extern vec3_t rider_origin;
 void CL_ClearParticles();
 cparticle_t* CL_AllocParticle();
 void CL_AddParticles();
+void CL_UpdateParticles(float gravityBase);
 
 void CLQ1_ParticleExplosion(const vec3_t origin);
 void CLQ1_ParticleExplosion2(const vec3_t origin, int colorStart, int colorLength);

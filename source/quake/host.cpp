@@ -32,6 +32,8 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
+extern	Cvar*	sv_gravity;
+
 quakeparms_t host_parms;
 
 qboolean	host_initialized;		// true if into command execution
@@ -739,7 +741,10 @@ void _Host_Frame (float time)
 		S_Respatialize(cl.viewentity, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
 		CL_DecayLights ();
 
-		R_UpdateParticles();
+		if (cl.serverTimeFloat != cl.oldtime)
+		{
+			CL_UpdateParticles(sv_gravity->value);
+		}
 	}
 
 	S_Update();

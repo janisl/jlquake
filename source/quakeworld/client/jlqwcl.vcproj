@@ -271,10 +271,6 @@
 				>
 			</File>
 			<File
-				RelativePath="r_part.cpp"
-				>
-			</File>
-			<File
 				RelativePath="sbar.cpp"
 				>
 			</File>
