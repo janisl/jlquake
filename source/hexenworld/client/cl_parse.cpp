@@ -934,7 +934,7 @@ void CL_MuzzleFlash (void)
 	VectorMA (dl->origin, 18, fv, dl->origin);
 	dl->radius = 200 + (rand()&31);
 	dl->minlight = 32;
-	dl->die = cl.serverTimeFloat + 0.1;
+	dl->die = cl.serverTime + 100;
 	dl->color[0] = 0.2;
 	dl->color[1] = 0.1;
 	dl->color[2] = 0.05;

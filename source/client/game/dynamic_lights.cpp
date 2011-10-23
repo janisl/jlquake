@@ -17,3 +17,8 @@
 #include "../client.h"
 
 cdlight_t cl_dlights[MAX_DLIGHTS];
+
+void CL_ClearDlights()
+{
+	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
+}

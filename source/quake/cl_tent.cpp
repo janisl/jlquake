@@ -182,7 +182,7 @@ void CL_ParseTEnt (void)
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.serverTimeFloat + 0.5;
+		dl->die = cl.serverTime + 500;
 		dl->decay = 300;
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
@@ -238,7 +238,7 @@ void CL_ParseTEnt (void)
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.serverTimeFloat + 0.5;
+		dl->die = cl.serverTime + 500;
 		dl->decay = 300;
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;

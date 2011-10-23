@@ -975,7 +975,7 @@ void V_RenderView (void)
 	cdlight_t* l = cl_dlights;
 	for (int i = 0; i < MAX_DLIGHTS; i++, l++)
 	{
-		if (l->die < cl.serverTimeFloat || !l->radius)
+		if (l->die < cl.serverTime || !l->radius)
 		{
 			continue;
 		}

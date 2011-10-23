@@ -123,16 +123,6 @@ DLIGHT MANAGEMENT
 */
 
 /*
-================
-CL_ClearDlights
-================
-*/
-void CL_ClearDlights (void)
-{
-	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
-}
-
-/*
 ===============
 CL_AllocDlight
 

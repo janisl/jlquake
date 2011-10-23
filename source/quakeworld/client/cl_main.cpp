@@ -373,7 +373,7 @@ void CL_ClearState (void)
 	cls.netchan.message.Clear();
 
 // clear other arrays	
-	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
+	CL_ClearDlights();
 	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 }
 

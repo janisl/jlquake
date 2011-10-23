@@ -63,7 +63,7 @@ cdlight_t *CL_AllocDlight (int key)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.serverTimeFloat)
+		if (dl->die < cl.serverTime)
 		{
 			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
@@ -92,7 +92,7 @@ void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 	dl->origin[1] = y;
 	dl->origin[2] = z;
 	dl->radius = radius;
-	dl->die = cl.serverTimeFloat + time;
+	dl->die = cl.serverTime + time * 1000;
 	if (type == 0) {
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
@@ -127,7 +127,7 @@ void CL_DecayLights (void)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.serverTimeFloat || !dl->radius)
+		if (dl->die < cl.serverTime || !dl->radius)
 			continue;
 		
 		dl->radius -= host_frametime*dl->decay;
@@ -534,7 +534,7 @@ void CL_LinkPacketEntities (void)
 			dl = CL_AllocDlight (s1->number);
 			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 200;
-			dl->die = cl.serverTimeFloat + 0.1;
+			dl->die = cl.serverTime + 100;
 		}
 		else if (ModelFlags & EF_GRENADE)
 			CLQ1_TrailParticles (old_origin, ent.origin, 1);

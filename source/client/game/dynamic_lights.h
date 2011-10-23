@@ -20,7 +20,7 @@ struct cdlight_t
 	vec3_t color;
 	vec3_t origin;
 	float radius;
-	float die;			// stop lighting after this time
+	int die;			// stop lighting after this time
 	float decay;		// drop this each second
 	float minlight;		// don't add when contributing less
 	//	Hexen 2 only, but wasn't implemented in GL.
@@ -28,3 +28,5 @@ struct cdlight_t
 };
 
 extern cdlight_t cl_dlights[MAX_DLIGHTS];
+
+void CL_ClearDlights();

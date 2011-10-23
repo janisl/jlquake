@@ -890,7 +890,7 @@ void CL_ParseTEnt (void)
 			dl = CL_AllocDlight (0);
 			VectorCopy (pos, dl->origin);
 			dl->radius = 350;
-			dl->die = cl.serverTimeFloat + 0.5;
+			dl->die = cl.serverTime + 500;
 			dl->decay = 300;
 			dl->color[0] = 0.2;
 			dl->color[1] = 0.1;
@@ -2725,7 +2725,7 @@ void CL_ParseTEnt (void)
 				dlx = CL_AllocDlight (0);
 				VectorCopy (pos,  dlx->origin);
 				dlx->radius = 200 + (rand()&31);
-				dlx->die = cl.serverTimeFloat + 0.001;
+				dlx->die = cl.serverTime + 1;
 
 				VectorCopy(pos, endPos);
 				endPos[0] += cos(travelAng) * cos(travelPitch) * 450;
@@ -2855,7 +2855,7 @@ void CL_ParseTEnt (void)
 				dlx = CL_AllocDlight (0);
 				VectorCopy (pos,  dlx->origin);
 				dlx->radius = 200 + (rand()&31);
-				dlx->die = cl.serverTimeFloat + 0.001;
+				dlx->die = cl.serverTime + 1;
 
 				VectorCopy(pos, endPos);
 				endPos[0] += cos(travelAng) * cos(travelPitch) * 375;
@@ -3211,7 +3211,7 @@ void CL_ParseTEnt (void)
 				dl = CL_AllocDlight (0);
 				VectorCopy (pos, dl->origin);
 				dl->radius = 350;
-				dl->die = cl.serverTimeFloat + 0.5;
+				dl->die = cl.serverTime + 500;
 				dl->decay = 300;
 				dl->color[0] = 0.2;
 				dl->color[1] = 0.1;

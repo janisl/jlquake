@@ -64,7 +64,7 @@ void CL_ClearState (void)
 
 // clear other arrays	
 	Com_Memset(cl_entities, 0, sizeof(cl_entities));
-	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
+	CL_ClearDlights();
 	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 	CL_ClearTEnts();
 	CL_ClearEffects();
@@ -340,7 +340,7 @@ cdlight_t *CL_AllocDlight (int key)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.serverTimeFloat)
+		if (dl->die < cl.serverTime)
 		{
 			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
@@ -372,7 +372,7 @@ void CL_DecayLights (void)
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
-		if (dl->die < cl.serverTimeFloat || !dl->radius)
+		if (dl->die < cl.serverTime || !dl->radius)
 			continue;
 		
 		if (dl->radius > 0)
@@ -597,7 +597,7 @@ void CL_RelinkEntities (void)
 				VectorMA (dl->origin, 18, fv, dl->origin);
 				dl->radius = 200 + (rand()&31);
 				dl->minlight = 32;
-				dl->die = cl.serverTimeFloat + 0.1;
+				dl->die = cl.serverTime + 100;
 			}
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
@@ -608,7 +608,7 @@ void CL_RelinkEntities (void)
 				VectorCopy (ent->origin,  dl->origin);
 				dl->origin[2] += 16;
 				dl->radius = 400 + (rand()&31);
-				dl->die = cl.serverTimeFloat + 0.001;
+				dl->die = cl.serverTime + 1;
 			}
 		}
 		if (ent->effects & EF_DIMLIGHT)
@@ -618,7 +618,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
 				dl->radius = 200 + (rand()&31);
-				dl->die = cl.serverTimeFloat + 0.001;
+				dl->die = cl.serverTime + 1;
 			}
 		}
 		if (ent->effects & EF_DARKLIGHT)
@@ -628,7 +628,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
 				dl->radius = 200.0 + (rand()&31);
-				dl->die = cl.serverTimeFloat + 0.001;
+				dl->die = cl.serverTime + 1;
 				dl->dark = true;
 			}
 		}
@@ -639,7 +639,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
 				dl->radius = 200;
-				dl->die = cl.serverTimeFloat + 0.001;
+				dl->die = cl.serverTime + 1;
 			}
 		}
 
@@ -666,7 +666,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 120 - (rand() % 20);
-				dl->die = cl.serverTimeFloat + 0.01;
+				dl->die = cl.serverTime + 10;
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ACIDBALL)
@@ -677,7 +677,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 120 - (rand() % 20);
-				dl->die = cl.serverTimeFloat + 0.01;
+				dl->die = cl.serverTime + 10;
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
@@ -692,7 +692,7 @@ void CL_RelinkEntities (void)
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = -120 - (rand() % 20);
-				dl->die = cl.serverTimeFloat + 0.05;
+				dl->die = cl.serverTime + 50;
 			}
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
