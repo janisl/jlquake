@@ -252,7 +252,6 @@ extern	Cvar	*cl_timedemo;
 extern	Cvar	*cl_vwep;
 
 extern	q2centity_t	cl_entities[MAX_EDICTS];
-extern	cdlight_t	cl_dlights[MAX_DLIGHTS];
 
 // the cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of
 // entities, so that when a delta compressed message arives from the server

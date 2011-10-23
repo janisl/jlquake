@@ -122,8 +122,6 @@ DLIGHT MANAGEMENT
 ==============================================================
 */
 
-cdlight_t		cl_dlights[MAX_DLIGHTS];
-
 /*
 ================
 CL_ClearDlights

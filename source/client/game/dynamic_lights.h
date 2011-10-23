@@ -26,3 +26,5 @@ struct cdlight_t
 	//	Hexen 2 only, but wasn't implemented in GL.
 	bool dark;			// subtracts light instead of adding
 };
+
+extern cdlight_t cl_dlights[MAX_DLIGHTS];

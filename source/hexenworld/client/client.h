@@ -404,7 +404,6 @@ extern	entity_state_t	cl_baselines[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
 extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
-extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 //=============================================================================
 
