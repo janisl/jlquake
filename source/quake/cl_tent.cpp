@@ -106,7 +106,6 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-	cdlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
 
@@ -179,11 +178,7 @@ void CL_ParseTEnt (void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		CLQ1_ParticleExplosion (pos);
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 350;
-		dl->die = cl.serverTime + 500;
-		dl->decay = 300;
+		CLQ1_ExplosionLight(pos);
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
 		
@@ -235,11 +230,7 @@ void CL_ParseTEnt (void)
 		colorStart = net_message.ReadByte ();
 		colorLength = net_message.ReadByte ();
 		CLQ1_ParticleExplosion2 (pos, colorStart, colorLength);
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 350;
-		dl->die = cl.serverTime + 500;
-		dl->decay = 300;
+		CLQ1_ExplosionLight(pos);
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
 		

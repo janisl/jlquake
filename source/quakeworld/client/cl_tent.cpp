@@ -165,7 +165,6 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-	cdlight_t	*dl;
 	int		rnd;
 	explosion_t	*ex;
 	int		cnt;
@@ -236,14 +235,7 @@ void CL_ParseTEnt (void)
 		CLQ1_ParticleExplosion (pos);
 		
 	// light
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 350;
-		dl->die = cl.serverTime + 500;
-		dl->decay = 300;
-		dl->color[0] = 0.2;
-		dl->color[1] = 0.1;
-		dl->color[2] = 0.05;
+		CLQ1_ExplosionLight(pos);
 	
 	// sound
 		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);

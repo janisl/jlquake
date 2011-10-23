@@ -1112,29 +1112,14 @@ CL_MuzzleFlash
 */
 void CL_MuzzleFlash (void)
 {
-	vec3_t		fv, rv, uv;
-	cdlight_t	*dl;
-	int			i;
-	player_state_t	*pl;
+	int i = net_message.ReadShort();
 
-	i = net_message.ReadShort ();
-
-	if ((unsigned)(i-1) >= MAX_CLIENTS)
+	if ((unsigned)(i - 1) >= MAX_CLIENTS)
+	{
 		return;
-
-	pl = &cl.frames[parsecountmod].playerstate[i-1];
-
-	dl = CL_AllocDlight (i);
-	VectorCopy (pl->origin,  dl->origin);
-	AngleVectors (pl->viewangles, fv, rv, uv);
-		
-	VectorMA (dl->origin, 18, fv, dl->origin);
-	dl->radius = 200 + (rand()&31);
-	dl->minlight = 32;
-	dl->die = cl.serverTime + 100;
-	dl->color[0] = 0.2;
-	dl->color[1] = 0.1;
-	dl->color[2] = 0.05;
+	}
+	player_state_t* pl = &cl.frames[parsecountmod].playerstate[i - 1];
+	CLQ1_MuzzleFlashLight(i, pl->origin, pl->viewangles);
 }
 
 

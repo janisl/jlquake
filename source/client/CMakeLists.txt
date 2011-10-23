@@ -4,6 +4,7 @@ set(CLIENT_FILES
 	cinematic/pcx.cpp
 	cinematic/roq.cpp
 	game/hexen2/particle_effects.cpp
+	game/quake/light_effects.cpp
 	game/quake/particle_effects.cpp
 	game/quake2/particle_effects.cpp
 	game/dynamic_lights.cpp

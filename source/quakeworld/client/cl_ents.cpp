@@ -31,44 +31,6 @@ static struct predicted_player {
 	vec3_t origin;	// predicted origin
 } predicted_players[MAX_CLIENTS];
 
-//============================================================
-
-/*
-===============
-CL_NewDlight
-===============
-*/
-void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
-				   int type)
-{
-	cdlight_t	*dl;
-
-	dl = CL_AllocDlight (key);
-	dl->origin[0] = x;
-	dl->origin[1] = y;
-	dl->origin[2] = z;
-	dl->radius = radius;
-	dl->die = cl.serverTime + time * 1000;
-	if (type == 0) {
-		dl->color[0] = 0.2;
-		dl->color[1] = 0.1;
-		dl->color[2] = 0.05;
-	} else if (type == 1) {
-		dl->color[0] = 0.05;
-		dl->color[1] = 0.05;
-		dl->color[2] = 0.3;
-	} else if (type == 2) {
-		dl->color[0] = 0.5;
-		dl->color[1] = 0.05;
-		dl->color[2] = 0.05;
-	} else if (type == 3) {
-		dl->color[0]=0.5;
-		dl->color[1] = 0.05;
-		dl->color[2] = 0.4;
-	}
-}
-
-
 /*
 =========================================================================
 
@@ -354,7 +316,6 @@ void CL_LinkPacketEntities (void)
 	float				autorotate;
 	int					i;
 	int					pnum;
-	cdlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
@@ -370,15 +331,15 @@ void CL_LinkPacketEntities (void)
 
 		// spawn light flashes, even ones coming from invisible objects
 		if ((s1->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 3);
+			CLQ1_DimLight (s1->number, s1->origin, 3);
 		else if (s1->effects & EF_BLUE)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 1);
+			CLQ1_DimLight (s1->number, s1->origin, 1);
 		else if (s1->effects & EF_RED)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 2);
+			CLQ1_DimLight (s1->number, s1->origin, 2);
 		else if (s1->effects & EF_BRIGHTLIGHT)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
+			CLQ1_BrightLight(s1->number, s1->origin);
 		else if (s1->effects & EF_DIMLIGHT)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 0);
+			CLQ1_DimLight (s1->number, s1->origin, 0);
 
 		// if set to invisible, skip
 		if (!s1->modelindex)
@@ -463,10 +424,7 @@ void CL_LinkPacketEntities (void)
 		if (ModelFlags & EF_ROCKET)
 		{
 			CLQ1_TrailParticles (old_origin, ent.origin, 0);
-			dl = CL_AllocDlight (s1->number);
-			VectorCopy (ent.origin, dl->origin);
-			dl->radius = 200;
-			dl->die = cl.serverTime + 100;
+			CLQ1_RocketLight(s1->number, ent.origin);
 		}
 		else if (ModelFlags & EF_GRENADE)
 			CLQ1_TrailParticles (old_origin, ent.origin, 1);
@@ -743,15 +701,15 @@ void CL_LinkPlayers (void)
 
 		// spawn light flashes, even ones coming from invisible objects
 		if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
+			CLQ1_DimLight (j, state->origin, 3);
 		else if (state->effects & EF_BLUE)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 1);
+			CLQ1_DimLight (j, state->origin, 1);
 		else if (state->effects & EF_RED)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 2);
+			CLQ1_DimLight (j, state->origin, 2);
 		else if (state->effects & EF_BRIGHTLIGHT)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
+			CLQ1_BrightLight(j, state->origin);
 		else if (state->effects & EF_DIMLIGHT)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 0);
+			CLQ1_DimLight (j, state->origin, 0);
 
 		// the player object never gets added
 		if (j == cl.playernum)

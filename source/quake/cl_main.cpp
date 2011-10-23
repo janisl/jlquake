@@ -323,7 +323,6 @@ void CL_RelinkEntities (void)
 	vec3_t		delta;
 	float		bobjrotate;
 	vec3_t		oldorg;
-	cdlight_t	*dl;
 
 // determine partial update time	
 	frac = CL_LerpPoint ();
@@ -411,32 +410,15 @@ void CL_RelinkEntities (void)
 			CLQ1_BrightFieldParticles(ent->origin);
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
-			vec3_t		fv, rv, uv;
-
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin,  dl->origin);
-			dl->origin[2] += 16;
-			AngleVectors (ent->angles, fv, rv, uv);
-			 
-			VectorMA (dl->origin, 18, fv, dl->origin);
-			dl->radius = 200 + (rand()&31);
-			dl->minlight = 32;
-			dl->die = cl.serverTime + 100;
+			CLQ1_MuzzleFlashLight(i, ent->origin, ent->angles);
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
-		{			
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin,  dl->origin);
-			dl->origin[2] += 16;
-			dl->radius = 400 + (rand()&31);
-			dl->die = cl.serverTime + 1;
+		{
+			CLQ1_BrightLight(i, ent->origin);
 		}
 		if (ent->effects & EF_DIMLIGHT)
 		{			
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin,  dl->origin);
-			dl->radius = 200 + (rand()&31);
-			dl->die = cl.serverTime + 10;
+			CLQ1_DimLight(i, ent->origin, 0);
 		}
 
 		if (ModelFlags & EF_GIB)
@@ -450,10 +432,7 @@ void CL_RelinkEntities (void)
 		else if (ModelFlags & EF_ROCKET)
 		{
 			CLQ1_TrailParticles (oldorg, ent->origin, 0);
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin, dl->origin);
-			dl->radius = 200;
-			dl->die = cl.serverTime + 10;
+			CLQ1_RocketLight(i, ent->origin);
 		}
 		else if (ModelFlags & EF_GRENADE)
 			CLQ1_TrailParticles (oldorg, ent->origin, 1);

@@ -33,3 +33,9 @@ void CL_ClearDlights();
 cdlight_t* CL_AllocDlight(int key);
 void CL_RunDLights();
 void CL_AddDLights();
+
+void CLQ1_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles);
+void CLQ1_BrightLight(int key, vec3_t origin);
+void CLQ1_DimLight(int key, vec3_t origin, int type);
+void CLQ1_RocketLight(int key, vec3_t origin);
+void CLQ1_ExplosionLight(vec3_t pos);
