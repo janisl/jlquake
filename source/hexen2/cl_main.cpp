@@ -330,18 +330,9 @@ void CL_DecayLights (void)
 		if (dl->die < cl.serverTime || !dl->radius)
 			continue;
 		
-		if (dl->radius > 0)
-		{
-			dl->radius -= time*dl->decay;
-			if (dl->radius < 0)
-				dl->radius = 0;
-		}
-		else
-		{
-			dl->radius += time*dl->decay;
-			if (dl->radius > 0)
-				dl->radius = 0;
-		}
+		dl->radius -= time*dl->decay;
+		if (dl->radius < 0)
+			dl->radius = 0;
 	}
 }
 
@@ -646,7 +637,7 @@ void CL_RelinkEntities (void)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
-				dl->radius = -120 - (rand() % 20);
+				dl->radius = 120 + (rand() % 20);
 				dl->die = cl.serverTime + 50;
 			}
 		}

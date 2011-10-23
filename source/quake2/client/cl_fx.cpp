@@ -124,24 +124,6 @@ DLIGHT MANAGEMENT
 
 /*
 ===============
-CL_NewDlight
-===============
-*/
-void CL_NewDlight (int key, float x, float y, float z, float radius, float time)
-{
-	cdlight_t	*dl;
-
-	dl = CL_AllocDlight (key);
-	dl->origin[0] = x;
-	dl->origin[1] = y;
-	dl->origin[2] = z;
-	dl->radius = radius;
-	dl->die = cl.serverTime + time;
-}
-
-
-/*
-===============
 CL_RunDLights
 
 ===============

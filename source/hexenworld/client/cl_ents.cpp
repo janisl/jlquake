@@ -47,42 +47,6 @@ const char *parsedelta_strings[] =
 
 /*
 ===============
-CL_NewDlight
-===============
-*/
-void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
-				   int type)
-{
-	cdlight_t	*dl;
-
-	dl = CL_AllocDlight (key);
-	dl->origin[0] = x;
-	dl->origin[1] = y;
-	dl->origin[2] = z;
-	dl->radius = radius;
-	dl->die = cl.serverTime + time * 1000;
-	if (type == 0) {
-		dl->color[0] = 0.2;
-		dl->color[1] = 0.1;
-		dl->color[2] = 0.05;
-	} else if (type == 1) {
-		dl->color[0] = 0.05;
-		dl->color[1] = 0.05;
-		dl->color[2] = 0.3;
-	} else if (type == 2) {
-		dl->color[0] = 0.5;
-		dl->color[1] = 0.05;
-		dl->color[2] = 0.05;
-	} else if (type == 3) {
-		dl->color[0]=0.5;
-		dl->color[1] = 0.05;
-		dl->color[2] = 0.4;
-	}
-}
-
-
-/*
-===============
 CL_DecayLights
 
 ===============
@@ -98,18 +62,9 @@ void CL_DecayLights (void)
 		if (dl->die < cl.serverTime || !dl->radius)
 			continue;
 		
-		if (dl->radius > 0)
-		{
-			dl->radius -= host_frametime*dl->decay;
-			if (dl->radius < 0)
-				dl->radius = 0;
-		}
-		else
-		{
-			dl->radius += host_frametime*dl->decay;
-			if (dl->radius > 0)
-				dl->radius = 0;
-		}
+		dl->radius -= host_frametime*dl->decay;
+		if (dl->radius < 0)
+			dl->radius = 0;
 	}
 }
 
@@ -711,7 +666,7 @@ void CL_LinkPacketEntities (void)
 			CLH2_TrailParticles (old_origin, ent.origin, rt_spit);
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent.origin, dl->origin);
-			dl->radius = -120 - (rand() % 20);
+			dl->radius = 120 + (rand() % 20);
 			dl->die = cl.serverTime + 50;
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
