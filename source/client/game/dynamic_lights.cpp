@@ -57,3 +57,27 @@ cdlight_t* CL_AllocDlight(int key)
 	dl->key = key;
 	return dl;
 }
+
+void CL_RunDLights()
+{
+	float time = cls_common->frametime * 0.001;
+
+	cdlight_t* dl = cl_dlights;
+	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
+	{
+		if (!dl->radius)
+		{
+			continue;
+		}
+		if (dl->die < cl_common->serverTime)
+		{
+			dl->radius = 0;
+			continue;
+		}
+		dl->radius -= time * dl->decay;
+		if (dl->radius < 0)
+		{
+			dl->radius = 0;
+		}
+	}
+}

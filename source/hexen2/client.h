@@ -258,8 +258,6 @@ extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 //
 // cl_main
 //
-void	CL_DecayLights (void);
-
 void CL_Init (void);
 
 void CL_EstablishConnection (const char *host);

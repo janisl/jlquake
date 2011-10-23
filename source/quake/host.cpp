@@ -688,7 +688,7 @@ void _Host_Frame (float time)
 	if (cls.signon == SIGNONS)
 	{
 		S_Respatialize(cl.viewentity, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
-		CL_DecayLights ();
+		CL_RunDLights ();
 
 		if (cl.serverTimeFloat != cl.oldtime)
 		{

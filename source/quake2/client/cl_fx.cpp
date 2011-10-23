@@ -123,34 +123,6 @@ DLIGHT MANAGEMENT
 */
 
 /*
-===============
-CL_RunDLights
-
-===============
-*/
-void CL_RunDLights (void)
-{
-	int			i;
-	cdlight_t	*dl;
-
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-	{
-		if (!dl->radius)
-			continue;
-		
-		if (dl->die < cl.serverTime)
-		{
-			dl->radius = 0;
-			return;
-		}
-		dl->radius -= cls.frametimeFloat*dl->decay;
-		if (dl->radius < 0)
-			dl->radius = 0;
-	}
-}
-
-/*
 ==============
 CL_ParseMuzzleFlash
 ==============

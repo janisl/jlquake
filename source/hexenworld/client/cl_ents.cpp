@@ -43,32 +43,6 @@ const char *parsedelta_strings[] =
 	"U_ABSLIGHT"//19
 };
 
-//============================================================
-
-/*
-===============
-CL_DecayLights
-
-===============
-*/
-void CL_DecayLights (void)
-{
-	int			i;
-	cdlight_t	*dl;
-
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-	{
-		if (dl->die < cl.serverTime || !dl->radius)
-			continue;
-		
-		dl->radius -= host_frametime*dl->decay;
-		if (dl->radius < 0)
-			dl->radius = 0;
-	}
-}
-
-
 /*
 =========================================================================
 

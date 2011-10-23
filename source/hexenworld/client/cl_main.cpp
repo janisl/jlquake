@@ -1251,7 +1251,7 @@ void Host_Frame (float time)
 	if (cls.state == ca_active)
 	{
 		S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
-		CL_DecayLights ();
+		CL_RunDLights ();
 
 		CL_UpdateParticles(movevars.gravity);
 	}

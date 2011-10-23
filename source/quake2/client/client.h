@@ -300,7 +300,6 @@ void SmokeAndFlash(vec3_t origin);
 void CL_SetLightstyle (int i);
 
 void CL_RunParticles (void);
-void CL_RunDLights (void);
 void CL_RunLightStyles (void);
 
 void CL_CalcViewValues();

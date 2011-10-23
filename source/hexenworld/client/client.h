@@ -419,8 +419,6 @@ extern float	server_version;	// version of server we connected to
 //
 // cl_main
 //
-void	CL_DecayLights (void);
-
 void CL_Init (void);
 
 void CL_Disconnect (void);

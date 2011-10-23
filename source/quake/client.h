@@ -256,8 +256,6 @@ extern	beam_t			cl_beams[MAX_BEAMS];
 //
 // cl_main
 //
-void	CL_DecayLights (void);
-
 void CL_Init (void);
 
 void CL_EstablishConnection (const char *host);

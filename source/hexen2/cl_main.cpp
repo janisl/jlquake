@@ -312,33 +312,6 @@ void CL_PrintEntities_f (void)
 
 /*
 ===============
-CL_DecayLights
-
-===============
-*/
-void CL_DecayLights (void)
-{
-	int			i;
-	cdlight_t	*dl;
-	float		time;
-	
-	time = cl.serverTimeFloat - cl.oldtime;
-
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-	{
-		if (dl->die < cl.serverTime || !dl->radius)
-			continue;
-		
-		dl->radius -= time*dl->decay;
-		if (dl->radius < 0)
-			dl->radius = 0;
-	}
-}
-
-
-/*
-===============
 CL_LerpPoint
 
 Determines the fraction between the last two messages that the objects

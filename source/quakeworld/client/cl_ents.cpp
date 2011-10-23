@@ -70,30 +70,6 @@ void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 
 
 /*
-===============
-CL_DecayLights
-
-===============
-*/
-void CL_DecayLights (void)
-{
-	int			i;
-	cdlight_t	*dl;
-
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-	{
-		if (dl->die < cl.serverTime || !dl->radius)
-			continue;
-		
-		dl->radius -= host_frametime*dl->decay;
-		if (dl->radius < 0)
-			dl->radius = 0;
-	}
-}
-
-
-/*
 =========================================================================
 
 PACKET ENTITY PARSING / LINKING
