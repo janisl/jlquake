@@ -28,6 +28,7 @@
 #include "hexen2clientdefs.h"
 #include "quake2clientdefs.h"
 #include "game/particles.h"
+#include "game/dynamic_lights.h"
 
 extern Cvar*		cl_inGameVideo;
 

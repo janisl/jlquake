@@ -52,17 +52,6 @@ typedef struct
 
 #define	SIGNONS		4			// signon messages to receive before connected
 
-typedef struct
-{
-	vec3_t	origin;
-	float	radius;
-	float	die;				// stop lighting after this time
-	float	decay;				// drop this each second
-	float	minlight;			// don't add when contributing less
-	int		key;
-	qboolean	dark;			// subtracts light instead of adding
-} cdlight_t;
-
 #define	MAX_EFRAGS		640
 
 #define	MAX_MAPSTRING	2048

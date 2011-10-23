@@ -97,22 +97,18 @@ void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
 		dl->color[2] = 0.05;
-		dl->color[3] = 0.7;
 	} else if (type == 1) {
 		dl->color[0] = 0.05;
 		dl->color[1] = 0.05;
 		dl->color[2] = 0.3;
-		dl->color[3] = 0.7;
 	} else if (type == 2) {
 		dl->color[0] = 0.5;
 		dl->color[1] = 0.05;
 		dl->color[2] = 0.05;
-		dl->color[3] = 0.7;
 	} else if (type == 3) {
 		dl->color[0]=0.5;
 		dl->color[1] = 0.05;
 		dl->color[2] = 0.4;
-		dl->color[3] = 0.7;
 	}
 }
 

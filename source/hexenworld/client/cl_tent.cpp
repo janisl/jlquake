@@ -895,7 +895,6 @@ void CL_ParseTEnt (void)
 			dl->color[0] = 0.2;
 			dl->color[1] = 0.1;
 			dl->color[2] = 0.05;
-			dl->color[3] = 0.7;
 		
 		// sound
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
@@ -3217,7 +3216,6 @@ void CL_ParseTEnt (void)
 				dl->color[0] = 0.2;
 				dl->color[1] = 0.1;
 				dl->color[2] = 0.05;
-				dl->color[3] = 0.7;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * speed;
 				vel[1] = sin(travelAng) * cos(travelPitch) * speed;

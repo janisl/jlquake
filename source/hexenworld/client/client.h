@@ -93,18 +93,6 @@ typedef struct
 //
 typedef struct
 {
-	int		key;				// so entities can reuse same entry
-	vec3_t	origin;
-	float	radius;
-	float	die;				// stop lighting after this time
-	float	decay;				// drop this each second
-	float	minlight;			// don't add when contributing less
-	float   color[4];
-	qboolean	dark;			// subtracts light instead of adding
-} cdlight_t;
-
-typedef struct
-{
 	int		length;
 	char	map[MAX_STYLESTRING];
 } clightstyle_t;

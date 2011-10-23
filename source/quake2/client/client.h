@@ -251,17 +251,6 @@ extern	Cvar	*cl_timedemo;
 
 extern	Cvar	*cl_vwep;
 
-typedef struct
-{
-	int		key;				// so entities can reuse same entry
-	vec3_t	color;
-	vec3_t	origin;
-	float	radius;
-	float	die;				// stop lighting after this time
-	float	decay;				// drop this each second
-	float	minlight;			// don't add when contributing less
-} cdlight_t;
-
 extern	q2centity_t	cl_entities[MAX_EDICTS];
 extern	cdlight_t	cl_dlights[MAX_DLIGHTS];
 

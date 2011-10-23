@@ -1445,6 +1445,30 @@
 			Name="game"
 			>
 			<File
+				RelativePath=".\game\dynamic_lights.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\game\"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\game\"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\game\dynamic_lights.h"
+				>
+			</File>
+			<File
 				RelativePath=".\game\particles.cpp"
 				>
 				<FileConfiguration
