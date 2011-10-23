@@ -847,15 +847,7 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 	}
 	CL_AddViewModel();
 
-	cdlight_t* l = cl_dlights;
-	for (int i = 0; i < MAX_DLIGHTS; i++, l++)
-	{
-		if (l->die < cl.serverTime || !l->radius)
-		{
-			continue;
-		}
-		R_AddLightToScene(l->origin, l->radius, 1, 1, 1);
-	}
+	CL_AddDLights();
 
 	V_RenderScene ();
 }

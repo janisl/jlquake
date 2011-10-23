@@ -81,3 +81,16 @@ void CL_RunDLights()
 		}
 	}
 }
+
+void CL_AddDLights()
+{
+	cdlight_t* dl = cl_dlights;
+	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
+	{
+		if (!dl->radius)
+		{
+			continue;
+		}
+		R_AddLightToScene(dl->origin, dl->radius, dl->color[0], dl->color[1], dl->color[2]);
+	}
+}

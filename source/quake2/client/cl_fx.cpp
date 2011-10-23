@@ -694,31 +694,6 @@ void CL_ParseMuzzleFlash2 (void)
 	}
 }
 
-
-/*
-===============
-CL_AddDLights
-
-===============
-*/
-void CL_AddDLights (void)
-{
-	int			i;
-	cdlight_t	*dl;
-
-	dl = cl_dlights;
-
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-	{
-		if (!dl->radius)
-			continue;
-		R_AddLightToScene (dl->origin, dl->radius,
-			dl->color[0], dl->color[1], dl->color[2]);
-	}
-}
-
-
-
 /*
 ==============================================================
 

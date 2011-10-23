@@ -304,7 +304,6 @@ void CL_RunLightStyles (void);
 
 void CL_CalcViewValues();
 void CL_AddPacketEntities(frame_t *frame);
-void CL_AddDLights (void);
 void CL_AddTEnts (void);
 void CL_AddLightStyles (void);
 
