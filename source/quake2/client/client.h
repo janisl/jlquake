@@ -420,7 +420,6 @@ void CL_CheckPredictionError (void);
 //
 // cl_fx.c
 //
-cdlight_t *CL_AllocDlight (int key);
 void CL_FlyEffect (q2centity_t *ent, vec3_t origin);
 void CL_EntityEvent (q2entity_state_t *ent);
 // RAFAEL

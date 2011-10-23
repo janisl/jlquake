@@ -30,3 +30,4 @@ struct cdlight_t
 extern cdlight_t cl_dlights[MAX_DLIGHTS];
 
 void CL_ClearDlights();
+cdlight_t* CL_AllocDlight(int key);

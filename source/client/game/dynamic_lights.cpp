@@ -22,3 +22,38 @@ void CL_ClearDlights()
 {
 	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
 }
+
+cdlight_t* CL_AllocDlight(int key)
+{
+	// first look for an exact key match
+	if (key)
+	{
+		cdlight_t* dl = cl_dlights;
+		for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
+		{
+			if (dl->key == key)
+			{
+				Com_Memset(dl, 0, sizeof(*dl));
+				dl->key = key;
+				return dl;
+			}
+		}
+	}
+
+	// then look for anything else
+	cdlight_t* dl = cl_dlights;
+	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
+	{
+		if (dl->die < cl_common->serverTime)
+		{
+			Com_Memset(dl, 0, sizeof(*dl));
+			dl->key = key;
+			return dl;
+		}
+	}
+
+	dl = &cl_dlights[0];
+	Com_Memset(dl, 0, sizeof(*dl));
+	dl->key = key;
+	return dl;
+}

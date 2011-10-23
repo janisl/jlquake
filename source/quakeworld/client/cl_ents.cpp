@@ -35,50 +35,6 @@ static struct predicted_player {
 
 /*
 ===============
-CL_AllocDlight
-
-===============
-*/
-cdlight_t *CL_AllocDlight (int key)
-{
-	int		i;
-	cdlight_t	*dl;
-
-// first look for an exact key match
-	if (key)
-	{
-		dl = cl_dlights;
-		for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-		{
-			if (dl->key == key)
-			{
-				Com_Memset(dl, 0, sizeof(*dl));
-				dl->key = key;
-				return dl;
-			}
-		}
-	}
-
-// then look for anything else
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
-	{
-		if (dl->die < cl.serverTime)
-		{
-			Com_Memset(dl, 0, sizeof(*dl));
-			dl->key = key;
-			return dl;
-		}
-	}
-
-	dl = &cl_dlights[0];
-	Com_Memset(dl, 0, sizeof(*dl));
-	dl->key = key;
-	return dl;
-}
-
-/*
-===============
 CL_NewDlight
 ===============
 */
