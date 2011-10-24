@@ -7,6 +7,7 @@ set(CLIENT_FILES
 	game/hexen2/particle_effects.cpp
 	game/quake/light_effects.cpp
 	game/quake/particle_effects.cpp
+	game/quake2/light_effects.cpp
 	game/quake2/particle_effects.cpp
 	game/dynamic_lights.cpp
 	game/particles.cpp

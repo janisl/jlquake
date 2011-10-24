@@ -280,13 +280,6 @@ void CL_AddNetgraph (void);
 void CL_ClearEffects (void);
 void CL_ClearTEnts (void);
 
-// ========
-// PGM
-void CL_Flashlight (int ent, vec3_t pos);
-void CL_ColorFlash (vec3_t pos, int ent, int intensity, float r, float g, float b);
-// PGM
-// ========
-
 int CL_ParseEntityBits (unsigned *bits);
 void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits);
 void CL_ParseFrame (void);

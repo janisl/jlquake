@@ -221,10 +221,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\cl_newfx.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\cl_parse.cpp"
 				>
 			</File>
