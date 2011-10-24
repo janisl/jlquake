@@ -14,54 +14,22 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "progsvm.h"
 
-// MACROS ------------------------------------------------------------------
+dprograms_t* progs;
+dfunction_t* pr_functions;
+char* pr_strings;
+ddef_t* pr_fielddefs;
+ddef_t* pr_globaldefs;
+dstatement_t* pr_statements;
+float* pr_globals;			// same as pr_global_struct
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-dprograms_t		*progs;
-dfunction_t		*pr_functions;
-char			*pr_strings;
-ddef_t			*pr_fielddefs;
-ddef_t			*pr_globaldefs;
-dstatement_t	*pr_statements;
-float			*pr_globals;			// same as pr_global_struct
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-static Array<const char*>	pr_strtbl;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	PR_ClearStringMap
-//
-//==========================================================================
+static Array<const char*> pr_strtbl;
 
 void PR_ClearStringMap()
 {
 	pr_strtbl.Clear();
 }
-
-//==========================================================================
-//
-//	PR_SetString
-//
-//==========================================================================
 
 int PR_SetString(const char* s)
 {
@@ -79,12 +47,6 @@ int PR_SetString(const char* s)
 	}
 	return (int)(s - pr_strings);
 }
-
-//==========================================================================
-//
-//	PR_SetString
-//
-//==========================================================================
 
 const char* PR_GetString(int Num)
 {
