@@ -408,7 +408,6 @@ void CL_RelinkEntities (void)
 	vec3_t		delta;
 	//float		bobjrotate;
 	vec3_t		oldorg;
-	cdlight_t	*dl;
 	int c;
 
 	c = 0;
@@ -504,61 +503,37 @@ void CL_RelinkEntities (void)
 			CLH2_DarkFieldParticles (ent->origin);
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
-			vec3_t		fv, rv, uv;
-
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->origin[2] += 16;
-				AngleVectors (ent->angles, fv, rv, uv);
-				 
-				VectorMA (dl->origin, 18, fv, dl->origin);
-				dl->radius = 200 + (rand()&31);
-				dl->minlight = 32;
-				dl->die = cl.serverTime + 100;
+				CLH2_MuzzleFlashLight(i, ent->origin, ent->angles, true);
 			}
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->origin[2] += 16;
-				dl->radius = 400 + (rand()&31);
-				dl->die = cl.serverTime + 1;
+				CLH2_BrightLight(i, ent->origin);
 			}
 		}
 		if (ent->effects & EF_DIMLIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->radius = 200 + (rand()&31);
-				dl->die = cl.serverTime + 1;
+				CLH2_DimLight(i, ent->origin);
 			}
 		}
 		if (ent->effects & EF_DARKLIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->radius = 200.0 + (rand()&31);
-				dl->die = cl.serverTime + 1;
-				dl->dark = true;
+				CLH2_DarkLight(i, ent->origin);
 			}
 		}
 		if (ent->effects & EF_LIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->radius = 200;
-				dl->die = cl.serverTime + 1;
+				CLH2_Light(i, ent->origin);
 			}
 		}
 
@@ -582,10 +557,7 @@ void CL_RelinkEntities (void)
 			CLH2_TrailParticles (oldorg, ent->origin, rt_fireball);
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin, dl->origin);
-				dl->radius = 120 - (rand() % 20);
-				dl->die = cl.serverTime + 10;
+				CLH2_FireBallLight(i, ent->origin);
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ACIDBALL)
@@ -593,10 +565,7 @@ void CL_RelinkEntities (void)
 			CLH2_TrailParticles (oldorg, ent->origin, rt_acidball);
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin, dl->origin);
-				dl->radius = 120 - (rand() % 20);
-				dl->die = cl.serverTime + 10;
+				CLH2_FireBallLight(i, ent->origin);
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
@@ -608,10 +577,7 @@ void CL_RelinkEntities (void)
 			CLH2_TrailParticles (oldorg, ent->origin, rt_spit);
 			if (cl_prettylights->value)
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin, dl->origin);
-				dl->radius = 120 + (rand() % 20);
-				dl->die = cl.serverTime + 50;
+				CLH2_SpitLight(i, ent->origin);
 			}
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)

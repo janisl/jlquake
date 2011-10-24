@@ -39,3 +39,13 @@ void CLQ1_BrightLight(int key, vec3_t origin);
 void CLQ1_DimLight(int key, vec3_t origin, int type);
 void CLQ1_RocketLight(int key, vec3_t origin);
 void CLQ1_ExplosionLight(vec3_t pos);
+
+void CLH2_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles, bool adjustZ);
+void CLH2_BrightLight(int key, vec3_t origin);
+void CLH2_DimLight(int key, vec3_t origin);
+void CLH2_DarkLight(int key, vec3_t origin);
+void CLH2_Light(int key, vec3_t origin);
+void CLH2_FireBallLight(int key, vec3_t origin);
+void CLH2_SpitLight(int key, vec3_t origin);
+void CLH2_BrightFieldLight(int key, vec3_t origin);
+void CLH2_ExplosionLight(vec3_t pos);

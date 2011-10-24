@@ -120,7 +120,6 @@ void CL_ParseTEnt(void)
 {
 	int type;
 	vec3_t pos;
-	cdlight_t *dl;
 	int rnd;
 
 	type = net_message.ReadByte();
@@ -131,7 +130,6 @@ void CL_ParseTEnt(void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		CLH2_RunParticleEffect (pos, vec3_origin, 30);
-//		S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 		break;
 		
 	case TE_KNIGHTSPIKE:			// spike hitting wall
@@ -139,7 +137,6 @@ void CL_ParseTEnt(void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		CLH2_RunParticleEffect (pos, vec3_origin, 20);
-//		S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 		break;
 		
 	case TE_SPIKE:			// spike hitting wall
@@ -192,13 +189,6 @@ void CL_ParseTEnt(void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		CLH2_ParticleExplosion (pos);
-		break;
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 350;
-		dl->die = cl.serverTime + 500;
-		dl->decay = 300;
-		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
 	case TE_LIGHTNING1:
 	case TE_LIGHTNING2:

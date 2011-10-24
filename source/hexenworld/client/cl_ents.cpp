@@ -360,65 +360,34 @@ void CL_ParsePacketEntities (qboolean delta)
 
 void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec3_t angleAdd, vec3_t oldOrg)
 {
-	cdlight_t			*dl;
 	int					rotateSet = 0;
 
 	// Effect Flags
 	if (effects & EF_BRIGHTFIELD)
-	{	// show that this guy is cool or something...
-		dl = CL_AllocDlight (number);
-		//dl->color[0] = .5 + cos(cl.time*7)*.5;
-		//dl->color[1] = .5 + cos(cl.time*7 + M_PI*2/3)*.5;
-		//dl->color[2] = .5 + cos(cl.time*7 + M_PI*4/3)*.5;
-		//dl->color[3] = 1.0;
-		VectorCopy (ent->origin,  dl->origin);
-		dl->radius = 200 + cos(cl.serverTimeFloat*5)*100;
-		dl->die = cl.serverTime + 1;
-
-		CLHW_BrightFieldParticles (ent->origin);
+	{
+		// show that this guy is cool or something...
+		CLH2_BrightFieldLight(number, ent->origin);
+		CLHW_BrightFieldParticles(ent->origin);
 	}
 	if (effects & EF_DARKFIELD)
-		CLH2_DarkFieldParticles (ent->origin);
+	{
+		CLH2_DarkFieldParticles(ent->origin);
+	}
 	if (effects & EF_MUZZLEFLASH)
 	{
-		dl = CL_AllocDlight (number);
-		VectorCopy (ent->origin,  dl->origin);
-		dl->origin[2] += 16;
-		 
-		VectorMA(dl->origin, 18, ent->axis[0], dl->origin);
-		dl->radius = 200 + (rand()&31);
-		dl->minlight = 32;
-		dl->die = cl.serverTime + 100;
+		CLH2_MuzzleFlashLight(number, ent->origin, angles, true);
 	}
 	if (effects & EF_BRIGHTLIGHT)
 	{			
-		dl = CL_AllocDlight (number);
-		VectorCopy (ent->origin,  dl->origin);
-		dl->origin[2] += 16;
-		dl->radius = 400 + (rand()&31);
-		dl->die = cl.serverTime + 1;
+		CLH2_BrightLight(number, ent->origin);
 	}
 	if (effects & EF_DIMLIGHT)
-	{			
-		dl = CL_AllocDlight (number);
-		VectorCopy (ent->origin,  dl->origin);
-		dl->radius = 200 + (rand()&31);
-		dl->die = cl.serverTime + 1;
+	{
+		CLH2_DimLight(number, ent->origin);
 	}
-/*	if (effects & EF_DARKLIGHT)
-	{			
-		dl = CL_AllocDlight (number);
-		VectorCopy (ent->origin,  dl->origin);
-		dl->radius = 200.0 + (rand()&31);
-		dl->die = cl.time + 0.001;
-//rjr		dl->dark = true;
-	}*/
 	if (effects & EF_LIGHT)
-	{			
-		dl = CL_AllocDlight (number);
-		VectorCopy (ent->origin,  dl->origin);
-		dl->radius = 200;
-		dl->die = cl.serverTime + 1;
+	{
+		CLH2_Light(number, ent->origin);
 	}
 
 
@@ -497,7 +466,6 @@ void CL_LinkPacketEntities (void)
 	float				autorotate;
 	int					i;
 	int					pnum;
-	cdlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
@@ -618,18 +586,11 @@ void CL_LinkPacketEntities (void)
 		else if (ModelFlags & H2MDLEF_ROCKET)
 		{
 			CLH2_TrailParticles (old_origin, ent.origin, rt_rocket_trail);
-/*			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin, dl->origin);
-			dl->radius = 200;
-			dl->die = cl.time + 0.01;*/
 		}
 		else if (ModelFlags & H2MDLEF_FIREBALL)
 		{
 			CLH2_TrailParticles (old_origin, ent.origin, rt_fireball);
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent.origin, dl->origin);
-			dl->radius = 120 - (rand() % 20);
-			dl->die = cl.serverTime + 10;
+			CLH2_FireBallLight(i, ent.origin);
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
 		{
@@ -638,10 +599,7 @@ void CL_LinkPacketEntities (void)
 		else if (ModelFlags & H2MDLEF_SPIT)
 		{
 			CLH2_TrailParticles (old_origin, ent.origin, rt_spit);
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent.origin, dl->origin);
-			dl->radius = 120 + (rand() % 20);
-			dl->die = cl.serverTime + 50;
+			CLH2_SpitLight(i, ent.origin);
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
 		{
@@ -649,7 +607,6 @@ void CL_LinkPacketEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_GRENADE)
 		{
-//			CLH2_RunParticleEffect4(old_origin,3,284,pt_h2slowgrav,3);
 			CLH2_TrailParticles (old_origin, ent.origin, rt_grensmoke);
 		}
 		else if (ModelFlags & H2MDLEF_TRACER3)

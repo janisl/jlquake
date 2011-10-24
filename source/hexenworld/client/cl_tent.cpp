@@ -796,7 +796,6 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos, vel, movedir, offset;
-	cdlight_t	*dl;
 	int		rnd;
 	explosion_t	*ex;
 	int		cnt, cnt2, i, chType;
@@ -812,7 +811,6 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			CLH2_RunParticleEffect (pos, vec3_origin, 30);
-//			S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 			break;
 			
 		case TE_KNIGHTSPIKE:			// spike hitting wall
@@ -820,7 +818,6 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			CLH2_RunParticleEffect (pos, vec3_origin, 20);
-//			S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 			break;
 			
 		case TE_SPIKE:			// spike hitting wall
@@ -887,14 +884,7 @@ void CL_ParseTEnt (void)
 			CLH2_ParticleExplosion (pos);
 			
 		// light
-			dl = CL_AllocDlight (0);
-			VectorCopy (pos, dl->origin);
-			dl->radius = 350;
-			dl->die = cl.serverTime + 500;
-			dl->decay = 300;
-			dl->color[0] = 0.2;
-			dl->color[1] = 0.1;
-			dl->color[2] = 0.05;
+			CLH2_ExplosionLight(pos);
 		
 		// sound
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
@@ -2712,7 +2702,6 @@ void CL_ParseTEnt (void)
 			{
 				float travelAng, travelPitch;
 				float fireCounts;
-				cdlight_t			*dlx;
 				vec3_t				endPos, curPos, posAdd;
 
 				pos[0] = net_message.ReadCoord();
@@ -2722,10 +2711,7 @@ void CL_ParseTEnt (void)
 				travelPitch = net_message.ReadByte()*6.28/256.0;
 				fireCounts = net_message.ReadByte();
 
-				dlx = CL_AllocDlight (0);
-				VectorCopy (pos,  dlx->origin);
-				dlx->radius = 200 + (rand()&31);
-				dlx->die = cl.serverTime + 1;
+				CLH2_DimLight(0, pos);
 
 				VectorCopy(pos, endPos);
 				endPos[0] += cos(travelAng) * cos(travelPitch) * 450;
@@ -2832,7 +2818,6 @@ void CL_ParseTEnt (void)
 			{
 				float travelAng, travelPitch;
 				float fireCounts;
-				cdlight_t			*dlx;
 				vec3_t				endPos, curPos, posAdd;
 				vec3_t				angles, forward, right, up;
 				float				cVal, sVal;
@@ -2852,10 +2837,7 @@ void CL_ParseTEnt (void)
 
 				AngleVectors(angles, forward, right, up);
 
-				dlx = CL_AllocDlight (0);
-				VectorCopy (pos,  dlx->origin);
-				dlx->radius = 200 + (rand()&31);
-				dlx->die = cl.serverTime + 1;
+				CLH2_DimLight(0, pos);
 
 				VectorCopy(pos, endPos);
 				endPos[0] += cos(travelAng) * cos(travelPitch) * 375;
@@ -3208,14 +3190,7 @@ void CL_ParseTEnt (void)
 				trailLen = net_message.ReadByte() * .01;
 
 				// light
-				dl = CL_AllocDlight (0);
-				VectorCopy (pos, dl->origin);
-				dl->radius = 350;
-				dl->die = cl.serverTime + 500;
-				dl->decay = 300;
-				dl->color[0] = 0.2;
-				dl->color[1] = 0.1;
-				dl->color[2] = 0.05;
+				CLH2_ExplosionLight(pos);
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * speed;
 				vel[1] = sin(travelAng) * cos(travelPitch) * speed;
