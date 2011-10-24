@@ -112,10 +112,10 @@ void CLQ1_RocketLight(int key, vec3_t origin)
 	}
 }
 
-void CLQ1_ExplosionLight(vec3_t pos)
+void CLQ1_ExplosionLight(vec3_t origin)
 {
 	cdlight_t* dl = CL_AllocDlight(0);
-	VectorCopy(pos, dl->origin);
+	VectorCopy(origin, dl->origin);
 	dl->radius = 350;
 	dl->die = cl_common->serverTime + 500;
 	dl->decay = 300;

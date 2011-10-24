@@ -96,10 +96,10 @@ void CLH2_BrightFieldLight(int key, vec3_t origin)
 	dl->die = cl_common->serverTime + 1;
 }
 
-void CLH2_ExplosionLight(vec3_t pos)
+void CLH2_ExplosionLight(vec3_t origin)
 {
 	cdlight_t* dl = CL_AllocDlight(0);
-	VectorCopy(pos, dl->origin);
+	VectorCopy(origin, dl->origin);
 	dl->radius = 350;
 	dl->die = cl_common->serverTime + 500;
 	dl->decay = 300;
