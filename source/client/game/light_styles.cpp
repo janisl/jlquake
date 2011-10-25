@@ -43,12 +43,14 @@ void CL_SetLightStyle(int i, const char* s)
 
 	String::Cpy(cl_lightstyle[i].mapStr,  s);
 
+	cl_lightstyle[i].rate = 0;
 	if (GGameType & GAME_Hexen2)
 	{
 		int c = s[0];
 		if (c == '1' || c == '2' || c == '3')
 		{
 			// Explicit anim rate
+			cl_lightstyle[i].rate = c - '1';
 			j--;
 			s++;
 		}
@@ -94,28 +96,14 @@ void CL_RunLightStyles()
 		}
 		if (GGameType & GAME_Quake)
 		{
-			int k = locusHz[0] % ls->length;
+			int k = locusHz[ls->rate] % ls->length;
 			k = ls->map[k] - 'a';
 			k = k*22;
-			ls->value[0] = k / 256.0;
-			ls->value[1] = k / 256.0;
-			ls->value[2] = k / 256.0;
+			ls->value[0] = ls->value[1] = ls->value[2] = k / 256.0;
 		}
 		else if (GGameType & GAME_Hexen2)
 		{
-			int c = ls->mapStr[0];
-			int rate;
-			if (c == '1' || c == '2' || c == '3')
-			{
-				// Explicit anim rate
-				rate = c - '1';
-			}
-			else
-			{
-				// Default anim rate (10 Hz)
-				rate = 0;
-			}
-			int v = locusHz[rate] % ls->length;
+			int v = locusHz[ls->rate] % ls->length;
 			ls->value[0] = ls->value[1] = ls->value[2] = (ls->map[v] - 'a') * 22 / 256.0;
 		}
 		else
@@ -126,7 +114,7 @@ void CL_RunLightStyles()
 			}
 			else
 			{
-				ls->value[0] = ls->value[1] = ls->value[2] = ls->map[locusHz[0] % ls->length];
+				ls->value[0] = ls->value[1] = ls->value[2] = ls->map[locusHz[ls->rate] % ls->length];
 			}
 		}
 	}	

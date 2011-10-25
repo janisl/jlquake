@@ -19,6 +19,7 @@
 struct clightstyle_t
 {
 	int length;
+	int rate;
 	float value[3];
 	char mapStr[MAX_STYLESTRING];
 	float map[MAX_STYLESTRING];
