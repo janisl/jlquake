@@ -1226,8 +1226,8 @@ void CL_ParseServerMessage (void)
 					
 		case svc_lightstyle:
 			i = net_message.ReadByte ();
-			if (i >= MAX_LIGHTSTYLES_Q1)
-				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_Q1");
+			if (i >= MAX_LIGHTSTYLES_H2)
+				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_H2");
 			String::Cpy(cl_lightstyle[i].mapStr,  net_message.ReadString2());
 			cl_lightstyle[i].length = String::Length(cl_lightstyle[i].mapStr);
 			break;

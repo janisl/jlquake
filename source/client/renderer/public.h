@@ -268,6 +268,10 @@ enum stereoFrame_t
 	STEREO_RIGHT
 };
 
+//	Games must have their own constants because in Quake/Hexen 2 it's
+// 64 and it's used by server.
+#define MAX_LIGHTSTYLES			256
+
 struct image_t;
 
 void R_BeginRegistration(glconfig_t* glconfig);

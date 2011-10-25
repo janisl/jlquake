@@ -261,7 +261,7 @@ void SV_Spawn_f (void)
 		SV_FullClientUpdate (client, &host_client->netchan.message);
 	
 // send all current light styles
-	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
+	for (i=0 ; i<MAX_LIGHTSTYLES_H2 ; i++)
 	{
 		host_client->netchan.message.WriteByte(svc_lightstyle);
 		host_client->netchan.message.WriteByte((char)i);

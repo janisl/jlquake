@@ -921,7 +921,7 @@ void V_RenderScene()
 		Cvar_Set("r_fullbright", "0");
 	}
 
-	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	for (int i = 0; i < MAX_LIGHTSTYLES_H2; i++)
 	{
 		R_AddLightStyleToScene(i, cl_lightstyle[i].value[0], cl_lightstyle[i].value[1], cl_lightstyle[i].value[2]);
 	}

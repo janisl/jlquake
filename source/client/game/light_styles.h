@@ -23,3 +23,5 @@ struct clightstyle_t
 	char mapStr[MAX_STYLESTRING];
 	float map[MAX_STYLESTRING];
 };
+
+extern clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];

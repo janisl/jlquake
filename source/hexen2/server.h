@@ -38,7 +38,7 @@ typedef struct
 	const char*	model_precache[MAX_MODELS];	// NULL terminated
 	clipHandle_t	models[MAX_MODELS];
 	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
-	const char*	lightstyles[MAX_LIGHTSTYLES_Q1];
+	const char*	lightstyles[MAX_LIGHTSTYLES_H2];
 	struct EffectT Effects[MAX_EFFECTS];
 	client_state2_t *states;
 	int			num_edicts;

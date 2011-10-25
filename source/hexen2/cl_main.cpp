@@ -41,7 +41,6 @@ client_state_t	cl;
 // FIXME: put these on hunk?
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
 
 image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
@@ -952,7 +951,7 @@ void CL_AnimateLight(void)
 	defaultLocus = locusHz[0] = (int)(cl.serverTimeFloat*10);
 	locusHz[1] = (int)(cl.serverTimeFloat*20);
 	locusHz[2] = (int)(cl.serverTimeFloat*30);
-	for(i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	for(i = 0; i < MAX_LIGHTSTYLES_H2; i++)
 	{
 		if(!cl_lightstyle[i].length)
 		{ // No style def

@@ -61,7 +61,6 @@ client_state_t	cl;
 
 entity_state_t	cl_baselines[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
 
 double			connect_time = -1;		// for connection retransmits
 
@@ -1549,7 +1548,7 @@ void CL_AnimateLight(void)
 	defaultLocus = locusHz[0] = (int)(cl.serverTimeFloat*10);
 	locusHz[1] = (int)(cl.serverTimeFloat*20);
 	locusHz[2] = (int)(cl.serverTimeFloat*30);
-	for(i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	for(i = 0; i < MAX_LIGHTSTYLES_H2; i++)
 	{
 		if(!cl_lightstyle[i].length)
 		{ // No style def

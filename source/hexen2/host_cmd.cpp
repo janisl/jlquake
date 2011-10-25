@@ -731,7 +731,7 @@ void SaveGamestate(qboolean ClientsOnly)
 
 		// write the light styles
 
-		for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
+		for (i=0 ; i<MAX_LIGHTSTYLES_H2 ; i++)
 		{
 			if (sv.lightstyles[i])
 				FS_Printf(f, "%s\n", sv.lightstyles[i]);
@@ -871,7 +871,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 		}
 
 		// load the light styles
-		for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
+		for (i=0 ; i<MAX_LIGHTSTYLES_H2 ; i++)
 		{
 			char* Style = GetLine(ReadPos);
 			char* Tmp = (char*)Hunk_Alloc(String::Length(Style) + 1);
@@ -1581,7 +1581,7 @@ void Host_Spawn_f (void)
 	}
 	
 // send all current light styles
-	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
+	for (i=0 ; i<MAX_LIGHTSTYLES_H2 ; i++)
 	{
 		host_client->message.WriteByte(svc_lightstyle);
 		host_client->message.WriteByte((char)i);

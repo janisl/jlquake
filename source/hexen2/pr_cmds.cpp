@@ -1586,7 +1586,7 @@ void PF_lightstylevalue(void)
 	int style;
 
 	style = G_FLOAT(OFS_PARM0);
-	if(style < 0 || style >= MAX_LIGHTSTYLES_Q1)
+	if(style < 0 || style >= MAX_LIGHTSTYLES_H2)
 	{
 		G_FLOAT(OFS_RETURN) = 0;
 		return;

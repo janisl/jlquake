@@ -15,3 +15,5 @@
 //**************************************************************************
 
 #include "../client.h"
+
+clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];

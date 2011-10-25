@@ -91,9 +91,6 @@ init
 #define MAX_DRAWIMAGES			2048
 #define MAX_LIGHTMAPS			256
 #define MAX_MOD_KNOWN			1500
-//	Games must have their own constants because in Quake/Hexen 2 it's
-// 64 and it's used by server.
-#define MAX_LIGHTSTYLES			256
 
 // 12 bits
 // see QSORT_SHADERNUM_SHIFT

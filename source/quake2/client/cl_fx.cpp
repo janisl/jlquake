@@ -31,7 +31,6 @@ LIGHT STYLE MANAGEMENT
 ==============================================================
 */
 
-clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q2];
 int			lastofs;
 
 /*
