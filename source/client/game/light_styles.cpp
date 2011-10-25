@@ -20,7 +20,8 @@
 #include "../client.h"
 
 clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
-int lastofs;
+
+static int lastofs;
 
 void CL_ClearLightStyles()
 {
@@ -59,14 +60,7 @@ void CL_SetLightStyle(int i, const char* s)
 
 	for (int k = 0; k < j; k++)
 	{
-		if (GGameType & GAME_Quake2)
-		{
-			cl_lightstyle[i].map[k] = (float)(s[k] - 'a') / (float)('m' - 'a');
-		}
-		else
-		{
-			cl_lightstyle[i].map[k] = s[k];
-		}
+		cl_lightstyle[i].map[k] = (float)(s[k] - 'a') / (float)('m' - 'a');
 	}
 }
 
@@ -77,7 +71,7 @@ void CL_RunLightStyles()
 	locusHz[1] = cl_common->serverTime / 50;
 	locusHz[2] = cl_common->serverTime * 3 / 100;
 
-	if (GGameType & GAME_Quake2)
+	if (!(GGameType & GAME_Hexen2))
 	{
 		if (locusHz[0] == lastofs)
 		{
@@ -94,28 +88,13 @@ void CL_RunLightStyles()
 			ls->value[0] = ls->value[1] = ls->value[2] = 1.0;
 			continue;
 		}
-		if (GGameType & GAME_Quake)
+		if (ls->length == 1)
 		{
-			int k = locusHz[ls->rate] % ls->length;
-			k = ls->map[k] - 'a';
-			k = k*22;
-			ls->value[0] = ls->value[1] = ls->value[2] = k / 256.0;
-		}
-		else if (GGameType & GAME_Hexen2)
-		{
-			int v = locusHz[ls->rate] % ls->length;
-			ls->value[0] = ls->value[1] = ls->value[2] = (ls->map[v] - 'a') * 22 / 256.0;
+			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[0];
 		}
 		else
 		{
-			if (ls->length == 1)
-			{
-				ls->value[0] = ls->value[1] = ls->value[2] = ls->map[0];
-			}
-			else
-			{
-				ls->value[0] = ls->value[1] = ls->value[2] = ls->map[locusHz[ls->rate] % ls->length];
-			}
+			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[locusHz[ls->rate] % ls->length];
 		}
 	}	
 }

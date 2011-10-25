@@ -26,7 +26,6 @@ struct clightstyle_t
 };
 
 extern clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
-extern int lastofs;
 
 void CL_ClearLightStyles();
 void CL_SetLightStyle(int i, const char* map);
