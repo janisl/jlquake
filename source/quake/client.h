@@ -294,7 +294,6 @@ float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
-void CL_AnimateLight (void);
 
 //
 // cl_demo.c

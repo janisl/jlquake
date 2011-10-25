@@ -33,37 +33,6 @@ LIGHT STYLE MANAGEMENT
 
 /*
 ================
-CL_RunLightStyles
-================
-*/
-void CL_RunLightStyles (void)
-{
-	int		ofs;
-	int		i;
-	clightstyle_t	*ls;
-
-	ofs = cl.serverTime / 100;
-	if (ofs == lastofs)
-		return;
-	lastofs = ofs;
-
-	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES_Q2 ; i++, ls++)
-	{
-		if (!ls->length)
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = 1.0;
-			continue;
-		}
-		if (ls->length == 1)
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[0];
-		else
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[ofs%ls->length];
-	}
-}
-
-
-/*
-================
 CL_AddLightStyles
 ================
 */

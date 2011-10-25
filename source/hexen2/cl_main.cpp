@@ -934,48 +934,6 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 	}
 }
 
-//==========================================================================
-//
-// CL_AnimateLight
-//
-//==========================================================================
-
-void CL_AnimateLight(void)
-{
-	int i;
-	int v;
-	int c;
-	int defaultLocus;
-	int locusHz[3];
-
-	defaultLocus = locusHz[0] = (int)(cl.serverTimeFloat*10);
-	locusHz[1] = (int)(cl.serverTimeFloat*20);
-	locusHz[2] = (int)(cl.serverTimeFloat*30);
-	for(i = 0; i < MAX_LIGHTSTYLES_H2; i++)
-	{
-		if(!cl_lightstyle[i].length)
-		{ // No style def
-			cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = 1;
-			continue;
-		}
-		c = cl_lightstyle[i].mapStr[0];
-		if(c == '1' || c == '2' || c == '3')
-		{ // Explicit anim rate
-			if(cl_lightstyle[i].length == 1)
-			{ // Bad style def
-				cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = 1;
-				continue;
-			}
-			v = locusHz[c-'1']%(cl_lightstyle[i].length-1);
-			cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = (cl_lightstyle[i].mapStr[v+1]-'a')*22/256.0;
-			continue;
-		}
-		// Default anim rate (10 Hz)
-		v = defaultLocus%cl_lightstyle[i].length;
-		cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = (cl_lightstyle[i].mapStr[v]-'a')*22/256.0;
-	}
-}
-
 void CIN_StartedPlayback()
 {
 }

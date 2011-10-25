@@ -927,7 +927,7 @@ void V_RenderScene()
 	}
 	CL_AddParticles();
 
-	CL_AnimateLight();
+	CL_RunLightStyles();
 
 	V_SetContentsColor(CM_PointContentsQ1(cl.refdef.vieworg, 0));
 	V_CalcBlend();

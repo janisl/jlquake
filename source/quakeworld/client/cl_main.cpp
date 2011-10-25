@@ -1524,35 +1524,6 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 }
 
-/*
-==================
-CL_AnimateLight
-==================
-*/
-void CL_AnimateLight (void)
-{
-	int			i,j,k;
-	
-//
-// light animations
-// 'm' is normal light, 'a' is no light, 'z' is double bright
-	i = (int)(cl.serverTimeFloat*10);
-	for (j=0 ; j<MAX_LIGHTSTYLES_Q1 ; j++)
-	{
-		if (!cl_lightstyle[j].length)
-		{
-			cl_lightstyle[j].value[0] = cl_lightstyle[j].value[1] = cl_lightstyle[j].value[2] = 1;
-			continue;
-		}
-		k = i % cl_lightstyle[j].length;
-		k = cl_lightstyle[j].mapStr[k] - 'a';
-		k = k*22;
-		cl_lightstyle[j].value[0] = k / 256.0;
-		cl_lightstyle[j].value[1] = k / 256.0;
-		cl_lightstyle[j].value[2] = k / 256.0;
-	}	
-}
-
 void CIN_StartedPlayback()
 {
 }

@@ -288,8 +288,6 @@ void CL_ParseMuzzleFlash (void);
 void CL_ParseMuzzleFlash2 (void);
 void SmokeAndFlash(vec3_t origin);
 
-void CL_RunLightStyles (void);
-
 void CL_CalcViewValues();
 void CL_AddPacketEntities(frame_t *frame);
 void CL_AddTEnts (void);
