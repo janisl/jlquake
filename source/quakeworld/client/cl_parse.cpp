@@ -228,11 +228,6 @@ R_NewMap
 */
 static void R_NewMap (void)
 {
-	int		i;
-	
-	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
-		cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = 1;		// normal light value
-
 	CL_ClearParticles ();
 
 	R_EndRegistration();
