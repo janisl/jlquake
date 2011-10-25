@@ -17,12 +17,6 @@ typedef struct
 
 typedef struct
 {
-	int		length;
-	char	map[MAX_STYLESTRING];
-} clightstyle_t;
-
-typedef struct
-{
 	char	name[MAX_SCOREBOARDNAME];
 	float	entertime;
 	int		frags;
@@ -251,7 +245,6 @@ extern	client_state_t	cl;
 extern	entity_t		cl_entities[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
-extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 
 //=============================================================================
 

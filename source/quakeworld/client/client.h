@@ -112,12 +112,6 @@ typedef struct
 //
 // client_state_t should hold all pieces of the client state
 //
-typedef struct
-{
-	int		length;
-	char	map[MAX_STYLESTRING];
-} clightstyle_t;
-
 
 
 #define	MAX_EFRAGS		512
@@ -318,7 +312,6 @@ extern	client_state_t	cl;
 extern	entity_state_t	cl_baselines[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
-extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to

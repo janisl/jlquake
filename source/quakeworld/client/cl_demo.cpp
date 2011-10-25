@@ -620,7 +620,7 @@ void CL_Record_f (void)
 	{
 		buf.WriteByte(svc_lightstyle);
 		buf.WriteByte((char)i);
-		buf.WriteString2(cl_lightstyle[i].map);
+		buf.WriteString2(cl_lightstyle[i].mapStr);
 	}
 
 	for (i = 0; i < MAX_CL_STATS; i++) {

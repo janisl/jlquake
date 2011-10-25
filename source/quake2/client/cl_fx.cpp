@@ -31,13 +31,6 @@ LIGHT STYLE MANAGEMENT
 ==============================================================
 */
 
-typedef struct
-{
-	int		length;
-	float	value[3];
-	float	map[MAX_QPATH];
-} clightstyle_t;
-
 clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q2];
 int			lastofs;
 

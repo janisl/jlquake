@@ -29,6 +29,7 @@
 #include "quake2clientdefs.h"
 #include "game/particles.h"
 #include "game/dynamic_lights.h"
+#include "game/light_styles.h"
 
 extern Cvar*		cl_inGameVideo;
 

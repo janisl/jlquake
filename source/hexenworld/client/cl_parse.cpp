@@ -176,11 +176,6 @@ R_NewMap
 */
 static void R_NewMap (void)
 {
-	int		i;
-	
-	for (i=0 ; i<256 ; i++)
-		cl_lightstylevalue[i] = 264;		// normal light value
-
 	CL_ClearParticles ();
 
 	R_EndRegistration();
@@ -1135,8 +1130,8 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= MAX_LIGHTSTYLES_Q1)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_Q1");
-			String::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
-			cl_lightstyle[i].length = String::Length(cl_lightstyle[i].map);
+			String::Cpy(cl_lightstyle[i].mapStr,  net_message.ReadString2());
+			cl_lightstyle[i].length = String::Length(cl_lightstyle[i].mapStr);
 			break;
 			
 		case svc_sound:

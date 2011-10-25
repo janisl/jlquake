@@ -916,8 +916,7 @@ void V_RenderScene()
 
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
-		float Val = cl_lightstylevalue[i] / 256.0;
-		R_AddLightStyleToScene(i, Val, Val, Val);
+		R_AddLightStyleToScene(i, cl_lightstyle[i].value[0], cl_lightstyle[i].value[1], cl_lightstyle[i].value[2]);
 	}
 	CL_AddParticles();
 

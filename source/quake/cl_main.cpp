@@ -48,7 +48,6 @@ client_state_t	cl;
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
-int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 
 /*
 =====================
@@ -669,13 +668,15 @@ void CL_AnimateLight (void)
 	{
 		if (!cl_lightstyle[j].length)
 		{
-			cl_lightstylevalue[j] = 256;
+			cl_lightstyle[j].value[0] = cl_lightstyle[j].value[1] = cl_lightstyle[j].value[2] = 1;
 			continue;
 		}
 		k = i % cl_lightstyle[j].length;
-		k = cl_lightstyle[j].map[k] - 'a';
+		k = cl_lightstyle[j].mapStr[k] - 'a';
 		k = k*22;
-		cl_lightstylevalue[j] = k;
+		cl_lightstyle[j].value[0] = k / 256.0;
+		cl_lightstyle[j].value[1] = k / 256.0;
+		cl_lightstyle[j].value[2] = k / 256.0;
 	}	
 }
 

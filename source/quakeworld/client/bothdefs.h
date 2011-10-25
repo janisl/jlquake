@@ -63,8 +63,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	SAVEGAME_COMMENT_LENGTH	39
 
-#define	MAX_STYLESTRING	64
-
 //
 // stats are integers communicated to the client by the server
 //

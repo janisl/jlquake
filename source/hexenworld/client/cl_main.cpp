@@ -62,7 +62,6 @@ client_state_t	cl;
 entity_state_t	cl_baselines[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
-int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 
 double			connect_time = -1;		// for connection retransmits
 
@@ -1554,24 +1553,24 @@ void CL_AnimateLight(void)
 	{
 		if(!cl_lightstyle[i].length)
 		{ // No style def
-			cl_lightstylevalue[i] = 256;
+			cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = 1;
 			continue;
 		}
-		c = cl_lightstyle[i].map[0];
+		c = cl_lightstyle[i].mapStr[0];
 		if(c == '1' || c == '2' || c == '3')
 		{ // Explicit anim rate
 			if(cl_lightstyle[i].length == 1)
 			{ // Bad style def
-				cl_lightstylevalue[i] = 256;
+				cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = 1;
 				continue;
 			}
 			v = locusHz[c-'1']%(cl_lightstyle[i].length-1);
-			cl_lightstylevalue[i] = (cl_lightstyle[i].map[v+1]-'a')*22;
+			cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = (cl_lightstyle[i].mapStr[v+1]-'a')*22/256.0;
 			continue;
 		}
 		// Default anim rate (10 Hz)
 		v = defaultLocus%cl_lightstyle[i].length;
-		cl_lightstylevalue[i] = (cl_lightstyle[i].map[v]-'a')*22;
+		cl_lightstyle[i].value[0] = cl_lightstyle[i].value[1] = cl_lightstyle[i].value[2] = (cl_lightstyle[i].mapStr[v]-'a')*22/256.0;
 	}
 
 }

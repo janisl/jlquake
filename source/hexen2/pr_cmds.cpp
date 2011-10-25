@@ -1592,7 +1592,7 @@ void PF_lightstylevalue(void)
 		return;
 	}
 
-	G_FLOAT(OFS_RETURN) = (int)((float)cl_lightstylevalue[style]/22.0);
+	G_FLOAT(OFS_RETURN) = (int)(cl_lightstyle[style].value[0]/22.0*256.0);
 }
 
 //==========================================================================
