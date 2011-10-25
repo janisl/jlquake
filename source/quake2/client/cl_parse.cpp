@@ -503,7 +503,9 @@ void CL_ParseConfigString (void)
 	// do something apropriate 
 
 	if (i >= CS_LIGHTS && i < CS_LIGHTS+MAX_LIGHTSTYLES_Q2)
-		CL_SetLightstyle (i - CS_LIGHTS);
+	{
+		CL_SetLightStyle(i - CS_LIGHTS, cl.configstrings[i]);
+	}
 	else if (i == CS_CDTRACK)
 	{
 		if (cl.refresh_prepped)
