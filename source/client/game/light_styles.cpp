@@ -41,7 +41,6 @@ void CL_SetLightStyle(int i, const char* s)
 		throw DropException(va("svc_lightstyle length=%i", j));
 	}
 
-	cl_lightstyle[i].length = j;
 	String::Cpy(cl_lightstyle[i].mapStr,  s);
 
 	if (GGameType & GAME_Hexen2)
@@ -54,6 +53,7 @@ void CL_SetLightStyle(int i, const char* s)
 			s++;
 		}
 	}
+	cl_lightstyle[i].length = j;
 
 	for (int k = 0; k < j; k++)
 	{
@@ -104,23 +104,18 @@ void CL_RunLightStyles()
 		else if (GGameType & GAME_Hexen2)
 		{
 			int c = ls->mapStr[0];
-			int v;
+			int rate;
 			if (c == '1' || c == '2' || c == '3')
 			{
 				// Explicit anim rate
-				if (ls->length == 1)
-				{
-					// Bad style def
-					ls->value[0] = ls->value[1] = ls->value[2] = 1;
-					continue;
-				}
-				v = locusHz[c - '1'] % (ls->length - 1);
+				rate = c - '1';
 			}
 			else
 			{
 				// Default anim rate (10 Hz)
-				v = locusHz[0] % ls->length;
+				rate = 0;
 			}
+			int v = locusHz[rate] % ls->length;
 			ls->value[0] = ls->value[1] = ls->value[2] = (ls->map[v] - 'a') * 22 / 256.0;
 		}
 		else
