@@ -51,6 +51,13 @@ void CL_SetLightStyle(int i, const char* s)
 			cl_lightstyle[i].map[k] = (float)(s[k] - 'a') / (float)('m' - 'a');
 		}
 	}
+	else
+	{
+		for (int k = 0; k < j; k++)
+		{
+			cl_lightstyle[i].map[k] = s[k];
+		}
+	}
 }
 
 void CL_RunLightStyles()
@@ -80,7 +87,7 @@ void CL_RunLightStyles()
 		if (GGameType & GAME_Quake)
 		{
 			int k = locusHz[0] % ls->length;
-			k = ls->mapStr[k] - 'a';
+			k = ls->map[k] - 'a';
 			k = k*22;
 			ls->value[0] = k / 256.0;
 			ls->value[1] = k / 256.0;
@@ -91,9 +98,11 @@ void CL_RunLightStyles()
 			int c = ls->mapStr[0];
 			int v;
 			if (c == '1' || c == '2' || c == '3')
-			{ // Explicit anim rate
-				if(ls->length == 1)
-				{ // Bad style def
+			{
+				// Explicit anim rate
+				if (ls->length == 1)
+				{
+					// Bad style def
 					ls->value[0] = ls->value[1] = ls->value[2] = 1;
 					continue;
 				}
@@ -105,7 +114,7 @@ void CL_RunLightStyles()
 				// Default anim rate (10 Hz)
 				v = locusHz[0] % ls->length;
 			}
-			ls->value[0] = ls->value[1] = ls->value[2] = (ls->mapStr[v] - 'a') * 22 / 256.0;
+			ls->value[0] = ls->value[1] = ls->value[2] = (ls->map[v] - 'a') * 22 / 256.0;
 		}
 		else
 		{
