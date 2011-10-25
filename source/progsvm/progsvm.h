@@ -31,6 +31,13 @@ extern float* pr_globals;			// same as pr_global_struct
 
 void PR_ClearStringMap();
 int PR_SetString(const char* string);
-const char* PR_GetString(int Num);
+const char* PR_GetString(int number);
+
+ddef_t* ED_GlobalAtOfs(int offset);
+ddef_t* ED_FieldAtOfs(int offset);
+ddef_t* ED_FindField(const char* name);
+ddef_t* ED_FindGlobal(const char* name);
+dfunction_t* ED_FindFunction(const char* name);
+dfunction_t* ED_FindFunctioni(const char* name);
 
 #endif

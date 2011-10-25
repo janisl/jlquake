@@ -26,18 +26,7 @@ int				pr_edict_size;	// in bytes
 
 int		type_size[8] = {1,sizeof(void *)/4,1,3,1,1,sizeof(void *)/4,sizeof(void *)/4};
 
-ddef_t *ED_FieldAtOfs (int ofs);
 qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s);
-
-#define	MAX_FIELD_LEN	64
-#define GEFV_CACHESIZE	2
-
-typedef struct {
-	ddef_t	*pcache;
-	char	field[MAX_FIELD_LEN];
-} gefv_cache;
-
-static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
 func_t SpectatorConnect;
 func_t SpectatorThink;
@@ -129,102 +118,15 @@ void ED_Free (edict_t *ed)
 
 //===========================================================================
 
-/*
-============
-ED_GlobalAtOfs
-============
-*/
-ddef_t *ED_GlobalAtOfs (int ofs)
-{
-	ddef_t		*def;
-	int			i;
-	
-	for (i=0 ; i<progs->numglobaldefs ; i++)
-	{
-		def = &pr_globaldefs[i];
-		if (def->ofs == ofs)
-			return def;
-	}
-	return NULL;
-}
+#define	MAX_FIELD_LEN	64
+#define GEFV_CACHESIZE	2
 
-/*
-============
-ED_FieldAtOfs
-============
-*/
-ddef_t *ED_FieldAtOfs (int ofs)
-{
-	ddef_t		*def;
-	int			i;
-	
-	for (i=0 ; i<progs->numfielddefs ; i++)
-	{
-		def = &pr_fielddefs[i];
-		if (def->ofs == ofs)
-			return def;
-	}
-	return NULL;
-}
+typedef struct {
+	ddef_t	*pcache;
+	char	field[MAX_FIELD_LEN];
+} gefv_cache;
 
-/*
-============
-ED_FindField
-============
-*/
-ddef_t *ED_FindField (const char *name)
-{
-	ddef_t		*def;
-	int			i;
-	
-	for (i=0 ; i<progs->numfielddefs ; i++)
-	{
-		def = &pr_fielddefs[i];
-		if (!String::Cmp(PR_GetString(def->s_name),name) )
-			return def;
-	}
-	return NULL;
-}
-
-
-/*
-============
-ED_FindGlobal
-============
-*/
-ddef_t *ED_FindGlobal (const char *name)
-{
-	ddef_t		*def;
-	int			i;
-	
-	for (i=0 ; i<progs->numglobaldefs ; i++)
-	{
-		def = &pr_globaldefs[i];
-		if (!String::Cmp(PR_GetString(def->s_name),name) )
-			return def;
-	}
-	return NULL;
-}
-
-
-/*
-============
-ED_FindFunction
-============
-*/
-dfunction_t *ED_FindFunction (const char *name)
-{
-	dfunction_t		*func;
-	int				i;
-	
-	for (i=0 ; i<progs->numfunctions ; i++)
-	{
-		func = &pr_functions[i];
-		if (!String::Cmp(PR_GetString(func->s_name),name) )
-			return func;
-	}
-	return NULL;
-}
+static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
 eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
 {

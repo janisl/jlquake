@@ -48,11 +48,89 @@ int PR_SetString(const char* s)
 	return (int)(s - pr_strings);
 }
 
-const char* PR_GetString(int Num)
+const char* PR_GetString(int number)
 {
-	if (Num < 0)
+	if (number < 0)
 	{
-		return pr_strtbl[-Num - 1];
+		return pr_strtbl[-number - 1];
 	}
-	return pr_strings + Num;
+	return pr_strings + number;
+}
+
+ddef_t* ED_GlobalAtOfs(int offset)
+{
+	for (int i = 0; i < progs->numglobaldefs; i++)
+	{
+		ddef_t* def = &pr_globaldefs[i];
+		if (def->ofs == offset)
+		{
+			return def;
+		}
+	}
+	return NULL;
+}
+
+ddef_t* ED_FieldAtOfs(int offset)
+{
+	for (int i = 0; i < progs->numfielddefs; i++)
+	{
+		ddef_t* def = &pr_fielddefs[i];
+		if (def->ofs == offset)
+		{
+			return def;
+		}
+	}
+	return NULL;
+}
+
+ddef_t* ED_FindField(const char* name)
+{
+	for (int i = 0; i < progs->numfielddefs; i++)
+	{
+		ddef_t* def = &pr_fielddefs[i];
+		if (!String::Cmp(PR_GetString(def->s_name), name))
+		{
+			return def;
+		}
+	}
+	return NULL;
+}
+
+ddef_t* ED_FindGlobal(const char* name)
+{
+	for (int i = 0; i < progs->numglobaldefs; i++)
+	{
+		ddef_t* def = &pr_globaldefs[i];
+		if (!String::Cmp(PR_GetString(def->s_name), name))
+		{
+			return def;
+		}
+	}
+	return NULL;
+}
+
+dfunction_t* ED_FindFunction(const char* name)
+{
+	for (int i = 0; i < progs->numfunctions; i++)
+	{
+		dfunction_t* func = &pr_functions[i];
+		if (!String::Cmp(PR_GetString(func->s_name), name))
+		{
+			return func;
+		}
+	}
+	return NULL;
+}
+
+dfunction_t* ED_FindFunctioni(const char* name)
+{
+	for (int i = 0; i < progs->numfunctions; i++)
+	{
+		dfunction_t* func = &pr_functions[i];
+		if (!String::ICmp(PR_GetString(func->s_name), name))
+		{
+			return func;
+		}
+	}
+	return NULL;
 }
