@@ -25,3 +25,6 @@ struct clightstyle_t
 };
 
 extern clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+extern int lastofs;
+
+void CL_ClearLightStyles();

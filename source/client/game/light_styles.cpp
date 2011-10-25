@@ -17,3 +17,10 @@
 #include "../client.h"
 
 clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+int lastofs;
+
+void CL_ClearLightStyles()
+{
+	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
+	lastofs = -1;
+}

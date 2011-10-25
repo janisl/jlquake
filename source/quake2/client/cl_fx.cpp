@@ -31,19 +31,6 @@ LIGHT STYLE MANAGEMENT
 ==============================================================
 */
 
-int			lastofs;
-
-/*
-================
-CL_ClearLightStyles
-================
-*/
-void CL_ClearLightStyles (void)
-{
-	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
-	lastofs = -1;
-}
-
 /*
 ================
 CL_RunLightStyles
