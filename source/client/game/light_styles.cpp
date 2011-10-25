@@ -44,6 +44,17 @@ void CL_SetLightStyle(int i, const char* s)
 	cl_lightstyle[i].length = j;
 	String::Cpy(cl_lightstyle[i].mapStr,  s);
 
+	if (GGameType & GAME_Hexen2)
+	{
+		int c = s[0];
+		if (c == '1' || c == '2' || c == '3')
+		{
+			// Explicit anim rate
+			j--;
+			s++;
+		}
+	}
+
 	for (int k = 0; k < j; k++)
 	{
 		if (GGameType & GAME_Quake2)
@@ -104,7 +115,6 @@ void CL_RunLightStyles()
 					continue;
 				}
 				v = locusHz[c - '1'] % (ls->length - 1);
-				v++;
 			}
 			else
 			{
