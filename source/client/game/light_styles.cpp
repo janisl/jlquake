@@ -44,16 +44,13 @@ void CL_SetLightStyle(int i, const char* s)
 	cl_lightstyle[i].length = j;
 	String::Cpy(cl_lightstyle[i].mapStr,  s);
 
-	if (GGameType & GAME_Quake2)
+	for (int k = 0; k < j; k++)
 	{
-		for (int k = 0; k < j; k++)
+		if (GGameType & GAME_Quake2)
 		{
 			cl_lightstyle[i].map[k] = (float)(s[k] - 'a') / (float)('m' - 'a');
 		}
-	}
-	else
-	{
-		for (int k = 0; k < j; k++)
+		else
 		{
 			cl_lightstyle[i].map[k] = s[k];
 		}
