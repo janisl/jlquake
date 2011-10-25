@@ -291,7 +291,6 @@ void SmokeAndFlash(vec3_t origin);
 void CL_CalcViewValues();
 void CL_AddPacketEntities(frame_t *frame);
 void CL_AddTEnts (void);
-void CL_AddLightStyles (void);
 
 //=================================================
 

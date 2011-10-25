@@ -26,28 +26,6 @@ void CL_LogoutEffect (vec3_t org, int type);
 /*
 ==============================================================
 
-LIGHT STYLE MANAGEMENT
-
-==============================================================
-*/
-
-/*
-================
-CL_AddLightStyles
-================
-*/
-void CL_AddLightStyles (void)
-{
-	int		i;
-	clightstyle_t	*ls;
-
-	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES_Q2 ; i++, ls++)
-		R_AddLightStyleToScene (i, ls->value[0], ls->value[1], ls->value[2]);
-}
-
-/*
-==============================================================
-
 DLIGHT MANAGEMENT
 
 ==============================================================

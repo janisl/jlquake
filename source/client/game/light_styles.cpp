@@ -120,3 +120,12 @@ void CL_RunLightStyles()
 		}
 	}	
 }
+
+void CL_AddLightStyles()
+{
+	clightstyle_t* ls = cl_lightstyle;
+	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
+	{
+		R_AddLightStyleToScene(i, ls->value[0], ls->value[1], ls->value[2]);
+	}
+}

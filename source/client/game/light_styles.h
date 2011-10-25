@@ -30,3 +30,4 @@ extern int lastofs;
 void CL_ClearLightStyles();
 void CL_SetLightStyle(int i, const char* map);
 void CL_RunLightStyles();
+void CL_AddLightStyles();
