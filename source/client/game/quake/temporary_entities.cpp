@@ -427,68 +427,78 @@ static void CLQ1_ParseLightningBlood(QMsg& message)
 	CLQ1_RunParticleEffect(position, vec3_origin, 225, 50);
 }
 
-void CLQ1_ParseTEnt(QMsg& message)
+static void CLQ1_ParseTEntCommon(QMsg& message, int type)
 {
-	int type = message.ReadByte();
 	switch (type)
 	{
 	case Q1TE_WIZSPIKE:			// spike hitting wall
 		CLQ1_ParseWizSpike(message);
 		break;
-		
-	case Q1TE_KNIGHTSPIKE:			// spike hitting wall
+
+	case Q1TE_KNIGHTSPIKE:		// spike hitting wall
 		CLQ1_ParseKnightSpike(message);
 		break;
-		
+
 	case Q1TE_SPIKE:			// spike hitting wall
 		CLQ1_ParseSpike(message);
 		break;
-	case Q1TE_SUPERSPIKE:			// super spike hitting wall
+
+	case Q1TE_SUPERSPIKE:		// super spike hitting wall
 		CLQ1_ParseSuperSpike(message);
 		break;
-		
-	case Q1TE_EXPLOSION:			// rocket explosion
-		CLQ1_ParseExplosion(message);
-		break;
-		
-	case Q1TE_TAREXPLOSION:			// tarbaby explosion
+
+	case Q1TE_TAREXPLOSION:		// tarbaby explosion
 		CLQ1_ParseTarExplosion(message);
 		break;
 
-	case Q1TE_EXPLOSION2:				// color mapped explosion
-		CLQ1_ParseExplosion2(message);
-		break;
-		
-	case Q1TE_LIGHTNING1:				// lightning bolts
+	case Q1TE_LIGHTNING1:		// lightning bolts
 		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt.mdl"));
 		break;
-	
-	case Q1TE_LIGHTNING2:				// lightning bolts
+
+	case Q1TE_LIGHTNING2:		// lightning bolts
 		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt2.mdl"));
 		break;
-	
-	case Q1TE_LIGHTNING3:				// lightning bolts
+
+	case Q1TE_LIGHTNING3:		// lightning bolts
 		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt3.mdl"));
 		break;
-	
+
+	case Q1TE_LAVASPLASH:
+		CLQ1_ParseLavaSplash(message);
+		break;
+
+	case Q1TE_TELEPORT:
+		CLQ1_ParseTeleportSplash(message);
+		break;
+
+	default:
+		throw Exception("CL_ParseTEnt: bad type");
+	}
+}
+
+void CLQ1_ParseTEnt(QMsg& message)
+{
+	int type = message.ReadByte();
+	switch (type)
+	{
+	case Q1TE_EXPLOSION:		// rocket explosion
+		CLQ1_ParseExplosion(message);
+		break;
+
+	case Q1TE_EXPLOSION2:		// color mapped explosion
+		CLQ1_ParseExplosion2(message);
+		break;
+
 	case Q1TE_BEAM:				// grappling hook beam
 		CLQ1_ParseBeam(message, R_RegisterModel("progs/beam.mdl"));
 		break;
 
-	case Q1TE_LAVASPLASH:	
-		CLQ1_ParseLavaSplash(message);
-		break;
-	
-	case Q1TE_TELEPORT:
-		CLQ1_ParseTeleportSplash(message);
-		break;
-		
 	case Q1TE_GUNSHOT:			// bullet hitting wall
 		CLQ1_ParseGunShot(message);
 		break;
-		
+
 	default:
-		throw DropException("CL_ParseTEnt: bad type");
+		CLQ1_ParseTEntCommon(message, type);
 	}
 }
 
@@ -497,63 +507,24 @@ void CLQW_ParseTEnt(QMsg& message)
 	int type = message.ReadByte();
 	switch (type)
 	{
-	case Q1TE_WIZSPIKE:			// spike hitting wall
-		CLQ1_ParseWizSpike(message);
-		break;
-		
-	case Q1TE_KNIGHTSPIKE:			// spike hitting wall
-		CLQ1_ParseKnightSpike(message);
-		break;
-		
-	case Q1TE_SPIKE:			// spike hitting wall
-		CLQ1_ParseSpike(message);
-		break;
-	case Q1TE_SUPERSPIKE:			// super spike hitting wall
-		CLQ1_ParseSuperSpike(message);
-		break;
-		
-	case Q1TE_EXPLOSION:			// rocket explosion
+	case Q1TE_EXPLOSION:		// rocket explosion
 		CLQW_ParseExplosion(message);
-		break;
-		
-	case Q1TE_TAREXPLOSION:			// tarbaby explosion
-		CLQ1_ParseTarExplosion(message);
-		break;
-
-	case Q1TE_LIGHTNING1:				// lightning bolts
-		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt.mdl"));
-		break;
-	
-	case Q1TE_LIGHTNING2:				// lightning bolts
-		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt2.mdl"));
-		break;
-	
-	case Q1TE_LIGHTNING3:				// lightning bolts
-		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt3.mdl"));
-		break;
-	
-	case Q1TE_LAVASPLASH:	
-		CLQ1_ParseLavaSplash(message);
-		break;
-	
-	case Q1TE_TELEPORT:
-		CLQ1_ParseTeleportSplash(message);
 		break;
 
 	case Q1TE_GUNSHOT:			// bullet hitting wall
 		CLQW_ParseGunShot(message);
 		break;
-		
-	case QWTE_BLOOD:				// bullets hitting body
+
+	case QWTE_BLOOD:			// bullets hitting body
 		CLQ1_ParseBlood(message);
 		break;
 
-	case QWTE_LIGHTNINGBLOOD:		// lightning hitting body
+	case QWTE_LIGHTNINGBLOOD:	// lightning hitting body
 		CLQ1_ParseLightningBlood(message);
 		break;
 
 	default:
-		throw Exception("CL_ParseTEnt: bad type");
+		CLQ1_ParseTEntCommon(message, type);
 	}
 }
 
