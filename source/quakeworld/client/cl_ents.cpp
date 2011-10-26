@@ -968,7 +968,7 @@ void CL_EmitEntities (void)
 	CL_LinkPlayers ();
 	CL_LinkPacketEntities ();
 	CL_LinkProjectiles ();
-	CL_UpdateTEnts ();
+	CLQ1_UpdateTEnts ();
 	CL_LinkStaticEntities();
 }
 

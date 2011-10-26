@@ -111,7 +111,7 @@ void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 	Log::write("beam list overflow!\n");
 }
 
-void CLQ1_UpdateBeams()
+static void CLQ1_UpdateBeams()
 {
 	// update lightning
 	q1beam_t* beam = clq1_beams;
@@ -220,7 +220,7 @@ static void CLQ1_ExplosionSprite(vec3_t position)
 	explosion->model = R_RegisterModel("progs/s_explod.spr");
 }
 
-void CLQ1_UpdateExplosions()
+static void CLQ1_UpdateExplosions()
 {
 	q1explosion_t* explosion = clq1_explosions;
 	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++, explosion++)
@@ -411,4 +411,10 @@ void CLQ1_ParseLightningBlood(QMsg& message)
 	position[2] = message.ReadCoord();
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 225, 50);
+}
+
+void CLQ1_UpdateTEnts()
+{
+	CLQ1_UpdateBeams();
+	CLQ1_UpdateExplosions();
 }

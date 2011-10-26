@@ -92,9 +92,3 @@ void CL_ParseTEnt (void)
 		Sys_Error ("CL_ParseTEnt: bad type");
 	}
 }
-
-
-void CL_UpdateTEnts (void)
-{
-	CLQ1_UpdateBeams();
-}

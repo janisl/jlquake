@@ -351,7 +351,6 @@ void CL_SendCmd (void);
 void CL_SendMove (usercmd_t *cmd);
 
 void CL_ParseTEnt (void);
-void CL_UpdateTEnts (void);
 
 void CL_ClearState (void);
 
