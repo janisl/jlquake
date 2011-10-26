@@ -844,7 +844,7 @@ void CL_ParseServerMessage (void)
 			CL_ParseStatic ();
 			break;			
 		case svc_temp_entity:
-			CL_ParseTEnt ();
+			CLQ1_ParseTEnt (net_message);
 			break;
 
 		case svc_setpause:

@@ -65,7 +65,7 @@ void CLQ1_ClearTEnts()
 	Com_Memset(clq1_explosions, 0, sizeof(clq1_explosions));
 }
 
-void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
+static void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 {
 	int entity = message.ReadShort();
 
@@ -247,7 +247,7 @@ static void CLQ1_UpdateExplosions()
 	}
 }
 
-void CLQ1_ParseWizSpike(QMsg& message)
+static void CLQ1_ParseWizSpike(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -258,7 +258,7 @@ void CLQ1_ParseWizSpike(QMsg& message)
 	S_StartSound(position, -1, 0, clq1_sfx_wizhit, 1, 1);
 }
 
-void CLQ1_ParseKnightSpike(QMsg& message)
+static void CLQ1_ParseKnightSpike(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -293,7 +293,7 @@ static void SpikeSound(vec3_t pos)
 	}
 }
 
-void CLQ1_ParseSpike(QMsg& message)
+static void CLQ1_ParseSpike(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -304,7 +304,7 @@ void CLQ1_ParseSpike(QMsg& message)
 	SpikeSound(position);
 }
 
-void CLQ1_ParseSuperSpike(QMsg& message)
+static void CLQ1_ParseSuperSpike(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -315,7 +315,7 @@ void CLQ1_ParseSuperSpike(QMsg& message)
 	SpikeSound(position);
 }
 
-void CLQ1_ParseExplosion(QMsg& message)
+static void CLQ1_ParseExplosion(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -332,7 +332,7 @@ void CLQ1_ParseExplosion(QMsg& message)
 	}
 }
 
-void CLQ1_ParseTarExplosion(QMsg& message)
+static void CLQ1_ParseTarExplosion(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -343,7 +343,7 @@ void CLQ1_ParseTarExplosion(QMsg& message)
 	S_StartSound(position, -1, 0, clq1_sfx_r_exp3, 1, 1);
 }
 
-void CLQ1_ParseExplosion2(QMsg& message)
+static void CLQ1_ParseExplosion2(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -357,7 +357,7 @@ void CLQ1_ParseExplosion2(QMsg& message)
 	S_StartSound(position, -1, 0, clq1_sfx_r_exp3, 1, 1);
 }
 
-void CLQ1_ParseLavaSplash(QMsg& message)
+static void CLQ1_ParseLavaSplash(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -367,7 +367,7 @@ void CLQ1_ParseLavaSplash(QMsg& message)
 	CLQ1_LavaSplash(position);
 }
 
-void CLQ1_ParseTeleportSplash(QMsg& message)
+static void CLQ1_ParseTeleportSplash(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -377,7 +377,7 @@ void CLQ1_ParseTeleportSplash(QMsg& message)
 	CLQ1_TeleportSplash(position);
 }
 
-void CLQ1_ParseGunShot(QMsg& message)
+static void CLQ1_ParseGunShot(QMsg& message)
 {
 	int count = 1;
 	if (GGameType & GAME_QuakeWorld)
@@ -392,7 +392,7 @@ void CLQ1_ParseGunShot(QMsg& message)
 	CLQ1_RunParticleEffect(position, vec3_origin, 0, 20 * count);
 }
 
-void CLQ1_ParseBlood(QMsg& message)
+static void CLQ1_ParseBlood(QMsg& message)
 {
 	int count = message.ReadByte();
 	vec3_t position;
@@ -403,7 +403,7 @@ void CLQ1_ParseBlood(QMsg& message)
 	CLQ1_RunParticleEffect(position, vec3_origin, 73, 20 * count);
 }
 
-void CLQ1_ParseLightningBlood(QMsg& message)
+static void CLQ1_ParseLightningBlood(QMsg& message)
 {
 	vec3_t position;
 	position[0] = message.ReadCoord();
@@ -411,6 +411,136 @@ void CLQ1_ParseLightningBlood(QMsg& message)
 	position[2] = message.ReadCoord();
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 225, 50);
+}
+
+void CLQ1_ParseTEnt(QMsg& message)
+{
+	int type = message.ReadByte();
+	switch (type)
+	{
+	case Q1TE_WIZSPIKE:			// spike hitting wall
+		CLQ1_ParseWizSpike(message);
+		break;
+		
+	case Q1TE_KNIGHTSPIKE:			// spike hitting wall
+		CLQ1_ParseKnightSpike(message);
+		break;
+		
+	case Q1TE_SPIKE:			// spike hitting wall
+		CLQ1_ParseSpike(message);
+		break;
+	case Q1TE_SUPERSPIKE:			// super spike hitting wall
+		CLQ1_ParseSuperSpike(message);
+		break;
+		
+	case Q1TE_EXPLOSION:			// rocket explosion
+		CLQ1_ParseExplosion(message);
+		break;
+		
+	case Q1TE_TAREXPLOSION:			// tarbaby explosion
+		CLQ1_ParseTarExplosion(message);
+		break;
+
+	case Q1TE_EXPLOSION2:				// color mapped explosion
+		CLQ1_ParseExplosion2(message);
+		break;
+		
+	case Q1TE_LIGHTNING1:				// lightning bolts
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt.mdl"));
+		break;
+	
+	case Q1TE_LIGHTNING2:				// lightning bolts
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt2.mdl"));
+		break;
+	
+	case Q1TE_LIGHTNING3:				// lightning bolts
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt3.mdl"));
+		break;
+	
+	case Q1TE_BEAM:				// grappling hook beam
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/beam.mdl"));
+		break;
+
+	case Q1TE_LAVASPLASH:	
+		CLQ1_ParseLavaSplash(message);
+		break;
+	
+	case Q1TE_TELEPORT:
+		CLQ1_ParseTeleportSplash(message);
+		break;
+		
+	case Q1TE_GUNSHOT:			// bullet hitting wall
+		CLQ1_ParseGunShot(message);
+		break;
+		
+	default:
+		throw DropException("CL_ParseTEnt: bad type");
+	}
+}
+
+void CLQW_ParseTEnt(QMsg& message)
+{
+	int type = message.ReadByte();
+	switch (type)
+	{
+	case Q1TE_WIZSPIKE:			// spike hitting wall
+		CLQ1_ParseWizSpike(message);
+		break;
+		
+	case Q1TE_KNIGHTSPIKE:			// spike hitting wall
+		CLQ1_ParseKnightSpike(message);
+		break;
+		
+	case Q1TE_SPIKE:			// spike hitting wall
+		CLQ1_ParseSpike(message);
+		break;
+	case Q1TE_SUPERSPIKE:			// super spike hitting wall
+		CLQ1_ParseSuperSpike(message);
+		break;
+		
+	case Q1TE_EXPLOSION:			// rocket explosion
+		CLQ1_ParseExplosion(message);
+		break;
+		
+	case Q1TE_TAREXPLOSION:			// tarbaby explosion
+		CLQ1_ParseTarExplosion(message);
+		break;
+
+	case Q1TE_LIGHTNING1:				// lightning bolts
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt.mdl"));
+		break;
+	
+	case Q1TE_LIGHTNING2:				// lightning bolts
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt2.mdl"));
+		break;
+	
+	case Q1TE_LIGHTNING3:				// lightning bolts
+		CLQ1_ParseBeam(message, R_RegisterModel("progs/bolt3.mdl"));
+		break;
+	
+	case Q1TE_LAVASPLASH:	
+		CLQ1_ParseLavaSplash(message);
+		break;
+	
+	case Q1TE_TELEPORT:
+		CLQ1_ParseTeleportSplash(message);
+		break;
+
+	case Q1TE_GUNSHOT:			// bullet hitting wall
+		CLQ1_ParseGunShot(message);
+		break;
+		
+	case QWTE_BLOOD:				// bullets hitting body
+		CLQ1_ParseBlood(message);
+		break;
+
+	case QWTE_LIGHTNINGBLOOD:		// lightning hitting body
+		CLQ1_ParseLightningBlood(message);
+		break;
+
+	default:
+		throw Exception("CL_ParseTEnt: bad type");
+	}
 }
 
 void CLQ1_UpdateTEnts()

@@ -44,7 +44,6 @@ add_executable(jlqwcl
 	client/cl_parse.cpp
 	client/cl_pred.cpp
 	client/cl_screen.cpp
-	client/cl_tent.cpp
 	client/cl_cam.cpp
 	client/cmd.cpp
 	client/common.cpp
