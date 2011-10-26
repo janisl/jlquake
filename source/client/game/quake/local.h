@@ -26,7 +26,7 @@ void CLQ1_UpdateExplosions();
 void CLQ1_ParseWizSpike(QMsg& message);
 void CLQ1_ParseKnightSpike(QMsg& message);
 void CLQ1_ParseSpike(QMsg& message);
-void CLQ1_SuperParseSpike(QMsg& message);
+void CLQ1_ParseSuperSpike(QMsg& message);
 void CLQ1_ParseExplosion(QMsg& message);
 void CLQ1_ParseTarExplosion(QMsg& message);
 void CLQ1_ParseExplosion2(QMsg& message);

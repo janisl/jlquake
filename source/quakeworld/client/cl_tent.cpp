@@ -43,7 +43,7 @@ void CL_ParseTEnt (void)
 		CLQ1_ParseSpike(net_message);
 		break;
 	case TE_SUPERSPIKE:			// super spike hitting wall
-		CLQ1_SuperParseSpike(net_message);
+		CLQ1_ParseSuperSpike(net_message);
 		break;
 		
 	case TE_EXPLOSION:			// rocket explosion
