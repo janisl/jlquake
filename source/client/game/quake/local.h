@@ -47,3 +47,4 @@ extern sfxHandle_t clq1_sfx_r_exp3;
 
 void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();
+void CLQ1_ParseBeam(QMsg& message, qhandle_t model);

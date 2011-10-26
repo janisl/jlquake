@@ -50,56 +50,6 @@ q1explosion_t *CL_AllocExplosion (void)
 
 /*
 =================
-CL_ParseBeam
-=================
-*/
-static void CL_ParseBeam (qhandle_t m)
-{
-	int		ent;
-	vec3_t	start, end;
-	q1beam_t	*b;
-	int		i;
-	
-	ent = net_message.ReadShort();
-	
-	start[0] = net_message.ReadCoord ();
-	start[1] = net_message.ReadCoord ();
-	start[2] = net_message.ReadCoord ();
-	
-	end[0] = net_message.ReadCoord ();
-	end[1] = net_message.ReadCoord ();
-	end[2] = net_message.ReadCoord ();
-
-// override any beam with the same entity
-	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
-		if (b->entity == ent)
-		{
-			b->entity = ent;
-			b->model = m;
-			b->endtime = cl.serverTimeFloat + 0.2;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			return;
-		}
-
-// find a free beam
-	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTimeFloat)
-		{
-			b->entity = ent;
-			b->model = m;
-			b->endtime = cl.serverTimeFloat + 0.2;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			return;
-		}
-	}
-	Con_Printf ("beam list overflow!\n");	
-}
-
-/*
-=================
 CL_ParseTEnt
 =================
 */
@@ -199,15 +149,15 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_LIGHTNING1:				// lightning bolts
-		CL_ParseBeam(R_RegisterModel("progs/bolt.mdl"));
+		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/bolt.mdl"));
 		break;
 	
 	case TE_LIGHTNING2:				// lightning bolts
-		CL_ParseBeam(R_RegisterModel("progs/bolt2.mdl"));
+		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/bolt2.mdl"));
 		break;
 	
 	case TE_LIGHTNING3:				// lightning bolts
-		CL_ParseBeam(R_RegisterModel("progs/bolt3.mdl"));
+		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/bolt3.mdl"));
 		break;
 	
 	case TE_LAVASPLASH:	
