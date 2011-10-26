@@ -45,6 +45,7 @@
 #include "content_types.h"
 #include "event_queue.h"
 #include "socket.h"
+#include "quakedefs.h"
 #include "hexen2defs.h"
 #include "quake2defs.h"
 

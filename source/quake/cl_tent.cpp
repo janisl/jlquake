@@ -31,60 +31,58 @@ void CL_ParseTEnt (void)
 	int type = net_message.ReadByte();
 	switch (type)
 	{
-	case TE_WIZSPIKE:			// spike hitting wall
+	case Q1TE_WIZSPIKE:			// spike hitting wall
 		CLQ1_ParseWizSpike(net_message);
 		break;
 		
-	case TE_KNIGHTSPIKE:			// spike hitting wall
+	case Q1TE_KNIGHTSPIKE:			// spike hitting wall
 		CLQ1_ParseKnightSpike(net_message);
 		break;
 		
-	case TE_SPIKE:			// spike hitting wall
+	case Q1TE_SPIKE:			// spike hitting wall
 		CLQ1_ParseSpike(net_message);
 		break;
-	case TE_SUPERSPIKE:			// super spike hitting wall
+	case Q1TE_SUPERSPIKE:			// super spike hitting wall
 		CLQ1_ParseSuperSpike(net_message);
 		break;
 		
-	case TE_EXPLOSION:			// rocket explosion
+	case Q1TE_EXPLOSION:			// rocket explosion
 		CLQ1_ParseExplosion(net_message);
 		break;
 		
-	case TE_TAREXPLOSION:			// tarbaby explosion
+	case Q1TE_TAREXPLOSION:			// tarbaby explosion
 		CLQ1_ParseTarExplosion(net_message);
 		break;
 
-	case TE_EXPLOSION2:				// color mapped explosion
+	case Q1TE_EXPLOSION2:				// color mapped explosion
 		CLQ1_ParseExplosion2(net_message);
 		break;
 		
-	case TE_LIGHTNING1:				// lightning bolts
+	case Q1TE_LIGHTNING1:				// lightning bolts
 		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/bolt.mdl"));
 		break;
 	
-	case TE_LIGHTNING2:				// lightning bolts
+	case Q1TE_LIGHTNING2:				// lightning bolts
 		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/bolt2.mdl"));
 		break;
 	
-	case TE_LIGHTNING3:				// lightning bolts
+	case Q1TE_LIGHTNING3:				// lightning bolts
 		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/bolt3.mdl"));
 		break;
 	
-// PGM 01/21/97 
-	case TE_BEAM:				// grappling hook beam
+	case Q1TE_BEAM:				// grappling hook beam
 		CLQ1_ParseBeam(net_message, R_RegisterModel("progs/beam.mdl"));
 		break;
-// PGM 01/21/97
 
-	case TE_LAVASPLASH:	
+	case Q1TE_LAVASPLASH:	
 		CLQ1_ParseLavaSplash(net_message);
 		break;
 	
-	case TE_TELEPORT:
+	case Q1TE_TELEPORT:
 		CLQ1_ParseTeleportSplash(net_message);
 		break;
 		
-	case TE_GUNSHOT:			// bullet hitting wall
+	case Q1TE_GUNSHOT:			// bullet hitting wall
 		CLQ1_ParseGunShot(net_message);
 		break;
 		
