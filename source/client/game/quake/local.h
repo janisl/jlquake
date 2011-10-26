@@ -14,17 +14,6 @@
 //**
 //**************************************************************************
 
-enum { MAX_BEAMS_Q1 = 24 };
-
-struct q1beam_t
-{
-	int entity;
-	qhandle_t model;
-	float endtime;
-	vec3_t start;
-	vec3_t end;
-};
-
 enum { MAX_EXPLOSIONS_Q1 = 8 };
 
 struct q1explosion_t
@@ -34,7 +23,6 @@ struct q1explosion_t
 	qhandle_t	model;
 };
 
-extern q1beam_t clq1_beams[MAX_BEAMS_Q1];
 extern q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
 
 extern sfxHandle_t clq1_sfx_wizhit;

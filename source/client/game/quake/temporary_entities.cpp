@@ -17,7 +17,18 @@
 #include "../../client.h"
 #include "local.h"
 
-q1beam_t clq1_beams[MAX_BEAMS_Q1];
+enum { MAX_BEAMS_Q1 = 24 };
+
+struct q1beam_t
+{
+	int entity;
+	qhandle_t model;
+	float endtime;
+	vec3_t start;
+	vec3_t end;
+};
+
+static q1beam_t clq1_beams[MAX_BEAMS_Q1];
 q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
 
 sfxHandle_t clq1_sfx_wizhit;
