@@ -408,12 +408,6 @@ void V_UpdatePalette (void);
 void V_Register (void);
 void V_ParseDamage (void);
 
-
-//
-// cl_tent
-//
-void CL_ClearTEnts (void);
-
 //
 // cl_ents.c
 //

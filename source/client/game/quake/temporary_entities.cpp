@@ -38,3 +38,9 @@ void CLQ1_InitTEnts()
 	clq1_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
 	clq1_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
 }
+
+void CLQ1_ClearTEnts()
+{
+	Com_Memset(clq1_beams, 0, sizeof(clq1_beams));
+	Com_Memset(cl_explosions, 0, sizeof(cl_explosions));
+}

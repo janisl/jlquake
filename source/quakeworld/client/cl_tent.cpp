@@ -23,17 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*
 =================
-CL_ClearTEnts
-=================
-*/
-void CL_ClearTEnts (void)
-{
-	Com_Memset(&clq1_beams, 0, sizeof(clq1_beams));
-	Com_Memset(&cl_explosions, 0, sizeof(cl_explosions));
-}
-
-/*
-=================
 CL_AllocExplosion
 =================
 */

@@ -46,3 +46,4 @@ extern sfxHandle_t clq1_sfx_ric3;
 extern sfxHandle_t clq1_sfx_r_exp3;
 
 void CLQ1_InitTEnts();
+void CLQ1_ClearTEnts();

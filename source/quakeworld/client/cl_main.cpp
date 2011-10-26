@@ -363,7 +363,7 @@ void CL_ClearState (void)
 	if (host_hunklevel)	// FIXME: check this...
 		Hunk_FreeToLowMark (host_hunklevel);
 
-	CL_ClearTEnts ();
+	CLQ1_ClearTEnts ();
 
 // wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));
