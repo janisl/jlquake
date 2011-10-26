@@ -28,8 +28,17 @@ struct q1beam_t
 	vec3_t end;
 };
 
+enum { MAX_EXPLOSIONS_Q1 = 8 };
+
+struct q1explosion_t
+{
+	vec3_t origin;
+	float start;
+	qhandle_t model;
+};
+
 static q1beam_t clq1_beams[MAX_BEAMS_Q1];
-q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
+static q1explosion_t clq1_explosions[MAX_EXPLOSIONS_Q1];
 
 static sfxHandle_t clq1_sfx_wizhit;
 static sfxHandle_t clq1_sfx_knighthit;
@@ -53,7 +62,7 @@ void CLQ1_InitTEnts()
 void CLQ1_ClearTEnts()
 {
 	Com_Memset(clq1_beams, 0, sizeof(clq1_beams));
-	Com_Memset(cl_explosions, 0, sizeof(cl_explosions));
+	Com_Memset(clq1_explosions, 0, sizeof(clq1_explosions));
 }
 
 void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
@@ -179,13 +188,13 @@ void CLQ1_UpdateBeams()
 	}
 }
 
-q1explosion_t* CLQ1_AllocExplosion()
+static q1explosion_t* CLQ1_AllocExplosion()
 {
 	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++)
 	{
-		if (!cl_explosions[i].model)
+		if (!clq1_explosions[i].model)
 		{
-			return &cl_explosions[i];
+			return &clq1_explosions[i];
 		}
 	}
 
@@ -194,18 +203,26 @@ q1explosion_t* CLQ1_AllocExplosion()
 	int index = 0;
 	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++)
 	{
-		if (cl_explosions[i].start < time)
+		if (clq1_explosions[i].start < time)
 		{
-			time = cl_explosions[i].start;
+			time = clq1_explosions[i].start;
 			index = i;
 		}
 	}
-	return &cl_explosions[index];
+	return &clq1_explosions[index];
+}
+
+static void CLQ1_ExplosionSprite(vec3_t pos)
+{
+	q1explosion_t* ex = CLQ1_AllocExplosion();
+	VectorCopy(pos, ex->origin);
+	ex->start = cl_common->serverTime * 0.001;
+	ex->model = R_RegisterModel("progs/s_explod.spr");
 }
 
 void CLQ1_UpdateExplosions()
 {
-	q1explosion_t* ex = cl_explosions;
+	q1explosion_t* ex = clq1_explosions;
 	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++, ex++)
 	{
 		if (!ex->model)
@@ -325,10 +342,7 @@ void CLQ1_ParseExplosion(QMsg& message)
 
 	if (GGameType & GAME_QuakeWorld)
 	{
-		q1explosion_t* ex = CLQ1_AllocExplosion();
-		VectorCopy(pos, ex->origin);
-		ex->start = cl_common->serverTime * 0.001;
-		ex->model = R_RegisterModel("progs/s_explod.spr");
+		CLQ1_ExplosionSprite(pos);
 	}
 }
 

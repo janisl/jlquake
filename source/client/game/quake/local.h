@@ -14,17 +14,6 @@
 //**
 //**************************************************************************
 
-enum { MAX_EXPLOSIONS_Q1 = 8 };
-
-struct q1explosion_t
-{
-	vec3_t		origin;
-	float		start;
-	qhandle_t	model;
-};
-
-extern q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
-
 extern Cvar* cl_doubleeyes;
 
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
@@ -33,7 +22,6 @@ void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();
 void CLQ1_ParseBeam(QMsg& message, qhandle_t model);
 void CLQ1_UpdateBeams();
-q1explosion_t* CLQ1_AllocExplosion();
 void CLQ1_UpdateExplosions();
 void CLQ1_ParseWizSpike(QMsg& message);
 void CLQ1_ParseKnightSpike(QMsg& message);
