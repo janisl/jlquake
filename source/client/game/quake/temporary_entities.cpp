@@ -167,3 +167,54 @@ void CLQ1_UpdateBeams()
 		}
 	}
 }
+
+q1explosion_t* CLQ1_AllocExplosion()
+{
+	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++)
+	{
+		if (!cl_explosions[i].model)
+		{
+			return &cl_explosions[i];
+		}
+	}
+
+	// find the oldest explosion
+	float time = cl_common->serverTime * 0.001;
+	int index = 0;
+	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++)
+	{
+		if (cl_explosions[i].start < time)
+		{
+			time = cl_explosions[i].start;
+			index = i;
+		}
+	}
+	return &cl_explosions[index];
+}
+
+void CLQ1_UpdateExplosions()
+{
+	q1explosion_t* ex = cl_explosions;
+	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++, ex++)
+	{
+		if (!ex->model)
+		{
+			continue;
+		}
+		int f = 10 * (cl_common->serverTime * 0.001 - ex->start);
+		if (f >= R_ModelNumFrames(ex->model))
+		{
+			ex->model = 0;
+			continue;
+		}
+
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+		VectorCopy(ex->origin, ent.origin);
+		ent.hModel = ex->model;
+		ent.frame = f;
+		CLQ1_SetRefEntAxis(&ent, vec3_origin);
+		R_AddRefEntityToScene(&ent);
+	}
+}

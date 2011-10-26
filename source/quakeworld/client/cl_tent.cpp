@@ -23,33 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*
 =================
-CL_AllocExplosion
-=================
-*/
-q1explosion_t *CL_AllocExplosion (void)
-{
-	int		i;
-	float	time;
-	int		index;
-	
-	for (i=0 ; i<MAX_EXPLOSIONS_Q1 ; i++)
-		if (!cl_explosions[i].model)
-			return &cl_explosions[i];
-// find the oldest explosion
-	time = cl.serverTimeFloat;
-	index = 0;
-
-	for (i=0 ; i<MAX_EXPLOSIONS_Q1 ; i++)
-		if (cl_explosions[i].start < time)
-		{
-			time = cl_explosions[i].start;
-			index = i;
-		}
-	return &cl_explosions[index];
-}
-
-/*
-=================
 CL_ParseTEnt
 =================
 */
@@ -133,7 +106,7 @@ void CL_ParseTEnt (void)
 		S_StartSound(pos, -1, 0, clq1_sfx_r_exp3, 1, 1);
 	
 	// sprite
-		ex = CL_AllocExplosion ();
+		ex = CLQ1_AllocExplosion ();
 		VectorCopy (pos, ex->origin);
 		ex->start = cl.serverTimeFloat;
 		ex->model = R_RegisterModel("progs/s_explod.spr");
@@ -204,45 +177,11 @@ void CL_ParseTEnt (void)
 
 /*
 =================
-CL_UpdateExplosions
-=================
-*/
-void CL_UpdateExplosions (void)
-{
-	int			i;
-	int			f;
-	q1explosion_t	*ex;
-
-	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS_Q1 ; i++, ex++)
-	{
-		if (!ex->model)
-			continue;
-		f = 10*(cl.serverTimeFloat - ex->start);
-		if (f >= R_ModelNumFrames(ex->model))
-		{
-			ex->model = 0;
-			continue;
-		}
-
-		refEntity_t ent;
-		Com_Memset(&ent, 0, sizeof(ent));
-
-		ent.reType = RT_MODEL;
-		VectorCopy(ex->origin, ent.origin);
-		ent.hModel = ex->model;
-		ent.frame = f;
-		CLQ1_SetRefEntAxis(&ent, vec3_origin);
-		R_AddRefEntityToScene(&ent);
-	}
-}
-
-/*
-=================
 CL_UpdateTEnts
 =================
 */
 void CL_UpdateTEnts (void)
 {
 	CLQ1_UpdateBeams ();
-	CL_UpdateExplosions ();
+	CLQ1_UpdateExplosions ();
 }

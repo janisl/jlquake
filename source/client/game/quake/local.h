@@ -53,3 +53,5 @@ void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();
 void CLQ1_ParseBeam(QMsg& message, qhandle_t model);
 void CLQ1_UpdateBeams();
+q1explosion_t* CLQ1_AllocExplosion();
+void CLQ1_UpdateExplosions();
