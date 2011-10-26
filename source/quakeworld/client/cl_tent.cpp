@@ -21,30 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-static sfxHandle_t	cl_sfx_wizhit;
-static sfxHandle_t	cl_sfx_knighthit;
-static sfxHandle_t	cl_sfx_tink1;
-static sfxHandle_t	cl_sfx_ric1;
-static sfxHandle_t	cl_sfx_ric2;
-static sfxHandle_t	cl_sfx_ric3;
-static sfxHandle_t	cl_sfx_r_exp3;
-
-/*
-=================
-CL_ParseTEnts
-=================
-*/
-void CL_InitTEnts (void)
-{
-	cl_sfx_wizhit = S_RegisterSound("wizard/hit.wav");
-	cl_sfx_knighthit = S_RegisterSound("hknight/hit.wav");
-	cl_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
-	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
-	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
-	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
-	cl_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
-}
-
 /*
 =================
 CL_ClearTEnts
@@ -154,7 +130,7 @@ void CL_ParseTEnt (void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		CLQ1_RunParticleEffect (pos, vec3_origin, 20, 30);
-		S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
+		S_StartSound(pos, -1, 0, clq1_sfx_wizhit, 1, 1);
 		break;
 		
 	case TE_KNIGHTSPIKE:			// spike hitting wall
@@ -162,7 +138,7 @@ void CL_ParseTEnt (void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		CLQ1_RunParticleEffect (pos, vec3_origin, 226, 20);
-		S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
+		S_StartSound(pos, -1, 0, clq1_sfx_knighthit, 1, 1);
 		break;
 		
 	case TE_SPIKE:			// spike hitting wall
@@ -172,16 +148,16 @@ void CL_ParseTEnt (void)
 		CLQ1_RunParticleEffect (pos, vec3_origin, 0, 10);
 
 		if ( rand() % 5 )
-			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
+			S_StartSound(pos, -1, 0, clq1_sfx_tink1, 1, 1);
 		else
 		{
 			rnd = rand() & 3;
 			if (rnd == 1)
-				S_StartSound(pos, -1, 0, cl_sfx_ric1, 1, 1);
+				S_StartSound(pos, -1, 0, clq1_sfx_ric1, 1, 1);
 			else if (rnd == 2)
-				S_StartSound(pos, -1, 0, cl_sfx_ric2, 1, 1);
+				S_StartSound(pos, -1, 0, clq1_sfx_ric2, 1, 1);
 			else
-				S_StartSound(pos, -1, 0, cl_sfx_ric3, 1, 1);
+				S_StartSound(pos, -1, 0, clq1_sfx_ric3, 1, 1);
 		}
 		break;
 	case TE_SUPERSPIKE:			// super spike hitting wall
@@ -191,16 +167,16 @@ void CL_ParseTEnt (void)
 		CLQ1_RunParticleEffect (pos, vec3_origin, 0, 20);
 
 		if ( rand() % 5 )
-			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
+			S_StartSound(pos, -1, 0, clq1_sfx_tink1, 1, 1);
 		else
 		{
 			rnd = rand() & 3;
 			if (rnd == 1)
-				S_StartSound(pos, -1, 0, cl_sfx_ric1, 1, 1);
+				S_StartSound(pos, -1, 0, clq1_sfx_ric1, 1, 1);
 			else if (rnd == 2)
-				S_StartSound(pos, -1, 0, cl_sfx_ric2, 1, 1);
+				S_StartSound(pos, -1, 0, clq1_sfx_ric2, 1, 1);
 			else
-				S_StartSound(pos, -1, 0, cl_sfx_ric3, 1, 1);
+				S_StartSound(pos, -1, 0, clq1_sfx_ric3, 1, 1);
 		}
 		break;
 		
@@ -215,7 +191,7 @@ void CL_ParseTEnt (void)
 		CLQ1_ExplosionLight(pos);
 	
 	// sound
-		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
+		S_StartSound(pos, -1, 0, clq1_sfx_r_exp3, 1, 1);
 	
 	// sprite
 		ex = CL_AllocExplosion ();
@@ -230,7 +206,7 @@ void CL_ParseTEnt (void)
 		pos[2] = net_message.ReadCoord ();
 		CLQ1_BlobExplosion (pos);
 
-		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
+		S_StartSound(pos, -1, 0, clq1_sfx_r_exp3, 1, 1);
 		break;
 
 	case TE_LIGHTNING1:				// lightning bolts

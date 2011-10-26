@@ -317,7 +317,6 @@ void V_ParseDamage (void);
 //
 // cl_tent
 //
-void CL_InitTEnts (void);
 void CL_SignonReply (void);
 
 extern	image_t*	playertextures[16];

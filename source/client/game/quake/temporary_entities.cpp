@@ -19,3 +19,22 @@
 
 q1beam_t clq1_beams[MAX_BEAMS_Q1];
 q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
+
+sfxHandle_t clq1_sfx_wizhit;
+sfxHandle_t clq1_sfx_knighthit;
+sfxHandle_t clq1_sfx_tink1;
+sfxHandle_t clq1_sfx_ric1;
+sfxHandle_t clq1_sfx_ric2;
+sfxHandle_t clq1_sfx_ric3;
+sfxHandle_t clq1_sfx_r_exp3;
+
+void CLQ1_InitTEnts()
+{
+	clq1_sfx_wizhit = S_RegisterSound("wizard/hit.wav");
+	clq1_sfx_knighthit = S_RegisterSound("hknight/hit.wav");
+	clq1_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
+	clq1_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
+	clq1_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
+	clq1_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
+	clq1_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
+}

@@ -36,3 +36,13 @@ struct q1explosion_t
 
 extern q1beam_t clq1_beams[MAX_BEAMS_Q1];
 extern q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
+
+extern sfxHandle_t clq1_sfx_wizhit;
+extern sfxHandle_t clq1_sfx_knighthit;
+extern sfxHandle_t clq1_sfx_tink1;
+extern sfxHandle_t clq1_sfx_ric1;
+extern sfxHandle_t clq1_sfx_ric2;
+extern sfxHandle_t clq1_sfx_ric3;
+extern sfxHandle_t clq1_sfx_r_exp3;
+
+void CLQ1_InitTEnts();
