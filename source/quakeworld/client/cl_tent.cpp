@@ -204,82 +204,6 @@ void CL_ParseTEnt (void)
 
 /*
 =================
-CL_UpdateBeams
-=================
-*/
-void CL_UpdateBeams (void)
-{
-	int			i;
-	q1beam_t		*b;
-	vec3_t		dist, org;
-	float		d;
-	float		yaw, pitch;
-	float		forward;
-
-// update lightning
-	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTimeFloat)
-			continue;
-
-	// if coming from the player, update the start position
-		if (b->entity == cl.playernum+1)	// entity 0 is the world
-		{
-			VectorCopy (cl.simorg, b->start);
-//			b->start[2] -= 22;	// adjust for view height
-		}
-
-	// calculate pitch and yaw
-		VectorSubtract (b->end, b->start, dist);
-
-		if (dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if (dist[2] > 0)
-				pitch = 90;
-			else
-				pitch = 270;
-		}
-		else
-		{
-			yaw = (int) (atan2(dist[1], dist[0]) * 180 / M_PI);
-			if (yaw < 0)
-				yaw += 360;
-	
-			forward = sqrt (dist[0]*dist[0] + dist[1]*dist[1]);
-			pitch = (int) (atan2(dist[2], forward) * 180 / M_PI);
-			if (pitch < 0)
-				pitch += 360;
-		}
-
-	// add new entities for the lightning
-		VectorCopy (b->start, org);
-		d = VectorNormalize(dist);
-		while (d > 0)
-		{
-			refEntity_t ent;
-			Com_Memset(&ent, 0, sizeof(ent));
-
-			ent.reType = RT_MODEL;
-			VectorCopy(org, ent.origin);
-			ent.hModel = b->model;
-			vec3_t angles;
-			angles[0] = pitch;
-			angles[1] = yaw;
-			angles[2] = rand() % 360;
-			CL_SetRefEntAxis(&ent, angles);
-			R_AddRefEntityToScene(&ent);
-
-			for (i=0 ; i<3 ; i++)
-				org[i] += dist[i]*30;
-			d -= 30;
-		}
-	}
-	
-}
-
-/*
-=================
 CL_UpdateExplosions
 =================
 */
@@ -307,7 +231,7 @@ void CL_UpdateExplosions (void)
 		VectorCopy(ex->origin, ent.origin);
 		ent.hModel = ex->model;
 		ent.frame = f;
-		CL_SetRefEntAxis(&ent, vec3_origin);
+		CLQ1_SetRefEntAxis(&ent, vec3_origin);
 		R_AddRefEntityToScene(&ent);
 	}
 }
@@ -319,6 +243,6 @@ CL_UpdateTEnts
 */
 void CL_UpdateTEnts (void)
 {
-	CL_UpdateBeams ();
+	CLQ1_UpdateBeams ();
 	CL_UpdateExplosions ();
 }

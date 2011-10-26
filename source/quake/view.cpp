@@ -793,7 +793,7 @@ static void CL_AddViewModel()
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(cl.viewent.origin, gun.origin);
 	gun.hModel = cl.viewent.model;
-	CL_SetRefEntAxis(&gun, cl.viewent.angles);	
+	CLQ1_SetRefEntAxis(&gun, cl.viewent.angles);	
 	gun.frame = cl.viewent.frame;
 	gun.shaderTime = cl.viewent.syncbase;
 	gun.skinNum = cl.viewent.skinnum;

@@ -66,10 +66,14 @@ extern clientActiveCommon_t* cl_common;
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 
-//	Called by Windows driver.
-void Key_ClearStates();
-
 float frand();	// 0 to 1
 float crand();	// -1 to 1
+
+//---------------------------------------------
+//	Must be provided
+//	Called by Windows driver.
+void Key_ClearStates();
+int CL_GetViewEntity();
+float* CL_GetSimOrg();
 
 #endif

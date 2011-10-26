@@ -389,7 +389,7 @@ void CL_LinkPacketEntities (void)
 				angles[i] = a2 + f * (a1 - a2);
 			}
 		}
-		CL_SetRefEntAxis(&ent, angles);
+		CLQ1_SetRefEntAxis(&ent, angles);
 
 		// calculate origin
 		for (i=0 ; i<3 ; i++)
@@ -523,7 +523,7 @@ void CL_LinkProjectiles (void)
 		ent.reType = RT_MODEL;
 		ent.hModel = cl.model_precache[pr->modelindex];
 		VectorCopy(pr->origin, ent.origin);
-		CL_SetRefEntAxis(&ent, pr->angles);
+		CLQ1_SetRefEntAxis(&ent, pr->angles);
 		R_AddRefEntityToScene(&ent);
 	}
 }
@@ -664,7 +664,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 	vec3_t flag_angles;
 	VectorCopy(angles, flag_angles);
 	flag_angles[2] -= 45;
-	CL_SetRefEntAxis(&newent, flag_angles);
+	CLQ1_SetRefEntAxis(&newent, flag_angles);
 	R_AddRefEntityToScene(&newent);
 }
 
@@ -743,7 +743,7 @@ void CL_LinkPlayers (void)
 		angles[YAW] = state->viewangles[YAW];
 		angles[ROLL] = 0;
 		angles[ROLL] = V_CalcRoll(angles, state->velocity)*4;
-		CL_SetRefEntAxis(&ent, angles);
+		CLQ1_SetRefEntAxis(&ent, angles);
 
 		// only predict half the move to minimize overruns
 		msec = 500*(playertime - state->state_time);
@@ -939,7 +939,7 @@ static void CL_LinkStaticEntities()
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->origin, rent.origin);
 		rent.hModel = pent->model;
-		CL_SetRefEntAxis(&rent, pent->angles);
+		CLQ1_SetRefEntAxis(&rent, pent->angles);
 		rent.frame = pent->frame;
 		rent.skinNum = pent->skinnum;
 		rent.shaderTime = pent->syncbase;

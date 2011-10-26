@@ -40,8 +40,6 @@ Cvar*	m_yaw;
 Cvar*	m_forward;
 Cvar*	m_side;
 
-Cvar*	cl_doubleeyes;
-
 client_static_t	cls;
 client_state_t	cl;
 // FIXME: put these on hunk?
@@ -444,7 +442,7 @@ void CL_RelinkEntities (void)
 		rent.reType = RT_MODEL;
 		VectorCopy(ent->origin, rent.origin);
 		rent.hModel = ent->model;
-		CL_SetRefEntAxis(&rent, ent->angles);	
+		CLQ1_SetRefEntAxis(&rent, ent->angles);	
 		rent.frame = ent->frame;
 		rent.shaderTime = ent->syncbase;
 		R_HandleRefEntColormap(&rent, ent->colormap);
@@ -467,7 +465,7 @@ static void CL_LinkStaticEntities()
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->origin, rent.origin);
 		rent.hModel = pent->model;
-		CL_SetRefEntAxis(&rent, pent->angles);	
+		CLQ1_SetRefEntAxis(&rent, pent->angles);	
 		rent.frame = pent->frame;
 		rent.shaderTime = pent->syncbase;
 		rent.skinNum = pent->skinnum;
@@ -611,45 +609,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
-{
-	vec3_t angles;
-	angles[YAW] = ent_angles[YAW];
-	angles[ROLL] = ent_angles[ROLL];
-	if (R_IsMeshModel(ent->hModel))
-	{
-		// stupid quake bug
-		angles[PITCH] = -ent_angles[PITCH];
-	}
-	else
-	{
-		angles[PITCH] = ent_angles[PITCH];
-	}
-
-	AnglesToAxis(angles, ent->axis);
-
-	if (!String::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl") && cl_doubleeyes->value)
-	{
-		// double size of eyes, since they are really hard to see in gl
-		ent->renderfx |= RF_LIGHTING_ORIGIN;
-		VectorCopy(ent->origin, ent->lightingOrigin);
-		ent->origin[2] -= (22 + 8);
-
-		VectorScale(ent->axis[0], 2, ent->axis[0]);
-		VectorScale(ent->axis[1], 2, ent->axis[1]);
-		VectorScale(ent->axis[2], 2, ent->axis[2]);
-		ent->nonNormalizedAxes = true;
-	}
-
-	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!String::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
-		!String::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
-	{
-		ent->renderfx |= RF_ABSOLUTE_LIGHT;
-		ent->radius = 1.0;
-	}
-}
-
 void CIN_StartedPlayback()
 {
 }
@@ -661,4 +620,14 @@ bool CIN_IsInCinematicState()
 
 void CIN_FinishCinematic()
 {
+}
+
+int CL_GetViewEntity()
+{
+	return cl.viewentity;
+}
+
+float* CL_GetSimOrg()
+{
+	return cl_entities[cl.viewentity].origin;
 }

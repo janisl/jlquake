@@ -5,6 +5,7 @@ set(CLIENT_FILES
 	cinematic/roq.cpp
 	game/hexen2/light_effects.cpp
 	game/hexen2/particle_effects.cpp
+	game/quake/entities.cpp
 	game/quake/light_effects.cpp
 	game/quake/particle_effects.cpp
 	game/quake/temporary_entities.cpp

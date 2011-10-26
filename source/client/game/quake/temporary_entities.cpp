@@ -90,3 +90,80 @@ void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 	}
 	Log::write("beam list overflow!\n");
 }
+
+void CLQ1_UpdateBeams()
+{
+	// update lightning
+	q1beam_t* beam = clq1_beams;
+	for (int i = 0; i < MAX_BEAMS_Q1; i++, beam++)
+	{
+		if (!beam->model || beam->endtime < cl_common->serverTime * 0.001)
+		{
+			continue;
+		}
+
+		// if coming from the player, update the start position
+		if (beam->entity == CL_GetViewEntity())
+		{
+			VectorCopy(CL_GetSimOrg(), beam->start);
+		}
+
+		// calculate pitch and yaw
+		vec3_t direction;
+		VectorSubtract(beam->end, beam->start, direction);
+
+		float yaw, pitch;
+		if (direction[1] == 0 && direction[0] == 0)
+		{
+			yaw = 0;
+			if (direction[2] > 0)
+			{
+				pitch = 90;
+			}
+			else
+			{
+				pitch = 270;
+			}
+		}
+		else
+		{
+			yaw = (int)(atan2(direction[1], direction[0]) * 180 / M_PI);
+			if (yaw < 0)
+			{
+				yaw += 360;
+			}
+
+			float forward = sqrt(direction[0] * direction[0] + direction[1] * direction[1]);
+			pitch = (int)(atan2(direction[2], forward) * 180 / M_PI);
+			if (pitch < 0)
+			{
+				pitch += 360;
+			}
+		}
+
+		// add new entities for the lightning
+		vec3_t origin;
+		VectorCopy(beam->start, origin);
+		float distance = VectorNormalize(direction);
+		while (distance > 0)
+		{
+			refEntity_t entity;
+			Com_Memset(&entity, 0, sizeof(entity));
+			entity.reType = RT_MODEL;
+			VectorCopy(origin, entity.origin);
+			entity.hModel = beam->model;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand() % 360;
+			CLQ1_SetRefEntAxis(&entity, angles);
+			R_AddRefEntityToScene(&entity);
+
+			for (int j = 0; j < 3; j++)
+			{
+				origin[j] += direction[j] * 30;
+			}
+			distance -= 30;
+		}
+	}
+}

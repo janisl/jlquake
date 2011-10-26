@@ -1485,45 +1485,6 @@ void Host_Shutdown(void)
 	R_Shutdown(true);
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
-{
-	vec3_t angles;
-	angles[YAW] = ent_angles[YAW];
-	angles[ROLL] = ent_angles[ROLL];
-	if (R_IsMeshModel(ent->hModel))
-	{
-		// stupid quake bug
-		angles[PITCH] = -ent_angles[PITCH];
-	}
-	else
-	{
-		angles[PITCH] = ent_angles[PITCH];
-	}
-
-	AnglesToAxis(angles, ent->axis);
-
-	if (!String::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl"))
-	{
-		// double size of eyes, since they are really hard to see in gl
-		ent->renderfx |= RF_LIGHTING_ORIGIN;
-		VectorCopy(ent->origin, ent->lightingOrigin);
-		ent->origin[2] -= (22 + 8);
-
-		VectorScale(ent->axis[0], 2, ent->axis[0]);
-		VectorScale(ent->axis[1], 2, ent->axis[1]);
-		VectorScale(ent->axis[2], 2, ent->axis[2]);
-		ent->nonNormalizedAxes = true;
-	}
-
-	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!String::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
-		!String::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
-	{
-		ent->renderfx |= RF_ABSOLUTE_LIGHT;
-		ent->radius = 1;
-	}
-}
-
 void CIN_StartedPlayback()
 {
 }
@@ -1537,3 +1498,12 @@ void CIN_FinishCinematic()
 {
 }
 
+int CL_GetViewEntity()
+{
+	return cl.playernum + 1;// entity 0 is the world
+}
+
+float* CL_GetSimOrg()
+{
+	return cl.simorg;
+}

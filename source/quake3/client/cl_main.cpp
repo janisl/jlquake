@@ -3212,3 +3212,13 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 
 	return qfalse;
 }
+
+int CL_GetViewEntity()
+{
+	return 0;
+}
+
+float* CL_GetSimOrg()
+{
+	return NULL;
+}

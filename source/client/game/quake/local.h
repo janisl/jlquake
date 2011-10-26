@@ -45,6 +45,11 @@ extern sfxHandle_t clq1_sfx_ric2;
 extern sfxHandle_t clq1_sfx_ric3;
 extern sfxHandle_t clq1_sfx_r_exp3;
 
+extern Cvar* cl_doubleeyes;
+
+void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
+
 void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();
 void CLQ1_ParseBeam(QMsg& message, qhandle_t model);
+void CLQ1_UpdateBeams();
