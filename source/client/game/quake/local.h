@@ -25,14 +25,6 @@ struct q1explosion_t
 
 extern q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
 
-extern sfxHandle_t clq1_sfx_wizhit;
-extern sfxHandle_t clq1_sfx_knighthit;
-extern sfxHandle_t clq1_sfx_tink1;
-extern sfxHandle_t clq1_sfx_ric1;
-extern sfxHandle_t clq1_sfx_ric2;
-extern sfxHandle_t clq1_sfx_ric3;
-extern sfxHandle_t clq1_sfx_r_exp3;
-
 extern Cvar* cl_doubleeyes;
 
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
@@ -43,3 +35,15 @@ void CLQ1_ParseBeam(QMsg& message, qhandle_t model);
 void CLQ1_UpdateBeams();
 q1explosion_t* CLQ1_AllocExplosion();
 void CLQ1_UpdateExplosions();
+void CLQ1_ParseWizSpike(QMsg& message);
+void CLQ1_ParseKnightSpike(QMsg& message);
+void CLQ1_ParseSpike(QMsg& message);
+void CLQ1_SuperParseSpike(QMsg& message);
+void CLQ1_ParseExplosion(QMsg& message);
+void CLQ1_ParseTarExplosion(QMsg& message);
+void CLQ1_ParseExplosion2(QMsg& message);
+void CLQ1_ParseLavaSplash(QMsg& message);
+void CLQ1_ParseTeleportSplash(QMsg& message);
+void CLQ1_ParseGunShot(QMsg& message);
+void CLQ1_ParseBlood(QMsg& message);
+void CLQ1_ParseLightningBlood(QMsg& message);

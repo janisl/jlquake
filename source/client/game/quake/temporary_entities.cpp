@@ -31,13 +31,13 @@ struct q1beam_t
 static q1beam_t clq1_beams[MAX_BEAMS_Q1];
 q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
 
-sfxHandle_t clq1_sfx_wizhit;
-sfxHandle_t clq1_sfx_knighthit;
-sfxHandle_t clq1_sfx_tink1;
-sfxHandle_t clq1_sfx_ric1;
-sfxHandle_t clq1_sfx_ric2;
-sfxHandle_t clq1_sfx_ric3;
-sfxHandle_t clq1_sfx_r_exp3;
+static sfxHandle_t clq1_sfx_wizhit;
+static sfxHandle_t clq1_sfx_knighthit;
+static sfxHandle_t clq1_sfx_tink1;
+static sfxHandle_t clq1_sfx_ric1;
+static sfxHandle_t clq1_sfx_ric2;
+static sfxHandle_t clq1_sfx_ric3;
+static sfxHandle_t clq1_sfx_r_exp3;
 
 void CLQ1_InitTEnts()
 {
@@ -228,4 +228,187 @@ void CLQ1_UpdateExplosions()
 		CLQ1_SetRefEntAxis(&ent, vec3_origin);
 		R_AddRefEntityToScene(&ent);
 	}
+}
+
+void CLQ1_ParseWizSpike(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(pos, vec3_origin, 20, 30);
+	S_StartSound(pos, -1, 0, clq1_sfx_wizhit, 1, 1);
+}
+
+void CLQ1_ParseKnightSpike(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(pos, vec3_origin, 226, 20);
+	S_StartSound(pos, -1, 0, clq1_sfx_knighthit, 1, 1);
+}
+
+void CLQ1_ParseSpike(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect (pos, vec3_origin, 0, 10);
+	if (rand() % 5)
+	{
+		S_StartSound(pos, -1, 0, clq1_sfx_tink1, 1, 1);
+	}
+	else
+	{
+		int rnd = rand() & 3;
+		if (rnd == 1)
+		{
+			S_StartSound(pos, -1, 0, clq1_sfx_ric1, 1, 1);
+		}
+		else if (rnd == 2)
+		{
+			S_StartSound(pos, -1, 0, clq1_sfx_ric2, 1, 1);
+		}
+		else
+		{
+			S_StartSound(pos, -1, 0, clq1_sfx_ric3, 1, 1);
+		}
+	}
+}
+
+void CLQ1_SuperParseSpike(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(pos, vec3_origin, 0, 20);
+	if (rand() % 5)
+	{
+		S_StartSound(pos, -1, 0, clq1_sfx_tink1, 1, 1);
+	}
+	else
+	{
+		int rnd = rand() & 3;
+		if (rnd == 1)
+		{
+			S_StartSound(pos, -1, 0, clq1_sfx_ric1, 1, 1);
+		}
+		else if (rnd == 2)
+		{
+			S_StartSound(pos, -1, 0, clq1_sfx_ric2, 1, 1);
+		}
+		else
+		{
+			S_StartSound(pos, -1, 0, clq1_sfx_ric3, 1, 1);
+		}
+	}
+}
+
+void CLQ1_ParseExplosion(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_ParticleExplosion(pos);
+	CLQ1_ExplosionLight(pos);
+	S_StartSound(pos, -1, 0, clq1_sfx_r_exp3, 1, 1);
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		q1explosion_t* ex = CLQ1_AllocExplosion();
+		VectorCopy(pos, ex->origin);
+		ex->start = cl_common->serverTime * 0.001;
+		ex->model = R_RegisterModel("progs/s_explod.spr");
+	}
+}
+
+void CLQ1_ParseTarExplosion(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_BlobExplosion(pos);
+	S_StartSound(pos, -1, 0, clq1_sfx_r_exp3, 1, 1);
+}
+
+void CLQ1_ParseExplosion2(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+	int colorStart = message.ReadByte();
+	int colorLength = message.ReadByte();
+
+	CLQ1_ParticleExplosion2(pos, colorStart, colorLength);
+	CLQ1_ExplosionLight(pos);
+	S_StartSound(pos, -1, 0, clq1_sfx_r_exp3, 1, 1);
+}
+
+void CLQ1_ParseLavaSplash(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_LavaSplash(pos);
+}
+
+void CLQ1_ParseTeleportSplash(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_TeleportSplash(pos);
+}
+
+void CLQ1_ParseGunShot(QMsg& message)
+{
+	int cnt = 1;
+	if (GGameType & GAME_QuakeWorld)
+	{
+		cnt = message.ReadByte();
+	}
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(pos, vec3_origin, 0, 20 * cnt);
+}
+
+void CLQ1_ParseBlood(QMsg& message)
+{
+	int cnt = message.ReadByte();
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(pos, vec3_origin, 73, 20 * cnt);
+}
+
+void CLQ1_ParseLightningBlood(QMsg& message)
+{
+	vec3_t pos;
+	pos[0] = message.ReadCoord();
+	pos[1] = message.ReadCoord();
+	pos[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(pos, vec3_origin, 225, 50);
 }
