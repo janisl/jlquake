@@ -18,3 +18,4 @@
 #include "local.h"
 
 q1beam_t clq1_beams[MAX_BEAMS_Q1];
+q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];

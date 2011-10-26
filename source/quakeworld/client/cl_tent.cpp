@@ -21,17 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define	MAX_EXPLOSIONS	8
-typedef struct
-{
-	vec3_t		origin;
-	float		start;
-	qhandle_t	model;
-} explosion_t;
-
-explosion_t	cl_explosions[MAX_EXPLOSIONS];
-
-
 static sfxHandle_t	cl_sfx_wizhit;
 static sfxHandle_t	cl_sfx_knighthit;
 static sfxHandle_t	cl_sfx_tink1;
@@ -72,20 +61,20 @@ void CL_ClearTEnts (void)
 CL_AllocExplosion
 =================
 */
-explosion_t *CL_AllocExplosion (void)
+q1explosion_t *CL_AllocExplosion (void)
 {
 	int		i;
 	float	time;
 	int		index;
 	
-	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
+	for (i=0 ; i<MAX_EXPLOSIONS_Q1 ; i++)
 		if (!cl_explosions[i].model)
 			return &cl_explosions[i];
 // find the oldest explosion
 	time = cl.serverTimeFloat;
 	index = 0;
 
-	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
+	for (i=0 ; i<MAX_EXPLOSIONS_Q1 ; i++)
 		if (cl_explosions[i].start < time)
 		{
 			time = cl_explosions[i].start;
@@ -154,7 +143,7 @@ void CL_ParseTEnt (void)
 	int		type;
 	vec3_t	pos;
 	int		rnd;
-	explosion_t	*ex;
+	q1explosion_t	*ex;
 	int		cnt;
 
 	type = net_message.ReadByte ();
@@ -383,9 +372,9 @@ void CL_UpdateExplosions (void)
 {
 	int			i;
 	int			f;
-	explosion_t	*ex;
+	q1explosion_t	*ex;
 
-	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
+	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS_Q1 ; i++, ex++)
 	{
 		if (!ex->model)
 			continue;

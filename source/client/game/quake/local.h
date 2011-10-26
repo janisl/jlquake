@@ -25,4 +25,14 @@ struct q1beam_t
 	vec3_t end;
 };
 
+enum { MAX_EXPLOSIONS_Q1 = 8 };
+
+struct q1explosion_t
+{
+	vec3_t		origin;
+	float		start;
+	qhandle_t	model;
+};
+
 extern q1beam_t clq1_beams[MAX_BEAMS_Q1];
+extern q1explosion_t cl_explosions[MAX_EXPLOSIONS_Q1];
