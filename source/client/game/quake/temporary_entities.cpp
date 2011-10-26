@@ -325,11 +325,19 @@ static void CLQ1_ParseExplosion(QMsg& message)
 	CLQ1_ParticleExplosion(position);
 	CLQ1_ExplosionLight(position);
 	S_StartSound(position, -1, 0, clq1_sfx_r_exp3, 1, 1);
+}
 
-	if (GGameType & GAME_QuakeWorld)
-	{
-		CLQ1_ExplosionSprite(position);
-	}
+static void CLQW_ParseExplosion(QMsg& message)
+{
+	vec3_t position;
+	position[0] = message.ReadCoord();
+	position[1] = message.ReadCoord();
+	position[2] = message.ReadCoord();
+
+	CLQ1_ParticleExplosion(position);
+	CLQ1_ExplosionLight(position);
+	S_StartSound(position, -1, 0, clq1_sfx_r_exp3, 1, 1);
+	CLQ1_ExplosionSprite(position);
 }
 
 static void CLQ1_ParseTarExplosion(QMsg& message)
@@ -379,11 +387,17 @@ static void CLQ1_ParseTeleportSplash(QMsg& message)
 
 static void CLQ1_ParseGunShot(QMsg& message)
 {
-	int count = 1;
-	if (GGameType & GAME_QuakeWorld)
-	{
-		count = message.ReadByte();
-	}
+	vec3_t position;
+	position[0] = message.ReadCoord();
+	position[1] = message.ReadCoord();
+	position[2] = message.ReadCoord();
+
+	CLQ1_RunParticleEffect(position, vec3_origin, 0, 20);
+}
+
+static void CLQW_ParseGunShot(QMsg& message)
+{
+	int count = message.ReadByte();
 	vec3_t position;
 	position[0] = message.ReadCoord();
 	position[1] = message.ReadCoord();
@@ -499,7 +513,7 @@ void CLQW_ParseTEnt(QMsg& message)
 		break;
 		
 	case Q1TE_EXPLOSION:			// rocket explosion
-		CLQ1_ParseExplosion(message);
+		CLQW_ParseExplosion(message);
 		break;
 		
 	case Q1TE_TAREXPLOSION:			// tarbaby explosion
@@ -527,7 +541,7 @@ void CLQW_ParseTEnt(QMsg& message)
 		break;
 
 	case Q1TE_GUNSHOT:			// bullet hitting wall
-		CLQ1_ParseGunShot(message);
+		CLQW_ParseGunShot(message);
 		break;
 		
 	case QWTE_BLOOD:				// bullets hitting body
