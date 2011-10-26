@@ -58,15 +58,6 @@ typedef struct
 
 #define	SIGNONS		4			// signon messages to receive before connected
 
-#define	MAX_BEAMS	24
-typedef struct
-{
-	int			entity;
-	qhandle_t	model;
-	float		endtime;
-	vec3_t		start, end;
-} beam_t;
-
 #define	MAX_EFRAGS		640
 
 #define	MAX_MAPSTRING	2048
@@ -241,7 +232,6 @@ extern	client_state_t	cl;
 // FIXME, allocate dynamically
 extern	entity_t		cl_entities[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-extern	beam_t			cl_beams[MAX_BEAMS];
 
 //=============================================================================
 

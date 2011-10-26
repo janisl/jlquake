@@ -68,7 +68,7 @@ void CL_ClearState (void)
 	Com_Memset(cl_entities, 0, sizeof(cl_entities));
 	CL_ClearDlights();
 	CL_ClearLightStyles();
-	Com_Memset(cl_beams, 0, sizeof(cl_beams));
+	Com_Memset(clq1_beams, 0, sizeof(clq1_beams));
 }
 
 /*

@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-beam_t		cl_beams[MAX_BEAMS];
-
 static sfxHandle_t		cl_sfx_wizhit;
 static sfxHandle_t		cl_sfx_knighthit;
 static sfxHandle_t		cl_sfx_tink1;
@@ -56,7 +54,7 @@ static void CL_ParseBeam(qhandle_t m)
 {
 	int		ent;
 	vec3_t	start, end;
-	beam_t	*b;
+	q1beam_t	*b;
 	int		i;
 	
 	ent = net_message.ReadShort();
@@ -70,7 +68,7 @@ static void CL_ParseBeam(qhandle_t m)
 	end[2] = net_message.ReadCoord ();
 
 // override any beam with the same entity
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
 		if (b->entity == ent)
 		{
 			b->entity = ent;
@@ -82,7 +80,7 @@ static void CL_ParseBeam(qhandle_t m)
 		}
 
 // find a free beam
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.serverTimeFloat)
 		{
@@ -248,14 +246,14 @@ CL_UpdateTEnts
 void CL_UpdateTEnts (void)
 {
 	int			i;
-	beam_t		*b;
+	q1beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
 	float		yaw, pitch;
 	float		forward;
 
 // update lightning
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.serverTimeFloat)
 			continue;

@@ -21,18 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-
-#define	MAX_BEAMS	8
-typedef struct
-{
-	int			entity;
-	qhandle_t	model;
-	float		endtime;
-	vec3_t		start, end;
-} beam_t;
-
-beam_t		cl_beams[MAX_BEAMS];
-
 #define	MAX_EXPLOSIONS	8
 typedef struct
 {
@@ -75,7 +63,7 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	Com_Memset(&cl_beams, 0, sizeof(cl_beams));
+	Com_Memset(&clq1_beams, 0, sizeof(clq1_beams));
 	Com_Memset(&cl_explosions, 0, sizeof(cl_explosions));
 }
 
@@ -115,7 +103,7 @@ static void CL_ParseBeam (qhandle_t m)
 {
 	int		ent;
 	vec3_t	start, end;
-	beam_t	*b;
+	q1beam_t	*b;
 	int		i;
 	
 	ent = net_message.ReadShort();
@@ -129,7 +117,7 @@ static void CL_ParseBeam (qhandle_t m)
 	end[2] = net_message.ReadCoord ();
 
 // override any beam with the same entity
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
 		if (b->entity == ent)
 		{
 			b->entity = ent;
@@ -141,7 +129,7 @@ static void CL_ParseBeam (qhandle_t m)
 		}
 
 // find a free beam
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.serverTimeFloat)
 		{
@@ -318,14 +306,14 @@ CL_UpdateBeams
 void CL_UpdateBeams (void)
 {
 	int			i;
-	beam_t		*b;
+	q1beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
 	float		yaw, pitch;
 	float		forward;
 
 // update lightning
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq1_beams ; i< MAX_BEAMS_Q1 ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.serverTimeFloat)
 			continue;

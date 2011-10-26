@@ -1540,7 +1540,31 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\game\quake\local.h"
+					>
+				</File>
+				<File
 					RelativePath=".\game\quake\particle_effects.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake\"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\game\quake\temporary_entities.cpp"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
