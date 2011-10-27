@@ -21,7 +21,14 @@ enum { MAX_EXPLOSIONS_Q2 = 32 };
 
 enum q2exptype_t
 {
-	ex_free, ex_explosion, ex_misc, ex_flash, ex_mflash, ex_poly, ex_poly2
+	ex_free,
+	ex_explosion,
+	ex_misc,
+	ex_flash,
+	ex_mflash,
+	ex_poly,
+	ex_poly2,
+	ex_sparks
 };
 
 struct q2explosion_t
@@ -267,16 +274,12 @@ void CLQ2_WeldingSparks(vec3_t pos)
 {
 	q2explosion_t* ex = CLQ2_AllocExplosion();
 	VectorCopy(pos, ex->ent.origin);
-	ex->type = ex_flash;
-	// note to self
-	// we need a better no draw flag
-	ex->ent.reType = RT_BEAM;
+	ex->type = ex_sparks;
 	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 100 + (rand() % 75);
 	ex->lightcolor[0] = 1.0;
 	ex->lightcolor[1] = 1.0;
 	ex->lightcolor[2] = 0.3;
-	ex->ent.hModel = cl_mod_flash;
 	ex->frames = 2;
 }
 
@@ -406,6 +409,7 @@ void CLQ2_AddExplosions (void)
 		switch (ex->type)
 		{
 		case ex_mflash:
+		case ex_sparks:
 			if (f >= ex->frames-1)
 				ex->type = ex_free;
 			break;
@@ -471,6 +475,8 @@ void CLQ2_AddExplosions (void)
 			R_AddLightToScene(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
 				ex->lightcolor[0], ex->lightcolor[1], ex->lightcolor[2]);
 		}
+		if (ex->type == ex_sparks)
+			continue;
 
 		VectorCopy (ent->origin, ent->oldorigin);
 
