@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 //#define BOTLIB
-//#define MEQCC
 
 #ifdef BOTLIB
 //include files for usage in the bot library
@@ -42,18 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_log.h"
 #include "l_libvar.h"
 #endif //BOTLIB
-
-#ifdef MEQCC
-//include files for usage in MrElusive's QuakeC Compiler
-#include "qcc.h"
-#include "l_script.h"
-#include "l_memory.h"
-#include "l_log.h"
-
-#define qtrue	true
-#define qfalse	false
-#endif //MEQCC
-
 
 #define PUNCTABLE
 
@@ -212,9 +199,6 @@ void QDECL ScriptError(script_t *script, const char *str, ...)
 #ifdef BOTLIB
 	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", script->filename, script->line, text);
 #endif //BOTLIB
-#ifdef MEQCC
-	printf("error: file %s, line %d: %s\n", script->filename, script->line, text);
-#endif //MEQCC
 } //end of the function ScriptError
 //===========================================================================
 //
@@ -235,9 +219,6 @@ void QDECL ScriptWarning(script_t *script, const char *str, ...)
 #ifdef BOTLIB
 	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", script->filename, script->line, text);
 #endif //BOTLIB
-#ifdef MEQCC
-	printf("warning: file %s, line %d: %s\n", script->filename, script->line, text);
-#endif //MEQCC
 } //end of the function ScriptWarning
 //===========================================================================
 //
