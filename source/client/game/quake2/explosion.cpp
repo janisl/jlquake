@@ -97,6 +97,7 @@ void CLQ2_SmokeAndFlash(vec3_t origin)
 	ex->ent.renderfx = RF_TRANSLUCENT;
 	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->ent.hModel = cl_mod_smoke;
+	AxisClear(ex->ent.axis);
 
 	ex = CLQ2_AllocExplosion();
 	VectorCopy(origin, ex->ent.origin);
@@ -106,6 +107,7 @@ void CLQ2_SmokeAndFlash(vec3_t origin)
 	ex->frames = 2;
 	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->ent.hModel = cl_mod_flash;
+	AxisClear(ex->ent.axis);
 }
 
 void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
@@ -257,6 +259,7 @@ void CLQ2_BfgExplosion(vec3_t pos)
 	ex->ent.hModel = cl_mod_bfg_explo;
 	ex->ent.renderfx |= RF_TRANSLUCENT;
 	ex->ent.shaderRGBA[3] = 76;
+	AxisClear(ex->ent.axis);
 	ex->frames = 4;
 }
 
