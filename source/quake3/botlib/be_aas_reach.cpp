@@ -298,11 +298,7 @@ int AAS_BestReachableFromJumpPadArea(vec3_t origin, vec3_t mins, vec3_t maxs)
 	aas_link_t *areas, *link;
 	char classname[MAX_EPAIRKEY];
 
-#ifdef BSPC
-	bot_visualizejumppads = 0;
-#else
 	bot_visualizejumppads = LibVarValue("bot_visualizejumppads", "0");
-#endif
 	VectorAdd(origin, mins, bboxmins);
 	VectorAdd(origin, maxs, bboxmaxs);
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
@@ -3281,10 +3277,8 @@ aas_lreachability_t *AAS_FindFaceReachabilities(vec3_t *facepoints, int numpoint
 		lreach->traveltime = 0;
 		lreach->next = lreachabilities;
 		lreachabilities = lreach;
-#ifndef BSPC
 		if (towardsface) AAS_PermanentLine(lreach->start, lreach->end, 1);
 		else AAS_PermanentLine(lreach->start, lreach->end, 2);
-#endif
 	} //end for
 	return lreachabilities;
 } //end of the function AAS_FindFaceReachabilities
@@ -3355,12 +3349,6 @@ void AAS_Reachability_FuncBobbing(void)
 		Log_Write("funcbob model %d, start = {%1.1f, %1.1f, %1.1f} end = {%1.1f, %1.1f, %1.1f}\n",
 					modelnum, move_start[0], move_start[1], move_start[2], move_end[0], move_end[1], move_end[2]);
 		//
-#ifndef BSPC
-		/*
-		AAS_DrawPermanentCross(move_start, 4, 1);
-		AAS_DrawPermanentCross(move_end, 4, 2);
-		*/
-#endif
 		//
 		for (i = 0; i < 4; i++)
 		{
@@ -3398,15 +3386,6 @@ void AAS_Reachability_FuncBobbing(void)
 		end_plane.dist = end_edgeverts[0][2];
 		VectorSet(end_plane.normal, 0, 0, 1);
 		//
-#ifndef BSPC
-#if 0
-		for (i = 0; i < 4; i++)
-		{
-			AAS_PermanentLine(start_edgeverts[i], start_edgeverts[(i+1)%4], 1);
-			AAS_PermanentLine(end_edgeverts[i], end_edgeverts[(i+1)%4], 1);
-		} //end for
-#endif
-#endif
 		VectorCopy(move_start, move_start_top);
 		move_start_top[2] += maxs[2] - mid[2] + 24; //+ bbox maxs z
 		VectorCopy(move_end, move_end_top);
@@ -3474,10 +3453,6 @@ void AAS_Reachability_FuncBobbing(void)
 					lreach->facenum = (spawnflags << 16) | modelnum;
 					VectorCopy(startreach->start, lreach->start);
 					VectorCopy(endreach->end, lreach->end);
-#ifndef BSPC
-//					AAS_DrawArrow(lreach->start, lreach->end, LINECOLOR_BLUE, LINECOLOR_YELLOW);
-//					AAS_PermanentLine(lreach->start, lreach->end, 1);
-#endif
 					lreach->traveltype = TRAVEL_FUNCBOB;
 					lreach->traveltype |= AAS_TravelFlagsForTeam(ent);
 					lreach->traveltime = aassettings.rs_funcbob;
@@ -3526,11 +3501,7 @@ void AAS_Reachability_JumpPad(void)
 	//char target[MAX_EPAIRKEY], targetname[MAX_EPAIRKEY], model[MAX_EPAIRKEY];
 	char classname[MAX_EPAIRKEY];
 
-#ifdef BSPC
-	bot_visualizejumppads = 0;
-#else
 	bot_visualizejumppads = LibVarValue("bot_visualizejumppads", "0");
-#endif
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
@@ -4531,20 +4502,13 @@ void AAS_InitReachability(void)
 
 	if (aasworld.reachabilitysize)
 	{
-#ifndef BSPC
 		if (!((int)LibVarGetValue("forcereachability")))
 		{
 			aasworld.numreachabilityareas = aasworld.numareas + 2;
 			return;
 		} //end if
-#else
-		aasworld.numreachabilityareas = aasworld.numareas + 2;
-		return;
-#endif //BSPC
 	} //end if
-#ifndef BSPC
 	calcgrapplereach = LibVarGetValue("grapplereach");
-#endif
 	aasworld.savefile = qtrue;
 	//start with area 1 because area zero is a dummy
 	aasworld.numreachabilityareas = 1;

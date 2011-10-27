@@ -75,19 +75,7 @@ typedef enum {qfalse, qtrue}	qboolean;
 #define qfalse	false
 #endif //MEQCC
 
-#ifdef BSPC
-//include files for usage in the BSP Converter
-#include "../bspc/qbsp.h"
-#include "../bspc/l_log.h"
-#include "../bspc/l_mem.h"
-#include "l_precomp.h"
-
-#define qtrue	true
-#define qfalse	false
-
-#endif //BSPC
-
-#if defined(QUAKE) && !defined(BSPC)
+#if defined(QUAKE)
 #include "l_utils.h"
 #endif //QUAKE
 
@@ -138,9 +126,6 @@ void QDECL SourceError(source_t *source, const char *str, ...)
 #ifdef MEQCC
 	printf("error: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 #endif //MEQCC
-#ifdef BSPC
-	Log_Print("error: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-#endif //BSPC
 } //end of the function SourceError
 //===========================================================================
 //
@@ -162,9 +147,6 @@ void QDECL SourceWarning(source_t *source, const char *str, ...)
 #ifdef MEQCC
 	printf("warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 #endif //MEQCC
-#ifdef BSPC
-	Log_Print("warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-#endif //BSPC
 } //end of the function ScriptWarning
 //============================================================================
 //
@@ -267,11 +249,7 @@ token_t *PC_CopyToken(token_t *token)
 //	t = freetokens;
 	if (!t)
 	{
-#ifdef BSPC
-		Error("out of token space\n");
-#else
 		Com_Error(ERR_FATAL, "out of token space\n");
-#endif
 		return NULL;
 	} //end if
 //	freetokens = freetokens->next;

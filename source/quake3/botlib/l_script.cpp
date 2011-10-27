@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#define SCREWUP
 //#define BOTLIB
 //#define MEQCC
-//#define BSPC
 
 #ifdef SCREWUP
 #include <stdio.h>
@@ -68,16 +67,6 @@ typedef enum {qfalse, qtrue}	qboolean;
 #define qtrue	true
 #define qfalse	false
 #endif //MEQCC
-
-#ifdef BSPC
-//include files for usage in the BSP Converter
-#include "../bspc/qbsp.h"
-#include "../bspc/l_log.h"
-#include "../bspc/l_mem.h"
-
-#define qtrue	true
-#define qfalse	false
-#endif //BSPC
 
 
 #define PUNCTABLE
@@ -160,11 +149,7 @@ punctuation_t default_punctuations[] =
 	{NULL, 0}
 };
 
-#ifdef BSPC
-char basefolder[MAX_PATH];
-#else
 char basefolder[MAX_QPATH];
-#endif
 
 //===========================================================================
 //
@@ -244,9 +229,6 @@ void QDECL ScriptError(script_t *script, const char *str, ...)
 #ifdef MEQCC
 	printf("error: file %s, line %d: %s\n", script->filename, script->line, text);
 #endif //MEQCC
-#ifdef BSPC
-	Log_Print("error: file %s, line %d: %s\n", script->filename, script->line, text);
-#endif //BSPC
 } //end of the function ScriptError
 //===========================================================================
 //
@@ -270,9 +252,6 @@ void QDECL ScriptWarning(script_t *script, const char *str, ...)
 #ifdef MEQCC
 	printf("warning: file %s, line %d: %s\n", script->filename, script->line, text);
 #endif //MEQCC
-#ifdef BSPC
-	Log_Print("warning: file %s, line %d: %s\n", script->filename, script->line, text);
-#endif //BSPC
 } //end of the function ScriptWarning
 //===========================================================================
 //
@@ -1425,9 +1404,5 @@ void FreeScript(script_t *script)
 //============================================================================
 void PS_SetBaseFolder(const char *path)
 {
-#ifdef BSPC
-	sprintf(basefolder, path);
-#else
 	String::Sprintf(basefolder, sizeof(basefolder), path);
-#endif
 } //end of the function PS_SetBaseFolder

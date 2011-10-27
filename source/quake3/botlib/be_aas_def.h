@@ -288,8 +288,6 @@ typedef struct aas_s
 
 #define AASINTERN
 
-#ifndef BSPCINCLUDE
-
 #include "be_aas_main.h"
 #include "be_aas_entity.h"
 #include "be_aas_sample.h"
@@ -302,5 +300,3 @@ typedef struct aas_s
 #include "be_aas_optimize.h"
 #include "be_aas_bsp.h"
 #include "be_aas_move.h"
-
-#endif //BSPCINCLUDE

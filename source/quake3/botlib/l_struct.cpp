@@ -39,18 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_interface.h"
 #endif //BOTLIB
 
-#ifdef BSPC
-//include files for usage in the BSP Converter
-#include "../bspc/qbsp.h"
-#include "../bspc/l_log.h"
-#include "../bspc/l_mem.h"
-#include "l_precomp.h"
-#include "l_struct.h"
-
-#define qtrue	true
-#define qfalse	false
-#endif //BSPC
-
 //===========================================================================
 //
 // Parameter:				-
