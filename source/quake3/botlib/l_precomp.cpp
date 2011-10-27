@@ -32,9 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //Notes:			fix: PC_StringizeTokens
 
-//#define QUAKE
-//#define QUAKEC
-
 #include "../game/q_shared.h"
 #include "botlib.h"
 #include "be_interface.h"
@@ -42,10 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_script.h"
 #include "l_precomp.h"
 #include "l_log.h"
-
-#if defined(QUAKE)
-#include "l_utils.h"
-#endif //QUAKE
 
 //#define DEBUG_EVAL
 
@@ -906,9 +899,6 @@ int PC_Directive_include(source_t *source)
 	script_t *script;
 	token_t token;
 	char path[MAX_PATH];
-#ifdef QUAKE
-	foundfile_t file;
-#endif //QUAKE
 
 	if (source->skip > 0) return qtrue;
 	//
@@ -964,14 +954,6 @@ int PC_Directive_include(source_t *source)
 		SourceError(source, "#include without file name");
 		return qfalse;
 	} //end else
-#ifdef QUAKE
-	if (!script)
-	{
-		Com_Memset(&file, 0, sizeof(foundfile_t));
-		script = LoadScriptFile(path);
-		if (script) String::NCpy(script->filename, path, MAX_PATH);
-	} //end if
-#endif //QUAKE
 	if (!script)
 	{
 		SourceError(source, "file %s not found", path);
@@ -2572,59 +2554,6 @@ int PC_ReadDollarDirective(source_t *source)
 	return qfalse;
 } //end of the function PC_ReadDirective
 
-#ifdef QUAKEC
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int BuiltinFunction(source_t *source)
-{
-	token_t token;
-
-	if (!PC_ReadSourceToken(source, &token)) return qfalse;
-	if (token.type == TT_NUMBER)
-	{
-		PC_UnreadSourceToken(source, &token);
-		return qtrue;
-	} //end if
-	else
-	{
-		PC_UnreadSourceToken(source, &token);
-		return qfalse;
-	} //end else
-} //end of the function BuiltinFunction
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int QuakeCMacro(source_t *source)
-{
-	int i;
-	token_t token;
-
-	if (!PC_ReadSourceToken(source, &token)) return qtrue;
-	if (token.type != TT_NAME)
-	{
-		PC_UnreadSourceToken(source, &token);
-		return qtrue;
-	} //end if
-	//find the precompiler directive
-	for (i = 0; dollardirectives[i].name; i++)
-	{
-		if (!String::Cmp(dollardirectives[i].name, token.string))
-		{
-			PC_UnreadSourceToken(source, &token);
-			return qfalse;
-		} //end if
-	} //end for
-	PC_UnreadSourceToken(source, &token);
-	return qtrue;
-} //end of the function QuakeCMacro
-#endif //QUAKEC
 //============================================================================
 //
 // Parameter:				-
@@ -2641,25 +2570,15 @@ int PC_ReadToken(source_t *source, token_t *token)
 		//check for precompiler directives
 		if (token->type == TT_PUNCTUATION && *token->string == '#')
 		{
-#ifdef QUAKEC
-			if (!BuiltinFunction(source))
-#endif //QUAKC
-			{
-				//read the precompiler directive
-				if (!PC_ReadDirective(source)) return qfalse;
-				continue;
-			} //end if
+			//read the precompiler directive
+			if (!PC_ReadDirective(source)) return qfalse;
+			continue;
 		} //end if
 		if (token->type == TT_PUNCTUATION && *token->string == '$')
 		{
-#ifdef QUAKEC
-			if (!QuakeCMacro(source))
-#endif //QUAKEC
-			{
-				//read the precompiler directive
-				if (!PC_ReadDollarDirective(source)) return qfalse;
-				continue;
-			} //end if
+			//read the precompiler directive
+			if (!PC_ReadDollarDirective(source)) return qfalse;
+			continue;
 		} //end if
 		// recursively concatenate strings that are behind each other still resolving defines
 		if (token->type == TT_STRING)
