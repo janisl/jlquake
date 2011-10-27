@@ -724,7 +724,7 @@ void CL_ParseTEnt (void)
 	// RAFAEL
 	case TE_PLASMA_EXPLOSION:
 		net_message.ReadPos(pos);
-		CLQ2_PlasmaExplosion(pos);
+		CLQ2_RocketExplosion(pos);
 		CLQ2_ExplosionParticles (pos);
 		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
@@ -844,7 +844,7 @@ void CL_ParseTEnt (void)
 	case TE_PLAIN_EXPLOSION:
 		net_message.ReadPos(pos);
 
-		CLQ2_PlainExplosion(pos);
+		CLQ2_RocketExplosion(pos);
 		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
 

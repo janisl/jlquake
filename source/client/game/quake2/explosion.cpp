@@ -74,7 +74,6 @@ static q2explosion_t* CLQ2_AllocExplosion()
 		if (q2cl_explosions[i].type == ex_free)
 		{
 			Com_Memset(&q2cl_explosions[i], 0, sizeof (q2cl_explosions[i]));
-			q2cl_explosions[i].ent.reType = RT_MODEL;
 			return &q2cl_explosions[i];
 		}
 	}
@@ -91,36 +90,39 @@ static q2explosion_t* CLQ2_AllocExplosion()
 		}
 	}
 	Com_Memset(&q2cl_explosions[index], 0, sizeof (q2cl_explosions[index]));
-	q2cl_explosions[index].ent.reType = RT_MODEL;
 	return &q2cl_explosions[index];
+}
+
+static q2explosion_t* NewExplosion(vec3_t origin)
+{
+	q2explosion_t* ex = CLQ2_AllocExplosion();
+	ex->start = cl_common->q2_frame.servertime - 100;
+	ex->ent.reType = RT_MODEL;
+	VectorCopy(origin, ex->ent.origin);
+	return ex;
 }
 
 void CLQ2_SmokeAndFlash(vec3_t origin)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(origin, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(origin);
 	ex->type = ex_misc;
 	ex->frames = 4;
 	ex->ent.renderfx = RF_TRANSLUCENT;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->ent.hModel = cl_mod_smoke;
 	AxisClear(ex->ent.axis);
 
-	ex = CLQ2_AllocExplosion();
-	VectorCopy(origin, ex->ent.origin);
+	ex = NewExplosion(origin);
 	ex->type = ex_flash;
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
 	ex->frames = 2;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->ent.hModel = cl_mod_flash;
 	AxisClear(ex->ent.axis);
 }
 
 void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	vec3_t angles;
 	angles[0] = acos(dir[2]) / M_PI * 180;
 	// PMM - fixed to correct for pitch of 0
@@ -146,7 +148,6 @@ void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
 	ex->type = ex_misc;
 	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 150;
 	ex->lightcolor[0] = 1;
 	ex->lightcolor[1] = 1;
@@ -156,12 +157,10 @@ void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
 
 void CLQ2_GrenadeExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	ex->type = ex_poly;
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 350;
 	ex->lightcolor[0] = 1.0;
 	ex->lightcolor[1] = 0.5;
@@ -176,16 +175,14 @@ void CLQ2_GrenadeExplosion(vec3_t pos)
 	AnglesToAxis(angles, ex->ent.axis);
 }
 
-void CLQ2_PlasmaExplosion(vec3_t pos)
+void CLQ2_RocketExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	ex->type = ex_poly;
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 350;
-	ex->lightcolor[0] = 1.0; 
+	ex->lightcolor[0] = 1.0;
 	ex->lightcolor[1] = 0.5;
 	ex->lightcolor[2] = 0.5;
 	vec3_t angles;
@@ -201,39 +198,12 @@ void CLQ2_PlasmaExplosion(vec3_t pos)
 	ex->frames = 15;
 }
 
-void CLQ2_RocketExplosion(vec3_t pos)
-{
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
-	ex->type = ex_poly;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
-	ex->light = 350;
-	ex->lightcolor[0] = 1.0;
-	ex->lightcolor[1] = 0.5;
-	ex->lightcolor[2] = 0.5;
-	vec3_t angles;
-	angles[0] = 0;
-	angles[1] = rand() % 360;
-	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
-	ex->ent.hModel = cl_mod_explo4;			// PMM
-	if (frand() < 0.5)
-	{
-		ex->baseframe = 15;
-	}
-	ex->frames = 15;
-}
-
 void CLQ2_BigExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	ex->type = ex_poly;
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 350;
 	ex->lightcolor[0] = 1.0;
 	ex->lightcolor[1] = 0.5;
@@ -253,12 +223,10 @@ void CLQ2_BigExplosion(vec3_t pos)
 
 void CLQ2_BfgExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	ex->type = ex_poly;
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 350;
 	ex->lightcolor[0] = 0.0;
 	ex->lightcolor[1] = 1.0;
@@ -272,10 +240,8 @@ void CLQ2_BfgExplosion(vec3_t pos)
 
 void CLQ2_WeldingSparks(vec3_t pos)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	ex->type = ex_sparks;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 100 + (rand() % 75);
 	ex->lightcolor[0] = 1.0;
 	ex->lightcolor[1] = 1.0;
@@ -285,8 +251,7 @@ void CLQ2_WeldingSparks(vec3_t pos)
 
 void CLQ2_Blaster2Explosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	vec3_t angles;
 	angles[0] = acos(dir[2]) / M_PI * 180;
 	// PMM - fixed to correct for pitch of 0
@@ -313,7 +278,6 @@ void CLQ2_Blaster2Explosion(vec3_t pos, vec3_t dir)
 	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
 	ex->ent.skinNum = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 150;
 	ex->lightcolor[1] = 1;
 	ex->ent.hModel = cl_mod_explode;
@@ -322,8 +286,7 @@ void CLQ2_Blaster2Explosion(vec3_t pos, vec3_t dir)
 
 void CLQ2_FlechetteExplosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
+	q2explosion_t* ex = NewExplosion(pos);
 	vec3_t angles;
 	angles[0] = acos(dir[2]) / M_PI * 180;
 	// PMM - fixed to correct for pitch of 0
@@ -350,38 +313,12 @@ void CLQ2_FlechetteExplosion(vec3_t pos, vec3_t dir)
 	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
 	ex->ent.skinNum = 2;
-	ex->start = cl_common->q2_frame.servertime - 100;
 	ex->light = 150;
 	ex->lightcolor[0] = 0.19;
 	ex->lightcolor[1] = 0.41;
 	ex->lightcolor[2] = 0.75;
 	ex->ent.hModel = cl_mod_explode;
 	ex->frames = 4;
-}
-
-void CLQ2_PlainExplosion(vec3_t pos)
-{
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	VectorCopy(pos, ex->ent.origin);
-	ex->type = ex_poly;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->start = cl_common->q2_frame.servertime - 100;
-	ex->light = 350;
-	ex->lightcolor[0] = 1.0;
-	ex->lightcolor[1] = 0.5;
-	ex->lightcolor[2] = 0.5;
-	vec3_t angles;
-	angles[0] = 0;
-	angles[1] = rand() % 360;
-	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
-	ex->ent.hModel = cl_mod_explo4;
-	if (frand() < 0.5)
-	{
-		ex->baseframe = 15;
-	}
-	ex->frames = 15;
 }
 
 /*
