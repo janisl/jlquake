@@ -21,27 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-typedef enum
-{
-	ex_free, ex_explosion, ex_misc, ex_flash, ex_mflash, ex_poly, ex_poly2
-} exptype_t;
 
-typedef struct
-{
-	exptype_t	type;
-	refEntity_t	ent;
-
-	int			frames;
-	float		light;
-	vec3_t		lightcolor;
-	float		start;
-	int			baseframe;
-} explosion_t;
-
-
-
-#define	MAX_EXPLOSIONS	32
-explosion_t	cl_explosions[MAX_EXPLOSIONS];
 
 
 #define	MAX_BEAMS	32
@@ -202,7 +182,7 @@ CL_ClearTEnts
 void CL_ClearTEnts (void)
 {
 	Com_Memset(cl_beams, 0, sizeof(cl_beams));
-	Com_Memset(cl_explosions, 0, sizeof(cl_explosions));
+	CLQ2_ClearExplosions();
 	Com_Memset(cl_lasers, 0, sizeof(cl_lasers));
 
 //ROGUE
@@ -213,47 +193,14 @@ void CL_ClearTEnts (void)
 
 /*
 =================
-CL_AllocExplosion
-=================
-*/
-explosion_t *CL_AllocExplosion (void)
-{
-	int		i;
-	int		time;
-	int		index;
-	
-	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
-	{
-		if (cl_explosions[i].type == ex_free)
-		{
-			Com_Memset(&cl_explosions[i], 0, sizeof (cl_explosions[i]));
-			return &cl_explosions[i];
-		}
-	}
-// find the oldest explosion
-	time = cl.serverTime;
-	index = 0;
-
-	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
-		if (cl_explosions[i].start < time)
-		{
-			time = cl_explosions[i].start;
-			index = i;
-		}
-	Com_Memset(&cl_explosions[index], 0, sizeof (cl_explosions[index]));
-	return &cl_explosions[index];
-}
-
-/*
-=================
 CL_SmokeAndFlash
 =================
 */
 void CL_SmokeAndFlash(vec3_t origin)
 {
-	explosion_t	*ex;
+	q2explosion_t	*ex;
 
-	ex = CL_AllocExplosion ();
+	ex = CLQ2_AllocExplosion ();
 	VectorCopy (origin, ex->ent.origin);
 	ex->type = ex_misc;
 	ex->frames = 4;
@@ -261,7 +208,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->start = cl.frame.servertime - 100;
 	ex->ent.hModel = cl_mod_smoke;
 
-	ex = CL_AllocExplosion ();
+	ex = CLQ2_AllocExplosion ();
 	VectorCopy (origin, ex->ent.origin);
 	ex->type = ex_flash;
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
@@ -686,7 +633,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos, pos2, dir;
-	explosion_t	*ex;
+	q2explosion_t	*ex;
 	int		cnt;
 	int		color;
 	int		r;
@@ -792,7 +739,7 @@ void CL_ParseTEnt (void)
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_BlasterParticles (pos, dir);
 
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		angles[0] = acos(dir[2])/M_PI*180;
 	// PMM - fixed to correct for pitch of 0
@@ -831,7 +778,7 @@ void CL_ParseTEnt (void)
 	case TE_GRENADE_EXPLOSION_WATER:
 		MSG_ReadPos (&net_message, pos);
 
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
@@ -858,7 +805,7 @@ void CL_ParseTEnt (void)
 	// RAFAEL
 	case TE_PLASMA_EXPLOSION:
 		MSG_ReadPos (&net_message, pos);
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
@@ -887,7 +834,7 @@ void CL_ParseTEnt (void)
 	case TE_EXPLOSION1_NP:						// PMM
 		MSG_ReadPos (&net_message, pos);
 
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
@@ -918,7 +865,7 @@ void CL_ParseTEnt (void)
 
 	case TE_BFG_EXPLOSION:
 		MSG_ReadPos (&net_message, pos);
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
@@ -972,13 +919,13 @@ void CL_ParseTEnt (void)
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
 
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_flash;
 		// note to self
 		// we need a better no draw flag
 		ex->ent.reType = RT_BEAM;
-		ex->start = cl.frame.servertime - 0.1;
+		ex->start = cl.frame.servertime - 100;
 		ex->light = 100 + (rand()%75);
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 1.0;
@@ -1016,7 +963,7 @@ void CL_ParseTEnt (void)
 		else
 			CLQ2_BlasterParticles2 (pos, dir, 0x6f); // 75
 
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		angles[0] = acos(dir[2])/M_PI*180;
 	// PMM - fixed to correct for pitch of 0
@@ -1072,7 +1019,7 @@ void CL_ParseTEnt (void)
 	case TE_PLAIN_EXPLOSION:
 		MSG_ReadPos (&net_message, pos);
 
-		ex = CL_AllocExplosion ();
+		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
@@ -1619,11 +1566,11 @@ void CL_AddExplosions (void)
 {
 	refEntity_t	*ent;
 	int			i;
-	explosion_t	*ex;
+	q2explosion_t	*ex;
 	float		frac;
 	int			f;
 
-	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
+	for (i=0, ex=q2cl_explosions ; i< MAX_EXPLOSIONS_Q2 ; i++, ex++)
 	{
 		if (ex->type == ex_free)
 			continue;

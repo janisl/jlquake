@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // client.h -- primary header for client
 
 #include "../../client/client.h"
+#include "../../client/game/quake2/local.h"
 
 //define	PARANOID			// speed sapping error checking
 
