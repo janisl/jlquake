@@ -20,37 +20,11 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
 
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-int				oldsize = 0;
-int				overflows;
-huffman_t		msgHuff;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	QMsg::Init
-//
-//==========================================================================
+int oldsize = 0;
+int overflows;
+huffman_t msgHuff;
 
 void QMsg::Init(byte* NewData, int Length)
 {
@@ -58,12 +32,6 @@ void QMsg::Init(byte* NewData, int Length)
 	_data = NewData;
 	maxsize = Length;
 }
-
-//==========================================================================
-//
-//	QMsg::InitOOB
-//
-//==========================================================================
 
 void QMsg::InitOOB(byte* NewData, int Length)
 {
@@ -73,12 +41,6 @@ void QMsg::InitOOB(byte* NewData, int Length)
 	oob = true;
 }
 
-//==========================================================================
-//
-//	QMsg::Clear
-//
-//==========================================================================
-
 void QMsg::Clear()
 {
 	cursize = 0;
@@ -86,28 +48,15 @@ void QMsg::Clear()
 	bit = 0;					//<- in bits
 }
 
-//==========================================================================
-//
-//	QMsg::Bitstream
-//
-//==========================================================================
-
 void QMsg::Bitstream()
 {
 	oob = false;
 }
 
-//==========================================================================
-//
-//	QMsg::Copy
-//
 //	TTimo
 //	Copy a QMsg in case we need to store it as is for a bit
 // (as I needed this to keep an QMsg from a static var for later use)
 // sets data buffer as Init does prior to do the copy
-//
-//==========================================================================
-
 void QMsg::Copy(byte* NewData, int Length, QMsg& Src)
 {
 	if (Length < Src.cursize)
@@ -119,12 +68,6 @@ void QMsg::Copy(byte* NewData, int Length, QMsg& Src)
 	Com_Memcpy(_data, Src._data, Src.cursize);
 }
 
-//==========================================================================
-//
-//	QMsg::BeginReading
-//
-//==========================================================================
-
 void QMsg::BeginReading()
 {
 	readcount = 0;
@@ -132,12 +75,6 @@ void QMsg::BeginReading()
 	bit = 0;
 	oob = false;
 }
-
-//==========================================================================
-//
-//	QMsg::BeginReadingOOB
-//
-//==========================================================================
 
 void QMsg::BeginReadingOOB()
 {
@@ -147,14 +84,7 @@ void QMsg::BeginReadingOOB()
 	oob = true;
 }
 
-//==========================================================================
-//
-//	QMsg::WriteBits
-//
 //	Negative bit values include signs
-//
-//==========================================================================
-
 void QMsg::WriteBits(int Value, int NumBits)
 {
 	oldsize += NumBits;
@@ -253,12 +183,6 @@ void QMsg::WriteBits(int Value, int NumBits)
 	}
 }
 
-//==========================================================================
-//
-//	QMsg::ReadBits
-//
-//==========================================================================
-
 int QMsg::ReadBits(int NumBits)
 {
 	bool		Sgn;
@@ -336,12 +260,6 @@ int QMsg::ReadBits(int NumBits)
 	return Value;
 }
 
-//==========================================================================
-//
-//	QMsg::WriteChar
-//
-//==========================================================================
-
 void QMsg::WriteChar(int C)
 {
 #ifdef PARANOID
@@ -351,12 +269,6 @@ void QMsg::WriteChar(int C)
 
 	WriteBits(C, 8);
 }
-
-//==========================================================================
-//
-//	QMsg::WriteByte
-//
-//==========================================================================
 
 void QMsg::WriteByte(int C)
 {
@@ -368,12 +280,6 @@ void QMsg::WriteByte(int C)
 	WriteBits(C, 8);
 }
 
-//==========================================================================
-//
-//	QMsg::WriteShort
-//
-//==========================================================================
-
 void QMsg::WriteShort(int C)
 {
 #ifdef PARANOID
@@ -384,40 +290,22 @@ void QMsg::WriteShort(int C)
 	WriteBits(C, 16);
 }
 
-//==========================================================================
-//
-//	QMsg::WriteLong
-//
-//==========================================================================
-
 void QMsg::WriteLong(int C)
 {
 	WriteBits(C, 32);
 }
 
-//==========================================================================
-//
-//	QMsg::WriteFloat
-//
-//==========================================================================
-
 void QMsg::WriteFloat(float F)
 {
 	union
 	{
-		float	F;
-		int		L;
+		float F;
+		int L;
 	} Dat;
 	
 	Dat.F = F;
 	WriteBits(Dat.L, 32);
 }
-
-//==========================================================================
-//
-//	QMsg::WriteString
-//
-//==========================================================================
 
 void QMsg::WriteString(const char* S)
 {
@@ -451,12 +339,6 @@ void QMsg::WriteString(const char* S)
 	}
 }
 
-//==========================================================================
-//
-//	QMsg::WriteString2
-//
-//==========================================================================
-
 void QMsg::WriteString2(const char* S)
 {
 	if (!S)
@@ -468,12 +350,6 @@ void QMsg::WriteString2(const char* S)
 		WriteData(S, String::Length(S) + 1);
 	}
 }
-
-//==========================================================================
-//
-//	QMsg::WriteBigString
-//
-//==========================================================================
 
 void QMsg::WriteBigString(const char *S)
 {
@@ -507,44 +383,20 @@ void QMsg::WriteBigString(const char *S)
 	}
 }
 
-//==========================================================================
-//
-//	QMsg::WriteCoord
-//
-//==========================================================================
-
 void QMsg::WriteCoord(float F)
 {
 	WriteShort((int)(F * 8));
 }
-
-//==========================================================================
-//
-//	QMsg::WriteAngle
-//
-//==========================================================================
 
 void QMsg::WriteAngle(float F)
 {
 	WriteByte((int)(F * 256 / 360) & 255);
 }
 
-//==========================================================================
-//
-//	QMsg::WriteAngle16
-//
-//==========================================================================
-
 void QMsg::WriteAngle16(float F)
 {
 	WriteShort(ANGLE2SHORT(F));
 }
-
-//==========================================================================
-//
-//	QMsg::WriteData
-//
-//==========================================================================
 
 void QMsg::WriteData(const void* Buffer, int Length)
 {
@@ -554,14 +406,7 @@ void QMsg::WriteData(const void* Buffer, int Length)
 	}
 }
 
-//==========================================================================
-//
-//	QMsg::Print
-//
 //	strcats onto the sizebuf
-//
-//==========================================================================
-
 void QMsg::Print(const char* S)
 {
 	if (!_data[cursize - 1])
@@ -572,14 +417,7 @@ void QMsg::Print(const char* S)
 	WriteString2(S);
 }
 
-//==========================================================================
-//
-//	QMsg::ReadByte
-//
 //	Returns -1 if no more characters are available
-//
-//==========================================================================
-
 int QMsg::ReadChar()
 {
 	int C = (qint8)ReadBits(8);
@@ -590,12 +428,6 @@ int QMsg::ReadChar()
 	}
 	return C;
 }
-
-//==========================================================================
-//
-//	QMsg::ReadByte
-//
-//==========================================================================
 
 int QMsg::ReadByte()
 {
@@ -608,12 +440,6 @@ int QMsg::ReadByte()
 	return C;
 }
 
-//==========================================================================
-//
-//	QMsg::ReadShort
-//
-//==========================================================================
-
 int QMsg::ReadShort()
 {
 	int C = (qint16)ReadBits(16);
@@ -624,12 +450,6 @@ int QMsg::ReadShort()
 	}
 	return C;
 }
-
-//==========================================================================
-//
-//	QMsg::ReadLong
-//
-//==========================================================================
 
 int QMsg::ReadLong()
 {
@@ -642,18 +462,12 @@ int QMsg::ReadLong()
 	return C;
 }
 
-//==========================================================================
-//
-//	QMsg::ReadFloat
-//
-//==========================================================================
-
 float QMsg::ReadFloat()
 {
 	union
 	{
-		float	F;
-		int		L;
+		float F;
+		int L;
 	} Dat;
 
 	Dat.L = ReadBits(32);
@@ -665,15 +479,9 @@ float QMsg::ReadFloat()
 	return Dat.F;
 }
 
-//==========================================================================
-//
-//	QMsg::ReadString
-//
-//==========================================================================
-
 const char* QMsg::ReadString()
 {
-	static char		string[MAX_STRING_CHARS];
+	static char string[MAX_STRING_CHARS];
 
 	int L = 0;
 	do
@@ -703,15 +511,9 @@ const char* QMsg::ReadString()
 	return string;
 }
 
-//==========================================================================
-//
-//	QMsg::ReadString2
-//
-//==========================================================================
-
 const char* QMsg::ReadString2()
 {
-	static char		string[2048];
+	static char string[2048];
 
 	int L = 0;
 	do
@@ -729,16 +531,10 @@ const char* QMsg::ReadString2()
 
 	return string;
 }
-
-//==========================================================================
-//
-//	QMsg::ReadStringLine
-//
-//==========================================================================
 
 const char* QMsg::ReadBigString()
 {
-	static char		string[BIG_INFO_STRING];
+	static char string[BIG_INFO_STRING];
 
 	int L = 0;
 	do
@@ -763,15 +559,9 @@ const char* QMsg::ReadBigString()
 	return string;
 }
 
-//==========================================================================
-//
-//	QMsg::ReadStringLine
-//
-//==========================================================================
-
 const char* QMsg::ReadStringLine()
 {
-	static char		string[MAX_STRING_CHARS];
+	static char string[MAX_STRING_CHARS];
 
 	int L = 0;
 	do
@@ -795,15 +585,9 @@ const char* QMsg::ReadStringLine()
 	return string;
 }
 
-//==========================================================================
-//
-//	QMsg::ReadStringLine2
-//
-//==========================================================================
-
 const char* QMsg::ReadStringLine2()
 {
-	static char		string[2048];
+	static char string[2048];
 
 	int L = 0;
 	do
@@ -821,45 +605,28 @@ const char* QMsg::ReadStringLine2()
 
 	return string;
 }
-
-//==========================================================================
-//
-//	QMsg::ReadCoord
-//
-//==========================================================================
 
 float QMsg::ReadCoord()
 {
 	return ReadShort() * (1.0 / 8.0);
 }
 
-//==========================================================================
-//
-//	QMsg::ReadAngle
-//
-//==========================================================================
+void QMsg::ReadPos(vec3_t pos)
+{
+	pos[0] = ReadCoord();
+	pos[1] = ReadCoord();
+	pos[2] = ReadCoord();
+}
 
 float QMsg::ReadAngle()
 {
 	return ReadChar() * (360.0 / 256.0);
 }
 
-//==========================================================================
-//
-//	QMsg::ReadAngle16
-//
-//==========================================================================
-
 float QMsg::ReadAngle16()
 {
 	return SHORT2ANGLE(ReadShort());
 }
-
-//==========================================================================
-//
-//	QMsg::ReadData
-//
-//==========================================================================
 
 void QMsg::ReadData(void* Buffer, int Len)
 {

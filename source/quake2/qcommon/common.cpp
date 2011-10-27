@@ -556,13 +556,6 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 // reading functions
 //
 
-void MSG_ReadPos (QMsg *msg_read, vec3_t pos)
-{
-	pos[0] = msg_read->ReadShort() * (1.0/8);
-	pos[1] = msg_read->ReadShort() * (1.0/8);
-	pos[2] = msg_read->ReadShort() * (1.0/8);
-}
-
 void MSG_ReadDeltaUsercmd (QMsg *msg_read, usercmd_t *from, usercmd_t *move)
 {
 	int bits;

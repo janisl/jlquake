@@ -17,15 +17,15 @@
 class QMsg
 {
 public:
-	qboolean	allowoverflow;	// if false, do a Sys_Error
-	qboolean	overflowed;		// set to true if the buffer size failed (with allowoverflow set)
-	qboolean	oob;
-	qboolean	badread;		// set if a read goes beyond end of message
-	byte*		_data;
-	int			maxsize;
-	int			cursize;
-	int			readcount;
-	int			bit;			// for bitwise reads and writes
+	qboolean allowoverflow;	// if false, throw exception
+	qboolean overflowed;	// set to true if the buffer size failed (with allowoverflow set)
+	qboolean oob;
+	qboolean badread;		// set if a read goes beyond end of message
+	byte* _data;
+	int maxsize;
+	int cursize;
+	int readcount;
+	int bit;				// for bitwise reads and writes
 
 	void Init(byte* NewData, int Length);
 	void InitOOB(byte* NewData, int Length);
@@ -70,6 +70,7 @@ public:
 	const char* ReadStringLine();
 	const char* ReadStringLine2();
 	float ReadCoord();
+	void ReadPos(vec3_t pos);
 	float ReadAngle();
 	float ReadAngle16();
 	void ReadData(void* Buffer, int Size);

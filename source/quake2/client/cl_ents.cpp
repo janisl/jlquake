@@ -145,7 +145,7 @@ void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, in
 		to->angles[2] = net_message.ReadAngle();
 
 	if (bits & U_OLDORIGIN)
-		MSG_ReadPos (&net_message, to->old_origin);
+		net_message.ReadPos(to->old_origin);
 
 	if (bits & U_SOUND)
 		to->sound = net_message.ReadByte ();

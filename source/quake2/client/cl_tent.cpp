@@ -228,7 +228,7 @@ void CL_ParseParticles (void)
 	int		color, count;
 	vec3_t	pos, dir;
 
-	MSG_ReadPos (&net_message, pos);
+	net_message.ReadPos(pos);
 	MSG_ReadDir (&net_message, dir);
 
 	color = net_message.ReadByte ();
@@ -252,8 +252,8 @@ static int CL_ParseBeam (qhandle_t model)
 	
 	ent = net_message.ReadShort();
 	
-	MSG_ReadPos (&net_message, start);
-	MSG_ReadPos (&net_message, end);
+	net_message.ReadPos(start);
+	net_message.ReadPos(end);
 
 // override any beam with the same entity
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
@@ -300,9 +300,9 @@ static int CL_ParseBeam2 (qhandle_t model)
 	
 	ent = net_message.ReadShort();
 	
-	MSG_ReadPos (&net_message, start);
-	MSG_ReadPos (&net_message, end);
-	MSG_ReadPos (&net_message, offset);
+	net_message.ReadPos(start);
+	net_message.ReadPos(end);
+	net_message.ReadPos(offset);
 
 //	Com_Printf ("end- %f %f %f\n", end[0], end[1], end[2]);
 
@@ -354,8 +354,8 @@ static int CL_ParsePlayerBeam (qhandle_t model)
 	
 	ent = net_message.ReadShort();
 	
-	MSG_ReadPos (&net_message, start);
-	MSG_ReadPos (&net_message, end);
+	net_message.ReadPos(start);
+	net_message.ReadPos(end);
 	// PMM - network optimization
 	if (model == cl_mod_heatbeam)
 		VectorSet(offset, 2, 7, -3);
@@ -365,7 +365,7 @@ static int CL_ParsePlayerBeam (qhandle_t model)
 		VectorSet(offset, 0, 0, 0);
 	}
 	else
-		MSG_ReadPos (&net_message, offset);
+		net_message.ReadPos(offset);
 
 //	Com_Printf ("end- %f %f %f\n", end[0], end[1], end[2]);
 
@@ -419,8 +419,8 @@ static int CL_ParseLightning (qhandle_t model)
 	srcEnt = net_message.ReadShort();
 	destEnt = net_message.ReadShort();
 
-	MSG_ReadPos (&net_message, start);
-	MSG_ReadPos (&net_message, end);
+	net_message.ReadPos(start);
+	net_message.ReadPos(end);
 
 // override any beam with the same source AND destination entities
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
@@ -469,8 +469,8 @@ void CL_ParseLaser (int colors)
 	laser_t	*l;
 	int		i;
 
-	MSG_ReadPos (&net_message, start);
-	MSG_ReadPos (&net_message, end);
+	net_message.ReadPos(start);
+	net_message.ReadPos(end);
 
 	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
 	{
@@ -519,7 +519,7 @@ void CL_ParseSteam (void)
 		{
 			s->id = id;
 			s->count = net_message.ReadByte ();
-			MSG_ReadPos (&net_message, s->org);
+			net_message.ReadPos(s->org);
 			MSG_ReadDir (&net_message, s->dir);
 			r = net_message.ReadByte ();
 			s->color = r & 0xff;
@@ -534,7 +534,7 @@ void CL_ParseSteam (void)
 //				Com_Printf ("No free sustains!\n");
 			// FIXME - read the stuff anyway
 			cnt = net_message.ReadByte ();
-			MSG_ReadPos (&net_message, pos);
+			net_message.ReadPos(pos);
 			MSG_ReadDir (&net_message, dir);
 			r = net_message.ReadByte ();
 			magnitude = net_message.ReadShort();
@@ -544,7 +544,7 @@ void CL_ParseSteam (void)
 	else // instant
 	{
 		cnt = net_message.ReadByte ();
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		r = net_message.ReadByte ();
 		magnitude = net_message.ReadShort();
@@ -574,7 +574,7 @@ void CL_ParseWidow (void)
 	if (free_sustain)
 	{
 		s->id = id;
-		MSG_ReadPos (&net_message, s->org);
+		net_message.ReadPos(s->org);
 		s->endtime = cl.serverTime + 2100;
 		s->think = CLQ2_Widowbeamout;
 		s->thinkinterval = 1;
@@ -583,7 +583,7 @@ void CL_ParseWidow (void)
 	else // no free sustains
 	{
 		// FIXME - read the stuff anyway
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 	}
 }
 
@@ -605,7 +605,7 @@ void CL_ParseNuke (void)
 	if (free_sustain)
 	{
 		s->id = 21000;
-		MSG_ReadPos (&net_message, s->org);
+		net_message.ReadPos(s->org);
 		s->endtime = cl.serverTime + 1000;
 		s->think = CLQ2_Nukeblast;
 		s->thinkinterval = 1;
@@ -614,7 +614,7 @@ void CL_ParseNuke (void)
 	else // no free sustains
 	{
 		// FIXME - read the stuff anyway
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 	}
 }
 
@@ -646,7 +646,7 @@ void CL_ParseTEnt (void)
 	switch (type)
 	{
 	case TE_BLOOD:			// bullet hitting flesh
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_ParticleEffect (pos, dir, 0xe8, 60);
 		break;
@@ -654,7 +654,7 @@ void CL_ParseTEnt (void)
 	case TE_GUNSHOT:			// bullet hitting wall
 	case TE_SPARKS:
 	case TE_BULLET_SPARKS:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		if (type == TE_GUNSHOT)
 			CLQ2_ParticleEffect (pos, dir, 0, 40);
@@ -679,7 +679,7 @@ void CL_ParseTEnt (void)
 		
 	case TE_SCREEN_SPARKS:
 	case TE_SHIELD_SPARKS:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		if (type == TE_SCREEN_SPARKS)
 			CLQ2_ParticleEffect (pos, dir, 0xd0, 40);
@@ -690,7 +690,7 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_SHOTGUN:			// bullet hitting wall
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_ParticleEffect (pos, dir, 0, 20);
 		CL_SmokeAndFlash(pos);
@@ -698,7 +698,7 @@ void CL_ParseTEnt (void)
 
 	case TE_SPLASH:			// bullet hitting water
 		cnt = net_message.ReadByte ();
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		r = net_message.ReadByte ();
 		if (r > 6)
@@ -721,7 +721,7 @@ void CL_ParseTEnt (void)
 
 	case TE_LASER_SPARKS:
 		cnt = net_message.ReadByte ();
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
@@ -729,13 +729,13 @@ void CL_ParseTEnt (void)
 
 	// RAFAEL
 	case TE_BLUEHYPERBLASTER:
-		MSG_ReadPos (&net_message, pos);
-		MSG_ReadPos (&net_message, dir);
+		net_message.ReadPos(pos);
+		net_message.ReadPos(dir);
 		CLQ2_BlasterParticles (pos, dir);
 		break;
 
 	case TE_BLASTER:			// blaster hitting wall
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_BlasterParticles (pos, dir);
 
@@ -767,8 +767,8 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_RAILTRAIL:			// railgun effect
-		MSG_ReadPos (&net_message, pos);
-		MSG_ReadPos (&net_message, pos2);
+		net_message.ReadPos(pos);
+		net_message.ReadPos(pos2);
 		CLQ2_RailTrail (pos, pos2);
 		S_StartSound (pos2, 0, 0, cl_sfx_railg, 1, ATTN_NORM, 0);
 		break;
@@ -776,7 +776,7 @@ void CL_ParseTEnt (void)
 	case TE_EXPLOSION2:
 	case TE_GRENADE_EXPLOSION:
 	case TE_GRENADE_EXPLOSION_WATER:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 
 		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
@@ -804,7 +804,7 @@ void CL_ParseTEnt (void)
 
 	// RAFAEL
 	case TE_PLASMA_EXPLOSION:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
@@ -832,7 +832,7 @@ void CL_ParseTEnt (void)
 	case TE_ROCKET_EXPLOSION:
 	case TE_ROCKET_EXPLOSION_WATER:
 	case TE_EXPLOSION1_NP:						// PMM
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 
 		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
@@ -864,7 +864,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_BFG_EXPLOSION:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
@@ -882,7 +882,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_BFG_BIGEXPLOSION:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		CLQ2_BFGExplosionParticles (pos);
 		break;
 
@@ -891,8 +891,8 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_BUBBLETRAIL:
-		MSG_ReadPos (&net_message, pos);
-		MSG_ReadPos (&net_message, pos2);
+		net_message.ReadPos(pos);
+		net_message.ReadPos(pos2);
 		CLQ2_BubbleTrail (pos, pos2);
 		break;
 
@@ -902,7 +902,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_BOSSTPORT:			// boss teleporting to station
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		CLQ2_BigTeleportParticles (pos);
 		S_StartSound (pos, 0, 0, S_RegisterSound ("misc/bigtele.wav"), 1, ATTN_NONE, 0);
 		break;
@@ -914,7 +914,7 @@ void CL_ParseTEnt (void)
 	// RAFAEL
 	case TE_WELDING_SPARKS:
 		cnt = net_message.ReadByte ();
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
@@ -935,7 +935,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_GREENBLOOD:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_ParticleEffect2 (pos, dir, 0xdf, 30);
 		break;
@@ -943,7 +943,7 @@ void CL_ParseTEnt (void)
 	// RAFAEL
 	case TE_TUNNEL_SPARKS:
 		cnt = net_message.ReadByte ();
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect3 (pos, dir, color, cnt);
@@ -954,7 +954,7 @@ void CL_ParseTEnt (void)
 		// PMM -following code integrated for flechette (different color)
 	case TE_BLASTER2:			// green blaster hitting wall
 	case TE_FLECHETTE:			// flechette
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		
 		// PMM
@@ -1011,13 +1011,13 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_DEBUGTRAIL:
-		MSG_ReadPos (&net_message, pos);
-		MSG_ReadPos (&net_message, pos2);
+		net_message.ReadPos(pos);
+		net_message.ReadPos(pos2);
 		CLQ2_DebugTrail (pos, pos2);
 		break;
 
 	case TE_PLAIN_EXPLOSION:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 
 		ex = CLQ2_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
@@ -1044,14 +1044,14 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_FLASHLIGHT:
-		MSG_ReadPos(&net_message, pos);
+		net_message.ReadPos(pos);
 		ent = net_message.ReadShort();
 		CLQ2_Flashlight(ent, pos);
 		break;
 
 	case TE_FORCEWALL:
-		MSG_ReadPos(&net_message, pos);
-		MSG_ReadPos(&net_message, pos2);
+		net_message.ReadPos(pos);
+		net_message.ReadPos(pos2);
 		color = net_message.ReadByte ();
 		CLQ2_ForceWall(pos, pos2, color);
 		break;
@@ -1067,7 +1067,7 @@ void CL_ParseTEnt (void)
 	case TE_HEATBEAM_SPARKS:
 //		cnt = net_message.ReadByte ();
 		cnt = 50;
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 //		r = net_message.ReadByte ();
 //		magnitude = net_message.ReadShort();
@@ -1081,7 +1081,7 @@ void CL_ParseTEnt (void)
 	case TE_HEATBEAM_STEAM:
 //		cnt = net_message.ReadByte ();
 		cnt = 20;
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 //		r = net_message.ReadByte ();
 //		magnitude = net_message.ReadShort();
@@ -1099,26 +1099,26 @@ void CL_ParseTEnt (void)
 	case TE_BUBBLETRAIL2:
 //		cnt = net_message.ReadByte ();
 		cnt = 8;
-		MSG_ReadPos (&net_message, pos);
-		MSG_ReadPos (&net_message, pos2);
+		net_message.ReadPos(pos);
+		net_message.ReadPos(pos2);
 		CLQ2_BubbleTrail2 (pos, pos2, cnt);
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_MOREBLOOD:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_ParticleEffect (pos, dir, 0xe8, 250);
 		break;
 
 	case TE_CHAINFIST_SMOKE:
 		dir[0]=0; dir[1]=0; dir[2]=1;
-		MSG_ReadPos(&net_message, pos);
+		net_message.ReadPos(pos);
 		CLQ2_ParticleSmokeEffect (pos, dir, 0, 20, 20);
 		break;
 
 	case TE_ELECTRIC_SPARKS:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 //		CLQ2_ParticleEffect (pos, dir, 109, 40);
 		CLQ2_ParticleEffect (pos, dir, 0x75, 40);
@@ -1127,7 +1127,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_TRACKER_EXPLOSION:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		CLQ2_ColorFlash (0, pos, 150, -1, -1, -1);
 		CLQ2_ColorExplosionParticles (pos, 0, 1);
 //		CLQ2_Tracker_Explode (pos);
@@ -1136,7 +1136,7 @@ void CL_ParseTEnt (void)
 
 	case TE_TELEPORT_EFFECT:
 	case TE_DBALL_GOAL:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		CLQ2_TeleportParticles (pos);
 		break;
 
@@ -1149,7 +1149,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_WIDOWSPLASH:
-		MSG_ReadPos (&net_message, pos);
+		net_message.ReadPos(pos);
 		CLQ2_WidowSplash (pos);
 		break;
 //PGM

@@ -600,7 +600,7 @@ void CL_ParseStartSoundPacket(void)
 
 	if (flags & SND_POS)
 	{	// positioned in space
-		MSG_ReadPos (&net_message, pos_v);
+		net_message.ReadPos(pos_v);
  
 		pos = pos_v;
 	}

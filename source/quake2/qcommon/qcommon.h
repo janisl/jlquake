@@ -83,7 +83,6 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 void MSG_WriteDir (QMsg *sb, vec3_t vector);
 
 
-void	MSG_ReadPos (QMsg *sb, vec3_t pos);
 void	MSG_ReadDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 
 void	MSG_ReadDir (QMsg *sb, vec3_t vector);
