@@ -34,23 +34,22 @@ enum q2exptype_t
 struct q2explosion_t
 {
 	q2exptype_t type;
-	refEntity_t ent;
-
+	refEntity_t entity;
 	int frames;
 	float light;
-	vec3_t lightcolor;
+	vec3_t lightColour;
 	int start;
-	int baseframe;
+	int baseFrame;
 };
 
 static q2explosion_t q2cl_explosions[MAX_EXPLOSIONS_Q2];
 
-static qhandle_t cl_mod_explode;
-static qhandle_t cl_mod_smoke;
-static qhandle_t cl_mod_flash;
-static qhandle_t cl_mod_explo4;
-static qhandle_t cl_mod_bfg_explo;
-static qhandle_t cl_mod_explo4_big;
+static qhandle_t clq2_mod_explode;
+static qhandle_t clq2_mod_smoke;
+static qhandle_t clq2_mod_flash;
+static qhandle_t clq2_mod_explo4;
+static qhandle_t clq2_mod_bfg_explo;
+static qhandle_t clq2_mod_explo4_big;
 
 void CLQ2_ClearExplosions()
 {
@@ -59,12 +58,12 @@ void CLQ2_ClearExplosions()
 
 void CLQ2_RegisterExplosionModels()
 {
-	cl_mod_explode = R_RegisterModel("models/objects/explode/tris.md2");
-	cl_mod_smoke = R_RegisterModel("models/objects/smoke/tris.md2");
-	cl_mod_flash = R_RegisterModel("models/objects/flash/tris.md2");
-	cl_mod_explo4 = R_RegisterModel("models/objects/r_explode/tris.md2");
-	cl_mod_bfg_explo = R_RegisterModel("sprites/s_bfg2.sp2");
-	cl_mod_explo4_big = R_RegisterModel("models/objects/r_explode2/tris.md2");
+	clq2_mod_explode = R_RegisterModel("models/objects/explode/tris.md2");
+	clq2_mod_smoke = R_RegisterModel("models/objects/smoke/tris.md2");
+	clq2_mod_flash = R_RegisterModel("models/objects/flash/tris.md2");
+	clq2_mod_explo4 = R_RegisterModel("models/objects/r_explode/tris.md2");
+	clq2_mod_bfg_explo = R_RegisterModel("sprites/s_bfg2.sp2");
+	clq2_mod_explo4_big = R_RegisterModel("models/objects/r_explode2/tris.md2");
 }
 
 static q2explosion_t* CLQ2_AllocExplosion()
@@ -95,34 +94,34 @@ static q2explosion_t* CLQ2_AllocExplosion()
 
 static q2explosion_t* NewExplosion(vec3_t origin)
 {
-	q2explosion_t* ex = CLQ2_AllocExplosion();
-	ex->start = cl_common->q2_frame.servertime - 100;
-	ex->ent.reType = RT_MODEL;
-	VectorCopy(origin, ex->ent.origin);
-	return ex;
+	q2explosion_t* explosion = CLQ2_AllocExplosion();
+	explosion->start = cl_common->q2_frame.servertime - 100;
+	explosion->entity.reType = RT_MODEL;
+	VectorCopy(origin, explosion->entity.origin);
+	return explosion;
 }
 
 void CLQ2_SmokeAndFlash(vec3_t origin)
 {
-	q2explosion_t* ex = NewExplosion(origin);
-	ex->type = ex_misc;
-	ex->frames = 4;
-	ex->ent.renderfx = RF_TRANSLUCENT;
-	ex->ent.hModel = cl_mod_smoke;
-	AxisClear(ex->ent.axis);
+	q2explosion_t* explosion = NewExplosion(origin);
+	explosion->type = ex_misc;
+	explosion->frames = 4;
+	explosion->entity.renderfx = RF_TRANSLUCENT;
+	explosion->entity.hModel = clq2_mod_smoke;
+	AxisClear(explosion->entity.axis);
 
-	ex = NewExplosion(origin);
-	ex->type = ex_flash;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->frames = 2;
-	ex->ent.hModel = cl_mod_flash;
-	AxisClear(ex->ent.axis);
+	explosion = NewExplosion(origin);
+	explosion->type = ex_flash;
+	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
+	explosion->entity.radius = 1;
+	explosion->frames = 2;
+	explosion->entity.hModel = clq2_mod_flash;
+	AxisClear(explosion->entity.axis);
 }
 
 static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = NewExplosion(pos);
+	q2explosion_t* explosion = NewExplosion(pos);
 	vec3_t angles;
 	angles[0] = acos(dir[2]) / M_PI * 180;
 	// PMM - fixed to correct for pitch of 0
@@ -143,236 +142,242 @@ static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 		angles[1] = 0;
 	}
 	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
+	AnglesToAxis(angles, explosion->entity.axis);
 
-	ex->type = ex_misc;
-	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->ent.hModel = cl_mod_explode;
-	ex->frames = 4;
-	ex->light = 150;
-	return ex;
+	explosion->type = ex_misc;
+	explosion->entity.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
+	explosion->entity.radius = 1;
+	explosion->entity.hModel = clq2_mod_explode;
+	explosion->frames = 4;
+	explosion->light = 150;
+	return explosion;
 }
 
 void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = NewBlasterExplosion(pos, dir);
-	ex->lightcolor[0] = 1;
-	ex->lightcolor[1] = 1;
+	q2explosion_t* explosion = NewBlasterExplosion(pos, dir);
+	explosion->lightColour[0] = 1;
+	explosion->lightColour[1] = 1;
 }
 
 void CLQ2_GrenadeExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	ex->type = ex_poly;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->light = 350;
-	ex->lightcolor[0] = 1.0;
-	ex->lightcolor[1] = 0.5;
-	ex->lightcolor[2] = 0.5;
-	ex->ent.hModel = cl_mod_explo4;
-	ex->frames = 19;
-	ex->baseframe = 30;
+	q2explosion_t* explosion = NewExplosion(pos);
+	explosion->type = ex_poly;
+	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
+	explosion->entity.radius = 1;
+	explosion->light = 350;
+	explosion->lightColour[0] = 1.0;
+	explosion->lightColour[1] = 0.5;
+	explosion->lightColour[2] = 0.5;
+	explosion->entity.hModel = clq2_mod_explo4;
+	explosion->frames = 19;
+	explosion->baseFrame = 30;
 	vec3_t	angles;
 	angles[0] = 0;
 	angles[1] = rand() % 360;
 	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
+	AnglesToAxis(angles, explosion->entity.axis);
 }
 
 void CLQ2_RocketExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	ex->type = ex_poly;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->light = 350;
-	ex->lightcolor[0] = 1.0;
-	ex->lightcolor[1] = 0.5;
-	ex->lightcolor[2] = 0.5;
+	q2explosion_t* explosion = NewExplosion(pos);
+	explosion->type = ex_poly;
+	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
+	explosion->entity.radius = 1;
+	explosion->light = 350;
+	explosion->lightColour[0] = 1.0;
+	explosion->lightColour[1] = 0.5;
+	explosion->lightColour[2] = 0.5;
 	vec3_t angles;
 	angles[0] = 0;
 	angles[1] = rand() % 360;
 	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
-	ex->ent.hModel = cl_mod_explo4;
+	AnglesToAxis(angles, explosion->entity.axis);
+	explosion->entity.hModel = clq2_mod_explo4;
 	if (frand() < 0.5)
 	{
-		ex->baseframe = 15;
+		explosion->baseFrame = 15;
 	}
-	ex->frames = 15;
+	explosion->frames = 15;
 }
 
 void CLQ2_BigExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	ex->type = ex_poly;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->light = 350;
-	ex->lightcolor[0] = 1.0;
-	ex->lightcolor[1] = 0.5;
-	ex->lightcolor[2] = 0.5;
+	q2explosion_t* explosion = NewExplosion(pos);
+	explosion->type = ex_poly;
+	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
+	explosion->entity.radius = 1;
+	explosion->light = 350;
+	explosion->lightColour[0] = 1.0;
+	explosion->lightColour[1] = 0.5;
+	explosion->lightColour[2] = 0.5;
 	vec3_t angles;
 	angles[0] = 0;
 	angles[1] = rand() % 360;
 	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
-	ex->ent.hModel = cl_mod_explo4_big;
+	AnglesToAxis(angles, explosion->entity.axis);
+	explosion->entity.hModel = clq2_mod_explo4_big;
 	if (frand() < 0.5)
 	{
-		ex->baseframe = 15;
+		explosion->baseFrame = 15;
 	}
-	ex->frames = 15;
+	explosion->frames = 15;
 }
 
 void CLQ2_BfgExplosion(vec3_t pos)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	ex->type = ex_poly;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->light = 350;
-	ex->lightcolor[0] = 0.0;
-	ex->lightcolor[1] = 1.0;
-	ex->lightcolor[2] = 0.0;
-	ex->ent.hModel = cl_mod_bfg_explo;
-	ex->ent.renderfx |= RF_TRANSLUCENT;
-	ex->ent.shaderRGBA[3] = 76;
-	AxisClear(ex->ent.axis);
-	ex->frames = 4;
+	q2explosion_t* explosion = NewExplosion(pos);
+	explosion->type = ex_poly;
+	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
+	explosion->entity.radius = 1;
+	explosion->light = 350;
+	explosion->lightColour[0] = 0.0;
+	explosion->lightColour[1] = 1.0;
+	explosion->lightColour[2] = 0.0;
+	explosion->entity.hModel = clq2_mod_bfg_explo;
+	explosion->entity.renderfx |= RF_TRANSLUCENT;
+	explosion->entity.shaderRGBA[3] = 76;
+	AxisClear(explosion->entity.axis);
+	explosion->frames = 4;
 }
 
 void CLQ2_WeldingSparks(vec3_t pos)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	ex->type = ex_sparks;
-	ex->light = 100 + (rand() % 75);
-	ex->lightcolor[0] = 1.0;
-	ex->lightcolor[1] = 1.0;
-	ex->lightcolor[2] = 0.3;
-	ex->frames = 2;
+	q2explosion_t* explosion = NewExplosion(pos);
+	explosion->type = ex_sparks;
+	explosion->light = 100 + (rand() % 75);
+	explosion->lightColour[0] = 1.0;
+	explosion->lightColour[1] = 1.0;
+	explosion->lightColour[2] = 0.3;
+	explosion->frames = 2;
 }
 
 void CLQ2_Blaster2Explosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = NewBlasterExplosion(pos, dir);
-	ex->ent.skinNum = 1;
-	ex->lightcolor[1] = 1;
+	q2explosion_t* explosion = NewBlasterExplosion(pos, dir);
+	explosion->entity.skinNum = 1;
+	explosion->lightColour[1] = 1;
 }
 
 void CLQ2_FlechetteExplosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = NewBlasterExplosion(pos, dir);
-	ex->ent.skinNum = 2;
-	ex->lightcolor[0] = 0.19;
-	ex->lightcolor[1] = 0.41;
-	ex->lightcolor[2] = 0.75;
+	q2explosion_t* explosion = NewBlasterExplosion(pos, dir);
+	explosion->entity.skinNum = 2;
+	explosion->lightColour[0] = 0.19;
+	explosion->lightColour[1] = 0.41;
+	explosion->lightColour[2] = 0.75;
 }
 
-/*
-=================
-CLQ2_AddExplosions
-=================
-*/
-void CLQ2_AddExplosions (void)
+void CLQ2_AddExplosions()
 {
-	refEntity_t	*ent;
-	int			i;
-	q2explosion_t	*ex;
-	float		frac;
-	int			f;
-
-	for (i=0, ex=q2cl_explosions ; i< MAX_EXPLOSIONS_Q2 ; i++, ex++)
+	q2explosion_t* explosion = q2cl_explosions;
+	for (int i = 0; i < MAX_EXPLOSIONS_Q2; i++, explosion++)
 	{
-		if (ex->type == ex_free)
+		if (explosion->type == ex_free)
+		{
 			continue;
-		frac = (cl_common->serverTime - ex->start)/100.0;
-		f = floor(frac);
+		}
+		float fraction = (cl_common->serverTime - explosion->start) / 100.0;
+		int frame = (int)floor(fraction);
 
-		ent = &ex->ent;
+		refEntity_t* entity = &explosion->entity;
 
-		switch (ex->type)
+		switch (explosion->type)
 		{
 		case ex_mflash:
 		case ex_sparks:
-			if (f >= ex->frames-1)
-				ex->type = ex_free;
+			if (frame >= explosion->frames - 1)
+			{
+				explosion->type = ex_free;
+			}
 			break;
 		case ex_misc:
-			if (f >= ex->frames-1)
+			if (frame >= explosion->frames - 1)
 			{
-				ex->type = ex_free;
+				explosion->type = ex_free;
 				break;
 			}
-			ent->shaderRGBA[3] = (int)((1.0 - frac/(ex->frames-1)) * 255);
+			entity->shaderRGBA[3] = (int)((1.0 - fraction / (explosion->frames - 1)) * 255);
 			break;
 		case ex_flash:
-			if (f >= 1)
+			if (frame >= 1)
 			{
-				ex->type = ex_free;
+				explosion->type = ex_free;
 				break;
 			}
-			ent->shaderRGBA[3] = 255;
+			entity->shaderRGBA[3] = 255;
 			break;
 		case ex_poly:
-			if (f >= ex->frames-1)
+			if (frame >= explosion->frames - 1)
 			{
-				ex->type = ex_free;
+				explosion->type = ex_free;
 				break;
 			}
 
-			ent->shaderRGBA[3] = (int)((16.0 - (float)f) / 16.0 * 255);
+			entity->shaderRGBA[3] = (int)((16.0 - (float)frame) / 16.0 * 255);
 
-			if (f < 10)
+			if (frame < 10)
 			{
-				ent->skinNum = (f>>1);
-				if (ent->skinNum < 0)
-					ent->skinNum = 0;
+				entity->skinNum = (frame >> 1);
+				if (entity->skinNum < 0)
+				{
+					entity->skinNum = 0;
+				}
 			}
 			else
 			{
-				ent->renderfx |= RF_TRANSLUCENT;
-				if (f < 13)
-					ent->skinNum = 5;
+				entity->renderfx |= RF_TRANSLUCENT;
+				if (frame < 13)
+				{
+					entity->skinNum = 5;
+				}
 				else
-					ent->skinNum = 6;
+				{
+					entity->skinNum = 6;
+				}
 			}
 			break;
 		case ex_poly2:
-			if (f >= ex->frames-1)
+			if (frame >= explosion->frames - 1)
 			{
-				ex->type = ex_free;
+				explosion->type = ex_free;
 				break;
 			}
 
-			ent->shaderRGBA[3] = (int)((5.0 - (float)f) / 5.0 * 255);
-			ent->skinNum = 0;
-			ent->renderfx |= RF_TRANSLUCENT;
+			entity->shaderRGBA[3] = (int)((5.0 - (float)frame) / 5.0 * 255);
+			entity->skinNum = 0;
+			entity->renderfx |= RF_TRANSLUCENT;
 			break;
 		default:
 			break;
 		}
 
-		if (ex->type == ex_free)
-			continue;
-		if (ex->light)
+		if (explosion->type == ex_free)
 		{
-			R_AddLightToScene(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
-				ex->lightcolor[0], ex->lightcolor[1], ex->lightcolor[2]);
-		}
-		if (ex->type == ex_sparks)
 			continue;
+		}
+		if (explosion->light)
+		{
+			R_AddLightToScene(entity->origin, explosion->light * (float)entity->shaderRGBA[3] / 255.0,
+				explosion->lightColour[0], explosion->lightColour[1], explosion->lightColour[2]);
+		}
+		if (explosion->type == ex_sparks)
+		{
+			continue;
+		}
 
-		VectorCopy (ent->origin, ent->oldorigin);
+		VectorCopy(entity->origin, entity->oldorigin);
 
-		if (f < 0)
-			f = 0;
-		ent->frame = ex->baseframe + f + 1;
-		ent->oldframe = ex->baseframe + f;
-		ent->backlerp = 1.0 - cl_common->q2_lerpfrac;
+		if (frame < 0)
+		{
+			frame = 0;
+		}
+		entity->frame = explosion->baseFrame + frame + 1;
+		entity->oldframe = explosion->baseFrame + frame;
+		entity->backlerp = 1.0 - cl_common->q2_lerpfrac;
 
-		R_AddRefEntityToScene (ent);
+		R_AddRefEntityToScene(entity);
 	}
 }
