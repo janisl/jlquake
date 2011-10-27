@@ -32,11 +32,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //Notes:			fix: PC_StringizeTokens
 
-//#define BOTLIB
 //#define QUAKE
 //#define QUAKEC
 
-#ifdef BOTLIB
 #include "../game/q_shared.h"
 #include "botlib.h"
 #include "be_interface.h"
@@ -44,7 +42,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_script.h"
 #include "l_precomp.h"
 #include "l_log.h"
-#endif //BOTLIB
 
 #if defined(QUAKE)
 #include "l_utils.h"
@@ -91,9 +88,7 @@ void QDECL SourceError(source_t *source, const char *str, ...)
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
-#ifdef BOTLIB
 	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-#endif	//BOTLIB
 } //end of the function SourceError
 //===========================================================================
 //
@@ -109,9 +104,7 @@ void QDECL SourceWarning(source_t *source, const char *str, ...)
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
-#ifdef BOTLIB
 	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-#endif //BOTLIB
 } //end of the function ScriptWarning
 //============================================================================
 //
@@ -3156,9 +3149,7 @@ void PC_CheckOpenSourceHandles(void)
 	{
 		if (sourceFiles[i])
 		{
-#ifdef BOTLIB
 			botimport.Print(PRT_ERROR, "file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
-#endif	//BOTLIB
 		} //end if
 	} //end for
 } //end of the function PC_CheckOpenSourceHandles

@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#ifdef BOTLIB
 #include "../game/q_shared.h"
 #include "botlib.h"				//for the include of be_interface.h
 #include "l_script.h"
@@ -37,7 +36,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_struct.h"
 #include "l_utils.h"
 #include "be_interface.h"
-#endif //BOTLIB
 
 //===========================================================================
 //

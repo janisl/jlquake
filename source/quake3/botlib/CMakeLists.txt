@@ -33,5 +33,5 @@ set(BOTLIB_SOURCES
 )
 
 add_library(botlib STATIC ${BOTLIB_SOURCES})
-set_target_properties(botlib PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DBOTLIB")
+set_target_properties(botlib PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS}")
 add_dependencies(botlib core)
