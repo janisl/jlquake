@@ -375,7 +375,7 @@ void V_RenderView(float stereo_separation)
 
 	// an invalid frame will just use the exact previous refdef
 	// we can't use the old frame if the video mode has changed, though...
-	if (!cl.frame.valid)
+	if (!cl.q2_frame.valid)
 	{
 		return;
 	}
@@ -392,7 +392,7 @@ void V_RenderView(float stereo_separation)
 		}
 		else
 		{
-			CL_AddPacketEntities(&cl.frame);
+			CL_AddPacketEntities(&cl.q2_frame);
 			CL_AddTEnts();
 		}
 	}
@@ -453,7 +453,7 @@ void V_RenderView(float stereo_separation)
 
 	for (int i = 0; i < MAX_MAP_AREA_BYTES; i++)
 	{
-		cl.refdef.areamask[i] = ~cl.frame.areabits[i];
+		cl.refdef.areamask[i] = ~cl.q2_frame.areabits[i];
 	}
 
 	if (!cl_add_blend->value)
@@ -462,11 +462,11 @@ void V_RenderView(float stereo_separation)
 	}
 
 	cl.refdef.rdflags = 0;
-	if (cl.frame.playerstate.rdflags & Q2RDF_NOWORLDMODEL)
+	if (cl.q2_frame.playerstate.rdflags & Q2RDF_NOWORLDMODEL)
 	{
 		cl.refdef.rdflags |= RDF_NOWORLDMODEL;
 	}
-	if (cl.frame.playerstate.rdflags & Q2RDF_IRGOGGLES)
+	if (cl.q2_frame.playerstate.rdflags & Q2RDF_IRGOGGLES)
 	{
 		cl.refdef.rdflags |= RDF_IRGOGGLES;
 	}

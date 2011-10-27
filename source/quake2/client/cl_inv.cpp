@@ -75,7 +75,7 @@ void CL_DrawInventory (void)
 	int		selected;
 	int		top;
 
-	selected = cl.frame.playerstate.stats[STAT_SELECTED_ITEM];
+	selected = cl.q2_frame.playerstate.stats[Q2STAT_SELECTED_ITEM];
 
 	num = 0;
 	selected_num = 0;

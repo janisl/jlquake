@@ -605,7 +605,7 @@ void PM_AirMove (void)
 //
 // clamp to server defined max speed
 //
-	maxspeed = (pm->s.pm_flags & PMF_DUCKED) ? pm_duckspeed : pm_maxspeed;
+	maxspeed = (pm->s.pm_flags & Q2PMF_DUCKED) ? pm_duckspeed : pm_maxspeed;
 
 	if (wishspeed > maxspeed)
 	{
@@ -686,7 +686,7 @@ void PM_CatagorizePosition (void)
 	point[2] = pml.origin[2] - 0.25;
 	if (pml.velocity[2] > 180) //!!ZOID changed from 100 to 180 (ramp accel)
 	{
-		pm->s.pm_flags &= ~PMF_ON_GROUND;
+		pm->s.pm_flags &= ~Q2PMF_ON_GROUND;
 		pm->groundentity = NULL;
 	}
 	else
@@ -699,26 +699,26 @@ void PM_CatagorizePosition (void)
 		if (!trace.ent || (trace.plane.normal[2] < 0.7 && !trace.startsolid) )
 		{
 			pm->groundentity = NULL;
-			pm->s.pm_flags &= ~PMF_ON_GROUND;
+			pm->s.pm_flags &= ~Q2PMF_ON_GROUND;
 		}
 		else
 		{
 			pm->groundentity = trace.ent;
 
 			// hitting solid ground will end a waterjump
-			if (pm->s.pm_flags & PMF_TIME_WATERJUMP)
+			if (pm->s.pm_flags & Q2PMF_TIME_WATERJUMP)
 			{
-				pm->s.pm_flags &= ~(PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_TELEPORT);
+				pm->s.pm_flags &= ~(Q2PMF_TIME_WATERJUMP | Q2PMF_TIME_LAND | Q2PMF_TIME_TELEPORT);
 				pm->s.pm_time = 0;
 			}
 
-			if (! (pm->s.pm_flags & PMF_ON_GROUND) )
+			if (! (pm->s.pm_flags & Q2PMF_ON_GROUND) )
 			{	// just hit the ground
-				pm->s.pm_flags |= PMF_ON_GROUND;
+				pm->s.pm_flags |= Q2PMF_ON_GROUND;
 				// don't do landing time if we were just going down a slope
 				if (pml.velocity[2] < -200)
 				{
-					pm->s.pm_flags |= PMF_TIME_LAND;
+					pm->s.pm_flags |= Q2PMF_TIME_LAND;
 					// don't allow another jump for a little while
 					if (pml.velocity[2] < -400)
 						pm->s.pm_time = 25;	
@@ -778,22 +778,22 @@ PM_CheckJump
 */
 void PM_CheckJump (void)
 {
-	if (pm->s.pm_flags & PMF_TIME_LAND)
+	if (pm->s.pm_flags & Q2PMF_TIME_LAND)
 	{	// hasn't been long enough since landing to jump again
 		return;
 	}
 
 	if (pm->cmd.upmove < 10)
 	{	// not holding jump
-		pm->s.pm_flags &= ~PMF_JUMP_HELD;
+		pm->s.pm_flags &= ~Q2PMF_JUMP_HELD;
 		return;
 	}
 
 	// must wait for jump to be released
-	if (pm->s.pm_flags & PMF_JUMP_HELD)
+	if (pm->s.pm_flags & Q2PMF_JUMP_HELD)
 		return;
 
-	if (pm->s.pm_type == PM_DEAD)
+	if (pm->s.pm_type == Q2PM_DEAD)
 		return;
 
 	if (pm->waterlevel >= 2)
@@ -815,7 +815,7 @@ void PM_CheckJump (void)
 	if (pm->groundentity == NULL)
 		return;		// in air, so no effect
 
-	pm->s.pm_flags |= PMF_JUMP_HELD;
+	pm->s.pm_flags |= Q2PMF_JUMP_HELD;
 
 	pm->groundentity = NULL;
 	pml.velocity[2] += 270;
@@ -870,7 +870,7 @@ void PM_CheckSpecialMovement (void)
 	VectorScale (flatforward, 50, pml.velocity);
 	pml.velocity[2] = 350;
 
-	pm->s.pm_flags |= PMF_TIME_WATERJUMP;
+	pm->s.pm_flags |= Q2PMF_TIME_WATERJUMP;
 	pm->s.pm_time = 255;
 }
 
@@ -984,7 +984,7 @@ void PM_CheckDuck (void)
 	pm->maxs[0] = 16;
 	pm->maxs[1] = 16;
 
-	if (pm->s.pm_type == PM_GIB)
+	if (pm->s.pm_type == Q2PM_GIB)
 	{
 		pm->mins[2] = 0;
 		pm->maxs[2] = 16;
@@ -994,27 +994,27 @@ void PM_CheckDuck (void)
 
 	pm->mins[2] = -24;
 
-	if (pm->s.pm_type == PM_DEAD)
+	if (pm->s.pm_type == Q2PM_DEAD)
 	{
-		pm->s.pm_flags |= PMF_DUCKED;
+		pm->s.pm_flags |= Q2PMF_DUCKED;
 	}
-	else if (pm->cmd.upmove < 0 && (pm->s.pm_flags & PMF_ON_GROUND) )
+	else if (pm->cmd.upmove < 0 && (pm->s.pm_flags & Q2PMF_ON_GROUND) )
 	{	// duck
-		pm->s.pm_flags |= PMF_DUCKED;
+		pm->s.pm_flags |= Q2PMF_DUCKED;
 	}
 	else
 	{	// stand up if possible
-		if (pm->s.pm_flags & PMF_DUCKED)
+		if (pm->s.pm_flags & Q2PMF_DUCKED)
 		{
 			// try to stand up
 			pm->maxs[2] = 32;
 			trace = pm->trace (pml.origin, pm->mins, pm->maxs, pml.origin);
 			if (!trace.allsolid)
-				pm->s.pm_flags &= ~PMF_DUCKED;
+				pm->s.pm_flags &= ~Q2PMF_DUCKED;
 		}
 	}
 
-	if (pm->s.pm_flags & PMF_DUCKED)
+	if (pm->s.pm_flags & Q2PMF_DUCKED)
 	{
 		pm->maxs[2] = 4;
 		pm->viewheight = -2;
@@ -1061,7 +1061,7 @@ qboolean	PM_GoodPosition (void)
 	vec3_t	origin, end;
 	int		i;
 
-	if (pm->s.pm_type == PM_SPECTATOR)
+	if (pm->s.pm_type == Q2PM_SPECTATOR)
 		return true;
 
 	for (i=0 ; i<3 ; i++)
@@ -1207,7 +1207,7 @@ void PM_ClampAngles (void)
 	short	temp;
 	int		i;
 
-	if (pm->s.pm_flags & PMF_TIME_TELEPORT)
+	if (pm->s.pm_flags & Q2PMF_TIME_TELEPORT)
 	{
 		pm->viewangles[YAW] = SHORT2ANGLE(pm->cmd.angles[YAW] + pm->s.delta_angles[YAW]);
 		pm->viewangles[PITCH] = 0;
@@ -1269,21 +1269,21 @@ void Pmove (pmove_t *pmove)
 
 	PM_ClampAngles ();
 
-	if (pm->s.pm_type == PM_SPECTATOR)
+	if (pm->s.pm_type == Q2PM_SPECTATOR)
 	{
 		PM_FlyMove (false);
 		PM_SnapPosition ();
 		return;
 	}
 
-	if (pm->s.pm_type >= PM_DEAD)
+	if (pm->s.pm_type >= Q2PM_DEAD)
 	{
 		pm->cmd.forwardmove = 0;
 		pm->cmd.sidemove = 0;
 		pm->cmd.upmove = 0;
 	}
 
-	if (pm->s.pm_type == PM_FREEZE)
+	if (pm->s.pm_type == Q2PM_FREEZE)
 		return;		// no movement at all
 
 	// set mins, maxs, and viewheight
@@ -1295,7 +1295,7 @@ void Pmove (pmove_t *pmove)
 	// set groundentity, watertype, and waterlevel
 	PM_CatagorizePosition ();
 
-	if (pm->s.pm_type == PM_DEAD)
+	if (pm->s.pm_type == Q2PM_DEAD)
 		PM_DeadMove ();
 
 	PM_CheckSpecialMovement ();
@@ -1310,22 +1310,22 @@ void Pmove (pmove_t *pmove)
 			msec = 1;
 		if ( msec >= pm->s.pm_time) 
 		{
-			pm->s.pm_flags &= ~(PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_TELEPORT);
+			pm->s.pm_flags &= ~(Q2PMF_TIME_WATERJUMP | Q2PMF_TIME_LAND | Q2PMF_TIME_TELEPORT);
 			pm->s.pm_time = 0;
 		}
 		else
 			pm->s.pm_time -= msec;
 	}
 
-	if (pm->s.pm_flags & PMF_TIME_TELEPORT)
+	if (pm->s.pm_flags & Q2PMF_TIME_TELEPORT)
 	{	// teleport pause stays exactly in place
 	}
-	else if (pm->s.pm_flags & PMF_TIME_WATERJUMP)
+	else if (pm->s.pm_flags & Q2PMF_TIME_WATERJUMP)
 	{	// waterjump has no control, but falls
 		pml.velocity[2] -= pm->s.gravity * pml.frametime;
 		if (pml.velocity[2] < 0)
 		{	// cancel as soon as we are falling down again
-			pm->s.pm_flags &= ~(PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_TELEPORT);
+			pm->s.pm_flags &= ~(Q2PMF_TIME_WATERJUMP | Q2PMF_TIME_LAND | Q2PMF_TIME_TELEPORT);
 			pm->s.pm_time = 0;
 		}
 

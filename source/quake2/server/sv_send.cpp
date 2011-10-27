@@ -403,7 +403,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 	msg.allowoverflow = true;
 
 	// send over all the relevant q2entity_state_t
-	// and the player_state_t
+	// and the q2player_state_t
 	SV_WriteFrameToClient (client, &msg);
 
 	// copy the accumulated multicast datagram

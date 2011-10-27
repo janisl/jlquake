@@ -126,7 +126,7 @@ char	*SV_StatusString (void)
 		if (cl->state == cs_connected || cl->state == cs_spawned )
 		{
 			String::Sprintf (player, sizeof(player), "%i %i \"%s\"\n", 
-				cl->edict->client->ps.stats[STAT_FRAGS], cl->ping, cl->name);
+				cl->edict->client->ps.stats[Q2STAT_FRAGS], cl->ping, cl->name);
 			playerLength = String::Length(player);
 			if (statusLength + playerLength >= (int)sizeof(status) )
 				break;		// can't hold any more

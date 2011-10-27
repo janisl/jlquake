@@ -42,3 +42,15 @@ struct q2cl_sustain_t
 	int magnitude;
 	void (*think)(q2cl_sustain_t* self);
 };
+
+struct q2frame_t
+{
+	qboolean valid;		// cleared if delta parsing was invalid
+	int serverframe;
+	int servertime;		// server time the message is valid for (in msec)
+	int deltaframe;
+	byte areabits[BSP38MAX_MAP_AREAS / 8];		// portalarea visibility bits
+	q2player_state_t playerstate;
+	int num_entities;
+	int parse_entities;	// non-masked index into cl_parse_entities array
+};

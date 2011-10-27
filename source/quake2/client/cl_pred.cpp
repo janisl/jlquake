@@ -33,7 +33,7 @@ void CL_CheckPredictionError (void)
 	int		i;
 	int		len;
 
-	if (!cl_predict->value || (cl.frame.playerstate.pmove.pm_flags & PMF_NO_PREDICTION))
+	if (!cl_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
 		return;
 
 	// calculate the last usercmd_t we sent that the server has processed
@@ -41,7 +41,7 @@ void CL_CheckPredictionError (void)
 	frame &= (CMD_BACKUP-1);
 
 	// compare what the server returned with what we had predicted it to be
-	VectorSubtract (cl.frame.playerstate.pmove.origin, cl.predicted_origins[frame], delta);
+	VectorSubtract (cl.q2_frame.playerstate.pmove.origin, cl.predicted_origins[frame], delta);
 
 	// save the prediction error for interpolation
 	len = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
@@ -52,10 +52,10 @@ void CL_CheckPredictionError (void)
 	else
 	{
 		if (cl_showmiss->value && (delta[0] || delta[1] || delta[2]) )
-			Com_Printf ("prediction miss on %i: %i\n", cl.frame.serverframe, 
+			Com_Printf ("prediction miss on %i: %i\n", cl.q2_frame.serverframe, 
 			delta[0] + delta[1] + delta[2]);
 
-		VectorCopy (cl.frame.playerstate.pmove.origin, cl.predicted_origins[frame]);
+		VectorCopy (cl.q2_frame.playerstate.pmove.origin, cl.predicted_origins[frame]);
 
 		// save for error itnerpolation
 		for (i=0 ; i<3 ; i++)
@@ -80,9 +80,9 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 	clipHandle_t	cmodel;
 	vec3_t		bmins, bmaxs;
 
-	for (i=0 ; i<cl.frame.num_entities ; i++)
+	for (i=0 ; i<cl.q2_frame.num_entities ; i++)
 	{
-		num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
+		num = (cl.q2_frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
 		ent = &cl_parse_entities[num];
 
 		if (!ent->solid)
@@ -168,9 +168,9 @@ int		CL_PMpointcontents (vec3_t point)
 
 	contents = CM_PointContentsQ2(point, 0);
 
-	for (i=0 ; i<cl.frame.num_entities ; i++)
+	for (i=0 ; i<cl.q2_frame.num_entities ; i++)
 	{
-		num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
+		num = (cl.q2_frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
 		ent = &cl_parse_entities[num];
 
 		if (ent->solid != 31) // special value for bmodel
@@ -211,11 +211,11 @@ void CL_PredictMovement (void)
 	if (cl_paused->value)
 		return;
 
-	if (!cl_predict->value || (cl.frame.playerstate.pmove.pm_flags & PMF_NO_PREDICTION))
+	if (!cl_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
 	{	// just set angles
 		for (i=0 ; i<3 ; i++)
 		{
-			cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
+			cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[i]);
 		}
 		return;
 	}
@@ -238,7 +238,7 @@ void CL_PredictMovement (void)
 
 	pm_airaccelerate = String::Atof(cl.configstrings[CS_AIRACCEL]);
 
-	pm.s = cl.frame.playerstate.pmove;
+	pm.s = cl.q2_frame.playerstate.pmove;
 
 //	SCR_DebugGraph (current - ack - 1, 0);
 
@@ -260,7 +260,7 @@ void CL_PredictMovement (void)
 	oldframe = (ack-2) & (CMD_BACKUP-1);
 	oldz = cl.predicted_origins[oldframe][2];
 	step = pm.s.origin[2] - oldz;
-	if (step > 63 && step < 160 && (pm.s.pm_flags & PMF_ON_GROUND) )
+	if (step > 63 && step < 160 && (pm.s.pm_flags & Q2PMF_ON_GROUND) )
 	{
 		cl.predicted_step = step * 0.125;
 		cl.predicted_step_time = cls.realtime - cls.frametimeFloat * 500;

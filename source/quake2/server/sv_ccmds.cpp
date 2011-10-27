@@ -615,7 +615,7 @@ void SV_Savegame_f (void)
 		return;
 	}
 
-	if (maxclients->value == 1 && svs.clients[0].edict->client->ps.stats[STAT_HEALTH] <= 0)
+	if (maxclients->value == 1 && svs.clients[0].edict->client->ps.stats[Q2STAT_HEALTH] <= 0)
 	{
 		Com_Printf ("\nCan't savegame while dead!\n");
 		return;
@@ -703,7 +703,7 @@ void SV_Status_f (void)
 		if (!cl->state)
 			continue;
 		Com_Printf ("%3i ", i);
-		Com_Printf ("%5i ", cl->edict->client->ps.stats[STAT_FRAGS]);
+		Com_Printf ("%5i ", cl->edict->client->ps.stats[Q2STAT_FRAGS]);
 
 		if (cl->state == cs_connected)
 			Com_Printf ("CNCT ");

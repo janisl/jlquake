@@ -221,8 +221,8 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, QMsg
 {
 	int				i;
 	int				pflags;
-	player_state_t	*ps, *ops;
-	player_state_t	dummy;
+	q2player_state_t	*ps, *ops;
+	q2player_state_t	dummy;
 	int				statbits;
 
 	ps = &to->ps;
@@ -306,7 +306,7 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, QMsg
 	msg->WriteShort(pflags);
 
 	//
-	// write the pmove_state_t
+	// write the q2pmove_state_t
 	//
 	if (pflags & PS_M_TYPE)
 		msg->WriteByte(ps->pmove.pm_type);
@@ -342,7 +342,7 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, QMsg
 	}
 
 	//
-	// write the rest of the player_state_t
+	// write the rest of the q2player_state_t
 	//
 	if (pflags & PS_VIEWOFFSET)
 	{
@@ -395,11 +395,11 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, QMsg
 
 	// send stats
 	statbits = 0;
-	for (i=0 ; i<MAX_STATS ; i++)
+	for (i=0 ; i<MAX_STATS_Q2 ; i++)
 		if (ps->stats[i] != ops->stats[i])
 			statbits |= 1<<i;
 	msg->WriteLong(statbits);
-	for (i=0 ; i<MAX_STATS ; i++)
+	for (i=0 ; i<MAX_STATS_Q2 ; i++)
 		if (statbits & (1<<i) )
 			msg->WriteShort(ps->stats[i]);
 }
@@ -558,7 +558,7 @@ void SV_BuildClientFrame (client_t *client)
 	// calculate the visible areas
 	frame->areabytes = CM_WriteAreaBits (frame->areabits, clientarea);
 
-	// grab the current player_state_t
+	// grab the current q2player_state_t
 	frame->ps = clent->client->ps;
 
 
@@ -692,7 +692,7 @@ void SV_RecordDemoMessage (void)
 	Com_Memset(&nostate, 0, sizeof(nostate));
 	buf.InitOOB(buf_data, sizeof(buf_data));
 
-	// write a frame message that doesn't contain a player_state_t
+	// write a frame message that doesn't contain a q2player_state_t
 	buf.WriteByte(svc_frame);
 	buf.WriteLong(sv.framenum);
 

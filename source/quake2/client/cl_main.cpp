@@ -1725,9 +1725,9 @@ void CL_UpdateSounds()
 	}
 
 	S_ClearLoopingSounds(false);
-	for (int i=0 ; i<cl.frame.num_entities ; i++)
+	for (int i=0 ; i<cl.q2_frame.num_entities ; i++)
 	{
-		int num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
+		int num = (cl.q2_frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
 		q2entity_state_t* ent = &cl_parse_entities[num];
 		if (!ent->sound)
 			continue;

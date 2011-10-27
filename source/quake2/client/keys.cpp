@@ -686,7 +686,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		if (!down)
 			return;
 
-		if (cl.frame.playerstate.stats[STAT_LAYOUTS] && in_keyCatchers == 0)
+		if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] && in_keyCatchers == 0)
 		{	// put away help computer / inventory
 			Cbuf_AddText ("cmd putaway\n");
 			return;

@@ -18,6 +18,7 @@
 #define _CLIENT_H
 
 #include "../core/core.h"
+#include "../core/file_formats/bsp38.h"
 
 #include "sound/public.h"
 #include "renderer/public.h"
@@ -61,6 +62,8 @@ struct clientActiveCommon_t
 	refdef_t refdef;
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
 	int viewentity;			// cl_entitites[cl.viewentity] = player
+
+	q2frame_t q2_frame;		// received from server
 };
 
 extern clientStaticCommon_t* cls_common;

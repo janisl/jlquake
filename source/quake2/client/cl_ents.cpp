@@ -167,7 +167,7 @@ Parses deltas from the given base and adds the resulting entity
 to the current frame
 ==================
 */
-void CL_DeltaEntity (frame_t *frame, int newnum, q2entity_state_t *old, int bits)
+void CL_DeltaEntity (q2frame_t *frame, int newnum, q2entity_state_t *old, int bits)
 {
 	q2centity_t	*ent;
 	q2entity_state_t	*state;
@@ -195,7 +195,7 @@ void CL_DeltaEntity (frame_t *frame, int newnum, q2entity_state_t *old, int bits
 		ent->serverframe = -99;
 	}
 
-	if (ent->serverframe != cl.frame.serverframe - 1)
+	if (ent->serverframe != cl.q2_frame.serverframe - 1)
 	{	// wasn't in last update, so initialize some things
 		ent->trailcount = 1024;		// for diminishing rocket / grenade trails
 		// duplicate the current state so lerping doesn't hurt anything
@@ -216,7 +216,7 @@ void CL_DeltaEntity (frame_t *frame, int newnum, q2entity_state_t *old, int bits
 		ent->prev = ent->current;
 	}
 
-	ent->serverframe = cl.frame.serverframe;
+	ent->serverframe = cl.q2_frame.serverframe;
 	ent->current = *state;
 }
 
@@ -228,7 +228,7 @@ An svc_packetentities has just been parsed, deal with the
 rest of the data stream.
 ==================
 */
-void CL_ParsePacketEntities (frame_t *oldframe, frame_t *newframe)
+void CL_ParsePacketEntities (q2frame_t *oldframe, q2frame_t *newframe)
 {
 	int			newnum;
 	unsigned int			bits;
@@ -355,10 +355,10 @@ void CL_ParsePacketEntities (frame_t *oldframe, frame_t *newframe)
 CL_ParsePlayerstate
 ===================
 */
-void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
+void CL_ParsePlayerstate (q2frame_t *oldframe, q2frame_t *newframe)
 {
 	int			flags;
-	player_state_t	*state;
+	q2player_state_t	*state;
 	int			i;
 	int			statbits;
 
@@ -373,10 +373,10 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 	flags = net_message.ReadShort();
 
 	//
-	// parse the pmove_state_t
+	// parse the q2pmove_state_t
 	//
 	if (flags & PS_M_TYPE)
-		state->pmove.pm_type = (pmtype_t)net_message.ReadByte ();
+		state->pmove.pm_type = (q2pmtype_t)net_message.ReadByte ();
 
 	if (flags & PS_M_ORIGIN)
 	{
@@ -409,10 +409,10 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 	}
 
 	if (cl.attractloop)
-		state->pmove.pm_type = PM_FREEZE;		// demo playback
+		state->pmove.pm_type = Q2PM_FREEZE;		// demo playback
 
 	//
-	// parse the rest of the player_state_t
+	// parse the rest of the q2player_state_t
 	//
 	if (flags & PS_VIEWOFFSET)
 	{
@@ -467,7 +467,7 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 
 	// parse stats
 	statbits = net_message.ReadLong();
-	for (i=0 ; i<MAX_STATS ; i++)
+	for (i=0 ; i<MAX_STATS_Q2 ; i++)
 		if (statbits & (1<<i) )
 			state->stats[i] = net_message.ReadShort();
 }
@@ -479,7 +479,7 @@ CL_FireEntityEvents
 
 ==================
 */
-void CL_FireEntityEvents (frame_t *frame)
+void CL_FireEntityEvents (q2frame_t *frame)
 {
 	q2entity_state_t		*s1;
 	int					pnum, num;
@@ -507,44 +507,44 @@ void CL_ParseFrame (void)
 {
 	int			cmd;
 	int			len;
-	frame_t		*old;
+	q2frame_t		*old;
 
-	Com_Memset(&cl.frame, 0, sizeof(cl.frame));
+	Com_Memset(&cl.q2_frame, 0, sizeof(cl.q2_frame));
 
 #if 0
 	CL_ClearProjectiles(); // clear projectiles for new frame
 #endif
 
-	cl.frame.serverframe = net_message.ReadLong();
-	cl.frame.deltaframe = net_message.ReadLong();
-	cl.frame.servertime = cl.frame.serverframe*100;
+	cl.q2_frame.serverframe = net_message.ReadLong();
+	cl.q2_frame.deltaframe = net_message.ReadLong();
+	cl.q2_frame.servertime = cl.q2_frame.serverframe*100;
 
 	// BIG HACK to let old demos continue to work
 	if (cls.serverProtocol != 26)
 		cl.surpressCount = net_message.ReadByte ();
 
 	if (cl_shownet->value == 3)
-		Com_Printf ("   frame:%i  delta:%i\n", cl.frame.serverframe,
-		cl.frame.deltaframe);
+		Com_Printf ("   frame:%i  delta:%i\n", cl.q2_frame.serverframe,
+		cl.q2_frame.deltaframe);
 
 	// If the frame is delta compressed from data that we
 	// no longer have available, we must suck up the rest of
 	// the frame, but not use it, then ask for a non-compressed
 	// message 
-	if (cl.frame.deltaframe <= 0)
+	if (cl.q2_frame.deltaframe <= 0)
 	{
-		cl.frame.valid = true;		// uncompressed frame
+		cl.q2_frame.valid = true;		// uncompressed frame
 		old = NULL;
 		cls.demowaiting = false;	// we can start recording now
 	}
 	else
 	{
-		old = &cl.frames[cl.frame.deltaframe & UPDATE_MASK];
+		old = &cl.frames[cl.q2_frame.deltaframe & UPDATE_MASK];
 		if (!old->valid)
 		{	// should never happen
 			Com_Printf ("Delta from invalid frame (not supposed to happen!).\n");
 		}
-		if (old->serverframe != cl.frame.deltaframe)
+		if (old->serverframe != cl.q2_frame.deltaframe)
 		{	// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			Com_Printf ("Delta frame too old.\n");
@@ -554,32 +554,32 @@ void CL_ParseFrame (void)
 			Com_Printf ("Delta parse_entities too old.\n");
 		}
 		else
-			cl.frame.valid = true;	// valid delta parse
+			cl.q2_frame.valid = true;	// valid delta parse
 	}
 
 	// clamp time 
-	if (cl.serverTime > cl.frame.servertime)
-		cl.serverTime = cl.frame.servertime;
-	else if (cl.serverTime < cl.frame.servertime - 100)
-		cl.serverTime = cl.frame.servertime - 100;
+	if (cl.serverTime > cl.q2_frame.servertime)
+		cl.serverTime = cl.q2_frame.servertime;
+	else if (cl.serverTime < cl.q2_frame.servertime - 100)
+		cl.serverTime = cl.q2_frame.servertime - 100;
 
 	// read areabits
 	len = net_message.ReadByte ();
-	net_message.ReadData(&cl.frame.areabits, len);
+	net_message.ReadData(&cl.q2_frame.areabits, len);
 
 	// read playerinfo
 	cmd = net_message.ReadByte ();
 	SHOWNET(svc_strings[cmd]);
 	if (cmd != svc_playerinfo)
 		Com_Error (ERR_DROP, "CL_ParseFrame: not playerinfo");
-	CL_ParsePlayerstate (old, &cl.frame);
+	CL_ParsePlayerstate (old, &cl.q2_frame);
 
 	// read packet entities
 	cmd = net_message.ReadByte ();
 	SHOWNET(svc_strings[cmd]);
 	if (cmd != svc_packetentities)
 		Com_Error (ERR_DROP, "CL_ParseFrame: not packetentities");
-	CL_ParsePacketEntities (old, &cl.frame);
+	CL_ParsePacketEntities (old, &cl.q2_frame);
 
 #if 0
 	if (cmd == svc_packetentities2)
@@ -587,18 +587,18 @@ void CL_ParseFrame (void)
 #endif
 
 	// save the frame off in the backup array for later delta comparisons
-	cl.frames[cl.frame.serverframe & UPDATE_MASK] = cl.frame;
+	cl.frames[cl.q2_frame.serverframe & UPDATE_MASK] = cl.q2_frame;
 
-	if (cl.frame.valid)
+	if (cl.q2_frame.valid)
 	{
 		// getting a valid frame message ends the connection process
 		if (cls.state != ca_active)
 		{
 			cls.state = ca_active;
-			cl.predicted_origin[0] = cl.frame.playerstate.pmove.origin[0]*0.125;
-			cl.predicted_origin[1] = cl.frame.playerstate.pmove.origin[1]*0.125;
-			cl.predicted_origin[2] = cl.frame.playerstate.pmove.origin[2]*0.125;
-			VectorCopy (cl.frame.playerstate.viewangles, cl.predicted_angles);
+			cl.predicted_origin[0] = cl.q2_frame.playerstate.pmove.origin[0]*0.125;
+			cl.predicted_origin[1] = cl.q2_frame.playerstate.pmove.origin[1]*0.125;
+			cl.predicted_origin[2] = cl.q2_frame.playerstate.pmove.origin[2]*0.125;
+			VectorCopy (cl.q2_frame.playerstate.viewangles, cl.predicted_angles);
 			if (cls.disable_servercount != cl.servercount
 				&& cl.refresh_prepped)
 				SCR_EndLoadingPlaque ();	// get rid of loading plaque
@@ -606,7 +606,7 @@ void CL_ParseFrame (void)
 		cl.sound_prepped = true;	// can start mixing ambient sounds
 	
 		// fire entity events
-		CL_FireEntityEvents (&cl.frame);
+		CL_FireEntityEvents (&cl.q2_frame);
 		CL_CheckPredictionError ();
 	}
 }
@@ -617,7 +617,7 @@ CL_AddPacketEntities
 
 ===============
 */
-void CL_AddPacketEntities(frame_t *frame)
+void CL_AddPacketEntities(q2frame_t *frame)
 {
 	refEntity_t			ent;
 	q2entity_state_t		*s1;
@@ -1169,7 +1169,7 @@ void CL_AddPacketEntities(frame_t *frame)
 CL_AddViewWeapon
 ==============
 */
-static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t viewangles)
+static void CL_AddViewWeapon(q2player_state_t *ps, q2player_state_t *ops, vec3_t viewangles)
 {
 	refEntity_t	gun;		// view model
 	int			i;
@@ -1239,22 +1239,22 @@ static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t vie
 
 static void CL_CalcLerpFrac()
 {
-	if (cl.serverTime > cl.frame.servertime)
+	if (cl.serverTime > cl.q2_frame.servertime)
 	{
 		if (cl_showclamp->value)
-			Com_Printf ("high clamp %i\n", cl.serverTime - cl.frame.servertime);
-		cl.serverTime = cl.frame.servertime;
+			Com_Printf ("high clamp %i\n", cl.serverTime - cl.q2_frame.servertime);
+		cl.serverTime = cl.q2_frame.servertime;
 		cl.lerpfrac = 1.0;
 	}
-	else if (cl.serverTime < cl.frame.servertime - 100)
+	else if (cl.serverTime < cl.q2_frame.servertime - 100)
 	{
 		if (cl_showclamp->value)
-			Com_Printf ("low clamp %i\n", cl.frame.servertime-100 - cl.serverTime);
-		cl.serverTime = cl.frame.servertime - 100;
+			Com_Printf ("low clamp %i\n", cl.q2_frame.servertime-100 - cl.serverTime);
+		cl.serverTime = cl.q2_frame.servertime - 100;
 		cl.lerpfrac = 0;
 	}
 	else
-		cl.lerpfrac = 1.0 - (cl.frame.servertime - cl.serverTime) * 0.01;
+		cl.lerpfrac = 1.0 - (cl.q2_frame.servertime - cl.serverTime) * 0.01;
 
 	if (cl_timedemo->value)
 		cl.lerpfrac = 1.0;
@@ -1272,17 +1272,17 @@ void CL_CalcViewValues (void)
 	int			i;
 	float		lerp, backlerp;
 	q2centity_t	*ent;
-	frame_t		*oldframe;
-	player_state_t	*ps, *ops;
+	q2frame_t		*oldframe;
+	q2player_state_t	*ps, *ops;
 
 	CL_CalcLerpFrac();
 
 	// find the previous frame to interpolate from
-	ps = &cl.frame.playerstate;
-	i = (cl.frame.serverframe - 1) & UPDATE_MASK;
+	ps = &cl.q2_frame.playerstate;
+	i = (cl.q2_frame.serverframe - 1) & UPDATE_MASK;
 	oldframe = &cl.frames[i];
-	if (oldframe->serverframe != cl.frame.serverframe-1 || !oldframe->valid)
-		oldframe = &cl.frame;		// previous frame was dropped or involid
+	if (oldframe->serverframe != cl.q2_frame.serverframe-1 || !oldframe->valid)
+		oldframe = &cl.q2_frame;		// previous frame was dropped or involid
 	ops = &oldframe->playerstate;
 
 	// see if the player entity was teleported this frame
@@ -1295,7 +1295,7 @@ void CL_CalcViewValues (void)
 	lerp = cl.lerpfrac;
 
 	// calculate the origin
-	if ((cl_predict->value) && !(cl.frame.playerstate.pmove.pm_flags & PMF_NO_PREDICTION))
+	if ((cl_predict->value) && !(cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
 	{	// use predicted values
 		unsigned	delta;
 
@@ -1322,7 +1322,7 @@ void CL_CalcViewValues (void)
 
 	// if not running a demo or on a locked frame, add the local angle movement
 	vec3_t viewangles;
-	if ( cl.frame.playerstate.pmove.pm_type < PM_DEAD )
+	if ( cl.q2_frame.playerstate.pmove.pm_type < Q2PM_DEAD )
 	{	// use predicted values
 		for (i=0 ; i<3 ; i++)
 			viewangles[i] = cl.predicted_angles[i];

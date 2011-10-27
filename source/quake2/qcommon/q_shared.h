@@ -136,47 +136,6 @@ COLLISION DETECTION
 #define	AREA_TRIGGERS	2
 
 
-// pmove_state_t is the information necessary for client side movement
-// prediction
-typedef enum 
-{
-	// can accelerate and turn
-	PM_NORMAL,
-	PM_SPECTATOR,
-	// no acceleration or turning
-	PM_DEAD,
-	PM_GIB,		// different bounding box
-	PM_FREEZE
-} pmtype_t;
-
-// pmove->pm_flags
-#define	PMF_DUCKED			1
-#define	PMF_JUMP_HELD		2
-#define	PMF_ON_GROUND		4
-#define	PMF_TIME_WATERJUMP	8	// pm_time is waterjump
-#define	PMF_TIME_LAND		16	// pm_time is time before rejump
-#define	PMF_TIME_TELEPORT	32	// pm_time is non-moving time
-#define PMF_NO_PREDICTION	64	// temporarily disables prediction (used for grappling hook)
-
-// this structure needs to be communicated bit-accurate
-// from the server to the client to guarantee that
-// prediction stays in sync, so no floats are used.
-// if any part of the game code modifies this struct, it
-// will result in a prediction error of some degree.
-typedef struct
-{
-	pmtype_t	pm_type;
-
-	short		origin[3];		// 12.3
-	short		velocity[3];	// 12.3
-	byte		pm_flags;		// ducked, jump_held, etc
-	byte		pm_time;		// each unit = 8 ms
-	short		gravity;
-	short		delta_angles[3];	// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
-} pmove_state_t;
-
-
 //
 // button bits
 //
@@ -201,7 +160,7 @@ typedef struct usercmd_s
 typedef struct
 {
 	// state (in / out)
-	pmove_state_t	s;
+	q2pmove_state_t	s;
 
 	// command (in)
 	usercmd_t		cmd;
@@ -247,7 +206,7 @@ typedef struct
 #define Q2RF_USE_DISGUISE	0x00040000
 //ROGUE
 
-// player_state_t->refdef flags
+// q2player_state_t->refdef flags
 #define Q2RDF_UNDERWATER	1		// warp the screen as apropriate (UNUSED)
 #define Q2RDF_NOWORLDMODEL	2		// used for player configuration screen
 
@@ -627,29 +586,6 @@ typedef enum
 #define	ATTN_STATIC             3	// diminish very rapidly with distance
 
 
-// player_state->stats[] indexes
-#define STAT_HEALTH_ICON		0
-#define	STAT_HEALTH				1
-#define	STAT_AMMO_ICON			2
-#define	STAT_AMMO				3
-#define	STAT_ARMOR_ICON			4
-#define	STAT_ARMOR				5
-#define	STAT_SELECTED_ICON		6
-#define	STAT_PICKUP_ICON		7
-#define	STAT_PICKUP_STRING		8
-#define	STAT_TIMER_ICON			9
-#define	STAT_TIMER				10
-#define	STAT_HELPICON			11
-#define	STAT_SELECTED_ITEM		12
-#define	STAT_LAYOUTS			13
-#define	STAT_FRAGS				14
-#define	STAT_FLASHES			15		// cleared each frame, 1 = health, 2 = armor
-#define STAT_CHASE				16
-#define STAT_SPECTATOR			17
-
-#define	MAX_STATS				32
-
-
 // dmflags->value flags
 #define	DF_NO_HEALTH		0x00000001	// 1
 #define	DF_NO_ITEMS			0x00000002	// 2
@@ -764,35 +700,3 @@ typedef enum
 	EV_PLAYER_TELEPORT,
 	EV_OTHER_TELEPORT
 } entity_event_t;
-
-//==============================================
-
-
-// player_state_t is the information needed in addition to pmove_state_t
-// to rendered a view.  There will only be 10 player_state_t sent each second,
-// but the number of pmove_state_t changes will be reletive to client
-// frame rates
-typedef struct
-{
-	pmove_state_t	pmove;		// for prediction
-
-	// these fields do not need to be communicated bit-precise
-
-	vec3_t		viewangles;		// for fixed views
-	vec3_t		viewoffset;		// add to pmovestate->origin
-	vec3_t		kick_angles;	// add to view direction to get render angles
-								// set by weapon kicks, pain effects, etc
-
-	vec3_t		gunangles;
-	vec3_t		gunoffset;
-	int			gunindex;
-	int			gunframe;
-
-	float		blend[4];		// rgba full screen effect
-	
-	float		fov;			// horizontal field of view
-
-	int			rdflags;		// refdef flags
-
-	short		stats[MAX_STATS];		// fast status bar updates
-} player_state_t;

@@ -78,7 +78,7 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 
 int S_GetClFrameServertime()
 {
-	return cl.frame.servertime;
+	return cl.q2_frame.servertime;
 }
 
 bool S_GetDisableScreen()

@@ -900,7 +900,7 @@ void SCR_ExecuteLayoutString (const char *s)
 		if (!String::Cmp(token, "pic"))
 		{	// draw a pic from a stat number
 			token = String::Parse2 (&s);
-			value = cl.frame.playerstate.stats[String::Atoi(token)];
+			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
 			if (value >= MAX_IMAGES)
 				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES");
 			if (cl.configstrings[CS_IMAGES+value])
@@ -991,7 +991,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			token = String::Parse2 (&s);
 			width = String::Atoi(token);
 			token = String::Parse2 (&s);
-			value = cl.frame.playerstate.stats[String::Atoi(token)];
+			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
 			SCR_DrawField (x, y, 0, width, value);
 			continue;
 		}
@@ -1001,15 +1001,15 @@ void SCR_ExecuteLayoutString (const char *s)
 			int		color;
 
 			width = 3;
-			value = cl.frame.playerstate.stats[STAT_HEALTH];
+			value = cl.q2_frame.playerstate.stats[Q2STAT_HEALTH];
 			if (value > 25)
 				color = 0;	// green
 			else if (value > 0)
-				color = (cl.frame.serverframe>>2) & 1;		// flash
+				color = (cl.q2_frame.serverframe>>2) & 1;		// flash
 			else
 				color = 1;
 
-			if (cl.frame.playerstate.stats[STAT_FLASHES] & 1)
+			if (cl.q2_frame.playerstate.stats[Q2STAT_FLASHES] & 1)
 				UI_DrawNamedPic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
@@ -1021,15 +1021,15 @@ void SCR_ExecuteLayoutString (const char *s)
 			int		color;
 
 			width = 3;
-			value = cl.frame.playerstate.stats[STAT_AMMO];
+			value = cl.q2_frame.playerstate.stats[Q2STAT_AMMO];
 			if (value > 5)
 				color = 0;	// green
 			else if (value >= 0)
-				color = (cl.frame.serverframe>>2) & 1;		// flash
+				color = (cl.q2_frame.serverframe>>2) & 1;		// flash
 			else
 				continue;	// negative number = don't show
 
-			if (cl.frame.playerstate.stats[STAT_FLASHES] & 4)
+			if (cl.q2_frame.playerstate.stats[Q2STAT_FLASHES] & 4)
 				UI_DrawNamedPic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
@@ -1041,13 +1041,13 @@ void SCR_ExecuteLayoutString (const char *s)
 			int		color;
 
 			width = 3;
-			value = cl.frame.playerstate.stats[STAT_ARMOR];
+			value = cl.q2_frame.playerstate.stats[Q2STAT_ARMOR];
 			if (value < 1)
 				continue;
 
 			color = 0;	// green
 
-			if (cl.frame.playerstate.stats[STAT_FLASHES] & 2)
+			if (cl.q2_frame.playerstate.stats[Q2STAT_FLASHES] & 2)
 				UI_DrawNamedPic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
@@ -1061,7 +1061,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			index = String::Atoi(token);
 			if (index < 0 || index >= MAX_CONFIGSTRINGS)
 				Com_Error (ERR_DROP, "Bad stat_string index");
-			index = cl.frame.playerstate.stats[index];
+			index = cl.q2_frame.playerstate.stats[index];
 			if (index < 0 || index >= MAX_CONFIGSTRINGS)
 				Com_Error (ERR_DROP, "Bad stat_string index");
 			DrawString (x, y, cl.configstrings[index]);
@@ -1099,7 +1099,7 @@ void SCR_ExecuteLayoutString (const char *s)
 		if (!String::Cmp(token, "if"))
 		{	// draw a number
 			token = String::Parse2 (&s);
-			value = cl.frame.playerstate.stats[String::Atoi(token)];
+			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
 			if (!value)
 			{	// skip to endif
 				while (s && String::Cmp(token, "endif") )
@@ -1136,11 +1136,11 @@ SCR_DrawLayout
 
 ================
 */
-#define	STAT_LAYOUTS		13
+#define	Q2STAT_LAYOUTS		13
 
 void SCR_DrawLayout (void)
 {
-	if (!cl.frame.playerstate.stats[STAT_LAYOUTS])
+	if (!cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS])
 		return;
 	SCR_ExecuteLayoutString (cl.layout);
 }
@@ -1184,9 +1184,9 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 		V_RenderView (separation);
 
 		SCR_DrawStats ();
-		if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 1)
+		if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 1)
 			SCR_DrawLayout ();
-		if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 2)
+		if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 2)
 			CL_DrawInventory ();
 
 		SCR_DrawNet ();
@@ -1254,7 +1254,7 @@ void SCR_UpdateScreen (void)
 
 	R_EndFrame(NULL, NULL);
 
-	if (cls.state == ca_active && cl.refresh_prepped && cl.frame.valid)
+	if (cls.state == ca_active && cl.refresh_prepped && cl.q2_frame.valid)
 	{
 		CL_UpdateParticles(800);
 	}

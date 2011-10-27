@@ -29,21 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "screen.h"
 #include "keys.h"
 #include "console.h"
-#include "../../core/file_formats/bsp38.h"
 
 //=============================================================================
-
-typedef struct
-{
-	qboolean		valid;			// cleared if delta parsing was invalid
-	int				serverframe;
-	int				servertime;		// server time the message is valid for (in msec)
-	int				deltaframe;
-	byte			areabits[BSP38MAX_MAP_AREAS/8];		// portalarea visibility bits
-	player_state_t	playerstate;
-	int				num_entities;
-	int				parse_entities;	// non-masked index into cl_parse_entities array
-} frame_t;
 
 #define MAX_CLIENTWEAPONMODELS		20		// PGM -- upped from 16 to fit the chainfist vwep
 
@@ -91,9 +78,8 @@ struct client_state_t : clientActiveCommon_t
 	vec3_t		predicted_angles;
 	vec3_t		prediction_error;
 
-	frame_t		frame;				// received from server
 	int			surpressCount;		// number of messages rate supressed
-	frame_t		frames[UPDATE_BACKUP];
+	q2frame_t		frames[UPDATE_BACKUP];
 
 	// the client maintains its own idea of view angles, which are
 	// sent to the server each frame.  It is cleared to 0 upon entering each level.
@@ -290,7 +276,7 @@ void CL_ParseMuzzleFlash2 (void);
 void SmokeAndFlash(vec3_t origin);
 
 void CL_CalcViewValues();
-void CL_AddPacketEntities(frame_t *frame);
+void CL_AddPacketEntities(q2frame_t *frame);
 void CL_AddTEnts (void);
 
 //=================================================

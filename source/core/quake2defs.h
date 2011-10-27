@@ -77,3 +77,93 @@ struct q2entity_state_t
 							// events only go out for a single frame, they
 							// are automatically cleared each frame
 };
+
+// q2pmove_state_t is the information necessary for client side movement
+// prediction
+enum q2pmtype_t
+{
+	// can accelerate and turn
+	Q2PM_NORMAL,
+	Q2PM_SPECTATOR,
+	// no acceleration or turning
+	Q2PM_DEAD,
+	Q2PM_GIB,		// different bounding box
+	Q2PM_FREEZE
+};
+
+// pmove->pm_flags
+#define Q2PMF_DUCKED			1
+#define Q2PMF_JUMP_HELD			2
+#define Q2PMF_ON_GROUND			4
+#define Q2PMF_TIME_WATERJUMP	8	// pm_time is waterjump
+#define Q2PMF_TIME_LAND			16	// pm_time is time before rejump
+#define Q2PMF_TIME_TELEPORT		32	// pm_time is non-moving time
+#define Q2PMF_NO_PREDICTION		64	// temporarily disables prediction (used for grappling hook)
+
+// this structure needs to be communicated bit-accurate
+// from the server to the client to guarantee that
+// prediction stays in sync, so no floats are used.
+// if any part of the game code modifies this struct, it
+// will result in a prediction error of some degree.
+struct q2pmove_state_t
+{
+	q2pmtype_t pm_type;
+	short origin[3];		// 12.3
+	short velocity[3];		// 12.3
+	byte pm_flags;			// ducked, jump_held, etc
+	byte pm_time;			// each unit = 8 ms
+	short gravity;
+	short delta_angles[3];	// add to command angles to get view direction
+							// changed by spawns, rotating objects, and teleporters
+};
+
+// player_state->stats[] indexes
+#define Q2STAT_HEALTH_ICON		0
+#define Q2STAT_HEALTH			1
+#define Q2STAT_AMMO_ICON		2
+#define Q2STAT_AMMO				3
+#define Q2STAT_ARMOR_ICON		4
+#define Q2STAT_ARMOR			5
+#define Q2STAT_SELECTED_ICON	6
+#define Q2STAT_PICKUP_ICON		7
+#define Q2STAT_PICKUP_STRING	8
+#define Q2STAT_TIMER_ICON		9
+#define Q2STAT_TIMER			10
+#define Q2STAT_HELPICON			11
+#define Q2STAT_SELECTED_ITEM	12
+#define Q2STAT_LAYOUTS			13
+#define Q2STAT_FRAGS			14
+#define Q2STAT_FLASHES			15		// cleared each frame, 1 = health, 2 = armor
+#define Q2STAT_CHASE			16
+#define Q2STAT_SPECTATOR		17
+
+#define MAX_STATS_Q2			32
+
+// q2player_state_t is the information needed in addition to q2pmove_state_t
+// to rendered a view.  There will only be 10 q2player_state_t sent each second,
+// but the number of q2pmove_state_t changes will be reletive to client
+// frame rates
+struct q2player_state_t
+{
+	q2pmove_state_t pmove;	// for prediction
+
+	// these fields do not need to be communicated bit-precise
+
+	vec3_t viewangles;		// for fixed views
+	vec3_t viewoffset;		// add to pmovestate->origin
+	vec3_t kick_angles;		// add to view direction to get render angles
+							// set by weapon kicks, pain effects, etc
+
+	vec3_t gunangles;
+	vec3_t gunoffset;
+	int gunindex;
+	int gunframe;
+
+	float blend[4];			// rgba full screen effect
+
+	float fov;				// horizontal field of view
+
+	int rdflags;			// refdef flags
+
+	short stats[MAX_STATS_Q2];	// fast status bar updates
+};

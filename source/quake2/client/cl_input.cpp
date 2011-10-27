@@ -360,7 +360,7 @@ void CL_ClampPitch (void)
 {
 	float	pitch;
 
-	pitch = SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+	pitch = SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[PITCH]);
 	if (pitch > 180)
 		pitch -= 360;
 	if (cl.viewangles[PITCH] + pitch > 89)
@@ -446,7 +446,7 @@ usercmd_t CL_CreateCmd (void)
 
 void IN_CenterView (void)
 {
-	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[PITCH]);
 }
 
 static void IN_MLookDown()
@@ -572,10 +572,10 @@ void CL_SendCmd (void)
 
 	// let the server know what the last frame we
 	// got was, so the next message can be delta compressed
-	if (cl_nodelta->value || !cl.frame.valid || cls.demowaiting)
+	if (cl_nodelta->value || !cl.q2_frame.valid || cls.demowaiting)
 		buf.WriteLong(-1);	// no compression
 	else
-		buf.WriteLong(cl.frame.serverframe);
+		buf.WriteLong(cl.q2_frame.serverframe);
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered

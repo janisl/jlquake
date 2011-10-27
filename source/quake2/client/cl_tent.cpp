@@ -205,7 +205,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->type = ex_misc;
 	ex->frames = 4;
 	ex->ent.renderfx = RF_TRANSLUCENT;
-	ex->start = cl.frame.servertime - 100;
+	ex->start = cl.q2_frame.servertime - 100;
 	ex->ent.hModel = cl_mod_smoke;
 
 	ex = CLQ2_AllocExplosion ();
@@ -214,7 +214,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
 	ex->frames = 2;
-	ex->start = cl.frame.servertime - 100;
+	ex->start = cl.q2_frame.servertime - 100;
 	ex->ent.hModel = cl_mod_flash;
 }
 
@@ -757,7 +757,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_misc;
 		ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 150;
 		ex->lightcolor[0] = 1;
 		ex->lightcolor[1] = 1;
@@ -783,7 +783,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
@@ -810,7 +810,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0; 
 		ex->lightcolor[1] = 0.5;
@@ -839,7 +839,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
@@ -870,7 +870,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 0.0;
 		ex->lightcolor[1] = 1.0;
@@ -925,7 +925,7 @@ void CL_ParseTEnt (void)
 		// note to self
 		// we need a better no draw flag
 		ex->ent.reType = RT_BEAM;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 100 + (rand()%75);
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 1.0;
@@ -988,7 +988,7 @@ void CL_ParseTEnt (void)
 		else // flechette
 			ex->ent.skinNum = 2;
 
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 150;
 		// PMM
 		if (type == TE_BLASTER2)
@@ -1024,7 +1024,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_poly;
 		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
-		ex->start = cl.frame.servertime - 100;
+		ex->start = cl.q2_frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
@@ -1326,8 +1326,8 @@ void CL_AddPlayerBeams (void)
 	float		model_length;
 	
 	float		hand_multiplier;
-	frame_t		*oldframe;
-	player_state_t	*ps, *ops;
+	q2frame_t		*oldframe;
+	q2player_state_t	*ps, *ops;
 
 //PMM
 	if (hand)
@@ -1359,11 +1359,11 @@ void CL_AddPlayerBeams (void)
 			{	
 				// set up gun position
 				// code straight out of CL_AddViewWeapon
-				ps = &cl.frame.playerstate;
-				j = (cl.frame.serverframe - 1) & UPDATE_MASK;
+				ps = &cl.q2_frame.playerstate;
+				j = (cl.q2_frame.serverframe - 1) & UPDATE_MASK;
 				oldframe = &cl.frames[j];
-				if (oldframe->serverframe != cl.frame.serverframe-1 || !oldframe->valid)
-					oldframe = &cl.frame;		// previous frame was dropped or involid
+				if (oldframe->serverframe != cl.q2_frame.serverframe-1 || !oldframe->valid)
+					oldframe = &cl.q2_frame;		// previous frame was dropped or involid
 				ops = &oldframe->playerstate;
 				for (j=0 ; j<3 ; j++)
 				{

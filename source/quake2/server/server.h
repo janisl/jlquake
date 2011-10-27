@@ -28,10 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define cvar_t	Cvar
 #define trace_t	q2trace_t
 #define entity_state_t q2entity_state_t
+#define player_state_t q2player_state_t
 #include "../../../q2game/game/game.h"
 #undef cvar_t
 #undef trace_t
 #undef entity_state_t
+#undef player_state_t
 
 //=============================================================================
 
@@ -91,7 +93,7 @@ typedef struct
 {
 	int					areabytes;
 	byte				areabits[BSP38MAX_MAP_AREAS/8];		// portalarea visibility bits
-	player_state_t		ps;
+	q2player_state_t		ps;
 	int					num_entities;
 	int					first_entity;		// into the circular sv_packet_entities[]
 	int					senttime;			// for ping calculations
