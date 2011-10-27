@@ -710,15 +710,17 @@ void CL_ParseTEnt (void)
 
 	case TE_EXPLOSION2:
 	case TE_GRENADE_EXPLOSION:
+		net_message.ReadPos(pos);
+		CLQ2_GrenadeExplosion(pos);
+		CLQ2_ExplosionParticles(pos);
+		S_StartSound(pos, 0, 0, cl_sfx_grenexp, 1, ATTN_NORM, 0);
+		break;
+
 	case TE_GRENADE_EXPLOSION_WATER:
 		net_message.ReadPos(pos);
-
 		CLQ2_GrenadeExplosion(pos);
-		CLQ2_ExplosionParticles (pos);
-		if (type == TE_GRENADE_EXPLOSION_WATER)
-			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
-		else
-			S_StartSound (pos, 0, 0, cl_sfx_grenexp, 1, ATTN_NORM, 0);
+		CLQ2_ExplosionParticles(pos);
+		S_StartSound(pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
 		break;
 
 	// RAFAEL
@@ -726,26 +728,35 @@ void CL_ParseTEnt (void)
 		net_message.ReadPos(pos);
 		CLQ2_RocketExplosion(pos);
 		CLQ2_ExplosionParticles (pos);
-		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+		S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
 	
 	case TE_EXPLOSION1:
-	case TE_EXPLOSION1_BIG:						// PMM
 	case TE_ROCKET_EXPLOSION:
-	case TE_ROCKET_EXPLOSION_WATER:
-	case TE_EXPLOSION1_NP:						// PMM
 		net_message.ReadPos(pos);
+		CLQ2_RocketExplosion(pos);
+		CLQ2_ExplosionParticles(pos);									// PMM
+		S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+		break;
 
-		if (type != TE_EXPLOSION1_BIG)				// PMM
-			CLQ2_RocketExplosion(pos);
-		else
-			CLQ2_BigExplosion(pos);
-		if ((type != TE_EXPLOSION1_BIG) && (type != TE_EXPLOSION1_NP))		// PMM
-			CLQ2_ExplosionParticles (pos);									// PMM
-		if (type == TE_ROCKET_EXPLOSION_WATER)
-			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
-		else
-			S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+	case TE_EXPLOSION1_BIG:						// PMM
+		net_message.ReadPos(pos);
+		CLQ2_BigExplosion(pos);
+		S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+		break;
+
+	case TE_ROCKET_EXPLOSION_WATER:
+		net_message.ReadPos(pos);
+		CLQ2_RocketExplosion(pos);
+		CLQ2_ExplosionParticles (pos);									// PMM
+		S_StartSound(pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
+		break;
+
+	case TE_EXPLOSION1_NP:						// PMM
+	case TE_PLAIN_EXPLOSION:
+		net_message.ReadPos(pos);
+		CLQ2_RocketExplosion(pos);
+		S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_BFG_EXPLOSION:
@@ -839,13 +850,6 @@ void CL_ParseTEnt (void)
 		net_message.ReadPos(pos);
 		net_message.ReadPos(pos2);
 		CLQ2_DebugTrail (pos, pos2);
-		break;
-
-	case TE_PLAIN_EXPLOSION:
-		net_message.ReadPos(pos);
-
-		CLQ2_RocketExplosion(pos);
-		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_FLASHLIGHT:
