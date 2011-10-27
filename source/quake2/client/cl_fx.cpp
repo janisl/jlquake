@@ -263,7 +263,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_INFANTRY_MACHINEGUN_13:
 		color[0] = 1;color[1] = 1;color[2] = 0;
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("infantry/infatck1.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -277,7 +277,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_SOLDIER_MACHINEGUN_8:
 		color[0] = 1;color[1] = 1;color[2] = 0;
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("soldier/solatck3.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -291,7 +291,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_GUNNER_MACHINEGUN_8:
 		color[0] = 1;color[1] = 1;color[2] = 0;
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("gunner/gunatck2.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -306,7 +306,7 @@ void CL_ParseMuzzleFlash2 (void)
 		color[0] = 1;color[1] = 1;color[2] = 0;
 
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("infantry/infatck1.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -320,7 +320,7 @@ void CL_ParseMuzzleFlash2 (void)
 		color[0] = 1;color[1] = 1;color[2] = 0;
 
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("infantry/infatck1.wav"), 1, ATTN_NONE, 0);
 		break;
 
@@ -367,7 +367,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_SOLDIER_SHOTGUN_7:
 	case MZ2_SOLDIER_SHOTGUN_8:
 		color[0] = 1;color[1] = 1;color[2] = 0;
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("soldier/solatck1.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -399,7 +399,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_TANK_MACHINEGUN_19:
 		color[0] = 1;color[1] = 1;color[2] = 0;
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		String::Sprintf(soundname, sizeof(soundname), "tank/tnkatk2%c.wav", 'a' + rand() % 5);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound(soundname), 1, ATTN_NORM, 0);
 		break;
@@ -483,7 +483,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_JORG_MACHINEGUN_L6:
 		color[0] = 1;color[1] = 1;color[2] = 0;
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("boss3/xfire.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -495,7 +495,7 @@ void CL_ParseMuzzleFlash2 (void)
 	case MZ2_JORG_MACHINEGUN_R6:
 		color[0] = 1;color[1] = 1;color[2] = 0;
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		break;
 
 	case MZ2_JORG_BFG_1:
@@ -513,7 +513,7 @@ void CL_ParseMuzzleFlash2 (void)
 		color[0] = 1;color[1] = 1;color[2] = 0;
 
 		CLQ2_ParticleEffect (origin, vec3_origin, 0, 40);
-		CL_SmokeAndFlash(origin);
+		CLQ2_SmokeAndFlash(origin);
 		break;
 
 // ======

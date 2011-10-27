@@ -35,5 +35,23 @@ struct q2explosion_t
 
 extern q2explosion_t q2cl_explosions[MAX_EXPLOSIONS_Q2];
 
+extern qhandle_t cl_mod_explode;
+extern qhandle_t cl_mod_flash;
+extern qhandle_t cl_mod_explo4;
+extern qhandle_t cl_mod_bfg_explo;
+extern qhandle_t cl_mod_explo4_big;
+
 void CLQ2_ClearExplosions();
+void CLQ2_RegisterExplosionModels();
 q2explosion_t* CLQ2_AllocExplosion();
+void CLQ2_SmokeAndFlash(vec3_t origin);
+void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir);
+void CLQ2_GrenadeExplosion(vec3_t pos);
+void CLQ2_PlasmaExplosion(vec3_t pos);
+void CLQ2_RocketExplosion(vec3_t pos);
+void CLQ2_BigExplosion(vec3_t pos);
+void CLQ2_BfgExplosion(vec3_t pos);
+void CLQ2_WeldingSparks(vec3_t pos);
+void CLQ2_Blaster2Explosion(vec3_t pos, vec3_t dir);
+void CLQ2_FlechetteExplosion(vec3_t pos, vec3_t dir);
+void CLQ2_PlainExplosion(vec3_t pos);

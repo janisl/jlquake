@@ -67,14 +67,9 @@ static sfxHandle_t	cl_sfx_grenexp;
 static sfxHandle_t	cl_sfx_watrexp;
 sfxHandle_t			cl_sfx_footsteps[4];
 
-static qhandle_t	cl_mod_explode;
-static qhandle_t	cl_mod_smoke;
-static qhandle_t	cl_mod_flash;
 static qhandle_t	cl_mod_parasite_segment;
 static qhandle_t	cl_mod_grapple_cable;
 static qhandle_t	cl_mod_parasite_tip;
-static qhandle_t	cl_mod_explo4;
-static qhandle_t	cl_mod_bfg_explo;
 qhandle_t			cl_mod_powerscreen;
 
 //ROGUE
@@ -83,7 +78,6 @@ static sfxHandle_t	cl_sfx_disrexp;
 static qhandle_t	cl_mod_lightning;
 static qhandle_t	cl_mod_heatbeam;
 static qhandle_t	cl_mod_monster_heatbeam;
-static qhandle_t	cl_mod_explo4_big;
 
 //ROGUE
 /*
@@ -140,14 +134,10 @@ CL_RegisterTEntModels
 */
 void CL_RegisterTEntModels (void)
 {
-	cl_mod_explode = R_RegisterModel("models/objects/explode/tris.md2");
-	cl_mod_smoke = R_RegisterModel("models/objects/smoke/tris.md2");
-	cl_mod_flash = R_RegisterModel("models/objects/flash/tris.md2");
+	CLQ2_RegisterExplosionModels();
 	cl_mod_parasite_segment = R_RegisterModel("models/monsters/parasite/segment/tris.md2");
 	cl_mod_grapple_cable = R_RegisterModel("models/ctf/segment/tris.md2");
 	cl_mod_parasite_tip = R_RegisterModel("models/monsters/parasite/tip/tris.md2");
-	cl_mod_explo4 = R_RegisterModel("models/objects/r_explode/tris.md2");
-	cl_mod_bfg_explo = R_RegisterModel("sprites/s_bfg2.sp2");
 	cl_mod_powerscreen = R_RegisterModel("models/items/armor/effect/tris.md2");
 
 R_RegisterModel("models/objects/laser/tris.md2");
@@ -167,7 +157,6 @@ R_RegisterPic ("i_health");
 R_RegisterPic ("a_grenades");
 
 //ROGUE
-	cl_mod_explo4_big = R_RegisterModel("models/objects/r_explode2/tris.md2");
 	cl_mod_lightning = R_RegisterModel("models/proj/lightning/tris.md2");
 	cl_mod_heatbeam = R_RegisterModel("models/proj/beam/tris.md2");
 	cl_mod_monster_heatbeam = R_RegisterModel("models/proj/widowbeam/tris.md2");
@@ -189,33 +178,6 @@ void CL_ClearTEnts (void)
 	Com_Memset(cl_playerbeams, 0, sizeof(cl_playerbeams));
 	Com_Memset(cl_sustains, 0, sizeof(cl_sustains));
 //ROGUE
-}
-
-/*
-=================
-CL_SmokeAndFlash
-=================
-*/
-void CL_SmokeAndFlash(vec3_t origin)
-{
-	q2explosion_t	*ex;
-
-	ex = CLQ2_AllocExplosion ();
-	VectorCopy (origin, ex->ent.origin);
-	ex->type = ex_misc;
-	ex->frames = 4;
-	ex->ent.renderfx = RF_TRANSLUCENT;
-	ex->start = cl.q2_frame.servertime - 100;
-	ex->ent.hModel = cl_mod_smoke;
-
-	ex = CLQ2_AllocExplosion ();
-	VectorCopy (origin, ex->ent.origin);
-	ex->type = ex_flash;
-	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
-	ex->frames = 2;
-	ex->start = cl.q2_frame.servertime - 100;
-	ex->ent.hModel = cl_mod_flash;
 }
 
 /*
@@ -621,7 +583,6 @@ void CL_ParseNuke (void)
 //ROGUE
 //=============
 
-
 /*
 =================
 CL_ParseTEnt
@@ -633,13 +594,11 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos, pos2, dir;
-	q2explosion_t	*ex;
 	int		cnt;
 	int		color;
 	int		r;
 	int		ent;
 	int		magnitude;
-	vec3_t	angles;
 
 	type = net_message.ReadByte ();
 
@@ -663,7 +622,7 @@ void CL_ParseTEnt (void)
 
 		if (type != TE_SPARKS)
 		{
-			CL_SmokeAndFlash(pos);
+			CLQ2_SmokeAndFlash(pos);
 			
 			// impact sound
 			cnt = rand()&15;
@@ -693,7 +652,7 @@ void CL_ParseTEnt (void)
 		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		CLQ2_ParticleEffect (pos, dir, 0, 20);
-		CL_SmokeAndFlash(pos);
+		CLQ2_SmokeAndFlash(pos);
 		break;
 
 	case TE_SPLASH:			// bullet hitting water
@@ -736,41 +695,17 @@ void CL_ParseTEnt (void)
 
 	case TE_BLASTER:			// blaster hitting wall
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
-		CLQ2_BlasterParticles (pos, dir);
-
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		angles[0] = acos(dir[2])/M_PI*180;
-	// PMM - fixed to correct for pitch of 0
-		if (dir[0])
-			angles[1] = atan2(dir[1], dir[0])/M_PI*180;
-		else if (dir[1] > 0)
-			angles[1] = 90;
-		else if (dir[1] < 0)
-			angles[1] = 270;
-		else
-			angles[1] = 0;
-		angles[2] = 0;
-		AnglesToAxis(angles, ex->ent.axis);
-
-		ex->type = ex_misc;
-		ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 150;
-		ex->lightcolor[0] = 1;
-		ex->lightcolor[1] = 1;
-		ex->ent.hModel = cl_mod_explode;
-		ex->frames = 4;
-		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+		MSG_ReadDir(&net_message, dir);
+		CLQ2_BlasterParticles(pos, dir);
+		CLQ2_BlasterExplosion(pos, dir);
+		S_StartSound(pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
 		
 	case TE_RAILTRAIL:			// railgun effect
 		net_message.ReadPos(pos);
 		net_message.ReadPos(pos2);
-		CLQ2_RailTrail (pos, pos2);
-		S_StartSound (pos2, 0, 0, cl_sfx_railg, 1, ATTN_NORM, 0);
+		CLQ2_RailTrail(pos, pos2);
+		S_StartSound(pos2, 0, 0, cl_sfx_railg, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_EXPLOSION2:
@@ -778,23 +713,7 @@ void CL_ParseTEnt (void)
 	case TE_GRENADE_EXPLOSION_WATER:
 		net_message.ReadPos(pos);
 
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		ex->type = ex_poly;
-		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 350;
-		ex->lightcolor[0] = 1.0;
-		ex->lightcolor[1] = 0.5;
-		ex->lightcolor[2] = 0.5;
-		ex->ent.hModel = cl_mod_explo4;
-		ex->frames = 19;
-		ex->baseframe = 30;
-		angles[0] = 0;
-		angles[1] = rand() % 360;
-		angles[2] = 0;
-		AnglesToAxis(angles, ex->ent.axis);
+		CLQ2_GrenadeExplosion(pos);
 		CLQ2_ExplosionParticles (pos);
 		if (type == TE_GRENADE_EXPLOSION_WATER)
 			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
@@ -805,24 +724,7 @@ void CL_ParseTEnt (void)
 	// RAFAEL
 	case TE_PLASMA_EXPLOSION:
 		net_message.ReadPos(pos);
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		ex->type = ex_poly;
-		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 350;
-		ex->lightcolor[0] = 1.0; 
-		ex->lightcolor[1] = 0.5;
-		ex->lightcolor[2] = 0.5;
-		angles[0] = 0;
-		angles[1] = rand() % 360;
-		angles[2] = 0;
-		AnglesToAxis(angles, ex->ent.axis);
-		ex->ent.hModel = cl_mod_explo4;
-		if (frand() < 0.5)
-			ex->baseframe = 15;
-		ex->frames = 15;
+		CLQ2_PlasmaExplosion(pos);
 		CLQ2_ExplosionParticles (pos);
 		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
@@ -834,27 +736,10 @@ void CL_ParseTEnt (void)
 	case TE_EXPLOSION1_NP:						// PMM
 		net_message.ReadPos(pos);
 
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		ex->type = ex_poly;
-		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 350;
-		ex->lightcolor[0] = 1.0;
-		ex->lightcolor[1] = 0.5;
-		ex->lightcolor[2] = 0.5;
-		angles[0] = 0;
-		angles[1] = rand() % 360;
-		angles[2] = 0;
-		AnglesToAxis(angles, ex->ent.axis);
 		if (type != TE_EXPLOSION1_BIG)				// PMM
-			ex->ent.hModel = cl_mod_explo4;			// PMM
+			CLQ2_RocketExplosion(pos);
 		else
-			ex->ent.hModel = cl_mod_explo4_big;
-		if (frand() < 0.5)
-			ex->baseframe = 15;
-		ex->frames = 15;
+			CLQ2_BigExplosion(pos);
 		if ((type != TE_EXPLOSION1_BIG) && (type != TE_EXPLOSION1_NP))		// PMM
 			CLQ2_ExplosionParticles (pos);									// PMM
 		if (type == TE_ROCKET_EXPLOSION_WATER)
@@ -865,20 +750,7 @@ void CL_ParseTEnt (void)
 
 	case TE_BFG_EXPLOSION:
 		net_message.ReadPos(pos);
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		ex->type = ex_poly;
-		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 350;
-		ex->lightcolor[0] = 0.0;
-		ex->lightcolor[1] = 1.0;
-		ex->lightcolor[2] = 0.0;
-		ex->ent.hModel = cl_mod_bfg_explo;
-		ex->ent.renderfx |= RF_TRANSLUCENT;
-		ex->ent.shaderRGBA[3] = 76;
-		ex->frames = 4;
+		CLQ2_BfgExplosion(pos);
 		break;
 
 	case TE_BFG_BIGEXPLOSION:
@@ -919,19 +791,7 @@ void CL_ParseTEnt (void)
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
 
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		ex->type = ex_flash;
-		// note to self
-		// we need a better no draw flag
-		ex->ent.reType = RT_BEAM;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 100 + (rand()%75);
-		ex->lightcolor[0] = 1.0;
-		ex->lightcolor[1] = 1.0;
-		ex->lightcolor[2] = 0.3;
-		ex->ent.hModel = cl_mod_flash;
-		ex->frames = 2;
+		CLQ2_WeldingSparks(pos);
 		break;
 
 	case TE_GREENBLOOD:
@@ -953,57 +813,22 @@ void CL_ParseTEnt (void)
 //PGM
 		// PMM -following code integrated for flechette (different color)
 	case TE_BLASTER2:			// green blaster hitting wall
+		net_message.ReadPos(pos);
+		MSG_ReadDir (&net_message, dir);
+		
+		CLQ2_BlasterParticles2 (pos, dir, 0xd0);
+		CLQ2_Blaster2Explosion(pos, dir);
+		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+		break;
+
 	case TE_FLECHETTE:			// flechette
 		net_message.ReadPos(pos);
 		MSG_ReadDir (&net_message, dir);
 		
-		// PMM
-		if (type == TE_BLASTER2)
-			CLQ2_BlasterParticles2 (pos, dir, 0xd0);
-		else
-			CLQ2_BlasterParticles2 (pos, dir, 0x6f); // 75
-
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		angles[0] = acos(dir[2])/M_PI*180;
-	// PMM - fixed to correct for pitch of 0
-		if (dir[0])
-			angles[1] = atan2(dir[1], dir[0])/M_PI*180;
-		else if (dir[1] > 0)
-			angles[1] = 90;
-		else if (dir[1] < 0)
-			angles[1] = 270;
-		else
-			angles[1] = 0;
-		angles[2] = 0;
-		AnglesToAxis(angles, ex->ent.axis);
-
-		ex->type = ex_misc;
-		ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-
-		// PMM
-		if (type == TE_BLASTER2)
-			ex->ent.skinNum = 1;
-		else // flechette
-			ex->ent.skinNum = 2;
-
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 150;
-		// PMM
-		if (type == TE_BLASTER2)
-			ex->lightcolor[1] = 1;
-		else // flechette
-		{
-			ex->lightcolor[0] = 0.19;
-			ex->lightcolor[1] = 0.41;
-			ex->lightcolor[2] = 0.75;
-		}
-		ex->ent.hModel = cl_mod_explode;
-		ex->frames = 4;
+		CLQ2_BlasterParticles2(pos, dir, 0x6f); // 75
+		CLQ2_FlechetteExplosion(pos, dir);
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
-
 
 	case TE_LIGHTNING:
 		ent = CL_ParseLightning (cl_mod_lightning);
@@ -1019,28 +844,8 @@ void CL_ParseTEnt (void)
 	case TE_PLAIN_EXPLOSION:
 		net_message.ReadPos(pos);
 
-		ex = CLQ2_AllocExplosion ();
-		VectorCopy (pos, ex->ent.origin);
-		ex->type = ex_poly;
-		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
-		ex->ent.radius = 1;
-		ex->start = cl.q2_frame.servertime - 100;
-		ex->light = 350;
-		ex->lightcolor[0] = 1.0;
-		ex->lightcolor[1] = 0.5;
-		ex->lightcolor[2] = 0.5;
-		angles[0] = 0;
-		angles[1] = rand() % 360;
-		angles[2] = 0;
-		AnglesToAxis(angles, ex->ent.axis);
-		ex->ent.hModel = cl_mod_explo4;
-		if (frand() < 0.5)
-			ex->baseframe = 15;
-		ex->frames = 15;
-		if (type == TE_ROCKET_EXPLOSION_WATER)
-			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
-		else
-			S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+		CLQ2_PlainExplosion(pos);
+		S_StartSound (pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
 		break;
 
 	case TE_FLASHLIGHT:
@@ -1578,7 +1383,6 @@ void CL_AddExplosions (void)
 		f = floor(frac);
 
 		ent = &ex->ent;
-		ent->reType = RT_MODEL;
 
 		switch (ex->type)
 		{

@@ -373,7 +373,6 @@ void V_RenderView( float stereo_separation );
 //
 void CL_RegisterTEntSounds (void);
 void CL_RegisterTEntModels (void);
-void CL_SmokeAndFlash(vec3_t origin);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized
