@@ -622,11 +622,6 @@ void CIN_FinishCinematic()
 {
 }
 
-int CL_GetViewEntity()
-{
-	return cl.viewentity;
-}
-
 float* CL_GetSimOrg()
 {
 	return cl_entities[cl.viewentity].origin;

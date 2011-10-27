@@ -629,6 +629,7 @@ void CL_ParseServerData (void)
 		cl.spectator = true;
 		cl.playernum &= ~128;
 	}
+	cl.viewentity = cl.playernum + 1;
 
 	// get the full level name
 	str = const_cast<char*>(net_message.ReadString2());

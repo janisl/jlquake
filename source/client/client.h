@@ -59,6 +59,8 @@ struct clientActiveCommon_t
 
 	//	Not in Quake 3
 	refdef_t refdef;
+	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
+	int viewentity;			// cl_entitites[cl.viewentity] = player
 };
 
 extern clientStaticCommon_t* cls_common;
@@ -73,7 +75,6 @@ float crand();	// -1 to 1
 //	Must be provided
 //	Called by Windows driver.
 void Key_ClearStates();
-int CL_GetViewEntity();
 float* CL_GetSimOrg();
 
 #endif

@@ -123,7 +123,7 @@ static void CLQ1_UpdateBeams()
 		}
 
 		// if coming from the player, update the start position
-		if (beam->entity == CL_GetViewEntity())
+		if (beam->entity == cl_common->viewentity)
 		{
 			VectorCopy(CL_GetSimOrg(), beam->start);
 		}

@@ -1913,11 +1913,6 @@ void CL_Shutdown(void)
 	R_Shutdown(true);
 }
 
-int CL_GetViewEntity()
-{
-	return cl.playernum + 1;// entity 0 is the world
-}
-
 float* CL_GetSimOrg()
 {
 	return NULL;

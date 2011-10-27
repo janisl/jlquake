@@ -306,6 +306,7 @@ void CL_ParseServerData (void)
 
 	// parse player entity number
 	cl.playernum = net_message.ReadShort();
+	cl.viewentity = cl.playernum + 1;
 
 	// get the full level name
 	str = const_cast<char*>(net_message.ReadString2());

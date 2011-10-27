@@ -1498,11 +1498,6 @@ void CIN_FinishCinematic()
 {
 }
 
-int CL_GetViewEntity()
-{
-	return cl.playernum + 1;// entity 0 is the world
-}
-
 float* CL_GetSimOrg()
 {
 	return cl.simorg;

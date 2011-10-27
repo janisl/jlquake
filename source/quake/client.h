@@ -177,7 +177,6 @@ struct client_state_t : clientActiveCommon_t
 	sfxHandle_t	sound_precache[MAX_SOUNDS];
 
 	char		levelname[40];	// for display on solo scoreboard
-	int			viewentity;		// cl_entitites[cl.viewentity] = player
 	int			maxclients;
 	int			gametype;
 
