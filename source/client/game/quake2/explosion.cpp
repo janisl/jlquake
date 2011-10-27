@@ -19,12 +19,12 @@
 
 q2explosion_t q2cl_explosions[MAX_EXPLOSIONS_Q2];
 
-qhandle_t cl_mod_explode;
-qhandle_t cl_mod_smoke;
-qhandle_t cl_mod_flash;
-qhandle_t cl_mod_explo4;
-qhandle_t cl_mod_bfg_explo;
-qhandle_t cl_mod_explo4_big;
+static qhandle_t cl_mod_explode;
+static qhandle_t cl_mod_smoke;
+static qhandle_t cl_mod_flash;
+static qhandle_t cl_mod_explo4;
+static qhandle_t cl_mod_bfg_explo;
+static qhandle_t cl_mod_explo4_big;
 
 void CLQ2_ClearExplosions()
 {
@@ -41,7 +41,7 @@ void CLQ2_RegisterExplosionModels()
 	cl_mod_explo4_big = R_RegisterModel("models/objects/r_explode2/tris.md2");
 }
 
-q2explosion_t* CLQ2_AllocExplosion()
+static q2explosion_t* CLQ2_AllocExplosion()
 {
 	for (int i = 0; i < MAX_EXPLOSIONS_Q2; i++)
 	{
