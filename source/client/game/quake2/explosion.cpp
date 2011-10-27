@@ -17,7 +17,26 @@
 #include "../../client.h"
 #include "local.h"
 
-q2explosion_t q2cl_explosions[MAX_EXPLOSIONS_Q2];
+enum { MAX_EXPLOSIONS_Q2 = 32 };
+
+enum q2exptype_t
+{
+	ex_free, ex_explosion, ex_misc, ex_flash, ex_mflash, ex_poly, ex_poly2
+};
+
+struct q2explosion_t
+{
+	q2exptype_t type;
+	refEntity_t ent;
+
+	int frames;
+	float light;
+	vec3_t lightcolor;
+	int start;
+	int baseframe;
+};
+
+static q2explosion_t q2cl_explosions[MAX_EXPLOSIONS_Q2];
 
 static qhandle_t cl_mod_explode;
 static qhandle_t cl_mod_smoke;
@@ -357,4 +376,107 @@ void CLQ2_PlainExplosion(vec3_t pos)
 		ex->baseframe = 15;
 	}
 	ex->frames = 15;
+}
+
+/*
+=================
+CLQ2_AddExplosions
+=================
+*/
+void CLQ2_AddExplosions (void)
+{
+	refEntity_t	*ent;
+	int			i;
+	q2explosion_t	*ex;
+	float		frac;
+	int			f;
+
+	for (i=0, ex=q2cl_explosions ; i< MAX_EXPLOSIONS_Q2 ; i++, ex++)
+	{
+		if (ex->type == ex_free)
+			continue;
+		frac = (cl_common->serverTime - ex->start)/100.0;
+		f = floor(frac);
+
+		ent = &ex->ent;
+
+		switch (ex->type)
+		{
+		case ex_mflash:
+			if (f >= ex->frames-1)
+				ex->type = ex_free;
+			break;
+		case ex_misc:
+			if (f >= ex->frames-1)
+			{
+				ex->type = ex_free;
+				break;
+			}
+			ent->shaderRGBA[3] = (int)((1.0 - frac/(ex->frames-1)) * 255);
+			break;
+		case ex_flash:
+			if (f >= 1)
+			{
+				ex->type = ex_free;
+				break;
+			}
+			ent->shaderRGBA[3] = 255;
+			break;
+		case ex_poly:
+			if (f >= ex->frames-1)
+			{
+				ex->type = ex_free;
+				break;
+			}
+
+			ent->shaderRGBA[3] = (int)((16.0 - (float)f) / 16.0 * 255);
+
+			if (f < 10)
+			{
+				ent->skinNum = (f>>1);
+				if (ent->skinNum < 0)
+					ent->skinNum = 0;
+			}
+			else
+			{
+				ent->renderfx |= RF_TRANSLUCENT;
+				if (f < 13)
+					ent->skinNum = 5;
+				else
+					ent->skinNum = 6;
+			}
+			break;
+		case ex_poly2:
+			if (f >= ex->frames-1)
+			{
+				ex->type = ex_free;
+				break;
+			}
+
+			ent->shaderRGBA[3] = (int)((5.0 - (float)f) / 5.0 * 255);
+			ent->skinNum = 0;
+			ent->renderfx |= RF_TRANSLUCENT;
+			break;
+		default:
+			break;
+		}
+
+		if (ex->type == ex_free)
+			continue;
+		if (ex->light)
+		{
+			R_AddLightToScene(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
+				ex->lightcolor[0], ex->lightcolor[1], ex->lightcolor[2]);
+		}
+
+		VectorCopy (ent->origin, ent->oldorigin);
+
+		if (f < 0)
+			f = 0;
+		ent->frame = ex->baseframe + f + 1;
+		ent->oldframe = ex->baseframe + f;
+		ent->backlerp = 1.0 - cl_common->q2_lerpfrac;
+
+		R_AddRefEntityToScene (ent);
+	}
 }

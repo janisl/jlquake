@@ -88,8 +88,6 @@ struct client_state_t : clientActiveCommon_t
 	// and teleport direction changes
 	vec3_t		viewangles;
 
-	float		lerpfrac;		// between oldframe and frame
-
 	//
 	// transient data from server
 	//

@@ -1173,7 +1173,7 @@ void CL_AddPlayerBeams (void)
 				for (j=0 ; j<3 ; j++)
 				{
 					b->start[j] = cl.refdef.vieworg[j] + ops->gunoffset[j]
-						+ cl.lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
+						+ cl.q2_lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
 				}
 				VectorMA (b->start, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], org);
 				VectorMA (     org, b->offset[1], cl.refdef.viewaxis[0], org);
@@ -1364,110 +1364,6 @@ void CL_AddPlayerBeams (void)
 
 /*
 =================
-CL_AddExplosions
-=================
-*/
-void CL_AddExplosions (void)
-{
-	refEntity_t	*ent;
-	int			i;
-	q2explosion_t	*ex;
-	float		frac;
-	int			f;
-
-	for (i=0, ex=q2cl_explosions ; i< MAX_EXPLOSIONS_Q2 ; i++, ex++)
-	{
-		if (ex->type == ex_free)
-			continue;
-		frac = (cl.serverTime - ex->start)/100.0;
-		f = floor(frac);
-
-		ent = &ex->ent;
-
-		switch (ex->type)
-		{
-		case ex_mflash:
-			if (f >= ex->frames-1)
-				ex->type = ex_free;
-			break;
-		case ex_misc:
-			if (f >= ex->frames-1)
-			{
-				ex->type = ex_free;
-				break;
-			}
-			ent->shaderRGBA[3] = (int)((1.0 - frac/(ex->frames-1)) * 255);
-			break;
-		case ex_flash:
-			if (f >= 1)
-			{
-				ex->type = ex_free;
-				break;
-			}
-			ent->shaderRGBA[3] = 255;
-			break;
-		case ex_poly:
-			if (f >= ex->frames-1)
-			{
-				ex->type = ex_free;
-				break;
-			}
-
-			ent->shaderRGBA[3] = (int)((16.0 - (float)f) / 16.0 * 255);
-
-			if (f < 10)
-			{
-				ent->skinNum = (f>>1);
-				if (ent->skinNum < 0)
-					ent->skinNum = 0;
-			}
-			else
-			{
-				ent->renderfx |= RF_TRANSLUCENT;
-				if (f < 13)
-					ent->skinNum = 5;
-				else
-					ent->skinNum = 6;
-			}
-			break;
-		case ex_poly2:
-			if (f >= ex->frames-1)
-			{
-				ex->type = ex_free;
-				break;
-			}
-
-			ent->shaderRGBA[3] = (int)((5.0 - (float)f) / 5.0 * 255);
-			ent->skinNum = 0;
-			ent->renderfx |= RF_TRANSLUCENT;
-			break;
-		default:
-			break;
-		}
-
-		if (ex->type == ex_free)
-			continue;
-		if (ex->light)
-		{
-			R_AddLightToScene(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
-				ex->lightcolor[0], ex->lightcolor[1], ex->lightcolor[2]);
-		}
-
-		VectorCopy (ent->origin, ent->oldorigin);
-
-		if (f < 0)
-			f = 0;
-		ent->frame = ex->baseframe + f + 1;
-		ent->oldframe = ex->baseframe + f;
-		ent->backlerp = 1.0 - cl.lerpfrac;
-
-		R_AddRefEntityToScene (ent);
-	}
-}
-
-
-/*
-=================
 CL_AddLasers
 =================
 */
@@ -1514,7 +1410,7 @@ void CL_AddTEnts (void)
 	CL_AddBeams ();
 	// PMM - draw plasma beams
 	CL_AddPlayerBeams ();
-	CL_AddExplosions ();
+	CLQ2_AddExplosions ();
 	CL_AddLasers ();
 	// PMM - set up sustain
 	CL_ProcessSustain();

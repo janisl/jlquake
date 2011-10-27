@@ -722,7 +722,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 // pmm
 //======
 		ent.oldframe = cent->prev.frame;
-		ent.backlerp = 1.0 - cl.lerpfrac;
+		ent.backlerp = 1.0 - cl.q2_lerpfrac;
 
 		if (renderfx_old & (Q2RF_FRAMELERP | Q2RF_BEAM))
 		{	// step origin discretely, because the frames
@@ -734,7 +734,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 		{	// interpolate origin
 			for (i=0 ; i<3 ; i++)
 			{
-				ent.origin[i] = ent.oldorigin[i] = cent->prev.origin[i] + cl.lerpfrac * 
+				ent.origin[i] = ent.oldorigin[i] = cent->prev.origin[i] + cl.q2_lerpfrac * 
 					(cent->current.origin[i] - cent->prev.origin[i]);
 			}
 		}
@@ -841,7 +841,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 			{
 				a1 = cent->current.angles[i];
 				a2 = cent->prev.angles[i];
-				angles[i] = LerpAngle (a2, a1, cl.lerpfrac);
+				angles[i] = LerpAngle (a2, a1, cl.q2_lerpfrac);
 			}
 		}
 		AnglesToAxis(angles, ent.axis);
@@ -1206,9 +1206,9 @@ static void CL_AddViewWeapon(q2player_state_t *ps, q2player_state_t *ops, vec3_t
 	for (i=0 ; i<3 ; i++)
 	{
 		gun.origin[i] = cl.refdef.vieworg[i] + ops->gunoffset[i]
-			+ cl.lerpfrac * (ps->gunoffset[i] - ops->gunoffset[i]);
+			+ cl.q2_lerpfrac * (ps->gunoffset[i] - ops->gunoffset[i]);
 		angles[i] = viewangles[i] + LerpAngle (ops->gunangles[i],
-			ps->gunangles[i], cl.lerpfrac);
+			ps->gunangles[i], cl.q2_lerpfrac);
 	}
 	AnglesToAxis(angles, gun.axis);
 
@@ -1232,7 +1232,7 @@ static void CL_AddViewWeapon(q2player_state_t *ps, q2player_state_t *ops, vec3_t
 	{
 		gun.renderfx |= RF_LEFTHAND;
 	}
-	gun.backlerp = 1.0 - cl.lerpfrac;
+	gun.backlerp = 1.0 - cl.q2_lerpfrac;
 	VectorCopy (gun.origin, gun.oldorigin);	// don't lerp at all
 	R_AddRefEntityToScene (&gun);
 }
@@ -1244,20 +1244,20 @@ static void CL_CalcLerpFrac()
 		if (cl_showclamp->value)
 			Com_Printf ("high clamp %i\n", cl.serverTime - cl.q2_frame.servertime);
 		cl.serverTime = cl.q2_frame.servertime;
-		cl.lerpfrac = 1.0;
+		cl.q2_lerpfrac = 1.0;
 	}
 	else if (cl.serverTime < cl.q2_frame.servertime - 100)
 	{
 		if (cl_showclamp->value)
 			Com_Printf ("low clamp %i\n", cl.q2_frame.servertime-100 - cl.serverTime);
 		cl.serverTime = cl.q2_frame.servertime - 100;
-		cl.lerpfrac = 0;
+		cl.q2_lerpfrac = 0;
 	}
 	else
-		cl.lerpfrac = 1.0 - (cl.q2_frame.servertime - cl.serverTime) * 0.01;
+		cl.q2_lerpfrac = 1.0 - (cl.q2_frame.servertime - cl.serverTime) * 0.01;
 
 	if (cl_timedemo->value)
-		cl.lerpfrac = 1.0;
+		cl.q2_lerpfrac = 1.0;
 }
 
 /*
@@ -1292,7 +1292,7 @@ void CL_CalcViewValues (void)
 		ops = ps;		// don't interpolate
 
 	ent = &cl_entities[cl.playernum+1];
-	lerp = cl.lerpfrac;
+	lerp = cl.q2_lerpfrac;
 
 	// calculate the origin
 	if ((cl_predict->value) && !(cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
@@ -1303,7 +1303,7 @@ void CL_CalcViewValues (void)
 		for (i=0 ; i<3 ; i++)
 		{
 			cl.refdef.vieworg[i] = cl.predicted_origin[i] + ops->viewoffset[i] 
-				+ cl.lerpfrac * (ps->viewoffset[i] - ops->viewoffset[i])
+				+ cl.q2_lerpfrac * (ps->viewoffset[i] - ops->viewoffset[i])
 				- backlerp * cl.prediction_error[i];
 		}
 

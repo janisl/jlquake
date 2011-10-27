@@ -14,27 +14,6 @@
 //**
 //**************************************************************************
 
-enum { MAX_EXPLOSIONS_Q2 = 32 };
-
-enum q2exptype_t
-{
-	ex_free, ex_explosion, ex_misc, ex_flash, ex_mflash, ex_poly, ex_poly2
-};
-
-struct q2explosion_t
-{
-	q2exptype_t type;
-	refEntity_t ent;
-
-	int frames;
-	float light;
-	vec3_t lightcolor;
-	int start;
-	int baseframe;
-};
-
-extern q2explosion_t q2cl_explosions[MAX_EXPLOSIONS_Q2];
-
 void CLQ2_ClearExplosions();
 void CLQ2_RegisterExplosionModels();
 void CLQ2_SmokeAndFlash(vec3_t origin);
@@ -48,3 +27,4 @@ void CLQ2_WeldingSparks(vec3_t origin);
 void CLQ2_Blaster2Explosion(vec3_t origin, vec3_t direction);
 void CLQ2_FlechetteExplosion(vec3_t origin, vec3_t direction);
 void CLQ2_PlainExplosion(vec3_t origin);
+void CLQ2_AddExplosions();
