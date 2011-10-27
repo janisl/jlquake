@@ -70,14 +70,10 @@ static void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 	int entity = message.ReadShort();
 
 	vec3_t start;
-	start[0] = message.ReadCoord();
-	start[1] = message.ReadCoord();
-	start[2] = message.ReadCoord();
+	message.ReadPos(start);
 
 	vec3_t end;
-	end[0] = message.ReadCoord();
-	end[1] = message.ReadCoord();
-	end[2] = message.ReadCoord();
+	message.ReadPos(end);
 
 	// override any beam with the same entity
 	q1beam_t* beam = clq1_beams;
@@ -250,9 +246,7 @@ static void CLQ1_UpdateExplosions()
 static void CLQ1_ParseWizSpike(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 20, 30);
 	S_StartSound(position, -1, 0, clq1_sfx_wizhit, 1, 1);
@@ -261,9 +255,7 @@ static void CLQ1_ParseWizSpike(QMsg& message)
 static void CLQ1_ParseKnightSpike(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 226, 20);
 	S_StartSound(position, -1, 0, clq1_sfx_knighthit, 1, 1);
@@ -296,9 +288,7 @@ static void SpikeSound(vec3_t pos)
 static void CLQ1_ParseSpike(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 0, 10);
 	SpikeSound(position);
@@ -307,9 +297,7 @@ static void CLQ1_ParseSpike(QMsg& message)
 static void CLQ1_ParseSuperSpike(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 0, 20);
 	SpikeSound(position);
@@ -318,9 +306,7 @@ static void CLQ1_ParseSuperSpike(QMsg& message)
 static void CLQ1_ParseExplosion(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_ParticleExplosion(position);
 	CLQ1_ExplosionLight(position);
@@ -330,9 +316,7 @@ static void CLQ1_ParseExplosion(QMsg& message)
 static void CLQW_ParseExplosion(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_ParticleExplosion(position);
 	CLQ1_ExplosionLight(position);
@@ -343,9 +327,7 @@ static void CLQW_ParseExplosion(QMsg& message)
 static void CLQ1_ParseTarExplosion(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_BlobExplosion(position);
 	S_StartSound(position, -1, 0, clq1_sfx_r_exp3, 1, 1);
@@ -354,9 +336,7 @@ static void CLQ1_ParseTarExplosion(QMsg& message)
 static void CLQ1_ParseExplosion2(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 	int colourStart = message.ReadByte();
 	int colourLength = message.ReadByte();
 
@@ -368,9 +348,7 @@ static void CLQ1_ParseExplosion2(QMsg& message)
 static void CLQ1_ParseLavaSplash(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_LavaSplash(position);
 }
@@ -378,9 +356,7 @@ static void CLQ1_ParseLavaSplash(QMsg& message)
 static void CLQ1_ParseTeleportSplash(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_TeleportSplash(position);
 }
@@ -388,9 +364,7 @@ static void CLQ1_ParseTeleportSplash(QMsg& message)
 static void CLQ1_ParseGunShot(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 0, 20);
 }
@@ -399,9 +373,7 @@ static void CLQW_ParseGunShot(QMsg& message)
 {
 	int count = message.ReadByte();
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 0, 20 * count);
 }
@@ -410,9 +382,7 @@ static void CLQ1_ParseBlood(QMsg& message)
 {
 	int count = message.ReadByte();
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 73, 20 * count);
 }
@@ -420,9 +390,7 @@ static void CLQ1_ParseBlood(QMsg& message)
 static void CLQ1_ParseLightningBlood(QMsg& message)
 {
 	vec3_t position;
-	position[0] = message.ReadCoord();
-	position[1] = message.ReadCoord();
-	position[2] = message.ReadCoord();
+	message.ReadPos(position);
 
 	CLQ1_RunParticleEffect(position, vec3_origin, 225, 50);
 }
