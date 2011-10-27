@@ -38,13 +38,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_precomp.h"
 #include "l_struct.h"
 #include "aasfile.h"
-#include "../game/botlib.h"
-#include "../game/be_aas.h"
+#include "botlib.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
 #include "be_ai_weight.h"
-#include "../game/be_ai_goal.h"
-#include "../game/be_ai_move.h"
+#include "be_ai_goal.h"
+#include "be_ai_move.h"
 
 //#define DEBUG_AI_GOAL
 #ifdef RANDOMIZE

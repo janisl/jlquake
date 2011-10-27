@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <string.h>
 
 #include "../game/q_shared.h"
-#include "../game/botlib.h"
+#include "botlib.h"
 #include "be_interface.h"			//for botimport.Print
 #include "l_libvar.h"
 
