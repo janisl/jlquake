@@ -120,7 +120,7 @@ void CLQ2_SmokeAndFlash(vec3_t origin)
 	AxisClear(ex->ent.axis);
 }
 
-void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
+static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 {
 	q2explosion_t* ex = NewExplosion(pos);
 	vec3_t angles;
@@ -148,11 +148,17 @@ void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
 	ex->type = ex_misc;
 	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
 	ex->ent.radius = 1;
-	ex->light = 150;
-	ex->lightcolor[0] = 1;
-	ex->lightcolor[1] = 1;
 	ex->ent.hModel = cl_mod_explode;
 	ex->frames = 4;
+	ex->light = 150;
+	return ex;
+}
+
+void CLQ2_BlasterExplosion(vec3_t pos, vec3_t dir)
+{
+	q2explosion_t* ex = NewBlasterExplosion(pos, dir);
+	ex->lightcolor[0] = 1;
+	ex->lightcolor[1] = 1;
 }
 
 void CLQ2_GrenadeExplosion(vec3_t pos)
@@ -251,74 +257,18 @@ void CLQ2_WeldingSparks(vec3_t pos)
 
 void CLQ2_Blaster2Explosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	vec3_t angles;
-	angles[0] = acos(dir[2]) / M_PI * 180;
-	// PMM - fixed to correct for pitch of 0
-	if (dir[0])
-	{
-		angles[1] = atan2(dir[1], dir[0]) / M_PI * 180;
-	}
-	else if (dir[1] > 0)
-	{
-		angles[1] = 90;
-	}
-	else if (dir[1] < 0)
-	{
-		angles[1] = 270;
-	}
-	else
-	{
-		angles[1] = 0;
-	}
-	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
-
-	ex->type = ex_misc;
-	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
+	q2explosion_t* ex = NewBlasterExplosion(pos, dir);
 	ex->ent.skinNum = 1;
-	ex->light = 150;
 	ex->lightcolor[1] = 1;
-	ex->ent.hModel = cl_mod_explode;
-	ex->frames = 4;
 }
 
 void CLQ2_FlechetteExplosion(vec3_t pos, vec3_t dir)
 {
-	q2explosion_t* ex = NewExplosion(pos);
-	vec3_t angles;
-	angles[0] = acos(dir[2]) / M_PI * 180;
-	// PMM - fixed to correct for pitch of 0
-	if (dir[0])
-	{
-		angles[1] = atan2(dir[1], dir[0]) / M_PI * 180;
-	}
-	else if (dir[1] > 0)
-	{
-		angles[1] = 90;
-	}
-	else if (dir[1] < 0)
-	{
-		angles[1] = 270;
-	}
-	else
-	{
-		angles[1] = 0;
-	}
-	angles[2] = 0;
-	AnglesToAxis(angles, ex->ent.axis);
-
-	ex->type = ex_misc;
-	ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
-	ex->ent.radius = 1;
+	q2explosion_t* ex = NewBlasterExplosion(pos, dir);
 	ex->ent.skinNum = 2;
-	ex->light = 150;
 	ex->lightcolor[0] = 0.19;
 	ex->lightcolor[1] = 0.41;
 	ex->lightcolor[2] = 0.75;
-	ex->ent.hModel = cl_mod_explode;
-	ex->frames = 4;
 }
 
 /*
