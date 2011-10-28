@@ -205,7 +205,7 @@ void SV_Baselines_f (void)
 	// write a packet full of data
 
 	while ( sv_client->netchan.message.cursize <  MAX_MSGLEN/2
-		&& start < MAX_EDICTS)
+		&& start < MAX_EDICTS_Q2)
 	{
 		base = &sv.baselines[start];
 		if (base->modelindex || base->sound || base->effects)
@@ -218,7 +218,7 @@ void SV_Baselines_f (void)
 
 	// send next command
 
-	if (start == MAX_EDICTS)
+	if (start == MAX_EDICTS_Q2)
 	{
 		sv_client->netchan.message.WriteByte(svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("precache %i\n", svs.spawncount) );

@@ -348,8 +348,8 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 
 	if (!to->number)
 		Com_Error (ERR_FATAL, "Unset entity number");
-	if (to->number >= MAX_EDICTS)
-		Com_Error (ERR_FATAL, "Entity number >= MAX_EDICTS");
+	if (to->number >= MAX_EDICTS_Q2)
+		Com_Error (ERR_FATAL, "Entity number >= MAX_EDICTS_Q2");
 
 // send an update
 	bits = 0;

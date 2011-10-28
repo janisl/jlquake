@@ -341,7 +341,7 @@ void CL_ParseBaseline (void)
 	Com_Memset(&nullstate, 0, sizeof(nullstate));
 
 	newnum = CL_ParseEntityBits (&bits);
-	es = &cl_entities[newnum].baseline;
+	es = &clq2_entities[newnum].baseline;
 	CL_ParseDelta (&nullstate, es, newnum, bits);
 }
 
@@ -587,7 +587,7 @@ void CL_ParseStartSoundPacket(void)
 	{	// entity reletive
 		channel = net_message.ReadShort(); 
 		ent = channel>>3;
-		if (ent > MAX_EDICTS)
+		if (ent > MAX_EDICTS_Q2)
 			Com_Error (ERR_DROP,"CL_ParseStartSoundPacket: ent = %i", ent);
 
 		channel &= 7;

@@ -167,7 +167,7 @@ void CL_DeltaEntity (q2frame_t *frame, int newnum, q2entity_state_t *old, int bi
 	q2centity_t	*ent;
 	q2entity_state_t	*state;
 
-	ent = &cl_entities[newnum];
+	ent = &clq2_entities[newnum];
 
 	state = &cl_parse_entities[cl.parse_entities & (MAX_PARSE_ENTITIES-1)];
 	cl.parse_entities++;
@@ -251,7 +251,7 @@ void CL_ParsePacketEntities (q2frame_t *oldframe, q2frame_t *newframe)
 	while (1)
 	{
 		newnum = CL_ParseEntityBits (&bits);
-		if (newnum >= MAX_EDICTS)
+		if (newnum >= MAX_EDICTS_Q2)
 			Com_Error (ERR_DROP,"CL_ParsePacketEntities: bad number:%i", newnum);
 
 		if (net_message.readcount > net_message.cursize)
@@ -318,7 +318,7 @@ void CL_ParsePacketEntities (q2frame_t *oldframe, q2frame_t *newframe)
 		{	// delta from baseline
 			if (cl_shownet->value == 3)
 				Com_Printf ("   baseline: %i\n", newnum);
-			CL_DeltaEntity (newframe, newnum, &cl_entities[newnum].baseline, bits);
+			CL_DeltaEntity (newframe, newnum, &clq2_entities[newnum].baseline, bits);
 			continue;
 		}
 
@@ -634,7 +634,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 	{
 		s1 = &cl_parse_entities[(frame->parse_entities+pnum)&(MAX_PARSE_ENTITIES-1)];
 
-		cent = &cl_entities[s1->number];
+		cent = &clq2_entities[s1->number];
 
 		effects = s1->effects;
 		renderfx_old = s1->renderfx;
@@ -1286,7 +1286,7 @@ void CL_CalcViewValues (void)
 		|| abs(ops->pmove.origin[2] - ps->pmove.origin[2]) > 256*8)
 		ops = ps;		// don't interpolate
 
-	ent = &cl_entities[cl.playernum+1];
+	ent = &clq2_entities[cl.playernum+1];
 	lerp = cl.q2_lerpfrac;
 
 	// calculate the origin
@@ -1358,9 +1358,9 @@ void CL_GetEntitySoundOrigin (int ent, vec3_t org)
 {
 	q2centity_t	*old;
 
-	if (ent < 0 || ent >= MAX_EDICTS)
+	if (ent < 0 || ent >= MAX_EDICTS_Q2)
 		Com_Error (ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");
-	old = &cl_entities[ent];
+	old = &clq2_entities[ent];
 	VectorCopy (old->lerp_origin, org);
 
 	// FIXME: bmodel issues...

@@ -40,22 +40,3 @@ void CL_ParseParticles (void)
 
 	CLQ2_ParticleEffect (pos, dir, color, count);
 }
-
-//ROGUE
-//=============
-
-/*
-=================
-CL_AddTEnts
-=================
-*/
-void CL_AddTEnts (void)
-{
-	CLQ2_AddBeams ();
-	// PMM - draw plasma beams
-	CLQ2_AddPlayerBeams ();
-	CLQ2_AddExplosions ();
-	CLQ2_AddLasers ();
-	// PMM - set up sustain
-	CLQ2_ProcessSustain();
-}

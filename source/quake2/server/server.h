@@ -64,7 +64,7 @@ typedef struct
 	clipHandle_t	models[MAX_MODELS];
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
-	q2entity_state_t	baselines[MAX_EDICTS];
+	q2entity_state_t	baselines[MAX_EDICTS_Q2];
 
 	// the multicast buffer is used to send a message to a set of clients
 	// it is only used to marshall data until SV_Multicast is called

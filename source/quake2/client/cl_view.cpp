@@ -393,7 +393,7 @@ void V_RenderView(float stereo_separation)
 		else
 		{
 			CL_AddPacketEntities(&cl.q2_frame);
-			CL_AddTEnts();
+			CLQ2_AddTEnts();
 		}
 	}
 

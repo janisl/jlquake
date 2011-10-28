@@ -15,7 +15,6 @@ add_executable(jlquake2
 	client/menu.cpp
 	client/snd_dma.cpp
 	client/qmenu.cpp
-	qcommon/m_flash.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp

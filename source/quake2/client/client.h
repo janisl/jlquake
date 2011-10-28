@@ -233,8 +233,6 @@ extern	Cvar	*cl_timedemo;
 
 extern	Cvar	*cl_vwep;
 
-extern	q2centity_t	cl_entities[MAX_EDICTS];
-
 // the cl_parse_entities must be large enough to hold UPDATE_BACKUP_Q2 frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original 
@@ -266,11 +264,9 @@ void CL_ParseFrame (void);
 void CL_ParseConfigString (void);
 void CL_ParseMuzzleFlash (void);
 void CL_ParseMuzzleFlash2 (void);
-void SmokeAndFlash(vec3_t origin);
 
 void CL_CalcViewValues();
 void CL_AddPacketEntities(q2frame_t *frame);
-void CL_AddTEnts (void);
 
 //=================================================
 

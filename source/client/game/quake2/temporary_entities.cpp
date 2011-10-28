@@ -870,3 +870,12 @@ void CLQ2_ParseTEnt(QMsg& message)
 		throw DropException("CLQ2_ParseTEnt: bad type");
 	}
 }
+
+void CLQ2_AddTEnts()
+{
+	CLQ2_AddBeams();
+	CLQ2_AddPlayerBeams();
+	CLQ2_AddExplosions();
+	CLQ2_AddLasers();
+	CLQ2_ProcessSustain();
+}

@@ -18,3 +18,5 @@
 #include "local.h"
 
 Cvar* q2_hand;
+
+q2centity_t clq2_entities[MAX_EDICTS_Q2];

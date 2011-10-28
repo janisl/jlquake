@@ -265,10 +265,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\m_flash.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\menu.cpp"
 				>
 			</File>

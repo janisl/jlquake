@@ -88,8 +88,6 @@ Cvar	*cl_vwep;
 client_static_t	cls;
 client_state_t	cl;
 
-q2centity_t		cl_entities[MAX_EDICTS];
-
 q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
 extern	Cvar *allow_download;
@@ -239,9 +237,9 @@ void CL_Record_f (void)
 
 	// baselines
 	Com_Memset(&nullstate, 0, sizeof(nullstate));
-	for (i=0; i<MAX_EDICTS ; i++)
+	for (i=0; i<MAX_EDICTS_Q2 ; i++)
 	{
-		ent = &cl_entities[i].baseline;
+		ent = &clq2_entities[i].baseline;
 		if (!ent->modelindex)
 			continue;
 
@@ -254,7 +252,7 @@ void CL_Record_f (void)
 		}
 
 		buf.WriteByte(svc_spawnbaseline);		
-		MSG_WriteDeltaEntity (&nullstate, &cl_entities[i].baseline, &buf, true, true);
+		MSG_WriteDeltaEntity (&nullstate, &clq2_entities[i].baseline, &buf, true, true);
 	}
 
 	buf.WriteByte(svc_stufftext);
@@ -592,7 +590,7 @@ void CL_ClearState (void)
 
 // wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));
-	Com_Memset(&cl_entities, 0, sizeof(cl_entities));
+	Com_Memset(&clq2_entities, 0, sizeof(clq2_entities));
 
 	cls.netchan.message.Clear();
 
@@ -1418,7 +1416,7 @@ void CL_InitLocal (void)
 
 	cl_add_blend = Cvar_Get ("cl_blend", "1", 0);
 	cl_add_particles = Cvar_Get ("cl_particles", "1", 0);
-	cl_add_entities = Cvar_Get ("cl_entities", "1", 0);
+	cl_add_entities = Cvar_Get ("clq2_entities", "1", 0);
 	cl_gun = Cvar_Get ("cl_gun", "1", 0);
 	cl_footsteps = Cvar_Get ("cl_footsteps", "1", 0);
 	cl_noskins = Cvar_Get ("cl_noskins", "0", 0);
@@ -1716,7 +1714,7 @@ void CL_UpdateSounds()
 	if (!cl.sound_prepped)
 		return;
 
-	for (int i = 0; i < MAX_EDICTS; i++)
+	for (int i = 0; i < MAX_EDICTS_Q2; i++)
 	{
 		vec3_t origin;
 		CL_GetEntitySoundOrigin(i, origin);

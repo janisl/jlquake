@@ -1,25 +1,21 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 2
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful },
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// m_flash.c
-
-#include "q_shared.h"
+#include "../../client.h"
+#include "local.h"
 
 // this file is included in both the game dll and quake2,
 // the game needs it to source shot locations, the client
@@ -486,3 +482,19 @@ vec3_t monster_flash_offset [] =
 // end of table
 	{ 0.0, 0.0, 0.0 }
 };
+
+void CLQ2_LogoutEffect(vec3_t org, int type)
+{
+	if (type == Q2MZ_LOGIN)
+	{
+		CLQ2_PlayerSpawnParticles(org, 0xd0);	// green
+	}
+	else if (type == Q2MZ_LOGOUT)
+	{
+		CLQ2_PlayerSpawnParticles(org, 0x40);	// red
+	}
+	else
+	{
+		CLQ2_PlayerSpawnParticles(org, 0xe0);	// yellow
+	}
+}

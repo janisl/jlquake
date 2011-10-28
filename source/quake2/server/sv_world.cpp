@@ -433,7 +433,7 @@ SV_PointContents
 */
 int SV_PointContents (vec3_t p)
 {
-	edict_t		*touch[MAX_EDICTS], *hit;
+	edict_t		*touch[MAX_EDICTS_Q2], *hit;
 	int			i, num;
 	int			contents, c2;
 	clipHandle_t	model;
@@ -443,7 +443,7 @@ int SV_PointContents (vec3_t p)
 	contents = CM_PointContentsQ2(p, 0);
 
 	// or in contents from all the other entities
-	num = SV_AreaEdicts (p, p, touch, MAX_EDICTS, AREA_SOLID);
+	num = SV_AreaEdicts (p, p, touch, MAX_EDICTS_Q2, AREA_SOLID);
 
 	for (i=0 ; i<num ; i++)
 	{
@@ -520,13 +520,13 @@ SV_ClipMoveToEntities
 void SV_ClipMoveToEntities ( moveclip_t *clip )
 {
 	int			i, num;
-	edict_t		*touchlist[MAX_EDICTS], *touch;
+	edict_t		*touchlist[MAX_EDICTS_Q2], *touch;
 	q2trace_t		trace;
 	clipHandle_t	model;
 	float		*angles;
 
 	num = SV_AreaEdicts (clip->boxmins, clip->boxmaxs, touchlist
-		, MAX_EDICTS, AREA_SOLID);
+		, MAX_EDICTS_Q2, AREA_SOLID);
 
 	// be careful, it is possible to have an entity in this
 	// list removed before we get to it (killtriggered)

@@ -20,6 +20,10 @@ extern sfxHandle_t clq2_sfx_footsteps[4];
 
 extern qhandle_t clq2_mod_powerscreen;
 
+extern q2centity_t clq2_entities[MAX_EDICTS_Q2];
+
+extern vec3_t monster_flash_offset[];
+
 void CLQ2_ClearExplosions();
 void CLQ2_RegisterExplosionModels();
 void CLQ2_SmokeAndFlash(vec3_t origin);
@@ -57,3 +61,6 @@ void CLQ2_RegisterTEntSounds();
 void CLQ2_RegisterTEntModels();
 void CLQ2_ClearTEnts();
 void CLQ2_ParseTEnt(QMsg& message);
+void CLQ2_AddTEnts();
+
+void CLQ2_LogoutEffect(vec3_t org, int type);
