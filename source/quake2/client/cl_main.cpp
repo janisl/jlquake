@@ -588,7 +588,7 @@ void CL_ClearState (void)
 {
 	S_StopAllSounds ();
 	CL_ClearEffects ();
-	CL_ClearTEnts ();
+	CLQ2_ClearTEnts ();
 
 // wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));

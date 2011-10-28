@@ -16,6 +16,25 @@
 
 extern Cvar* q2_hand;
 
+extern sfxHandle_t cl_sfx_ric1;
+extern sfxHandle_t cl_sfx_ric2;
+extern sfxHandle_t cl_sfx_ric3;
+extern sfxHandle_t cl_sfx_lashit;
+extern sfxHandle_t cl_sfx_spark5;
+extern sfxHandle_t cl_sfx_spark6;
+extern sfxHandle_t cl_sfx_spark7;
+extern sfxHandle_t cl_sfx_railg;
+extern sfxHandle_t cl_sfx_rockexp;
+extern sfxHandle_t cl_sfx_grenexp;
+extern sfxHandle_t cl_sfx_watrexp;
+extern sfxHandle_t cl_sfx_footsteps[4];
+
+extern qhandle_t cl_mod_parasite_tip;
+extern qhandle_t cl_mod_powerscreen;
+
+extern sfxHandle_t cl_sfx_lightning;
+extern sfxHandle_t cl_sfx_disrexp;
+
 void CLQ2_ClearExplosions();
 void CLQ2_RegisterExplosionModels();
 void CLQ2_SmokeAndFlash(vec3_t origin);
@@ -48,3 +67,7 @@ void CLQ2_SustainParticleStream(int id, int cnt, vec3_t pos, vec3_t dir, int r, 
 void CLQ2_SustainWindow(int id, vec3_t pos);
 void CLQ2_SustainNuke(vec3_t pos);
 void CLQ2_ProcessSustain();
+
+void CLQ2_RegisterTEntSounds();
+void CLQ2_RegisterTEntModels();
+void CLQ2_ClearTEnts();

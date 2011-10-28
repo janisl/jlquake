@@ -258,7 +258,6 @@ void CL_AddNetgraph (void);
 // ========
 
 void CL_ClearEffects (void);
-void CL_ClearTEnts (void);
 
 int CL_ParseEntityBits (unsigned *bits);
 void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits);
@@ -362,12 +361,6 @@ extern float		v_blend[4];
 
 void V_Init (void);
 void V_RenderView( float stereo_separation );
-
-//
-// cl_tent.c
-//
-void CL_RegisterTEntSounds (void);
-void CL_RegisterTEntModels (void);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized

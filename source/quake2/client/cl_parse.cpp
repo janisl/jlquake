@@ -153,7 +153,7 @@ void CL_RegisterSounds (void)
 	int		i;
 
 	S_BeginRegistration ();
-	CL_RegisterTEntSounds ();
+	CLQ2_RegisterTEntSounds ();
 	for (i=1 ; i<MAX_SOUNDS ; i++)
 	{
 		if (!cl.configstrings[CS_SOUNDS+i][0])

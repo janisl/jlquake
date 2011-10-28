@@ -179,7 +179,7 @@ void CL_PrepRefresh (void)
 	SCR_TouchPics ();
 	Com_Printf ("                                     \r");
 
-	CL_RegisterTEntModels ();
+	CLQ2_RegisterTEntModels ();
 
 	num_cl_weaponmodels = 1;
 	String::Cpy(cl_weaponmodels[0], "weapon.md2");

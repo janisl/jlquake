@@ -1795,6 +1795,26 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\game\quake2\temporary_entities.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake2\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake2\"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 		</Filter>
 		<File
