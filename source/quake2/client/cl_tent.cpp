@@ -39,14 +39,6 @@ beam_t		cl_beams[MAX_BEAMS];
 beam_t		cl_playerbeams[MAX_BEAMS];
 
 
-#define	MAX_LASERS	32
-typedef struct
-{
-	refEntity_t	ent;
-	int			endtime;
-} laser_t;
-laser_t		cl_lasers[MAX_LASERS];
-
 //ROGUE
 q2cl_sustain_t	cl_sustains[MAX_SUSTAINS];
 //ROGUE
@@ -172,7 +164,7 @@ void CL_ClearTEnts (void)
 {
 	Com_Memset(cl_beams, 0, sizeof(cl_beams));
 	CLQ2_ClearExplosions();
-	Com_Memset(cl_lasers, 0, sizeof(cl_lasers));
+	CLQ2_ClearLasers();
 
 //ROGUE
 	Com_Memset(cl_playerbeams, 0, sizeof(cl_playerbeams));
@@ -424,32 +416,14 @@ static int CL_ParseLightning (qhandle_t model)
 CL_ParseLaser
 =================
 */
-void CL_ParseLaser (int colors)
+void CL_ParseLaser(int colors)
 {
-	vec3_t	start;
-	vec3_t	end;
-	laser_t	*l;
-	int		i;
-
+	vec3_t start;
 	net_message.ReadPos(start);
+	vec3_t end;
 	net_message.ReadPos(end);
 
-	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
-	{
-		if (l->endtime < cl.serverTime)
-		{
-			l->ent.reType = RT_BEAM;
-			l->ent.renderfx = RF_TRANSLUCENT;
-			VectorCopy (start, l->ent.origin);
-			VectorCopy (end, l->ent.oldorigin);
-			l->ent.shaderRGBA[3] = 76;
-			l->ent.skinNum = (colors >> ((rand() % 4)*8)) & 0xff;
-			l->ent.hModel = 0;
-			l->ent.frame = 4;
-			l->endtime = cl.serverTime + 100;
-			return;
-		}
-	}
+	CLQ2_NewLaser(start, end, colors);
 }
 
 //=============
@@ -1366,23 +1340,6 @@ void CL_AddPlayerBeams (void)
 	}
 }
 
-/*
-=================
-CL_AddLasers
-=================
-*/
-void CL_AddLasers (void)
-{
-	laser_t		*l;
-	int			i;
-
-	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
-	{
-		if (l->endtime >= cl.serverTime)
-			R_AddRefEntityToScene (&l->ent);
-	}
-}
-
 /* PMM - CL_Sustains */
 void CL_ProcessSustain ()
 {
@@ -1415,7 +1372,7 @@ void CL_AddTEnts (void)
 	// PMM - draw plasma beams
 	CL_AddPlayerBeams ();
 	CLQ2_AddExplosions ();
-	CL_AddLasers ();
+	CLQ2_AddLasers ();
 	// PMM - set up sustain
 	CL_ProcessSustain();
 }

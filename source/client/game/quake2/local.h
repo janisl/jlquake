@@ -26,3 +26,7 @@ void CLQ2_WeldingSparks(vec3_t origin);
 void CLQ2_Blaster2Explosion(vec3_t origin, vec3_t direction);
 void CLQ2_FlechetteExplosion(vec3_t origin, vec3_t direction);
 void CLQ2_AddExplosions();
+
+void CLQ2_ClearLasers();
+void CLQ2_NewLaser(vec3_t start, vec3_t end, int colors);
+void CLQ2_AddLasers();
