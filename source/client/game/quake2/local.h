@@ -15,6 +15,7 @@
 //**************************************************************************
 
 extern Cvar* q2_hand;
+extern Cvar* clq2_footsteps;
 
 extern sfxHandle_t clq2_sfx_footsteps[4];
 
@@ -63,4 +64,9 @@ void CLQ2_ClearTEnts();
 void CLQ2_ParseTEnt(QMsg& message);
 void CLQ2_AddTEnts();
 
+void CLQ2_ClearEffects();
 void CLQ2_LogoutEffect(vec3_t org, int type);
+void CLQ2_ParseMuzzleFlash(QMsg& message);
+void CLQ2_ParseMuzzleFlash2(QMsg& message);
+void CLQ2_FlyEffect(q2centity_t* ent, vec3_t origin);
+void CLQ2_EntityEvent(q2entity_state_t* ent);

@@ -513,3 +513,19 @@ enum q2temp_event_t
 #define Q2MZ2_WIDOW2_BEAM_SWEEP_9		208
 #define Q2MZ2_WIDOW2_BEAM_SWEEP_10		209
 #define Q2MZ2_WIDOW2_BEAM_SWEEP_11		210
+
+// q2entity_state_t->event values
+// ertity events are for effects that take place reletive
+// to an existing entities origin.  Very network efficient.
+// All muzzle flashes really should be converted to events...
+enum q2entity_event_t
+{
+	Q2EV_NONE,
+	Q2EV_ITEM_RESPAWN,
+	Q2EV_FOOTSTEP,
+	Q2EV_FALLSHORT,
+	Q2EV_FALL,
+	Q2EV_FALLFAR,
+	Q2EV_PLAYER_TELEPORT,
+	Q2EV_OTHER_TELEPORT
+};

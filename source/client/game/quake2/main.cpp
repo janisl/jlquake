@@ -18,5 +18,6 @@
 #include "local.h"
 
 Cvar* q2_hand;
+Cvar* clq2_footsteps;
 
 q2centity_t clq2_entities[MAX_EDICTS_Q2];

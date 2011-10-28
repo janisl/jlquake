@@ -196,7 +196,6 @@ extern	Cvar	*cl_add_blend;
 extern	Cvar	*cl_add_particles;
 extern	Cvar	*cl_add_entities;
 extern	Cvar	*cl_predict;
-extern	Cvar	*cl_footsteps;
 extern	Cvar	*cl_noskins;
 extern	Cvar	*cl_autoskins;
 
@@ -255,15 +254,11 @@ void CL_AddNetgraph (void);
 #define BLASTER_PARTICLE_COLOR		0xe0
 // ========
 
-void CL_ClearEffects (void);
-
 int CL_ParseEntityBits (unsigned *bits);
 void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits);
 void CL_ParseFrame (void);
 
 void CL_ParseConfigString (void);
-void CL_ParseMuzzleFlash (void);
-void CL_ParseMuzzleFlash2 (void);
 
 void CL_CalcViewValues();
 void CL_AddPacketEntities(q2frame_t *frame);
@@ -368,14 +363,6 @@ void CL_GetEntitySoundOrigin (int ent, vec3_t org);
 void CL_InitPrediction (void);
 void CL_PredictMove (void);
 void CL_CheckPredictionError (void);
-
-//
-// cl_fx.c
-//
-void CL_FlyEffect (q2centity_t *ent, vec3_t origin);
-void CL_EntityEvent (q2entity_state_t *ent);
-// RAFAEL
-void CLQ2_TrapParticles(vec3_t origin);
 
 //
 // menus

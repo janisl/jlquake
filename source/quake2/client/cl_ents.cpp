@@ -183,8 +183,8 @@ void CL_DeltaEntity (q2frame_t *frame, int newnum, q2entity_state_t *old, int bi
 		|| abs(state->origin[0] - ent->current.origin[0]) > 512
 		|| abs(state->origin[1] - ent->current.origin[1]) > 512
 		|| abs(state->origin[2] - ent->current.origin[2]) > 512
-		|| state->event == EV_PLAYER_TELEPORT
-		|| state->event == EV_OTHER_TELEPORT
+		|| state->event == Q2EV_PLAYER_TELEPORT
+		|| state->event == Q2EV_OTHER_TELEPORT
 		)
 	{
 		ent->serverframe = -99;
@@ -195,7 +195,7 @@ void CL_DeltaEntity (q2frame_t *frame, int newnum, q2entity_state_t *old, int bi
 		ent->trailcount = 1024;		// for diminishing rocket / grenade trails
 		// duplicate the current state so lerping doesn't hurt anything
 		ent->prev = *state;
-		if (state->event == EV_OTHER_TELEPORT)
+		if (state->event == Q2EV_OTHER_TELEPORT)
 		{
 			VectorCopy (state->origin, ent->prev.origin);
 			VectorCopy (state->origin, ent->lerp_origin);
@@ -484,7 +484,7 @@ void CL_FireEntityEvents (q2frame_t *frame)
 		num = (frame->parse_entities + pnum)&(MAX_PARSE_ENTITIES-1);
 		s1 = &cl_parse_entities[num];
 		if (s1->event)
-			CL_EntityEvent (s1);
+			CLQ2_EntityEvent (s1);
 
 		// Q2EF_TELEPORTER acts like an event, but is not cleared each frame
 		if (s1->effects & Q2EF_TELEPORTER)
@@ -1062,7 +1062,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 			}
 			else if (effects & Q2EF_FLIES)
 			{
-				CL_FlyEffect (cent, ent.origin);
+				CLQ2_FlyEffect (cent, ent.origin);
 			}
 			else if (effects & Q2EF_BFG)
 			{

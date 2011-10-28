@@ -41,7 +41,6 @@ Cvar	*rcon_address;
 
 Cvar	*cl_noskins;
 Cvar	*cl_autoskins;
-Cvar	*cl_footsteps;
 Cvar	*cl_timeout;
 Cvar	*cl_predict;
 //Cvar	*cl_minfps;
@@ -585,7 +584,7 @@ CL_ClearState
 void CL_ClearState (void)
 {
 	S_StopAllSounds ();
-	CL_ClearEffects ();
+	CLQ2_ClearEffects ();
 	CLQ2_ClearTEnts ();
 
 // wipe the entire cl structure
@@ -1418,7 +1417,7 @@ void CL_InitLocal (void)
 	cl_add_particles = Cvar_Get ("cl_particles", "1", 0);
 	cl_add_entities = Cvar_Get ("clq2_entities", "1", 0);
 	cl_gun = Cvar_Get ("cl_gun", "1", 0);
-	cl_footsteps = Cvar_Get ("cl_footsteps", "1", 0);
+	clq2_footsteps = Cvar_Get ("cl_footsteps", "1", 0);
 	cl_noskins = Cvar_Get ("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get ("cl_autoskins", "0", 0);
 	cl_predict = Cvar_Get ("cl_predict", "1", 0);

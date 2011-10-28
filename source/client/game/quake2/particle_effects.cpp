@@ -710,13 +710,6 @@ void CLQ2_FlyParticles(vec3_t origin, int count)
 	}
 }
 
-
-/*
-===============
-CLQ2_BfgParticles
-===============
-*/
-
 void CLQ2_BfgParticles(vec3_t origin)
 {
 	enum { BEAMLENGTH = 16 };

@@ -737,11 +737,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_muzzleflash:
-			CL_ParseMuzzleFlash ();
+			CLQ2_ParseMuzzleFlash(net_message);
 			break;
 
 		case svc_muzzleflash2:
-			CL_ParseMuzzleFlash2 ();
+			CLQ2_ParseMuzzleFlash2(net_message);
 			break;
 
 		case svc_download:

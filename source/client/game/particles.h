@@ -209,6 +209,7 @@ void CLQ2_IonripperTrail(vec3_t start, vec3_t end);
 void CLQ2_BubbleTrail(vec3_t start, vec3_t end);
 void CLQ2_FlyParticles(vec3_t origin, int count);
 void CLQ2_BfgParticles(vec3_t origin);
+void CLQ2_TrapParticles(vec3_t origin);
 void CLQ2_BFGExplosionParticles(vec3_t origin);
 void CLQ2_TeleportParticles(vec3_t origin);
 void CLQ2_DebugTrail(vec3_t start, vec3_t end);

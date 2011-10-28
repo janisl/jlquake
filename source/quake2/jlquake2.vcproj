@@ -205,10 +205,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\cl_fx.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\cl_input.cpp"
 				>
 			</File>
@@ -230,10 +226,6 @@
 			</File>
 			<File
 				RelativePath="client\cl_scrn.cpp"
-				>
-			</File>
-			<File
-				RelativePath="client\cl_tent.cpp"
 				>
 			</File>
 			<File
