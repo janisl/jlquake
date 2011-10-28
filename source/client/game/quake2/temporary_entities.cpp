@@ -36,6 +36,8 @@ qhandle_t cl_mod_powerscreen;
 sfxHandle_t cl_sfx_lightning;
 sfxHandle_t cl_sfx_disrexp;
 
+static byte splash_color[] = { 0x00, 0xe0, 0xb0, 0x50, 0xd0, 0xe0, 0xe8 };
+
 void CLQ2_RegisterTEntSounds()
 {
 	cl_sfx_ric1 = S_RegisterSound("world/ric1.wav");
@@ -93,4 +95,565 @@ void CLQ2_ClearTEnts()
 	CLQ2_ClearExplosions();
 	CLQ2_ClearLasers();
 	CLQ2_ClearSustains();
+}
+
+void CLQ2_ParseBlood(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0xe8, 60);
+}
+
+static void CLQ2_ImpactSound(vec3_t pos)
+{
+	int cnt = rand() & 15;
+	if (cnt == 1)
+	{
+		S_StartSound(pos, 0, 0, cl_sfx_ric1, 1, ATTN_NORM, 0);
+	}
+	else if (cnt == 2)
+	{
+		S_StartSound(pos, 0, 0, cl_sfx_ric2, 1, ATTN_NORM, 0);
+	}
+	else if (cnt == 3)
+	{
+		S_StartSound(pos, 0, 0, cl_sfx_ric3, 1, ATTN_NORM, 0);
+	}
+}
+
+void CLQ2_ParseGunShot(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0, 40);
+	CLQ2_SmokeAndFlash(pos);
+	CLQ2_ImpactSound(pos);
+}
+
+void CLQ2_ParseSparks(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0xe0, 6);
+}
+
+void CLQ2_ParseBulletSparks(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0xe0, 6);
+	CLQ2_SmokeAndFlash(pos);
+	CLQ2_ImpactSound(pos);
+}
+
+void CLQ2_ParseScreenSparks(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0xd0, 40);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseShieldSparks(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0xb0, 40);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseShotgun(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0, 20);
+	CLQ2_SmokeAndFlash(pos);
+}
+
+void CLQ2_ParseSplash(QMsg& message)
+{
+	int cnt = message.ReadByte();
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+	int r = message.ReadByte();
+
+	int color = r > 6 ? 0x00 : splash_color[r];
+	CLQ2_ParticleEffect(pos, dir, color, cnt);
+	if (r == Q2SPLASH_SPARKS)
+	{
+		r = rand() & 3;
+		if (r == 0)
+		{
+			S_StartSound(pos, 0, 0, cl_sfx_spark5, 1, ATTN_STATIC, 0);
+		}
+		else if (r == 1)
+		{
+			S_StartSound(pos, 0, 0, cl_sfx_spark6, 1, ATTN_STATIC, 0);
+		}
+		else
+		{
+			S_StartSound(pos, 0, 0, cl_sfx_spark7, 1, ATTN_STATIC, 0);
+		}
+	}
+}
+
+void CLQ2_ParseLaserSparks(QMsg& message)
+{
+	int cnt = message.ReadByte();
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+	int color = message.ReadByte();
+
+	CLQ2_ParticleEffect2(pos, dir, color, cnt);
+}
+
+void CLQ2_ParseBlueHyperBlaster(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadPos(dir);
+
+	CLQ2_BlasterParticles(pos, dir);
+}
+
+void CLQ2_ParseBlaster(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_BlasterParticles(pos, dir);
+	CLQ2_BlasterExplosion(pos, dir);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseRailTrail(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t pos2;
+	message.ReadPos(pos2);
+
+	CLQ2_RailTrail(pos, pos2);
+	S_StartSound(pos2, 0, 0, cl_sfx_railg, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseGrenadeExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_GrenadeExplosion(pos);
+	CLQ2_ExplosionParticles(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_grenexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseGrenadeExplosionWater(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_GrenadeExplosion(pos);
+	CLQ2_ExplosionParticles(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParsePlasmaExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_RocketExplosion(pos);
+	CLQ2_ExplosionParticles(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseRocketExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_RocketExplosion(pos);
+	CLQ2_ExplosionParticles(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseExplosion1Big(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_BigExplosion(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseRocketExplosionWater(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_RocketExplosion(pos);
+	CLQ2_ExplosionParticles(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParsePlainExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_RocketExplosion(pos);
+	S_StartSound(pos, 0, 0, cl_sfx_rockexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseBfgExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_BfgExplosion(pos);
+}
+
+void CLQ2_ParseBfgBigExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_BFGExplosionParticles(pos);
+}
+
+void CLQ2_ParseBfgLaser(QMsg& message)
+{
+	vec3_t start;
+	message.ReadPos(start);
+	vec3_t end;
+	message.ReadPos(end);
+
+	CLQ2_NewLaser(start, end, 0xd0d1d2d3);
+}
+
+void CLQ2_ParseBubleTrail(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t pos2;
+	message.ReadPos(pos2);
+
+	CLQ2_BubbleTrail(pos, pos2);
+}
+
+void CLQ2_ParseParasiteAttack(QMsg& message)
+{
+	int ent = message.ReadShort();
+	vec3_t start;
+	message.ReadPos(start);
+	vec3_t end;
+	message.ReadPos(end);
+
+	CLQ2_ParasiteBeam(ent, start, end);
+}
+
+void CLQ2_ParseBossTeleport(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_BigTeleportParticles(pos);
+	S_StartSound(pos, 0, 0, S_RegisterSound("misc/bigtele.wav"), 1, ATTN_NONE, 0);
+}
+
+void CLQ2_ParseGrappleCable(QMsg& message)
+{
+	int ent = message.ReadShort();
+	vec3_t start;
+	message.ReadPos(start);
+	vec3_t end;
+	message.ReadPos(end);
+	vec3_t offset;
+	message.ReadPos(offset);
+
+	CLQ2_GrappleCableBeam(ent, start, end, offset);
+}
+
+void CLQ2_ParseWeldingSparks(QMsg& message)
+{
+	int cnt = message.ReadByte();
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+	int color = message.ReadByte();
+
+	CLQ2_ParticleEffect2(pos, dir, color, cnt);
+	CLQ2_WeldingSparks(pos);
+}
+
+void CLQ2_ParseGreenBlood(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect2(pos, dir, 0xdf, 30);
+}
+
+void CLQ2_ParseTunnelSparks(QMsg& message)
+{
+	int cnt = message.ReadByte();
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+	int color = message.ReadByte();
+
+	CLQ2_ParticleEffect3(pos, dir, color, cnt);
+}
+
+void CLQ2_ParseBlaster2(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_BlasterParticles2(pos, dir, 0xd0);
+	CLQ2_Blaster2Explosion(pos, dir);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseFlechette(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_BlasterParticles2(pos, dir, 0x6f); // 75
+	CLQ2_FlechetteExplosion(pos, dir);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseLightning(QMsg& message)
+{
+	int srcEnt = message.ReadShort();
+	int destEnt = message.ReadShort();
+	vec3_t start;
+	message.ReadPos(start);
+	vec3_t end;
+	message.ReadPos(end);
+
+	CLQ2_LightningBeam(srcEnt, destEnt, start, end);
+	S_StartSound(NULL, srcEnt, Q2CHAN_WEAPON, cl_sfx_lightning, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseDebugTrail(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t pos2;
+	message.ReadPos(pos2);
+
+	CLQ2_DebugTrail(pos, pos2);
+}
+
+void CLQ2_ParseFlashLight(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	int ent = message.ReadShort();
+
+	CLQ2_Flashlight(ent, pos);
+}
+
+void CLQ2_ParseForceWall(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t pos2;
+	message.ReadPos(pos2);
+	int color = message.ReadByte();
+
+	CLQ2_ForceWall(pos, pos2, color);
+}
+
+void CLQ2_ParseHeatBeam(QMsg& message)
+{
+	int ent = message.ReadShort();
+	vec3_t start;
+	message.ReadPos(start);
+	vec3_t end;
+	message.ReadPos(end);
+
+	CLQ2_HeatBeam(ent, start, end);
+}
+
+void CLQ2_ParseMonsterHeatBeam(QMsg& message)
+{
+	int ent = message.ReadShort();
+	vec3_t start;
+	message.ReadPos(start);
+	vec3_t end;
+	message.ReadPos(end);
+
+	CLQ2_MonsterHeatBeam(ent, start, end);
+}
+
+void CLQ2_ParseHeatBeamSparks(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleSteamEffect(pos, dir, 8, 50, 60);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseHeatBeamSteam(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleSteamEffect(pos, dir, 0xe0, 20, 60);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseSteam(QMsg& message)
+{
+	int id = message.ReadShort();		// an id of -1 is an instant effect
+	int cnt = message.ReadByte();
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+	int r = message.ReadByte();
+	int magnitude = message.ReadShort();
+
+	if (id != -1) // sustains
+	{
+		int interval = message.ReadLong();
+		CLQ2_SustainParticleStream(id, cnt, pos, dir, r, magnitude, interval);
+	}
+	else // instant
+	{
+		int color = r & 0xff;
+		CLQ2_ParticleSteamEffect(pos, dir, color, cnt, magnitude);
+	}
+}
+
+void CLQ2_ParseBubleTrail2(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t pos2;
+	message.ReadPos(pos2);
+
+	CLQ2_BubbleTrail2(pos, pos2, 8);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseMoreBlood(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0xe8, 250);
+}
+
+void CLQ2_ParseChainfistSmoke(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	vec3_t dir;
+	dir[0] = 0;
+	dir[1] = 0;
+	dir[2] = 1;
+	CLQ2_ParticleSmokeEffect(pos, dir, 0, 20, 20);
+}
+
+void CLQ2_ParseElectricSparks(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	vec3_t dir;
+	message.ReadDir(dir);
+
+	CLQ2_ParticleEffect(pos, dir, 0x75, 40);
+	S_StartSound(pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseTrackerExplosion(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_ColorFlash(0, pos, 150, -1, -1, -1);
+	CLQ2_ColorExplosionParticles(pos, 0, 1);
+	S_StartSound(pos, 0, 0, cl_sfx_disrexp, 1, ATTN_NORM, 0);
+}
+
+void CLQ2_ParseTeleportEffect(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_TeleportParticles(pos);
+}
+
+void CLQ2_ParseWidowBeamOut(QMsg& message)
+{
+	int id = message.ReadShort();
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_SustainWindow(id, pos);
+}
+
+void CLQ2_ParseNukeBlast(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_SustainNuke(pos);
+}
+
+void CLQ2_ParseWidowSplash(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	CLQ2_WidowSplash(pos);
 }

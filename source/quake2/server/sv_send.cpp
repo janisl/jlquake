@@ -360,7 +360,7 @@ void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 	if (attenuation == ATTN_NONE)
 		use_phs = false;
 
-	if (channel & CHAN_RELIABLE)
+	if (channel & Q2CHAN_RELIABLE)
 	{
 		if (use_phs)
 			SV_Multicast (origin, MULTICAST_PHS_R);

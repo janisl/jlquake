@@ -39,8 +39,6 @@
 #define CHAN_LOCAL_SOUND		6
 #define CHAN_ANNOUNCER			7
 
-#define ATTN_STATIC				3	// diminish very rapidly with distance
-
 #define SOUND_LOOPATTENUATE		0.003
 #define SOUND_ATTENUATE			0.0008f
 

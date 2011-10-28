@@ -171,3 +171,23 @@ struct q2player_state_t
 
 	short stats[MAX_STATS_Q2];	// fast status bar updates
 };
+
+#define Q2SPLASH_UNKNOWN		0
+#define Q2SPLASH_SPARKS			1
+#define Q2SPLASH_BLUE_WATER		2
+#define Q2SPLASH_BROWN_WATER	3
+#define Q2SPLASH_SLIME			4
+#define Q2SPLASH_LAVA			5
+#define Q2SPLASH_BLOOD			6
+
+// sound channels
+// channel 0 never willingly overrides
+// other channels (1-7) allways override a playing sound on that channel
+#define Q2CHAN_AUTO			0
+#define Q2CHAN_WEAPON		1
+#define Q2CHAN_VOICE		2
+#define Q2CHAN_ITEM			3
+#define Q2CHAN_BODY			4
+// modifier flags
+#define Q2CHAN_NO_PHS_ADD	8	// send to all clients, not just ones in PHS (ATTN 0 will also do this)
+#define Q2CHAN_RELIABLE		16	// send by reliable message, not datagram
