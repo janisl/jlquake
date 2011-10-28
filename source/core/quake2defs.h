@@ -14,6 +14,10 @@
 //**
 //**************************************************************************
 
+#define UPDATE_BACKUP_Q2	16	// copies of q2entity_state_t to keep buffered
+							// must be power of two
+#define UPDATE_MASK_Q2		(UPDATE_BACKUP_Q2 - 1)
+
 // q2entity_state_t->effects
 // Effects are things handled on the client side (lights, particles, frame animations)
 // that happen constantly on the given entity.

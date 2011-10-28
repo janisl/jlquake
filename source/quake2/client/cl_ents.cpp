@@ -537,7 +537,7 @@ void CL_ParseFrame (void)
 	}
 	else
 	{
-		old = &cl.frames[cl.q2_frame.deltaframe & UPDATE_MASK];
+		old = &cl.q2_frames[cl.q2_frame.deltaframe & UPDATE_MASK_Q2];
 		if (!old->valid)
 		{	// should never happen
 			Com_Printf ("Delta from invalid frame (not supposed to happen!).\n");
@@ -585,7 +585,7 @@ void CL_ParseFrame (void)
 #endif
 
 	// save the frame off in the backup array for later delta comparisons
-	cl.frames[cl.q2_frame.serverframe & UPDATE_MASK] = cl.q2_frame;
+	cl.q2_frames[cl.q2_frame.serverframe & UPDATE_MASK_Q2] = cl.q2_frame;
 
 	if (cl.q2_frame.valid)
 	{
@@ -1277,8 +1277,8 @@ void CL_CalcViewValues (void)
 
 	// find the previous frame to interpolate from
 	ps = &cl.q2_frame.playerstate;
-	i = (cl.q2_frame.serverframe - 1) & UPDATE_MASK;
-	oldframe = &cl.frames[i];
+	i = (cl.q2_frame.serverframe - 1) & UPDATE_MASK_Q2;
+	oldframe = &cl.q2_frames[i];
 	if (oldframe->serverframe != cl.q2_frame.serverframe-1 || !oldframe->valid)
 		oldframe = &cl.q2_frame;		// previous frame was dropped or involid
 	ops = &oldframe->playerstate;

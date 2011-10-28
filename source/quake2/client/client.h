@@ -79,7 +79,6 @@ struct client_state_t : clientActiveCommon_t
 	vec3_t		prediction_error;
 
 	int			surpressCount;		// number of messages rate supressed
-	q2frame_t		frames[UPDATE_BACKUP];
 
 	// the client maintains its own idea of view angles, which are
 	// sent to the server each frame.  It is cleared to 0 upon entering each level.
@@ -236,7 +235,7 @@ extern	Cvar	*cl_vwep;
 
 extern	q2centity_t	cl_entities[MAX_EDICTS];
 
-// the cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of
+// the cl_parse_entities must be large enough to hold UPDATE_BACKUP_Q2 frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original 
 #define	MAX_PARSE_ENTITIES	1024

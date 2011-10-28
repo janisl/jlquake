@@ -17,14 +17,27 @@
 #include "../../client.h"
 #include "local.h"
 
-q2beam_t clq2_beams[MAX_BEAMS_Q2];
+enum { MAX_BEAMS_Q2 = 32 };
+
+struct q2beam_t
+{
+	int entity;
+	int dest_entity;
+	qhandle_t model;
+	int endtime;
+	vec3_t offset;
+	vec3_t start;
+	vec3_t end;
+};
+
+static q2beam_t clq2_beams[MAX_BEAMS_Q2];
 //PMM - added this for player-linked beams.  Currently only used by the plasma beam
-q2beam_t clq2_playerbeams[MAX_BEAMS_Q2];
+static q2beam_t clq2_playerbeams[MAX_BEAMS_Q2];
 
 static qhandle_t clq2_mod_parasite_segment;
 static qhandle_t clq2_mod_grapple_cable;
-qhandle_t clq2_mod_heatbeam;
-qhandle_t clq2_mod_lightning;
+static qhandle_t clq2_mod_heatbeam;
+static qhandle_t clq2_mod_lightning;
 
 void CLQ2_ClearBeams()
 {
@@ -116,4 +129,389 @@ void CLQ2_MonsterHeatBeam(int ent, vec3_t start, vec3_t end)
 void CLQ2_LightningBeam(int srcEnt, int destEnt, vec3_t start, vec3_t end)
 {
 	CLQ2_NewBeam(srcEnt, destEnt, clq2_mod_lightning, start, end, vec3_origin);
+}
+
+void CLQ2_AddBeams()
+{
+	q2beam_t* b = clq2_beams;
+	for (int i = 0; i < MAX_BEAMS_Q2; i++, b++)
+	{
+		if (!b->model || b->endtime < cl_common->serverTime)
+		{
+			continue;
+		}
+
+		// if coming from the player, update the start position
+		if (b->entity == cl_common->viewentity)
+		{
+			VectorCopy(cl_common->refdef.vieworg, b->start);
+			b->start[2] -= 22;	// adjust for view height
+		}
+		vec3_t org;
+		VectorAdd(b->start, b->offset, org);
+
+		// calculate pitch and yaw
+		vec3_t dist;
+		VectorSubtract(b->end, org, dist);
+
+		float yaw, pitch;
+		if (dist[1] == 0 && dist[0] == 0)
+		{
+			yaw = 0;
+			if (dist[2] > 0)
+			{
+				pitch = 90;
+			}
+			else
+			{
+				pitch = 270;
+			}
+		}
+		else
+		{
+			// PMM - fixed to correct for pitch of 0
+			if (dist[0])
+			{
+				yaw = (atan2(dist[1], dist[0]) * 180 / M_PI);
+			}
+			else if (dist[1] > 0)
+			{
+				yaw = 90;
+			}
+			else
+			{
+				yaw = 270;
+			}
+			if (yaw < 0)
+			{
+				yaw += 360;
+			}
+
+			float forward = sqrt (dist[0] * dist[0] + dist[1] * dist[1]);
+			pitch = (atan2(dist[2], forward) * -180.0 / M_PI);
+			if (pitch < 0)
+			{
+				pitch += 360.0;
+			}
+		}
+
+		// add new entities for the beams
+		float d = VectorNormalize(dist);
+
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+		float model_length;
+		if (b->model == clq2_mod_lightning)
+		{
+			model_length = 35.0;
+			d-= 20.0;  // correction so it doesn't end in middle of tesla
+		}
+		else
+		{
+			model_length = 30.0;
+		}
+		float steps = ceil(d / model_length);
+		float len = (d - model_length) / (steps - 1);
+
+		// PMM - special case for lightning model .. if the real length is shorter than the model,
+		// flip it around & draw it from the end to the start.  This prevents the model from going
+		// through the tesla mine (instead it goes through the target)
+		if ((b->model == clq2_mod_lightning) && (d <= model_length))
+		{
+			VectorCopy(b->end, ent.origin);
+			ent.hModel = b->model;
+			ent.renderfx = RF_ABSOLUTE_LIGHT;
+			ent.radius = 1;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand()%360;
+			AnglesToAxis(angles, ent.axis);
+			R_AddRefEntityToScene(&ent);
+			return;
+		}
+		while (d > 0)
+		{
+			VectorCopy(org, ent.origin);
+			ent.hModel = b->model;
+			vec3_t angles;
+			if (b->model == clq2_mod_lightning)
+			{
+				ent.renderfx = RF_ABSOLUTE_LIGHT;
+				ent.radius = 1;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = rand() % 360;
+			}
+			else
+			{
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = rand() % 360;
+			}
+			AnglesToAxis(angles, ent.axis);
+
+			R_AddRefEntityToScene(&ent);
+
+			for (int j = 0; j < 3; j++)
+			{
+				org[j] += dist[j] * len;
+			}
+			d -= model_length;
+		}
+	}
+}
+
+void CLQ2_AddPlayerBeams()
+{
+	float hand_multiplier;
+	if (q2_hand)
+	{
+		if (q2_hand->value == 2)
+		{
+			hand_multiplier = 0;
+		}
+		else if (q2_hand->value == 1)
+		{
+			hand_multiplier = -1;
+		}
+		else
+		{
+			hand_multiplier = 1;
+		}
+	}
+	else 
+	{
+		hand_multiplier = 1;
+	}
+
+	q2beam_t* b = clq2_playerbeams;
+	for (int i = 0; i < MAX_BEAMS_Q2; i++, b++)
+	{
+		if (!b->model || b->endtime < cl_common->serverTime)
+		{
+			continue;
+		}
+
+		vec3_t org;
+		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
+		{
+			// if coming from the player, update the start position
+			if (b->entity == cl_common->viewentity)
+			{
+				// set up gun position
+				// code straight out of CL_AddViewWeapon
+				q2player_state_t* ps = &cl_common->q2_frame.playerstate;
+				int j = (cl_common->q2_frame.serverframe - 1) & UPDATE_MASK_Q2;
+				q2frame_t* oldframe = &cl_common->q2_frames[j];
+				if (oldframe->serverframe != cl_common->q2_frame.serverframe-1 || !oldframe->valid)
+				{
+					oldframe = &cl_common->q2_frame;		// previous frame was dropped or involid
+				}
+				q2player_state_t* ops = &oldframe->playerstate;
+				for (j = 0; j < 3; j++)
+				{
+					b->start[j] = cl_common->refdef.vieworg[j] + ops->gunoffset[j]
+						+ cl_common->q2_lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
+				}
+				VectorMA(b->start, -(hand_multiplier * b->offset[0]), cl_common->refdef.viewaxis[1], org);
+				VectorMA(org, b->offset[1], cl_common->refdef.viewaxis[0], org);
+				VectorMA(org, b->offset[2], cl_common->refdef.viewaxis[2], org);
+				if (q2_hand && (q2_hand->value == 2))
+				{
+					VectorMA(org, -1, cl_common->refdef.viewaxis[2], org);
+				}
+			}
+			else
+			{
+				VectorCopy(b->start, org);
+			}
+		}
+		else
+		{
+			// if coming from the player, update the start position
+			if (b->entity == cl_common->viewentity)
+			{
+				VectorCopy(cl_common->refdef.vieworg, b->start);
+				b->start[2] -= 22;	// adjust for view height
+			}
+			VectorAdd(b->start, b->offset, org);
+		}
+
+		// calculate pitch and yaw
+		vec3_t dist;
+		VectorSubtract(b->end, org, dist);
+
+		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl_common->viewentity))
+		{
+			vec_t len = VectorLength(dist);
+			VectorScale(cl_common->refdef.viewaxis[0], len, dist);
+			VectorMA(dist, -(hand_multiplier * b->offset[0]), cl_common->refdef.viewaxis[1], dist);
+			VectorMA(dist, b->offset[1], cl_common->refdef.viewaxis[0], dist);
+			VectorMA(dist, b->offset[2], cl_common->refdef.viewaxis[2], dist);
+			if (q2_hand && (q2_hand->value == 2))
+			{
+				VectorMA(org, -1, cl_common->refdef.viewaxis[2], org);
+			}
+		}
+
+		float yaw, pitch;
+		if (dist[1] == 0 && dist[0] == 0)
+		{
+			yaw = 0;
+			if (dist[2] > 0)
+			{
+				pitch = 90;
+			}
+			else
+			{
+				pitch = 270;
+			}
+		}
+		else
+		{
+			// PMM - fixed to correct for pitch of 0
+			if (dist[0])
+			{
+				yaw = (atan2(dist[1], dist[0]) * 180 / M_PI);
+			}
+			else if (dist[1] > 0)
+			{
+				yaw = 90;
+			}
+			else
+			{
+				yaw = 270;
+			}
+			if (yaw < 0)
+			{
+				yaw += 360;
+			}
+	
+			float forward = sqrt (dist[0] * dist[0] + dist[1] * dist[1]);
+			pitch = (atan2(dist[2], forward) * -180.0 / M_PI);
+			if (pitch < 0)
+			{
+				pitch += 360.0;
+			}
+		}
+
+		int framenum;
+		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
+		{
+			if (b->entity != cl_common->viewentity)
+			{
+				framenum = 2;
+				vec3_t angles;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = 0;
+				vec3_t f, r, u;
+				AngleVectors(angles, f, r, u);
+
+				// if it's a non-origin offset, it's a player, so use the hardcoded player offset
+				if (!VectorCompare(b->offset, vec3_origin))
+				{
+					VectorMA(org, -b->offset[0] + 1, r, org);
+					VectorMA(org, -b->offset[1], f, org);
+					VectorMA(org, -b->offset[2] - 10, u, org);
+				}
+				else
+				{
+					// if it's a monster, do the particle effect
+					CLQ2_MonsterPlasma_Shell(b->start);
+				}
+			}
+			else
+			{
+				framenum = 1;
+			}
+		}
+
+		// if it's the heatbeam, draw the particle effect
+		if ((clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl_common->viewentity)))
+		{
+			CLQ2_HeatbeamPaticles(org, dist);
+		}
+
+		// add new entities for the beams
+		float d = VectorNormalize(dist);
+
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+		float model_length;
+		if (b->model == clq2_mod_heatbeam)
+		{
+			model_length = 32.0;
+		}
+		else if (b->model == clq2_mod_lightning)
+		{
+			model_length = 35.0;
+			d-= 20.0;  // correction so it doesn't end in middle of tesla
+		}
+		else
+		{
+			model_length = 30.0;
+		}
+		float steps = ceil(d / model_length);
+		float len = (d - model_length) / (steps - 1);
+
+		// PMM - special case for lightning model .. if the real length is shorter than the model,
+		// flip it around & draw it from the end to the start.  This prevents the model from going
+		// through the tesla mine (instead it goes through the target)
+		if ((b->model == clq2_mod_lightning) && (d <= model_length))
+		{
+			VectorCopy (b->end, ent.origin);
+			ent.hModel = b->model;
+			ent.renderfx = RF_ABSOLUTE_LIGHT;
+			ent.radius = 1;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand() % 360;
+			AnglesToAxis(angles, ent.axis);
+			R_AddRefEntityToScene(&ent);
+			return;
+		}
+		while (d > 0)
+		{
+			VectorCopy(org, ent.origin);
+			ent.hModel = b->model;
+			vec3_t angles;
+			if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
+			{
+				ent.renderfx = RF_ABSOLUTE_LIGHT;
+				ent.radius = 1;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = (cl_common->serverTime) % 360;
+				ent.frame = framenum;
+			}
+			else if (b->model == clq2_mod_lightning)
+			{
+				ent.renderfx = RF_ABSOLUTE_LIGHT;
+				ent.radius = 1;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = rand() % 360;
+			}
+			else
+			{
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = rand() % 360;
+			}
+			AnglesToAxis(angles, ent.axis);
+			
+			R_AddRefEntityToScene(&ent);
+
+			for (int j = 0; j < 3; j++)
+			{
+				org[j] += dist[j] * len;
+			}
+			d -= model_length;
+		}
+	}
 }

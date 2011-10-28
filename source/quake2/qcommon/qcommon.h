@@ -113,12 +113,6 @@ PROTOCOL
 
 //=========================================
 
-#define	UPDATE_BACKUP	16	// copies of q2entity_state_t to keep buffered
-							// must be power of two
-#define	UPDATE_MASK		(UPDATE_BACKUP-1)
-
-
-
 //==================
 // the svc_strings[] array in cl_parse.c should mirror this
 //==================

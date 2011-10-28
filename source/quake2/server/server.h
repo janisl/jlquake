@@ -130,7 +130,7 @@ typedef struct client_s
 	QMsg			datagram;
 	byte			datagram_buf[MAX_MSGLEN];
 
-	client_frame_t	frames[UPDATE_BACKUP];	// updates can be delta'd from here
+	client_frame_t	frames[UPDATE_BACKUP_Q2];	// updates can be delta'd from here
 
 	byte			*download;			// file being downloaded
 	int				downloadsize;		// total bytes (can't use EOF because of paks)
@@ -176,7 +176,7 @@ typedef struct
 											// used to check late spawns
 
 	client_t	*clients;					// [maxclients->value];
-	int			num_client_entities;		// maxclients->value*UPDATE_BACKUP*MAX_PACKET_ENTITIES
+	int			num_client_entities;		// maxclients->value*UPDATE_BACKUP_Q2*MAX_PACKET_ENTITIES
 	int			next_client_entities;		// next client_entity to use
 	q2entity_state_t	*client_entities;		// [num_client_entities]
 

@@ -64,6 +64,7 @@ struct clientActiveCommon_t
 	int viewentity;			// cl_entitites[cl.viewentity] = player
 
 	q2frame_t q2_frame;		// received from server
+	q2frame_t q2_frames[UPDATE_BACKUP_Q2];
 
 	float q2_lerpfrac;		// between oldframe and frame
 };

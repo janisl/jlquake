@@ -417,14 +417,14 @@ void SV_WriteFrameToClient (client_t *client, QMsg *msg)
 
 //Com_Printf ("%i -> %i\n", client->lastframe, sv.framenum);
 	// this is the frame we are creating
-	frame = &client->frames[sv.framenum & UPDATE_MASK];
+	frame = &client->frames[sv.framenum & UPDATE_MASK_Q2];
 
 	if (client->lastframe <= 0)
 	{	// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = -1;
 	}
-	else if (sv.framenum - client->lastframe >= (UPDATE_BACKUP - 3) )
+	else if (sv.framenum - client->lastframe >= (UPDATE_BACKUP_Q2 - 3) )
 	{	// client hasn't gotten a good message through in a long time
 //		Com_Printf ("%s: Delta request from out-of-date packet.\n", client->name);
 		oldframe = NULL;
@@ -432,7 +432,7 @@ void SV_WriteFrameToClient (client_t *client, QMsg *msg)
 	}
 	else
 	{	// we have a valid message to delta from
-		oldframe = &client->frames[client->lastframe & UPDATE_MASK];
+		oldframe = &client->frames[client->lastframe & UPDATE_MASK_Q2];
 		lastframe = client->lastframe;
 	}
 
@@ -543,7 +543,7 @@ void SV_BuildClientFrame (client_t *client)
 #endif
 
 	// this is the frame we are creating
-	frame = &client->frames[sv.framenum & UPDATE_MASK];
+	frame = &client->frames[sv.framenum & UPDATE_MASK_Q2];
 
 	frame->senttime = svs.realtime; // save it for ping calc later
 
