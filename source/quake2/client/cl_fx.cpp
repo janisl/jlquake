@@ -662,8 +662,6 @@ An entity has just been parsed that has an event value
 the female events are there for backwards compatability
 ==============
 */
-extern sfxHandle_t	cl_sfx_footsteps[4];
-
 void CL_EntityEvent (q2entity_state_t *ent)
 {
 	switch (ent->event)
@@ -678,7 +676,7 @@ void CL_EntityEvent (q2entity_state_t *ent)
 		break;
 	case EV_FOOTSTEP:
 		if (cl_footsteps->value)
-			S_StartSound (NULL, ent->number, Q2CHAN_BODY, cl_sfx_footsteps[rand()&3], 1, ATTN_NORM, 0);
+			S_StartSound (NULL, ent->number, Q2CHAN_BODY, clq2_sfx_footsteps[rand()&3], 1, ATTN_NORM, 0);
 		break;
 	case EV_FALLSHORT:
 		S_StartSound (NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound ("player/land1.wav"), 1, ATTN_NORM, 0);

@@ -733,7 +733,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_temp_entity:
-			CL_ParseTEnt ();
+			CLQ2_ParseTEnt(net_message);
 			break;
 
 		case svc_muzzleflash:

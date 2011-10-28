@@ -263,7 +263,6 @@ int CL_ParseEntityBits (unsigned *bits);
 void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits);
 void CL_ParseFrame (void);
 
-void CL_ParseTEnt (void);
 void CL_ParseConfigString (void);
 void CL_ParseMuzzleFlash (void);
 void CL_ParseMuzzleFlash2 (void);

@@ -21,9 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-
-extern qhandle_t	cl_mod_powerscreen;
-
 /*
 =========================================================================
 
@@ -1011,7 +1008,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 
 		if (effects & Q2EF_POWERSCREEN)
 		{
-			ent.hModel = cl_mod_powerscreen;
+			ent.hModel = clq2_mod_powerscreen;
 			ent.oldframe = 0;
 			ent.frame = 0;
 			ent.renderfx |= RF_TRANSLUCENT | RF_COLOUR_SHELL;
