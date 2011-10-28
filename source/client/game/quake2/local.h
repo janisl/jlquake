@@ -34,6 +34,8 @@ extern q2beam_t clq2_playerbeams[MAX_BEAMS_Q2];
 extern qhandle_t clq2_mod_heatbeam;
 extern qhandle_t clq2_mod_lightning;
 
+extern Cvar* q2_hand;
+
 void CLQ2_ClearExplosions();
 void CLQ2_RegisterExplosionModels();
 void CLQ2_SmokeAndFlash(vec3_t origin);

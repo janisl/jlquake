@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern qhandle_t	cl_mod_powerscreen;
 
-extern Cvar *hand;
-
 /*
 =========================================================================
 
@@ -1228,7 +1226,7 @@ static void CL_AddViewWeapon(q2player_state_t *ps, q2player_state_t *ops, vec3_t
 
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	if (hand->integer == 1)
+	if (q2_hand->integer == 1)
 	{
 		gun.renderfx |= RF_LEFTHAND;
 	}

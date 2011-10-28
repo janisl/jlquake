@@ -936,8 +936,6 @@ void CL_AddBeams (void)
 //				Com_Printf ("Time:  %d %d %f\n", cl.serverTime, cls.realtime, cls.frametime);
 */
 
-extern Cvar *hand;
-
 /*
 =================
 ROGUE - draw player locked beams
@@ -962,11 +960,11 @@ void CL_AddPlayerBeams (void)
 	q2player_state_t	*ps, *ops;
 
 //PMM
-	if (hand)
+	if (q2_hand)
 	{
-		if (hand->value == 2)
+		if (q2_hand->value == 2)
 			hand_multiplier = 0;
-		else if (hand->value == 1)
+		else if (q2_hand->value == 1)
 			hand_multiplier = -1;
 		else
 			hand_multiplier = 1;
@@ -1005,7 +1003,7 @@ void CL_AddPlayerBeams (void)
 				VectorMA (b->start, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], org);
 				VectorMA (     org, b->offset[1], cl.refdef.viewaxis[0], org);
 				VectorMA (     org, b->offset[2], cl.refdef.viewaxis[2], org);
-				if ((hand) && (hand->value == 2)) {
+				if ((q2_hand) && (q2_hand->value == 2)) {
 					VectorMA (org, -1, cl.refdef.viewaxis[2], org);
 				}
 			}
@@ -1036,7 +1034,7 @@ void CL_AddPlayerBeams (void)
 			VectorMA (dist, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], dist);
 			VectorMA (dist, b->offset[1], cl.refdef.viewaxis[0], dist);
 			VectorMA (dist, b->offset[2], cl.refdef.viewaxis[2], dist);
-			if ((hand) && (hand->value == 2)) {
+			if ((q2_hand) && (q2_hand->value == 2)) {
 				VectorMA (org, -1, cl.refdef.viewaxis[2], org);
 			}
 		}

@@ -1736,6 +1736,26 @@
 					>
 				</File>
 				<File
+					RelativePath=".\game\quake2\main.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake2\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake2\"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\game\quake2\particle_effects.cpp"
 					>
 					<FileConfiguration
