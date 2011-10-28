@@ -1652,6 +1652,26 @@
 				Name="quake2"
 				>
 				<File
+					RelativePath=".\game\quake2\beam.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake2\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\quake2\"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\game\quake2\explosion.cpp"
 					>
 					<FileConfiguration

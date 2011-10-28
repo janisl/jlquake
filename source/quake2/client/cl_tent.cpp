@@ -24,21 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-#define	MAX_BEAMS	32
-typedef struct
-{
-	int		entity;
-	int		dest_entity;
-	qhandle_t	model;
-	int		endtime;
-	vec3_t	offset;
-	vec3_t	start, end;
-} beam_t;
-beam_t		cl_beams[MAX_BEAMS];
-//PMM - added this for player-linked beams.  Currently only used by the plasma beam
-beam_t		cl_playerbeams[MAX_BEAMS];
-
-
 //ROGUE
 q2cl_sustain_t	cl_sustains[MAX_SUSTAINS];
 //ROGUE
@@ -59,17 +44,12 @@ static sfxHandle_t	cl_sfx_grenexp;
 static sfxHandle_t	cl_sfx_watrexp;
 sfxHandle_t			cl_sfx_footsteps[4];
 
-static qhandle_t	cl_mod_parasite_segment;
-static qhandle_t	cl_mod_grapple_cable;
 static qhandle_t	cl_mod_parasite_tip;
 qhandle_t			cl_mod_powerscreen;
 
 //ROGUE
 static sfxHandle_t	cl_sfx_lightning;
 static sfxHandle_t	cl_sfx_disrexp;
-static qhandle_t	cl_mod_lightning;
-static qhandle_t	cl_mod_heatbeam;
-static qhandle_t	cl_mod_monster_heatbeam;
 
 //ROGUE
 /*
@@ -127,8 +107,7 @@ CL_RegisterTEntModels
 void CL_RegisterTEntModels (void)
 {
 	CLQ2_RegisterExplosionModels();
-	cl_mod_parasite_segment = R_RegisterModel("models/monsters/parasite/segment/tris.md2");
-	cl_mod_grapple_cable = R_RegisterModel("models/ctf/segment/tris.md2");
+	CLQ2_RegisterBeamModels();
 	cl_mod_parasite_tip = R_RegisterModel("models/monsters/parasite/tip/tris.md2");
 	cl_mod_powerscreen = R_RegisterModel("models/items/armor/effect/tris.md2");
 
@@ -147,12 +126,6 @@ R_RegisterPic ("w_machinegun");
 R_RegisterPic ("a_bullets");
 R_RegisterPic ("i_health");
 R_RegisterPic ("a_grenades");
-
-//ROGUE
-	cl_mod_lightning = R_RegisterModel("models/proj/lightning/tris.md2");
-	cl_mod_heatbeam = R_RegisterModel("models/proj/beam/tris.md2");
-	cl_mod_monster_heatbeam = R_RegisterModel("models/proj/widowbeam/tris.md2");
-//ROGUE
 }	
 
 /*
@@ -162,12 +135,11 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	Com_Memset(cl_beams, 0, sizeof(cl_beams));
+	CLQ2_ClearBeams();
 	CLQ2_ClearExplosions();
 	CLQ2_ClearLasers();
 
 //ROGUE
-	Com_Memset(cl_playerbeams, 0, sizeof(cl_playerbeams));
 	Com_Memset(cl_sustains, 0, sizeof(cl_sustains));
 //ROGUE
 }
@@ -192,51 +164,23 @@ void CL_ParseParticles (void)
 	CLQ2_ParticleEffect (pos, dir, color, count);
 }
 
+
 /*
 =================
 CL_ParseBeam
 =================
 */
-static int CL_ParseBeam (qhandle_t model)
+static int CL_ParseBeam ()
 {
 	int		ent;
 	vec3_t	start, end;
-	beam_t	*b;
-	int		i;
 	
 	ent = net_message.ReadShort();
 	
 	net_message.ReadPos(start);
 	net_message.ReadPos(end);
 
-// override any beam with the same entity
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-		if (b->entity == ent)
-		{
-			b->entity = ent;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorClear (b->offset);
-			return ent;
-		}
-
-// find a free beam
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTime)
-		{
-			b->entity = ent;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorClear (b->offset);
-			return ent;
-		}
-	}
-	Com_Printf ("beam list overflow!\n");	
+	CLQ2_ParasiteBeam(ent, start, end);
 	return ent;
 }
 
@@ -245,12 +189,10 @@ static int CL_ParseBeam (qhandle_t model)
 CL_ParseBeam2
 =================
 */
-static int CL_ParseBeam2 (qhandle_t model)
+static int CL_ParseBeam2 ()
 {
 	int		ent;
 	vec3_t	start, end, offset;
-	beam_t	*b;
-	int		i;
 	
 	ent = net_message.ReadShort();
 	
@@ -258,37 +200,7 @@ static int CL_ParseBeam2 (qhandle_t model)
 	net_message.ReadPos(end);
 	net_message.ReadPos(offset);
 
-//	Com_Printf ("end- %f %f %f\n", end[0], end[1], end[2]);
-
-// override any beam with the same entity
-
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-		if (b->entity == ent)
-		{
-			b->entity = ent;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorCopy (offset, b->offset);
-			return ent;
-		}
-
-// find a free beam
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTime)
-		{
-			b->entity = ent;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;	
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorCopy (offset, b->offset);
-			return ent;
-		}
-	}
-	Com_Printf ("beam list overflow!\n");	
+	CLQ2_GrappleCableBeam(ent, start, end, offset);
 	return ent;
 }
 
@@ -296,64 +208,34 @@ static int CL_ParseBeam2 (qhandle_t model)
 /*
 =================
 CL_ParsePlayerBeam
-  - adds to the cl_playerbeam array instead of the cl_beams array
+  - adds to the cl_playerbeam array instead of the clq2_beams array
 =================
 */
-static int CL_ParsePlayerBeam (qhandle_t model)
+static int CL_ParsePlayerBeam ()
 {
 	int		ent;
-	vec3_t	start, end, offset;
-	beam_t	*b;
-	int		i;
+	vec3_t	start, end;
 	
 	ent = net_message.ReadShort();
 	
 	net_message.ReadPos(start);
 	net_message.ReadPos(end);
-	// PMM - network optimization
-	if (model == cl_mod_heatbeam)
-		VectorSet(offset, 2, 7, -3);
-	else if (model == cl_mod_monster_heatbeam)
-	{
-		model = cl_mod_heatbeam;
-		VectorSet(offset, 0, 0, 0);
-	}
-	else
-		net_message.ReadPos(offset);
 
-//	Com_Printf ("end- %f %f %f\n", end[0], end[1], end[2]);
+	CLQ2_HeatBeam(ent, start, end);
+	return ent;
+}
 
-// override any beam with the same entity
-// PMM - For player beams, we only want one per player (entity) so..
-	for (i=0, b=cl_playerbeams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (b->entity == ent)
-		{
-			b->entity = ent;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorCopy (offset, b->offset);
-			return ent;
-		}
-	}
+static int CL_ParsePlayerBeam2 ()
+{
+	int		ent;
+	vec3_t	start, end;
+	
+	ent = net_message.ReadShort();
+	
+	net_message.ReadPos(start);
+	net_message.ReadPos(end);
 
-// find a free beam
-	for (i=0, b=cl_playerbeams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTime)
-		{
-			b->entity = ent;
-			b->model = model;
-			b->endtime = cl.serverTime + 100;		// PMM - this needs to be 100 to prevent multiple heatbeams
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorCopy (offset, b->offset);
-			return ent;
-		}
-	}
-	Com_Printf ("beam list overflow!\n");	
+	CLQ2_MonsterHeatBeam(ent, start, end);
 	return ent;
 }
 //rogue
@@ -363,12 +245,10 @@ static int CL_ParsePlayerBeam (qhandle_t model)
 CL_ParseLightning
 =================
 */
-static int CL_ParseLightning (qhandle_t model)
+static int CL_ParseLightning ()
 {
 	int		srcEnt, destEnt;
 	vec3_t	start, end;
-	beam_t	*b;
-	int		i;
 	
 	srcEnt = net_message.ReadShort();
 	destEnt = net_message.ReadShort();
@@ -376,38 +256,7 @@ static int CL_ParseLightning (qhandle_t model)
 	net_message.ReadPos(start);
 	net_message.ReadPos(end);
 
-// override any beam with the same source AND destination entities
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-		if (b->entity == srcEnt && b->dest_entity == destEnt)
-		{
-//			Com_Printf("%d: OVERRIDE  %d -> %d\n", cl.serverTime, srcEnt, destEnt);
-			b->entity = srcEnt;
-			b->dest_entity = destEnt;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorClear (b->offset);
-			return srcEnt;
-		}
-
-// find a free beam
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTime)
-		{
-//			Com_Printf("%d: NORMAL  %d -> %d\n", cl.serverTime, srcEnt, destEnt);
-			b->entity = srcEnt;
-			b->dest_entity = destEnt;
-			b->model = model;
-			b->endtime = cl.serverTime + 200;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			VectorClear (b->offset);
-			return srcEnt;
-		}
-	}
-	Com_Printf ("beam list overflow!\n");	
+	CLQ2_LightningBeam(srcEnt, destEnt, start, end);
 	return srcEnt;
 }
 
@@ -755,7 +604,7 @@ void CL_ParseTEnt (void)
 
 	case TE_PARASITE_ATTACK:
 	case TE_MEDIC_CABLE_ATTACK:
-		ent = CL_ParseBeam (cl_mod_parasite_segment);
+		ent = CL_ParseBeam ();
 		break;
 
 	case TE_BOSSTPORT:			// boss teleporting to station
@@ -765,7 +614,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_GRAPPLE_CABLE:
-		ent = CL_ParseBeam2 (cl_mod_grapple_cable);
+		ent = CL_ParseBeam2 ();
 		break;
 
 	// RAFAEL
@@ -816,7 +665,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_LIGHTNING:
-		ent = CL_ParseLightning (cl_mod_lightning);
+		ent = CL_ParseLightning ();
 		S_StartSound (NULL, ent, CHAN_WEAPON, cl_sfx_lightning, 1, ATTN_NORM, 0);
 		break;
 
@@ -840,11 +689,11 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_HEATBEAM:
-		ent = CL_ParsePlayerBeam (cl_mod_heatbeam);
+		ent = CL_ParsePlayerBeam ();
 		break;
 
 	case TE_MONSTER_HEATBEAM:
-		ent = CL_ParsePlayerBeam (cl_mod_monster_heatbeam);
+		ent = CL_ParsePlayerBeam2 ();
 		break;
 
 	case TE_HEATBEAM_SPARKS:
@@ -951,7 +800,7 @@ CL_AddBeams
 void CL_AddBeams (void)
 {
 	int			i,j;
-	beam_t		*b;
+	q2beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
 	refEntity_t	ent;
@@ -961,7 +810,7 @@ void CL_AddBeams (void)
 	float		model_length;
 	
 // update beams
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq2_beams ; i< MAX_BEAMS_Q2 ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.serverTime)
 			continue;
@@ -1008,7 +857,7 @@ void CL_AddBeams (void)
 
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
-		if (b->model == cl_mod_lightning)
+		if (b->model == clq2_mod_lightning)
 		{
 			model_length = 35.0;
 			d-= 20.0;  // correction so it doesn't end in middle of tesla
@@ -1023,7 +872,7 @@ void CL_AddBeams (void)
 		// PMM - special case for lightning model .. if the real length is shorter than the model,
 		// flip it around & draw it from the end to the start.  This prevents the model from going
 		// through the tesla mine (instead it goes through the target)
-		if ((b->model == cl_mod_lightning) && (d <= model_length))
+		if ((b->model == clq2_mod_lightning) && (d <= model_length))
 		{
 //			Com_Printf ("special case\n");
 			VectorCopy (b->end, ent.origin);
@@ -1047,7 +896,7 @@ void CL_AddBeams (void)
 			VectorCopy (org, ent.origin);
 			ent.hModel = b->model;
 			vec3_t angles;
-			if (b->model == cl_mod_lightning)
+			if (b->model == clq2_mod_lightning)
 			{
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
 				ent.radius = 1;
@@ -1098,7 +947,7 @@ CL_AddPlayerBeams
 void CL_AddPlayerBeams (void)
 {
 	int			i,j;
-	beam_t		*b;
+	q2beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
 	refEntity_t	ent;
@@ -1129,12 +978,12 @@ void CL_AddPlayerBeams (void)
 //PMM
 
 // update beams
-	for (i=0, b=cl_playerbeams ; i< MAX_BEAMS ; i++, b++)
+	for (i=0, b=clq2_playerbeams ; i< MAX_BEAMS_Q2 ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.serverTime)
 			continue;
 
-		if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
+		if(clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
 		{
 
 			// if coming from the player, update the start position
@@ -1178,7 +1027,7 @@ void CL_AddPlayerBeams (void)
 		VectorSubtract (b->end, org, dist);
 
 //PMM
-		if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam) && (b->entity == cl.playernum+1))
+		if(clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl.playernum+1))
 		{
 			vec_t len;
 
@@ -1219,7 +1068,7 @@ void CL_AddPlayerBeams (void)
 				pitch += 360.0;
 		}
 		
-		if (cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
+		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
 		{
 			if (b->entity != cl.playernum+1)
 			{
@@ -1252,7 +1101,7 @@ void CL_AddPlayerBeams (void)
 		}
 
 		// if it's the heatbeam, draw the particle effect
-		if ((cl_mod_heatbeam && (b->model == cl_mod_heatbeam) && (b->entity == cl.playernum+1)))
+		if ((clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl.playernum+1)))
 		{
 			CLQ2_HeatbeamPaticles (org, dist);
 		}
@@ -1262,11 +1111,11 @@ void CL_AddPlayerBeams (void)
 
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
-		if (b->model == cl_mod_heatbeam)
+		if (b->model == clq2_mod_heatbeam)
 		{
 			model_length = 32.0;
 		}
-		else if (b->model == cl_mod_lightning)
+		else if (b->model == clq2_mod_lightning)
 		{
 			model_length = 35.0;
 			d-= 20.0;  // correction so it doesn't end in middle of tesla
@@ -1281,7 +1130,7 @@ void CL_AddPlayerBeams (void)
 		// PMM - special case for lightning model .. if the real length is shorter than the model,
 		// flip it around & draw it from the end to the start.  This prevents the model from going
 		// through the tesla mine (instead it goes through the target)
-		if ((b->model == cl_mod_lightning) && (d <= model_length))
+		if ((b->model == clq2_mod_lightning) && (d <= model_length))
 		{
 //			Com_Printf ("special case\n");
 			VectorCopy (b->end, ent.origin);
@@ -1305,7 +1154,7 @@ void CL_AddPlayerBeams (void)
 			VectorCopy (org, ent.origin);
 			ent.hModel = b->model;
 			vec3_t angles;
-			if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
+			if(clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
 			{
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
 				ent.radius = 1;
@@ -1314,7 +1163,7 @@ void CL_AddPlayerBeams (void)
 				angles[2] = (cl.serverTime) % 360;
 				ent.frame = framenum;
 			}
-			else if (b->model == cl_mod_lightning)
+			else if (b->model == clq2_mod_lightning)
 			{
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
 				ent.radius = 1;

@@ -9,6 +9,7 @@ set(CLIENT_FILES
 	game/quake/light_effects.cpp
 	game/quake/particle_effects.cpp
 	game/quake/temporary_entities.cpp
+	game/quake2/beam.cpp
 	game/quake2/explosion.cpp
 	game/quake2/laser.cpp
 	game/quake2/light_effects.cpp

@@ -14,6 +14,26 @@
 //**
 //**************************************************************************
 
+enum { MAX_BEAMS_Q2 = 32 };
+
+struct q2beam_t
+{
+	int entity;
+	int dest_entity;
+	qhandle_t model;
+	int endtime;
+	vec3_t offset;
+	vec3_t start;
+	vec3_t end;
+};
+
+extern q2beam_t clq2_beams[MAX_BEAMS_Q2];
+//PMM - added this for player-linked beams.  Currently only used by the plasma beam
+extern q2beam_t clq2_playerbeams[MAX_BEAMS_Q2];
+
+extern qhandle_t clq2_mod_heatbeam;
+extern qhandle_t clq2_mod_lightning;
+
 void CLQ2_ClearExplosions();
 void CLQ2_RegisterExplosionModels();
 void CLQ2_SmokeAndFlash(vec3_t origin);
@@ -30,3 +50,11 @@ void CLQ2_AddExplosions();
 void CLQ2_ClearLasers();
 void CLQ2_NewLaser(vec3_t start, vec3_t end, int colors);
 void CLQ2_AddLasers();
+
+void CLQ2_ClearBeams();
+void CLQ2_RegisterBeamModels();
+void CLQ2_ParasiteBeam(int ent, vec3_t start, vec3_t end);
+void CLQ2_GrappleCableBeam(int ent, vec3_t start, vec3_t end, vec3_t offset);
+void CLQ2_HeatBeam(int ent, vec3_t start, vec3_t end);
+void CLQ2_MonsterHeatBeam(int ent, vec3_t start, vec3_t end);
+void CLQ2_LightningBeam(int srcEnt, int destEnt, vec3_t start, vec3_t end);
