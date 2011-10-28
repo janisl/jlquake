@@ -80,12 +80,9 @@ struct usercmd_s;
 void MSG_WritePos (QMsg *sb, vec3_t pos);
 void MSG_WriteDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *msg, qboolean force, qboolean newentity);
-void MSG_WriteDir (QMsg *sb, vec3_t vector);
 
 
 void	MSG_ReadDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
-
-void	MSG_ReadDir (QMsg *sb, vec3_t vector);
 
 //============================================================================
 

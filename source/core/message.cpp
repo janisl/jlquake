@@ -388,6 +388,11 @@ void QMsg::WriteCoord(float F)
 	WriteShort((int)(F * 8));
 }
 
+void QMsg::WriteDir(vec3_t dir)
+{
+	WriteByte(DirToByte(dir));
+}
+
 void QMsg::WriteAngle(float F)
 {
 	WriteByte((int)(F * 256 / 360) & 255);
@@ -616,6 +621,12 @@ void QMsg::ReadPos(vec3_t pos)
 	pos[0] = ReadCoord();
 	pos[1] = ReadCoord();
 	pos[2] = ReadCoord();
+}
+
+void QMsg::ReadDir(vec3_t dir)
+{
+	int b = ReadByte();
+	ByteToDir(b, dir);
 }
 
 float QMsg::ReadAngle()

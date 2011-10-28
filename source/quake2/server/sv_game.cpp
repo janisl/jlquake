@@ -219,7 +219,7 @@ void PF_WriteLong (int c) {sv.multicast.WriteLong(c);}
 void PF_WriteFloat (float f) {sv.multicast.WriteFloat(f);}
 void PF_WriteString (char *s) {sv.multicast.WriteString2(s);}
 void PF_WritePos (vec3_t pos) {MSG_WritePos (&sv.multicast, pos);}
-void PF_WriteDir (vec3_t dir) {MSG_WriteDir (&sv.multicast, dir);}
+void PF_WriteDir (vec3_t dir) {sv.multicast.WriteDir(dir);}
 void PF_WriteAngle (float f) {sv.multicast.WriteAngle(f);}
 
 

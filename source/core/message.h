@@ -53,6 +53,7 @@ public:
 	void WriteString2(const char* S);
 	void WriteBigString(const char* S);
 	void WriteCoord(float F);
+	void WriteDir(vec3_t vector);
 	void WriteAngle(float F);
 	void WriteAngle16(float F);
 	void WriteData(const void* Buffer, int Length);
@@ -71,6 +72,7 @@ public:
 	const char* ReadStringLine2();
 	float ReadCoord();
 	void ReadPos(vec3_t pos);
+	void ReadDir(vec3_t vector);
 	float ReadAngle();
 	float ReadAngle16();
 	void ReadData(void* Buffer, int Size);

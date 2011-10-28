@@ -32,7 +32,7 @@ void CL_ParseParticles (void)
 	vec3_t	pos, dir;
 
 	net_message.ReadPos(pos);
-	MSG_ReadDir (&net_message, dir);
+	net_message.ReadDir(dir);
 
 	color = net_message.ReadByte ();
 
@@ -161,7 +161,7 @@ void CL_ParseSteam (void)
 	vec3_t pos;
 	net_message.ReadPos(pos);
 	vec3_t dir;
-	MSG_ReadDir(&net_message, dir);
+	net_message.ReadDir(dir);
 	int r = net_message.ReadByte();
 	int magnitude = net_message.ReadShort();
 
@@ -220,7 +220,7 @@ void CL_ParseTEnt (void)
 	{
 	case TE_BLOOD:			// bullet hitting flesh
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		CLQ2_ParticleEffect (pos, dir, 0xe8, 60);
 		break;
 
@@ -228,7 +228,7 @@ void CL_ParseTEnt (void)
 	case TE_SPARKS:
 	case TE_BULLET_SPARKS:
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		if (type == TE_GUNSHOT)
 			CLQ2_ParticleEffect (pos, dir, 0, 40);
 		else
@@ -253,7 +253,7 @@ void CL_ParseTEnt (void)
 	case TE_SCREEN_SPARKS:
 	case TE_SHIELD_SPARKS:
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		if (type == TE_SCREEN_SPARKS)
 			CLQ2_ParticleEffect (pos, dir, 0xd0, 40);
 		else
@@ -264,7 +264,7 @@ void CL_ParseTEnt (void)
 		
 	case TE_SHOTGUN:			// bullet hitting wall
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		CLQ2_ParticleEffect (pos, dir, 0, 20);
 		CLQ2_SmokeAndFlash(pos);
 		break;
@@ -272,7 +272,7 @@ void CL_ParseTEnt (void)
 	case TE_SPLASH:			// bullet hitting water
 		cnt = net_message.ReadByte ();
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		r = net_message.ReadByte ();
 		if (r > 6)
 			color = 0x00;
@@ -295,7 +295,7 @@ void CL_ParseTEnt (void)
 	case TE_LASER_SPARKS:
 		cnt = net_message.ReadByte ();
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
 		break;
@@ -309,7 +309,7 @@ void CL_ParseTEnt (void)
 
 	case TE_BLASTER:			// blaster hitting wall
 		net_message.ReadPos(pos);
-		MSG_ReadDir(&net_message, dir);
+		net_message.ReadDir(dir);
 		CLQ2_BlasterParticles(pos, dir);
 		CLQ2_BlasterExplosion(pos, dir);
 		S_StartSound(pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
@@ -412,7 +412,7 @@ void CL_ParseTEnt (void)
 	case TE_WELDING_SPARKS:
 		cnt = net_message.ReadByte ();
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect2 (pos, dir, color, cnt);
 
@@ -421,7 +421,7 @@ void CL_ParseTEnt (void)
 
 	case TE_GREENBLOOD:
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		CLQ2_ParticleEffect2 (pos, dir, 0xdf, 30);
 		break;
 
@@ -429,7 +429,7 @@ void CL_ParseTEnt (void)
 	case TE_TUNNEL_SPARKS:
 		cnt = net_message.ReadByte ();
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		color = net_message.ReadByte ();
 		CLQ2_ParticleEffect3 (pos, dir, color, cnt);
 		break;
@@ -439,7 +439,7 @@ void CL_ParseTEnt (void)
 		// PMM -following code integrated for flechette (different color)
 	case TE_BLASTER2:			// green blaster hitting wall
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		
 		CLQ2_BlasterParticles2 (pos, dir, 0xd0);
 		CLQ2_Blaster2Explosion(pos, dir);
@@ -448,7 +448,7 @@ void CL_ParseTEnt (void)
 
 	case TE_FLECHETTE:			// flechette
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		
 		CLQ2_BlasterParticles2(pos, dir, 0x6f); // 75
 		CLQ2_FlechetteExplosion(pos, dir);
@@ -491,7 +491,7 @@ void CL_ParseTEnt (void)
 //		cnt = net_message.ReadByte ();
 		cnt = 50;
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 //		r = net_message.ReadByte ();
 //		magnitude = net_message.ReadShort();
 		r = 8;
@@ -505,7 +505,7 @@ void CL_ParseTEnt (void)
 //		cnt = net_message.ReadByte ();
 		cnt = 20;
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 //		r = net_message.ReadByte ();
 //		magnitude = net_message.ReadShort();
 //		color = r & 0xff;
@@ -530,7 +530,7 @@ void CL_ParseTEnt (void)
 
 	case TE_MOREBLOOD:
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 		CLQ2_ParticleEffect (pos, dir, 0xe8, 250);
 		break;
 
@@ -542,7 +542,7 @@ void CL_ParseTEnt (void)
 
 	case TE_ELECTRIC_SPARKS:
 		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
+		net_message.ReadDir(dir);
 //		CLQ2_ParticleEffect (pos, dir, 109, 40);
 		CLQ2_ParticleEffect (pos, dir, 0x75, 40);
 		//FIXME : replace or remove this sound

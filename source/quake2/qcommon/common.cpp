@@ -334,19 +334,6 @@ void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
 }
 
 
-void MSG_WriteDir (QMsg *sb, vec3_t dir)
-{
-	sb->WriteByte(DirToByte(dir));
-}
-
-
-void MSG_ReadDir (QMsg *sb, vec3_t dir)
-{
-	int b = sb->ReadByte();
-	ByteToDir(b, dir);
-}
-
-
 /*
 ==================
 MSG_WriteDeltaEntity
