@@ -6,7 +6,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	MAX_BEAMS				8
 #define MAX_STREAMS				32
 #define MAX_STREAM_ENTITIES		128
 #define STREAM_ATTACHED			16
@@ -32,14 +31,6 @@ float seedrand(void)
 
 typedef struct
 {
-	int		entity;
-	qhandle_t model;
-	float	endtime;
-	vec3_t	start, end;
-} beam_t;
-
-typedef struct
-{
 	int type;
 	int entity;
 	int tag;
@@ -52,8 +43,6 @@ typedef struct
 	float endTime;
 	float lastTrailTime;
 } stream_t;
-
-typedef struct explosion_t explosion_t;
 
 typedef enum
 {
@@ -128,7 +117,6 @@ void MeteorCrushSpawnThink(explosion_t *ex);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-beam_t			cl_beams[MAX_BEAMS];
 explosion_t		cl_explosions[MAX_EXPLOSIONS];
 
 static stream_t cl_Streams[MAX_STREAMS];
@@ -276,7 +264,6 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	Com_Memset(&cl_beams, 0, sizeof(cl_beams));
 	Com_Memset(&cl_explosions, 0, sizeof(cl_explosions));
 	Com_Memset(cl_Streams, 0, sizeof(cl_Streams));
 }
@@ -333,54 +320,17 @@ explosion_t *CL_AllocExplosion (void)
 CL_ParseBeam
 =================
 */
-void CL_ParseBeam (qhandle_t m)
+void CL_ParseBeam ()
 {
-	int		ent;
-	vec3_t	start, end;
-	beam_t	*b;
-	int		i;
+	net_message.ReadShort();
 	
-	ent = net_message.ReadShort ();
+	net_message.ReadCoord();
+	net_message.ReadCoord();
+	net_message.ReadCoord();
 	
-	start[0] = net_message.ReadCoord ();
-	start[1] = net_message.ReadCoord ();
-	start[2] = net_message.ReadCoord ();
-	
-	end[0] = net_message.ReadCoord ();
-	end[1] = net_message.ReadCoord ();
-	end[2] = net_message.ReadCoord ();
-
-	if (!m)
-	{
-		return;
-	}
-
-// override any beam with the same entity
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-		if (b->entity == ent)
-		{
-			b->entity = ent;
-			b->model = m;
-			b->endtime = cl.serverTimeFloat + 0.2;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			return;
-		}
-
-// find a free beam
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTimeFloat)
-		{
-			b->entity = ent;
-			b->model = m;
-			b->endtime = cl.serverTimeFloat + 0.2;
-			VectorCopy (start, b->start);
-			VectorCopy (end, b->end);
-			return;
-		}
-	}
-	Con_Printf ("beam list overflow!\n");	
+	net_message.ReadCoord();
+	net_message.ReadCoord();
+	net_message.ReadCoord();
 }
 
 entity_state_t *FindState(int EntNum)
@@ -900,15 +850,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_LIGHTNING1:				// lightning bolts
-			CL_ParseBeam (0);
-			break;
-		
-		case TE_LIGHTNING2:				// lightning bolts
-			CL_ParseBeam (0);
-			break;
-		
-		case TE_LIGHTNING3:				// lightning bolts
-			CL_ParseBeam (0);
+		case TE_LIGHTNING2:
+		case TE_LIGHTNING3:
+			CL_ParseBeam();
 			break;
 
 		case TE_STREAM_CHAIN:
@@ -3526,81 +3470,6 @@ void CL_ParseTEnt (void)
 
 /*
 =================
-CL_UpdateBeams
-=================
-*/
-void CL_UpdateBeams (void)
-{
-	int			i;
-	beam_t		*b;
-	vec3_t		dist, org;
-	float		d;
-	float		yaw, pitch;
-	float		forward;
-
-// update lightning
-	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
-	{
-		if (!b->model || b->endtime < cl.serverTimeFloat)
-			continue;
-
-	// if coming from the player, update the start position
-		if (b->entity == cl.playernum+1)	// entity 0 is the world
-		{
-			VectorCopy (cl.simorg, b->start);
-			b->start[2] -= 22;	// adjust for view height
-		}
-
-	// calculate pitch and yaw
-		VectorSubtract (b->end, b->start, dist);
-
-		if (dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if (dist[2] > 0)
-				pitch = 90;
-			else
-				pitch = 270;
-		}
-		else
-		{
-			yaw = (int) (atan2(dist[1], dist[0]) * 180 / M_PI);
-			if (yaw < 0)
-				yaw += 360;
-	
-			forward = sqrt (dist[0]*dist[0] + dist[1]*dist[1]);
-			pitch = (int) (atan2(dist[2], forward) * 180 / M_PI);
-			if (pitch < 0)
-				pitch += 360;
-		}
-
-	// add new entities for the lightning
-		VectorCopy (b->start, org);
-		d = VectorNormalize(dist);
-		while (d > 0)
-		{
-			refEntity_t ent;
-			Com_Memset(&ent, 0, sizeof(ent));
-			ent.reType = RT_MODEL;
-			VectorCopy(org, ent.origin);
-			ent.hModel = b->model;
-			vec3_t angles;
-			angles[0] = pitch;
-			angles[1] = yaw;
-			angles[2] = rand()%360;
-			CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 0, 0);
-			R_AddRefEntityToScene(&ent);
-
-			for (i=0 ; i<3 ; i++)
-				org[i] += dist[i]*30;
-			d -= 30;
-		}
-	}
-	
-}
-
-/*
-=================
 CL_UpdateExplosions
 =================
 */
@@ -3966,7 +3835,6 @@ CL_UpdateTEnts
 */
 void CL_UpdateTEnts (void)
 {
-	CL_UpdateBeams ();
 	CL_UpdateExplosions ();
 	CL_UpdateStreams();
 	CL_UpdateTargetBall();
