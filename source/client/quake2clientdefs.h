@@ -28,21 +28,6 @@ struct q2centity_t
 	int fly_stoptime;
 };
 
-struct q2cl_sustain_t
-{
-	int id;
-	int type;
-	int endtime;
-	int nextthink;
-	int thinkinterval;
-	vec3_t org;
-	vec3_t dir;
-	int color;
-	int count;
-	int magnitude;
-	void (*think)(q2cl_sustain_t* self);
-};
-
 struct q2frame_t
 {
 	qboolean valid;		// cleared if delta parsing was invalid

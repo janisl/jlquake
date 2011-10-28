@@ -1149,43 +1149,6 @@ void CLQ2_ParticleSteamEffect(vec3_t org, vec3_t dir, int color, int count, int 
 	}
 }
 
-void CLQ2_ParticleSteamEffect2(q2cl_sustain_t* self)
-{
-	vec3_t dir;
-	VectorCopy(self->dir, dir);
-	vec3_t r, u;
-	MakeNormalVectors(dir, r, u);
-
-	for (int i = 0; i < self->count; i++)
-	{
-		cparticle_t* p = CL_AllocParticle();
-		if (!p)
-		{
-			return;
-		}
-		p->type = pt_q2static;
-
-		p->color = self->color + (rand() & 7);
-
-		for (int j = 0; j < 3; j++)
-		{
-			p->org[j] = self->org[j] + self->magnitude * 0.1 * crand();
-		}
-		VectorScale(dir, self->magnitude, p->vel);
-		float d = crand() * self->magnitude / 3;
-		VectorMA(p->vel, d, r, p->vel);
-		d = crand() * self->magnitude / 3;
-		VectorMA(p->vel, d, u, p->vel);
-
-		p->accel[0] = p->accel[1] = 0;
-		p->accel[2] = -PARTICLE_GRAVITY / 2;
-		p->alpha = 1.0;
-
-		p->alphavel = -1.0 / (0.5 + frand() * 0.3);
-	}
-	self->nextthink += self->thinkinterval;
-}
-
 void CLQ2_TrackerTrail(vec3_t start, vec3_t end, int particleColour)
 {
 	vec3_t move;
@@ -1282,66 +1245,6 @@ void CLQ2_MonsterPlasma_Shell(vec3_t origin)
 		VectorNormalize(dir);
 	
 		VectorMA(origin, 10, dir, p->org);
-	}
-}
-
-void CLQ2_Widowbeamout(q2cl_sustain_t* self)
-{
-	static int colortable[4] = {2 * 8, 13 * 8, 21 * 8, 18 * 8};
-
-	float ratio = 1.0 - (((float)self->endtime - (float)cl_common->serverTime) / 2100.0);
-
-	for (int i = 0; i < 300; i++)
-	{
-		cparticle_t* p = CL_AllocParticle();
-		if (!p)
-		{
-			return;
-		}
-		p->type = pt_q2static;
-		VectorClear(p->accel);
-
-		p->alpha = 1.0;
-		p->alphavel = INSTANT_PARTICLE;
-		p->color = colortable[rand() & 3];
-
-		vec3_t dir;
-		dir[0] = crand();
-		dir[1] = crand();
-		dir[2] = crand();
-		VectorNormalize(dir);
-	
-		VectorMA(self->org, (45.0 * ratio), dir, p->org);
-	}
-}
-
-void CLQ2_Nukeblast(q2cl_sustain_t* self)
-{
-	static int colortable[4] = {110, 112, 114, 116};
-
-	float ratio = 1.0 - (((float)self->endtime - (float)cl_common->serverTime) / 1000.0);
-
-	for (int i = 0; i < 700; i++)
-	{
-		cparticle_t* p = CL_AllocParticle();
-		if (!p)
-		{
-			return;
-		}
-		p->type = pt_q2static;
-		VectorClear(p->accel);
-
-		p->alpha = 1.0;
-		p->alphavel = INSTANT_PARTICLE;
-		p->color = colortable[rand() & 3];
-
-		vec3_t dir;
-		dir[0] = crand();
-		dir[1] = crand();
-		dir[2] = crand();
-		VectorNormalize(dir);
-	
-		VectorMA(self->org, (200.0 * ratio), dir, p->org);
 	}
 }
 

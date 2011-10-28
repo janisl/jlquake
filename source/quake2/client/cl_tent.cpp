@@ -24,10 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-//ROGUE
-q2cl_sustain_t	cl_sustains[MAX_SUSTAINS];
-//ROGUE
-
 // RAFAEL
 void CL_BlueBlasterParticles (vec3_t org, vec3_t dir);
 
@@ -138,10 +134,7 @@ void CL_ClearTEnts (void)
 	CLQ2_ClearBeams();
 	CLQ2_ClearExplosions();
 	CLQ2_ClearLasers();
-
-//ROGUE
-	Com_Memset(cl_sustains, 0, sizeof(cl_sustains));
-//ROGUE
+	CLQ2_ClearSustains();
 }
 
 /*
@@ -279,128 +272,42 @@ void CL_ParseLaser(int colors)
 //ROGUE
 void CL_ParseSteam (void)
 {
-	vec3_t	pos, dir;
-	int		id, i;
-	int		r;
-	int		cnt;
-	int		color;
-	int		magnitude;
-	q2cl_sustain_t	*s, *free_sustain;
+	int id = net_message.ReadShort();		// an id of -1 is an instant effect
+	int cnt = net_message.ReadByte();
+	vec3_t pos;
+	net_message.ReadPos(pos);
+	vec3_t dir;
+	MSG_ReadDir(&net_message, dir);
+	int r = net_message.ReadByte();
+	int magnitude = net_message.ReadShort();
 
-	id = net_message.ReadShort();		// an id of -1 is an instant effect
 	if (id != -1) // sustains
 	{
-//			Com_Printf ("Sustain effect id %d\n", id);
-		free_sustain = NULL;
-		for (i=0, s=cl_sustains; i<MAX_SUSTAINS; i++, s++)
-		{
-			if (s->id == 0)
-			{
-				free_sustain = s;
-				break;
-			}
-		}
-		if (free_sustain)
-		{
-			s->id = id;
-			s->count = net_message.ReadByte ();
-			net_message.ReadPos(s->org);
-			MSG_ReadDir (&net_message, s->dir);
-			r = net_message.ReadByte ();
-			s->color = r & 0xff;
-			s->magnitude = net_message.ReadShort();
-			s->endtime = cl.serverTime + net_message.ReadLong();
-			s->think = CLQ2_ParticleSteamEffect2;
-			s->thinkinterval = 100;
-			s->nextthink = cl.serverTime;
-		}
-		else
-		{
-//				Com_Printf ("No free sustains!\n");
-			// FIXME - read the stuff anyway
-			cnt = net_message.ReadByte ();
-			net_message.ReadPos(pos);
-			MSG_ReadDir (&net_message, dir);
-			r = net_message.ReadByte ();
-			magnitude = net_message.ReadShort();
-			magnitude = net_message.ReadLong(); // really interval
-		}
+		int interval = net_message.ReadLong();
+		CLQ2_SustainParticleStream(id, cnt, pos, dir, r, magnitude, interval);
 	}
 	else // instant
 	{
-		cnt = net_message.ReadByte ();
-		net_message.ReadPos(pos);
-		MSG_ReadDir (&net_message, dir);
-		r = net_message.ReadByte ();
-		magnitude = net_message.ReadShort();
-		color = r & 0xff;
-		CLQ2_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
-//		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+		int color = r & 0xff;
+		CLQ2_ParticleSteamEffect(pos, dir, color, cnt, magnitude);
 	}
 }
 
 void CL_ParseWidow (void)
 {
-	vec3_t	pos;
-	int		id, i;
-	q2cl_sustain_t	*s, *free_sustain;
+	int id = net_message.ReadShort();
+	vec3_t pos;
+	net_message.ReadPos(pos);
 
-	id = net_message.ReadShort();
-
-	free_sustain = NULL;
-	for (i=0, s=cl_sustains; i<MAX_SUSTAINS; i++, s++)
-	{
-		if (s->id == 0)
-		{
-			free_sustain = s;
-			break;
-		}
-	}
-	if (free_sustain)
-	{
-		s->id = id;
-		net_message.ReadPos(s->org);
-		s->endtime = cl.serverTime + 2100;
-		s->think = CLQ2_Widowbeamout;
-		s->thinkinterval = 1;
-		s->nextthink = cl.serverTime;
-	}
-	else // no free sustains
-	{
-		// FIXME - read the stuff anyway
-		net_message.ReadPos(pos);
-	}
+	CLQ2_SustainWindow(id, pos);
 }
 
 void CL_ParseNuke (void)
 {
-	vec3_t	pos;
-	int		i;
-	q2cl_sustain_t	*s, *free_sustain;
+	vec3_t pos;
+	net_message.ReadPos(pos);
 
-	free_sustain = NULL;
-	for (i=0, s=cl_sustains; i<MAX_SUSTAINS; i++, s++)
-	{
-		if (s->id == 0)
-		{
-			free_sustain = s;
-			break;
-		}
-	}
-	if (free_sustain)
-	{
-		s->id = 21000;
-		net_message.ReadPos(s->org);
-		s->endtime = cl.serverTime + 1000;
-		s->think = CLQ2_Nukeblast;
-		s->thinkinterval = 1;
-		s->nextthink = cl.serverTime;
-	}
-	else // no free sustains
-	{
-		// FIXME - read the stuff anyway
-		net_message.ReadPos(pos);
-	}
+	CLQ2_SustainNuke(pos);
 }
 
 //ROGUE
@@ -792,27 +699,6 @@ void CL_ParseTEnt (void)
 	}
 }
 
-/* PMM - CL_Sustains */
-void CL_ProcessSustain ()
-{
-	q2cl_sustain_t	*s;
-	int				i;
-
-	for (i=0, s=cl_sustains; i< MAX_SUSTAINS; i++, s++)
-	{
-		if (s->id)
-		{
-			if ((s->endtime >= cl.serverTime) && (cl.serverTime >= s->nextthink))
-			{
-//				Com_Printf ("think %d %d %d\n", cl.serverTime, s->nextthink, s->thinkinterval);
-				s->think (s);
-			}
-			else if (s->endtime < cl.serverTime)
-				s->id = 0;
-		}
-	}
-}
-
 /*
 =================
 CL_AddTEnts
@@ -826,5 +712,5 @@ void CL_AddTEnts (void)
 	CLQ2_AddExplosions ();
 	CLQ2_AddLasers ();
 	// PMM - set up sustain
-	CL_ProcessSustain();
+	CLQ2_ProcessSustain();
 }

@@ -15,6 +15,7 @@ set(CLIENT_FILES
 	game/quake2/light_effects.cpp
 	game/quake2/main.cpp
 	game/quake2/particle_effects.cpp
+	game/quake2/sustain.cpp
 	game/dynamic_lights.cpp
 	game/light_styles.cpp
 	game/particles.cpp

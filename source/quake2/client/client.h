@@ -252,8 +252,6 @@ qboolean	CL_CheckOrDownloadFile (char *filename);
 
 void CL_AddNetgraph (void);
 
-#define MAX_SUSTAINS		32
-
 //=================================================
 
 #define BLASTER_PARTICLE_COLOR		0xe0

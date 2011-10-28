@@ -42,3 +42,9 @@ void CLQ2_MonsterHeatBeam(int ent, vec3_t start, vec3_t end);
 void CLQ2_LightningBeam(int srcEnt, int destEnt, vec3_t start, vec3_t end);
 void CLQ2_AddBeams();
 void CLQ2_AddPlayerBeams();
+
+void CLQ2_ClearSustains();
+void CLQ2_SustainParticleStream(int id, int cnt, vec3_t pos, vec3_t dir, int r, int magnitude, int interval);
+void CLQ2_SustainWindow(int id, vec3_t pos);
+void CLQ2_SustainNuke(vec3_t pos);
+void CLQ2_ProcessSustain();
