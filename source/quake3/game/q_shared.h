@@ -50,18 +50,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define idppc_altivec 0
 #endif
 
-// for windows fastcall option
-
-#define	QDECL
-
 //======================= WIN32 DEFINES =================================
 
 #ifdef WIN32
 
 #define	MAC_STATIC
-
-#undef QDECL
-#define	QDECL	__cdecl
 
 // buildstring will be incorporated into the version string
 #ifdef NDEBUG
@@ -338,8 +331,8 @@ typedef struct
 //=============================================
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void	QDECL Com_Error( int level, const char *error, ... );
-void	QDECL Com_Printf( const char *msg, ... );
+void	Com_Error( int level, const char *error, ... );
+void	Com_Printf( const char *msg, ... );
 
 
 //=====================================================================

@@ -110,7 +110,7 @@ void Log_Shutdown(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL Log_Write(const char *fmt, ...)
+void Log_Write(const char *fmt, ...)
 {
 	va_list ap;
 
@@ -127,7 +127,7 @@ void QDECL Log_Write(const char *fmt, ...)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL Log_WriteTimeStamped(const char *fmt, ...)
+void Log_WriteTimeStamped(const char *fmt, ...)
 {
 	va_list ap;
 

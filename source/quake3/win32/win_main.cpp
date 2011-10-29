@@ -44,7 +44,7 @@ Sys_Error
 Show the early console as an error dialog
 =============
 */
-void QDECL Sys_Error( const char *error, ... ) {
+void Sys_Error( const char *error, ... ) {
 	va_list		argptr;
 	char		text[4096];
     MSG        msg;
@@ -129,11 +129,11 @@ TTimo: added some verbosity in debug
 // fqpath param added 7/20/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
 // fqpath will be empty if dll not loaded, otherwise will hold fully qualified path of dll module loaded
 // fqpath buffersize must be at least MAX_QPATH+1 bytes long
-void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoint)(int, ...),
-				  int (QDECL *systemcalls)(int, ...) ) {
+void * Sys_LoadDll( const char *name, char *fqpath , int (**entryPoint)(int, ...),
+				  int (*systemcalls)(int, ...) ) {
 	static int	lastWarning = 0;
 	HINSTANCE	libHandle;
-	void	(QDECL *dllEntry)( int (QDECL *syscallptr)(int, ...) );
+	void	(*dllEntry)( int (*syscallptr)(int, ...) );
 	const char	*basepath;
 	const char	*cdpath;
 	const char	*gamedir;
@@ -215,8 +215,8 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoi
 	}
 #endif
 
-	dllEntry = ( void (QDECL *)( int (QDECL *)( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" ); 
-	*entryPoint = (int (QDECL *)(int,...))GetProcAddress( libHandle, "vmMain" );
+	dllEntry = ( void (*)( int (*)( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" ); 
+	*entryPoint = (int (*)(int,...))GetProcAddress( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		FreeLibrary( libHandle );
 		return NULL;
