@@ -6,10 +6,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_STREAMS				32
-#define MAX_STREAM_ENTITIES		128
-#define STREAM_ATTACHED			16
-#define STREAM_TRANSLUCENT		32
 #define	MAX_EXPLOSIONS			128
 
 #define FRANDOM() (rand()*(1.0/RAND_MAX))
@@ -28,21 +24,6 @@ float seedrand(void)
 }
 
 // TYPES -------------------------------------------------------------------
-
-typedef struct
-{
-	int type;
-	int entity;
-	int tag;
-	int flags;
-	int skin;
-	qhandle_t models[4];
-	vec3_t source;
-	vec3_t dest;
-	vec3_t offset;
-	float endTime;
-	float lastTrailTime;
-} stream_t;
 
 typedef enum
 {
@@ -87,7 +68,7 @@ int	TempSoundChannel()
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 static void ParseStream(int type);
-static stream_t *NewStream(int ent, int tag, int *isNew);
+static h2stream_t *NewStream(int ent, int tag, int *isNew);
 
 void MultiGrenadeThink (explosion_t *ex);
 void MultiGrenadePieceThink (explosion_t *ex);
@@ -118,9 +99,6 @@ void MeteorCrushSpawnThink(explosion_t *ex);
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 explosion_t		cl_explosions[MAX_EXPLOSIONS];
-
-static stream_t cl_Streams[MAX_STREAMS];
-static int		StreamEntityCount;
 
 static int		MultiGrenadeCurrentChannel;
 
@@ -264,8 +242,8 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	Com_Memset(&cl_explosions, 0, sizeof(cl_explosions));
-	Com_Memset(cl_Streams, 0, sizeof(cl_Streams));
+	Com_Memset(cl_explosions, 0, sizeof(cl_explosions));
+	CLH2_ClearStreams();
 }
 
 /*
@@ -377,7 +355,7 @@ entity_state_t *FindState(int EntNum)
 
 void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest)
 {
-	stream_t		*stream;
+	h2stream_t		*stream;
 	qhandle_t		models[4];
 	entity_state_t	*state;
 
@@ -438,7 +416,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
-	if(flags&STREAM_ATTACHED)
+	if(flags&H2STREAM_ATTACHED)
 	{
 		VectorCopy(vec3_origin, stream->offset);
 
@@ -605,7 +583,7 @@ static void ParseStream(int type)
 	int				skin;
 	vec3_t			source;
 	vec3_t			dest;
-	stream_t		*stream;
+	h2stream_t		*stream;
 	float			duration;
 	qhandle_t		models[4];
 	entity_state_t	*state;
@@ -683,7 +661,7 @@ static void ParseStream(int type)
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
-	if(flags&STREAM_ATTACHED)
+	if(flags&H2STREAM_ATTACHED)
 	{
 		VectorCopy(vec3_origin, stream->offset);
 
@@ -701,13 +679,13 @@ static void ParseStream(int type)
 //
 //==========================================================================
 
-static stream_t *NewStream(int ent, int tag, int *isNew)
+static h2stream_t *NewStream(int ent, int tag, int *isNew)
 {
 	int i;
-	stream_t *stream;
+	h2stream_t *stream;
 
 	// Search for a stream with matching entity and tag
-	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
 		if(stream->entity == ent && stream->tag == tag)
 		{
@@ -726,7 +704,7 @@ static stream_t *NewStream(int ent, int tag, int *isNew)
 		}
 	}
 	// Search for a free stream
-	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
 		if(!stream->models[0] || stream->endTime < cl.serverTimeFloat)
 		{
@@ -1664,7 +1642,7 @@ void CL_ParseTEnt (void)
 			{
 				int				ent;
 				vec3_t			center;
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[2];
 				entity_state_t	*state;
 				static float	playIceSound = .6;
@@ -1694,7 +1672,7 @@ void CL_ParseTEnt (void)
 						}
 						stream->type = TE_STREAM_ICECHUNKS;
 						stream->tag = (i)&15;// FIXME
-						stream->flags = (i+STREAM_ATTACHED);
+						stream->flags = (i+H2STREAM_ATTACHED);
 						stream->entity = ent;
 						stream->skin = 0;
 						stream->models[0] = models[0];
@@ -1748,7 +1726,7 @@ void CL_ParseTEnt (void)
 				entity_state_t	*state;
 				int				i, j;
 
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[4];
 
 
@@ -1791,7 +1769,7 @@ void CL_ParseTEnt (void)
 						stream->tag = i;
 						if(!i)
 						{
-							stream->flags = (i+STREAM_ATTACHED);
+							stream->flags = (i+H2STREAM_ATTACHED);
 						}
 						else
 						{
@@ -1829,7 +1807,7 @@ void CL_ParseTEnt (void)
 		case TE_LIGHTNING_HAMMER:
 			{
 				int				ent;
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[2];
 				entity_state_t	*state;
 
@@ -1926,7 +1904,7 @@ void CL_ParseTEnt (void)
 			{
 				vec3_t			pos;
 				int				ent;
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[2];
 				entity_state_t	*state;
 
@@ -2128,7 +2106,7 @@ void CL_ParseTEnt (void)
 		case TE_SUNSTAFF_POWER:
 			{
 				int				ent;
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[4];
 				entity_state_t	*state;
 
@@ -2194,7 +2172,7 @@ void CL_ParseTEnt (void)
 					}
 					stream->type = TE_STREAM_SUNSTAFF2;
 					stream->tag = 0;
-					//stream->flags = STREAM_ATTACHED;
+					//stream->flags = H2STREAM_ATTACHED;
 					stream->flags = 0;
 					stream->entity = ent;
 					stream->skin = 0;
@@ -3266,7 +3244,7 @@ void CL_ParseTEnt (void)
 		case TE_LIGHTNINGEXPLODE:
 			{
 				int				ent;
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[2];
 				entity_state_t	*state;
 				float			tempAng, tempPitch;
@@ -3392,7 +3370,7 @@ void CL_ParseTEnt (void)
 				int				temp;
 
 				int				ent;
-				stream_t		*stream;
+				h2stream_t		*stream;
 				qhandle_t		models[2];
 
 				ent = net_message.ReadShort();
@@ -3569,7 +3547,7 @@ void CL_UpdateExplosions (void)
 void CL_UpdateStreams(void)
 {
 	int				i;
-	stream_t		*stream;
+	h2stream_t		*stream;
 	vec3_t			dist;
 	vec3_t			org;
 	vec3_t			discard, right, up;
@@ -3582,8 +3560,7 @@ void CL_UpdateStreams(void)
 	entity_state_t	*state;
 
 	// Update streams
-	StreamEntityCount = 0;
-	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
 		if(!stream->models[0])// || stream->endTime < cl.time)
 		{ // Inactive
@@ -3598,7 +3575,7 @@ void CL_UpdateStreams(void)
 				continue;
 		}
 
-		if(stream->flags&STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
+		if(stream->flags&H2STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
 			{ // Attach the start position to owner
 			state = FindState(stream->entity);
 			if (state)

@@ -5,6 +5,7 @@
  */
 
 #include "../client/client.h"
+#include "../client/game/hexen2/local.h"
 
 //#define MISSIONPACK
 

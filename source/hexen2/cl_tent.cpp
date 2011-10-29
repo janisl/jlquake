@@ -15,11 +15,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_STREAMS				32
-#define MAX_STREAM_ENTITIES		128
-#define STREAM_ATTACHED			16
-#define STREAM_TRANSLUCENT		32
-
 #define	TE_SPIKE				0
 #define	TE_SUPERSPIKE			1
 #define	TE_GUNSHOT				2
@@ -45,21 +40,6 @@
 
 // TYPES -------------------------------------------------------------------
 
-typedef struct
-{
-	int type;
-	int entity;
-	int tag;
-	int flags;
-	int skin;
-	qhandle_t models[4];
-	vec3_t source;
-	vec3_t dest;
-	vec3_t offset;
-	float endTime;
-	float lastTrailTime;
-} stream_t;
-
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -67,7 +47,7 @@ typedef struct
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 static void ParseStream(int type);
-static stream_t *NewStream(int ent, int tag);
+static h2stream_t *NewStream(int ent, int tag);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -75,7 +55,6 @@ static stream_t *NewStream(int ent, int tag);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static stream_t cl_Streams[MAX_STREAMS];
 static sfxHandle_t cl_sfx_tink1;
 static sfxHandle_t cl_sfx_ric1;
 static sfxHandle_t cl_sfx_ric2;
@@ -107,7 +86,7 @@ void CL_InitTEnts(void)
 
 void CL_ClearTEnts(void)
 {
-	Com_Memset(cl_Streams, 0, sizeof(cl_Streams));
+	CLH2_ClearStreams();
 }
 
 //==========================================================================
@@ -246,7 +225,7 @@ static void ParseStream(int type)
 	int skin;
 	vec3_t source;
 	vec3_t dest;
-	stream_t *stream;
+	h2stream_t *stream;
 	float duration;
 	qhandle_t models[4];
 
@@ -325,7 +304,7 @@ static void ParseStream(int type)
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
-	if(flags&STREAM_ATTACHED)
+	if(flags&H2STREAM_ATTACHED)
 	{
 		VectorSubtract(source, cl_entities[ent].origin, stream->offset);
 	}
@@ -337,13 +316,13 @@ static void ParseStream(int type)
 //
 //==========================================================================
 
-static stream_t *NewStream(int ent, int tag)
+static h2stream_t *NewStream(int ent, int tag)
 {
 	int i;
-	stream_t *stream;
+	h2stream_t *stream;
 
 	// Search for a stream with matching entity and tag
-	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
 		if(stream->entity == ent && stream->tag == tag)
 		{
@@ -351,7 +330,7 @@ static stream_t *NewStream(int ent, int tag)
 		}
 	}
 	// Search for a free stream
-	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
 		if(!stream->models[0] || stream->endTime < cl.serverTimeFloat)
 		{
@@ -370,7 +349,7 @@ static stream_t *NewStream(int ent, int tag)
 void CL_UpdateTEnts(void)
 {
 	int i;
-	stream_t *stream;
+	h2stream_t *stream;
 	vec3_t dist;
 	vec3_t org;
 	float d;
@@ -380,7 +359,7 @@ void CL_UpdateTEnts(void)
 	int offset;
 
 	// Update streams
-	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
 		if(!stream->models[0])// || stream->endTime < cl.time)
 		{ // Inactive
@@ -394,7 +373,7 @@ void CL_UpdateTEnts(void)
 				continue;
 		}
 
-		if(stream->flags&STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
+		if(stream->flags&H2STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
 		{ // Attach the start position to owner
 			VectorAdd(cl_entities[stream->entity].origin, stream->offset,
 				stream->source);
