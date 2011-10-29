@@ -37,10 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	MAX_SOUNDS			256		// so they cannot be blindly increased
 #define	MAX_CONFIGSTRINGS	1024
 
-#define	CS_SCORES			32
-#define	CS_MODELS			(CS_SCORES+MAX_CLIENTS)
-#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS)
-
 #define DF_AASENTNUMBER(x)		(x - aasworld.entities)
 #define DF_NUMBERAASENT(x)		(&aasworld.entities[x])
 #define DF_AASENTCLIENT(x)		(x - aasworld.entities - 1)

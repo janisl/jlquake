@@ -119,26 +119,6 @@ int AAS_IndexFromString(const char *indexname, char *stringindex[], int numindex
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-const char *AAS_ModelFromIndex(int index)
-{
-	return AAS_StringFromIndex("ModelFromIndex", &aasworld.configstrings[CS_MODELS], MAX_MODELS, index);
-} //end of the function AAS_ModelFromIndex
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_IndexFromModel(const char *modelname)
-{
-	return AAS_IndexFromString("IndexFromModel", &aasworld.configstrings[CS_MODELS], MAX_MODELS, modelname);
-} //end of the function AAS_IndexFromModel
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_UpdateStringIndexes(int numconfigstrings, char *configstrings[])
 {
 	int i;
