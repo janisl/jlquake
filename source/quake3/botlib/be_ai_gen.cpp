@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#include "../game/q_shared.h"
+#include "../../core/core.h"
 #include "l_memory.h"
 #include "l_log.h"
 #include "l_utils.h"
@@ -96,7 +96,7 @@ int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, in
 	{
 		botimport.Print(PRT_WARNING, "GeneticParentsAndChildSelection: too many bots\n");
 		*parent1 = *parent2 = *child = 0;
-		return qfalse;
+		return false;
 	} //end if
 	for (max = 0, i = 0; i < numranks; i++)
 	{
@@ -107,7 +107,7 @@ int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, in
 	{
 		botimport.Print(PRT_WARNING, "GeneticParentsAndChildSelection: too few valid bots\n");
 		*parent1 = *parent2 = *child = 0;
-		return qfalse;
+		return false;
 	} //end if
 	Com_Memcpy(rankings, ranks, sizeof(float) * numranks);
 	//select first parent
@@ -130,5 +130,5 @@ int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, in
 	} //end for
 	//select child
 	*child = GeneticSelection(numranks, rankings);
-	return qtrue;
+	return true;
 } //end of the function GeneticParentsAndChildSelection

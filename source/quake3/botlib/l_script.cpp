@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 //include files for usage in the bot library
-#include "../game/q_shared.h"
+#include "../../core/core.h"
 #include "botlib.h"
 #include "be_interface.h"
 #include "l_script.h"
@@ -621,14 +621,14 @@ int PS_ReadNumber(script_t *script, token_t *token)
 #endif //BINARYNUMBERS
 	else //decimal or octal integer or floating point number
 	{
-		octal = qfalse;
-		dot = qfalse;
-		if (*script->script_p == '0') octal = qtrue;
+		octal = false;
+		dot = false;
+		if (*script->script_p == '0') octal = true;
 		while(1)
 		{
 			c = *script->script_p;
-			if (c == '.') dot = qtrue;
-			else if (c == '8' || c == '9') octal = qfalse;
+			if (c == '.') dot = true;
+			else if (c == '8' || c == '9') octal = false;
 			else if (c < '0' || c > '9') break;
 			token->string[len++] = *script->script_p++;
 			if (len >= MAX_TOKEN - 1)

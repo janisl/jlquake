@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
+#include "../../core/core.h"
 #include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_libvar.h"
@@ -409,8 +410,8 @@ int IsWhiteSpace(char c)
 		|| c == ',' || c == '.'
 		|| c == '['	|| c == ']'
 		|| c == '-' || c == '_'
-		|| c == '+' || c == '=') return qfalse;
-	return qtrue;
+		|| c == '+' || c == '=') return false;
+	return true;
 } //end of the function IsWhiteSpace
 //===========================================================================
 //
@@ -539,17 +540,17 @@ void StringReplaceWords(char *string, char *synonym, char *replacement)
 	char *str, *str2;
 
 	//find the synonym in the string
-	str = StringContainsWord(string, synonym, qfalse);
+	str = StringContainsWord(string, synonym, false);
 	//if the synonym occured in the string
 	while(str)
 	{
 		//if the synonym isn't part of the replacement which is already in the string
 		//usefull for abreviations
-		str2 = StringContainsWord(string, replacement, qfalse);
+		str2 = StringContainsWord(string, replacement, false);
 		while(str2)
 		{
 			if (str2 <= str && str < str2 + String::Length(replacement)) break;
-			str2 = StringContainsWord(str2+1, replacement, qfalse);
+			str2 = StringContainsWord(str2+1, replacement, false);
 		} //end while
 		if (!str2)
 		{
@@ -558,7 +559,7 @@ void StringReplaceWords(char *string, char *synonym, char *replacement)
 			Com_Memcpy(str, replacement, String::Length(replacement));
 		} //end if
 		//find the next synonym in the string
-		str = StringContainsWord(str+String::Length(replacement), synonym, qfalse);
+		str = StringContainsWord(str+String::Length(replacement), synonym, false);
 	} //end if
 } //end of the function StringReplaceWords
 //===========================================================================
@@ -830,12 +831,12 @@ void BotReplaceReplySynonyms(char *string, unsigned long int context)
 			{
 				str2 = synonym->string;
 				//if the synonym is not at the front of the string continue
-				str2 = StringContainsWord(str1, synonym->string, qfalse);
+				str2 = StringContainsWord(str1, synonym->string, false);
 				if (!str2 || str2 != str1) continue;
 				//
 				replacement = syn->firstsynonym->string;
 				//if the replacement IS in front of the string continue
-				str2 = StringContainsWord(str1, replacement, qfalse);
+				str2 = StringContainsWord(str1, replacement, false);
 				if (str2 && str2 == str1) continue;
 				//
 				memmove(str1 + String::Length(replacement), str1+String::Length(synonym->string),
@@ -869,7 +870,7 @@ int BotLoadChatMessage(source_t *source, char *chatmessagestring)
 	//
 	while(1)
 	{
-		if (!PC_ExpectAnyToken(source, &token)) return qfalse;
+		if (!PC_ExpectAnyToken(source, &token)) return false;
 		//fixed string
 		if (token.type == TT_STRING)
 		{
@@ -877,7 +878,7 @@ int BotLoadChatMessage(source_t *source, char *chatmessagestring)
 			if (String::Length(ptr) + String::Length(token.string) + 1 > MAX_MESSAGE_SIZE)
 			{
 				SourceError(source, "chat message too long\n");
-				return qfalse;
+				return false;
 			} //end if
 			String::Cat(ptr, MAX_MESSAGE_SIZE, token.string);
 		} //end else if
@@ -887,7 +888,7 @@ int BotLoadChatMessage(source_t *source, char *chatmessagestring)
 			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
 			{
 				SourceError(source, "chat message too long\n");
-				return qfalse;
+				return false;
 			} //end if
 			sprintf(&ptr[String::Length(ptr)], "%cv%ld%c", ESCAPE_CHAR, token.intvalue, ESCAPE_CHAR);
 		} //end if
@@ -897,20 +898,20 @@ int BotLoadChatMessage(source_t *source, char *chatmessagestring)
 			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
 			{
 				SourceError(source, "chat message too long\n");
-				return qfalse;
+				return false;
 			} //end if
 			sprintf(&ptr[String::Length(ptr)], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR);
 		} //end else if
 		else
 		{
 			SourceError(source, "unknown message component %s\n", token.string);
-			return qfalse;
+			return false;
 		} //end else
 		if (PC_CheckTokenString(source, ";")) break;
-		if (!PC_ExpectTokenString(source, ",")) return qfalse;
+		if (!PC_ExpectTokenString(source, ",")) return false;
 	} //end while
 	//
-	return qtrue;
+	return true;
 } //end of the function BotLoadChatMessage
 //===========================================================================
 //
@@ -1146,7 +1147,7 @@ bot_matchpiece_t *BotLoadMatchPieces(source_t *source, const char *endtoken)
 	firstpiece = NULL;
 	lastpiece = NULL;
 	//
-	lastwasvariable = qfalse;
+	lastwasvariable = false;
 	//
 	while(PC_ReadToken(source, &token))
 	{
@@ -1166,7 +1167,7 @@ bot_matchpiece_t *BotLoadMatchPieces(source_t *source, const char *endtoken)
 				BotFreeMatchPieces(firstpiece);
 				return NULL;
 			} //end if
-			lastwasvariable = qtrue;
+			lastwasvariable = true;
 			//
 			matchpiece = (bot_matchpiece_t *) GetClearedHunkMemory(sizeof(bot_matchpiece_t));
 			matchpiece->type = MT_VARIABLE;
@@ -1189,7 +1190,7 @@ bot_matchpiece_t *BotLoadMatchPieces(source_t *source, const char *endtoken)
 			lastpiece = matchpiece;
 			//
 			lastmatchstring = NULL;
-			emptystring = qfalse;
+			emptystring = false;
 			//
 			do
 			{
@@ -1206,14 +1207,14 @@ bot_matchpiece_t *BotLoadMatchPieces(source_t *source, const char *endtoken)
 				matchstring = (bot_matchstring_t *) GetClearedHunkMemory(sizeof(bot_matchstring_t) + String::Length(token.string) + 1);
 				matchstring->string = (char *) matchstring + sizeof(bot_matchstring_t);
 				String::Cpy(matchstring->string, token.string);
-				if (!String::Length(token.string)) emptystring = qtrue;
+				if (!String::Length(token.string)) emptystring = true;
 				matchstring->next = NULL;
 				if (lastmatchstring) lastmatchstring->next = matchstring;
 				else matchpiece->firststring = matchstring;
 				lastmatchstring = matchstring;
 			} while(PC_CheckTokenString(source, "|"));
 			//if there was no empty string found
-			if (!emptystring) lastwasvariable = qfalse;
+			if (!emptystring) lastwasvariable = false;
 		} //end if
 		else
 		{
@@ -1381,7 +1382,7 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 					break;
 				} //end if
 				//Log_Write("MT_STRING: %s", mp->string);
-				index = StringContains(strptr, ms->string, qfalse);
+				index = StringContains(strptr, ms->string, false);
 				if (index >= 0)
 				{
 					newstrptr = strptr + index;
@@ -1400,7 +1401,7 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 					newstrptr = NULL;
 				} //end if
 			} //end for
-			if (!newstrptr) return qfalse;
+			if (!newstrptr) return false;
 			strptr = newstrptr + String::Length(ms->string);
 		} //end if
 		//if it is a variable piece of string
@@ -1421,9 +1422,9 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 			match->variables[lastvariable].length =
 				String::Length(&match->string[ (int) match->variables[lastvariable].offset]);
 		} //end if
-		return qtrue;
+		return true;
 	} //end if
-	return qfalse;
+	return false;
 } //end of the function StringsMatch
 //===========================================================================
 //
@@ -1454,10 +1455,10 @@ int BotFindMatch(char *str, bot_match_t *match, unsigned long int context)
 		{
 			match->type = ms->type;
 			match->subtype = ms->subtype;
-			return qtrue;
+			return true;
 		} //end if
 	} //end for
-	return qfalse;
+	return false;
 } //end of the function BotFindMatch
 //===========================================================================
 //
@@ -1726,23 +1727,23 @@ void BotCheckValidReplyChatKeySet(source_t *source, bot_replychatkey_t *keys)
 	bot_replychatkey_t *key, *key2;
 
 	//
-	allprefixed = qtrue;
-	hasvariableskey = hasstringkey = qfalse;
+	allprefixed = true;
+	hasvariableskey = hasstringkey = false;
 	for (key = keys; key; key = key->next)
 	{
 		if (!(key->flags & (RCKFL_AND|RCKFL_NOT)))
 		{
-			allprefixed = qfalse;
+			allprefixed = false;
 			if (key->flags & RCKFL_VARIABLES)
 			{
 				for (m = key->match; m; m = m->next)
 				{
-					if (m->type == MT_VARIABLE) hasvariableskey = qtrue;
+					if (m->type == MT_VARIABLE) hasvariableskey = true;
 				} //end for
 			} //end if
 			else if (key->flags & RCKFL_STRING)
 			{
-				hasstringkey = qtrue;
+				hasstringkey = true;
 			} //end else if
 		} //end if
 		else if ((key->flags & RCKFL_AND) && (key->flags & RCKFL_STRING))
@@ -1759,7 +1760,7 @@ void BotCheckValidReplyChatKeySet(source_t *source, bot_replychatkey_t *keys)
 						{
 							for (ms = m->firststring; ms; ms = ms->next)
 							{
-								if (StringContains(ms->string, key->string, qfalse) != -1)
+								if (StringContains(ms->string, key->string, false) != -1)
 								{
 									break;
 								} //end if
@@ -1787,7 +1788,7 @@ void BotCheckValidReplyChatKeySet(source_t *source, bot_replychatkey_t *keys)
 				if (key2->flags & RCKFL_NOT) continue;
 				if (key2->flags & RCKFL_STRING)
 				{
-					if (StringContains(key2->string, key->string, qfalse) != -1)
+					if (StringContains(key2->string, key->string, false) != -1)
 					{
 						SourceWarning(source, "the key %s with prefix ! is inside the key %s", key->string, key2->string);
 					} //end if
@@ -1800,7 +1801,7 @@ void BotCheckValidReplyChatKeySet(source_t *source, bot_replychatkey_t *keys)
 						{
 							for (ms = m->firststring; ms; ms = ms->next)
 							{
-								if (StringContains(ms->string, key->string, qfalse) != -1)
+								if (StringContains(ms->string, key->string, false) != -1)
 								{
 									SourceWarning(source, "the key %s with prefix ! is inside "
 												"the match template string %s", key->string, ms->string);
@@ -2027,7 +2028,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 #endif //DEBUG
 	//
 	size = 0;
-	foundchat = qfalse;
+	foundchat = false;
 	//a bot chat is parsed in two phases
 	for (pass = 0; pass < 2; pass++)
 	{
@@ -2068,7 +2069,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 				//if the chat name is found
 				if (!String::ICmp(token.string, chatname))
 				{
-					foundchat = qtrue;
+					foundchat = true;
 					//read the chat types
 					while(1)
 					{
@@ -2262,7 +2263,7 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 	char *outputbuf, *ptr, *msgptr;
 	char temp[MAX_MESSAGE_SIZE];
 
-	expansion = qfalse;
+	expansion = false;
 	msgptr = message;
 	outputbuf = outmessage;
 	len = 0;
@@ -2287,7 +2288,7 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 					if (num > MAX_MATCHVARIABLES)
 					{
 						botimport.Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
-						return qfalse;
+						return false;
 					} //end if
 					if (match->variables[num].offset >= 0)
 					{
@@ -2313,7 +2314,7 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 						if (len + String::Length(temp) >= MAX_MESSAGE_SIZE)
 						{
 							botimport.Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
-							return qfalse;
+							return false;
 						} //end if
 						String::Cpy(&outputbuf[len], temp);
 						len += String::Length(temp);
@@ -2335,16 +2336,16 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 					if (!ptr)
 					{
 						botimport.Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
-						return qfalse;
+						return false;
 					} //end if
 					if (len + String::Length(ptr) >= MAX_MESSAGE_SIZE)
 					{
 						botimport.Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
-						return qfalse;
+						return false;
 					} //end if
 					String::Cpy(&outputbuf[len], ptr);
 					len += String::Length(ptr);
-					expansion = qtrue;
+					expansion = true;
 					break;
 				} //end case
 				default:
@@ -2562,7 +2563,7 @@ void BotInitialChat(int chatstate, char *type, int mcontext, char *var0, char *v
 		index += String::Length(var7);
 	}
  	//
-	BotConstructChatMessage(cs, message, mcontext, &match, 0, qfalse);
+	BotConstructChatMessage(cs, message, mcontext, &match, 0, false);
 } //end of the function BotInitialChat
 //===========================================================================
 //
@@ -2621,7 +2622,7 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 	bot_chatstate_t *cs;
 
 	cs = BotChatStateFromHandle(chatstate);
-	if (!cs) return qfalse;
+	if (!cs) return false;
 	Com_Memset(&match, 0, sizeof(bot_match_t));
 	String::Cpy(match.string, message);
 	bestpriority = -1;
@@ -2630,24 +2631,24 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 	//go through all the reply chats
 	for (rchat = replychats; rchat; rchat = rchat->next)
 	{
-		found = qfalse;
+		found = false;
 		for (key = rchat->keys; key; key = key->next)
 		{
-			res = qfalse;
+			res = false;
 			//get the match result
-			if (key->flags & RCKFL_NAME) res = (StringContains(message, cs->name, qfalse) != -1);
-			else if (key->flags & RCKFL_BOTNAMES) res = (StringContains(key->string, cs->name, qfalse) != -1);
+			if (key->flags & RCKFL_NAME) res = (StringContains(message, cs->name, false) != -1);
+			else if (key->flags & RCKFL_BOTNAMES) res = (StringContains(key->string, cs->name, false) != -1);
 			else if (key->flags & RCKFL_GENDERFEMALE) res = (cs->gender == CHAT_GENDERFEMALE);
 			else if (key->flags & RCKFL_GENDERMALE) res = (cs->gender == CHAT_GENDERMALE);
 			else if (key->flags & RCKFL_GENDERLESS) res = (cs->gender == CHAT_GENDERLESS);
 			else if (key->flags & RCKFL_VARIABLES) res = StringsMatch(key->match, &match);
-			else if (key->flags & RCKFL_STRING) res = (StringContainsWord(message, key->string, qfalse) != NULL);
+			else if (key->flags & RCKFL_STRING) res = (StringContainsWord(message, key->string, false) != NULL);
 			//if the key must be present
 			if (key->flags & RCKFL_AND)
 			{
 				if (!res)
 				{
-					found = qfalse;
+					found = false;
 					break;
 				} //end if
 			} //end else if
@@ -2656,13 +2657,13 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 			{
 				if (res)
 				{
-					found = qfalse;
+					found = false;
 					break;
 				} //end if
 			} //end if
 			else if (res)
 			{
-				found = qtrue;
+				found = true;
 			} //end else
 		} //end for
 		//
@@ -2748,7 +2749,7 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 		{
 			for (m = bestrchat->firstchatmessage; m; m = m->next)
 			{
-				BotConstructChatMessage(cs, m->chatmessage, mcontext, &bestmatch, vcontext, qtrue);
+				BotConstructChatMessage(cs, m->chatmessage, mcontext, &bestmatch, vcontext, true);
 				BotRemoveTildes(cs->chatmessage);
 				botimport.Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
 			} //end if
@@ -2756,11 +2757,11 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 		else
 		{
 			bestchatmessage->time = AAS_Time() + CHATMESSAGE_RECENTTIME;
-			BotConstructChatMessage(cs, bestchatmessage->chatmessage, mcontext, &bestmatch, vcontext, qtrue);
+			BotConstructChatMessage(cs, bestchatmessage->chatmessage, mcontext, &bestmatch, vcontext, true);
 		} //end else
-		return qtrue;
+		return true;
 	} //end if
-	return qfalse;
+	return false;
 } //end of the function BotReplyChat
 //===========================================================================
 //
