@@ -14,28 +14,12 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
 
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 //	Should be const
-vec3_t				vec3_origin = {0, 0, 0};
+vec3_t vec3_origin = {0, 0, 0};
 
-const vec3_t		axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+const vec3_t axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 
 float bytedirs[NUMVERTEXNORMALS][3] =
 {
@@ -203,17 +187,7 @@ float bytedirs[NUMVERTEXNORMALS][3] =
 	{-0.688191, -0.587785, -0.425325}, 
 };
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
 #if !idppc
-
-//==========================================================================
-//
-//	Q_rsqrt
-//
-//==========================================================================
 
 float Q_rsqrt(float number)
 {
@@ -235,12 +209,6 @@ float Q_rsqrt(float number)
 	return y;
 }
 
-//==========================================================================
-//
-//	Q_fabs
-//
-//==========================================================================
-
 float Q_fabs(float f)
 {
 	int tmp = *(int*)&f;
@@ -249,12 +217,6 @@ float Q_fabs(float f)
 }
 
 #endif
-
-//==========================================================================
-//
-//	Q_log2
-//
-//==========================================================================
 
 int Q_log2(int val)
 {
@@ -266,18 +228,11 @@ int Q_log2(int val)
 	return answer;
 }
 
-//==========================================================================
-//
-//	Q_acos
-//
 //	the msvc acos doesn't always return a value between -PI and PI:
 //
 //	int i;
 //	i = 1065353246;
 //	acos(*(float*) &i) == -1.#IND0
-//
-//==========================================================================
-
 float Q_acos(float c)
 {
 	float angle;
@@ -295,12 +250,6 @@ float Q_acos(float c)
 	return angle;
 }
 
-//==========================================================================
-//
-//	Q_ftol
-//
-//==========================================================================
-
 #if id386 && defined _MSC_VER
 #pragma warning (disable:4035)
 __declspec(naked) long Q_ftol(float f)
@@ -313,12 +262,6 @@ __declspec(naked) long Q_ftol(float f)
 }
 #pragma warning (default:4035)
 #endif
-
-//==========================================================================
-//
-//	ClampChar
-//
-//==========================================================================
 
 qint8 ClampChar(int i)
 {
@@ -333,12 +276,6 @@ qint8 ClampChar(int i)
 	return i;
 }
 
-//==========================================================================
-//
-//	ClampShort
-//
-//==========================================================================
-
 qint16 ClampShort(int i)
 {
 	if (i < MIN_QINT16)
@@ -352,12 +289,6 @@ qint16 ClampShort(int i)
 	return i;
 }
 
-//==========================================================================
-//
-//	_VectorMA
-//
-//==========================================================================
-
 void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc)
 {
 	vecc[0] = veca[0] + scale*vecb[0];
@@ -365,22 +296,10 @@ void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc)
 	vecc[2] = veca[2] + scale*vecb[2];
 }
 
-//==========================================================================
-//
-//	_DotProduct
-//
-//==========================================================================
-
 vec_t _DotProduct(const vec3_t v1, const vec3_t v2)
 {
 	return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
 }
-
-//==========================================================================
-//
-//	_VectorSubtract
-//
-//==========================================================================
 
 void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
@@ -389,24 +308,12 @@ void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out)
 	out[2] = veca[2]-vecb[2];
 }
 
-//==========================================================================
-//
-//	_VectorAdd
-//
-//==========================================================================
-
 void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
 	out[0] = veca[0]+vecb[0];
 	out[1] = veca[1]+vecb[1];
 	out[2] = veca[2]+vecb[2];
 }
-
-//==========================================================================
-//
-//	_VectorCopy
-//
-//==========================================================================
 
 void _VectorCopy(const vec3_t in, vec3_t out)
 {
@@ -415,24 +322,12 @@ void _VectorCopy(const vec3_t in, vec3_t out)
 	out[2] = in[2];
 }
 
-//==========================================================================
-//
-//	_VectorScale
-//
-//==========================================================================
-
 void _VectorScale(const vec3_t in, vec_t scale, vec3_t out)
 {
 	out[0] = in[0]*scale;
 	out[1] = in[1]*scale;
 	out[2] = in[2]*scale;
 }
-
-//==========================================================================
-//
-//	VectorNormalize
-//
-//==========================================================================
 
 vec_t VectorNormalize(vec3_t v)
 {
@@ -452,12 +347,6 @@ vec_t VectorNormalize(vec3_t v)
 		
 	return length;
 }
-
-//==========================================================================
-//
-//	VectorNormalize2
-//
-//==========================================================================
 
 vec_t VectorNormalize2(const vec3_t v, vec3_t out)
 {
@@ -482,12 +371,6 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out)
 		
 	return length;
 }
-
-//==========================================================================
-//
-//	ProjectPointOnPlane
-//
-//==========================================================================
 
 void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 {
@@ -514,14 +397,7 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 	dst[2] = p[2] - d * n[2];
 }
 
-//==========================================================================
-//
-//	PerpendicularVector
-//
 //	assumes "src" is normalized
-//
-//==========================================================================
-
 void PerpendicularVector(vec3_t dst, const vec3_t src)
 {
 	int	pos;
@@ -554,14 +430,7 @@ void PerpendicularVector(vec3_t dst, const vec3_t src)
 	VectorNormalize( dst );
 }
 
-//==========================================================================
-//
-//	RotatePointAroundVector
-//
 //	This is not implemented very well...
-//
-//==========================================================================
-
 void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point,
 	float degrees)
 {
@@ -620,24 +489,12 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point,
 	}
 }
 
-//==========================================================================
-//
-//	VectorRotate
-//
-//==========================================================================
-
 void VectorRotate(const vec3_t in, const vec3_t matrix[3], vec3_t out)
 {
 	out[0] = DotProduct(in, matrix[0]);
 	out[1] = DotProduct(in, matrix[1]);
 	out[2] = DotProduct(in, matrix[2]);
 }
-
-//==========================================================================
-//
-//	Vector4Scale
-//
-//==========================================================================
 
 void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out)
 {
@@ -647,23 +504,11 @@ void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out)
 	out[3] = in[3]*scale;
 }
 
-//==========================================================================
-//
-//	ClearBounds
-//
-//==========================================================================
-
 void ClearBounds(vec3_t mins, vec3_t maxs)
 {
 	mins[0] = mins[1] = mins[2] = 99999;
 	maxs[0] = maxs[1] = maxs[2] = -99999;
 }
-
-//==========================================================================
-//
-//	AddPointToBounds
-//
-//==========================================================================
 
 void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs)
 {
@@ -695,12 +540,6 @@ void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs)
 	}
 }
 
-//==========================================================================
-//
-//	RadiusFromBounds
-//
-//==========================================================================
-
 float RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
 {
 	vec3_t	corner;
@@ -714,12 +553,6 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
 
 	return VectorLength(corner);
 }
-
-//==========================================================================
-//
-//	MatrixMultiply
-//
-//==========================================================================
 
 void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3])
 {
@@ -743,27 +576,13 @@ void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3
 				in1[2][2] * in2[2][2];
 }
 
-//==========================================================================
-//
-//	AngleNormalize360
-//
 //	returns angle normalized to the range [0 <= angle < 360]
-//
-//==========================================================================
-
 float AngleNormalize360(float angle)
 {
 	return (360.0 / 65536) * ((int)(angle * (65536 / 360.0)) & 65535);
 }
 
-//==========================================================================
-//
-//	AngleNormalize180
-//
 //	returns angle normalized to the range [-180 < angle <= 180]
-//
-//==========================================================================
-
 float AngleNormalize180(float angle)
 {
 	angle = AngleNormalize360(angle);
@@ -773,12 +592,6 @@ float AngleNormalize180(float angle)
 	}
 	return angle;
 }
-
-//==========================================================================
-//
-//	LerpAngle
-//
-//==========================================================================
 
 float LerpAngle(float from, float to, float frac)
 {
@@ -797,14 +610,7 @@ float LerpAngle(float from, float to, float frac)
 	return a;
 }
 
-//==========================================================================
-//
-//	AngleSubtract
-//
 //	Always returns a value from -180 to 180
-//
-//==========================================================================
-
 float AngleSubtract(float a1, float a2)
 {
 	float a = a1 - a2;
@@ -819,12 +625,6 @@ float AngleSubtract(float a1, float a2)
 	return a;
 }
 
-//==========================================================================
-//
-//	AnglesSubtract
-//
-//==========================================================================
-
 void AnglesSubtract(const  vec3_t v1, const vec3_t v2, vec3_t v3)
 {
 	v3[0] = AngleSubtract(v1[0], v2[0]);
@@ -832,24 +632,11 @@ void AnglesSubtract(const  vec3_t v1, const vec3_t v2, vec3_t v3)
 	v3[2] = AngleSubtract(v1[2], v2[2]);
 }
 
-//==========================================================================
-//
-//	AngleDelta
-//
 //	returns the normalized delta from angle1 to angle2
-//
-//==========================================================================
-
 float AngleDelta(float angle1, float angle2)
 {
 	return AngleNormalize180(angle1 - angle2);
 }
-
-//==========================================================================
-//
-//	AngleVectors
-//
-//==========================================================================
 
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
@@ -887,12 +674,6 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	}
 }
 
-//==========================================================================
-//
-//	SetPlaneSignbits
-//
-//==========================================================================
-
 void SetPlaneSignbits(cplane_t* out)
 {
 	// for fast box on planeside test
@@ -906,12 +687,6 @@ void SetPlaneSignbits(cplane_t* out)
 	}
 	out->signbits = bits;
 }
-
-//==========================================================================
-//
-//	BoxOnPlaneSide
-//
-//==========================================================================
 
 #if id386 && defined _MSC_VER
 #pragma warning( disable: 4035 )
@@ -1211,15 +986,8 @@ int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t* p)
 }
 #endif
 
-//==========================================================================
-//
-//	PlaneFromPoints
-//
 //	Returns false if the triangle is degenrate.
 //	The normal will point out of the clock for clockwise ordered points
-//
-//==========================================================================
-
 bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c)
 {
 	vec3_t	d1, d2;
@@ -1235,12 +1003,6 @@ bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t 
 	plane[3] = DotProduct(a, plane);
 	return true;
 }
-
-//==========================================================================
-//
-//	Q_rsqrt
-//
-//==========================================================================
 
 void VecToAngles(const vec3_t value1, vec3_t angles)
 {
@@ -1291,12 +1053,6 @@ void VecToAngles(const vec3_t value1, vec3_t angles)
 	angles[ROLL] = 0;
 }
 
-//==========================================================================
-//
-//	AnglesToAxis
-//
-//==========================================================================
-
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3])
 {
 	vec3_t	right;
@@ -1305,12 +1061,6 @@ void AnglesToAxis(const vec3_t angles, vec3_t axis[3])
 	AngleVectors(angles, axis[0], right, axis[2]);
 	VectorSubtract(vec3_origin, right, axis[1]);
 }
-
-//==========================================================================
-//
-//	AxisClear
-//
-//==========================================================================
 
 void AxisClear(vec3_t axis[3])
 {
@@ -1325,24 +1075,12 @@ void AxisClear(vec3_t axis[3])
 	axis[2][2] = 1;
 }
 
-//==========================================================================
-//
-//	AxisCopy
-//
-//==========================================================================
-
 void AxisCopy(const  vec3_t in[3], vec3_t out[3])
 {
 	VectorCopy(in[0], out[0]);
 	VectorCopy(in[1], out[1]);
 	VectorCopy(in[2], out[2]);
 }
-
-//==========================================================================
-//
-//	RotateAroundDirection
-//
-//==========================================================================
 
 void RotateAroundDirection(vec3_t axis[3], float yaw)
 {
@@ -1362,15 +1100,8 @@ void RotateAroundDirection(vec3_t axis[3], float yaw)
 	CrossProduct(axis[0], axis[1], axis[2]);
 }
 
-//==========================================================================
-//
-//	MakeNormalVectors
-//
 //	Given a normalized forward vector, create two
 //	other perpendicular vectors
-//
-//==========================================================================
-
 void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up)
 {
 	float		d;
@@ -1387,12 +1118,6 @@ void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up)
 	CrossProduct(right, forward, up);
 }
 
-//==========================================================================
-//
-//	RotatePoint
-//
-//==========================================================================
-
 void RotatePoint(vec3_t point, const vec3_t matrix[3])
 {
 	vec3_t tvec;
@@ -1402,12 +1127,6 @@ void RotatePoint(vec3_t point, const vec3_t matrix[3])
 	point[1] = DotProduct(matrix[1], tvec);
 	point[2] = DotProduct(matrix[2], tvec);
 }
-
-//==========================================================================
-//
-//	TransposeMatrix
-//
-//==========================================================================
 
 void TransposeMatrix(const vec3_t matrix[3], vec3_t transpose[3])
 {
@@ -1420,14 +1139,7 @@ void TransposeMatrix(const vec3_t matrix[3], vec3_t transpose[3])
 	}
 }
 
-//==========================================================================
-//
-//	DirToByte
-//
 // this isn't a real cheap function to call!
-//
-//==========================================================================
-
 int DirToByte(vec3_t dir)
 {
 	if (!dir)
@@ -1449,12 +1161,6 @@ int DirToByte(vec3_t dir)
 
 	return best;
 }
-
-//==========================================================================
-//
-//	ByteToDir
-//
-//==========================================================================
 
 void ByteToDir(int b, vec3_t dir)
 {
