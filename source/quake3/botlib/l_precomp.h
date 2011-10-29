@@ -29,6 +29,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
+//!!!!!!!!!!!!!!! Used by game VMs !!!!!!!!!!!!!!!!!!!!!
+//NOTE There were duplicate definitions in l_script.h, maybe move this there.
+#define MAX_TOKENLENGTH		1024
+
+//token types
+#define TT_STRING					1			// string
+#define TT_LITERAL					2			// literal
+#define TT_NUMBER					3			// number
+#define TT_NAME						4			// name
+#define TT_PUNCTUATION				5			// punctuation
+
+struct pc_token_t
+{
+	int type;
+	int subtype;
+	int intvalue;
+	float floatvalue;
+	char string[MAX_TOKENLENGTH];
+};
+//!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
+
 #ifndef MAX_PATH
 	#define MAX_PATH			MAX_QPATH
 #endif

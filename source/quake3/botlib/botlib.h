@@ -43,6 +43,7 @@ struct bot_goal_s;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 struct weaponinfo_s;
+struct pc_token_t;
 
 #define BOTFILESBASEFOLDER		"botfiles"
 //debug line colors
