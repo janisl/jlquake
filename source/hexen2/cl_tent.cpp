@@ -354,7 +354,6 @@ void CL_UpdateTEnts(void)
 	vec3_t org;
 	float d;
 	float yaw, pitch;
-	float forward;
 	int segmentCount;
 	int offset;
 
@@ -395,7 +394,7 @@ void CL_UpdateTEnts(void)
 		}
 		else
 		{
-			VecToAnglesCommon(dist, angles, forward, yaw, pitch);
+			VecToAnglesCommon(dist, angles, yaw, pitch);
 		}
 		angles[0] = pitch;
 		angles[1] = yaw;

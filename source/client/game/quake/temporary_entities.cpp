@@ -128,7 +128,7 @@ static void CLQ1_UpdateBeams()
 		vec3_t direction;
 		VectorSubtract(beam->end, beam->start, direction);
 
-		float yaw, pitch, forward;
+		float yaw, pitch;
 		vec3_t angles;
 		if (direction[1] == 0 && direction[0] == 0)
 		{
@@ -144,7 +144,7 @@ static void CLQ1_UpdateBeams()
 		}
 		else
 		{
-			VecToAnglesCommon(direction, angles, forward, yaw, pitch);
+			VecToAnglesCommon(direction, angles, yaw, pitch);
 		}
 		angles[0] = pitch;
 		angles[1] = yaw;

@@ -49,7 +49,6 @@ static int EffectEntityCount;
 
 static void vectoangles(vec3_t vec, vec3_t ang)
 {
-	float	forward;
 	float	yaw, pitch;
 	
 	if (vec[1] == 0 && vec[0] == 0)
@@ -62,7 +61,7 @@ static void vectoangles(vec3_t vec, vec3_t ang)
 	}
 	else
 	{
-		VecToAnglesCommon(vec, ang, forward, yaw, pitch);
+		VecToAnglesCommon(vec, ang, yaw, pitch);
 	}
 
 	ang[0] = pitch;

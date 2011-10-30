@@ -359,7 +359,6 @@ vector vectoangles(vector)
 void PF_vectoangles (void)
 {
 	float	*value1;
-	float	forward;
 	float	yaw, pitch;
 	vec3_t angles;
 	
@@ -375,7 +374,7 @@ void PF_vectoangles (void)
 	}
 	else
 	{
-		VecToAnglesCommon(value1, angles, forward, yaw, pitch);
+		VecToAnglesCommon(value1, angles, yaw, pitch);
 	}
 
 	G_FLOAT(OFS_RETURN+0) = pitch;

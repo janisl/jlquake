@@ -154,7 +154,7 @@ void CLQ2_AddBeams()
 		vec3_t dist;
 		VectorSubtract(b->end, org, dist);
 
-		float yaw, pitch, forward;
+		float yaw, pitch;
 		vec3_t _angles;
 		if (dist[1] == 0 && dist[0] == 0)
 		{
@@ -170,7 +170,7 @@ void CLQ2_AddBeams()
 		}
 		else
 		{
-			VecToAnglesCommon(dist, _angles, forward, yaw, pitch);
+			VecToAnglesCommon(dist, _angles, yaw, pitch);
 			pitch = 360 - pitch;
 		}
 
@@ -335,7 +335,7 @@ void CLQ2_AddPlayerBeams()
 			}
 		}
 
-		float yaw, pitch, forward;
+		float yaw, pitch;
 		vec3_t _angles;
 		if (dist[1] == 0 && dist[0] == 0)
 		{
@@ -351,7 +351,7 @@ void CLQ2_AddPlayerBeams()
 		}
 		else
 		{
-			VecToAnglesCommon(dist, _angles, forward, yaw, pitch);
+			VecToAnglesCommon(dist, _angles, yaw, pitch);
 			pitch = -pitch;
 		}
 

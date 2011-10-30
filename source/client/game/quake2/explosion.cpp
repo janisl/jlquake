@@ -123,10 +123,10 @@ static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 {
 	q2explosion_t* explosion = NewExplosion(pos);
 	vec3_t angles;
-	float forward, yaw, pitch;
+	float yaw, pitch;
 	if (dir[0] && dir[1])
 	{
-		VecToAnglesCommon(dir, angles, forward, yaw, pitch);
+		VecToAnglesCommon(dir, angles, yaw, pitch);
 	}
 	else
 	{

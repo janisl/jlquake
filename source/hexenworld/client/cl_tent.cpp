@@ -205,7 +205,6 @@ void CL_InitTEnts (void)
 
 static void vectoangles(vec3_t vec, vec3_t ang)
 {
-	float	forward;
 	float	yaw, pitch;
 	
 	if (vec[1] == 0 && vec[0] == 0)
@@ -218,7 +217,7 @@ static void vectoangles(vec3_t vec, vec3_t ang)
 	}
 	else
 	{
-		VecToAnglesCommon(vec, ang, forward, yaw, pitch);
+		VecToAnglesCommon(vec, ang, yaw, pitch);
 		if (pitch < 0)
 			pitch += 360;
 	}
@@ -3549,7 +3548,6 @@ void CL_UpdateStreams(void)
 	float			cosTime, sinTime, lifeTime, cos2Time, sin2Time;
 	float			d;
 	float			yaw, pitch;
-	float			forward;
 	int				segmentCount;
 	int				offset;
 	entity_state_t	*state;
@@ -3595,7 +3593,7 @@ void CL_UpdateStreams(void)
 		}
 		else
 		{
-			VecToAnglesCommon(dist, angles, forward, yaw, pitch);
+			VecToAnglesCommon(dist, angles, yaw, pitch);
 			if(pitch < 0)
 			{
 				pitch += 360;
