@@ -1153,7 +1153,7 @@ void CLQ2_TrackerTrail(vec3_t start, vec3_t end, int particleColour)
 	vec3_t forward;
 	VectorCopy(vec, forward);
 	vec3_t angle_dir;
-	vectoangles2(forward, angle_dir);
+	VecToAngles(forward, angle_dir);
 	vec3_t right, up;
 	AngleVectors(angle_dir, forward, right, up);
 

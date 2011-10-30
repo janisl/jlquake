@@ -128,26 +128,9 @@ static void CLQ1_UpdateBeams()
 		vec3_t direction;
 		VectorSubtract(beam->end, beam->start, direction);
 
-		float yaw, pitch;
 		vec3_t angles;
-		if (direction[1] == 0 && direction[0] == 0)
-		{
-			yaw = 0;
-			if (direction[2] > 0)
-			{
-				pitch = 90;
-			}
-			else
-			{
-				pitch = 270;
-			}
-		}
-		else
-		{
-			VecToAnglesCommon(direction, angles, yaw, pitch);
-		}
-		angles[0] = pitch;
-		angles[1] = yaw;
+		VecToAngles(direction, angles);
+		angles[PITCH] = -angles[PITCH];
 
 		// add new entities for the lightning
 		vec3_t origin;

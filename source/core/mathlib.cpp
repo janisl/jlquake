@@ -1048,39 +1048,20 @@ static float VecToPitchNotAlongZ(const vec3_t vector)
 	return pitch;
 }
 
-void VecToAnglesCommon(const vec3_t value1, vec3_t angles, float& yaw, float& pitch)
+void VecToAngles(const vec3_t vector, vec3_t angles)
 {
-	if (value1[1] == 0 && value1[0] == 0)
-	{
-	}
-	else
-	{
-		yaw = VecToYawNotAlongZ(value1);
-		pitch = VecToPitchNotAlongZ(value1);
-	}
-}
-
-void VecToAngles(const vec3_t value1, vec3_t angles)
-{
-	float	yaw, pitch;
-	
-	if (value1[1] == 0 && value1[0] == 0)
+	float yaw;
+	float pitch;
+	if (vector[1] == 0 && vector[0] == 0)
 	{
 		yaw = 0;
-		if (value1[2] > 0)
-		{
-			pitch = 90;
-		}
-		else
-		{
-			pitch = 270;
-		}
+		pitch = vector[2] > 0 ? 90 : 270;
 	}
 	else
 	{
-		VecToAnglesCommon(value1, angles, yaw, pitch);
+		yaw = VecToYawNotAlongZ(vector);
+		pitch = VecToPitchNotAlongZ(vector);
 	}
-
 	angles[PITCH] = -pitch;
 	angles[YAW] = yaw;
 	angles[ROLL] = 0;
@@ -1207,26 +1188,4 @@ void ByteToDir(int b, vec3_t dir)
 		return;
 	}
 	VectorCopy(bytedirs[b], dir);
-}
-
-void vectoangles2(const vec3_t value1, vec3_t angles)
-{
-	float	yaw, pitch;
-	
-	if (value1[1] == 0 && value1[0] == 0)
-	{
-		yaw = 0;
-		if (value1[2] > 0)
-			pitch = 90;
-		else
-			pitch = 270;
-	}
-	else
-	{
-		VecToAnglesCommon(value1, angles, yaw, pitch);
-	}
-
-	angles[PITCH] = -pitch;
-	angles[YAW] = yaw;
-	angles[ROLL] = 0;
 }

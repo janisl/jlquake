@@ -154,25 +154,10 @@ void CLQ2_AddBeams()
 		vec3_t dist;
 		VectorSubtract(b->end, org, dist);
 
-		float yaw, pitch;
 		vec3_t _angles;
-		if (dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if (dist[2] > 0)
-			{
-				pitch = 90;
-			}
-			else
-			{
-				pitch = 270;
-			}
-		}
-		else
-		{
-			VecToAnglesCommon(dist, _angles, yaw, pitch);
-			pitch = 360 - pitch;
-		}
+		VecToAngles(dist, _angles);
+		float pitch = _angles[PITCH];
+		float yaw = _angles[YAW];
 
 		// add new entities for the beams
 		float d = VectorNormalize(dist);
@@ -335,25 +320,10 @@ void CLQ2_AddPlayerBeams()
 			}
 		}
 
-		float yaw, pitch;
 		vec3_t _angles;
-		if (dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if (dist[2] > 0)
-			{
-				pitch = 90;
-			}
-			else
-			{
-				pitch = 270;
-			}
-		}
-		else
-		{
-			VecToAnglesCommon(dist, _angles, yaw, pitch);
-			pitch = -pitch;
-		}
+		VecToAngles(dist, _angles);
+		float pitch = _angles[PITCH];
+		float yaw = _angles[YAW];
 
 		int framenum;
 		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))

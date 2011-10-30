@@ -205,26 +205,9 @@ void CL_InitTEnts (void)
 
 static void vectoangles(vec3_t vec, vec3_t ang)
 {
-	float	yaw, pitch;
-	
-	if (vec[1] == 0 && vec[0] == 0)
-	{
-		yaw = 0;
-		if (vec[2] > 0)
-			pitch = 90;
-		else
-			pitch = 270;
-	}
-	else
-	{
-		VecToAnglesCommon(vec, ang, yaw, pitch);
-		if (pitch < 0)
-			pitch += 360;
-	}
+	VecToAngles(vec, ang);
 
-	ang[0] = pitch;
-	ang[1] = yaw;
-	ang[2] = 0;
+	ang[0] = -ang[0];
 }
 
 
@@ -3547,7 +3530,6 @@ void CL_UpdateStreams(void)
 	vec3_t			discard, right, up;
 	float			cosTime, sinTime, lifeTime, cos2Time, sin2Time;
 	float			d;
-	float			yaw, pitch;
 	int				segmentCount;
 	int				offset;
 	entity_state_t	*state;
@@ -3579,38 +3561,15 @@ void CL_UpdateStreams(void)
 
 		VectorSubtract(stream->dest, stream->source, dist);
 		vec3_t angles;
-		if(dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if(dist[2] > 0)
-			{
-				pitch = 90;
-			}
-			else
-			{
-				pitch = 270;
-			}
-		}
-		else
-		{
-			VecToAnglesCommon(dist, angles, yaw, pitch);
-			if(pitch < 0)
-			{
-				pitch += 360;
-			}
-		}
-		angles[0] = pitch;
-		angles[1] = yaw;
+		VecToAngles(dist, angles);
+		angles[0] = -angles[0];
 
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);
 
 		if(stream->type == TE_STREAM_SUNSTAFF2)
 		{
-			discard[YAW] = yaw;
-			discard[PITCH] = pitch;
-			discard[ROLL] = 0;
-			AngleVectors(discard, discard, right, up);
+			AngleVectors(angles, discard, right, up);
 
 			lifeTime = ((stream->endTime - cl.serverTimeFloat)/.8);
 			cosTime = cos(cl.serverTimeFloat*5);

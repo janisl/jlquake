@@ -353,7 +353,6 @@ void CL_UpdateTEnts(void)
 	vec3_t dist;
 	vec3_t org;
 	float d;
-	float yaw, pitch;
 	int segmentCount;
 	int offset;
 
@@ -380,24 +379,8 @@ void CL_UpdateTEnts(void)
 
 		VectorSubtract(stream->dest, stream->source, dist);
 		vec3_t angles;
-		if(dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if(dist[2] > 0)
-			{
-				pitch = 90;
-			}
-			else
-			{
-				pitch = 270;
-			}
-		}
-		else
-		{
-			VecToAnglesCommon(dist, angles, yaw, pitch);
-		}
-		angles[0] = pitch;
-		angles[1] = yaw;
+		VecToAngles(dist, angles);
+		angles[PITCH] = -angles[PITCH];
 
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);

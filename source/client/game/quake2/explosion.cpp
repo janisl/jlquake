@@ -123,19 +123,7 @@ static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 {
 	q2explosion_t* explosion = NewExplosion(pos);
 	vec3_t angles;
-	float yaw, pitch;
-	if (dir[0] && dir[1])
-	{
-		VecToAnglesCommon(dir, angles, yaw, pitch);
-	}
-	else
-	{
-		yaw = 0;
-		pitch = acos(dir[2]) / M_PI * 180;
-	}
-	angles[0] = pitch;
-	angles[1] = yaw;
-	angles[2] = 0;
+	VecToAngles(dir, angles);
 	AnglesToAxis(angles, explosion->entity.axis);
 
 	explosion->type = ex_misc;
