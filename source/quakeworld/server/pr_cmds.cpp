@@ -368,6 +368,7 @@ void PF_vectoangles (void)
 	float	*value1;
 	float	forward;
 	float	yaw, pitch;
+	vec3_t angles;
 	
 	value1 = G_VECTOR(OFS_PARM0);
 
@@ -381,14 +382,7 @@ void PF_vectoangles (void)
 	}
 	else
 	{
-		yaw = (int) (atan2(value1[1], value1[0]) * 180 / M_PI);
-		if (yaw < 0)
-			yaw += 360;
-
-		forward = sqrt (value1[0]*value1[0] + value1[1]*value1[1]);
-		pitch = (int) (atan2(value1[2], forward) * 180 / M_PI);
-		if (pitch < 0)
-			pitch += 360;
+		VecToAnglesCommon(value1, angles, forward, yaw, pitch);
 	}
 
 	G_FLOAT(OFS_RETURN+0) = pitch;

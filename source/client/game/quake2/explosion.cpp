@@ -123,24 +123,18 @@ static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 {
 	q2explosion_t* explosion = NewExplosion(pos);
 	vec3_t angles;
-	angles[0] = acos(dir[2]) / M_PI * 180;
-	// PMM - fixed to correct for pitch of 0
-	if (dir[0])
+	float forward, yaw, pitch;
+	if (dir[0] && dir[1])
 	{
-		angles[1] = atan2(dir[1], dir[0]) / M_PI * 180;
-	}
-	else if (dir[1] > 0)
-	{
-		angles[1] = 90;
-	}
-	else if (dir[1] < 0)
-	{
-		angles[1] = 270;
+		VecToAnglesCommon(dir, angles, forward, yaw, pitch);
 	}
 	else
 	{
-		angles[1] = 0;
+		yaw = 0;
+		pitch = acos(dir[2]) / M_PI * 180;
 	}
+	angles[0] = pitch;
+	angles[1] = yaw;
 	angles[2] = 0;
 	AnglesToAxis(angles, explosion->entity.axis);
 

@@ -154,7 +154,8 @@ void CLQ2_AddBeams()
 		vec3_t dist;
 		VectorSubtract(b->end, org, dist);
 
-		float yaw, pitch;
+		float yaw, pitch, forward;
+		vec3_t _angles;
 		if (dist[1] == 0 && dist[0] == 0)
 		{
 			yaw = 0;
@@ -169,30 +170,8 @@ void CLQ2_AddBeams()
 		}
 		else
 		{
-			// PMM - fixed to correct for pitch of 0
-			if (dist[0])
-			{
-				yaw = (atan2(dist[1], dist[0]) * 180 / M_PI);
-			}
-			else if (dist[1] > 0)
-			{
-				yaw = 90;
-			}
-			else
-			{
-				yaw = 270;
-			}
-			if (yaw < 0)
-			{
-				yaw += 360;
-			}
-
-			float forward = sqrt (dist[0] * dist[0] + dist[1] * dist[1]);
-			pitch = (atan2(dist[2], forward) * -180.0 / M_PI);
-			if (pitch < 0)
-			{
-				pitch += 360.0;
-			}
+			VecToAnglesCommon(dist, _angles, forward, yaw, pitch);
+			pitch = 360 - pitch;
 		}
 
 		// add new entities for the beams
@@ -356,7 +335,8 @@ void CLQ2_AddPlayerBeams()
 			}
 		}
 
-		float yaw, pitch;
+		float yaw, pitch, forward;
+		vec3_t _angles;
 		if (dist[1] == 0 && dist[0] == 0)
 		{
 			yaw = 0;
@@ -371,30 +351,8 @@ void CLQ2_AddPlayerBeams()
 		}
 		else
 		{
-			// PMM - fixed to correct for pitch of 0
-			if (dist[0])
-			{
-				yaw = (atan2(dist[1], dist[0]) * 180 / M_PI);
-			}
-			else if (dist[1] > 0)
-			{
-				yaw = 90;
-			}
-			else
-			{
-				yaw = 270;
-			}
-			if (yaw < 0)
-			{
-				yaw += 360;
-			}
-	
-			float forward = sqrt (dist[0] * dist[0] + dist[1] * dist[1]);
-			pitch = (atan2(dist[2], forward) * -180.0 / M_PI);
-			if (pitch < 0)
-			{
-				pitch += 360.0;
-			}
+			VecToAnglesCommon(dist, _angles, forward, yaw, pitch);
+			pitch = -pitch;
 		}
 
 		int framenum;

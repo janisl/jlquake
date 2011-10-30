@@ -128,7 +128,8 @@ static void CLQ1_UpdateBeams()
 		vec3_t direction;
 		VectorSubtract(beam->end, beam->start, direction);
 
-		float yaw, pitch;
+		float yaw, pitch, forward;
+		vec3_t angles;
 		if (direction[1] == 0 && direction[0] == 0)
 		{
 			yaw = 0;
@@ -143,19 +144,10 @@ static void CLQ1_UpdateBeams()
 		}
 		else
 		{
-			yaw = (int)(atan2(direction[1], direction[0]) * 180 / M_PI);
-			if (yaw < 0)
-			{
-				yaw += 360;
-			}
-
-			float forward = sqrt(direction[0] * direction[0] + direction[1] * direction[1]);
-			pitch = (int)(atan2(direction[2], forward) * 180 / M_PI);
-			if (pitch < 0)
-			{
-				pitch += 360;
-			}
+			VecToAnglesCommon(direction, angles, forward, yaw, pitch);
 		}
+		angles[0] = pitch;
+		angles[1] = yaw;
 
 		// add new entities for the lightning
 		vec3_t origin;
@@ -168,9 +160,6 @@ static void CLQ1_UpdateBeams()
 			entity.reType = RT_MODEL;
 			VectorCopy(origin, entity.origin);
 			entity.hModel = beam->model;
-			vec3_t angles;
-			angles[0] = pitch;
-			angles[1] = yaw;
 			angles[2] = rand() % 360;
 			CLQ1_SetRefEntAxis(&entity, angles);
 			R_AddRefEntityToScene(&entity);

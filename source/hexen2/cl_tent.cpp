@@ -380,6 +380,7 @@ void CL_UpdateTEnts(void)
 		}
 
 		VectorSubtract(stream->dest, stream->source, dist);
+		vec3_t angles;
 		if(dist[1] == 0 && dist[0] == 0)
 		{
 			yaw = 0;
@@ -394,18 +395,10 @@ void CL_UpdateTEnts(void)
 		}
 		else
 		{
-			yaw = (int)(atan2(dist[1], dist[0])*180/M_PI);
-			if(yaw < 0)
-			{
-				yaw += 360;
-			}
-			forward = sqrt(dist[0]*dist[0]+dist[1]*dist[1]);
-			pitch = (int)(atan2(dist[2], forward)*180/M_PI);
-			if(pitch < 0)
-			{
-				pitch += 360;
-			}
+			VecToAnglesCommon(dist, angles, forward, yaw, pitch);
 		}
+		angles[0] = pitch;
+		angles[1] = yaw;
 
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);
@@ -425,9 +418,6 @@ void CL_UpdateTEnts(void)
 			ent.reType = RT_MODEL;
 			VectorCopy(org, ent.origin);
 			ent.hModel = stream->models[0];
-			vec3_t angles;
-			angles[0] = pitch;
-			angles[1] = yaw;
 			switch (stream->type)
 			{
 			case TE_STREAM_CHAIN:
@@ -445,8 +435,6 @@ void CL_UpdateTEnts(void)
 				ent.reType = RT_MODEL;
 				VectorCopy(org, ent.origin);
 				ent.hModel = stream->models[1];
-				angles[0] = pitch;
-				angles[1] = yaw;
 				angles[2] = (int)(cl.serverTimeFloat*50)%360;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);

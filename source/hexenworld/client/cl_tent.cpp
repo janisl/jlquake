@@ -218,12 +218,7 @@ static void vectoangles(vec3_t vec, vec3_t ang)
 	}
 	else
 	{
-		yaw = (int) (atan2(vec[1], vec[0]) * 180 / M_PI);
-		if (yaw < 0)
-			yaw += 360;
-
-		forward = sqrt (vec[0]*vec[0] + vec[1]*vec[1]);
-		pitch = (int) (atan2(vec[2], forward) * 180 / M_PI);
+		VecToAnglesCommon(vec, ang, forward, yaw, pitch);
 		if (pitch < 0)
 			pitch += 360;
 	}
@@ -3585,6 +3580,7 @@ void CL_UpdateStreams(void)
 		}
 
 		VectorSubtract(stream->dest, stream->source, dist);
+		vec3_t angles;
 		if(dist[1] == 0 && dist[0] == 0)
 		{
 			yaw = 0;
@@ -3599,18 +3595,14 @@ void CL_UpdateStreams(void)
 		}
 		else
 		{
-			yaw = (int)(atan2(dist[1], dist[0])*180/M_PI);
-			if(yaw < 0)
-			{
-				yaw += 360;
-			}
-			forward = sqrt(dist[0]*dist[0]+dist[1]*dist[1]);
-			pitch = (int)(atan2(dist[2], forward)*180/M_PI);
+			VecToAnglesCommon(dist, angles, forward, yaw, pitch);
 			if(pitch < 0)
 			{
 				pitch += 360;
 			}
 		}
+		angles[0] = pitch;
+		angles[1] = yaw;
 
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);
@@ -3645,9 +3637,6 @@ void CL_UpdateStreams(void)
 			ent.reType = RT_MODEL;
 			VectorCopy(org, ent.origin);
 			ent.hModel = stream->models[0];
-			vec3_t angles;
-			angles[0] = pitch;
-			angles[1] = yaw;
 			switch (stream->type)
 			{
 			case TE_STREAM_CHAIN:
@@ -3665,8 +3654,6 @@ void CL_UpdateStreams(void)
 				ent.reType = RT_MODEL;
 				VectorCopy(org, ent.origin);
 				ent.hModel = stream->models[1];
-				angles[0] = pitch;
-				angles[1] = yaw;
 				angles[2] = (int)(cl.serverTimeFloat*50)%360;
 				//stream->endTime = cl.time+0.3;	// FIXME
 				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.5), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
@@ -3683,8 +3670,6 @@ void CL_UpdateStreams(void)
 				ent.reType = RT_MODEL;
 				VectorCopy(org, ent.origin);
 				ent.hModel = stream->models[0];
-				angles[0] = pitch;
-				angles[1] = yaw;
 				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
@@ -3707,8 +3692,6 @@ void CL_UpdateStreams(void)
 						VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
 					}
 					ent.hModel = stream->models[1];
-					angles[0] = pitch;
-					angles[1] = yaw;
 					angles[2] = (int)(cl.serverTimeFloat*20)%360;
 					CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT);
 					R_AddRefEntityToScene(&ent);
