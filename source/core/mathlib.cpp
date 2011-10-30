@@ -1004,6 +1004,27 @@ bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t 
 	return true;
 }
 
+float VecToYawNotAlongZ(const vec3_t value1)
+{
+	if (value1[0])
+	{
+		float yaw = (atan2(value1[1], value1[0]) * 180 / M_PI);
+		if (yaw < 0)
+		{
+			yaw += 360;
+		}
+		return yaw;
+	}
+	else if (value1[1] > 0)
+	{
+		return 90;
+	}
+	else
+	{
+		return 270;
+	}
+}
+
 void VecToAnglesCommon(const vec3_t value1, vec3_t angles, float& forward, float& yaw, float& pitch)
 {
 	if (value1[1] == 0 && value1[0] == 0)
@@ -1011,22 +1032,7 @@ void VecToAnglesCommon(const vec3_t value1, vec3_t angles, float& forward, float
 	}
 	else
 	{
-		if (value1[0])
-		{
-			yaw = (atan2(value1[1], value1[0]) * 180 / M_PI);
-		}
-		else if (value1[1] > 0)
-		{
-			yaw = 90;
-		}
-		else
-		{
-			yaw = 270;
-		}
-		if (yaw < 0)
-		{
-			yaw += 360;
-		}
+		yaw = VecToYawNotAlongZ(value1);
 
 		forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
 		pitch = (atan2(value1[2], forward) * 180 / M_PI);

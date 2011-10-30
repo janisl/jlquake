@@ -666,9 +666,7 @@ void PF_vectoyaw (void)
 		yaw = 0;
 	else
 	{
-		yaw = (int) (atan2(value1[1], value1[0]) * 180 / M_PI);
-		if (yaw < 0)
-			yaw += 360;
+		yaw = VecToYawNotAlongZ(value1);
 	}
 
 	G_FLOAT(OFS_RETURN) = yaw;
