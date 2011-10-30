@@ -371,11 +371,24 @@ void R_DrawSprModel(trRefEntity_t* e)
 		// generate the sprite's axes, parallel to the viewplane, but rotated in
 		// that plane around the center according to the sprite entity's roll
 		// angle. So vpn stays the same, but vright and vup rotate
-		vec3_t tmp_angles;
-		VecToAngles(e->e.axis[0], tmp_angles);
-		float angle = tmp_angles[ROLL] * (M_PI * 2 / 360);
-		float sr = sin(angle);
-		float cr = cos(angle);
+		float sr;
+		float cr;
+		if (e->e.axis[0][2] == 1)
+		{
+			sr = -e->e.axis[1][0];
+			cr = e->e.axis[1][1];
+		}
+		else if (e->e.axis[0][2] == -1)
+		{
+			sr = e->e.axis[1][0];
+			cr = e->e.axis[1][1];
+		}
+		else
+		{
+			float cp = sqrt(1 - e->e.axis[0][2] * e->e.axis[0][2]);
+			sr = e->e.axis[1][2] / cp;
+			cr = e->e.axis[2][2] / cp;
+		}
 
 		for (int i = 0; i < 3; i++)
 		{
