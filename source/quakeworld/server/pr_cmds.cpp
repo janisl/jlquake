@@ -343,12 +343,7 @@ void PF_vectoyaw (void)
 	
 	value1 = G_VECTOR(OFS_PARM0);
 
-	if (value1[1] == 0 && value1[0] == 0)
-		yaw = 0;
-	else
-	{
-		yaw = VecToYawNotAlongZ(value1);
-	}
+	yaw = VecToYaw(value1);
 
 	G_FLOAT(OFS_RETURN) = yaw;
 }

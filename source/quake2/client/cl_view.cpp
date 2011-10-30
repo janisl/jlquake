@@ -486,10 +486,9 @@ V_Viewpos_f
 */
 void V_Viewpos_f (void)
 {
-	float yaw = VecToYawNotAlongZ(cl.refdef.viewaxis[0]);
 	Com_Printf ("(%i %i %i) : %i\n", (int)cl.refdef.vieworg[0],
 		(int)cl.refdef.vieworg[1], (int)cl.refdef.vieworg[2], 
-		(int)yaw);
+		(int)VecToYaw(cl.refdef.viewaxis[0]));
 }
 
 /*

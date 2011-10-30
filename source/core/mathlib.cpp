@@ -1004,7 +1004,7 @@ bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t 
 	return true;
 }
 
-float VecToYawNotAlongZ(const vec3_t value1)
+static float VecToYawNotAlongZ(const vec3_t value1)
 {
 	if (value1[0])
 	{
@@ -1022,6 +1022,18 @@ float VecToYawNotAlongZ(const vec3_t value1)
 	else
 	{
 		return 270;
+	}
+}
+
+float VecToYaw(const vec3_t value1)
+{
+	if (value1[1] == 0 && value1[0] == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return VecToYawNotAlongZ(value1);
 	}
 }
 

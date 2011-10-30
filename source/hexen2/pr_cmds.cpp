@@ -464,17 +464,9 @@ float vectoyaw(vector)
 */
 void PF_vectoyaw (void)
 {
-	float	*value1;
-	float	yaw;
-	
-	value1 = G_VECTOR(OFS_PARM0);
+	float* value1 = G_VECTOR(OFS_PARM0);
 
-	if (value1[1] == 0 && value1[0] == 0)
-		yaw = 0;
-	else
-	{
-		yaw = VecToYawNotAlongZ(value1);
-	}
+	float yaw = VecToYaw(value1);
 
 	G_FLOAT(OFS_RETURN) = yaw;
 }
