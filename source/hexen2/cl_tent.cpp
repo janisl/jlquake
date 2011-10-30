@@ -379,8 +379,7 @@ void CL_UpdateTEnts(void)
 
 		VectorSubtract(stream->dest, stream->source, dist);
 		vec3_t angles;
-		VecToAngles(dist, angles);
-		angles[PITCH] = -angles[PITCH];
+		VecToAnglesBuggy(dist, angles);
 
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);

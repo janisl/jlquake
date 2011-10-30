@@ -1067,6 +1067,12 @@ void VecToAngles(const vec3_t vector, vec3_t angles)
 	angles[ROLL] = 0;
 }
 
+void VecToAnglesBuggy(const vec3_t vector, vec3_t angles)
+{
+	VecToAngles(vector, angles);
+	angles[PITCH] = -angles[PITCH];
+}
+
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3])
 {
 	vec3_t	right;

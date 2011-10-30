@@ -248,6 +248,7 @@ bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t 
 
 float VecToYaw(const vec3_t vector);
 void VecToAngles(const vec3_t vector, vec3_t angles);
+void VecToAnglesBuggy(const vec3_t vector, vec3_t angles);
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3]);
 
 void AxisClear(vec3_t axis[3]);

@@ -202,16 +202,6 @@ void CL_InitTEnts (void)
 	cl_sfx_ravengo = S_RegisterSound("raven/ravengo.wav");
 }
 
-
-static void vectoangles(vec3_t vec, vec3_t ang)
-{
-	VecToAngles(vec, ang);
-
-	ang[0] = -ang[0];
-}
-
-
-
 /*
 =================
 CL_ClearTEnts
@@ -434,7 +424,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 	ex->origin[0]=pos[0]-vel[0];
 	ex->origin[1]=pos[1]-vel[1];
 	ex->origin[2]=pos[2]-vel[2];
-	vectoangles(vel,ex->angles);
+	VecToAnglesBuggy(vel,ex->angles);
 	ex->avel[2]=(rand()%500)+200;
 	ex->scale=10;
 	ex->frameFunc = MissileFlashThink;
@@ -455,7 +445,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 		ex->velocity[0] = 0.0;
 		ex->velocity[1] = 0.0;
 		ex->velocity[2] = 80.0;
-		vectoangles(vel,ex->angles);
+		VecToAnglesBuggy(vel,ex->angles);
 		ex->startTime=cl.serverTimeFloat;
 		ex->endTime=cl.serverTimeFloat+0.35;
 		ex->model=R_RegisterModel ("models/whtsmk1.spr");
@@ -1258,7 +1248,7 @@ void CL_ParseTEnt (void)
 			ex->origin[0]=pos[0]-vel[0];
 			ex->origin[1]=pos[1]-vel[1];
 			ex->origin[2]=pos[2]-vel[2];
-			vectoangles(vel,ex->angles);
+			VecToAnglesBuggy(vel,ex->angles);
 			ex->avel[2]=(rand()%500)+200;
 			ex->scale=10;
 			ex->startTime=cl.serverTimeFloat;
@@ -1278,7 +1268,7 @@ void CL_ParseTEnt (void)
 				ex->velocity[0] = 0.0;
 				ex->velocity[1] = 0.0;
 				ex->velocity[2] = 80.0;
-				vectoangles(vel,ex->angles);
+				VecToAnglesBuggy(vel,ex->angles);
 				ex->startTime=cl.serverTimeFloat;
 				ex->endTime=cl.serverTimeFloat+0.35;
 				ex->model=R_RegisterModel ("models/whtsmk1.spr");
@@ -3561,8 +3551,7 @@ void CL_UpdateStreams(void)
 
 		VectorSubtract(stream->dest, stream->source, dist);
 		vec3_t angles;
-		VecToAngles(dist, angles);
-		angles[0] = -angles[0];
+		VecToAnglesBuggy(dist, angles);
 
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);
@@ -4740,7 +4729,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		ex->velocity[2] += 24;
 		VectorScale(ex->velocity, 1.0 / .25, ex->velocity);
 		VectorNormalize(srcVec);
-		vectoangles(srcVec, ex->angles);
+		VecToAnglesBuggy(srcVec, ex->angles);
 
 		ex->flags |= MLS_ABSLIGHT;//|DRF_TRANSLUCENT;
 		ex->abslight = 128;

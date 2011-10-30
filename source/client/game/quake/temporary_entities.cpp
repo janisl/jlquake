@@ -129,8 +129,7 @@ static void CLQ1_UpdateBeams()
 		VectorSubtract(beam->end, beam->start, direction);
 
 		vec3_t angles;
-		VecToAngles(direction, angles);
-		angles[PITCH] = -angles[PITCH];
+		VecToAnglesBuggy(direction, angles);
 
 		// add new entities for the lightning
 		vec3_t origin;

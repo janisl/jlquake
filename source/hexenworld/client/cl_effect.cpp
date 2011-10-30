@@ -47,14 +47,6 @@ static int EffectEntityCount;
 
 // CODE --------------------------------------------------------------------
 
-static void vectoangles(vec3_t vec, vec3_t ang)
-{
-	VecToAngles(vec, ang);
-
-	ang[0] = -ang[0];
-}
-
-
 //==========================================================================
 //
 // CL_InitTEnts
@@ -743,7 +735,7 @@ void CL_ParseEffect(void)
 			cl.Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
 			cl.Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
 			cl.Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
-			vectoangles(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
+			VecToAnglesBuggy(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
 
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
@@ -847,7 +839,7 @@ void CL_ParseEffect(void)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->origin);
-					vectoangles(cl.Effects[index].Xbow.vel[i],ent->angles);
+					VecToAnglesBuggy(cl.Effects[index].Xbow.vel[i],ent->angles);
 					if (cl.Effects[index].Xbow.bolts == 5)
 						ent->model = R_RegisterModel("models/flaming.mdl");
 					else
@@ -908,7 +900,7 @@ void CL_ParseEffect(void)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->origin);
-					vectoangles(cl.Effects[index].Xbow.vel[i],ent->angles);
+					VecToAnglesBuggy(cl.Effects[index].Xbow.vel[i],ent->angles);
 					ent->model = R_RegisterModel("models/polymrph.spr");
 				}
 			}
@@ -1016,7 +1008,7 @@ void CL_ParseEffect(void)
 			cl.Effects[index].Star.velocity[0] = net_message.ReadFloat ();
 			cl.Effects[index].Star.velocity[1] = net_message.ReadFloat ();
 			cl.Effects[index].Star.velocity[2] = net_message.ReadFloat ();
-			vectoangles(cl.Effects[index].Star.velocity, cl.Effects[index].Star.angle);
+			VecToAnglesBuggy(cl.Effects[index].Star.velocity, cl.Effects[index].Star.angle);
 			cl.Effects[index].Missile.avelocity[2] = 300 + rand()%300;
 
 			if ((cl.Effects[index].Star.entity_index = NewEffectEntity()) != -1)
@@ -1556,7 +1548,7 @@ void CL_TurnEffect(void)
 			ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
 			UpdateMissilePath(ent->origin, pos, vel, time);
 			VectorCopy(vel, cl.Effects[index].Missile.velocity);
-			vectoangles(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
+			VecToAnglesBuggy(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
 		}
 		break;
 	case CE_HWMISSILESTAR:
@@ -2333,7 +2325,7 @@ void CL_ParseMultiEffect(void)
 			cl.Effects[index].type = type;
 			VectorCopy(orig, cl.Effects[index].Missile.origin);
 			VectorCopy(vel, cl.Effects[index].Missile.velocity);
-			vectoangles(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
+			VecToAnglesBuggy(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];

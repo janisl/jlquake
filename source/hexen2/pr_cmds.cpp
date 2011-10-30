@@ -486,8 +486,7 @@ void PF_vectoangles (void)
 	
 	value1 = G_VECTOR(OFS_PARM0);
 
-	VecToAngles(value1, angles);
-	angles[0] = -angles[0];
+	VecToAnglesBuggy(value1, angles);
 
 	G_FLOAT(OFS_RETURN+0) = angles[0];
 	G_FLOAT(OFS_RETURN+1) = angles[1];
