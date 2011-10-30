@@ -668,9 +668,8 @@ void R_DrawMd2Model(trRefEntity_t* e)
 	// PGM	
 	// =================
 
-	vec3_t tmp_angles;
-	VecToAngles(e->e.axis[0], tmp_angles);
-	shadedots = r_avertexnormal_dots[((int)(tmp_angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+	float tmp_yaw = VecToYaw(e->e.axis[0]);
+	shadedots = r_avertexnormal_dots[((int)(tmp_yaw * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	
 	VectorCopy(e->e.axis[0], shadevector);
 	shadevector[2] = 1;
