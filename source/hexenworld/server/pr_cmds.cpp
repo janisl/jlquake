@@ -655,13 +655,13 @@ PF_vectoyaw
 float vectoyaw(vector)
 =================
 */
-void PF_vectoyaw (void)
+void PF_vectoyaw()
 {
 	float* value1 = G_VECTOR(OFS_PARM0);
 
 	float yaw = VecToYaw(value1);
 
-	G_FLOAT(OFS_RETURN) = yaw;
+	G_FLOAT(OFS_RETURN) = (int)yaw;
 }
 
 
@@ -672,18 +672,16 @@ PF_vectoangles
 vector vectoangles(vector)
 =================
 */
-void PF_vectoangles (void)
+void PF_vectoangles()
 {
-	float	*value1;
-	vec3_t angles;
-	
-	value1 = G_VECTOR(OFS_PARM0);
+	float* value1 = G_VECTOR(OFS_PARM0);
 
+	vec3_t angles;
 	VecToAnglesBuggy(value1, angles);
 
-	G_FLOAT(OFS_RETURN+0) = angles[0];
-	G_FLOAT(OFS_RETURN+1) = angles[1];
-	G_FLOAT(OFS_RETURN+2) = angles[2];
+	G_FLOAT(OFS_RETURN+0) = (int)angles[0];
+	G_FLOAT(OFS_RETURN+1) = (int)angles[1];
+	G_FLOAT(OFS_RETURN+2) = (int)angles[2];
 }
 
 /*
