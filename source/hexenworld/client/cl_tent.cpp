@@ -278,10 +278,10 @@ void CL_ParseBeam ()
 	net_message.ReadCoord();
 }
 
-entity_state_t *FindState(int EntNum)
+h2entity_state_t *FindState(int EntNum)
 {
 	packet_entities_t		*pack;
-	static entity_state_t	pretend_player;
+	static h2entity_state_t	pretend_player;
 	int						pnum;
 
 	if (EntNum >= 1 && EntNum <= MAX_CLIENTS)
@@ -324,7 +324,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 {
 	h2stream_t		*stream;
 	qhandle_t		models[4];
-	entity_state_t	*state;
+	h2entity_state_t	*state;
 
 	models[1] = models[2] = models[3] = 0;
 	switch(type)
@@ -553,7 +553,7 @@ static void ParseStream(int type)
 	h2stream_t		*stream;
 	float			duration;
 	qhandle_t		models[4];
-	entity_state_t	*state;
+	h2entity_state_t	*state;
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
@@ -1611,7 +1611,7 @@ void CL_ParseTEnt (void)
 				vec3_t			center;
 				h2stream_t		*stream;
 				qhandle_t		models[2];
-				entity_state_t	*state;
+				h2entity_state_t	*state;
 				static float	playIceSound = .6;
 
 				ent = net_message.ReadShort();
@@ -1690,7 +1690,7 @@ void CL_ParseTEnt (void)
 				vec3_t			points[4];
 				int				reflect_count;
 				short int		tempVal;
-				entity_state_t	*state;
+				h2entity_state_t	*state;
 				int				i, j;
 
 				h2stream_t		*stream;
@@ -1776,7 +1776,7 @@ void CL_ParseTEnt (void)
 				int				ent;
 				h2stream_t		*stream;
 				qhandle_t		models[2];
-				entity_state_t	*state;
+				h2entity_state_t	*state;
 
 				ent = net_message.ReadShort();
 
@@ -1873,7 +1873,7 @@ void CL_ParseTEnt (void)
 				int				ent;
 				h2stream_t		*stream;
 				qhandle_t		models[2];
-				entity_state_t	*state;
+				h2entity_state_t	*state;
 
 				pos[0] = net_message.ReadCoord();
 				pos[1] = net_message.ReadCoord();
@@ -2075,7 +2075,7 @@ void CL_ParseTEnt (void)
 				int				ent;
 				h2stream_t		*stream;
 				qhandle_t		models[4];
-				entity_state_t	*state;
+				h2entity_state_t	*state;
 
 				ent = net_message.ReadShort();
 
@@ -3155,8 +3155,8 @@ void CL_ParseTEnt (void)
 				vec3_t			dest;
 				vec3_t			smokeDir;
 				float			duration;
-				entity_state_t	*state;
-				entity_state_t	*state2;
+				h2entity_state_t	*state;
+				h2entity_state_t	*state2;
 
 				type = TE_STREAM_COLORBEAM;
 
@@ -3213,7 +3213,7 @@ void CL_ParseTEnt (void)
 				int				ent;
 				h2stream_t		*stream;
 				qhandle_t		models[2];
-				entity_state_t	*state;
+				h2entity_state_t	*state;
 				float			tempAng, tempPitch;
 
 				ent = net_message.ReadShort();
@@ -3522,7 +3522,7 @@ void CL_UpdateStreams(void)
 	float			d;
 	int				segmentCount;
 	int				offset;
-	entity_state_t	*state;
+	h2entity_state_t	*state;
 
 	// Update streams
 	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
@@ -4782,7 +4782,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 {
 	vec3_t			center, side1;
 	vec3_t			side2 = {160, 160, 128};
-	entity_state_t	*state;
+	h2entity_state_t	*state;
 	static float	playIceSound = .6;
 
 	state = FindState(edict_num);

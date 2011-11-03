@@ -172,19 +172,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
-
-typedef struct
-{
-	vec3_t	origin;
-	vec3_t	angles;
-	int		modelindex;
-	int		frame;
-	int		colormap;
-	int		skin;
-	int		effects;
-} entity_state_t;
-
-
 #include "draw.h"
 #include "screen.h"
 #include "net.h"

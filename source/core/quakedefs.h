@@ -35,3 +35,19 @@
 //	QuakeWorld only
 #define QWTE_BLOOD			12
 #define QWTE_LIGHTNINGBLOOD	13
+
+// q1entity_state_t is the information conveyed from the server
+// in an update message
+struct q1entity_state_t
+{
+	int number;			// edict index
+
+	vec3_t origin;
+	vec3_t angles;
+	int modelindex;
+	int frame;
+	int colormap;
+	int skinnum;
+	int effects;
+	int flags;			// nolerp, etc
+};

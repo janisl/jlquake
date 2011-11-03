@@ -47,7 +47,7 @@ Can go from either a baseline or a previous packet_entity
 ==================
 */
 int	bitcounts[32];	/// just for protocol profiling
-void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int bits)
+void CL_ParseDelta (q1entity_state_t *from, q1entity_state_t *to, int bits)
 {
 	int			i;
 
@@ -118,7 +118,7 @@ FlushEntityPacket
 void FlushEntityPacket (void)
 {
 	int			word;
-	entity_state_t	olde, newe;
+	q1entity_state_t	olde, newe;
 
 	Con_DPrintf ("FlushEntityPacket\n");
 
@@ -309,7 +309,7 @@ CL_LinkPacketEntities
 void CL_LinkPacketEntities (void)
 {
 	packet_entities_t	*pack;
-	entity_state_t		*s1, *s2;
+	q1entity_state_t		*s1, *s2;
 	float				f;
 	qhandle_t			model;
 	vec3_t				old_origin;
@@ -789,7 +789,7 @@ void CL_SetSolidEntities (void)
 	int		i;
 	frame_t	*frame;
 	packet_entities_t	*pak;
-	entity_state_t		*state;
+	q1entity_state_t		*state;
 
 	pmove.physents[0].model = 0;
 	VectorCopy (vec3_origin, pmove.physents[0].origin);

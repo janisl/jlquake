@@ -382,7 +382,7 @@ void CL_Record_f (void)
 	int n, i, j;
 	char *s;
 	entity_t *ent;
-	entity_state_t *es, blankes;
+	q1entity_state_t *es, blankes;
 	player_info_t *player;
 	extern	char gamedirfile[];
 	int seq = 1;

@@ -23,7 +23,7 @@
 extern void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest);
 extern void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
 extern void CLTENT_SpawnDeathBubble(vec3_t pos);
-entity_state_t *FindState(int EntNum);
+h2entity_state_t *FindState(int EntNum);
 int	TempSoundChannel();
 void setseed(unsigned int seed);
 float seedrand(void);
@@ -1139,7 +1139,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 	entity_t	*ent;
 	vec3_t	forward,right,up,pos;
 	float	dist,speed;
-	entity_state_t	*es;
+	h2entity_state_t	*es;
 
 
 	index = net_message.ReadByte ();
@@ -1606,7 +1606,7 @@ void CL_UpdateEffects(void)
 	entity_t	*ent, *ent2;
 	float		smoketime;
 	int			i;
-	entity_state_t	*es;
+	h2entity_state_t	*es;
 
 	frametime = host_frametime;
 	if (!frametime) return;

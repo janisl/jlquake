@@ -9,7 +9,7 @@ struct entity_t
 {
 	qboolean				forcelink;		// model changed
 
-	entity_state3_t			baseline;		// to fill in defaults in updates
+	h2entity_state_t			baseline;		// to fill in defaults in updates
 
 	double					msgtime;		// time of last update
 	vec3_t					msg_origins[2];	// last two updates (0 is newest)	

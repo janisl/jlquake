@@ -268,7 +268,7 @@ Writes part of a packetentities message.
 Can delta from either a baseline or a previous packet_entity
 ==================
 */
-void SV_WriteDelta (entity_state_t *from, entity_state_t *to, QMsg *msg, qboolean force, edict_t *ent, client_t *client)
+void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qboolean force, edict_t *ent, client_t *client)
 {
 	int		bits;
 	int		i;
@@ -1346,7 +1346,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	packet_entities_t	*pack;
 	edict_t	*clent;
 	client_frame_t	*frame;
-	entity_state_t	*state;
+	h2entity_state_t	*state;
 
 	// this is the frame we are creating
 	frame = &client->frames[client->netchan.incoming_sequence & UPDATE_MASK];

@@ -422,7 +422,7 @@ void CL_ParseUpdate (int bits)
 	qboolean	forcelink;
 	entity_t	*ent;
 	int			num;
-	entity_state2_t *ref_ent,*set_ent,build_ent,dummy;
+	h2entity_state_t *ref_ent,*set_ent,build_ent,dummy;
 
 	if (cls.signon == SIGNONS - 1)
 	{	// first update is the final signon stage
@@ -453,7 +453,7 @@ void CL_ParseUpdate (int bits)
 	ref_ent = NULL;
 
 	for(i=0;i<cl.frames[0].count;i++)
-		if (cl.frames[0].states[i].index == num)
+		if (cl.frames[0].states[i].number == num)
 		{
 			ref_ent = &cl.frames[0].states[i];
 //			if (num == 2) fprintf(FH,"Found Reference\n");
@@ -464,7 +464,7 @@ void CL_ParseUpdate (int bits)
 	{
 		ref_ent = &build_ent;
 
-		build_ent.index = num;
+		build_ent.number = num;
 		build_ent.origin[0] = ent->baseline.origin[0];
 		build_ent.origin[1] = ent->baseline.origin[1];
 		build_ent.origin[2] = ent->baseline.origin[2];
@@ -474,7 +474,7 @@ void CL_ParseUpdate (int bits)
 		build_ent.modelindex = ent->baseline.modelindex;
 		build_ent.frame = ent->baseline.frame;
 		build_ent.colormap = ent->baseline.colormap;
-		build_ent.skin = ent->baseline.skin;
+		build_ent.skinnum = ent->baseline.skinnum;
 		build_ent.effects = ent->baseline.effects;
 		build_ent.scale = ent->baseline.scale;
 		build_ent.drawflags = ent->baseline.drawflags;
@@ -493,7 +493,7 @@ void CL_ParseUpdate (int bits)
 	{
 		Com_Memset(ent, 0, sizeof(entity_t));
 		Com_Memset(ref_ent, 0, sizeof(*ref_ent));
-		ref_ent->index = num;
+		ref_ent->number = num;
 	}
 
 	*set_ent = *ref_ent;
@@ -556,12 +556,12 @@ void CL_ParseUpdate (int bits)
 
 	if(bits & U_SKIN)
 	{
-		set_ent->skin = ent->skinnum = net_message.ReadByte();
+		set_ent->skinnum = ent->skinnum = net_message.ReadByte();
 		set_ent->drawflags = ent->drawflags = net_message.ReadByte();
 	}
 	else
 	{
-		ent->skinnum = ref_ent->skin;
+		ent->skinnum = ref_ent->skinnum;
 		ent->drawflags = ref_ent->drawflags;
 	}
 
@@ -716,7 +716,7 @@ void CL_ParseBaseline (entity_t *ent)
 	ent->baseline.modelindex = net_message.ReadShort ();
 	ent->baseline.frame = net_message.ReadByte ();
 	ent->baseline.colormap = net_message.ReadByte();
-	ent->baseline.skin = net_message.ReadByte();
+	ent->baseline.skinnum = net_message.ReadByte();
 	ent->baseline.scale = net_message.ReadByte();
 	ent->baseline.drawflags = net_message.ReadByte();
 	ent->baseline.abslight = net_message.ReadByte();
@@ -963,7 +963,7 @@ void CL_ParseStatic (void)
 // copy it to the current state
 	ent->model = cl.model_precache[ent->baseline.modelindex];
 	ent->frame = ent->baseline.frame;
-	ent->skinnum = ent->baseline.skin;
+	ent->skinnum = ent->baseline.skinnum;
 	ent->scale = ent->baseline.scale;
 	ent->effects = ent->baseline.effects;
 	ent->drawflags = ent->baseline.drawflags;
@@ -1451,14 +1451,14 @@ void CL_ParseServerMessage (void)
 							if (RemovePlace >= cl.NumToRemove || cl.RemoveList[RemovePlace] != i)
 							{
 								if (NewPlace < cl.frames[1].count &&
-									cl.frames[1].states[NewPlace].index == i)
+									cl.frames[1].states[NewPlace].number == i)
 								{
 									cl.frames[2].states[AddedIndex] = cl.frames[1].states[NewPlace];
 									AddedIndex++;
 									cl.frames[2].count++;
 								}
 								else if (OrigPlace < cl.frames[0].count &&
-									     cl.frames[0].states[OrigPlace].index == i)
+									     cl.frames[0].states[OrigPlace].number == i)
 								{
 									cl.frames[2].states[AddedIndex] = cl.frames[0].states[OrigPlace];
 									AddedIndex++;
@@ -1468,9 +1468,9 @@ void CL_ParseServerMessage (void)
 							else
 								RemovePlace++;
 
-							if (cl.frames[0].states[OrigPlace].index == i)
+							if (cl.frames[0].states[OrigPlace].number == i)
 								OrigPlace++;
-							if (cl.frames[1].states[NewPlace].index == i)
+							if (cl.frames[1].states[NewPlace].number == i)
 								NewPlace++;
 						}
 						cl.frames[0] = cl.frames[2];
@@ -1492,7 +1492,7 @@ void CL_ParseServerMessage (void)
 
 				for(i=0;i<cl.frames[0].count;i++)
 				{
-					ent = CL_EntityNum (cl.frames[0].states[i].index);
+					ent = CL_EntityNum (cl.frames[0].states[i].number);
 					ent->model = cl.model_precache[cl.frames[0].states[i].modelindex];
 					ent->baseline.flags |= BE_ON;
 				}

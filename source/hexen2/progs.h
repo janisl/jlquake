@@ -23,7 +23,7 @@ typedef struct edict_s
 	int			num_leafs;
 	int			LeafNums[MAX_ENT_LEAFS];
 
-	entity_state_t	baseline;
+	h2entity_state_t	baseline;
 	
 	float		freetime;			// sv.time when the object was freed
 	float		alloctime;			// sv.time when the object was allocated

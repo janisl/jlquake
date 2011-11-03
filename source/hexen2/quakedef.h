@@ -149,54 +149,6 @@
 //#define BASE_ENT_ON		1
 //#define BASE_ENT_SENT	2
 
-typedef struct
-{
-	vec3_t	origin;
-	vec3_t	angles;
-	short	modelindex;
-	byte	frame;
-	byte	colormap;
-	byte	skin;
-	byte	effects;
-	byte	scale;
-	byte	drawflags;
-	byte	abslight;
-	byte	ClearCount[32];
-} entity_state_t;
-
-typedef struct
-{
-	byte	flags;
-	short	index;
-
-	vec3_t	origin;
-	vec3_t	angles;
-	short	modelindex;
-	byte	frame;
-	byte	colormap;
-	byte	skin;
-	byte	effects;
-	byte	scale;
-	byte	drawflags;
-	byte	abslight;
-} entity_state2_t;
-
-typedef struct
-{
-	byte	flags;
-
-	vec3_t	origin;
-	vec3_t	angles;
-	short	modelindex;
-	byte	frame;
-	byte	colormap;
-	byte	skin;
-	byte	effects;
-	byte	scale;
-	byte	drawflags;
-	byte	abslight;
-} entity_state3_t;
-
 #define MAX_CLIENT_STATES 150
 #define MAX_FRAMES 5
 #define MAX_CLIENTS 8
@@ -207,15 +159,13 @@ typedef struct
 
 typedef struct 
 {
-	entity_state2_t states[MAX_CLIENT_STATES];
-//	unsigned long frame;
-//	unsigned long flags;
+	h2entity_state_t states[MAX_CLIENT_STATES];
 	int count;
 } client_frames_t;
 
 typedef struct 
 {
-	entity_state2_t states[MAX_CLIENT_STATES*2];
+	h2entity_state_t states[MAX_CLIENT_STATES*2];
 	int count;
 } client_frames2_t;
 

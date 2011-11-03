@@ -617,7 +617,7 @@ void CL_ParseModellist (void)
 CL_ParseBaseline
 ==================
 */
-void CL_ParseBaseline (entity_state_t *es)
+void CL_ParseBaseline (h2entity_state_t *es)
 {
 	int			i;
 	
@@ -650,7 +650,7 @@ void CL_ParseStatic (void)
 {
 	entity_t *ent;
 	int		i;
-	entity_state_t	es;
+	h2entity_state_t	es;
 
 	CL_ParseBaseline (&es);
 		

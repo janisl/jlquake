@@ -28,3 +28,24 @@
 
 // Timing macros
 #define HX_FRAME_TIME		0.05
+
+// h2entity_state_t is the information conveyed from the server
+// in an update message
+struct h2entity_state_t
+{
+	int number;			// edict index
+
+	vec3_t origin;
+	vec3_t angles;
+	int modelindex;
+	int frame;
+	int colormap;
+	int skinnum;
+	int effects;
+	int scale;			// for Alias models
+	int drawflags;		// for Alias models
+	int abslight;		// for Alias models
+	int wpn_sound;		// for cheap playing of sounds
+	int flags;			// nolerp, etc
+	byte ClearCount[32];
+};

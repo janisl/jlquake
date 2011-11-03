@@ -495,7 +495,7 @@ void SV_ConnectClient (int clientnum)
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
 		svent = EDICT_NUM(entnum);
-//		Com_Memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(entity_state_t));
+//		Com_Memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(h2entity_state_t));
 	}
 	Com_Memset(&sv.states[clientnum],0,sizeof(client_state2_t ));
 
@@ -662,7 +662,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 	unsigned long   client_bit;
 	client_frames_t *reference, *build;
 	client_state2_t  *state;
-	entity_state2_t *ref_ent,*set_ent,build_ent;
+	h2entity_state_t *ref_ent,*set_ent,build_ent;
 	qboolean		FoundInList,DoRemove,DoPlayer,DoMonsters,DoMissiles,DoMisc,IgnoreEnt;
 	short			RemoveList[MAX_CLIENT_STATES],NumToRemove;
 
@@ -695,7 +695,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 		for(i=0;i<reference->count;i++)
 			if (reference->states[i].flags & ENT_CLEARED)
 			{
-				e = reference->states[i].index;
+				e = reference->states[i].number;
 				ent = EDICT_NUM(e);
 				if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
 				{
@@ -816,10 +816,10 @@ skipA:
 		bits = 0;
 
 		while (position < reference->count && 
-			   e > reference->states[position].index)
+			   e > reference->states[position].number)
 			position++;
 
-		if (position < reference->count && reference->states[position].index == e)
+		if (position < reference->count && reference->states[position].number == e)
 		{
 			FoundInList = true;
 			if (DoRemove)
@@ -840,7 +840,7 @@ skipA:
 
 			ref_ent = &build_ent;
 
-			build_ent.index = e;
+			build_ent.number = e;
 			build_ent.origin[0] = ent->baseline.origin[0];
 			build_ent.origin[1] = ent->baseline.origin[1];
 			build_ent.origin[2] = ent->baseline.origin[2];
@@ -850,7 +850,7 @@ skipA:
 			build_ent.modelindex = ent->baseline.modelindex;
 			build_ent.frame = ent->baseline.frame;
 			build_ent.colormap = ent->baseline.colormap;
-			build_ent.skin = ent->baseline.skin;
+			build_ent.skinnum = ent->baseline.skinnum;
 			build_ent.effects = ent->baseline.effects;
 			build_ent.scale = ent->baseline.scale;
 			build_ent.drawflags = ent->baseline.drawflags;
@@ -865,7 +865,7 @@ skipA:
 		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
 			Com_Memset(ref_ent,0,sizeof(*ref_ent));
-			ref_ent->index = e;
+			ref_ent->number = e;
 		}
 		*set_ent = *ref_ent;
 
@@ -910,11 +910,11 @@ skipA:
 			set_ent->colormap = ent->v.colormap;
 		}
 			
-		if (ref_ent->skin != ent->v.skin
+		if (ref_ent->skinnum != ent->v.skin
 			|| ref_ent->drawflags != ent->v.drawflags)
 		{
 			bits |= U_SKIN;
-			set_ent->skin = ent->v.skin;
+			set_ent->skinnum = ent->v.skin;
 			set_ent->drawflags = ent->v.drawflags;
 		}
 
@@ -1750,7 +1750,7 @@ void SV_CreateBaseline (void)
 		VectorCopy (svent->v.origin, svent->baseline.origin);
 		VectorCopy (svent->v.angles, svent->baseline.angles);
 		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skin = svent->v.skin;
+		svent->baseline.skinnum = svent->v.skin;
 		svent->baseline.scale = (int)(svent->v.scale*100.0)&255;
 		svent->baseline.drawflags = svent->v.drawflags;
 		svent->baseline.abslight = (int)(svent->v.abslight*255.0)&255;
@@ -1776,7 +1776,7 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteShort(svent->baseline.modelindex);
 		sv.signon.WriteByte(svent->baseline.frame);
 		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skin);
+		sv.signon.WriteByte(svent->baseline.skinnum);
 		sv.signon.WriteByte(svent->baseline.scale);
 		sv.signon.WriteByte(svent->baseline.drawflags);
 		sv.signon.WriteByte(svent->baseline.abslight);

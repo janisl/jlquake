@@ -485,7 +485,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, QMsg *msg)
 		if (ent->baseline.colormap != ent->v.colormap)
 			bits |= U_COLORMAP;
 			
-		if (ent->baseline.skin != ent->v.skin)
+		if (ent->baseline.skinnum != ent->v.skin)
 			bits |= U_SKIN;
 			
 		if (ent->baseline.frame != ent->v.frame)
@@ -925,7 +925,7 @@ void SV_CreateBaseline (void)
 		VectorCopy (svent->v.origin, svent->baseline.origin);
 		VectorCopy (svent->v.angles, svent->baseline.angles);
 		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skin = svent->v.skin;
+		svent->baseline.skinnum = svent->v.skin;
 		if (entnum > 0 && entnum <= svs.maxclients)
 		{
 			svent->baseline.colormap = entnum;
@@ -947,7 +947,7 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteByte(svent->baseline.modelindex);
 		sv.signon.WriteByte(svent->baseline.frame);
 		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skin);
+		sv.signon.WriteByte(svent->baseline.skinnum);
 		for (i=0 ; i<3 ; i++)
 		{
 			sv.signon.WriteCoord(svent->baseline.origin[i]);

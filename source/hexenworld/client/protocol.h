@@ -405,36 +405,16 @@
 
 #define	MAX_CLIENTS		32
 
-#define	UPDATE_BACKUP	64	// copies of entity_state_t to keep buffered
+#define	UPDATE_BACKUP	64	// copies of h2entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)
-
-// entity_state_t is the information conveyed from the server
-// in an update message
-typedef struct
-{
-	int		number;			// edict index
-
-	int		flags;			// nolerp, etc
-	vec3_t	origin;
-	vec3_t	angles;
-	int		modelindex;
-	int		frame;
-	int		colormap;
-	int		skinnum;
-	int		effects;
-	int		scale;			// for Alias models
-	int		drawflags;		// for Alias models
-	int		abslight;		// for Alias models
-	int		wpn_sound;			// for cheap playing of sounds
-} entity_state_t;
 
 
 #define	MAX_PACKET_ENTITIES	64	// doesn't count nails
 typedef struct
 {
 	int		num_entities;
-	entity_state_t	entities[MAX_PACKET_ENTITIES];
+	h2entity_state_t	entities[MAX_PACKET_ENTITIES];
 } packet_entities_t;
 
 typedef struct usercmd_s

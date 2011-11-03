@@ -40,7 +40,7 @@ typedef struct edict_s
 	int			num_leafs;
 	int			LeafNums[MAX_ENT_LEAFS];
 
-	entity_state_t	baseline;
+	q1entity_state_t	baseline;
 	
 	float		freetime;			// sv.time when the object was freed
 	entvars_t	v;					// C exported fields from progs

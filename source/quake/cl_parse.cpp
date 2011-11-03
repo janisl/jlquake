@@ -439,7 +439,7 @@ if (bits&(1<<i))
 	if (bits & U_SKIN)
 		skin = net_message.ReadByte();
 	else
-		skin = ent->baseline.skin;
+		skin = ent->baseline.skinnum;
 	if (skin != ent->skinnum) {
 		ent->skinnum = skin;
 		if (num > 0 && num <= cl.maxclients)
@@ -507,7 +507,7 @@ void CL_ParseBaseline (entity_t *ent)
 	ent->baseline.modelindex = net_message.ReadByte ();
 	ent->baseline.frame = net_message.ReadByte ();
 	ent->baseline.colormap = net_message.ReadByte();
-	ent->baseline.skin = net_message.ReadByte();
+	ent->baseline.skinnum = net_message.ReadByte();
 	for (i=0 ; i<3 ; i++)
 	{
 		ent->baseline.origin[i] = net_message.ReadCoord ();
@@ -659,7 +659,7 @@ void CL_ParseStatic (void)
 // copy it to the current state
 	ent->model = cl.model_precache[ent->baseline.modelindex];
 	ent->frame = ent->baseline.frame;
-	ent->skinnum = ent->baseline.skin;
+	ent->skinnum = ent->baseline.skinnum;
 	ent->effects = ent->baseline.effects;
 
 	VectorCopy (ent->baseline.origin, ent->origin);
