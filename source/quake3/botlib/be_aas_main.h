@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern aas_t aasworld;
 
 //AAS error message
-void QDECL AAS_Error(const char *fmt, ...);
+void AAS_Error(const char *fmt, ...);
 //set AAS initialized
 void AAS_SetInitialized(void);
 //setup AAS with the given number of entities and clients
@@ -51,10 +51,6 @@ int AAS_StartFrame(float time);
 int AAS_Initialized(void);
 //returns true if the AAS file is loaded
 int AAS_Loaded(void);
-//returns the model name from the given index
-const char *AAS_ModelFromIndex(int index);
-//returns the index from the given model name
-int AAS_IndexFromModel(const char *modelname);
 //returns the current time
 float AAS_Time(void);
 //

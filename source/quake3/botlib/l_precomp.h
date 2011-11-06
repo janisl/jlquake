@@ -29,6 +29,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
+//!!!!!!!!!!!!!!! Used by game VMs !!!!!!!!!!!!!!!!!!!!!
+//NOTE There were duplicate definitions in l_script.h, maybe move this there.
+#define MAX_TOKENLENGTH		1024
+
+//token types
+#define TT_STRING					1			// string
+#define TT_LITERAL					2			// literal
+#define TT_NUMBER					3			// number
+#define TT_NAME						4			// name
+#define TT_PUNCTUATION				5			// punctuation
+
+struct pc_token_t
+{
+	int type;
+	int subtype;
+	int intvalue;
+	float floatvalue;
+	char string[MAX_TOKENLENGTH];
+};
+//!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
+
 #ifndef MAX_PATH
 	#define MAX_PATH			MAX_QPATH
 #endif
@@ -46,10 +67,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	#else
 		#define PATHSEPERATOR_CHAR		'/'
 	#endif
-#endif
-
-#if defined(BSPC) && !defined(QDECL)
-#define QDECL
 #endif
 
 
@@ -152,25 +169,9 @@ source_t *LoadSourceMemory(char *ptr, int length, char *name);
 //free the given source
 void FreeSource(source_t *source);
 //print a source error
-void QDECL SourceError(source_t *source, const char *str, ...);
+void SourceError(source_t *source, const char *str, ...);
 //print a source warning
-void QDECL SourceWarning(source_t *source, const char *str, ...);
-
-#ifdef BSPC
-// some of BSPC source does include game/q_shared.h and some does not
-// we define pc_token_s pc_token_t if needed (yes, it's ugly)
-#ifndef __Q_SHARED_H
-#define MAX_TOKENLENGTH		1024
-typedef struct pc_token_s
-{
-	int type;
-	int subtype;
-	int intvalue;
-	float floatvalue;
-	char string[MAX_TOKENLENGTH];
-} pc_token_t;
-#endif //!_Q_SHARED_H
-#endif //BSPC
+void SourceWarning(source_t *source, const char *str, ...);
 
 //
 int PC_LoadSourceHandle(const char *filename);

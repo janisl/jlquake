@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
+#include "../../core/core.h"
 #include "../game/q_shared.h"
 #include "l_log.h"
 #include "l_memory.h"
@@ -38,11 +39,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_struct.h"
 #include "l_libvar.h"
 #include "aasfile.h"
-#include "../game/botlib.h"
-#include "../game/be_aas.h"
+#include "botlib.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
-#include "../game/be_ai_char.h"
+#include "be_ai_char.h"
 
 #define MAX_CHARACTERISTICS		80
 
@@ -216,7 +217,7 @@ bot_character_t *BotLoadCharacterFromFile(const char *charfile, int skill)
 	source_t *source;
 	token_t token;
 
-	foundcharacter = qfalse;
+	foundcharacter = false;
 	//a bot character is parsed in two phases
 	PC_SetBaseFolder(BOTFILESBASEFOLDER);
 	source = LoadSourceFile(charfile);
@@ -249,7 +250,7 @@ bot_character_t *BotLoadCharacterFromFile(const char *charfile, int skill)
 			//if it's the correct skill
 			if (skill < 0 || (int)token.intvalue == skill)
 			{
-				foundcharacter = qtrue;
+				foundcharacter = true;
 				ch->skill = token.intvalue;
 				while(PC_ExpectAnyToken(source, &token))
 				{
@@ -497,7 +498,7 @@ int BotLoadCharacterSkill(char *charfile, float skill)
 {
 	int ch, defaultch;
 
-	defaultch = BotLoadCachedCharacter(DEFAULT_CHARACTER, skill, qfalse);
+	defaultch = BotLoadCachedCharacter(DEFAULT_CHARACTER, skill, false);
 	ch = BotLoadCachedCharacter(charfile, skill, LibVarGetValue("bot_reloadcharacters"));
 
 	if (defaultch && ch)
@@ -619,18 +620,18 @@ int CheckCharacteristicIndex(int character, int index)
 	bot_character_t *ch;
 
 	ch = BotCharacterFromHandle(character);
-	if (!ch) return qfalse;
+	if (!ch) return false;
 	if (index < 0 || index >= MAX_CHARACTERISTICS)
 	{
 		botimport.Print(PRT_ERROR, "characteristic %d does not exist\n", index);
-		return qfalse;
+		return false;
 	} //end if
 	if (!ch->c[index].type)
 	{
 		botimport.Print(PRT_ERROR, "characteristic %d is not initialized\n", index);
-		return qfalse;
+		return false;
 	} //end if
-	return qtrue;
+	return true;
 } //end of the function CheckCharacteristicIndex
 //===========================================================================
 //

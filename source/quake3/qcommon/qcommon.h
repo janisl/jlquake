@@ -85,8 +85,8 @@ void		NET_Shutdown( void );
 void		NET_Restart( void );
 
 void		NET_SendPacket (netsrc_t sock, int length, const void *data, netadr_t to);
-void		QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ...);
-void		QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
+void		NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ...);
+void		NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_Sleep(int msec);
@@ -246,7 +246,7 @@ void	VM_Free( vm_t *vm );
 void	VM_Clear(void);
 vm_t	*VM_Restart( vm_t *vm );
 
-int		QDECL VM_Call( vm_t *vm, int callNum, ... );
+int		VM_Call( vm_t *vm, int callNum, ... );
 
 void	VM_Debug( int level );
 
@@ -306,9 +306,9 @@ char		*CopyString( const char *in );
 
 void		Com_BeginRedirect (char *buffer, int buffersize, void (*flush)(char *));
 void		Com_EndRedirect( void );
-void 		QDECL Com_Printf( const char *fmt, ... );
-void 		QDECL Com_DPrintf( const char *fmt, ... );
-void 		QDECL Com_Error( int code, const char *fmt, ... );
+void 		Com_Printf( const char *fmt, ... );
+void 		Com_DPrintf( const char *fmt, ... );
+void 		Com_Error( int code, const char *fmt, ... );
 void 		Com_Quit_f( void );
 int			Com_EventLoop( void );
 int			Com_Milliseconds( void );	// will be journaled properly
@@ -515,8 +515,8 @@ void	Sys_Init (void);
 
 // general development dll loading for virtual machine testing
 // fqpath param added 7/20/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-void	* QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoint)(int, ...),
-				  int (QDECL *systemcalls)(int, ...) );
+void	* Sys_LoadDll( const char *name, char *fqpath , int (**entryPoint)(int, ...),
+				  int (*systemcalls)(int, ...) );
 void	Sys_UnloadDll( void *dllHandle );
 
 void	Sys_UnloadGame( void );
@@ -534,7 +534,7 @@ void	*Sys_GetBotLibAPI( void *parms );
 
 const char	*Sys_GetCurrentUser( void );
 
-void	QDECL Sys_Error( const char *error, ...);
+void	Sys_Error( const char *error, ...);
 void	Sys_Quit (void);
 
 extern "C" void	Sys_SnapVector( float *v );

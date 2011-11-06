@@ -290,7 +290,7 @@ Dlls will call this directly
   JL: On 64 bit stack contains 64 bit values.
 ============
 */
-int QDECL VM_DllSyscall(int arg, ...)
+int VM_DllSyscall(int arg, ...)
 {
 #if id386
 	return currentVM->systemCall(&arg);
@@ -632,7 +632,7 @@ locals from sp
 #define	MAX_STACK	256
 #define	STACK_MASK	(MAX_STACK-1)
 
-int QDECL VM_Call(vm_t* vm, int callnum, ...)
+int VM_Call(vm_t* vm, int callnum, ...)
 {
 	if (!vm)
 	{
@@ -690,7 +690,7 @@ int QDECL VM_Call(vm_t* vm, int callnum, ...)
 
 //=================================================================
 
-static int QDECL VM_ProfileSort( const void *a, const void *b ) {
+static int VM_ProfileSort( const void *a, const void *b ) {
 	vmSymbol_t	*sa, *sb;
 
 	sa = *(vmSymbol_t **)a;

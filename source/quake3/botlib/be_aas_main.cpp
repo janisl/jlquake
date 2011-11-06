@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#include "../game/q_shared.h"
+#include "../../core/core.h"
 #include "l_memory.h"
 #include "l_libvar.h"
 #include "l_utils.h"
@@ -38,8 +38,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_struct.h"
 #include "l_log.h"
 #include "aasfile.h"
-#include "../game/botlib.h"
-#include "../game/be_aas.h"
+#include "botlib.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
 #include "be_aas_def.h"
@@ -54,7 +54,7 @@ libvar_t *saveroutingcache;
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL AAS_Error(const char *fmt, ...)
+void AAS_Error(const char *fmt, ...)
 {
 	char str[1024];
 	va_list arglist;
@@ -119,26 +119,6 @@ int AAS_IndexFromString(const char *indexname, char *stringindex[], int numindex
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-const char *AAS_ModelFromIndex(int index)
-{
-	return AAS_StringFromIndex("ModelFromIndex", &aasworld.configstrings[CS_MODELS], MAX_MODELS, index);
-} //end of the function AAS_ModelFromIndex
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_IndexFromModel(const char *modelname)
-{
-	return AAS_IndexFromString("IndexFromModel", &aasworld.configstrings[CS_MODELS], MAX_MODELS, modelname);
-} //end of the function AAS_IndexFromModel
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_UpdateStringIndexes(int numconfigstrings, char *configstrings[])
 {
 	int i;
@@ -152,7 +132,7 @@ void AAS_UpdateStringIndexes(int numconfigstrings, char *configstrings[])
 			String::Cpy(aasworld.configstrings[i], configstrings[i]);
 		} //end if
 	} //end for
-	aasworld.indexessetup = qtrue;
+	aasworld.indexessetup = true;
 } //end of the function AAS_UpdateStringIndexes
 //===========================================================================
 //
@@ -182,7 +162,7 @@ int AAS_Initialized(void)
 //===========================================================================
 void AAS_SetInitialized(void)
 {
-	aasworld.initialized = qtrue;
+	aasworld.initialized = true;
 	botimport.Print(PRT_MESSAGE, "AAS initialized.\n");
 #ifdef DEBUG
 	//create all the routing cache
@@ -348,7 +328,7 @@ int AAS_LoadMap(const char *mapname)
 		return 0;
 	} //end if
 	//
-	aasworld.initialized = qfalse;
+	aasworld.initialized = false;
 	//NOTE: free the routing caches before loading a new map because
 	// to free the caches the old number of areas, number of clusters
 	// and number of areas in a clusters must be available
@@ -357,7 +337,7 @@ int AAS_LoadMap(const char *mapname)
 	errnum = AAS_LoadFiles(mapname);
 	if (errnum != BLERR_NOERROR)
 	{
-		aasworld.loaded = qfalse;
+		aasworld.loaded = false;
 		return errnum;
 	} //end if
 	//
@@ -421,7 +401,7 @@ void AAS_Shutdown(void)
 	//clear the aasworld structure
 	Com_Memset(&aasworld, 0, sizeof(aas_t));
 	//aas has not been initialized
-	aasworld.initialized = qfalse;
+	aasworld.initialized = false;
 	//NOTE: as soon as a new .bsp file is loaded the .bsp file memory is
 	// freed an reallocated, so there's no need to free that memory here
 	//print shutdown

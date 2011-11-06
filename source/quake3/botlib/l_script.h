@@ -39,10 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //maximum token length
 #define MAX_TOKEN					1024
 
-#if defined(BSPC) && !defined(QDECL)
-#define QDECL
-#endif
-
 
 //script flags
 #define SCFL_NOERRORS				0x0001
@@ -52,13 +48,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SCFL_PRIMITIVE				0x0010
 #define SCFL_NOBINARYNUMBERS		0x0020
 #define SCFL_NONUMBERVALUES		0x0040
-
-//token types
-#define TT_STRING						1			// string
-#define TT_LITERAL					2			// literal
-#define TT_NUMBER						3			// number
-#define TT_NAME						4			// name
-#define TT_PUNCTUATION				5			// punctuation
 
 //string sub type
 //---------------
@@ -240,8 +229,8 @@ void FreeScript(script_t *script);
 //set the base folder to load files from
 void PS_SetBaseFolder(const char *path);
 //print a script error with filename and line number
-void QDECL ScriptError(script_t *script, const char *str, ...);
+void ScriptError(script_t *script, const char *str, ...);
 //print a script warning with filename and line number
-void QDECL ScriptWarning(script_t *script, const char *str, ...);
+void ScriptWarning(script_t *script, const char *str, ...);
 
 

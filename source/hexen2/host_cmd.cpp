@@ -1629,8 +1629,6 @@ void Host_Spawn_f (void)
 	host_client->sendsignon = true;
 }
 
-dfunction_t *ED_FindFunctioni (char *name);
-
 #define		MAXCMDLINE	256
 extern  char	key_lines[32][MAXCMDLINE];
 extern int		key_linepos;

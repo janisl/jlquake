@@ -19,6 +19,7 @@ along with Foobar; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
+//!!!!!!!!!!!!!!! Used by game VM !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
 /*****************************************************************************
  * name:		botlib.h
@@ -42,6 +43,7 @@ struct bot_goal_s;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 struct weaponinfo_s;
+struct pc_token_t;
 
 #define BOTFILESBASEFOLDER		"botfiles"
 //debug line colors
@@ -169,7 +171,7 @@ typedef struct bot_entitystate_s
 typedef struct botlib_import_s
 {
 	//print messages from the bot library
-	void		(QDECL *Print)(int type, const char *fmt, ...);
+	void		(*Print)(int type, const char *fmt, ...);
 	//trace a bbox through the world
 	void		(*Trace)(bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
 	//trace a bbox against a specific entity

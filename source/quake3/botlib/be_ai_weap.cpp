@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
+#include "../../core/core.h"
 #include "../game/q_shared.h"
 #include "l_libvar.h"
 #include "l_log.h"
@@ -38,12 +39,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_precomp.h"
 #include "l_struct.h"
 #include "aasfile.h"
-#include "../game/botlib.h"
-#include "../game/be_aas.h"
+#include "botlib.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
 #include "be_ai_weight.h"		//fuzzy weights
-#include "../game/be_ai_weap.h"
+#include "be_ai_weap.h"
 
 //#define DEBUG_AI_WEAP
 
@@ -139,9 +140,9 @@ int BotValidWeaponNumber(int weaponnum)
 	if (weaponnum <= 0 || weaponnum > weaponconfig->numweapons)
 	{
 		botimport.Print(PRT_ERROR, "weapon number out of range\n");
-		return qfalse;
+		return false;
 	} //end if
-	return qtrue;
+	return true;
 } //end of the function BotValidWeaponNumber
 //========================================================================
 //
@@ -256,7 +257,7 @@ weaponconfig_t *LoadWeaponConfig(char *filename)
 				return NULL;
 			} //end if
 			Com_Memcpy(&wc->weaponinfo[weaponinfo.number], &weaponinfo, sizeof(weaponinfo_t));
-			wc->weaponinfo[weaponinfo.number].valid = qtrue;
+			wc->weaponinfo[weaponinfo.number].valid = true;
 		} //end if
 		else if (!String::Cmp(token.string, "projectileinfo"))
 		{

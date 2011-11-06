@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#include "../game/q_shared.h"
+#include "../../core/core.h"
 #include "l_utils.h"
 #include "l_memory.h"
 #include "l_log.h"
@@ -37,8 +37,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_precomp.h"
 #include "l_struct.h"
 #include "aasfile.h"
-#include "../game/botlib.h"
-#include "../game/be_aas.h"
+#include "botlib.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
 #include "be_aas_def.h"
@@ -73,7 +73,7 @@ void AAS_AltRoutingFloodCluster_r(int areanum)
 	clusterareas[numclusterareas] = areanum;
 	numclusterareas++;
 	//remove the area from the mid range areas
-	midrangeareas[areanum].valid = qfalse;
+	midrangeareas[areanum].valid = false;
 	//flood to other areas through the faces of this area
 	area = &aasworld.areas[areanum];
 	for (i = 0; i < area->numfaces; i++)
@@ -150,7 +150,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		//if the travel time from the area to the goal is greater than the shortest goal travel time
 		if (goaltime > (float) 0.8 * goaltraveltime) continue;
 		//this is a mid range area
-		midrangeareas[i].valid = qtrue;
+		midrangeareas[i].valid = true;
 		midrangeareas[i].starttime = starttime;
 		midrangeareas[i].goaltime = goaltime;
 		Log_Write("%d midrange area %d", nummidrangeareas, i);

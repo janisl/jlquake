@@ -16,8 +16,8 @@
 
 #pragma pack(push, 1)
 
-typedef int	func_t;
-typedef int	string_t;
+typedef int func_t;
+typedef int string_t;
 
 enum etype_t
 {
@@ -31,17 +31,20 @@ enum etype_t
 	ev_pointer
 };
 
-#define	OFS_NULL		0
-#define	OFS_RETURN		1
-#define	OFS_PARM0		4		// leave 3 ofs for each parm to hold vectors
-#define	OFS_PARM1		7
-#define	OFS_PARM2		10
-#define	OFS_PARM3		13
-#define	OFS_PARM4		16
-#define	OFS_PARM5		19
-#define	OFS_PARM6		22
-#define	OFS_PARM7		25
-#define	RESERVED_OFS	28
+enum
+{
+	OFS_NULL = 0,
+	OFS_RETURN = 1,
+	OFS_PARM0 = 4,		// leave 3 ofs for each parm to hold vectors
+	OFS_PARM1 = 7,
+	OFS_PARM2 = 10,
+	OFS_PARM3 = 13,
+	OFS_PARM4 = 16,
+	OFS_PARM5 = 19,
+	OFS_PARM6 = 22,
+	OFS_PARM7 = 25,
+	RESERVED_OFS = 28,
+};
 
 enum
 {
@@ -173,68 +176,70 @@ enum
 	OP_CASERANGE
 };
 
+enum
+{
+	DEF_SAVEGLOBAL = (1 << 15),
+
+	MAX_PARMS = 8,
+
+	PROG_VERSION = 6,
+};
+
 struct dstatement_t
 {
-	quint16		op;
-	qint16		a;
-	qint16		b;
-	qint16		c;
+	quint16 op;
+	qint16 a;
+	qint16 b;
+	qint16 c;
 };
 
 struct ddef_t
 {
-	quint16		type;		// if DEF_SAVEGLOBGAL bit is set
+	quint16 type;		// if DEF_SAVEGLOBGAL bit is set
 							// the variable needs to be saved in savegames
-	quint16		ofs;
-	qint32		s_name;
+	quint16 ofs;
+	qint32 s_name;
 };
-
-#define DEF_SAVEGLOBAL	(1 << 15)
-
-#define MAX_PARMS		8
 
 struct dfunction_t
 {
-	qint32		first_statement;	// negative numbers are builtins
-	qint32		parm_start;
-	qint32		locals;				// total ints of parms + locals
+	qint32 first_statement;	// negative numbers are builtins
+	qint32 parm_start;
+	qint32 locals;				// total ints of parms + locals
 	
-	qint32		profile;		// runtime
+	qint32 profile;		// runtime
 	
-	qint32		s_name;
-	qint32		s_file;			// source file defined in
+	qint32 s_name;
+	qint32 s_file;			// source file defined in
 	
-	qint32		numparms;
-	quint8		parm_size[MAX_PARMS];
+	qint32 numparms;
+	quint8 parm_size[MAX_PARMS];
 };
-
-
-#define PROG_VERSION	6
 
 struct dprograms_t
 {
-	qint32		version;
-	qint32		crc;			// check of header file
+	qint32 version;
+	qint32 crc;				// check of header file
 
-	qint32		ofs_statements;
-	qint32		numstatements;	// statement 0 is an error
+	qint32 ofs_statements;
+	qint32 numstatements;	// statement 0 is an error
 
-	qint32		ofs_globaldefs;
-	qint32		numglobaldefs;
+	qint32 ofs_globaldefs;
+	qint32 numglobaldefs;
 
-	qint32		ofs_fielddefs;
-	qint32		numfielddefs;
+	qint32 ofs_fielddefs;
+	qint32 numfielddefs;
 
-	qint32		ofs_functions;
-	qint32		numfunctions;	// function 0 is an empty
+	qint32 ofs_functions;
+	qint32 numfunctions;	// function 0 is an empty
 
-	qint32		ofs_strings;
-	qint32		numstrings;		// first string is a null string
+	qint32 ofs_strings;
+	qint32 numstrings;		// first string is a null string
 
-	qint32		ofs_globals;
-	qint32		numglobals;
+	qint32 ofs_globals;
+	qint32 numglobals;
 
-	qint32		entityfields;
+	qint32 entityfields;
 };
 
 #pragma pack(pop)

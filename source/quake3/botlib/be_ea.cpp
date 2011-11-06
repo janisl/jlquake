@@ -29,12 +29,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#include "../game/q_shared.h"
+#include "../../core/core.h"
 #include "l_memory.h"
 #include "l_script.h"
 #include "l_precomp.h"
 #include "l_struct.h"
-#include "../game/botlib.h"
+#include "botlib.h"
 #include "be_interface.h"
 
 #define MAX_USERMOVE				400
@@ -470,7 +470,7 @@ void EA_GetInput(int client, float thinktime, bot_input_t *input)
 void EA_ResetInput(int client)
 {
 	bot_input_t *bi;
-	int jumped = qfalse;
+	int jumped = false;
 
 	bi = &botinputs[client];
 	bi->actionflags &= ~ACTION_JUMPEDLASTFRAME;
