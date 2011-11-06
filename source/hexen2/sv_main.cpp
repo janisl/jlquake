@@ -1921,7 +1921,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	sv.states = (client_state2_t*)Hunk_AllocName (svs.maxclients * sizeof(client_state2_t), "states");
 	Com_Memset(sv.states,0,svs.maxclients * sizeof(client_state2_t));
 
-	sv.max_edicts = MAX_EDICTS;
+	sv.max_edicts = MAX_EDICTS_H2;
 	
 	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 

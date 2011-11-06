@@ -736,7 +736,7 @@ void CL_ParseStartSoundPacket(void)
 	ent = (channel>>3)&1023;
 	channel &= 7;
 
-	if (ent > MAX_EDICTS)
+	if (ent > MAX_EDICTS_H2)
 		Host_EndGame ("CL_ParseStartSoundPacket: ent = %i", ent);
 	
     S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
@@ -1150,7 +1150,7 @@ void CL_ParseServerMessage (void)
 			ent = channel >> 3;
 			channel &= 7;
 			
-			if (ent > MAX_EDICTS)
+			if (ent > MAX_EDICTS_H2)
 				Host_Error ("svc_sound_update_pos: ent = %i", ent);
 			
 			for (i=0 ; i<3 ; i++)
@@ -1252,7 +1252,7 @@ void CL_ParseServerMessage (void)
 
 		case svc_spawnbaseline:
 			i = net_message.ReadShort ();
-			CL_ParseBaseline (&cl_baselines[i]);
+			CL_ParseBaseline (&clh2_baselines[i]);
 			break;
 		case svc_spawnstatic:
 			CL_ParseStatic ();

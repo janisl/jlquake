@@ -16,6 +16,8 @@
 
 extern Cvar* cl_doubleeyes;
 
+extern q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
+
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
 
 void CLQ1_InitTEnts();

@@ -83,7 +83,7 @@ entity_t	*CL_EntityNum (int num)
 {
 	if (num >= cl.num_entities)
 	{
-		if (num >= MAX_EDICTS)
+		if (num >= MAX_EDICTS_Q1)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
 		while (cl.num_entities<=num)
 		{
@@ -129,7 +129,7 @@ void CL_ParseStartSoundPacket(void)
 	ent = channel >> 3;
 	channel &= 7;
 
-	if (ent > MAX_EDICTS)
+	if (ent > MAX_EDICTS_Q1)
 		Host_Error ("CL_ParseStartSoundPacket: ent = %i", ent);
 	
 	for (i=0 ; i<3 ; i++)
@@ -383,6 +383,7 @@ void CL_ParseUpdate (int bits)
 		num = net_message.ReadByte ();
 
 	ent = CL_EntityNum (num);
+	const q1entity_state_t& baseline = clq1_baselines[num];
 
 for (i=0 ; i<16 ; i++)
 if (bits&(1<<i))
@@ -402,7 +403,7 @@ if (bits&(1<<i))
 			Host_Error ("CL_ParseModel: bad modnum");
 	}
 	else
-		modnum = ent->baseline.modelindex;
+		modnum = baseline.modelindex;
 		
 	model = cl.model_precache[modnum];
 	if (modnum != ent->state.modelindex)
@@ -426,12 +427,12 @@ if (bits&(1<<i))
 	if (bits & U_FRAME)
 		ent->state.frame = net_message.ReadByte ();
 	else
-		ent->state.frame = ent->baseline.frame;
+		ent->state.frame = baseline.frame;
 
 	if (bits & U_COLORMAP)
 		i = net_message.ReadByte();
 	else
-		i = ent->baseline.colormap;
+		i = baseline.colormap;
 	if (i > cl.maxclients)
 		Sys_Error ("i >= cl.maxclients");
 	ent->state.colormap = i;
@@ -439,7 +440,7 @@ if (bits&(1<<i))
 	if (bits & U_SKIN)
 		skin = net_message.ReadByte();
 	else
-		skin = ent->baseline.skinnum;
+		skin = baseline.skinnum;
 	if (skin != ent->state.skinnum) {
 		ent->state.skinnum = skin;
 		if (num > 0 && num <= cl.maxclients)
@@ -449,7 +450,7 @@ if (bits&(1<<i))
 	if (bits & U_EFFECTS)
 		ent->state.effects = net_message.ReadByte();
 	else
-		ent->state.effects = ent->baseline.effects;
+		ent->state.effects = baseline.effects;
 
 // shift the known values for interpolation
 	VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
@@ -458,29 +459,29 @@ if (bits&(1<<i))
 	if (bits & U_ORIGIN1)
 		ent->msg_origins[0][0] = net_message.ReadCoord ();
 	else
-		ent->msg_origins[0][0] = ent->baseline.origin[0];
+		ent->msg_origins[0][0] = baseline.origin[0];
 	if (bits & U_ANGLE1)
 		ent->msg_angles[0][0] = net_message.ReadAngle();
 	else
-		ent->msg_angles[0][0] = ent->baseline.angles[0];
+		ent->msg_angles[0][0] = baseline.angles[0];
 
 	if (bits & U_ORIGIN2)
 		ent->msg_origins[0][1] = net_message.ReadCoord ();
 	else
-		ent->msg_origins[0][1] = ent->baseline.origin[1];
+		ent->msg_origins[0][1] = baseline.origin[1];
 	if (bits & U_ANGLE2)
 		ent->msg_angles[0][1] = net_message.ReadAngle();
 	else
-		ent->msg_angles[0][1] = ent->baseline.angles[1];
+		ent->msg_angles[0][1] = baseline.angles[1];
 
 	if (bits & U_ORIGIN3)
 		ent->msg_origins[0][2] = net_message.ReadCoord ();
 	else
-		ent->msg_origins[0][2] = ent->baseline.origin[2];
+		ent->msg_origins[0][2] = baseline.origin[2];
 	if (bits & U_ANGLE3)
 		ent->msg_angles[0][2] = net_message.ReadAngle();
 	else
-		ent->msg_angles[0][2] = ent->baseline.angles[2];
+		ent->msg_angles[0][2] = baseline.angles[2];
 
 	if ( bits & U_NOLERP )
 		forcelink = true;
@@ -499,18 +500,18 @@ if (bits&(1<<i))
 CL_ParseBaseline
 ==================
 */
-void CL_ParseBaseline (entity_t *ent)
+void CL_ParseBaseline (q1entity_state_t *ent)
 {
 	int			i;
 	
-	ent->baseline.modelindex = net_message.ReadByte ();
-	ent->baseline.frame = net_message.ReadByte ();
-	ent->baseline.colormap = net_message.ReadByte();
-	ent->baseline.skinnum = net_message.ReadByte();
+	ent->modelindex = net_message.ReadByte ();
+	ent->frame = net_message.ReadByte ();
+	ent->colormap = net_message.ReadByte();
+	ent->skinnum = net_message.ReadByte();
 	for (i=0 ; i<3 ; i++)
 	{
-		ent->baseline.origin[i] = net_message.ReadCoord ();
-		ent->baseline.angles[i] = net_message.ReadAngle ();
+		ent->origin[i] = net_message.ReadCoord ();
+		ent->angles[i] = net_message.ReadAngle ();
 	}
 }
 
@@ -645,6 +646,7 @@ CL_ParseStatic
 void CL_ParseStatic (void)
 {
 	entity_t *ent;
+	q1entity_state_t baseline;
 	int		i;
 		
 	i = cl.num_statics;
@@ -653,16 +655,16 @@ void CL_ParseStatic (void)
 	ent = &cl_static_entities[i];
 	Com_Memset(ent, 0, sizeof(*ent));
 	cl.num_statics++;
-	CL_ParseBaseline (ent);
+	CL_ParseBaseline(&baseline);
 
 // copy it to the current state
-	ent->state.modelindex = ent->baseline.modelindex;
-	ent->state.frame = ent->baseline.frame;
-	ent->state.skinnum = ent->baseline.skinnum;
-	ent->state.effects = ent->baseline.effects;
+	ent->state.modelindex = baseline.modelindex;
+	ent->state.frame = baseline.frame;
+	ent->state.skinnum = baseline.skinnum;
+	ent->state.effects = baseline.effects;
 
-	VectorCopy (ent->baseline.origin, ent->state.origin);
-	VectorCopy (ent->baseline.angles, ent->state.angles);	
+	VectorCopy (baseline.origin, ent->state.origin);
+	VectorCopy (baseline.angles, ent->state.angles);	
 }
 
 /*
@@ -837,7 +839,8 @@ void CL_ParseServerMessage (void)
 		case svc_spawnbaseline:
 			i = net_message.ReadShort ();
 			// must use CL_EntityNum() to force cl.num_entities up
-			CL_ParseBaseline (CL_EntityNum(i));
+			CL_EntityNum(i);
+			CL_ParseBaseline(&clq1_baselines[i]);
 			break;
 		case svc_spawnstatic:
 			CL_ParseStatic ();

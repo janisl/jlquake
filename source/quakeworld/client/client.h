@@ -309,7 +309,6 @@ extern	Cvar*	name;
 extern	client_state_t	cl;
 
 // FIXME, allocate dynamically
-extern	q1entity_state_t	cl_baselines[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 extern	qboolean	nomaster;

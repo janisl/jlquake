@@ -260,7 +260,7 @@ void CL_ParsePacketEntities (qboolean delta)
 			}
 			if (newindex >= MAX_PACKET_ENTITIES)
 				Host_EndGame ("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
-			CL_ParseDelta (&cl_baselines[newnum], &newp->entities[newindex], word);
+			CL_ParseDelta (&clq1_baselines[newnum], &newp->entities[newindex], word);
 			newindex++;
 			continue;
 		}

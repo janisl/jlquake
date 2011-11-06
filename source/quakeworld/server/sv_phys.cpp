@@ -432,8 +432,8 @@ qboolean SV_Push (edict_t *pusher, vec3_t move)
 	vec3_t		mins, maxs;
 	vec3_t		pushorig;
 	int			num_moved;
-	edict_t		*moved_edict[MAX_EDICTS];
-	vec3_t		moved_from[MAX_EDICTS];
+	edict_t		*moved_edict[MAX_EDICTS_Q1];
+	vec3_t		moved_from[MAX_EDICTS_Q1];
 
 	for (i=0 ; i<3 ; i++)
 	{

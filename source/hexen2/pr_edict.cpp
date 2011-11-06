@@ -87,7 +87,7 @@ edict_t *ED_Alloc (void)
 		}
 	}
 	
-	if (i == MAX_EDICTS)
+	if (i == MAX_EDICTS_H2)
 	{
 		SV_Edicts("edicts.txt");
 		Sys_Error ("ED_Alloc: no free edicts");

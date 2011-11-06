@@ -98,7 +98,7 @@ entity_t	*CL_EntityNum (int num)
 {
 	if (num >= cl.num_entities)
 	{
-		if (num >= MAX_EDICTS)
+		if (num >= MAX_EDICTS_H2)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
 		while (cl.num_entities<=num)
 		{
@@ -145,7 +145,7 @@ void CL_ParseStartSoundPacket(void)
 	ent = channel >> 3;
 	channel &= 7;
 
-	if (ent > MAX_EDICTS)
+	if (ent > MAX_EDICTS_H2)
 		Host_Error ("CL_ParseStartSoundPacket: ent = %i", ent);
 	
 	for (i=0 ; i<3 ; i++)
@@ -447,8 +447,9 @@ void CL_ParseUpdate (int bits)
 	else
 		num = net_message.ReadByte ();
 	ent = CL_EntityNum (num);
+	h2entity_state_t& baseline = clh2_baselines[num];
 
-	ent->baseline.flags |= BE_ON;
+	baseline.flags |= BE_ON;
 
 	ref_ent = NULL;
 
@@ -465,20 +466,20 @@ void CL_ParseUpdate (int bits)
 		ref_ent = &build_ent;
 
 		build_ent.number = num;
-		build_ent.origin[0] = ent->baseline.origin[0];
-		build_ent.origin[1] = ent->baseline.origin[1];
-		build_ent.origin[2] = ent->baseline.origin[2];
-		build_ent.angles[0] = ent->baseline.angles[0];
-		build_ent.angles[1] = ent->baseline.angles[1];
-		build_ent.angles[2] = ent->baseline.angles[2];
-		build_ent.modelindex = ent->baseline.modelindex;
-		build_ent.frame = ent->baseline.frame;
-		build_ent.colormap = ent->baseline.colormap;
-		build_ent.skinnum = ent->baseline.skinnum;
-		build_ent.effects = ent->baseline.effects;
-		build_ent.scale = ent->baseline.scale;
-		build_ent.drawflags = ent->baseline.drawflags;
-		build_ent.abslight = ent->baseline.abslight;
+		build_ent.origin[0] = baseline.origin[0];
+		build_ent.origin[1] = baseline.origin[1];
+		build_ent.origin[2] = baseline.origin[2];
+		build_ent.angles[0] = baseline.angles[0];
+		build_ent.angles[1] = baseline.angles[1];
+		build_ent.angles[2] = baseline.angles[2];
+		build_ent.modelindex = baseline.modelindex;
+		build_ent.frame = baseline.frame;
+		build_ent.colormap = baseline.colormap;
+		build_ent.skinnum = baseline.skinnum;
+		build_ent.effects = baseline.effects;
+		build_ent.scale = baseline.scale;
+		build_ent.drawflags = baseline.drawflags;
+		build_ent.abslight = baseline.abslight;
 	}
 
 	if (cl.need_build)
@@ -699,21 +700,21 @@ void CL_ParseUpdate2 (int bits)
 CL_ParseBaseline
 ==================
 */
-void CL_ParseBaseline (entity_t *ent)
+void CL_ParseBaseline (h2entity_state_t *ent)
 {
 	int			i;
 	
-	ent->baseline.modelindex = net_message.ReadShort ();
-	ent->baseline.frame = net_message.ReadByte ();
-	ent->baseline.colormap = net_message.ReadByte();
-	ent->baseline.skinnum = net_message.ReadByte();
-	ent->baseline.scale = net_message.ReadByte();
-	ent->baseline.drawflags = net_message.ReadByte();
-	ent->baseline.abslight = net_message.ReadByte();
+	ent->modelindex = net_message.ReadShort ();
+	ent->frame = net_message.ReadByte ();
+	ent->colormap = net_message.ReadByte();
+	ent->skinnum = net_message.ReadByte();
+	ent->scale = net_message.ReadByte();
+	ent->drawflags = net_message.ReadByte();
+	ent->abslight = net_message.ReadByte();
 	for (i=0 ; i<3 ; i++)
 	{
-		ent->baseline.origin[i] = net_message.ReadCoord ();
-		ent->baseline.angles[i] = net_message.ReadAngle ();
+		ent->origin[i] = net_message.ReadCoord ();
+		ent->angles[i] = net_message.ReadAngle ();
 	}
 }
 
@@ -941,6 +942,7 @@ CL_ParseStatic
 void CL_ParseStatic (void)
 {
 	entity_t *ent;
+	h2entity_state_t baseline;
 	int		i;
 		
 	i = cl.num_statics;
@@ -948,19 +950,19 @@ void CL_ParseStatic (void)
 		Host_Error ("Too many static entities");
 	ent = &cl_static_entities[i];
 	cl.num_statics++;
-	CL_ParseBaseline (ent);
+	CL_ParseBaseline (&baseline);
 
 // copy it to the current state
-	ent->state.modelindex = ent->baseline.modelindex;
-	ent->state.frame = ent->baseline.frame;
-	ent->state.skinnum = ent->baseline.skinnum;
-	ent->state.scale = ent->baseline.scale;
-	ent->state.effects = ent->baseline.effects;
-	ent->state.drawflags = ent->baseline.drawflags;
-	ent->state.abslight = ent->baseline.abslight;
+	ent->state.modelindex = baseline.modelindex;
+	ent->state.frame = baseline.frame;
+	ent->state.skinnum = baseline.skinnum;
+	ent->state.scale = baseline.scale;
+	ent->state.effects = baseline.effects;
+	ent->state.drawflags = baseline.drawflags;
+	ent->state.abslight = baseline.abslight;
 
-	VectorCopy (ent->baseline.origin, ent->state.origin);
-	VectorCopy (ent->baseline.angles, ent->state.angles);
+	VectorCopy (baseline.origin, ent->state.origin);
+	VectorCopy (baseline.angles, ent->state.angles);
 }
 
 /*
@@ -1237,7 +1239,7 @@ void CL_ParseServerMessage (void)
 			ent = channel >> 3;
 			channel &= 7;
 			
-			if (ent > MAX_EDICTS)
+			if (ent > MAX_EDICTS_H2)
 				Host_Error ("svc_sound_update_pos: ent = %i", ent);
 			
 			for (i=0 ; i<3 ; i++)
@@ -1303,7 +1305,8 @@ void CL_ParseServerMessage (void)
 		case svc_spawnbaseline:
 			i = net_message.ReadShort ();
 			// must use CL_EntityNum() to force cl.num_entities up
-			CL_ParseBaseline (CL_EntityNum(i));
+			CL_EntityNum(i);
+			CL_ParseBaseline (&clh2_baselines[i]);
 			break;
 		case svc_spawnstatic:
 			CL_ParseStatic ();
@@ -1475,16 +1478,16 @@ void CL_ParseServerMessage (void)
 					cl.need_build = 0;
 				}
 
-				for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
+				for (i = 1; i < cl.num_entities; i++)
 				{
-					ent->baseline.flags &= ~BE_ON;
+					clh2_baselines[i].flags &= ~BE_ON;
 				}
 
 				for(i=0;i<cl.frames[0].count;i++)
 				{
 					ent = CL_EntityNum (cl.frames[0].states[i].number);
 					ent->state.modelindex = cl.frames[0].states[i].modelindex;
-					ent->baseline.flags |= BE_ON;
+					clh2_baselines[cl.frames[0].states[i].number].flags |= BE_ON;
 				}
 				break;
 
@@ -1500,7 +1503,7 @@ void CL_ParseServerMessage (void)
 					if (cl.need_build)
 						cl.RemoveList[i] = k;
 					ent = CL_EntityNum (k);
-					ent->baseline.flags &= ~BE_ON;
+					clh2_baselines[k].flags &= ~BE_ON;
 				}
 				break;
 

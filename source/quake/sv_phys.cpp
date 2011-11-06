@@ -429,8 +429,8 @@ void SV_PushMove (edict_t *pusher, float movetime)
 	vec3_t		mins, maxs, move;
 	vec3_t		entorig, pushorig;
 	int			num_moved;
-	edict_t		*moved_edict[MAX_EDICTS];
-	vec3_t		moved_from[MAX_EDICTS];
+	edict_t		*moved_edict[MAX_EDICTS_Q1];
+	vec3_t		moved_from[MAX_EDICTS_Q1];
 
 	if (!pusher->v.velocity[0] && !pusher->v.velocity[1] && !pusher->v.velocity[2])
 	{

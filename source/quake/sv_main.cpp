@@ -1064,7 +1064,7 @@ void SV_SpawnServer (char *server)
 	PR_LoadProgs ();
 
 // allocate server memory
-	sv.max_edicts = MAX_EDICTS;
+	sv.max_edicts = MAX_EDICTS_Q1;
 	
 	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 

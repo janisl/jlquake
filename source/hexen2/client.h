@@ -241,7 +241,7 @@ extern	Cvar	*cl_lightlevel;	// FIXME HACK
 extern	client_state_t	cl;
 
 // FIXME, allocate dynamically
-extern	entity_t		cl_entities[MAX_EDICTS];
+extern	entity_t		cl_entities[MAX_EDICTS_H2];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 //=============================================================================

@@ -83,7 +83,7 @@ edict_t *ED_Alloc (void)
 		}
 	}
 	
-	if (i == MAX_EDICTS)
+	if (i == MAX_EDICTS_Q1)
 		Sys_Error ("ED_Alloc: no free edicts");
 		
 	sv.num_edicts++;

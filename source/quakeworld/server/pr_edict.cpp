@@ -74,7 +74,7 @@ edict_t *ED_Alloc (void)
 		}
 	}
 	
-	if (i == MAX_EDICTS)
+	if (i == MAX_EDICTS_Q1)
 	{
 		Con_Printf ("WARNING: ED_Alloc: no free edicts\n");
 		i--;	// step on whatever is the last edict
@@ -966,7 +966,7 @@ void PR_Init (void)
 
 edict_t *EDICT_NUM(int n)
 {
-	if (n < 0 || n >= MAX_EDICTS)
+	if (n < 0 || n >= MAX_EDICTS_Q1)
 		SV_Error ("EDICT_NUM: bad number %i", n);
 	return (edict_t *)((byte *)sv.edicts+ (n)*pr_edict_size);
 }

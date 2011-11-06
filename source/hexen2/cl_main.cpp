@@ -39,7 +39,7 @@ Cvar	*cl_lightlevel;
 client_static_t	cls;
 client_state_t	cl;
 // FIXME: put these on hunk?
-entity_t		cl_entities[MAX_EDICTS];
+entity_t		cl_entities[MAX_EDICTS_H2];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
@@ -62,6 +62,7 @@ void CL_ClearState (void)
 
 // clear other arrays	
 	Com_Memset(cl_entities, 0, sizeof(cl_entities));
+	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
 	CL_ClearDlights();
 	CL_ClearLightStyles();
 	CL_ClearTEnts();
@@ -447,7 +448,7 @@ void CL_RelinkEntities (void)
 		}
 
 // if the object wasn't included in the last packet, remove it
-		if (ent->msgtime != cl.mtime[0] && !(ent->baseline.flags & BE_ON))
+		if (ent->msgtime != cl.mtime[0] && !(clh2_baselines[i].flags & BE_ON))
 		{
 			ent->state.modelindex = 0;
 			continue;

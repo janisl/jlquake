@@ -229,7 +229,7 @@ extern	Cvar*	m_side;
 extern	client_state_t	cl;
 
 // FIXME, allocate dynamically
-extern	entity_t		cl_entities[MAX_EDICTS];
+extern	entity_t		cl_entities[MAX_EDICTS_Q1];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 //=============================================================================

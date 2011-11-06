@@ -43,7 +43,7 @@ Cvar*	m_side;
 client_static_t	cls;
 client_state_t	cl;
 // FIXME: put these on hunk?
-entity_t		cl_entities[MAX_EDICTS];
+entity_t		cl_entities[MAX_EDICTS_Q1];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 /*
@@ -64,6 +64,7 @@ void CL_ClearState (void)
 
 // clear other arrays	
 	Com_Memset(cl_entities, 0, sizeof(cl_entities));
+	Com_Memset(clq1_baselines, 0, sizeof(clq1_baselines));
 	CL_ClearDlights();
 	CL_ClearLightStyles();
 	CLQ1_ClearTEnts();

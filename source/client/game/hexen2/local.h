@@ -34,4 +34,6 @@ struct h2stream_t
 
 extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
+extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
+
 void CLH2_ClearStreams();

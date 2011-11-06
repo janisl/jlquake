@@ -3,6 +3,7 @@ set(CLIENT_FILES
 	cinematic/main.cpp
 	cinematic/pcx.cpp
 	cinematic/roq.cpp
+	game/hexen2/entities.cpp
 	game/hexen2/light_effects.cpp
 	game/hexen2/particle_effects.cpp
 	game/hexen2/stream.cpp

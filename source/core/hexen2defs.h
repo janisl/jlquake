@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#define MAX_EDICTS_H2		768			// FIXME: ouch! ouch! ouch!
+
 // Player Classes
 #define NUM_CLASSES_H2				4
 #define NUM_CLASSES_H2MP			5

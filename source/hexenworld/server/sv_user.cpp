@@ -1107,7 +1107,7 @@ SV_PreRunCmd
 ===========
 Done before running a player command.  Clears the touch array
 */
-byte playertouch[(MAX_EDICTS+7)/8];
+byte playertouch[(MAX_EDICTS_H2+7)/8];
 
 void SV_PreRunCmd(void)
 {

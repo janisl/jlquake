@@ -499,8 +499,8 @@ qboolean SV_Push (edict_t *pusher, vec3_t move)
 	vec3_t		mins, maxs;
 	vec3_t		pushorig;
 	int			num_moved;
-	edict_t		*moved_edict[MAX_EDICTS];
-	vec3_t		moved_from[MAX_EDICTS];
+	edict_t		*moved_edict[MAX_EDICTS_H2];
+	vec3_t		moved_from[MAX_EDICTS_H2];
 
 	for (i=0 ; i<3 ; i++)
 	{
@@ -656,8 +656,8 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 	vec3_t		move, a, amove;
 	vec3_t		entorig, pushorig;
 	int			num_moved;
-	edict_t		*moved_edict[MAX_EDICTS];
-	vec3_t		moved_from[MAX_EDICTS];
+	edict_t		*moved_edict[MAX_EDICTS_H2];
+	vec3_t		moved_from[MAX_EDICTS_H2];
 	vec3_t		org, org2;
 	vec3_t		forward, right, up;
 	edict_t		*ground;
@@ -698,8 +698,8 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 #endif
 
 		slaves_moved++;
-		VectorCopy (slave->v.angles, moved_from[MAX_EDICTS - slaves_moved]);
-		moved_edict[MAX_EDICTS - slaves_moved] = slave;
+		VectorCopy (slave->v.angles, moved_from[MAX_EDICTS_H2 - slaves_moved]);
+		moved_edict[MAX_EDICTS_H2 - slaves_moved] = slave;
 
 		if (slave->v.movedir[PITCH])
 			slave->v.angles[PITCH] = master->v.angles[PITCH];
@@ -749,7 +749,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 			{
 				for (i=0; i<slaves_moved; i++)
 				{
-					if (ground == moved_edict[MAX_EDICTS - i - 1])
+					if (ground == moved_edict[MAX_EDICTS_H2 - i - 1])
 					{
 						moveit = true;
 						break;
@@ -769,7 +769,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 			{
 				for (i=0; i<slaves_moved; i++)
 				{
-					slave = moved_edict[MAX_EDICTS - i - 1];
+					slave = moved_edict[MAX_EDICTS_H2 - i - 1];
 					if ( check->v.absmin[0] >= slave->v.absmax[0]
 					|| check->v.absmin[1] >= slave->v.absmax[1]
 					|| check->v.absmin[2] >= slave->v.absmax[2]
@@ -835,8 +835,8 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 
 			for (i=0; i<slaves_moved; i++)
 			{
-				slave = moved_edict[MAX_EDICTS - i - 1];
-				VectorCopy (moved_from[MAX_EDICTS - i - 1], slave->v.angles);
+				slave = moved_edict[MAX_EDICTS_H2 - i - 1];
+				VectorCopy (moved_from[MAX_EDICTS_H2 - i - 1], slave->v.angles);
 				SV_LinkEdict (slave, false);
 				slave->v.ltime -= movetime;
 			}
@@ -870,7 +870,7 @@ Con_DPrintf("result:\n");
 Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.angles[2]);
 for (i=0; i<slaves_moved; i++)
 {
-	slave = moved_edict[MAX_EDICTS - i - 1];
+	slave = moved_edict[MAX_EDICTS_H2 - i - 1];
 	Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], NUM_FOR_EDICT(slave));
 }
 Con_DPrintf("\n");
@@ -885,8 +885,8 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 	vec3_t		move, a, amove,mins,maxs,move2,move3,testmove/*,amove_norm*/;
 	vec3_t		entorig, pushorig,pushorigangles;
 	int			num_moved;
-	edict_t		*moved_edict[MAX_EDICTS];
-	vec3_t		moved_from[MAX_EDICTS];
+	edict_t		*moved_edict[MAX_EDICTS_H2];
+	vec3_t		moved_from[MAX_EDICTS_H2];
 	vec3_t		org, org2, check_center;
 	vec3_t		forward, right, up;
 	//vec3_t		dir2push,push_vel;
@@ -935,8 +935,8 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 #endif
 
 		slaves_moved++;
-		VectorCopy (slave->v.angles, moved_from[MAX_EDICTS - slaves_moved]);
-		moved_edict[MAX_EDICTS - slaves_moved] = slave;
+		VectorCopy (slave->v.angles, moved_from[MAX_EDICTS_H2 - slaves_moved]);
+		moved_edict[MAX_EDICTS_H2 - slaves_moved] = slave;
 
 		if (slave->v.movedir[PITCH])
 			slave->v.angles[PITCH] = master->v.angles[PITCH];
@@ -986,7 +986,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 			{
 				for (i=0; i<slaves_moved; i++)
 				{
-					if (ground == moved_edict[MAX_EDICTS - i - 1])
+					if (ground == moved_edict[MAX_EDICTS_H2 - i - 1])
 					{
 						moveit = true;
 						break;
@@ -1006,7 +1006,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 			{
 				for (i=0; i<slaves_moved; i++)
 				{
-					slave = moved_edict[MAX_EDICTS - i - 1];
+					slave = moved_edict[MAX_EDICTS_H2 - i - 1];
 					if ( check->v.absmin[0] >= slave->v.absmax[0]
 					|| check->v.absmin[1] >= slave->v.absmax[1]
 					|| check->v.absmin[2] >= slave->v.absmax[2]
@@ -1198,8 +1198,8 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 				
 				for (i=0; i<slaves_moved; i++)
 				{
-					slave = moved_edict[MAX_EDICTS - i - 1];
-					VectorCopy (moved_from[MAX_EDICTS - i - 1], slave->v.angles);
+					slave = moved_edict[MAX_EDICTS_H2 - i - 1];
+					VectorCopy (moved_from[MAX_EDICTS_H2 - i - 1], slave->v.angles);
 					SV_LinkEdict (slave, false);
 					slave->v.ltime -= movetime;
 				}
@@ -1236,7 +1236,7 @@ Con_DPrintf("result:\n");
 Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.angles[2]);
 for (i=0; i<slaves_moved; i++)
 {
-	slave = moved_edict[MAX_EDICTS - i - 1];
+	slave = moved_edict[MAX_EDICTS_H2 - i - 1];
 	Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], NUM_FOR_EDICT(slave));
 }
 Con_DPrintf("\n");

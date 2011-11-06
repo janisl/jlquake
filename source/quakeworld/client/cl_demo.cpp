@@ -544,8 +544,8 @@ void CL_Record_f (void)
 // baselines
 
 	Com_Memset(&blankes, 0, sizeof(blankes));
-	for (i = 0; i < MAX_EDICTS; i++) {
-		es = cl_baselines + i;
+	for (i = 0; i < MAX_EDICTS_Q1; i++) {
+		es = clq1_baselines + i;
 
 		if (memcmp(es, &blankes, sizeof(blankes))) {
 			buf.WriteByte(svc_spawnbaseline);		

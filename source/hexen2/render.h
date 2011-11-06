@@ -7,7 +7,6 @@
 
 struct entity_t
 {
-	h2entity_state_t			baseline;		// to fill in defaults in updates
 	h2entity_state_t state;
 
 	double					msgtime;		// time of last update

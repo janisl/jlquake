@@ -37,7 +37,6 @@
 //
 // per-level limits
 //
-#define	MAX_EDICTS		768			// FIXME: ouch! ouch! ouch!
 #define	MAX_LIGHTSTYLES_H2	64
 #define	MAX_MODELS		512			// Sent over the net as a word
 #define	MAX_SOUNDS		256			// so they cannot be blindly increased

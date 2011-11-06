@@ -236,7 +236,7 @@ void SV_SpawnServer (char *server)
 	PR_LoadProgs ();
 
 	// allocate edicts
-	sv.edicts = (edict_t*)Hunk_AllocName (MAX_EDICTS*pr_edict_size, "edicts");
+	sv.edicts = (edict_t*)Hunk_AllocName (MAX_EDICTS_Q1*pr_edict_size, "edicts");
 	
 	// leave slots at start for clients only
 	sv.num_edicts = MAX_CLIENTS+1;

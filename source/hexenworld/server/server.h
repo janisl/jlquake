@@ -39,7 +39,7 @@ typedef struct
 
 	struct EffectT Effects[MAX_EFFECTS];
 
-	int			num_edicts;			// increases towards MAX_EDICTS
+	int			num_edicts;			// increases towards MAX_EDICTS_H2
 	edict_t		*edicts;			// can NOT be array indexed, because
 									// edict_t is variable sized, but can
 									// be used to reference the world ent

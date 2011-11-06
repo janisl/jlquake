@@ -79,7 +79,6 @@ Cvar*	msg;
 client_static_t	cls;
 client_state_t	cl;
 
-q1entity_state_t	cl_baselines[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 double			connect_time = -1;		// for connection retransmits
@@ -373,6 +372,7 @@ void CL_ClearState (void)
 // clear other arrays	
 	CL_ClearDlights();
 	CL_ClearLightStyles();
+	Com_Memset(clq1_baselines, 0, sizeof(clq1_baselines));
 }
 
 /*

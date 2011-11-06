@@ -56,7 +56,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // per-level limits
 //
-#define	MAX_EDICTS		768			// FIXME: ouch! ouch! ouch!
 #define	MAX_LIGHTSTYLES_Q1	64
 #define	MAX_MODELS		256			// these are sent over the net as bytes
 #define	MAX_SOUNDS		256			// so they cannot be blindly increased
