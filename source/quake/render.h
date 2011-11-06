@@ -36,21 +36,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct entity_t
 {
-	qboolean				forcelink;		// model changed
-
-	q1entity_state_t			baseline;		// to fill in defaults in updates
+	q1entity_state_t		baseline;		// to fill in defaults in updates
+	q1entity_state_t state;
 
 	double					msgtime;		// time of last update
 	vec3_t					msg_origins[2];	// last two updates (0 is newest)	
-	vec3_t					origin;
 	vec3_t					msg_angles[2];	// last two updates (0 is newest)
-	vec3_t					angles;	
-	qhandle_t				model;			// NULL = no model
-	int						frame;
 	float					syncbase;		// for client-side animations
-	int						colormap;
-	int						effects;		// light, particals, etc
-	int						skinnum;		// for Alias models
 };
 
 

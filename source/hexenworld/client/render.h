@@ -3,22 +3,9 @@
 
 struct entity_t
 {
-	vec3_t					origin;
-	vec3_t					angles;
-	vec3_t					angleAdd;		// For clientside rotation stuff
-	qhandle_t				model;			// 0 = no model
-	int						frame;
-	byte					colorshade;
-	int						skinnum;		// for Alias models
-	int						scale;			// for Alias models
-	int						drawflags;		// for Alias models
-	int						abslight;		// for Alias models
-
-	struct player_info_s	*scoreboard;	// identify player
-
-	float					syncbase;
+	h2entity_state_t state;
+	float syncbase;
 };
-
 
 extern float RTint[256],GTint[256],BTint[256];
 

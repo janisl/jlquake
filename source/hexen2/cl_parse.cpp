@@ -401,7 +401,7 @@ static void R_TranslatePlayerSkin (int playernum)
 		classIndex = 0;
 	}
 
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), ent->model, translate, classIndex);
+	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate, classIndex);
 }
 
 /*
@@ -516,9 +516,9 @@ void CL_ParseUpdate (int bits)
 		
 	model = cl.model_precache[modnum];
 	set_ent->modelindex = modnum;
-	if (model != ent->model)
+	if (modnum != ent->state.modelindex)
 	{
-		ent->model = model;
+		ent->state.modelindex = modnum;
 
 	// automatic animation (torches, etc) can be either all together
 	// or randomized
@@ -536,43 +536,34 @@ void CL_ParseUpdate (int bits)
 	}
 	
 	if (bits & U_FRAME)
-		set_ent->frame = ent->frame = net_message.ReadByte ();
+		set_ent->frame = ent->state.frame = net_message.ReadByte ();
 	else
-		ent->frame = ref_ent->frame;
+		ent->state.frame = ref_ent->frame;
 
 	if (bits & U_COLORMAP)
-		set_ent->colormap = i = net_message.ReadByte();
+		set_ent->colormap = ent->state.colormap = net_message.ReadByte();
 	else
-		i = ref_ent->colormap;
-
-	if (!i)
-	{
-		ent->colorshade = i;
-	}
-	else
-	{
-		ent->colorshade = i;
-	}
+		ent->state.colormap = ref_ent->colormap;
 
 	if(bits & U_SKIN)
 	{
-		set_ent->skinnum = ent->skinnum = net_message.ReadByte();
-		set_ent->drawflags = ent->drawflags = net_message.ReadByte();
+		set_ent->skinnum = ent->state.skinnum = net_message.ReadByte();
+		set_ent->drawflags = ent->state.drawflags = net_message.ReadByte();
 	}
 	else
 	{
-		ent->skinnum = ref_ent->skinnum;
-		ent->drawflags = ref_ent->drawflags;
+		ent->state.skinnum = ref_ent->skinnum;
+		ent->state.drawflags = ref_ent->drawflags;
 	}
 
 	if (bits & U_EFFECTS)
 	{
-		set_ent->effects = ent->effects = net_message.ReadByte();
+		set_ent->effects = ent->state.effects = net_message.ReadByte();
 //		if (num == 2) fprintf(FH,"Read effects %d\n",set_ent->effects);
 	}
 	else
 	{
-		ent->effects = ref_ent->effects;
+		ent->state.effects = ref_ent->effects;
 		//if (num == 2) fprintf(FH,"restored effects %d\n",ref_ent->effects);
 	}
 
@@ -615,25 +606,24 @@ void CL_ParseUpdate (int bits)
 
 	if(bits&U_SCALE)
 	{
-		set_ent->scale = ent->scale = net_message.ReadByte();
-		set_ent->abslight = ent->abslight = net_message.ReadByte();
+		set_ent->scale = ent->state.scale = net_message.ReadByte();
+		set_ent->abslight = ent->state.abslight = net_message.ReadByte();
 	}
 	else
 	{
-		ent->scale = ref_ent->scale;
-		ent->abslight = ref_ent->abslight;
+		ent->state.scale = ref_ent->scale;
+		ent->state.abslight = ref_ent->abslight;
 	}
 
 	if ( bits & U_NOLERP )
-		ent->forcelink = true;
+		forcelink = true;
 
 	if ( forcelink )
 	{	// didn't have an update last message
 		VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
-		VectorCopy (ent->msg_origins[0], ent->origin);
+		VectorCopy (ent->msg_origins[0], ent->state.origin);
 		VectorCopy (ent->msg_angles[0], ent->msg_angles[1]);
-		VectorCopy (ent->msg_angles[0], ent->angles);
-		ent->forcelink = true;
+		VectorCopy (ent->msg_angles[0], ent->state.angles);
 	}
 
 
@@ -961,16 +951,16 @@ void CL_ParseStatic (void)
 	CL_ParseBaseline (ent);
 
 // copy it to the current state
-	ent->model = cl.model_precache[ent->baseline.modelindex];
-	ent->frame = ent->baseline.frame;
-	ent->skinnum = ent->baseline.skinnum;
-	ent->scale = ent->baseline.scale;
-	ent->effects = ent->baseline.effects;
-	ent->drawflags = ent->baseline.drawflags;
-	ent->abslight = ent->baseline.abslight;
+	ent->state.modelindex = ent->baseline.modelindex;
+	ent->state.frame = ent->baseline.frame;
+	ent->state.skinnum = ent->baseline.skinnum;
+	ent->state.scale = ent->baseline.scale;
+	ent->state.effects = ent->baseline.effects;
+	ent->state.drawflags = ent->baseline.drawflags;
+	ent->state.abslight = ent->baseline.abslight;
 
-	VectorCopy (ent->baseline.origin, ent->origin);
-	VectorCopy (ent->baseline.angles, ent->angles);	
+	VectorCopy (ent->baseline.origin, ent->state.origin);
+	VectorCopy (ent->baseline.angles, ent->state.angles);
 }
 
 /*
@@ -1400,11 +1390,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 			case svc_set_view_flags:
-				cl.viewent.drawflags |= net_message.ReadByte();
+				cl.viewent.state.drawflags |= net_message.ReadByte();
 				break;
 
 			case svc_clear_view_flags:
-				cl.viewent.drawflags &= ~net_message.ReadByte();
+				cl.viewent.state.drawflags &= ~net_message.ReadByte();
 				break;
 
 			case svc_start_effect:
@@ -1424,7 +1414,7 @@ void CL_ParseServerMessage (void)
 
 			case svc_set_view_tint:
 				i = net_message.ReadByte();
-				cl.viewent.colorshade = i;
+				cl.viewent.state.colormap = i;
 				break;
 
 			case svc_reference:
@@ -1493,7 +1483,7 @@ void CL_ParseServerMessage (void)
 				for(i=0;i<cl.frames[0].count;i++)
 				{
 					ent = CL_EntityNum (cl.frames[0].states[i].number);
-					ent->model = cl.model_precache[cl.frames[0].states[i].modelindex];
+					ent->state.modelindex = cl.frames[0].states[i].modelindex;
 					ent->baseline.flags |= BE_ON;
 				}
 				break;

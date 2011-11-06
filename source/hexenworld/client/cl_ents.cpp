@@ -1410,12 +1410,12 @@ static void CL_LinkStaticEntities()
 		refEntity_t rent;
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
-		VectorCopy(pent->origin, rent.origin);
-		rent.hModel = pent->model;
-		rent.frame = pent->frame;
-		rent.skinNum = pent->skinnum;
+		VectorCopy(pent->state.origin, rent.origin);
+		rent.hModel = cl.model_precache[pent->state.modelindex];
+		rent.frame = pent->state.frame;
+		rent.skinNum = pent->state.skinnum;
 		rent.shaderTime = pent->syncbase;
-		CL_SetRefEntAxis(&rent, pent->angles, pent->angleAdd, pent->scale, pent->colorshade, pent->abslight, pent->drawflags);
+		CL_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, 0, pent->state.abslight, pent->state.drawflags);
 		R_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);
 	}

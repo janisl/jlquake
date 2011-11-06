@@ -298,13 +298,13 @@ void CL_PrintEntities_f (void)
 	for (i=0,ent=cl_entities ; i<cl.num_entities ; i++,ent++)
 	{
 		Con_Printf ("%3i:",i);
-		if (!ent->model)
+		if (!ent->state.modelindex)
 		{
 			Con_Printf ("EMPTY\n");
 			continue;
 		}
 		Con_Printf ("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n"
-		,R_ModelName(ent->model),ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
+		,R_ModelName(cl.model_precache[ent->state.modelindex]),ent->state.frame, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2], ent->state.angles[0], ent->state.angles[1], ent->state.angles[2]);
 	}
 }
 
@@ -440,7 +440,7 @@ void CL_RelinkEntities (void)
 // start on the entity after the world
 	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
 	{
-		if (!ent->model)
+		if (!ent->state.modelindex)
 		{
 			// empty slot
 			continue;
@@ -449,17 +449,17 @@ void CL_RelinkEntities (void)
 // if the object wasn't included in the last packet, remove it
 		if (ent->msgtime != cl.mtime[0] && !(ent->baseline.flags & BE_ON))
 		{
-			ent->model = 0;
+			ent->state.modelindex = 0;
 			continue;
 		}
 
-		VectorCopy (ent->origin, oldorg);
+		VectorCopy (ent->state.origin, oldorg);
 
-		if (ent->forcelink || ent->msgtime != cl.mtime[0])
+		if (ent->msgtime != cl.mtime[0])
 		{	// the entity was not updated in the last message
 			// so move to the final spot
-			VectorCopy (ent->msg_origins[0], ent->origin);
-			VectorCopy (ent->msg_angles[0], ent->angles);
+			VectorCopy (ent->msg_origins[0], ent->state.origin);
+			VectorCopy (ent->msg_angles[0], ent->state.angles);
 		}
 		else
 		{	// if the delta is large, assume a teleport and don't lerp
@@ -475,14 +475,14 @@ void CL_RelinkEntities (void)
 		// interpolate the origin and angles
 			for (j=0 ; j<3 ; j++)
 			{
-				ent->origin[j] = ent->msg_origins[1][j] + f*delta[j];
+				ent->state.origin[j] = ent->msg_origins[1][j] + f*delta[j];
 
 				d = ent->msg_angles[0][j] - ent->msg_angles[1][j];
 				if (d > 180)
 					d -= 360;
 				else if (d < -180)
 					d += 360;
-				ent->angles[j] = ent->msg_angles[1][j] + f*d;
+				ent->state.angles[j] = ent->msg_angles[1][j] + f*d;
 			}
 			
 		}
@@ -497,127 +497,125 @@ void CL_RelinkEntities (void)
 
 
 		c++;
-		if (ent->effects & EF_DARKFIELD)
-			CLH2_DarkFieldParticles (ent->origin);
-		if (ent->effects & EF_MUZZLEFLASH)
+		if (ent->state.effects & EF_DARKFIELD)
+			CLH2_DarkFieldParticles (ent->state.origin);
+		if (ent->state.effects & EF_MUZZLEFLASH)
 		{
 			if (cl_prettylights->value)
 			{
-				CLH2_MuzzleFlashLight(i, ent->origin, ent->angles, true);
+				CLH2_MuzzleFlashLight(i, ent->state.origin, ent->state.angles, true);
 			}
 		}
-		if (ent->effects & EF_BRIGHTLIGHT)
+		if (ent->state.effects & EF_BRIGHTLIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				CLH2_BrightLight(i, ent->origin);
+				CLH2_BrightLight(i, ent->state.origin);
 			}
 		}
-		if (ent->effects & EF_DIMLIGHT)
+		if (ent->state.effects & EF_DIMLIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				CLH2_DimLight(i, ent->origin);
+				CLH2_DimLight(i, ent->state.origin);
 			}
 		}
-		if (ent->effects & EF_DARKLIGHT)
+		if (ent->state.effects & EF_DARKLIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				CLH2_DarkLight(i, ent->origin);
+				CLH2_DarkLight(i, ent->state.origin);
 			}
 		}
-		if (ent->effects & EF_LIGHT)
+		if (ent->state.effects & EF_LIGHT)
 		{			
 			if (cl_prettylights->value)
 			{
-				CLH2_Light(i, ent->origin);
+				CLH2_Light(i, ent->state.origin);
 			}
 		}
 
-		int ModelFlags = R_ModelFlags(ent->model);
+		int ModelFlags = R_ModelFlags(cl.model_precache[ent->state.modelindex]);
 		if (ModelFlags & H2MDLEF_GIB)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_blood);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_blood);
 		else if (ModelFlags & H2MDLEF_ZOMGIB)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_slight_blood);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_slight_blood);
 		else if (ModelFlags & H2MDLEF_BLOODSHOT)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_bloodshot);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_bloodshot);
 		else if (ModelFlags & H2MDLEF_TRACER)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_tracer);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_tracer);
 		else if (ModelFlags & H2MDLEF_TRACER2)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_tracer2);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_tracer2);
 		else if (ModelFlags & H2MDLEF_ROCKET)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_rocket_trail);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_rocket_trail);
 		}
 		else if (ModelFlags & H2MDLEF_FIREBALL)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_fireball);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_fireball);
 			if (cl_prettylights->value)
 			{
-				CLH2_FireBallLight(i, ent->origin);
+				CLH2_FireBallLight(i, ent->state.origin);
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ACIDBALL)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_acidball);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_acidball);
 			if (cl_prettylights->value)
 			{
-				CLH2_FireBallLight(i, ent->origin);
+				CLH2_FireBallLight(i, ent->state.origin);
 			}
 		}
 		else if (ModelFlags & H2MDLEF_ICE)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_ice);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_ice);
 		}
 		else if (ModelFlags & H2MDLEF_SPIT)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_spit);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_spit);
 			if (cl_prettylights->value)
 			{
-				CLH2_SpitLight(i, ent->origin);
+				CLH2_SpitLight(i, ent->state.origin);
 			}
 		}
 		else if (ModelFlags & H2MDLEF_SPELL)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_spell);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_spell);
 		}
 		else if (ModelFlags & H2MDLEF_GRENADE)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_smoke);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_smoke);
 		else if (ModelFlags & H2MDLEF_TRACER3)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_voor_trail);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_voor_trail);
 		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin, rt_vorpal);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_vorpal);
 		}
 		else if (ModelFlags & H2MDLEF_SET_STAFF)
 		{
-			CLH2_TrailParticles (oldorg, ent->origin,rt_setstaff);
+			CLH2_TrailParticles (oldorg, ent->state.origin,rt_setstaff);
 		}
 		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
-				CLH2_TrailParticles (oldorg, ent->origin, rt_magicmissile);
+				CLH2_TrailParticles (oldorg, ent->state.origin, rt_magicmissile);
 		}
 		else if (ModelFlags & H2MDLEF_BONESHARD)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_boneshard);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_boneshard);
 		else if (ModelFlags & H2MDLEF_SCARAB)
-			CLH2_TrailParticles (oldorg, ent->origin, rt_scarab);
+			CLH2_TrailParticles (oldorg, ent->state.origin, rt_scarab);
 
-		ent->forcelink = false;
-
-		if ( ent->effects & EF_NODRAW )
+		if ( ent->state.effects & EF_NODRAW )
 			continue;
 
 		refEntity_t rent;
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
-		VectorCopy(ent->origin, rent.origin);
-		rent.hModel = ent->model;
-		rent.frame = ent->frame;
+		VectorCopy(ent->state.origin, rent.origin);
+		rent.hModel = cl.model_precache[ent->state.modelindex];
+		rent.frame = ent->state.frame;
 		rent.shaderTime = ent->syncbase;
-		rent.skinNum = ent->skinnum;
-		CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
+		rent.skinNum = ent->state.skinnum;
+		CL_SetRefEntAxis(&rent, ent->state.angles, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
 		R_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
 		if (i == cl.viewentity && !chase_active->value)
 		{
@@ -641,12 +639,12 @@ static void CL_LinkStaticEntities()
 		refEntity_t rent;
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
-		VectorCopy(pent->origin, rent.origin);
-		rent.hModel = pent->model;
-		rent.frame = pent->frame;
+		VectorCopy(pent->state.origin, rent.origin);
+		rent.hModel = cl.model_precache[pent->state.modelindex];
+		rent.frame = pent->state.frame;
 		rent.shaderTime = pent->syncbase;
-		rent.skinNum = pent->skinnum;
-		CL_SetRefEntAxis(&rent, pent->angles, pent->scale, pent->colorshade, pent->abslight, pent->drawflags);
+		rent.skinNum = pent->state.skinnum;
+		CL_SetRefEntAxis(&rent, pent->state.angles, pent->state.scale, pent->state.colormap, pent->state.abslight, pent->state.drawflags);
 		R_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);
 	}
@@ -949,5 +947,5 @@ void CIN_FinishCinematic()
 
 float* CL_GetSimOrg()
 {
-	return cl_entities[cl.viewentity].origin;
+	return cl_entities[cl.viewentity].state.origin;
 }

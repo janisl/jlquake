@@ -45,15 +45,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct entity_t
 {
-	vec3_t					origin;
-	vec3_t					angles;	
-	qhandle_t				model;			// 0 = no model
-	int						frame;
-	int						skinnum;		// for Alias models
-
-	struct player_info_s	*scoreboard;	// identify player
-
-	float					syncbase;
+	q1entity_state_t state;
+	float syncbase;
 };
 
 

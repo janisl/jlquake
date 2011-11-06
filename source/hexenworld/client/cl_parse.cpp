@@ -661,15 +661,15 @@ void CL_ParseStatic (void)
 	cl.num_statics++;
 
 // copy it to the current state
-	ent->model = cl.model_precache[es.modelindex];
-	ent->frame = es.frame;
-	ent->skinnum = es.skinnum;
-	ent->scale = es.scale;
-	ent->drawflags = es.drawflags;
-	ent->abslight = es.abslight;
+	ent->state.modelindex = es.modelindex;
+	ent->state.frame = es.frame;
+	ent->state.skinnum = es.skinnum;
+	ent->state.scale = es.scale;
+	ent->state.drawflags = es.drawflags;
+	ent->state.abslight = es.abslight;
 
-	VectorCopy (es.origin, ent->origin);
-	VectorCopy (es.angles, ent->angles);
+	VectorCopy (es.origin, ent->state.origin);
+	VectorCopy (es.angles, ent->state.angles);
 }
 
 /*
@@ -1414,11 +1414,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_set_view_flags:
-			cl.viewent.drawflags |= net_message.ReadByte();
+			cl.viewent.state.drawflags |= net_message.ReadByte();
 			break;
 
 		case svc_clear_view_flags:
-			cl.viewent.drawflags &= ~net_message.ReadByte();
+			cl.viewent.state.drawflags &= ~net_message.ReadByte();
 			break;
 
 		case svc_update_inv:

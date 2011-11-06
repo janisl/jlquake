@@ -306,7 +306,7 @@ static void ParseStream(int type)
 	VectorCopy(dest, stream->dest);
 	if(flags&H2STREAM_ATTACHED)
 	{
-		VectorSubtract(source, cl_entities[ent].origin, stream->offset);
+		VectorSubtract(source, cl_entities[ent].state.origin, stream->offset);
 	}
 }
 
@@ -373,7 +373,7 @@ void CL_UpdateTEnts(void)
 
 		if(stream->flags&H2STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
 		{ // Attach the start position to owner
-			VectorAdd(cl_entities[stream->entity].origin, stream->offset,
+			VectorAdd(cl_entities[stream->entity].state.origin, stream->offset,
 				stream->source);
 		}
 

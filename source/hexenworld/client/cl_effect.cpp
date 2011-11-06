@@ -19,6 +19,12 @@
 
 #define MAX_EFFECT_ENTITIES		256
 
+struct effect_entity_t
+{
+	h2entity_state_t state;
+	qhandle_t model;			// 0 = no model
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 extern void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest);
 extern void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
@@ -41,7 +47,7 @@ static void FreeEffectEntity(int index);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static entity_t EffectEntities[MAX_EFFECT_ENTITIES];
+static effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES];
 static qboolean EntityUsed[MAX_EFFECT_ENTITIES];
 static int EffectEntityCount;
 
@@ -265,7 +271,7 @@ void CL_ParseEffect(void)
 {
 	int index,i;
 	qboolean ImmediateFree;
-	entity_t *ent;
+	effect_entity_t* ent;
 	int dir;
 	float	angleval, sinval, cosval;
 	float skinnum;
@@ -356,7 +362,7 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Smoke.entity_index];
-				VectorCopy(cl.Effects[index].Smoke.origin, ent->origin);
+				VectorCopy(cl.Effects[index].Smoke.origin, ent->state.origin);
 
 				if ((cl.Effects[index].type == CE_WHITE_SMOKE) || 
 					(cl.Effects[index].type == CE_SLOW_WHITE_SMOKE))
@@ -378,8 +384,8 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_ACID_MUZZFL)
 				{
 					ent->model = R_RegisterModel("models/muzzle1.spr");
-					ent->drawflags=DRF_TRANSLUCENT|MLS_ABSLIGHT;
-					ent->abslight=0.2;
+					ent->state.drawflags=DRF_TRANSLUCENT|MLS_ABSLIGHT;
+					ent->state.abslight=0.2;
 				}
 				else if (cl.Effects[index].type == CE_FLAMEWALL)
 					ent->model = R_RegisterModel("models/firewal1.spr");
@@ -396,9 +402,9 @@ void CL_ParseEffect(void)
 					else
 						ent->model = R_RegisterModel("models/firewal3.spr");
 					
-					ent->drawflags = DRF_TRANSLUCENT;
-					ent->abslight = 1;
-					ent->frame = cl.Effects[index].Smoke.frame;
+					ent->state.drawflags = DRF_TRANSLUCENT;
+					ent->state.abslight = 1;
+					ent->state.frame = cl.Effects[index].Smoke.frame;
 				}
 				else if (cl.Effects[index].type == CE_RIPPLE)
 				{
@@ -413,8 +419,8 @@ void CL_ParseEffect(void)
 						S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ripple, 1, 1);
 					cl.Effects[index].Smoke.framelength=0.05;
 					ent->model = R_RegisterModel("models/ripple.spr");
-					ent->drawflags = DRF_TRANSLUCENT;//|SCALE_TYPE_XYONLY|SCALE_ORIGIN_CENTER;
-					ent->angles[0]=90;
+					ent->state.drawflags = DRF_TRANSLUCENT;//|SCALE_TYPE_XYONLY|SCALE_ORIGIN_CENTER;
+					ent->state.angles[0]=90;
 					//ent->scale = 1;
 				}
 				else
@@ -424,20 +430,20 @@ void CL_ParseEffect(void)
 				}
 
 				if (cl.Effects[index].type != CE_REDCLOUD&&cl.Effects[index].type != CE_ACID_MUZZFL&&cl.Effects[index].type != CE_FLAMEWALL&&cl.Effects[index].type != CE_RIPPLE)
-					ent->drawflags = DRF_TRANSLUCENT;
+					ent->state.drawflags = DRF_TRANSLUCENT;
 
 				if (cl.Effects[index].type == CE_FLAMESTREAM)
 				{
-					ent->drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-					ent->abslight = 1;
-					ent->frame = cl.Effects[index].Smoke.frame;
+					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
+					ent->state.abslight = 1;
+					ent->state.frame = cl.Effects[index].Smoke.frame;
 				}
 
 				if (cl.Effects[index].type == CE_GHOST)
 				{		
 					ent->model = R_RegisterModel("models/ghost.spr");
-					ent->drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-					ent->abslight = .5;
+					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
+					ent->state.abslight = .5;
 				}
 				if (cl.Effects[index].type == CE_TELESMK1)
 				{
@@ -446,9 +452,9 @@ void CL_ParseEffect(void)
 					if ((cl.Effects[index].Smoke.entity_index2 = NewEffectEntity()) != -1)
 					{
 						ent = &EffectEntities[cl.Effects[index].Smoke.entity_index2];
-						VectorCopy(cl.Effects[index].Smoke.origin, ent->origin);
+						VectorCopy(cl.Effects[index].Smoke.origin, ent->state.origin);
 						ent->model = R_RegisterModel("models/telesmk1.spr");
-						ent->drawflags = DRF_TRANSLUCENT;
+						ent->state.drawflags = DRF_TRANSLUCENT;
 					}
 				}
 			}
@@ -496,7 +502,7 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Smoke.entity_index];
-				VectorCopy(cl.Effects[index].Smoke.origin, ent->origin);
+				VectorCopy(cl.Effects[index].Smoke.origin, ent->state.origin);
 
 				if (cl.Effects[index].type == CE_BLUESPARK)
 					ent->model = R_RegisterModel("models/bspark.spr");
@@ -511,7 +517,7 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_YELLOWRED_FLASH)
 				{
 					ent->model = R_RegisterModel("models/yr_flsh.spr");
-					ent->drawflags = DRF_TRANSLUCENT;
+					ent->state.drawflags = DRF_TRANSLUCENT;
 				}
 				else if (cl.Effects[index].type == CE_SM_EXPLOSION)
 					ent->model = R_RegisterModel("models/sm_expld.spr");
@@ -562,8 +568,8 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_ACID_EXPL)
 				{
 					ent->model = R_RegisterModel("models/axplsn_5.spr");
-					ent->drawflags = MLS_ABSLIGHT;
-					ent->abslight = 1;
+					ent->state.drawflags = MLS_ABSLIGHT;
+					ent->state.abslight = 1;
 				}
 				else if (cl.Effects[index].type == CE_FBOOM)
 					ent->model = R_RegisterModel("models/fboom.spr");
@@ -582,9 +588,9 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_LSHOCK)
 				{
 					ent->model = R_RegisterModel("models/vorpshok.mdl");
-					ent->drawflags=MLS_TORCH;
-					ent->angles[2]=90;
-					ent->scale=255;
+					ent->state.drawflags=MLS_TORCH;
+					ent->state.angles[2]=90;
+					ent->state.scale=255;
 				}
 			}
 			else
@@ -605,7 +611,7 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Flash.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Flash.entity_index];
-				VectorCopy(cl.Effects[index].Flash.origin, ent->origin);
+				VectorCopy(cl.Effects[index].Flash.origin, ent->state.origin);
 
 				if (cl.Effects[index].type == CE_WHITE_FLASH)
 					ent->model = R_RegisterModel("models/gryspt.spr");
@@ -620,7 +626,7 @@ void CL_ParseEffect(void)
 					ent->model = R_RegisterModel("models/sm_blue.spr");
 					S_StartSound(cl.Effects[index].Flash.origin, TempSoundChannel(), 1, cl_fxsfx_ravensplit, 1, 1);
 				}
-				ent->drawflags = DRF_TRANSLUCENT;
+				ent->state.drawflags = DRF_TRANSLUCENT;
 
 			}
 			else
@@ -647,7 +653,7 @@ void CL_ParseEffect(void)
 				if ((cl.Effects[index].Teleporter.entity_index[i] = NewEffectEntity()) != -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[i]];
-					VectorCopy(cl.Effects[index].Teleporter.origin, ent->origin);
+					VectorCopy(cl.Effects[index].Teleporter.origin, ent->state.origin);
 
 					angleval = dir * M_PI*2 / 360;
 
@@ -660,7 +666,7 @@ void CL_ParseEffect(void)
 					dir += 45;
 
 					ent->model = R_RegisterModel("models/telesmk2.spr");
-					ent->drawflags = DRF_TRANSLUCENT;
+					ent->state.drawflags = DRF_TRANSLUCENT;
 				}
 			}
 			break;
@@ -681,12 +687,12 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Teleporter.entity_index[0] = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[0]];
-				VectorCopy(cl.Effects[index].Teleporter.origin, ent->origin);
+				VectorCopy(cl.Effects[index].Teleporter.origin, ent->state.origin);
 
 				ent->model = R_RegisterModel("models/teleport.mdl");
-				ent->drawflags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
-				ent->scale = 100;
-				ent->skinnum = skinnum;
+				ent->state.drawflags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
+				ent->state.scale = 100;
+				ent->state.skinnum = skinnum;
 			}
 			break;
 
@@ -711,8 +717,8 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
-				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
+				VectorCopy(cl.Effects[index].Missile.origin, ent->state.origin);
+				VectorCopy(cl.Effects[index].Missile.angle, ent->state.angles);
 				if (cl.Effects[index].type == CE_BONESHRAPNEL)
 					ent->model = R_RegisterModel("models/boneshrd.mdl");
 				else if (cl.Effects[index].type == CE_HWBONEBALL)
@@ -740,8 +746,8 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
-				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
+				VectorCopy(cl.Effects[index].Missile.origin, ent->state.origin);
+				VectorCopy(cl.Effects[index].Missile.angle, ent->state.angles);
 				if (cl.Effects[index].type == CE_HWRAVENSTAFF)
 				{
 					cl.Effects[index].Missile.avelocity[2] = 1000;
@@ -838,8 +844,8 @@ void CL_ParseEffect(void)
 				if ((cl.Effects[index].Xbow.ent[i] = NewEffectEntity()) != -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
-					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->origin);
-					VecToAnglesBuggy(cl.Effects[index].Xbow.vel[i],ent->angles);
+					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->state.origin);
+					VecToAnglesBuggy(cl.Effects[index].Xbow.vel[i],ent->state.angles);
 					if (cl.Effects[index].Xbow.bolts == 5)
 						ent->model = R_RegisterModel("models/flaming.mdl");
 					else
@@ -899,8 +905,8 @@ void CL_ParseEffect(void)
 				if ((cl.Effects[index].Xbow.ent[i] = NewEffectEntity()) != -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
-					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->origin);
-					VecToAnglesBuggy(cl.Effects[index].Xbow.vel[i],ent->angles);
+					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->state.origin);
+					VecToAnglesBuggy(cl.Effects[index].Xbow.vel[i],ent->state.angles);
 					ent->model = R_RegisterModel("models/polymrph.spr");
 				}
 			}
@@ -926,8 +932,8 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
-				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
+				VectorCopy(cl.Effects[index].Missile.origin, ent->state.origin);
+				VectorCopy(cl.Effects[index].Missile.angle, ent->state.angles);
 				ent->model = R_RegisterModel("models/scrbstp1.mdl");
 			}
 			else
@@ -953,7 +959,7 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Chain.ent1 = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
-				VectorCopy(cl.Effects[index].Chain.origin, ent->origin);
+				VectorCopy(cl.Effects[index].Chain.origin, ent->state.origin);
 				ent->model = R_RegisterModel("models/scrbpbdy.mdl");
 			}
 			else
@@ -971,7 +977,7 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Chain.ent1 = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
-				VectorCopy(cl.Effects[index].Chain.origin, ent->origin);
+				VectorCopy(cl.Effects[index].Chain.origin, ent->state.origin);
 				ent->model = R_RegisterModel("models/twspike.mdl");
 			}
 			else
@@ -990,7 +996,7 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Chain.ent1 = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
-				VectorCopy(cl.Effects[index].Chain.velocity, ent->origin);
+				VectorCopy(cl.Effects[index].Chain.velocity, ent->state.origin);
 				ent->model = R_RegisterModel("models/twspike.mdl");
 			}
 			else
@@ -1014,8 +1020,8 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Star.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Star.entity_index];
-				VectorCopy(cl.Effects[index].Star.origin, ent->origin);
-				VectorCopy(cl.Effects[index].Star.angle, ent->angles);
+				VectorCopy(cl.Effects[index].Star.origin, ent->state.origin);
+				VectorCopy(cl.Effects[index].Star.angle, ent->state.angles);
 				ent->model = R_RegisterModel("models/ball.mdl");
 			}
 			else
@@ -1027,21 +1033,21 @@ void CL_ParseEffect(void)
 			if ((cl.Effects[index].Star.ent1 = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Star.ent1];
-				VectorCopy(cl.Effects[index].Star.origin, ent->origin);
-				ent->drawflags |= MLS_ABSLIGHT;
-				ent->abslight = 0.5;
-				ent->angles[2] = 90;
+				VectorCopy(cl.Effects[index].Star.origin, ent->state.origin);
+				ent->state.drawflags |= MLS_ABSLIGHT;
+				ent->state.abslight = 0.5;
+				ent->state.angles[2] = 90;
 				if(cl.Effects[index].type == CE_HWMISSILESTAR)
 				{
 					ent->model = R_RegisterModel("models/star.mdl");
-					ent->scale = 0.3;
-					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_mmfire, 1, 1);
+					ent->state.scale = 0.3;
+					S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_mmfire, 1, 1);
 
 				}
 				else
 				{
 					ent->model = R_RegisterModel("models/glowball.mdl");
-					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_eidolon, 1, 1);
+					S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_eidolon, 1, 1);
 				}
 			}
 			if(cl.Effects[index].type == CE_HWMISSILESTAR)
@@ -1049,11 +1055,11 @@ void CL_ParseEffect(void)
 				if ((cl.Effects[index].Star.ent2 = NewEffectEntity()) != -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Star.ent2];
-					VectorCopy(cl.Effects[index].Star.origin, ent->origin);
+					VectorCopy(cl.Effects[index].Star.origin, ent->state.origin);
 					ent->model = R_RegisterModel("models/star.mdl");
-					ent->drawflags |= MLS_ABSLIGHT;
-					ent->abslight = 0.5;
-					ent->scale = 0.3;
+					ent->state.drawflags |= MLS_ABSLIGHT;
+					ent->state.abslight = 0.5;
+					ent->state.scale = 0.3;
 				}
 			}
 			break;
@@ -1074,7 +1080,7 @@ void CreateExplosionWithSound(vec3_t pos);
 void CL_EndEffect(void)
 {
 	int index;
-	entity_t *ent;
+	effect_entity_t* ent;
 
 	index = net_message.ReadByte();
 
@@ -1084,14 +1090,14 @@ void CL_EndEffect(void)
 		if(cl.Effects[index].Missile.entity_index > -1)
 		{
 			ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-			CreateRavenDeath(ent->origin);
+			CreateRavenDeath(ent->state.origin);
 		}
 		break;
 	case CE_HWRAVENSTAFF:
 		if(cl.Effects[index].Missile.entity_index > -1)
 		{
 			ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-			CreateExplosionWithSound(ent->origin);
+			CreateExplosionWithSound(ent->state.origin);
 		}
 		break;
 	}
@@ -1136,7 +1142,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 {
 	int index,type,revisionCode;
 	int curEnt,material,takedamage;
-	entity_t	*ent;
+	effect_entity_t* ent;
 	vec3_t	forward,right,up,pos;
 	float	dist,speed;
 	h2entity_state_t	*es;
@@ -1163,7 +1169,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					if (es)
 					{
 						ent = &EffectEntities[cl.Effects[index].Chain.ent1];
-						XbowImpactPuff(ent->origin, cl.Effects[index].Chain.material);
+						XbowImpactPuff(ent->state.origin, cl.Effects[index].Chain.material);
 					}
 				}
 				else
@@ -1193,7 +1199,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					VectorCopy(cl.Effects[index].Xbow.vel[curEnt],forward);
 					VectorNormalize(forward);
 					VectorScale(forward,dist,forward);
-					VectorAdd(cl.Effects[index].Xbow.origin[curEnt],forward,ent->origin);
+					VectorAdd(cl.Effects[index].Xbow.origin[curEnt],forward,ent->state.origin);
 
 					material = (revisionCode & 14);
 					takedamage = (revisionCode & 128);
@@ -1212,7 +1218,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					VectorScale(forward,8,forward);
 
 					// do a particle effect here, with the color depending on chType
-					XbowImpactPuff(ent->origin,material);
+					XbowImpactPuff(ent->state.origin,material);
 
 					// impact sound:
 					switch (material)
@@ -1220,17 +1226,17 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					case XBOW_IMPACT_GREENFLESH:
 					case XBOW_IMPACT_REDFLESH:
 					case XBOW_IMPACT_MUMMY:
-						S_StartSound(ent->origin, TempSoundChannel(), 0, cl_fxsfx_arr2flsh, 1, 1);
+						S_StartSound(ent->state.origin, TempSoundChannel(), 0, cl_fxsfx_arr2flsh, 1, 1);
 						break;
 					case XBOW_IMPACT_WOOD:
-						S_StartSound(ent->origin, TempSoundChannel(), 0, cl_fxsfx_arr2wood, 1, 1);
+						S_StartSound(ent->state.origin, TempSoundChannel(), 0, cl_fxsfx_arr2wood, 1, 1);
 						break;
 					default:
-						S_StartSound(ent->origin, TempSoundChannel(), 0, cl_fxsfx_met2stn, 1, 1);
+						S_StartSound(ent->state.origin, TempSoundChannel(), 0, cl_fxsfx_met2stn, 1, 1);
 						break;
 					}
 
-					CLTENT_XbowImpact(ent->origin, forward, material, takedamage, cl.Effects[index].Xbow.bolts);
+					CLTENT_XbowImpact(ent->state.origin, forward, material, takedamage, cl.Effects[index].Xbow.bolts);
 				}
 			}
 			else
@@ -1238,14 +1244,14 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				if (cl.Effects[index].Xbow.ent[curEnt]!=-1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[curEnt]];
-					ent->angles[0] = net_message.ReadAngle();
-					if (ent->angles[0] < 0)
-						ent->angles[0] += 360;
-					ent->angles[0]*=-1;
-					ent->angles[1] = net_message.ReadAngle();
-					if (ent->angles[1] < 0)
-						ent->angles[1] += 360;
-					ent->angles[2] = 0;
+					ent->state.angles[0] = net_message.ReadAngle();
+					if (ent->state.angles[0] < 0)
+						ent->state.angles[0] += 360;
+					ent->state.angles[0]*=-1;
+					ent->state.angles[1] = net_message.ReadAngle();
+					if (ent->state.angles[1] < 0)
+						ent->state.angles[1] += 360;
+					ent->state.angles[2] = 0;
 
 					if (revisionCode &128)//new origin
 					{
@@ -1254,10 +1260,10 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 						cl.Effects[index].Xbow.origin[curEnt][2]=net_message.ReadCoord();
 					}
 
-					AngleVectors(ent->angles,forward,right,up);
+					AngleVectors(ent->state.angles,forward,right,up);
 					speed = VectorLength(cl.Effects[index].Xbow.vel[curEnt]);
 					VectorScale(forward,speed,cl.Effects[index].Xbow.vel[curEnt]);
-					VectorCopy(cl.Effects[index].Xbow.origin[curEnt],ent->origin);
+					VectorCopy(cl.Effects[index].Xbow.origin[curEnt],ent->state.origin);
 				}
 				else
 				{
@@ -1299,8 +1305,8 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					VectorCopy(cl.Effects[index].Xbow.vel[curEnt],forward);
 					VectorNormalize(forward);
 					VectorScale(forward,dist,forward);
-					VectorAdd(cl.Effects[index].Xbow.origin[curEnt],forward,ent->origin);
-					CLH2_ColouredParticleExplosion(ent->origin,(rand()%16)+144/*(144,159)*/,20,30);
+					VectorAdd(cl.Effects[index].Xbow.origin[curEnt],forward,ent->state.origin);
+					CLH2_ColouredParticleExplosion(ent->state.origin,(rand()%16)+144/*(144,159)*/,20,30);
 				}
 			}
 			else//direction change
@@ -1308,14 +1314,14 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				if (cl.Effects[index].Xbow.ent[curEnt] != -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[curEnt]];
-					ent->angles[0] = net_message.ReadAngle();
-					if (ent->angles[0] < 0)
-						ent->angles[0] += 360;
-					ent->angles[0]*=-1;
-					ent->angles[1] = net_message.ReadAngle();
-					if (ent->angles[1] < 0)
-						ent->angles[1] += 360;
-					ent->angles[2] = 0;
+					ent->state.angles[0] = net_message.ReadAngle();
+					if (ent->state.angles[0] < 0)
+						ent->state.angles[0] += 360;
+					ent->state.angles[0]*=-1;
+					ent->state.angles[1] = net_message.ReadAngle();
+					if (ent->state.angles[1] < 0)
+						ent->state.angles[1] += 360;
+					ent->state.angles[2] = 0;
 
 					if (revisionCode &128)//new origin
 					{
@@ -1324,10 +1330,10 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 						cl.Effects[index].Xbow.origin[curEnt][2]=net_message.ReadCoord();
 					}
 
-					AngleVectors(ent->angles,forward,right,up);
+					AngleVectors(ent->state.angles,forward,right,up);
 					speed = VectorLength(cl.Effects[index].Xbow.vel[curEnt]);
 					VectorScale(forward,speed,cl.Effects[index].Xbow.vel[curEnt]);
-					VectorCopy(cl.Effects[index].Xbow.origin[curEnt],ent->origin);
+					VectorCopy(cl.Effects[index].Xbow.origin[curEnt],ent->state.origin);
 				}
 				else
 				{
@@ -1386,23 +1392,23 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				if (cl.Effects[index].Missile.entity_index!=-1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-					ent->angles[0] = net_message.ReadAngle();
-					if (ent->angles[0] < 0)
-						ent->angles[0] += 360;
-					ent->angles[0]*=-1;
-					ent->angles[1] = net_message.ReadAngle();
-					if (ent->angles[1] < 0)
-						ent->angles[1] += 360;
-					ent->angles[2] = 0;
+					ent->state.angles[0] = net_message.ReadAngle();
+					if (ent->state.angles[0] < 0)
+						ent->state.angles[0] += 360;
+					ent->state.angles[0]*=-1;
+					ent->state.angles[1] = net_message.ReadAngle();
+					if (ent->state.angles[1] < 0)
+						ent->state.angles[1] += 360;
+					ent->state.angles[2] = 0;
 
 					cl.Effects[index].Missile.origin[0]=net_message.ReadCoord();
 					cl.Effects[index].Missile.origin[1]=net_message.ReadCoord();
 					cl.Effects[index].Missile.origin[2]=net_message.ReadCoord();
 
-					AngleVectors(ent->angles,forward,right,up);
+					AngleVectors(ent->state.angles,forward,right,up);
 					speed = VectorLength(cl.Effects[index].Missile.velocity);
 					VectorScale(forward,speed,cl.Effects[index].Missile.velocity);
-					VectorCopy(cl.Effects[index].Missile.origin,ent->origin);
+					VectorCopy(cl.Effects[index].Missile.origin,ent->state.origin);
 				}
 				else
 				{
@@ -1524,7 +1530,7 @@ void UpdateMissilePath(vec3_t oldorg, vec3_t neworg, vec3_t newvel, float time)
 void CL_TurnEffect(void)
 {
 	int index;
-	entity_t *ent;
+	effect_entity_t* ent;
 	vec3_t pos, vel;
 	float time;
 
@@ -1546,7 +1552,7 @@ void CL_TurnEffect(void)
 		if(cl.Effects[index].Missile.entity_index > -1)
 		{
 			ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-			UpdateMissilePath(ent->origin, pos, vel, time);
+			UpdateMissilePath(ent->state.origin, pos, vel, time);
 			VectorCopy(vel, cl.Effects[index].Missile.velocity);
 			VecToAnglesBuggy(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
 		}
@@ -1556,7 +1562,7 @@ void CL_TurnEffect(void)
 		if(cl.Effects[index].Star.entity_index > -1)
 		{
 			ent = &EffectEntities[cl.Effects[index].Star.entity_index];
-			UpdateMissilePath(ent->origin, pos, vel, time);
+			UpdateMissilePath(ent->state.origin, pos, vel, time);
 			VectorCopy(vel, cl.Effects[index].Star.velocity);
 		}
 		break;
@@ -1573,7 +1579,7 @@ void CL_TurnEffect(void)
 
 }
 
-void CL_LinkEntity(entity_t *ent)
+void CL_LinkEntity(effect_entity_t* ent)
 {
 	//debug: if visedicts getting messed up, it should appear here.
 //	if (ent->_model < 10)
@@ -1584,12 +1590,11 @@ void CL_LinkEntity(entity_t *ent)
 	refEntity_t rent;
 	Com_Memset(&rent, 0, sizeof(rent));
 	rent.reType = RT_MODEL;
-	VectorCopy(ent->origin, rent.origin);
+	VectorCopy(ent->state.origin, rent.origin);
 	rent.hModel = ent->model;
-	rent.frame = ent->frame;
-	rent.skinNum = ent->skinnum;
-	rent.shaderTime = ent->syncbase;
-	CL_SetRefEntAxis(&rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
+	rent.frame = ent->state.frame;
+	rent.skinNum = ent->state.skinnum;
+	CL_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, 0, ent->state.abslight, ent->state.drawflags);
 	R_HandleCustomSkin(&rent, -1);
 	R_AddRefEntityToScene(&rent);
 }
@@ -1603,7 +1608,7 @@ void CL_UpdateEffects(void)
 //	trace_t		trace;
 	vec3_t		org,org2,old_origin;
 	int			x_dir,y_dir;
-	entity_t	*ent, *ent2;
+	effect_entity_t	*ent, *ent2;
 	float		smoketime;
 	int			i;
 	h2entity_state_t	*es;
@@ -1687,14 +1692,14 @@ void CL_UpdateEffects(void)
 				if (!smoketime)
 					smoketime = HX_FRAME_TIME*2;
 
-				while(cl.Effects[index].Smoke.time_amount >= smoketime&&ent->scale<250)
+				while(cl.Effects[index].Smoke.time_amount >= smoketime&&ent->state.scale<250)
 				{
-					ent->frame++;
-					ent->angles[1]+=1;
+					ent->state.frame++;
+					ent->state.angles[1]+=1;
 					cl.Effects[index].Smoke.time_amount -= smoketime;
 				}
 
-				if (ent->frame >= 10)
+				if (ent->state.frame >= 10)
 				{
 					CL_FreeEffect(index);
 				}
@@ -1724,19 +1729,19 @@ void CL_UpdateEffects(void)
 				if (!smoketime)
 					smoketime = HX_FRAME_TIME;
 
-				ent->origin[0] += (frametime/smoketime) * cl.Effects[index].Smoke.velocity[0];
-				ent->origin[1] += (frametime/smoketime) * cl.Effects[index].Smoke.velocity[1];
-				ent->origin[2] += (frametime/smoketime) * cl.Effects[index].Smoke.velocity[2];
+				ent->state.origin[0] += (frametime/smoketime) * cl.Effects[index].Smoke.velocity[0];
+				ent->state.origin[1] += (frametime/smoketime) * cl.Effects[index].Smoke.velocity[1];
+				ent->state.origin[2] += (frametime/smoketime) * cl.Effects[index].Smoke.velocity[2];
 	
 				i=0;
 				while(cl.Effects[index].Smoke.time_amount >= smoketime)
 				{
-					ent->frame++;
+					ent->state.frame++;
 					i++;
 					cl.Effects[index].Smoke.time_amount -= smoketime;
 				}
 
-				if (ent->frame >= R_ModelNumFrames(ent->model))
+				if (ent->state.frame >= R_ModelNumFrames(ent->model))
 				{
 					CL_FreeEffect(index);
 				}
@@ -1748,12 +1753,12 @@ void CL_UpdateEffects(void)
 				{
 					ent = &EffectEntities[cl.Effects[index].Smoke.entity_index2];
 
-					ent->origin[0] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[0];
-					ent->origin[1] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[1];
-					ent->origin[2] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[2];
+					ent->state.origin[0] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[0];
+					ent->state.origin[1] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[1];
+					ent->state.origin[2] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[2];
 
-					ent->frame += i;
-					if (ent->frame < R_ModelNumFrames(ent->model))
+					ent->state.frame += i;
+					if (ent->state.frame < R_ModelNumFrames(ent->model))
 					{
 						CL_LinkEntity(ent);
 					}
@@ -1801,7 +1806,7 @@ void CL_UpdateEffects(void)
 				{
 					while(cl.Effects[index].Smoke.time_amount >= HX_FRAME_TIME)
 					{
-						ent->frame++;
+						ent->state.frame++;
 						cl.Effects[index].Smoke.time_amount -= HX_FRAME_TIME;
 					}
 				}
@@ -1809,13 +1814,13 @@ void CL_UpdateEffects(void)
 				{
 					while(cl.Effects[index].Smoke.time_amount >= HX_FRAME_TIME * 2)
 					{
-						ent->frame++;
+						ent->state.frame++;
 						cl.Effects[index].Smoke.time_amount -= HX_FRAME_TIME * 2;
 					}
 				}
 
 
-				if (ent->frame >= R_ModelNumFrames(ent->model))
+				if (ent->state.frame >= R_ModelNumFrames(ent->model))
 				{
 					CL_FreeEffect(index);
 				}
@@ -1837,22 +1842,22 @@ void CL_UpdateEffects(void)
 				{
 					if (!cl.Effects[index].Flash.reverse)
 					{
-						if (ent->frame >= R_ModelNumFrames(ent->model) - 1)  // Ran through forward animation
+						if (ent->state.frame >= R_ModelNumFrames(ent->model) - 1)  // Ran through forward animation
 						{
 							cl.Effects[index].Flash.reverse = 1;
-							ent->frame--;
+							ent->state.frame--;
 						}
 						else
-							ent->frame++;
+							ent->state.frame++;
 
 					}	
 					else
-						ent->frame--;
+						ent->state.frame--;
 
 					cl.Effects[index].Flash.time_amount -= HX_FRAME_TIME;
 				}
 
-				if ((ent->frame <= 0) && (cl.Effects[index].Flash.reverse))
+				if ((ent->state.frame <= 0) && (cl.Effects[index].Flash.reverse))
 				{
 					CL_FreeEffect(index);
 				}
@@ -1902,10 +1907,10 @@ void CL_UpdateEffects(void)
 				ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[0]];
 				while(cl.Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
 				{
-					ent->frame++;
+					ent->state.frame++;
 					cl.Effects[index].Teleporter.time_amount -= HX_FRAME_TIME;
 				}
-				cur_frame = ent->frame;
+				cur_frame = ent->state.frame;
 
 				if (cur_frame >= R_ModelNumFrames(ent->model))
 				{
@@ -1917,10 +1922,10 @@ void CL_UpdateEffects(void)
 				{
 					ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[i]];
 
-					ent->origin[0] += (frametime/smoketime) * cl.Effects[index].Teleporter.velocity[i][0];
-					ent->origin[1] += (frametime/smoketime) * cl.Effects[index].Teleporter.velocity[i][1];
-					ent->origin[2] += (frametime/smoketime) * cl.Effects[index].Teleporter.velocity[i][2];
-					ent->frame = cur_frame;
+					ent->state.origin[0] += (frametime/smoketime) * cl.Effects[index].Teleporter.velocity[i][0];
+					ent->state.origin[1] += (frametime/smoketime) * cl.Effects[index].Teleporter.velocity[i][1];
+					ent->state.origin[2] += (frametime/smoketime) * cl.Effects[index].Teleporter.velocity[i][2];
+					ent->state.frame = cur_frame;
 
 					CL_LinkEntity(ent);
 				}
@@ -1932,14 +1937,14 @@ void CL_UpdateEffects(void)
 				ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[0]];
 				while(cl.Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
 				{
-					ent->scale -= 15;
+					ent->state.scale -= 15;
 					cl.Effects[index].Teleporter.time_amount -= HX_FRAME_TIME;
 				}
 
 				ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[0]];
-				ent->angles[1] += 45;
+				ent->state.angles[1] += 45;
 
-				if (ent->scale <= 10)
+				if (ent->state.scale <= 10)
 				{
 					CL_FreeEffect(index);
 				}
@@ -1955,20 +1960,20 @@ void CL_UpdateEffects(void)
 
 				if ((int)(cl.serverTimeFloat) != (int)(cl.serverTimeFloat - host_frametime))
 				{
-					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_drillaspin, 1, 1);
+					S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_drillaspin, 1, 1);
 				}
 
-				ent->angles[0] += frametime * cl.Effects[index].Missile.avelocity[0];
-				ent->angles[1] += frametime * cl.Effects[index].Missile.avelocity[1];
-				ent->angles[2] += frametime * cl.Effects[index].Missile.avelocity[2];
+				ent->state.angles[0] += frametime * cl.Effects[index].Missile.avelocity[0];
+				ent->state.angles[1] += frametime * cl.Effects[index].Missile.avelocity[1];
+				ent->state.angles[2] += frametime * cl.Effects[index].Missile.avelocity[2];
 
-				VectorCopy(ent->origin,old_origin);
+				VectorCopy(ent->state.origin,old_origin);
 
-				ent->origin[0] += frametime * cl.Effects[index].Missile.velocity[0];
-				ent->origin[1] += frametime * cl.Effects[index].Missile.velocity[1];
-				ent->origin[2] += frametime * cl.Effects[index].Missile.velocity[2];
+				ent->state.origin[0] += frametime * cl.Effects[index].Missile.velocity[0];
+				ent->state.origin[1] += frametime * cl.Effects[index].Missile.velocity[1];
+				ent->state.origin[2] += frametime * cl.Effects[index].Missile.velocity[2];
 
-				CLH2_TrailParticles (old_origin, ent->origin, rt_setstaff);
+				CLH2_TrailParticles (old_origin, ent->state.origin, rt_setstaff);
 
 				CL_LinkEntity(ent);
 				break;
@@ -1982,9 +1987,9 @@ void CL_UpdateEffects(void)
 						{
 							ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 
-							ent->origin[0] += frametime * cl.Effects[index].Xbow.vel[i][0];
-							ent->origin[1] += frametime * cl.Effects[index].Xbow.vel[i][1];
-							ent->origin[2] += frametime * cl.Effects[index].Xbow.vel[i][2];
+							ent->state.origin[0] += frametime * cl.Effects[index].Xbow.vel[i][0];
+							ent->state.origin[1] += frametime * cl.Effects[index].Xbow.vel[i][1];
+							ent->state.origin[2] += frametime * cl.Effects[index].Xbow.vel[i][2];
 
 							CL_LinkEntity(ent);
 						}
@@ -2007,17 +2012,17 @@ void CL_UpdateEffects(void)
 									//move bolt back a little to make explosion look better
 									VectorNormalize(cl.Effects[index].Xbow.vel[i]);
 									VectorScale(cl.Effects[index].Xbow.vel[i],-8,cl.Effects[index].Xbow.vel[i]);
-									VectorAdd(ent->origin,cl.Effects[index].Xbow.vel[i],ent->origin);
+									VectorAdd(ent->state.origin,cl.Effects[index].Xbow.vel[i],ent->state.origin);
 
 									//turn bolt entity into an explosion
 									ent->model = R_RegisterModel("models/xbowexpl.spr");
-									ent->frame = 0;
+									ent->state.frame = 0;
 
 									//set frame change counter
 									cl.Effects[index].Xbow.gonetime[i] = cl.serverTimeFloat + HX_FRAME_TIME * 2;
 
 									//play explosion sound
-									S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
+									S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 
 									CL_LinkEntity(ent);
 								}
@@ -2029,12 +2034,12 @@ void CL_UpdateEffects(void)
 								//increment frame if it's time
 								while(cl.Effects[index].Xbow.gonetime[i] <= cl.serverTimeFloat)
 								{
-									ent->frame++;
+									ent->state.frame++;
 									cl.Effects[index].Xbow.gonetime[i] += HX_FRAME_TIME * 0.75;
 								}
 
 
-								if (ent->frame >= R_ModelNumFrames(ent->model))
+								if (ent->state.frame >= R_ModelNumFrames(ent->model))
 								{
 									cl.Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
 								}
@@ -2055,11 +2060,11 @@ void CL_UpdateEffects(void)
 						{
 							ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 
-							ent->origin[0] += frametime * cl.Effects[index].Xbow.vel[i][0];
-							ent->origin[1] += frametime * cl.Effects[index].Xbow.vel[i][1];
-							ent->origin[2] += frametime * cl.Effects[index].Xbow.vel[i][2];
+							ent->state.origin[0] += frametime * cl.Effects[index].Xbow.vel[i][0];
+							ent->state.origin[1] += frametime * cl.Effects[index].Xbow.vel[i][1];
+							ent->state.origin[2] += frametime * cl.Effects[index].Xbow.vel[i][2];
 
-							CLH2_RunParticleEffect4(ent->origin,7,(rand()%15)+144,pt_h2explode2,(rand()%5)+1);
+							CLH2_RunParticleEffect4(ent->state.origin,7,(rand()%15)+144,pt_h2explode2,(rand()%5)+1);
 
 							CL_LinkEntity(ent);
 						}
@@ -2104,25 +2109,25 @@ void CL_UpdateEffects(void)
 					if (cl.Effects[index].Chain.sound_time <= cl.serverTimeFloat)
 					{
 						cl.Effects[index].Chain.sound_time = cl.serverTimeFloat + 0.5;
-						S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabhome, 1, 1);
+						S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_scarabhome, 1, 1);
 					}
 					if (es)
 					{
 						VectorCopy(es->origin,org);
 						org[2]+=cl.Effects[index].Chain.height;
-						VectorSubtract(org,ent->origin,org);
+						VectorSubtract(org,ent->state.origin,org);
 						if (fabs(VectorNormalize(org))<500*frametime)
 						{
-							S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabgrab, 1, 1);
+							S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_scarabgrab, 1, 1);
 							cl.Effects[index].Chain.state = 1;
-							VectorCopy(es->origin, ent->origin);
-							ent->origin[2] += cl.Effects[index].Chain.height;
-							XbowImpactPuff(ent->origin, cl.Effects[index].Chain.material);
+							VectorCopy(es->origin, ent->state.origin);
+							ent->state.origin[2] += cl.Effects[index].Chain.height;
+							XbowImpactPuff(ent->state.origin, cl.Effects[index].Chain.material);
 						}
 						else
 						{
 							VectorScale(org,500*frametime,org);
-							VectorAdd(ent->origin,org,ent->origin);
+							VectorAdd(ent->state.origin,org,ent->state.origin);
 						}
 					}
 					break;
@@ -2130,28 +2135,28 @@ void CL_UpdateEffects(void)
 					es = FindState(cl.Effects[index].Chain.owner);
 					if (es)
 					{
-						VectorCopy(es->origin, ent->origin);
-						ent->origin[2] += cl.Effects[index].Chain.height;
+						VectorCopy(es->origin, ent->state.origin);
+						ent->state.origin[2] += cl.Effects[index].Chain.height;
 					}
 					break;
 				case 2://unattaching, server needs to set this state
-					VectorCopy(ent->origin,org);
+					VectorCopy(ent->state.origin,org);
 					VectorSubtract(cl.Effects[index].Chain.origin,org,org);
 					if (fabs(VectorNormalize(org))>350*frametime)//closer than 30 is too close?
 					{
 						VectorScale(org,350*frametime,org);
-						VectorAdd(ent->origin,org,ent->origin);
+						VectorAdd(ent->state.origin,org,ent->state.origin);
 					}
 					else//done--flash & git outa here (change type to redflash)
 					{
-						S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabbyebye, 1, 1);
+						S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_scarabbyebye, 1, 1);
 						cl.Effects[index].Flash.entity_index = cl.Effects[index].Chain.ent1;
 						cl.Effects[index].type = CE_RED_FLASH;
-						VectorCopy(ent->origin,cl.Effects[index].Flash.origin);
+						VectorCopy(ent->state.origin,cl.Effects[index].Flash.origin);
 						cl.Effects[index].Flash.reverse = 0;
 						ent->model = R_RegisterModel("models/redspt.spr");
-						ent->frame = 0;
-						ent->drawflags = DRF_TRANSLUCENT;
+						ent->state.frame = 0;
+						ent->state.drawflags = DRF_TRANSLUCENT;
 					}
 					break;
 				}
@@ -2160,7 +2165,7 @@ void CL_UpdateEffects(void)
 
 				//damndamndamn--add stream stuff here!
 				VectorCopy(cl.Effects[index].Chain.origin, org);
-				VectorCopy(ent->origin, org2);
+				VectorCopy(ent->state.origin, org2);
 				CreateStream(TE_STREAM_CHAIN, cl.Effects[index].Chain.ent1, 1, cl.Effects[index].Chain.tag, 0.1, 0, org, org2);
 
 				break;
@@ -2176,7 +2181,7 @@ void CL_UpdateEffects(void)
 
 				//damndamndamn--add stream stuff here!
 				VectorCopy(cl.Effects[index].Chain.origin, org);
-				VectorCopy(ent->origin, org2);
+				VectorCopy(ent->state.origin, org2);
 				CreateStream(TE_STREAM_CHAIN, cl.Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
 
 				break;
@@ -2184,15 +2189,15 @@ void CL_UpdateEffects(void)
 				cl.Effects[index].Chain.time_amount += frametime;
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
 
-				ent->origin[0] += frametime * cl.Effects[index].Chain.velocity[0];
-				ent->origin[1] += frametime * cl.Effects[index].Chain.velocity[1];
-				ent->origin[2] += frametime * cl.Effects[index].Chain.velocity[2];
+				ent->state.origin[0] += frametime * cl.Effects[index].Chain.velocity[0];
+				ent->state.origin[1] += frametime * cl.Effects[index].Chain.velocity[1];
+				ent->state.origin[2] += frametime * cl.Effects[index].Chain.velocity[2];
 
 				CL_LinkEntity(ent);
 
 				//damndamndamn--add stream stuff here!
 				VectorCopy(cl.Effects[index].Chain.origin, org);
-				VectorCopy(ent->origin, org2);
+				VectorCopy(ent->state.origin, org2);
 				CreateStream(TE_STREAM_CHAIN, cl.Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
 
 				break;
@@ -2208,31 +2213,31 @@ void CL_UpdateEffects(void)
 //		ent->angles[1] = cl.Effects[index].Missile.angle[1];
 //		ent->angles[2] = cl.Effects[index].Missile.angle[2];
 
-				ent->angles[0] += frametime * cl.Effects[index].Missile.avelocity[0];
-				ent->angles[1] += frametime * cl.Effects[index].Missile.avelocity[1];
-				ent->angles[2] += frametime * cl.Effects[index].Missile.avelocity[2];
+				ent->state.angles[0] += frametime * cl.Effects[index].Missile.avelocity[0];
+				ent->state.angles[1] += frametime * cl.Effects[index].Missile.avelocity[1];
+				ent->state.angles[2] += frametime * cl.Effects[index].Missile.avelocity[2];
 
-				ent->origin[0] += frametime * cl.Effects[index].Missile.velocity[0];
-				ent->origin[1] += frametime * cl.Effects[index].Missile.velocity[1];
-				ent->origin[2] += frametime * cl.Effects[index].Missile.velocity[2];
+				ent->state.origin[0] += frametime * cl.Effects[index].Missile.velocity[0];
+				ent->state.origin[1] += frametime * cl.Effects[index].Missile.velocity[1];
+				ent->state.origin[2] += frametime * cl.Effects[index].Missile.velocity[2];
 				if(cl.Effects[index].type == CE_HWRAVENPOWER)
 				{
 					while(cl.Effects[index].Missile.time_amount >= HX_FRAME_TIME)
 					{
-						ent->frame++;
+						ent->state.frame++;
 						cl.Effects[index].Missile.time_amount -= HX_FRAME_TIME;
 					}
 
-					if (ent->frame > 7)
+					if (ent->state.frame > 7)
 					{
-						ent->frame = 0;
+						ent->state.frame = 0;
 						break;
 					}
 				}
 				CL_LinkEntity(ent);
 				if(cl.Effects[index].type == CE_HWBONEBALL)
 				{
-					CLH2_RunParticleEffect4 (ent->origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
+					CLH2_RunParticleEffect4 (ent->state.origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
 
 				}
 				break;
@@ -2259,23 +2264,23 @@ void CL_UpdateEffects(void)
 				cl.Effects[index].Star.time_amount += frametime;
 				ent = &EffectEntities[cl.Effects[index].Star.entity_index];
 
-				ent->angles[0] += frametime * cl.Effects[index].Star.avelocity[0];
-				ent->angles[1] += frametime * cl.Effects[index].Star.avelocity[1];
-				ent->angles[2] += frametime * cl.Effects[index].Star.avelocity[2];
+				ent->state.angles[0] += frametime * cl.Effects[index].Star.avelocity[0];
+				ent->state.angles[1] += frametime * cl.Effects[index].Star.avelocity[1];
+				ent->state.angles[2] += frametime * cl.Effects[index].Star.avelocity[2];
 
-				ent->origin[0] += frametime * cl.Effects[index].Star.velocity[0];
-				ent->origin[1] += frametime * cl.Effects[index].Star.velocity[1];
-				ent->origin[2] += frametime * cl.Effects[index].Star.velocity[2];
+				ent->state.origin[0] += frametime * cl.Effects[index].Star.velocity[0];
+				ent->state.origin[1] += frametime * cl.Effects[index].Star.velocity[1];
+				ent->state.origin[2] += frametime * cl.Effects[index].Star.velocity[2];
 
 				CL_LinkEntity(ent);
 				
 				if (cl.Effects[index].Star.ent1 != -1)
 				{
 					ent2= &EffectEntities[cl.Effects[index].Star.ent1];
-					VectorCopy(ent->origin, ent2->origin);
-					ent2->scale = cl.Effects[index].Star.scale;
-					ent2->angles[1] += frametime * 300;
-					ent2->angles[2] += frametime * 400;
+					VectorCopy(ent->state.origin, ent2->state.origin);
+					ent2->state.scale = cl.Effects[index].Star.scale;
+					ent2->state.angles[1] += frametime * 300;
+					ent2->state.angles[2] += frametime * 400;
 					CL_LinkEntity(ent2);
 				}
 				if(cl.Effects[index].type == CE_HWMISSILESTAR)
@@ -2283,16 +2288,16 @@ void CL_UpdateEffects(void)
 					if (cl.Effects[index].Star.ent2 != -1)
 					{
 						ent2 = &EffectEntities[cl.Effects[index].Star.ent2];
-						VectorCopy(ent->origin, ent2->origin);
-						ent2->scale = cl.Effects[index].Star.scale;
-						ent2->angles[1] += frametime * -300;
-						ent2->angles[2] += frametime * -400;
+						VectorCopy(ent->state.origin, ent2->state.origin);
+						ent2->state.scale = cl.Effects[index].Star.scale;
+						ent2->state.angles[1] += frametime * -300;
+						ent2->state.angles[2] += frametime * -400;
 						CL_LinkEntity(ent2);
 					}
 				}					
 				if(rand() % 10 < 3)		
 				{
-					CLH2_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
+					CLH2_RunParticleEffect4 (ent->state.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
 				}
 				break;
 		}
@@ -2306,7 +2311,7 @@ void CL_ParseMultiEffect(void)
 {
 	int type, index, count;
 	vec3_t	orig, vel;
-	entity_t *ent;
+	effect_entity_t* ent;
 
 	type = net_message.ReadByte();
 	switch(type)
@@ -2329,8 +2334,8 @@ void CL_ParseMultiEffect(void)
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
-				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
+				VectorCopy(cl.Effects[index].Missile.origin, ent->state.origin);
+				VectorCopy(cl.Effects[index].Missile.angle, ent->state.angles);
 				ent->model = R_RegisterModel("models/ravproj.mdl");
 				S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
 			}
@@ -2353,7 +2358,7 @@ void CL_ParseMultiEffect(void)
 
 static int NewEffectEntity(void)
 {
-	entity_t	*ent;
+	effect_entity_t* ent;
 	int counter;
 
 	if(EffectEntityCount == MAX_EFFECT_ENTITIES)

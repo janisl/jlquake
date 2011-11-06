@@ -522,21 +522,14 @@ void CL_Record_f (void)
 
 		buf.WriteByte(svc_spawnstatic);
 
-		for (j = 1; j < MAX_MODELS; j++)
-			if (ent->model == cl.model_precache[j])
-				break;
-		if (j == MAX_MODELS)
-			buf.WriteByte(0);
-		else
-			buf.WriteByte(j);
-
-		buf.WriteByte(ent->frame);
+		buf.WriteByte(ent->state.modelindex);
+		buf.WriteByte(ent->state.frame);
 		buf.WriteByte(0);
-		buf.WriteByte(ent->skinnum);
+		buf.WriteByte(ent->state.skinnum);
 		for (j=0 ; j<3 ; j++)
 		{
-			buf.WriteCoord(ent->origin[j]);
-			buf.WriteAngle(ent->angles[j]);
+			buf.WriteCoord(ent->state.origin[j]);
+			buf.WriteAngle(ent->state.angles[j]);
 		}
 
 		if (buf.cursize > MAX_MSGLEN/2) {

@@ -87,7 +87,7 @@ entity_t	*CL_EntityNum (int num)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
 		while (cl.num_entities<=num)
 		{
-			cl_entities[cl.num_entities].colormap = 0;
+			cl_entities[cl.num_entities].state.colormap = 0;
 			cl.num_entities++;
 		}
 	}
@@ -341,7 +341,7 @@ static void R_TranslatePlayerSkin(int playernum)
 	//
 	entity_t* ent = &cl_entities[1 + playernum];
 
-	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), ent->model, translate);
+	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate);
 }
 
 /*
@@ -405,9 +405,9 @@ if (bits&(1<<i))
 		modnum = ent->baseline.modelindex;
 		
 	model = cl.model_precache[modnum];
-	if (model != ent->model)
+	if (modnum != ent->state.modelindex)
 	{
-		ent->model = model;
+		ent->state.modelindex = modnum;
 	// automatic animation (torches, etc) can be either all together
 	// or randomized
 		if (model)
@@ -424,9 +424,9 @@ if (bits&(1<<i))
 	}
 	
 	if (bits & U_FRAME)
-		ent->frame = net_message.ReadByte ();
+		ent->state.frame = net_message.ReadByte ();
 	else
-		ent->frame = ent->baseline.frame;
+		ent->state.frame = ent->baseline.frame;
 
 	if (bits & U_COLORMAP)
 		i = net_message.ReadByte();
@@ -434,22 +434,22 @@ if (bits&(1<<i))
 		i = ent->baseline.colormap;
 	if (i > cl.maxclients)
 		Sys_Error ("i >= cl.maxclients");
-	ent->colormap = i;
+	ent->state.colormap = i;
 
 	if (bits & U_SKIN)
 		skin = net_message.ReadByte();
 	else
 		skin = ent->baseline.skinnum;
-	if (skin != ent->skinnum) {
-		ent->skinnum = skin;
+	if (skin != ent->state.skinnum) {
+		ent->state.skinnum = skin;
 		if (num > 0 && num <= cl.maxclients)
 			R_TranslatePlayerSkin (num - 1);
 	}
 
 	if (bits & U_EFFECTS)
-		ent->effects = net_message.ReadByte();
+		ent->state.effects = net_message.ReadByte();
 	else
-		ent->effects = ent->baseline.effects;
+		ent->state.effects = ent->baseline.effects;
 
 // shift the known values for interpolation
 	VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
@@ -483,15 +483,14 @@ if (bits&(1<<i))
 		ent->msg_angles[0][2] = ent->baseline.angles[2];
 
 	if ( bits & U_NOLERP )
-		ent->forcelink = true;
+		forcelink = true;
 
 	if ( forcelink )
 	{	// didn't have an update last message
 		VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
-		VectorCopy (ent->msg_origins[0], ent->origin);
+		VectorCopy (ent->msg_origins[0], ent->state.origin);
 		VectorCopy (ent->msg_angles[0], ent->msg_angles[1]);
-		VectorCopy (ent->msg_angles[0], ent->angles);
-		ent->forcelink = true;
+		VectorCopy (ent->msg_angles[0], ent->state.angles);
 	}
 }
 
@@ -657,13 +656,13 @@ void CL_ParseStatic (void)
 	CL_ParseBaseline (ent);
 
 // copy it to the current state
-	ent->model = cl.model_precache[ent->baseline.modelindex];
-	ent->frame = ent->baseline.frame;
-	ent->skinnum = ent->baseline.skinnum;
-	ent->effects = ent->baseline.effects;
+	ent->state.modelindex = ent->baseline.modelindex;
+	ent->state.frame = ent->baseline.frame;
+	ent->state.skinnum = ent->baseline.skinnum;
+	ent->state.effects = ent->baseline.effects;
 
-	VectorCopy (ent->baseline.origin, ent->origin);
-	VectorCopy (ent->baseline.angles, ent->angles);	
+	VectorCopy (ent->baseline.origin, ent->state.origin);
+	VectorCopy (ent->baseline.angles, ent->state.angles);	
 }
 
 /*

@@ -792,12 +792,12 @@ void CL_ParseStatic (void)
 	cl.num_statics++;
 
 // copy it to the current state
-	ent->model = cl.model_precache[es.modelindex];
-	ent->frame = es.frame;
-	ent->skinnum = es.skinnum;
+	ent->state.modelindex = es.modelindex;
+	ent->state.frame = es.frame;
+	ent->state.skinnum = es.skinnum;
 
-	VectorCopy (es.origin, ent->origin);
-	VectorCopy (es.angles, ent->angles);
+	VectorCopy (es.origin, ent->state.origin);
+	VectorCopy (es.angles, ent->state.angles);
 }
 
 /*

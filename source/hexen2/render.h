@@ -7,26 +7,14 @@
 
 struct entity_t
 {
-	qboolean				forcelink;		// model changed
-
 	h2entity_state_t			baseline;		// to fill in defaults in updates
+	h2entity_state_t state;
 
 	double					msgtime;		// time of last update
 	vec3_t					msg_origins[2];	// last two updates (0 is newest)	
-	vec3_t					origin;
 	vec3_t					msg_angles[2];	// last two updates (0 is newest)
-	vec3_t					angles;
-	qhandle_t				model;			// 0 = no model
-	int						frame;
 	float					syncbase;		// for client-side animations
-	byte					colorshade;
-	int						effects;		// light, particals, etc
-	int						skinnum;		// for Alias models
-	int						scale;			// for Alias models
-	int						drawflags;		// for Alias models
-	int						abslight;		// for Alias models
 };
-
 
 extern float RTint[256],GTint[256],BTint[256];
 

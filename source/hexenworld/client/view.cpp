@@ -624,12 +624,12 @@ CalcGunAngle
 */
 static void CalcGunAngle(vec3_t viewangles)
 {	
-	cl.viewent.angles[YAW] = viewangles[YAW];
-	cl.viewent.angles[PITCH] = -viewangles[PITCH];
+	cl.viewent.state.angles[YAW] = viewangles[YAW];
+	cl.viewent.state.angles[PITCH] = -viewangles[PITCH];
 
-	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
-	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
-	cl.viewent.angles[YAW] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
+	cl.viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	cl.viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	cl.viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 /*
@@ -697,7 +697,7 @@ static void V_CalcIntermissionRefdef (void)
 	VectorCopy (cl.simorg, cl.refdef.vieworg);
 	vec3_t viewangles;
 	VectorCopy(cl.simangles, viewangles);
-	view->model = 0;
+	view->state.modelindex = 0;
 
 // allways idle in intermission
 	old = v_idlescale->value;
@@ -773,16 +773,16 @@ static void V_CalcRefdef (void)
 	AngleVectors (cl.simangles, forward, right, up);
 	
 // set up gun position
-	VectorCopy (cl.simangles, view->angles);
+	VectorCopy (cl.simangles, view->state.angles);
 	
 	CalcGunAngle(viewangles);
 
-	VectorCopy (cl.refdef.vieworg, view->origin);
+	VectorCopy (cl.refdef.vieworg, view->state.origin);
 //	view->origin[2] += 56;
 
 	for (i=0 ; i<3 ; i++)
 	{
-		view->origin[i] += forward[i]*bob*0.4;
+		view->state.origin[i] += forward[i]*bob*0.4;
 //		view->origin[i] += right[i]*bob*0.4;
 //		view->origin[i] += up[i]*bob*0.8;
 	}
@@ -792,25 +792,25 @@ static void V_CalcRefdef (void)
 // fudge position around to keep amount of weapon visible
 // roughly equal with different FOV
 	if (scr_viewsize->value == 110)
-		view->origin[2] += 1;
+		view->state.origin[2] += 1;
 	else if (scr_viewsize->value == 100)
-		view->origin[2] += 2;
+		view->state.origin[2] += 2;
 	else if (scr_viewsize->value == 90)
-		view->origin[2] += 1;
+		view->state.origin[2] += 1;
 	else if (scr_viewsize->value == 80)
-		view->origin[2] += 0.5;
+		view->state.origin[2] += 0.5;
 
 	if (view_message->flags & (PF_DEAD) )
- 		view->model = 0;
+ 		view->state.modelindex = 0;
  	else
-		view->model = cl.model_precache[cl.stats[STAT_WEAPON]];
-	view->frame = view_message->weaponframe;
+		view->state.modelindex = cl.stats[STAT_WEAPON];
+	view->state.frame = view_message->weaponframe;
 
 	// Place weapon in powered up mode
 	if ((cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & MLS_MASKIN) == MLS_POWERMODE)
-		view->drawflags = (view->drawflags & MLS_MASKOUT) | MLS_POWERMODE;
+		view->state.drawflags = (view->state.drawflags & MLS_MASKOUT) | MLS_POWERMODE;
 	else
-		view->drawflags = (view->drawflags & MLS_MASKOUT) | 0;
+		view->state.drawflags = (view->state.drawflags & MLS_MASKOUT) | 0;
 
 // set up the refresh position
 	viewangles[PITCH] += cl.punchangle;
@@ -829,7 +829,7 @@ static void V_CalcRefdef (void)
 		if (cl.simorg[2] - oldz > 12)
 			oldz = cl.simorg[2] - 12;
 		cl.refdef.vieworg[2] += oldz - cl.simorg[2];
-		view->origin[2] += oldz - cl.simorg[2];
+		view->state.origin[2] += oldz - cl.simorg[2];
 	}
 	else
 		oldz = cl.simorg[2];
@@ -868,7 +868,7 @@ static void CL_AddViewModel()
 	if (cl.v.health <= 0)
 		return;
 
-	if (!cl.viewent.model)
+	if (!cl.viewent.state.modelindex)
 		return;
 
 	refEntity_t gun;
@@ -876,12 +876,12 @@ static void CL_AddViewModel()
 	Com_Memset(&gun, 0, sizeof(gun));
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(cl.viewent.origin, gun.origin);
-	gun.hModel = cl.viewent.model;
-	gun.frame = cl.viewent.frame;
-	gun.skinNum = cl.viewent.skinnum;
+	VectorCopy(cl.viewent.state.origin, gun.origin);
+	gun.hModel = cl.model_precache[cl.viewent.state.modelindex];
+	gun.frame = cl.viewent.state.frame;
+	gun.skinNum = cl.viewent.state.skinnum;
 	gun.shaderTime = cl.viewent.syncbase;
-	CL_SetRefEntAxis(&gun, cl.viewent.angles, cl.viewent.angleAdd, cl.viewent.scale, cl.viewent.colorshade, cl.viewent.abslight, cl.viewent.drawflags);
+	CL_SetRefEntAxis(&gun, cl.viewent.state.angles, vec3_origin, cl.viewent.state.scale, 0, cl.viewent.state.abslight, cl.viewent.state.drawflags);
 	R_HandleCustomSkin(&gun, -1);
 
 	R_AddRefEntityToScene(&gun);
