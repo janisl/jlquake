@@ -139,31 +139,17 @@ public:
 
 // the game guarantees that no string from the network will ever
 // exceed MAX_STRING_CHARS
-#define	MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
+#define MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
 
 // TTimo
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
-#define	MAXPRINTMSG	4096
+#define MAXPRINTMSG	4096
 
-#define MAX_TOKEN_CHARS_Q2	128		// max length of an individual token
-#define MAX_TOKEN_CHARS_Q3	1024	// max length of an individual token
-
-#define	ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
-#define	SHORT2ANGLE(x)		((x)*(360.0/65536))
+#define ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
+#define SHORT2ANGLE(x)		((x)*(360.0/65536))
 
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
-
-//
-//	!!! Used in refdef which is used in Quake 3 VMs, Do not change!
-//
-#define	MAX_MAP_AREA_BYTES		32		// bit vector of area visibility
-
-// sound attenuation values
-#define ATTN_NONE               0	// full volume the entire level
-#define ATTN_NORM               1
-#define ATTN_IDLE               2
-#define ATTN_STATIC             3	// diminish very rapidly with distance
 
 //==========================================================================
 //

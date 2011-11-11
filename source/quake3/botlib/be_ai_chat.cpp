@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #include "../../core/core.h"
-#include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_libvar.h"
 #include "l_script.h"
@@ -196,9 +195,9 @@ typedef struct {
 	char		chatname[MAX_QPATH];
 } bot_ichatdata_t;
 
-bot_ichatdata_t	*ichatdata[MAX_CLIENTS];
+bot_ichatdata_t	*ichatdata[MAX_CLIENTS_Q3];
 
-bot_chatstate_t *botchatstates[MAX_CLIENTS+1];
+bot_chatstate_t *botchatstates[MAX_CLIENTS_Q3+1];
 //console message heap
 bot_consolemessage_t *consolemessageheap = NULL;
 bot_consolemessage_t *freeconsolemessages = NULL;
@@ -219,7 +218,7 @@ bot_replychat_t *replychats = NULL;
 //========================================================================
 bot_chatstate_t *BotChatStateFromHandle(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
 		return NULL;
@@ -1418,7 +1417,7 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 		//if the last piece was a variable string
 		if (lastvariable >= 0)
 		{
-        		assert( match->variables[lastvariable].offset >= 0 ); // bk001204
+        		qassert( match->variables[lastvariable].offset >= 0 ); // bk001204
 			match->variables[lastvariable].length =
 				String::Length(&match->string[ (int) match->variables[lastvariable].offset]);
 		} //end if
@@ -1479,7 +1478,7 @@ void BotMatchVariable(bot_match_t *match, int variable, char *buf, int size)
 	{
 		if (match->variables[variable].length < size)
 			size = match->variables[variable].length+1;
-		assert( match->variables[variable].offset >= 0 ); // bk001204
+		qassert( match->variables[variable].offset >= 0 ); // bk001204
 		String::NCpy(buf, &match->string[ (int) match->variables[variable].offset], size-1);
 		buf[size-1] = '\0';
 	} //end if
@@ -2210,7 +2209,7 @@ int BotLoadChatFile(int chatstate, char *chatfile, char *chatname)
 	if (!LibVarGetValue("bot_reloadcharacters"))
 	{
 		avail = -1;
-		for( n = 0; n < MAX_CLIENTS; n++ ) {
+		for( n = 0; n < MAX_CLIENTS_Q3; n++ ) {
 			if( !ichatdata[n] ) {
 				if( avail == -1 ) {
 					avail = n;
@@ -2292,7 +2291,7 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 					} //end if
 					if (match->variables[num].offset >= 0)
 					{
-					        assert( match->variables[num].offset >= 0 ); // bk001204
+					        qassert( match->variables[num].offset >= 0 ); // bk001204
 						ptr = &match->string[ (int) match->variables[num].offset];
 						for (i = 0; i < match->variables[num].length; i++)
 						{
@@ -2897,7 +2896,7 @@ int BotAllocChatState(void)
 {
 	int i;
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (!botchatstates[i])
 		{
@@ -2919,7 +2918,7 @@ void BotFreeChatState(int handle)
 	bot_consolemessage_t m;
 	int h;
 
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
 		return;
@@ -2988,7 +2987,7 @@ void BotShutdownChatAI(void)
 	int i;
 
 	//free all remaining chat states
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(i = 0; i < MAX_CLIENTS_Q3; i++)
 	{
 		if (botchatstates[i])
 		{
@@ -2996,7 +2995,7 @@ void BotShutdownChatAI(void)
 		} //end if
 	} //end for
 	//free all cached chats
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(i = 0; i < MAX_CLIENTS_Q3; i++)
 	{
 		if (ichatdata[i])
 		{

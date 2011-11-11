@@ -109,7 +109,7 @@ static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to,
 		}
 	}
 
-	msg->WriteBits((MAX_GENTITIES-1), GENTITYNUM_BITS );	// end of packetentities
+	msg->WriteBits((MAX_GENTITIES_Q3-1), GENTITYNUM_BITS_Q3 );	// end of packetentities
 }
 
 
@@ -470,7 +470,7 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 	// never send client's own entity, because it can
 	// be regenerated from the playerstate
 	clientNum = frame->ps.clientNum;
-	if ( clientNum < 0 || clientNum >= MAX_GENTITIES ) {
+	if ( clientNum < 0 || clientNum >= MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 	svEnt = &sv.svEntities[ clientNum ];

@@ -22,14 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // bg_public.h -- definitions shared by both the server game and client game modules
 
-//
-// config strings are a general means of communicating variable length strings
-// from the server to all connected clients.
-//
-
-// CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
-#define	CS_WARMUP				5		// server time when the match will be restarted
-
 typedef enum {
 	GT_FFA,				// free for all
 	GT_TOURNAMENT,		// one on one tournament

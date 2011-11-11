@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #include "../../core/core.h"
-//#include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_log.h"
 #include "l_utils.h"

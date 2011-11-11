@@ -55,8 +55,8 @@ struct q2trace_t
 };
 
 // a trace is returned when a box is swept through the world
-// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
-// or ENTITYNUM_NONE, ENTITYNUM_WORLD
+// trace->entityNum can also be 0 to (MAX_GENTITIES_Q3-1)
+// or ENTITYNUMQ3_NONE, ENTITYNUMQ3_WORLD
 struct q3trace_t
 {
 	qboolean	allsolid;	// if true, plane is not valid

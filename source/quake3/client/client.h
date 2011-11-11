@@ -94,7 +94,7 @@ struct clientActive_t : clientActiveCommon_t
 	qboolean	newSnapshots;		// set on parse of any valid packet
 
 	gameState_t	gameState;			// configstrings
-	char		mapname[MAX_QPATH];	// extracted from CS_SERVERINFO
+	char		mapname[MAX_QPATH];	// extracted from CSQ3_SERVERINFO
 
 	int			parseEntitiesNum;	// index (not anded off) into cl_parse_entities[]
 
@@ -126,7 +126,7 @@ struct clientActive_t : clientActiveCommon_t
 	// big stuff at end of structure so most offsets are 15 bits or less
 	clSnapshot_t	snapshots[PACKET_BACKUP];
 
-	entityState_t	entityBaselines[MAX_GENTITIES];	// for delta compression when not in previous frame
+	entityState_t	entityBaselines[MAX_GENTITIES_Q3];	// for delta compression when not in previous frame
 
 	entityState_t	parseEntities[MAX_PARSE_ENTITIES];
 };

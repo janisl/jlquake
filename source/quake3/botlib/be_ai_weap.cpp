@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #include "../../core/core.h"
-#include "../game/q_shared.h"
 #include "l_libvar.h"
 #include "l_log.h"
 #include "l_memory.h"
@@ -126,7 +125,7 @@ typedef struct bot_weaponstate_s
 	int *weaponweightindex;							//weapon weight index
 } bot_weaponstate_t;
 
-static bot_weaponstate_t *botweaponstates[MAX_CLIENTS+1];
+static bot_weaponstate_t *botweaponstates[MAX_CLIENTS_Q3+1];
 static weaponconfig_t *weaponconfig;
 
 //========================================================================
@@ -152,7 +151,7 @@ int BotValidWeaponNumber(int weaponnum)
 //========================================================================
 bot_weaponstate_t *BotWeaponStateFromHandle(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "move state handle %d out of range\n", handle);
 		return NULL;
@@ -464,7 +463,7 @@ int BotAllocWeaponState(void)
 {
 	int i;
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (!botweaponstates[i])
 		{
@@ -482,7 +481,7 @@ int BotAllocWeaponState(void)
 //========================================================================
 void BotFreeWeaponState(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "move state handle %d out of range\n", handle);
 		return;
@@ -533,7 +532,7 @@ void BotShutdownWeaponAI(void)
 	if (weaponconfig) FreeMemory(weaponconfig);
 	weaponconfig = NULL;
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (botweaponstates[i])
 		{

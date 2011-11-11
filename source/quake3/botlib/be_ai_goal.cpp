@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #include "../../core/core.h"
-#include "../game/q_shared.h"
 #include "l_utils.h"
 #include "l_libvar.h"
 #include "l_memory.h"
@@ -177,7 +176,7 @@ typedef struct bot_goalstate_s
 	float avoidgoaltimes[MAX_AVOIDGOALS];		//times to avoid the goals
 } bot_goalstate_t;
 
-bot_goalstate_t *botgoalstates[MAX_CLIENTS + 1]; // bk001206 - FIXME: init?
+bot_goalstate_t *botgoalstates[MAX_CLIENTS_Q3 + 1]; // bk001206 - FIXME: init?
 //item configuration
 itemconfig_t *itemconfig = NULL; // bk001206 - init
 //level items
@@ -202,7 +201,7 @@ libvar_t *droppedweight = NULL; // bk001206 - init
 //========================================================================
 bot_goalstate_t *BotGoalStateFromHandle(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "goal state handle %d out of range\n", handle);
 		return NULL;
@@ -1044,7 +1043,7 @@ void BotUpdateEntityItems(void)
 		AAS_EntityInfo(ent, &entinfo);
 		//FIXME: don't do this
 		//skip all floating items for now
-		//if (entinfo.groundent != ENTITYNUM_WORLD) continue;
+		//if (entinfo.groundent != ENTITYNUMQ3_WORLD) continue;
 		//if the entity is still moving
 		if (entinfo.origin[0] != entinfo.lastvisorigin[0] ||
 				entinfo.origin[1] != entinfo.lastvisorigin[1] ||
@@ -1732,7 +1731,7 @@ int BotAllocGoalState(int client)
 {
 	int i;
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (!botgoalstates[i])
 		{
@@ -1751,7 +1750,7 @@ int BotAllocGoalState(int client)
 //========================================================================
 void BotFreeGoalState(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "goal state handle %d out of range\n", handle);
 		return;
@@ -1811,7 +1810,7 @@ void BotShutdownGoalAI(void)
 
 	BotFreeInfoEntities();
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (botgoalstates[i])
 		{

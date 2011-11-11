@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #include "../../core/core.h"
-#include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_libvar.h"
 #include "l_utils.h"
@@ -115,9 +114,9 @@ libvar_t *offhandgrapple;
 libvar_t *cmd_grappleoff;
 libvar_t *cmd_grappleon;
 //type of model, func_plat or func_bobbing
-int modeltypes[MAX_MODELS];
+int modeltypes[MAX_MODELS_Q3];
 
-bot_movestate_t *botmovestates[MAX_CLIENTS+1];
+bot_movestate_t *botmovestates[MAX_CLIENTS_Q3+1];
 
 //========================================================================
 //
@@ -129,7 +128,7 @@ int BotAllocMoveState(void)
 {
 	int i;
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (!botmovestates[i])
 		{
@@ -147,7 +146,7 @@ int BotAllocMoveState(void)
 //========================================================================
 void BotFreeMoveState(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "move state handle %d out of range\n", handle);
 		return;
@@ -168,7 +167,7 @@ void BotFreeMoveState(int handle)
 //========================================================================
 bot_movestate_t *BotMoveStateFromHandle(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "move state handle %d out of range\n", handle);
 		return NULL;
@@ -311,10 +310,10 @@ int BotReachabilityArea(vec3_t origin, int client)
 	AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, mins, maxs);
 	VectorMA(origin, -3, up, end);
 	bsptrace = AAS_Trace(origin, mins, maxs, end, client, BSP46CONTENTS_SOLID|BSP46CONTENTS_PLAYERCLIP);
-	if (!bsptrace.startsolid && bsptrace.fraction < 1 && bsptrace.ent != ENTITYNUM_NONE)
+	if (!bsptrace.startsolid && bsptrace.fraction < 1 && bsptrace.ent != ENTITYNUMQ3_NONE)
 	{
 		//if standing on the world the bot should be in a valid area
-		if (bsptrace.ent == ENTITYNUM_WORLD)
+		if (bsptrace.ent == ENTITYNUMQ3_WORLD)
 		{
 			return BotFuzzyPointReachabilityArea(origin);
 		} //end if
@@ -473,7 +472,7 @@ int BotOnMover(vec3_t origin, int entnum, aas_reachability_t *reach)
 	if (!trace.startsolid && !trace.allsolid)
 	{
 		//NOTE: the reachability face number is the model number of the elevator
-		if (trace.ent != ENTITYNUM_NONE && AAS_EntityModelNum(trace.ent) == modelnum)
+		if (trace.ent != ENTITYNUMQ3_NONE && AAS_EntityModelNum(trace.ent) == modelnum)
 		{
 			return true;
 		} //end if
@@ -516,7 +515,7 @@ void BotSetBrushModelTypes(void)
 	int ent, modelnum;
 	char classname[MAX_EPAIRKEY], model[MAX_EPAIRKEY];
 
-	Com_Memset(modeltypes, 0, MAX_MODELS * sizeof(int));
+	Com_Memset(modeltypes, 0, MAX_MODELS_Q3 * sizeof(int));
 	//
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
@@ -525,7 +524,7 @@ void BotSetBrushModelTypes(void)
 		if (model[0]) modelnum = String::Atoi(model+1);
 		else modelnum = 0;
 
-		if (modelnum < 0 || modelnum > MAX_MODELS)
+		if (modelnum < 0 || modelnum > MAX_MODELS_Q3)
 		{
 			botimport.Print(PRT_MESSAGE, "entity %s model number out of range\n", classname);
 			continue;
@@ -555,7 +554,7 @@ int BotOnTopOfEntity(bot_movestate_t *ms)
 	AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
 	VectorMA(ms->origin, -3, up, end);
 	trace = AAS_Trace(ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID|BSP46CONTENTS_PLAYERCLIP);
-	if (!trace.startsolid && (trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE) )
+	if (!trace.startsolid && (trace.ent != ENTITYNUMQ3_WORLD && trace.ent != ENTITYNUMQ3_NONE) )
 	{
 		return trace.ent;
 	} //end if
@@ -1296,7 +1295,7 @@ void BotCheckBlocked(bot_movestate_t *ms, vec3_t dir, int checkbottom, bot_mover
 	VectorMA(ms->origin, 3, dir, end);
 	trace = AAS_Trace(ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID|BSP46CONTENTS_PLAYERCLIP|BSP46CONTENTS_BODY);
 	//if not started in solid and not hitting the world entity
-	if (!trace.startsolid && (trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE) )
+	if (!trace.startsolid && (trace.ent != ENTITYNUMQ3_WORLD && trace.ent != ENTITYNUMQ3_NONE) )
 	{
 		result->blocked = true;
 		result->blockentity = trace.ent;
@@ -1311,7 +1310,7 @@ void BotCheckBlocked(bot_movestate_t *ms, vec3_t dir, int checkbottom, bot_mover
 		AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
 		VectorMA(ms->origin, -3, up, end);
 		trace = AAS_Trace(ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID|BSP46CONTENTS_PLAYERCLIP);
-		if (!trace.startsolid && (trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE) )
+		if (!trace.startsolid && (trace.ent != ENTITYNUMQ3_WORLD && trace.ent != ENTITYNUMQ3_NONE) )
 		{
 			result->blocked = true;
 			result->blockentity = trace.ent;
@@ -3095,7 +3094,7 @@ void BotMoveToGoal(bot_moveresult_t *result, int movestate, bot_goal_t *goal, in
 		if (ent != -1)
 		{
 			modelnum = AAS_EntityModelindex(ent);
-			if (modelnum >= 0 && modelnum < MAX_MODELS)
+			if (modelnum >= 0 && modelnum < MAX_MODELS_Q3)
 			{
 				modeltype = modeltypes[modelnum];
 
@@ -3598,7 +3597,7 @@ void BotShutdownMoveAI(void)
 {
 	int i;
 
-	for (i = 1; i <= MAX_CLIENTS; i++)
+	for (i = 1; i <= MAX_CLIENTS_Q3; i++)
 	{
 		if (botmovestates[i])
 		{

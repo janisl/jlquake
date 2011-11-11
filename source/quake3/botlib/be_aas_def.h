@@ -32,11 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //debugging on
 #define AAS_DEBUG
 
-#define MAX_CLIENTS			64
-#define	MAX_MODELS			256		// these are sent over the net as 8 bits
-#define	MAX_SOUNDS			256		// so they cannot be blindly increased
-#define	MAX_CONFIGSTRINGS	1024
-
 #define DF_AASENTNUMBER(x)		(x - aasworld.entities)
 #define DF_NUMBERAASENT(x)		(&aasworld.entities[x])
 #define DF_AASENTCLIENT(x)		(x - aasworld.entities - 1)
@@ -254,7 +249,7 @@ typedef struct aas_s
 	int maxclients;
 	aas_entity_t *entities;
 	//string indexes
-	char *configstrings[MAX_CONFIGSTRINGS];
+	char *configstrings[MAX_CONFIGSTRINGS_Q3];
 	int indexessetup;
 	//index to retrieve travel flag for a travel type
 	int travelflagfortype[MAX_TRAVELTYPES];
