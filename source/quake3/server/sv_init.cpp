@@ -33,7 +33,7 @@ void SV_SetConfigstring (int index, const char *val) {
 	int		maxChunkSize = MAX_STRING_CHARS - 24;
 	client_t	*client;
 
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q3 ) {
 		Com_Error (ERR_DROP, "SV_SetConfigstring: bad index %i\n", index);
 	}
 
@@ -60,7 +60,7 @@ void SV_SetConfigstring (int index, const char *val) {
 				continue;
 			}
 			// do not always send server info to all clients
-			if ( index == CS_SERVERINFO && client->gentity && (client->gentity->r.svFlags & SVF_NOSERVERINFO) ) {
+			if ( index == CSQ3_SERVERINFO && client->gentity && (client->gentity->r.svFlags & SVF_NOSERVERINFO) ) {
 				continue;
 			}
 
@@ -108,7 +108,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetConfigstring: bufferSize == %i", bufferSize );
 	}
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q3 ) {
 		Com_Error (ERR_DROP, "SV_GetConfigstring: bad index %i\n", index);
 	}
 	if ( !sv.configstrings[index] ) {
@@ -200,8 +200,8 @@ void SV_BoundMaxClients( int minimum ) {
 
 	if ( sv_maxclients->integer < minimum ) {
 		Cvar_Set( "sv_maxclients", va("%i", minimum) );
-	} else if ( sv_maxclients->integer > MAX_CLIENTS ) {
-		Cvar_Set( "sv_maxclients", va("%i", MAX_CLIENTS) );
+	} else if ( sv_maxclients->integer > MAX_CLIENTS_Q3 ) {
+		Cvar_Set( "sv_maxclients", va("%i", MAX_CLIENTS_Q3) );
 	}
 }
 
@@ -309,7 +309,7 @@ SV_ClearServer
 void SV_ClearServer(void) {
 	int i;
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
 		if ( sv.configstrings[i] ) {
 			Z_Free( sv.configstrings[i] );
 		}
@@ -395,7 +395,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 
 	// wipe the entire per-level structure
 	SV_ClearServer();
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
 		sv.configstrings[i] = CopyString("");
 	}
 
@@ -527,9 +527,9 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	// save systeminfo and serverinfo strings
 	String::NCpyZ( systemInfo, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
+	SV_SetConfigstring( CSQ3_SYSTEMINFO, systemInfo );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+	SV_SetConfigstring( CSQ3_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// any media configstring setting now should issue a warning

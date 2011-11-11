@@ -52,7 +52,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake2", "source\quake2\j
 		{E1056FE2-3D8C-4778-B075-F4DA1C35858D} = {E1056FE2-3D8C-4778-B075-F4DA1C35858D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlib", "source\quake3\botlib\botlib.vcproj", "{A410161F-AE9F-485D-A01F-5294891430A6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlib", "source\botlib\botlib.vcproj", "{A410161F-AE9F-485D-A01F-5294891430A6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0E31D872-F284-45B8-B4FD-11009667B854} = {0E31D872-F284-45B8-B4FD-11009667B854}
 	EndProjectSection

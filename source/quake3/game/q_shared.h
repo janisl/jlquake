@@ -343,39 +343,9 @@ typedef enum {
 #define	SNAPFLAG_NOT_ACTIVE		2	// snapshot used during connection and for zombies
 #define SNAPFLAG_SERVERCOUNT	4	// toggled every map_restart so transitions can be detected
 
-//
-// per-level limits
-//
-#define	MAX_CLIENTS			64		// absolute limit
-#define MAX_LOCATIONS		64
-
-#define	GENTITYNUM_BITS		10		// don't need to send any more
-#define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
-
-// entitynums are communicated with GENTITY_BITS, so any reserved
-// values that are going to be communcated over the net need to
-// also be in this range
-#define	ENTITYNUM_NONE		(MAX_GENTITIES-1)
-#define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
-#define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-2)
-
-
-#define	MAX_MODELS			256		// these are sent over the net as 8 bits
-#define	MAX_SOUNDS			256		// so they cannot be blindly increased
-
-
-#define	MAX_CONFIGSTRINGS	1024
-
-// these are the only configstrings that the system reserves, all the
-// other ones are strictly for servergame to clientgame communication
-#define	CS_SERVERINFO		0		// an info string with all the serverinfo cvars
-#define	CS_SYSTEMINFO		1		// an info string for server system to client system configuration (timescale, etc)
-
-#define	RESERVED_CONFIGSTRINGS	2	// game can't modify below this, only the system can
-
 #define	MAX_GAMESTATE_CHARS	16000
 typedef struct {
-	int			stringOffsets[MAX_CONFIGSTRINGS];
+	int			stringOffsets[MAX_CONFIGSTRINGS_Q3];
 	char		stringData[MAX_GAMESTATE_CHARS];
 	int			dataCount;
 } gameState_t;
@@ -417,7 +387,7 @@ typedef struct playerState_s {
 	int			delta_angles[3];	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
 
-	int			groundEntityNum;// ENTITYNUM_NONE = in air
+	int			groundEntityNum;// ENTITYNUMQ3_NONE = in air
 
 	int			legsTimer;		// don't change low priority animations until this runs out
 	int			legsAnim;		// mask off ANIM_TOGGLEBIT
@@ -442,7 +412,7 @@ typedef struct playerState_s {
 	int			externalEventParm;
 	int			externalEventTime;
 
-	int			clientNum;		// ranges from 0 to MAX_CLIENTS-1
+	int			clientNum;		// ranges from 0 to MAX_CLIENTS_Q3-1
 	int			weapon;			// copied to entityState_t->weapon
 	int			weaponstate;
 
@@ -566,7 +536,7 @@ typedef struct entityState_s {
 
 	int		modelindex;
 	int		modelindex2;
-	int		clientNum;		// 0 to (MAX_CLIENTS - 1), for players and corpses
+	int		clientNum;		// 0 to (MAX_CLIENTS_Q3 - 1), for players and corpses
 	int		frame;
 
 	int		solid;			// for client side prediction, trap_linkentity sets this properly

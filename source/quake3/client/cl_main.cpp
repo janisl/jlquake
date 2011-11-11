@@ -334,7 +334,7 @@ void CL_Record_f( void ) {
 	buf.WriteLong(clc.serverCommandSequence );
 
 	// configstrings
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
 		if ( !cl.gameState.stringOffsets[i] ) {
 			continue;
 		}
@@ -346,7 +346,7 @@ void CL_Record_f( void ) {
 
 	// baselines
 	Com_Memset (&nullstate, 0, sizeof(nullstate));
-	for ( i = 0; i < MAX_GENTITIES ; i++ ) {
+	for ( i = 0; i < MAX_GENTITIES_Q3 ; i++ ) {
 		ent = &cl.entityBaselines[i];
 		if ( !ent->number ) {
 			continue;
@@ -1264,7 +1264,7 @@ void CL_Configstrings_f( void ) {
 		return;
 	}
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
 		ofs = cl.gameState.stringOffsets[ i ];
 		if ( !ofs ) {
 			continue;

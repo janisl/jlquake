@@ -574,7 +574,7 @@ void SV_SendClientGameState( client_t *client ) {
 	msg.WriteLong(client->reliableSequence );
 
 	// write the configstrings
-	for ( start = 0 ; start < MAX_CONFIGSTRINGS ; start++ ) {
+	for ( start = 0 ; start < MAX_CONFIGSTRINGS_Q3 ; start++ ) {
 		if (sv.configstrings[start][0]) {
 			msg.WriteByte(svc_configstring );
 			msg.WriteShort(start );
@@ -584,7 +584,7 @@ void SV_SendClientGameState( client_t *client ) {
 
 	// write the baselines
 	Com_Memset( &nullstate, 0, sizeof( nullstate ) );
-	for ( start = 0 ; start < MAX_GENTITIES; start++ ) {
+	for ( start = 0 ; start < MAX_GENTITIES_Q3; start++ ) {
 		base = &sv.svEntities[start].baseline;
 		if ( !base->number ) {
 			continue;

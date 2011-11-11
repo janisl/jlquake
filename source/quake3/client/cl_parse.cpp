@@ -72,7 +72,7 @@ void CL_DeltaEntity (QMsg *msg, clSnapshot_t *frame, int newnum, entityState_t *
 		MSG_ReadDeltaEntity( msg, old, state, newnum );
 	}
 
-	if ( state->number == (MAX_GENTITIES-1) ) {
+	if ( state->number == (MAX_GENTITIES_Q3-1) ) {
 		return;		// entity was delta removed
 	}
 	cl.parseEntitiesNum++;
@@ -110,9 +110,9 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 
 	while ( 1 ) {
 		// read the entity index number
-		newnum = msg->ReadBits(GENTITYNUM_BITS);
+		newnum = msg->ReadBits(GENTITYNUM_BITS_Q3);
 
-		if ( newnum == (MAX_GENTITIES-1) ) {
+		if ( newnum == (MAX_GENTITIES_Q3-1) ) {
 			break;
 		}
 
@@ -331,7 +331,7 @@ void CL_SystemInfoChanged( void ) {
 	char			value[BIG_INFO_VALUE];
 	qboolean		gameSet;
 
-	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SYSTEMINFO ];
+	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ CSQ3_SYSTEMINFO ];
 	// NOTE TTimo:
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
@@ -415,8 +415,8 @@ void CL_ParseGamestate( QMsg *msg ) {
 			int		len;
 
 			i = msg->ReadShort();
-			if ( i < 0 || i >= MAX_CONFIGSTRINGS ) {
-				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
+			if ( i < 0 || i >= MAX_CONFIGSTRINGS_Q3 ) {
+				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS_Q3" );
 			}
 			s = msg->ReadBigString();
 			len = String::Length( s );
@@ -430,8 +430,8 @@ void CL_ParseGamestate( QMsg *msg ) {
 			Com_Memcpy( cl.gameState.stringData + cl.gameState.dataCount, s, len + 1 );
 			cl.gameState.dataCount += len + 1;
 		} else if ( cmd == svc_baseline ) {
-			newnum = msg->ReadBits(GENTITYNUM_BITS );
-			if ( newnum < 0 || newnum >= MAX_GENTITIES ) {
+			newnum = msg->ReadBits(GENTITYNUM_BITS_Q3 );
+			if ( newnum < 0 || newnum >= MAX_GENTITIES_Q3 ) {
 				Com_Error( ERR_DROP, "Baseline number out of range: %i", newnum );
 			}
 			Com_Memset (&nullstate, 0, sizeof(nullstate));

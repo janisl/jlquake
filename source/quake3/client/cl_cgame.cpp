@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-#include "../botlib/botlib.h"
+#include "../../botlib/botlib.h"
 
 extern	botlib_export_t	*botlib_export;
 
@@ -205,8 +205,8 @@ void CL_ConfigstringModified( void ) {
 	int			len;
 
 	index = String::Atoi( Cmd_Argv(1) );
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
-		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q3 ) {
+		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS_Q3" );
 	}
 	// get everything after "cs <num>"
 	s = Cmd_ArgsFrom(2);
@@ -224,7 +224,7 @@ void CL_ConfigstringModified( void ) {
 	// leave the first 0 for uninitialized strings
 	cl.gameState.dataCount = 1;
 		
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
 		if ( i == index ) {
 			dup = s;
 		} else {
@@ -246,7 +246,7 @@ void CL_ConfigstringModified( void ) {
 		cl.gameState.dataCount += len + 1;
 	}
 
-	if ( index == CS_SYSTEMINFO ) {
+	if ( index == CSQ3_SYSTEMINFO ) {
 		// parse serverId and other cvars
 		CL_SystemInfoChanged();
 	}
@@ -743,7 +743,7 @@ void CL_InitCGame( void ) {
 	Con_Close();
 
 	// find the current mapname
-	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SERVERINFO ];
+	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CSQ3_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
 	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 

@@ -29,8 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#include "../../core/core.h"
-#include "../game/q_shared.h"
+#include "../core/core.h"
 #include "l_memory.h"
 #include "l_script.h"
 #include "l_precomp.h"
@@ -146,7 +145,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t *state)
 	if (relink)
 	{
 		//don't link the world model
-		if (entnum != ENTITYNUM_WORLD)
+		if (entnum != ENTITYNUMQ3_WORLD)
 		{
 			//absolute mins and maxs
 			VectorAdd(ent->i.mins, ent->i.origin, absmins);

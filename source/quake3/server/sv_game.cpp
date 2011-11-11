@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server.h"
 
-#include "../botlib/botlib.h"
+#include "../../botlib/botlib.h"
 
 botlib_export_t	*botlib_export;
 
@@ -62,7 +62,7 @@ playerState_t *SV_GameClientNum( int num ) {
 }
 
 svEntity_t	*SV_SvEntityForGentity( sharedEntity_t *gEnt ) {
-	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES ) {
+	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 	return &sv.svEntities[ gEnt->s.number ];

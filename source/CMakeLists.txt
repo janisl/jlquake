@@ -11,6 +11,7 @@ include_directories(/usr/include/freetype2)
 add_subdirectory(core)
 add_subdirectory(client)
 add_subdirectory(progsvm)
+add_subdirectory(botlib)
 
 add_subdirectory(quake)
 add_subdirectory(quakeworld)

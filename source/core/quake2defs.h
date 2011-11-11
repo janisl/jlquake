@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#define MAX_TOKEN_CHARS_Q2	128		// max length of an individual token
+
 #define MAX_EDICTS_Q2		1024	// must change protocol to increase more
 
 #define UPDATE_BACKUP_Q2	16	// copies of q2entity_state_t to keep buffered

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-#include "../botlib/botlib.h"
+#include "../../botlib/botlib.h"
 
 extern	botlib_export_t	*botlib_export;
 
@@ -728,7 +728,7 @@ static int GetConfigString(int index, char *buf, int size)
 {
 	int		offset;
 
-	if (index < 0 || index >= MAX_CONFIGSTRINGS)
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q3)
 		return qfalse;
 
 	offset = cl.gameState.stringOffsets[index];

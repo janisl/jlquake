@@ -63,16 +63,16 @@ typedef struct {
 	int				snapshotCounter;	// incremented for each snapshot built
 	int				timeResidual;		// <= 1000 / sv_frame->value
 	int				nextFrameTime;		// when time > nextFrameTime, process world
-	struct cmodel_s	*models[MAX_MODELS];
-	char			*configstrings[MAX_CONFIGSTRINGS];
-	svEntity_t		svEntities[MAX_GENTITIES];
+	struct cmodel_s	*models[MAX_MODELS_Q3];
+	char			*configstrings[MAX_CONFIGSTRINGS_Q3];
+	svEntity_t		svEntities[MAX_GENTITIES_Q3];
 
 	const char*		entityParsePoint;	// used during game VM init
 
 	// the game virtual machine will update these on init and changes
 	sharedEntity_t	*gentities;
 	int				gentitySize;
-	int				num_entities;		// current number, <= MAX_GENTITIES
+	int				num_entities;		// current number, <= MAX_GENTITIES_Q3
 
 	playerState_t	*gameClients;
 	int				gameClientSize;		// will be > sizeof(playerState_t) due to game private data
@@ -389,7 +389,7 @@ void SV_Trace( q3trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs,
 // if the starting point is in a solid, it will be allowed to move out
 // to an open area
 
-// passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUM_NONE)
+// passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUMQ3_NONE)
 
 
 void SV_ClipToEntity( q3trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule );

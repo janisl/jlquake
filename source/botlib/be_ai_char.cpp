@@ -29,8 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#include "../../core/core.h"
-#include "../game/q_shared.h"
+#include "../core/core.h"
 #include "l_log.h"
 #include "l_memory.h"
 #include "l_utils.h"
@@ -75,7 +74,7 @@ typedef struct bot_character_s
 	bot_characteristic_t c[1];		//variable sized
 } bot_character_t;
 
-bot_character_t *botcharacters[MAX_CLIENTS + 1];
+bot_character_t *botcharacters[MAX_CLIENTS_Q3 + 1];
 
 //========================================================================
 //
@@ -85,7 +84,7 @@ bot_character_t *botcharacters[MAX_CLIENTS + 1];
 //========================================================================
 bot_character_t *BotCharacterFromHandle(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "character handle %d out of range\n", handle);
 		return NULL;
@@ -147,7 +146,7 @@ void BotFreeCharacterStrings(bot_character_t *ch)
 //========================================================================
 void BotFreeCharacter2(int handle)
 {
-	if (handle <= 0 || handle > MAX_CLIENTS)
+	if (handle <= 0 || handle > MAX_CLIENTS_Q3)
 	{
 		botimport.Print(PRT_FATAL, "character handle %d out of range\n", handle);
 		return;
@@ -364,7 +363,7 @@ int BotFindCachedCharacter(const char *charfile, float skill)
 {
 	int handle;
 
-	for (handle = 1; handle <= MAX_CLIENTS; handle++)
+	for (handle = 1; handle <= MAX_CLIENTS_Q3; handle++)
 	{
 		if ( !botcharacters[handle] ) continue;
 		if ( String::Cmp( botcharacters[handle]->filename, charfile ) == 0 &&
@@ -392,11 +391,11 @@ int BotLoadCachedCharacter(const char *charfile, float skill, int reload)
 #endif //DEBUG
 
 	//find a free spot for a character
-	for (handle = 1; handle <= MAX_CLIENTS; handle++)
+	for (handle = 1; handle <= MAX_CLIENTS_Q3; handle++)
 	{
 		if (!botcharacters[handle]) break;
 	} //end for
-	if (handle > MAX_CLIENTS) return 0;
+	if (handle > MAX_CLIENTS_Q3) return 0;
 	//try to load a cached character with the given skill
 	if (!reload)
 	{
@@ -525,11 +524,11 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill)
 	if (!ch1 || !ch2)
 		return 0;
 	//find a free spot for a character
-	for (handle = 1; handle <= MAX_CLIENTS; handle++)
+	for (handle = 1; handle <= MAX_CLIENTS_Q3; handle++)
 	{
 		if (!botcharacters[handle]) break;
 	} //end for
-	if (handle > MAX_CLIENTS) return 0;
+	if (handle > MAX_CLIENTS_Q3) return 0;
 	out = (bot_character_t *) GetClearedMemory(sizeof(bot_character_t) +
 					MAX_CHARACTERISTICS * sizeof(bot_characteristic_t));
 	out->skill = desiredskill;
@@ -780,7 +779,7 @@ void BotShutdownCharacters(void)
 {
 	int handle;
 
-	for (handle = 1; handle <= MAX_CLIENTS; handle++)
+	for (handle = 1; handle <= MAX_CLIENTS_Q3; handle++)
 	{
 		if (botcharacters[handle])
 		{
