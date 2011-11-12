@@ -559,7 +559,7 @@ void CL_LinkPacketEntities (void)
 			if((int)s1->effects & EF_NODRAW)
 			{
 				ent.skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
-				drawflags|=DRF_TRANSLUCENT;
+				drawflags|=H2DRF_TRANSLUCENT;
 				s1->effects &= ~EF_NODRAW;
 //				cl.players[s1->number].invis=true;
 			}
@@ -838,12 +838,12 @@ void CL_LinkMissiles (void)
 		if(pr->type == 1)
 		{	//ball
 			ent.hModel = cl.model_precache[cl_ballindex];
-			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, SCALE_ORIGIN_CENTER);
+			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		else
 		{	//missilestar
 			ent.hModel = cl.model_precache[cl_missilestarindex];
-			CL_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, SCALE_ORIGIN_CENTER);
+			CL_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		if(rand() % 10 < 3)		
 		{
@@ -1146,7 +1146,7 @@ void CL_LinkPlayers (void)
 			if((int)state->effects & EF_NODRAW)
 			{
 				ent.skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
-				drawflags|=DRF_TRANSLUCENT;
+				drawflags|=H2DRF_TRANSLUCENT;
 				state->effects &= ~EF_NODRAW;
 			}
 

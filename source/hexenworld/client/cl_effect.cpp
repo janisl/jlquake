@@ -22,7 +22,6 @@ extern void CreateStream(int type, int ent, int flags, int tag, float duration, 
 extern void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
 extern void CLTENT_SpawnDeathBubble(vec3_t pos);
 h2entity_state_t *FindState(int EntNum);
-int	TempSoundChannel();
 void setseed(unsigned int seed);
 float seedrand(void);
 
@@ -37,68 +36,6 @@ float seedrand(void);
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-// CL_InitTEnts
-//
-//==========================================================================
-
-static sfxHandle_t	cl_fxsfx_bone;
-static sfxHandle_t	cl_fxsfx_bonefpow;
-static sfxHandle_t	cl_fxsfx_xbowshoot;
-static sfxHandle_t	cl_fxsfx_xbowfshoot;
-static sfxHandle_t	cl_fxsfx_explode;
-static sfxHandle_t	cl_fxsfx_mmfire;
-static sfxHandle_t	cl_fxsfx_eidolon;
-static sfxHandle_t	cl_fxsfx_scarabwhoosh;
-static sfxHandle_t	cl_fxsfx_scarabgrab;
-static sfxHandle_t	cl_fxsfx_scarabhome;
-static sfxHandle_t	cl_fxsfx_scarabrip;
-static sfxHandle_t	cl_fxsfx_scarabbyebye;
-static sfxHandle_t	cl_fxsfx_ravensplit;
-static sfxHandle_t	cl_fxsfx_ravenfire;
-static sfxHandle_t	cl_fxsfx_ravengo;
-static sfxHandle_t	cl_fxsfx_drillashoot;
-static sfxHandle_t	cl_fxsfx_drillaspin;
-static sfxHandle_t	cl_fxsfx_drillameat;
-
-
-static sfxHandle_t	cl_fxsfx_arr2flsh;
-static sfxHandle_t	cl_fxsfx_arr2wood;
-static sfxHandle_t	cl_fxsfx_met2stn;
-
-static sfxHandle_t	cl_fxsfx_ripple;
-static sfxHandle_t	cl_fxsfx_splash;
-
-void CL_InitEffects(void)
-{
-	cl_fxsfx_bone = S_RegisterSound("necro/bonefnrm.wav");
-	cl_fxsfx_bonefpow = S_RegisterSound("necro/bonefpow.wav");
-	cl_fxsfx_xbowshoot = S_RegisterSound("assassin/firebolt.wav");
-	cl_fxsfx_xbowfshoot = S_RegisterSound("assassin/firefblt.wav");
-	cl_fxsfx_explode = S_RegisterSound("weapons/explode.wav");
-	cl_fxsfx_mmfire = S_RegisterSound("necro/mmfire.wav");
-	cl_fxsfx_eidolon = S_RegisterSound("eidolon/spell.wav");
-	cl_fxsfx_scarabwhoosh = S_RegisterSound("misc/whoosh.wav");
-	cl_fxsfx_scarabgrab = S_RegisterSound("assassin/chn2flsh.wav");
-	cl_fxsfx_scarabhome = S_RegisterSound("assassin/chain.wav");
-	cl_fxsfx_scarabrip = S_RegisterSound("assassin/chntear.wav");
-	cl_fxsfx_scarabbyebye = S_RegisterSound("items/itmspawn.wav");
-	cl_fxsfx_ravensplit = S_RegisterSound("raven/split.wav");
-	cl_fxsfx_ravenfire = S_RegisterSound("raven/rfire1.wav");
-	cl_fxsfx_ravengo = S_RegisterSound("raven/ravengo.wav");
-	cl_fxsfx_drillashoot = S_RegisterSound("assassin/pincer.wav");
-	cl_fxsfx_drillaspin = S_RegisterSound("assassin/spin.wav");
-	cl_fxsfx_drillameat = S_RegisterSound("assassin/core.wav");
-
-	cl_fxsfx_arr2flsh = S_RegisterSound("assassin/arr2flsh.wav");
-	cl_fxsfx_arr2wood = S_RegisterSound("assassin/arr2wood.wav");
-	cl_fxsfx_met2stn = S_RegisterSound("weapons/met2stn.wav");
-
-	cl_fxsfx_ripple = S_RegisterSound("misc/drip.wav");
-	cl_fxsfx_splash = S_RegisterSound("raven/outwater.wav");
-}
 
 //==========================================================================
 //
@@ -133,311 +70,157 @@ void CL_ParseEffect(void)
 	switch(cl.h2_Effects[index].type)
 	{
 		case CEHW_RAIN:
-			cl.h2_Effects[index].Rain.min_org[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.min_org[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.min_org[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.max_org[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.max_org[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.max_org[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.e_size[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.e_size[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.e_size[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.dir[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.dir[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.dir[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.color = net_message.ReadShort();
-			cl.h2_Effects[index].Rain.count = net_message.ReadShort();
-			cl.h2_Effects[index].Rain.wait = net_message.ReadFloat();
+			CLH2_ParseEffectRain(index, net_message);
 			break;
 
 		case CEHW_FOUNTAIN:
-			cl.h2_Effects[index].Fountain.pos[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.pos[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.pos[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.angle[0] = net_message.ReadAngle ();
-			cl.h2_Effects[index].Fountain.angle[1] = net_message.ReadAngle ();
-			cl.h2_Effects[index].Fountain.angle[2] = net_message.ReadAngle ();
-			cl.h2_Effects[index].Fountain.movedir[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.movedir[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.movedir[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.color = net_message.ReadShort ();
-			cl.h2_Effects[index].Fountain.cnt = net_message.ReadByte ();
-			AngleVectors (cl.h2_Effects[index].Fountain.angle, 
-						  cl.h2_Effects[index].Fountain.vforward,
-						  cl.h2_Effects[index].Fountain.vright,
-						  cl.h2_Effects[index].Fountain.vup);
+			CLH2_ParseEffectFountain(index, net_message);
 			break;
 
 		case CEHW_QUAKE:
-			cl.h2_Effects[index].Quake.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Quake.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Quake.origin[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Quake.radius = net_message.ReadFloat ();
+			CLH2_ParseEffectQuake(index, net_message);
 			break;
 
 		case CEHW_WHITE_SMOKE:
-		case CEHW_GREEN_SMOKE:
-		case CEHW_GREY_SMOKE:
-		case CEHW_RED_SMOKE:
 		case CEHW_SLOW_WHITE_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectWhiteSmoke(index, net_message);
+			break;
+		case CEHW_GREEN_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectGreenSmoke(index, net_message);
+			break;
+		case CEHW_GREY_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectGraySmoke(index, net_message);
+			break;
+		case CEHW_RED_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectRedSmoke(index, net_message);
+			break;
 		case CEHW_TELESMK1:
+			ImmediateFree = !CLH2_ParseEffectTeleportSmoke1(index, net_message);
+			break;
 		case CEHW_TELESMK2:
+			ImmediateFree = !CLH2_ParseEffectTeleportSmoke2(index, net_message);
+			break;
 		case CEHW_GHOST:
+			ImmediateFree = !CLH2_ParseEffectGhost(index, net_message);
+			break;
 		case CEHW_REDCLOUD:
+			ImmediateFree = !CLH2_ParseEffectRedCloud(index, net_message);
+			break;
 		case CEHW_ACID_MUZZFL:
+			ImmediateFree = !CLH2_ParseEffectAcidMuzzleFlash(index, net_message);
+			break;
 		case CEHW_FLAMESTREAM:
+			ImmediateFree = !CLH2_ParseEffectFlameStream(index, net_message);
+			break;
 		case CEHW_FLAMEWALL:
+			ImmediateFree = !CLH2_ParseEffectFlameWall(index, net_message);
+			break;
 		case CEHW_FLAMEWALL2:
+			ImmediateFree = !CLH2_ParseEffectFlameWall2(index, net_message);
+			break;
 		case CEHW_ONFIRE:
+			ImmediateFree = !CLH2_ParseEffectOnFire(index, net_message);
+			break;
 		case CEHW_RIPPLE:
-			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Smoke.velocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Smoke.velocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Smoke.velocity[2] = net_message.ReadFloat ();
-
-			cl.h2_Effects[index].Smoke.framelength = net_message.ReadFloat ();
-
-			if ((cl.h2_Effects[index].Smoke.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
-
-				if ((cl.h2_Effects[index].type == CEHW_WHITE_SMOKE) || 
-					(cl.h2_Effects[index].type == CEHW_SLOW_WHITE_SMOKE))
-					ent->model = R_RegisterModel("models/whtsmk1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_GREEN_SMOKE)
-					ent->model = R_RegisterModel("models/grnsmk1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_GREY_SMOKE)
-					ent->model = R_RegisterModel("models/grysmk1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_RED_SMOKE)
-					ent->model = R_RegisterModel("models/redsmk1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_TELESMK1)
-					ent->model = R_RegisterModel("models/telesmk1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_TELESMK2)
-					ent->model = R_RegisterModel("models/telesmk2.spr");
-				else if (cl.h2_Effects[index].type == CEHW_REDCLOUD)
-					ent->model = R_RegisterModel("models/rcloud.spr");
-				else if (cl.h2_Effects[index].type == CEHW_FLAMESTREAM)
-					ent->model = R_RegisterModel("models/flamestr.spr");
-				else if (cl.h2_Effects[index].type == CEHW_ACID_MUZZFL)
-				{
-					ent->model = R_RegisterModel("models/muzzle1.spr");
-					ent->state.drawflags=DRF_TRANSLUCENT|MLS_ABSLIGHT;
-					ent->state.abslight=0.2;
-				}
-				else if (cl.h2_Effects[index].type == CEHW_FLAMEWALL)
-					ent->model = R_RegisterModel("models/firewal1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_FLAMEWALL2)
-					ent->model = R_RegisterModel("models/firewal2.spr");
-				else if (cl.h2_Effects[index].type == CEHW_ONFIRE)
-				{
-					float rdm = rand() & 3;
-
-					if (rdm < 1)
-						ent->model = R_RegisterModel("models/firewal1.spr");
-					else if (rdm < 2)
-						ent->model = R_RegisterModel("models/firewal2.spr");
-					else
-						ent->model = R_RegisterModel("models/firewal3.spr");
-					
-					ent->state.drawflags = DRF_TRANSLUCENT;
-					ent->state.abslight = 1;
-					ent->state.frame = cl.h2_Effects[index].Smoke.frame;
-				}
-				else if (cl.h2_Effects[index].type == CEHW_RIPPLE)
-				{
-					if(cl.h2_Effects[index].Smoke.framelength==2)
-					{
-						CLH2_SplashParticleEffect (cl.h2_Effects[index].Smoke.origin, 200, 406+rand()%8, pt_h2slowgrav, 40);//splash
-						S_StartSound(cl.h2_Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_splash, 1, 1);
-					}
-					else if(cl.h2_Effects[index].Smoke.framelength==1)
-						CLH2_SplashParticleEffect (cl.h2_Effects[index].Smoke.origin, 100, 406+rand()%8, pt_h2slowgrav, 20);//splash
-					else
-						S_StartSound(cl.h2_Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ripple, 1, 1);
-					cl.h2_Effects[index].Smoke.framelength=0.05;
-					ent->model = R_RegisterModel("models/ripple.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT;//|SCALE_TYPE_XYONLY|SCALE_ORIGIN_CENTER;
-					ent->state.angles[0]=90;
-					//ent->scale = 1;
-				}
-				else
-				{
-					ImmediateFree = true;
-					Con_Printf ("Bad effect type %d\n",(int)cl.h2_Effects[index].type);
-				}
-
-				if (cl.h2_Effects[index].type != CEHW_REDCLOUD&&cl.h2_Effects[index].type != CEHW_ACID_MUZZFL&&cl.h2_Effects[index].type != CEHW_FLAMEWALL&&cl.h2_Effects[index].type != CEHW_RIPPLE)
-					ent->state.drawflags = DRF_TRANSLUCENT;
-
-				if (cl.h2_Effects[index].type == CEHW_FLAMESTREAM)
-				{
-					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-					ent->state.abslight = 1;
-					ent->state.frame = cl.h2_Effects[index].Smoke.frame;
-				}
-
-				if (cl.h2_Effects[index].type == CEHW_GHOST)
-				{		
-					ent->model = R_RegisterModel("models/ghost.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-					ent->state.abslight = .5;
-				}
-				if (cl.h2_Effects[index].type == CEHW_TELESMK1)
-				{
-					S_StartSound(cl.h2_Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ravenfire, 1, 1);
-
-					if ((cl.h2_Effects[index].Smoke.entity_index2 = CLH2_NewEffectEntity()) != -1)
-					{
-						ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index2];
-						VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
-						ent->model = R_RegisterModel("models/telesmk1.spr");
-						ent->state.drawflags = DRF_TRANSLUCENT;
-					}
-				}
-			}
-			else
-				ImmediateFree = true;
+			ImmediateFree = !CLHW_ParseEffectRipple(index, net_message);
 			break;
 
 		case CEHW_SM_WHITE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectSmallWhiteFlash(index, net_message);
+			break;
 		case CEHW_YELLOWRED_FLASH:
+			ImmediateFree = !CLH2_ParseEffectYellowRedFlash(index, net_message);
+			break;
 		case CEHW_BLUESPARK:
+			ImmediateFree = !CLH2_ParseEffectBlueSpark(index, net_message);
+			break;
 		case CEHW_YELLOWSPARK:
-		case CEHW_SM_CIRCLE_EXP:
-		case CEHW_BG_CIRCLE_EXP:
-		case CEHW_SM_EXPLOSION:
-		case CEHW_SM_EXPLOSION2:
-		case CEHW_BG_EXPLOSION:
-		case CEHW_FLOOR_EXPLOSION:
-		case CEHW_BLUE_EXPLOSION:
-		case CEHW_REDSPARK:
-		case CEHW_GREENSPARK:
-		case CEHW_ICEHIT:
-		case CEHW_MEDUSA_HIT:
-		case CEHW_MEZZO_REFLECT:
-		case CEHW_FLOOR_EXPLOSION2:
-		case CEHW_XBOW_EXPLOSION:
-		case CEHW_NEW_EXPLOSION:
-		case CEHW_MAGIC_MISSILE_EXPLOSION:
-		case CEHW_BONE_EXPLOSION:
-		case CEHW_BLDRN_EXPL:
 		case CEHW_BRN_BOUNCE:
+			ImmediateFree = !CLH2_ParseEffectYellowSpark(index, net_message);
+			break;
+		case CEHW_SM_CIRCLE_EXP:
+			ImmediateFree = !CLH2_ParseEffectSmallCircleExplosion(index, net_message);
+			break;
+		case CEHW_BG_CIRCLE_EXP:
+			ImmediateFree = !CLH2_ParseEffectBigCircleExplosion(index, net_message);
+			break;
+		case CEHW_SM_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, net_message);
+			break;
+		case CEHW_SM_EXPLOSION2:
+			ImmediateFree = !CLH2_ParseEffectSmallExplosionWithSound(index, net_message);
+			break;
+		case CEHW_BG_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectBigExplosionWithSound(index, net_message);
+			break;
+		case CEHW_FLOOR_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, net_message);
+			break;
+		case CEHW_BLUE_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectBlueExplosion(index, net_message);
+			break;
+		case CEHW_REDSPARK:
+			ImmediateFree = !CLH2_ParseEffectRedSpark(index, net_message);
+			break;
+		case CEHW_GREENSPARK:
+			ImmediateFree = !CLH2_ParseEffectGreenSpark(index, net_message);
+			break;
+		case CEHW_ICEHIT:
+			ImmediateFree = !CLH2_ParseEffectIceHit(index, net_message);
+			break;
+		case CEHW_MEDUSA_HIT:
+			ImmediateFree = !CLH2_ParseEffectMedusaHit(index, net_message);
+			break;
+		case CEHW_MEZZO_REFLECT:
+			ImmediateFree = !CLH2_ParseEffectMezzoReflect(index, net_message);
+			break;
+		case CEHW_FLOOR_EXPLOSION2:
+			ImmediateFree = !CLH2_ParseEffectFloorExplosion2(index, net_message);
+			break;
+		case CEHW_XBOW_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectXBowExplosion(index, net_message);
+			break;
+		case CEHW_NEW_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectNewExplosion(index, net_message);
+			break;
+		case CEHW_MAGIC_MISSILE_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectMagicMissileExplosionWithSound(index, net_message);
+			break;
+		case CEHW_BONE_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, net_message);
+			break;
+		case CEHW_BLDRN_EXPL:
+			ImmediateFree = !CLH2_ParseEffectBldrnExplosion(index, net_message);
+			break;
 		case CEHW_LSHOCK:
+			ImmediateFree = !CLH2_ParseEffectLShock(index, net_message);
+			break;
 		case CEHW_ACID_HIT:
+			ImmediateFree = !CLH2_ParseEffectAcidHit(index, net_message);
+			break;
 		case CEHW_ACID_SPLAT:
+			ImmediateFree = !CLH2_ParseEffectAcidSplat(index, net_message);
+			break;
 		case CEHW_ACID_EXPL:
+			ImmediateFree = !CLH2_ParseEffectAcidExplosion(index, net_message);
+			break;
 		case CEHW_LBALL_EXPL:
+			ImmediateFree = !CLH2_ParseEffectLBallExplosion(index, net_message);
+			break;
 		case CEHW_FBOOM:
+			ImmediateFree = !CLH2_ParseEffectFBoom(index, net_message);
+			break;
 		case CEHW_BOMB:
+			ImmediateFree = !CLH2_ParseEffectBomb(index, net_message);
+			break;
 		case CEHW_FIREWALL_SMALL:
+			ImmediateFree = !CLH2_ParseEffectFirewallSall(index, net_message);
+			break;
 		case CEHW_FIREWALL_MEDIUM:
+			ImmediateFree = !CLH2_ParseEffectFirewallMedium(index, net_message);
+			break;
 		case CEHW_FIREWALL_LARGE:
-
-			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
-			if ((cl.h2_Effects[index].Smoke.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
-
-				if (cl.h2_Effects[index].type == CEHW_BLUESPARK)
-					ent->model = R_RegisterModel("models/bspark.spr");
-				else if (cl.h2_Effects[index].type == CEHW_YELLOWSPARK)
-					ent->model = R_RegisterModel("models/spark.spr");
-				else if (cl.h2_Effects[index].type == CEHW_SM_CIRCLE_EXP)
-					ent->model = R_RegisterModel("models/fcircle.spr");
-				else if (cl.h2_Effects[index].type == CEHW_BG_CIRCLE_EXP)
-					ent->model = R_RegisterModel("models/xplod29.spr");
-				else if (cl.h2_Effects[index].type == CEHW_SM_WHITE_FLASH)
-					ent->model = R_RegisterModel("models/sm_white.spr");
-				else if (cl.h2_Effects[index].type == CEHW_YELLOWRED_FLASH)
-				{
-					ent->model = R_RegisterModel("models/yr_flsh.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT;
-				}
-				else if (cl.h2_Effects[index].type == CEHW_SM_EXPLOSION)
-					ent->model = R_RegisterModel("models/sm_expld.spr");
-				else if (cl.h2_Effects[index].type == CEHW_SM_EXPLOSION2)
-				{
-					ent->model = R_RegisterModel("models/sm_expld.spr");
-					S_StartSound(cl.h2_Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
-
-				}
-				else if (cl.h2_Effects[index].type == CEHW_BG_EXPLOSION)
-				{
-					ent->model = R_RegisterModel("models/bg_expld.spr");
-					S_StartSound(cl.h2_Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
-				}
-				else if (cl.h2_Effects[index].type == CEHW_FLOOR_EXPLOSION)
-					ent->model = R_RegisterModel("models/fl_expld.spr");
-				else if (cl.h2_Effects[index].type == CEHW_BLUE_EXPLOSION)
-					ent->model = R_RegisterModel("models/xpspblue.spr");
-				else if (cl.h2_Effects[index].type == CEHW_REDSPARK)
-					ent->model = R_RegisterModel("models/rspark.spr");
-				else if (cl.h2_Effects[index].type == CEHW_GREENSPARK)
-					ent->model = R_RegisterModel("models/gspark.spr");
-				else if (cl.h2_Effects[index].type == CEHW_ICEHIT)
-					ent->model = R_RegisterModel("models/icehit.spr");
-				else if (cl.h2_Effects[index].type == CEHW_MEDUSA_HIT)
-					ent->model = R_RegisterModel("models/medhit.spr");
-				else if (cl.h2_Effects[index].type == CEHW_MEZZO_REFLECT)
-					ent->model = R_RegisterModel("models/mezzoref.spr");
-				else if (cl.h2_Effects[index].type == CEHW_FLOOR_EXPLOSION2)
-					ent->model = R_RegisterModel("models/flrexpl2.spr");
-				else if (cl.h2_Effects[index].type == CEHW_XBOW_EXPLOSION)
-					ent->model = R_RegisterModel("models/xbowexpl.spr");
-				else if (cl.h2_Effects[index].type == CEHW_NEW_EXPLOSION)
-					ent->model = R_RegisterModel("models/gen_expl.spr");
-				else if (cl.h2_Effects[index].type == CEHW_MAGIC_MISSILE_EXPLOSION)
-				{
-					ent->model = R_RegisterModel("models/mm_expld.spr");
-					S_StartSound(cl.h2_Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
-				}
-				else if (cl.h2_Effects[index].type == CEHW_BONE_EXPLOSION)
-					ent->model = R_RegisterModel("models/bonexpld.spr");
-				else if (cl.h2_Effects[index].type == CEHW_BLDRN_EXPL)
-					ent->model = R_RegisterModel("models/xplsn_1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_ACID_HIT)
-					ent->model = R_RegisterModel("models/axplsn_2.spr");
-				else if (cl.h2_Effects[index].type == CEHW_ACID_SPLAT)
-					ent->model = R_RegisterModel("models/axplsn_1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_ACID_EXPL)
-				{
-					ent->model = R_RegisterModel("models/axplsn_5.spr");
-					ent->state.drawflags = MLS_ABSLIGHT;
-					ent->state.abslight = 1;
-				}
-				else if (cl.h2_Effects[index].type == CEHW_FBOOM)
-					ent->model = R_RegisterModel("models/fboom.spr");
-				else if (cl.h2_Effects[index].type == CEHW_BOMB)
-					ent->model = R_RegisterModel("models/pow.spr");
-				else if (cl.h2_Effects[index].type == CEHW_LBALL_EXPL)
-					ent->model = R_RegisterModel("models/Bluexp3.spr");
-				else if (cl.h2_Effects[index].type == CEHW_FIREWALL_SMALL)
-					ent->model = R_RegisterModel("models/firewal1.spr");
-				else if (cl.h2_Effects[index].type == CEHW_FIREWALL_MEDIUM)
-					ent->model = R_RegisterModel("models/firewal5.spr");
-				else if (cl.h2_Effects[index].type == CEHW_FIREWALL_LARGE)
-					ent->model = R_RegisterModel("models/firewal4.spr");
-				else if (cl.h2_Effects[index].type == CEHW_BRN_BOUNCE)
-					ent->model = R_RegisterModel("models/spark.spr");
-				else if (cl.h2_Effects[index].type == CEHW_LSHOCK)
-				{
-					ent->model = R_RegisterModel("models/vorpshok.mdl");
-					ent->state.drawflags=MLS_TORCH;
-					ent->state.angles[2]=90;
-					ent->state.scale=255;
-				}
-			}
-			else
-			{
-				ImmediateFree = true;
-			}
+			ImmediateFree = !CLH2_ParseEffectFirewallLarge(index, net_message);
 			break;
 
 		case CEHW_WHITE_FLASH:
@@ -465,9 +248,9 @@ void CL_ParseEffect(void)
 				else if (cl.h2_Effects[index].type == CEHW_HWSPLITFLASH)
 				{
 					ent->model = R_RegisterModel("models/sm_blue.spr");
-					S_StartSound(cl.h2_Effects[index].Flash.origin, TempSoundChannel(), 1, cl_fxsfx_ravensplit, 1, 1);
+					S_StartSound(cl.h2_Effects[index].Flash.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravensplit, 1, 1);
 				}
-				ent->state.drawflags = DRF_TRANSLUCENT;
+				ent->state.drawflags = H2DRF_TRANSLUCENT;
 
 			}
 			else
@@ -507,7 +290,7 @@ void CL_ParseEffect(void)
 					dir += 45;
 
 					ent->model = R_RegisterModel("models/telesmk2.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT;
+					ent->state.drawflags = H2DRF_TRANSLUCENT;
 				}
 			}
 			break;
@@ -531,7 +314,7 @@ void CL_ParseEffect(void)
 				VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
 
 				ent->model = R_RegisterModel("models/teleport.mdl");
-				ent->state.drawflags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
+				ent->state.drawflags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
 				ent->state.scale = 100;
 				ent->state.skinnum = skinnum;
 			}
@@ -565,7 +348,7 @@ void CL_ParseEffect(void)
 				else if (cl.h2_Effects[index].type == CEHW_HWBONEBALL)
 				{
 					ent->model = R_RegisterModel("models/bonelump.mdl");
-					S_StartSound(cl.h2_Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_bonefpow, 1, 1);
+					S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_bonefpow, 1, 1);
 				}
 			}
 			else
@@ -598,12 +381,12 @@ void CL_ParseEffect(void)
 				{
 					cl.h2_Effects[index].Missile.avelocity[0] = (rand() % 1554) - 777;
 					ent->model = R_RegisterModel("models/boneshot.mdl");
-					S_StartSound(cl.h2_Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_bone, 1, 1);
+					S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_bone, 1, 1);
 				}
 				else if (cl.h2_Effects[index].type == CEHW_HWRAVENPOWER)
 				{
 					ent->model = R_RegisterModel("models/ravproj.mdl");
-					S_StartSound(cl.h2_Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
+					S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
 				}
 			}
 			else
@@ -643,11 +426,11 @@ void CL_ParseEffect(void)
 
 			if (cl.h2_Effects[index].Xbow.bolts == 3)
 			{
-				S_StartSound(origin, TempSoundChannel(), 1, cl_fxsfx_xbowshoot, 1, 1);
+				S_StartSound(origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowshoot, 1, 1);
 			}
 			else if (cl.h2_Effects[index].Xbow.bolts == 5)
 			{
-				S_StartSound(origin, TempSoundChannel(), 1, cl_fxsfx_xbowfshoot, 1, 1);
+				S_StartSound(origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowfshoot, 1, 1);
 			}
 
 			for (i=0;i<cl.h2_Effects[index].Xbow.bolts;i++)
@@ -716,7 +499,7 @@ void CL_ParseEffect(void)
 			VectorNormalize(forward);
 			VectorCopy(forward, cl.h2_Effects[index].Xbow.velocity);
 
-//			S_StartSound(origin, TempSoundChannel(), 1, cl_fxsfx_xbowshoot, 1, 1);
+//			S_StartSound(origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowshoot, 1, 1);
 
 			for (i=0;i<cl.h2_Effects[index].Xbow.bolts;i++)
 			{
@@ -764,7 +547,7 @@ void CL_ParseEffect(void)
 
 			cl.h2_Effects[index].Missile.speed = net_message.ReadShort();
 
-			S_StartSound(cl.h2_Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_drillashoot, 1, 1);
+			S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_drillashoot, 1, 1);
 
 			AngleVectors(cl.h2_Effects[index].Missile.angle,cl.h2_Effects[index].Missile.velocity,right,up);
 
@@ -795,7 +578,7 @@ void CL_ParseEffect(void)
 
 			cl.h2_Effects[index].Chain.state = 0;//state 0: move slowly toward owner
 
-			S_StartSound(cl.h2_Effects[index].Chain.origin, TempSoundChannel(), 1, cl_fxsfx_scarabwhoosh, 1, 1);
+			S_StartSound(cl.h2_Effects[index].Chain.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabwhoosh, 1, 1);
 
 			if ((cl.h2_Effects[index].Chain.ent1 = CLH2_NewEffectEntity()) != -1)
 			{
@@ -875,20 +658,20 @@ void CL_ParseEffect(void)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Star.ent1];
 				VectorCopy(cl.h2_Effects[index].Star.origin, ent->state.origin);
-				ent->state.drawflags |= MLS_ABSLIGHT;
+				ent->state.drawflags |= H2MLS_ABSLIGHT;
 				ent->state.abslight = 0.5;
 				ent->state.angles[2] = 90;
 				if(cl.h2_Effects[index].type == CEHW_HWMISSILESTAR)
 				{
 					ent->model = R_RegisterModel("models/star.mdl");
 					ent->state.scale = 0.3;
-					S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_mmfire, 1, 1);
+					S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_mmfire, 1, 1);
 
 				}
 				else
 				{
 					ent->model = R_RegisterModel("models/glowball.mdl");
-					S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_eidolon, 1, 1);
+					S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_eidolon, 1, 1);
 				}
 			}
 			if(cl.h2_Effects[index].type == CEHW_HWMISSILESTAR)
@@ -898,7 +681,7 @@ void CL_ParseEffect(void)
 					ent = &EffectEntities[cl.h2_Effects[index].Star.ent2];
 					VectorCopy(cl.h2_Effects[index].Star.origin, ent->state.origin);
 					ent->model = R_RegisterModel("models/star.mdl");
-					ent->state.drawflags |= MLS_ABSLIGHT;
+					ent->state.drawflags |= H2MLS_ABSLIGHT;
 					ent->state.abslight = 0.5;
 					ent->state.scale = 0.3;
 				}
@@ -1067,13 +850,13 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					case XBOW_IMPACT_GREENFLESH:
 					case XBOW_IMPACT_REDFLESH:
 					case XBOW_IMPACT_MUMMY:
-						S_StartSound(ent->state.origin, TempSoundChannel(), 0, cl_fxsfx_arr2flsh, 1, 1);
+						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 0, clh2_fxsfx_arr2flsh, 1, 1);
 						break;
 					case XBOW_IMPACT_WOOD:
-						S_StartSound(ent->state.origin, TempSoundChannel(), 0, cl_fxsfx_arr2wood, 1, 1);
+						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 0, clh2_fxsfx_arr2wood, 1, 1);
 						break;
 					default:
-						S_StartSound(ent->state.origin, TempSoundChannel(), 0, cl_fxsfx_met2stn, 1, 1);
+						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 0, clh2_fxsfx_met2stn, 1, 1);
 						break;
 					}
 
@@ -1216,7 +999,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 
 				if ((material == XBOW_IMPACT_GREENFLESH) || (material == XBOW_IMPACT_GREENFLESH))
 				{//meaty sound and some chunks too
-					S_StartSound(pos, TempSoundChannel(), 0, cl_fxsfx_drillameat, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_fxsfx_drillameat, 1, 1);
 					
 					//todo: the chunks
 				}
@@ -1801,7 +1584,7 @@ void CL_UpdateEffects(void)
 
 				if ((int)(cl.serverTimeFloat) != (int)(cl.serverTimeFloat - host_frametime))
 				{
-					S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_drillaspin, 1, 1);
+					S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_drillaspin, 1, 1);
 				}
 
 				ent->state.angles[0] += frametime * cl.h2_Effects[index].Missile.avelocity[0];
@@ -1863,7 +1646,7 @@ void CL_UpdateEffects(void)
 									cl.h2_Effects[index].Xbow.gonetime[i] = cl.serverTimeFloat + HX_FRAME_TIME * 2;
 
 									//play explosion sound
-									S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
+									S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_explode, 1, 1);
 
 									CL_LinkEntity(ent);
 								}
@@ -1950,7 +1733,7 @@ void CL_UpdateEffects(void)
 					if (cl.h2_Effects[index].Chain.sound_time <= cl.serverTimeFloat)
 					{
 						cl.h2_Effects[index].Chain.sound_time = cl.serverTimeFloat + 0.5;
-						S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_scarabhome, 1, 1);
+						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabhome, 1, 1);
 					}
 					if (es)
 					{
@@ -1959,7 +1742,7 @@ void CL_UpdateEffects(void)
 						VectorSubtract(org,ent->state.origin,org);
 						if (fabs(VectorNormalize(org))<500*frametime)
 						{
-							S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_scarabgrab, 1, 1);
+							S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabgrab, 1, 1);
 							cl.h2_Effects[index].Chain.state = 1;
 							VectorCopy(es->origin, ent->state.origin);
 							ent->state.origin[2] += cl.h2_Effects[index].Chain.height;
@@ -1990,14 +1773,14 @@ void CL_UpdateEffects(void)
 					}
 					else//done--flash & git outa here (change type to redflash)
 					{
-						S_StartSound(ent->state.origin, TempSoundChannel(), 1, cl_fxsfx_scarabbyebye, 1, 1);
+						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabbyebye, 1, 1);
 						cl.h2_Effects[index].Flash.entity_index = cl.h2_Effects[index].Chain.ent1;
 						cl.h2_Effects[index].type = CEHW_RED_FLASH;
 						VectorCopy(ent->state.origin,cl.h2_Effects[index].Flash.origin);
 						cl.h2_Effects[index].Flash.reverse = 0;
 						ent->model = R_RegisterModel("models/redspt.spr");
 						ent->state.frame = 0;
-						ent->state.drawflags = DRF_TRANSLUCENT;
+						ent->state.drawflags = H2DRF_TRANSLUCENT;
 					}
 					break;
 				}
@@ -2177,7 +1960,7 @@ void CL_ParseMultiEffect(void)
 				VectorCopy(cl.h2_Effects[index].Missile.origin, ent->state.origin);
 				VectorCopy(cl.h2_Effects[index].Missile.angle, ent->state.angles);
 				ent->model = R_RegisterModel("models/ravproj.mdl");
-				S_StartSound(cl.h2_Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
+				S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
 			}
 		}
 		CreateRavenExplosions(orig);

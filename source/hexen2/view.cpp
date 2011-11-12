@@ -817,10 +817,10 @@ static void V_CalcRefdef (void)
 	view->state.frame = cl.stats[STAT_WEAPONFRAME];
 
 	// Place weapon in powered up mode
-	if ((ent->state.drawflags & MLS_MASKIN) == MLS_POWERMODE)
-		view->state.drawflags = (view->state.drawflags & MLS_MASKOUT) | MLS_POWERMODE;
+	if ((ent->state.drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)
+		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | H2MLS_POWERMODE;
 	else
-		view->state.drawflags = (view->state.drawflags & MLS_MASKOUT) | 0;
+		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | 0;
 
 // set up the refresh position
 	VectorAdd(viewangles, cl.punchangle, viewangles);

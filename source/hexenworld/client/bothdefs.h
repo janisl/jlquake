@@ -127,28 +127,6 @@
 #define	PRINT_CHAT			3		// chat messages
 #define PRINT_SOUND			4		// says a sound
 
-
-// edict->drawflags
-#define MLS_MASKIN				7	// MLS: Model Light Style
-#define MLS_MASKOUT				248
-#define MLS_NONE				0
-#define MLS_FULLBRIGHT			1
-#define MLS_POWERMODE			2
-#define MLS_TORCH				3
-#define MLS_TOTALDARK			4
-#define MLS_ABSLIGHT			7
-#define SCALE_TYPE_MASKIN		24
-#define SCALE_TYPE_MASKOUT		231
-#define SCALE_TYPE_UNIFORM		0	// Scale X, Y, and Z
-#define SCALE_TYPE_XYONLY		8	// Scale X and Y
-#define SCALE_TYPE_ZONLY		16	// Scale Z
-#define SCALE_ORIGIN_MASKIN		96
-#define SCALE_ORIGIN_MASKOUT	159
-#define SCALE_ORIGIN_CENTER		0	// Scaling origin at object center
-#define SCALE_ORIGIN_BOTTOM		32	// Scaling origin at object bottom
-#define SCALE_ORIGIN_TOP		64	// Scaling origin at object top
-#define DRF_TRANSLUCENT			128
-
 //Siege teams
 #define ST_DEFENDER					1
 #define ST_ATTACKER   				2

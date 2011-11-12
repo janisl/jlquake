@@ -959,7 +959,7 @@ void CL_Init (void)
 
 	CL_InitInput ();
 	CL_InitPrediction ();
-	CL_InitEffects ();
+	CLHW_InitEffects ();
 	CL_InitCam ();
 	Pmove_Init ();
 	
@@ -1402,7 +1402,7 @@ void Host_Shutdown(void)
 
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags)
 {
-	if (drawflags & DRF_TRANSLUCENT)
+	if (drawflags & H2DRF_TRANSLUCENT)
 	{
 		ent->renderfx |= RF_WATERTRANS;
 	}
@@ -1455,7 +1455,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.serverTimeFloat * 3)) * 5.5;
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
 			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.serverTimeFloat * 3.8)) * 34;
-			drawflags |= MLS_ABSLIGHT;
+			drawflags |= H2MLS_ABSLIGHT;
  		}
 
 		if (scale != 0 && scale != 100)
@@ -1464,34 +1464,34 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			float esx;
 			float esy;
 			float esz;
-			switch (drawflags & SCALE_TYPE_MASKIN)
+			switch (drawflags & H2SCALE_TYPE_MASKIN)
 			{
-			case SCALE_TYPE_UNIFORM:
+			case H2SCALE_TYPE_UNIFORM:
 				esx = entScale;
 				esy = entScale;
 				esz = entScale;
 				break;
-			case SCALE_TYPE_XYONLY:
+			case H2SCALE_TYPE_XYONLY:
 				esx = entScale;
 				esy = entScale;
 				esz = 1;
 				break;
-			case SCALE_TYPE_ZONLY:
+			case H2SCALE_TYPE_ZONLY:
 				esx = 1;
 				esy = 1;
 				esz = entScale;
 				break;
 			}
 			float etz;
-			switch (drawflags & SCALE_ORIGIN_MASKIN)
+			switch (drawflags & H2SCALE_ORIGIN_MASKIN)
 			{
-			case SCALE_ORIGIN_CENTER:
+			case H2SCALE_ORIGIN_CENTER:
 				etz = 0.5;
 				break;
-			case SCALE_ORIGIN_BOTTOM:
+			case H2SCALE_ORIGIN_BOTTOM:
 				etz = 0;
 				break;
-			case SCALE_ORIGIN_TOP:
+			case H2SCALE_ORIGIN_TOP:
 				etz = 1.0;
 				break;
 			}
@@ -1524,8 +1524,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		ent->shaderRGBA[2] = (int)(BTint[colorshade] * 255);
 	}
 
-	int mls = drawflags & MLS_MASKIN;
-	if (mls == MLS_ABSLIGHT)
+	int mls = drawflags & H2MLS_MASKIN;
+	if (mls == H2MLS_ABSLIGHT)
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = abslight / 256.0;

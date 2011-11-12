@@ -807,10 +807,10 @@ static void V_CalcRefdef (void)
 	view->state.frame = view_message->weaponframe;
 
 	// Place weapon in powered up mode
-	if ((cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & MLS_MASKIN) == MLS_POWERMODE)
-		view->state.drawflags = (view->state.drawflags & MLS_MASKOUT) | MLS_POWERMODE;
+	if ((cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)
+		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | H2MLS_POWERMODE;
 	else
-		view->state.drawflags = (view->state.drawflags & MLS_MASKOUT) | 0;
+		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | 0;
 
 // set up the refresh position
 	viewangles[PITCH] += cl.punchangle;

@@ -55,16 +55,6 @@ struct explosion_t
 };
 // PUBLIC FUNCTION DEFINITIONS ---------------------------------------------
 
-int	TempSoundChannel()
-{
-	static int last = -1;
-	last--;
-	if(last<-20) last=-1;
-	return last;
-}
-
-
-
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 static void ParseStream(int type);
@@ -409,7 +399,7 @@ void CLTENT_SpawnDeathBubble(vec3_t pos)
 	ex->startTime=cl.serverTimeFloat;
 	ex->endTime=cl.serverTimeFloat+15;
 	ex->model=R_RegisterModel ("models/s_bubble.spr");
-	ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
+	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 	ex->abslight=175;
 }
 
@@ -432,7 +422,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 	ex->endTime=cl.serverTimeFloat+0.3;
 	ex->model=R_RegisterModel ("models/arrowhit.mdl");
 	ex->exflags = EXFLAG_ROTATE;
-	ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
+	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 	ex->abslight=175;
 
 	//white smoke if invulnerable impact
@@ -449,7 +439,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 		ex->startTime=cl.serverTimeFloat;
 		ex->endTime=cl.serverTimeFloat+0.35;
 		ex->model=R_RegisterModel ("models/whtsmk1.spr");
-		ex->flags = DRF_TRANSLUCENT;
+		ex->flags = H2DRF_TRANSLUCENT;
 
 
 		if (arrowType == 3)//little arrows go away
@@ -722,16 +712,16 @@ void CL_ParseTEnt (void)
 			CLH2_RunParticleEffect (pos, vec3_origin, 10);
 
 			if ( rand() % 5 )
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
 			else
 			{
 				rnd = rand() & 3;
 				if (rnd == 1)
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
 				else if (rnd == 2)
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
 				else
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
 			}
 			break;
 		case TE_SUPERSPIKE:			// super spike hitting wall
@@ -741,16 +731,16 @@ void CL_ParseTEnt (void)
 			CLH2_RunParticleEffect (pos, vec3_origin, 20);
 
 			if ( rand() % 5 )
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
 			else
 			{
 				rnd = rand() & 3;
 				if (rnd == 1)
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
 				else if (rnd == 2)
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
 				else
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
 			}
 			break;
 
@@ -768,7 +758,7 @@ void CL_ParseTEnt (void)
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 		
 		// sound
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_explode, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_explode, 1, 1);
 			break;
 			
 		case TE_EXPLOSION:			// rocket explosion
@@ -782,7 +772,7 @@ void CL_ParseTEnt (void)
 			CLH2_ExplosionLight(pos);
 		
 		// sound
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
 			break;
 			
 		case TE_TAREXPLOSION:			// tarbaby explosion
@@ -791,7 +781,7 @@ void CL_ParseTEnt (void)
 			pos[2] = net_message.ReadCoord ();
 			CLH2_BlobExplosion (pos);
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
 			break;
 
 		case TE_LIGHTNING1:				// lightning bolts
@@ -984,7 +974,7 @@ void CL_ParseTEnt (void)
 					if (chType==THINGTYPEH2_CLEARGLASS)
 					{
 						ex->skin = 1;
-						ex->flags |= DRF_TRANSLUCENT;
+						ex->flags |= H2DRF_TRANSLUCENT;
 					}
 					else if (chType==THINGTYPEH2_REDGLASS)
 					{
@@ -993,7 +983,7 @@ void CL_ParseTEnt (void)
 					else if (chType==THINGTYPEH2_WEBS)
 					{
 						ex->skin = 3;
-						ex->flags |= DRF_TRANSLUCENT;
+						ex->flags |= H2DRF_TRANSLUCENT;
 					}
 				}
 				else if (chType==THINGTYPEH2_WOOD)
@@ -1173,7 +1163,7 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/shard.mdl");
 					ex->skin = 0;
 					//ent->frame = rand()%2;
-					ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
+					ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
 					//ent->abslight = 0.5;
 				}
 				else if (chType==THINGTYPEH2_METEOR)
@@ -1233,13 +1223,13 @@ void CL_ParseTEnt (void)
 			switch (chType)
 			{
 			case THINGTYPEH2_FLESH:
-//				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_arr2flsh, 1, 1);
+//				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_arr2flsh, 1, 1);
 				break;
 			case THINGTYPEH2_WOOD:
-//				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_arr2wood, 1, 1);
+//				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_arr2wood, 1, 1);
 				break;
 			default:
-//				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_met2stn, 1, 1);
+//				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_met2stn, 1, 1);
 				break;
 			}
 
@@ -1255,7 +1245,7 @@ void CL_ParseTEnt (void)
 			ex->endTime=cl.serverTimeFloat+0.3;
 			ex->model=R_RegisterModel ("models/arrowhit.mdl");
 			ex->exflags = EXFLAG_ROTATE;
-			ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
+			ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 			ex->abslight=128;
 
 			//white smoke if invulnerable impact
@@ -1272,7 +1262,7 @@ void CL_ParseTEnt (void)
 				ex->startTime=cl.serverTimeFloat;
 				ex->endTime=cl.serverTimeFloat+0.35;
 				ex->model=R_RegisterModel ("models/whtsmk1.spr");
-				ex->flags = DRF_TRANSLUCENT;
+				ex->flags = H2DRF_TRANSLUCENT;
 			}
 
 			break;
@@ -1356,7 +1346,7 @@ void CL_ParseTEnt (void)
 				}
 				if(host_frametime < .07)
 				{
-					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				}
 				ex->abslight = 160 + rand()%64;
 				ex->skin = 0;
@@ -1364,7 +1354,7 @@ void CL_ParseTEnt (void)
 				ex->startTime = cl.serverTimeFloat + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
 			}
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
 
 		case TE_HWBONEPOWER:
@@ -1398,7 +1388,7 @@ void CL_ParseTEnt (void)
 				ex->data=250;
 				ex->model = R_RegisterModel("models/ghost.spr");
 				ex->abslight = 128;
-				ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
+				ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			}			
@@ -1432,7 +1422,7 @@ void CL_ParseTEnt (void)
 				ex->frameFunc = CheckSpaceThink;
 				
 			}
-			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonephit, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_bonephit, 1, 1);
 
 			break;
 		case TE_HWBONEPOWER2:
@@ -1451,11 +1441,11 @@ void CL_ParseTEnt (void)
 			//sound
 			if(cnt2)
 			{
-				S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonehit, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_bonehit, 1, 1);
 			}
 			else
 			{
-				S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonewal, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_bonewal, 1, 1);
 			}
 
 			CLH2_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, 7);
@@ -1489,7 +1479,7 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 			
-			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
 			break;
 		case TE_HWRAVENEXPLODE:
 			pos[0] = net_message.ReadCoord ();
@@ -1519,7 +1509,7 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravengo, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_ravengo, 1, 1);
 			break;
 
 		case TE_ICEHIT:
@@ -1565,7 +1555,7 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/shard.mdl");
 					ex->skin = 0;
 					//ent->frame = rand()%2;
-					ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
+					ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
 					ex->abslight = 128;
 
 					ex->startTime = cl.serverTimeFloat;
@@ -1593,15 +1583,15 @@ void CL_ParseTEnt (void)
 			// Add in the sound
 			if(cnt2 == 1)
 			{	// hit a wall
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_icewall, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_icewall, 1, 1);
 			}
 			else if (cnt2 == 2)
 			{
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_iceshatter, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_iceshatter, 1, 1);
 			}
 			else
 			{	// hit a person
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_iceflesh, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_iceflesh, 1, 1);
 			}
 			break;
 
@@ -1624,7 +1614,7 @@ void CL_ParseTEnt (void)
 					playIceSound+=host_frametime;
 					if(playIceSound >= .6)
 					{
-						S_StartSound(center, TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
+						S_StartSound(center, CLH2_TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
 						playIceSound -= .6;
 					}
 
@@ -1678,7 +1668,7 @@ void CL_ParseTEnt (void)
 			ex->endTime = ex->startTime + 2;
 			ex->exflags = EXFLAG_ROTATE;
 			ex->avel[2] = rand() * 360 + 360;
-			ex->flags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
+			ex->flags = H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 			ex->abslight = 128;
 			//ex->scale = .8 + (rand()%100) * 0.004;  // .8 to 1.2
 			ex->scale = 80 + rand()%40;
@@ -1786,11 +1776,11 @@ void CL_ParseTEnt (void)
 				{
 					if(rand()&1)
 					{
-						S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
+						S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 					}
 					else
 					{
-						S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
+						S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 					}
 
 					for (i = 0; i < 5; i++)
@@ -1829,7 +1819,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			cnt = net_message.ReadShort();  //skin#
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_teleport[rand() % 5], 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_teleport[rand() % 5], 1, 1);
 
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
@@ -1838,7 +1828,7 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + 2;
 			ex->avel[2] = rand() * 360 + 360;
-			ex->flags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
+			ex->flags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
 			ex->skin = cnt;
 			ex->scale = 100;
 			
@@ -1853,7 +1843,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + .5;
 				ex->velocity[0] = cosval;
 				ex->velocity[1] = sinval;
-				ex->flags = DRF_TRANSLUCENT;
+				ex->flags = H2DRF_TRANSLUCENT;
 
 				ex = CL_AllocExplosion ();
 				VectorCopy(pos, ex->origin);
@@ -1863,7 +1853,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + .5;
 				ex->velocity[0] = cosval;
 				ex->velocity[1] = sinval;
-				ex->flags = DRF_TRANSLUCENT;
+				ex->flags = H2DRF_TRANSLUCENT;
 			}
 			break;
 
@@ -1886,11 +1876,11 @@ void CL_ParseTEnt (void)
 				{
 					if(rand()&1)
 					{
-						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
+						S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 					}
 					else
 					{
-						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
+						S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 					}
 
 					for (i = 0; i < 5; i++)
@@ -1926,13 +1916,13 @@ void CL_ParseTEnt (void)
 				ex->model = R_RegisterModel("models/vorpshok.mdl");
 				ex->startTime = cl.serverTimeFloat;
 				ex->endTime = ex->startTime + 1.0;
-				ex->flags |= MLS_ABSLIGHT;
+				ex->flags |= H2MLS_ABSLIGHT;
 				ex->abslight = 128;
 				ex->skin = 0;
 				ex->scale = 100;
 				ex->frameFunc = SwordFrameFunc;
 
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_swordExplode, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_swordExplode, 1, 1);
 
 			}
 			break;
@@ -1946,13 +1936,13 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/spark.spr");
 			ex->startTime = cl.serverTimeFloat;
-			ex->flags |= MLS_ABSLIGHT;
+			ex->flags |= H2MLS_ABSLIGHT;
 			ex->abslight = 128;
 			ex->skin = 0;
 			ex->scale = 100;
 			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeBounce, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_axeBounce, 1, 1);
 			break;
 
 		case TE_AXE_EXPLODE:
@@ -1983,15 +1973,15 @@ void CL_ParseTEnt (void)
 				case 2:
 				case 3:
 					ex->model = R_RegisterModel("models/xpspblue.spr");
-					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 					break;
 				case 4:
 				case 5:
 					ex->model = R_RegisterModel("models/spark0.spr");
-					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 					break;
 				}
-				ex->flags |= MLS_ABSLIGHT;//|DRF_TRANSLUCENT;
+				ex->flags |= H2MLS_ABSLIGHT;//|H2DRF_TRANSLUCENT;
 				ex->abslight = 160+rand()%24;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
@@ -2000,7 +1990,7 @@ void CL_ParseTEnt (void)
 			}
 
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
 
 		case TE_TIME_BOMB:
@@ -2034,7 +2024,7 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/gen_expl.spr");
 					break;
 				}
-				ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+				ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				ex->abslight = 160+rand()%24;
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
@@ -2042,7 +2032,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
 
 		case TE_FIREBALL:
@@ -2053,7 +2043,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/blast.mdl");
-			ex->flags |= MLS_ABSLIGHT|SCALE_TYPE_UNIFORM|SCALE_ORIGIN_CENTER;
+			ex->flags |= H2MLS_ABSLIGHT|H2SCALE_TYPE_UNIFORM|H2SCALE_ORIGIN_CENTER;
 			ex->abslight = 128;
 			ex->skin = 0;
 			ex->scale = 1;
@@ -2067,7 +2057,7 @@ void CL_ParseTEnt (void)
 			ex->avel[1] = 50;
 			ex->avel[2] = 50;
 		
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_fireBall, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_fireBall, 1, 1);
 			break;
 
 		case TE_SUNSTAFF_POWER:
@@ -2099,11 +2089,11 @@ void CL_ParseTEnt (void)
 					else
 					{
 						ex->model = R_RegisterModel("models/blast.mdl");
-						ex->flags |= DRF_TRANSLUCENT;
+						ex->flags |= H2DRF_TRANSLUCENT;
 						ex->frameFunc = sunBallUpdate;
 						ex->scale = 120;
 					}
-					ex->flags |= MLS_ABSLIGHT|SCALE_TYPE_UNIFORM|SCALE_ORIGIN_CENTER;
+					ex->flags |= H2MLS_ABSLIGHT|H2SCALE_TYPE_UNIFORM|H2SCALE_ORIGIN_CENTER;
 					ex->abslight = 128;
 					ex->skin = 0;
 					ex->scale = 200;
@@ -2119,13 +2109,13 @@ void CL_ParseTEnt (void)
 
 
 
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_fireBall, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_fireBall, 1, 1);
 
 				state = FindState(ent);
 
 				if (state)
 				{
-					S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
+					S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 
 					models[0] = R_RegisterModel("models/stsunsf2.mdl");
 					models[1] = R_RegisterModel("models/stsunsf1.mdl");
@@ -2170,7 +2160,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/xplod29.spr");
 			ex->startTime = cl.serverTimeFloat;
-			ex->flags |= MLS_ABSLIGHT;
+			ex->flags |= H2MLS_ABSLIGHT;
 			ex->abslight = 128;
 			ex->skin = 0;
 			ex->scale = 100;
@@ -2204,7 +2194,7 @@ void CL_ParseTEnt (void)
 				}
 				if(host_frametime < 0.07)
 				{
-					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				}
 				ex->abslight = 160 + rand()%64;
 				ex->skin = 0;
@@ -2213,7 +2203,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
 			}
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_purify2, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_purify2, 1, 1);
 			 
 			break;
 
@@ -2288,20 +2278,20 @@ void CL_ParseTEnt (void)
 				switch(style)
 				{
 				case 0:
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_big_gib, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_big_gib, 1, 1);
 					break;
 				case 1:
 					if(rand()%2)
 					{
-						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_gib1, 1, 1);
+						S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_gib1, 1, 1);
 					}
 					else
 					{
-						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_gib2, 1, 1);
+						S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_gib2, 1, 1);
 					}
 					break;
 				case 2:
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_telefrag, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_telefrag, 1, 1);
 					break;
 				}
 			}
@@ -2329,14 +2319,14 @@ void CL_ParseTEnt (void)
 				//CLH2_TrailParticles (pos, endPos, rt_purify);
 				CLH2_TrailParticles (pos, endPos, rt_purify);
 
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_purify1_fire, 1, 1);
-				S_StartSound(endPos, TempSoundChannel(), 0, cl_sfx_purify1_hit, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_purify1_fire, 1, 1);
+				S_StartSound(endPos, CLH2_TempSoundChannel(), 0, cl_sfx_purify1_hit, 1, 1);
 
 				ex = CL_AllocExplosion();
 				VectorCopy(endPos, ex->origin);
 				ex->model = R_RegisterModel("models/fcircle.spr");
 				ex->startTime = cl.serverTimeFloat;
-				ex->flags |= MLS_ABSLIGHT;
+				ex->flags |= H2MLS_ABSLIGHT;
 				ex->abslight = 128;
 				ex->skin = 0;
 				ex->scale = 100;
@@ -2358,7 +2348,7 @@ void CL_ParseTEnt (void)
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/bspark.spr");
 				ex->startTime = cl.serverTimeFloat;
-				ex->flags |= MLS_ABSLIGHT;
+				ex->flags |= H2MLS_ABSLIGHT;
 				ex->abslight = 128;
 				ex->frameFunc = telEffectUpdate;
 				ex->skin = 0;
@@ -2408,7 +2398,7 @@ void CL_ParseTEnt (void)
 							ex->model = R_RegisterModel("models/sm_expld.spr");
 							break;
 						}
-						ex->flags |= MLS_ABSLIGHT;
+						ex->flags |= H2MLS_ABSLIGHT;
 						ex->abslight = 128;
 						ex->skin = 0;
 						ratio = (float)i/(float)distance;
@@ -2438,7 +2428,7 @@ void CL_ParseTEnt (void)
 							ex->model = R_RegisterModel("models/sm_expld.spr");
 							break;
 						}
-						ex->flags |= MLS_ABSLIGHT;
+						ex->flags |= H2MLS_ABSLIGHT;
 						ex->abslight = 128;
 						ex->skin = 0;
 						ratio = (float)i/(float)distance;
@@ -2469,7 +2459,7 @@ void CL_ParseTEnt (void)
 				ex->frameFunc = MeteorCrushSpawnThink;
 				ex->data = maxDist;
 
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			}
 
 			break;
@@ -2495,7 +2485,7 @@ void CL_ParseTEnt (void)
 				ex->model = R_RegisterModel("models/axplsn_2.spr");
 				if(host_frametime < 0.07)
 				{
-					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				}
 				ex->abslight = 160+rand()%24;
 				ex->skin = 0;
@@ -2504,7 +2494,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
 
 			break;
 
@@ -2541,7 +2531,7 @@ void CL_ParseTEnt (void)
 				}
 				if(host_frametime < 0.07)
 				{
-					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				}
 				ex->abslight = 1;
 				ex->skin = 0;
@@ -2584,7 +2574,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + 4.0;
 			}
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
 			break;
 
 		case TE_FIREWALL:
@@ -2658,7 +2648,7 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
-					ex->flags |= DRF_TRANSLUCENT;
+					ex->flags |= H2DRF_TRANSLUCENT;
 
 					VectorAdd(curPos, posAdd, curPos);
 				}
@@ -2684,7 +2674,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
-			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_flameend, 1, 1);
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_flameend, 1, 1);
 
 			break;
 		case TE_HWBONERIC:
@@ -2695,11 +2685,11 @@ void CL_ParseTEnt (void)
 			CLH2_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, cnt);
 			rnd = rand() % 100;
 			if (rnd > 95)
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
 			else if (rnd > 91)
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
 			else if (rnd > 87)
-				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
 
 			break;
 
@@ -2756,7 +2746,7 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
-					ex->flags |= DRF_TRANSLUCENT;
+					ex->flags |= H2DRF_TRANSLUCENT;
 
 					ex->velocity[0] = 0;
 					ex->velocity[1] = 0;
@@ -2774,7 +2764,7 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.serverTimeFloat + .3/8.0 * i;
 					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
-					ex->flags |= DRF_TRANSLUCENT;
+					ex->flags |= H2DRF_TRANSLUCENT;
 
 					ex->velocity[0] = 0;
 					ex->velocity[1] = 0;
@@ -2897,7 +2887,7 @@ void CL_ParseTEnt (void)
 				ex->exflags |= EXFLAG_COLLIDE;
 				ex->exflags |= EXFLAG_STILL_FRAME;
 				ex->data = 0;
-				ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+				ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				ex->abslight = 128;
 				ex->skin = 0;
 			}
@@ -3017,7 +3007,7 @@ void CL_ParseTEnt (void)
 				ex->exflags |= EXFLAG_COLLIDE;
 				//ex->frameFunc = updateSwordShot;
 				ex->scale = 200;
-				ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+				ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 				ex->abslight = 128;
 				ex->exflags = EXFLAG_ROTATE;
 
@@ -3133,7 +3123,7 @@ void CL_ParseTEnt (void)
 				ex->exflags |= EXFLAG_COLLIDE;
 				ex->frameFunc = updateMeteor;
 				ex->scale = 230;
-				ex->flags |= DRF_TRANSLUCENT;
+				ex->flags |= H2DRF_TRANSLUCENT;
 
 				ex->exflags = EXFLAG_ROTATE;
 
@@ -3200,8 +3190,8 @@ void CL_ParseTEnt (void)
 					}
 
 					VectorSet(smokeDir,0,0,100);
-					S_StartSound(source, TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
-					S_StartSound(dest, TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
+					S_StartSound(source, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
+					S_StartSound(dest, CLH2_TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
 					CLH2_SunStaffTrail(dest, source);
 					CreateStream(TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
 				}
@@ -3225,11 +3215,11 @@ void CL_ParseTEnt (void)
 
 				if(rand()&1)
 				{
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 				}
 				else
 				{
-					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 				}
 
 				for (i = 0; i < 10; i++)
@@ -3391,14 +3381,14 @@ void CL_ParseTEnt (void)
 					ex->model = R_RegisterModel("models/vorpshok.mdl");
 					ex->startTime = cl.serverTimeFloat;
 					ex->endTime = ex->startTime + .3;
-					ex->flags |= MLS_ABSLIGHT;//|DRF_TRANSLUCENT;
+					ex->flags |= H2MLS_ABSLIGHT;//|H2DRF_TRANSLUCENT;
 					//ex->abslight = 128;
 					ex->abslight = 224;
 					ex->skin = rand()&1;
 					ex->scale = 150;
 					ex->frameFunc = zapFrameFunc;
 					//ex->frameFunc = SwordFrameFunc;
-					//ex->flags = DRF_TRANSLUCENT;// | MLS_ABSLIGHT;
+					//ex->flags = H2DRF_TRANSLUCENT;// | H2MLS_ABSLIGHT;
 					//ex->angles[0] = travelPitch*360/6.28;
 					//ex->angles[1] = travelAng*360/6.28;
 
@@ -3587,13 +3577,13 @@ void CL_UpdateStreams(void)
 			{
 			case TE_STREAM_CHAIN:
 				angles[2] = 0;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF1:
 				angles[2] = (int)(cl.serverTimeFloat*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.3), 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.3), 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 
 				Com_Memset(&ent, 0, sizeof(ent));
@@ -3602,14 +3592,14 @@ void CL_UpdateStreams(void)
 				ent.hModel = stream->models[1];
 				angles[2] = (int)(cl.serverTimeFloat*50)%360;
 				//stream->endTime = cl.time+0.3;	// FIXME
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.5), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.5), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF2:
 				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 
 				Com_Memset(&ent, 0, sizeof(ent));
@@ -3619,7 +3609,7 @@ void CL_UpdateStreams(void)
 				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 
 				for (int ix = 0; ix < 2; ix++)
@@ -3639,59 +3629,59 @@ void CL_UpdateStreams(void)
 					}
 					ent.hModel = stream->models[1];
 					angles[2] = (int)(cl.serverTimeFloat*20)%360;
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT);
 					R_AddRefEntityToScene(&ent);
 				}
 				break;
 			case TE_STREAM_LIGHTNING:
 				if(stream->endTime < cl.serverTimeFloat)
 				{//fixme: keep last non-translucent frame and angle
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
 					ent.frame = rand()%6;
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				}
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
 				if(stream->endTime < cl.serverTimeFloat)
 				{
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
 					ent.frame = rand()%6;
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				}
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_FAMINE:
 				angles[2] = rand()%360;
 				ent.frame = 0;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_COLORBEAM:
 				angles[2] = 0;
 				ent.skinNum = stream->skin;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_HandleCustomSkin(&ent, -1);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
 				ent.frame = (int)(cl.serverTimeFloat*40)%36;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_ICECHUNKS:
 				angles[2] = rand()%360;
 				ent.frame = rand()%5;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			default:
@@ -3720,14 +3710,14 @@ void CL_UpdateStreams(void)
 			VectorCopy(stream->dest, ent.origin);
 			ent.hModel = stream->models[2];
 			//ent->frame = (int)(cl.time*20)%20;
-			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0, 128, MLS_ABSLIGHT);
+			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT);
 			R_AddRefEntityToScene(&ent);
 
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.reType = RT_MODEL;
 			VectorCopy(stream->dest, ent.origin);
 			ent.hModel = stream->models[3];
-			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 			R_AddRefEntityToScene(&ent);
 		}
 	}
@@ -3755,7 +3745,7 @@ void MultiGrenadeExplodeSound (explosion_t *ex)//plug up all of -1's channels w/
 			MultiGrenadeCurrentChannel=0;
 		}
 
-		S_StartSound(ex->origin, TempSoundChannel(), MultiGrenadeCurrentChannel++, cl_sfx_explode, 1, 1);
+		S_StartSound(ex->origin, CLH2_TempSoundChannel(), MultiGrenadeCurrentChannel++, cl_sfx_explode, 1, 1);
 	}
 
 
@@ -3989,7 +3979,7 @@ void ChunkThink(explosion_t *ex)
 
 				if(!(rand()%3))
 				{
-					S_StartSound(ex->origin, TempSoundChannel(), 0, cl_sfx_dropfizzle, 1, 1);
+					S_StartSound(ex->origin, CLH2_TempSoundChannel(), 0, cl_sfx_dropfizzle, 1, 1);
 				}
 			}
 		}
@@ -4017,7 +4007,7 @@ void ChunkThink(explosion_t *ex)
 			{
 				ex->abslight -= 35;
 			}
-			ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
+			ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
 			ex->scale *= 1.4;
 			ex->angles[0] += 20;
 			break;
@@ -4216,7 +4206,7 @@ void CreateRavenDeath(vec3_t pos)
 	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	
-	S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
+	S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
 }
 
 void CreateExplosionWithSound(vec3_t pos)
@@ -4229,7 +4219,7 @@ void CreateExplosionWithSound(vec3_t pos)
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	ex->model = R_RegisterModel("models/sm_expld.spr");
 	
-	S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_explode, 1, 1);
+	S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_explode, 1, 1);
 }
 
 void SwordFrameFunc(explosion_t *ex)
@@ -4344,7 +4334,7 @@ void MeteorBlastThink(explosion_t *ex)
 				ex2->model = R_RegisterModel("models/gen_expl.spr");
 				break;
 			}
-			ex2->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+			ex2->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 			ex2->abslight = 160 + rand()%64;
 			ex2->skin = 0;
 			ex2->scale = 80 + rand()%40;
@@ -4353,7 +4343,7 @@ void MeteorBlastThink(explosion_t *ex)
 		}
 		if(rand()&1)
 		{
-			S_StartSound(ex->origin, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
+			S_StartSound(ex->origin, CLH2_TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 		}
 
 		ex->model = 0;
@@ -4460,7 +4450,7 @@ void updatePurify2(explosion_t *ex)
 
 		ex2->velocity[2] = 15.0;
 
-		ex2->flags |= DRF_TRANSLUCENT | SCALE_ORIGIN_CENTER;
+		ex2->flags |= H2DRF_TRANSLUCENT | H2SCALE_ORIGIN_CENTER;
 	}
 }
 
@@ -4472,7 +4462,7 @@ void updateSwordShot(explosion_t *ex)
 
 	ex->data = 16 + ((int)(cl.serverTimeFloat * 20.0)%13);
 
-	ex->flags |= MLS_ABSLIGHT;
+	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 
 	testVal = (int)(cl.serverTimeFloat * 20.0);
@@ -4528,7 +4518,7 @@ void updateAcidBlob(explosion_t *ex)
 			ex2->velocity[1] = 0;
 			ex2->velocity[2] = 0;
 
-			ex2->flags |= DRF_TRANSLUCENT | SCALE_ORIGIN_CENTER;
+			ex2->flags |= H2DRF_TRANSLUCENT | H2SCALE_ORIGIN_CENTER;
 		}
 	}
 }
@@ -4587,7 +4577,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 		ex->velocity[1] = (rand()%100) - 50;
 		ex->velocity[2] = 150.0;
 
-		ex->flags |= DRF_TRANSLUCENT | SCALE_ORIGIN_CENTER;
+		ex->flags |= H2DRF_TRANSLUCENT | H2SCALE_ORIGIN_CENTER;
 
 		smokeCount -= 1.0;
 	}
@@ -4623,7 +4613,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 			ex->velocity[1] = 0;
 			ex->velocity[2] = 0;
 
-			ex->flags |= DRF_TRANSLUCENT | SCALE_ORIGIN_CENTER;
+			ex->flags |= H2DRF_TRANSLUCENT | H2SCALE_ORIGIN_CENTER;
 		}
 	}
 }
@@ -4671,7 +4661,7 @@ void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 		ex->velocity[2] = 50 + (rand()%100);
 
 		if(rand()%5)//translucent 80% of the time
-			ex->flags |= DRF_TRANSLUCENT;
+			ex->flags |= H2DRF_TRANSLUCENT;
 	}
 }
 
@@ -4698,11 +4688,11 @@ void PowerFlameBurnRemove(explosion_t *ex)
 
 	ex2->scale = 100;
 
-	ex2->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+	ex2->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 	ex2->abslight = 128;
 
 	
-	if(rand()&1)S_StartSound(ex2->origin, TempSoundChannel(), 1, cl_sfx_flameend, 1, 1);
+	if(rand()&1)S_StartSound(ex2->origin, CLH2_TempSoundChannel(), 1, cl_sfx_flameend, 1, 1);
 }
 
 void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
@@ -4731,7 +4721,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		VectorNormalize(srcVec);
 		VecToAnglesBuggy(srcVec, ex->angles);
 
-		ex->flags |= MLS_ABSLIGHT;//|DRF_TRANSLUCENT;
+		ex->flags |= H2MLS_ABSLIGHT;//|H2DRF_TRANSLUCENT;
 		ex->abslight = 128;
 
 
@@ -4741,7 +4731,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		ex2->model = R_RegisterModel("models/flamestr.spr");
 		ex2->startTime = cl.serverTimeFloat;
 		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
-		ex2->flags |= DRF_TRANSLUCENT;
+		ex2->flags |= H2DRF_TRANSLUCENT;
 	}
 }
 
@@ -4756,7 +4746,7 @@ void CL_UpdateHammer(refEntity_t *ent, int edict_num)
 	{
 		if(!(testVal%3))
 		{
-			//S_StartSound(ent->origin, TempSoundChannel(), 1, cl_sfx_hammersound, 1, 1);
+			//S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, cl_sfx_hammersound, 1, 1);
 			S_StartSound(ent->origin, edict_num, 2, cl_sfx_hammersound, 1, 1);
 		}
 	}
@@ -4773,7 +4763,7 @@ void CL_UpdateBug(refEntity_t *ent)
 	// do this every .1 seconds
 //		if(!(testVal%3))
 //		{
-			S_StartSound(ent->origin, TempSoundChannel(), 1, cl_sfx_buzzbee, 1, 1);
+			S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, cl_sfx_buzzbee, 1, 1);
 //		}
 	}
 }
@@ -4800,7 +4790,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 		playIceSound+=host_frametime;
 		if(playIceSound >= .6)
 		{
-			S_StartSound(center, TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
+			S_StartSound(center, CLH2_TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
 			playIceSound -= .6;
 		}
 	}
@@ -4838,7 +4828,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 		ex->model = R_RegisterModel("models/shard.mdl");
 		ex->skin = 0;
 		//ent->frame = rand()%2;
-		ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
+		ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
 		ex->abslight = 128;
 
 		ex->startTime = cl.serverTimeFloat;
@@ -4915,7 +4905,7 @@ void telEffectUpdate (explosion_t *ex)
 			ex2->velocity[1] = -tvec[0];
 			ex2->velocity[2] = 20.0;
 
-			ex2->flags |= MLS_ABSLIGHT;
+			ex2->flags |= H2MLS_ABSLIGHT;
 			ex2->abslight = 128;
 		}
 	}
@@ -4952,7 +4942,7 @@ void CL_UpdateTargetBall(void)
 		{	// make certain it's an active one
 			if(cl_explosions[i].model == iceMod)
 			{
-				if(cl_explosions[i].flags & DRF_TRANSLUCENT)
+				if(cl_explosions[i].flags & H2DRF_TRANSLUCENT)
 				{
 					ex1 = &cl_explosions[i];
 				}
@@ -4983,7 +4973,7 @@ void CL_UpdateTargetBall(void)
 		ex1->exflags |= EXFLAG_STILL_FRAME;
 		ex1->data = 0;
 
-		ex1->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
+		ex1->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 		ex1->skin = 0;
 		VectorCopy(newOrg, ex1->origin);
 		ex1->scale = newScale;
@@ -5014,7 +5004,7 @@ void CL_UpdateTargetBall(void)
 		ex2->exflags |= EXFLAG_STILL_FRAME;
 		ex2->data = 0;
 
-		ex2->flags |= MLS_ABSLIGHT;
+		ex2->flags |= H2MLS_ABSLIGHT;
 		ex2->skin = 0;
 		ex2->scale = newScale;
 	}

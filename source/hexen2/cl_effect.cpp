@@ -1084,280 +1084,158 @@ void CL_ParseEffect(void)
 	switch(cl.h2_Effects[index].type)
 	{
 		case CEH2_RAIN:
-			cl.h2_Effects[index].Rain.min_org[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.min_org[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.min_org[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.max_org[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.max_org[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.max_org[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.e_size[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.e_size[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.e_size[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.dir[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.dir[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.dir[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Rain.color = net_message.ReadShort();
-			cl.h2_Effects[index].Rain.count = net_message.ReadShort();
-			cl.h2_Effects[index].Rain.wait = net_message.ReadFloat();
+			CLH2_ParseEffectRain(index, net_message);
 			break;
 
 		case CEH2_SNOW:
-			cl.h2_Effects[index].Snow.min_org[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.min_org[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.min_org[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.max_org[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.max_org[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.max_org[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.flags = net_message.ReadByte();
-			cl.h2_Effects[index].Snow.dir[0] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.dir[1] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.dir[2] = net_message.ReadCoord();
-			cl.h2_Effects[index].Snow.count = net_message.ReadByte();
+			CLH2_ParseEffectSnow(index, net_message);
 			break;
 
 		case CEH2_FOUNTAIN:
-			cl.h2_Effects[index].Fountain.pos[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.pos[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.pos[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.angle[0] = net_message.ReadAngle ();
-			cl.h2_Effects[index].Fountain.angle[1] = net_message.ReadAngle ();
-			cl.h2_Effects[index].Fountain.angle[2] = net_message.ReadAngle ();
-			cl.h2_Effects[index].Fountain.movedir[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.movedir[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.movedir[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Fountain.color = net_message.ReadShort ();
-			cl.h2_Effects[index].Fountain.cnt = net_message.ReadByte ();
-			AngleVectors (cl.h2_Effects[index].Fountain.angle, 
-						  cl.h2_Effects[index].Fountain.vforward,
-						  cl.h2_Effects[index].Fountain.vright,
-						  cl.h2_Effects[index].Fountain.vup);
+			CLH2_ParseEffectFountain(index, net_message);
 			break;
 
 		case CEH2_QUAKE:
-			cl.h2_Effects[index].Quake.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Quake.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Quake.origin[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Quake.radius = net_message.ReadFloat ();
+			CLH2_ParseEffectQuake(index, net_message);
 			break;
 
 		case CEH2_WHITE_SMOKE:
-		case CEH2_GREEN_SMOKE:
-		case CEH2_GREY_SMOKE:
-		case CEH2_RED_SMOKE:
 		case CEH2_SLOW_WHITE_SMOKE:
+			ImmediateFree = CLH2_ParseEffectWhiteSmoke(index, net_message);
+			break;
+		case CEH2_GREEN_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectGreenSmoke(index, net_message);
+			break;
+		case CEH2_GREY_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectGraySmoke(index, net_message);
+			break;
+		case CEH2_RED_SMOKE:
+			ImmediateFree = !CLH2_ParseEffectRedSmoke(index, net_message);
+			break;
 		case CEH2_TELESMK1:
+			ImmediateFree = !CLH2_ParseEffectTeleportSmoke1(index, net_message);
+			break;
 		case CEH2_TELESMK2:
+			ImmediateFree = !CLH2_ParseEffectTeleportSmoke2(index, net_message);
+			break;
 		case CEH2_GHOST:
+			ImmediateFree = !CLH2_ParseEffectGhost(index, net_message);
+			break;
 		case CEH2_REDCLOUD:
+			ImmediateFree = !CLH2_ParseEffectRedCloud(index, net_message);
+			break;
 		case CEH2_ACID_MUZZFL:
+			ImmediateFree = !CLH2_ParseEffectAcidMuzzleFlash(index, net_message);
+			break;
 		case CEH2_FLAMESTREAM:
+			ImmediateFree = !CLH2_ParseEffectFlameStream(index, net_message);
+			break;
 		case CEH2_FLAMEWALL:
+			ImmediateFree = !CLH2_ParseEffectFlameWall(index, net_message);
+			break;
 		case CEH2_FLAMEWALL2:
+			ImmediateFree = !CLH2_ParseEffectFlameWall2(index, net_message);
+			break;
 		case CEH2_ONFIRE:
-			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Smoke.velocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Smoke.velocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Smoke.velocity[2] = net_message.ReadFloat ();
-
-			cl.h2_Effects[index].Smoke.framelength = net_message.ReadFloat ();
-			cl.h2_Effects[index].Smoke.frame = net_message.ReadFloat ();
-
-			if ((cl.h2_Effects[index].Smoke.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
-
-				if ((cl.h2_Effects[index].type == CEH2_WHITE_SMOKE) || 
-					(cl.h2_Effects[index].type == CEH2_SLOW_WHITE_SMOKE))
-					ent->model = R_RegisterModel("models/whtsmk1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_GREEN_SMOKE)
-					ent->model = R_RegisterModel("models/grnsmk1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_GREY_SMOKE)
-					ent->model = R_RegisterModel("models/grysmk1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_RED_SMOKE)
-					ent->model = R_RegisterModel("models/redsmk1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_TELESMK1)
-					ent->model = R_RegisterModel("models/telesmk1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_TELESMK2)
-					ent->model = R_RegisterModel("models/telesmk2.spr");
-				else if (cl.h2_Effects[index].type == CEH2_REDCLOUD)
-					ent->model = R_RegisterModel("models/rcloud.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FLAMESTREAM)
-					ent->model = R_RegisterModel("models/flamestr.spr");
-				else if (cl.h2_Effects[index].type == CEH2_ACID_MUZZFL)
-				{
-					ent->model = R_RegisterModel("models/muzzle1.spr");
-					ent->state.drawflags=DRF_TRANSLUCENT|MLS_ABSLIGHT;
-					ent->state.abslight=0.2;
-				}
-				else if (cl.h2_Effects[index].type == CEH2_FLAMEWALL)
-					ent->model = R_RegisterModel("models/firewal1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FLAMEWALL2)
-					ent->model = R_RegisterModel("models/firewal2.spr");
-				else if (cl.h2_Effects[index].type == CEH2_ONFIRE)
-				{
-					float rdm = rand() & 3;
-
-					if (rdm < 1)
-						ent->model = R_RegisterModel("models/firewal1.spr");
-					else if (rdm < 2)
-						ent->model = R_RegisterModel("models/firewal2.spr");
-					else
-						ent->model = R_RegisterModel("models/firewal3.spr");
-					
-					ent->state.drawflags = DRF_TRANSLUCENT;
-					ent->state.abslight = 1;
-					ent->state.frame = cl.h2_Effects[index].Smoke.frame;
-				}
-
-				if (cl.h2_Effects[index].type != CEH2_REDCLOUD&&cl.h2_Effects[index].type != CEH2_ACID_MUZZFL&&cl.h2_Effects[index].type != CEH2_FLAMEWALL)
-					ent->state.drawflags = DRF_TRANSLUCENT;
-
-				if (cl.h2_Effects[index].type == CEH2_FLAMESTREAM)
-				{
-					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-					ent->state.abslight = 1;
-					ent->state.frame = cl.h2_Effects[index].Smoke.frame;
-				}
-
-				if (cl.h2_Effects[index].type == CEH2_GHOST)
-				{
-					ent->model = R_RegisterModel("models/ghost.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
-					ent->state.abslight = .5;
-				}
-			}
-			else
-				ImmediateFree = true;
+			ImmediateFree = !CLH2_ParseEffectOnFire(index, net_message);
 			break;
 
 		case CEH2_SM_WHITE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectSmallWhiteFlash(index, net_message);
+			break;
 		case CEH2_YELLOWRED_FLASH:
+			ImmediateFree = !CLH2_ParseEffectYellowRedFlash(index, net_message);
+			break;
 		case CEH2_BLUESPARK:
+			ImmediateFree = !CLH2_ParseEffectBlueSpark(index, net_message);
+			break;
 		case CEH2_YELLOWSPARK:
-		case CEH2_SM_CIRCLE_EXP:
-		case CEH2_BG_CIRCLE_EXP:
-		case CEH2_SM_EXPLOSION:
-		case CEH2_LG_EXPLOSION:
-		case CEH2_FLOOR_EXPLOSION:
-		case CEH2_FLOOR_EXPLOSION3:
-		case CEH2_BLUE_EXPLOSION:
-		case CEH2_REDSPARK:
-		case CEH2_GREENSPARK:
-		case CEH2_ICEHIT:
-		case CEH2_MEDUSA_HIT:
-		case CEH2_MEZZO_REFLECT:
-		case CEH2_FLOOR_EXPLOSION2:
-		case CEH2_XBOW_EXPLOSION:
-		case CEH2_NEW_EXPLOSION:
-		case CEH2_MAGIC_MISSILE_EXPLOSION:
-		case CEH2_BONE_EXPLOSION:
-		case CEH2_BLDRN_EXPL:
 		case CEH2_BRN_BOUNCE:
+			ImmediateFree = !CLH2_ParseEffectYellowSpark(index, net_message);
+			break;
+		case CEH2_SM_CIRCLE_EXP:
+			ImmediateFree = !CLH2_ParseEffectSmallCircleExplosion(index, net_message);
+			break;
+		case CEH2_BG_CIRCLE_EXP:
+			ImmediateFree = !CLH2_ParseEffectBigCircleExplosion(index, net_message);
+			break;
+		case CEH2_SM_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, net_message);
+			break;
+		case CEH2_LG_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectBigExplosion(index, net_message);
+			break;
+		case CEH2_FLOOR_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, net_message);
+			break;
+		case CEH2_FLOOR_EXPLOSION3:
+			ImmediateFree = !CLH2_ParseEffectFloorExplosion3(index, net_message);
+			break;
+		case CEH2_BLUE_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectBlueExplosion(index, net_message);
+			break;
+		case CEH2_REDSPARK:
+			ImmediateFree = !CLH2_ParseEffectRedSpark(index, net_message);
+			break;
+		case CEH2_GREENSPARK:
+			ImmediateFree = !CLH2_ParseEffectGreenSpark(index, net_message);
+			break;
+		case CEH2_ICEHIT:
+			ImmediateFree = !CLH2_ParseEffectIceHit(index, net_message);
+			break;
+		case CEH2_MEDUSA_HIT:
+			ImmediateFree = !CLH2_ParseEffectMedusaHit(index, net_message);
+			break;
+		case CEH2_MEZZO_REFLECT:
+			ImmediateFree = !CLH2_ParseEffectMezzoReflect(index, net_message);
+			break;
+		case CEH2_FLOOR_EXPLOSION2:
+			ImmediateFree = !CLH2_ParseEffectFloorExplosion2(index, net_message);
+			break;
+		case CEH2_XBOW_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectXBowExplosion(index, net_message);
+			break;
+		case CEH2_NEW_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectNewExplosion(index, net_message);
+			break;
+		case CEH2_MAGIC_MISSILE_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectMagicMissileExplosion(index, net_message);
+			break;
+		case CEH2_BONE_EXPLOSION:
+			ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, net_message);
+			break;
+		case CEH2_BLDRN_EXPL:
+			ImmediateFree = !CLH2_ParseEffectBldrnExplosion(index, net_message);
+			break;
 		case CEH2_LSHOCK:
+			ImmediateFree = !CLH2_ParseEffectLShock(index, net_message);
+			break;
 		case CEH2_ACID_HIT:
+			ImmediateFree = !CLH2_ParseEffectAcidHit(index, net_message);
+			break;
 		case CEH2_ACID_SPLAT:
+			ImmediateFree = !CLH2_ParseEffectAcidSplat(index, net_message);
+			break;
 		case CEH2_ACID_EXPL:
+			ImmediateFree = !CLH2_ParseEffectAcidExplosion(index, net_message);
+			break;
 		case CEH2_LBALL_EXPL:
+			ImmediateFree = !CLH2_ParseEffectLBallExplosion(index, net_message);
+			break;
 		case CEH2_FBOOM:
+			ImmediateFree = !CLH2_ParseEffectFBoom(index, net_message);
+			break;
 		case CEH2_BOMB:
+			ImmediateFree = !CLH2_ParseEffectBomb(index, net_message);
+			break;
 		case CEH2_FIREWALL_SMALL:
+			ImmediateFree = !CLH2_ParseEffectFirewallSall(index, net_message);
+			break;
 		case CEH2_FIREWALL_MEDIUM:
+			ImmediateFree = !CLH2_ParseEffectFirewallMedium(index, net_message);
+			break;
 		case CEH2_FIREWALL_LARGE:
-			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
-			if ((cl.h2_Effects[index].Smoke.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
-
-				if (cl.h2_Effects[index].type == CEH2_BLUESPARK)
-					ent->model = R_RegisterModel("models/bspark.spr");
-				else if (cl.h2_Effects[index].type == CEH2_YELLOWSPARK)
-					ent->model = R_RegisterModel("models/spark.spr");
-				else if (cl.h2_Effects[index].type == CEH2_SM_CIRCLE_EXP)
-					ent->model = R_RegisterModel("models/fcircle.spr");
-				else if (cl.h2_Effects[index].type == CEH2_BG_CIRCLE_EXP)
-					ent->model = R_RegisterModel("models/xplod29.spr");
-				else if (cl.h2_Effects[index].type == CEH2_SM_WHITE_FLASH)
-					ent->model = R_RegisterModel("models/sm_white.spr");
-				else if (cl.h2_Effects[index].type == CEH2_YELLOWRED_FLASH)
-				{
-					ent->model = R_RegisterModel("models/yr_flsh.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT;
-				}
-				else if (cl.h2_Effects[index].type == CEH2_SM_EXPLOSION)
-					ent->model = R_RegisterModel("models/sm_expld.spr");
-				else if (cl.h2_Effects[index].type == CEH2_LG_EXPLOSION)
-					ent->model = R_RegisterModel("models/bg_expld.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FLOOR_EXPLOSION)
-					ent->model = R_RegisterModel("models/fl_expld.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FLOOR_EXPLOSION3)
-					ent->model = R_RegisterModel("models/biggy.spr");
-				else if (cl.h2_Effects[index].type == CEH2_BLUE_EXPLOSION)
-					ent->model = R_RegisterModel("models/xpspblue.spr");
-				else if (cl.h2_Effects[index].type == CEH2_REDSPARK)
-					ent->model = R_RegisterModel("models/rspark.spr");
-				else if (cl.h2_Effects[index].type == CEH2_GREENSPARK)
-					ent->model = R_RegisterModel("models/gspark.spr");
-				else if (cl.h2_Effects[index].type == CEH2_ICEHIT)
-					ent->model = R_RegisterModel("models/icehit.spr");
-				else if (cl.h2_Effects[index].type == CEH2_MEDUSA_HIT)
-					ent->model = R_RegisterModel("models/medhit.spr");
-				else if (cl.h2_Effects[index].type == CEH2_MEZZO_REFLECT)
-					ent->model = R_RegisterModel("models/mezzoref.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FLOOR_EXPLOSION2)
-					ent->model = R_RegisterModel("models/flrexpl2.spr");
-				else if (cl.h2_Effects[index].type == CEH2_XBOW_EXPLOSION)
-					ent->model = R_RegisterModel("models/xbowexpl.spr");
-				else if (cl.h2_Effects[index].type == CEH2_NEW_EXPLOSION)
-					ent->model = R_RegisterModel("models/gen_expl.spr");
-				else if (cl.h2_Effects[index].type == CEH2_MAGIC_MISSILE_EXPLOSION)
-					ent->model = R_RegisterModel("models/mm_expld.spr");
-				else if (cl.h2_Effects[index].type == CEH2_BONE_EXPLOSION)
-					ent->model = R_RegisterModel("models/bonexpld.spr");
-				else if (cl.h2_Effects[index].type == CEH2_BLDRN_EXPL)
-					ent->model = R_RegisterModel("models/xplsn_1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_ACID_HIT)
-					ent->model = R_RegisterModel("models/axplsn_2.spr");
-				else if (cl.h2_Effects[index].type == CEH2_ACID_SPLAT)
-					ent->model = R_RegisterModel("models/axplsn_1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_ACID_EXPL)
-				{
-					ent->model = R_RegisterModel("models/axplsn_5.spr");
-					ent->state.drawflags = MLS_ABSLIGHT;
-					ent->state.abslight = 1;
-				}
-				else if (cl.h2_Effects[index].type == CEH2_FBOOM)
-					ent->model = R_RegisterModel("models/fboom.spr");
-				else if (cl.h2_Effects[index].type == CEH2_BOMB)
-					ent->model = R_RegisterModel("models/pow.spr");
-				else if (cl.h2_Effects[index].type == CEH2_LBALL_EXPL)
-					ent->model = R_RegisterModel("models/Bluexp3.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FIREWALL_SMALL)
-					ent->model = R_RegisterModel("models/firewal1.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FIREWALL_MEDIUM)
-					ent->model = R_RegisterModel("models/firewal5.spr");
-				else if (cl.h2_Effects[index].type == CEH2_FIREWALL_LARGE)
-					ent->model = R_RegisterModel("models/firewal4.spr");
-				else if (cl.h2_Effects[index].type == CEH2_BRN_BOUNCE)
-					ent->model = R_RegisterModel("models/spark.spr");
-				else if (cl.h2_Effects[index].type == CEH2_LSHOCK)
-				{
-					ent->model = R_RegisterModel("models/vorpshok.mdl");
-					ent->state.drawflags=MLS_TORCH;
-					ent->state.angles[2]=90;
-					ent->state.scale=255;
-				}
-			}
-			else
-			{
-				ImmediateFree = true;
-			}
+			ImmediateFree = !CLH2_ParseEffectFirewallLarge(index, net_message);
 			break;
 
 		case CEH2_WHITE_FLASH:
@@ -1382,7 +1260,7 @@ void CL_ParseEffect(void)
 				else if (cl.h2_Effects[index].type == CEH2_RED_FLASH)
 					ent->model = R_RegisterModel("models/redspt.spr");
 
-				ent->state.drawflags = DRF_TRANSLUCENT;
+				ent->state.drawflags = H2DRF_TRANSLUCENT;
 
 			}
 			else
@@ -1430,7 +1308,7 @@ void CL_ParseEffect(void)
 					dir += 45;
 
 					ent->model = R_RegisterModel("models/telesmk2.spr");
-					ent->state.drawflags = DRF_TRANSLUCENT;
+					ent->state.drawflags = H2DRF_TRANSLUCENT;
 				}
 			}
 			break;
@@ -1454,7 +1332,7 @@ void CL_ParseEffect(void)
 				VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
 
 				ent->model = R_RegisterModel("models/teleport.mdl");
-				ent->state.drawflags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
+				ent->state.drawflags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
 				ent->state.scale = 100;
 				ent->state.skinnum = skinnum;
 			}
@@ -1550,7 +1428,7 @@ void CL_ParseEffect(void)
 						if (cl.h2_Effects[index].Chunk.type==THINGTYPEH2_CLEARGLASS)
 						{
 							ent->state.skinnum=1;
-							ent->state.drawflags |= DRF_TRANSLUCENT;
+							ent->state.drawflags |= H2DRF_TRANSLUCENT;
 						}
 						else if (cl.h2_Effects[index].Chunk.type==THINGTYPEH2_REDGLASS)
 						{
@@ -1559,7 +1437,7 @@ void CL_ParseEffect(void)
 						else if (cl.h2_Effects[index].Chunk.type==THINGTYPEH2_WEBS)
 						{
 							ent->state.skinnum=3;
-							ent->state.drawflags |= DRF_TRANSLUCENT;
+							ent->state.drawflags |= H2DRF_TRANSLUCENT;
 						}
 					}
 					else if (cl.h2_Effects[index].Chunk.type==THINGTYPEH2_WOOD)
@@ -1743,7 +1621,7 @@ void CL_ParseEffect(void)
 						ent->model = R_RegisterModel("models/shard.mdl");
 						ent->state.skinnum=0;
 						ent->state.frame = rand()%2;
-						ent->state.drawflags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
+						ent->state.drawflags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
 						ent->state.abslight = 0.5;
 					}
 					else if (cl.h2_Effects[index].Chunk.type==THINGTYPEH2_METEOR)

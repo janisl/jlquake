@@ -31,6 +31,27 @@
 // Timing macros
 #define HX_FRAME_TIME		0.05
 
+// edict->drawflags
+#define H2MLS_MASKIN			7	// MLS: Model Light Style
+#define H2MLS_MASKOUT			248
+#define H2MLS_NONE				0
+#define H2MLS_FULLBRIGHT		1
+#define H2MLS_POWERMODE			2
+#define H2MLS_TORCH				3
+#define H2MLS_TOTALDARK			4
+#define H2MLS_ABSLIGHT			7
+#define H2SCALE_TYPE_MASKIN		24
+#define H2SCALE_TYPE_MASKOUT	231
+#define H2SCALE_TYPE_UNIFORM	0	// Scale X, Y, and Z
+#define H2SCALE_TYPE_XYONLY		8	// Scale X and Y
+#define H2SCALE_TYPE_ZONLY		16	// Scale Z
+#define H2SCALE_ORIGIN_MASKIN	96
+#define H2SCALE_ORIGIN_MASKOUT	159
+#define H2SCALE_ORIGIN_CENTER	0	// Scaling origin at object center
+#define H2SCALE_ORIGIN_BOTTOM	32	// Scaling origin at object bottom
+#define H2SCALE_ORIGIN_TOP		64	// Scaling origin at object top
+#define H2DRF_TRANSLUCENT		128
+
 // h2entity_state_t is the information conveyed from the server
 // in an update message
 struct h2entity_state_t
