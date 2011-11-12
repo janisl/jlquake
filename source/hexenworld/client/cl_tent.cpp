@@ -474,7 +474,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 
 					ex->scale = 30 + 100 * (cnt / 40.0) + rand()%40;
 
-					ex->data = THINGTYPEH2_WOOD;
+					ex->data = H2THINGTYPE_WOOD;
 
 					final = (rand()%100)*.01;
 
@@ -514,7 +514,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 
 					ex->scale = 128;
 
-					ex->data = THINGTYPEH2_WOOD;
+					ex->data = H2THINGTYPE_WOOD;
 
 					ex->model = R_RegisterModel ("models/arrow.mdl");
 
@@ -957,8 +957,8 @@ void CL_ParseTEnt (void)
 				ex->data = chType;
 
 				final = (rand()%100)*.01;
-				if ((chType==THINGTYPEH2_GLASS) || (chType==THINGTYPEH2_REDGLASS) || 
-						(chType==THINGTYPEH2_CLEARGLASS) || (chType==THINGTYPEH2_WEBS))
+				if ((chType==H2THINGTYPE_GLASS) || (chType==H2THINGTYPE_REDGLASS) || 
+						(chType==H2THINGTYPE_CLEARGLASS) || (chType==H2THINGTYPE_WEBS))
 				{
 					if (final<0.20)
 						ex->model = R_RegisterModel ("models/shard1.mdl");
@@ -971,22 +971,22 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/shard5.mdl");
 
-					if (chType==THINGTYPEH2_CLEARGLASS)
+					if (chType==H2THINGTYPE_CLEARGLASS)
 					{
 						ex->skin = 1;
 						ex->flags |= H2DRF_TRANSLUCENT;
 					}
-					else if (chType==THINGTYPEH2_REDGLASS)
+					else if (chType==H2THINGTYPE_REDGLASS)
 					{
 						ex->skin = 2;
 					}
-					else if (chType==THINGTYPEH2_WEBS)
+					else if (chType==H2THINGTYPE_WEBS)
 					{
 						ex->skin = 3;
 						ex->flags |= H2DRF_TRANSLUCENT;
 					}
 				}
-				else if (chType==THINGTYPEH2_WOOD)
+				else if (chType==H2THINGTYPE_WOOD)
 				{
 					if (final < 0.25)
 						ex->model = R_RegisterModel ("models/splnter1.mdl");
@@ -997,7 +997,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/splnter4.mdl");
 				}
-				else if (chType==THINGTYPEH2_METAL)
+				else if (chType==H2THINGTYPE_METAL)
 				{
 					if (final < 0.25)
 						ex->model = R_RegisterModel ("models/metlchk1.mdl");
@@ -1008,7 +1008,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 				}
-				else if (chType==THINGTYPEH2_FLESH)
+				else if (chType==H2THINGTYPE_FLESH)
 				{
 					if (final < 0.33)
 						ex->model = R_RegisterModel ("models/flesh1.mdl");
@@ -1017,7 +1017,7 @@ void CL_ParseTEnt (void)
 					else
 						ex->model = R_RegisterModel ("models/flesh3.mdl");
 				}
-				else if (chType==THINGTYPEH2_BROWNSTONE||chType==THINGTYPEH2_DIRT)
+				else if (chType==H2THINGTYPE_BROWNSTONE||chType==H2THINGTYPE_DIRT)
 				{
 					if (final < 0.25)
 						ex->model = R_RegisterModel ("models/schunk1.mdl");
@@ -1029,7 +1029,7 @@ void CL_ParseTEnt (void)
 						ex->model = R_RegisterModel ("models/schunk4.mdl");
 					ex->skin = 1;
 				}
-				else if (chType==THINGTYPEH2_CLAY)
+				else if (chType==H2THINGTYPE_CLAY)
 				{
 					if (final < 0.25)
 						ex->model = R_RegisterModel ("models/clshard1.mdl");
@@ -1040,7 +1040,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/clshard4.mdl");
 				}
-				else if (chType==THINGTYPEH2_LEAVES)
+				else if (chType==H2THINGTYPE_LEAVES)
 				{
 					if (final < 0.33)
 						ex->model = R_RegisterModel ("models/leafchk1.mdl");
@@ -1049,7 +1049,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/leafchk3.mdl");
 				}
-				else if (chType==THINGTYPEH2_HAY)
+				else if (chType==H2THINGTYPE_HAY)
 				{
 					if (final < 0.33)
 						ex->model = R_RegisterModel ("models/hay1.mdl");
@@ -1058,7 +1058,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/hay3.mdl");
 				}
-				else if (chType==THINGTYPEH2_CLOTH)
+				else if (chType==H2THINGTYPE_CLOTH)
 				{
 					if (final < 0.33)
 						ex->model = R_RegisterModel ("models/clthchk1.mdl");
@@ -1067,7 +1067,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/clthchk3.mdl");
 				}
-				else if (chType==THINGTYPEH2_WOOD_LEAF)
+				else if (chType==H2THINGTYPE_WOOD_LEAF)
 				{
 					if (final < 0.14)
 						ex->model = R_RegisterModel ("models/splnter1.mdl");
@@ -1084,7 +1084,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/splnter4.mdl");
 				}
-				else if (chType==THINGTYPEH2_WOOD_METAL)
+				else if (chType==H2THINGTYPE_WOOD_METAL)
 				{
 					if (final < 0.125)
 						ex->model = R_RegisterModel ("models/splnter1.mdl");
@@ -1103,7 +1103,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 				}
-				else if (chType==THINGTYPEH2_WOOD_STONE)
+				else if (chType==H2THINGTYPE_WOOD_STONE)
 				{
 					if (final < 0.125)
 						ex->model = R_RegisterModel ("models/splnter1.mdl");
@@ -1122,7 +1122,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/schunk4.mdl");
 				}
-				else if (chType==THINGTYPEH2_METAL_STONE)
+				else if (chType==H2THINGTYPE_METAL_STONE)
 				{
 					if (final < 0.125)
 						ex->model = R_RegisterModel ("models/metlchk1.mdl");
@@ -1141,7 +1141,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/schunk4.mdl");
 				}
-				else if (chType==THINGTYPEH2_METAL_CLOTH)
+				else if (chType==H2THINGTYPE_METAL_CLOTH)
 				{
 					if (final < 0.14)
 						ex->model = R_RegisterModel ("models/metlchk1.mdl");
@@ -1158,7 +1158,7 @@ void CL_ParseTEnt (void)
 					else 
 						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 				}
-				else if (chType==THINGTYPEH2_ICE)
+				else if (chType==H2THINGTYPE_ICE)
 				{
 					ex->model = R_RegisterModel("models/shard.mdl");
 					ex->skin = 0;
@@ -1166,19 +1166,19 @@ void CL_ParseTEnt (void)
 					ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
 					//ent->abslight = 0.5;
 				}
-				else if (chType==THINGTYPEH2_METEOR)
+				else if (chType==H2THINGTYPE_METEOR)
 				{
 					ex->model = R_RegisterModel("models/tempmetr.mdl");
 					ex->skin = 0;
 					//ex->scale *= .6;
 					VectorScale(ex->avel, 4.0, ex->avel);
 				}
-				else if (chType==THINGTYPEH2_ACID)
+				else if (chType==H2THINGTYPE_ACID)
 				{	// no spinning if possible...
 					ex->model = R_RegisterModel("models/sucwp2p.mdl");
 					ex->skin = 0;
 				}
-				else if (chType==THINGTYPEH2_GREENFLESH)
+				else if (chType==H2THINGTYPE_GREENFLESH)
 				{	// spider guts
 					if (final < 0.33)
 						ex->model = R_RegisterModel ("models/sflesh1.mdl");
@@ -1189,7 +1189,7 @@ void CL_ParseTEnt (void)
 
 					ex->skin = 0;
 				}
-				else// if (chType==THINGTYPEH2_GREYSTONE)
+				else// if (chType==H2THINGTYPE_GREYSTONE)
 				{
 					if (final < 0.25)
 						ex->model = R_RegisterModel ("models/schunk1.mdl");
@@ -1222,10 +1222,10 @@ void CL_ParseTEnt (void)
 			// impact sound:
 			switch (chType)
 			{
-			case THINGTYPEH2_FLESH:
+			case H2THINGTYPE_FLESH:
 //				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_arr2flsh, 1, 1);
 				break;
-			case THINGTYPEH2_WOOD:
+			case H2THINGTYPE_WOOD:
 //				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_arr2wood, 1, 1);
 				break;
 			default:
@@ -1298,7 +1298,7 @@ void CL_ParseTEnt (void)
 				ex->avel[2] = rand()%850 - 425;
 
 				ex->scale = 45 + rand()%10;
-				ex->data = THINGTYPEH2_METEOR;
+				ex->data = H2THINGTYPE_METEOR;
 
 				final = (rand()%100)*.01;
 				ex->model = R_RegisterModel("models/tempmetr.mdl");
@@ -1550,7 +1550,7 @@ void CL_ParseTEnt (void)
 					{
 						ex->scale = 35 + rand()%10;
 					}
-					ex->data = THINGTYPEH2_ICE;
+					ex->data = H2THINGTYPE_ICE;
 
 					ex->model = R_RegisterModel("models/shard.mdl");
 					ex->skin = 0;
@@ -2254,7 +2254,7 @@ void CL_ParseTEnt (void)
 					ex->avel[2] = rand()%850 - 425;
 
 					ex->scale = 80 + rand()%40;
-					ex->data = THINGTYPEH2_FLESH;
+					ex->data = H2THINGTYPE_FLESH;
 
 					switch(rand()%3)
 					{
@@ -2564,7 +2564,7 @@ void CL_ParseTEnt (void)
 				ex->avel[2] = rand()%850 - 425;
 
 				ex->scale = 45 + rand()%10;
-				ex->data = THINGTYPEH2_ACID;
+				ex->data = H2THINGTYPE_ACID;
 
 				ex->model = R_RegisterModel("models/sucwp2p.mdl");
 				ex->skin = 0;
@@ -3961,7 +3961,7 @@ void ChunkThink(explosion_t *ex)
 		//collided with world
 		VectorCopy(ex->oldorg, ex->origin);
 
-		if((int)ex->data == THINGTYPEH2_FLESH)
+		if((int)ex->data == H2THINGTYPE_FLESH)
 		{
 			if(VectorNormalize(ex->velocity) > 100.0)
 			{	// hit, now make a splash of blood
@@ -3970,7 +3970,7 @@ void ChunkThink(explosion_t *ex)
 				CLH2_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_h2darken, 20);
 			}
 		}
-		else if((int)ex->data == THINGTYPEH2_ACID)
+		else if((int)ex->data == H2THINGTYPE_ACID)
 		{
 			if(VectorNormalize(ex->velocity) > 100.0)
 			{	// hit, now make a splash of acid
@@ -3998,7 +3998,7 @@ void ChunkThink(explosion_t *ex)
 	{	// chunk leaves in 5 frames about
 		switch((int)ex->data)
 		{
-		case THINGTYPEH2_METEOR:
+		case H2THINGTYPE_METEOR:
 			if(cl.serverTimeFloat + host_frametime * 4 < ex->endTime)
 			{	// just crossed the threshold
 				ex->abslight = 200;
@@ -4021,54 +4021,54 @@ void ChunkThink(explosion_t *ex)
 
 	switch((int)ex->data)
 	{
-	case THINGTYPEH2_GREYSTONE:
+	case H2THINGTYPE_GREYSTONE:
 		break;
-	case THINGTYPEH2_WOOD:
+	case H2THINGTYPE_WOOD:
 		break;
-	case THINGTYPEH2_METAL:
+	case H2THINGTYPE_METAL:
 		break;
-	case THINGTYPEH2_FLESH:
+	case H2THINGTYPE_FLESH:
 		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_blood);
 		break;
-	case THINGTYPEH2_FIRE:
+	case H2THINGTYPE_FIRE:
 		break;
-	case THINGTYPEH2_CLAY:
+	case H2THINGTYPE_CLAY:
 		break;
-	case THINGTYPEH2_LEAVES:
+	case H2THINGTYPE_LEAVES:
 		break;
-	case THINGTYPEH2_HAY:
+	case H2THINGTYPE_HAY:
 		break;
-	case THINGTYPEH2_BROWNSTONE:
-	case THINGTYPEH2_DIRT:
+	case H2THINGTYPE_BROWNSTONE:
+	case H2THINGTYPE_DIRT:
 		break;
-	case THINGTYPEH2_CLOTH:
+	case H2THINGTYPE_CLOTH:
 		break;
-	case THINGTYPEH2_WOOD_LEAF:
+	case H2THINGTYPE_WOOD_LEAF:
 		break;
-	case THINGTYPEH2_WOOD_METAL:
+	case H2THINGTYPE_WOOD_METAL:
 		break;
-	case THINGTYPEH2_WOOD_STONE:
+	case H2THINGTYPE_WOOD_STONE:
 		break;
-	case THINGTYPEH2_METAL_STONE:
+	case H2THINGTYPE_METAL_STONE:
 		break;
-	case THINGTYPEH2_METAL_CLOTH:
+	case H2THINGTYPE_METAL_CLOTH:
 		break;
-	case THINGTYPEH2_WEBS:
+	case H2THINGTYPE_WEBS:
 		break;
-	case THINGTYPEH2_GLASS:
+	case H2THINGTYPE_GLASS:
 		break;
-	case THINGTYPEH2_ICE:
+	case H2THINGTYPE_ICE:
 		ex->velocity[2] += host_frametime * movevars.gravity * 0.5; // lower gravity for ice chunks
 		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_ice);
 		break;
-	case THINGTYPEH2_CLEARGLASS:
+	case H2THINGTYPE_CLEARGLASS:
 		break;
-	case THINGTYPEH2_REDGLASS:
+	case H2THINGTYPE_REDGLASS:
 		break;
-	case THINGTYPEH2_ACID:
+	case H2THINGTYPE_ACID:
 		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_grensmoke);
 		break;
-	case THINGTYPEH2_METEOR:
+	case H2THINGTYPE_METEOR:
 		VectorCopy(ex->oldorg, oldorg);
 		if(!moving)
 		{	// resting meteors still give off smoke
@@ -4078,7 +4078,7 @@ void ChunkThink(explosion_t *ex)
 		}
 		CLH2_TrailParticles (oldorg, ex->origin, rt_smoke);
 		break;
-	case THINGTYPEH2_GREENFLESH:
+	case H2THINGTYPE_GREENFLESH:
 		if(moving)CLH2_TrailParticles (ex->oldorg, ex->origin, rt_grensmoke);
 		break;
 
@@ -4823,7 +4823,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 
 		ex->scale = 65 + rand()%10;
 
-		ex->data = THINGTYPEH2_ICE;
+		ex->data = H2THINGTYPE_ICE;
 
 		ex->model = R_RegisterModel("models/shard.mdl");
 		ex->skin = 0;

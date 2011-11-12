@@ -199,87 +199,87 @@ static void CLH2_FreeEffectEntityH2(int index)
 {
 	switch (cl_common->h2_Effects[index].type)
 	{
-	case CEH2_RAIN:
-	case CEH2_SNOW:
-	case CEH2_FOUNTAIN:
-	case CEH2_QUAKE:
-	case CEH2_RIDER_DEATH:
-	case CEH2_GRAVITYWELL:
+	case H2CE_RAIN:
+	case H2CE_SNOW:
+	case H2CE_FOUNTAIN:
+	case H2CE_QUAKE:
+	case H2CE_RIDER_DEATH:
+	case H2CE_GRAVITYWELL:
 		break;
 
-	case CEH2_WHITE_SMOKE:
-	case CEH2_GREEN_SMOKE:
-	case CEH2_GREY_SMOKE:
-	case CEH2_RED_SMOKE:
-	case CEH2_SLOW_WHITE_SMOKE:
-	case CEH2_TELESMK1:
-	case CEH2_TELESMK2:
-	case CEH2_GHOST:
-	case CEH2_REDCLOUD:
-	case CEH2_ACID_MUZZFL:
-	case CEH2_FLAMESTREAM:
-	case CEH2_FLAMEWALL:
-	case CEH2_FLAMEWALL2:
-	case CEH2_ONFIRE:
+	case H2CE_WHITE_SMOKE:
+	case H2CE_GREEN_SMOKE:
+	case H2CE_GREY_SMOKE:
+	case H2CE_RED_SMOKE:
+	case H2CE_SLOW_WHITE_SMOKE:
+	case H2CE_TELESMK1:
+	case H2CE_TELESMK2:
+	case H2CE_GHOST:
+	case H2CE_REDCLOUD:
+	case H2CE_ACID_MUZZFL:
+	case H2CE_FLAMESTREAM:
+	case H2CE_FLAMEWALL:
+	case H2CE_FLAMEWALL2:
+	case H2CE_ONFIRE:
 	// Just go through animation and then remove
-	case CEH2_SM_WHITE_FLASH:
-	case CEH2_YELLOWRED_FLASH:
-	case CEH2_BLUESPARK:
-	case CEH2_YELLOWSPARK:
-	case CEH2_SM_CIRCLE_EXP:
-	case CEH2_BG_CIRCLE_EXP:
-	case CEH2_SM_EXPLOSION:
-	case CEH2_LG_EXPLOSION:
-	case CEH2_FLOOR_EXPLOSION:
-	case CEH2_FLOOR_EXPLOSION3:
-	case CEH2_BLUE_EXPLOSION:
-	case CEH2_REDSPARK:
-	case CEH2_GREENSPARK:
-	case CEH2_ICEHIT:
-	case CEH2_MEDUSA_HIT:
-	case CEH2_MEZZO_REFLECT:
-	case CEH2_FLOOR_EXPLOSION2:
-	case CEH2_XBOW_EXPLOSION:
-	case CEH2_NEW_EXPLOSION:
-	case CEH2_MAGIC_MISSILE_EXPLOSION:
-	case CEH2_BONE_EXPLOSION:
-	case CEH2_BLDRN_EXPL:
-	case CEH2_BRN_BOUNCE:
-	case CEH2_LSHOCK:
-	case CEH2_ACID_HIT:
-	case CEH2_ACID_SPLAT:
-	case CEH2_ACID_EXPL:
-	case CEH2_LBALL_EXPL:
-	case CEH2_FBOOM:
-	case CEH2_BOMB:
-	case CEH2_FIREWALL_SMALL:
-	case CEH2_FIREWALL_MEDIUM:
-	case CEH2_FIREWALL_LARGE:
+	case H2CE_SM_WHITE_FLASH:
+	case H2CE_YELLOWRED_FLASH:
+	case H2CE_BLUESPARK:
+	case H2CE_YELLOWSPARK:
+	case H2CE_SM_CIRCLE_EXP:
+	case H2CE_BG_CIRCLE_EXP:
+	case H2CE_SM_EXPLOSION:
+	case H2CE_LG_EXPLOSION:
+	case H2CE_FLOOR_EXPLOSION:
+	case H2CE_FLOOR_EXPLOSION3:
+	case H2CE_BLUE_EXPLOSION:
+	case H2CE_REDSPARK:
+	case H2CE_GREENSPARK:
+	case H2CE_ICEHIT:
+	case H2CE_MEDUSA_HIT:
+	case H2CE_MEZZO_REFLECT:
+	case H2CE_FLOOR_EXPLOSION2:
+	case H2CE_XBOW_EXPLOSION:
+	case H2CE_NEW_EXPLOSION:
+	case H2CE_MAGIC_MISSILE_EXPLOSION:
+	case H2CE_BONE_EXPLOSION:
+	case H2CE_BLDRN_EXPL:
+	case H2CE_BRN_BOUNCE:
+	case H2CE_LSHOCK:
+	case H2CE_ACID_HIT:
+	case H2CE_ACID_SPLAT:
+	case H2CE_ACID_EXPL:
+	case H2CE_LBALL_EXPL:
+	case H2CE_FBOOM:
+	case H2CE_BOMB:
+	case H2CE_FIREWALL_SMALL:
+	case H2CE_FIREWALL_MEDIUM:
+	case H2CE_FIREWALL_LARGE:
 		CLH2_FreeEffectSmoke(index);
 		break;
 
 	// Go forward then backward through animation then remove
-	case CEH2_WHITE_FLASH:
-	case CEH2_BLUE_FLASH:
-	case CEH2_SM_BLUE_FLASH:
-	case CEH2_RED_FLASH:
+	case H2CE_WHITE_FLASH:
+	case H2CE_BLUE_FLASH:
+	case H2CE_SM_BLUE_FLASH:
+	case H2CE_RED_FLASH:
 		CLH2_FreeEffectFlash(index);
 		break;
 
-	case CEH2_TELEPORTERPUFFS:
+	case H2CE_TELEPORTERPUFFS:
 		CLH2_FreeEffectTeleporterPuffs(index);
 		break;
 
-	case CEH2_TELEPORTERBODY:
+	case H2CE_TELEPORTERBODY:
 		CLH2_FreeEffectTeleporterBody(index);
 		break;
 
-	case CEH2_BONESHARD:
-	case CEH2_BONESHRAPNEL:
+	case H2CE_BONESHARD:
+	case H2CE_BONESHRAPNEL:
 		CLH2_FreeEffectMissile(index);
 		break;
 
-	case CEH2_CHUNK:
+	case H2CE_CHUNK:
 		CLH2_FreeEffectChunk(index);
 		break;
 	}
@@ -289,113 +289,113 @@ static void CLH2_FreeEffectEntityHW(int index)
 {
 	switch (cl_common->h2_Effects[index].type)
 	{
-	case CEHW_RAIN:
-	case CEHW_FOUNTAIN:
-	case CEHW_QUAKE:
-	case CEHW_DEATHBUBBLES:
-	case CEHW_RIDER_DEATH:
+	case HWCE_RAIN:
+	case HWCE_FOUNTAIN:
+	case HWCE_QUAKE:
+	case HWCE_DEATHBUBBLES:
+	case HWCE_RIDER_DEATH:
 		break;
 
-	case CEHW_TELESMK1:
+	case HWCE_TELESMK1:
 		CLH2_FreeEffectTeleSmoke1(index);
 		break;
 
-	case CEHW_WHITE_SMOKE:
-	case CEHW_GREEN_SMOKE:
-	case CEHW_GREY_SMOKE:
-	case CEHW_RED_SMOKE:
-	case CEHW_SLOW_WHITE_SMOKE:
-	case CEHW_TELESMK2:
-	case CEHW_GHOST:
-	case CEHW_REDCLOUD:
-	case CEHW_ACID_MUZZFL:
-	case CEHW_FLAMESTREAM:
-	case CEHW_FLAMEWALL:
-	case CEHW_FLAMEWALL2:
-	case CEHW_ONFIRE:
-	case CEHW_RIPPLE:
+	case HWCE_WHITE_SMOKE:
+	case HWCE_GREEN_SMOKE:
+	case HWCE_GREY_SMOKE:
+	case HWCE_RED_SMOKE:
+	case HWCE_SLOW_WHITE_SMOKE:
+	case HWCE_TELESMK2:
+	case HWCE_GHOST:
+	case HWCE_REDCLOUD:
+	case HWCE_ACID_MUZZFL:
+	case HWCE_FLAMESTREAM:
+	case HWCE_FLAMEWALL:
+	case HWCE_FLAMEWALL2:
+	case HWCE_ONFIRE:
+	case HWCE_RIPPLE:
 	// Just go through animation and then remove
-	case CEHW_SM_WHITE_FLASH:
-	case CEHW_YELLOWRED_FLASH:
-	case CEHW_BLUESPARK:
-	case CEHW_YELLOWSPARK:
-	case CEHW_SM_CIRCLE_EXP:
-	case CEHW_BG_CIRCLE_EXP:
-	case CEHW_SM_EXPLOSION:
-	case CEHW_SM_EXPLOSION2:
-	case CEHW_BG_EXPLOSION:
-	case CEHW_FLOOR_EXPLOSION:
-	case CEHW_BLUE_EXPLOSION:
-	case CEHW_REDSPARK:
-	case CEHW_GREENSPARK:
-	case CEHW_ICEHIT:
-	case CEHW_MEDUSA_HIT:
-	case CEHW_MEZZO_REFLECT:
-	case CEHW_FLOOR_EXPLOSION2:
-	case CEHW_XBOW_EXPLOSION:
-	case CEHW_NEW_EXPLOSION:
-	case CEHW_MAGIC_MISSILE_EXPLOSION:
-	case CEHW_BONE_EXPLOSION:
-	case CEHW_BLDRN_EXPL:
-	case CEHW_BRN_BOUNCE:
-	case CEHW_LSHOCK:
-	case CEHW_ACID_HIT:
-	case CEHW_ACID_SPLAT:
-	case CEHW_ACID_EXPL:
-	case CEHW_LBALL_EXPL:
-	case CEHW_FBOOM:
-	case CEHW_BOMB:
-	case CEHW_FIREWALL_SMALL:
-	case CEHW_FIREWALL_MEDIUM:
-	case CEHW_FIREWALL_LARGE:
+	case HWCE_SM_WHITE_FLASH:
+	case HWCE_YELLOWRED_FLASH:
+	case HWCE_BLUESPARK:
+	case HWCE_YELLOWSPARK:
+	case HWCE_SM_CIRCLE_EXP:
+	case HWCE_BG_CIRCLE_EXP:
+	case HWCE_SM_EXPLOSION:
+	case HWCE_SM_EXPLOSION2:
+	case HWCE_BG_EXPLOSION:
+	case HWCE_FLOOR_EXPLOSION:
+	case HWCE_BLUE_EXPLOSION:
+	case HWCE_REDSPARK:
+	case HWCE_GREENSPARK:
+	case HWCE_ICEHIT:
+	case HWCE_MEDUSA_HIT:
+	case HWCE_MEZZO_REFLECT:
+	case HWCE_FLOOR_EXPLOSION2:
+	case HWCE_XBOW_EXPLOSION:
+	case HWCE_NEW_EXPLOSION:
+	case HWCE_MAGIC_MISSILE_EXPLOSION:
+	case HWCE_BONE_EXPLOSION:
+	case HWCE_BLDRN_EXPL:
+	case HWCE_BRN_BOUNCE:
+	case HWCE_LSHOCK:
+	case HWCE_ACID_HIT:
+	case HWCE_ACID_SPLAT:
+	case HWCE_ACID_EXPL:
+	case HWCE_LBALL_EXPL:
+	case HWCE_FBOOM:
+	case HWCE_BOMB:
+	case HWCE_FIREWALL_SMALL:
+	case HWCE_FIREWALL_MEDIUM:
+	case HWCE_FIREWALL_LARGE:
 		CLH2_FreeEffectSmoke(index);
 		break;
 
 	// Go forward then backward through animation then remove
-	case CEHW_WHITE_FLASH:
-	case CEHW_BLUE_FLASH:
-	case CEHW_SM_BLUE_FLASH:
-	case CEHW_HWSPLITFLASH:
-	case CEHW_RED_FLASH:
+	case HWCE_WHITE_FLASH:
+	case HWCE_BLUE_FLASH:
+	case HWCE_SM_BLUE_FLASH:
+	case HWCE_HWSPLITFLASH:
+	case HWCE_RED_FLASH:
 		CLH2_FreeEffectFlash(index);
 		break;
 
-	case CEHW_TELEPORTERPUFFS:
+	case HWCE_TELEPORTERPUFFS:
 		CLH2_FreeEffectTeleporterPuffs(index);
 		break;
 
-	case CEHW_TELEPORTERBODY:
+	case HWCE_TELEPORTERBODY:
 		CLH2_FreeEffectTeleporterBody(index);
 		break;
 
-	case CEHW_HWSHEEPINATOR:
+	case HWCE_HWSHEEPINATOR:
 		CLH2_FreeEffectSheepinator(index);
 		break;
 
-	case CEHW_HWXBOWSHOOT:
+	case HWCE_HWXBOWSHOOT:
 		CLH2_FreeEffectXbow(index);
 		break;
 
-	case CEHW_HWDRILLA:
-	case CEHW_BONESHARD:
-	case CEHW_BONESHRAPNEL:
-	case CEHW_HWBONEBALL:
-	case CEHW_HWRAVENSTAFF:
-	case CEHW_HWRAVENPOWER:
+	case HWCE_HWDRILLA:
+	case HWCE_BONESHARD:
+	case HWCE_BONESHRAPNEL:
+	case HWCE_HWBONEBALL:
+	case HWCE_HWRAVENSTAFF:
+	case HWCE_HWRAVENPOWER:
 		CLH2_FreeEffectMissile(index);
 		break;
 
-	case CEHW_TRIPMINESTILL:
-	case CEHW_SCARABCHAIN:
-	case CEHW_TRIPMINE:
+	case HWCE_TRIPMINESTILL:
+	case HWCE_SCARABCHAIN:
+	case HWCE_TRIPMINE:
 		CLH2_FreeEffectChain(index);
 		break;
 
-	case CEHW_HWMISSILESTAR:
+	case HWCE_HWMISSILESTAR:
 		CLH2_FreeEffectMissileStar(index);
 		break;
 
-	case CEHW_HWEIDOLONSTAR:
+	case HWCE_HWEIDOLONSTAR:
 		CLH2_FreeEffectEidolonStar(index);
 		break;
 

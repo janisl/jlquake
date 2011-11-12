@@ -74,181 +74,181 @@ struct h2entity_state_t
 };
 
 // Types for various chunks
-#define THINGTYPEH2_GREYSTONE	1
-#define THINGTYPEH2_WOOD		2
-#define THINGTYPEH2_METAL		3
-#define THINGTYPEH2_FLESH		4
-#define THINGTYPEH2_FIRE		5
-#define THINGTYPEH2_CLAY		6
-#define THINGTYPEH2_LEAVES		7
-#define THINGTYPEH2_HAY			8
-#define THINGTYPEH2_BROWNSTONE	9
-#define THINGTYPEH2_CLOTH		10
-#define THINGTYPEH2_WOOD_LEAF	11
-#define THINGTYPEH2_WOOD_METAL	12
-#define THINGTYPEH2_WOOD_STONE	13
-#define THINGTYPEH2_METAL_STONE	14
-#define THINGTYPEH2_METAL_CLOTH	15
-#define THINGTYPEH2_WEBS		16
-#define THINGTYPEH2_GLASS		17
-#define THINGTYPEH2_ICE			18
-#define THINGTYPEH2_CLEARGLASS	19
-#define THINGTYPEH2_REDGLASS	20
-#define THINGTYPEH2_ACID	 	21
-#define THINGTYPEH2_METEOR	 	22
-#define THINGTYPEH2_GREENFLESH	23
-#define THINGTYPEH2_BONE		24
-#define THINGTYPEH2_DIRT		25
+#define H2THINGTYPE_GREYSTONE	1
+#define H2THINGTYPE_WOOD		2
+#define H2THINGTYPE_METAL		3
+#define H2THINGTYPE_FLESH		4
+#define H2THINGTYPE_FIRE		5
+#define H2THINGTYPE_CLAY		6
+#define H2THINGTYPE_LEAVES		7
+#define H2THINGTYPE_HAY			8
+#define H2THINGTYPE_BROWNSTONE	9
+#define H2THINGTYPE_CLOTH		10
+#define H2THINGTYPE_WOOD_LEAF	11
+#define H2THINGTYPE_WOOD_METAL	12
+#define H2THINGTYPE_WOOD_STONE	13
+#define H2THINGTYPE_METAL_STONE	14
+#define H2THINGTYPE_METAL_CLOTH	15
+#define H2THINGTYPE_WEBS		16
+#define H2THINGTYPE_GLASS		17
+#define H2THINGTYPE_ICE			18
+#define H2THINGTYPE_CLEARGLASS	19
+#define H2THINGTYPE_REDGLASS	20
+#define H2THINGTYPE_ACID	 	21
+#define H2THINGTYPE_METEOR	 	22
+#define H2THINGTYPE_GREENFLESH	23
+#define H2THINGTYPE_BONE		24
+#define H2THINGTYPE_DIRT		25
 
-#define CEH2_NONE						0
-#define CEH2_RAIN						1
-#define CEH2_FOUNTAIN					2
-#define CEH2_QUAKE						3
-#define CEH2_WHITE_SMOKE				4   // whtsmk1.spr
-#define CEH2_BLUESPARK					5	// bspark.spr
-#define CEH2_YELLOWSPARK				6	// spark.spr
-#define CEH2_SM_CIRCLE_EXP				7	// fcircle.spr
-#define CEH2_BG_CIRCLE_EXP				8	// fcircle.spr
-#define CEH2_SM_WHITE_FLASH				9	// sm_white.spr
-#define CEH2_WHITE_FLASH				10	// gryspt.spr
-#define CEH2_YELLOWRED_FLASH			11  // yr_flash.spr
-#define CEH2_BLUE_FLASH					12  // bluflash.spr
-#define CEH2_SM_BLUE_FLASH				13  // bluflash.spr
-#define CEH2_RED_FLASH					14  // redspt.spr
-#define CEH2_SM_EXPLOSION				15  // sm_expld.spr
-#define CEH2_LG_EXPLOSION				16  // bg_expld.spr
-#define CEH2_FLOOR_EXPLOSION			17  // fl_expld.spr
-#define CEH2_RIDER_DEATH				18
-#define CEH2_BLUE_EXPLOSION				19  // xpspblue.spr
-#define CEH2_GREEN_SMOKE				20  // grnsmk1.spr
-#define CEH2_GREY_SMOKE					21  // grysmk1.spr
-#define CEH2_RED_SMOKE					22  // redsmk1.spr
-#define CEH2_SLOW_WHITE_SMOKE			23  // whtsmk1.spr
-#define CEH2_REDSPARK					24  // rspark.spr
-#define CEH2_GREENSPARK					25  // gspark.spr
-#define CEH2_TELESMK1					26  // telesmk1.spr
-#define CEH2_TELESMK2					27  // telesmk2.spr
-#define CEH2_ICEHIT						28  // icehit.spr
-#define CEH2_MEDUSA_HIT					29  // medhit.spr
-#define CEH2_MEZZO_REFLECT				30  // mezzoref.spr
-#define CEH2_FLOOR_EXPLOSION2			31  // flrexpl2.spr
-#define CEH2_XBOW_EXPLOSION				32  // xbowexpl.spr
-#define CEH2_NEW_EXPLOSION				33  // gen_expl.spr
-#define CEH2_MAGIC_MISSILE_EXPLOSION	34  // mm_expld.spr
-#define CEH2_GHOST						35  // ghost.spr
-#define CEH2_BONE_EXPLOSION				36
-#define CEH2_REDCLOUD					37
-#define CEH2_TELEPORTERPUFFS			38
-#define CEH2_TELEPORTERBODY				39
-#define CEH2_BONESHARD					40
-#define CEH2_BONESHRAPNEL				41
-#define CEH2_FLAMESTREAM				42	//Flamethrower
-#define CEH2_SNOW						43
-#define CEH2_GRAVITYWELL				44
-#define CEH2_BLDRN_EXPL					45
-#define CEH2_ACID_MUZZFL				46
-#define CEH2_ACID_HIT					47
-#define CEH2_FIREWALL_SMALL				48
-#define CEH2_FIREWALL_MEDIUM			49
-#define CEH2_FIREWALL_LARGE				50
-#define CEH2_LBALL_EXPL					51
-#define CEH2_ACID_SPLAT					52
-#define CEH2_ACID_EXPL					53
-#define CEH2_FBOOM						54
-#define CEH2_CHUNK						55
-#define CEH2_BOMB						56
-#define CEH2_BRN_BOUNCE					57
-#define CEH2_LSHOCK						58
-#define CEH2_FLAMEWALL					59
-#define CEH2_FLAMEWALL2					60
-#define CEH2_FLOOR_EXPLOSION3			61  
-#define CEH2_ONFIRE						62
+#define H2CE_NONE						0
+#define H2CE_RAIN						1
+#define H2CE_FOUNTAIN					2
+#define H2CE_QUAKE						3
+#define H2CE_WHITE_SMOKE				4   // whtsmk1.spr
+#define H2CE_BLUESPARK					5	// bspark.spr
+#define H2CE_YELLOWSPARK				6	// spark.spr
+#define H2CE_SM_CIRCLE_EXP				7	// fcircle.spr
+#define H2CE_BG_CIRCLE_EXP				8	// fcircle.spr
+#define H2CE_SM_WHITE_FLASH				9	// sm_white.spr
+#define H2CE_WHITE_FLASH				10	// gryspt.spr
+#define H2CE_YELLOWRED_FLASH			11  // yr_flash.spr
+#define H2CE_BLUE_FLASH					12  // bluflash.spr
+#define H2CE_SM_BLUE_FLASH				13  // bluflash.spr
+#define H2CE_RED_FLASH					14  // redspt.spr
+#define H2CE_SM_EXPLOSION				15  // sm_expld.spr
+#define H2CE_LG_EXPLOSION				16  // bg_expld.spr
+#define H2CE_FLOOR_EXPLOSION			17  // fl_expld.spr
+#define H2CE_RIDER_DEATH				18
+#define H2CE_BLUE_EXPLOSION				19  // xpspblue.spr
+#define H2CE_GREEN_SMOKE				20  // grnsmk1.spr
+#define H2CE_GREY_SMOKE					21  // grysmk1.spr
+#define H2CE_RED_SMOKE					22  // redsmk1.spr
+#define H2CE_SLOW_WHITE_SMOKE			23  // whtsmk1.spr
+#define H2CE_REDSPARK					24  // rspark.spr
+#define H2CE_GREENSPARK					25  // gspark.spr
+#define H2CE_TELESMK1					26  // telesmk1.spr
+#define H2CE_TELESMK2					27  // telesmk2.spr
+#define H2CE_ICEHIT						28  // icehit.spr
+#define H2CE_MEDUSA_HIT					29  // medhit.spr
+#define H2CE_MEZZO_REFLECT				30  // mezzoref.spr
+#define H2CE_FLOOR_EXPLOSION2			31  // flrexpl2.spr
+#define H2CE_XBOW_EXPLOSION				32  // xbowexpl.spr
+#define H2CE_NEW_EXPLOSION				33  // gen_expl.spr
+#define H2CE_MAGIC_MISSILE_EXPLOSION	34  // mm_expld.spr
+#define H2CE_GHOST						35  // ghost.spr
+#define H2CE_BONE_EXPLOSION				36
+#define H2CE_REDCLOUD					37
+#define H2CE_TELEPORTERPUFFS			38
+#define H2CE_TELEPORTERBODY				39
+#define H2CE_BONESHARD					40
+#define H2CE_BONESHRAPNEL				41
+#define H2CE_FLAMESTREAM				42	//Flamethrower
+#define H2CE_SNOW						43
+#define H2CE_GRAVITYWELL				44
+#define H2CE_BLDRN_EXPL					45
+#define H2CE_ACID_MUZZFL				46
+#define H2CE_ACID_HIT					47
+#define H2CE_FIREWALL_SMALL				48
+#define H2CE_FIREWALL_MEDIUM			49
+#define H2CE_FIREWALL_LARGE				50
+#define H2CE_LBALL_EXPL					51
+#define H2CE_ACID_SPLAT					52
+#define H2CE_ACID_EXPL					53
+#define H2CE_FBOOM						54
+#define H2CE_CHUNK						55
+#define H2CE_BOMB						56
+#define H2CE_BRN_BOUNCE					57
+#define H2CE_LSHOCK						58
+#define H2CE_FLAMEWALL					59
+#define H2CE_FLAMEWALL2					60
+#define H2CE_FLOOR_EXPLOSION3			61  
+#define H2CE_ONFIRE						62
 
-#define CEHW_NONE						0
-#define CEHW_RAIN						1
-#define CEHW_FOUNTAIN					2
-#define CEHW_QUAKE						3
-#define CEHW_WHITE_SMOKE				4   // whtsmk1.spr
-#define CEHW_BLUESPARK					5	// bspark.spr
-#define CEHW_YELLOWSPARK				6	// spark.spr
-#define CEHW_SM_CIRCLE_EXP				7	// fcircle.spr
-#define CEHW_BG_CIRCLE_EXP				8	// fcircle.spr
-#define CEHW_SM_WHITE_FLASH				9	// sm_white.spr
-#define CEHW_WHITE_FLASH				10	// gryspt.spr
-#define CEHW_YELLOWRED_FLASH			11  // yr_flash.spr
-#define CEHW_BLUE_FLASH					12  // bluflash.spr
-#define CEHW_SM_BLUE_FLASH				13  // bluflash.spr
-#define CEHW_RED_FLASH					14  // redspt.spr
-#define CEHW_SM_EXPLOSION				15  // sm_expld.spr
-#define CEHW_BG_EXPLOSION				16  // bg_expld.spr
-#define CEHW_FLOOR_EXPLOSION			17  // fl_expld.spr
-#define CEHW_RIDER_DEATH				18
-#define CEHW_BLUE_EXPLOSION				19  // xpspblue.spr
-#define CEHW_GREEN_SMOKE				20  // grnsmk1.spr
-#define CEHW_GREY_SMOKE					21  // grysmk1.spr
-#define CEHW_RED_SMOKE					22  // redsmk1.spr
-#define CEHW_SLOW_WHITE_SMOKE			23  // whtsmk1.spr
-#define CEHW_REDSPARK					24  // rspark.spr
-#define CEHW_GREENSPARK					25  // gspark.spr
-#define CEHW_TELESMK1					26  // telesmk1.spr
-#define CEHW_TELESMK2					27  // telesmk2.spr
-#define CEHW_ICEHIT						28  // icehit.spr
-#define CEHW_MEDUSA_HIT					29  // medhit.spr
-#define CEHW_MEZZO_REFLECT				30  // mezzoref.spr
-#define CEHW_FLOOR_EXPLOSION2			31  // flrexpl2.spr
-#define CEHW_XBOW_EXPLOSION				32  // xbowexpl.spr
-#define CEHW_NEW_EXPLOSION				33  // gen_expl.spr
-#define CEHW_MAGIC_MISSILE_EXPLOSION	34  // mm_expld.spr
-#define CEHW_GHOST						35  // ghost.spr
-#define CEHW_BONE_EXPLOSION				36
-#define CEHW_REDCLOUD					37
-#define CEHW_TELEPORTERPUFFS			38
-#define CEHW_TELEPORTERBODY				39
-#define CEHW_BONESHARD					40
-#define CEHW_BONESHRAPNEL				41
-#define CEHW_HWMISSILESTAR				42
-#define CEHW_HWEIDOLONSTAR				43
-#define CEHW_HWSHEEPINATOR				44
-#define CEHW_TRIPMINE					45
-#define CEHW_HWBONEBALL					46
-#define CEHW_HWRAVENSTAFF				47
-#define CEHW_TRIPMINESTILL				48
-#define CEHW_SCARABCHAIN				49
-#define CEHW_SM_EXPLOSION2				50
-#define CEHW_HWSPLITFLASH				51
-#define CEHW_HWXBOWSHOOT				52
-#define CEHW_HWRAVENPOWER				53
-#define CEHW_HWDRILLA					54
-#define CEHW_DEATHBUBBLES				55
+#define HWCE_NONE						0
+#define HWCE_RAIN						1
+#define HWCE_FOUNTAIN					2
+#define HWCE_QUAKE						3
+#define HWCE_WHITE_SMOKE				4   // whtsmk1.spr
+#define HWCE_BLUESPARK					5	// bspark.spr
+#define HWCE_YELLOWSPARK				6	// spark.spr
+#define HWCE_SM_CIRCLE_EXP				7	// fcircle.spr
+#define HWCE_BG_CIRCLE_EXP				8	// fcircle.spr
+#define HWCE_SM_WHITE_FLASH				9	// sm_white.spr
+#define HWCE_WHITE_FLASH				10	// gryspt.spr
+#define HWCE_YELLOWRED_FLASH			11  // yr_flash.spr
+#define HWCE_BLUE_FLASH					12  // bluflash.spr
+#define HWCE_SM_BLUE_FLASH				13  // bluflash.spr
+#define HWCE_RED_FLASH					14  // redspt.spr
+#define HWCE_SM_EXPLOSION				15  // sm_expld.spr
+#define HWCE_BG_EXPLOSION				16  // bg_expld.spr
+#define HWCE_FLOOR_EXPLOSION			17  // fl_expld.spr
+#define HWCE_RIDER_DEATH				18
+#define HWCE_BLUE_EXPLOSION				19  // xpspblue.spr
+#define HWCE_GREEN_SMOKE				20  // grnsmk1.spr
+#define HWCE_GREY_SMOKE					21  // grysmk1.spr
+#define HWCE_RED_SMOKE					22  // redsmk1.spr
+#define HWCE_SLOW_WHITE_SMOKE			23  // whtsmk1.spr
+#define HWCE_REDSPARK					24  // rspark.spr
+#define HWCE_GREENSPARK					25  // gspark.spr
+#define HWCE_TELESMK1					26  // telesmk1.spr
+#define HWCE_TELESMK2					27  // telesmk2.spr
+#define HWCE_ICEHIT						28  // icehit.spr
+#define HWCE_MEDUSA_HIT					29  // medhit.spr
+#define HWCE_MEZZO_REFLECT				30  // mezzoref.spr
+#define HWCE_FLOOR_EXPLOSION2			31  // flrexpl2.spr
+#define HWCE_XBOW_EXPLOSION				32  // xbowexpl.spr
+#define HWCE_NEW_EXPLOSION				33  // gen_expl.spr
+#define HWCE_MAGIC_MISSILE_EXPLOSION	34  // mm_expld.spr
+#define HWCE_GHOST						35  // ghost.spr
+#define HWCE_BONE_EXPLOSION				36
+#define HWCE_REDCLOUD					37
+#define HWCE_TELEPORTERPUFFS			38
+#define HWCE_TELEPORTERBODY				39
+#define HWCE_BONESHARD					40
+#define HWCE_BONESHRAPNEL				41
+#define HWCE_HWMISSILESTAR				42
+#define HWCE_HWEIDOLONSTAR				43
+#define HWCE_HWSHEEPINATOR				44
+#define HWCE_TRIPMINE					45
+#define HWCE_HWBONEBALL					46
+#define HWCE_HWRAVENSTAFF				47
+#define HWCE_TRIPMINESTILL				48
+#define HWCE_SCARABCHAIN				49
+#define HWCE_SM_EXPLOSION2				50
+#define HWCE_HWSPLITFLASH				51
+#define HWCE_HWXBOWSHOOT				52
+#define HWCE_HWRAVENPOWER				53
+#define HWCE_HWDRILLA					54
+#define HWCE_DEATHBUBBLES				55
 //New for Mission Pack...
-#define CEHW_RIPPLE						56
-#define CEHW_BLDRN_EXPL					57
-#define CEHW_ACID_MUZZFL				58
-#define CEHW_ACID_HIT					59
-#define CEHW_FIREWALL_SMALL				60
-#define CEHW_FIREWALL_MEDIUM			61
-#define CEHW_FIREWALL_LARGE				62
-#define CEHW_LBALL_EXPL					63
-#define CEHW_ACID_SPLAT					64
-#define CEHW_ACID_EXPL					65
-#define CEHW_FBOOM						66
-#define CEHW_BOMB						67
-#define CEHW_BRN_BOUNCE					68
-#define CEHW_LSHOCK						69
-#define CEHW_FLAMEWALL					70
-#define CEHW_FLAMEWALL2					71
-#define CEHW_FLOOR_EXPLOSION3			72
-#define CEHW_ONFIRE						73
-#define CEHW_FLAMESTREAM				74
+#define HWCE_RIPPLE						56
+#define HWCE_BLDRN_EXPL					57
+#define HWCE_ACID_MUZZFL				58
+#define HWCE_ACID_HIT					59
+#define HWCE_FIREWALL_SMALL				60
+#define HWCE_FIREWALL_MEDIUM			61
+#define HWCE_FIREWALL_LARGE				62
+#define HWCE_LBALL_EXPL					63
+#define HWCE_ACID_SPLAT					64
+#define HWCE_ACID_EXPL					65
+#define HWCE_FBOOM						66
+#define HWCE_BOMB						67
+#define HWCE_BRN_BOUNCE					68
+#define HWCE_LSHOCK						69
+#define HWCE_FLAMEWALL					70
+#define HWCE_FLAMEWALL2					71
+#define HWCE_FLOOR_EXPLOSION3			72
+#define HWCE_ONFIRE						73
+#define HWCE_FLAMESTREAM				74
 
-#define XBOW_IMPACT_DEFAULT			0
-#define XBOW_IMPACT_GREENFLESH		2
-#define XBOW_IMPACT_REDFLESH		4
-#define XBOW_IMPACT_WOOD			6
-#define XBOW_IMPACT_STONE			8
-#define XBOW_IMPACT_METAL			10
-#define XBOW_IMPACT_ICE				12
-#define XBOW_IMPACT_MUMMY			14
+#define H2XBOW_IMPACT_DEFAULT			0
+#define H2XBOW_IMPACT_GREENFLESH		2
+#define H2XBOW_IMPACT_REDFLESH		4
+#define H2XBOW_IMPACT_WOOD			6
+#define H2XBOW_IMPACT_STONE			8
+#define H2XBOW_IMPACT_METAL			10
+#define H2XBOW_IMPACT_ICE				12
+#define H2XBOW_IMPACT_MUMMY			14
 
 #define MAX_EFFECTS_H2 256
 
@@ -335,7 +335,7 @@ struct h2EffectT
 			vec3_t velocity;
 			int entity_index;
 			float time_amount;
-			float speed;// Only for CEHW_HWDRILLA
+			float speed;// Only for HWCE_HWDRILLA
 		} Missile;
 		struct
 		{
