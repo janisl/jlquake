@@ -526,7 +526,7 @@ void CL_TurnEffect(void);
 void CL_ReviseEffect(void);
 void CL_ParseMultiEffect(void);
 void CL_SetSolidEntities (void);
-void CL_ClearEffects(void);
+void CLH2_ClearEffects(void);
 void CL_InitEffects(void);
 void CL_InitCam(void);
 void CL_SetUpPlayerPrediction(qboolean dopred);

@@ -86,9 +86,6 @@
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static int NewEffectEntity(void);
-static void FreeEffectEntity(int index);
-
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 extern Cvar* sv_ce_scale;
@@ -99,19 +96,6 @@ extern Cvar* sv_ce_max_size;
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-// CL_InitTEnts
-//
-//==========================================================================
-
-void CL_ClearEffects(void)
-{
-	Com_Memset(cl.h2_Effects,0,sizeof(cl.h2_Effects));
-	Com_Memset(EntityUsed,0,sizeof(EntityUsed));
-	EffectEntityCount = 0;
-}
 
 void SV_ClearEffects(void)
 {
@@ -1165,7 +1149,7 @@ void CL_FreeEffect(int index)
 		case CE_FLAMEWALL:
 		case CE_FLAMEWALL2:
 		case CE_ONFIRE:
-			FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
+			CLH2_FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
 			break;
 
 		// Just go through animation and then remove
@@ -1203,7 +1187,7 @@ void CL_FreeEffect(int index)
 		case CE_FIREWALL_MEDIUM:
 		case CE_FIREWALL_LARGE:
 
-			FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
+			CLH2_FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
 			break;
 
 		// Go forward then backward through animation then remove
@@ -1211,7 +1195,7 @@ void CL_FreeEffect(int index)
 		case CE_BLUE_FLASH:
 		case CE_SM_BLUE_FLASH:
 		case CE_RED_FLASH:
-			FreeEffectEntity(cl.h2_Effects[index].Flash.entity_index);
+			CLH2_FreeEffectEntity(cl.h2_Effects[index].Flash.entity_index);
 			break;
 
 		case CE_RIDER_DEATH:
@@ -1222,16 +1206,16 @@ void CL_FreeEffect(int index)
 
 		case CE_TELEPORTERPUFFS:
 			for (i=0;i<8;++i)
-				FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[i]);
+				CLH2_FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[i]);
 			break;
 
 		case CE_TELEPORTERBODY:
-			FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[0]);
+			CLH2_FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[0]);
 			break;
 
 		case CE_BONESHARD:
 		case CE_BONESHRAPNEL:
-			FreeEffectEntity(cl.h2_Effects[index].Missile.entity_index);
+			CLH2_FreeEffectEntity(cl.h2_Effects[index].Missile.entity_index);
 			break;
 		case CE_CHUNK:
 			//Con_Printf("Freeing a chunk here\n");
@@ -1239,7 +1223,7 @@ void CL_FreeEffect(int index)
 			{
 				if(cl.h2_Effects[index].Chunk.entity_index[i] != -1)
 				{
-					FreeEffectEntity(cl.h2_Effects[index].Chunk.entity_index[i]);
+					CLH2_FreeEffectEntity(cl.h2_Effects[index].Chunk.entity_index[i]);
 				}
 			}
 			break;
@@ -1361,7 +1345,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].Smoke.framelength = net_message.ReadFloat ();
 			cl.h2_Effects[index].Smoke.frame = net_message.ReadFloat ();
 
-			if ((cl.h2_Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
+			if ((cl.h2_Effects[index].Smoke.entity_index = CLH2_NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
@@ -1466,7 +1450,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
-			if ((cl.h2_Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
+			if ((cl.h2_Effects[index].Smoke.entity_index = CLH2_NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
@@ -1564,7 +1548,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].Flash.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Flash.origin[2] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Flash.reverse = 0;
-			if ((cl.h2_Effects[index].Flash.entity_index = NewEffectEntity()) != -1)
+			if ((cl.h2_Effects[index].Flash.entity_index = CLH2_NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Flash.entity_index];
 				VectorCopy(cl.h2_Effects[index].Flash.origin, ent->state.origin);
@@ -1610,7 +1594,7 @@ void CL_ParseEffect(void)
 			dir = 0;
 			for (i=0;i<8;++i)
 			{		
-				if ((cl.h2_Effects[index].Teleporter.entity_index[i] = NewEffectEntity()) != -1)
+				if ((cl.h2_Effects[index].Teleporter.entity_index[i] = CLH2_NewEffectEntity()) != -1)
 				{
 					ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[i]];
 					VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
@@ -1644,7 +1628,7 @@ void CL_ParseEffect(void)
 			
 			cl.h2_Effects[index].Teleporter.framelength = .05;
 			dir = 0;
-			if ((cl.h2_Effects[index].Teleporter.entity_index[0] = NewEffectEntity()) != -1)
+			if ((cl.h2_Effects[index].Teleporter.entity_index[0] = CLH2_NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[0]];
 				VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
@@ -1674,7 +1658,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].Missile.avelocity[1] = net_message.ReadFloat ();
 			cl.h2_Effects[index].Missile.avelocity[2] = net_message.ReadFloat ();
 
-			if ((cl.h2_Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
+			if ((cl.h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
 				VectorCopy(cl.h2_Effects[index].Missile.origin, ent->state.origin);
@@ -1708,7 +1692,7 @@ void CL_ParseEffect(void)
 
 			for (i=0;i < cl.h2_Effects[index].Chunk.numChunks;i++)
 			{		
-				if ((cl.h2_Effects[index].Chunk.entity_index[i] = NewEffectEntity()) != -1)
+				if ((cl.h2_Effects[index].Chunk.entity_index[i] = CLH2_NewEffectEntity()) != -1)
 				{
 					ent = &EffectEntities[cl.h2_Effects[index].Chunk.entity_index[i]];
 					VectorCopy(cl.h2_Effects[index].Chunk.origin, ent->state.origin);
@@ -2521,38 +2505,4 @@ void CL_UpdateEffects(void)
 				break;
 		}
 	}
-}
-
-//==========================================================================
-//
-// NewEffectEntity
-//
-//==========================================================================
-
-static int NewEffectEntity(void)
-{
-	effect_entity_t* ent;
-	int counter;
-
-	if(EffectEntityCount == MAX_EFFECT_ENTITIES_H2)
-	{
-		return -1;
-	}
-
-	for(counter=0;counter<MAX_EFFECT_ENTITIES_H2;counter++)
-		if (!EntityUsed[counter]) 
-			break;
-
-	EntityUsed[counter] = true;
-	EffectEntityCount++;
-	ent = &EffectEntities[counter];
-	Com_Memset(ent, 0, sizeof(*ent));
-
-	return counter;
-}
-
-static void FreeEffectEntity(int index)
-{
-	EntityUsed[index] = false;
-	EffectEntityCount--;
 }

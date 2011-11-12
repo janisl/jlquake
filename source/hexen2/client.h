@@ -328,7 +328,7 @@ void CL_ClearTEnts(void);
 void CL_ParseTEnt(void);
 void CL_UpdateTEnts(void);
 
-void CL_ClearEffects(void);
+void CLH2_ClearEffects(void);
 void CL_ParseEffect(void);
 void CL_EndEffect(void);
 void SV_UpdateEffects(QMsg *sb);

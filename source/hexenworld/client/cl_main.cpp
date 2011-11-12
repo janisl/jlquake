@@ -301,7 +301,7 @@ void CL_ClearState (void)
 		Hunk_FreeToLowMark (host_hunklevel);
 
 	CL_ClearTEnts ();
-	CL_ClearEffects();
+	CLH2_ClearEffects();
 
 // wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));

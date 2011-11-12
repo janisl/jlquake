@@ -66,7 +66,7 @@ void CL_ClearState (void)
 	CL_ClearDlights();
 	CL_ClearLightStyles();
 	CL_ClearTEnts();
-	CL_ClearEffects();
+	CLH2_ClearEffects();
 
 	cl.current_frame = cl.current_sequence = 99;
 	cl.reference_frame = cl.last_frame = cl.last_sequence = 199;

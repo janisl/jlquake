@@ -49,3 +49,6 @@ extern bool EntityUsed[MAX_EFFECT_ENTITIES_H2];
 extern int EffectEntityCount;
 
 void CLH2_ClearStreams();
+
+int CLH2_NewEffectEntity();
+void CLH2_FreeEffectEntity(int index);
