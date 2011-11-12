@@ -45,10 +45,9 @@ extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
-extern bool EntityUsed[MAX_EFFECT_ENTITIES_H2];
-extern int EffectEntityCount;
 
 void CLH2_ClearStreams();
 
+void CLH2_ClearEffects();
 int CLH2_NewEffectEntity();
-void CLH2_FreeEffectEntity(int index);
+void CLH2_FreeEffect(int index);

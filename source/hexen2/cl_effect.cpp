@@ -1053,122 +1053,6 @@ char* SV_LoadEffects(char* Data)
 	return Data;
 }
 
-void CL_FreeEffect(int index)
-{	
-	int i;
-
-	switch(cl.h2_Effects[index].type)
-	{
-		case CEH2_RAIN:
-			break;
-
-		case CEH2_SNOW:
-			break;
-
-		case CEH2_FOUNTAIN:
-			break;
-
-		case CEH2_QUAKE:
-			break;
-
-		case CEH2_WHITE_SMOKE:
-		case CEH2_GREEN_SMOKE:
-		case CEH2_GREY_SMOKE:
-		case CEH2_RED_SMOKE:
-		case CEH2_SLOW_WHITE_SMOKE:
-		case CEH2_TELESMK1:
-		case CEH2_TELESMK2:
-		case CEH2_GHOST:
-		case CEH2_REDCLOUD:
-		case CEH2_ACID_MUZZFL:
-		case CEH2_FLAMESTREAM:
-		case CEH2_FLAMEWALL:
-		case CEH2_FLAMEWALL2:
-		case CEH2_ONFIRE:
-			CLH2_FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
-			break;
-
-		// Just go through animation and then remove
-		case CEH2_SM_WHITE_FLASH:
-		case CEH2_YELLOWRED_FLASH:
-		case CEH2_BLUESPARK:
-		case CEH2_YELLOWSPARK:
-		case CEH2_SM_CIRCLE_EXP:
-		case CEH2_BG_CIRCLE_EXP:
-		case CEH2_SM_EXPLOSION:
-		case CEH2_LG_EXPLOSION:
-		case CEH2_FLOOR_EXPLOSION:
-		case CEH2_FLOOR_EXPLOSION3:
-		case CEH2_BLUE_EXPLOSION:
-		case CEH2_REDSPARK:
-		case CEH2_GREENSPARK:
-		case CEH2_ICEHIT:
-		case CEH2_MEDUSA_HIT:
-		case CEH2_MEZZO_REFLECT:
-		case CEH2_FLOOR_EXPLOSION2:
-		case CEH2_XBOW_EXPLOSION:
-		case CEH2_NEW_EXPLOSION:
-		case CEH2_MAGIC_MISSILE_EXPLOSION:
-		case CEH2_BONE_EXPLOSION:
-		case CEH2_BLDRN_EXPL:
-		case CEH2_BRN_BOUNCE:
-		case CEH2_LSHOCK:
-		case CEH2_ACID_HIT:
-		case CEH2_ACID_SPLAT:
-		case CEH2_ACID_EXPL:
-		case CEH2_LBALL_EXPL:
-		case CEH2_FBOOM:
-		case CEH2_BOMB:
-		case CEH2_FIREWALL_SMALL:
-		case CEH2_FIREWALL_MEDIUM:
-		case CEH2_FIREWALL_LARGE:
-
-			CLH2_FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
-			break;
-
-		// Go forward then backward through animation then remove
-		case CEH2_WHITE_FLASH:
-		case CEH2_BLUE_FLASH:
-		case CEH2_SM_BLUE_FLASH:
-		case CEH2_RED_FLASH:
-			CLH2_FreeEffectEntity(cl.h2_Effects[index].Flash.entity_index);
-			break;
-
-		case CEH2_RIDER_DEATH:
-			break;
-
-		case CEH2_GRAVITYWELL:
-			break;
-
-		case CEH2_TELEPORTERPUFFS:
-			for (i=0;i<8;++i)
-				CLH2_FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[i]);
-			break;
-
-		case CEH2_TELEPORTERBODY:
-			CLH2_FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[0]);
-			break;
-
-		case CEH2_BONESHARD:
-		case CEH2_BONESHRAPNEL:
-			CLH2_FreeEffectEntity(cl.h2_Effects[index].Missile.entity_index);
-			break;
-		case CEH2_CHUNK:
-			//Con_Printf("Freeing a chunk here\n");
-			for (i=0;i < cl.h2_Effects[index].Chunk.numChunks;i++)
-			{
-				if(cl.h2_Effects[index].Chunk.entity_index[i] != -1)
-				{
-					CLH2_FreeEffectEntity(cl.h2_Effects[index].Chunk.entity_index[i]);
-				}
-			}
-			break;
-
-	}
-
-	Com_Memset(&cl.h2_Effects[index],0,sizeof(struct h2EffectT));
-}
-
 //==========================================================================
 //
 // CL_ParseEffect
@@ -1191,7 +1075,7 @@ void CL_ParseEffect(void)
 
 	index = net_message.ReadByte();
 	if (cl.h2_Effects[index].type)
-		CL_FreeEffect(index);
+		CLH2_FreeEffect(index);
 
 	Com_Memset(&cl.h2_Effects[index],0,sizeof(struct h2EffectT));
 
@@ -1922,7 +1806,7 @@ void CL_EndEffect(void)
 
 	index = net_message.ReadByte();
 
-	CL_FreeEffect(index);
+	CLH2_FreeEffect(index);
 }
 
 void CL_LinkEntity(effect_entity_t* ent)
@@ -2086,7 +1970,7 @@ void CL_UpdateEffects(void)
 
 				if (ent->state.frame >= R_ModelNumFrames(ent->model))
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 				}
 				else
 					CL_LinkEntity(ent);
@@ -2148,7 +2032,7 @@ void CL_UpdateEffects(void)
 				}
 				if (ent->state.frame >= R_ModelNumFrames(ent->model))
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 				}
 				else
 					CL_LinkEntity(ent);
@@ -2164,7 +2048,7 @@ void CL_UpdateEffects(void)
 				ent->state.scale-=10;
 				if (ent->state.scale<=10)
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 				}
 				else
 					CL_LinkEntity(ent);
@@ -2199,7 +2083,7 @@ void CL_UpdateEffects(void)
 
 				if ((ent->state.frame <= 0) && (cl.h2_Effects[index].Flash.reverse))
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 				}
 				else
 					CL_LinkEntity(ent);
@@ -2233,7 +2117,7 @@ void CL_UpdateEffects(void)
 					else if (cl.h2_Effects[index].RD.stage > 13) 
 					{
 //						cl.h2_Effects[index].RD.stage = 0;
-						CL_FreeEffect(index);
+						CLH2_FreeEffect(index);
 					}
 				}
 				break;
@@ -2250,7 +2134,7 @@ void CL_UpdateEffects(void)
 
 				if (cl.h2_Effects[index].GravityWell.lifetime < cl.serverTimeFloat)
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 				}
 				else
 					CLH2_GravityWellParticle(rand()%8,org, cl.h2_Effects[index].GravityWell.color);
@@ -2271,7 +2155,7 @@ void CL_UpdateEffects(void)
 
 				if (cur_frame >= R_ModelNumFrames(ent->model))
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 					break;
 				}
 
@@ -2304,7 +2188,7 @@ void CL_UpdateEffects(void)
 
 				if (ent->state.scale <= 10)
 				{
-					CL_FreeEffect(index);
+					CLH2_FreeEffect(index);
 				}
 				else
 				{
@@ -2336,7 +2220,7 @@ void CL_UpdateEffects(void)
 				cl.h2_Effects[index].Chunk.time_amount -= frametime;
 				if(cl.h2_Effects[index].Chunk.time_amount < 0)
 				{
-					CL_FreeEffect(index);	
+					CLH2_FreeEffect(index);	
 				}
 				else
 				{
