@@ -50,9 +50,6 @@ void CL_ParseEffect(void)
 	int index,i;
 	qboolean ImmediateFree;
 	effect_entity_t* ent;
-	int dir;
-	float	angleval, sinval, cosval;
-	float skinnum;
 	vec3_t forward, right, up, vtemp;
 	vec3_t forward2, right2, up2;
 	vec3_t origin;
@@ -148,10 +145,10 @@ void CL_ParseEffect(void)
 			ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, net_message);
 			break;
 		case HWCE_SM_EXPLOSION2:
-			ImmediateFree = !CLH2_ParseEffectSmallExplosionWithSound(index, net_message);
+			ImmediateFree = !CLHW_ParseEffectSmallExplosionWithSound(index, net_message);
 			break;
 		case HWCE_BG_EXPLOSION:
-			ImmediateFree = !CLH2_ParseEffectBigExplosionWithSound(index, net_message);
+			ImmediateFree = !CLHW_ParseEffectBigExplosionWithSound(index, net_message);
 			break;
 		case HWCE_FLOOR_EXPLOSION:
 			ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, net_message);
@@ -184,7 +181,7 @@ void CL_ParseEffect(void)
 			ImmediateFree = !CLH2_ParseEffectNewExplosion(index, net_message);
 			break;
 		case HWCE_MAGIC_MISSILE_EXPLOSION:
-			ImmediateFree = !CLH2_ParseEffectMagicMissileExplosionWithSound(index, net_message);
+			ImmediateFree = !CLHW_ParseEffectMagicMissileExplosionWithSound(index, net_message);
 			break;
 		case HWCE_BONE_EXPLOSION:
 			ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, net_message);
@@ -224,173 +221,47 @@ void CL_ParseEffect(void)
 			break;
 
 		case HWCE_WHITE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectWhiteFlash(index, net_message);
+			break;
 		case HWCE_BLUE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectBlueFlash(index, net_message);
+			break;
 		case HWCE_SM_BLUE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectSmallBlueFlash(index, net_message);
+			break;
 		case HWCE_HWSPLITFLASH:
+			ImmediateFree = !CLHW_ParseEffectSplitFlash(index, net_message);
+			break;
 		case HWCE_RED_FLASH:
-			cl.h2_Effects[index].Flash.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Flash.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Flash.origin[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Flash.reverse = 0;
-			if ((cl.h2_Effects[index].Flash.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Flash.entity_index];
-				VectorCopy(cl.h2_Effects[index].Flash.origin, ent->state.origin);
-
-				if (cl.h2_Effects[index].type == HWCE_WHITE_FLASH)
-					ent->model = R_RegisterModel("models/gryspt.spr");
-				else if (cl.h2_Effects[index].type == HWCE_BLUE_FLASH)
-					ent->model = R_RegisterModel("models/bluflash.spr");
-				else if (cl.h2_Effects[index].type == HWCE_SM_BLUE_FLASH)
-					ent->model = R_RegisterModel("models/sm_blue.spr");
-				else if (cl.h2_Effects[index].type == HWCE_RED_FLASH)
-					ent->model = R_RegisterModel("models/redspt.spr");
-				else if (cl.h2_Effects[index].type == HWCE_HWSPLITFLASH)
-				{
-					ent->model = R_RegisterModel("models/sm_blue.spr");
-					S_StartSound(cl.h2_Effects[index].Flash.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravensplit, 1, 1);
-				}
-				ent->state.drawflags = H2DRF_TRANSLUCENT;
-
-			}
-			else
-			{
-				ImmediateFree = true;
-			}
+			ImmediateFree = !CLH2_ParseEffectRedFlash(index, net_message);
 			break;
 
 		case HWCE_RIDER_DEATH:
-			cl.h2_Effects[index].RD.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].RD.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].RD.origin[2] = net_message.ReadCoord ();
+			CLH2_ParseEffectRiderDeath(index, net_message);
 			break;
 
 		case HWCE_TELEPORTERPUFFS:
-			cl.h2_Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
-				
-			cl.h2_Effects[index].Teleporter.framelength = .05;
-			dir = 0;
-			for (i=0;i<8;++i)
-			{		
-				if ((cl.h2_Effects[index].Teleporter.entity_index[i] = CLH2_NewEffectEntity()) != -1)
-				{
-					ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[i]];
-					VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
-
-					angleval = dir * M_PI*2 / 360;
-
-					sinval = sin(angleval);
-					cosval = cos(angleval);
-
-					cl.h2_Effects[index].Teleporter.velocity[i][0] = 10*cosval;
-					cl.h2_Effects[index].Teleporter.velocity[i][1] = 10*sinval;
-					cl.h2_Effects[index].Teleporter.velocity[i][2] = 0;
-					dir += 45;
-
-					ent->model = R_RegisterModel("models/telesmk2.spr");
-					ent->state.drawflags = H2DRF_TRANSLUCENT;
-				}
-			}
+			CLH2_ParseEffectTeleporterPuffs(index, net_message);
 			break;
 
 		case HWCE_TELEPORTERBODY:
-			cl.h2_Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Teleporter.velocity[0][0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Teleporter.velocity[0][1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Teleporter.velocity[0][2] = net_message.ReadFloat ();
-
-			skinnum = net_message.ReadFloat ();
-			
-			cl.h2_Effects[index].Teleporter.framelength = .05;
-			dir = 0;
-			if ((cl.h2_Effects[index].Teleporter.entity_index[0] = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[0]];
-				VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
-
-				ent->model = R_RegisterModel("models/teleport.mdl");
-				ent->state.drawflags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
-				ent->state.scale = 100;
-				ent->state.skinnum = skinnum;
-			}
+			CLH2_ParseEffectTeleporterBody(index, net_message);
 			break;
 
 		case HWCE_BONESHRAPNEL:
+			ImmediateFree = !CLH2_ParseEffectBoneShrapnel(index, net_message);
+			break;
 		case HWCE_HWBONEBALL:
-			cl.h2_Effects[index].Missile.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Missile.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Missile.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
-
-			cl.h2_Effects[index].Missile.angle[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.angle[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.angle[2] = net_message.ReadFloat ();
-
-			cl.h2_Effects[index].Missile.avelocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.avelocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.avelocity[2] = net_message.ReadFloat ();
-
-			if ((cl.h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-				VectorCopy(cl.h2_Effects[index].Missile.origin, ent->state.origin);
-				VectorCopy(cl.h2_Effects[index].Missile.angle, ent->state.angles);
-				if (cl.h2_Effects[index].type == HWCE_BONESHRAPNEL)
-					ent->model = R_RegisterModel("models/boneshrd.mdl");
-				else if (cl.h2_Effects[index].type == HWCE_HWBONEBALL)
-				{
-					ent->model = R_RegisterModel("models/bonelump.mdl");
-					S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_bonefpow, 1, 1);
-				}
-			}
-			else
-				ImmediateFree = true;
-
+			ImmediateFree = !CLHW_ParseEffectBoneBall(index, net_message);
 			break;
 		case HWCE_BONESHARD:
+			ImmediateFree = !CLHW_ParseEffectBoneShard(index, net_message);
+			break;
 		case HWCE_HWRAVENSTAFF:
+			ImmediateFree = !CLHW_ParseEffectRavenStaff(index, net_message);
+			break;
 		case HWCE_HWRAVENPOWER:
-			cl.h2_Effects[index].Missile.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Missile.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Missile.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
-			VecToAnglesBuggy(cl.h2_Effects[index].Missile.velocity, cl.h2_Effects[index].Missile.angle);
-
-			if ((cl.h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-				VectorCopy(cl.h2_Effects[index].Missile.origin, ent->state.origin);
-				VectorCopy(cl.h2_Effects[index].Missile.angle, ent->state.angles);
-				if (cl.h2_Effects[index].type == HWCE_HWRAVENSTAFF)
-				{
-					cl.h2_Effects[index].Missile.avelocity[2] = 1000;
-					ent->model = R_RegisterModel("models/vindsht1.mdl");
-				}
-				else if (cl.h2_Effects[index].type == HWCE_BONESHARD)
-				{
-					cl.h2_Effects[index].Missile.avelocity[0] = (rand() % 1554) - 777;
-					ent->model = R_RegisterModel("models/boneshot.mdl");
-					S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_bone, 1, 1);
-				}
-				else if (cl.h2_Effects[index].type == HWCE_HWRAVENPOWER)
-				{
-					ent->model = R_RegisterModel("models/ravproj.mdl");
-					S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
-				}
-			}
-			else
-				ImmediateFree = true;
+			ImmediateFree = !CLHW_ParseEffectRavenPower(index, net_message);
 			break;
 		case HWCE_DEATHBUBBLES:
 			cl.h2_Effects[index].Bubble.owner = net_message.ReadShort();

@@ -21,8 +21,8 @@ effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 static bool EntityUsed[MAX_EFFECT_ENTITIES_H2];
 static int EffectEntityCount;
 
-sfxHandle_t clh2_fxsfx_bone;
-sfxHandle_t clh2_fxsfx_bonefpow;
+static sfxHandle_t clh2_fxsfx_bone;
+static sfxHandle_t clh2_fxsfx_bonefpow;
 sfxHandle_t clh2_fxsfx_xbowshoot;
 sfxHandle_t clh2_fxsfx_xbowfshoot;
 sfxHandle_t clh2_fxsfx_explode;
@@ -33,7 +33,7 @@ sfxHandle_t clh2_fxsfx_scarabgrab;
 sfxHandle_t clh2_fxsfx_scarabhome;
 sfxHandle_t clh2_fxsfx_scarabrip;
 sfxHandle_t clh2_fxsfx_scarabbyebye;
-sfxHandle_t clh2_fxsfx_ravensplit;
+static sfxHandle_t clh2_fxsfx_ravensplit;
 static sfxHandle_t clh2_fxsfx_ravenfire;
 sfxHandle_t clh2_fxsfx_ravengo;
 sfxHandle_t clh2_fxsfx_drillashoot;
@@ -696,7 +696,7 @@ bool CLH2_ParseEffectSmallExplosion(int index, QMsg& message)
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/sm_expld.spr");
 }
 
-bool CLH2_ParseEffectSmallExplosionWithSound(int index, QMsg& message)
+bool CLHW_ParseEffectSmallExplosionWithSound(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmallExplosion(index, message))
 	{
@@ -711,7 +711,7 @@ bool CLH2_ParseEffectBigExplosion(int index, QMsg& message)
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/bg_expld.spr");
 }
 
-bool CLH2_ParseEffectBigExplosionWithSound(int index, QMsg& message)
+bool CLHW_ParseEffectBigExplosionWithSound(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectBigExplosion(index, message))
 	{
@@ -781,7 +781,7 @@ bool CLH2_ParseEffectMagicMissileExplosion(int index, QMsg& message)
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/mm_expld.spr");
 }
 
-bool CLH2_ParseEffectMagicMissileExplosionWithSound(int index, QMsg& message)
+bool CLHW_ParseEffectMagicMissileExplosionWithSound(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectMagicMissileExplosion(index, message))
 	{
@@ -864,4 +864,211 @@ bool CLH2_ParseEffectFirewallMedium(int index, QMsg& message)
 bool CLH2_ParseEffectFirewallLarge(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/firewal4.spr");
+}
+
+static bool CLH2_ParseEffectFlashCommon(int index, QMsg& message, const char* modelName)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Flash.origin);
+	cl_common->h2_Effects[index].Flash.reverse = 0;
+	if ((cl_common->h2_Effects[index].Flash.entity_index = CLH2_NewEffectEntity()) == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Flash.entity_index];
+	VectorCopy(cl_common->h2_Effects[index].Flash.origin, ent->state.origin);
+	ent->model = R_RegisterModel(modelName);
+	ent->state.drawflags = H2DRF_TRANSLUCENT;
+	return true;
+}
+
+bool CLH2_ParseEffectWhiteFlash(int index, QMsg& message)
+{
+	return CLH2_ParseEffectFlashCommon(index, message, "models/gryspt.spr");
+}
+
+bool CLH2_ParseEffectBlueFlash(int index, QMsg& message)
+{
+	return CLH2_ParseEffectFlashCommon(index, message, "models/bluflash.spr");
+}
+
+bool CLH2_ParseEffectSmallBlueFlash(int index, QMsg& message)
+{
+	return CLH2_ParseEffectFlashCommon(index, message, "models/sm_blue.spr");
+}
+
+bool CLHW_ParseEffectSplitFlash(int index, QMsg& message)
+{
+	if (!CLH2_ParseEffectSmallBlueFlash(index, message))
+	{
+		return false;
+	}
+	S_StartSound(cl_common->h2_Effects[index].Flash.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravensplit, 1, 1);
+	return true;
+}
+
+bool CLH2_ParseEffectRedFlash(int index, QMsg& message)
+{
+	return CLH2_ParseEffectFlashCommon(index, message, "models/redspt.spr");
+}
+
+void CLH2_ParseEffectRiderDeath(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].RD.origin);
+}
+
+void CLH2_ParseEffectGravityWell(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].GravityWell.origin);
+	cl_common->h2_Effects[index].GravityWell.color = message.ReadShort();
+	cl_common->h2_Effects[index].GravityWell.lifetime = message.ReadFloat();
+}
+
+void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Teleporter.origin);
+
+	cl_common->h2_Effects[index].Teleporter.framelength = .05;
+	int dir = 0;
+	for (int i = 0; i < 8; i++)
+	{		
+		if ((cl_common->h2_Effects[index].Teleporter.entity_index[i] = CLH2_NewEffectEntity()) == -1)
+		{
+			continue;
+		}
+		effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[i]];
+		VectorCopy(cl_common->h2_Effects[index].Teleporter.origin, ent->state.origin);
+
+		float angleval = dir * M_PI * 2 / 360;
+
+		float sinval = sin(angleval);
+		float cosval = cos(angleval);
+
+		cl_common->h2_Effects[index].Teleporter.velocity[i][0] = 10 * cosval;
+		cl_common->h2_Effects[index].Teleporter.velocity[i][1] = 10 * sinval;
+		cl_common->h2_Effects[index].Teleporter.velocity[i][2] = 0;
+		dir += 45;
+
+		ent->model = R_RegisterModel("models/telesmk2.spr");
+		ent->state.drawflags = H2DRF_TRANSLUCENT;
+	}
+}
+
+void CLH2_ParseEffectTeleporterBody(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Teleporter.origin);
+	cl_common->h2_Effects[index].Teleporter.velocity[0][0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Teleporter.velocity[0][1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Teleporter.velocity[0][2] = message.ReadFloat();
+	float skinnum = message.ReadFloat();
+	
+	cl_common->h2_Effects[index].Teleporter.framelength = .05;
+	int dir = 0;
+	if ((cl_common->h2_Effects[index].Teleporter.entity_index[0] = CLH2_NewEffectEntity()) == -1)
+	{
+		return;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[0]];
+	VectorCopy(cl_common->h2_Effects[index].Teleporter.origin, ent->state.origin);
+
+	ent->model = R_RegisterModel("models/teleport.mdl");
+	ent->state.drawflags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
+	ent->state.scale = 100;
+	ent->state.skinnum = skinnum;
+}
+
+static bool CLH2_ParseEffectMissileCommon(int index, QMsg& message, const char* modelName)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
+	cl_common->h2_Effects[index].Missile.velocity[0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.velocity[1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.velocity[2] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.angle[0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.angle[1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.angle[2] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.avelocity[0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.avelocity[1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.avelocity[2] = message.ReadFloat();
+
+	if ((cl_common->h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+	VectorCopy(cl_common->h2_Effects[index].Missile.origin, ent->state.origin);
+	if (GGameType & GAME_HexenWorld)
+	{
+		VectorCopy(cl_common->h2_Effects[index].Missile.angle, ent->state.angles);
+	}
+	ent->model = R_RegisterModel(modelName);
+	return true;
+}
+
+static bool CLHW_ParseEffectMissileCommonNoAngles(int index, QMsg& message, const char* modelName)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
+	cl_common->h2_Effects[index].Missile.velocity[0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.velocity[1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Missile.velocity[2] = message.ReadFloat();
+
+	VecToAnglesBuggy(cl_common->h2_Effects[index].Missile.velocity, cl_common->h2_Effects[index].Missile.angle);
+	if ((cl_common->h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+	VectorCopy(cl_common->h2_Effects[index].Missile.origin, ent->state.origin);
+	VectorCopy(cl_common->h2_Effects[index].Missile.angle, ent->state.angles);
+	ent->model = R_RegisterModel(modelName);
+	return true;
+}
+
+bool CLH2_ParseEffectBoneShard(int index, QMsg& message)
+{
+	return CLH2_ParseEffectMissileCommon(index, message, "models/boneshot.mdl");
+}
+
+bool CLHW_ParseEffectBoneShard(int index, QMsg& message)
+{
+	if (!CLHW_ParseEffectMissileCommonNoAngles(index, message, "models/boneshot.mdl"))
+	{
+		return false;
+	}
+	cl_common->h2_Effects[index].Missile.avelocity[0] = (rand() % 1554) - 777;
+	S_StartSound(cl_common->h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_bone, 1, 1);
+	return true;
+}
+
+bool CLH2_ParseEffectBoneShrapnel(int index, QMsg& message)
+{
+	return CLH2_ParseEffectMissileCommon(index, message, "models/boneshrd.mdl");
+}
+
+bool CLHW_ParseEffectBoneBall(int index, QMsg& message)
+{
+	if (!CLH2_ParseEffectMissileCommon(index, message, "models/bonelump.mdl"))
+	{
+		return false;
+	}
+	S_StartSound(cl_common->h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_bonefpow, 1, 1);
+	return true;
+}
+
+bool CLHW_ParseEffectRavenStaff(int index, QMsg& message)
+{
+	if (!CLHW_ParseEffectMissileCommonNoAngles(index, message, "models/vindsht1.mdl"))
+	{
+		return false;
+	}
+	cl_common->h2_Effects[index].Missile.avelocity[2] = 1000;
+	return true;
+}
+
+bool CLHW_ParseEffectRavenPower(int index, QMsg& message)
+{
+	if (!CLHW_ParseEffectMissileCommonNoAngles(index, message, "models/ravproj.mdl"))
+	{
+		return false;
+	}
+	S_StartSound(cl_common->h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
+	return true;
 }

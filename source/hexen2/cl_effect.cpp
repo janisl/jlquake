@@ -1066,9 +1066,6 @@ void CL_ParseEffect(void)
 	int index,i;
 	qboolean ImmediateFree;
 	effect_entity_t* ent;
-	int dir;
-	float	angleval, sinval, cosval;
-	float skinnum;
 	float final;
 
 	ImmediateFree = false;
@@ -1239,134 +1236,39 @@ void CL_ParseEffect(void)
 			break;
 
 		case H2CE_WHITE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectWhiteFlash(index, net_message);
+			break;
 		case H2CE_BLUE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectBlueFlash(index, net_message);
+			break;
 		case H2CE_SM_BLUE_FLASH:
+			ImmediateFree = !CLH2_ParseEffectSmallBlueFlash(index, net_message);
+			break;
 		case H2CE_RED_FLASH:
-			cl.h2_Effects[index].Flash.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Flash.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Flash.origin[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Flash.reverse = 0;
-			if ((cl.h2_Effects[index].Flash.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Flash.entity_index];
-				VectorCopy(cl.h2_Effects[index].Flash.origin, ent->state.origin);
-
-				if (cl.h2_Effects[index].type == H2CE_WHITE_FLASH)
-					ent->model = R_RegisterModel("models/gryspt.spr");
-				else if (cl.h2_Effects[index].type == H2CE_BLUE_FLASH)
-					ent->model = R_RegisterModel("models/bluflash.spr");
-				else if (cl.h2_Effects[index].type == H2CE_SM_BLUE_FLASH)
-					ent->model = R_RegisterModel("models/sm_blue.spr");
-				else if (cl.h2_Effects[index].type == H2CE_RED_FLASH)
-					ent->model = R_RegisterModel("models/redspt.spr");
-
-				ent->state.drawflags = H2DRF_TRANSLUCENT;
-
-			}
-			else
-			{
-				ImmediateFree = true;
-			}
+			ImmediateFree = !CLH2_ParseEffectRedFlash(index, net_message);
 			break;
 
 		case H2CE_RIDER_DEATH:
-			cl.h2_Effects[index].RD.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].RD.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].RD.origin[2] = net_message.ReadCoord ();
+			CLH2_ParseEffectRiderDeath(index, net_message);
 			break;
 
 		case H2CE_GRAVITYWELL:
-			cl.h2_Effects[index].GravityWell.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].GravityWell.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].GravityWell.origin[2] = net_message.ReadCoord ();
-			cl.h2_Effects[index].GravityWell.color = net_message.ReadShort ();
-			cl.h2_Effects[index].GravityWell.lifetime = net_message.ReadFloat ();
+			CLH2_ParseEffectGravityWell(index, net_message);
 			break;
 
 		case H2CE_TELEPORTERPUFFS:
-			cl.h2_Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
-				
-			cl.h2_Effects[index].Teleporter.framelength = .05;
-			dir = 0;
-			for (i=0;i<8;++i)
-			{		
-				if ((cl.h2_Effects[index].Teleporter.entity_index[i] = CLH2_NewEffectEntity()) != -1)
-				{
-					ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[i]];
-					VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
-
-					angleval = dir * M_PI*2 / 360;
-
-					sinval = sin(angleval);
-					cosval = cos(angleval);
-
-					cl.h2_Effects[index].Teleporter.velocity[i][0] = 10*cosval;
-					cl.h2_Effects[index].Teleporter.velocity[i][1] = 10*sinval;
-					cl.h2_Effects[index].Teleporter.velocity[i][2] = 0;
-					dir += 45;
-
-					ent->model = R_RegisterModel("models/telesmk2.spr");
-					ent->state.drawflags = H2DRF_TRANSLUCENT;
-				}
-			}
+			CLH2_ParseEffectTeleporterPuffs(index, net_message);
 			break;
 
 		case H2CE_TELEPORTERBODY:
-			cl.h2_Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Teleporter.velocity[0][0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Teleporter.velocity[0][1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Teleporter.velocity[0][2] = net_message.ReadFloat ();
-
-			skinnum = net_message.ReadFloat ();
-			
-			cl.h2_Effects[index].Teleporter.framelength = .05;
-			dir = 0;
-			if ((cl.h2_Effects[index].Teleporter.entity_index[0] = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[0]];
-				VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
-
-				ent->model = R_RegisterModel("models/teleport.mdl");
-				ent->state.drawflags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
-				ent->state.scale = 100;
-				ent->state.skinnum = skinnum;
-			}
+			CLH2_ParseEffectTeleporterBody(index, net_message);
 			break;
 
 		case H2CE_BONESHARD:
+			ImmediateFree = !CLH2_ParseEffectBoneShard(index, net_message);
+			break;
 		case H2CE_BONESHRAPNEL:
-			cl.h2_Effects[index].Missile.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Missile.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Missile.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
-
-			cl.h2_Effects[index].Missile.angle[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.angle[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.angle[2] = net_message.ReadFloat ();
-
-			cl.h2_Effects[index].Missile.avelocity[0] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.avelocity[1] = net_message.ReadFloat ();
-			cl.h2_Effects[index].Missile.avelocity[2] = net_message.ReadFloat ();
-
-			if ((cl.h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) != -1)
-			{
-				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-				VectorCopy(cl.h2_Effects[index].Missile.origin, ent->state.origin);
-				if (cl.h2_Effects[index].type == H2CE_BONESHARD)
-					ent->model = R_RegisterModel("models/boneshot.mdl");
-				else if (cl.h2_Effects[index].type == H2CE_BONESHRAPNEL)
-					ent->model = R_RegisterModel("models/boneshrd.mdl");
-			}
-			else
-				ImmediateFree = true;
+			ImmediateFree = !CLH2_ParseEffectBoneShrapnel(index, net_message);
 			break;
 
 		case H2CE_CHUNK:
