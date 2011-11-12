@@ -481,7 +481,7 @@ void SV_UpdateEffects(QMsg *sb)
 {
 	int index;
 
-	for(index=0;index<MAX_EFFECTS;index++)
+	for(index=0;index<MAX_EFFECTS_H2;index++)
 		if (sv.Effects[index].type)
 			SV_SendEffect(sb,index);
 }
@@ -495,20 +495,20 @@ void SV_ParseEffect(QMsg *sb)
 
 	effect = G_FLOAT(OFS_PARM0);
 
-	for(index=0;index<MAX_EFFECTS;index++)
+	for(index=0;index<MAX_EFFECTS_H2;index++)
 		if (!sv.Effects[index].type || 
 			(sv.Effects[index].expire_time && sv.Effects[index].expire_time <= sv.time)) 
 			break;
 		
-	if (index >= MAX_EFFECTS)
+	if (index >= MAX_EFFECTS_H2)
 	{
-		PR_RunError ("MAX_EFFECTS reached");
+		PR_RunError ("MAX_EFFECTS_H2 reached");
 		return;
 	}
 
 //	Con_Printf("Effect #%d\n",index);
 
-	Com_Memset(&sv.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&sv.Effects[index],0,sizeof(struct h2EffectT));
 
 	sv.Effects[index].type = effect;
 	G_FLOAT(OFS_RETURN) = index;
@@ -768,13 +768,13 @@ void SV_ParseMultiEffect(QMsg *sb)
 		sb->WriteCoord(vel[2]);
 		for(count=0;count<3;count++)
 		{
-			for(index=0;index<MAX_EFFECTS;index++)
+			for(index=0;index<MAX_EFFECTS_H2;index++)
 				if (!sv.Effects[index].type || 
 					(sv.Effects[index].expire_time && sv.Effects[index].expire_time <= sv.time)) 
 					break;
-					if (index >= MAX_EFFECTS)
+					if (index >= MAX_EFFECTS_H2)
 			{
-				PR_RunError ("MAX_EFFECTS reached");
+				PR_RunError ("MAX_EFFECTS_H2 reached");
 				return;
 			}
 			sb->WriteByte(index);

@@ -302,8 +302,6 @@ struct client_state_t : clientActiveCommon_t
 
 	entity_t	viewent;		// weapon model
 
-	struct EffectT Effects[MAX_EFFECTS];
-
 	unsigned	PIV;			// players in view
 
 // all player information

@@ -182,7 +182,6 @@ struct client_state_t : clientActiveCommon_t
 	int			num_entities;	// held in cl_entities array
 	int			num_statics;	// held in cl_staticentities array
 	entity_t	viewent;			// the gun model
-	struct EffectT Effects[MAX_EFFECTS];
 
 	int			cdtrack, looptrack;	// cd audio
 	char		midi_name[128];     // midi file name

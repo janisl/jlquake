@@ -14,38 +14,9 @@
 //**
 //**************************************************************************
 
-#define MAX_STREAMS_H2				32
-#define H2STREAM_ATTACHED			16
+#include "../../client.h"
+#include "local.h"
 
-struct h2stream_t
-{
-	int type;
-	int entity;
-	int tag;
-	int flags;
-	int skin;
-	qhandle_t models[4];
-	vec3_t source;
-	vec3_t dest;
-	vec3_t offset;
-	float endTime;
-	float lastTrailTime;
-};
-
-#define MAX_EFFECT_ENTITIES_H2		256
-
-struct effect_entity_t
-{
-	h2entity_state_t state;
-	qhandle_t model;			// 0 = no model
-};
-
-extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
-
-extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
-
-extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
-extern bool EntityUsed[MAX_EFFECT_ENTITIES_H2];
-extern int EffectEntityCount;
-
-void CLH2_ClearStreams();
+effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
+bool EntityUsed[MAX_EFFECT_ENTITIES_H2];
+int EffectEntityCount;

@@ -63,6 +63,8 @@ struct clientActiveCommon_t
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
 	int viewentity;			// cl_entitites[cl.viewentity] = player
 
+	h2EffectT h2_Effects[MAX_EFFECTS_H2];
+
 	q2frame_t q2_frame;		// received from server
 	q2frame_t q2_frames[UPDATE_BACKUP_Q2];
 

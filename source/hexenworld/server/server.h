@@ -37,7 +37,7 @@ typedef struct
 	const char*	lightstyles[MAX_LIGHTSTYLES_H2];
 	clipHandle_t	models[MAX_MODELS];
 
-	struct EffectT Effects[MAX_EFFECTS];
+	struct h2EffectT Effects[MAX_EFFECTS_H2];
 
 	int			num_edicts;			// increases towards MAX_EDICTS_H2
 	edict_t		*edicts;			// can NOT be array indexed, because
