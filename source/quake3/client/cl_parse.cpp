@@ -331,7 +331,7 @@ void CL_SystemInfoChanged( void ) {
 	char			value[BIG_INFO_VALUE];
 	qboolean		gameSet;
 
-	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ CSQ3_SYSTEMINFO ];
+	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SYSTEMINFO ];
 	// NOTE TTimo:
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475

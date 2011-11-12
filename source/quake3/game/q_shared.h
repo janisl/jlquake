@@ -387,7 +387,7 @@ typedef struct playerState_s {
 	int			delta_angles[3];	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
 
-	int			groundEntityNum;// ENTITYNUMQ3_NONE = in air
+	int			groundEntityNum;// Q3ENTITYNUM_NONE = in air
 
 	int			legsTimer;		// don't change low priority animations until this runs out
 	int			legsAnim;		// mask off ANIM_TOGGLEBIT

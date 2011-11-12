@@ -568,7 +568,7 @@ bool Cvar_Command()
 //
 //	Cvar_InfoString
 //
-//	Handles large info strings ( CSQ3_SYSTEMINFO )
+//	Handles large info strings ( Q3CS_SYSTEMINFO )
 //
 //==========================================================================
 

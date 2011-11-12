@@ -23,9 +23,9 @@
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
-#define CSQ3_SERVERINFO		0		// an info string with all the serverinfo cvars
-#define CSQ3_SYSTEMINFO		1		// an info string for server system to client system configuration (timescale, etc)
-#define CSQ3_WARMUP			5		// server time when the match will be restarted
+#define Q3CS_SERVERINFO		0		// an info string with all the serverinfo cvars
+#define Q3CS_SYSTEMINFO		1		// an info string for server system to client system configuration (timescale, etc)
+#define Q3CS_WARMUP			5		// server time when the match will be restarted
 
 #define GENTITYNUM_BITS_Q3		10		// don't need to send any more
 #define MAX_GENTITIES_Q3		(1 << GENTITYNUM_BITS_Q3)
@@ -33,6 +33,6 @@
 // entitynums are communicated with GENTITY_BITS, so any reserved
 // values that are going to be communcated over the net need to
 // also be in this range
-#define ENTITYNUMQ3_NONE		(MAX_GENTITIES_Q3 - 1)
-#define ENTITYNUMQ3_WORLD		(MAX_GENTITIES_Q3 - 2)
-#define ENTITYNUMQ3_MAX_NORMAL	(MAX_GENTITIES_Q3 - 2)
+#define Q3ENTITYNUM_NONE		(MAX_GENTITIES_Q3 - 1)
+#define Q3ENTITYNUM_WORLD		(MAX_GENTITIES_Q3 - 2)
+#define Q3ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES_Q3 - 2)

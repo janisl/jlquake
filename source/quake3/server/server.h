@@ -389,7 +389,7 @@ void SV_Trace( q3trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs,
 // if the starting point is in a solid, it will be allowed to move out
 // to an open area
 
-// passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUMQ3_NONE)
+// passEntityNum is explicitly excluded from clipping checks (normally Q3ENTITYNUM_NONE)
 
 
 void SV_ClipToEntity( q3trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule );

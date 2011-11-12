@@ -60,7 +60,7 @@ void SV_SetConfigstring (int index, const char *val) {
 				continue;
 			}
 			// do not always send server info to all clients
-			if ( index == CSQ3_SERVERINFO && client->gentity && (client->gentity->r.svFlags & SVF_NOSERVERINFO) ) {
+			if ( index == Q3CS_SERVERINFO && client->gentity && (client->gentity->r.svFlags & SVF_NOSERVERINFO) ) {
 				continue;
 			}
 
@@ -527,9 +527,9 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	// save systeminfo and serverinfo strings
 	String::NCpyZ( systemInfo, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring( CSQ3_SYSTEMINFO, systemInfo );
+	SV_SetConfigstring( Q3CS_SYSTEMINFO, systemInfo );
 
-	SV_SetConfigstring( CSQ3_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+	SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// any media configstring setting now should issue a warning

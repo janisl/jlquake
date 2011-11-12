@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	SVF_USE_CURRENT_ORIGIN	0x00000080	// entity->r.currentOrigin instead of entity->s.origin
 											// for link position (missiles and movers)
 #define SVF_SINGLECLIENT		0x00000100	// only send to a single client (entityShared_t->singleClient)
-#define SVF_NOSERVERINFO		0x00000200	// don't send CSQ3_SERVERINFO updates to this client
+#define SVF_NOSERVERINFO		0x00000200	// don't send Q3CS_SERVERINFO updates to this client
 											// so that it can be updated for ping tools without
 											// lagging clients
 #define SVF_CAPSULE				0x00000400	// use capsule for collision detection instead of bbox
@@ -80,7 +80,7 @@ typedef struct {
 	vec3_t		currentOrigin;
 	vec3_t		currentAngles;
 
-	// when a trace call is made and passEntityNum != ENTITYNUMQ3_NONE,
+	// when a trace call is made and passEntityNum != Q3ENTITYNUM_NONE,
 	// an ent will be excluded from testing if:
 	// ent->s.number == passEntityNum	(don't interact with self)
 	// ent->s.ownerNum = passEntityNum	(don't interact with your own missiles)

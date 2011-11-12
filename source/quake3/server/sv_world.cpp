@@ -518,9 +518,9 @@ void SV_ClipMoveToEntities( moveclip_t *clip ) {
 
 	num = SV_AreaEntities( clip->boxmins, clip->boxmaxs, touchlist, MAX_GENTITIES_Q3);
 
-	if ( clip->passEntityNum != ENTITYNUMQ3_NONE ) {
+	if ( clip->passEntityNum != Q3ENTITYNUM_NONE ) {
 		passOwnerNum = ( SV_GentityNum( clip->passEntityNum ) )->r.ownerNum;
-		if ( passOwnerNum == ENTITYNUMQ3_NONE ) {
+		if ( passOwnerNum == Q3ENTITYNUM_NONE ) {
 			passOwnerNum = -1;
 		}
 	} else {
@@ -534,7 +534,7 @@ void SV_ClipMoveToEntities( moveclip_t *clip ) {
 		touch = SV_GentityNum( touchlist[i] );
 
 		// see if we should ignore this entity
-		if ( clip->passEntityNum != ENTITYNUMQ3_NONE ) {
+		if ( clip->passEntityNum != Q3ENTITYNUM_NONE ) {
 			if ( touchlist[i] == clip->passEntityNum ) {
 				continue;	// don't clip against the pass entity
 			}
@@ -612,7 +612,7 @@ void SV_Trace( q3trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs,
 
 	// clip to world
 	CM_BoxTraceQ3( &clip.trace, start, end, mins, maxs, 0, contentmask, capsule );
-	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUMQ3_WORLD : ENTITYNUMQ3_NONE;
+	clip.trace.entityNum = clip.trace.fraction != 1.0 ? Q3ENTITYNUM_WORLD : Q3ENTITYNUM_NONE;
 	if ( clip.trace.fraction == 0 ) {
 		*results = clip.trace;
 		return;		// blocked immediately by the world

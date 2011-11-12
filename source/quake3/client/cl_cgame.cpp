@@ -246,7 +246,7 @@ void CL_ConfigstringModified( void ) {
 		cl.gameState.dataCount += len + 1;
 	}
 
-	if ( index == CSQ3_SYSTEMINFO ) {
+	if ( index == Q3CS_SYSTEMINFO ) {
 		// parse serverId and other cvars
 		CL_SystemInfoChanged();
 	}
@@ -743,7 +743,7 @@ void CL_InitCGame( void ) {
 	Con_Close();
 
 	// find the current mapname
-	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CSQ3_SERVERINFO ];
+	info = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
 	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 

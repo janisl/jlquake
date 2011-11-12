@@ -805,11 +805,11 @@ void SV_Frame( int msec ) {
 
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO ) {
-		SV_SetConfigstring( CSQ3_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+		SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO ) {
-		SV_SetConfigstring(CSQ3_SYSTEMINFO, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING));
+		SV_SetConfigstring(Q3CS_SYSTEMINFO, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING));
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 

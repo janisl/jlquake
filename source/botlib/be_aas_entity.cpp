@@ -145,7 +145,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t *state)
 	if (relink)
 	{
 		//don't link the world model
-		if (entnum != ENTITYNUMQ3_WORLD)
+		if (entnum != Q3ENTITYNUM_WORLD)
 		{
 			//absolute mins and maxs
 			VectorAdd(ent->i.mins, ent->i.origin, absmins);
