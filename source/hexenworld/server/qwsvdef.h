@@ -15,7 +15,6 @@
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
-#include "cl_effect.h"
 #include "progs.h"
 
 #include "server.h"

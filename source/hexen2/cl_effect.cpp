@@ -16,70 +16,6 @@
 
 // TYPES -------------------------------------------------------------------
 
-#define CE_NONE				0
-#define CE_RAIN				1
-#define CE_FOUNTAIN			2
-#define CE_QUAKE			3
-#define CE_WHITE_SMOKE		4   // whtsmk1.spr
-#define CE_BLUESPARK		5	// bspark.spr
-#define CE_YELLOWSPARK		6	// spark.spr
-#define CE_SM_CIRCLE_EXP	7	// fcircle.spr
-#define CE_BG_CIRCLE_EXP	8	// fcircle.spr
-#define CE_SM_WHITE_FLASH	9	// sm_white.spr
-#define CE_WHITE_FLASH		10	// gryspt.spr
-#define CE_YELLOWRED_FLASH  11  // yr_flash.spr
-#define CE_BLUE_FLASH       12  // bluflash.spr
-#define CE_SM_BLUE_FLASH    13  // bluflash.spr
-#define CE_RED_FLASH		14  // redspt.spr
-#define CE_SM_EXPLOSION		15  // sm_expld.spr
-#define CE_LG_EXPLOSION		16  // bg_expld.spr
-#define CE_FLOOR_EXPLOSION	17  // fl_expld.spr
-#define CE_RIDER_DEATH		18
-#define CE_BLUE_EXPLOSION   19  // xpspblue.spr
-#define CE_GREEN_SMOKE      20  // grnsmk1.spr
-#define CE_GREY_SMOKE       21  // grysmk1.spr
-#define CE_RED_SMOKE        22  // redsmk1.spr
-#define CE_SLOW_WHITE_SMOKE 23  // whtsmk1.spr
-#define CE_REDSPARK         24  // rspark.spr
-#define CE_GREENSPARK       25  // gspark.spr
-#define CE_TELESMK1         26  // telesmk1.spr
-#define CE_TELESMK2         27  // telesmk2.spr
-#define CE_ICEHIT           28  // icehit.spr
-#define CE_MEDUSA_HIT       29  // medhit.spr
-#define CE_MEZZO_REFLECT    30  // mezzoref.spr
-#define CE_FLOOR_EXPLOSION2 31  // flrexpl2.spr
-#define CE_XBOW_EXPLOSION   32  // xbowexpl.spr
-#define CE_NEW_EXPLOSION    33  // gen_expl.spr
-#define CE_MAGIC_MISSILE_EXPLOSION   34  // mm_expld.spr
-#define CE_GHOST			35  // ghost.spr
-#define CE_BONE_EXPLOSION	36
-#define CE_REDCLOUD			37
-#define CE_TELEPORTERPUFFS  38
-#define CE_TELEPORTERBODY   39
-#define CE_BONESHARD		40
-#define CE_BONESHRAPNEL		41
-#define CE_FLAMESTREAM		42	//Flamethrower
-#define CE_SNOW				43
-#define CE_GRAVITYWELL		44
-#define CE_BLDRN_EXPL		45
-#define CE_ACID_MUZZFL		46
-#define CE_ACID_HIT			47
-#define CE_FIREWALL_SMALL	48
-#define CE_FIREWALL_MEDIUM	49
-#define CE_FIREWALL_LARGE	50
-#define CE_LBALL_EXPL		51
-#define	CE_ACID_SPLAT		52
-#define	CE_ACID_EXPL		53
-#define	CE_FBOOM			54
-#define CE_CHUNK			55
-#define CE_BOMB				56
-#define CE_BRN_BOUNCE		57
-#define CE_LSHOCK			58
-#define CE_FLAMEWALL		59
-#define CE_FLAMEWALL2		60
-#define CE_FLOOR_EXPLOSION3 61  
-#define CE_ONFIRE			62
-
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -121,107 +57,107 @@ void SV_SendEffect(QMsg *sb, int index)
 
 	switch(sv.Effects[index].type)
 	{
-		case CE_RAIN:
-		case CE_SNOW:
+		case CEH2_RAIN:
+		case CEH2_SNOW:
 			DoTest = false;
 			break;
 
-		case CE_FOUNTAIN:
+		case CEH2_FOUNTAIN:
 			DoTest = false;
 			break;
 
-		case CE_QUAKE:
+		case CEH2_QUAKE:
 			VectorCopy(sv.Effects[index].Quake.origin, TestO1);
 			TestDistance = 700;
 			break;
 
-		case CE_WHITE_SMOKE:
-		case CE_GREEN_SMOKE:
-		case CE_GREY_SMOKE:
-		case CE_RED_SMOKE:
-		case CE_SLOW_WHITE_SMOKE:
-		case CE_TELESMK1:
-		case CE_TELESMK2:
-		case CE_GHOST:
-		case CE_REDCLOUD:
-		case CE_FLAMESTREAM:
-		case CE_ACID_MUZZFL:
-		case CE_FLAMEWALL:
-		case CE_FLAMEWALL2:
-		case CE_ONFIRE:
+		case CEH2_WHITE_SMOKE:
+		case CEH2_GREEN_SMOKE:
+		case CEH2_GREY_SMOKE:
+		case CEH2_RED_SMOKE:
+		case CEH2_SLOW_WHITE_SMOKE:
+		case CEH2_TELESMK1:
+		case CEH2_TELESMK2:
+		case CEH2_GHOST:
+		case CEH2_REDCLOUD:
+		case CEH2_FLAMESTREAM:
+		case CEH2_ACID_MUZZFL:
+		case CEH2_FLAMEWALL:
+		case CEH2_FLAMEWALL2:
+		case CEH2_ONFIRE:
 			VectorCopy(sv.Effects[index].Smoke.origin, TestO1);
 			TestDistance = 250;
 			break;
 
-		case CE_SM_WHITE_FLASH:
-		case CE_YELLOWRED_FLASH:
-		case CE_BLUESPARK:
-		case CE_YELLOWSPARK:
-		case CE_SM_CIRCLE_EXP:
-		case CE_BG_CIRCLE_EXP:
-		case CE_SM_EXPLOSION:
-		case CE_LG_EXPLOSION:
-		case CE_FLOOR_EXPLOSION:
-		case CE_BLUE_EXPLOSION:
-		case CE_REDSPARK:
-		case CE_GREENSPARK:
-		case CE_ICEHIT:
-		case CE_MEDUSA_HIT:
-		case CE_MEZZO_REFLECT:
-		case CE_FLOOR_EXPLOSION2:
-		case CE_XBOW_EXPLOSION:
-		case CE_NEW_EXPLOSION:
-		case CE_MAGIC_MISSILE_EXPLOSION:
-		case CE_BONE_EXPLOSION:
-		case CE_BLDRN_EXPL:
-		case CE_ACID_HIT:
-		case CE_LBALL_EXPL:
-		case CE_FIREWALL_SMALL:
-		case CE_FIREWALL_MEDIUM:
-		case CE_FIREWALL_LARGE:
-		case CE_ACID_SPLAT:
-		case CE_ACID_EXPL:
-		case CE_FBOOM:
-		case CE_BRN_BOUNCE:
-		case CE_LSHOCK:
-		case CE_BOMB:
-		case CE_FLOOR_EXPLOSION3:
+		case CEH2_SM_WHITE_FLASH:
+		case CEH2_YELLOWRED_FLASH:
+		case CEH2_BLUESPARK:
+		case CEH2_YELLOWSPARK:
+		case CEH2_SM_CIRCLE_EXP:
+		case CEH2_BG_CIRCLE_EXP:
+		case CEH2_SM_EXPLOSION:
+		case CEH2_LG_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION:
+		case CEH2_BLUE_EXPLOSION:
+		case CEH2_REDSPARK:
+		case CEH2_GREENSPARK:
+		case CEH2_ICEHIT:
+		case CEH2_MEDUSA_HIT:
+		case CEH2_MEZZO_REFLECT:
+		case CEH2_FLOOR_EXPLOSION2:
+		case CEH2_XBOW_EXPLOSION:
+		case CEH2_NEW_EXPLOSION:
+		case CEH2_MAGIC_MISSILE_EXPLOSION:
+		case CEH2_BONE_EXPLOSION:
+		case CEH2_BLDRN_EXPL:
+		case CEH2_ACID_HIT:
+		case CEH2_LBALL_EXPL:
+		case CEH2_FIREWALL_SMALL:
+		case CEH2_FIREWALL_MEDIUM:
+		case CEH2_FIREWALL_LARGE:
+		case CEH2_ACID_SPLAT:
+		case CEH2_ACID_EXPL:
+		case CEH2_FBOOM:
+		case CEH2_BRN_BOUNCE:
+		case CEH2_LSHOCK:
+		case CEH2_BOMB:
+		case CEH2_FLOOR_EXPLOSION3:
 			VectorCopy(sv.Effects[index].Smoke.origin, TestO1);
 			TestDistance = 250;
 			break;
 
-		case CE_WHITE_FLASH:
-		case CE_BLUE_FLASH:
-		case CE_SM_BLUE_FLASH:
-		case CE_RED_FLASH:
+		case CEH2_WHITE_FLASH:
+		case CEH2_BLUE_FLASH:
+		case CEH2_SM_BLUE_FLASH:
+		case CEH2_RED_FLASH:
 			VectorCopy(sv.Effects[index].Smoke.origin, TestO1);
 			TestDistance = 250;
 			break;
 
-		case CE_RIDER_DEATH:
+		case CEH2_RIDER_DEATH:
 			DoTest = false;
 			break;
 
-		case CE_GRAVITYWELL:
+		case CEH2_GRAVITYWELL:
 			DoTest = false;
 			break;
 
-		case CE_TELEPORTERPUFFS:
+		case CEH2_TELEPORTERPUFFS:
 			VectorCopy(sv.Effects[index].Teleporter.origin, TestO1);
 			TestDistance = 350;
 			break;
 
-		case CE_TELEPORTERBODY:
+		case CEH2_TELEPORTERBODY:
 			VectorCopy(sv.Effects[index].Teleporter.origin, TestO1);
 			TestDistance = 350;
 			break;
 
-		case CE_BONESHARD:
-		case CE_BONESHRAPNEL:
+		case CEH2_BONESHARD:
+		case CEH2_BONESHRAPNEL:
 			VectorCopy(sv.Effects[index].Missile.origin, TestO1);
 			TestDistance = 600;
 			break;
-		case CE_CHUNK:
+		case CEH2_CHUNK:
 			VectorCopy(sv.Effects[index].Chunk.origin, TestO1);
 			TestDistance = 600;
 			break;
@@ -267,7 +203,7 @@ void SV_SendEffect(QMsg *sb, int index)
 		
 		switch(sv.Effects[index].type)
 		{
-			case CE_RAIN:
+			case CEH2_RAIN:
 				sb->WriteCoord(sv.Effects[index].Rain.min_org[0]);
 				sb->WriteCoord(sv.Effects[index].Rain.min_org[1]);
 				sb->WriteCoord(sv.Effects[index].Rain.min_org[2]);
@@ -285,7 +221,7 @@ void SV_SendEffect(QMsg *sb, int index)
 				sb->WriteFloat(sv.Effects[index].Rain.wait);
 				break;
 				
-			case CE_SNOW:
+			case CEH2_SNOW:
 				sb->WriteCoord(sv.Effects[index].Snow.min_org[0]);
 				sb->WriteCoord(sv.Effects[index].Snow.min_org[1]);
 				sb->WriteCoord(sv.Effects[index].Snow.min_org[2]);
@@ -299,7 +235,7 @@ void SV_SendEffect(QMsg *sb, int index)
 				sb->WriteByte(sv.Effects[index].Snow.count);
 				break;
 				
-			case CE_FOUNTAIN:
+			case CEH2_FOUNTAIN:
 				sb->WriteCoord(sv.Effects[index].Fountain.pos[0]);
 				sb->WriteCoord(sv.Effects[index].Fountain.pos[1]);
 				sb->WriteCoord(sv.Effects[index].Fountain.pos[2]);
@@ -313,27 +249,27 @@ void SV_SendEffect(QMsg *sb, int index)
 				sb->WriteByte(sv.Effects[index].Fountain.cnt);
 				break;
 				
-			case CE_QUAKE:
+			case CEH2_QUAKE:
 				sb->WriteCoord(sv.Effects[index].Quake.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Quake.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Quake.origin[2]);
 				sb->WriteFloat(sv.Effects[index].Quake.radius);
 				break;
 				
-			case CE_WHITE_SMOKE:
-			case CE_GREEN_SMOKE:
-			case CE_GREY_SMOKE:
-			case CE_RED_SMOKE:
-			case CE_SLOW_WHITE_SMOKE:
-			case CE_TELESMK1:
-			case CE_TELESMK2:
-			case CE_GHOST:
-			case CE_REDCLOUD:
-			case CE_FLAMESTREAM:
-			case CE_ACID_MUZZFL:
-			case CE_FLAMEWALL:
-			case CE_FLAMEWALL2:
-			case CE_ONFIRE:
+			case CEH2_WHITE_SMOKE:
+			case CEH2_GREEN_SMOKE:
+			case CEH2_GREY_SMOKE:
+			case CEH2_RED_SMOKE:
+			case CEH2_SLOW_WHITE_SMOKE:
+			case CEH2_TELESMK1:
+			case CEH2_TELESMK2:
+			case CEH2_GHOST:
+			case CEH2_REDCLOUD:
+			case CEH2_FLAMESTREAM:
+			case CEH2_ACID_MUZZFL:
+			case CEH2_FLAMEWALL:
+			case CEH2_FLAMEWALL2:
+			case CEH2_ONFIRE:
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[2]);
@@ -344,66 +280,66 @@ void SV_SendEffect(QMsg *sb, int index)
 				sb->WriteFloat(sv.Effects[index].Smoke.frame);
 				break;
 				
-			case CE_SM_WHITE_FLASH:
-			case CE_YELLOWRED_FLASH:
-			case CE_BLUESPARK:
-			case CE_YELLOWSPARK:
-			case CE_SM_CIRCLE_EXP:
-			case CE_BG_CIRCLE_EXP:
-			case CE_SM_EXPLOSION:
-			case CE_LG_EXPLOSION:
-			case CE_FLOOR_EXPLOSION:
-			case CE_FLOOR_EXPLOSION3:
-			case CE_BLUE_EXPLOSION:
-			case CE_REDSPARK:
-			case CE_GREENSPARK:
-			case CE_ICEHIT:
-			case CE_MEDUSA_HIT:
-			case CE_MEZZO_REFLECT:
-			case CE_FLOOR_EXPLOSION2:
-			case CE_XBOW_EXPLOSION:
-			case CE_NEW_EXPLOSION:
-			case CE_MAGIC_MISSILE_EXPLOSION:
-			case CE_BONE_EXPLOSION:
-			case CE_BLDRN_EXPL:
-			case CE_ACID_HIT:
-			case CE_ACID_SPLAT:
-			case CE_ACID_EXPL:
-			case CE_LBALL_EXPL:	
-			case CE_FIREWALL_SMALL:
-			case CE_FIREWALL_MEDIUM:
-			case CE_FIREWALL_LARGE:
-			case CE_FBOOM:
-			case CE_BOMB:
-			case CE_BRN_BOUNCE:
-			case CE_LSHOCK:
+			case CEH2_SM_WHITE_FLASH:
+			case CEH2_YELLOWRED_FLASH:
+			case CEH2_BLUESPARK:
+			case CEH2_YELLOWSPARK:
+			case CEH2_SM_CIRCLE_EXP:
+			case CEH2_BG_CIRCLE_EXP:
+			case CEH2_SM_EXPLOSION:
+			case CEH2_LG_EXPLOSION:
+			case CEH2_FLOOR_EXPLOSION:
+			case CEH2_FLOOR_EXPLOSION3:
+			case CEH2_BLUE_EXPLOSION:
+			case CEH2_REDSPARK:
+			case CEH2_GREENSPARK:
+			case CEH2_ICEHIT:
+			case CEH2_MEDUSA_HIT:
+			case CEH2_MEZZO_REFLECT:
+			case CEH2_FLOOR_EXPLOSION2:
+			case CEH2_XBOW_EXPLOSION:
+			case CEH2_NEW_EXPLOSION:
+			case CEH2_MAGIC_MISSILE_EXPLOSION:
+			case CEH2_BONE_EXPLOSION:
+			case CEH2_BLDRN_EXPL:
+			case CEH2_ACID_HIT:
+			case CEH2_ACID_SPLAT:
+			case CEH2_ACID_EXPL:
+			case CEH2_LBALL_EXPL:	
+			case CEH2_FIREWALL_SMALL:
+			case CEH2_FIREWALL_MEDIUM:
+			case CEH2_FIREWALL_LARGE:
+			case CEH2_FBOOM:
+			case CEH2_BOMB:
+			case CEH2_BRN_BOUNCE:
+			case CEH2_LSHOCK:
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[2]);
 				break;
 				
-			case CE_WHITE_FLASH:
-			case CE_BLUE_FLASH:
-			case CE_SM_BLUE_FLASH:
-			case CE_RED_FLASH:
+			case CEH2_WHITE_FLASH:
+			case CEH2_BLUE_FLASH:
+			case CEH2_SM_BLUE_FLASH:
+			case CEH2_RED_FLASH:
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Smoke.origin[2]);
 				break;
 								
-			case CE_RIDER_DEATH:
+			case CEH2_RIDER_DEATH:
 				sb->WriteCoord(sv.Effects[index].RD.origin[0]);
 				sb->WriteCoord(sv.Effects[index].RD.origin[1]);
 				sb->WriteCoord(sv.Effects[index].RD.origin[2]);
 				break;
 				
-			case CE_TELEPORTERPUFFS:
+			case CEH2_TELEPORTERPUFFS:
 				sb->WriteCoord(sv.Effects[index].Teleporter.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Teleporter.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Teleporter.origin[2]);
 				break;
 				
-			case CE_TELEPORTERBODY:
+			case CEH2_TELEPORTERBODY:
 				sb->WriteCoord(sv.Effects[index].Teleporter.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Teleporter.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Teleporter.origin[2]);
@@ -413,8 +349,8 @@ void SV_SendEffect(QMsg *sb, int index)
 				sb->WriteFloat(sv.Effects[index].Teleporter.skinnum);
 				break;
 
-			case CE_BONESHARD:
-			case CE_BONESHRAPNEL:
+			case CEH2_BONESHARD:
+			case CEH2_BONESHRAPNEL:
 				sb->WriteCoord(sv.Effects[index].Missile.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Missile.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Missile.origin[2]);
@@ -430,7 +366,7 @@ void SV_SendEffect(QMsg *sb, int index)
 				
 				break;
 
-			case CE_GRAVITYWELL:
+			case CEH2_GRAVITYWELL:
 				sb->WriteCoord(sv.Effects[index].GravityWell.origin[0]);
 				sb->WriteCoord(sv.Effects[index].GravityWell.origin[1]);
 				sb->WriteCoord(sv.Effects[index].GravityWell.origin[2]);
@@ -438,7 +374,7 @@ void SV_SendEffect(QMsg *sb, int index)
 				sb->WriteFloat(sv.Effects[index].GravityWell.lifetime);
 				break;
 
-			case CE_CHUNK:
+			case CEH2_CHUNK:
 				sb->WriteCoord(sv.Effects[index].Chunk.origin[0]);
 				sb->WriteCoord(sv.Effects[index].Chunk.origin[1]);
 				sb->WriteCoord(sv.Effects[index].Chunk.origin[2]);
@@ -497,7 +433,7 @@ void SV_ParseEffect(QMsg *sb)
 
 	switch(effect)
 	{
-		case CE_RAIN:
+		case CEH2_RAIN:
 			VectorCopy(G_VECTOR(OFS_PARM1),sv.Effects[index].Rain.min_org);
 			VectorCopy(G_VECTOR(OFS_PARM2),sv.Effects[index].Rain.max_org);
 			VectorCopy(G_VECTOR(OFS_PARM3),sv.Effects[index].Rain.e_size);
@@ -509,7 +445,7 @@ void SV_ParseEffect(QMsg *sb)
 			sv.Effects[index].Rain.next_time = 0;
 			break;
 
-		case CE_SNOW:
+		case CEH2_SNOW:
 			VectorCopy(G_VECTOR(OFS_PARM1),sv.Effects[index].Snow.min_org);
 			VectorCopy(G_VECTOR(OFS_PARM2),sv.Effects[index].Snow.max_org);
 			sv.Effects[index].Snow.flags = G_FLOAT(OFS_PARM3);
@@ -519,7 +455,7 @@ void SV_ParseEffect(QMsg *sb)
 			sv.Effects[index].Snow.next_time = 0;
 			break;
 
-		case CE_FOUNTAIN:
+		case CEH2_FOUNTAIN:
 			VectorCopy(G_VECTOR(OFS_PARM1),sv.Effects[index].Fountain.pos);
 			VectorCopy(G_VECTOR(OFS_PARM2),sv.Effects[index].Fountain.angle);
 			VectorCopy(G_VECTOR(OFS_PARM3),sv.Effects[index].Fountain.movedir);
@@ -527,20 +463,20 @@ void SV_ParseEffect(QMsg *sb)
 			sv.Effects[index].Fountain.cnt = G_FLOAT(OFS_PARM5);
 			break;
 
-		case CE_QUAKE:
+		case CEH2_QUAKE:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Quake.origin);
 			sv.Effects[index].Quake.radius = G_FLOAT(OFS_PARM2);
 			break;
 
-		case CE_WHITE_SMOKE:
-		case CE_GREEN_SMOKE:
-		case CE_GREY_SMOKE:
-		case CE_RED_SMOKE:
-		case CE_SLOW_WHITE_SMOKE:
-		case CE_TELESMK1:
-		case CE_TELESMK2:
-		case CE_GHOST:
-		case CE_REDCLOUD:
+		case CEH2_WHITE_SMOKE:
+		case CEH2_GREEN_SMOKE:
+		case CEH2_GREY_SMOKE:
+		case CEH2_RED_SMOKE:
+		case CEH2_SLOW_WHITE_SMOKE:
+		case CEH2_TELESMK1:
+		case CEH2_TELESMK2:
+		case CEH2_GHOST:
+		case CEH2_REDCLOUD:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Smoke.origin);
 			VectorCopy(G_VECTOR(OFS_PARM2), sv.Effects[index].Smoke.velocity);
 			sv.Effects[index].Smoke.framelength = G_FLOAT(OFS_PARM3);
@@ -548,11 +484,11 @@ void SV_ParseEffect(QMsg *sb)
 			sv.Effects[index].expire_time = sv.time + 1;
 			break;
 
-		case CE_ACID_MUZZFL:
-		case CE_FLAMESTREAM:
-		case CE_FLAMEWALL:
-		case CE_FLAMEWALL2:
-		case CE_ONFIRE:
+		case CEH2_ACID_MUZZFL:
+		case CEH2_FLAMESTREAM:
+		case CEH2_FLAMEWALL:
+		case CEH2_FLAMEWALL2:
+		case CEH2_ONFIRE:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Smoke.origin);
 			VectorCopy(G_VECTOR(OFS_PARM2), sv.Effects[index].Smoke.velocity);
 			sv.Effects[index].Smoke.framelength = 0.05;
@@ -560,75 +496,75 @@ void SV_ParseEffect(QMsg *sb)
 			sv.Effects[index].expire_time = sv.time + 1;
 			break;
 
-		case CE_SM_WHITE_FLASH:
-		case CE_YELLOWRED_FLASH:
-		case CE_BLUESPARK:
-		case CE_YELLOWSPARK:
-		case CE_SM_CIRCLE_EXP:
-		case CE_BG_CIRCLE_EXP:
-		case CE_SM_EXPLOSION:
-		case CE_LG_EXPLOSION:
-		case CE_FLOOR_EXPLOSION:
-		case CE_FLOOR_EXPLOSION3:
-		case CE_BLUE_EXPLOSION:
-		case CE_REDSPARK:
-		case CE_GREENSPARK:
-		case CE_ICEHIT:
-		case CE_MEDUSA_HIT:
-		case CE_MEZZO_REFLECT:
-		case CE_FLOOR_EXPLOSION2:
-		case CE_XBOW_EXPLOSION:
-		case CE_NEW_EXPLOSION:
-		case CE_MAGIC_MISSILE_EXPLOSION:
-		case CE_BONE_EXPLOSION:
-		case CE_BLDRN_EXPL:
-		case CE_ACID_HIT:
-		case CE_ACID_SPLAT:
-		case CE_ACID_EXPL:
-		case CE_LBALL_EXPL:
-		case CE_FIREWALL_SMALL:
-		case CE_FIREWALL_MEDIUM:
-		case CE_FIREWALL_LARGE:
-		case CE_FBOOM:
-		case CE_BOMB:
-		case CE_BRN_BOUNCE:
-		case CE_LSHOCK:
+		case CEH2_SM_WHITE_FLASH:
+		case CEH2_YELLOWRED_FLASH:
+		case CEH2_BLUESPARK:
+		case CEH2_YELLOWSPARK:
+		case CEH2_SM_CIRCLE_EXP:
+		case CEH2_BG_CIRCLE_EXP:
+		case CEH2_SM_EXPLOSION:
+		case CEH2_LG_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION3:
+		case CEH2_BLUE_EXPLOSION:
+		case CEH2_REDSPARK:
+		case CEH2_GREENSPARK:
+		case CEH2_ICEHIT:
+		case CEH2_MEDUSA_HIT:
+		case CEH2_MEZZO_REFLECT:
+		case CEH2_FLOOR_EXPLOSION2:
+		case CEH2_XBOW_EXPLOSION:
+		case CEH2_NEW_EXPLOSION:
+		case CEH2_MAGIC_MISSILE_EXPLOSION:
+		case CEH2_BONE_EXPLOSION:
+		case CEH2_BLDRN_EXPL:
+		case CEH2_ACID_HIT:
+		case CEH2_ACID_SPLAT:
+		case CEH2_ACID_EXPL:
+		case CEH2_LBALL_EXPL:
+		case CEH2_FIREWALL_SMALL:
+		case CEH2_FIREWALL_MEDIUM:
+		case CEH2_FIREWALL_LARGE:
+		case CEH2_FBOOM:
+		case CEH2_BOMB:
+		case CEH2_BRN_BOUNCE:
+		case CEH2_LSHOCK:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Smoke.origin);
 			sv.Effects[index].expire_time = sv.time + 1;
 			break;
 
-		case CE_WHITE_FLASH:
-		case CE_BLUE_FLASH:
-		case CE_SM_BLUE_FLASH:
-		case CE_RED_FLASH:
+		case CEH2_WHITE_FLASH:
+		case CEH2_BLUE_FLASH:
+		case CEH2_SM_BLUE_FLASH:
+		case CEH2_RED_FLASH:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Flash.origin);
 			sv.Effects[index].expire_time = sv.time + 1;
 			break;
 
-		case CE_RIDER_DEATH:
+		case CEH2_RIDER_DEATH:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].RD.origin);
 			break;
 
-		case CE_GRAVITYWELL:
+		case CEH2_GRAVITYWELL:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].GravityWell.origin);
 			sv.Effects[index].GravityWell.color = G_FLOAT(OFS_PARM2);
 			sv.Effects[index].GravityWell.lifetime = G_FLOAT(OFS_PARM3);
 			break;
 
-		case CE_TELEPORTERPUFFS:
+		case CEH2_TELEPORTERPUFFS:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Teleporter.origin);
 			sv.Effects[index].expire_time = sv.time + 1;
 			break;
 
-		case CE_TELEPORTERBODY:
+		case CEH2_TELEPORTERBODY:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Teleporter.origin);
 			VectorCopy(G_VECTOR(OFS_PARM2),sv.Effects[index].Teleporter.velocity[0]);
 			sv.Effects[index].Teleporter.skinnum = G_FLOAT(OFS_PARM3);
 			sv.Effects[index].expire_time = sv.time + 1;
 			break;
 
-		case CE_BONESHARD:
-		case CE_BONESHRAPNEL:
+		case CEH2_BONESHARD:
+		case CEH2_BONESHRAPNEL:
 			VectorCopy(G_VECTOR(OFS_PARM1), sv.Effects[index].Missile.origin);
 			VectorCopy(G_VECTOR(OFS_PARM2),sv.Effects[index].Missile.velocity);
 			VectorCopy(G_VECTOR(OFS_PARM3),sv.Effects[index].Missile.angle);
@@ -637,7 +573,7 @@ void SV_ParseEffect(QMsg *sb)
 			sv.Effects[index].expire_time = sv.time + 10;
 			break;
 
-		case CE_CHUNK:
+		case CEH2_CHUNK:
 			VectorCopy(G_VECTOR(OFS_PARM1),sv.Effects[index].Chunk.origin);
 			sv.Effects[index].Chunk.type = G_FLOAT(OFS_PARM2);
 			VectorCopy(G_VECTOR(OFS_PARM3),sv.Effects[index].Chunk.srcVel);
@@ -674,7 +610,7 @@ void SV_SaveEffects(fileHandle_t FH)
 
 			switch(sv.Effects[index].type)
 			{
-				case CE_RAIN:
+				case CEH2_RAIN:
 					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[2]);
@@ -692,7 +628,7 @@ void SV_SaveEffects(fileHandle_t FH)
 					FS_Printf(FH, "%f\n", sv.Effects[index].Rain.wait);
 					break;
 
-				case CE_SNOW:
+				case CEH2_SNOW:
 					FS_Printf(FH, "%f ", sv.Effects[index].Snow.min_org[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Snow.min_org[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Snow.min_org[2]);
@@ -706,7 +642,7 @@ void SV_SaveEffects(fileHandle_t FH)
 					FS_Printf(FH, "%d ", sv.Effects[index].Snow.count);
 					break;
 
-				case CE_FOUNTAIN:
+				case CEH2_FOUNTAIN:
 					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.pos[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.pos[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.pos[2]);
@@ -720,27 +656,27 @@ void SV_SaveEffects(fileHandle_t FH)
 					FS_Printf(FH, "%d\n", sv.Effects[index].Fountain.cnt);
 					break;
 
-				case CE_QUAKE:
+				case CEH2_QUAKE:
 					FS_Printf(FH, "%f ", sv.Effects[index].Quake.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Quake.origin[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Quake.origin[2]);
 					FS_Printf(FH, "%f\n", sv.Effects[index].Quake.radius);
 					break;
 
-				case CE_WHITE_SMOKE:
-				case CE_GREEN_SMOKE:
-				case CE_GREY_SMOKE:
-				case CE_RED_SMOKE:
-				case CE_SLOW_WHITE_SMOKE:
-				case CE_TELESMK1:
-				case CE_TELESMK2:
-				case CE_GHOST:
-				case CE_REDCLOUD:
-				case CE_ACID_MUZZFL:
-				case CE_FLAMESTREAM:
-				case CE_FLAMEWALL:
-				case CE_FLAMEWALL2:
-				case CE_ONFIRE:
+				case CEH2_WHITE_SMOKE:
+				case CEH2_GREEN_SMOKE:
+				case CEH2_GREY_SMOKE:
+				case CEH2_RED_SMOKE:
+				case CEH2_SLOW_WHITE_SMOKE:
+				case CEH2_TELESMK1:
+				case CEH2_TELESMK2:
+				case CEH2_GHOST:
+				case CEH2_REDCLOUD:
+				case CEH2_ACID_MUZZFL:
+				case CEH2_FLAMESTREAM:
+				case CEH2_FLAMEWALL:
+				case CEH2_FLAMEWALL2:
+				case CEH2_ONFIRE:
 					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[2]);
@@ -751,80 +687,80 @@ void SV_SaveEffects(fileHandle_t FH)
 					FS_Printf(FH, "%f\n", sv.Effects[index].Smoke.frame);
 					break;
 
-				case CE_SM_WHITE_FLASH:
-				case CE_YELLOWRED_FLASH:
-				case CE_BLUESPARK:
-				case CE_YELLOWSPARK:
-				case CE_SM_CIRCLE_EXP:
-				case CE_BG_CIRCLE_EXP:
-				case CE_SM_EXPLOSION:
-				case CE_LG_EXPLOSION:
-				case CE_FLOOR_EXPLOSION:
-				case CE_FLOOR_EXPLOSION3:
-				case CE_BLUE_EXPLOSION:
-				case CE_REDSPARK:
-				case CE_GREENSPARK:
-				case CE_ICEHIT:
-				case CE_MEDUSA_HIT:
-				case CE_MEZZO_REFLECT:
-				case CE_FLOOR_EXPLOSION2:
-				case CE_XBOW_EXPLOSION:
-				case CE_NEW_EXPLOSION:
-				case CE_MAGIC_MISSILE_EXPLOSION:
-				case CE_BONE_EXPLOSION:
-				case CE_BLDRN_EXPL:
-				case CE_BRN_BOUNCE:
-				case CE_LSHOCK:
-				case CE_ACID_HIT:
-				case CE_ACID_SPLAT:
-				case CE_ACID_EXPL:
-				case CE_LBALL_EXPL:
-				case CE_FIREWALL_SMALL:
-				case CE_FIREWALL_MEDIUM:
-				case CE_FIREWALL_LARGE:
-				case CE_FBOOM:
-				case CE_BOMB:
+				case CEH2_SM_WHITE_FLASH:
+				case CEH2_YELLOWRED_FLASH:
+				case CEH2_BLUESPARK:
+				case CEH2_YELLOWSPARK:
+				case CEH2_SM_CIRCLE_EXP:
+				case CEH2_BG_CIRCLE_EXP:
+				case CEH2_SM_EXPLOSION:
+				case CEH2_LG_EXPLOSION:
+				case CEH2_FLOOR_EXPLOSION:
+				case CEH2_FLOOR_EXPLOSION3:
+				case CEH2_BLUE_EXPLOSION:
+				case CEH2_REDSPARK:
+				case CEH2_GREENSPARK:
+				case CEH2_ICEHIT:
+				case CEH2_MEDUSA_HIT:
+				case CEH2_MEZZO_REFLECT:
+				case CEH2_FLOOR_EXPLOSION2:
+				case CEH2_XBOW_EXPLOSION:
+				case CEH2_NEW_EXPLOSION:
+				case CEH2_MAGIC_MISSILE_EXPLOSION:
+				case CEH2_BONE_EXPLOSION:
+				case CEH2_BLDRN_EXPL:
+				case CEH2_BRN_BOUNCE:
+				case CEH2_LSHOCK:
+				case CEH2_ACID_HIT:
+				case CEH2_ACID_SPLAT:
+				case CEH2_ACID_EXPL:
+				case CEH2_LBALL_EXPL:
+				case CEH2_FIREWALL_SMALL:
+				case CEH2_FIREWALL_MEDIUM:
+				case CEH2_FIREWALL_LARGE:
+				case CEH2_FBOOM:
+				case CEH2_BOMB:
 					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[1]);
 					FS_Printf(FH, "%f\n", sv.Effects[index].Smoke.origin[2]);
 					break;
 
-				case CE_WHITE_FLASH:
-				case CE_BLUE_FLASH:
-				case CE_SM_BLUE_FLASH:
-				case CE_RED_FLASH:
+				case CEH2_WHITE_FLASH:
+				case CEH2_BLUE_FLASH:
+				case CEH2_SM_BLUE_FLASH:
+				case CEH2_RED_FLASH:
 					FS_Printf(FH, "%f ", sv.Effects[index].Flash.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Flash.origin[1]);
 					FS_Printf(FH, "%f\n", sv.Effects[index].Flash.origin[2]);
 					break;
 
-				case CE_RIDER_DEATH:
+				case CEH2_RIDER_DEATH:
 					FS_Printf(FH, "%f ", sv.Effects[index].RD.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].RD.origin[1]);
 					FS_Printf(FH, "%f\n", sv.Effects[index].RD.origin[2]);
 					break;
 
-				case CE_GRAVITYWELL:
+				case CEH2_GRAVITYWELL:
 					FS_Printf(FH, "%f ", sv.Effects[index].GravityWell.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].GravityWell.origin[1]);
 					FS_Printf(FH, "%f", sv.Effects[index].GravityWell.origin[2]);
 					FS_Printf(FH, "%d", sv.Effects[index].GravityWell.color);
 					FS_Printf(FH, "%f\n", sv.Effects[index].GravityWell.lifetime);
 					break;
-				case CE_TELEPORTERPUFFS:
+				case CEH2_TELEPORTERPUFFS:
 					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[1]);
 					FS_Printf(FH, "%f\n", sv.Effects[index].Teleporter.origin[2]);
 					break;
 
-				case CE_TELEPORTERBODY:
+				case CEH2_TELEPORTERBODY:
 					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[1]);
 					FS_Printf(FH, "%f\n", sv.Effects[index].Teleporter.origin[2]);
 					break;
 
-				case CE_BONESHARD:
-				case CE_BONESHRAPNEL:
+				case CEH2_BONESHARD:
+				case CEH2_BONESHRAPNEL:
 					FS_Printf(FH, "%f ", sv.Effects[index].Missile.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Missile.origin[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Missile.origin[2]);
@@ -839,7 +775,7 @@ void SV_SaveEffects(fileHandle_t FH)
 					FS_Printf(FH, "%f ", sv.Effects[index].Missile.avelocity[2]);
 					break;
 
-				case CE_CHUNK:
+				case CEH2_CHUNK:
 					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.origin[0]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.origin[1]);
 					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.origin[2]);
@@ -932,7 +868,7 @@ char* SV_LoadEffects(char* Data)
 
 		switch(sv.Effects[index].type)
 		{
-			case CE_RAIN:
+			case CEH2_RAIN:
 				sv.Effects[index].Rain.min_org[0] = GetFloat(Data);
 				sv.Effects[index].Rain.min_org[1] = GetFloat(Data);
 				sv.Effects[index].Rain.min_org[2] = GetFloat(Data);
@@ -950,7 +886,7 @@ char* SV_LoadEffects(char* Data)
 				sv.Effects[index].Rain.wait = GetFloat(Data);
 				break;
 
-			case CE_SNOW:
+			case CEH2_SNOW:
 				sv.Effects[index].Snow.min_org[0] = GetFloat(Data);
 				sv.Effects[index].Snow.min_org[1] = GetFloat(Data);
 				sv.Effects[index].Snow.min_org[2] = GetFloat(Data);
@@ -964,7 +900,7 @@ char* SV_LoadEffects(char* Data)
 				sv.Effects[index].Snow.count = GetInt(Data);
 				break;
 
-			case CE_FOUNTAIN:
+			case CEH2_FOUNTAIN:
 				sv.Effects[index].Fountain.pos[0] = GetFloat(Data);
 				sv.Effects[index].Fountain.pos[1] = GetFloat(Data);
 				sv.Effects[index].Fountain.pos[2] = GetFloat(Data);
@@ -978,27 +914,27 @@ char* SV_LoadEffects(char* Data)
 				sv.Effects[index].Fountain.cnt = GetInt(Data);
 				break;
 
-			case CE_QUAKE:
+			case CEH2_QUAKE:
 				sv.Effects[index].Quake.origin[0] = GetFloat(Data);
 				sv.Effects[index].Quake.origin[1] = GetFloat(Data);
 				sv.Effects[index].Quake.origin[2] = GetFloat(Data);
 				sv.Effects[index].Quake.radius = GetFloat(Data);
 				break;
 
-			case CE_WHITE_SMOKE:
-			case CE_GREEN_SMOKE:
-			case CE_GREY_SMOKE:
-			case CE_RED_SMOKE:
-			case CE_SLOW_WHITE_SMOKE:
-			case CE_TELESMK1:
-			case CE_TELESMK2:
-			case CE_GHOST:
-			case CE_REDCLOUD:
-			case CE_ACID_MUZZFL:
-			case CE_FLAMESTREAM:
-			case CE_FLAMEWALL:
-			case CE_FLAMEWALL2:
-			case CE_ONFIRE:
+			case CEH2_WHITE_SMOKE:
+			case CEH2_GREEN_SMOKE:
+			case CEH2_GREY_SMOKE:
+			case CEH2_RED_SMOKE:
+			case CEH2_SLOW_WHITE_SMOKE:
+			case CEH2_TELESMK1:
+			case CEH2_TELESMK2:
+			case CEH2_GHOST:
+			case CEH2_REDCLOUD:
+			case CEH2_ACID_MUZZFL:
+			case CEH2_FLAMESTREAM:
+			case CEH2_FLAMEWALL:
+			case CEH2_FLAMEWALL2:
+			case CEH2_ONFIRE:
 				sv.Effects[index].Smoke.origin[0] = GetFloat(Data);
 				sv.Effects[index].Smoke.origin[1] = GetFloat(Data);
 				sv.Effects[index].Smoke.origin[2] = GetFloat(Data);
@@ -1009,60 +945,60 @@ char* SV_LoadEffects(char* Data)
 				sv.Effects[index].Smoke.frame = GetFloat(Data);
 				break;
 
-			case CE_SM_WHITE_FLASH:
-			case CE_YELLOWRED_FLASH:
-			case CE_BLUESPARK:
-			case CE_YELLOWSPARK:
-			case CE_SM_CIRCLE_EXP:
-			case CE_BG_CIRCLE_EXP:
-			case CE_SM_EXPLOSION:
-			case CE_LG_EXPLOSION:
-			case CE_FLOOR_EXPLOSION:
-			case CE_FLOOR_EXPLOSION3:
-			case CE_BLUE_EXPLOSION:
-			case CE_REDSPARK:
-			case CE_GREENSPARK:
-			case CE_ICEHIT:
-			case CE_MEDUSA_HIT:
-			case CE_MEZZO_REFLECT:
-			case CE_FLOOR_EXPLOSION2:
-			case CE_XBOW_EXPLOSION:
-			case CE_NEW_EXPLOSION:
-			case CE_MAGIC_MISSILE_EXPLOSION:
-			case CE_BONE_EXPLOSION:
-			case CE_BLDRN_EXPL:
-			case CE_BRN_BOUNCE:
-			case CE_LSHOCK:
-			case CE_ACID_HIT:
-			case CE_ACID_SPLAT:
-			case CE_ACID_EXPL:
-			case CE_LBALL_EXPL:
-			case CE_FBOOM:
-			case CE_FIREWALL_SMALL:
-			case CE_FIREWALL_MEDIUM:
-			case CE_FIREWALL_LARGE:
-			case CE_BOMB:
+			case CEH2_SM_WHITE_FLASH:
+			case CEH2_YELLOWRED_FLASH:
+			case CEH2_BLUESPARK:
+			case CEH2_YELLOWSPARK:
+			case CEH2_SM_CIRCLE_EXP:
+			case CEH2_BG_CIRCLE_EXP:
+			case CEH2_SM_EXPLOSION:
+			case CEH2_LG_EXPLOSION:
+			case CEH2_FLOOR_EXPLOSION:
+			case CEH2_FLOOR_EXPLOSION3:
+			case CEH2_BLUE_EXPLOSION:
+			case CEH2_REDSPARK:
+			case CEH2_GREENSPARK:
+			case CEH2_ICEHIT:
+			case CEH2_MEDUSA_HIT:
+			case CEH2_MEZZO_REFLECT:
+			case CEH2_FLOOR_EXPLOSION2:
+			case CEH2_XBOW_EXPLOSION:
+			case CEH2_NEW_EXPLOSION:
+			case CEH2_MAGIC_MISSILE_EXPLOSION:
+			case CEH2_BONE_EXPLOSION:
+			case CEH2_BLDRN_EXPL:
+			case CEH2_BRN_BOUNCE:
+			case CEH2_LSHOCK:
+			case CEH2_ACID_HIT:
+			case CEH2_ACID_SPLAT:
+			case CEH2_ACID_EXPL:
+			case CEH2_LBALL_EXPL:
+			case CEH2_FBOOM:
+			case CEH2_FIREWALL_SMALL:
+			case CEH2_FIREWALL_MEDIUM:
+			case CEH2_FIREWALL_LARGE:
+			case CEH2_BOMB:
 				sv.Effects[index].Smoke.origin[0] = GetFloat(Data);
 				sv.Effects[index].Smoke.origin[1] = GetFloat(Data);
 				sv.Effects[index].Smoke.origin[2] = GetFloat(Data);
 				break;
 
-			case CE_WHITE_FLASH:
-			case CE_BLUE_FLASH:
-			case CE_SM_BLUE_FLASH:
-			case CE_RED_FLASH:
+			case CEH2_WHITE_FLASH:
+			case CEH2_BLUE_FLASH:
+			case CEH2_SM_BLUE_FLASH:
+			case CEH2_RED_FLASH:
 				sv.Effects[index].Flash.origin[0] = GetFloat(Data);
 				sv.Effects[index].Flash.origin[1] = GetFloat(Data);
 				sv.Effects[index].Flash.origin[2] = GetFloat(Data);
 				break;
 
-			case CE_RIDER_DEATH:
+			case CEH2_RIDER_DEATH:
 				sv.Effects[index].RD.origin[0] = GetFloat(Data);
 				sv.Effects[index].RD.origin[1] = GetFloat(Data);
 				sv.Effects[index].RD.origin[2] = GetFloat(Data);
 				break;
 
-			case CE_GRAVITYWELL:
+			case CEH2_GRAVITYWELL:
 				sv.Effects[index].GravityWell.origin[0] = GetFloat(Data);
 				sv.Effects[index].GravityWell.origin[1] = GetFloat(Data);
 				sv.Effects[index].GravityWell.origin[2] = GetFloat(Data);
@@ -1070,20 +1006,20 @@ char* SV_LoadEffects(char* Data)
 				sv.Effects[index].GravityWell.lifetime = GetFloat(Data);
 				break;
 
-			case CE_TELEPORTERPUFFS:
+			case CEH2_TELEPORTERPUFFS:
 				sv.Effects[index].Teleporter.origin[0] = GetFloat(Data);
 				sv.Effects[index].Teleporter.origin[1] = GetFloat(Data);
 				sv.Effects[index].Teleporter.origin[2] = GetFloat(Data);
 				break;
 
-			case CE_TELEPORTERBODY:
+			case CEH2_TELEPORTERBODY:
 				sv.Effects[index].Teleporter.origin[0] = GetFloat(Data);
 				sv.Effects[index].Teleporter.origin[1] = GetFloat(Data);
 				sv.Effects[index].Teleporter.origin[2] = GetFloat(Data);
 				break;
 
-			case CE_BONESHARD:
-			case CE_BONESHRAPNEL:
+			case CEH2_BONESHARD:
+			case CEH2_BONESHRAPNEL:
 				sv.Effects[index].Missile.origin[0] = GetFloat(Data);
 				sv.Effects[index].Missile.origin[1] = GetFloat(Data);
 				sv.Effects[index].Missile.origin[2] = GetFloat(Data);
@@ -1098,7 +1034,7 @@ char* SV_LoadEffects(char* Data)
 				sv.Effects[index].Missile.avelocity[2] = GetFloat(Data);
 				break;
 
-			case CE_CHUNK:
+			case CEH2_CHUNK:
 				sv.Effects[index].Chunk.origin[0] = GetFloat(Data);
 				sv.Effects[index].Chunk.origin[1] = GetFloat(Data);
 				sv.Effects[index].Chunk.origin[2] = GetFloat(Data);
@@ -1123,101 +1059,101 @@ void CL_FreeEffect(int index)
 
 	switch(cl.h2_Effects[index].type)
 	{
-		case CE_RAIN:
+		case CEH2_RAIN:
 			break;
 
-		case CE_SNOW:
+		case CEH2_SNOW:
 			break;
 
-		case CE_FOUNTAIN:
+		case CEH2_FOUNTAIN:
 			break;
 
-		case CE_QUAKE:
+		case CEH2_QUAKE:
 			break;
 
-		case CE_WHITE_SMOKE:
-		case CE_GREEN_SMOKE:
-		case CE_GREY_SMOKE:
-		case CE_RED_SMOKE:
-		case CE_SLOW_WHITE_SMOKE:
-		case CE_TELESMK1:
-		case CE_TELESMK2:
-		case CE_GHOST:
-		case CE_REDCLOUD:
-		case CE_ACID_MUZZFL:
-		case CE_FLAMESTREAM:
-		case CE_FLAMEWALL:
-		case CE_FLAMEWALL2:
-		case CE_ONFIRE:
+		case CEH2_WHITE_SMOKE:
+		case CEH2_GREEN_SMOKE:
+		case CEH2_GREY_SMOKE:
+		case CEH2_RED_SMOKE:
+		case CEH2_SLOW_WHITE_SMOKE:
+		case CEH2_TELESMK1:
+		case CEH2_TELESMK2:
+		case CEH2_GHOST:
+		case CEH2_REDCLOUD:
+		case CEH2_ACID_MUZZFL:
+		case CEH2_FLAMESTREAM:
+		case CEH2_FLAMEWALL:
+		case CEH2_FLAMEWALL2:
+		case CEH2_ONFIRE:
 			CLH2_FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
 			break;
 
 		// Just go through animation and then remove
-		case CE_SM_WHITE_FLASH:
-		case CE_YELLOWRED_FLASH:
-		case CE_BLUESPARK:
-		case CE_YELLOWSPARK:
-		case CE_SM_CIRCLE_EXP:
-		case CE_BG_CIRCLE_EXP:
-		case CE_SM_EXPLOSION:
-		case CE_LG_EXPLOSION:
-		case CE_FLOOR_EXPLOSION:
-		case CE_FLOOR_EXPLOSION3:
-		case CE_BLUE_EXPLOSION:
-		case CE_REDSPARK:
-		case CE_GREENSPARK:
-		case CE_ICEHIT:
-		case CE_MEDUSA_HIT:
-		case CE_MEZZO_REFLECT:
-		case CE_FLOOR_EXPLOSION2:
-		case CE_XBOW_EXPLOSION:
-		case CE_NEW_EXPLOSION:
-		case CE_MAGIC_MISSILE_EXPLOSION:
-		case CE_BONE_EXPLOSION:
-		case CE_BLDRN_EXPL:
-		case CE_BRN_BOUNCE:
-		case CE_LSHOCK:
-		case CE_ACID_HIT:
-		case CE_ACID_SPLAT:
-		case CE_ACID_EXPL:
-		case CE_LBALL_EXPL:
-		case CE_FBOOM:
-		case CE_BOMB:
-		case CE_FIREWALL_SMALL:
-		case CE_FIREWALL_MEDIUM:
-		case CE_FIREWALL_LARGE:
+		case CEH2_SM_WHITE_FLASH:
+		case CEH2_YELLOWRED_FLASH:
+		case CEH2_BLUESPARK:
+		case CEH2_YELLOWSPARK:
+		case CEH2_SM_CIRCLE_EXP:
+		case CEH2_BG_CIRCLE_EXP:
+		case CEH2_SM_EXPLOSION:
+		case CEH2_LG_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION3:
+		case CEH2_BLUE_EXPLOSION:
+		case CEH2_REDSPARK:
+		case CEH2_GREENSPARK:
+		case CEH2_ICEHIT:
+		case CEH2_MEDUSA_HIT:
+		case CEH2_MEZZO_REFLECT:
+		case CEH2_FLOOR_EXPLOSION2:
+		case CEH2_XBOW_EXPLOSION:
+		case CEH2_NEW_EXPLOSION:
+		case CEH2_MAGIC_MISSILE_EXPLOSION:
+		case CEH2_BONE_EXPLOSION:
+		case CEH2_BLDRN_EXPL:
+		case CEH2_BRN_BOUNCE:
+		case CEH2_LSHOCK:
+		case CEH2_ACID_HIT:
+		case CEH2_ACID_SPLAT:
+		case CEH2_ACID_EXPL:
+		case CEH2_LBALL_EXPL:
+		case CEH2_FBOOM:
+		case CEH2_BOMB:
+		case CEH2_FIREWALL_SMALL:
+		case CEH2_FIREWALL_MEDIUM:
+		case CEH2_FIREWALL_LARGE:
 
 			CLH2_FreeEffectEntity(cl.h2_Effects[index].Smoke.entity_index);
 			break;
 
 		// Go forward then backward through animation then remove
-		case CE_WHITE_FLASH:
-		case CE_BLUE_FLASH:
-		case CE_SM_BLUE_FLASH:
-		case CE_RED_FLASH:
+		case CEH2_WHITE_FLASH:
+		case CEH2_BLUE_FLASH:
+		case CEH2_SM_BLUE_FLASH:
+		case CEH2_RED_FLASH:
 			CLH2_FreeEffectEntity(cl.h2_Effects[index].Flash.entity_index);
 			break;
 
-		case CE_RIDER_DEATH:
+		case CEH2_RIDER_DEATH:
 			break;
 
-		case CE_GRAVITYWELL:
+		case CEH2_GRAVITYWELL:
 			break;
 
-		case CE_TELEPORTERPUFFS:
+		case CEH2_TELEPORTERPUFFS:
 			for (i=0;i<8;++i)
 				CLH2_FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[i]);
 			break;
 
-		case CE_TELEPORTERBODY:
+		case CEH2_TELEPORTERBODY:
 			CLH2_FreeEffectEntity(cl.h2_Effects[index].Teleporter.entity_index[0]);
 			break;
 
-		case CE_BONESHARD:
-		case CE_BONESHRAPNEL:
+		case CEH2_BONESHARD:
+		case CEH2_BONESHRAPNEL:
 			CLH2_FreeEffectEntity(cl.h2_Effects[index].Missile.entity_index);
 			break;
-		case CE_CHUNK:
+		case CEH2_CHUNK:
 			//Con_Printf("Freeing a chunk here\n");
 			for (i=0;i < cl.h2_Effects[index].Chunk.numChunks;i++)
 			{
@@ -1263,7 +1199,7 @@ void CL_ParseEffect(void)
 
 	switch(cl.h2_Effects[index].type)
 	{
-		case CE_RAIN:
+		case CEH2_RAIN:
 			cl.h2_Effects[index].Rain.min_org[0] = net_message.ReadCoord();
 			cl.h2_Effects[index].Rain.min_org[1] = net_message.ReadCoord();
 			cl.h2_Effects[index].Rain.min_org[2] = net_message.ReadCoord();
@@ -1281,7 +1217,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].Rain.wait = net_message.ReadFloat();
 			break;
 
-		case CE_SNOW:
+		case CEH2_SNOW:
 			cl.h2_Effects[index].Snow.min_org[0] = net_message.ReadCoord();
 			cl.h2_Effects[index].Snow.min_org[1] = net_message.ReadCoord();
 			cl.h2_Effects[index].Snow.min_org[2] = net_message.ReadCoord();
@@ -1295,7 +1231,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].Snow.count = net_message.ReadByte();
 			break;
 
-		case CE_FOUNTAIN:
+		case CEH2_FOUNTAIN:
 			cl.h2_Effects[index].Fountain.pos[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Fountain.pos[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Fountain.pos[2] = net_message.ReadCoord ();
@@ -1313,27 +1249,27 @@ void CL_ParseEffect(void)
 						  cl.h2_Effects[index].Fountain.vup);
 			break;
 
-		case CE_QUAKE:
+		case CEH2_QUAKE:
 			cl.h2_Effects[index].Quake.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Quake.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Quake.origin[2] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Quake.radius = net_message.ReadFloat ();
 			break;
 
-		case CE_WHITE_SMOKE:
-		case CE_GREEN_SMOKE:
-		case CE_GREY_SMOKE:
-		case CE_RED_SMOKE:
-		case CE_SLOW_WHITE_SMOKE:
-		case CE_TELESMK1:
-		case CE_TELESMK2:
-		case CE_GHOST:
-		case CE_REDCLOUD:
-		case CE_ACID_MUZZFL:
-		case CE_FLAMESTREAM:
-		case CE_FLAMEWALL:
-		case CE_FLAMEWALL2:
-		case CE_ONFIRE:
+		case CEH2_WHITE_SMOKE:
+		case CEH2_GREEN_SMOKE:
+		case CEH2_GREY_SMOKE:
+		case CEH2_RED_SMOKE:
+		case CEH2_SLOW_WHITE_SMOKE:
+		case CEH2_TELESMK1:
+		case CEH2_TELESMK2:
+		case CEH2_GHOST:
+		case CEH2_REDCLOUD:
+		case CEH2_ACID_MUZZFL:
+		case CEH2_FLAMESTREAM:
+		case CEH2_FLAMEWALL:
+		case CEH2_FLAMEWALL2:
+		case CEH2_ONFIRE:
 			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
@@ -1350,34 +1286,34 @@ void CL_ParseEffect(void)
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
 
-				if ((cl.h2_Effects[index].type == CE_WHITE_SMOKE) || 
-					(cl.h2_Effects[index].type == CE_SLOW_WHITE_SMOKE))
+				if ((cl.h2_Effects[index].type == CEH2_WHITE_SMOKE) || 
+					(cl.h2_Effects[index].type == CEH2_SLOW_WHITE_SMOKE))
 					ent->model = R_RegisterModel("models/whtsmk1.spr");
-				else if (cl.h2_Effects[index].type == CE_GREEN_SMOKE)
+				else if (cl.h2_Effects[index].type == CEH2_GREEN_SMOKE)
 					ent->model = R_RegisterModel("models/grnsmk1.spr");
-				else if (cl.h2_Effects[index].type == CE_GREY_SMOKE)
+				else if (cl.h2_Effects[index].type == CEH2_GREY_SMOKE)
 					ent->model = R_RegisterModel("models/grysmk1.spr");
-				else if (cl.h2_Effects[index].type == CE_RED_SMOKE)
+				else if (cl.h2_Effects[index].type == CEH2_RED_SMOKE)
 					ent->model = R_RegisterModel("models/redsmk1.spr");
-				else if (cl.h2_Effects[index].type == CE_TELESMK1)
+				else if (cl.h2_Effects[index].type == CEH2_TELESMK1)
 					ent->model = R_RegisterModel("models/telesmk1.spr");
-				else if (cl.h2_Effects[index].type == CE_TELESMK2)
+				else if (cl.h2_Effects[index].type == CEH2_TELESMK2)
 					ent->model = R_RegisterModel("models/telesmk2.spr");
-				else if (cl.h2_Effects[index].type == CE_REDCLOUD)
+				else if (cl.h2_Effects[index].type == CEH2_REDCLOUD)
 					ent->model = R_RegisterModel("models/rcloud.spr");
-				else if (cl.h2_Effects[index].type == CE_FLAMESTREAM)
+				else if (cl.h2_Effects[index].type == CEH2_FLAMESTREAM)
 					ent->model = R_RegisterModel("models/flamestr.spr");
-				else if (cl.h2_Effects[index].type == CE_ACID_MUZZFL)
+				else if (cl.h2_Effects[index].type == CEH2_ACID_MUZZFL)
 				{
 					ent->model = R_RegisterModel("models/muzzle1.spr");
 					ent->state.drawflags=DRF_TRANSLUCENT|MLS_ABSLIGHT;
 					ent->state.abslight=0.2;
 				}
-				else if (cl.h2_Effects[index].type == CE_FLAMEWALL)
+				else if (cl.h2_Effects[index].type == CEH2_FLAMEWALL)
 					ent->model = R_RegisterModel("models/firewal1.spr");
-				else if (cl.h2_Effects[index].type == CE_FLAMEWALL2)
+				else if (cl.h2_Effects[index].type == CEH2_FLAMEWALL2)
 					ent->model = R_RegisterModel("models/firewal2.spr");
-				else if (cl.h2_Effects[index].type == CE_ONFIRE)
+				else if (cl.h2_Effects[index].type == CEH2_ONFIRE)
 				{
 					float rdm = rand() & 3;
 
@@ -1393,17 +1329,17 @@ void CL_ParseEffect(void)
 					ent->state.frame = cl.h2_Effects[index].Smoke.frame;
 				}
 
-				if (cl.h2_Effects[index].type != CE_REDCLOUD&&cl.h2_Effects[index].type != CE_ACID_MUZZFL&&cl.h2_Effects[index].type != CE_FLAMEWALL)
+				if (cl.h2_Effects[index].type != CEH2_REDCLOUD&&cl.h2_Effects[index].type != CEH2_ACID_MUZZFL&&cl.h2_Effects[index].type != CEH2_FLAMEWALL)
 					ent->state.drawflags = DRF_TRANSLUCENT;
 
-				if (cl.h2_Effects[index].type == CE_FLAMESTREAM)
+				if (cl.h2_Effects[index].type == CEH2_FLAMESTREAM)
 				{
 					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 					ent->state.abslight = 1;
 					ent->state.frame = cl.h2_Effects[index].Smoke.frame;
 				}
 
-				if (cl.h2_Effects[index].type == CE_GHOST)
+				if (cl.h2_Effects[index].type == CEH2_GHOST)
 				{
 					ent->model = R_RegisterModel("models/ghost.spr");
 					ent->state.drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
@@ -1414,39 +1350,39 @@ void CL_ParseEffect(void)
 				ImmediateFree = true;
 			break;
 
-		case CE_SM_WHITE_FLASH:
-		case CE_YELLOWRED_FLASH:
-		case CE_BLUESPARK:
-		case CE_YELLOWSPARK:
-		case CE_SM_CIRCLE_EXP:
-		case CE_BG_CIRCLE_EXP:
-		case CE_SM_EXPLOSION:
-		case CE_LG_EXPLOSION:
-		case CE_FLOOR_EXPLOSION:
-		case CE_FLOOR_EXPLOSION3:
-		case CE_BLUE_EXPLOSION:
-		case CE_REDSPARK:
-		case CE_GREENSPARK:
-		case CE_ICEHIT:
-		case CE_MEDUSA_HIT:
-		case CE_MEZZO_REFLECT:
-		case CE_FLOOR_EXPLOSION2:
-		case CE_XBOW_EXPLOSION:
-		case CE_NEW_EXPLOSION:
-		case CE_MAGIC_MISSILE_EXPLOSION:
-		case CE_BONE_EXPLOSION:
-		case CE_BLDRN_EXPL:
-		case CE_BRN_BOUNCE:
-		case CE_LSHOCK:
-		case CE_ACID_HIT:
-		case CE_ACID_SPLAT:
-		case CE_ACID_EXPL:
-		case CE_LBALL_EXPL:
-		case CE_FBOOM:
-		case CE_BOMB:
-		case CE_FIREWALL_SMALL:
-		case CE_FIREWALL_MEDIUM:
-		case CE_FIREWALL_LARGE:
+		case CEH2_SM_WHITE_FLASH:
+		case CEH2_YELLOWRED_FLASH:
+		case CEH2_BLUESPARK:
+		case CEH2_YELLOWSPARK:
+		case CEH2_SM_CIRCLE_EXP:
+		case CEH2_BG_CIRCLE_EXP:
+		case CEH2_SM_EXPLOSION:
+		case CEH2_LG_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION:
+		case CEH2_FLOOR_EXPLOSION3:
+		case CEH2_BLUE_EXPLOSION:
+		case CEH2_REDSPARK:
+		case CEH2_GREENSPARK:
+		case CEH2_ICEHIT:
+		case CEH2_MEDUSA_HIT:
+		case CEH2_MEZZO_REFLECT:
+		case CEH2_FLOOR_EXPLOSION2:
+		case CEH2_XBOW_EXPLOSION:
+		case CEH2_NEW_EXPLOSION:
+		case CEH2_MAGIC_MISSILE_EXPLOSION:
+		case CEH2_BONE_EXPLOSION:
+		case CEH2_BLDRN_EXPL:
+		case CEH2_BRN_BOUNCE:
+		case CEH2_LSHOCK:
+		case CEH2_ACID_HIT:
+		case CEH2_ACID_SPLAT:
+		case CEH2_ACID_EXPL:
+		case CEH2_LBALL_EXPL:
+		case CEH2_FBOOM:
+		case CEH2_BOMB:
+		case CEH2_FIREWALL_SMALL:
+		case CEH2_FIREWALL_MEDIUM:
+		case CEH2_FIREWALL_LARGE:
 			cl.h2_Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
@@ -1455,78 +1391,78 @@ void CL_ParseEffect(void)
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 				VectorCopy(cl.h2_Effects[index].Smoke.origin, ent->state.origin);
 
-				if (cl.h2_Effects[index].type == CE_BLUESPARK)
+				if (cl.h2_Effects[index].type == CEH2_BLUESPARK)
 					ent->model = R_RegisterModel("models/bspark.spr");
-				else if (cl.h2_Effects[index].type == CE_YELLOWSPARK)
+				else if (cl.h2_Effects[index].type == CEH2_YELLOWSPARK)
 					ent->model = R_RegisterModel("models/spark.spr");
-				else if (cl.h2_Effects[index].type == CE_SM_CIRCLE_EXP)
+				else if (cl.h2_Effects[index].type == CEH2_SM_CIRCLE_EXP)
 					ent->model = R_RegisterModel("models/fcircle.spr");
-				else if (cl.h2_Effects[index].type == CE_BG_CIRCLE_EXP)
+				else if (cl.h2_Effects[index].type == CEH2_BG_CIRCLE_EXP)
 					ent->model = R_RegisterModel("models/xplod29.spr");
-				else if (cl.h2_Effects[index].type == CE_SM_WHITE_FLASH)
+				else if (cl.h2_Effects[index].type == CEH2_SM_WHITE_FLASH)
 					ent->model = R_RegisterModel("models/sm_white.spr");
-				else if (cl.h2_Effects[index].type == CE_YELLOWRED_FLASH)
+				else if (cl.h2_Effects[index].type == CEH2_YELLOWRED_FLASH)
 				{
 					ent->model = R_RegisterModel("models/yr_flsh.spr");
 					ent->state.drawflags = DRF_TRANSLUCENT;
 				}
-				else if (cl.h2_Effects[index].type == CE_SM_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_SM_EXPLOSION)
 					ent->model = R_RegisterModel("models/sm_expld.spr");
-				else if (cl.h2_Effects[index].type == CE_LG_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_LG_EXPLOSION)
 					ent->model = R_RegisterModel("models/bg_expld.spr");
-				else if (cl.h2_Effects[index].type == CE_FLOOR_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_FLOOR_EXPLOSION)
 					ent->model = R_RegisterModel("models/fl_expld.spr");
-				else if (cl.h2_Effects[index].type == CE_FLOOR_EXPLOSION3)
+				else if (cl.h2_Effects[index].type == CEH2_FLOOR_EXPLOSION3)
 					ent->model = R_RegisterModel("models/biggy.spr");
-				else if (cl.h2_Effects[index].type == CE_BLUE_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_BLUE_EXPLOSION)
 					ent->model = R_RegisterModel("models/xpspblue.spr");
-				else if (cl.h2_Effects[index].type == CE_REDSPARK)
+				else if (cl.h2_Effects[index].type == CEH2_REDSPARK)
 					ent->model = R_RegisterModel("models/rspark.spr");
-				else if (cl.h2_Effects[index].type == CE_GREENSPARK)
+				else if (cl.h2_Effects[index].type == CEH2_GREENSPARK)
 					ent->model = R_RegisterModel("models/gspark.spr");
-				else if (cl.h2_Effects[index].type == CE_ICEHIT)
+				else if (cl.h2_Effects[index].type == CEH2_ICEHIT)
 					ent->model = R_RegisterModel("models/icehit.spr");
-				else if (cl.h2_Effects[index].type == CE_MEDUSA_HIT)
+				else if (cl.h2_Effects[index].type == CEH2_MEDUSA_HIT)
 					ent->model = R_RegisterModel("models/medhit.spr");
-				else if (cl.h2_Effects[index].type == CE_MEZZO_REFLECT)
+				else if (cl.h2_Effects[index].type == CEH2_MEZZO_REFLECT)
 					ent->model = R_RegisterModel("models/mezzoref.spr");
-				else if (cl.h2_Effects[index].type == CE_FLOOR_EXPLOSION2)
+				else if (cl.h2_Effects[index].type == CEH2_FLOOR_EXPLOSION2)
 					ent->model = R_RegisterModel("models/flrexpl2.spr");
-				else if (cl.h2_Effects[index].type == CE_XBOW_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_XBOW_EXPLOSION)
 					ent->model = R_RegisterModel("models/xbowexpl.spr");
-				else if (cl.h2_Effects[index].type == CE_NEW_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_NEW_EXPLOSION)
 					ent->model = R_RegisterModel("models/gen_expl.spr");
-				else if (cl.h2_Effects[index].type == CE_MAGIC_MISSILE_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_MAGIC_MISSILE_EXPLOSION)
 					ent->model = R_RegisterModel("models/mm_expld.spr");
-				else if (cl.h2_Effects[index].type == CE_BONE_EXPLOSION)
+				else if (cl.h2_Effects[index].type == CEH2_BONE_EXPLOSION)
 					ent->model = R_RegisterModel("models/bonexpld.spr");
-				else if (cl.h2_Effects[index].type == CE_BLDRN_EXPL)
+				else if (cl.h2_Effects[index].type == CEH2_BLDRN_EXPL)
 					ent->model = R_RegisterModel("models/xplsn_1.spr");
-				else if (cl.h2_Effects[index].type == CE_ACID_HIT)
+				else if (cl.h2_Effects[index].type == CEH2_ACID_HIT)
 					ent->model = R_RegisterModel("models/axplsn_2.spr");
-				else if (cl.h2_Effects[index].type == CE_ACID_SPLAT)
+				else if (cl.h2_Effects[index].type == CEH2_ACID_SPLAT)
 					ent->model = R_RegisterModel("models/axplsn_1.spr");
-				else if (cl.h2_Effects[index].type == CE_ACID_EXPL)
+				else if (cl.h2_Effects[index].type == CEH2_ACID_EXPL)
 				{
 					ent->model = R_RegisterModel("models/axplsn_5.spr");
 					ent->state.drawflags = MLS_ABSLIGHT;
 					ent->state.abslight = 1;
 				}
-				else if (cl.h2_Effects[index].type == CE_FBOOM)
+				else if (cl.h2_Effects[index].type == CEH2_FBOOM)
 					ent->model = R_RegisterModel("models/fboom.spr");
-				else if (cl.h2_Effects[index].type == CE_BOMB)
+				else if (cl.h2_Effects[index].type == CEH2_BOMB)
 					ent->model = R_RegisterModel("models/pow.spr");
-				else if (cl.h2_Effects[index].type == CE_LBALL_EXPL)
+				else if (cl.h2_Effects[index].type == CEH2_LBALL_EXPL)
 					ent->model = R_RegisterModel("models/Bluexp3.spr");
-				else if (cl.h2_Effects[index].type == CE_FIREWALL_SMALL)
+				else if (cl.h2_Effects[index].type == CEH2_FIREWALL_SMALL)
 					ent->model = R_RegisterModel("models/firewal1.spr");
-				else if (cl.h2_Effects[index].type == CE_FIREWALL_MEDIUM)
+				else if (cl.h2_Effects[index].type == CEH2_FIREWALL_MEDIUM)
 					ent->model = R_RegisterModel("models/firewal5.spr");
-				else if (cl.h2_Effects[index].type == CE_FIREWALL_LARGE)
+				else if (cl.h2_Effects[index].type == CEH2_FIREWALL_LARGE)
 					ent->model = R_RegisterModel("models/firewal4.spr");
-				else if (cl.h2_Effects[index].type == CE_BRN_BOUNCE)
+				else if (cl.h2_Effects[index].type == CEH2_BRN_BOUNCE)
 					ent->model = R_RegisterModel("models/spark.spr");
-				else if (cl.h2_Effects[index].type == CE_LSHOCK)
+				else if (cl.h2_Effects[index].type == CEH2_LSHOCK)
 				{
 					ent->model = R_RegisterModel("models/vorpshok.mdl");
 					ent->state.drawflags=MLS_TORCH;
@@ -1540,10 +1476,10 @@ void CL_ParseEffect(void)
 			}
 			break;
 
-		case CE_WHITE_FLASH:
-		case CE_BLUE_FLASH:
-		case CE_SM_BLUE_FLASH:
-		case CE_RED_FLASH:
+		case CEH2_WHITE_FLASH:
+		case CEH2_BLUE_FLASH:
+		case CEH2_SM_BLUE_FLASH:
+		case CEH2_RED_FLASH:
 			cl.h2_Effects[index].Flash.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Flash.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Flash.origin[2] = net_message.ReadCoord ();
@@ -1553,13 +1489,13 @@ void CL_ParseEffect(void)
 				ent = &EffectEntities[cl.h2_Effects[index].Flash.entity_index];
 				VectorCopy(cl.h2_Effects[index].Flash.origin, ent->state.origin);
 
-				if (cl.h2_Effects[index].type == CE_WHITE_FLASH)
+				if (cl.h2_Effects[index].type == CEH2_WHITE_FLASH)
 					ent->model = R_RegisterModel("models/gryspt.spr");
-				else if (cl.h2_Effects[index].type == CE_BLUE_FLASH)
+				else if (cl.h2_Effects[index].type == CEH2_BLUE_FLASH)
 					ent->model = R_RegisterModel("models/bluflash.spr");
-				else if (cl.h2_Effects[index].type == CE_SM_BLUE_FLASH)
+				else if (cl.h2_Effects[index].type == CEH2_SM_BLUE_FLASH)
 					ent->model = R_RegisterModel("models/sm_blue.spr");
-				else if (cl.h2_Effects[index].type == CE_RED_FLASH)
+				else if (cl.h2_Effects[index].type == CEH2_RED_FLASH)
 					ent->model = R_RegisterModel("models/redspt.spr");
 
 				ent->state.drawflags = DRF_TRANSLUCENT;
@@ -1571,13 +1507,13 @@ void CL_ParseEffect(void)
 			}
 			break;
 
-		case CE_RIDER_DEATH:
+		case CEH2_RIDER_DEATH:
 			cl.h2_Effects[index].RD.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].RD.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].RD.origin[2] = net_message.ReadCoord ();
 			break;
 
-		case CE_GRAVITYWELL:
+		case CEH2_GRAVITYWELL:
 			cl.h2_Effects[index].GravityWell.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].GravityWell.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].GravityWell.origin[2] = net_message.ReadCoord ();
@@ -1585,7 +1521,7 @@ void CL_ParseEffect(void)
 			cl.h2_Effects[index].GravityWell.lifetime = net_message.ReadFloat ();
 			break;
 
-		case CE_TELEPORTERPUFFS:
+		case CEH2_TELEPORTERPUFFS:
 			cl.h2_Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
@@ -1615,7 +1551,7 @@ void CL_ParseEffect(void)
 			}
 			break;
 
-		case CE_TELEPORTERBODY:
+		case CEH2_TELEPORTERBODY:
 			cl.h2_Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
@@ -1640,8 +1576,8 @@ void CL_ParseEffect(void)
 			}
 			break;
 
-		case CE_BONESHARD:
-		case CE_BONESHRAPNEL:
+		case CEH2_BONESHARD:
+		case CEH2_BONESHRAPNEL:
 			cl.h2_Effects[index].Missile.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Missile.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Missile.origin[2] = net_message.ReadCoord ();
@@ -1662,16 +1598,16 @@ void CL_ParseEffect(void)
 			{
 				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
 				VectorCopy(cl.h2_Effects[index].Missile.origin, ent->state.origin);
-				if (cl.h2_Effects[index].type == CE_BONESHARD)
+				if (cl.h2_Effects[index].type == CEH2_BONESHARD)
 					ent->model = R_RegisterModel("models/boneshot.mdl");
-				else if (cl.h2_Effects[index].type == CE_BONESHRAPNEL)
+				else if (cl.h2_Effects[index].type == CEH2_BONESHRAPNEL)
 					ent->model = R_RegisterModel("models/boneshrd.mdl");
 			}
 			else
 				ImmediateFree = true;
 			break;
 
-		case CE_CHUNK:
+		case CEH2_CHUNK:
 			cl.h2_Effects[index].Chunk.origin[0] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Chunk.origin[1] = net_message.ReadCoord ();
 			cl.h2_Effects[index].Chunk.origin[2] = net_message.ReadCoord ();
@@ -1976,7 +1912,7 @@ void CL_ParseEffect(void)
 
 	if (ImmediateFree)
 	{
-		cl.h2_Effects[index].type = CE_NONE;
+		cl.h2_Effects[index].type = CEH2_NONE;
 	}
 }
 
@@ -2029,7 +1965,7 @@ void CL_UpdateEffects(void)
 
 		switch(cl.h2_Effects[index].type)
 		{
-			case CE_RAIN:
+			case CEH2_RAIN:
 				org[0] = cl.h2_Effects[index].Rain.min_org[0];
 				org[1] = cl.h2_Effects[index].Rain.min_org[1];
 				org[2] = cl.h2_Effects[index].Rain.max_org[2];
@@ -2050,7 +1986,7 @@ void CL_UpdateEffects(void)
 				}
 				break;
 
-			case CE_SNOW:
+			case CEH2_SNOW:
 				VectorCopy(cl.h2_Effects[index].Snow.min_org,org);
 				VectorCopy(cl.h2_Effects[index].Snow.max_org,org2);
 				VectorCopy(cl.h2_Effects[index].Snow.dir,alldir);
@@ -2078,7 +2014,7 @@ void CL_UpdateEffects(void)
 				}
 				break;
 
-			case CE_FOUNTAIN:
+			case CEH2_FOUNTAIN:
 				mymin[0] = (-3 * cl.h2_Effects[index].Fountain.vright[0] * cl.h2_Effects[index].Fountain.movedir[0]) +
 						   (-3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
 						   (2 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
@@ -2113,24 +2049,24 @@ void CL_UpdateEffects(void)
 				Con_Printf("Fraction is %f\n",trace.fraction);*/
 				break;
 
-			case CE_QUAKE:
+			case CEH2_QUAKE:
 				CLH2_RunQuakeEffect (cl.h2_Effects[index].Quake.origin,cl.h2_Effects[index].Quake.radius);
 				break;
 
-			case CE_WHITE_SMOKE:
-			case CE_GREEN_SMOKE:
-			case CE_GREY_SMOKE:
-			case CE_RED_SMOKE:
-			case CE_SLOW_WHITE_SMOKE:
-			case CE_TELESMK1:
-			case CE_TELESMK2:
-			case CE_GHOST:
-			case CE_REDCLOUD:
-			case CE_FLAMESTREAM:
-			case CE_ACID_MUZZFL:
-			case CE_FLAMEWALL:
-			case CE_FLAMEWALL2:
-			case CE_ONFIRE:
+			case CEH2_WHITE_SMOKE:
+			case CEH2_GREEN_SMOKE:
+			case CEH2_GREY_SMOKE:
+			case CEH2_RED_SMOKE:
+			case CEH2_SLOW_WHITE_SMOKE:
+			case CEH2_TELESMK1:
+			case CEH2_TELESMK2:
+			case CEH2_GHOST:
+			case CEH2_REDCLOUD:
+			case CEH2_FLAMESTREAM:
+			case CEH2_ACID_MUZZFL:
+			case CEH2_FLAMEWALL:
+			case CEH2_FLAMEWALL2:
+			case CEH2_ONFIRE:
 				cl.h2_Effects[index].Smoke.time_amount += frametime;
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 
@@ -2158,43 +2094,43 @@ void CL_UpdateEffects(void)
 				break;
 
 			// Just go through animation and then remove
-			case CE_SM_WHITE_FLASH:
-			case CE_YELLOWRED_FLASH:
-			case CE_BLUESPARK:
-			case CE_YELLOWSPARK:
-			case CE_SM_CIRCLE_EXP:
-			case CE_BG_CIRCLE_EXP:
-			case CE_SM_EXPLOSION:
-			case CE_LG_EXPLOSION:
-			case CE_FLOOR_EXPLOSION:
-			case CE_FLOOR_EXPLOSION3:
-			case CE_BLUE_EXPLOSION:
-			case CE_REDSPARK:
-			case CE_GREENSPARK:
-			case CE_ICEHIT:
-			case CE_MEDUSA_HIT:
-			case CE_MEZZO_REFLECT:
-			case CE_FLOOR_EXPLOSION2:
-			case CE_XBOW_EXPLOSION:
-			case CE_NEW_EXPLOSION:
-			case CE_MAGIC_MISSILE_EXPLOSION:
-			case CE_BONE_EXPLOSION:
-			case CE_BLDRN_EXPL:
-			case CE_BRN_BOUNCE:
-			case CE_ACID_HIT:
-			case CE_ACID_SPLAT:
-			case CE_ACID_EXPL:
-			case CE_LBALL_EXPL:
-			case CE_FBOOM:
-			case CE_BOMB:
-			case CE_FIREWALL_SMALL:
-			case CE_FIREWALL_MEDIUM:
-			case CE_FIREWALL_LARGE:
+			case CEH2_SM_WHITE_FLASH:
+			case CEH2_YELLOWRED_FLASH:
+			case CEH2_BLUESPARK:
+			case CEH2_YELLOWSPARK:
+			case CEH2_SM_CIRCLE_EXP:
+			case CEH2_BG_CIRCLE_EXP:
+			case CEH2_SM_EXPLOSION:
+			case CEH2_LG_EXPLOSION:
+			case CEH2_FLOOR_EXPLOSION:
+			case CEH2_FLOOR_EXPLOSION3:
+			case CEH2_BLUE_EXPLOSION:
+			case CEH2_REDSPARK:
+			case CEH2_GREENSPARK:
+			case CEH2_ICEHIT:
+			case CEH2_MEDUSA_HIT:
+			case CEH2_MEZZO_REFLECT:
+			case CEH2_FLOOR_EXPLOSION2:
+			case CEH2_XBOW_EXPLOSION:
+			case CEH2_NEW_EXPLOSION:
+			case CEH2_MAGIC_MISSILE_EXPLOSION:
+			case CEH2_BONE_EXPLOSION:
+			case CEH2_BLDRN_EXPL:
+			case CEH2_BRN_BOUNCE:
+			case CEH2_ACID_HIT:
+			case CEH2_ACID_SPLAT:
+			case CEH2_ACID_EXPL:
+			case CEH2_LBALL_EXPL:
+			case CEH2_FBOOM:
+			case CEH2_BOMB:
+			case CEH2_FIREWALL_SMALL:
+			case CEH2_FIREWALL_MEDIUM:
+			case CEH2_FIREWALL_LARGE:
 
 				cl.h2_Effects[index].Smoke.time_amount += frametime;
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 
-				if (cl.h2_Effects[index].type != CE_BG_CIRCLE_EXP)
+				if (cl.h2_Effects[index].type != CEH2_BG_CIRCLE_EXP)
 				{
 					while(cl.h2_Effects[index].Smoke.time_amount >= HX_FRAME_TIME)
 					{
@@ -2219,7 +2155,7 @@ void CL_UpdateEffects(void)
 				break;
 
 
-			case CE_LSHOCK:
+			case CEH2_LSHOCK:
 				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
 				if(ent->state.skinnum==0)
 					ent->state.skinnum=1;
@@ -2235,10 +2171,10 @@ void CL_UpdateEffects(void)
 				break;
 
 			// Go forward then backward through animation then remove
-			case CE_WHITE_FLASH:
-			case CE_BLUE_FLASH:
-			case CE_SM_BLUE_FLASH:
-			case CE_RED_FLASH:
+			case CEH2_WHITE_FLASH:
+			case CEH2_BLUE_FLASH:
+			case CEH2_SM_BLUE_FLASH:
+			case CEH2_RED_FLASH:
 				cl.h2_Effects[index].Flash.time_amount += frametime;
 				ent = &EffectEntities[cl.h2_Effects[index].Flash.entity_index];
 
@@ -2269,7 +2205,7 @@ void CL_UpdateEffects(void)
 					CL_LinkEntity(ent);
 				break;
 
-			case CE_RIDER_DEATH:
+			case CEH2_RIDER_DEATH:
 				cl.h2_Effects[index].RD.time_amount += frametime;
 				if (cl.h2_Effects[index].RD.time_amount >= 1)
 				{
@@ -2302,7 +2238,7 @@ void CL_UpdateEffects(void)
 				}
 				break;
 
-			case CE_GRAVITYWELL:
+			case CEH2_GRAVITYWELL:
 			
 				cl.h2_Effects[index].GravityWell.time_amount += frametime*2;
 				if (cl.h2_Effects[index].GravityWell.time_amount >= 1)
@@ -2321,7 +2257,7 @@ void CL_UpdateEffects(void)
 
 				break;
 
-			case CE_TELEPORTERPUFFS:
+			case CEH2_TELEPORTERPUFFS:
 				cl.h2_Effects[index].Teleporter.time_amount += frametime;
 				smoketime = cl.h2_Effects[index].Teleporter.framelength;
 
@@ -2352,7 +2288,7 @@ void CL_UpdateEffects(void)
 				}
 				break;
 
-			case CE_TELEPORTERBODY:
+			case CEH2_TELEPORTERBODY:
 				cl.h2_Effects[index].Teleporter.time_amount += frametime;
 				smoketime = cl.h2_Effects[index].Teleporter.framelength;
 
@@ -2376,8 +2312,8 @@ void CL_UpdateEffects(void)
 				}
 				break;
 
-			case CE_BONESHARD:
-			case CE_BONESHRAPNEL:
+			case CEH2_BONESHARD:
+			case CEH2_BONESHRAPNEL:
 				cl.h2_Effects[index].Missile.time_amount += frametime;
 				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
 
@@ -2396,7 +2332,7 @@ void CL_UpdateEffects(void)
 				CL_LinkEntity(ent);
 				break;
 
-			case CE_CHUNK:
+			case CEH2_CHUNK:
 				cl.h2_Effects[index].Chunk.time_amount -= frametime;
 				if(cl.h2_Effects[index].Chunk.time_amount < 0)
 				{

@@ -21,7 +21,6 @@
 #include "strings.h"
 #include "sbar.h"
 #include "render.h"
-#include "cl_effect.h"
 #include "client.h"
 #include "keys.h"
 #include "console.h"

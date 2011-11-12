@@ -2817,7 +2817,7 @@ void PF_updateeffect (void)//type-specific what this will send
 
 	switch (type)
 	{
-	case CE_SCARABCHAIN://new ent to be attached to--pass in 0 for chain retract
+	case CEHW_SCARABCHAIN://new ent to be attached to--pass in 0 for chain retract
 		sv.Effects[index].Chain.owner = G_INT(OFS_PARM2)&0x0fff;
 		sv.Effects[index].Chain.material = G_INT(OFS_PARM2)>>12;
 
@@ -2828,8 +2828,8 @@ void PF_updateeffect (void)//type-specific what this will send
 
 		sv.multicast.WriteShort(G_EDICTNUM(OFS_PARM2));
 		break;
-	case CE_HWSHEEPINATOR:
-	case CE_HWXBOWSHOOT:
+	case CEHW_HWSHEEPINATOR:
+	case CEHW_HWXBOWSHOOT:
 		cmd = G_FLOAT(OFS_PARM2);
 		sv.multicast.WriteByte(cmd);
 		if (cmd & 1)
@@ -2855,7 +2855,7 @@ void PF_updateeffect (void)//type-specific what this will send
 			}
 		}
 		break;
-	case CE_HWDRILLA:
+	case CEHW_HWDRILLA:
 		cmd = G_FLOAT(OFS_PARM2);
 		sv.multicast.WriteByte(cmd);
 		if (cmd == 0)

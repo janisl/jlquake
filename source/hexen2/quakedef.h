@@ -181,7 +181,6 @@ typedef struct
 #include "cmd.h"
 #include "sbar.h"
 #include "render.h"
-#include "cl_effect.h"
 #include "progs.h"
 #include "client.h"
 #include "server.h"
