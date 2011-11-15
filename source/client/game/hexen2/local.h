@@ -46,18 +46,11 @@ extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 
-extern sfxHandle_t clh2_fxsfx_xbowshoot;
-extern sfxHandle_t clh2_fxsfx_xbowfshoot;
 extern sfxHandle_t clh2_fxsfx_explode;
-extern sfxHandle_t clh2_fxsfx_mmfire;
-extern sfxHandle_t clh2_fxsfx_eidolon;
-extern sfxHandle_t clh2_fxsfx_scarabwhoosh;
 extern sfxHandle_t clh2_fxsfx_scarabgrab;
 extern sfxHandle_t clh2_fxsfx_scarabhome;
-extern sfxHandle_t clh2_fxsfx_scarabrip;
 extern sfxHandle_t clh2_fxsfx_scarabbyebye;
 extern sfxHandle_t clh2_fxsfx_ravengo;
-extern sfxHandle_t clh2_fxsfx_drillashoot;
 extern sfxHandle_t clh2_fxsfx_drillaspin;
 extern sfxHandle_t clh2_fxsfx_drillameat;
 
@@ -141,3 +134,13 @@ bool CLH2_ParseEffectBoneShrapnel(int index, QMsg& message);
 bool CLHW_ParseEffectBoneBall(int index, QMsg& message);
 bool CLHW_ParseEffectRavenStaff(int index, QMsg& message);
 bool CLHW_ParseEffectRavenPower(int index, QMsg& message);
+void CLHW_ParseEffectDeathBubbles(int index, QMsg& message);
+void CLHW_ParseEffectXBowShoot(int index, QMsg& message);
+void CLHW_ParseEffectSheepinator(int index, QMsg& message);
+bool CLHW_ParseEffectDrilla(int index, QMsg& message);
+bool CLHW_ParseEffectScarabChain(int index, QMsg& message);
+bool CLHW_ParseEffectTripMine(int index, QMsg& message);
+bool CLHW_ParseEffectTripMineStill(int index, QMsg& message);
+bool CLHW_ParseEffectStarCommon(int index, QMsg& message);
+bool CLHW_ParseEffectMissileStar(int index, QMsg& message);
+bool CLHW_ParseEffectEidolonStar(int index, QMsg& message);

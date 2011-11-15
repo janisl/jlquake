@@ -23,20 +23,19 @@ static int EffectEntityCount;
 
 static sfxHandle_t clh2_fxsfx_bone;
 static sfxHandle_t clh2_fxsfx_bonefpow;
-sfxHandle_t clh2_fxsfx_xbowshoot;
-sfxHandle_t clh2_fxsfx_xbowfshoot;
+static sfxHandle_t clh2_fxsfx_xbowshoot;
+static sfxHandle_t clh2_fxsfx_xbowfshoot;
 sfxHandle_t clh2_fxsfx_explode;
-sfxHandle_t clh2_fxsfx_mmfire;
-sfxHandle_t clh2_fxsfx_eidolon;
-sfxHandle_t clh2_fxsfx_scarabwhoosh;
+static sfxHandle_t clh2_fxsfx_mmfire;
+static sfxHandle_t clh2_fxsfx_eidolon;
+static sfxHandle_t clh2_fxsfx_scarabwhoosh;
 sfxHandle_t clh2_fxsfx_scarabgrab;
 sfxHandle_t clh2_fxsfx_scarabhome;
-sfxHandle_t clh2_fxsfx_scarabrip;
 sfxHandle_t clh2_fxsfx_scarabbyebye;
 static sfxHandle_t clh2_fxsfx_ravensplit;
 static sfxHandle_t clh2_fxsfx_ravenfire;
 sfxHandle_t clh2_fxsfx_ravengo;
-sfxHandle_t clh2_fxsfx_drillashoot;
+static sfxHandle_t clh2_fxsfx_drillashoot;
 sfxHandle_t clh2_fxsfx_drillaspin;
 sfxHandle_t clh2_fxsfx_drillameat;
 
@@ -46,6 +45,20 @@ sfxHandle_t clh2_fxsfx_met2stn;
 
 static sfxHandle_t clh2_fxsfx_ripple;
 static sfxHandle_t clh2_fxsfx_splash;
+
+static unsigned int randomseed;
+
+static void setseed(unsigned int seed)
+{
+	randomseed = seed;
+}
+
+//unsigned int seedrand(int max)
+static float seedrand()
+{
+	randomseed = (randomseed * 877 + 573) % 9968;
+	return (float)randomseed / 9968;
+}
 
 void CLHW_InitEffects()
 {
@@ -59,7 +72,6 @@ void CLHW_InitEffects()
 	clh2_fxsfx_scarabwhoosh = S_RegisterSound("misc/whoosh.wav");
 	clh2_fxsfx_scarabgrab = S_RegisterSound("assassin/chn2flsh.wav");
 	clh2_fxsfx_scarabhome = S_RegisterSound("assassin/chain.wav");
-	clh2_fxsfx_scarabrip = S_RegisterSound("assassin/chntear.wav");
 	clh2_fxsfx_scarabbyebye = S_RegisterSound("items/itmspawn.wav");
 	clh2_fxsfx_ravensplit = S_RegisterSound("raven/split.wav");
 	clh2_fxsfx_ravenfire = S_RegisterSound("raven/rfire1.wav");
@@ -962,7 +974,6 @@ void CLH2_ParseEffectTeleporterBody(int index, QMsg& message)
 	float skinnum = message.ReadFloat();
 	
 	cl_common->h2_Effects[index].Teleporter.framelength = .05;
-	int dir = 0;
 	if ((cl_common->h2_Effects[index].Teleporter.entity_index[0] = CLH2_NewEffectEntity()) == -1)
 	{
 		return;
@@ -1071,4 +1082,315 @@ bool CLHW_ParseEffectRavenPower(int index, QMsg& message)
 	}
 	S_StartSound(cl_common->h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
 	return true;
+}
+
+void CLHW_ParseEffectDeathBubbles(int index, QMsg& message)
+{
+	cl_common->h2_Effects[index].Bubble.owner = message.ReadShort();
+	cl_common->h2_Effects[index].Bubble.offset[0] = message.ReadByte();
+	cl_common->h2_Effects[index].Bubble.offset[1] = message.ReadByte();
+	cl_common->h2_Effects[index].Bubble.offset[2] = message.ReadByte();
+	cl_common->h2_Effects[index].Bubble.count = message.ReadByte();//num of bubbles
+	cl_common->h2_Effects[index].Bubble.time_amount = 0;
+}
+
+void CLHW_ParseEffectXBowCommon(int index, QMsg& message, vec3_t origin)
+{
+	message.ReadPos(origin);
+	cl_common->h2_Effects[index].Xbow.angle[0] = message.ReadAngle();
+	cl_common->h2_Effects[index].Xbow.angle[1] = message.ReadAngle();
+	cl_common->h2_Effects[index].Xbow.angle[2] = 0;
+}
+
+static void CLHW_ParseEffectXBowThunderbolt(int index, QMsg& message, int i, vec3_t forward2)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[i]);
+	vec3_t vtemp;
+	vtemp[0] = message.ReadAngle();
+	vtemp[1] = message.ReadAngle();
+	vtemp[2] = 0;
+	vec3_t right2, up2;
+	AngleVectors(vtemp, forward2, right2, up2);
+}
+
+static void CLHW_InitXBowEffectEntity(int index, int i, const char* modelName)
+{
+	cl_common->h2_Effects[index].Xbow.ent[i] = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Xbow.ent[i] == -1)
+	{
+		return;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[i]];
+	VectorCopy(cl_common->h2_Effects[index].Xbow.origin[i], ent->state.origin);
+	VecToAnglesBuggy(cl_common->h2_Effects[index].Xbow.vel[i], ent->state.angles);
+	ent->model = R_RegisterModel(modelName);
+}
+
+void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
+{
+	vec3_t origin;
+	CLHW_ParseEffectXBowCommon(index, message, origin);
+	cl_common->h2_Effects[index].Xbow.bolts = message.ReadByte();
+	cl_common->h2_Effects[index].Xbow.randseed = message.ReadByte();
+	cl_common->h2_Effects[index].Xbow.turnedbolts = message.ReadByte();
+	cl_common->h2_Effects[index].Xbow.activebolts= message.ReadByte();
+
+	setseed(cl_common->h2_Effects[index].Xbow.randseed);
+
+	vec3_t forward, right, up;
+	AngleVectors(cl_common->h2_Effects[index].Xbow.angle, forward, right, up);
+
+	VectorNormalize(forward);
+	VectorCopy(forward, cl_common->h2_Effects[index].Xbow.velocity);
+
+	if (cl_common->h2_Effects[index].Xbow.bolts == 3)
+	{
+		S_StartSound(origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowshoot, 1, 1);
+	}
+	else if (cl_common->h2_Effects[index].Xbow.bolts == 5)
+	{
+		S_StartSound(origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowfshoot, 1, 1);
+	}
+
+	for (int i = 0; i < cl_common->h2_Effects[index].Xbow.bolts; i++)
+	{
+		cl_common->h2_Effects[index].Xbow.gonetime[i] = 1 + seedrand() * 2;
+		cl_common->h2_Effects[index].Xbow.state[i] = 0;
+
+		if ((1 << i) & cl_common->h2_Effects[index].Xbow.turnedbolts)
+		{
+			vec3_t forward2;
+			CLHW_ParseEffectXBowThunderbolt(index, message, i, forward2);
+			VectorScale(forward2, 800 + seedrand() * 500, cl_common->h2_Effects[index].Xbow.vel[i]);
+		}
+		else
+		{
+			VectorScale(forward, 800 + seedrand() * 500, cl_common->h2_Effects[index].Xbow.vel[i]);
+
+			vec3_t vtemp;
+			VectorScale(right, i * 100 - (cl_common->h2_Effects[index].Xbow.bolts- 1) * 50, vtemp);
+
+			//this should only be done for deathmatch:
+			VectorScale(vtemp, 0.333, vtemp);
+
+			VectorAdd(cl_common->h2_Effects[index].Xbow.vel[i], vtemp, cl_common->h2_Effects[index].Xbow.vel[i]);
+
+			//start me off a bit out
+			VectorScale(vtemp, 0.05, cl_common->h2_Effects[index].Xbow.origin[i]);
+			VectorAdd(origin, cl_common->h2_Effects[index].Xbow.origin[i], cl_common->h2_Effects[index].Xbow.origin[i]);
+		}
+		if (cl_common->h2_Effects[index].Xbow.bolts == 5)
+		{
+			CLHW_InitXBowEffectEntity(index, i, "models/flaming.mdl");
+		}
+		else
+		{
+			CLHW_InitXBowEffectEntity(index, i, "models/arrow.mdl");
+		}
+	}
+}
+
+void CLHW_ParseEffectSheepinator(int index, QMsg& message)
+{
+	vec3_t origin;
+	CLHW_ParseEffectXBowCommon(index, message, origin);
+	cl_common->h2_Effects[index].Xbow.turnedbolts = message.ReadByte();
+	cl_common->h2_Effects[index].Xbow.activebolts= message.ReadByte();
+	cl_common->h2_Effects[index].Xbow.bolts = 5;
+	cl_common->h2_Effects[index].Xbow.randseed = 0;
+
+	vec3_t forward, right, up;
+	AngleVectors(cl_common->h2_Effects[index].Xbow.angle, forward, right, up);
+
+	VectorNormalize(forward);
+	VectorCopy(forward, cl_common->h2_Effects[index].Xbow.velocity);
+
+	for (int i = 0; i < cl_common->h2_Effects[index].Xbow.bolts; i++)
+	{
+		cl_common->h2_Effects[index].Xbow.gonetime[i] = 0;
+		cl_common->h2_Effects[index].Xbow.state[i] = 0;
+
+		if ((1 << i) & cl_common->h2_Effects[index].Xbow.turnedbolts)
+		{
+			vec3_t forward2;
+			CLHW_ParseEffectXBowThunderbolt(index, message, i, forward2);
+			VectorScale(forward2, 700, cl_common->h2_Effects[index].Xbow.vel[i]);
+		}
+		else
+		{
+			VectorCopy(origin, cl_common->h2_Effects[index].Xbow.origin[i]);
+			VectorScale(forward, 700, cl_common->h2_Effects[index].Xbow.vel[i]);
+			vec3_t vtemp;
+			VectorScale(right, i * 75 - 150, vtemp);
+			VectorAdd(cl_common->h2_Effects[index].Xbow.vel[i], vtemp, cl_common->h2_Effects[index].Xbow.vel[i]);
+		}
+		CLHW_InitXBowEffectEntity(index, i, "models/polymrph.spr");
+	}
+}
+
+bool CLHW_ParseEffectDrilla(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
+	cl_common->h2_Effects[index].Missile.angle[0] = message.ReadAngle();
+	cl_common->h2_Effects[index].Missile.angle[1] = message.ReadAngle();
+	cl_common->h2_Effects[index].Missile.angle[2] = 0;
+	cl_common->h2_Effects[index].Missile.speed = message.ReadShort();
+
+	S_StartSound(cl_common->h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_drillashoot, 1, 1);
+
+	vec3_t right, up;
+	AngleVectors(cl_common->h2_Effects[index].Missile.angle, cl_common->h2_Effects[index].Missile.velocity, right, up);
+
+	VectorScale(cl_common->h2_Effects[index].Missile.velocity, cl_common->h2_Effects[index].Missile.speed, cl_common->h2_Effects[index].Missile.velocity);
+
+	cl_common->h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Missile.entity_index == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+	VectorCopy(cl_common->h2_Effects[index].Missile.origin, ent->state.origin);
+	VectorCopy(cl_common->h2_Effects[index].Missile.angle, ent->state.angles);
+	ent->model = R_RegisterModel("models/scrbstp1.mdl");
+	return true;
+}
+
+bool CLHW_ParseEffectScarabChain(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Chain.origin);
+	cl_common->h2_Effects[index].Chain.owner = message.ReadShort();
+	cl_common->h2_Effects[index].Chain.tag = message.ReadByte();
+
+	cl_common->h2_Effects[index].Chain.material = cl_common->h2_Effects[index].Chain.owner >> 12;
+	cl_common->h2_Effects[index].Chain.owner &= 0x0fff;
+	cl_common->h2_Effects[index].Chain.height = 16;
+
+	cl_common->h2_Effects[index].Chain.sound_time = cl_common->serverTime * 0.001;
+
+	cl_common->h2_Effects[index].Chain.state = 0;//state 0: move slowly toward owner
+
+	S_StartSound(cl_common->h2_Effects[index].Chain.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabwhoosh, 1, 1);
+
+	cl_common->h2_Effects[index].Chain.ent1 = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Chain.ent1 == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+	VectorCopy(cl_common->h2_Effects[index].Chain.origin, ent->state.origin);
+	ent->model = R_RegisterModel("models/scrbpbdy.mdl");
+	return true;
+}
+
+static bool CLHW_ParseEffectTripMineCommon(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Chain.origin);
+	cl_common->h2_Effects[index].Chain.velocity[0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Chain.velocity[1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Chain.velocity[2] = message.ReadFloat();
+
+	cl_common->h2_Effects[index].Chain.ent1 = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Chain.ent1 == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+	ent->model = R_RegisterModel("models/twspike.mdl");
+	return true;
+}
+
+bool CLHW_ParseEffectTripMine(int index, QMsg& message)
+{
+	if (!CLHW_ParseEffectTripMineCommon(index, message))
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+	VectorCopy(cl_common->h2_Effects[index].Chain.origin, ent->state.origin);
+	return true;
+}
+
+bool CLHW_ParseEffectTripMineStill(int index, QMsg& message)
+{
+	if (!CLHW_ParseEffectTripMineCommon(index, message))
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+	VectorCopy(cl_common->h2_Effects[index].Chain.velocity, ent->state.origin);
+	return true;
+}
+
+bool CLHW_ParseEffectStarCommon(int index, QMsg& message)
+{
+	cl_common->h2_Effects[index].Star.origin[0] = message.ReadCoord();
+	cl_common->h2_Effects[index].Star.origin[1] = message.ReadCoord();
+	cl_common->h2_Effects[index].Star.origin[2] = message.ReadCoord();
+
+	cl_common->h2_Effects[index].Star.velocity[0] = message.ReadFloat();
+	cl_common->h2_Effects[index].Star.velocity[1] = message.ReadFloat();
+	cl_common->h2_Effects[index].Star.velocity[2] = message.ReadFloat();
+
+	VecToAnglesBuggy(cl_common->h2_Effects[index].Star.velocity, cl_common->h2_Effects[index].Star.angle);
+	cl_common->h2_Effects[index].Missile.avelocity[2] = 300 + rand() % 300;
+
+	cl_common->h2_Effects[index].Star.scaleDir = 1;
+	cl_common->h2_Effects[index].Star.scale = 0.3;
+
+	cl_common->h2_Effects[index].Star.entity_index = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Star.entity_index == -1)
+	{
+		return false;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.entity_index];
+	VectorCopy(cl_common->h2_Effects[index].Star.origin, ent->state.origin);
+	VectorCopy(cl_common->h2_Effects[index].Star.angle, ent->state.angles);
+	ent->model = R_RegisterModel("models/ball.mdl");
+	return true;
+}
+
+bool CLHW_ParseEffectMissileStar(int index, QMsg& message)
+{
+	bool ImmediateFree = !CLHW_ParseEffectStarCommon(index, message);
+
+	cl_common->h2_Effects[index].Star.ent1 = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Star.ent1 != -1)
+	{
+		effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.ent1];
+		VectorCopy(cl_common->h2_Effects[index].Star.origin, ent->state.origin);
+		ent->state.drawflags |= H2MLS_ABSLIGHT;
+		ent->state.abslight = 0.5;
+		ent->state.angles[2] = 90;
+		ent->model = R_RegisterModel("models/star.mdl");
+		ent->state.scale = 0.3;
+		S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_mmfire, 1, 1);
+	}
+	cl_common->h2_Effects[index].Star.ent2 = CLH2_NewEffectEntity();
+	if (cl_common->h2_Effects[index].Star.ent2 != -1)
+	{
+		effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.ent2];
+		VectorCopy(cl_common->h2_Effects[index].Star.origin, ent->state.origin);
+		ent->model = R_RegisterModel("models/star.mdl");
+		ent->state.drawflags |= H2MLS_ABSLIGHT;
+		ent->state.abslight = 0.5;
+		ent->state.scale = 0.3;
+	}
+	return !ImmediateFree;
+}
+
+bool CLHW_ParseEffectEidolonStar(int index, QMsg& message)
+{
+	bool ImmediateFree = !CLHW_ParseEffectStarCommon(index, message);
+
+	if ((cl_common->h2_Effects[index].Star.ent1 = CLH2_NewEffectEntity()) != -1)
+	{
+		effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.ent1];
+		VectorCopy(cl_common->h2_Effects[index].Star.origin, ent->state.origin);
+		ent->state.drawflags |= H2MLS_ABSLIGHT;
+		ent->state.abslight = 0.5;
+		ent->state.angles[2] = 90;
+		ent->model = R_RegisterModel("models/glowball.mdl");
+		S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_eidolon, 1, 1);
+	}
+	return !ImmediateFree;
 }

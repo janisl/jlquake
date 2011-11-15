@@ -10,19 +10,6 @@
 
 #define FRANDOM() (rand()*(1.0/RAND_MAX))
 
-static unsigned int randomseed;
-void setseed(unsigned int seed)
-{
-	randomseed = seed;
-}
-
-//unsigned int seedrand(int max)
-float seedrand(void)
-{
-	randomseed = (randomseed * 877 + 573) % 9968;
-	return (float)randomseed / 9968;
-}
-
 // TYPES -------------------------------------------------------------------
 
 typedef enum
