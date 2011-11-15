@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "../../core/core.h"
-#include "vm_local.h"
+#include "../../core/virtual_machine/local.h"
 
 #ifdef DEBUG_VM // bk001204
 static char	*opnames[256] = {

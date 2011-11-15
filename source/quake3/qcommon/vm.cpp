@@ -39,7 +39,6 @@ and one exported function: Perform
 #include "vm_local.h"
 
 
-vm_t	*currentVM = NULL; // bk001212
 vm_t	*lastVM    = NULL; // bk001212
 
 #define	MAX_VM		3
@@ -65,78 +64,6 @@ void VM_Init( void ) {
 
 	Com_Memset( vmTable, 0, sizeof( vmTable ) );
 }
-
-
-/*
-===============
-VM_ValueToSymbol
-
-Assumes a program counter value
-===============
-*/
-const char *VM_ValueToSymbol( vm_t *vm, int value ) {
-	vmSymbol_t	*sym;
-	static char		text[MAX_TOKEN_CHARS_Q3];
-
-	sym = vm->symbols;
-	if ( !sym ) {
-		return "NO SYMBOLS";
-	}
-
-	// find the symbol
-	while ( sym->next && sym->next->symValue <= value ) {
-		sym = sym->next;
-	}
-
-	if ( value == sym->symValue ) {
-		return sym->symName;
-	}
-
-	String::Sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
-
-	return text;
-}
-
-/*
-===============
-VM_ValueToFunctionSymbol
-
-For profiling, find the symbol behind this value
-===============
-*/
-vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value ) {
-	vmSymbol_t	*sym;
-	static vmSymbol_t	nullSym;
-
-	sym = vm->symbols;
-	if ( !sym ) {
-		return &nullSym;
-	}
-
-	while ( sym->next && sym->next->symValue <= value ) {
-		sym = sym->next;
-	}
-
-	return sym;
-}
-
-
-/*
-===============
-VM_SymbolToValue
-===============
-*/
-int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
-	vmSymbol_t	*sym;
-
-	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !String::Cmp( symbol, sym->symName ) ) {
-			return sym->symValue;
-		}
-	}
-	return 0;
-}
-
 
 /*
 ===============
@@ -792,23 +719,4 @@ void VM_VmInfo_f( void ) {
 		Log::write( "    table length: %7i\n", vm->instructionPointersLength );
 		Log::write( "    data length : %7i\n", vm->dataMask + 1 );
 	}
-}
-
-/*
-===============
-VM_LogSyscalls
-
-Insert calls to this while debugging the vm compiler
-===============
-*/
-void VM_LogSyscalls( int *args ) {
-	static	int		callnum;
-	static	FILE	*f;
-
-	if ( !f ) {
-		f = fopen("syscalls.log", "w" );
-	}
-	callnum++;
-	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, (int)(args - (int*)currentVM->dataBase),
-		args[0], args[1], args[2], args[3], args[4] );
 }

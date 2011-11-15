@@ -20,18 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "../../core/virtual_machine/local.h"
-#include "../../core/file_formats/qvm.h"
-
-extern	vm_t	*currentVM;
 
 void VM_Compile( vm_t *vm, vmHeader_t *header );
 int	VM_CallCompiled( vm_t *vm, int *args );
 
 void VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header );
 int	VM_CallInterpreted( vm_t *vm, int *args );
-
-vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value );
-int VM_SymbolToValue( vm_t *vm, const char *symbol );
-const char *VM_ValueToSymbol( vm_t *vm, int value );
-void VM_LogSyscalls( int *args );
-

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // vm_x86.c -- load time compiler and execution environment for x86
 
 #include "../../core/core.h"
-#include "vm_local.h"
+#include "../../core/virtual_machine/local.h"
 
 #ifdef __FreeBSD__ // rb0101023
 #include <sys/types.h>
