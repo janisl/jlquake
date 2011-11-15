@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "../../core/virtual_machine/local.h"
+#include "../../core/file_formats/qvm.h"
 
 extern	vm_t	*currentVM;
 extern	int		vm_debugLevel;
