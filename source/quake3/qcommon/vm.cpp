@@ -536,36 +536,37 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 VM_Free
 ==============
 */
-void VM_Free( vm_t *vm ) {
-
-	if ( vm->dllHandle ) {
-		Sys_UnloadDll( vm->dllHandle );
-		Com_Memset( vm, 0, sizeof( *vm ) );
+void VM_Free(vm_t* vm)
+{
+	if (vm->dllHandle)
+	{
+		Sys_UnloadDll(vm->dllHandle);
 	}
 #if 0	// now automatically freed by hunk
-	if ( vm->codeBase ) {
-		Z_Free( vm->codeBase );
+	if (vm->codeBase)
+	{
+		Z_Free(vm->codeBase);
 	}
-	if ( vm->dataBase ) {
-		Z_Free( vm->dataBase );
+	if (vm->dataBase)
+	{
+		Z_Free(vm->dataBase);
 	}
-	if ( vm->instructionPointers ) {
-		Z_Free( vm->instructionPointers );
+	if (vm->instructionPointers)
+	{
+		Z_Free(vm->instructionPointers);
 	}
 #endif
-	Com_Memset( vm, 0, sizeof( *vm ) );
+	Com_Memset(vm, 0, sizeof(*vm));
 
 	currentVM = NULL;
 	lastVM = NULL;
 }
 
-void VM_Clear(void) {
-	int i;
-	for (i=0;i<MAX_VM; i++) {
-		if ( vmTable[i].dllHandle ) {
-			Sys_UnloadDll( vmTable[i].dllHandle );
-		}
-		Com_Memset( &vmTable[i], 0, sizeof( vm_t ) );
+void VM_Clear()
+{
+	for (int i = 0; i < MAX_VM; i++)
+	{
+		VM_Free(&vmTable[i]);
 	}
 	currentVM = NULL;
 	lastVM = NULL;
