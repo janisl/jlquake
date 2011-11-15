@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "../../core/core.h"
-#include "../game/q_shared.h"
 #include "vm_local.h"
 
 #ifdef DEBUG_VM // bk001204
@@ -162,8 +161,8 @@ void VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header ) {
 	int		instruction;
 	int		*codeBase;
 
-	vm->codeBase = (byte*)Hunk_Alloc( vm->codeLength*4, h_high );			// we're now int aligned
-//	Com_Memcpy( vm->codeBase, (byte *)header + header->codeOffset, vm->codeLength );
+	vm->codeBase = new byte[vm->codeLength * 4];			// we're now int aligned
+	Com_Memset(vm->codeBase, 0, vm->codeLength * 4);
 
 	// we don't need to translate the instructions, but we still need
 	// to find each instructions starting point for jumps

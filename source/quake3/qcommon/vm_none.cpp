@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "../game/q_shared.h"
+#include "../../core/core.h"
 #include "vm_local.h"
 
 void VM_Compile(vm_t *vm, vmHeader_t *header)
 {
-	vm->compiled = qfalse;
+	vm->compiled = false;
 	VM_PrepareInterpreter(vm, header);
 }
 

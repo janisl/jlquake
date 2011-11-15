@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // vm_x86.c -- load time compiler and execution environment for x86
 
 #include "../../core/core.h"
-#include "../game/q_shared.h"
 #include "vm_local.h"
 
 #ifdef __FreeBSD__ // rb0101023
@@ -1063,8 +1062,8 @@ void VM_Compile( vm_t *vm, vmHeader_t *header ) {
 
 	// copy to an exact size buffer on the hunk
 	vm->codeLength = compiledOfs;
-	vm->codeBase = (byte*)Hunk_Alloc( compiledOfs, h_low );
-	Com_Memcpy( vm->codeBase, buf, compiledOfs );
+	vm->codeBase = new byte[compiledOfs];
+	Com_Memcpy(vm->codeBase, buf, compiledOfs);
 	delete[] buf;
 	delete[] jused;
 	Log::write("VM file %s compiled to %i bytes of code\n", vm->name, compiledOfs);

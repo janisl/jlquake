@@ -228,7 +228,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 			break;
 		}
 		chars = String::Length( token );
-		sym = (vmSymbol_t*)Hunk_Alloc( sizeof( *sym ) + chars, h_high );
+		sym = (vmSymbol_t*)Mem_Alloc(sizeof( *sym ) + chars);
 		*prev = sym;
 		prev = &sym->next;
 		sym->next = NULL;
@@ -239,6 +239,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 		}
 
 		sym->symValue = value;
+		sym->profileCount = 0;
 		String::NCpyZ( sym->symName, token, chars + 1 );
 
 		count++;
@@ -492,7 +493,8 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	dataLength = 1 << i;
 
 	// allocate zero filled space for initialized and uninitialized data
-	vm->dataBase = (byte*)Hunk_Alloc( dataLength, h_high );
+	vm->dataBase = new byte[dataLength];
+	Com_Memset(vm->dataBase, 0, dataLength);
 	vm->dataMask = dataLength - 1;
 
 	// copy the intialized data
@@ -505,7 +507,8 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	// allocate space for the jump targets, which will be filled in by the compile/prep functions
 	vm->instructionPointersLength = header->instructionCount * 4;
-	vm->instructionPointers = (int*)Hunk_Alloc( vm->instructionPointersLength, h_high );
+	vm->instructionPointers = new int[header->instructionCount];
+	Com_Memset(vm->instructionPointers, 0, vm->instructionPointersLength);
 
 	// copy or compile the instructions
 	vm->codeLength = header->codeLength;
@@ -544,20 +547,24 @@ void VM_Free(vm_t* vm)
 	{
 		Sys_UnloadDll(vm->dllHandle);
 	}
-#if 0	// now automatically freed by hunk
 	if (vm->codeBase)
 	{
-		Z_Free(vm->codeBase);
+		delete[] vm->codeBase;
 	}
 	if (vm->dataBase)
 	{
-		Z_Free(vm->dataBase);
+		delete[] vm->dataBase;
 	}
 	if (vm->instructionPointers)
 	{
-		Z_Free(vm->instructionPointers);
+		delete[] vm->instructionPointers;
 	}
-#endif
+	for (vmSymbol_t* sym = vm->symbols; sym;)
+	{
+		vmSymbol_t* next = sym->next;
+		Mem_Free(sym);
+		sym = next;
+	}
 	Com_Memset(vm, 0, sizeof(*vm));
 
 	currentVM = NULL;
