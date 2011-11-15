@@ -19,6 +19,7 @@ along with Foobar; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
+#include "../../core/core.h"
 #include "../game/q_shared.h"
 #include "vm_local.h"
 
@@ -139,12 +140,13 @@ void VM_StackTrace( vm_t *vm, int programCounter, int programStack ) {
 	int		count;
 
 	count = 0;
-	do {
-		Com_Printf( "%s\n", VM_ValueToSymbol( vm, programCounter ) );
+	do
+	{
+		Log::write("%s\n", VM_ValueToSymbol(vm, programCounter));
 		programStack =  *(int *)&vm->dataBase[programStack+4];
 		programCounter = *(int *)&vm->dataBase[programStack];
-	} while ( programCounter != -1 && ++count < 32 );
-
+	}
+	while (programCounter != -1 && ++count < 32);
 }
 
 
@@ -176,8 +178,9 @@ void VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header ) {
 
 		op = code[ pc ];
 		codeBase[pc] = op;
-		if ( pc > header->codeLength ) {
-			Com_Error( ERR_FATAL, "VM_PrepareInterpreter: pc > header->codeLength" );
+		if (pc > header->codeLength)
+		{
+			throw Exception("VM_PrepareInterpreter: pc > header->codeLength");
 		}
 
 		pc++;
@@ -326,7 +329,7 @@ int	VM_CallInterpreted( vm_t *vm, int *args ) {
 #endif
 
 	// interpret the code
-	vm->currentlyInterpreting = qtrue;
+	vm->currentlyInterpreting = true;
 
 	// we might be called recursively, so this might not be the very top
 	programStack = stackOnEntry = vm->programStack;
@@ -383,27 +386,32 @@ nextInstruction:
 nextInstruction2:
 		opcode = codeImage[ programCounter++ ];
 #ifdef DEBUG_VM
-		if ( (unsigned)programCounter > vm->codeLength ) {
-			Com_Error( ERR_DROP, "VM pc out of range" );
+		if ((unsigned)programCounter > vm->codeLength)
+		{
+			throw DropException("VM pc out of range");
 		}
 
-		if ( opStack < stack ) {
-			Com_Error( ERR_DROP, "VM opStack underflow" );
+		if (opStack < stack)
+		{
+			throw DropException("VM opStack underflow");
 		}
-		if ( opStack >= stack+MAX_STACK ) {
-			Com_Error( ERR_DROP, "VM opStack overflow" );
-		}
-
-		if ( programStack <= vm->stackBottom ) {
-			Com_Error( ERR_DROP, "VM stack overflow" );
+		if (opStack >= stack+MAX_STACK)
+		{
+			throw DropException("VM opStack overflow");
 		}
 
-		if ( programStack & 3 ) {
-			Com_Error( ERR_DROP, "VM program stack misaligned" );
+		if (programStack <= vm->stackBottom)
+		{
+			throw DropException("VM stack overflow");
+		}
+
+		if (programStack & 3)
+		{
+			throw DropException("VM program stack misaligned");
 		}
 
 		if ( vm_debugLevel > 1 ) {
-			Com_Printf( "%s %s\n", DEBUGSTR, opnames[opcode] );
+			Log::write( "%s %s\n", DEBUGSTR, opnames[opcode] );
 		}
 		profileSymbol->profileCount++;
 #endif
@@ -411,7 +419,7 @@ nextInstruction2:
 		switch ( opcode ) {
 #ifdef DEBUG_VM
 		default:
-			Com_Error( ERR_DROP, "Bad VM instruction" );  // this should be scanned on load!
+			throw DropException("Bad VM instruction");  // this should be scanned on load!
 #endif
 		case OP_BREAK:
 			vm->breakCount++;
@@ -434,7 +442,7 @@ nextInstruction2:
 		case OP_LOAD4:
 #ifdef DEBUG_VM
 			if ( *opStack & 3 ) {
-				Com_Error( ERR_DROP, "OP_LOAD4 misaligned" );
+				throw DropException("OP_LOAD4 misaligned");
 			}
 #endif
 			r0 = *opStack = *(int *)&image[ r0&dataMask ];
@@ -481,7 +489,7 @@ nextInstruction2:
 				src = (int *)&image[ r0&dataMask ];
 				dest = (int *)&image[ r1&dataMask ];
 				if ( ( (qintptr)src | (qintptr)dest | count ) & 3 ) {
-					Com_Error( ERR_DROP, "OP_BLOCK_COPY not dword aligned" );
+					throw DropException("OP_BLOCK_COPY not dword aligned");
 				}
 				count >>= 2;
 				for ( i = count-1 ; i>= 0 ; i-- ) {
@@ -507,7 +515,7 @@ nextInstruction2:
 				int		stomped;
 
 				if ( vm_debugLevel ) {
-					Com_Printf( "%s---> systemcall(%i)\n", DEBUGSTR, -1 - programCounter );
+					Log::write( "%s---> systemcall(%i)\n", DEBUGSTR, -1 - programCounter );
 				}
 #endif
 				// save the stack to allow recursive VM entry
@@ -534,7 +542,7 @@ nextInstruction2:
 				vm->callLevel = temp;
 #ifdef DEBUG_VM
 				if ( vm_debugLevel ) {
-					Com_Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
+					Log::write( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 				}
 #endif
 			} else {
@@ -563,7 +571,7 @@ nextInstruction2:
 			// save old stack frame for debugging traces
 			*(int *)&image[programStack+4] = programStack + v1;
 			if ( vm_debugLevel ) {
-				Com_Printf( "%s---> %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter - 5 ) );
+				Log::write( "%s---> %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter - 5 ) );
 				if ( vm->breakFunction && programCounter - 5 == vm->breakFunction ) {
 					// this is to allow setting breakpoints here in the debugger
 					vm->breakCount++;
@@ -586,7 +594,7 @@ nextInstruction2:
 			profileSymbol = VM_ValueToFunctionSymbol( vm, programCounter );
 			if ( vm_debugLevel ) {
 				vm->callLevel--;
-				Com_Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
+				Log::write( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 			}
 #endif
 			// check for leaving the VM
@@ -877,10 +885,11 @@ nextInstruction2:
 	}
 
 done:
-	vm->currentlyInterpreting = qfalse;
+	vm->currentlyInterpreting = false;
 
-	if ( opStack != &stack[1] ) {
-		Com_Error( ERR_DROP, "Interpreter error: opStack = %i", opStack - stack );
+	if (opStack != &stack[1])
+	{
+		throw DropException(va("Interpreter error: opStack = %i", opStack - stack));
 	}
 
 	vm->programStack = stackOnEntry;

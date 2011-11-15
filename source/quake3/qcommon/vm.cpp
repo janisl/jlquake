@@ -33,6 +33,7 @@ and one exported function: Perform
 
 */
 
+#include "../../core/core.h"
 #include "../game/q_shared.h"
 #include "qcommon.h"
 #include "vm_local.h"
@@ -191,7 +192,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 	String::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
 	len = FS_ReadFile( symbols, (void **)&mapfile );
 	if ( !mapfile ) {
-		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
+		Log::write( "Couldn't load symbol file: %s\n", symbols );
 		return;
 	}
 
@@ -216,14 +217,14 @@ void VM_LoadSymbols( vm_t *vm ) {
 
 		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Log::write( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		value = ParseHex( token );
 
 		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Log::write( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		chars = String::Length( token );
@@ -244,7 +245,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 	}
 
 	vm->numSymbols = count;
-	Com_Printf( "%i symbols parsed from %s\n", count, symbols );
+	Log::write( "%i symbols parsed from %s\n", count, symbols );
 	FS_FreeFile( mapfile );
 }
 
@@ -338,12 +339,13 @@ vm_t *VM_Restart( vm_t *vm ) {
 	}
 
 	// load the image
-	Com_Printf( "VM_Restart()\n", filename );
+	Log::write( "VM_Restart()\n", filename );
 	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
-	Com_Printf( "Loading vm file %s.\n", filename );
+	Log::write( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
-	if ( !header ) {
-		Com_Error( ERR_DROP, "VM_Restart failed.\n" );
+	if (!header)
+	{
+		throw DropException("VM_Restart failed.\n");
 	}
 
 	// byte swap the header
@@ -358,7 +360,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 		|| header->litLength < 0 
 		|| header->codeLength <= 0 ) {
 		VM_Free( vm );
-		Com_Error( ERR_FATAL, "%s has bad header", filename );
+		throw Exception(va("%s has bad header", filename));
 	}
 
 	// round up to next power of 2 so all data operations can
@@ -405,8 +407,9 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	int			i, remaining;
 	char		filename[MAX_QPATH];
 
-	if ( !module || !module[0] || !systemCalls ) {
-		Com_Error( ERR_FATAL, "VM_Create: bad parms" );
+	if (!module || !module[0] || !systemCalls)
+	{
+		throw Exception("VM_Create: bad parms");
 	}
 
 	remaining = Hunk_MemoryRemaining();
@@ -426,8 +429,9 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 		}
 	}
 
-	if ( i == MAX_VM ) {
-		Com_Error( ERR_FATAL, "VM_Create: no free vm_t" );
+	if (i == MAX_VM)
+	{
+		throw Exception("VM_Create: no free vm_t");
 	}
 
 	vm = &vmTable[i];
@@ -444,22 +448,22 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	if ( interpret == VMI_NATIVE ) {
 		// try to load as a system dll
-		Com_Printf( "Loading dll file %s.\n", vm->name );
+		Log::write( "Loading dll file %s.\n", vm->name );
 		vm->dllHandle = Sys_LoadDll( module, vm->fqpath , &vm->entryPoint, VM_DllSyscall );
 		if ( vm->dllHandle ) {
 			return vm;
 		}
 
-		Com_Printf( "Failed to load dll, looking for qvm.\n" );
+		Log::write( "Failed to load dll, looking for qvm.\n" );
 		interpret = VMI_COMPILED;
 	}
 
 	// load the image
 	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
-	Com_Printf( "Loading vm file %s.\n", filename );
+	Log::write( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {
-		Com_Printf( "Failed.\n" );
+		Log::write( "Failed.\n" );
 		VM_Free( vm );
 		return NULL;
 	}
@@ -474,9 +478,10 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 		|| header->bssLength < 0 
 		|| header->dataLength < 0 
 		|| header->litLength < 0 
-		|| header->codeLength <= 0 ) {
-		VM_Free( vm );
-		Com_Error( ERR_FATAL, "%s has bad header", filename );
+		|| header->codeLength <= 0 )
+	{
+		VM_Free(vm);
+		throw Exception(va("%s has bad header", filename));
 	}
 
 	// round up to next power of 2 so all data operations can
@@ -506,10 +511,10 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	vm->codeLength = header->codeLength;
 
 	if ( interpret >= VMI_COMPILED ) {
-		vm->compiled = qtrue;
+		vm->compiled = true;
 		VM_Compile( vm, header );
 	} else {
-		vm->compiled = qfalse;
+		vm->compiled = false;
 		VM_PrepareInterpreter( vm, header );
 	}
 
@@ -523,7 +528,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	vm->programStack = vm->dataMask + 1;
 	vm->stackBottom = vm->programStack - STACK_SIZE;
 
-	Com_Printf("%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining());
+	Log::write("%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining());
 
 	return vm;
 }
@@ -634,7 +639,7 @@ int VM_Call(vm_t* vm, int callnum, ...)
 {
 	if (!vm)
 	{
-		Com_Error(ERR_FATAL, "VM_Call with NULL vm");
+		throw Exception("VM_Call with NULL vm");
 	}
 
 	vm_t* oldVM = currentVM;
@@ -643,7 +648,7 @@ int VM_Call(vm_t* vm, int callnum, ...)
 
 	if (vm_debugLevel)
 	{
-		Com_Printf("VM_Call( %i )\n", callnum);
+		Log::write("VM_Call( %i )\n", callnum);
 	}
 
 #if id386
@@ -741,11 +746,11 @@ void VM_VmProfile_f( void ) {
 		sym = sorted[i];
 
 		perc = 100 * (float) sym->profileCount / total;
-		Com_Printf( "%2i%% %9i %s\n", perc, sym->profileCount, sym->symName );
+		Log::write( "%2i%% %9i %s\n", perc, sym->profileCount, sym->symName );
 		sym->profileCount = 0;
 	}
 
-	Com_Printf("    %9.0f total\n", total );
+	Log::write("    %9.0f total\n", total );
 
 	Z_Free( sorted );
 }
@@ -760,25 +765,25 @@ void VM_VmInfo_f( void ) {
 	vm_t	*vm;
 	int		i;
 
-	Com_Printf( "Registered virtual machines:\n" );
+	Log::write( "Registered virtual machines:\n" );
 	for ( i = 0 ; i < MAX_VM ; i++ ) {
 		vm = &vmTable[i];
 		if ( !vm->name[0] ) {
 			break;
 		}
-		Com_Printf( "%s : ", vm->name );
+		Log::write( "%s : ", vm->name );
 		if ( vm->dllHandle ) {
-			Com_Printf( "native\n" );
+			Log::write( "native\n" );
 			continue;
 		}
 		if ( vm->compiled ) {
-			Com_Printf( "compiled on load\n" );
+			Log::write( "compiled on load\n" );
 		} else {
-			Com_Printf( "interpreted\n" );
+			Log::write( "interpreted\n" );
 		}
-		Com_Printf( "    code length : %7i\n", vm->codeLength );
-		Com_Printf( "    table length: %7i\n", vm->instructionPointersLength );
-		Com_Printf( "    data length : %7i\n", vm->dataMask + 1 );
+		Log::write( "    code length : %7i\n", vm->codeLength );
+		Log::write( "    table length: %7i\n", vm->instructionPointersLength );
+		Log::write( "    data length : %7i\n", vm->dataMask + 1 );
 	}
 }
 

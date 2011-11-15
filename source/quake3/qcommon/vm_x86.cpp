@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // vm_x86.c -- load time compiler and execution environment for x86
 
+#include "../../core/core.h"
 #include "../game/q_shared.h"
-#include "qcommon.h"
 #include "vm_local.h"
 
 #ifdef __FreeBSD__ // rb0101023
@@ -283,10 +283,9 @@ static int Hex( int c ) {
 		return c - '0';
 	}
 
-	Com_Error( ERR_DROP, "Hex: bad char '%c'", c );
-
-	return 0;
+	throw DropException(va("Hex: bad char '%c'", c));
 }
+
 static void EmitString( const char *string ) {
 	int		c1, c2;
 	int		v;
@@ -374,13 +373,13 @@ qboolean EmitMovEBXEDI(vm_t *vm, int andit) {
 		compiledOfs -= 2;
 		vm->instructionPointers[ instruction-1 ] = compiledOfs;
 		EmitString( "8B D8");		// mov bx, eax
-		return qfalse;
+		return false;
 	}
 	if (pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
 		pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 ) 
 	{	
 		EmitString( "8B D8");		// mov bx, eax
-		return qfalse;
+		return false;
 	}
 	if (pop1 == OP_CONST && buf[compiledOfs-6] == 0xC7 && buf[compiledOfs-5] == 0x07 ) 
 	{		// mov edi, 0x123456
@@ -392,11 +391,11 @@ qboolean EmitMovEBXEDI(vm_t *vm, int andit) {
 		} else {
 			Emit4( lastConst );
 		}
-		return qtrue;
+		return true;
 	}
 
 	EmitString( "8B 1F" );		// mov ebx, dword ptr [edi]
-	return qfalse;
+	return false;
 }
 
 /*
@@ -413,8 +412,8 @@ void VM_Compile( vm_t *vm, vmHeader_t *header ) {
 
 	// allocate a very large temp buffer, we will shrink it later
 	maxLength = header->codeLength * 8;
-	buf = (byte*)Z_Malloc( maxLength );
-	jused = (byte*)Z_Malloc(header->instructionCount + 2 );
+	buf = new byte[maxLength];
+	jused = new byte[header->instructionCount + 2];
 	
 	Com_Memset(jused, 0, header->instructionCount+2);
 
@@ -433,15 +432,17 @@ void VM_Compile( vm_t *vm, vmHeader_t *header ) {
 	LastCommand = LAST_COMMAND_NONE;
 
 	while ( instruction < header->instructionCount ) {
-		if ( compiledOfs > maxLength - 16 ) {
-			Com_Error( ERR_FATAL, "VM_CompileX86: maxLength exceeded" );
+		if (compiledOfs > maxLength - 16)
+		{
+			throw Exception("VM_CompileX86: maxLength exceeded");
 		}
 
 		vm->instructionPointers[ instruction ] = compiledOfs;
 		instruction++;
 
-		if ( pc > header->codeLength ) {
-			Com_Error( ERR_FATAL, "VM_CompileX86: pc > header->codeLength" );
+		if (pc > header->codeLength)
+		{
+			throw Exception("VM_CompileX86: pc > header->codeLength");
 		}
 
 		op = code[ pc ];
@@ -1053,7 +1054,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header ) {
 			Emit4( (int)vm->instructionPointers );
 			break;
 		default:
-			Com_Error( ERR_DROP, "VM_CompileX86: bad opcode %i at offset %i", op, pc );
+			throw DropException(va("VM_CompileX86: bad opcode %i at offset %i", op, pc));
 		}
 		pop0 = pop1;
 		pop1 = op;
@@ -1064,9 +1065,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header ) {
 	vm->codeLength = compiledOfs;
 	vm->codeBase = (byte*)Hunk_Alloc( compiledOfs, h_low );
 	Com_Memcpy( vm->codeBase, buf, compiledOfs );
-	Z_Free( buf );
-	Z_Free( jused );
-	Com_Printf( "VM file %s compiled to %i bytes of code\n", vm->name, compiledOfs );
+	delete[] buf;
+	delete[] jused;
+	Log::write("VM file %s compiled to %i bytes of code\n", vm->name, compiledOfs);
 
 	// offset all the instruction pointers for the new location
 	for ( i = 0 ; i < header->instructionCount ; i++ ) {
@@ -1085,8 +1086,8 @@ void VM_Compile( vm_t *vm, vmHeader_t *header ) {
 		r = mprotect((char*)addr, vm->codeLength + (int)vm->codeBase - addr + psize, 
 			PROT_READ | PROT_WRITE | PROT_EXEC );
 
-		if (r < 0)
-			Com_Error( ERR_FATAL, "mprotect failed to change PROT_EXEC" );
+// 		if (r < 0)
+			throw Exception("mprotect failed to change PROT_EXEC");
 	}
 #endif
 
@@ -1115,7 +1116,7 @@ int VM_CallCompiled( vm_t *vm, int *args ) {
 	instructionPointers = vm->instructionPointers;
 
 	// interpret the code
-	vm->currentlyInterpreting = qtrue;
+	vm->currentlyInterpreting = true;
 
 	callMask = vm->dataMask;
 
@@ -1176,11 +1177,13 @@ int VM_CallCompiled( vm_t *vm, int *args ) {
 	}
 #endif
 
-	if ( opStack != &stack[1] ) {
-		Com_Error( ERR_DROP, "opStack corrupted in compiled code" );
+	if (opStack != &stack[1])
+	{
+		throw DropException("opStack corrupted in compiled code");
 	}
-	if ( programStack != stackOnEntry - 48 ) {
-		Com_Error( ERR_DROP, "programStack corrupted in compiled code" );
+	if (programStack != stackOnEntry - 48)
+	{
+		throw DropException("programStack corrupted in compiled code");
 	}
 
 	vm->programStack = stackOnEntry;
