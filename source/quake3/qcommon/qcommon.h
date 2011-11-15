@@ -211,7 +211,7 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
-typedef struct vm_s vm_t;
+struct vm_t;
 
 typedef enum {
 	VMI_NATIVE,
