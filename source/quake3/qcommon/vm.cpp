@@ -40,7 +40,6 @@ and one exported function: Perform
 
 vm_t	*currentVM = NULL; // bk001212
 vm_t	*lastVM    = NULL; // bk001212
-int		vm_debugLevel;
 
 #define	MAX_VM		3
 vm_t	vmTable[MAX_VM];
@@ -49,10 +48,6 @@ vm_t	vmTable[MAX_VM];
 void VM_VmInfo_f( void );
 void VM_VmProfile_f( void );
 
-
-void VM_Debug( int level ) {
-	vm_debugLevel = level;
-}
 
 /*
 ==============

@@ -147,3 +147,5 @@ struct vm_t
 
 	char fqpath[MAX_QPATH + 1];
 };
+
+extern int vm_debugLevel;

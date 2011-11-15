@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../core/file_formats/qvm.h"
 
 extern	vm_t	*currentVM;
-extern	int		vm_debugLevel;
 
 void VM_Compile( vm_t *vm, vmHeader_t *header );
 int	VM_CallCompiled( vm_t *vm, int *args );

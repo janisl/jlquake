@@ -50,6 +50,7 @@
 #include "hexen2defs.h"
 #include "quake2defs.h"
 #include "quake3defs.h"
+#include "virtual_machine/public.h"
 
 int Com_Milliseconds();
 
