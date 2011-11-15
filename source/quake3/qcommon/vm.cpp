@@ -33,6 +33,8 @@ and one exported function: Perform
 
 */
 
+#include "../game/q_shared.h"
+#include "qcommon.h"
 #include "vm_local.h"
 
 
