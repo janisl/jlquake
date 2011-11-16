@@ -318,10 +318,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\vm_x86.cpp"
-				>
-			</File>
-			<File
 				RelativePath="win32\win_main.cpp"
 				>
 			</File>
@@ -376,10 +372,6 @@
 			</File>
 			<File
 				RelativePath="ui\ui_public.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\vm_local.h"
 				>
 			</File>
 			<File
