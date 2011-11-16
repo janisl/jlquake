@@ -944,249 +944,96 @@ void CL_ParseTEnt (void)
 				ex->data = chType;
 
 				final = (rand()%100)*.01;
-				if ((chType==H2THINGTYPE_GLASS) || (chType==H2THINGTYPE_REDGLASS) || 
-						(chType==H2THINGTYPE_CLEARGLASS) || (chType==H2THINGTYPE_WEBS))
+				if (chType==H2THINGTYPE_GLASS)
 				{
-					if (final<0.20)
-						ex->model = R_RegisterModel ("models/shard1.mdl");
-					else if (final<0.40)
-						ex->model = R_RegisterModel ("models/shard2.mdl");
-					else if (final<0.60)
-						ex->model = R_RegisterModel ("models/shard3.mdl");
-					else if (final<0.80)
-						ex->model = R_RegisterModel ("models/shard4.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/shard5.mdl");
-
-					if (chType==H2THINGTYPE_CLEARGLASS)
-					{
-						ex->skin = 1;
-						ex->flags |= H2DRF_TRANSLUCENT;
-					}
-					else if (chType==H2THINGTYPE_REDGLASS)
-					{
-						ex->skin = 2;
-					}
-					else if (chType==H2THINGTYPE_WEBS)
-					{
-						ex->skin = 3;
-						ex->flags |= H2DRF_TRANSLUCENT;
-					}
+					CLH2_InitChunkGlass(final, &ex->model);
+				}
+				else if (chType==H2THINGTYPE_CLEARGLASS)
+				{
+					CLH2_InitChunkClearGlass(final, &ex->model, &ex->skin, &ex->flags);
+				}
+				else if (chType==H2THINGTYPE_REDGLASS)
+				{
+					CLH2_InitChunkRedGlass(final, &ex->model, &ex->skin);
+				}
+				else if (chType==H2THINGTYPE_WEBS)
+				{
+					CLH2_InitChunkWebs(final, &ex->model, &ex->skin, &ex->flags);
 				}
 				else if (chType==H2THINGTYPE_WOOD)
 				{
-					if (final < 0.25)
-						ex->model = R_RegisterModel ("models/splnter1.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/splnter2.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/splnter3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/splnter4.mdl");
+					CLH2_InitChunkWood(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_METAL)
 				{
-					if (final < 0.25)
-						ex->model = R_RegisterModel ("models/metlchk1.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/metlchk2.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/metlchk3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/metlchk4.mdl");
+					CLH2_InitChunkMetal(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_FLESH)
 				{
-					if (final < 0.33)
-						ex->model = R_RegisterModel ("models/flesh1.mdl");
-					else if (final < 0.66)
-						ex->model = R_RegisterModel ("models/flesh2.mdl");
-					else
-						ex->model = R_RegisterModel ("models/flesh3.mdl");
+					CLH2_InitChunkFlesh(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_BROWNSTONE||chType==H2THINGTYPE_DIRT)
 				{
-					if (final < 0.25)
-						ex->model = R_RegisterModel ("models/schunk1.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/schunk2.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/schunk3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/schunk4.mdl");
-					ex->skin = 1;
+					CLH2_InitChunkBrownStone(final, &ex->model, &ex->skin);
 				}
 				else if (chType==H2THINGTYPE_CLAY)
 				{
-					if (final < 0.25)
-						ex->model = R_RegisterModel ("models/clshard1.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/clshard2.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/clshard3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/clshard4.mdl");
+					CLH2_InitChunkClay(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_LEAVES)
 				{
-					if (final < 0.33)
-						ex->model = R_RegisterModel ("models/leafchk1.mdl");
-					else if (final < 0.66)
-						ex->model = R_RegisterModel ("models/leafchk2.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/leafchk3.mdl");
+					CLH2_InitChunkLeaves(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_HAY)
 				{
-					if (final < 0.33)
-						ex->model = R_RegisterModel ("models/hay1.mdl");
-					else if (final < 0.66)
-						ex->model = R_RegisterModel ("models/hay2.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/hay3.mdl");
+					CLH2_InitChunkHay(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_CLOTH)
 				{
-					if (final < 0.33)
-						ex->model = R_RegisterModel ("models/clthchk1.mdl");
-					else if (final < 0.66)
-						ex->model = R_RegisterModel ("models/clthchk2.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/clthchk3.mdl");
+					CLH2_InitChunkCloth(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_WOOD_LEAF)
 				{
-					if (final < 0.14)
-						ex->model = R_RegisterModel ("models/splnter1.mdl");
-					else if (final < 0.28)
-						ex->model = R_RegisterModel ("models/leafchk1.mdl");
-					else if (final < 0.42)
-						ex->model = R_RegisterModel ("models/splnter2.mdl");
-					else if (final < 0.56)
-						ex->model = R_RegisterModel ("models/leafchk2.mdl");
-					else if (final < 0.70)
-						ex->model = R_RegisterModel ("models/splnter3.mdl");
-					else if (final < 0.84)
-						ex->model = R_RegisterModel ("models/leafchk3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/splnter4.mdl");
+					CLH2_InitChunkWoodAndLeaf(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_WOOD_METAL)
 				{
-					if (final < 0.125)
-						ex->model = R_RegisterModel ("models/splnter1.mdl");
-					else if (final < 0.25)
-						ex->model = R_RegisterModel ("models/metlchk1.mdl");
-					else if (final < 0.375)
-						ex->model = R_RegisterModel ("models/splnter2.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/metlchk2.mdl");
-					else if (final < 0.625)
-						ex->model = R_RegisterModel ("models/splnter3.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/metlchk3.mdl");
-					else if (final < 0.875)
-						ex->model = R_RegisterModel ("models/splnter4.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/metlchk4.mdl");
+					CLH2_InitChunkWoodAndMetal(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_WOOD_STONE)
 				{
-					if (final < 0.125)
-						ex->model = R_RegisterModel ("models/splnter1.mdl");
-					else if (final < 0.25)
-						ex->model = R_RegisterModel ("models/schunk1.mdl");
-					else if (final < 0.375)
-						ex->model = R_RegisterModel ("models/splnter2.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/schunk2.mdl");
-					else if (final < 0.625)
-						ex->model = R_RegisterModel ("models/splnter3.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/schunk3.mdl");
-					else if (final < 0.875)
-						ex->model = R_RegisterModel ("models/splnter4.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/schunk4.mdl");
+					CLH2_InitChunkWoodAndStone(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_METAL_STONE)
 				{
-					if (final < 0.125)
-						ex->model = R_RegisterModel ("models/metlchk1.mdl");
-					else if (final < 0.25)
-						ex->model = R_RegisterModel ("models/schunk1.mdl");
-					else if (final < 0.375)
-						ex->model = R_RegisterModel ("models/metlchk2.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/schunk2.mdl");
-					else if (final < 0.625)
-						ex->model = R_RegisterModel ("models/metlchk3.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/schunk3.mdl");
-					else if (final < 0.875)
-						ex->model = R_RegisterModel ("models/metlchk4.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/schunk4.mdl");
+					CLH2_InitChunkMetalAndStone(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_METAL_CLOTH)
 				{
-					if (final < 0.14)
-						ex->model = R_RegisterModel ("models/metlchk1.mdl");
-					else if (final < 0.28)
-						ex->model = R_RegisterModel ("models/clthchk1.mdl");
-					else if (final < 0.42)
-						ex->model = R_RegisterModel ("models/metlchk2.mdl");
-					else if (final < 0.56)
-						ex->model = R_RegisterModel ("models/clthchk2.mdl");
-					else if (final < 0.70)
-						ex->model = R_RegisterModel ("models/metlchk3.mdl");
-					else if (final < 0.84)
-						ex->model = R_RegisterModel ("models/clthchk3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/metlchk4.mdl");
+					CLH2_InitChunkMetalAndCloth(final, &ex->model);
 				}
 				else if (chType==H2THINGTYPE_ICE)
 				{
-					ex->model = R_RegisterModel("models/shard.mdl");
-					ex->skin = 0;
-					//ent->frame = rand()%2;
-					ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
-					//ent->abslight = 0.5;
+					int frame;
+					int absoluteLight;
+					CLH2_InitChunkIce(&ex->model, &ex->skin, &ex->flags, &frame, &absoluteLight);
 				}
 				else if (chType==H2THINGTYPE_METEOR)
 				{
-					ex->model = R_RegisterModel("models/tempmetr.mdl");
-					ex->skin = 0;
-					//ex->scale *= .6;
+					CLH2_InitChunkMeteor(&ex->model, &ex->skin);
 					VectorScale(ex->avel, 4.0, ex->avel);
 				}
 				else if (chType==H2THINGTYPE_ACID)
-				{	// no spinning if possible...
-					ex->model = R_RegisterModel("models/sucwp2p.mdl");
-					ex->skin = 0;
+				{
+					CLH2_InitChunkAcid(&ex->model, &ex->skin);
 				}
 				else if (chType==H2THINGTYPE_GREENFLESH)
-				{	// spider guts
-					if (final < 0.33)
-						ex->model = R_RegisterModel ("models/sflesh1.mdl");
-					else if (final < 0.66)
-						ex->model = R_RegisterModel ("models/sflesh2.mdl");
-					else
-						ex->model = R_RegisterModel ("models/sflesh3.mdl");
-
-					ex->skin = 0;
-				}
-				else// if (chType==H2THINGTYPE_GREYSTONE)
 				{
-					if (final < 0.25)
-						ex->model = R_RegisterModel ("models/schunk1.mdl");
-					else if (final < 0.50)
-						ex->model = R_RegisterModel ("models/schunk2.mdl");
-					else if (final < 0.75)
-						ex->model = R_RegisterModel ("models/schunk3.mdl");
-					else 
-						ex->model = R_RegisterModel ("models/schunk4.mdl");
-					ex->skin = 0;
+					CLH2_InitChunkGreenFlesh(final, &ex->model, &ex->skin);
+				}
+				else // if (chType==H2THINGTYPE_GREYSTONE)
+				{
+					CLH2_InitChunkGreyStone(final, &ex->model, &ex->skin);
 				}
 
 				ex->startTime = cl.serverTimeFloat;

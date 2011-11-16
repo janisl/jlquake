@@ -1313,251 +1313,97 @@ void CL_ParseEffect(void)
 
 					// make this overcomplicated
 					final = (rand()%100)*.01;
-					if ((cl.h2_Effects[index].Chunk.type==H2THINGTYPE_GLASS) || (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_REDGLASS) || 
-							(cl.h2_Effects[index].Chunk.type==H2THINGTYPE_CLEARGLASS) || (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WEBS))
+					if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_GLASS)
 					{
-						if (final<0.20)
-							ent->model = R_RegisterModel ("models/shard1.mdl");
-						else if (final<0.40)
-							ent->model = R_RegisterModel ("models/shard2.mdl");
-						else if (final<0.60)
-							ent->model = R_RegisterModel ("models/shard3.mdl");
-						else if (final<0.80)
-							ent->model = R_RegisterModel ("models/shard4.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/shard5.mdl");
-
-						if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_CLEARGLASS)
-						{
-							ent->state.skinnum=1;
-							ent->state.drawflags |= H2DRF_TRANSLUCENT;
-						}
-						else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_REDGLASS)
-						{
-							ent->state.skinnum=2;
-						}
-						else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WEBS)
-						{
-							ent->state.skinnum=3;
-							ent->state.drawflags |= H2DRF_TRANSLUCENT;
-						}
+						CLH2_InitChunkGlass(final, &ent->model);
+					}
+					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_CLEARGLASS)
+					{
+						CLH2_InitChunkClearGlass(final, &ent->model, &ent->state.skinnum, &ent->state.drawflags);
+					}
+					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_REDGLASS)
+					{
+						CLH2_InitChunkRedGlass(final, &ent->model, &ent->state.skinnum);
+					}
+					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WEBS)
+					{
+						CLH2_InitChunkWebs(final, &ent->model, &ent->state.skinnum, &ent->state.drawflags);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WOOD)
 					{
-						if (final < 0.25)
-							ent->model = R_RegisterModel ("models/splnter1.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/splnter2.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/splnter3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/splnter4.mdl");
+						CLH2_InitChunkWood(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_METAL)
 					{
-						if (final < 0.25)
-							ent->model = R_RegisterModel ("models/metlchk1.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/metlchk2.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/metlchk3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/metlchk4.mdl");
+						CLH2_InitChunkMetal(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_FLESH)
 					{
-						if (final < 0.33)
-							ent->model = R_RegisterModel ("models/flesh1.mdl");
-						else if (final < 0.66)
-							ent->model = R_RegisterModel ("models/flesh2.mdl");
-						else
-							ent->model = R_RegisterModel ("models/flesh3.mdl");
+						CLH2_InitChunkFlesh(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_BROWNSTONE)
 					{
-						if (final < 0.25)
-							ent->model = R_RegisterModel ("models/schunk1.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/schunk2.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/schunk3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/schunk4.mdl");
-						ent->state.skinnum = 1;
+						CLH2_InitChunkBrownStone(final, &ent->model, &ent->state.skinnum);
 					}
-					else if ((cl.h2_Effects[index].Chunk.type==H2THINGTYPE_CLAY) || (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_BONE))
+					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_CLAY)
 					{
-						if (final < 0.25)
-							ent->model = R_RegisterModel ("models/clshard1.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/clshard2.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/clshard3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/clshard4.mdl");
-						if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_BONE)
-						{
-							ent->state.skinnum=1;//bone skin is second
-						}
+						CLH2_InitChunkClay(final, &ent->model);
+					}
+					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_BONE)
+					{
+						CLH2_InitChunkBone(final, &ent->model, &ent->state.skinnum);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_LEAVES)
 					{
-						if (final < 0.33)
-							ent->model = R_RegisterModel ("models/leafchk1.mdl");
-						else if (final < 0.66)
-							ent->model = R_RegisterModel ("models/leafchk2.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/leafchk3.mdl");
+						CLH2_InitChunkLeaves(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_HAY)
 					{
-						if (final < 0.33)
-							ent->model = R_RegisterModel ("models/hay1.mdl");
-						else if (final < 0.66)
-							ent->model = R_RegisterModel ("models/hay2.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/hay3.mdl");
+						CLH2_InitChunkHay(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_CLOTH)
 					{
-						if (final < 0.33)
-							ent->model = R_RegisterModel ("models/clthchk1.mdl");
-						else if (final < 0.66)
-							ent->model = R_RegisterModel ("models/clthchk2.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/clthchk3.mdl");
+						CLH2_InitChunkCloth(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WOOD_LEAF)
 					{
-						if (final < 0.14)
-							ent->model = R_RegisterModel ("models/splnter1.mdl");
-						else if (final < 0.28)
-							ent->model = R_RegisterModel ("models/leafchk1.mdl");
-						else if (final < 0.42)
-							ent->model = R_RegisterModel ("models/splnter2.mdl");
-						else if (final < 0.56)
-							ent->model = R_RegisterModel ("models/leafchk2.mdl");
-						else if (final < 0.70)
-							ent->model = R_RegisterModel ("models/splnter3.mdl");
-						else if (final < 0.84)
-							ent->model = R_RegisterModel ("models/leafchk3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/splnter4.mdl");
+						CLH2_InitChunkWoodAndLeaf(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WOOD_METAL)
 					{
-						if (final < 0.125)
-							ent->model = R_RegisterModel ("models/splnter1.mdl");
-						else if (final < 0.25)
-							ent->model = R_RegisterModel ("models/metlchk1.mdl");
-						else if (final < 0.375)
-							ent->model = R_RegisterModel ("models/splnter2.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/metlchk2.mdl");
-						else if (final < 0.625)
-							ent->model = R_RegisterModel ("models/splnter3.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/metlchk3.mdl");
-						else if (final < 0.875)
-							ent->model = R_RegisterModel ("models/splnter4.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/metlchk4.mdl");
+						CLH2_InitChunkWoodAndMetal(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_WOOD_STONE)
 					{
-						if (final < 0.125)
-							ent->model = R_RegisterModel ("models/splnter1.mdl");
-						else if (final < 0.25)
-							ent->model = R_RegisterModel ("models/schunk1.mdl");
-						else if (final < 0.375)
-							ent->model = R_RegisterModel ("models/splnter2.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/schunk2.mdl");
-						else if (final < 0.625)
-							ent->model = R_RegisterModel ("models/splnter3.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/schunk3.mdl");
-						else if (final < 0.875)
-							ent->model = R_RegisterModel ("models/splnter4.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/schunk4.mdl");
+						CLH2_InitChunkWoodAndStone(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_METAL_STONE)
 					{
-						if (final < 0.125)
-							ent->model = R_RegisterModel ("models/metlchk1.mdl");
-						else if (final < 0.25)
-							ent->model = R_RegisterModel ("models/schunk1.mdl");
-						else if (final < 0.375)
-							ent->model = R_RegisterModel ("models/metlchk2.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/schunk2.mdl");
-						else if (final < 0.625)
-							ent->model = R_RegisterModel ("models/metlchk3.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/schunk3.mdl");
-						else if (final < 0.875)
-							ent->model = R_RegisterModel ("models/metlchk4.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/schunk4.mdl");
+						CLH2_InitChunkMetalAndStone(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_METAL_CLOTH)
 					{
-						if (final < 0.14)
-							ent->model = R_RegisterModel ("models/metlchk1.mdl");
-						else if (final < 0.28)
-							ent->model = R_RegisterModel ("models/clthchk1.mdl");
-						else if (final < 0.42)
-							ent->model = R_RegisterModel ("models/metlchk2.mdl");
-						else if (final < 0.56)
-							ent->model = R_RegisterModel ("models/clthchk2.mdl");
-						else if (final < 0.70)
-							ent->model = R_RegisterModel ("models/metlchk3.mdl");
-						else if (final < 0.84)
-							ent->model = R_RegisterModel ("models/clthchk3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/metlchk4.mdl");
+						CLH2_InitChunkMetalAndCloth(final, &ent->model);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_ICE)
 					{
-						ent->model = R_RegisterModel("models/shard.mdl");
-						ent->state.skinnum=0;
-						ent->state.frame = rand()%2;
-						ent->state.drawflags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
-						ent->state.abslight = 0.5;
+						CLH2_InitChunkIce(&ent->model, &ent->state.skinnum, &ent->state.drawflags, &ent->state.frame, &ent->state.abslight);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_METEOR)
 					{
-						ent->model = R_RegisterModel("models/tempmetr.mdl");
-						ent->state.skinnum = 0;
+						CLH2_InitChunkMeteor(&ent->model, &ent->state.skinnum);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_ACID)
-					{	// no spinning if possible...
-						ent->model = R_RegisterModel("models/sucwp2p.mdl");
-						ent->state.skinnum = 0;
+					{
+						CLH2_InitChunkAcid(&ent->model, &ent->state.skinnum);
 					}
 					else if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_GREENFLESH)
-					{	// spider guts
-						if (final < 0.33)
-							ent->model = R_RegisterModel ("models/sflesh1.mdl");
-						else if (final < 0.66)
-							ent->model = R_RegisterModel ("models/sflesh2.mdl");
-						else
-							ent->model = R_RegisterModel ("models/sflesh3.mdl");
-
-						ent->state.skinnum = 0;
-					}
-					else// if (cl.h2_Effects[index].Chunk.type==H2THINGTYPE_GREYSTONE)
 					{
-						if (final < 0.25)
-							ent->model = R_RegisterModel ("models/schunk1.mdl");
-						else if (final < 0.50)
-							ent->model = R_RegisterModel ("models/schunk2.mdl");
-						else if (final < 0.75)
-							ent->model = R_RegisterModel ("models/schunk3.mdl");
-						else 
-							ent->model = R_RegisterModel ("models/schunk4.mdl");
-						ent->state.skinnum = 0;
+						CLH2_InitChunkGreenFlesh(final, &ent->model, &ent->state.skinnum);
+					}
+					else
+					{
+						CLH2_InitChunkGreyStone(final, &ent->model, &ent->state.skinnum);
 					}
 				}
 			}

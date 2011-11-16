@@ -1608,6 +1608,26 @@
 				Name="hexen2"
 				>
 				<File
+					RelativePath=".\game\hexen2\chunk.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\hexen2\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\hexen2\"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\game\hexen2\effects.cpp"
 					>
 					<FileConfiguration
