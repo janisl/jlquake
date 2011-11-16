@@ -1406,3 +1406,422 @@ bool CLHW_ParseEffectEidolonStar(int index, QMsg& message)
 	}
 	return !ImmediateFree;
 }
+
+bool CLH2_ParseEffectType(int index, QMsg& message)
+{
+	bool ImmediateFree = false;
+	switch (cl_common->h2_Effects[index].type)
+	{
+	case H2CE_RAIN:
+		CLH2_ParseEffectRain(index, message);
+		break;
+	case H2CE_SNOW:
+		CLH2_ParseEffectSnow(index, message);
+		break;
+	case H2CE_FOUNTAIN:
+		CLH2_ParseEffectFountain(index, message);
+		break;
+	case H2CE_QUAKE:
+		CLH2_ParseEffectQuake(index, message);
+		break;
+	case H2CE_WHITE_SMOKE:
+	case H2CE_SLOW_WHITE_SMOKE:
+		ImmediateFree = CLH2_ParseEffectWhiteSmoke(index, message);
+		break;
+	case H2CE_GREEN_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectGreenSmoke(index, message);
+		break;
+	case H2CE_GREY_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectGraySmoke(index, message);
+		break;
+	case H2CE_RED_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectRedSmoke(index, message);
+		break;
+	case H2CE_TELESMK1:
+		ImmediateFree = !CLH2_ParseEffectTeleportSmoke1(index, message);
+		break;
+	case H2CE_TELESMK2:
+		ImmediateFree = !CLH2_ParseEffectTeleportSmoke2(index, message);
+		break;
+	case H2CE_GHOST:
+		ImmediateFree = !CLH2_ParseEffectGhost(index, message);
+		break;
+	case H2CE_REDCLOUD:
+		ImmediateFree = !CLH2_ParseEffectRedCloud(index, message);
+		break;
+	case H2CE_ACID_MUZZFL:
+		ImmediateFree = !CLH2_ParseEffectAcidMuzzleFlash(index, message);
+		break;
+	case H2CE_FLAMESTREAM:
+		ImmediateFree = !CLH2_ParseEffectFlameStream(index, message);
+		break;
+	case H2CE_FLAMEWALL:
+		ImmediateFree = !CLH2_ParseEffectFlameWall(index, message);
+		break;
+	case H2CE_FLAMEWALL2:
+		ImmediateFree = !CLH2_ParseEffectFlameWall2(index, message);
+		break;
+	case H2CE_ONFIRE:
+		ImmediateFree = !CLH2_ParseEffectOnFire(index, message);
+		break;
+	case H2CE_SM_WHITE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectSmallWhiteFlash(index, message);
+		break;
+	case H2CE_YELLOWRED_FLASH:
+		ImmediateFree = !CLH2_ParseEffectYellowRedFlash(index, message);
+		break;
+	case H2CE_BLUESPARK:
+		ImmediateFree = !CLH2_ParseEffectBlueSpark(index, message);
+		break;
+	case H2CE_YELLOWSPARK:
+	case H2CE_BRN_BOUNCE:
+		ImmediateFree = !CLH2_ParseEffectYellowSpark(index, message);
+		break;
+	case H2CE_SM_CIRCLE_EXP:
+		ImmediateFree = !CLH2_ParseEffectSmallCircleExplosion(index, message);
+		break;
+	case H2CE_BG_CIRCLE_EXP:
+		ImmediateFree = !CLH2_ParseEffectBigCircleExplosion(index, message);
+		break;
+	case H2CE_SM_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, message);
+		break;
+	case H2CE_LG_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectBigExplosion(index, message);
+		break;
+	case H2CE_FLOOR_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, message);
+		break;
+	case H2CE_FLOOR_EXPLOSION3:
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion3(index, message);
+		break;
+	case H2CE_BLUE_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectBlueExplosion(index, message);
+		break;
+	case H2CE_REDSPARK:
+		ImmediateFree = !CLH2_ParseEffectRedSpark(index, message);
+		break;
+	case H2CE_GREENSPARK:
+		ImmediateFree = !CLH2_ParseEffectGreenSpark(index, message);
+		break;
+	case H2CE_ICEHIT:
+		ImmediateFree = !CLH2_ParseEffectIceHit(index, message);
+		break;
+	case H2CE_MEDUSA_HIT:
+		ImmediateFree = !CLH2_ParseEffectMedusaHit(index, message);
+		break;
+	case H2CE_MEZZO_REFLECT:
+		ImmediateFree = !CLH2_ParseEffectMezzoReflect(index, message);
+		break;
+	case H2CE_FLOOR_EXPLOSION2:
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion2(index, message);
+		break;
+	case H2CE_XBOW_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectXBowExplosion(index, message);
+		break;
+	case H2CE_NEW_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectNewExplosion(index, message);
+		break;
+	case H2CE_MAGIC_MISSILE_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectMagicMissileExplosion(index, message);
+		break;
+	case H2CE_BONE_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, message);
+		break;
+	case H2CE_BLDRN_EXPL:
+		ImmediateFree = !CLH2_ParseEffectBldrnExplosion(index, message);
+		break;
+	case H2CE_LSHOCK:
+		ImmediateFree = !CLH2_ParseEffectLShock(index, message);
+		break;
+	case H2CE_ACID_HIT:
+		ImmediateFree = !CLH2_ParseEffectAcidHit(index, message);
+		break;
+	case H2CE_ACID_SPLAT:
+		ImmediateFree = !CLH2_ParseEffectAcidSplat(index, message);
+		break;
+	case H2CE_ACID_EXPL:
+		ImmediateFree = !CLH2_ParseEffectAcidExplosion(index, message);
+		break;
+	case H2CE_LBALL_EXPL:
+		ImmediateFree = !CLH2_ParseEffectLBallExplosion(index, message);
+		break;
+	case H2CE_FBOOM:
+		ImmediateFree = !CLH2_ParseEffectFBoom(index, message);
+		break;
+	case H2CE_BOMB:
+		ImmediateFree = !CLH2_ParseEffectBomb(index, message);
+		break;
+	case H2CE_FIREWALL_SMALL:
+		ImmediateFree = !CLH2_ParseEffectFirewallSall(index, message);
+		break;
+	case H2CE_FIREWALL_MEDIUM:
+		ImmediateFree = !CLH2_ParseEffectFirewallMedium(index, message);
+		break;
+	case H2CE_FIREWALL_LARGE:
+		ImmediateFree = !CLH2_ParseEffectFirewallLarge(index, message);
+		break;
+	case H2CE_WHITE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectWhiteFlash(index, message);
+		break;
+	case H2CE_BLUE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectBlueFlash(index, message);
+		break;
+	case H2CE_SM_BLUE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectSmallBlueFlash(index, message);
+		break;
+	case H2CE_RED_FLASH:
+		ImmediateFree = !CLH2_ParseEffectRedFlash(index, message);
+		break;
+	case H2CE_RIDER_DEATH:
+		CLH2_ParseEffectRiderDeath(index, message);
+		break;
+	case H2CE_GRAVITYWELL:
+		CLH2_ParseEffectGravityWell(index, message);
+		break;
+	case H2CE_TELEPORTERPUFFS:
+		CLH2_ParseEffectTeleporterPuffs(index, message);
+		break;
+	case H2CE_TELEPORTERBODY:
+		CLH2_ParseEffectTeleporterBody(index, message);
+		break;
+	case H2CE_BONESHARD:
+		ImmediateFree = !CLH2_ParseEffectBoneShard(index, message);
+		break;
+	case H2CE_BONESHRAPNEL:
+		ImmediateFree = !CLH2_ParseEffectBoneShrapnel(index, message);
+		break;
+	case H2CE_CHUNK:
+		CLH2_ParseEffectChunk(index, message);
+		break;
+	default:
+		throw Exception("CL_ParseEffect: bad type");
+	}
+	return ImmediateFree;
+}
+
+bool CLHW_ParseEffectType(int index, QMsg& net_message)
+{
+	bool ImmediateFree = false;
+	switch (cl_common->h2_Effects[index].type)
+	{
+	case HWCE_RAIN:
+		CLH2_ParseEffectRain(index, net_message);
+		break;
+	case HWCE_FOUNTAIN:
+		CLH2_ParseEffectFountain(index, net_message);
+		break;
+	case HWCE_QUAKE:
+		CLH2_ParseEffectQuake(index, net_message);
+		break;
+	case HWCE_WHITE_SMOKE:
+	case HWCE_SLOW_WHITE_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectWhiteSmoke(index, net_message);
+		break;
+	case HWCE_GREEN_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectGreenSmoke(index, net_message);
+		break;
+	case HWCE_GREY_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectGraySmoke(index, net_message);
+		break;
+	case HWCE_RED_SMOKE:
+		ImmediateFree = !CLH2_ParseEffectRedSmoke(index, net_message);
+		break;
+	case HWCE_TELESMK1:
+		ImmediateFree = !CLH2_ParseEffectTeleportSmoke1(index, net_message);
+		break;
+	case HWCE_TELESMK2:
+		ImmediateFree = !CLH2_ParseEffectTeleportSmoke2(index, net_message);
+		break;
+	case HWCE_GHOST:
+		ImmediateFree = !CLH2_ParseEffectGhost(index, net_message);
+		break;
+	case HWCE_REDCLOUD:
+		ImmediateFree = !CLH2_ParseEffectRedCloud(index, net_message);
+		break;
+	case HWCE_ACID_MUZZFL:
+		ImmediateFree = !CLH2_ParseEffectAcidMuzzleFlash(index, net_message);
+		break;
+	case HWCE_FLAMESTREAM:
+		ImmediateFree = !CLH2_ParseEffectFlameStream(index, net_message);
+		break;
+	case HWCE_FLAMEWALL:
+		ImmediateFree = !CLH2_ParseEffectFlameWall(index, net_message);
+		break;
+	case HWCE_FLAMEWALL2:
+		ImmediateFree = !CLH2_ParseEffectFlameWall2(index, net_message);
+		break;
+	case HWCE_ONFIRE:
+		ImmediateFree = !CLH2_ParseEffectOnFire(index, net_message);
+		break;
+	case HWCE_RIPPLE:
+		ImmediateFree = !CLHW_ParseEffectRipple(index, net_message);
+		break;
+	case HWCE_SM_WHITE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectSmallWhiteFlash(index, net_message);
+		break;
+	case HWCE_YELLOWRED_FLASH:
+		ImmediateFree = !CLH2_ParseEffectYellowRedFlash(index, net_message);
+		break;
+	case HWCE_BLUESPARK:
+		ImmediateFree = !CLH2_ParseEffectBlueSpark(index, net_message);
+		break;
+	case HWCE_YELLOWSPARK:
+	case HWCE_BRN_BOUNCE:
+		ImmediateFree = !CLH2_ParseEffectYellowSpark(index, net_message);
+		break;
+	case HWCE_SM_CIRCLE_EXP:
+		ImmediateFree = !CLH2_ParseEffectSmallCircleExplosion(index, net_message);
+		break;
+	case HWCE_BG_CIRCLE_EXP:
+		ImmediateFree = !CLH2_ParseEffectBigCircleExplosion(index, net_message);
+		break;
+	case HWCE_SM_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, net_message);
+		break;
+	case HWCE_SM_EXPLOSION2:
+		ImmediateFree = !CLHW_ParseEffectSmallExplosionWithSound(index, net_message);
+		break;
+	case HWCE_BG_EXPLOSION:
+		ImmediateFree = !CLHW_ParseEffectBigExplosionWithSound(index, net_message);
+		break;
+	case HWCE_FLOOR_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, net_message);
+		break;
+	case HWCE_BLUE_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectBlueExplosion(index, net_message);
+		break;
+	case HWCE_REDSPARK:
+		ImmediateFree = !CLH2_ParseEffectRedSpark(index, net_message);
+		break;
+	case HWCE_GREENSPARK:
+		ImmediateFree = !CLH2_ParseEffectGreenSpark(index, net_message);
+		break;
+	case HWCE_ICEHIT:
+		ImmediateFree = !CLH2_ParseEffectIceHit(index, net_message);
+		break;
+	case HWCE_MEDUSA_HIT:
+		ImmediateFree = !CLH2_ParseEffectMedusaHit(index, net_message);
+		break;
+	case HWCE_MEZZO_REFLECT:
+		ImmediateFree = !CLH2_ParseEffectMezzoReflect(index, net_message);
+		break;
+	case HWCE_FLOOR_EXPLOSION2:
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion2(index, net_message);
+		break;
+	case HWCE_XBOW_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectXBowExplosion(index, net_message);
+		break;
+	case HWCE_NEW_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectNewExplosion(index, net_message);
+		break;
+	case HWCE_MAGIC_MISSILE_EXPLOSION:
+		ImmediateFree = !CLHW_ParseEffectMagicMissileExplosionWithSound(index, net_message);
+		break;
+	case HWCE_BONE_EXPLOSION:
+		ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, net_message);
+		break;
+	case HWCE_BLDRN_EXPL:
+		ImmediateFree = !CLH2_ParseEffectBldrnExplosion(index, net_message);
+		break;
+	case HWCE_LSHOCK:
+		ImmediateFree = !CLH2_ParseEffectLShock(index, net_message);
+		break;
+	case HWCE_ACID_HIT:
+		ImmediateFree = !CLH2_ParseEffectAcidHit(index, net_message);
+		break;
+	case HWCE_ACID_SPLAT:
+		ImmediateFree = !CLH2_ParseEffectAcidSplat(index, net_message);
+		break;
+	case HWCE_ACID_EXPL:
+		ImmediateFree = !CLH2_ParseEffectAcidExplosion(index, net_message);
+		break;
+	case HWCE_LBALL_EXPL:
+		ImmediateFree = !CLH2_ParseEffectLBallExplosion(index, net_message);
+		break;
+	case HWCE_FBOOM:
+		ImmediateFree = !CLH2_ParseEffectFBoom(index, net_message);
+		break;
+	case HWCE_BOMB:
+		ImmediateFree = !CLH2_ParseEffectBomb(index, net_message);
+		break;
+	case HWCE_FIREWALL_SMALL:
+		ImmediateFree = !CLH2_ParseEffectFirewallSall(index, net_message);
+		break;
+	case HWCE_FIREWALL_MEDIUM:
+		ImmediateFree = !CLH2_ParseEffectFirewallMedium(index, net_message);
+		break;
+	case HWCE_FIREWALL_LARGE:
+		ImmediateFree = !CLH2_ParseEffectFirewallLarge(index, net_message);
+		break;
+	case HWCE_WHITE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectWhiteFlash(index, net_message);
+		break;
+	case HWCE_BLUE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectBlueFlash(index, net_message);
+		break;
+	case HWCE_SM_BLUE_FLASH:
+		ImmediateFree = !CLH2_ParseEffectSmallBlueFlash(index, net_message);
+		break;
+	case HWCE_HWSPLITFLASH:
+		ImmediateFree = !CLHW_ParseEffectSplitFlash(index, net_message);
+		break;
+	case HWCE_RED_FLASH:
+		ImmediateFree = !CLH2_ParseEffectRedFlash(index, net_message);
+		break;
+	case HWCE_RIDER_DEATH:
+		CLH2_ParseEffectRiderDeath(index, net_message);
+		break;
+	case HWCE_TELEPORTERPUFFS:
+		CLH2_ParseEffectTeleporterPuffs(index, net_message);
+		break;
+	case HWCE_TELEPORTERBODY:
+		CLH2_ParseEffectTeleporterBody(index, net_message);
+		break;
+	case HWCE_BONESHRAPNEL:
+		ImmediateFree = !CLH2_ParseEffectBoneShrapnel(index, net_message);
+		break;
+	case HWCE_HWBONEBALL:
+		ImmediateFree = !CLHW_ParseEffectBoneBall(index, net_message);
+		break;
+	case HWCE_BONESHARD:
+		ImmediateFree = !CLHW_ParseEffectBoneShard(index, net_message);
+		break;
+	case HWCE_HWRAVENSTAFF:
+		ImmediateFree = !CLHW_ParseEffectRavenStaff(index, net_message);
+		break;
+	case HWCE_HWRAVENPOWER:
+		ImmediateFree = !CLHW_ParseEffectRavenPower(index, net_message);
+		break;
+	case HWCE_DEATHBUBBLES:
+		CLHW_ParseEffectDeathBubbles(index, net_message);
+		break;
+	case HWCE_HWXBOWSHOOT:
+		CLHW_ParseEffectXBowShoot(index, net_message);
+		break;
+	case HWCE_HWSHEEPINATOR:
+		CLHW_ParseEffectSheepinator(index, net_message);
+		break;
+	case HWCE_HWDRILLA:
+		ImmediateFree = !CLHW_ParseEffectDrilla(index, net_message);
+		break;
+	case HWCE_SCARABCHAIN:
+		ImmediateFree = !CLHW_ParseEffectScarabChain(index, net_message);
+		break;
+	case HWCE_TRIPMINE:
+		ImmediateFree = !CLHW_ParseEffectTripMine(index, net_message);
+		break;
+	case HWCE_TRIPMINESTILL:
+		ImmediateFree = !CLHW_ParseEffectTripMineStill(index, net_message);
+		break;
+	case HWCE_HWMISSILESTAR:
+		ImmediateFree = !CLHW_ParseEffectMissileStar(index, net_message);
+		break;
+	case HWCE_HWEIDOLONSTAR:
+		ImmediateFree = !CLHW_ParseEffectEidolonStar(index, net_message);
+		break;
+	default:
+		throw Exception("CL_ParseEffect: bad type");
+	}
+	return ImmediateFree;
+}

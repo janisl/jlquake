@@ -145,6 +145,8 @@ bool CLHW_ParseEffectTripMineStill(int index, QMsg& message);
 bool CLHW_ParseEffectStarCommon(int index, QMsg& message);
 bool CLHW_ParseEffectMissileStar(int index, QMsg& message);
 bool CLHW_ParseEffectEidolonStar(int index, QMsg& message);
+bool CLH2_ParseEffectType(int index, QMsg& message);
+bool CLHW_ParseEffectType(int index, QMsg& message);
 
 void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight);
 void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);
