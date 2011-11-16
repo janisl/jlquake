@@ -1530,6 +1530,12 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = abslight / 256.0;
 	}
+	else if (mls != H2MLS_NONE)
+	{
+		// Use a model light style (25-30)
+		ent->renderfx |= RF_ABSOLUTE_LIGHT;
+		ent->radius = cl_lightstyle[24 + mls].value[0] / 2;
+	}
 }
 
 void CIN_StartedPlayback()
