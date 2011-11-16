@@ -943,97 +943,13 @@ void CL_ParseTEnt (void)
 				}
 				ex->data = chType;
 
-				final = (rand()%100)*.01;
-				if (chType==H2THINGTYPE_GLASS)
+				int tmpFrame;
+				int tmpAbsoluteLight;
+				CLH2_InitChunkModel(chType, &ex->model, &ex->skin, &ex->flags, &tmpFrame, &tmpAbsoluteLight);
+
+				if (chType == H2THINGTYPE_METEOR)
 				{
-					CLH2_InitChunkGlass(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_CLEARGLASS)
-				{
-					CLH2_InitChunkClearGlass(final, &ex->model, &ex->skin, &ex->flags);
-				}
-				else if (chType==H2THINGTYPE_REDGLASS)
-				{
-					CLH2_InitChunkRedGlass(final, &ex->model, &ex->skin);
-				}
-				else if (chType==H2THINGTYPE_WEBS)
-				{
-					CLH2_InitChunkWebs(final, &ex->model, &ex->skin, &ex->flags);
-				}
-				else if (chType==H2THINGTYPE_WOOD)
-				{
-					CLH2_InitChunkWood(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_METAL)
-				{
-					CLH2_InitChunkMetal(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_FLESH)
-				{
-					CLH2_InitChunkFlesh(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_BROWNSTONE||chType==H2THINGTYPE_DIRT)
-				{
-					CLH2_InitChunkBrownStone(final, &ex->model, &ex->skin);
-				}
-				else if (chType==H2THINGTYPE_CLAY)
-				{
-					CLH2_InitChunkClay(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_LEAVES)
-				{
-					CLH2_InitChunkLeaves(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_HAY)
-				{
-					CLH2_InitChunkHay(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_CLOTH)
-				{
-					CLH2_InitChunkCloth(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_WOOD_LEAF)
-				{
-					CLH2_InitChunkWoodAndLeaf(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_WOOD_METAL)
-				{
-					CLH2_InitChunkWoodAndMetal(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_WOOD_STONE)
-				{
-					CLH2_InitChunkWoodAndStone(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_METAL_STONE)
-				{
-					CLH2_InitChunkMetalAndStone(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_METAL_CLOTH)
-				{
-					CLH2_InitChunkMetalAndCloth(final, &ex->model);
-				}
-				else if (chType==H2THINGTYPE_ICE)
-				{
-					int frame;
-					int absoluteLight;
-					CLH2_InitChunkIce(&ex->model, &ex->skin, &ex->flags, &frame, &absoluteLight);
-				}
-				else if (chType==H2THINGTYPE_METEOR)
-				{
-					CLH2_InitChunkMeteor(&ex->model, &ex->skin);
 					VectorScale(ex->avel, 4.0, ex->avel);
-				}
-				else if (chType==H2THINGTYPE_ACID)
-				{
-					CLH2_InitChunkAcid(&ex->model, &ex->skin);
-				}
-				else if (chType==H2THINGTYPE_GREENFLESH)
-				{
-					CLH2_InitChunkGreenFlesh(final, &ex->model, &ex->skin);
-				}
-				else // if (chType==H2THINGTYPE_GREYSTONE)
-				{
-					CLH2_InitChunkGreyStone(final, &ex->model, &ex->skin);
 				}
 
 				ex->startTime = cl.serverTimeFloat;
