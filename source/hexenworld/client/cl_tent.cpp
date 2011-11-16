@@ -892,30 +892,17 @@ void CL_ParseTEnt (void)
 
 			for(i = 0; i < cnt; i++)
 			{
-				float final;
-
 				ex = CL_AllocExplosion();
 				ex->frameFunc = ChunkThink;
 
 				if(type == TE_CHUNK)
 				{
 					VectorCopy(pos,ex->origin);
-					VectorCopy(vel, ex->velocity);
-					VectorScale(ex->velocity, .80 + ((rand()%4)/10.0), ex->velocity);
-					// temp modify them...
-					ex->velocity[0] += (rand()%140)-70;
-					ex->velocity[1] += (rand()%140)-70;
-					ex->velocity[2] += (rand()%140)-70;
+					CLH2_InitChunkVelocity(vel, ex->velocity);
 
-					// are these in degrees or radians?
-					ex->angles[0] = rand()%360;
-					ex->angles[1] = rand()%360;
-					ex->angles[2] = rand()%360;
 					ex->exflags = EXFLAG_ROTATE;
 
-					ex->avel[0] = rand()%850 - 425;
-					ex->avel[1] = rand()%850 - 425;
-					ex->avel[2] = rand()%850 - 425;
+					CLH2_InitChunkAngleVelocity(ex->avel);
 
 					ex->scale = 30 + 100 * (cnt / 40.0) + rand()%40;
 				}
@@ -932,15 +919,12 @@ void CL_ParseTEnt (void)
 					ex->velocity[2] = -210 + FRANDOM() * 490;
 					// set scale
 					ex->scale = scale*100;
-					// set angles, avel
-					ex->angles[0] = rand()%360;
-					ex->angles[1] = rand()%360;
-					ex->angles[2] = rand()%360;
 
 					ex->avel[0] = rand()%1200;
 					ex->avel[1] = rand()%1200;
 					ex->avel[2] = rand()%1200;
 				}
+				CLH2_InitChunkAngles(ex->angles);
 				ex->data = chType;
 
 				int tmpFrame;

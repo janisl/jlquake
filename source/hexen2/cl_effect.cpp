@@ -1066,7 +1066,6 @@ void CL_ParseEffect(void)
 	int index,i;
 	qboolean ImmediateFree;
 	effect_entity_t* ent;
-	float final;
 
 	ImmediateFree = false;
 
@@ -1296,21 +1295,9 @@ void CL_ParseEffect(void)
 				{
 					ent = &EffectEntities[cl.h2_Effects[index].Chunk.entity_index[i]];
 					VectorCopy(cl.h2_Effects[index].Chunk.origin, ent->state.origin);
-
-					VectorCopy(cl.h2_Effects[index].Chunk.srcVel, cl.h2_Effects[index].Chunk.velocity[i]);
-					VectorScale(cl.h2_Effects[index].Chunk.velocity[i], .80 + ((rand()%4)/10.0), cl.h2_Effects[index].Chunk.velocity[i]);
-					// temp modify them...
-					cl.h2_Effects[index].Chunk.velocity[i][0] += (rand()%140)-70;
-					cl.h2_Effects[index].Chunk.velocity[i][1] += (rand()%140)-70;
-					cl.h2_Effects[index].Chunk.velocity[i][2] += (rand()%140)-70;
-
-					// are these in degrees or radians?
-					ent->state.angles[0] = rand()%360;
-					ent->state.angles[1] = rand()%360;
-					ent->state.angles[2] = rand()%360;
-
+					CLH2_InitChunkVelocity(cl.h2_Effects[index].Chunk.srcVel, cl.h2_Effects[index].Chunk.velocity[i]);
+					CLH2_InitChunkAngles(ent->state.angles);
 					ent->state.scale = cl.h2_Effects[index].Chunk.aveScale + rand()%40;
-
 					CLH2_InitChunkModel(cl.h2_Effects[index].Chunk.type,
 						&ent->model, &ent->state.skinnum, &ent->state.drawflags,
 						&ent->state.frame, &ent->state.abslight);
@@ -1318,9 +1305,7 @@ void CL_ParseEffect(void)
 			}
 			for(i=0; i < 3; i++)
 			{
-				cl.h2_Effects[index].Chunk.avel[i][0] = rand()%850 - 425;
-				cl.h2_Effects[index].Chunk.avel[i][1] = rand()%850 - 425;
-				cl.h2_Effects[index].Chunk.avel[i][2] = rand()%850 - 425;
+				CLH2_InitChunkAngleVelocity(cl.h2_Effects[index].Chunk.avel[i]);
 			}
 
 			break;

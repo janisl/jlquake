@@ -430,100 +430,124 @@ static void CLH2_InitChunkGreenFlesh(float final, qhandle_t* model, int* skinNum
 	*skinNum = 0;
 }
 
-void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight)
+void CLH2_InitChunkModel(int chunkType, int* model, int* skinNumber, int* drawFlags, int* frame, int* absoluteLight)
 {
 	float final = (rand() % 100) * .01;
-	if (chType == H2THINGTYPE_GLASS)
+	if (chunkType == H2THINGTYPE_GLASS)
 	{
 		CLH2_InitChunkGlass(final, model);
 	}
-	else if (chType == H2THINGTYPE_CLEARGLASS)
+	else if (chunkType == H2THINGTYPE_CLEARGLASS)
 	{
-		CLH2_InitChunkClearGlass(final, model, skinNum, drawFlags);
+		CLH2_InitChunkClearGlass(final, model, skinNumber, drawFlags);
 	}
-	else if (chType == H2THINGTYPE_REDGLASS)
+	else if (chunkType == H2THINGTYPE_REDGLASS)
 	{
-		CLH2_InitChunkRedGlass(final, model, skinNum);
+		CLH2_InitChunkRedGlass(final, model, skinNumber);
 	}
-	else if (chType == H2THINGTYPE_WEBS)
+	else if (chunkType == H2THINGTYPE_WEBS)
 	{
-		CLH2_InitChunkWebs(final, model, skinNum, drawFlags);
+		CLH2_InitChunkWebs(final, model, skinNumber, drawFlags);
 	}
-	else if (chType == H2THINGTYPE_WOOD)
+	else if (chunkType == H2THINGTYPE_WOOD)
 	{
 		CLH2_InitChunkWood(final, model);
 	}
-	else if (chType == H2THINGTYPE_METAL)
+	else if (chunkType == H2THINGTYPE_METAL)
 	{
 		CLH2_InitChunkMetal(final, model);
 	}
-	else if (chType == H2THINGTYPE_FLESH)
+	else if (chunkType == H2THINGTYPE_FLESH)
 	{
 		CLH2_InitChunkFlesh(final, model);
 	}
-	else if (chType == H2THINGTYPE_BROWNSTONE ||
-		((GGameType & GAME_HexenWorld) && chType == H2THINGTYPE_DIRT))
+	else if (chunkType == H2THINGTYPE_BROWNSTONE ||
+		((GGameType & GAME_HexenWorld) && chunkType == H2THINGTYPE_DIRT))
 	{
-		CLH2_InitChunkBrownStone(final, model, skinNum);
+		CLH2_InitChunkBrownStone(final, model, skinNumber);
 	}
-	else if (chType == H2THINGTYPE_CLAY)
+	else if (chunkType == H2THINGTYPE_CLAY)
 	{
 		CLH2_InitChunkClay(final, model);
 	}
-	else if (!(GGameType & GAME_HexenWorld) && chType == H2THINGTYPE_BONE)
+	else if (!(GGameType & GAME_HexenWorld) && chunkType == H2THINGTYPE_BONE)
 	{
-		CLH2_InitChunkBone(final, model, skinNum);
+		CLH2_InitChunkBone(final, model, skinNumber);
 	}
-	else if (chType == H2THINGTYPE_LEAVES)
+	else if (chunkType == H2THINGTYPE_LEAVES)
 	{
 		CLH2_InitChunkLeaves(final, model);
 	}
-	else if (chType == H2THINGTYPE_HAY)
+	else if (chunkType == H2THINGTYPE_HAY)
 	{
 		CLH2_InitChunkHay(final, model);
 	}
-	else if (chType == H2THINGTYPE_CLOTH)
+	else if (chunkType == H2THINGTYPE_CLOTH)
 	{
 		CLH2_InitChunkCloth(final, model);
 	}
-	else if (chType == H2THINGTYPE_WOOD_LEAF)
+	else if (chunkType == H2THINGTYPE_WOOD_LEAF)
 	{
 		CLH2_InitChunkWoodAndLeaf(final, model);
 	}
-	else if (chType == H2THINGTYPE_WOOD_METAL)
+	else if (chunkType == H2THINGTYPE_WOOD_METAL)
 	{
 		CLH2_InitChunkWoodAndMetal(final, model);
 	}
-	else if (chType == H2THINGTYPE_WOOD_STONE)
+	else if (chunkType == H2THINGTYPE_WOOD_STONE)
 	{
 		CLH2_InitChunkWoodAndStone(final, model);
 	}
-	else if (chType == H2THINGTYPE_METAL_STONE)
+	else if (chunkType == H2THINGTYPE_METAL_STONE)
 	{
 		CLH2_InitChunkMetalAndStone(final, model);
 	}
-	else if (chType == H2THINGTYPE_METAL_CLOTH)
+	else if (chunkType == H2THINGTYPE_METAL_CLOTH)
 	{
 		CLH2_InitChunkMetalAndCloth(final, model);
 	}
-	else if (chType == H2THINGTYPE_ICE)
+	else if (chunkType == H2THINGTYPE_ICE)
 	{
-		CLH2_InitChunkIce(model, skinNum, drawFlags, frame, absoluteLight);
+		CLH2_InitChunkIce(model, skinNumber, drawFlags, frame, absoluteLight);
 	}
-	else if (chType == H2THINGTYPE_METEOR)
+	else if (chunkType == H2THINGTYPE_METEOR)
 	{
-		CLH2_InitChunkMeteor(model, skinNum);
+		CLH2_InitChunkMeteor(model, skinNumber);
 	}
-	else if (chType == H2THINGTYPE_ACID)
+	else if (chunkType == H2THINGTYPE_ACID)
 	{
-		CLH2_InitChunkAcid(model, skinNum);
+		CLH2_InitChunkAcid(model, skinNumber);
 	}
-	else if (chType == H2THINGTYPE_GREENFLESH)
+	else if (chunkType == H2THINGTYPE_GREENFLESH)
 	{
-		CLH2_InitChunkGreenFlesh(final, model, skinNum);
+		CLH2_InitChunkGreenFlesh(final, model, skinNumber);
 	}
 	else
 	{
-		CLH2_InitChunkGreyStone(final, model, skinNum);
+		CLH2_InitChunkGreyStone(final, model, skinNumber);
 	}
+}
+
+void CLH2_InitChunkVelocity(vec3_t sourceVelocity, vec3_t velocity)
+{
+	VectorCopy(sourceVelocity, velocity);
+	VectorScale(velocity, .80 + ((rand() % 4) / 10.0), velocity);
+	// temp modify them...
+	velocity[0] += (rand() % 140) - 70;
+	velocity[1] += (rand() % 140) - 70;
+	velocity[2] += (rand() % 140) - 70;
+}
+
+void CLH2_InitChunkAngles(vec3_t angles)
+{
+	angles[0] = rand() % 360;
+	angles[1] = rand() % 360;
+	angles[2] = rand() % 360;
+}
+
+void CLH2_InitChunkAngleVelocity(vec3_t avel)
+{
+	avel[0] = rand() % 850 - 425;
+	avel[1] = rand() % 850 - 425;
+	avel[2] = rand() % 850 - 425;
 }
