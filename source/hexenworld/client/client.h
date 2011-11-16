@@ -520,7 +520,6 @@ void CL_SavePlayer (void);
 void CL_ParseProjectiles (void);
 void CL_ParsePackMissiles (void);
 void CL_ParsePacketEntities (qboolean delta);
-void CL_ParseEffect(void);
 void CL_EndEffect(void);
 void CL_TurnEffect(void);
 void CL_ReviseEffect(void);

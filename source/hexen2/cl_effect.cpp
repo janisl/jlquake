@@ -39,7 +39,7 @@ void SV_ClearEffects(void)
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
+// SV_SaveEffects(), SV_LoadEffects()
 void SV_SendEffect(QMsg *sb, int index)
 {
 	qboolean	DoTest;
@@ -405,7 +405,7 @@ void SV_UpdateEffects(QMsg *sb)
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
+// SV_SaveEffects(), SV_LoadEffects()
 void SV_ParseEffect(QMsg *sb)
 {
 	int index;
@@ -592,7 +592,7 @@ void SV_ParseEffect(QMsg *sb)
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
+// SV_SaveEffects(), SV_LoadEffects()
 void SV_SaveEffects(fileHandle_t FH)
 {
 	int index,count;
@@ -837,7 +837,7 @@ static float GetFloat(char*& Data)
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
+// SV_SaveEffects(), SV_LoadEffects()
 char* SV_LoadEffects(char* Data)
 {
 	int index,Total,count;
@@ -1051,32 +1051,6 @@ char* SV_LoadEffects(char* Data)
 		}
 	}
 	return Data;
-}
-
-//==========================================================================
-//
-// CL_ParseEffect
-//
-//==========================================================================
-
-// All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
-void CL_ParseEffect(void)
-{
-	int index = net_message.ReadByte();
-	if (cl.h2_Effects[index].type)
-		CLH2_FreeEffect(index);
-
-	Com_Memset(&cl.h2_Effects[index],0,sizeof(struct h2EffectT));
-
-	cl.h2_Effects[index].type = net_message.ReadByte();
-
-	bool ImmediateFree = CLH2_ParseEffectType(index, net_message);
-
-	if (ImmediateFree)
-	{
-		cl.h2_Effects[index].type = H2CE_NONE;
-	}
 }
 
 void CL_EndEffect(void)

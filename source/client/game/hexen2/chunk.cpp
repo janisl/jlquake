@@ -565,7 +565,8 @@ void CLH2_InitChunkEffect(h2EffectT& effect)
 
 	for (int i = 0; i < effect.Chunk.numChunks; i++)
 	{
-		if ((effect.Chunk.entity_index[i] = CLH2_NewEffectEntity()) != -1)
+		effect.Chunk.entity_index[i] = CLH2_NewEffectEntity();
+		if (effect.Chunk.entity_index[i] != -1)
 		{
 			effect_entity_t* ent = &EffectEntities[effect.Chunk.entity_index[i]];
 			VectorCopy(effect.Chunk.origin, ent->state.origin);

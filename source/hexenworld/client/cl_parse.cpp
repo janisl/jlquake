@@ -1406,7 +1406,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_start_effect:
-			CL_ParseEffect();
+			CLH2_ParseEffect(net_message);
 			break;
 
 		case svc_end_effect:

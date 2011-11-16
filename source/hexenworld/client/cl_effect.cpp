@@ -35,34 +35,6 @@ h2entity_state_t *FindState(int EntNum);
 
 // CODE --------------------------------------------------------------------
 
-//==========================================================================
-//
-// CL_ParseEffect
-//
-//==========================================================================
-
-// All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// CL_ParseEffect()
-void CL_ParseEffect()
-{
-	int index = net_message.ReadByte();
-	if (cl.h2_Effects[index].type)
-	{
-		CLH2_FreeEffect(index);
-	}
-
-	Com_Memset(&cl.h2_Effects[index], 0, sizeof(h2EffectT));
-
-	cl.h2_Effects[index].type = net_message.ReadByte();
-
-	bool ImmediateFree = CLHW_ParseEffectType(index, net_message);
-
-	if (ImmediateFree)
-	{
-		cl.h2_Effects[index].type = HWCE_NONE;
-	}
-}
-
 // these are in cl_tent.c
 void CreateRavenDeath(vec3_t pos);
 void CreateExplosionWithSound(vec3_t pos);
@@ -571,12 +543,6 @@ void CL_TurnEffect(void)
 
 void CL_LinkEntity(effect_entity_t* ent)
 {
-	//debug: if visedicts getting messed up, it should appear here.
-//	if (ent->_model < 10)
-//	{
-//		ent->_model = 3;
-//	}
-
 	refEntity_t rent;
 	Com_Memset(&rent, 0, sizeof(rent));
 	rent.reType = RT_MODEL;

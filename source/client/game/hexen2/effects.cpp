@@ -430,7 +430,7 @@ void CLH2_FreeEffect(int index)
 	Com_Memset(&cl_common->h2_Effects[index], 0, sizeof(h2EffectT));
 }
 
-void CLH2_ParseEffectRain(int index, QMsg& message)
+static void CLH2_ParseEffectRain(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Rain.min_org);
 	message.ReadPos(cl_common->h2_Effects[index].Rain.max_org);
@@ -441,7 +441,7 @@ void CLH2_ParseEffectRain(int index, QMsg& message)
 	cl_common->h2_Effects[index].Rain.wait = message.ReadFloat();
 }
 
-void CLH2_ParseEffectSnow(int index, QMsg& message)
+static void CLH2_ParseEffectSnow(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Snow.min_org);
 	message.ReadPos(cl_common->h2_Effects[index].Snow.max_org);
@@ -450,7 +450,7 @@ void CLH2_ParseEffectSnow(int index, QMsg& message)
 	cl_common->h2_Effects[index].Snow.count = message.ReadByte();
 }
 
-void CLH2_ParseEffectFountain(int index, QMsg& message)
+static void CLH2_ParseEffectFountain(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Fountain.pos);
 	cl_common->h2_Effects[index].Fountain.angle[0] = message.ReadAngle();
@@ -466,7 +466,7 @@ void CLH2_ParseEffectFountain(int index, QMsg& message)
 		cl_common->h2_Effects[index].Fountain.vup);
 }
 
-void CLH2_ParseEffectQuake(int index, QMsg& message)
+static void CLH2_ParseEffectQuake(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Quake.origin);
 	cl_common->h2_Effects[index].Quake.radius = message.ReadFloat();
@@ -496,27 +496,27 @@ static bool CLH2_ParseEffectSmokeCommon(int index, QMsg& message, const char* mo
 	return true;
 }
 
-bool CLH2_ParseEffectWhiteSmoke(int index, QMsg& message)
+static bool CLH2_ParseEffectWhiteSmoke(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/whtsmk1.spr", H2DRF_TRANSLUCENT);
 }
 
-bool CLH2_ParseEffectGreenSmoke(int index, QMsg& message)
+static bool CLH2_ParseEffectGreenSmoke(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/grnsmk1.spr", H2DRF_TRANSLUCENT);
 }
 
-bool CLH2_ParseEffectGraySmoke(int index, QMsg& message)
+static bool CLH2_ParseEffectGraySmoke(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/grysmk1.spr", H2DRF_TRANSLUCENT);
 }
 
-bool CLH2_ParseEffectRedSmoke(int index, QMsg& message)
+static bool CLH2_ParseEffectRedSmoke(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/redsmk1.spr", H2DRF_TRANSLUCENT);
 }
 
-bool CLH2_ParseEffectTeleportSmoke1(int index, QMsg& message)
+static bool CLH2_ParseEffectTeleportSmoke1(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmokeCommon(index, message, "models/telesmk1.spr", H2DRF_TRANSLUCENT))
 	{
@@ -538,12 +538,12 @@ bool CLH2_ParseEffectTeleportSmoke1(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectTeleportSmoke2(int index, QMsg& message)
+static bool CLH2_ParseEffectTeleportSmoke2(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/telesmk2.spr", H2DRF_TRANSLUCENT);
 }
 
-bool CLH2_ParseEffectGhost(int index, QMsg& message)
+static bool CLH2_ParseEffectGhost(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmokeCommon(index, message, "models/ghost.spr", H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT))
 	{
@@ -559,12 +559,12 @@ bool CLH2_ParseEffectGhost(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectRedCloud(int index, QMsg& message)
+static bool CLH2_ParseEffectRedCloud(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/rcloud.spr", 0);
 }
 
-bool CLH2_ParseEffectAcidMuzzleFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectAcidMuzzleFlash(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmokeCommon(index, message, "models/muzzle1.spr", H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT))
 	{
@@ -575,7 +575,7 @@ bool CLH2_ParseEffectAcidMuzzleFlash(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectFlameStream(int index, QMsg& message)
+static bool CLH2_ParseEffectFlameStream(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmokeCommon(index, message, "models/flamestr.spr", H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT))
 	{
@@ -587,12 +587,12 @@ bool CLH2_ParseEffectFlameStream(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectFlameWall(int index, QMsg& message)
+static bool CLH2_ParseEffectFlameWall(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/firewal1.spr", 0);
 }
 
-bool CLH2_ParseEffectFlameWall2(int index, QMsg& message)
+static bool CLH2_ParseEffectFlameWall2(int index, QMsg& message)
 {
 	return CLH2_ParseEffectSmokeCommon(index, message, "models/firewal2.spr", H2DRF_TRANSLUCENT);
 }
@@ -614,7 +614,7 @@ static const char* CLH2_ChooseOnFireModel()
 	}
 }
 
-bool CLH2_ParseEffectOnFire(int index, QMsg& message)
+static bool CLH2_ParseEffectOnFire(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmokeCommon(index, message, CLH2_ChooseOnFireModel(), H2DRF_TRANSLUCENT))
 	{
@@ -626,7 +626,7 @@ bool CLH2_ParseEffectOnFire(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectRipple(int index, QMsg& message)
+static bool CLHW_ParseEffectRipple(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmokeCommon(index, message, "models/ripple.spr", H2DRF_TRANSLUCENT))
 	{
@@ -667,12 +667,12 @@ static bool CLH2_ParseEffectExplosionCommon(int index, QMsg& message, const char
 	return true;
 }
 
-bool CLH2_ParseEffectSmallWhiteFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectSmallWhiteFlash(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/sm_white.spr");
 }
 
-bool CLH2_ParseEffectYellowRedFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectYellowRedFlash(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectExplosionCommon(index, message, "models/yr_flsh.spr"))
 	{
@@ -683,32 +683,32 @@ bool CLH2_ParseEffectYellowRedFlash(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectBlueSpark(int index, QMsg& message)
+static bool CLH2_ParseEffectBlueSpark(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/bspark.spr");
 }
 
-bool CLH2_ParseEffectYellowSpark(int index, QMsg& message)
+static bool CLH2_ParseEffectYellowSpark(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/spark.spr");
 }
 
-bool CLH2_ParseEffectSmallCircleExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectSmallCircleExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/fcircle.spr");
 }
 
-bool CLH2_ParseEffectBigCircleExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectBigCircleExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/xplod29.spr");
 }
 
-bool CLH2_ParseEffectSmallExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectSmallExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/sm_expld.spr");
 }
 
-bool CLHW_ParseEffectSmallExplosionWithSound(int index, QMsg& message)
+static bool CLHW_ParseEffectSmallExplosionWithSound(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmallExplosion(index, message))
 	{
@@ -718,12 +718,12 @@ bool CLHW_ParseEffectSmallExplosionWithSound(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectBigExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectBigExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/bg_expld.spr");
 }
 
-bool CLHW_ParseEffectBigExplosionWithSound(int index, QMsg& message)
+static bool CLHW_ParseEffectBigExplosionWithSound(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectBigExplosion(index, message))
 	{
@@ -733,67 +733,67 @@ bool CLHW_ParseEffectBigExplosionWithSound(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectFloorExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectFloorExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/fl_expld.spr");
 }
 
-bool CLH2_ParseEffectFloorExplosion2(int index, QMsg& message)
+static bool CLH2_ParseEffectFloorExplosion2(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/flrexpl2.spr");
 }
 
-bool CLH2_ParseEffectFloorExplosion3(int index, QMsg& message)
+static bool CLH2_ParseEffectFloorExplosion3(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/biggy.spr");
 }
 
-bool CLH2_ParseEffectBlueExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectBlueExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/xpspblue.spr");
 }
 
-bool CLH2_ParseEffectRedSpark(int index, QMsg& message)
+static bool CLH2_ParseEffectRedSpark(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/rspark.spr");
 }
 
-bool CLH2_ParseEffectGreenSpark(int index, QMsg& message)
+static bool CLH2_ParseEffectGreenSpark(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/gspark.spr");
 }
 
-bool CLH2_ParseEffectIceHit(int index, QMsg& message)
+static bool CLH2_ParseEffectIceHit(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/icehit.spr");
 }
 
-bool CLH2_ParseEffectMedusaHit(int index, QMsg& message)
+static bool CLH2_ParseEffectMedusaHit(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/medhit.spr");
 }
 
-bool CLH2_ParseEffectMezzoReflect(int index, QMsg& message)
+static bool CLH2_ParseEffectMezzoReflect(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/mezzoref.spr");
 }
 
-bool CLH2_ParseEffectXBowExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectXBowExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/xbowexpl.spr");
 }
 
-bool CLH2_ParseEffectNewExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectNewExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/gen_expl.spr");
 }
 
-bool CLH2_ParseEffectMagicMissileExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectMagicMissileExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/mm_expld.spr");
 }
 
-bool CLHW_ParseEffectMagicMissileExplosionWithSound(int index, QMsg& message)
+static bool CLHW_ParseEffectMagicMissileExplosionWithSound(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectMagicMissileExplosion(index, message))
 	{
@@ -803,17 +803,17 @@ bool CLHW_ParseEffectMagicMissileExplosionWithSound(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectBoneExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectBoneExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/bonexpld.spr");
 }
 
-bool CLH2_ParseEffectBldrnExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectBldrnExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/xplsn_1.spr");
 }
 
-bool CLH2_ParseEffectLShock(int index, QMsg& message)
+static bool CLH2_ParseEffectLShock(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectExplosionCommon(index, message, "models/vorpshok.mdl"))
 	{
@@ -826,17 +826,17 @@ bool CLH2_ParseEffectLShock(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectAcidHit(int index, QMsg& message)
+static bool CLH2_ParseEffectAcidHit(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/axplsn_2.spr");
 }
 
-bool CLH2_ParseEffectAcidSplat(int index, QMsg& message)
+static bool CLH2_ParseEffectAcidSplat(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/axplsn_1.spr");
 }
 
-bool CLH2_ParseEffectAcidExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectAcidExplosion(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectExplosionCommon(index, message, "models/axplsn_5.spr"))
 	{
@@ -848,32 +848,32 @@ bool CLH2_ParseEffectAcidExplosion(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectLBallExplosion(int index, QMsg& message)
+static bool CLH2_ParseEffectLBallExplosion(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/Bluexp3.spr");
 }
 
-bool CLH2_ParseEffectFBoom(int index, QMsg& message)
+static bool CLH2_ParseEffectFBoom(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/fboom.spr");
 }
 
-bool CLH2_ParseEffectBomb(int index, QMsg& message)
+static bool CLH2_ParseEffectBomb(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/pow.spr");
 }
 
-bool CLH2_ParseEffectFirewallSall(int index, QMsg& message)
+static bool CLH2_ParseEffectFirewallSall(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/firewal1.spr");
 }
 
-bool CLH2_ParseEffectFirewallMedium(int index, QMsg& message)
+static bool CLH2_ParseEffectFirewallMedium(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/firewal5.spr");
 }
 
-bool CLH2_ParseEffectFirewallLarge(int index, QMsg& message)
+static bool CLH2_ParseEffectFirewallLarge(int index, QMsg& message)
 {
 	return CLH2_ParseEffectExplosionCommon(index, message, "models/firewal4.spr");
 }
@@ -893,22 +893,22 @@ static bool CLH2_ParseEffectFlashCommon(int index, QMsg& message, const char* mo
 	return true;
 }
 
-bool CLH2_ParseEffectWhiteFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectWhiteFlash(int index, QMsg& message)
 {
 	return CLH2_ParseEffectFlashCommon(index, message, "models/gryspt.spr");
 }
 
-bool CLH2_ParseEffectBlueFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectBlueFlash(int index, QMsg& message)
 {
 	return CLH2_ParseEffectFlashCommon(index, message, "models/bluflash.spr");
 }
 
-bool CLH2_ParseEffectSmallBlueFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectSmallBlueFlash(int index, QMsg& message)
 {
 	return CLH2_ParseEffectFlashCommon(index, message, "models/sm_blue.spr");
 }
 
-bool CLHW_ParseEffectSplitFlash(int index, QMsg& message)
+static bool CLHW_ParseEffectSplitFlash(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectSmallBlueFlash(index, message))
 	{
@@ -918,24 +918,24 @@ bool CLHW_ParseEffectSplitFlash(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectRedFlash(int index, QMsg& message)
+static bool CLH2_ParseEffectRedFlash(int index, QMsg& message)
 {
 	return CLH2_ParseEffectFlashCommon(index, message, "models/redspt.spr");
 }
 
-void CLH2_ParseEffectRiderDeath(int index, QMsg& message)
+static void CLH2_ParseEffectRiderDeath(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].RD.origin);
 }
 
-void CLH2_ParseEffectGravityWell(int index, QMsg& message)
+static void CLH2_ParseEffectGravityWell(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].GravityWell.origin);
 	cl_common->h2_Effects[index].GravityWell.color = message.ReadShort();
 	cl_common->h2_Effects[index].GravityWell.lifetime = message.ReadFloat();
 }
 
-void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
+static void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Teleporter.origin);
 
@@ -965,7 +965,7 @@ void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
 	}
 }
 
-void CLH2_ParseEffectTeleporterBody(int index, QMsg& message)
+static void CLH2_ParseEffectTeleporterBody(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Teleporter.origin);
 	cl_common->h2_Effects[index].Teleporter.velocity[0][0] = message.ReadFloat();
@@ -1033,12 +1033,12 @@ static bool CLHW_ParseEffectMissileCommonNoAngles(int index, QMsg& message, cons
 	return true;
 }
 
-bool CLH2_ParseEffectBoneShard(int index, QMsg& message)
+static bool CLH2_ParseEffectBoneShard(int index, QMsg& message)
 {
 	return CLH2_ParseEffectMissileCommon(index, message, "models/boneshot.mdl");
 }
 
-bool CLHW_ParseEffectBoneShard(int index, QMsg& message)
+static bool CLHW_ParseEffectBoneShard(int index, QMsg& message)
 {
 	if (!CLHW_ParseEffectMissileCommonNoAngles(index, message, "models/boneshot.mdl"))
 	{
@@ -1049,12 +1049,12 @@ bool CLHW_ParseEffectBoneShard(int index, QMsg& message)
 	return true;
 }
 
-bool CLH2_ParseEffectBoneShrapnel(int index, QMsg& message)
+static bool CLH2_ParseEffectBoneShrapnel(int index, QMsg& message)
 {
 	return CLH2_ParseEffectMissileCommon(index, message, "models/boneshrd.mdl");
 }
 
-void CLH2_ParseEffectChunk(int index, QMsg& message)
+static void CLH2_ParseEffectChunk(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Chunk.origin);
 	cl_common->h2_Effects[index].Chunk.type = message.ReadByte();
@@ -1066,7 +1066,7 @@ void CLH2_ParseEffectChunk(int index, QMsg& message)
 	CLH2_InitChunkEffect(cl_common->h2_Effects[index]);
 }
 
-bool CLHW_ParseEffectBoneBall(int index, QMsg& message)
+static bool CLHW_ParseEffectBoneBall(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectMissileCommon(index, message, "models/bonelump.mdl"))
 	{
@@ -1076,7 +1076,7 @@ bool CLHW_ParseEffectBoneBall(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectRavenStaff(int index, QMsg& message)
+static bool CLHW_ParseEffectRavenStaff(int index, QMsg& message)
 {
 	if (!CLHW_ParseEffectMissileCommonNoAngles(index, message, "models/vindsht1.mdl"))
 	{
@@ -1086,7 +1086,7 @@ bool CLHW_ParseEffectRavenStaff(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectRavenPower(int index, QMsg& message)
+static bool CLHW_ParseEffectRavenPower(int index, QMsg& message)
 {
 	if (!CLHW_ParseEffectMissileCommonNoAngles(index, message, "models/ravproj.mdl"))
 	{
@@ -1096,7 +1096,7 @@ bool CLHW_ParseEffectRavenPower(int index, QMsg& message)
 	return true;
 }
 
-void CLHW_ParseEffectDeathBubbles(int index, QMsg& message)
+static void CLHW_ParseEffectDeathBubbles(int index, QMsg& message)
 {
 	cl_common->h2_Effects[index].Bubble.owner = message.ReadShort();
 	cl_common->h2_Effects[index].Bubble.offset[0] = message.ReadByte();
@@ -1106,7 +1106,7 @@ void CLHW_ParseEffectDeathBubbles(int index, QMsg& message)
 	cl_common->h2_Effects[index].Bubble.time_amount = 0;
 }
 
-void CLHW_ParseEffectXBowCommon(int index, QMsg& message, vec3_t origin)
+static void CLHW_ParseEffectXBowCommon(int index, QMsg& message, vec3_t origin)
 {
 	message.ReadPos(origin);
 	cl_common->h2_Effects[index].Xbow.angle[0] = message.ReadAngle();
@@ -1138,7 +1138,7 @@ static void CLHW_InitXBowEffectEntity(int index, int i, const char* modelName)
 	ent->model = R_RegisterModel(modelName);
 }
 
-void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
+static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 {
 	vec3_t origin;
 	CLHW_ParseEffectXBowCommon(index, message, origin);
@@ -1202,7 +1202,7 @@ void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 	}
 }
 
-void CLHW_ParseEffectSheepinator(int index, QMsg& message)
+static void CLHW_ParseEffectSheepinator(int index, QMsg& message)
 {
 	vec3_t origin;
 	CLHW_ParseEffectXBowCommon(index, message, origin);
@@ -1240,7 +1240,7 @@ void CLHW_ParseEffectSheepinator(int index, QMsg& message)
 	}
 }
 
-bool CLHW_ParseEffectDrilla(int index, QMsg& message)
+static bool CLHW_ParseEffectDrilla(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
 	cl_common->h2_Effects[index].Missile.angle[0] = message.ReadAngle();
@@ -1267,7 +1267,7 @@ bool CLHW_ParseEffectDrilla(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectScarabChain(int index, QMsg& message)
+static bool CLHW_ParseEffectScarabChain(int index, QMsg& message)
 {
 	message.ReadPos(cl_common->h2_Effects[index].Chain.origin);
 	cl_common->h2_Effects[index].Chain.owner = message.ReadShort();
@@ -1311,7 +1311,7 @@ static bool CLHW_ParseEffectTripMineCommon(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectTripMine(int index, QMsg& message)
+static bool CLHW_ParseEffectTripMine(int index, QMsg& message)
 {
 	if (!CLHW_ParseEffectTripMineCommon(index, message))
 	{
@@ -1322,7 +1322,7 @@ bool CLHW_ParseEffectTripMine(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectTripMineStill(int index, QMsg& message)
+static bool CLHW_ParseEffectTripMineStill(int index, QMsg& message)
 {
 	if (!CLHW_ParseEffectTripMineCommon(index, message))
 	{
@@ -1333,7 +1333,7 @@ bool CLHW_ParseEffectTripMineStill(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectStarCommon(int index, QMsg& message)
+static bool CLHW_ParseEffectStarCommon(int index, QMsg& message)
 {
 	cl_common->h2_Effects[index].Star.origin[0] = message.ReadCoord();
 	cl_common->h2_Effects[index].Star.origin[1] = message.ReadCoord();
@@ -1361,7 +1361,7 @@ bool CLHW_ParseEffectStarCommon(int index, QMsg& message)
 	return true;
 }
 
-bool CLHW_ParseEffectMissileStar(int index, QMsg& message)
+static bool CLHW_ParseEffectMissileStar(int index, QMsg& message)
 {
 	bool ImmediateFree = !CLHW_ParseEffectStarCommon(index, message);
 
@@ -1390,7 +1390,7 @@ bool CLHW_ParseEffectMissileStar(int index, QMsg& message)
 	return !ImmediateFree;
 }
 
-bool CLHW_ParseEffectEidolonStar(int index, QMsg& message)
+static bool CLHW_ParseEffectEidolonStar(int index, QMsg& message)
 {
 	bool ImmediateFree = !CLHW_ParseEffectStarCommon(index, message);
 
@@ -1407,7 +1407,7 @@ bool CLHW_ParseEffectEidolonStar(int index, QMsg& message)
 	return !ImmediateFree;
 }
 
-bool CLH2_ParseEffectType(int index, QMsg& message)
+static bool CLH2_ParseEffectType(int index, QMsg& message)
 {
 	bool ImmediateFree = false;
 	switch (cl_common->h2_Effects[index].type)
@@ -1600,228 +1600,256 @@ bool CLH2_ParseEffectType(int index, QMsg& message)
 	return ImmediateFree;
 }
 
-bool CLHW_ParseEffectType(int index, QMsg& net_message)
+static bool CLHW_ParseEffectType(int index, QMsg& message)
 {
 	bool ImmediateFree = false;
 	switch (cl_common->h2_Effects[index].type)
 	{
 	case HWCE_RAIN:
-		CLH2_ParseEffectRain(index, net_message);
+		CLH2_ParseEffectRain(index, message);
 		break;
 	case HWCE_FOUNTAIN:
-		CLH2_ParseEffectFountain(index, net_message);
+		CLH2_ParseEffectFountain(index, message);
 		break;
 	case HWCE_QUAKE:
-		CLH2_ParseEffectQuake(index, net_message);
+		CLH2_ParseEffectQuake(index, message);
 		break;
 	case HWCE_WHITE_SMOKE:
 	case HWCE_SLOW_WHITE_SMOKE:
-		ImmediateFree = !CLH2_ParseEffectWhiteSmoke(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectWhiteSmoke(index, message);
 		break;
 	case HWCE_GREEN_SMOKE:
-		ImmediateFree = !CLH2_ParseEffectGreenSmoke(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectGreenSmoke(index, message);
 		break;
 	case HWCE_GREY_SMOKE:
-		ImmediateFree = !CLH2_ParseEffectGraySmoke(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectGraySmoke(index, message);
 		break;
 	case HWCE_RED_SMOKE:
-		ImmediateFree = !CLH2_ParseEffectRedSmoke(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectRedSmoke(index, message);
 		break;
 	case HWCE_TELESMK1:
-		ImmediateFree = !CLH2_ParseEffectTeleportSmoke1(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectTeleportSmoke1(index, message);
 		break;
 	case HWCE_TELESMK2:
-		ImmediateFree = !CLH2_ParseEffectTeleportSmoke2(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectTeleportSmoke2(index, message);
 		break;
 	case HWCE_GHOST:
-		ImmediateFree = !CLH2_ParseEffectGhost(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectGhost(index, message);
 		break;
 	case HWCE_REDCLOUD:
-		ImmediateFree = !CLH2_ParseEffectRedCloud(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectRedCloud(index, message);
 		break;
 	case HWCE_ACID_MUZZFL:
-		ImmediateFree = !CLH2_ParseEffectAcidMuzzleFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectAcidMuzzleFlash(index, message);
 		break;
 	case HWCE_FLAMESTREAM:
-		ImmediateFree = !CLH2_ParseEffectFlameStream(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFlameStream(index, message);
 		break;
 	case HWCE_FLAMEWALL:
-		ImmediateFree = !CLH2_ParseEffectFlameWall(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFlameWall(index, message);
 		break;
 	case HWCE_FLAMEWALL2:
-		ImmediateFree = !CLH2_ParseEffectFlameWall2(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFlameWall2(index, message);
 		break;
 	case HWCE_ONFIRE:
-		ImmediateFree = !CLH2_ParseEffectOnFire(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectOnFire(index, message);
 		break;
 	case HWCE_RIPPLE:
-		ImmediateFree = !CLHW_ParseEffectRipple(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectRipple(index, message);
 		break;
 	case HWCE_SM_WHITE_FLASH:
-		ImmediateFree = !CLH2_ParseEffectSmallWhiteFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectSmallWhiteFlash(index, message);
 		break;
 	case HWCE_YELLOWRED_FLASH:
-		ImmediateFree = !CLH2_ParseEffectYellowRedFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectYellowRedFlash(index, message);
 		break;
 	case HWCE_BLUESPARK:
-		ImmediateFree = !CLH2_ParseEffectBlueSpark(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBlueSpark(index, message);
 		break;
 	case HWCE_YELLOWSPARK:
 	case HWCE_BRN_BOUNCE:
-		ImmediateFree = !CLH2_ParseEffectYellowSpark(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectYellowSpark(index, message);
 		break;
 	case HWCE_SM_CIRCLE_EXP:
-		ImmediateFree = !CLH2_ParseEffectSmallCircleExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectSmallCircleExplosion(index, message);
 		break;
 	case HWCE_BG_CIRCLE_EXP:
-		ImmediateFree = !CLH2_ParseEffectBigCircleExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBigCircleExplosion(index, message);
 		break;
 	case HWCE_SM_EXPLOSION:
-		ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectSmallExplosion(index, message);
 		break;
 	case HWCE_SM_EXPLOSION2:
-		ImmediateFree = !CLHW_ParseEffectSmallExplosionWithSound(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectSmallExplosionWithSound(index, message);
 		break;
 	case HWCE_BG_EXPLOSION:
-		ImmediateFree = !CLHW_ParseEffectBigExplosionWithSound(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectBigExplosionWithSound(index, message);
 		break;
 	case HWCE_FLOOR_EXPLOSION:
-		ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion(index, message);
 		break;
 	case HWCE_BLUE_EXPLOSION:
-		ImmediateFree = !CLH2_ParseEffectBlueExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBlueExplosion(index, message);
 		break;
 	case HWCE_REDSPARK:
-		ImmediateFree = !CLH2_ParseEffectRedSpark(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectRedSpark(index, message);
 		break;
 	case HWCE_GREENSPARK:
-		ImmediateFree = !CLH2_ParseEffectGreenSpark(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectGreenSpark(index, message);
 		break;
 	case HWCE_ICEHIT:
-		ImmediateFree = !CLH2_ParseEffectIceHit(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectIceHit(index, message);
 		break;
 	case HWCE_MEDUSA_HIT:
-		ImmediateFree = !CLH2_ParseEffectMedusaHit(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectMedusaHit(index, message);
 		break;
 	case HWCE_MEZZO_REFLECT:
-		ImmediateFree = !CLH2_ParseEffectMezzoReflect(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectMezzoReflect(index, message);
 		break;
 	case HWCE_FLOOR_EXPLOSION2:
-		ImmediateFree = !CLH2_ParseEffectFloorExplosion2(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFloorExplosion2(index, message);
 		break;
 	case HWCE_XBOW_EXPLOSION:
-		ImmediateFree = !CLH2_ParseEffectXBowExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectXBowExplosion(index, message);
 		break;
 	case HWCE_NEW_EXPLOSION:
-		ImmediateFree = !CLH2_ParseEffectNewExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectNewExplosion(index, message);
 		break;
 	case HWCE_MAGIC_MISSILE_EXPLOSION:
-		ImmediateFree = !CLHW_ParseEffectMagicMissileExplosionWithSound(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectMagicMissileExplosionWithSound(index, message);
 		break;
 	case HWCE_BONE_EXPLOSION:
-		ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBoneExplosion(index, message);
 		break;
 	case HWCE_BLDRN_EXPL:
-		ImmediateFree = !CLH2_ParseEffectBldrnExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBldrnExplosion(index, message);
 		break;
 	case HWCE_LSHOCK:
-		ImmediateFree = !CLH2_ParseEffectLShock(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectLShock(index, message);
 		break;
 	case HWCE_ACID_HIT:
-		ImmediateFree = !CLH2_ParseEffectAcidHit(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectAcidHit(index, message);
 		break;
 	case HWCE_ACID_SPLAT:
-		ImmediateFree = !CLH2_ParseEffectAcidSplat(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectAcidSplat(index, message);
 		break;
 	case HWCE_ACID_EXPL:
-		ImmediateFree = !CLH2_ParseEffectAcidExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectAcidExplosion(index, message);
 		break;
 	case HWCE_LBALL_EXPL:
-		ImmediateFree = !CLH2_ParseEffectLBallExplosion(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectLBallExplosion(index, message);
 		break;
 	case HWCE_FBOOM:
-		ImmediateFree = !CLH2_ParseEffectFBoom(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFBoom(index, message);
 		break;
 	case HWCE_BOMB:
-		ImmediateFree = !CLH2_ParseEffectBomb(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBomb(index, message);
 		break;
 	case HWCE_FIREWALL_SMALL:
-		ImmediateFree = !CLH2_ParseEffectFirewallSall(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFirewallSall(index, message);
 		break;
 	case HWCE_FIREWALL_MEDIUM:
-		ImmediateFree = !CLH2_ParseEffectFirewallMedium(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFirewallMedium(index, message);
 		break;
 	case HWCE_FIREWALL_LARGE:
-		ImmediateFree = !CLH2_ParseEffectFirewallLarge(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectFirewallLarge(index, message);
 		break;
 	case HWCE_WHITE_FLASH:
-		ImmediateFree = !CLH2_ParseEffectWhiteFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectWhiteFlash(index, message);
 		break;
 	case HWCE_BLUE_FLASH:
-		ImmediateFree = !CLH2_ParseEffectBlueFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBlueFlash(index, message);
 		break;
 	case HWCE_SM_BLUE_FLASH:
-		ImmediateFree = !CLH2_ParseEffectSmallBlueFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectSmallBlueFlash(index, message);
 		break;
 	case HWCE_HWSPLITFLASH:
-		ImmediateFree = !CLHW_ParseEffectSplitFlash(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectSplitFlash(index, message);
 		break;
 	case HWCE_RED_FLASH:
-		ImmediateFree = !CLH2_ParseEffectRedFlash(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectRedFlash(index, message);
 		break;
 	case HWCE_RIDER_DEATH:
-		CLH2_ParseEffectRiderDeath(index, net_message);
+		CLH2_ParseEffectRiderDeath(index, message);
 		break;
 	case HWCE_TELEPORTERPUFFS:
-		CLH2_ParseEffectTeleporterPuffs(index, net_message);
+		CLH2_ParseEffectTeleporterPuffs(index, message);
 		break;
 	case HWCE_TELEPORTERBODY:
-		CLH2_ParseEffectTeleporterBody(index, net_message);
+		CLH2_ParseEffectTeleporterBody(index, message);
 		break;
 	case HWCE_BONESHRAPNEL:
-		ImmediateFree = !CLH2_ParseEffectBoneShrapnel(index, net_message);
+		ImmediateFree = !CLH2_ParseEffectBoneShrapnel(index, message);
 		break;
 	case HWCE_HWBONEBALL:
-		ImmediateFree = !CLHW_ParseEffectBoneBall(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectBoneBall(index, message);
 		break;
 	case HWCE_BONESHARD:
-		ImmediateFree = !CLHW_ParseEffectBoneShard(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectBoneShard(index, message);
 		break;
 	case HWCE_HWRAVENSTAFF:
-		ImmediateFree = !CLHW_ParseEffectRavenStaff(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectRavenStaff(index, message);
 		break;
 	case HWCE_HWRAVENPOWER:
-		ImmediateFree = !CLHW_ParseEffectRavenPower(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectRavenPower(index, message);
 		break;
 	case HWCE_DEATHBUBBLES:
-		CLHW_ParseEffectDeathBubbles(index, net_message);
+		CLHW_ParseEffectDeathBubbles(index, message);
 		break;
 	case HWCE_HWXBOWSHOOT:
-		CLHW_ParseEffectXBowShoot(index, net_message);
+		CLHW_ParseEffectXBowShoot(index, message);
 		break;
 	case HWCE_HWSHEEPINATOR:
-		CLHW_ParseEffectSheepinator(index, net_message);
+		CLHW_ParseEffectSheepinator(index, message);
 		break;
 	case HWCE_HWDRILLA:
-		ImmediateFree = !CLHW_ParseEffectDrilla(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectDrilla(index, message);
 		break;
 	case HWCE_SCARABCHAIN:
-		ImmediateFree = !CLHW_ParseEffectScarabChain(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectScarabChain(index, message);
 		break;
 	case HWCE_TRIPMINE:
-		ImmediateFree = !CLHW_ParseEffectTripMine(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectTripMine(index, message);
 		break;
 	case HWCE_TRIPMINESTILL:
-		ImmediateFree = !CLHW_ParseEffectTripMineStill(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectTripMineStill(index, message);
 		break;
 	case HWCE_HWMISSILESTAR:
-		ImmediateFree = !CLHW_ParseEffectMissileStar(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectMissileStar(index, message);
 		break;
 	case HWCE_HWEIDOLONSTAR:
-		ImmediateFree = !CLHW_ParseEffectEidolonStar(index, net_message);
+		ImmediateFree = !CLHW_ParseEffectEidolonStar(index, message);
 		break;
 	default:
 		throw Exception("CL_ParseEffect: bad type");
 	}
 	return ImmediateFree;
+}
+
+void CLH2_ParseEffect(QMsg& message)
+{
+	int index = message.ReadByte();
+	if (cl_common->h2_Effects[index].type)
+	{
+		CLH2_FreeEffect(index);
+	}
+
+	Com_Memset(&cl_common->h2_Effects[index], 0, sizeof(h2EffectT));
+
+	cl_common->h2_Effects[index].type = message.ReadByte();
+
+	bool ImmediateFree;
+	if (!(GGameType & GAME_HexenWorld))
+	{
+		ImmediateFree = CLH2_ParseEffectType(index, message);
+	}
+	else
+	{
+		ImmediateFree = CLHW_ParseEffectType(index, message);
+	}
+
+	if (ImmediateFree)
+	{
+		cl_common->h2_Effects[index].type = HWCE_NONE;
+	}
 }
