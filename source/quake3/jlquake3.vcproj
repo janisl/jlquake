@@ -318,10 +318,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\vm_interpreted.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\vm_x86.cpp"
 				>
 			</File>
@@ -368,14 +364,6 @@
 			</File>
 			<File
 				RelativePath="qcommon\qcommon.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\qfiles.h"
-				>
-			</File>
-			<File
-				RelativePath="renderer\qgl.h"
 				>
 			</File>
 			<File

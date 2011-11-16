@@ -15,6 +15,7 @@ set(CORE_FILES
 	clip_map/bsp46/trace.cpp
 	clip_map/main.cpp
 	clip_map/non_map.cpp
+	virtual_machine/interpreted.cpp
 	virtual_machine/main.cpp
 	command_buffer.cpp
 	common.cpp

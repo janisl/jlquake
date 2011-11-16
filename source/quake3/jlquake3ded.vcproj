@@ -265,10 +265,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\vm_interpreted.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\qcommon\vm_x86.cpp"
 				>
 			</File>
@@ -287,46 +283,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\game\be_aas.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ai_char.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ai_chat.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ai_gen.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ai_goal.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ai_move.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ai_weap.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\be_ea.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\bg_public.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\botlib.h"
-				>
-			</File>
-			<File
 				RelativePath=".\game\g_public.h"
 				>
 			</File>
@@ -336,10 +292,6 @@
 			</File>
 			<File
 				RelativePath=".\qcommon\qcommon.h"
-				>
-			</File>
-			<File
-				RelativePath=".\qcommon\qfiles.h"
 				>
 			</File>
 			<File

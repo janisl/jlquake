@@ -549,6 +549,26 @@
 			Name="virtual_machine"
 			>
 			<File
+				RelativePath="virtual_machine\interpreted.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\virtual_machine\"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\virtual_machine\"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\virtual_machine\local.h"
 				>
 			</File>
