@@ -1433,14 +1433,21 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			// stupid quake bug
 			angles[PITCH] = -ent_angles[PITCH];
 
-			float BaseAxis[3][3];
-			AnglesToAxis(angles, BaseAxis);
+			if (angleAdd[0] || angleAdd[1] || angleAdd[2])
+			{
+				float BaseAxis[3][3];
+				AnglesToAxis(angles, BaseAxis);
 
-			// For clientside rotation stuff
-			float AddAxis[3][3];
-			AnglesToAxis(angleAdd, AddAxis);
+				// For clientside rotation stuff
+				float AddAxis[3][3];
+				AnglesToAxis(angleAdd, AddAxis);
 
-			MatrixMultiply(AddAxis, BaseAxis, ent->axis);
+				MatrixMultiply(AddAxis, BaseAxis, ent->axis);
+			}
+			else
+			{
+				AnglesToAxis(angles, ent->axis);
+			}
 		}
 
 		if ((R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE) || (scale != 0 && scale != 100))

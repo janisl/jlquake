@@ -616,7 +616,7 @@ void CL_RelinkEntities (void)
 		rent.frame = ent->state.frame;
 		rent.shaderTime = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
-		CL_SetRefEntAxis(&rent, ent->state.angles, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
+		CL_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
 		R_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
 		if (i == cl.viewentity && !chase_active->value)
 		{
@@ -645,7 +645,7 @@ static void CL_LinkStaticEntities()
 		rent.frame = pent->state.frame;
 		rent.shaderTime = pent->syncbase;
 		rent.skinNum = pent->state.skinnum;
-		CL_SetRefEntAxis(&rent, pent->state.angles, pent->state.scale, pent->state.colormap, pent->state.abslight, pent->state.drawflags);
+		CL_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, pent->state.colormap, pent->state.abslight, pent->state.drawflags);
 		R_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);
 	}
@@ -804,7 +804,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("sensitivity_save", CL_Sensitivity_save_f);
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colorshade, int abslight, int drawflags)
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags)
 {
 	if (drawflags & H2DRF_TRANSLUCENT)
 	{
@@ -820,6 +820,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 			angles[PITCH] = 0;
 			angles[YAW] = 0;
 			angles[ROLL] = ent_angles[ROLL];
+
+			AnglesToAxis(angles, ent->axis);
 		}
 		else 
 		{
@@ -834,9 +836,23 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 			angles[ROLL] = ent_angles[ROLL];
 			// stupid quake bug
 			angles[PITCH] = -ent_angles[PITCH];
-		}
 
-		AnglesToAxis(angles, ent->axis);
+			if (angleAdd[0] || angleAdd[1] || angleAdd[2])
+			{
+				float BaseAxis[3][3];
+				AnglesToAxis(angles, BaseAxis);
+
+				// For clientside rotation stuff
+				float AddAxis[3][3];
+				AnglesToAxis(angleAdd, AddAxis);
+
+				MatrixMultiply(AddAxis, BaseAxis, ent->axis);
+			}
+			else
+			{
+				AnglesToAxis(angles, ent->axis);
+			}
+		}
 
 		if ((R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE) || (scale != 0 && scale != 100))
 		{
