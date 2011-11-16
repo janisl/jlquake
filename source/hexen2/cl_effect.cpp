@@ -1063,13 +1063,9 @@ char* SV_LoadEffects(char* Data)
 // SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
 void CL_ParseEffect(void)
 {
-	int index,i;
-	qboolean ImmediateFree;
-	effect_entity_t* ent;
+	bool ImmediateFree = false;
 
-	ImmediateFree = false;
-
-	index = net_message.ReadByte();
+	int index = net_message.ReadByte();
 	if (cl.h2_Effects[index].type)
 		CLH2_FreeEffect(index);
 
@@ -1271,43 +1267,7 @@ void CL_ParseEffect(void)
 			break;
 
 		case H2CE_CHUNK:
-			cl.h2_Effects[index].Chunk.origin[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Chunk.origin[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Chunk.origin[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Chunk.type = net_message.ReadByte ();
-
-			cl.h2_Effects[index].Chunk.srcVel[0] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Chunk.srcVel[1] = net_message.ReadCoord ();
-			cl.h2_Effects[index].Chunk.srcVel[2] = net_message.ReadCoord ();
-
-			cl.h2_Effects[index].Chunk.numChunks = net_message.ReadByte ();
-
-			cl.h2_Effects[index].Chunk.time_amount = 4.0;
-
-			cl.h2_Effects[index].Chunk.aveScale = 30 + 100 * (cl.h2_Effects[index].Chunk.numChunks / 40.0);
-
-			if(cl.h2_Effects[index].Chunk.numChunks > 16)cl.h2_Effects[index].Chunk.numChunks = 16;
-
-			for (i=0;i < cl.h2_Effects[index].Chunk.numChunks;i++)
-			{		
-				if ((cl.h2_Effects[index].Chunk.entity_index[i] = CLH2_NewEffectEntity()) != -1)
-				{
-					ent = &EffectEntities[cl.h2_Effects[index].Chunk.entity_index[i]];
-					VectorCopy(cl.h2_Effects[index].Chunk.origin, ent->state.origin);
-					CLH2_InitChunkVelocity(cl.h2_Effects[index].Chunk.srcVel, cl.h2_Effects[index].Chunk.velocity[i]);
-					CLH2_InitChunkAngles(ent->state.angles);
-					ent->state.scale = cl.h2_Effects[index].Chunk.aveScale + rand()%40;
-					CLH2_InitChunkModel(cl.h2_Effects[index].Chunk.type,
-						&ent->model, &ent->state.skinnum, &ent->state.drawflags,
-						&ent->state.frame, &ent->state.abslight);
-				}
-			}
-			for(i=0; i < 3; i++)
-			{
-				CLH2_InitChunkAngleVelocity(cl.h2_Effects[index].Chunk.avel[i]);
-			}
-
+			CLH2_ParseEffectChunk(index, net_message);
 			break;
 
 		default:

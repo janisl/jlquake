@@ -1054,6 +1054,18 @@ bool CLH2_ParseEffectBoneShrapnel(int index, QMsg& message)
 	return CLH2_ParseEffectMissileCommon(index, message, "models/boneshrd.mdl");
 }
 
+void CLH2_ParseEffectChunk(int index, QMsg& message)
+{
+	message.ReadPos(cl_common->h2_Effects[index].Chunk.origin);
+	cl_common->h2_Effects[index].Chunk.type = message.ReadByte();
+	cl_common->h2_Effects[index].Chunk.srcVel[0] = message.ReadCoord();
+	cl_common->h2_Effects[index].Chunk.srcVel[1] = message.ReadCoord();
+	cl_common->h2_Effects[index].Chunk.srcVel[2] = message.ReadCoord();
+	cl_common->h2_Effects[index].Chunk.numChunks = message.ReadByte();
+
+	CLH2_InitChunkEffect(cl_common->h2_Effects[index]);
+}
+
 bool CLHW_ParseEffectBoneBall(int index, QMsg& message)
 {
 	if (!CLH2_ParseEffectMissileCommon(index, message, "models/bonelump.mdl"))

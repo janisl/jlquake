@@ -551,3 +551,33 @@ void CLH2_InitChunkAngleVelocity(vec3_t avel)
 	avel[1] = rand() % 850 - 425;
 	avel[2] = rand() % 850 - 425;
 }
+
+void CLH2_InitChunkEffect(h2EffectT& effect)
+{
+	effect.Chunk.time_amount = 4.0;
+
+	effect.Chunk.aveScale = 30 + 100 * (effect.Chunk.numChunks / 40.0);
+
+	if (effect.Chunk.numChunks > 16)
+	{
+		effect.Chunk.numChunks = 16;
+	}
+
+	for (int i = 0; i < effect.Chunk.numChunks; i++)
+	{
+		if ((effect.Chunk.entity_index[i] = CLH2_NewEffectEntity()) != -1)
+		{
+			effect_entity_t* ent = &EffectEntities[effect.Chunk.entity_index[i]];
+			VectorCopy(effect.Chunk.origin, ent->state.origin);
+			CLH2_InitChunkVelocity(effect.Chunk.srcVel, effect.Chunk.velocity[i]);
+			CLH2_InitChunkAngles(ent->state.angles);
+			ent->state.scale = effect.Chunk.aveScale + rand()%40;
+			CLH2_InitChunkModel(effect.Chunk.type, &ent->model, &ent->state.skinnum,
+				&ent->state.drawflags, &ent->state.frame, &ent->state.abslight);
+		}
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		CLH2_InitChunkAngleVelocity(effect.Chunk.avel[i]);
+	}
+}
