@@ -42,3 +42,32 @@ enum
 	H2MDLEF_ACIDBALL = 4194304,		// Green drippy acid shit
 	H2MDLEF_BLOODSHOT = 8388608,	// Blood rain shot trail
 };
+
+#define H2MAX_SCOREBOARDNAME	32
+struct h2player_info_t
+{
+	// scoreboard information
+	char name[H2MAX_SCOREBOARDNAME];
+	float entertime;
+	int frags;
+
+	// skin information
+	int topColour;
+	int bottomColour;
+	int playerclass;
+
+	//	New to HexenWorld
+	int userid;
+	char userinfo[HWMAX_INFO_STRING];
+
+	int ping;
+
+	int level;
+	int spectator;
+	int modelindex;
+	qboolean Translated;
+	int siege_team;
+	qboolean shownames_off;
+
+	vec3_t origin;
+};

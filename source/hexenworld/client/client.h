@@ -31,33 +31,6 @@ typedef struct
 } player_state_t;
 
 
-#define	MAX_SCOREBOARDNAME	16
-typedef struct player_info_s
-{
-	int			userid;
-	char		userinfo[MAX_INFO_STRING];
-
-	// scoreboard information
-	char		name[MAX_SCOREBOARDNAME];
-	float		entertime;
-	int			frags;
-	int			ping;
-
-	// skin information
-	int			topcolor;
-	int			bottomcolor;
-	int			playerclass;
-	int			level;
-	int			spectator;
-	int			modelindex;
-	qboolean	Translated;
-	int			siege_team;
-	qboolean	shownames_off;
-
-	vec3_t		origin;
-} player_info_t;
-
-
 typedef struct
 {
 	// generated on client side
@@ -126,7 +99,7 @@ struct client_static_t : clientStaticCommon_t
 	netchan_t	netchan;
 
 // private userinfo for sending to masterless servers
-	char		userinfo[MAX_INFO_STRING];
+	char		userinfo[HWMAX_INFO_STRING];
 
 	char		servername[MAX_OSPATH];	// name of server from original connect
 
@@ -305,7 +278,7 @@ struct client_state_t : clientActiveCommon_t
 	unsigned	PIV;			// players in view
 
 // all player information
-	player_info_t	players[MAX_CLIENTS];
+	h2player_info_t	players[MAX_CLIENTS];
 };
 
 

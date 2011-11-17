@@ -31,6 +31,8 @@
 // Timing macros
 #define HX_FRAME_TIME		0.05
 
+#define HWMAX_INFO_STRING	196
+
 // edict->drawflags
 #define H2MLS_MASKIN			7	// MLS: Model Light Style
 #define H2MLS_MASKOUT			248

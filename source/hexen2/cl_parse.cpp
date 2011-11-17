@@ -260,7 +260,7 @@ void CL_ParseServerInfo (void)
 		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
 		return;
 	}
-	cl.scores = (scoreboard_t*)Hunk_AllocName (cl.maxclients*sizeof(*cl.scores), "scores");
+	cl.scores = (h2player_info_t*)Hunk_AllocName (cl.maxclients*sizeof(*cl.scores), "scores");
 
 // parse gametype
 	cl.gametype = net_message.ReadByte ();
@@ -378,10 +378,10 @@ Translates a skin texture by the per-player color lookup
 */
 static void R_TranslatePlayerSkin (int playernum)
 {
-	int playerclass = (int)cl.scores[playernum].playerclass;
+	int playerclass = cl.scores[playernum].playerclass;
 
-	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
-	int bottom = (cl.scores[playernum].colors & 15);
+	int top = cl.scores[playernum].topColour;
+	int bottom = cl.scores[playernum].bottomColour;
 
 	byte translate[256];
 	CL_CalcHexen2SkinTranslation(top, bottom, playerclass, translate);
@@ -1265,7 +1265,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updateclass > MAX_SCOREBOARD");
-			cl.scores[i].playerclass = (float)net_message.ReadByte();
+			cl.scores[i].playerclass = net_message.ReadByte();
 			CL_NewTranslation(i); // update the color
 			break;
 		
@@ -1284,7 +1284,9 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
-			cl.scores[i].colors = net_message.ReadByte ();
+			j = net_message.ReadByte();
+			cl.scores[i].topColour = (j & 0xf0) >> 4;
+			cl.scores[i].bottomColour = (j & 15);
 			CL_NewTranslation (i);
 			break;
 			

@@ -2683,7 +2683,7 @@ void PF_setclass (void)
 	host_client->playerclass = NewClass;
 
 	sprintf(temp,"%d",(int)NewClass);
-	Info_SetValueForKey(host_client->userinfo, "playerclass", temp, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(host_client->userinfo, "playerclass", temp, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 		, sizeof(host_client->name)-1);	
 	host_client->sendinfo = true;
@@ -2725,7 +2725,7 @@ void PF_setsiegeteam (void)
 
 //???
 //	sprintf(temp,"%d",(int)NewTeam);
-//	Info_SetValueForKey (host_client->userinfo, "playerclass", temp, MAX_INFO_STRING);
+//	Info_SetValueForKey (host_client->userinfo, "playerclass", temp, HWMAX_INFO_STRING);
 //	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 //		, sizeof(host_client->name)-1);	
 //	host_client->sendinfo = true;

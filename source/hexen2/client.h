@@ -17,15 +17,6 @@ typedef struct
 
 typedef struct
 {
-	char	name[MAX_SCOREBOARDNAME];
-	float	entertime;
-	int		frags;
-	int		colors;			// two 4 bit fields
-	float	playerclass;
-} scoreboard_t;
-
-typedef struct
-{
 	int		destcolor[3];
 	int		percent;		// 0-256
 } cshift_t;
@@ -190,7 +181,7 @@ struct client_state_t : clientActiveCommon_t
 	byte		need_build;
 
 // frag scoreboard
-	scoreboard_t	*scores;		// [cl.maxclients]
+	h2player_info_t	*scores;		// [cl.maxclients]
 
 	client_frames2_t frames[3]; // 0 = base, 1 = building, 2 = 0 & 1 merged
 	short RemoveList[MAX_CLIENT_STATES],NumToRemove;

@@ -210,7 +210,7 @@ static qboolean InitFlyby(player_state_t *self, player_state_t *player, int chec
 static void Cam_CheckHighTarget(void)
 {
 	int i, j, max;
-	player_info_t	*s;
+	h2player_info_t	*s;
 
 	j = -1;
 	for (i = 0, max = -9999; i < MAX_CLIENTS; i++) {
@@ -333,7 +333,7 @@ static float adjustang(float current, float ideal, float speed)
 void Cam_FinishMove(usercmd_t *cmd)
 {
 	int i;
-	player_info_t	*s;
+	h2player_info_t	*s;
 	int end;
 
 	if (cls.state != ca_active || server_version < 1.57)

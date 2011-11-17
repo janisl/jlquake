@@ -832,7 +832,7 @@ void Sbar_DrawFrags (void)
 	int				x, y, f;
 	int				xofs;
 	char			num[12];
-	scoreboard_t	*s;
+	h2player_info_t	*s;
 	
 	Sbar_SortFrags ();
 
@@ -924,8 +924,8 @@ void FindColor (int slot, int *color1, int *color2)
 		return;
 	}
 
-	top = (cl.scores[slot].colors & 0xf0) >> 4;
-	bottom = (cl.scores[slot].colors & 15);
+	top = cl.scores[slot].topColour;
+	bottom = cl.scores[slot].bottomColour;
 
 	if (top > 10) top = 0;
 	if (bottom > 10) bottom = 0;
@@ -933,7 +933,7 @@ void FindColor (int slot, int *color1, int *color2)
 	top -= 1;
 	bottom -= 1;
 
-	colorA = playerTranslation + 256 + color_offsets[(int)cl.scores[slot].playerclass-1];
+	colorA = playerTranslation + 256 + color_offsets[cl.scores[slot].playerclass - 1];
 	colorB = colorA + 256;
 	sourceA = colorB + 256 + (top * 256);
 	sourceB = colorB + 256 + (bottom * 256);
@@ -972,7 +972,7 @@ void Sbar_DeathmatchOverlay(void)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
-	scoreboard_t	*s;
+	h2player_info_t	*s;
 
 	pic = R_CachePic ("gfx/menu/title8.lmp");
 	M_DrawTransPic ((320-R_GetImageWidth(pic))/2, 0, pic);
@@ -1124,7 +1124,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	int				top, bottom;
 	int				x, y, f;
 	unsigned char	num[12];
-	scoreboard_t	*s;
+	h2player_info_t	*s;
 
 	if (DMMode->value == 2 && BarHeight != BAR_TOP_HEIGHT)
 		return;

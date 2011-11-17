@@ -367,7 +367,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 	{
 		if (Ent->skinNum > 255) 
 		{
-			Sys_Error ("skinnum > 255");
+			Sys_Error("skinnum > 255");
 		}
 
 		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in

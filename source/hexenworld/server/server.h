@@ -102,7 +102,7 @@ typedef struct client_s
 										// this prevents malicious multiple broadcasts
 	qboolean		portals;			// They have portals mission pack installed
 	int				userid;							// identifying number
-	char			userinfo[MAX_INFO_STRING];		// infostring
+	char			userinfo[HWMAX_INFO_STRING];		// infostring
 
 	usercmd_t		lastcmd;			// for filling in big drops and partial predictions
 	double			localtime;			// of last message

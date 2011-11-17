@@ -794,7 +794,7 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-	player_info_t* player = &cl.players[playernum];
+	h2player_info_t* player = &cl.players[playernum];
 	if (!player->name[0])
 	{
 		return;
@@ -805,7 +805,7 @@ void R_TranslatePlayerSkin(int playernum)
 	}
 
 	byte translate[256];
-	CL_CalcHexen2SkinTranslation(player->topcolor, player->bottomcolor, player->playerclass, translate);
+	CL_CalcHexen2SkinTranslation(player->topColour, player->bottomColour, player->playerclass, translate);
 
 	//
 	// locate the original skin pixels
@@ -850,7 +850,7 @@ CL_UpdateUserinfo
 void CL_UpdateUserinfo (void)
 {
 	int		slot;
-	player_info_t	*player;
+	h2player_info_t	*player;
 
 	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
@@ -861,8 +861,8 @@ void CL_UpdateUserinfo (void)
 	String::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
 
 	String::NCpy(player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
-	player->topcolor = String::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
-	player->bottomcolor = String::Atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
+	player->topColour = String::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
+	player->bottomColour = String::Atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
 	if (Info_ValueForKey (player->userinfo, "*spectator")[0])
 		player->spectator = true;
 	else

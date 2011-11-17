@@ -298,7 +298,7 @@ unsigned int attLosses;	// Attackers Losses in Siege
 void SV_FullClientUpdate (client_t *client, QMsg *buf)
 {
 	int		i;
-	char	info[MAX_INFO_STRING];
+	char	info[HWMAX_INFO_STRING];
 
 //	Con_Printf("SV_FullClientUpdate\n");
 	i = client - svs.clients;
@@ -337,7 +337,7 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 	buf->WriteFloat(realtime - client->connection_started);
 
 	String::Cpy(info, client->userinfo);
-	Info_RemovePrefixedKeys (info, '_', MAX_INFO_STRING);	// server passwords, etc
+	Info_RemovePrefixedKeys (info, '_', HWMAX_INFO_STRING);	// server passwords, etc
 
 	buf->WriteByte(svc_updateuserinfo);
 	buf->WriteByte(i);
@@ -503,9 +503,9 @@ void SVC_DirectConnect (void)
 			Netchan_OutOfBandPrint (net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
 			return;
 		}
-		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(userinfo, "*spectator", "1", HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		spectator = true;
-		Info_RemoveKey (userinfo, "spectator", MAX_INFO_STRING); // remove passwd
+		Info_RemoveKey (userinfo, "spectator", HWMAX_INFO_STRING); // remove passwd
 	}
 	else
 	{
@@ -519,7 +519,7 @@ void SVC_DirectConnect (void)
 			return;
 		}
 		spectator = false;
-		Info_RemoveKey (userinfo, "password", MAX_INFO_STRING); // remove passwd
+		Info_RemoveKey (userinfo, "password", HWMAX_INFO_STRING); // remove passwd
 	}
 
 	adr = net_from;
@@ -1450,12 +1450,12 @@ void SV_ExtractFromUserinfo (client_t *cl)
 	p[1] = 0;
 
 	if (String::Cmp(val, newname)) {
-		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(cl->userinfo, "name", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		val = Info_ValueForKey (cl->userinfo, "name");
 	}
 
 	if (!val[0] || !String::ICmp(val, "console")) {
-		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(cl->userinfo, "name", "unnamed", HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		val = Info_ValueForKey (cl->userinfo, "name");
 	}
 
@@ -1484,7 +1484,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 			}
 
 			sprintf(newname, "(%d)%-0.40s", dupc++, p);
-			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
+			Info_SetValueForKey(cl->userinfo, "name", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 			val = Info_ValueForKey (cl->userinfo, "name");
 		} else
 			break;
@@ -1520,7 +1520,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		if (cl->edict->v.health > 0)
 		{
 			sprintf(newname,"%d",cl->playerclass);
-			Info_SetValueForKey(cl->userinfo, "playerclass", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
+			Info_SetValueForKey(cl->userinfo, "playerclass", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		}
 	}
 

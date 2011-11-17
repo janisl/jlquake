@@ -132,8 +132,6 @@
 	#define	MAX_SCOREBOARD		16
 #endif
 
-#define	MAX_SCOREBOARDNAME	32
-
 #define	SOUND_CHANNELS		8
 
 // This makes anyone on id's net privileged

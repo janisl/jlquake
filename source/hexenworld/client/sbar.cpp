@@ -936,7 +936,7 @@ void Sbar_DrawFrags (void)
 	int				x, y, f;
 	int				xofs;
 	char			num[12];
-	scoreboard_t	*s;
+	h2player_info_t	*s;
 	
 	Sbar_SortFrags ();
 
@@ -1028,8 +1028,8 @@ void FindColor (int slot, int *color1, int *color2)
 		return;
 	}
 
-	top = cl.players[slot].topcolor;
-	bottom = cl.players[slot].bottomcolor;
+	top = cl.players[slot].topColour;
+	bottom = cl.players[slot].bottomColour;
 
 	if (top > 10) top = 0;
 	if (bottom > 10) bottom = 0;
@@ -1076,7 +1076,7 @@ void Sbar_DeathmatchOverlay(void)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[40];
-	player_info_t	*s;
+	h2player_info_t	*s;
 	float			total;
 	int				minutes;
 
@@ -1371,7 +1371,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	int				def_frags,att_frags;
 	char			num[40];
 //	unsigned char	num[12];
-	player_info_t	*s;
+	h2player_info_t	*s;
 
 	if (DMMode->value >= 2 && BarHeight != BAR_TOP_HEIGHT)
 		return;

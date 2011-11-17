@@ -867,7 +867,7 @@ extern double parsecounttime;
 void CL_SavePlayer (void)
 {
 	int			num;
-	player_info_t	*info;
+	h2player_info_t	*info;
 	player_state_t	*state;
 
 	num = net_message.ReadByte ();
@@ -886,7 +886,7 @@ void CL_ParsePlayerinfo (void)
 {
 	int			msec;
 	int			flags;
-	player_info_t	*info;
+	h2player_info_t	*info;
 	player_state_t	*state;
 	int			num;
 	int			i;
@@ -1020,7 +1020,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 
 		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
 		{
-			char temp[80];
+			char temp[40];
 			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
 			gl_extra_textures[Ent->skinNum - 100] = R_CachePic(temp);
 		}
@@ -1058,7 +1058,7 @@ for all current players
 void CL_LinkPlayers (void)
 {
 	int				j;
-	player_info_t	*info;
+	h2player_info_t	*info;
 	player_state_t	*state;
 	player_state_t	exact;
 	double			playertime;
