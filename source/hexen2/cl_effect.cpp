@@ -1062,7 +1062,7 @@ void CL_EndEffect(void)
 	CLH2_FreeEffect(index);
 }
 
-void CL_LinkEntity(effect_entity_t* ent)
+void CLH2_LinkEffectEntity(effect_entity_t* ent)
 {
 	refEntity_t rent;
 	Com_Memset(&rent, 0, sizeof(rent));
@@ -1226,7 +1226,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 
 				break;
 
@@ -1288,7 +1288,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				break;
 
 
@@ -1304,7 +1304,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				break;
 
 			// Go forward then backward through animation then remove
@@ -1339,7 +1339,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				break;
 
 			case H2CE_RIDER_DEATH:
@@ -1421,7 +1421,7 @@ void CL_UpdateEffects(void)
 					ent->state.origin[2] += (frametime/smoketime) * cl.h2_Effects[index].Teleporter.velocity[i][2];
 					ent->state.frame = cur_frame;
 
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				}
 				break;
 
@@ -1445,7 +1445,7 @@ void CL_UpdateEffects(void)
 				}
 				else
 				{
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				}
 				break;
 
@@ -1466,7 +1466,7 @@ void CL_UpdateEffects(void)
 				ent->state.origin[1] += frametime * cl.h2_Effects[index].Missile.velocity[1];
 				ent->state.origin[2] += frametime * cl.h2_Effects[index].Missile.velocity[2];
 
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 				break;
 
 			case H2CE_CHUNK:
@@ -1513,7 +1513,7 @@ void CL_UpdateEffects(void)
 							ent->state.scale *= .7;
 						}
 
-						CL_LinkEntity(ent);
+						CLH2_LinkEffectEntity(ent);
 
 						cl.h2_Effects[index].Chunk.velocity[i][2] -= frametime * 500; // apply gravity
 

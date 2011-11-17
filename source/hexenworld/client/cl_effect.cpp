@@ -541,7 +541,7 @@ void CL_TurnEffect(void)
 
 }
 
-void CL_LinkEntity(effect_entity_t* ent)
+void CLH2_LinkEffectEntity(effect_entity_t* ent)
 {
 	refEntity_t rent;
 	Com_Memset(&rent, 0, sizeof(rent));
@@ -660,7 +660,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				break;
 
 
@@ -702,7 +702,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 
 				
 				if(cl.h2_Effects[index].type == HWCE_TELESMK1)
@@ -716,7 +716,7 @@ void CL_UpdateEffects(void)
 					ent->state.frame += i;
 					if (ent->state.frame < R_ModelNumFrames(ent->model))
 					{
-						CL_LinkEntity(ent);
+						CLH2_LinkEffectEntity(ent);
 					}
 				}
 				break;
@@ -781,7 +781,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 
 				break;
 
@@ -818,7 +818,7 @@ void CL_UpdateEffects(void)
 					CLH2_FreeEffect(index);
 				}
 				else
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				break;
 
 			case HWCE_RIDER_DEATH:
@@ -883,7 +883,7 @@ void CL_UpdateEffects(void)
 					ent->state.origin[2] += (frametime/smoketime) * cl.h2_Effects[index].Teleporter.velocity[i][2];
 					ent->state.frame = cur_frame;
 
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				}
 				break;
 			case HWCE_TELEPORTERBODY:
@@ -906,7 +906,7 @@ void CL_UpdateEffects(void)
 				}
 				else
 				{
-					CL_LinkEntity(ent);
+					CLH2_LinkEffectEntity(ent);
 				}
 				break;
 
@@ -931,7 +931,7 @@ void CL_UpdateEffects(void)
 
 				CLH2_TrailParticles (old_origin, ent->state.origin, rt_setstaff);
 
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 				break;
 			case HWCE_HWXBOWSHOOT:
 				cl.h2_Effects[index].Xbow.time_amount += frametime;
@@ -947,7 +947,7 @@ void CL_UpdateEffects(void)
 							ent->state.origin[1] += frametime * cl.h2_Effects[index].Xbow.vel[i][1];
 							ent->state.origin[2] += frametime * cl.h2_Effects[index].Xbow.vel[i][2];
 
-							CL_LinkEntity(ent);
+							CLH2_LinkEffectEntity(ent);
 						}
 						else if (cl.h2_Effects[index].Xbow.bolts == 5)//fiery bolts don't just go away
 						{
@@ -956,7 +956,7 @@ void CL_UpdateEffects(void)
 								if (cl.h2_Effects[index].Xbow.gonetime[i] > cl.serverTimeFloat)//fiery bolts stick around for a while
 								{
 									ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
-									CL_LinkEntity(ent);
+									CLH2_LinkEffectEntity(ent);
 								}
 								else//when time's up on fiery guys, they explode
 								{
@@ -980,7 +980,7 @@ void CL_UpdateEffects(void)
 									//play explosion sound
 									S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_explode, 1, 1);
 
-									CL_LinkEntity(ent);
+									CLH2_LinkEffectEntity(ent);
 								}
 							}
 							else if (cl.h2_Effects[index].Xbow.state[i] == 1)//fiery bolt exploding state
@@ -1000,7 +1000,7 @@ void CL_UpdateEffects(void)
 									cl.h2_Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
 								}
 								else
-									CL_LinkEntity(ent);
+									CLH2_LinkEffectEntity(ent);
 							}
 						}
 					}
@@ -1022,7 +1022,7 @@ void CL_UpdateEffects(void)
 
 							CLH2_RunParticleEffect4(ent->state.origin,7,(rand()%15)+144,pt_h2explode2,(rand()%5)+1);
 
-							CL_LinkEntity(ent);
+							CLH2_LinkEffectEntity(ent);
 						}
 					}
 				}
@@ -1117,7 +1117,7 @@ void CL_UpdateEffects(void)
 					break;
 				}
 
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 
 				//damndamndamn--add stream stuff here!
 				VectorCopy(cl.h2_Effects[index].Chain.origin, org);
@@ -1132,7 +1132,7 @@ void CL_UpdateEffects(void)
 //				if (cl.h2_Effects[index].Chain.ent1 < 0)//fixme: remove this!!!
 //					Con_DPrintf("OHSHITOHSHIT--bad chain ent\n");
 
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 //				Con_DPrintf("Chain Ent at: %d %d %d\n",(int)cl.h2_Effects[index].Chain.origin[0],(int)cl.h2_Effects[index].Chain.origin[1],(int)cl.h2_Effects[index].Chain.origin[2]);
 
 				//damndamndamn--add stream stuff here!
@@ -1149,7 +1149,7 @@ void CL_UpdateEffects(void)
 				ent->state.origin[1] += frametime * cl.h2_Effects[index].Chain.velocity[1];
 				ent->state.origin[2] += frametime * cl.h2_Effects[index].Chain.velocity[2];
 
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 
 				//damndamndamn--add stream stuff here!
 				VectorCopy(cl.h2_Effects[index].Chain.origin, org);
@@ -1190,7 +1190,7 @@ void CL_UpdateEffects(void)
 						break;
 					}
 				}
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 				if(cl.h2_Effects[index].type == HWCE_HWBONEBALL)
 				{
 					CLH2_RunParticleEffect4 (ent->state.origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
@@ -1228,7 +1228,7 @@ void CL_UpdateEffects(void)
 				ent->state.origin[1] += frametime * cl.h2_Effects[index].Star.velocity[1];
 				ent->state.origin[2] += frametime * cl.h2_Effects[index].Star.velocity[2];
 
-				CL_LinkEntity(ent);
+				CLH2_LinkEffectEntity(ent);
 				
 				if (cl.h2_Effects[index].Star.ent1 != -1)
 				{
@@ -1237,7 +1237,7 @@ void CL_UpdateEffects(void)
 					ent2->state.scale = cl.h2_Effects[index].Star.scale;
 					ent2->state.angles[1] += frametime * 300;
 					ent2->state.angles[2] += frametime * 400;
-					CL_LinkEntity(ent2);
+					CLH2_LinkEffectEntity(ent2);
 				}
 				if(cl.h2_Effects[index].type == HWCE_HWMISSILESTAR)
 				{
@@ -1248,7 +1248,7 @@ void CL_UpdateEffects(void)
 						ent2->state.scale = cl.h2_Effects[index].Star.scale;
 						ent2->state.angles[1] += frametime * -300;
 						ent2->state.angles[2] += frametime * -400;
-						CL_LinkEntity(ent2);
+						CLH2_LinkEffectEntity(ent2);
 					}
 				}					
 				if(rand() % 10 < 3)		
