@@ -787,21 +787,28 @@ void CL_ParseClientdata (void)
 
 /*
 ===============
-R_TranslatePlayerSkin
+CLH2_TranslatePlayerSkin
 
 Translates a skin texture by the per-player color lookup
 ===============
 */
-void R_TranslatePlayerSkin(int playernum)
+void CLH2_TranslatePlayerSkin(int playernum)
 {
 	h2player_info_t* player = &cl.h2_players[playernum];
-	if (!player->name[0])
+	if (GGameType & GAME_HexenWorld)
 	{
-		return;
-	}
-	if (!player->playerclass)
-	{
-		return;
+		if (!player->name[0])
+		{
+			return;
+		}
+		if (!player->playerclass)
+		{
+			return;
+		}
+		if (player->modelindex <= 0)
+		{
+			return;
+		}
 	}
 
 	byte translate[256];
@@ -810,15 +817,10 @@ void R_TranslatePlayerSkin(int playernum)
 	//
 	// locate the original skin pixels
 	//
-	if (player->modelindex <= 0)
-	{
-		return;
-	}
-
 	int classIndex;
-	if (player->playerclass >= 1 && player->playerclass <= MAX_PLAYER_CLASS)
+	if (player->playerclass >= 1 && player->playerclass <= CLH2_GetMaxPlayerClasses())
 	{
-		classIndex = (int)player->playerclass - 1;
+		classIndex = player->playerclass - 1;
 		player->Translated = true;
 	}
 	else
@@ -826,7 +828,8 @@ void R_TranslatePlayerSkin(int playernum)
 		classIndex = 0;
 	}
 
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[classIndex], translate, classIndex);
+	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum),
+		player_models[classIndex], translate, classIndex);
 }
 
 /*
@@ -839,7 +842,7 @@ void CL_NewTranslation (int slot)
 	if (slot > HWMAX_CLIENTS)
 		Sys_Error ("CL_NewTranslation: slot > HWMAX_CLIENTS");
 
-	R_TranslatePlayerSkin(slot);
+	CLH2_TranslatePlayerSkin(slot);
 }
 
 /*

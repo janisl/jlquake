@@ -370,37 +370,49 @@ void CL_ParseServerInfo (void)
 
 /*
 ===============
-R_TranslatePlayerSkin
+CLH2_TranslatePlayerSkin
 
 Translates a skin texture by the per-player color lookup
 ===============
 */
-static void R_TranslatePlayerSkin (int playernum)
+void CLH2_TranslatePlayerSkin(int playernum)
 {
-	int playerclass = cl.h2_players[playernum].playerclass;
-
-	int top = cl.h2_players[playernum].topColour;
-	int bottom = cl.h2_players[playernum].bottomColour;
+	h2player_info_t* player = &cl.h2_players[playernum];
+	if (GGameType & GAME_HexenWorld)
+	{
+		if (!player->name[0])
+		{
+			return;
+		}
+		if (!player->playerclass)
+		{
+			return;
+		}
+		if (player->modelindex <= 0)
+		{
+			return;
+		}
+	}
 
 	byte translate[256];
-	CL_CalcHexen2SkinTranslation(top, bottom, playerclass, translate);
+	CL_CalcHexen2SkinTranslation(player->topColour, player->bottomColour, player->playerclass, translate);
 
 	//
 	// locate the original skin pixels
 	//
-	entity_t* ent = &cl_entities[1 + playernum];
-
 	int classIndex;
-	if (playerclass >= 1 && playerclass <= NUM_CLASSES)
+	if (player->playerclass >= 1 && player->playerclass <= CLH2_GetMaxPlayerClasses())
 	{
-		classIndex = playerclass - 1;
+		classIndex = player->playerclass - 1;
+		player->Translated = true;
 	}
 	else
 	{
 		classIndex = 0;
 	}
 
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate, classIndex);
+	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum),
+		player_models[classIndex], translate, classIndex);
 }
 
 /*
@@ -532,7 +544,7 @@ void CL_ParseUpdate (int bits)
 		else
 			forcelink = true;	// hack to make null model players work
 		if (num > 0 && num <= cl.maxclients)
-			R_TranslatePlayerSkin (num - 1);
+			CLH2_TranslatePlayerSkin (num - 1);
 	}
 	
 	if (bits & U_FRAME)
@@ -930,7 +942,7 @@ void CL_NewTranslation (int slot)
 	if (!cl.h2_players[slot].playerclass)
 		return;
 
-	R_TranslatePlayerSkin (slot);
+	CLH2_TranslatePlayerSkin (slot);
 }
 
 /*

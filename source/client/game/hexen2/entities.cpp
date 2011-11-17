@@ -42,6 +42,19 @@ void CLH2_InitColourShadeTables()
 	}
 }
 
+int CLH2_GetMaxPlayerClasses()
+{
+	if (GGameType & GAME_HexenWorld)
+	{
+		return MAX_PLAYER_CLASS;
+	}
+	if (GGameType & GAME_H2Portals)
+	{
+		return NUM_CLASSES_H2MP;
+	}
+	return NUM_CLASSES_H2;
+}
+
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags)
 {
 	if (drawFlags & H2DRF_TRANSLUCENT)

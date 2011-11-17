@@ -1039,7 +1039,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 		{
 			if (!cl.h2_players[PlayerNum].Translated)
 			{
-				R_TranslatePlayerSkin(PlayerNum);
+				CLH2_TranslatePlayerSkin(PlayerNum);
 			}
 
 			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
