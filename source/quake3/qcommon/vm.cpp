@@ -33,12 +33,13 @@ and one exported function: Perform
 
 */
 
-#include "vm_local.h"
+#include "../../core/core.h"
+#include "../game/q_shared.h"
+#include "qcommon.h"
+#include "../../core/virtual_machine/local.h"
 
 
-vm_t	*currentVM = NULL; // bk001212
 vm_t	*lastVM    = NULL; // bk001212
-int		vm_debugLevel;
 
 #define	MAX_VM		3
 vm_t	vmTable[MAX_VM];
@@ -47,10 +48,6 @@ vm_t	vmTable[MAX_VM];
 void VM_VmInfo_f( void );
 void VM_VmProfile_f( void );
 
-
-void VM_Debug( int level ) {
-	vm_debugLevel = level;
-}
 
 /*
 ==============
@@ -67,78 +64,6 @@ void VM_Init( void ) {
 
 	Com_Memset( vmTable, 0, sizeof( vmTable ) );
 }
-
-
-/*
-===============
-VM_ValueToSymbol
-
-Assumes a program counter value
-===============
-*/
-const char *VM_ValueToSymbol( vm_t *vm, int value ) {
-	vmSymbol_t	*sym;
-	static char		text[MAX_TOKEN_CHARS_Q3];
-
-	sym = vm->symbols;
-	if ( !sym ) {
-		return "NO SYMBOLS";
-	}
-
-	// find the symbol
-	while ( sym->next && sym->next->symValue <= value ) {
-		sym = sym->next;
-	}
-
-	if ( value == sym->symValue ) {
-		return sym->symName;
-	}
-
-	String::Sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
-
-	return text;
-}
-
-/*
-===============
-VM_ValueToFunctionSymbol
-
-For profiling, find the symbol behind this value
-===============
-*/
-vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value ) {
-	vmSymbol_t	*sym;
-	static vmSymbol_t	nullSym;
-
-	sym = vm->symbols;
-	if ( !sym ) {
-		return &nullSym;
-	}
-
-	while ( sym->next && sym->next->symValue <= value ) {
-		sym = sym->next;
-	}
-
-	return sym;
-}
-
-
-/*
-===============
-VM_SymbolToValue
-===============
-*/
-int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
-	vmSymbol_t	*sym;
-
-	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !String::Cmp( symbol, sym->symName ) ) {
-			return sym->symValue;
-		}
-	}
-	return 0;
-}
-
 
 /*
 ===============
@@ -194,7 +119,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 	String::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
 	len = FS_ReadFile( symbols, (void **)&mapfile );
 	if ( !mapfile ) {
-		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
+		Log::write( "Couldn't load symbol file: %s\n", symbols );
 		return;
 	}
 
@@ -219,18 +144,18 @@ void VM_LoadSymbols( vm_t *vm ) {
 
 		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Log::write( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		value = ParseHex( token );
 
 		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Log::write( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		chars = String::Length( token );
-		sym = (vmSymbol_t*)Hunk_Alloc( sizeof( *sym ) + chars, h_high );
+		sym = (vmSymbol_t*)Mem_Alloc(sizeof( *sym ) + chars);
 		*prev = sym;
 		prev = &sym->next;
 		sym->next = NULL;
@@ -241,13 +166,14 @@ void VM_LoadSymbols( vm_t *vm ) {
 		}
 
 		sym->symValue = value;
+		sym->profileCount = 0;
 		String::NCpyZ( sym->symName, token, chars + 1 );
 
 		count++;
 	}
 
 	vm->numSymbols = count;
-	Com_Printf( "%i symbols parsed from %s\n", count, symbols );
+	Log::write( "%i symbols parsed from %s\n", count, symbols );
 	FS_FreeFile( mapfile );
 }
 
@@ -341,12 +267,13 @@ vm_t *VM_Restart( vm_t *vm ) {
 	}
 
 	// load the image
-	Com_Printf( "VM_Restart()\n", filename );
+	Log::write( "VM_Restart()\n", filename );
 	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
-	Com_Printf( "Loading vm file %s.\n", filename );
+	Log::write( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
-	if ( !header ) {
-		Com_Error( ERR_DROP, "VM_Restart failed.\n" );
+	if (!header)
+	{
+		throw DropException("VM_Restart failed.\n");
 	}
 
 	// byte swap the header
@@ -361,7 +288,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 		|| header->litLength < 0 
 		|| header->codeLength <= 0 ) {
 		VM_Free( vm );
-		Com_Error( ERR_FATAL, "%s has bad header", filename );
+		throw Exception(va("%s has bad header", filename));
 	}
 
 	// round up to next power of 2 so all data operations can
@@ -408,8 +335,9 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	int			i, remaining;
 	char		filename[MAX_QPATH];
 
-	if ( !module || !module[0] || !systemCalls ) {
-		Com_Error( ERR_FATAL, "VM_Create: bad parms" );
+	if (!module || !module[0] || !systemCalls)
+	{
+		throw Exception("VM_Create: bad parms");
 	}
 
 	remaining = Hunk_MemoryRemaining();
@@ -429,8 +357,9 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 		}
 	}
 
-	if ( i == MAX_VM ) {
-		Com_Error( ERR_FATAL, "VM_Create: no free vm_t" );
+	if (i == MAX_VM)
+	{
+		throw Exception("VM_Create: no free vm_t");
 	}
 
 	vm = &vmTable[i];
@@ -447,22 +376,22 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	if ( interpret == VMI_NATIVE ) {
 		// try to load as a system dll
-		Com_Printf( "Loading dll file %s.\n", vm->name );
+		Log::write( "Loading dll file %s.\n", vm->name );
 		vm->dllHandle = Sys_LoadDll( module, vm->fqpath , &vm->entryPoint, VM_DllSyscall );
 		if ( vm->dllHandle ) {
 			return vm;
 		}
 
-		Com_Printf( "Failed to load dll, looking for qvm.\n" );
+		Log::write( "Failed to load dll, looking for qvm.\n" );
 		interpret = VMI_COMPILED;
 	}
 
 	// load the image
 	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
-	Com_Printf( "Loading vm file %s.\n", filename );
+	Log::write( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {
-		Com_Printf( "Failed.\n" );
+		Log::write( "Failed.\n" );
 		VM_Free( vm );
 		return NULL;
 	}
@@ -477,9 +406,10 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 		|| header->bssLength < 0 
 		|| header->dataLength < 0 
 		|| header->litLength < 0 
-		|| header->codeLength <= 0 ) {
-		VM_Free( vm );
-		Com_Error( ERR_FATAL, "%s has bad header", filename );
+		|| header->codeLength <= 0 )
+	{
+		VM_Free(vm);
+		throw Exception(va("%s has bad header", filename));
 	}
 
 	// round up to next power of 2 so all data operations can
@@ -490,7 +420,8 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	dataLength = 1 << i;
 
 	// allocate zero filled space for initialized and uninitialized data
-	vm->dataBase = (byte*)Hunk_Alloc( dataLength, h_high );
+	vm->dataBase = new byte[dataLength];
+	Com_Memset(vm->dataBase, 0, dataLength);
 	vm->dataMask = dataLength - 1;
 
 	// copy the intialized data
@@ -503,16 +434,17 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	// allocate space for the jump targets, which will be filled in by the compile/prep functions
 	vm->instructionPointersLength = header->instructionCount * 4;
-	vm->instructionPointers = (int*)Hunk_Alloc( vm->instructionPointersLength, h_high );
+	vm->instructionPointers = new int[header->instructionCount];
+	Com_Memset(vm->instructionPointers, 0, vm->instructionPointersLength);
 
 	// copy or compile the instructions
 	vm->codeLength = header->codeLength;
 
 	if ( interpret >= VMI_COMPILED ) {
-		vm->compiled = qtrue;
+		vm->compiled = true;
 		VM_Compile( vm, header );
 	} else {
-		vm->compiled = qfalse;
+		vm->compiled = false;
 		VM_PrepareInterpreter( vm, header );
 	}
 
@@ -526,7 +458,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	vm->programStack = vm->dataMask + 1;
 	vm->stackBottom = vm->programStack - STACK_SIZE;
 
-	Com_Printf("%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining());
+	Log::write("%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining());
 
 	return vm;
 }
@@ -536,36 +468,41 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 VM_Free
 ==============
 */
-void VM_Free( vm_t *vm ) {
-
-	if ( vm->dllHandle ) {
-		Sys_UnloadDll( vm->dllHandle );
-		Com_Memset( vm, 0, sizeof( *vm ) );
+void VM_Free(vm_t* vm)
+{
+	if (vm->dllHandle)
+	{
+		Sys_UnloadDll(vm->dllHandle);
 	}
-#if 0	// now automatically freed by hunk
-	if ( vm->codeBase ) {
-		Z_Free( vm->codeBase );
+	if (vm->codeBase)
+	{
+		delete[] vm->codeBase;
 	}
-	if ( vm->dataBase ) {
-		Z_Free( vm->dataBase );
+	if (vm->dataBase)
+	{
+		delete[] vm->dataBase;
 	}
-	if ( vm->instructionPointers ) {
-		Z_Free( vm->instructionPointers );
+	if (vm->instructionPointers)
+	{
+		delete[] vm->instructionPointers;
 	}
-#endif
-	Com_Memset( vm, 0, sizeof( *vm ) );
+	for (vmSymbol_t* sym = vm->symbols; sym;)
+	{
+		vmSymbol_t* next = sym->next;
+		Mem_Free(sym);
+		sym = next;
+	}
+	Com_Memset(vm, 0, sizeof(*vm));
 
 	currentVM = NULL;
 	lastVM = NULL;
 }
 
-void VM_Clear(void) {
-	int i;
-	for (i=0;i<MAX_VM; i++) {
-		if ( vmTable[i].dllHandle ) {
-			Sys_UnloadDll( vmTable[i].dllHandle );
-		}
-		Com_Memset( &vmTable[i], 0, sizeof( vm_t ) );
+void VM_Clear()
+{
+	for (int i = 0; i < MAX_VM; i++)
+	{
+		VM_Free(&vmTable[i]);
 	}
 	currentVM = NULL;
 	lastVM = NULL;
@@ -636,7 +573,7 @@ int VM_Call(vm_t* vm, int callnum, ...)
 {
 	if (!vm)
 	{
-		Com_Error(ERR_FATAL, "VM_Call with NULL vm");
+		throw Exception("VM_Call with NULL vm");
 	}
 
 	vm_t* oldVM = currentVM;
@@ -645,7 +582,7 @@ int VM_Call(vm_t* vm, int callnum, ...)
 
 	if (vm_debugLevel)
 	{
-		Com_Printf("VM_Call( %i )\n", callnum);
+		Log::write("VM_Call( %i )\n", callnum);
 	}
 
 #if id386
@@ -743,11 +680,11 @@ void VM_VmProfile_f( void ) {
 		sym = sorted[i];
 
 		perc = 100 * (float) sym->profileCount / total;
-		Com_Printf( "%2i%% %9i %s\n", perc, sym->profileCount, sym->symName );
+		Log::write( "%2i%% %9i %s\n", perc, sym->profileCount, sym->symName );
 		sym->profileCount = 0;
 	}
 
-	Com_Printf("    %9.0f total\n", total );
+	Log::write("    %9.0f total\n", total );
 
 	Z_Free( sorted );
 }
@@ -762,43 +699,24 @@ void VM_VmInfo_f( void ) {
 	vm_t	*vm;
 	int		i;
 
-	Com_Printf( "Registered virtual machines:\n" );
+	Log::write( "Registered virtual machines:\n" );
 	for ( i = 0 ; i < MAX_VM ; i++ ) {
 		vm = &vmTable[i];
 		if ( !vm->name[0] ) {
 			break;
 		}
-		Com_Printf( "%s : ", vm->name );
+		Log::write( "%s : ", vm->name );
 		if ( vm->dllHandle ) {
-			Com_Printf( "native\n" );
+			Log::write( "native\n" );
 			continue;
 		}
 		if ( vm->compiled ) {
-			Com_Printf( "compiled on load\n" );
+			Log::write( "compiled on load\n" );
 		} else {
-			Com_Printf( "interpreted\n" );
+			Log::write( "interpreted\n" );
 		}
-		Com_Printf( "    code length : %7i\n", vm->codeLength );
-		Com_Printf( "    table length: %7i\n", vm->instructionPointersLength );
-		Com_Printf( "    data length : %7i\n", vm->dataMask + 1 );
+		Log::write( "    code length : %7i\n", vm->codeLength );
+		Log::write( "    table length: %7i\n", vm->instructionPointersLength );
+		Log::write( "    data length : %7i\n", vm->dataMask + 1 );
 	}
-}
-
-/*
-===============
-VM_LogSyscalls
-
-Insert calls to this while debugging the vm compiler
-===============
-*/
-void VM_LogSyscalls( int *args ) {
-	static	int		callnum;
-	static	FILE	*f;
-
-	if ( !f ) {
-		f = fopen("syscalls.log", "w" );
-	}
-	callnum++;
-	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, (int)(args - (int*)currentVM->dataBase),
-		args[0], args[1], args[2], args[3], args[4] );
 }

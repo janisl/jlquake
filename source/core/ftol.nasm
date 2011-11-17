@@ -1,22 +1,18 @@
-;===========================================================================
-;Copyright (C) 1999-2005 Id Software, Inc.
-;
-;This file is part of Quake III Arena source code.
-;
-;Quake III Arena source code is free software; you can redistribute it
-;and/or modify it under the terms of the GNU General Public License as
-;published by the Free Software Foundation; either version 2 of the License,
-;or (at your option) any later version.
-;
-;Quake III Arena source code is distributed in the hope that it will be
-;useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;GNU General Public License for more details.
-;
-;You should have received a copy of the GNU General Public License
-;along with Foobar; if not, write to the Free Software
-;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-;===========================================================================
+;**************************************************************************
+;**
+;**	See jlquake.txt for copyright info.
+;**
+;**	This program is free software; you can redistribute it and/or
+;**  modify it under the terms of the GNU General Public License
+;**  as published by the Free Software Foundation; either version 2
+;**  of the License, or (at your option) any later version.
+;**
+;**	This program is distributed in the hope that it will be useful,
+;**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;**  included (gnu.txt) GNU General Public License for more details.
+;**
+;**************************************************************************
 
 ;
 ; qftol -- fast floating point to long conversion.
@@ -57,9 +53,9 @@ segment .text
 global qftol
 
 qftol: 
-        fistp dword [temp]
-        mov eax, [temp]
-        ret
+	fistp dword [temp]
+	mov eax, [temp]
+	ret
 
 
 ;
@@ -71,10 +67,10 @@ global qftol027F
 qftol027F:
 	fnstcw [fpucw]
 	fldcw  [cw027F]  
-        fistp dword [temp]
+	fistp dword [temp]
 	fldcw  [fpucw]
-        mov eax, [temp]
-        ret
+	mov eax, [temp]
+	ret
 
 ;
 ; int qftol037F( void ) - Linux FPU 
@@ -85,10 +81,10 @@ global qftol037F
 qftol037F:
 	fnstcw [fpucw]
 	fldcw  [cw037F]  
-        fistp dword [temp]
+	fistp dword [temp]
 	fldcw  [fpucw]
-        mov eax, [temp]
-        ret
+	mov eax, [temp]
+	ret
 
 
 ;
@@ -100,10 +96,10 @@ global qftol0F7F
 qftol0F7F:
 	fnstcw [fpucw]
 	fldcw  [cw0F7F]  
-        fistp dword [temp]
+	fistp dword [temp]
 	fldcw  [fpucw]
-        mov eax, [temp]
-        ret
+	mov eax, [temp]
+	ret
 
 ;
 ; int qftol0E7F( void ) 
@@ -114,11 +110,10 @@ global qftol0E7F
 qftol0E7F:
 	fnstcw [fpucw]
 	fldcw  [cw0E7F]  
-        fistp dword [temp]
+	fistp dword [temp]
 	fldcw  [fpucw]
-        mov eax, [temp]
-        ret
-
+	mov eax, [temp]
+	ret
 
 
 ;
@@ -128,11 +123,10 @@ qftol0E7F:
 global Q_ftol
 
 Q_ftol:
-        fld dword [esp+4]  
-        fistp dword [temp]
-        mov eax, [temp]
-        ret
-
+	fld dword [esp+4]  
+	fistp dword [temp]
+	mov eax, [temp]
+	ret
 
 ;
 ; long qftol0F7F( float q ) - Linux FPU 
@@ -144,8 +138,7 @@ Q_ftol0F7F:
 	fnstcw [fpucw]
 	fld dword [esp+4]  
 	fldcw  [cw0F7F]  
-        fistp dword [temp]
+	fistp dword [temp]
 	fldcw  [fpucw]
-        mov eax, [temp]
-        ret
-
+	mov eax, [temp]
+	ret

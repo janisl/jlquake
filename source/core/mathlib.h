@@ -44,8 +44,15 @@ float Q_rsqrt(float f);		// reciprocal square root
 #endif
 int Q_log2(int val);
 float Q_acos(float c);
-#if id386 && defined _MSC_VER
-extern long Q_ftol(float f);
+#if id386
+#ifndef _MSC_VER
+extern "C"
+{
+#endif
+long Q_ftol(float f);
+#ifndef _MSC_VER
+}
+#endif
 #else
 #define Q_ftol(f)		(long)(f)
 #endif

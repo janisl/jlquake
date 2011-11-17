@@ -30,7 +30,6 @@ set(QUAKE3_FILES
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 	game/q_shared.cpp
 	game/q_math.cpp
 	unix/unix_main.cpp
@@ -39,12 +38,7 @@ set(QUAKE3_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(QUAKE3_FILES ${QUAKE3_FILES}
-		qcommon/vm_x86.cpp
-	)
-
 	set(QUAKE3_NASM_FILES
-		unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 
@@ -57,10 +51,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		set(QUAKE3_FILES ${QUAKE3_FILES} ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(QUAKE3_FILES ${QUAKE3_FILES}
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3 ${QUAKE3_FILES})
@@ -90,7 +80,6 @@ set(QUAKE3_DEDICATED_FILES
 	game/q_math.cpp
 	game/q_shared.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
@@ -99,12 +88,7 @@ set(QUAKE3_DEDICATED_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES}
-		qcommon/vm_x86.cpp
-	)
-
 	set(QUAKE3_DED_NASM_FILES
-		unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 
@@ -117,10 +101,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES} ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES}
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})

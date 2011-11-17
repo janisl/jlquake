@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef _QCOMMON_H_
 #define _QCOMMON_H_
 
-#include "qfiles.h"
-
 //#define	PRE_RELEASE_DEMO
 
 //============================================================================
@@ -211,7 +209,7 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
-typedef struct vm_s vm_t;
+struct vm_t;
 
 typedef enum {
 	VMI_NATIVE,
@@ -247,8 +245,6 @@ void	VM_Clear(void);
 vm_t	*VM_Restart( vm_t *vm );
 
 int		VM_Call( vm_t *vm, int callNum, ... );
-
-void	VM_Debug( int level );
 
 void	*VM_ArgPtr( int intValue );
 void	*VM_ExplicitArgPtr( vm_t *vm, int intValue );
