@@ -2057,7 +2057,7 @@ void SV_Physics (void)
 		if (pr_global_struct->force_retouch)
 			SV_LinkEdict (ent, true);	// force retouch even for stationary
 
-		if (i > 0 && i <= MAX_CLIENTS)
+		if (i > 0 && i <= HWMAX_CLIENTS)
 		{
 //			SV_Physics_Client(ent);
 //			VectorCopy (ent->v.origin,ent->v.oldorigin);

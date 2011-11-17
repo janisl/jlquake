@@ -255,7 +255,7 @@ void CL_ParseServerInfo (void)
 
 // parse maxclients
 	cl.maxclients = net_message.ReadByte ();
-	if (cl.maxclients < 1 || cl.maxclients > MAX_SCOREBOARD)
+	if (cl.maxclients < 1 || cl.maxclients > H2MAX_CLIENTS)
 	{
 		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
 		return;
@@ -1257,14 +1257,14 @@ void CL_ParseServerMessage (void)
 		case svc_updatename:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: svc_updatename > H2MAX_CLIENTS");
 			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
 			break;
 
 		case svc_updateclass:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updateclass > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: svc_updateclass > H2MAX_CLIENTS");
 			cl.scores[i].playerclass = net_message.ReadByte();
 			CL_NewTranslation(i); // update the color
 			break;
@@ -1272,7 +1272,7 @@ void CL_ParseServerMessage (void)
 		case svc_updatefrags:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: svc_updatefrags > H2MAX_CLIENTS");
 			cl.scores[i].frags = net_message.ReadShort ();
 			break;			
 
@@ -1283,7 +1283,7 @@ void CL_ParseServerMessage (void)
 		case svc_updatecolors:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: svc_updatecolors > H2MAX_CLIENTS");
 			j = net_message.ReadByte();
 			cl.scores[i].topColour = (j & 0xf0) >> 4;
 			cl.scores[i].bottomColour = (j & 15);

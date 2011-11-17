@@ -524,7 +524,7 @@ static void Test_f (void)
 {
 	char	*host;
 	int		n;
-	int		max = MAX_SCOREBOARD;
+	int		max = H2MAX_CLIENTS;
 	netadr_t sendaddr;
 
 	if (testInProgress)

@@ -185,7 +185,7 @@ void SV_BroadcastPrintf (int level, const char *fmt, ...)
 	
 	Con_Printf ("%s", string);	// print to the console
 
-	for (i=0, cl = svs.clients ; i<MAX_CLIENTS ; i++, cl++)
+	for (i=0, cl = svs.clients ; i<HWMAX_CLIENTS ; i++, cl++)
 	{
 		if (level < cl->messagelevel)
 			continue;
@@ -273,7 +273,7 @@ void SV_Multicast (vec3_t origin, int to)
 	}
 
 	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
 		if (client->state != cs_spawned)
 			continue;
@@ -320,7 +320,7 @@ void SV_MulticastSpecific (unsigned clients, qboolean reliable)
 	clients_multicast = 0;
 	
 	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
 		if (client->state != cs_spawned)
 			continue;
@@ -845,12 +845,12 @@ static void UpdatePIV(void)
 	vec3_t		adjust_org1, adjust_org2, distvec;
 	float		save_hull, dist;
 
-	for (i=0, host_client = svs.clients ; i<MAX_CLIENTS ; i++, host_client++)
+	for (i=0, host_client = svs.clients ; i<HWMAX_CLIENTS ; i++, host_client++)
 	{
 		host_client->PIV = 0;
 	}
 
-	for (i=0, host_client = svs.clients ; i<MAX_CLIENTS ; i++, host_client++)
+	for (i=0, host_client = svs.clients ; i<HWMAX_CLIENTS ; i++, host_client++)
 	{
 		if (host_client->state != cs_spawned || host_client->spectator)
 			continue;
@@ -861,7 +861,7 @@ static void UpdatePIV(void)
 		save_hull = host_client->edict->v.hull;
 		host_client->edict->v.hull = 0;
 
-		for(j=i+1, client = host_client+1 ; j<MAX_CLIENTS ; j++, client++)
+		for(j=i+1, client = host_client+1 ; j<HWMAX_CLIENTS ; j++, client++)
 		{
 			if (client->state != cs_spawned || client->spectator)
 				continue;
@@ -912,7 +912,7 @@ void SV_UpdateToReliableMessages (void)
 	}
 
 // check for changes to be sent over the reliable streams to all clients
-	for (i=0, host_client = svs.clients ; i<MAX_CLIENTS ; i++, host_client++)
+	for (i=0, host_client = svs.clients ; i<HWMAX_CLIENTS ; i++, host_client++)
 	{
 		if (host_client->state != cs_spawned)
 			continue;
@@ -923,7 +923,7 @@ void SV_UpdateToReliableMessages (void)
 		}
 		if (host_client->old_frags != host_client->edict->v.frags)
 		{
-			for (j=0, client = svs.clients ; j<MAX_CLIENTS ; j++, client++)
+			for (j=0, client = svs.clients ; j<HWMAX_CLIENTS ; j++, client++)
 			{
 				if (client->state < cs_connected)
 					continue;
@@ -975,7 +975,7 @@ void SV_UpdateToReliableMessages (void)
 		sv.datagram.Clear();
 
 	// append the broadcast messages to each client messages
-	for (j=0, client = svs.clients ; j<MAX_CLIENTS ; j++, client++)
+	for (j=0, client = svs.clients ; j<HWMAX_CLIENTS ; j++, client++)
 	{
 		if (client->state < cs_connected)
 			continue;	// reliables go to all connected or spawned
@@ -1029,7 +1029,7 @@ void SV_SendClientMessages (void)
 	SV_UpdateToReliableMessages ();
 
 // build individual updates
-	for (i=0, c = svs.clients ; i<MAX_CLIENTS ; i++, c++)
+	for (i=0, c = svs.clients ; i<HWMAX_CLIENTS ; i++, c++)
 	{
 		if (!c->state)
 			continue;
@@ -1081,7 +1081,7 @@ void SV_SendMessagesToAll (void)
 	int			i;
 	client_t	*c;
 
-	for (i=0, c = svs.clients ; i<MAX_CLIENTS ; i++, c++)
+	for (i=0, c = svs.clients ; i<HWMAX_CLIENTS ; i++, c++)
 		if (c->state)		// FIXME: should this only send to active?
 			c->send_message = true;
 	

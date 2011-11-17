@@ -100,7 +100,7 @@ static Cvar* sbtrans;
 static image_t *sb_nums[11];
 static image_t *sb_colon, *sb_slash;
 
-static int fragsort[MAX_CLIENTS];
+static int fragsort[HWMAX_CLIENTS];
 
 static int scoreboardlines;
 
@@ -222,7 +222,7 @@ void Sbar_Init(void)
 
 void SB_PlacePlayerNames(void)
 {
-	for (int i = 0; i < MAX_CLIENTS; i++)
+	for (int i = 0; i < HWMAX_CLIENTS; i++)
 	{
 		if ((cl.PIV & (1 << i)))
 		{
@@ -850,7 +850,7 @@ void Sbar_SortFrags (qboolean includespec)
 		
 // sort by frags
 	scoreboardlines = 0;
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	for (i=0 ; i<HWMAX_CLIENTS ; i++)
 	{
 		if (cl.players[i].name[0] &&
 			(!cl.players[i].spectator || includespec))
@@ -1019,7 +1019,7 @@ void FindColor (int slot, int *color1, int *color2)
 	int		top, bottom, done;
 	byte	*sourceA, *sourceB, *colorA, *colorB;
 	
-	if (slot > MAX_CLIENTS)
+	if (slot > HWMAX_CLIENTS)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 
 	if (cl.players[slot].playerclass <= 0 || cl.players[slot].playerclass > MAX_PLAYER_CLASS)

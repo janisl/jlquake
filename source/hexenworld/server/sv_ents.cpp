@@ -843,13 +843,13 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 	int			pflags;
 	int			invis_level;
 	qboolean	playermodel = false;
-	int			visclient[MAX_CLIENTS];
-	int			forcevisclient[MAX_CLIENTS];
-	int			cl_v_priority[MAX_CLIENTS];
-	int			cl_v_psort[MAX_CLIENTS];
+	int			visclient[HWMAX_CLIENTS];
+	int			forcevisclient[HWMAX_CLIENTS];
+	int			cl_v_priority[HWMAX_CLIENTS];
+	int			cl_v_psort[HWMAX_CLIENTS];
 	int			numvc,forcevc,totalvc,num_eliminated;
 
-	for (j=0,cl=svs.clients,numvc=0,forcevc=0 ; j<MAX_CLIENTS ; j++,cl++)
+	for (j=0,cl=svs.clients,numvc=0,forcevc=0 ; j<HWMAX_CLIENTS ; j++,cl++)
 	{
 		if (cl->state != cs_spawned)
 			continue;
@@ -974,7 +974,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		//priority 5 - send less info on clients
 	}
 
-	for (j=0, l=0, k=0, cl=svs.clients; j<MAX_CLIENTS ; j++,cl++)
+	for (j=0, l=0, k=0, cl=svs.clients; j<HWMAX_CLIENTS ; j++,cl++)
 	{//priority 1 - if behind, cull out
 		if(forcevisclient[l]==j&&l<=forcevc)
 			l++;
@@ -1142,7 +1142,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 	int			invis_level;
 	qboolean	playermodel = false;
 
-	for (j=0,cl=svs.clients ; j<MAX_CLIENTS ; j++,cl++)
+	for (j=0,cl=svs.clients ; j<HWMAX_CLIENTS ; j++,cl++)
 	{
 		if (cl->state != cs_spawned)
 			continue;
@@ -1368,7 +1368,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	numravens = 0;
 	numraven2s = 0;
 
-	for (e=MAX_CLIENTS+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
+	for (e=HWMAX_CLIENTS+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->v.model))

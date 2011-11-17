@@ -12,7 +12,7 @@ static struct predicted_player {
 	int flags;
 	qboolean active;
 	vec3_t origin;	// predicted origin
-} predicted_players[MAX_CLIENTS];
+} predicted_players[HWMAX_CLIENTS];
 
 #define	U_MODEL		(1<<16)
 #define U_SOUND		(1<<17)
@@ -872,7 +872,7 @@ void CL_SavePlayer (void)
 
 	num = net_message.ReadByte ();
 
-	if (num > MAX_CLIENTS)
+	if (num > HWMAX_CLIENTS)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
 	info = &cl.players[num];
@@ -893,7 +893,7 @@ void CL_ParsePlayerinfo (void)
 	qboolean	playermodel = false;
 
 	num = net_message.ReadByte ();
-	if (num > MAX_CLIENTS)
+	if (num > HWMAX_CLIENTS)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
 	info = &cl.players[num];
@@ -1072,7 +1072,7 @@ void CL_LinkPlayers (void)
 
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
-	for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS 
+	for (j=0, info=cl.players, state=frame->playerstate ; j < HWMAX_CLIENTS 
 		; j++, info++, state++)
 	{
 		info->shownames_off = true;
@@ -1291,7 +1291,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
-		j < MAX_CLIENTS;
+		j < HWMAX_CLIENTS;
 		j++, pplayer++, state++) 
 	{
 
@@ -1363,7 +1363,7 @@ void CL_SetSolidPlayers (int playernum)
 
 	pent = pmove.physents + pmove.numphysent;
 
-	for (j=0, pplayer = predicted_players; j < MAX_CLIENTS;	j++, pplayer++) 
+	for (j=0, pplayer = predicted_players; j < HWMAX_CLIENTS;	j++, pplayer++) 
 	{
 
 		if (!pplayer->active)

@@ -14,24 +14,28 @@
 //**
 //**************************************************************************
 
+#define H2MAX_CLIENTS			16
+#define HWMAX_CLIENTS			32
+#define H2BIGGEST_MAX_CLIENTS	32	//	For common arrays
+
 #define MAX_EDICTS_H2		768			// FIXME: ouch! ouch! ouch!
-
-// Player Classes
-#define NUM_CLASSES_H2				4
-#define NUM_CLASSES_H2MP			5
-#define MAX_PLAYER_CLASS			6
-
-#define CLASS_PALADIN				1
-#define CLASS_CLERIC 				2
-#define CLASS_NECROMANCER			3
-#define CLASS_THEIF   				4
-#define CLASS_DEMON					5
-#define CLASS_DWARF					6
 
 // Timing macros
 #define HX_FRAME_TIME		0.05
 
 #define HWMAX_INFO_STRING	196
+
+// Player Classes
+#define NUM_CLASSES_H2			4
+#define NUM_CLASSES_H2MP		5
+#define MAX_PLAYER_CLASS		6
+
+#define CLASS_PALADIN			1
+#define CLASS_CLERIC 			2
+#define CLASS_NECROMANCER		3
+#define CLASS_THEIF   			4
+#define CLASS_DEMON				5
+#define CLASS_DWARF				6
 
 // edict->drawflags
 #define H2MLS_MASKIN			7	// MLS: Model Light Style

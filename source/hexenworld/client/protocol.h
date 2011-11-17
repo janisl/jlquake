@@ -403,8 +403,6 @@
 ==========================================================
 */
 
-#define	MAX_CLIENTS		32
-
 #define	UPDATE_BACKUP	64	// copies of h2entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)

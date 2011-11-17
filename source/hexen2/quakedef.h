@@ -126,8 +126,6 @@
 #endif
 #define ABILITIES_STR_INDEX			400
 
-#define	MAX_SCOREBOARD		16
-
 #define	SOUND_CHANNELS		8
 
 // This makes anyone on id's net privileged

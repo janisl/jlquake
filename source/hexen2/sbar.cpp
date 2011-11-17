@@ -95,7 +95,7 @@ Cvar* DMMode;
 static image_t *sb_nums[11];
 static image_t *sb_colon, *sb_slash;
 
-static int fragsort[MAX_SCOREBOARD];
+static int fragsort[H2MAX_CLIENTS];
 
 static int scoreboardlines;
 

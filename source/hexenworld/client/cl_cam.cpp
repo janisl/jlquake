@@ -213,7 +213,7 @@ static void Cam_CheckHighTarget(void)
 	h2player_info_t	*s;
 
 	j = -1;
-	for (i = 0, max = -9999; i < MAX_CLIENTS; i++) {
+	for (i = 0, max = -9999; i < HWMAX_CLIENTS; i++) {
 		s = &cl.players[i];
 		if (s->name[0] && !s->spectator && s->frags > max) {
 			max = s->frags;
@@ -380,7 +380,7 @@ void Cam_FinishMove(usercmd_t *cmd)
 //	Con_Printf("Selecting track target...\n");
 
 	if (locked && autocam)
-		end = (spec_track + 1) % MAX_CLIENTS;
+		end = (spec_track + 1) % HWMAX_CLIENTS;
 	else
 		end = spec_track;
 	i = end;
@@ -390,7 +390,7 @@ void Cam_FinishMove(usercmd_t *cmd)
 			Cam_Lock(i);
 			return;
 		}
-		i = (i + 1) % MAX_CLIENTS;
+		i = (i + 1) % HWMAX_CLIENTS;
 	} while (i != end);
 	// stay on same guy?
 	i = spec_track;

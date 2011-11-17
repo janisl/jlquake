@@ -261,7 +261,7 @@ h2entity_state_t *FindState(int EntNum)
 	static h2entity_state_t	pretend_player;
 	int						pnum;
 
-	if (EntNum >= 1 && EntNum <= MAX_CLIENTS)
+	if (EntNum >= 1 && EntNum <= HWMAX_CLIENTS)
 	{
 		EntNum--;
 

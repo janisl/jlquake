@@ -50,7 +50,7 @@ edict_t *ED_Alloc (void)
 	int			i;
 	edict_t		*e;
 
-	for ( i=MAX_CLIENTS+max_temp_edicts->value+1 ; i<sv.num_edicts ; i++)
+	for ( i=HWMAX_CLIENTS+max_temp_edicts->value+1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
@@ -86,7 +86,7 @@ edict_t *ED_Alloc_Temp (void)
 
 	LeastTime = -1;
 	LeastSet = false;
-	for ( i=MAX_CLIENTS+1,j=0 ; j < max_temp_edicts->value ; i++,j++)
+	for ( i=HWMAX_CLIENTS+1,j=0 ; j < max_temp_edicts->value ; i++,j++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of

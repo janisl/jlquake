@@ -40,7 +40,7 @@ typedef struct
 
 	// received from server
 	double		receivedtime;	// time message was received, or -1
-	player_state_t	playerstate[MAX_CLIENTS];	// message received that reflects performing
+	player_state_t	playerstate[HWMAX_CLIENTS];	// message received that reflects performing
 							// the usercmd
 	packet_entities_t	packet_entities;
 	qboolean	invalid;		// true if the packet_entities delta was invalid
@@ -278,7 +278,7 @@ struct client_state_t : clientActiveCommon_t
 	unsigned	PIV;			// players in view
 
 // all player information
-	h2player_info_t	players[MAX_CLIENTS];
+	h2player_info_t	players[HWMAX_CLIENTS];
 };
 
 
@@ -510,7 +510,7 @@ void Cam_Reset(void);
 void R_TranslatePlayerSkin (int playernum);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 
-extern	image_t*	playertextures[MAX_CLIENTS];
+extern	image_t*	playertextures[HWMAX_CLIENTS];
 
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
 extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models

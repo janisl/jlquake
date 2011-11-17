@@ -110,7 +110,7 @@ double	parsecounttime;
 
 qhandle_t	player_models[MAX_PLAYER_CLASS];
 
-image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
+image_t*	playertextures[HWMAX_CLIENTS];		// up to 16 color translated skins
 
 int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
 int		cl_ballindex, cl_missilestarindex, cl_ravenindex, cl_raven2index;
@@ -836,8 +836,8 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	if (slot > MAX_CLIENTS)
-		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS");
+	if (slot > HWMAX_CLIENTS)
+		Sys_Error ("CL_NewTranslation: slot > HWMAX_CLIENTS");
 
 	R_TranslatePlayerSkin(slot);
 }
@@ -853,8 +853,8 @@ void CL_UpdateUserinfo (void)
 	h2player_info_t	*player;
 
 	slot = net_message.ReadByte ();
-	if (slot >= MAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_CLIENTS");
+	if (slot >= HWMAX_CLIENTS)
+		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > HWMAX_CLIENTS");
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
@@ -912,7 +912,7 @@ CL_MuzzleFlash
 void CL_MuzzleFlash()
 {
 	int i = net_message.ReadShort();
-	if ((unsigned)(i - 1) >= MAX_CLIENTS)
+	if ((unsigned)(i - 1) >= HWMAX_CLIENTS)
 	{
 		return;
 	}
@@ -969,7 +969,7 @@ void CL_NamePrint(void)
 
 	index = net_message.ReadByte ();
 
-	if (index >= 0 && index < MAX_CLIENTS)
+	if (index >= 0 && index < HWMAX_CLIENTS)
 	{
 		Con_Printf ("%s",&cl.players[index].name);
 	}
@@ -1168,31 +1168,31 @@ void CL_ParseServerMessage (void)
 		case svc_updatefrags:
 			Sbar_Changed ();
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_CLIENTS");
+			if (i >= HWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > HWMAX_CLIENTS");
 			cl.players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_CLIENTS");
+			if (i >= HWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateping > HWMAX_CLIENTS");
 			cl.players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case svc_updateentertime:
 		// time is sent over as seconds ago
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_CLIENTS");
+			if (i >= HWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > HWMAX_CLIENTS");
 			cl.players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
 		case svc_updatepclass:
 		// playerclass has changed for this dude
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatepclass > MAX_CLIENTS");
+			if (i >= HWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatepclass > HWMAX_CLIENTS");
 			cl.players[i].playerclass = net_message.ReadByte ();
 			cl.players[i].level = cl.players[i].playerclass&31;
 			cl.players[i].playerclass = cl.players[i].playerclass>>5;
@@ -1201,8 +1201,8 @@ void CL_ParseServerMessage (void)
 		case svc_updatedminfo:
 		// This dude killed someone, update his frags and level
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatedminfo > MAX_CLIENTS");
+			if (i >= HWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatedminfo > HWMAX_CLIENTS");
 			cl.players[i].frags = net_message.ReadShort ();
 			cl.players[i].playerclass = net_message.ReadByte ();
 			cl.players[i].level = cl.players[i].playerclass&31;
@@ -1218,8 +1218,8 @@ void CL_ParseServerMessage (void)
 		case svc_updatesiegeteam:
 		// This dude killed someone, update his frags and level
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatesiegeteam > MAX_CLIENTS");
+			if (i >= HWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatesiegeteam > HWMAX_CLIENTS");
 			cl.players[i].siege_team = net_message.ReadByte ();
 			break;
 
