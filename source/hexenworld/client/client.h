@@ -415,7 +415,7 @@ void CL_Disconnect_f (void);
 void CL_NextDemo (void);
 qboolean CL_DemoBehind(void);
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
+void CLH2_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
 
 //
 // cl_input

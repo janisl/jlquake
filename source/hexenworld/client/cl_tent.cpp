@@ -3229,7 +3229,7 @@ void CL_UpdateExplosions (void)
 		ent.hModel = ex->model;
 		ent.frame = f;
 		ent.skinNum = ex->skin;
-		CL_SetRefEntAxis(&ent, ex->angles, vec3_origin, ex->scale, 0, ex->abslight, ex->flags);
+		CLH2_SetRefEntAxis(&ent, ex->angles, vec3_origin, ex->scale, 0, ex->abslight, ex->flags);
 		R_HandleCustomSkin(&ent, -1);
 		R_AddRefEntityToScene(&ent);
 	}
@@ -3311,13 +3311,13 @@ void CL_UpdateStreams(void)
 			{
 			case TE_STREAM_CHAIN:
 				angles[2] = 0;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF1:
 				angles[2] = (int)(cl.serverTimeFloat*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.3), 0, 128, H2MLS_ABSLIGHT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.3), 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 
 				Com_Memset(&ent, 0, sizeof(ent));
@@ -3326,14 +3326,14 @@ void CL_UpdateStreams(void)
 				ent.hModel = stream->models[1];
 				angles[2] = (int)(cl.serverTimeFloat*50)%360;
 				//stream->endTime = cl.time+0.3;	// FIXME
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.5), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTimeFloat)/.5), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF2:
 				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 
 				Com_Memset(&ent, 0, sizeof(ent));
@@ -3343,7 +3343,7 @@ void CL_UpdateStreams(void)
 				angles[2] = (int)(cl.serverTimeFloat*100)%360;
 				VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 
 				for (int ix = 0; ix < 2; ix++)
@@ -3363,64 +3363,64 @@ void CL_UpdateStreams(void)
 					}
 					ent.hModel = stream->models[1];
 					angles[2] = (int)(cl.serverTimeFloat*20)%360;
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT);
 					R_AddRefEntityToScene(&ent);
 				}
 				break;
 			case TE_STREAM_LIGHTNING:
 				if(stream->endTime < cl.serverTimeFloat)
 				{//fixme: keep last non-translucent frame and angle
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
 					ent.frame = rand()%6;
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				}
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
 				if(stream->endTime < cl.serverTimeFloat)
 				{
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTimeFloat)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
 					ent.frame = rand()%6;
-					CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				}
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_FAMINE:
 				angles[2] = rand()%360;
 				ent.frame = 0;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_COLORBEAM:
 				angles[2] = 0;
 				ent.skinNum = stream->skin;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_HandleCustomSkin(&ent, -1);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
 				ent.frame = (int)(cl.serverTimeFloat*40)%36;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_ICECHUNKS:
 				angles[2] = rand()%360;
 				ent.frame = rand()%5;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
 			default:
 				angles[2] = 0;
-				CL_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 0, 0);
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 0, 0);
 				R_AddRefEntityToScene(&ent);
 			}
 			for(i = 0; i < 3; i++)
@@ -3444,14 +3444,14 @@ void CL_UpdateStreams(void)
 			VectorCopy(stream->dest, ent.origin);
 			ent.hModel = stream->models[2];
 			//ent->frame = (int)(cl.time*20)%20;
-			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT);
+			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT);
 			R_AddRefEntityToScene(&ent);
 
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.reType = RT_MODEL;
 			VectorCopy(stream->dest, ent.origin);
 			ent.hModel = stream->models[3];
-			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 			R_AddRefEntityToScene(&ent);
 		}
 	}

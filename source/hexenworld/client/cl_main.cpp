@@ -1400,7 +1400,7 @@ void Host_Shutdown(void)
 	R_Shutdown(true);
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags)
+void CLH2_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags)
 {
 	if (drawflags & H2DRF_TRANSLUCENT)
 	{

@@ -539,7 +539,7 @@ void CL_LinkPacketEntities (void)
 		}
 		if (i == PrevPack->num_entities)
 		{
-			CL_SetRefEntAxis(&ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
+			CLH2_SetRefEntAxis(&ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
 			R_AddRefEntityToScene(&ent);
 			continue;		// not in last message
 		}
@@ -566,7 +566,7 @@ void CL_LinkPacketEntities (void)
 
 		vec3_t angleAdd;
 		HandleEffects(s1->effects, s1->number, &ent, angles, angleAdd, old_origin);
-		CL_SetRefEntAxis(&ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
+		CLH2_SetRefEntAxis(&ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
 		R_AddRefEntityToScene(&ent);
 
 		// add automatic particle trails
@@ -746,7 +746,7 @@ void CL_LinkProjectiles (void)
 		ent.hModel = cl.model_precache[pr->modelindex];
 		ent.frame = pr->frame;
 		VectorCopy(pr->origin, ent.origin);
-		CL_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
+		CLH2_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
 		R_AddRefEntityToScene(&ent);
 	}
 }
@@ -838,12 +838,12 @@ void CL_LinkMissiles (void)
 		if(pr->type == 1)
 		{	//ball
 			ent.hModel = cl.model_precache[cl_ballindex];
-			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, H2SCALE_ORIGIN_CENTER);
+			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		else
 		{	//missilestar
 			ent.hModel = cl.model_precache[cl_missilestarindex];
-			CL_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER);
+			CLH2_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		if(rand() % 10 < 3)		
 		{
@@ -1217,7 +1217,7 @@ void CL_LinkPlayers (void)
 			}
 		}
 
-		CL_SetRefEntAxis(&ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
+		CLH2_SetRefEntAxis(&ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
 		R_HandleCustomSkin(&ent, j);
 		R_AddRefEntityToScene(&ent);
 	}
@@ -1415,7 +1415,7 @@ static void CL_LinkStaticEntities()
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;
 		rent.shaderTime = pent->syncbase;
-		CL_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, 0, pent->state.abslight, pent->state.drawflags);
+		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, 0, pent->state.abslight, pent->state.drawflags);
 		R_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);
 	}
