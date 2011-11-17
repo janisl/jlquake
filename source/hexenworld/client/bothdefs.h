@@ -24,8 +24,6 @@
 #define	MINIMUM_MEMORY	0x550000
 
 
-#define	MAX_SCOREBOARD		32		// max numbers of players
-
 #define	SOUND_CHANNELS		8
 
 

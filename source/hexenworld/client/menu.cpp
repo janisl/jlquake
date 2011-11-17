@@ -1632,11 +1632,7 @@ const char *CreditText[MAX_LINES] =
    "the gl version!",
    "",
    "No snails were harmed in the",
-#ifdef DEMOBUILD
-   "making of this demo!"
-#else
    "making of this game!"
-#endif
 };
 
 #define MAX_LINES2 158+27

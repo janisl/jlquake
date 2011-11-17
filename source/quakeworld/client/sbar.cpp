@@ -335,8 +335,6 @@ void Sbar_DrawNum (int x, int y, int num, int digits, int color)
 
 //=============================================================================
 
-//ZOID: this should be MAX_CLIENTS, not MAX_SCOREBOARD!!
-//int		fragsort[MAX_SCOREBOARD];
 int		fragsort[MAX_CLIENTS];
 int		scoreboardlines;
 typedef struct {

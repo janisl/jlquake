@@ -854,7 +854,7 @@ void CL_UpdateUserinfo (void)
 
 	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_SCOREBOARD");
+		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_CLIENTS");
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
@@ -1169,14 +1169,14 @@ void CL_ParseServerMessage (void)
 			Sbar_Changed ();
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_CLIENTS");
 			cl.players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_CLIENTS");
 			cl.players[i].ping = net_message.ReadShort ();
 			break;
 			
@@ -1184,7 +1184,7 @@ void CL_ParseServerMessage (void)
 		// time is sent over as seconds ago
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_CLIENTS");
 			cl.players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
@@ -1192,7 +1192,7 @@ void CL_ParseServerMessage (void)
 		// playerclass has changed for this dude
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatepclass > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updatepclass > MAX_CLIENTS");
 			cl.players[i].playerclass = net_message.ReadByte ();
 			cl.players[i].level = cl.players[i].playerclass&31;
 			cl.players[i].playerclass = cl.players[i].playerclass>>5;
@@ -1202,7 +1202,7 @@ void CL_ParseServerMessage (void)
 		// This dude killed someone, update his frags and level
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatedminfo > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updatedminfo > MAX_CLIENTS");
 			cl.players[i].frags = net_message.ReadShort ();
 			cl.players[i].playerclass = net_message.ReadByte ();
 			cl.players[i].level = cl.players[i].playerclass&31;
@@ -1219,7 +1219,7 @@ void CL_ParseServerMessage (void)
 		// This dude killed someone, update his frags and level
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatesiegeteam > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updatesiegeteam > MAX_CLIENTS");
 			cl.players[i].siege_team = net_message.ReadByte ();
 			break;
 

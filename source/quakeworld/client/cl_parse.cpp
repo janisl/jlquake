@@ -1013,7 +1013,7 @@ void CL_UpdateUserinfo (void)
 
 	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_SCOREBOARD");
+		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_CLIENTS");
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
@@ -1036,7 +1036,7 @@ void CL_SetInfo (void)
 
 	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > MAX_SCOREBOARD");
+		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > MAX_CLIENTS");
 
 	player = &cl.players[slot];
 
@@ -1241,21 +1241,21 @@ void CL_ParseServerMessage (void)
 		case svc_updatefrags:
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_CLIENTS");
 			cl.players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_CLIENTS");
 			cl.players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case svc_updatepl:
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > MAX_CLIENTS");
 			cl.players[i].pl = net_message.ReadByte ();
 			break;
 			
@@ -1263,7 +1263,7 @@ void CL_ParseServerMessage (void)
 		// time is sent over as seconds ago
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_SCOREBOARD");
+				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_CLIENTS");
 			cl.players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
