@@ -24,7 +24,9 @@ static float GTint[256];
 static float BTint[256];
 
 qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
-image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];		// color translated skins
+image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];	// color translated skins
+
+image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];   // generic textures for models
 
 void CLH2_InitColourShadeTables()
 {
@@ -242,4 +244,43 @@ void CLH2_TranslatePlayerSkin(int playernum)
 
 	R_CreateOrUpdateTranslatedModelSkinH2(clh2_playertextures[playernum], va("*player%d", playernum),
 		clh2_player_models[classIndex], translate, classIndex);
+}
+
+void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
+{
+	if (entity->skinNum >= 100)
+	{
+		if (entity->skinNum > 255) 
+		{
+			throw Exception("skinnum > 255");
+		}
+
+		if (!clh2_extra_textures[entity->skinNum - 100])  // Need to load it in
+		{
+			char temp[40];
+			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", entity->skinNum);
+			clh2_extra_textures[entity->skinNum - 100] = R_CachePic(temp);
+		}
+
+		entity->customSkin = R_GetImageHandle(clh2_extra_textures[entity->skinNum - 100]);
+	}
+	else if (playerIndex >= 0 && entity->hModel)
+	{
+		// we can't dynamically colormap textures, so they are cached
+		// seperately for the players.  Heads are just uncolored.
+		//FIXME? What about Dwarf?
+		if (entity->hModel == clh2_player_models[0] ||
+			entity->hModel == clh2_player_models[1] ||
+			entity->hModel == clh2_player_models[2] ||
+			entity->hModel == clh2_player_models[3] ||
+			entity->hModel == clh2_player_models[4])
+		{
+			if (!cl_common->h2_players[playerIndex].Translated)
+			{
+				CLH2_TranslatePlayerSkin(playerIndex);
+			}
+
+			entity->customSkin = R_GetImageHandle(clh2_playertextures[playerIndex]);
+		}
+	}
 }

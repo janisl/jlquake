@@ -42,8 +42,6 @@ client_state_t	cl;
 entity_t		cl_entities[MAX_EDICTS_H2];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
-image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
-
 /*
 =====================
 CL_ClearState
@@ -361,39 +359,6 @@ float	CL_LerpPoint (void)
 	return frac;
 }
 
-void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
-{
-	if (Ent->skinNum >= 100)
-	{
-		if (Ent->skinNum > 255) 
-		{
-			Sys_Error("skinnum > 255");
-		}
-
-		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
-		{
-			char temp[40];
-			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
-			gl_extra_textures[Ent->skinNum - 100] = R_CachePic(temp);
-		}
-
-		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);
-	}
-	else if (PlayerNum >= 0 && Ent->hModel)
-	{
-		// we can't dynamically colormap textures, so they are cached
-		// seperately for the players.  Heads are just uncolored.
-		if (Ent->hModel == clh2_player_models[0] ||
-			Ent->hModel == clh2_player_models[1] ||
-			Ent->hModel == clh2_player_models[2] ||
-			Ent->hModel == clh2_player_models[3] ||
-			Ent->hModel == clh2_player_models[4])
-		{
-			Ent->customSkin = R_GetImageHandle(clh2_playertextures[PlayerNum]);
-		}
-	}
-}
-
 /*
 ===============
 CL_RelinkEntities
@@ -617,7 +582,7 @@ void CL_RelinkEntities (void)
 		rent.shaderTime = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
 		CLH2_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
-		R_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
+		CLH2_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
 		if (i == cl.viewentity && !chase_active->value)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;
@@ -646,7 +611,7 @@ static void CL_LinkStaticEntities()
 		rent.shaderTime = pent->syncbase;
 		rent.skinNum = pent->state.skinnum;
 		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, pent->state.colormap, pent->state.abslight, pent->state.drawflags);
-		R_HandleCustomSkin(&rent, -1);
+		CLH2_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);
 	}
 }

@@ -1072,7 +1072,7 @@ void CLH2_LinkEffectEntity(effect_entity_t* ent)
 	rent.frame = ent->state.frame;
 	rent.skinNum = ent->state.skinnum;
 	CLH2_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, 0, ent->state.abslight, ent->state.drawflags);
-	R_HandleCustomSkin(&rent, -1);
+	CLH2_HandleCustomSkin(&rent, -1);
 	R_AddRefEntityToScene(&rent);
 }
 

@@ -531,7 +531,7 @@ static void Mod_ClearAll (void)
 	R_BeginRegistration(&cls.glconfig);
 
 	Com_Memset(clh2_playertextures, 0, sizeof(clh2_playertextures));
-	Com_Memset(gl_extra_textures, 0, sizeof(gl_extra_textures));
+	Com_Memset(clh2_extra_textures, 0, sizeof(clh2_extra_textures));
 	Com_Memset(translate_texture, 0, sizeof(translate_texture));
 
 	Draw_Init();

@@ -60,10 +60,14 @@ extern sfxHandle_t clh2_fxsfx_arr2flsh;
 extern sfxHandle_t clh2_fxsfx_arr2wood;
 extern sfxHandle_t clh2_fxsfx_met2stn;
 
+#define H2MAX_EXTRA_TEXTURES 156   // 255-100+1
+extern image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];   // generic textures for models
+
 void CLH2_InitColourShadeTables();
 int CLH2_GetMaxPlayerClasses();
-void CLH2_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
+void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin (int playernum);
+void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 
 void CLH2_ClearStreams();
 

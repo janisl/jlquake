@@ -3230,7 +3230,7 @@ void CL_UpdateExplosions (void)
 		ent.frame = f;
 		ent.skinNum = ex->skin;
 		CLH2_SetRefEntAxis(&ent, ex->angles, vec3_origin, ex->scale, 0, ex->abslight, ex->flags);
-		R_HandleCustomSkin(&ent, -1);
+		CLH2_HandleCustomSkin(&ent, -1);
 		R_AddRefEntityToScene(&ent);
 	}
 }
@@ -3403,7 +3403,7 @@ void CL_UpdateStreams(void)
 				angles[2] = 0;
 				ent.skinNum = stream->skin;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
-				R_HandleCustomSkin(&ent, -1);
+				CLH2_HandleCustomSkin(&ent, -1);
 				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_GAZE:

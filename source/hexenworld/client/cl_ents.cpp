@@ -1007,44 +1007,6 @@ void CL_ParsePlayerinfo (void)
 	VectorCopy (state->command.angles, state->viewangles);
 }
 
-void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
-{
-	if (Ent->skinNum >= 100)
-	{
-		if (Ent->skinNum > 255) 
-		{
-			Sys_Error("skinnum > 255");
-		}
-
-		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
-		{
-			char temp[40];
-			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
-			gl_extra_textures[Ent->skinNum - 100] = R_CachePic(temp);
-		}
-
-		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);
-	}
-	else if (PlayerNum >= 0)
-	{
-		// we can't dynamically colormap textures, so they are cached
-		// seperately for the players.  Heads are just uncolored.
-		//FIXME? What about Demoness and Dwarf?
-		if (Ent->hModel == clh2_player_models[0] ||
-			Ent->hModel == clh2_player_models[1] ||
-			Ent->hModel == clh2_player_models[2] ||
-			Ent->hModel == clh2_player_models[3])
-		{
-			if (!cl.h2_players[PlayerNum].Translated)
-			{
-				CLH2_TranslatePlayerSkin(PlayerNum);
-			}
-
-			Ent->customSkin = R_GetImageHandle(clh2_playertextures[PlayerNum]);
-		}
-	}
-}
-
 /*
 =============
 CL_LinkPlayers
@@ -1216,7 +1178,7 @@ void CL_LinkPlayers (void)
 		}
 
 		CLH2_SetRefEntAxis(&ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
-		R_HandleCustomSkin(&ent, j);
+		CLH2_HandleCustomSkin(&ent, j);
 		R_AddRefEntityToScene(&ent);
 	}
 }
@@ -1414,7 +1376,7 @@ static void CL_LinkStaticEntities()
 		rent.skinNum = pent->state.skinnum;
 		rent.shaderTime = pent->syncbase;
 		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, 0, pent->state.abslight, pent->state.drawflags);
-		R_HandleCustomSkin(&rent, -1);
+		CLH2_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);
 	}
 }

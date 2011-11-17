@@ -503,8 +503,3 @@ void Host_WriteConfiguration (const char *fname);
 void Cam_Track(usercmd_t *cmd);
 void Cam_FinishMove(usercmd_t *cmd);
 void Cam_Reset(void);
-
-void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
-
-#define MAX_EXTRA_TEXTURES 156   // 255-100+1
-extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models

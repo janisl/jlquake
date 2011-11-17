@@ -319,8 +319,3 @@ void SV_UpdateEffects(QMsg *sb);
 
 void CL_RemoveGIPFiles(const char *path);
 void CL_CopyFiles(const char* source, const char* ext, const char* dest);
-
-void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
-
-#define MAX_EXTRA_TEXTURES 156   // 255-100+1
-extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
