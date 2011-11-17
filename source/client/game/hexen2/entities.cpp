@@ -18,3 +18,26 @@
 #include "local.h"
 
 h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
+
+float RTint[256];
+float GTint[256];
+float BTint[256];
+
+void CLH2_InitColourShadeTables()
+{
+	for (int i = 0; i < 16; i++)
+	{
+		int c = ColorIndex[i];
+
+		int r = r_palette[c][0];
+		int g = r_palette[c][1];
+		int b = r_palette[c][2];
+
+		for (int p = 0; p < 16; p++)
+		{
+			RTint[i * 16 + p] = ((float)r) / ((float)ColorPercent[15 - p]) ;
+			GTint[i * 16 + p] = ((float)g) / ((float)ColorPercent[15 - p]);
+			BTint[i * 16 + p] = ((float)b) / ((float)ColorPercent[15 - p]);
+		}
+	}
+}

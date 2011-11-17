@@ -58,6 +58,10 @@ extern sfxHandle_t clh2_fxsfx_arr2flsh;
 extern sfxHandle_t clh2_fxsfx_arr2wood;
 extern sfxHandle_t clh2_fxsfx_met2stn;
 
+extern float RTint[256],GTint[256],BTint[256];
+
+void CLH2_InitColourShadeTables();
+
 void CLH2_ClearStreams();
 
 int CLH2_TempSoundChannel();

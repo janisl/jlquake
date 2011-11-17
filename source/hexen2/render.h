@@ -15,8 +15,6 @@ struct entity_t
 	float					syncbase;		// for client-side animations
 };
 
-extern float RTint[256],GTint[256],BTint[256];
-
 void V_RenderScene (void);		// must set cl.refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever cl.refdef or vid change
