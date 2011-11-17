@@ -794,7 +794,7 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-	h2player_info_t* player = &cl.players[playernum];
+	h2player_info_t* player = &cl.h2_players[playernum];
 	if (!player->name[0])
 	{
 		return;
@@ -856,7 +856,7 @@ void CL_UpdateUserinfo (void)
 	if (slot >= HWMAX_CLIENTS)
 		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > HWMAX_CLIENTS");
 
-	player = &cl.players[slot];
+	player = &cl.h2_players[slot];
 	player->userid = net_message.ReadLong ();
 	String::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
 
@@ -971,7 +971,7 @@ void CL_NamePrint(void)
 
 	if (index >= 0 && index < HWMAX_CLIENTS)
 	{
-		Con_Printf ("%s",&cl.players[index].name);
+		Con_Printf ("%s",&cl.h2_players[index].name);
 	}
 	else
 	{
@@ -1170,14 +1170,14 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > HWMAX_CLIENTS");
-			cl.players[i].frags = net_message.ReadShort ();
+			cl.h2_players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updateping > HWMAX_CLIENTS");
-			cl.players[i].ping = net_message.ReadShort ();
+			cl.h2_players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case svc_updateentertime:
@@ -1185,7 +1185,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > HWMAX_CLIENTS");
-			cl.players[i].entertime = realtime - net_message.ReadFloat ();
+			cl.h2_players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
 		case svc_updatepclass:
@@ -1193,9 +1193,9 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatepclass > HWMAX_CLIENTS");
-			cl.players[i].playerclass = net_message.ReadByte ();
-			cl.players[i].level = cl.players[i].playerclass&31;
-			cl.players[i].playerclass = cl.players[i].playerclass>>5;
+			cl.h2_players[i].playerclass = net_message.ReadByte ();
+			cl.h2_players[i].level = cl.h2_players[i].playerclass&31;
+			cl.h2_players[i].playerclass = cl.h2_players[i].playerclass>>5;
 			break;
 
 		case svc_updatedminfo:
@@ -1203,10 +1203,10 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatedminfo > HWMAX_CLIENTS");
-			cl.players[i].frags = net_message.ReadShort ();
-			cl.players[i].playerclass = net_message.ReadByte ();
-			cl.players[i].level = cl.players[i].playerclass&31;
-			cl.players[i].playerclass = cl.players[i].playerclass>>5;
+			cl.h2_players[i].frags = net_message.ReadShort ();
+			cl.h2_players[i].playerclass = net_message.ReadByte ();
+			cl.h2_players[i].level = cl.h2_players[i].playerclass&31;
+			cl.h2_players[i].playerclass = cl.h2_players[i].playerclass>>5;
 			break;
 
 		case svc_updatesiegelosses:
@@ -1220,7 +1220,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatesiegeteam > HWMAX_CLIENTS");
-			cl.players[i].siege_team = net_message.ReadByte ();
+			cl.h2_players[i].siege_team = net_message.ReadByte ();
 			break;
 
 		case svc_updatesiegeinfo:

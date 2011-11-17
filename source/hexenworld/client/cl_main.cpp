@@ -391,12 +391,12 @@ void CL_User_f (void)
 
 	for (i=0 ; i<HWMAX_CLIENTS ; i++)
 	{
-		if (!cl.players[i].name[0])
+		if (!cl.h2_players[i].name[0])
 			continue;
-		if (cl.players[i].userid == uid
-		|| !String::Cmp(cl.players[i].name, Cmd_Argv(1)) )
+		if (cl.h2_players[i].userid == uid
+		|| !String::Cmp(cl.h2_players[i].name, Cmd_Argv(1)) )
 		{
-			Info_Print (cl.players[i].userinfo);
+			Info_Print (cl.h2_players[i].userinfo);
 			return;
 		}
 	}
@@ -420,9 +420,9 @@ void CL_Users_f (void)
 	Con_Printf ("------ ----- ----\n");
 	for (i=0 ; i<HWMAX_CLIENTS ; i++)
 	{
-		if (cl.players[i].name[0])
+		if (cl.h2_players[i].name[0])
 		{
-			Con_Printf ("%6i %4i %s\n", cl.players[i].userid, cl.players[i].frags, cl.players[i].name);
+			Con_Printf ("%6i %4i %s\n", cl.h2_players[i].userid, cl.h2_players[i].frags, cl.h2_players[i].name);
 			c++;
 		}
 	}

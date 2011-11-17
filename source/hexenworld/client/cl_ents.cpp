@@ -554,14 +554,14 @@ void CL_LinkPacketEntities (void)
 
 		// some of the effects need to know how far the thing has moved...
 
-//		cl.players[s1->number].invis=false;
+//		cl.h2_players[s1->number].invis=false;
 		if(cl_siege)
 			if((int)s1->effects & EF_NODRAW)
 			{
 				ent.skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				drawflags|=H2DRF_TRANSLUCENT;
 				s1->effects &= ~EF_NODRAW;
-//				cl.players[s1->number].invis=true;
+//				cl.h2_players[s1->number].invis=true;
 			}
 
 		vec3_t angleAdd;
@@ -875,7 +875,7 @@ void CL_SavePlayer (void)
 	if (num > HWMAX_CLIENTS)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
-	info = &cl.players[num];
+	info = &cl.h2_players[num];
 	state = &cl.frames[parsecountmod].playerstate[num];
 	
 	state->messagenum = cl.parsecount;
@@ -896,7 +896,7 @@ void CL_ParsePlayerinfo (void)
 	if (num > HWMAX_CLIENTS)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
-	info = &cl.players[num];
+	info = &cl.h2_players[num];
 
 	state = &cl.frames[parsecountmod].playerstate[num];
 
@@ -1037,7 +1037,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 			Ent->hModel == player_models[2] ||
 			Ent->hModel == player_models[3])
 		{
-			if (!cl.players[PlayerNum].Translated)
+			if (!cl.h2_players[PlayerNum].Translated)
 			{
 				R_TranslatePlayerSkin(PlayerNum);
 			}
@@ -1072,7 +1072,7 @@ void CL_LinkPlayers (void)
 
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
-	for (j=0, info=cl.players, state=frame->playerstate ; j < HWMAX_CLIENTS 
+	for (j=0, info=cl.h2_players, state=frame->playerstate ; j < HWMAX_CLIENTS 
 		; j++, info++, state++)
 	{
 		info->shownames_off = true;
@@ -1082,7 +1082,7 @@ void CL_LinkPlayers (void)
 		if (!state->modelindex)
 			continue;
 
-		cl.players[j].modelindex = state->modelindex;
+		cl.h2_players[j].modelindex = state->modelindex;
 
 		// the player object never gets added
 		if (j == cl.playernum)
@@ -1159,7 +1159,7 @@ void CL_LinkPlayers (void)
 		int colorshade = 0;
 		if (!info->shownames_off)
 		{
-			int my_team = cl.players[cl.playernum].siege_team;
+			int my_team = cl.h2_players[cl.playernum].siege_team;
 			int ve_team = info->siege_team;
 			float ambientlight = R_CalcEntityLight(&ent);
 			float shadelight = ambientlight;
@@ -1183,12 +1183,12 @@ void CL_LinkPlayers (void)
 			}
 			if (cl_siege)
 			{
-				if (cl.players[cl.playernum].playerclass == CLASS_DWARF && ent.skinNum == 101)
+				if (cl.h2_players[cl.playernum].playerclass == CLASS_DWARF && ent.skinNum == 101)
 				{
 					colorshade = 141;
 					info->shownames_off = false;
 				}
-				else if (cl.players[cl.playernum].playerclass == CLASS_DWARF && (ambientlight + shadelight) < 151)
+				else if (cl.h2_players[cl.playernum].playerclass == CLASS_DWARF && (ambientlight + shadelight) < 151)
 				{
 					colorshade = 138 + (int)((ambientlight + shadelight) / 30);
 					info->shownames_off = false;
@@ -1202,7 +1202,7 @@ void CL_LinkPlayers (void)
 			else
 			{
 				char client_team[16];
-				String::NCpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
+				String::NCpy(client_team, Info_ValueForKey(cl.h2_players[cl.playernum].userinfo, "team"), 16);
 				client_team[15] = 0;
 				if (client_team[0])
 				{
@@ -1379,7 +1379,7 @@ void CL_SetSolidPlayers (int playernum)
 		pent->model = -1;
 		VectorCopy(pplayer->origin, pent->origin);
 /*shitbox
-		if(!String::ICmp(cl.model_precache[cl.players[playernum].modelindex]->name,"models/yakman.mdl"))
+		if(!String::ICmp(cl.model_precache[cl.h2_players[playernum].modelindex]->name,"models/yakman.mdl"))
 		{//use golem hull
 			Sys_Error("Using beast model");
 			VectorCopy(beast_mins, pent->mins);

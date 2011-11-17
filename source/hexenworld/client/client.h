@@ -277,8 +277,8 @@ struct client_state_t : clientActiveCommon_t
 
 	unsigned	PIV;			// players in view
 
-// all player information
-	h2player_info_t	players[HWMAX_CLIENTS];
+	// all player information
+	h2player_info_t h2_players[H2BIGGEST_MAX_CLIENTS];
 };
 
 

@@ -226,34 +226,34 @@ void SB_PlacePlayerNames(void)
 	{
 		if ((cl.PIV & (1 << i)))
 		{
-			if (!cl.players[i].shownames_off)
+			if (!cl.h2_players[i].shownames_off)
 			{
 				if (cl_siege)
 				{
 					//why the fuck does GL fuck this up??!!!
-					if (cl.players[i].siege_team==ST_ATTACKER)//attacker
+					if (cl.h2_players[i].siege_team==ST_ATTACKER)//attacker
 					{
 						if(i==cl_keyholder)
-							R_DrawName(cl.players[i].origin, cl.players[i].name,10);
+							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,10);
 						else
-							R_DrawName(cl.players[i].origin, cl.players[i].name,false);
+							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,false);
 					}
-					else if (cl.players[i].siege_team==ST_DEFENDER)//def
+					else if (cl.h2_players[i].siege_team==ST_DEFENDER)//def
 					{
 						if(i==cl_keyholder&&i==cl_doc)
-							R_DrawName(cl.players[i].origin, cl.players[i].name,12);
+							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,12);
 						else if(i==cl_keyholder)
-							R_DrawName(cl.players[i].origin, cl.players[i].name,11);
+							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,11);
 						else if(i==cl_doc)
-							R_DrawName(cl.players[i].origin, cl.players[i].name,2);
+							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,2);
 						else
-							R_DrawName(cl.players[i].origin, cl.players[i].name,1);
+							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,1);
 					}
 					else
-						R_DrawName(cl.players[i].origin, cl.players[i].name,3);
+						R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,3);
 				}
 				else
-					R_DrawName(cl.players[i].origin, cl.players[i].name,false);
+					R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,false);
 			}
 		}
 	}
@@ -569,7 +569,7 @@ static void DrawLowerBar(void)
 	int piece;
 	int ringhealth;
 
-	playerClass = cl.players[cl.playernum].playerclass;
+	playerClass = cl.h2_players[cl.playernum].playerclass;
 //	playerClass = playerclass->value;
 	if(playerClass < 1 || playerClass > MAX_PLAYER_CLASS)
 	{ // Default to paladin
@@ -852,19 +852,19 @@ void Sbar_SortFrags (qboolean includespec)
 	scoreboardlines = 0;
 	for (i=0 ; i<HWMAX_CLIENTS ; i++)
 	{
-		if (cl.players[i].name[0] &&
-			(!cl.players[i].spectator || includespec))
+		if (cl.h2_players[i].name[0] &&
+			(!cl.h2_players[i].spectator || includespec))
 		{
 			fragsort[scoreboardlines] = i;
 			scoreboardlines++;
-			if (cl.players[i].spectator)
-				cl.players[i].frags = SPEC_FRAGS;
+			if (cl.h2_players[i].spectator)
+				cl.h2_players[i].frags = SPEC_FRAGS;
 		}
 	}
 		
 	for (i=0 ; i<scoreboardlines ; i++)
 		for (j=0 ; j<scoreboardlines-1-i ; j++)
-			if (cl.players[fragsort[j]].frags < cl.players[fragsort[j+1]].frags)
+			if (cl.h2_players[fragsort[j]].frags < cl.h2_players[fragsort[j+1]].frags)
 			{
 				k = fragsort[j];
 				fragsort[j] = fragsort[j+1];
@@ -1022,14 +1022,14 @@ void FindColor (int slot, int *color1, int *color2)
 	if (slot > HWMAX_CLIENTS)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 
-	if (cl.players[slot].playerclass <= 0 || cl.players[slot].playerclass > MAX_PLAYER_CLASS)
+	if (cl.h2_players[slot].playerclass <= 0 || cl.h2_players[slot].playerclass > MAX_PLAYER_CLASS)
 	{
 		*color1 = *color2 = 0;
 		return;
 	}
 
-	top = cl.players[slot].topColour;
-	bottom = cl.players[slot].bottomColour;
+	top = cl.h2_players[slot].topColour;
+	bottom = cl.h2_players[slot].bottomColour;
 
 	if (top > 10) top = 0;
 	if (bottom > 10) bottom = 0;
@@ -1037,7 +1037,7 @@ void FindColor (int slot, int *color1, int *color2)
 	top -= 1;
 	bottom -= 1;
 
-	colorA = playerTranslation + 256 + color_offsets[(int)cl.players[slot].playerclass-1];
+	colorA = playerTranslation + 256 + color_offsets[(int)cl.h2_players[slot].playerclass-1];
 	colorB = colorA + 256;
 	sourceA = colorB + 256 + (top * 256);
 	sourceB = colorB + 256 + (bottom * 256);
@@ -1111,7 +1111,7 @@ void Sbar_DeathmatchOverlay(void)
 			break;
 
 		k = fragsort[i];
-		s = &cl.players[k];
+		s = &cl.h2_players[k];
 
 		if (!s->name[0])
 			continue;
@@ -1427,7 +1427,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.players[k];
+		s = &cl.h2_players[k];
 		if (!s->name[0])
 			continue;
 
