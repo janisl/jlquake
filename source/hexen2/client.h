@@ -322,9 +322,5 @@ void CL_CopyFiles(const char* source, const char* ext, const char* dest);
 
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 
-extern qhandle_t	player_models[NUM_CLASSES];
-
-extern image_t*		playertextures[16];
-
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
 extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models

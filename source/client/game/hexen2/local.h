@@ -43,6 +43,8 @@ struct effect_entity_t
 extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
+extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
+extern image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 

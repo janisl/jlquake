@@ -23,6 +23,9 @@ static float RTint[256];
 static float GTint[256];
 static float BTint[256];
 
+qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
+image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];		// color translated skins
+
 void CLH2_InitColourShadeTables()
 {
 	for (int i = 0; i < 16; i++)

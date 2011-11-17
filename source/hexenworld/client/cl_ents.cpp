@@ -6,8 +6,6 @@ extern	Cvar*	cl_predict_players;
 extern	Cvar*	cl_predict_players2;
 extern	Cvar*	cl_solid_players;
 
-extern qhandle_t	player_models[MAX_PLAYER_CLASS];
-
 static struct predicted_player {
 	int flags;
 	qboolean active;
@@ -1032,17 +1030,17 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
 		//FIXME? What about Demoness and Dwarf?
-		if (Ent->hModel == player_models[0] ||
-			Ent->hModel == player_models[1] ||
-			Ent->hModel == player_models[2] ||
-			Ent->hModel == player_models[3])
+		if (Ent->hModel == clh2_player_models[0] ||
+			Ent->hModel == clh2_player_models[1] ||
+			Ent->hModel == clh2_player_models[2] ||
+			Ent->hModel == clh2_player_models[3])
 		{
 			if (!cl.h2_players[PlayerNum].Translated)
 			{
 				CLH2_TranslatePlayerSkin(PlayerNum);
 			}
 
-			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+			Ent->customSkin = R_GetImageHandle(clh2_playertextures[PlayerNum]);
 		}
 	}
 }
@@ -1100,12 +1098,12 @@ void CL_LinkPlayers (void)
 		ent.frame = state->frame;
 
 		int drawflags = state->drawflags;
-		if (ent.hModel == player_models[0] ||
-			ent.hModel == player_models[1] ||
-			ent.hModel == player_models[2] ||
-			ent.hModel == player_models[3] ||
-			ent.hModel == player_models[4] ||//mg-siege
-			ent.hModel == player_models[5])
+		if (ent.hModel == clh2_player_models[0] ||
+			ent.hModel == clh2_player_models[1] ||
+			ent.hModel == clh2_player_models[2] ||
+			ent.hModel == clh2_player_models[3] ||
+			ent.hModel == clh2_player_models[4] ||//mg-siege
+			ent.hModel == clh2_player_models[5])
 		{
 			// use custom skin
 			info->shownames_off = false;

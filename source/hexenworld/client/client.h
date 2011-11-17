@@ -507,7 +507,5 @@ void Cam_Reset(void);
 void CLH2_TranslatePlayerSkin (int playernum);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 
-extern	image_t*	playertextures[HWMAX_CLIENTS];
-
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
 extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models

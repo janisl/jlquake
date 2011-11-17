@@ -108,10 +108,6 @@ int	oldparsecountmod;
 int	parsecountmod;
 double	parsecounttime;
 
-qhandle_t	player_models[MAX_PLAYER_CLASS];
-
-image_t*	playertextures[HWMAX_CLIENTS];		// up to 16 color translated skins
-
 int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
 int		cl_ballindex, cl_missilestarindex, cl_ravenindex, cl_raven2index;
 
@@ -599,13 +595,13 @@ void CL_ParseModellist (void)
 			cl_raven2index = nummodels;
 	}
 
-	player_models[0] = R_RegisterModel("models/paladin.mdl");
-	player_models[1] = R_RegisterModel("models/crusader.mdl");
-	player_models[2] = R_RegisterModel("models/necro.mdl");
-	player_models[3] = R_RegisterModel("models/assassin.mdl");
-	player_models[4] = R_RegisterModel("models/succubus.mdl");
+	clh2_player_models[0] = R_RegisterModel("models/paladin.mdl");
+	clh2_player_models[1] = R_RegisterModel("models/crusader.mdl");
+	clh2_player_models[2] = R_RegisterModel("models/necro.mdl");
+	clh2_player_models[3] = R_RegisterModel("models/assassin.mdl");
+	clh2_player_models[4] = R_RegisterModel("models/succubus.mdl");
 //siege
-	player_models[5] = R_RegisterModel("models/hank.mdl");
+	clh2_player_models[5] = R_RegisterModel("models/hank.mdl");
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_model;
@@ -828,8 +824,8 @@ void CLH2_TranslatePlayerSkin(int playernum)
 		classIndex = 0;
 	}
 
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum),
-		player_models[classIndex], translate, classIndex);
+	R_CreateOrUpdateTranslatedModelSkinH2(clh2_playertextures[playernum], va("*player%d", playernum),
+		clh2_player_models[classIndex], translate, classIndex);
 }
 
 /*

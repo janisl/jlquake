@@ -13,10 +13,6 @@
 extern	Cvar*	sv_flypitch;
 extern	Cvar*	sv_walkpitch;
 
-qhandle_t	player_models[NUM_CLASSES];
-
-image_t*	playertextures[16];		// up to 16 color translated skins
-
 const char *svc_strings[] =
 {
 	"svc_bad",
@@ -337,11 +333,11 @@ void CL_ParseServerInfo (void)
 		CL_KeepaliveMessage ();
 	}
 
-	player_models[0] = R_RegisterModel("models/paladin.mdl");
-	player_models[1] = R_RegisterModel("models/crusader.mdl");
-	player_models[2] = R_RegisterModel("models/necro.mdl");
-	player_models[3] = R_RegisterModel("models/assassin.mdl");
-	player_models[4] = R_RegisterModel("models/succubus.mdl");
+	clh2_player_models[0] = R_RegisterModel("models/paladin.mdl");
+	clh2_player_models[1] = R_RegisterModel("models/crusader.mdl");
+	clh2_player_models[2] = R_RegisterModel("models/necro.mdl");
+	clh2_player_models[3] = R_RegisterModel("models/assassin.mdl");
+	clh2_player_models[4] = R_RegisterModel("models/succubus.mdl");
 
 	S_BeginRegistration();
 	for (i=1 ; i<numsounds ; i++)
@@ -411,8 +407,8 @@ void CLH2_TranslatePlayerSkin(int playernum)
 		classIndex = 0;
 	}
 
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum),
-		player_models[classIndex], translate, classIndex);
+	R_CreateOrUpdateTranslatedModelSkinH2(clh2_playertextures[playernum], va("*player%d", playernum),
+		clh2_player_models[classIndex], translate, classIndex);
 }
 
 /*

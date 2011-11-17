@@ -383,13 +383,13 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 	{
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
-		if (Ent->hModel == player_models[0] ||
-			Ent->hModel == player_models[1] ||
-			Ent->hModel == player_models[2] ||
-			Ent->hModel == player_models[3] ||
-			Ent->hModel == player_models[4])
+		if (Ent->hModel == clh2_player_models[0] ||
+			Ent->hModel == clh2_player_models[1] ||
+			Ent->hModel == clh2_player_models[2] ||
+			Ent->hModel == clh2_player_models[3] ||
+			Ent->hModel == clh2_player_models[4])
 		{
-			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+			Ent->customSkin = R_GetImageHandle(clh2_playertextures[PlayerNum]);
 		}
 	}
 }
