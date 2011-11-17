@@ -180,9 +180,6 @@ struct client_state_t : clientActiveCommon_t
 	byte		current_sequence, last_sequence;
 	byte		need_build;
 
-// frag scoreboard
-	h2player_info_t h2_players[H2BIGGEST_MAX_CLIENTS];
-
 	client_frames2_t frames[3]; // 0 = base, 1 = building, 2 = 0 & 1 merged
 	short RemoveList[MAX_CLIENT_STATES],NumToRemove;
 
