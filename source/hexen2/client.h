@@ -261,8 +261,6 @@ void CL_Disconnect (void);
 void CL_Disconnect_f (void);
 void CL_NextDemo (void);
 
-void CLH2_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
-
 //
 // cl_input
 //

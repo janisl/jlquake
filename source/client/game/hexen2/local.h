@@ -58,9 +58,8 @@ extern sfxHandle_t clh2_fxsfx_arr2flsh;
 extern sfxHandle_t clh2_fxsfx_arr2wood;
 extern sfxHandle_t clh2_fxsfx_met2stn;
 
-extern float RTint[256],GTint[256],BTint[256];
-
 void CLH2_InitColourShadeTables();
+void CLH2_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
 
 void CLH2_ClearStreams();
 
