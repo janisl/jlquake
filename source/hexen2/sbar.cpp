@@ -751,7 +751,7 @@ static void Sbar_SortFrags(void)
 	scoreboardlines = 0;
 	for (i=0 ; i<cl.maxclients ; i++)
 	{
-		if (cl.scores[i].name[0])
+		if (cl.h2_players[i].name[0])
 		{
 			fragsort[scoreboardlines] = i;
 			scoreboardlines++;
@@ -760,7 +760,7 @@ static void Sbar_SortFrags(void)
 		
 	for (i=0 ; i<scoreboardlines ; i++)
 		for (j=0 ; j<scoreboardlines-1-i ; j++)
-			if (cl.scores[fragsort[j]].frags < cl.scores[fragsort[j+1]].frags)
+			if (cl.h2_players[fragsort[j]].frags < cl.h2_players[fragsort[j+1]].frags)
 			{
 				k = fragsort[j];
 				fragsort[j] = fragsort[j+1];
@@ -846,7 +846,7 @@ void Sbar_DrawFrags (void)
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.h2_players[k];
 		if (!s->name[0])
 			continue;
 
@@ -918,14 +918,14 @@ void FindColor (int slot, int *color1, int *color2)
 	if (slot > cl.maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 
-	if (!cl.scores[slot].playerclass)
+	if (!cl.h2_players[slot].playerclass)
 	{
 		*color1 = *color2 = 0;
 		return;
 	}
 
-	top = cl.scores[slot].topColour;
-	bottom = cl.scores[slot].bottomColour;
+	top = cl.h2_players[slot].topColour;
+	bottom = cl.h2_players[slot].bottomColour;
 
 	if (top > 10) top = 0;
 	if (bottom > 10) bottom = 0;
@@ -933,7 +933,7 @@ void FindColor (int slot, int *color1, int *color2)
 	top -= 1;
 	bottom -= 1;
 
-	colorA = playerTranslation + 256 + color_offsets[cl.scores[slot].playerclass - 1];
+	colorA = playerTranslation + 256 + color_offsets[cl.h2_players[slot].playerclass - 1];
 	colorB = colorA + 256;
 	sourceA = colorB + 256 + (top * 256);
 	sourceB = colorB + 256 + (bottom * 256);
@@ -991,7 +991,7 @@ void Sbar_DeathmatchOverlay(void)
 			break;
 
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.h2_players[k];
 		if (!s->name[0])
 			continue;
 
@@ -1152,7 +1152,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.h2_players[k];
 		if (!s->name[0])
 			continue;
 

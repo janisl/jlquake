@@ -260,7 +260,6 @@ void CL_ParseServerInfo (void)
 		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
 		return;
 	}
-	cl.scores = (h2player_info_t*)Hunk_AllocName (cl.maxclients*sizeof(*cl.scores), "scores");
 
 // parse gametype
 	cl.gametype = net_message.ReadByte ();
@@ -378,10 +377,10 @@ Translates a skin texture by the per-player color lookup
 */
 static void R_TranslatePlayerSkin (int playernum)
 {
-	int playerclass = cl.scores[playernum].playerclass;
+	int playerclass = cl.h2_players[playernum].playerclass;
 
-	int top = cl.scores[playernum].topColour;
-	int bottom = cl.scores[playernum].bottomColour;
+	int top = cl.h2_players[playernum].topColour;
+	int bottom = cl.h2_players[playernum].bottomColour;
 
 	byte translate[256];
 	CL_CalcHexen2SkinTranslation(top, bottom, playerclass, translate);
@@ -928,7 +927,7 @@ void CL_NewTranslation (int slot)
 {
 	if (slot > cl.maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
-	if (!cl.scores[slot].playerclass)
+	if (!cl.h2_players[slot].playerclass)
 		return;
 
 	R_TranslatePlayerSkin (slot);
@@ -1258,14 +1257,14 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > H2MAX_CLIENTS");
-			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
+			String::Cpy(cl.h2_players[i].name, net_message.ReadString2 ());
 			break;
 
 		case svc_updateclass:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updateclass > H2MAX_CLIENTS");
-			cl.scores[i].playerclass = net_message.ReadByte();
+			cl.h2_players[i].playerclass = net_message.ReadByte();
 			CL_NewTranslation(i); // update the color
 			break;
 		
@@ -1273,7 +1272,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatefrags > H2MAX_CLIENTS");
-			cl.scores[i].frags = net_message.ReadShort ();
+			cl.h2_players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_update_kingofhill:
@@ -1285,8 +1284,8 @@ void CL_ParseServerMessage (void)
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatecolors > H2MAX_CLIENTS");
 			j = net_message.ReadByte();
-			cl.scores[i].topColour = (j & 0xf0) >> 4;
-			cl.scores[i].bottomColour = (j & 15);
+			cl.h2_players[i].topColour = (j & 0xf0) >> 4;
+			cl.h2_players[i].bottomColour = (j & 15);
 			CL_NewTranslation (i);
 			break;
 			
