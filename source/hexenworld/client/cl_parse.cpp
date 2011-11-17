@@ -782,53 +782,6 @@ void CL_ParseClientdata (void)
 }
 
 /*
-===============
-CLH2_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-void CLH2_TranslatePlayerSkin(int playernum)
-{
-	h2player_info_t* player = &cl.h2_players[playernum];
-	if (GGameType & GAME_HexenWorld)
-	{
-		if (!player->name[0])
-		{
-			return;
-		}
-		if (!player->playerclass)
-		{
-			return;
-		}
-		if (player->modelindex <= 0)
-		{
-			return;
-		}
-	}
-
-	byte translate[256];
-	CL_CalcHexen2SkinTranslation(player->topColour, player->bottomColour, player->playerclass, translate);
-
-	//
-	// locate the original skin pixels
-	//
-	int classIndex;
-	if (player->playerclass >= 1 && player->playerclass <= CLH2_GetMaxPlayerClasses())
-	{
-		classIndex = player->playerclass - 1;
-		player->Translated = true;
-	}
-	else
-	{
-		classIndex = 0;
-	}
-
-	R_CreateOrUpdateTranslatedModelSkinH2(clh2_playertextures[playernum], va("*player%d", playernum),
-		clh2_player_models[classIndex], translate, classIndex);
-}
-
-/*
 =====================
 CL_NewTranslation
 =====================

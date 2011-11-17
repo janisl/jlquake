@@ -504,7 +504,6 @@ void Cam_Track(usercmd_t *cmd);
 void Cam_FinishMove(usercmd_t *cmd);
 void Cam_Reset(void);
 
-void CLH2_TranslatePlayerSkin (int playernum);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1

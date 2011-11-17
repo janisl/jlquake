@@ -63,6 +63,7 @@ extern sfxHandle_t clh2_fxsfx_met2stn;
 void CLH2_InitColourShadeTables();
 int CLH2_GetMaxPlayerClasses();
 void CLH2_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
+void CLH2_TranslatePlayerSkin (int playernum);
 
 void CLH2_ClearStreams();
 
