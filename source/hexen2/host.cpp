@@ -530,8 +530,7 @@ static void Mod_ClearAll (void)
 	R_Shutdown(false);
 	R_BeginRegistration(&cls.glconfig);
 
-	Com_Memset(clh2_playertextures, 0, sizeof(clh2_playertextures));
-	Com_Memset(clh2_extra_textures, 0, sizeof(clh2_extra_textures));
+	CLH2_ClearEntityTextureArrays();
 	Com_Memset(translate_texture, 0, sizeof(translate_texture));
 
 	Draw_Init();

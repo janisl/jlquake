@@ -17,6 +17,8 @@
 #include "../../client.h"
 #include "local.h"
 
+#define H2MAX_EXTRA_TEXTURES 156   // 255-100+1
+
 h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
 static float RTint[256];
@@ -24,9 +26,9 @@ static float GTint[256];
 static float BTint[256];
 
 qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
-image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];	// color translated skins
+static image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];	// color translated skins
 
-image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];   // generic textures for models
+static image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];   // generic textures for models
 
 void CLH2_InitColourShadeTables()
 {
@@ -45,6 +47,12 @@ void CLH2_InitColourShadeTables()
 			BTint[i * 16 + p] = ((float)b) / ((float)ColorPercent[15 - p]);
 		}
 	}
+}
+
+void CLH2_ClearEntityTextureArrays()
+{
+	Com_Memset(clh2_playertextures, 0, sizeof(clh2_playertextures));
+	Com_Memset(clh2_extra_textures, 0, sizeof(clh2_extra_textures));
 }
 
 int CLH2_GetMaxPlayerClasses()

@@ -44,7 +44,6 @@ extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
-extern image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 
@@ -60,10 +59,8 @@ extern sfxHandle_t clh2_fxsfx_arr2flsh;
 extern sfxHandle_t clh2_fxsfx_arr2wood;
 extern sfxHandle_t clh2_fxsfx_met2stn;
 
-#define H2MAX_EXTRA_TEXTURES 156   // 255-100+1
-extern image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];   // generic textures for models
-
 void CLH2_InitColourShadeTables();
+void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin (int playernum);
