@@ -541,31 +541,12 @@ void CL_TurnEffect(void)
 
 }
 
-void CLH2_LinkEffectEntity(effect_entity_t* ent)
-{
-	refEntity_t rent;
-	Com_Memset(&rent, 0, sizeof(rent));
-	rent.reType = RT_MODEL;
-	VectorCopy(ent->state.origin, rent.origin);
-	rent.hModel = ent->model;
-	rent.frame = ent->state.frame;
-	rent.skinNum = ent->state.skinnum;
-	CLH2_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, 0, ent->state.abslight, ent->state.drawflags);
-	CLH2_HandleCustomSkin(&rent, -1);
-	R_AddRefEntityToScene(&rent);
-}
-
 void CL_UpdateEffects(void)
 {
-	int			index,cur_frame;
-	vec3_t		mymin,mymax;
+	int			index;
 	float		frametime;
-//	edict_t		test;
-//	trace_t		trace;
 	vec3_t		org,org2,old_origin;
-	int			x_dir,y_dir;
 	effect_entity_t	*ent, *ent2;
-	float		smoketime;
 	int			i;
 	h2entity_state_t	*es;
 
@@ -581,95 +562,22 @@ void CL_UpdateEffects(void)
 		switch(cl.h2_Effects[index].type)
 		{
 			case HWCE_RAIN:
-				org[0] = cl.h2_Effects[index].Rain.min_org[0];
-				org[1] = cl.h2_Effects[index].Rain.min_org[1];
-				org[2] = cl.h2_Effects[index].Rain.max_org[2];
-
-				org2[0] = cl.h2_Effects[index].Rain.e_size[0];
-				org2[1] = cl.h2_Effects[index].Rain.e_size[1];
-				org2[2] = cl.h2_Effects[index].Rain.e_size[2];
-
-				x_dir = cl.h2_Effects[index].Rain.dir[0];
-				y_dir = cl.h2_Effects[index].Rain.dir[1];
-				
-				cl.h2_Effects[index].Rain.next_time += frametime;
-				if (cl.h2_Effects[index].Rain.next_time >= cl.h2_Effects[index].Rain.wait)
-				{		
-					CLH2_RainEffect(org,org2,x_dir,y_dir,cl.h2_Effects[index].Rain.color,
-						cl.h2_Effects[index].Rain.count);
-					cl.h2_Effects[index].Rain.next_time = 0;
-				}
+				CLH2_UpdateEffectRain(index, frametime);
 				break;
-
 			case HWCE_FOUNTAIN:
-				mymin[0] = (-3 * cl.h2_Effects[index].Fountain.vright[0] * cl.h2_Effects[index].Fountain.movedir[0]) +
-						   (-3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
-						   (2 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
-				mymin[1] = (-3 * cl.h2_Effects[index].Fountain.vright[1] * cl.h2_Effects[index].Fountain.movedir[0]) +
-						   (-3 * cl.h2_Effects[index].Fountain.vforward[1] * cl.h2_Effects[index].Fountain.movedir[1]) +
-						   (2 * cl.h2_Effects[index].Fountain.vup[1] * cl.h2_Effects[index].Fountain.movedir[2]);
-				mymin[2] = (-3 * cl.h2_Effects[index].Fountain.vright[2] * cl.h2_Effects[index].Fountain.movedir[0]) +
-						   (-3 * cl.h2_Effects[index].Fountain.vforward[2] * cl.h2_Effects[index].Fountain.movedir[1]) +
-						   (2 * cl.h2_Effects[index].Fountain.vup[2] * cl.h2_Effects[index].Fountain.movedir[2]);
-				mymin[0] *= 15;
-				mymin[1] *= 15;
-				mymin[2] *= 15;
-
-				mymax[0] = (3 * cl.h2_Effects[index].Fountain.vright[0] * cl.h2_Effects[index].Fountain.movedir[0]) +
-						   (3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
-						   (10 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
-				mymax[1] = (3 * cl.h2_Effects[index].Fountain.vright[1] * cl.h2_Effects[index].Fountain.movedir[0]) +
-						   (3 * cl.h2_Effects[index].Fountain.vforward[1] * cl.h2_Effects[index].Fountain.movedir[1]) +
-						   (10 * cl.h2_Effects[index].Fountain.vup[1] * cl.h2_Effects[index].Fountain.movedir[2]);
-				mymax[2] = (3 * cl.h2_Effects[index].Fountain.vright[2] * cl.h2_Effects[index].Fountain.movedir[0]) +
-						   (3 * cl.h2_Effects[index].Fountain.vforward[2] * cl.h2_Effects[index].Fountain.movedir[1]) +
-						   (10 * cl.h2_Effects[index].Fountain.vup[2] * cl.h2_Effects[index].Fountain.movedir[2]);
-				mymax[0] *= 15;
-				mymax[1] *= 15;
-				mymax[2] *= 15;
-
-				CLH2_RunParticleEffect2 (cl.h2_Effects[index].Fountain.pos,mymin,mymax,
-					                  cl.h2_Effects[index].Fountain.color,pt_h2fastgrav,cl.h2_Effects[index].Fountain.cnt);
-
-/*				Com_Memset(&test,0,sizeof(test));
-				trace = SV_Move (cl.h2_Effects[index].Fountain.pos, mymin, mymax, mymin, false, &test);
-				Con_Printf("Fraction is %f\n",trace.fraction);*/
+				CLH2_UpdateEffectFountain(index);
 				break;
-
 			case HWCE_QUAKE:
-				CLH2_RunQuakeEffect (cl.h2_Effects[index].Quake.origin,cl.h2_Effects[index].Quake.radius);
+				CLH2_UpdateEffectQuake(index);
 				break;
-
 			case HWCE_RIPPLE:
-				cl.h2_Effects[index].Smoke.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-
-				smoketime = cl.h2_Effects[index].Smoke.framelength;
-				if (!smoketime)
-					smoketime = HX_FRAME_TIME*2;
-
-				while(cl.h2_Effects[index].Smoke.time_amount >= smoketime&&ent->state.scale<250)
-				{
-					ent->state.frame++;
-					ent->state.angles[1]+=1;
-					cl.h2_Effects[index].Smoke.time_amount -= smoketime;
-				}
-
-				if (ent->state.frame >= 10)
-				{
-					CLH2_FreeEffect(index);
-				}
-				else
-					CLH2_LinkEffectEntity(ent);
+				CLHW_UpdateEffectRipple(index, frametime);
 				break;
-
-
 			case HWCE_WHITE_SMOKE:
 			case HWCE_GREEN_SMOKE:
 			case HWCE_GREY_SMOKE:
 			case HWCE_RED_SMOKE:
 			case HWCE_SLOW_WHITE_SMOKE:
-			case HWCE_TELESMK1:
 			case HWCE_TELESMK2:
 			case HWCE_GHOST:
 			case HWCE_REDCLOUD:
@@ -678,56 +586,16 @@ void CL_UpdateEffects(void)
 			case HWCE_FLAMEWALL:
 			case HWCE_FLAMEWALL2:
 			case HWCE_ONFIRE:
-				cl.h2_Effects[index].Smoke.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-
-				smoketime = cl.h2_Effects[index].Smoke.framelength;
-				if (!smoketime)
-					smoketime = HX_FRAME_TIME;
-
-				ent->state.origin[0] += (frametime/smoketime) * cl.h2_Effects[index].Smoke.velocity[0];
-				ent->state.origin[1] += (frametime/smoketime) * cl.h2_Effects[index].Smoke.velocity[1];
-				ent->state.origin[2] += (frametime/smoketime) * cl.h2_Effects[index].Smoke.velocity[2];
-	
-				i=0;
-				while(cl.h2_Effects[index].Smoke.time_amount >= smoketime)
-				{
-					ent->state.frame++;
-					i++;
-					cl.h2_Effects[index].Smoke.time_amount -= smoketime;
-				}
-
-				if (ent->state.frame >= R_ModelNumFrames(ent->model))
-				{
-					CLH2_FreeEffect(index);
-				}
-				else
-					CLH2_LinkEffectEntity(ent);
-
-				
-				if(cl.h2_Effects[index].type == HWCE_TELESMK1)
-				{
-					ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index2];
-
-					ent->state.origin[0] -= (frametime/smoketime) * cl.h2_Effects[index].Smoke.velocity[0];
-					ent->state.origin[1] -= (frametime/smoketime) * cl.h2_Effects[index].Smoke.velocity[1];
-					ent->state.origin[2] -= (frametime/smoketime) * cl.h2_Effects[index].Smoke.velocity[2];
-
-					ent->state.frame += i;
-					if (ent->state.frame < R_ModelNumFrames(ent->model))
-					{
-						CLH2_LinkEffectEntity(ent);
-					}
-				}
+				CLH2_UpdateEffectSmoke(index, frametime);
 				break;
-
-			// Just go through animation and then remove
+			case HWCE_TELESMK1:
+				CLHW_UpdateEffectTeleportSmoke1(index, frametime);
+				break;
 			case HWCE_SM_WHITE_FLASH:
 			case HWCE_YELLOWRED_FLASH:
 			case HWCE_BLUESPARK:
 			case HWCE_YELLOWSPARK:
 			case HWCE_SM_CIRCLE_EXP:
-			case HWCE_BG_CIRCLE_EXP:
 			case HWCE_SM_EXPLOSION:
 			case HWCE_SM_EXPLOSION2:
 			case HWCE_BG_EXPLOSION:
@@ -754,73 +622,18 @@ void CL_UpdateEffects(void)
 			case HWCE_FIREWALL_SMALL:
 			case HWCE_FIREWALL_MEDIUM:
 			case HWCE_FIREWALL_LARGE:
-
-				cl.h2_Effects[index].Smoke.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Smoke.entity_index];
-
-				if (cl.h2_Effects[index].type != HWCE_BG_CIRCLE_EXP)
-				{
-					while(cl.h2_Effects[index].Smoke.time_amount >= HX_FRAME_TIME)
-					{
-						ent->state.frame++;
-						cl.h2_Effects[index].Smoke.time_amount -= HX_FRAME_TIME;
-					}
-				}
-				else
-				{
-					while(cl.h2_Effects[index].Smoke.time_amount >= HX_FRAME_TIME * 2)
-					{
-						ent->state.frame++;
-						cl.h2_Effects[index].Smoke.time_amount -= HX_FRAME_TIME * 2;
-					}
-				}
-
-
-				if (ent->state.frame >= R_ModelNumFrames(ent->model))
-				{
-					CLH2_FreeEffect(index);
-				}
-				else
-					CLH2_LinkEffectEntity(ent);
-
+				CLH2_UpdateEffectExplosion(index, frametime);
 				break;
-
-			// Go forward then backward through animation then remove
+			case HWCE_BG_CIRCLE_EXP:
+				CLH2_UpdateEffectBigCircleExplosion(index, frametime);
+				break;
 			case HWCE_WHITE_FLASH:
 			case HWCE_BLUE_FLASH:
 			case HWCE_SM_BLUE_FLASH:
 			case HWCE_HWSPLITFLASH:
 			case HWCE_RED_FLASH:
-				cl.h2_Effects[index].Flash.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Flash.entity_index];
-
-				while(cl.h2_Effects[index].Flash.time_amount >= HX_FRAME_TIME)
-				{
-					if (!cl.h2_Effects[index].Flash.reverse)
-					{
-						if (ent->state.frame >= R_ModelNumFrames(ent->model) - 1)  // Ran through forward animation
-						{
-							cl.h2_Effects[index].Flash.reverse = 1;
-							ent->state.frame--;
-						}
-						else
-							ent->state.frame++;
-
-					}	
-					else
-						ent->state.frame--;
-
-					cl.h2_Effects[index].Flash.time_amount -= HX_FRAME_TIME;
-				}
-
-				if ((ent->state.frame <= 0) && (cl.h2_Effects[index].Flash.reverse))
-				{
-					CLH2_FreeEffect(index);
-				}
-				else
-					CLH2_LinkEffectEntity(ent);
+				CLH2_UpdateEffectFlash(index, frametime);
 				break;
-
 			case HWCE_RIDER_DEATH:
 				cl.h2_Effects[index].RD.time_amount += frametime;
 				if (cl.h2_Effects[index].RD.time_amount >= 1)
@@ -850,64 +663,15 @@ void CL_UpdateEffects(void)
 					}
 					else if (cl.h2_Effects[index].RD.stage > 13) 
 					{
-//						cl.h2_Effects[index].RD.stage = 0;
 						CLH2_FreeEffect(index);
 					}
 				}
 				break;
-
 			case HWCE_TELEPORTERPUFFS:
-				cl.h2_Effects[index].Teleporter.time_amount += frametime;
-				smoketime = cl.h2_Effects[index].Teleporter.framelength;
-
-				ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[0]];
-				while(cl.h2_Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
-				{
-					ent->state.frame++;
-					cl.h2_Effects[index].Teleporter.time_amount -= HX_FRAME_TIME;
-				}
-				cur_frame = ent->state.frame;
-
-				if (cur_frame >= R_ModelNumFrames(ent->model))
-				{
-					CLH2_FreeEffect(index);
-					break;
-				}
-
-				for (i=0;i<8;++i)
-				{
-					ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[i]];
-
-					ent->state.origin[0] += (frametime/smoketime) * cl.h2_Effects[index].Teleporter.velocity[i][0];
-					ent->state.origin[1] += (frametime/smoketime) * cl.h2_Effects[index].Teleporter.velocity[i][1];
-					ent->state.origin[2] += (frametime/smoketime) * cl.h2_Effects[index].Teleporter.velocity[i][2];
-					ent->state.frame = cur_frame;
-
-					CLH2_LinkEffectEntity(ent);
-				}
+				CLH2_UpdateEffectTeleporterPuffs(index, frametime);
 				break;
 			case HWCE_TELEPORTERBODY:
-				cl.h2_Effects[index].Teleporter.time_amount += frametime;
-				smoketime = cl.h2_Effects[index].Teleporter.framelength;
-
-				ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[0]];
-				while(cl.h2_Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
-				{
-					ent->state.scale -= 15;
-					cl.h2_Effects[index].Teleporter.time_amount -= HX_FRAME_TIME;
-				}
-
-				ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[0]];
-				ent->state.angles[1] += 45;
-
-				if (ent->state.scale <= 10)
-				{
-					CLH2_FreeEffect(index);
-				}
-				else
-				{
-					CLH2_LinkEffectEntity(ent);
-				}
+				CLH2_UpdateEffectTeleporterBody(index, frametime);
 				break;
 
 			case HWCE_HWDRILLA:
@@ -1159,43 +923,14 @@ void CL_UpdateEffects(void)
 				break;
 			case HWCE_BONESHARD:
 			case HWCE_BONESHRAPNEL:
-			case HWCE_HWBONEBALL:
 			case HWCE_HWRAVENSTAFF:
+				CLH2_UpdateEffectMissile(index, frametime);
+				break;
+			case HWCE_HWBONEBALL:
+				CLHW_UpdateEffectBoneBall(index, frametime);
+				break;
 			case HWCE_HWRAVENPOWER:
-				cl.h2_Effects[index].Missile.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-
-//		ent->angles[0] = cl.h2_Effects[index].Missile.angle[0];
-//		ent->angles[1] = cl.h2_Effects[index].Missile.angle[1];
-//		ent->angles[2] = cl.h2_Effects[index].Missile.angle[2];
-
-				ent->state.angles[0] += frametime * cl.h2_Effects[index].Missile.avelocity[0];
-				ent->state.angles[1] += frametime * cl.h2_Effects[index].Missile.avelocity[1];
-				ent->state.angles[2] += frametime * cl.h2_Effects[index].Missile.avelocity[2];
-
-				ent->state.origin[0] += frametime * cl.h2_Effects[index].Missile.velocity[0];
-				ent->state.origin[1] += frametime * cl.h2_Effects[index].Missile.velocity[1];
-				ent->state.origin[2] += frametime * cl.h2_Effects[index].Missile.velocity[2];
-				if(cl.h2_Effects[index].type == HWCE_HWRAVENPOWER)
-				{
-					while(cl.h2_Effects[index].Missile.time_amount >= HX_FRAME_TIME)
-					{
-						ent->state.frame++;
-						cl.h2_Effects[index].Missile.time_amount -= HX_FRAME_TIME;
-					}
-
-					if (ent->state.frame > 7)
-					{
-						ent->state.frame = 0;
-						break;
-					}
-				}
-				CLH2_LinkEffectEntity(ent);
-				if(cl.h2_Effects[index].type == HWCE_HWBONEBALL)
-				{
-					CLH2_RunParticleEffect4 (ent->state.origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
-
-				}
+				CLHW_UpdateEffectRavenPower(index, frametime);
 				break;
 			case HWCE_HWMISSILESTAR:
 			case HWCE_HWEIDOLONSTAR:

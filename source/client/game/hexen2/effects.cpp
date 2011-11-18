@@ -1853,3 +1853,413 @@ void CLH2_ParseEffect(QMsg& message)
 		cl_common->h2_Effects[index].type = HWCE_NONE;
 	}
 }
+
+void CLH2_LinkEffectEntity(effect_entity_t* entity)
+{
+	refEntity_t refEntity;
+	Com_Memset(&refEntity, 0, sizeof(refEntity));
+	refEntity.reType = RT_MODEL;
+	VectorCopy(entity->state.origin, refEntity.origin);
+	refEntity.hModel = entity->model;
+	refEntity.frame = entity->state.frame;
+	refEntity.skinNum = entity->state.skinnum;
+	CLH2_SetRefEntAxis(&refEntity, entity->state.angles, vec3_origin,
+		entity->state.scale, 0, entity->state.abslight, entity->state.drawflags);
+	CLH2_HandleCustomSkin(&refEntity, -1);
+	R_AddRefEntityToScene(&refEntity);
+}
+
+void CLH2_UpdateEffectRain(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Rain.next_time += frametime;
+	if (cl_common->h2_Effects[index].Rain.next_time < cl_common->h2_Effects[index].Rain.wait)
+	{
+		return;
+	}
+
+	CLH2_RainEffect(cl_common->h2_Effects[index].Rain.min_org, cl_common->h2_Effects[index].Rain.e_size,
+		cl_common->h2_Effects[index].Rain.dir[0], cl_common->h2_Effects[index].Rain.dir[1],
+		cl_common->h2_Effects[index].Rain.color, cl_common->h2_Effects[index].Rain.count);
+	cl_common->h2_Effects[index].Rain.next_time = 0;
+}
+
+void CLH2_UpdateEffectSnow(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Snow.next_time += frametime;
+	if (cl_common->h2_Effects[index].Snow.next_time < 0.10)
+	{
+		return;
+	}
+
+	vec3_t org, org2, alldir;
+	VectorCopy(cl_common->h2_Effects[index].Snow.min_org, org);
+	VectorCopy(cl_common->h2_Effects[index].Snow.max_org, org2);
+	VectorCopy(cl_common->h2_Effects[index].Snow.dir, alldir);
+
+	vec3_t snow_org;
+	VectorAdd(org, org2, snow_org);
+
+	snow_org[0] *= 0.5;
+	snow_org[1] *= 0.5;
+	snow_org[2] *= 0.5;
+
+	snow_org[2] = cl_common->refdef.vieworg[2];
+
+	VectorSubtract(snow_org, cl_common->refdef.vieworg, snow_org);
+
+	float distance = VectorNormalize(snow_org);
+	if (distance >= 1024)
+	{
+		return;
+	}
+	CLH2_SnowEffect(org, org2, cl_common->h2_Effects[index].Snow.flags, alldir,
+		cl_common->h2_Effects[index].Snow.count);
+
+	cl_common->h2_Effects[index].Snow.next_time = 0;
+}
+
+void CLH2_UpdateEffectFountain(int index)
+{
+	vec3_t mymin;
+	mymin[0] = (-3 * cl_common->h2_Effects[index].Fountain.vright[0] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
+				(-3 * cl_common->h2_Effects[index].Fountain.vforward[0] * cl_common->h2_Effects[index].Fountain.movedir[1]) +
+				(2 * cl_common->h2_Effects[index].Fountain.vup[0] * cl_common->h2_Effects[index].Fountain.movedir[2]);
+	mymin[1] = (-3 * cl_common->h2_Effects[index].Fountain.vright[1] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
+				(-3 * cl_common->h2_Effects[index].Fountain.vforward[1] * cl_common->h2_Effects[index].Fountain.movedir[1]) +
+				(2 * cl_common->h2_Effects[index].Fountain.vup[1] * cl_common->h2_Effects[index].Fountain.movedir[2]);
+	mymin[2] = (-3 * cl_common->h2_Effects[index].Fountain.vright[2] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
+				(-3 * cl_common->h2_Effects[index].Fountain.vforward[2] * cl_common->h2_Effects[index].Fountain.movedir[1]) +
+				(2 * cl_common->h2_Effects[index].Fountain.vup[2] * cl_common->h2_Effects[index].Fountain.movedir[2]);
+	mymin[0] *= 15;
+	mymin[1] *= 15;
+	mymin[2] *= 15;
+
+	vec3_t mymax;
+	mymax[0] = (3 * cl_common->h2_Effects[index].Fountain.vright[0] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
+				(3 * cl_common->h2_Effects[index].Fountain.vforward[0] * cl_common->h2_Effects[index].Fountain.movedir[1]) +
+				(10 * cl_common->h2_Effects[index].Fountain.vup[0] * cl_common->h2_Effects[index].Fountain.movedir[2]);
+	mymax[1] = (3 * cl_common->h2_Effects[index].Fountain.vright[1] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
+				(3 * cl_common->h2_Effects[index].Fountain.vforward[1] * cl_common->h2_Effects[index].Fountain.movedir[1]) +
+				(10 * cl_common->h2_Effects[index].Fountain.vup[1] * cl_common->h2_Effects[index].Fountain.movedir[2]);
+	mymax[2] = (3 * cl_common->h2_Effects[index].Fountain.vright[2] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
+				(3 * cl_common->h2_Effects[index].Fountain.vforward[2] * cl_common->h2_Effects[index].Fountain.movedir[1]) +
+				(10 * cl_common->h2_Effects[index].Fountain.vup[2] * cl_common->h2_Effects[index].Fountain.movedir[2]);
+	mymax[0] *= 15;
+	mymax[1] *= 15;
+	mymax[2] *= 15;
+
+	CLH2_RunParticleEffect2(cl_common->h2_Effects[index].Fountain.pos, mymin, mymax,
+		cl_common->h2_Effects[index].Fountain.color, pt_h2fastgrav, cl_common->h2_Effects[index].Fountain.cnt);
+}
+
+void CLH2_UpdateEffectQuake(int index)
+{
+	CLH2_RunQuakeEffect(cl_common->h2_Effects[index].Quake.origin, cl_common->h2_Effects[index].Quake.radius);
+}
+
+static float CLH2_UpdateEffectSmokeTimeAmount(int index)
+{
+	float smoketime = cl_common->h2_Effects[index].Smoke.framelength;
+	if (!smoketime)
+	{
+		smoketime = HX_FRAME_TIME;
+	}
+	return smoketime;
+}
+
+static int CLH2_UpdateEffectSmokeTimeAmount(int index, float frametime, float smoketime)
+{
+	cl_common->h2_Effects[index].Smoke.time_amount += frametime;
+
+	int i = 0;
+	while (cl_common->h2_Effects[index].Smoke.time_amount >= smoketime)
+	{
+		i++;
+		cl_common->h2_Effects[index].Smoke.time_amount -= smoketime;
+	}
+	return i;
+}
+
+static bool CLH2_UpdateEffectSmokeEntity(int index, int entity_index, float frametime, float smoketime, int numFramesPassed)
+{
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Smoke.entity_index];
+	ent->state.origin[0] += (frametime / smoketime) * cl_common->h2_Effects[index].Smoke.velocity[0];
+	ent->state.origin[1] += (frametime / smoketime) * cl_common->h2_Effects[index].Smoke.velocity[1];
+	ent->state.origin[2] += (frametime / smoketime) * cl_common->h2_Effects[index].Smoke.velocity[2];
+
+	ent->state.frame += numFramesPassed;
+	if (ent->state.frame >= R_ModelNumFrames(ent->model))
+	{
+		return false;
+	}
+	CLH2_LinkEffectEntity(ent);
+	return true;
+}
+
+static int CLH2_UpdateEffectSmokeCommon(int index, float frametime, float& smoketime)
+{
+	smoketime = CLH2_UpdateEffectSmokeTimeAmount(index);
+	int i = CLH2_UpdateEffectSmokeTimeAmount(index, frametime, smoketime);
+	if (!CLH2_UpdateEffectSmokeEntity(index, cl_common->h2_Effects[index].Smoke.entity_index, frametime, smoketime, i))
+	{
+		CLH2_FreeEffect(index);
+	}
+	return i;
+}
+
+void CLH2_UpdateEffectSmoke(int index, float frametime)
+{
+	float smoketime;
+	CLH2_UpdateEffectSmokeCommon(index, frametime, smoketime);
+}
+
+void CLHW_UpdateEffectTeleportSmoke1(int index, float frametime)
+{
+	float smoketime;
+	int i = CLH2_UpdateEffectSmokeCommon(index, frametime, smoketime);
+	CLH2_UpdateEffectSmokeEntity(index, cl_common->h2_Effects[index].Smoke.entity_index2, frametime, smoketime, i);
+}
+
+void CLHW_UpdateEffectRipple(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Smoke.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Smoke.entity_index];
+
+	float smoketime = cl_common->h2_Effects[index].Smoke.framelength;
+	if (!smoketime)
+	{
+		smoketime = HX_FRAME_TIME * 2;
+	}
+
+	while (cl_common->h2_Effects[index].Smoke.time_amount >= smoketime && ent->state.scale < 250)
+	{
+		ent->state.frame++;
+		ent->state.angles[1] += 1;
+		cl_common->h2_Effects[index].Smoke.time_amount -= smoketime;
+	}
+
+	if (ent->state.frame >= 10)
+	{
+		CLH2_FreeEffect(index);
+	}
+	else
+	{
+		CLH2_LinkEffectEntity(ent);
+	}
+}
+
+static void CLH2_UpdateEffectExplosionCommon(int index, float frametime, float frameDuration)
+{
+	// Just go through animation and then remove
+	cl_common->h2_Effects[index].Smoke.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Smoke.entity_index];
+
+	while (cl_common->h2_Effects[index].Smoke.time_amount >= frameDuration)
+	{
+		ent->state.frame++;
+		cl_common->h2_Effects[index].Smoke.time_amount -= frameDuration;
+	}
+
+	if (ent->state.frame >= R_ModelNumFrames(ent->model))
+	{
+		CLH2_FreeEffect(index);
+	}
+	else
+	{
+		CLH2_LinkEffectEntity(ent);
+	}
+}
+
+void CLH2_UpdateEffectExplosion(int index, float frametime)
+{
+	CLH2_UpdateEffectExplosionCommon(index, frametime, HX_FRAME_TIME);
+}
+
+void CLH2_UpdateEffectBigCircleExplosion(int index, float frametime)
+{
+	CLH2_UpdateEffectExplosionCommon(index, frametime, HX_FRAME_TIME * 2);
+}
+
+void CLH2_UpdateEffectLShock(int index)
+{
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Smoke.entity_index];
+	if (ent->state.skinnum == 0)
+	{
+		ent->state.skinnum = 1;
+	}
+	else if (ent->state.skinnum == 1)
+	{
+		ent->state.skinnum = 0;
+	}
+	ent->state.scale -= 10;
+	if (ent->state.scale <= 10)
+	{
+		CLH2_FreeEffect(index);
+	}
+	else
+	{
+		CLH2_LinkEffectEntity(ent);
+	}
+}
+
+void CLH2_UpdateEffectFlash(int index, float frametime)
+{
+	// Go forward then backward through animation then remove
+	cl_common->h2_Effects[index].Flash.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Flash.entity_index];
+
+	while (cl_common->h2_Effects[index].Flash.time_amount >= HX_FRAME_TIME)
+	{
+		if (!cl_common->h2_Effects[index].Flash.reverse)
+		{
+			if (ent->state.frame >= R_ModelNumFrames(ent->model) - 1)  // Ran through forward animation
+			{
+				cl_common->h2_Effects[index].Flash.reverse = 1;
+				ent->state.frame--;
+			}
+			else
+			{
+				ent->state.frame++;
+			}
+		}	
+		else
+		{
+			ent->state.frame--;
+		}
+		cl_common->h2_Effects[index].Flash.time_amount -= HX_FRAME_TIME;
+	}
+
+	if (ent->state.frame <= 0 && cl_common->h2_Effects[index].Flash.reverse)
+	{
+		CLH2_FreeEffect(index);
+	}
+	else
+	{
+		CLH2_LinkEffectEntity(ent);
+	}
+}
+
+void CLH2_UpdateEffectGravityWell(int index, float frametime)
+{
+	cl_common->h2_Effects[index].GravityWell.time_amount += frametime * 2;
+	if (cl_common->h2_Effects[index].GravityWell.time_amount >= 1)
+	{
+		cl_common->h2_Effects[index].GravityWell.time_amount -= 1;
+	}
+
+	vec3_t org;
+	VectorCopy(cl_common->h2_Effects[index].GravityWell.origin, org);
+	org[0] += sin(cl_common->h2_Effects[index].GravityWell.time_amount * 2 * M_PI) * 30;
+	org[1] += cos(cl_common->h2_Effects[index].GravityWell.time_amount * 2 * M_PI) * 30;
+
+	if (cl_common->h2_Effects[index].GravityWell.lifetime < cl_common->serverTime * 0.001)
+	{
+		CLH2_FreeEffect(index);
+	}
+	else
+	{
+		CLH2_GravityWellParticle(rand() % 8, org, cl_common->h2_Effects[index].GravityWell.color);
+	}
+}
+
+void CLH2_UpdateEffectTeleporterPuffs(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Teleporter.time_amount += frametime;
+	float smoketime = cl_common->h2_Effects[index].Teleporter.framelength;
+
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[0]];
+	while (cl_common->h2_Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
+	{
+		ent->state.frame++;
+		cl_common->h2_Effects[index].Teleporter.time_amount -= HX_FRAME_TIME;
+	}
+	int cur_frame = ent->state.frame;
+
+	if (cur_frame >= R_ModelNumFrames(ent->model))
+	{
+		CLH2_FreeEffect(index);
+		return;
+	}
+
+	for (int i = 0; i < 8; i++)
+	{
+		ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[i]];
+
+		ent->state.origin[0] += (frametime / smoketime) * cl_common->h2_Effects[index].Teleporter.velocity[i][0];
+		ent->state.origin[1] += (frametime / smoketime) * cl_common->h2_Effects[index].Teleporter.velocity[i][1];
+		ent->state.origin[2] += (frametime / smoketime) * cl_common->h2_Effects[index].Teleporter.velocity[i][2];
+		ent->state.frame = cur_frame;
+
+		CLH2_LinkEffectEntity(ent);
+	}
+}
+
+void CLH2_UpdateEffectTeleporterBody(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Teleporter.time_amount += frametime;
+	float smoketime = cl_common->h2_Effects[index].Teleporter.framelength;
+
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[0]];
+	while (cl_common->h2_Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
+	{
+		ent->state.scale -= 15;
+		cl_common->h2_Effects[index].Teleporter.time_amount -= HX_FRAME_TIME;
+	}
+
+	ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[0]];
+	ent->state.angles[1] += 45;
+
+	if (ent->state.scale <= 10)
+	{
+		CLH2_FreeEffect(index);
+	}
+	else
+	{
+		CLH2_LinkEffectEntity(ent);
+	}
+}
+
+effect_entity_t* CLH2_UpdateEffectMissileCommon(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Missile.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+
+	ent->state.angles[0] += frametime * cl_common->h2_Effects[index].Missile.avelocity[0];
+	ent->state.angles[1] += frametime * cl_common->h2_Effects[index].Missile.avelocity[1];
+	ent->state.angles[2] += frametime * cl_common->h2_Effects[index].Missile.avelocity[2];
+
+	ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Missile.velocity[0];
+	ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Missile.velocity[1];
+	ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Missile.velocity[2];
+	return ent;
+}
+
+void CLH2_UpdateEffectMissile(int index, float frametime)
+{
+	effect_entity_t* ent = CLH2_UpdateEffectMissileCommon(index, frametime);
+	CLH2_LinkEffectEntity(ent);
+}
+
+void CLHW_UpdateEffectBoneBall(int index, float frametime)
+{
+	effect_entity_t* ent = CLH2_UpdateEffectMissileCommon(index, frametime);
+	CLH2_LinkEffectEntity(ent);
+	CLH2_RunParticleEffect4(ent->state.origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
+}
+
+void CLHW_UpdateEffectRavenPower(int index, float frametime)
+{
+	effect_entity_t* ent = CLH2_UpdateEffectMissileCommon(index, frametime);
+	while (cl_common->h2_Effects[index].Missile.time_amount >= HX_FRAME_TIME)
+	{
+		ent->state.frame++;
+		cl_common->h2_Effects[index].Missile.time_amount -= HX_FRAME_TIME;
+	}
+
+	if (ent->state.frame > 7)
+	{
+		ent->state.frame = 0;
+		return;
+	}
+	CLH2_LinkEffectEntity(ent);
+}
