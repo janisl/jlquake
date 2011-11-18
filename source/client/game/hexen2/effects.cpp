@@ -2450,3 +2450,121 @@ void CLHW_UpdateEffectMissileStar(int index, float frametime)
 		CLH2_LinkEffectEntity(ent2);
 	}
 }
+
+void CLH2_UpdateEffectChunk(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Chunk.time_amount -= frametime;
+	if (cl_common->h2_Effects[index].Chunk.time_amount < 0)
+	{
+		CLH2_FreeEffect(index);
+		return;
+	}
+	for (int i = 0; i < cl_common->h2_Effects[index].Chunk.numChunks; i++)
+	{
+		effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chunk.entity_index[i]];
+
+		vec3_t oldorg;
+		VectorCopy(ent->state.origin, oldorg);
+
+		ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Chunk.velocity[i][0];
+		ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Chunk.velocity[i][1];
+		ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Chunk.velocity[i][2];
+
+		bool moving = true;
+		if (CM_PointContentsQ1(ent->state.origin, 0) != BSP29CONTENTS_EMPTY) //||in_solid==true
+		{
+			// bouncing prolly won't work...
+			VectorCopy(oldorg, ent->state.origin);
+
+			cl_common->h2_Effects[index].Chunk.velocity[i][0] = 0;
+			cl_common->h2_Effects[index].Chunk.velocity[i][1] = 0;
+			cl_common->h2_Effects[index].Chunk.velocity[i][2] = 0;
+
+			moving = false;
+		}
+		else
+		{
+			ent->state.angles[0] += frametime * cl_common->h2_Effects[index].Chunk.avel[i % 3][0];
+			ent->state.angles[1] += frametime * cl_common->h2_Effects[index].Chunk.avel[i % 3][1];
+			ent->state.angles[2] += frametime * cl_common->h2_Effects[index].Chunk.avel[i % 3][2];
+		}
+
+		if (cl_common->h2_Effects[index].Chunk.time_amount < frametime * 3)
+		{
+			// chunk leaves in 3 frames
+			ent->state.scale *= .7;
+		}
+
+		CLH2_LinkEffectEntity(ent);
+
+		cl_common->h2_Effects[index].Chunk.velocity[i][2] -= frametime * 500; // apply gravity
+
+		switch (cl_common->h2_Effects[index].Chunk.type)
+		{
+		case H2THINGTYPE_GREYSTONE:
+			break;
+		case H2THINGTYPE_WOOD:
+			break;
+		case H2THINGTYPE_METAL:
+			break;
+		case H2THINGTYPE_FLESH:
+			if (moving)
+			{
+				CLH2_TrailParticles(oldorg, ent->state.origin, rt_bloodshot);
+			}
+			break;
+		case H2THINGTYPE_FIRE:
+			break;
+		case H2THINGTYPE_CLAY:
+		case H2THINGTYPE_BONE:
+			break;
+		case H2THINGTYPE_LEAVES:
+			break;
+		case H2THINGTYPE_HAY:
+			break;
+		case H2THINGTYPE_BROWNSTONE:
+			break;
+		case H2THINGTYPE_CLOTH:
+			break;
+		case H2THINGTYPE_WOOD_LEAF:
+			break;
+		case H2THINGTYPE_WOOD_METAL:
+			break;
+		case H2THINGTYPE_WOOD_STONE:
+			break;
+		case H2THINGTYPE_METAL_STONE:
+			break;
+		case H2THINGTYPE_METAL_CLOTH:
+			break;
+		case H2THINGTYPE_WEBS:
+			break;
+		case H2THINGTYPE_GLASS:
+			break;
+		case H2THINGTYPE_ICE:
+			if (moving)
+			{
+				CLH2_TrailParticles(oldorg, ent->state.origin, rt_ice);
+			}
+			break;
+		case H2THINGTYPE_CLEARGLASS:
+			break;
+		case H2THINGTYPE_REDGLASS:
+			break;
+		case H2THINGTYPE_ACID:
+			if (moving)
+			{
+				CLH2_TrailParticles(oldorg, ent->state.origin, rt_acidball);
+			}
+			break;
+		case H2THINGTYPE_METEOR:
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_smoke);
+			break;
+		case H2THINGTYPE_GREENFLESH:
+			if (moving)
+			{
+				CLH2_TrailParticles(oldorg, ent->state.origin, rt_acidball);
+			}
+			break;
+		}
+	}
+}

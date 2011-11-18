@@ -719,7 +719,7 @@ void CLHW_UpdateEffectTripMine(int index, float frametime)
 	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
 }
 
-void CL_UpdateEffects(void)
+void CL_UpdateEffects()
 {
 	float frametime = host_frametime;
 	if (!frametime)
@@ -729,131 +729,132 @@ void CL_UpdateEffects(void)
 
 	for (int index = 0; index < MAX_EFFECTS_H2; index++)
 	{
-		if (!cl.h2_Effects[index].type) 
+		if (!cl.h2_Effects[index].type)
+		{
 			continue;
-
+		}
 		switch(cl.h2_Effects[index].type)
 		{
-			case HWCE_RAIN:
-				CLH2_UpdateEffectRain(index, frametime);
-				break;
-			case HWCE_FOUNTAIN:
-				CLH2_UpdateEffectFountain(index);
-				break;
-			case HWCE_QUAKE:
-				CLH2_UpdateEffectQuake(index);
-				break;
-			case HWCE_RIPPLE:
-				CLHW_UpdateEffectRipple(index, frametime);
-				break;
-			case HWCE_WHITE_SMOKE:
-			case HWCE_GREEN_SMOKE:
-			case HWCE_GREY_SMOKE:
-			case HWCE_RED_SMOKE:
-			case HWCE_SLOW_WHITE_SMOKE:
-			case HWCE_TELESMK2:
-			case HWCE_GHOST:
-			case HWCE_REDCLOUD:
-			case HWCE_FLAMESTREAM:
-			case HWCE_ACID_MUZZFL:
-			case HWCE_FLAMEWALL:
-			case HWCE_FLAMEWALL2:
-			case HWCE_ONFIRE:
-				CLH2_UpdateEffectSmoke(index, frametime);
-				break;
-			case HWCE_TELESMK1:
-				CLHW_UpdateEffectTeleportSmoke1(index, frametime);
-				break;
-			case HWCE_SM_WHITE_FLASH:
-			case HWCE_YELLOWRED_FLASH:
-			case HWCE_BLUESPARK:
-			case HWCE_YELLOWSPARK:
-			case HWCE_SM_CIRCLE_EXP:
-			case HWCE_SM_EXPLOSION:
-			case HWCE_SM_EXPLOSION2:
-			case HWCE_BG_EXPLOSION:
-			case HWCE_FLOOR_EXPLOSION:
-			case HWCE_BLUE_EXPLOSION:
-			case HWCE_REDSPARK:
-			case HWCE_GREENSPARK:
-			case HWCE_ICEHIT:
-			case HWCE_MEDUSA_HIT:
-			case HWCE_MEZZO_REFLECT:
-			case HWCE_FLOOR_EXPLOSION2:
-			case HWCE_XBOW_EXPLOSION:
-			case HWCE_NEW_EXPLOSION:
-			case HWCE_MAGIC_MISSILE_EXPLOSION:
-			case HWCE_BONE_EXPLOSION:
-			case HWCE_BLDRN_EXPL:
-			case HWCE_BRN_BOUNCE:
-			case HWCE_ACID_HIT:
-			case HWCE_ACID_SPLAT:
-			case HWCE_ACID_EXPL:
-			case HWCE_LBALL_EXPL:
-			case HWCE_FBOOM:
-			case HWCE_BOMB:
-			case HWCE_FIREWALL_SMALL:
-			case HWCE_FIREWALL_MEDIUM:
-			case HWCE_FIREWALL_LARGE:
-				CLH2_UpdateEffectExplosion(index, frametime);
-				break;
-			case HWCE_BG_CIRCLE_EXP:
-				CLH2_UpdateEffectBigCircleExplosion(index, frametime);
-				break;
-			case HWCE_WHITE_FLASH:
-			case HWCE_BLUE_FLASH:
-			case HWCE_SM_BLUE_FLASH:
-			case HWCE_HWSPLITFLASH:
-			case HWCE_RED_FLASH:
-				CLH2_UpdateEffectFlash(index, frametime);
-				break;
-			case HWCE_RIDER_DEATH:
-				CLH2_UpdateEffectRiderDeath(index, frametime);
-				break;
-			case HWCE_TELEPORTERPUFFS:
-				CLH2_UpdateEffectTeleporterPuffs(index, frametime);
-				break;
-			case HWCE_TELEPORTERBODY:
-				CLH2_UpdateEffectTeleporterBody(index, frametime);
-				break;
-			case HWCE_HWDRILLA:
-				CLHW_UpdateEffectDrilla(index, frametime);
-				break;
-			case HWCE_HWXBOWSHOOT:
-				CLHW_UpdateEffectXBowShot(index, frametime);
-				break;
-			case HWCE_HWSHEEPINATOR:
-				CLHW_UpdateEffectSheepinator(index, frametime);
-				break;
-			case HWCE_DEATHBUBBLES:
-				CLHW_UpdateEffectDeathBubbles(index, frametime);
-				break;
-			case HWCE_SCARABCHAIN:
-				CLHW_UpdateEffectScarabChain(index, frametime);
-				break;
-			case HWCE_TRIPMINESTILL:
-				CLHW_UpdateEffectTripMineStill(index, frametime);
-				break;
-			case HWCE_TRIPMINE:
-				CLHW_UpdateEffectTripMine(index, frametime);
-				break;
-			case HWCE_BONESHARD:
-			case HWCE_BONESHRAPNEL:
-			case HWCE_HWRAVENSTAFF:
-				CLH2_UpdateEffectMissile(index, frametime);
-				break;
-			case HWCE_HWBONEBALL:
-				CLHW_UpdateEffectBoneBall(index, frametime);
-				break;
-			case HWCE_HWRAVENPOWER:
-				CLHW_UpdateEffectRavenPower(index, frametime);
-				break;
-			case HWCE_HWMISSILESTAR:
-				CLHW_UpdateEffectMissileStar(index, frametime);
-				break;
-			case HWCE_HWEIDOLONSTAR:
-				CLHW_UpdateEffectEidolonStar(index, frametime);
-				break;
+		case HWCE_RAIN:
+			CLH2_UpdateEffectRain(index, frametime);
+			break;
+		case HWCE_FOUNTAIN:
+			CLH2_UpdateEffectFountain(index);
+			break;
+		case HWCE_QUAKE:
+			CLH2_UpdateEffectQuake(index);
+			break;
+		case HWCE_RIPPLE:
+			CLHW_UpdateEffectRipple(index, frametime);
+			break;
+		case HWCE_WHITE_SMOKE:
+		case HWCE_GREEN_SMOKE:
+		case HWCE_GREY_SMOKE:
+		case HWCE_RED_SMOKE:
+		case HWCE_SLOW_WHITE_SMOKE:
+		case HWCE_TELESMK2:
+		case HWCE_GHOST:
+		case HWCE_REDCLOUD:
+		case HWCE_FLAMESTREAM:
+		case HWCE_ACID_MUZZFL:
+		case HWCE_FLAMEWALL:
+		case HWCE_FLAMEWALL2:
+		case HWCE_ONFIRE:
+			CLH2_UpdateEffectSmoke(index, frametime);
+			break;
+		case HWCE_TELESMK1:
+			CLHW_UpdateEffectTeleportSmoke1(index, frametime);
+			break;
+		case HWCE_SM_WHITE_FLASH:
+		case HWCE_YELLOWRED_FLASH:
+		case HWCE_BLUESPARK:
+		case HWCE_YELLOWSPARK:
+		case HWCE_SM_CIRCLE_EXP:
+		case HWCE_SM_EXPLOSION:
+		case HWCE_SM_EXPLOSION2:
+		case HWCE_BG_EXPLOSION:
+		case HWCE_FLOOR_EXPLOSION:
+		case HWCE_BLUE_EXPLOSION:
+		case HWCE_REDSPARK:
+		case HWCE_GREENSPARK:
+		case HWCE_ICEHIT:
+		case HWCE_MEDUSA_HIT:
+		case HWCE_MEZZO_REFLECT:
+		case HWCE_FLOOR_EXPLOSION2:
+		case HWCE_XBOW_EXPLOSION:
+		case HWCE_NEW_EXPLOSION:
+		case HWCE_MAGIC_MISSILE_EXPLOSION:
+		case HWCE_BONE_EXPLOSION:
+		case HWCE_BLDRN_EXPL:
+		case HWCE_BRN_BOUNCE:
+		case HWCE_ACID_HIT:
+		case HWCE_ACID_SPLAT:
+		case HWCE_ACID_EXPL:
+		case HWCE_LBALL_EXPL:
+		case HWCE_FBOOM:
+		case HWCE_BOMB:
+		case HWCE_FIREWALL_SMALL:
+		case HWCE_FIREWALL_MEDIUM:
+		case HWCE_FIREWALL_LARGE:
+			CLH2_UpdateEffectExplosion(index, frametime);
+			break;
+		case HWCE_BG_CIRCLE_EXP:
+			CLH2_UpdateEffectBigCircleExplosion(index, frametime);
+			break;
+		case HWCE_WHITE_FLASH:
+		case HWCE_BLUE_FLASH:
+		case HWCE_SM_BLUE_FLASH:
+		case HWCE_HWSPLITFLASH:
+		case HWCE_RED_FLASH:
+			CLH2_UpdateEffectFlash(index, frametime);
+			break;
+		case HWCE_RIDER_DEATH:
+			CLH2_UpdateEffectRiderDeath(index, frametime);
+			break;
+		case HWCE_TELEPORTERPUFFS:
+			CLH2_UpdateEffectTeleporterPuffs(index, frametime);
+			break;
+		case HWCE_TELEPORTERBODY:
+			CLH2_UpdateEffectTeleporterBody(index, frametime);
+			break;
+		case HWCE_HWDRILLA:
+			CLHW_UpdateEffectDrilla(index, frametime);
+			break;
+		case HWCE_HWXBOWSHOOT:
+			CLHW_UpdateEffectXBowShot(index, frametime);
+			break;
+		case HWCE_HWSHEEPINATOR:
+			CLHW_UpdateEffectSheepinator(index, frametime);
+			break;
+		case HWCE_DEATHBUBBLES:
+			CLHW_UpdateEffectDeathBubbles(index, frametime);
+			break;
+		case HWCE_SCARABCHAIN:
+			CLHW_UpdateEffectScarabChain(index, frametime);
+			break;
+		case HWCE_TRIPMINESTILL:
+			CLHW_UpdateEffectTripMineStill(index, frametime);
+			break;
+		case HWCE_TRIPMINE:
+			CLHW_UpdateEffectTripMine(index, frametime);
+			break;
+		case HWCE_BONESHARD:
+		case HWCE_BONESHRAPNEL:
+		case HWCE_HWRAVENSTAFF:
+			CLH2_UpdateEffectMissile(index, frametime);
+			break;
+		case HWCE_HWBONEBALL:
+			CLHW_UpdateEffectBoneBall(index, frametime);
+			break;
+		case HWCE_HWRAVENPOWER:
+			CLHW_UpdateEffectRavenPower(index, frametime);
+			break;
+		case HWCE_HWMISSILESTAR:
+			CLHW_UpdateEffectMissileStar(index, frametime);
+			break;
+		case HWCE_HWEIDOLONSTAR:
+			CLHW_UpdateEffectEidolonStar(index, frametime);
+			break;
 		}
 	}
 }

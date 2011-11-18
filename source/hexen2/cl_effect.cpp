@@ -1098,223 +1098,119 @@ void CLH2_UpdateEffectRiderDeath(int index, float frametime)
 	}
 }
 
-void CL_UpdateEffects(void)
+void CL_UpdateEffects()
 {
-	int index;
-	float frametime;
-	effect_entity_t* ent;
-	int i;
-
 	if (cls.state == ca_disconnected)
-		return;
-
-	frametime = cl.serverTimeFloat - cl.oldtime;
-	if (!frametime) return;
-//	Con_Printf("Here at %f\n",cl.time);
-
-	for(index=0;index<MAX_EFFECTS_H2;index++)
 	{
-		if (!cl.h2_Effects[index].type) 
-			continue;
+		return;
+	}
 
-		switch(cl.h2_Effects[index].type)
+	float frametime = cl.serverTimeFloat - cl.oldtime;
+	if (!frametime)
+	{
+		return;
+	}
+
+	for (int index = 0; index < MAX_EFFECTS_H2; index++)
+	{
+		if (!cl.h2_Effects[index].type)
 		{
-			case H2CE_RAIN:
-				CLH2_UpdateEffectRain(index, frametime);
-				break;
-			case H2CE_SNOW:
-				CLH2_UpdateEffectSnow(index, frametime);
-				break;
-			case H2CE_FOUNTAIN:
-				CLH2_UpdateEffectFountain(index);
-				break;
-			case H2CE_QUAKE:
-				CLH2_UpdateEffectQuake(index);
-				break;
-			case H2CE_WHITE_SMOKE:
-			case H2CE_GREEN_SMOKE:
-			case H2CE_GREY_SMOKE:
-			case H2CE_RED_SMOKE:
-			case H2CE_SLOW_WHITE_SMOKE:
-			case H2CE_TELESMK1:
-			case H2CE_TELESMK2:
-			case H2CE_GHOST:
-			case H2CE_REDCLOUD:
-			case H2CE_FLAMESTREAM:
-			case H2CE_ACID_MUZZFL:
-			case H2CE_FLAMEWALL:
-			case H2CE_FLAMEWALL2:
-			case H2CE_ONFIRE:
-				CLH2_UpdateEffectSmoke(index, frametime);
-				break;
-			case H2CE_SM_WHITE_FLASH:
-			case H2CE_YELLOWRED_FLASH:
-			case H2CE_BLUESPARK:
-			case H2CE_YELLOWSPARK:
-			case H2CE_SM_CIRCLE_EXP:
-			case H2CE_SM_EXPLOSION:
-			case H2CE_LG_EXPLOSION:
-			case H2CE_FLOOR_EXPLOSION:
-			case H2CE_FLOOR_EXPLOSION3:
-			case H2CE_BLUE_EXPLOSION:
-			case H2CE_REDSPARK:
-			case H2CE_GREENSPARK:
-			case H2CE_ICEHIT:
-			case H2CE_MEDUSA_HIT:
-			case H2CE_MEZZO_REFLECT:
-			case H2CE_FLOOR_EXPLOSION2:
-			case H2CE_XBOW_EXPLOSION:
-			case H2CE_NEW_EXPLOSION:
-			case H2CE_MAGIC_MISSILE_EXPLOSION:
-			case H2CE_BONE_EXPLOSION:
-			case H2CE_BLDRN_EXPL:
-			case H2CE_BRN_BOUNCE:
-			case H2CE_ACID_HIT:
-			case H2CE_ACID_SPLAT:
-			case H2CE_ACID_EXPL:
-			case H2CE_LBALL_EXPL:
-			case H2CE_FBOOM:
-			case H2CE_BOMB:
-			case H2CE_FIREWALL_SMALL:
-			case H2CE_FIREWALL_MEDIUM:
-			case H2CE_FIREWALL_LARGE:
-				CLH2_UpdateEffectExplosion(index, frametime);
-				break;
-			case H2CE_BG_CIRCLE_EXP:
-				CLH2_UpdateEffectBigCircleExplosion(index, frametime);
-				break;
-			case H2CE_LSHOCK:
-				CLH2_UpdateEffectLShock(index);
-				break;
-			case H2CE_WHITE_FLASH:
-			case H2CE_BLUE_FLASH:
-			case H2CE_SM_BLUE_FLASH:
-			case H2CE_RED_FLASH:
-				CLH2_UpdateEffectFlash(index, frametime);
-				break;
-			case H2CE_RIDER_DEATH:
-				CLH2_UpdateEffectRiderDeath(index, frametime);
-				break;
-			case H2CE_GRAVITYWELL:
-				CLH2_UpdateEffectGravityWell(index, frametime);
-				break;
-			case H2CE_TELEPORTERPUFFS:
-				CLH2_UpdateEffectTeleporterPuffs(index, frametime);
-				break;
-			case H2CE_TELEPORTERBODY:
-				CLH2_UpdateEffectTeleporterBody(index, frametime);
-				break;
-			case H2CE_BONESHARD:
-			case H2CE_BONESHRAPNEL:
-				CLH2_UpdateEffectMissile(index, frametime);
-				break;
-			case H2CE_CHUNK:
-				cl.h2_Effects[index].Chunk.time_amount -= frametime;
-				if(cl.h2_Effects[index].Chunk.time_amount < 0)
-				{
-					CLH2_FreeEffect(index);	
-				}
-				else
-				{
-					for (i=0;i < cl.h2_Effects[index].Chunk.numChunks;i++)
-					{
-						vec3_t oldorg;
-						int			moving = 1;
-
-						ent = &EffectEntities[cl.h2_Effects[index].Chunk.entity_index[i]];
-
-						VectorCopy(ent->state.origin, oldorg);
-
-						ent->state.origin[0] += frametime * cl.h2_Effects[index].Chunk.velocity[i][0];
-						ent->state.origin[1] += frametime * cl.h2_Effects[index].Chunk.velocity[i][1];
-						ent->state.origin[2] += frametime * cl.h2_Effects[index].Chunk.velocity[i][2];
-
-						if (CM_PointContentsQ1(ent->state.origin, 0) != BSP29CONTENTS_EMPTY) //||in_solid==true
-						{
-							// bouncing prolly won't work...
-							VectorCopy(oldorg, ent->state.origin);
-
-							cl.h2_Effects[index].Chunk.velocity[i][0] = 0;
-							cl.h2_Effects[index].Chunk.velocity[i][1] = 0;
-							cl.h2_Effects[index].Chunk.velocity[i][2] = 0;
-
-							moving = 0;
-						}
-						else
-						{
-							ent->state.angles[0] += frametime * cl.h2_Effects[index].Chunk.avel[i%3][0];
-							ent->state.angles[1] += frametime * cl.h2_Effects[index].Chunk.avel[i%3][1];
-							ent->state.angles[2] += frametime * cl.h2_Effects[index].Chunk.avel[i%3][2];
-						}
-
-						if(cl.h2_Effects[index].Chunk.time_amount < frametime * 3)
-						{	// chunk leaves in 3 frames
-							ent->state.scale *= .7;
-						}
-
-						CLH2_LinkEffectEntity(ent);
-
-						cl.h2_Effects[index].Chunk.velocity[i][2] -= frametime * 500; // apply gravity
-
-						switch(cl.h2_Effects[index].Chunk.type)
-						{
-						case H2THINGTYPE_GREYSTONE:
-							break;
-						case H2THINGTYPE_WOOD:
-							break;
-						case H2THINGTYPE_METAL:
-							break;
-						case H2THINGTYPE_FLESH:
-							if(moving)CLH2_TrailParticles (oldorg, ent->state.origin, rt_bloodshot);
-							break;
-						case H2THINGTYPE_FIRE:
-							break;
-						case H2THINGTYPE_CLAY:
-						case H2THINGTYPE_BONE:
-							break;
-						case H2THINGTYPE_LEAVES:
-							break;
-						case H2THINGTYPE_HAY:
-							break;
-						case H2THINGTYPE_BROWNSTONE:
-							break;
-						case H2THINGTYPE_CLOTH:
-							break;
-						case H2THINGTYPE_WOOD_LEAF:
-							break;
-						case H2THINGTYPE_WOOD_METAL:
-							break;
-						case H2THINGTYPE_WOOD_STONE:
-							break;
-						case H2THINGTYPE_METAL_STONE:
-							break;
-						case H2THINGTYPE_METAL_CLOTH:
-							break;
-						case H2THINGTYPE_WEBS:
-							break;
-						case H2THINGTYPE_GLASS:
-							break;
-						case H2THINGTYPE_ICE:
-							if(moving)CLH2_TrailParticles (oldorg, ent->state.origin, rt_ice);
-							break;
-						case H2THINGTYPE_CLEARGLASS:
-							break;
-						case H2THINGTYPE_REDGLASS:
-							break;
-						case H2THINGTYPE_ACID:
-							if(moving)CLH2_TrailParticles (oldorg, ent->state.origin, rt_acidball);
-							break;
-						case H2THINGTYPE_METEOR:
-							CLH2_TrailParticles (oldorg, ent->state.origin, rt_smoke);
-							break;
-						case H2THINGTYPE_GREENFLESH:
-							if(moving)CLH2_TrailParticles (oldorg, ent->state.origin, rt_acidball);
-							break;
-
-						}
-					}
-				}
-				break;
+			continue;
+		}
+		switch (cl.h2_Effects[index].type)
+		{
+		case H2CE_RAIN:
+			CLH2_UpdateEffectRain(index, frametime);
+			break;
+		case H2CE_SNOW:
+			CLH2_UpdateEffectSnow(index, frametime);
+			break;
+		case H2CE_FOUNTAIN:
+			CLH2_UpdateEffectFountain(index);
+			break;
+		case H2CE_QUAKE:
+			CLH2_UpdateEffectQuake(index);
+			break;
+		case H2CE_WHITE_SMOKE:
+		case H2CE_GREEN_SMOKE:
+		case H2CE_GREY_SMOKE:
+		case H2CE_RED_SMOKE:
+		case H2CE_SLOW_WHITE_SMOKE:
+		case H2CE_TELESMK1:
+		case H2CE_TELESMK2:
+		case H2CE_GHOST:
+		case H2CE_REDCLOUD:
+		case H2CE_FLAMESTREAM:
+		case H2CE_ACID_MUZZFL:
+		case H2CE_FLAMEWALL:
+		case H2CE_FLAMEWALL2:
+		case H2CE_ONFIRE:
+			CLH2_UpdateEffectSmoke(index, frametime);
+			break;
+		case H2CE_SM_WHITE_FLASH:
+		case H2CE_YELLOWRED_FLASH:
+		case H2CE_BLUESPARK:
+		case H2CE_YELLOWSPARK:
+		case H2CE_SM_CIRCLE_EXP:
+		case H2CE_SM_EXPLOSION:
+		case H2CE_LG_EXPLOSION:
+		case H2CE_FLOOR_EXPLOSION:
+		case H2CE_FLOOR_EXPLOSION3:
+		case H2CE_BLUE_EXPLOSION:
+		case H2CE_REDSPARK:
+		case H2CE_GREENSPARK:
+		case H2CE_ICEHIT:
+		case H2CE_MEDUSA_HIT:
+		case H2CE_MEZZO_REFLECT:
+		case H2CE_FLOOR_EXPLOSION2:
+		case H2CE_XBOW_EXPLOSION:
+		case H2CE_NEW_EXPLOSION:
+		case H2CE_MAGIC_MISSILE_EXPLOSION:
+		case H2CE_BONE_EXPLOSION:
+		case H2CE_BLDRN_EXPL:
+		case H2CE_BRN_BOUNCE:
+		case H2CE_ACID_HIT:
+		case H2CE_ACID_SPLAT:
+		case H2CE_ACID_EXPL:
+		case H2CE_LBALL_EXPL:
+		case H2CE_FBOOM:
+		case H2CE_BOMB:
+		case H2CE_FIREWALL_SMALL:
+		case H2CE_FIREWALL_MEDIUM:
+		case H2CE_FIREWALL_LARGE:
+			CLH2_UpdateEffectExplosion(index, frametime);
+			break;
+		case H2CE_BG_CIRCLE_EXP:
+			CLH2_UpdateEffectBigCircleExplosion(index, frametime);
+			break;
+		case H2CE_LSHOCK:
+			CLH2_UpdateEffectLShock(index);
+			break;
+		case H2CE_WHITE_FLASH:
+		case H2CE_BLUE_FLASH:
+		case H2CE_SM_BLUE_FLASH:
+		case H2CE_RED_FLASH:
+			CLH2_UpdateEffectFlash(index, frametime);
+			break;
+		case H2CE_RIDER_DEATH:
+			CLH2_UpdateEffectRiderDeath(index, frametime);
+			break;
+		case H2CE_GRAVITYWELL:
+			CLH2_UpdateEffectGravityWell(index, frametime);
+			break;
+		case H2CE_TELEPORTERPUFFS:
+			CLH2_UpdateEffectTeleporterPuffs(index, frametime);
+			break;
+		case H2CE_TELEPORTERBODY:
+			CLH2_UpdateEffectTeleporterBody(index, frametime);
+			break;
+		case H2CE_BONESHARD:
+		case H2CE_BONESHRAPNEL:
+			CLH2_UpdateEffectMissile(index, frametime);
+			break;
+		case H2CE_CHUNK:
+			CLH2_UpdateEffectChunk(index, frametime);
+			break;
 		}
 	}
 }
