@@ -36,7 +36,7 @@ static sfxHandle_t clh2_fxsfx_ravensplit;
 static sfxHandle_t clh2_fxsfx_ravenfire;
 sfxHandle_t clh2_fxsfx_ravengo;
 static sfxHandle_t clh2_fxsfx_drillashoot;
-sfxHandle_t clh2_fxsfx_drillaspin;
+static sfxHandle_t clh2_fxsfx_drillaspin;
 sfxHandle_t clh2_fxsfx_drillameat;
 
 sfxHandle_t clh2_fxsfx_arr2flsh;
@@ -2197,7 +2197,6 @@ void CLH2_UpdateEffectTeleporterPuffs(int index, float frametime)
 void CLH2_UpdateEffectTeleporterBody(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Teleporter.time_amount += frametime;
-	float smoketime = cl_common->h2_Effects[index].Teleporter.framelength;
 
 	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Teleporter.entity_index[0]];
 	while (cl_common->h2_Effects[index].Teleporter.time_amount >= HX_FRAME_TIME)
@@ -2219,7 +2218,7 @@ void CLH2_UpdateEffectTeleporterBody(int index, float frametime)
 	}
 }
 
-effect_entity_t* CLH2_UpdateEffectMissileCommon(int index, float frametime)
+static effect_entity_t* CLH2_UpdateEffectMissileCommon(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Missile.time_amount += frametime;
 	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
@@ -2262,4 +2261,192 @@ void CLHW_UpdateEffectRavenPower(int index, float frametime)
 		return;
 	}
 	CLH2_LinkEffectEntity(ent);
+}
+
+void CLHW_UpdateEffectDrilla(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Missile.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+
+	S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_drillaspin, 1, 1);
+
+	ent->state.angles[0] += frametime * cl_common->h2_Effects[index].Missile.avelocity[0];
+	ent->state.angles[1] += frametime * cl_common->h2_Effects[index].Missile.avelocity[1];
+	ent->state.angles[2] += frametime * cl_common->h2_Effects[index].Missile.avelocity[2];
+
+	vec3_t old_origin;
+	VectorCopy(ent->state.origin, old_origin);
+
+	ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Missile.velocity[0];
+	ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Missile.velocity[1];
+	ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Missile.velocity[2];
+
+	CLH2_TrailParticles(old_origin, ent->state.origin, rt_setstaff);
+
+	CLH2_LinkEffectEntity(ent);
+}
+
+void CLHW_UpdateEffectXBowShot(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Xbow.time_amount += frametime;
+	for (int i = 0; i < cl_common->h2_Effects[index].Xbow.bolts; i++)
+	{
+		if (cl_common->h2_Effects[index].Xbow.ent[i] == -1)//only update valid effect ents
+		{
+			continue;
+		}
+		if (cl_common->h2_Effects[index].Xbow.activebolts & (1 << i))//bolt in air, simply update position
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[i]];
+
+			ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Xbow.vel[i][0];
+			ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Xbow.vel[i][1];
+			ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Xbow.vel[i][2];
+
+			CLH2_LinkEffectEntity(ent);
+		}
+		else if (cl_common->h2_Effects[index].Xbow.bolts == 5)//fiery bolts don't just go away
+		{
+			if (cl_common->h2_Effects[index].Xbow.state[i] == 0)//waiting to explode state
+			{
+				if (cl_common->h2_Effects[index].Xbow.gonetime[i] > cl_common->serverTime * 0.001)//fiery bolts stick around for a while
+				{
+					effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[i]];
+					CLH2_LinkEffectEntity(ent);
+				}
+				else//when time's up on fiery guys, they explode
+				{
+					//set state to exploding
+					cl_common->h2_Effects[index].Xbow.state[i] = 1;
+
+					effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[i]];
+
+					//move bolt back a little to make explosion look better
+					VectorNormalize(cl_common->h2_Effects[index].Xbow.vel[i]);
+					VectorScale(cl_common->h2_Effects[index].Xbow.vel[i],-8,cl_common->h2_Effects[index].Xbow.vel[i]);
+					VectorAdd(ent->state.origin,cl_common->h2_Effects[index].Xbow.vel[i],ent->state.origin);
+
+					//turn bolt entity into an explosion
+					ent->model = R_RegisterModel("models/xbowexpl.spr");
+					ent->state.frame = 0;
+
+					//set frame change counter
+					cl_common->h2_Effects[index].Xbow.gonetime[i] = cl_common->serverTime * 0.001 + HX_FRAME_TIME * 2;
+
+					//play explosion sound
+					S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_explode, 1, 1);
+
+					CLH2_LinkEffectEntity(ent);
+				}
+			}
+			else if (cl_common->h2_Effects[index].Xbow.state[i] == 1)//fiery bolt exploding state
+			{
+				effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[i]];
+
+				//increment frame if it's time
+				while (cl_common->h2_Effects[index].Xbow.gonetime[i] <= cl_common->serverTime * 0.001)
+				{
+					ent->state.frame++;
+					cl_common->h2_Effects[index].Xbow.gonetime[i] += HX_FRAME_TIME * 0.75;
+				}
+
+
+				if (ent->state.frame >= R_ModelNumFrames(ent->model))
+				{
+					cl_common->h2_Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
+				}
+				else
+				{
+					CLH2_LinkEffectEntity(ent);
+				}
+			}
+		}
+	}
+}
+
+void CLHW_UpdateEffectSheepinator(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Xbow.time_amount += frametime;
+	for (int i = 0; i < cl_common->h2_Effects[index].Xbow.bolts; i++)
+	{
+		if (cl_common->h2_Effects[index].Xbow.ent[i] == -1)//only update valid effect ents
+		{
+			continue;
+		}
+		if (cl_common->h2_Effects[index].Xbow.activebolts & (1 << i))//bolt in air, simply update position
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[i]];
+
+			ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Xbow.vel[i][0];
+			ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Xbow.vel[i][1];
+			ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Xbow.vel[i][2];
+
+			CLH2_RunParticleEffect4(ent->state.origin, 7, (rand() % 15) + 144, pt_h2explode2, (rand() %5) + 1);
+
+			CLH2_LinkEffectEntity(ent);
+		}
+	}
+}
+
+void CLHW_UpdateEffectEidolonStar(int index, float frametime)
+{
+	// update scale
+	if (cl_common->h2_Effects[index].Star.scaleDir)
+	{
+		cl_common->h2_Effects[index].Star.scale += 0.05;
+		if (cl_common->h2_Effects[index].Star.scale >= 1)
+		{
+			cl_common->h2_Effects[index].Star.scaleDir = 0;
+		}
+	}
+	else
+	{
+		cl_common->h2_Effects[index].Star.scale -= 0.05;
+		if (cl_common->h2_Effects[index].Star.scale <= 0.01)
+		{
+			cl_common->h2_Effects[index].Star.scaleDir = 1;
+		}
+	}
+	
+	cl_common->h2_Effects[index].Star.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.entity_index];
+
+	ent->state.angles[0] += frametime * cl_common->h2_Effects[index].Star.avelocity[0];
+	ent->state.angles[1] += frametime * cl_common->h2_Effects[index].Star.avelocity[1];
+	ent->state.angles[2] += frametime * cl_common->h2_Effects[index].Star.avelocity[2];
+
+	ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Star.velocity[0];
+	ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Star.velocity[1];
+	ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Star.velocity[2];
+
+	CLH2_LinkEffectEntity(ent);
+	
+	if (cl_common->h2_Effects[index].Star.ent1 != -1)
+	{
+		effect_entity_t* ent2 = &EffectEntities[cl_common->h2_Effects[index].Star.ent1];
+		VectorCopy(ent->state.origin, ent2->state.origin);
+		ent2->state.scale = cl_common->h2_Effects[index].Star.scale;
+		ent2->state.angles[1] += frametime * 300;
+		ent2->state.angles[2] += frametime * 400;
+		CLH2_LinkEffectEntity(ent2);
+	}
+	if (rand() % 10 < 3)		
+	{
+		CLH2_RunParticleEffect4(ent->state.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
+	}
+}
+
+void CLHW_UpdateEffectMissileStar(int index, float frametime)
+{
+	CLHW_UpdateEffectEidolonStar(index, frametime);
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.entity_index];
+	if (cl_common->h2_Effects[index].Star.ent2 != -1)
+	{
+		effect_entity_t* ent2 = &EffectEntities[cl_common->h2_Effects[index].Star.ent2];
+		VectorCopy(ent->state.origin, ent2->state.origin);
+		ent2->state.scale = cl_common->h2_Effects[index].Star.scale;
+		ent2->state.angles[1] += frametime * -300;
+		ent2->state.angles[2] += frametime * -400;
+		CLH2_LinkEffectEntity(ent2);
+	}
 }

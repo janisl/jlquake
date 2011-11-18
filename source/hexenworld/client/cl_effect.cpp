@@ -541,20 +541,193 @@ void CL_TurnEffect(void)
 
 }
 
+void CLH2_UpdateEffectRiderDeath(int index, float frametime)
+{
+	cl.h2_Effects[index].RD.time_amount += frametime;
+	if (cl.h2_Effects[index].RD.time_amount >= 1)
+	{
+		cl.h2_Effects[index].RD.stage++;
+		cl.h2_Effects[index].RD.time_amount -= 1;
+	}
+
+	vec3_t org;
+	VectorCopy(cl.h2_Effects[index].RD.origin, org);
+	org[0] += sin(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
+	org[1] += cos(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
+
+	if (cl.h2_Effects[index].RD.stage <= 6)
+	{
+		CLH2_RiderParticles(cl.h2_Effects[index].RD.stage + 1, org);
+	}
+	else
+	{
+		// To set the rider's origin point for the particles
+		CLH2_RiderParticles(0, org);
+		if (cl.h2_Effects[index].RD.stage == 7) 
+		{
+			cl.cshifts[CSHIFT_BONUS].destcolor[0] = 255;
+			cl.cshifts[CSHIFT_BONUS].destcolor[1] = 255;
+			cl.cshifts[CSHIFT_BONUS].destcolor[2] = 255;
+			cl.cshifts[CSHIFT_BONUS].percent = 256;
+		}
+		else if (cl.h2_Effects[index].RD.stage > 13) 
+		{
+			CLH2_FreeEffect(index);
+		}
+	}
+}
+
+void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Bubble.time_amount += frametime;
+	if (cl_common->h2_Effects[index].Bubble.time_amount > 0.1)//10 bubbles a sec
+	{
+		cl_common->h2_Effects[index].Bubble.time_amount = 0;
+		cl_common->h2_Effects[index].Bubble.count--;
+		h2entity_state_t* es = FindState(cl_common->h2_Effects[index].Bubble.owner);
+		if (es)
+		{
+			vec3_t org;
+			VectorCopy(es->origin, org);
+			VectorAdd(org, cl_common->h2_Effects[index].Bubble.offset, org);
+
+			if (CM_PointContentsQ1(org, 0) != BSP29CONTENTS_WATER) 
+			{
+				//not in water anymore
+				CLH2_FreeEffect(index);
+				return;
+			}
+			else
+			{
+				CLTENT_SpawnDeathBubble(org);
+			}
+		}
+	}
+	if (cl_common->h2_Effects[index].Bubble.count <= 0)
+	{
+		CLH2_FreeEffect(index);
+	}
+}
+
+void CLHW_UpdateEffectScarabChain(int index, float frametime)
+{
+	cl.h2_Effects[index].Chain.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
+
+	h2entity_state_t* es;
+	switch (cl.h2_Effects[index].Chain.state)
+	{
+	case 0://zooming in toward owner
+		es = FindState(cl.h2_Effects[index].Chain.owner);
+		if (cl.h2_Effects[index].Chain.sound_time <= cl.serverTimeFloat)
+		{
+			cl.h2_Effects[index].Chain.sound_time = cl.serverTimeFloat + 0.5;
+			S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabhome, 1, 1);
+		}
+		if (es)
+		{
+			vec3_t org;
+			VectorCopy(es->origin,org);
+			org[2] += cl.h2_Effects[index].Chain.height;
+			VectorSubtract(org, ent->state.origin, org);
+			if (fabs(VectorNormalize(org)) < 500 * frametime)
+			{
+				S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabgrab, 1, 1);
+				cl.h2_Effects[index].Chain.state = 1;
+				VectorCopy(es->origin, ent->state.origin);
+				ent->state.origin[2] += cl.h2_Effects[index].Chain.height;
+				XbowImpactPuff(ent->state.origin, cl.h2_Effects[index].Chain.material);
+			}
+			else
+			{
+				VectorScale(org, 500 * frametime, org);
+				VectorAdd(ent->state.origin, org, ent->state.origin);
+			}
+		}
+		break;
+	case 1://attached--snap to owner's pos
+		es = FindState(cl.h2_Effects[index].Chain.owner);
+		if (es)
+		{
+			VectorCopy(es->origin, ent->state.origin);
+			ent->state.origin[2] += cl.h2_Effects[index].Chain.height;
+		}
+		break;
+	case 2://unattaching, server needs to set this state
+		{
+		vec3_t org;
+		VectorCopy(ent->state.origin,org);
+		VectorSubtract(cl.h2_Effects[index].Chain.origin, org, org);
+		if (fabs(VectorNormalize(org)) > 350 * frametime)//closer than 30 is too close?
+		{
+			VectorScale(org, 350 * frametime, org);
+			VectorAdd(ent->state.origin, org, ent->state.origin);
+		}
+		else//done--flash & git outa here (change type to redflash)
+		{
+			S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabbyebye, 1, 1);
+			cl.h2_Effects[index].Flash.entity_index = cl.h2_Effects[index].Chain.ent1;
+			cl.h2_Effects[index].type = HWCE_RED_FLASH;
+			VectorCopy(ent->state.origin, cl.h2_Effects[index].Flash.origin);
+			cl.h2_Effects[index].Flash.reverse = 0;
+			ent->model = R_RegisterModel("models/redspt.spr");
+			ent->state.frame = 0;
+			ent->state.drawflags = H2DRF_TRANSLUCENT;
+		}
+		}
+		break;
+	}
+
+	CLH2_LinkEffectEntity(ent);
+
+	//damndamndamn--add stream stuff here!
+	vec3_t org, org2;
+	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
+	VectorCopy(ent->state.origin, org2);
+	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, cl.h2_Effects[index].Chain.tag, 0.1, 0, org, org2);
+}
+
+void CLHW_UpdateEffectTripMineStill(int index, float frametime)
+{
+	cl.h2_Effects[index].Chain.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
+
+	CLH2_LinkEffectEntity(ent);
+
+	//damndamndamn--add stream stuff here!
+	vec3_t org, org2;
+	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
+	VectorCopy(ent->state.origin, org2);
+	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
+}
+
+void CLHW_UpdateEffectTripMine(int index, float frametime)
+{
+	cl.h2_Effects[index].Chain.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
+
+	ent->state.origin[0] += frametime * cl.h2_Effects[index].Chain.velocity[0];
+	ent->state.origin[1] += frametime * cl.h2_Effects[index].Chain.velocity[1];
+	ent->state.origin[2] += frametime * cl.h2_Effects[index].Chain.velocity[2];
+
+	CLH2_LinkEffectEntity(ent);
+
+	//damndamndamn--add stream stuff here!
+	vec3_t org, org2;
+	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
+	VectorCopy(ent->state.origin, org2);
+	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
+}
+
 void CL_UpdateEffects(void)
 {
-	int			index;
-	float		frametime;
-	vec3_t		org,org2,old_origin;
-	effect_entity_t	*ent, *ent2;
-	int			i;
-	h2entity_state_t	*es;
+	float frametime = host_frametime;
+	if (!frametime)
+	{
+		return;
+	}
 
-	frametime = host_frametime;
-	if (!frametime) return;
-//	Con_Printf("Here at %f\n",cl.time);
-
-	for(index=0;index<MAX_EFFECTS_H2;index++)
+	for (int index = 0; index < MAX_EFFECTS_H2; index++)
 	{
 		if (!cl.h2_Effects[index].type) 
 			continue;
@@ -635,37 +808,7 @@ void CL_UpdateEffects(void)
 				CLH2_UpdateEffectFlash(index, frametime);
 				break;
 			case HWCE_RIDER_DEATH:
-				cl.h2_Effects[index].RD.time_amount += frametime;
-				if (cl.h2_Effects[index].RD.time_amount >= 1)
-				{
-					cl.h2_Effects[index].RD.stage++;
-					cl.h2_Effects[index].RD.time_amount -= 1;
-				}
-
-				VectorCopy(cl.h2_Effects[index].RD.origin,org);
-				org[0] += sin(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
-				org[1] += cos(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
-
-				if (cl.h2_Effects[index].RD.stage <= 6)
-				{
-					CLH2_RiderParticles(cl.h2_Effects[index].RD.stage+1,org);
-				}
-				else
-				{
-					// To set the rider's origin point for the particles
-					CLH2_RiderParticles(0,org);
-					if (cl.h2_Effects[index].RD.stage == 7) 
-					{
-						cl.cshifts[CSHIFT_BONUS].destcolor[0] = 255;
-						cl.cshifts[CSHIFT_BONUS].destcolor[1] = 255;
-						cl.cshifts[CSHIFT_BONUS].destcolor[2] = 255;
-						cl.cshifts[CSHIFT_BONUS].percent = 256;
-					}
-					else if (cl.h2_Effects[index].RD.stage > 13) 
-					{
-						CLH2_FreeEffect(index);
-					}
-				}
+				CLH2_UpdateEffectRiderDeath(index, frametime);
 				break;
 			case HWCE_TELEPORTERPUFFS:
 				CLH2_UpdateEffectTeleporterPuffs(index, frametime);
@@ -673,253 +816,26 @@ void CL_UpdateEffects(void)
 			case HWCE_TELEPORTERBODY:
 				CLH2_UpdateEffectTeleporterBody(index, frametime);
 				break;
-
 			case HWCE_HWDRILLA:
-				cl.h2_Effects[index].Missile.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-
-				if ((int)(cl.serverTimeFloat) != (int)(cl.serverTimeFloat - host_frametime))
-				{
-					S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_drillaspin, 1, 1);
-				}
-
-				ent->state.angles[0] += frametime * cl.h2_Effects[index].Missile.avelocity[0];
-				ent->state.angles[1] += frametime * cl.h2_Effects[index].Missile.avelocity[1];
-				ent->state.angles[2] += frametime * cl.h2_Effects[index].Missile.avelocity[2];
-
-				VectorCopy(ent->state.origin,old_origin);
-
-				ent->state.origin[0] += frametime * cl.h2_Effects[index].Missile.velocity[0];
-				ent->state.origin[1] += frametime * cl.h2_Effects[index].Missile.velocity[1];
-				ent->state.origin[2] += frametime * cl.h2_Effects[index].Missile.velocity[2];
-
-				CLH2_TrailParticles (old_origin, ent->state.origin, rt_setstaff);
-
-				CLH2_LinkEffectEntity(ent);
+				CLHW_UpdateEffectDrilla(index, frametime);
 				break;
 			case HWCE_HWXBOWSHOOT:
-				cl.h2_Effects[index].Xbow.time_amount += frametime;
-				for (i=0;i<cl.h2_Effects[index].Xbow.bolts;i++)
-				{
-					if (cl.h2_Effects[index].Xbow.ent[i] != -1)//only update valid effect ents
-					{
-						if (cl.h2_Effects[index].Xbow.activebolts & (1<<i))//bolt in air, simply update position
-						{
-							ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
-
-							ent->state.origin[0] += frametime * cl.h2_Effects[index].Xbow.vel[i][0];
-							ent->state.origin[1] += frametime * cl.h2_Effects[index].Xbow.vel[i][1];
-							ent->state.origin[2] += frametime * cl.h2_Effects[index].Xbow.vel[i][2];
-
-							CLH2_LinkEffectEntity(ent);
-						}
-						else if (cl.h2_Effects[index].Xbow.bolts == 5)//fiery bolts don't just go away
-						{
-							if (cl.h2_Effects[index].Xbow.state[i] == 0)//waiting to explode state
-							{
-								if (cl.h2_Effects[index].Xbow.gonetime[i] > cl.serverTimeFloat)//fiery bolts stick around for a while
-								{
-									ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
-									CLH2_LinkEffectEntity(ent);
-								}
-								else//when time's up on fiery guys, they explode
-								{
-									//set state to exploding
-									cl.h2_Effects[index].Xbow.state[i] = 1;
-
-									ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
-
-									//move bolt back a little to make explosion look better
-									VectorNormalize(cl.h2_Effects[index].Xbow.vel[i]);
-									VectorScale(cl.h2_Effects[index].Xbow.vel[i],-8,cl.h2_Effects[index].Xbow.vel[i]);
-									VectorAdd(ent->state.origin,cl.h2_Effects[index].Xbow.vel[i],ent->state.origin);
-
-									//turn bolt entity into an explosion
-									ent->model = R_RegisterModel("models/xbowexpl.spr");
-									ent->state.frame = 0;
-
-									//set frame change counter
-									cl.h2_Effects[index].Xbow.gonetime[i] = cl.serverTimeFloat + HX_FRAME_TIME * 2;
-
-									//play explosion sound
-									S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_explode, 1, 1);
-
-									CLH2_LinkEffectEntity(ent);
-								}
-							}
-							else if (cl.h2_Effects[index].Xbow.state[i] == 1)//fiery bolt exploding state
-							{
-								ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
-
-								//increment frame if it's time
-								while(cl.h2_Effects[index].Xbow.gonetime[i] <= cl.serverTimeFloat)
-								{
-									ent->state.frame++;
-									cl.h2_Effects[index].Xbow.gonetime[i] += HX_FRAME_TIME * 0.75;
-								}
-
-
-								if (ent->state.frame >= R_ModelNumFrames(ent->model))
-								{
-									cl.h2_Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
-								}
-								else
-									CLH2_LinkEffectEntity(ent);
-							}
-						}
-					}
-				}
+				CLHW_UpdateEffectXBowShot(index, frametime);
 				break;
 			case HWCE_HWSHEEPINATOR:
-				cl.h2_Effects[index].Xbow.time_amount += frametime;
-				for (i=0;i<cl.h2_Effects[index].Xbow.bolts;i++)
-				{
-					if (cl.h2_Effects[index].Xbow.ent[i] != -1)//only update valid effect ents
-					{
-						if (cl.h2_Effects[index].Xbow.activebolts & (1<<i))//bolt in air, simply update position
-						{
-							ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
-
-							ent->state.origin[0] += frametime * cl.h2_Effects[index].Xbow.vel[i][0];
-							ent->state.origin[1] += frametime * cl.h2_Effects[index].Xbow.vel[i][1];
-							ent->state.origin[2] += frametime * cl.h2_Effects[index].Xbow.vel[i][2];
-
-							CLH2_RunParticleEffect4(ent->state.origin,7,(rand()%15)+144,pt_h2explode2,(rand()%5)+1);
-
-							CLH2_LinkEffectEntity(ent);
-						}
-					}
-				}
+				CLHW_UpdateEffectSheepinator(index, frametime);
 				break;
 			case HWCE_DEATHBUBBLES:
-				cl.h2_Effects[index].Bubble.time_amount += frametime;
-				if (cl.h2_Effects[index].Bubble.time_amount > 0.1)//10 bubbles a sec
-				{
-					cl.h2_Effects[index].Bubble.time_amount = 0;
-					cl.h2_Effects[index].Bubble.count--;
-					es = FindState(cl.h2_Effects[index].Bubble.owner);
-					if (es)
-					{
-						VectorCopy(es->origin,org);
-						VectorAdd(org,cl.h2_Effects[index].Bubble.offset,org);
-
-						if (CM_PointContentsQ1(org, 0) != BSP29CONTENTS_WATER) 
-						{
-							//not in water anymore
-							CLH2_FreeEffect(index);
-							break;
-						}
-						else
-						{
-							CLTENT_SpawnDeathBubble(org);
-						}
-					}
-				}
-				if (cl.h2_Effects[index].Bubble.count <= 0)
-					CLH2_FreeEffect(index);
+				CLHW_UpdateEffectDeathBubbles(index, frametime);
 				break;
 			case HWCE_SCARABCHAIN:
-				cl.h2_Effects[index].Chain.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
-
-				switch (cl.h2_Effects[index].Chain.state)
-				{
-				case 0://zooming in toward owner
-					es = FindState(cl.h2_Effects[index].Chain.owner);
-					if (cl.h2_Effects[index].Chain.sound_time <= cl.serverTimeFloat)
-					{
-						cl.h2_Effects[index].Chain.sound_time = cl.serverTimeFloat + 0.5;
-						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabhome, 1, 1);
-					}
-					if (es)
-					{
-						VectorCopy(es->origin,org);
-						org[2]+=cl.h2_Effects[index].Chain.height;
-						VectorSubtract(org,ent->state.origin,org);
-						if (fabs(VectorNormalize(org))<500*frametime)
-						{
-							S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabgrab, 1, 1);
-							cl.h2_Effects[index].Chain.state = 1;
-							VectorCopy(es->origin, ent->state.origin);
-							ent->state.origin[2] += cl.h2_Effects[index].Chain.height;
-							XbowImpactPuff(ent->state.origin, cl.h2_Effects[index].Chain.material);
-						}
-						else
-						{
-							VectorScale(org,500*frametime,org);
-							VectorAdd(ent->state.origin,org,ent->state.origin);
-						}
-					}
-					break;
-				case 1://attached--snap to owner's pos
-					es = FindState(cl.h2_Effects[index].Chain.owner);
-					if (es)
-					{
-						VectorCopy(es->origin, ent->state.origin);
-						ent->state.origin[2] += cl.h2_Effects[index].Chain.height;
-					}
-					break;
-				case 2://unattaching, server needs to set this state
-					VectorCopy(ent->state.origin,org);
-					VectorSubtract(cl.h2_Effects[index].Chain.origin,org,org);
-					if (fabs(VectorNormalize(org))>350*frametime)//closer than 30 is too close?
-					{
-						VectorScale(org,350*frametime,org);
-						VectorAdd(ent->state.origin,org,ent->state.origin);
-					}
-					else//done--flash & git outa here (change type to redflash)
-					{
-						S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabbyebye, 1, 1);
-						cl.h2_Effects[index].Flash.entity_index = cl.h2_Effects[index].Chain.ent1;
-						cl.h2_Effects[index].type = HWCE_RED_FLASH;
-						VectorCopy(ent->state.origin,cl.h2_Effects[index].Flash.origin);
-						cl.h2_Effects[index].Flash.reverse = 0;
-						ent->model = R_RegisterModel("models/redspt.spr");
-						ent->state.frame = 0;
-						ent->state.drawflags = H2DRF_TRANSLUCENT;
-					}
-					break;
-				}
-
-				CLH2_LinkEffectEntity(ent);
-
-				//damndamndamn--add stream stuff here!
-				VectorCopy(cl.h2_Effects[index].Chain.origin, org);
-				VectorCopy(ent->state.origin, org2);
-				CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, cl.h2_Effects[index].Chain.tag, 0.1, 0, org, org2);
-
+				CLHW_UpdateEffectScarabChain(index, frametime);
 				break;
 			case HWCE_TRIPMINESTILL:
-				cl.h2_Effects[index].Chain.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
-
-//				if (cl.h2_Effects[index].Chain.ent1 < 0)//fixme: remove this!!!
-//					Con_DPrintf("OHSHITOHSHIT--bad chain ent\n");
-
-				CLH2_LinkEffectEntity(ent);
-//				Con_DPrintf("Chain Ent at: %d %d %d\n",(int)cl.h2_Effects[index].Chain.origin[0],(int)cl.h2_Effects[index].Chain.origin[1],(int)cl.h2_Effects[index].Chain.origin[2]);
-
-				//damndamndamn--add stream stuff here!
-				VectorCopy(cl.h2_Effects[index].Chain.origin, org);
-				VectorCopy(ent->state.origin, org2);
-				CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
-
+				CLHW_UpdateEffectTripMineStill(index, frametime);
 				break;
 			case HWCE_TRIPMINE:
-				cl.h2_Effects[index].Chain.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
-
-				ent->state.origin[0] += frametime * cl.h2_Effects[index].Chain.velocity[0];
-				ent->state.origin[1] += frametime * cl.h2_Effects[index].Chain.velocity[1];
-				ent->state.origin[2] += frametime * cl.h2_Effects[index].Chain.velocity[2];
-
-				CLH2_LinkEffectEntity(ent);
-
-				//damndamndamn--add stream stuff here!
-				VectorCopy(cl.h2_Effects[index].Chain.origin, org);
-				VectorCopy(ent->state.origin, org2);
-				CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
-
+				CLHW_UpdateEffectTripMine(index, frametime);
 				break;
 			case HWCE_BONESHARD:
 			case HWCE_BONESHRAPNEL:
@@ -933,63 +849,10 @@ void CL_UpdateEffects(void)
 				CLHW_UpdateEffectRavenPower(index, frametime);
 				break;
 			case HWCE_HWMISSILESTAR:
+				CLHW_UpdateEffectMissileStar(index, frametime);
+				break;
 			case HWCE_HWEIDOLONSTAR:
-				// update scale
-				if(cl.h2_Effects[index].Star.scaleDir)
-				{
-					cl.h2_Effects[index].Star.scale += 0.05;
-					if(cl.h2_Effects[index].Star.scale >= 1)
-					{
-						cl.h2_Effects[index].Star.scaleDir = 0;
-					}
-				}
-				else
-				{
-					cl.h2_Effects[index].Star.scale -= 0.05;
-					if(cl.h2_Effects[index].Star.scale <= 0.01)
-					{
-						cl.h2_Effects[index].Star.scaleDir = 1;
-					}
-				}
-				
-				cl.h2_Effects[index].Star.time_amount += frametime;
-				ent = &EffectEntities[cl.h2_Effects[index].Star.entity_index];
-
-				ent->state.angles[0] += frametime * cl.h2_Effects[index].Star.avelocity[0];
-				ent->state.angles[1] += frametime * cl.h2_Effects[index].Star.avelocity[1];
-				ent->state.angles[2] += frametime * cl.h2_Effects[index].Star.avelocity[2];
-
-				ent->state.origin[0] += frametime * cl.h2_Effects[index].Star.velocity[0];
-				ent->state.origin[1] += frametime * cl.h2_Effects[index].Star.velocity[1];
-				ent->state.origin[2] += frametime * cl.h2_Effects[index].Star.velocity[2];
-
-				CLH2_LinkEffectEntity(ent);
-				
-				if (cl.h2_Effects[index].Star.ent1 != -1)
-				{
-					ent2= &EffectEntities[cl.h2_Effects[index].Star.ent1];
-					VectorCopy(ent->state.origin, ent2->state.origin);
-					ent2->state.scale = cl.h2_Effects[index].Star.scale;
-					ent2->state.angles[1] += frametime * 300;
-					ent2->state.angles[2] += frametime * 400;
-					CLH2_LinkEffectEntity(ent2);
-				}
-				if(cl.h2_Effects[index].type == HWCE_HWMISSILESTAR)
-				{
-					if (cl.h2_Effects[index].Star.ent2 != -1)
-					{
-						ent2 = &EffectEntities[cl.h2_Effects[index].Star.ent2];
-						VectorCopy(ent->state.origin, ent2->state.origin);
-						ent2->state.scale = cl.h2_Effects[index].Star.scale;
-						ent2->state.angles[1] += frametime * -300;
-						ent2->state.angles[2] += frametime * -400;
-						CLH2_LinkEffectEntity(ent2);
-					}
-				}					
-				if(rand() % 10 < 3)		
-				{
-					CLH2_RunParticleEffect4 (ent->state.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
-				}
+				CLHW_UpdateEffectEidolonStar(index, frametime);
 				break;
 		}
 	}

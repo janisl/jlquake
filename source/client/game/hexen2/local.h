@@ -52,7 +52,6 @@ extern sfxHandle_t clh2_fxsfx_scarabgrab;
 extern sfxHandle_t clh2_fxsfx_scarabhome;
 extern sfxHandle_t clh2_fxsfx_scarabbyebye;
 extern sfxHandle_t clh2_fxsfx_ravengo;
-extern sfxHandle_t clh2_fxsfx_drillaspin;
 extern sfxHandle_t clh2_fxsfx_drillameat;
 
 extern sfxHandle_t clh2_fxsfx_arr2flsh;
@@ -90,10 +89,14 @@ void CLH2_UpdateEffectFlash(int index, float frametime);
 void CLH2_UpdateEffectGravityWell(int index, float frametime);
 void CLH2_UpdateEffectTeleporterPuffs(int index, float frametime);
 void CLH2_UpdateEffectTeleporterBody(int index, float frametime);
-effect_entity_t* CLH2_UpdateEffectMissileCommon(int index, float frametime);
 void CLH2_UpdateEffectMissile(int index, float frametime);
 void CLHW_UpdateEffectBoneBall(int index, float frametime);
 void CLHW_UpdateEffectRavenPower(int index, float frametime);
+void CLHW_UpdateEffectDrilla(int index, float frametime);
+void CLHW_UpdateEffectXBowShot(int index, float frametime);
+void CLHW_UpdateEffectSheepinator(int index, float frametime);
+void CLHW_UpdateEffectEidolonStar(int index, float frametime);
+void CLHW_UpdateEffectMissileStar(int index, float frametime);
 
 void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight);
 void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);
