@@ -6,6 +6,7 @@ set(CLIENT_FILES
 	game/hexen2/chunk.cpp
 	game/hexen2/effects.cpp
 	game/hexen2/entities.cpp
+	game/hexen2/explosion.cpp
 	game/hexen2/light_effects.cpp
 	game/hexen2/particle_effects.cpp
 	game/hexen2/stream.cpp

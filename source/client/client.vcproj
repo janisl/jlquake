@@ -1668,6 +1668,26 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\game\hexen2\explosion.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\hexen2\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\game\hexen2\"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\game\hexen2\light_effects.cpp"
 					>
 					<FileConfiguration

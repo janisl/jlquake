@@ -609,6 +609,14 @@ void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
 	}
 }
 
+static void CLH2_CreateStreamChain(int index, int tag, effect_entity_t* ent)
+{
+	vec3_t org, org2;
+	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
+	VectorCopy(ent->state.origin, org2);
+	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, tag, 0.1, 0, org, org2);
+}
+
 void CLHW_UpdateEffectScarabChain(int index, float frametime)
 {
 	cl.h2_Effects[index].Chain.time_amount += frametime;
@@ -680,11 +688,7 @@ void CLHW_UpdateEffectScarabChain(int index, float frametime)
 
 	CLH2_LinkEffectEntity(ent);
 
-	//damndamndamn--add stream stuff here!
-	vec3_t org, org2;
-	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
-	VectorCopy(ent->state.origin, org2);
-	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, cl.h2_Effects[index].Chain.tag, 0.1, 0, org, org2);
+	CLH2_CreateStreamChain(index, cl.h2_Effects[index].Chain.tag, ent);
 }
 
 void CLHW_UpdateEffectTripMineStill(int index, float frametime)
@@ -694,11 +698,7 @@ void CLHW_UpdateEffectTripMineStill(int index, float frametime)
 
 	CLH2_LinkEffectEntity(ent);
 
-	//damndamndamn--add stream stuff here!
-	vec3_t org, org2;
-	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
-	VectorCopy(ent->state.origin, org2);
-	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
+	CLH2_CreateStreamChain(index, 1, ent);
 }
 
 void CLHW_UpdateEffectTripMine(int index, float frametime)
@@ -712,11 +712,7 @@ void CLHW_UpdateEffectTripMine(int index, float frametime)
 
 	CLH2_LinkEffectEntity(ent);
 
-	//damndamndamn--add stream stuff here!
-	vec3_t org, org2;
-	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
-	VectorCopy(ent->state.origin, org2);
-	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, 1, 0.1, 0, org, org2);
+	CLH2_CreateStreamChain(index, 1, ent);
 }
 
 void CL_UpdateEffects()

@@ -6,40 +6,10 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	MAX_EXPLOSIONS			128
-
 #define FRANDOM() (rand()*(1.0/RAND_MAX))
 
 // TYPES -------------------------------------------------------------------
 
-typedef enum
-{
-	EXFLAG_ROTATE = 1,
-	EXFLAG_COLLIDE = 2,
-	EXFLAG_STILL_FRAME = 4
-} exflags_t;
-
-
-struct explosion_t
-{
-	vec3_t		origin;
-	vec3_t		oldorg;// holds position from last frame
-	float		startTime;
-	float		endTime;
-	vec3_t		velocity;
-	vec3_t		accel;
-	vec3_t		angles;
-	vec3_t		avel;	// angular velocity
-	int			flags;
-	int			abslight;
-	int	        exflags;
-	int			skin;
-	int			scale;
-	qhandle_t	model;
-	void (*frameFunc)(explosion_t *ex);
-	void (*removeFunc)(explosion_t *ex);
-	float		data; //for easy transition of script code that relied on counters of some sort
-};
 // PUBLIC FUNCTION DEFINITIONS ---------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
@@ -47,35 +17,33 @@ struct explosion_t
 static void ParseStream(int type);
 static h2stream_t *NewStream(int ent, int tag, int *isNew);
 
-void MultiGrenadeThink (explosion_t *ex);
-void MultiGrenadePieceThink (explosion_t *ex);
-void MultiGrenadePiece2Think (explosion_t *ex);
-void ChunkThink(explosion_t *ex);
-void BubbleThink(explosion_t *ex);
-void MissileFlashThink(explosion_t *ex);
-void TeleportFlashThink(explosion_t *ex);
-void CheckSpaceThink(explosion_t *ex);
-void SwordFrameFunc(explosion_t *ex);
-void zapFrameFunc(explosion_t *ex);
-void fireBallUpdate(explosion_t *ex);
-void sunBallUpdate(explosion_t *ex);
-void sunPowerUpdate(explosion_t *ex);
-void purify1Update(explosion_t *ex);
-void telEffectUpdate (explosion_t *ex);
+void MultiGrenadeThink (h2explosion_t *ex);
+void MultiGrenadePieceThink (h2explosion_t *ex);
+void MultiGrenadePiece2Think (h2explosion_t *ex);
+void ChunkThink(h2explosion_t *ex);
+void BubbleThink(h2explosion_t *ex);
+void MissileFlashThink(h2explosion_t *ex);
+void TeleportFlashThink(h2explosion_t *ex);
+void CheckSpaceThink(h2explosion_t *ex);
+void SwordFrameFunc(h2explosion_t *ex);
+void zapFrameFunc(h2explosion_t *ex);
+void fireBallUpdate(h2explosion_t *ex);
+void sunBallUpdate(h2explosion_t *ex);
+void sunPowerUpdate(h2explosion_t *ex);
+void purify1Update(h2explosion_t *ex);
+void telEffectUpdate (h2explosion_t *ex);
 void CL_UpdateTargetBall(void);
-void updateBloodRain(explosion_t *ex);
-void updatePurify2(explosion_t *ex);
-void updateSwordShot(explosion_t *ex);
-void updateIceShot(explosion_t *ex);
-void updateMeteor(explosion_t *ex);
-void SmokeRingFrameFunc(explosion_t *ex);
-void updateAcidBlob(explosion_t *ex);
-void updateAcidBall(explosion_t *ex);
-void MeteorCrushSpawnThink(explosion_t *ex);
+void updateBloodRain(h2explosion_t *ex);
+void updatePurify2(h2explosion_t *ex);
+void updateSwordShot(h2explosion_t *ex);
+void updateIceShot(h2explosion_t *ex);
+void updateMeteor(h2explosion_t *ex);
+void SmokeRingFrameFunc(h2explosion_t *ex);
+void updateAcidBlob(h2explosion_t *ex);
+void updateAcidBall(h2explosion_t *ex);
+void MeteorCrushSpawnThink(h2explosion_t *ex);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-explosion_t		cl_explosions[MAX_EXPLOSIONS];
 
 static int		MultiGrenadeCurrentChannel;
 
@@ -186,7 +154,7 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	Com_Memset(cl_explosions, 0, sizeof(cl_explosions));
+	Com_Memset(clh2_explosions, 0, sizeof(clh2_explosions));
 	CLH2_ClearStreams();
 }
 
@@ -196,7 +164,7 @@ CL_AllocExplosion
 **** CAREFUL!!! This may overwrite an explosion!!!!!
 =================
 */
-explosion_t *CL_AllocExplosion (void)
+h2explosion_t *CL_AllocExplosion (void)
 {
 	int		i,freeSlot;
 	float	time;
@@ -205,9 +173,9 @@ explosion_t *CL_AllocExplosion (void)
 	index = 0;
 	freeSlot = false;
 
-	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
+	for (i=0 ; i<H2MAX_EXPLOSIONS ; i++)
 	{
-		if (!cl_explosions[i].model)
+		if (!clh2_explosions[i].model)
 		{
 			index = i;
 			freeSlot = true;
@@ -221,20 +189,20 @@ explosion_t *CL_AllocExplosion (void)
 
 	if (!freeSlot)
 	{
-		for (i=0 ; i<MAX_EXPLOSIONS ; i++)
+		for (i=0 ; i<H2MAX_EXPLOSIONS ; i++)
 		{
-			if (cl_explosions[i].startTime < time)
+			if (clh2_explosions[i].startTime < time)
 			{
-				time = cl_explosions[i].startTime;
+				time = clh2_explosions[i].startTime;
 				index = i;
 			}
 		}
 	}
 
 	//zero out velocity and acceleration, funcs
-	Com_Memset(&cl_explosions[index], 0, sizeof(explosion_t));
+	Com_Memset(&clh2_explosions[index], 0, sizeof(h2explosion_t));
 
-	return &cl_explosions[index];
+	return &clh2_explosions[index];
 }
 
 /*
@@ -374,7 +342,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 
 void CLTENT_SpawnDeathBubble(vec3_t pos)
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 
 	//generic spinny impact image
 	ex=CL_AllocExplosion();
@@ -392,7 +360,7 @@ void CLTENT_SpawnDeathBubble(vec3_t pos)
 
 void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrowType)//arrowType is total # of arrows in effect
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 	float cnt;
 	int i;
 
@@ -669,7 +637,7 @@ void CL_ParseTEnt (void)
 	int		type;
 	vec3_t	pos, vel, movedir, offset;
 	int		rnd;
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 	int		cnt, cnt2, i, chType;
 	int damage;
 	float	volume, scale;
@@ -2696,7 +2664,7 @@ void CL_ParseTEnt (void)
 				float travelAng, travelPitch;
 				float trailLen;
 				vec3_t				vel;
-				explosion_t			*ex2;
+				h2explosion_t			*ex2;
 
 				pos[0] = net_message.ReadCoord();
 				pos[1] = net_message.ReadCoord();
@@ -3146,9 +3114,9 @@ void CL_UpdateExplosions (void)
 {
 	int			i;
 	int			f;
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 
-	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
+	for (i=0, ex=clh2_explosions ; i< H2MAX_EXPLOSIONS ; i++, ex++)
 	{
 		if (!ex->model)
 			continue;
@@ -3470,7 +3438,7 @@ void CL_UpdateTEnts (void)
 	CL_UpdateTargetBall();
 }
 
-void MultiGrenadeExplodeSound (explosion_t *ex)//plug up all of -1's channels w/ grenade sounds
+void MultiGrenadeExplodeSound (h2explosion_t *ex)//plug up all of -1's channels w/ grenade sounds
 {
 	if (!(rand()&7))
 	{
@@ -3487,9 +3455,9 @@ void MultiGrenadeExplodeSound (explosion_t *ex)//plug up all of -1's channels w/
 }
 
 
-void MultiGrenadeThink (explosion_t *ex)
+void MultiGrenadeThink (h2explosion_t *ex)
 {//FIXME: too messy
-	explosion_t *missile;
+	h2explosion_t *missile;
 
 	int attack_counter,number_explosions;
 
@@ -3561,10 +3529,10 @@ void MultiGrenadeThink (explosion_t *ex)
     }
 }
 
-void MultiGrenadePieceThink (explosion_t *ex)
+void MultiGrenadePieceThink (h2explosion_t *ex)
 {//FIXME: too messy
 
-	explosion_t *missile;
+	h2explosion_t *missile;
 
 	int attack_counter,number_explosions;
 	float ftemp;
@@ -3627,10 +3595,10 @@ void MultiGrenadePieceThink (explosion_t *ex)
     }
 }
 
-void MultiGrenadePiece2Think (explosion_t *ex)
+void MultiGrenadePiece2Think (h2explosion_t *ex)
 {//FIXME: too messy
 
-	explosion_t *missile;
+	h2explosion_t *missile;
 
 	int attack_counter,number_explosions;
 	float ftemp;
@@ -3685,7 +3653,7 @@ void MultiGrenadePiece2Think (explosion_t *ex)
     }
 }
 
-void ChunkThink(explosion_t *ex)
+void ChunkThink(h2explosion_t *ex)
 {
 	vec3_t oldorg;
 	int			moving = 1;
@@ -3821,7 +3789,7 @@ void ChunkThink(explosion_t *ex)
 
 }
 
-void BubbleThink(explosion_t *ex)
+void BubbleThink(h2explosion_t *ex)
 {
 	if (CM_PointContentsQ1(ex->origin, 0) == BSP29CONTENTS_WATER) 
 	{
@@ -3858,7 +3826,7 @@ void BubbleThink(explosion_t *ex)
 
 }
 
-void MissileFlashThink(explosion_t *ex)
+void MissileFlashThink(h2explosion_t *ex)
 {
 	ex->abslight-=(0.05*256);
 	ex->scale+=5;
@@ -3867,7 +3835,7 @@ void MissileFlashThink(explosion_t *ex)
 }
 
 
-void TeleportFlashThink(explosion_t *ex)
+void TeleportFlashThink(h2explosion_t *ex)
 {
 	ex->scale -= 15;
 	if(ex->scale < 10)
@@ -3875,7 +3843,7 @@ void TeleportFlashThink(explosion_t *ex)
 }
 
 // remove tent if not in open air
-void CheckSpaceThink(explosion_t *ex)
+void CheckSpaceThink(h2explosion_t *ex)
 {
 	if (CM_PointContentsQ1(ex->origin, 0) != BSP29CONTENTS_EMPTY) 
 	{
@@ -3887,7 +3855,7 @@ void CheckSpaceThink(explosion_t *ex)
 
 void CreateRavenExplosions(vec3_t pos)
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
@@ -3915,7 +3883,7 @@ void CreateRavenExplosions(vec3_t pos)
 
 void CreateRavenDeath(vec3_t pos)
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
@@ -3945,7 +3913,7 @@ void CreateRavenDeath(vec3_t pos)
 
 void CreateExplosionWithSound(vec3_t pos)
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
@@ -3956,7 +3924,7 @@ void CreateExplosionWithSound(vec3_t pos)
 	S_StartSound(pos, CLH2_TempSoundChannel(), 1, cl_sfx_explode, 1, 1);
 }
 
-void SwordFrameFunc(explosion_t *ex)
+void SwordFrameFunc(h2explosion_t *ex)
 {
 	ex->scale = (ex->endTime - cl.serverTimeFloat)*150 + 1;
 	if(((int)(cl.serverTimeFloat * 20.0))%2)
@@ -3970,7 +3938,7 @@ void SwordFrameFunc(explosion_t *ex)
 
 }
 
-void zapFrameFunc(explosion_t *ex)
+void zapFrameFunc(h2explosion_t *ex)
 {
 	ex->scale = (ex->endTime - cl.serverTimeFloat)*(150/.3) + 1;
 	//ex->abslight = (224/.3) * (ex->endTime - cl.time) + 1;
@@ -3985,31 +3953,31 @@ void zapFrameFunc(explosion_t *ex)
 
 }
 
-void fireBallUpdate(explosion_t *ex)
+void fireBallUpdate(h2explosion_t *ex)
 {
 	ex->scale = (int)(((cl.serverTimeFloat - ex->startTime) / 1.0) * 250)+1;
 }
 
-void sunBallUpdate(explosion_t *ex)
+void sunBallUpdate(h2explosion_t *ex)
 {
 	ex->scale = 121 - (int)(((cl.serverTimeFloat - ex->startTime) / .8) * 120);
 }
 
-void sunPowerUpdate(explosion_t *ex)
+void sunPowerUpdate(h2explosion_t *ex)
 {
 
 }
 
-void purify1Update(explosion_t *ex)
+void purify1Update(h2explosion_t *ex)
 {
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_purify);
 	//CLH2_TrailParticles (ex->oldorg, ex->origin, rt_setstaff);
 }
 
-void MeteorBlastThink(explosion_t *ex)
+void MeteorBlastThink(h2explosion_t *ex)
 {
 	int i, maxI;
-	explosion_t *ex2;
+	h2explosion_t *ex2;
 	vec3_t		tempVect, oldPos;
 	int			hitWall = 0;
 
@@ -4085,10 +4053,10 @@ void MeteorBlastThink(explosion_t *ex)
 	}
 }
 
-void MeteorCrushSpawnThink(explosion_t *ex)
+void MeteorCrushSpawnThink(h2explosion_t *ex)
 {
 	float chance;
-	explosion_t *ex2;
+	h2explosion_t *ex2;
 
 	if(host_frametime <= 0.05)
 	{
@@ -4138,7 +4106,7 @@ void MeteorCrushSpawnThink(explosion_t *ex)
 	}
 }
 
-void updateBloodRain(explosion_t *ex)
+void updateBloodRain(h2explosion_t *ex)
 {
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_blood);
 
@@ -4149,9 +4117,9 @@ void updateBloodRain(explosion_t *ex)
 	}
 }
 
-void updatePurify2(explosion_t *ex)
+void updatePurify2(h2explosion_t *ex)
 {
-	explosion_t	*ex2;
+	h2explosion_t	*ex2;
 	int numSprites;
 
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_purify);
@@ -4188,7 +4156,7 @@ void updatePurify2(explosion_t *ex)
 	}
 }
 
-void updateSwordShot(explosion_t *ex)
+void updateSwordShot(h2explosion_t *ex)
 {
 	int testVal;
 
@@ -4212,19 +4180,19 @@ void updateSwordShot(explosion_t *ex)
 
 }
 
-void updateIceShot(explosion_t *ex)
+void updateIceShot(h2explosion_t *ex)
 {
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_ice);
 }
 
-void updateMeteor(explosion_t *ex)
+void updateMeteor(h2explosion_t *ex)
 {
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_smoke);
 }
 
-void updateAcidBlob(explosion_t *ex)
+void updateAcidBlob(h2explosion_t *ex)
 {
-	explosion_t	*ex2;
+	h2explosion_t	*ex2;
 	int testVal, testVal2;
 
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_acidball);
@@ -4257,7 +4225,7 @@ void updateAcidBlob(explosion_t *ex)
 	}
 }
 
-void updateAcidBall(explosion_t *ex)
+void updateAcidBall(h2explosion_t *ex)
 {
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_acidball);
 }
@@ -4270,7 +4238,7 @@ void updateAcidBall(explosion_t *ex)
 
 void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 	float		smokeCount;
 
 	if(host_frametime <= 0.05)
@@ -4319,7 +4287,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 
 void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 {
-	explosion_t	*ex;
+	h2explosion_t	*ex;
 	int testVal, testVal2;
 
 	testVal = (int)(cl.serverTimeFloat * 10.0);
@@ -4354,7 +4322,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 
 void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 {
-	explosion_t *ex;
+	h2explosion_t *ex;
 
 	if((rand()%100)/100.0 < 5.0 * host_frametime)
 	{
@@ -4399,9 +4367,9 @@ void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 	}
 }
 
-void PowerFlameBurnRemove(explosion_t *ex)
+void PowerFlameBurnRemove(h2explosion_t *ex)
 {
-	explosion_t *ex2;
+	h2explosion_t *ex2;
 
 	ex2 = CL_AllocExplosion();
 	VectorCopy(ex->origin, ex2->origin);
@@ -4431,7 +4399,7 @@ void PowerFlameBurnRemove(explosion_t *ex)
 
 void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 {
-	explosion_t *ex, *ex2;
+	h2explosion_t *ex, *ex2;
 	vec3_t		srcVec;
 
 	if((rand()%100)/100.0 < host_frametime * 10)
@@ -4532,7 +4500,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 	// toss little ice chunks
 	if(rand()%100 < host_frametime * 100.0 * 3)
 	{
-		explosion_t *ex;
+		h2explosion_t *ex;
 
 		ex = CL_AllocExplosion();
 		VectorCopy(ent->origin,ex->origin);
@@ -4570,7 +4538,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 	}
 }
 
-void telPuffMove (explosion_t *ex)
+void telPuffMove (h2explosion_t *ex)
 {
 	vec3_t tvec,tvec2;
 	VectorSubtract(ex->angles, ex->origin, tvec);
@@ -4598,9 +4566,9 @@ void telPuffMove (explosion_t *ex)
 //	ex->accel[2] += FRANDOM()*3.0;
 }
 
-void telEffectUpdate (explosion_t *ex)
+void telEffectUpdate (h2explosion_t *ex)
 {
-	explosion_t *ex2;
+	h2explosion_t *ex2;
 	float angle;
 	int testVal, testVal2;
 	vec3_t tvec;
@@ -4655,8 +4623,8 @@ void telEffectUpdate (explosion_t *ex)
 void CL_UpdateTargetBall(void)
 {
 	int i;
-	explosion_t *ex1 = NULL;
-	explosion_t *ex2 = NULL;
+	h2explosion_t *ex1 = NULL;
+	h2explosion_t *ex2 = NULL;
 	qhandle_t	iceMod;
 	vec3_t		newOrg;
 	float		newScale;
@@ -4670,19 +4638,19 @@ void CL_UpdateTargetBall(void)
 
 	iceMod = R_RegisterModel("models/iceshot2.mdl");
 
-	for(i = 0; i < MAX_EXPLOSIONS; i++)
+	for(i = 0; i < H2MAX_EXPLOSIONS; i++)
 	{
-		if(cl_explosions[i].endTime > cl.serverTimeFloat)
+		if(clh2_explosions[i].endTime > cl.serverTimeFloat)
 		{	// make certain it's an active one
-			if(cl_explosions[i].model == iceMod)
+			if(clh2_explosions[i].model == iceMod)
 			{
-				if(cl_explosions[i].flags & H2DRF_TRANSLUCENT)
+				if(clh2_explosions[i].flags & H2DRF_TRANSLUCENT)
 				{
-					ex1 = &cl_explosions[i];
+					ex1 = &clh2_explosions[i];
 				}
 				else
 				{
-					ex2 = &cl_explosions[i];
+					ex2 = &clh2_explosions[i];
 				}
 			}
 		}
@@ -4754,7 +4722,7 @@ void CL_UpdateTargetBall(void)
 	CLHW_TargetBallEffectParticles (ex1->origin, v_targDist);
 }
 
-void SmokeRingFrameFunc(explosion_t *ex)
+void SmokeRingFrameFunc(h2explosion_t *ex)
 {
 	if(cl.serverTimeFloat - ex->startTime < .3)
 	{
