@@ -154,55 +154,8 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	Com_Memset(clh2_explosions, 0, sizeof(clh2_explosions));
+	CLH2_ClearExplosions();
 	CLH2_ClearStreams();
-}
-
-/*
-=================
-CL_AllocExplosion
-**** CAREFUL!!! This may overwrite an explosion!!!!!
-=================
-*/
-h2explosion_t *CL_AllocExplosion (void)
-{
-	int		i,freeSlot;
-	float	time;
-	int		index;
-	
-	index = 0;
-	freeSlot = false;
-
-	for (i=0 ; i<H2MAX_EXPLOSIONS ; i++)
-	{
-		if (!clh2_explosions[i].model)
-		{
-			index = i;
-			freeSlot = true;
-			break;
-		}
-	}
-
-
-// find the oldest explosion
-	time = cl.serverTimeFloat;
-
-	if (!freeSlot)
-	{
-		for (i=0 ; i<H2MAX_EXPLOSIONS ; i++)
-		{
-			if (clh2_explosions[i].startTime < time)
-			{
-				time = clh2_explosions[i].startTime;
-				index = i;
-			}
-		}
-	}
-
-	//zero out velocity and acceleration, funcs
-	Com_Memset(&clh2_explosions[index], 0, sizeof(h2explosion_t));
-
-	return &clh2_explosions[index];
 }
 
 /*
@@ -345,7 +298,7 @@ void CLTENT_SpawnDeathBubble(vec3_t pos)
 	h2explosion_t	*ex;
 
 	//generic spinny impact image
-	ex=CL_AllocExplosion();
+	ex=CLH2_AllocExplosion();
 	VectorCopy(pos,ex->origin);
 	VectorSet(ex->velocity,0,0,17);
 	ex->data=cl.serverTimeFloat;
@@ -365,7 +318,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 	int i;
 
 	//generic spinny impact image
-	ex=CL_AllocExplosion();
+	ex=CLH2_AllocExplosion();
 	ex->origin[0]=pos[0]-vel[0];
 	ex->origin[1]=pos[1]-vel[1];
 	ex->origin[2]=pos[2]-vel[2];
@@ -383,7 +336,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 	//white smoke if invulnerable impact
 	if (!damage)
 	{
-		ex=CL_AllocExplosion();
+		ex=CLH2_AllocExplosion();
 		ex->origin[0]=pos[0]-vel[0]*2;
 		ex->origin[1]=pos[1]-vel[1]*2;
 		ex->origin[2]=pos[2]-vel[2]*2;
@@ -408,7 +361,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 				{
 					float final;
 
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					ex->frameFunc = ChunkThink;
 
 					VectorSubtract(pos,vel,ex->origin);
@@ -448,7 +401,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 			}
 			else if (rand()&1)//whole go
 			{
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					ex->frameFunc = ChunkThink;
 
 					VectorSubtract(pos,vel,ex->origin);
@@ -704,7 +657,7 @@ void CL_ParseTEnt (void)
 			pos[0] = net_message.ReadCoord ();
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(pos,ex->origin);
 
 			ex->model = R_RegisterModel("models/gen_expl.spr");
@@ -799,7 +752,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			CLH2_ParticleExplosion(pos);
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(pos,ex->origin);
 			ex->frameFunc = MultiGrenadeThink;
 
@@ -860,7 +813,7 @@ void CL_ParseTEnt (void)
 
 			for(i = 0; i < cnt; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				ex->frameFunc = ChunkThink;
 
 				if(type == TE_CHUNK)
@@ -936,7 +889,7 @@ void CL_ParseTEnt (void)
 			}
 
 			//generic spinny impact image
-			ex=CL_AllocExplosion();
+			ex=CLH2_AllocExplosion();
 			ex->origin[0]=pos[0]-vel[0];
 			ex->origin[1]=pos[1]-vel[1];
 			ex->origin[2]=pos[2]-vel[2];
@@ -953,7 +906,7 @@ void CL_ParseTEnt (void)
 			//white smoke if invulnerable impact
 			if (!damage)
 			{
-				ex=CL_AllocExplosion();
+				ex=CLH2_AllocExplosion();
 				ex->origin[0]=pos[0]-vel[0]*2;
 				ex->origin[1]=pos[1]-vel[1]*2;
 				ex->origin[2]=pos[2]-vel[2]*2;
@@ -980,7 +933,7 @@ void CL_ParseTEnt (void)
 			{
 				float final;
 
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos,ex->origin);
 				ex->frameFunc = ChunkThink;
 
@@ -1015,7 +968,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < .07) ? 0 : 8;	// based on framerate
 			for( ; i < 11; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += (rand()%10) - 5;
 				ex->origin[1] += (rand()%10) - 5;
@@ -1070,7 +1023,7 @@ void CL_ParseTEnt (void)
 			CLH2_RunParticleEffect4 (pos, 50, 368 + rand() % 16, pt_h2grav, 10);
 
 			// particle4 (50, rand(368-384), grav, 10);
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			VectorMA(ex->origin, -6, movedir, ex->origin);
 			ex->data=250;
@@ -1082,7 +1035,7 @@ void CL_ParseTEnt (void)
 				offset[0] = rand() % 40 - 20;
 				offset[1] = rand() % 40 - 20;
 				offset[2] = rand() % 40 - 20;
-				ex = CL_AllocExplosion ();
+				ex = CLH2_AllocExplosion ();
 				VectorAdd(pos, offset, ex->origin); 
 				VectorMA(ex->origin, -8, movedir, ex->origin);
 				VectorCopy(offset, ex->velocity);
@@ -1107,7 +1060,7 @@ void CL_ParseTEnt (void)
 				offset[2] = rand() % 400 + 300;
 				if(rand() % 2)
 					offset[2] = -offset[2];
-				ex = CL_AllocExplosion ();
+				ex = CLH2_AllocExplosion ();
 				VectorMA(pos, 1/700, offset, ex->origin); 
 				VectorCopy(offset, ex->velocity);
 				ex->data=250;
@@ -1134,7 +1087,7 @@ void CL_ParseTEnt (void)
 			pos[2] = net_message.ReadCoord ();
 
 			// white smoke
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.serverTimeFloat;
@@ -1158,7 +1111,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[1] = 8;
 			ex->velocity[2] = -10;
@@ -1166,14 +1119,14 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[2] = -10;
 			ex->model = R_RegisterModel("models/redsmk1.spr");
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[1] = -8;
 			ex->velocity[2] = -10;
@@ -1188,14 +1141,14 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[2] = 8;
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->origin[2] -= 5;
 			ex->velocity[2] = 8;
@@ -1203,7 +1156,7 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.serverTimeFloat;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->origin[2] -= 10;
 			ex->velocity[2] = 8;
@@ -1226,7 +1179,7 @@ void CL_ParseTEnt (void)
 				i = (host_frametime < .07) ? 0 : 5;	// based on framerate
 				for( ; i < 9; i++)
 				{
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(pos,ex->origin);
 					ex->frameFunc = ChunkThink;
 
@@ -1276,7 +1229,7 @@ void CL_ParseTEnt (void)
 				CLH2_RunParticleEffect2 (pos, dmin, dmax, 145, pt_h2explode, 14);
 			}
 			// make the actual explosion
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/icehit.spr");
 			ex->startTime = cl.serverTimeFloat;
@@ -1361,7 +1314,7 @@ void CL_ParseTEnt (void)
 			vel[1] = net_message.ReadCoord ();
 			vel[2] = rand() % 360;
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			VectorCopy(vel, ex->angles);
 			ex->frameFunc = MissileFlashThink;
@@ -1523,7 +1476,7 @@ void CL_ParseTEnt (void)
 			cnt = net_message.ReadShort();  //skin#
 			S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_teleport[rand() % 5], 1, 1);
 
-			ex = CL_AllocExplosion ();
+			ex = CLH2_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->frameFunc = TeleportFlashThink;	
 			ex->model = R_RegisterModel("models/teleport.mdl");
@@ -1538,7 +1491,7 @@ void CL_ParseTEnt (void)
 			{
 				cosval = 10 * cos(dir *M_PI*2 / 360);
 				sinval = 10 * sin(dir *M_PI*2 / 360);
-				ex = CL_AllocExplosion ();
+				ex = CLH2_AllocExplosion ();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/telesmk2.spr");
 				ex->startTime = cl.serverTimeFloat;
@@ -1547,7 +1500,7 @@ void CL_ParseTEnt (void)
 				ex->velocity[1] = sinval;
 				ex->flags = H2DRF_TRANSLUCENT;
 
-				ex = CL_AllocExplosion ();
+				ex = CLH2_AllocExplosion ();
 				VectorCopy(pos, ex->origin);
 				ex->origin[2] += 64;
 				ex->model = R_RegisterModel("models/telesmk2.spr");
@@ -1613,7 +1566,7 @@ void CL_ParseTEnt (void)
 						stream->dest[2] += 64 + (rand()%48);
 					}
 				}
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/vorpshok.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -1634,7 +1587,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord();
 			pos[2] = net_message.ReadCoord();
 
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/spark.spr");
 			ex->startTime = cl.serverTimeFloat;
@@ -1656,7 +1609,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < .07) ? 0 : 3;	// based on framerate
 			for( ; i < 5; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += rand()%6 - 3;
 				ex->origin[1] += rand()%6 - 3;
@@ -1703,7 +1656,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < .07) ? 0 : 14;	// based on framerate
 			for(; i < 20; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += rand()%6 - 3;
 				ex->origin[1] += rand()%6 - 3;
@@ -1742,7 +1695,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord();
 			pos[2] = net_message.ReadCoord();
 
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/blast.mdl");
 			ex->flags |= H2MLS_ABSLIGHT|H2SCALE_TYPE_UNIFORM|H2SCALE_ORIGIN_CENTER;
@@ -1780,7 +1733,7 @@ void CL_ParseTEnt (void)
 
 				for(i = 0; i < 2; i++)
 				{
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(pos, ex->origin);
 					if(i)
 					{
@@ -1858,7 +1811,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord();
 			pos[2] = net_message.ReadCoord();
 
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/xplod29.spr");
 			ex->startTime = cl.serverTimeFloat;
@@ -1871,7 +1824,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < .07) ? 0 : 8;	// based on framerate
 			for(i = 0; i < 12; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += (rand()%20) - 10;
 				ex->origin[1] += (rand()%20) - 10;
@@ -1930,7 +1883,7 @@ void CL_ParseTEnt (void)
 				i = (host_frametime < 0.07) ? 0 : 8;
 				for( ; i < 12; i++)
 				{
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(pos, ex->origin);
 					ex->origin[0] += (rand()%40)-20;
 					ex->origin[1] += (rand()%40)-20;
@@ -2024,7 +1977,7 @@ void CL_ParseTEnt (void)
 				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_purify1_fire, 1, 1);
 				S_StartSound(endPos, CLH2_TempSoundChannel(), 0, cl_sfx_purify1_hit, 1, 1);
 
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(endPos, ex->origin);
 				ex->model = R_RegisterModel("models/fcircle.spr");
 				ex->startTime = cl.serverTimeFloat;
@@ -2046,7 +1999,7 @@ void CL_ParseTEnt (void)
 
 				duration = net_message.ReadCoord();
 
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/bspark.spr");
 				ex->startTime = cl.serverTimeFloat;
@@ -2086,7 +2039,7 @@ void CL_ParseTEnt (void)
 
 					for (i=0;i<distance;i++)
 					{
-						ex = CL_AllocExplosion();
+						ex = CLH2_AllocExplosion();
 						VectorCopy(curPos, ex->origin);
 						switch(rand()%3)
 						{
@@ -2116,7 +2069,7 @@ void CL_ParseTEnt (void)
 
 					for (i=0;i<distance;i++)
 					{
-						ex = CL_AllocExplosion();
+						ex = CLH2_AllocExplosion();
 						VectorCopy(curPos, ex->origin);
 						switch(rand()%3)
 						{
@@ -2153,7 +2106,7 @@ void CL_ParseTEnt (void)
 				pos[2] = net_message.ReadCoord();
 				maxDist = net_message.ReadLong();
 
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/null.spr");
 				ex->startTime = cl.serverTimeFloat;
@@ -2174,7 +2127,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < 0.07) ? 0 : 2;
 			for( ; i < 5; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += rand()%6 - 3;
 				ex->origin[1] += rand()%6 - 3;
@@ -2208,7 +2161,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < 0.07) ? 0 : 7;
 			for( ; i < 12; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += rand()%6 - 3;
 				ex->origin[1] += rand()%6 - 3;
@@ -2246,7 +2199,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < 0.07) ? 0 : 4;
 			for( ; i < 8; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos,ex->origin);
 				ex->frameFunc = ChunkThink;
 
@@ -2305,7 +2258,7 @@ void CL_ParseTEnt (void)
 
 				for(i = 0; i < fireCounts; i++)
 				{
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(curPos, ex->origin);
 					switch(rand()%3)
 					{
@@ -2342,7 +2295,7 @@ void CL_ParseTEnt (void)
 					ex->origin[2] += (rand()%6)+21;
 
 					
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(curPos, ex->origin);
 					ex->origin[0] += (rand()%8)-4;
 					ex->origin[1] += (rand()%8)-4;
@@ -2366,7 +2319,7 @@ void CL_ParseTEnt (void)
 			i = (host_frametime < 0.07) ? 0 : 8;
 			for( ; i < 12; i++)
 			{
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->origin[0] += (rand()%32)-16;
 				ex->origin[1] += (rand()%32)-16;
@@ -2438,7 +2391,7 @@ void CL_ParseTEnt (void)
 
 
 
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(curPos, ex->origin);
 					VectorMA(ex->origin, cVal, right, ex->origin);
 					VectorMA(ex->origin, sVal, up, ex->origin);
@@ -2456,7 +2409,7 @@ void CL_ParseTEnt (void)
 					VectorMA(ex->velocity, cVal * 4.0, right, ex->velocity);
 					VectorMA(ex->velocity, sVal * 4.0, up, ex->velocity);
 
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(curPos, ex->origin);
 					VectorMA(ex->origin, -cVal, right, ex->origin);
 					VectorMA(ex->origin, -sVal, up, ex->origin);
@@ -2500,7 +2453,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 800;
 				vel[2] = sin(travelPitch) * 800;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/sucwp1p.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2520,7 +2473,7 @@ void CL_ParseTEnt (void)
 
 					AngleVectors(angles, forward, right, up);
 
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(pos, ex->origin);
 					VectorMA(ex->origin, 7, right, ex->origin);
 					ex->model = R_RegisterModel("models/sucwp1p.mdl");
@@ -2533,7 +2486,7 @@ void CL_ParseTEnt (void)
 					ex->frameFunc = updateBloodRain;
 					//ex->exflags & EXFLAG_COLLIDE;
 
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(pos, ex->origin);
 					VectorMA(ex->origin, -7, right, ex->origin);
 					ex->model = R_RegisterModel("models/sucwp1p.mdl");
@@ -2568,7 +2521,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1100;
 				vel[2] = sin(travelPitch) * 1100;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/axblade.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2578,7 +2531,7 @@ void CL_ParseTEnt (void)
 				VectorCopy(vel, ex->velocity);
 				ex->exflags |= EXFLAG_COLLIDE;
 
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/axtail.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2612,7 +2565,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1000;
 				vel[2] = sin(travelPitch) * 1000;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/drgnball.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2643,7 +2596,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1200;
 				vel[2] = sin(travelPitch) * 1200;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/vorpshot.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2677,7 +2630,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1200;
 				vel[2] = sin(travelPitch) * 1200;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/iceshot1.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2698,7 +2651,7 @@ void CL_ParseTEnt (void)
 
 				ex2 = ex;
 
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/iceshot2.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2735,7 +2688,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1000;
 				vel[2] = sin(travelPitch) * 1000;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/tempmetr.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2777,7 +2730,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * speed;
 				vel[2] = sin(travelPitch) * speed;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/lball.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2814,7 +2767,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1600;
 				vel[2] = sin(travelPitch) * 1600;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/tempmetr.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -2971,7 +2924,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 850;
 				vel[2] = sin(travelPitch) * 850;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/sucwp2p.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -3001,7 +2954,7 @@ void CL_ParseTEnt (void)
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1000;
 				vel[2] = sin(travelPitch) * 1000;
 				
-				ex = CL_AllocExplosion();
+				ex = CLH2_AllocExplosion();
 				VectorCopy(pos, ex->origin);
 				ex->model = R_RegisterModel("models/sucwp2p.mdl");
 				ex->startTime = cl.serverTimeFloat;
@@ -3078,7 +3031,7 @@ void CL_ParseTEnt (void)
 					VectorCopy(points[temp], stream->source);
 					VectorCopy(points[temp + 1], stream->dest);
 
-					ex = CL_AllocExplosion();
+					ex = CLH2_AllocExplosion();
 					VectorCopy(points[temp+1], ex->origin);
 					ex->model = R_RegisterModel("models/vorpshok.mdl");
 					ex->startTime = cl.serverTimeFloat;
@@ -3474,7 +3427,7 @@ void MultiGrenadeThink (h2explosion_t *ex)
     while(attack_counter<number_explosions)
     {
 		attack_counter+=1;
-		missile=CL_AllocExplosion();
+		missile=CLH2_AllocExplosion();
 
         missile->frameFunc = MultiGrenadePieceThink;
 
@@ -3569,7 +3522,7 @@ void MultiGrenadePieceThink (h2explosion_t *ex)
     while(attack_counter<number_explosions)
     {
 		attack_counter+=1;
-		missile=CL_AllocExplosion();
+		missile=CLH2_AllocExplosion();
 
         missile->frameFunc = MultiGrenadePieceThink;
 
@@ -3627,7 +3580,7 @@ void MultiGrenadePiece2Think (h2explosion_t *ex)
     while(attack_counter<number_explosions)
     {
 		attack_counter+=1;
-		missile=CL_AllocExplosion();
+		missile=CLH2_AllocExplosion();
 
         missile->frameFunc = MultiGrenadePiece2Think;
 
@@ -3857,14 +3810,14 @@ void CreateRavenExplosions(vec3_t pos)
 {
 	h2explosion_t	*ex;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[2] = 8;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
 	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->origin[2] -= 5;
 	ex->velocity[2] = 8;
@@ -3872,7 +3825,7 @@ void CreateRavenExplosions(vec3_t pos)
 	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->origin[2] -= 10;
 	ex->velocity[2] = 8;
@@ -3885,7 +3838,7 @@ void CreateRavenDeath(vec3_t pos)
 {
 	h2explosion_t	*ex;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[1] = 8;
 	ex->velocity[2] = -10;
@@ -3893,14 +3846,14 @@ void CreateRavenDeath(vec3_t pos)
 	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[2] = -10;
 	ex->model = R_RegisterModel("models/redsmk1.spr");
 	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[1] = -8;
 	ex->velocity[2] = -10;
@@ -3915,7 +3868,7 @@ void CreateExplosionWithSound(vec3_t pos)
 {
 	h2explosion_t	*ex;
 
-	ex = CL_AllocExplosion ();
+	ex = CLH2_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->startTime = cl.serverTimeFloat;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
@@ -4013,7 +3966,7 @@ void MeteorBlastThink(h2explosion_t *ex)
 		maxI = (host_frametime <= 0.05) ? 12:5;
 		for(i = 0; i < maxI; i++)
 		{
-			ex2 = CL_AllocExplosion();
+			ex2 = CLH2_AllocExplosion();
 			VectorCopy(ex->origin, ex2->origin);
 			ex2->origin[0] += (rand()%10) - 5;
 			ex2->origin[1] += (rand()%10) - 5;
@@ -4077,7 +4030,7 @@ void MeteorCrushSpawnThink(h2explosion_t *ex)
 			}
 		}
 
-		ex2 = CL_AllocExplosion();
+		ex2 = CLH2_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->origin[0] += (rand()%160) - 80;
 		ex2->origin[1] += (rand()%160) - 80;
@@ -4135,7 +4088,7 @@ void updatePurify2(h2explosion_t *ex)
 
 	if((rand()%100)/100.0 < numSprites * host_frametime)
 	{
-		ex2 = CL_AllocExplosion();
+		ex2 = CLH2_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/ring.mdl");
 		ex2->startTime = cl.serverTimeFloat;
@@ -4204,7 +4157,7 @@ void updateAcidBlob(h2explosion_t *ex)
 	{
 		if(!(testVal%2))
 		{
-			ex2 = CL_AllocExplosion();
+			ex2 = CLH2_AllocExplosion();
 			VectorCopy(ex->origin, ex2->origin);
 			ex2->model = R_RegisterModel("models/muzzle1.spr");
 			ex2->startTime = cl.serverTimeFloat;
@@ -4261,7 +4214,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 			}
 		}
 
-		ex = CL_AllocExplosion();
+		ex = CLH2_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
 		ex->model = R_RegisterModel("models/grnsmk1.spr");
 		ex->startTime = cl.serverTimeFloat;
@@ -4297,7 +4250,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 	{
 		if(!(testVal%2))
 		{
-			ex = CL_AllocExplosion();
+			ex = CLH2_AllocExplosion();
 			VectorCopy(ent->origin, ex->origin);
 			ex->model = R_RegisterModel("models/muzzle1.spr");
 			ex->startTime = cl.serverTimeFloat;
@@ -4326,7 +4279,7 @@ void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 
 	if((rand()%100)/100.0 < 5.0 * host_frametime)
 	{
-		ex = CL_AllocExplosion();
+		ex = CLH2_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
 
 		//raise and randomize origin some
@@ -4371,7 +4324,7 @@ void PowerFlameBurnRemove(h2explosion_t *ex)
 {
 	h2explosion_t *ex2;
 
-	ex2 = CL_AllocExplosion();
+	ex2 = CLH2_AllocExplosion();
 	VectorCopy(ex->origin, ex2->origin);
 	switch(rand()%3)
 	{
@@ -4404,7 +4357,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 
 	if((rand()%100)/100.0 < host_frametime * 10)
 	{
-		ex = CL_AllocExplosion();
+		ex = CLH2_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
 		ex->origin[0] += (rand()%120)-60;
 		ex->origin[1] += (rand()%120)-60;
@@ -4428,7 +4381,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 
 
 		// I'm not seeing this right now... (?)
-		ex2 = CL_AllocExplosion();
+		ex2 = CLH2_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/flamestr.spr");
 		ex2->startTime = cl.serverTimeFloat;
@@ -4502,7 +4455,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 	{
 		h2explosion_t *ex;
 
-		ex = CL_AllocExplosion();
+		ex = CLH2_AllocExplosion();
 		VectorCopy(ent->origin,ex->origin);
 		ex->origin[0] += rand()%32 - 16;
 		ex->origin[1] += rand()%32 - 16;
@@ -4583,7 +4536,7 @@ void telEffectUpdate (h2explosion_t *ex)
 	{
 		if(!(testVal%3))
 		{
-			ex2 = CL_AllocExplosion();
+			ex2 = CLH2_AllocExplosion();
 			angle = FRANDOM() * 3.14159;
 
 			VectorCopy(ex->origin,ex2->origin);
@@ -4670,7 +4623,7 @@ void CL_UpdateTargetBall(void)
 	}
 	if(ex1 == NULL)
 	{
-		ex1 = CL_AllocExplosion();
+		ex1 = CLH2_AllocExplosion();
 		ex1->model = iceMod;
 		ex1->exflags |= EXFLAG_STILL_FRAME;
 		ex1->data = 0;
@@ -4701,7 +4654,7 @@ void CL_UpdateTargetBall(void)
 	}
 	if(ex2 == NULL)
 	{
-		ex2 = CL_AllocExplosion();
+		ex2 = CLH2_AllocExplosion();
 		ex2->model = iceMod;
 		ex2->exflags |= EXFLAG_STILL_FRAME;
 		ex2->data = 0;

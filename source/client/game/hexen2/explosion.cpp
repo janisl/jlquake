@@ -18,3 +18,46 @@
 #include "local.h"
 
 h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
+
+void CLH2_ClearExplosions()
+{
+	Com_Memset(clh2_explosions, 0, sizeof(clh2_explosions));
+}
+
+//**** CAREFUL!!! This may overwrite an explosion!!!!!
+h2explosion_t* CLH2_AllocExplosion()
+{
+	int index = 0;
+	bool freeSlot = false;
+
+	for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
+	{
+		if (!clh2_explosions[i].model)
+		{
+			index = i;
+			freeSlot = true;
+			break;
+		}
+	}
+
+
+	// find the oldest explosion
+	if (!freeSlot)
+	{
+		float time = cl_common->serverTime * 0.001;
+
+		for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
+		{
+			if (clh2_explosions[i].startTime < time)
+			{
+				time = clh2_explosions[i].startTime;
+				index = i;
+			}
+		}
+	}
+
+	//zero out velocity and acceleration, funcs
+	Com_Memset(&clh2_explosions[index], 0, sizeof(h2explosion_t));
+
+	return &clh2_explosions[index];
+}

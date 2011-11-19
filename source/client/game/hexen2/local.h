@@ -136,3 +136,6 @@ void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);
 void CLH2_InitChunkAngles(vec3_t angles);
 void CLH2_InitChunkAngleVelocity(vec3_t avel);
 void CLH2_InitChunkEffect(h2EffectT& effect);
+
+void CLH2_ClearExplosions();
+h2explosion_t* CLH2_AllocExplosion();
