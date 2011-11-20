@@ -91,6 +91,8 @@ extern sfxHandle_t clh2_fxsfx_met2stn;
 extern h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
 extern sfxHandle_t clh2_sfx_explode;
+extern sfxHandle_t clh2_sfx_axeExplode;
+extern sfxHandle_t clh2_sfx_acidhit;
 
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
@@ -142,7 +144,7 @@ void CLH2_InitChunkEffect(h2EffectT& effect);
 void CLHW_InitExplosionSounds();
 void CLH2_ClearExplosions();
 h2explosion_t* CLH2_AllocExplosion();
-void CLTENT_SpawnDeathBubble(const vec3_t pos);
+void CLHW_SpawnDeathBubble(const vec3_t pos);
 void MissileFlashThink(h2explosion_t *ex);
 void CLHW_ParseMissileFlash(QMsg& message);
 void CLHW_InitChunkExplosionCommon(h2explosion_t* ex, int chType);
@@ -155,3 +157,11 @@ void CLHW_CreateRavenDeath(const vec3_t pos);
 void CLHW_ParseRavenDie(QMsg& message);
 void CLHW_CreateRavenExplosions(const vec3_t pos);
 void CLHW_ParseRavenExplode(QMsg& message);
+void CLHW_ParseChunk(QMsg& message);
+void CLHW_ParseChunk2(QMsg& message);
+void CLHW_ParseMeteorHit(QMsg& message);
+void CLHW_ParseIceHit(QMsg& message);
+void CLHW_ParsePlayerDeath(QMsg& message);
+void CLHW_ParseAcidBlob(QMsg& message);
+void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
+void CLHW_CreateIceChunk(const vec3_t origin);

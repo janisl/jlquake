@@ -19,7 +19,6 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 extern void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest);
-extern void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
 h2entity_state_t *FindState(int EntNum);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -196,7 +195,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 						break;
 					}
 
-					CLTENT_XbowImpact(ent->state.origin, forward, material, takedamage, cl.h2_Effects[index].Xbow.bolts);
+					CLHW_XbowImpact(ent->state.origin, forward, material, takedamage, cl.h2_Effects[index].Xbow.bolts);
 				}
 			}
 			else
@@ -597,7 +596,7 @@ void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
 			}
 			else
 			{
-				CLTENT_SpawnDeathBubble(org);
+				CLHW_SpawnDeathBubble(org);
 			}
 		}
 	}

@@ -17,6 +17,8 @@
 #include "../../client.h"
 #include "local.h"
 
+#define FRANDOM() (rand() * (1.0 / RAND_MAX))
+
 h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
 sfxHandle_t clh2_sfx_explode;
@@ -25,16 +27,37 @@ static sfxHandle_t clh2_sfx_bonehit;
 static sfxHandle_t clh2_sfx_bonewal;
 static sfxHandle_t clh2_sfx_ravendie;
 static sfxHandle_t clh2_sfx_ravengo;
+static sfxHandle_t clh2_sfx_dropfizzle;
+sfxHandle_t clh2_sfx_axeExplode;
+static sfxHandle_t clh2_sfx_icewall;
+static sfxHandle_t clh2_sfx_iceshatter;
+static sfxHandle_t clh2_sfx_iceflesh;
+static sfxHandle_t clh2_sfx_big_gib;
+static sfxHandle_t clh2_sfx_gib1;
+static sfxHandle_t clh2_sfx_gib2;
+static sfxHandle_t clh2_sfx_telefrag;
+sfxHandle_t clh2_sfx_acidhit;
 
 static int MultiGrenadeCurrentChannel;
 
 void CLHW_InitExplosionSounds()
 {
+	clh2_sfx_explode = S_RegisterSound("weapons/explode.wav");
 	clh2_sfx_bonephit = S_RegisterSound("necro/bonephit.wav");
 	clh2_sfx_bonehit = S_RegisterSound("necro/bonenhit.wav");
 	clh2_sfx_bonewal = S_RegisterSound("necro/bonenwal.wav");
 	clh2_sfx_ravendie = S_RegisterSound("raven/death.wav");
 	clh2_sfx_ravengo = S_RegisterSound("raven/ravengo.wav");
+	clh2_sfx_dropfizzle = S_RegisterSound("succubus/dropfizz.wav");
+	clh2_sfx_axeExplode = S_RegisterSound("weapons/explode.wav");
+	clh2_sfx_icewall = S_RegisterSound("crusader/icewall.wav");
+	clh2_sfx_iceshatter = S_RegisterSound("misc/icestatx.wav");
+	clh2_sfx_iceflesh = S_RegisterSound("crusader/icehit.wav");
+	clh2_sfx_big_gib = S_RegisterSound("player/megagib.wav");
+	clh2_sfx_gib1 = S_RegisterSound("player/gib1.wav");
+	clh2_sfx_gib2 = S_RegisterSound("player/gib2.wav");
+	clh2_sfx_telefrag = S_RegisterSound("player/telefrag.wav");
+	clh2_sfx_acidhit = S_RegisterSound("succubus/acidhit.wav");
 }
 
 void CLH2_ClearExplosions()
@@ -127,7 +150,7 @@ static void BubbleThink(h2explosion_t* ex)
 	}
 }
 
-void CLTENT_SpawnDeathBubble(const vec3_t pos)
+void CLHW_SpawnDeathBubble(const vec3_t pos)
 {
 	h2explosion_t	*ex;
 
@@ -623,8 +646,120 @@ void CLHW_ParseRavenExplode(QMsg& message)
 	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_ravengo, 1, 1);
 }
 
+static void ChunkThink(h2explosion_t *ex)
+{
+	bool moving = true;
+	if (CM_PointContentsQ1(ex->origin, 0) != BSP29CONTENTS_EMPTY)
+	{
+		//collided with world
+		VectorCopy(ex->oldorg, ex->origin);
+
+		if ((int)ex->data == H2THINGTYPE_FLESH)
+		{
+			if (VectorNormalize(ex->velocity) > 100.0)
+			{
+				// hit, now make a splash of blood
+				vec3_t dmin = {-40, -40, 10};
+				vec3_t dmax = {40, 40, 40};
+				CLH2_RunParticleEffect2(ex->origin, dmin, dmax, 136 + (rand() % 5), pt_h2darken, 20);
+			}
+		}
+		else if ((int)ex->data == H2THINGTYPE_ACID)
+		{
+			if (VectorNormalize(ex->velocity) > 100.0)
+			{
+				// hit, now make a splash of acid
+				//vec3_t	dmin = {-40, -40, 10};
+				//vec3_t	dmax = {40, 40, 40};
+				if (!(rand() % 3))
+				{
+					S_StartSound(ex->origin, CLH2_TempSoundChannel(), 0, clh2_sfx_dropfizzle, 1, 1);
+				}
+			}
+		}
+
+		ex->velocity[0] = 0;
+		ex->velocity[1] = 0;
+		ex->velocity[2] = 0;
+		ex->avel[0] = 0;
+		ex->avel[1] = 0;
+		ex->avel[2] = 0;
+
+		moving = false;
+	}
+
+	if (cl_common->serverTime * 0.001 + cls_common->frametime * 0.001 * 5 > ex->endTime)
+	{
+		// chunk leaves in 5 frames about
+		switch((int)ex->data)
+		{
+		case H2THINGTYPE_METEOR:
+			if (cl_common->serverTime * 0.001 + cls_common->frametime * 0.001 * 4 < ex->endTime)
+			{
+				// just crossed the threshold
+				ex->abslight = 200;
+			}
+			else
+			{
+				ex->abslight -= 35;
+			}
+			ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
+			ex->scale *= 1.4;
+			ex->angles[0] += 20;
+			break;
+		default:
+			ex->scale *= .8;
+			break;
+		}
+	}
+
+	ex->velocity[2] -= cls_common->frametime * 0.001 * movevars.gravity; // this is gravity
+
+	vec3_t oldorg;
+	switch ((int)ex->data)
+	{
+	case H2THINGTYPE_FLESH:
+		if (moving)
+		{
+			CLH2_TrailParticles(ex->oldorg, ex->origin, rt_blood);
+		}
+		break;
+	case H2THINGTYPE_ICE:
+		ex->velocity[2] += cls_common->frametime * 0.001 * movevars.gravity * 0.5; // lower gravity for ice chunks
+		if (moving)
+		{
+			CLH2_TrailParticles(ex->oldorg, ex->origin, rt_ice);
+		}
+		break;
+	case H2THINGTYPE_ACID:
+		if (moving)
+		{
+			CLH2_TrailParticles(ex->oldorg, ex->origin, rt_grensmoke);
+		}
+		break;
+	case H2THINGTYPE_METEOR:
+		VectorCopy(ex->oldorg, oldorg);
+		if (!moving)
+		{
+			// resting meteors still give off smoke
+			oldorg[0] += rand() % 7 - 3;
+			oldorg[1] += rand() % 7 - 3;
+			oldorg[2] += 16;
+		}
+		CLH2_TrailParticles(oldorg, ex->origin, rt_smoke);
+		break;
+	case H2THINGTYPE_GREENFLESH:
+		if (moving)
+		{
+			CLH2_TrailParticles(ex->oldorg, ex->origin, rt_grensmoke);
+		}
+		break;
+	}
+}
+
 void CLHW_InitChunkExplosionCommon(h2explosion_t* ex, int chType)
 {
+	ex->frameFunc = ChunkThink;
 	CLH2_InitChunkAngles(ex->angles);
 	ex->data = chType;
 
@@ -639,4 +774,574 @@ void CLHW_InitChunkExplosionCommon(h2explosion_t* ex, int chType)
 
 	ex->startTime = cl_common->serverTime * 0.001;
 	ex->endTime = ex->startTime + 4.0;
+}
+
+void CLHW_ParseChunk(QMsg& message)
+{
+	//directed chunks
+	vec3_t pos, vel;
+	message.ReadPos(pos);
+	message.ReadPos(vel);
+	int chType = message.ReadByte();
+	int cnt = message.ReadByte();
+
+	for (int i = 0; i < cnt; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos,ex->origin);
+		CLH2_InitChunkVelocity(vel, ex->velocity);
+
+		ex->exflags = EXFLAG_ROTATE;
+
+		CLH2_InitChunkAngleVelocity(ex->avel);
+
+		ex->scale = 30 + 100 * (cnt / 40.0) + rand() % 40;
+		CLHW_InitChunkExplosionCommon(ex, chType);
+	}
+}
+
+void CLHW_ParseChunk2(QMsg& message)
+{
+	//volume based chunks
+	vec3_t pos, vel;
+	message.ReadPos(pos);
+	message.ReadPos(vel);	//vel for CHUNK, volume for CHUNK2
+	int chType = message.ReadByte();
+
+	float volume = vel[0] * vel[1] * vel[2];
+	int cnt = volume / 8192;
+	float scale;
+	if (volume < 5000)
+	{
+		scale = .20;
+		cnt *= 3;	// Because so few pieces come out of a small object
+	}
+	else if (volume < 50000)
+	{
+		scale = .45;
+		cnt *= 3;	// Because so few pieces come out of a small object
+	}
+	else if (volume < 500000)
+	{
+		scale = .50;
+	}
+	else if (volume < 1000000)
+	{
+		scale = .75;
+	}
+	else
+	{
+		scale = 1;
+	}
+	if (cnt > 30)
+	{
+		cnt = 30;
+	}
+
+	for (int i = 0; i < cnt; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		// set origin (origin is really absmin here)
+		VectorCopy(pos, ex->origin);
+		ex->origin[0] += FRANDOM() * vel[0];
+		ex->origin[1] += FRANDOM() * vel[1];
+		ex->origin[2] += FRANDOM() * vel[2];
+		// set velocity
+		ex->velocity[0] = -210 + FRANDOM() * 420;
+		ex->velocity[1] = -210 + FRANDOM() * 420;
+		ex->velocity[2] = -210 + FRANDOM() * 490;
+		// set scale
+		ex->scale = scale * 100;
+
+		ex->avel[0] = rand() % 1200;
+		ex->avel[1] = rand() % 1200;
+		ex->avel[2] = rand() % 1200;
+		CLHW_InitChunkExplosionCommon(ex, chType);
+	}
+}
+
+void CLHW_ParseMeteorHit(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	// always make 8 meteors
+	int i = (cls_common->frametime < 70) ? 0 : 4;	// based on framerate
+	for( ; i < 8; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos,ex->origin);
+		ex->frameFunc = ChunkThink;
+
+		// temp modify them...
+		ex->velocity[0] += (rand() % 400) - 200;
+		ex->velocity[1] += (rand() % 400) - 200;
+		ex->velocity[2] += (rand() % 200) + 150;
+
+		// are these in degrees or radians?
+		ex->angles[0] = rand() % 360;
+		ex->angles[1] = rand() % 360;
+		ex->angles[2] = rand() % 360;
+		ex->exflags = EXFLAG_ROTATE;
+
+		ex->avel[0] = rand() % 850 - 425;
+		ex->avel[1] = rand() % 850 - 425;
+		ex->avel[2] = rand() % 850 - 425;
+
+		ex->scale = 45 + rand() % 10;
+		ex->data = H2THINGTYPE_METEOR;
+
+		ex->model = R_RegisterModel("models/tempmetr.mdl");
+		ex->skin = 0;
+		VectorScale(ex->avel, 4.0, ex->avel);
+
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = ex->startTime + 4.0;
+	}
+
+	// make the actual explosion
+	i = (cls_common->frametime < 70) ? 0 : 8;	// based on framerate
+	for (; i < 11; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos, ex->origin);
+		ex->origin[0] += (rand() % 10) - 5;
+		ex->origin[1] += (rand() % 10) - 5;
+		ex->origin[2] += (rand() % 10) - 5;
+
+		ex->velocity[0] = (ex->origin[0] - pos[0]) * 12;
+		ex->velocity[1] = (ex->origin[1] - pos[1]) * 12;
+		ex->velocity[2] = (ex->origin[2] - pos[2]) * 12;
+
+		switch (rand() % 4)
+		{
+		case 0:
+		case 1:
+			ex->model = R_RegisterModel("models/sm_expld.spr");
+			break;
+		case 2:
+			ex->model = R_RegisterModel("models/bg_expld.spr");
+			break;
+		case 3:
+			ex->model = R_RegisterModel("models/gen_expl.spr");
+			break;
+		}
+		if (cls_common->frametime * 0.001 < .07)
+		{
+			ex->flags |= H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT;
+		}
+		ex->abslight = 160 + rand() % 64;
+		ex->skin = 0;
+		ex->scale = 80 + rand() % 40;
+		ex->startTime = cl_common->serverTime * 0.001 + (rand() % 50 / 200.0);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
+	}
+	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_axeExplode, 1, 1);
+}
+
+void CLHW_ParseIceHit(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+	int cnt2 = message.ReadByte();	// 0 for person, 1 for wall
+
+	if (cnt2)
+	{
+		int i = (cls_common->frametime < 70) ? 0 : 5;	// based on framerate
+		for (; i < 9; i++)
+		{
+			h2explosion_t* ex = CLH2_AllocExplosion();
+			VectorCopy(pos,ex->origin);
+			ex->frameFunc = ChunkThink;
+
+			ex->velocity[0] += (rand()%1000)-500;
+			ex->velocity[1] += (rand()%1000)-500;
+			ex->velocity[2] += (rand()%200)-50;
+
+			// are these in degrees or radians?
+			ex->angles[0] = rand()%360;
+			ex->angles[1] = rand()%360;
+			ex->angles[2] = rand()%360;
+			ex->exflags = EXFLAG_ROTATE;
+
+			ex->avel[0] = rand()%850 - 425;
+			ex->avel[1] = rand()%850 - 425;
+			ex->avel[2] = rand()%850 - 425;
+
+			if(cnt2 == 2)
+			{
+				ex->scale = 65 + rand()%10;
+			}
+			else
+			{
+				ex->scale = 35 + rand()%10;
+			}
+			ex->data = H2THINGTYPE_ICE;
+
+			ex->model = R_RegisterModel("models/shard.mdl");
+			ex->skin = 0;
+			//ent->frame = rand()%2;
+			ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
+			ex->abslight = 128;
+
+			ex->startTime = cl_common->serverTime * 0.001;
+			ex->endTime = ex->startTime + 2.0;
+			if(cnt2 == 2)
+			{
+				ex->endTime += 3.0;
+			}
+		}
+	}
+	else
+	{
+		vec3_t dmin = {-10, -10, -10};
+		vec3_t dmax = {10, 10, 10};
+		CLH2_ColouredParticleExplosion(pos,14,10,10);
+		CLH2_RunParticleEffect2 (pos, dmin, dmax, 145, pt_h2explode, 14);
+	}
+	// make the actual explosion
+	h2explosion_t* ex = CLH2_AllocExplosion();
+	VectorCopy(pos, ex->origin);
+	ex->model = R_RegisterModel("models/icehit.spr");
+	ex->startTime = cl_common->serverTime * 0.001;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+
+	// Add in the sound
+	if (cnt2 == 1)
+	{	// hit a wall
+		S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_icewall, 1, 1);
+	}
+	else if (cnt2 == 2)
+	{
+		S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_iceshatter, 1, 1);
+	}
+	else
+	{	// hit a person
+		S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_iceflesh, 1, 1);
+	}
+}
+
+void CLHW_ParsePlayerDeath(QMsg& message)
+{
+	float			throwPower, curAng, curPitch;
+
+	vec3_t pos;
+	message.ReadPos(pos);
+	int angle = message.ReadByte();	// from 0 to 256
+	int pitch = message.ReadByte();	// from 0 to 256
+	int force = message.ReadByte();
+	int style = message.ReadByte();
+
+
+	int i = (cls_common->frametime < 70) ? 0 : 8;
+	for (; i < 12; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos, ex->origin);
+		ex->origin[0] += (rand()%40)-20;
+		ex->origin[1] += (rand()%40)-20;
+		ex->origin[2] += rand()%40;
+		ex->frameFunc = ChunkThink;
+
+		throwPower = 3.5 + ((rand()%100)/100.0);
+		curAng = angle*6.28/256.0 + ((rand()%100)/50.0) - 1.0;
+		curPitch = pitch*6.28/256.0 + ((rand()%100)/100.0) - .5;
+
+		ex->velocity[0] = force*throwPower * cos(curAng) * cos(curPitch);
+		ex->velocity[1] = force*throwPower * sin(curAng) * cos(curPitch);
+		ex->velocity[2] = force*throwPower * sin(curPitch);
+
+		// are these in degrees or radians?
+		ex->angles[0] = rand()%360;
+		ex->angles[1] = rand()%360;
+		ex->angles[2] = rand()%360;
+		ex->exflags = EXFLAG_ROTATE;
+
+		ex->avel[0] = rand()%850 - 425;
+		ex->avel[1] = rand()%850 - 425;
+		ex->avel[2] = rand()%850 - 425;
+
+		ex->scale = 80 + rand()%40;
+		ex->data = H2THINGTYPE_FLESH;
+
+		switch(rand()%3)
+		{
+		case 0:
+			ex->model = R_RegisterModel("models/flesh1.mdl");
+			break;
+		case 1:
+			ex->model = R_RegisterModel("models/flesh2.mdl");
+			break;
+		case 2:
+			ex->model = R_RegisterModel("models/flesh3.mdl");
+			break;
+		}
+		
+		ex->skin = 0;
+
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = ex->startTime + 4.0;
+	}
+
+	switch(style)
+	{
+	case 0:
+		S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_big_gib, 1, 1);
+		break;
+	case 1:
+		if(rand()%2)
+		{
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_gib1, 1, 1);
+		}
+		else
+		{
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_gib2, 1, 1);
+		}
+		break;
+	case 2:
+		S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_telefrag, 1, 1);
+		break;
+	}
+}
+
+void CLHW_ParseAcidBlob(QMsg& message)
+{
+	vec3_t pos;
+	message.ReadPos(pos);
+
+	int i = (cls_common->frametime < 70) ? 0 : 7;
+	for (; i < 12; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos, ex->origin);
+		ex->origin[0] += rand()%6 - 3;
+		ex->origin[1] += rand()%6 - 3;
+		ex->origin[2] += rand()%6 - 3;
+
+		ex->velocity[0] = (ex->origin[0] - pos[0])*25;
+		ex->velocity[1] = (ex->origin[1] - pos[1])*25;
+		ex->velocity[2] = (ex->origin[2] - pos[2])*25;
+
+		switch(rand()%4)
+		{
+		case 0:
+			ex->model = R_RegisterModel("models/axplsn_2.spr");
+			break;
+		case 1:
+			ex->model = R_RegisterModel("models/axplsn_1.spr");
+			break;
+		case 2:
+		case 3:
+			ex->model = R_RegisterModel("models/axplsn_5.spr");
+			break;
+		}
+		if (cls_common->frametime < 70)
+		{
+			ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
+		}
+		ex->abslight = 1;
+		ex->skin = 0;
+		ex->scale = 80 + rand()%40;
+		ex->startTime = cl_common->serverTime * 0.001 + (rand()%50 / 200.0);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+	}
+
+	// always make 8 meteors
+	i = (cls_common->frametime < 70) ? 0 : 4;
+	for (; i < 8; i++)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos,ex->origin);
+		ex->frameFunc = ChunkThink;
+
+		// temp modify them...
+		ex->velocity[0] = (rand()%500)-250;
+		ex->velocity[1] = (rand()%500)-250;
+		ex->velocity[2] = (rand()%200)+200;
+
+		// are these in degrees or radians?
+		ex->angles[0] = rand()%360;
+		ex->angles[1] = rand()%360;
+		ex->angles[2] = rand()%360;
+		ex->exflags = EXFLAG_ROTATE;
+
+		ex->avel[0] = rand()%850 - 425;
+		ex->avel[1] = rand()%850 - 425;
+		ex->avel[2] = rand()%850 - 425;
+
+		ex->scale = 45 + rand()%10;
+		ex->data = H2THINGTYPE_ACID;
+
+		ex->model = R_RegisterModel("models/sucwp2p.mdl");
+		ex->skin = 0;
+		VectorScale(ex->avel, 4.0, ex->avel);
+
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = ex->startTime + 4.0;
+	}
+
+	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_acidhit, 1, 1);
+}
+
+void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage, int arrowType)//arrowType is total # of arrows in effect
+{
+	float cnt;
+	int i;
+
+	//	generic spinny impact image
+	h2explosion_t* ex = CLH2_AllocExplosion();
+	ex->origin[0] = pos[0] - vel[0];
+	ex->origin[1] = pos[1] - vel[1];
+	ex->origin[2] = pos[2] - vel[2];
+	VecToAnglesBuggy(vel, ex->angles);
+	ex->avel[2] = (rand() % 500) + 200;
+	ex->scale = 10;
+	ex->frameFunc = MissileFlashThink;
+	ex->startTime = cl_common->serverTime * 0.001;
+	ex->endTime = cl_common->serverTime * 0.001 + 0.3;
+	ex->model = R_RegisterModel("models/arrowhit.mdl");
+	ex->exflags = EXFLAG_ROTATE;
+	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
+	ex->abslight = 175;
+
+	//white smoke if invulnerable impact
+	if (!damage)
+	{
+		ex = CLH2_AllocExplosion();
+		ex->origin[0] = pos[0] - vel[0] * 2;
+		ex->origin[1] = pos[1] - vel[1] * 2;
+		ex->origin[2] = pos[2] - vel[2] * 2;
+		ex->velocity[0] = 0.0;
+		ex->velocity[1] = 0.0;
+		ex->velocity[2] = 80.0;
+		VecToAnglesBuggy(vel, ex->angles);
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = cl_common->serverTime * 0.001 + 0.35;
+		ex->model = R_RegisterModel("models/whtsmk1.spr");
+		ex->flags = H2DRF_TRANSLUCENT;
+
+		if (arrowType == 3)//little arrows go away
+		{
+			if (rand() & 3)//chunky go
+			{
+				cnt	= rand() % 2 + 1;
+
+				for (i = 0; i < cnt; i++)
+				{
+					float final;
+
+					ex = CLH2_AllocExplosion();
+					ex->frameFunc = ChunkThink;
+
+					VectorSubtract(pos,vel,ex->origin);
+					// temp modify them...
+					ex->velocity[0] = (rand() % 140) - 70;
+					ex->velocity[1] = (rand() % 140) - 70;
+					ex->velocity[2] = (rand() % 140) - 70;
+
+					// are these in degrees or radians?
+					ex->angles[0] = rand() % 360;
+					ex->angles[1] = rand() % 360;
+					ex->angles[2] = rand() % 360;
+					ex->exflags = EXFLAG_ROTATE;
+
+					ex->avel[0] = rand() % 850 - 425;
+					ex->avel[1] = rand() % 850 - 425;
+					ex->avel[2] = rand() % 850 - 425;
+
+					ex->scale = 30 + 100 * (cnt / 40.0) + rand() % 40;
+
+					ex->data = H2THINGTYPE_WOOD;
+
+					final = (rand() % 100) * .01;
+
+					if (final < 0.25)
+					{
+						ex->model = R_RegisterModel("models/splnter1.mdl");
+					}
+					else if (final < 0.50)
+					{
+						ex->model = R_RegisterModel("models/splnter2.mdl");
+					}
+					else if (final < 0.75)
+					{
+						ex->model = R_RegisterModel("models/splnter3.mdl");
+					}
+					else
+					{
+						ex->model = R_RegisterModel("models/splnter4.mdl");
+					}
+
+					ex->startTime = cl_common->serverTime * 0.001;
+					ex->endTime = ex->startTime + 4.0;
+				}
+			}
+			else if (rand() & 1)//whole go
+			{
+					ex = CLH2_AllocExplosion();
+					ex->frameFunc = ChunkThink;
+
+					VectorSubtract(pos, vel, ex->origin);
+					// temp modify them...
+					ex->velocity[0] = (rand() % 140) - 70;
+					ex->velocity[1] = (rand() % 140) - 70;
+					ex->velocity[2] = (rand() % 140) - 70;
+
+					// are these in degrees or radians?
+					ex->angles[0] = rand() % 360;
+					ex->angles[1] = rand() % 360;
+					ex->angles[2] = rand() % 360;
+					ex->exflags = EXFLAG_ROTATE;
+
+					ex->avel[0] = rand() % 850 - 425;
+					ex->avel[1] = rand() % 850 - 425;
+					ex->avel[2] = rand() % 850 - 425;
+
+					ex->scale = 128;
+
+					ex->data = H2THINGTYPE_WOOD;
+
+					ex->model = R_RegisterModel("models/arrow.mdl");
+
+					ex->startTime = cl_common->serverTime * 0.001;
+					ex->endTime = ex->startTime + 4.0;
+			}
+		}
+	}
+}
+
+void CLHW_CreateIceChunk(const vec3_t origin)
+{
+	h2explosion_t* ex = CLH2_AllocExplosion();
+	VectorCopy(origin, ex->origin);
+	ex->origin[0] += rand() % 32 - 16;
+	ex->origin[1] += rand() % 32 - 16;
+	ex->origin[2] += 48 + rand() %32;
+	ex->frameFunc = ChunkThink;
+
+	ex->velocity[0] += (rand() % 300) - 150;
+	ex->velocity[1] += (rand() % 300) - 150;
+	ex->velocity[2] += (rand() % 200) - 50;
+
+	// are these in degrees or radians?
+	ex->angles[0] = rand() % 360;
+	ex->angles[1] = rand() % 360;
+	ex->angles[2] = rand() % 360;
+	ex->exflags = EXFLAG_ROTATE;
+
+	ex->avel[0] = rand() % 850 - 425;
+	ex->avel[1] = rand() % 850 - 425;
+	ex->avel[2] = rand() % 850 - 425;
+
+	ex->scale = 65 + rand() % 10;
+
+	ex->data = H2THINGTYPE_ICE;
+
+	ex->model = R_RegisterModel("models/shard.mdl");
+	ex->skin = 0;
+	ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
+	ex->abslight = 128;
+
+	ex->startTime = cl_common->serverTime * 0.001;
+	ex->endTime = ex->startTime + 2.0;
 }
