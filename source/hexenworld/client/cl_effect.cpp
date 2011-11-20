@@ -35,7 +35,6 @@ h2entity_state_t *FindState(int EntNum);
 // CODE --------------------------------------------------------------------
 
 // these are in cl_tent.c
-void CreateRavenDeath(vec3_t pos);
 void CreateExplosionWithSound(vec3_t pos);
 
 void CL_EndEffect(void)
@@ -51,7 +50,7 @@ void CL_EndEffect(void)
 		if(cl.h2_Effects[index].Missile.entity_index > -1)
 		{
 			ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-			CreateRavenDeath(ent->state.origin);
+			CLHW_CreateRavenDeath(ent->state.origin);
 		}
 		break;
 	case HWCE_HWRAVENSTAFF:
@@ -855,7 +854,6 @@ void CL_UpdateEffects()
 }
 
 // this creates multi effects from one packet
-void CreateRavenExplosions(vec3_t pos);
 void CL_ParseMultiEffect(void)
 {
 	int type, index, count;
@@ -889,7 +887,7 @@ void CL_ParseMultiEffect(void)
 				S_StartSound(cl.h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
 			}
 		}
-		CreateRavenExplosions(orig);
+		CLHW_CreateRavenExplosions(orig);
 		break;
 	default:
 		Sys_Error ("CL_ParseMultiEffect: bad type");

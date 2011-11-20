@@ -23,7 +23,7 @@ sfxHandle_t clh2_sfx_explode;
 static sfxHandle_t clh2_sfx_bonephit;
 static sfxHandle_t clh2_sfx_bonehit;
 static sfxHandle_t clh2_sfx_bonewal;
-sfxHandle_t clh2_sfx_ravendie;
+static sfxHandle_t clh2_sfx_ravendie;
 static sfxHandle_t clh2_sfx_ravengo;
 
 static int MultiGrenadeCurrentChannel;
@@ -33,6 +33,7 @@ void CLHW_InitExplosionSounds()
 	clh2_sfx_bonephit = S_RegisterSound("necro/bonephit.wav");
 	clh2_sfx_bonehit = S_RegisterSound("necro/bonenhit.wav");
 	clh2_sfx_bonewal = S_RegisterSound("necro/bonenwal.wav");
+	clh2_sfx_ravendie = S_RegisterSound("raven/death.wav");
 	clh2_sfx_ravengo = S_RegisterSound("raven/ravengo.wav");
 }
 
@@ -579,15 +580,20 @@ static void NewRavenDieExplosion(const vec3_t pos, float velocityY, const char* 
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 }
 
+void CLHW_CreateRavenDeath(const vec3_t pos)
+{
+	NewRavenDieExplosion(pos, 8, "models/whtsmk1.spr");
+	NewRavenDieExplosion(pos, 0, "models/redsmk1.spr");
+	NewRavenDieExplosion(pos, -8, "models/whtsmk1.spr");
+	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_ravendie, 1, 1);
+}
+
 void CLHW_ParseRavenDie(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	NewRavenDieExplosion(pos, 8, "models/whtsmk1.spr");
-	NewRavenDieExplosion(pos, 0, "models/redsmk1.spr");
-	NewRavenDieExplosion(pos, -8, "models/whtsmk1.spr");
-	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_ravendie, 1, 1);
+	CLHW_CreateRavenDeath(pos);
 }
 
 static void NewRavenExplodeExplosion(const vec3_t pos, float originAdjust)
@@ -601,14 +607,19 @@ static void NewRavenExplodeExplosion(const vec3_t pos, float originAdjust)
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 }
 
+void CLHW_CreateRavenExplosions(const vec3_t pos)
+{
+	NewRavenExplodeExplosion(pos, 0);
+	NewRavenExplodeExplosion(pos, 5);
+	NewRavenExplodeExplosion(pos, 10);
+}
+
 void CLHW_ParseRavenExplode(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	NewRavenExplodeExplosion(pos, 0);
-	NewRavenExplodeExplosion(pos, 5);
-	NewRavenExplodeExplosion(pos, 10);
+	CLHW_CreateRavenExplosions(pos);
 	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_ravengo, 1, 1);
 }
 

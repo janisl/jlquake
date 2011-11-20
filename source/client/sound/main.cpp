@@ -1481,7 +1481,7 @@ static void S_FreePlaysound(playsound_t* ps)
 //
 //==========================================================================
 
-void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHandle, float fvol, float attenuation, float timeofs)
+void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHandle, float fvol, float attenuation, float timeofs)
 {
 	if (!s_soundStarted || s_soundMuted)
 	{

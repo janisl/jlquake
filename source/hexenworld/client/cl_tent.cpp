@@ -89,7 +89,6 @@ void CL_InitTEnts (void)
 	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
 	clh2_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
 	clh2_sfx_explode = S_RegisterSound("weapons/explode.wav");
-	clh2_sfx_ravendie = S_RegisterSound("raven/death.wav");
 	cl_sfx_buzzbee = S_RegisterSound("assassin/scrbfly.wav");
 
 	cl_sfx_iceflesh = S_RegisterSound("crusader/icehit.wav");
@@ -3234,66 +3233,6 @@ void TeleportFlashThink(h2explosion_t *ex)
 	ex->scale -= 15;
 	if(ex->scale < 10)
 		ex->endTime = ex->startTime;
-}
-
-// functions to create tempents from client effect calls
-
-void CreateRavenExplosions(vec3_t pos)
-{
-	h2explosion_t	*ex;
-
-	ex = CLH2_AllocExplosion ();
-	VectorCopy(pos, ex->origin);
-	ex->velocity[2] = 8;
-	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTimeFloat;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-
-	ex = CLH2_AllocExplosion ();
-	VectorCopy(pos, ex->origin);
-	ex->origin[2] -= 5;
-	ex->velocity[2] = 8;
-	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTimeFloat;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-
-	ex = CLH2_AllocExplosion ();
-	VectorCopy(pos, ex->origin);
-	ex->origin[2] -= 10;
-	ex->velocity[2] = 8;
-	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTimeFloat;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-}
-
-void CreateRavenDeath(vec3_t pos)
-{
-	h2explosion_t	*ex;
-
-	ex = CLH2_AllocExplosion ();
-	VectorCopy(pos, ex->origin);
-	ex->velocity[1] = 8;
-	ex->velocity[2] = -10;
-	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTimeFloat;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-
-	ex = CLH2_AllocExplosion ();
-	VectorCopy(pos, ex->origin);
-	ex->velocity[2] = -10;
-	ex->model = R_RegisterModel("models/redsmk1.spr");
-	ex->startTime = cl.serverTimeFloat;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-
-	ex = CLH2_AllocExplosion ();
-	VectorCopy(pos, ex->origin);
-	ex->velocity[1] = -8;
-	ex->velocity[2] = -10;
-	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTimeFloat;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-	
-	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_ravendie, 1, 1);
 }
 
 void CreateExplosionWithSound(vec3_t pos)

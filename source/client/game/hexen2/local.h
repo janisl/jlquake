@@ -91,7 +91,6 @@ extern sfxHandle_t clh2_fxsfx_met2stn;
 extern h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
 extern sfxHandle_t clh2_sfx_explode;
-extern sfxHandle_t clh2_sfx_ravendie;
 
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
@@ -152,5 +151,7 @@ void CLHW_ParseBigGrenade(QMsg& message);
 void CLHW_ParseXBowHit(QMsg& message);
 void CLHW_ParseBonePower(QMsg& message);
 void CLHW_ParseBonePower2(QMsg& message);
+void CLHW_CreateRavenDeath(const vec3_t pos);
 void CLHW_ParseRavenDie(QMsg& message);
+void CLHW_CreateRavenExplosions(const vec3_t pos);
 void CLHW_ParseRavenExplode(QMsg& message);

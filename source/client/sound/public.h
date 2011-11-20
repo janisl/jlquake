@@ -46,7 +46,7 @@ void S_StopAllSounds();
 void S_ClearSoundBuffer();
 
 // if origin is NULL, the sound will be dynamically sourced from the entity
-void S_StartSound(vec3_t Origin, int EntityNumber, int EntityChannel, sfxHandle_t SfxHandle, float FVolume = 1, float Attenuation = 1, float TimeOffset = 0);
+void S_StartSound(const vec3_t Origin, int EntityNumber, int EntityChannel, sfxHandle_t SfxHandle, float FVolume = 1, float Attenuation = 1, float TimeOffset = 0);
 void S_StartLocalSound(const char* Sound);
 void S_StartLocalSound(sfxHandle_t SfxHandle, int ChannelNumber);
 void S_StopSound(int EntityNumber, int EntityChannel);
