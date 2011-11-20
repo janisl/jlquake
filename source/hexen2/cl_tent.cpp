@@ -59,7 +59,6 @@ static sfxHandle_t cl_sfx_tink1;
 static sfxHandle_t cl_sfx_ric1;
 static sfxHandle_t cl_sfx_ric2;
 static sfxHandle_t cl_sfx_ric3;
-static sfxHandle_t cl_sfx_r_exp3;
 
 // CODE --------------------------------------------------------------------
 
@@ -75,7 +74,6 @@ void CL_InitTEnts(void)
 	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
 	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
 	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
-	cl_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
 }
 
 //==========================================================================

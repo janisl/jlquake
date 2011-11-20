@@ -20,7 +20,6 @@
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 extern void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest);
 extern void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
-extern void CLTENT_SpawnDeathBubble(vec3_t pos);
 h2entity_state_t *FindState(int EntNum);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------

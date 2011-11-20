@@ -90,6 +90,9 @@ extern sfxHandle_t clh2_fxsfx_met2stn;
 
 extern h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
+extern sfxHandle_t clh2_sfx_explode;
+extern sfxHandle_t clh2_sfx_ravendie;
+
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -137,5 +140,17 @@ void CLH2_InitChunkAngles(vec3_t angles);
 void CLH2_InitChunkAngleVelocity(vec3_t avel);
 void CLH2_InitChunkEffect(h2EffectT& effect);
 
+void CLHW_InitExplosionSounds();
 void CLH2_ClearExplosions();
 h2explosion_t* CLH2_AllocExplosion();
+void CLTENT_SpawnDeathBubble(const vec3_t pos);
+void MissileFlashThink(h2explosion_t *ex);
+void CLHW_ParseMissileFlash(QMsg& message);
+void CLHW_InitChunkExplosionCommon(h2explosion_t* ex, int chType);
+void CLHW_ParseDrillaExplode(QMsg& message);
+void CLHW_ParseBigGrenade(QMsg& message);
+void CLHW_ParseXBowHit(QMsg& message);
+void CLHW_ParseBonePower(QMsg& message);
+void CLHW_ParseBonePower2(QMsg& message);
+void CLHW_ParseRavenDie(QMsg& message);
+void CLHW_ParseRavenExplode(QMsg& message);
