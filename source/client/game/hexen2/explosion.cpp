@@ -152,12 +152,10 @@ static void BubbleThink(h2explosion_t* ex)
 
 void CLHW_SpawnDeathBubble(const vec3_t pos)
 {
-	h2explosion_t	*ex;
-
 	//generic spinny impact image
-	ex=CLH2_AllocExplosion();
-	VectorCopy(pos,ex->origin);
-	VectorSet(ex->velocity,0,0,17);
+	h2explosion_t* ex = CLH2_AllocExplosion();
+	VectorCopy(pos, ex->origin);
+	VectorSet(ex->velocity, 0, 0, 17);
 	ex->data = cl_common->serverTime * 0.001;
 	ex->scale = 128;
 	ex->frameFunc = BubbleThink;
@@ -449,28 +447,23 @@ void CLHW_ParseBigGrenade(QMsg& message)
 	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 }
 
-void CLHW_ParseXBowHit(QMsg& message)
+static void CLHW_XBowHit(const vec3_t pos, const vec3_t vel, int damage, int absoluteLight, void (*frameFunc)(h2explosion_t *ex))
 {
-	vec3_t pos, vel;
-	message.ReadPos(pos);
-	message.ReadPos(vel);
-	message.ReadByte();	//	Chunk type, unused
-	int damage = message.ReadByte();
-
 	//	generic spinny impact image
 	h2explosion_t* ex = CLH2_AllocExplosion();
+	ex->frameFunc = frameFunc;
 	ex->origin[0] = pos[0] - vel[0];
 	ex->origin[1] = pos[1] - vel[1];
 	ex->origin[2] = pos[2] - vel[2];
 	VecToAnglesBuggy(vel, ex->angles);
-	ex->avel[2] = (rand()  %500) + 200;
+	ex->avel[2] = (rand() % 500) + 200;
 	ex->scale = 10;
 	ex->startTime = cl_common->serverTime * 0.001;
 	ex->endTime = cl_common->serverTime * 0.001 + 0.3;
 	ex->model = R_RegisterModel("models/arrowhit.mdl");
 	ex->exflags = EXFLAG_ROTATE;
 	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
-	ex->abslight = 128;
+	ex->abslight = absoluteLight;
 
 	//	white smoke if invulnerable impact
 	if (!damage)
@@ -488,6 +481,17 @@ void CLHW_ParseXBowHit(QMsg& message)
 		ex->model = R_RegisterModel("models/whtsmk1.spr");
 		ex->flags = H2DRF_TRANSLUCENT;
 	}
+}
+
+void CLHW_ParseXBowHit(QMsg& message)
+{
+	vec3_t pos, vel;
+	message.ReadPos(pos);
+	message.ReadPos(vel);
+	message.ReadByte();	//	Chunk type, unused
+	int damage = message.ReadByte();
+
+	CLHW_XBowHit(pos, vel, damage, 128, NULL);
 }
 
 // remove tent if not in open air
@@ -1185,52 +1189,18 @@ void CLHW_ParseAcidBlob(QMsg& message)
 
 void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage, int arrowType)//arrowType is total # of arrows in effect
 {
-	float cnt;
-	int i;
+	CLHW_XBowHit(pos, vel, damage, 175, MissileFlashThink);
 
-	//	generic spinny impact image
-	h2explosion_t* ex = CLH2_AllocExplosion();
-	ex->origin[0] = pos[0] - vel[0];
-	ex->origin[1] = pos[1] - vel[1];
-	ex->origin[2] = pos[2] - vel[2];
-	VecToAnglesBuggy(vel, ex->angles);
-	ex->avel[2] = (rand() % 500) + 200;
-	ex->scale = 10;
-	ex->frameFunc = MissileFlashThink;
-	ex->startTime = cl_common->serverTime * 0.001;
-	ex->endTime = cl_common->serverTime * 0.001 + 0.3;
-	ex->model = R_RegisterModel("models/arrowhit.mdl");
-	ex->exflags = EXFLAG_ROTATE;
-	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
-	ex->abslight = 175;
-
-	//white smoke if invulnerable impact
 	if (!damage)
 	{
-		ex = CLH2_AllocExplosion();
-		ex->origin[0] = pos[0] - vel[0] * 2;
-		ex->origin[1] = pos[1] - vel[1] * 2;
-		ex->origin[2] = pos[2] - vel[2] * 2;
-		ex->velocity[0] = 0.0;
-		ex->velocity[1] = 0.0;
-		ex->velocity[2] = 80.0;
-		VecToAnglesBuggy(vel, ex->angles);
-		ex->startTime = cl_common->serverTime * 0.001;
-		ex->endTime = cl_common->serverTime * 0.001 + 0.35;
-		ex->model = R_RegisterModel("models/whtsmk1.spr");
-		ex->flags = H2DRF_TRANSLUCENT;
-
 		if (arrowType == 3)//little arrows go away
 		{
 			if (rand() & 3)//chunky go
 			{
-				cnt	= rand() % 2 + 1;
-
-				for (i = 0; i < cnt; i++)
+				int cnt	= rand() % 2 + 1;
+				for (int i = 0; i < cnt; i++)
 				{
-					float final;
-
-					ex = CLH2_AllocExplosion();
+					h2explosion_t* ex = CLH2_AllocExplosion();
 					ex->frameFunc = ChunkThink;
 
 					VectorSubtract(pos,vel,ex->origin);
@@ -1253,24 +1223,9 @@ void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage,
 
 					ex->data = H2THINGTYPE_WOOD;
 
-					final = (rand() % 100) * .01;
-
-					if (final < 0.25)
-					{
-						ex->model = R_RegisterModel("models/splnter1.mdl");
-					}
-					else if (final < 0.50)
-					{
-						ex->model = R_RegisterModel("models/splnter2.mdl");
-					}
-					else if (final < 0.75)
-					{
-						ex->model = R_RegisterModel("models/splnter3.mdl");
-					}
-					else
-					{
-						ex->model = R_RegisterModel("models/splnter4.mdl");
-					}
+					int tmpFrame;
+					int tmpAbsoluteLight;
+					CLH2_InitChunkModel(H2THINGTYPE_WOOD, &ex->model, &ex->skin, &ex->flags, &tmpFrame, &tmpAbsoluteLight);
 
 					ex->startTime = cl_common->serverTime * 0.001;
 					ex->endTime = ex->startTime + 4.0;
@@ -1278,33 +1233,33 @@ void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage,
 			}
 			else if (rand() & 1)//whole go
 			{
-					ex = CLH2_AllocExplosion();
-					ex->frameFunc = ChunkThink;
+				h2explosion_t* ex = CLH2_AllocExplosion();
+				ex->frameFunc = ChunkThink;
 
-					VectorSubtract(pos, vel, ex->origin);
-					// temp modify them...
-					ex->velocity[0] = (rand() % 140) - 70;
-					ex->velocity[1] = (rand() % 140) - 70;
-					ex->velocity[2] = (rand() % 140) - 70;
+				VectorSubtract(pos, vel, ex->origin);
+				// temp modify them...
+				ex->velocity[0] = (rand() % 140) - 70;
+				ex->velocity[1] = (rand() % 140) - 70;
+				ex->velocity[2] = (rand() % 140) - 70;
 
-					// are these in degrees or radians?
-					ex->angles[0] = rand() % 360;
-					ex->angles[1] = rand() % 360;
-					ex->angles[2] = rand() % 360;
-					ex->exflags = EXFLAG_ROTATE;
+				// are these in degrees or radians?
+				ex->angles[0] = rand() % 360;
+				ex->angles[1] = rand() % 360;
+				ex->angles[2] = rand() % 360;
+				ex->exflags = EXFLAG_ROTATE;
 
-					ex->avel[0] = rand() % 850 - 425;
-					ex->avel[1] = rand() % 850 - 425;
-					ex->avel[2] = rand() % 850 - 425;
+				ex->avel[0] = rand() % 850 - 425;
+				ex->avel[1] = rand() % 850 - 425;
+				ex->avel[2] = rand() % 850 - 425;
 
-					ex->scale = 128;
+				ex->scale = 128;
 
-					ex->data = H2THINGTYPE_WOOD;
+				ex->data = H2THINGTYPE_WOOD;
 
-					ex->model = R_RegisterModel("models/arrow.mdl");
+				ex->model = R_RegisterModel("models/arrow.mdl");
 
-					ex->startTime = cl_common->serverTime * 0.001;
-					ex->endTime = ex->startTime + 4.0;
+				ex->startTime = cl_common->serverTime * 0.001;
+				ex->endTime = ex->startTime + 4.0;
 			}
 		}
 	}
