@@ -51,6 +51,7 @@
 #include "quake2defs.h"
 #include "quake3defs.h"
 #include "virtual_machine/public.h"
+#include "player_move.h"
 
 int Com_Milliseconds();
 

@@ -2,8 +2,6 @@
 #include "quakedef.h"
 
 
-movevars_t		movevars;
-
 playermove_t	pmove;
 
 int			onground;

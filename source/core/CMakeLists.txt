@@ -32,6 +32,7 @@ set(CORE_FILES
 	md4.cpp
 	memory.cpp
 	message.cpp
+	player_move1.cpp
 	socket.cpp
 	socket_unix.cpp
 	strings.cpp

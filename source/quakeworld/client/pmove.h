@@ -53,21 +53,7 @@ typedef struct
 	int		touchindex[MAX_PHYSENTS];
 } playermove_t;
 
-typedef struct {
-	float	gravity;
-	float	stopspeed;
-	float	maxspeed;
-	float	spectatormaxspeed;
-	float	accelerate;
-	float	airaccelerate;
-	float	wateraccelerate;
-	float	friction;
-	float	waterfriction;
-	float	entgravity;
-} movevars_t;
 
-
-extern	movevars_t		movevars;
 extern	playermove_t	pmove;
 extern	int		onground;
 extern	int		waterlevel;

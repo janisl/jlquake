@@ -746,6 +746,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\player_move1.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\player_move.h"
+			>
+		</File>
+		<File
 			RelativePath=".\socket.cpp"
 			>
 		</File>
