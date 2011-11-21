@@ -32,6 +32,18 @@
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
 
+#define CSHIFT_CONTENTS	0
+#define CSHIFT_DAMAGE	1
+#define CSHIFT_BONUS	2
+#define CSHIFT_POWERUP	3
+#define NUM_CSHIFTS		4
+
+struct cshift_t
+{
+	int		destcolor[3];
+	int		percent;		// 0-256
+};
+
 extern Cvar*		cl_inGameVideo;
 
 void CL_SharedInit();
@@ -62,6 +74,10 @@ struct clientActiveCommon_t
 	refdef_t refdef;
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
 	int viewentity;			// cl_entitites[cl.viewentity] = player
+
+	//	Only for Quake and Hexen 2
+	cshift_t cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
+	cshift_t prev_cshifts[NUM_CSHIFTS];	// and content types
 
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 

@@ -47,20 +47,6 @@ typedef struct
 } frame_t;
 
 
-typedef struct
-{
-	int		destcolor[3];
-	int		percent;		// 0-256
-} cshift_t;
-
-#define	CSHIFT_CONTENTS		0
-#define	CSHIFT_DAMAGE		1
-#define	CSHIFT_BONUS		2
-#define	CSHIFT_POWERUP		3
-#define	CSHIFT_INTERVENTION 4
-#define	NUM_CSHIFTS			5
-
-
 //
 // client_state_t should hold all pieces of the client state
 //
@@ -214,9 +200,6 @@ struct client_state_t : clientActiveCommon_t
 
 	client_entvars_t	v; // NOTE: not every field will be update - you must specifically add
 	                   // them in functions SV_WriteClientdatatToMessage() and CL_ParseClientdata()
-
-	cshift_t	cshifts[NUM_CSHIFTS];	// color shifts for damage, powerups
-	cshift_t	prev_cshifts[NUM_CSHIFTS];	// and content types
 
 	char puzzle_pieces[8][10]; // puzzle piece names
 

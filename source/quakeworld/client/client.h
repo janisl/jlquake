@@ -96,19 +96,6 @@ typedef struct
 } frame_t;
 
 
-typedef struct
-{
-	int		destcolor[3];
-	int		percent;		// 0-256
-} cshift_t;
-
-#define	CSHIFT_CONTENTS	0
-#define	CSHIFT_DAMAGE	1
-#define	CSHIFT_BONUS	2
-#define	CSHIFT_POWERUP	3
-#define	NUM_CSHIFTS		4
-
-
 //
 // client_state_t should hold all pieces of the client state
 //
@@ -213,9 +200,6 @@ struct client_state_t : clientActiveCommon_t
 	int			stats[MAX_CL_STATS];	// health, etc
 	float		item_gettime[32];	// cl.time of aquiring item, for blinking
 	float		faceanimtime;		// use anim frame if cl.time < this
-
-	cshift_t	cshifts[NUM_CSHIFTS];	// color shifts for damage, powerups
-	cshift_t	prev_cshifts[NUM_CSHIFTS];	// and content types
 
 // the client maintains its own idea of view angles, which are
 // sent to the server each frame.  And only reset at level change
