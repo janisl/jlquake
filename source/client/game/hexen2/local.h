@@ -99,6 +99,7 @@ void CLHW_UpdateEffectEidolonStar(int index, float frametime);
 void CLHW_UpdateEffectMissileStar(int index, float frametime);
 void CLH2_UpdateEffectChunk(int index, float frametime);
 void CLH2_UpdateEffectRiderDeath(int index, float frametime);
+void CLH2_UpdateEffect(int index, float frametime);
 
 void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight);
 void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);
