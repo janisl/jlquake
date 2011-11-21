@@ -6,8 +6,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define FRANDOM() (rand()*(1.0/RAND_MAX))
-
 // TYPES -------------------------------------------------------------------
 
 // PUBLIC FUNCTION DEFINITIONS ---------------------------------------------
@@ -1133,104 +1131,6 @@ void CL_ParseTEnt (void)
 	}
 }
 
-/*
-=================
-CL_UpdateExplosions
-=================
-*/
-void CL_UpdateExplosions (void)
-{
-	int			i;
-	int			f;
-	h2explosion_t	*ex;
-
-	for (i=0, ex=clh2_explosions ; i< H2MAX_EXPLOSIONS ; i++, ex++)
-	{
-		if (!ex->model)
-			continue;
-
-		if(ex->exflags & EXFLAG_COLLIDE)
-		{
-			if (CM_PointContentsQ1(ex->origin, 0) != BSP29CONTENTS_EMPTY)
-			{
-				if (ex->removeFunc)
-				{
-					ex->removeFunc(ex);
-				}
-				ex->model = 0;
-				continue;
-			}
-		}
-
-
-		// if we hit endTime, get rid of explosion (i assume endTime is greater than startTime, etc)
-		if (ex->endTime <= cl_common->serverTime * 0.001)
-		{
-			if (ex->removeFunc)
-			{
-				ex->removeFunc(ex);
-			}
-			ex->model = 0;
-			continue;
-		}
-
-		VectorCopy(ex->origin, ex->oldorg);
-
-		// set the current frame so i finish anim at endTime
-		if(ex->exflags & EXFLAG_STILL_FRAME)
-		{	// if it's a still frame, use the data field
-			f = (int)ex->data;
-		}
-		else
-		{
-			f = (R_ModelNumFrames(ex->model) - 1) * (cl_common->serverTime * 0.001 - ex->startTime) / (ex->endTime - ex->startTime);
-		}
-
-		// apply velocity
-		ex->origin[0] += host_frametime * ex->velocity[0];
-		ex->origin[1] += host_frametime * ex->velocity[1];
-		ex->origin[2] += host_frametime * ex->velocity[2];
-
-		// apply acceleration
-		ex->velocity[0] += host_frametime * ex->accel[0];
-		ex->velocity[1] += host_frametime * ex->accel[1];
-		ex->velocity[2] += host_frametime * ex->accel[2];
-
-		// add in angular velocity
-		if(ex->exflags & EXFLAG_ROTATE)
-		{
-			VectorMA(ex->angles, host_frametime, ex->avel, ex->angles);
-		}
-		// you can set startTime to some point in the future to delay the explosion showing up or thinking; it'll still move, though
-		if (ex->startTime > cl_common->serverTime * 0.001)
-			continue;
-
-		if (ex->frameFunc)
-		{
-			ex->frameFunc(ex);
-		}
-
-		// allow for the possibility for the frame func to reset startTime
-		if (ex->startTime > cl_common->serverTime * 0.001)
-			continue;
-
-		// just incase the frameFunc eliminates the thingy here.
-		if (ex->model == 0)
-			continue;
-
-		refEntity_t	ent;
-		Com_Memset(&ent, 0, sizeof(ent));
-		ent.reType = RT_MODEL;
-		VectorCopy(ex->origin, ent.origin);
-		ent.hModel = ex->model;
-		ent.frame = f;
-		ent.skinNum = ex->skin;
-		CLH2_SetRefEntAxis(&ent, ex->angles, vec3_origin, ex->scale, 0, ex->abslight, ex->flags);
-		CLH2_HandleCustomSkin(&ent, -1);
-		R_AddRefEntityToScene(&ent);
-	}
-}
-
 void CL_UpdateStreams(void)
 {
 	int				i;
@@ -1461,7 +1361,7 @@ CL_UpdateTEnts
 */
 void CL_UpdateTEnts (void)
 {
-	CL_UpdateExplosions ();
+	CLH2_UpdateExplosions ();
 	CL_UpdateStreams();
 	CLHW_UpdateTargetBall(v_targDist, v_targAngle, v_targPitch, cl.simorg);
 }

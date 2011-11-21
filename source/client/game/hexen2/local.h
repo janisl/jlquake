@@ -40,36 +40,6 @@ struct effect_entity_t
 	qhandle_t model;			// 0 = no model
 };
 
-enum exflags_t
-{
-	EXFLAG_ROTATE = 1,
-	EXFLAG_COLLIDE = 2,
-	EXFLAG_STILL_FRAME = 4
-};
-
-#define H2MAX_EXPLOSIONS			128
-
-struct h2explosion_t
-{
-	vec3_t		origin;
-	vec3_t		oldorg;// holds position from last frame
-	float		startTime;
-	float		endTime;
-	vec3_t		velocity;
-	vec3_t		accel;
-	vec3_t		angles;
-	vec3_t		avel;	// angular velocity
-	int			flags;
-	int			abslight;
-	int	        exflags;
-	int			skin;
-	int			scale;
-	qhandle_t	model;
-	void (*frameFunc)(h2explosion_t *ex);
-	void (*removeFunc)(h2explosion_t *ex);
-	float		data; //for easy transition of script code that relied on counters of some sort
-};
-
 extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
@@ -87,8 +57,6 @@ extern sfxHandle_t clh2_fxsfx_drillameat;
 extern sfxHandle_t clh2_fxsfx_arr2flsh;
 extern sfxHandle_t clh2_fxsfx_arr2wood;
 extern sfxHandle_t clh2_fxsfx_met2stn;
-
-extern h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
@@ -191,3 +159,4 @@ void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles);
 void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num);
 void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
 void CLHW_UpdateTargetBall(float targetDistance, float targetAngle, float targetPitch, const vec3_t viewOrigin);
+void CLH2_UpdateExplosions();
