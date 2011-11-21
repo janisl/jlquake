@@ -1062,42 +1062,6 @@ void CL_EndEffect(void)
 	CLH2_FreeEffect(index);
 }
 
-void CLH2_UpdateEffectRiderDeath(int index, float frametime)
-{
-	cl.h2_Effects[index].RD.time_amount += frametime;
-	if (cl.h2_Effects[index].RD.time_amount >= 1)
-	{
-		cl.h2_Effects[index].RD.stage++;
-		cl.h2_Effects[index].RD.time_amount -= 1;
-	}
-
-	vec3_t org;
-	VectorCopy(cl.h2_Effects[index].RD.origin, org);
-	org[0] += sin(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
-	org[1] += cos(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
-
-	if (cl.h2_Effects[index].RD.stage <= 6)
-	{
-		CLH2_RiderParticles(cl.h2_Effects[index].RD.stage + 1, org);
-	}
-	else
-	{
-		// To set the rider's origin point for the particles
-		CLH2_RiderParticles(0, org);
-		if (cl.h2_Effects[index].RD.stage == 7) 
-		{
-			cl.cshifts[CSHIFT_BONUS].destcolor[0] = 255;
-			cl.cshifts[CSHIFT_BONUS].destcolor[1] = 255;
-			cl.cshifts[CSHIFT_BONUS].destcolor[2] = 255;
-			cl.cshifts[CSHIFT_BONUS].percent = 256;
-		}
-		else if (cl.h2_Effects[index].RD.stage > 13) 
-		{
-			CLH2_FreeEffect(index);
-		}
-	}
-}
-
 void CL_UpdateEffects()
 {
 	if (cls.state == ca_disconnected)

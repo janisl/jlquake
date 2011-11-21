@@ -2568,3 +2568,39 @@ void CLH2_UpdateEffectChunk(int index, float frametime)
 		}
 	}
 }
+
+void CLH2_UpdateEffectRiderDeath(int index, float frametime)
+{
+	cl_common->h2_Effects[index].RD.time_amount += frametime;
+	if (cl_common->h2_Effects[index].RD.time_amount >= 1)
+	{
+		cl_common->h2_Effects[index].RD.stage++;
+		cl_common->h2_Effects[index].RD.time_amount -= 1;
+	}
+
+	vec3_t org;
+	VectorCopy(cl_common->h2_Effects[index].RD.origin, org);
+	org[0] += sin(cl_common->h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
+	org[1] += cos(cl_common->h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
+
+	if (cl_common->h2_Effects[index].RD.stage <= 6)
+	{
+		CLH2_RiderParticles(cl_common->h2_Effects[index].RD.stage + 1, org);
+	}
+	else
+	{
+		// To set the rider's origin point for the particles
+		CLH2_RiderParticles(0, org);
+		if (cl_common->h2_Effects[index].RD.stage == 7) 
+		{
+			cl_common->cshifts[CSHIFT_BONUS].destcolor[0] = 255;
+			cl_common->cshifts[CSHIFT_BONUS].destcolor[1] = 255;
+			cl_common->cshifts[CSHIFT_BONUS].destcolor[2] = 255;
+			cl_common->cshifts[CSHIFT_BONUS].percent = 256;
+		}
+		else if (cl_common->h2_Effects[index].RD.stage > 13) 
+		{
+			CLH2_FreeEffect(index);
+		}
+	}
+}
