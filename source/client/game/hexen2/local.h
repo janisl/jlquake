@@ -90,9 +90,6 @@ extern sfxHandle_t clh2_fxsfx_met2stn;
 
 extern h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
-extern sfxHandle_t clh2_sfx_explode;
-extern sfxHandle_t clh2_sfx_flameend;
-
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -142,7 +139,6 @@ void CLH2_InitChunkEffect(h2EffectT& effect);
 
 void CLHW_InitExplosionSounds();
 void CLH2_ClearExplosions();
-h2explosion_t* CLH2_AllocExplosion();
 void CLHW_SpawnDeathBubble(const vec3_t pos);
 void CLHW_ParseMissileFlash(QMsg& message);
 void CLHW_ParseDrillaExplode(QMsg& message);
@@ -189,3 +185,9 @@ void CLHW_ParseLightningBall(QMsg& message);
 void CLHW_ParseAcidBallFly(QMsg& message);
 void CLHW_ParseAcidBlobFly(QMsg& message);
 void CLHW_ChainLightningExplosion(const vec3_t pos);
+void CLHW_CreateExplosionWithSound(const vec3_t pos);
+void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles);
+void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles);
+void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num);
+void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
+void CLHW_UpdateTargetBall(float targetDistance, float targetAngle, float targetPitch, const vec3_t viewOrigin);

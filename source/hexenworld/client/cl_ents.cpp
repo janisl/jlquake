@@ -391,7 +391,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 
 	if(effects & EF_POISON_GAS)
 	{
-		CL_UpdatePoisonGas(ent, angles, number);
+		CLHW_UpdatePoisonGas(ent->origin, angles);
 	}
 	if(effects & EF_ACIDBLOB)
 	{
@@ -401,15 +401,15 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 
 		rotateSet = 1;
 
-		CL_UpdateAcidBlob(ent, angles, number);
+		CLHW_UpdateAcidBlob(ent->origin, angles);
 	}
 	if(effects & EF_ONFIRE)
 	{
-		CL_UpdateOnFire(ent, angles, number);
+		CLHW_UpdateOnFire(ent, angles, number);
 	}
 	if(effects & EF_POWERFLAMEBURN)
 	{
-		CL_UpdatePowerFlameBurn(ent, number);
+		CLHW_UpdatePowerFlameBurn(ent, number);
 	}
 	if(effects & EF_ICESTORM_EFFECT)
 	{

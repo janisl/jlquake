@@ -21,7 +21,7 @@
 
 h2explosion_t clh2_explosions[H2MAX_EXPLOSIONS];
 
-sfxHandle_t clh2_sfx_explode;
+static sfxHandle_t clh2_sfx_explode;
 static sfxHandle_t clh2_sfx_bonephit;
 static sfxHandle_t clh2_sfx_bonehit;
 static sfxHandle_t clh2_sfx_bonewal;
@@ -44,7 +44,7 @@ static sfxHandle_t clh2_sfx_fireBall;
 static sfxHandle_t clh2_sfx_purify2;
 static sfxHandle_t clh2_sfx_purify1_fire;
 static sfxHandle_t clh2_sfx_purify1_hit;
-sfxHandle_t clh2_sfx_flameend;
+static sfxHandle_t clh2_sfx_flameend;
 
 static int MultiGrenadeCurrentChannel;
 
@@ -86,7 +86,7 @@ void CLH2_ClearExplosions()
 }
 
 //**** CAREFUL!!! This may overwrite an explosion!!!!!
-h2explosion_t* CLH2_AllocExplosion()
+static h2explosion_t* CLH2_AllocExplosion()
 {
 	int index = 0;
 	bool freeSlot = false;
@@ -2696,4 +2696,308 @@ void CLHW_ChainLightningExplosion(const vec3_t pos)
 	ex->skin = rand() & 1;
 	ex->scale = 150;
 	ex->frameFunc = zapFrameFunc;
+}
+
+void CLHW_CreateExplosionWithSound(const vec3_t pos)
+{
+	h2explosion_t* ex = CLH2_AllocExplosion();
+	VectorCopy(pos, ex->origin);
+	ex->startTime = cl_common->serverTime * 0.001;
+	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
+	ex->model = R_RegisterModel("models/sm_expld.spr");
+	
+	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_explode, 1, 1);
+}
+
+void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles)
+{
+	float smokeCount;
+	if (cls_common->frametime <= 50)
+	{
+		smokeCount = 32 * cls_common->frametime * 0.001;
+	}
+	else
+	{
+		smokeCount = 16 * cls_common->frametime * 0.001;
+	}
+
+	while (smokeCount > 0)
+	{
+		if (smokeCount < 1.0)
+		{
+			if ((rand() % 100) / 100 > smokeCount)
+			{
+				// account for fractional chance of more smoke...
+				smokeCount = 0;
+				continue;
+			}
+		}
+
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(pos, ex->origin);
+		ex->model = R_RegisterModel("models/grnsmk1.spr");
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = ex->startTime + .7 + (rand() % 200) * .001;
+
+		ex->scale = 100;
+
+		VectorCopy(angles, ex->angles);
+		ex->angles[2] += 90;
+		ex->skin = 0;
+
+		ex->velocity[0] = (rand() % 100) - 50;
+		ex->velocity[1] = (rand() % 100) - 50;
+		ex->velocity[2] = 150.0;
+
+		ex->flags |= H2DRF_TRANSLUCENT | H2SCALE_ORIGIN_CENTER;
+
+		smokeCount -= 1.0;
+	}
+}
+
+void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles)
+{
+	int testVal = cl_common->serverTime / 100;
+	int testVal2 = (cl_common->serverTime - cls_common->frametime) / 100;
+
+	if (testVal != testVal2)
+	{
+		if (!(testVal % 2))
+		{
+			h2explosion_t* ex = CLH2_AllocExplosion();
+			VectorCopy(pos, ex->origin);
+			ex->model = R_RegisterModel("models/muzzle1.spr");
+			ex->startTime = cl_common->serverTime * 0.001;
+			ex->endTime = ex->startTime + .4;
+
+			ex->scale = 100;
+
+			VectorCopy(angles, ex->angles);
+			ex->angles[2] += 90;
+			ex->skin = 0;
+
+			ex->velocity[0] = 0;
+			ex->velocity[1] = 0;
+			ex->velocity[2] = 0;
+
+			ex->flags |= H2DRF_TRANSLUCENT | H2SCALE_ORIGIN_CENTER;
+		}
+	}
+}
+
+void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
+{
+	if (rand() % 100 < cls_common->frametime / 2)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(ent->origin, ex->origin);
+
+		//raise and randomize origin some
+		ex->origin[0] += (rand() % 10) - 5;
+		ex->origin[1] += (rand() % 10) - 5;
+		ex->origin[2] += rand() % 20 + 10;//at least 10 up from origin, sprite's origin is in center!
+
+		switch (rand() % 3)
+		{
+		case 0:
+			ex->model = R_RegisterModel("models/firewal1.spr");
+			break;
+		case 1:
+			ex->model = R_RegisterModel("models/firewal2.spr");
+			break;
+		case 2:
+			ex->model = R_RegisterModel("models/firewal3.spr");
+			break;
+		}
+		
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+
+		ex->scale = 100;
+
+		VectorCopy(angles, ex->angles);
+		ex->angles[2] += 90;
+
+		ex->velocity[0] = (rand() % 40) - 20;
+		ex->velocity[1] = (rand() % 40) - 20;
+		ex->velocity[2] = 50 + (rand() % 100);
+
+		if (rand() % 5)//translucent 80% of the time
+		{
+			ex->flags |= H2DRF_TRANSLUCENT;
+		}
+	}
+}
+
+static void PowerFlameBurnRemove(h2explosion_t* ex)
+{
+	h2explosion_t* ex2 = CLH2_AllocExplosion();
+	VectorCopy(ex->origin, ex2->origin);
+	switch (rand() % 3)
+	{
+	case 0:
+		ex2->model = R_RegisterModel("models/sm_expld.spr");
+		break;
+	case 1:
+		ex2->model = R_RegisterModel("models/fboom.spr");
+		break;
+	case 2:
+		ex2->model = R_RegisterModel("models/pow.spr");
+		break;
+	}
+	ex2->startTime = cl_common->serverTime * 0.001;
+	ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
+
+	ex2->scale = 100;
+
+	ex2->flags |= H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT;
+	ex2->abslight = 128;
+
+	
+	if (rand() & 1)
+	{
+		S_StartSound(ex2->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_flameend, 1, 1);
+	}
+}
+
+void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
+{
+	if (rand() % 100 < cls_common->frametime)
+	{
+		h2explosion_t* ex = CLH2_AllocExplosion();
+		VectorCopy(ent->origin, ex->origin);
+		ex->origin[0] += (rand() % 120) - 60;
+		ex->origin[1] += (rand() % 120) - 60;
+		ex->origin[2] += (rand() % 120) - 60 + 120;
+		ex->model = R_RegisterModel("models/sucwp1p.mdl");
+		ex->startTime = cl_common->serverTime * 0.001;
+		ex->endTime = ex->startTime + .25;
+		ex->removeFunc = PowerFlameBurnRemove;
+
+		ex->scale = 100;
+
+		vec3_t srcVec;
+		VectorSubtract(ent->origin, ex->origin, srcVec);
+		VectorCopy(srcVec, ex->velocity);
+		ex->velocity[2] += 24;
+		VectorScale(ex->velocity, 1.0 / .25, ex->velocity);
+		VectorNormalize(srcVec);
+		VecToAnglesBuggy(srcVec, ex->angles);
+
+		ex->flags |= H2MLS_ABSLIGHT;
+		ex->abslight = 128;
+
+		// I'm not seeing this right now... (?)
+		h2explosion_t* ex2 = CLH2_AllocExplosion();
+		VectorCopy(ex->origin, ex2->origin);
+		ex2->model = R_RegisterModel("models/flamestr.spr");
+		ex2->startTime = cl_common->serverTime * 0.001;
+		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
+		ex2->flags |= H2DRF_TRANSLUCENT;
+	}
+}
+
+void CLHW_UpdateTargetBall(float targetDistance, float targetAngle, float targetPitch, const vec3_t viewOrigin)
+{
+	int i;
+	vec3_t		newOrg;
+	float		newScale;
+
+	if (targetDistance < 24)
+	{
+		// either there is no ball, or it's too close to be needed...
+		return;
+	}
+
+	// search for the two thingies.  If they don't exist, make new ones and set v_oldTargOrg
+
+	qhandle_t iceMod = R_RegisterModel("models/iceshot2.mdl");
+
+	h2explosion_t* ex1 = NULL;
+	h2explosion_t* ex2 = NULL;
+	for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
+	{
+		if (clh2_explosions[i].endTime > cl_common->serverTime * 0.001)
+		{
+			// make certain it's an active one
+			if (clh2_explosions[i].model == iceMod)
+			{
+				if (clh2_explosions[i].flags & H2DRF_TRANSLUCENT)
+				{
+					ex1 = &clh2_explosions[i];
+				}
+				else
+				{
+					ex2 = &clh2_explosions[i];
+				}
+			}
+		}
+	}
+
+	VectorCopy(viewOrigin, newOrg);
+	newOrg[0] += cos(targetAngle * M_PI * 2 / 256.0) * 50 * cos(targetPitch * M_PI * 2 / 256.0);
+	newOrg[1] += sin(targetAngle * M_PI * 2 / 256.0) * 50 * cos(targetPitch * M_PI * 2 / 256.0);
+	newOrg[2] += 44 + sin(targetPitch * M_PI * 2 / 256.0) * 50 + cos(cl_common->serverTime * 0.001 * 2) * 5;
+	if (targetDistance < 60)
+	{
+		// make it scale back down up close...
+		newScale = 172 - (172 * (1.0 - (targetDistance - 24.0) / 36.0));
+	}
+	else
+	{
+		newScale = 80 + (120 * ((256.0 - targetDistance) / 256.0));
+	}
+	if (ex1 == NULL)
+	{
+		ex1 = CLH2_AllocExplosion();
+		ex1->model = iceMod;
+		ex1->exflags |= EXFLAG_STILL_FRAME;
+		ex1->data = 0;
+
+		ex1->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
+		ex1->skin = 0;
+		VectorCopy(newOrg, ex1->origin);
+		ex1->scale = newScale;
+	}
+
+	VectorScale(ex1->origin, (.75 - cls_common->frametime * 0.001 * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
+	VectorMA(ex1->origin, (.25 + cls_common->frametime * 0.001 * 1.5), newOrg, ex1->origin);
+	ex1->startTime = cl_common->serverTime * 0.001;
+	ex1->endTime = ex1->startTime + cls_common->frametime * 0.001 + 0.2;
+	ex1->scale = (ex1->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
+	ex1->angles[0] = targetPitch * 360 / 256.0;
+	ex1->angles[1] = targetAngle * 360 / 256.0;
+	ex1->angles[2] = cl_common->serverTime * 0.001 * 240;
+	ex1->abslight = 96 + (32 * cos(cl_common->serverTime * 0.001*6.5)) + (64 * ((256.0 - targetDistance) / 256.0));
+
+	if (targetDistance < 60)
+	{
+		// make it scale back down up close...
+		newScale = 76 - (76 * (1.0 - (targetDistance - 24.0) / 36.0));
+	}
+	else
+	{
+		newScale = 30 + (60 * ((256.0 - targetDistance) / 256.0));
+	}
+	if (ex2 == NULL)
+	{
+		ex2 = CLH2_AllocExplosion();
+		ex2->model = iceMod;
+		ex2->exflags |= EXFLAG_STILL_FRAME;
+		ex2->data = 0;
+
+		ex2->flags |= H2MLS_ABSLIGHT;
+		ex2->skin = 0;
+		ex2->scale = newScale;
+	}
+	VectorCopy(ex1->origin, ex2->origin);
+	ex2->startTime = cl_common->serverTime * 0.001;
+	ex2->endTime = ex2->startTime + cls_common->frametime * 0.001 + 0.2;
+	ex2->scale = (ex2->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
+	ex2->angles[0] = ex1->angles[0];
+	ex2->angles[1] = ex1->angles[1];
+	ex2->angles[2] = cl_common->serverTime * 0.001 * -360;
+	ex2->abslight = 96 + (128 * cos(cl_common->serverTime * 0.001 * 4.5));
+
+	CLHW_TargetBallEffectParticles (ex1->origin, targetDistance);
 }

@@ -33,9 +33,6 @@ h2entity_state_t *FindState(int EntNum);
 
 // CODE --------------------------------------------------------------------
 
-// these are in cl_tent.c
-void CreateExplosionWithSound(vec3_t pos);
-
 void CL_EndEffect(void)
 {
 	int index;
@@ -56,7 +53,7 @@ void CL_EndEffect(void)
 		if(cl.h2_Effects[index].Missile.entity_index > -1)
 		{
 			ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-			CreateExplosionWithSound(ent->state.origin);
+			CLHW_CreateExplosionWithSound(ent->state.origin);
 		}
 		break;
 	}
