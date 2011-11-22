@@ -47,11 +47,9 @@ extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 
-extern sfxHandle_t clh2_fxsfx_explode;
 extern sfxHandle_t clh2_fxsfx_scarabgrab;
 extern sfxHandle_t clh2_fxsfx_scarabhome;
 extern sfxHandle_t clh2_fxsfx_scarabbyebye;
-extern sfxHandle_t clh2_fxsfx_ravengo;
 extern sfxHandle_t clh2_fxsfx_drillameat;
 
 extern sfxHandle_t clh2_fxsfx_arr2flsh;
