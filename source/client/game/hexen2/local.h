@@ -74,6 +74,7 @@ void CLH2_ClearEffects();
 int CLH2_NewEffectEntity();
 void CLH2_FreeEffect(int index);
 void CLH2_ParseEffect(QMsg& message);
+void CLHW_ParseMultiEffect(QMsg& message);
 void CLH2_LinkEffectEntity(effect_entity_t* entity);
 void CLH2_UpdateEffectRain(int index, float frametime);
 void CLH2_UpdateEffectSnow(int index, float frametime);

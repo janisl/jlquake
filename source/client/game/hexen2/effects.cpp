@@ -1854,6 +1854,46 @@ void CLH2_ParseEffect(QMsg& message)
 	}
 }
 
+static void CLHW_ParseMultiEffectRavenPower(QMsg& message)
+{
+	vec3_t orig, vel;
+	message.ReadPos(orig);
+	message.ReadPos(vel);
+
+	for (int count = 0; count < 3; count++)
+	{
+		int index = message.ReadByte();
+		// create the effect
+		cl_common->h2_Effects[index].type = HWCE_HWRAVENPOWER;
+		VectorCopy(orig, cl_common->h2_Effects[index].Missile.origin);
+		VectorCopy(vel, cl_common->h2_Effects[index].Missile.velocity);
+		VecToAnglesBuggy(cl_common->h2_Effects[index].Missile.velocity, cl_common->h2_Effects[index].Missile.angle);
+		if ((cl_common->h2_Effects[index].Missile.entity_index = CLH2_NewEffectEntity()) != -1)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+			VectorCopy(cl_common->h2_Effects[index].Missile.origin, ent->state.origin);
+			VectorCopy(cl_common->h2_Effects[index].Missile.angle, ent->state.angles);
+			ent->model = R_RegisterModel("models/ravproj.mdl");
+			S_StartSound(cl_common->h2_Effects[index].Missile.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ravengo, 1, 1);
+		}
+	}
+	CLHW_CreateRavenExplosions(orig);
+}
+
+// this creates multi effects from one packet
+void CLHW_ParseMultiEffect(QMsg& message)
+{
+	int type = message.ReadByte();
+	switch (type)
+	{
+	case HWCE_HWRAVENPOWER:
+		CLHW_ParseMultiEffectRavenPower(message);
+		break;
+	default:
+		throw Exception("CLHW_ParseMultiEffect: bad type");
+	}
+}
+
 void CLH2_LinkEffectEntity(effect_entity_t* entity)
 {
 	refEntity_t refEntity;

@@ -1534,7 +1534,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_multieffect:
-			CL_ParseMultiEffect();
+			CLHW_ParseMultiEffect(net_message);
 			break;
 
 		case svc_midi_name:
