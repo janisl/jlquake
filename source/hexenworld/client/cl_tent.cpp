@@ -17,11 +17,6 @@ static h2stream_t *NewStream(int ent, int tag, int *isNew);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static sfxHandle_t		cl_sfx_tink1;
-static sfxHandle_t		cl_sfx_ric1;
-static sfxHandle_t		cl_sfx_ric2;
-static sfxHandle_t		cl_sfx_ric3;
-static sfxHandle_t		clh2_sfx_r_exp3;
 static sfxHandle_t		cl_sfx_buzzbee;
 
 static sfxHandle_t		cl_sfx_icestorm;
@@ -41,12 +36,7 @@ CL_ParseTEnts
 */
 void CL_InitTEnts (void)
 {
-	CLHW_InitExplosionSounds();
-	cl_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
-	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
-	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
-	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
-	clh2_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
+	CLH2_InitTEntsCommon();
 	cl_sfx_buzzbee = S_RegisterSound("assassin/scrbfly.wav");
 
 	cl_sfx_icestorm = S_RegisterSound("crusader/blizzard.wav");
@@ -67,24 +57,6 @@ void CL_ClearTEnts (void)
 {
 	CLH2_ClearExplosions();
 	CLH2_ClearStreams();
-}
-
-/*
-=================
-CL_ParseBeam
-=================
-*/
-void CL_ParseBeam ()
-{
-	net_message.ReadShort();
-	
-	net_message.ReadCoord();
-	net_message.ReadCoord();
-	net_message.ReadCoord();
-	
-	net_message.ReadCoord();
-	net_message.ReadCoord();
-	net_message.ReadCoord();
 }
 
 h2entity_state_t *FindState(int EntNum)
@@ -361,671 +333,262 @@ void CL_ParseTEnt (void)
 	int rnd;
 	int cnt, i;
 
-	type = net_message.ReadByte ();
+	type = net_message.ReadByte();
 	switch (type)
 	{
-		case TE_WIZSPIKE:			// spike hitting wall
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 30);
-			break;
-			
-		case TE_KNIGHTSPIKE:			// spike hitting wall
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 20);
-			break;
-			
-		case TE_SPIKE:			// spike hitting wall
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 10);
+	case TE_WIZSPIKE:	// spike hitting wall
+		CLH2_ParseWizSpike(net_message);
+		break;
+	case TE_KNIGHTSPIKE:	// spike hitting wall
+		CLH2_ParseKnightSpike(net_message);
+		break;
+	case TE_SPIKE:			// spike hitting wall
+		CLH2_ParseSpike(net_message);
+		break;
+	case TE_SUPERSPIKE:			// super spike hitting wall
+		CLH2_ParseSuperSpike(net_message);
+		break;
+	case TE_DRILLA_EXPLODE:
+		CLHW_ParseDrillaExplode(net_message);
+		break;
+	case TE_EXPLOSION:			// rocket explosion
+		CLHW_ParseExplosion(net_message);
+		break;
+	case TE_TAREXPLOSION:			// tarbaby explosion
+		CLHW_ParseTarExplosion(net_message);
+		break;
+	case TE_LIGHTNING1:				// lightning bolts
+	case TE_LIGHTNING2:
+	case TE_LIGHTNING3:
+		CLH2_ParseBeam(net_message);
+		break;
 
-			if ( rand() % 5 )
-				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
-			else
+	case TE_STREAM_CHAIN:
+	case TE_STREAM_SUNSTAFF1:
+	case TE_STREAM_SUNSTAFF2:
+	case TE_STREAM_LIGHTNING:
+	case TE_STREAM_LIGHTNING_SMALL:
+	case TE_STREAM_COLORBEAM:
+	case TE_STREAM_ICECHUNKS:
+	case TE_STREAM_GAZE:
+	case TE_STREAM_FAMINE:
+		ParseStream(type);
+		break;
+
+	case TE_LAVASPLASH:	
+		CLH2_ParseLavaSplash(net_message);
+		break;
+	case TE_TELEPORT:
+		CLH2_ParseTeleport(net_message);
+		break;
+	case TE_GUNSHOT:			// bullet hitting wall
+	case TE_BLOOD:				// bullets hitting body
+		CLHW_ParseGunShot(net_message);
+		break;
+	case TE_LIGHTNINGBLOOD:		// lightning hitting body
+		CLHW_ParseLightningBlood(net_message);
+		break;
+	case TE_BIGGRENADE:
+		CLHW_ParseBigGrenade(net_message);
+		break;
+	case TE_CHUNK:
+		CLHW_ParseChunk(net_message);
+		break;
+	case TE_CHUNK2:
+		CLHW_ParseChunk2(net_message);
+		break;
+	case TE_XBOWHIT:
+		CLHW_ParseXBowHit(net_message);
+		break;
+	case TE_METEORHIT:
+		CLHW_ParseMeteorHit(net_message);
+		break;
+	case TE_HWBONEPOWER:
+		CLHW_ParseBonePower(net_message);
+		break;
+	case TE_HWBONEPOWER2:
+		CLHW_ParseBonePower2(net_message);
+		break;
+	case TE_HWRAVENDIE:
+		CLHW_ParseRavenDie(net_message);
+		break;
+	case TE_HWRAVENEXPLODE:
+		CLHW_ParseRavenExplode(net_message);
+		break;
+	case TE_ICEHIT:
+		CLHW_ParseIceHit(net_message);
+		break;
+
+	case TE_ICESTORM:
+		{
+			int				ent;
+			vec3_t			center;
+			h2stream_t		*stream;
+			qhandle_t		models[2];
+			h2entity_state_t	*state;
+			static float	playIceSound = .6;
+
+			ent = net_message.ReadShort();
+
+			state = FindState(ent);
+			if (state)
 			{
-				rnd = rand() & 3;
-				if (rnd == 1)
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
-				else if (rnd == 2)
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
-				else
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
-			}
-			break;
-		case TE_SUPERSPIKE:			// super spike hitting wall
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 20);
+				VectorCopy(state->origin, center);
 
-			if ( rand() % 5 )
-				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
-			else
-			{
-				rnd = rand() & 3;
-				if (rnd == 1)
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
-				else if (rnd == 2)
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
-				else
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
-			}
-			break;
-
-		case TE_DRILLA_EXPLODE:
-			CLHW_ParseDrillaExplode(net_message);
-			break;
-			
-		case TE_EXPLOSION:			// rocket explosion
-		// particles
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_ParticleExplosion (pos);
-			
-		// light
-			CLH2_ExplosionLight(pos);
-		
-		// sound
-			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_r_exp3, 1, 1);
-			break;
-			
-		case TE_TAREXPLOSION:			// tarbaby explosion
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_BlobExplosion (pos);
-
-			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_r_exp3, 1, 1);
-			break;
-
-		case TE_LIGHTNING1:				// lightning bolts
-		case TE_LIGHTNING2:
-		case TE_LIGHTNING3:
-			CL_ParseBeam();
-			break;
-
-		case TE_STREAM_CHAIN:
-		case TE_STREAM_SUNSTAFF1:
-		case TE_STREAM_SUNSTAFF2:
-		case TE_STREAM_LIGHTNING:
-		case TE_STREAM_LIGHTNING_SMALL:
-		case TE_STREAM_COLORBEAM:
-		case TE_STREAM_ICECHUNKS:
-		case TE_STREAM_GAZE:
-		case TE_STREAM_FAMINE:
-			ParseStream(type);
-			break;
-
-		case TE_LAVASPLASH:	
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_LavaSplash (pos);
-			break;
-		
-		case TE_TELEPORT:
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_TeleportSplash (pos);
-			break;
-
-		case TE_GUNSHOT:			// bullet hitting wall
-			cnt = net_message.ReadByte ();
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 20*cnt);
-			break;
-			
-		case TE_BLOOD:				// bullets hitting body
-			cnt = net_message.ReadByte ();
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 20*cnt);
-			break;
-
-		case TE_LIGHTNINGBLOOD:		// lightning hitting body
-			pos[0] = net_message.ReadCoord ();
-			pos[1] = net_message.ReadCoord ();
-			pos[2] = net_message.ReadCoord ();
-			CLH2_RunParticleEffect (pos, vec3_origin, 50);
-			break;
-
-		case TE_BIGGRENADE:
-			CLHW_ParseBigGrenade(net_message);
-			break;
-		case TE_CHUNK:
-			CLHW_ParseChunk(net_message);
-			break;
-		case TE_CHUNK2:
-			CLHW_ParseChunk2(net_message);
-			break;
-		case TE_XBOWHIT:
-			CLHW_ParseXBowHit(net_message);
-			break;
-		case TE_METEORHIT:
-			CLHW_ParseMeteorHit(net_message);
-			break;
-		case TE_HWBONEPOWER:
-			CLHW_ParseBonePower(net_message);
-			break;
-		case TE_HWBONEPOWER2:
-			CLHW_ParseBonePower2(net_message);
-			break;
-		case TE_HWRAVENDIE:
-			CLHW_ParseRavenDie(net_message);
-			break;
-		case TE_HWRAVENEXPLODE:
-			CLHW_ParseRavenExplode(net_message);
-			break;
-		case TE_ICEHIT:
-			CLHW_ParseIceHit(net_message);
-			break;
-
-		case TE_ICESTORM:
-			{
-				int				ent;
-				vec3_t			center;
-				h2stream_t		*stream;
-				qhandle_t		models[2];
-				h2entity_state_t	*state;
-				static float	playIceSound = .6;
-
-				ent = net_message.ReadShort();
-
-				state = FindState(ent);
-				if (state)
+				playIceSound+=host_frametime;
+				if(playIceSound >= .6)
 				{
-					VectorCopy(state->origin, center);
-
-					playIceSound+=host_frametime;
-					if(playIceSound >= .6)
-					{
-						S_StartSound(center, CLH2_TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
-						playIceSound -= .6;
-					}
-
-					for (i = 0; i < 5; i++)
-					{	// make some ice beams...
-						models[0] = R_RegisterModel("models/stice.mdl");
-
-						if((stream = NewStream(ent, i, NULL)) == NULL)
-						{
-							Con_Printf("stream list overflow\n");
-							return;
-						}
-						stream->type = TE_STREAM_ICECHUNKS;
-						stream->tag = (i)&15;// FIXME
-						stream->flags = (i+H2STREAM_ATTACHED);
-						stream->entity = ent;
-						stream->skin = 0;
-						stream->models[0] = models[0];
-						stream->endTime = cl_common->serverTime * 0.001+0.3;
-						stream->lastTrailTime = 0;
-
-						VectorCopy(center, stream->source);
-						stream->source[0] += rand()%100 - 50;
-						stream->source[1] += rand()%100 - 50;
-						VectorCopy(stream->source, stream->dest);
-						stream->dest[2] += 128;
-
-						VectorCopy(vec3_origin, stream->offset);
-
-						VectorSubtract(stream->source, state->origin, stream->offset);
-					}
-
+					S_StartSound(center, CLH2_TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
+					playIceSound -= .6;
 				}
-			}
 
-			break;
-		case TE_HWMISSILEFLASH:
-			CLHW_ParseMissileFlash(net_message);
-			break;
+				for (i = 0; i < 5; i++)
+				{	// make some ice beams...
+					models[0] = R_RegisterModel("models/stice.mdl");
 
-		case TE_SUNSTAFF_CHEAP:
-			{
-				int				ent;
-				vec3_t			points[4];
-				int				reflect_count;
-				short int		tempVal;
-				h2entity_state_t	*state;
-				int				i, j;
-
-				h2stream_t		*stream;
-				qhandle_t		models[4];
-
-
-				ent = net_message.ReadShort();
-				reflect_count = net_message.ReadByte();
-
-				state = FindState(ent);
-				if (state)
-				{
-					// read in up to 4 points for up to 3 beams
-					for(i = 0; i < 3; i++)
-					{
-						tempVal = net_message.ReadCoord();
-						points[0][i] = tempVal;
-					}
-					for(i = 1; i < 2 + reflect_count; i++)
-					{
-						for(j = 0; j < 3; j++)
-						{
-							tempVal = net_message.ReadCoord();
-							points[i][j] = tempVal;
-						}
-					}
-					
-					// actually create the sun model pieces
-					for ( i = 0; i < reflect_count + 1; i++)
-					{
-						models[0] = R_RegisterModel("models/stsunsf1.mdl");
-						models[1] = R_RegisterModel("models/stsunsf2.mdl");
-						models[2] = R_RegisterModel("models/stsunsf3.mdl");
-						models[3] = R_RegisterModel("models/stsunsf4.mdl");
-
-						//if((stream = NewStream(ent, i, NULL)) == NULL)
-						if((stream = NewStream(ent, i, NULL)) == NULL)
-						{
-							Con_Printf("stream list overflow\n");
-							return;
-						}
-						stream->type = TE_STREAM_SUNSTAFF1;
-						stream->tag = i;
-						if(!i)
-						{
-							stream->flags = (i+H2STREAM_ATTACHED);
-						}
-						else
-						{
-							stream->flags = i;
-						}
-						stream->entity = ent;
-						stream->skin = 0;
-						stream->models[0] = models[0];
-						stream->models[1] = models[1];
-						stream->models[2] = models[2];
-						stream->models[3] = models[3];
-						stream->endTime = cl_common->serverTime * 0.001+0.5;	// FIXME
-						stream->lastTrailTime = 0;
-
-						VectorCopy(points[i], stream->source);
-						VectorCopy(points[i+1], stream->dest);
-
-						if(!i)
-						{
-							VectorCopy(vec3_origin, stream->offset);
-							VectorSubtract(stream->source, state->origin, stream->offset);
-						}
-					}
-				}
-				else
-				{	// read in everything to keep everything in sync
-					for(i = 0; i < (2 + reflect_count)*3; i++)
-					{
-						tempVal = net_message.ReadShort();
-					}
-				}
-			}
-			break;
-
-		case TE_LIGHTNING_HAMMER:
-			{
-				int				ent;
-				h2stream_t		*stream;
-				qhandle_t		models[2];
-				h2entity_state_t	*state;
-
-				ent = net_message.ReadShort();
-
-				state = FindState(ent);
-
-				if (state)
-				{
-					if(rand()&1)
-					{
-						S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
-					}
-					else
-					{
-						S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
-					}
-
-					for (i = 0; i < 5; i++)
-					{	// make some lightning
-						models[0] = R_RegisterModel("models/stlghtng.mdl");
-
-						if((stream = NewStream(ent, i, NULL)) == NULL)
-						{
-							Con_Printf("stream list overflow\n");
-							return;
-						}
-						//stream->type = TE_STREAM_ICECHUNKS;
-						stream->type = TE_STREAM_LIGHTNING;
-						stream->tag = i;
-						stream->flags = i;
-						stream->entity = ent;
-						stream->skin = 0;
-						stream->models[0] = models[0];
-						stream->endTime = cl_common->serverTime * 0.001+0.5;
-						stream->lastTrailTime = 0;
-
-						VectorCopy(state->origin, stream->source);
-						stream->source[0] += rand()%30 - 15;
-						stream->source[1] += rand()%30 - 15;
-						VectorCopy(stream->source, stream->dest);
-						stream->dest[0] += rand()%80 - 40;
-						stream->dest[1] += rand()%80 - 40;
-						stream->dest[2] += 64 + (rand()%48);
-					}
-
-				}
-			}
-			break;
-		case TE_HWTELEPORT:
-			CLHW_ParseTeleport(net_message);
-			break;
-		case TE_SWORD_EXPLOSION:
-			{
-				vec3_t			pos;
-				int				ent;
-				h2stream_t		*stream;
-				qhandle_t		models[2];
-				h2entity_state_t	*state;
-
-				pos[0] = net_message.ReadCoord();
-				pos[1] = net_message.ReadCoord();
-				pos[2] = net_message.ReadCoord();
-				ent = net_message.ReadShort();
-
-				state = FindState(ent);
-
-				if (state)
-				{
-					if(rand()&1)
-					{
-						S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
-					}
-					else
-					{
-						S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
-					}
-
-					for (i = 0; i < 5; i++)
-					{	// make some lightning
-						models[0] = R_RegisterModel("models/stlghtng.mdl");
-
-						if((stream = NewStream(ent, i, NULL)) == NULL)
-						{
-							Con_Printf("stream list overflow\n");
-							return;
-						}
-						//stream->type = TE_STREAM_ICECHUNKS;
-						stream->type = TE_STREAM_LIGHTNING;
-						stream->tag = i;
-						stream->flags = i;
-						stream->entity = ent;
-						stream->skin = 0;
-						stream->models[0] = models[0];
-						stream->endTime = cl_common->serverTime * 0.001+0.5;
-						stream->lastTrailTime = 0;
-
-						VectorCopy(pos, stream->source);
-						stream->source[0] += rand()%30 - 15;
-						stream->source[1] += rand()%30 - 15;
-						VectorCopy(stream->source, stream->dest);
-						stream->dest[0] += rand()%80 - 40;
-						stream->dest[1] += rand()%80 - 40;
-						stream->dest[2] += 64 + (rand()%48);
-					}
-				}
-				CLHW_SwordExplosion(pos);
-			}
-			break;
-
-		case TE_AXE_BOUNCE:
-			CLHW_ParseAxeBounce(net_message);
-			break;
-		case TE_AXE_EXPLODE:
-			CLHW_ParseAxeExplode(net_message);
-			break;
-		case TE_TIME_BOMB:
-			CLHW_ParseTimeBomb(net_message);
-			break;
-		case TE_FIREBALL:
-			CLHW_ParseFireBall(net_message);
-			break;
-
-		case TE_SUNSTAFF_POWER:
-			{
-				int				ent;
-				h2stream_t		*stream;
-				qhandle_t		models[4];
-				h2entity_state_t	*state;
-
-				ent = net_message.ReadShort();
-
-				vel[0] = net_message.ReadCoord();
-				vel[1] = net_message.ReadCoord();
-				vel[2] = net_message.ReadCoord();
-				pos[0] = net_message.ReadCoord();
-				pos[1] = net_message.ReadCoord();
-				pos[2] = net_message.ReadCoord();
-
-				CLHW_SunStaffExplosions(pos);
-
-				state = FindState(ent);
-
-				if (state)
-				{
-					S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
-
-					models[0] = R_RegisterModel("models/stsunsf2.mdl");
-					models[1] = R_RegisterModel("models/stsunsf1.mdl");
-					models[2] = R_RegisterModel("models/stsunsf3.mdl");
-					models[3] = R_RegisterModel("models/stsunsf4.mdl");
-
-					if((stream = NewStream(ent, 0, NULL)) == NULL)
+					if((stream = NewStream(ent, i, NULL)) == NULL)
 					{
 						Con_Printf("stream list overflow\n");
 						return;
 					}
-					stream->type = TE_STREAM_SUNSTAFF2;
-					stream->tag = 0;
-					//stream->flags = H2STREAM_ATTACHED;
-					stream->flags = 0;
+					stream->type = TE_STREAM_ICECHUNKS;
+					stream->tag = (i)&15;// FIXME
+					stream->flags = (i+H2STREAM_ATTACHED);
+					stream->entity = ent;
+					stream->skin = 0;
+					stream->models[0] = models[0];
+					stream->endTime = cl_common->serverTime * 0.001+0.3;
+					stream->lastTrailTime = 0;
+
+					VectorCopy(center, stream->source);
+					stream->source[0] += rand()%100 - 50;
+					stream->source[1] += rand()%100 - 50;
+					VectorCopy(stream->source, stream->dest);
+					stream->dest[2] += 128;
+
+					VectorCopy(vec3_origin, stream->offset);
+
+					VectorSubtract(stream->source, state->origin, stream->offset);
+				}
+
+			}
+		}
+
+		break;
+	case TE_HWMISSILEFLASH:
+		CLHW_ParseMissileFlash(net_message);
+		break;
+
+	case TE_SUNSTAFF_CHEAP:
+		{
+			int				ent;
+			vec3_t			points[4];
+			int				reflect_count;
+			short int		tempVal;
+			h2entity_state_t	*state;
+			int				i, j;
+
+			h2stream_t		*stream;
+			qhandle_t		models[4];
+
+
+			ent = net_message.ReadShort();
+			reflect_count = net_message.ReadByte();
+
+			state = FindState(ent);
+			if (state)
+			{
+				// read in up to 4 points for up to 3 beams
+				for(i = 0; i < 3; i++)
+				{
+					tempVal = net_message.ReadCoord();
+					points[0][i] = tempVal;
+				}
+				for(i = 1; i < 2 + reflect_count; i++)
+				{
+					for(j = 0; j < 3; j++)
+					{
+						tempVal = net_message.ReadCoord();
+						points[i][j] = tempVal;
+					}
+				}
+				
+				// actually create the sun model pieces
+				for ( i = 0; i < reflect_count + 1; i++)
+				{
+					models[0] = R_RegisterModel("models/stsunsf1.mdl");
+					models[1] = R_RegisterModel("models/stsunsf2.mdl");
+					models[2] = R_RegisterModel("models/stsunsf3.mdl");
+					models[3] = R_RegisterModel("models/stsunsf4.mdl");
+
+					//if((stream = NewStream(ent, i, NULL)) == NULL)
+					if((stream = NewStream(ent, i, NULL)) == NULL)
+					{
+						Con_Printf("stream list overflow\n");
+						return;
+					}
+					stream->type = TE_STREAM_SUNSTAFF1;
+					stream->tag = i;
+					if(!i)
+					{
+						stream->flags = (i+H2STREAM_ATTACHED);
+					}
+					else
+					{
+						stream->flags = i;
+					}
 					stream->entity = ent;
 					stream->skin = 0;
 					stream->models[0] = models[0];
 					stream->models[1] = models[1];
 					stream->models[2] = models[2];
 					stream->models[3] = models[3];
-					stream->endTime = cl_common->serverTime * 0.001+0.8;
+					stream->endTime = cl_common->serverTime * 0.001+0.5;	// FIXME
 					stream->lastTrailTime = 0;
 
-					VectorCopy(vel, stream->source);
-					VectorCopy(pos, stream->dest);
+					VectorCopy(points[i], stream->source);
+					VectorCopy(points[i+1], stream->dest);
 
-					//VectorCopy(vec3_origin, stream->offset);
-					//VectorSubtract(stream->source, vel, stream->offset);
-
-					// make some spiffy particles to glue it all together
+					if(!i)
+					{
+						VectorCopy(vec3_origin, stream->offset);
+						VectorSubtract(stream->source, state->origin, stream->offset);
+					}
 				}
 			}
-			break;
-
-		case TE_PURIFY2_EXPLODE:
-			CLHW_ParsePurify2Explode(net_message);
-			break;
-		case TE_PLAYER_DEATH:
-			CLHW_ParsePlayerDeath(net_message);
-			break;
-		case TE_PURIFY1_EFFECT:
-			CLHW_ParsePurify1Effect(net_message);
-			break;
-		case TE_TELEPORT_LINGER:
-			CLHW_ParseTeleportLinger(net_message);
-			break;
-		case TE_LINE_EXPLOSION:
-			CLHW_ParseLineExplosion(net_message);
-			break;
-		case TE_METEOR_CRUSH:
-			CLHW_ParseMeteorCrush(net_message);
-			break;
-		case TE_ACIDBALL:
-			CLHW_ParseAcidBall(net_message);
-			break;
-		case TE_ACIDBLOB:
-			CLHW_ParseAcidBlob(net_message);
-			break;
-		case TE_FIREWALL:
-			CLHW_ParseFireWall(net_message);
-			break;
-		case TE_FIREWALL_IMPACT:
-			CLHW_ParseFireWallImpact(net_message);
-			break;
-		case TE_HWBONERIC:
-			pos[0] = net_message.ReadCoord();
-			pos[1] = net_message.ReadCoord();
-			pos[2] = net_message.ReadCoord();
-			cnt = net_message.ReadByte ();
-			CLH2_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, cnt);
-			rnd = rand() % 100;
-			if (rnd > 95)
-				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
-			else if (rnd > 91)
-				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
-			else if (rnd > 87)
-				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
-
-			break;
-
-		case TE_POWERFLAME:
-			CLHW_ParsePowerFlame(net_message);
-			break;
-		case TE_BLOODRAIN:
-			CLHW_ParseBloodRain(net_message);
-			break;
-		case TE_AXE:
-			CLHW_ParseAxe(net_message);
-			break;
-		case TE_PURIFY2_MISSILE:
-			CLHW_ParsePurify2Missile(net_message);
-			break;
-		case TE_SWORD_SHOT:
-			CLHW_ParseSwordShot(net_message);
-			break;
-		case TE_ICESHOT:
-			CLHW_ParseIceShot(net_message);
-			break;
-		case TE_METEOR:
-			CLHW_ParseMeteor(net_message);
-			break;
-		case TE_LIGHTNINGBALL:
-			CLHW_ParseLightningBall(net_message);
-			break;
-		case TE_MEGAMETEOR:
-			CLHW_ParseMegaMeteor(net_message);
-			break;
-
-		case TE_CUBEBEAM:
-			{
-				int				type;
-				int				ent;
-				int				ent2;
-				int				tag;
-				int				flags;
-				int				skin;
-				vec3_t			source;
-				vec3_t			dest;
-				vec3_t			smokeDir;
-				float			duration;
-				h2entity_state_t	*state;
-				h2entity_state_t	*state2;
-
-				type = TE_STREAM_COLORBEAM;
-
-				ent = net_message.ReadShort();
-				ent2 = net_message.ReadShort();
-				flags = 0;
-				tag = 0;
-				duration = 0.1;
-				skin = rand()%5;
-//				source[0] = net_message.ReadCoord();
-//				source[1] = net_message.ReadCoord();
-//				source[2] = net_message.ReadCoord();
-//				dest[0] = net_message.ReadCoord();
-//				dest[1] = net_message.ReadCoord();
-//				dest[2] = net_message.ReadCoord();
-
-				state = FindState(ent);
-				state2 = FindState(ent2);
-
-				if (state || state2)
+			else
+			{	// read in everything to keep everything in sync
+				for(i = 0; i < (2 + reflect_count)*3; i++)
 				{
-					if (state)
-					{
-						VectorCopy(state->origin, source);
-					}
-					else//don't know where the damn cube is--prolly won't see beam anyway then, so put it all at the target
-					{
-						VectorCopy(state2->origin, source);
-						source[2]+=10;
-					}
-
-					if (state2)
-					{
-						VectorCopy(state2->origin, dest);//in case they're both valid, copy me again
-						dest[2]+=30;
-					}
-					else//don't know where the damn victim is--prolly won't see beam anyway then, so put it all at the cube
-					{
-						VectorCopy(source, dest);
-						dest[2]+=10;
-					}
-
-					VectorSet(smokeDir,0,0,100);
-					S_StartSound(source, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
-					S_StartSound(dest, CLH2_TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
-					CLH2_SunStaffTrail(dest, source);
-					CreateStream(TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
+					tempVal = net_message.ReadShort();
 				}
 			}
-			break;
+		}
+		break;
 
-		case TE_LIGHTNINGEXPLODE:
+	case TE_LIGHTNING_HAMMER:
+		{
+			int				ent;
+			h2stream_t		*stream;
+			qhandle_t		models[2];
+			h2entity_state_t	*state;
+
+			ent = net_message.ReadShort();
+
+			state = FindState(ent);
+
+			if (state)
 			{
-				int				ent;
-				h2stream_t		*stream;
-				qhandle_t		models[2];
-				h2entity_state_t	*state;
-				float			tempAng, tempPitch;
-
-				ent = net_message.ReadShort();
-
-				state = FindState(ent);
-				pos[0] = net_message.ReadCoord();
-				pos[1] = net_message.ReadCoord();
-				pos[2] = net_message.ReadCoord();
-
 				if(rand()&1)
 				{
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
+					S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 				}
 				else
 				{
-					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
+					S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 				}
 
-				for (i = 0; i < 10; i++)
+				for (i = 0; i < 5; i++)
 				{	// make some lightning
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
@@ -1034,6 +597,7 @@ void CL_ParseTEnt (void)
 						Con_Printf("stream list overflow\n");
 						return;
 					}
+					//stream->type = TE_STREAM_ICECHUNKS;
 					stream->type = TE_STREAM_LIGHTNING;
 					stream->tag = i;
 					stream->flags = i;
@@ -1043,91 +607,403 @@ void CL_ParseTEnt (void)
 					stream->endTime = cl_common->serverTime * 0.001+0.5;
 					stream->lastTrailTime = 0;
 
-					tempAng = (rand()%628)/100.0;
-					tempPitch = (rand()%628)/100.0;
-
-					VectorCopy(pos, stream->source);
+					VectorCopy(state->origin, stream->source);
+					stream->source[0] += rand()%30 - 15;
+					stream->source[1] += rand()%30 - 15;
 					VectorCopy(stream->source, stream->dest);
-					stream->dest[0] += 75.0 * cos(tempAng) * cos(tempPitch);
-					stream->dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
-					stream->dest[2] += 75.0 * sin(tempPitch);
+					stream->dest[0] += rand()%80 - 40;
+					stream->dest[1] += rand()%80 - 40;
+					stream->dest[2] += 64 + (rand()%48);
 				}
+
 			}
-			break;
+		}
+		break;
+	case TE_HWTELEPORT:
+		CLHW_ParseTeleport(net_message);
+		break;
+	case TE_SWORD_EXPLOSION:
+		{
+			vec3_t			pos;
+			int				ent;
+			h2stream_t		*stream;
+			qhandle_t		models[2];
+			h2entity_state_t	*state;
 
-		case TE_ACID_BALL_FLY:
-			CLHW_ParseAcidBallFly(net_message);
-			break;
-		case TE_ACID_BLOB_FLY:
-			CLHW_ParseAcidBlobFly(net_message);
-			break;
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
+			ent = net_message.ReadShort();
 
-		case TE_CHAINLIGHTNING:
+			state = FindState(ent);
+
+			if (state)
 			{
-				vec3_t			points[12];
-				int				numTargs = 0;
-				int				oldNum;
-				int				temp;
-
-				int				ent;
-				h2stream_t		*stream;
-				qhandle_t		models[2];
-
-				ent = net_message.ReadShort();
-
-				do
+				if(rand()&1)
 				{
-					points[numTargs][0] = net_message.ReadCoord();
-					points[numTargs][1] = net_message.ReadCoord();
-					points[numTargs][2] = net_message.ReadCoord();
-
-					oldNum = numTargs;
-
-					if(points[numTargs][0]||points[numTargs][1]||points[numTargs][2])
-					{
-						if(numTargs < 9)
-						{
-							numTargs++;
-						}
-					}
-				}while(points[oldNum][0]||points[oldNum][1]||points[oldNum][2]);
-
-				if(numTargs == 0)
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
+				}
+				else
 				{
-					break;
+					S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 				}
 
-				for(temp = 0; temp < numTargs - 1; temp++)
-				{
-					// make the connecting lightning...
+				for (i = 0; i < 5; i++)
+				{	// make some lightning
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-					if((stream = NewStream(ent, temp, NULL)) == NULL)
+					if((stream = NewStream(ent, i, NULL)) == NULL)
 					{
 						Con_Printf("stream list overflow\n");
 						return;
 					}
+					//stream->type = TE_STREAM_ICECHUNKS;
 					stream->type = TE_STREAM_LIGHTNING;
-					stream->tag = temp;
-					stream->flags = temp;
+					stream->tag = i;
+					stream->flags = i;
 					stream->entity = ent;
 					stream->skin = 0;
 					stream->models[0] = models[0];
-					stream->endTime = cl_common->serverTime * 0.001+0.3;
+					stream->endTime = cl_common->serverTime * 0.001+0.5;
 					stream->lastTrailTime = 0;
 
-					VectorCopy(points[temp], stream->source);
-					VectorCopy(points[temp + 1], stream->dest);
+					VectorCopy(pos, stream->source);
+					stream->source[0] += rand()%30 - 15;
+					stream->source[1] += rand()%30 - 15;
+					VectorCopy(stream->source, stream->dest);
+					stream->dest[0] += rand()%80 - 40;
+					stream->dest[1] += rand()%80 - 40;
+					stream->dest[2] += 64 + (rand()%48);
+				}
+			}
+			CLHW_SwordExplosion(pos);
+		}
+		break;
 
-					CLHW_ChainLightningExplosion(points[temp + 1]);
+	case TE_AXE_BOUNCE:
+		CLHW_ParseAxeBounce(net_message);
+		break;
+	case TE_AXE_EXPLODE:
+		CLHW_ParseAxeExplode(net_message);
+		break;
+	case TE_TIME_BOMB:
+		CLHW_ParseTimeBomb(net_message);
+		break;
+	case TE_FIREBALL:
+		CLHW_ParseFireBall(net_message);
+		break;
+
+	case TE_SUNSTAFF_POWER:
+		{
+			int				ent;
+			h2stream_t		*stream;
+			qhandle_t		models[4];
+			h2entity_state_t	*state;
+
+			ent = net_message.ReadShort();
+
+			vel[0] = net_message.ReadCoord();
+			vel[1] = net_message.ReadCoord();
+			vel[2] = net_message.ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
+
+			CLHW_SunStaffExplosions(pos);
+
+			state = FindState(ent);
+
+			if (state)
+			{
+				S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
+
+				models[0] = R_RegisterModel("models/stsunsf2.mdl");
+				models[1] = R_RegisterModel("models/stsunsf1.mdl");
+				models[2] = R_RegisterModel("models/stsunsf3.mdl");
+				models[3] = R_RegisterModel("models/stsunsf4.mdl");
+
+				if((stream = NewStream(ent, 0, NULL)) == NULL)
+				{
+					Con_Printf("stream list overflow\n");
+					return;
+				}
+				stream->type = TE_STREAM_SUNSTAFF2;
+				stream->tag = 0;
+				//stream->flags = H2STREAM_ATTACHED;
+				stream->flags = 0;
+				stream->entity = ent;
+				stream->skin = 0;
+				stream->models[0] = models[0];
+				stream->models[1] = models[1];
+				stream->models[2] = models[2];
+				stream->models[3] = models[3];
+				stream->endTime = cl_common->serverTime * 0.001+0.8;
+				stream->lastTrailTime = 0;
+
+				VectorCopy(vel, stream->source);
+				VectorCopy(pos, stream->dest);
+
+				//VectorCopy(vec3_origin, stream->offset);
+				//VectorSubtract(stream->source, vel, stream->offset);
+
+				// make some spiffy particles to glue it all together
+			}
+		}
+		break;
+
+	case TE_PURIFY2_EXPLODE:
+		CLHW_ParsePurify2Explode(net_message);
+		break;
+	case TE_PLAYER_DEATH:
+		CLHW_ParsePlayerDeath(net_message);
+		break;
+	case TE_PURIFY1_EFFECT:
+		CLHW_ParsePurify1Effect(net_message);
+		break;
+	case TE_TELEPORT_LINGER:
+		CLHW_ParseTeleportLinger(net_message);
+		break;
+	case TE_LINE_EXPLOSION:
+		CLHW_ParseLineExplosion(net_message);
+		break;
+	case TE_METEOR_CRUSH:
+		CLHW_ParseMeteorCrush(net_message);
+		break;
+	case TE_ACIDBALL:
+		CLHW_ParseAcidBall(net_message);
+		break;
+	case TE_ACIDBLOB:
+		CLHW_ParseAcidBlob(net_message);
+		break;
+	case TE_FIREWALL:
+		CLHW_ParseFireWall(net_message);
+		break;
+	case TE_FIREWALL_IMPACT:
+		CLHW_ParseFireWallImpact(net_message);
+		break;
+	case TE_HWBONERIC:
+		CLHW_ParseBoneRic(net_message);
+		break;
+	case TE_POWERFLAME:
+		CLHW_ParsePowerFlame(net_message);
+		break;
+	case TE_BLOODRAIN:
+		CLHW_ParseBloodRain(net_message);
+		break;
+	case TE_AXE:
+		CLHW_ParseAxe(net_message);
+		break;
+	case TE_PURIFY2_MISSILE:
+		CLHW_ParsePurify2Missile(net_message);
+		break;
+	case TE_SWORD_SHOT:
+		CLHW_ParseSwordShot(net_message);
+		break;
+	case TE_ICESHOT:
+		CLHW_ParseIceShot(net_message);
+		break;
+	case TE_METEOR:
+		CLHW_ParseMeteor(net_message);
+		break;
+	case TE_LIGHTNINGBALL:
+		CLHW_ParseLightningBall(net_message);
+		break;
+	case TE_MEGAMETEOR:
+		CLHW_ParseMegaMeteor(net_message);
+		break;
+
+	case TE_CUBEBEAM:
+		{
+			int				type;
+			int				ent;
+			int				ent2;
+			int				tag;
+			int				flags;
+			int				skin;
+			vec3_t			source;
+			vec3_t			dest;
+			vec3_t			smokeDir;
+			float			duration;
+			h2entity_state_t	*state;
+			h2entity_state_t	*state2;
+
+			type = TE_STREAM_COLORBEAM;
+
+			ent = net_message.ReadShort();
+			ent2 = net_message.ReadShort();
+			flags = 0;
+			tag = 0;
+			duration = 0.1;
+			skin = rand()%5;
+//				source[0] = net_message.ReadCoord();
+//				source[1] = net_message.ReadCoord();
+//				source[2] = net_message.ReadCoord();
+//				dest[0] = net_message.ReadCoord();
+//				dest[1] = net_message.ReadCoord();
+//				dest[2] = net_message.ReadCoord();
+
+			state = FindState(ent);
+			state2 = FindState(ent2);
+
+			if (state || state2)
+			{
+				if (state)
+				{
+					VectorCopy(state->origin, source);
+				}
+				else//don't know where the damn cube is--prolly won't see beam anyway then, so put it all at the target
+				{
+					VectorCopy(state2->origin, source);
+					source[2]+=10;
 				}
 
+				if (state2)
+				{
+					VectorCopy(state2->origin, dest);//in case they're both valid, copy me again
+					dest[2]+=30;
+				}
+				else//don't know where the damn victim is--prolly won't see beam anyway then, so put it all at the cube
+				{
+					VectorCopy(source, dest);
+					dest[2]+=10;
+				}
+
+				VectorSet(smokeDir,0,0,100);
+				S_StartSound(source, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
+				S_StartSound(dest, CLH2_TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
+				CLH2_SunStaffTrail(dest, source);
+				CreateStream(TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
 			}
-			break;
+		}
+		break;
+
+	case TE_LIGHTNINGEXPLODE:
+		{
+			int				ent;
+			h2stream_t		*stream;
+			qhandle_t		models[2];
+			h2entity_state_t	*state;
+			float			tempAng, tempPitch;
+
+			ent = net_message.ReadShort();
+
+			state = FindState(ent);
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
+
+			if(rand()&1)
+			{
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
+			}
+			else
+			{
+				S_StartSound(pos, CLH2_TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
+			}
+
+			for (i = 0; i < 10; i++)
+			{	// make some lightning
+				models[0] = R_RegisterModel("models/stlghtng.mdl");
+
+				if((stream = NewStream(ent, i, NULL)) == NULL)
+				{
+					Con_Printf("stream list overflow\n");
+					return;
+				}
+				stream->type = TE_STREAM_LIGHTNING;
+				stream->tag = i;
+				stream->flags = i;
+				stream->entity = ent;
+				stream->skin = 0;
+				stream->models[0] = models[0];
+				stream->endTime = cl_common->serverTime * 0.001+0.5;
+				stream->lastTrailTime = 0;
+
+				tempAng = (rand()%628)/100.0;
+				tempPitch = (rand()%628)/100.0;
+
+				VectorCopy(pos, stream->source);
+				VectorCopy(stream->source, stream->dest);
+				stream->dest[0] += 75.0 * cos(tempAng) * cos(tempPitch);
+				stream->dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
+				stream->dest[2] += 75.0 * sin(tempPitch);
+			}
+		}
+		break;
+
+	case TE_ACID_BALL_FLY:
+		CLHW_ParseAcidBallFly(net_message);
+		break;
+	case TE_ACID_BLOB_FLY:
+		CLHW_ParseAcidBlobFly(net_message);
+		break;
+
+	case TE_CHAINLIGHTNING:
+		{
+			vec3_t			points[12];
+			int				numTargs = 0;
+			int				oldNum;
+			int				temp;
+
+			int				ent;
+			h2stream_t		*stream;
+			qhandle_t		models[2];
+
+			ent = net_message.ReadShort();
+
+			do
+			{
+				points[numTargs][0] = net_message.ReadCoord();
+				points[numTargs][1] = net_message.ReadCoord();
+				points[numTargs][2] = net_message.ReadCoord();
+
+				oldNum = numTargs;
+
+				if(points[numTargs][0]||points[numTargs][1]||points[numTargs][2])
+				{
+					if(numTargs < 9)
+					{
+						numTargs++;
+					}
+				}
+			}while(points[oldNum][0]||points[oldNum][1]||points[oldNum][2]);
+
+			if(numTargs == 0)
+			{
+				break;
+			}
+
+			for(temp = 0; temp < numTargs - 1; temp++)
+			{
+				// make the connecting lightning...
+				models[0] = R_RegisterModel("models/stlghtng.mdl");
+
+				if((stream = NewStream(ent, temp, NULL)) == NULL)
+				{
+					Con_Printf("stream list overflow\n");
+					return;
+				}
+				stream->type = TE_STREAM_LIGHTNING;
+				stream->tag = temp;
+				stream->flags = temp;
+				stream->entity = ent;
+				stream->skin = 0;
+				stream->models[0] = models[0];
+				stream->endTime = cl_common->serverTime * 0.001+0.3;
+				stream->lastTrailTime = 0;
+
+				VectorCopy(points[temp], stream->source);
+				VectorCopy(points[temp + 1], stream->dest);
+
+				CLHW_ChainLightningExplosion(points[temp + 1]);
+			}
+
+		}
+		break;
 
 
-		default:
-			Sys_Error ("CL_ParseTEnt: bad type");
+	default:
+		Sys_Error ("CL_ParseTEnt: bad type");
 	}
 }
 

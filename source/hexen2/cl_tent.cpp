@@ -55,11 +55,6 @@ static h2stream_t *NewStream(int ent, int tag);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static sfxHandle_t cl_sfx_tink1;
-static sfxHandle_t cl_sfx_ric1;
-static sfxHandle_t cl_sfx_ric2;
-static sfxHandle_t cl_sfx_ric3;
-
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -70,10 +65,7 @@ static sfxHandle_t cl_sfx_ric3;
 
 void CL_InitTEnts(void)
 {
-	cl_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
-	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
-	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
-	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
+	CLH2_InitTEntsCommon();
 }
 
 //==========================================================================
@@ -93,90 +85,31 @@ void CL_ClearTEnts(void)
 //
 //==========================================================================
 
-void CL_ParseTEnt(void)
+void CL_ParseTEnt()
 {
-	int type;
-	vec3_t pos;
-	int rnd;
-
-	type = net_message.ReadByte();
-	switch(type)
+	int type = net_message.ReadByte();
+	switch (type)
 	{
-	case TE_WIZSPIKE:			// spike hitting wall
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_RunParticleEffect (pos, vec3_origin, 30);
+	case TE_WIZSPIKE:	// spike hitting wall
+		CLH2_ParseWizSpike(net_message);
 		break;
-		
-	case TE_KNIGHTSPIKE:			// spike hitting wall
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_RunParticleEffect (pos, vec3_origin, 20);
+	case TE_KNIGHTSPIKE:	// spike hitting wall
+	case TE_GUNSHOT:		// bullet hitting wall
+		CLH2_ParseKnightSpike(net_message);
 		break;
-		
 	case TE_SPIKE:			// spike hitting wall
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_RunParticleEffect (pos, vec3_origin, 10);
-		if ( rand() % 5 )
-			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
-		else
-		{
-			rnd = rand() & 3;
-			if (rnd == 1)
-				S_StartSound(pos, -1, 0, cl_sfx_ric1, 1, 1);
-			else if (rnd == 2)
-				S_StartSound(pos, -1, 0, cl_sfx_ric2, 1, 1);
-			else
-				S_StartSound(pos, -1, 0, cl_sfx_ric3, 1, 1);
-		}
+		CLH2_ParseSpike(net_message);
 		break;
 	case TE_SUPERSPIKE:			// super spike hitting wall
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_RunParticleEffect (pos, vec3_origin, 20);
-
-		if ( rand() % 5 )
-			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
-		else
-		{
-			rnd = rand() & 3;
-			if (rnd == 1)
-				S_StartSound(pos, -1, 0, cl_sfx_ric1, 1, 1);
-			else if (rnd == 2)
-				S_StartSound(pos, -1, 0, cl_sfx_ric2, 1, 1);
-			else
-				S_StartSound(pos, -1, 0, cl_sfx_ric3, 1, 1);
-		}
+		CLH2_ParseSuperSpike(net_message);
 		break;
-		
-	case TE_GUNSHOT:			// bullet hitting wall
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_RunParticleEffect (pos, vec3_origin, 20);
-		break;
-		
 	case TE_EXPLOSION:			// rocket explosion
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_ParticleExplosion (pos);
+		CLH2_ParseExplosion(net_message);
 		break;
 	case TE_LIGHTNING1:
 	case TE_LIGHTNING2:
 	case TE_LIGHTNING3:
-		net_message.ReadShort();
-		net_message.ReadCoord();
-		net_message.ReadCoord();
-		net_message.ReadCoord();
-		net_message.ReadCoord();
-		net_message.ReadCoord();
-		net_message.ReadCoord();
+		CLH2_ParseBeam(net_message);
 		break;
 
 	case TE_STREAM_CHAIN:
@@ -192,17 +125,10 @@ void CL_ParseTEnt(void)
 		break;
 
 	case TE_LAVASPLASH:
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_LavaSplash (pos);
+		CLH2_ParseLavaSplash(net_message);
 		break;
-
 	case TE_TELEPORT:
-		pos[0] = net_message.ReadCoord ();
-		pos[1] = net_message.ReadCoord ();
-		pos[2] = net_message.ReadCoord ();
-		CLH2_TeleportSplash (pos);
+		CLH2_ParseTeleport(net_message);
 		break;
 	default:
 		Sys_Error ("CL_ParseTEnt: bad type");

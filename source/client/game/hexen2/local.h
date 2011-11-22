@@ -67,7 +67,21 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 
 void CLH2_ClearStreams();
 
+void CLH2_InitTEntsCommon();
 int CLH2_TempSoundChannel();
+void CLH2_ParseWizSpike(QMsg& message);
+void CLH2_ParseKnightSpike(QMsg& message);
+void CLH2_ParseSpike(QMsg& message);
+void CLH2_ParseSuperSpike(QMsg& message);
+void CLH2_ParseExplosion(QMsg& message);
+void CLHW_ParseExplosion(QMsg& message);
+void CLH2_ParseBeam(QMsg& message);
+void CLHW_ParseTarExplosion(QMsg& message);
+void CLH2_ParseLavaSplash(QMsg& message);
+void CLH2_ParseTeleport(QMsg& message);
+void CLHW_ParseGunShot(QMsg& message);
+void CLHW_ParseLightningBlood(QMsg& message);
+void CLHW_ParseBoneRic(QMsg& message);
 
 void CLHW_InitEffects();
 void CLH2_ClearEffects();
