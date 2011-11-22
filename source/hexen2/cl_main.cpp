@@ -63,7 +63,7 @@ void CL_ClearState (void)
 	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
 	CL_ClearDlights();
 	CL_ClearLightStyles();
-	CL_ClearTEnts();
+	CLH2_ClearTEnts();
 	CLH2_ClearEffects();
 
 	cl.current_frame = cl.current_sequence = 99;

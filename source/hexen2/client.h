@@ -294,7 +294,6 @@ void V_ParseDamage (void);
 // cl_tent
 //
 void CL_InitTEnts(void);
-void CL_ClearTEnts(void);
 void CL_ParseTEnt(void);
 void CL_UpdateTEnts(void);
 

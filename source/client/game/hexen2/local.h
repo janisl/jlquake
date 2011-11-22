@@ -66,6 +66,7 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 void CLH2_ClearStreams();
 
 void CLH2_InitTEntsCommon();
+void CLH2_ClearTEnts();
 int CLH2_TempSoundChannel();
 void CLH2_ParseWizSpike(QMsg& message);
 void CLH2_ParseKnightSpike(QMsg& message);

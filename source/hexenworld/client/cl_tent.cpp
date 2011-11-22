@@ -48,17 +48,6 @@ void CL_InitTEnts (void)
 	cl_sfx_tornado = S_RegisterSound("crusader/tornado.wav");
 }
 
-/*
-=================
-CL_ClearTEnts
-=================
-*/
-void CL_ClearTEnts (void)
-{
-	CLH2_ClearExplosions();
-	CLH2_ClearStreams();
-}
-
 h2entity_state_t *FindState(int EntNum)
 {
 	packet_entities_t		*pack;

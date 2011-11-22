@@ -38,6 +38,12 @@ void CLH2_InitTEntsCommon()
 	}
 }
 
+void CLH2_ClearTEnts()
+{
+	CLH2_ClearExplosions();
+	CLH2_ClearStreams();
+}
+
 int CLH2_TempSoundChannel()
 {
 	static int last = -1;
