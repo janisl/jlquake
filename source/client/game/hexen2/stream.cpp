@@ -23,3 +23,27 @@ void CLH2_ClearStreams()
 {
 	Com_Memset(clh2_Streams, 0, sizeof(clh2_Streams));
 }
+
+h2stream_t* CLH2_NewStream(int ent, int tag)
+{
+	int i;
+	h2stream_t *stream;
+
+	// Search for a stream with matching entity and tag
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
+	{
+		if(stream->entity == ent && stream->tag == tag)
+		{
+			return stream;
+		}
+	}
+	// Search for a free stream
+	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
+	{
+		if(!stream->models[0] || stream->endTime < cl_common->serverTime * 0.001)
+		{
+			return stream;
+		}
+	}
+	return NULL;
+}

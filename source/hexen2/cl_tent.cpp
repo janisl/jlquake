@@ -47,7 +47,6 @@
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 static void ParseStream(int type);
-static h2stream_t *NewStream(int ent, int tag);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -199,7 +198,7 @@ static void ParseStream(int type)
 		Sys_Error("ParseStream: bad type");
 	}
 
-	if((stream = NewStream(ent, tag)) == NULL)
+	if((stream = CLH2_NewStream(ent, tag)) == NULL)
 	{
 		Con_Printf("stream list overflow\n");
 		return;
@@ -221,36 +220,6 @@ static void ParseStream(int type)
 	{
 		VectorSubtract(source, cl_entities[ent].state.origin, stream->offset);
 	}
-}
-
-//==========================================================================
-//
-// NewStream
-//
-//==========================================================================
-
-static h2stream_t *NewStream(int ent, int tag)
-{
-	int i;
-	h2stream_t *stream;
-
-	// Search for a stream with matching entity and tag
-	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
-	{
-		if(stream->entity == ent && stream->tag == tag)
-		{
-			return stream;
-		}
-	}
-	// Search for a free stream
-	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
-	{
-		if(!stream->models[0] || stream->endTime < cl.serverTimeFloat)
-		{
-			return stream;
-		}
-	}
-	return NULL;
 }
 
 //==========================================================================

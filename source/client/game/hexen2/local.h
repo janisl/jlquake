@@ -64,6 +64,7 @@ void CLH2_TranslatePlayerSkin (int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 
 void CLH2_ClearStreams();
+h2stream_t* CLH2_NewStream(int ent, int tag);
 
 void CLH2_InitTEntsCommon();
 void CLH2_ClearTEnts();
