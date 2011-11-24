@@ -13,7 +13,7 @@
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 static void ParseStream(int type);
-static h2stream_t *NewStream(int ent, int tag, int *isNew);
+static h2stream_t *NewStream(int ent, int tag);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -135,7 +135,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 		Sys_Error("CreateStream: bad type");
 	}
 
-	if((stream = NewStream(ent, tag, NULL)) == NULL)
+	if((stream = NewStream(ent, tag)) == NULL)
 	{
 		Con_Printf("stream list overflow\n");
 		return;
@@ -238,7 +238,7 @@ static void ParseStream(int type)
 		Sys_Error("ParseStream: bad type");
 	}
 
-	if((stream = NewStream(ent, tag, NULL)) == NULL)
+	if((stream = NewStream(ent, tag)) == NULL)
 	{
 		Con_Printf("stream list overflow\n");
 		return;
@@ -274,7 +274,7 @@ static void ParseStream(int type)
 //
 //==========================================================================
 
-static h2stream_t *NewStream(int ent, int tag, int *isNew)
+static h2stream_t *NewStream(int ent, int tag)
 {
 	int i;
 	h2stream_t *stream;
@@ -284,17 +284,6 @@ static h2stream_t *NewStream(int ent, int tag, int *isNew)
 	{
 		if(stream->entity == ent && stream->tag == tag)
 		{
-			if(isNew)
-			{
-				if(stream->endTime > cl_common->serverTime * 0.001)
-				{
-					*isNew = 0;
-				}
-				else
-				{	// this stream was already used up
-					*isNew = 1;
-				}
-			}
 			return stream;
 		}
 	}
@@ -303,7 +292,6 @@ static h2stream_t *NewStream(int ent, int tag, int *isNew)
 	{
 		if(!stream->models[0] || stream->endTime < cl_common->serverTime * 0.001)
 		{
-			if(isNew)*isNew = 1;
 			return stream;
 		}
 	}
@@ -319,8 +307,7 @@ void CL_ParseTEnt (void)
 {
 	int type;
 	vec3_t pos, vel;
-	int rnd;
-	int cnt, i;
+	int i;
 
 	type = net_message.ReadByte();
 	switch (type)
@@ -435,7 +422,7 @@ void CL_ParseTEnt (void)
 				{	// make some ice beams...
 					models[0] = R_RegisterModel("models/stice.mdl");
 
-					if((stream = NewStream(ent, i, NULL)) == NULL)
+					if((stream = NewStream(ent, i)) == NULL)
 					{
 						Con_Printf("stream list overflow\n");
 						return;
@@ -511,7 +498,7 @@ void CL_ParseTEnt (void)
 					models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
 					//if((stream = NewStream(ent, i, NULL)) == NULL)
-					if((stream = NewStream(ent, i, NULL)) == NULL)
+					if((stream = NewStream(ent, i)) == NULL)
 					{
 						Con_Printf("stream list overflow\n");
 						return;
@@ -581,7 +568,7 @@ void CL_ParseTEnt (void)
 				{	// make some lightning
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-					if((stream = NewStream(ent, i, NULL)) == NULL)
+					if((stream = NewStream(ent, i)) == NULL)
 					{
 						Con_Printf("stream list overflow\n");
 						return;
@@ -641,7 +628,7 @@ void CL_ParseTEnt (void)
 				{	// make some lightning
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-					if((stream = NewStream(ent, i, NULL)) == NULL)
+					if((stream = NewStream(ent, i)) == NULL)
 					{
 						Con_Printf("stream list overflow\n");
 						return;
@@ -711,7 +698,7 @@ void CL_ParseTEnt (void)
 				models[2] = R_RegisterModel("models/stsunsf3.mdl");
 				models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
-				if((stream = NewStream(ent, 0, NULL)) == NULL)
+				if((stream = NewStream(ent, 0)) == NULL)
 				{
 					Con_Printf("stream list overflow\n");
 					return;
@@ -894,7 +881,7 @@ void CL_ParseTEnt (void)
 			{	// make some lightning
 				models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-				if((stream = NewStream(ent, i, NULL)) == NULL)
+				if((stream = NewStream(ent, i)) == NULL)
 				{
 					Con_Printf("stream list overflow\n");
 					return;
@@ -967,7 +954,7 @@ void CL_ParseTEnt (void)
 				// make the connecting lightning...
 				models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-				if((stream = NewStream(ent, temp, NULL)) == NULL)
+				if((stream = NewStream(ent, temp)) == NULL)
 				{
 					Con_Printf("stream list overflow\n");
 					return;
