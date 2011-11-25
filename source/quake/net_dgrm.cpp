@@ -125,7 +125,7 @@ void NET_Ban_f (void)
 #endif
 
 
-int Datagram_SendMessage (qsocket_t *sock, QMsg *data)
+int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	unsigned int	packetLen;
 	unsigned int	dataLen;
@@ -163,7 +163,7 @@ int Datagram_SendMessage (qsocket_t *sock, QMsg *data)
 
 	sock->canSend = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -172,7 +172,7 @@ int Datagram_SendMessage (qsocket_t *sock, QMsg *data)
 }
 
 
-int SendMessageNext (qsocket_t *sock)
+int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 {
 	unsigned int	packetLen;
 	unsigned int	dataLen;
@@ -196,7 +196,7 @@ int SendMessageNext (qsocket_t *sock)
 
 	sock->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -205,7 +205,7 @@ int SendMessageNext (qsocket_t *sock)
 }
 
 
-int ReSendMessage (qsocket_t *sock)
+int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 {
 	unsigned int	packetLen;
 	unsigned int	dataLen;
@@ -229,7 +229,7 @@ int ReSendMessage (qsocket_t *sock)
 
 	sock->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -238,10 +238,10 @@ int ReSendMessage (qsocket_t *sock)
 }
 
 
-qboolean Datagram_CanSendMessage (qsocket_t *sock)
+qboolean Datagram_CanSendMessage (qsocket_t *sock, netchan_t* chan)
 {
 	if (sock->sendNext)
-		SendMessageNext (sock);
+		SendMessageNext (sock, chan);
 
 	return sock->canSend;
 }
@@ -253,7 +253,7 @@ qboolean Datagram_CanSendUnreliableMessage (qsocket_t *sock)
 }
 
 
-int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
+int Datagram_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	int 	packetLen;
 
@@ -271,7 +271,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
 	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
 	packetsSent++;
@@ -279,7 +279,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 }
 
 
-int	Datagram_GetMessage (qsocket_t *sock)
+int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 {
 	int				length;
 	unsigned int	flags;
@@ -290,7 +290,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 
 	if (!sock->canSend)
 		if ((net_time - sock->lastSendTime) > 1.0)
-			ReSendMessage (sock);
+			ReSendMessage (sock, chan);
 
 	while(1)
 	{	
@@ -308,7 +308,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 			return -1;
 		}
 
-		if (UDP_AddrCompare(&readaddr, &sock->addr) != 0)
+		if (UDP_AddrCompare(&readaddr, &chan->remoteAddress) != 0)
 		{
 #ifdef DEBUG
 			Con_DPrintf("Forged packet received\n");
@@ -424,7 +424,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 	}
 
 	if (sock->sendNext)
-		SendMessageNext (sock);
+		SendMessageNext (sock, chan);
 
 	return ret;
 }
@@ -762,7 +762,7 @@ void Datagram_Listen (qboolean state)
 }
 
 
-static qsocket_t *_Datagram_CheckNewConnections (void)
+static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 {
 	netadr_t clientaddr;
 	netadr_t newaddr;
@@ -941,11 +941,17 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 #endif
 
 	// see if this guy is already connected
-	for (s = net_activeSockets; s; s = s->next)
+	client_t* client = svs.clients;
+	for (int i = 0; i < svs.maxclients; i++, client++)
 	{
+		if (!client->netconnection)
+			continue;
+		if (!client->active)
+			continue;
+		s = client->netconnection;
 		if (s->driver != net_driverlevel)
 			continue;
-		ret = UDP_AddrCompare(&clientaddr, &s->addr);
+		ret = UDP_AddrCompare(&clientaddr, &client->netchan.remoteAddress);
 		if (ret >= 0)
 		{
 			// is this a duplicate connection reqeust?
@@ -996,7 +1002,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
-	sock->addr = clientaddr;
+	*outaddr = clientaddr;
 	String::Cpy(sock->address, SOCK_AdrToString(clientaddr));
 
 	// send him back the info about the server connection he has been allocated
@@ -1014,12 +1020,12 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	return sock;
 }
 
-qsocket_t *Datagram_CheckNewConnections (void)
+qsocket_t *Datagram_CheckNewConnections (netadr_t* outaddr)
 {
 	qsocket_t *ret = NULL;
 
 	if (udp_initialized)
-		ret = _Datagram_CheckNewConnections();
+		ret = _Datagram_CheckNewConnections(outaddr);
 	return ret;
 }
 
@@ -1133,7 +1139,7 @@ void Datagram_SearchForHosts (qboolean xmit)
 }
 
 
-static qsocket_t *_Datagram_Connect (const char *host)
+static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 {
 	netadr_t sendaddr;
 	netadr_t readaddr;
@@ -1254,8 +1260,8 @@ static qsocket_t *_Datagram_Connect (const char *host)
 
 	if (ret == CCREP_ACCEPT)
 	{
-		sock->addr = sendaddr;
-		SOCK_SetPort(&sock->addr, net_message.ReadLong());
+		chan->remoteAddress = sendaddr;
+		SOCK_SetPort(&chan->remoteAddress, net_message.ReadLong());
 	}
 	else
 	{
@@ -1286,12 +1292,12 @@ ErrorReturn2:
 	return NULL;
 }
 
-qsocket_t *Datagram_Connect (const char *host)
+qsocket_t *Datagram_Connect (const char *host, netchan_t* chan)
 {
 	qsocket_t *ret = NULL;
 
 	if (udp_initialized)
-		ret = _Datagram_Connect (host);
+		ret = _Datagram_Connect (host, chan);
 	return ret;
 }
 

@@ -305,7 +305,6 @@ struct netchan_t : netchan_common_t
 	int			last_received;		// for timeouts
 	int			last_sent;			// for retransmits
 
-	netadr_t	remote_address;
 	int			qport;				// qport value to write when transmitting
 
 // sequencing variables

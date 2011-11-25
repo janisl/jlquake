@@ -340,9 +340,9 @@ void SVC_DirectConnect (void)
 	{
 		if (cl->state == cs_free)
 			continue;
-		if (SOCK_CompareBaseAdr(adr, cl->netchan.remote_address)
+		if (SOCK_CompareBaseAdr(adr, cl->netchan.remoteAddress)
 			&& ( cl->netchan.qport == qport 
-			|| adr.port == cl->netchan.remote_address.port ) )
+			|| adr.port == cl->netchan.remoteAddress.port ) )
 		{
 			if (!SOCK_IsLocalAddress(adr) && (svs.realtime - cl->lastconnect) < ((int)sv_reconnect_limit->value * 1000))
 			{
@@ -623,14 +623,14 @@ void SV_ReadPackets (void)
 		{
 			if (cl->state == cs_free)
 				continue;
-			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remote_address))
+			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remoteAddress))
 				continue;
 			if (cl->netchan.qport != qport)
 				continue;
-			if (cl->netchan.remote_address.port != net_from.port)
+			if (cl->netchan.remoteAddress.port != net_from.port)
 			{
 				Com_Printf ("SV_ReadPackets: fixing up a translated port\n");
-				cl->netchan.remote_address.port = net_from.port;
+				cl->netchan.remoteAddress.port = net_from.port;
 			}
 
 			if (Netchan_Process(&cl->netchan, &net_message))

@@ -33,8 +33,6 @@ struct netchan_t : netchan_common_t
 	int			good_count;			// cleared each level
 
 
-	netadr_t	remote_address;
-
 // bandwidth estimator
 	double		cleartime;			// if realtime > nc->cleartime, free to go
 	double		rate;				// seconds / byte

@@ -722,7 +722,7 @@ void SV_Status_f (void)
 
 		Com_Printf ("%7i ", svs.realtime - cl->lastmessage );
 
-		s = SOCK_AdrToString( cl->netchan.remote_address);
+		s = SOCK_AdrToString( cl->netchan.remoteAddress);
 		Com_Printf ("%s", s);
 		l = 22 - String::Length(s);
 		for (j=0 ; j<l ; j++)

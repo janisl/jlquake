@@ -25,4 +25,6 @@ struct netchan_common_t
 	netsrc_t sock;
 
 	int dropped;			// between last packet and previous
+
+	netadr_t remoteAddress;
 };

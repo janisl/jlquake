@@ -100,8 +100,6 @@ Netchan handles packet fragmentation and out of order / duplicate suppression
 
 struct netchan_t : netchan_common_t
 {
-
-	netadr_t	remoteAddress;
 	int			qport;				// qport value to write when transmitting
 
 	// sequencing variables

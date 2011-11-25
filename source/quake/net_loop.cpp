@@ -62,7 +62,7 @@ void Loop_SearchForHosts (qboolean xmit)
 }
 
 
-qsocket_t *Loop_Connect (const char *host)
+qsocket_t *Loop_Connect (const char *host, netchan_t* chan)
 {
 	if (String::Cmp(host,"local") != 0)
 		return NULL;
@@ -102,7 +102,7 @@ qsocket_t *Loop_Connect (const char *host)
 }
 
 
-qsocket_t *Loop_CheckNewConnections (void)
+qsocket_t *Loop_CheckNewConnections (netadr_t* outaddr)
 {
 	if (!localconnectpending)
 		return NULL;
@@ -124,7 +124,7 @@ static int IntAlign(int value)
 }
 
 
-int Loop_GetMessage (qsocket_t *sock)
+int Loop_GetMessage (qsocket_t *sock, netchan_t* chan)
 {
 	int		ret;
 	int		length;
@@ -151,7 +151,7 @@ int Loop_GetMessage (qsocket_t *sock)
 }
 
 
-int Loop_SendMessage (qsocket_t *sock, QMsg *data)
+int Loop_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	byte *buffer;
 	int  *bufferLength;
@@ -185,7 +185,7 @@ int Loop_SendMessage (qsocket_t *sock, QMsg *data)
 }
 
 
-int Loop_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
+int Loop_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	byte *buffer;
 	int  *bufferLength;
@@ -217,7 +217,7 @@ int Loop_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 }
 
 
-qboolean Loop_CanSendMessage (qsocket_t *sock)
+qboolean Loop_CanSendMessage (qsocket_t *sock, netchan_t* chan)
 {
 	if (!sock->driverdata)
 		return false;

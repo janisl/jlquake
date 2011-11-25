@@ -136,7 +136,6 @@ typedef struct qsocket_s
 	int				receiveMessageLength;
 	byte			receiveMessage [NET_MAXMESSAGE];
 
-	netadr_t		addr;
 	char			address[NET_NAMELEN];
 
 } qsocket_t;
@@ -158,12 +157,12 @@ typedef struct
 	int			(*Init) (void);
 	void		(*Listen) (qboolean state);
 	void		(*SearchForHosts) (qboolean xmit);
-	qsocket_t	*(*Connect) (const char *host);
-	qsocket_t 	*(*CheckNewConnections) (void);
-	int			(*QGetMessage) (qsocket_t *sock);
-	int			(*QSendMessage) (qsocket_t *sock, QMsg *data);
-	int			(*SendUnreliableMessage) (qsocket_t *sock, QMsg *data);
-	qboolean	(*CanSendMessage) (qsocket_t *sock);
+	qsocket_t	*(*Connect) (const char *host, netchan_t* chan);
+	qsocket_t 	*(*CheckNewConnections) (netadr_t* outaddr);
+	int			(*QGetMessage) (qsocket_t *sock, netchan_t* chan);
+	int			(*QSendMessage) (qsocket_t *sock, netchan_t* chan, QMsg *data);
+	int			(*SendUnreliableMessage) (qsocket_t *sock, netchan_t* chan, QMsg *data);
+	qboolean	(*CanSendMessage) (qsocket_t *sock, netchan_t* chan);
 	qboolean	(*CanSendUnreliableMessage) (qsocket_t *sock);
 	void		(*Close) (qsocket_t *sock);
 	void		(*Shutdown) (void);
@@ -224,25 +223,25 @@ extern	int			net_activeconnections;
 void		NET_Init (void);
 void		NET_Shutdown (void);
 
-struct qsocket_s	*NET_CheckNewConnections (void);
+struct qsocket_s	*NET_CheckNewConnections (netadr_t* outaddr);
 // returns a new connection number if there is one pending, else -1
 
-struct qsocket_s	*NET_Connect (const char *host);
+struct qsocket_s	*NET_Connect (const char *host, netchan_t* chan);
 // called by client to connect to a host.  Returns -1 if not able to
 
-qboolean NET_CanSendMessage (qsocket_t *sock);
+qboolean NET_CanSendMessage (qsocket_t *sock, netchan_t* chan);
 // Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
 
-int			NET_GetMessage (struct qsocket_s *sock);
+int			NET_GetMessage (struct qsocket_s *sock, netchan_t* chan);
 // returns data in net_message sizebuf
 // returns 0 if no data is waiting
 // returns 1 if a message was received
 // returns 2 if an unreliable message was received
 // returns -1 if the connection died
 
-int			NET_SendMessage (struct qsocket_s *sock, QMsg *data);
-int			NET_SendUnreliableMessage (struct qsocket_s *sock, QMsg *data);
+int			NET_SendMessage (struct qsocket_s *sock, netchan_t* chan, QMsg *data);
+int			NET_SendUnreliableMessage (struct qsocket_s *sock, netchan_t* chan, QMsg *data);
 // returns 0 if the message connot be delivered reliably, but the connection
 //		is still considered valid
 // returns 1 if the message was sent properly

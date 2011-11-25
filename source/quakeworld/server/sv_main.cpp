@@ -624,9 +624,9 @@ void SVC_DirectConnect (void)
 	{
 		if (cl->state == cs_free)
 			continue;
-		if (SOCK_CompareBaseAdr(adr, cl->netchan.remote_address)
+		if (SOCK_CompareBaseAdr(adr, cl->netchan.remoteAddress)
 			&& ( cl->netchan.qport == qport 
-			|| adr.port == cl->netchan.remote_address.port ))
+			|| adr.port == cl->netchan.remoteAddress.port ))
 		{
 			if (cl->state == cs_connected) {
 				Con_Printf("%s:dup connect\n", SOCK_AdrToString (adr));
@@ -1117,14 +1117,14 @@ void SV_ReadPackets (void)
 		{
 			if (cl->state == cs_free)
 				continue;
-			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remote_address))
+			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remoteAddress))
 				continue;
 			if (cl->netchan.qport != qport)
 				continue;
-			if (cl->netchan.remote_address.port != net_from.port)
+			if (cl->netchan.remoteAddress.port != net_from.port)
 			{
 				Con_DPrintf ("SV_ReadPackets: fixing up a translated port\n");
-				cl->netchan.remote_address.port = net_from.port;
+				cl->netchan.remoteAddress.port = net_from.port;
 			}
 			if (Netchan_Process(&cl->netchan))
 			{	// this is a valid, sequenced packet, so process it

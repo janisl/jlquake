@@ -476,7 +476,7 @@ void SV_Status_f (void)
 			else			
 				Con_Printf("\n");
 
-			s = SOCK_BaseAdrToString( cl->netchan.remote_address);
+			s = SOCK_BaseAdrToString( cl->netchan.remoteAddress);
 			Con_Printf ("  %-16.16s", s);
 			if (cl->state == cs_connected)
 			{
@@ -504,7 +504,7 @@ void SV_Status_f (void)
 				continue;
 			Con_Printf ("%5i %6i ", (int)cl->edict->v.frags,  cl->userid);
 
-			s = SOCK_BaseAdrToString( cl->netchan.remote_address);
+			s = SOCK_BaseAdrToString( cl->netchan.remoteAddress);
 			Con_Printf ("%s", s);
 			l = 16 - String::Length(s);
 			for (j=0 ; j<l ; j++)

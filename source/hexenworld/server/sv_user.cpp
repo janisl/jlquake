@@ -585,9 +585,9 @@ void SV_Say (qboolean team)
 		p[String::Length(p)-1] = 0;
 	}
 
-	if (host_client->netchan.remote_address.ip[0] == 208 &&
-	    host_client->netchan.remote_address.ip[1] == 135 &&
-	    host_client->netchan.remote_address.ip[2] == 137)
+	if (host_client->netchan.remoteAddress.ip[0] == 208 &&
+	    host_client->netchan.remoteAddress.ip[1] == 135 &&
+	    host_client->netchan.remoteAddress.ip[2] == 137)
 	{
 		IsRaven = true;
 	}

@@ -155,7 +155,7 @@ void CL_Disconnect (void)
 		Con_DPrintf ("Sending clc_disconnect\n");
 		cls.message.Clear();
 		cls.message.WriteByte(clc_disconnect);
-		NET_SendUnreliableMessage (cls.netcon, &cls.message);
+		NET_SendUnreliableMessage (cls.netcon, &clc.netchan, &cls.message);
 		cls.message.Clear();
 		NET_Close (cls.netcon);
 
@@ -199,7 +199,7 @@ void CL_EstablishConnection (const char *host)
 
 	Com_Memset(&clc.netchan, 0, sizeof(clc.netchan));
 	clc.netchan.sock = NS_CLIENT;
-	cls.netcon = NET_Connect (host);
+	cls.netcon = NET_Connect (host, &clc.netchan);
 	if (!cls.netcon)
 		Host_Error ("CL_Connect: connect failed\n");
 	Con_DPrintf ("CL_EstablishConnection: connected to %s\n", host);
@@ -694,13 +694,13 @@ void CL_SendCmd (void)
 	if (!cls.message.cursize)
 		return;		// no message at all
 	
-	if (!NET_CanSendMessage (cls.netcon))
+	if (!NET_CanSendMessage (cls.netcon, &clc.netchan))
 	{
 		Con_DPrintf ("CL_WriteToServer: can't send\n");
 		return;
 	}
 
-	if (NET_SendMessage (cls.netcon, &cls.message) == -1)
+	if (NET_SendMessage (cls.netcon, &clc.netchan, &cls.message) == -1)
 		Host_Error ("CL_WriteToServer: lost server connection");
 
 	cls.message.Clear();

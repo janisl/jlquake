@@ -313,7 +313,7 @@ void CL_Rcon_f (void)
 	}
 
 	if (cls.state >= ca_connected)
-		to = cls.netchan.remote_address;
+		to = cls.netchan.remoteAddress;
 	else
 	{
 		if (!String::Length(rcon_address->string))
@@ -950,7 +950,7 @@ void CL_ReadPackets (void)
 		// packet from server
 		//
 		if (!cls.demoplayback && 
-			!SOCK_CompareAdr(net_from, cls.netchan.remote_address))
+			!SOCK_CompareAdr(net_from, cls.netchan.remoteAddress))
 		{
 			Con_DPrintf ("%s:sequenced packet without connection\n"
 				,SOCK_AdrToString(net_from));

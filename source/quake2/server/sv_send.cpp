@@ -462,7 +462,7 @@ qboolean SV_RateDrop (client_t *c)
 	int		i;
 
 	// never drop over the loopback
-	if (c->netchan.remote_address.type == NA_LOOPBACK)
+	if (c->netchan.remoteAddress.type == NA_LOOPBACK)
 		return false;
 
 	total = 0;

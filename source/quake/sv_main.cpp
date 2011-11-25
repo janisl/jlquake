@@ -310,7 +310,8 @@ void SV_CheckForNewClients (void)
 //
 	while (1)
 	{
-		ret = NET_CheckNewConnections ();
+		netadr_t addr;
+		ret = NET_CheckNewConnections (&addr);
 		if (!ret)
 			break;
 
@@ -325,6 +326,7 @@ void SV_CheckForNewClients (void)
 		
 		Com_Memset(&svs.clients[i].netchan, 0, sizeof(svs.clients[i].netchan));
 		svs.clients[i].netchan.sock = NS_SERVER;
+		svs.clients[i].netchan.remoteAddress = addr;
 		svs.clients[i].netconnection = ret;
 		SV_ConnectClient (i);	
 	
@@ -725,7 +727,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 		msg.WriteData(sv.datagram._data, sv.datagram.cursize);
 
 // send the datagram
-	if (NET_SendUnreliableMessage (client->netconnection, &msg) == -1)
+	if (NET_SendUnreliableMessage (client->netconnection, &client->netchan, &msg) == -1)
 	{
 		SV_DropClient (true);// if the message couldn't send, kick off
 		return false;
@@ -790,7 +792,7 @@ void SV_SendNop (client_t *client)
 
 	msg.WriteChar(svc_nop);
 
-	if (NET_SendUnreliableMessage (client->netconnection, &msg) == -1)
+	if (NET_SendUnreliableMessage (client->netconnection, &client->netchan, &msg) == -1)
 		SV_DropClient (true);	// if the message couldn't send, kick off
 	client->last_message = realtime;
 }
@@ -845,7 +847,7 @@ void SV_SendClientMessages (void)
 			
 		if (host_client->message.cursize || host_client->dropasap)
 		{
-			if (!NET_CanSendMessage (host_client->netconnection))
+			if (!NET_CanSendMessage (host_client->netconnection, &host_client->netchan))
 			{
 //				I_Printf ("can't write\n");
 				continue;
@@ -856,7 +858,7 @@ void SV_SendClientMessages (void)
 			else
 			{
 				if (NET_SendMessage (host_client->netconnection
-				, &host_client->message) == -1)
+				, &host_client->netchan, &host_client->message) == -1)
 					SV_DropClient (true);	// if the message couldn't send, kick off
 				host_client->message.Clear();
 				host_client->last_message = realtime;

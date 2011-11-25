@@ -162,7 +162,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 {
 	Com_Memset(chan, 0, sizeof(*chan));
 	
-	chan->remote_address = adr;
+	chan->remoteAddress = adr;
 	chan->last_received = realtime;
 	
 	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
@@ -231,7 +231,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	{
 		chan->fatal_error = true;
 		Con_Printf ("%s:Outgoing message overflow\n"
-			, SOCK_AdrToString (chan->remote_address));
+			, SOCK_AdrToString (chan->remoteAddress));
 		return;
 	}
 
@@ -288,7 +288,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 #ifndef SERVERONLY
 	if (!cls.demoplayback)
 #endif
-		NET_SendPacket (send.cursize, send._data, chan->remote_address);
+		NET_SendPacket (send.cursize, send._data, chan->remoteAddress);
 
 	if (chan->cleartime < realtime)
 		chan->cleartime = realtime + send.cursize*chan->rate;
@@ -329,7 +329,7 @@ qboolean Netchan_Process (netchan_t *chan)
 #ifndef SERVERONLY
 			!cls.demoplayback && 
 #endif
-			!SOCK_CompareAdr (net_from, chan->remote_address))
+			!SOCK_CompareAdr (net_from, chan->remoteAddress))
 		return false;
 	
 // get sequence numbers		
@@ -393,7 +393,7 @@ qboolean Netchan_Process (netchan_t *chan)
 	{
 		if (showdrop->value)
 			Con_Printf ("%s:Out of order packet %i at %i\n"
-				, SOCK_AdrToString (chan->remote_address)
+				, SOCK_AdrToString (chan->remoteAddress)
 				,  sequence
 				, chan->incoming_sequence);
 		return false;
@@ -409,7 +409,7 @@ qboolean Netchan_Process (netchan_t *chan)
 
 		if (showdrop->value)
 			Con_Printf ("%s:Dropped %i packets at %i\n"
-			, SOCK_AdrToString (chan->remote_address)
+			, SOCK_AdrToString (chan->remoteAddress)
 			, sequence-(chan->incoming_sequence+1)
 			, sequence);
 	}

@@ -154,7 +154,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	Com_Memset(chan, 0, sizeof(*chan));
 	
 	chan->sock = sock;
-	chan->remote_address = adr;
+	chan->remoteAddress = adr;
 	chan->qport = qport;
 	chan->last_received = curtime;
 	chan->incoming_sequence = 0;
@@ -222,7 +222,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	{
 		chan->fatal_error = true;
 		Com_Printf ("%s:Outgoing message overflow\n"
-			, SOCK_AdrToString (chan->remote_address));
+			, SOCK_AdrToString (chan->remoteAddress));
 		return;
 	}
 
@@ -267,7 +267,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		Com_Printf ("Netchan_Transmit: dumped unreliable\n");
 
 // send the datagram
-	NET_SendPacket (chan->sock, send.cursize, send._data, chan->remote_address);
+	NET_SendPacket (chan->sock, send.cursize, send._data, chan->remoteAddress);
 
 	if (showpackets->value)
 	{
@@ -340,7 +340,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	{
 		if (showdrop->value)
 			Com_Printf ("%s:Out of order packet %i at %i\n"
-				, SOCK_AdrToString (chan->remote_address)
+				, SOCK_AdrToString (chan->remoteAddress)
 				,  sequence
 				, chan->incoming_sequence);
 		return false;
@@ -354,7 +354,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	{
 		if (showdrop->value)
 			Com_Printf ("%s:Dropped %i packets at %i\n"
-			, SOCK_AdrToString (chan->remote_address)
+			, SOCK_AdrToString (chan->remoteAddress)
 			, chan->dropped
 			, sequence);
 	}

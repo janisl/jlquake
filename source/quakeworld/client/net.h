@@ -51,7 +51,6 @@ struct netchan_t : netchan_common_t
 	int			drop_count;			// dropped packets, cleared each level
 	int			good_count;			// cleared each level
 
-	netadr_t	remote_address;
 	int			qport;
 
 // bandwidth estimator

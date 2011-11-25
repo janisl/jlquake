@@ -1531,7 +1531,7 @@ void PF_infokey (void)
 	} else if (e1 <= MAX_CLIENTS) {
 		if (!String::Cmp(key, "ip"))
 		{
-			String::Cpy(ov, SOCK_BaseAdrToString(svs.clients[e1-1].netchan.remote_address));
+			String::Cpy(ov, SOCK_BaseAdrToString(svs.clients[e1-1].netchan.remoteAddress));
 			value = ov;
 		}
 		else if (!String::Cmp(key, "ping"))

@@ -371,7 +371,7 @@ NET_Connect
 int hostCacheCount = 0;
 hostcache_t hostcache[HOSTCACHESIZE];
 
-qsocket_t *NET_Connect (const char *host)
+qsocket_t *NET_Connect (const char *host, netchan_t* chan)
 {
 	qsocket_t		*ret;
 	int				n;
@@ -420,7 +420,7 @@ JustDoIt:
 	{
 		if (net_drivers[net_driverlevel].initialized == false)
 			continue;
-		ret = dfunc.Connect (host);
+		ret = dfunc.Connect (host, chan);
 		if (ret)
 			return ret;
 	}
@@ -443,8 +443,9 @@ NET_CheckNewConnections
 ===================
 */
 
-qsocket_t *NET_CheckNewConnections (void)
+qsocket_t *NET_CheckNewConnections (netadr_t* outaddr)
 {
+	Com_Memset(outaddr, 0, sizeof(*outaddr));
 	qsocket_t	*ret;
 
 	SetNetTime();
@@ -455,7 +456,7 @@ qsocket_t *NET_CheckNewConnections (void)
 			continue;
 		if (net_driverlevel && listening == false)
 			continue;
-		ret = dfunc.CheckNewConnections ();
+		ret = dfunc.CheckNewConnections (outaddr);
 		if (ret)
 		{
 			return ret;
@@ -501,7 +502,7 @@ returns -1 if connection is invalid
 
 extern void PrintStats(qsocket_t *s);
 
-int	NET_GetMessage (qsocket_t *sock)
+int	NET_GetMessage (qsocket_t *sock, netchan_t* chan)
 {
 	int ret;
 
@@ -516,7 +517,7 @@ int	NET_GetMessage (qsocket_t *sock)
 
 	SetNetTime();
 
-	ret = sfunc.QGetMessage(sock);
+	ret = sfunc.QGetMessage(sock, chan);
 
 	// see if this connection has timed out
 	if (ret == 0 && sock->driver)
@@ -556,7 +557,7 @@ returns 1 if the message was sent properly
 returns -1 if the connection died
 ==================
 */
-int NET_SendMessage (qsocket_t *sock, QMsg *data)
+int NET_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	int		r;
 	
@@ -570,7 +571,7 @@ int NET_SendMessage (qsocket_t *sock, QMsg *data)
 	}
 
 	SetNetTime();
-	r = sfunc.QSendMessage(sock, data);
+	r = sfunc.QSendMessage(sock, chan, data);
 	if (r == 1 && sock->driver)
 		messagesSent++;
 
@@ -578,7 +579,7 @@ int NET_SendMessage (qsocket_t *sock, QMsg *data)
 }
 
 
-int NET_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
+int NET_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	int		r;
 	
@@ -592,7 +593,7 @@ int NET_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 	}
 
 	SetNetTime();
-	r = sfunc.SendUnreliableMessage(sock, data);
+	r = sfunc.SendUnreliableMessage(sock, chan, data);
 	if (r == 1 && sock->driver)
 		unreliableMessagesSent++;
 
@@ -608,7 +609,7 @@ Returns true or false if the given qsocket can currently accept a
 message to be transmitted.
 ==================
 */
-qboolean NET_CanSendMessage (qsocket_t *sock)
+qboolean NET_CanSendMessage (qsocket_t *sock, netchan_t* chan)
 {
 	int		r;
 	
@@ -620,7 +621,7 @@ qboolean NET_CanSendMessage (qsocket_t *sock)
 
 	SetNetTime();
 
-	r = sfunc.CanSendMessage(sock);
+	r = sfunc.CanSendMessage(sock, chan);
 	
 	return r;
 }
@@ -642,7 +643,7 @@ int NET_SendToAll(QMsg *data, int blocktime)
 		{
 			if (host_client->netconnection->driver == 0)
 			{
-				NET_SendMessage(host_client->netconnection, data);
+				NET_SendMessage(host_client->netconnection, &host_client->netchan, data);
 				state1[i] = true;
 				state2[i] = true;
 				continue;
@@ -666,14 +667,14 @@ int NET_SendToAll(QMsg *data, int blocktime)
 		{
 			if (! state1[i])
 			{
-				if (NET_CanSendMessage (host_client->netconnection))
+				if (NET_CanSendMessage (host_client->netconnection, &host_client->netchan))
 				{
 					state1[i] = true;
-					NET_SendMessage(host_client->netconnection, data);
+					NET_SendMessage(host_client->netconnection, &host_client->netchan, data);
 				}
 				else
 				{
-					NET_GetMessage (host_client->netconnection);
+					NET_GetMessage (host_client->netconnection, &host_client->netchan);
 				}
 				count++;
 				continue;
@@ -681,13 +682,13 @@ int NET_SendToAll(QMsg *data, int blocktime)
 
 			if (! state2[i])
 			{
-				if (NET_CanSendMessage (host_client->netconnection))
+				if (NET_CanSendMessage (host_client->netconnection, &host_client->netchan))
 				{
 					state2[i] = true;
 				}
 				else
 				{
-					NET_GetMessage (host_client->netconnection);
+					NET_GetMessage (host_client->netconnection, &host_client->netchan);
 				}
 				count++;
 				continue;

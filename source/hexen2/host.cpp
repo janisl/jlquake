@@ -402,10 +402,10 @@ void SV_DropClient (qboolean crash)
 	if (!crash)
 	{
 		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage (host_client->netconnection))
+		if (NET_CanSendMessage (host_client->netconnection, &host_client->netchan))
 		{
 			host_client->message.WriteByte(svc_disconnect);
-			NET_SendMessage (host_client->netconnection, &host_client->message);
+			NET_SendMessage (host_client->netconnection, &host_client->netchan, &host_client->message);
 		}
 	
 		if (host_client->edict && host_client->spawned)
@@ -484,14 +484,14 @@ void Host_ShutdownServer(qboolean crash)
 		{
 			if (host_client->active && host_client->message.cursize)
 			{
-				if (NET_CanSendMessage (host_client->netconnection))
+				if (NET_CanSendMessage (host_client->netconnection, &host_client->netchan))
 				{
-					NET_SendMessage(host_client->netconnection, &host_client->message);
+					NET_SendMessage(host_client->netconnection, &host_client->netchan, &host_client->message);
 					host_client->message.Clear();
 				}
 				else
 				{
-					NET_GetMessage(host_client->netconnection);
+					NET_GetMessage(host_client->netconnection, &host_client->netchan);
 					count++;
 				}
 			}
@@ -504,7 +504,7 @@ void Host_ShutdownServer(qboolean crash)
 // make sure all the clients know we're disconnecting
 	buf.InitOOB(message, 4);
 	buf.WriteByte(svc_disconnect);
-	count = NET_SendToAll(&buf, 5);
+	count = (&buf, 5);
 	if (count)
 		Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
 
