@@ -301,7 +301,6 @@ struct netchan_t : netchan_common_t
 {
 	qboolean	fatal_error;
 
-	netsrc_t	sock;
 
 	int			dropped;			// between last packet and previous
 

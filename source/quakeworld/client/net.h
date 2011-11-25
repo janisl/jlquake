@@ -88,7 +88,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (netadr_t adr, int length, byte *data);
 void Netchan_OutOfBandPrint (netadr_t adr, const char *format, ...);
 qboolean Netchan_Process (netchan_t *chan);
-void Netchan_Setup (netchan_t *chan, netadr_t adr, int qport);
+void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport);
 
 qboolean Netchan_CanPacket (netchan_t *chan);
 qboolean Netchan_CanReliable (netchan_t *chan);

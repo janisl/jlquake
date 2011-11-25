@@ -197,6 +197,8 @@ void CL_EstablishConnection (const char *host)
 
 	CL_Disconnect ();
 
+	Com_Memset(&clc.netchan, 0, sizeof(clc.netchan));
+	clc.netchan.sock = NS_CLIENT;
 	cls.netcon = NET_Connect (host);
 	if (!cls.netcon)
 		Host_Error ("CL_Connect: connect failed\n");

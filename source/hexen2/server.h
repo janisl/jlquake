@@ -74,6 +74,7 @@ typedef struct client_s
 										// periodically
 
 	struct qsocket_s *netconnection;	// communications handle
+	netchan_t netchan;
 
  	usercmd_t		cmd;				// movement
 	vec3_t			wishdir;			// intended motion calced from cmd

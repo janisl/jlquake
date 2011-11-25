@@ -116,10 +116,11 @@ Netchan_Setup
 called to open a channel to a remote system
 ==============
 */
-void Netchan_Setup (netchan_t *chan, netadr_t adr)
+void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr)
 {
 	Com_Memset(chan, 0, sizeof(*chan));
 	
+	chan->sock = sock;
 	chan->remote_address = adr;
 	chan->last_received = realtime;
 	

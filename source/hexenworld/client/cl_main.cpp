@@ -745,7 +745,7 @@ void CL_ConnectionlessPacket (void)
 				Con_Printf ("Dup connect received.  Ignored.\n");
 			return;
 		}
-		Netchan_Setup (&cls.netchan, net_from);
+		Netchan_Setup (NS_CLIENT, &cls.netchan, net_from);
 		cls.netchan.message.WriteChar(clc_stringcmd);
 		cls.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;

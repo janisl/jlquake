@@ -548,6 +548,8 @@ void SV_CheckForNewClients (void)
 		if (i == svs.maxclients)
 			Sys_Error ("Host_CheckForNewClients: no free clients");
 		
+		Com_Memset(&svs.clients[i].netchan, 0, sizeof(svs.clients[i].netchan));
+		svs.clients[i].netchan.sock = NS_SERVER;
 		svs.clients[i].netconnection = ret;
 		SV_ConnectClient (i);	
 	
