@@ -1638,6 +1638,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			if (!sv.paused) {
 				SV_PreRunCmd();
 
+				int net_drop = cl->netchan.dropped;
 				if (net_drop < 20)
 				{
 					while (net_drop > 2)

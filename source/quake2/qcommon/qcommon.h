@@ -302,8 +302,6 @@ struct netchan_t : netchan_common_t
 	qboolean	fatal_error;
 
 
-	int			dropped;			// between last packet and previous
-
 	int			last_received;		// for timeouts
 	int			last_sent;			// for retransmits
 

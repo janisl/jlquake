@@ -1372,6 +1372,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_move:
+		{
 			MSG_ReadUsercmd (&oldest, false);
 			MSG_ReadUsercmd (&oldcmd, false);
 			MSG_ReadUsercmd (&newcmd, true);
@@ -1381,6 +1382,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 			SV_PreRunCmd();
 
+			int net_drop = cl->netchan.dropped;
 			if (net_drop < 20)
 			{
 				while (net_drop > 2)
@@ -1399,6 +1401,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 			cl->lastcmd = newcmd;
 			cl->lastcmd.buttons = 0; // avoid multiple fires on lag
+		}
 			break;
 
 

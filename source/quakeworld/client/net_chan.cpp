@@ -77,7 +77,6 @@ to the new value before sending out any replies.
 
 */
 
-int		net_drop;
 Cvar*	showpackets;
 Cvar*	showdrop;
 Cvar*	qport;
@@ -403,8 +402,8 @@ qboolean Netchan_Process (netchan_t *chan)
 //
 // dropped packets don't keep the message from being used
 //
-	net_drop = sequence - (chan->incoming_sequence+1);
-	if (net_drop > 0)
+	chan->dropped = sequence - (chan->incoming_sequence+1);
+	if (chan->dropped > 0)
 	{
 		chan->drop_count += 1;
 

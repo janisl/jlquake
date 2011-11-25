@@ -23,4 +23,6 @@ enum netsrc_t
 struct netchan_common_t
 {
 	netsrc_t sock;
+
+	int dropped;			// between last packet and previous
 };
