@@ -74,6 +74,13 @@ struct client_static_t : clientStaticCommon_t
 
 extern client_static_t	cls;
 
+struct clientConnection_t
+{
+	netchan_t netchan;
+};
+
+extern clientConnection_t clc;
+
 //
 // the client_state_t structure is wiped completely at every
 // server signon

@@ -73,11 +73,6 @@ NET
 
 #define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
 
-typedef enum {
-	NS_CLIENT,
-	NS_SERVER
-} netsrc_t;
-
 void		NET_Init( void );
 void		NET_Shutdown( void );
 void		NET_Restart( void );
@@ -103,7 +98,8 @@ qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 Netchan handles packet fragmentation and out of order / duplicate suppression
 */
 
-typedef struct {
+struct netchan_t : netchan_common_t
+{
 	netsrc_t	sock;
 
 	int			dropped;			// between last packet and previous
@@ -126,7 +122,7 @@ typedef struct {
 	int			unsentFragmentStart;
 	int			unsentLength;
 	byte		unsentBuffer[MAX_MSGLEN];
-} netchan_t;
+};
 
 void Netchan_Init( int qport );
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );

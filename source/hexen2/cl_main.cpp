@@ -37,6 +37,7 @@ Cvar	*cl_lightlevel;
 
 
 client_static_t	cls;
+clientConnection_t clc;
 client_state_t	cl;
 // FIXME: put these on hunk?
 entity_t		cl_entities[MAX_EDICTS_H2];

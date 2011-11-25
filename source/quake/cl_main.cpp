@@ -41,6 +41,7 @@ Cvar*	m_forward;
 Cvar*	m_side;
 
 client_static_t	cls;
+clientConnection_t clc;
 client_state_t	cl;
 // FIXME: put these on hunk?
 entity_t		cl_entities[MAX_EDICTS_Q1];

@@ -281,8 +281,6 @@ NET
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
-typedef enum {NS_CLIENT, NS_SERVER} netsrc_t;
-
 void		NET_Init (void);
 void		NET_Shutdown (void);
 
@@ -299,7 +297,7 @@ void		NET_Sleep(int msec);
 
 #define	MAX_LATENT	32
 
-typedef struct
+struct netchan_t : netchan_common_t
 {
 	qboolean	fatal_error;
 
@@ -331,7 +329,7 @@ typedef struct
 // message is copied to this buffer when it is first transfered
 	int			reliable_length;
 	byte		reliable_buf[MAX_MSGLEN-16];	// unacked reliable message
-} netchan_t;
+};
 
 extern	netadr_t	net_from;
 extern	QMsg	net_message;

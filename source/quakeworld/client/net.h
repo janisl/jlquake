@@ -37,7 +37,7 @@ void		NET_SendPacket (int length, void *data, netadr_t to);
 
 #define	MAX_LATENT	32
 
-typedef struct
+struct netchan_t : netchan_common_t
 {
 	qboolean	fatal_error;
 
@@ -79,7 +79,7 @@ typedef struct
 // time and size data to calculate bandwidth
 	int			outgoing_size[MAX_LATENT];
 	double		outgoing_time[MAX_LATENT];
-} netchan_t;
+};
 
 extern	int	net_drop;		// packets dropped before this one
 
