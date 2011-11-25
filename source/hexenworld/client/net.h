@@ -37,8 +37,6 @@ struct netchan_t : netchan_common_t
 	double		cleartime;			// if realtime > nc->cleartime, free to go
 	double		rate;				// seconds / byte
 
-// sequencing variables
-	int			incoming_sequence;
 	int			incoming_acknowledged;
 	int			incoming_reliable_acknowledged;	// single bit
 

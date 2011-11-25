@@ -63,13 +63,13 @@ h2entity_state_t *FindState(int EntNum)
 		}
 		else
 		{
-			VectorCopy(cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].playerstate[EntNum].origin, pretend_player.origin);
+			VectorCopy(cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].playerstate[EntNum].origin, pretend_player.origin);
 		}
 
 		return &pretend_player;
 	}
 
-	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
+	pack = &cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].packet_entities;
 	for (pnum=0 ; pnum<pack->num_entities ; pnum++)
 	{
 		if (pack->entities[pnum].number == EntNum)

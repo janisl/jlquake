@@ -610,13 +610,13 @@ void SV_ExecuteClientMessage (client_t *cl)
 			calculatedChecksum = COM_BlockSequenceCRCByte (
 				net_message._data + checksumIndex + 1,
 				net_message.readcount - checksumIndex - 1,
-				cl->netchan.incoming_sequence);
+				cl->netchan.incomingSequence);
 
 			if (calculatedChecksum != checksum)
 			{
 				Com_DPrintf ("Failed command checksum for %s (%d != %d)/%d\n", 
 					cl->name, calculatedChecksum, checksum, 
-					cl->netchan.incoming_sequence);
+					cl->netchan.incomingSequence);
 				return;
 			}
 

@@ -296,7 +296,7 @@ void Cam_Track(usercmd_t *cmd)
 		return;
 	}
 
-	frame = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
+	frame = &cl.frames[cls.netchan.incomingSequence & UPDATE_MASK];
 	player = frame->playerstate + spec_track;
 	self = frame->playerstate + cl.playernum;
 

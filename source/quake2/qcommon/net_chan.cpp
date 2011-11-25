@@ -157,7 +157,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->remoteAddress = adr;
 	chan->qport = qport;
 	chan->last_received = curtime;
-	chan->incoming_sequence = 0;
+	chan->incomingSequence = 0;
 	chan->outgoing_sequence = 1;
 
 	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
@@ -241,7 +241,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	send.InitOOB(send_buf, sizeof(send_buf));
 
 	w1 = ( chan->outgoing_sequence & ~(1<<31) ) | (send_reliable<<31);
-	w2 = ( chan->incoming_sequence & ~(1<<31) ) | (chan->incoming_reliable_sequence<<31);
+	w2 = ( chan->incomingSequence & ~(1<<31) ) | (chan->incoming_reliable_sequence<<31);
 
 	chan->outgoing_sequence++;
 	chan->last_sent = curtime;
@@ -276,13 +276,13 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 				, send.cursize
 				, chan->outgoing_sequence - 1
 				, chan->reliable_sequence
-				, chan->incoming_sequence
+				, chan->incomingSequence
 				, chan->incoming_reliable_sequence);
 		else
 			Com_Printf ("send %4i : s=%i ack=%i rack=%i\n"
 				, send.cursize
 				, chan->outgoing_sequence - 1
-				, chan->incoming_sequence
+				, chan->incomingSequence
 				, chan->incoming_reliable_sequence);
 	}
 }
@@ -336,20 +336,20 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 //
 // discard stale or duplicated packets
 //
-	if (sequence <= chan->incoming_sequence)
+	if (sequence <= chan->incomingSequence)
 	{
 		if (showdrop->value)
 			Com_Printf ("%s:Out of order packet %i at %i\n"
 				, SOCK_AdrToString (chan->remoteAddress)
 				,  sequence
-				, chan->incoming_sequence);
+				, chan->incomingSequence);
 		return false;
 	}
 
 //
 // dropped packets don't keep the message from being used
 //
-	chan->dropped = sequence - (chan->incoming_sequence+1);
+	chan->dropped = sequence - (chan->incomingSequence+1);
 	if (chan->dropped > 0)
 	{
 		if (showdrop->value)
@@ -369,7 +369,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 //
 // if this message contains a reliable message, bump incoming_reliable_sequence 
 //
-	chan->incoming_sequence = sequence;
+	chan->incomingSequence = sequence;
 	chan->incoming_acknowledged = sequence_ack;
 	chan->incoming_reliable_acknowledged = reliable_ack;
 	if (reliable_message)

@@ -316,19 +316,19 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 
 		if (flags & NETFLAG_UNRELIABLE)
 		{
-			if (sequence < sock->unreliableReceiveSequence)
+			if (sequence < chan->incomingSequence)
 			{
 				Con_DPrintf("Got a stale datagram\n");
 				ret = 0;
 				break;
 			}
-			if (sequence != sock->unreliableReceiveSequence)
+			if (sequence != chan->incomingSequence)
 			{
-				count = sequence - sock->unreliableReceiveSequence;
+				count = sequence - chan->incomingSequence;
 				droppedDatagrams += count;
 				Con_DPrintf("Dropped %u datagram(s)\n", count);
 			}
-			sock->unreliableReceiveSequence = sequence + 1;
+			chan->incomingSequence = sequence + 1;
 
 			length -= NET_HEADERSIZE;
 

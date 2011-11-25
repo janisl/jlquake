@@ -807,7 +807,7 @@ static void V_CalcRefdef (void)
 	view->state.frame = view_message->weaponframe;
 
 	// Place weapon in powered up mode
-	if ((cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)
+	if ((cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)
 		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | H2MLS_POWERMODE;
 	else
 		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | 0;
@@ -946,7 +946,7 @@ void V_RenderView (void)
 	if (cls.state != ca_active)
 		return;
 
-	view_frame = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
+	view_frame = &cl.frames[cls.netchan.incomingSequence & UPDATE_MASK];
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle ();

@@ -237,7 +237,7 @@ qboolean CL_GetDemoMessage (void)
 		FS_Read (&i, 4, cls.demofile);
 		cls.netchan.outgoing_sequence = LittleLong(i);
 		FS_Read (&i, 4, cls.demofile);
-		cls.netchan.incoming_sequence = LittleLong(i);
+		cls.netchan.incomingSequence = LittleLong(i);
 		break;
 
 	default :
@@ -357,7 +357,7 @@ void CL_WriteSetDemoMessage (void)
 
 	len = LittleLong(cls.netchan.outgoing_sequence);
 	FS_Write(&len, 4, cls.demofile);
-	len = LittleLong(cls.netchan.incoming_sequence);
+	len = LittleLong(cls.netchan.incomingSequence);
 	FS_Write(&len, 4, cls.demofile);
 
 	FS_Flush (cls.demofile);

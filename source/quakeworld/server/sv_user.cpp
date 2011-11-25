@@ -1557,8 +1557,8 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 	// make sure the reply sequence number matches the incoming
 	// sequence number 
-	if (cl->netchan.incoming_sequence >= cl->netchan.outgoing_sequence)
-		cl->netchan.outgoing_sequence = cl->netchan.incoming_sequence;
+	if (cl->netchan.incomingSequence >= cl->netchan.outgoing_sequence)
+		cl->netchan.outgoing_sequence = cl->netchan.incomingSequence;
 	else
 		cl->send_message = false;	// don't reply, sequences have slipped		
 
@@ -1570,7 +1570,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 	sv_player = host_client->edict;
 
 //	seq_hash = (cl->netchan.incoming_sequence & 0xffff) ; // ^ QW_CHECK_HASH;
-	seq_hash = cl->netchan.incoming_sequence;
+	seq_hash = cl->netchan.incomingSequence;
 	
 	// mark time so clients will know how much to predict
 	// other players
@@ -1631,7 +1631,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			if (calculatedChecksum != checksum)
 			{
 				Con_DPrintf ("Failed command checksum for %s(%d) (%d != %d)\n", 
-					cl->name, cl->netchan.incoming_sequence, checksum, calculatedChecksum);
+					cl->name, cl->netchan.incomingSequence, checksum, calculatedChecksum);
 				return;
 			}
 

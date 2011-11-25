@@ -139,7 +139,6 @@ qsocket_t *NET_NewQSocket (void)
 	sock->unreliableSendSequence = 0;
 	sock->sendMessageLength = 0;
 	sock->receiveSequence = 0;
-	sock->unreliableReceiveSequence = 0;
 	sock->receiveMessageLength = 0;
 
 	return sock;

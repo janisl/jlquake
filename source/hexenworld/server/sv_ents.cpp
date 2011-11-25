@@ -1349,7 +1349,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	h2entity_state_t	*state;
 
 	// this is the frame we are creating
-	frame = &client->frames[client->netchan.incoming_sequence & UPDATE_MASK];
+	frame = &client->frames[client->netchan.incomingSequence & UPDATE_MASK];
 
 	// find the client's PVS
 	clent = client->edict;

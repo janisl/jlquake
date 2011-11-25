@@ -829,7 +829,7 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 	if (cls.state != ca_active)
 		return;
 
-	view_frame = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
+	view_frame = &cl.frames[cls.netchan.incomingSequence & UPDATE_MASK];
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle ();

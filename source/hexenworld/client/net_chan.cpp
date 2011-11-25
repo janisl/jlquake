@@ -209,7 +209,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	send.InitOOB(send_buf, sizeof(send_buf));
 
 	w1 = chan->outgoing_sequence | (send_reliable<<31);
-	w2 = chan->incoming_sequence | (chan->incoming_reliable_sequence<<31);
+	w2 = chan->incomingSequence | (chan->incoming_reliable_sequence<<31);
 
 	chan->outgoing_sequence++;
 
@@ -247,7 +247,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		Con_Printf ("--> s=%i(%i) a=%i(%i) %i\n"
 			, chan->outgoing_sequence
 			, send_reliable
-			, chan->incoming_sequence
+			, chan->incomingSequence
 			, chan->incoming_reliable_sequence
 			, send.cursize);
 
@@ -327,20 +327,20 @@ qboolean Netchan_Process (netchan_t *chan)
 //
 // discard stale or duplicated packets
 //
-	if (sequence <= chan->incoming_sequence)
+	if (sequence <= chan->incomingSequence)
 	{
 		if (showdrop->value)
 			Con_Printf ("%s:Out of order packet %i at %i\n"
 				, SOCK_AdrToString (chan->remoteAddress)
 				,  sequence
-				, chan->incoming_sequence);
+				, chan->incomingSequence);
 		return false;
 	}
 
 //
 // dropped packets don't keep the message from being used
 //
-	chan->dropped = sequence - (chan->incoming_sequence+1);
+	chan->dropped = sequence - (chan->incomingSequence+1);
 	if (chan->dropped > 0)
 	{
 		chan->drop_count += 1;
@@ -348,7 +348,7 @@ qboolean Netchan_Process (netchan_t *chan)
 		if (showdrop->value)
 			Con_Printf ("%s:Dropped %i packets at %i\n"
 			, SOCK_AdrToString (chan->remoteAddress)
-			, sequence-(chan->incoming_sequence+1)
+			, sequence-(chan->incomingSequence+1)
 			, sequence);
 	}
 
@@ -362,7 +362,7 @@ qboolean Netchan_Process (netchan_t *chan)
 //
 // if this message contains a reliable message, bump incoming_reliable_sequence 
 //
-	chan->incoming_sequence = sequence;
+	chan->incomingSequence = sequence;
 	chan->incoming_acknowledged = sequence_ack;
 	chan->incoming_reliable_acknowledged = reliable_ack;
 	if (reliable_message)
