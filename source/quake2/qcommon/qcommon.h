@@ -309,8 +309,6 @@ struct netchan_t : netchan_common_t
 	int			incoming_acknowledged;
 	int			incoming_reliable_acknowledged;	// single bit
 
-	int			last_reliable_sequence;		// sequence number of last send
-
 // reliable staging and holding areas
 	QMsg	message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN-16];		// leave space for header

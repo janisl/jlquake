@@ -34,4 +34,5 @@ struct netchan_common_t
 	int incomingReliableSequence;		// single bit, maintained local
 	int outgoingSequence;
 	int outgoingReliableSequence;		// single bit
+	int lastReliableSequence;		// sequence number of last send
 };

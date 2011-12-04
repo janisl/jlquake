@@ -187,7 +187,7 @@ qboolean Netchan_NeedReliable (netchan_t *chan)
 // if the remote side dropped the last reliable message, resend it
 	send_reliable = false;
 
-	if (chan->incoming_acknowledged > chan->last_reliable_sequence
+	if (chan->incoming_acknowledged > chan->lastReliableSequence
 	&& chan->incoming_reliable_acknowledged != chan->outgoingReliableSequence)
 		send_reliable = true;
 
@@ -257,7 +257,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	if (send_reliable)
 	{
 		send.WriteData(chan->reliable_buf, chan->reliable_length);
-		chan->last_reliable_sequence = chan->outgoingSequence;
+		chan->lastReliableSequence = chan->outgoingSequence;
 	}
 	
 // add the unreliable part if space is available
