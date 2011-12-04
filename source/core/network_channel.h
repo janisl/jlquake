@@ -31,4 +31,6 @@ struct netchan_common_t
 
 	// sequencing variables
 	int incomingSequence;
+	int incomingReliableSequence;		// single bit, maintained local
+	int outgoingSequence;
 };

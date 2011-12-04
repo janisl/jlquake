@@ -208,10 +208,10 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // write the packet header
 	send.InitOOB(send_buf, sizeof(send_buf));
 
-	w1 = chan->outgoing_sequence | (send_reliable<<31);
-	w2 = chan->incomingSequence | (chan->incoming_reliable_sequence<<31);
+	w1 = chan->outgoingSequence | (send_reliable<<31);
+	w2 = chan->incomingSequence | (chan->incomingReliableSequence<<31);
 
-	chan->outgoing_sequence++;
+	chan->outgoingSequence++;
 
 	send.WriteLong(w1);
 	send.WriteLong(w2);
@@ -220,7 +220,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	if (send_reliable)
 	{
 		send.WriteData(chan->reliable_buf, chan->reliable_length);
-		chan->last_reliable_sequence = chan->outgoing_sequence;
+		chan->last_reliable_sequence = chan->outgoingSequence;
 	}
 	
 // add the unreliable part if space is available
@@ -228,7 +228,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		send.WriteData(data, length);
 
 // send the datagram
-	i = chan->outgoing_sequence & (MAX_LATENT-1);
+	i = chan->outgoingSequence & (MAX_LATENT-1);
 	chan->outgoing_size[i] = send.cursize;
 	chan->outgoing_time[i] = realtime;
 
@@ -245,10 +245,10 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 	if (showpackets->value)
 		Con_Printf ("--> s=%i(%i) a=%i(%i) %i\n"
-			, chan->outgoing_sequence
+			, chan->outgoingSequence
 			, send_reliable
 			, chan->incomingSequence
-			, chan->incoming_reliable_sequence
+			, chan->incomingReliableSequence
 			, send.cursize);
 
 }
@@ -366,14 +366,14 @@ qboolean Netchan_Process (netchan_t *chan)
 	chan->incoming_acknowledged = sequence_ack;
 	chan->incoming_reliable_acknowledged = reliable_ack;
 	if (reliable_message)
-		chan->incoming_reliable_sequence ^= 1;
+		chan->incomingReliableSequence ^= 1;
 
 //
 // the message can now be read from the current message pointer
 // update statistics counters
 //
 	chan->frame_latency = chan->frame_latency*OLD_AVG
-		+ (chan->outgoing_sequence-sequence_ack)*(1.0-OLD_AVG);
+		+ (chan->outgoingSequence-sequence_ack)*(1.0-OLD_AVG);
 	chan->frame_rate = chan->frame_rate*OLD_AVG
 		+ (realtime-chan->last_received)*(1.0-OLD_AVG);		
 	chan->good_count += 1;

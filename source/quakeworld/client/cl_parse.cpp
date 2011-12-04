@@ -119,8 +119,8 @@ int CL_CalcNet (void)
 	frame_t	*frame;
 	int lost;
 
-	for (i=cls.netchan.outgoing_sequence-UPDATE_BACKUP+1
-		; i <= cls.netchan.outgoing_sequence
+	for (i=cls.netchan.outgoingSequence-UPDATE_BACKUP+1
+		; i <= cls.netchan.outgoingSequence
 		; i++)
 	{
 		frame = &cl.frames[i&UPDATE_MASK];
@@ -137,7 +137,7 @@ int CL_CalcNet (void)
 	lost = 0;
 	for (a=0 ; a<NET_TIMINGS ; a++)
 	{
-		i = (cls.netchan.outgoing_sequence-a) & NET_TIMINGSMASK;
+		i = (cls.netchan.outgoingSequence-a) & NET_TIMINGSMASK;
 		if (packet_latency[i] == 9999)
 			lost++;
 	}

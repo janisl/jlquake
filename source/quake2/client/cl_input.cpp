@@ -527,7 +527,7 @@ void CL_SendCmd (void)
 	// build a command even if not connected
 
 	// save this command off for prediction
-	i = cls.netchan.outgoing_sequence & (CMD_BACKUP-1);
+	i = cls.netchan.outgoingSequence & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	cl.cmd_time[i] = cls.realtime;	// for netgraph ping calculation
 
@@ -579,25 +579,25 @@ void CL_SendCmd (void)
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
-	i = (cls.netchan.outgoing_sequence-2) & (CMD_BACKUP-1);
+	i = (cls.netchan.outgoingSequence-2) & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
 	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoing_sequence-1) & (CMD_BACKUP-1);
+	i = (cls.netchan.outgoingSequence-1) & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoing_sequence) & (CMD_BACKUP-1);
+	i = (cls.netchan.outgoingSequence) & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
 	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
 		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
-		cls.netchan.outgoing_sequence);
+		cls.netchan.outgoingSequence);
 
 	//
 	// deliver the message

@@ -58,9 +58,6 @@ struct netchan_t : netchan_common_t
 	int			incoming_acknowledged;
 	int			incoming_reliable_acknowledged;	// single bit
 
-	int			incoming_reliable_sequence;		// single bit, maintained local
-
-	int			outgoing_sequence;
 	int			reliable_sequence;			// single bit
 	int			last_reliable_sequence;		// sequence number of last send
 

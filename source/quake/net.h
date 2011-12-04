@@ -127,11 +127,9 @@ typedef struct qsocket_s
 
 	unsigned int	ackSequence;
 	unsigned int	sendSequence;
-	unsigned int	unreliableSendSequence;
 	int				sendMessageLength;
 	byte			sendMessage [NET_MAXMESSAGE];
 
-	unsigned int	receiveSequence;
 	int				receiveMessageLength;
 	byte			receiveMessage [NET_MAXMESSAGE];
 

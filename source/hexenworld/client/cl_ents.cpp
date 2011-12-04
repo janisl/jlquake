@@ -247,7 +247,7 @@ void CL_ParsePacketEntities (qboolean delta)
 	full = false;
 	if (oldpacket != -1)
 	{
-		if (cls.netchan.outgoing_sequence - oldpacket >= UPDATE_BACKUP-1)
+		if (cls.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP-1)
 		{	// we can't use this, it is too old
 			FlushEntityPacket ();
 			return;
@@ -1270,7 +1270,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 		// we use his last predicted postition
 		if (j == cl.playernum) 
 		{
-			VectorCopy(cl.frames[cls.netchan.outgoing_sequence&UPDATE_MASK].playerstate[cl.playernum].origin,
+			VectorCopy(cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].playerstate[cl.playernum].origin,
 				pplayer->origin);
 		} 
 		else 

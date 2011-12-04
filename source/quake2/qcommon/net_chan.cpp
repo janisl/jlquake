@@ -158,7 +158,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->qport = qport;
 	chan->last_received = curtime;
 	chan->incomingSequence = 0;
-	chan->outgoing_sequence = 1;
+	chan->outgoingSequence = 1;
 
 	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
 	chan->message.allowoverflow = true;
@@ -240,10 +240,10 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // write the packet header
 	send.InitOOB(send_buf, sizeof(send_buf));
 
-	w1 = ( chan->outgoing_sequence & ~(1<<31) ) | (send_reliable<<31);
-	w2 = ( chan->incomingSequence & ~(1<<31) ) | (chan->incoming_reliable_sequence<<31);
+	w1 = ( chan->outgoingSequence & ~(1<<31) ) | (send_reliable<<31);
+	w2 = ( chan->incomingSequence & ~(1<<31) ) | (chan->incomingReliableSequence<<31);
 
-	chan->outgoing_sequence++;
+	chan->outgoingSequence++;
 	chan->last_sent = curtime;
 
 	send.WriteLong(w1);
@@ -257,7 +257,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	if (send_reliable)
 	{
 		send.WriteData(chan->reliable_buf, chan->reliable_length);
-		chan->last_reliable_sequence = chan->outgoing_sequence;
+		chan->last_reliable_sequence = chan->outgoingSequence;
 	}
 	
 // add the unreliable part if space is available
@@ -274,16 +274,16 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		if (send_reliable)
 			Com_Printf ("send %4i : s=%i reliable=%i ack=%i rack=%i\n"
 				, send.cursize
-				, chan->outgoing_sequence - 1
+				, chan->outgoingSequence - 1
 				, chan->reliable_sequence
 				, chan->incomingSequence
-				, chan->incoming_reliable_sequence);
+				, chan->incomingReliableSequence);
 		else
 			Com_Printf ("send %4i : s=%i ack=%i rack=%i\n"
 				, send.cursize
-				, chan->outgoing_sequence - 1
+				, chan->outgoingSequence - 1
 				, chan->incomingSequence
-				, chan->incoming_reliable_sequence);
+				, chan->incomingReliableSequence);
 	}
 }
 
@@ -322,7 +322,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 			Com_Printf ("recv %4i : s=%i reliable=%i ack=%i rack=%i\n"
 				, msg->cursize
 				, sequence
-				, chan->incoming_reliable_sequence ^ 1
+				, chan->incomingReliableSequence ^ 1
 				, sequence_ack
 				, reliable_ack);
 		else
@@ -374,7 +374,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	chan->incoming_reliable_acknowledged = reliable_ack;
 	if (reliable_message)
 	{
-		chan->incoming_reliable_sequence ^= 1;
+		chan->incomingReliableSequence ^= 1;
 	}
 
 //

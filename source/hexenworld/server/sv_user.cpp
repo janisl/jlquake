@@ -1328,14 +1328,14 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 	// make sure the reply sequence number matches the incoming
 	// sequence number 
-	if (cl->netchan.incomingSequence >= cl->netchan.outgoing_sequence)
-		cl->netchan.outgoing_sequence = cl->netchan.incomingSequence;
+	if (cl->netchan.incomingSequence >= cl->netchan.outgoingSequence)
+		cl->netchan.outgoingSequence = cl->netchan.incomingSequence;
 	else
 		cl->send_message = false;	// don't reply, sequences have slipped		
 
 	// save time for ping calculations
-	cl->frames[cl->netchan.outgoing_sequence & UPDATE_MASK].senttime = realtime;
-	cl->frames[cl->netchan.outgoing_sequence & UPDATE_MASK].ping_time = -1;
+	cl->frames[cl->netchan.outgoingSequence & UPDATE_MASK].senttime = realtime;
+	cl->frames[cl->netchan.outgoingSequence & UPDATE_MASK].ping_time = -1;
 
 	host_client = cl;
 	sv_player = host_client->edict;

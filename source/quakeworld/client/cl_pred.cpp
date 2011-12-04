@@ -135,7 +135,7 @@ void CL_PredictMove (void)
 	if (!cl.validsequence)
 		return;
 
-	if (cls.netchan.outgoing_sequence - cls.netchan.incomingSequence >= UPDATE_BACKUP-1)
+	if (cls.netchan.outgoingSequence - cls.netchan.incomingSequence >= UPDATE_BACKUP-1)
 		return;
 
 	VectorCopy (cl.viewangles, cl.simangles);
@@ -169,7 +169,7 @@ void CL_PredictMove (void)
 //	to = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
 
 	for (i=1 ; i<UPDATE_BACKUP-1 && cls.netchan.incomingSequence+i <
-			cls.netchan.outgoing_sequence; i++)
+			cls.netchan.outgoingSequence; i++)
 	{
 		to = &cl.frames[(cls.netchan.incomingSequence+i) & UPDATE_MASK];
 		CL_PredictUsercmd (&from->playerstate[cl.playernum]

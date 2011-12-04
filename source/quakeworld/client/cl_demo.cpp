@@ -194,7 +194,7 @@ qboolean CL_GetDemoMessage (void)
 	switch (c) {
 	case dem_cmd :
 		// user sent input
-		i = cls.netchan.outgoing_sequence & UPDATE_MASK;
+		i = cls.netchan.outgoingSequence & UPDATE_MASK;
 		pcmd = &cl.frames[i].cmd;
 		r = FS_Read (pcmd, sizeof(*pcmd), cls.demofile);
 		if (r != sizeof(*pcmd))
@@ -210,7 +210,7 @@ qboolean CL_GetDemoMessage (void)
 		pcmd->upmove      = LittleShort(pcmd->upmove);
 		cl.frames[i].senttime = demotime;
 		cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
-		cls.netchan.outgoing_sequence++;
+		cls.netchan.outgoingSequence++;
 		for (i=0 ; i<3 ; i++)
 		{
 			r = FS_Read (&f, 4, cls.demofile);
@@ -235,7 +235,7 @@ qboolean CL_GetDemoMessage (void)
 
 	case dem_set :
 		FS_Read (&i, 4, cls.demofile);
-		cls.netchan.outgoing_sequence = LittleLong(i);
+		cls.netchan.outgoingSequence = LittleLong(i);
 		FS_Read (&i, 4, cls.demofile);
 		cls.netchan.incomingSequence = LittleLong(i);
 		break;
@@ -355,7 +355,7 @@ void CL_WriteSetDemoMessage (void)
 	c = dem_set;
 	FS_Write(&c, sizeof(c), cls.demofile);
 
-	len = LittleLong(cls.netchan.outgoing_sequence);
+	len = LittleLong(cls.netchan.outgoingSequence);
 	FS_Write(&len, 4, cls.demofile);
 	len = LittleLong(cls.netchan.incomingSequence);
 	FS_Write(&len, 4, cls.demofile);

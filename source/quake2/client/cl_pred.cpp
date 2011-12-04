@@ -221,7 +221,7 @@ void CL_PredictMovement (void)
 	}
 
 	ack = cls.netchan.incoming_acknowledged;
-	current = cls.netchan.outgoing_sequence;
+	current = cls.netchan.outgoingSequence;
 
 	// if we are too far out of date, just freeze
 	if (current - ack >= CMD_BACKUP)

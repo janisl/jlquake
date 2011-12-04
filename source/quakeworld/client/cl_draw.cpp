@@ -231,7 +231,7 @@ void R_NetGraph (void)
 
 	for (int a = 0; a < NET_TIMINGS; a++)
 	{
-		int i = (cls.netchan.outgoing_sequence - a) & NET_TIMINGSMASK;
+		int i = (cls.netchan.outgoingSequence - a) & NET_TIMINGSMASK;
 		R_LineGraph(NET_TIMINGS - 1 - a, y, packet_latency[i]);
 	}
 }

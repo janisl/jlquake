@@ -268,7 +268,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data
 	packetLen = NET_HEADERSIZE + data->cursize;
 
 	packetBuffer.length = BigLong(packetLen | NETFLAG_UNRELIABLE);
-	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
+	packetBuffer.sequence = BigLong(chan->outgoingSequence++);
 	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
 	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
@@ -397,12 +397,12 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 			packetBuffer.sequence = BigLong(sequence);
 			UDP_Write(sock->socket, (byte *)&packetBuffer, NET_HEADERSIZE, &readaddr);
 
-			if (sequence != sock->receiveSequence)
+			if (sequence != chan->incomingReliableSequence)
 			{
 				receivedDuplicateCount++;
 				continue;
 			}
-			sock->receiveSequence++;
+			chan->incomingReliableSequence++;
 
 			length -= NET_HEADERSIZE;
 
@@ -434,7 +434,7 @@ void PrintStats(qsocket_t *s)
 {
 	Con_Printf("canSend = %4u   \n", s->canSend);
 	Con_Printf("sendSeq = %4u   ", s->sendSequence);
-	Con_Printf("recvSeq = %4u   \n", s->receiveSequence);
+//	Con_Printf("recvSeq = %4u   \n", s->incomingReliableSequence);
 	Con_Printf("\n");
 }
 
