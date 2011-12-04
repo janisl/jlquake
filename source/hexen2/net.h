@@ -108,7 +108,6 @@ typedef struct qsocket_s
 	void			*driverdata;
 
 	unsigned int	ackSequence;
-	unsigned int	sendSequence;
 	int				sendMessageLength;
 	byte			sendMessage [NET_MAXMESSAGE];
 

@@ -239,7 +239,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	send_reliable = false;
 
 	if (chan->incoming_acknowledged > chan->last_reliable_sequence
-	&& chan->incoming_reliable_acknowledged != chan->reliable_sequence)
+	&& chan->incoming_reliable_acknowledged != chan->outgoingReliableSequence)
 		send_reliable = true;
 
 // if the reliable transmit buffer is empty, copy the current message out
@@ -248,7 +248,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		Com_Memcpy(chan->reliable_buf, chan->message_buf, chan->message.cursize);
 		chan->reliable_length = chan->message.cursize;
 		chan->message.cursize = 0;
-		chan->reliable_sequence ^= 1;
+		chan->outgoingReliableSequence ^= 1;
 		send_reliable = true;
 	}
 
@@ -418,7 +418,7 @@ qboolean Netchan_Process (netchan_t *chan)
 // if the current outgoing reliable message has been acknowledged
 // clear the buffer to make way for the next
 //
-	if (reliable_ack == (unsigned)chan->reliable_sequence)
+	if (reliable_ack == (unsigned)chan->outgoingReliableSequence)
 		chan->reliable_length = 0;	// it has been received
 	
 //

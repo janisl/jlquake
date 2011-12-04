@@ -135,7 +135,6 @@ qsocket_t *NET_NewQSocket (void)
 	sock->sendNext = false;
 	sock->lastMessageTime = net_time;
 	sock->ackSequence = 0;
-	sock->sendSequence = 0;
 	sock->sendMessageLength = 0;
 	sock->receiveMessageLength = 0;
 

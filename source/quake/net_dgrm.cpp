@@ -158,7 +158,7 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 	packetLen = NET_HEADERSIZE + dataLen;
 
 	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
-	packetBuffer.sequence = BigLong(sock->sendSequence++);
+	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence++);
 	Com_Memcpy(packetBuffer.data, sock->sendMessage, dataLen);
 
 	sock->canSend = false;
@@ -191,7 +191,7 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 	packetLen = NET_HEADERSIZE + dataLen;
 
 	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
-	packetBuffer.sequence = BigLong(sock->sendSequence++);
+	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence++);
 	Com_Memcpy(packetBuffer.data, sock->sendMessage, dataLen);
 
 	sock->sendNext = false;
@@ -224,7 +224,7 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 	packetLen = NET_HEADERSIZE + dataLen;
 
 	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
-	packetBuffer.sequence = BigLong(sock->sendSequence - 1);
+	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence - 1);
 	Com_Memcpy(packetBuffer.data, sock->sendMessage, dataLen);
 
 	sock->sendNext = false;
@@ -361,7 +361,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 
 		if (flags & NETFLAG_ACK)
 		{
-			if (sequence != (sock->sendSequence - 1))
+			if (sequence != (chan->outgoingReliableSequence - 1))
 			{
 				Con_DPrintf("Stale ACK received\n");
 				continue;
@@ -369,7 +369,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 			if (sequence == sock->ackSequence)
 			{
 				sock->ackSequence++;
-				if (sock->ackSequence != sock->sendSequence)
+				if (sock->ackSequence != chan->outgoingReliableSequence)
 					Con_DPrintf("ack sequencing error\n");
 			}
 			else
@@ -433,7 +433,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 void PrintStats(qsocket_t *s)
 {
 	Con_Printf("canSend = %4u   \n", s->canSend);
-	Con_Printf("sendSeq = %4u   ", s->sendSequence);
+//	Con_Printf("sendSeq = %4u   ", s->outgoingReliableSequence);
 //	Con_Printf("recvSeq = %4u   \n", s->incomingReliableSequence);
 	Con_Printf("\n");
 }
