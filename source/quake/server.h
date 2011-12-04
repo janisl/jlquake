@@ -58,10 +58,10 @@ typedef struct
 	server_state_t	state;			// some actions are only valid during load
 
 	QMsg		datagram;
-	byte		datagram_buf[MAX_DATAGRAM];
+	byte		datagram_buf[MAX_DATAGRAM_Q1];
 
 	QMsg		reliable_datagram;	// copied to all clients at end of frame
-	byte		reliable_datagram_buf[MAX_DATAGRAM];
+	byte		reliable_datagram_buf[MAX_DATAGRAM_Q1];
 
 	QMsg		signon;
 	byte		signon_buf[8192];
@@ -90,7 +90,7 @@ typedef struct client_s
 
 	QMsg			message;			// can be added to at any time,
 										// copied and clear once per frame
-	byte			msgbuf[MAX_MSGLEN];
+	byte			msgbuf[MAX_MSGLEN_Q1];
 	edict_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;

@@ -38,7 +38,7 @@ static struct
 {
 	unsigned int	length;
 	unsigned int	sequence;
-	byte			data[MAX_DATAGRAM];
+	byte			data[MAX_DATAGRAM_H2];
 } packetBuffer;
 
 extern qboolean m_return_onerror;
@@ -125,14 +125,14 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 	Com_Memcpy(sock->sendMessage, data->_data, data->cursize);
 	sock->sendMessageLength = data->cursize;
 
-	if (data->cursize <= MAX_DATAGRAM)
+	if (data->cursize <= MAX_DATAGRAM_H2)
 	{
 		dataLen = data->cursize;
 		eom = NETFLAG_EOM;
 	}
 	else
 	{
-		dataLen = MAX_DATAGRAM;
+		dataLen = MAX_DATAGRAM_H2;
 		eom = 0;
 	}
 	packetLen = NET_HEADERSIZE + dataLen;
@@ -158,14 +158,14 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 	unsigned int	dataLen;
 	unsigned int	eom;
 
-	if (sock->sendMessageLength <= MAX_DATAGRAM)
+	if (sock->sendMessageLength <= MAX_DATAGRAM_H2)
 	{
 		dataLen = sock->sendMessageLength;
 		eom = NETFLAG_EOM;
 	}
 	else
 	{
-		dataLen = MAX_DATAGRAM;
+		dataLen = MAX_DATAGRAM_H2;
 		eom = 0;
 	}
 	packetLen = NET_HEADERSIZE + dataLen;
@@ -191,14 +191,14 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 	unsigned int	dataLen;
 	unsigned int	eom;
 
-	if (sock->sendMessageLength <= MAX_DATAGRAM)
+	if (sock->sendMessageLength <= MAX_DATAGRAM_H2)
 	{
 		dataLen = sock->sendMessageLength;
 		eom = NETFLAG_EOM;
 	}
 	else
 	{
-		dataLen = MAX_DATAGRAM;
+		dataLen = MAX_DATAGRAM_H2;
 		eom = 0;
 	}
 	packetLen = NET_HEADERSIZE + dataLen;
@@ -241,7 +241,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data
 	if (data->cursize == 0)
 		Sys_Error("Datagram_SendUnreliableMessage: zero length message\n");
 
-	if (data->cursize > MAX_DATAGRAM)
+	if (data->cursize > MAX_DATAGRAM_H2)
 		Sys_Error("Datagram_SendUnreliableMessage: message too big %u\n", data->cursize);
 #endif
 
@@ -357,10 +357,10 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 				Con_DPrintf("Duplicate ACK received\n");
 				continue;
 			}
-			sock->sendMessageLength -= MAX_DATAGRAM;
+			sock->sendMessageLength -= MAX_DATAGRAM_H2;
 			if (sock->sendMessageLength > 0)
 			{
-				Com_Memcpy(sock->sendMessage, sock->sendMessage+MAX_DATAGRAM, sock->sendMessageLength);
+				Com_Memcpy(sock->sendMessage, sock->sendMessage+MAX_DATAGRAM_H2, sock->sendMessageLength);
 				sock->sendNext = true;
 			}
 			else

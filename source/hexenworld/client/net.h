@@ -42,10 +42,10 @@ struct netchan_t : netchan_common_t
 
 // reliable staging and holding areas
 	QMsg		message;		// writing buffer to send to server
-	byte		message_buf[MAX_MSGLEN];
+	byte		message_buf[MAX_MSGLEN_HW];
 
 	int			reliable_length;
-	byte		reliable_buf[MAX_MSGLEN];	// unacked reliable message
+	byte		reliable_buf[MAX_MSGLEN_HW];	// unacked reliable message
 
 // time and size data to calculate bandwidth
 	int			outgoing_size[MAX_LATENT];

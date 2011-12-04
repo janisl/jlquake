@@ -80,7 +80,7 @@ Cvar		*qport;
 
 netadr_t	net_from;
 QMsg		net_message;
-byte		net_message_buffer[MAX_MSGLEN];
+byte		net_message_buffer[MAX_MSGLEN_Q2];
 
 /*
 ===============
@@ -110,7 +110,7 @@ Sends an out-of-band datagram
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data)
 {
 	QMsg		send;
-	byte		send_buf[MAX_MSGLEN];
+	byte		send_buf[MAX_MSGLEN_Q2];
 
 // write the packet header
 	send.InitOOB(send_buf, sizeof(send_buf));
@@ -132,7 +132,7 @@ Sends a text message in an out-of-band datagram
 void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, const char *format, ...)
 {
 	va_list		argptr;
-	static char		string[MAX_MSGLEN - 4];
+	static char		string[MAX_MSGLEN_Q2 - 4];
 	
 	va_start (argptr, format);
 	Q_vsnprintf(string, sizeof(string), format, argptr);
@@ -213,7 +213,7 @@ A 0 length will still generate a packet and deal with the reliable messages.
 void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 {
 	QMsg		send;
-	byte		send_buf[MAX_MSGLEN];
+	byte		send_buf[MAX_MSGLEN_Q2];
 	qboolean	send_reliable;
 	unsigned	w1, w2;
 
@@ -397,7 +397,7 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 
 struct loopmsg_t
 {
-	byte	data[MAX_MSGLEN];
+	byte	data[MAX_MSGLEN_Q2];
 	int		datalen;
 };
 

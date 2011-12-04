@@ -34,13 +34,6 @@
 
 #define	ON_EPSILON		0.1			// point on plane side epsilon
 
-//#define	MAX_MSGLEN		8000		// max length of a reliable message
-//#define	MAX_MSGLEN		16000		// max length of a reliable message
-#define	MAX_MSGLEN		20000		// for mission pack tibet2
-
-#define	MAX_DATAGRAM	1024		// max length of unreliable message
-//#define	MAX_DATAGRAM	2048		// max length of unreliable message  TEMP: This only for E3
-
 //
 // per-level limits
 //

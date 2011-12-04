@@ -247,7 +247,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 	QMsg		send;
 	byte		send_buf[MAX_PACKETLEN];
 
-	if ( length > MAX_MSGLEN ) {
+	if ( length > MAX_MSGLEN_Q3 ) {
 		Com_Error( ERR_DROP, "Netchan_Transmit: length = %i", length );
 	}
 	chan->unsentFragmentStart = 0;
@@ -296,7 +296,7 @@ Netchan_Process
 Returns qfalse if the message should not be processed due to being
 out of order or a fragment.
 
-Msg must be large enough to hold MAX_MSGLEN, because if this is the
+Msg must be large enough to hold MAX_MSGLEN_Q3, because if this is the
 final fragment of a multi-part message, the entire thing will be
 copied out.
 =================
@@ -578,7 +578,7 @@ Sends a text message in an out-of-band datagram
 */
 void NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, ... ) {
 	va_list		argptr;
-	char		string[MAX_MSGLEN];
+	char		string[MAX_MSGLEN_Q3];
 
 
 	// set the header
@@ -603,7 +603,7 @@ Sends a data message in an out-of-band datagram (only used for "connect")
 ================
 */
 void NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len ) {
-	byte		string[MAX_MSGLEN*2];
+	byte		string[MAX_MSGLEN_Q3*2];
 	int			i;
 	QMsg		mbuf;
 

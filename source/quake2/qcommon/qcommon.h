@@ -278,7 +278,6 @@ NET
 
 // net.h -- quake's interface to the networking layer
 
-#define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
 void		NET_Init (void);
@@ -311,16 +310,16 @@ struct netchan_t : netchan_common_t
 
 // reliable staging and holding areas
 	QMsg	message;		// writing buffer to send to server
-	byte		message_buf[MAX_MSGLEN-16];		// leave space for header
+	byte		message_buf[MAX_MSGLEN_Q2-16];		// leave space for header
 
 // message is copied to this buffer when it is first transfered
 	int			reliable_length;
-	byte		reliable_buf[MAX_MSGLEN-16];	// unacked reliable message
+	byte		reliable_buf[MAX_MSGLEN_Q2-16];	// unacked reliable message
 };
 
 extern	netadr_t	net_from;
 extern	QMsg	net_message;
-extern	byte		net_message_buffer[MAX_MSGLEN];
+extern	byte		net_message_buffer[MAX_MSGLEN_Q2];
 
 
 void Netchan_Init (void);

@@ -83,7 +83,7 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 {
 	int		i, v;
 
-	if (sv.datagram.cursize > MAX_DATAGRAM-16)
+	if (sv.datagram.cursize > MAX_DATAGRAM_Q1-16)
 		return;	
 	sv.datagram.WriteByte(svc_particle);
 	sv.datagram.WriteCoord(org[0]);
@@ -134,7 +134,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 	if (channel < 0 || channel > 7)
 		Sys_Error ("SV_StartSound: channel = %i", channel);
 
-	if (sv.datagram.cursize > MAX_DATAGRAM-16)
+	if (sv.datagram.cursize > MAX_DATAGRAM_Q1-16)
 		return;	
 
 // find precache number for sound
@@ -709,7 +709,7 @@ SV_SendClientDatagram
 */
 qboolean SV_SendClientDatagram (client_t *client)
 {
-	byte		buf[MAX_DATAGRAM];
+	byte		buf[MAX_DATAGRAM_Q1];
 	QMsg		msg;
 	
 	msg.InitOOB(buf, sizeof(buf));

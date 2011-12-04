@@ -430,7 +430,7 @@ instead of the data.
 void SVC_Log (void)
 {
 	int		seq;
-	char	data[MAX_DATAGRAM+64];
+	char	data[MAX_DATAGRAM_HW+64];
 
 	if (Cmd_Argc() == 2)
 		seq = String::Atoi(Cmd_Argv(1));

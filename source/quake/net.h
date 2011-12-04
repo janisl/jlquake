@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NET_MAXMESSAGE		8192
 #define NET_HEADERSIZE		(2 * sizeof(unsigned int))
-#define NET_DATAGRAMSIZE	(MAX_DATAGRAM + NET_HEADERSIZE)
+#define NET_DATAGRAMSIZE	(MAX_DATAGRAM_Q1 + NET_HEADERSIZE)
 
 // NetHeader flags
 #define NETFLAG_LENGTH_MASK	0x0000ffff

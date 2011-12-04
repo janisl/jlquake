@@ -71,7 +71,7 @@ Sends an out-of-band datagram
 void Netchan_OutOfBand (netadr_t adr, int length, byte *data)
 {
 	QMsg		send;
-	byte		send_buf[MAX_MSGLEN + PACKET_HEADER];
+	byte		send_buf[MAX_MSGLEN_HW + PACKET_HEADER];
 
 // write the packet header
 	send.InitOOB(send_buf, sizeof(send_buf));
@@ -174,7 +174,7 @@ A 0 length will still generate a packet and deal with the reliable messages.
 void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 {
 	QMsg		send;
-	byte		send_buf[MAX_MSGLEN + PACKET_HEADER];
+	byte		send_buf[MAX_MSGLEN_HW + PACKET_HEADER];
 	qboolean	send_reliable;
 	unsigned	w1, w2;
 	int			i;
@@ -1157,7 +1157,7 @@ netadr_t	net_from;
 QMsg		net_message;
 int			net_socket;
 
-#define	MAX_UDP_PACKET	(MAX_MSGLEN+9)	// one more than msg + header
+#define	MAX_UDP_PACKET	(MAX_MSGLEN_HW+9)	// one more than msg + header
 static byte		net_message_buffer[MAX_UDP_PACKET];
 
 //=============================================================================

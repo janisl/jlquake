@@ -790,7 +790,7 @@ SV_SendClientDatagram
 */
 qboolean SV_SendClientDatagram (client_t *client)
 {
-	byte		buf[MAX_DATAGRAM];
+	byte		buf[MAX_DATAGRAM_HW];
 	QMsg		msg;
 
 	msg.InitOOB(buf, sizeof(buf));

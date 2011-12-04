@@ -6,7 +6,7 @@
 
 #define NET_MAXMESSAGE		16384
 #define NET_HEADERSIZE		(2 * sizeof(unsigned int))
-#define NET_DATAGRAMSIZE	(MAX_DATAGRAM + NET_HEADERSIZE)
+#define NET_DATAGRAMSIZE	(MAX_DATAGRAM_H2 + NET_HEADERSIZE)
 
 // NetHeader flags
 #define NETFLAG_LENGTH_MASK	0x0000ffff

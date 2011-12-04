@@ -223,8 +223,8 @@ qboolean CL_GetDemoMessage (void)
 		FS_Read (&net_message.cursize, 4, cls.demofile);
 		net_message.cursize = LittleLong (net_message.cursize);
 	//Con_Printf("read: %ld bytes\n", net_message.cursize);
-		if (net_message.cursize > MAX_MSGLEN)
-			Sys_Error ("Demo message > MAX_MSGLEN");
+		if (net_message.cursize > MAX_MSGLEN_QW)
+			Sys_Error ("Demo message > MAX_MSGLEN_QW");
 		r = FS_Read (net_message._data, net_message.cursize, cls.demofile);
 		if (r != net_message.cursize)
 		{
@@ -378,7 +378,7 @@ void CL_Record_f (void)
 	int		c;
 	char	name[MAX_OSPATH];
 	QMsg	buf;
-	byte	buf_data[MAX_MSGLEN];
+	byte	buf_data[MAX_MSGLEN_QW];
 	int n, i, j;
 	char *s;
 	entity_t *ent;
@@ -471,7 +471,7 @@ void CL_Record_f (void)
 	s = cl.sound_name[n+1];
 	while (*s) {
 		buf.WriteString2(s);
-		if (buf.cursize > MAX_MSGLEN/2) {
+		if (buf.cursize > MAX_MSGLEN_QW/2) {
 			buf.WriteByte(0);
 			buf.WriteByte(n);
 			CL_WriteRecordDemoMessage (&buf, seq++);
@@ -497,7 +497,7 @@ void CL_Record_f (void)
 	s = cl.model_name[n+1];
 	while (*s) {
 		buf.WriteString2(s);
-		if (buf.cursize > MAX_MSGLEN/2) {
+		if (buf.cursize > MAX_MSGLEN_QW/2) {
 			buf.WriteByte(0);
 			buf.WriteByte(n);
 			CL_WriteRecordDemoMessage (&buf, seq++);
@@ -532,7 +532,7 @@ void CL_Record_f (void)
 			buf.WriteAngle(ent->state.angles[j]);
 		}
 
-		if (buf.cursize > MAX_MSGLEN/2) {
+		if (buf.cursize > MAX_MSGLEN_QW/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
 			buf.Clear(); 
 		}
@@ -561,7 +561,7 @@ void CL_Record_f (void)
 				buf.WriteAngle(es->angles[j]);
 			}
 
-			if (buf.cursize > MAX_MSGLEN/2) {
+			if (buf.cursize > MAX_MSGLEN_QW/2) {
 				CL_WriteRecordDemoMessage (&buf, seq++);
 				buf.Clear(); 
 			}
@@ -602,7 +602,7 @@ void CL_Record_f (void)
 		buf.WriteLong(player->userid);
 		buf.WriteString2(player->userinfo);
 
-		if (buf.cursize > MAX_MSGLEN/2) {
+		if (buf.cursize > MAX_MSGLEN_QW/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
 			buf.Clear(); 
 		}
@@ -620,7 +620,7 @@ void CL_Record_f (void)
 		buf.WriteByte(svc_updatestatlong);
 		buf.WriteByte(i);
 		buf.WriteLong(cl.stats[i]);
-		if (buf.cursize > MAX_MSGLEN/2) {
+		if (buf.cursize > MAX_MSGLEN_QW/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
 			buf.Clear(); 
 		}

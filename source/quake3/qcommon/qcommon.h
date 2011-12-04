@@ -87,9 +87,6 @@ void		NET_Sleep(int msec);
 qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 
 
-#define	MAX_MSGLEN				16384		// max length of a message, which may
-											// be fragmented into multiple packets
-
 #define MAX_DOWNLOAD_WINDOW			8		// max of eight download frames
 #define MAX_DOWNLOAD_BLKSIZE		2048	// 2048 byte block chunks
  
@@ -103,14 +100,14 @@ struct netchan_t : netchan_common_t
 	// incoming fragment assembly buffer
 	int			fragmentSequence;
 	int			fragmentLength;	
-	byte		fragmentBuffer[MAX_MSGLEN];
+	byte		fragmentBuffer[MAX_MSGLEN_Q3];
 
 	// outgoing fragment buffer
 	// we need to space out the sending of large fragmented messages
 	qboolean	unsentFragments;
 	int			unsentFragmentStart;
 	int			unsentLength;
-	byte		unsentBuffer[MAX_MSGLEN];
+	byte		unsentBuffer[MAX_MSGLEN_Q3];
 };
 
 void Netchan_Init( int qport );

@@ -63,28 +63,28 @@ typedef struct
 
 	// added to every client's unreliable buffer each frame, then cleared
 	QMsg		datagram;
-	byte		datagram_buf[MAX_DATAGRAM];
+	byte		datagram_buf[MAX_DATAGRAM_QW];
 
 	// added to every client's reliable buffer each frame, then cleared
 	QMsg		reliable_datagram;
-	byte		reliable_datagram_buf[MAX_MSGLEN];
+	byte		reliable_datagram_buf[MAX_MSGLEN_QW];
 
 	// the multicast buffer is used to send a message to a set of clients
 	QMsg		multicast;
-	byte		multicast_buf[MAX_MSGLEN];
+	byte		multicast_buf[MAX_MSGLEN_QW];
 
 	// the master buffer is used for building log packets
 	QMsg		master;
-	byte		master_buf[MAX_DATAGRAM];
+	byte		master_buf[MAX_DATAGRAM_QW];
 
 	// the signon buffer will be sent to each client as they connect
 	// includes the entity baselines, the static entities, etc
-	// large levels will have >MAX_DATAGRAM sized signons, so 
+	// large levels will have >MAX_DATAGRAM_QW sized signons, so 
 	// multiple signon messages are kept
 	QMsg		signon;
 	int			num_signon_buffers;
 	int			signon_buffer_size[MAX_SIGNON_BUFFERS];
-	byte		signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM];
+	byte		signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_QW];
 } server_t;
 
 
@@ -143,13 +143,13 @@ typedef struct client_s
 	// the datagram is written to after every frame, but only cleared
 	// when it is sent out to the client.  overflow is tolerated.
 	QMsg		datagram;
-	byte			datagram_buf[MAX_DATAGRAM];
+	byte			datagram_buf[MAX_DATAGRAM_QW];
 
 	// back buffers for client reliable data
 	QMsg	backbuf;
 	int			num_backbuf;
 	int			backbuf_size[MAX_BACK_BUFFERS];
-	byte		backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN];
+	byte		backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN_QW];
 
 	double			connection_started;	// or time of disconnect for zombies
 	qboolean		send_message;		// set on frames a datagram arived on
@@ -239,7 +239,7 @@ typedef struct
 	int			logsequence;	// the message currently being filled
 	double		logtime;		// time of last swap
 	QMsg		log[2];
-	byte		log_buf[2][MAX_DATAGRAM];
+	byte		log_buf[2][MAX_DATAGRAM_QW];
 
 	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
 } server_static_t;

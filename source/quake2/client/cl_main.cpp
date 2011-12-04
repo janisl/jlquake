@@ -157,7 +157,7 @@ Begins recording a demo from the current position
 void CL_Record_f (void)
 {
 	char	name[MAX_OSPATH];
-	byte	buf_data[MAX_MSGLEN];
+	byte	buf_data[MAX_MSGLEN_Q2];
 	QMsg	buf;
 	int		i;
 	int		len;

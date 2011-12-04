@@ -109,7 +109,7 @@ Builds the string that is sent as heartbeats and status replies
 char	*SV_StatusString (void)
 {
 	char	player[1024];
-	static char	status[MAX_MSGLEN - 16];
+	static char	status[MAX_MSGLEN_Q2 - 16];
 	int		i;
 	client_t	*cl;
 	int		statusLength;

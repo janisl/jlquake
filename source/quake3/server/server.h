@@ -108,7 +108,7 @@ typedef enum {
 
 typedef struct netchan_buffer_s {
 	QMsg           msg;
-	byte            msgBuffer[MAX_MSGLEN];
+	byte            msgBuffer[MAX_MSGLEN_Q3];
 	struct netchan_buffer_s *next;
 } netchan_buffer_t;
 

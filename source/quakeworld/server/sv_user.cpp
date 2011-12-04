@@ -153,7 +153,7 @@ void SV_Soundlist_f (void)
 	host_client->netchan.message.WriteByte(svc_soundlist);
 	host_client->netchan.message.WriteByte(n);
 	for (s = sv.sound_precache+1 + n ; 
-		*s && host_client->netchan.message.cursize < (MAX_MSGLEN/2); 
+		*s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW/2); 
 		s++, n++)
 		host_client->netchan.message.WriteString2(*s);
 
@@ -203,7 +203,7 @@ void SV_Modellist_f (void)
 	host_client->netchan.message.WriteByte(svc_modellist);
 	host_client->netchan.message.WriteByte(n);
 	for (s = sv.model_precache+1+n ; 
-		*s && host_client->netchan.message.cursize < (MAX_MSGLEN/2); 
+		*s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW/2); 
 		s++, n++)
 		host_client->netchan.message.WriteString2(*s);
 	host_client->netchan.message.WriteByte(0);

@@ -1031,8 +1031,8 @@ void CL_SetInfo (void)
 {
 	int		slot;
 	player_info_t	*player;
-	char key[MAX_MSGLEN];
-	char value[MAX_MSGLEN];
+	char key[MAX_MSGLEN_QW];
+	char value[MAX_MSGLEN_QW];
 
 	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
@@ -1063,8 +1063,8 @@ CL_ServerInfo
 */
 void CL_ServerInfo (void)
 {
-	char key[MAX_MSGLEN];
-	char value[MAX_MSGLEN];
+	char key[MAX_MSGLEN_QW];
+	char value[MAX_MSGLEN_QW];
 
 	String::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
 	key[sizeof(key) - 1] = 0;

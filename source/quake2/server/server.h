@@ -69,7 +69,7 @@ typedef struct
 	// the multicast buffer is used to send a message to a set of clients
 	// it is only used to marshall data until SV_Multicast is called
 	QMsg		multicast;
-	byte		multicast_buf[MAX_MSGLEN];
+	byte		multicast_buf[MAX_MSGLEN_Q2];
 
 	// demo server information
 	fileHandle_t	demofile;
@@ -128,7 +128,7 @@ typedef struct client_s
 	// The datagram is written to by sound calls, prints, temp ents, etc.
 	// It can be harmlessly overflowed.
 	QMsg			datagram;
-	byte			datagram_buf[MAX_MSGLEN];
+	byte			datagram_buf[MAX_MSGLEN_Q2];
 
 	client_frame_t	frames[UPDATE_BACKUP_Q2];	// updates can be delta'd from here
 
@@ -187,7 +187,7 @@ typedef struct
 	// serverrecord values
 	fileHandle_t	demofile;
 	QMsg		demo_multicast;
-	byte		demo_multicast_buf[MAX_MSGLEN];
+	byte		demo_multicast_buf[MAX_MSGLEN_Q2];
 } server_static_t;
 
 //=============================================================================
@@ -250,7 +250,7 @@ void SV_PrepWorldFrame (void);
 // sv_send.c
 //
 typedef enum {RD_NONE, RD_CLIENT, RD_PACKET} redirect_t;
-#define	SV_OUTPUTBUF_LENGTH	(MAX_MSGLEN - 16)
+#define	SV_OUTPUTBUF_LENGTH	(MAX_MSGLEN_Q2 - 16)
 
 extern	char	sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 

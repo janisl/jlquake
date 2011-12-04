@@ -204,8 +204,8 @@ qboolean CL_GetDemoMessage (void)
 		FS_Read(&net_message.cursize, 4, cls.demofile);
 		net_message.cursize = LittleLong (net_message.cursize);
 	//Con_Printf("read: %ld bytes\n", net_message.cursize);
-		if (net_message.cursize > MAX_MSGLEN)
-			Sys_Error ("Demo message > MAX_MSGLEN");
+		if (net_message.cursize > MAX_MSGLEN_HW)
+			Sys_Error ("Demo message > MAX_MSGLEN_HW");
 		r = FS_Read(net_message._data, net_message.cursize, cls.demofile);
 		if (r != net_message.cursize)
 		{
