@@ -50,4 +50,9 @@ struct netchan_common_t
 	int outgoingSequence;
 	int outgoingReliableSequence;		// single bit
 	int lastReliableSequence;		// sequence number of last send
+
+	// incoming fragment assembly buffer
+	int fragmentSequence;
+	int fragmentLength;
+	byte fragmentBuffer[MAX_MSGLEN];
 };

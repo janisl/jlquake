@@ -97,10 +97,6 @@ Netchan handles packet fragmentation and out of order / duplicate suppression
 
 struct netchan_t : netchan_common_t
 {
-	// incoming fragment assembly buffer
-	int			fragmentSequence;
-	int			fragmentLength;	
-	byte		fragmentBuffer[MAX_MSGLEN_Q3];
 
 	// outgoing fragment buffer
 	// we need to space out the sending of large fragmented messages
