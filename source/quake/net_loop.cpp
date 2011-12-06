@@ -231,7 +231,7 @@ qboolean Loop_CanSendUnreliableMessage (qsocket_t *sock)
 }
 
 
-void Loop_Close (qsocket_t *sock)
+void Loop_Close (qsocket_t *sock, netchan_t* chan)
 {
 	if (sock->driverdata)
 		((qsocket_t *)sock->driverdata)->driverdata = NULL;

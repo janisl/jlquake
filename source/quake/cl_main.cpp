@@ -100,7 +100,7 @@ void CL_Disconnect (void)
 		cls.message.WriteByte(clc_disconnect);
 		NET_SendUnreliableMessage (cls.netcon, &clc.netchan, &cls.message);
 		cls.message.Clear();
-		NET_Close (cls.netcon);
+		NET_Close (cls.netcon, &clc.netchan);
 
 		cls.state = ca_disconnected;
 		if (sv.active)

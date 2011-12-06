@@ -160,7 +160,7 @@ typedef struct
 	int			(*SendUnreliableMessage) (qsocket_t *sock, netchan_t* chan, QMsg *data);
 	qboolean	(*CanSendMessage) (qsocket_t *sock, netchan_t* chan);
 	qboolean	(*CanSendUnreliableMessage) (qsocket_t *sock);
-	void		(*Close) (qsocket_t *sock);
+	void		(*Close) (qsocket_t *sock, netchan_t* chan);
 	void		(*Shutdown) (void);
 	int			controlSock;
 } net_driver_t;
@@ -247,7 +247,7 @@ int			NET_SendToAll(QMsg *data, int blocktime);
 // This is a reliable *blocking* send to all attached clients.
 
 
-void		NET_Close (struct qsocket_s *sock);
+void		NET_Close (struct qsocket_s *sock, netchan_t* chan);
 // if a dead connection is returned by a get or send function, this function
 // should be called when it is convenient
 

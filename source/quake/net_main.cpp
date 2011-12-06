@@ -490,7 +490,7 @@ qsocket_t *NET_CheckNewConnections (netadr_t* outaddr)
 NET_Close
 ===================
 */
-void NET_Close (qsocket_t *sock)
+void NET_Close (qsocket_t *sock, netchan_t* chan)
 {
 	if (!sock)
 		return;
@@ -501,7 +501,7 @@ void NET_Close (qsocket_t *sock)
 	SetNetTime();
 
 	// call the driver_Close function
-	sfunc.Close (sock);
+	sfunc.Close (sock, chan);
 
 	NET_FreeQSocket(sock);
 }
@@ -543,7 +543,7 @@ int	NET_GetMessage (qsocket_t *sock, netchan_t* chan)
 	{
 		if (net_time - sock->lastMessageTime > net_messagetimeout->value)
 		{
-			NET_Close(sock);
+			NET_Close(sock, chan);
 			return -1;
 		}
 	}
@@ -798,12 +798,19 @@ NET_Shutdown
 
 void		NET_Shutdown (void)
 {
-	qsocket_t	*sock;
-
 	SetNetTime();
 
-	for (sock = net_activeSockets; sock; sock = sock->next)
-		NET_Close(sock);
+	client_t* client = svs.clients;
+	for (int i = 0; i < svs.maxclients; i++, client++)
+	{
+		if (!client->netconnection)
+			continue;
+		if (!client->active)
+			continue;
+		NET_Close(client->netconnection, &client->netchan);
+	}
+	if (cls.netcon)
+		NET_Close(cls.netcon, &clc.netchan);
 
 //
 // shutdown the drivers

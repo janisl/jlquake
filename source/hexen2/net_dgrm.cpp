@@ -729,7 +729,7 @@ void Datagram_Shutdown (void)
 }
 
 
-void Datagram_Close (qsocket_t *sock)
+void Datagram_Close (qsocket_t *sock, netchan_t* chan)
 {
 	UDP_OpenSocket(sock->socket);
 }
@@ -951,7 +951,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 			}
 			// it's somebody coming back in from a crash/disconnect
 			// so close the old qsocket and let their retry get them back in
-			NET_Close(s);
+			NET_Close(s, &client->netchan);
 			return NULL;
 		}
 	}
