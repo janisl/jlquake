@@ -29,6 +29,8 @@
 #define MAX_DATAGRAM_HW		1400		// max length of unreliable message
 #define MAX_DATAGRAM		1450		// biggest value of all of the above
 
+#define MAX_PACKETLEN		1400		// max size of a network packet
+
 enum netsrc_t
 {
 	NS_CLIENT,

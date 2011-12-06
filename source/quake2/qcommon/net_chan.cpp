@@ -397,7 +397,7 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 
 struct loopmsg_t
 {
-	byte	data[MAX_MSGLEN_Q2];
+	byte	data[MAX_PACKETLEN];
 	int		datalen;
 };
 

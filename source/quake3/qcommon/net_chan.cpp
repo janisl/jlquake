@@ -46,9 +46,6 @@ to the new value before sending out any replies.
 
 */
 
-
-#define	MAX_PACKETLEN			1400		// max size of a network packet
-
 #define	FRAGMENT_SIZE			(MAX_PACKETLEN - 100)
 #define	PACKET_HEADER			10			// two ints and a short
 
@@ -471,10 +468,11 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 // gamestate of maximum size
 #define	MAX_LOOPBACK	16
 
-typedef struct {
+struct loopmsg_t
+{
 	byte	data[MAX_PACKETLEN];
 	int		datalen;
-} loopmsg_t;
+};
 
 typedef struct {
 	loopmsg_t	msgs[MAX_LOOPBACK];
