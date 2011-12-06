@@ -3,6 +3,13 @@
 #include "quakedef.h"
 #include "net_loop.h"
 
+struct loopmsg_t
+{
+	byte	data[NET_MAXMESSAGE];
+	int		datalen;
+};
+
+static loopmsg_t loops[2];
 qboolean	localconnectpending = false;
 qsocket_t	*loop_client = NULL;
 qsocket_t	*loop_server = NULL;
@@ -59,7 +66,7 @@ qsocket_t *Loop_Connect (const char *host, netchan_t* chan)
 		}
 		String::Cpy(loop_client->address, "localhost");
 	}
-	loop_client->receiveMessageLength = 0;
+	loops[0].datalen = 0;
 	loop_client->sendMessageLength = 0;
 	loop_client->canSend = true;
 
@@ -72,7 +79,7 @@ qsocket_t *Loop_Connect (const char *host, netchan_t* chan)
 		}
 		String::Cpy(loop_server->address, "LOCAL");
 	}
-	loop_server->receiveMessageLength = 0;
+	loops[1].datalen = 0;
 	loop_server->sendMessageLength = 0;
 	loop_server->canSend = true;
 
@@ -90,10 +97,10 @@ qsocket_t *Loop_CheckNewConnections (netadr_t* outaddr)
 
 	localconnectpending = false;
 	loop_server->sendMessageLength = 0;
-	loop_server->receiveMessageLength = 0;
+	loops[1].datalen = 0;
 	loop_server->canSend = true;
 	loop_client->sendMessageLength = 0;
-	loop_client->receiveMessageLength = 0;
+	loops[0].datalen = 0;
 	loop_client->canSend = true;
 	return loop_server;
 }
@@ -110,20 +117,21 @@ int Loop_GetMessage (qsocket_t *sock, netchan_t* chan)
 	int		ret;
 	int		length;
 
-	if (sock->receiveMessageLength == 0)
+	loopmsg_t* loop = &loops[chan->sock];
+	if (loop->datalen == 0)
 		return 0;
 
-	ret = sock->receiveMessage[0];
-	length = sock->receiveMessage[1] + (sock->receiveMessage[2] << 8);
+	ret = loop->data[0];
+	length = loop->data[1] + (loop->data[2] << 8);
 	// alignment byte skipped here
 	net_message.Clear();
-	net_message.WriteData(&sock->receiveMessage[4], length);
+	net_message.WriteData(&loop->data[4], length);
 
 	length = IntAlign(length + 4);
-	sock->receiveMessageLength -= length;
+	loop->datalen -= length;
 
-	if (sock->receiveMessageLength)
-		Com_Memcpy(sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
+	if (loop->datalen)
+		Com_Memcpy(loop->data, &loop->data[length], loop->datalen);
 
 	if (sock->driverdata && ret == 1)
 		((qsocket_t *)sock->driverdata)->canSend = true;
@@ -135,17 +143,15 @@ int Loop_GetMessage (qsocket_t *sock, netchan_t* chan)
 int Loop_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	byte *buffer;
-	int  *bufferLength;
 
+	loopmsg_t* loop = &loops[chan->sock ^ 1];
 	if (!sock->driverdata)
 		return -1;
 
-	bufferLength = &((qsocket_t *)sock->driverdata)->receiveMessageLength;
-
-	if ((*bufferLength + data->cursize + 4) > NET_MAXMESSAGE)
+	if ((loop->datalen + data->cursize + 4) > NET_MAXMESSAGE)
 		Sys_Error("Loop_SendMessage: overflow\n");
 
-	buffer = ((qsocket_t *)sock->driverdata)->receiveMessage + *bufferLength;
+	buffer = loop->data + loop->datalen;
 
 	// message type
 	*buffer++ = 1;
@@ -159,7 +165,7 @@ int Loop_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 
 	// message
 	Com_Memcpy(buffer, data->_data, data->cursize);
-	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
+	loop->datalen = IntAlign(loop->datalen + data->cursize + 4);
 
 	sock->canSend = false;
 	return 1;
@@ -169,17 +175,15 @@ int Loop_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 int Loop_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 {
 	byte *buffer;
-	int  *bufferLength;
 
+	loopmsg_t* loop = &loops[chan->sock ^ 1];
 	if (!sock->driverdata)
 		return -1;
 
-	bufferLength = &((qsocket_t *)sock->driverdata)->receiveMessageLength;
-
-	if ((*bufferLength + data->cursize + sizeof(byte) + sizeof(short)) > NET_MAXMESSAGE)
+	if ((loop->datalen + data->cursize + sizeof(byte) + sizeof(short)) > NET_MAXMESSAGE)
 		return 0;
 
-	buffer = ((qsocket_t *)sock->driverdata)->receiveMessage + *bufferLength;
+	buffer = loop->data + loop->datalen;
 
 	// message type
 	*buffer++ = 2;
@@ -193,7 +197,7 @@ int Loop_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 
 	// message
 	Com_Memcpy(buffer, data->_data, data->cursize);
-	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
+	loop->datalen = IntAlign(loop->datalen + data->cursize + 4);
 	return 1;
 }
 
@@ -216,7 +220,7 @@ void Loop_Close (qsocket_t *sock, netchan_t* chan)
 {
 	if (sock->driverdata)
 		((qsocket_t *)sock->driverdata)->driverdata = NULL;
-	sock->receiveMessageLength = 0;
+	loops[chan->sock].datalen = 0;
 	sock->sendMessageLength = 0;
 	sock->canSend = true;
 	if (sock == loop_client)
