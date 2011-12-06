@@ -4,7 +4,6 @@
 
 #define	NET_NAMELEN			64
 
-#define NET_MAXMESSAGE		16384
 #define NET_HEADERSIZE		(2 * sizeof(unsigned int))
 #define NET_DATAGRAMSIZE	(MAX_DATAGRAM_H2 + NET_HEADERSIZE)
 
@@ -109,9 +108,9 @@ typedef struct qsocket_s
 
 	unsigned int	ackSequence;
 	int				sendMessageLength;
-	byte			sendMessage [NET_MAXMESSAGE];
+	byte			sendMessage [NET_MAXMESSAGE_H2];
 
-	byte			receiveMessage [NET_MAXMESSAGE];
+	byte			receiveMessage [NET_MAXMESSAGE_H2];
 
 	char			address[NET_NAMELEN];
 

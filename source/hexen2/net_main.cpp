@@ -26,7 +26,7 @@ PollProcedure	slistPollProcedure = {NULL, 0.0, Slist_Poll};
 
 
 QMsg			net_message;
-byte			net_message_buf[NET_MAXMESSAGE];
+byte			net_message_buf[NET_MAXMESSAGE_H2];
 int				net_activeconnections = 0;
 
 int messagesSent = 0;
@@ -740,7 +740,7 @@ void NET_Init (void)
 	}
 
 	// allocate space for network message buffer
-	net_message.InitOOB(net_message_buf, NET_MAXMESSAGE);
+	net_message.InitOOB(net_message_buf, NET_MAXMESSAGE_H2);
 
 	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
 	hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);

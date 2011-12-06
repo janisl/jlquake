@@ -164,7 +164,7 @@ void CL_KeepaliveMessage (void)
 	static float lastmsg;
 	int		ret;
 	QMsg		old;
-	byte		olddata[NET_MAXMESSAGE];
+	byte		olddata[NET_MAXMESSAGE_H2];
 	
 	if (sv.active)
 		return;		// no need if server is local

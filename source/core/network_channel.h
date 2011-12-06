@@ -15,8 +15,10 @@
 //**************************************************************************
 
 #define MAX_MSGLEN_Q1		8000		// max length of a reliable message
+#define NET_MAXMESSAGE_Q1	8192
 #define MAX_MSGLEN_QW		1450		// max length of a reliable message
 #define MAX_MSGLEN_H2		20000		// for mission pack tibet2
+#define NET_MAXMESSAGE_H2	16384
 #define MAX_MSGLEN_HW		7500		// max length of a reliable message
 #define MAX_MSGLEN_Q2		1400		// max length of a message
 #define MAX_MSGLEN_Q3		16384		// max length of a message, which may

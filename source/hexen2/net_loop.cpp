@@ -5,7 +5,7 @@
 
 struct loopmsg_t
 {
-	byte	data[NET_MAXMESSAGE];
+	byte	data[NET_MAXMESSAGE_H2];
 	int		datalen;
 };
 
@@ -148,7 +148,7 @@ int Loop_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 	if (!sock->driverdata)
 		return -1;
 
-	if ((loop->datalen + data->cursize + 4) > NET_MAXMESSAGE)
+	if ((loop->datalen + data->cursize + 4) > NET_MAXMESSAGE_H2)
 		Sys_Error("Loop_SendMessage: overflow\n");
 
 	buffer = loop->data + loop->datalen;
@@ -180,7 +180,7 @@ int Loop_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 	if (!sock->driverdata)
 		return -1;
 
-	if ((loop->datalen + data->cursize + sizeof(byte) + sizeof(short)) > NET_MAXMESSAGE)
+	if ((loop->datalen + data->cursize + sizeof(byte) + sizeof(short)) > NET_MAXMESSAGE_H2)
 		return 0;
 
 	buffer = loop->data + loop->datalen;

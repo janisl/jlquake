@@ -115,7 +115,7 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 	if (data->cursize == 0)
 		Sys_Error("Datagram_SendMessage: zero length message\n");
 
-	if (data->cursize > NET_MAXMESSAGE)
+	if (data->cursize > NET_MAXMESSAGE_H2)
 		Sys_Error("Datagram_SendMessage: message too big %u\n", data->cursize);
 
 	if (sock->canSend == false)
