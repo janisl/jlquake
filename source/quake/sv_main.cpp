@@ -261,11 +261,13 @@ void SV_ConnectClient (int clientnum)
 	
 // set up the client_t
 	netconnection = client->netconnection;
-	
+	netchan_t netchan = client->netchan;
+
 	if (sv.loadgame)
 		Com_Memcpy(spawn_parms, client->spawn_parms, sizeof(spawn_parms));
 	Com_Memset(client, 0, sizeof(*client));
 	client->netconnection = netconnection;
+	client->netchan = netchan;
 
 	String::Cpy(client->name, "unconnected");
 	client->active = true;
