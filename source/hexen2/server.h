@@ -81,7 +81,7 @@ typedef struct client_s
 
 	QMsg			message;			// can be added to at any time,
 										// copied and clear once per frame
-	byte			msgbuf[MAX_MSGLEN_H2];
+	byte			msgbuf[NET_MAXMESSAGE_H2];
 
 	QMsg			datagram;
 	byte			datagram_buf[NET_MAXMESSAGE_H2];
