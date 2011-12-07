@@ -409,7 +409,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 			if (flags & NETFLAG_EOM)
 			{
 				net_message.Clear();
-				net_message.WriteData(sock->receiveMessage, chan->fragmentLength);
+				net_message.WriteData(chan->fragmentBuffer, chan->fragmentLength);
 				net_message.WriteData(packetBuffer.data, length);
 				chan->fragmentLength = 0;
 
@@ -417,7 +417,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 				break;
 			}
 
-			Com_Memcpy(sock->receiveMessage + chan->fragmentLength, packetBuffer.data, length);
+			Com_Memcpy(chan->fragmentBuffer + chan->fragmentLength, packetBuffer.data, length);
 			chan->fragmentLength += length;
 			continue;
 		}

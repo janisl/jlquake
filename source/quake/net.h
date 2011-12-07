@@ -128,8 +128,6 @@ typedef struct qsocket_s
 	int				sendMessageLength;
 	byte			sendMessage [NET_MAXMESSAGE_Q1];
 
-	byte			receiveMessage [NET_MAXMESSAGE_Q1];
-
 	char			address[NET_NAMELEN];
 
 } qsocket_t;
