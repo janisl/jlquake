@@ -64,7 +64,7 @@ typedef struct
 	byte		reliable_datagram_buf[MAX_DATAGRAM_Q1];
 
 	QMsg		signon;
-	byte		signon_buf[NET_MAXMESSAGE_Q1];
+	byte		signon_buf[MAX_MSGLEN_Q1];
 } server_t;
 
 
@@ -90,7 +90,7 @@ typedef struct client_s
 
 	QMsg			message;			// can be added to at any time,
 										// copied and clear once per frame
-	byte			msgbuf[NET_MAXMESSAGE_Q1];
+	byte			msgbuf[MAX_MSGLEN_Q1];
 	edict_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;

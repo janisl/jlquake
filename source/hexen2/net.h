@@ -108,7 +108,7 @@ typedef struct qsocket_s
 
 	unsigned int	ackSequence;
 	int				sendMessageLength;
-	byte			sendMessage [NET_MAXMESSAGE_H2];
+	byte			sendMessage [MAX_MSGLEN_H2];
 
 	char			address[NET_NAMELEN];
 

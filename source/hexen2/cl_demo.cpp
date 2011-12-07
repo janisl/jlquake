@@ -116,8 +116,8 @@ int CL_GetMessage (void)
 		
 		net_message.cursize = LittleLong (net_message.cursize);
 		num_intro_msg++;
-		if (net_message.cursize > NET_MAXMESSAGE_H2)
-			Sys_Error ("Demo message > NET_MAXMESSAGE_H2");
+		if (net_message.cursize > MAX_MSGLEN_H2)
+			Sys_Error ("Demo message > MAX_MSGLEN_H2");
 		r = FS_Read (net_message._data, net_message.cursize, cls.demofile);
 		if (r != net_message.cursize)
 		{
