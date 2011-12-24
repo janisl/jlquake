@@ -1530,7 +1530,7 @@ void CL_ParseServerMessage (void)
 			CL_TurnEffect ();
 			break;
 		case svc_update_effect:
-			CL_ReviseEffect();
+			CLHW_ParseReviseEffect(net_message);
 			break;
 
 		case svc_multieffect:

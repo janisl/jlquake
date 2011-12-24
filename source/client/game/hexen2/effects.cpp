@@ -1894,6 +1894,465 @@ void CLHW_ParseMultiEffect(QMsg& message)
 	}
 }
 
+void CLHW_XbowImpactPuff(const vec3_t origin, int material)//hopefully can use this with xbow & chain both
+{
+	int part_color;
+	switch (material)
+	{
+	case H2XBOW_IMPACT_REDFLESH:
+		part_color = 256 + 8 * 16 + rand() % 9;				//Blood red
+		break;
+	case H2XBOW_IMPACT_STONE:
+		part_color = 256 + 20 + rand() % 8;			// Gray
+		break;
+	case H2XBOW_IMPACT_METAL:
+		part_color = 256 + (8 * 15);			// Sparks
+		break;
+	case H2XBOW_IMPACT_WOOD:
+		part_color = 256 + (5 * 16) + rand() % 8;			// Wood chunks
+		break;
+	case H2XBOW_IMPACT_ICE:
+		part_color = 406 + rand() % 8;				// Ice particles
+		break;
+	case H2XBOW_IMPACT_GREENFLESH:
+		part_color = 256 + 183 + rand() % 8;		// Spider's have green blood
+		break;
+	default:
+		part_color = 256 + (3 * 16) + 4;		// Dust Brown
+		break;
+	}
+
+	CLH2_RunParticleEffect4(origin, 24, part_color, pt_h2fastgrav, 20);
+}
+
+static void CLHW_ParseReviseEffectScarabChain(QMsg& message, int index)
+{
+	//attach to new guy or retract if new guy is world
+	int curEnt = message.ReadShort();
+
+	cl_common->h2_Effects[index].Chain.material = curEnt >> 12;
+	curEnt &= 0x0fff;
+
+	if (curEnt)
+	{
+		cl_common->h2_Effects[index].Chain.state = 1;
+		cl_common->h2_Effects[index].Chain.owner = curEnt;
+		h2entity_state_t* es = CLHW_FindState(cl_common->h2_Effects[index].Chain.owner);
+		if (es)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+			CLHW_XbowImpactPuff(ent->state.origin, cl_common->h2_Effects[index].Chain.material);
+		}
+	}
+	else
+	{
+		cl_common->h2_Effects[index].Chain.state = 2;
+	}
+}
+
+static void CLHW_ParseReviseEffectXBowShoot(QMsg& message, int index)
+{
+	int revisionCode = message.ReadByte();
+	//this is one packed byte!
+	//highest bit: for impact revision, indicates whether damage is done
+	//				for redirect revision, indicates whether new origin was sent
+	//next 3 high bits: for all revisions, indicates which bolt is to be revised
+	//highest 3 of the low 4 bits: for impact revision, indicates the material that was hit
+	//lowest bit: indicates whether revision is of impact or redirect variety
+
+
+	int curEnt = (revisionCode >> 4) & 7;
+	if (revisionCode & 1)//impact effect: 
+	{
+		cl_common->h2_Effects[index].Xbow.activebolts &= ~(1 << curEnt);
+		float dist = message.ReadCoord();
+		if (cl_common->h2_Effects[index].Xbow.ent[curEnt]!= -1)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
+
+			//make sure bolt is in correct position
+			vec3_t forward;
+			VectorCopy(cl_common->h2_Effects[index].Xbow.vel[curEnt], forward);
+			VectorNormalize(forward);
+			VectorScale(forward, dist, forward);
+			VectorAdd(cl_common->h2_Effects[index].Xbow.origin[curEnt], forward, ent->state.origin);
+
+			int material = (revisionCode & 14);
+			int takedamage = (revisionCode & 128);
+
+			if (takedamage)
+			{
+				cl_common->h2_Effects[index].Xbow.gonetime[curEnt] = cl_common->serverTime / 1000.0;
+			}
+			else
+			{
+				cl_common->h2_Effects[index].Xbow.gonetime[curEnt] += cl_common->serverTime / 1000.0;
+			}
+			
+			VectorCopy(cl_common->h2_Effects[index].Xbow.vel[curEnt], forward);
+			VectorNormalize(forward);
+			VectorScale(forward, 8, forward);
+
+			// do a particle effect here, with the color depending on chType
+			CLHW_XbowImpactPuff(ent->state.origin, material);
+
+			// impact sound:
+			switch (material)
+			{
+			case H2XBOW_IMPACT_GREENFLESH:
+			case H2XBOW_IMPACT_REDFLESH:
+			case H2XBOW_IMPACT_MUMMY:
+				S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 0, clh2_fxsfx_arr2flsh, 1, 1);
+				break;
+			case H2XBOW_IMPACT_WOOD:
+				S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 0, clh2_fxsfx_arr2wood, 1, 1);
+				break;
+			default:
+				S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 0, clh2_fxsfx_met2stn, 1, 1);
+				break;
+			}
+
+			CLHW_XbowImpact(ent->state.origin, forward, material, takedamage, cl_common->h2_Effects[index].Xbow.bolts);
+		}
+	}
+	else
+	{
+		if (cl_common->h2_Effects[index].Xbow.ent[curEnt]!=-1)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
+			ent->state.angles[0] = message.ReadAngle();
+			if (ent->state.angles[0] < 0)
+			{
+				ent->state.angles[0] += 360;
+			}
+			ent->state.angles[0]*=-1;
+			ent->state.angles[1] = message.ReadAngle();
+			if (ent->state.angles[1] < 0)
+			{
+				ent->state.angles[1] += 360;
+			}
+			ent->state.angles[2] = 0;
+
+			if (revisionCode &128)//new origin
+			{
+				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
+			}
+
+			vec3_t forward, right, up;
+			AngleVectors(ent->state.angles, forward, right, up);
+			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+			VectorScale(forward,speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+			VectorCopy(cl_common->h2_Effects[index].Xbow.origin[curEnt], ent->state.origin);
+		}
+		else
+		{
+			vec3_t pos;
+			pos[0] = message.ReadAngle();
+			if (pos[0] < 0)
+			{
+				pos[0] += 360;
+			}
+			pos[0]*=-1;
+			pos[1] = message.ReadAngle();
+			if (pos[1] < 0)
+			{
+				pos[1] += 360;
+			}
+			pos[2] = 0;
+
+			if (revisionCode & 128)//new origin
+			{
+				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
+			}
+
+			vec3_t forward, right, up;
+			AngleVectors(pos, forward, right, up);
+			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+			VectorScale(forward, speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+		}
+	}
+}
+
+static void CLHW_ParseReviseEffectSheepinator(QMsg& message, int index)
+{
+	int revisionCode = message.ReadByte();
+	int curEnt = (revisionCode >> 4) & 7;
+	if (revisionCode & 1)//impact
+	{
+		float dist = message.ReadCoord();
+		cl_common->h2_Effects[index].Xbow.activebolts &= ~(1<<curEnt);
+		if (cl_common->h2_Effects[index].Xbow.ent[curEnt] != -1)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
+
+			//make sure bolt is in correct position
+			vec3_t forward;
+			VectorCopy(cl_common->h2_Effects[index].Xbow.vel[curEnt],forward);
+			VectorNormalize(forward);
+			VectorScale(forward,dist,forward);
+			VectorAdd(cl_common->h2_Effects[index].Xbow.origin[curEnt],forward,ent->state.origin);
+			CLH2_ColouredParticleExplosion(ent->state.origin,(rand()%16)+144/*(144,159)*/,20,30);
+		}
+	}
+	else//direction change
+	{
+		if (cl_common->h2_Effects[index].Xbow.ent[curEnt] != -1)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
+			ent->state.angles[0] = message.ReadAngle();
+			if (ent->state.angles[0] < 0)
+			{
+				ent->state.angles[0] += 360;
+			}
+			ent->state.angles[0]*=-1;
+			ent->state.angles[1] = message.ReadAngle();
+			if (ent->state.angles[1] < 0)
+			{
+				ent->state.angles[1] += 360;
+			}
+			ent->state.angles[2] = 0;
+
+			if (revisionCode & 128)//new origin
+			{
+				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
+			}
+
+			vec3_t forward, right, up;
+			AngleVectors(ent->state.angles, forward, right, up);
+			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+			VectorScale(forward,speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+			VectorCopy(cl_common->h2_Effects[index].Xbow.origin[curEnt], ent->state.origin);
+		}
+		else
+		{
+			vec3_t pos;
+			pos[0] = message.ReadAngle();
+			if (pos[0] < 0)
+			{
+				pos[0] += 360;
+			}
+			pos[0]*=-1;
+			pos[1] = message.ReadAngle();
+			if (pos[1] < 0)
+			{
+				pos[1] += 360;
+			}
+			pos[2] = 0;
+
+			if (revisionCode & 128)//new origin
+			{
+				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
+			}
+
+			vec3_t forward, right, up;
+			AngleVectors(pos, forward, right, up);
+			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+			VectorScale(forward,speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+		}
+	}
+}
+
+static void CLHW_ParseReviseEffectDrilla(QMsg& message, int index)
+{
+	int revisionCode = message.ReadByte();
+	if (revisionCode == 0)//impact
+	{
+		vec3_t pos;
+		message.ReadPos(pos);
+		int material = message.ReadByte();
+
+		//throw lil bits of victim at entry
+		CLHW_XbowImpactPuff(pos, material);
+
+		if ((material == H2XBOW_IMPACT_GREENFLESH) || (material == H2XBOW_IMPACT_GREENFLESH))
+		{
+			//meaty sound and some chunks too
+			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_fxsfx_drillameat, 1, 1);
+			
+			//todo: the chunks
+		}
+
+		//lil bits at exit
+		vec3_t forward;
+		VectorCopy(cl_common->h2_Effects[index].Missile.velocity, forward);
+		VectorNormalize(forward);
+		VectorScale(forward, 36, forward);
+		VectorAdd(forward, pos, pos);
+		CLHW_XbowImpactPuff(pos, material);
+	}
+	else//turn
+	{
+		if (cl_common->h2_Effects[index].Missile.entity_index != -1)
+		{
+			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+			ent->state.angles[0] = message.ReadAngle();
+			if (ent->state.angles[0] < 0)
+			{
+				ent->state.angles[0] += 360;
+			}
+			ent->state.angles[0]*=-1;
+			ent->state.angles[1] = message.ReadAngle();
+			if (ent->state.angles[1] < 0)
+			{
+				ent->state.angles[1] += 360;
+			}
+			ent->state.angles[2] = 0;
+
+			message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
+
+			vec3_t forward, right, up;
+			AngleVectors(ent->state.angles, forward, right, up);
+			float speed = VectorLength(cl_common->h2_Effects[index].Missile.velocity);
+			VectorScale(forward, speed, cl_common->h2_Effects[index].Missile.velocity);
+			VectorCopy(cl_common->h2_Effects[index].Missile.origin, ent->state.origin);
+		}
+		else
+		{
+			vec3_t pos;
+			pos[0] = message.ReadAngle();
+			if (pos[0] < 0)
+			{
+				pos[0] += 360;
+			}
+			pos[0]*=-1;
+			pos[1] = message.ReadAngle();
+			if (pos[1] < 0)
+			{
+				pos[1] += 360;
+			}
+			pos[2] = 0;
+
+			message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
+
+			vec3_t forward, right, up;
+			AngleVectors(pos, forward, right, up);
+			float speed = VectorLength(cl_common->h2_Effects[index].Missile.velocity);
+			VectorScale(forward, speed, cl_common->h2_Effects[index].Missile.velocity);
+		}
+	}
+}
+
+static void CLHW_ParseReviseEffectType(QMsg& message, int index)
+{
+	switch (cl_common->h2_Effects[index].type)
+	{
+	case HWCE_SCARABCHAIN:
+		CLHW_ParseReviseEffectScarabChain(message, index);
+		break;
+	case HWCE_HWXBOWSHOOT:
+		CLHW_ParseReviseEffectXBowShoot(message, index);
+		break;
+	case HWCE_HWSHEEPINATOR:
+		CLHW_ParseReviseEffectSheepinator(message, index);
+		break;
+	case HWCE_HWDRILLA:
+		CLHW_ParseReviseEffectDrilla(message, index);
+		break;
+	}
+}
+
+static void CLHW_SkipReviseEffectScarabChain(QMsg& message)
+{
+	message.ReadShort();
+}
+
+static void CLHW_SkipReviseEffectXBowShoot(QMsg& message)
+{
+	int revisionCode = message.ReadByte();
+	if (revisionCode & 1)//impact effect: 
+	{
+		message.ReadCoord();
+	}
+	else
+	{
+		message.ReadAngle();
+		message.ReadAngle();
+		if (revisionCode & 128)//new origin
+		{
+			message.ReadCoord();
+			message.ReadCoord();
+			message.ReadCoord();
+		}
+	}
+}
+
+static void CLHW_SkipReviseEffectSheepinator(QMsg& message)
+{
+	int revisionCode = message.ReadByte();
+	if (revisionCode & 1)//impact
+	{
+		message.ReadCoord();
+	}
+	else//direction change
+	{
+		message.ReadAngle();
+		message.ReadAngle();
+		if (revisionCode & 128)//new origin
+		{
+			message.ReadCoord();
+			message.ReadCoord();
+			message.ReadCoord();
+		}
+	}
+}
+
+static void CLHW_SkipReviseEffectDrilla(QMsg& message)
+{
+	int revisionCode = message.ReadByte();
+	if (revisionCode == 0)//impact
+	{
+		message.ReadCoord();
+		message.ReadCoord();
+		message.ReadCoord();
+		message.ReadByte();
+	}
+	else//turn
+	{
+		message.ReadAngle();
+		message.ReadAngle();
+		message.ReadCoord();
+		message.ReadCoord();
+		message.ReadCoord();
+	}
+}
+
+static void CLHW_SkipReviseEffectType(QMsg& message, int type)
+{
+	switch (type)
+	{
+	case HWCE_SCARABCHAIN:
+		CLHW_SkipReviseEffectScarabChain(message);
+		break;
+	case HWCE_HWXBOWSHOOT:
+		CLHW_SkipReviseEffectXBowShoot(message);
+		break;
+	case HWCE_HWSHEEPINATOR:
+		CLHW_SkipReviseEffectSheepinator(message);
+		break;
+	case HWCE_HWDRILLA:
+		CLHW_SkipReviseEffectDrilla(message);
+		break;
+	}
+}
+
+// be sure to read, in the switch statement, everything
+// in this message, even if the effect is not the right kind or invalid,
+// or else client is sure to crash.
+void CLHW_ParseReviseEffect(QMsg& message)
+{
+	int index = message.ReadByte();
+	int type = message.ReadByte();
+
+	if (cl_common->h2_Effects[index].type == type)
+	{
+		CLHW_ParseReviseEffectType(message, index);
+	}
+	else
+	{
+		CLHW_SkipReviseEffectType(message, type);
+	}
+}
+
 void CLH2_LinkEffectEntity(effect_entity_t* entity)
 {
 	refEntity_t refEntity;
