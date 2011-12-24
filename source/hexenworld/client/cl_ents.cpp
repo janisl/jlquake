@@ -192,7 +192,7 @@ void FlushEntityPacket (void)
 	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.validsequence = 0;		// can't render a frame
-	cl.hw_frames[cls.netchan.incomingSequence&HWUPDATE_MASK_HW].invalid = true;
+	cl.hw_frames[cls.netchan.incomingSequence&UPDATE_MASK_HW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -228,7 +228,7 @@ void CL_ParsePacketEntities (qboolean delta)
 	qboolean	full;
 	byte		from;
 
-	newpacket = cls.netchan.incomingSequence&HWUPDATE_MASK_HW;
+	newpacket = cls.netchan.incomingSequence&UPDATE_MASK_HW;
 	newp = &cl.hw_frames[newpacket].packet_entities;
 	cl.hw_frames[newpacket].invalid = false;
 
@@ -238,7 +238,7 @@ void CL_ParsePacketEntities (qboolean delta)
 
 		oldpacket = cl.hw_frames[newpacket].delta_sequence;
 
-		if ( (from&HWUPDATE_MASK_HW) != (oldpacket&HWUPDATE_MASK_HW) )
+		if ( (from&UPDATE_MASK_HW) != (oldpacket&UPDATE_MASK_HW) )
 			Con_DPrintf ("WARNING: from mismatch\n");
 	}
 	else
@@ -253,7 +253,7 @@ void CL_ParsePacketEntities (qboolean delta)
 			return;
 		}
 		cl.validsequence = cls.netchan.incomingSequence;
-		oldp = &cl.hw_frames[oldpacket&HWUPDATE_MASK_HW].packet_entities;
+		oldp = &cl.hw_frames[oldpacket&UPDATE_MASK_HW].packet_entities;
 	}
 	else
 	{	// this is a full update that we can start delta compressing from now
@@ -465,8 +465,8 @@ void CL_LinkPacketEntities (void)
 	int					i;
 	int					pnum;
 
-	pack = &cl.hw_frames[cls.netchan.incomingSequence&HWUPDATE_MASK_HW].packet_entities;
-	hwpacket_entities_t* PrevPack = &cl.hw_frames[(cls.netchan.incomingSequence - 1) & HWUPDATE_MASK_HW].packet_entities;
+	pack = &cl.hw_frames[cls.netchan.incomingSequence&UPDATE_MASK_HW].packet_entities;
+	hwpacket_entities_t* PrevPack = &cl.hw_frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK_HW].packet_entities;
 
 	autorotate = AngleMod(100*cl.serverTimeFloat);
 
@@ -1030,7 +1030,7 @@ void CL_LinkPlayers (void)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.hw_frames[cl.parsecount&HWUPDATE_MASK_HW];
+	frame = &cl.hw_frames[cl.parsecount&UPDATE_MASK_HW];
 
 	for (j=0, info=cl.h2_players, state=frame->playerstate ; j < HWMAX_CLIENTS 
 		; j++, info++, state++)
@@ -1248,7 +1248,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.hw_frames[cl.parsecount&HWUPDATE_MASK_HW];
+	frame = &cl.hw_frames[cl.parsecount&UPDATE_MASK_HW];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
 		j < HWMAX_CLIENTS;
@@ -1270,7 +1270,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 		// we use his last predicted postition
 		if (j == cl.playernum) 
 		{
-			VectorCopy(cl.hw_frames[cls.netchan.outgoingSequence&HWUPDATE_MASK_HW].playerstate[cl.playernum].origin,
+			VectorCopy(cl.hw_frames[cls.netchan.outgoingSequence&UPDATE_MASK_HW].playerstate[cl.playernum].origin,
 				pplayer->origin);
 		} 
 		else 

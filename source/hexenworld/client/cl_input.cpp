@@ -515,7 +515,7 @@ void CL_SendCmd (void)
 		return; // sendcmds come from the demo
 
 	// save this command off for prediction
-	i = cls.netchan.outgoingSequence & HWUPDATE_MASK_HW;
+	i = cls.netchan.outgoingSequence & UPDATE_MASK_HW;
 	cmd = &cl.hw_frames[i].cmd;
 	cl.hw_frames[i].senttime = realtime;
 	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
@@ -539,11 +539,11 @@ void CL_SendCmd (void)
 	buf.InitOOB(data, 128);
 
 	buf.WriteByte(clc_move);
-	i = (cls.netchan.outgoingSequence-2) & HWUPDATE_MASK_HW;
+	i = (cls.netchan.outgoingSequence-2) & UPDATE_MASK_HW;
 	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, false);
-	i = (cls.netchan.outgoingSequence-1) & HWUPDATE_MASK_HW;
+	i = (cls.netchan.outgoingSequence-1) & UPDATE_MASK_HW;
 	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, false);
-	i = (cls.netchan.outgoingSequence) & HWUPDATE_MASK_HW;
+	i = (cls.netchan.outgoingSequence) & UPDATE_MASK_HW;
 	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, true);
 
 //	Con_Printf("I  %hd %hd %hd\n",cmd->forwardmove, cmd->sidemove, cmd->upmove);
@@ -555,12 +555,12 @@ void CL_SendCmd (void)
 	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
 		!cls.demorecording)
 	{
-		cl.hw_frames[cls.netchan.outgoingSequence&HWUPDATE_MASK_HW].delta_sequence = cl.validsequence;
+		cl.hw_frames[cls.netchan.outgoingSequence&UPDATE_MASK_HW].delta_sequence = cl.validsequence;
 		buf.WriteByte(clc_delta);
 		buf.WriteByte(cl.validsequence&255);
 	}
 	else
-		cl.hw_frames[cls.netchan.outgoingSequence&HWUPDATE_MASK_HW].delta_sequence = -1;
+		cl.hw_frames[cls.netchan.outgoingSequence&UPDATE_MASK_HW].delta_sequence = -1;
 
 	if (cls.demorecording)
 		CL_WriteDemoCmd(cmd);

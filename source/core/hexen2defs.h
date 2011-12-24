@@ -424,4 +424,4 @@ struct hwpacket_entities_t
 
 #define UPDATE_BACKUP_HW	64	// copies of entity_state_t to keep buffered
 							// must be power of two
-#define HWUPDATE_MASK_HW	(UPDATE_BACKUP_HW - 1)
+#define UPDATE_MASK_HW	(UPDATE_BACKUP_HW - 1)

@@ -1321,7 +1321,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 	vec3_t o;
 
 	// calc ping time
-	frame = &cl->frames[cl->netchan.incomingAcknowledged & HWUPDATE_MASK_HW];
+	frame = &cl->frames[cl->netchan.incomingAcknowledged & UPDATE_MASK_HW];
 	frame->ping_time = realtime - frame->senttime;
 
 	// make sure the reply sequence number matches the incoming
@@ -1332,8 +1332,8 @@ void SV_ExecuteClientMessage (client_t *cl)
 		cl->send_message = false;	// don't reply, sequences have slipped		
 
 	// save time for ping calculations
-	cl->frames[cl->netchan.outgoingSequence & HWUPDATE_MASK_HW].senttime = realtime;
-	cl->frames[cl->netchan.outgoingSequence & HWUPDATE_MASK_HW].ping_time = -1;
+	cl->frames[cl->netchan.outgoingSequence & UPDATE_MASK_HW].senttime = realtime;
+	cl->frames[cl->netchan.outgoingSequence & UPDATE_MASK_HW].ping_time = -1;
 
 	host_client = cl;
 	sv_player = host_client->edict;

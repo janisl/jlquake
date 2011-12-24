@@ -256,7 +256,7 @@ void Cam_Track(hwusercmd_t *cmd)
 		return;
 	}
 
-	frame = &cl.hw_frames[cls.netchan.incomingSequence & HWUPDATE_MASK_HW];
+	frame = &cl.hw_frames[cls.netchan.incomingSequence & UPDATE_MASK_HW];
 	player = frame->playerstate + spec_track;
 	self = frame->playerstate + cl.playernum;
 

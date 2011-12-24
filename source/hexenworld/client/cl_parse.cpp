@@ -757,7 +757,7 @@ void CL_ParseClientdata (void)
 
 	i = cls.netchan.incomingAcknowledged;
 	cl.parsecount = i;
-	i &= HWUPDATE_MASK_HW;
+	i &= UPDATE_MASK_HW;
 	parsecountmod = i;
 	frame = &cl.hw_frames[i];
 	parsecounttime = cl.hw_frames[i].senttime;
@@ -1309,7 +1309,7 @@ void CL_ParseServerMessage (void)
 		case svc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.hw_frames[ (cls.netchan.incomingAcknowledged-1-j)&HWUPDATE_MASK_HW ].receivedtime = -2;
+				cl.hw_frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_HW ].receivedtime = -2;
 			break;
 
 		case svc_modellist:
