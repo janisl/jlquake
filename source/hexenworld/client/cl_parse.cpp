@@ -386,7 +386,7 @@ void CL_ParseDownload (void)
 		// rename the temp file to it's final name
 		FS_Rename(cls.downloadtempname, cls.downloadname);
 
-		cls.download = NULL;
+		cls.download = 0;
 		cls.downloadpercent = 0;
 
 		// get another file if needed

@@ -431,7 +431,7 @@ void SV_NextDownload_f (void)
 		return;
 
 	FS_FCloseFile (host_client->download);
-	host_client->download = NULL;
+	host_client->download = 0;
 
 }
 
@@ -476,7 +476,7 @@ void SV_BeginDownload_f(void)
 
 	if (host_client->download) {
 		FS_FCloseFile (host_client->download);
-		host_client->download = NULL;
+		host_client->download = 0;
 	}
 
 	// lowercase name (needed for casesen file systems)

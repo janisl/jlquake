@@ -504,7 +504,7 @@ void Host_ShutdownServer(qboolean crash)
 // make sure all the clients know we're disconnecting
 	buf.InitOOB(message, 4);
 	buf.WriteByte(svc_disconnect);
-	count = (&buf, 5);
+	count = NET_SendToAll(&buf, 5);
 	if (count)
 		Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
 

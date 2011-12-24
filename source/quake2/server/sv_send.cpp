@@ -442,7 +442,7 @@ void SV_DemoCompleted (void)
 	if (sv.demofile)
 	{
 		FS_FCloseFile (sv.demofile);
-		sv.demofile = NULL;
+		sv.demofile = 0;
 	}
 	SV_Nextserver ();
 }

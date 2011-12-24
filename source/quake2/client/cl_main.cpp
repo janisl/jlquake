@@ -140,7 +140,7 @@ void CL_Stop_f (void)
 	len = -1;
 	FS_Write(&len, 4, cls.demofile);
 	FS_FCloseFile(cls.demofile);
-	cls.demofile = NULL;
+	cls.demofile = 0;
 	cls.demorecording = false;
 	Com_Printf ("Stopped demo.\n");
 }

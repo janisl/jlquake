@@ -229,7 +229,7 @@ void SV_DropClient (client_t *drop)
 	if (drop->download)
 	{
 		FS_FCloseFile (drop->download);
-		drop->download = NULL;
+		drop->download = 0;
 	}
 	if (drop->upload)
 	{

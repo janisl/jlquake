@@ -98,7 +98,7 @@ void SV_Logfile_f (void)
 	{
 		Con_Printf ("File logging off.\n");
 		FS_FCloseFile(sv_logfile);
-		sv_logfile = NULL;
+		sv_logfile = 0;
 		return;
 	}
 
@@ -144,7 +144,7 @@ void SV_Fraglogfile_f (void)
 	if (i==1000)
 	{
 		Con_Printf ("Can't open any logfiles.\n");
-		sv_fraglogfile = NULL;
+		sv_fraglogfile = 0;
 		return;
 	}
 
@@ -541,8 +541,6 @@ SV_Serverinfo_f
 */
 void SV_Serverinfo_f (void)
 {
-	Cvar*	var;
-
 	if (Cmd_Argc() == 1)
 	{
 		Con_Printf ("Server info settings:\n");

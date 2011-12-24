@@ -406,7 +406,7 @@ void CL_ParseDownload (void)
 		{
 			Con_Printf ("cls.download shouldn't have been set\n");
 			FS_FCloseFile(cls.download);
-			cls.download = NULL;
+			cls.download = 0;
 		}
 		CL_RequestNextDownload();
 		return;
@@ -480,7 +480,7 @@ void CL_ParseDownload (void)
 			}
 		}
 
-		cls.download = NULL;
+		cls.download = 0;
 		cls.downloadpercent = 0;
 
 		// get another file if needed

@@ -189,7 +189,7 @@ void CL_ParseDownload (void)
 		{
 			// if here, we tried to resume a file but the server said no
 			FS_FCloseFile(cls.download);
-			cls.download = NULL;
+			cls.download = 0;
 		}
 		CL_RequestNextDownload ();
 		return;
@@ -246,7 +246,7 @@ void CL_ParseDownload (void)
 		if (r)
 			Com_Printf ("failed to rename.\n");
 
-		cls.download = NULL;
+		cls.download = 0;
 		cls.downloadpercent = 0;
 
 		// get another file if needed
