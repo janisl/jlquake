@@ -106,8 +106,6 @@ typedef struct qsocket_s
 	int				socket;
 	void			*driverdata;
 
-	unsigned int	ackSequence;
-
 	char			address[NET_NAMELEN];
 
 } qsocket_t;

@@ -55,9 +55,6 @@ struct netchan_t : netchan_common_t
 	double		cleartime;			// if realtime > nc->cleartime, free to go
 	double		rate;				// seconds / byte
 
-	int			incoming_acknowledged;
-	int			incoming_reliable_acknowledged;	// single bit
-
 // reliable staging and holding areas
 	QMsg		message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN_QW];

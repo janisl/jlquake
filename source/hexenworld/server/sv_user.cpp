@@ -1323,7 +1323,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 	vec3_t o;
 
 	// calc ping time
-	frame = &cl->frames[cl->netchan.incoming_acknowledged & UPDATE_MASK];
+	frame = &cl->frames[cl->netchan.incomingAcknowledged & UPDATE_MASK];
 	frame->ping_time = realtime - frame->senttime;
 
 	// make sure the reply sequence number matches the incoming

@@ -153,7 +153,6 @@ qsocket_t *NET_NewQSocket (void)
 	sock->canSend = true;
 	sock->sendNext = false;
 	sock->lastMessageTime = net_time;
-	sock->ackSequence = 0;
 
 	return sock;
 }

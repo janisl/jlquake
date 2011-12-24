@@ -755,7 +755,7 @@ void CL_ParseClientdata (void)
 // calculate simulated time of message
 	oldparsecountmod = parsecountmod;
 
-	i = cls.netchan.incoming_acknowledged;
+	i = cls.netchan.incomingAcknowledged;
 	cl.parsecount = i;
 	i &= UPDATE_MASK;
 	parsecountmod = i;
@@ -1309,7 +1309,7 @@ void CL_ParseServerMessage (void)
 		case svc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
+				cl.frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
 			break;
 
 		case svc_modellist:

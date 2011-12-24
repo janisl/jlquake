@@ -366,10 +366,10 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 				Con_DPrintf("Stale ACK received\n");
 				continue;
 			}
-			if (sequence == sock->ackSequence)
+			if (sequence == chan->incomingReliableAcknowledged)
 			{
-				sock->ackSequence++;
-				if (sock->ackSequence != chan->outgoingReliableSequence)
+				chan->incomingReliableAcknowledged++;
+				if (chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
 					Con_DPrintf("ack sequencing error\n");
 			}
 			else

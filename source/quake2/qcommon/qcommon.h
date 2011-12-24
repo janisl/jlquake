@@ -300,13 +300,8 @@ struct netchan_t : netchan_common_t
 {
 	qboolean	fatal_error;
 
-
 	int			last_received;		// for timeouts
 	int			last_sent;			// for retransmits
-
-// sequencing variables
-	int			incoming_acknowledged;
-	int			incoming_reliable_acknowledged;	// single bit
 
 // reliable staging and holding areas
 	QMsg	message;		// writing buffer to send to server

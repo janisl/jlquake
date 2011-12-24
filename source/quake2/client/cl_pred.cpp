@@ -37,7 +37,7 @@ void CL_CheckPredictionError (void)
 		return;
 
 	// calculate the last usercmd_t we sent that the server has processed
-	frame = cls.netchan.incoming_acknowledged;
+	frame = cls.netchan.incomingAcknowledged;
 	frame &= (CMD_BACKUP-1);
 
 	// compare what the server returned with what we had predicted it to be
@@ -220,7 +220,7 @@ void CL_PredictMovement (void)
 		return;
 	}
 
-	ack = cls.netchan.incoming_acknowledged;
+	ack = cls.netchan.incomingAcknowledged;
 	current = cls.netchan.outgoingSequence;
 
 	// if we are too far out of date, just freeze

@@ -191,8 +191,8 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // if the remote side dropped the last reliable message, resend it
 	send_reliable = false;
 
-	if (chan->incoming_acknowledged > chan->lastReliableSequence
-	&& chan->incoming_reliable_acknowledged != chan->outgoingReliableSequence)
+	if (chan->incomingAcknowledged > chan->lastReliableSequence
+	&& chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
 		send_reliable = true;
 
 // if the reliable transmit buffer is empty, copy the current message out
@@ -363,8 +363,8 @@ qboolean Netchan_Process (netchan_t *chan)
 // if this message contains a reliable message, bump incoming_reliable_sequence 
 //
 	chan->incomingSequence = sequence;
-	chan->incoming_acknowledged = sequence_ack;
-	chan->incoming_reliable_acknowledged = reliable_ack;
+	chan->incomingAcknowledged = sequence_ack;
+	chan->incomingReliableAcknowledged = reliable_ack;
 	if (reliable_message)
 		chan->incomingReliableSequence ^= 1;
 
