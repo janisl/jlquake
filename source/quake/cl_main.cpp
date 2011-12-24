@@ -515,7 +515,7 @@ CL_SendCmd
 */
 void CL_SendCmd (void)
 {
-	usercmd_t		cmd;
+	q1usercmd_t		cmd;
 
 	if (cls.state != ca_connected)
 		return;

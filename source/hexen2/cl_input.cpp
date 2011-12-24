@@ -290,7 +290,7 @@ CL_BaseMove
 Send the intended movement message to the server
 ================
 */
-void CL_BaseMove (usercmd_t *cmd)
+void CL_BaseMove (h2usercmd_t *cmd)
 {	
 	if (cls.signon != SIGNONS)
 		return;
@@ -360,7 +360,7 @@ void CL_MouseEvent(int mx, int my)
 	mouse_move_y += my;
 }
 
-void CL_MouseMove(usercmd_t *cmd)
+void CL_MouseMove(h2usercmd_t *cmd)
 {
 	if (cl.v.cameramode)	// Stuck in a different camera so don't move
 	{
@@ -423,7 +423,7 @@ void CL_MouseMove(usercmd_t *cmd)
 CL_SendMove
 ==============
 */
-void CL_SendMove (usercmd_t *cmd)
+void CL_SendMove (h2usercmd_t *cmd)
 {
 	int		i;
 	int		bits;

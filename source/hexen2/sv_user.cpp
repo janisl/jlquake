@@ -24,7 +24,7 @@ float	*velocity;
 
 qboolean	onground;
 
-usercmd_t	cmd;
+h2usercmd_t	cmd;
 
 Cvar*	sv_idealpitchscale;
 Cvar*	sv_idealrollscale;
@@ -525,7 +525,7 @@ void SV_ClientThink (void)
 SV_ReadClientMove
 ===================
 */
-void SV_ReadClientMove (usercmd_t *move)
+void SV_ReadClientMove (h2usercmd_t *move)
 {
 	int		i;
 	vec3_t	angle;

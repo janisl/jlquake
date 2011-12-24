@@ -46,7 +46,7 @@ typedef struct
 	physent_t	physents[MAX_PHYSENTS];	// 0 should be the world
 
 	// input
-	usercmd_t	cmd;
+	qwusercmd_t	cmd;
 
 	// results
 	int		numtouch;

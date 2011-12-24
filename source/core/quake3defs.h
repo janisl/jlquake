@@ -36,3 +36,13 @@
 #define Q3ENTITYNUM_NONE		(MAX_GENTITIES_Q3 - 1)
 #define Q3ENTITYNUM_WORLD		(MAX_GENTITIES_Q3 - 2)
 #define Q3ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES_Q3 - 2)
+
+// q3usercmd_t is sent to the server each client frame
+struct q3usercmd_t
+{
+	int serverTime;
+	int angles[3];
+	int buttons;
+	byte weapon;           // weapon 
+	signed char forwardmove, rightmove, upmove;
+};

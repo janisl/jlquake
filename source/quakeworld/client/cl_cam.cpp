@@ -271,7 +271,7 @@ static void Cam_CheckHighTarget(void)
 //
 // Take over the user controls and track a player.
 // We find a nice position to watch the player and move there
-void Cam_Track(usercmd_t *cmd)
+void Cam_Track(qwusercmd_t *cmd)
 {
 	player_state_t *player, *self;
 	frame_t *frame;
@@ -349,7 +349,7 @@ void Cam_Track(usercmd_t *cmd)
 	}
 }
 
-void Cam_FinishMove(usercmd_t *cmd)
+void Cam_FinishMove(qwusercmd_t *cmd)
 {
 	int i;
 	player_info_t	*s;

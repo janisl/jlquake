@@ -23,11 +23,9 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-struct usercmd_s;
+void MSG_WriteUsercmd (QMsg *sb, hwusercmd_t* cmd, qboolean long_msg);
 
-void MSG_WriteUsercmd (QMsg *sb, struct usercmd_s *cmd, qboolean long_msg);
-
-void MSG_ReadUsercmd (struct usercmd_s *cmd, qboolean long_msg);
+void MSG_ReadUsercmd (hwusercmd_t* cmd, qboolean long_msg);
 
 //============================================================================
 

@@ -21,16 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	vec3_t	viewangles;
-
-// intended velocities
-	float	forwardmove;
-	float	sidemove;
-	float	upmove;
-} usercmd_t;
-
-typedef struct
-{
 	char	name[MAX_SCOREBOARDNAME];
 	float	entertime;
 	int		frags;
@@ -113,7 +103,7 @@ struct client_state_t : clientActiveCommon_t
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 
 								// first frame
-	usercmd_t	cmd;			// last command sent to the server
+	q1usercmd_t	cmd;			// last command sent to the server
 
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc
@@ -256,16 +246,16 @@ extern 	kbutton_t 	in_speed;
 
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
+void CL_SendMove (q1usercmd_t *cmd);
 
 void CL_ClearState (void);
 
 
 int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
+void CL_WriteToServer (q1usercmd_t *cmd);
+void CL_BaseMove (q1usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(usercmd_t *cmd);
+void CL_MouseMove(q1usercmd_t *cmd);
 
 
 float CL_KeyState (kbutton_t *key);

@@ -292,7 +292,7 @@ CL_BaseMove
 Send the intended movement message to the server
 ================
 */
-void CL_BaseMove (usercmd_t *cmd)
+void CL_BaseMove (qwusercmd_t *cmd)
 {	
 	CL_AdjustAngles ();
 	
@@ -334,7 +334,7 @@ void CL_MouseEvent(int mx, int my)
 	mouse_move_y += my;
 }
 
-void CL_MouseMove(usercmd_t *cmd)
+void CL_MouseMove(qwusercmd_t *cmd)
 {
 	int mouse_x = mouse_move_x;
 	int mouse_y = mouse_move_y;
@@ -393,7 +393,7 @@ int MakeChar (int i)
 CL_FinishMove
 ==============
 */
-void CL_FinishMove (usercmd_t *cmd)
+void CL_FinishMove (qwusercmd_t *cmd)
 {
 	int		i;
 	int		ms;
@@ -448,7 +448,7 @@ void CL_SendCmd (void)
 	QMsg		buf;
 	byte		data[128];
 	int			i;
-	usercmd_t	*cmd, *oldcmd;
+	qwusercmd_t	*cmd, *oldcmd;
 	int			checksumIndex;
 	int			lost;
 	int			seq_hash;

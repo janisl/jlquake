@@ -667,7 +667,7 @@ CL_SendCmd
 */
 void CL_SendCmd (void)
 {
-	usercmd_t		cmd;
+	h2usercmd_t		cmd;
 
 	if (cls.state != ca_connected)
 		return;

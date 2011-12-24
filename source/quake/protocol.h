@@ -139,5 +139,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	clc_bad			0
 #define	clc_nop 		1
 #define	clc_disconnect	2
-#define	clc_move		3			// [usercmd_t]
+#define	clc_move		3			// [q1usercmd_t]
 #define	clc_stringcmd	4		// [string] message

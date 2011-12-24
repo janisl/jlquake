@@ -531,3 +531,14 @@ enum q2entity_event_t
 	Q2EV_PLAYER_TELEPORT,
 	Q2EV_OTHER_TELEPORT
 };
+
+// q2usercmd_t is sent to the server each client frame
+struct q2usercmd_t
+{
+	byte	msec;
+	byte	buttons;
+	short	angles[3];
+	short	forwardmove, sidemove, upmove;
+	byte	impulse;		// remove?
+	byte	lightlevel;		// light level the player is standing on
+};

@@ -294,7 +294,7 @@ CL_BaseMove
 Send the intended movement message to the server
 ================
 */
-void CL_BaseMove (usercmd_t *cmd)
+void CL_BaseMove (q1usercmd_t *cmd)
 {	
 	if (cls.signon != SIGNONS)
 		return;
@@ -338,7 +338,7 @@ void CL_MouseEvent(int mx, int my)
 	mouse_move_y += my;
 }
 
-void CL_MouseMove(usercmd_t *cmd)
+void CL_MouseMove(q1usercmd_t *cmd)
 {
 	int mouse_x = mouse_move_x;
 	int mouse_y = mouse_move_y;
@@ -401,7 +401,7 @@ void CL_MouseMove(usercmd_t *cmd)
 CL_SendMove
 ==============
 */
-void CL_SendMove (usercmd_t *cmd)
+void CL_SendMove (q1usercmd_t *cmd)
 {
 	int		i;
 	int		bits;

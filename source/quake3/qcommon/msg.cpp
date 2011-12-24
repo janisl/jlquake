@@ -174,7 +174,7 @@ float MSG_ReadDeltaKeyFloat( QMsg *msg, int key, float oldV ) {
 /*
 ============================================================================
 
-usercmd_t communication
+q3usercmd_t communication
 
 ============================================================================
 */
@@ -194,7 +194,7 @@ usercmd_t communication
 MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
+void MSG_WriteDeltaUsercmd( QMsg *msg, q3usercmd_t *from, q3usercmd_t *to ) {
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits(1, 1 );
 		msg->WriteBits(to->serverTime - from->serverTime, 8 );
@@ -218,7 +218,7 @@ void MSG_WriteDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
 MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
+void MSG_ReadDeltaUsercmd( QMsg *msg, q3usercmd_t *from, q3usercmd_t *to ) {
 	if ( msg->ReadBits(1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits(8 );
 	} else {
@@ -239,7 +239,7 @@ void MSG_ReadDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
 MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to ) {
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t *to ) {
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits(1, 1 );
 		msg->WriteBits(to->serverTime - from->serverTime, 8 );
@@ -277,7 +277,7 @@ void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *t
 MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to ) {
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t *to ) {
 	if ( msg->ReadBits(1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits(8 );
 	} else {

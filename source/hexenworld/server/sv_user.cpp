@@ -4,7 +4,7 @@
 
 edict_t	*sv_player;
 
-usercmd_t	cmd;
+hwusercmd_t	cmd;
 
 Cvar*	cl_rollspeed;
 Cvar*	cl_rollangle;
@@ -1117,7 +1117,7 @@ void SV_PreRunCmd(void)
 SV_RunCmd
 ===========
 */
-void SV_RunCmd (usercmd_t *ucmd)
+void SV_RunCmd (hwusercmd_t *ucmd)
 {
 	edict_t		*ent;
 	int			i, n;
@@ -1316,7 +1316,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 {
 	int		c;
 	char	*s;
-	usercmd_t	oldest, oldcmd, newcmd;
+	hwusercmd_t	oldest, oldcmd, newcmd;
 	client_frame_t	*frame;
 	vec3_t o;
 

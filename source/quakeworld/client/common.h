@@ -43,13 +43,11 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-struct usercmd_s;
+extern qwusercmd_t nullcmd;
 
-extern struct usercmd_s nullcmd;
+void MSG_WriteDeltaUsercmd (QMsg *sb, qwusercmd_t* from, qwusercmd_t* cmd);
 
-void MSG_WriteDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
-
-void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
+void MSG_ReadDeltaUsercmd (qwusercmd_t* from, qwusercmd_t* cmd);
 
 //============================================================================
 

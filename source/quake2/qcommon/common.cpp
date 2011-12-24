@@ -283,7 +283,7 @@ void MSG_WritePos (QMsg *sb, vec3_t pos)
 }
 
 
-void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
+void MSG_WriteDeltaUsercmd (QMsg *buf, q2usercmd_t *from, q2usercmd_t *cmd)
 {
 	int		bits;
 
@@ -543,7 +543,7 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 // reading functions
 //
 
-void MSG_ReadDeltaUsercmd (QMsg *msg_read, usercmd_t *from, usercmd_t *move)
+void MSG_ReadDeltaUsercmd (QMsg *msg_read, q2usercmd_t *from, q2usercmd_t *move)
 {
 	int bits;
 

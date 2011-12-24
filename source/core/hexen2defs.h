@@ -392,3 +392,24 @@ struct h2EffectT
 		}Chunk;
 	};
 };
+
+struct h2usercmd_t
+{
+	vec3_t viewangles;
+
+	// intended velocities
+	float forwardmove;
+	float sidemove;
+	float upmove;
+	byte lightlevel;
+};
+
+struct hwusercmd_t
+{
+	byte msec;
+	vec3_t angles;
+	short forwardmove, sidemove, upmove;
+	byte buttons;
+	byte impulse;
+	byte light_level;
+};

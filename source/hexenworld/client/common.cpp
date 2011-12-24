@@ -121,7 +121,7 @@ Handles byte ordering and avoids alignment errors
 // writing functions
 //
 
-void MSG_WriteUsercmd (QMsg *buf, usercmd_t *cmd, qboolean long_msg)
+void MSG_WriteUsercmd (QMsg *buf, hwusercmd_t *cmd, qboolean long_msg)
 {
 	int		bits;
 
@@ -178,7 +178,7 @@ void MSG_WriteUsercmd (QMsg *buf, usercmd_t *cmd, qboolean long_msg)
 // reading functions
 //
 
-void MSG_ReadUsercmd (usercmd_t *move, qboolean long_msg)
+void MSG_ReadUsercmd (hwusercmd_t *move, qboolean long_msg)
 {
 	int bits;
 

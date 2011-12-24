@@ -33,16 +33,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void MSG_Init (QMsg *buf, byte *data, int length);
 void MSG_InitOOB( QMsg *buf, byte *data, int length );
 
-struct usercmd_s;
 struct entityState_s;
 struct playerState_s;
 
 
-void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
-void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_WriteDeltaUsercmd( QMsg *msg, q3usercmd_t* from, q3usercmd_t* to );
+void MSG_ReadDeltaUsercmd( QMsg *msg, q3usercmd_t* from, q3usercmd_t* to );
 
-void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
-void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t *to );
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t *to );
 
 void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
 						   , qboolean force );
@@ -69,7 +68,7 @@ NET
 							// server for delta comrpession and ping estimation
 #define	PACKET_MASK		(PACKET_BACKUP-1)
 
-#define	MAX_PACKET_USERCMDS		32		// max number of usercmd_t in a packet
+#define	MAX_PACKET_USERCMDS		32		// max number of q3usercmd_t in a packet
 
 #define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
 
@@ -162,8 +161,8 @@ enum svc_ops_e {
 enum clc_ops_e {
 	clc_bad,
 	clc_nop, 		
-	clc_move,				// [[usercmd_t]
-	clc_moveNoDelta,		// [[usercmd_t]
+	clc_move,				// [[q3usercmd_t]
+	clc_moveNoDelta,		// [[q3usercmd_t]
 	clc_clientCommand,		// [string] message
 	clc_EOF
 };

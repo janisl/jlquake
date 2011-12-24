@@ -53,3 +53,22 @@ struct q1entity_state_t
 	int effects;
 	int flags;			// nolerp, etc
 };
+
+struct q1usercmd_t
+{
+	vec3_t viewangles;
+
+	// intended velocities
+	float forwardmove;
+	float sidemove;
+	float upmove;
+};
+
+struct qwusercmd_t
+{
+	byte msec;
+	vec3_t angles;
+	short forwardmove, sidemove, upmove;
+	byte buttons;
+	byte impulse;
+};

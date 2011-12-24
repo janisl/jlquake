@@ -125,7 +125,7 @@ typedef struct client_s {
 	int				gamestateMessageNum;	// netchan->outgoingSequence of gamestate
 	int				challenge;
 
-	usercmd_t		lastUsercmd;
+	q3usercmd_t		lastUsercmd;
 	int				lastMessageNum;		// for delta compression
 	int				lastClientCommand;	// reliable client message sequence
 	char			lastClientCommandString[MAX_STRING_CHARS];
@@ -289,11 +289,11 @@ void SV_AuthorizeIpPacket( netadr_t from );
 void SV_ExecuteClientMessage( client_t *cl, QMsg *msg );
 void SV_UserinfoChanged( client_t *cl );
 
-void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd );
+void SV_ClientEnterWorld( client_t *client, q3usercmd_t *cmd );
 void SV_DropClient( client_t *drop, const char *reason );
 
 void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK );
-void SV_ClientThink (client_t *cl, usercmd_t *cmd);
+void SV_ClientThink (client_t *cl, q3usercmd_t *cmd);
 
 void SV_WriteDownloadToClient( client_t *cl , QMsg *msg );
 

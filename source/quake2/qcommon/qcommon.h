@@ -75,14 +75,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-struct usercmd_s;
-
 void MSG_WritePos (QMsg *sb, vec3_t pos);
-void MSG_WriteDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
+void MSG_WriteDeltaUsercmd (QMsg *sb, q2usercmd_t* from, q2usercmd_t* cmd);
 void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *msg, qboolean force, qboolean newentity);
 
 
-void	MSG_ReadDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
+void	MSG_ReadDeltaUsercmd (QMsg *sb, q2usercmd_t* from, q2usercmd_t* cmd);
 
 //============================================================================
 
@@ -155,7 +153,7 @@ enum clc_ops_e
 {
 	clc_bad,
 	clc_nop, 		
-	clc_move,				// [[usercmd_t]
+	clc_move,				// [[q2usercmd_t]
 	clc_userinfo,			// [[userinfo string]
 	clc_stringcmd			// [string] message
 };

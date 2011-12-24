@@ -35,7 +35,7 @@ typedef struct
 
 	double		state_time;		// not the same as the packet time,
 								// because player commands come asyncronously
-	usercmd_t	command;		// last command for prediction
+	qwusercmd_t	command;		// last command for prediction
 
 	vec3_t		origin;
 	vec3_t		viewangles;		// only for demos, not from server
@@ -83,7 +83,7 @@ typedef struct player_info_s
 typedef struct
 {
 	// generated on client side
-	usercmd_t	cmd;		// cmd that generated the frame
+	qwusercmd_t	cmd;		// cmd that generated the frame
 	double		senttime;	// time cmd was sent off
 	int			delta_sequence;		// sequence number to delta from, -1 = full update
 
@@ -331,17 +331,17 @@ extern 	kbutton_t 	in_speed;
 
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
+void CL_SendMove (qwusercmd_t *cmd);
 
 void CL_ClearState (void);
 
 void CL_ReadPackets (void);
 
 int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
+void CL_WriteToServer (qwusercmd_t *cmd);
+void CL_BaseMove (qwusercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(usercmd_t *cmd);
+void CL_MouseMove(qwusercmd_t *cmd);
 
 
 float CL_KeyState (kbutton_t *key);
@@ -352,7 +352,7 @@ const char *Key_KeynumToString (int keynum);
 //
 void CL_StopPlayback (void);
 qboolean CL_GetMessage (void);
-void CL_WriteDemoCmd (usercmd_t *pcmd);
+void CL_WriteDemoCmd (qwusercmd_t *pcmd);
 
 void CL_Stop_f (void);
 void CL_Record_f (void);
@@ -403,7 +403,7 @@ void CL_ParsePlayerinfo (void);
 //
 void CL_InitPrediction (void);
 void CL_PredictMove (void);
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
+void CL_PredictUsercmd (player_state_t *from, player_state_t *to, qwusercmd_t *u, qboolean spectator);
 
 //
 // cl_cam.c
@@ -416,8 +416,8 @@ extern int spec_track; // player# of who we are tracking
 
 qboolean Cam_DrawViewModel(void);
 qboolean Cam_DrawPlayer(int playernum);
-void Cam_Track(usercmd_t *cmd);
-void Cam_FinishMove(usercmd_t *cmd);
+void Cam_Track(qwusercmd_t *cmd);
+void Cam_FinishMove(qwusercmd_t *cmd);
 void Cam_Reset(void);
 void CL_InitCam(void);
 

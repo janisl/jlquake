@@ -306,7 +306,7 @@ CL_BaseMove
 Send the intended movement message to the server
 ================
 */
-void CL_BaseMove (usercmd_t *cmd)
+void CL_BaseMove (hwusercmd_t *cmd)
 {	
 	CL_AdjustAngles ();
 	
@@ -369,7 +369,7 @@ void CL_MouseEvent(int mx, int my)
 	mouse_move_y += my;
 }
 
-void CL_MouseMove(usercmd_t *cmd)
+void CL_MouseMove(hwusercmd_t *cmd)
 {
 	if (cl.v.cameramode)	// Stuck in a different camera so don't move
 	{
@@ -442,7 +442,7 @@ int MakeChar (int i)
 CL_FinishMove
 ==============
 */
-void CL_FinishMove (usercmd_t *cmd)
+void CL_FinishMove (hwusercmd_t *cmd)
 {
 	int		i;
 	int		ms;
@@ -509,7 +509,7 @@ void CL_SendCmd (void)
 	QMsg		buf;
 	byte		data[128];
 	int			i;
-	usercmd_t	*cmd;
+	hwusercmd_t	*cmd;
 
 	if (cls.demoplayback)
 		return; // sendcmds come from the demo

@@ -42,7 +42,7 @@ typedef enum {
 
 PMOVE MODULE
 
-The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t
+The pmove code takes a player_state_t and a q3usercmd_t and generates a new player_state_t
 and some other output data.  Used for local prediction on the client game and true
 movement on the server game.
 ===================================================================================

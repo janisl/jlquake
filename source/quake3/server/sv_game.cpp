@@ -278,7 +278,7 @@ SV_GetUsercmd
 
 ===============
 */
-void SV_GetUsercmd( int clientNum, usercmd_t *cmd ) {
+void SV_GetUsercmd( int clientNum, q3usercmd_t *cmd ) {
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer ) {
 		Com_Error( ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum );
 	}
@@ -428,7 +428,7 @@ int SV_GameSystemCalls( int *args ) {
 		return 0;
 
 	case G_GET_USERCMD:
-		SV_GetUsercmd( args[1], (usercmd_t*)VMA(2) );
+		SV_GetUsercmd( args[1], (q3usercmd_t*)VMA(2) );
 		return 0;
 	case G_GET_ENTITY_TOKEN:
 		{
@@ -490,7 +490,7 @@ int SV_GameSystemCalls( int *args ) {
 	case BOTLIB_GET_CONSOLE_MESSAGE:
 		return SV_BotGetConsoleMessage( args[1], (char*)VMA(2), args[3] );
 	case BOTLIB_USER_COMMAND:
-		SV_ClientThink( &svs.clients[args[1]], (usercmd_t*)VMA(2) );
+		SV_ClientThink( &svs.clients[args[1]], (q3usercmd_t*)VMA(2) );
 		return 0;
 
 	case BOTLIB_AAS_BBOX_AREAS:

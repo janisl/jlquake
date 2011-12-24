@@ -142,19 +142,6 @@ COLLISION DETECTION
 #define	BUTTON_USE			2
 #define	BUTTON_ANY			128			// any key whatsoever
 
-
-// usercmd_t is sent to the server each client frame
-typedef struct usercmd_s
-{
-	byte	msec;
-	byte	buttons;
-	short	angles[3];
-	short	forwardmove, sidemove, upmove;
-	byte	impulse;		// remove?
-	byte	lightlevel;		// light level the player is standing on
-} usercmd_t;
-
-
 #define	MAXTOUCH	32
 typedef struct
 {
@@ -162,7 +149,7 @@ typedef struct
 	q2pmove_state_t	s;
 
 	// command (in)
-	usercmd_t		cmd;
+	q2usercmd_t		cmd;
 	qboolean		snapinitial;	// if s has been changed outside pmove
 
 	// results (out)

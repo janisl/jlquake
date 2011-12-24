@@ -210,7 +210,7 @@ typedef enum {
 
 	G_BOT_FREE_CLIENT,	// ( int clientNum );
 
-	G_GET_USERCMD,	// ( int clientNum, usercmd_t *cmd )
+	G_GET_USERCMD,	// ( int clientNum, q3usercmd_t *cmd )
 
 	G_GET_ENTITY_TOKEN,	// qboolean ( char *buffer, int bufferSize )
 	// Retrieves the next string token from the entity spawn text, returning
@@ -241,7 +241,7 @@ typedef enum {
 
 	BOTLIB_GET_SNAPSHOT_ENTITY,		// ( int client, int ent );
 	BOTLIB_GET_CONSOLE_MESSAGE,		// ( int client, char *message, int size );
-	BOTLIB_USER_COMMAND,			// ( int client, usercmd_t *ucmd );
+	BOTLIB_USER_COMMAND,			// ( int client, q3usercmd_t *ucmd );
 
 	BOTLIB_AAS_ENABLE_ROUTING_AREA = 300,
 	BOTLIB_AAS_BBOX_AREAS,

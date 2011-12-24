@@ -29,11 +29,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define trace_t	q2trace_t
 #define entity_state_t q2entity_state_t
 #define player_state_t q2player_state_t
+#define usercmd_t q2usercmd_t
 #include "../../../q2game/game/game.h"
 #undef cvar_t
 #undef trace_t
 #undef entity_state_t
 #undef player_state_t
+#undef usercmd_t
 
 //=============================================================================
 
@@ -109,7 +111,7 @@ typedef struct client_s
 	char			userinfo[MAX_INFO_STRING];		// name, etc
 
 	int				lastframe;			// for delta compression
-	usercmd_t		lastcmd;			// for filling in big drops
+	q2usercmd_t		lastcmd;			// for filling in big drops
 
 	int				commandMsec;		// every seconds this is reset, if user
 										// commands exhaust it, assume time cheating

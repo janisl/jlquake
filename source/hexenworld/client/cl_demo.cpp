@@ -47,12 +47,12 @@ CL_WriteDemoCmd
 Writes the current user cmd
 ====================
 */
-void CL_WriteDemoCmd (usercmd_t *pcmd)
+void CL_WriteDemoCmd (hwusercmd_t *pcmd)
 {
 	int		i;
 	float	fl;
 	byte	c;
-	usercmd_t cmd;
+	hwusercmd_t cmd;
 
 //Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
@@ -126,7 +126,7 @@ qboolean CL_GetDemoMessage (void)
 	float	f;
 	float	demotime;
 	byte	c;
-	usercmd_t *pcmd;
+	hwusercmd_t *pcmd;
 
 
 	// read the time from the packet

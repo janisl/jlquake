@@ -280,7 +280,7 @@ CL_BaseMove
 Send the intended movement message to the server
 ================
 */
-void CL_BaseMove (usercmd_t *cmd)
+void CL_BaseMove (q2usercmd_t *cmd)
 {	
 	CL_AdjustAngles ();
 	
@@ -322,7 +322,7 @@ void CL_MouseEvent(int mx, int my)
 	mouse_move_y += my;
 }
 
-void CL_MouseMove(usercmd_t *cmd)
+void CL_MouseMove(q2usercmd_t *cmd)
 {
 	int mouse_x = mouse_move_x;
 	int mouse_y = mouse_move_y;
@@ -374,7 +374,7 @@ void CL_ClampPitch (void)
 CL_FinishMove
 ==============
 */
-void CL_FinishMove (usercmd_t *cmd)
+void CL_FinishMove (q2usercmd_t *cmd)
 {
 	int		ms;
 	int		i;
@@ -415,9 +415,9 @@ void CL_FinishMove (usercmd_t *cmd)
 CL_CreateCmd
 =================
 */
-usercmd_t CL_CreateCmd (void)
+q2usercmd_t CL_CreateCmd (void)
 {
-	usercmd_t	cmd;
+	q2usercmd_t	cmd;
 
 	// grab frame time 
 	sys_frame_time = Sys_Milliseconds_();
@@ -520,8 +520,8 @@ void CL_SendCmd (void)
 	QMsg		buf;
 	byte		data[128];
 	int			i;
-	usercmd_t	*cmd, *oldcmd;
-	usercmd_t	nullcmd;
+	q2usercmd_t	*cmd, *oldcmd;
+	q2usercmd_t	nullcmd;
 	int			checksumIndex;
 
 	// build a command even if not connected

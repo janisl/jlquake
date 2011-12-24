@@ -318,7 +318,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 	client_t	*cl;
 	edict_t		*ent;
 	int			msec;
-	usercmd_t	cmd;
+	qwusercmd_t	cmd;
 	int			pflags;
 
 	for (j=0,cl=svs.clients ; j<MAX_CLIENTS ; j++,cl++)

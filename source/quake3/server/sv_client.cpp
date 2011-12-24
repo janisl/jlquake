@@ -610,7 +610,7 @@ void SV_SendClientGameState( client_t *client ) {
 SV_ClientEnterWorld
 ==================
 */
-void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd ) {
+void SV_ClientEnterWorld( client_t *client, q3usercmd_t *cmd ) {
 	int		clientNum;
 	sharedEntity_t *ent;
 
@@ -1304,7 +1304,7 @@ SV_ClientThink
 Also called by bot code
 ==================
 */
-void SV_ClientThink (client_t *cl, usercmd_t *cmd) {
+void SV_ClientThink (client_t *cl, q3usercmd_t *cmd) {
 	cl->lastUsercmd = *cmd;
 
 	if ( cl->state != CS_ACTIVE ) {
@@ -1329,9 +1329,9 @@ each of the backup packets.
 static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	int			i, key;
 	int			cmdCount;
-	usercmd_t	nullcmd;
-	usercmd_t	cmds[MAX_PACKET_USERCMDS];
-	usercmd_t	*cmd, *oldcmd;
+	q3usercmd_t	nullcmd;
+	q3usercmd_t	cmds[MAX_PACKET_USERCMDS];
+	q3usercmd_t	*cmd, *oldcmd;
 
 	if ( delta ) {
 		cl->deltaMessage = cl->messageAcknowledge;
@@ -1514,7 +1514,7 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 		}
 	} while ( 1 );
 
-	// read the usercmd_t
+	// read the q3usercmd_t
 	if ( c == clc_move ) {
 		SV_UserMove( cl, msg, qtrue );
 	} else if ( c == clc_moveNoDelta ) {

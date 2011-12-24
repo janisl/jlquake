@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS	6
 
-usercmd_t nullcmd; // guarenteed to be zero
+qwusercmd_t nullcmd; // guarenteed to be zero
 
 static const char	*safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
@@ -129,7 +129,7 @@ Handles byte ordering and avoids alignment errors
 // writing functions
 //
 
-void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
+void MSG_WriteDeltaUsercmd (QMsg *buf, qwusercmd_t *from, qwusercmd_t *cmd)
 {
 	int		bits;
 
@@ -182,7 +182,7 @@ void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
 // reading functions
 //
 
-void MSG_ReadDeltaUsercmd (usercmd_t *from, usercmd_t *move)
+void MSG_ReadDeltaUsercmd (qwusercmd_t *from, qwusercmd_t *move)
 {
 	int bits;
 

@@ -55,7 +55,7 @@ void CL_GetGlconfig( glconfig_t *glconfig ) {
 CL_GetUserCmd
 ====================
 */
-qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd ) {
+qboolean CL_GetUserCmd( int cmdNumber, q3usercmd_t *ucmd ) {
 	// cmds[cmdNumber] is the last properly generated command
 
 	// can't return anything that we haven't created yet
@@ -616,7 +616,7 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_GETCURRENTCMDNUMBER:
 		return CL_GetCurrentCmdNumber();
 	case CG_GETUSERCMD:
-		return CL_GetUserCmd( args[1], (usercmd_t*)VMA(2) );
+		return CL_GetUserCmd( args[1], (q3usercmd_t*)VMA(2) );
 	case CG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue( args[1], VMF(2) );
 		return 0;

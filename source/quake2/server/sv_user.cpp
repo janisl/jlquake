@@ -506,7 +506,7 @@ USER CMD EXECUTION
 
 
 
-void SV_ClientThink (client_t *cl, usercmd_t *cmd)
+void SV_ClientThink (client_t *cl, q2usercmd_t *cmd)
 
 {
 	cl->commandMsec -= cmd->msec;
@@ -535,8 +535,8 @@ void SV_ExecuteClientMessage (client_t *cl)
 	int		c;
 	char	*s;
 
-	usercmd_t	nullcmd;
-	usercmd_t	oldest, oldcmd, newcmd;
+	q2usercmd_t	nullcmd;
+	q2usercmd_t	oldest, oldcmd, newcmd;
 	int		net_drop;
 	int		stringCmdCount;
 	int		checksum, calculatedChecksum;

@@ -4,17 +4,6 @@
  * $Header: /H2 Mission Pack/CLIENT.H 4     3/12/98 6:31p Mgummelt $
  */
 
-typedef struct
-{
-	vec3_t	viewangles;
-
-// intended velocities
-	float	forwardmove;
-	float	sidemove;
-	float	upmove;
-	byte	lightlevel;
-} usercmd_t;
-
 #define	NAME_LENGTH	64
 
 
@@ -91,7 +80,7 @@ struct client_state_t : clientActiveCommon_t
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 
 								// first frame
-	usercmd_t	cmd;			// last command sent to the server
+	h2usercmd_t	cmd;			// last command sent to the server
 
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc
@@ -255,15 +244,15 @@ extern 	kbutton_t 	in_speed;
 
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
+void CL_SendMove (h2usercmd_t *cmd);
 
 void CL_ClearState (void);
 
 int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
+void CL_WriteToServer (h2usercmd_t *cmd);
+void CL_BaseMove (h2usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(usercmd_t *cmd);
+void CL_MouseMove(h2usercmd_t *cmd);
 
 
 float CL_KeyState (kbutton_t *key);

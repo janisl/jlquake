@@ -8,7 +8,7 @@ typedef struct
 
 	double		state_time;		// not the same as the packet time,
 								// because player commands come asyncronously
-	usercmd_t	command;		// last command for prediction
+	hwusercmd_t	command;		// last command for prediction
 
 	vec3_t		origin;
 	vec3_t		viewangles;		// only for demos, not from server
@@ -34,7 +34,7 @@ typedef struct
 typedef struct
 {
 	// generated on client side
-	usercmd_t	cmd;		// cmd that generated the frame
+	hwusercmd_t	cmd;		// cmd that generated the frame
 	double		senttime;	// time cmd was sent off
 	int			delta_sequence;		// sequence number to delta from, -1 = full update
 
@@ -383,7 +383,7 @@ extern 	kbutton_t 	in_speed;
 
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
+void CL_SendMove (hwusercmd_t *cmd);
 
 void CL_ParseTEnt (void);
 void CL_UpdateTEnts (void);
@@ -393,10 +393,10 @@ void CL_ClearState (void);
 void CL_ReadPackets (void);
 
 int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
+void CL_WriteToServer (hwusercmd_t *cmd);
+void CL_BaseMove (hwusercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(usercmd_t *cmd);
+void CL_MouseMove(hwusercmd_t *cmd);
 
 
 float CL_KeyState (kbutton_t *key);
@@ -473,10 +473,10 @@ void CL_SetSolidEntities (void);
 void CL_InitCam(void);
 void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities (void);
-void CL_WriteDemoCmd (usercmd_t *pcmd);
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
+void CL_WriteDemoCmd (hwusercmd_t *pcmd);
+void CL_PredictUsercmd (player_state_t *from, player_state_t *to, hwusercmd_t *u, qboolean spectator);
 void CL_SendConnectPacket (void);
 void Host_WriteConfiguration (const char *fname);
-void Cam_Track(usercmd_t *cmd);
-void Cam_FinishMove(usercmd_t *cmd);
+void Cam_Track(hwusercmd_t *cmd);
+void Cam_FinishMove(hwusercmd_t *cmd);
 void Cam_Reset(void);

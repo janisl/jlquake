@@ -302,10 +302,10 @@ void CL_AdjustAngles( void ) {
 ================
 CL_KeyMove
 
-Sets the usercmd_t based on key states
+Sets the q3usercmd_t based on key states
 ================
 */
-void CL_KeyMove( usercmd_t *cmd ) {
+void CL_KeyMove( q3usercmd_t *cmd ) {
 	int		movespeed;
 	int		forward, side, up;
 
@@ -380,7 +380,7 @@ void CL_JoystickEvent( int axis, int value, int time ) {
 CL_JoystickMove
 =================
 */
-void CL_JoystickMove( usercmd_t *cmd ) {
+void CL_JoystickMove( q3usercmd_t *cmd ) {
 	int		movespeed;
 	float	anglespeed;
 
@@ -417,7 +417,7 @@ void CL_JoystickMove( usercmd_t *cmd ) {
 CL_MouseMove
 =================
 */
-void CL_MouseMove( usercmd_t *cmd ) {
+void CL_MouseMove( q3usercmd_t *cmd ) {
 	float	mx, my;
 	float	accelSensitivity;
 	float	rate;
@@ -471,7 +471,7 @@ void CL_MouseMove( usercmd_t *cmd ) {
 CL_CmdButtons
 ==============
 */
-void CL_CmdButtons( usercmd_t *cmd ) {
+void CL_CmdButtons( q3usercmd_t *cmd ) {
 	int		i;
 
 	//
@@ -503,7 +503,7 @@ void CL_CmdButtons( usercmd_t *cmd ) {
 CL_FinishMove
 ==============
 */
-void CL_FinishMove( usercmd_t *cmd ) {
+void CL_FinishMove( q3usercmd_t *cmd ) {
 	int		i;
 
 	// copy the state that the cgame is currently sending
@@ -524,8 +524,8 @@ void CL_FinishMove( usercmd_t *cmd ) {
 CL_CreateCmd
 =================
 */
-usercmd_t CL_CreateCmd( void ) {
-	usercmd_t	cmd;
+q3usercmd_t CL_CreateCmd( void ) {
+	q3usercmd_t	cmd;
 	vec3_t		oldAngles;
 
 	VectorCopy( cl.viewangles, oldAngles );
@@ -574,11 +574,11 @@ usercmd_t CL_CreateCmd( void ) {
 =================
 CL_CreateNewCommands
 
-Create a new usercmd_t structure for this frame
+Create a new q3usercmd_t structure for this frame
 =================
 */
 void CL_CreateNewCommands( void ) {
-	usercmd_t	*cmd;
+	q3usercmd_t	*cmd;
 	int			cmdNum;
 
 	// no need to create usercmds until we have a gamestate
@@ -689,8 +689,8 @@ void CL_WritePacket( void ) {
 	QMsg		buf;
 	byte		data[MAX_MSGLEN_Q3];
 	int			i, j;
-	usercmd_t	*cmd, *oldcmd;
-	usercmd_t	nullcmd;
+	q3usercmd_t	*cmd, *oldcmd;
+	q3usercmd_t	nullcmd;
 	int			packetNum;
 	int			oldPacketNum;
 	int			count, key;

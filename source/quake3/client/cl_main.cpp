@@ -125,7 +125,7 @@ CLIENT RELIABLE COMMAND COMMUNICATION
 CL_AddReliableCommand
 
 The given command will be transmitted to the server, and is gauranteed to
-not have future usercmd_t executed before it is executed
+not have future q3usercmd_t executed before it is executed
 ======================
 */
 void CL_AddReliableCommand( const char *cmd ) {

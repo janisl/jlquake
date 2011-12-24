@@ -138,7 +138,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	clc_bad			0
 #define	clc_nop 		1
 //define	clc_doublemove	2
-#define	clc_move		3		// [[usercmd_t]
+#define	clc_move		3		// [[qwusercmd_t]
 #define	clc_stringcmd	4		// [string] message
 #define	clc_delta		5		// [byte] sequence number, requests delta compression of message
 #define clc_tmove		6		// teleport request, spectator only
@@ -234,13 +234,4 @@ typedef struct
 	int		num_entities;
 	q1entity_state_t	entities[MAX_PACKET_ENTITIES];
 } packet_entities_t;
-
-typedef struct usercmd_s
-{
-	byte	msec;
-	vec3_t	angles;
-	short	forwardmove, sidemove, upmove;
-	byte	buttons;
-	byte	impulse;
-} usercmd_t;
 

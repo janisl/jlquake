@@ -222,7 +222,7 @@
 #define	clc_bad			0
 #define	clc_nop 		1
 #define	clc_disconnect	2
-#define	clc_move		3			// [usercmd_t]
+#define	clc_move		3			// [h2usercmd_t]
 #define	clc_stringcmd	4		// [string] message
 #define clc_inv_select  5
 #define clc_frame		6

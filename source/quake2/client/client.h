@@ -66,8 +66,8 @@ struct client_state_t : clientActiveCommon_t
 
 	int			parse_entities;		// index (not anded off) into cl_parse_entities[]
 
-	usercmd_t	cmd;
-	usercmd_t	cmds[CMD_BACKUP];	// each mesage will send several old cmds
+	q2usercmd_t	cmd;
+	q2usercmd_t	cmds[CMD_BACKUP];	// each mesage will send several old cmds
 	int			cmd_time[CMD_BACKUP];	// time sent, for calculating pings
 	short		predicted_origins[CMD_BACKUP][3];	// for debug comparing against server
 
@@ -306,17 +306,17 @@ extern 	kbutton_t 	in_speed;
 
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
+void CL_SendMove (q2usercmd_t *cmd);
 
 void CL_ClearState (void);
 
 void CL_ReadPackets (void);
 
 int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
+void CL_WriteToServer (q2usercmd_t *cmd);
+void CL_BaseMove (q2usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(usercmd_t *cmd);
+void CL_MouseMove(q2usercmd_t *cmd);
 
 void IN_CenterView (void);
 
