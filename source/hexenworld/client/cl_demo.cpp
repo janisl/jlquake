@@ -175,7 +175,7 @@ qboolean CL_GetDemoMessage (void)
 	switch (c) {
 	case dem_cmd :
 		// user sent input
-		i = cls.netchan.outgoingSequence & UPDATE_MASK_HW;
+		i = clc.netchan.outgoingSequence & UPDATE_MASK_HW;
 		pcmd = &cl.hw_frames[i].cmd;
 		r = FS_Read(pcmd, sizeof(*pcmd), cls.demofile);
 		if (r != sizeof(*pcmd))
@@ -191,7 +191,7 @@ qboolean CL_GetDemoMessage (void)
 		pcmd->upmove      = LittleShort(pcmd->upmove);
 		cl.hw_frames[i].senttime = demotime;
 		cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
-		cls.netchan.outgoingSequence++;
+		clc.netchan.outgoingSequence++;
 		for (i=0 ; i<3 ; i++)
 		{
 			r = FS_Read(&f, 4, cls.demofile);
@@ -409,7 +409,7 @@ void CL_PlayDemo_f (void)
 
 	cls.demoplayback = true;
 	cls.state = ca_demostart;
-	Netchan_Setup (NS_CLIENT, &cls.netchan, net_from);
+	Netchan_Setup (NS_CLIENT, &clc.netchan, net_from);
 	realtime = 0;
 }
 

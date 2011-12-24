@@ -439,7 +439,7 @@ SCR_DrawNet
 */
 void SCR_DrawNet (void)
 {
-	if (cls.netchan.outgoingSequence - cls.netchan.incomingAcknowledged < UPDATE_BACKUP_QW-1)
+	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < UPDATE_BACKUP_QW-1)
 		return;
 	if (cls.demoplayback)
 		return;
@@ -592,8 +592,8 @@ void SCR_RSShot_f (void)
 
 	if (!scr_allowsnap->integer)
 	{
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.Print("snap\n");
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.Print("snap\n");
 		Con_Printf("Refusing remote screen shot request.\n");
 		return;
 	}

@@ -203,7 +203,7 @@ static void V_DriftPitch (void)
 // don't count small mouse motion
 	if (cl.nodrift)
 	{
-		if ( abs(cl.frames[(cls.netchan.outgoingSequence-1)&UPDATE_MASK_QW].cmd.forwardmove) < 200)
+		if ( abs(cl.frames[(clc.netchan.outgoingSequence-1)&UPDATE_MASK_QW].cmd.forwardmove) < 200)
 			cl.driftmove = 0;
 		else
 			cl.driftmove += host_frametime;
@@ -829,7 +829,7 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 	if (cls.state != ca_active)
 		return;
 
-	view_frame = &cl.frames[cls.netchan.incomingSequence & UPDATE_MASK_QW];
+	view_frame = &cl.frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle ();

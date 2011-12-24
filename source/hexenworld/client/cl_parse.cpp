@@ -156,8 +156,8 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	String::StripExtension (cls.downloadname, cls.downloadtempname);
 	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(
 		va("download %s", cls.downloadname));
 
 	cls.downloadnumber++;
@@ -238,8 +238,8 @@ void Model_NextDownload (void)
 	Hunk_Check ();		// make sure nothing is hurt
 
 	// done with modellist, request first of static signon messages
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(
 		va("prespawn %i", cl.servercount));
 }
 
@@ -279,8 +279,8 @@ void Sound_NextDownload (void)
 	S_EndRegistration();
 
 	// done with sounds, request models now
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(
 		va("modellist %i", cl.servercount));
 }
 
@@ -372,8 +372,8 @@ void CL_ParseDownload (void)
 #endif
 		cls.downloadpercent = percent;
 
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2("nextdl");
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2("nextdl");
 	}
 	else
 	{
@@ -498,8 +498,8 @@ void CL_ParseServerData (void)
 	Con_Printf ("%c%s\n", 2, str);
 
 	// ask for the sound list next
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(
 		va("soundlist %i", cl.servercount));
 
 	// now waiting for downloads, etc
@@ -755,7 +755,7 @@ void CL_ParseClientdata (void)
 // calculate simulated time of message
 	oldparsecountmod = parsecountmod;
 
-	i = cls.netchan.incomingAcknowledged;
+	i = clc.netchan.incomingAcknowledged;
 	cl.parsecount = i;
 	i &= UPDATE_MASK_HW;
 	parsecountmod = i;
@@ -1309,7 +1309,7 @@ void CL_ParseServerMessage (void)
 		case svc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.hw_frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_HW ].receivedtime = -2;
+				cl.hw_frames[ (clc.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_HW ].receivedtime = -2;
 			break;
 
 		case svc_modellist:

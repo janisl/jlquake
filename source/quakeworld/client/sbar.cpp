@@ -952,8 +952,8 @@ void Sbar_DeathmatchOverlay (int start)
 	if (realtime - cl.last_ping_request > 2)
 	{
 		cl.last_ping_request = realtime;
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2("pings");
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2("pings");
 	}
 
 	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));

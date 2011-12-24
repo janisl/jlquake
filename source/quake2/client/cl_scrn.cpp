@@ -93,14 +93,14 @@ void CL_AddNetgraph (void)
 	if (scr_debuggraph->value || scr_timegraph->value)
 		return;
 
-	for (i=0 ; i<cls.netchan.dropped ; i++)
+	for (i=0 ; i<clc.netchan.dropped ; i++)
 		SCR_DebugGraph (30, 0x40);
 
 	for (i=0 ; i<cl.surpressCount ; i++)
 		SCR_DebugGraph (30, 0xdf);
 
 	// see what the latency was on this packet
-	in = cls.netchan.incomingAcknowledged & (CMD_BACKUP-1);
+	in = clc.netchan.incomingAcknowledged & (CMD_BACKUP-1);
 	ping = cls.realtime - cl.cmd_time[in];
 	ping /= 30;
 	if (ping > 30)
@@ -432,7 +432,7 @@ SCR_DrawNet
 */
 void SCR_DrawNet (void)
 {
-	if (cls.netchan.outgoingSequence - cls.netchan.incomingAcknowledged < CMD_BACKUP - 1)
+	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP - 1)
 		return;
 
 	UI_DrawNamedPic (scr_vrect.x+64, scr_vrect.y, "net");

@@ -118,6 +118,13 @@ struct client_state_t : clientActiveCommon_t
 
 extern	client_state_t	cl;
 
+struct clientConnection_t
+{
+	netchan_t	netchan;
+};
+
+extern clientConnection_t clc;
+
 /*
 ==================================================================
 
@@ -164,7 +171,6 @@ struct client_static_t : clientStaticCommon_t
 
 	int			quakePort;			// a 16 bit value that allows quake servers
 									// to work around address translating routers
-	netchan_t	netchan;
 	int			serverProtocol;		// in case we are doing some kind of version hack
 
 	int			challenge;			// from the server to use for connecting

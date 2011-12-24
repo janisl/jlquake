@@ -415,8 +415,8 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					net_message.ReadCoord();
 
 					// create a clc message to retrieve effect information
-//					cls.netchan.message.WriteByte(clc_get_effect);
-//					cls.netchan.message.WriteByte(index);
+//					clc.netchan.message.WriteByte(clc_get_effect);
+//					clc.netchan.message.WriteByte(index);
 				}
 			}
 			break;
@@ -438,8 +438,8 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					net_message.ReadCoord();
 
 					// create a clc message to retrieve effect information
-//					cls.netchan.message.WriteByte(clc_get_effect);
-//					cls.netchan.message.WriteByte(index);
+//					clc.netchan.message.WriteByte(clc_get_effect);
+//					clc.netchan.message.WriteByte(index);
 				}
 			}
 			break;
@@ -462,8 +462,8 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				net_message.ReadCoord();
 
 				// create a clc message to retrieve effect information
-//				cls.netchan.message.WriteByte(clc_get_effect);
-//				cls.netchan.message.WriteByte(index);
+//				clc.netchan.message.WriteByte(clc_get_effect);
+//				clc.netchan.message.WriteByte(index);
 
 			}
 			break;
@@ -524,8 +524,8 @@ void CL_TurnEffect(void)
 		break;
 	case 0:
 		// create a clc message to retrieve effect information
-//		cls.netchan.message.WriteByte(clc_get_effect);
-//		cls.netchan.message.WriteByte(index);
+//		clc.netchan.message.WriteByte(clc_get_effect);
+//		clc.netchan.message.WriteByte(index);
 //		Con_Printf("CL_TurnEffect: null effect %d\n", index);
 		break;
 	default:

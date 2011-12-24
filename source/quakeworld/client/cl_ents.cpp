@@ -125,7 +125,7 @@ void FlushEntityPacket (void)
 	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.validsequence = 0;		// can't render a frame
-	cl.frames[cls.netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
+	cl.frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -161,7 +161,7 @@ void CL_ParsePacketEntities (qboolean delta)
 	qboolean	full;
 	byte		from;
 
-	newpacket = cls.netchan.incomingSequence&UPDATE_MASK_QW;
+	newpacket = clc.netchan.incomingSequence&UPDATE_MASK_QW;
 	newp = &cl.frames[newpacket].packet_entities;
 	cl.frames[newpacket].invalid = false;
 
@@ -180,19 +180,19 @@ void CL_ParsePacketEntities (qboolean delta)
 	full = false;
 	if (oldpacket != -1)
 	{
-		if (cls.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_QW-1)
+		if (clc.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_QW-1)
 		{	// we can't use this, it is too old
 			FlushEntityPacket ();
 			return;
 		}
-		cl.validsequence = cls.netchan.incomingSequence;
+		cl.validsequence = clc.netchan.incomingSequence;
 		oldp = &cl.frames[oldpacket&UPDATE_MASK_QW].packet_entities;
 	}
 	else
 	{	// this is a full update that we can start delta compressing from now
 		oldp = &dummy;
 		dummy.num_entities = 0;
-		cl.validsequence = cls.netchan.incomingSequence;
+		cl.validsequence = clc.netchan.incomingSequence;
 		full = true;
 	}
 
@@ -317,8 +317,8 @@ void CL_LinkPacketEntities (void)
 	int					i;
 	int					pnum;
 
-	pack = &cl.frames[cls.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
-	qwpacket_entities_t* PrevPack = &cl.frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
+	pack = &cl.frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
+	qwpacket_entities_t* PrevPack = &cl.frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
 
 	autorotate = AngleMod(100*cl.serverTimeFloat);
 
@@ -858,7 +858,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 		// note that the local player is special, since he moves locally
 		// we use his last predicted postition
 		if (j == cl.playernum) {
-			VectorCopy(cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK_QW].playerstate[cl.playernum].origin,
+			VectorCopy(cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].playerstate[cl.playernum].origin,
 				pplayer->origin);
 		} else {
 			// only predict half the move to minimize overruns

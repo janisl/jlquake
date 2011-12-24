@@ -33,12 +33,12 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.Print(Cmd_Argv(0));
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.Print(Cmd_Argv(0));
 	if (Cmd_Argc() > 1)
 	{
-		cls.netchan.message.Print(" ");
-		cls.netchan.message.Print(Cmd_ArgsUnmodified());
+		clc.netchan.message.Print(" ");
+		clc.netchan.message.Print(Cmd_ArgsUnmodified());
 	}
 }
 
@@ -56,8 +56,8 @@ void Cmd_ForwardToServer_f (void)
 
 	if (Cmd_Argc() > 1)
 	{
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.Print(Cmd_ArgsUnmodified());
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.Print(Cmd_ArgsUnmodified());
 	}
 }
 #else

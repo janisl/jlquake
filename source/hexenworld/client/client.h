@@ -35,9 +35,6 @@ struct client_static_t : clientStaticCommon_t
 // connection information
 	cactive_t	state;
 	
-// network stuff
-	netchan_t	netchan;
-
 // private userinfo for sending to masterless servers
 	char		userinfo[HWMAX_INFO_STRING];
 
@@ -68,6 +65,14 @@ struct client_static_t : clientStaticCommon_t
 };
 
 extern client_static_t	cls;
+
+struct clientConnection_t
+{
+// network stuff
+	netchan_t	netchan;
+};
+
+extern clientConnection_t clc;
 
 struct client_entvars_t
 {

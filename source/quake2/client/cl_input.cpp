@@ -527,7 +527,7 @@ void CL_SendCmd (void)
 	// build a command even if not connected
 
 	// save this command off for prediction
-	i = cls.netchan.outgoingSequence & (CMD_BACKUP-1);
+	i = clc.netchan.outgoingSequence & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	cl.cmd_time[i] = cls.realtime;	// for netgraph ping calculation
 
@@ -540,8 +540,8 @@ void CL_SendCmd (void)
 
 	if ( cls.state == ca_connected)
 	{
-		if (cls.netchan.message.cursize	|| curtime - cls.netchan.lastSent > 1000 )
-			Netchan_Transmit (&cls.netchan, 0, buf._data);	
+		if (clc.netchan.message.cursize	|| curtime - clc.netchan.lastSent > 1000 )
+			Netchan_Transmit (&clc.netchan, 0, buf._data);	
 		return;
 	}
 
@@ -550,8 +550,8 @@ void CL_SendCmd (void)
 	{
 		CL_FixUpGender();
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		cls.netchan.message.WriteByte(clc_userinfo);
-		cls.netchan.message.WriteString2(Cvar_InfoString(
+		clc.netchan.message.WriteByte(clc_userinfo);
+		clc.netchan.message.WriteString2(Cvar_InfoString(
 			CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY, MAX_INFO_VALUE, true, false));
 	}
 
@@ -579,30 +579,30 @@ void CL_SendCmd (void)
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
-	i = (cls.netchan.outgoingSequence-2) & (CMD_BACKUP-1);
+	i = (clc.netchan.outgoingSequence-2) & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
 	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoingSequence-1) & (CMD_BACKUP-1);
+	i = (clc.netchan.outgoingSequence-1) & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoingSequence) & (CMD_BACKUP-1);
+	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
 	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
 		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
-		cls.netchan.outgoingSequence);
+		clc.netchan.outgoingSequence);
 
 	//
 	// deliver the message
 	//
-	Netchan_Transmit (&cls.netchan, buf.cursize, buf._data);	
+	Netchan_Transmit (&clc.netchan, buf.cursize, buf._data);	
 }
 
 

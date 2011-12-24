@@ -85,6 +85,7 @@ Cvar	*gender_auto;
 Cvar	*cl_vwep;
 
 client_static_t	cls;
+clientConnection_t clc;
 client_state_t	cl;
 
 q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
@@ -288,12 +289,12 @@ void Cmd_ForwardToServer (void)
 		return;
 	}
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.Print(cmd);
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.Print(cmd);
 	if (Cmd_Argc() > 1)
 	{
-		cls.netchan.message.Print(" ");
-		cls.netchan.message.Print(Cmd_ArgsUnmodified());
+		clc.netchan.message.Print(" ");
+		clc.netchan.message.Print(Cmd_ArgsUnmodified());
 	}
 }
 
@@ -349,8 +350,8 @@ void CL_ForwardToServer_f (void)
 	// don't forward the first argument
 	if (Cmd_Argc() > 1)
 	{
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2(Cmd_ArgsUnmodified());
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2(Cmd_ArgsUnmodified());
 	}
 }
 
@@ -557,7 +558,7 @@ void CL_Rcon_f (void)
 	}
 
 	if (cls.state >= ca_connected)
-		to = cls.netchan.remoteAddress;
+		to = clc.netchan.remoteAddress;
 	else
 	{
 		if (!String::Length(rcon_address->string))
@@ -591,7 +592,7 @@ void CL_ClearState (void)
 	Com_Memset(&cl, 0, sizeof(cl));
 	Com_Memset(&clq2_entities, 0, sizeof(clq2_entities));
 
-	cls.netchan.message.Clear();
+	clc.netchan.message.Clear();
 
 }
 
@@ -635,9 +636,9 @@ void CL_Disconnect (void)
 	// send a disconnect message to the server
 	final[0] = clc_stringcmd;
 	String::Cpy((char *)final+1, "disconnect");
-	Netchan_Transmit (&cls.netchan, String::Length((char *)final), final);
-	Netchan_Transmit (&cls.netchan, String::Length((char *)final), final);
-	Netchan_Transmit (&cls.netchan, String::Length((char *)final), final);
+	Netchan_Transmit (&clc.netchan, String::Length((char *)final), final);
+	Netchan_Transmit (&clc.netchan, String::Length((char *)final), final);
+	Netchan_Transmit (&clc.netchan, String::Length((char *)final), final);
 
 	CL_ClearState ();
 
@@ -746,8 +747,8 @@ void CL_Reconnect_f (void)
 	if (cls.state == ca_connected) {
 		Com_Printf ("reconnecting...\n");
 		cls.state = ca_connected;
-		cls.netchan.message.WriteChar(clc_stringcmd);
-		cls.netchan.message.WriteString2("new");		
+		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteString2("new");		
 		return;
 	}
 
@@ -881,9 +882,9 @@ void CL_ConnectionlessPacket (void)
 			Com_Printf ("Dup connect received.  Ignored.\n");
 			return;
 		}
-		Netchan_Setup (NS_CLIENT, &cls.netchan, net_from, cls.quakePort);
-		cls.netchan.message.WriteChar(clc_stringcmd);
-		cls.netchan.message.WriteString2("new");	
+		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
+		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;
 		return;
 	}
@@ -990,13 +991,13 @@ void CL_ReadPackets (void)
 		//
 		// packet from server
 		//
-		if (!SOCK_CompareAdr(net_from, cls.netchan.remoteAddress))
+		if (!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
 		{
 			Com_DPrintf ("%s:sequenced packet without connection\n"
 				,SOCK_AdrToString(net_from));
 			continue;
 		}
-		if (!Netchan_Process(&cls.netchan, &net_message))
+		if (!Netchan_Process(&clc.netchan, &net_message))
 			continue;		// wasn't accepted for some reason
 		CL_ParseServerMessage ();
 	}
@@ -1005,7 +1006,7 @@ void CL_ReadPackets (void)
 	// check timeout
 	//
 	if (cls.state >= ca_connected
-	 && cls.realtime - cls.netchan.lastReceived > cl_timeout->value*1000)
+	 && cls.realtime - clc.netchan.lastReceived > cl_timeout->value*1000)
 	{
 		if (++cl.timeoutcount > 5)	// timeoutcount saves debugger
 		{
@@ -1341,8 +1342,8 @@ void CL_RequestNextDownload (void)
 	CL_RegisterSounds ();
 	CL_PrepRefresh ();
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(va("begin %i\n", precache_spawncount) );
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(va("begin %i\n", precache_spawncount) );
 }
 
 /*
@@ -1772,7 +1773,7 @@ void CL_Frame (int msec)
 
 	// if in the debugger last frame, don't timeout
 	if (msec > 5000)
-		cls.netchan.lastReceived = Sys_Milliseconds_ ();
+		clc.netchan.lastReceived = Sys_Milliseconds_ ();
 
 	// fetch results from server
 	CL_ReadPackets ();

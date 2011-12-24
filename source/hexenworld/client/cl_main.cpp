@@ -57,6 +57,7 @@ Cvar	*cl_lightlevel;
 Cvar*	cl_teamcolor;
 
 client_static_t	cls;
+clientConnection_t clc;
 client_state_t	cl;
 
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
@@ -247,7 +248,7 @@ void CL_Rcon_f (void)
 	}
 
 	if (cls.state >= ca_connected)
-		to = cls.netchan.remoteAddress;
+		to = clc.netchan.remoteAddress;
 	else
 	{
 		if (!String::Length(rcon_address->string))
@@ -303,7 +304,7 @@ void CL_ClearState (void)
 // wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));
 
-	cls.netchan.message.Clear();
+	clc.netchan.message.Clear();
 
 // clear other arrays	
 	CL_ClearDlights();
@@ -347,9 +348,9 @@ void CL_Disconnect (void)
 
 		final[0] = clc_stringcmd;
 		String::Cpy((char*)final+1, "drop");
-		Netchan_Transmit (&cls.netchan, 6, final);
-		Netchan_Transmit (&cls.netchan, 6, final);
-		Netchan_Transmit (&cls.netchan, 6, final);
+		Netchan_Transmit (&clc.netchan, 6, final);
+		Netchan_Transmit (&clc.netchan, 6, final);
+		Netchan_Transmit (&clc.netchan, 6, final);
 
 		cls.state = ca_disconnected;
 
@@ -704,8 +705,8 @@ void CL_Reconnect_f (void)
 
 	if (cls.state == ca_connected) {
 		Con_Printf ("reconnecting...\n");
-		cls.netchan.message.WriteChar(clc_stringcmd);
-		cls.netchan.message.WriteString2("new");
+		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteString2("new");
 		return;
 	}
 
@@ -745,9 +746,9 @@ void CL_ConnectionlessPacket (void)
 				Con_Printf ("Dup connect received.  Ignored.\n");
 			return;
 		}
-		Netchan_Setup (NS_CLIENT, &cls.netchan, net_from);
-		cls.netchan.message.WriteChar(clc_stringcmd);
-		cls.netchan.message.WriteString2("new");	
+		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from);
+		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;
 		Con_Printf ("Connected.\n");
 		return;
@@ -830,13 +831,13 @@ void CL_ReadPackets (void)
 		// packet from server
 		//
 		if (!cls.demoplayback && 
-			!SOCK_CompareAdr(net_from, cls.netchan.remoteAddress))
+			!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
 		{
 			Con_Printf ("%s:sequenced packet without connection\n"
 				,SOCK_AdrToString(net_from));
 			continue;
 		}
-		if (!Netchan_Process(&cls.netchan))
+		if (!Netchan_Process(&clc.netchan))
 			continue;		// wasn't accepted for some reason
 		CL_ParseServerMessage ();
 
@@ -848,7 +849,7 @@ void CL_ReadPackets (void)
 	// check timeout
 	//
 	if (cls.state >= ca_connected
-	 && realtime - cls.netchan.lastReceived / 1000.0 > cl_timeout->value)
+	 && realtime - clc.netchan.lastReceived / 1000.0 > cl_timeout->value)
 	{
 		Con_Printf ("\nServer connection timed out.\n");
 		CL_Disconnect ();
@@ -882,8 +883,8 @@ void CL_Download_f (void)
 	cls.download = FS_FOpenFileWrite (cls.downloadname);
 	cls.downloadtype = dl_single;
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
 }
 
 void CL_Sensitivity_save_f (void)
@@ -927,8 +928,8 @@ static void Skin_Skins_f()
 
 	if (cls.state != ca_active)
 	{	// get next signon phase
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2(
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2(
 			va("begin %i", cl.servercount));
 	}
 }

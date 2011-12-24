@@ -119,8 +119,8 @@ int CL_CalcNet (void)
 	qwframe_t	*frame;
 	int lost;
 
-	for (i=cls.netchan.outgoingSequence-UPDATE_BACKUP_QW+1
-		; i <= cls.netchan.outgoingSequence
+	for (i=clc.netchan.outgoingSequence-UPDATE_BACKUP_QW+1
+		; i <= clc.netchan.outgoingSequence
 		; i++)
 	{
 		frame = &cl.frames[i&UPDATE_MASK_QW];
@@ -137,7 +137,7 @@ int CL_CalcNet (void)
 	lost = 0;
 	for (a=0 ; a<NET_TIMINGS ; a++)
 	{
-		i = (cls.netchan.outgoingSequence-a) & NET_TIMINGSMASK;
+		i = (clc.netchan.outgoingSequence-a) & NET_TIMINGSMASK;
 		if (packet_latency[i] == 9999)
 			lost++;
 	}
@@ -189,8 +189,8 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	String::StripExtension (cls.downloadname, cls.downloadtempname);
 	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(va("download %s", cls.downloadname));
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(va("download %s", cls.downloadname));
 
 	cls.downloadnumber++;
 
@@ -216,9 +216,9 @@ static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 	sprintf(st, "%d", (int)crc);
 	Info_SetValueForKey(cls.userinfo, CVarName, st, MAX_INFO_STRING, 64, 64, true, false);
 
-	cls.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(clc_stringcmd);
 	sprintf(st, "setinfo %s %d", CVarName, (int)crc);
-	cls.netchan.message.WriteString2(st);
+	clc.netchan.message.WriteString2(st);
 }
 
 /*
@@ -300,9 +300,9 @@ void Model_NextDownload (void)
 	CM_MapChecksums(CheckSum1, CheckSum2);
 
 	// done with modellist, request first of static signon messages
-	cls.netchan.message.WriteByte(clc_stringcmd);
-//	cls.netchan.message.WriteString2(va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
-	cls.netchan.message.WriteString2(va(prespawn_name, cl.servercount, CheckSum2));
+	clc.netchan.message.WriteByte(clc_stringcmd);
+//	clc.netchan.message.WriteString2(va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
+	clc.netchan.message.WriteString2(va(prespawn_name, cl.servercount, CheckSum2));
 }
 
 /*
@@ -345,9 +345,9 @@ void Sound_NextDownload (void)
 	cl_playerindex = -1;
 	cl_spikeindex = -1;
 	cl_flagindex = -1;
-	cls.netchan.message.WriteByte(clc_stringcmd);
-//	cls.netchan.message.WriteString2(va("modellist %i 0", cl.servercount));
-	cls.netchan.message.WriteString2(va(modellist_name, cl.servercount, 0));
+	clc.netchan.message.WriteByte(clc_stringcmd);
+//	clc.netchan.message.WriteString2(va("modellist %i 0", cl.servercount));
+	clc.netchan.message.WriteString2(va(modellist_name, cl.servercount, 0));
 }
 
 
@@ -451,8 +451,8 @@ void CL_ParseDownload (void)
 #endif
 		cls.downloadpercent = percent;
 
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2("nextdl");
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2("nextdl");
 	}
 	else
 	{
@@ -507,16 +507,16 @@ void CL_NextUpload(void)
 	if (r > 768)
 		r = 768;
 	Com_Memcpy(buffer, upload_data + upload_pos, r);
-	cls.netchan.message.WriteByte(clc_upload);
-	cls.netchan.message.WriteShort(r);
+	clc.netchan.message.WriteByte(clc_upload);
+	clc.netchan.message.WriteShort(r);
 
 	upload_pos += r;
 	size = upload_size;
 	if (!size)
 		size = 1;
 	percent = upload_pos*100/size;
-	cls.netchan.message.WriteByte(percent);
-	cls.netchan.message.WriteData(buffer, r);
+	clc.netchan.message.WriteByte(percent);
+	clc.netchan.message.WriteData(buffer, r);
 
 Con_DPrintf ("UPLOAD: %6d: %d written\n", upload_pos - r, r);
 
@@ -653,9 +653,9 @@ void CL_ParseServerData (void)
 
 	// ask for the sound list next
 	Com_Memset(cl.sound_name, 0, sizeof(cl.sound_name));
-	cls.netchan.message.WriteByte(clc_stringcmd);
-//	cls.netchan.message.WriteString2(va("soundlist %i 0", cl.servercount));
-	cls.netchan.message.WriteString2(va(soundlist_name, cl.servercount, 0));
+	clc.netchan.message.WriteByte(clc_stringcmd);
+//	clc.netchan.message.WriteString2(va("soundlist %i 0", cl.servercount));
+	clc.netchan.message.WriteString2(va(soundlist_name, cl.servercount, 0));
 
 	// now waiting for downloads, etc
 	cls.state = ca_onserver;
@@ -690,9 +690,9 @@ void CL_ParseSoundlist (void)
 	n = net_message.ReadByte();
 
 	if (n) {
-		cls.netchan.message.WriteByte(clc_stringcmd);
-//		cls.netchan.message.WriteString2(va("soundlist %i %i", cl.servercount, n));
-		cls.netchan.message.WriteString2(va(soundlist_name, cl.servercount, n));
+		clc.netchan.message.WriteByte(clc_stringcmd);
+//		clc.netchan.message.WriteString2(va("soundlist %i %i", cl.servercount, n));
+		clc.netchan.message.WriteString2(va(soundlist_name, cl.servercount, n));
 		return;
 	}
 
@@ -736,9 +736,9 @@ void CL_ParseModellist (void)
 	n = net_message.ReadByte();
 
 	if (n) {
-		cls.netchan.message.WriteByte(clc_stringcmd);
-//		cls.netchan.message.WriteString2(va("modellist %i %i", cl.servercount, n));
-		cls.netchan.message.WriteString2(va(modellist_name, cl.servercount, n));
+		clc.netchan.message.WriteByte(clc_stringcmd);
+//		clc.netchan.message.WriteString2(va("modellist %i %i", cl.servercount, n));
+		clc.netchan.message.WriteString2(va(modellist_name, cl.servercount, n));
 		return;
 	}
 
@@ -887,7 +887,7 @@ void CL_ParseClientdata (void)
 // calculate simulated time of message
 	oldparsecountmod = parsecountmod;
 
-	i = cls.netchan.incomingAcknowledged;
+	i = clc.netchan.incomingAcknowledged;
 	cl.parsecount = i;
 	i &= UPDATE_MASK_QW;
 	parsecountmod = i;
@@ -1364,7 +1364,7 @@ void CL_ParseServerMessage (void)
 		case svc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_QW ].receivedtime = -2;
+				cl.frames[ (clc.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_QW ].receivedtime = -2;
 			break;
 
 		case svc_modellist:

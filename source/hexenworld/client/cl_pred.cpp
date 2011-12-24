@@ -120,13 +120,13 @@ void CL_PredictMove (void)
 	if (!cl.validsequence)
 		return;
 
-	if (cls.netchan.outgoingSequence - cls.netchan.incomingSequence >= UPDATE_BACKUP_HW-1)
+	if (clc.netchan.outgoingSequence - clc.netchan.incomingSequence >= UPDATE_BACKUP_HW-1)
 		return;
 
 	VectorCopy (cl.viewangles, cl.simangles);
 
 	// this is the last frame received from the server
-	from = &cl.hw_frames[cls.netchan.incomingSequence & UPDATE_MASK_HW];
+	from = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW];
 	player_crouching = ((from->playerstate[cl.playernum].flags) & PF_CROUCH)>>10;
 
 	// we can now render a frame
@@ -152,12 +152,12 @@ void CL_PredictMove (void)
 	oldphysent = pmove.numphysent;
 	CL_SetSolidPlayers (cl.playernum);
 
-//	to = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK_HW];
+//	to = &cl.frames[clc.netchan.incoming_sequence & UPDATE_MASK_HW];
 
-	for (i=1 ; i<UPDATE_BACKUP_HW-1 && cls.netchan.incomingSequence+i <
-			cls.netchan.outgoingSequence; i++)
+	for (i=1 ; i<UPDATE_BACKUP_HW-1 && clc.netchan.incomingSequence+i <
+			clc.netchan.outgoingSequence; i++)
 	{
-		to = &cl.hw_frames[(cls.netchan.incomingSequence+i) & UPDATE_MASK_HW];
+		to = &cl.hw_frames[(clc.netchan.incomingSequence+i) & UPDATE_MASK_HW];
 		CL_PredictUsercmd (&from->playerstate[cl.playernum]
 			, &to->playerstate[cl.playernum], &to->cmd, cl.spectator);
 		if (to->senttime >= cl.serverTimeFloat)

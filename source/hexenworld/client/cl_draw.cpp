@@ -279,7 +279,7 @@ void R_NetGraph (void)
 	hwframe_t	*frame;
 	char st[80];
 
-	for (int i = cls.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= cls.netchan.outgoingSequence; i++)
+	for (int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++)
 	{
 		frame = &cl.hw_frames[i&UPDATE_MASK_HW];
 		if (frame->receivedtime == -1)
@@ -296,7 +296,7 @@ void R_NetGraph (void)
 	int lost = 0;
 	for (int a = 0; a < NET_TIMINGS; a++)
 	{
-		int i = (cls.netchan.outgoingSequence - a) & 255;
+		int i = (clc.netchan.outgoingSequence - a) & 255;
 		if (packet_latency[i] == 9999)
 		{
 			lost++;
@@ -315,7 +315,7 @@ void R_NetGraph (void)
 
 	for (int a = 0; a < NET_TIMINGS; a++)
 	{
-		int i = (cls.netchan.outgoingSequence - a) & 255;
+		int i = (clc.netchan.outgoingSequence - a) & 255;
 		R_LineGraph(NET_TIMINGS - 1 - a, y, packet_latency[i]);
 	}
 }

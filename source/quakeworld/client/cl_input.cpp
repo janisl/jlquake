@@ -457,13 +457,13 @@ void CL_SendCmd (void)
 		return; // sendcmds come from the demo
 
 	// save this command off for prediction
-	i = cls.netchan.outgoingSequence & UPDATE_MASK_QW;
+	i = clc.netchan.outgoingSequence & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	cl.frames[i].senttime = realtime;
 	cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
-//	seq_hash = (cls.netchan.outgoing_sequence & 0xffff) ; // ^ QW_CHECK_HASH;
-	seq_hash = cls.netchan.outgoingSequence;
+//	seq_hash = (clc.netchan.outgoing_sequence & 0xffff) ; // ^ QW_CHECK_HASH;
+	seq_hash = clc.netchan.outgoingSequence;
 
 	// get basic movement from keyboard
 	CL_BaseMove (cmd);
@@ -493,17 +493,17 @@ void CL_SendCmd (void)
 	lost = CL_CalcNet();
 	buf.WriteByte((byte)lost);
 
-	i = (cls.netchan.outgoingSequence-2) & UPDATE_MASK_QW;
+	i = (clc.netchan.outgoingSequence-2) & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoingSequence-1) & UPDATE_MASK_QW;
+	i = (clc.netchan.outgoingSequence-1) & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoingSequence) & UPDATE_MASK_QW;
+	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
@@ -513,18 +513,18 @@ void CL_SendCmd (void)
 		seq_hash);
 
 	// request delta compression of entities
-	if (cls.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_QW-1)
+	if (clc.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_QW-1)
 		cl.validsequence = 0;
 
 	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
 		!cls.demorecording)
 	{
-		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;
+		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;
 		buf.WriteByte(clc_delta);
 		buf.WriteByte(cl.validsequence&255);
 	}
 	else
-		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
+		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
 
 	if (cls.demorecording)
 		CL_WriteDemoCmd(cmd);
@@ -532,7 +532,7 @@ void CL_SendCmd (void)
 //
 // deliver the message
 //
-	Netchan_Transmit (&cls.netchan, buf.cursize, buf._data);	
+	Netchan_Transmit (&clc.netchan, buf.cursize, buf._data);	
 }
 
 

@@ -39,8 +39,8 @@ static float vlen(vec3_t v)
 void Cam_Unlock(void)
 {
 	if (autocam) {
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2("ptrack");
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2("ptrack");
 		autocam = CAM_NONE;
 		locked = false;
 		Sbar_Changed();
@@ -52,8 +52,8 @@ void Cam_Lock(int playernum)
 	char st[40];
 
 	sprintf(st, "ptrack %i", playernum);
-	cls.netchan.message.WriteByte(clc_stringcmd);
-	cls.netchan.message.WriteString2(st);
+	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteString2(st);
 	spec_track = playernum;
 	cam_forceview = true;
 	locked = false;
@@ -256,7 +256,7 @@ void Cam_Track(hwusercmd_t *cmd)
 		return;
 	}
 
-	frame = &cl.hw_frames[cls.netchan.incomingSequence & UPDATE_MASK_HW];
+	frame = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW];
 	player = frame->playerstate + spec_track;
 	self = frame->playerstate + cl.playernum;
 
@@ -279,10 +279,10 @@ void Cam_Track(hwusercmd_t *cmd)
 	len = vlen(vec);
 	cmd->forwardmove = cmd->sidemove = cmd->upmove = 0;
 	if (len > 16) { // close enough?
-		cls.netchan.message.WriteByte(clc_tmove);
-		cls.netchan.message.WriteCoord(desired_position[0]);
-		cls.netchan.message.WriteCoord(desired_position[1]);
-		cls.netchan.message.WriteCoord(desired_position[2]);
+		clc.netchan.message.WriteByte(clc_tmove);
+		clc.netchan.message.WriteCoord(desired_position[0]);
+		clc.netchan.message.WriteCoord(desired_position[1]);
+		clc.netchan.message.WriteCoord(desired_position[2]);
 	}
 
 	// move there locally immediately

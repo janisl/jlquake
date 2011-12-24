@@ -181,8 +181,8 @@ void Skin_NextDownload (void)
 
 	if (cls.state != ca_active)
 	{	// get next signon phase
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2(va("begin %i", cl.servercount));
+		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteString2(va("begin %i", cl.servercount));
 	}
 }
 

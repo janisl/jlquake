@@ -135,13 +135,13 @@ void CL_PredictMove (void)
 	if (!cl.validsequence)
 		return;
 
-	if (cls.netchan.outgoingSequence - cls.netchan.incomingSequence >= UPDATE_BACKUP_QW-1)
+	if (clc.netchan.outgoingSequence - clc.netchan.incomingSequence >= UPDATE_BACKUP_QW-1)
 		return;
 
 	VectorCopy (cl.viewangles, cl.simangles);
 
 	// this is the last frame received from the server
-	from = &cl.frames[cls.netchan.incomingSequence & UPDATE_MASK_QW];
+	from = &cl.frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
 
 	// we can now render a frame
 	if (cls.state == ca_onserver)
@@ -166,12 +166,12 @@ void CL_PredictMove (void)
 	oldphysent = pmove.numphysent;
 	CL_SetSolidPlayers (cl.playernum);
 
-//	to = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK_QW];
+//	to = &cl.frames[clc.netchan.incoming_sequence & UPDATE_MASK_QW];
 
-	for (i=1 ; i<UPDATE_BACKUP_QW-1 && cls.netchan.incomingSequence+i <
-			cls.netchan.outgoingSequence; i++)
+	for (i=1 ; i<UPDATE_BACKUP_QW-1 && clc.netchan.incomingSequence+i <
+			clc.netchan.outgoingSequence; i++)
 	{
-		to = &cl.frames[(cls.netchan.incomingSequence+i) & UPDATE_MASK_QW];
+		to = &cl.frames[(clc.netchan.incomingSequence+i) & UPDATE_MASK_QW];
 		CL_PredictUsercmd (&from->playerstate[cl.playernum]
 			, &to->playerstate[cl.playernum], &to->cmd, cl.spectator);
 		if (to->senttime >= cl.serverTimeFloat)
