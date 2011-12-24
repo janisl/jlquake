@@ -489,9 +489,9 @@ void SV_Status_f (void)
 				continue;
 			}
 			Con_Printf ("%4i %4i %5.2f\n"
-				, (int)(1000*cl->netchan.frame_rate)
+				, (int)(1000*cl->netchan.frameRate)
 				, (int)SV_CalcPing (cl)
-				, 100.0*cl->netchan.drop_count / cl->netchan.incomingSequence);
+				, 100.0*cl->netchan.dropCount / cl->netchan.incomingSequence);
 		}
 	} 
 	else 
@@ -525,9 +525,9 @@ void SV_Status_f (void)
 				continue;
 			}
 			Con_Printf ("%4i %4i %5.2f"
-				, (int)(1000*cl->netchan.frame_rate)
+				, (int)(1000*cl->netchan.frameRate)
 				, (int)SV_CalcPing (cl)
-				, 100.0*cl->netchan.drop_count / cl->netchan.incomingSequence);
+				, 100.0*cl->netchan.dropCount / cl->netchan.incomingSequence);
 
 			if (cl->spectator)
 				Con_Printf(" (s)\n");

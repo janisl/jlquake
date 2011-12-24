@@ -1043,7 +1043,7 @@ void SV_SendClientMessages (void)
 			Con_Printf ("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient (c);
 			c->send_message = true;
-			c->netchan.cleartime = 0;	// don't choke this message
+			c->netchan.clearTime = 0;	// don't choke this message
 		}
 
 		// only send messages if the client has sent one

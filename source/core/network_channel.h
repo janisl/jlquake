@@ -75,4 +75,12 @@ struct netchan_common_t
 	// reliable staging and holding areas
 	QMsg message;		// writing buffer to send to server
 	byte messageBuffer[MAX_MSGLEN];
+
+	// the statistics are cleared at each client begin, because
+	// the server connecting process gives a bogus picture of the data
+	float frameRate;
+	int dropCount;			// dropped packets, cleared each level
+	// bandwidth estimator
+	double clearTime;			// if realtime > nc->cleartime, free to go
+	double rate;				// seconds / byte
 };

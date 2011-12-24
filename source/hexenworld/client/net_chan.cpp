@@ -140,7 +140,7 @@ Returns true if the bandwidth choke isn't active
 #define	MAX_BACKUP	200
 qboolean Netchan_CanPacket (netchan_t *chan)
 {
-	if (chan->cleartime < realtime + MAX_BACKUP*chan->rate)
+	if (chan->clearTime < realtime + MAX_BACKUP*chan->rate)
 		return true;
 	return false;
 }
@@ -235,10 +235,10 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 #endif
 		NET_SendPacket (send.cursize, send._data, chan->remoteAddress);
 
-	if (chan->cleartime < realtime)
-		chan->cleartime = realtime + send.cursize*chan->rate;
+	if (chan->clearTime < realtime)
+		chan->clearTime = realtime + send.cursize*chan->rate;
 	else
-		chan->cleartime += send.cursize*chan->rate;
+		chan->clearTime += send.cursize*chan->rate;
 
 	if (showpackets->value)
 		Con_Printf ("--> s=%i(%i) a=%i(%i) %i\n"
@@ -340,7 +340,7 @@ qboolean Netchan_Process (netchan_t *chan)
 	chan->dropped = sequence - (chan->incomingSequence+1);
 	if (chan->dropped > 0)
 	{
-		chan->drop_count += 1;
+		chan->dropCount += 1;
 
 		if (showdrop->value)
 			Con_Printf ("%s:Dropped %i packets at %i\n"
@@ -369,7 +369,7 @@ qboolean Netchan_Process (netchan_t *chan)
 // the message can now be read from the current message pointer
 // update statistics counters
 //
-	chan->frame_rate = chan->frame_rate*OLD_AVG
+	chan->frameRate = chan->frameRate * OLD_AVG
 		+ (realtime-chan->lastReceived / 1000.0)*(1.0-OLD_AVG);		
 
 	chan->lastReceived = realtime * 1000;

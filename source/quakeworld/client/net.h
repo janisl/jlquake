@@ -39,15 +39,6 @@ void		NET_SendPacket (int length, void *data, netadr_t to);
 
 struct netchan_t : netchan_common_t
 {
-// the statistics are cleared at each client begin, because
-// the server connecting process gives a bogus picture of the data
-	float		frame_rate;
-
-	int			drop_count;			// dropped packets, cleared each level
-
-// bandwidth estimator
-	double		cleartime;			// if realtime > nc->cleartime, free to go
-	double		rate;				// seconds / byte
 };
 
 void Netchan_Init (void);
