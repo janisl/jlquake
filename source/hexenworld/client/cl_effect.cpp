@@ -19,7 +19,6 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 extern void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest);
-h2entity_state_t *FindState(int EntNum);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -121,7 +120,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				{
 					cl.h2_Effects[index].Chain.state = 1;
 					cl.h2_Effects[index].Chain.owner = curEnt;
-					es = FindState(cl.h2_Effects[index].Chain.owner);
+					es = CLHW_FindState(cl.h2_Effects[index].Chain.owner);
 					if (es)
 					{
 						ent = &EffectEntities[cl.h2_Effects[index].Chain.ent1];
@@ -542,7 +541,7 @@ void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
 	{
 		cl_common->h2_Effects[index].Bubble.time_amount = 0;
 		cl_common->h2_Effects[index].Bubble.count--;
-		h2entity_state_t* es = FindState(cl_common->h2_Effects[index].Bubble.owner);
+		h2entity_state_t* es = CLHW_FindState(cl_common->h2_Effects[index].Bubble.owner);
 		if (es)
 		{
 			vec3_t org;
@@ -584,7 +583,7 @@ void CLHW_UpdateEffectScarabChain(int index, float frametime)
 	switch (cl.h2_Effects[index].Chain.state)
 	{
 	case 0://zooming in toward owner
-		es = FindState(cl.h2_Effects[index].Chain.owner);
+		es = CLHW_FindState(cl.h2_Effects[index].Chain.owner);
 		if (cl.h2_Effects[index].Chain.sound_time <= cl.serverTimeFloat)
 		{
 			cl.h2_Effects[index].Chain.sound_time = cl.serverTimeFloat + 0.5;
@@ -612,7 +611,7 @@ void CLHW_UpdateEffectScarabChain(int index, float frametime)
 		}
 		break;
 	case 1://attached--snap to owner's pos
-		es = FindState(cl.h2_Effects[index].Chain.owner);
+		es = CLHW_FindState(cl.h2_Effects[index].Chain.owner);
 		if (es)
 		{
 			VectorCopy(es->origin, ent->state.origin);

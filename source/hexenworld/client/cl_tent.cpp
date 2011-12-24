@@ -47,40 +47,6 @@ void CL_InitTEnts (void)
 	cl_sfx_tornado = S_RegisterSound("crusader/tornado.wav");
 }
 
-h2entity_state_t *FindState(int EntNum)
-{
-	hwpacket_entities_t		*pack;
-	static h2entity_state_t	pretend_player;
-	int						pnum;
-
-	if (EntNum >= 1 && EntNum <= HWMAX_CLIENTS)
-	{
-		EntNum--;
-
-		if (EntNum == cl.playernum)
-		{
-			VectorCopy(cl.simorg, pretend_player.origin);
-		}
-		else
-		{
-			VectorCopy(cl.hw_frames[clc.netchan.incomingSequence&UPDATE_MASK_HW].playerstate[EntNum].origin, pretend_player.origin);
-		}
-
-		return &pretend_player;
-	}
-
-	pack = &cl.hw_frames[clc.netchan.incomingSequence&UPDATE_MASK_HW].packet_entities;
-	for (pnum=0 ; pnum<pack->num_entities ; pnum++)
-	{
-		if (pack->entities[pnum].number == EntNum)
-		{
-			return &pack->entities[pnum];
-		}
-	}
-
-	return NULL;
-}
-
 //==========================================================================
 //
 // CreateStream--for use mainly external to cl_tent (i.e. cl_effect)
@@ -156,7 +122,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 	{
 		VectorCopy(vec3_origin, stream->offset);
 
-		state = FindState(ent);
+		state = CLHW_FindState(ent);
 		if (state)
 		{	// rjr - potential problem if this doesn't ever get set - origin might have to be set properly in script code?
 			VectorSubtract(source, state->origin, stream->offset);
@@ -259,7 +225,7 @@ static void ParseStream(int type)
 	{
 		VectorCopy(vec3_origin, stream->offset);
 
-		state = FindState(ent);
+		state = CLHW_FindState(ent);
 		if (state)
 		{	// rjr - potential problem if this doesn't ever get set - origin might have to be set properly in script code?
 			VectorSubtract(source, state->origin, stream->offset);
@@ -375,7 +341,7 @@ void CL_ParseTEnt (void)
 
 			ent = net_message.ReadShort();
 
-			state = FindState(ent);
+			state = CLHW_FindState(ent);
 			if (state)
 			{
 				VectorCopy(state->origin, center);
@@ -440,7 +406,7 @@ void CL_ParseTEnt (void)
 			ent = net_message.ReadShort();
 			reflect_count = net_message.ReadByte();
 
-			state = FindState(ent);
+			state = CLHW_FindState(ent);
 			if (state)
 			{
 				// read in up to 4 points for up to 3 beams
@@ -519,7 +485,7 @@ void CL_ParseTEnt (void)
 
 			ent = net_message.ReadShort();
 
-			state = FindState(ent);
+			state = CLHW_FindState(ent);
 
 			if (state)
 			{
@@ -579,7 +545,7 @@ void CL_ParseTEnt (void)
 			pos[2] = net_message.ReadCoord();
 			ent = net_message.ReadShort();
 
-			state = FindState(ent);
+			state = CLHW_FindState(ent);
 
 			if (state)
 			{
@@ -655,7 +621,7 @@ void CL_ParseTEnt (void)
 
 			CLHW_SunStaffExplosions(pos);
 
-			state = FindState(ent);
+			state = CLHW_FindState(ent);
 
 			if (state)
 			{
@@ -786,8 +752,8 @@ void CL_ParseTEnt (void)
 //				dest[1] = net_message.ReadCoord();
 //				dest[2] = net_message.ReadCoord();
 
-			state = FindState(ent);
-			state2 = FindState(ent2);
+			state = CLHW_FindState(ent);
+			state2 = CLHW_FindState(ent2);
 
 			if (state || state2)
 			{
@@ -831,7 +797,7 @@ void CL_ParseTEnt (void)
 
 			ent = net_message.ReadShort();
 
-			state = FindState(ent);
+			state = CLHW_FindState(ent);
 			pos[0] = net_message.ReadCoord();
 			pos[1] = net_message.ReadCoord();
 			pos[2] = net_message.ReadCoord();
@@ -982,7 +948,7 @@ void CL_UpdateStreams(void)
 
 		if(stream->flags&H2STREAM_ATTACHED&&stream->endTime >= cl_common->serverTime * 0.001)
 			{ // Attach the start position to owner
-			state = FindState(stream->entity);
+			state = CLHW_FindState(stream->entity);
 			if (state)
 			{
 				VectorAdd(state->origin, stream->offset, stream->source);
@@ -1232,7 +1198,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 	h2entity_state_t	*state;
 	static float	playIceSound = .6;
 
-	state = FindState(edict_num);
+	state = CLHW_FindState(edict_num);
 	if (state)
 	{
 		VectorCopy(state->origin, center);
