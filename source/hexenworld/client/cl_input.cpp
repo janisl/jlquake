@@ -515,10 +515,10 @@ void CL_SendCmd (void)
 		return; // sendcmds come from the demo
 
 	// save this command off for prediction
-	i = cls.netchan.outgoingSequence & UPDATE_MASK;
-	cmd = &cl.frames[i].cmd;
-	cl.frames[i].senttime = realtime;
-	cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
+	i = cls.netchan.outgoingSequence & HWUPDATE_MASK_HW;
+	cmd = &cl.hw_frames[i].cmd;
+	cl.hw_frames[i].senttime = realtime;
+	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
 	// get basic movement from keyboard
 	CL_BaseMove (cmd);
@@ -539,28 +539,28 @@ void CL_SendCmd (void)
 	buf.InitOOB(data, 128);
 
 	buf.WriteByte(clc_move);
-	i = (cls.netchan.outgoingSequence-2) & UPDATE_MASK;
-	MSG_WriteUsercmd (&buf, &cl.frames[i].cmd, false);
-	i = (cls.netchan.outgoingSequence-1) & UPDATE_MASK;
-	MSG_WriteUsercmd (&buf, &cl.frames[i].cmd, false);
-	i = (cls.netchan.outgoingSequence) & UPDATE_MASK;
-	MSG_WriteUsercmd (&buf, &cl.frames[i].cmd, true);
+	i = (cls.netchan.outgoingSequence-2) & HWUPDATE_MASK_HW;
+	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, false);
+	i = (cls.netchan.outgoingSequence-1) & HWUPDATE_MASK_HW;
+	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, false);
+	i = (cls.netchan.outgoingSequence) & HWUPDATE_MASK_HW;
+	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, true);
 
 //	Con_Printf("I  %hd %hd %hd\n",cmd->forwardmove, cmd->sidemove, cmd->upmove);
 
 	// request delta compression of entities
-	if (cls.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP-1)
+	if (cls.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_HW-1)
 		cl.validsequence = 0;
 
 	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
 		!cls.demorecording)
 	{
-		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].delta_sequence = cl.validsequence;
+		cl.hw_frames[cls.netchan.outgoingSequence&HWUPDATE_MASK_HW].delta_sequence = cl.validsequence;
 		buf.WriteByte(clc_delta);
 		buf.WriteByte(cl.validsequence&255);
 	}
 	else
-		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].delta_sequence = -1;
+		cl.hw_frames[cls.netchan.outgoingSequence&HWUPDATE_MASK_HW].delta_sequence = -1;
 
 	if (cls.demorecording)
 		CL_WriteDemoCmd(cmd);

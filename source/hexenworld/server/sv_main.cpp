@@ -271,7 +271,7 @@ int SV_CalcPing (client_t *cl)
 
 	ping = 0;
 	count = 0;
-	for (frame = cl->frames, i=0 ; i<UPDATE_BACKUP ; i++, frame++)
+	for (frame = cl->frames, i=0 ; i<UPDATE_BACKUP_HW ; i++, frame++)
 	{
 		if (frame->ping_time > 0)
 		{

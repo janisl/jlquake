@@ -181,7 +181,7 @@ void SV_FinalMessage (const char *message)
 	net_message.WriteString2(message);
 	net_message.WriteByte(svc_disconnect);
 
-	for (i=0, cl = svs.clients ; i<QWMAX_CLIENTS ; i++, cl++)
+	for (i=0, cl = svs.clients ; i<MAX_CLIENTS_QW ; i++, cl++)
 		if (cl->state >= cs_spawned)
 			Netchan_Transmit (&cl->netchan, net_message.cursize
 			, net_message._data);
@@ -268,7 +268,7 @@ int SV_CalcPing (client_t *cl)
 
 	ping = 0;
 	count = 0;
-	for (frame = cl->frames, i=0 ; i<UPDATE_BACKUP ; i++, frame++)
+	for (frame = cl->frames, i=0 ; i<UPDATE_BACKUP_QW ; i++, frame++)
 	{
 		if (frame->ping_time > 0)
 		{
@@ -368,7 +368,7 @@ void SVC_Status (void)
 	Cmd_TokenizeString ("status");
 	SV_BeginRedirect (RD_PACKET);
 	Con_Printf ("%s\n", svs.info);
-	for (i=0 ; i<QWMAX_CLIENTS ; i++)
+	for (i=0 ; i<MAX_CLIENTS_QW ; i++)
 	{
 		cl = &svs.clients[i];
 		if ((cl->state == cs_connected || cl->state == cs_spawned ) && !cl->spectator)
@@ -620,7 +620,7 @@ void SVC_DirectConnect (void)
 		String::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo)-1);
 
 	// if there is allready a slot for this ip, drop it
-	for (i=0,cl=svs.clients ; i<QWMAX_CLIENTS ; i++,cl++)
+	for (i=0,cl=svs.clients ; i<MAX_CLIENTS_QW ; i++,cl++)
 	{
 		if (cl->state == cs_free)
 			continue;
@@ -643,7 +643,7 @@ void SVC_DirectConnect (void)
 	// count up the clients and spectators
 	clients = 0;
 	spectators = 0;
-	for (i=0,cl=svs.clients ; i<QWMAX_CLIENTS ; i++,cl++)
+	for (i=0,cl=svs.clients ; i<MAX_CLIENTS_QW ; i++,cl++)
 	{
 		if (cl->state == cs_free)
 			continue;
@@ -654,12 +654,12 @@ void SVC_DirectConnect (void)
 	}
 
 	// if at server limits, refuse connection
-	if ( maxclients->value > QWMAX_CLIENTS )
-		Cvar_SetValue ("maxclients", QWMAX_CLIENTS);
-	if (maxspectators->value > QWMAX_CLIENTS)
-		Cvar_SetValue ("maxspectators", QWMAX_CLIENTS);
-	if (maxspectators->value + maxclients->value > QWMAX_CLIENTS)
-		Cvar_SetValue ("maxspectators", QWMAX_CLIENTS - maxspectators->value + maxclients->value);
+	if ( maxclients->value > MAX_CLIENTS_QW )
+		Cvar_SetValue ("maxclients", MAX_CLIENTS_QW);
+	if (maxspectators->value > MAX_CLIENTS_QW)
+		Cvar_SetValue ("maxspectators", MAX_CLIENTS_QW);
+	if (maxspectators->value + maxclients->value > MAX_CLIENTS_QW)
+		Cvar_SetValue ("maxspectators", MAX_CLIENTS_QW - maxspectators->value + maxclients->value);
 	if ( (spectator && spectators >= (int)maxspectators->value)
 		|| (!spectator && clients >= (int)maxclients->value) )
 	{
@@ -670,7 +670,7 @@ void SVC_DirectConnect (void)
 
 	// find a client slot
 	newcl = NULL;
-	for (i=0,cl=svs.clients ; i<QWMAX_CLIENTS ; i++,cl++)
+	for (i=0,cl=svs.clients ; i<MAX_CLIENTS_QW ; i++,cl++)
 	{
 		if (cl->state == cs_free)
 		{
@@ -1113,7 +1113,7 @@ void SV_ReadPackets (void)
 		qport = net_message.ReadShort() & 0xffff;
 
 		// check for packets from connected clients
-		for (i=0, cl=svs.clients ; i<QWMAX_CLIENTS ; i++,cl++)
+		for (i=0, cl=svs.clients ; i<MAX_CLIENTS_QW ; i++,cl++)
 		{
 			if (cl->state == cs_free)
 				continue;
@@ -1137,7 +1137,7 @@ void SV_ReadPackets (void)
 			break;
 		}
 		
-		if (i != QWMAX_CLIENTS)
+		if (i != MAX_CLIENTS_QW)
 			continue;
 	
 		// packet is not from a known client
@@ -1167,7 +1167,7 @@ void SV_CheckTimeouts (void)
 	int droptime = realtime * 1000 - timeout->value * 1000;
 	nclients = 0;
 
-	for (i=0,cl=svs.clients ; i<QWMAX_CLIENTS ; i++,cl++)
+	for (i=0,cl=svs.clients ; i<MAX_CLIENTS_QW ; i++,cl++)
 	{
 		if (cl->state == cs_connected || cl->state == cs_spawned) {
 			if (!cl->spectator)
@@ -1448,7 +1448,7 @@ void Master_Heartbeat (void)
 	// count active users
 	//
 	active = 0;
-	for (i=0 ; i<QWMAX_CLIENTS ; i++)
+	for (i=0 ; i<MAX_CLIENTS_QW ; i++)
 		if (svs.clients[i].state == cs_connected ||
 		svs.clients[i].state == cs_spawned )
 			active++;
@@ -1545,13 +1545,13 @@ void SV_ExtractFromUserinfo (client_t *cl)
 
 	// check to see if another user by the same name exists
 	while (1) {
-		for (i=0, client = svs.clients ; i<QWMAX_CLIENTS ; i++, client++) {
+		for (i=0, client = svs.clients ; i<MAX_CLIENTS_QW ; i++, client++) {
 			if (client->state != cs_spawned || client == cl)
 				continue;
 			if (!String::ICmp(client->name, val))
 				break;
 		}
-		if (i != QWMAX_CLIENTS)
+		if (i != MAX_CLIENTS_QW)
 		{
 			// dup name
 			char tmp[80];

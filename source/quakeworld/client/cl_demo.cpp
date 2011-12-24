@@ -194,7 +194,7 @@ qboolean CL_GetDemoMessage (void)
 	switch (c) {
 	case dem_cmd :
 		// user sent input
-		i = cls.netchan.outgoingSequence & UPDATE_MASK;
+		i = cls.netchan.outgoingSequence & UPDATE_MASK_QW;
 		pcmd = &cl.frames[i].cmd;
 		r = FS_Read (pcmd, sizeof(*pcmd), cls.demofile);
 		if (r != sizeof(*pcmd))
@@ -578,7 +578,7 @@ void CL_Record_f (void)
 
 // send current status of all other players
 
-	for (i = 0; i < QWMAX_CLIENTS; i++) {
+	for (i = 0; i < MAX_CLIENTS_QW; i++) {
 		player = cl.players + i;
 
 		buf.WriteByte(svc_updatefrags);

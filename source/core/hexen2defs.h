@@ -421,3 +421,7 @@ struct hwpacket_entities_t
 	int num_entities;
 	h2entity_state_t entities[HWMAX_PACKET_ENTITIES];
 };
+
+#define UPDATE_BACKUP_HW	64	// copies of entity_state_t to keep buffered
+							// must be power of two
+#define HWUPDATE_MASK_HW	(UPDATE_BACKUP_HW - 1)

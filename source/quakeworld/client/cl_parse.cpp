@@ -107,7 +107,7 @@ double	parsecounttime;
 
 int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
-image_t*	playertextures[QWMAX_CLIENTS];		// up to 16 color translated skins
+image_t*	playertextures[MAX_CLIENTS_QW];		// up to 16 color translated skins
 
 //=============================================================================
 
@@ -119,11 +119,11 @@ int CL_CalcNet (void)
 	qwframe_t	*frame;
 	int lost;
 
-	for (i=cls.netchan.outgoingSequence-UPDATE_BACKUP+1
+	for (i=cls.netchan.outgoingSequence-UPDATE_BACKUP_QW+1
 		; i <= cls.netchan.outgoingSequence
 		; i++)
 	{
-		frame = &cl.frames[i&UPDATE_MASK];
+		frame = &cl.frames[i&UPDATE_MASK_QW];
 		if (frame->receivedtime == -1)
 			packet_latency[i&NET_TIMINGSMASK] = 9999;	// dropped
 		else if (frame->receivedtime == -2)
@@ -889,7 +889,7 @@ void CL_ParseClientdata (void)
 
 	i = cls.netchan.incomingAcknowledged;
 	cl.parsecount = i;
-	i &= UPDATE_MASK;
+	i &= UPDATE_MASK_QW;
 	parsecountmod = i;
 	frame = &cl.frames[i];
 	parsecounttime = cl.frames[i].senttime;
@@ -974,8 +974,8 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	if (slot > QWMAX_CLIENTS)
-		Sys_Error ("CL_NewTranslation: slot > QWMAX_CLIENTS");
+	if (slot > MAX_CLIENTS_QW)
+		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS_QW");
 
 	R_TranslatePlayerSkin(slot);
 }
@@ -1012,8 +1012,8 @@ void CL_UpdateUserinfo (void)
 	player_info_t	*player;
 
 	slot = net_message.ReadByte ();
-	if (slot >= QWMAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > QWMAX_CLIENTS");
+	if (slot >= MAX_CLIENTS_QW)
+		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_CLIENTS_QW");
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
@@ -1035,8 +1035,8 @@ void CL_SetInfo (void)
 	char value[MAX_MSGLEN_QW];
 
 	slot = net_message.ReadByte ();
-	if (slot >= QWMAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > QWMAX_CLIENTS");
+	if (slot >= MAX_CLIENTS_QW)
+		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > MAX_CLIENTS_QW");
 
 	player = &cl.players[slot];
 
@@ -1110,7 +1110,7 @@ void CL_MuzzleFlash (void)
 {
 	int i = net_message.ReadShort();
 
-	if ((unsigned)(i - 1) >= QWMAX_CLIENTS)
+	if ((unsigned)(i - 1) >= MAX_CLIENTS_QW)
 	{
 		return;
 	}
@@ -1240,30 +1240,30 @@ void CL_ParseServerMessage (void)
 		
 		case svc_updatefrags:
 			i = net_message.ReadByte ();
-			if (i >= QWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > QWMAX_CLIENTS");
+			if (i >= MAX_CLIENTS_QW)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_CLIENTS_QW");
 			cl.players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
 			i = net_message.ReadByte ();
-			if (i >= QWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > QWMAX_CLIENTS");
+			if (i >= MAX_CLIENTS_QW)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_CLIENTS_QW");
 			cl.players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case svc_updatepl:
 			i = net_message.ReadByte ();
-			if (i >= QWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > QWMAX_CLIENTS");
+			if (i >= MAX_CLIENTS_QW)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > MAX_CLIENTS_QW");
 			cl.players[i].pl = net_message.ReadByte ();
 			break;
 			
 		case svc_updateentertime:
 		// time is sent over as seconds ago
 			i = net_message.ReadByte ();
-			if (i >= QWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > QWMAX_CLIENTS");
+			if (i >= MAX_CLIENTS_QW)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_CLIENTS_QW");
 			cl.players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
@@ -1364,7 +1364,7 @@ void CL_ParseServerMessage (void)
 		case svc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
+				cl.frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_QW ].receivedtime = -2;
 			break;
 
 		case svc_modellist:

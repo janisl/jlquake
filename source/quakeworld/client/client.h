@@ -150,8 +150,8 @@ struct client_state_t : clientActiveCommon_t
 	double		last_ping_request;	// while showing scoreboard
 	double		last_servermessage;
 
-// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK] = cmd
-	qwframe_t		frames[UPDATE_BACKUP];
+// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK_QW] = cmd
+	qwframe_t		frames[UPDATE_BACKUP_QW];
 
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc
@@ -209,7 +209,7 @@ struct client_state_t : clientActiveCommon_t
 	entity_t	viewent;		// weapon model
 
 // all player information
-	player_info_t	players[QWMAX_CLIENTS];
+	player_info_t	players[MAX_CLIENTS_QW];
 };
 
 
@@ -392,4 +392,4 @@ extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
 void R_TranslatePlayerSkin (int playernum);
 
-extern	image_t*	playertextures[QWMAX_CLIENTS];
+extern	image_t*	playertextures[MAX_CLIENTS_QW];

@@ -135,7 +135,7 @@ typedef struct client_s
 	
 	int				stats[MAX_CL_STATS];
 
-	client_frame_t	frames[UPDATE_BACKUP];	// updates can be deltad from here
+	client_frame_t	frames[UPDATE_BACKUP_HW];	// updates can be deltad from here
 
 	fileHandle_t	download;			// file being downloaded
 	int				downloadsize;		// total bytes

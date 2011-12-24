@@ -192,7 +192,7 @@ void FlushEntityPacket (void)
 	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.validsequence = 0;		// can't render a frame
-	cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].invalid = true;
+	cl.hw_frames[cls.netchan.incomingSequence&HWUPDATE_MASK_HW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -228,17 +228,17 @@ void CL_ParsePacketEntities (qboolean delta)
 	qboolean	full;
 	byte		from;
 
-	newpacket = cls.netchan.incomingSequence&UPDATE_MASK;
-	newp = &cl.frames[newpacket].packet_entities;
-	cl.frames[newpacket].invalid = false;
+	newpacket = cls.netchan.incomingSequence&HWUPDATE_MASK_HW;
+	newp = &cl.hw_frames[newpacket].packet_entities;
+	cl.hw_frames[newpacket].invalid = false;
 
 	if (delta)
 	{
 		from = net_message.ReadByte ();
 
-		oldpacket = cl.frames[newpacket].delta_sequence;
+		oldpacket = cl.hw_frames[newpacket].delta_sequence;
 
-		if ( (from&UPDATE_MASK) != (oldpacket&UPDATE_MASK) )
+		if ( (from&HWUPDATE_MASK_HW) != (oldpacket&HWUPDATE_MASK_HW) )
 			Con_DPrintf ("WARNING: from mismatch\n");
 	}
 	else
@@ -247,13 +247,13 @@ void CL_ParsePacketEntities (qboolean delta)
 	full = false;
 	if (oldpacket != -1)
 	{
-		if (cls.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP-1)
+		if (cls.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_HW-1)
 		{	// we can't use this, it is too old
 			FlushEntityPacket ();
 			return;
 		}
 		cl.validsequence = cls.netchan.incomingSequence;
-		oldp = &cl.frames[oldpacket&UPDATE_MASK].packet_entities;
+		oldp = &cl.hw_frames[oldpacket&HWUPDATE_MASK_HW].packet_entities;
 	}
 	else
 	{	// this is a full update that we can start delta compressing from now
@@ -465,8 +465,8 @@ void CL_LinkPacketEntities (void)
 	int					i;
 	int					pnum;
 
-	pack = &cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].packet_entities;
-	hwpacket_entities_t* PrevPack = &cl.frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK].packet_entities;
+	pack = &cl.hw_frames[cls.netchan.incomingSequence&HWUPDATE_MASK_HW].packet_entities;
+	hwpacket_entities_t* PrevPack = &cl.hw_frames[(cls.netchan.incomingSequence - 1) & HWUPDATE_MASK_HW].packet_entities;
 
 	autorotate = AngleMod(100*cl.serverTimeFloat);
 
@@ -874,7 +874,7 @@ void CL_SavePlayer (void)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
 	info = &cl.h2_players[num];
-	state = &cl.frames[parsecountmod].playerstate[num];
+	state = &cl.hw_frames[parsecountmod].playerstate[num];
 	
 	state->messagenum = cl.parsecount;
 	state->state_time = parsecounttime;
@@ -896,7 +896,7 @@ void CL_ParsePlayerinfo (void)
 
 	info = &cl.h2_players[num];
 
-	state = &cl.frames[parsecountmod].playerstate[num];
+	state = &cl.hw_frames[parsecountmod].playerstate[num];
 
 	flags = state->flags = net_message.ReadShort ();
 
@@ -1030,7 +1030,7 @@ void CL_LinkPlayers (void)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
+	frame = &cl.hw_frames[cl.parsecount&HWUPDATE_MASK_HW];
 
 	for (j=0, info=cl.h2_players, state=frame->playerstate ; j < HWMAX_CLIENTS 
 		; j++, info++, state++)
@@ -1204,7 +1204,7 @@ void CL_SetSolidEntities (void)
 	pmove.physents[0].info = 0;
 	pmove.numphysent = 1;
 
-	frame = &cl.frames[parsecountmod];
+	frame = &cl.hw_frames[parsecountmod];
 	pak = &frame->packet_entities;
 
 	for (i=0 ; i<pak->num_entities ; i++)
@@ -1248,7 +1248,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
+	frame = &cl.hw_frames[cl.parsecount&HWUPDATE_MASK_HW];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
 		j < HWMAX_CLIENTS;
@@ -1270,7 +1270,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 		// we use his last predicted postition
 		if (j == cl.playernum) 
 		{
-			VectorCopy(cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].playerstate[cl.playernum].origin,
+			VectorCopy(cl.hw_frames[cls.netchan.outgoingSequence&HWUPDATE_MASK_HW].playerstate[cl.playernum].origin,
 				pplayer->origin);
 		} 
 		else 

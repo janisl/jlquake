@@ -921,7 +921,7 @@ void SV_Physics (void)
 		if (pr_global_struct->force_retouch)
 			SV_LinkEdict (ent, true);	// force retouch even for stationary
 
-		if (i > 0 && i <= QWMAX_CLIENTS)
+		if (i > 0 && i <= MAX_CLIENTS_QW)
 			continue;		// clients are run directly from packets
 
 		SV_RunEntity (ent);

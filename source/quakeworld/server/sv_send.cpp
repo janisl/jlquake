@@ -204,7 +204,7 @@ void SV_BroadcastPrintf (int level, const char *fmt, ...)
 	
 	Sys_Print(string);	// print to the console
 
-	for (i=0, cl = svs.clients ; i<QWMAX_CLIENTS ; i++, cl++)
+	for (i=0, cl = svs.clients ; i<MAX_CLIENTS_QW ; i++, cl++)
 	{
 		if (level < cl->messagelevel)
 			continue;
@@ -288,7 +288,7 @@ void SV_Multicast (vec3_t origin, int to)
 	}
 
 	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < QWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 	{
 		if (client->state != cs_spawned)
 			continue;
@@ -611,7 +611,7 @@ void SV_UpdateToReliableMessages (void)
 	edict_t *ent;
 
 // check for changes to be sent over the reliable streams to all clients
-	for (i=0, host_client = svs.clients ; i<QWMAX_CLIENTS ; i++, host_client++)
+	for (i=0, host_client = svs.clients ; i<MAX_CLIENTS_QW ; i++, host_client++)
 	{
 		if (host_client->state != cs_spawned)
 			continue;
@@ -622,7 +622,7 @@ void SV_UpdateToReliableMessages (void)
 		}
 		if (host_client->old_frags != host_client->edict->v.frags)
 		{
-			for (j=0, client = svs.clients ; j<QWMAX_CLIENTS ; j++, client++)
+			for (j=0, client = svs.clients ; j<MAX_CLIENTS_QW ; j++, client++)
 			{
 				if (client->state < cs_connected)
 					continue;
@@ -656,7 +656,7 @@ void SV_UpdateToReliableMessages (void)
 		sv.datagram.Clear();
 
 	// append the broadcast messages to each client messages
-	for (j=0, client = svs.clients ; j<QWMAX_CLIENTS ; j++, client++)
+	for (j=0, client = svs.clients ; j<MAX_CLIENTS_QW ; j++, client++)
 	{
 		if (client->state < cs_connected)
 			continue;	// reliables go to all connected or spawned
@@ -693,7 +693,7 @@ void SV_SendClientMessages (void)
 	SV_UpdateToReliableMessages ();
 
 // build individual updates
-	for (i=0, c = svs.clients ; i<QWMAX_CLIENTS ; i++, c++)
+	for (i=0, c = svs.clients ; i<MAX_CLIENTS_QW ; i++, c++)
 	{
 		if (!c->state)
 			continue;
@@ -782,7 +782,7 @@ void SV_SendMessagesToAll (void)
 	int			i;
 	client_t	*c;
 
-	for (i=0, c = svs.clients ; i<QWMAX_CLIENTS ; i++, c++)
+	for (i=0, c = svs.clients ; i<MAX_CLIENTS_QW ; i++, c++)
 		if (c->state)		// FIXME: should this only send to active?
 			c->send_message = true;
 	

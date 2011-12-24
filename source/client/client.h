@@ -85,6 +85,8 @@ struct clientActiveCommon_t
 	// all player information
 	h2player_info_t h2_players[H2BIGGEST_MAX_CLIENTS];
 
+	hwframe_t hw_frames[UPDATE_BACKUP_HW];
+
 	q2frame_t q2_frame;		// received from server
 	q2frame_t q2_frames[UPDATE_BACKUP_Q2];
 

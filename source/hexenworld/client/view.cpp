@@ -186,7 +186,7 @@ static void V_DriftPitch (void)
 // don't count small mouse motion
 	if (cl.nodrift)
 	{
-		if ( Q_fabs(cl.frames[(cls.netchan.outgoingSequence-1)&UPDATE_MASK].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed->value)-10 || lookspring->value == 0.0)
+		if ( Q_fabs(cl.hw_frames[(cls.netchan.outgoingSequence-1)&HWUPDATE_MASK_HW].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed->value)-10 || lookspring->value == 0.0)
 			cl.driftmove = 0;
 		else
 			cl.driftmove += host_frametime;
@@ -807,7 +807,7 @@ static void V_CalcRefdef (void)
 	view->state.frame = view_message->weaponframe;
 
 	// Place weapon in powered up mode
-	if ((cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)
+	if ((cl.hw_frames[cls.netchan.incomingSequence&HWUPDATE_MASK_HW].playerstate[cl.playernum].drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)
 		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | H2MLS_POWERMODE;
 	else
 		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | 0;
@@ -946,7 +946,7 @@ void V_RenderView (void)
 	if (cls.state != ca_active)
 		return;
 
-	view_frame = &cl.frames[cls.netchan.incomingSequence & UPDATE_MASK];
+	view_frame = &cl.hw_frames[cls.netchan.incomingSequence & HWUPDATE_MASK_HW];
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle ();

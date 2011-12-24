@@ -29,7 +29,7 @@ static struct predicted_player {
 	int flags;
 	qboolean active;
 	vec3_t origin;	// predicted origin
-} predicted_players[QWMAX_CLIENTS];
+} predicted_players[MAX_CLIENTS_QW];
 
 /*
 =========================================================================
@@ -125,7 +125,7 @@ void FlushEntityPacket (void)
 	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.validsequence = 0;		// can't render a frame
-	cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].invalid = true;
+	cl.frames[cls.netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -161,7 +161,7 @@ void CL_ParsePacketEntities (qboolean delta)
 	qboolean	full;
 	byte		from;
 
-	newpacket = cls.netchan.incomingSequence&UPDATE_MASK;
+	newpacket = cls.netchan.incomingSequence&UPDATE_MASK_QW;
 	newp = &cl.frames[newpacket].packet_entities;
 	cl.frames[newpacket].invalid = false;
 
@@ -171,7 +171,7 @@ void CL_ParsePacketEntities (qboolean delta)
 
 		oldpacket = cl.frames[newpacket].delta_sequence;
 
-		if ( (from&UPDATE_MASK) != (oldpacket&UPDATE_MASK) )
+		if ( (from&UPDATE_MASK_QW) != (oldpacket&UPDATE_MASK_QW) )
 			Con_DPrintf ("WARNING: from mismatch\n");
 	}
 	else
@@ -180,13 +180,13 @@ void CL_ParsePacketEntities (qboolean delta)
 	full = false;
 	if (oldpacket != -1)
 	{
-		if (cls.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP-1)
+		if (cls.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_QW-1)
 		{	// we can't use this, it is too old
 			FlushEntityPacket ();
 			return;
 		}
 		cl.validsequence = cls.netchan.incomingSequence;
-		oldp = &cl.frames[oldpacket&UPDATE_MASK].packet_entities;
+		oldp = &cl.frames[oldpacket&UPDATE_MASK_QW].packet_entities;
 	}
 	else
 	{	// this is a full update that we can start delta compressing from now
@@ -317,8 +317,8 @@ void CL_LinkPacketEntities (void)
 	int					i;
 	int					pnum;
 
-	pack = &cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].packet_entities;
-	qwpacket_entities_t* PrevPack = &cl.frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK].packet_entities;
+	pack = &cl.frames[cls.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
+	qwpacket_entities_t* PrevPack = &cl.frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
 
 	autorotate = AngleMod(100*cl.serverTimeFloat);
 
@@ -354,7 +354,7 @@ void CL_LinkPacketEntities (void)
 		ent.hModel = model;
 	
 		// set colormap
-		if (s1->colormap && (s1->colormap < QWMAX_CLIENTS) && s1->modelindex == cl_playerindex)
+		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == cl_playerindex)
 		{
 			R_HandlePlayerSkin(&ent, s1->colormap - 1);
 		}
@@ -547,7 +547,7 @@ void CL_ParsePlayerinfo (void)
 	int			i;
 
 	num = net_message.ReadByte ();
-	if (num > QWMAX_CLIENTS)
+	if (num > MAX_CLIENTS_QW)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
 	info = &cl.players[num];
@@ -691,9 +691,9 @@ void CL_LinkPlayers (void)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
+	frame = &cl.frames[cl.parsecount&UPDATE_MASK_QW];
 
-	for (j=0, info=cl.players, state=frame->playerstate ; j < QWMAX_CLIENTS 
+	for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS_QW 
 		; j++, info++, state++)
 	{
 		if (state->messagenum != cl.parsecount)
@@ -838,10 +838,10 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
+	frame = &cl.frames[cl.parsecount&UPDATE_MASK_QW];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
-		j < QWMAX_CLIENTS;
+		j < MAX_CLIENTS_QW;
 		j++, pplayer++, state++) {
 
 		pplayer->active = false;
@@ -858,7 +858,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 		// note that the local player is special, since he moves locally
 		// we use his last predicted postition
 		if (j == cl.playernum) {
-			VectorCopy(cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].playerstate[cl.playernum].origin,
+			VectorCopy(cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK_QW].playerstate[cl.playernum].origin,
 				pplayer->origin);
 		} else {
 			// only predict half the move to minimize overruns
@@ -908,7 +908,7 @@ void CL_SetSolidPlayers (int playernum)
 
 	pent = pmove.physents + pmove.numphysent;
 
-	for (j=0, pplayer = predicted_players; j < QWMAX_CLIENTS;	j++, pplayer++) {
+	for (j=0, pplayer = predicted_players; j < MAX_CLIENTS_QW;	j++, pplayer++) {
 
 		if (!pplayer->active)
 			continue;	// not present this frame

@@ -252,7 +252,7 @@ void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg
 	// this is the frame that we are going to delta update from
 	if (client->delta_sequence != -1)
 	{
-		fromframe = &client->frames[client->delta_sequence & UPDATE_MASK];
+		fromframe = &client->frames[client->delta_sequence & UPDATE_MASK_QW];
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
@@ -269,8 +269,8 @@ void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg
 
 	newindex = 0;
 	oldindex = 0;
-//Con_Printf ("---%i to %i ----\n", client->delta_sequence & UPDATE_MASK
-//			, client->netchan.outgoing_sequence & UPDATE_MASK);
+//Con_Printf ("---%i to %i ----\n", client->delta_sequence & UPDATE_MASK_QW
+//			, client->netchan.outgoing_sequence & UPDATE_MASK_QW);
 	while (newindex < to->num_entities || oldindex < oldmax)
 	{
 		newnum = newindex >= to->num_entities ? 9999 : to->entities[newindex].number;
@@ -321,7 +321,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 	qwusercmd_t	cmd;
 	int			pflags;
 
-	for (j=0,cl=svs.clients ; j<QWMAX_CLIENTS ; j++,cl++)
+	for (j=0,cl=svs.clients ; j<MAX_CLIENTS_QW ; j++,cl++)
 	{
 		if (cl->state != cs_spawned)
 			continue;
@@ -454,7 +454,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	q1entity_state_t	*state;
 
 	// this is the frame we are creating
-	frame = &client->frames[client->netchan.incomingSequence & UPDATE_MASK];
+	frame = &client->frames[client->netchan.incomingSequence & UPDATE_MASK_QW];
 
 	// find the client's PVS
 	clent = client->edict;
@@ -470,7 +470,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 	numnails = 0;
 
-	for (e=QWMAX_CLIENTS+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
+	for (e=MAX_CLIENTS_QW+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->v.model))

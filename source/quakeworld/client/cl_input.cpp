@@ -457,7 +457,7 @@ void CL_SendCmd (void)
 		return; // sendcmds come from the demo
 
 	// save this command off for prediction
-	i = cls.netchan.outgoingSequence & UPDATE_MASK;
+	i = cls.netchan.outgoingSequence & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	cl.frames[i].senttime = realtime;
 	cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
@@ -493,17 +493,17 @@ void CL_SendCmd (void)
 	lost = CL_CalcNet();
 	buf.WriteByte((byte)lost);
 
-	i = (cls.netchan.outgoingSequence-2) & UPDATE_MASK;
+	i = (cls.netchan.outgoingSequence-2) & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoingSequence-1) & UPDATE_MASK;
+	i = (cls.netchan.outgoingSequence-1) & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
-	i = (cls.netchan.outgoingSequence) & UPDATE_MASK;
+	i = (cls.netchan.outgoingSequence) & UPDATE_MASK_QW;
 	cmd = &cl.frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
@@ -513,18 +513,18 @@ void CL_SendCmd (void)
 		seq_hash);
 
 	// request delta compression of entities
-	if (cls.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP-1)
+	if (cls.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_QW-1)
 		cl.validsequence = 0;
 
 	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
 		!cls.demorecording)
 	{
-		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].delta_sequence = cl.validsequence;
+		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;
 		buf.WriteByte(clc_delta);
 		buf.WriteByte(cl.validsequence&255);
 	}
 	else
-		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK].delta_sequence = -1;
+		cl.frames[cls.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
 
 	if (cls.demorecording)
 		CL_WriteDemoCmd(cmd);

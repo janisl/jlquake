@@ -757,10 +757,10 @@ void CL_ParseClientdata (void)
 
 	i = cls.netchan.incomingAcknowledged;
 	cl.parsecount = i;
-	i &= UPDATE_MASK;
+	i &= HWUPDATE_MASK_HW;
 	parsecountmod = i;
-	frame = &cl.frames[i];
-	parsecounttime = cl.frames[i].senttime;
+	frame = &cl.hw_frames[i];
+	parsecounttime = cl.hw_frames[i].senttime;
 
 	frame->receivedtime = realtime;
 
@@ -868,7 +868,7 @@ void CL_MuzzleFlash()
 	{
 		return;
 	}
-	hwplayer_state_t* pl = &cl.frames[parsecountmod].playerstate[i - 1];
+	hwplayer_state_t* pl = &cl.hw_frames[parsecountmod].playerstate[i - 1];
 	CLH2_MuzzleFlashLight(i, pl->origin, pl->viewangles, false);
 }
 
@@ -1309,7 +1309,7 @@ void CL_ParseServerMessage (void)
 		case svc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.frames[ (cls.netchan.incomingAcknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
+				cl.hw_frames[ (cls.netchan.incomingAcknowledged-1-j)&HWUPDATE_MASK_HW ].receivedtime = -2;
 			break;
 
 		case svc_modellist:

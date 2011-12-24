@@ -142,9 +142,6 @@ struct client_state_t : clientActiveCommon_t
 	double		last_ping_request;	// while showing scoreboard
 	double		last_servermessage;
 
-// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK] = cmd
-	hwframe_t		frames[UPDATE_BACKUP];
-
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc
 	int			inv_order[MAX_INVENTORY];

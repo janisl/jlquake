@@ -279,9 +279,9 @@ void R_NetGraph (void)
 	hwframe_t	*frame;
 	char st[80];
 
-	for (int i = cls.netchan.outgoingSequence - UPDATE_BACKUP + 1; i <= cls.netchan.outgoingSequence; i++)
+	for (int i = cls.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= cls.netchan.outgoingSequence; i++)
 	{
-		frame = &cl.frames[i&UPDATE_MASK];
+		frame = &cl.hw_frames[i&HWUPDATE_MASK_HW];
 		if (frame->receivedtime == -1)
 			packet_latency[i&255] = 9999;	// dropped
 		else if (frame->receivedtime == -2)

@@ -437,7 +437,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 	// this is the frame that we are going to delta update from
 	if (client->delta_sequence != -1)
 	{
-		fromframe = &client->frames[client->delta_sequence & UPDATE_MASK];
+		fromframe = &client->frames[client->delta_sequence & HWUPDATE_MASK_HW];
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
@@ -454,8 +454,8 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 
 	newindex = 0;
 	oldindex = 0;
-//Con_Printf ("---%i to %i ----\n", client->delta_sequence & UPDATE_MASK
-//			, client->netchan.outgoing_sequence & UPDATE_MASK);
+//Con_Printf ("---%i to %i ----\n", client->delta_sequence & HWUPDATE_MASK_HW
+//			, client->netchan.outgoing_sequence & HWUPDATE_MASK_HW);
 	while (newindex < to->num_entities || oldindex < oldmax)
 	{
 		newnum = newindex >= to->num_entities ? 9999 : to->entities[newindex].number;
@@ -1349,7 +1349,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	h2entity_state_t	*state;
 
 	// this is the frame we are creating
-	frame = &client->frames[client->netchan.incomingSequence & UPDATE_MASK];
+	frame = &client->frames[client->netchan.incomingSequence & HWUPDATE_MASK_HW];
 
 	// find the client's PVS
 	clent = client->edict;

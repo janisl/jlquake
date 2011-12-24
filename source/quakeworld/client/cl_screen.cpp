@@ -439,7 +439,7 @@ SCR_DrawNet
 */
 void SCR_DrawNet (void)
 {
-	if (cls.netchan.outgoingSequence - cls.netchan.incomingAcknowledged < UPDATE_BACKUP-1)
+	if (cls.netchan.outgoingSequence - cls.netchan.incomingAcknowledged < UPDATE_BACKUP_QW-1)
 		return;
 	if (cls.demoplayback)
 		return;

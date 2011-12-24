@@ -163,7 +163,7 @@ typedef struct client_s
 	int				stats[MAX_CL_STATS];
 
 
-	client_frame_t	frames[UPDATE_BACKUP];	// updates can be deltad from here
+	client_frame_t	frames[UPDATE_BACKUP_QW];	// updates can be deltad from here
 
 	fileHandle_t	download;			// file being downloaded
 	int				downloadsize;		// total bytes
@@ -226,7 +226,7 @@ typedef struct
 {
 	int			spawncount;			// number of servers spawned since start,
 									// used to check late spawns
-	client_t	clients[QWMAX_CLIENTS];
+	client_t	clients[MAX_CLIENTS_QW];
 	int			serverflags;		// episode completion information
 	
 	double		last_heartbeat;
