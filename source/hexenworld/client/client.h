@@ -1,36 +1,5 @@
 // client.h
 
-// player_state_t is the information needed by a player entity
-// to do move prediction and to generate a drawable entity
-typedef struct
-{
-	int			messagenum;		// all player's won't be updated each frame
-
-	double		state_time;		// not the same as the packet time,
-								// because player commands come asyncronously
-	hwusercmd_t	command;		// last command for prediction
-
-	vec3_t		origin;
-	vec3_t		viewangles;		// only for demos, not from server
-	vec3_t		velocity;
-	int			weaponframe;
-
-	int			modelindex;
-	int			frame;
-	int			skinnum;
-	int			effects;
-	int			drawflags;
-	int			scale;
-	int			abslight;
-
-	int			flags;			// dead, gib, etc
-
-	float		waterjumptime;
-	int			onground;		// -1 = in air, else pmove entity number
-	int			oldbuttons;
-} player_state_t;
-
-
 typedef struct
 {
 	// generated on client side
@@ -40,7 +9,7 @@ typedef struct
 
 	// received from server
 	double		receivedtime;	// time message was received, or -1
-	player_state_t	playerstate[HWMAX_CLIENTS];	// message received that reflects performing
+	hwplayer_state_t	playerstate[HWMAX_CLIENTS];	// message received that reflects performing
 							// the usercmd
 	packet_entities_t	packet_entities;
 	qboolean	invalid;		// true if the packet_entities delta was invalid
@@ -474,7 +443,7 @@ void CL_InitCam(void);
 void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities (void);
 void CL_WriteDemoCmd (hwusercmd_t *pcmd);
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, hwusercmd_t *u, qboolean spectator);
+void CL_PredictUsercmd (hwplayer_state_t *from, hwplayer_state_t *to, hwusercmd_t *u, qboolean spectator);
 void CL_SendConnectPacket (void);
 void Host_WriteConfiguration (const char *fname);
 void Cam_Track(hwusercmd_t *cmd);

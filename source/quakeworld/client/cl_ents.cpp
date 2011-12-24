@@ -542,7 +542,7 @@ void CL_ParsePlayerinfo (void)
 	int			msec;
 	int			flags;
 	player_info_t	*info;
-	player_state_t	*state;
+	qwplayer_state_t	*state;
 	int			num;
 	int			i;
 
@@ -680,8 +680,8 @@ void CL_LinkPlayers (void)
 {
 	int				j;
 	player_info_t	*info;
-	player_state_t	*state;
-	player_state_t	exact;
+	qwplayer_state_t	*state;
+	qwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
 	frame_t			*frame;
@@ -827,8 +827,8 @@ This sets up the first phase.
 void CL_SetUpPlayerPrediction(qboolean dopred)
 {
 	int				j;
-	player_state_t	*state;
-	player_state_t	exact;
+	qwplayer_state_t	*state;
+	qwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
 	frame_t			*frame;

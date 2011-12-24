@@ -868,7 +868,7 @@ void CL_MuzzleFlash()
 	{
 		return;
 	}
-	player_state_t* pl = &cl.frames[parsecountmod].playerstate[i - 1];
+	hwplayer_state_t* pl = &cl.frames[parsecountmod].playerstate[i - 1];
 	CLH2_MuzzleFlashLight(i, pl->origin, pl->viewangles, false);
 }
 

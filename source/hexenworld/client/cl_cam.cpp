@@ -67,7 +67,7 @@ q1trace_t Cam_DoTrace(vec3_t vec1, vec3_t vec2)
 }
 	
 // Returns distance or 9999 if invalid for some reason
-static float Cam_TryFlyby(player_state_t *self, player_state_t *player, vec3_t vec, qboolean checkvis)
+static float Cam_TryFlyby(hwplayer_state_t *self, hwplayer_state_t *player, vec3_t vec, qboolean checkvis)
 {
 	vec3_t v;
 	q1trace_t trace;
@@ -100,7 +100,7 @@ static float Cam_TryFlyby(player_state_t *self, player_state_t *player, vec3_t v
 }
 
 // Is player visible?
-static qboolean Cam_IsVisible(player_state_t *player, vec3_t vec)
+static qboolean Cam_IsVisible(hwplayer_state_t *player, vec3_t vec)
 {
 	q1trace_t trace;
 	vec3_t v;
@@ -117,7 +117,7 @@ static qboolean Cam_IsVisible(player_state_t *player, vec3_t vec)
 	return true;
 }
 
-static qboolean InitFlyby(player_state_t *self, player_state_t *player, int checkvis) 
+static qboolean InitFlyby(hwplayer_state_t *self, hwplayer_state_t *player, int checkvis) 
 {
     float f, max;
     vec3_t vec, vec2;
@@ -233,7 +233,7 @@ static void Cam_CheckHighTarget(void)
 // We find a nice position to watch the player and move there
 void Cam_Track(hwusercmd_t *cmd)
 {
-	player_state_t *player, *self;
+	hwplayer_state_t *player, *self;
 	frame_t *frame;
 	vec3_t vec;
 	float len;

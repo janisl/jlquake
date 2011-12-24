@@ -72,7 +72,7 @@ static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 extern	int			in_forward, in_forward2, in_back;
 
 frame_t		*view_frame;
-static player_state_t		*view_message;
+static qwplayer_state_t		*view_message;
 
 static cshift_t	cshift_empty = { {130,80,50}, 0 };
 static cshift_t	cshift_water = { {130,80,50}, 128 };

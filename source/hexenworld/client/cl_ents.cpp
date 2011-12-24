@@ -866,7 +866,7 @@ void CL_SavePlayer (void)
 {
 	int			num;
 	h2player_info_t	*info;
-	player_state_t	*state;
+	hwplayer_state_t	*state;
 
 	num = net_message.ReadByte ();
 
@@ -885,7 +885,7 @@ void CL_ParsePlayerinfo (void)
 	int			msec;
 	int			flags;
 	h2player_info_t	*info;
-	player_state_t	*state;
+	hwplayer_state_t	*state;
 	int			num;
 	int			i;
 	qboolean	playermodel = false;
@@ -1019,8 +1019,8 @@ void CL_LinkPlayers (void)
 {
 	int				j;
 	h2player_info_t	*info;
-	player_state_t	*state;
-	player_state_t	exact;
+	hwplayer_state_t	*state;
+	hwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
 	frame_t			*frame;
@@ -1237,8 +1237,8 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 {
 	int				j;
 
-	player_state_t	*state;
-	player_state_t	exact;
+	hwplayer_state_t	*state;
+	hwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
 	frame_t			*frame;

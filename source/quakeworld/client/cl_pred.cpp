@@ -63,12 +63,12 @@ void CL_NudgePosition (void)
 CL_PredictUsercmd
 ==============
 */
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, qwusercmd_t *u, qboolean spectator)
+void CL_PredictUsercmd (qwplayer_state_t *from, qwplayer_state_t *to, qwusercmd_t *u, qboolean spectator)
 {
 	// split up very long moves
 	if (u->msec > 50)
 	{
-		player_state_t	temp;
+		qwplayer_state_t	temp;
 		qwusercmd_t	split;
 
 		split = *u;

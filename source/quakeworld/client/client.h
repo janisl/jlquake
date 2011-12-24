@@ -27,33 +27,6 @@ typedef struct
 	byte*		data;
 } qw_skin_t;
 
-// player_state_t is the information needed by a player entity
-// to do move prediction and to generate a drawable entity
-typedef struct
-{
-	int			messagenum;		// all player's won't be updated each frame
-
-	double		state_time;		// not the same as the packet time,
-								// because player commands come asyncronously
-	qwusercmd_t	command;		// last command for prediction
-
-	vec3_t		origin;
-	vec3_t		viewangles;		// only for demos, not from server
-	vec3_t		velocity;
-	int			weaponframe;
-
-	int			modelindex;
-	int			frame;
-	int			skinnum;
-	int			effects;
-
-	int			flags;			// dead, gib, etc
-
-	float		waterjumptime;
-	int			onground;		// -1 = in air, else pmove entity number
-	int			oldbuttons;
-} player_state_t;
-
 
 #define	MAX_SCOREBOARDNAME	16
 typedef struct player_info_s
@@ -89,7 +62,7 @@ typedef struct
 
 	// received from server
 	double		receivedtime;	// time message was received, or -1
-	player_state_t	playerstate[MAX_CLIENTS];	// message received that reflects performing
+	qwplayer_state_t	playerstate[MAX_CLIENTS];	// message received that reflects performing
 							// the usercmd
 	packet_entities_t	packet_entities;
 	qboolean	invalid;		// true if the packet_entities delta was invalid
@@ -403,7 +376,7 @@ void CL_ParsePlayerinfo (void);
 //
 void CL_InitPrediction (void);
 void CL_PredictMove (void);
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, qwusercmd_t *u, qboolean spectator);
+void CL_PredictUsercmd (qwplayer_state_t *from, qwplayer_state_t *to, qwusercmd_t *u, qboolean spectator);
 
 //
 // cl_cam.c
