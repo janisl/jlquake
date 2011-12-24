@@ -2259,6 +2259,58 @@ void CLHW_ParseReviseEffect(QMsg& message)
 	}
 }
 
+static void CLHW_TurnEffectMissile(int index, float time, vec3_t position, vec3_t velocity)
+{
+	if (cl_common->h2_Effects[index].Missile.entity_index == -1)
+	{
+		return;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+	VectorCopy(position, ent->state.origin);
+	VectorCopy(velocity, cl_common->h2_Effects[index].Missile.velocity);
+	VecToAnglesBuggy(cl_common->h2_Effects[index].Missile.velocity, cl_common->h2_Effects[index].Missile.angle);
+}
+
+static void CLHW_TurnEffectStar(int index, float time, vec3_t position, vec3_t velocity)
+{
+	if (cl_common->h2_Effects[index].Star.entity_index == -1)
+	{
+		return;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.entity_index];
+	VectorCopy(position, ent->state.origin);
+	VectorCopy(velocity, cl_common->h2_Effects[index].Star.velocity);
+}
+
+void CLHW_ParseTurnEffect(QMsg& message)
+{
+	int index = message.ReadByte();
+	float time = message.ReadFloat();
+	vec3_t pos, vel;
+	message.ReadPos(pos);
+	message.ReadPos(vel);
+
+	switch (cl_common->h2_Effects[index].type)
+	{
+	case HWCE_HWRAVENSTAFF:
+	case HWCE_HWRAVENPOWER:
+	case HWCE_BONESHARD:
+	case HWCE_BONESHRAPNEL:
+	case HWCE_HWBONEBALL:
+		CLHW_TurnEffectMissile(index, time, pos, vel);
+		break;
+	case HWCE_HWMISSILESTAR:
+	case HWCE_HWEIDOLONSTAR:
+		CLHW_TurnEffectStar(index, time, pos, vel);
+		break;
+	case 0:
+		break;
+	default:
+		Log::write("CLHW_ParseTurnEffect: bad type %d\n", cl_common->h2_Effects[index].type);
+		break;
+	}
+}
+
 void CLH2_LinkEffectEntity(effect_entity_t* entity)
 {
 	refEntity_t refEntity;

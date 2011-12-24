@@ -1527,7 +1527,7 @@ void CL_ParseServerMessage (void)
 			R_ParseParticleEffect4 ();
 			break;
 		case svc_turn_effect:
-			CL_TurnEffect ();
+			CLHW_ParseTurnEffect(net_message);
 			break;
 		case svc_update_effect:
 			CLHW_ParseReviseEffect(net_message);
