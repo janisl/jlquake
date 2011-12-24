@@ -227,11 +227,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	UPDATE_BACKUP	64	// copies of q1entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)
-
-#define	MAX_PACKET_ENTITIES	64	// doesn't count nails
-typedef struct
-{
-	int		num_entities;
-	q1entity_state_t	entities[MAX_PACKET_ENTITIES];
-} packet_entities_t;
-

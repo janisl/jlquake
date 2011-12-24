@@ -89,7 +89,7 @@ typedef struct
 	// reply
 	double				senttime;
 	float				ping_time;
-	packet_entities_t	entities;
+	hwpacket_entities_t	entities;
 } client_frame_t;
 
 typedef struct client_s

@@ -64,7 +64,7 @@ typedef struct
 	double		receivedtime;	// time message was received, or -1
 	qwplayer_state_t	playerstate[MAX_CLIENTS];	// message received that reflects performing
 							// the usercmd
-	packet_entities_t	packet_entities;
+	qwpacket_entities_t	packet_entities;
 	qboolean	invalid;		// true if the packet_entities delta was invalid
 } frame_t;
 

@@ -49,7 +49,7 @@ void CL_InitTEnts (void)
 
 h2entity_state_t *FindState(int EntNum)
 {
-	packet_entities_t		*pack;
+	hwpacket_entities_t		*pack;
 	static h2entity_state_t	pretend_player;
 	int						pnum;
 

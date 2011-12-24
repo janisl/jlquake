@@ -413,3 +413,11 @@ struct hwusercmd_t
 	byte impulse;
 	byte light_level;
 };
+
+#define HWMAX_PACKET_ENTITIES	64	// doesn't count nails
+
+struct hwpacket_entities_t
+{
+	int num_entities;
+	h2entity_state_t entities[HWMAX_PACKET_ENTITIES];
+};

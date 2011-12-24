@@ -236,15 +236,15 @@ void SV_WriteDelta (q1entity_state_t *from, q1entity_state_t *to, QMsg *msg, qbo
 =============
 SV_EmitPacketEntities
 
-Writes a delta update of a packet_entities_t to the message.
+Writes a delta update of a qwpacket_entities_t to the message.
 
 =============
 */
-void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, QMsg *msg)
+void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg)
 {
 	edict_t	*ent;
 	client_frame_t	*fromframe;
-	packet_entities_t *from;
+	qwpacket_entities_t *from;
 	int		oldindex, newindex;
 	int		oldnum, newnum;
 	int		oldmax;
@@ -448,7 +448,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	byte	*pvs;
 	vec3_t	org;
 	edict_t	*ent;
-	packet_entities_t	*pack;
+	qwpacket_entities_t	*pack;
 	edict_t	*clent;
 	client_frame_t	*frame;
 	q1entity_state_t	*state;
@@ -493,7 +493,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 			continue;	// added to the special update list
 
 		// add to the packetentities
-		if (pack->num_entities == MAX_PACKET_ENTITIES)
+		if (pack->num_entities == QWMAX_PACKET_ENTITIES)
 			continue;	// all full
 
 		state = &pack->entities[pack->num_entities];

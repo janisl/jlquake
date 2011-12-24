@@ -406,12 +406,3 @@
 #define	UPDATE_BACKUP	64	// copies of h2entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)
-
-
-#define	MAX_PACKET_ENTITIES	64	// doesn't count nails
-typedef struct
-{
-	int		num_entities;
-	h2entity_state_t	entities[MAX_PACKET_ENTITIES];
-} packet_entities_t;
-

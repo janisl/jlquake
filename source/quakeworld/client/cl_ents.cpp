@@ -155,7 +155,7 @@ rest of the data stream.
 void CL_ParsePacketEntities (qboolean delta)
 {
 	int			oldpacket, newpacket;
-	packet_entities_t	*oldp, *newp, dummy;
+	qwpacket_entities_t	*oldp, *newp, dummy;
 	int			oldindex, newindex;
 	int			word, newnum, oldnum;
 	qboolean	full;
@@ -214,8 +214,8 @@ void CL_ParsePacketEntities (qboolean delta)
 			while (oldindex < oldp->num_entities)
 			{	// copy all the rest of the entities from the old packet
 //Con_Printf ("copy %i\n", oldp->entities[oldindex].number);
-				if (newindex >= MAX_PACKET_ENTITIES)
-					Host_EndGame ("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
+				if (newindex >= QWMAX_PACKET_ENTITIES)
+					Host_EndGame ("CL_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
 				newp->entities[newindex] = oldp->entities[oldindex];
 				newindex++;
 				oldindex++;
@@ -236,8 +236,8 @@ void CL_ParsePacketEntities (qboolean delta)
 
 //Con_Printf ("copy %i\n", oldnum);
 			// copy one of the old entities over to the new packet unchanged
-			if (newindex >= MAX_PACKET_ENTITIES)
-				Host_EndGame ("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
+			if (newindex >= QWMAX_PACKET_ENTITIES)
+				Host_EndGame ("CL_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
 			newp->entities[newindex] = oldp->entities[oldindex];
 			newindex++;
 			oldindex++;
@@ -258,8 +258,8 @@ void CL_ParsePacketEntities (qboolean delta)
 				}
 				continue;
 			}
-			if (newindex >= MAX_PACKET_ENTITIES)
-				Host_EndGame ("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
+			if (newindex >= QWMAX_PACKET_ENTITIES)
+				Host_EndGame ("CL_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
 			CL_ParseDelta (&clq1_baselines[newnum], &newp->entities[newindex], word);
 			newindex++;
 			continue;
@@ -308,7 +308,7 @@ CL_LinkPacketEntities
 */
 void CL_LinkPacketEntities (void)
 {
-	packet_entities_t	*pack;
+	qwpacket_entities_t	*pack;
 	q1entity_state_t		*s1, *s2;
 	float				f;
 	qhandle_t			model;
@@ -318,7 +318,7 @@ void CL_LinkPacketEntities (void)
 	int					pnum;
 
 	pack = &cl.frames[cls.netchan.incomingSequence&UPDATE_MASK].packet_entities;
-	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK].packet_entities;
+	qwpacket_entities_t* PrevPack = &cl.frames[(cls.netchan.incomingSequence - 1) & UPDATE_MASK].packet_entities;
 
 	autorotate = AngleMod(100*cl.serverTimeFloat);
 
@@ -788,7 +788,7 @@ void CL_SetSolidEntities (void)
 {
 	int		i;
 	frame_t	*frame;
-	packet_entities_t	*pak;
+	qwpacket_entities_t	*pak;
 	q1entity_state_t		*state;
 
 	pmove.physents[0].model = 0;

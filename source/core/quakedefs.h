@@ -72,3 +72,11 @@ struct qwusercmd_t
 	byte buttons;
 	byte impulse;
 };
+
+#define QWMAX_PACKET_ENTITIES	64	// doesn't count nails
+
+struct qwpacket_entities_t
+{
+	int num_entities;
+	q1entity_state_t entities[QWMAX_PACKET_ENTITIES];
+};

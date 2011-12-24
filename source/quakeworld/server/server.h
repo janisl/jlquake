@@ -106,7 +106,7 @@ typedef struct
 	// reply
 	double				senttime;
 	float				ping_time;
-	packet_entities_t	entities;
+	qwpacket_entities_t	entities;
 } client_frame_t;
 
 #define MAX_BACK_BUFFERS 4
