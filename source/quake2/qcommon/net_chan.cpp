@@ -220,7 +220,6 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // check for message overflow
 	if (chan->message.overflowed)
 	{
-		chan->fatal_error = true;
 		Com_Printf ("%s:Outgoing message overflow\n"
 			, SOCK_AdrToString (chan->remoteAddress));
 		return;

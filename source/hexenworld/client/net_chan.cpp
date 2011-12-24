@@ -182,7 +182,6 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // check for message overflow
 	if (chan->message.overflowed)
 	{
-		chan->fatal_error = true;
 		Con_Printf ("%s:Outgoing message overflow\n"
 			, SOCK_AdrToString (chan->remoteAddress));
 		return;
@@ -229,8 +228,6 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 // send the datagram
 	i = chan->outgoingSequence & (MAX_LATENT-1);
-	chan->outgoing_size[i] = send.cursize;
-	chan->outgoing_time[i] = realtime;
 
 	//zoid, no input in demo playback mode
 #ifndef SERVERONLY
@@ -372,11 +369,8 @@ qboolean Netchan_Process (netchan_t *chan)
 // the message can now be read from the current message pointer
 // update statistics counters
 //
-	chan->frame_latency = chan->frame_latency*OLD_AVG
-		+ (chan->outgoingSequence-sequence_ack)*(1.0-OLD_AVG);
 	chan->frame_rate = chan->frame_rate*OLD_AVG
 		+ (realtime-chan->lastReceived / 1000.0)*(1.0-OLD_AVG);		
-	chan->good_count += 1;
 
 	chan->lastReceived = realtime * 1000;
 

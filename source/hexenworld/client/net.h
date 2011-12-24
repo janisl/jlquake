@@ -20,15 +20,11 @@ void		NET_SendPacket (int length, void *data, netadr_t to);
 
 struct netchan_t : netchan_common_t
 {
-	qboolean	fatal_error;
-
 // the statistics are cleared at each client begin, because
 // the server connecting process gives a bogus picture of the data
-	float		frame_latency;		// rolling average
 	float		frame_rate;
 
 	int			drop_count;			// dropped packets, cleared each level
-	int			good_count;			// cleared each level
 
 // bandwidth estimator
 	double		cleartime;			// if realtime > nc->cleartime, free to go
@@ -37,10 +33,6 @@ struct netchan_t : netchan_common_t
 // reliable staging and holding areas
 	QMsg		message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN_HW];
-
-// time and size data to calculate bandwidth
-	int			outgoing_size[MAX_LATENT];
-	double		outgoing_time[MAX_LATENT];
 };
 
 void Netchan_Init (void);
