@@ -394,15 +394,3 @@
 #define TE_ACID_BALL_FLY		79
 #define TE_ACID_BLOB_FLY		80
 #define TE_CHAINLIGHTNING		81
-
-/*
-==========================================================
-
-  ELEMENTS COMMUNICATED ACROSS THE NET
-
-==========================================================
-*/
-
-#define	UPDATE_BACKUP	64	// copies of h2entity_state_t to keep buffered
-							// must be power of two
-#define	UPDATE_MASK		(UPDATE_BACKUP-1)

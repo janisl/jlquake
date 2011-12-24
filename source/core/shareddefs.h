@@ -20,7 +20,11 @@
 #define MAX_MAP_AREA_BYTES		32		// bit vector of area visibility
 
 // sound attenuation values
-#define ATTN_NONE               0	// full volume the entire level
-#define ATTN_NORM               1
-#define ATTN_IDLE               2
-#define ATTN_STATIC             3	// diminish very rapidly with distance
+#define ATTN_NONE				0	// full volume the entire level
+#define ATTN_NORM				1
+#define ATTN_IDLE				2
+#define ATTN_STATIC				3	// diminish very rapidly with distance
+
+#define UPDATE_BACKUP	64	// copies of entity_state_t to keep buffered
+							// must be power of two
+#define UPDATE_MASK		(UPDATE_BACKUP - 1)
