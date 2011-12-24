@@ -108,10 +108,6 @@ typedef struct qsocket_s
 
 } qsocket_t;
 
-struct netchan_t : netchan_common_t
-{
-};
-
 extern qsocket_t	*net_activeSockets;
 extern qsocket_t	*net_freeSockets;
 extern int			net_numsockets;

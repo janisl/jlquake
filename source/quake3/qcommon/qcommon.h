@@ -95,10 +95,6 @@ qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 Netchan handles packet fragmentation and out of order / duplicate suppression
 */
 
-struct netchan_t : netchan_common_t
-{
-};
-
 void Netchan_Init( int qport );
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 

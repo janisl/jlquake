@@ -37,10 +37,6 @@ void		NET_SendPacket (int length, void *data, netadr_t to);
 
 #define	MAX_LATENT	32
 
-struct netchan_t : netchan_common_t
-{
-};
-
 void Netchan_Init (void);
 void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (netadr_t adr, int length, byte *data);

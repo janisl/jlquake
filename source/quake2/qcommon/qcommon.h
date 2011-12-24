@@ -296,10 +296,6 @@ void		NET_Sleep(int msec);
 
 #define	MAX_LATENT	32
 
-struct netchan_t : netchan_common_t
-{
-};
-
 extern	netadr_t	net_from;
 extern	QMsg	net_message;
 extern	byte		net_message_buffer[MAX_MSGLEN_Q2];

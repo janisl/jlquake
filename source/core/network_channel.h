@@ -37,7 +37,7 @@ enum netsrc_t
 	NS_SERVER
 };
 
-struct netchan_common_t
+struct netchan_t
 {
 	netsrc_t sock;
 
