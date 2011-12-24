@@ -1950,6 +1950,50 @@ static void CLHW_ParseReviseEffectScarabChain(QMsg& message, int index)
 	}
 }
 
+static void CLHW_ParseDirectionChangeAngles(QMsg& message, vec3_t angles)
+{
+	angles[0] = message.ReadAngle();
+	if (angles[0] < 0)
+	{
+		angles[0] += 360;
+	}
+	angles[0] *= -1;
+	angles[1] = message.ReadAngle();
+	if (angles[1] < 0)
+	{
+		angles[1] += 360;
+	}
+	angles[2] = 0;
+}
+
+static void CLHW_UpdateDirectionChangeVelocity(const vec3_t angles, vec3_t velocity)
+{
+	vec3_t forward, right, up;
+	AngleVectors(angles, forward, right, up);
+	float speed = VectorLength(velocity);
+	VectorScale(forward, speed, velocity);
+}
+
+static void CLHW_ParseReviseEffectXBowDirectionChange(QMsg& message, int index, int revisionCode, int curEnt)
+{
+	vec3_t angles;
+	CLHW_ParseDirectionChangeAngles(message, angles);
+
+	if (revisionCode & 128)//new origin
+	{
+		message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
+	}
+
+	CLHW_UpdateDirectionChangeVelocity(angles, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
+
+	if (cl_common->h2_Effects[index].Xbow.ent[curEnt] != -1)
+	{
+		effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
+		VectorCopy(angles, ent->state.angles);
+		VectorCopy(cl_common->h2_Effects[index].Xbow.origin[curEnt], ent->state.origin);
+	}
+}
+
 static void CLHW_ParseReviseEffectXBowShoot(QMsg& message, int index)
 {
 	int revisionCode = message.ReadByte();
@@ -2017,59 +2061,7 @@ static void CLHW_ParseReviseEffectXBowShoot(QMsg& message, int index)
 	}
 	else
 	{
-		if (cl_common->h2_Effects[index].Xbow.ent[curEnt]!=-1)
-		{
-			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
-			ent->state.angles[0] = message.ReadAngle();
-			if (ent->state.angles[0] < 0)
-			{
-				ent->state.angles[0] += 360;
-			}
-			ent->state.angles[0]*=-1;
-			ent->state.angles[1] = message.ReadAngle();
-			if (ent->state.angles[1] < 0)
-			{
-				ent->state.angles[1] += 360;
-			}
-			ent->state.angles[2] = 0;
-
-			if (revisionCode &128)//new origin
-			{
-				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
-			}
-
-			vec3_t forward, right, up;
-			AngleVectors(ent->state.angles, forward, right, up);
-			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-			VectorScale(forward,speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-			VectorCopy(cl_common->h2_Effects[index].Xbow.origin[curEnt], ent->state.origin);
-		}
-		else
-		{
-			vec3_t pos;
-			pos[0] = message.ReadAngle();
-			if (pos[0] < 0)
-			{
-				pos[0] += 360;
-			}
-			pos[0]*=-1;
-			pos[1] = message.ReadAngle();
-			if (pos[1] < 0)
-			{
-				pos[1] += 360;
-			}
-			pos[2] = 0;
-
-			if (revisionCode & 128)//new origin
-			{
-				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
-			}
-
-			vec3_t forward, right, up;
-			AngleVectors(pos, forward, right, up);
-			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-			VectorScale(forward, speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-		}
+		CLHW_ParseReviseEffectXBowDirectionChange(message, index, revisionCode, curEnt);
 	}
 }
 
@@ -2094,61 +2086,9 @@ static void CLHW_ParseReviseEffectSheepinator(QMsg& message, int index)
 			CLH2_ColouredParticleExplosion(ent->state.origin,(rand()%16)+144/*(144,159)*/,20,30);
 		}
 	}
-	else//direction change
+	else
 	{
-		if (cl_common->h2_Effects[index].Xbow.ent[curEnt] != -1)
-		{
-			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Xbow.ent[curEnt]];
-			ent->state.angles[0] = message.ReadAngle();
-			if (ent->state.angles[0] < 0)
-			{
-				ent->state.angles[0] += 360;
-			}
-			ent->state.angles[0]*=-1;
-			ent->state.angles[1] = message.ReadAngle();
-			if (ent->state.angles[1] < 0)
-			{
-				ent->state.angles[1] += 360;
-			}
-			ent->state.angles[2] = 0;
-
-			if (revisionCode & 128)//new origin
-			{
-				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
-			}
-
-			vec3_t forward, right, up;
-			AngleVectors(ent->state.angles, forward, right, up);
-			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-			VectorScale(forward,speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-			VectorCopy(cl_common->h2_Effects[index].Xbow.origin[curEnt], ent->state.origin);
-		}
-		else
-		{
-			vec3_t pos;
-			pos[0] = message.ReadAngle();
-			if (pos[0] < 0)
-			{
-				pos[0] += 360;
-			}
-			pos[0]*=-1;
-			pos[1] = message.ReadAngle();
-			if (pos[1] < 0)
-			{
-				pos[1] += 360;
-			}
-			pos[2] = 0;
-
-			if (revisionCode & 128)//new origin
-			{
-				message.ReadPos(cl_common->h2_Effects[index].Xbow.origin[curEnt]);
-			}
-
-			vec3_t forward, right, up;
-			AngleVectors(pos, forward, right, up);
-			float speed = VectorLength(cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-			VectorScale(forward,speed, cl_common->h2_Effects[index].Xbow.vel[curEnt]);
-		}
+		CLHW_ParseReviseEffectXBowDirectionChange(message, index, revisionCode, curEnt);
 	}
 }
 
@@ -2182,52 +2122,18 @@ static void CLHW_ParseReviseEffectDrilla(QMsg& message, int index)
 	}
 	else//turn
 	{
+		vec3_t angles;
+		CLHW_ParseDirectionChangeAngles(message, angles);
+
+		message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
+
+		CLHW_UpdateDirectionChangeVelocity(angles, cl_common->h2_Effects[index].Missile.velocity);
+
 		if (cl_common->h2_Effects[index].Missile.entity_index != -1)
 		{
 			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
-			ent->state.angles[0] = message.ReadAngle();
-			if (ent->state.angles[0] < 0)
-			{
-				ent->state.angles[0] += 360;
-			}
-			ent->state.angles[0]*=-1;
-			ent->state.angles[1] = message.ReadAngle();
-			if (ent->state.angles[1] < 0)
-			{
-				ent->state.angles[1] += 360;
-			}
-			ent->state.angles[2] = 0;
-
-			message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
-
-			vec3_t forward, right, up;
-			AngleVectors(ent->state.angles, forward, right, up);
-			float speed = VectorLength(cl_common->h2_Effects[index].Missile.velocity);
-			VectorScale(forward, speed, cl_common->h2_Effects[index].Missile.velocity);
+			VectorCopy(angles, ent->state.angles);
 			VectorCopy(cl_common->h2_Effects[index].Missile.origin, ent->state.origin);
-		}
-		else
-		{
-			vec3_t pos;
-			pos[0] = message.ReadAngle();
-			if (pos[0] < 0)
-			{
-				pos[0] += 360;
-			}
-			pos[0]*=-1;
-			pos[1] = message.ReadAngle();
-			if (pos[1] < 0)
-			{
-				pos[1] += 360;
-			}
-			pos[2] = 0;
-
-			message.ReadPos(cl_common->h2_Effects[index].Missile.origin);
-
-			vec3_t forward, right, up;
-			AngleVectors(pos, forward, right, up);
-			float speed = VectorLength(cl_common->h2_Effects[index].Missile.velocity);
-			VectorScale(forward, speed, cl_common->h2_Effects[index].Missile.velocity);
 		}
 	}
 }
