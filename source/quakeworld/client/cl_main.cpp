@@ -453,7 +453,7 @@ void CL_User_f (void)
 
 	uid = String::Atoi(Cmd_Argv(1));
 
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	for (i=0 ; i<QWMAX_CLIENTS ; i++)
 	{
 		if (!cl.players[i].name[0])
 			continue;
@@ -482,7 +482,7 @@ void CL_Users_f (void)
 	c = 0;
 	Con_Printf ("userid frags name\n");
 	Con_Printf ("------ ----- ----\n");
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	for (i=0 ; i<QWMAX_CLIENTS ; i++)
 	{
 		if (cl.players[i].name[0])
 		{

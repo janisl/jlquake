@@ -276,7 +276,7 @@ R_NetGraph
 void R_NetGraph (void)
 {
 	int		x, y;
-	frame_t	*frame;
+	hwframe_t	*frame;
 	char st[80];
 
 	for (int i = cls.netchan.outgoingSequence - UPDATE_BACKUP + 1; i <= cls.netchan.outgoingSequence; i++)

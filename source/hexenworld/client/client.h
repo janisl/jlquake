@@ -1,20 +1,5 @@
 // client.h
 
-typedef struct
-{
-	// generated on client side
-	hwusercmd_t	cmd;		// cmd that generated the frame
-	double		senttime;	// time cmd was sent off
-	int			delta_sequence;		// sequence number to delta from, -1 = full update
-
-	// received from server
-	double		receivedtime;	// time message was received, or -1
-	hwplayer_state_t	playerstate[HWMAX_CLIENTS];	// message received that reflects performing
-							// the usercmd
-	hwpacket_entities_t	packet_entities;
-	qboolean	invalid;		// true if the packet_entities delta was invalid
-} frame_t;
-
 
 //
 // client_state_t should hold all pieces of the client state
@@ -158,7 +143,7 @@ struct client_state_t : clientActiveCommon_t
 	double		last_servermessage;
 
 // sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK] = cmd
-	frame_t		frames[UPDATE_BACKUP];
+	hwframe_t		frames[UPDATE_BACKUP];
 
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc

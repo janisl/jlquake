@@ -335,7 +335,7 @@ void Sbar_DrawNum (int x, int y, int num, int digits, int color)
 
 //=============================================================================
 
-int		fragsort[MAX_CLIENTS];
+int		fragsort[QWMAX_CLIENTS];
 int		scoreboardlines;
 typedef struct {
 	char team[16+1];
@@ -343,8 +343,8 @@ typedef struct {
 	int players;
 	int plow, phigh, ptotal;
 } team_t;
-team_t teams[MAX_CLIENTS];
-int teamsort[MAX_CLIENTS];
+team_t teams[QWMAX_CLIENTS];
+int teamsort[QWMAX_CLIENTS];
 int scoreboardteams;
 
 /*
@@ -358,7 +358,7 @@ void Sbar_SortFrags (qboolean includespec)
 		
 // sort by frags
 	scoreboardlines = 0;
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	for (i=0 ; i<QWMAX_CLIENTS ; i++)
 	{
 		if (cl.players[i].name[0] &&
 			(!cl.players[i].spectator || includespec))
@@ -396,10 +396,10 @@ void Sbar_SortTeams (void)
 
 // sort the teams
 	Com_Memset(teams, 0, sizeof(teams));
-	for (i = 0; i < MAX_CLIENTS; i++)
+	for (i = 0; i < QWMAX_CLIENTS; i++)
 		teams[i].plow = 999;
 
-	for (i = 0; i < MAX_CLIENTS; i++) {
+	for (i = 0; i < QWMAX_CLIENTS; i++) {
 		s = &cl.players[i];
 		if (!s->name[0])
 			continue;

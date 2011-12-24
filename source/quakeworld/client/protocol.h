@@ -222,8 +222,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ==========================================================
 */
 
-#define	MAX_CLIENTS		32
-
 #define	UPDATE_BACKUP	64	// copies of q1entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)

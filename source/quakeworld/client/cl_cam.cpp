@@ -253,7 +253,7 @@ static void Cam_CheckHighTarget(void)
 	player_info_t	*s;
 
 	j = -1;
-	for (i = 0, max = -9999; i < MAX_CLIENTS; i++) {
+	for (i = 0, max = -9999; i < QWMAX_CLIENTS; i++) {
 		s = &cl.players[i];
 		if (s->name[0] && !s->spectator && s->frags > max) {
 			max = s->frags;
@@ -274,7 +274,7 @@ static void Cam_CheckHighTarget(void)
 void Cam_Track(qwusercmd_t *cmd)
 {
 	qwplayer_state_t *player, *self;
-	frame_t *frame;
+	qwframe_t *frame;
 	vec3_t vec;
 	float len;
 
@@ -399,7 +399,7 @@ void Cam_FinishMove(qwusercmd_t *cmd)
 //	Con_Printf("Selecting track target...\n");
 
 	if (locked && autocam)
-		end = (spec_track + 1) % MAX_CLIENTS;
+		end = (spec_track + 1) % QWMAX_CLIENTS;
 	else
 		end = spec_track;
 	i = end;
@@ -409,7 +409,7 @@ void Cam_FinishMove(qwusercmd_t *cmd)
 			Cam_Lock(i);
 			return;
 		}
-		i = (i + 1) % MAX_CLIENTS;
+		i = (i + 1) % QWMAX_CLIENTS;
 	} while (i != end);
 	// stay on same guy?
 	i = spec_track;

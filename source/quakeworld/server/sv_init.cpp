@@ -91,7 +91,7 @@ void SV_CreateBaseline (void)
 			continue;
 		// create baselines for all player slots,
 		// and any other edict that has a visible model
-		if (entnum > MAX_CLIENTS && !svent->v.modelindex)
+		if (entnum > QWMAX_CLIENTS && !svent->v.modelindex)
 			continue;
 
 	//
@@ -101,7 +101,7 @@ void SV_CreateBaseline (void)
 		VectorCopy (svent->v.angles, svent->baseline.angles);
 		svent->baseline.frame = svent->v.frame;
 		svent->baseline.skinnum = svent->v.skin;
-		if (entnum > 0 && entnum <= MAX_CLIENTS)
+		if (entnum > 0 && entnum <= QWMAX_CLIENTS)
 		{
 			svent->baseline.colormap = entnum;
 			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
@@ -157,7 +157,7 @@ void SV_SaveSpawnparms (void)
 	// serverflags is the only game related thing maintained
 	svs.serverflags = pr_global_struct->serverflags;
 
-	for (i=0, host_client = svs.clients ; i<MAX_CLIENTS ; i++, host_client++)
+	for (i=0, host_client = svs.clients ; i<QWMAX_CLIENTS ; i++, host_client++)
 	{
 		if (host_client->state != cs_spawned)
 			continue;
@@ -239,8 +239,8 @@ void SV_SpawnServer (char *server)
 	sv.edicts = (edict_t*)Hunk_AllocName (MAX_EDICTS_Q1*pr_edict_size, "edicts");
 	
 	// leave slots at start for clients only
-	sv.num_edicts = MAX_CLIENTS+1;
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	sv.num_edicts = QWMAX_CLIENTS+1;
+	for (i=0 ; i<QWMAX_CLIENTS ; i++)
 	{
 		ent = EDICT_NUM(i+1);
 		svs.clients[i].edict = ent;

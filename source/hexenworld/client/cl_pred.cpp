@@ -6,7 +6,7 @@
 Cvar*	cl_nopred;
 Cvar*	cl_pushlatency;
 
-extern	frame_t		*view_frame;
+extern	hwframe_t		*view_frame;
 qboolean player_crouching;
 
 /*
@@ -103,7 +103,7 @@ void CL_PredictMove (void)
 {
 	int			i;
 	float		f;
-	frame_t		*from, *to = NULL;
+	hwframe_t		*from, *to = NULL;
 	int			oldphysent;
 
 	if (cl_pushlatency->value > 0)

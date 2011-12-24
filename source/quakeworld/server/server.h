@@ -226,7 +226,7 @@ typedef struct
 {
 	int			spawncount;			// number of servers spawned since start,
 									// used to check late spawns
-	client_t	clients[MAX_CLIENTS];
+	client_t	clients[QWMAX_CLIENTS];
 	int			serverflags;		// episode completion information
 	
 	double		last_heartbeat;

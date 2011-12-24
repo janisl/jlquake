@@ -750,7 +750,7 @@ void CL_ParseClientdata (void)
 {
 	int				i;
 	float		latency;
-	frame_t		*frame;
+	hwframe_t		*frame;
 
 // calculate simulated time of message
 	oldparsecountmod = parsecountmod;

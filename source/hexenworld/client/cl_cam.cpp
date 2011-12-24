@@ -234,7 +234,7 @@ static void Cam_CheckHighTarget(void)
 void Cam_Track(hwusercmd_t *cmd)
 {
 	hwplayer_state_t *player, *self;
-	frame_t *frame;
+	hwframe_t *frame;
 	vec3_t vec;
 	float len;
 

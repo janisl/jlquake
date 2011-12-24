@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Cvar*	cl_nopred;
 Cvar*	cl_pushlatency;
 
-extern	frame_t		*view_frame;
+extern	qwframe_t		*view_frame;
 
 /*
 =================
@@ -115,7 +115,7 @@ void CL_PredictMove (void)
 {
 	int			i;
 	float		f;
-	frame_t		*from, *to = NULL;
+	qwframe_t		*from, *to = NULL;
 	int			oldphysent;
 
 	if (cl_pushlatency->value > 0)

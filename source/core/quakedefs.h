@@ -80,3 +80,5 @@ struct qwpacket_entities_t
 	int num_entities;
 	q1entity_state_t entities[QWMAX_PACKET_ENTITIES];
 };
+
+#define QWMAX_CLIENTS		32

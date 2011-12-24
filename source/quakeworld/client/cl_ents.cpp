@@ -29,7 +29,7 @@ static struct predicted_player {
 	int flags;
 	qboolean active;
 	vec3_t origin;	// predicted origin
-} predicted_players[MAX_CLIENTS];
+} predicted_players[QWMAX_CLIENTS];
 
 /*
 =========================================================================
@@ -354,7 +354,7 @@ void CL_LinkPacketEntities (void)
 		ent.hModel = model;
 	
 		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS) && s1->modelindex == cl_playerindex)
+		if (s1->colormap && (s1->colormap < QWMAX_CLIENTS) && s1->modelindex == cl_playerindex)
 		{
 			R_HandlePlayerSkin(&ent, s1->colormap - 1);
 		}
@@ -547,7 +547,7 @@ void CL_ParsePlayerinfo (void)
 	int			i;
 
 	num = net_message.ReadByte ();
-	if (num > MAX_CLIENTS)
+	if (num > QWMAX_CLIENTS)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
 	info = &cl.players[num];
@@ -684,7 +684,7 @@ void CL_LinkPlayers (void)
 	qwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
-	frame_t			*frame;
+	qwframe_t			*frame;
 	int				oldphysent;
 
 	playertime = realtime - cls.latency + 0.02;
@@ -693,7 +693,7 @@ void CL_LinkPlayers (void)
 
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
-	for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS 
+	for (j=0, info=cl.players, state=frame->playerstate ; j < QWMAX_CLIENTS 
 		; j++, info++, state++)
 	{
 		if (state->messagenum != cl.parsecount)
@@ -787,7 +787,7 @@ Builds all the pmove physents for the current frame
 void CL_SetSolidEntities (void)
 {
 	int		i;
-	frame_t	*frame;
+	qwframe_t	*frame;
 	qwpacket_entities_t	*pak;
 	q1entity_state_t		*state;
 
@@ -831,7 +831,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	qwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
-	frame_t			*frame;
+	qwframe_t			*frame;
 	struct predicted_player *pplayer;
 
 	playertime = realtime - cls.latency + 0.02;
@@ -841,7 +841,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
-		j < MAX_CLIENTS;
+		j < QWMAX_CLIENTS;
 		j++, pplayer++, state++) {
 
 		pplayer->active = false;
@@ -908,7 +908,7 @@ void CL_SetSolidPlayers (int playernum)
 
 	pent = pmove.physents + pmove.numphysent;
 
-	for (j=0, pplayer = predicted_players; j < MAX_CLIENTS;	j++, pplayer++) {
+	for (j=0, pplayer = predicted_players; j < QWMAX_CLIENTS;	j++, pplayer++) {
 
 		if (!pplayer->active)
 			continue;	// not present this frame

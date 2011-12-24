@@ -578,7 +578,7 @@ void CL_Record_f (void)
 
 // send current status of all other players
 
-	for (i = 0; i < MAX_CLIENTS; i++) {
+	for (i = 0; i < QWMAX_CLIENTS; i++) {
 		player = cl.players + i;
 
 		buf.WriteByte(svc_updatefrags);

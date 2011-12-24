@@ -53,7 +53,7 @@ float	v_targDist = 0.0;
 
 extern	int			in_forward, in_forward2, in_back;
 
-frame_t		*view_frame;
+hwframe_t		*view_frame;
 static hwplayer_state_t		*view_message;
 
 static cshift_t	cshift_empty = { {130,80,50}, 0 };

@@ -1023,7 +1023,7 @@ void CL_LinkPlayers (void)
 	hwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
-	frame_t			*frame;
+	hwframe_t			*frame;
 	int				oldphysent;
 
 	playertime = realtime - cls.latency + 0.02;
@@ -1195,7 +1195,7 @@ Builds all the pmove physents for the current frame
 void CL_SetSolidEntities (void)
 {
 	int		i;
-	frame_t	*frame;
+	hwframe_t	*frame;
 	hwpacket_entities_t	*pak;
 	h2entity_state_t		*state;
 
@@ -1241,7 +1241,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	hwplayer_state_t	exact;
 	double			playertime;
 	int				msec;
-	frame_t			*frame;
+	hwframe_t			*frame;
 	struct predicted_player *pplayer;
 
 	playertime = realtime - cls.latency + 0.02;

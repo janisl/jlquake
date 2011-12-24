@@ -107,7 +107,7 @@ double	parsecounttime;
 
 int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
-image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
+image_t*	playertextures[QWMAX_CLIENTS];		// up to 16 color translated skins
 
 //=============================================================================
 
@@ -116,7 +116,7 @@ int packet_latency[NET_TIMINGS];
 int CL_CalcNet (void)
 {
 	int		a, i;
-	frame_t	*frame;
+	qwframe_t	*frame;
 	int lost;
 
 	for (i=cls.netchan.outgoingSequence-UPDATE_BACKUP+1
@@ -882,7 +882,7 @@ void CL_ParseClientdata (void)
 {
 	int				i;
 	float		latency;
-	frame_t		*frame;
+	qwframe_t		*frame;
 
 // calculate simulated time of message
 	oldparsecountmod = parsecountmod;
@@ -974,8 +974,8 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	if (slot > MAX_CLIENTS)
-		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS");
+	if (slot > QWMAX_CLIENTS)
+		Sys_Error ("CL_NewTranslation: slot > QWMAX_CLIENTS");
 
 	R_TranslatePlayerSkin(slot);
 }
@@ -1012,8 +1012,8 @@ void CL_UpdateUserinfo (void)
 	player_info_t	*player;
 
 	slot = net_message.ReadByte ();
-	if (slot >= MAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_CLIENTS");
+	if (slot >= QWMAX_CLIENTS)
+		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > QWMAX_CLIENTS");
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
@@ -1035,8 +1035,8 @@ void CL_SetInfo (void)
 	char value[MAX_MSGLEN_QW];
 
 	slot = net_message.ReadByte ();
-	if (slot >= MAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > MAX_CLIENTS");
+	if (slot >= QWMAX_CLIENTS)
+		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > QWMAX_CLIENTS");
 
 	player = &cl.players[slot];
 
@@ -1110,7 +1110,7 @@ void CL_MuzzleFlash (void)
 {
 	int i = net_message.ReadShort();
 
-	if ((unsigned)(i - 1) >= MAX_CLIENTS)
+	if ((unsigned)(i - 1) >= QWMAX_CLIENTS)
 	{
 		return;
 	}
@@ -1240,30 +1240,30 @@ void CL_ParseServerMessage (void)
 		
 		case svc_updatefrags:
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_CLIENTS");
+			if (i >= QWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > QWMAX_CLIENTS");
 			cl.players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_CLIENTS");
+			if (i >= QWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateping > QWMAX_CLIENTS");
 			cl.players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case svc_updatepl:
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > MAX_CLIENTS");
+			if (i >= QWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > QWMAX_CLIENTS");
 			cl.players[i].pl = net_message.ReadByte ();
 			break;
 			
 		case svc_updateentertime:
 		// time is sent over as seconds ago
 			i = net_message.ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_CLIENTS");
+			if (i >= QWMAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > QWMAX_CLIENTS");
 			cl.players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
