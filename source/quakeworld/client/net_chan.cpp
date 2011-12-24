@@ -165,7 +165,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->remoteAddress = adr;
 	chan->lastReceived = realtime * 1000;
 	
-	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
+	chan->message.InitOOB(chan->messageBuffer, MAX_MSGLEN_QW);
 	chan->message.allowoverflow = true;
 
 	chan->qport = qport;
@@ -244,7 +244,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // if the reliable transmit buffer is empty, copy the current message out
 	if (!chan->reliableOrUnsentLength && chan->message.cursize)
 	{
-		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->message_buf, chan->message.cursize);
+		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->messageBuffer, chan->message.cursize);
 		chan->reliableOrUnsentLength = chan->message.cursize;
 		chan->message.cursize = 0;
 		chan->outgoingReliableSequence ^= 1;

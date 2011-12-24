@@ -160,7 +160,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->incomingSequence = 0;
 	chan->outgoingSequence = 1;
 
-	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
+	chan->message.InitOOB(chan->messageBuffer, MAX_MSGLEN_Q2 - 16);	// leave space for header
 	chan->message.allowoverflow = true;
 }
 
@@ -229,7 +229,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 	if (!chan->reliableOrUnsentLength && chan->message.cursize)
 	{
-		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->message_buf, chan->message.cursize);
+		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->messageBuffer, chan->message.cursize);
 		chan->reliableOrUnsentLength = chan->message.cursize;
 		chan->message.cursize = 0;
 		chan->outgoingReliableSequence ^= 1;

@@ -71,4 +71,8 @@ struct netchan_common_t
 
 	int lastReceived;		// for timeouts
 	int lastSent;			// for retransmits
+
+	// reliable staging and holding areas
+	QMsg message;		// writing buffer to send to server
+	byte messageBuffer[MAX_MSGLEN];
 };

@@ -48,10 +48,6 @@ struct netchan_t : netchan_common_t
 // bandwidth estimator
 	double		cleartime;			// if realtime > nc->cleartime, free to go
 	double		rate;				// seconds / byte
-
-// reliable staging and holding areas
-	QMsg		message;		// writing buffer to send to server
-	byte		message_buf[MAX_MSGLEN_QW];
 };
 
 void Netchan_Init (void);

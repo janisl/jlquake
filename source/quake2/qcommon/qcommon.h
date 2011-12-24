@@ -298,9 +298,6 @@ void		NET_Sleep(int msec);
 
 struct netchan_t : netchan_common_t
 {
-// reliable staging and holding areas
-	QMsg	message;		// writing buffer to send to server
-	byte		message_buf[MAX_MSGLEN_Q2-16];		// leave space for header
 };
 
 extern	netadr_t	net_from;
