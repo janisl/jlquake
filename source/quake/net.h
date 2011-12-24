@@ -125,8 +125,6 @@ typedef struct qsocket_s
 	void			*driverdata;
 
 	unsigned int	ackSequence;
-	int				sendMessageLength;
-	byte			sendMessage [MAX_MSGLEN_Q1];
 
 	char			address[NET_NAMELEN];
 

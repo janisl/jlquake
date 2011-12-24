@@ -311,10 +311,6 @@ struct netchan_t : netchan_common_t
 // reliable staging and holding areas
 	QMsg	message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN_Q2-16];		// leave space for header
-
-// message is copied to this buffer when it is first transfered
-	int			reliable_length;
-	byte		reliable_buf[MAX_MSGLEN_Q2-16];	// unacked reliable message
 };
 
 extern	netadr_t	net_from;

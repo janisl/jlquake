@@ -67,7 +67,6 @@ qsocket_t *Loop_Connect (const char *host, netchan_t* chan)
 		String::Cpy(loop_client->address, "localhost");
 	}
 	loops[0].datalen = 0;
-	loop_client->sendMessageLength = 0;
 	loop_client->canSend = true;
 
 	if (!loop_server)
@@ -80,7 +79,6 @@ qsocket_t *Loop_Connect (const char *host, netchan_t* chan)
 		String::Cpy(loop_server->address, "LOCAL");
 	}
 	loops[1].datalen = 0;
-	loop_server->sendMessageLength = 0;
 	loop_server->canSend = true;
 
 	loop_client->driverdata = (void *)loop_server;
@@ -96,10 +94,8 @@ qsocket_t *Loop_CheckNewConnections (netadr_t* outaddr)
 		return NULL;
 
 	localconnectpending = false;
-	loop_server->sendMessageLength = 0;
 	loops[1].datalen = 0;
 	loop_server->canSend = true;
-	loop_client->sendMessageLength = 0;
 	loops[0].datalen = 0;
 	loop_client->canSend = true;
 	return loop_server;
@@ -221,7 +217,6 @@ void Loop_Close (qsocket_t *sock, netchan_t* chan)
 	if (sock->driverdata)
 		((qsocket_t *)sock->driverdata)->driverdata = NULL;
 	loops[chan->sock].datalen = 0;
-	sock->sendMessageLength = 0;
 	sock->canSend = true;
 	if (sock == loop_client)
 		loop_client = NULL;

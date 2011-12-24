@@ -155,7 +155,7 @@ Returns true if the bandwidth choke isn't
 */
 qboolean Netchan_CanReliable (netchan_t *chan)
 {
-	if (chan->reliable_length)
+	if (chan->reliableOrUnsentLength)
 		return false;			// waiting for ack
 	return Netchan_CanPacket (chan);
 }
@@ -196,10 +196,10 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		send_reliable = true;
 
 // if the reliable transmit buffer is empty, copy the current message out
-	if (!chan->reliable_length && chan->message.cursize)
+	if (!chan->reliableOrUnsentLength && chan->message.cursize)
 	{
-		Com_Memcpy(chan->reliable_buf, chan->message_buf, chan->message.cursize);
-		chan->reliable_length = chan->message.cursize;
+		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->message_buf, chan->message.cursize);
+		chan->reliableOrUnsentLength = chan->message.cursize;
 		chan->message.cursize = 0;
 		chan->outgoingReliableSequence ^= 1;
 		send_reliable = true;
@@ -219,7 +219,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // copy the reliable message to the packet first
 	if (send_reliable)
 	{
-		send.WriteData(chan->reliable_buf, chan->reliable_length);
+		send.WriteData(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentLength);
 		chan->lastReliableSequence = chan->outgoingSequence;
 	}
 	
@@ -357,7 +357,7 @@ qboolean Netchan_Process (netchan_t *chan)
 // clear the buffer to make way for the next
 //
 	if (reliable_ack == chan->outgoingReliableSequence)
-		chan->reliable_length = 0;	// it has been received
+		chan->reliableOrUnsentLength = 0;	// it has been received
 	
 //
 // if this message contains a reliable message, bump incoming_reliable_sequence 

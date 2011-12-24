@@ -142,8 +142,8 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 		Sys_Error("SendMessage: called with canSend == false\n");
 #endif
 
-	Com_Memcpy(sock->sendMessage, data->_data, data->cursize);
-	sock->sendMessageLength = data->cursize;
+	Com_Memcpy(chan->reliableOrUnsentBuffer, data->_data, data->cursize);
+	chan->reliableOrUnsentLength = data->cursize;
 
 	if (data->cursize <= MAX_DATAGRAM_Q1)
 	{
@@ -159,7 +159,7 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 
 	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence++);
-	Com_Memcpy(packetBuffer.data, sock->sendMessage, dataLen);
+	Com_Memcpy(packetBuffer.data, chan->reliableOrUnsentBuffer, dataLen);
 
 	sock->canSend = false;
 
@@ -178,9 +178,9 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 	unsigned int	dataLen;
 	unsigned int	eom;
 
-	if (sock->sendMessageLength <= MAX_DATAGRAM_Q1)
+	if (chan->reliableOrUnsentLength <= MAX_DATAGRAM_Q1)
 	{
-		dataLen = sock->sendMessageLength;
+		dataLen = chan->reliableOrUnsentLength;
 		eom = NETFLAG_EOM;
 	}
 	else
@@ -192,7 +192,7 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 
 	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence++);
-	Com_Memcpy(packetBuffer.data, sock->sendMessage, dataLen);
+	Com_Memcpy(packetBuffer.data, chan->reliableOrUnsentBuffer, dataLen);
 
 	sock->sendNext = false;
 
@@ -211,9 +211,9 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 	unsigned int	dataLen;
 	unsigned int	eom;
 
-	if (sock->sendMessageLength <= MAX_DATAGRAM_Q1)
+	if (chan->reliableOrUnsentLength <= MAX_DATAGRAM_Q1)
 	{
-		dataLen = sock->sendMessageLength;
+		dataLen = chan->reliableOrUnsentLength;
 		eom = NETFLAG_EOM;
 	}
 	else
@@ -225,7 +225,7 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 
 	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence - 1);
-	Com_Memcpy(packetBuffer.data, sock->sendMessage, dataLen);
+	Com_Memcpy(packetBuffer.data, chan->reliableOrUnsentBuffer, dataLen);
 
 	sock->sendNext = false;
 
@@ -377,15 +377,15 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 				Con_DPrintf("Duplicate ACK received\n");
 				continue;
 			}
-			sock->sendMessageLength -= MAX_DATAGRAM_Q1;
-			if (sock->sendMessageLength > 0)
+			chan->reliableOrUnsentLength -= MAX_DATAGRAM_Q1;
+			if (chan->reliableOrUnsentLength > 0)
 			{
-				Com_Memcpy(sock->sendMessage, sock->sendMessage+MAX_DATAGRAM_Q1, sock->sendMessageLength);
+				Com_Memcpy(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentBuffer+MAX_DATAGRAM_Q1, chan->reliableOrUnsentLength);
 				sock->sendNext = true;
 			}
 			else
 			{
-				sock->sendMessageLength = 0;
+				chan->reliableOrUnsentLength = 0;
 				sock->canSend = true;
 			}
 			continue;

@@ -57,4 +57,13 @@ struct netchan_common_t
 	int fragmentSequence;
 	int fragmentLength;
 	byte fragmentBuffer[MAX_MSGLEN];
+
+	//	Reliable message buffer for pre-Quake 3 games, message is copied to
+	// this buffer when it is first transfered.
+	//	For Quake 3 it's outgoing fragment buffer.
+	// we need to space out the sending of large fragmented messages
+	bool unsentFragments;
+	int unsentFragmentStart;
+	int reliableOrUnsentLength;
+	byte reliableOrUnsentBuffer[MAX_MSGLEN];
 };

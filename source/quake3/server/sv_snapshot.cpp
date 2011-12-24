@@ -670,7 +670,7 @@ void SV_SendClientMessages( void ) {
 		// was too large to send at once
 		if ( c->netchan.unsentFragments ) {
 			c->nextSnapshotTime = svs.time + 
-				SV_RateMsec( c, c->netchan.unsentLength - c->netchan.unsentFragmentStart );
+				SV_RateMsec( c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart );
 			SV_Netchan_TransmitNextFragment( c );
 			continue;
 		}
