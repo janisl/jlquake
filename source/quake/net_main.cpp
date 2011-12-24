@@ -152,7 +152,6 @@ qsocket_t *NET_NewQSocket (void)
 	sock->driverdata = NULL;
 	sock->canSend = true;
 	sock->sendNext = false;
-	sock->lastMessageTime = net_time;
 
 	return sock;
 }
@@ -538,7 +537,7 @@ int	NET_GetMessage (qsocket_t *sock, netchan_t* chan)
 	// see if this connection has timed out
 	if (ret == 0 && sock->driver)
 	{
-		if (net_time - sock->lastMessageTime > net_messagetimeout->value)
+		if (net_time - chan->lastReceived * 1000.0 > net_messagetimeout->value)
 		{
 			NET_Close(sock, chan);
 			return -1;
@@ -550,7 +549,7 @@ int	NET_GetMessage (qsocket_t *sock, netchan_t* chan)
 	{
 		if (sock->driver)
 		{
-			sock->lastMessageTime = net_time;
+			chan->lastReceived = net_time * 1000;
 			if (ret == 1)
 				messagesReceived++;
 			else if (ret == 2)

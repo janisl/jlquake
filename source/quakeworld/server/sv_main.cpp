@@ -1162,10 +1162,9 @@ void SV_CheckTimeouts (void)
 {
 	int		i;
 	client_t	*cl;
-	float	droptime;
 	int	nclients;
 	
-	droptime = realtime - timeout->value;
+	int droptime = realtime * 1000 - timeout->value * 1000;
 	nclients = 0;
 
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
@@ -1173,7 +1172,7 @@ void SV_CheckTimeouts (void)
 		if (cl->state == cs_connected || cl->state == cs_spawned) {
 			if (!cl->spectator)
 				nclients++;
-			if (cl->netchan.last_received < droptime) {
+			if (cl->netchan.lastReceived < droptime) {
 				SV_BroadcastPrintf (PRINT_HIGH, "%s timed out\n", cl->name);
 				SV_DropClient (cl); 
 				cl->state = cs_free;	// don't bother with zombie state

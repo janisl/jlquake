@@ -156,7 +156,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->sock = sock;
 	chan->remoteAddress = adr;
 	chan->qport = qport;
-	chan->last_received = curtime;
+	chan->lastReceived = curtime;
 	chan->incomingSequence = 0;
 	chan->outgoingSequence = 1;
 
@@ -244,7 +244,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	w2 = ( chan->incomingSequence & ~(1<<31) ) | (chan->incomingReliableSequence<<31);
 
 	chan->outgoingSequence++;
-	chan->last_sent = curtime;
+	chan->lastSent = curtime;
 
 	send.WriteLong(w1);
 	send.WriteLong(w2);
@@ -380,7 +380,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 //
 // the message can now be read from the current message pointer
 //
-	chan->last_received = curtime;
+	chan->lastReceived = curtime;
 
 	return true;
 }

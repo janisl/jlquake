@@ -1005,7 +1005,7 @@ void CL_ReadPackets (void)
 	// check timeout
 	//
 	if (cls.state >= ca_connected
-	 && cls.realtime - cls.netchan.last_received > cl_timeout->value*1000)
+	 && cls.realtime - cls.netchan.lastReceived > cl_timeout->value*1000)
 	{
 		if (++cl.timeoutcount > 5)	// timeoutcount saves debugger
 		{
@@ -1772,7 +1772,7 @@ void CL_Frame (int msec)
 
 	// if in the debugger last frame, don't timeout
 	if (msec > 5000)
-		cls.netchan.last_received = Sys_Milliseconds_ ();
+		cls.netchan.lastReceived = Sys_Milliseconds_ ();
 
 	// fetch results from server
 	CL_ReadPackets ();

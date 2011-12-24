@@ -559,7 +559,7 @@ void SV_SendClientMessages (void)
 		else
 		{
 	// just update reliable	if needed
-			if (c->netchan.message.cursize	|| curtime - c->netchan.last_sent > 1000 )
+			if (c->netchan.message.cursize	|| curtime - c->netchan.lastSent > 1000 )
 				Netchan_Transmit (&c->netchan, 0, NULL);
 		}
 	}

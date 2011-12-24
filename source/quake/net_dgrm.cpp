@@ -166,7 +166,7 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
-	sock->lastSendTime = net_time;
+	chan->lastSent = net_time * 1000;
 	packetsSent++;
 	return 1;
 }
@@ -199,7 +199,7 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
-	sock->lastSendTime = net_time;
+	chan->lastSent = net_time * 1000;
 	packetsSent++;
 	return 1;
 }
@@ -232,7 +232,7 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 		return -1;
 
-	sock->lastSendTime = net_time;
+	chan->lastSent = net_time * 1000;
 	packetsReSent++;
 	return 1;
 }
@@ -289,7 +289,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 	unsigned int	count;
 
 	if (!sock->canSend)
-		if ((net_time - sock->lastSendTime) > 1.0)
+		if ((net_time * 1000 - chan->lastSent) > 1000)
 			ReSendMessage (sock, chan);
 
 	while(1)
@@ -1274,7 +1274,7 @@ static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 	UDP_GetNameFromAddr(&sendaddr, sock->address);
 
 	Con_Printf ("Connection accepted\n");
-	sock->lastMessageTime = SetNetTime();
+	chan->lastReceived = SetNetTime() * 1000;
 
 	m_return_onerror = false;
 	return sock;

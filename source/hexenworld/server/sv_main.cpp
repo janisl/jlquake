@@ -1066,14 +1066,13 @@ void SV_CheckTimeouts (void)
 {
 	int		i;
 	client_t	*cl;
-	float	droptime;
-	
-	droptime = realtime - timeout->value;
+
+	int droptime = realtime * 1000 - timeout->value * 1000;
 
 	for (i=0,cl=svs.clients ; i<HWMAX_CLIENTS ; i++,cl++)
 	{
 		if ( (cl->state == cs_connected || cl->state == cs_spawned) 
-			&& cl->netchan.last_received < droptime)
+			&& cl->netchan.lastReceived < droptime)
 		{
 			SV_BroadcastPrintf (PRINT_HIGH, "%s timed out\n", cl->name);
 			SV_DropClient (cl); 

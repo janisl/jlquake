@@ -68,4 +68,7 @@ struct netchan_common_t
 	int unsentFragmentStart;
 	int reliableOrUnsentLength;
 	byte reliableOrUnsentBuffer[MAX_MSGLEN];
+
+	int lastReceived;		// for timeouts
+	int lastSent;			// for retransmits
 };

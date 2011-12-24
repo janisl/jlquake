@@ -300,9 +300,6 @@ struct netchan_t : netchan_common_t
 {
 	qboolean	fatal_error;
 
-	int			last_received;		// for timeouts
-	int			last_sent;			// for retransmits
-
 // reliable staging and holding areas
 	QMsg	message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN_Q2-16];		// leave space for header

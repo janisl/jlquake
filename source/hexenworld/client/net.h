@@ -22,8 +22,6 @@ struct netchan_t : netchan_common_t
 {
 	qboolean	fatal_error;
 
-	float		last_received;		// for timeouts
-
 // the statistics are cleared at each client begin, because
 // the server connecting process gives a bogus picture of the data
 	float		frame_latency;		// rolling average

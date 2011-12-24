@@ -554,6 +554,7 @@ void SV_CheckForNewClients (void)
 		Com_Memset(&svs.clients[i].netchan, 0, sizeof(svs.clients[i].netchan));
 		svs.clients[i].netchan.sock = NS_SERVER;
 		svs.clients[i].netchan.remoteAddress = addr;
+		svs.clients[i].netchan.lastReceived = net_time * 1000;
 		svs.clients[i].netconnection = ret;
 		SV_ConnectClient (i);	
 	

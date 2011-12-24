@@ -121,7 +121,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr)
 	
 	chan->sock = sock;
 	chan->remoteAddress = adr;
-	chan->last_received = realtime;
+	chan->lastReceived = realtime * 1000;
 	
 	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
 	chan->message.allowoverflow = true;
@@ -375,10 +375,10 @@ qboolean Netchan_Process (netchan_t *chan)
 	chan->frame_latency = chan->frame_latency*OLD_AVG
 		+ (chan->outgoingSequence-sequence_ack)*(1.0-OLD_AVG);
 	chan->frame_rate = chan->frame_rate*OLD_AVG
-		+ (realtime-chan->last_received)*(1.0-OLD_AVG);		
+		+ (realtime-chan->lastReceived / 1000.0)*(1.0-OLD_AVG);		
 	chan->good_count += 1;
 
-	chan->last_received = realtime;
+	chan->lastReceived = realtime * 1000;
 
 	return true;
 }

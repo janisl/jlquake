@@ -95,8 +95,6 @@ typedef struct qsocket_s
 {
 	struct qsocket_s	*next;
 	double			connecttime;
-	double			lastMessageTime;
-	double			lastSendTime;
 
 	qboolean		disconnected;
 	qboolean		canSend;

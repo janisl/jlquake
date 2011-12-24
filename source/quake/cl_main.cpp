@@ -143,6 +143,7 @@ void CL_EstablishConnection (const char *host)
 	cls.netcon = NET_Connect (host, &clc.netchan);
 	if (!cls.netcon)
 		Host_Error ("CL_Connect: connect failed\n");
+	clc.netchan.lastReceived = net_time * 1000;
 	Con_DPrintf ("CL_EstablishConnection: connected to %s\n", host);
 	
 	cls.demonum = -1;			// not in the demo loop now
