@@ -66,10 +66,8 @@ struct client_static_t : clientStaticCommon_t
 
 extern client_static_t	cls;
 
-struct clientConnection_t
+struct clientConnection_t : clientConnectionCommon_t
 {
-// network stuff
-	netchan_t	netchan;
 };
 
 extern clientConnection_t clc;

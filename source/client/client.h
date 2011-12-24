@@ -55,18 +55,6 @@ void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* tr
 extern byte* playerTranslation;
 extern int color_offsets[MAX_PLAYER_CLASS];
 
-struct clientStaticCommon_t
-{
-	int framecount;
-	int frametime;			// msec since last frame
-
-	// rendering info
-	glconfig_t glconfig;
-	qhandle_t charSetShader;
-	qhandle_t whiteShader;
-	qhandle_t consoleShader;
-};
-
 struct clientActiveCommon_t
 {
 	int serverTime;			// may be paused during play
@@ -93,8 +81,27 @@ struct clientActiveCommon_t
 	float q2_lerpfrac;		// between oldframe and frame
 };
 
-extern clientStaticCommon_t* cls_common;
+struct clientConnectionCommon_t
+{
+	// big stuff at end of structure so most offsets are 15 bits or less
+	netchan_t netchan;
+};
+
+struct clientStaticCommon_t
+{
+	int framecount;
+	int frametime;			// msec since last frame
+
+	// rendering info
+	glconfig_t glconfig;
+	qhandle_t charSetShader;
+	qhandle_t whiteShader;
+	qhandle_t consoleShader;
+};
+
 extern clientActiveCommon_t* cl_common;
+extern clientConnectionCommon_t* clc_common;
+extern clientStaticCommon_t* cls_common;
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 

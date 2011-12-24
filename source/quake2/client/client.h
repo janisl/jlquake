@@ -118,9 +118,8 @@ struct client_state_t : clientActiveCommon_t
 
 extern	client_state_t	cl;
 
-struct clientConnection_t
+struct clientConnection_t : clientConnectionCommon_t
 {
-	netchan_t	netchan;
 };
 
 extern clientConnection_t clc;
