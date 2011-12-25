@@ -105,19 +105,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 		Con_Printf("stream list overflow\n");
 		return;
 	}
-	stream->type = type;
-	stream->tag = tag;
-	stream->flags = flags;
-	stream->entity = ent;
-	stream->skin = skin;
-	stream->models[0] = models[0];
-	stream->models[1] = models[1];
-	stream->models[2] = models[2];
-	stream->models[3] = models[3];
-	stream->endTime = cl_common->serverTime * 0.001+duration;
-	stream->lastTrailTime = 0;
-	VectorCopy(source, stream->source);
-	VectorCopy(dest, stream->dest);
+	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration * 1000, source, dest, models);
 	if(flags&H2STREAM_ATTACHED)
 	{
 		VectorCopy(vec3_origin, stream->offset);
@@ -144,14 +132,13 @@ static void ParseStream(int type)
 	vec3_t			source;
 	vec3_t			dest;
 	h2stream_t		*stream;
-	float			duration;
 	qhandle_t		models[4];
 	h2entity_state_t	*state;
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
 	tag = flags&15;
-	duration = (float)net_message.ReadByte()*0.05;
+	int duration = net_message.ReadByte() * 50;
 	skin = 0;
 	if(type == TE_STREAM_COLORBEAM)
 	{
@@ -208,19 +195,7 @@ static void ParseStream(int type)
 		Con_Printf("stream list overflow\n");
 		return;
 	}
-	stream->type = type;
-	stream->tag = tag;
-	stream->flags = flags;
-	stream->entity = ent;
-	stream->skin = skin;
-	stream->models[0] = models[0];
-	stream->models[1] = models[1];
-	stream->models[2] = models[2];
-	stream->models[3] = models[3];
-	stream->endTime = cl_common->serverTime * 0.001+duration;
-	stream->lastTrailTime = 0;
-	VectorCopy(source, stream->source);
-	VectorCopy(dest, stream->dest);
+	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
 	if(flags&H2STREAM_ATTACHED)
 	{
 		VectorCopy(vec3_origin, stream->offset);
@@ -362,20 +337,16 @@ void CL_ParseTEnt (void)
 						Con_Printf("stream list overflow\n");
 						return;
 					}
-					stream->type = TE_STREAM_ICECHUNKS;
-					stream->tag = (i)&15;// FIXME
-					stream->flags = (i+H2STREAM_ATTACHED);
-					stream->entity = ent;
-					stream->skin = 0;
-					stream->models[0] = models[0];
-					stream->endTime = cl_common->serverTime * 0.001+0.3;
-					stream->lastTrailTime = 0;
+					vec3_t source;
+					VectorCopy(center, source);
+					source[0] += rand() % 100 - 50;
+					source[1] += rand() % 100 - 50;
 
-					VectorCopy(center, stream->source);
-					stream->source[0] += rand()%100 - 50;
-					stream->source[1] += rand()%100 - 50;
-					VectorCopy(stream->source, stream->dest);
-					stream->dest[2] += 128;
+					vec3_t dest;
+					VectorCopy(source, dest);
+					dest[2] += 128;
+
+					CLH2_InitStream(stream, TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
 
 					VectorCopy(vec3_origin, stream->offset);
 
@@ -437,27 +408,7 @@ void CL_ParseTEnt (void)
 						Con_Printf("stream list overflow\n");
 						return;
 					}
-					stream->type = TE_STREAM_SUNSTAFF1;
-					stream->tag = i;
-					if(!i)
-					{
-						stream->flags = (i+H2STREAM_ATTACHED);
-					}
-					else
-					{
-						stream->flags = i;
-					}
-					stream->entity = ent;
-					stream->skin = 0;
-					stream->models[0] = models[0];
-					stream->models[1] = models[1];
-					stream->models[2] = models[2];
-					stream->models[3] = models[3];
-					stream->endTime = cl_common->serverTime * 0.001+0.5;	// FIXME
-					stream->lastTrailTime = 0;
-
-					VectorCopy(points[i], stream->source);
-					VectorCopy(points[i+1], stream->dest);
+					CLH2_InitStream(stream, TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
 
 					if(!i)
 					{
@@ -480,7 +431,7 @@ void CL_ParseTEnt (void)
 		{
 			int				ent;
 			h2stream_t		*stream;
-			qhandle_t		models[2];
+			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
 			ent = net_message.ReadShort();
@@ -507,23 +458,18 @@ void CL_ParseTEnt (void)
 						Con_Printf("stream list overflow\n");
 						return;
 					}
-					//stream->type = TE_STREAM_ICECHUNKS;
-					stream->type = TE_STREAM_LIGHTNING;
-					stream->tag = i;
-					stream->flags = i;
-					stream->entity = ent;
-					stream->skin = 0;
-					stream->models[0] = models[0];
-					stream->endTime = cl_common->serverTime * 0.001+0.5;
-					stream->lastTrailTime = 0;
+					vec3_t source;
+					VectorCopy(state->origin, source);
+					source[0] += rand() % 30 - 15;
+					source[1] += rand() % 30 - 15;
 
-					VectorCopy(state->origin, stream->source);
-					stream->source[0] += rand()%30 - 15;
-					stream->source[1] += rand()%30 - 15;
-					VectorCopy(stream->source, stream->dest);
-					stream->dest[0] += rand()%80 - 40;
-					stream->dest[1] += rand()%80 - 40;
-					stream->dest[2] += 64 + (rand()%48);
+					vec3_t dest;
+					VectorCopy(source, dest);
+					dest[0] += rand() % 80 - 40;
+					dest[1] += rand() % 80 - 40;
+					dest[2] += 64 + (rand() % 48);
+
+					CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
 				}
 
 			}
@@ -537,7 +483,7 @@ void CL_ParseTEnt (void)
 			vec3_t			pos;
 			int				ent;
 			h2stream_t		*stream;
-			qhandle_t		models[2];
+			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
 			pos[0] = net_message.ReadCoord();
@@ -559,7 +505,19 @@ void CL_ParseTEnt (void)
 				}
 
 				for (i = 0; i < 5; i++)
-				{	// make some lightning
+				{
+					// make some lightning
+					vec3_t source;
+					VectorCopy(pos, source);
+					source[0] += rand() % 30 - 15;
+					source[1] += rand() % 30 - 15;
+
+					vec3_t dest;
+					VectorCopy(source, dest);
+					dest[0] += rand() % 80 - 40;
+					dest[1] += rand() % 80 - 40;
+					dest[2] += 64 + (rand() % 48);
+
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
 					if((stream = CLH2_NewStream(ent, i)) == NULL)
@@ -567,23 +525,7 @@ void CL_ParseTEnt (void)
 						Con_Printf("stream list overflow\n");
 						return;
 					}
-					//stream->type = TE_STREAM_ICECHUNKS;
-					stream->type = TE_STREAM_LIGHTNING;
-					stream->tag = i;
-					stream->flags = i;
-					stream->entity = ent;
-					stream->skin = 0;
-					stream->models[0] = models[0];
-					stream->endTime = cl_common->serverTime * 0.001+0.5;
-					stream->lastTrailTime = 0;
-
-					VectorCopy(pos, stream->source);
-					stream->source[0] += rand()%30 - 15;
-					stream->source[1] += rand()%30 - 15;
-					VectorCopy(stream->source, stream->dest);
-					stream->dest[0] += rand()%80 - 40;
-					stream->dest[1] += rand()%80 - 40;
-					stream->dest[2] += 64 + (rand()%48);
+					CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
 				}
 			}
 			CLHW_SwordExplosion(pos);
@@ -637,26 +579,7 @@ void CL_ParseTEnt (void)
 					Con_Printf("stream list overflow\n");
 					return;
 				}
-				stream->type = TE_STREAM_SUNSTAFF2;
-				stream->tag = 0;
-				//stream->flags = H2STREAM_ATTACHED;
-				stream->flags = 0;
-				stream->entity = ent;
-				stream->skin = 0;
-				stream->models[0] = models[0];
-				stream->models[1] = models[1];
-				stream->models[2] = models[2];
-				stream->models[3] = models[3];
-				stream->endTime = cl_common->serverTime * 0.001+0.8;
-				stream->lastTrailTime = 0;
-
-				VectorCopy(vel, stream->source);
-				VectorCopy(pos, stream->dest);
-
-				//VectorCopy(vec3_origin, stream->offset);
-				//VectorSubtract(stream->source, vel, stream->offset);
-
-				// make some spiffy particles to glue it all together
+				CLH2_InitStream(stream, TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, vel, pos, models);
 			}
 		}
 		break;
@@ -791,7 +714,7 @@ void CL_ParseTEnt (void)
 		{
 			int				ent;
 			h2stream_t		*stream;
-			qhandle_t		models[2];
+			qhandle_t		models[4];
 			h2entity_state_t	*state;
 			float			tempAng, tempPitch;
 
@@ -815,28 +738,21 @@ void CL_ParseTEnt (void)
 			{	// make some lightning
 				models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-				if((stream = CLH2_NewStream(ent, i)) == NULL)
+				tempAng = (rand()%628)/100.0;
+				tempPitch = (rand()%628)/100.0;
+
+				vec3_t dest;
+				VectorCopy(pos, dest);
+				dest[0] += 75.0 * cos(tempAng) * cos(tempPitch);
+				dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
+				dest[2] += 75.0 * sin(tempPitch);
+
+				if ((stream = CLH2_NewStream(ent, i)) == NULL)
 				{
 					Con_Printf("stream list overflow\n");
 					return;
 				}
-				stream->type = TE_STREAM_LIGHTNING;
-				stream->tag = i;
-				stream->flags = i;
-				stream->entity = ent;
-				stream->skin = 0;
-				stream->models[0] = models[0];
-				stream->endTime = cl_common->serverTime * 0.001+0.5;
-				stream->lastTrailTime = 0;
-
-				tempAng = (rand()%628)/100.0;
-				tempPitch = (rand()%628)/100.0;
-
-				VectorCopy(pos, stream->source);
-				VectorCopy(stream->source, stream->dest);
-				stream->dest[0] += 75.0 * cos(tempAng) * cos(tempPitch);
-				stream->dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
-				stream->dest[2] += 75.0 * sin(tempPitch);
+				CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, i, i, 0, 500, pos, dest, models);
 			}
 		}
 		break;
@@ -857,7 +773,7 @@ void CL_ParseTEnt (void)
 
 			int				ent;
 			h2stream_t		*stream;
-			qhandle_t		models[2];
+			qhandle_t		models[4];
 
 			ent = net_message.ReadShort();
 
@@ -893,17 +809,7 @@ void CL_ParseTEnt (void)
 					Con_Printf("stream list overflow\n");
 					return;
 				}
-				stream->type = TE_STREAM_LIGHTNING;
-				stream->tag = temp;
-				stream->flags = temp;
-				stream->entity = ent;
-				stream->skin = 0;
-				stream->models[0] = models[0];
-				stream->endTime = cl_common->serverTime * 0.001+0.3;
-				stream->lastTrailTime = 0;
-
-				VectorCopy(points[temp], stream->source);
-				VectorCopy(points[temp + 1], stream->dest);
+				CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, temp, temp, 0, 300, points[temp], points[temp + 1], models);
 
 				CLHW_ChainLightningExplosion(points[temp + 1]);
 			}

@@ -47,3 +47,20 @@ h2stream_t* CLH2_NewStream(int ent, int tag)
 	}
 	return NULL;
 }
+
+void CLH2_InitStream(h2stream_t* stream, int type, int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest, const qhandle_t* models)
+{
+	stream->type = type;
+	stream->entity = ent;
+	stream->tag = tag;
+	stream->flags = flags;
+	stream->skin = skin;
+	stream->endTime = (cl_common->serverTime + duration) * 0.001;
+	stream->lastTrailTime = 0;
+	VectorCopy(source, stream->source);
+	VectorCopy(dest, stream->dest);
+	stream->models[0] = models[0];
+	stream->models[1] = models[1];
+	stream->models[2] = models[2];
+	stream->models[3] = models[3];
+}

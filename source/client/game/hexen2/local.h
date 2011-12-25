@@ -65,6 +65,7 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 
 void CLH2_ClearStreams();
 h2stream_t* CLH2_NewStream(int ent, int tag);
+void CLH2_InitStream(h2stream_t* stream, int type, int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest, const qhandle_t* models);
 
 void CLH2_InitTEntsCommon();
 void CLH2_ClearTEnts();

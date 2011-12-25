@@ -138,13 +138,12 @@ static void ParseStream(int type)
 	vec3_t source;
 	vec3_t dest;
 	h2stream_t *stream;
-	float duration;
 	qhandle_t models[4];
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
 	tag = flags&15;
-	duration = (float)net_message.ReadByte()*0.05;
+	int duration = net_message.ReadByte() * 50;
 	skin = 0;
 	if(type == TE_STREAM_COLORBEAM)
 	{
@@ -203,20 +202,8 @@ static void ParseStream(int type)
 		Con_Printf("stream list overflow\n");
 		return;
 	}
-	stream->type = type;
-	stream->tag = tag;
-	stream->flags = flags;
-	stream->entity = ent;
-	stream->skin = skin;
-	stream->models[0] = models[0];
-	stream->models[1] = models[1];
-	stream->models[2] = models[2];
-	stream->models[3] = models[3];
-	stream->endTime = cl.serverTimeFloat+duration;
-	stream->lastTrailTime = 0;
-	VectorCopy(source, stream->source);
-	VectorCopy(dest, stream->dest);
-	if(flags&H2STREAM_ATTACHED)
+	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
+	if (flags & H2STREAM_ATTACHED)
 	{
 		VectorSubtract(source, cl_entities[ent].state.origin, stream->offset);
 	}
