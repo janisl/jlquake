@@ -105,16 +105,6 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 		return;
 	}
 	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration * 1000, source, dest, models);
-	if(flags&H2STREAM_ATTACHED)
-	{
-		VectorCopy(vec3_origin, stream->offset);
-
-		h2entity_state_t* state = CLH2_FindState(ent);
-		if (state)
-		{	// rjr - potential problem if this doesn't ever get set - origin might have to be set properly in script code?
-			VectorSubtract(source, state->origin, stream->offset);
-		}
-	}
 }
 //==========================================================================
 //
@@ -132,7 +122,6 @@ static void ParseStream(int type)
 	vec3_t			dest;
 	h2stream_t		*stream;
 	qhandle_t		models[4];
-	h2entity_state_t	*state;
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
@@ -195,16 +184,6 @@ static void ParseStream(int type)
 		return;
 	}
 	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
-	if(flags&H2STREAM_ATTACHED)
-	{
-		VectorCopy(vec3_origin, stream->offset);
-
-		state = CLH2_FindState(ent);
-		if (state)
-		{	// rjr - potential problem if this doesn't ever get set - origin might have to be set properly in script code?
-			VectorSubtract(source, state->origin, stream->offset);
-		}
-	}
 }
 
 /*
@@ -346,10 +325,6 @@ void CL_ParseTEnt (void)
 					dest[2] += 128;
 
 					CLH2_InitStream(stream, TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
-
-					VectorCopy(vec3_origin, stream->offset);
-
-					VectorSubtract(stream->source, state->origin, stream->offset);
 				}
 
 			}
@@ -408,12 +383,6 @@ void CL_ParseTEnt (void)
 						return;
 					}
 					CLH2_InitStream(stream, TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
-
-					if(!i)
-					{
-						VectorCopy(vec3_origin, stream->offset);
-						VectorSubtract(stream->source, state->origin, stream->offset);
-					}
 				}
 			}
 			else

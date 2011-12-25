@@ -63,4 +63,14 @@ void CLH2_InitStream(h2stream_t* stream, int type, int ent, int tag, int flags, 
 	stream->models[1] = models[1];
 	stream->models[2] = models[2];
 	stream->models[3] = models[3];
+
+	if (flags & H2STREAM_ATTACHED)
+	{
+		VectorCopy(vec3_origin, stream->offset);
+		h2entity_state_t* state = CLH2_FindState(ent);
+		if (state)
+		{
+			VectorSubtract(source, state->origin, stream->offset);
+		}
+	}
 }

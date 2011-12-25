@@ -203,15 +203,6 @@ static void ParseStream(int type)
 		return;
 	}
 	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
-	if (flags & H2STREAM_ATTACHED)
-	{
-		VectorCopy(vec3_origin, stream->offset);
-		h2entity_state_t* state = CLH2_FindState(ent);
-		if (state)
-		{
-			VectorSubtract(source, state->origin, stream->offset);
-		}
-	}
 }
 
 //==========================================================================
