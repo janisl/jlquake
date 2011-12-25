@@ -96,7 +96,7 @@ static void CLH2_CreateStreamChain(int index, int tag, effect_entity_t* ent)
 	vec3_t org, org2;
 	VectorCopy(cl.h2_Effects[index].Chain.origin, org);
 	VectorCopy(ent->state.origin, org2);
-	CreateStream(TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, tag, 0.1, 0, org, org2);
+	CreateStream(H2TE_STREAM_CHAIN, cl.h2_Effects[index].Chain.ent1, 1, tag, 0.1, 0, org, org2);
 }
 
 void CLHW_UpdateEffectScarabChain(int index, float frametime)

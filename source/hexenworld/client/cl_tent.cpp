@@ -62,36 +62,36 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 	models[1] = models[2] = models[3] = 0;
 	switch(type)
 	{
-	case TE_STREAM_CHAIN:
+	case H2TE_STREAM_CHAIN:
 		models[0] = R_RegisterModel("models/stchain.mdl");
 		break;
-	case TE_STREAM_SUNSTAFF1:
+	case H2TE_STREAM_SUNSTAFF1:
 		models[0] = R_RegisterModel("models/stsunsf1.mdl");
 		models[1] = R_RegisterModel("models/stsunsf2.mdl");
 		models[2] = R_RegisterModel("models/stsunsf3.mdl");
 		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
-	case TE_STREAM_SUNSTAFF2:
+	case H2TE_STREAM_SUNSTAFF2:
 		models[0] = R_RegisterModel("models/stsunsf5.mdl");
 		models[2] = R_RegisterModel("models/stsunsf3.mdl");
 		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
-	case TE_STREAM_LIGHTNING:
+	case H2TE_STREAM_LIGHTNING:
 		models[0] = R_RegisterModel("models/stlghtng.mdl");
 		break;
-	case TE_STREAM_LIGHTNING_SMALL:
+	case HWTE_STREAM_LIGHTNING_SMALL:
 		models[0] = R_RegisterModel("models/stltng2.mdl");
 		break;
-	case TE_STREAM_FAMINE:
+	case H2TE_STREAM_FAMINE:
 		models[0] = R_RegisterModel("models/fambeam.mdl");
 		break;
-	case TE_STREAM_COLORBEAM:
+	case H2TE_STREAM_COLORBEAM:
 		models[0] = R_RegisterModel("models/stclrbm.mdl");
 		break;
-	case TE_STREAM_ICECHUNKS:
+	case H2TE_STREAM_ICECHUNKS:
 		models[0] = R_RegisterModel("models/stice.mdl");
 		break;
-	case TE_STREAM_GAZE:
+	case H2TE_STREAM_GAZE:
 		models[0] = R_RegisterModel("models/stmedgaz.mdl");
 		break;
 	default:
@@ -121,7 +121,7 @@ static void ParseStream(int type)
 	tag = flags&15;
 	int duration = net_message.ReadByte() * 50;
 	skin = 0;
-	if(type == TE_STREAM_COLORBEAM)
+	if(type == H2TE_STREAM_COLORBEAM)
 	{
 		skin = net_message.ReadByte();
 	}
@@ -135,36 +135,36 @@ static void ParseStream(int type)
 	models[1] = models[2] = models[3] = 0;
 	switch(type)
 	{
-	case TE_STREAM_CHAIN:
+	case H2TE_STREAM_CHAIN:
 		models[0] = R_RegisterModel("models/stchain.mdl");
 		break;
-	case TE_STREAM_SUNSTAFF1:
+	case H2TE_STREAM_SUNSTAFF1:
 		models[0] = R_RegisterModel("models/stsunsf1.mdl");
 		models[1] = R_RegisterModel("models/stsunsf2.mdl");
 		models[2] = R_RegisterModel("models/stsunsf3.mdl");
 		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
-	case TE_STREAM_SUNSTAFF2:
+	case H2TE_STREAM_SUNSTAFF2:
 		models[0] = R_RegisterModel("models/stsunsf5.mdl");
 		models[2] = R_RegisterModel("models/stsunsf3.mdl");
 		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
-	case TE_STREAM_LIGHTNING:
+	case H2TE_STREAM_LIGHTNING:
 		models[0] = R_RegisterModel("models/stlghtng.mdl");
 		break;
-	case TE_STREAM_LIGHTNING_SMALL:
+	case HWTE_STREAM_LIGHTNING_SMALL:
 		models[0] = R_RegisterModel("models/stltng2.mdl");
 		break;
-	case TE_STREAM_FAMINE:
+	case H2TE_STREAM_FAMINE:
 		models[0] = R_RegisterModel("models/fambeam.mdl");
 		break;
-	case TE_STREAM_COLORBEAM:
+	case H2TE_STREAM_COLORBEAM:
 		models[0] = R_RegisterModel("models/stclrbm.mdl");
 		break;
-	case TE_STREAM_ICECHUNKS:
+	case H2TE_STREAM_ICECHUNKS:
 		models[0] = R_RegisterModel("models/stice.mdl");
 		break;
-	case TE_STREAM_GAZE:
+	case H2TE_STREAM_GAZE:
 		models[0] = R_RegisterModel("models/stmedgaz.mdl");
 		break;
 	default:
@@ -188,90 +188,90 @@ void CL_ParseTEnt (void)
 	type = net_message.ReadByte();
 	switch (type)
 	{
-	case TE_WIZSPIKE:	// spike hitting wall
+	case H2TE_WIZSPIKE:	// spike hitting wall
 		CLH2_ParseWizSpike(net_message);
 		break;
-	case TE_KNIGHTSPIKE:	// spike hitting wall
+	case H2TE_KNIGHTSPIKE:	// spike hitting wall
 		CLH2_ParseKnightSpike(net_message);
 		break;
-	case TE_SPIKE:			// spike hitting wall
+	case H2TE_SPIKE:			// spike hitting wall
 		CLH2_ParseSpike(net_message);
 		break;
-	case TE_SUPERSPIKE:			// super spike hitting wall
+	case H2TE_SUPERSPIKE:			// super spike hitting wall
 		CLH2_ParseSuperSpike(net_message);
 		break;
-	case TE_DRILLA_EXPLODE:
+	case HWTE_DRILLA_EXPLODE:
 		CLHW_ParseDrillaExplode(net_message);
 		break;
-	case TE_EXPLOSION:			// rocket explosion
+	case H2TE_EXPLOSION:			// rocket explosion
 		CLHW_ParseExplosion(net_message);
 		break;
-	case TE_TAREXPLOSION:			// tarbaby explosion
+	case HWTE_TAREXPLOSION:			// tarbaby explosion
 		CLHW_ParseTarExplosion(net_message);
 		break;
-	case TE_LIGHTNING1:				// lightning bolts
-	case TE_LIGHTNING2:
-	case TE_LIGHTNING3:
+	case H2TE_LIGHTNING1:				// lightning bolts
+	case H2TE_LIGHTNING2:
+	case H2TE_LIGHTNING3:
 		CLH2_ParseBeam(net_message);
 		break;
 
-	case TE_STREAM_CHAIN:
-	case TE_STREAM_SUNSTAFF1:
-	case TE_STREAM_SUNSTAFF2:
-	case TE_STREAM_LIGHTNING:
-	case TE_STREAM_LIGHTNING_SMALL:
-	case TE_STREAM_COLORBEAM:
-	case TE_STREAM_ICECHUNKS:
-	case TE_STREAM_GAZE:
-	case TE_STREAM_FAMINE:
+	case H2TE_STREAM_CHAIN:
+	case H2TE_STREAM_SUNSTAFF1:
+	case H2TE_STREAM_SUNSTAFF2:
+	case H2TE_STREAM_LIGHTNING:
+	case HWTE_STREAM_LIGHTNING_SMALL:
+	case H2TE_STREAM_COLORBEAM:
+	case H2TE_STREAM_ICECHUNKS:
+	case H2TE_STREAM_GAZE:
+	case H2TE_STREAM_FAMINE:
 		ParseStream(type);
 		break;
 
-	case TE_LAVASPLASH:	
+	case H2TE_LAVASPLASH:	
 		CLH2_ParseLavaSplash(net_message);
 		break;
-	case TE_TELEPORT:
+	case H2TE_TELEPORT:
 		CLH2_ParseTeleport(net_message);
 		break;
-	case TE_GUNSHOT:			// bullet hitting wall
-	case TE_BLOOD:				// bullets hitting body
+	case H2TE_GUNSHOT:			// bullet hitting wall
+	case HWTE_BLOOD:				// bullets hitting body
 		CLHW_ParseGunShot(net_message);
 		break;
-	case TE_LIGHTNINGBLOOD:		// lightning hitting body
+	case HWTE_LIGHTNINGBLOOD:		// lightning hitting body
 		CLHW_ParseLightningBlood(net_message);
 		break;
-	case TE_BIGGRENADE:
+	case HWTE_BIGGRENADE:
 		CLHW_ParseBigGrenade(net_message);
 		break;
-	case TE_CHUNK:
+	case HWTE_CHUNK:
 		CLHW_ParseChunk(net_message);
 		break;
-	case TE_CHUNK2:
+	case HWTE_CHUNK2:
 		CLHW_ParseChunk2(net_message);
 		break;
-	case TE_XBOWHIT:
+	case HWTE_XBOWHIT:
 		CLHW_ParseXBowHit(net_message);
 		break;
-	case TE_METEORHIT:
+	case HWTE_METEORHIT:
 		CLHW_ParseMeteorHit(net_message);
 		break;
-	case TE_HWBONEPOWER:
+	case HWTE_HWBONEPOWER:
 		CLHW_ParseBonePower(net_message);
 		break;
-	case TE_HWBONEPOWER2:
+	case HWTE_HWBONEPOWER2:
 		CLHW_ParseBonePower2(net_message);
 		break;
-	case TE_HWRAVENDIE:
+	case HWTE_HWRAVENDIE:
 		CLHW_ParseRavenDie(net_message);
 		break;
-	case TE_HWRAVENEXPLODE:
+	case HWTE_HWRAVENEXPLODE:
 		CLHW_ParseRavenExplode(net_message);
 		break;
-	case TE_ICEHIT:
+	case HWTE_ICEHIT:
 		CLHW_ParseIceHit(net_message);
 		break;
 
-	case TE_ICESTORM:
+	case HWTE_ICESTORM:
 		{
 			int				ent;
 			vec3_t			center;
@@ -306,18 +306,18 @@ void CL_ParseTEnt (void)
 					VectorCopy(source, dest);
 					dest[2] += 128;
 
-					CLH2_CreateStream(TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
+					CLH2_CreateStream(H2TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
 				}
 
 			}
 		}
 
 		break;
-	case TE_HWMISSILEFLASH:
+	case HWTE_HWMISSILEFLASH:
 		CLHW_ParseMissileFlash(net_message);
 		break;
 
-	case TE_SUNSTAFF_CHEAP:
+	case HWTE_SUNSTAFF_CHEAP:
 		{
 			int				ent;
 			vec3_t			points[4];
@@ -358,7 +358,7 @@ void CL_ParseTEnt (void)
 					models[2] = R_RegisterModel("models/stsunsf3.mdl");
 					models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
-					CLH2_CreateStream(TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
+					CLH2_CreateStream(H2TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
 				}
 			}
 			else
@@ -371,7 +371,7 @@ void CL_ParseTEnt (void)
 		}
 		break;
 
-	case TE_LIGHTNING_HAMMER:
+	case HWTE_LIGHTNING_HAMMER:
 		{
 			int				ent;
 			qhandle_t		models[4];
@@ -407,16 +407,16 @@ void CL_ParseTEnt (void)
 					dest[1] += rand() % 80 - 40;
 					dest[2] += 64 + (rand() % 48);
 
-					CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
+					CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
 				}
 
 			}
 		}
 		break;
-	case TE_HWTELEPORT:
+	case HWTE_HWTELEPORT:
 		CLHW_ParseTeleport(net_message);
 		break;
-	case TE_SWORD_EXPLOSION:
+	case HWTE_SWORD_EXPLOSION:
 		{
 			vec3_t			pos;
 			int				ent;
@@ -457,27 +457,27 @@ void CL_ParseTEnt (void)
 
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-					CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
+					CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
 				}
 			}
 			CLHW_SwordExplosion(pos);
 		}
 		break;
 
-	case TE_AXE_BOUNCE:
+	case HWTE_AXE_BOUNCE:
 		CLHW_ParseAxeBounce(net_message);
 		break;
-	case TE_AXE_EXPLODE:
+	case HWTE_AXE_EXPLODE:
 		CLHW_ParseAxeExplode(net_message);
 		break;
-	case TE_TIME_BOMB:
+	case HWTE_TIME_BOMB:
 		CLHW_ParseTimeBomb(net_message);
 		break;
-	case TE_FIREBALL:
+	case HWTE_FIREBALL:
 		CLHW_ParseFireBall(net_message);
 		break;
 
-	case TE_SUNSTAFF_POWER:
+	case HWTE_SUNSTAFF_POWER:
 		{
 			int				ent;
 			qhandle_t		models[4];
@@ -505,73 +505,73 @@ void CL_ParseTEnt (void)
 				models[2] = R_RegisterModel("models/stsunsf3.mdl");
 				models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
-				CLH2_CreateStream(TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, vel, pos, models);
+				CLH2_CreateStream(H2TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, vel, pos, models);
 			}
 		}
 		break;
 
-	case TE_PURIFY2_EXPLODE:
+	case HWTE_PURIFY2_EXPLODE:
 		CLHW_ParsePurify2Explode(net_message);
 		break;
-	case TE_PLAYER_DEATH:
+	case HWTE_PLAYER_DEATH:
 		CLHW_ParsePlayerDeath(net_message);
 		break;
-	case TE_PURIFY1_EFFECT:
+	case HWTE_PURIFY1_EFFECT:
 		CLHW_ParsePurify1Effect(net_message);
 		break;
-	case TE_TELEPORT_LINGER:
+	case HWTE_TELEPORT_LINGER:
 		CLHW_ParseTeleportLinger(net_message);
 		break;
-	case TE_LINE_EXPLOSION:
+	case HWTE_LINE_EXPLOSION:
 		CLHW_ParseLineExplosion(net_message);
 		break;
-	case TE_METEOR_CRUSH:
+	case HWTE_METEOR_CRUSH:
 		CLHW_ParseMeteorCrush(net_message);
 		break;
-	case TE_ACIDBALL:
+	case HWTE_ACIDBALL:
 		CLHW_ParseAcidBall(net_message);
 		break;
-	case TE_ACIDBLOB:
+	case HWTE_ACIDBLOB:
 		CLHW_ParseAcidBlob(net_message);
 		break;
-	case TE_FIREWALL:
+	case HWTE_FIREWALL:
 		CLHW_ParseFireWall(net_message);
 		break;
-	case TE_FIREWALL_IMPACT:
+	case HWTE_FIREWALL_IMPACT:
 		CLHW_ParseFireWallImpact(net_message);
 		break;
-	case TE_HWBONERIC:
+	case HWTE_HWBONERIC:
 		CLHW_ParseBoneRic(net_message);
 		break;
-	case TE_POWERFLAME:
+	case HWTE_POWERFLAME:
 		CLHW_ParsePowerFlame(net_message);
 		break;
-	case TE_BLOODRAIN:
+	case HWTE_BLOODRAIN:
 		CLHW_ParseBloodRain(net_message);
 		break;
-	case TE_AXE:
+	case HWTE_AXE:
 		CLHW_ParseAxe(net_message);
 		break;
-	case TE_PURIFY2_MISSILE:
+	case HWTE_PURIFY2_MISSILE:
 		CLHW_ParsePurify2Missile(net_message);
 		break;
-	case TE_SWORD_SHOT:
+	case HWTE_SWORD_SHOT:
 		CLHW_ParseSwordShot(net_message);
 		break;
-	case TE_ICESHOT:
+	case HWTE_ICESHOT:
 		CLHW_ParseIceShot(net_message);
 		break;
-	case TE_METEOR:
+	case HWTE_METEOR:
 		CLHW_ParseMeteor(net_message);
 		break;
-	case TE_LIGHTNINGBALL:
+	case HWTE_LIGHTNINGBALL:
 		CLHW_ParseLightningBall(net_message);
 		break;
-	case TE_MEGAMETEOR:
+	case HWTE_MEGAMETEOR:
 		CLHW_ParseMegaMeteor(net_message);
 		break;
 
-	case TE_CUBEBEAM:
+	case HWTE_CUBEBEAM:
 		{
 			int				type;
 			int				ent;
@@ -586,7 +586,7 @@ void CL_ParseTEnt (void)
 			h2entity_state_t	*state;
 			h2entity_state_t	*state2;
 
-			type = TE_STREAM_COLORBEAM;
+			type = H2TE_STREAM_COLORBEAM;
 
 			ent = net_message.ReadShort();
 			ent2 = net_message.ReadShort();
@@ -631,12 +631,12 @@ void CL_ParseTEnt (void)
 				S_StartSound(source, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 				S_StartSound(dest, CLH2_TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
 				CLH2_SunStaffTrail(dest, source);
-				CreateStream(TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
+				CreateStream(H2TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
 			}
 		}
 		break;
 
-	case TE_LIGHTNINGEXPLODE:
+	case HWTE_LIGHTNINGEXPLODE:
 		{
 			int				ent;
 			qhandle_t		models[4];
@@ -672,19 +672,19 @@ void CL_ParseTEnt (void)
 				dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
 				dest[2] += 75.0 * sin(tempPitch);
 
-				CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, i, i, 0, 500, pos, dest, models);
+				CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, i, i, 0, 500, pos, dest, models);
 			}
 		}
 		break;
 
-	case TE_ACID_BALL_FLY:
+	case HWTE_ACID_BALL_FLY:
 		CLHW_ParseAcidBallFly(net_message);
 		break;
-	case TE_ACID_BLOB_FLY:
+	case HWTE_ACID_BLOB_FLY:
 		CLHW_ParseAcidBlobFly(net_message);
 		break;
 
-	case TE_CHAINLIGHTNING:
+	case HWTE_CHAINLIGHTNING:
 		{
 			vec3_t			points[12];
 			int				numTargs = 0;
@@ -723,7 +723,7 @@ void CL_ParseTEnt (void)
 				// make the connecting lightning...
 				models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-				CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, temp, temp, 0, 300, points[temp], points[temp + 1], models);
+				CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, temp, temp, 0, 300, points[temp], points[temp + 1], models);
 
 				CLHW_ChainLightningExplosion(points[temp + 1]);
 			}
@@ -760,7 +760,7 @@ void CL_UpdateStreams(void)
 
 		if(stream->endTime < cl_common->serverTime * 0.001)
 		{ // Inactive
-			if(stream->type!=TE_STREAM_LIGHTNING&&stream->type!=TE_STREAM_LIGHTNING_SMALL)
+			if(stream->type!=H2TE_STREAM_LIGHTNING&&stream->type!=HWTE_STREAM_LIGHTNING_SMALL)
 				continue;
 			else if(stream->endTime + 0.25 < cl_common->serverTime * 0.001)
 				continue;
@@ -782,7 +782,7 @@ void CL_UpdateStreams(void)
 		VectorCopy(stream->source, org);
 		d = VectorNormalize(dist);
 
-		if(stream->type == TE_STREAM_SUNSTAFF2)
+		if(stream->type == H2TE_STREAM_SUNSTAFF2)
 		{
 			AngleVectors(angles, discard, right, up);
 
@@ -794,7 +794,7 @@ void CL_UpdateStreams(void)
 		}
 
 		segmentCount = 0;
-		if(stream->type == TE_STREAM_ICECHUNKS)
+		if(stream->type == H2TE_STREAM_ICECHUNKS)
 		{
 			offset = (int)(cl_common->serverTime * 0.001*40)%30;
 			for(i = 0; i < 3; i++)
@@ -811,12 +811,12 @@ void CL_UpdateStreams(void)
 			ent.hModel = stream->models[0];
 			switch (stream->type)
 			{
-			case TE_STREAM_CHAIN:
+			case H2TE_STREAM_CHAIN:
 				angles[2] = 0;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_SUNSTAFF1:
+			case H2TE_STREAM_SUNSTAFF1:
 				angles[2] = (int)(cl_common->serverTime * 0.001*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl_common->serverTime * 0.001)/.3), 0, 128, H2MLS_ABSLIGHT);
@@ -831,7 +831,7 @@ void CL_UpdateStreams(void)
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl_common->serverTime * 0.001)/.5), 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_SUNSTAFF2:
+			case H2TE_STREAM_SUNSTAFF2:
 				angles[2] = (int)(cl_common->serverTime * 0.001*100)%360;
 				VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
 				VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
@@ -869,7 +869,7 @@ void CL_UpdateStreams(void)
 					R_AddRefEntityToScene(&ent);
 				}
 				break;
-			case TE_STREAM_LIGHTNING:
+			case H2TE_STREAM_LIGHTNING:
 				if(stream->endTime < cl_common->serverTime * 0.001)
 				{//fixme: keep last non-translucent frame and angle
 					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl_common->serverTime * 0.001)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
@@ -882,7 +882,7 @@ void CL_UpdateStreams(void)
 				}
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_LIGHTNING_SMALL:
+			case HWTE_STREAM_LIGHTNING_SMALL:
 				if(stream->endTime < cl_common->serverTime * 0.001)
 				{
 					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl_common->serverTime * 0.001)*192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
@@ -895,26 +895,26 @@ void CL_UpdateStreams(void)
 				}
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_FAMINE:
+			case H2TE_STREAM_FAMINE:
 				angles[2] = rand()%360;
 				ent.frame = 0;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_COLORBEAM:
+			case H2TE_STREAM_COLORBEAM:
 				angles[2] = 0;
 				ent.skinNum = stream->skin;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				CLH2_HandleCustomSkin(&ent, -1);
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_GAZE:
+			case H2TE_STREAM_GAZE:
 				angles[2] = 0;
 				ent.frame = (int)(cl_common->serverTime * 0.001*40)%36;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
-			case TE_STREAM_ICECHUNKS:
+			case H2TE_STREAM_ICECHUNKS:
 				angles[2] = rand()%360;
 				ent.frame = rand()%5;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
@@ -932,7 +932,7 @@ void CL_UpdateStreams(void)
 			d -= 30;
 			segmentCount++;
 		}
-		if(stream->type == TE_STREAM_SUNSTAFF1)
+		if(stream->type == H2TE_STREAM_SUNSTAFF1)
 		{
 			if(stream->lastTrailTime+0.2 < cl_common->serverTime * 0.001)
 			{

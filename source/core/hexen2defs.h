@@ -425,3 +425,87 @@ struct hwpacket_entities_t
 #define UPDATE_BACKUP_HW	64	// copies of entity_state_t to keep buffered
 							// must be power of two
 #define UPDATE_MASK_HW	(UPDATE_BACKUP_HW - 1)
+
+//
+// temp entity events
+//
+#define H2TE_SPIKE					0
+#define H2TE_SUPERSPIKE				1
+#define H2TE_GUNSHOT				2
+#define H2TE_EXPLOSION				3
+#define HWTE_TAREXPLOSION			4
+#define H2TE_LIGHTNING1				5
+#define H2TE_LIGHTNING2				6
+#define H2TE_WIZSPIKE				7
+#define H2TE_KNIGHTSPIKE			8
+#define H2TE_LIGHTNING3				9
+#define H2TE_LAVASPLASH				10
+#define H2TE_TELEPORT				11
+#define HWTE_BLOOD					12
+#define HWTE_LIGHTNINGBLOOD			13
+
+// hexen 2
+#define H2TE_STREAM_LIGHTNING_SMALL	24
+#define H2TE_STREAM_CHAIN			25
+#define H2TE_STREAM_SUNSTAFF1		26
+#define H2TE_STREAM_SUNSTAFF2		27
+#define H2TE_STREAM_LIGHTNING		28
+#define H2TE_STREAM_COLORBEAM		29
+#define H2TE_STREAM_ICECHUNKS		30
+#define H2TE_STREAM_GAZE			31
+#define H2TE_STREAM_FAMINE			32
+
+#define HWTE_BIGGRENADE				33
+#define HWTE_CHUNK					34
+#define HWTE_HWBONEPOWER			35
+#define HWTE_HWBONEPOWER2			36
+#define HWTE_METEORHIT				37
+#define HWTE_HWRAVENDIE				38
+#define HWTE_HWRAVENEXPLODE			39
+#define HWTE_XBOWHIT				40
+
+#define	HWTE_CHUNK2					41
+#define HWTE_ICEHIT					42
+#define HWTE_ICESTORM				43
+#define HWTE_HWMISSILEFLASH			44
+#define HWTE_SUNSTAFF_CHEAP			45
+#define HWTE_LIGHTNING_HAMMER		46
+#define HWTE_DRILLA_EXPLODE			47
+#define HWTE_DRILLA_DRILL			48
+
+#define HWTE_HWTELEPORT				49
+#define HWTE_SWORD_EXPLOSION		50
+
+#define HWTE_AXE_BOUNCE				51
+#define HWTE_AXE_EXPLODE			52
+#define HWTE_TIME_BOMB				53
+#define HWTE_FIREBALL				54
+#define HWTE_SUNSTAFF_POWER			55
+#define HWTE_PURIFY2_EXPLODE		56
+#define HWTE_PLAYER_DEATH			57
+#define HWTE_PURIFY1_EFFECT			58
+#define HWTE_TELEPORT_LINGER		59
+#define HWTE_LINE_EXPLOSION			60
+#define HWTE_METEOR_CRUSH			61
+//MISSION PACK
+#define HWTE_STREAM_LIGHTNING_SMALL	62
+
+#define HWTE_ACIDBALL				63
+#define HWTE_ACIDBLOB				64
+#define HWTE_FIREWALL				65
+#define HWTE_FIREWALL_IMPACT		66
+#define HWTE_HWBONERIC				67
+#define HWTE_POWERFLAME				68
+#define HWTE_BLOODRAIN				69
+#define HWTE_AXE					70
+#define HWTE_PURIFY2_MISSILE		71
+#define HWTE_SWORD_SHOT				72
+#define HWTE_ICESHOT				73
+#define HWTE_METEOR					74
+#define HWTE_LIGHTNINGBALL			75
+#define HWTE_MEGAMETEOR				76
+#define HWTE_CUBEBEAM				77
+#define HWTE_LIGHTNINGEXPLODE		78
+#define HWTE_ACID_BALL_FLY			79
+#define HWTE_ACID_BLOB_FLY			80
+#define HWTE_CHAINLIGHTNING			81
