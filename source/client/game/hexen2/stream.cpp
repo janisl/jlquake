@@ -17,7 +17,24 @@
 #include "../../client.h"
 #include "local.h"
 
-h2stream_t clh2_Streams[MAX_STREAMS_H2];
+#define MAX_STREAMS_H2				32
+
+struct h2stream_t
+{
+	int type;
+	int entity;
+	int tag;
+	int flags;
+	int skin;
+	qhandle_t models[4];
+	vec3_t source;
+	vec3_t dest;
+	vec3_t offset;
+	float endTime;
+	float lastTrailTime;
+};
+
+static h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
 void CLH2_ClearStreams()
 {
@@ -225,5 +242,253 @@ void CLH2_ParseStream(QMsg& message, int type)
 		break;
 	default:
 		throw Exception("CLH2_ParseStream: bad type");
+	}
+}
+
+void CLH2_UpdateStreams()
+{
+	h2stream_t* stream = clh2_Streams;
+	for (int i = 0; i < MAX_STREAMS_H2; i++, stream++)
+	{
+		if (!stream->models[0])
+		{
+			// Inactive
+			continue;
+		}
+
+		if (stream->endTime * 1000 < cl_common->serverTime)
+		{
+			// Inactive
+			if (stream->type != H2TE_STREAM_LIGHTNING && stream->type != H2TE_STREAM_LIGHTNING_SMALL)
+			{
+				continue;
+			}
+			else if (stream->endTime * 1000 + 250 < cl_common->serverTime)
+			{
+				continue;
+			}
+		}
+
+		if (stream->flags & H2STREAM_ATTACHED && stream->endTime * 1000 >= cl_common->serverTime)
+		{
+			// Attach the start position to owner
+			h2entity_state_t* state = CLH2_FindState(stream->entity);
+			if (state)
+			{
+				VectorAdd(state->origin, stream->offset, stream->source);
+			}
+		}
+
+		vec3_t dist;
+		VectorSubtract(stream->dest, stream->source, dist);
+		vec3_t angles;
+		VecToAnglesBuggy(dist, angles);
+
+		vec3_t org;
+		VectorCopy(stream->source, org);
+		float d = VectorNormalize(dist);
+
+		vec3_t right, up;
+		float cosTime, sinTime, lifeTime, cos2Time, sin2Time;
+		if ((GGameType & GAME_HexenWorld) && stream->type == H2TE_STREAM_SUNSTAFF2)
+		{
+			vec3_t discard;
+			AngleVectors(angles, discard, right, up);
+
+			lifeTime = ((stream->endTime - cl_common->serverTime * 0.001)/.8);
+			cosTime = cos(cl_common->serverTime * 0.001 * 5);
+			sinTime = sin(cl_common->serverTime * 0.001 * 5);
+			cos2Time = cos(cl_common->serverTime * 0.001 * 5 + 3.14);
+			sin2Time = sin(cl_common->serverTime * 0.001 * 5 + 3.14);
+		}
+
+		int segmentCount = 0;
+		if(stream->type == H2TE_STREAM_ICECHUNKS)
+		{
+			int offset = (cl_common->serverTime / 25) % 30;
+			for (i = 0; i < 3; i++)
+			{
+				org[i] += dist[i] * offset;
+			}
+		}
+		while(d > 0)
+		{
+			refEntity_t ent;
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.reType = RT_MODEL;
+			VectorCopy(org, ent.origin);
+			ent.hModel = stream->models[0];
+			switch (stream->type)
+			{
+			case H2TE_STREAM_CHAIN:
+				angles[2] = 0;
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_SUNSTAFF1:
+				angles[2] = (cl_common->serverTime / 100) % 360;
+				if (GGameType & GAME_HexenWorld)
+				{
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl_common->serverTime * 0.001) / .3), 0, 128, H2MLS_ABSLIGHT);
+				}
+				else
+				{
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				}
+				R_AddRefEntityToScene(&ent);
+
+				Com_Memset(&ent, 0, sizeof(ent));
+				ent.reType = RT_MODEL;
+				VectorCopy(org, ent.origin);
+				ent.hModel = stream->models[1];
+				angles[2] = (cl_common->serverTime / 20) % 360;
+				if (GGameType & GAME_HexenWorld)
+				{
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl_common->serverTime * 0.001)/.5), 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+				}
+				else
+				{
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+				}
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_SUNSTAFF2:
+				if (!(GGameType & GAME_HexenWorld))
+				{
+					angles[2] = (cl_common->serverTime / 100) % 360;
+					ent.frame = (cl_common->serverTime / 100) % 8;
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+					R_AddRefEntityToScene(&ent);
+				}
+				else
+				{
+					angles[2] = (int)(cl_common->serverTime * 0.001*100)%360;
+					VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
+					VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+					R_AddRefEntityToScene(&ent);
+
+					Com_Memset(&ent, 0, sizeof(ent));
+					ent.reType = RT_MODEL;
+					VectorCopy(org, ent.origin);
+					ent.hModel = stream->models[0];
+					angles[2] = (int)(cl_common->serverTime * 0.001*100)%360;
+					VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
+					VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+					R_AddRefEntityToScene(&ent);
+
+					for (int ix = 0; ix < 2; ix++)
+					{
+						Com_Memset(&ent, 0, sizeof(ent));
+						ent.reType = RT_MODEL;
+						VectorCopy(org, ent.origin);
+						if (i)
+						{
+							VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
+							VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
+						}
+						else
+						{
+							VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
+							VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
+						}
+						ent.hModel = stream->models[1];
+						angles[2] = (int)(cl_common->serverTime * 0.001*20)%360;
+						CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT);
+						R_AddRefEntityToScene(&ent);
+					}
+				}
+				break;
+			case H2TE_STREAM_LIGHTNING:
+				if (stream->endTime * 1000 < cl_common->serverTime)
+				{//fixme: keep last non-translucent frame and angle
+					angles[2] = 0;
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl_common->serverTime / 1000.0) * 192, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+				}
+				else
+				{
+					angles[2] = rand() % 360;
+					ent.frame = rand() % 6;
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				}
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_LIGHTNING_SMALL:
+			case HWTE_STREAM_LIGHTNING_SMALL:
+				if (stream->endTime * 1000 < cl_common->serverTime)
+				{
+					angles[2] = 0;
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl_common->serverTime / 1000.0) * 192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+				}
+				else
+				{
+					angles[2] = rand() % 360;
+					ent.frame = rand() % 6;
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				}
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_FAMINE:
+				angles[2] = rand()%360;
+				ent.frame = 0;
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_COLORBEAM:
+				angles[2] = 0;
+				ent.skinNum = stream->skin;
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				CLH2_HandleCustomSkin(&ent, -1);
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_GAZE:
+				angles[2] = 0;
+				ent.frame = (cl_common->serverTime /  25) % 36;
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				R_AddRefEntityToScene(&ent);
+				break;
+			case H2TE_STREAM_ICECHUNKS:
+				angles[2] = rand()%360;
+				ent.frame = rand()%5;
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
+				R_AddRefEntityToScene(&ent);
+				break;
+			default:
+				angles[2] = 0;
+				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 0, 0);
+				R_AddRefEntityToScene(&ent);
+			}
+			for (i = 0; i < 3; i++)
+			{
+				org[i] += dist[i] * 30;
+			}
+			d -= 30;
+			segmentCount++;
+		}
+		if (stream->type == H2TE_STREAM_SUNSTAFF1 ||
+			(!(GGameType & GAME_HexenWorld) && stream->type == H2TE_STREAM_SUNSTAFF2))
+		{
+			if (stream->lastTrailTime * 1000 + 200 < cl_common->serverTime)
+			{
+				stream->lastTrailTime = cl_common->serverTime / 1000.0;
+				CLH2_SunStaffTrail(stream->source, stream->dest);
+			}
+
+			refEntity_t ent;
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.reType = RT_MODEL;
+			VectorCopy(stream->dest, ent.origin);
+			ent.hModel = stream->models[2];
+			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT);
+			R_AddRefEntityToScene(&ent);
+
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.reType = RT_MODEL;
+			VectorCopy(stream->dest, ent.origin);
+			ent.hModel = stream->models[3];
+			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+			R_AddRefEntityToScene(&ent);
+		}
 	}
 }

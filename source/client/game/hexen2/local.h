@@ -14,25 +14,9 @@
 //**
 //**************************************************************************
 
-#define MAX_STREAMS_H2				32
 #define H2STREAM_ATTACHED			16
 
 #define MAX_STATIC_ENTITIES_H2		256			// torches, etc
-
-struct h2stream_t
-{
-	int type;
-	int entity;
-	int tag;
-	int flags;
-	int skin;
-	qhandle_t models[4];
-	vec3_t source;
-	vec3_t dest;
-	vec3_t offset;
-	float endTime;
-	float lastTrailTime;
-};
 
 #define MAX_EFFECT_ENTITIES_H2		256
 
@@ -41,8 +25,6 @@ struct effect_entity_t
 	h2entity_state_t state;
 	qhandle_t model;			// 0 = no model
 };
-
-extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 extern h2entity_t h2cl_entities[MAX_EDICTS_H2];
@@ -75,6 +57,7 @@ void CLH2_CreateStreamLightning(int ent, int tag, int flags, int skin, int durat
 void CLH2_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_ParseStream(QMsg& message, int type);
+void CLH2_UpdateStreams();
 
 void CLH2_InitTEntsCommon();
 void CLH2_ClearTEnts();
