@@ -57,7 +57,6 @@ void CL_InitTEnts (void)
 
 void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest)
 {
-	h2stream_t		*stream;
 	qhandle_t		models[4];
 
 	models[1] = models[2] = models[3] = 0;
@@ -99,12 +98,7 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 		Sys_Error("CreateStream: bad type");
 	}
 
-	if((stream = CLH2_NewStream(ent, tag)) == NULL)
-	{
-		Con_Printf("stream list overflow\n");
-		return;
-	}
-	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration * 1000, source, dest, models);
+	CLH2_CreateStream(type, ent, tag, flags, skin, duration * 1000, source, dest, models);
 }
 //==========================================================================
 //
@@ -120,7 +114,6 @@ static void ParseStream(int type)
 	int				skin;
 	vec3_t			source;
 	vec3_t			dest;
-	h2stream_t		*stream;
 	qhandle_t		models[4];
 
 	ent = net_message.ReadShort();
@@ -178,12 +171,7 @@ static void ParseStream(int type)
 		Sys_Error("ParseStream: bad type");
 	}
 
-	if((stream = CLH2_NewStream(ent, tag)) == NULL)
-	{
-		Con_Printf("stream list overflow\n");
-		return;
-	}
-	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
+	CLH2_CreateStream(type, ent, tag, flags, skin, duration, source, dest, models);
 }
 
 /*
@@ -287,7 +275,6 @@ void CL_ParseTEnt (void)
 		{
 			int				ent;
 			vec3_t			center;
-			h2stream_t		*stream;
 			qhandle_t		models[2];
 			h2entity_state_t	*state;
 			static float	playIceSound = .6;
@@ -310,11 +297,6 @@ void CL_ParseTEnt (void)
 				{	// make some ice beams...
 					models[0] = R_RegisterModel("models/stice.mdl");
 
-					if((stream = CLH2_NewStream(ent, i)) == NULL)
-					{
-						Con_Printf("stream list overflow\n");
-						return;
-					}
 					vec3_t source;
 					VectorCopy(center, source);
 					source[0] += rand() % 100 - 50;
@@ -324,7 +306,7 @@ void CL_ParseTEnt (void)
 					VectorCopy(source, dest);
 					dest[2] += 128;
 
-					CLH2_InitStream(stream, TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
+					CLH2_CreateStream(TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
 				}
 
 			}
@@ -344,7 +326,6 @@ void CL_ParseTEnt (void)
 			h2entity_state_t	*state;
 			int				i, j;
 
-			h2stream_t		*stream;
 			qhandle_t		models[4];
 
 
@@ -377,12 +358,7 @@ void CL_ParseTEnt (void)
 					models[2] = R_RegisterModel("models/stsunsf3.mdl");
 					models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
-					if((stream = CLH2_NewStream(ent, i)) == NULL)
-					{
-						Con_Printf("stream list overflow\n");
-						return;
-					}
-					CLH2_InitStream(stream, TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
+					CLH2_CreateStream(TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
 				}
 			}
 			else
@@ -398,7 +374,6 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNING_HAMMER:
 		{
 			int				ent;
-			h2stream_t		*stream;
 			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
@@ -421,11 +396,6 @@ void CL_ParseTEnt (void)
 				{	// make some lightning
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-					if((stream = CLH2_NewStream(ent, i)) == NULL)
-					{
-						Con_Printf("stream list overflow\n");
-						return;
-					}
 					vec3_t source;
 					VectorCopy(state->origin, source);
 					source[0] += rand() % 30 - 15;
@@ -437,7 +407,7 @@ void CL_ParseTEnt (void)
 					dest[1] += rand() % 80 - 40;
 					dest[2] += 64 + (rand() % 48);
 
-					CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
+					CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
 				}
 
 			}
@@ -450,7 +420,6 @@ void CL_ParseTEnt (void)
 		{
 			vec3_t			pos;
 			int				ent;
-			h2stream_t		*stream;
 			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
@@ -488,12 +457,7 @@ void CL_ParseTEnt (void)
 
 					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-					if((stream = CLH2_NewStream(ent, i)) == NULL)
-					{
-						Con_Printf("stream list overflow\n");
-						return;
-					}
-					CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
+					CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
 				}
 			}
 			CLHW_SwordExplosion(pos);
@@ -516,7 +480,6 @@ void CL_ParseTEnt (void)
 	case TE_SUNSTAFF_POWER:
 		{
 			int				ent;
-			h2stream_t		*stream;
 			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
@@ -542,12 +505,7 @@ void CL_ParseTEnt (void)
 				models[2] = R_RegisterModel("models/stsunsf3.mdl");
 				models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
-				if((stream = CLH2_NewStream(ent, 0)) == NULL)
-				{
-					Con_Printf("stream list overflow\n");
-					return;
-				}
-				CLH2_InitStream(stream, TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, vel, pos, models);
+				CLH2_CreateStream(TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, vel, pos, models);
 			}
 		}
 		break;
@@ -681,7 +639,6 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNINGEXPLODE:
 		{
 			int				ent;
-			h2stream_t		*stream;
 			qhandle_t		models[4];
 			h2entity_state_t	*state;
 			float			tempAng, tempPitch;
@@ -715,12 +672,7 @@ void CL_ParseTEnt (void)
 				dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
 				dest[2] += 75.0 * sin(tempPitch);
 
-				if ((stream = CLH2_NewStream(ent, i)) == NULL)
-				{
-					Con_Printf("stream list overflow\n");
-					return;
-				}
-				CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, i, i, 0, 500, pos, dest, models);
+				CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, i, i, 0, 500, pos, dest, models);
 			}
 		}
 		break;
@@ -740,7 +692,6 @@ void CL_ParseTEnt (void)
 			int				temp;
 
 			int				ent;
-			h2stream_t		*stream;
 			qhandle_t		models[4];
 
 			ent = net_message.ReadShort();
@@ -772,12 +723,7 @@ void CL_ParseTEnt (void)
 				// make the connecting lightning...
 				models[0] = R_RegisterModel("models/stlghtng.mdl");
 
-				if((stream = CLH2_NewStream(ent, temp)) == NULL)
-				{
-					Con_Printf("stream list overflow\n");
-					return;
-				}
-				CLH2_InitStream(stream, TE_STREAM_LIGHTNING, ent, temp, temp, 0, 300, points[temp], points[temp + 1], models);
+				CLH2_CreateStream(TE_STREAM_LIGHTNING, ent, temp, temp, 0, 300, points[temp], points[temp + 1], models);
 
 				CLHW_ChainLightningExplosion(points[temp + 1]);
 			}

@@ -24,7 +24,7 @@ void CLH2_ClearStreams()
 	Com_Memset(clh2_Streams, 0, sizeof(clh2_Streams));
 }
 
-h2stream_t* CLH2_NewStream(int ent, int tag)
+static h2stream_t* CLH2_NewStream(int ent, int tag)
 {
 	int i;
 	h2stream_t *stream;
@@ -48,8 +48,14 @@ h2stream_t* CLH2_NewStream(int ent, int tag)
 	return NULL;
 }
 
-void CLH2_InitStream(h2stream_t* stream, int type, int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest, const qhandle_t* models)
+void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest, const qhandle_t* models)
 {
+	h2stream_t* stream = CLH2_NewStream(ent, tag);
+	if (stream == NULL)
+	{
+		Log::write("stream list overflow\n");
+		return;
+	}
 	stream->type = type;
 	stream->entity = ent;
 	stream->tag = tag;

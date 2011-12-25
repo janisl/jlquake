@@ -137,7 +137,6 @@ static void ParseStream(int type)
 	int skin;
 	vec3_t source;
 	vec3_t dest;
-	h2stream_t *stream;
 	qhandle_t models[4];
 
 	ent = net_message.ReadShort();
@@ -197,12 +196,7 @@ static void ParseStream(int type)
 		Sys_Error("ParseStream: bad type");
 	}
 
-	if((stream = CLH2_NewStream(ent, tag)) == NULL)
-	{
-		Con_Printf("stream list overflow\n");
-		return;
-	}
-	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
+	CLH2_CreateStream(type, ent, tag, flags, skin, duration, source, dest, models);
 }
 
 //==========================================================================
