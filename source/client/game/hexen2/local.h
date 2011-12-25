@@ -75,10 +75,10 @@ void CLH2_CreateStreamSunstaffPower(int ent, const vec3_t source, const vec3_t d
 void CLH2_CreateStreamLightning(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLHW_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLHW_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLHW_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLHW_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLHW_CreateStreamGaze(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamGaze(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 
 void CLH2_InitTEntsCommon();
 void CLH2_ClearTEnts();

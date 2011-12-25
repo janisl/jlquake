@@ -149,16 +149,16 @@ static void ParseStream(int type)
 		CLH2_CreateStreamLightningSmall(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_FAMINE:
-		CLHW_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_COLORBEAM:
-		CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_ICECHUNKS:
-		CLHW_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_GAZE:
-		CLHW_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
 		break;
 	default:
 		Sys_Error("ParseStream: bad type");

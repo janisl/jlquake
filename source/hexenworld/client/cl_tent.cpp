@@ -96,16 +96,16 @@ static void ParseStream(int type)
 		CLHW_CreateStreamLightningSmall(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_FAMINE:
-		CLHW_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_COLORBEAM:
-		CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_ICECHUNKS:
-		CLHW_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_GAZE:
-		CLHW_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
+		CLH2_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
 		break;
 	default:
 		Sys_Error("ParseStream: bad type");
@@ -241,7 +241,7 @@ void CL_ParseTEnt (void)
 					VectorCopy(source, dest);
 					dest[2] += 128;
 
-					CLHW_CreateStreamIceChunks(ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest);
+					CLH2_CreateStreamIceChunks(ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest);
 				}
 
 			}
@@ -547,7 +547,7 @@ void CL_ParseTEnt (void)
 				S_StartSound(source, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 				S_StartSound(dest, CLH2_TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
 				CLH2_SunStaffTrail(dest, source);
-				CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration * 1000, source, dest);
+				CLH2_CreateStreamColourBeam(ent, tag, flags, skin, duration * 1000, source, dest);
 			}
 		}
 		break;

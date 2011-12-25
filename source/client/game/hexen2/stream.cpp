@@ -143,7 +143,7 @@ void CLHW_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int 
 	CLH2_CreateStream(HWTE_STREAM_LIGHTNING_SMALL, ent, tag, flags, skin, duration, source, dest, models);
 }
 
-void CLHW_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+void CLH2_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
 {
 	qhandle_t models[4];
 	models[0] = R_RegisterModel("models/fambeam.mdl");
@@ -151,7 +151,7 @@ void CLHW_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration
 	CLH2_CreateStream(H2TE_STREAM_FAMINE, ent, tag, flags, skin, duration, source, dest, models);
 }
 
-void CLHW_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+void CLH2_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
 {
 	qhandle_t models[4];
 	models[0] = R_RegisterModel("models/stclrbm.mdl");
@@ -159,7 +159,7 @@ void CLHW_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int dura
 	CLH2_CreateStream(H2TE_STREAM_COLORBEAM, ent, tag, flags, skin, duration, source, dest, models);
 }
 
-void CLHW_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
 {
 	qhandle_t models[4];
 	models[0] = R_RegisterModel("models/stice.mdl");
@@ -167,7 +167,7 @@ void CLHW_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int durat
 	CLH2_CreateStream(H2TE_STREAM_ICECHUNKS, ent, tag, flags, skin, duration, source, dest, models);
 }
 
-void CLHW_CreateStreamGaze(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+void CLH2_CreateStreamGaze(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
 {
 	qhandle_t models[4];
 	models[0] = R_RegisterModel("models/stmedgaz.mdl");
