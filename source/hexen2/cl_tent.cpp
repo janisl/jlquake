@@ -23,8 +23,6 @@
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static void ParseStream(int type);
-
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
@@ -86,7 +84,7 @@ void CL_ParseTEnt()
 	case H2TE_STREAM_ICECHUNKS:
 	case H2TE_STREAM_GAZE:
 	case H2TE_STREAM_FAMINE:
-		ParseStream(type);
+		CLH2_ParseStream(net_message, type);
 		break;
 
 	case H2TE_LAVASPLASH:
@@ -97,71 +95,6 @@ void CL_ParseTEnt()
 		break;
 	default:
 		Sys_Error ("CL_ParseTEnt: bad type");
-	}
-}
-
-//==========================================================================
-//
-// ParseStream
-//
-//==========================================================================
-
-static void ParseStream(int type)
-{
-	int ent;
-	int tag;
-	int flags;
-	int skin;
-	vec3_t source;
-	vec3_t dest;
-
-	ent = net_message.ReadShort();
-	flags = net_message.ReadByte();
-	tag = flags&15;
-	int duration = net_message.ReadByte() * 50;
-	skin = 0;
-	if(type == H2TE_STREAM_COLORBEAM)
-	{
-		skin = net_message.ReadByte();
-	}
-	source[0] = net_message.ReadCoord();
-	source[1] = net_message.ReadCoord();
-	source[2] = net_message.ReadCoord();
-	dest[0] = net_message.ReadCoord();
-	dest[1] = net_message.ReadCoord();
-	dest[2] = net_message.ReadCoord();
-
-	switch (type)
-	{
-	case H2TE_STREAM_CHAIN:
-		CLH2_CreateStreamChain(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_SUNSTAFF1:
-		CLH2_CreateStreamSunstaff1(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_SUNSTAFF2:
-		CLH2_CreateStreamSunstaff2(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_LIGHTNING:
-		CLH2_CreateStreamLightning(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_LIGHTNING_SMALL:
-		CLH2_CreateStreamLightningSmall(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_FAMINE:
-		CLH2_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_COLORBEAM:
-		CLH2_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_ICECHUNKS:
-		CLH2_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
-		break;
-	case H2TE_STREAM_GAZE:
-		CLH2_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
-		break;
-	default:
-		Sys_Error("ParseStream: bad type");
 	}
 }
 

@@ -70,15 +70,11 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 void CLH2_ClearStreams();
 void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamSunstaff1(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamSunstaff2(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamSunstaffPower(int ent, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamLightning(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLHW_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
 void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamGaze(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_ParseStream(QMsg& message, int type);
 
 void CLH2_InitTEntsCommon();
 void CLH2_ClearTEnts();
