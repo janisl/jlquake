@@ -74,7 +74,7 @@ void CLH2_InitStream(h2stream_t* stream, int type, int ent, int tag, int flags, 
 void CLH2_InitTEntsCommon();
 void CLH2_ClearTEnts();
 int CLH2_TempSoundChannel();
-h2entity_state_t* CLHW_FindState(int EntNum);
+h2entity_state_t* CLH2_FindState(int EntNum);
 void CLH2_ParseWizSpike(QMsg& message);
 void CLH2_ParseKnightSpike(QMsg& message);
 void CLH2_ParseSpike(QMsg& message);

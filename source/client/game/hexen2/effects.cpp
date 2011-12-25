@@ -1937,7 +1937,7 @@ static void CLHW_ParseReviseEffectScarabChain(QMsg& message, int index)
 	{
 		cl_common->h2_Effects[index].Chain.state = 1;
 		cl_common->h2_Effects[index].Chain.owner = curEnt;
-		h2entity_state_t* es = CLHW_FindState(cl_common->h2_Effects[index].Chain.owner);
+		h2entity_state_t* es = CLH2_FindState(cl_common->h2_Effects[index].Chain.owner);
 		if (es)
 		{
 			effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];

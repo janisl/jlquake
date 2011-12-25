@@ -59,19 +59,24 @@ int CLH2_TempSoundChannel()
 	return last;
 }
 
-h2entity_state_t* CLHW_FindState(int EntNum)
+h2entity_state_t* CLH2_FindState(int entityNumber)
 {
 	static h2entity_state_t pretend_player;
 
-	if (EntNum >= 1 && EntNum <= HWMAX_CLIENTS)
+	if (!(GGameType & GAME_HexenWorld))
 	{
-		if (EntNum == cl_common->viewentity)
+		return &h2cl_entities[entityNumber].state;
+	}
+
+	if (entityNumber >= 1 && entityNumber <= HWMAX_CLIENTS)
+	{
+		if (entityNumber == cl_common->viewentity)
 		{
 			VectorCopy(CL_GetSimOrg(), pretend_player.origin);
 		}
 		else
 		{
-			VectorCopy(cl_common->hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].playerstate[EntNum - 1].origin, pretend_player.origin);
+			VectorCopy(cl_common->hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].playerstate[entityNumber - 1].origin, pretend_player.origin);
 		}
 		return &pretend_player;
 	}
@@ -79,7 +84,7 @@ h2entity_state_t* CLHW_FindState(int EntNum)
 	hwpacket_entities_t* pack = &cl_common->hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
 	for (int pnum = 0; pnum < pack->num_entities; pnum++)
 	{
-		if (pack->entities[pnum].number == EntNum)
+		if (pack->entities[pnum].number == entityNumber)
 		{
 			return &pack->entities[pnum];
 		}
