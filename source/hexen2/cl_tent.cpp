@@ -114,7 +114,6 @@ static void ParseStream(int type)
 	int skin;
 	vec3_t source;
 	vec3_t dest;
-	qhandle_t models[4];
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
@@ -132,48 +131,38 @@ static void ParseStream(int type)
 	dest[1] = net_message.ReadCoord();
 	dest[2] = net_message.ReadCoord();
 
-	models[1] = models[2] = models[3] = 0;
-	switch(type)
+	switch (type)
 	{
 	case H2TE_STREAM_CHAIN:
-		models[0] = R_RegisterModel("models/stchain.mdl");
+		CLH2_CreateStreamChain(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_SUNSTAFF1:
-		models[0] = R_RegisterModel("models/stsunsf1.mdl");
-		models[1] = R_RegisterModel("models/stsunsf2.mdl");
-		models[2] = R_RegisterModel("models/stsunsf3.mdl");
-		models[3] = R_RegisterModel("models/stsunsf4.mdl");
+		CLH2_CreateStreamSunstaff1(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_SUNSTAFF2:
-		models[0] = R_RegisterModel("models/stsunsf5.mdl");
-		models[2] = R_RegisterModel("models/stsunsf3.mdl");
-		models[3] = R_RegisterModel("models/stsunsf4.mdl");
+		CLH2_CreateStreamSunstaff2(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_LIGHTNING:
-		models[0] = R_RegisterModel("models/stlghtng.mdl");
-//		duration*=2;
+		CLH2_CreateStreamLightning(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_LIGHTNING_SMALL:
-		models[0] = R_RegisterModel("models/stltng2.mdl");
-//		duration*=2;
+		CLH2_CreateStreamLightningSmall(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_FAMINE:
-		models[0] = R_RegisterModel("models/fambeam.mdl");
+		CLHW_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_COLORBEAM:
-		models[0] = R_RegisterModel("models/stclrbm.mdl");
+		CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_ICECHUNKS:
-		models[0] = R_RegisterModel("models/stice.mdl");
+		CLHW_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_GAZE:
-		models[0] = R_RegisterModel("models/stmedgaz.mdl");
+		CLHW_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
 		break;
 	default:
 		Sys_Error("ParseStream: bad type");
 	}
-
-	CLH2_CreateStream(type, ent, tag, flags, skin, duration, source, dest, models);
 }
 
 //==========================================================================

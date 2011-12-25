@@ -48,7 +48,7 @@ static h2stream_t* CLH2_NewStream(int ent, int tag)
 	return NULL;
 }
 
-void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest, const qhandle_t* models)
+static void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest, const qhandle_t* models)
 {
 	h2stream_t* stream = CLH2_NewStream(ent, tag);
 	if (stream == NULL)
@@ -79,4 +79,98 @@ void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, int dura
 			VectorSubtract(source, state->origin, stream->offset);
 		}
 	}
+}
+
+void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stchain.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_CHAIN, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLH2_CreateStreamSunstaff1(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stsunsf1.mdl");
+	models[1] = R_RegisterModel("models/stsunsf2.mdl");
+	models[2] = R_RegisterModel("models/stsunsf3.mdl");
+	models[3] = R_RegisterModel("models/stsunsf4.mdl");
+	CLH2_CreateStream(H2TE_STREAM_SUNSTAFF1, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLH2_CreateStreamSunstaff2(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stsunsf5.mdl");
+	models[1] = 0;
+	models[2] = R_RegisterModel("models/stsunsf3.mdl");
+	models[3] = R_RegisterModel("models/stsunsf4.mdl");
+	CLH2_CreateStream(H2TE_STREAM_SUNSTAFF2, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLH2_CreateStreamSunstaffPower(int ent, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stsunsf2.mdl");
+	models[1] = R_RegisterModel("models/stsunsf1.mdl");
+	models[2] = R_RegisterModel("models/stsunsf3.mdl");
+	models[3] = R_RegisterModel("models/stsunsf4.mdl");
+	CLH2_CreateStream(H2TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, source, dest, models);
+}
+
+void CLH2_CreateStreamLightning(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stlghtng.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLH2_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stltng2.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_LIGHTNING_SMALL, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLHW_CreateStreamLightningSmall(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stltng2.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(HWTE_STREAM_LIGHTNING_SMALL, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLHW_CreateStreamFaMine(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/fambeam.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_FAMINE, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLHW_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stclrbm.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_COLORBEAM, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLHW_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stice.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_ICECHUNKS, ent, tag, flags, skin, duration, source, dest, models);
+}
+
+void CLHW_CreateStreamGaze(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest)
+{
+	qhandle_t models[4];
+	models[0] = R_RegisterModel("models/stmedgaz.mdl");
+	models[1] = models[2] = models[3] = 0;
+	CLH2_CreateStream(H2TE_STREAM_GAZE, ent, tag, flags, skin, duration, source, dest, models);
 }

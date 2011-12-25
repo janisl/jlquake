@@ -57,48 +57,38 @@ void CL_InitTEnts (void)
 
 void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest)
 {
-	qhandle_t		models[4];
-
-	models[1] = models[2] = models[3] = 0;
-	switch(type)
+	switch (type)
 	{
 	case H2TE_STREAM_CHAIN:
-		models[0] = R_RegisterModel("models/stchain.mdl");
+		CLH2_CreateStreamChain(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_SUNSTAFF1:
-		models[0] = R_RegisterModel("models/stsunsf1.mdl");
-		models[1] = R_RegisterModel("models/stsunsf2.mdl");
-		models[2] = R_RegisterModel("models/stsunsf3.mdl");
-		models[3] = R_RegisterModel("models/stsunsf4.mdl");
+		CLH2_CreateStreamSunstaff1(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_SUNSTAFF2:
-		models[0] = R_RegisterModel("models/stsunsf5.mdl");
-		models[2] = R_RegisterModel("models/stsunsf3.mdl");
-		models[3] = R_RegisterModel("models/stsunsf4.mdl");
+		CLH2_CreateStreamSunstaff2(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_LIGHTNING:
-		models[0] = R_RegisterModel("models/stlghtng.mdl");
+		CLH2_CreateStreamLightning(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case HWTE_STREAM_LIGHTNING_SMALL:
-		models[0] = R_RegisterModel("models/stltng2.mdl");
+		CLHW_CreateStreamLightningSmall(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_FAMINE:
-		models[0] = R_RegisterModel("models/fambeam.mdl");
+		CLHW_CreateStreamFaMine(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_COLORBEAM:
-		models[0] = R_RegisterModel("models/stclrbm.mdl");
+		CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_ICECHUNKS:
-		models[0] = R_RegisterModel("models/stice.mdl");
+		CLHW_CreateStreamIceChunks(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	case H2TE_STREAM_GAZE:
-		models[0] = R_RegisterModel("models/stmedgaz.mdl");
+		CLHW_CreateStreamGaze(ent, tag, flags, skin, duration * 1000, source, dest);
 		break;
 	default:
 		Sys_Error("CreateStream: bad type");
 	}
-
-	CLH2_CreateStream(type, ent, tag, flags, skin, duration * 1000, source, dest, models);
 }
 //==========================================================================
 //
@@ -114,7 +104,6 @@ static void ParseStream(int type)
 	int				skin;
 	vec3_t			source;
 	vec3_t			dest;
-	qhandle_t		models[4];
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
@@ -132,46 +121,38 @@ static void ParseStream(int type)
 	dest[1] = net_message.ReadCoord();
 	dest[2] = net_message.ReadCoord();
 
-	models[1] = models[2] = models[3] = 0;
 	switch(type)
 	{
 	case H2TE_STREAM_CHAIN:
-		models[0] = R_RegisterModel("models/stchain.mdl");
+		CLH2_CreateStreamChain(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_SUNSTAFF1:
-		models[0] = R_RegisterModel("models/stsunsf1.mdl");
-		models[1] = R_RegisterModel("models/stsunsf2.mdl");
-		models[2] = R_RegisterModel("models/stsunsf3.mdl");
-		models[3] = R_RegisterModel("models/stsunsf4.mdl");
+		CLH2_CreateStreamSunstaff1(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_SUNSTAFF2:
-		models[0] = R_RegisterModel("models/stsunsf5.mdl");
-		models[2] = R_RegisterModel("models/stsunsf3.mdl");
-		models[3] = R_RegisterModel("models/stsunsf4.mdl");
+		CLH2_CreateStreamSunstaff2(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_LIGHTNING:
-		models[0] = R_RegisterModel("models/stlghtng.mdl");
+		CLH2_CreateStreamLightning(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case HWTE_STREAM_LIGHTNING_SMALL:
-		models[0] = R_RegisterModel("models/stltng2.mdl");
+		CLHW_CreateStreamLightningSmall(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_FAMINE:
-		models[0] = R_RegisterModel("models/fambeam.mdl");
+		CLHW_CreateStreamFaMine(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_COLORBEAM:
-		models[0] = R_RegisterModel("models/stclrbm.mdl");
+		CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_ICECHUNKS:
-		models[0] = R_RegisterModel("models/stice.mdl");
+		CLHW_CreateStreamIceChunks(ent, tag, flags, skin, duration, source, dest);
 		break;
 	case H2TE_STREAM_GAZE:
-		models[0] = R_RegisterModel("models/stmedgaz.mdl");
+		CLHW_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
 		break;
 	default:
 		Sys_Error("ParseStream: bad type");
 	}
-
-	CLH2_CreateStream(type, ent, tag, flags, skin, duration, source, dest, models);
 }
 
 /*
@@ -275,7 +256,6 @@ void CL_ParseTEnt (void)
 		{
 			int				ent;
 			vec3_t			center;
-			qhandle_t		models[2];
 			h2entity_state_t	*state;
 			static float	playIceSound = .6;
 
@@ -295,8 +275,6 @@ void CL_ParseTEnt (void)
 
 				for (i = 0; i < 5; i++)
 				{	// make some ice beams...
-					models[0] = R_RegisterModel("models/stice.mdl");
-
 					vec3_t source;
 					VectorCopy(center, source);
 					source[0] += rand() % 100 - 50;
@@ -306,7 +284,7 @@ void CL_ParseTEnt (void)
 					VectorCopy(source, dest);
 					dest[2] += 128;
 
-					CLH2_CreateStream(H2TE_STREAM_ICECHUNKS, ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest, models);
+					CLHW_CreateStreamIceChunks(ent, i, i + H2STREAM_ATTACHED, 0, 300, source, dest);
 				}
 
 			}
@@ -325,8 +303,6 @@ void CL_ParseTEnt (void)
 			short int		tempVal;
 			h2entity_state_t	*state;
 			int				i, j;
-
-			qhandle_t		models[4];
 
 
 			ent = net_message.ReadShort();
@@ -353,12 +329,7 @@ void CL_ParseTEnt (void)
 				// actually create the sun model pieces
 				for ( i = 0; i < reflect_count + 1; i++)
 				{
-					models[0] = R_RegisterModel("models/stsunsf1.mdl");
-					models[1] = R_RegisterModel("models/stsunsf2.mdl");
-					models[2] = R_RegisterModel("models/stsunsf3.mdl");
-					models[3] = R_RegisterModel("models/stsunsf4.mdl");
-
-					CLH2_CreateStream(H2TE_STREAM_SUNSTAFF1, ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1], models);
+					CLH2_CreateStreamSunstaff1(ent, i, !i ? i + H2STREAM_ATTACHED : i, 0, 500, points[i], points[i + 1]);
 				}
 			}
 			else
@@ -374,7 +345,6 @@ void CL_ParseTEnt (void)
 	case HWTE_LIGHTNING_HAMMER:
 		{
 			int				ent;
-			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
 			ent = net_message.ReadShort();
@@ -394,8 +364,6 @@ void CL_ParseTEnt (void)
 
 				for (i = 0; i < 5; i++)
 				{	// make some lightning
-					models[0] = R_RegisterModel("models/stlghtng.mdl");
-
 					vec3_t source;
 					VectorCopy(state->origin, source);
 					source[0] += rand() % 30 - 15;
@@ -407,7 +375,7 @@ void CL_ParseTEnt (void)
 					dest[1] += rand() % 80 - 40;
 					dest[2] += 64 + (rand() % 48);
 
-					CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
+					CLH2_CreateStreamLightning(ent, i, i, 0, 500, source, dest);
 				}
 
 			}
@@ -420,7 +388,6 @@ void CL_ParseTEnt (void)
 		{
 			vec3_t			pos;
 			int				ent;
-			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
 			pos[0] = net_message.ReadCoord();
@@ -455,9 +422,7 @@ void CL_ParseTEnt (void)
 					dest[1] += rand() % 80 - 40;
 					dest[2] += 64 + (rand() % 48);
 
-					models[0] = R_RegisterModel("models/stlghtng.mdl");
-
-					CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, i, i, 0, 500, source, dest, models);
+					CLH2_CreateStreamLightning(ent, i, i, 0, 500, source, dest);
 				}
 			}
 			CLHW_SwordExplosion(pos);
@@ -480,7 +445,6 @@ void CL_ParseTEnt (void)
 	case HWTE_SUNSTAFF_POWER:
 		{
 			int				ent;
-			qhandle_t		models[4];
 			h2entity_state_t	*state;
 
 			ent = net_message.ReadShort();
@@ -500,12 +464,7 @@ void CL_ParseTEnt (void)
 			{
 				S_StartSound(state->origin, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 
-				models[0] = R_RegisterModel("models/stsunsf2.mdl");
-				models[1] = R_RegisterModel("models/stsunsf1.mdl");
-				models[2] = R_RegisterModel("models/stsunsf3.mdl");
-				models[3] = R_RegisterModel("models/stsunsf4.mdl");
-
-				CLH2_CreateStream(H2TE_STREAM_SUNSTAFF2, ent, 0, 0, 0, 800, vel, pos, models);
+				CLH2_CreateStreamSunstaffPower(ent, vel, pos);
 			}
 		}
 		break;
@@ -639,7 +598,6 @@ void CL_ParseTEnt (void)
 	case HWTE_LIGHTNINGEXPLODE:
 		{
 			int				ent;
-			qhandle_t		models[4];
 			h2entity_state_t	*state;
 			float			tempAng, tempPitch;
 
@@ -661,8 +619,6 @@ void CL_ParseTEnt (void)
 
 			for (i = 0; i < 10; i++)
 			{	// make some lightning
-				models[0] = R_RegisterModel("models/stlghtng.mdl");
-
 				tempAng = (rand()%628)/100.0;
 				tempPitch = (rand()%628)/100.0;
 
@@ -672,7 +628,7 @@ void CL_ParseTEnt (void)
 				dest[1] += 75.0 * sin(tempAng) * cos(tempPitch);
 				dest[2] += 75.0 * sin(tempPitch);
 
-				CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, i, i, 0, 500, pos, dest, models);
+				CLH2_CreateStreamLightning(ent, i, i, 0, 500, pos, dest);
 			}
 		}
 		break;
@@ -692,7 +648,6 @@ void CL_ParseTEnt (void)
 			int				temp;
 
 			int				ent;
-			qhandle_t		models[4];
 
 			ent = net_message.ReadShort();
 
@@ -721,10 +676,7 @@ void CL_ParseTEnt (void)
 			for(temp = 0; temp < numTargs - 1; temp++)
 			{
 				// make the connecting lightning...
-				models[0] = R_RegisterModel("models/stlghtng.mdl");
-
-				CLH2_CreateStream(H2TE_STREAM_LIGHTNING, ent, temp, temp, 0, 300, points[temp], points[temp + 1], models);
-
+				CLH2_CreateStreamLightning(ent, temp, temp, 0, 300, points[temp], points[temp + 1]);
 				CLHW_ChainLightningExplosion(points[temp + 1]);
 			}
 
