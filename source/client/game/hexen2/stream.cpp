@@ -248,7 +248,7 @@ void CLH2_ParseStream(QMsg& message, int type)
 void CLH2_UpdateStreams()
 {
 	h2stream_t* stream = clh2_Streams;
-	for (int i = 0; i < MAX_STREAMS_H2; i++, stream++)
+	for (int streamIndex = 0; streamIndex < MAX_STREAMS_H2; streamIndex++, stream++)
 	{
 		if (!stream->models[0])
 		{
@@ -306,7 +306,7 @@ void CLH2_UpdateStreams()
 		if(stream->type == H2TE_STREAM_ICECHUNKS)
 		{
 			int offset = (cl_common->serverTime / 25) % 30;
-			for (i = 0; i < 3; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				org[i] += dist[i] * offset;
 			}
@@ -383,7 +383,7 @@ void CLH2_UpdateStreams()
 						Com_Memset(&ent, 0, sizeof(ent));
 						ent.reType = RT_MODEL;
 						VectorCopy(org, ent.origin);
-						if (i)
+						if (ix)
 						{
 							VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
 							VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
@@ -459,7 +459,7 @@ void CLH2_UpdateStreams()
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 0, 0);
 				R_AddRefEntityToScene(&ent);
 			}
-			for (i = 0; i < 3; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				org[i] += dist[i] * 30;
 			}
