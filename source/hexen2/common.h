@@ -14,7 +14,7 @@ void InsertLinkBefore (link_t *l, link_t *before);
 void InsertLinkAfter (link_t *l, link_t *after);
 
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
-// ent = STRUCT_FROM_LINK(link,entity_t,order)
+// ent = STRUCT_FROM_LINK(link,h2entity_t,order)
 // FIXME: remove this mess!
 #define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (qintptr)&(((t *)0)->m)))
 

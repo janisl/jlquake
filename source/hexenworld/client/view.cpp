@@ -688,7 +688,7 @@ V_CalcIntermissionRefdef
 */
 static void V_CalcIntermissionRefdef (void)
 {
-	entity_t	*view;
+	h2entity_t	*view;
 	float		old;
 
 // view is the weapon model
@@ -715,7 +715,7 @@ V_CalcRefdef
 */
 static void V_CalcRefdef (void)
 {
-	entity_t	*view;
+	h2entity_t	*view;
 	int			i;
 	vec3_t		forward, right, up;
 	float		bob;

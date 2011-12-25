@@ -149,9 +149,9 @@ struct client_state_t : clientActiveCommon_t
 	int			gametype;
 
 // refresh related state
-	int			num_entities;	// held in cl_entities array
+	int			num_entities;	// held in h2cl_entities array
 	int			num_statics;	// held in cl_staticentities array
-	entity_t	viewent;			// the gun model
+	h2entity_t	viewent;			// the gun model
 
 	int			cdtrack, looptrack;	// cd audio
 	char		midi_name[128];     // midi file name
@@ -202,13 +202,7 @@ extern	Cvar*	m_side;
 extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
 
-#define	MAX_STATIC_ENTITIES	256			// torches, etc
-
 extern	client_state_t	cl;
-
-// FIXME, allocate dynamically
-extern	entity_t		cl_entities[MAX_EDICTS_H2];
-extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 //=============================================================================
 

@@ -90,7 +90,7 @@ CL_EntityNum
 This error checks and tracks the total number of entities
 ===============
 */
-entity_t	*CL_EntityNum (int num)
+h2entity_t	*CL_EntityNum (int num)
 {
 	if (num >= cl.num_entities)
 	{
@@ -102,7 +102,7 @@ entity_t	*CL_EntityNum (int num)
 		}
 	}
 		
-	return &cl_entities[num];
+	return &h2cl_entities[num];
 }
 
 
@@ -380,7 +380,7 @@ void CL_ParseUpdate (int bits)
 	qhandle_t	model;
 	int			modnum;
 	qboolean	forcelink;
-	entity_t	*ent;
+	h2entity_t	*ent;
 	int			num;
 	h2entity_state_t *ref_ent,*set_ent,build_ent,dummy;
 
@@ -452,7 +452,7 @@ void CL_ParseUpdate (int bits)
 
 	if (bits & U_CLEAR_ENT)
 	{
-		Com_Memset(ent, 0, sizeof(entity_t));
+		Com_Memset(ent, 0, sizeof(h2entity_t));
 		Com_Memset(ref_ent, 0, sizeof(*ref_ent));
 		ref_ent->number = num;
 	}
@@ -901,14 +901,14 @@ CL_ParseStatic
 */
 void CL_ParseStatic (void)
 {
-	entity_t *ent;
+	h2entity_t *ent;
 	h2entity_state_t baseline;
 	int		i;
 		
 	i = cl.num_statics;
-	if (i >= MAX_STATIC_ENTITIES)
+	if (i >= MAX_STATIC_ENTITIES_H2)
 		Host_Error ("Too many static entities");
-	ent = &cl_static_entities[i];
+	ent = &h2cl_static_entities[i];
 	cl.num_statics++;
 	CL_ParseBaseline (&baseline);
 
@@ -1010,7 +1010,7 @@ void CL_ParseServerMessage (void)
 	int			before;
 	static		double lasttime;
 	static		qboolean packet_loss = false;
-	entity_t	*ent;
+	h2entity_t	*ent;
 	short		RemovePlace, OrigPlace, NewPlace, AddedIndex;
 	int sc1, sc2;
 	byte test;

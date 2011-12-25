@@ -1364,7 +1364,7 @@ void CL_SetSolidPlayers (int playernum)
 
 static void CL_LinkStaticEntities()
 {
-	entity_t* pent = cl_static_entities;
+	h2entity_t* pent = h2cl_static_entities;
 	for (int i = 0; i < cl.num_statics; i++, pent++)
 	{
 		refEntity_t rent;

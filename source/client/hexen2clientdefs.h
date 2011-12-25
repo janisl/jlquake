@@ -116,3 +116,13 @@ struct hwframe_t
 	hwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid
 };
+
+struct h2entity_t
+{
+	h2entity_state_t state;
+	float syncbase;			// for client-side animations
+
+	double msgtime;			// time of last update
+	vec3_t msg_origins[2];	// last two updates (0 is newest)	
+	vec3_t msg_angles[2];	// last two updates (0 is newest)
+};

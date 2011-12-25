@@ -1,12 +1,6 @@
 
 // refresh.h -- public interface to refresh functions
 
-struct entity_t
-{
-	h2entity_state_t state;
-	float syncbase;
-};
-
 void V_RenderScene (void);		// must set cl.refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever cl.refdef or vid change

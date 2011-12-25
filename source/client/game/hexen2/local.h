@@ -17,6 +17,8 @@
 #define MAX_STREAMS_H2				32
 #define H2STREAM_ATTACHED			16
 
+#define MAX_STATIC_ENTITIES_H2		256			// torches, etc
+
 struct h2stream_t
 {
 	int type;
@@ -43,6 +45,8 @@ struct effect_entity_t
 extern h2stream_t clh2_Streams[MAX_STREAMS_H2];
 
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
+extern h2entity_t h2cl_entities[MAX_EDICTS_H2];
+extern h2entity_t h2cl_static_entities[MAX_STATIC_ENTITIES_H2];
 extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];

@@ -39,9 +39,6 @@ Cvar	*cl_lightlevel;
 client_static_t	cls;
 clientConnection_t clc;
 client_state_t	cl;
-// FIXME: put these on hunk?
-entity_t		cl_entities[MAX_EDICTS_H2];
-entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 /*
 =====================
@@ -60,7 +57,7 @@ void CL_ClearState (void)
 	cls.message.Clear();
 
 // clear other arrays	
-	Com_Memset(cl_entities, 0, sizeof(cl_entities));
+	Com_Memset(h2cl_entities, 0, sizeof(h2cl_entities));
 	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
 	CL_ClearDlights();
 	CL_ClearLightStyles();
@@ -295,10 +292,10 @@ CL_PrintEntities_f
 */
 void CL_PrintEntities_f (void)
 {
-	entity_t	*ent;
+	h2entity_t	*ent;
 	int			i;
 	
-	for (i=0,ent=cl_entities ; i<cl.num_entities ; i++,ent++)
+	for (i=0,ent=h2cl_entities ; i<cl.num_entities ; i++,ent++)
 	{
 		Con_Printf ("%3i:",i);
 		if (!ent->state.modelindex)
@@ -370,7 +367,7 @@ CL_RelinkEntities
 */
 void CL_RelinkEntities (void)
 {
-	entity_t	*ent;
+	h2entity_t	*ent;
 	int			i, j;
 	float		frac, f, d;
 	vec3_t		delta;
@@ -408,7 +405,7 @@ void CL_RelinkEntities (void)
 	//bobjrotate = AngleMod(100*(cl.time+ent->origin[0]+ent->origin[1]));
 	
 // start on the entity after the world
-	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
+	for (i=1,ent=h2cl_entities+1 ; i<cl.num_entities ; i++,ent++)
 	{
 		if (!ent->state.modelindex)
 		{
@@ -603,7 +600,7 @@ void CL_RelinkEntities (void)
 
 static void CL_LinkStaticEntities()
 {
-	entity_t* pent = cl_static_entities;
+	h2entity_t* pent = h2cl_static_entities;
 	for (int i = 0; i < cl.num_statics; i++, pent++)
 	{
 		refEntity_t rent;
@@ -789,5 +786,5 @@ void CIN_FinishCinematic()
 
 float* CL_GetSimOrg()
 {
-	return cl_entities[cl.viewentity].state.origin;
+	return h2cl_entities[cl.viewentity].state.origin;
 }

@@ -644,16 +644,16 @@ like torches
 */
 void CL_ParseStatic (void)
 {
-	entity_t *ent;
+	h2entity_t *ent;
 	int		i;
 	h2entity_state_t	es;
 
 	CL_ParseBaseline (&es);
 		
 	i = cl.num_statics;
-	if (i >= MAX_STATIC_ENTITIES)
+	if (i >= MAX_STATIC_ENTITIES_H2)
 		Host_EndGame ("Too many static entities");
-	ent = &cl_static_entities[i];
+	ent = &h2cl_static_entities[i];
 	cl.num_statics++;
 
 // copy it to the current state

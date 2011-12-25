@@ -21,6 +21,9 @@
 
 h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
+h2entity_t h2cl_entities[MAX_EDICTS_H2];
+h2entity_t h2cl_static_entities[MAX_STATIC_ENTITIES_H2];
+
 static float RTint[256];
 static float GTint[256];
 static float BTint[256];

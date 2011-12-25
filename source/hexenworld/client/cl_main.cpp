@@ -60,8 +60,6 @@ client_static_t	cls;
 clientConnection_t clc;
 client_state_t	cl;
 
-entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-
 double			connect_time = -1;		// for connection retransmits
 
 quakeparms_t host_parms;

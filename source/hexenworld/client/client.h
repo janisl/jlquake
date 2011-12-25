@@ -210,7 +210,7 @@ struct client_state_t : clientActiveCommon_t
 	int			cdtrack;		// cd audio
 	char		midi_name[MAX_QPATH];     // midi file name
 
-	entity_t	viewent;		// weapon model
+	h2entity_t	viewent;		// weapon model
 
 	unsigned	PIV;			// players in view
 };
@@ -294,12 +294,7 @@ extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
 extern	Cvar*	cl_teamcolor;
 
-#define	MAX_STATIC_ENTITIES	256			// torches, etc
-
 extern	client_state_t	cl;
-
-// FIXME, allocate dynamically
-extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 //=============================================================================
 

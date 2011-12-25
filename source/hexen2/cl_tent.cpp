@@ -205,7 +205,7 @@ static void ParseStream(int type)
 	CLH2_InitStream(stream, type, ent, tag, flags, skin, duration, source, dest, models);
 	if (flags & H2STREAM_ATTACHED)
 	{
-		VectorSubtract(source, cl_entities[ent].state.origin, stream->offset);
+		VectorSubtract(source, h2cl_entities[ent].state.origin, stream->offset);
 	}
 }
 
@@ -242,7 +242,7 @@ void CL_UpdateTEnts(void)
 
 		if(stream->flags&H2STREAM_ATTACHED&&stream->endTime >= cl.serverTimeFloat)
 		{ // Attach the start position to owner
-			VectorAdd(cl_entities[stream->entity].state.origin, stream->offset,
+			VectorAdd(h2cl_entities[stream->entity].state.origin, stream->offset,
 				stream->source);
 		}
 
