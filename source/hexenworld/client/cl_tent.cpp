@@ -49,49 +49,6 @@ void CL_InitTEnts (void)
 
 //==========================================================================
 //
-// CreateStream--for use mainly external to cl_tent (i.e. cl_effect)
-//
-// generally pass in 0 for skin
-//
-//==========================================================================
-
-void CreateStream(int type, int ent, int flags, int tag, float duration, int skin, vec3_t source, vec3_t dest)
-{
-	switch (type)
-	{
-	case H2TE_STREAM_CHAIN:
-		CLH2_CreateStreamChain(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_SUNSTAFF1:
-		CLH2_CreateStreamSunstaff1(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_SUNSTAFF2:
-		CLH2_CreateStreamSunstaff2(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_LIGHTNING:
-		CLH2_CreateStreamLightning(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case HWTE_STREAM_LIGHTNING_SMALL:
-		CLHW_CreateStreamLightningSmall(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_FAMINE:
-		CLHW_CreateStreamFaMine(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_COLORBEAM:
-		CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_ICECHUNKS:
-		CLHW_CreateStreamIceChunks(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	case H2TE_STREAM_GAZE:
-		CLHW_CreateStreamGaze(ent, tag, flags, skin, duration * 1000, source, dest);
-		break;
-	default:
-		Sys_Error("CreateStream: bad type");
-	}
-}
-//==========================================================================
-//
 // ParseStream
 //
 //==========================================================================
@@ -590,7 +547,7 @@ void CL_ParseTEnt (void)
 				S_StartSound(source, CLH2_TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 				S_StartSound(dest, CLH2_TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
 				CLH2_SunStaffTrail(dest, source);
-				CreateStream(H2TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
+				CLHW_CreateStreamColourBeam(ent, tag, flags, skin, duration * 1000, source, dest);
 			}
 		}
 		break;
