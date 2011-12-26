@@ -33,15 +33,6 @@ extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 
-extern sfxHandle_t clh2_fxsfx_scarabgrab;
-extern sfxHandle_t clh2_fxsfx_scarabhome;
-extern sfxHandle_t clh2_fxsfx_scarabbyebye;
-extern sfxHandle_t clh2_fxsfx_drillameat;
-
-extern sfxHandle_t clh2_fxsfx_arr2flsh;
-extern sfxHandle_t clh2_fxsfx_arr2wood;
-extern sfxHandle_t clh2_fxsfx_met2stn;
-
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -85,8 +76,7 @@ void CLHW_ParseMultiEffect(QMsg& message);
 void CLHW_ParseReviseEffect(QMsg& message);
 void CLHW_ParseTurnEffect(QMsg& message);
 void CLH2_ParseEndEffect(QMsg& message);
-void CLH2_UpdateEffect(int index, float frametime);
-void CLHW_UpdateEffect(int index, float frametime);
+void CLH2_UpdateEffects();
 
 void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight);
 void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);

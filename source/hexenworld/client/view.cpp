@@ -960,7 +960,7 @@ void V_RenderView (void)
 	}
 	CL_AddViewModel();
 
-	CL_UpdateEffects ();
+	CLH2_UpdateEffects ();
 
 	CL_AddDLights();
 

@@ -406,7 +406,6 @@ void CL_SetSolidPlayers (int playernum);
 void CL_InitPrediction (void);
 void CL_PredictMove (void);
 
-void CL_UpdateEffects(void);
 qboolean CL_CheckOrDownloadFile (char *filename);
 void CL_ClearProjectiles (void);
 void CL_ClearMissiles (void);

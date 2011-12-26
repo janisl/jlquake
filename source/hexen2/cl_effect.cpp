@@ -1052,26 +1052,3 @@ char* SV_LoadEffects(char* Data)
 	}
 	return Data;
 }
-
-void CL_UpdateEffects()
-{
-	if (cls.state == ca_disconnected)
-	{
-		return;
-	}
-
-	float frametime = cl.serverTimeFloat - cl.oldtime;
-	if (!frametime)
-	{
-		return;
-	}
-
-	for (int index = 0; index < MAX_EFFECTS_H2; index++)
-	{
-		if (!cl.h2_Effects[index].type)
-		{
-			continue;
-		}
-		CLH2_UpdateEffect(index, frametime);
-	}
-}

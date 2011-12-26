@@ -211,10 +211,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cl_effect.cpp"
-				>
-			</File>
-			<File
 				RelativePath="cl_ents.cpp"
 				>
 			</File>

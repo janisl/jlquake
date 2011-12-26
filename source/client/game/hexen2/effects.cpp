@@ -29,19 +29,19 @@ static sfxHandle_t clh2_fxsfx_explode;
 static sfxHandle_t clh2_fxsfx_mmfire;
 static sfxHandle_t clh2_fxsfx_eidolon;
 static sfxHandle_t clh2_fxsfx_scarabwhoosh;
-sfxHandle_t clh2_fxsfx_scarabgrab;
-sfxHandle_t clh2_fxsfx_scarabhome;
-sfxHandle_t clh2_fxsfx_scarabbyebye;
+static sfxHandle_t clh2_fxsfx_scarabgrab;
+static sfxHandle_t clh2_fxsfx_scarabhome;
+static sfxHandle_t clh2_fxsfx_scarabbyebye;
 static sfxHandle_t clh2_fxsfx_ravensplit;
 static sfxHandle_t clh2_fxsfx_ravenfire;
 static sfxHandle_t clh2_fxsfx_ravengo;
 static sfxHandle_t clh2_fxsfx_drillashoot;
 static sfxHandle_t clh2_fxsfx_drillaspin;
-sfxHandle_t clh2_fxsfx_drillameat;
+static sfxHandle_t clh2_fxsfx_drillameat;
 
-sfxHandle_t clh2_fxsfx_arr2flsh;
-sfxHandle_t clh2_fxsfx_arr2wood;
-sfxHandle_t clh2_fxsfx_met2stn;
+static sfxHandle_t clh2_fxsfx_arr2flsh;
+static sfxHandle_t clh2_fxsfx_arr2wood;
+static sfxHandle_t clh2_fxsfx_met2stn;
 
 static sfxHandle_t clh2_fxsfx_ripple;
 static sfxHandle_t clh2_fxsfx_splash;
@@ -3234,7 +3234,7 @@ static void CLH2_UpdateEffectRiderDeath(int index, float frametime)
 	}
 }
 
-void CLH2_UpdateEffect(int index, float frametime)
+static void CLH2_UpdateEffect(int index, float frametime)
 {
 	switch (cl_common->h2_Effects[index].type)
 	{
@@ -3333,7 +3333,7 @@ void CLH2_UpdateEffect(int index, float frametime)
 	}
 }
 
-void CLHW_UpdateEffect(int index, float frametime)
+static void CLHW_UpdateEffect(int index, float frametime)
 {
 	switch (cl_common->h2_Effects[index].type)
 	{
@@ -3457,5 +3457,30 @@ void CLHW_UpdateEffect(int index, float frametime)
 	case HWCE_HWEIDOLONSTAR:
 		CLHW_UpdateEffectEidolonStar(index, frametime);
 		break;
+	}
+}
+
+void CLH2_UpdateEffects()
+{
+	float frametime = cls_common->frametime * 0.001;
+	if (!frametime)
+	{
+		return;
+	}
+
+	for (int index = 0; index < MAX_EFFECTS_H2; index++)
+	{
+		if (!cl_common->h2_Effects[index].type)
+		{
+			continue;
+		}
+		if (GGameType & GAME_HexenWorld)
+		{
+			CLHW_UpdateEffect(index, frametime);
+		}
+		else
+		{
+			CLH2_UpdateEffect(index, frametime);
+		}
 	}
 }

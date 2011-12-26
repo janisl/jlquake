@@ -614,8 +614,6 @@ void Host_GetConsoleCommands (void)
 }
 
 
-void CL_UpdateEffects (void);
-
 /*
 ==================
 Host_ServerFrame
@@ -735,9 +733,8 @@ void _Host_Frame (float time)
 			{
 				CL_UpdateParticles(sv_gravity->value);
 			}
+			CLH2_UpdateEffects();
 		}
-
-		CL_UpdateEffects ();
 
 		if (!sys_adaptive->value) break;
 

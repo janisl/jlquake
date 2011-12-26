@@ -40,7 +40,6 @@ add_executable(jlhwcl
 	client/cl_cam.cpp
 	client/cl_demo.cpp
 	client/cl_draw.cpp
-	client/cl_effect.cpp
 	client/cl_ents.cpp
 	client/cl_input.cpp
 	client/cl_main.cpp
