@@ -27,6 +27,8 @@ static sfxHandle_t clh2_sfx_lightning1;
 static sfxHandle_t clh2_sfx_lightning2;
 static sfxHandle_t clh2_sfx_sunstaff;
 static sfxHandle_t clh2_sfx_sunhit;
+static sfxHandle_t clh2_sfx_hammersound;
+static sfxHandle_t clh2_sfx_buzzbee;
 
 void CLH2_InitTEntsCommon()
 {
@@ -43,6 +45,8 @@ void CLH2_InitTEntsCommon()
 		clh2_sfx_lightning2 = S_RegisterSound("crusader/lghtn2.wav");
 		clh2_sfx_sunstaff = S_RegisterSound("crusader/sunhum.wav");
 		clh2_sfx_sunhit = S_RegisterSound("crusader/sunhit.wav");
+		clh2_sfx_hammersound = S_RegisterSound("paladin/axblade.wav");
+		clh2_sfx_buzzbee = S_RegisterSound("assassin/scrbfly.wav");
 
 		CLHW_InitExplosionSounds();
 	}
@@ -752,5 +756,29 @@ void CLHW_ParseTEnt(QMsg& message)
 		break;
 	default:
 		throw Exception("CL_ParseTEnt: bad type");
+	}
+}
+
+void CLHW_UpdateHammer(refEntity_t* ent, int edict_num)
+{
+	// do this every .3 seconds
+	int testVal = cl_common->serverTime / 100;
+	int testVal2 = (cl_common->serverTime - cls_common->frametime) / 100;
+	if (testVal != testVal2)
+	{
+		if (!(testVal % 3))
+		{
+			S_StartSound(ent->origin, edict_num, 2, clh2_sfx_hammersound, 1, 1);
+		}
+	}
+}
+
+void CLHW_UpdateBug(refEntity_t* ent)
+{
+	int testVal = cl_common->serverTime / 100;
+	int testVal2 = (cl_common->serverTime - cls_common->frametime) / 100;
+	if (testVal != testVal2)
+	{
+		S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_buzzbee, 1, 1);
 	}
 }

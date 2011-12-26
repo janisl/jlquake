@@ -58,6 +58,8 @@ int CLH2_TempSoundChannel();
 h2entity_state_t* CLH2_FindState(int EntNum);
 void CLH2_ParseTEnt(QMsg& message);
 void CLHW_ParseTEnt(QMsg& message);
+void CLHW_UpdateHammer(refEntity_t *ent, int edict_num);
+void CLHW_UpdateBug(refEntity_t *ent);
 
 void CLHW_InitEffects();
 void CLH2_ClearEffects();

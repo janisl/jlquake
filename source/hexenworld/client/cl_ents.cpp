@@ -423,11 +423,11 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 
 		rotateSet = 1;
 
-		CL_UpdateHammer(ent, number);
+		CLHW_UpdateHammer(ent, number);
 	}
 	if (effects & EF_BEETLE_EFFECTS)
 	{
-		CL_UpdateBug(ent);
+		CLHW_UpdateBug(ent);
 	}
 	if (effects & EF_DARKLIGHT)//EF_INVINC_CIRC)
 	{
