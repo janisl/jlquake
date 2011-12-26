@@ -31,33 +31,6 @@
 
 // CODE --------------------------------------------------------------------
 
-void CL_EndEffect(void)
-{
-	int index;
-	effect_entity_t* ent;
-
-	index = net_message.ReadByte();
-
-	switch(cl.h2_Effects[index].type )
-	{
-	case HWCE_HWRAVENPOWER:
-		if(cl.h2_Effects[index].Missile.entity_index > -1)
-		{
-			ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-			CLHW_CreateRavenDeath(ent->state.origin);
-		}
-		break;
-	case HWCE_HWRAVENSTAFF:
-		if(cl.h2_Effects[index].Missile.entity_index > -1)
-		{
-			ent = &EffectEntities[cl.h2_Effects[index].Missile.entity_index];
-			CLHW_CreateExplosionWithSound(ent->state.origin);
-		}
-		break;
-	}
-	CLH2_FreeEffect(index);
-}
-
 void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Bubble.time_amount += frametime;

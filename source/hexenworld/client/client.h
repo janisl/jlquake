@@ -415,7 +415,6 @@ void CL_SavePlayer (void);
 void CL_ParseProjectiles (void);
 void CL_ParsePackMissiles (void);
 void CL_ParsePacketEntities (qboolean delta);
-void CL_EndEffect(void);
 void CL_SetSolidEntities (void);
 void CL_InitCam(void);
 void CL_SetUpPlayerPrediction(qboolean dopred);

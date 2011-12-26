@@ -86,6 +86,7 @@ void CLHW_ParseMultiEffect(QMsg& message);
 void CLHW_XbowImpactPuff(const vec3_t origin, int material);
 void CLHW_ParseReviseEffect(QMsg& message);
 void CLHW_ParseTurnEffect(QMsg& message);
+void CLH2_ParseEndEffect(QMsg& message);
 void CLH2_LinkEffectEntity(effect_entity_t* entity);
 void CLH2_UpdateEffectRain(int index, float frametime);
 void CLH2_UpdateEffectSnow(int index, float frametime);

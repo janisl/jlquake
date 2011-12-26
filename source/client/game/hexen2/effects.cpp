@@ -2311,6 +2311,45 @@ void CLHW_ParseTurnEffect(QMsg& message)
 	}
 }
 
+static void CLHW_EndEffectRavenPower(int index)
+{
+	if (cl_common->h2_Effects[index].Missile.entity_index == -1)
+	{
+		return;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+	CLHW_CreateRavenDeath(ent->state.origin);
+}
+
+static void CLHW_EndEffectRavenStaff(int index)
+{
+	if (cl_common->h2_Effects[index].Missile.entity_index == -1)
+	{
+		return;
+	}
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
+	CLHW_CreateExplosionWithSound(ent->state.origin);
+}
+
+void CLH2_ParseEndEffect(QMsg& message)
+{
+	int index = message.ReadByte();
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		switch (cl_common->h2_Effects[index].type)
+		{
+		case HWCE_HWRAVENPOWER:
+			CLHW_EndEffectRavenPower(index);
+			break;
+		case HWCE_HWRAVENSTAFF:
+			CLHW_EndEffectRavenStaff(index);
+			break;
+		}
+	}
+	CLH2_FreeEffect(index);
+}
+
 void CLH2_LinkEffectEntity(effect_entity_t* entity)
 {
 	refEntity_t refEntity;

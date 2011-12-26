@@ -1053,15 +1053,6 @@ char* SV_LoadEffects(char* Data)
 	return Data;
 }
 
-void CL_EndEffect(void)
-{
-	int index;
-
-	index = net_message.ReadByte();
-
-	CLH2_FreeEffect(index);
-}
-
 void CL_UpdateEffects()
 {
 	if (cls.state == ca_disconnected)
