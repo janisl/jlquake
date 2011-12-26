@@ -648,7 +648,7 @@ int CL_ReadFromServer (void)
 		Con_Printf ("\n");
 
 	CL_RelinkEntities ();
-	CL_UpdateTEnts ();
+	CLH2_UpdateTEnts ();
 	CL_LinkStaticEntities();
 
 //

@@ -14,25 +14,9 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-/*
-=================
-CL_ParseTEnts
-=================
-*/
-void CL_InitTEnts (void)
+void CLH2_UpdateTEnts()
 {
-	CLH2_InitTEntsCommon();
-}
-
-
-/*
-=================
-CL_UpdateTEnts
-=================
-*/
-void CL_UpdateTEnts (void)
-{
-	CLH2_UpdateExplosions ();
+	CLH2_UpdateExplosions();
 	CLH2_UpdateStreams();
 	CLHW_UpdateTargetBall(v_targDist, v_targAngle, v_targPitch, cl.simorg);
 }

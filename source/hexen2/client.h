@@ -282,8 +282,7 @@ void V_ParseDamage (void);
 //
 // cl_tent
 //
-void CL_InitTEnts(void);
-void CL_UpdateTEnts(void);
+void CLH2_UpdateTEnts(void);
 
 void SV_UpdateEffects(QMsg *sb);
 

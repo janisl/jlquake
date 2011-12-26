@@ -52,7 +52,7 @@ void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int durat
 void CLH2_ParseStream(QMsg& message, int type);
 void CLH2_UpdateStreams();
 
-void CLH2_InitTEntsCommon();
+void CLH2_InitTEnts();
 void CLH2_ClearTEnts();
 int CLH2_TempSoundChannel();
 h2entity_state_t* CLH2_FindState(int EntNum);

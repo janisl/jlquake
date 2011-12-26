@@ -1403,7 +1403,7 @@ void CL_EmitEntities (void)
 	CL_LinkPacketEntities ();
 	CL_LinkProjectiles ();
 	CL_LinkMissiles();
-	CL_UpdateTEnts ();
+	CLH2_UpdateTEnts ();
 	CL_LinkStaticEntities();
 }
 

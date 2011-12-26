@@ -30,7 +30,7 @@ static sfxHandle_t clh2_sfx_sunhit;
 static sfxHandle_t clh2_sfx_hammersound;
 static sfxHandle_t clh2_sfx_buzzbee;
 
-void CLH2_InitTEntsCommon()
+void CLH2_InitTEnts()
 {
 	clh2_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
 	clh2_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");

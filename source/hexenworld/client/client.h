@@ -334,7 +334,7 @@ void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_SendMove (hwusercmd_t *cmd);
 
-void CL_UpdateTEnts (void);
+void CLH2_UpdateTEnts (void);
 
 void CL_ClearState (void);
 
@@ -385,11 +385,6 @@ extern	float	v_targAngle;
 extern	float	v_targPitch;
 extern	float	v_targDist;
 
-
-//
-// cl_tent
-//
-void CL_InitTEnts (void);
 
 //
 // cl_ents.c
