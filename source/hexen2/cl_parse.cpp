@@ -1279,7 +1279,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_temp_entity:
-			CL_ParseTEnt ();
+			CLH2_ParseTEnt(net_message);
 			break;
 
 		case svc_setpause:

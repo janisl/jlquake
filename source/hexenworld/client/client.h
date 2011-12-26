@@ -334,7 +334,7 @@ void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_SendMove (hwusercmd_t *cmd);
 
-void CL_ParseTEnt (void);
+void CLHW_ParseTEnt (void);
 void CL_UpdateTEnts (void);
 
 void CL_ClearState (void);

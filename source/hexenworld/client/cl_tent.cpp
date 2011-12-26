@@ -47,10 +47,10 @@ void CL_InitTEnts (void)
 
 /*
 =================
-CL_ParseTEnt
+CLHW_ParseTEnt
 =================
 */
-void CL_ParseTEnt (void)
+void CLHW_ParseTEnt (void)
 {
 	int type;
 	vec3_t pos, vel;
@@ -575,7 +575,7 @@ void CL_ParseTEnt (void)
 
 
 	default:
-		Sys_Error ("CL_ParseTEnt: bad type");
+		Sys_Error("CL_ParseTEnt: bad type");
 	}
 }
 

@@ -1210,7 +1210,7 @@ void CL_ParseServerMessage (void)
 			CL_ParseStatic ();
 			break;			
 		case svc_temp_entity:
-			CL_ParseTEnt ();
+			CLHW_ParseTEnt ();
 			break;
 
 		case svc_killedmonster:

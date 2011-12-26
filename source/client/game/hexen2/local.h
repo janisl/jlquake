@@ -67,6 +67,7 @@ void CLH2_ParseTeleport(QMsg& message);
 void CLHW_ParseGunShot(QMsg& message);
 void CLHW_ParseLightningBlood(QMsg& message);
 void CLHW_ParseBoneRic(QMsg& message);
+void CLH2_ParseTEnt(QMsg& message);
 
 void CLHW_InitEffects();
 void CLH2_ClearEffects();
