@@ -282,8 +282,6 @@ void V_ParseDamage (void);
 //
 // cl_tent
 //
-void CLH2_UpdateTEnts(void);
-
 void SV_UpdateEffects(QMsg *sb);
 
 void CL_RemoveGIPFiles(const char *path);

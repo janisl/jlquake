@@ -233,10 +233,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cl_tent.cpp"
-				>
-			</File>
-			<File
 				RelativePath="cmd.cpp"
 				>
 			</File>

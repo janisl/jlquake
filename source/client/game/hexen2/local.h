@@ -60,6 +60,7 @@ void CLH2_ParseTEnt(QMsg& message);
 void CLHW_ParseTEnt(QMsg& message);
 void CLHW_UpdateHammer(refEntity_t *ent, int edict_num);
 void CLHW_UpdateBug(refEntity_t *ent);
+void CLH2_UpdateTEnts();
 
 void CLHW_InitEffects();
 void CLH2_ClearEffects();

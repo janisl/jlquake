@@ -782,3 +782,10 @@ void CLHW_UpdateBug(refEntity_t* ent)
 		S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_buzzbee, 1, 1);
 	}
 }
+
+void CLH2_UpdateTEnts()
+{
+	CLH2_UpdateExplosions();
+	CLH2_UpdateStreams();
+	CLHW_UpdateTargetBall();
+}
