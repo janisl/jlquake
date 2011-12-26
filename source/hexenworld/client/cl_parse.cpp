@@ -979,7 +979,8 @@ void CL_ParseServerMessage (void)
 	cl.last_servermessage = realtime;
 	CL_ClearProjectiles ();
 	CL_ClearMissiles ();
-	v_targDist = 0; // This clears out the target field on each netupdate; it won't be drawn unless another update comes...
+	// This clears out the target field on each netupdate; it won't be drawn unless another update comes...
+	CLHW_ClearTarget();
 
 //
 // if recording demos, copy the message out
@@ -1550,7 +1551,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_targetupdate:
-			V_ParseTarget();
+			CLHW_ParseTarget(net_message);
 			break;
 
 		case svc_update_piv:

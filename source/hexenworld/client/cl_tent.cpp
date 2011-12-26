@@ -18,5 +18,5 @@ void CLH2_UpdateTEnts()
 {
 	CLH2_UpdateExplosions();
 	CLH2_UpdateStreams();
-	CLHW_UpdateTargetBall(v_targDist, v_targAngle, v_targPitch, cl.simorg);
+	CLHW_UpdateTargetBall();
 }

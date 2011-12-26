@@ -130,5 +130,7 @@ void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles);
 void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num);
 void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
 void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num);
-void CLHW_UpdateTargetBall(float targetDistance, float targetAngle, float targetPitch, const vec3_t viewOrigin);
 void CLH2_UpdateExplosions();
+void CLHW_ClearTarget();
+void CLHW_ParseTarget(QMsg& message);
+void CLHW_UpdateTargetBall();

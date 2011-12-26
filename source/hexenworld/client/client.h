@@ -379,13 +379,6 @@ void V_UpdatePalette (void);
 void V_Register (void);
 void V_ParseDamage (void);
 
-void V_ParseTarget(void);
-
-extern	float	v_targAngle;
-extern	float	v_targPitch;
-extern	float	v_targDist;
-
-
 //
 // cl_ents.c
 //

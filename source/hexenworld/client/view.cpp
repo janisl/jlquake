@@ -47,10 +47,6 @@ static Cvar*	cl_polyblend;
 
 static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
-float	v_targAngle;
-float	v_targPitch;
-float	v_targDist = 0.0;
-
 extern	int			in_forward, in_forward2, in_back;
 
 hwframe_t		*view_frame;
@@ -300,21 +296,6 @@ static void V_DriftRoll (void)
 		cl.viewangles[ROLL] -= move;
 	}
 }
-
-
-/*
-===============
-V_ParseTarget
-===============
-*/
-
-void V_ParseTarget(void)
-{
-	v_targAngle = net_message.ReadByte();
-	v_targPitch = net_message.ReadByte();
-	v_targDist = net_message.ReadByte();
-}
-
 
 /*
 ============================================================================== 

@@ -78,6 +78,10 @@ static sfxHandle_t clh2_sfx_flameend;
 
 static int MultiGrenadeCurrentChannel;
 
+static float clh2_targetDistance = 0.0;
+static float clh2_targetAngle;
+static float clh2_targetPitch;
+
 void CLHW_InitExplosionSounds()
 {
 	clh2_sfx_explode = S_RegisterSound("weapons/explode.wav");
@@ -2962,109 +2966,6 @@ void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num)
 	}
 }
 
-void CLHW_UpdateTargetBall(float targetDistance, float targetAngle, float targetPitch, const vec3_t viewOrigin)
-{
-	if (targetDistance < 24)
-	{
-		// either there is no ball, or it's too close to be needed...
-		return;
-	}
-
-	// search for the two thingies.  If they don't exist, make new ones and set v_oldTargOrg
-
-	qhandle_t iceMod = R_RegisterModel("models/iceshot2.mdl");
-
-	h2explosion_t* ex1 = NULL;
-	h2explosion_t* ex2 = NULL;
-	for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
-	{
-		if (clh2_explosions[i].endTime > cl_common->serverTime * 0.001)
-		{
-			// make certain it's an active one
-			if (clh2_explosions[i].model == iceMod)
-			{
-				if (clh2_explosions[i].flags & H2DRF_TRANSLUCENT)
-				{
-					ex1 = &clh2_explosions[i];
-				}
-				else
-				{
-					ex2 = &clh2_explosions[i];
-				}
-			}
-		}
-	}
-
-	vec3_t newOrg;
-	VectorCopy(viewOrigin, newOrg);
-	newOrg[0] += cos(targetAngle * M_PI * 2 / 256.0) * 50 * cos(targetPitch * M_PI * 2 / 256.0);
-	newOrg[1] += sin(targetAngle * M_PI * 2 / 256.0) * 50 * cos(targetPitch * M_PI * 2 / 256.0);
-	newOrg[2] += 44 + sin(targetPitch * M_PI * 2 / 256.0) * 50 + cos(cl_common->serverTime * 0.001 * 2) * 5;
-	float newScale;
-	if (targetDistance < 60)
-	{
-		// make it scale back down up close...
-		newScale = 172 - (172 * (1.0 - (targetDistance - 24.0) / 36.0));
-	}
-	else
-	{
-		newScale = 80 + (120 * ((256.0 - targetDistance) / 256.0));
-	}
-	if (ex1 == NULL)
-	{
-		ex1 = CLH2_AllocExplosion();
-		ex1->model = iceMod;
-		ex1->exflags |= EXFLAG_STILL_FRAME;
-		ex1->data = 0;
-
-		ex1->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
-		ex1->skin = 0;
-		VectorCopy(newOrg, ex1->origin);
-		ex1->scale = newScale;
-	}
-
-	VectorScale(ex1->origin, (.75 - cls_common->frametime * 0.001 * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
-	VectorMA(ex1->origin, (.25 + cls_common->frametime * 0.001 * 1.5), newOrg, ex1->origin);
-	ex1->startTime = cl_common->serverTime * 0.001;
-	ex1->endTime = ex1->startTime + cls_common->frametime * 0.001 + 0.2;
-	ex1->scale = (ex1->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
-	ex1->angles[0] = targetPitch * 360 / 256.0;
-	ex1->angles[1] = targetAngle * 360 / 256.0;
-	ex1->angles[2] = cl_common->serverTime * 0.001 * 240;
-	ex1->abslight = 96 + (32 * cos(cl_common->serverTime * 0.001*6.5)) + (64 * ((256.0 - targetDistance) / 256.0));
-
-	if (targetDistance < 60)
-	{
-		// make it scale back down up close...
-		newScale = 76 - (76 * (1.0 - (targetDistance - 24.0) / 36.0));
-	}
-	else
-	{
-		newScale = 30 + (60 * ((256.0 - targetDistance) / 256.0));
-	}
-	if (ex2 == NULL)
-	{
-		ex2 = CLH2_AllocExplosion();
-		ex2->model = iceMod;
-		ex2->exflags |= EXFLAG_STILL_FRAME;
-		ex2->data = 0;
-
-		ex2->flags |= H2MLS_ABSLIGHT;
-		ex2->skin = 0;
-		ex2->scale = newScale;
-	}
-	VectorCopy(ex1->origin, ex2->origin);
-	ex2->startTime = cl_common->serverTime * 0.001;
-	ex2->endTime = ex2->startTime + cls_common->frametime * 0.001 + 0.2;
-	ex2->scale = (ex2->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
-	ex2->angles[0] = ex1->angles[0];
-	ex2->angles[1] = ex1->angles[1];
-	ex2->angles[2] = cl_common->serverTime * 0.001 * -360;
-	ex2->abslight = 96 + (128 * cos(cl_common->serverTime * 0.001 * 4.5));
-
-	CLHW_TargetBallEffectParticles (ex1->origin, targetDistance);
-}
-
 void CLH2_UpdateExplosions()
 {
 	h2explosion_t* ex = clh2_explosions;
@@ -3162,4 +3063,119 @@ void CLH2_UpdateExplosions()
 		CLH2_HandleCustomSkin(&ent, -1);
 		R_AddRefEntityToScene(&ent);
 	}
+}
+
+void CLHW_ClearTarget()
+{
+	clh2_targetDistance = 0; 
+}
+
+void CLHW_ParseTarget(QMsg& message)
+{
+	clh2_targetAngle = message.ReadByte();
+	clh2_targetPitch = message.ReadByte();
+	clh2_targetDistance = message.ReadByte();
+}
+
+void CLHW_UpdateTargetBall()
+{
+	if (clh2_targetDistance < 24)
+	{
+		// either there is no ball, or it's too close to be needed...
+		return;
+	}
+
+	// search for the two thingies.  If they don't exist, make new ones and set v_oldTargOrg
+
+	qhandle_t iceMod = R_RegisterModel("models/iceshot2.mdl");
+
+	h2explosion_t* ex1 = NULL;
+	h2explosion_t* ex2 = NULL;
+	for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
+	{
+		if (clh2_explosions[i].endTime > cl_common->serverTime * 0.001)
+		{
+			// make certain it's an active one
+			if (clh2_explosions[i].model == iceMod)
+			{
+				if (clh2_explosions[i].flags & H2DRF_TRANSLUCENT)
+				{
+					ex1 = &clh2_explosions[i];
+				}
+				else
+				{
+					ex2 = &clh2_explosions[i];
+				}
+			}
+		}
+	}
+
+	vec3_t newOrg;
+	VectorCopy(CL_GetSimOrg(), newOrg);
+	newOrg[0] += cos(clh2_targetAngle * M_PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * M_PI * 2 / 256.0);
+	newOrg[1] += sin(clh2_targetAngle * M_PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * M_PI * 2 / 256.0);
+	newOrg[2] += 44 + sin(clh2_targetPitch * M_PI * 2 / 256.0) * 50 + cos(cl_common->serverTime * 0.001 * 2) * 5;
+	float newScale;
+	if (clh2_targetDistance < 60)
+	{
+		// make it scale back down up close...
+		newScale = 172 - (172 * (1.0 - (clh2_targetDistance - 24.0) / 36.0));
+	}
+	else
+	{
+		newScale = 80 + (120 * ((256.0 - clh2_targetDistance) / 256.0));
+	}
+	if (ex1 == NULL)
+	{
+		ex1 = CLH2_AllocExplosion();
+		ex1->model = iceMod;
+		ex1->exflags |= EXFLAG_STILL_FRAME;
+		ex1->data = 0;
+
+		ex1->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
+		ex1->skin = 0;
+		VectorCopy(newOrg, ex1->origin);
+		ex1->scale = newScale;
+	}
+
+	VectorScale(ex1->origin, (.75 - cls_common->frametime * 0.001 * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
+	VectorMA(ex1->origin, (.25 + cls_common->frametime * 0.001 * 1.5), newOrg, ex1->origin);
+	ex1->startTime = cl_common->serverTime * 0.001;
+	ex1->endTime = ex1->startTime + cls_common->frametime * 0.001 + 0.2;
+	ex1->scale = (ex1->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
+	ex1->angles[0] = clh2_targetPitch * 360 / 256.0;
+	ex1->angles[1] = clh2_targetAngle * 360 / 256.0;
+	ex1->angles[2] = cl_common->serverTime * 0.001 * 240;
+	ex1->abslight = 96 + (32 * cos(cl_common->serverTime * 0.001*6.5)) + (64 * ((256.0 - clh2_targetDistance) / 256.0));
+
+	if (clh2_targetDistance < 60)
+	{
+		// make it scale back down up close...
+		newScale = 76 - (76 * (1.0 - (clh2_targetDistance - 24.0) / 36.0));
+	}
+	else
+	{
+		newScale = 30 + (60 * ((256.0 - clh2_targetDistance) / 256.0));
+	}
+	if (ex2 == NULL)
+	{
+		ex2 = CLH2_AllocExplosion();
+		ex2->model = iceMod;
+		ex2->exflags |= EXFLAG_STILL_FRAME;
+		ex2->data = 0;
+
+		ex2->flags |= H2MLS_ABSLIGHT;
+		ex2->skin = 0;
+		ex2->scale = newScale;
+	}
+	VectorCopy(ex1->origin, ex2->origin);
+	ex2->startTime = cl_common->serverTime * 0.001;
+	ex2->endTime = ex2->startTime + cls_common->frametime * 0.001 + 0.2;
+	ex2->scale = (ex2->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
+	ex2->angles[0] = ex1->angles[0];
+	ex2->angles[1] = ex1->angles[1];
+	ex2->angles[2] = cl_common->serverTime * 0.001 * -360;
+	ex2->abslight = 96 + (128 * cos(cl_common->serverTime * 0.001 * 4.5));
+
+	CLHW_TargetBallEffectParticles (ex1->origin, clh2_targetDistance);
 }
