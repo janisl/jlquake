@@ -1315,42 +1315,6 @@ void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage,
 	}
 }
 
-void CLHW_CreateIceChunk(const vec3_t origin)
-{
-	h2explosion_t* ex = CLH2_AllocExplosion();
-	VectorCopy(origin, ex->origin);
-	ex->origin[0] += rand() % 32 - 16;
-	ex->origin[1] += rand() % 32 - 16;
-	ex->origin[2] += 48 + rand() %32;
-	ex->frameFunc = ChunkThink;
-
-	ex->velocity[0] += (rand() % 300) - 150;
-	ex->velocity[1] += (rand() % 300) - 150;
-	ex->velocity[2] += (rand() % 200) - 50;
-
-	// are these in degrees or radians?
-	ex->angles[0] = rand() % 360;
-	ex->angles[1] = rand() % 360;
-	ex->angles[2] = rand() % 360;
-	ex->exflags = EXFLAG_ROTATE;
-
-	ex->avel[0] = rand() % 850 - 425;
-	ex->avel[1] = rand() % 850 - 425;
-	ex->avel[2] = rand() % 850 - 425;
-
-	ex->scale = 65 + rand() % 10;
-
-	ex->data = H2THINGTYPE_ICE;
-
-	ex->model = R_RegisterModel("models/shard.mdl");
-	ex->skin = 0;
-	ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
-	ex->abslight = 128;
-
-	ex->startTime = cl_common->serverTime * 0.001;
-	ex->endTime = ex->startTime + 2.0;
-}
-
 static void TeleportFlashThink(h2explosion_t* ex)
 {
 	ex->scale -= 15;
@@ -2924,6 +2888,77 @@ void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		ex2->startTime = cl_common->serverTime * 0.001;
 		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
 		ex2->flags |= H2DRF_TRANSLUCENT;
+	}
+}
+
+static void CLHW_CreateIceChunk(const vec3_t origin)
+{
+	h2explosion_t* ex = CLH2_AllocExplosion();
+	VectorCopy(origin, ex->origin);
+	ex->origin[0] += rand() % 32 - 16;
+	ex->origin[1] += rand() % 32 - 16;
+	ex->origin[2] += 48 + rand() %32;
+	ex->frameFunc = ChunkThink;
+
+	ex->velocity[0] += (rand() % 300) - 150;
+	ex->velocity[1] += (rand() % 300) - 150;
+	ex->velocity[2] += (rand() % 200) - 50;
+
+	// are these in degrees or radians?
+	ex->angles[0] = rand() % 360;
+	ex->angles[1] = rand() % 360;
+	ex->angles[2] = rand() % 360;
+	ex->exflags = EXFLAG_ROTATE;
+
+	ex->avel[0] = rand() % 850 - 425;
+	ex->avel[1] = rand() % 850 - 425;
+	ex->avel[2] = rand() % 850 - 425;
+
+	ex->scale = 65 + rand() % 10;
+
+	ex->data = H2THINGTYPE_ICE;
+
+	ex->model = R_RegisterModel("models/shard.mdl");
+	ex->skin = 0;
+	ex->flags |= H2DRF_TRANSLUCENT|H2MLS_ABSLIGHT;
+	ex->abslight = 128;
+
+	ex->startTime = cl_common->serverTime * 0.001;
+	ex->endTime = ex->startTime + 2.0;
+}
+
+void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num)
+{
+	static int playIceSound = 600;
+
+	h2entity_state_t* state = CLH2_FindState(edict_num);
+	if (state)
+	{
+		vec3_t center;
+		VectorCopy(state->origin, center);
+
+		// handle the particles
+		vec3_t side1;
+		VectorCopy(center, side1);
+		side1[0] -= 80;
+		side1[1] -= 80;
+		side1[2] += 104;
+		vec3_t side2 = { 160, 160, 128 };
+		CLH2_RainEffect2(side1, side2, rand() % 400 - 200, rand() % 400 - 200, rand() % 15 + 9 * 16,
+			cls_common->frametime * 3 / 5);
+
+		playIceSound += cls_common->frametime;
+		if (playIceSound >= 600)
+		{
+			S_StartSound(center, CLH2_TempSoundChannel(), 0, clh2_sfx_icestorm, 1, 1);
+			playIceSound -= 600;
+		}
+	}
+
+	// toss little ice chunks
+	if (rand() % 100 < cls_common->frametime * 3 / 10)
+	{
+		CLHW_CreateIceChunk(ent->origin);
 	}
 }
 

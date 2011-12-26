@@ -392,7 +392,6 @@ extern	float	v_targDist;
 void CL_InitTEnts (void);
 void CL_UpdateHammer(refEntity_t *ent, int edict_num);
 void CL_UpdateBug(refEntity_t *ent);
-void CL_UpdateIceStorm(refEntity_t *ent, int edict_num);
 
 //
 // cl_ents.c

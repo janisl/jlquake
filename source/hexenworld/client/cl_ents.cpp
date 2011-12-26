@@ -413,7 +413,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	}
 	if(effects & EF_ICESTORM_EFFECT)
 	{
-		CL_UpdateIceStorm(ent, number);
+		CLHW_UpdateIceStorm(ent, number);
 	}
 	if (effects & EF_HAMMER_EFFECTS)
 	{

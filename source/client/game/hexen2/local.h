@@ -95,7 +95,6 @@ void CLHW_ParseIceHit(QMsg& message);
 void CLHW_ParsePlayerDeath(QMsg& message);
 void CLHW_ParseAcidBlob(QMsg& message);
 void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage, int arrowType);//so xbow effect can use tents
-void CLHW_CreateIceChunk(const vec3_t origin);
 void CLHW_ParseTeleport(QMsg& message);
 void CLHW_SwordExplosion(const vec3_t pos);
 void CLHW_ParseAxeBounce(QMsg& message);
@@ -128,5 +127,6 @@ void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles);
 void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles);
 void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num);
 void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
+void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num);
 void CLHW_UpdateTargetBall(float targetDistance, float targetAngle, float targetPitch, const vec3_t viewOrigin);
 void CLH2_UpdateExplosions();

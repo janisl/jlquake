@@ -14,12 +14,9 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static sfxHandle_t		cl_sfx_buzzbee;
+static sfxHandle_t		clh2_sfx_buzzbee;
 
-static sfxHandle_t		cl_sfx_hammersound;
-static sfxHandle_t		cl_sfx_tornado;
-
-
+static sfxHandle_t		clh2_sfx_hammersound;
 
 /*
 =================
@@ -29,10 +26,9 @@ CL_ParseTEnts
 void CL_InitTEnts (void)
 {
 	CLH2_InitTEntsCommon();
-	cl_sfx_buzzbee = S_RegisterSound("assassin/scrbfly.wav");
+	clh2_sfx_buzzbee = S_RegisterSound("assassin/scrbfly.wav");
 
-	cl_sfx_hammersound = S_RegisterSound("paladin/axblade.wav");
-	cl_sfx_tornado = S_RegisterSound("crusader/tornado.wav");
+	clh2_sfx_hammersound = S_RegisterSound("paladin/axblade.wav");
 }
 
 
@@ -65,8 +61,8 @@ void CL_UpdateHammer(refEntity_t *ent, int edict_num)
 	{
 		if(!(testVal%3))
 		{
-			//S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, cl_sfx_hammersound, 1, 1);
-			S_StartSound(ent->origin, edict_num, 2, cl_sfx_hammersound, 1, 1);
+			//S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_hammersound, 1, 1);
+			S_StartSound(ent->origin, edict_num, 2, clh2_sfx_hammersound, 1, 1);
 		}
 	}
 }
@@ -82,41 +78,7 @@ void CL_UpdateBug(refEntity_t *ent)
 	// do this every .1 seconds
 //		if(!(testVal%3))
 //		{
-			S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, cl_sfx_buzzbee, 1, 1);
+			S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_buzzbee, 1, 1);
 //		}
-	}
-}
-
-void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
-{
-	vec3_t			center, side1;
-	vec3_t			side2 = {160, 160, 128};
-	h2entity_state_t	*state;
-	static float	playIceSound = .6;
-
-	state = CLH2_FindState(edict_num);
-	if (state)
-	{
-		VectorCopy(state->origin, center);
-
-		// handle the particles
-		VectorCopy(center, side1);
-		side1[0] -= 80;
-		side1[1] -= 80;
-		side1[2] += 104;
-		CLH2_RainEffect2(side1, side2, rand()%400-200, rand()%400-200, rand()%15 + 9*16, (int)(30*20*host_frametime));
-
-		playIceSound+=host_frametime;
-		if(playIceSound >= .6)
-		{
-			S_StartSound(center, CLH2_TempSoundChannel(), 0, clh2_sfx_icestorm, 1, 1);
-			playIceSound -= .6;
-		}
-	}
-
-	// toss little ice chunks
-	if(rand()%100 < host_frametime * 100.0 * 3)
-	{
-		CLHW_CreateIceChunk(ent->origin);
 	}
 }
