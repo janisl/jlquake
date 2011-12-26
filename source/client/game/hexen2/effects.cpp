@@ -416,7 +416,7 @@ static void CLH2_FreeEffectEntityHW(int index)
 	}
 }
 
-void CLH2_FreeEffect(int index)
+static void CLH2_FreeEffect(int index)
 {
 	if (GGameType & GAME_HexenWorld)
 	{
@@ -1894,7 +1894,7 @@ void CLHW_ParseMultiEffect(QMsg& message)
 	}
 }
 
-void CLHW_XbowImpactPuff(const vec3_t origin, int material)//hopefully can use this with xbow & chain both
+static void CLHW_XbowImpactPuff(const vec3_t origin, int material)//hopefully can use this with xbow & chain both
 {
 	int part_color;
 	switch (material)
@@ -2350,7 +2350,7 @@ void CLH2_ParseEndEffect(QMsg& message)
 	CLH2_FreeEffect(index);
 }
 
-void CLH2_LinkEffectEntity(effect_entity_t* entity)
+static void CLH2_LinkEffectEntity(effect_entity_t* entity)
 {
 	refEntity_t refEntity;
 	Com_Memset(&refEntity, 0, sizeof(refEntity));
@@ -2365,7 +2365,7 @@ void CLH2_LinkEffectEntity(effect_entity_t* entity)
 	R_AddRefEntityToScene(&refEntity);
 }
 
-void CLH2_UpdateEffectRain(int index, float frametime)
+static void CLH2_UpdateEffectRain(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Rain.next_time += frametime;
 	if (cl_common->h2_Effects[index].Rain.next_time < cl_common->h2_Effects[index].Rain.wait)
@@ -2379,7 +2379,7 @@ void CLH2_UpdateEffectRain(int index, float frametime)
 	cl_common->h2_Effects[index].Rain.next_time = 0;
 }
 
-void CLH2_UpdateEffectSnow(int index, float frametime)
+static void CLH2_UpdateEffectSnow(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Snow.next_time += frametime;
 	if (cl_common->h2_Effects[index].Snow.next_time < 0.10)
@@ -2414,7 +2414,7 @@ void CLH2_UpdateEffectSnow(int index, float frametime)
 	cl_common->h2_Effects[index].Snow.next_time = 0;
 }
 
-void CLH2_UpdateEffectFountain(int index)
+static void CLH2_UpdateEffectFountain(int index)
 {
 	vec3_t mymin;
 	mymin[0] = (-3 * cl_common->h2_Effects[index].Fountain.vright[0] * cl_common->h2_Effects[index].Fountain.movedir[0]) +
@@ -2448,7 +2448,7 @@ void CLH2_UpdateEffectFountain(int index)
 		cl_common->h2_Effects[index].Fountain.color, pt_h2fastgrav, cl_common->h2_Effects[index].Fountain.cnt);
 }
 
-void CLH2_UpdateEffectQuake(int index)
+static void CLH2_UpdateEffectQuake(int index)
 {
 	CLH2_RunQuakeEffect(cl_common->h2_Effects[index].Quake.origin, cl_common->h2_Effects[index].Quake.radius);
 }
@@ -2503,20 +2503,20 @@ static int CLH2_UpdateEffectSmokeCommon(int index, float frametime, float& smoke
 	return i;
 }
 
-void CLH2_UpdateEffectSmoke(int index, float frametime)
+static void CLH2_UpdateEffectSmoke(int index, float frametime)
 {
 	float smoketime;
 	CLH2_UpdateEffectSmokeCommon(index, frametime, smoketime);
 }
 
-void CLHW_UpdateEffectTeleportSmoke1(int index, float frametime)
+static void CLHW_UpdateEffectTeleportSmoke1(int index, float frametime)
 {
 	float smoketime;
 	int i = CLH2_UpdateEffectSmokeCommon(index, frametime, smoketime);
 	CLH2_UpdateEffectSmokeEntity(index, cl_common->h2_Effects[index].Smoke.entity_index2, frametime, smoketime, i);
 }
 
-void CLHW_UpdateEffectRipple(int index, float frametime)
+static void CLHW_UpdateEffectRipple(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Smoke.time_amount += frametime;
 	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Smoke.entity_index];
@@ -2566,17 +2566,17 @@ static void CLH2_UpdateEffectExplosionCommon(int index, float frametime, float f
 	}
 }
 
-void CLH2_UpdateEffectExplosion(int index, float frametime)
+static void CLH2_UpdateEffectExplosion(int index, float frametime)
 {
 	CLH2_UpdateEffectExplosionCommon(index, frametime, HX_FRAME_TIME);
 }
 
-void CLH2_UpdateEffectBigCircleExplosion(int index, float frametime)
+static void CLH2_UpdateEffectBigCircleExplosion(int index, float frametime)
 {
 	CLH2_UpdateEffectExplosionCommon(index, frametime, HX_FRAME_TIME * 2);
 }
 
-void CLH2_UpdateEffectLShock(int index)
+static void CLH2_UpdateEffectLShock(int index)
 {
 	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Smoke.entity_index];
 	if (ent->state.skinnum == 0)
@@ -2598,7 +2598,7 @@ void CLH2_UpdateEffectLShock(int index)
 	}
 }
 
-void CLH2_UpdateEffectFlash(int index, float frametime)
+static void CLH2_UpdateEffectFlash(int index, float frametime)
 {
 	// Go forward then backward through animation then remove
 	cl_common->h2_Effects[index].Flash.time_amount += frametime;
@@ -2635,7 +2635,7 @@ void CLH2_UpdateEffectFlash(int index, float frametime)
 	}
 }
 
-void CLH2_UpdateEffectGravityWell(int index, float frametime)
+static void CLH2_UpdateEffectGravityWell(int index, float frametime)
 {
 	cl_common->h2_Effects[index].GravityWell.time_amount += frametime * 2;
 	if (cl_common->h2_Effects[index].GravityWell.time_amount >= 1)
@@ -2658,7 +2658,7 @@ void CLH2_UpdateEffectGravityWell(int index, float frametime)
 	}
 }
 
-void CLH2_UpdateEffectTeleporterPuffs(int index, float frametime)
+static void CLH2_UpdateEffectTeleporterPuffs(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Teleporter.time_amount += frametime;
 	float smoketime = cl_common->h2_Effects[index].Teleporter.framelength;
@@ -2690,7 +2690,7 @@ void CLH2_UpdateEffectTeleporterPuffs(int index, float frametime)
 	}
 }
 
-void CLH2_UpdateEffectTeleporterBody(int index, float frametime)
+static void CLH2_UpdateEffectTeleporterBody(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Teleporter.time_amount += frametime;
 
@@ -2729,20 +2729,20 @@ static effect_entity_t* CLH2_UpdateEffectMissileCommon(int index, float frametim
 	return ent;
 }
 
-void CLH2_UpdateEffectMissile(int index, float frametime)
+static void CLH2_UpdateEffectMissile(int index, float frametime)
 {
 	effect_entity_t* ent = CLH2_UpdateEffectMissileCommon(index, frametime);
 	CLH2_LinkEffectEntity(ent);
 }
 
-void CLHW_UpdateEffectBoneBall(int index, float frametime)
+static void CLHW_UpdateEffectBoneBall(int index, float frametime)
 {
 	effect_entity_t* ent = CLH2_UpdateEffectMissileCommon(index, frametime);
 	CLH2_LinkEffectEntity(ent);
 	CLH2_RunParticleEffect4(ent->state.origin, 10, 368 + rand() % 16, pt_h2slowgrav, 3);
 }
 
-void CLHW_UpdateEffectRavenPower(int index, float frametime)
+static void CLHW_UpdateEffectRavenPower(int index, float frametime)
 {
 	effect_entity_t* ent = CLH2_UpdateEffectMissileCommon(index, frametime);
 	while (cl_common->h2_Effects[index].Missile.time_amount >= HX_FRAME_TIME)
@@ -2759,7 +2759,7 @@ void CLHW_UpdateEffectRavenPower(int index, float frametime)
 	CLH2_LinkEffectEntity(ent);
 }
 
-void CLHW_UpdateEffectDrilla(int index, float frametime)
+static void CLHW_UpdateEffectDrilla(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Missile.time_amount += frametime;
 	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Missile.entity_index];
@@ -2782,7 +2782,7 @@ void CLHW_UpdateEffectDrilla(int index, float frametime)
 	CLH2_LinkEffectEntity(ent);
 }
 
-void CLHW_UpdateEffectXBowShot(int index, float frametime)
+static void CLHW_UpdateEffectXBowShot(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Xbow.time_amount += frametime;
 	for (int i = 0; i < cl_common->h2_Effects[index].Xbow.bolts; i++)
@@ -2860,7 +2860,7 @@ void CLHW_UpdateEffectXBowShot(int index, float frametime)
 	}
 }
 
-void CLHW_UpdateEffectSheepinator(int index, float frametime)
+static void CLHW_UpdateEffectSheepinator(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Xbow.time_amount += frametime;
 	for (int i = 0; i < cl_common->h2_Effects[index].Xbow.bolts; i++)
@@ -2884,7 +2884,140 @@ void CLHW_UpdateEffectSheepinator(int index, float frametime)
 	}
 }
 
-void CLHW_UpdateEffectEidolonStar(int index, float frametime)
+static void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Bubble.time_amount += frametime;
+	if (cl_common->h2_Effects[index].Bubble.time_amount > 0.1)//10 bubbles a sec
+	{
+		cl_common->h2_Effects[index].Bubble.time_amount = 0;
+		cl_common->h2_Effects[index].Bubble.count--;
+		h2entity_state_t* es = CLH2_FindState(cl_common->h2_Effects[index].Bubble.owner);
+		if (es)
+		{
+			vec3_t org;
+			VectorCopy(es->origin, org);
+			VectorAdd(org, cl_common->h2_Effects[index].Bubble.offset, org);
+
+			if (CM_PointContentsQ1(org, 0) != BSP29CONTENTS_WATER) 
+			{
+				//not in water anymore
+				CLH2_FreeEffect(index);
+				return;
+			}
+			else
+			{
+				CLHW_SpawnDeathBubble(org);
+			}
+		}
+	}
+	if (cl_common->h2_Effects[index].Bubble.count <= 0)
+	{
+		CLH2_FreeEffect(index);
+	}
+}
+
+static void CLHW_UpdateEffectScarabChain(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Chain.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+
+	h2entity_state_t* es;
+	switch (cl_common->h2_Effects[index].Chain.state)
+	{
+	case 0://zooming in toward owner
+		es = CLH2_FindState(cl_common->h2_Effects[index].Chain.owner);
+		if (cl_common->h2_Effects[index].Chain.sound_time * 1000 <= cl_common->serverTime)
+		{
+			cl_common->h2_Effects[index].Chain.sound_time = cl_common->serverTime * 0.001 + 0.5;
+			S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabhome, 1, 1);
+		}
+		if (es)
+		{
+			vec3_t org;
+			VectorCopy(es->origin,org);
+			org[2] += cl_common->h2_Effects[index].Chain.height;
+			VectorSubtract(org, ent->state.origin, org);
+			if (fabs(VectorNormalize(org)) < 500 * frametime)
+			{
+				S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabgrab, 1, 1);
+				cl_common->h2_Effects[index].Chain.state = 1;
+				VectorCopy(es->origin, ent->state.origin);
+				ent->state.origin[2] += cl_common->h2_Effects[index].Chain.height;
+				CLHW_XbowImpactPuff(ent->state.origin, cl_common->h2_Effects[index].Chain.material);
+			}
+			else
+			{
+				VectorScale(org, 500 * frametime, org);
+				VectorAdd(ent->state.origin, org, ent->state.origin);
+			}
+		}
+		break;
+	case 1://attached--snap to owner's pos
+		es = CLH2_FindState(cl_common->h2_Effects[index].Chain.owner);
+		if (es)
+		{
+			VectorCopy(es->origin, ent->state.origin);
+			ent->state.origin[2] += cl_common->h2_Effects[index].Chain.height;
+		}
+		break;
+	case 2://unattaching, server needs to set this state
+		{
+		vec3_t org;
+		VectorCopy(ent->state.origin,org);
+		VectorSubtract(cl_common->h2_Effects[index].Chain.origin, org, org);
+		if (fabs(VectorNormalize(org)) > 350 * frametime)//closer than 30 is too close?
+		{
+			VectorScale(org, 350 * frametime, org);
+			VectorAdd(ent->state.origin, org, ent->state.origin);
+		}
+		else//done--flash & git outa here (change type to redflash)
+		{
+			S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabbyebye, 1, 1);
+			cl_common->h2_Effects[index].Flash.entity_index = cl_common->h2_Effects[index].Chain.ent1;
+			cl_common->h2_Effects[index].type = HWCE_RED_FLASH;
+			VectorCopy(ent->state.origin, cl_common->h2_Effects[index].Flash.origin);
+			cl_common->h2_Effects[index].Flash.reverse = 0;
+			ent->model = R_RegisterModel("models/redspt.spr");
+			ent->state.frame = 0;
+			ent->state.drawflags = H2DRF_TRANSLUCENT;
+		}
+		}
+		break;
+	}
+
+	CLH2_LinkEffectEntity(ent);
+
+	CLH2_CreateStreamChain(cl_common->h2_Effects[index].Chain.ent1, cl_common->h2_Effects[index].Chain.tag,
+		1, 0, 100, cl_common->h2_Effects[index].Chain.origin, ent->state.origin);
+}
+
+static void CLHW_UpdateEffectTripMineStill(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Chain.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+
+	CLH2_LinkEffectEntity(ent);
+
+	CLH2_CreateStreamChain(cl_common->h2_Effects[index].Chain.ent1, 1, 1, 0, 100,
+		cl_common->h2_Effects[index].Chain.origin, ent->state.origin);
+}
+
+static void CLHW_UpdateEffectTripMine(int index, float frametime)
+{
+	cl_common->h2_Effects[index].Chain.time_amount += frametime;
+	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Chain.ent1];
+
+	ent->state.origin[0] += frametime * cl_common->h2_Effects[index].Chain.velocity[0];
+	ent->state.origin[1] += frametime * cl_common->h2_Effects[index].Chain.velocity[1];
+	ent->state.origin[2] += frametime * cl_common->h2_Effects[index].Chain.velocity[2];
+
+	CLH2_LinkEffectEntity(ent);
+
+	CLH2_CreateStreamChain(cl_common->h2_Effects[index].Chain.ent1, 1, 1, 0, 100,
+		cl_common->h2_Effects[index].Chain.origin, ent->state.origin);
+}
+
+static void CLHW_UpdateEffectEidolonStar(int index, float frametime)
 {
 	// update scale
 	if (cl_common->h2_Effects[index].Star.scaleDir)
@@ -2932,7 +3065,7 @@ void CLHW_UpdateEffectEidolonStar(int index, float frametime)
 	}
 }
 
-void CLHW_UpdateEffectMissileStar(int index, float frametime)
+static void CLHW_UpdateEffectMissileStar(int index, float frametime)
 {
 	CLHW_UpdateEffectEidolonStar(index, frametime);
 	effect_entity_t* ent = &EffectEntities[cl_common->h2_Effects[index].Star.entity_index];
@@ -2947,7 +3080,7 @@ void CLHW_UpdateEffectMissileStar(int index, float frametime)
 	}
 }
 
-void CLH2_UpdateEffectChunk(int index, float frametime)
+static void CLH2_UpdateEffectChunk(int index, float frametime)
 {
 	cl_common->h2_Effects[index].Chunk.time_amount -= frametime;
 	if (cl_common->h2_Effects[index].Chunk.time_amount < 0)
@@ -3065,7 +3198,7 @@ void CLH2_UpdateEffectChunk(int index, float frametime)
 	}
 }
 
-void CLH2_UpdateEffectRiderDeath(int index, float frametime)
+static void CLH2_UpdateEffectRiderDeath(int index, float frametime)
 {
 	cl_common->h2_Effects[index].RD.time_amount += frametime;
 	if (cl_common->h2_Effects[index].RD.time_amount >= 1)
@@ -3196,6 +3329,133 @@ void CLH2_UpdateEffect(int index, float frametime)
 		break;
 	case H2CE_CHUNK:
 		CLH2_UpdateEffectChunk(index, frametime);
+		break;
+	}
+}
+
+void CLHW_UpdateEffect(int index, float frametime)
+{
+	switch (cl_common->h2_Effects[index].type)
+	{
+	case HWCE_RAIN:
+		CLH2_UpdateEffectRain(index, frametime);
+		break;
+	case HWCE_FOUNTAIN:
+		CLH2_UpdateEffectFountain(index);
+		break;
+	case HWCE_QUAKE:
+		CLH2_UpdateEffectQuake(index);
+		break;
+	case HWCE_RIPPLE:
+		CLHW_UpdateEffectRipple(index, frametime);
+		break;
+	case HWCE_WHITE_SMOKE:
+	case HWCE_GREEN_SMOKE:
+	case HWCE_GREY_SMOKE:
+	case HWCE_RED_SMOKE:
+	case HWCE_SLOW_WHITE_SMOKE:
+	case HWCE_TELESMK2:
+	case HWCE_GHOST:
+	case HWCE_REDCLOUD:
+	case HWCE_FLAMESTREAM:
+	case HWCE_ACID_MUZZFL:
+	case HWCE_FLAMEWALL:
+	case HWCE_FLAMEWALL2:
+	case HWCE_ONFIRE:
+		CLH2_UpdateEffectSmoke(index, frametime);
+		break;
+	case HWCE_TELESMK1:
+		CLHW_UpdateEffectTeleportSmoke1(index, frametime);
+		break;
+	case HWCE_SM_WHITE_FLASH:
+	case HWCE_YELLOWRED_FLASH:
+	case HWCE_BLUESPARK:
+	case HWCE_YELLOWSPARK:
+	case HWCE_SM_CIRCLE_EXP:
+	case HWCE_SM_EXPLOSION:
+	case HWCE_SM_EXPLOSION2:
+	case HWCE_BG_EXPLOSION:
+	case HWCE_FLOOR_EXPLOSION:
+	case HWCE_BLUE_EXPLOSION:
+	case HWCE_REDSPARK:
+	case HWCE_GREENSPARK:
+	case HWCE_ICEHIT:
+	case HWCE_MEDUSA_HIT:
+	case HWCE_MEZZO_REFLECT:
+	case HWCE_FLOOR_EXPLOSION2:
+	case HWCE_XBOW_EXPLOSION:
+	case HWCE_NEW_EXPLOSION:
+	case HWCE_MAGIC_MISSILE_EXPLOSION:
+	case HWCE_BONE_EXPLOSION:
+	case HWCE_BLDRN_EXPL:
+	case HWCE_BRN_BOUNCE:
+	case HWCE_ACID_HIT:
+	case HWCE_ACID_SPLAT:
+	case HWCE_ACID_EXPL:
+	case HWCE_LBALL_EXPL:
+	case HWCE_FBOOM:
+	case HWCE_BOMB:
+	case HWCE_FIREWALL_SMALL:
+	case HWCE_FIREWALL_MEDIUM:
+	case HWCE_FIREWALL_LARGE:
+		CLH2_UpdateEffectExplosion(index, frametime);
+		break;
+	case HWCE_BG_CIRCLE_EXP:
+		CLH2_UpdateEffectBigCircleExplosion(index, frametime);
+		break;
+	case HWCE_WHITE_FLASH:
+	case HWCE_BLUE_FLASH:
+	case HWCE_SM_BLUE_FLASH:
+	case HWCE_HWSPLITFLASH:
+	case HWCE_RED_FLASH:
+		CLH2_UpdateEffectFlash(index, frametime);
+		break;
+	case HWCE_RIDER_DEATH:
+		CLH2_UpdateEffectRiderDeath(index, frametime);
+		break;
+	case HWCE_TELEPORTERPUFFS:
+		CLH2_UpdateEffectTeleporterPuffs(index, frametime);
+		break;
+	case HWCE_TELEPORTERBODY:
+		CLH2_UpdateEffectTeleporterBody(index, frametime);
+		break;
+	case HWCE_HWDRILLA:
+		CLHW_UpdateEffectDrilla(index, frametime);
+		break;
+	case HWCE_HWXBOWSHOOT:
+		CLHW_UpdateEffectXBowShot(index, frametime);
+		break;
+	case HWCE_HWSHEEPINATOR:
+		CLHW_UpdateEffectSheepinator(index, frametime);
+		break;
+	case HWCE_DEATHBUBBLES:
+		CLHW_UpdateEffectDeathBubbles(index, frametime);
+		break;
+	case HWCE_SCARABCHAIN:
+		CLHW_UpdateEffectScarabChain(index, frametime);
+		break;
+	case HWCE_TRIPMINESTILL:
+		CLHW_UpdateEffectTripMineStill(index, frametime);
+		break;
+	case HWCE_TRIPMINE:
+		CLHW_UpdateEffectTripMine(index, frametime);
+		break;
+	case HWCE_BONESHARD:
+	case HWCE_BONESHRAPNEL:
+	case HWCE_HWRAVENSTAFF:
+		CLH2_UpdateEffectMissile(index, frametime);
+		break;
+	case HWCE_HWBONEBALL:
+		CLHW_UpdateEffectBoneBall(index, frametime);
+		break;
+	case HWCE_HWRAVENPOWER:
+		CLHW_UpdateEffectRavenPower(index, frametime);
+		break;
+	case HWCE_HWMISSILESTAR:
+		CLHW_UpdateEffectMissileStar(index, frametime);
+		break;
+	case HWCE_HWEIDOLONSTAR:
+		CLHW_UpdateEffectEidolonStar(index, frametime);
 		break;
 	}
 }
