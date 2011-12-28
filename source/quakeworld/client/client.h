@@ -203,10 +203,6 @@ struct client_state_t : clientActiveCommon_t
 
 	clipHandle_t	clip_models[MAX_MODELS];
 
-	// refresh related state
-	int			num_entities;	// stored bottom up in cl_entities array
-	int			num_statics;	// stored top down in cl_entitiers
-
 	int			cdtrack;		// cd audio
 
 	q1entity_t	viewent;		// weapon model

@@ -148,9 +148,6 @@ struct client_state_t : clientActiveCommon_t
 	int			maxclients;
 	int			gametype;
 
-// refresh related state
-	int			num_entities;	// held in h2cl_entities array
-	int			num_statics;	// held in cl_staticentities array
 	h2entity_t	viewent;			// the gun model
 
 	int			cdtrack, looptrack;	// cd audio
