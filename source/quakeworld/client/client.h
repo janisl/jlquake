@@ -209,7 +209,7 @@ struct client_state_t : clientActiveCommon_t
 
 	int			cdtrack;		// cd audio
 
-	entity_t	viewent;		// weapon model
+	q1entity_t	viewent;		// weapon model
 
 // all player information
 	player_info_t	players[MAX_CLIENTS_QW];
@@ -248,12 +248,7 @@ extern	Cvar*	m_side;
 extern	Cvar*	name;
 
 
-#define	MAX_STATIC_ENTITIES	128			// torches, etc
-
 extern	client_state_t	cl;
-
-// FIXME, allocate dynamically
-extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to

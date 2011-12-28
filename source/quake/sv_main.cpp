@@ -561,7 +561,7 @@ void SV_CleanupEnts (void)
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
-		ent->v.effects = (int)ent->v.effects & ~EF_MUZZLEFLASH;
+		ent->v.effects = (int)ent->v.effects & ~Q1EF_MUZZLEFLASH;
 	}
 
 }

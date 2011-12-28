@@ -43,9 +43,6 @@ Cvar*	m_side;
 client_static_t	cls;
 clientConnection_t clc;
 client_state_t	cl;
-// FIXME: put these on hunk?
-entity_t		cl_entities[MAX_EDICTS_Q1];
-entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 /*
 =====================
@@ -64,7 +61,7 @@ void CL_ClearState (void)
 	cls.message.Clear();
 
 // clear other arrays	
-	Com_Memset(cl_entities, 0, sizeof(cl_entities));
+	Com_Memset(clq1_entities, 0, sizeof(clq1_entities));
 	Com_Memset(clq1_baselines, 0, sizeof(clq1_baselines));
 	CL_ClearDlights();
 	CL_ClearLightStyles();
@@ -233,10 +230,10 @@ CL_PrintEntities_f
 */
 void CL_PrintEntities_f (void)
 {
-	entity_t	*ent;
+	q1entity_t	*ent;
 	int			i;
 	
-	for (i=0,ent=cl_entities ; i<cl.num_entities ; i++,ent++)
+	for (i=0,ent=clq1_entities ; i<cl.num_entities ; i++,ent++)
 	{
 		Con_Printf ("%3i:",i);
 		if (!ent->state.modelindex)
@@ -318,7 +315,7 @@ CL_RelinkEntities
 */
 void CL_RelinkEntities (void)
 {
-	entity_t	*ent;
+	q1entity_t	*ent;
 	int			i, j;
 	float		frac, f, d;
 	vec3_t		delta;
@@ -354,7 +351,7 @@ void CL_RelinkEntities (void)
 	bobjrotate = AngleMod(100*cl.serverTimeFloat);
 	
 // start on the entity after the world
-	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
+	for (i=1,ent=clq1_entities+1 ; i<cl.num_entities ; i++,ent++)
 	{
 		if (!ent->state.modelindex)
 		{
@@ -396,40 +393,40 @@ void CL_RelinkEntities (void)
 
 		int ModelFlags = R_ModelFlags(cl.model_precache[ent->state.modelindex]);
 // rotate binary objects locally
-		if (ModelFlags & EF_ROTATE)
+		if (ModelFlags & Q1MDLEF_ROTATE)
 			ent->state.angles[1] = bobjrotate;
 
-		if (ent->state.effects & EF_BRIGHTFIELD)
+		if (ent->state.effects & Q1EF_BRIGHTFIELD)
 			CLQ1_BrightFieldParticles(ent->state.origin);
-		if (ent->state.effects & EF_MUZZLEFLASH)
+		if (ent->state.effects & Q1EF_MUZZLEFLASH)
 		{
 			CLQ1_MuzzleFlashLight(i, ent->state.origin, ent->state.angles);
 		}
-		if (ent->state.effects & EF_BRIGHTLIGHT)
+		if (ent->state.effects & Q1EF_BRIGHTLIGHT)
 		{
 			CLQ1_BrightLight(i, ent->state.origin);
 		}
-		if (ent->state.effects & EF_DIMLIGHT)
+		if (ent->state.effects & Q1EF_DIMLIGHT)
 		{			
 			CLQ1_DimLight(i, ent->state.origin, 0);
 		}
 
-		if (ModelFlags & EF_GIB)
+		if (ModelFlags & Q1MDLEF_GIB)
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 2);
-		else if (ModelFlags & EF_ZOMGIB)
+		else if (ModelFlags & Q1MDLEF_ZOMGIB)
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 4);
-		else if (ModelFlags & EF_TRACER)
+		else if (ModelFlags & Q1MDLEF_TRACER)
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 3);
-		else if (ModelFlags & EF_TRACER2)
+		else if (ModelFlags & Q1MDLEF_TRACER2)
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 5);
-		else if (ModelFlags & EF_ROCKET)
+		else if (ModelFlags & Q1MDLEF_ROCKET)
 		{
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 0);
 			CLQ1_RocketLight(i, ent->state.origin);
 		}
-		else if (ModelFlags & EF_GRENADE)
+		else if (ModelFlags & Q1MDLEF_GRENADE)
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 1);
-		else if (ModelFlags & EF_TRACER3)
+		else if (ModelFlags & Q1MDLEF_TRACER3)
 			CLQ1_TrailParticles (oldorg, ent->state.origin, 6);
 
 		refEntity_t rent;
@@ -452,7 +449,7 @@ void CL_RelinkEntities (void)
 
 static void CL_LinkStaticEntities()
 {
-	entity_t* pent = cl_static_entities;
+	q1entity_t* pent = clq1_static_entities;
 	for (int i = 0; i < cl.num_statics; i++, pent++)
 	{
 		refEntity_t rent;
@@ -620,5 +617,5 @@ void CIN_FinishCinematic()
 
 float* CL_GetSimOrg()
 {
-	return cl_entities[cl.viewentity].state.origin;
+	return clq1_entities[cl.viewentity].state.origin;
 }

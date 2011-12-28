@@ -20,6 +20,8 @@
 Cvar* cl_doubleeyes;
 
 q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
+q1entity_t clq1_entities[MAX_EDICTS_Q1];
+q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 {

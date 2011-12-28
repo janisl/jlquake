@@ -20,31 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // refresh.h -- public interface to refresh functions
 
-#define	MAXCLIPPLANES	11
-
-//	Model effects
-#define	EF_ROCKET	1			// leave a trail
-#define	EF_GRENADE	2			// leave a trail
-#define	EF_GIB		4			// leave a trail
-#define	EF_ROTATE	8			// rotate (bonus items)
-#define	EF_TRACER	16			// green split trail
-#define	EF_ZOMGIB	32			// small blood trail
-#define	EF_TRACER2	64			// orange split trail + rotate
-#define	EF_TRACER3	128			// purple trail
-
-//=============================================================================
-
-struct entity_t
-{
-	q1entity_state_t state;
-
-	double					msgtime;		// time of last update
-	vec3_t					msg_origins[2];	// last two updates (0 is newest)	
-	vec3_t					msg_angles[2];	// last two updates (0 is newest)
-	float					syncbase;		// for client-side animations
-};
-
-
 //
 // refresh
 //

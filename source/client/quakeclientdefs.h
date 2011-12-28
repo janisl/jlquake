@@ -14,6 +14,29 @@
 //**
 //**************************************************************************
 
+//	Model effects
+enum
+{
+	Q1MDLEF_ROCKET	= 1,	// leave a trail
+	Q1MDLEF_GRENADE	= 2,	// leave a trail
+	Q1MDLEF_GIB		= 4,	// leave a trail
+	Q1MDLEF_ROTATE	= 8,	// rotate (bonus items)
+	Q1MDLEF_TRACER	= 16,	// green split trail
+	Q1MDLEF_ZOMGIB	= 32,	// small blood trail
+	Q1MDLEF_TRACER2	= 64,	// orange split trail + rotate
+	Q1MDLEF_TRACER3	= 128,	// purple trail
+};
+
+struct q1entity_t
+{
+	q1entity_state_t state;
+	float syncbase;			// for client-side animations
+
+	double msgtime;			// time of last update
+	vec3_t msg_origins[2];	// last two updates (0 is newest)	
+	vec3_t msg_angles[2];	// last two updates (0 is newest)
+};
+
 // qwplayer_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
 struct qwplayer_state_t

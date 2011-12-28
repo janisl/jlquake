@@ -381,7 +381,7 @@ void CL_Record_f (void)
 	byte	buf_data[MAX_MSGLEN_QW];
 	int n, i, j;
 	char *s;
-	entity_t *ent;
+	q1entity_t *ent;
 	q1entity_state_t *es, blankes;
 	player_info_t *player;
 	extern	char gamedirfile[];
@@ -518,7 +518,7 @@ void CL_Record_f (void)
 // spawnstatic
 
 	for (i = 0; i < cl.num_statics; i++) {
-		ent = cl_static_entities + i;
+		ent = clq1_static_entities + i;
 
 		buf.WriteByte(svc_spawnstatic);
 

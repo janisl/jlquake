@@ -16,6 +16,19 @@
 
 #define MAX_EDICTS_Q1		768			// FIXME: ouch! ouch! ouch!
 
+// entity effects
+enum
+{
+	Q1EF_BRIGHTFIELD	= 1,
+	Q1EF_MUZZLEFLASH 	= 2,
+	Q1EF_BRIGHTLIGHT 	= 4,
+	Q1EF_DIMLIGHT 		= 8,
+	QWEF_FLAG1	 		= 16,
+	QWEF_FLAG2	 		= 32,
+	QWEF_BLUE			= 64,
+	QWEF_RED			= 128,
+};
+
 //
 // temp entity events
 //

@@ -330,15 +330,15 @@ void CL_LinkPacketEntities (void)
 		s2 = s1;	// FIXME: no interpolation right now
 
 		// spawn light flashes, even ones coming from invisible objects
-		if ((s1->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
+		if ((s1->effects & (QWEF_BLUE | QWEF_RED)) == (QWEF_BLUE | QWEF_RED))
 			CLQ1_DimLight (s1->number, s1->origin, 3);
-		else if (s1->effects & EF_BLUE)
+		else if (s1->effects & QWEF_BLUE)
 			CLQ1_DimLight (s1->number, s1->origin, 1);
-		else if (s1->effects & EF_RED)
+		else if (s1->effects & QWEF_RED)
 			CLQ1_DimLight (s1->number, s1->origin, 2);
-		else if (s1->effects & EF_BRIGHTLIGHT)
+		else if (s1->effects & Q1EF_BRIGHTLIGHT)
 			CLQ1_BrightLight(s1->number, s1->origin);
-		else if (s1->effects & EF_DIMLIGHT)
+		else if (s1->effects & Q1EF_DIMLIGHT)
 			CLQ1_DimLight (s1->number, s1->origin, 0);
 
 		// if set to invisible, skip
@@ -368,7 +368,7 @@ void CL_LinkPacketEntities (void)
 		int ModelFlags = R_ModelFlags(model);
 		// rotate binary objects locally
 		vec3_t angles;
-		if (ModelFlags & EF_ROTATE)
+		if (ModelFlags & Q1MDLEF_ROTATE)
 		{
 			angles[0] = 0;
 			angles[1] = autorotate;
@@ -421,22 +421,22 @@ void CL_LinkPacketEntities (void)
 				VectorCopy (ent.origin, old_origin);
 				break;
 			}
-		if (ModelFlags & EF_ROCKET)
+		if (ModelFlags & Q1MDLEF_ROCKET)
 		{
 			CLQ1_TrailParticles (old_origin, ent.origin, 0);
 			CLQ1_RocketLight(s1->number, ent.origin);
 		}
-		else if (ModelFlags & EF_GRENADE)
+		else if (ModelFlags & Q1MDLEF_GRENADE)
 			CLQ1_TrailParticles (old_origin, ent.origin, 1);
-		else if (ModelFlags & EF_GIB)
+		else if (ModelFlags & Q1MDLEF_GIB)
 			CLQ1_TrailParticles (old_origin, ent.origin, 2);
-		else if (ModelFlags & EF_ZOMGIB)
+		else if (ModelFlags & Q1MDLEF_ZOMGIB)
 			CLQ1_TrailParticles (old_origin, ent.origin, 4);
-		else if (ModelFlags & EF_TRACER)
+		else if (ModelFlags & Q1MDLEF_TRACER)
 			CLQ1_TrailParticles (old_origin, ent.origin, 3);
-		else if (ModelFlags & EF_TRACER2)
+		else if (ModelFlags & Q1MDLEF_TRACER2)
 			CLQ1_TrailParticles (old_origin, ent.origin, 5);
-		else if (ModelFlags & EF_TRACER3)
+		else if (ModelFlags & Q1MDLEF_TRACER3)
 			CLQ1_TrailParticles (old_origin, ent.origin, 6);
 	}
 }
@@ -700,15 +700,15 @@ void CL_LinkPlayers (void)
 			continue;	// not present this frame
 
 		// spawn light flashes, even ones coming from invisible objects
-		if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
+		if ((state->effects & (QWEF_BLUE | QWEF_RED)) == (QWEF_BLUE | QWEF_RED))
 			CLQ1_DimLight (j, state->origin, 3);
-		else if (state->effects & EF_BLUE)
+		else if (state->effects & QWEF_BLUE)
 			CLQ1_DimLight (j, state->origin, 1);
-		else if (state->effects & EF_RED)
+		else if (state->effects & QWEF_RED)
 			CLQ1_DimLight (j, state->origin, 2);
-		else if (state->effects & EF_BRIGHTLIGHT)
+		else if (state->effects & Q1EF_BRIGHTLIGHT)
 			CLQ1_BrightLight(j, state->origin);
-		else if (state->effects & EF_DIMLIGHT)
+		else if (state->effects & Q1EF_DIMLIGHT)
 			CLQ1_DimLight (j, state->origin, 0);
 
 		// the player object never gets added
@@ -768,9 +768,9 @@ void CL_LinkPlayers (void)
 		}
 		R_AddRefEntityToScene(&ent);
 
-		if (state->effects & EF_FLAG1)
+		if (state->effects & QWEF_FLAG1)
 			CL_AddFlagModels(&ent, 0, angles);
-		else if (state->effects & EF_FLAG2)
+		else if (state->effects & QWEF_FLAG2)
 			CL_AddFlagModels(&ent, 1, angles);
 	}
 }
@@ -931,7 +931,7 @@ void CL_SetSolidPlayers (int playernum)
 
 static void CL_LinkStaticEntities()
 {
-	entity_t* pent = cl_static_entities;
+	q1entity_t* pent = clq1_static_entities;
 	for (int i = 0; i < cl.num_statics; i++, pent++)
 	{
 		refEntity_t rent;

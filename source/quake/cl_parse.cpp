@@ -79,7 +79,7 @@ CL_EntityNum
 This error checks and tracks the total number of entities
 ===============
 */
-entity_t	*CL_EntityNum (int num)
+q1entity_t	*CL_EntityNum (int num)
 {
 	if (num >= cl.num_entities)
 	{
@@ -87,12 +87,12 @@ entity_t	*CL_EntityNum (int num)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
 		while (cl.num_entities<=num)
 		{
-			cl_entities[cl.num_entities].state.colormap = 0;
+			clq1_entities[cl.num_entities].state.colormap = 0;
 			cl.num_entities++;
 		}
 	}
 		
-	return &cl_entities[num];
+	return &clq1_entities[num];
 }
 
 
@@ -339,7 +339,7 @@ static void R_TranslatePlayerSkin(int playernum)
 	//
 	// locate the original skin pixels
 	//
-	entity_t* ent = &cl_entities[1 + playernum];
+	q1entity_t* ent = &clq1_entities[1 + playernum];
 
 	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate);
 }
@@ -361,7 +361,7 @@ void CL_ParseUpdate (int bits)
 	qhandle_t	model;
 	int			modnum;
 	qboolean	forcelink;
-	entity_t	*ent;
+	q1entity_t	*ent;
 	int			num;
 	int			skin;
 
@@ -645,14 +645,14 @@ CL_ParseStatic
 */
 void CL_ParseStatic (void)
 {
-	entity_t *ent;
+	q1entity_t *ent;
 	q1entity_state_t baseline;
 	int		i;
 		
 	i = cl.num_statics;
-	if (i >= MAX_STATIC_ENTITIES)
+	if (i >= MAX_STATIC_ENTITIES_Q1)
 		Host_Error ("Too many static entities");
-	ent = &cl_static_entities[i];
+	ent = &clq1_static_entities[i];
 	Com_Memset(ent, 0, sizeof(*ent));
 	cl.num_statics++;
 	CL_ParseBaseline(&baseline);

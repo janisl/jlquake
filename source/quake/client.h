@@ -162,9 +162,9 @@ struct client_state_t : clientActiveCommon_t
 	int			gametype;
 
 // refresh related state
-	int			num_entities;	// held in cl_entities array
+	int			num_entities;	// held in clq1_entities array
 	int			num_statics;	// held in cl_staticentities array
-	entity_t	viewent;			// the gun model
+	q1entity_t	viewent;			// the gun model
 
 	int			cdtrack, looptrack;	// cd audio
 
@@ -204,14 +204,7 @@ extern	Cvar*	m_forward;
 extern	Cvar*	m_side;
 
 
-#define	MAX_TEMP_ENTITIES	64			// lightning bolts, etc
-#define	MAX_STATIC_ENTITIES	128			// torches, etc
-
 extern	client_state_t	cl;
-
-// FIXME, allocate dynamically
-extern	entity_t		cl_entities[MAX_EDICTS_Q1];
-extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 
 //=============================================================================
 
