@@ -1104,7 +1104,7 @@ void CL_ParseServerMessage (void)
 			channel &= 7;
 			
 			if (ent > MAX_EDICTS_H2)
-				Host_Error ("svc_sound_update_pos: ent = %i", ent);
+				Host_FatalError ("svc_sound_update_pos: ent = %i", ent);
 			
 			for (i=0 ; i<3 ; i++)
 				pos[i] = net_message.ReadCoord ();

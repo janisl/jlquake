@@ -319,7 +319,7 @@ void CL_ClearState (void)
 CL_Disconnect
 
 Sends a disconnect message to the server
-This is also called on Host_Error, so it shouldn't cause any errors
+This is also called on Host_FatalError, so it shouldn't cause any errors
 =====================
 */
 void CL_Disconnect (void)
@@ -1083,25 +1083,25 @@ void Host_EndGame (const char *message, ...)
 
 /*
 ================
-Host_Error
+Host_FatalError
 
 This shuts down the client and exits qwcl
 ================
 */
-void Host_Error (const char *error, ...)
+void Host_FatalError (const char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];
 	static	qboolean inerror = false;
 	
 	if (inerror)
-		Sys_Error ("Host_Error: recursively entered");
+		Sys_Error ("Host_FatalError: recursively entered");
 	inerror = true;
 	
 	va_start (argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
 	va_end (argptr);
-	Con_Printf ("Host_Error: %s\n",string);
+	Con_Printf ("Host_FatalError: %s\n",string);
 	
 	CL_Disconnect ();
 	cls.demonum = -1;
@@ -1109,7 +1109,7 @@ void Host_Error (const char *error, ...)
 	inerror = false;
 
 // FIXME
-	Sys_Error ("Host_Error: %s\n",string);
+	Sys_Error ("Host_FatalError: %s\n",string);
 }
 
 

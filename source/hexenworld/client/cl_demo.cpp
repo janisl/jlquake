@@ -167,7 +167,7 @@ qboolean CL_GetDemoMessage (void)
 		realtime = demotime; // we're warping
 
 	if (cls.state < ca_demostart)
-		Host_Error ("CL_GetDemoMessage: cls.state != ca_active");
+		Host_FatalError ("CL_GetDemoMessage: cls.state != ca_active");
 	
 	// get the msg type
 	FS_Read(&c, sizeof(c), cls.demofile);

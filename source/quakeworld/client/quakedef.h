@@ -94,7 +94,7 @@ void Host_ServerFrame (void);
 void Host_InitCommands (void);
 void Host_Init (quakeparms_t *parms);
 void Host_Shutdown(void);
-void Host_Error (const char *error, ...);
+void Host_FatalError (const char *error, ...);
 void Host_EndGame (const char *message, ...);
 qboolean Host_SimulationTime(float time);
 void Host_Frame (float time);
