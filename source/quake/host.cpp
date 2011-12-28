@@ -617,6 +617,8 @@ void _Host_Frame (float time)
 	static double		time3 = 0;
 	int			pass1, pass2, pass3;
 
+	try
+	{
 	if (setjmp (host_abortserver) )
 		return;			// something bad happened, or the server disconnected
 
@@ -713,6 +715,11 @@ void _Host_Frame (float time)
 	host_framecount++;
 	cls.framecount++;
 	fps_count++;
+	}
+	catch (DropException& e)
+	{
+		Host_Error(e.What());
+	}
 }
 
 void Host_Frame (float time)

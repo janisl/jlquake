@@ -1105,6 +1105,10 @@ void Qcommon_Frame (int msec)
 			all, sv, gm, cl, rf);
 	}	
 	}
+	catch (DropException& e)
+	{
+		Com_Error(ERR_DROP, e.What());
+	}
 	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());

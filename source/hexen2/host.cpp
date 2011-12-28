@@ -661,6 +661,8 @@ void _Host_Frame (float time)
 	if (setjmp (host_abortserver) )
 		return;			// something bad happened, or the server disconnected
 
+	try
+	{
 // keep the random time dependent
 	rand ();
 	
@@ -784,6 +786,11 @@ void _Host_Frame (float time)
 	host_framecount++;
 	cls.framecount++;
 	fps_count++;
+	}
+	catch (DropException& e)
+	{
+		Host_Error(e.What());
+	}
 }
 
 void Host_Frame (float time)

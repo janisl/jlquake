@@ -1353,6 +1353,10 @@ void Host_Frame (float time)
 	cls.framecount++;
 	fps_count++;
 	}
+	catch (DropException& e)
+	{
+		Host_EndGame(e.What());
+	}
 	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
