@@ -73,30 +73,6 @@ image_t*	playertextures[16];		// up to 16 color translated skins
 //=============================================================================
 
 /*
-===============
-CL_EntityNum
-
-This error checks and tracks the total number of entities
-===============
-*/
-q1entity_t	*CL_EntityNum (int num)
-{
-	if (num >= cl.num_entities)
-	{
-		if (num >= MAX_EDICTS_Q1)
-			Host_Error ("CL_EntityNum: %i is an invalid number",num);
-		while (cl.num_entities<=num)
-		{
-			clq1_entities[cl.num_entities].state.colormap = 0;
-			cl.num_entities++;
-		}
-	}
-		
-	return &clq1_entities[num];
-}
-
-
-/*
 ==================
 CL_ParseStartSoundPacket
 ==================
@@ -382,7 +358,7 @@ void CL_ParseUpdate (int bits)
 	else
 		num = net_message.ReadByte ();
 
-	ent = CL_EntityNum (num);
+	ent = CLQ1_EntityNum (num);
 	const q1entity_state_t& baseline = clq1_baselines[num];
 
 for (i=0 ; i<16 ; i++)
@@ -494,27 +470,6 @@ if (bits&(1<<i))
 		VectorCopy (ent->msg_angles[0], ent->state.angles);
 	}
 }
-
-/*
-==================
-CL_ParseBaseline
-==================
-*/
-void CL_ParseBaseline (q1entity_state_t *ent)
-{
-	int			i;
-	
-	ent->modelindex = net_message.ReadByte ();
-	ent->frame = net_message.ReadByte ();
-	ent->colormap = net_message.ReadByte();
-	ent->skinnum = net_message.ReadByte();
-	for (i=0 ; i<3 ; i++)
-	{
-		ent->origin[i] = net_message.ReadCoord ();
-		ent->angles[i] = net_message.ReadAngle ();
-	}
-}
-
 
 /*
 ==================
@@ -636,35 +591,6 @@ void CL_NewTranslation (int slot)
 	if (slot > cl.maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 	R_TranslatePlayerSkin (slot);
-}
-
-/*
-=====================
-CL_ParseStatic
-=====================
-*/
-void CL_ParseStatic (void)
-{
-	q1entity_t *ent;
-	q1entity_state_t baseline;
-	int		i;
-		
-	i = cl.num_statics;
-	if (i >= MAX_STATIC_ENTITIES_Q1)
-		Host_Error ("Too many static entities");
-	ent = &clq1_static_entities[i];
-	Com_Memset(ent, 0, sizeof(*ent));
-	cl.num_statics++;
-	CL_ParseBaseline(&baseline);
-
-// copy it to the current state
-	ent->state.modelindex = baseline.modelindex;
-	ent->state.frame = baseline.frame;
-	ent->state.skinnum = baseline.skinnum;
-	ent->state.effects = baseline.effects;
-
-	VectorCopy (baseline.origin, ent->state.origin);
-	VectorCopy (baseline.angles, ent->state.angles);	
 }
 
 /*
@@ -837,13 +763,10 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_spawnbaseline:
-			i = net_message.ReadShort ();
-			// must use CL_EntityNum() to force cl.num_entities up
-			CL_EntityNum(i);
-			CL_ParseBaseline(&clq1_baselines[i]);
+			CLQ1_ParseSpawnBaseline(net_message);
 			break;
 		case svc_spawnstatic:
-			CL_ParseStatic ();
+			CLQ1_ParseSpawnStatic(net_message);
 			break;			
 		case svc_temp_entity:
 			CLQ1_ParseTEnt (net_message);

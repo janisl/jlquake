@@ -748,59 +748,6 @@ void CL_ParseModellist (void)
 }
 
 /*
-==================
-CL_ParseBaseline
-==================
-*/
-void CL_ParseBaseline (q1entity_state_t *es)
-{
-	int			i;
-	
-	es->modelindex = net_message.ReadByte ();
-	es->frame = net_message.ReadByte ();
-	es->colormap = net_message.ReadByte();
-	es->skinnum = net_message.ReadByte();
-	for (i=0 ; i<3 ; i++)
-	{
-		es->origin[i] = net_message.ReadCoord();
-		es->angles[i] = net_message.ReadAngle();
-	}
-}
-
-
-
-/*
-=====================
-CL_ParseStatic
-
-Static entities are non-interactive world objects
-like torches
-=====================
-*/
-void CL_ParseStatic (void)
-{
-	q1entity_t *ent;
-	int		i;
-	q1entity_state_t	es;
-
-	CL_ParseBaseline (&es);
-		
-	i = cl.num_statics;
-	if (i >= MAX_STATIC_ENTITIES_Q1)
-		Host_EndGame ("Too many static entities");
-	ent = &clq1_static_entities[i];
-	cl.num_statics++;
-
-// copy it to the current state
-	ent->state.modelindex = es.modelindex;
-	ent->state.frame = es.frame;
-	ent->state.skinnum = es.skinnum;
-
-	VectorCopy (es.origin, ent->state.origin);
-	VectorCopy (es.angles, ent->state.angles);
-}
-
-/*
 ===================
 CL_ParseStaticSound
 ===================
@@ -1268,11 +1215,10 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case svc_spawnbaseline:
-			i = net_message.ReadShort ();
-			CL_ParseBaseline (&clq1_baselines[i]);
+			CLQ1_ParseSpawnBaseline(net_message);
 			break;
 		case svc_spawnstatic:
-			CL_ParseStatic ();
+			CLQ1_ParseSpawnStatic(net_message);
 			break;			
 		case svc_temp_entity:
 			CLQW_ParseTEnt(net_message);

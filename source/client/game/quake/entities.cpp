@@ -23,6 +23,62 @@ q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
 q1entity_t clq1_entities[MAX_EDICTS_Q1];
 q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
+//	This error checks and tracks the total number of entities
+q1entity_t* CLQ1_EntityNum(int number)
+{
+	if (number >= cl_common->num_entities)
+	{
+		if (number >= MAX_EDICTS_Q1)
+		{
+			throw DropException(va("CLQ1_EntityNum: %i is an invalid number", number));
+		}
+		while (cl_common->num_entities <= number)
+		{
+			clq1_entities[cl_common->num_entities].state.colormap = 0;
+			cl_common->num_entities++;
+		}
+	}
+	return &clq1_entities[number];
+}
+
+static void CLQ1_ParseBaseline(QMsg& message, q1entity_state_t *es)
+{
+	es->modelindex = message.ReadByte();
+	es->frame = message.ReadByte();
+	es->colormap = message.ReadByte();
+	es->skinnum = message.ReadByte();
+	for (int i = 0; i < 3; i++)
+	{
+		es->origin[i] = message.ReadCoord();
+		es->angles[i] = message.ReadAngle();
+	}
+}
+
+void CLQ1_ParseSpawnBaseline(QMsg& message)
+{
+	int i = message.ReadShort();
+	if (!(GGameType & GAME_QuakeWorld))
+	{
+		// must use CLQ1_EntityNum() to force cl.num_entities up
+		CLQ1_EntityNum(i);
+	}
+	CLQ1_ParseBaseline(message, &clq1_baselines[i]);
+}
+
+void CLQ1_ParseSpawnStatic(QMsg& message)
+{
+	int i = cl_common->num_statics;
+	if (i >= MAX_STATIC_ENTITIES_Q1)
+	{
+		throw DropException("Too many static entities");
+	}
+	q1entity_t* ent = &clq1_static_entities[i];
+	cl_common->num_statics++;
+
+	CLQ1_ParseBaseline(message, &ent->state);
+	ent->state.colormap = 0;
+}
+
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 {
 	vec3_t angles;
