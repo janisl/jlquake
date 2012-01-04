@@ -355,81 +355,81 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 	bits = 0;
 
 	if (to->number >= 256)
-		bits |= U_NUMBER16;		// number8 is implicit otherwise
+		bits |= Q2U_NUMBER16;		// number8 is implicit otherwise
 
 	if (to->origin[0] != from->origin[0])
-		bits |= U_ORIGIN1;
+		bits |= Q2U_ORIGIN1;
 	if (to->origin[1] != from->origin[1])
-		bits |= U_ORIGIN2;
+		bits |= Q2U_ORIGIN2;
 	if (to->origin[2] != from->origin[2])
-		bits |= U_ORIGIN3;
+		bits |= Q2U_ORIGIN3;
 
 	if ( to->angles[0] != from->angles[0] )
-		bits |= U_ANGLE1;		
+		bits |= Q2U_ANGLE1;		
 	if ( to->angles[1] != from->angles[1] )
-		bits |= U_ANGLE2;
+		bits |= Q2U_ANGLE2;
 	if ( to->angles[2] != from->angles[2] )
-		bits |= U_ANGLE3;
+		bits |= Q2U_ANGLE3;
 		
 	if ( to->skinnum != from->skinnum )
 	{
 		if ((unsigned)to->skinnum < 256)
-			bits |= U_SKIN8;
+			bits |= Q2U_SKIN8;
 		else if ((unsigned)to->skinnum < 0x10000)
-			bits |= U_SKIN16;
+			bits |= Q2U_SKIN16;
 		else
-			bits |= (U_SKIN8|U_SKIN16);
+			bits |= (Q2U_SKIN8|Q2U_SKIN16);
 	}
 		
 	if ( to->frame != from->frame )
 	{
 		if (to->frame < 256)
-			bits |= U_FRAME8;
+			bits |= Q2U_FRAME8;
 		else
-			bits |= U_FRAME16;
+			bits |= Q2U_FRAME16;
 	}
 
 	if ( to->effects != from->effects )
 	{
 		if (to->effects < 256)
-			bits |= U_EFFECTS8;
+			bits |= Q2U_EFFECTS8;
 		else if (to->effects < 0x8000)
-			bits |= U_EFFECTS16;
+			bits |= Q2U_EFFECTS16;
 		else
-			bits |= U_EFFECTS8|U_EFFECTS16;
+			bits |= Q2U_EFFECTS8|Q2U_EFFECTS16;
 	}
 	
 	if ( to->renderfx != from->renderfx )
 	{
 		if (to->renderfx < 256)
-			bits |= U_RENDERFX8;
+			bits |= Q2U_RENDERFX8;
 		else if (to->renderfx < 0x8000)
-			bits |= U_RENDERFX16;
+			bits |= Q2U_RENDERFX16;
 		else
-			bits |= U_RENDERFX8|U_RENDERFX16;
+			bits |= Q2U_RENDERFX8|Q2U_RENDERFX16;
 	}
 	
 	if ( to->solid != from->solid )
-		bits |= U_SOLID;
+		bits |= Q2U_SOLID;
 
 	// event is not delta compressed, just 0 compressed
 	if ( to->event  )
-		bits |= U_EVENT;
+		bits |= Q2U_EVENT;
 	
 	if ( to->modelindex != from->modelindex )
-		bits |= U_MODEL;
+		bits |= Q2U_MODEL;
 	if ( to->modelindex2 != from->modelindex2 )
-		bits |= U_MODEL2;
+		bits |= Q2U_MODEL2;
 	if ( to->modelindex3 != from->modelindex3 )
-		bits |= U_MODEL3;
+		bits |= Q2U_MODEL3;
 	if ( to->modelindex4 != from->modelindex4 )
-		bits |= U_MODEL4;
+		bits |= Q2U_MODEL4;
 
 	if ( to->sound != from->sound )
-		bits |= U_SOUND;
+		bits |= Q2U_SOUND;
 
 	if (newentity || (to->renderfx & Q2RF_BEAM))
-		bits |= U_OLDORIGIN;
+		bits |= Q2U_OLDORIGIN;
 
 	//
 	// write the message
@@ -440,11 +440,11 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 	//----------
 
 	if (bits & 0xff000000)
-		bits |= U_MOREBITS3 | U_MOREBITS2 | U_MOREBITS1;
+		bits |= Q2U_MOREBITS3 | Q2U_MOREBITS2 | Q2U_MOREBITS1;
 	else if (bits & 0x00ff0000)
-		bits |= U_MOREBITS2 | U_MOREBITS1;
+		bits |= Q2U_MOREBITS2 | Q2U_MOREBITS1;
 	else if (bits & 0x0000ff00)
-		bits |= U_MOREBITS1;
+		bits |= Q2U_MOREBITS1;
 
 	msg->WriteByte(bits&255 );
 
@@ -466,73 +466,73 @@ void MSG_WriteDeltaEntity (q2entity_state_t *from, q2entity_state_t *to, QMsg *m
 
 	//----------
 
-	if (bits & U_NUMBER16)
+	if (bits & Q2U_NUMBER16)
 		msg->WriteShort(to->number);
 	else
 		msg->WriteByte(to->number);
 
-	if (bits & U_MODEL)
+	if (bits & Q2U_MODEL)
 		msg->WriteByte(to->modelindex);
-	if (bits & U_MODEL2)
+	if (bits & Q2U_MODEL2)
 		msg->WriteByte(to->modelindex2);
-	if (bits & U_MODEL3)
+	if (bits & Q2U_MODEL3)
 		msg->WriteByte(to->modelindex3);
-	if (bits & U_MODEL4)
+	if (bits & Q2U_MODEL4)
 		msg->WriteByte(to->modelindex4);
 
-	if (bits & U_FRAME8)
+	if (bits & Q2U_FRAME8)
 		msg->WriteByte(to->frame);
-	if (bits & U_FRAME16)
+	if (bits & Q2U_FRAME16)
 		msg->WriteShort(to->frame);
 
-	if ((bits & U_SKIN8) && (bits & U_SKIN16))		//used for laser colors
+	if ((bits & Q2U_SKIN8) && (bits & Q2U_SKIN16))		//used for laser colors
 		msg->WriteLong(to->skinnum);
-	else if (bits & U_SKIN8)
+	else if (bits & Q2U_SKIN8)
 		msg->WriteByte(to->skinnum);
-	else if (bits & U_SKIN16)
+	else if (bits & Q2U_SKIN16)
 		msg->WriteShort(to->skinnum);
 
 
-	if ( (bits & (U_EFFECTS8|U_EFFECTS16)) == (U_EFFECTS8|U_EFFECTS16) )
+	if ( (bits & (Q2U_EFFECTS8|Q2U_EFFECTS16)) == (Q2U_EFFECTS8|Q2U_EFFECTS16) )
 		msg->WriteLong(to->effects);
-	else if (bits & U_EFFECTS8)
+	else if (bits & Q2U_EFFECTS8)
 		msg->WriteByte(to->effects);
-	else if (bits & U_EFFECTS16)
+	else if (bits & Q2U_EFFECTS16)
 		msg->WriteShort(to->effects);
 
-	if ( (bits & (U_RENDERFX8|U_RENDERFX16)) == (U_RENDERFX8|U_RENDERFX16) )
+	if ( (bits & (Q2U_RENDERFX8|Q2U_RENDERFX16)) == (Q2U_RENDERFX8|Q2U_RENDERFX16) )
 		msg->WriteLong(to->renderfx);
-	else if (bits & U_RENDERFX8)
+	else if (bits & Q2U_RENDERFX8)
 		msg->WriteByte(to->renderfx);
-	else if (bits & U_RENDERFX16)
+	else if (bits & Q2U_RENDERFX16)
 		msg->WriteShort(to->renderfx);
 
-	if (bits & U_ORIGIN1)
+	if (bits & Q2U_ORIGIN1)
 		msg->WriteCoord(to->origin[0]);		
-	if (bits & U_ORIGIN2)
+	if (bits & Q2U_ORIGIN2)
 		msg->WriteCoord(to->origin[1]);
-	if (bits & U_ORIGIN3)
+	if (bits & Q2U_ORIGIN3)
 		msg->WriteCoord(to->origin[2]);
 
-	if (bits & U_ANGLE1)
+	if (bits & Q2U_ANGLE1)
 		msg->WriteAngle(to->angles[0]);
-	if (bits & U_ANGLE2)
+	if (bits & Q2U_ANGLE2)
 		msg->WriteAngle(to->angles[1]);
-	if (bits & U_ANGLE3)
+	if (bits & Q2U_ANGLE3)
 		msg->WriteAngle(to->angles[2]);
 
-	if (bits & U_OLDORIGIN)
+	if (bits & Q2U_OLDORIGIN)
 	{
 		msg->WriteCoord(to->old_origin[0]);
 		msg->WriteCoord(to->old_origin[1]);
 		msg->WriteCoord(to->old_origin[2]);
 	}
 
-	if (bits & U_SOUND)
+	if (bits & Q2U_SOUND)
 		msg->WriteByte(to->sound);
-	if (bits & U_EVENT)
+	if (bits & Q2U_EVENT)
 		msg->WriteByte(to->event);
-	if (bits & U_SOLID)
+	if (bits & Q2U_SOLID)
 		msg->WriteShort(to->solid);
 }
 

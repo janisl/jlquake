@@ -183,15 +183,15 @@ void SV_EmitPacketEntities (client_frame_t *from, client_frame_t *to, QMsg *msg)
 
 		if (newnum > oldnum)
 		{	// the old entity isn't present in the new message
-			bits = U_REMOVE;
+			bits = Q2U_REMOVE;
 			if (oldnum >= 256)
-				bits |= U_NUMBER16 | U_MOREBITS1;
+				bits |= Q2U_NUMBER16 | Q2U_MOREBITS1;
 
 			msg->WriteByte(bits&255 );
 			if (bits & 0x0000ff00)
 				msg->WriteByte((bits>>8)&255 );
 
-			if (bits & U_NUMBER16)
+			if (bits & Q2U_NUMBER16)
 				msg->WriteShort(oldnum);
 			else
 				msg->WriteByte(oldnum);

@@ -542,3 +542,40 @@ struct q2usercmd_t
 	byte	impulse;		// remove?
 	byte	lightlevel;		// light level the player is standing on
 };
+
+// q2entity_state_t communication
+
+// try to pack the common update flags into the first byte
+#define Q2U_ORIGIN1		(1<<0)
+#define Q2U_ORIGIN2		(1<<1)
+#define Q2U_ANGLE2		(1<<2)
+#define Q2U_ANGLE3		(1<<3)
+#define Q2U_FRAME8		(1<<4)		// frame is a byte
+#define Q2U_EVENT		(1<<5)
+#define Q2U_REMOVE		(1<<6)		// REMOVE this entity, don't add it
+#define Q2U_MOREBITS1	(1<<7)		// read one additional byte
+
+// second byte
+#define Q2U_NUMBER16	(1<<8)		// NUMBER8 is implicit if not set
+#define Q2U_ORIGIN3		(1<<9)
+#define Q2U_ANGLE1		(1<<10)
+#define Q2U_MODEL		(1<<11)
+#define Q2U_RENDERFX8	(1<<12)		// fullbright, etc
+#define Q2U_EFFECTS8	(1<<14)		// autorotate, trails, etc
+#define Q2U_MOREBITS2	(1<<15)		// read one additional byte
+
+// third byte
+#define Q2U_SKIN8		(1<<16)
+#define Q2U_FRAME16		(1<<17)		// frame is a short
+#define Q2U_RENDERFX16	(1<<18)	// 8 + 16 = 32
+#define Q2U_EFFECTS16	(1<<19)		// 8 + 16 = 32
+#define Q2U_MODEL2		(1<<20)		// weapons, flags, etc
+#define Q2U_MODEL3		(1<<21)
+#define Q2U_MODEL4		(1<<22)
+#define Q2U_MOREBITS3	(1<<23)		// read one additional byte
+
+// fourth byte
+#define Q2U_OLDORIGIN	(1<<24)		// FIXME: get rid of this
+#define Q2U_SKIN16		(1<<25)
+#define Q2U_SOUND		(1<<26)
+#define Q2U_SOLID		(1<<27)

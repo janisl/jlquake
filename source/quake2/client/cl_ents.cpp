@@ -43,17 +43,17 @@ int CL_ParseEntityBits (unsigned *bits)
 	int			number;
 
 	total = net_message.ReadByte ();
-	if (total & U_MOREBITS1)
+	if (total & Q2U_MOREBITS1)
 	{
 		b = net_message.ReadByte ();
 		total |= b<<8;
 	}
-	if (total & U_MOREBITS2)
+	if (total & Q2U_MOREBITS2)
 	{
 		b = net_message.ReadByte ();
 		total |= b<<16;
 	}
-	if (total & U_MOREBITS3)
+	if (total & Q2U_MOREBITS3)
 	{
 		b = net_message.ReadByte ();
 		total |= b<<24;
@@ -64,7 +64,7 @@ int CL_ParseEntityBits (unsigned *bits)
 		if (total&(1<<i))
 			bitcounts[i]++;
 
-	if (total & U_NUMBER16)
+	if (total & Q2U_NUMBER16)
 		number = net_message.ReadShort();
 	else
 		number = net_message.ReadByte ();
@@ -89,67 +89,67 @@ void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, in
 	VectorCopy (from->origin, to->old_origin);
 	to->number = number;
 
-	if (bits & U_MODEL)
+	if (bits & Q2U_MODEL)
 		to->modelindex = net_message.ReadByte ();
-	if (bits & U_MODEL2)
+	if (bits & Q2U_MODEL2)
 		to->modelindex2 = net_message.ReadByte ();
-	if (bits & U_MODEL3)
+	if (bits & Q2U_MODEL3)
 		to->modelindex3 = net_message.ReadByte ();
-	if (bits & U_MODEL4)
+	if (bits & Q2U_MODEL4)
 		to->modelindex4 = net_message.ReadByte ();
 		
-	if (bits & U_FRAME8)
+	if (bits & Q2U_FRAME8)
 		to->frame = net_message.ReadByte ();
-	if (bits & U_FRAME16)
+	if (bits & Q2U_FRAME16)
 		to->frame = net_message.ReadShort();
 
-	if ((bits & U_SKIN8) && (bits & U_SKIN16))		//used for laser colors
+	if ((bits & Q2U_SKIN8) && (bits & Q2U_SKIN16))		//used for laser colors
 		to->skinnum = net_message.ReadLong();
-	else if (bits & U_SKIN8)
+	else if (bits & Q2U_SKIN8)
 		to->skinnum = net_message.ReadByte();
-	else if (bits & U_SKIN16)
+	else if (bits & Q2U_SKIN16)
 		to->skinnum = net_message.ReadShort();
 
-	if ( (bits & (U_EFFECTS8|U_EFFECTS16)) == (U_EFFECTS8|U_EFFECTS16) )
+	if ( (bits & (Q2U_EFFECTS8|Q2U_EFFECTS16)) == (Q2U_EFFECTS8|Q2U_EFFECTS16) )
 		to->effects = net_message.ReadLong();
-	else if (bits & U_EFFECTS8)
+	else if (bits & Q2U_EFFECTS8)
 		to->effects = net_message.ReadByte();
-	else if (bits & U_EFFECTS16)
+	else if (bits & Q2U_EFFECTS16)
 		to->effects = net_message.ReadShort();
 
-	if ( (bits & (U_RENDERFX8|U_RENDERFX16)) == (U_RENDERFX8|U_RENDERFX16) )
+	if ( (bits & (Q2U_RENDERFX8|Q2U_RENDERFX16)) == (Q2U_RENDERFX8|Q2U_RENDERFX16) )
 		to->renderfx = net_message.ReadLong();
-	else if (bits & U_RENDERFX8)
+	else if (bits & Q2U_RENDERFX8)
 		to->renderfx = net_message.ReadByte();
-	else if (bits & U_RENDERFX16)
+	else if (bits & Q2U_RENDERFX16)
 		to->renderfx = net_message.ReadShort();
 
-	if (bits & U_ORIGIN1)
+	if (bits & Q2U_ORIGIN1)
 		to->origin[0] = net_message.ReadCoord();
-	if (bits & U_ORIGIN2)
+	if (bits & Q2U_ORIGIN2)
 		to->origin[1] = net_message.ReadCoord();
-	if (bits & U_ORIGIN3)
+	if (bits & Q2U_ORIGIN3)
 		to->origin[2] = net_message.ReadCoord();
 		
-	if (bits & U_ANGLE1)
+	if (bits & Q2U_ANGLE1)
 		to->angles[0] = net_message.ReadAngle();
-	if (bits & U_ANGLE2)
+	if (bits & Q2U_ANGLE2)
 		to->angles[1] = net_message.ReadAngle();
-	if (bits & U_ANGLE3)
+	if (bits & Q2U_ANGLE3)
 		to->angles[2] = net_message.ReadAngle();
 
-	if (bits & U_OLDORIGIN)
+	if (bits & Q2U_OLDORIGIN)
 		net_message.ReadPos(to->old_origin);
 
-	if (bits & U_SOUND)
+	if (bits & Q2U_SOUND)
 		to->sound = net_message.ReadByte ();
 
-	if (bits & U_EVENT)
+	if (bits & Q2U_EVENT)
 		to->event = net_message.ReadByte ();
 	else
 		to->event = 0;
 
-	if (bits & U_SOLID)
+	if (bits & Q2U_SOLID)
 		to->solid = net_message.ReadShort();
 }
 
@@ -276,12 +276,12 @@ void CL_ParsePacketEntities (q2frame_t *oldframe, q2frame_t *newframe)
 			}
 		}
 
-		if (bits & U_REMOVE)
+		if (bits & Q2U_REMOVE)
 		{	// the entity present in oldframe is not in the current frame
 			if (cl_shownet->value == 3)
 				Com_Printf ("   remove: %i\n", newnum);
 			if (oldnum != newnum)
-				Com_Printf ("U_REMOVE: oldnum != newnum\n");
+				Com_Printf ("Q2U_REMOVE: oldnum != newnum\n");
 
 			oldindex++;
 
