@@ -6,30 +6,6 @@
 
 #define	PROTOCOL_VERSION	19
 
-// if the high bit of the servercmd is set, the low bits are fast update flags:
-#define	U_MOREBITS	(1<<0)
-#define	U_ORIGIN1	(1<<1)
-#define	U_ORIGIN2	(1<<2)
-#define	U_ORIGIN3	(1<<3)
-#define	U_ANGLE2	(1<<4)
-#define	U_NOLERP	(1<<5)		// don't interpolate movement
-#define	U_FRAME		(1<<6)
-#define U_SIGNAL	(1<<7)		// just differentiates from other updates
-
-// svc_update can pass all of the fast update bits, plus more
-#define	U_ANGLE1		(1<<8)
-#define	U_ANGLE3		(1<<9)
-#define	U_MODEL			(1<<10)
-#define	U_CLEAR_ENT		(1<<11)
-#define U_ENT_OFF       (1<<13)
-#define	U_LONGENTITY	(1<<14)
-#define U_MOREBITS2     (1<<15)
-
-#define	U_SKIN			(1<<16)
-#define	U_EFFECTS		(1<<17)
-#define U_SCALE			(1<<18)
-#define	U_COLORMAP		(1<<19)
-
 #define BE_ON	        (1<<0)
 
 #define	SU_VIEWHEIGHT	(1<<0)

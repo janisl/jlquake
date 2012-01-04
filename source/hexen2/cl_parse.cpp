@@ -390,19 +390,19 @@ void CL_ParseUpdate (int bits)
 		CL_SignonReply ();
 	}
 
-	if (bits & U_MOREBITS)
+	if (bits & H2U_MOREBITS)
 	{
 		i = net_message.ReadByte ();
 		bits |= (i<<8);
 	}
 
-	if (bits & U_MOREBITS2)
+	if (bits & H2U_MOREBITS2)
 	{
 		i = net_message.ReadByte ();
 		bits |= (i<<16);
 	}
 
-	if (bits & U_LONGENTITY)	
+	if (bits & H2U_LONGENTITY)	
 		num = net_message.ReadShort ();
 	else
 		num = net_message.ReadByte ();
@@ -450,7 +450,7 @@ void CL_ParseUpdate (int bits)
 	else
 		set_ent = &dummy;
 
-	if (bits & U_CLEAR_ENT)
+	if (bits & H2U_CLEAR_ENT)
 	{
 		Com_Memset(ent, 0, sizeof(h2entity_t));
 		Com_Memset(ref_ent, 0, sizeof(*ref_ent));
@@ -466,7 +466,7 @@ void CL_ParseUpdate (int bits)
 
 	ent->msgtime = cl.mtime[0];
 	
-	if (bits & U_MODEL)
+	if (bits & H2U_MODEL)
 	{
 		modnum = net_message.ReadShort ();
 		if (modnum >= MAX_MODELS)
@@ -496,17 +496,17 @@ void CL_ParseUpdate (int bits)
 			CLH2_TranslatePlayerSkin (num - 1);
 	}
 	
-	if (bits & U_FRAME)
+	if (bits & H2U_FRAME)
 		set_ent->frame = ent->state.frame = net_message.ReadByte ();
 	else
 		ent->state.frame = ref_ent->frame;
 
-	if (bits & U_COLORMAP)
+	if (bits & H2U_COLORMAP)
 		set_ent->colormap = ent->state.colormap = net_message.ReadByte();
 	else
 		ent->state.colormap = ref_ent->colormap;
 
-	if(bits & U_SKIN)
+	if(bits & H2U_SKIN)
 	{
 		set_ent->skinnum = ent->state.skinnum = net_message.ReadByte();
 		set_ent->drawflags = ent->state.drawflags = net_message.ReadByte();
@@ -517,7 +517,7 @@ void CL_ParseUpdate (int bits)
 		ent->state.drawflags = ref_ent->drawflags;
 	}
 
-	if (bits & U_EFFECTS)
+	if (bits & H2U_EFFECTS)
 	{
 		set_ent->effects = ent->state.effects = net_message.ReadByte();
 //		if (num == 2) fprintf(FH,"Read effects %d\n",set_ent->effects);
@@ -532,7 +532,7 @@ void CL_ParseUpdate (int bits)
 	VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
 	VectorCopy (ent->msg_angles[0], ent->msg_angles[1]);
 
-	if (bits & U_ORIGIN1)
+	if (bits & H2U_ORIGIN1)
 	{
 		set_ent->origin[0] = ent->msg_origins[0][0] = net_message.ReadCoord ();
 		//if (num == 2) fprintf(FH,"Read origin[0] %f\n",set_ent->angles[0]);
@@ -542,30 +542,30 @@ void CL_ParseUpdate (int bits)
 		ent->msg_origins[0][0] = ref_ent->origin[0];
 		//if (num == 2) fprintf(FH,"Restored origin[0] %f\n",ref_ent->angles[0]);
 	}
-	if (bits & U_ANGLE1)
+	if (bits & H2U_ANGLE1)
 		set_ent->angles[0] = ent->msg_angles[0][0] = net_message.ReadAngle();
 	else
 		ent->msg_angles[0][0] = ref_ent->angles[0];
 
-	if (bits & U_ORIGIN2)
+	if (bits & H2U_ORIGIN2)
 		set_ent->origin[1] = ent->msg_origins[0][1] = net_message.ReadCoord ();
 	else
 		ent->msg_origins[0][1] = ref_ent->origin[1];
-	if (bits & U_ANGLE2)
+	if (bits & H2U_ANGLE2)
 		set_ent->angles[1] = ent->msg_angles[0][1] = net_message.ReadAngle();
 	else
 		ent->msg_angles[0][1] = ref_ent->angles[1];
 
-	if (bits & U_ORIGIN3)
+	if (bits & H2U_ORIGIN3)
 		set_ent->origin[2] = ent->msg_origins[0][2] = net_message.ReadCoord ();
 	else
 		ent->msg_origins[0][2] = ref_ent->origin[2];
-	if (bits & U_ANGLE3)
+	if (bits & H2U_ANGLE3)
 		set_ent->angles[2] = ent->msg_angles[0][2] = net_message.ReadAngle();
 	else
 		ent->msg_angles[0][2] = ref_ent->angles[2];
 
-	if(bits&U_SCALE)
+	if(bits&H2U_SCALE)
 	{
 		set_ent->scale = ent->state.scale = net_message.ReadByte();
 		set_ent->abslight = ent->state.abslight = net_message.ReadByte();
@@ -576,7 +576,7 @@ void CL_ParseUpdate (int bits)
 		ent->state.abslight = ref_ent->abslight;
 	}
 
-	if ( bits & U_NOLERP )
+	if ( bits & H2U_NOLERP )
 		forcelink = true;
 
 	if ( forcelink )
@@ -596,59 +596,59 @@ void CL_ParseUpdate2 (int bits)
 {
 	int			i;
 
-	if (bits & U_MOREBITS)
+	if (bits & H2U_MOREBITS)
 	{
 		i = net_message.ReadByte ();
 		bits |= (i<<8);
 	}
 
-	if (bits & U_MOREBITS2)
+	if (bits & H2U_MOREBITS2)
 	{
 		i = net_message.ReadByte ();
 		bits |= (i<<16);
 	}
 
-	if (bits & U_LONGENTITY)	
+	if (bits & H2U_LONGENTITY)	
 		net_message.ReadShort ();
 	else
 		net_message.ReadByte ();
 	
-	if (bits & U_MODEL)
+	if (bits & H2U_MODEL)
 	{
 		net_message.ReadShort ();
 	}
 		
-	if (bits & U_FRAME)
+	if (bits & H2U_FRAME)
 		net_message.ReadByte ();
 
-	if (bits & U_COLORMAP)
+	if (bits & H2U_COLORMAP)
 		net_message.ReadByte();
 
-	if(bits & U_SKIN)
+	if(bits & H2U_SKIN)
 	{
 		net_message.ReadByte();
 		net_message.ReadByte();
 	}
 
-	if (bits & U_EFFECTS)
+	if (bits & H2U_EFFECTS)
 		net_message.ReadByte();
 
-	if (bits & U_ORIGIN1)
+	if (bits & H2U_ORIGIN1)
 		net_message.ReadCoord ();
-	if (bits & U_ANGLE1)
+	if (bits & H2U_ANGLE1)
 		net_message.ReadAngle();
 
-	if (bits & U_ORIGIN2)
+	if (bits & H2U_ORIGIN2)
 		net_message.ReadCoord ();
-	if (bits & U_ANGLE2)
+	if (bits & H2U_ANGLE2)
 		net_message.ReadAngle();
 
-	if (bits & U_ORIGIN3)
+	if (bits & H2U_ORIGIN3)
 		net_message.ReadCoord ();
-	if (bits & U_ANGLE3)
+	if (bits & H2U_ANGLE3)
 		net_message.ReadAngle();
 
-	if(bits&U_SCALE)
+	if(bits&H2U_SCALE)
 	{
 		net_message.ReadByte();
 		net_message.ReadByte();

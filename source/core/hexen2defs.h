@@ -509,3 +509,27 @@ struct hwpacket_entities_t
 #define HWTE_ACID_BALL_FLY			79
 #define HWTE_ACID_BLOB_FLY			80
 #define HWTE_CHAINLIGHTNING			81
+
+// if the high bit of the servercmd is set, the low bits are fast update flags:
+#define H2U_MOREBITS	(1<<0)
+#define H2U_ORIGIN1		(1<<1)
+#define H2U_ORIGIN2		(1<<2)
+#define H2U_ORIGIN3		(1<<3)
+#define H2U_ANGLE2		(1<<4)
+#define H2U_NOLERP		(1<<5)		// don't interpolate movement
+#define H2U_FRAME		(1<<6)
+#define H2U_SIGNAL		(1<<7)		// just differentiates from other updates
+
+// svc_update can pass all of the fast update bits, plus more
+#define H2U_ANGLE1		(1<<8)
+#define H2U_ANGLE3		(1<<9)
+#define H2U_MODEL		(1<<10)
+#define H2U_CLEAR_ENT	(1<<11)
+#define H2U_ENT_OFF		(1<<13)
+#define H2U_LONGENTITY	(1<<14)
+#define H2U_MOREBITS2	(1<<15)
+
+#define H2U_SKIN		(1<<16)
+#define H2U_EFFECTS		(1<<17)
+#define H2U_SCALE		(1<<18)
+#define H2U_COLORMAP	(1<<19)

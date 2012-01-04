@@ -885,55 +885,55 @@ skipA:
 			miss = ent->v.origin[i] - ref_ent->origin[i];
 			if ( miss < -0.1 || miss > 0.1 )
 			{
-				bits |= U_ORIGIN1<<i;
+				bits |= H2U_ORIGIN1<<i;
 				set_ent->origin[i] = ent->v.origin[i];
 			}
 		}
 
 		if ( ent->v.angles[0] != ref_ent->angles[0] )
 		{
-			bits |= U_ANGLE1;
+			bits |= H2U_ANGLE1;
 			set_ent->angles[0] = ent->v.angles[0];
 		}
 			
 		if ( ent->v.angles[1] != ref_ent->angles[1] )
 		{
-			bits |= U_ANGLE2;
+			bits |= H2U_ANGLE2;
 			set_ent->angles[1] = ent->v.angles[1];
 		}
 			
 		if ( ent->v.angles[2] != ref_ent->angles[2] )
 		{
-			bits |= U_ANGLE3;
+			bits |= H2U_ANGLE3;
 			set_ent->angles[2] = ent->v.angles[2];
 		}
 			
 		if (ent->v.movetype == MOVETYPE_STEP)
-			bits |= U_NOLERP;	// don't mess up the step animation
+			bits |= H2U_NOLERP;	// don't mess up the step animation
 	
 		if (ref_ent->colormap != ent->v.colormap)
 		{
-			bits |= U_COLORMAP;
+			bits |= H2U_COLORMAP;
 			set_ent->colormap = ent->v.colormap;
 		}
 			
 		if (ref_ent->skinnum != ent->v.skin
 			|| ref_ent->drawflags != ent->v.drawflags)
 		{
-			bits |= U_SKIN;
+			bits |= H2U_SKIN;
 			set_ent->skinnum = ent->v.skin;
 			set_ent->drawflags = ent->v.drawflags;
 		}
 
 		if (ref_ent->frame != ent->v.frame)
 		{
-			bits |= U_FRAME;
+			bits |= H2U_FRAME;
 			set_ent->frame = ent->v.frame;
 		}
 	
 		if (ref_ent->effects != ent->v.effects)
 		{
-			bits |= U_EFFECTS;
+			bits |= H2U_EFFECTS;
 			set_ent->effects = ent->v.effects;
 		}
 
@@ -954,21 +954,21 @@ skipA:
 
 		if (ref_ent->modelindex != temp_index)
 		{
-			bits |= U_MODEL;
+			bits |= H2U_MODEL;
 			set_ent->modelindex = temp_index;
 		}
 
 		if (ref_ent->scale != ((int)(ent->v.scale*100.0)&255)
 			|| ref_ent->abslight != ((int)(ent->v.abslight*255.0)&255))
 		{
-			bits |= U_SCALE;
+			bits |= H2U_SCALE;
 			set_ent->scale = ((int)(ent->v.scale*100.0)&255);
 			set_ent->abslight = (int)(ent->v.abslight*255.0)&255;
 		}
 
 		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
-			bits |= U_CLEAR_ENT;
+			bits |= H2U_CLEAR_ENT;
 			set_ent->flags |= ENT_CLEARED;
 		}
 
@@ -981,55 +981,55 @@ skipA:
 		}
 
 		if (e >= 256)
-			bits |= U_LONGENTITY;
+			bits |= H2U_LONGENTITY;
 
 		if (bits >= 256)
-			bits |= U_MOREBITS;
+			bits |= H2U_MOREBITS;
 
 		if (bits >= 65536)
-			bits |= U_MOREBITS2;
+			bits |= H2U_MOREBITS2;
 
 	//
 	// write the message
 	//
-		msg->WriteByte(bits | U_SIGNAL);
+		msg->WriteByte(bits | H2U_SIGNAL);
 		
-		if (bits & U_MOREBITS)
+		if (bits & H2U_MOREBITS)
 			msg->WriteByte(bits>>8);
-		if (bits & U_MOREBITS2)
+		if (bits & H2U_MOREBITS2)
 			msg->WriteByte(bits>>16);
 
-		if (bits & U_LONGENTITY)
+		if (bits & H2U_LONGENTITY)
 			msg->WriteShort(e);
 		else
 			msg->WriteByte(e);
 
-		if (bits & U_MODEL)
+		if (bits & H2U_MODEL)
 			msg->WriteShort(temp_index);
-		if (bits & U_FRAME)
+		if (bits & H2U_FRAME)
 			msg->WriteByte(ent->v.frame);
-		if (bits & U_COLORMAP)
+		if (bits & H2U_COLORMAP)
 			msg->WriteByte(ent->v.colormap);
-		if(bits & U_SKIN)
+		if(bits & H2U_SKIN)
 		{ // Used for skin and drawflags
 			msg->WriteByte(ent->v.skin);
 			msg->WriteByte(ent->v.drawflags);
 		}
-		if (bits & U_EFFECTS)
+		if (bits & H2U_EFFECTS)
 			msg->WriteByte(ent->v.effects);
-		if (bits & U_ORIGIN1)
+		if (bits & H2U_ORIGIN1)
 			msg->WriteCoord(ent->v.origin[0]);		
-		if (bits & U_ANGLE1)
+		if (bits & H2U_ANGLE1)
 			msg->WriteAngle(ent->v.angles[0]);
-		if (bits & U_ORIGIN2)
+		if (bits & H2U_ORIGIN2)
 			msg->WriteCoord(ent->v.origin[1]);
-		if (bits & U_ANGLE2)
+		if (bits & H2U_ANGLE2)
 			msg->WriteAngle(ent->v.angles[1]);
-		if (bits & U_ORIGIN3)
+		if (bits & H2U_ORIGIN3)
 			msg->WriteCoord(ent->v.origin[2]);
-		if (bits & U_ANGLE3)
+		if (bits & H2U_ANGLE3)
 			msg->WriteAngle(ent->v.angles[2]);
-		if(bits & U_SCALE)
+		if(bits & H2U_SCALE)
 		{ // Used for scale and abslight
 			msg->WriteByte((int)(ent->v.scale*100.0)&255);
 			msg->WriteByte((int)(ent->v.abslight*255.0)&255);
