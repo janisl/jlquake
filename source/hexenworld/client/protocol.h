@@ -200,36 +200,6 @@
 
 //==============================================
 
-// the first 16 bits of a packetentities update holds 9 bits
-// of entity number and 7 bits of flags
-#define	U_ORIGIN1	(1<<9)
-#define	U_ORIGIN2	(1<<10)
-#define	U_ORIGIN3	(1<<11)
-#define	U_ANGLE2	(1<<12)
-#define	U_FRAME		(1<<13)
-#define	U_REMOVE	(1<<14)		// REMOVE this entity, don't add it
-#define	U_MOREBITS	(1<<15)
-
-// if MOREBITS is set, these additional flags are read in next
-#define	U_ANGLE1	(1<<0)
-#define	U_ANGLE3	(1<<1)
-#define	U_SCALE		(1<<2)	
-#define	U_COLORMAP	(1<<3)
-#define	U_SKIN		(1<<4)
-#define	U_EFFECTS	(1<<5)
-#define	U_MODEL16	(1<<6)		
-#define U_MOREBITS2 (1<<7)	
-
-//if MOREBITS2 is set, then send the 3rd byte
-
-#define	U_MODEL		(1<<16)
-#define U_SOUND		(1<<17)
-#define U_DRAWFLAGS (1<<18)
-#define U_ABSLIGHT  (1<<19)
-
-
-//==============================================
-
 // Bits to help send server info about the client's edict variables
 #define SC1_HEALTH				(1<<0)		// changes stat bar
 #define SC1_LEVEL				(1<<1)		// changes stat bar

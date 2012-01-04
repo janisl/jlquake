@@ -533,3 +533,30 @@ struct hwpacket_entities_t
 #define H2U_EFFECTS		(1<<17)
 #define H2U_SCALE		(1<<18)
 #define H2U_COLORMAP	(1<<19)
+
+// the first 16 bits of a packetentities update holds 9 bits
+// of entity number and 7 bits of flags
+#define HWU_ORIGIN1		(1<<9)
+#define HWU_ORIGIN2		(1<<10)
+#define HWU_ORIGIN3		(1<<11)
+#define HWU_ANGLE2		(1<<12)
+#define HWU_FRAME		(1<<13)
+#define HWU_REMOVE		(1<<14)		// REMOVE this entity, don't add it
+#define HWU_MOREBITS	(1<<15)
+
+// if MOREBITS is set, these additional flags are read in next
+#define HWU_ANGLE1		(1<<0)
+#define HWU_ANGLE3		(1<<1)
+#define HWU_SCALE		(1<<2)	
+#define HWU_COLORMAP	(1<<3)
+#define HWU_SKIN		(1<<4)
+#define HWU_EFFECTS		(1<<5)
+#define HWU_MODEL16		(1<<6)		
+#define HWU_MOREBITS2	(1<<7)	
+
+//if MOREBITS2 is set, then send the 3rd byte
+
+#define HWU_MODEL		(1<<16)
+#define HWU_SOUND		(1<<17)
+#define HWU_DRAWFLAGS	(1<<18)
+#define HWU_ABSLIGHT	(1<<19)

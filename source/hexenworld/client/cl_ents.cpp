@@ -12,33 +12,33 @@ static struct predicted_player {
 	vec3_t origin;	// predicted origin
 } predicted_players[HWMAX_CLIENTS];
 
-#define	U_MODEL		(1<<16)
-#define U_SOUND		(1<<17)
-#define U_DRAWFLAGS (1<<18)
-#define U_ABSLIGHT  (1<<19)
+#define	HWU_MODEL		(1<<16)
+#define HWU_SOUND		(1<<17)
+#define HWU_DRAWFLAGS (1<<18)
+#define HWU_ABSLIGHT  (1<<19)
 
 const char *parsedelta_strings[] =
 {
-	"U_ANGLE1",	//0
-	"U_ANGLE3",	//1
-	"U_SCALE",	//2
-	"U_COLORMAP",//3
-	"U_SKIN",	//4
-	"U_EFFECTS",	//5
-	"U_MODEL16",//6
-	"U_MOREBITS2",			//7 
+	"HWU_ANGLE1",	//0
+	"HWU_ANGLE3",	//1
+	"HWU_SCALE",	//2
+	"HWU_COLORMAP",//3
+	"HWU_SKIN",	//4
+	"HWU_EFFECTS",	//5
+	"HWU_MODEL16",//6
+	"HWU_MOREBITS2",			//7 
 	"",			//8 is unused
-	"U_ORIGIN1",	//9
-	"U_ORIGIN2",	//10
-	"U_ORIGIN3",	//11
-	"U_ANGLE2",	//12
-	"U_FRAME",	//13
-	"U_REMOVE",	//14
-	"U_MOREBITS",//15
-	"U_MODEL",//16
-	"U_SOUND",//17
-	"U_DRAWFLAGS",//18
-	"U_ABSLIGHT"//19
+	"HWU_ORIGIN1",	//9
+	"HWU_ORIGIN2",	//10
+	"HWU_ORIGIN3",	//11
+	"HWU_ANGLE2",	//12
+	"HWU_FRAME",	//13
+	"HWU_REMOVE",	//14
+	"HWU_MOREBITS",//15
+	"HWU_MODEL",//16
+	"HWU_SOUND",//17
+	"HWU_DRAWFLAGS",//18
+	"HWU_ABSLIGHT"//19
 };
 
 /*
@@ -93,13 +93,13 @@ void CL_ParseDelta (h2entity_state_t *from, h2entity_state_t *to, int bits)
 	to->number = bits & 511;
 	bits &= ~511;
 
-	if (bits & U_MOREBITS)
+	if (bits & HWU_MOREBITS)
 	{	// read in the low order bits
 		i = net_message.ReadByte ();
 		bits |= i;
 	}
 
-	if(bits & U_MOREBITS2)
+	if(bits & HWU_MOREBITS2)
 	{
 		i =net_message.ReadByte ();
 		bits |= (i << 16);
@@ -114,9 +114,9 @@ void CL_ParseDelta (h2entity_state_t *from, h2entity_state_t *to, int bits)
 
 	to->flags = bits;
 	
-	if (bits & U_MODEL)
+	if (bits & HWU_MODEL)
 	{
-		if (bits & U_MODEL16)
+		if (bits & HWU_MODEL16)
 		{
 			to->modelindex = net_message.ReadShort ();
 		}
@@ -126,48 +126,48 @@ void CL_ParseDelta (h2entity_state_t *from, h2entity_state_t *to, int bits)
 		}
 	}
 		
-	if (bits & U_FRAME)
+	if (bits & HWU_FRAME)
 		to->frame = net_message.ReadByte ();
 
-	if (bits & U_COLORMAP)
+	if (bits & HWU_COLORMAP)
 		to->colormap = net_message.ReadByte();
 
-	if (bits & U_SKIN)
+	if (bits & HWU_SKIN)
 	{
 		to->skinnum = net_message.ReadByte();
 	}
 
-	if (bits & U_DRAWFLAGS)
+	if (bits & HWU_DRAWFLAGS)
 		to->drawflags = net_message.ReadByte();
 
-	if (bits & U_EFFECTS)
+	if (bits & HWU_EFFECTS)
 		to->effects = net_message.ReadLong();
 
-	if (bits & U_ORIGIN1)
+	if (bits & HWU_ORIGIN1)
 		to->origin[0] = net_message.ReadCoord ();
 		
-	if (bits & U_ANGLE1)
+	if (bits & HWU_ANGLE1)
 		to->angles[0] = net_message.ReadAngle();
 
-	if (bits & U_ORIGIN2)
+	if (bits & HWU_ORIGIN2)
 		to->origin[1] = net_message.ReadCoord ();
 		
-	if (bits & U_ANGLE2)
+	if (bits & HWU_ANGLE2)
 		to->angles[1] = net_message.ReadAngle();
 
-	if (bits & U_ORIGIN3)
+	if (bits & HWU_ORIGIN3)
 		to->origin[2] = net_message.ReadCoord ();
 		
-	if (bits & U_ANGLE3)
+	if (bits & HWU_ANGLE3)
 		to->angles[2] = net_message.ReadAngle();
 
-	if (bits & U_SCALE)
+	if (bits & HWU_SCALE)
 	{
 		to->scale = net_message.ReadByte();
 	}
-	if (bits & U_ABSLIGHT)
+	if (bits & HWU_ABSLIGHT)
 		to->abslight = net_message.ReadByte();
-	if (bits & U_SOUND)
+	if (bits & HWU_SOUND)
 	{
 		i = net_message.ReadShort();
 		S_StartSound(to->origin, to->number, 1, cl.sound_precache[i], 1.0, 1.0);
@@ -313,12 +313,12 @@ void CL_ParsePacketEntities (qboolean delta)
 		if (newnum < oldnum)
 		{	// new from baseline
 //Con_Printf ("baseline %i\n", newnum);
-			if (word & U_REMOVE)
+			if (word & HWU_REMOVE)
 			{
 				if (full)
 				{
 					cl.validsequence = 0;
-					Con_Printf ("WARNING: U_REMOVE on full update\n");
+					Con_Printf ("WARNING: HWU_REMOVE on full update\n");
 					FlushEntityPacket ();
 					return;
 				}
@@ -338,7 +338,7 @@ void CL_ParsePacketEntities (qboolean delta)
 				cl.validsequence = 0;
 				Con_Printf ("WARNING: delta on full update");
 			}
-			if (word & U_REMOVE)
+			if (word & HWU_REMOVE)
 			{
 				oldindex++;
 				continue;

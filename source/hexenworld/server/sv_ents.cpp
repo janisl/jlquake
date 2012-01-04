@@ -283,34 +283,34 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 	{
 		miss = to->origin[i] - from->origin[i];
 		if ( miss < -0.1 || miss > 0.1 )
-			bits |= U_ORIGIN1<<i;
+			bits |= HWU_ORIGIN1<<i;
 	}
 
 	if ( to->angles[0] != from->angles[0] )
-		bits |= U_ANGLE1;
+		bits |= HWU_ANGLE1;
 		
 	if ( to->angles[1] != from->angles[1] )
-		bits |= U_ANGLE2;
+		bits |= HWU_ANGLE2;
 		
 	if ( to->angles[2] != from->angles[2] )
-		bits |= U_ANGLE3;
+		bits |= HWU_ANGLE3;
 		
 	if ( to->colormap != from->colormap )
-		bits |= U_COLORMAP;
+		bits |= HWU_COLORMAP;
 		
 	if ( to->skinnum != from->skinnum)
 	{
-		bits |= U_SKIN;
+		bits |= HWU_SKIN;
 	}
 
 	if (to->drawflags != from->drawflags)
-		bits |= U_DRAWFLAGS;
+		bits |= HWU_DRAWFLAGS;
 
 	if ( to->frame != from->frame )
-		bits |= U_FRAME;
+		bits |= HWU_FRAME;
 	
 	if ( to->effects != from->effects )
-		bits |= U_EFFECTS;
+		bits |= HWU_EFFECTS;
 
 	temp_index = to->modelindex;
 	if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
@@ -329,33 +329,33 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 
 	if (temp_index != from->modelindex )
 	{
-		bits |= U_MODEL;
+		bits |= HWU_MODEL;
 		if (temp_index > 255)
 		{
-			bits |= U_MODEL16;
+			bits |= HWU_MODEL16;
 		}
 	}
 
 	if (to->scale != from->scale)
 	{
-		bits |= U_SCALE;
+		bits |= HWU_SCALE;
 	}
 
 	if (to->abslight != from->abslight)
 	{
-		bits |= U_ABSLIGHT;
+		bits |= HWU_ABSLIGHT;
 	}
 
 	if(to->wpn_sound)
 	{	//not delta'ed, sound gets cleared after send 
-		bits |= U_SOUND;
+		bits |= HWU_SOUND;
 	}
 
 	if (bits & 0xff0000)
-		bits |= U_MOREBITS2;
+		bits |= HWU_MOREBITS2;
 
 	if (bits & 511)
-		bits |= U_MOREBITS;
+		bits |= HWU_MOREBITS;
 
 	//
 	// write the message
@@ -368,17 +368,17 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 	if (!bits && !force)
 		return;		// nothing to send!
 	i = to->number | (bits&~511);
-	if (i & U_REMOVE)
-		Sys_Error ("U_REMOVE");
+	if (i & HWU_REMOVE)
+		Sys_Error ("HWU_REMOVE");
 	msg->WriteShort(i & 0xffff);
 	
-	if (bits & U_MOREBITS)
+	if (bits & HWU_MOREBITS)
 		msg->WriteByte(bits&255);
-	if (bits & U_MOREBITS2)
+	if (bits & HWU_MOREBITS2)
 		msg->WriteByte((bits >> 16) & 0xff);
-	if (bits & U_MODEL)
+	if (bits & HWU_MODEL)
 	{
-		if (bits & U_MODEL16)
+		if (bits & HWU_MODEL16)
 		{
 			msg->WriteShort(temp_index);
 		}
@@ -387,33 +387,33 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 			msg->WriteByte(temp_index);
 		}
 	}
-	if (bits & U_FRAME)
+	if (bits & HWU_FRAME)
 		msg->WriteByte(to->frame);
-	if (bits & U_COLORMAP)
+	if (bits & HWU_COLORMAP)
 		msg->WriteByte(to->colormap);
-	if (bits & U_SKIN)
+	if (bits & HWU_SKIN)
 		msg->WriteByte(to->skinnum);
-	if (bits & U_DRAWFLAGS)
+	if (bits & HWU_DRAWFLAGS)
 		msg->WriteByte(to->drawflags);
-	if (bits & U_EFFECTS)
+	if (bits & HWU_EFFECTS)
 		msg->WriteLong(to->effects);
-	if (bits & U_ORIGIN1)
+	if (bits & HWU_ORIGIN1)
 		msg->WriteCoord(to->origin[0]);		
-	if (bits & U_ANGLE1)
+	if (bits & HWU_ANGLE1)
 		msg->WriteAngle(to->angles[0]);
-	if (bits & U_ORIGIN2)
+	if (bits & HWU_ORIGIN2)
 		msg->WriteCoord(to->origin[1]);
-	if (bits & U_ANGLE2)
+	if (bits & HWU_ANGLE2)
 		msg->WriteAngle(to->angles[1]);
-	if (bits & U_ORIGIN3)
+	if (bits & HWU_ORIGIN3)
 		msg->WriteCoord(to->origin[2]);
-	if (bits & U_ANGLE3)
+	if (bits & HWU_ANGLE3)
 		msg->WriteAngle(to->angles[2]);
-	if (bits & U_SCALE)
+	if (bits & HWU_SCALE)
 		msg->WriteByte(to->scale);
-	if (bits & U_ABSLIGHT)
+	if (bits & HWU_ABSLIGHT)
 		msg->WriteByte(to->abslight);
-	if (bits & U_SOUND)
+	if (bits & HWU_SOUND)
 		msg->WriteShort(to->wpn_sound);
 }
 
@@ -482,7 +482,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 		if (newnum > oldnum)
 		{	// the old entity isn't present in the new message
 //Con_Printf ("remove %i\n", oldnum);
-			msg->WriteShort(oldnum | U_REMOVE);
+			msg->WriteShort(oldnum | HWU_REMOVE);
 			oldindex++;
 			continue;
 		}
