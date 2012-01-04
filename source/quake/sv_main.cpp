@@ -474,75 +474,75 @@ void SV_WriteEntitiesToClient (edict_t	*clent, QMsg *msg)
 		{
 			miss = ent->v.origin[i] - ent->baseline.origin[i];
 			if ( miss < -0.1 || miss > 0.1 )
-				bits |= U_ORIGIN1<<i;
+				bits |= Q1U_ORIGIN1<<i;
 		}
 
 		if ( ent->v.angles[0] != ent->baseline.angles[0] )
-			bits |= U_ANGLE1;
+			bits |= Q1U_ANGLE1;
 			
 		if ( ent->v.angles[1] != ent->baseline.angles[1] )
-			bits |= U_ANGLE2;
+			bits |= Q1U_ANGLE2;
 			
 		if ( ent->v.angles[2] != ent->baseline.angles[2] )
-			bits |= U_ANGLE3;
+			bits |= Q1U_ANGLE3;
 			
 		if (ent->v.movetype == MOVETYPE_STEP)
-			bits |= U_NOLERP;	// don't mess up the step animation
+			bits |= Q1U_NOLERP;	// don't mess up the step animation
 	
 		if (ent->baseline.colormap != ent->v.colormap)
-			bits |= U_COLORMAP;
+			bits |= Q1U_COLORMAP;
 			
 		if (ent->baseline.skinnum != ent->v.skin)
-			bits |= U_SKIN;
+			bits |= Q1U_SKIN;
 			
 		if (ent->baseline.frame != ent->v.frame)
-			bits |= U_FRAME;
+			bits |= Q1U_FRAME;
 		
 		if (ent->baseline.effects != ent->v.effects)
-			bits |= U_EFFECTS;
+			bits |= Q1U_EFFECTS;
 		
 		if (ent->baseline.modelindex != ent->v.modelindex)
-			bits |= U_MODEL;
+			bits |= Q1U_MODEL;
 
 		if (e >= 256)
-			bits |= U_LONGENTITY;
+			bits |= Q1U_LONGENTITY;
 			
 		if (bits >= 256)
-			bits |= U_MOREBITS;
+			bits |= Q1U_MOREBITS;
 
 	//
 	// write the message
 	//
-		msg->WriteByte(bits | U_SIGNAL);
+		msg->WriteByte(bits | Q1U_SIGNAL);
 		
-		if (bits & U_MOREBITS)
+		if (bits & Q1U_MOREBITS)
 			msg->WriteByte(bits>>8);
-		if (bits & U_LONGENTITY)
+		if (bits & Q1U_LONGENTITY)
 			msg->WriteShort(e);
 		else
 			msg->WriteByte(e);
 
-		if (bits & U_MODEL)
+		if (bits & Q1U_MODEL)
 			msg->WriteByte(ent->v.modelindex);
-		if (bits & U_FRAME)
+		if (bits & Q1U_FRAME)
 			msg->WriteByte(ent->v.frame);
-		if (bits & U_COLORMAP)
+		if (bits & Q1U_COLORMAP)
 			msg->WriteByte(ent->v.colormap);
-		if (bits & U_SKIN)
+		if (bits & Q1U_SKIN)
 			msg->WriteByte(ent->v.skin);
-		if (bits & U_EFFECTS)
+		if (bits & Q1U_EFFECTS)
 			msg->WriteByte(ent->v.effects);
-		if (bits & U_ORIGIN1)
+		if (bits & Q1U_ORIGIN1)
 			msg->WriteCoord(ent->v.origin[0]);		
-		if (bits & U_ANGLE1)
+		if (bits & Q1U_ANGLE1)
 			msg->WriteAngle(ent->v.angles[0]);
-		if (bits & U_ORIGIN2)
+		if (bits & Q1U_ORIGIN2)
 			msg->WriteCoord(ent->v.origin[1]);
-		if (bits & U_ANGLE2)
+		if (bits & Q1U_ANGLE2)
 			msg->WriteAngle(ent->v.angles[1]);
-		if (bits & U_ORIGIN3)
+		if (bits & Q1U_ORIGIN3)
 			msg->WriteCoord(ent->v.origin[2]);
-		if (bits & U_ANGLE3)
+		if (bits & Q1U_ANGLE3)
 			msg->WriteAngle(ent->v.angles[2]);
 	}
 }

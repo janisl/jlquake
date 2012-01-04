@@ -99,3 +99,22 @@ struct qwpacket_entities_t
 #define UPDATE_BACKUP_QW	64	// copies of entity_state_t to keep buffered
 							// must be power of two
 #define UPDATE_MASK_QW		(UPDATE_BACKUP_QW - 1)
+
+// if the high bit of the servercmd is set, the low bits are fast update flags:
+#define Q1U_MOREBITS	(1<<0)
+#define Q1U_ORIGIN1		(1<<1)
+#define Q1U_ORIGIN2		(1<<2)
+#define Q1U_ORIGIN3		(1<<3)
+#define Q1U_ANGLE2		(1<<4)
+#define Q1U_NOLERP		(1<<5)		// don't interpolate movement
+#define Q1U_FRAME		(1<<6)
+#define Q1U_SIGNAL		(1<<7)		// just differentiates from other updates
+
+// svc_update can pass all of the fast update bits, plus more
+#define Q1U_ANGLE1		(1<<8)
+#define Q1U_ANGLE3		(1<<9)
+#define Q1U_MODEL		(1<<10)
+#define Q1U_COLORMAP	(1<<11)
+#define Q1U_SKIN		(1<<12)
+#define Q1U_EFFECTS		(1<<13)
+#define Q1U_LONGENTITY	(1<<14)

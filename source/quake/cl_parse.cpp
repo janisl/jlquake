@@ -345,13 +345,13 @@ void CL_ParseUpdate (int bits)
 		CL_SignonReply ();
 	}
 
-	if (bits & U_MOREBITS)
+	if (bits & Q1U_MOREBITS)
 	{
 		i = net_message.ReadByte ();
 		bits |= (i<<8);
 	}
 
-	if (bits & U_LONGENTITY)	
+	if (bits & Q1U_LONGENTITY)	
 		num = net_message.ReadShort ();
 	else
 		num = net_message.ReadByte ();
@@ -370,7 +370,7 @@ if (bits&(1<<i))
 
 	ent->msgtime = cl.mtime[0];
 	
-	if (bits & U_MODEL)
+	if (bits & Q1U_MODEL)
 	{
 		modnum = net_message.ReadByte ();
 		if (modnum >= MAX_MODELS)
@@ -398,12 +398,12 @@ if (bits&(1<<i))
 			R_TranslatePlayerSkin (num - 1);
 	}
 	
-	if (bits & U_FRAME)
+	if (bits & Q1U_FRAME)
 		ent->state.frame = net_message.ReadByte ();
 	else
 		ent->state.frame = baseline.frame;
 
-	if (bits & U_COLORMAP)
+	if (bits & Q1U_COLORMAP)
 		i = net_message.ReadByte();
 	else
 		i = baseline.colormap;
@@ -411,7 +411,7 @@ if (bits&(1<<i))
 		Sys_Error ("i >= cl.maxclients");
 	ent->state.colormap = i;
 
-	if (bits & U_SKIN)
+	if (bits & Q1U_SKIN)
 		skin = net_message.ReadByte();
 	else
 		skin = baseline.skinnum;
@@ -421,7 +421,7 @@ if (bits&(1<<i))
 			R_TranslatePlayerSkin (num - 1);
 	}
 
-	if (bits & U_EFFECTS)
+	if (bits & Q1U_EFFECTS)
 		ent->state.effects = net_message.ReadByte();
 	else
 		ent->state.effects = baseline.effects;
@@ -430,34 +430,34 @@ if (bits&(1<<i))
 	VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
 	VectorCopy (ent->msg_angles[0], ent->msg_angles[1]);
 
-	if (bits & U_ORIGIN1)
+	if (bits & Q1U_ORIGIN1)
 		ent->msg_origins[0][0] = net_message.ReadCoord ();
 	else
 		ent->msg_origins[0][0] = baseline.origin[0];
-	if (bits & U_ANGLE1)
+	if (bits & Q1U_ANGLE1)
 		ent->msg_angles[0][0] = net_message.ReadAngle();
 	else
 		ent->msg_angles[0][0] = baseline.angles[0];
 
-	if (bits & U_ORIGIN2)
+	if (bits & Q1U_ORIGIN2)
 		ent->msg_origins[0][1] = net_message.ReadCoord ();
 	else
 		ent->msg_origins[0][1] = baseline.origin[1];
-	if (bits & U_ANGLE2)
+	if (bits & Q1U_ANGLE2)
 		ent->msg_angles[0][1] = net_message.ReadAngle();
 	else
 		ent->msg_angles[0][1] = baseline.angles[1];
 
-	if (bits & U_ORIGIN3)
+	if (bits & Q1U_ORIGIN3)
 		ent->msg_origins[0][2] = net_message.ReadCoord ();
 	else
 		ent->msg_origins[0][2] = baseline.origin[2];
-	if (bits & U_ANGLE3)
+	if (bits & Q1U_ANGLE3)
 		ent->msg_angles[0][2] = net_message.ReadAngle();
 	else
 		ent->msg_angles[0][2] = baseline.angles[2];
 
-	if ( bits & U_NOLERP )
+	if ( bits & Q1U_NOLERP )
 		forcelink = true;
 
 	if ( forcelink )
@@ -652,7 +652,7 @@ void CL_ParseServerMessage (void)
 		}
 
 	// if the high bit of the command byte is set, it is a fast update
-		if (cmd & 128)
+		if (cmd & Q1U_SIGNAL)
 		{
 			SHOWNET("fast update");
 			CL_ParseUpdate (cmd&127);
