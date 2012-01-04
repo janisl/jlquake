@@ -118,3 +118,22 @@ struct qwpacket_entities_t
 #define Q1U_SKIN		(1<<12)
 #define Q1U_EFFECTS		(1<<13)
 #define Q1U_LONGENTITY	(1<<14)
+
+// the first 16 bits of a packetentities update holds 9 bits
+// of entity number and 7 bits of flags
+#define QWU_ORIGIN1		(1<<9)
+#define QWU_ORIGIN2		(1<<10)
+#define QWU_ORIGIN3		(1<<11)
+#define QWU_ANGLE2		(1<<12)
+#define QWU_FRAME		(1<<13)
+#define QWU_REMOVE		(1<<14)		// REMOVE this entity, don't add it
+#define QWU_MOREBITS	(1<<15)
+
+// if MOREBITS is set, these additional flags are read in next
+#define QWU_ANGLE1		(1<<0)
+#define QWU_ANGLE3		(1<<1)
+#define QWU_MODEL		(1<<2)
+#define QWU_COLORMAP	(1<<3)
+#define QWU_SKIN		(1<<4)
+#define QWU_EFFECTS		(1<<5)
+#define QWU_SOLID		(1<<6)		// the entity should be solid for prediction

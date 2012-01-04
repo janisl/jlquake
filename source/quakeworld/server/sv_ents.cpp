@@ -158,38 +158,38 @@ void SV_WriteDelta (q1entity_state_t *from, q1entity_state_t *to, QMsg *msg, qbo
 	{
 		miss = to->origin[i] - from->origin[i];
 		if ( miss < -0.1 || miss > 0.1 )
-			bits |= U_ORIGIN1<<i;
+			bits |= QWU_ORIGIN1<<i;
 	}
 
 	if ( to->angles[0] != from->angles[0] )
-		bits |= U_ANGLE1;
+		bits |= QWU_ANGLE1;
 		
 	if ( to->angles[1] != from->angles[1] )
-		bits |= U_ANGLE2;
+		bits |= QWU_ANGLE2;
 		
 	if ( to->angles[2] != from->angles[2] )
-		bits |= U_ANGLE3;
+		bits |= QWU_ANGLE3;
 		
 	if ( to->colormap != from->colormap )
-		bits |= U_COLORMAP;
+		bits |= QWU_COLORMAP;
 		
 	if ( to->skinnum != from->skinnum )
-		bits |= U_SKIN;
+		bits |= QWU_SKIN;
 		
 	if ( to->frame != from->frame )
-		bits |= U_FRAME;
+		bits |= QWU_FRAME;
 	
 	if ( to->effects != from->effects )
-		bits |= U_EFFECTS;
+		bits |= QWU_EFFECTS;
 	
 	if ( to->modelindex != from->modelindex )
-		bits |= U_MODEL;
+		bits |= QWU_MODEL;
 
 	if (bits & 511)
-		bits |= U_MOREBITS;
+		bits |= QWU_MOREBITS;
 
-	if (to->flags & U_SOLID)
-		bits |= U_SOLID;
+	if (to->flags & QWU_SOLID)
+		bits |= QWU_SOLID;
 
 	//
 	// write the message
@@ -202,33 +202,33 @@ void SV_WriteDelta (q1entity_state_t *from, q1entity_state_t *to, QMsg *msg, qbo
 	if (!bits && !force)
 		return;		// nothing to send!
 	i = to->number | (bits&~511);
-	if (i & U_REMOVE)
-		Sys_Error ("U_REMOVE");
+	if (i & QWU_REMOVE)
+		Sys_Error ("QWU_REMOVE");
 	msg->WriteShort(i);
 	
-	if (bits & U_MOREBITS)
+	if (bits & QWU_MOREBITS)
 		msg->WriteByte(bits&255);
-	if (bits & U_MODEL)
+	if (bits & QWU_MODEL)
 		msg->WriteByte(to->modelindex);
-	if (bits & U_FRAME)
+	if (bits & QWU_FRAME)
 		msg->WriteByte(to->frame);
-	if (bits & U_COLORMAP)
+	if (bits & QWU_COLORMAP)
 		msg->WriteByte(to->colormap);
-	if (bits & U_SKIN)
+	if (bits & QWU_SKIN)
 		msg->WriteByte(to->skinnum);
-	if (bits & U_EFFECTS)
+	if (bits & QWU_EFFECTS)
 		msg->WriteByte(to->effects);
-	if (bits & U_ORIGIN1)
+	if (bits & QWU_ORIGIN1)
 		msg->WriteCoord(to->origin[0]);		
-	if (bits & U_ANGLE1)
+	if (bits & QWU_ANGLE1)
 		msg->WriteAngle(to->angles[0]);
-	if (bits & U_ORIGIN2)
+	if (bits & QWU_ORIGIN2)
 		msg->WriteCoord(to->origin[1]);
-	if (bits & U_ANGLE2)
+	if (bits & QWU_ANGLE2)
 		msg->WriteAngle(to->angles[1]);
-	if (bits & U_ORIGIN3)
+	if (bits & QWU_ORIGIN3)
 		msg->WriteCoord(to->origin[2]);
-	if (bits & U_ANGLE3)
+	if (bits & QWU_ANGLE3)
 		msg->WriteAngle(to->angles[2]);
 }
 
@@ -297,7 +297,7 @@ void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg
 		if (newnum > oldnum)
 		{	// the old entity isn't present in the new message
 //Con_Printf ("remove %i\n", oldnum);
-			msg->WriteShort(oldnum | U_REMOVE);
+			msg->WriteShort(oldnum | QWU_REMOVE);
 			oldindex++;
 			continue;
 		}

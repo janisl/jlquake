@@ -56,7 +56,7 @@ void CL_ParseDelta (q1entity_state_t *from, q1entity_state_t *to, int bits)
 	to->number = bits & 511;
 	bits &= ~511;
 
-	if (bits & U_MOREBITS)
+	if (bits & QWU_MOREBITS)
 	{	// read in the low order bits
 		i = net_message.ReadByte ();
 		bits |= i;
@@ -69,40 +69,40 @@ void CL_ParseDelta (q1entity_state_t *from, q1entity_state_t *to, int bits)
 
 	to->flags = bits;
 	
-	if (bits & U_MODEL)
+	if (bits & QWU_MODEL)
 		to->modelindex = net_message.ReadByte ();
 		
-	if (bits & U_FRAME)
+	if (bits & QWU_FRAME)
 		to->frame = net_message.ReadByte ();
 
-	if (bits & U_COLORMAP)
+	if (bits & QWU_COLORMAP)
 		to->colormap = net_message.ReadByte();
 
-	if (bits & U_SKIN)
+	if (bits & QWU_SKIN)
 		to->skinnum = net_message.ReadByte();
 
-	if (bits & U_EFFECTS)
+	if (bits & QWU_EFFECTS)
 		to->effects = net_message.ReadByte();
 
-	if (bits & U_ORIGIN1)
+	if (bits & QWU_ORIGIN1)
 		to->origin[0] = net_message.ReadCoord ();
 		
-	if (bits & U_ANGLE1)
+	if (bits & QWU_ANGLE1)
 		to->angles[0] = net_message.ReadAngle();
 
-	if (bits & U_ORIGIN2)
+	if (bits & QWU_ORIGIN2)
 		to->origin[1] = net_message.ReadCoord ();
 		
-	if (bits & U_ANGLE2)
+	if (bits & QWU_ANGLE2)
 		to->angles[1] = net_message.ReadAngle();
 
-	if (bits & U_ORIGIN3)
+	if (bits & QWU_ORIGIN3)
 		to->origin[2] = net_message.ReadCoord ();
 		
-	if (bits & U_ANGLE3)
+	if (bits & QWU_ANGLE3)
 		to->angles[2] = net_message.ReadAngle();
 
-	if (bits & U_SOLID)
+	if (bits & QWU_SOLID)
 	{
 		// FIXME
 	}
@@ -246,12 +246,12 @@ void CL_ParsePacketEntities (qboolean delta)
 		if (newnum < oldnum)
 		{	// new from baseline
 //Con_Printf ("baseline %i\n", newnum);
-			if (word & U_REMOVE)
+			if (word & QWU_REMOVE)
 			{
 				if (full)
 				{
 					cl.validsequence = 0;
-					Con_Printf ("WARNING: U_REMOVE on full update\n");
+					Con_Printf ("WARNING: QWU_REMOVE on full update\n");
 					FlushEntityPacket ();
 					return;
 				}
@@ -271,7 +271,7 @@ void CL_ParsePacketEntities (qboolean delta)
 				cl.validsequence = 0;
 				Con_Printf ("WARNING: delta on full update");
 			}
-			if (word & U_REMOVE)
+			if (word & QWU_REMOVE)
 			{
 				oldindex++;
 				continue;

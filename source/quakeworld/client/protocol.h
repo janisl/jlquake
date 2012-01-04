@@ -179,27 +179,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //==============================================
 
-// the first 16 bits of a packetentities update holds 9 bits
-// of entity number and 7 bits of flags
-#define	U_ORIGIN1	(1<<9)
-#define	U_ORIGIN2	(1<<10)
-#define	U_ORIGIN3	(1<<11)
-#define	U_ANGLE2	(1<<12)
-#define	U_FRAME		(1<<13)
-#define	U_REMOVE	(1<<14)		// REMOVE this entity, don't add it
-#define	U_MOREBITS	(1<<15)
-
-// if MOREBITS is set, these additional flags are read in next
-#define	U_ANGLE1	(1<<0)
-#define	U_ANGLE3	(1<<1)
-#define	U_MODEL		(1<<2)
-#define	U_COLORMAP	(1<<3)
-#define	U_SKIN		(1<<4)
-#define	U_EFFECTS	(1<<5)
-#define	U_SOLID		(1<<6)		// the entity should be solid for prediction
-
-//==============================================
-
 // a sound with no channel is a local only sound
 // the sound field has bits 0-2: channel, 3-12: entity
 #define	SND_VOLUME		(1<<15)		// a byte
