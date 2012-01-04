@@ -50,6 +50,8 @@ int color_offsets[MAX_PLAYER_CLASS] =
 	2 * 14 * 256
 };
 
+int bitcounts[32];	/// just for protocol profiling
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------

@@ -329,8 +329,6 @@ If an entities model or origin changes from frame to frame, it must be
 relinked.  Other attributes can change without relinking.
 ==================
 */
-int	bitcounts[16];
-
 void CL_ParseUpdate (int bits)
 {
 	int			i;

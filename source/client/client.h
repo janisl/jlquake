@@ -106,6 +106,8 @@ extern clientActiveCommon_t* cl_common;
 extern clientConnectionCommon_t* clc_common;
 extern clientStaticCommon_t* cls_common;
 
+extern int bitcounts[32];
+
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 
 float frand();	// 0 to 1

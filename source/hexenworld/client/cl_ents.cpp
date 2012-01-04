@@ -83,7 +83,6 @@ static void ShowNetParseDelta(int x)
 	Con_Printf("\n");
 }
 
-int	bitcounts[32];	/// just for protocol profiling
 void CL_ParseDelta (h2entity_state_t *from, h2entity_state_t *to, int bits)
 {
 	int			i;
