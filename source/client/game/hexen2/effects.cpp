@@ -3222,10 +3222,10 @@ static void CLH2_UpdateEffectRiderDeath(int index, float frametime)
 		CLH2_RiderParticles(0, org);
 		if (cl_common->h2_Effects[index].RD.stage == 7) 
 		{
-			cl_common->cshifts[CSHIFT_BONUS].destcolor[0] = 255;
-			cl_common->cshifts[CSHIFT_BONUS].destcolor[1] = 255;
-			cl_common->cshifts[CSHIFT_BONUS].destcolor[2] = 255;
-			cl_common->cshifts[CSHIFT_BONUS].percent = 256;
+			cl_common->qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;
+			cl_common->qh_cshifts[CSHIFT_BONUS].destcolor[1] = 255;
+			cl_common->qh_cshifts[CSHIFT_BONUS].destcolor[2] = 255;
+			cl_common->qh_cshifts[CSHIFT_BONUS].percent = 256;
 		}
 		else if (cl_common->h2_Effects[index].RD.stage > 13) 
 		{

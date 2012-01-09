@@ -517,7 +517,7 @@ void CL_Record_f (void)
 
 // spawnstatic
 
-	for (i = 0; i < cl.num_statics; i++) {
+	for (i = 0; i < cl.qh_num_statics; i++) {
 		ent = clq1_static_entities + i;
 
 		buf.WriteByte(q1svc_spawnstatic);

@@ -65,11 +65,11 @@ struct clientActiveCommon_t
 	int viewentity;			// cl_entitites[cl.viewentity] = player
 
 	//	Only for Quake and Hexen 2
-	cshift_t cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
-	cshift_t prev_cshifts[NUM_CSHIFTS];	// and content types
+	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
+	cshift_t qh_prev_cshifts[NUM_CSHIFTS];	// and content types
 
-	int num_entities;	// held in cl_entities array
-	int num_statics;	// held in cl_staticentities array
+	int qh_num_entities;	// held in cl_entities array
+	int qh_num_statics;		// held in cl_staticentities array
 
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 

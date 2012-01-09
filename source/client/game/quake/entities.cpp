@@ -26,16 +26,16 @@ q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 //	This error checks and tracks the total number of entities
 q1entity_t* CLQ1_EntityNum(int number)
 {
-	if (number >= cl_common->num_entities)
+	if (number >= cl_common->qh_num_entities)
 	{
 		if (number >= MAX_EDICTS_Q1)
 		{
 			throw DropException(va("CLQ1_EntityNum: %i is an invalid number", number));
 		}
-		while (cl_common->num_entities <= number)
+		while (cl_common->qh_num_entities <= number)
 		{
-			clq1_entities[cl_common->num_entities].state.colormap = 0;
-			cl_common->num_entities++;
+			clq1_entities[cl_common->qh_num_entities].state.colormap = 0;
+			cl_common->qh_num_entities++;
 		}
 	}
 	return &clq1_entities[number];
@@ -67,13 +67,13 @@ void CLQ1_ParseSpawnBaseline(QMsg& message)
 
 void CLQ1_ParseSpawnStatic(QMsg& message)
 {
-	int i = cl_common->num_statics;
+	int i = cl_common->qh_num_statics;
 	if (i >= MAX_STATIC_ENTITIES_Q1)
 	{
 		throw DropException("Too many static entities");
 	}
 	q1entity_t* ent = &clq1_static_entities[i];
-	cl_common->num_statics++;
+	cl_common->qh_num_statics++;
 
 	CLQ1_ParseBaseline(message, &ent->state);
 	ent->state.colormap = 0;

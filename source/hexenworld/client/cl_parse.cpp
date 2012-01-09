@@ -650,11 +650,11 @@ void CL_ParseStatic (void)
 
 	CL_ParseBaseline (&es);
 		
-	i = cl.num_statics;
+	i = cl.qh_num_statics;
 	if (i >= MAX_STATIC_ENTITIES_H2)
 		Host_EndGame ("Too many static entities");
 	ent = &h2cl_static_entities[i];
-	cl.num_statics++;
+	cl.qh_num_statics++;
 
 // copy it to the current state
 	ent->state.modelindex = es.modelindex;

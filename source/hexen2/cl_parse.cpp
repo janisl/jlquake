@@ -92,13 +92,13 @@ This error checks and tracks the total number of entities
 */
 h2entity_t	*CL_EntityNum (int num)
 {
-	if (num >= cl.num_entities)
+	if (num >= cl.qh_num_entities)
 	{
 		if (num >= MAX_EDICTS_H2)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
-		while (cl.num_entities<=num)
+		while (cl.qh_num_entities<=num)
 		{
-			cl.num_entities++;
+			cl.qh_num_entities++;
 		}
 	}
 		
@@ -905,11 +905,11 @@ void CL_ParseStatic (void)
 	h2entity_state_t baseline;
 	int		i;
 		
-	i = cl.num_statics;
+	i = cl.qh_num_statics;
 	if (i >= MAX_STATIC_ENTITIES_H2)
 		Host_Error ("Too many static entities");
 	ent = &h2cl_static_entities[i];
-	cl.num_statics++;
+	cl.qh_num_statics++;
 	CL_ParseBaseline (&baseline);
 
 // copy it to the current state
@@ -1401,7 +1401,7 @@ void CL_ParseServerMessage (void)
 					if (cl.reference_frame >= 1 && cl.reference_frame <= MAX_FRAMES)
 					{
 						RemovePlace = OrigPlace = NewPlace = AddedIndex = 0;
-						for(i=0;i<cl.num_entities;i++)
+						for(i=0;i<cl.qh_num_entities;i++)
 						{
 							if (RemovePlace >= cl.NumToRemove || cl.RemoveList[RemovePlace] != i)
 							{
@@ -1440,7 +1440,7 @@ void CL_ParseServerMessage (void)
 					cl.need_build = 0;
 				}
 
-				for (i = 1; i < cl.num_entities; i++)
+				for (i = 1; i < cl.qh_num_entities; i++)
 				{
 					clh2_baselines[i].flags &= ~BE_ON;
 				}

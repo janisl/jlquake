@@ -286,29 +286,29 @@ void V_ParseDamage (void)
 
 	cl.faceanimtime = cl.serverTimeFloat + 0.2;		// but sbar face into pain frame
 
-	cl.cshifts[CSHIFT_DAMAGE].percent += 3*count;
-	if (cl.cshifts[CSHIFT_DAMAGE].percent < 0)
-		cl.cshifts[CSHIFT_DAMAGE].percent = 0;
-	if (cl.cshifts[CSHIFT_DAMAGE].percent > 150)
-		cl.cshifts[CSHIFT_DAMAGE].percent = 150;
+	cl.qh_cshifts[CSHIFT_DAMAGE].percent += 3*count;
+	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent < 0)
+		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 0;
+	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent > 150)
+		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 150;
 
 	if (armor > blood)		
 	{
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 200;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 100;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[2] = 100;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[0] = 200;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[1] = 100;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[2] = 100;
 	}
 	else if (armor)
 	{
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 220;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 50;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[2] = 50;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[0] = 220;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[1] = 50;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[2] = 50;
 	}
 	else
 	{
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 255;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[2] = 0;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[0] = 255;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[2] = 0;
 	}
 
 //
@@ -352,10 +352,10 @@ When you run over an item, the server sends this command
 */
 static void V_BonusFlash_f (void)
 {
-	cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
-	cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
-	cl.cshifts[CSHIFT_BONUS].destcolor[2] = 69;
-	cl.cshifts[CSHIFT_BONUS].percent = 50;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 215;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 186;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[2] = 69;
+	cl.qh_cshifts[CSHIFT_BONUS].percent = 50;
 }
 
 /*
@@ -368,24 +368,24 @@ Underwater, lava, etc each has a color shift
 static void V_SetContentsColor (int contents)
 {
 	if (!v_contentblend->value) {
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		return;
 	}
 
 	switch (contents)
 	{
 	case BSP29CONTENTS_EMPTY:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		break;
 	case BSP29CONTENTS_LAVA:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_lava;
 		break;
 	case BSP29CONTENTS_SOLID:
 	case BSP29CONTENTS_SLIME:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_slime;
 		break;
 	default:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_water;
 	}
 }
 
@@ -398,34 +398,34 @@ static void V_CalcPowerupCshift (void)
 {
 	if (cl.stats[STAT_ITEMS] & IT_QUAD)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
-		cl.cshifts[CSHIFT_POWERUP].percent = 30;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
 	}
 	else if (cl.stats[STAT_ITEMS] & IT_SUIT)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-		cl.cshifts[CSHIFT_POWERUP].percent = 20;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
 	}
 	else if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
-		cl.cshifts[CSHIFT_POWERUP].percent = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
 	}
 	else if (cl.stats[STAT_ITEMS] & IT_INVULNERABILITY)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-		cl.cshifts[CSHIFT_POWERUP].percent = 30;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
 	}
 	else
-		cl.cshifts[CSHIFT_POWERUP].percent = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 0;
 }
 
 
@@ -449,17 +449,17 @@ static void V_CalcBlend (void)
 		if (!gl_cshiftpercent->value)
 			continue;
 
-		a2 = ((cl.cshifts[j].percent * gl_cshiftpercent->value) / 100.0) / 255.0;
+		a2 = ((cl.qh_cshifts[j].percent * gl_cshiftpercent->value) / 100.0) / 255.0;
 
-//		a2 = (cl.cshifts[j].percent/2)/255.0;
+//		a2 = (cl.qh_cshifts[j].percent/2)/255.0;
 		if (!a2)
 			continue;
 		a = a + a2*(1-a);
 //Con_Printf ("j:%i a:%f\n", j, a);
 		a2 = a2/a;
-		r = r*(1-a2) + cl.cshifts[j].destcolor[0]*a2;
-		g = g*(1-a2) + cl.cshifts[j].destcolor[1]*a2;
-		b = b*(1-a2) + cl.cshifts[j].destcolor[2]*a2;
+		r = r*(1-a2) + cl.qh_cshifts[j].destcolor[0]*a2;
+		g = g*(1-a2) + cl.qh_cshifts[j].destcolor[1]*a2;
+		b = b*(1-a2) + cl.qh_cshifts[j].destcolor[2]*a2;
 	}
 
 	v_blend[0] = r/255.0;
@@ -488,28 +488,28 @@ void V_UpdatePalette (void)
 	
 	for (i=0 ; i<NUM_CSHIFTS ; i++)
 	{
-		if (cl.cshifts[i].percent != cl.prev_cshifts[i].percent)
+		if (cl.qh_cshifts[i].percent != cl.qh_prev_cshifts[i].percent)
 		{
 			is_new = true;
-			cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
+			cl.qh_prev_cshifts[i].percent = cl.qh_cshifts[i].percent;
 		}
 		for (j=0 ; j<3 ; j++)
-			if (cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
+			if (cl.qh_cshifts[i].destcolor[j] != cl.qh_prev_cshifts[i].destcolor[j])
 			{
 				is_new = true;
-				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
+				cl.qh_prev_cshifts[i].destcolor[j] = cl.qh_cshifts[i].destcolor[j];
 			}
 	}
 
 // drop the damage value
-	cl.cshifts[CSHIFT_DAMAGE].percent -= host_frametime*150;
-	if (cl.cshifts[CSHIFT_DAMAGE].percent <= 0)
-		cl.cshifts[CSHIFT_DAMAGE].percent = 0;
+	cl.qh_cshifts[CSHIFT_DAMAGE].percent -= host_frametime*150;
+	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent <= 0)
+		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 0;
 
 // drop the bonus value
-	cl.cshifts[CSHIFT_BONUS].percent -= host_frametime*100;
-	if (cl.cshifts[CSHIFT_BONUS].percent <= 0)
-		cl.cshifts[CSHIFT_BONUS].percent = 0;
+	cl.qh_cshifts[CSHIFT_BONUS].percent -= host_frametime*100;
+	if (cl.qh_cshifts[CSHIFT_BONUS].percent <= 0)
+		cl.qh_cshifts[CSHIFT_BONUS].percent = 0;
 
 	if (!is_new)
 		return;

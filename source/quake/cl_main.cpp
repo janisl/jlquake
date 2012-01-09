@@ -233,7 +233,7 @@ void CL_PrintEntities_f (void)
 	q1entity_t	*ent;
 	int			i;
 	
-	for (i=0,ent=clq1_entities ; i<cl.num_entities ; i++,ent++)
+	for (i=0,ent=clq1_entities ; i<cl.qh_num_entities ; i++,ent++)
 	{
 		Con_Printf ("%3i:",i);
 		if (!ent->state.modelindex)
@@ -351,7 +351,7 @@ void CL_RelinkEntities (void)
 	bobjrotate = AngleMod(100*cl.serverTimeFloat);
 	
 // start on the entity after the world
-	for (i=1,ent=clq1_entities+1 ; i<cl.num_entities ; i++,ent++)
+	for (i=1,ent=clq1_entities+1 ; i<cl.qh_num_entities ; i++,ent++)
 	{
 		if (!ent->state.modelindex)
 		{
@@ -450,7 +450,7 @@ void CL_RelinkEntities (void)
 static void CL_LinkStaticEntities()
 {
 	q1entity_t* pent = clq1_static_entities;
-	for (int i = 0; i < cl.num_statics; i++, pent++)
+	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
 	{
 		refEntity_t rent;
 		Com_Memset(&rent, 0, sizeof(rent));
