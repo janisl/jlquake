@@ -679,7 +679,7 @@ During normal gameplay, a client packet will contain something like:
 4	acknowledged sequence number
 4	clc.serverCommandSequence
 <optional reliable commands>
-1	clc_move or clc_moveNoDelta
+1	q3clc_move or q3clc_moveNoDelta
 1	command count
 <count * usercmds>
 
@@ -720,7 +720,7 @@ void CL_WritePacket( void ) {
 
 	// write any unacknowledged clientCommands
 	for ( i = clc.reliableAcknowledge + 1 ; i <= clc.reliableSequence ; i++ ) {
-		buf.WriteByte(clc_clientCommand );
+		buf.WriteByte(q3clc_clientCommand );
 		buf.WriteLong(i );
 		buf.WriteString(clc.reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
 	}
@@ -747,9 +747,9 @@ void CL_WritePacket( void ) {
 		// begin a client move command
 		if ( cl_nodelta->integer || !cl.snap.valid || clc.demowaiting
 			|| clc.serverMessageSequence != cl.snap.messageNum ) {
-			buf.WriteByte(clc_moveNoDelta);
+			buf.WriteByte(q3clc_moveNoDelta);
 		} else {
-			buf.WriteByte(clc_move);
+			buf.WriteByte(q3clc_move);
 		}
 
 		// write the command count

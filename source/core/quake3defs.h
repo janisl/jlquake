@@ -46,3 +46,34 @@ struct q3usercmd_t
 	byte weapon;           // weapon 
 	signed char forwardmove, rightmove, upmove;
 };
+
+// the svc_strings[] array in cl_parse.c should mirror this
+//
+// server to client
+//
+enum
+{
+	q3svc_bad,
+	q3svc_nop,
+	q3svc_gamestate,
+	q3svc_configstring,			// [short] [string] only in gamestate messages
+	q3svc_baseline,				// only in gamestate messages
+	q3svc_serverCommand,			// [string] to be executed by client game module
+	q3svc_download,				// [short] size [size bytes]
+	q3svc_snapshot,
+	q3svc_EOF
+};
+
+
+//
+// client to server
+//
+enum
+{
+	q3clc_bad,
+	q3clc_nop, 		
+	q3clc_move,				// [[q3usercmd_t]
+	q3clc_moveNoDelta,		// [[q3usercmd_t]
+	q3clc_clientCommand,		// [string] message
+	q3clc_EOF
+};

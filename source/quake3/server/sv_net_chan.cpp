@@ -172,7 +172,7 @@ then buffer them and make sure they get sent in correct order
 */
 
 void SV_Netchan_Transmit( client_t *client, QMsg *msg) {	//int length, const byte *data ) {
-	msg->WriteByte(svc_EOF );
+	msg->WriteByte(q3svc_EOF );
 	if (client->netchan.unsentFragments) {
 		netchan_buffer_t *netbuf;
 		Com_DPrintf("#462 SV_Netchan_Transmit: unsent fragments, stacked\n");

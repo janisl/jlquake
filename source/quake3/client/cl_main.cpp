@@ -330,7 +330,7 @@ void CL_Record_f( void ) {
 	// NOTE, MRE: all server->client messages now acknowledge
 	buf.WriteLong(clc.reliableSequence );
 
-	buf.WriteByte(svc_gamestate);
+	buf.WriteByte(q3svc_gamestate);
 	buf.WriteLong(clc.serverCommandSequence );
 
 	// configstrings
@@ -339,7 +339,7 @@ void CL_Record_f( void ) {
 			continue;
 		}
 		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
-		buf.WriteByte(svc_configstring);
+		buf.WriteByte(q3svc_configstring);
 		buf.WriteShort(i);
 		buf.WriteBigString(s);
 	}
@@ -351,11 +351,11 @@ void CL_Record_f( void ) {
 		if ( !ent->number ) {
 			continue;
 		}
-		buf.WriteByte(svc_baseline);		
+		buf.WriteByte(q3svc_baseline);		
 		MSG_WriteDeltaEntity (&buf, &nullstate, ent, qtrue );
 	}
 
-	buf.WriteByte(svc_EOF );
+	buf.WriteByte(q3svc_EOF );
 	
 	// finished writing the gamestate stuff
 
@@ -365,7 +365,7 @@ void CL_Record_f( void ) {
 	buf.WriteLong(clc.checksumFeed);
 
 	// finished writing the client packet
-	buf.WriteByte(svc_EOF );
+	buf.WriteByte(q3svc_EOF );
 
 	// write it to the demo file
 	len = LittleLong( clc.serverMessageSequence - 1 );

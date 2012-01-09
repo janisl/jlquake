@@ -137,36 +137,6 @@ extern int demo_protocols[];
 									// PORT_SERVER so a single machine can
 									// run multiple servers
 
-
-// the svc_strings[] array in cl_parse.c should mirror this
-//
-// server to client
-//
-enum svc_ops_e {
-	svc_bad,
-	svc_nop,
-	svc_gamestate,
-	svc_configstring,			// [short] [string] only in gamestate messages
-	svc_baseline,				// only in gamestate messages
-	svc_serverCommand,			// [string] to be executed by client game module
-	svc_download,				// [short] size [size bytes]
-	svc_snapshot,
-	svc_EOF
-};
-
-
-//
-// client to server
-//
-enum clc_ops_e {
-	clc_bad,
-	clc_nop, 		
-	clc_move,				// [[q3usercmd_t]
-	clc_moveNoDelta,		// [[q3usercmd_t]
-	clc_clientCommand,		// [string] message
-	clc_EOF
-};
-
 /*
 ==============================================================
 
@@ -415,7 +385,7 @@ void CL_MapLoading( void );
 // the renderer
 
 void	CL_ForwardCommandToServer( const char *string );
-// adds the current command line as a clc_clientCommand to the client message.
+// adds the current command line as a q3clc_clientCommand to the client message.
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
 

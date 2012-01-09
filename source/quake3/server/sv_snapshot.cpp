@@ -32,7 +32,7 @@ A normal server packet will look like:
 
 4	sequence number (high bit set if an oversize fragment)
 <optional reliable commands>
-1	svc_snapshot
+1	q3svc_snapshot
 4	last client reliable command
 4	serverTime
 1	lastframe for delta compression
@@ -152,7 +152,7 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 		}
 	}
 
-	msg->WriteByte(svc_snapshot);
+	msg->WriteByte(q3svc_snapshot);
 
 	// NOTE, MRE: now sent at the start of every message from server to client
 	// let the client know which reliable clientCommands we have received
@@ -192,7 +192,7 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 	// padding for rate debugging
 	if ( sv_padPackets->integer ) {
 		for ( i = 0 ; i < sv_padPackets->integer ; i++ ) {
-			msg->WriteByte(svc_nop);
+			msg->WriteByte(q3svc_nop);
 		}
 	}
 }
@@ -210,7 +210,7 @@ void SV_UpdateServerCommandsToClient( client_t *client, QMsg *msg ) {
 
 	// write any unacknowledged serverCommands
 	for ( i = client->reliableAcknowledge + 1 ; i <= client->reliableSequence ; i++ ) {
-		msg->WriteByte(svc_serverCommand );
+		msg->WriteByte(q3svc_serverCommand );
 		msg->WriteLong(i );
 		msg->WriteString(client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
 	}

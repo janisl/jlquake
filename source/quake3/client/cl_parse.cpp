@@ -24,15 +24,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 
 const char *svc_strings[256] = {
-	"svc_bad",
+	"q3svc_bad",
 
-	"svc_nop",
-	"svc_gamestate",
-	"svc_configstring",
-	"svc_baseline",	
-	"svc_serverCommand",
-	"svc_download",
-	"svc_snapshot"
+	"q3svc_nop",
+	"q3svc_gamestate",
+	"q3svc_configstring",
+	"q3svc_baseline",	
+	"q3svc_serverCommand",
+	"q3svc_download",
+	"q3svc_snapshot"
 };
 
 void SHOWNET( QMsg *msg, const char *s) {
@@ -214,7 +214,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	Com_Memset (&newSnap, 0, sizeof(newSnap));
 
 	// we will have read any new server commands in this
-	// message before we got to svc_snapshot
+	// message before we got to q3svc_snapshot
 	newSnap.serverCommandNum = clc.serverCommandSequence;
 
 	newSnap.serverTime = msg->ReadLong();
@@ -407,11 +407,11 @@ void CL_ParseGamestate( QMsg *msg ) {
 	while ( 1 ) {
 		cmd = msg->ReadByte();
 
-		if ( cmd == svc_EOF ) {
+		if ( cmd == q3svc_EOF ) {
 			break;
 		}
 		
-		if ( cmd == svc_configstring ) {
+		if ( cmd == q3svc_configstring ) {
 			int		len;
 
 			i = msg->ReadShort();
@@ -429,7 +429,7 @@ void CL_ParseGamestate( QMsg *msg ) {
 			cl.gameState.stringOffsets[ i ] = cl.gameState.dataCount;
 			Com_Memcpy( cl.gameState.stringData + cl.gameState.dataCount, s, len + 1 );
 			cl.gameState.dataCount += len + 1;
-		} else if ( cmd == svc_baseline ) {
+		} else if ( cmd == q3svc_baseline ) {
 			newnum = msg->ReadBits(GENTITYNUM_BITS_Q3 );
 			if ( newnum < 0 || newnum >= MAX_GENTITIES_Q3 ) {
 				Com_Error( ERR_DROP, "Baseline number out of range: %i", newnum );
@@ -616,7 +616,7 @@ void CL_ParseServerMessage( QMsg *msg ) {
 
 		cmd = msg->ReadByte();
 
-		if ( cmd == svc_EOF) {
+		if ( cmd == q3svc_EOF) {
 			SHOWNET( msg, "END OF MESSAGE" );
 			break;
 		}
@@ -634,18 +634,18 @@ void CL_ParseServerMessage( QMsg *msg ) {
 		default:
 			Com_Error (ERR_DROP,"CL_ParseServerMessage: Illegible server message\n");
 			break;			
-		case svc_nop:
+		case q3svc_nop:
 			break;
-		case svc_serverCommand:
+		case q3svc_serverCommand:
 			CL_ParseCommandString( msg );
 			break;
-		case svc_gamestate:
+		case q3svc_gamestate:
 			CL_ParseGamestate( msg );
 			break;
-		case svc_snapshot:
+		case q3svc_snapshot:
 			CL_ParseSnapshot( msg );
 			break;
-		case svc_download:
+		case q3svc_download:
 			CL_ParseDownload( msg );
 			break;
 		}
