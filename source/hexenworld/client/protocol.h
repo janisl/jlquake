@@ -30,137 +30,6 @@
 #define	S2M_SHUTDOWN		'C'
 
 
-//==================
-// note that there are some defs.qc that mirror to these numbers
-// also related to svc_strings[] in cl_parse
-//==================
-
-//
-// server to client
-//
-#define	svc_bad				0
-#define	svc_nop				1
-#define	svc_disconnect		2
-#define	svc_updatestat		3	// [byte] [byte]
-//define	svc_version			4	// [long] server version
-#define	svc_setview			5	// [short] entity number
-#define	svc_sound			6	// <see code>
-#define	svc_time			7	// [float] server time
-#define	svc_print			8	// [byte] id [string] null terminated string
-#define	svc_stufftext		9	// [string] stuffed into client's console buffer
-								// the string should be \n terminated
-#define	svc_setangle		10	// [angle3] set the view angle to this absolute value
-	
-#define	svc_serverdata		11	// [long] protocol ...
-#define	svc_lightstyle		12	// [byte] [string]
-//define	svc_updatename		13	// [byte] [string]
-#define	svc_updatefrags		14	// [byte] [short]
-//define	svc_clientdata		15	// <shortbits + data>
-#define	svc_stopsound		16	// <see code>
-//define	svc_updatecolors	17	// [byte] [byte] [byte]
-#define	svc_particle		18	// [vec3] <variable>
-#define	svc_damage			19
-	
-#define	svc_spawnstatic		20
-//	svc_spawnbinary		21
-#define	svc_spawnbaseline	22
-	
-#define	svc_temp_entity		23	// variable
-//	svc_setpause		24	// [byte] on / off
-//	svc_signonnum		25	// [byte]  used for the signon sequence
-
-#define	svc_centerprint		26	// [string] to put in center of the screen
-
-#define	svc_killedmonster	27
-#define	svc_foundsecret		28
-
-#define	svc_spawnstaticsound	29	// [coord3] [byte] samp [byte] vol [byte] aten
-
-#define	svc_intermission	30		// [vec3_t] origin [vec3_t] angle
-#define	svc_finale			31		// [string] text
-
-#define	svc_cdtrack			32		// [byte] track
-#define svc_sellscreen		33
-
-#define	svc_smallkick		34		// set client punchangle to 2
-#define	svc_bigkick			35		// set client punchangle to 4
-
-#define	svc_updateping		36		// [byte] [short]
-#define	svc_updateentertime	37		// [byte] [float]
-
-#define	svc_updatestatlong	38		// [byte] [long]
-
-#define	svc_muzzleflash		39		// [short] entity
-
-#define	svc_updateuserinfo	40		// [byte] slot [long] uid
-									// [string] userinfo
-
-#define	svc_download		41		// [short] size [size bytes]
-#define	svc_playerinfo		42		// variable
-#define	svc_nails			43		// [byte] num [48 bits] xyzpy 12 12 12 4 8 
-#define	svc_chokecount		44		// [byte] packets choked
-#define	svc_modellist		45		// [strings]
-#define	svc_soundlist		46		// [strings]
-#define	svc_packetentities	47		// [...]
-#define	svc_deltapacketentities	48		// [...]
-#define svc_maxspeed		49		// maxspeed change, for prediction
-#define svc_entgravity		50		// gravity change, for prediction
-
-// Hexen2 specifics
-#define svc_plaque					51
-#define svc_particle_explosion		52
-#define svc_set_view_tint			53
-#define svc_start_effect			54
-#define svc_end_effect				55
-#define svc_set_view_flags			56
-#define svc_clear_view_flags		57
-#define svc_update_inv				58
-#define	svc_particle2				59
-#define	svc_particle3				60	
-#define	svc_particle4				61	
-#define svc_turn_effect				62
-#define svc_update_effect			63
-#define svc_multieffect				64
-#define svc_midi_name				65
-#define	svc_raineffect				66
-
-#define svc_packmissile				67	//[byte] num [40 bits] xyz type 12 12 12 4
-
-#define svc_indexed_print			68 //same as svc_print, but sends an index in strings.txt instead of string
-
-#define svc_targetupdate			69 // [byte] angle [byte] pitch [byte] dist/4 - Hey, I got number 69!  Woo hoo!
-
-#define svc_name_print				70 // print player's name
-#define svc_sound_update_pos		71	//[short] ent+channel [coord3] pos
-#define svc_update_piv				72	// update players in view
-#define svc_player_sound			73  // sends weapon sound for invisible player
-#define	svc_updatepclass			74	// [byte] [byte]
-#define	svc_updatedminfo			75	// [byte] [short] [byte]
-#define	svc_updatesiegeinfo			76	// [byte] [byte]
-#define	svc_updatesiegeteam			77	// [byte] [byte]
-#define svc_updatesiegelosses		78  // [byte] [byte]
-
-#define svc_haskey					79  // [byte] [byte]
-#define svc_nonehaskey				80  // [byte] [byte]
-#define svc_isdoc					81  // [byte] [byte]
-#define svc_nodoc					82  // [byte] [byte]
-#define svc_playerskipped			83	// [byte]
-
-//==============================================
-
-//
-// client to server
-//
-#define	clc_bad			0
-#define	clc_nop 		1
-//define	clc_doublemove	2
-#define	clc_move		3		// [[hwusercmd_t]
-#define	clc_stringcmd	4		// [string] message
-#define	clc_delta		5		// [byte] sequence number, requests delta compression of message
-#define clc_tmove		6		// teleport request, spectator only
-#define clc_inv_select  7
-#define clc_get_effect  8		//[byte] effect id
-
 //==============================================
 
 // playerinfo flags from server
@@ -276,7 +145,7 @@
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
-// svc_print messages have an id, so messages can be filtered
+// h2svc_print messages have an id, so messages can be filtered
 #define	PRINT_LOW			0
 #define	PRINT_MEDIUM		1
 #define	PRINT_HIGH			2

@@ -22,7 +22,7 @@ void Cvar_Changed(Cvar* var)
 			String::ICmp(var->name, "name") != 0, String::ICmp(var->name, "team") == 0);
 		if (cls.state >= ca_connected)
 		{
-			clc.netchan.message.WriteByte(clc_stringcmd);
+			clc.netchan.message.WriteByte(h2clc_stringcmd);
 			clc.netchan.message.WriteString2(va("setinfo \"%s\" \"%s\"\n", var->name, var->string));
 		}
 	}

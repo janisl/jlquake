@@ -415,20 +415,20 @@ void PF_name_print (void)
 			{
 				if (cl->state)//not fully in so won't know name yet, explicitly say the name
 				{
-					cl->netchan.message.WriteByte(svc_print);
+					cl->netchan.message.WriteByte(h2svc_print);
 					cl->netchan.message.WriteByte(Style);
 					cl->netchan.message.WriteString2((char *)&svs.clients[Index-1].name);
 				}
 				continue;
 			}
-			cl->netchan.message.WriteByte(svc_name_print);
+			cl->netchan.message.WriteByte(hwsvc_name_print);
 			cl->netchan.message.WriteByte(Style);
 			cl->netchan.message.WriteByte(Index-1);//knows the name, send the index.
 		}
 		return;
 	}
 
-	WriteDest()->WriteByte(svc_name_print);
+	WriteDest()->WriteByte(hwsvc_name_print);
 	WriteDest()->WriteByte(Style);
 	WriteDest()->WriteByte(Index-1);//heh, don't need a short here.
 }
@@ -475,14 +475,14 @@ void PF_print_indexed (void)
 				continue;
 			if (!cl->state)
 				continue;
-			cl->netchan.message.WriteByte(svc_indexed_print);
+			cl->netchan.message.WriteByte(hwsvc_indexed_print);
 			cl->netchan.message.WriteByte(Style);
 			cl->netchan.message.WriteShort(Index);
 		}
 		return;
 	}
 
-	WriteDest()->WriteByte(svc_indexed_print);
+	WriteDest()->WriteByte(hwsvc_indexed_print);
 	WriteDest()->WriteByte(Style);
 	WriteDest()->WriteShort(Index);
 }
@@ -515,7 +515,7 @@ void PF_centerprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	client->netchan.message.WriteChar(svc_centerprint);
+	client->netchan.message.WriteChar(h2svc_centerprint);
 	client->netchan.message.WriteString2(s );
 }
 
@@ -541,7 +541,7 @@ void PF_bcenterprint2 (void)
 	{
 		if (!cl->state)
 			continue;
-		cl->netchan.message.WriteByte(svc_centerprint);
+		cl->netchan.message.WriteByte(h2svc_centerprint);
 		cl->netchan.message.WriteString2(s);
 	}
 }
@@ -572,7 +572,7 @@ void PF_centerprint2 (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	client->netchan.message.WriteChar(svc_centerprint);
+	client->netchan.message.WriteChar(h2svc_centerprint);
 	client->netchan.message.WriteString2(s );
 }
 
@@ -824,7 +824,7 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	sv.signon.WriteByte(svc_spawnstaticsound);
+	sv.signon.WriteByte(h2svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
 		sv.signon.WriteCoord(pos[i]);
 
@@ -1167,7 +1167,7 @@ void PF_stuffcmd (void)
 	old = host_client;
 	host_client = &svs.clients[entnum-1];
 
-	host_client->netchan.message.WriteByte(svc_stufftext);
+	host_client->netchan.message.WriteByte(h2svc_stufftext);
 	host_client->netchan.message.WriteString2(str);
 
 	host_client = old;
@@ -1674,7 +1674,7 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<HWMAX_CLIENTS ; j++, client++)
 		if ( client->state == cs_spawned )
 		{
-			client->netchan.message.WriteChar(svc_lightstyle);
+			client->netchan.message.WriteChar(h2svc_lightstyle);
 			client->netchan.message.WriteChar(style);
 			client->netchan.message.WriteString2(val);
 		}
@@ -1758,7 +1758,7 @@ void PF_lightstylestatic(void)
 	for (j=0, client = svs.clients ; j<HWMAX_CLIENTS ; j++, client++)
 		if ( client->state == cs_spawned )
 		{
-			client->netchan.message.WriteChar(svc_lightstyle);
+			client->netchan.message.WriteChar(h2svc_lightstyle);
 			client->netchan.message.WriteChar(styleNumber);
 			client->netchan.message.WriteString2(styleString);
 		}
@@ -2084,7 +2084,7 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	sv.signon.WriteByte(svc_spawnstatic);
+	sv.signon.WriteByte(h2svc_spawnstatic);
 
 	sv.signon.WriteShort(SV_ModelIndex(PR_GetString(ent->v.model)));
 
@@ -2274,7 +2274,7 @@ void PF_plaque_draw (void)
 	if (Index > pr_string_count)
 		PR_RunError ("PF_plaque_draw: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
 
-	WriteDest()->WriteByte(svc_plaque);
+	WriteDest()->WriteByte(hwsvc_plaque);
 	WriteDest()->WriteShort(Index);
 }
 
@@ -2316,7 +2316,7 @@ void PF_particleexplosion (void)
 	radius = G_FLOAT(OFS_PARM2);
 	counter = G_FLOAT(OFS_PARM3);
 
-	sv.datagram.WriteByte(svc_particle_explosion);
+	sv.datagram.WriteByte(hwsvc_particle_explosion);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -2511,7 +2511,7 @@ void PF_AwardExperience(void)
 
 				sprintf(temp,"You are now level %d\n",AfterLevel);
 	
-				client->message.WriteChar(svc_print);
+				client->message.WriteChar(h2svc_print);
 				client->message.WriteString2(temp );
 */
 
@@ -2692,7 +2692,7 @@ void PF_setclass (void)
 //	SV_ExtractFromUserinfo (host_client);
 
 	//update everyone else about playerclass change
-	sv.reliable_datagram.WriteByte(svc_updatepclass);
+	sv.reliable_datagram.WriteByte(hwsvc_updatepclass);
 	sv.reliable_datagram.WriteByte(entnum - 1);
 	sv.reliable_datagram.WriteByte(((host_client->playerclass<<5)|((int)e->v.level&31)));
 	host_client = old;
@@ -2731,7 +2731,7 @@ void PF_setsiegeteam (void)
 //	host_client->sendinfo = true;
 
 	//update everyone else about playerclass change
-	sv.reliable_datagram.WriteByte(svc_updatesiegeteam);
+	sv.reliable_datagram.WriteByte(hwsvc_updatesiegeteam);
 	sv.reliable_datagram.WriteByte(entnum - 1);
 	sv.reliable_datagram.WriteByte(host_client->siege_team);
 	host_client = old;
@@ -2746,7 +2746,7 @@ client_t	*client;
 	{
 		if (client->state < cs_connected)
 			continue;
-		client->netchan.message.WriteByte(svc_updatesiegeinfo);
+		client->netchan.message.WriteByte(hwsvc_updatesiegeinfo);
 		client->netchan.message.WriteByte((int)ceil(timelimit->value));
 		client->netchan.message.WriteByte((int)ceil(fraglimit->value));
 	}
@@ -2767,7 +2767,7 @@ void PF_endeffect (void)
 	if (!sv.Effects[index].type) return;
 
 	sv.Effects[index].type = 0;
-	sv.multicast.WriteByte(svc_end_effect);
+	sv.multicast.WriteByte(hwsvc_end_effect);
 	sv.multicast.WriteByte(index);
 	SV_Multicast (vec3_origin, MULTICAST_ALL_R);
 }
@@ -2785,7 +2785,7 @@ void PF_turneffect (void)
 	VectorCopy(pos, sv.Effects[index].Missile.origin);
 	VectorCopy(dir, sv.Effects[index].Missile.velocity);
 
-	sv.multicast.WriteByte(svc_turn_effect);
+	sv.multicast.WriteByte(hwsvc_turn_effect);
 	sv.multicast.WriteByte(index);
 	sv.multicast.WriteFloat(sv.time);
 	sv.multicast.WriteCoord(pos[0]);
@@ -2811,7 +2811,7 @@ void PF_updateeffect (void)//type-specific what this will send
 	if(sv.Effects[index].type != type) return;
 
 	//common writing--PLEASE use sent type when determining how much and what to read, so it's safe
-	sv.multicast.WriteByte(svc_update_effect);
+	sv.multicast.WriteByte(hwsvc_update_effect);
 	sv.multicast.WriteByte(index);//
 	sv.multicast.WriteByte(type);//paranoia alert--make sure client reads the correct number of bytes
 

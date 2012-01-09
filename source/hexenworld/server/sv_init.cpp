@@ -107,7 +107,7 @@ void SV_CreateBaseline (void)
 		//
 		// add to the message
 		//
-		sv.signon.WriteByte(svc_spawnbaseline);		
+		sv.signon.WriteByte(h2svc_spawnbaseline);		
 		sv.signon.WriteShort(entnum);
 
 		sv.signon.WriteShort(svent->baseline.modelindex);

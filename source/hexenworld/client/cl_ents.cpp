@@ -214,7 +214,7 @@ void FlushEntityPacket (void)
 ==================
 CL_ParsePacketEntities
 
-An svc_packetentities has just been parsed, deal with the
+An hwsvc_packetentities has just been parsed, deal with the
 rest of the data stream.
 ==================
 */

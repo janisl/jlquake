@@ -97,7 +97,7 @@ void SV_EmitNailUpdate (QMsg *msg)
 	if (!numnails)
 		return;
 
-	msg->WriteByte(svc_nails);
+	msg->WriteByte(hwsvc_nails);
 	msg->WriteByte(numnails);
 
 	for (n=0 ; n<numnails ; n++)
@@ -170,7 +170,7 @@ void SV_EmitMissileUpdate (QMsg *msg)
 	if (!nummissiles)
 		return;
 
-	msg->WriteByte(svc_packmissile);
+	msg->WriteByte(hwsvc_packmissile);
 	msg->WriteByte(nummissiles);
 
 	for (n=0 ; n<nummissiles ; n++)
@@ -205,7 +205,7 @@ void SV_EmitRavenUpdate (QMsg *msg)
 	if ((!numravens) && (!numraven2s))
 		return;
 
-	msg->WriteByte(svc_nails);	//svc nails overloaded for ravens
+	msg->WriteByte(hwsvc_nails);	//svc nails overloaded for ravens
 	msg->WriteByte(numravens);
 
 	for (n=0 ; n<numravens ; n++)
@@ -441,7 +441,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
-		msg->WriteByte(svc_deltapacketentities);
+		msg->WriteByte(hwsvc_deltapacketentities);
 		msg->WriteByte(client->delta_sequence);
 	}
 	else
@@ -449,7 +449,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 		oldmax = 0;	// no delta update
 		from = NULL;
 
-		msg->WriteByte(svc_packetentities);
+		msg->WriteByte(hwsvc_packetentities);
 	}
 
 	newindex = 0;
@@ -632,7 +632,7 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
 	if (!sc1 && !sc2)
 		goto end;
 
-	msg->WriteByte(svc_update_inv);
+	msg->WriteByte(hwsvc_update_inv);
 	test = 0;
 	if (sc1 & 0x000000ff)
 		test |= 1;
@@ -889,7 +889,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		{//ok to send weaponsound
 			if(ent->v.wpn_sound)
 			{
-				msg->WriteByte(svc_player_sound);
+				msg->WriteByte(hwsvc_player_sound);
 				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
 					msg->WriteCoord(ent->v.origin[i]);
@@ -985,7 +985,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 
 		if(cl->skipsend)
 		{//still 2 bytes, but what ya gonna do?
-			msg->WriteByte(svc_playerskipped);
+			msg->WriteByte(hwsvc_playerskipped);
 			msg->WriteByte(j);
 			continue;
 		}
@@ -1052,7 +1052,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			pflags |= PF_SOUND;
 		}
 
-		msg->WriteByte(svc_playerinfo);
+		msg->WriteByte(hwsvc_playerinfo);
 		msg->WriteByte(j);
 		msg->WriteShort(pflags);
 
@@ -1184,7 +1184,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		{//ok to send weaponsound
 			if(ent->v.wpn_sound)
 			{
-				msg->WriteByte(svc_player_sound);
+				msg->WriteByte(hwsvc_player_sound);
 				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
 					msg->WriteCoord(ent->v.origin[i]);
@@ -1254,7 +1254,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			pflags |= PF_SOUND;
 		}
 
-		msg->WriteByte(svc_playerinfo);
+		msg->WriteByte(hwsvc_playerinfo);
 		msg->WriteByte(j);
 		msg->WriteShort(pflags);
 
@@ -1332,9 +1332,9 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 SV_WriteEntitiesToClient
 
 Encodes the current state of the world as
-a svc_packetentities messages and possibly
-a svc_nails message and
-svc_playerinfo messages
+a hwsvc_packetentities messages and possibly
+a hwsvc_nails message and
+hwsvc_playerinfo messages
 =============
 */
 void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)

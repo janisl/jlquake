@@ -4,100 +4,100 @@
 
 const char *svc_strings[] =
 {
-	"svc_bad",
-	"svc_nop",
-	"svc_disconnect",
-	"svc_updatestat",
-	"svc_version",		// [long] server version
-	"svc_setview",		// [short] entity number
-	"svc_sound",			// <see code>
-	"svc_time",			// [float] server time
-	"svc_print",			// [string] null terminated string
-	"svc_stufftext",		// [string] stuffed into client's console buffer
+	"h2svc_bad",
+	"h2svc_nop",
+	"h2svc_disconnect",
+	"h2svc_updatestat",
+	"h2svc_version",		// [long] server version
+	"h2svc_setview",		// [short] entity number
+	"h2svc_sound",			// <see code>
+	"h2svc_time",			// [float] server time
+	"h2svc_print",			// [string] null terminated string
+	"h2svc_stufftext",		// [string] stuffed into client's console buffer
 						// the string should be \n terminated
-	"svc_setangle",		// [vec3] set the view angle to this absolute value
+	"h2svc_setangle",		// [vec3] set the view angle to this absolute value
 	
-	"svc_serverdata",		// [long] version ...
-	"svc_lightstyle",		// [byte] [string]
-	"svc_updatename",		// [byte] [string]
-	"svc_updatefrags",	// [byte] [short]
-	"svc_clientdata",		// <shortbits + data>
-	"svc_stopsound",		// <see code>
-	"svc_updatecolors",	// [byte] [byte]
-	"svc_particle",		// [vec3] <variable>
-	"svc_damage",			// [byte] impact [byte] blood [vec3] from
+	"hwsvc_serverdata",		// [long] version ...
+	"h2svc_lightstyle",		// [byte] [string]
+	"h2svc_updatename",		// [byte] [string]
+	"h2svc_updatefrags",	// [byte] [short]
+	"h2svc_clientdata",		// <shortbits + data>
+	"h2svc_stopsound",		// <see code>
+	"h2svc_updatecolors",	// [byte] [byte]
+	"h2svc_particle",		// [vec3] <variable>
+	"h2svc_damage",			// [byte] impact [byte] blood [vec3] from
 	
-	"svc_spawnstatic",
+	"h2svc_spawnstatic",
 	"OBSOLETE svc_spawnbinary",
-	"svc_spawnbaseline",
+	"h2svc_spawnbaseline",
 	
-	"svc_temp_entity",		// <variable>
-	"svc_setpause",
-	"svc_signonnum",
-	"svc_centerprint",
-	"svc_killedmonster",
-	"svc_foundsecret",
-	"svc_spawnstaticsound",
-	"svc_intermission",
-	"svc_finale",
+	"h2svc_temp_entity",		// <variable>
+	"h2svc_setpause",
+	"h2svc_signonnum",
+	"h2svc_centerprint",
+	"h2svc_killedmonster",
+	"h2svc_foundsecret",
+	"h2svc_spawnstaticsound",
+	"h2svc_intermission",
+	"h2svc_finale",
 
-	"svc_cdtrack",
-	"svc_sellscreen",
+	"h2svc_cdtrack",
+	"h2svc_sellscreen",
 
-	"svc_smallkick",
-	"svc_bigkick",
+	"hwsvc_smallkick",
+	"hwsvc_bigkick",
 
-	"svc_updateping",
-	"svc_updateentertime",
+	"hwsvc_updateping",
+	"hwsvc_updateentertime",
 
-	"svc_updatestatlong",
-	"svc_muzzleflash",
-	"svc_updateuserinfo",
-	"svc_download",
-	"svc_playerinfo",
-	"svc_nails",
+	"hwsvc_updatestatlong",
+	"hwsvc_muzzleflash",
+	"hwsvc_updateuserinfo",
+	"hwsvc_download",
+	"hwsvc_playerinfo",
+	"hwsvc_nails",
 	"svc_choke",
-	"svc_modellist",
-	"svc_soundlist",
-	"svc_packetentities",
- 	"svc_deltapacketentities",
-	"svc_maxspeed",
-	"svc_entgravity",
+	"hwsvc_modellist",
+	"hwsvc_soundlist",
+	"hwsvc_packetentities",
+ 	"hwsvc_deltapacketentities",
+	"hwsvc_maxspeed",
+	"hwsvc_entgravity",
 
-	"svc_plaque",
-	"svc_particle_explosion",
-	"svc_set_view_tint",
-	"svc_start_effect",
-	"svc_end_effect",
-	"svc_set_view_flags",
-	"svc_clear_view_flags",
-	"svc_update_inv",
-	"svc_particle2",
-	"svc_particle3",
-	"svc_particle4",
-	"svc_turn_effect",
-	"svc_update_effect",
-	"svc_multieffect",
-	"svc_midi_name",
-	"svc_raineffect",
-	"svc_packmissile",
+	"hwsvc_plaque",
+	"hwsvc_particle_explosion",
+	"hwsvc_set_view_tint",
+	"hwsvc_start_effect",
+	"hwsvc_end_effect",
+	"hwsvc_set_view_flags",
+	"hwsvc_clear_view_flags",
+	"hwsvc_update_inv",
+	"hwsvc_particle2",
+	"hwsvc_particle3",
+	"hwsvc_particle4",
+	"hwsvc_turn_effect",
+	"hwsvc_update_effect",
+	"hwsvc_multieffect",
+	"hwsvc_midi_name",
+	"hwsvc_raineffect",
+	"hwsvc_packmissile",
 
-	"svc_indexed_print",
-	"svc_targetupdate",
-	"svc_name_print",
-	"svc_sound_update_pos",
-	"svc_update_piv",
-	"svc_player_sound",
-	"svc_updatepclass",
-	"svc_updatedminfo",	// [byte] [short] [byte]
-	"svc_updatesiegeinfo",	// [byte] [byte]
-	"svc_updatesiegeteam",	// [byte] [byte]
-	"svc_updatesiegelosses",	// [byte] [byte]
-	"svc_haskey",		//[byte] [byte]
-	"svc_nonehaskey",		//[byte]
-	"svc_isdoc",		//[byte] [byte]
-	"svc_nodoc",		//[byte]
-	"svc_playerskipped"	//[byte]
+	"hwsvc_indexed_print",
+	"hwsvc_targetupdate",
+	"hwsvc_name_print",
+	"hwsvc_sound_update_pos",
+	"hwsvc_update_piv",
+	"hwsvc_player_sound",
+	"hwsvc_updatepclass",
+	"hwsvc_updatedminfo",	// [byte] [short] [byte]
+	"hwsvc_updatesiegeinfo",	// [byte] [byte]
+	"hwsvc_updatesiegeteam",	// [byte] [byte]
+	"hwsvc_updatesiegelosses",	// [byte] [byte]
+	"hwsvc_haskey",		//[byte] [byte]
+	"hwsvc_nonehaskey",		//[byte]
+	"hwsvc_isdoc",		//[byte] [byte]
+	"hwsvc_nodoc",		//[byte]
+	"hwsvc_playerskipped"	//[byte]
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
@@ -156,7 +156,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	String::StripExtension (cls.downloadname, cls.downloadtempname);
 	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("download %s", cls.downloadname));
 
@@ -238,7 +238,7 @@ void Model_NextDownload (void)
 	Hunk_Check ();		// make sure nothing is hurt
 
 	// done with modellist, request first of static signon messages
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("prespawn %i", cl.servercount));
 }
@@ -279,7 +279,7 @@ void Sound_NextDownload (void)
 	S_EndRegistration();
 
 	// done with sounds, request models now
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("modellist %i", cl.servercount));
 }
@@ -372,7 +372,7 @@ void CL_ParseDownload (void)
 #endif
 		cls.downloadpercent = percent;
 
-		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteByte(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("nextdl");
 	}
 	else
@@ -498,7 +498,7 @@ void CL_ParseServerData (void)
 	Con_Printf ("%c%s\n", 2, str);
 
 	// ask for the sound list next
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("soundlist %i", cl.servercount));
 
@@ -806,7 +806,7 @@ void CL_UpdateUserinfo (void)
 
 	slot = net_message.ReadByte ();
 	if (slot >= HWMAX_CLIENTS)
-		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > HWMAX_CLIENTS");
+		Host_EndGame ("CL_ParseServerMessage: hwsvc_updateuserinfo > HWMAX_CLIENTS");
 
 	player = &cl.h2_players[slot];
 	player->userid = net_message.ReadLong ();
@@ -1022,15 +1022,15 @@ void CL_ParseServerMessage (void)
 			Host_EndGame ("CL_ParseServerMessage: Illegible server message\n");
 			break;
 			
-		case svc_nop:
-//			Con_Printf ("svc_nop\n");
+		case h2svc_nop:
+//			Con_Printf ("h2svc_nop\n");
 			break;
 			
-		case svc_disconnect:
+		case h2svc_disconnect:
 			Host_EndGame ("Server disconnected\n");
 			break;
 
-		case svc_print:
+		case h2svc_print:
 			i = net_message.ReadByte ();
 			if (i == PRINT_CHAT)
 			{
@@ -1055,41 +1055,41 @@ void CL_ParseServerMessage (void)
 			con_ormask = 0;
 			break;
 			
-		case svc_centerprint:
+		case h2svc_centerprint:
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
-		case svc_stufftext:
+		case h2svc_stufftext:
 			s = const_cast<char*>(net_message.ReadString2());
 			Con_DPrintf ("stufftext: %s\n", s);
 			Cbuf_AddText (s);
 			break;
 			
-		case svc_damage:
+		case h2svc_damage:
 			V_ParseDamage ();
 			break;
 			
-		case svc_serverdata:
+		case hwsvc_serverdata:
 			Cbuf_Execute ();		// make sure any stuffed commands are done
 			CL_ParseServerData ();
 			break;
 			
-		case svc_setangle:
+		case h2svc_setangle:
 			for (i=0 ; i<3 ; i++)
 				cl.viewangles[i] = net_message.ReadAngle ();
 //			cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
 			break;
 			
-		case svc_lightstyle:
+		case h2svc_lightstyle:
 			i = net_message.ReadByte();
 			CL_SetLightStyle(i, net_message.ReadString2());
 			break;
 			
-		case svc_sound:
+		case h2svc_sound:
 			CL_ParseStartSoundPacket();
 			break;
 			
-		case svc_sound_update_pos:
+		case hwsvc_sound_update_pos:
 		{//FIXME: put a field on the entity that lists the channels
 			//it should update when it moves- if a certain flag
 			//is on the ent, this update_channels field could
@@ -1104,7 +1104,7 @@ void CL_ParseServerMessage (void)
 			channel &= 7;
 			
 			if (ent > MAX_EDICTS_H2)
-				Host_FatalError ("svc_sound_update_pos: ent = %i", ent);
+				Host_FatalError ("hwsvc_sound_update_pos: ent = %i", ent);
 			
 			for (i=0 ; i<3 ; i++)
 				pos[i] = net_message.ReadCoord ();
@@ -1113,136 +1113,136 @@ void CL_ParseServerMessage (void)
 		}
 			break;
 
-		case svc_stopsound:
+		case h2svc_stopsound:
 			i = net_message.ReadShort();
 			S_StopSound(i>>3, i&7);
 			break;
 		
-		case svc_updatefrags:
+		case h2svc_updatefrags:
 			Sbar_Changed ();
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > HWMAX_CLIENTS");
+				Host_EndGame ("CL_ParseServerMessage: h2svc_updatefrags > HWMAX_CLIENTS");
 			cl.h2_players[i].frags = net_message.ReadShort ();
 			break;			
 
-		case svc_updateping:
+		case hwsvc_updateping:
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > HWMAX_CLIENTS");
+				Host_EndGame ("CL_ParseServerMessage: hwsvc_updateping > HWMAX_CLIENTS");
 			cl.h2_players[i].ping = net_message.ReadShort ();
 			break;
 			
-		case svc_updateentertime:
+		case hwsvc_updateentertime:
 		// time is sent over as seconds ago
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > HWMAX_CLIENTS");
+				Host_EndGame ("CL_ParseServerMessage: hwsvc_updateentertime > HWMAX_CLIENTS");
 			cl.h2_players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
-		case svc_updatepclass:
+		case hwsvc_updatepclass:
 		// playerclass has changed for this dude
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatepclass > HWMAX_CLIENTS");
+				Host_EndGame ("CL_ParseServerMessage: hwsvc_updatepclass > HWMAX_CLIENTS");
 			cl.h2_players[i].playerclass = net_message.ReadByte ();
 			cl.h2_players[i].level = cl.h2_players[i].playerclass&31;
 			cl.h2_players[i].playerclass = cl.h2_players[i].playerclass>>5;
 			break;
 
-		case svc_updatedminfo:
+		case hwsvc_updatedminfo:
 		// This dude killed someone, update his frags and level
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatedminfo > HWMAX_CLIENTS");
+				Host_EndGame ("CL_ParseServerMessage: hwsvc_updatedminfo > HWMAX_CLIENTS");
 			cl.h2_players[i].frags = net_message.ReadShort ();
 			cl.h2_players[i].playerclass = net_message.ReadByte ();
 			cl.h2_players[i].level = cl.h2_players[i].playerclass&31;
 			cl.h2_players[i].playerclass = cl.h2_players[i].playerclass>>5;
 			break;
 
-		case svc_updatesiegelosses:
+		case hwsvc_updatesiegelosses:
 		// This dude killed someone, update his frags and level
 			defLosses = net_message.ReadByte ();
 			attLosses = net_message.ReadByte ();
 			break;
 
-		case svc_updatesiegeteam:
+		case hwsvc_updatesiegeteam:
 		// This dude killed someone, update his frags and level
 			i = net_message.ReadByte ();
 			if (i >= HWMAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updatesiegeteam > HWMAX_CLIENTS");
+				Host_EndGame ("CL_ParseServerMessage: hwsvc_updatesiegeteam > HWMAX_CLIENTS");
 			cl.h2_players[i].siege_team = net_message.ReadByte ();
 			break;
 
-		case svc_updatesiegeinfo:
+		case hwsvc_updatesiegeinfo:
 		// This dude killed someone, update his frags and level
 			cl_siege = true;
 			cl_timelimit = net_message.ReadByte () * 60;
 			cl_fraglimit = net_message.ReadByte ();
 			break;
 
-		case svc_haskey:
+		case hwsvc_haskey:
 			cl_keyholder = net_message.ReadShort() - 1;
 			break;
 
-		case svc_isdoc:
+		case hwsvc_isdoc:
 			cl_doc = net_message.ReadShort() - 1;
 			break;
 
-		case svc_nonehaskey:
+		case hwsvc_nonehaskey:
 			cl_keyholder = -1;
 			break;
 
-		case svc_nodoc:
+		case hwsvc_nodoc:
 			cl_doc = -1;
 			break;
 		
-		case svc_time:
+		case h2svc_time:
 			cl_server_time_offset = ((int)net_message.ReadFloat()) - cl.serverTimeFloat;
 			break;
 
-		case svc_spawnbaseline:
+		case h2svc_spawnbaseline:
 			i = net_message.ReadShort ();
 			CL_ParseBaseline (&clh2_baselines[i]);
 			break;
-		case svc_spawnstatic:
+		case h2svc_spawnstatic:
 			CL_ParseStatic ();
 			break;			
-		case svc_temp_entity:
+		case h2svc_temp_entity:
 			CLHW_ParseTEnt(net_message);
 			break;
 
-		case svc_killedmonster:
+		case h2svc_killedmonster:
 			cl.stats[STAT_MONSTERS]++;
 			break;
 
-		case svc_foundsecret:
+		case h2svc_foundsecret:
 			cl.stats[STAT_SECRETS]++;
 			break;
 
-		case svc_updatestat:
+		case h2svc_updatestat:
 			i = net_message.ReadByte ();
 			j = net_message.ReadByte ();
 			CL_SetStat (i, j);
 			break;
-		case svc_updatestatlong:
+		case hwsvc_updatestatlong:
 			i = net_message.ReadByte ();
 			j = net_message.ReadLong ();
 			CL_SetStat (i, j);
 			break;
 			
-		case svc_spawnstaticsound:
+		case h2svc_spawnstaticsound:
 			CL_ParseStaticSound ();
 			break;
 
-		case svc_cdtrack:
+		case h2svc_cdtrack:
 			cl.cdtrack = net_message.ReadByte ();
 			CDAudio_Play ((byte)cl.cdtrack, true);
 			break;
 
-		case svc_intermission:
+		case h2svc_intermission:
 //			if(cl_siege)
 //			{//MG
 				cl.intermission = net_message.ReadByte();
@@ -1262,119 +1262,119 @@ void CL_ParseServerMessage (void)
 				break;
 			}
 */
-		case svc_finale:
+		case h2svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = realtime;
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
-		case svc_sellscreen:
+		case h2svc_sellscreen:
 			Cmd_ExecuteString ("help");
 			break;
 
-		case svc_smallkick:
+		case hwsvc_smallkick:
 			cl.punchangle = -2;
 			break;
-		case svc_bigkick:
+		case hwsvc_bigkick:
 			cl.punchangle = -4;
 			break;
 
-		case svc_muzzleflash:
+		case hwsvc_muzzleflash:
 			CL_MuzzleFlash ();
 			break;
 
-		case svc_updateuserinfo:
+		case hwsvc_updateuserinfo:
 			CL_UpdateUserinfo ();
 			break;
 
-		case svc_download:
+		case hwsvc_download:
 			CL_ParseDownload ();
 			break;
 
-		case svc_playerinfo:
+		case hwsvc_playerinfo:
 			CL_ParsePlayerinfo ();
 			break;
 
-		case svc_playerskipped:
+		case hwsvc_playerskipped:
 			CL_SavePlayer ();
 			break;
 
-		case svc_nails:
+		case hwsvc_nails:
 			CL_ParseProjectiles ();
 			break;
 
-		case svc_packmissile:
+		case hwsvc_packmissile:
 			CL_ParsePackMissiles ();
 			break;
 
-		case svc_chokecount:		// some preceding packets were choked
+		case hwsvc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
 				cl.hw_frames[ (clc.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_HW ].receivedtime = -2;
 			break;
 
-		case svc_modellist:
+		case hwsvc_modellist:
 			CL_ParseModellist ();
 			break;
 
-		case svc_soundlist:
+		case hwsvc_soundlist:
 			CL_ParseSoundlist ();
 			break;
 
-		case svc_packetentities:
+		case hwsvc_packetentities:
 			CL_ParsePacketEntities (false);
 			break;
 
-		case svc_deltapacketentities:
+		case hwsvc_deltapacketentities:
 			CL_ParsePacketEntities (true);
 			break;
 
-		case svc_maxspeed :
+		case hwsvc_maxspeed :
 			movevars.maxspeed = net_message.ReadFloat();
 			break;
 
-		case svc_entgravity :
+		case hwsvc_entgravity :
 			movevars.entgravity = net_message.ReadFloat();
 			break;
 
-		case svc_plaque:
+		case hwsvc_plaque:
 			CL_Plaque();
 			break;
 
-		case svc_indexed_print:
+		case hwsvc_indexed_print:
 			CL_IndexedPrint();
 			break;
 
-		case svc_name_print:
+		case hwsvc_name_print:
 			CL_NamePrint();
 			break;
 
-		case svc_particle_explosion:
+		case hwsvc_particle_explosion:
 			CL_ParticleExplosion();
 			break;
 
-		case svc_set_view_tint:
+		case hwsvc_set_view_tint:
 			i = net_message.ReadByte();
 //				cl.viewent.colorshade = i;
 			break;
 
-		case svc_start_effect:
+		case hwsvc_start_effect:
 			CLH2_ParseEffect(net_message);
 			break;
 
-		case svc_end_effect:
+		case hwsvc_end_effect:
 			CLH2_ParseEndEffect(net_message);
 			break;
 
-		case svc_set_view_flags:
+		case hwsvc_set_view_flags:
 			cl.viewent.state.drawflags |= net_message.ReadByte();
 			break;
 
-		case svc_clear_view_flags:
+		case hwsvc_clear_view_flags:
 			cl.viewent.state.drawflags &= ~net_message.ReadByte();
 			break;
 
-		case svc_update_inv:
+		case hwsvc_update_inv:
 			sc1 = sc2 = 0;
 
 			test = net_message.ReadByte();
@@ -1515,30 +1515,30 @@ void CL_ParseServerMessage (void)
 				SB_InvChanged();
 			break;
 
-		case svc_particle:
+		case h2svc_particle:
 			R_ParseParticleEffect ();
 			break;
-		case svc_particle2:
+		case hwsvc_particle2:
 			R_ParseParticleEffect2 ();
 			break;
-		case svc_particle3:
+		case hwsvc_particle3:
 			R_ParseParticleEffect3 ();
 			break;
-		case svc_particle4:
+		case hwsvc_particle4:
 			R_ParseParticleEffect4 ();
 			break;
-		case svc_turn_effect:
+		case hwsvc_turn_effect:
 			CLHW_ParseTurnEffect(net_message);
 			break;
-		case svc_update_effect:
+		case hwsvc_update_effect:
 			CLHW_ParseReviseEffect(net_message);
 			break;
 
-		case svc_multieffect:
+		case hwsvc_multieffect:
 			CLHW_ParseMultiEffect(net_message);
 			break;
 
-		case svc_midi_name:
+		case hwsvc_midi_name:
 			String::Cpy(cl.midi_name,net_message.ReadString2 ());
 			if (String::ICmp(bgmtype->string,"midi") == 0)
 				MIDI_Play(cl.midi_name);
@@ -1546,19 +1546,19 @@ void CL_ParseServerMessage (void)
 				MIDI_Stop();
 			break;
 
-		case svc_raineffect:
+		case hwsvc_raineffect:
 			R_ParseRainEffect();
 			break;
 
-		case svc_targetupdate:
+		case hwsvc_targetupdate:
 			CLHW_ParseTarget(net_message);
 			break;
 
-		case svc_update_piv:
+		case hwsvc_update_piv:
 			cl.PIV = net_message.ReadLong();
 			break;
 
-		case svc_player_sound:
+		case hwsvc_player_sound:
 			test = net_message.ReadByte();
 			pos[0] = net_message.ReadCoord();
 			pos[1] = net_message.ReadCoord();

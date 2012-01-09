@@ -155,7 +155,7 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 
 	if (sv.datagram.cursize > MAX_DATAGRAM_H2-16)
 		return;	
-	sv.datagram.WriteByte(svc_particle);
+	sv.datagram.WriteByte(h2svc_particle);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -183,7 +183,7 @@ void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int eff
 {
 	if (sv.datagram.cursize > MAX_DATAGRAM_H2-36)
 		return;	
-	sv.datagram.WriteByte(svc_particle2);
+	sv.datagram.WriteByte(h2svc_particle2);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -210,7 +210,7 @@ void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count
 {
 	if (sv.datagram.cursize > MAX_DATAGRAM_H2-15)
 		return;	
-	sv.datagram.WriteByte(svc_particle3);
+	sv.datagram.WriteByte(h2svc_particle3);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -234,7 +234,7 @@ void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int cou
 {
 	if (sv.datagram.cursize > MAX_DATAGRAM_H2-13)
 		return;	
-	sv.datagram.WriteByte(svc_particle4);
+	sv.datagram.WriteByte(h2svc_particle4);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -260,7 +260,7 @@ void SV_StopSound (edict_t *entity, int channel)
 	ent = NUM_FOR_EDICT(entity);
 	channel = (ent<<3) | channel;
 
-	sv.datagram.WriteByte(svc_stopsound);
+	sv.datagram.WriteByte(h2svc_stopsound);
 	sv.datagram.WriteShort(channel);
 }
 
@@ -280,7 +280,7 @@ void SV_UpdateSoundPos (edict_t *entity, int channel)
 	ent = NUM_FOR_EDICT(entity);
 	channel = (ent<<3) | channel;
 
-	sv.datagram.WriteByte(svc_sound_update_pos);
+	sv.datagram.WriteByte(h2svc_sound_update_pos);
 	sv.datagram.WriteShort(channel);
 	for (i=0 ; i<3 ; i++)
 		sv.datagram.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
@@ -359,7 +359,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 	}
 
 // directed messages go only to the entity the are targeted on
-	sv.datagram.WriteByte(svc_sound);
+	sv.datagram.WriteByte(h2svc_sound);
 	sv.datagram.WriteByte(field_mask);
 	if (field_mask & SND_VOLUME)
 		sv.datagram.WriteByte(volume);
@@ -392,11 +392,11 @@ void SV_SendServerinfo (client_t *client)
 	const char			**s;
 	char			message[2048];
 
-	client->message.WriteByte(svc_print);
+	client->message.WriteByte(h2svc_print);
 	sprintf (message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, HEXEN2_VERSION, pr_crc);
 	client->message.WriteString2(message);
 
-	client->message.WriteByte(svc_serverinfo);
+	client->message.WriteByte(h2svc_serverinfo);
 	client->message.WriteLong(PROTOCOL_VERSION);
 	client->message.WriteByte(svs.maxclients);
 
@@ -427,20 +427,20 @@ void SV_SendServerinfo (client_t *client)
 	client->message.WriteByte(0);
 
 // send music
-	client->message.WriteByte(svc_cdtrack);
+	client->message.WriteByte(h2svc_cdtrack);
 //	client->message.WriteByte(sv.edicts->v.soundtype);
 //	client->message.WriteByte(sv.edicts->v.soundtype);
 	client->message.WriteByte(sv.cd_track);
 	client->message.WriteByte(sv.cd_track);
 
-	client->message.WriteByte(svc_midi_name);
+	client->message.WriteByte(h2svc_midi_name);
 	client->message.WriteString2(sv.midi_name);
 
 // set view	
-	client->message.WriteByte(svc_setview);
+	client->message.WriteByte(h2svc_setview);
 	client->message.WriteShort(NUM_FOR_EDICT(client->edict));
 
-	client->message.WriteByte(svc_signonnum);
+	client->message.WriteByte(h2svc_signonnum);
 	client->message.WriteByte(1);
 
 	client->sendsignon = true;
@@ -741,7 +741,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 	client->last_frame = CLIENT_FRAME_RESET;
 
 	NumToRemove = 0;
-	msg->WriteByte(svc_reference);
+	msg->WriteByte(h2svc_reference);
 	msg->WriteByte(client->current_frame);
 	msg->WriteByte(client->current_sequence);
 
@@ -1039,7 +1039,7 @@ skipA:
 			break;
 	}
 
-	msg->WriteByte(svc_clear_edicts);
+	msg->WriteByte(h2svc_clear_edicts);
 	msg->WriteByte(NumToRemove);
 	for(i=0;i<NumToRemove;i++)
 		msg->WriteShort(RemoveList[i]);
@@ -1085,7 +1085,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	if (ent->v.dmg_take || ent->v.dmg_save)
 	{
 		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
-		msg->WriteByte(svc_damage);
+		msg->WriteByte(h2svc_damage);
 		msg->WriteByte(ent->v.dmg_save);
 		msg->WriteByte(ent->v.dmg_take);
 		for (i=0 ; i<3 ; i++)
@@ -1103,7 +1103,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 // a fixangle might get lost in a dropped packet.  Oh well.
 	if ( ent->v.fixangle )
 	{
-		msg->WriteByte(svc_setangle);
+		msg->WriteByte(h2svc_setangle);
 		for (i=0 ; i < 3 ; i++)
 			msg->WriteAngle(ent->v.angles[i] );
 		ent->v.fixangle = 0;
@@ -1191,7 +1191,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 		}
 	}
 
-	msg->WriteByte(svc_clientdata);
+	msg->WriteByte(h2svc_clientdata);
 	msg->WriteShort(bits);
 	
 	if (bits & SU_VIEWHEIGHT)
@@ -1345,7 +1345,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	if (!sc1 && !sc2)
 		goto end;
 
-	host_client->message.WriteByte(svc_update_inv);
+	host_client->message.WriteByte(h2svc_update_inv);
 	test = 0;
 	if (sc1 & 0x000000ff)
 		test |= 1;
@@ -1519,7 +1519,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 	
 	msg.InitOOB(buf, sizeof(buf));
 
-	msg.WriteByte(svc_time);
+	msg.WriteByte(h2svc_time);
 	msg.WriteFloat(sv.time);
 
 // add the client specific data to the datagram
@@ -1578,7 +1578,7 @@ void SV_UpdateToReliableMessages (void)
 				if (!client->active)
 					continue;
 
-				client->message.WriteByte(svc_updatefrags);
+				client->message.WriteByte(h2svc_updatefrags);
 				client->message.WriteByte(i);
 				client->message.WriteShort(host_client->edict->v.frags);
 			}
@@ -1613,7 +1613,7 @@ void SV_SendNop (client_t *client)
 	
 	msg.InitOOB(buf, sizeof(buf));
 
-	msg.WriteChar(svc_nop);
+	msg.WriteChar(h2svc_nop);
 
 	if (NET_SendUnreliableMessage (client->netconnection, &client->netchan, &msg) == -1)
 		SV_DropClient (true);	// if the message couldn't send, kick off
@@ -1777,7 +1777,7 @@ void SV_CreateBaseline (void)
 	//
 	// add to the message
 	//
-		sv.signon.WriteByte(svc_spawnbaseline);
+		sv.signon.WriteByte(h2svc_spawnbaseline);
 		sv.signon.WriteShort(entnum);
 
 		sv.signon.WriteShort(svent->baseline.modelindex);
@@ -1810,7 +1810,7 @@ void SV_SendReconnect (void)
 
 	msg.InitOOB(data, sizeof(data));
 
-	msg.WriteChar(svc_stufftext);
+	msg.WriteChar(h2svc_stufftext);
 	msg.WriteString2("reconnect\n");
 	NET_SendToAll (&msg, 5);
 	

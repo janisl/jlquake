@@ -39,7 +39,7 @@ static float vlen(vec3_t v)
 void Cam_Unlock(void)
 {
 	if (autocam) {
-		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteByte(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("ptrack");
 		autocam = CAM_NONE;
 		locked = false;
@@ -52,7 +52,7 @@ void Cam_Lock(int playernum)
 	char st[40];
 
 	sprintf(st, "ptrack %i", playernum);
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(st);
 	spec_track = playernum;
 	cam_forceview = true;
@@ -279,7 +279,7 @@ void Cam_Track(hwusercmd_t *cmd)
 	len = vlen(vec);
 	cmd->forwardmove = cmd->sidemove = cmd->upmove = 0;
 	if (len > 16) { // close enough?
-		clc.netchan.message.WriteByte(clc_tmove);
+		clc.netchan.message.WriteByte(hwclc_tmove);
 		clc.netchan.message.WriteCoord(desired_position[0]);
 		clc.netchan.message.WriteCoord(desired_position[1]);
 		clc.netchan.message.WriteCoord(desired_position[2]);

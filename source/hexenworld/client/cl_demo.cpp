@@ -262,7 +262,7 @@ void CL_Stop_f (void)
 // write a disconnect message to the demo file
 	net_message.Clear();
 	net_message.WriteLong(-1);	// -1 sequence means out of band
-	net_message.WriteByte(svc_disconnect);
+	net_message.WriteByte(h2svc_disconnect);
 	net_message.WriteString2("EndOfDemo");
 	CL_WriteDemoMessage (&net_message);
 

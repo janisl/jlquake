@@ -348,7 +348,7 @@ void PF_sprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	client->message.WriteChar(svc_print);
+	client->message.WriteChar(h2svc_print);
 	client->message.WriteString2(s );
 }
 
@@ -379,7 +379,7 @@ void PF_centerprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	client->message.WriteChar(svc_centerprint);
+	client->message.WriteChar(h2svc_centerprint);
 	client->message.WriteString2(s );
 }
 
@@ -632,7 +632,7 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	sv.signon.WriteByte(svc_spawnstaticsound);
+	sv.signon.WriteByte(h2svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
 		sv.signon.WriteCoord(pos[i]);
 
@@ -1536,7 +1536,7 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 		if (client->active || client->spawned)
 		{
-			client->message.WriteChar(svc_lightstyle);
+			client->message.WriteChar(h2svc_lightstyle);
 			client->message.WriteChar(style);
 			client->message.WriteString2(val);
 		}
@@ -1612,7 +1612,7 @@ void PF_lightstylestatic(void)
 	{
 		if(client->active || client->spawned)
 		{
-			client->message.WriteChar(svc_lightstyle);
+			client->message.WriteChar(h2svc_lightstyle);
 			client->message.WriteChar(styleNumber);
 			client->message.WriteString2(styleString);
 		}
@@ -1941,7 +1941,7 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	sv.signon.WriteByte(svc_spawnstatic);
+	sv.signon.WriteByte(h2svc_spawnstatic);
 
 	sv.signon.WriteShort(SV_ModelIndex(PR_GetString(ent->v.model)));
 
@@ -2034,7 +2034,7 @@ void PF_plaque_draw (void)
 	if (Index > pr_string_count)
 		PR_RunError ("PF_plaque_draw: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
 
-	WriteDest()->WriteByte(svc_plaque);
+	WriteDest()->WriteByte(h2svc_plaque);
 	WriteDest()->WriteShort(Index);
 }
 
@@ -2065,7 +2065,7 @@ void PF_rain_go (void)
 	
 //void SV_StartRainEffect (vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
 {
-	sv.datagram.WriteByte(svc_raineffect);
+	sv.datagram.WriteByte(h2svc_raineffect);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -2092,7 +2092,7 @@ void PF_particleexplosion (void)
 	radius = G_FLOAT(OFS_PARM2);
 	counter = G_FLOAT(OFS_PARM3);
 
-	sv.datagram.WriteByte(svc_particle_explosion);
+	sv.datagram.WriteByte(h2svc_particle_explosion);
 	sv.datagram.WriteCoord(org[0]);
 	sv.datagram.WriteCoord(org[1]);
 	sv.datagram.WriteCoord(org[2]);
@@ -2287,7 +2287,7 @@ void PF_AwardExperience(void)
 
 				sprintf(temp,"You are now level %d\n",AfterLevel);
 	
-				client->message.WriteChar(svc_print);
+				client->message.WriteChar(h2svc_print);
 				client->message.WriteString2(temp );
 */
 
@@ -2458,7 +2458,7 @@ void PF_endeffect (void)
 	if (!sv.Effects[index].type) return;
 
 	sv.Effects[index].type = 0;
-	sv.reliable_datagram.WriteByte(svc_end_effect);
+	sv.reliable_datagram.WriteByte(h2svc_end_effect);
 	sv.reliable_datagram.WriteByte(index);
 }
 

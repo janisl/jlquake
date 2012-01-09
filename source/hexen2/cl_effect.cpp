@@ -197,7 +197,7 @@ void SV_SendEffect(QMsg *sb, int index)
 			else continue;
 		}
 		
-		sb->WriteByte(svc_start_effect);
+		sb->WriteByte(h2svc_start_effect);
 		sb->WriteByte(index);
 		sb->WriteByte(sv.Effects[index].type);
 		

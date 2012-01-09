@@ -55,8 +55,8 @@
 #define	STAT_ACTIVEWEAPON	10
 #define	STAT_TOTALSECRETS	11
 #define	STAT_TOTALMONSTERS	12
-#define	STAT_SECRETS		13		// bumped on client side by svc_foundsecret
-#define	STAT_MONSTERS		14		// bumped by svc_killedmonster
+#define	STAT_SECRETS		13		// bumped on client side by h2svc_foundsecret
+#define	STAT_MONSTERS		14		// bumped by h2svc_killedmonster
 #define	STAT_ITEMS			15
 //define	STAT_VIEWHEIGHT		16
 

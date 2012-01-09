@@ -177,10 +177,10 @@ void SV_FinalMessage (const char *message)
 	client_t	*cl;
 	
 	net_message.Clear();
-	net_message.WriteByte(svc_print);
+	net_message.WriteByte(h2svc_print);
 	net_message.WriteByte(PRINT_HIGH);
 	net_message.WriteString2(message);
-	net_message.WriteByte(svc_disconnect);
+	net_message.WriteByte(h2svc_disconnect);
 
 	for (i=0, cl = svs.clients ; i<HWMAX_CLIENTS ; i++, cl++)
 		if (cl->state >= cs_spawned)
@@ -201,7 +201,7 @@ void SV_DropClient (client_t *drop)
 {
 
 	// add the disconnect
-	drop->netchan.message.WriteByte(svc_disconnect);
+	drop->netchan.message.WriteByte(h2svc_disconnect);
 
 	if (drop->state == cs_spawned)
 	{
@@ -305,41 +305,41 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 
 //Con_Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
 
-	buf->WriteByte(svc_updatedminfo);
+	buf->WriteByte(hwsvc_updatedminfo);
 	buf->WriteByte(i);
 	buf->WriteShort(client->old_frags);
 	buf->WriteByte((client->playerclass<<5)|((int)client->edict->v.level&31));
 	
 	if(dmMode->value==DM_SIEGE)
 	{
-		buf->WriteByte(svc_updatesiegeinfo);
+		buf->WriteByte(hwsvc_updatesiegeinfo);
 		buf->WriteByte((int)ceil(timelimit->value));
 		buf->WriteByte((int)ceil(fraglimit->value));
 
-		buf->WriteByte(svc_updatesiegeteam);
+		buf->WriteByte(hwsvc_updatesiegeteam);
 		buf->WriteByte(i);
 		buf->WriteByte(client->siege_team);
 
-		buf->WriteByte(svc_updatesiegelosses);
+		buf->WriteByte(hwsvc_updatesiegelosses);
 		buf->WriteByte(pr_global_struct->defLosses);
 		buf->WriteByte(pr_global_struct->attLosses);
 
-		buf->WriteByte(svc_time);//send server time upon connection
+		buf->WriteByte(h2svc_time);//send server time upon connection
 		buf->WriteFloat(sv.time);
 	}
 
-	buf->WriteByte(svc_updateping);
+	buf->WriteByte(hwsvc_updateping);
 	buf->WriteByte(i);
 	buf->WriteShort(SV_CalcPing (client));
 	
-	buf->WriteByte(svc_updateentertime);
+	buf->WriteByte(hwsvc_updateentertime);
 	buf->WriteByte(i);
 	buf->WriteFloat(realtime - client->connection_started);
 
 	String::Cpy(info, client->userinfo);
 	Info_RemovePrefixedKeys (info, '_', HWMAX_INFO_STRING);	// server passwords, etc
 
-	buf->WriteByte(svc_updateuserinfo);
+	buf->WriteByte(hwsvc_updateuserinfo);
 	buf->WriteByte(i);
 	buf->WriteLong(client->userid);
 	buf->WriteString2(info);

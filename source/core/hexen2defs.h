@@ -464,7 +464,7 @@ struct hwpacket_entities_t
 #define HWTE_HWRAVENEXPLODE			39
 #define HWTE_XBOWHIT				40
 
-#define	HWTE_CHUNK2					41
+#define HWTE_CHUNK2					41
 #define HWTE_ICEHIT					42
 #define HWTE_ICESTORM				43
 #define HWTE_HWMISSILEFLASH			44
@@ -560,3 +560,165 @@ struct hwpacket_entities_t
 #define HWU_SOUND		(1<<17)
 #define HWU_DRAWFLAGS	(1<<18)
 #define HWU_ABSLIGHT	(1<<19)
+
+//==================
+// note that there are some defs.qc that mirror to these numbers
+// also related to svc_strings[] in cl_parse
+//==================
+
+//
+// server to client
+//
+#define h2svc_bad					0
+#define h2svc_nop					1
+#define h2svc_disconnect			2
+#define h2svc_updatestat			3	// [byte] [long]
+#define h2svc_version				4	// [long] server version, not in HW
+#define h2svc_setview				5	// [short] entity number
+#define h2svc_sound					6	// <see code>
+#define h2svc_time					7	// [float] server time
+#define h2svc_print					8	// [string] null terminated string
+#define h2svc_stufftext				9	// [string] stuffed into client's console buffer
+										// the string should be \n terminated
+#define h2svc_setangle				10	// [angle3] set the view angle to this absolute value
+	
+#define h2svc_serverinfo			11	// [long] version
+										// [string] signon string
+										// [string]..[0]model cache
+										// [string]...[0]sounds cache
+#define hwsvc_serverdata			11	// [long] protocol ...
+#define h2svc_lightstyle			12	// [byte] [string]
+#define h2svc_updatename			13	// [byte] [string], not in HW
+#define h2svc_updatefrags			14	// [byte] [short]
+#define h2svc_clientdata			15	// <shortbits + data>, not in HW
+#define h2svc_stopsound				16	// <see code>
+#define h2svc_updatecolors			17	// [byte] [byte], not in HW
+#define h2svc_particle				18	// [vec3] <variable>
+#define h2svc_damage				19
+	
+#define h2svc_spawnstatic			20
+
+#define h2svc_raineffect			21	// not in HW
+
+#define h2svc_spawnbaseline			22
+	
+#define h2svc_temp_entity			23
+
+#define h2svc_setpause				24	// [byte] on / off, not in HW
+#define h2svc_signonnum				25	// [byte]  used for the signon sequence, not in HW
+
+#define h2svc_centerprint			26	// [string] to put in center of the screen
+
+#define h2svc_killedmonster			27
+#define h2svc_foundsecret			28
+
+#define h2svc_spawnstaticsound		29	// [coord3] [byte] samp [byte] vol [byte] aten
+
+#define h2svc_intermission			30		// [string] music
+#define h2svc_finale				31		// [string] music [string] text
+
+#define h2svc_cdtrack				32		// [byte] track [byte] looptrack
+#define h2svc_sellscreen			33
+
+#define h2svc_particle2				34	// [vec3] <variable>
+#define h2svc_cutscene				35
+#define h2svc_midi_name				36		// [string] name
+#define h2svc_updateclass			37		// [byte] [byte]
+#define h2svc_particle3				38	
+#define h2svc_particle4				39	
+#define h2svc_set_view_flags		40
+#define h2svc_clear_view_flags		41
+#define h2svc_start_effect			42
+#define h2svc_end_effect			43
+#define h2svc_plaque				44
+#define h2svc_particle_explosion	45
+#define h2svc_set_view_tint			46
+#define h2svc_reference				47
+#define h2svc_clear_edicts			48
+#define h2svc_update_inv			49
+
+#define h2svc_setangle_interpolate	50
+#define h2svc_update_kingofhill		51
+#define h2svc_toggle_statbar		52
+#define h2svc_sound_update_pos		53	//[short] ent+channel [coord3] pos
+
+#define hwsvc_smallkick				34		// set client punchangle to 2
+#define hwsvc_bigkick				35		// set client punchangle to 4
+
+#define hwsvc_updateping			36		// [byte] [short]
+#define hwsvc_updateentertime		37		// [byte] [float]
+
+#define hwsvc_updatestatlong		38		// [byte] [long]
+
+#define hwsvc_muzzleflash			39		// [short] entity
+
+#define hwsvc_updateuserinfo		40		// [byte] slot [long] uid
+									// [string] userinfo
+
+#define hwsvc_download				41		// [short] size [size bytes]
+#define hwsvc_playerinfo			42		// variable
+#define hwsvc_nails					43		// [byte] num [48 bits] xyzpy 12 12 12 4 8 
+#define hwsvc_chokecount			44		// [byte] packets choked
+#define hwsvc_modellist				45		// [strings]
+#define hwsvc_soundlist				46		// [strings]
+#define hwsvc_packetentities		47		// [...]
+#define hwsvc_deltapacketentities	48		// [...]
+#define hwsvc_maxspeed				49		// maxspeed change, for prediction
+#define hwsvc_entgravity			50		// gravity change, for prediction
+
+// Hexen2 specifics
+#define hwsvc_plaque				51
+#define hwsvc_particle_explosion	52
+#define hwsvc_set_view_tint			53
+#define hwsvc_start_effect			54
+#define hwsvc_end_effect			55
+#define hwsvc_set_view_flags		56
+#define hwsvc_clear_view_flags		57
+#define hwsvc_update_inv			58
+#define hwsvc_particle2				59
+#define hwsvc_particle3				60	
+#define hwsvc_particle4				61	
+#define hwsvc_turn_effect			62
+#define hwsvc_update_effect			63
+#define hwsvc_multieffect			64
+#define hwsvc_midi_name				65
+#define hwsvc_raineffect			66
+
+#define hwsvc_packmissile			67	//[byte] num [40 bits] xyz type 12 12 12 4
+
+#define hwsvc_indexed_print			68 //same as h2svc_print, but sends an index in strings.txt instead of string
+
+#define hwsvc_targetupdate			69 // [byte] angle [byte] pitch [byte] dist/4 - Hey, I got number 69!  Woo hoo!
+
+#define hwsvc_name_print			70 // print player's name
+#define hwsvc_sound_update_pos		71	//[short] ent+channel [coord3] pos
+#define hwsvc_update_piv			72	// update players in view
+#define hwsvc_player_sound			73  // sends weapon sound for invisible player
+#define hwsvc_updatepclass			74	// [byte] [byte]
+#define hwsvc_updatedminfo			75	// [byte] [short] [byte]
+#define hwsvc_updatesiegeinfo		76	// [byte] [byte]
+#define hwsvc_updatesiegeteam		77	// [byte] [byte]
+#define hwsvc_updatesiegelosses		78  // [byte] [byte]
+
+#define hwsvc_haskey				79  // [byte] [byte]
+#define hwsvc_nonehaskey			80  // [byte] [byte]
+#define hwsvc_isdoc					81  // [byte] [byte]
+#define hwsvc_nodoc					82  // [byte] [byte]
+#define hwsvc_playerskipped			83	// [byte]
+
+//
+// client to server
+//
+#define h2clc_bad			0
+#define h2clc_nop 			1
+#define h2clc_disconnect	2	// Not in HW
+#define h2clc_move			3	// [usercmd_t]
+#define h2clc_stringcmd		4	// [string] message
+
+#define h2clc_inv_select	5
+#define h2clc_frame			6
+
+#define hwclc_delta			5	// [byte] sequence number, requests delta compression of message
+#define hwclc_tmove			6	// teleport request, spectator only
+#define hwclc_inv_select	7
+#define hwclc_get_effect	8	//[byte] effect id

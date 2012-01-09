@@ -53,7 +53,7 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	cls.message.WriteByte(clc_stringcmd);
+	cls.message.WriteByte(h2clc_stringcmd);
 	if (String::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{
 		cls.message.Print(Cmd_Argv(0));

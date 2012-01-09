@@ -538,7 +538,7 @@ void CL_SendCmd (void)
 // if the last packet was dropped, it can be recovered
 	buf.InitOOB(data, 128);
 
-	buf.WriteByte(clc_move);
+	buf.WriteByte(h2clc_move);
 	i = (clc.netchan.outgoingSequence-2) & UPDATE_MASK_HW;
 	MSG_WriteUsercmd (&buf, &cl.hw_frames[i].cmd, false);
 	i = (clc.netchan.outgoingSequence-1) & UPDATE_MASK_HW;
@@ -556,7 +556,7 @@ void CL_SendCmd (void)
 		!cls.demorecording)
 	{
 		cl.hw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_HW].delta_sequence = cl.validsequence;
-		buf.WriteByte(clc_delta);
+		buf.WriteByte(hwclc_delta);
 		buf.WriteByte(cl.validsequence&255);
 	}
 	else

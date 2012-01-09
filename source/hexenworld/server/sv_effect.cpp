@@ -205,7 +205,7 @@ void SV_SendEffect(QMsg *sb, int index)
 			break;
 	}
 
-	sv.multicast.WriteByte(svc_start_effect);
+	sv.multicast.WriteByte(hwsvc_start_effect);
 	sv.multicast.WriteByte(index);
 	sv.multicast.WriteByte(sv.Effects[index].type);
 
@@ -753,7 +753,7 @@ void SV_ParseMultiEffect(QMsg *sb)
 	case HWCE_HWRAVENPOWER:
 		// need to set aside 3 effect ids
 		
-		sb->WriteByte(svc_multieffect);
+		sb->WriteByte(hwsvc_multieffect);
 		sb->WriteByte(effect);
 
 		VectorCopy(G_VECTOR(OFS_PARM1), orig);

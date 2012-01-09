@@ -149,9 +149,9 @@ void CL_Disconnect (void)
 		if (cls.demorecording)
 			CL_Stop_f ();
 
-		Con_DPrintf ("Sending clc_disconnect\n");
+		Con_DPrintf ("Sending h2clc_disconnect\n");
 		cls.message.Clear();
-		cls.message.WriteByte(clc_disconnect);
+		cls.message.WriteByte(h2clc_disconnect);
 		NET_SendUnreliableMessage (cls.netcon, &clc.netchan, &cls.message);
 		cls.message.Clear();
 		NET_Close (cls.netcon, &clc.netchan);
@@ -211,7 +211,7 @@ void CL_EstablishConnection (const char *host)
 =====================
 CL_SignonReply
 
-An svc_signonnum has been received, perform a client side setup
+An h2svc_signonnum has been received, perform a client side setup
 =====================
 */
 void CL_SignonReply (void)
@@ -223,27 +223,27 @@ Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
 	switch (cls.signon)
 	{
 	case 1:
-		cls.message.WriteByte(clc_stringcmd);
+		cls.message.WriteByte(h2clc_stringcmd);
 		cls.message.WriteString2("prespawn");
 		break;
 		
 	case 2:		
-		cls.message.WriteByte(clc_stringcmd);
+		cls.message.WriteByte(h2clc_stringcmd);
 		cls.message.WriteString2(va("name \"%s\"\n", cl_name->string));
 	
-		cls.message.WriteByte(clc_stringcmd);
+		cls.message.WriteByte(h2clc_stringcmd);
 		cls.message.WriteString2(va("playerclass %i\n", (int)cl_playerclass->value));
 
-		cls.message.WriteByte(clc_stringcmd);
+		cls.message.WriteByte(h2clc_stringcmd);
 		cls.message.WriteString2(va("color %i %i\n", ((int)cl_color->value)>>4, ((int)cl_color->value)&15));
 
-		cls.message.WriteByte(clc_stringcmd);
+		cls.message.WriteByte(h2clc_stringcmd);
 		sprintf (str, "spawn %s", cls.spawnparms);
 		cls.message.WriteString2(str);
 		break;
 		
 	case 3:	
-		cls.message.WriteByte(clc_stringcmd);
+		cls.message.WriteByte(h2clc_stringcmd);
 		cls.message.WriteString2("begin");
 		break;
 		

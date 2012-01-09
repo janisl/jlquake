@@ -437,11 +437,11 @@ void CL_SendMove (h2usercmd_t *cmd)
 //
 // send the movement message
 //
-	buf.WriteByte(clc_frame);
+	buf.WriteByte(h2clc_frame);
 	buf.WriteByte(cl.reference_frame);
 	buf.WriteByte(cl.current_sequence);
 
-	buf.WriteByte(clc_move);
+	buf.WriteByte(h2clc_move);
 
 	buf.WriteFloat(cl.mtime[0]);	// so server can get ping times
 

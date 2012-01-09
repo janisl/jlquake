@@ -15,66 +15,66 @@ extern	Cvar*	sv_walkpitch;
 
 const char *svc_strings[] =
 {
-	"svc_bad",
-	"svc_nop",
-	"svc_disconnect",
-	"svc_updatestat",
-	"svc_version",		// [long] server version
-	"svc_setview",		// [short] entity number
-	"svc_sound",			// <see code>
-	"svc_time",			// [float] server time
-	"svc_print",			// [string] null terminated string
-	"svc_stufftext",		// [string] stuffed into client's console buffer
+	"h2svc_bad",
+	"h2svc_nop",
+	"h2svc_disconnect",
+	"h2svc_updatestat",
+	"h2svc_version",		// [long] server version
+	"h2svc_setview",		// [short] entity number
+	"h2svc_sound",			// <see code>
+	"h2svc_time",			// [float] server time
+	"h2svc_print",			// [string] null terminated string
+	"h2svc_stufftext",		// [string] stuffed into client's console buffer
 						// the string should be \n terminated
-	"svc_setangle",		// [vec3] set the view angle to this absolute value
+	"h2svc_setangle",		// [vec3] set the view angle to this absolute value
 	
-	"svc_serverinfo",		// [long] version
+	"h2svc_serverinfo",		// [long] version
 						// [string] signon string
 						// [string]..[0]model cache [string]...[0]sounds cache
 						// [string]..[0]item cache
-	"svc_lightstyle",		// [byte] [string]
-	"svc_updatename",		// [byte] [string]
-	"svc_updatefrags",	// [byte] [short]
-	"svc_clientdata",		// <shortbits + data>
-	"svc_stopsound",		// <see code>
-	"svc_updatecolors",	// [byte] [byte]
-	"svc_particle",		// [vec3] <variable>
-	"svc_damage",			// [byte] impact [byte] blood [vec3] from
+	"h2svc_lightstyle",		// [byte] [string]
+	"h2svc_updatename",		// [byte] [string]
+	"h2svc_updatefrags",	// [byte] [short]
+	"h2svc_clientdata",		// <shortbits + data>
+	"h2svc_stopsound",		// <see code>
+	"h2svc_updatecolors",	// [byte] [byte]
+	"h2svc_particle",		// [vec3] <variable>
+	"h2svc_damage",			// [byte] impact [byte] blood [vec3] from
 	
-	"svc_spawnstatic",
-	"svc_raineffect",
-	"svc_spawnbaseline",
+	"h2svc_spawnstatic",
+	"h2svc_raineffect",
+	"h2svc_spawnbaseline",
 	
-	"svc_temp_entity",		// <variable>
-	"svc_setpause",
-	"svc_signonnum",
-	"svc_centerprint",
-	"svc_killedmonster",
-	"svc_foundsecret",
-	"svc_spawnstaticsound",
-	"svc_intermission",
-	"svc_finale",			// [string] music [string] text
-	"svc_cdtrack",			// [byte] track [byte] looptrack
-	"svc_sellscreen",
-	"svc_particle2",		// [vec3] <variable>
-	"svc_cutscene",
-	"svc_midi_name",
-	"svc_updateclass",  // [byte] client [byte] class
-	"svc_particle3",
-	"svc_particle4",
-	"svc_set_view_flags",
-	"svc_clear_view_flags",
-	"svc_start_effect",
-	"svc_end_effect",
-	"svc_plaque",
-	"svc_particle_explosion",
-	"svc_set_view_tint",
-	"svc_reference",
-	"svc_clear_edicts",
-	"svc_update_inv",
-	"svc_setangle_interpolate",
-	"svc_update_kingofhill",
-	"svc_toggle_statbar"
+	"h2svc_temp_entity",		// <variable>
+	"h2svc_setpause",
+	"h2svc_signonnum",
+	"h2svc_centerprint",
+	"h2svc_killedmonster",
+	"h2svc_foundsecret",
+	"h2svc_spawnstaticsound",
+	"h2svc_intermission",
+	"h2svc_finale",			// [string] music [string] text
+	"h2svc_cdtrack",			// [byte] track [byte] looptrack
+	"h2svc_sellscreen",
+	"h2svc_particle2",		// [vec3] <variable>
+	"h2svc_cutscene",
+	"h2svc_midi_name",
+	"h2svc_updateclass",  // [byte] client [byte] class
+	"h2svc_particle3",
+	"h2svc_particle4",
+	"h2svc_set_view_flags",
+	"h2svc_clear_view_flags",
+	"h2svc_start_effect",
+	"h2svc_end_effect",
+	"h2svc_plaque",
+	"h2svc_particle_explosion",
+	"h2svc_set_view_tint",
+	"h2svc_reference",
+	"h2svc_clear_edicts",
+	"h2svc_update_inv",
+	"h2svc_setangle_interpolate",
+	"h2svc_update_kingofhill",
+	"h2svc_toggle_statbar"
 };
 
 char *puzzle_strings;
@@ -187,7 +187,7 @@ void CL_KeepaliveMessage (void)
 			Host_Error ("CL_KeepaliveMessage: received a message");
 			break;
 		case 2:
-			if (net_message.ReadByte() != svc_nop)
+			if (net_message.ReadByte() != h2svc_nop)
 				Host_Error ("CL_KeepaliveMessage: datagram wasn't a nop");
 			break;
 		}
@@ -204,7 +204,7 @@ void CL_KeepaliveMessage (void)
 // write out a nop
 	Con_Printf ("--> client to server keepalive\n");
 
-	cls.message.WriteByte(clc_nop);
+	cls.message.WriteByte(h2clc_nop);
 	NET_SendMessage (cls.netcon, &clc.netchan, &cls.message);
 	cls.message.Clear();
 }
@@ -1078,60 +1078,60 @@ void CL_ParseServerMessage (void)
 			Host_Error ("CL_ParseServerMessage: Illegible server message\n");
 			break;
 			
-		case svc_nop:
-//			Con_Printf ("svc_nop\n");
+		case h2svc_nop:
+//			Con_Printf ("h2svc_nop\n");
 			break;
 			
-		case svc_time:
+		case h2svc_time:
 			cl.mtime[1] = cl.mtime[0];
 			cl.mtime[0] = net_message.ReadFloat ();			
 			break;
 			
-		case svc_clientdata:
+		case h2svc_clientdata:
 			i = net_message.ReadShort ();
 			CL_ParseClientdata (i);
 			break;
 		
-		case svc_version:
+		case h2svc_version:
 			i = net_message.ReadLong ();
 			if (i != PROTOCOL_VERSION)
 				Host_Error ("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, PROTOCOL_VERSION);
 			break;
 			
-		case svc_disconnect:
+		case h2svc_disconnect:
 			Host_EndGame ("Server disconnected\n");
 
-		case svc_print:
+		case h2svc_print:
 			if(intro_playing)
 				net_message.ReadString2 ();
 			else
 				Con_Printf ("%s", net_message.ReadString2 ());
 			break;
 			
-		case svc_centerprint:
+		case h2svc_centerprint:
 			//Bottom_Plaque_Draw(net_message.ReadString2(),true);
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
-		case svc_stufftext:
+		case h2svc_stufftext:
 			Cbuf_AddText (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
-		case svc_damage:
+		case h2svc_damage:
 			V_ParseDamage ();
 			break;
 			
-		case svc_serverinfo:
+		case h2svc_serverinfo:
 			CL_ParseServerInfo ();
 			break;
 			
-		case svc_setangle:
+		case h2svc_setangle:
 			for (i=0 ; i<3 ; i++)
 				cl.viewangles[i] = net_message.ReadAngle ();
 
 			break;
 
-		case svc_setangle_interpolate:
+		case h2svc_setangle_interpolate:
 			
 			compangles[0][0] = net_message.ReadAngle();
 			compangles[0][1] = net_message.ReadAngle();
@@ -1172,20 +1172,20 @@ void CL_ParseServerMessage (void)
 			}
 			break;
 			
-		case svc_setview:
+		case h2svc_setview:
 			cl.viewentity = net_message.ReadShort ();
 			break;
 					
-		case svc_lightstyle:
+		case h2svc_lightstyle:
 			i = net_message.ReadByte();
 			CL_SetLightStyle(i, net_message.ReadString2());
 			break;
 			
-		case svc_sound:
+		case h2svc_sound:
 			CL_ParseStartSoundPacket();
 			break;
 		
-		case svc_sound_update_pos:
+		case h2svc_sound_update_pos:
 		{//FIXME: put a field on the entity that lists the channels
 			//it should update when it moves- if a certain flag
 			//is on the ent, this update_channels field could
@@ -1200,7 +1200,7 @@ void CL_ParseServerMessage (void)
 			channel &= 7;
 			
 			if (ent > MAX_EDICTS_H2)
-				Host_Error ("svc_sound_update_pos: ent = %i", ent);
+				Host_Error ("h2svc_sound_update_pos: ent = %i", ent);
 			
 			for (i=0 ; i<3 ; i++)
 				pos[i] = net_message.ReadCoord ();
@@ -1209,80 +1209,80 @@ void CL_ParseServerMessage (void)
 		}
 			break;
 
-		case svc_stopsound:
+		case h2svc_stopsound:
 			i = net_message.ReadShort();
 			S_StopSound(i>>3, i&7);
 			break;
 		
-		case svc_updatename:
+		case h2svc_updatename:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatename > H2MAX_CLIENTS");
+				Host_Error ("CL_ParseServerMessage: h2svc_updatename > H2MAX_CLIENTS");
 			String::Cpy(cl.h2_players[i].name, net_message.ReadString2 ());
 			break;
 
-		case svc_updateclass:
+		case h2svc_updateclass:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updateclass > H2MAX_CLIENTS");
+				Host_Error ("CL_ParseServerMessage: h2svc_updateclass > H2MAX_CLIENTS");
 			cl.h2_players[i].playerclass = net_message.ReadByte();
 			CL_NewTranslation(i); // update the color
 			break;
 		
-		case svc_updatefrags:
+		case h2svc_updatefrags:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatefrags > H2MAX_CLIENTS");
+				Host_Error ("CL_ParseServerMessage: h2svc_updatefrags > H2MAX_CLIENTS");
 			cl.h2_players[i].frags = net_message.ReadShort ();
 			break;			
 
-		case svc_update_kingofhill:
+		case h2svc_update_kingofhill:
 			sv_kingofhill = net_message.ReadShort() - 1;
 			break;
 
-		case svc_updatecolors:
+		case h2svc_updatecolors:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatecolors > H2MAX_CLIENTS");
+				Host_Error ("CL_ParseServerMessage: h2svc_updatecolors > H2MAX_CLIENTS");
 			j = net_message.ReadByte();
 			cl.h2_players[i].topColour = (j & 0xf0) >> 4;
 			cl.h2_players[i].bottomColour = (j & 15);
 			CL_NewTranslation (i);
 			break;
 			
-		case svc_particle:
+		case h2svc_particle:
 			R_ParseParticleEffect ();
 			break;
 
-		case svc_particle2:
+		case h2svc_particle2:
 			R_ParseParticleEffect2 ();
 			break;
-		case svc_particle3:
+		case h2svc_particle3:
 			R_ParseParticleEffect3 ();
 			break;
-		case svc_particle4:
+		case h2svc_particle4:
 			R_ParseParticleEffect4 ();
 			break;
 
-		case svc_spawnbaseline:
+		case h2svc_spawnbaseline:
 			i = net_message.ReadShort ();
 			// must use CL_EntityNum() to force cl.num_entities up
 			CL_EntityNum(i);
 			CL_ParseBaseline (&clh2_baselines[i]);
 			break;
-		case svc_spawnstatic:
+		case h2svc_spawnstatic:
 			CL_ParseStatic ();
 			break;			
 
-		case svc_raineffect:
+		case h2svc_raineffect:
 			CL_ParseRainEffect();
 			break;
 
-		case svc_temp_entity:
+		case h2svc_temp_entity:
 			CLH2_ParseTEnt(net_message);
 			break;
 
-		case svc_setpause:
+		case h2svc_setpause:
 			{
 				cl.paused = net_message.ReadByte ();
 
@@ -1297,7 +1297,7 @@ void CL_ParseServerMessage (void)
 			}
 			break;
 			
-		case svc_signonnum:
+		case h2svc_signonnum:
 			i = net_message.ReadByte ();
 			if (i <= cls.signon)
 				Host_Error ("Received signon %i when at %i", i, cls.signon);
@@ -1305,26 +1305,26 @@ void CL_ParseServerMessage (void)
 			CL_SignonReply ();
 			break;
 
-		case svc_killedmonster:
+		case h2svc_killedmonster:
 			cl.stats[STAT_MONSTERS]++;
 			break;
 
-		case svc_foundsecret:
+		case h2svc_foundsecret:
 			cl.stats[STAT_SECRETS]++;
 			break;
 
-		case svc_updatestat:
+		case h2svc_updatestat:
 			i = net_message.ReadByte ();
 			if (i < 0 || i >= MAX_CL_STATS)
-				Sys_Error ("svc_updatestat: %i is invalid", i);
+				Sys_Error ("h2svc_updatestat: %i is invalid", i);
 			cl.stats[i] = net_message.ReadLong ();;
 			break;
 			
-		case svc_spawnstaticsound:
+		case h2svc_spawnstaticsound:
 			CL_ParseStaticSound ();
 			break;
 
-		case svc_cdtrack:
+		case h2svc_cdtrack:
 			cl.cdtrack = net_message.ReadByte ();
 			cl.looptrack = net_message.ReadByte ();
 			if (String::ICmp(bgmtype->string,"cd") == 0)
@@ -1338,7 +1338,7 @@ void CL_ParseServerMessage (void)
 			   CDAudio_Stop();
 			break;
 
-		case svc_midi_name:
+		case h2svc_midi_name:
 			String::Cpy(cl.midi_name,net_message.ReadString2 ());
 			if (String::ICmp(bgmtype->string,"midi") == 0)
 				MIDI_Play(cl.midi_name);
@@ -1346,43 +1346,43 @@ void CL_ParseServerMessage (void)
 				MIDI_Stop();
 			break;
 
-		case svc_toggle_statbar:
+		case h2svc_toggle_statbar:
 			break;
 
-		case svc_intermission:
+		case h2svc_intermission:
 			cl.intermission = net_message.ReadByte();
 			cl.completed_time = cl.serverTimeFloat;
 			break;
 
-			case svc_set_view_flags:
+			case h2svc_set_view_flags:
 				cl.viewent.state.drawflags |= net_message.ReadByte();
 				break;
 
-			case svc_clear_view_flags:
+			case h2svc_clear_view_flags:
 				cl.viewent.state.drawflags &= ~net_message.ReadByte();
 				break;
 
-			case svc_start_effect:
+			case h2svc_start_effect:
 				CLH2_ParseEffect(net_message);
 				break;
-			case svc_end_effect:
+			case h2svc_end_effect:
 				CLH2_ParseEndEffect(net_message);
 				break;
 
-			case svc_plaque:
+			case h2svc_plaque:
 				CL_Plaque();
 				break;
 
-			case svc_particle_explosion:
+			case h2svc_particle_explosion:
 				CL_ParticleExplosion();
 				break;
 
-			case svc_set_view_tint:
+			case h2svc_set_view_tint:
 				i = net_message.ReadByte();
 				cl.viewent.state.colormap = i;
 				break;
 
-			case svc_reference:
+			case h2svc_reference:
 				packet_loss = false;
 				cl.last_frame = cl.current_frame;
 				cl.last_sequence = cl.current_sequence;
@@ -1453,7 +1453,7 @@ void CL_ParseServerMessage (void)
 				}
 				break;
 
-			case svc_clear_edicts:
+			case h2svc_clear_edicts:
 				j = net_message.ReadByte();
 				if (cl.need_build)
 				{
@@ -1469,7 +1469,7 @@ void CL_ParseServerMessage (void)
 				}
 				break;
 
-			case svc_update_inv:
+			case h2svc_update_inv:
 				sc1 = sc2 = 0;
 
 				test = net_message.ReadByte();
