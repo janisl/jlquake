@@ -51,7 +51,7 @@ int SV_FindIndex (char *name, int start, int max, qboolean create)
 	if (sv.state != ss_loading)
 	{	// send the update to everyone
 		sv.multicast.Clear();
-		sv.multicast.WriteChar(svc_configstring);
+		sv.multicast.WriteChar(q2svc_configstring);
 		sv.multicast.WriteShort(start+i);
 		sv.multicast.WriteString2(name);
 		SV_Multicast (vec3_origin, MULTICAST_ALL_R);

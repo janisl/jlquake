@@ -135,7 +135,7 @@ void SV_EmitPacketEntities (client_frame_t *from, client_frame_t *to, QMsg *msg)
 		msg->WriteByte(svc_packetentities2);
 	else
 #endif
-		msg->WriteByte(svc_packetentities);
+		msg->WriteByte(q2svc_packetentities);
 
 	if (!from)
 		from_num_entities = 0;
@@ -302,7 +302,7 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, QMsg
 	//
 	// write it
 	//
-	msg->WriteByte(svc_playerinfo);
+	msg->WriteByte(q2svc_playerinfo);
 	msg->WriteShort(pflags);
 
 	//
@@ -436,7 +436,7 @@ void SV_WriteFrameToClient (client_t *client, QMsg *msg)
 		lastframe = client->lastframe;
 	}
 
-	msg->WriteByte(svc_frame);
+	msg->WriteByte(q2svc_frame);
 	msg->WriteLong(sv.framenum);
 	msg->WriteLong(lastframe);	// what we are delta'ing from
 	msg->WriteByte(client->surpressCount);	// rate dropped packets
@@ -693,10 +693,10 @@ void SV_RecordDemoMessage (void)
 	buf.InitOOB(buf_data, sizeof(buf_data));
 
 	// write a frame message that doesn't contain a q2player_state_t
-	buf.WriteByte(svc_frame);
+	buf.WriteByte(q2svc_frame);
 	buf.WriteLong(sv.framenum);
 
-	buf.WriteByte(svc_packetentities);
+	buf.WriteByte(q2svc_packetentities);
 
 	e = 1;
 	ent = EDICT_NUM(e);

@@ -579,3 +579,55 @@ struct q2usercmd_t
 #define Q2U_SKIN16		(1<<25)
 #define Q2U_SOUND		(1<<26)
 #define Q2U_SOLID		(1<<27)
+
+//=========================================
+
+//==================
+// the svc_strings[] array in cl_parse.c should mirror this
+//==================
+
+//
+// server to client
+//
+enum
+{
+	q2svc_bad,
+
+	// these ops are known to the game dll
+	q2svc_muzzleflash,
+	q2svc_muzzleflash2,
+	q2svc_temp_entity,
+	q2svc_layout,
+	q2svc_inventory,
+
+	// the rest are private to the client and server
+	q2svc_nop,
+	q2svc_disconnect,
+	q2svc_reconnect,
+	q2svc_sound,				// <see code>
+	q2svc_print,				// [byte] id [string] null terminated string
+	q2svc_stufftext,			// [string] stuffed into client's console buffer, should be \n terminated
+	q2svc_serverdata,			// [long] protocol ...
+	q2svc_configstring,			// [short] [string]
+	q2svc_spawnbaseline,		
+	q2svc_centerprint,			// [string] to put in center of the screen
+	q2svc_download,				// [short] size [size bytes]
+	q2svc_playerinfo,			// variable
+	q2svc_packetentities,		// [...]
+	q2svc_deltapacketentities,	// [...]
+	q2svc_frame
+};
+
+//==============================================
+
+//
+// client to server
+//
+enum
+{
+	q2clc_bad,
+	q2clc_nop, 		
+	q2clc_move,				// [usercmd_t]
+	q2clc_userinfo,			// [userinfo string]
+	q2clc_stringcmd			// [string] message
+};

@@ -206,7 +206,7 @@ void CL_Record_f (void)
 	buf.InitOOB(buf_data, sizeof(buf_data));
 
 	// send the serverdata
-	buf.WriteByte(svc_serverdata);
+	buf.WriteByte(q2svc_serverdata);
 	buf.WriteLong(PROTOCOL_VERSION);
 	buf.WriteLong(0x10000 + cl.servercount);
 	buf.WriteByte(1);	// demos are always attract loops
@@ -228,7 +228,7 @@ void CL_Record_f (void)
 				buf.cursize = 0;
 			}
 
-			buf.WriteByte(svc_configstring);
+			buf.WriteByte(q2svc_configstring);
 			buf.WriteShort(i);
 			buf.WriteString2(cl.configstrings[i]);
 		}
@@ -251,11 +251,11 @@ void CL_Record_f (void)
 			buf.cursize = 0;
 		}
 
-		buf.WriteByte(svc_spawnbaseline);		
+		buf.WriteByte(q2svc_spawnbaseline);		
 		MSG_WriteDeltaEntity (&nullstate, &clq2_entities[i].baseline, &buf, true, true);
 	}
 
-	buf.WriteByte(svc_stufftext);
+	buf.WriteByte(q2svc_stufftext);
 	buf.WriteString2("precache\n");
 
 	// write it to the demo file
@@ -273,7 +273,7 @@ void CL_Record_f (void)
 ===================
 Cmd_ForwardToServer
 
-adds the current command line as a clc_stringcmd to the client message.
+adds the current command line as a q2clc_stringcmd to the client message.
 things like godmode, noclip, etc, are commands directed to the server,
 so when they are typed in at the console, they will need to be forwarded.
 ===================
@@ -289,7 +289,7 @@ void Cmd_ForwardToServer (void)
 		return;
 	}
 
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.Print(cmd);
 	if (Cmd_Argc() > 1)
 	{
@@ -350,7 +350,7 @@ void CL_ForwardToServer_f (void)
 	// don't forward the first argument
 	if (Cmd_Argc() > 1)
 	{
-		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteByte(q2clc_stringcmd);
 		clc.netchan.message.WriteString2(Cmd_ArgsUnmodified());
 	}
 }
@@ -634,7 +634,7 @@ void CL_Disconnect (void)
 		CL_Stop_f ();
 
 	// send a disconnect message to the server
-	final[0] = clc_stringcmd;
+	final[0] = q2clc_stringcmd;
 	String::Cpy((char *)final+1, "disconnect");
 	Netchan_Transmit (&clc.netchan, String::Length((char *)final), final);
 	Netchan_Transmit (&clc.netchan, String::Length((char *)final), final);
@@ -747,7 +747,7 @@ void CL_Reconnect_f (void)
 	if (cls.state == ca_connected) {
 		Com_Printf ("reconnecting...\n");
 		cls.state = ca_connected;
-		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteChar(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");		
 		return;
 	}
@@ -883,7 +883,7 @@ void CL_ConnectionlessPacket (void)
 			return;
 		}
 		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
-		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteChar(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;
 		return;
@@ -1342,7 +1342,7 @@ void CL_RequestNextDownload (void)
 	CL_RegisterSounds ();
 	CL_PrepRefresh ();
 
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.WriteString2(va("begin %i\n", precache_spawncount) );
 }
 

@@ -70,7 +70,7 @@ or crashing.
 void SV_DropClient (client_t *drop)
 {
 	// add the disconnect
-	drop->netchan.message.WriteByte(svc_disconnect);
+	drop->netchan.message.WriteByte(q2svc_disconnect);
 
 	if (drop->state == cs_spawned)
 	{
@@ -998,14 +998,14 @@ void SV_FinalMessage (const char *message, qboolean reconnect)
 	client_t	*cl;
 	
 	net_message.Clear();
-	net_message.WriteByte(svc_print);
+	net_message.WriteByte(q2svc_print);
 	net_message.WriteByte(PRINT_HIGH);
 	net_message.WriteString2(message);
 
 	if (reconnect)
-		net_message.WriteByte(svc_reconnect);
+		net_message.WriteByte(q2svc_reconnect);
 	else
-		net_message.WriteByte(svc_disconnect);
+		net_message.WriteByte(q2svc_disconnect);
 
 	// send it twice
 	// stagger the packets to crutch operating system limited buffers

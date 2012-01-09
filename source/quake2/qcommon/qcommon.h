@@ -106,58 +106,6 @@ PROTOCOL
 #define	PORT_CLIENT	27901
 #define	PORT_SERVER	27910
 
-//=========================================
-
-//==================
-// the svc_strings[] array in cl_parse.c should mirror this
-//==================
-
-//
-// server to client
-//
-enum svc_ops_e
-{
-	svc_bad,
-
-	// these ops are known to the game dll
-	svc_muzzleflash,
-	svc_muzzleflash2,
-	svc_temp_entity,
-	svc_layout,
-	svc_inventory,
-
-	// the rest are private to the client and server
-	svc_nop,
-	svc_disconnect,
-	svc_reconnect,
-	svc_sound,					// <see code>
-	svc_print,					// [byte] id [string] null terminated string
-	svc_stufftext,				// [string] stuffed into client's console buffer, should be \n terminated
-	svc_serverdata,				// [long] protocol ...
-	svc_configstring,			// [short] [string]
-	svc_spawnbaseline,		
-	svc_centerprint,			// [string] to put in center of the screen
-	svc_download,				// [short] size [size bytes]
-	svc_playerinfo,				// variable
-	svc_packetentities,			// [...]
-	svc_deltapacketentities,	// [...]
-	svc_frame
-};
-
-//==============================================
-
-//
-// client to server
-//
-enum clc_ops_e
-{
-	clc_bad,
-	clc_nop, 		
-	clc_move,				// [[q2usercmd_t]
-	clc_userinfo,			// [[userinfo string]
-	clc_stringcmd			// [string] message
-};
-
 //==============================================
 
 // plyer_state_t communication
@@ -210,7 +158,7 @@ enum clc_ops_e
 void	Cmd_Init (void);
 
 void	Cmd_ForwardToServer (void);
-// adds the current command line as a clc_stringcmd to the client message.
+// adds the current command line as a q2clc_stringcmd to the client message.
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
 

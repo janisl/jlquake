@@ -126,7 +126,7 @@ void PF_centerprintf (edict_t *ent, const char *fmt, ...)
 	Q_vsnprintf(msg, 1024, fmt, argptr);
 	va_end (argptr);
 
-	sv.multicast.WriteByte(svc_centerprint);
+	sv.multicast.WriteByte(q2svc_centerprint);
 	sv.multicast.WriteString2(msg);
 	PF_Unicast (ent, true);
 }
@@ -202,7 +202,7 @@ void PF_Configstring (int index, const char *val)
 	if (sv.state != ss_loading)
 	{	// send the update to everyone
 		sv.multicast.Clear();
-		sv.multicast.WriteChar(svc_configstring);
+		sv.multicast.WriteChar(q2svc_configstring);
 		sv.multicast.WriteShort(index);
 		sv.multicast.WriteString2(val);
 

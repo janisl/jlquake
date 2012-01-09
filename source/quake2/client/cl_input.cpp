@@ -550,7 +550,7 @@ void CL_SendCmd (void)
 	{
 		CL_FixUpGender();
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		clc.netchan.message.WriteByte(clc_userinfo);
+		clc.netchan.message.WriteByte(q2clc_userinfo);
 		clc.netchan.message.WriteString2(Cvar_InfoString(
 			CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY, MAX_INFO_VALUE, true, false));
 	}
@@ -564,7 +564,7 @@ void CL_SendCmd (void)
 	}
 
 	// begin a client move command
-	buf.WriteByte(clc_move);
+	buf.WriteByte(q2clc_move);
 
 	// save the position for a checksum byte
 	checksumIndex = buf.cursize;

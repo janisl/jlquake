@@ -218,7 +218,7 @@ void CL_DeltaEntity (q2frame_t *frame, int newnum, q2entity_state_t *old, int bi
 ==================
 CL_ParsePacketEntities
 
-An svc_packetentities has just been parsed, deal with the
+An q2svc_packetentities has just been parsed, deal with the
 rest of the data stream.
 ==================
 */
@@ -564,14 +564,14 @@ void CL_ParseFrame (void)
 	// read playerinfo
 	cmd = net_message.ReadByte ();
 	SHOWNET(svc_strings[cmd]);
-	if (cmd != svc_playerinfo)
+	if (cmd != q2svc_playerinfo)
 		Com_Error (ERR_DROP, "CL_ParseFrame: not playerinfo");
 	CL_ParsePlayerstate (old, &cl.q2_frame);
 
 	// read packet entities
 	cmd = net_message.ReadByte ();
 	SHOWNET(svc_strings[cmd]);
-	if (cmd != svc_packetentities)
+	if (cmd != q2svc_packetentities)
 		Com_Error (ERR_DROP, "CL_ParseFrame: not packetentities");
 	CL_ParsePacketEntities (old, &cl.q2_frame);
 

@@ -881,7 +881,7 @@ void SV_ServerRecord_f (void)
 	// to make sure the protocol is right, and to set the gamedir
 	//
 	// send the serverdata
-	buf.WriteByte(svc_serverdata);
+	buf.WriteByte(q2svc_serverdata);
 	buf.WriteLong(PROTOCOL_VERSION);
 	buf.WriteLong(svs.spawncount);
 	// 2 means server demo
@@ -894,7 +894,7 @@ void SV_ServerRecord_f (void)
 	for (i=0 ; i<MAX_CONFIGSTRINGS ; i++)
 		if (sv.configstrings[i][0])
 		{
-			buf.WriteByte(svc_configstring);
+			buf.WriteByte(q2svc_configstring);
 			buf.WriteShort(i);
 			buf.WriteString2(sv.configstrings[i]);
 		}

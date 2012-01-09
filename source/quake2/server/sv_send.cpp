@@ -39,7 +39,7 @@ void SV_FlushRedirect (int sv_redirected, char *outputbuf)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		sv_client->netchan.message.WriteByte(svc_print);
+		sv_client->netchan.message.WriteByte(q2svc_print);
 		sv_client->netchan.message.WriteByte(PRINT_HIGH);
 		sv_client->netchan.message.WriteString2(outputbuf);
 	}
@@ -74,7 +74,7 @@ void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
-	cl->netchan.message.WriteByte(svc_print);
+	cl->netchan.message.WriteByte(q2svc_print);
 	cl->netchan.message.WriteByte(level);
 	cl->netchan.message.WriteString2(string);
 }
@@ -116,7 +116,7 @@ void SV_BroadcastPrintf (int level, const char *fmt, ...)
 			continue;
 		if (cl->state != cs_spawned)
 			continue;
-		cl->netchan.message.WriteByte(svc_print);
+		cl->netchan.message.WriteByte(q2svc_print);
 		cl->netchan.message.WriteByte(level);
 		cl->netchan.message.WriteString2(string);
 	}
@@ -140,7 +140,7 @@ void SV_BroadcastCommand (const char *fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 
-	sv.multicast.WriteByte(svc_stufftext);
+	sv.multicast.WriteByte(q2svc_stufftext);
 	sv.multicast.WriteString2(string);
 	SV_Multicast (NULL, MULTICAST_ALL_R);
 }
@@ -338,7 +338,7 @@ void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 		}
 	}
 
-	sv.multicast.WriteByte(svc_sound);
+	sv.multicast.WriteByte(q2svc_sound);
 	sv.multicast.WriteByte(flags);
 	sv.multicast.WriteByte(soundindex);
 

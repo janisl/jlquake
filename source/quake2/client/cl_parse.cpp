@@ -23,29 +23,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 const char *svc_strings[256] =
 {
-	"svc_bad",
+	"q2svc_bad",
 
-	"svc_muzzleflash",
+	"q2svc_muzzleflash",
 	"svc_muzzlflash2",
-	"svc_temp_entity",
-	"svc_layout",
-	"svc_inventory",
+	"q2svc_temp_entity",
+	"q2svc_layout",
+	"q2svc_inventory",
 
-	"svc_nop",
-	"svc_disconnect",
-	"svc_reconnect",
-	"svc_sound",
-	"svc_print",
-	"svc_stufftext",
-	"svc_serverdata",
-	"svc_configstring",
-	"svc_spawnbaseline",	
-	"svc_centerprint",
-	"svc_download",
-	"svc_playerinfo",
-	"svc_packetentities",
-	"svc_deltapacketentities",
-	"svc_frame"
+	"q2svc_nop",
+	"q2svc_disconnect",
+	"q2svc_reconnect",
+	"q2svc_sound",
+	"q2svc_print",
+	"q2svc_stufftext",
+	"q2svc_serverdata",
+	"q2svc_configstring",
+	"q2svc_spawnbaseline",	
+	"q2svc_centerprint",
+	"q2svc_download",
+	"q2svc_playerinfo",
+	"q2svc_packetentities",
+	"q2svc_deltapacketentities",
+	"q2svc_frame"
 };
 
 //=============================================================================
@@ -88,7 +88,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	Com_Printf ("Downloading %s\n", cls.downloadname);
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("download %s", cls.downloadname));
 
@@ -136,7 +136,7 @@ void	CL_Download_f (void)
 	String::StripExtension (cls.downloadname, cls.downloadtempname);
 	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("download %s", cls.downloadname));
 
@@ -227,7 +227,7 @@ void CL_ParseDownload (void)
 #endif
 		cls.downloadpercent = percent;
 
-		clc.netchan.message.WriteByte(clc_stringcmd);
+		clc.netchan.message.WriteByte(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("nextdl");
 	}
 	else
@@ -674,15 +674,15 @@ void CL_ParseServerMessage (void)
 			Com_Error (ERR_DROP,"CL_ParseServerMessage: Illegible server message\n");
 			break;
 			
-		case svc_nop:
-//			Com_Printf ("svc_nop\n");
+		case q2svc_nop:
+//			Com_Printf ("q2svc_nop\n");
 			break;
 			
-		case svc_disconnect:
+		case q2svc_disconnect:
 			Com_Error (ERR_DISCONNECT,"Server disconnected\n");
 			break;
 
-		case svc_reconnect:
+		case q2svc_reconnect:
 			Com_Printf ("Server disconnected, reconnecting\n");
 			if (cls.download)
 			{
@@ -694,7 +694,7 @@ void CL_ParseServerMessage (void)
 			cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 			break;
 
-		case svc_print:
+		case q2svc_print:
 			i = net_message.ReadByte ();
 			if (i == PRINT_CHAT)
 			{
@@ -705,65 +705,65 @@ void CL_ParseServerMessage (void)
 			con.ormask = 0;
 			break;
 			
-		case svc_centerprint:
+		case q2svc_centerprint:
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
-		case svc_stufftext:
+		case q2svc_stufftext:
 			s = const_cast<char*>(net_message.ReadString2());
 			Com_DPrintf ("stufftext: %s\n", s);
 			Cbuf_AddText (s);
 			break;
 			
-		case svc_serverdata:
+		case q2svc_serverdata:
 			Cbuf_Execute ();		// make sure any stuffed commands are done
 			CL_ParseServerData ();
 			break;
 			
-		case svc_configstring:
+		case q2svc_configstring:
 			CL_ParseConfigString ();
 			break;
 			
-		case svc_sound:
+		case q2svc_sound:
 			CL_ParseStartSoundPacket();
 			break;
 			
-		case svc_spawnbaseline:
+		case q2svc_spawnbaseline:
 			CL_ParseBaseline ();
 			break;
 
-		case svc_temp_entity:
+		case q2svc_temp_entity:
 			CLQ2_ParseTEnt(net_message);
 			break;
 
-		case svc_muzzleflash:
+		case q2svc_muzzleflash:
 			CLQ2_ParseMuzzleFlash(net_message);
 			break;
 
-		case svc_muzzleflash2:
+		case q2svc_muzzleflash2:
 			CLQ2_ParseMuzzleFlash2(net_message);
 			break;
 
-		case svc_download:
+		case q2svc_download:
 			CL_ParseDownload ();
 			break;
 
-		case svc_frame:
+		case q2svc_frame:
 			CL_ParseFrame ();
 			break;
 
-		case svc_inventory:
+		case q2svc_inventory:
 			CL_ParseInventory ();
 			break;
 
-		case svc_layout:
+		case q2svc_layout:
 			s = const_cast<char*>(net_message.ReadString2());
 			String::NCpy(cl.layout, s, sizeof(cl.layout)-1);
 			break;
 
-		case svc_playerinfo:
-		case svc_packetentities:
-		case svc_deltapacketentities:
+		case q2svc_playerinfo:
+		case q2svc_packetentities:
+		case q2svc_deltapacketentities:
 			Com_Error (ERR_DROP, "Out of place frame data");
 			break;
 		}

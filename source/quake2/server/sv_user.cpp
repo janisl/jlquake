@@ -83,7 +83,7 @@ void SV_New_f (void)
 	gamedir = Cvar_VariableString ("gamedir");
 
 	// send the serverdata
-	sv_client->netchan.message.WriteByte(svc_serverdata);
+	sv_client->netchan.message.WriteByte(q2svc_serverdata);
 	sv_client->netchan.message.WriteLong(PROTOCOL_VERSION);
 	sv_client->netchan.message.WriteLong(svs.spawncount);
 	sv_client->netchan.message.WriteByte(sv.attractloop);
@@ -110,7 +110,7 @@ void SV_New_f (void)
 		Com_Memset(&sv_client->lastcmd, 0, sizeof(sv_client->lastcmd));
 
 		// begin fetching configstrings
-		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteByte(q2svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("cmd configstrings %i 0\n",svs.spawncount) );
 	}
 
@@ -150,7 +150,7 @@ void SV_Configstrings_f (void)
 	{
 		if (sv.configstrings[start][0])
 		{
-			sv_client->netchan.message.WriteByte(svc_configstring);
+			sv_client->netchan.message.WriteByte(q2svc_configstring);
 			sv_client->netchan.message.WriteShort(start);
 			sv_client->netchan.message.WriteString2(sv.configstrings[start]);
 		}
@@ -161,12 +161,12 @@ void SV_Configstrings_f (void)
 
 	if (start == MAX_CONFIGSTRINGS)
 	{
-		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteByte(q2svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("cmd baselines %i 0\n",svs.spawncount) );
 	}
 	else
 	{
-		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteByte(q2svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("cmd configstrings %i %i\n",svs.spawncount, start) );
 	}
 }
@@ -210,7 +210,7 @@ void SV_Baselines_f (void)
 		base = &sv.baselines[start];
 		if (base->modelindex || base->sound || base->effects)
 		{
-			sv_client->netchan.message.WriteByte(svc_spawnbaseline);
+			sv_client->netchan.message.WriteByte(q2svc_spawnbaseline);
 			MSG_WriteDeltaEntity (&nullstate, base, &sv_client->netchan.message, true, true);
 		}
 		start++;
@@ -220,12 +220,12 @@ void SV_Baselines_f (void)
 
 	if (start == MAX_EDICTS_Q2)
 	{
-		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteByte(q2svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("precache %i\n", svs.spawncount) );
 	}
 	else
 	{
-		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteByte(q2svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("cmd baselines %i %i\n",svs.spawncount, start) );
 	}
 }
@@ -275,7 +275,7 @@ void SV_NextDownload_f (void)
 	if (r > 1024)
 		r = 1024;
 
-	sv_client->netchan.message.WriteByte(svc_download);
+	sv_client->netchan.message.WriteByte(q2svc_download);
 	sv_client->netchan.message.WriteShort(r);
 
 	sv_client->downloadcount += r;
@@ -332,7 +332,7 @@ void SV_BeginDownload_f(void)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
-		sv_client->netchan.message.WriteByte(svc_download);
+		sv_client->netchan.message.WriteByte(q2svc_download);
 		sv_client->netchan.message.WriteShort(-1);
 		sv_client->netchan.message.WriteByte(0);
 		return;
@@ -359,7 +359,7 @@ void SV_BeginDownload_f(void)
 			sv_client->download = NULL;
 		}
 
-		sv_client->netchan.message.WriteByte(svc_download);
+		sv_client->netchan.message.WriteByte(q2svc_download);
 		sv_client->netchan.message.WriteShort(-1);
 		sv_client->netchan.message.WriteByte(0);
 		return;
@@ -571,15 +571,15 @@ void SV_ExecuteClientMessage (client_t *cl)
 			SV_DropClient (cl);
 			return;
 						
-		case clc_nop:
+		case q2clc_nop:
 			break;
 
-		case clc_userinfo:
+		case q2clc_userinfo:
 			String::NCpy(cl->userinfo, net_message.ReadString2(), sizeof(cl->userinfo)-1);
 			SV_UserinfoChanged (cl);
 			break;
 
-		case clc_move:
+		case q2clc_move:
 			if (move_issued)
 				return;		// someone is trying to cheat...
 
@@ -648,7 +648,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			cl->lastcmd = newcmd;
 			break;
 
-		case clc_stringcmd:	
+		case q2clc_stringcmd:	
 			s = const_cast<char*>(net_message.ReadString2());
 
 			// malicious users may try using too many string commands
