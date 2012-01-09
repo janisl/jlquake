@@ -273,7 +273,7 @@ void PF_centerprint (void)
 		
 	cl = &svs.clients[entnum-1];
 
-	ClientReliableWrite_Begin (cl, svc_centerprint, 2 + String::Length(s));
+	ClientReliableWrite_Begin (cl, q1svc_centerprint, 2 + String::Length(s));
 	ClientReliableWrite_String (cl, s);
 }
 
@@ -416,7 +416,7 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	sv.signon.WriteByte(svc_spawnstaticsound);
+	sv.signon.WriteByte(q1svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
 		sv.signon.WriteCoord(pos[i]);
 
@@ -664,7 +664,7 @@ void PF_stuffcmd (void)
 		return;
 	}
 
-	ClientReliableWrite_Begin (cl, svc_stufftext, 2+String::Length(str));
+	ClientReliableWrite_Begin (cl, q1svc_stufftext, 2+String::Length(str));
 	ClientReliableWrite_String (cl, str);
 }
 
@@ -1028,7 +1028,7 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<MAX_CLIENTS_QW ; j++, client++)
 		if ( client->state == cs_spawned )
 		{
-			ClientReliableWrite_Begin (client, svc_lightstyle, String::Length(val)+3);
+			ClientReliableWrite_Begin (client, q1svc_lightstyle, String::Length(val)+3);
 			ClientReliableWrite_Char (client, style);
 			ClientReliableWrite_String (client, val);
 		}
@@ -1409,7 +1409,7 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	sv.signon.WriteByte(svc_spawnstatic);
+	sv.signon.WriteByte(q1svc_spawnstatic);
 
 	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->v.model)));
 

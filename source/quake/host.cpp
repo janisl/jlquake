@@ -299,7 +299,7 @@ void SV_ClientPrintf (const char *fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
-	host_client->message.WriteByte(svc_print);
+	host_client->message.WriteByte(q1svc_print);
 	host_client->message.WriteString2(string);
 }
 
@@ -323,7 +323,7 @@ void SV_BroadcastPrintf (const char *fmt, ...)
 	for (i=0 ; i<svs.maxclients ; i++)
 		if (svs.clients[i].active && svs.clients[i].spawned)
 		{
-			svs.clients[i].message.WriteByte(svc_print);
+			svs.clients[i].message.WriteByte(q1svc_print);
 			svs.clients[i].message.WriteString2(string);
 		}
 }
@@ -344,7 +344,7 @@ void Host_ClientCommands (const char *fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
-	host_client->message.WriteByte(svc_stufftext);
+	host_client->message.WriteByte(q1svc_stufftext);
 	host_client->message.WriteString2(string);
 }
 
@@ -367,7 +367,7 @@ void SV_DropClient (qboolean crash)
 		// send any final messages (don't check for errors)
 		if (NET_CanSendMessage (host_client->netconnection, &host_client->netchan))
 		{
-			host_client->message.WriteByte(svc_disconnect);
+			host_client->message.WriteByte(q1svc_disconnect);
 			NET_SendMessage (host_client->netconnection, &host_client->netchan, &host_client->message);
 		}
 	
@@ -399,13 +399,13 @@ void SV_DropClient (qboolean crash)
 	{
 		if (!client->active)
 			continue;
-		client->message.WriteByte(svc_updatename);
+		client->message.WriteByte(q1svc_updatename);
 		client->message.WriteByte(host_client - svs.clients);
 		client->message.WriteString2("");
-		client->message.WriteByte(svc_updatefrags);
+		client->message.WriteByte(q1svc_updatefrags);
 		client->message.WriteByte(host_client - svs.clients);
 		client->message.WriteShort(0);
-		client->message.WriteByte(svc_updatecolors);
+		client->message.WriteByte(q1svc_updatecolors);
 		client->message.WriteByte(host_client - svs.clients);
 		client->message.WriteByte(0);
 	}
@@ -463,7 +463,7 @@ void Host_ShutdownServer(qboolean crash)
 
 // make sure all the clients know we're disconnecting
 	buf.InitOOB(message, 4);
-	buf.WriteByte(svc_disconnect);
+	buf.WriteByte(q1svc_disconnect);
 	count = NET_SendToAll(&buf, 5);
 	if (count)
 		Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);

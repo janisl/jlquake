@@ -176,10 +176,10 @@ void SV_FinalMessage (const char *message)
 	client_t	*cl;
 	
 	net_message.Clear();
-	net_message.WriteByte(svc_print);
+	net_message.WriteByte(q1svc_print);
 	net_message.WriteByte(PRINT_HIGH);
 	net_message.WriteString2(message);
-	net_message.WriteByte(svc_disconnect);
+	net_message.WriteByte(q1svc_disconnect);
 
 	for (i=0, cl = svs.clients ; i<MAX_CLIENTS_QW ; i++, cl++)
 		if (cl->state >= cs_spawned)
@@ -201,7 +201,7 @@ or crashing.
 void SV_DropClient (client_t *drop)
 {
 	// add the disconnect
-	drop->netchan.message.WriteByte(svc_disconnect);
+	drop->netchan.message.WriteByte(q1svc_disconnect);
 
 	if (drop->state == cs_spawned)
 	{
@@ -299,26 +299,26 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 
 //Con_Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
 
-	buf->WriteByte(svc_updatefrags);
+	buf->WriteByte(q1svc_updatefrags);
 	buf->WriteByte(i);
 	buf->WriteShort(client->old_frags);
 	
-	buf->WriteByte(svc_updateping);
+	buf->WriteByte(qwsvc_updateping);
 	buf->WriteByte(i);
 	buf->WriteShort(SV_CalcPing (client));
 	
-	buf->WriteByte(svc_updatepl);
+	buf->WriteByte(qwsvc_updatepl);
 	buf->WriteByte(i);
 	buf->WriteByte(client->lossage);
 	
-	buf->WriteByte(svc_updateentertime);
+	buf->WriteByte(qwsvc_updateentertime);
 	buf->WriteByte(i);
 	buf->WriteFloat(realtime - client->connection_started);
 
 	String::Cpy(info, client->userinfo);
 	Info_RemovePrefixedKeys (info, '_', MAX_INFO_STRING);	// server passwords, etc
 
-	buf->WriteByte(svc_updateuserinfo);
+	buf->WriteByte(qwsvc_updateuserinfo);
 	buf->WriteByte(i);
 	buf->WriteLong(client->userid);
 	buf->WriteString2(info);

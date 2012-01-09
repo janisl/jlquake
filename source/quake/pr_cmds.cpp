@@ -311,7 +311,7 @@ void PF_sprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	client->message.WriteChar(svc_print);
+	client->message.WriteChar(q1svc_print);
 	client->message.WriteString2(s);
 }
 
@@ -342,7 +342,7 @@ void PF_centerprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	client->message.WriteChar(svc_centerprint);
+	client->message.WriteChar(q1svc_centerprint);
 	client->message.WriteString2(s);
 }
 
@@ -505,7 +505,7 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	sv.signon.WriteByte(svc_spawnstaticsound);
+	sv.signon.WriteByte(q1svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
 		sv.signon.WriteCoord(pos[i]);
 
@@ -1123,7 +1123,7 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 		if (client->active || client->spawned)
 		{
-			client->message.WriteChar(svc_lightstyle);
+			client->message.WriteChar(q1svc_lightstyle);
 			client->message.WriteChar(style);
 			client->message.WriteString2(val);
 		}
@@ -1427,7 +1427,7 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	sv.signon.WriteByte(svc_spawnstatic);
+	sv.signon.WriteByte(q1svc_spawnstatic);
 
 	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->v.model)));
 

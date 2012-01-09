@@ -403,7 +403,7 @@ void CL_Disconnect (void)
 		if (cls.demorecording)
 			CL_Stop_f ();
 
-		final[0] = clc_stringcmd;
+		final[0] = q1clc_stringcmd;
 		String::Cpy((char*)final+1, "drop");
 		Netchan_Transmit (&clc.netchan, 6, final);
 		Netchan_Transmit (&clc.netchan, 6, final);
@@ -769,7 +769,7 @@ void CL_Reconnect_f (void)
 
 	if (cls.state == ca_connected) {
 		Con_Printf ("reconnecting...\n");
-		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteChar(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
 		return;
 	}
@@ -812,7 +812,7 @@ void CL_ConnectionlessPacket (void)
 			return;
 		}
 		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.qport);
-		clc.netchan.message.WriteChar(clc_stringcmd);
+		clc.netchan.message.WriteChar(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;
 		Con_Printf ("Connected.\n");
@@ -908,7 +908,7 @@ void CL_ConnectionlessPacket (void)
 	}
 
 #if 0
-	if (c == svc_disconnect) {
+	if (c == q1svc_disconnect) {
 		Con_Printf ("disconnect\n");
 
 		Host_EndGame ("Server disconnected");
@@ -1002,7 +1002,7 @@ void CL_Download_f (void)
 	cls.download = FS_FOpenFileWrite(cls.downloadname);
 	cls.downloadtype = dl_single;
 
-	clc.netchan.message.WriteByte(clc_stringcmd);
+	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	clc.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
 }
 

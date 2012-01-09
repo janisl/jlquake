@@ -82,7 +82,7 @@ void SV_New_f (void)
 	}
 
 	// send the serverdata
-	host_client->netchan.message.WriteByte(svc_serverdata);
+	host_client->netchan.message.WriteByte(qwsvc_serverdata);
 	host_client->netchan.message.WriteLong(PROTOCOL_VERSION);
 	host_client->netchan.message.WriteLong(svs.spawncount);
 	host_client->netchan.message.WriteString2(gamedir);
@@ -108,11 +108,11 @@ void SV_New_f (void)
 	host_client->netchan.message.WriteFloat(movevars.entgravity);
 
 	// send music
-	host_client->netchan.message.WriteByte(svc_cdtrack);
+	host_client->netchan.message.WriteByte(q1svc_cdtrack);
 	host_client->netchan.message.WriteByte(sv.edicts->v.sounds);
 
 	// send server info string
-	host_client->netchan.message.WriteByte(svc_stufftext);
+	host_client->netchan.message.WriteByte(q1svc_stufftext);
 	host_client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.info) );
 }
 
@@ -150,7 +150,7 @@ void SV_Soundlist_f (void)
 		host_client->netchan.message.Clear();
 	}
 
-	host_client->netchan.message.WriteByte(svc_soundlist);
+	host_client->netchan.message.WriteByte(qwsvc_soundlist);
 	host_client->netchan.message.WriteByte(n);
 	for (s = sv.sound_precache+1 + n ; 
 		*s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW/2); 
@@ -200,7 +200,7 @@ void SV_Modellist_f (void)
 		host_client->netchan.message.Clear();
 	}
 
-	host_client->netchan.message.WriteByte(svc_modellist);
+	host_client->netchan.message.WriteByte(qwsvc_modellist);
 	host_client->netchan.message.WriteByte(n);
 	for (s = sv.model_precache+1+n ; 
 		*s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW/2); 
@@ -279,12 +279,12 @@ void SV_PreSpawn_f (void)
 	buf++;
 	if (buf == sv.num_signon_buffers)
 	{	// all done prespawning
-		host_client->netchan.message.WriteByte(svc_stufftext);
+		host_client->netchan.message.WriteByte(q1svc_stufftext);
 		host_client->netchan.message.WriteString2(va("cmd spawn %i 0\n",svs.spawncount) );
 	}
 	else
 	{	// need to prespawn more
-		host_client->netchan.message.WriteByte(svc_stufftext);
+		host_client->netchan.message.WriteByte(q1svc_stufftext);
 		host_client->netchan.message.WriteString2(
 			va("cmd prespawn %i %i\n", svs.spawncount, buf) );
 	}
@@ -342,7 +342,7 @@ void SV_Spawn_f (void)
 // send all current light styles
 	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
 	{
-		ClientReliableWrite_Begin (host_client, svc_lightstyle, 
+		ClientReliableWrite_Begin (host_client, q1svc_lightstyle, 
 			3 + (sv.lightstyles[i] ? String::Length(sv.lightstyles[i]) : 1));
 		ClientReliableWrite_Byte (host_client, (char)i);
 		ClientReliableWrite_String (host_client, sv.lightstyles[i]);
@@ -370,25 +370,25 @@ void SV_Spawn_f (void)
 //
 	Com_Memset(host_client->stats, 0, sizeof(host_client->stats));
 
-	ClientReliableWrite_Begin (host_client, svc_updatestatlong, 6);
+	ClientReliableWrite_Begin (host_client, qwsvc_updatestatlong, 6);
 	ClientReliableWrite_Byte (host_client, STAT_TOTALSECRETS);
 	ClientReliableWrite_Long (host_client, pr_global_struct->total_secrets);
 
-	ClientReliableWrite_Begin (host_client, svc_updatestatlong, 6);
+	ClientReliableWrite_Begin (host_client, qwsvc_updatestatlong, 6);
 	ClientReliableWrite_Byte (host_client, STAT_TOTALMONSTERS);
 	ClientReliableWrite_Long (host_client, pr_global_struct->total_monsters);
 
-	ClientReliableWrite_Begin (host_client, svc_updatestatlong, 6);
+	ClientReliableWrite_Begin (host_client, qwsvc_updatestatlong, 6);
 	ClientReliableWrite_Byte (host_client, STAT_SECRETS);
 	ClientReliableWrite_Long (host_client, pr_global_struct->found_secrets);
 
-	ClientReliableWrite_Begin (host_client, svc_updatestatlong, 6);
+	ClientReliableWrite_Begin (host_client, qwsvc_updatestatlong, 6);
 	ClientReliableWrite_Byte (host_client, STAT_MONSTERS);
 	ClientReliableWrite_Long (host_client, pr_global_struct->killed_monsters);
 
 	// get the client to check and download skins
 	// when that is completed, a begin command will be issued
-	ClientReliableWrite_Begin (host_client, svc_stufftext, 8);
+	ClientReliableWrite_Begin (host_client, q1svc_stufftext, 8);
 	ClientReliableWrite_String (host_client, "skins\n" );
 
 }
@@ -490,7 +490,7 @@ void SV_Begin_f (void)
 
 	// if we are paused, tell the client
 	if (sv.paused) {
-		ClientReliableWrite_Begin (host_client, svc_setpause, 2);
+		ClientReliableWrite_Begin (host_client, q1svc_setpause, 2);
 		ClientReliableWrite_Byte (host_client, sv.paused);
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Server is paused.\n");
 	}
@@ -503,7 +503,7 @@ void SV_Begin_f (void)
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
-	host_client->netchan.message.WriteByte(svc_setangle);
+	host_client->netchan.message.WriteByte(q1svc_setangle);
 	for (i=0 ; i < 2 ; i++)
 		host_client->netchan.message.WriteAngle(ent->v.angles[i] );
 	host_client->netchan.message.WriteAngle(0 );
@@ -531,7 +531,7 @@ void SV_NextDownload_f (void)
 	if (r > 768)
 		r = 768;
 	r = FS_Read (buffer, r, host_client->download);
-	ClientReliableWrite_Begin (host_client, svc_download, 6+r);
+	ClientReliableWrite_Begin (host_client, qwsvc_download, 6+r);
 	ClientReliableWrite_Short (host_client, r);
 
 	host_client->downloadcount += r;
@@ -579,7 +579,7 @@ void SV_NextUpload (void)
 
 	if (!*host_client->uploadfn) {
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Upload denied\n");
-		ClientReliableWrite_Begin (host_client, svc_stufftext, 8);
+		ClientReliableWrite_Begin (host_client, q1svc_stufftext, 8);
 		ClientReliableWrite_String (host_client, "stopul");
 
 		// suck out rest of packet
@@ -596,7 +596,7 @@ void SV_NextUpload (void)
 		host_client->upload = FS_FOpenFileWrite(host_client->uploadfn);
 		if (!host_client->upload) {
 			Con_Printf("Can't create %s\n", host_client->uploadfn);
-			ClientReliableWrite_Begin (host_client, svc_stufftext, 8);
+			ClientReliableWrite_Begin (host_client, q1svc_stufftext, 8);
 			ClientReliableWrite_String (host_client, "stopul");
 			*host_client->uploadfn = 0;
 			return;
@@ -612,7 +612,7 @@ void SV_NextUpload (void)
 Con_DPrintf ("UPLOAD: %d received\n", size);
 
 	if (percent != 100) {
-		ClientReliableWrite_Begin (host_client, svc_stufftext, 8);
+		ClientReliableWrite_Begin (host_client, q1svc_stufftext, 8);
 		ClientReliableWrite_String (host_client, "nextul\n");
 	} else {
 		FS_FCloseFile (host_client->upload);
@@ -667,7 +667,7 @@ void SV_BeginDownload_f(void)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
-		ClientReliableWrite_Begin (host_client, svc_download, 4);
+		ClientReliableWrite_Begin (host_client, qwsvc_download, 4);
 		ClientReliableWrite_Short (host_client, -1);
 		ClientReliableWrite_Byte (host_client, 0);
 		return;
@@ -701,7 +701,7 @@ void SV_BeginDownload_f(void)
 		}
 
 		Con_Printf ("Couldn't download %s to %s\n", name, host_client->name);
-		ClientReliableWrite_Begin (host_client, svc_download, 4);
+		ClientReliableWrite_Begin (host_client, qwsvc_download, 4);
 		ClientReliableWrite_Short (host_client, -1);
 		ClientReliableWrite_Byte (host_client, 0);
 		return;
@@ -850,10 +850,10 @@ void SV_Pings_f (void)
 		if (client->state != cs_spawned)
 			continue;
 
-		ClientReliableWrite_Begin (host_client, svc_updateping, 4);
+		ClientReliableWrite_Begin (host_client, qwsvc_updateping, 4);
 		ClientReliableWrite_Byte (host_client, j);
 		ClientReliableWrite_Short (host_client, SV_CalcPing(client));
-		ClientReliableWrite_Begin (host_client, svc_updatepl, 4);
+		ClientReliableWrite_Begin (host_client, qwsvc_updatepl, 4);
 		ClientReliableWrite_Byte (host_client, j);
 		ClientReliableWrite_Byte (host_client, client->lossage);
 	}
@@ -899,7 +899,7 @@ void SV_TogglePause (const char *msg)
 	{
 		if (!cl->state)
 			continue;
-		ClientReliableWrite_Begin (cl, svc_setpause, 2);
+		ClientReliableWrite_Begin (cl, q1svc_setpause, 2);
 		ClientReliableWrite_Byte (cl, sv.paused);
 	}
 }
@@ -1086,7 +1086,7 @@ void SV_SetInfo_f (void)
 	SV_ExtractFromUserinfo (host_client);
 
 	i = host_client - svs.clients;
-	sv.reliable_datagram.WriteByte(svc_setinfo);
+	sv.reliable_datagram.WriteByte(qwsvc_setinfo);
 	sv.reliable_datagram.WriteByte(i);
 	sv.reliable_datagram.WriteString2(Cmd_Argv(1));
 	sv.reliable_datagram.WriteString2(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
@@ -1594,14 +1594,14 @@ void SV_ExecuteClientMessage (client_t *cl)
 			SV_DropClient (cl);
 			return;
 						
-		case clc_nop:
+		case q1clc_nop:
 			break;
 
-		case clc_delta:
+		case qwclc_delta:
 			cl->delta_sequence = net_message.ReadByte ();
 			break;
 
-		case clc_move:
+		case q1clc_move:
 			if (move_issued)
 				return;		// someone is trying to cheat...
 
@@ -1659,12 +1659,12 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 
-		case clc_stringcmd:	
+		case q1clc_stringcmd:	
 			s = const_cast<char*>(net_message.ReadString2());
 			SV_ExecuteUserCommand (s);
 			break;
 
-		case clc_tmove:
+		case qwclc_tmove:
 			o[0] = net_message.ReadCoord();
 			o[1] = net_message.ReadCoord();
 			o[2] = net_message.ReadCoord();
@@ -1675,7 +1675,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			}
 			break;
 
-		case clc_upload:
+		case qwclc_upload:
 			SV_NextUpload();
 			break;
 

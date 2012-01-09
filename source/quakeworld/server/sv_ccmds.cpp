@@ -527,7 +527,7 @@ void SV_SendServerInfoChange(char *key, char *value)
 	if (!sv.state)
 		return;
 
-	sv.reliable_datagram.WriteByte(svc_serverinfo);
+	sv.reliable_datagram.WriteByte(qwsvc_serverinfo);
 	sv.reliable_datagram.WriteString2(key);
 	sv.reliable_datagram.WriteString2(value);
 }
@@ -800,7 +800,7 @@ void SV_Snap (int uid)
 	else
 		cl->remote_snap = false;
 
-	ClientReliableWrite_Begin (cl, svc_stufftext, 24);
+	ClientReliableWrite_Begin (cl, q1svc_stufftext, 24);
 	ClientReliableWrite_String (cl, "cmd snap");
 	Con_Printf ("Requesting snap from user %d...\n", uid);
 }

@@ -24,48 +24,48 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 const char *svc_strings[] =
 {
-	"svc_bad",
-	"svc_nop",
-	"svc_disconnect",
-	"svc_updatestat",
-	"svc_version",		// [long] server version
-	"svc_setview",		// [short] entity number
-	"svc_sound",			// <see code>
-	"svc_time",			// [float] server time
-	"svc_print",			// [string] null terminated string
-	"svc_stufftext",		// [string] stuffed into client's console buffer
+	"q1svc_bad",
+	"q1svc_nop",
+	"q1svc_disconnect",
+	"q1svc_updatestat",
+	"q1svc_version",		// [long] server version
+	"q1svc_setview",		// [short] entity number
+	"q1svc_sound",			// <see code>
+	"q1svc_time",			// [float] server time
+	"q1svc_print",			// [string] null terminated string
+	"q1svc_stufftext",		// [string] stuffed into client's console buffer
 						// the string should be \n terminated
-	"svc_setangle",		// [vec3] set the view angle to this absolute value
+	"q1svc_setangle",		// [vec3] set the view angle to this absolute value
 	
-	"svc_serverinfo",		// [long] version
+	"q1svc_serverinfo",		// [long] version
 						// [string] signon string
 						// [string]..[0]model cache [string]...[0]sounds cache
 						// [string]..[0]item cache
-	"svc_lightstyle",		// [byte] [string]
-	"svc_updatename",		// [byte] [string]
-	"svc_updatefrags",	// [byte] [short]
-	"svc_clientdata",		// <shortbits + data>
-	"svc_stopsound",		// <see code>
-	"svc_updatecolors",	// [byte] [byte]
-	"svc_particle",		// [vec3] <variable>
-	"svc_damage",			// [byte] impact [byte] blood [vec3] from
+	"q1svc_lightstyle",		// [byte] [string]
+	"q1svc_updatename",		// [byte] [string]
+	"q1svc_updatefrags",	// [byte] [short]
+	"q1svc_clientdata",		// <shortbits + data>
+	"q1svc_stopsound",		// <see code>
+	"q1svc_updatecolors",	// [byte] [byte]
+	"q1svc_particle",		// [vec3] <variable>
+	"q1svc_damage",			// [byte] impact [byte] blood [vec3] from
 	
-	"svc_spawnstatic",
+	"q1svc_spawnstatic",
 	"OBSOLETE svc_spawnbinary",
-	"svc_spawnbaseline",
+	"q1svc_spawnbaseline",
 	
-	"svc_temp_entity",		// <variable>
-	"svc_setpause",
-	"svc_signonnum",
-	"svc_centerprint",
-	"svc_killedmonster",
-	"svc_foundsecret",
-	"svc_spawnstaticsound",
-	"svc_intermission",
-	"svc_finale",			// [string] music [string] text
-	"svc_cdtrack",			// [byte] track [byte] looptrack
-	"svc_sellscreen",
-	"svc_cutscene"
+	"q1svc_temp_entity",		// <variable>
+	"q1svc_setpause",
+	"q1svc_signonnum",
+	"q1svc_centerprint",
+	"q1svc_killedmonster",
+	"q1svc_foundsecret",
+	"q1svc_spawnstaticsound",
+	"q1svc_intermission",
+	"q1svc_finale",			// [string] music [string] text
+	"q1svc_cdtrack",			// [byte] track [byte] looptrack
+	"q1svc_sellscreen",
+	"q1svc_cutscene"
 };
 
 image_t*	playertextures[16];		// up to 16 color translated skins
@@ -151,7 +151,7 @@ void CL_KeepaliveMessage (void)
 			Host_Error ("CL_KeepaliveMessage: received a message");
 			break;
 		case 2:
-			if (net_message.ReadByte() != svc_nop)
+			if (net_message.ReadByte() != q1svc_nop)
 				Host_Error ("CL_KeepaliveMessage: datagram wasn't a nop");
 			break;
 		}
@@ -168,7 +168,7 @@ void CL_KeepaliveMessage (void)
 // write out a nop
 	Con_Printf ("--> client to server keepalive\n");
 
-	cls.message.WriteByte(clc_nop);
+	cls.message.WriteByte(q1clc_nop);
 	NET_SendMessage (cls.netcon, &clc.netchan, &cls.message);
 	cls.message.Clear();
 }
@@ -668,109 +668,109 @@ void CL_ParseServerMessage (void)
 			Host_Error ("CL_ParseServerMessage: Illegible server message\n");
 			break;
 			
-		case svc_nop:
-//			Con_Printf ("svc_nop\n");
+		case q1svc_nop:
+//			Con_Printf ("q1svc_nop\n");
 			break;
 			
-		case svc_time:
+		case q1svc_time:
 			cl.mtime[1] = cl.mtime[0];
 			cl.mtime[0] = net_message.ReadFloat();
 			break;
 			
-		case svc_clientdata:
+		case q1svc_clientdata:
 			i = net_message.ReadShort ();
 			CL_ParseClientdata (i);
 			break;
 		
-		case svc_version:
+		case q1svc_version:
 			i = net_message.ReadLong ();
 			if (i != PROTOCOL_VERSION)
 				Host_Error ("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, PROTOCOL_VERSION);
 			break;
 			
-		case svc_disconnect:
+		case q1svc_disconnect:
 			Host_EndGame ("Server disconnected\n");
 
-		case svc_print:
+		case q1svc_print:
 			Con_Printf ("%s", net_message.ReadString2 ());
 			break;
 			
-		case svc_centerprint:
+		case q1svc_centerprint:
 			SCR_CenterPrint (net_message.ReadString2 ());
 			break;
 			
-		case svc_stufftext:
+		case q1svc_stufftext:
 			Cbuf_AddText (net_message.ReadString2 ());
 			break;
 			
-		case svc_damage:
+		case q1svc_damage:
 			V_ParseDamage ();
 			break;
 			
-		case svc_serverinfo:
+		case q1svc_serverinfo:
 			CL_ParseServerInfo ();
 			break;
 			
-		case svc_setangle:
+		case q1svc_setangle:
 			for (i=0 ; i<3 ; i++)
 				cl.viewangles[i] = net_message.ReadAngle ();
 			break;
 			
-		case svc_setview:
+		case q1svc_setview:
 			cl.viewentity = net_message.ReadShort ();
 			break;
 					
-		case svc_lightstyle:
+		case q1svc_lightstyle:
 			i = net_message.ReadByte();
 			CL_SetLightStyle(i, net_message.ReadString2());
 			break;
 			
-		case svc_sound:
+		case q1svc_sound:
 			CL_ParseStartSoundPacket();
 			break;
 			
-		case svc_stopsound:
+		case q1svc_stopsound:
 			i = net_message.ReadShort();
 			S_StopSound(i>>3, i&7);
 			break;
 		
-		case svc_updatename:
+		case q1svc_updatename:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: q1svc_updatename > MAX_SCOREBOARD");
 			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
 			break;
 			
-		case svc_updatefrags:
+		case q1svc_updatefrags:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: q1svc_updatefrags > MAX_SCOREBOARD");
 			cl.scores[i].frags = net_message.ReadShort ();
 			break;			
 
-		case svc_updatecolors:
+		case q1svc_updatecolors:
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: q1svc_updatecolors > MAX_SCOREBOARD");
 			cl.scores[i].colors = net_message.ReadByte ();
 			CL_NewTranslation (i);
 			break;
 			
-		case svc_particle:
+		case q1svc_particle:
 			R_ParseParticleEffect ();
 			break;
 
-		case svc_spawnbaseline:
+		case q1svc_spawnbaseline:
 			CLQ1_ParseSpawnBaseline(net_message);
 			break;
-		case svc_spawnstatic:
+		case q1svc_spawnstatic:
 			CLQ1_ParseSpawnStatic(net_message);
 			break;			
-		case svc_temp_entity:
+		case q1svc_temp_entity:
 			CLQ1_ParseTEnt (net_message);
 			break;
 
-		case svc_setpause:
+		case q1svc_setpause:
 			{
 				cl.paused = net_message.ReadByte ();
 
@@ -785,7 +785,7 @@ void CL_ParseServerMessage (void)
 			}
 			break;
 			
-		case svc_signonnum:
+		case q1svc_signonnum:
 			i = net_message.ReadByte ();
 			if (i <= cls.signon)
 				Host_Error ("Received signon %i when at %i", i, cls.signon);
@@ -793,26 +793,26 @@ void CL_ParseServerMessage (void)
 			CL_SignonReply ();
 			break;
 
-		case svc_killedmonster:
+		case q1svc_killedmonster:
 			cl.stats[STAT_MONSTERS]++;
 			break;
 
-		case svc_foundsecret:
+		case q1svc_foundsecret:
 			cl.stats[STAT_SECRETS]++;
 			break;
 
-		case svc_updatestat:
+		case q1svc_updatestat:
 			i = net_message.ReadByte ();
 			if (i < 0 || i >= MAX_CL_STATS)
-				Sys_Error ("svc_updatestat: %i is invalid", i);
+				Sys_Error ("q1svc_updatestat: %i is invalid", i);
 			cl.stats[i] = net_message.ReadLong ();;
 			break;
 			
-		case svc_spawnstaticsound:
+		case q1svc_spawnstaticsound:
 			CL_ParseStaticSound ();
 			break;
 
-		case svc_cdtrack:
+		case q1svc_cdtrack:
 			cl.cdtrack = net_message.ReadByte ();
 			cl.looptrack = net_message.ReadByte ();
 			if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
@@ -821,24 +821,24 @@ void CL_ParseServerMessage (void)
 				CDAudio_Play ((byte)cl.cdtrack, true);
 			break;
 
-		case svc_intermission:
+		case q1svc_intermission:
 			cl.intermission = 1;
 			cl.completed_time = cl.serverTimeFloat;
 			break;
 
-		case svc_finale:
+		case q1svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = cl.serverTimeFloat;
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 
-		case svc_cutscene:
+		case q1svc_cutscene:
 			cl.intermission = 3;
 			cl.completed_time = cl.serverTimeFloat;
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 
-		case svc_sellscreen:
+		case q1svc_sellscreen:
 			Cmd_ExecuteString ("help", src_command);
 			break;
 		}

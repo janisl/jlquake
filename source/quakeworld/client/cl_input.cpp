@@ -483,7 +483,7 @@ void CL_SendCmd (void)
 // if the last packet was dropped, it can be recovered
 	buf.InitOOB(data, 128);
 
-	buf.WriteByte(clc_move);
+	buf.WriteByte(q1clc_move);
 
 	// save the position for a checksum byte
 	checksumIndex = buf.cursize;
@@ -520,7 +520,7 @@ void CL_SendCmd (void)
 		!cls.demorecording)
 	{
 		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;
-		buf.WriteByte(clc_delta);
+		buf.WriteByte(qwclc_delta);
 		buf.WriteByte(cl.validsequence&255);
 	}
 	else

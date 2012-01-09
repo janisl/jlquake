@@ -516,11 +516,11 @@ nextmsg:
 				Con_Printf ("SV_ReadClientMessage: unknown command char\n");
 				return false;
 							
-			case clc_nop:
-//				Con_Printf ("clc_nop\n");
+			case q1clc_nop:
+//				Con_Printf ("q1clc_nop\n");
 				break;
 				
-			case clc_stringcmd:	
+			case q1clc_stringcmd:	
 				s = net_message.ReadString2();
 				if (host_client->privileged)
 					ret = 2;
@@ -572,11 +572,11 @@ nextmsg:
 					Con_DPrintf("%s tried to %s\n", host_client->name, s);
 				break;
 				
-			case clc_disconnect:
+			case q1clc_disconnect:
 //				Con_Printf ("SV_ReadClientMessage: client disconnected\n");
 				return false;
 			
-			case clc_move:
+			case q1clc_move:
 				SV_ReadClientMove (&host_client->cmd);
 				break;
 			}

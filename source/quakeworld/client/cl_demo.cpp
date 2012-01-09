@@ -288,7 +288,7 @@ void CL_Stop_f (void)
 // write a disconnect message to the demo file
 	net_message.Clear();
 	net_message.WriteLong(-1);	// -1 sequence means out of band
-	net_message.WriteByte(svc_disconnect);
+	net_message.WriteByte(q1svc_disconnect);
 	net_message.WriteString2("EndOfDemo");
 	CL_WriteDemoMessage (&net_message);
 
@@ -426,7 +426,7 @@ void CL_Record_f (void)
 	buf.InitOOB(buf_data, sizeof(buf_data));
 
 // send the serverdata
-	buf.WriteByte(svc_serverdata);
+	buf.WriteByte(qwsvc_serverdata);
 	buf.WriteLong(PROTOCOL_VERSION);
 	buf.WriteLong(cl.servercount);
 	buf.WriteString2(gamedirfile);
@@ -452,11 +452,11 @@ void CL_Record_f (void)
 	buf.WriteFloat(movevars.entgravity);
 
 	// send music
-	buf.WriteByte(svc_cdtrack);
+	buf.WriteByte(q1svc_cdtrack);
 	buf.WriteByte(0); // none in demos
 
 	// send server info string
-	buf.WriteByte(svc_stufftext);
+	buf.WriteByte(q1svc_stufftext);
 	buf.WriteString2(va("fullserverinfo \"%s\"\n", cl.serverinfo) );
 
 	// flush packet
@@ -464,7 +464,7 @@ void CL_Record_f (void)
 	buf.Clear(); 
 
 // soundlist
-	buf.WriteByte(svc_soundlist);
+	buf.WriteByte(qwsvc_soundlist);
 	buf.WriteByte(0);
 
 	n = 0;
@@ -476,7 +476,7 @@ void CL_Record_f (void)
 			buf.WriteByte(n);
 			CL_WriteRecordDemoMessage (&buf, seq++);
 			buf.Clear(); 
-			buf.WriteByte(svc_soundlist);
+			buf.WriteByte(qwsvc_soundlist);
 			buf.WriteByte(n + 1);
 		}
 		n++;
@@ -490,7 +490,7 @@ void CL_Record_f (void)
 	}
 
 // modellist
-	buf.WriteByte(svc_modellist);
+	buf.WriteByte(qwsvc_modellist);
 	buf.WriteByte(0);
 
 	n = 0;
@@ -502,7 +502,7 @@ void CL_Record_f (void)
 			buf.WriteByte(n);
 			CL_WriteRecordDemoMessage (&buf, seq++);
 			buf.Clear(); 
-			buf.WriteByte(svc_modellist);
+			buf.WriteByte(qwsvc_modellist);
 			buf.WriteByte(n + 1);
 		}
 		n++;
@@ -520,7 +520,7 @@ void CL_Record_f (void)
 	for (i = 0; i < cl.num_statics; i++) {
 		ent = clq1_static_entities + i;
 
-		buf.WriteByte(svc_spawnstatic);
+		buf.WriteByte(q1svc_spawnstatic);
 
 		buf.WriteByte(ent->state.modelindex);
 		buf.WriteByte(ent->state.frame);
@@ -548,7 +548,7 @@ void CL_Record_f (void)
 		es = clq1_baselines + i;
 
 		if (memcmp(es, &blankes, sizeof(blankes))) {
-			buf.WriteByte(svc_spawnbaseline);		
+			buf.WriteByte(q1svc_spawnbaseline);		
 			buf.WriteShort(i);
 
 			buf.WriteByte(es->modelindex);
@@ -568,7 +568,7 @@ void CL_Record_f (void)
 		}
 	}
 
-	buf.WriteByte(svc_stufftext);
+	buf.WriteByte(q1svc_stufftext);
 	buf.WriteString2(va("cmd spawn %i 0\n", cl.servercount) );
 
 	if (buf.cursize) {
@@ -581,23 +581,23 @@ void CL_Record_f (void)
 	for (i = 0; i < MAX_CLIENTS_QW; i++) {
 		player = cl.players + i;
 
-		buf.WriteByte(svc_updatefrags);
+		buf.WriteByte(q1svc_updatefrags);
 		buf.WriteByte(i);
 		buf.WriteShort(player->frags);
 		
-		buf.WriteByte(svc_updateping);
+		buf.WriteByte(qwsvc_updateping);
 		buf.WriteByte(i);
 		buf.WriteShort(player->ping);
 		
-		buf.WriteByte(svc_updatepl);
+		buf.WriteByte(qwsvc_updatepl);
 		buf.WriteByte(i);
 		buf.WriteByte(player->pl);
 		
-		buf.WriteByte(svc_updateentertime);
+		buf.WriteByte(qwsvc_updateentertime);
 		buf.WriteByte(i);
 		buf.WriteFloat(player->entertime);
 
-		buf.WriteByte(svc_updateuserinfo);
+		buf.WriteByte(qwsvc_updateuserinfo);
 		buf.WriteByte(i);
 		buf.WriteLong(player->userid);
 		buf.WriteString2(player->userinfo);
@@ -611,13 +611,13 @@ void CL_Record_f (void)
 // send all current light styles
 	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
 	{
-		buf.WriteByte(svc_lightstyle);
+		buf.WriteByte(q1svc_lightstyle);
 		buf.WriteByte((char)i);
 		buf.WriteString2(cl_lightstyle[i].mapStr);
 	}
 
 	for (i = 0; i < MAX_CL_STATS; i++) {
-		buf.WriteByte(svc_updatestatlong);
+		buf.WriteByte(qwsvc_updatestatlong);
 		buf.WriteByte(i);
 		buf.WriteLong(cl.stats[i]);
 		if (buf.cursize > MAX_MSGLEN_QW/2) {
@@ -627,22 +627,22 @@ void CL_Record_f (void)
 	}
 
 #if 0
-	buf.WriteByte(svc_updatestatlong);
+	buf.WriteByte(qwsvc_updatestatlong);
 	buf.WriteByte(STAT_TOTALMONSTERS);
 	buf.WriteLong(cl.stats[STAT_TOTALMONSTERS]);
 
-	buf.WriteByte(svc_updatestatlong);
+	buf.WriteByte(qwsvc_updatestatlong);
 	buf.WriteByte(STAT_SECRETS);
 	buf.WriteLong(cl.stats[STAT_SECRETS]);
 
-	buf.WriteByte(svc_updatestatlong);
+	buf.WriteByte(qwsvc_updatestatlong);
 	buf.WriteByte(STAT_MONSTERS);
 	buf.WriteLong(cl.stats[STAT_MONSTERS]);
 #endif
 
 	// get the client to check and download skins
 	// when that is completed, a begin command will be issued
-	buf.WriteByte(svc_stufftext);
+	buf.WriteByte(q1svc_stufftext);
 	buf.WriteString2(va("skins\n") );
 
 	CL_WriteRecordDemoMessage (&buf, seq++);

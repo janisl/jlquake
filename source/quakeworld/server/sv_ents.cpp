@@ -110,7 +110,7 @@ void SV_EmitNailUpdate (QMsg *msg)
 	if (!numnails)
 		return;
 
-	msg->WriteByte(svc_nails);
+	msg->WriteByte(qwsvc_nails);
 	msg->WriteByte(numnails);
 
 	for (n=0 ; n<numnails ; n++)
@@ -256,7 +256,7 @@ void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
-		msg->WriteByte(svc_deltapacketentities);
+		msg->WriteByte(qwsvc_deltapacketentities);
 		msg->WriteByte(client->delta_sequence);
 	}
 	else
@@ -264,7 +264,7 @@ void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg
 		oldmax = 0;	// no delta update
 		from = NULL;
 
-		msg->WriteByte(svc_packetentities);
+		msg->WriteByte(qwsvc_packetentities);
 	}
 
 	newindex = 0;
@@ -379,7 +379,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			ent->v.weaponframe) 
 			pflags |= PF_WEAPONFRAME;
 
-		msg->WriteByte(svc_playerinfo);
+		msg->WriteByte(qwsvc_playerinfo);
 		msg->WriteByte(j);
 		msg->WriteShort(pflags);
 
@@ -437,9 +437,9 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 SV_WriteEntitiesToClient
 
 Encodes the current state of the world as
-a svc_packetentities messages and possibly
-a svc_nails message and
-svc_playerinfo messages
+a qwsvc_packetentities messages and possibly
+a qwsvc_nails message and
+qwsvc_playerinfo messages
 =============
 */
 void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)

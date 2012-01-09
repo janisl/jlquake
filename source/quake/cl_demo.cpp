@@ -143,7 +143,7 @@ int CL_GetMessage (void)
 			return r;
 	
 	// discard nop keepalive message
-		if (net_message.cursize == 1 && net_message._data[0] == svc_nop)
+		if (net_message.cursize == 1 && net_message._data[0] == q1svc_nop)
 			Con_Printf ("<-- server to client keepalive\n");
 		else
 			break;
@@ -176,7 +176,7 @@ void CL_Stop_f (void)
 
 // write a disconnect message to the demo file
 	net_message.Clear();
-	net_message.WriteByte(svc_disconnect);
+	net_message.WriteByte(q1svc_disconnect);
 	CL_WriteDemoMessage ();
 
 // finish up

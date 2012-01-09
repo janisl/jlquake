@@ -415,7 +415,7 @@ void CL_SendMove (q1usercmd_t *cmd)
 //
 // send the movement message
 //
-    buf.WriteByte(clc_move);
+    buf.WriteByte(q1clc_move);
 
 	buf.WriteFloat(cl.mtime[0]);	// so server can get ping times
 

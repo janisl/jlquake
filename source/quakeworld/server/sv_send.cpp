@@ -63,7 +63,7 @@ void SV_FlushRedirect (void)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		ClientReliableWrite_Begin (host_client, svc_print, String::Length(outputbuf)+3);
+		ClientReliableWrite_Begin (host_client, q1svc_print, String::Length(outputbuf)+3);
 		ClientReliableWrite_Byte (host_client, PRINT_HIGH);
 		ClientReliableWrite_String (host_client, outputbuf);
 	}
@@ -156,7 +156,7 @@ EVENT MESSAGES
 
 static void SV_PrintToClient(client_t *cl, int level, char *string)
 {
-	ClientReliableWrite_Begin (cl, svc_print, String::Length(string)+3);
+	ClientReliableWrite_Begin (cl, q1svc_print, String::Length(string)+3);
 	ClientReliableWrite_Byte (cl, level);
 	ClientReliableWrite_String (cl, string);
 }
@@ -233,7 +233,7 @@ void SV_BroadcastCommand (const char *fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 
-	sv.reliable_datagram.WriteByte(svc_stufftext);
+	sv.reliable_datagram.WriteByte(q1svc_stufftext);
 	sv.reliable_datagram.WriteString2(string);
 }
 
@@ -404,7 +404,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 		VectorCopy (entity->v.origin, origin);
 	}
 
-	sv.multicast.WriteByte(svc_sound);
+	sv.multicast.WriteByte(q1svc_sound);
 	sv.multicast.WriteShort(channel);
 	if (channel & SND_VOLUME)
 		sv.multicast.WriteByte(volume);
@@ -470,7 +470,7 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	// send the chokecount for cl_netgraph
 	if (client->chokecount)
 	{
-		msg->WriteByte(svc_chokecount);
+		msg->WriteByte(qwsvc_chokecount);
 		msg->WriteByte(client->chokecount);
 		client->chokecount = 0;
 	}
@@ -479,7 +479,7 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	if (ent->v.dmg_take || ent->v.dmg_save)
 	{
 		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
-		msg->WriteByte(svc_damage);
+		msg->WriteByte(q1svc_damage);
 		msg->WriteByte(ent->v.dmg_save);
 		msg->WriteByte(ent->v.dmg_take);
 		for (i=0 ; i<3 ; i++)
@@ -492,7 +492,7 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	// a fixangle might get lost in a dropped packet.  Oh well.
 	if ( ent->v.fixangle )
 	{
-		msg->WriteByte(svc_setangle);
+		msg->WriteByte(q1svc_setangle);
 		for (i=0 ; i < 3 ; i++)
 			msg->WriteAngle(ent->v.angles[i] );
 		ent->v.fixangle = 0;
@@ -540,13 +540,13 @@ void SV_UpdateClientStats (client_t *client)
 			client->stats[i] = stats[i];
 			if (stats[i] >=0 && stats[i] <= 255)
 			{
-				ClientReliableWrite_Begin(client, svc_updatestat, 3);
+				ClientReliableWrite_Begin(client, q1svc_updatestat, 3);
 				ClientReliableWrite_Byte(client, i);
 				ClientReliableWrite_Byte(client, stats[i]);
 			}
 			else
 			{
-				ClientReliableWrite_Begin(client, svc_updatestatlong, 6);
+				ClientReliableWrite_Begin(client, qwsvc_updatestatlong, 6);
 				ClientReliableWrite_Byte(client, i);
 				ClientReliableWrite_Long(client, stats[i]);
 			}
@@ -626,7 +626,7 @@ void SV_UpdateToReliableMessages (void)
 			{
 				if (client->state < cs_connected)
 					continue;
-				ClientReliableWrite_Begin(client, svc_updatefrags, 4);
+				ClientReliableWrite_Begin(client, q1svc_updatefrags, 4);
 				ClientReliableWrite_Byte(client, i);
 				ClientReliableWrite_Short(client, host_client->edict->v.frags);
 			}
@@ -640,13 +640,13 @@ void SV_UpdateToReliableMessages (void)
 		val = GetEdictFieldValue(ent, "gravity");
 		if (val && host_client->entgravity != val->_float) {
 			host_client->entgravity = val->_float;
-			ClientReliableWrite_Begin(host_client, svc_entgravity, 5);
+			ClientReliableWrite_Begin(host_client, qwsvc_entgravity, 5);
 			ClientReliableWrite_Float(host_client, host_client->entgravity);
 		}
 		val = GetEdictFieldValue(ent, "maxspeed");
 		if (val && host_client->maxspeed != val->_float) {
 			host_client->maxspeed = val->_float;
-			ClientReliableWrite_Begin(host_client, svc_maxspeed, 5);
+			ClientReliableWrite_Begin(host_client, qwsvc_maxspeed, 5);
 			ClientReliableWrite_Float(host_client, host_client->maxspeed);
 		}
 

@@ -78,8 +78,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	STAT_ACTIVEWEAPON	10
 #define	STAT_TOTALSECRETS	11
 #define	STAT_TOTALMONSTERS	12
-#define	STAT_SECRETS		13		// bumped on client side by svc_foundsecret
-#define	STAT_MONSTERS		14		// bumped by svc_killedmonster
+#define	STAT_SECRETS		13		// bumped on client side by q1svc_foundsecret
+#define	STAT_MONSTERS		14		// bumped by q1svc_killedmonster
 
 // stock defines
 
