@@ -167,27 +167,27 @@ void Key_Console (int key)
 
 	if (key == K_PGUP || key==K_MWHEELUP)
 	{
-		con->display -= 2;
+		con.display -= 2;
 		return;
 	}
 
 	if (key == K_PGDN || key==K_MWHEELDOWN)
 	{
-		con->display += 2;
-		if (con->display > con->current)
-			con->display = con->current;
+		con.display += 2;
+		if (con.display > con.current)
+			con.display = con.current;
 		return;
 	}
 
 	if (key == K_HOME)
 	{
-		con->display = con->current - con_totallines + 10;
+		con.display = con.current - con_totallines + 10;
 		return;
 	}
 
 	if (key == K_END)
 	{
-		con->display = con->current;
+		con.display = con.current;
 		return;
 	}
 	

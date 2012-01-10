@@ -13,9 +13,7 @@ typedef struct
 	int		display;		// bottom of console displays this line
 } console_t;
 
-extern	console_t	con_main;
-extern	console_t	con_chat;
-extern	console_t	*con;			// point to either con_main or con_chat
+extern	console_t	con;
 
 extern	int			con_ormask;
 

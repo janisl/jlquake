@@ -3,9 +3,7 @@
 #include "quakedef.h"
 
 int			con_ormask;
-console_t	con_main;
-console_t	con_chat;
-console_t	*con;			// point to either con_main or con_chat
+console_t	con;
 
 int 		con_linewidth;	// characters across screen
 int			con_totallines;		// total lines in console scrollback
@@ -15,7 +13,7 @@ float		con_cursorspeed = 4;
 
 Cvar*		con_notifytime;
 
-#define	NUM_CON_TIMES 4
+#define NUM_CON_TIMES	4
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 								// for transparent notify lines
 
@@ -85,10 +83,8 @@ Con_Clear_f
 */
 void Con_Clear_f (void)
 {
-	Com_Memset(con_main.text, ' ', CON_TEXTSIZE);
-	Com_Memset(con_main.text_attr, 0, CON_TEXTSIZE);
-	Com_Memset(con_chat.text, ' ', CON_TEXTSIZE);
-	Com_Memset(con_chat.text_attr, 0, CON_TEXTSIZE);
+	Com_Memset(con.text, ' ', CON_TEXTSIZE);
+	Com_Memset(con.text_attr, 0, CON_TEXTSIZE);
 }
 
 						
@@ -134,7 +130,7 @@ Con_Resize
 
 ================
 */
-void Con_Resize (console_t *con)
+void Con_Resize ()
 {
 	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char	tbuf[CON_TEXTSIZE], tbuf_attr[CON_TEXTSIZE];
@@ -149,8 +145,8 @@ void Con_Resize (console_t *con)
 		width = 38;
 		con_linewidth = width;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
-		Com_Memset(con->text, ' ', CON_TEXTSIZE);
-		Com_Memset(con->text_attr, 0, CON_TEXTSIZE);
+		Com_Memset(con.text, ' ', CON_TEXTSIZE);
+		Com_Memset(con.text_attr, 0, CON_TEXTSIZE);
 	}
 	else
 	{
@@ -168,20 +164,20 @@ void Con_Resize (console_t *con)
 		if (con_linewidth < numchars)
 			numchars = con_linewidth;
 
-		Com_Memcpy(tbuf, con->text, CON_TEXTSIZE);
-		Com_Memcpy(tbuf_attr, con->text_attr, CON_TEXTSIZE);
-		Com_Memset(con->text, ' ', CON_TEXTSIZE);
-		Com_Memset(con->text_attr, 0, CON_TEXTSIZE);
+		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE);
+		Com_Memcpy(tbuf_attr, con.text_attr, CON_TEXTSIZE);
+		Com_Memset(con.text, ' ', CON_TEXTSIZE);
+		Com_Memset(con.text_attr, 0, CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)
 		{
 			for (j=0 ; j<numchars ; j++)
 			{
-				con->text[(con_totallines - 1 - i) * con_linewidth + j] =
-						tbuf[((con->current - i + oldtotallines) %
+				con.text[(con_totallines - 1 - i) * con_linewidth + j] =
+						tbuf[((con.current - i + oldtotallines) %
 							  oldtotallines) * oldwidth + j];
-				con->text_attr[(con_totallines - 1 - i) * con_linewidth + j] =
-						tbuf_attr[((con->current - i + oldtotallines) %
+				con.text_attr[(con_totallines - 1 - i) * con_linewidth + j] =
+						tbuf_attr[((con.current - i + oldtotallines) %
 							  oldtotallines) * oldwidth + j];
 			}
 		}
@@ -189,8 +185,8 @@ void Con_Resize (console_t *con)
 		Con_ClearNotify ();
 	}
 
-	con->current = con_totallines - 1;
-	con->display = con->current;
+	con.current = con_totallines - 1;
+	con.display = con.current;
 }
 
 					
@@ -203,8 +199,7 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize (void)
 {
-	Con_Resize (&con_main);
-	Con_Resize (&con_chat);
+	Con_Resize ();
 }
 
 
@@ -217,7 +212,6 @@ void Con_Init (void)
 {
 	con_debuglog = COM_CheckParm("-condebug");
 
-	con = &con_main;
 	con_linewidth = -1;
 	Con_CheckResize ();
 	
@@ -244,12 +238,12 @@ Con_Linefeed
 */
 void Con_Linefeed (void)
 {
-	con->x = 0;
-	if (con->display == con->current)
-		con->display++;
-	con->current++;
-	Com_Memset(&con->text[(con->current%con_totallines)*con_linewidth], ' ', con_linewidth);
-	Com_Memset(&con->text_attr[(con->current%con_totallines)*con_linewidth], 0, con_linewidth);
+	con.x = 0;
+	if (con.display == con.current)
+		con.display++;
+	con.current++;
+	Com_Memset(&con.text[(con.current%con_totallines)*con_linewidth], ' ', con_linewidth);
+	Com_Memset(&con.text_attr[(con.current%con_totallines)*con_linewidth], 0, con_linewidth);
 }
 
 /*
@@ -285,44 +279,44 @@ void Con_Print (const char *txt)
 				break;
 
 	// word wrap
-		if (l != con_linewidth && (con->x + l > con_linewidth) )
-			con->x = 0;
+		if (l != con_linewidth && (con.x + l > con_linewidth) )
+			con.x = 0;
 
 		txt++;
 
 		if (cr)
 		{
-			con->current--;
+			con.current--;
 			cr = false;
 		}
 
 		
-		if (!con->x)
+		if (!con.x)
 		{
 			Con_Linefeed ();
 		// mark time for transparent overlay
-			if (con->current >= 0)
-				con_times[con->current % NUM_CON_TIMES] = realtime;
+			if (con.current >= 0)
+				con_times[con.current % NUM_CON_TIMES] = realtime;
 		}
 
 		switch (c)
 		{
 		case '\n':
-			con->x = 0;
+			con.x = 0;
 			break;
 
 		case '\r':
-			con->x = 0;
+			con.x = 0;
 			cr = 1;
 			break;
 
 		default:	// display character and advance
-			y = con->current % con_totallines;
-			con->text[y*con_linewidth+con->x] = c;
-			con->text_attr[y*con_linewidth+con->x] = mask | con_ormask;
-			con->x++;
-			if (con->x >= con_linewidth)
-				con->x = 0;
+			y = con.current % con_totallines;
+			con.text[y*con_linewidth+con.x] = c;
+			con.text_attr[y*con_linewidth+con.x] = mask | con_ormask;
+			con.x++;
+			if (con.x >= con_linewidth)
+				con.x = 0;
 			break;
 		}
 		
@@ -477,7 +471,7 @@ void Con_DrawNotify (void)
 	int		skip;
 
 	v = 0;
-	for (i= con->current-NUM_CON_TIMES+1 ; i<=con->current ; i++)
+	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
 	{
 		if (i < 0)
 			continue;
@@ -487,8 +481,8 @@ void Con_DrawNotify (void)
 		time = realtime - time;
 		if (time > con_notifytime->value)
 			continue;
-		text = con->text + (i % con_totallines)*con_linewidth;
-		text_attr = con->text_attr + (i % con_totallines)*con_linewidth;
+		text = con.text + (i % con_totallines)*con_linewidth;
+		text_attr = con.text_attr + (i % con_totallines)*con_linewidth;
 
 		for (x = 0 ; x < con_linewidth ; x++)
 			Draw_Character ( (x+1)<<3, v, text[x] + 256*text_attr[x]);
@@ -555,7 +549,7 @@ void Con_DrawConsole (int lines)
 	y = lines - 30;
 
 // draw from the bottom up
-	if (con->display != con->current)
+	if (con.display != con.current)
 	{
 	// draw arrows to show the buffer is backscrolled
 		for (x=0 ; x<con_linewidth ; x+=4)
@@ -565,16 +559,16 @@ void Con_DrawConsole (int lines)
 		rows--;
 	}
 	
-	row = con->display;
+	row = con.display;
 	for (i=0 ; i<rows ; i++, y-=8, row--)
 	{
 		if (row < 0)
 			break;
-		if (con->current - row >= con_totallines)
+		if (con.current - row >= con_totallines)
 			break;		// past scrollback wrap point
 			
-		text = con->text + (row % con_totallines)*con_linewidth;
-		text_attr = con->text_attr + (row % con_totallines)*con_linewidth;
+		text = con.text + (row % con_totallines)*con_linewidth;
+		text_attr = con.text_attr + (row % con_totallines)*con_linewidth;
 
 		for (x=0 ; x<con_linewidth ; x++)
 			Draw_Character ( (x+1)<<3, y, text[x] + 256*text_attr[x]);
