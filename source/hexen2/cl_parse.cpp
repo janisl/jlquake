@@ -384,9 +384,9 @@ void CL_ParseUpdate (int bits)
 	int			num;
 	h2entity_state_t *ref_ent,*set_ent,build_ent,dummy;
 
-	if (cls.signon == SIGNONS - 1)
+	if (clc.qh_signon == SIGNONS - 1)
 	{	// first update is the final signon stage
-		cls.signon = SIGNONS;
+		clc.qh_signon = SIGNONS;
 		CL_SignonReply ();
 	}
 
@@ -1299,9 +1299,9 @@ void CL_ParseServerMessage (void)
 			
 		case h2svc_signonnum:
 			i = net_message.ReadByte ();
-			if (i <= cls.signon)
-				Host_Error ("Received signon %i when at %i", i, cls.signon);
-			cls.signon = i;
+			if (i <= clc.qh_signon)
+				Host_Error ("Received signon %i when at %i", i, clc.qh_signon);
+			clc.qh_signon = i;
 			CL_SignonReply ();
 			break;
 

@@ -510,7 +510,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;		// never a console with loading plaque
 		
 // decide on the height of the console
-	con_forcedup = cls.state != ca_connected || cls.signon != SIGNONS;
+	con_forcedup = cls.state != ca_connected || clc.qh_signon != SIGNONS;
 
 	if (con_forcedup)
 	{
@@ -567,7 +567,7 @@ void SCR_BeginLoadingPlaque (void)
 
 	if (cls.state != ca_connected)
 		return;
-	if (cls.signon != SIGNONS)
+	if (clc.qh_signon != SIGNONS)
 		return;
 	
 // redraw with no console and the loading plaque

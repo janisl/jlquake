@@ -512,7 +512,7 @@ void Host_ClearMemory (void)
 	if (host_hunklevel)
 		Hunk_FreeToLowMark (host_hunklevel);
 
-	cls.signon = 0;
+	clc.qh_signon = 0;
 	Com_Memset(&sv, 0, sizeof(sv));
 	Com_Memset(&cl, 0, sizeof(cl));
 }
@@ -687,7 +687,7 @@ void _Host_Frame (float time)
 		time2 = Sys_DoubleTime ();
 		
 // update audio
-	if (cls.signon == SIGNONS)
+	if (clc.qh_signon == SIGNONS)
 	{
 		S_Respatialize(cl.viewentity, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
 		CL_RunDLights ();

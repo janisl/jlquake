@@ -11,8 +11,6 @@
 // client_state_t should hold all pieces of the client state
 //
 
-#define	SIGNONS		4			// signon messages to receive before connected
-
 #define	MAX_EFRAGS		640
 
 #define	MAX_MAPSTRING	2048
@@ -54,7 +52,6 @@ struct client_static_t : clientStaticCommon_t
 
 
 // connection information
-	int			signon;			// 0 to SIGNONS
 	struct qsocket_s	*netcon;
 	QMsg		message;		// writing buffer to send to server
 	byte		message_buf[1024];

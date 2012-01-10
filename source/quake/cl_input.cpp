@@ -296,7 +296,7 @@ Send the intended movement message to the server
 */
 void CL_BaseMove (q1usercmd_t *cmd)
 {	
-	if (cls.signon != SIGNONS)
+	if (clc.qh_signon != SIGNONS)
 		return;
 			
 	CL_AdjustAngles ();

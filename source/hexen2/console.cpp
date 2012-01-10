@@ -376,7 +376,7 @@ void Con_Printf (const char *fmt, ...)
 	Con_Print (msg);
 	
 // update the screen if the console is displayed
-	if (cls.signon != SIGNONS && !scr_disabled_for_loading )
+	if (clc.qh_signon != SIGNONS && !scr_disabled_for_loading )
 	{
 	// protect against infinite loop if something in SCR_UpdateScreen calls
 	// Con_Printd

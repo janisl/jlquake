@@ -161,7 +161,7 @@ void CL_Disconnect (void)
 	}
 
 	cls.demoplayback = cls.timedemo = false;
-	cls.signon = 0;
+	clc.qh_signon = 0;
 }
 
 void CL_Disconnect_f (void)
@@ -201,7 +201,7 @@ void CL_EstablishConnection (const char *host)
 	
 	cls.demonum = -1;			// not in the demo loop now
 	cls.state = ca_connected;
-	cls.signon = 0;				// need all the signon messages before playing
+	clc.qh_signon = 0;				// need all the signon messages before playing
 }
 
 /*
@@ -215,9 +215,9 @@ void CL_SignonReply (void)
 {
 	char 	str[8192];
 
-Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
+Con_DPrintf ("CL_SignonReply: %i\n", clc.qh_signon);
 
-	switch (cls.signon)
+	switch (clc.qh_signon)
 	{
 	case 1:
 		cls.message.WriteByte(h2clc_stringcmd);
@@ -666,7 +666,7 @@ void CL_SendCmd (void)
 	if (cls.state != ca_connected)
 		return;
 
-	if (cls.signon == SIGNONS)
+	if (clc.qh_signon == SIGNONS)
 	{
 	// get basic movement from keyboard
 		CL_BaseMove (&cmd);

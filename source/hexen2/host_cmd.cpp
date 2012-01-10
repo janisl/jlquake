@@ -371,7 +371,7 @@ void Host_Reconnect_f (void)
 	//updatePlaqueMessage();
 
 	SCR_BeginLoadingPlaque ();
-	cls.signon = 0;		// need new connection messages
+	clc.qh_signon = 0;		// need new connection messages
 }
 
 /*

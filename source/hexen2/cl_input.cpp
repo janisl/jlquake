@@ -292,7 +292,7 @@ Send the intended movement message to the server
 */
 void CL_BaseMove (h2usercmd_t *cmd)
 {	
-	if (cls.signon != SIGNONS)
+	if (clc.qh_signon != SIGNONS)
 		return;
 			
 	if (cl.v.cameramode)	// Stuck in a different camera so don't move

@@ -350,7 +350,7 @@ This is sent just before a server changes levels
 void Host_Reconnect_f (void)
 {
 	SCR_BeginLoadingPlaque ();
-	cls.signon = 0;		// need new connection messages
+	clc.qh_signon = 0;		// need new connection messages
 }
 
 /*

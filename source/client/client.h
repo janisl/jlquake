@@ -39,6 +39,8 @@
 #define CSHIFT_POWERUP	3
 #define NUM_CSHIFTS		4
 
+#define SIGNONS		4			// signon messages to receive before connected
+
 struct cshift_t
 {
 	int		destcolor[3];
@@ -91,6 +93,8 @@ struct clientConnectionCommon_t
 {
 	// big stuff at end of structure so most offsets are 15 bits or less
 	netchan_t netchan;
+
+	int qh_signon;			// 0 to SIGNONS
 };
 
 struct clientStaticCommon_t
