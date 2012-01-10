@@ -32,7 +32,11 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Cvar*		cl_inGameVideo;
+Cvar* cl_inGameVideo;
+
+// these two are not intended to be set directly
+Cvar* clqh_name;
+Cvar* clqh_color;
 
 clientStaticCommon_t* cls_common;
 clientConnectionCommon_t* clc_common;

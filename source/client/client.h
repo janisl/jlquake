@@ -45,7 +45,10 @@ struct cshift_t
 	int		percent;		// 0-256
 };
 
-extern Cvar*		cl_inGameVideo;
+extern Cvar* cl_inGameVideo;
+
+extern Cvar* clqh_name;
+extern Cvar* clqh_color;
 
 void CL_SharedInit();
 int CL_ScaledMilliseconds();

@@ -15,9 +15,6 @@
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
-// these two are not intended to be set directly
-Cvar*	cl_name;
-Cvar*	cl_color;
 Cvar*	cl_playerclass;
 
 Cvar*	cl_shownet;
@@ -229,13 +226,13 @@ Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
 		
 	case 2:		
 		cls.message.WriteByte(h2clc_stringcmd);
-		cls.message.WriteString2(va("name \"%s\"\n", cl_name->string));
+		cls.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
 	
 		cls.message.WriteByte(h2clc_stringcmd);
 		cls.message.WriteString2(va("playerclass %i\n", (int)cl_playerclass->value));
 
 		cls.message.WriteByte(h2clc_stringcmd);
-		cls.message.WriteString2(va("color %i %i\n", ((int)cl_color->value)>>4, ((int)cl_color->value)&15));
+		cls.message.WriteString2(va("color %i %i\n", ((int)clqh_color->value)>>4, ((int)clqh_color->value)&15));
 
 		cls.message.WriteByte(h2clc_stringcmd);
 		sprintf (str, "spawn %s", cls.spawnparms);
@@ -737,8 +734,8 @@ void CL_Init (void)
 //
 // register our commands
 //
-	cl_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
-	cl_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
+	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
+	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
 	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
 	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
 	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);

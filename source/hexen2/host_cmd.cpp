@@ -1020,7 +1020,7 @@ void Host_Name_f (void)
 
 	if (Cmd_Argc () == 1)
 	{
-		Con_Printf ("\"name\" is \"%s\"\n", cl_name->string);
+		Con_Printf ("\"name\" is \"%s\"\n", clqh_name->string);
 		return;
 	}
 	if (Cmd_Argc () == 2)
@@ -1039,7 +1039,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (String::Cmp(cl_name->string, newName) == 0)
+		if (String::Cmp(clqh_name->string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -1365,7 +1365,7 @@ void Host_Color_f(void)
 	
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color->value) >> 4, ((int)cl_color->value) & 0x0f);
+		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 0x0f);
 		Con_Printf ("color <0-10> [0-10]\n");
 		return;
 	}
@@ -1820,7 +1820,7 @@ void Host_Kick_f (void)
 			if (cls.state == ca_dedicated)
 				who = "Console";
 			else
-				who = cl_name->string;
+				who = clqh_name->string;
 		else
 			who = save->name;
 

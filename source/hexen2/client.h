@@ -166,8 +166,6 @@ struct client_state_t : clientActiveCommon_t
 //
 // cvars
 //
-extern	Cvar*	cl_name;
-extern	Cvar*	cl_color;
 extern	Cvar*	cl_playerclass;
 
 extern	Cvar*	cl_upspeed;

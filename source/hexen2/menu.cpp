@@ -1405,10 +1405,10 @@ void M_Menu_Setup_f (void)
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
 	m_entersound = true;
-	String::Cpy(setup_myname, cl_name->string);
+	String::Cpy(setup_myname, clqh_name->string);
 	String::Cpy(setup_hostname, hostname->string);
-	setup_top = setup_oldtop = ((int)cl_color->value) >> 4;
-	setup_bottom = setup_oldbottom = ((int)cl_color->value) & 15;
+	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
+	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
 	setup_class = cl_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 		setup_class = NUM_CLASSES;
@@ -1516,7 +1516,7 @@ forward:
 		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4)
 			goto forward;
 
-		if (String::Cmp(cl_name->string, setup_myname) != 0)
+		if (String::Cmp(clqh_name->string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
 		if (String::Cmp(hostname->string, setup_hostname) != 0)
 			Cvar_Set("hostname", setup_hostname);
