@@ -13,7 +13,6 @@
 
 #define	MAX_EFRAGS		640
 
-#define	MAX_MAPSTRING	2048
 #define	MAX_DEMOS		8
 #define	MAX_DEMONAME	16
 
@@ -33,7 +32,6 @@ struct client_static_t : clientStaticCommon_t
 
 // personalization data sent to server	
 	char		mapstring[MAX_QPATH];
-	char		spawnparms[MAX_MAPSTRING];	// to restart a level
 
 // demo loop control
 	int			demonum;		// -1 = don't play demos

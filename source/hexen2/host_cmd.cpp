@@ -267,12 +267,12 @@ void Host_Map_f (void)
 	{
 		loading_stage = 2;
 
-		String::Cpy (cls.spawnparms, "");
+		String::Cpy (cls.qh_spawnparms, "");
 
 		for (i=2 ; i<Cmd_Argc() ; i++)
 		{
-			String::Cat(cls.spawnparms, sizeof(cls.spawnparms), Cmd_Argv(i));
-			String::Cat(cls.spawnparms, sizeof(cls.spawnparms), " ");
+			String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), Cmd_Argv(i));
+			String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), " ");
 		}
 		
 		Cmd_ExecuteString ("connect local", src_command);

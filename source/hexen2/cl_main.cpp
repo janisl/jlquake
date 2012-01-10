@@ -235,7 +235,7 @@ Con_DPrintf ("CL_SignonReply: %i\n", clc.qh_signon);
 		cls.message.WriteString2(va("color %i %i\n", ((int)clqh_color->value)>>4, ((int)clqh_color->value)&15));
 
 		cls.message.WriteByte(h2clc_stringcmd);
-		sprintf (str, "spawn %s", cls.spawnparms);
+		sprintf (str, "spawn %s", cls.qh_spawnparms);
 		cls.message.WriteString2(str);
 		break;
 		

@@ -41,6 +41,8 @@
 
 #define SIGNONS		4			// signon messages to receive before connected
 
+#define MAX_MAPSTRING	2048
+
 struct cshift_t
 {
 	int		destcolor[3];
@@ -107,6 +109,8 @@ struct clientStaticCommon_t
 	qhandle_t charSetShader;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
+
+	char qh_spawnparms[MAX_MAPSTRING];	// to restart a level
 };
 
 extern clientActiveCommon_t* cl_common;
