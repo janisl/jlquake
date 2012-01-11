@@ -952,7 +952,7 @@ void Host_Shutdown(void)
 	isdown = true;
 
 // keep Con_Printf from trying to update the screen
-	scr_disabled_for_loading = true;
+	cls.disable_screen = true;
 
 	Host_WriteConfiguration ("config.cfg"); 
 

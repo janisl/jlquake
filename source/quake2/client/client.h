@@ -158,9 +158,6 @@ struct client_static_t : clientStaticCommon_t
 	float		frametimeFloat;		// seconds since last frame
 
 // screen rendering information
-	float		disable_screen;		// showing loading plaque between levels
-									// or changing rendering dlls
-									// if time gets > 30 seconds ahead, break it
 	int			disable_servercount;	// when we receive a frame and cl.servercount
 									// > cls.disable_servercount, clear disable_screen
 

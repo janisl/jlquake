@@ -21,8 +21,6 @@ extern	float		scr_conlines;		// lines of console to display
 
 extern	int			sb_lines;
 
-extern	qboolean	scr_disabled_for_loading;
-
 extern	Cvar*		scr_viewsize;
 
 extern int			total_loading_size, current_loading_size, loading_stage;

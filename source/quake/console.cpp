@@ -349,7 +349,7 @@ void Con_Printf (const char *fmt, ...)
 	Con_Print (msg);
 	
 // update the screen if the console is displayed
-	if (clc.qh_signon != SIGNONS && !scr_disabled_for_loading )
+	if (clc.qh_signon != SIGNONS && !cls.disable_screen)
 	{
 	// protect against infinite loop if something in SCR_UpdateScreen calls
 	// Con_Printd
@@ -402,10 +402,10 @@ void Con_SafePrintf (const char *fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
+	temp = cls.disable_screen;
+	cls.disable_screen = true;
 	Con_Printf ("%s", msg);
-	scr_disabled_for_loading = temp;
+	cls.disable_screen = temp;
 }
 
 

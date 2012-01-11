@@ -94,9 +94,7 @@ image_t          *scr_turtle;
 
 vrect_t         scr_vrect;
 
-qboolean        scr_disabled_for_loading;
 qboolean        scr_drawloading;
-float           scr_disabled_time;
 
 void SCR_RSShot_f (void);
 
@@ -741,11 +739,11 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen (void)
 {
-	if (scr_disabled_for_loading)
+	if (cls.disable_screen)
 	{
-		if (realtime - scr_disabled_time > 60)
+		if (realtime * 1000 - cls.disable_screen > 60000)
 		{
-			scr_disabled_for_loading = false;
+			cls.disable_screen = 0;
 			Con_Printf ("load failed.\n");
 		}
 		else

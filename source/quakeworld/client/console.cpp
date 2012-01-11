@@ -653,9 +653,9 @@ void Con_SafePrintf (const char *fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 	
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
+	temp = cls.disable_screen;
+	cls.disable_screen = true;
 	Con_Printf ("%s", msg);
-	scr_disabled_for_loading = temp;
+	cls.disable_screen = temp;
 }
 
