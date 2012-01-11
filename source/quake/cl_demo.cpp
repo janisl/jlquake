@@ -301,6 +301,7 @@ void CL_PlayDemo_f (void)
 	}
 
 	cls.demoplayback = true;
+	clc.netchan.message.InitOOB(clc.netchan.messageBuffer, 1024);
 	cls.state = ca_connected;
 	cls.forcetrack = 0;
 

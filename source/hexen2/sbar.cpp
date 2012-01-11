@@ -1304,8 +1304,8 @@ void Inv_Update(qboolean force)
 		}
 
 		// This will cause the server to set the client's edict's inventory value
-		cls.message.WriteByte(h2clc_inv_select);
-		cls.message.WriteByte(cl.v.inventory);
+		clc.netchan.message.WriteByte(h2clc_inv_select);
+		clc.netchan.message.WriteByte(cl.v.inventory);
 	}
 }
 

@@ -69,14 +69,15 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	cls.message.WriteByte(q1clc_stringcmd);
+Log::write("Forward to server %s %s", Cmd_Argv(0), Cmd_ArgsUnmodified());
+	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	if (String::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{
-		cls.message.Print(Cmd_Argv(0));
-		cls.message.Print(" ");
+		clc.netchan.message.Print(Cmd_Argv(0));
+		clc.netchan.message.Print(" ");
 	}
 	if (Cmd_Argc() > 1)
-		cls.message.Print(Cmd_ArgsUnmodified());
+		clc.netchan.message.Print(Cmd_ArgsUnmodified());
 	else
-		cls.message.Print("\n");
+		clc.netchan.message.Print("\n");
 }

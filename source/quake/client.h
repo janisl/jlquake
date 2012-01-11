@@ -74,9 +74,6 @@ struct client_static_t : clientStaticCommon_t
 
 // connection information
 	struct qsocket_s	*netcon;
-	QMsg		message;		// writing buffer to send to server
-	byte		message_buf[1024];
-	
 };
 
 extern client_static_t	cls;
