@@ -342,7 +342,7 @@ void CL_ParseUpdate (int bits)
 	if (clc.qh_signon == SIGNONS - 1)
 	{	// first update is the final signon stage
 		clc.qh_signon = SIGNONS;
-		CL_SignonReply ();
+		CLQ1_SignonReply ();
 	}
 
 	if (bits & Q1U_MOREBITS)
@@ -790,7 +790,7 @@ void CL_ParseServerMessage (void)
 			if (i <= clc.qh_signon)
 				Host_Error ("Received signon %i when at %i", i, clc.qh_signon);
 			clc.qh_signon = i;
-			CL_SignonReply ();
+			CLQ1_SignonReply ();
 			break;
 
 		case q1svc_killedmonster:

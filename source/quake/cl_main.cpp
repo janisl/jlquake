@@ -147,49 +147,6 @@ void CL_EstablishConnection (const char *host)
 
 /*
 =====================
-CL_SignonReply
-
-An q1svc_signonnum has been received, perform a client side setup
-=====================
-*/
-void CL_SignonReply (void)
-{
-	char 	str[8192];
-
-Con_DPrintf ("CL_SignonReply: %i\n", clc.qh_signon);
-
-	switch (clc.qh_signon)
-	{
-	case 1:
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2("prespawn");
-		break;
-		
-	case 2:		
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
-	
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2(va("color %i %i\n", ((int)clqh_color->value)>>4, ((int)clqh_color->value)&15));
-	
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		sprintf (str, "spawn %s", cls.qh_spawnparms);
-		clc.netchan.message.WriteString2(str);
-		break;
-		
-	case 3:	
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2("begin");
-		break;
-		
-	case 4:
-		SCR_EndLoadingPlaque ();		// allow normal screen updates
-		break;
-	}
-}
-
-/*
-=====================
 CL_NextDemo
 
 Called to play the next demo in the demo loop

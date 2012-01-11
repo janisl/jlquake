@@ -11,6 +11,7 @@ set(CLIENT_FILES
 	game/hexen2/particle_effects.cpp
 	game/hexen2/stream.cpp
 	game/hexen2/temporary_entities.cpp
+	game/quake/connection.cpp
 	game/quake/entities.cpp
 	game/quake/light_effects.cpp
 	game/quake/particle_effects.cpp
