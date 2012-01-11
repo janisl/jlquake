@@ -146,7 +146,7 @@ int Loop_GetMessage (qsocket_t *sock, netchan_t* chan)
 	loop->datalen -= length;
 
 	if (loop->datalen)
-		Com_Memcpy(loop->data, &loop->data[length], loop->datalen);
+		memmove(loop->data, &loop->data[length], loop->datalen);
 
 	if (sock->driverdata && ret == 1)
 		((qsocket_t *)sock->driverdata)->canSend = true;
