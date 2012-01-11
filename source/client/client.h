@@ -26,6 +26,7 @@
 #include "input/public.h"
 #include "cinematic/public.h"
 #include "ui/ui.h"
+#include "ui/console.h"
 #include "quakeclientdefs.h"
 #include "hexen2clientdefs.h"
 #include "quake2clientdefs.h"

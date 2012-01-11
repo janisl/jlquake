@@ -1140,10 +1140,10 @@ void CL_ParseServerMessage (void)
 			if (i == PRINT_CHAT)
 			{
 				S_StartLocalSound("misc/talk.wav");
-				con_ormask = 128;
+				con.ormask = 128;
 			}
 			Con_Printf ("%s", net_message.ReadString2 ());
-			con_ormask = 0;
+			con.ormask = 0;
 			break;
 			
 		case q1svc_centerprint:

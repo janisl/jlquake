@@ -21,22 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // console
 //
-
-#define		CON_TEXTSIZE	16384
-typedef struct
-{
-	char	text[CON_TEXTSIZE];
-	int		current;		// line where next message will be printed
-	int		x;				// offset in current line for next print
-	int		display;		// bottom of console displays this line
-} console_t;
-
-extern	console_t	con;
-
-extern	int			con_ormask;
-
-extern int con_totallines;
-extern qboolean con_initialized;
 extern byte *con_chars;
 
 void Con_DrawCharacter (int cx, int line, int num);
@@ -50,7 +34,6 @@ void Con_DPrintf (const char *fmt, ...);
 void Con_SafePrintf (const char *fmt, ...);
 void Con_Clear_f (void);
 void Con_DrawNotify (void);
-void Con_ClearNotify (void);
 void Con_ToggleConsole_f (void);
 
 void Con_NotifyBox (const char *text);	// during startup for sound / cd warnings

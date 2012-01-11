@@ -181,7 +181,7 @@ void Key_Console (int key)
 
 	if (key == K_HOME)
 	{
-		con.display = con.current - con_totallines + 10;
+		con.display = con.current - con.totallines + 10;
 		return;
 	}
 

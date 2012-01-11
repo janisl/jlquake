@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-console_t	con;
-
 Cvar		*con_notifytime;
 
 
@@ -130,7 +128,8 @@ Con_Clear_f
 */
 void Con_Clear_f (void)
 {
-	Com_Memset(con.text, ' ', CON_TEXTSIZE);
+	for (int i = 0; i < CON_TEXTSIZE; i++)
+		con.text[i] = ' ';
 }
 
 						
@@ -144,7 +143,7 @@ Save the console contents out to a file
 void Con_Dump_f (void)
 {
 	int		l, x;
-	char	*line;
+	short	*line;
 	fileHandle_t	f;
 	char	buffer[1024];
 	char	name[MAX_OSPATH];
@@ -181,7 +180,8 @@ void Con_Dump_f (void)
 	for ( ; l <= con.current ; l++)
 	{
 		line = con.text + (l%con.totallines)*con.linewidth;
-		String::NCpy(buffer, line, con.linewidth);
+		for (int i = 0; i < con.linewidth; i++)
+			buffer[i] = line[i] & 0xff;
 		for (x=con.linewidth-1 ; x>=0 ; x--)
 		{
 			if (buffer[x] == ' ')
@@ -198,21 +198,6 @@ void Con_Dump_f (void)
 	FS_FCloseFile(f);
 }
 
-						
-/*
-================
-Con_ClearNotify
-================
-*/
-void Con_ClearNotify (void)
-{
-	int		i;
-	
-	for (i=0 ; i<NUM_CON_TIMES ; i++)
-		con.times[i] = 0;
-}
-
-						
 /*
 ================
 Con_MessageMode_f
@@ -245,7 +230,7 @@ If the line width has changed, reformat the buffer.
 void Con_CheckResize (void)
 {
 	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	tbuf[CON_TEXTSIZE];
+	short	tbuf[CON_TEXTSIZE];
 
 	width = (viddef.width >> 3) - 2;
 
@@ -257,7 +242,8 @@ void Con_CheckResize (void)
 		width = 38;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		Com_Memset(con.text, ' ', CON_TEXTSIZE);
+		for (int i = 0; i < CON_TEXTSIZE; i++)
+			con.text[i] = ' ';
 	}
 	else
 	{
@@ -275,8 +261,9 @@ void Con_CheckResize (void)
 		if (con.linewidth < numchars)
 			numchars = con.linewidth;
 
-		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE);
-		Com_Memset(con.text, ' ', CON_TEXTSIZE);
+		Com_Memcpy(tbuf, con.text, 2 * CON_TEXTSIZE);
+		for (i = 0; i < CON_TEXTSIZE; i++)
+			con.text[i] = ' ';
 
 		for (i=0 ; i<numlines ; i++)
 		{
@@ -335,8 +322,8 @@ void Con_Linefeed (void)
 	if (con.display == con.current)
 		con.display++;
 	con.current++;
-	Com_Memset(&con.text[(con.current%con.totallines)*con.linewidth]
-	, ' ', con.linewidth);
+	for (int i = 0; i < con.linewidth; i++)
+		con.text[(con.current%con.totallines)*con.linewidth + i] = ' ';
 }
 
 /*
@@ -500,7 +487,7 @@ Draws the last few lines of output transparently over the game top
 void Con_DrawNotify (void)
 {
 	int		x, v;
-	char	*text;
+	short	*text;
 	int		i;
 	int		time;
 	char	*s;
@@ -520,7 +507,7 @@ void Con_DrawNotify (void)
 		text = con.text + (i % con.totallines)*con.linewidth;
 		
 		for (x = 0 ; x < con.linewidth ; x++)
-			Draw_Char ( (x+1)<<3, v, text[x]);
+			Draw_Char ( (x+1)<<3, v, text[x] & 0xff);
 
 		v += 8;
 	}
@@ -564,7 +551,6 @@ void Con_DrawConsole (float frac)
 {
 	int				i, j, x, y, n;
 	int				rows;
-	char			*text;
 	int				row;
 	int				lines;
 	char			version[64];
@@ -616,17 +602,19 @@ void Con_DrawConsole (float frac)
 		if (con.current - row >= con.totallines)
 			break;		// past scrollback wrap point
 			
-		text = con.text + (row % con.totallines)*con.linewidth;
+		short* text = con.text + (row % con.totallines)*con.linewidth;
 
 		for (x=0 ; x<con.linewidth ; x++)
-			Draw_Char ( (x+1)<<3, y, text[x]);
+			Draw_Char ( (x+1)<<3, y, text[x] & 0xff);
 	}
 
 //ZOID
 	// draw the download bar
 	// figure out width
-	if (cls.download) {
-		if ((text = String::RChr(cls.downloadname, '/')) != NULL)
+	if (cls.download)
+	{
+		char* text = String::RChr(cls.downloadname, '/');
+		if (text)
 			text++;
 		else
 			text = cls.downloadname;

@@ -1253,6 +1253,30 @@
 			Name="ui"
 			>
 			<File
+				RelativePath=".\ui\console.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\ui\"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\ui\"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\ui\console.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ui\draw.cpp"
 				>
 				<FileConfiguration

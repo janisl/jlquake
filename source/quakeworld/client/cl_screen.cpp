@@ -752,7 +752,7 @@ void SCR_UpdateScreen (void)
 			return;
 	}
 
-	if (!scr_initialized || !con_initialized || !cls.glconfig.vidWidth)
+	if (!scr_initialized || !con.initialized || !cls.glconfig.vidWidth)
 		return;                         // not initialized yet
 
 	R_BeginFrame(STEREO_CENTER);

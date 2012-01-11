@@ -21,27 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int 		con_linewidth;
-
-float		con_cursorspeed = 4;
-
-#define		CON_TEXTSIZE	16384
-
 qboolean 	con_forcedup;		// because no entities to refresh
 
-int			con_totallines;		// total lines in console scrollback
-int			con_backscroll;		// lines up from bottom to display
-int			con_current;		// where next message will be printed
-int			con_x;				// offset in current line for next print
-char		*con_text=0;
-
 Cvar*		con_notifytime;
-
-#define	NUM_CON_TIMES 4
-float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
-								// for transparent notify lines
-
-int			con_vislines;
 
 qboolean	con_debuglog;
 
@@ -50,8 +32,6 @@ extern	char	key_lines[32][MAXCMDLINE];
 extern	int		edit_line;
 extern	int		key_linepos;
 		
-
-qboolean	con_initialized;
 
 extern void M_Menu_Main_f (void);
 
@@ -79,7 +59,7 @@ void Con_ToggleConsole_f (void)
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 	
 	SCR_EndLoadingPlaque ();
-	Com_Memset(con_times, 0, sizeof(con_times));
+	Con_ClearNotify();
 }
 
 /*
@@ -89,25 +69,10 @@ Con_Clear_f
 */
 void Con_Clear_f (void)
 {
-	if (con_text)
-		Com_Memset(con_text, ' ', CON_TEXTSIZE);
+	for (int i = 0; i < CON_TEXTSIZE; i++)
+		con.text[i] = ' ';
 }
 
-						
-/*
-================
-Con_ClearNotify
-================
-*/
-void Con_ClearNotify (void)
-{
-	int		i;
-	
-	for (i=0 ; i<NUM_CON_TIMES ; i++)
-		con_times[i] = 0;
-}
-
-						
 /*
 ================
 Con_MessageMode_f
@@ -144,45 +109,45 @@ If the line width has changed, reformat the buffer.
 void Con_CheckResize (void)
 {
 	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	tbuf[CON_TEXTSIZE];
+	short	tbuf[CON_TEXTSIZE];
 
 	width = (viddef.width >> 3) - 2;
 
-	if (width == con_linewidth)
+	if (width == con.linewidth)
 		return;
 
 	if (width < 1)			// video hasn't been initialized yet
 	{
 		width = 38;
-		con_linewidth = width;
-		con_totallines = CON_TEXTSIZE / con_linewidth;
-		Com_Memset(con_text, ' ', CON_TEXTSIZE);
+		con.linewidth = width;
+		con.totallines = CON_TEXTSIZE / con.linewidth;
+		Con_Clear_f();
 	}
 	else
 	{
-		oldwidth = con_linewidth;
-		con_linewidth = width;
-		oldtotallines = con_totallines;
-		con_totallines = CON_TEXTSIZE / con_linewidth;
+		oldwidth = con.linewidth;
+		con.linewidth = width;
+		oldtotallines = con.totallines;
+		con.totallines = CON_TEXTSIZE / con.linewidth;
 		numlines = oldtotallines;
 
-		if (con_totallines < numlines)
-			numlines = con_totallines;
+		if (con.totallines < numlines)
+			numlines = con.totallines;
 
 		numchars = oldwidth;
 	
-		if (con_linewidth < numchars)
-			numchars = con_linewidth;
+		if (con.linewidth < numchars)
+			numchars = con.linewidth;
 
-		Com_Memcpy(tbuf, con_text, CON_TEXTSIZE);
-		Com_Memset(con_text, ' ', CON_TEXTSIZE);
+		Com_Memcpy(tbuf, con.text, 2 * CON_TEXTSIZE);
+		Con_Clear_f();
 
 		for (i=0 ; i<numlines ; i++)
 		{
 			for (j=0 ; j<numchars ; j++)
 			{
-				con_text[(con_totallines - 1 - i) * con_linewidth + j] =
-						tbuf[((con_current - i + oldtotallines) %
+				con.text[(con.totallines - 1 - i) * con.linewidth + j] =
+						tbuf[((con.current - i + oldtotallines) %
 							  oldtotallines) * oldwidth + j];
 			}
 		}
@@ -190,8 +155,8 @@ void Con_CheckResize (void)
 		Con_ClearNotify ();
 	}
 
-	con_backscroll = 0;
-	con_current = con_totallines - 1;
+	con.current = con.totallines - 1;
+	con.display = con.current;
 }
 
 
@@ -211,9 +176,8 @@ void Con_Init (void)
 		FS_FCloseFile(FS_FOpenFileWrite(t2));
 	}
 
-	con_text = (char*)Hunk_AllocName (CON_TEXTSIZE, "context");
-	Com_Memset(con_text, ' ', CON_TEXTSIZE);
-	con_linewidth = -1;
+	con.linewidth = -1;
+	con.cursorspeed = 4;
 	Con_CheckResize ();
 	
 	Con_Printf ("Console initialized.\n");
@@ -227,7 +191,7 @@ void Con_Init (void)
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
 	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand ("clear", Con_Clear_f);
-	con_initialized = true;
+	con.initialized = true;
 }
 
 
@@ -238,10 +202,13 @@ Con_Linefeed
 */
 void Con_Linefeed (void)
 {
-	con_x = 0;
-	con_current++;
-	Com_Memset(&con_text[(con_current%con_totallines)*con_linewidth]
-	, ' ', con_linewidth);
+	con.x = 0;
+	if (con.display == con.current)
+		con.display++;
+	con.current++;
+	int j = (con.current % con.totallines) * con.linewidth;
+	for (int i = 0; i < con.linewidth; i++)
+		con.text[i + j] = ' ';
 }
 
 /*
@@ -259,8 +226,6 @@ void Con_Print (const char *txt)
 	int		c, l;
 	static int	cr;
 	int		mask;
-	
-	con_backscroll = 0;
 
 	if (txt[0] == 1)
 	{
@@ -281,48 +246,48 @@ void Con_Print (const char *txt)
 	while ( (c = *txt) )
 	{
 	// count word length
-		for (l=0 ; l< con_linewidth ; l++)
+		for (l=0 ; l< con.linewidth ; l++)
 			if ( txt[l] <= ' ')
 				break;
 
 	// word wrap
-		if (l != con_linewidth && (con_x + l > con_linewidth) )
-			con_x = 0;
+		if (l != con.linewidth && (con.x + l > con.linewidth) )
+			con.x = 0;
 
 		txt++;
 
 		if (cr)
 		{
-			con_current--;
+			con.current--;
 			cr = false;
 		}
 
 		
-		if (!con_x)
+		if (!con.x)
 		{
 			Con_Linefeed ();
 		// mark time for transparent overlay
-			if (con_current >= 0)
-				con_times[con_current % NUM_CON_TIMES] = realtime;
+			if (con.current >= 0)
+				con.times[con.current % NUM_CON_TIMES] = realtime * 1000;
 		}
 
 		switch (c)
 		{
 		case '\n':
-			con_x = 0;
+			con.x = 0;
 			break;
 
 		case '\r':
-			con_x = 0;
+			con.x = 0;
 			cr = 1;
 			break;
 
 		default:	// display character and advance
-			y = con_current % con_totallines;
-			con_text[y*con_linewidth+con_x] = c | mask;
-			con_x++;
-			if (con_x >= con_linewidth)
-				con_x = 0;
+			y = con.current % con.totallines;
+			con.text[y*con.linewidth+con.x] = c | mask;
+			con.x++;
+			if (con.x >= con.linewidth)
+				con.x = 0;
 			break;
 		}
 		
@@ -374,7 +339,7 @@ void Con_Printf (const char *fmt, ...)
 	if (con_debuglog)
 		Con_DebugLog("qconsole.log", "%s", msg);
 
-	if (!con_initialized)
+	if (!con.initialized)
 		return;
 		
 	if (cls.state == ca_dedicated)
@@ -472,21 +437,21 @@ void Con_DrawInput (void)
 	text = key_lines[edit_line];
 	
 // add the cursor frame
-	text[key_linepos] = 10+((int)(realtime*con_cursorspeed)&1);
+	text[key_linepos] = 10+((int)(realtime*con.cursorspeed)&1);
 	
 // fill out remainder with spaces
-	for (i=key_linepos+1 ; i< con_linewidth ; i++)
+	for (i=key_linepos+1 ; i< con.linewidth ; i++)
 		text[i] = ' ';
 		
 //	prestep if horizontally scrolling
-	if (key_linepos >= con_linewidth)
-		text += 1 + key_linepos - con_linewidth;
+	if (key_linepos >= con.linewidth)
+		text += 1 + key_linepos - con.linewidth;
 		
 // draw it
-	y = con_vislines-16;
+	y = con.vislines-16;
 
-	for (i=0 ; i<con_linewidth ; i++)
-		Draw_Character ( (i+1)<<3, con_vislines - 16, text[i]);
+	for (i=0 ; i<con.linewidth ; i++)
+		Draw_Character ( (i+1)<<3, con.vislines - 16, text[i]);
 
 // remove cursor
 	key_lines[edit_line][key_linepos] = 0;
@@ -503,26 +468,25 @@ Draws the last few lines of output transparently over the game top
 void Con_DrawNotify (void)
 {
 	int		x, v;
-	char	*text;
+	short	*text;
 	int		i;
-	float	time;
 	extern char chat_buffer[];
 
 	v = 0;
-	for (i= con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
+	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
 	{
 		if (i < 0)
 			continue;
-		time = con_times[i % NUM_CON_TIMES];
+		int time = con.times[i % NUM_CON_TIMES];
 		if (time == 0)
 			continue;
-		time = realtime - time;
-		if (time > con_notifytime->value)
+		time = realtime * 1000 - time;
+		if (time > con_notifytime->value * 1000)
 			continue;
-		text = con_text + (i % con_totallines)*con_linewidth;
+		text = con.text + (i % con.totallines)*con.linewidth;
 
-		for (x = 0 ; x < con_linewidth ; x++)
-			Draw_Character ( (x+1)<<3, v, text[x]);
+		for (x = 0 ; x < con.linewidth ; x++)
+			Draw_Character ( (x+1)<<3, v, text[x] & 0xff);
 
 		v += 8;
 	}
@@ -538,7 +502,7 @@ void Con_DrawNotify (void)
 			Draw_Character ( (x+5)<<3, v, chat_buffer[x]);
 			x++;
 		}
-		Draw_Character ( (x+5)<<3, v, 10+((int)(realtime*con_cursorspeed)&1));
+		Draw_Character ( (x+5)<<3, v, 10+((int)(realtime*con.cursorspeed)&1));
 		v += 8;
 	}
 }
@@ -555,7 +519,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 {
 	int				i, x, y;
 	int				rows;
-	char			*text;
+	short			*text;
 	int				j;
 	
 	if (lines <= 0)
@@ -565,20 +529,20 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	Draw_ConsoleBackground (lines);
 
 // draw the text
-	con_vislines = lines;
+	con.vislines = lines;
 
 	rows = (lines-16)>>3;		// rows of text to draw
 	y = lines - 16 - (rows<<3);	// may start slightly negative
 
-	for (i= con_current - rows + 1 ; i<=con_current ; i++, y+=8 )
+	for (i= con.current - rows + 1 ; i<=con.current ; i++, y+=8 )
 	{
-		j = i - con_backscroll;
+		j = i - con.current + con.display;
 		if (j<0)
 			j = 0;
-		text = con_text + (j % con_totallines)*con_linewidth;
+		text = con.text + (j % con.totallines)*con.linewidth;
 
-		for (x=0 ; x<con_linewidth ; x++)
-			Draw_Character ( (x+1)<<3, y, text[x]);
+		for (x=0 ; x<con.linewidth ; x++)
+			Draw_Character ( (x+1)<<3, y, text[x] & 0xff);
 	}
 
 // draw the input prompt, user text, and cursor if desired
