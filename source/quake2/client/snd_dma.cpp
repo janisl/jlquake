@@ -80,8 +80,3 @@ int S_GetClFrameServertime()
 {
 	return cl.q2_frame.servertime;
 }
-
-bool S_GetDisableScreen()
-{
-	return !!cls.disable_screen;
-}

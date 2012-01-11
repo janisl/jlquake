@@ -64,7 +64,6 @@ struct loopSound_t
 
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
-bool S_GetDisableScreen();
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -2405,7 +2404,7 @@ void S_Update()
 	// if the laoding plaque is up, clear everything
 	// out to make sure we aren't looping a dirty
 	// dma buffer while loading
-	if (S_GetDisableScreen())
+	if (cls_common->disable_screen)
 	{
 		S_ClearSoundBuffer();
 		return;

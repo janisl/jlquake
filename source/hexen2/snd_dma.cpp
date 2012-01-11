@@ -10,8 +10,3 @@ int S_GetClFrameServertime()
 {
 	return 0;
 }
-
-bool S_GetDisableScreen()
-{
-	return false;
-}
