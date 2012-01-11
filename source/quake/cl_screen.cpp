@@ -580,18 +580,6 @@ void SCR_BeginLoadingPlaque (void)
 	cls.disable_screen = realtime * 1000;
 }
 
-/*
-===============
-SCR_EndLoadingPlaque
-
-================
-*/
-void SCR_EndLoadingPlaque (void)
-{
-	cls.disable_screen = 0;
-	Con_ClearNotify ();
-}
-
 //=============================================================================
 
 const char	*scr_notifystring;

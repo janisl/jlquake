@@ -59,3 +59,5 @@ void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setC
 void SCR_DrawBigString(int x, int y, const char* s, float alpha);		// draws a string with embedded color control characters with fade
 void SCR_DrawBigStringColor(int x, int y, const char *s, vec4_t color);	// ignores embedded color control characters
 void SCR_DrawSmallStringExt(int x, int y, const char *string, float *setColor, bool forceColor);
+
+void SCR_EndLoadingPlaque();

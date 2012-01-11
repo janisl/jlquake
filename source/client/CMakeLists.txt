@@ -83,6 +83,7 @@ set(CLIENT_FILES
 	sound/mix.cpp
 	ui/console.cpp
 	ui/draw.cpp
+	ui/screen.cpp
 	client_main.cpp
 	system_unix.cpp
 	utils.cpp

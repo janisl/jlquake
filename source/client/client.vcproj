@@ -1297,6 +1297,30 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ui\screen.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\ui\"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\ui\"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\ui\screen.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ui\ui.h"
 				>
 			</File>

@@ -568,17 +568,6 @@ void SCR_BeginLoadingPlaque(bool Clear)
 
 /*
 ================
-SCR_EndLoadingPlaque
-================
-*/
-void SCR_EndLoadingPlaque (void)
-{
-	cls.disable_screen = 0;
-	Con_ClearNotify ();
-}
-
-/*
-================
 SCR_Loading_f
 ================
 */
