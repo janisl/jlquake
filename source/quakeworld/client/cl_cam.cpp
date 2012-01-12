@@ -250,18 +250,18 @@ static qboolean InitFlyby(qwplayer_state_t *self, qwplayer_state_t *player, int 
 static void Cam_CheckHighTarget(void)
 {
 	int i, j, max;
-	player_info_t	*s;
+	q1player_info_t	*s;
 
 	j = -1;
 	for (i = 0, max = -9999; i < MAX_CLIENTS_QW; i++) {
-		s = &cl.players[i];
+		s = &cl.q1_players[i];
 		if (s->name[0] && !s->spectator && s->frags > max) {
 			max = s->frags;
 			j = i;
 		}
 	}
 	if (j >= 0) {
-		if (!locked || cl.players[j].frags > cl.players[spec_track].frags)
+		if (!locked || cl.q1_players[j].frags > cl.q1_players[spec_track].frags)
 			Cam_Lock(j);
 	} else
 		Cam_Unlock();
@@ -287,7 +287,7 @@ void Cam_Track(qwusercmd_t *cmd)
 	if (!autocam || cls.state != ca_active)
 		return;
 
-	if (locked && (!cl.players[spec_track].name[0] || cl.players[spec_track].spectator)) {
+	if (locked && (!cl.q1_players[spec_track].name[0] || cl.q1_players[spec_track].spectator)) {
 		locked = false;
 		if (cl_hightrack->value)
 			Cam_CheckHighTarget();
@@ -352,7 +352,7 @@ void Cam_Track(qwusercmd_t *cmd)
 void Cam_FinishMove(qwusercmd_t *cmd)
 {
 	int i;
-	player_info_t	*s;
+	q1player_info_t	*s;
 	int end;
 
 	if (cls.state != ca_active)
@@ -404,7 +404,7 @@ void Cam_FinishMove(qwusercmd_t *cmd)
 		end = spec_track;
 	i = end;
 	do {
-		s = &cl.players[i];
+		s = &cl.q1_players[i];
 		if (s->name[0] && !s->spectator) {
 			Cam_Lock(i);
 			return;
@@ -413,7 +413,7 @@ void Cam_FinishMove(qwusercmd_t *cmd)
 	} while (i != end);
 	// stay on same guy?
 	i = spec_track;
-	s = &cl.players[i];
+	s = &cl.q1_players[i];
 	if (s->name[0] && !s->spectator) {
 		Cam_Lock(i);
 		return;

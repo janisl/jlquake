@@ -37,7 +37,7 @@ Skin_Find
 
 ================
 */
-void Skin_Find (player_info_t *sc)
+void Skin_Find (q1player_info_t *sc)
 {
 	qw_skin_t		*skin;
 	int			i;
@@ -146,7 +146,7 @@ Skin_NextDownload
 */
 void Skin_NextDownload (void)
 {
-	player_info_t	*sc;
+	q1player_info_t	*sc;
 	int			i;
 
 	if (cls.downloadnumber == 0)
@@ -157,7 +157,7 @@ void Skin_NextDownload (void)
 		; cls.downloadnumber != MAX_CLIENTS_QW
 		; cls.downloadnumber++)
 	{
-		sc = &cl.players[cls.downloadnumber];
+		sc = &cl.q1_players[cls.downloadnumber];
 		if (!sc->name[0])
 			continue;
 		Skin_Find (sc);
@@ -172,7 +172,7 @@ void Skin_NextDownload (void)
 	// now load them in for real
 	for (i=0 ; i<MAX_CLIENTS_QW ; i++)
 	{
-		sc = &cl.players[i];
+		sc = &cl.q1_players[i];
 		if (!sc->name[0])
 			continue;
 		Skin_Cache (sc->skin);

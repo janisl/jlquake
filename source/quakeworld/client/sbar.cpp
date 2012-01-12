@@ -360,19 +360,19 @@ void Sbar_SortFrags (qboolean includespec)
 	scoreboardlines = 0;
 	for (i=0 ; i<MAX_CLIENTS_QW ; i++)
 	{
-		if (cl.players[i].name[0] &&
-			(!cl.players[i].spectator || includespec))
+		if (cl.q1_players[i].name[0] &&
+			(!cl.q1_players[i].spectator || includespec))
 		{
 			fragsort[scoreboardlines] = i;
 			scoreboardlines++;
-			if (cl.players[i].spectator)
-				cl.players[i].frags = -999;
+			if (cl.q1_players[i].spectator)
+				cl.q1_players[i].frags = -999;
 		}
 	}
 		
 	for (i=0 ; i<scoreboardlines ; i++)
 		for (j=0 ; j<scoreboardlines-1-i ; j++)
-			if (cl.players[fragsort[j]].frags < cl.players[fragsort[j+1]].frags)
+			if (cl.q1_players[fragsort[j]].frags < cl.q1_players[fragsort[j+1]].frags)
 			{
 				k = fragsort[j];
 				fragsort[j] = fragsort[j+1];
@@ -383,7 +383,7 @@ void Sbar_SortFrags (qboolean includespec)
 void Sbar_SortTeams (void)
 {
 	int				i, j, k;
-	player_info_t	*s;
+	q1player_info_t	*s;
 	int				teamplay;
 	char t[16+1];
 
@@ -400,7 +400,7 @@ void Sbar_SortTeams (void)
 		teams[i].plow = 999;
 
 	for (i = 0; i < MAX_CLIENTS_QW; i++) {
-		s = &cl.players[i];
+		s = &cl.q1_players[i];
 		if (!s->name[0])
 			continue;
 		if (s->spectator)
@@ -580,7 +580,7 @@ void Sbar_DrawFrags (void)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
-	player_info_t	*s;
+	q1player_info_t	*s;
 	
 	Sbar_SortFrags (false);
 
@@ -594,7 +594,7 @@ void Sbar_DrawFrags (void)
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.players[k];
+		s = &cl.q1_players[k];
 		if (!s->name[0])
 			continue;
 		if (s->spectator)
@@ -768,7 +768,7 @@ void Sbar_Draw (void)
 
 //					Sbar_DrawString (160-14*8+4,4, "SPECTATOR MODE - TRACK CAMERA");
 				sprintf(st, "Tracking %-.13s, [JUMP] for next",
-						cl.players[spec_track].name);
+						cl.q1_players[spec_track].name);
 				Sbar_DrawString(0, -8, st);
 			}
 		} else if (sb_showscores || cl.stats[STAT_HEALTH] <= 0)
@@ -911,7 +911,7 @@ void Sbar_TeamOverlay (void)
 		sprintf (num, "%5i", tm->players);
 		Draw_String (x + 104 + 88, y, num);
 		
-		if (!String::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
+		if (!String::NCmp(Info_ValueForKey(cl.q1_players[cl.playernum].userinfo,
 			"team"), tm->team, 16)) {
 			Draw_Character ( x + 104 - 8, y, 16);
 			Draw_Character ( x + 104 + 32, y, 17);
@@ -937,7 +937,7 @@ void Sbar_DeathmatchOverlay (int start)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
-	player_info_t	*s;
+	q1player_info_t	*s;
 	int				total;
 	int				minutes;
 	int				p;
@@ -997,7 +997,7 @@ void Sbar_DeathmatchOverlay (int start)
 	for (i=0 ; i<l && y <= (int)viddef.height-10 ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.players[k];
+		s = &cl.q1_players[k];
 		if (!s->name[0])
 			continue;
 
@@ -1100,7 +1100,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
-	player_info_t	*s;
+	q1player_info_t	*s;
 	int				teamplay;
 	char			team[5];
 	int				numlines;
@@ -1146,7 +1146,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	for (/* */ ; i < scoreboardlines && y < (int)viddef.height - 8 + 1; i++)
 	{
 		k = fragsort[i];
-		s = &cl.players[k];
+		s = &cl.q1_players[k];
 		if (!s->name[0])
 			continue;
 
@@ -1217,7 +1217,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 		sprintf (num, "%5i", tm->frags);
 		Draw_String (x + 40, y, num);
 		
-		if (!String::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
+		if (!String::NCmp(Info_ValueForKey(cl.q1_players[cl.playernum].userinfo,
 			"team"), tm->team, 16)) {
 			Draw_Character ( x - 8, y, 16);
 			Draw_Character ( x + 32, y, 17);

@@ -383,7 +383,7 @@ void CL_Record_f (void)
 	char *s;
 	q1entity_t *ent;
 	q1entity_state_t *es, blankes;
-	player_info_t *player;
+	q1player_info_t *player;
 	extern	char gamedirfile[];
 	int seq = 1;
 
@@ -579,7 +579,7 @@ void CL_Record_f (void)
 // send current status of all other players
 
 	for (i = 0; i < MAX_CLIENTS_QW; i++) {
-		player = cl.players + i;
+		player = cl.q1_players + i;
 
 		buf.WriteByte(q1svc_updatefrags);
 		buf.WriteByte(i);

@@ -19,40 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
-
-typedef struct
-{
-	char		name[16];
-	bool		failedload;		// the name isn't a valid skin
-	byte*		data;
-} qw_skin_t;
-
-
-#define	MAX_SCOREBOARDNAME	16
-typedef struct player_info_s
-{
-	int		userid;
-	char	userinfo[MAX_INFO_STRING_QW];
-
-	// scoreboard information
-	char	name[MAX_SCOREBOARDNAME];
-	float	entertime;
-	int		frags;
-	int		ping;
-	byte	pl;
-
-	// skin information
-	int		topcolor;
-	int		bottomcolor;
-
-	int		_topcolor;
-	int		_bottomcolor;
-
-	int		spectator;
-	qw_skin_t	*skin;
-} player_info_t;
-
-
 //
 // client_state_t should hold all pieces of the client state
 //
@@ -206,9 +172,6 @@ struct client_state_t : clientActiveCommon_t
 	int			cdtrack;		// cd audio
 
 	q1entity_t	viewent;		// weapon model
-
-// all player information
-	player_info_t	players[MAX_CLIENTS_QW];
 };
 
 
@@ -376,7 +339,7 @@ void CL_InitCam(void);
 // skin.c
 //
 
-void	Skin_Find (player_info_t *sc);
+void	Skin_Find (q1player_info_t *sc);
 byte	*Skin_Cache (qw_skin_t *skin);
 void	Skin_Skins_f (void);
 void	Skin_AllSkins_f (void);

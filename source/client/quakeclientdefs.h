@@ -27,6 +27,8 @@ enum
 	Q1MDLEF_TRACER3	= 128,	// purple trail
 };
 
+#define MAX_SCOREBOARDNAME_Q1	32
+
 struct q1entity_t
 {
 	q1entity_state_t state;
@@ -77,4 +79,35 @@ struct qwframe_t
 							// the usercmd
 	qwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid
+};
+
+struct qw_skin_t
+{
+	char name[16];
+	bool failedload;		// the name isn't a valid skin
+	byte* data;
+};
+
+struct q1player_info_t
+{
+	char name[MAX_SCOREBOARDNAME_Q1];
+	float entertime;
+	int frags;
+
+	// skin information
+	int topcolor;
+	int bottomcolor;
+
+	// New to QuakeWorld
+	int userid;
+	char userinfo[MAX_INFO_STRING_QW];
+
+	int ping;
+	byte pl;
+
+	int _topcolor;
+	int _bottomcolor;
+
+	int spectator;
+	qw_skin_t* skin;
 };

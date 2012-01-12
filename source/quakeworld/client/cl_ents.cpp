@@ -291,9 +291,9 @@ static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 {
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (!cl.players[PlayerNum].skin)
+	if (!cl.q1_players[PlayerNum].skin)
 	{
-		Skin_Find(&cl.players[PlayerNum]);
+		Skin_Find(&cl.q1_players[PlayerNum]);
 		R_TranslatePlayerSkin(PlayerNum);
 	}
 	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);
@@ -540,7 +540,7 @@ void CL_ParsePlayerinfo (void)
 {
 	int			msec;
 	int			flags;
-	player_info_t	*info;
+	q1player_info_t	*info;
 	qwplayer_state_t	*state;
 	int			num;
 	int			i;
@@ -549,7 +549,7 @@ void CL_ParsePlayerinfo (void)
 	if (num > MAX_CLIENTS_QW)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
-	info = &cl.players[num];
+	info = &cl.q1_players[num];
 
 	state = &cl.frames[parsecountmod].playerstate[num];
 
@@ -678,7 +678,7 @@ for all current players
 void CL_LinkPlayers (void)
 {
 	int				j;
-	player_info_t	*info;
+	q1player_info_t	*info;
 	qwplayer_state_t	*state;
 	qwplayer_state_t	exact;
 	double			playertime;
@@ -692,7 +692,7 @@ void CL_LinkPlayers (void)
 
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK_QW];
 
-	for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS_QW 
+	for (j=0, info=cl.q1_players, state=frame->playerstate ; j < MAX_CLIENTS_QW 
 		; j++, info++, state++)
 	{
 		if (state->messagenum != cl.parsecount)

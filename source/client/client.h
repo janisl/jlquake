@@ -50,19 +50,6 @@ struct cshift_t
 	int		percent;		// 0-256
 };
 
-extern Cvar* cl_inGameVideo;
-
-extern Cvar* clqh_name;
-extern Cvar* clqh_color;
-
-void CL_SharedInit();
-int CL_ScaledMilliseconds();
-void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
-void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
-
-extern byte* playerTranslation;
-extern int color_offsets[MAX_PLAYER_CLASS];
-
 struct clientActiveCommon_t
 {
 	int serverTime;			// may be paused during play
@@ -82,6 +69,9 @@ struct clientActiveCommon_t
 	double qh_mtime[2];		// the timestamp of last two messages	
 
 	int qh_maxclients;
+
+	// all player information
+	q1player_info_t q1_players[BIGGEST_MAX_CLIENTS_Q1];
 
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 
@@ -127,6 +117,19 @@ extern clientConnectionCommon_t* clc_common;
 extern clientStaticCommon_t* cls_common;
 
 extern int bitcounts[32];
+
+extern Cvar* cl_inGameVideo;
+
+extern Cvar* clqh_name;
+extern Cvar* clqh_color;
+
+extern byte* playerTranslation;
+extern int color_offsets[MAX_PLAYER_CLASS];
+
+void CL_SharedInit();
+int CL_ScaledMilliseconds();
+void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
+void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 

@@ -384,7 +384,7 @@ void Sbar_SortFrags (void)
 	scoreboardlines = 0;
 	for (i=0 ; i<cl.qh_maxclients ; i++)
 	{
-		if (cl.scores[i].name[0])
+		if (cl.q1_players[i].name[0])
 		{
 			fragsort[scoreboardlines] = i;
 			scoreboardlines++;
@@ -393,7 +393,7 @@ void Sbar_SortFrags (void)
 
 	for (i=0 ; i<scoreboardlines ; i++)
 		for (j=0 ; j<scoreboardlines-1-i ; j++)
-			if (cl.scores[fragsort[j]].frags < cl.scores[fragsort[j+1]].frags)
+			if (cl.q1_players[fragsort[j]].frags < cl.q1_players[fragsort[j+1]].frags)
 			{
 				k = fragsort[j];
 				fragsort[j] = fragsort[j+1];
@@ -415,7 +415,7 @@ void Sbar_UpdateScoreboard (void)
 {
 	int		i, k;
 	int		top, bottom;
-	scoreboard_t	*s;
+	q1player_info_t	*s;
 
 	Sbar_SortFrags ();
 
@@ -425,11 +425,11 @@ void Sbar_UpdateScoreboard (void)
 	for (i=0 ; i<scoreboardlines; i++)
 	{
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.q1_players[k];
 		sprintf (&scoreboardtext[i][1], "%3i %s", s->frags, s->name);
 
-		top = s->colors & 0xf0;
-		bottom = (s->colors & 15) <<4;
+		top = s->topcolor << 4;
+		bottom = s->bottomcolor <<4;
 		scoreboardtop[i] = Sbar_ColorForMap (top);
 		scoreboardbottom[i] = Sbar_ColorForMap (bottom);
 	}
@@ -482,7 +482,7 @@ void Sbar_DrawScoreboard (void)
 	int		x, y;
 	int		l;
 	int		top, bottom;
-	scoreboard_t	*s;
+	q1player_info_t	*s;
 
 	if (cl.gametype != GAME_DEATHMATCH)
 	{
@@ -728,7 +728,7 @@ void Sbar_DrawFrags (void)
 	int				x, y, f;
 	int				xofs;
 	char			num[12];
-	scoreboard_t	*s;
+	q1player_info_t	*s;
 
 	Sbar_SortFrags ();
 
@@ -745,13 +745,13 @@ void Sbar_DrawFrags (void)
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.q1_players[k];
 		if (!s->name[0])
 			continue;
 
 	// draw background
-		top = s->colors & 0xf0;
-		bottom = (s->colors & 15)<<4;
+		top = s->topcolor << 4;
+		bottom = s->bottomcolor << 4;
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
@@ -797,12 +797,12 @@ void Sbar_DrawFace (void)
 		int				top, bottom;
 		int				xofs;
 		char			num[12];
-		scoreboard_t	*s;
+		q1player_info_t	*s;
 		
-		s = &cl.scores[cl.viewentity - 1];
+		s = &cl.q1_players[cl.viewentity - 1];
 		// draw background
-		top = s->colors & 0xf0;
-		bottom = (s->colors & 15)<<4;
+		top = s->topcolor << 4;
+		bottom = s->bottomcolor << 4;
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
@@ -1039,7 +1039,7 @@ void Sbar_DeathmatchOverlay (void)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
-	scoreboard_t	*s;
+	q1player_info_t	*s;
 
 	pic = R_CachePic ("gfx/ranking.lmp");
 	M_DrawPic ((320-R_GetImageWidth(pic))/2, 8, pic);
@@ -1055,13 +1055,13 @@ void Sbar_DeathmatchOverlay (void)
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.q1_players[k];
 		if (!s->name[0])
 			continue;
 
 	// draw background
-		top = s->colors & 0xf0;
-		bottom = (s->colors & 15)<<4;
+		top = s->topcolor << 4;
+		bottom = s->bottomcolor << 4;
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
@@ -1116,7 +1116,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
-	scoreboard_t	*s;
+	q1player_info_t	*s;
 	int				numlines;
 
 	if (viddef.width < 512 || !sb_lines)
@@ -1151,13 +1151,13 @@ void Sbar_MiniDeathmatchOverlay (void)
 	for (/* */; i < scoreboardlines && y < (int)viddef.height - 8 ; i++)
 	{
 		k = fragsort[i];
-		s = &cl.scores[k];
+		s = &cl.q1_players[k];
 		if (!s->name[0])
 			continue;
 
 	// draw background
-		top = s->colors & 0xf0;
-		bottom = (s->colors & 15)<<4;
+		top = s->topcolor << 4;
+		bottom = s->bottomcolor << 4;
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 

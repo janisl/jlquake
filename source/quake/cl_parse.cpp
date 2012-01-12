@@ -217,7 +217,6 @@ void CL_ParseServerInfo (void)
 		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
 	}
-	cl.scores = (scoreboard_t*)Hunk_AllocName (cl.qh_maxclients*sizeof(*cl.scores), "scores");
 
 // parse gametype
 	cl.gametype = net_message.ReadByte ();
@@ -305,8 +304,8 @@ Translates a skin texture by the per-player color lookup
 */
 static void R_TranslatePlayerSkin(int playernum)
 {
-	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
-	int bottom = cl.scores[playernum].colors & 15;
+	int top = cl.q1_players[playernum].topcolor;
+	int bottom = cl.q1_players[playernum].bottomcolor;
 	byte translate[256];
 	CL_CalcQuakeSkinTranslation(top, bottom, translate);
 
@@ -736,22 +735,26 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_Q1");
-			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
+			String::Cpy(cl.q1_players[i].name, net_message.ReadString2 ());
 			break;
 			
 		case q1svc_updatefrags:
 			i = net_message.ReadByte ();
 			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_Q1");
-			cl.scores[i].frags = net_message.ReadShort ();
+			cl.q1_players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case q1svc_updatecolors:
+		{
 			i = net_message.ReadByte ();
 			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_Q1");
-			cl.scores[i].colors = net_message.ReadByte ();
+			int j = net_message.ReadByte();
+			cl.q1_players[i].topcolor = (j & 0xf0) >> 4;
+			cl.q1_players[i].bottomcolor = (j & 15);
 			CL_NewTranslation (i);
+		}
 			break;
 			
 		case q1svc_particle:

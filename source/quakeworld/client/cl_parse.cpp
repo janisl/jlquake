@@ -867,7 +867,7 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-	player_info_t* player = &cl.players[playernum];
+	q1player_info_t* player = &cl.q1_players[playernum];
 	if (!player->name[0])
 		return;
 
@@ -930,7 +930,7 @@ void CL_NewTranslation (int slot)
 CL_UpdateUserinfo
 ==============
 */
-void CL_ProcessUserInfo (int slot, player_info_t *player)
+void CL_ProcessUserInfo (int slot, q1player_info_t *player)
 {
 	String::NCpy(player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
 	player->topcolor = String::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
@@ -954,13 +954,13 @@ CL_UpdateUserinfo
 void CL_UpdateUserinfo (void)
 {
 	int		slot;
-	player_info_t	*player;
+	q1player_info_t	*player;
 
 	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS_QW)
 		Host_EndGame ("CL_ParseServerMessage: qwsvc_updateuserinfo > MAX_CLIENTS_QW");
 
-	player = &cl.players[slot];
+	player = &cl.q1_players[slot];
 	player->userid = net_message.ReadLong ();
 	String::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
 
@@ -975,7 +975,7 @@ CL_SetInfo
 void CL_SetInfo (void)
 {
 	int		slot;
-	player_info_t	*player;
+	q1player_info_t	*player;
 	char key[MAX_MSGLEN_QW];
 	char value[MAX_MSGLEN_QW];
 
@@ -983,7 +983,7 @@ void CL_SetInfo (void)
 	if (slot >= MAX_CLIENTS_QW)
 		Host_EndGame ("CL_ParseServerMessage: qwsvc_setinfo > MAX_CLIENTS_QW");
 
-	player = &cl.players[slot];
+	player = &cl.q1_players[slot];
 
 	String::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
 	key[sizeof(key) - 1] = 0;
@@ -1187,21 +1187,21 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS_QW)
 				Host_EndGame ("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QW");
-			cl.players[i].frags = net_message.ReadShort ();
+			cl.q1_players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case qwsvc_updateping:
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS_QW)
 				Host_EndGame ("CL_ParseServerMessage: qwsvc_updateping > MAX_CLIENTS_QW");
-			cl.players[i].ping = net_message.ReadShort ();
+			cl.q1_players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case qwsvc_updatepl:
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS_QW)
 				Host_EndGame ("CL_ParseServerMessage: qwsvc_updatepl > MAX_CLIENTS_QW");
-			cl.players[i].pl = net_message.ReadByte ();
+			cl.q1_players[i].pl = net_message.ReadByte ();
 			break;
 			
 		case qwsvc_updateentertime:
@@ -1209,7 +1209,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS_QW)
 				Host_EndGame ("CL_ParseServerMessage: qwsvc_updateentertime > MAX_CLIENTS_QW");
-			cl.players[i].entertime = realtime - net_message.ReadFloat ();
+			cl.q1_players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
 		case q1svc_spawnbaseline:

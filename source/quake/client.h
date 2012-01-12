@@ -19,14 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
-typedef struct
-{
-	char	name[MAX_SCOREBOARDNAME];
-	float	entertime;
-	int		frags;
-	int		colors;			// two 4 bit fields
-} scoreboard_t;
-
 #define	NAME_LENGTH	64
 
 
@@ -155,9 +147,6 @@ struct client_state_t : clientActiveCommon_t
 	q1entity_t	viewent;			// the gun model
 
 	int			cdtrack, looptrack;	// cd audio
-
-// frag scoreboard
-	scoreboard_t	*scores;		// [cl.maxclients]
 };
 
 
