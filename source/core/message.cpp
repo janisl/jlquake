@@ -89,16 +89,17 @@ void QMsg::WriteBits(int Value, int NumBits)
 {
 	oldsize += NumBits;
 
-	// this isn't an exact overflow check, but close enough
-	if (maxsize - cursize < 4)
+	if (maxsize - cursize < (abs(NumBits) + 7) / 8)
 	{
 		if (!allowoverflow)
 		{
 			throw Exception("SZ_GetSpace: overflow without allowoverflow set");
 		}
-		//	Games before Quake 3 does this.
-		//Log::writeLine("SZ_GetSpace: overflow");
-		//Clear(); 
+		if (!(GGameType & GAME_Quake3))
+		{
+			Log::writeLine("SZ_GetSpace: overflow");
+			Clear(); 
+		}
 		overflowed = true;
 		return;
 	}
