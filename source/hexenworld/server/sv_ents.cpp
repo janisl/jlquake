@@ -122,10 +122,10 @@ void SV_EmitNailUpdate (QMsg *msg)
 }
 */
   
-#define	MAX_MISSILES	32
-edict_t	*missiles[MAX_MISSILES];
-edict_t	*ravens[MAX_MISSILES];
-edict_t	*raven2s[MAX_MISSILES];
+#define	MAX_MISSILES_H2	32
+edict_t	*missiles[MAX_MISSILES_H2];
+edict_t	*ravens[MAX_MISSILES_H2];
+edict_t	*raven2s[MAX_MISSILES_H2];
 int		nummissiles, numravens, numraven2s;
 
 extern	int	sv_magicmissmodel, sv_playermodel[MAX_PLAYER_CLASS], sv_ravenmodel, sv_raven2model;
@@ -135,7 +135,7 @@ qboolean SV_AddMissileUpdate (edict_t *ent)
 
 	if (ent->v.modelindex == sv_magicmissmodel)
 	{
-		if (nummissiles == MAX_MISSILES)
+		if (nummissiles == MAX_MISSILES_H2)
 			return true;
 		missiles[nummissiles] = ent;
 		nummissiles++;
@@ -143,7 +143,7 @@ qboolean SV_AddMissileUpdate (edict_t *ent)
 	}
 	if (ent->v.modelindex == sv_ravenmodel)
 	{
-		if (numravens == MAX_MISSILES)
+		if (numravens == MAX_MISSILES_H2)
 			return true;
 		ravens[numravens] = ent;
 		numravens++;
@@ -151,7 +151,7 @@ qboolean SV_AddMissileUpdate (edict_t *ent)
 	}
 	if (ent->v.modelindex == sv_raven2model)
 	{
-		if (numraven2s == MAX_MISSILES)
+		if (numraven2s == MAX_MISSILES_H2)
 			return true;
 		raven2s[numraven2s] = ent;
 		numraven2s++;

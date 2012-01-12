@@ -380,12 +380,8 @@ void CL_InitPrediction (void);
 void CL_PredictMove (void);
 
 qboolean CL_CheckOrDownloadFile (char *filename);
-void CL_ClearProjectiles (void);
-void CL_ClearMissiles (void);
 void CL_ParsePlayerinfo (void);
 void CL_SavePlayer (void);
-void CL_ParseProjectiles (void);
-void CL_ParsePackMissiles (void);
 void CL_ParsePacketEntities (qboolean delta);
 void CL_SetSolidEntities (void);
 void CL_InitCam(void);

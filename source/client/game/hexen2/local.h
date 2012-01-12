@@ -35,6 +35,11 @@ extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 
 extern sfxHandle_t clh2_sfx_icestorm;
 
+extern int clh2_ravenindex;
+extern int clh2_raven2index;
+extern int clh2_ballindex;
+extern int clh2_missilestarindex;
+
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -135,3 +140,10 @@ void CLH2_UpdateExplosions();
 void CLHW_ClearTarget();
 void CLHW_ParseTarget(QMsg& message);
 void CLHW_UpdateTargetBall();
+
+void CLH2_ClearProjectiles();
+void CLH2_ClearMissiles();
+void CLHW_ParseNails(QMsg& message);
+void CLHW_ParsePackMissiles(QMsg& message);
+void CLH2_LinkProjectiles();
+void CLH2_LinkMissiles();

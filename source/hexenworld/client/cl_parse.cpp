@@ -109,7 +109,6 @@ int	parsecountmod;
 double	parsecounttime;
 
 int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
-int		cl_ballindex, cl_missilestarindex, cl_ravenindex, cl_raven2index;
 
 //=============================================================================
 
@@ -555,10 +554,10 @@ void CL_ParseModellist (void)
 	cl_playerindex[5] = -1;//mg-siege
 	cl_spikeindex = -1;
 	cl_flagindex = -1;
-	cl_ballindex = -1;
-	cl_missilestarindex = -1;
-	cl_ravenindex = -1;
-	cl_raven2index = -1;
+	clh2_ballindex = -1;
+	clh2_missilestarindex = -1;
+	clh2_ravenindex = -1;
+	clh2_raven2index = -1;
 
 	for (nummodels=1 ; ; nummodels++)
 	{
@@ -586,13 +585,13 @@ void CL_ParseModellist (void)
 		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
 			cl_flagindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"models/ball.mdl"))
-			cl_ballindex = nummodels;
+			clh2_ballindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"models/newmmis.mdl"))
-			cl_missilestarindex = nummodels;
+			clh2_missilestarindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"models/ravproj.mdl"))
-			cl_ravenindex = nummodels;
+			clh2_ravenindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"models/vindsht1.mdl"))
-			cl_raven2index = nummodels;
+			clh2_raven2index = nummodels;
 	}
 
 	clh2_player_models[0] = R_RegisterModel("models/paladin.mdl");
@@ -977,8 +976,8 @@ void CL_ParseServerMessage (void)
 
 	received_framecount = host_framecount;
 	cl.last_servermessage = realtime;
-	CL_ClearProjectiles ();
-	CL_ClearMissiles ();
+	CLH2_ClearProjectiles ();
+	CLH2_ClearMissiles ();
 	// This clears out the target field on each netupdate; it won't be drawn unless another update comes...
 	CLHW_ClearTarget();
 
@@ -1300,11 +1299,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case hwsvc_nails:
-			CL_ParseProjectiles ();
+			CLHW_ParseNails(net_message);
 			break;
 
 		case hwsvc_packmissile:
-			CL_ParsePackMissiles ();
+			CLHW_ParsePackMissiles(net_message);
 			break;
 
 		case hwsvc_chokecount:		// some preceding packets were choked
