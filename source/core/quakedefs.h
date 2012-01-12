@@ -237,3 +237,5 @@ struct qwpacket_entities_t
 #define qwclc_delta			5	// [byte] sequence number, requests delta compression of message
 #define qwclc_tmove			6	// teleport request, spectator only
 #define qwclc_upload		7	// teleport request, spectator only
+
+#define MAX_INFO_STRING_QW	196

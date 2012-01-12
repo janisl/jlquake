@@ -212,7 +212,7 @@ static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 
 	char st[40];
 	sprintf(st, "%d", (int)crc);
-	Info_SetValueForKey(cls.userinfo, CVarName, st, MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, CVarName, st, MAX_INFO_STRING_QW, 64, 64, true, false);
 
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	sprintf(st, "setinfo %s %d", CVarName, (int)crc);
@@ -994,7 +994,7 @@ void CL_SetInfo (void)
 
 	if (key[0] != '*')
 	{
-		Info_SetValueForKey(player->userinfo, key, value, MAX_INFO_STRING, 64, 64,
+		Info_SetValueForKey(player->userinfo, key, value, MAX_INFO_STRING_QW, 64, 64,
 			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 

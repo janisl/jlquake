@@ -32,7 +32,7 @@ typedef struct
 typedef struct player_info_s
 {
 	int		userid;
-	char	userinfo[MAX_INFO_STRING];
+	char	userinfo[MAX_INFO_STRING_QW];
 
 	// scoreboard information
 	char	name[MAX_SCOREBOARDNAME];
@@ -89,7 +89,7 @@ struct client_static_t : clientStaticCommon_t
 	cactive_t	state;
 	
 // private userinfo for sending to masterless servers
-	char		userinfo[MAX_INFO_STRING];
+	char		userinfo[MAX_INFO_STRING_QW];
 
 	char		servername[MAX_OSPATH];	// name of server from original connect
 

@@ -196,7 +196,7 @@ void CL_SendConnectPacket (void)
 
 	cls.qport = Cvar_VariableValue("qport");
 
-	Info_SetValueForKey(cls.userinfo, "*ip", SOCK_AdrToString(adr), MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "*ip", SOCK_AdrToString(adr), MAX_INFO_STRING_QW, 64, 64, true, false);
 
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
@@ -614,7 +614,7 @@ void CL_FullInfo_f (void)
 			continue;
 		}
 
-		Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING, 64, 64,
+		Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING_QW, 64, 64,
 			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 }
@@ -647,7 +647,7 @@ void CL_SetInfo_f (void)
 		return;
 	}
 
-	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64,
+	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64,
 		String::ICmp(Cmd_Argv(1), "name") != 0, String::ICmp(Cmd_Argv(1), "team") == 0);
 	if (cls.state >= ca_connected)
 		Cmd_ForwardToServer ();
@@ -1024,13 +1024,13 @@ void CL_Init (void)
 
 	cls.state = ca_disconnected;
 
-	Info_SetValueForKey(cls.userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, false, false);
-	Info_SetValueForKey(cls.userinfo, "topcolor", "0", MAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "rate", "2500", MAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "msg", "1", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, false, false);
+	Info_SetValueForKey(cls.userinfo, "topcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "rate", "2500", MAX_INFO_STRING_QW, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "msg", "1", MAX_INFO_STRING_QW, 64, 64, true, false);
 	sprintf (st, "%4.2f-%04d", VERSION, build_number());
-	Info_SetValueForKey(cls.userinfo, "*ver", st, MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "*ver", st, MAX_INFO_STRING_QW, 64, 64, true, false);
 
 	CL_InitInput ();
 	CL_InitPrediction ();

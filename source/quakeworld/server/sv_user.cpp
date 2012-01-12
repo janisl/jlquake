@@ -1051,7 +1051,7 @@ Allow clients to change userinfo
 void SV_SetInfo_f (void)
 {
 	int i;
-	char oldval[MAX_INFO_STRING];
+	char oldval[MAX_INFO_STRING_QW];
 
 
 	if (Cmd_Argc() == 1)
@@ -1072,7 +1072,7 @@ void SV_SetInfo_f (void)
 
 	String::Cpy(oldval, Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
 
-	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64, !sv_highchars->value, false);
+	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !sv_highchars->value, false);
 // name is extracted below in ExtractFromUserInfo
 //	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 //		, sizeof(host_client->name)-1);	
