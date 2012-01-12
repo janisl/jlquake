@@ -382,7 +382,7 @@ void Sbar_SortFrags (void)
 
 // sort by frags
 	scoreboardlines = 0;
-	for (i=0 ; i<cl.maxclients ; i++)
+	for (i=0 ; i<cl.qh_maxclients ; i++)
 	{
 		if (cl.scores[i].name[0])
 		{
@@ -790,7 +790,7 @@ void Sbar_DrawFace (void)
 // PGM 01/19/97 - team color drawing
 // PGM 03/02/97 - fixed so color swatch only appears in CTF modes
 	if (rogue &&
-        (cl.maxclients != 1) &&
+        (cl.qh_maxclients != 1) &&
         (teamplay->value>3) &&
         (teamplay->value<7))
 	{
@@ -891,7 +891,7 @@ void Sbar_Draw (void)
 	if (sb_lines > 24)
 	{
 		Sbar_DrawInventory ();
-		if (cl.maxclients != 1)
+		if (cl.qh_maxclients != 1)
 			Sbar_DrawFrags ();
 	}
 

@@ -136,7 +136,6 @@ struct client_state_t : clientActiveCommon_t
 	sfxHandle_t	sound_precache[MAX_SOUNDS];
 
 	char		levelname[40];	// for display on solo scoreboard
-	int			maxclients;
 	int			gametype;
 
 	h2entity_t	viewent;			// the gun model

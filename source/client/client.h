@@ -81,6 +81,8 @@ struct clientActiveCommon_t
 
 	double qh_mtime[2];		// the timestamp of last two messages	
 
+	int qh_maxclients;
+
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 
 	// all player information

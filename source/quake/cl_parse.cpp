@@ -213,13 +213,13 @@ void CL_ParseServerInfo (void)
 	}
 
 // parse maxclients
-	cl.maxclients = net_message.ReadByte ();
-	if (cl.maxclients < 1 || cl.maxclients > MAX_SCOREBOARD)
+	cl.qh_maxclients = net_message.ReadByte ();
+	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_SCOREBOARD)
 	{
-		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
+		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
 	}
-	cl.scores = (scoreboard_t*)Hunk_AllocName (cl.maxclients*sizeof(*cl.scores), "scores");
+	cl.scores = (scoreboard_t*)Hunk_AllocName (cl.qh_maxclients*sizeof(*cl.scores), "scores");
 
 // parse gametype
 	cl.gametype = net_message.ReadByte ();
@@ -394,7 +394,7 @@ if (bits&(1<<i))
 		}
 		else
 			forcelink = true;	// hack to make null model players work
-		if (num > 0 && num <= cl.maxclients)
+		if (num > 0 && num <= cl.qh_maxclients)
 			R_TranslatePlayerSkin (num - 1);
 	}
 	
@@ -407,7 +407,7 @@ if (bits&(1<<i))
 		i = net_message.ReadByte();
 	else
 		i = baseline.colormap;
-	if (i > cl.maxclients)
+	if (i > cl.qh_maxclients)
 		Sys_Error ("i >= cl.maxclients");
 	ent->state.colormap = i;
 
@@ -417,7 +417,7 @@ if (bits&(1<<i))
 		skin = baseline.skinnum;
 	if (skin != ent->state.skinnum) {
 		ent->state.skinnum = skin;
-		if (num > 0 && num <= cl.maxclients)
+		if (num > 0 && num <= cl.qh_maxclients)
 			R_TranslatePlayerSkin (num - 1);
 	}
 
@@ -586,7 +586,7 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	if (slot > cl.maxclients)
+	if (slot > cl.qh_maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 	R_TranslatePlayerSkin (slot);
 }
@@ -736,21 +736,21 @@ void CL_ParseServerMessage (void)
 		
 		case q1svc_updatename:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: q1svc_updatename > MAX_SCOREBOARD");
 			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
 			break;
 			
 		case q1svc_updatefrags:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: q1svc_updatefrags > MAX_SCOREBOARD");
 			cl.scores[i].frags = net_message.ReadShort ();
 			break;			
 
 		case q1svc_updatecolors:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: q1svc_updatecolors > MAX_SCOREBOARD");
 			cl.scores[i].colors = net_message.ReadByte ();
 			CL_NewTranslation (i);

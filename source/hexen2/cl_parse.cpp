@@ -250,10 +250,10 @@ void CL_ParseServerInfo (void)
 	}
 
 // parse maxclients
-	cl.maxclients = net_message.ReadByte ();
-	if (cl.maxclients < 1 || cl.maxclients > H2MAX_CLIENTS)
+	cl.qh_maxclients = net_message.ReadByte ();
+	if (cl.qh_maxclients < 1 || cl.qh_maxclients > H2MAX_CLIENTS)
 	{
-		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
+		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
 	}
 
@@ -492,7 +492,7 @@ void CL_ParseUpdate (int bits)
 		}
 		else
 			forcelink = true;	// hack to make null model players work
-		if (num > 0 && num <= cl.maxclients)
+		if (num > 0 && num <= cl.qh_maxclients)
 			CLH2_TranslatePlayerSkin (num - 1);
 	}
 	
@@ -886,7 +886,7 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	if (slot > cl.maxclients)
+	if (slot > cl.qh_maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 	if (!cl.h2_players[slot].playerclass)
 		return;
@@ -1216,14 +1216,14 @@ void CL_ParseServerMessage (void)
 		
 		case h2svc_updatename:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: h2svc_updatename > H2MAX_CLIENTS");
 			String::Cpy(cl.h2_players[i].name, net_message.ReadString2 ());
 			break;
 
 		case h2svc_updateclass:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: h2svc_updateclass > H2MAX_CLIENTS");
 			cl.h2_players[i].playerclass = net_message.ReadByte();
 			CL_NewTranslation(i); // update the color
@@ -1231,7 +1231,7 @@ void CL_ParseServerMessage (void)
 		
 		case h2svc_updatefrags:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: h2svc_updatefrags > H2MAX_CLIENTS");
 			cl.h2_players[i].frags = net_message.ReadShort ();
 			break;			
@@ -1242,7 +1242,7 @@ void CL_ParseServerMessage (void)
 
 		case h2svc_updatecolors:
 			i = net_message.ReadByte ();
-			if (i >= cl.maxclients)
+			if (i >= cl.qh_maxclients)
 				Host_Error ("CL_ParseServerMessage: h2svc_updatecolors > H2MAX_CLIENTS");
 			j = net_message.ReadByte();
 			cl.h2_players[i].topColour = (j & 0xf0) >> 4;

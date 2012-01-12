@@ -826,7 +826,7 @@ cl.refdef must be set before the first call
 void V_RenderScene()
 {
 	// don't allow cheats in multiplayer
-	if (cl.maxclients > 1)
+	if (cl.qh_maxclients > 1)
 	{
 		Cvar_Set("r_fullbright", "0");
 	}
@@ -852,7 +852,7 @@ void V_RenderView (void)
 		return;
 
 // don't allow cheats in multiplayer
-	if (cl.maxclients > 1)
+	if (cl.qh_maxclients > 1)
 	{
 		Cvar_Set ("scr_ofsx", "0");
 		Cvar_Set ("scr_ofsy", "0");

@@ -581,7 +581,7 @@ void CL_RelinkEntities (void)
 		rent.shaderTime = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
 		CLH2_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
-		CLH2_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
+		CLH2_HandleCustomSkin(&rent, i <= cl.qh_maxclients ? i - 1 : -1);
 		if (i == cl.viewentity && !chase_active->value)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;

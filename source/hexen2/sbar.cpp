@@ -749,7 +749,7 @@ static void Sbar_SortFrags(void)
 		
 // sort by frags
 	scoreboardlines = 0;
-	for (i=0 ; i<cl.maxclients ; i++)
+	for (i=0 ; i<cl.qh_maxclients ; i++)
 	{
 		if (cl.h2_players[i].name[0])
 		{
@@ -915,7 +915,7 @@ void FindColor (int slot, int *color1, int *color2)
 	int		top, bottom, done;
 	byte	*sourceA, *sourceB, *colorA, *colorB;
 	
-	if (slot > cl.maxclients)
+	if (slot > cl.qh_maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 
 	if (!cl.h2_players[slot].playerclass)
