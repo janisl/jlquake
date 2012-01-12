@@ -32,10 +32,10 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	const char*	model_precache[MAX_MODELS];	// NULL terminated
-	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
+	const char*	model_precache[MAX_MODELS_H2];	// NULL terminated
+	const char*	sound_precache[MAX_SOUNDS_HW];	// NULL terminated
 	const char*	lightstyles[MAX_LIGHTSTYLES_H2];
-	clipHandle_t	models[MAX_MODELS];
+	clipHandle_t	models[MAX_MODELS_H2];
 
 	struct h2EffectT Effects[MAX_EFFECTS_H2];
 
@@ -334,7 +334,7 @@ extern	client_t	*host_client;
 
 extern	edict_t		*sv_player;
 
-extern	char		localmodels[MAX_MODELS][5];	// inline model names for precache
+extern	char		localmodels[MAX_MODELS_H2][5];	// inline model names for precache
 
 extern	char		localinfo[MAX_LOCALINFO_STRING+1];
 

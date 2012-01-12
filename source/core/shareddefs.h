@@ -24,3 +24,6 @@
 #define ATTN_NORM				1
 #define ATTN_IDLE				2
 #define ATTN_STATIC				3	// diminish very rapidly with distance
+
+#define BIGGEST_MAX_MODELS		512
+#define BIGGEST_MAX_SOUNDS		512

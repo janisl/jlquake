@@ -889,8 +889,8 @@ void SCR_ExecuteLayoutString (const char *s)
 		{	// draw a pic from a stat number
 			token = String::Parse2 (&s);
 			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
-			if (value >= MAX_IMAGES)
-				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES");
+			if (value >= MAX_IMAGES_Q2)
+				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES_Q2");
 			if (cl.configstrings[CS_IMAGES+value])
 			{
 				UI_DrawNamedPic (x, y, cl.configstrings[CS_IMAGES+value]);
@@ -909,8 +909,8 @@ void SCR_ExecuteLayoutString (const char *s)
 
 			token = String::Parse2 (&s);
 			value = String::Atoi(token);
-			if (value >= MAX_CLIENTS || value < 0)
-				Com_Error (ERR_DROP, "client >= MAX_CLIENTS");
+			if (value >= MAX_CLIENTS_Q2 || value < 0)
+				Com_Error (ERR_DROP, "client >= MAX_CLIENTS_Q2");
 			ci = &cl.clientinfo[value];
 
 			token = String::Parse2 (&s);
@@ -946,8 +946,8 @@ void SCR_ExecuteLayoutString (const char *s)
 
 			token = String::Parse2 (&s);
 			value = String::Atoi(token);
-			if (value >= MAX_CLIENTS || value < 0)
-				Com_Error (ERR_DROP, "client >= MAX_CLIENTS");
+			if (value >= MAX_CLIENTS_Q2 || value < 0)
+				Com_Error (ERR_DROP, "client >= MAX_CLIENTS_Q2");
 			ci = &cl.clientinfo[value];
 
 			token = String::Parse2 (&s);

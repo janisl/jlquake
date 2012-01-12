@@ -722,3 +722,8 @@ struct hwpacket_entities_t
 #define hwclc_tmove			6	// teleport request, spectator only
 #define hwclc_inv_select	7
 #define hwclc_get_effect	8	//[byte] effect id
+
+#define MAX_LIGHTSTYLES_H2	64
+#define MAX_MODELS_H2		512			// Sent over the net as a word
+#define MAX_SOUNDS_H2		512			// Sent over the net as a byte
+#define MAX_SOUNDS_HW		256			// so they cannot be blindly increased

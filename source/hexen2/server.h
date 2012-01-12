@@ -35,9 +35,9 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[64];		// maps/<name>.bsp, for model_precache[0]
-	const char*	model_precache[MAX_MODELS];	// NULL terminated
-	clipHandle_t	models[MAX_MODELS];
-	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
+	const char*	model_precache[MAX_MODELS_H2];	// NULL terminated
+	clipHandle_t	models[MAX_MODELS_H2];
+	const char*	sound_precache[MAX_SOUNDS_H2];	// NULL terminated
 	const char*	lightstyles[MAX_LIGHTSTYLES_H2];
 	struct h2EffectT Effects[MAX_EFFECTS_H2];
 	client_state2_t *states;

@@ -1290,7 +1290,7 @@ void PF_precache_sound (void)
 	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
 	PR_CheckEmptyString (s);
 	
-	for (i=0 ; i<MAX_SOUNDS ; i++)
+	for (i=0 ; i<MAX_SOUNDS_H2 ; i++)
 	{
 		if (!sv.sound_precache[i])
 		{
@@ -1339,7 +1339,7 @@ void PF_precache_model (void)
 	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
 	PR_CheckEmptyString (s);
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for (i=0 ; i<MAX_MODELS_H2 ; i++)
 	{
 		if (!sv.model_precache[i])
 		{
@@ -1397,7 +1397,7 @@ void PF_precache_puzzle_model (void)
 
 	PR_CheckEmptyString (s);
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for (i=0 ; i<MAX_MODELS_H2 ; i++)
 	{
 		if (!sv.model_precache[i])
 		{

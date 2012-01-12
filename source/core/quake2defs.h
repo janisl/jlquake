@@ -631,3 +631,14 @@ enum
 	q2clc_userinfo,			// [userinfo string]
 	q2clc_stringcmd			// [string] message
 };
+
+//
+// per-level limits
+//
+#define MAX_CLIENTS_Q2			256		// absolute limit
+#define MAX_LIGHTSTYLES_Q2		256
+#define MAX_MODELS_Q2			256		// these are sent over the net as bytes
+#define MAX_SOUNDS_Q2			256		// so they cannot be blindly increased
+#define MAX_IMAGES_Q2			256
+#define MAX_ITEMS_Q2			256
+#define MAX_GENERAL_Q2			(MAX_CLIENTS_Q2 * 2)	// general config strings

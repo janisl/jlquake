@@ -91,7 +91,7 @@ struct client_state_t : clientActiveCommon_t
 	// transient data from server
 	//
 	char		layout[1024];		// general 2D overlay
-	int			inventory[MAX_ITEMS];
+	int			inventory[MAX_ITEMS_Q2];
 
 	//
 	// server state information
@@ -106,13 +106,13 @@ struct client_state_t : clientActiveCommon_t
 	//
 	// locally derived information from server state
 	//
-	qhandle_t		model_draw[MAX_MODELS];
-	clipHandle_t	model_clip[MAX_MODELS];
+	qhandle_t		model_draw[MAX_MODELS_Q2];
+	clipHandle_t	model_clip[MAX_MODELS_Q2];
 
-	sfxHandle_t		sound_precache[MAX_SOUNDS];
-	struct image_t	*image_precache[MAX_IMAGES];
+	sfxHandle_t		sound_precache[MAX_SOUNDS_Q2];
+	struct image_t	*image_precache[MAX_IMAGES_Q2];
 
-	clientinfo_t	clientinfo[MAX_CLIENTS];
+	clientinfo_t	clientinfo[MAX_CLIENTS_Q2];
 	clientinfo_t	baseclientinfo;
 };
 

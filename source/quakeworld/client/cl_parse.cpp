@@ -264,7 +264,7 @@ void Model_NextDownload (void)
 	cl.clip_models[1] = 0;
 	R_LoadWorld(cl.model_name[1]);
 
-	for (i = 2; i < MAX_MODELS; i++)
+	for (i = 2; i < MAX_MODELS_Q1; i++)
 	{
 		if (!cl.model_name[i][0])
 			break;
@@ -330,7 +330,7 @@ void Sound_NextDownload (void)
 	}
 
 	S_BeginRegistration();
-	for (i=1 ; i<MAX_SOUNDS ; i++)
+	for (i=1 ; i<MAX_SOUNDS_Q1 ; i++)
 	{
 		if (!cl.sound_name[i][0])
 			break;
@@ -680,7 +680,7 @@ void CL_ParseSoundlist (void)
 		if (!str[0])
 			break;
 		numsounds++;
-		if (numsounds == MAX_SOUNDS)
+		if (numsounds == MAX_SOUNDS_Q1)
 			Host_EndGame ("Server sent too many sound_precache");
 		String::Cpy(cl.sound_name[numsounds], str);
 	}
@@ -719,7 +719,7 @@ void CL_ParseModellist (void)
 		if (!str[0])
 			break;
 		nummodels++;
-		if (nummodels==MAX_MODELS)
+		if (nummodels==MAX_MODELS_Q1)
 			Host_EndGame ("Server sent too many model_precache");
 		String::Cpy(cl.model_name[nummodels], str);
 

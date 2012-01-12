@@ -46,9 +46,9 @@ typedef struct
 	
 	char		name[64];			// map name
 	char		modelname[64];		// maps/<name>.bsp, for model_precache[0]
-	const char*	model_precache[MAX_MODELS];	// NULL terminated
-	clipHandle_t	models[MAX_MODELS];
-	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
+	const char*	model_precache[MAX_MODELS_Q1];	// NULL terminated
+	clipHandle_t	models[MAX_MODELS_Q1];
+	const char*	sound_precache[MAX_SOUNDS_Q1];	// NULL terminated
 	const char*	lightstyles[MAX_LIGHTSTYLES_Q1];
 	int			num_edicts;
 	int			max_edicts;

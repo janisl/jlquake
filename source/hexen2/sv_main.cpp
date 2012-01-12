@@ -9,7 +9,7 @@
 
 server_t		sv;
 server_static_t	svs;
-char	localmodels[MAX_MODELS][5];			// inline model names for precache
+char	localmodels[MAX_MODELS_H2][5];			// inline model names for precache
 
 Cvar*	sv_sound_distance;
 
@@ -76,7 +76,7 @@ void SV_Init (void)
 
 	Cmd_AddCommand ("sv_edicts", Sv_Edicts_f);	
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for (i=0 ; i<MAX_MODELS_H2 ; i++)
 		sprintf (localmodels[i], "*%i", i);
 
 	sv_kingofhill=0;//Initialize King of Hill to world
@@ -332,12 +332,12 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 		return;	
 
 // find precache number for sound
-    for (sound_num=1 ; sound_num<MAX_SOUNDS
+    for (sound_num=1 ; sound_num<MAX_SOUNDS_H2
         && sv.sound_precache[sound_num] ; sound_num++)
         if (!String::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
-    if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
+    if ( sound_num == MAX_SOUNDS_H2 || !sv.sound_precache[sound_num] )
     {
         Con_Printf ("SV_StartSound: %s not precached\n", sample);
         return;
@@ -1717,10 +1717,10 @@ int SV_ModelIndex (const char *name)
 	if (!name || !name[0])
 		return 0;
 
-	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
+	for (i=0 ; i<MAX_MODELS_H2 && sv.model_precache[i] ; i++)
 		if (!String::Cmp(sv.model_precache[i], name))
 			return i;
-	if (i==MAX_MODELS || !sv.model_precache[i])
+	if (i==MAX_MODELS_H2 || !sv.model_precache[i])
 	{
 		Con_Printf("SV_ModelIndex: model %s not precached\n", name);
 		return 0;

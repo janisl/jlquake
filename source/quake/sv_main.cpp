@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 server_t		sv;
 server_static_t	svs;
 
-char	localmodels[MAX_MODELS][5];			// inline model names for precache
+char	localmodels[MAX_MODELS_Q1][5];			// inline model names for precache
 
 //============================================================================
 
@@ -60,7 +60,7 @@ void SV_Init (void)
 	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
 	sv_nostep = Cvar_Get("sv_nostep", "0", 0);
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for (i=0 ; i<MAX_MODELS_Q1 ; i++)
 		sprintf (localmodels[i], "*%i", i);
 }
 
@@ -138,12 +138,12 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 		return;	
 
 // find precache number for sound
-    for (sound_num=1 ; sound_num<MAX_SOUNDS
+    for (sound_num=1 ; sound_num<MAX_SOUNDS_Q1
         && sv.sound_precache[sound_num] ; sound_num++)
         if (!String::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
-    if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
+    if ( sound_num == MAX_SOUNDS_Q1 || !sv.sound_precache[sound_num] )
     {
         Con_Printf ("SV_StartSound: %s not precacheed\n", sample);
         return;
@@ -897,10 +897,10 @@ int SV_ModelIndex (const char *name)
 	if (!name || !name[0])
 		return 0;
 
-	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
+	for (i=0 ; i<MAX_MODELS_Q1 && sv.model_precache[i] ; i++)
 		if (!String::Cmp(sv.model_precache[i], name))
 			return i;
-	if (i==MAX_MODELS || !sv.model_precache[i])
+	if (i==MAX_MODELS_Q1 || !sv.model_precache[i])
 		Sys_Error ("SV_ModelIndex: model %s not precached", name);
 	return i;
 }

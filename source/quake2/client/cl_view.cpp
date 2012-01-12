@@ -184,7 +184,7 @@ void CL_PrepRefresh (void)
 	num_cl_weaponmodels = 1;
 	String::Cpy(cl_weaponmodels[0], "weapon.md2");
 
-	for (i=1 ; i<MAX_MODELS && cl.configstrings[CS_MODELS+i][0] ; i++)
+	for (i=1 ; i<MAX_MODELS_Q2 && cl.configstrings[CS_MODELS+i][0] ; i++)
 	{
 		String::Cpy(name, cl.configstrings[CS_MODELS+i]);
 		name[37] = 0;	// never go beyond one line
@@ -217,7 +217,7 @@ void CL_PrepRefresh (void)
 
 	Com_Printf ("images\r", i); 
 	SCR_UpdateScreen ();
-	for (i=1 ; i<MAX_IMAGES && cl.configstrings[CS_IMAGES+i][0] ; i++)
+	for (i=1 ; i<MAX_IMAGES_Q2 && cl.configstrings[CS_IMAGES+i][0] ; i++)
 	{
 		cl.image_precache[i] = R_RegisterPic (cl.configstrings[CS_IMAGES+i]);
 		Sys_SendKeyEvents ();	// pump message loop
@@ -225,7 +225,7 @@ void CL_PrepRefresh (void)
 	}
 	
 	Com_Printf ("                                     \r");
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	for (i=0 ; i<MAX_CLIENTS_Q2 ; i++)
 	{
 		if (!cl.configstrings[CS_PLAYERSKINS+i][0])
 			continue;

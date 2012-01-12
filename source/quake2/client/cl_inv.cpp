@@ -30,7 +30,7 @@ void CL_ParseInventory (void)
 {
 	int		i;
 
-	for (i=0 ; i<MAX_ITEMS ; i++)
+	for (i=0 ; i<MAX_ITEMS_Q2 ; i++)
 		cl.inventory[i] = net_message.ReadShort();
 }
 
@@ -67,7 +67,7 @@ void CL_DrawInventory (void)
 {
 	int		i, j;
 	int		num, selected_num, item;
-	int		index[MAX_ITEMS];
+	int		index[MAX_ITEMS_Q2];
 	char	string[1024];
 	int		x, y;
 	char	binding[1024];
@@ -79,7 +79,7 @@ void CL_DrawInventory (void)
 
 	num = 0;
 	selected_num = 0;
-	for (i=0 ; i<MAX_ITEMS ; i++)
+	for (i=0 ; i<MAX_ITEMS_Q2 ; i++)
 	{
 		if (i==selected)
 			selected_num = num;

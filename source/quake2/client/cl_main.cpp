@@ -838,7 +838,7 @@ void CL_Skins_f (void)
 {
 	int		i;
 
-	for (i=0 ; i<MAX_CLIENTS ; i++)
+	for (i=0 ; i<MAX_CLIENTS_Q2 ; i++)
 	{
 		if (!cl.configstrings[CS_PLAYERSKINS+i][0])
 			continue;
@@ -1091,7 +1091,7 @@ byte *precache_model; // used for skin checking in alias models
 #define PLAYER_MULT 5
 
 // ENV_CNT is map load, ENV_CNT+1 is first env map
-#define ENV_CNT (CS_PLAYERSKINS + MAX_CLIENTS * PLAYER_MULT)
+#define ENV_CNT (CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT)
 #define TEXTURE_CNT (ENV_CNT+13)
 
 static const char *env_suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
@@ -1115,9 +1115,9 @@ void CL_RequestNextDownload (void)
 			if (!CL_CheckOrDownloadFile(cl.configstrings[CS_MODELS+1]))
 				return; // started a download
 	}
-	if (precache_check >= CS_MODELS && precache_check < CS_MODELS+MAX_MODELS) {
+	if (precache_check >= CS_MODELS && precache_check < CS_MODELS+MAX_MODELS_Q2) {
 		if (allow_download_models->value) {
-			while (precache_check < CS_MODELS+MAX_MODELS &&
+			while (precache_check < CS_MODELS+MAX_MODELS_Q2 &&
 				cl.configstrings[precache_check][0]) {
 				if (cl.configstrings[precache_check][0] == '*' ||
 					cl.configstrings[precache_check][0] == '#') {
@@ -1178,11 +1178,11 @@ void CL_RequestNextDownload (void)
 		}
 		precache_check = CS_SOUNDS;
 	}
-	if (precache_check >= CS_SOUNDS && precache_check < CS_SOUNDS+MAX_SOUNDS) { 
+	if (precache_check >= CS_SOUNDS && precache_check < CS_SOUNDS+MAX_SOUNDS_Q2) { 
 		if (allow_download_sounds->value) {
 			if (precache_check == CS_SOUNDS)
 				precache_check++; // zero is blank
-			while (precache_check < CS_SOUNDS+MAX_SOUNDS &&
+			while (precache_check < CS_SOUNDS+MAX_SOUNDS_Q2 &&
 				cl.configstrings[precache_check][0]) {
 				if (cl.configstrings[precache_check][0] == '*') {
 					precache_check++;
@@ -1195,10 +1195,10 @@ void CL_RequestNextDownload (void)
 		}
 		precache_check = CS_IMAGES;
 	}
-	if (precache_check >= CS_IMAGES && precache_check < CS_IMAGES+MAX_IMAGES) {
+	if (precache_check >= CS_IMAGES && precache_check < CS_IMAGES+MAX_IMAGES_Q2) {
 		if (precache_check == CS_IMAGES)
 			precache_check++; // zero is blank
-		while (precache_check < CS_IMAGES+MAX_IMAGES &&
+		while (precache_check < CS_IMAGES+MAX_IMAGES_Q2 &&
 			cl.configstrings[precache_check][0]) {
 			String::Sprintf(fn, sizeof(fn), "pics/%s.pcx", cl.configstrings[precache_check++]);
 			if (!CL_CheckOrDownloadFile(fn))
@@ -1209,9 +1209,9 @@ void CL_RequestNextDownload (void)
 	// skins are special, since a player has three things to download:
 	// model, weapon model and skin
 	// so precache_check is now *3
-	if (precache_check >= CS_PLAYERSKINS && precache_check < CS_PLAYERSKINS + MAX_CLIENTS * PLAYER_MULT) {
+	if (precache_check >= CS_PLAYERSKINS && precache_check < CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT) {
 		if (allow_download_players->value) {
-			while (precache_check < CS_PLAYERSKINS + MAX_CLIENTS * PLAYER_MULT) {
+			while (precache_check < CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT) {
 				int i, n;
 				char model[MAX_QPATH], skin[MAX_QPATH], *p;
 

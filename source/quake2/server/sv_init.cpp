@@ -63,17 +63,17 @@ int SV_FindIndex (char *name, int start, int max, qboolean create)
 
 int SV_ModelIndex (char *name)
 {
-	return SV_FindIndex (name, CS_MODELS, MAX_MODELS, true);
+	return SV_FindIndex (name, CS_MODELS, MAX_MODELS_Q2, true);
 }
 
 int SV_SoundIndex (char *name)
 {
-	return SV_FindIndex (name, CS_SOUNDS, MAX_SOUNDS, true);
+	return SV_FindIndex (name, CS_SOUNDS, MAX_SOUNDS_Q2, true);
 }
 
 int SV_ImageIndex (char *name)
 {
-	return SV_FindIndex (name, CS_IMAGES, MAX_IMAGES, true);
+	return SV_FindIndex (name, CS_IMAGES, MAX_IMAGES_Q2, true);
 }
 
 
@@ -325,8 +325,8 @@ void SV_InitGame (void)
 	{
 		if (maxclients->value <= 1)
 			Cvar_Set("maxclients", "8");
-		else if (maxclients->value > MAX_CLIENTS)
-			Cvar_Set("maxclients", va("%i", MAX_CLIENTS));
+		else if (maxclients->value > MAX_CLIENTS_Q2)
+			Cvar_Set("maxclients", va("%i", MAX_CLIENTS_Q2));
 	}
 	else if (Cvar_VariableValue ("coop"))
 	{

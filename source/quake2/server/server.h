@@ -63,7 +63,7 @@ typedef struct
 	int			framenum;
 
 	char		name[MAX_QPATH];			// map name, or cinematic name
-	clipHandle_t	models[MAX_MODELS];
+	clipHandle_t	models[MAX_MODELS_Q2];
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
 	q2entity_state_t	baselines[MAX_EDICTS_Q2];

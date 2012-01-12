@@ -137,8 +137,8 @@ struct client_state_t : clientActiveCommon_t
 //
 // information that is static for the entire time connected to a server
 //
-	qhandle_t	model_precache[MAX_MODELS];
-	sfxHandle_t	sound_precache[MAX_SOUNDS];
+	qhandle_t	model_precache[MAX_MODELS_Q1];
+	sfxHandle_t	sound_precache[MAX_SOUNDS_Q1];
 
 	char		levelname[40];	// for display on solo scoreboard
 	int			gametype;

@@ -154,7 +154,7 @@ void CL_RegisterSounds (void)
 
 	S_BeginRegistration ();
 	CLQ2_RegisterTEntSounds ();
-	for (i=1 ; i<MAX_SOUNDS ; i++)
+	for (i=1 ; i<MAX_SOUNDS_Q2 ; i++)
 	{
 		if (!cl.configstrings[CS_SOUNDS+i][0])
 			break;
@@ -512,7 +512,7 @@ void CL_ParseConfigString (void)
 		if (cl.refresh_prepped)
 			CDAudio_Play (String::Atoi(cl.configstrings[CS_CDTRACK]), true);
 	}
-	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS)
+	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS_Q2)
 	{
 		if (cl.refresh_prepped)
 		{
@@ -523,17 +523,17 @@ void CL_ParseConfigString (void)
 				cl.model_clip[i-CS_MODELS] = 0;
 		}
 	}
-	else if (i >= CS_SOUNDS && i < CS_SOUNDS+MAX_MODELS)
+	else if (i >= CS_SOUNDS && i < CS_SOUNDS+MAX_MODELS_Q2)
 	{
 		if (cl.refresh_prepped)
 			cl.sound_precache[i-CS_SOUNDS] = S_RegisterSound (cl.configstrings[i]);
 	}
-	else if (i >= CS_IMAGES && i < CS_IMAGES+MAX_MODELS)
+	else if (i >= CS_IMAGES && i < CS_IMAGES+MAX_MODELS_Q2)
 	{
 		if (cl.refresh_prepped)
 			cl.image_precache[i-CS_IMAGES] = R_RegisterPic (cl.configstrings[i]);
 	}
-	else if (i >= CS_PLAYERSKINS && i < CS_PLAYERSKINS+MAX_CLIENTS)
+	else if (i >= CS_PLAYERSKINS && i < CS_PLAYERSKINS+MAX_CLIENTS_Q2)
 	{
 		if (cl.refresh_prepped)
 			CL_ParseClientinfo (i-CS_PLAYERSKINS);

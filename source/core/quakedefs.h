@@ -239,3 +239,7 @@ struct qwpacket_entities_t
 #define qwclc_upload		7	// teleport request, spectator only
 
 #define MAX_INFO_STRING_QW	196
+
+#define MAX_LIGHTSTYLES_Q1	64
+#define MAX_MODELS_Q1		256			// these are sent over the net as bytes
+#define MAX_SOUNDS_Q1		256			// so they cannot be blindly increased

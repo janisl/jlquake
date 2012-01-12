@@ -1319,7 +1319,7 @@ void SV_InitLocal (void)
 	Cmd_AddCommand ("listip", SV_ListIP_f);
 	Cmd_AddCommand ("writeip", SV_WriteIP_f);
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for (i=0 ; i<MAX_MODELS_H2 ; i++)
 		sprintf (localmodels[i], "*%i", i);
 
 	Info_SetValueForKey(svs.info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);

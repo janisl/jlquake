@@ -231,8 +231,8 @@ void CL_ParseServerInfo (void)
 	char	*str;
 	int		i;
 	int		nummodels, numsounds;
-	char	model_precache[MAX_MODELS][MAX_QPATH];
-	char	sound_precache[MAX_SOUNDS][MAX_QPATH];
+	char	model_precache[MAX_MODELS_H2][MAX_QPATH];
+	char	sound_precache[MAX_SOUNDS_H2][MAX_QPATH];
 // rjr	edict_t		*ent;
 	
 	Con_DPrintf ("Serverinfo packet received.\n");
@@ -284,7 +284,7 @@ void CL_ParseServerInfo (void)
 		str = const_cast<char*>(net_message.ReadString2());
 		if (!str[0])
 			break;
-		if (nummodels==MAX_MODELS)
+		if (nummodels==MAX_MODELS_H2)
 		{
 			Con_Printf ("Server sent too many model precaches\n");
 			return;
@@ -299,7 +299,7 @@ void CL_ParseServerInfo (void)
 		str = const_cast<char*>(net_message.ReadString2());
 		if (!str[0])
 			break;
-		if (numsounds==MAX_SOUNDS)
+		if (numsounds==MAX_SOUNDS_H2)
 		{
 			Con_Printf ("Server sent too many sound precaches\n");
 			return;
@@ -469,7 +469,7 @@ void CL_ParseUpdate (int bits)
 	if (bits & H2U_MODEL)
 	{
 		modnum = net_message.ReadShort ();
-		if (modnum >= MAX_MODELS)
+		if (modnum >= MAX_MODELS_H2)
 			Host_Error ("CL_ParseModel: bad modnum");
 	}
 	else

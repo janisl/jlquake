@@ -359,12 +359,12 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 		SV_Error ("SV_StartSound: channel = %i", channel);
 
 // find precache number for sound
-    for (sound_num=1 ; sound_num<MAX_SOUNDS
+    for (sound_num=1 ; sound_num<MAX_SOUNDS_Q1
         && sv.sound_precache[sound_num] ; sound_num++)
         if (!String::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
-    if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
+    if ( sound_num == MAX_SOUNDS_Q1 || !sv.sound_precache[sound_num] )
     {
         Con_Printf ("SV_StartSound: %s not precacheed\n", sample);
         return;
@@ -439,7 +439,7 @@ void SV_FindModelNumbers (void)
 	sv_supernailmodel = -1;
 	sv_playermodel = -1;
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for (i=0 ; i<MAX_MODELS_Q1 ; i++)
 	{
 		if (!sv.model_precache[i])
 			break;

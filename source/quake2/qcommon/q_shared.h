@@ -25,18 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h>
 #include <time.h>
 
-//
-// per-level limits
-//
-#define	MAX_CLIENTS			256		// absolute limit
-#define	MAX_LIGHTSTYLES_Q2		256
-#define	MAX_MODELS			256		// these are sent over the net as bytes
-#define	MAX_SOUNDS			256		// so they cannot be blindly increased
-#define	MAX_IMAGES			256
-#define	MAX_ITEMS			256
-#define MAX_GENERAL			(MAX_CLIENTS*2)	// general config strings
-
-
 // game print flags
 #define	PRINT_LOW			0		// pickup messages
 #define	PRINT_MEDIUM		1		// death messages
@@ -291,10 +279,10 @@ ROGUE - VERSIONS
 #define	CS_MAPCHECKSUM		31		// for catching cheater maps
 
 #define	CS_MODELS			32
-#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS)
-#define	CS_IMAGES			(CS_SOUNDS+MAX_SOUNDS)
-#define	CS_LIGHTS			(CS_IMAGES+MAX_IMAGES)
+#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS_Q2)
+#define	CS_IMAGES			(CS_SOUNDS+MAX_SOUNDS_Q2)
+#define	CS_LIGHTS			(CS_IMAGES+MAX_IMAGES_Q2)
 #define	CS_ITEMS			(CS_LIGHTS+MAX_LIGHTSTYLES_Q2)
-#define	CS_PLAYERSKINS		(CS_ITEMS+MAX_ITEMS)
-#define CS_GENERAL			(CS_PLAYERSKINS+MAX_CLIENTS)
-#define	MAX_CONFIGSTRINGS	(CS_GENERAL+MAX_GENERAL)
+#define	CS_PLAYERSKINS		(CS_ITEMS+MAX_ITEMS_Q2)
+#define CS_GENERAL			(CS_PLAYERSKINS+MAX_CLIENTS_Q2)
+#define	MAX_CONFIGSTRINGS	(CS_GENERAL+MAX_GENERAL_Q2)
