@@ -195,8 +195,6 @@ struct client_state_t : clientActiveCommon_t
 	char		model_name[MAX_MODELS_H2][MAX_QPATH];
 	char		sound_name[MAX_SOUNDS_HW][MAX_QPATH];
 
-	sfxHandle_t	sound_precache[MAX_SOUNDS_HW];
-
 	char		levelname[40];	// for display on solo scoreboard
 	int			playernum;
 

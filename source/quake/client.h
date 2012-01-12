@@ -134,11 +134,6 @@ struct client_state_t : clientActiveCommon_t
 
 	float		last_received_message;	// (realtime) for net trouble icon
 
-//
-// information that is static for the entire time connected to a server
-//
-	sfxHandle_t	sound_precache[MAX_SOUNDS_Q1];
-
 	char		levelname[40];	// for display on solo scoreboard
 	int			gametype;
 

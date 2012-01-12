@@ -103,7 +103,6 @@ struct client_state_t : clientActiveCommon_t
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
 
-	sfxHandle_t		sound_precache[MAX_SOUNDS_Q2];
 	struct image_t	*image_precache[MAX_IMAGES_Q2];
 
 	clientinfo_t	clientinfo[MAX_CLIENTS_Q2];

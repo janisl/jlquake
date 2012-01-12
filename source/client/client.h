@@ -65,6 +65,8 @@ struct clientActiveCommon_t
 	qhandle_t model_draw[BIGGEST_MAX_MODELS];
 	clipHandle_t model_clip[BIGGEST_MAX_MODELS];
 
+	sfxHandle_t sound_precache[BIGGEST_MAX_SOUNDS];
+
 	//	Only for Quake and Hexen 2
 	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
 	cshift_t qh_prev_cshifts[NUM_CSHIFTS];	// and content types
