@@ -302,7 +302,7 @@ void CL_PrintEntities_f (void)
 			continue;
 		}
 		Con_Printf ("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n"
-		,R_ModelName(cl.model_precache[ent->state.modelindex]),ent->state.frame, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2], ent->state.angles[0], ent->state.angles[1], ent->state.angles[2]);
+		,R_ModelName(cl.model_draw[ent->state.modelindex]),ent->state.frame, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2], ent->state.angles[0], ent->state.angles[1], ent->state.angles[2]);
 	}
 }
 
@@ -500,7 +500,7 @@ void CL_RelinkEntities (void)
 			}
 		}
 
-		int ModelFlags = R_ModelFlags(cl.model_precache[ent->state.modelindex]);
+		int ModelFlags = R_ModelFlags(cl.model_draw[ent->state.modelindex]);
 		if (ModelFlags & H2MDLEF_GIB)
 			CLH2_TrailParticles (oldorg, ent->state.origin, rt_blood);
 		else if (ModelFlags & H2MDLEF_ZOMGIB)
@@ -576,7 +576,7 @@ void CL_RelinkEntities (void)
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(ent->state.origin, rent.origin);
-		rent.hModel = cl.model_precache[ent->state.modelindex];
+		rent.hModel = cl.model_draw[ent->state.modelindex];
 		rent.frame = ent->state.frame;
 		rent.shaderTime = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
@@ -605,7 +605,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl.model_precache[pent->state.modelindex];
+		rent.hModel = cl.model_draw[pent->state.modelindex];
 		rent.frame = pent->state.frame;
 		rent.shaderTime = pent->syncbase;
 		rent.skinNum = pent->state.skinnum;

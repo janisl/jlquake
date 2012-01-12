@@ -103,12 +103,6 @@ struct client_state_t : clientActiveCommon_t
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
 
-	//
-	// locally derived information from server state
-	//
-	qhandle_t		model_draw[MAX_MODELS_Q2];
-	clipHandle_t	model_clip[MAX_MODELS_Q2];
-
 	sfxHandle_t		sound_precache[MAX_SOUNDS_Q2];
 	struct image_t	*image_precache[MAX_IMAGES_Q2];
 

@@ -207,19 +207,19 @@ void Model_NextDownload (void)
 	}
 
 	CM_LoadMap(cl.model_name[1], true, NULL);
-	cl.clip_models[1] = 0;
+	cl.model_clip[1] = 0;
 	R_LoadWorld(cl.model_name[1]);
 
 	for (i = 2; i < MAX_MODELS_H2; i++)
 	{
 		if (!cl.model_name[i][0])
 			break;
-		cl.model_precache[i] = R_RegisterModel(cl.model_name[i]);
+		cl.model_draw[i] = R_RegisterModel(cl.model_name[i]);
 		if (cl.model_name[i][0] == '*')
 		{
-			cl.clip_models[i] = CM_InlineModel(String::Atoi(cl.model_name[i] + 1));
+			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.model_name[i] + 1));
 		}
-		if (!cl.model_precache[i])
+		if (!cl.model_draw[i])
 		{
 			Con_Printf ("\nThe required model file '%s' could not be found or downloaded.\n\n"
 				, cl.model_name[i]);
@@ -546,7 +546,7 @@ void CL_ParseModellist (void)
 	char	*str;
 
 // precache models and note certain default indexes
-	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
 	cl_playerindex[0] = -1;
 	cl_playerindex[1] = -1;
 	cl_playerindex[2] = -1;

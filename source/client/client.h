@@ -59,6 +59,12 @@ struct clientActiveCommon_t
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
 	int viewentity;			// cl_entitites[cl.viewentity] = player
 
+	//
+	// locally derived information from server state
+	//
+	qhandle_t model_draw[BIGGEST_MAX_MODELS];
+	clipHandle_t model_clip[BIGGEST_MAX_MODELS];
+
 	//	Only for Quake and Hexen 2
 	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
 	cshift_t qh_prev_cshifts[NUM_CSHIFTS];	// and content types

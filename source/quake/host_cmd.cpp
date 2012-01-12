@@ -1459,7 +1459,7 @@ void Host_Viewmodel_f (void)
 	}
 	
 	e->v.frame = 0;
-	cl.model_precache[(int)e->v.modelindex] = m;
+	cl.model_draw[(int)e->v.modelindex] = m;
 }
 
 /*
@@ -1476,7 +1476,7 @@ void Host_Viewframe_f (void)
 	e = FindViewthing ();
 	if (!e)
 		return;
-	m = cl.model_precache[(int)e->v.modelindex];
+	m = cl.model_draw[(int)e->v.modelindex];
 
 	f = String::Atoi(Cmd_Argv(1));
 	if (f >= R_ModelNumFrames(m))
@@ -1498,7 +1498,7 @@ void Host_Viewnext_f (void)
 	e = FindViewthing ();
 	if (!e)
 		return;
-	m = cl.model_precache[(int)e->v.modelindex];
+	m = cl.model_draw[(int)e->v.modelindex];
 
 	e->v.frame = e->v.frame + 1;
 	if (e->v.frame >= R_ModelNumFrames(m))
@@ -1521,7 +1521,7 @@ void Host_Viewprev_f (void)
 	if (!e)
 		return;
 
-	m = cl.model_precache[(int)e->v.modelindex];
+	m = cl.model_draw[(int)e->v.modelindex];
 
 	e->v.frame = e->v.frame - 1;
 	if (e->v.frame < 0)

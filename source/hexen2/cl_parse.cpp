@@ -278,7 +278,7 @@ void CL_ParseServerInfo (void)
 //
 
 // precache models
-	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
 	for (nummodels=1 ; ; nummodels++)
 	{
 		str = const_cast<char*>(net_message.ReadString2());
@@ -321,11 +321,11 @@ void CL_ParseServerInfo (void)
 
 	for (i=2 ; i<nummodels ; i++)
 	{
-		cl.model_precache[i] = R_RegisterModel (model_precache[i]);
+		cl.model_draw[i] = R_RegisterModel (model_precache[i]);
 		current_loading_size++;
 		SCR_UpdateScreen();
 
-		if (cl.model_precache[i] == 0)
+		if (cl.model_draw[i] == 0)
 		{
 			Con_Printf("Model %s not found\n", model_precache[i]);
 			return;
@@ -475,7 +475,7 @@ void CL_ParseUpdate (int bits)
 	else
 		modnum = ref_ent->modelindex;
 		
-	model = cl.model_precache[modnum];
+	model = cl.model_draw[modnum];
 	set_ent->modelindex = modnum;
 	if (modnum != ent->state.modelindex)
 	{

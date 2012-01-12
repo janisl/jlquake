@@ -881,7 +881,7 @@ static void CL_AddViewModel()
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(cl.viewent.state.origin, gun.origin);
-	gun.hModel = cl.model_precache[cl.viewent.state.modelindex];
+	gun.hModel = cl.model_draw[cl.viewent.state.modelindex];
 	gun.frame = cl.viewent.state.frame;
 	gun.shaderTime = cl.viewent.syncbase;
 	gun.skinNum = cl.viewent.state.skinnum;

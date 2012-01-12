@@ -485,7 +485,7 @@ void CL_LinkPacketEntities (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 
 		ent.reType = RT_MODEL;
-		model = cl.model_precache[s1->modelindex];
+		model = cl.model_draw[s1->modelindex];
 		ent.hModel = model;
 	
 		// set skin
@@ -740,7 +740,7 @@ void CL_LinkProjectiles (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = cl.model_precache[pr->modelindex];
+		ent.hModel = cl.model_draw[pr->modelindex];
 		ent.frame = pr->frame;
 		VectorCopy(pr->origin, ent.origin);
 		CLH2_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
@@ -834,12 +834,12 @@ void CL_LinkMissiles (void)
 		VectorCopy (pr->origin, ent.origin);
 		if(pr->type == 1)
 		{	//ball
-			ent.hModel = cl.model_precache[cl_ballindex];
+			ent.hModel = cl.model_draw[cl_ballindex];
 			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		else
 		{	//missilestar
-			ent.hModel = cl.model_precache[cl_missilestarindex];
+			ent.hModel = cl.model_draw[cl_missilestarindex];
 			CLH2_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		if(rand() % 10 < 3)		
@@ -1054,7 +1054,7 @@ void CL_LinkPlayers (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = cl.model_precache[state->modelindex];
+		ent.hModel = cl.model_draw[state->modelindex];
 		ent.skinNum = state->skinnum;
 		ent.frame = state->frame;
 
@@ -1212,9 +1212,9 @@ void CL_SetSolidEntities (void)
 
 		if (state->modelindex < 2)
 			continue;
-		if (!cl.clip_models[state->modelindex])
+		if (!cl.model_clip[state->modelindex])
 			continue;
-		pmove.physents[pmove.numphysent].model = cl.clip_models[state->modelindex];
+		pmove.physents[pmove.numphysent].model = cl.model_clip[state->modelindex];
 		VectorCopy(state->origin, pmove.physents[pmove.numphysent].origin);
 		VectorCopy(state->angles, pmove.physents[pmove.numphysent].angles);
 		pmove.numphysent++;
@@ -1370,7 +1370,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl.model_precache[pent->state.modelindex];
+		rent.hModel = cl.model_draw[pent->state.modelindex];
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;
 		rent.shaderTime = pent->syncbase;

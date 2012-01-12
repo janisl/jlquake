@@ -349,7 +349,7 @@ void CL_LinkPacketEntities (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		model = cl.model_precache[s1->modelindex];
+		model = cl.model_draw[s1->modelindex];
 		ent.hModel = model;
 	
 		// set colormap
@@ -520,7 +520,7 @@ void CL_LinkProjectiles (void)
 		refEntity_t ent;
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
-		ent.hModel = cl.model_precache[pr->modelindex];
+		ent.hModel = cl.model_draw[pr->modelindex];
 		VectorCopy(pr->origin, ent.origin);
 		CLQ1_SetRefEntAxis(&ent, pr->angles);
 		R_AddRefEntityToScene(&ent);
@@ -651,7 +651,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 	Com_Memset(&newent, 0, sizeof(newent));
 
 	newent.reType = RT_MODEL;
-	newent.hModel = cl.model_precache[cl_flagindex];
+	newent.hModel = cl.model_draw[cl_flagindex];
 	newent.skinNum = team;
 
 	AngleVectors(angles, v_forward, v_right, v_up);
@@ -725,7 +725,7 @@ void CL_LinkPlayers (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = cl.model_precache[state->modelindex];
+		ent.hModel = cl.model_draw[state->modelindex];
 		ent.skinNum = state->skinnum;
 		ent.frame = state->frame;
 		if (state->modelindex == cl_playerindex)
@@ -804,9 +804,9 @@ void CL_SetSolidEntities (void)
 
 		if (state->modelindex < 2)
 			continue;
-		if (!cl.clip_models[state->modelindex])
+		if (!cl.model_clip[state->modelindex])
 			continue;
-		pmove.physents[pmove.numphysent].model = cl.clip_models[state->modelindex];
+		pmove.physents[pmove.numphysent].model = cl.model_clip[state->modelindex];
 		VectorCopy(state->origin, pmove.physents[pmove.numphysent].origin);
 		pmove.numphysent++;
 	}
@@ -937,7 +937,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl.model_precache[pent->state.modelindex];
+		rent.hModel = cl.model_draw[pent->state.modelindex];
 		CLQ1_SetRefEntAxis(&rent, pent->state.angles);
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;

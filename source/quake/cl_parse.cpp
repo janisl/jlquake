@@ -230,7 +230,7 @@ void CL_ParseServerInfo (void)
 	Con_Printf ("%c%s\n", 2, str);
 
 // precache models
-	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
 	for (nummodels=1 ; ; nummodels++)
 	{
 		str = net_message.ReadString2 ();
@@ -269,8 +269,8 @@ void CL_ParseServerInfo (void)
 
 	for (i = 2; i < nummodels; i++)
 	{
-		cl.model_precache[i] = R_RegisterModel(model_precache[i]);
-		if (cl.model_precache[i] == 0)
+		cl.model_draw[i] = R_RegisterModel(model_precache[i]);
+		if (cl.model_draw[i] == 0)
 		{
 			Con_Printf("Model %s not found\n", model_precache[i]);
 			return;
@@ -314,7 +314,7 @@ static void R_TranslatePlayerSkin(int playernum)
 	//
 	q1entity_t* ent = &clq1_entities[1 + playernum];
 
-	R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate);
+	R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum), cl.model_draw[ent->state.modelindex], translate);
 }
 
 /*
@@ -376,7 +376,7 @@ if (bits&(1<<i))
 	else
 		modnum = baseline.modelindex;
 		
-	model = cl.model_precache[modnum];
+	model = cl.model_draw[modnum];
 	if (modnum != ent->state.modelindex)
 	{
 		ent->state.modelindex = modnum;

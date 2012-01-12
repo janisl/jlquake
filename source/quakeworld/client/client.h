@@ -161,13 +161,10 @@ struct client_state_t : clientActiveCommon_t
 	char		model_name[MAX_MODELS_Q1][MAX_QPATH];
 	char		sound_name[MAX_SOUNDS_Q1][MAX_QPATH];
 
-	qhandle_t	model_precache[MAX_MODELS_Q1];
 	sfxHandle_t	sound_precache[MAX_SOUNDS_Q1];
 
 	char		levelname[40];	// for display on solo scoreboard
 	int			playernum;
-
-	clipHandle_t	clip_models[MAX_MODELS_Q1];
 
 	int			cdtrack;		// cd audio
 
