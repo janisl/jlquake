@@ -340,7 +340,7 @@ static void Mod_ClearAll (void)
 	R_Shutdown(false);
 	R_BeginRegistration(&cls.glconfig);
 
-	Com_Memset(playertextures, 0, sizeof(playertextures));
+	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
 
 	Draw_Init();
 	Sbar_Init();

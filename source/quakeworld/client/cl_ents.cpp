@@ -296,7 +296,7 @@ static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 		Skin_Find(&cl.players[PlayerNum]);
 		R_TranslatePlayerSkin(PlayerNum);
 	}
-	Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);
 }
 
 /*

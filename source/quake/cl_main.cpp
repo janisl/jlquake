@@ -258,7 +258,7 @@ static void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
 	// seperately for the players.  Heads are just uncolored.
 	if (ColorMap && !String::Cmp(R_ModelName(Ent->hModel), "progs/player.mdl"))
 	{
-	    Ent->customSkin = R_GetImageHandle(playertextures[ColorMap - 1]);
+	    Ent->customSkin = R_GetImageHandle(clq1_playertextures[ColorMap - 1]);
 	}
 }
 

@@ -265,5 +265,3 @@ void V_RenderView (void);
 void V_UpdatePalette (void);
 void V_Register (void);
 void V_ParseDamage (void);
-
-extern	image_t*	playertextures[16];

@@ -68,8 +68,6 @@ const char *svc_strings[] =
 	"q1svc_cutscene"
 };
 
-image_t*	playertextures[16];		// up to 16 color translated skins
-
 //=============================================================================
 
 /*
@@ -214,7 +212,7 @@ void CL_ParseServerInfo (void)
 
 // parse maxclients
 	cl.qh_maxclients = net_message.ReadByte ();
-	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_SCOREBOARD)
+	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_Q1)
 	{
 		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
@@ -317,7 +315,7 @@ static void R_TranslatePlayerSkin(int playernum)
 	//
 	q1entity_t* ent = &clq1_entities[1 + playernum];
 
-	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate);
+	R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum), cl.model_precache[ent->state.modelindex], translate);
 }
 
 /*
@@ -737,21 +735,21 @@ void CL_ParseServerMessage (void)
 		case q1svc_updatename:
 			i = net_message.ReadByte ();
 			if (i >= cl.qh_maxclients)
-				Host_Error ("CL_ParseServerMessage: q1svc_updatename > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_Q1");
 			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
 			break;
 			
 		case q1svc_updatefrags:
 			i = net_message.ReadByte ();
 			if (i >= cl.qh_maxclients)
-				Host_Error ("CL_ParseServerMessage: q1svc_updatefrags > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_Q1");
 			cl.scores[i].frags = net_message.ReadShort ();
 			break;			
 
 		case q1svc_updatecolors:
 			i = net_message.ReadByte ();
 			if (i >= cl.qh_maxclients)
-				Host_Error ("CL_ParseServerMessage: q1svc_updatecolors > MAX_SCOREBOARD");
+				Host_Error ("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_Q1");
 			cl.scores[i].colors = net_message.ReadByte ();
 			CL_NewTranslation (i);
 			break;

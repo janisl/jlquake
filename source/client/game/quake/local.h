@@ -22,6 +22,8 @@ extern q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
 extern q1entity_t clq1_entities[MAX_EDICTS_Q1];
 extern q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
+extern	image_t*	clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];
+
 void CLQ1_SignonReply();
 
 q1entity_t* CLQ1_EntityNum(int number);

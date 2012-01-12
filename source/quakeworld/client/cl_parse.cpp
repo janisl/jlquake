@@ -107,8 +107,6 @@ double	parsecounttime;
 
 int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
-image_t*	playertextures[MAX_CLIENTS_QW];		// up to 16 color translated skins
-
 //=============================================================================
 
 int packet_latency[NET_TIMINGS];
@@ -905,11 +903,11 @@ void R_TranslatePlayerSkin(int playernum)
 	if (original != NULL)
 	{
 		//skin data width
-		R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, 320, 200);
+		R_CreateOrUpdateTranslatedSkin(clq1_playertextures[playernum], va("*player%d", playernum), original, translate, 320, 200);
 	}
 	else
 	{
-		R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum),
+		R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum),
 			cl.model_precache[cl_playerindex], translate);
 	}
 }

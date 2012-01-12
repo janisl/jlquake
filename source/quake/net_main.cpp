@@ -647,8 +647,8 @@ int NET_SendToAll(QMsg *data, int blocktime)
 	double		start;
 	int			i;
 	int			count = 0;
-	qboolean	state1 [MAX_SCOREBOARD];
-	qboolean	state2 [MAX_SCOREBOARD];
+	qboolean	state1 [MAX_CLIENTS_Q1];
+	qboolean	state2 [MAX_CLIENTS_Q1];
 
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{

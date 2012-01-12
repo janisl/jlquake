@@ -201,8 +201,8 @@ void	Host_FindMaxClients (void)
 	}
 	if (svs.maxclients < 1)
 		svs.maxclients = 8;
-	else if (svs.maxclients > MAX_SCOREBOARD)
-		svs.maxclients = MAX_SCOREBOARD;
+	else if (svs.maxclients > MAX_CLIENTS_Q1)
+		svs.maxclients = MAX_CLIENTS_Q1;
 
 	svs.maxclientslimit = svs.maxclients;
 	if (svs.maxclientslimit < 4)
@@ -490,7 +490,7 @@ static void Mod_ClearAll (void)
 	R_Shutdown(false);
 	R_BeginRegistration(&cls.glconfig);
 
-	Com_Memset(playertextures, 0, sizeof(playertextures));
+	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
 	translate_texture = NULL;
 
 	Draw_Init();
