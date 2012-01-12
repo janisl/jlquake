@@ -401,24 +401,6 @@ void CL_RelinkEntities (void)
 	}
 }
 
-static void CL_LinkStaticEntities()
-{
-	q1entity_t* pent = clq1_static_entities;
-	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
-	{
-		refEntity_t rent;
-		Com_Memset(&rent, 0, sizeof(rent));
-		rent.reType = RT_MODEL;
-		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl.model_draw[pent->state.modelindex];
-		CLQ1_SetRefEntAxis(&rent, pent->state.angles);
-		rent.frame = pent->state.frame;
-		rent.shaderTime = pent->syncbase;
-		rent.skinNum = pent->state.skinnum;
-		R_AddRefEntityToScene(&rent);
-	}
-}
-
 /*
 ===============
 CL_ReadFromServer
@@ -451,7 +433,7 @@ int CL_ReadFromServer (void)
 
 	CL_RelinkEntities ();
 	CLQ1_UpdateTEnts ();
-	CL_LinkStaticEntities();
+	CLQ1_LinkStaticEntities();
 
 //
 // bring the links up to date

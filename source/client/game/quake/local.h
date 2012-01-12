@@ -30,6 +30,7 @@ q1entity_t* CLQ1_EntityNum(int number);
 void CLQ1_ParseSpawnBaseline(QMsg& message);
 void CLQ1_ParseSpawnStatic(QMsg& message);
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
+void CLQ1_LinkStaticEntities();
 
 void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();

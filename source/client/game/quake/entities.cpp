@@ -120,3 +120,21 @@ void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 		ent->radius = 1.0;
 	}
 }
+
+void CLQ1_LinkStaticEntities()
+{
+	q1entity_t* pent = clq1_static_entities;
+	for (int i = 0; i < cl_common->qh_num_statics; i++, pent++)
+	{
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(pent->state.origin, rent.origin);
+		rent.hModel = cl_common->model_draw[pent->state.modelindex];
+		CLQ1_SetRefEntAxis(&rent, pent->state.angles);
+		rent.frame = pent->state.frame;
+		rent.skinNum = pent->state.skinnum;
+		rent.shaderTime = pent->syncbase;
+		R_AddRefEntityToScene(&rent);
+	}
+}
