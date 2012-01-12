@@ -505,10 +505,6 @@ void CL_ParseFrame (void)
 
 	Com_Memset(&cl.q2_frame, 0, sizeof(cl.q2_frame));
 
-#if 0
-	CL_ClearProjectiles(); // clear projectiles for new frame
-#endif
-
 	cl.q2_frame.serverframe = net_message.ReadLong();
 	cl.q2_frame.deltaframe = net_message.ReadLong();
 	cl.q2_frame.servertime = cl.q2_frame.serverframe*100;
@@ -574,11 +570,6 @@ void CL_ParseFrame (void)
 	if (cmd != q2svc_packetentities)
 		Com_Error (ERR_DROP, "CL_ParseFrame: not packetentities");
 	CL_ParsePacketEntities (old, &cl.q2_frame);
-
-#if 0
-	if (cmd == svc_packetentities2)
-		CL_ParseProjectiles();
-#endif
 
 	// save the frame off in the backup array for later delta comparisons
 	cl.q2_frames[cl.q2_frame.serverframe & UPDATE_MASK_Q2] = cl.q2_frame;
