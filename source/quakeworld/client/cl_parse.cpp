@@ -105,7 +105,7 @@ int	oldparsecountmod;
 int	parsecountmod;
 double	parsecounttime;
 
-int		cl_spikeindex, cl_playerindex, cl_flagindex;
+int		cl_playerindex, cl_flagindex;
 
 //=============================================================================
 
@@ -341,7 +341,7 @@ void Sound_NextDownload (void)
 	// done with sounds, request models now
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
 	cl_playerindex = -1;
-	cl_spikeindex = -1;
+	clq1_spikeindex = -1;
 	cl_flagindex = -1;
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 //	clc.netchan.message.WriteString2(va("modellist %i 0", cl.servercount));
@@ -724,7 +724,7 @@ void CL_ParseModellist (void)
 		String::Cpy(cl.model_name[nummodels], str);
 
 		if (!String::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
-			cl_spikeindex = nummodels;
+			clq1_spikeindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"progs/player.mdl"))
 			cl_playerindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
@@ -1079,7 +1079,7 @@ void CL_ParseServerMessage (void)
 
 	received_framecount = host_framecount;
 	cl.last_servermessage = realtime;
-	CL_ClearProjectiles ();
+	CLQ1_ClearProjectiles ();
 
 //
 // if recording demos, copy the message out
@@ -1302,7 +1302,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case qwsvc_nails:
-			CL_ParseProjectiles ();
+			CLQW_ParseNails(net_message);
 			break;
 
 		case qwsvc_chokecount:		// some preceding packets were choked

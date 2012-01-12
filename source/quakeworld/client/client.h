@@ -301,8 +301,6 @@ void V_ParseDamage (void);
 void CL_SetSolidPlayers (int playernum);
 void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities (void);
-void CL_ClearProjectiles (void);
-void CL_ParseProjectiles (void);
 void CL_ParsePacketEntities (qboolean delta);
 void CL_SetSolidEntities (void);
 void CL_ParsePlayerinfo (void);
@@ -340,6 +338,6 @@ void	Skin_Skins_f (void);
 void	Skin_AllSkins_f (void);
 void	Skin_NextDownload (void);
 
-extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
+extern	int		cl_playerindex, cl_flagindex;
 
 void R_TranslatePlayerSkin (int playernum);

@@ -440,93 +440,6 @@ void CL_LinkPacketEntities (void)
 	}
 }
 
-
-/*
-=========================================================================
-
-PROJECTILE PARSING / LINKING
-
-=========================================================================
-*/
-
-typedef struct
-{
-	int		modelindex;
-	vec3_t	origin;
-	vec3_t	angles;
-} projectile_t;
-
-#define	MAX_PROJECTILES	32
-projectile_t	cl_projectiles[MAX_PROJECTILES];
-int				cl_num_projectiles;
-
-extern int cl_spikeindex;
-
-void CL_ClearProjectiles (void)
-{
-	cl_num_projectiles = 0;
-}
-
-/*
-=====================
-CL_ParseProjectiles
-
-Nails are passed as efficient temporary entities
-=====================
-*/
-void CL_ParseProjectiles (void)
-{
-	int		i, c, j;
-	byte	bits[6];
-	projectile_t	*pr;
-
-	c = net_message.ReadByte ();
-	for (i=0 ; i<c ; i++)
-	{
-		for (j=0 ; j<6 ; j++)
-			bits[j] = net_message.ReadByte ();
-
-		if (cl_num_projectiles == MAX_PROJECTILES)
-			continue;
-
-		pr = &cl_projectiles[cl_num_projectiles];
-		cl_num_projectiles++;
-
-		pr->modelindex = cl_spikeindex;
-		pr->origin[0] = ( ( bits[0] + ((bits[1]&15)<<8) ) <<1) - 4096;
-		pr->origin[1] = ( ( (bits[1]>>4) + (bits[2]<<4) ) <<1) - 4096;
-		pr->origin[2] = ( ( bits[3] + ((bits[4]&15)<<8) ) <<1) - 4096;
-		pr->angles[0] = 360*(bits[4]>>4)/16;
-		pr->angles[1] = 360*bits[5]/256;
-	}
-}
-
-/*
-=============
-CL_LinkProjectiles
-
-=============
-*/
-void CL_LinkProjectiles (void)
-{
-	int		i;
-	projectile_t	*pr;
-
-	for (i=0, pr=cl_projectiles ; i<cl_num_projectiles ; i++, pr++)
-	{
-		// grab an entity to fill in
-		if (pr->modelindex < 1)
-			continue;
-		refEntity_t ent;
-		Com_Memset(&ent, 0, sizeof(ent));
-		ent.reType = RT_MODEL;
-		ent.hModel = cl.model_draw[pr->modelindex];
-		VectorCopy(pr->origin, ent.origin);
-		CLQ1_SetRefEntAxis(&ent, pr->angles);
-		R_AddRefEntityToScene(&ent);
-	}
-}
-
 //========================================
 
 /*
@@ -948,7 +861,7 @@ void CL_EmitEntities (void)
 
 	CL_LinkPlayers ();
 	CL_LinkPacketEntities ();
-	CL_LinkProjectiles ();
+	CLQ1_LinkProjectiles ();
 	CLQ1_UpdateTEnts ();
 	CLQ1_LinkStaticEntities();
 }

@@ -24,6 +24,8 @@ extern q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
 extern image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];
 
+extern int clq1_spikeindex;
+
 void CLQ1_SignonReply();
 
 q1entity_t* CLQ1_EntityNum(int number);
@@ -37,3 +39,7 @@ void CLQ1_ClearTEnts();
 void CLQ1_ParseTEnt(QMsg& message);
 void CLQW_ParseTEnt(QMsg& message);
 void CLQ1_UpdateTEnts();
+
+void CLQ1_ClearProjectiles();
+void CLQW_ParseNails(QMsg& message);
+void CLQ1_LinkProjectiles();
