@@ -133,7 +133,6 @@ struct client_state_t : clientActiveCommon_t
 	int			intermission;	// don't change view angle, full screen, etc
 	int			completed_time;	// latched at intermission start
 	
-	double		mtime[2];		// the timestamp of last two messages	
 	double		serverTimeFloat;			// clients view of time, should be between
 								// servertime and oldservertime to generate
 								// a lerp point for other data

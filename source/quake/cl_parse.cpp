@@ -363,12 +363,12 @@ for (i=0 ; i<16 ; i++)
 if (bits&(1<<i))
 	bitcounts[i]++;
 
-	if (ent->msgtime != cl.mtime[1])
+	if (ent->msgtime != cl.qh_mtime[1])
 		forcelink = true;	// no previous frame to lerp from
 	else
 		forcelink = false;
 
-	ent->msgtime = cl.mtime[0];
+	ent->msgtime = cl.qh_mtime[0];
 	
 	if (bits & Q1U_MODEL)
 	{
@@ -673,8 +673,8 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case q1svc_time:
-			cl.mtime[1] = cl.mtime[0];
-			cl.mtime[0] = net_message.ReadFloat();
+			cl.qh_mtime[1] = cl.qh_mtime[0];
+			cl.qh_mtime[0] = net_message.ReadFloat();
 			break;
 			
 		case q1svc_clientdata:

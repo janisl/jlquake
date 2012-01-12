@@ -417,7 +417,7 @@ void CL_SendMove (q1usercmd_t *cmd)
 //
     buf.WriteByte(q1clc_move);
 
-	buf.WriteFloat(cl.mtime[0]);	// so server can get ping times
+	buf.WriteFloat(cl.qh_mtime[0]);	// so server can get ping times
 
 	for (i=0 ; i<3 ; i++)
 		buf.WriteAngle(cl.viewangles[i]);

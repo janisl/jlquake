@@ -79,6 +79,8 @@ struct clientActiveCommon_t
 	int qh_num_entities;	// held in cl_entities array
 	int qh_num_statics;		// held in cl_staticentities array
 
+	double qh_mtime[2];		// the timestamp of last two messages	
+
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 
 	// all player information

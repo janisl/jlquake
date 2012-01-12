@@ -107,7 +107,7 @@ int CL_GetMessage (void)
 				if (host_framecount == cls.td_startframe + 1)
 					cls.td_starttime = realtime;
 			}
-			else if ( /* cl.time > 0 && */ cl.serverTimeFloat <= cl.mtime[0])
+			else if ( /* cl.time > 0 && */ cl.serverTimeFloat <= cl.qh_mtime[0])
 			{
 					return 0;		// don't need another message yet
 			}

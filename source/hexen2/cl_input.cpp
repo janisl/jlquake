@@ -443,7 +443,7 @@ void CL_SendMove (h2usercmd_t *cmd)
 
 	buf.WriteByte(h2clc_move);
 
-	buf.WriteFloat(cl.mtime[0]);	// so server can get ping times
+	buf.WriteFloat(cl.qh_mtime[0]);	// so server can get ping times
 
 	for (i=0 ; i<3 ; i++)
 		buf.WriteAngle(cl.viewangles[i]);

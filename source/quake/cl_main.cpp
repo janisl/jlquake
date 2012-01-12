@@ -212,27 +212,27 @@ float	CL_LerpPoint (void)
 {
 	float	f, frac;
 
-	f = cl.mtime[0] - cl.mtime[1];
+	f = cl.qh_mtime[0] - cl.qh_mtime[1];
 	
 	if (!f || cl_nolerp->value || cls.timedemo || sv.active)
 	{
-		cl.serverTimeFloat = cl.mtime[0];
+		cl.serverTimeFloat = cl.qh_mtime[0];
 		cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 		return 1;
 	}
 		
 	if (f > 0.1)
 	{	// dropped packet, or start of demo
-		cl.mtime[1] = cl.mtime[0] - 0.1;
+		cl.qh_mtime[1] = cl.qh_mtime[0] - 0.1;
 		f = 0.1;
 	}
-	frac = (cl.serverTimeFloat - cl.mtime[1]) / f;
+	frac = (cl.serverTimeFloat - cl.qh_mtime[1]) / f;
 //Con_Printf ("frac: %f\n",frac);
 	if (frac < 0)
 	{
 		if (frac < -0.01)
 		{
-			cl.serverTimeFloat = cl.mtime[1];
+			cl.serverTimeFloat = cl.qh_mtime[1];
 			cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 //				Con_Printf ("low frac\n");
 		}
@@ -242,7 +242,7 @@ float	CL_LerpPoint (void)
 	{
 		if (frac > 1.01)
 		{
-			cl.serverTimeFloat = cl.mtime[0];
+			cl.serverTimeFloat = cl.qh_mtime[0];
 			cl.serverTime = (int)(cl.serverTimeFloat * 1000);
 //				Con_Printf ("high frac\n");
 		}
@@ -314,7 +314,7 @@ void CL_RelinkEntities (void)
 		}
 
 // if the object wasn't included in the last packet, remove it
-		if (ent->msgtime != cl.mtime[0])
+		if (ent->msgtime != cl.qh_mtime[0])
 		{
 			ent->state.modelindex = 0;
 			continue;
