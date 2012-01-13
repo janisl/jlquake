@@ -439,7 +439,7 @@ void SCR_DrawNet (void)
 {
 	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < UPDATE_BACKUP_QW-1)
 		return;
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;
 
 	UI_DrawPic (scr_vrect.x+64, scr_vrect.y, scr_net);

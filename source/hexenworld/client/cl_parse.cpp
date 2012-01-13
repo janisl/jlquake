@@ -138,12 +138,12 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	}
 
 	//ZOID - can't download when recording
-	if (cls.demorecording) {
+	if (clc.demorecording) {
 		Con_Printf("Unable to download %s in record mode.\n", clc.downloadName);
 		return true;
 	}
 	//ZOID - can't download when playback
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return true;
 
 	String::Cpy(clc.downloadName, filename);
@@ -321,7 +321,7 @@ void CL_ParseDownload (void)
 	size = net_message.ReadShort ();
 	percent = net_message.ReadByte ();
 
-	if (cls.demoplayback) {
+	if (clc.demoplaying) {
 		if (size > 0)
 			net_message.readcount += size;
 		return; // not in demo playback

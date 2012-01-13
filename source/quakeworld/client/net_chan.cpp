@@ -125,7 +125,7 @@ void Netchan_OutOfBand (netadr_t adr, int length, byte *data)
 // send the datagram
 	//zoid, no input in demo playback mode
 #ifndef SERVERONLY
-	if (!cls.demoplayback)
+	if (!clc.demoplaying)
 #endif
 		NET_SendPacket (send.cursize, send._data, adr);
 }
@@ -283,7 +283,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 	//zoid, no input in demo playback mode
 #ifndef SERVERONLY
-	if (!cls.demoplayback)
+	if (!clc.demoplaying)
 #endif
 		NET_SendPacket (send.cursize, send._data, chan->remoteAddress);
 
@@ -324,7 +324,7 @@ qboolean Netchan_Process (netchan_t *chan)
 
 	if (
 #ifndef SERVERONLY
-			!cls.demoplayback && 
+			!clc.demoplaying && 
 #endif
 			!SOCK_CompareAdr (net_from, chan->remoteAddress))
 		return false;

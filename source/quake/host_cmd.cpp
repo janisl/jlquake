@@ -308,7 +308,7 @@ void Host_Changelevel_f (void)
 		Con_Printf ("changelevel <levelname> : continue game on a new level\n");
 		return;
 	}
-	if (!sv.active || cls.demoplayback)
+	if (!sv.active || clc.demoplaying)
 	{
 		Con_Printf ("Only the server may changelevel\n");
 		return;
@@ -329,7 +329,7 @@ void Host_Restart_f (void)
 {
 	char	mapname[MAX_QPATH];
 
-	if (cls.demoplayback || !sv.active)
+	if (clc.demoplaying || !sv.active)
 		return;
 
 	if (cmd_source != src_command)
@@ -365,7 +365,7 @@ void Host_Connect_f (void)
 	char	name[MAX_QPATH];
 	
 	cls.demonum = -1;		// stop demo loop in case this fails
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 	{
 		CL_StopPlayback ();
 		CL_Disconnect ();
@@ -1566,7 +1566,7 @@ void Host_Startdemos_f (void)
 	for (i=1 ; i<c+1 ; i++)
 		String::NCpy(cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);
 
-	if (!sv.active && cls.demonum != -1 && !cls.demoplayback)
+	if (!sv.active && cls.demonum != -1 && !clc.demoplaying)
 	{
 		cls.demonum = 0;
 		CL_NextDemo ();
@@ -1604,7 +1604,7 @@ void Host_Stopdemo_f (void)
 {
 	if (cls.state == ca_dedicated)
 		return;
-	if (!cls.demoplayback)
+	if (!clc.demoplaying)
 		return;
 	CL_StopPlayback ();
 	CL_Disconnect ();

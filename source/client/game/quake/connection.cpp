@@ -17,14 +17,8 @@
 #include "../../client.h"
 #include "local.h"
 
-/*
-=====================
-CLQ1_SignonReply
-
-An q1svc_signonnum has been received, perform a client side setup
-=====================
-*/
-void CLQ1_SignonReply (void)
+//	An q1svc_signonnum has been received, perform a client side setup
+void CLQ1_SignonReply()
 {
 	char str[8192];
 
@@ -42,10 +36,10 @@ void CLQ1_SignonReply (void)
 		clc_common->netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
 	
 		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2(va("color %i %i\n", ((int)clqh_color->value)>>4, ((int)clqh_color->value)&15));
+		clc_common->netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
 	
 		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		sprintf (str, "spawn %s", cls_common->qh_spawnparms);
+		sprintf(str, "spawn %s", cls_common->qh_spawnparms);
 		clc_common->netchan.message.WriteString2(str);
 		break;
 		

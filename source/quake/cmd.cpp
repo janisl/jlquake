@@ -66,7 +66,7 @@ void Cmd_ForwardToServer (void)
 		return;
 	}
 	
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;		// not really connected
 
 Log::write("Forward to server %s %s", Cmd_Argv(0), Cmd_ArgsUnmodified());

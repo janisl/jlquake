@@ -30,6 +30,7 @@ extern Cvar* clqw_baseskin;
 extern Cvar* clqw_noskins;
 
 void CLQ1_SignonReply();
+bool CLQW_CheckOrDownloadFile(const char* filename);
 
 q1entity_t* CLQ1_EntityNum(int number);
 void CLQ1_ParseSpawnBaseline(QMsg& message);

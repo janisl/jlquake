@@ -123,7 +123,12 @@ struct clientConnectionCommon_t
 	int downloadCount;	// how many bytes we got
 	int downloadSize;	// how many bytes we got
 	char downloadList[MAX_INFO_STRING_Q3]; // list of paks we need to download
-	qboolean downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
+	bool downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
+
+	// demo information
+	bool demorecording;
+	bool demoplaying;
+	fileHandle_t demofile;
 
 	int qh_signon;			// 0 to SIGNONS
 };

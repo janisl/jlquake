@@ -172,7 +172,7 @@ static void V_DriftPitch (void)
 {
 	float		delta, move;
 
-	if (view_message->onground == -1 || cls.demoplayback )
+	if (view_message->onground == -1 || clc.demoplaying)
 	{
 		cl.driftmove = 0;
 		cl.pitchvel = 0;
@@ -250,7 +250,7 @@ static void V_DriftRoll (void)
 	float		delta, move;
 	float		rollspeed;
 
-	if (view_message->onground == -1 || cls.demoplayback )
+	if (view_message->onground == -1 || clc.demoplaying)
 	{
 		if(cl.v.movetype != MOVETYPE_FLY)
 		{

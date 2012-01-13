@@ -337,11 +337,11 @@ void CL_Disconnect (void)
 	S_StopAllSounds();
 	
 // if running a local server, shut it down
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		CL_StopPlayback ();
 	else if (cls.state != ca_disconnected)
 	{
-		if (cls.demorecording)
+		if (clc.demorecording)
 			CL_Stop_f ();
 
 		final[0] = h2clc_stringcmd;
@@ -352,7 +352,7 @@ void CL_Disconnect (void)
 
 		cls.state = ca_disconnected;
 
-		cls.demoplayback = cls.demorecording = cls.timedemo = false;
+		clc.demoplaying = clc.demorecording = cls.timedemo = false;
 	}
 	Cam_Reset();
 
@@ -733,14 +733,14 @@ void CL_ConnectionlessPacket (void)
     net_message.ReadLong();        // skip the -1
 
 	c = net_message.ReadByte ();
-	if (!cls.demoplayback)
+	if (!clc.demoplaying)
 		Con_Printf ("%s:\n", SOCK_AdrToString (net_from));
 	Con_DPrintf ("%s", net_message._data + 5);
 	if (c == S2C_CONNECTION)
 	{
 		if (cls.state == ca_connected)
 		{
-			if (!cls.demoplayback)
+			if (!clc.demoplaying)
 				Con_Printf ("Dup connect received.  Ignored.\n");
 			return;
 		}
@@ -828,7 +828,7 @@ void CL_ReadPackets (void)
 		//
 		// packet from server
 		//
-		if (!cls.demoplayback && 
+		if (!clc.demoplaying && 
 			!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
 		{
 			Con_Printf ("%s:sequenced packet without connection\n"

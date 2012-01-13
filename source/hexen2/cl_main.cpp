@@ -139,11 +139,11 @@ void CL_Disconnect (void)
 //	SCR_BringDownConsole ();
 
 // if running a local server, shut it down
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		CL_StopPlayback ();
 	else if (cls.state == ca_connected)
 	{
-		if (cls.demorecording)
+		if (clc.demorecording)
 			CL_Stop_f ();
 
 		Con_DPrintf ("Sending h2clc_disconnect\n");
@@ -160,7 +160,7 @@ void CL_Disconnect (void)
 		CL_RemoveGIPFiles(NULL);
 	}
 
-	cls.demoplayback = cls.timedemo = false;
+	clc.demoplaying = cls.timedemo = false;
 	clc.qh_signon = 0;
 }
 
@@ -186,7 +186,7 @@ void CL_EstablishConnection (const char *host)
 	if (cls.state == ca_dedicated)
 		return;
 
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;
 
 	CL_Disconnect ();
@@ -386,7 +386,7 @@ void CL_RelinkEntities (void)
 		cl.velocity[i] = cl.mvelocity[1][i] + 
 			frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
 
-	if (cls.demoplayback && !intro_playing)
+	if (clc.demoplaying && !intro_playing)
 	{
 	// interpolate the angles	
 		for (j=0 ; j<3 ; j++)
@@ -680,7 +680,7 @@ void CL_SendCmd (void)
 	
 	}
 
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 	{
 		clc.netchan.message.Clear();
 		return;

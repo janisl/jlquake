@@ -420,7 +420,7 @@ void SCR_DrawNet (void)
 {
 	if (realtime - cl.last_received_message < 0.3)
 		return;
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;
 
 	UI_DrawPic (scr_vrect.x+64, scr_vrect.y, (image_t*)scr_net);

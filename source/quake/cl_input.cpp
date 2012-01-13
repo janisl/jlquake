@@ -447,7 +447,7 @@ void CL_SendMove (q1usercmd_t *cmd)
 //
 // deliver the message
 //
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;
 
 //

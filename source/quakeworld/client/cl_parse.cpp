@@ -144,53 +144,51 @@ int CL_CalcNet (void)
 
 //=============================================================================
 
-/*
-===============
-CL_CheckOrDownloadFile
-
-Returns true if the file exists, otherwise it attempts
-to start a download from the server.
-===============
-*/
-qboolean	CL_CheckOrDownloadFile (char *filename)
+//	Returns true if the file exists, otherwise it attempts
+// to start a download from the server.
+bool CLQW_CheckOrDownloadFile(const char* filename)
 {
 	fileHandle_t	f;
 
-	if (strstr (filename, ".."))
+	if (strstr(filename, ".."))
 	{
-		Con_Printf ("Refusing to download a path with ..\n");
+		Log::write("Refusing to download a path with ..\n");
 		return true;
 	}
 
-	FS_FOpenFileRead (filename, &f, true);
+	FS_FOpenFileRead(filename, &f, true);
 	if (f)
-	{	// it exists, no need to download
-		FS_FCloseFile (f);
+	{
+		// it exists, no need to download
+		FS_FCloseFile(f);
 		return true;
 	}
 
 	//ZOID - can't download when recording
-	if (cls.demorecording) {
-		Con_Printf("Unable to download %s in record mode.\n", clc.downloadName);
+	if (clc.demorecording)
+	{
+		Log::write("Unable to download %s in record mode.\n", clc_common->downloadName);
 		return true;
 	}
 	//ZOID - can't download when playback
-	if (cls.demoplayback)
+	if (clc.demoplaying)
+	{
 		return true;
+	}
 
-	String::Cpy(clc.downloadName, filename);
-	Con_Printf ("Downloading %s...\n", clc.downloadName);
+	String::Cpy(clc_common->downloadName, filename);
+	Log::write("Downloading %s...\n", clc_common->downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	String::StripExtension (clc.downloadName, clc.downloadTempName);
-	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
+	String::StripExtension(clc_common->downloadName, clc_common->downloadTempName);
+	String::Cat(clc_common->downloadTempName, sizeof(clc_common->downloadTempName), ".tmp");
 
-	clc.netchan.message.WriteByte(q1clc_stringcmd);
-	clc.netchan.message.WriteString2(va("download %s", clc.downloadName));
+	clc_common->netchan.message.WriteByte(q1clc_stringcmd);
+	clc_common->netchan.message.WriteString2(va("download %s", clc_common->downloadName));
 
-	clc.downloadNumber++;
+	clc_common->downloadNumber++;
 
 	return false;
 }
@@ -256,7 +254,7 @@ void Model_NextDownload (void)
 		s = cl.model_name[clc.downloadNumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
-		if (!CL_CheckOrDownloadFile(s))
+		if (!CLQW_CheckOrDownloadFile(s))
 			return;		// started a download
 	}
 
@@ -325,7 +323,7 @@ void Sound_NextDownload (void)
 		; clc.downloadNumber++)
 	{
 		s = cl.sound_name[clc.downloadNumber];
-		if (!CL_CheckOrDownloadFile(va("sound/%s",s)))
+		if (!CLQW_CheckOrDownloadFile(va("sound/%s",s)))
 			return;		// started a download
 	}
 
@@ -391,7 +389,7 @@ void CL_ParseDownload (void)
 	size = net_message.ReadShort ();
 	percent = net_message.ReadByte ();
 
-	if (cls.demoplayback) {
+	if (clc.demoplaying) {
 		if (size > 0)
 			net_message.readcount += size;
 		return; // not in demo playback
@@ -591,7 +589,7 @@ void CL_ParseServerData (void)
 // allow 2.2 and 2.29 demos to play
 	protover = net_message.ReadLong ();
 	if (protover != PROTOCOL_VERSION && 
-		!(cls.demoplayback && (protover == 26 || protover == 27 || protover == 28)))
+		!(clc.demoplaying && (protover == 26 || protover == 27 || protover == 28)))
 		Host_EndGame ("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, PROTOCOL_VERSION);
 
 	cl.servercount = net_message.ReadLong ();

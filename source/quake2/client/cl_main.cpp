@@ -115,8 +115,8 @@ void CL_WriteDemoMessage (void)
 	// the first eight bytes are just packet sequencing stuff
 	len = net_message.cursize-8;
 	swlen = LittleLong(len);
-	FS_Write(&swlen, 4, cls.demofile);
-	FS_Write(net_message._data+8, len, cls.demofile);
+	FS_Write(&swlen, 4, clc.demofile);
+	FS_Write(net_message._data+8, len, clc.demofile);
 }
 
 
@@ -131,7 +131,7 @@ void CL_Stop_f (void)
 {
 	int		len;
 
-	if (!cls.demorecording)
+	if (!clc.demorecording)
 	{
 		Com_Printf ("Not recording a demo.\n");
 		return;
@@ -139,10 +139,10 @@ void CL_Stop_f (void)
 
 // finish up
 	len = -1;
-	FS_Write(&len, 4, cls.demofile);
-	FS_FCloseFile(cls.demofile);
-	cls.demofile = 0;
-	cls.demorecording = false;
+	FS_Write(&len, 4, clc.demofile);
+	FS_FCloseFile(clc.demofile);
+	clc.demofile = 0;
+	clc.demorecording = false;
 	Com_Printf ("Stopped demo.\n");
 }
 
@@ -171,7 +171,7 @@ void CL_Record_f (void)
 		return;
 	}
 
-	if (cls.demorecording)
+	if (clc.demorecording)
 	{
 		Com_Printf ("Already recording.\n");
 		return;
@@ -189,13 +189,13 @@ void CL_Record_f (void)
 	String::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
 
 	Com_Printf ("recording to %s.\n", name);
-	cls.demofile = FS_FOpenFileWrite(name);
-	if (!cls.demofile)
+	clc.demofile = FS_FOpenFileWrite(name);
+	if (!clc.demofile)
 	{
 		Com_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
-	cls.demorecording = true;
+	clc.demorecording = true;
 
 	// don't start saving messages until a non-delta compressed message is received
 	cls.demowaiting = true;
@@ -223,8 +223,8 @@ void CL_Record_f (void)
 			if (buf.cursize + String::Length(cl.configstrings[i]) + 32 > buf.maxsize)
 			{	// write it out
 				len = LittleLong (buf.cursize);
-				FS_Write(&len, 4, cls.demofile);
-				FS_Write(buf._data, buf.cursize, cls.demofile);
+				FS_Write(&len, 4, clc.demofile);
+				FS_Write(buf._data, buf.cursize, clc.demofile);
 				buf.cursize = 0;
 			}
 
@@ -246,8 +246,8 @@ void CL_Record_f (void)
 		if (buf.cursize + 64 > buf.maxsize)
 		{	// write it out
 			len = LittleLong (buf.cursize);
-			FS_Write(&len, 4, cls.demofile);
-			FS_Write(buf._data, buf.cursize, cls.demofile);
+			FS_Write(&len, 4, clc.demofile);
+			FS_Write(buf._data, buf.cursize, clc.demofile);
 			buf.cursize = 0;
 		}
 
@@ -261,8 +261,8 @@ void CL_Record_f (void)
 	// write it to the demo file
 
 	len = LittleLong (buf.cursize);
-	FS_Write(&len, 4, cls.demofile);
-	FS_Write(buf._data, buf.cursize, cls.demofile);
+	FS_Write(&len, 4, clc.demofile);
+	FS_Write(buf._data, buf.cursize, clc.demofile);
 
 	// the rest of the demo file will be individual frames
 }
@@ -630,7 +630,7 @@ void CL_Disconnect (void)
 
 	SCR_StopCinematic ();
 
-	if (cls.demorecording)
+	if (clc.demorecording)
 		CL_Stop_f ();
 
 	// send a disconnect message to the server

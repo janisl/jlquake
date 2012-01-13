@@ -106,7 +106,7 @@ void Skin_NextDownload (void)
 		Skin_Find (sc);
 		if (clqw_noskins->value)
 			continue;
-		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
+		if (!CLQW_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
 			return;		// started a download
 	}
 

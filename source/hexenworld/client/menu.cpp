@@ -615,7 +615,7 @@ void M_Main_Key (int key)
 		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		cls.demonum = m_save_demonum;
-		if (cls.demonum != -1 && !cls.demoplayback && cls.state == ca_disconnected)
+		if (cls.demonum != -1 && !clc.demoplaying && cls.state == ca_disconnected)
 			CL_NextDemo ();
 		break;
 		

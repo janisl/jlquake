@@ -49,7 +49,7 @@ void Cmd_ForwardToServer (void)
 		return;
 	}
 	
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;		// not really connected
 
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
@@ -75,7 +75,7 @@ void Cmd_ForwardToServer_f (void)
 		return;
 	}
 	
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;		// not really connected
 
 	if (Cmd_Argc() > 1)

@@ -39,10 +39,7 @@ struct client_static_t : clientStaticCommon_t
 
 // demo recording info must be here, because record is started before
 // entering a map (and clearing client_state_t)
-	qboolean	demorecording;
-	qboolean	demoplayback;
 	qboolean	timedemo;
-	fileHandle_t	demofile;
 	float		td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo

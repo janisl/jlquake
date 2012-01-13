@@ -25,7 +25,7 @@ Called when a demo file runs out, or the user starts a game
 */
 void CL_StopPlayback (void)
 {
-	if (!cls.demoplayback)
+	if (!clc.demoplaying)
 		return;
 
 	if (intro_playing)
@@ -35,9 +35,9 @@ void CL_StopPlayback (void)
 	intro_playing=false;
 	num_intro_msg=0;
 
-	FS_FCloseFile (cls.demofile);
-	cls.demoplayback = false;
-	cls.demofile = 0;
+	FS_FCloseFile (clc.demofile);
+	clc.demoplaying = false;
+	clc.demofile = 0;
 	cls.state = ca_disconnected;
 
 	if (cls.timedemo)
@@ -58,16 +58,16 @@ void CL_WriteDemoMessage (void)
 	float	f;
 
 	len = LittleLong (net_message.cursize);
-	FS_Write (&len, 4, cls.demofile);
+	FS_Write (&len, 4, clc.demofile);
 //	fwrite (&len, 4, 1, cls.introdemofile);
 	for (i=0 ; i<3 ; i++)
 	{
 		f = LittleFloat (cl.viewangles[i]);
-		FS_Write (&f, 4, cls.demofile);
+		FS_Write (&f, 4, clc.demofile);
 //		fwrite (&f, 4, 1, cls.introdemofile);
 	}
-	FS_Write (net_message._data, net_message.cursize, cls.demofile);
-	FS_Flush (cls.demofile);
+	FS_Write (net_message._data, net_message.cursize, clc.demofile);
+	FS_Flush (clc.demofile);
 //	fwrite (net_message.data, net_message.cursize, 1, cls.introdemofile);
 //	fflush (cls.introdemofile);
 }
@@ -84,7 +84,7 @@ int CL_GetMessage (void)
 	int		r, i;
 	float	f;
 	
-	if	(cls.demoplayback)
+	if	(clc.demoplaying)
 	{
 	// decide if it is time to grab the next message		
 		if (clc.qh_signon == SIGNONS)	// allways grab until fully connected
@@ -106,11 +106,11 @@ int CL_GetMessage (void)
 		}
 		
 	// get the next message
-		FS_Read (&net_message.cursize, 4, cls.demofile);
+		FS_Read (&net_message.cursize, 4, clc.demofile);
 		VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
 		for (i=0 ; i<3 ; i++)
 		{
-			r = FS_Read (&f, 4, cls.demofile);
+			r = FS_Read (&f, 4, clc.demofile);
 			cl.mviewangles[0][i] = LittleFloat (f);
 		}
 		
@@ -118,7 +118,7 @@ int CL_GetMessage (void)
 		num_intro_msg++;
 		if (net_message.cursize > MAX_MSGLEN_H2)
 			Sys_Error ("Demo message > MAX_MSGLEN_H2");
-		r = FS_Read (net_message._data, net_message.cursize, cls.demofile);
+		r = FS_Read (net_message._data, net_message.cursize, clc.demofile);
 		if (r != net_message.cursize)
 		{
 			CL_StopPlayback ();
@@ -142,7 +142,7 @@ int CL_GetMessage (void)
 			break;
 	}
 
-	if (cls.demorecording)
+	if (clc.demorecording)
 		CL_WriteDemoMessage ();
 	
 	return r;
@@ -161,7 +161,7 @@ void CL_Stop_f (void)
 	if (cmd_source != src_command)
 		return;
 
-	if (!cls.demorecording)
+	if (!clc.demorecording)
 	{
 		Con_Printf ("Not recording a demo.\n");
 		return;
@@ -177,9 +177,9 @@ void CL_Stop_f (void)
 // finish up
 //	fclose (cls.introdemofile);
 //	cls.introdemofile = NULL;
-	FS_FCloseFile (cls.demofile);
-	cls.demofile = 0;
-	cls.demorecording = false;
+	FS_FCloseFile (clc.demofile);
+	clc.demofile = 0;
+	clc.demorecording = false;
 	Con_Printf ("Completed demo\n");
 }
 
@@ -241,17 +241,17 @@ void CL_Record_f (void)
 	String::DefaultExtension (name, sizeof(name), ".dem");
 
 	Con_Printf ("recording to %s.\n", name);
-	cls.demofile = FS_FOpenFileWrite (name);
-	if (!cls.demofile)
+	clc.demofile = FS_FOpenFileWrite (name);
+	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
 
 	cls.forcetrack = track;
-	FS_Printf (cls.demofile, "%i\n", cls.forcetrack);
+	FS_Printf (clc.demofile, "%i\n", cls.forcetrack);
 	
-	cls.demorecording = true;
+	clc.demorecording = true;
 }
 
 
@@ -293,29 +293,29 @@ void CL_PlayDemo_f (void)
 	String::DefaultExtension (name, sizeof(name), ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name);
-	FS_FOpenFileRead (name, &cls.demofile, true);
-	if (!cls.demofile)
+	FS_FOpenFileRead (name, &clc.demofile, true);
+	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		cls.demonum = -1;		// stop demo loop
 		return;
 	}
 
-	cls.demoplayback = true;
+	clc.demoplaying = true;
 	clc.netchan.message.InitOOB(clc.netchan.messageBuffer, 1024);
 	cls.state = ca_connected;
 	cls.forcetrack = 0;
 
 	bool neg = false;
 	char c;
-	FS_Read(&c, 1, cls.demofile);
+	FS_Read(&c, 1, clc.demofile);
 	while (c != '\n')
 	{
 		if (c == '-')
 			neg = true;
 		else
 			cls.forcetrack = cls.forcetrack * 10 + (c - '0');
-		FS_Read(&c, 1, cls.demofile);
+		FS_Read(&c, 1, clc.demofile);
 	}
 
 	if (neg)

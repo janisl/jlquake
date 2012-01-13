@@ -25,13 +25,13 @@ Called when a demo file runs out, or the user starts a game
 */
 void CL_StopPlayback (void)
 {
-	if (!cls.demoplayback)
+	if (!clc.demoplaying)
 		return;
 
-	FS_FCloseFile (cls.demofile);
-	cls.demofile = 0;
+	FS_FCloseFile (clc.demofile);
+	clc.demofile = 0;
 	cls.state = ca_disconnected;
-	cls.demoplayback = 0;
+	clc.demoplaying = false;
 
 	if (cls.timedemo)
 		CL_FinishTimeDemo ();
@@ -57,10 +57,10 @@ void CL_WriteDemoCmd (hwusercmd_t *pcmd)
 //Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	fl = LittleFloat((float)realtime);
-	FS_Write (&fl, sizeof(fl), cls.demofile);
+	FS_Write (&fl, sizeof(fl), clc.demofile);
 
 	c = dem_cmd;
-	FS_Write(&c, sizeof(c), cls.demofile);
+	FS_Write(&c, sizeof(c), clc.demofile);
 
 	// correct for byte order, bytes don't matter
 	cmd = *pcmd;
@@ -71,15 +71,15 @@ void CL_WriteDemoCmd (hwusercmd_t *pcmd)
 	cmd.sidemove    = LittleShort(cmd.sidemove);
 	cmd.upmove      = LittleShort(cmd.upmove);
 
-	FS_Write(&cmd, sizeof(cmd), cls.demofile);
+	FS_Write(&cmd, sizeof(cmd), clc.demofile);
 
 	for (i=0 ; i<3 ; i++)
 	{
 		fl = LittleFloat (cl.viewangles[i]);
-		FS_Write(&fl, 4, cls.demofile);
+		FS_Write(&fl, 4, clc.demofile);
 	}
 
-	FS_Flush (cls.demofile);
+	FS_Flush (clc.demofile);
 }
 
 /*
@@ -97,20 +97,20 @@ void CL_WriteDemoMessage (QMsg *msg)
 
 //Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
-	if (!cls.demorecording)
+	if (!clc.demorecording)
 		return;
 
 	fl = LittleFloat((float)realtime);
-	FS_Write(&fl, sizeof(fl), cls.demofile);
+	FS_Write(&fl, sizeof(fl), clc.demofile);
 
 	c = dem_read;
-	FS_Write(&c, sizeof(c), cls.demofile);
+	FS_Write(&c, sizeof(c), clc.demofile);
 
 	len = LittleLong (msg->cursize);
-	FS_Write(&len, 4, cls.demofile);
-	FS_Write(msg->_data, msg->cursize, cls.demofile);
+	FS_Write(&len, 4, clc.demofile);
+	FS_Write(msg->_data, msg->cursize, clc.demofile);
 
-	FS_Flush (cls.demofile);
+	FS_Flush (clc.demofile);
 }
 
 /*
@@ -130,7 +130,7 @@ qboolean CL_GetDemoMessage (void)
 
 
 	// read the time from the packet
-	FS_Read(&demotime, sizeof(demotime), cls.demofile);
+	FS_Read(&demotime, sizeof(demotime), clc.demofile);
 	demotime = LittleFloat(demotime);
 
 // decide if it is time to grab the next message		
@@ -140,7 +140,7 @@ qboolean CL_GetDemoMessage (void)
 		else if (demotime > cls.td_lastframe) {
 			cls.td_lastframe = demotime;
 			// rewind back to time
-			FS_Seek(cls.demofile, FS_FTell(cls.demofile) - sizeof(demotime),
+			FS_Seek(clc.demofile, FS_FTell(clc.demofile) - sizeof(demotime),
 					FS_SEEK_SET);
 			return 0;		// allready read this frame's message
 		}
@@ -154,12 +154,12 @@ qboolean CL_GetDemoMessage (void)
 			// too far back
 			realtime = demotime - 1.0;
 			// rewind back to time
-			FS_Seek(cls.demofile, FS_FTell(cls.demofile) - sizeof(demotime),
+			FS_Seek(clc.demofile, FS_FTell(clc.demofile) - sizeof(demotime),
 					FS_SEEK_SET);
 			return 0;
 		} else if (realtime < demotime) {
 			// rewind back to time
-			FS_Seek(cls.demofile, FS_FTell(cls.demofile) - sizeof(demotime),
+			FS_Seek(clc.demofile, FS_FTell(clc.demofile) - sizeof(demotime),
 					FS_SEEK_SET);
 			return 0;		// don't need another message yet
 		}
@@ -170,14 +170,14 @@ qboolean CL_GetDemoMessage (void)
 		Host_FatalError ("CL_GetDemoMessage: cls.state != ca_active");
 	
 	// get the msg type
-	FS_Read(&c, sizeof(c), cls.demofile);
+	FS_Read(&c, sizeof(c), clc.demofile);
 	
 	switch (c) {
 	case dem_cmd :
 		// user sent input
 		i = clc.netchan.outgoingSequence & UPDATE_MASK_HW;
 		pcmd = &cl.hw_frames[i].cmd;
-		r = FS_Read(pcmd, sizeof(*pcmd), cls.demofile);
+		r = FS_Read(pcmd, sizeof(*pcmd), clc.demofile);
 		if (r != sizeof(*pcmd))
 		{
 			CL_StopPlayback ();
@@ -194,19 +194,19 @@ qboolean CL_GetDemoMessage (void)
 		clc.netchan.outgoingSequence++;
 		for (i=0 ; i<3 ; i++)
 		{
-			r = FS_Read(&f, 4, cls.demofile);
+			r = FS_Read(&f, 4, clc.demofile);
 			cl.viewangles[i] = LittleFloat (f);
 		}
 		break;
 
 	case dem_read:
 		// get the next message
-		FS_Read(&net_message.cursize, 4, cls.demofile);
+		FS_Read(&net_message.cursize, 4, clc.demofile);
 		net_message.cursize = LittleLong (net_message.cursize);
 	//Con_Printf("read: %ld bytes\n", net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN_HW)
 			Sys_Error ("Demo message > MAX_MSGLEN_HW");
-		r = FS_Read(net_message._data, net_message.cursize, cls.demofile);
+		r = FS_Read(net_message._data, net_message.cursize, clc.demofile);
 		if (r != net_message.cursize)
 		{
 			CL_StopPlayback ();
@@ -232,7 +232,7 @@ Handles recording and playback of demos, on top of NET_ code
 */
 qboolean CL_GetMessage (void)
 {
-	if	(cls.demoplayback)
+	if	(clc.demoplaying)
 		return CL_GetDemoMessage ();
 
 	if (!NET_GetPacket ())
@@ -253,7 +253,7 @@ stop recording a demo
 */
 void CL_Stop_f (void)
 {
-	if (!cls.demorecording)
+	if (!clc.demorecording)
 	{
 		Con_Printf ("Not recording a demo.\n");
 		return;
@@ -267,9 +267,9 @@ void CL_Stop_f (void)
 	CL_WriteDemoMessage (&net_message);
 
 // finish up
-	FS_FCloseFile (cls.demofile);
-	cls.demofile = 0;
-	cls.demorecording = false;
+	FS_FCloseFile (clc.demofile);
+	clc.demofile = 0;
+	clc.demorecording = false;
 	Con_Printf ("Completed demo\n");
 }
 
@@ -292,7 +292,7 @@ void CL_Record_f (void)
 		return;
 	}
 
-	if (cls.demorecording)
+	if (clc.demorecording)
 		CL_Stop_f();
   
 	String::Cpy(name, Cmd_Argv(1));
@@ -302,8 +302,8 @@ void CL_Record_f (void)
 //
 	String::DefaultExtension (name, sizeof(name), ".qwd");
 
-	cls.demofile = FS_FOpenFileWrite (name);
-	if (!cls.demofile)
+	clc.demofile = FS_FOpenFileWrite (name);
+	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
@@ -313,7 +313,7 @@ void CL_Record_f (void)
 		CL_Disconnect();
 	
 	Con_Printf ("recording to %s.\n", name);
-	cls.demorecording = true;
+	clc.demorecording = true;
 
 //
 // start the map up
@@ -345,7 +345,7 @@ void CL_ReRecord_f (void)
 		return;
 	}
 
-	if (cls.demorecording)
+	if (clc.demorecording)
 		CL_Stop_f();
   
 	String::Cpy(name, Cmd_Argv(1));
@@ -355,15 +355,15 @@ void CL_ReRecord_f (void)
 //
 	String::DefaultExtension (name, sizeof(name), ".qwd");
 
-	cls.demofile = FS_FOpenFileWrite (name);
-	if (!cls.demofile)
+	clc.demofile = FS_FOpenFileWrite (name);
+	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
 
 	Con_Printf ("recording to %s.\n", name);
-	cls.demorecording = true;
+	clc.demorecording = true;
 
 	CL_Disconnect();
 	CL_SendConnectPacket ();
@@ -399,15 +399,15 @@ void CL_PlayDemo_f (void)
 	String::DefaultExtension (name, sizeof(name), ".qwd");
 
 	Con_Printf ("Playing demo from %s.\n", name);
-	FS_FOpenFileRead (name, &cls.demofile, true);
-	if (!cls.demofile)
+	FS_FOpenFileRead (name, &clc.demofile, true);
+	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		cls.demonum = -1;		// stop demo loop
 		return;
 	}
 
-	cls.demoplayback = true;
+	clc.demoplaying = true;
 	cls.state = ca_demostart;
 	Netchan_Setup (NS_CLIENT, &clc.netchan, net_from);
 	realtime = 0;

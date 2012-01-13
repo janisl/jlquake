@@ -179,14 +179,10 @@ struct clientConnection_t : clientConnectionCommon_t
 	int			lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
 	char		serverCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
-	// demo information
 	char		demoName[MAX_QPATH];
 	qboolean	spDemoRecording;
-	qboolean	demorecording;
-	qboolean	demoplaying;
 	qboolean	demowaiting;	// don't record until a non-delta message is received
 	qboolean	firstDemoFrameSkipped;
-	fileHandle_t	demofile;
 
 	int			timeDemoFrames;		// counter of rendered frames
 	int			timeDemoStart;		// cls.realtime before first frame

@@ -50,7 +50,7 @@ void Cmd_ForwardToServer (void)
 		return;
 	}
 	
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;		// not really connected
 
 	clc.netchan.message.WriteByte(h2clc_stringcmd);

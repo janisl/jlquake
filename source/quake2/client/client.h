@@ -157,9 +157,7 @@ struct client_static_t : clientStaticCommon_t
 	int			challenge;			// from the server to use for connecting
 
 // demo recording info must be here, so it isn't cleared on level change
-	qboolean	demorecording;
 	qboolean	demowaiting;	// don't record until a non-delta message is received
-	fileHandle_t	demofile;
 };
 
 extern client_static_t	cls;

@@ -130,7 +130,7 @@ void CL_KeepaliveMessage (void)
 	
 	if (sv.active)
 		return;		// no need if server is local
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;
 
 // read messages from server, should just be nops
@@ -816,7 +816,7 @@ void CL_ParseServerMessage (void)
 		case q1svc_cdtrack:
 			cl.cdtrack = net_message.ReadByte ();
 			cl.looptrack = net_message.ReadByte ();
-			if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
+			if ( (clc.demoplaying || clc.demorecording) && (cls.forcetrack != -1) )
 				CDAudio_Play ((byte)cls.forcetrack, true);
 			else
 				CDAudio_Play ((byte)cl.cdtrack, true);

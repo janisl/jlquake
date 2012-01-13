@@ -453,7 +453,7 @@ void CL_SendCmd (void)
 	int			lost;
 	int			seq_hash;
 
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return; // sendcmds come from the demo
 
 	// save this command off for prediction
@@ -517,7 +517,7 @@ void CL_SendCmd (void)
 		cl.validsequence = 0;
 
 	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
-		!cls.demorecording)
+		!clc.demorecording)
 	{
 		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;
 		buf.WriteByte(qwclc_delta);
@@ -526,7 +526,7 @@ void CL_SendCmd (void)
 	else
 		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
 
-	if (cls.demorecording)
+	if (clc.demorecording)
 		CL_WriteDemoCmd(cmd);
 
 //

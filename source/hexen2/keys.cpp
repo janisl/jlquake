@@ -565,7 +565,7 @@ void Key_Event (int key, qboolean down)
 //
 // during demo playback, most keys bring up the main menu
 //
-	if (cls.demoplayback && down && consolekeys[key] && in_keyCatchers == 0)
+	if (clc.demoplaying && down && consolekeys[key] && in_keyCatchers == 0)
 	{
 		M_ToggleMenu_f ();
 		return;

@@ -481,7 +481,7 @@ void CL_SendMove (h2usercmd_t *cmd)
 //
 // deliver the message
 //
-	if (cls.demoplayback)
+	if (clc.demoplaying)
 		return;
 
 //

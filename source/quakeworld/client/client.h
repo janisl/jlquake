@@ -59,10 +59,7 @@ struct client_static_t : clientStaticCommon_t
 
 // demo recording info must be here, because record is started before
 // entering a map (and clearing client_state_t)
-	qboolean	demorecording;
-	qboolean	demoplayback;
 	qboolean	timedemo;
-	fileHandle_t	demofile;
 	float		td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
@@ -263,7 +260,6 @@ extern int	packet_latency[NET_TIMINGS];
 int CL_CalcNet (void);
 void CL_ParseServerMessage (void);
 void CL_NewTranslation (int slot);
-qboolean	CL_CheckOrDownloadFile (char *filename);
 qboolean CL_IsUploading(void);
 void CL_NextUpload(void);
 void CL_StartUpload (byte *data, int size);
