@@ -899,7 +899,7 @@ void R_TranslatePlayerSkin(int playernum)
 	{
 		Skin_Find(player);
 	}
-	byte* original = Skin_Cache(player->skin);
+	byte* original = CLQW_SkinCache(player->skin);
 	if (original != NULL)
 	{
 		//skin data width

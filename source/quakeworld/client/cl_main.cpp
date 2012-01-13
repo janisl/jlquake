@@ -1013,8 +1013,6 @@ CL_Init
 */
 void CL_Init (void)
 {
-	extern	Cvar*		baseskin;
-	extern	Cvar*		noskins;
 	char st[80];
 
 	cls_common = &cls;
@@ -1074,8 +1072,8 @@ void CL_Init (void)
 
 	localid = Cvar_Get("localid", "", 0);
 
-	baseskin = Cvar_Get("baseskin", "base", 0);
-	noskins = Cvar_Get("noskins", "0", 0);
+	clqw_baseskin = Cvar_Get("baseskin", "base", 0);
+	clqw_noskins = Cvar_Get("noskins", "0", 0);
 
 	//
 	// info mirrors

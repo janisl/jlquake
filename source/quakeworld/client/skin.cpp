@@ -20,9 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-Cvar*		baseskin;
-Cvar*		noskins;
-
 char		allskins[128];
 #define	MAX_CACHED_SKINS		128
 qw_skin_t		skins[MAX_CACHED_SKINS];
@@ -52,7 +49,7 @@ void Skin_Find (q1player_info_t *sc)
 		if (s && s[0])
 			String::Cpy(name, s);
 		else
-			String::Cpy(name, baseskin->string);
+			String::Cpy(name, clqw_baseskin->string);
 	}
 
 	if (strstr (name, "..") || *name == '.')
@@ -65,7 +62,7 @@ void Skin_Find (q1player_info_t *sc)
 		if (!String::Cmp(name, skins[i].name))
 		{
 			sc->skin = &skins[i];
-			Skin_Cache (sc->skin);
+			CLQW_SkinCache (sc->skin);
 			return;
 		}
 	}
@@ -82,60 +79,6 @@ void Skin_Find (q1player_info_t *sc)
 
 	Com_Memset(skin, 0, sizeof(*skin));
 	String::NCpy(skin->name, name, sizeof(skin->name) - 1);
-}
-
-
-/*
-==========
-Skin_Cache
-
-Returns a pointer to the skin bitmap, or NULL to use the default
-==========
-*/
-byte* Skin_Cache(qw_skin_t* skin)
-{
-	if (clc.downloadType == dl_skin)
-		return NULL;		// use base until downloaded
-
-	if (noskins->value==1) // JACK: So NOSKINS > 1 will show skins, but
-		return NULL;	  // not download new ones.
-
-	if (skin->failedload)
-		return NULL;
-
-	byte* out = skin->data;
-	if (out)
-		return out;
-
-	//
-	// load the pic from disk
-	//
-	char	name[1024];
-	sprintf (name, "skins/%s.pcx", skin->name);
-	if (!FS_FOpenFileRead(name, NULL, false))
-	{
-		Con_Printf ("Couldn't load skin %s\n", name);
-		sprintf (name, "skins/%s.pcx", baseskin->string);
-		if (!FS_FOpenFileRead(name, NULL, false))
-		{
-			skin->failedload = true;
-			return NULL;
-		}
-	}
-
-	out = R_LoadQuakeWorldSkinData(name);
-
-	if (!out)
-	{
-		skin->failedload = true;
-		Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
-		return NULL;
-	}
-
-	skin->data = out;
-	skin->failedload = false;
-
-	return out;
 }
 
 
@@ -161,7 +104,7 @@ void Skin_NextDownload (void)
 		if (!sc->name[0])
 			continue;
 		Skin_Find (sc);
-		if (noskins->value)
+		if (clqw_noskins->value)
 			continue;
 		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
 			return;		// started a download
@@ -175,7 +118,7 @@ void Skin_NextDownload (void)
 		sc = &cl.q1_players[i];
 		if (!sc->name[0])
 			continue;
-		Skin_Cache (sc->skin);
+		CLQW_SkinCache (sc->skin);
 		sc->skin = NULL;
 	}
 

@@ -318,7 +318,6 @@ void CL_InitCam(void);
 //
 
 void	Skin_Find (q1player_info_t *sc);
-byte	*Skin_Cache (qw_skin_t *skin);
 void	Skin_Skins_f (void);
 void	Skin_AllSkins_f (void);
 void	Skin_NextDownload (void);
