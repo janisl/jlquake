@@ -271,10 +271,6 @@
 				>
 			</File>
 			<File
-				RelativePath="skin.cpp"
-				>
-			</File>
-			<File
 				RelativePath="snd_dma.cpp"
 				>
 			</File>

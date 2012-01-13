@@ -55,7 +55,6 @@ add_executable(jlqwcl
 	client/pmove.cpp
 	client/pmovetst.cpp
 	client/sbar.cpp
-	client/skin.cpp
 	client/snd_dma.cpp
 	client/sys_linux.cpp
 	client/view.cpp

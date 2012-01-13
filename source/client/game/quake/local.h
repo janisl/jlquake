@@ -54,4 +54,8 @@ void CLQ1_ClearProjectiles();
 void CLQW_ParseNails(QMsg& message);
 void CLQ1_LinkProjectiles();
 
+void CLQW_SkinFind(q1player_info_t* sc);
 byte* CLQW_SkinCache(qw_skin_t* skin);
+void CLQW_SkinNextDownload();
+void CLQW_SkinSkins_f();
+void CLQW_SkinAllSkins_f();
