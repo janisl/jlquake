@@ -134,14 +134,6 @@ typedef enum {
 	ca_active			// game views should be displayed
 } connstate_t;
 
-typedef enum {
-	dl_none,
-	dl_model,
-	dl_sound,
-	dl_skin,
-	dl_single
-} dltype_t;		// download type
-
 struct client_static_t : clientStaticCommon_t
 {
 	connstate_t	state;
@@ -168,7 +160,6 @@ struct client_static_t : clientStaticCommon_t
 	char		downloadtempname[MAX_OSPATH];
 	char		downloadname[MAX_OSPATH];
 	int			downloadnumber;
-	dltype_t	downloadtype;
 	int			downloadpercent;
 
 // demo recording info must be here, so it isn't cleared on level change
