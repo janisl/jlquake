@@ -516,7 +516,7 @@ void CL_SendCmd (void)
 	if (clc.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_QW-1)
 		cl.validsequence = 0;
 
-	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
+	if (cl.validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
 		!clc.demorecording)
 	{
 		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;

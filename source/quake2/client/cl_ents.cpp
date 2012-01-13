@@ -577,9 +577,9 @@ void CL_ParseFrame (void)
 	if (cl.q2_frame.valid)
 	{
 		// getting a valid frame message ends the connection process
-		if (cls.state != ca_active)
+		if (cls.state != CA_ACTIVE)
 		{
-			cls.state = ca_active;
+			cls.state = CA_ACTIVE;
 			cl.predicted_origin[0] = cl.q2_frame.playerstate.pmove.origin[0]*0.125;
 			cl.predicted_origin[1] = cl.q2_frame.playerstate.pmove.origin[1]*0.125;
 			cl.predicted_origin[2] = cl.q2_frame.playerstate.pmove.origin[2]*0.125;

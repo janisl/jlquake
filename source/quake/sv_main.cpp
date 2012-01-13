@@ -982,7 +982,7 @@ void SV_SendReconnect (void)
 	msg.WriteString2("reconnect\n");
 	NET_SendToAll (&msg, 5);
 	
-	if (cls.state != ca_dedicated)
+	if (cls.state != CA_DEDICATED)
 		Cmd_ExecuteString ("reconnect\n", src_command);
 }
 

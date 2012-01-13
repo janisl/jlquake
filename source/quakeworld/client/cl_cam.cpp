@@ -284,7 +284,7 @@ void Cam_Track(qwusercmd_t *cmd)
 	if (cl_hightrack->value && !locked)
 		Cam_CheckHighTarget();
 
-	if (!autocam || cls.state != ca_active)
+	if (!autocam || cls.state != CA_ACTIVE)
 		return;
 
 	if (locked && (!cl.q1_players[spec_track].name[0] || cl.q1_players[spec_track].spectator)) {
@@ -355,7 +355,7 @@ void Cam_FinishMove(qwusercmd_t *cmd)
 	q1player_info_t	*s;
 	int end;
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 		return;
 
 	if (!cl.spectator) // only in spectator mode

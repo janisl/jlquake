@@ -117,7 +117,7 @@ void CIN_StartedPlayback()
 {
 	SCR_EndLoadingPlaque();
 
-	cls.state = ca_active;
+	cls.state = CA_ACTIVE;
 }
 
 /*

@@ -360,7 +360,7 @@ V_RenderView
 */
 void V_RenderView(float stereo_separation)
 {
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 		return;
 
 	if (!cl.refresh_prepped)

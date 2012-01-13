@@ -118,7 +118,7 @@ void Key_Console (int key)
 			Cbuf_AddText (key_lines[edit_line]+1);	// valid command
 		else
 		{	// convert to a chat message
-			if (cls.state >= ca_connected)
+			if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 				Cbuf_AddText ("say ");
 			Cbuf_AddText (key_lines[edit_line]+1);	// skip the >
 		}
@@ -129,7 +129,7 @@ void Key_Console (int key)
 		history_line = edit_line;
 		key_lines[edit_line][0] = ']';
 		key_linepos = 1;
-		if (cls.state == ca_disconnected)
+		if (cls.state == CA_DISCONNECTED)
 			SCR_UpdateScreen ();	// force an update, because the command
 									// may take some time
 		return;
@@ -663,7 +663,7 @@ void Key_Event (int key, qboolean down)
 //
 	if ( ((in_keyCatchers & KEYCATCH_UI) && menubound[key])
 	|| ((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key])
-	|| (in_keyCatchers == 0 && ( cls.state == ca_active || !consolekeys[key] ) ) )
+	|| (in_keyCatchers == 0 && ( cls.state == CA_ACTIVE || !consolekeys[key] ) ) )
 	{
 		kb = keybindings[key];
 		if (kb)

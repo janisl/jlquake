@@ -144,11 +144,11 @@ void CL_PredictMove (void)
 	from = &cl.frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
 
 	// we can now render a frame
-	if (cls.state == ca_onserver)
+	if (cls.state == CA_LOADING)
 	{	// first update is the final signon stage
 		char		text[1024];
 
-		cls.state = ca_active;
+		cls.state = CA_ACTIVE;
 		sprintf (text, "QuakeWorld: %s", cls.servername);
 #ifdef _WIN32
 		SetWindowText (GMainWindow, text);

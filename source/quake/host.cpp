@@ -109,7 +109,7 @@ void Host_EndGame (const char *message, ...)
 	if (sv.active)
 		Host_ShutdownServer (false);
 
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		Sys_Error ("Host_EndGame: %s\n",string);	// dedicated servers exit
 	
 	if (cls.demonum != -1)
@@ -147,7 +147,7 @@ void Host_Error (const char *error, ...)
 	if (sv.active)
 		Host_ShutdownServer (false);
 
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		Sys_Error ("Host_Error: %s\n",string);	// dedicated servers exit
 
 	CL_Disconnect ();
@@ -174,7 +174,7 @@ void	Host_FindMaxClients (void)
 	{
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
-		cls.state = ca_dedicated;
+		cls.state = CA_DEDICATED;
 		if (i != (COM_Argc() - 1))
 		{
 			svs.maxclients = String::Atoi(COM_Argv(i+1));
@@ -186,13 +186,13 @@ void	Host_FindMaxClients (void)
 	{
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
-		cls.state = ca_disconnected;
+		cls.state = CA_DISCONNECTED;
 	}
 
 	i = COM_CheckParm ("-listen");
 	if (i)
 	{
-		if (cls.state == ca_dedicated)
+		if (cls.state == CA_DEDICATED)
 			Sys_Error ("Only one of -dedicated or -listen can be specified");
 		if (i != (COM_Argc() - 1))
 			svs.maxclients = String::Atoi(COM_Argv(i+1));
@@ -432,7 +432,7 @@ void Host_ShutdownServer(qboolean crash)
 	sv.active = false;
 
 // stop all client sounds immediately
-	if (cls.state == ca_connected)
+	if (cls.state == CA_CONNECTED)
 		CL_Disconnect ();
 
 // flush any pending messages - like the score!!!
@@ -672,7 +672,7 @@ void _Host_Frame (float time)
 	host_time += host_frametime;
 
 // fetch results from server
-	if (cls.state == ca_connected)
+	if (cls.state == CA_CONNECTED)
 	{
 		CL_ReadFromServer ();
 	}
@@ -810,7 +810,7 @@ void Host_Init (quakeparms_t *parms)
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
 	
-	if (cls.state != ca_dedicated)
+	if (cls.state != CA_DEDICATED)
 	{
 		CL_Init ();
 	}
@@ -820,7 +820,7 @@ void Host_Init (quakeparms_t *parms)
 
 	NET_Init();
 
-	if (cls.state != ca_dedicated)
+	if (cls.state != CA_DEDICATED)
 	{
 		IN_Init();
 		VID_Init();
@@ -875,7 +875,7 @@ void Host_Shutdown(void)
 	S_Shutdown();
 	IN_Shutdown ();
 
-	if (cls.state != ca_dedicated)
+	if (cls.state != CA_DEDICATED)
 	{
 		R_Shutdown(true);
 	}

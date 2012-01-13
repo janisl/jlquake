@@ -244,7 +244,7 @@ void Cam_Track(hwusercmd_t *cmd)
 	if (cl_hightrack->value && !locked)
 		Cam_CheckHighTarget();
 
-	if (!autocam || cls.state != ca_active)
+	if (!autocam || cls.state != CA_ACTIVE)
 		return;
 
 	if (locked && (!cl.h2_players[spec_track].name[0] || cl.h2_players[spec_track].spectator)) {
@@ -336,7 +336,7 @@ void Cam_FinishMove(hwusercmd_t *cmd)
 	h2player_info_t	*s;
 	int end;
 
-	if (cls.state != ca_active || server_version < 1.57)
+	if (cls.state != CA_ACTIVE || server_version < 1.57)
 		return;
 
 	if (!cl.spectator) // only in spectator mode

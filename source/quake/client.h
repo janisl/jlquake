@@ -31,20 +31,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_DEMOS		8
 #define	MAX_DEMONAME	16
 
-typedef enum {
-ca_dedicated, 		// a dedicated server with no ability to start a client
-ca_disconnected, 	// full screen console with no connection
-ca_connected		// valid netcon, talking to a server
-} cactive_t;
-
 //
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
 //
 struct client_static_t : clientStaticCommon_t
 {
-	cactive_t	state;
-
 // personalization data sent to server	
 	char		mapstring[MAX_QPATH];
 

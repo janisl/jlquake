@@ -924,7 +924,7 @@ void V_RenderView (void)
 //		Sys_Error ("cl.simangles[ROLL]");	// DEBUG
 //rjrcl.simangles[ROLL] = 0;	// FIXME @@@ 
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 		return;
 
 	view_frame = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW];

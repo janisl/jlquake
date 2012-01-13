@@ -324,7 +324,7 @@ static void R_TimeRefresh_f (void)
 	int			i;
 	float		start, stop, time;
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 	{
 		Con_Printf("Not connected to a server\n");
 		return;
@@ -536,7 +536,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;         // never a console with loading plaque
 		
 // decide on the height of the console
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 	{
 		scr_conlines = viddef.height;              // full screen
 		scr_con_current = scr_conlines;

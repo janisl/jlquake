@@ -535,10 +535,10 @@ void CL_SendCmd (void)
 
 	cl.cmd = *cmd;
 
-	if (cls.state == ca_disconnected || cls.state == ca_connecting)
+	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
 		return;
 
-	if ( cls.state == ca_connected)
+	if ( cls.state == CA_CONNECTED)
 	{
 		if (clc.netchan.message.cursize	|| curtime - clc.netchan.lastSent > 1000 )
 			Netchan_Transmit (&clc.netchan, 0, buf._data);	

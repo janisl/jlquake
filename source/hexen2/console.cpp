@@ -26,7 +26,7 @@ void Con_ToggleConsole_f (void)
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
 		in_keyCatchers &= ~KEYCATCH_CONSOLE;
-		if (cls.state == ca_connected)
+		if (cls.state == CA_CONNECTED)
 		{
 			key_lines[edit_line][1] = 0;	// clear any typing
 			key_linepos = 1;
@@ -330,7 +330,7 @@ void Con_Printf (const char *fmt, ...)
 	if (!con.initialized)
 		return;
 		
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		return;		// no graphics mode
 
 // write it to the scrollable buffer

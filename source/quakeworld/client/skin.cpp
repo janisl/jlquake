@@ -117,7 +117,7 @@ void CLQW_SkinNextDownload()
 		sc->skin = NULL;
 	}
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 	{
 		// get next signon phase
 		clc_common->netchan.message.WriteByte(q1clc_stringcmd);

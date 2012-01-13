@@ -205,7 +205,7 @@ void CL_PredictMovement (void)
 	int			step;
 	int			oldz;
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 		return;
 
 	if (cl_paused->value)

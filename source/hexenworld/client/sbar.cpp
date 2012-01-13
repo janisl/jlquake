@@ -1644,7 +1644,7 @@ void Inv_Update(qboolean force)
 			inv_flg = false;  // Toggle menu off
 		}
 
-		if (cls.state == ca_active)
+		if (cls.state == CA_ACTIVE)
 		{	// This will cause the server to set the client's edict's inventory value
 			clc.netchan.message.WriteByte(hwclc_inv_select);
 			clc.netchan.message.WriteByte(cl.v.inventory);

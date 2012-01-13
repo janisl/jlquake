@@ -479,7 +479,7 @@ Con_DPrintf ("UPLOAD: %6d: %d written\n", upload_pos - r, r);
 
 void CL_StartUpload (byte *data, int size)
 {
-	if (cls.state < ca_onserver)
+	if (cls.state < CA_LOADING)
 		return; // gotta be connected
 
 	// override
@@ -605,7 +605,7 @@ void CL_ParseServerData (void)
 	clc.netchan.message.WriteString2(va(soundlist_name, cl.servercount, 0));
 
 	// now waiting for downloads, etc
-	cls.state = ca_onserver;
+	cls.state = CA_LOADING;
 }
 
 /*
@@ -889,7 +889,7 @@ void CL_ProcessUserInfo (int slot, q1player_info_t *player)
 	else
 		player->spectator = false;
 
-	if (cls.state == ca_active)
+	if (cls.state == CA_ACTIVE)
 		CLQW_SkinFind (player);
 
 	CL_NewTranslation (slot);
@@ -1075,7 +1075,7 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case q1svc_disconnect:
-			if (cls.state == ca_connected)
+			if (cls.state == CA_CONNECTED)
 				Host_EndGame ("Server disconnected\n"
 					"Server version may not be compatible");
 			else

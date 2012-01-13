@@ -280,7 +280,7 @@ void CL_ParseServerData (void)
 // wipe the client_state_t struct
 //
 	CL_ClearState ();
-	cls.state = ca_connected;
+	cls.state = CA_CONNECTED;
 
 // parse protocol version number
 	i = net_message.ReadLong();
@@ -690,7 +690,7 @@ void CL_ParseServerMessage (void)
 				FS_FCloseFile(clc.download);
 				clc.download = 0;
 			}
-			cls.state = ca_connecting;
+			cls.state = CA_CONNECTING;
 			cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 			break;
 

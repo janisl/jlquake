@@ -516,13 +516,13 @@ void SCR_DrawConsole (void)
 {
 	Con_CheckResize ();
 	
-	if (cls.state == ca_disconnected || cls.state == ca_connecting)
+	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
 	{	// forced full screen console
 		Con_DrawConsole (1.0);
 		return;
 	}
 
-	if (cls.state != ca_active || !cl.refresh_prepped)
+	if (cls.state != CA_ACTIVE || !cl.refresh_prepped)
 	{	// connected, but can't render
 		Con_DrawConsole (0.5);
 		UI_FillPal (0, viddef.height/2, viddef.width, viddef.height/2, 0);
@@ -556,7 +556,7 @@ void SCR_BeginLoadingPlaque(bool Clear)
 		return;
 	if (developer->value)
 		return;
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 		return;	// if at console, don't bring up the plaque
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 		return;
@@ -582,7 +582,7 @@ void SCR_TimeRefresh_f (void)
 	int		start, stop;
 	float	time;
 
-	if ( cls.state != ca_active )
+	if ( cls.state != CA_ACTIVE)
 		return;
 
 	start = Sys_Milliseconds_ ();
@@ -834,7 +834,7 @@ void SCR_ExecuteLayoutString (const char *s)
 	int		index;
 	clientinfo_t	*ci;
 
-	if (cls.state != ca_active || !cl.refresh_prepped)
+	if (cls.state != CA_ACTIVE || !cl.refresh_prepped)
 		return;
 
 	if (!s[0])
@@ -1242,7 +1242,7 @@ void SCR_UpdateScreen (void)
 
 	R_EndFrame(NULL, NULL);
 
-	if (cls.state == ca_active && cl.refresh_prepped && cl.q2_frame.valid)
+	if (cls.state == CA_ACTIVE && cl.refresh_prepped && cl.q2_frame.valid)
 	{
 		CL_UpdateParticles(800);
 	}

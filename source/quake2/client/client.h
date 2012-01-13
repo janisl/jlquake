@@ -126,18 +126,8 @@ of server connections
 ==================================================================
 */
 
-typedef enum {
-	ca_uninitialized,
-	ca_disconnected, 	// not talking to a server
-	ca_connecting,		// sending request packets to the server
-	ca_connected,		// netchan_t established, waiting for q2svc_serverdata
-	ca_active			// game views should be displayed
-} connstate_t;
-
 struct client_static_t : clientStaticCommon_t
 {
-	connstate_t	state;
-
 	int			framecount;
 	int			realtime;			// always increasing, no clamping, etc
 	float		frametimeFloat;		// seconds since last frame

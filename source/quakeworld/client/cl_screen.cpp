@@ -528,7 +528,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;         // never a console with loading plaque
 		
 // decide on the height of the console
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 	{
 		scr_conlines = viddef.height;              // full screen
 		scr_con_current = scr_conlines;
@@ -583,7 +583,7 @@ void SCR_RSShot_f (void)
 		return; // already one pending
 	}
 
-	if (cls.state < ca_onserver)
+	if (cls.state < CA_LOADING)
 	{
 		return; // gotta be connected
 	}

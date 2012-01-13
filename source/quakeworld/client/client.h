@@ -29,23 +29,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_DEMOS		8
 #define	MAX_DEMONAME	16
 
-typedef enum {
-ca_disconnected, 	// full screen console with no connection
-ca_demostart,		// starting up a demo
-ca_connected,		// netchan_t established, waiting for qwsvc_serverdata
-ca_onserver,		// processing data lists, donwloading, etc
-ca_active			// everything is in, so frames can be rendered
-} cactive_t;
-
 //
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
 //
 struct client_static_t : clientStaticCommon_t
 {
-// connection information
-	cactive_t	state;
-	
 // private userinfo for sending to masterless servers
 	char		userinfo[MAX_INFO_STRING_QW];
 

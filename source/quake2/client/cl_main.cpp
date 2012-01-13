@@ -177,7 +177,7 @@ void CL_Record_f (void)
 		return;
 	}
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 	{
 		Com_Printf ("You must be in a level to record.\n");
 		return;
@@ -283,7 +283,7 @@ void Cmd_ForwardToServer (void)
 	char	*cmd;
 
 	cmd = Cmd_Argv(0);
-	if (cls.state <= ca_connected || *cmd == '-' || *cmd == '+')
+	if (cls.state <= CA_CONNECTED || *cmd == '-' || *cmd == '+')
 	{
 		Com_Printf ("Unknown command \"%s\"\n", cmd);
 		return;
@@ -341,7 +341,7 @@ CL_ForwardToServer_f
 */
 void CL_ForwardToServer_f (void)
 {
-	if (cls.state != ca_connected && cls.state != ca_active)
+	if (cls.state != CA_CONNECTED && cls.state != CA_ACTIVE)
 	{
 		Com_Printf ("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
@@ -393,9 +393,9 @@ Called after an ERR_DROP was thrown
 */
 void CL_Drop (void)
 {
-	if (cls.state == ca_uninitialized)
+	if (cls.state == CA_UNINITIALIZED)
 		return;
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 		return;
 
 	CL_Disconnect ();
@@ -448,9 +448,9 @@ void CL_CheckForResend (void)
 
 	// if the local server is running and we aren't
 	// then connect
-	if (cls.state == ca_disconnected && Com_ServerState() )
+	if (cls.state == CA_DISCONNECTED && Com_ServerState() )
 	{
-		cls.state = ca_connecting;
+		cls.state = CA_CONNECTING;
 		String::NCpy(cls.servername, "localhost", sizeof(cls.servername)-1);
 		// we don't need a challenge on the localhost
 		CL_SendConnectPacket ();
@@ -459,7 +459,7 @@ void CL_CheckForResend (void)
 	}
 
 	// resend if we haven't gotten a reply yet
-	if (cls.state != ca_connecting)
+	if (cls.state != CA_CONNECTING)
 		return;
 
 	if (cls.realtime - cls.connect_time < 3000)
@@ -468,7 +468,7 @@ void CL_CheckForResend (void)
 	if (!SOCK_StringToAdr(cls.servername, &adr, PORT_SERVER))
 	{
 		Com_Printf ("Bad server address\n");
-		cls.state = ca_disconnected;
+		cls.state = CA_DISCONNECTED;
 		return;
 	}
 
@@ -511,7 +511,7 @@ void CL_Connect_f (void)
 
 	CL_Disconnect ();
 
-	cls.state = ca_connecting;
+	cls.state = CA_CONNECTING;
 	String::NCpy(cls.servername, server, sizeof(cls.servername)-1);
 	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 }
@@ -557,7 +557,7 @@ void CL_Rcon_f (void)
 		String::Cat(message, sizeof(message), " ");
 	}
 
-	if (cls.state >= ca_connected)
+	if (cls.state >= CA_CONNECTED)
 		to = clc.netchan.remoteAddress;
 	else
 	{
@@ -609,7 +609,7 @@ void CL_Disconnect (void)
 {
 	byte	final[32];
 
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 		return;
 
 	if (cl_timedemo && cl_timedemo->value)
@@ -649,7 +649,7 @@ void CL_Disconnect (void)
 		clc.download = 0;
 	}
 
-	cls.state = ca_disconnected;
+	cls.state = CA_DISCONNECTED;
 }
 
 void CL_Disconnect_f (void)
@@ -724,7 +724,7 @@ void CL_Changing_f (void)
 		return;
 
 	SCR_BeginLoadingPlaque ();
-	cls.state = ca_connected;	// not active anymore, but not disconnected
+	cls.state = CA_CONNECTED;	// not active anymore, but not disconnected
 	Com_Printf ("\nChanging map...\n");
 }
 
@@ -744,22 +744,22 @@ void CL_Reconnect_f (void)
 		return;
 
 	S_StopAllSounds ();
-	if (cls.state == ca_connected) {
+	if (cls.state == CA_CONNECTED) {
 		Com_Printf ("reconnecting...\n");
-		cls.state = ca_connected;
+		cls.state = CA_CONNECTED;
 		clc.netchan.message.WriteChar(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");		
 		return;
 	}
 
 	if (*cls.servername) {
-		if (cls.state >= ca_connected) {
+		if (cls.state >= CA_CONNECTED) {
 			CL_Disconnect();
 			cls.connect_time = cls.realtime - 1500;
 		} else
 			cls.connect_time = -99999; // fire immediately
 
-		cls.state = ca_connecting;
+		cls.state = CA_CONNECTING;
 		Com_Printf ("reconnecting...\n");
 	}
 }
@@ -877,7 +877,7 @@ void CL_ConnectionlessPacket (void)
 	// server connection
 	if (!String::Cmp(c, "client_connect"))
 	{
-		if (cls.state == ca_connected)
+		if (cls.state == CA_CONNECTED)
 		{
 			Com_Printf ("Dup connect received.  Ignored.\n");
 			return;
@@ -885,7 +885,7 @@ void CL_ConnectionlessPacket (void)
 		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
 		clc.netchan.message.WriteChar(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");	
-		cls.state = ca_connected;
+		cls.state = CA_CONNECTED;
 		return;
 	}
 
@@ -979,7 +979,7 @@ void CL_ReadPackets (void)
 			continue;
 		}
 
-		if (cls.state == ca_disconnected || cls.state == ca_connecting)
+		if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
 			continue;		// dump it if not connected
 
 		if (net_message.cursize < 8)
@@ -1005,7 +1005,7 @@ void CL_ReadPackets (void)
 	//
 	// check timeout
 	//
-	if (cls.state >= ca_connected
+	if (cls.state >= CA_CONNECTED
 	 && cls.realtime - clc.netchan.lastReceived > cl_timeout->value*1000)
 	{
 		if (++cl.timeoutcount > 5)	// timeoutcount saves debugger
@@ -1102,7 +1102,7 @@ void CL_RequestNextDownload (void)
 	char fn[MAX_OSPATH];
 	dmd2_t *pheader;
 
-	if (cls.state != ca_connected)
+	if (cls.state != CA_CONNECTED)
 		return;
 
 	if (!allow_download->value && precache_check < ENV_CNT)
@@ -1394,7 +1394,7 @@ CL_InitLocal
 */
 void CL_InitLocal (void)
 {
-	cls.state = ca_disconnected;
+	cls.state = CA_DISCONNECTED;
 	cls.realtime = Sys_Milliseconds_ ();
 
 	CL_InitInput ();
@@ -1544,7 +1544,7 @@ Writes key bindings and archived cvars to config.cfg
 */
 void CL_WriteConfiguration()
 {
-	if (cls.state == ca_uninitialized)
+	if (cls.state == CA_UNINITIALIZED)
 	{
 		return;
 	}
@@ -1708,7 +1708,7 @@ void CL_UpdateSounds()
 	if (cl_paused->value)
 		return;
 
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 		return;
 
 	if (!cl.sound_prepped)
@@ -1750,7 +1750,7 @@ void CL_Frame (int msec)
 
 	if (!cl_timedemo->value)
 	{
-		if (cls.state == ca_connected && extratime < 100)
+		if (cls.state == CA_CONNECTED && extratime < 100)
 			return;			// don't flood packets out while connecting
 		if (extratime < 1000/cl_maxfps->value)
 			return;			// framerate is too high
@@ -1786,7 +1786,7 @@ void CL_Frame (int msec)
 
 	// allow rendering DLL change
 	VID_CheckChanges ();
-	if (!cl.refresh_prepped && cls.state == ca_active)
+	if (!cl.refresh_prepped && cls.state == CA_ACTIVE)
 		CL_PrepRefresh ();
 
 	// update the screen
@@ -1815,7 +1815,7 @@ void CL_Frame (int msec)
 
 	if ( log_stats->value )
 	{
-		if ( cls.state == ca_active )
+		if ( cls.state == CA_ACTIVE)
 		{
 			if ( !lasttimecalled )
 			{

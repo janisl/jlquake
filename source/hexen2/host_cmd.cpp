@@ -34,7 +34,7 @@ extern void M_Menu_Quit_f (void);
 
 void Host_Quit_f (void)
 {
-	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state != ca_dedicated)
+	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state != CA_DEDICATED)
 	{
 		M_Menu_Quit_f ();
 		return;
@@ -263,7 +263,7 @@ void Host_Map_f (void)
 	if (!sv.active)
 		return;
 	
-	if (cls.state != ca_dedicated)
+	if (cls.state != CA_DEDICATED)
 	{
 		loading_stage = 2;
 
@@ -679,7 +679,7 @@ void Host_Loadgame_f (void)
 	sv.paused = true;		// pause until all clients connect
 	sv.loadgame = true;
 
-	if (cls.state != ca_dedicated)
+	if (cls.state != CA_DEDICATED)
 	{
 		CL_EstablishConnection("local");
 		Host_Reconnect_f();
@@ -1042,7 +1042,7 @@ void Host_Name_f (void)
 		if (String::Cmp(clqh_name->string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
-		if (cls.state == ca_connected)
+		if (cls.state == CA_CONNECTED)
 			Cmd_ForwardToServer ();
 		return;
 	}
@@ -1089,7 +1089,7 @@ void Host_Class_f (void)
 			pr_global_struct->cl_playerclass = newClass;
 #endif
 
-		if (cls.state == ca_connected)
+		if (cls.state == CA_CONNECTED)
 			Cmd_ForwardToServer ();
 		return;
 	}
@@ -1235,7 +1235,7 @@ void Host_Say(qboolean teamonly)
 
 	if (cmd_source == src_command)
 	{
-		if (cls.state == ca_dedicated)
+		if (cls.state == CA_DEDICATED)
 		{
 			fromServer = true;
 			teamonly = false;
@@ -1390,7 +1390,7 @@ void Host_Color_f(void)
 	if (cmd_source == src_command)
 	{
 		Cvar_SetValue ("_cl_color", playercolor);
-		if (cls.state == ca_connected)
+		if (cls.state == CA_CONNECTED)
 			Cmd_ForwardToServer ();
 		return;
 	}
@@ -1817,7 +1817,7 @@ void Host_Kick_f (void)
 	if (i < svs.maxclients)
 	{
 		if (cmd_source == src_command)
-			if (cls.state == ca_dedicated)
+			if (cls.state == CA_DEDICATED)
 				who = "Console";
 			else
 				who = clqh_name->string;
@@ -2144,7 +2144,7 @@ void Host_Startdemos_f (void)
 {
 	int		i, c;
 
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 	{
 		if (!sv.active)
 			Cbuf_AddText ("map start\n");
@@ -2181,7 +2181,7 @@ Return to looping demos
 */
 void Host_Demos_f (void)
 {
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		return;
 	if (cls.demonum == -1)
 		cls.demonum = 1;
@@ -2198,7 +2198,7 @@ Return to looping demos
 */
 void Host_Stopdemo_f (void)
 {
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		return;
 	if (!clc.demoplaying)
 		return;

@@ -72,7 +72,7 @@ void Con_ToggleConsole_f (void)
 		return;
 	}
 
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 	{	// start the demo loop again
 		Cbuf_AddText ("d1\n");
 		return;
@@ -109,7 +109,7 @@ void Con_ToggleChat_f (void)
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		if (cls.state == ca_active)
+		if (cls.state == CA_ACTIVE)
 		{
 			M_ForceMenuOff ();
 			in_keyCatchers &= ~KEYCATCH_CONSOLE;
@@ -450,7 +450,7 @@ void Con_DrawInput (void)
 
 	if (in_keyCatchers & KEYCATCH_UI)
 		return;
-	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == ca_active)
+	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == CA_ACTIVE)
 		return;		// don't draw anything (always draw if not active)
 
 	text = key_lines[edit_line];

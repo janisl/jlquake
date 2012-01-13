@@ -48,7 +48,7 @@ void Con_ToggleConsole_f (void)
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		if (cls.state == ca_active)
+		if (cls.state == CA_ACTIVE)
 			in_keyCatchers &= ~KEYCATCH_CONSOLE;
 	}
 	else
@@ -68,7 +68,7 @@ void Con_ToggleChat_f (void)
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		if (cls.state == ca_active)
+		if (cls.state == CA_ACTIVE)
 			in_keyCatchers &= ~KEYCATCH_CONSOLE;
 	}
 	else
@@ -350,7 +350,7 @@ void Con_Printf (const char *fmt, ...)
 	Con_Print (msg);
 	
 // update the screen immediately if the console is displayed
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 	{
 	// protect against infinite loop if something in SCR_UpdateScreen calls
 	// Con_Printd
@@ -407,7 +407,7 @@ void Con_DrawInput (void)
 	int		i;
 	char	*text;
 
-	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == ca_active)
+	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == CA_ACTIVE)
 		return;		// don't draw anything (allways draw if not active)
 
 	text = key_lines[edit_line];

@@ -141,7 +141,7 @@ void CL_Disconnect (void)
 // if running a local server, shut it down
 	if (clc.demoplaying)
 		CL_StopPlayback ();
-	else if (cls.state == ca_connected)
+	else if (cls.state == CA_CONNECTED)
 	{
 		if (clc.demorecording)
 			CL_Stop_f ();
@@ -153,7 +153,7 @@ void CL_Disconnect (void)
 		clc.netchan.message.Clear();
 		NET_Close (cls.netcon, &clc.netchan);
 
-		cls.state = ca_disconnected;
+		cls.state = CA_DISCONNECTED;
 		if (sv.active)
 			Host_ShutdownServer(false);
 
@@ -183,7 +183,7 @@ Host should be either "local" or a net address to be passed on
 */
 void CL_EstablishConnection (const char *host)
 {
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		return;
 
 	if (clc.demoplaying)
@@ -201,7 +201,7 @@ void CL_EstablishConnection (const char *host)
 	Con_DPrintf ("CL_EstablishConnection: connected to %s\n", host);
 	
 	cls.demonum = -1;			// not in the demo loop now
-	cls.state = ca_connected;
+	cls.state = CA_CONNECTED;
 	clc.qh_signon = 0;				// need all the signon messages before playing
 }
 
@@ -640,7 +640,7 @@ int CL_ReadFromServer (void)
 		
 		cl.last_received_message = realtime;
 		CL_ParseServerMessage ();
-	} while (ret && cls.state == ca_connected);
+	} while (ret && cls.state == CA_CONNECTED);
 	
 	if (cl_shownet->value)
 		Con_Printf ("\n");
@@ -664,7 +664,7 @@ void CL_SendCmd (void)
 {
 	h2usercmd_t		cmd;
 
-	if (cls.state != ca_connected)
+	if (cls.state != CA_CONNECTED)
 		return;
 
 	if (clc.qh_signon == SIGNONS)

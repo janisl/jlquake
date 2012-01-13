@@ -230,8 +230,6 @@ typedef struct {
 
 struct clientStatic_t : clientStaticCommon_t
 {
-	connstate_t	state;				// connection status
-
 	qboolean	cddialog;			// bring up the cd needed dialog next frame
 
 	char		servername[MAX_OSPATH];		// name of server from original connect (used by reconnect)

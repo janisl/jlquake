@@ -130,11 +130,11 @@ void CL_PredictMove (void)
 	player_crouching = ((from->playerstate[cl.playernum].flags) & PF_CROUCH)>>10;
 
 	// we can now render a frame
-	if (cls.state == ca_onserver)
+	if (cls.state == CA_LOADING)
 	{	// first update is the final signon stage
 		char		text[1024];
 
-		cls.state = ca_active;
+		cls.state = CA_ACTIVE;
 		sprintf (text, "HexenWorld: %s", cls.servername);
 #ifdef _WIN32
 		SetWindowText (GMainWindow, text);

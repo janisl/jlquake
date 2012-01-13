@@ -508,7 +508,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;		// never a console with loading plaque
 		
 // decide on the height of the console
-	con_forcedup = cls.state != ca_connected || clc.qh_signon != SIGNONS;
+	con_forcedup = cls.state != CA_CONNECTED || clc.qh_signon != SIGNONS;
 
 	if (con_forcedup)
 	{
@@ -563,7 +563,7 @@ void SCR_BeginLoadingPlaque (void)
 {
 	S_StopAllSounds();
 
-	if (cls.state != ca_connected)
+	if (cls.state != CA_CONNECTED)
 		return;
 	if (clc.qh_signon != SIGNONS)
 		return;
@@ -627,7 +627,7 @@ keypress.
 */
 int SCR_ModalMessage (const char *text)
 {
-	if (cls.state == ca_dedicated)
+	if (cls.state == CA_DEDICATED)
 		return true;
 
 	scr_notifystring = text;

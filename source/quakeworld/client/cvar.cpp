@@ -44,7 +44,7 @@ void Cvar_Changed(Cvar* var)
 	{
 		Info_SetValueForKey(cls.userinfo, var->name, var->string, MAX_INFO_STRING_QW, 64, 64,
 			String::ICmp(var->name, "name") != 0, String::ICmp(var->name, "team") == 0);
-		if (cls.state >= ca_connected)
+		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		{
 			clc.netchan.message.WriteByte(q1clc_stringcmd);
 			clc.netchan.message.WriteString2(va("setinfo \"%s\" \"%s\"\n", var->name, var->string));

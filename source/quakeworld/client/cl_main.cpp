@@ -178,7 +178,7 @@ void CL_SendConnectPacket (void)
 //       Now, adds lookup time to the connect time.
 //		 Should I add it to realtime instead?!?!
 
-	if (cls.state != ca_disconnected)
+	if (cls.state != CA_DISCONNECTED)
 		return;
 
 	t1 = Sys_DoubleTime ();
@@ -220,7 +220,7 @@ void CL_CheckForResend (void)
 
 	if (connect_time == -1)
 		return;
-	if (cls.state != ca_disconnected)
+	if (cls.state != CA_DISCONNECTED)
 		return;
 	if (connect_time && realtime - connect_time < 5.0)
 		return;
@@ -311,7 +311,7 @@ void CL_Rcon_f (void)
 		String::Cat(message, sizeof(message), " ");
 	}
 
-	if (cls.state >= ca_connected)
+	if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		to = clc.netchan.remoteAddress;
 	else
 	{
@@ -398,7 +398,7 @@ void CL_Disconnect (void)
 // if running a local server, shut it down
 	if (clc.demoplaying)
 		CL_StopPlayback ();
-	else if (cls.state != ca_disconnected)
+	else if (cls.state != CA_DISCONNECTED)
 	{
 		if (clc.demorecording)
 			CL_Stop_f ();
@@ -409,7 +409,7 @@ void CL_Disconnect (void)
 		Netchan_Transmit (&clc.netchan, 6, final);
 		Netchan_Transmit (&clc.netchan, 6, final);
 
-		cls.state = ca_disconnected;
+		cls.state = CA_DISCONNECTED;
 
 		clc.demoplaying = clc.demorecording = cls.timedemo = false;
 	}
@@ -649,7 +649,7 @@ void CL_SetInfo_f (void)
 
 	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64,
 		String::ICmp(Cmd_Argv(1), "name") != 0, String::ICmp(Cmd_Argv(1), "team") == 0);
-	if (cls.state >= ca_connected)
+	if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		Cmd_ForwardToServer ();
 }
 
@@ -748,7 +748,7 @@ void CL_Changing_f (void)
 
 	S_StopAllSounds();
 	cl.intermission = 0;
-	cls.state = ca_connected;	// not active anymore, but not disconnected
+	cls.state = CA_CONNECTED;	// not active anymore, but not disconnected
 	Con_Printf ("\nChanging map...\n");
 }
 
@@ -767,7 +767,7 @@ void CL_Reconnect_f (void)
 
 	S_StopAllSounds();
 
-	if (cls.state == ca_connected) {
+	if (cls.state == CA_CONNECTED) {
 		Con_Printf ("reconnecting...\n");
 		clc.netchan.message.WriteChar(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
@@ -805,7 +805,7 @@ void CL_ConnectionlessPacket (void)
 	if (c == S2C_CONNECTION)
 	{
 		Con_Printf ("connection\n");
-		if (cls.state >= ca_connected)
+		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		{
 			if (!clc.demoplaying)
 				Con_Printf ("Dup connect received.  Ignored.\n");
@@ -814,7 +814,7 @@ void CL_ConnectionlessPacket (void)
 		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.qport);
 		clc.netchan.message.WriteChar(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("new");	
-		cls.state = ca_connected;
+		cls.state = CA_CONNECTED;
 		Con_Printf ("Connected.\n");
 		allowremotecmd = false; // localid required now for remote cmds
 		return;
@@ -966,7 +966,8 @@ void CL_ReadPackets (void)
 	//
 	// check timeout
 	//
-	if (cls.state >= ca_connected && realtime - clc.netchan.lastReceived / 1000.0 > cl_timeout->value)
+	if ((cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE) &&
+		realtime - clc.netchan.lastReceived / 1000.0 > cl_timeout->value)
 	{
 		Con_Printf ("\nServer connection timed out.\n");
 		CL_Disconnect ();
@@ -984,7 +985,7 @@ CL_Download_f
 */
 void CL_Download_f (void)
 {
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 	{
 		Con_Printf ("Must be connected.\n");
 		return;
@@ -1020,7 +1021,7 @@ void CL_Init (void)
 	cl_common = &cl;
 	CL_SharedInit();
 
-	cls.state = ca_disconnected;
+	cls.state = CA_DISCONNECTED;
 
 	Info_SetValueForKey(cls.userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, false, false);
 	Info_SetValueForKey(cls.userinfo, "topcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
@@ -1298,7 +1299,7 @@ void Host_Frame (float time)
 
 	// send intentions now
 	// resend a connection request if necessary
-	if (cls.state == ca_disconnected) {
+	if (cls.state == CA_DISCONNECTED) {
 		CL_CheckForResend ();
 	} else
 		CL_SendCmd ();
@@ -1325,7 +1326,7 @@ void Host_Frame (float time)
 		time2 = Sys_DoubleTime ();
 		
 	// update audio
-	if (cls.state == ca_active)
+	if (cls.state == CA_ACTIVE)
 	{
 		S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
 		CL_RunDLights ();
@@ -1424,7 +1425,7 @@ void Host_Init (quakeparms_t *parms)
 //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf ("%4.1f megs RAM used.\n",parms->memsize/ (1024*1024.0));
 	
-	cls.state = ca_disconnected;
+	cls.state = CA_DISCONNECTED;
 	CL_Init ();
 
 	Cbuf_InsertText("exec quake.rc\n");

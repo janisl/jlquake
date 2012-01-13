@@ -24,7 +24,7 @@ so when they are typed in at the console, they will need to be forwarded.
 */
 void Cmd_ForwardToServer (void)
 {
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 	{
 		Con_Printf ("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
@@ -45,7 +45,7 @@ void Cmd_ForwardToServer (void)
 // don't forward the first argument
 void Cmd_ForwardToServer_f (void)
 {
-	if (cls.state == ca_disconnected)
+	if (cls.state == CA_DISCONNECTED)
 	{
 		Con_Printf ("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;

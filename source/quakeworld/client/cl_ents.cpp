@@ -852,7 +852,7 @@ Made up of: clients, packet_entities, nails, and tents
 */
 void CL_EmitEntities (void)
 {
-	if (cls.state != ca_active)
+	if (cls.state != CA_ACTIVE)
 		return;
 	if (!cl.validsequence)
 		return;

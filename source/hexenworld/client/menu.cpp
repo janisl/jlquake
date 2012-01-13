@@ -369,7 +369,7 @@ void M_ToggleMenu_f (void)
 		m_state = m_none;
 		return;
 	}
-	if ((in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == ca_active)
+	if ((in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == CA_ACTIVE)
 	{
 		Con_ToggleConsole_f ();
 	}
@@ -615,7 +615,7 @@ void M_Main_Key (int key)
 		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		cls.demonum = m_save_demonum;
-		if (cls.demonum != -1 && !clc.demoplaying && cls.state == ca_disconnected)
+		if (cls.demonum != -1 && !clc.demoplaying && cls.state == CA_DISCONNECTED)
 			CL_NextDemo ();
 		break;
 		

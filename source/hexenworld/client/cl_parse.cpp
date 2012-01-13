@@ -502,7 +502,7 @@ void CL_ParseServerData (void)
 		va("soundlist %i", cl.servercount));
 
 	// now waiting for downloads, etc
-	cls.state = ca_onserver;
+	cls.state = CA_LOADING;
 	cl_keyholder = -1;
 	cl_doc = -1;
 }
