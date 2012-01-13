@@ -72,8 +72,6 @@ extern clientConnection_t clc;
 //
 struct client_state_t : clientActiveCommon_t
 {
-	int			servercount;	// server identification for prespawns
-
 	char		serverinfo[MAX_SERVERINFO_STRING];
 
 	int			parsecount;		// server message counter

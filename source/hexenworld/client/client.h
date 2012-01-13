@@ -99,8 +99,6 @@ struct client_entvars_t
 //
 struct client_state_t : clientActiveCommon_t
 {
-	int			servercount;	// server identification for prespawns
-
 	char		serverinfo[MAX_SERVERINFO_STRING];
 
 	int			parsecount;		// server message counter

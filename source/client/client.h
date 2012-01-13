@@ -67,6 +67,8 @@ struct clientActiveCommon_t
 
 	sfxHandle_t sound_precache[BIGGEST_MAX_SOUNDS];
 
+	int servercount;	// server identification for prespawns
+
 	//	Only for Quake and Hexen 2
 	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
 	cshift_t qh_prev_cshifts[NUM_CSHIFTS];	// and content types
