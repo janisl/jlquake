@@ -308,26 +308,26 @@ void SVC_Status( netadr_t from ) {
 	playerState_t	*ps;
 	int		statusLength;
 	int		playerLength;
-	char	infostring[MAX_INFO_STRING];
+	char	infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
 	if ( Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER ) {
 		return;
 	}
 
-	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
 
 	// add "demo" to the sv_keywords if restricted
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
-		char	keywords[MAX_INFO_STRING];
+		char	keywords[MAX_INFO_STRING_Q3];
 
 		String::Sprintf( keywords, sizeof( keywords ), "demo %s",
 			Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING);
+		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING_Q3);
 	}
 
 	status[0] = 0;
@@ -362,7 +362,7 @@ if a user is interested in a server to do a full status
 void SVC_Info( netadr_t from ) {
 	int		i, count;
 	const char	*gamedir;
-	char	infostring[MAX_INFO_STRING];
+	char	infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
 	if ( Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER || Cvar_VariableValue("ui_singlePlayerActive")) {
@@ -381,26 +381,26 @@ void SVC_Info( netadr_t from ) {
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
 
-	Info_SetValueForKey( infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING);
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING);
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, MAX_INFO_STRING);
-	Info_SetValueForKey( infostring, "clients", va("%i", count), MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey( infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey( infostring, "sv_maxclients", 
-		va("%i", sv_maxclients->integer - sv_privateClients->integer ), MAX_INFO_STRING);
-	Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ), MAX_INFO_STRING);
-	Info_SetValueForKey( infostring, "pure", va("%i", sv_pure->integer ), MAX_INFO_STRING);
+		va("%i", sv_maxclients->integer - sv_privateClients->integer ), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey( infostring, "pure", va("%i", sv_pure->integer ), MAX_INFO_STRING_Q3);
 
 	if( sv_minPing->integer ) {
-		Info_SetValueForKey( infostring, "minPing", va("%i", sv_minPing->integer), MAX_INFO_STRING);
+		Info_SetValueForKey( infostring, "minPing", va("%i", sv_minPing->integer), MAX_INFO_STRING_Q3);
 	}
 	if( sv_maxPing->integer ) {
-		Info_SetValueForKey( infostring, "maxPing", va("%i", sv_maxPing->integer), MAX_INFO_STRING);
+		Info_SetValueForKey( infostring, "maxPing", va("%i", sv_maxPing->integer), MAX_INFO_STRING_Q3);
 	}
 	gamedir = Cvar_VariableString( "fs_game" );
 	if( *gamedir ) {
-		Info_SetValueForKey( infostring, "game", gamedir, MAX_INFO_STRING);
+		Info_SetValueForKey( infostring, "game", gamedir, MAX_INFO_STRING_Q3);
 	}
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
@@ -805,7 +805,7 @@ void SV_Frame( int msec ) {
 
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO ) {
-		SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+		SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO ) {

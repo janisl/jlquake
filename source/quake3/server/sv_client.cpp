@@ -225,7 +225,7 @@ A "connect" OOB command has been received
 				"www.idsoftware.com"
 
 void SV_DirectConnect( netadr_t from ) {
-	char		userinfo[MAX_INFO_STRING];
+	char		userinfo[MAX_INFO_STRING_Q3];
 	int			i;
 	client_t	*cl, *newcl;
 	MAC_STATIC client_t	temp;
@@ -285,7 +285,7 @@ void SV_DirectConnect( netadr_t from ) {
 			return;
 		}
 		// force the IP key/value pair so the game can filter based on ip
-		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING);
+		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING_Q3);
 
 		ping = svs.time - svs.challenges[i].pingTime;
 		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
@@ -310,7 +310,7 @@ void SV_DirectConnect( netadr_t from ) {
 		}
 	} else {
 		// force the "ip" info key to "localhost"
-		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING);
+		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
 	}
 
 	newcl = &temp;
@@ -1140,7 +1140,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	if (String::Length(val)) {
 		i = String::Atoi(val);
 		if (i<=0 || i>100 || String::Length(val) > 4) {
-			Info_SetValueForKey( cl->userinfo, "handicap", "100", MAX_INFO_STRING);
+			Info_SetValueForKey( cl->userinfo, "handicap", "100", MAX_INFO_STRING_Q3);
 		}
 	}
 
@@ -1167,10 +1167,10 @@ void SV_UserinfoChanged( client_t *cl ) {
 	{
 		//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
 		if ( !SOCK_IsLocalAddress(cl->netchan.remoteAddress) )
-			Info_SetValueForKey( cl->userinfo, "ip", SOCK_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING);
+			Info_SetValueForKey( cl->userinfo, "ip", SOCK_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING_Q3);
 		else
 			// force the "ip" info key to "localhost" for local clients
-			Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING);
+			Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
 	}
 }
 

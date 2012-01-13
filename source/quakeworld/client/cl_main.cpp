@@ -415,10 +415,10 @@ void CL_Disconnect (void)
 	}
 	Cam_Reset();
 
-	if (cls.download)
+	if (clc.download)
 	{
-		FS_FCloseFile(cls.download);
-		cls.download = 0;
+		FS_FCloseFile(clc.download);
+		clc.download = 0;
 	}
 
 	CL_StopUpload();
@@ -743,7 +743,7 @@ drop to full console
 */
 void CL_Changing_f (void)
 {
-	if (cls.download)  // don't change when downloading
+	if (clc.download)  // don't change when downloading
 		return;
 
 	S_StopAllSounds();
@@ -762,7 +762,7 @@ The server is changing levels
 */
 void CL_Reconnect_f (void)
 {
-	if (cls.download)  // don't change when downloading
+	if (clc.download)  // don't change when downloading
 		return;
 
 	S_StopAllSounds();
@@ -996,11 +996,11 @@ void CL_Download_f (void)
 		return;
 	}
 
-	String::NCpyZ(cls.downloadname, Cmd_Argv(1), sizeof(cls.downloadname));
-	String::Cpy(cls.downloadtempname, cls.downloadname);
+	String::NCpyZ(clc.downloadName, Cmd_Argv(1), sizeof(clc.downloadName));
+	String::Cpy(clc.downloadTempName, clc.downloadName);
 
-	cls.download = FS_FOpenFileWrite(cls.downloadname);
-	cls.downloadtype = dl_single;
+	clc.download = FS_FOpenFileWrite(clc.downloadName);
+	clc.downloadType = dl_single;
 
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	clc.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));

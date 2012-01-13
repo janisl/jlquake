@@ -179,17 +179,6 @@ struct clientConnection_t : clientConnectionCommon_t
 	int			lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
 	char		serverCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
-	// file transfer from server
-	fileHandle_t download;
-	char		downloadTempName[MAX_OSPATH];
-	char		downloadName[MAX_OSPATH];
-	int			downloadNumber;
-	int			downloadBlock;	// block we are waiting for
-	int			downloadCount;	// how many bytes we got
-	int			downloadSize;	// how many bytes we got
-	char		downloadList[MAX_INFO_STRING]; // list of paks we need to download
-	qboolean	downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
-
 	// demo information
 	char		demoName[MAX_QPATH];
 	qboolean	spDemoRecording;
@@ -219,7 +208,7 @@ typedef struct {
 	netadr_t	adr;
 	int			start;
 	int			time;
-	char		info[MAX_INFO_STRING];
+	char		info[MAX_INFO_STRING_Q3];
 } ping_t;
 
 typedef struct {
@@ -283,7 +272,7 @@ struct clientStatic_t : clientStaticCommon_t
 	// update server info
 	netadr_t	updateServer;
 	char		updateChallenge[MAX_TOKEN_CHARS_Q3];
-	char		updateInfoString[MAX_INFO_STRING];
+	char		updateInfoString[MAX_INFO_STRING_Q3];
 
 	netadr_t	authorizeServer;
 };

@@ -634,7 +634,7 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void ) {
 	Com_Printf ("Server info settings:\n");
-	Info_Print ( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+	Info_Print ( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3) );
 }
 
 
@@ -647,7 +647,7 @@ Examine or change the serverinfo string
 */
 static void SV_Systeminfo_f( void ) {
 	Com_Printf ("System info settings:\n");
-	Info_Print ( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING) );
+	Info_Print ( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING_Q3) );
 }
 
 

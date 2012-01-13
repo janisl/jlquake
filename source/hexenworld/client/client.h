@@ -19,13 +19,6 @@ ca_onserver,		// processing data lists, donwloading, etc
 ca_active			// everything is in, so frames can be rendered
 } cactive_t;
 
-typedef enum {
-	dl_none,
-	dl_model,
-	dl_sound,
-	dl_single
-} dltype_t;		// download type
-
 //
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
@@ -39,13 +32,6 @@ struct client_static_t : clientStaticCommon_t
 	char		userinfo[HWMAX_INFO_STRING];
 
 	char		servername[MAX_OSPATH];	// name of server from original connect
-
-	fileHandle_t	download;		// file transfer from server
-	char		downloadtempname[MAX_OSPATH];
-	char		downloadname[MAX_OSPATH];
-	int			downloadnumber;
-	dltype_t	downloadtype;
-	int			downloadpercent;
 
 // demo loop control
 	int			demonum;		// -1 = don't play demos

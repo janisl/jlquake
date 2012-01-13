@@ -139,27 +139,27 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 
 	//ZOID - can't download when recording
 	if (cls.demorecording) {
-		Con_Printf("Unable to download %s in record mode.\n", cls.downloadname);
+		Con_Printf("Unable to download %s in record mode.\n", clc.downloadName);
 		return true;
 	}
 	//ZOID - can't download when playback
 	if (cls.demoplayback)
 		return true;
 
-	String::Cpy(cls.downloadname, filename);
-	Con_Printf ("Downloading %s...\n", cls.downloadname);
+	String::Cpy(clc.downloadName, filename);
+	Con_Printf ("Downloading %s...\n", clc.downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	String::StripExtension (cls.downloadname, cls.downloadtempname);
-	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (clc.downloadName, clc.downloadTempName);
+	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
 	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(
-		va("download %s", cls.downloadname));
+		va("download %s", clc.downloadName));
 
-	cls.downloadnumber++;
+	clc.downloadNumber++;
 
 	return false;
 }
@@ -187,18 +187,18 @@ void Model_NextDownload (void)
 	int		i;
 	extern	char gamedirfile[];
 
-	if (cls.downloadnumber == 0)
+	if (clc.downloadNumber == 0)
 	{
 		Con_Printf ("Checking models...\n");
-		cls.downloadnumber = 1;
+		clc.downloadNumber = 1;
 	}
 
-	cls.downloadtype = dl_model;
+	clc.downloadType = dl_model;
 	for ( 
-		; cl.model_name[cls.downloadnumber][0]
-		; cls.downloadnumber++)
+		; cl.model_name[clc.downloadNumber][0]
+		; clc.downloadNumber++)
 	{
-		s = cl.model_name[cls.downloadnumber];
+		s = cl.model_name[clc.downloadNumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
 		if (!CL_CheckOrDownloadFile(s))
@@ -252,18 +252,18 @@ void Sound_NextDownload (void)
 	char	*s;
 	int		i;
 
-	if (cls.downloadnumber == 0)
+	if (clc.downloadNumber == 0)
 	{
 		Con_Printf ("Checking sounds...\n");
-		cls.downloadnumber = 1;
+		clc.downloadNumber = 1;
 	}
 
-	cls.downloadtype = dl_sound;
+	clc.downloadType = dl_sound;
 	for ( 
-		; cl.sound_name[cls.downloadnumber][0]
-		; cls.downloadnumber++)
+		; cl.sound_name[clc.downloadNumber][0]
+		; clc.downloadNumber++)
 	{
-		s = cl.sound_name[cls.downloadnumber];
+		s = cl.sound_name[clc.downloadNumber];
 		if (!CL_CheckOrDownloadFile(va("sound/%s",s)))
 			return;		// started a download
 	}
@@ -291,7 +291,7 @@ CL_RequestNextDownload
 */
 void CL_RequestNextDownload (void)
 {
-	switch (cls.downloadtype)
+	switch (clc.downloadType)
 	{
 	case dl_single:
 		break;
@@ -330,31 +330,31 @@ void CL_ParseDownload (void)
 	if (size == -1)
 	{
 		Con_Printf ("File not found.\n");
-		if (cls.download)
+		if (clc.download)
 		{
 			Con_Printf ("cls.download shouldn't have been set\n");
-			FS_FCloseFile (cls.download);
-			cls.download = 0;
+			FS_FCloseFile(clc.download);
+			clc.download = 0;
 		}
 		CL_RequestNextDownload ();
 		return;
 	}
 
 	// open the file if not opened yet
-	if (!cls.download)
+	if (!clc.download)
 	{
-		cls.download = FS_FOpenFileWrite(cls.downloadtempname);
+		clc.download = FS_FOpenFileWrite(clc.downloadTempName);
 
-		if (!cls.download)
+		if (!clc.download)
 		{
 			net_message.readcount += size;
-			Con_Printf ("Failed to open %s\n", cls.downloadtempname);
+			Con_Printf ("Failed to open %s\n", clc.downloadTempName);
 			CL_RequestNextDownload ();
 			return;
 		}
 	}
 
-	FS_Write (net_message._data + net_message.readcount, size, cls.download);
+	FS_Write (net_message._data + net_message.readcount, size, clc.download);
 	net_message.readcount += size;
 
 	if (percent != 100)
@@ -369,7 +369,7 @@ void CL_ParseDownload (void)
 			Con_Printf ("%i%%", cls.downloadpercent);
 		}
 #endif
-		cls.downloadpercent = percent;
+		clc.downloadPercent = percent;
 
 		clc.netchan.message.WriteByte(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("nextdl");
@@ -380,13 +380,13 @@ void CL_ParseDownload (void)
 		Con_Printf ("100%%\n");
 #endif
 
-		FS_FCloseFile (cls.download);
+		FS_FCloseFile (clc.download);
 
 		// rename the temp file to it's final name
-		FS_Rename(cls.downloadtempname, cls.downloadname);
+		FS_Rename(clc.downloadTempName, clc.downloadName);
 
-		cls.download = 0;
-		cls.downloadpercent = 0;
+		clc.download = 0;
+		clc.downloadPercent = 0;
 
 		// get another file if needed
 
@@ -529,8 +529,8 @@ void CL_ParseSoundlist (void)
 		String::Cpy(cl.sound_name[numsounds], str);
 	}
 
-	cls.downloadnumber = 0;
-	cls.downloadtype = dl_sound;
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_sound;
 	Sound_NextDownload ();
 }
 
@@ -602,8 +602,8 @@ void CL_ParseModellist (void)
 //siege
 	clh2_player_models[5] = R_RegisterModel("models/hank.mdl");
 
-	cls.downloadnumber = 0;
-	cls.downloadtype = dl_model;
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_model;
 	Model_NextDownload ();
 }
 

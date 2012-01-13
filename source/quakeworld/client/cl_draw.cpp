@@ -142,7 +142,7 @@ void Draw_ConsoleBackground(int lines)
 	}
 
 	y = lines - 14;
-	if (!cls.download)
+	if (!clc.download)
 	{
 		char ver[80];
 		sprintf(ver, "JLQuakeWorld %s", JLQUAKE_VERSION_STRING);

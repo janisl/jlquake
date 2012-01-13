@@ -94,10 +94,36 @@ struct clientActiveCommon_t
 	float q2_lerpfrac;		// between oldframe and frame
 };
 
+// download type
+enum dltype_t
+{
+	dl_none,
+	dl_model,
+	dl_sound,
+	dl_skin,
+	dl_single
+};
+
 struct clientConnectionCommon_t
 {
 	// big stuff at end of structure so most offsets are 15 bits or less
 	netchan_t netchan;
+
+	// file transfer from server
+	fileHandle_t download;
+	char downloadTempName[MAX_OSPATH];
+	char downloadName[MAX_OSPATH];
+	int downloadNumber;
+	//	Only in QuakeWorld and HexenWorld
+	dltype_t downloadType;
+	//	Not in Quake 3
+	int downloadPercent;
+	//	Only in Quake 3
+	int downloadBlock;	// block we are waiting for
+	int downloadCount;	// how many bytes we got
+	int downloadSize;	// how many bytes we got
+	char downloadList[MAX_INFO_STRING_Q3]; // list of paks we need to download
+	qboolean downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
 
 	int qh_signon;			// 0 to SIGNONS
 };

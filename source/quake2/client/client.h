@@ -156,12 +156,6 @@ struct client_static_t : clientStaticCommon_t
 
 	int			challenge;			// from the server to use for connecting
 
-	fileHandle_t	download;			// file transfer from server
-	char		downloadtempname[MAX_OSPATH];
-	char		downloadname[MAX_OSPATH];
-	int			downloadnumber;
-	int			downloadpercent;
-
 // demo recording info must be here, so it isn't cleared on level change
 	qboolean	demorecording;
 	qboolean	demowaiting;	// don't record until a non-delta message is received

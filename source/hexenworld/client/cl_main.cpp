@@ -877,9 +877,9 @@ void CL_Download_f (void)
 		return;
 	}
 
-	String::Cpy(cls.downloadname, Cmd_Argv(1));
-	cls.download = FS_FOpenFileWrite (cls.downloadname);
-	cls.downloadtype = dl_single;
+	String::Cpy(clc.downloadName, Cmd_Argv(1));
+	clc.download = FS_FOpenFileWrite (clc.downloadName);
+	clc.downloadType = dl_single;
 
 	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
@@ -921,8 +921,8 @@ static void Skin_Skins_f()
 		return;
 	}
 
-	cls.downloadnumber = 0;
-	cls.downloadtype = dl_none;
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_none;
 
 	if (cls.state != ca_active)
 	{	// get next signon phase

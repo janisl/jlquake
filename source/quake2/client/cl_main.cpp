@@ -643,10 +643,10 @@ void CL_Disconnect (void)
 	CL_ClearState ();
 
 	// stop download
-	if (cls.download)
+	if (clc.download)
 	{
-		FS_FCloseFile(cls.download);
-		cls.download = 0;
+		FS_FCloseFile(clc.download);
+		clc.download = 0;
 	}
 
 	cls.state = ca_disconnected;
@@ -720,7 +720,7 @@ void CL_Changing_f (void)
 {
 	//ZOID
 	//if we are downloading, we don't change!  This so we don't suddenly stop downloading a map
-	if (cls.download)
+	if (clc.download)
 		return;
 
 	SCR_BeginLoadingPlaque ();
@@ -740,7 +740,7 @@ void CL_Reconnect_f (void)
 {
 	//ZOID
 	//if we are downloading, we don't change!  This so we don't suddenly stop downloading a map
-	if (cls.download)
+	if (clc.download)
 		return;
 
 	S_StopAllSounds ();

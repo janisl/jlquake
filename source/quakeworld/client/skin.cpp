@@ -94,7 +94,7 @@ Returns a pointer to the skin bitmap, or NULL to use the default
 */
 byte* Skin_Cache(qw_skin_t* skin)
 {
-	if (cls.downloadtype == dl_skin)
+	if (clc.downloadType == dl_skin)
 		return NULL;		// use base until downloaded
 
 	if (noskins->value==1) // JACK: So NOSKINS > 1 will show skins, but
@@ -149,15 +149,15 @@ void Skin_NextDownload (void)
 	q1player_info_t	*sc;
 	int			i;
 
-	if (cls.downloadnumber == 0)
+	if (clc.downloadNumber == 0)
 		Con_Printf ("Checking skins...\n");
-	cls.downloadtype = dl_skin;
+	clc.downloadType = dl_skin;
 
 	for ( 
-		; cls.downloadnumber != MAX_CLIENTS_QW
-		; cls.downloadnumber++)
+		; clc.downloadNumber != MAX_CLIENTS_QW
+		; clc.downloadNumber++)
 	{
-		sc = &cl.q1_players[cls.downloadnumber];
+		sc = &cl.q1_players[clc.downloadNumber];
 		if (!sc->name[0])
 			continue;
 		Skin_Find (sc);
@@ -167,7 +167,7 @@ void Skin_NextDownload (void)
 			return;		// started a download
 	}
 
-	cls.downloadtype = dl_none;
+	clc.downloadType = dl_none;
 
 	// now load them in for real
 	for (i=0 ; i<MAX_CLIENTS_QW ; i++)
@@ -208,8 +208,8 @@ void	Skin_Skins_f (void)
 	}
 	numskins = 0;
 
-	cls.downloadnumber = 0;
-	cls.downloadtype = dl_skin;
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_skin;
 	Skin_NextDownload ();
 }
 

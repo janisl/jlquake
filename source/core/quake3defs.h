@@ -77,3 +77,7 @@ enum
 	q3clc_clientCommand,		// [string] message
 	q3clc_EOF
 };
+
+#define MAX_INFO_STRING_Q3	1024
+#define MAX_INFO_KEY_Q3		1024
+#define MAX_INFO_VALUE_Q3	1024

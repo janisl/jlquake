@@ -551,13 +551,13 @@ void Con_DrawConsole (int lines)
 
 	// draw the download bar
 	// figure out width
-	if (cls.download)
+	if (clc.download)
 	{
-		char* text = String::RChr(cls.downloadname, '/');
+		char* text = String::RChr(clc.downloadName, '/');
 		if (text != NULL)
 			text++;
 		else
-			text = cls.downloadname;
+			text = clc.downloadName;
 
 		x = con.linewidth - ((con.linewidth * 7) / 40);
 		y = x - String::Length(text) - 8;
@@ -573,10 +573,10 @@ void Con_DrawConsole (int lines)
 		i = String::Length(dlbar);
 		dlbar[i++] = '\x80';
 		// where's the dot go?
-		if (cls.downloadpercent == 0)
+		if (clc.downloadPercent == 0)
 			n = 0;
 		else
-			n = y * cls.downloadpercent / 100;
+			n = y * clc.downloadPercent / 100;
 			
 		for (j = 0; j < y; j++)
 			if (j == n)
@@ -586,7 +586,7 @@ void Con_DrawConsole (int lines)
 		dlbar[i++] = '\x82';
 		dlbar[i] = 0;
 
-		sprintf(dlbar + String::Length(dlbar), " %02d%%", cls.downloadpercent);
+		sprintf(dlbar + String::Length(dlbar), " %02d%%", clc.downloadPercent);
 
 		// draw it
 		y = con.vislines-22 + 8;

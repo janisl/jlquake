@@ -79,20 +79,20 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 		return true;
 	}
 
-	String::Cpy(cls.downloadname, filename);
+	String::Cpy(clc.downloadName, filename);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	String::StripExtension (cls.downloadname, cls.downloadtempname);
-	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (clc.downloadName, clc.downloadTempName);
+	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
-	Com_Printf ("Downloading %s\n", cls.downloadname);
+	Com_Printf ("Downloading %s\n", clc.downloadName);
 	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.WriteString2(
-		va("download %s", cls.downloadname));
+		va("download %s", clc.downloadName));
 
-	cls.downloadnumber++;
+	clc.downloadNumber++;
 
 	return false;
 }
@@ -127,20 +127,20 @@ void	CL_Download_f (void)
 		return;
 	}
 
-	String::Cpy(cls.downloadname, filename);
-	Com_Printf ("Downloading %s\n", cls.downloadname);
+	String::Cpy(clc.downloadName, filename);
+	Com_Printf ("Downloading %s\n", clc.downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	String::StripExtension (cls.downloadname, cls.downloadtempname);
-	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (clc.downloadName, clc.downloadTempName);
+	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
 	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.WriteString2(
-		va("download %s", cls.downloadname));
+		va("download %s", clc.downloadName));
 
-	cls.downloadnumber++;
+	clc.downloadNumber++;
 }
 
 /*
@@ -185,32 +185,32 @@ void CL_ParseDownload (void)
 	if (size == -1)
 	{
 		Com_Printf ("Server does not have this file.\n");
-		if (cls.download)
+		if (clc.download)
 		{
 			// if here, we tried to resume a file but the server said no
-			FS_FCloseFile(cls.download);
-			cls.download = 0;
+			FS_FCloseFile(clc.download);
+			clc.download = 0;
 		}
 		CL_RequestNextDownload ();
 		return;
 	}
 
 	// open the file if not opened yet
-	if (!cls.download)
+	if (!clc.download)
 	{
-		CL_DownloadFileName(name, sizeof(name), cls.downloadtempname);
+		CL_DownloadFileName(name, sizeof(name), clc.downloadTempName);
 
-		cls.download = FS_SV_FOpenFileWrite(name);
-		if (!cls.download)
+		clc.download = FS_SV_FOpenFileWrite(name);
+		if (!clc.download)
 		{
 			net_message.readcount += size;
-			Com_Printf ("Failed to open %s\n", cls.downloadtempname);
+			Com_Printf ("Failed to open %s\n", clc.downloadTempName);
 			CL_RequestNextDownload ();
 			return;
 		}
 	}
 
-	FS_Write(net_message._data + net_message.readcount, size, cls.download);
+	FS_Write(net_message._data + net_message.readcount, size, clc.download);
 	net_message.readcount += size;
 
 	if (percent != 100)
@@ -225,7 +225,7 @@ void CL_ParseDownload (void)
 			Com_Printf ("%i%%", cls.downloadpercent);
 		}
 #endif
-		cls.downloadpercent = percent;
+		clc.downloadPercent = percent;
 
 		clc.netchan.message.WriteByte(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("nextdl");
@@ -237,17 +237,17 @@ void CL_ParseDownload (void)
 
 //		Com_Printf ("100%%\n");
 
-		FS_FCloseFile(cls.download);
+		FS_FCloseFile(clc.download);
 
 		// rename the temp file to it's final name
-		CL_DownloadFileName(oldn, sizeof(oldn), cls.downloadtempname);
-		CL_DownloadFileName(newn, sizeof(newn), cls.downloadname);
+		CL_DownloadFileName(oldn, sizeof(oldn), clc.downloadTempName);
+		CL_DownloadFileName(newn, sizeof(newn), clc.downloadName);
 		r = rename (oldn, newn);
 		if (r)
 			Com_Printf ("failed to rename.\n");
 
-		cls.download = 0;
-		cls.downloadpercent = 0;
+		clc.download = 0;
+		clc.downloadPercent = 0;
 
 		// get another file if needed
 
@@ -684,11 +684,11 @@ void CL_ParseServerMessage (void)
 
 		case q2svc_reconnect:
 			Com_Printf ("Server disconnected, reconnecting\n");
-			if (cls.download)
+			if (clc.download)
 			{
 				//ZOID, close download
-				FS_FCloseFile(cls.download);
-				cls.download = 0;
+				FS_FCloseFile(clc.download);
+				clc.download = 0;
 			}
 			cls.state = ca_connecting;
 			cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately

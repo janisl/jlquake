@@ -176,10 +176,6 @@ void Sys_PumpEvents( void );
 
 enum {qfalse, qtrue};
 
-#define	MAX_INFO_STRING		1024
-#define	MAX_INFO_KEY		1024
-#define	MAX_INFO_VALUE		1024
-
 
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 
