@@ -310,7 +310,7 @@ void CL_RequestNextDownload (void)
 	case dl_single:
 		break;
 	case dl_skin:
-		Skin_NextDownload ();
+		CLQW_SkinNextDownload ();
 		break;
 	case dl_model:
 		Model_NextDownload ();
@@ -846,7 +846,7 @@ void R_TranslatePlayerSkin(int playernum)
 
 	if (!player->skin)
 	{
-		Skin_Find(player);
+		CLQW_SkinFind(player);
 	}
 	byte* original = CLQW_SkinCache(player->skin);
 	if (original != NULL)
@@ -890,7 +890,7 @@ void CL_ProcessUserInfo (int slot, q1player_info_t *player)
 		player->spectator = false;
 
 	if (cls.state == ca_active)
-		Skin_Find (player);
+		CLQW_SkinFind (player);
 
 	CL_NewTranslation (slot);
 }

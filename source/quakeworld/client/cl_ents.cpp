@@ -293,7 +293,7 @@ static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 	// seperately for the players.  Heads are just uncolored.
 	if (!cl.q1_players[PlayerNum].skin)
 	{
-		Skin_Find(&cl.q1_players[PlayerNum]);
+		CLQW_SkinFind(&cl.q1_players[PlayerNum]);
 		R_TranslatePlayerSkin(PlayerNum);
 	}
 	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);

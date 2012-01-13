@@ -16,6 +16,8 @@
 
 #define MAX_STATIC_ENTITIES_Q1	128			// torches, etc
 
+#define MAX_CACHED_SKINS		128
+
 extern Cvar* cl_doubleeyes;
 
 extern q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
@@ -28,6 +30,10 @@ extern int clq1_spikeindex;
 
 extern Cvar* clqw_baseskin;
 extern Cvar* clqw_noskins;
+
+extern char		allskins[128];
+extern qw_skin_t		skins[MAX_CACHED_SKINS];
+extern int			numskins;
 
 void CLQ1_SignonReply();
 bool CLQW_CheckOrDownloadFile(const char* filename);

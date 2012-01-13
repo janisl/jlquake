@@ -20,60 +20,53 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-char		allskins[128];
-#define	MAX_CACHED_SKINS		128
-qw_skin_t		skins[MAX_CACHED_SKINS];
-int			numskins;
-
-/*
-================
-Skin_Find
-
-  Determines the best skin for the given scoreboard
-  slot, and sets scoreboard->skin
-
-================
-*/
-void Skin_Find (q1player_info_t *sc)
+//  Determines the best skin for the given scoreboard
+// slot, and sets scoreboard->skin
+void CLQW_SkinFind(q1player_info_t* sc)
 {
-	qw_skin_t		*skin;
-	int			i;
-	char		name[128];
-	const char*	s;
-
+	char name[128];
 	if (allskins[0])
+	{
 		String::Cpy(name, allskins);
+	}
 	else
 	{
-		s = Info_ValueForKey (sc->userinfo, "skin");
+		const char* s = Info_ValueForKey(sc->userinfo, "skin");
 		if (s && s[0])
+		{
 			String::Cpy(name, s);
+		}
 		else
+		{
 			String::Cpy(name, clqw_baseskin->string);
+		}
 	}
 
-	if (strstr (name, "..") || *name == '.')
+	if (strstr(name, "..") || *name == '.')
+	{
 		String::Cpy(name, "base");
+	}
 
-	String::StripExtension (name, name);
+	String::StripExtension(name, name);
 
-	for (i=0 ; i<numskins ; i++)
+	for (int i = 0; i < numskins; i++)
 	{
 		if (!String::Cmp(name, skins[i].name))
 		{
 			sc->skin = &skins[i];
-			CLQW_SkinCache (sc->skin);
+			CLQW_SkinCache(sc->skin);
 			return;
 		}
 	}
 
 	if (numskins == MAX_CACHED_SKINS)
-	{	// ran out of spots, so flush everything
-		Skin_Skins_f ();
+	{
+		// ran out of spots, so flush everything
+		CLQW_SkinSkins_f();
 		return;
 	}
 
-	skin = &skins[numskins];
+	qw_skin_t* skin = &skins[numskins];
 	sc->skin = skin;
 	numskins++;
 
@@ -81,67 +74,61 @@ void Skin_Find (q1player_info_t *sc)
 	String::NCpy(skin->name, name, sizeof(skin->name) - 1);
 }
 
-
-/*
-=================
-Skin_NextDownload
-=================
-*/
-void Skin_NextDownload (void)
+void CLQW_SkinNextDownload()
 {
 	q1player_info_t	*sc;
 	int			i;
 
-	if (clc.downloadNumber == 0)
-		Con_Printf ("Checking skins...\n");
-	clc.downloadType = dl_skin;
-
-	for ( 
-		; clc.downloadNumber != MAX_CLIENTS_QW
-		; clc.downloadNumber++)
+	if (clc_common->downloadNumber == 0)
 	{
-		sc = &cl.q1_players[clc.downloadNumber];
+		Log::write("Checking skins...\n");
+	}
+	clc_common->downloadType = dl_skin;
+
+	for (; clc_common->downloadNumber != MAX_CLIENTS_QW; clc_common->downloadNumber++)
+	{
+		sc = &cl_common->q1_players[clc_common->downloadNumber];
 		if (!sc->name[0])
+		{
 			continue;
-		Skin_Find (sc);
+		}
+		CLQW_SkinFind(sc);
 		if (clqw_noskins->value)
+		{
 			continue;
+		}
 		if (!CLQW_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
+		{
 			return;		// started a download
+		}
 	}
 
-	clc.downloadType = dl_none;
+	clc_common->downloadType = dl_none;
 
 	// now load them in for real
-	for (i=0 ; i<MAX_CLIENTS_QW ; i++)
+	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
-		sc = &cl.q1_players[i];
+		sc = &cl_common->q1_players[i];
 		if (!sc->name[0])
+		{
 			continue;
-		CLQW_SkinCache (sc->skin);
+		}
+		CLQW_SkinCache(sc->skin);
 		sc->skin = NULL;
 	}
 
 	if (cls.state != ca_active)
-	{	// get next signon phase
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2(va("begin %i", cl.servercount));
+	{
+		// get next signon phase
+		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
+		clc_common->netchan.message.WriteString2(va("begin %i", cl.servercount));
 	}
 }
 
-
-/*
-==========
-Skin_Skins_f
-
-Refind all skins, downloading if needed.
-==========
-*/
-void	Skin_Skins_f (void)
+//	Refind all skins, downloading if needed.
+void CLQW_SkinSkins_f()
 {
-	int		i;
-
-	for (i=0 ; i<numskins ; i++)
+	for (int i = 0; i < numskins; i++)
 	{
 		if (skins[i].data)
 		{
@@ -151,21 +138,14 @@ void	Skin_Skins_f (void)
 	}
 	numskins = 0;
 
-	clc.downloadNumber = 0;
-	clc.downloadType = dl_skin;
-	Skin_NextDownload ();
+	clc_common->downloadNumber = 0;
+	clc_common->downloadType = dl_skin;
+	CLQW_SkinNextDownload();
 }
 
-
-/*
-==========
-Skin_AllSkins_f
-
-Sets all skins to one specific one
-==========
-*/
-void	Skin_AllSkins_f (void)
+//	Sets all skins to one specific one
+void CLQW_SkinAllSkins_f()
 {
 	String::Cpy(allskins, Cmd_Argv(1));
-	Skin_Skins_f ();
+	CLQW_SkinSkins_f ();
 }

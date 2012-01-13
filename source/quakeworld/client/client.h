@@ -309,14 +309,10 @@ void Cam_FinishMove(qwusercmd_t *cmd);
 void Cam_Reset(void);
 void CL_InitCam(void);
 
-//
-// skin.c
-//
-
-void	Skin_Find (q1player_info_t *sc);
-void	Skin_Skins_f (void);
-void	Skin_AllSkins_f (void);
-void	Skin_NextDownload (void);
+void CLQW_SkinFind(q1player_info_t* sc);
+void CLQW_SkinNextDownload();
+void CLQW_SkinSkins_f();
+void CLQW_SkinAllSkins_f();
 
 extern	int		cl_playerindex, cl_flagindex;
 

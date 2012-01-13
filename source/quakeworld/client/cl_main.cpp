@@ -1099,8 +1099,8 @@ void CL_Init (void)
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 
-	Cmd_AddCommand ("skins", Skin_Skins_f);
-	Cmd_AddCommand ("allskins", Skin_AllSkins_f);
+	Cmd_AddCommand ("skins", CLQW_SkinSkins_f);
+	Cmd_AddCommand ("allskins", CLQW_SkinAllSkins_f);
 
 	Cmd_AddCommand ("quit", CL_Quit_f);
 

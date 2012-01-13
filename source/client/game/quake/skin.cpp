@@ -20,6 +20,10 @@
 Cvar* clqw_baseskin;
 Cvar* clqw_noskins;
 
+char allskins[128];
+qw_skin_t skins[MAX_CACHED_SKINS];
+int numskins;
+
 //	Returns a pointer to the skin bitmap, or NULL to use the default
 byte* CLQW_SkinCache(qw_skin_t* skin)
 {
