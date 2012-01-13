@@ -53,3 +53,52 @@ void CLQ1_SignonReply()
 		break;
 	}
 }
+
+//	Returns true if the file exists, otherwise it attempts
+// to start a download from the server.
+bool CLQW_CheckOrDownloadFile(const char* filename)
+{
+	fileHandle_t	f;
+
+	if (strstr(filename, ".."))
+	{
+		Log::write("Refusing to download a path with ..\n");
+		return true;
+	}
+
+	FS_FOpenFileRead(filename, &f, true);
+	if (f)
+	{
+		// it exists, no need to download
+		FS_FCloseFile(f);
+		return true;
+	}
+
+	//ZOID - can't download when recording
+	if (clc_common->demorecording)
+	{
+		Log::write("Unable to download %s in record mode.\n", clc_common->downloadName);
+		return true;
+	}
+	//ZOID - can't download when playback
+	if (clc_common->demoplaying)
+	{
+		return true;
+	}
+
+	String::Cpy(clc_common->downloadName, filename);
+	Log::write("Downloading %s...\n", clc_common->downloadName);
+
+	// download to a temp name, and only rename
+	// to the real name when done, so if interrupted
+	// a runt file wont be left
+	String::StripExtension(clc_common->downloadName, clc_common->downloadTempName);
+	String::Cat(clc_common->downloadTempName, sizeof(clc_common->downloadTempName), ".tmp");
+
+	clc_common->netchan.message.WriteByte(q1clc_stringcmd);
+	clc_common->netchan.message.WriteString2(va("download %s", clc_common->downloadName));
+
+	clc_common->downloadNumber++;
+
+	return false;
+}
