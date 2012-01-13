@@ -201,10 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\m_flash.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\qcommon\net_chan.cpp"
 				>
 			</File>
