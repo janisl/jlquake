@@ -1,0 +1,395 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="renderer">
+      <UniqueIdentifier>{7d3c462b-2f65-4541-a8d0-b3c15f8788be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer\images">
+      <UniqueIdentifier>{e8ba6281-118d-44c8-9170-68e40a5f441a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer\models">
+      <UniqueIdentifier>{e63cdb6b-dd84-43e6-ae0a-560d955b9138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound">
+      <UniqueIdentifier>{c88e982e-9798-4f5e-90c4-22b750c63594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound\audiocd">
+      <UniqueIdentifier>{0620d569-8850-4220-90b7-ed800a0cacaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound\midi">
+      <UniqueIdentifier>{cac9264c-dace-41e5-8103-f44509d2222c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{024a5455-2c02-4cbe-aabf-cbb3e0d79392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cinematic">
+      <UniqueIdentifier>{3a6396d4-3046-4c2b-99ea-39c77f3208b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{b6469c72-1e9f-43f9-9f66-bdb17145a794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{e55caa28-1631-4bfd-8041-866d5c028a68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\quake">
+      <UniqueIdentifier>{ae2df484-f060-4d0c-9487-bede1b7e3277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\hexen2">
+      <UniqueIdentifier>{74891c9c-5632-4fef-9a14-61776c380979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\quake2">
+      <UniqueIdentifier>{aba49e77-8828-4d72-85eb-2720a6ffb061}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="renderer\backend.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\commands.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\curve.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\driver_wgl.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\flares.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\font.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\init.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\light.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\main.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\marks.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\noise.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\particle.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\qgl.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\scene.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\screenshot.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\shade.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\shade_calculate.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\shader.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\shadows.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\skin.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\sky.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\state.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\surface1.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\surface2.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\surface3.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\wad.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\world.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\bmp.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\image.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\jpg.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\pcx.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\pic.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\tga.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\images\wal.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\bsp29.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\bsp38.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\bsp46.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\md2.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\md3.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\md4.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\mdl.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\model.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\sp2.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\spr.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\driver_directsound.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\main.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\memory.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\mix.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\audiocd\windows.cpp">
+      <Filter>sound\audiocd</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\midi\windows.cpp">
+      <Filter>sound\midi</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\midi\windows_stream_converter.cpp">
+      <Filter>sound\midi</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\console.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\draw.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\screen.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="cinematic\cin.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="cinematic\main.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="cinematic\pcx.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="cinematic\roq.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="input\keys.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="input\main.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="input\windows.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="game\dynamic_lights.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\light_styles.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\particles.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\connection.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\entities.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\light_effects.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\particle_effects.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\projectiles.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\skin.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\temporary_entities.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\chunk.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\effects.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\entities.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\explosion.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\light_effects.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\particle_effects.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\projectiles.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\stream.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\temporary_entities.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\beam.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\effects.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\explosion.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\laser.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\light_effects.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\main.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\particle_effects.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\sustain.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\temporary_entities.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="client_main.cpp" />
+    <ClCompile Include="system_windows.cpp" />
+    <ClCompile Include="utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="renderer\cvars.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\local.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\public.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\qgl.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\qgl_functions.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\shader.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\state.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\images\image.h">
+      <Filter>renderer\images</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\models\model.h">
+      <Filter>renderer\models</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\local.h">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\public.h">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\midi\midi.h">
+      <Filter>sound\midi</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\midi\midstuff.h">
+      <Filter>sound\midi</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\console.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\screen.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ui.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="cinematic\local.h">
+      <Filter>cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="cinematic\public.h">
+      <Filter>cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="input\keycodes.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="input\public.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="game\dynamic_lights.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\light_styles.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\particles.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake\local.h">
+      <Filter>game\quake</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake2\local.h">
+      <Filter>game\quake2</Filter>
+    </ClInclude>
+    <ClInclude Include="client.h" />
+    <ClInclude Include="windows_shared.h" />
+  </ItemGroup>
+</Project>
