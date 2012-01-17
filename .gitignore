@@ -1,2 +1,7 @@
 build
 jlquake.kdev4
+*.opensdf
+*.sdf
+*.suo
+*.user
+ipch
