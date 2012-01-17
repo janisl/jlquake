@@ -5,6 +5,7 @@
   <PropertyGroup>
     <_PropertySheetDisplayName>Common project properties</_PropertySheetDisplayName>
     <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Platform)\$(Configuration)\intermediate\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup />
