@@ -32,11 +32,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\common.props" />
     <Import Project="..\..\release.props" />
+    <Import Project="..\client_exe.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\common.props" />
     <Import Project="..\..\debug.props" />
+    <Import Project="..\client_exe.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -45,17 +47,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile />
     <ResourceCompile />
-    <Link>
-      <AdditionalDependencies>winmm.lib;wsock32.lib;iphlpapi.lib;dxguid.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
+    <Link />
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile />
     <ResourceCompile />
-    <Link>
-      <AdditionalDependencies>winmm.lib;wsock32.lib;iphlpapi.lib;dxguid.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
+    <Link />
     <Bscmake />
     <ClCompile />
   </ItemDefinitionGroup>
