@@ -45,17 +45,13 @@
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <BrowseInformation>true</BrowseInformation>
-    </ClCompile>
+    <ClCompile />
     <ResourceCompile />
     <Link />
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <BrowseInformation>true</BrowseInformation>
-    </ClCompile>
+    <ClCompile />
     <ResourceCompile />
     <Link />
     <Bscmake />
