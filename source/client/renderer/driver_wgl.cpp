@@ -144,7 +144,7 @@ static void AppActivate(bool fActive, bool minimize)
 //
 //==========================================================================
 
-static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{

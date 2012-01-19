@@ -177,5 +177,8 @@
     <ClCompile Include="system_console_windows.cpp" />
     <ClCompile Include="system_windows.cpp" />
     <ClCompile Include="unzip.cpp" />
+    <ClCompile Include="virtual_machine\none.cpp">
+      <Filter>virtual_machine</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
