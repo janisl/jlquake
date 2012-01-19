@@ -62,7 +62,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	CPUSTRING	"win-x86"
 #elif defined _M_ALPHA
 #define	CPUSTRING	"win-AXP"
-#elif defined _M_X86_64
+#elif defined _M_X64
 #define	CPUSTRING	"win-x86_64"
 #endif
 #else
@@ -70,7 +70,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	CPUSTRING	"win-x86-debug"
 #elif defined _M_ALPHA
 #define	CPUSTRING	"win-AXP-debug"
-#elif defined _M_X86_64
+#elif defined _M_X64
 #define	CPUSTRING	"win-x86_64-debug"
 #endif
 #endif

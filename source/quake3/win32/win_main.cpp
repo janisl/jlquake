@@ -148,7 +148,7 @@ void * Sys_LoadDll( const char *name, char *fqpath , int (**entryPoint)(int, ...
 
 #if defined _M_IX86
 	String::Sprintf( filename, sizeof( filename ), "%sx86.dll", name );
-#elif defined _M_X86_64
+#elif defined _M_X64
 	String::Sprintf( filename, sizeof( filename ), "%sx86_64.dll", name );
 #else
 #error "Unknown arch"

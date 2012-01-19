@@ -39,14 +39,19 @@ Sys_SnapVector
 ================
 */
 long fastftol( float f ) {
+#ifdef _WIN64
+	return (long)f;
+#else
 	static int tmp;
 	__asm fld f
 	__asm fistp tmp
 	__asm mov eax, tmp
+#endif
 }
 
 void Sys_SnapVector( float *v )
 {
+#ifndef _WIN64
 	int i;
 	float f;
 
@@ -64,13 +69,13 @@ void Sys_SnapVector( float *v )
 	__asm	fld		f;
 	__asm	fistp	i;
 	*v = i;
-	/*
+#else
 	*v = fastftol(*v);
 	v++;
 	*v = fastftol(*v);
 	v++;
 	*v = fastftol(*v);
-	*/
+#endif
 }
 
 
@@ -79,6 +84,7 @@ void Sys_SnapVector( float *v )
 ** Disable all optimizations temporarily so this code works correctly!
 **
 */
+#ifndef _WIN64
 #pragma optimize( "", off )
 
 /*
@@ -211,11 +217,14 @@ static int IsMMX( void )
 		return qtrue;
 	return qfalse;
 }
+#endif
 
 int Sys_GetProcessorId( void )
 {
 #if defined _M_ALPHA
 	return CPUID_AXP;
+#elif defined _M_X64
+	return CPUID_INTEL_KATMAI;
 #elif !defined _M_IX86
 	return CPUID_GENERIC;
 #else
