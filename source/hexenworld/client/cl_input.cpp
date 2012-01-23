@@ -549,15 +549,15 @@ void CL_SendCmd (void)
 //	Con_Printf("I  %hd %hd %hd\n",cmd->forwardmove, cmd->sidemove, cmd->upmove);
 
 	// request delta compression of entities
-	if (clc.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_HW-1)
-		cl.validsequence = 0;
+	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_HW-1)
+		cl.qh_validsequence = 0;
 
-	if (cl.validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
+	if (cl.qh_validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
 		!clc.demorecording)
 	{
-		cl.hw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_HW].delta_sequence = cl.validsequence;
+		cl.hw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_HW].delta_sequence = cl.qh_validsequence;
 		buf.WriteByte(hwclc_delta);
-		buf.WriteByte(cl.validsequence&255);
+		buf.WriteByte(cl.qh_validsequence&255);
 	}
 	else
 		cl.hw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_HW].delta_sequence = -1;

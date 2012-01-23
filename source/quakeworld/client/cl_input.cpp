@@ -458,9 +458,9 @@ void CL_SendCmd (void)
 
 	// save this command off for prediction
 	i = clc.netchan.outgoingSequence & UPDATE_MASK_QW;
-	cmd = &cl.frames[i].cmd;
-	cl.frames[i].senttime = realtime;
-	cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
+	cmd = &cl.qw_frames[i].cmd;
+	cl.qw_frames[i].senttime = realtime;
+	cl.qw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
 //	seq_hash = (clc.netchan.outgoing_sequence & 0xffff) ; // ^ QW_CHECK_HASH;
 	seq_hash = clc.netchan.outgoingSequence;
@@ -494,17 +494,17 @@ void CL_SendCmd (void)
 	buf.WriteByte((byte)lost);
 
 	i = (clc.netchan.outgoingSequence-2) & UPDATE_MASK_QW;
-	cmd = &cl.frames[i].cmd;
+	cmd = &cl.qw_frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
 	i = (clc.netchan.outgoingSequence-1) & UPDATE_MASK_QW;
-	cmd = &cl.frames[i].cmd;
+	cmd = &cl.qw_frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
 	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_QW;
-	cmd = &cl.frames[i].cmd;
+	cmd = &cl.qw_frames[i].cmd;
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
@@ -513,18 +513,18 @@ void CL_SendCmd (void)
 		seq_hash);
 
 	// request delta compression of entities
-	if (clc.netchan.outgoingSequence - cl.validsequence >= UPDATE_BACKUP_QW-1)
-		cl.validsequence = 0;
+	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_QW-1)
+		cl.qh_validsequence = 0;
 
-	if (cl.validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
+	if (cl.qh_validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
 		!clc.demorecording)
 	{
-		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.validsequence;
+		cl.qw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.qh_validsequence;
 		buf.WriteByte(qwclc_delta);
-		buf.WriteByte(cl.validsequence&255);
+		buf.WriteByte(cl.qh_validsequence&255);
 	}
 	else
-		cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
+		cl.qw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
 
 	if (clc.demorecording)
 		CL_WriteDemoCmd(cmd);

@@ -39,254 +39,6 @@ PACKET ENTITY PARSING / LINKING
 =========================================================================
 */
 
-/*
-==================
-CL_ParseDelta
-
-Can go from either a baseline or a previous packet_entity
-==================
-*/
-void CL_ParseDelta (q1entity_state_t *from, q1entity_state_t *to, int bits)
-{
-	int			i;
-
-	// set everything to the state we are delta'ing from
-	*to = *from;
-
-	to->number = bits & 511;
-	bits &= ~511;
-
-	if (bits & QWU_MOREBITS)
-	{	// read in the low order bits
-		i = net_message.ReadByte ();
-		bits |= i;
-	}
-
-	// count the bits for net profiling
-	for (i=0 ; i<16 ; i++)
-		if (bits&(1<<i))
-			bitcounts[i]++;
-
-	to->flags = bits;
-	
-	if (bits & QWU_MODEL)
-		to->modelindex = net_message.ReadByte ();
-		
-	if (bits & QWU_FRAME)
-		to->frame = net_message.ReadByte ();
-
-	if (bits & QWU_COLORMAP)
-		to->colormap = net_message.ReadByte();
-
-	if (bits & QWU_SKIN)
-		to->skinnum = net_message.ReadByte();
-
-	if (bits & QWU_EFFECTS)
-		to->effects = net_message.ReadByte();
-
-	if (bits & QWU_ORIGIN1)
-		to->origin[0] = net_message.ReadCoord ();
-		
-	if (bits & QWU_ANGLE1)
-		to->angles[0] = net_message.ReadAngle();
-
-	if (bits & QWU_ORIGIN2)
-		to->origin[1] = net_message.ReadCoord ();
-		
-	if (bits & QWU_ANGLE2)
-		to->angles[1] = net_message.ReadAngle();
-
-	if (bits & QWU_ORIGIN3)
-		to->origin[2] = net_message.ReadCoord ();
-		
-	if (bits & QWU_ANGLE3)
-		to->angles[2] = net_message.ReadAngle();
-
-	if (bits & QWU_SOLID)
-	{
-		// FIXME
-	}
-}
-
-
-/*
-=================
-FlushEntityPacket
-=================
-*/
-void FlushEntityPacket (void)
-{
-	int			word;
-	q1entity_state_t	olde, newe;
-
-	Con_DPrintf ("FlushEntityPacket\n");
-
-	Com_Memset(&olde, 0, sizeof(olde));
-
-	cl.validsequence = 0;		// can't render a frame
-	cl.frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
-
-	// read it all, but ignore it
-	while (1)
-	{
-		word = (unsigned short)net_message.ReadShort ();
-		if (net_message.badread)
-		{	// something didn't parse right...
-			Host_EndGame ("msg_badread in packetentities");
-			return;
-		}
-
-		if (!word)
-			break;	// done
-
-		CL_ParseDelta (&olde, &newe, word);
-	}
-}
-
-/*
-==================
-CL_ParsePacketEntities
-
-An qwsvc_packetentities has just been parsed, deal with the
-rest of the data stream.
-==================
-*/
-void CL_ParsePacketEntities (qboolean delta)
-{
-	int			oldpacket, newpacket;
-	qwpacket_entities_t	*oldp, *newp, dummy;
-	int			oldindex, newindex;
-	int			word, newnum, oldnum;
-	qboolean	full;
-	byte		from;
-
-	newpacket = clc.netchan.incomingSequence&UPDATE_MASK_QW;
-	newp = &cl.frames[newpacket].packet_entities;
-	cl.frames[newpacket].invalid = false;
-
-	if (delta)
-	{
-		from = net_message.ReadByte ();
-
-		oldpacket = cl.frames[newpacket].delta_sequence;
-
-		if ( (from&UPDATE_MASK_QW) != (oldpacket&UPDATE_MASK_QW) )
-			Con_DPrintf ("WARNING: from mismatch\n");
-	}
-	else
-		oldpacket = -1;
-
-	full = false;
-	if (oldpacket != -1)
-	{
-		if (clc.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_QW-1)
-		{	// we can't use this, it is too old
-			FlushEntityPacket ();
-			return;
-		}
-		cl.validsequence = clc.netchan.incomingSequence;
-		oldp = &cl.frames[oldpacket&UPDATE_MASK_QW].packet_entities;
-	}
-	else
-	{	// this is a full update that we can start delta compressing from now
-		oldp = &dummy;
-		dummy.num_entities = 0;
-		cl.validsequence = clc.netchan.incomingSequence;
-		full = true;
-	}
-
-	oldindex = 0;
-	newindex = 0;
-	newp->num_entities = 0;
-
-	while (1)
-	{
-		word = (unsigned short)net_message.ReadShort ();
-		if (net_message.badread)
-		{	// something didn't parse right...
-			Host_EndGame ("msg_badread in packetentities");
-			return;
-		}
-
-		if (!word)
-		{
-			while (oldindex < oldp->num_entities)
-			{	// copy all the rest of the entities from the old packet
-//Con_Printf ("copy %i\n", oldp->entities[oldindex].number);
-				if (newindex >= QWMAX_PACKET_ENTITIES)
-					Host_EndGame ("CL_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
-				newp->entities[newindex] = oldp->entities[oldindex];
-				newindex++;
-				oldindex++;
-			}
-			break;
-		}
-		newnum = word&511;
-		oldnum = oldindex >= oldp->num_entities ? 9999 : oldp->entities[oldindex].number;
-
-		while (newnum > oldnum)
-		{
-			if (full)
-			{
-				Con_Printf ("WARNING: oldcopy on full update");
-				FlushEntityPacket ();
-				return;
-			}
-
-//Con_Printf ("copy %i\n", oldnum);
-			// copy one of the old entities over to the new packet unchanged
-			if (newindex >= QWMAX_PACKET_ENTITIES)
-				Host_EndGame ("CL_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
-			newp->entities[newindex] = oldp->entities[oldindex];
-			newindex++;
-			oldindex++;
-			oldnum = oldindex >= oldp->num_entities ? 9999 : oldp->entities[oldindex].number;
-		}
-
-		if (newnum < oldnum)
-		{	// new from baseline
-//Con_Printf ("baseline %i\n", newnum);
-			if (word & QWU_REMOVE)
-			{
-				if (full)
-				{
-					cl.validsequence = 0;
-					Con_Printf ("WARNING: QWU_REMOVE on full update\n");
-					FlushEntityPacket ();
-					return;
-				}
-				continue;
-			}
-			if (newindex >= QWMAX_PACKET_ENTITIES)
-				Host_EndGame ("CL_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
-			CL_ParseDelta (&clq1_baselines[newnum], &newp->entities[newindex], word);
-			newindex++;
-			continue;
-		}
-
-		if (newnum == oldnum)
-		{	// delta from previous
-			if (full)
-			{
-				cl.validsequence = 0;
-				Con_Printf ("WARNING: delta on full update");
-			}
-			if (word & QWU_REMOVE)
-			{
-				oldindex++;
-				continue;
-			}
-//Con_Printf ("delta %i\n",newnum);
-			CL_ParseDelta (&oldp->entities[oldindex], &newp->entities[newindex], word);
-			newindex++;
-			oldindex++;
-		}
-
-	}
-
-	newp->num_entities = newindex;
-}
-
 static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 {
 	// we can't dynamically colormap textures, so they are cached
@@ -316,8 +68,8 @@ void CL_LinkPacketEntities (void)
 	int					i;
 	int					pnum;
 
-	pack = &cl.frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
-	qwpacket_entities_t* PrevPack = &cl.frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
+	pack = &cl.qw_frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
+	qwpacket_entities_t* PrevPack = &cl.qw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
 
 	autorotate = AngleMod(100*cl.serverTimeFloat);
 
@@ -464,7 +216,7 @@ void CL_ParsePlayerinfo (void)
 
 	info = &cl.q1_players[num];
 
-	state = &cl.frames[parsecountmod].playerstate[num];
+	state = &cl.qw_frames[parsecountmod].playerstate[num];
 
 	flags = state->flags = net_message.ReadShort ();
 
@@ -603,7 +355,7 @@ void CL_LinkPlayers (void)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.frames[cl.parsecount&UPDATE_MASK_QW];
+	frame = &cl.qw_frames[cl.parsecount&UPDATE_MASK_QW];
 
 	for (j=0, info=cl.q1_players, state=frame->playerstate ; j < MAX_CLIENTS_QW 
 		; j++, info++, state++)
@@ -708,7 +460,7 @@ void CL_SetSolidEntities (void)
 	pmove.physents[0].info = 0;
 	pmove.numphysent = 1;
 
-	frame = &cl.frames[parsecountmod];
+	frame = &cl.qw_frames[parsecountmod];
 	pak = &frame->packet_entities;
 
 	for (i=0 ; i<pak->num_entities ; i++)
@@ -750,7 +502,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.frames[cl.parsecount&UPDATE_MASK_QW];
+	frame = &cl.qw_frames[cl.parsecount&UPDATE_MASK_QW];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
 		j < MAX_CLIENTS_QW;
@@ -770,7 +522,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 		// note that the local player is special, since he moves locally
 		// we use his last predicted postition
 		if (j == cl.playernum) {
-			VectorCopy(cl.frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].playerstate[cl.playernum].origin,
+			VectorCopy(cl.qw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].playerstate[cl.playernum].origin,
 				pplayer->origin);
 		} else {
 			// only predict half the move to minimize overruns
@@ -854,7 +606,7 @@ void CL_EmitEntities (void)
 {
 	if (cls.state != CA_ACTIVE)
 		return;
-	if (!cl.validsequence)
+	if (!cl.qh_validsequence)
 		return;
 
 	R_ClearScene();

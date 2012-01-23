@@ -117,7 +117,7 @@ void CL_PredictMove (void)
 	if (cl.intermission)
 		return;
 
-	if (!cl.validsequence)
+	if (!cl.qh_validsequence)
 		return;
 
 	if (clc.netchan.outgoingSequence - clc.netchan.incomingSequence >= UPDATE_BACKUP_HW-1)

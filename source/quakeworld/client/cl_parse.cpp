@@ -121,7 +121,7 @@ int CL_CalcNet (void)
 		; i <= clc.netchan.outgoingSequence
 		; i++)
 	{
-		frame = &cl.frames[i&UPDATE_MASK_QW];
+		frame = &cl.qw_frames[i&UPDATE_MASK_QW];
 		if (frame->receivedtime == -1)
 			packet_latency[i&NET_TIMINGSMASK] = 9999;	// dropped
 		else if (frame->receivedtime == -2)
@@ -785,8 +785,8 @@ void CL_ParseClientdata (void)
 	cl.parsecount = i;
 	i &= UPDATE_MASK_QW;
 	parsecountmod = i;
-	frame = &cl.frames[i];
-	parsecounttime = cl.frames[i].senttime;
+	frame = &cl.qw_frames[i];
+	parsecounttime = cl.qw_frames[i].senttime;
 
 	frame->receivedtime = realtime;
 
@@ -954,7 +954,7 @@ void CL_MuzzleFlash (void)
 	{
 		return;
 	}
-	qwplayer_state_t* pl = &cl.frames[parsecountmod].playerstate[i - 1];
+	qwplayer_state_t* pl = &cl.qw_frames[parsecountmod].playerstate[i - 1];
 	CLQ1_MuzzleFlashLight(i, pl->origin, pl->viewangles);
 }
 
@@ -1203,7 +1203,7 @@ void CL_ParseServerMessage (void)
 		case qwsvc_chokecount:		// some preceding packets were choked
 			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
-				cl.frames[ (clc.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_QW ].receivedtime = -2;
+				cl.qw_frames[ (clc.netchan.incomingAcknowledged-1-j)&UPDATE_MASK_QW ].receivedtime = -2;
 			break;
 
 		case qwsvc_modellist:
@@ -1215,11 +1215,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case qwsvc_packetentities:
-			CL_ParsePacketEntities (false);
+			CLQW_ParsePacketEntities(net_message);
 			break;
 
 		case qwsvc_deltapacketentities:
-			CL_ParsePacketEntities (true);
+			CLQW_ParseDeltaPacketEntities(net_message);
 			break;
 
 		case qwsvc_maxspeed :

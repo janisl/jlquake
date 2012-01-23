@@ -195,7 +195,7 @@ qboolean CL_GetDemoMessage (void)
 	case dem_cmd :
 		// user sent input
 		i = clc.netchan.outgoingSequence & UPDATE_MASK_QW;
-		pcmd = &cl.frames[i].cmd;
+		pcmd = &cl.qw_frames[i].cmd;
 		r = FS_Read (pcmd, sizeof(*pcmd), clc.demofile);
 		if (r != sizeof(*pcmd))
 		{
@@ -208,8 +208,8 @@ qboolean CL_GetDemoMessage (void)
 		pcmd->forwardmove = LittleShort(pcmd->forwardmove);
 		pcmd->sidemove    = LittleShort(pcmd->sidemove);
 		pcmd->upmove      = LittleShort(pcmd->upmove);
-		cl.frames[i].senttime = demotime;
-		cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
+		cl.qw_frames[i].senttime = demotime;
+		cl.qw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 		clc.netchan.outgoingSequence++;
 		for (i=0 ; i<3 ; i++)
 		{

@@ -190,7 +190,7 @@ void FlushEntityPacket (void)
 
 	Com_Memset(&olde, 0, sizeof(olde));
 
-	cl.validsequence = 0;		// can't render a frame
+	cl.qh_validsequence = 0;		// can't render a frame
 	cl.hw_frames[clc.netchan.incomingSequence&UPDATE_MASK_HW].invalid = true;
 
 	// read it all, but ignore it
@@ -251,14 +251,14 @@ void CL_ParsePacketEntities (qboolean delta)
 			FlushEntityPacket ();
 			return;
 		}
-		cl.validsequence = clc.netchan.incomingSequence;
+		cl.qh_validsequence = clc.netchan.incomingSequence;
 		oldp = &cl.hw_frames[oldpacket&UPDATE_MASK_HW].packet_entities;
 	}
 	else
 	{	// this is a full update that we can start delta compressing from now
 		oldp = &dummy;
 		dummy.num_entities = 0;
-		cl.validsequence = clc.netchan.incomingSequence;
+		cl.qh_validsequence = clc.netchan.incomingSequence;
 		full = true;
 	}
 
@@ -317,7 +317,7 @@ void CL_ParsePacketEntities (qboolean delta)
 			{
 				if (full)
 				{
-					cl.validsequence = 0;
+					cl.qh_validsequence = 0;
 					Con_Printf ("WARNING: HWU_REMOVE on full update\n");
 					FlushEntityPacket ();
 					return;
@@ -335,7 +335,7 @@ void CL_ParsePacketEntities (qboolean delta)
 		{	// delta from previous
 			if (full)
 			{
-				cl.validsequence = 0;
+				cl.qh_validsequence = 0;
 				Con_Printf ("WARNING: delta on full update");
 			}
 			if (word & HWU_REMOVE)
@@ -1175,7 +1175,7 @@ void CL_EmitEntities (void)
 {
 	if (cls.state != CA_ACTIVE)
 		return;
-	if (!cl.validsequence)
+	if (!cl.qh_validsequence)
 		return;
 
 	R_ClearScene();

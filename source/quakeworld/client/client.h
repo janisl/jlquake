@@ -75,9 +75,6 @@ struct client_state_t : clientActiveCommon_t
 	char		serverinfo[MAX_SERVERINFO_STRING];
 
 	int			parsecount;		// server message counter
-	int			validsequence;	// this is the sequence number of the last good
-								// packetentity_t we got.  If this is 0, we can't
-								// render a frame yet
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 
@@ -87,9 +84,6 @@ struct client_state_t : clientActiveCommon_t
 
 	double		last_ping_request;	// while showing scoreboard
 	double		last_servermessage;
-
-// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK_QW] = cmd
-	qwframe_t		frames[UPDATE_BACKUP_QW];
 
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc
@@ -269,7 +263,6 @@ void V_ParseDamage (void);
 void CL_SetSolidPlayers (int playernum);
 void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities (void);
-void CL_ParsePacketEntities (qboolean delta);
 void CL_SetSolidEntities (void);
 void CL_ParsePlayerinfo (void);
 

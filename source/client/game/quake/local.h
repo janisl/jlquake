@@ -37,6 +37,8 @@ q1entity_t* CLQ1_EntityNum(int number);
 void CLQ1_ParseSpawnBaseline(QMsg& message);
 void CLQ1_ParseSpawnStatic(QMsg& message);
 void CLQ1_ParseUpdate(QMsg& message, int bits);
+void CLQW_ParsePacketEntities(QMsg& message);
+void CLQW_ParseDeltaPacketEntities(QMsg& message);
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
 void CLQ1_TranslatePlayerSkin(int playernum);
 void CLQ1_LinkStaticEntities();

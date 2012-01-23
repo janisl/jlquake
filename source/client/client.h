@@ -79,9 +79,15 @@ struct clientActiveCommon_t
 	double qh_mtime[2];		// the timestamp of last two messages	
 
 	int qh_maxclients;
+	int qh_validsequence;	// this is the sequence number of the last good
+								// packetentity_t we got.  If this is 0, we can't
+								// render a frame yet
 
 	// all player information
 	q1player_info_t q1_players[BIGGEST_MAX_CLIENTS_Q1];
+
+	// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK_QW] = cmd
+	qwframe_t qw_frames[UPDATE_BACKUP_QW];
 
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 
