@@ -199,8 +199,6 @@ void CL_LinkPacketEntities (void)
 CL_ParsePlayerinfo
 ===================
 */
-extern int parsecountmod;
-extern double parsecounttime;
 void CL_ParsePlayerinfo (void)
 {
 	int			msec;
@@ -216,7 +214,7 @@ void CL_ParsePlayerinfo (void)
 
 	info = &cl.q1_players[num];
 
-	state = &cl.qw_frames[parsecountmod].playerstate[num];
+	state = &cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].playerstate[num];
 
 	flags = state->flags = net_message.ReadShort ();
 
@@ -233,10 +231,10 @@ void CL_ParsePlayerinfo (void)
 	if (flags & PF_MSEC)
 	{
 		msec = net_message.ReadByte ();
-		state->state_time = parsecounttime - msec*0.001;
+		state->state_time = cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].senttime - msec*0.001;
 	}
 	else
-		state->state_time = parsecounttime;
+		state->state_time = cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].senttime;
 
 	if (flags & PF_COMMAND)
 		MSG_ReadDeltaUsercmd (&nullcmd, &state->command);
@@ -460,7 +458,7 @@ void CL_SetSolidEntities (void)
 	pmove.physents[0].info = 0;
 	pmove.numphysent = 1;
 
-	frame = &cl.qw_frames[parsecountmod];
+	frame = &cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW];
 	pak = &frame->packet_entities;
 
 	for (i=0 ; i<pak->num_entities ; i++)

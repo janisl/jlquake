@@ -104,10 +104,6 @@ const char *svc_strings[] =
 	"NEW PROTOCOL"
 };
 
-int	oldparsecountmod;
-int	parsecountmod;
-double	parsecounttime;
-
 int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
 
 //=============================================================================
@@ -747,19 +743,12 @@ Server information pertaining to this client only, sent every frame
 */
 void CL_ParseClientdata (void)
 {
-	int				i;
 	float		latency;
 	hwframe_t		*frame;
 
 // calculate simulated time of message
-	oldparsecountmod = parsecountmod;
-
-	i = clc.netchan.incomingAcknowledged;
-	cl.parsecount = i;
-	i &= UPDATE_MASK_HW;
-	parsecountmod = i;
-	frame = &cl.hw_frames[i];
-	parsecounttime = cl.hw_frames[i].senttime;
+	cl.parsecount = clc.netchan.incomingAcknowledged;
+	frame = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW];
 
 	frame->receivedtime = realtime;
 
@@ -867,7 +856,7 @@ void CL_MuzzleFlash()
 	{
 		return;
 	}
-	hwplayer_state_t* pl = &cl.hw_frames[parsecountmod].playerstate[i - 1];
+	hwplayer_state_t* pl = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].playerstate[i - 1];
 	CLH2_MuzzleFlashLight(i, pl->origin, pl->viewangles, false);
 }
 
