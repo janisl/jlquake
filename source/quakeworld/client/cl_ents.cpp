@@ -194,81 +194,6 @@ void CL_LinkPacketEntities (void)
 
 //========================================
 
-/*
-===================
-CL_ParsePlayerinfo
-===================
-*/
-void CL_ParsePlayerinfo (void)
-{
-	int			msec;
-	int			flags;
-	q1player_info_t	*info;
-	qwplayer_state_t	*state;
-	int			num;
-	int			i;
-
-	num = net_message.ReadByte ();
-	if (num > MAX_CLIENTS_QW)
-		Sys_Error ("CL_ParsePlayerinfo: bad num");
-
-	info = &cl.q1_players[num];
-
-	state = &cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].playerstate[num];
-
-	flags = state->flags = net_message.ReadShort ();
-
-	state->messagenum = cl.parsecount;
-	state->origin[0] = net_message.ReadCoord ();
-	state->origin[1] = net_message.ReadCoord ();
-	state->origin[2] = net_message.ReadCoord ();
-
-	state->frame = net_message.ReadByte ();
-
-	// the other player's last move was likely some time
-	// before the packet was sent out, so accurately track
-	// the exact time it was valid at
-	if (flags & PF_MSEC)
-	{
-		msec = net_message.ReadByte ();
-		state->state_time = cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].senttime - msec*0.001;
-	}
-	else
-		state->state_time = cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].senttime;
-
-	if (flags & PF_COMMAND)
-		MSG_ReadDeltaUsercmd (&nullcmd, &state->command);
-
-	for (i=0 ; i<3 ; i++)
-	{
-		if (flags & (PF_VELOCITY1<<i) )
-			state->velocity[i] = net_message.ReadShort();
-		else
-			state->velocity[i] = 0;
-	}
-	if (flags & PF_MODEL)
-		state->modelindex = net_message.ReadByte ();
-	else
-		state->modelindex = clq1_playerindex;
-
-	if (flags & PF_SKINNUM)
-		state->skinnum = net_message.ReadByte ();
-	else
-		state->skinnum = 0;
-
-	if (flags & PF_EFFECTS)
-		state->effects = net_message.ReadByte ();
-	else
-		state->effects = 0;
-
-	if (flags & PF_WEAPONFRAME)
-		state->weaponframe = net_message.ReadByte ();
-	else
-		state->weaponframe = 0;
-
-	VectorCopy (state->command.angles, state->viewangles);
-}
-
 
 /*
 ================
@@ -353,12 +278,12 @@ void CL_LinkPlayers (void)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.qw_frames[cl.parsecount&UPDATE_MASK_QW];
+	frame = &cl.qw_frames[cl.qh_parsecount&UPDATE_MASK_QW];
 
 	for (j=0, info=cl.q1_players, state=frame->playerstate ; j < MAX_CLIENTS_QW 
 		; j++, info++, state++)
 	{
-		if (state->messagenum != cl.parsecount)
+		if (state->messagenum != cl.qh_parsecount)
 			continue;	// not present this frame
 
 		// spawn light flashes, even ones coming from invisible objects
@@ -458,7 +383,7 @@ void CL_SetSolidEntities (void)
 	pmove.physents[0].info = 0;
 	pmove.numphysent = 1;
 
-	frame = &cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW];
+	frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
 	pak = &frame->packet_entities;
 
 	for (i=0 ; i<pak->num_entities ; i++)
@@ -500,7 +425,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.qw_frames[cl.parsecount&UPDATE_MASK_QW];
+	frame = &cl.qw_frames[cl.qh_parsecount&UPDATE_MASK_QW];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
 		j < MAX_CLIENTS_QW;
@@ -508,7 +433,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 
 		pplayer->active = false;
 
-		if (state->messagenum != cl.parsecount)
+		if (state->messagenum != cl.qh_parsecount)
 			continue;	// not present this frame
 
 		if (!state->modelindex)
@@ -579,7 +504,7 @@ void CL_SetSolidPlayers (int playernum)
 		if (j == playernum)
 			continue;
 
-		if (pplayer->flags & PF_DEAD)
+		if (pplayer->flags & QWPF_DEAD)
 			continue; // dead players aren't solid
 
 		pent->model = -1;

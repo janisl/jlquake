@@ -77,3 +77,6 @@ public:
 	float ReadAngle16();
 	void ReadData(void* Buffer, int Size);
 };
+
+void MSGQW_WriteDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
+void MSGQW_ReadDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);

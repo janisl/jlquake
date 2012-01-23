@@ -140,6 +140,33 @@ struct qwpacket_entities_t
 #define QWU_EFFECTS		(1<<5)
 #define QWU_SOLID		(1<<6)		// the entity should be solid for prediction
 
+// playerinfo flags from server
+// playerinfo allways sends: playernum, flags, origin[] and framenumber
+
+#define QWPF_MSEC			(1<<0)
+#define QWPF_COMMAND		(1<<1)
+#define QWPF_VELOCITY1ND	(1<<2)
+#define QWPF_VELOCITY2		(1<<3)
+#define QWPF_VELOCITY3		(1<<4)
+#define QWPF_MODEL			(1<<5)
+#define QWPF_SKINNUM		(1<<6)
+#define QWPF_EFFECTS		(1<<7)
+#define QWPF_WEAPONFRAME	(1<<8)		// only sent for view player
+#define QWPF_DEAD			(1<<9)		// don't block movement any more
+#define QWPF_GIB			(1<<10)		// offset the view height differently
+
+// if the high bit of the client to server byte is set, the low bits are
+// client move cmd bits
+// ms and angle2 are allways sent, the others are optional
+#define QWCM_ANGLE1 	(1<<0)
+#define QWCM_ANGLE3 	(1<<1)
+#define QWCM_FORWARD	(1<<2)
+#define QWCM_SIDE		(1<<3)
+#define QWCM_UP			(1<<4)
+#define QWCM_BUTTONS	(1<<5)
+#define QWCM_IMPULSE	(1<<6)
+#define QWCM_ANGLE2 	(1<<7)
+
 //==================
 // note that there are some defs.qc that mirror to these numbers
 // also related to svc_strings[] in cl_parse

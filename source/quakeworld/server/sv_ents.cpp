@@ -348,36 +348,36 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 				continue;		// not visible
 		}
 		
-		pflags = PF_MSEC | PF_COMMAND;
+		pflags = QWPF_MSEC | QWPF_COMMAND;
 		
 		if (ent->v.modelindex != sv_playermodel)
-			pflags |= PF_MODEL;
+			pflags |= QWPF_MODEL;
 		for (i=0 ; i<3 ; i++)
 			if (ent->v.velocity[i])
-				pflags |= PF_VELOCITY1<<i;
+				pflags |= QWPF_VELOCITY1ND<<i;
 		if (ent->v.effects)
-			pflags |= PF_EFFECTS;
+			pflags |= QWPF_EFFECTS;
 		if (ent->v.skin)
-			pflags |= PF_SKINNUM;
+			pflags |= QWPF_SKINNUM;
 		if (ent->v.health <= 0)
-			pflags |= PF_DEAD;
+			pflags |= QWPF_DEAD;
 		if (ent->v.mins[2] != -24)
-			pflags |= PF_GIB;
+			pflags |= QWPF_GIB;
 
 		if (cl->spectator)
 		{	// only sent origin and velocity to spectators
-			pflags &= PF_VELOCITY1 | PF_VELOCITY2 | PF_VELOCITY3;
+			pflags &= QWPF_VELOCITY1ND | QWPF_VELOCITY2 | QWPF_VELOCITY3;
 		}
 		else if (ent == clent)
 		{	// don't send a lot of data on personal entity
-			pflags &= ~(PF_MSEC|PF_COMMAND);
+			pflags &= ~(QWPF_MSEC|QWPF_COMMAND);
 			if (ent->v.weaponframe)
-				pflags |= PF_WEAPONFRAME;
+				pflags |= QWPF_WEAPONFRAME;
 		}
 
 		if (client->spec_track && client->spec_track - 1 == j &&
 			ent->v.weaponframe) 
-			pflags |= PF_WEAPONFRAME;
+			pflags |= QWPF_WEAPONFRAME;
 
 		msg->WriteByte(qwsvc_playerinfo);
 		msg->WriteByte(j);
@@ -388,7 +388,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		
 		msg->WriteByte(ent->v.frame);
 
-		if (pflags & PF_MSEC)
+		if (pflags & QWPF_MSEC)
 		{
 			msec = 1000*(sv.time - cl->localtime);
 			if (msec > 255)
@@ -396,7 +396,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			msg->WriteByte(msec);
 		}
 		
-		if (pflags & PF_COMMAND)
+		if (pflags & QWPF_COMMAND)
 		{
 			cmd = cl->lastcmd;
 
@@ -410,23 +410,23 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			cmd.buttons = 0;	// never send buttons
 			cmd.impulse = 0;	// never send impulses
 
-			MSG_WriteDeltaUsercmd (msg, &nullcmd, &cmd);
+			MSGQW_WriteDeltaUsercmd (msg, &nullcmd, &cmd);
 		}
 
 		for (i=0 ; i<3 ; i++)
-			if (pflags & (PF_VELOCITY1<<i) )
+			if (pflags & (QWPF_VELOCITY1ND<<i) )
 				msg->WriteShort(ent->v.velocity[i]);
 
-		if (pflags & PF_MODEL)
+		if (pflags & QWPF_MODEL)
 			msg->WriteByte(ent->v.modelindex);
 
-		if (pflags & PF_SKINNUM)
+		if (pflags & QWPF_SKINNUM)
 			msg->WriteByte(ent->v.skin);
 
-		if (pflags & PF_EFFECTS)
+		if (pflags & QWPF_EFFECTS)
 			msg->WriteByte(ent->v.effects);
 
-		if (pflags & PF_WEAPONFRAME)
+		if (pflags & QWPF_WEAPONFRAME)
 			msg->WriteByte(ent->v.weaponframe);
 	}
 }

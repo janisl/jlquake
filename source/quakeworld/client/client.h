@@ -74,7 +74,6 @@ struct client_state_t : clientActiveCommon_t
 {
 	char		serverinfo[MAX_SERVERINFO_STRING];
 
-	int			parsecount;		// server message counter
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 
@@ -264,7 +263,6 @@ void CL_SetSolidPlayers (int playernum);
 void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities (void);
 void CL_SetSolidEntities (void);
-void CL_ParsePlayerinfo (void);
 
 //
 // cl_pred.c

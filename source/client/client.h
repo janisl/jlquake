@@ -79,6 +79,7 @@ struct clientActiveCommon_t
 	double qh_mtime[2];		// the timestamp of last two messages	
 
 	int qh_maxclients;
+	int qh_parsecount;		// server message counter
 	int qh_validsequence;	// this is the sequence number of the last good
 								// packetentity_t we got.  If this is 0, we can't
 								// render a frame yet

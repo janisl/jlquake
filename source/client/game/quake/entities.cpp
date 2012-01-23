@@ -558,6 +558,96 @@ void CLQW_ParseDeltaPacketEntities(QMsg& message)
 	CLQW_ParsePacketEntities(message, true);
 }
 
+void CLQW_ParsePlayerinfo(QMsg& message)
+{
+	int num = message.ReadByte();
+	if (num > MAX_CLIENTS_QW)
+	{
+		throw Exception("CLQW_ParsePlayerinfo: bad num");
+	}
+
+	qwframe_t* frame = &cl_common->qw_frames[cl_common->qh_parsecount &  UPDATE_MASK_QW];
+	qwplayer_state_t* state = &frame->playerstate[num];
+
+	int flags = state->flags = message.ReadShort();
+
+	state->messagenum = cl_common->qh_parsecount;
+	state->origin[0] = message.ReadCoord();
+	state->origin[1] = message.ReadCoord();
+	state->origin[2] = message.ReadCoord();
+
+	state->frame = message.ReadByte();
+
+	// the other player's last move was likely some time
+	// before the packet was sent out, so accurately track
+	// the exact time it was valid at
+	if (flags & QWPF_MSEC)
+	{
+		int msec = message.ReadByte();
+		state->state_time = frame->senttime - msec * 0.001;
+	}
+	else
+	{
+		state->state_time = frame->senttime;
+	}
+
+	if (flags & QWPF_COMMAND)
+	{
+		qwusercmd_t nullcmd;
+		Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+		MSGQW_ReadDeltaUsercmd(&message, &nullcmd, &state->command);
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (flags & (QWPF_VELOCITY1ND << i))
+		{
+			state->velocity[i] = message.ReadShort();
+		}
+		else
+		{
+			state->velocity[i] = 0;
+		}
+	}
+	if (flags & QWPF_MODEL)
+	{
+		state->modelindex = message.ReadByte();
+	}
+	else
+	{
+		state->modelindex = clq1_playerindex;
+	}
+
+	if (flags & QWPF_SKINNUM)
+	{
+		state->skinnum = message.ReadByte();
+	}
+	else
+	{
+		state->skinnum = 0;
+	}
+
+	if (flags & QWPF_EFFECTS)
+	{
+		state->effects = message.ReadByte();
+	}
+	else
+	{
+		state->effects = 0;
+	}
+
+	if (flags & QWPF_WEAPONFRAME)
+	{
+		state->weaponframe = message.ReadByte();
+	}
+	else
+	{
+		state->weaponframe = 0;
+	}
+
+	VectorCopy(state->command.angles, state->viewangles);
+}
+
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 {
 	vec3_t angles;

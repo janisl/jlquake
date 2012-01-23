@@ -101,7 +101,6 @@ struct client_state_t : clientActiveCommon_t
 {
 	char		serverinfo[MAX_SERVERINFO_STRING];
 
-	int			parsecount;		// server message counter
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 

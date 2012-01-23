@@ -1613,9 +1613,9 @@ void SV_ExecuteClientMessage (client_t *cl)
 			// read loss percentage
 			cl->lossage = net_message.ReadByte();
 
-			MSG_ReadDeltaUsercmd (&nullcmd, &oldest);
-			MSG_ReadDeltaUsercmd (&oldest, &oldcmd);
-			MSG_ReadDeltaUsercmd (&oldcmd, &newcmd);
+			MSGQW_ReadDeltaUsercmd(&net_message, &nullcmd, &oldest);
+			MSGQW_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
+			MSGQW_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
 
 			if ( cl->state != cs_spawned )
 				break;

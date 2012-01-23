@@ -774,8 +774,8 @@ void CL_ParseClientdata (void)
 	qwframe_t		*frame;
 
 // calculate simulated time of message
-	cl.parsecount = clc.netchan.incomingAcknowledged;
-	frame = &cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW];
+	cl.qh_parsecount = clc.netchan.incomingAcknowledged;
+	frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
 
 	frame->receivedtime = realtime;
 
@@ -943,7 +943,7 @@ void CL_MuzzleFlash (void)
 	{
 		return;
 	}
-	qwplayer_state_t* pl = &cl.qw_frames[cl.parsecount &  UPDATE_MASK_QW].playerstate[i - 1];
+	qwplayer_state_t* pl = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW].playerstate[i - 1];
 	CLQ1_MuzzleFlashLight(i, pl->origin, pl->viewangles);
 }
 
@@ -1182,7 +1182,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case qwsvc_playerinfo:
-			CL_ParsePlayerinfo ();
+			CLQW_ParsePlayerinfo(net_message);
 			break;
 
 		case qwsvc_nails:

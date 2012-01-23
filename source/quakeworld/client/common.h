@@ -44,10 +44,6 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 extern qwusercmd_t nullcmd;
 
-void MSG_WriteDeltaUsercmd (QMsg *sb, qwusercmd_t* from, qwusercmd_t* cmd);
-
-void MSG_ReadDeltaUsercmd (qwusercmd_t* from, qwusercmd_t* cmd);
-
 //============================================================================
 
 void COM_Init (void);

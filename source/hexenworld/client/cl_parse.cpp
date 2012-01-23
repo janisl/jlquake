@@ -747,8 +747,8 @@ void CL_ParseClientdata (void)
 	hwframe_t		*frame;
 
 // calculate simulated time of message
-	cl.parsecount = clc.netchan.incomingAcknowledged;
-	frame = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW];
+	cl.qh_parsecount = clc.netchan.incomingAcknowledged;
+	frame = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW];
 
 	frame->receivedtime = realtime;
 
@@ -856,7 +856,7 @@ void CL_MuzzleFlash()
 	{
 		return;
 	}
-	hwplayer_state_t* pl = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].playerstate[i - 1];
+	hwplayer_state_t* pl = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].playerstate[i - 1];
 	CLH2_MuzzleFlashLight(i, pl->origin, pl->viewangles, false);
 }
 

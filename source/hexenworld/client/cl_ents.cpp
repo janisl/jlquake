@@ -653,10 +653,10 @@ void CL_SavePlayer (void)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
 	info = &cl.h2_players[num];
-	state = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].playerstate[num];
+	state = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].playerstate[num];
 	
-	state->messagenum = cl.parsecount;
-	state->state_time = cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].senttime;
+	state->messagenum = cl.qh_parsecount;
+	state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
 }
 
 void CL_ParsePlayerinfo (void)
@@ -675,11 +675,11 @@ void CL_ParsePlayerinfo (void)
 
 	info = &cl.h2_players[num];
 
-	state = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].playerstate[num];
+	state = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].playerstate[num];
 
 	flags = state->flags = net_message.ReadShort ();
 
-	state->messagenum = cl.parsecount;
+	state->messagenum = cl.qh_parsecount;
 	state->origin[0] = net_message.ReadCoord ();
 	state->origin[1] = net_message.ReadCoord ();
 	state->origin[2] = net_message.ReadCoord ();
@@ -693,10 +693,10 @@ void CL_ParsePlayerinfo (void)
 	if (flags & PF_MSEC)
 	{
 		msec = net_message.ReadByte ();
-		state->state_time = cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].senttime - msec*0.001;
+		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime - msec*0.001;
 	}
 	else
-		state->state_time = cl.hw_frames[cl.parsecount & UPDATE_MASK_HW].senttime;
+		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
 
 	if (flags & PF_COMMAND)
 		MSG_ReadUsercmd (&state->command, false);
@@ -809,13 +809,13 @@ void CL_LinkPlayers (void)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.hw_frames[cl.parsecount&UPDATE_MASK_HW];
+	frame = &cl.hw_frames[cl.qh_parsecount&UPDATE_MASK_HW];
 
 	for (j=0, info=cl.h2_players, state=frame->playerstate ; j < HWMAX_CLIENTS 
 		; j++, info++, state++)
 	{
 		info->shownames_off = true;
-		if (state->messagenum != cl.parsecount)
+		if (state->messagenum != cl.qh_parsecount)
 			continue;	// not present this frame
 
 		if (!state->modelindex)
@@ -983,7 +983,7 @@ void CL_SetSolidEntities (void)
 	pmove.physents[0].info = 0;
 	pmove.numphysent = 1;
 
-	frame = &cl.hw_frames[cl.parsecount & UPDATE_MASK_HW];
+	frame = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW];
 	pak = &frame->packet_entities;
 
 	for (i=0 ; i<pak->num_entities ; i++)
@@ -1027,7 +1027,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	if (playertime > realtime)
 		playertime = realtime;
 
-	frame = &cl.hw_frames[cl.parsecount&UPDATE_MASK_HW];
+	frame = &cl.hw_frames[cl.qh_parsecount&UPDATE_MASK_HW];
 
 	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
 		j < HWMAX_CLIENTS;
@@ -1036,7 +1036,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 
 		pplayer->active = false;
 
-		if (state->messagenum != cl.parsecount)
+		if (state->messagenum != cl.qh_parsecount)
 			continue;	// not present this frame
 
 		if (!state->modelindex)

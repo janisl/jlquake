@@ -644,14 +644,14 @@ static void V_CalcRefdef (void)
 	V_CalcViewRoll(viewangles);
 	V_AddIdle(viewangles);
 
-	if (view_message->flags & PF_GIB)
+	if (view_message->flags & QWPF_GIB)
 		cl.refdef.vieworg[2] += 8;	// gib view height
-	else if (view_message->flags & PF_DEAD)
+	else if (view_message->flags & QWPF_DEAD)
 		cl.refdef.vieworg[2] -= 16;	// corpse view height
 	else
 		cl.refdef.vieworg[2] += 22;	// view height
 
-	if (view_message->flags & PF_DEAD)		// PF_GIB will also set PF_DEAD
+	if (view_message->flags & QWPF_DEAD)		// QWPF_GIB will also set QWPF_DEAD
 		viewangles[ROLL] = 80;	// dead view angle
 
 
@@ -685,7 +685,7 @@ static void V_CalcRefdef (void)
 	else if (scr_viewsize->value == 80)
 		view->state.origin[2] += 0.5;
 
-	if (view_message->flags & (PF_GIB|PF_DEAD) )
+	if (view_message->flags & (QWPF_GIB|QWPF_DEAD) )
  		view->state.modelindex = 0;
  	else
 		view->state.modelindex = cl.stats[STAT_WEAPON];

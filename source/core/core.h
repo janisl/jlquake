@@ -33,8 +33,6 @@
 #include "strings.h"	//	Strings
 #include "info_string.h"
 #include "mathlib.h"
-#include "message.h"
-#include "huffman.h"
 #include "files.h"
 #include "command_buffer.h"
 #include "console_variable.h"
@@ -50,6 +48,8 @@
 #include "hexen2defs.h"
 #include "quake2defs.h"
 #include "quake3defs.h"
+#include "message.h"
+#include "huffman.h"
 #include "virtual_machine/public.h"
 #include "player_move.h"
 #include "network_channel.h"
