@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../../client.h"
+#include "../../../core/file_formats/spr.h"
 #include "local.h"
 
 Cvar* cl_doubleeyes;
@@ -81,6 +82,209 @@ void CLQ1_ParseSpawnStatic(QMsg& message)
 
 	CLQ1_ParseBaseline(message, &ent->state);
 	ent->state.colormap = 0;
+}
+
+//	Parse an entity update message from the server
+//	If an entities model or origin changes from frame to frame, it must be
+// relinked.  Other attributes can change without relinking.
+void CLQ1_ParseUpdate(QMsg& message, int bits)
+{
+	if (clc_common->qh_signon == SIGNONS - 1)
+	{
+		// first update is the final signon stage
+		clc_common->qh_signon = SIGNONS;
+		CLQ1_SignonReply ();
+	}
+
+	if (bits & Q1U_MOREBITS)
+	{
+		int i = message.ReadByte();
+		bits |= (i << 8);
+	}
+
+	int num;
+	if (bits & Q1U_LONGENTITY)
+	{
+		num = message.ReadShort();
+	}
+	else
+	{
+		num = message.ReadByte();
+	}
+
+	q1entity_t* ent = CLQ1_EntityNum(num);
+	const q1entity_state_t& baseline = clq1_baselines[num];
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (bits & (1 << i))
+		{
+			bitcounts[i]++;
+		}
+	}
+
+	bool forcelink = ent->msgtime != cl_common->qh_mtime[1];	// no previous frame to lerp from
+
+	ent->msgtime = cl_common->qh_mtime[0];
+
+	int modnum;
+	if (bits & Q1U_MODEL)
+	{
+		modnum = message.ReadByte();
+		if (modnum >= MAX_MODELS_Q1)
+		{
+			throw DropException("CL_ParseModel: bad modnum");
+		}
+	}
+	else
+	{
+		modnum = baseline.modelindex;
+	}
+
+	qhandle_t model = cl_common->model_draw[modnum];
+	if (modnum != ent->state.modelindex)
+	{
+		ent->state.modelindex = modnum;
+		// automatic animation (torches, etc) can be either all together
+		// or randomized
+		if (model)
+		{
+			if (R_ModelSyncType(model) == ST_RAND)
+			{
+				ent->syncbase = (float)(rand() & 0x7fff) / 0x7fff;
+			}
+			else
+			{
+				ent->syncbase = 0.0;
+			}
+		}
+		else
+		{
+			forcelink = true;	// hack to make null model players work
+		}
+		if (num > 0 && num <= cl_common->qh_maxclients)
+		{
+			CLQ1_TranslatePlayerSkin(num - 1);
+		}
+	}
+	
+	if (bits & Q1U_FRAME)
+	{
+		ent->state.frame = message.ReadByte();
+	}
+	else
+	{
+		ent->state.frame = baseline.frame;
+	}
+
+	if (bits & Q1U_COLORMAP)
+	{
+		ent->state.colormap = message.ReadByte();
+	}
+	else
+	{
+		ent->state.colormap = baseline.colormap;
+	}
+	if (ent->state.colormap > cl_common->qh_maxclients)
+	{
+		throw Exception("i >= cl.maxclients");
+	}
+
+	int skin;
+	if (bits & Q1U_SKIN)
+	{
+		skin = message.ReadByte();
+	}
+	else
+	{
+		skin = baseline.skinnum;
+	}
+	if (skin != ent->state.skinnum)
+	{
+		ent->state.skinnum = skin;
+		if (num > 0 && num <= cl_common->qh_maxclients)
+		{
+			CLQ1_TranslatePlayerSkin(num - 1);
+		}
+	}
+
+	if (bits & Q1U_EFFECTS)
+	{
+		ent->state.effects = message.ReadByte();
+	}
+	else
+	{
+		ent->state.effects = baseline.effects;
+	}
+
+	// shift the known values for interpolation
+	VectorCopy(ent->msg_origins[0], ent->msg_origins[1]);
+	VectorCopy(ent->msg_angles[0], ent->msg_angles[1]);
+
+	if (bits & Q1U_ORIGIN1)
+	{
+		ent->msg_origins[0][0] = message.ReadCoord();
+	}
+	else
+	{
+		ent->msg_origins[0][0] = baseline.origin[0];
+	}
+	if (bits & Q1U_ANGLE1)
+	{
+		ent->msg_angles[0][0] = message.ReadAngle();
+	}
+	else
+	{
+		ent->msg_angles[0][0] = baseline.angles[0];
+	}
+
+	if (bits & Q1U_ORIGIN2)
+	{
+		ent->msg_origins[0][1] = message.ReadCoord();
+	}
+	else
+	{
+		ent->msg_origins[0][1] = baseline.origin[1];
+	}
+	if (bits & Q1U_ANGLE2)
+	{
+		ent->msg_angles[0][1] = message.ReadAngle();
+	}
+	else
+	{
+		ent->msg_angles[0][1] = baseline.angles[1];
+	}
+
+	if (bits & Q1U_ORIGIN3)
+	{
+		ent->msg_origins[0][2] = message.ReadCoord();
+	}
+	else
+	{
+		ent->msg_origins[0][2] = baseline.origin[2];
+	}
+	if (bits & Q1U_ANGLE3)
+	{
+		ent->msg_angles[0][2] = message.ReadAngle();
+	}
+	else
+	{
+		ent->msg_angles[0][2] = baseline.angles[2];
+	}
+
+	if (bits & Q1U_NOLERP)
+	{
+		forcelink = true;
+	}
+
+	if (forcelink)
+	{
+		// didn't have an update last message
+		VectorCopy(ent->msg_origins[0], ent->msg_origins[1]);
+		VectorCopy(ent->msg_origins[0], ent->state.origin);
+		VectorCopy(ent->msg_angles[0], ent->msg_angles[1]);
+		VectorCopy(ent->msg_angles[0], ent->state.angles);
+	}
 }
 
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)

@@ -36,6 +36,7 @@ bool CLQW_CheckOrDownloadFile(const char* filename);
 q1entity_t* CLQ1_EntityNum(int number);
 void CLQ1_ParseSpawnBaseline(QMsg& message);
 void CLQ1_ParseSpawnStatic(QMsg& message);
+void CLQ1_ParseUpdate(QMsg& message, int bits);
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
 void CLQ1_TranslatePlayerSkin(int playernum);
 void CLQ1_LinkStaticEntities();
