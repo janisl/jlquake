@@ -17,12 +17,14 @@
 #include "../../client.h"
 #include "local.h"
 
+#define MAX_CACHED_SKINS		128
+
 Cvar* clqw_baseskin;
 Cvar* clqw_noskins;
 
-char allskins[128];
-qw_skin_t skins[MAX_CACHED_SKINS];
-int numskins;
+static char allskins[128];
+static qw_skin_t skins[MAX_CACHED_SKINS];
+static int numskins;
 
 //  Determines the best skin for the given scoreboard
 // slot, and sets scoreboard->skin

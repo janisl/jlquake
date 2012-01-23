@@ -105,7 +105,7 @@ int	oldparsecountmod;
 int	parsecountmod;
 double	parsecounttime;
 
-int		cl_playerindex, cl_flagindex;
+int		cl_flagindex;
 
 //=============================================================================
 
@@ -289,7 +289,7 @@ void Sound_NextDownload (void)
 
 	// done with sounds, request models now
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
-	cl_playerindex = -1;
+	clq1_playerindex = -1;
 	clq1_spikeindex = -1;
 	cl_flagindex = -1;
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
@@ -675,7 +675,7 @@ void CL_ParseModellist (void)
 		if (!String::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
 			clq1_spikeindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"progs/player.mdl"))
-			cl_playerindex = nummodels;
+			clq1_playerindex = nummodels;
 		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
 			cl_flagindex = nummodels;
 	}
@@ -808,60 +808,6 @@ void CL_ParseClientdata (void)
 }
 
 /*
-===============
-R_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-void R_TranslatePlayerSkin(int playernum)
-{
-	q1player_info_t* player = &cl.q1_players[playernum];
-	if (!player->name[0])
-		return;
-
-	char s[512];
-	String::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
-	String::StripExtension(s, s);
-	if (player->skin && !String::ICmp(s, player->skin->name))
-	{
-		player->skin = NULL;
-	}
-
-	if (player->_topcolor == player->topcolor &&
-		player->_bottomcolor == player->bottomcolor && player->skin)
-	{
-		return;
-	}
-
-	player->_topcolor = player->topcolor;
-	player->_bottomcolor = player->bottomcolor;
-
-	byte translate[256];
-	CL_CalcQuakeSkinTranslation(player->topcolor, player->bottomcolor, translate);
-
-	//
-	// locate the original skin pixels
-	//
-
-	if (!player->skin)
-	{
-		CLQW_SkinFind(player);
-	}
-	byte* original = CLQW_SkinCache(player->skin);
-	if (original != NULL)
-	{
-		//skin data width
-		R_CreateOrUpdateTranslatedSkin(clq1_playertextures[playernum], va("*player%d", playernum), original, translate, 320, 200);
-	}
-	else
-	{
-		R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum),
-			cl.model_draw[cl_playerindex], translate);
-	}
-}
-
-/*
 =====================
 CL_NewTranslation
 =====================
@@ -871,7 +817,7 @@ void CL_NewTranslation (int slot)
 	if (slot > MAX_CLIENTS_QW)
 		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS_QW");
 
-	R_TranslatePlayerSkin(slot);
+	CLQ1_TranslatePlayerSkin(slot);
 }
 
 /*

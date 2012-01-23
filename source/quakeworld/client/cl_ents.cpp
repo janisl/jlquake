@@ -294,7 +294,7 @@ static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 	if (!cl.q1_players[PlayerNum].skin)
 	{
 		CLQW_SkinFind(&cl.q1_players[PlayerNum]);
-		R_TranslatePlayerSkin(PlayerNum);
+		CLQ1_TranslatePlayerSkin(PlayerNum);
 	}
 	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);
 }
@@ -353,7 +353,7 @@ void CL_LinkPacketEntities (void)
 		ent.hModel = model;
 	
 		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == cl_playerindex)
+		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == clq1_playerindex)
 		{
 			R_HandlePlayerSkin(&ent, s1->colormap - 1);
 		}
@@ -499,7 +499,7 @@ void CL_ParsePlayerinfo (void)
 	if (flags & PF_MODEL)
 		state->modelindex = net_message.ReadByte ();
 	else
-		state->modelindex = cl_playerindex;
+		state->modelindex = clq1_playerindex;
 
 	if (flags & PF_SKINNUM)
 		state->skinnum = net_message.ReadByte ();
@@ -641,7 +641,7 @@ void CL_LinkPlayers (void)
 		ent.hModel = cl.model_draw[state->modelindex];
 		ent.skinNum = state->skinnum;
 		ent.frame = state->frame;
-		if (state->modelindex == cl_playerindex)
+		if (state->modelindex == clq1_playerindex)
 		{
 			// use custom skin
 			R_HandlePlayerSkin(&ent, j);

@@ -296,6 +296,4 @@ void Cam_FinishMove(qwusercmd_t *cmd);
 void Cam_Reset(void);
 void CL_InitCam(void);
 
-extern	int		cl_playerindex, cl_flagindex;
-
-void R_TranslatePlayerSkin (int playernum);
+extern	int		clq1_playerindex, cl_flagindex;

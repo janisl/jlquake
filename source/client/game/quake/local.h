@@ -16,8 +16,6 @@
 
 #define MAX_STATIC_ENTITIES_Q1	128			// torches, etc
 
-#define MAX_CACHED_SKINS		128
-
 extern Cvar* cl_doubleeyes;
 
 extern q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
@@ -27,13 +25,10 @@ extern q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 extern image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];
 
 extern int clq1_spikeindex;
+extern int clq1_playerindex;
 
 extern Cvar* clqw_baseskin;
 extern Cvar* clqw_noskins;
-
-extern char		allskins[128];
-extern qw_skin_t		skins[MAX_CACHED_SKINS];
-extern int			numskins;
 
 void CLQ1_SignonReply();
 bool CLQW_CheckOrDownloadFile(const char* filename);
@@ -42,6 +37,7 @@ q1entity_t* CLQ1_EntityNum(int number);
 void CLQ1_ParseSpawnBaseline(QMsg& message);
 void CLQ1_ParseSpawnStatic(QMsg& message);
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
+void CLQ1_TranslatePlayerSkin(int playernum);
 void CLQ1_LinkStaticEntities();
 
 void CLQ1_InitTEnts();

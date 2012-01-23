@@ -296,28 +296,6 @@ void CL_ParseServerInfo (void)
 }
 
 /*
-===============
-R_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-static void R_TranslatePlayerSkin(int playernum)
-{
-	int top = cl.q1_players[playernum].topcolor;
-	int bottom = cl.q1_players[playernum].bottomcolor;
-	byte translate[256];
-	CL_CalcQuakeSkinTranslation(top, bottom, translate);
-
-	//
-	// locate the original skin pixels
-	//
-	q1entity_t* ent = &clq1_entities[1 + playernum];
-
-	R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum), cl.model_draw[ent->state.modelindex], translate);
-}
-
-/*
 ==================
 CL_ParseUpdate
 
@@ -392,7 +370,7 @@ if (bits&(1<<i))
 		else
 			forcelink = true;	// hack to make null model players work
 		if (num > 0 && num <= cl.qh_maxclients)
-			R_TranslatePlayerSkin (num - 1);
+			CLQ1_TranslatePlayerSkin (num - 1);
 	}
 	
 	if (bits & Q1U_FRAME)
@@ -415,7 +393,7 @@ if (bits&(1<<i))
 	if (skin != ent->state.skinnum) {
 		ent->state.skinnum = skin;
 		if (num > 0 && num <= cl.qh_maxclients)
-			R_TranslatePlayerSkin (num - 1);
+			CLQ1_TranslatePlayerSkin (num - 1);
 	}
 
 	if (bits & Q1U_EFFECTS)
@@ -585,7 +563,7 @@ void CL_NewTranslation (int slot)
 {
 	if (slot > cl.qh_maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
-	R_TranslatePlayerSkin (slot);
+	CLQ1_TranslatePlayerSkin (slot);
 }
 
 /*

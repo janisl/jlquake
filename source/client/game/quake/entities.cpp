@@ -25,6 +25,8 @@ q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
 image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];	// color translated skins
 
+int clq1_playerindex;
+
 //	This error checks and tracks the total number of entities
 q1entity_t* CLQ1_EntityNum(int number)
 {
@@ -136,5 +138,68 @@ void CLQ1_LinkStaticEntities()
 		rent.skinNum = pent->state.skinnum;
 		rent.shaderTime = pent->syncbase;
 		R_AddRefEntityToScene(&rent);
+	}
+}
+
+//	Translates a skin texture by the per-player color lookup
+void CLQ1_TranslatePlayerSkin(int playernum)
+{
+	q1player_info_t* player = &cl_common->q1_players[playernum];
+	if (GGameType & GAME_QuakeWorld)
+	{
+		if (!player->name[0])
+		{
+			return;
+		}
+
+		char s[512];
+		String::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
+		String::StripExtension(s, s);
+		if (player->skin && !String::ICmp(s, player->skin->name))
+		{
+			player->skin = NULL;
+		}
+
+		if (player->_topcolor == player->topcolor &&
+			player->_bottomcolor == player->bottomcolor && player->skin)
+		{
+			return;
+		}
+
+		player->_topcolor = player->topcolor;
+		player->_bottomcolor = player->bottomcolor;
+	}
+
+	byte translate[256];
+	CL_CalcQuakeSkinTranslation(player->topcolor, player->bottomcolor, translate);
+
+	//
+	// locate the original skin pixels
+	//
+	if (GGameType & GAME_QuakeWorld)
+	{
+		if (!player->skin)
+		{
+			CLQW_SkinFind(player);
+		}
+		byte* original = CLQW_SkinCache(player->skin);
+		if (original != NULL)
+		{
+			//skin data width
+			R_CreateOrUpdateTranslatedSkin(clq1_playertextures[playernum], va("*player%d", playernum),
+				original, translate, 320, 200);
+		}
+		else
+		{
+			R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum),
+				cl_common->model_draw[clq1_playerindex], translate);
+		}
+	}
+	else
+	{
+		q1entity_t* ent = &clq1_entities[1 + playernum];
+
+		R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum),
+			cl_common->model_draw[ent->state.modelindex], translate);
 	}
 }
