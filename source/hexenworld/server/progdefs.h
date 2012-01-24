@@ -241,7 +241,7 @@ typedef struct
 	func_t	chainmoved;
 	float	string_index;
 	float	gravity;
-	float	siege_team;
+	float	_siege_team;
 } entvars_t;
 
 #define PROGHEADER_CRC 25203

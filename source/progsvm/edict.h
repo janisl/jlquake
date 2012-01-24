@@ -16,6 +16,8 @@
 
 #define	MAX_ENT_LEAFS	16
 
+extern idEntVarDef entFieldSiegeTeam;
+
 struct qhedict_t
 {
 	bool free;
@@ -36,4 +38,34 @@ struct qhedict_t
 #endif
 	entvars_t v;			// C exported fields from progs
 	// other fields from progs come immediately after
+
+	float GetFloatField(idEntVarDef& field);
+	void SetFloatField(idEntVarDef& field, float value);
+
+#define FIELD_FLOAT(name) \
+	float Get ## name() \
+	{ \
+		return GetFloatField(entField ## name); \
+	} \
+	void Set ## name(float value) \
+	{ \
+		SetFloatField(entField ## name, value); \
+	}
+
+	//	HexenWorld
+	FIELD_FLOAT(SiegeTeam)
+
+#undef FIELD_FLOAT
 };
+
+int ED_InitEntityFields();
+
+inline float qhedict_t::GetFloatField(idEntVarDef& field)
+{
+	return *(float*)((byte*)&v + field.offset);
+}
+
+inline void qhedict_t::SetFloatField(idEntVarDef& field, float value)
+{
+	*(float*)((byte*)&v + field.offset) = value;
+}

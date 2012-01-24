@@ -234,7 +234,7 @@ void SV_Spawn_f (void)
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->v.colormap = NUM_FOR_EDICT(ent);
 	if(dmMode->value==DM_SIEGE)
-		ent->v.team = ent->v.siege_team;	// FIXME
+		ent->v.team = ent->GetSiegeTeam();	// FIXME
 	else
 		ent->v.team = 0;	// FIXME
 	ent->v.netname = PR_SetString(host_client->name);

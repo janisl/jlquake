@@ -2720,7 +2720,7 @@ void PF_setsiegeteam (void)
 	old = host_client;
 	host_client = client;
 
-	e->v.siege_team = NewTeam;
+	e->SetSiegeTeam(NewTeam);
 	host_client->siege_team = NewTeam;
 
 //???

@@ -15,3 +15,48 @@
 //**************************************************************************
 
 #include "progsvm.h"
+
+idEntVarDef entFieldSiegeTeam;
+
+void idEntVarDef::Init(const char* name, int offset)
+{
+	this->name = name;
+	this->offset = offset;
+}
+
+int ED_InitEntityFields()
+{
+	int offset;
+	if (GGameType & GAME_Quake)
+	{
+		if (GGameType & GAME_QuakeWorld)
+		{
+			offset = 408;
+		}
+		else
+		{
+			offset = 420;
+		}
+	}
+	else
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			offset = 696;
+		}
+		else
+		{
+			offset = 664;
+		}
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			entFieldSiegeTeam.Init("siege_team", offset);
+			offset += 4;
+		}
+	}
+	return offset;
+}

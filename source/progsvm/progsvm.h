@@ -31,6 +31,15 @@ union eval_t
 	int edict;
 };	
 
+class idEntVarDef
+{
+public:
+	void Init(const char* name, int offset);
+
+	const char* name;
+	int offset;
+};
+
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
 extern char* pr_strings;

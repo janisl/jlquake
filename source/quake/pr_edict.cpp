@@ -958,6 +958,10 @@ void PR_LoadProgs (void)
 
 	for (i=0 ; i<progs->numglobals ; i++)
 		((int *)pr_globals)[i] = LittleLong (((int *)pr_globals)[i]);
+
+	int entSize = ED_InitEntityFields();
+	if (entSize != sizeof(entvars_t))
+		throw Exception(va("Wrong entity size %d should be %d\n", entSize, sizeof(entvars_t)));
 }
 
 

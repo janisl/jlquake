@@ -1133,6 +1133,10 @@ void PR_LoadProgs (void)
 		for (i=0 ; i<progs->numglobals ; i++)
 			((int *)pr_globals)[i] = LittleLong (((int *)pr_globals)[i]);
 	}
+
+	int entSize = ED_InitEntityFields();
+	if (entSize != sizeof(entvars_t))
+		throw Exception(va("Wrong entity size %d should be %d\n", entSize, sizeof(entvars_t)));
 #ifdef MISSIONPACK
 	// set the cl_playerclass value after pr_global_struct has been created
 	pr_global_struct->cl_playerclass = cl_playerclass->value;
