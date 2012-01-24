@@ -726,7 +726,7 @@ static void V_CalcRefdef (void)
 	float		bob;
 	static float oldz = 0;
 
-	if (!cl.v._cameramode)
+	if (!cl.v.cameramode)
 	{		
 		V_DriftPitch ();
 		V_DriftRoll ();

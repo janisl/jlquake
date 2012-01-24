@@ -1283,7 +1283,7 @@ void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg)
 			sc1 |= SC1_ARTIFACT_LOW;
 		if (ent->v.movetype != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
-		if (ent->GetCameraMode() != host_client->old_v._cameramode)
+		if (ent->GetCameraMode() != host_client->old_v.cameramode)
 			sc1 |= SC1_CAMERAMODE;
 		if (ent->v.hasted != host_client->old_v.hasted)
 			sc1 |= SC1_HASTED;
@@ -1504,7 +1504,68 @@ void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg)
 	}
 
 end:
-	Com_Memcpy(&client->old_v,&ent->v,sizeof(client->old_v));
+	client->old_v.movetype = ent->v.movetype;
+	VectorCopy(ent->v.velocity, client->old_v.velocity);
+	VectorCopy(ent->v.punchangle, client->old_v.punchangle);
+	client->old_v.weapon = ent->v.weapon;
+	client->old_v.weaponmodel = ent->v.weaponmodel;
+	client->old_v.weaponframe = ent->v.weaponframe;
+	client->old_v.health = ent->v.health;
+	client->old_v.max_health = ent->v.max_health;
+	client->old_v.bluemana = ent->v.bluemana;
+	client->old_v.greenmana = ent->v.greenmana;
+	client->old_v.max_mana = ent->v.max_mana;
+	client->old_v.armor_amulet = ent->v.armor_amulet;
+	client->old_v.armor_bracer = ent->v.armor_bracer;
+	client->old_v.armor_breastplate = ent->v.armor_breastplate;
+	client->old_v.armor_helmet = ent->v.armor_helmet;
+	client->old_v.level = ent->v.level;
+	client->old_v.intelligence = ent->v.intelligence;
+	client->old_v.wisdom = ent->v.wisdom;
+	client->old_v.dexterity = ent->v.dexterity;
+	client->old_v.strength = ent->v.strength;
+	client->old_v.experience = ent->v.experience;
+	client->old_v.ring_flight = ent->v.ring_flight;
+	client->old_v.ring_water = ent->v.ring_water;
+	client->old_v.ring_turning = ent->v.ring_turning;
+	client->old_v.ring_regeneration = ent->v.ring_regeneration;
+	client->old_v.haste_time = ent->v.haste_time;
+	client->old_v.tome_time = ent->v.tome_time;
+	client->old_v.puzzle_inv1 = ent->v.puzzle_inv1;
+	client->old_v.puzzle_inv2 = ent->v.puzzle_inv2;
+	client->old_v.puzzle_inv3 = ent->v.puzzle_inv3;
+	client->old_v.puzzle_inv4 = ent->v.puzzle_inv4;
+	client->old_v.puzzle_inv5 = ent->v.puzzle_inv5;
+	client->old_v.puzzle_inv6 = ent->v.puzzle_inv6;
+	client->old_v.puzzle_inv7 = ent->v.puzzle_inv7;
+	client->old_v.puzzle_inv8 = ent->v.puzzle_inv8;
+	VectorCopy(ent->v.view_ofs, client->old_v.view_ofs);
+	client->old_v.idealpitch = ent->v.idealpitch;
+	client->old_v.idealroll = ent->v.idealroll;
+	client->old_v.flags = ent->v.flags;
+	client->old_v.armorvalue = ent->v.armorvalue;
+	client->old_v.rings_active = ent->v.rings_active;
+	client->old_v.rings_low = ent->v.rings_low;
+	client->old_v.artifact_active = ent->v.artifact_active;
+	client->old_v.artifact_low = ent->v.artifact_low;
+	client->old_v.hasted = ent->v.hasted;
+	client->old_v.inventory = ent->v.inventory;
+	client->old_v.cnt_torch = ent->v.cnt_torch;
+	client->old_v.cnt_h_boost = ent->v.cnt_h_boost;
+	client->old_v.cnt_sh_boost = ent->v.cnt_sh_boost;
+	client->old_v.cnt_mana_boost = ent->v.cnt_mana_boost;
+	client->old_v.cnt_teleport = ent->v.cnt_teleport;
+	client->old_v.cnt_tome = ent->v.cnt_tome;
+	client->old_v.cnt_summon = ent->v.cnt_summon;
+	client->old_v.cnt_invisibility = ent->v.cnt_invisibility;
+	client->old_v.cnt_glyph = ent->v.cnt_glyph;
+	client->old_v.cnt_haste = ent->v.cnt_haste;
+	client->old_v.cnt_blast = ent->v.cnt_blast;
+	client->old_v.cnt_polymorph = ent->v.cnt_polymorph;
+	client->old_v.cnt_flight = ent->v.cnt_flight;
+	client->old_v.cnt_cubeofforce = ent->v.cnt_cubeofforce;
+	client->old_v.cnt_invincibility = ent->v.cnt_invincibility;
+	client->old_v.cameramode = ent->GetCameraMode();
 }
 
 /*

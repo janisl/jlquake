@@ -152,7 +152,7 @@ typedef struct client_s
 	int				delta_sequence;		// -1 = no compression
 	netchan_t		netchan;
 
-	entvars_t		old_v;
+	h2client_entvars_t	old_v;
 	qboolean        send_all_v;
 
 	unsigned		PIV, LastPIV;		// people in view

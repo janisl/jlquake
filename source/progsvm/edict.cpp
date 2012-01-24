@@ -50,7 +50,7 @@ int ED_InitEntityFields()
 		}
 		else
 		{
-			offset = 652;
+			offset = 648;
 		}
 	}
 

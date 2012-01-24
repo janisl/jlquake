@@ -1547,7 +1547,7 @@ void CL_ParseServerMessage (void)
 				if (sc1 & SC1_MOVETYPE)
 					cl.v.movetype = net_message.ReadByte();
 				if (sc1 & SC1_CAMERAMODE)
-					cl.v._cameramode = net_message.ReadByte();
+					cl.v.cameramode = net_message.ReadByte();
 				if (sc1 & SC1_HASTED)
 					cl.v.hasted = net_message.ReadFloat();
 				if (sc1 & SC1_INVENTORY)

@@ -44,7 +44,7 @@ struct clientConnection_t : clientConnectionCommon_t
 
 extern clientConnection_t clc;
 
-struct client_entvars_t
+struct h2client_entvars_t
 {
 	float	movetype;
 	float	health;
@@ -118,7 +118,7 @@ struct client_state_t : clientActiveCommon_t
 	float		item_gettime[32];	// cl.time of aquiring item, for blinking
 	float		faceanimtime;		// use anim frame if cl.time < this
 
-	client_entvars_t	v; // NOTE: not every field will be update - you must specifically add
+	h2client_entvars_t	v; // NOTE: not every field will be update - you must specifically add
 	                   // them in functions SV_WriteClientdatatToMessage() and CL_ParseClientdata()
 
 	char puzzle_pieces[8][10]; // puzzle piece names

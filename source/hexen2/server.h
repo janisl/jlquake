@@ -99,7 +99,7 @@ typedef struct client_s
 
 // client known data for deltas	
 	int				old_frags;
-	entvars_t		old_v;
+	h2client_entvars_t	old_v;
 	qboolean        send_all_v;
 
 	byte			current_frame, last_frame;
