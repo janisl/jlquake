@@ -295,7 +295,7 @@ void CL_BaseMove (h2usercmd_t *cmd)
 	if (clc.qh_signon != SIGNONS)
 		return;
 			
-	if (cl.v.cameramode)	// Stuck in a different camera so don't move
+	if (cl.v._cameramode)	// Stuck in a different camera so don't move
 	{
 		Com_Memset(cmd, 0, sizeof(*cmd));
 		return;
@@ -362,7 +362,7 @@ void CL_MouseEvent(int mx, int my)
 
 void CL_MouseMove(h2usercmd_t *cmd)
 {
-	if (cl.v.cameramode)	// Stuck in a different camera so don't move
+	if (cl.v._cameramode)	// Stuck in a different camera so don't move
 	{
 		Com_Memset(cmd, 0, sizeof(*cmd));
 		return;

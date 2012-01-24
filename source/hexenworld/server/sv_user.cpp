@@ -1198,7 +1198,7 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	pmove.teleport_time = realtime + (sv_player->v.teleport_time - sv.time);
 
 //	movevars.entgravity = host_client->entgravity;
-	movevars.entgravity = sv_player->v.gravity;
+	movevars.entgravity = sv_player->GetGravity();
 	movevars.maxspeed = host_client->maxspeed;
 
 	for (i=0 ; i<3 ; i++)

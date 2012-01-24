@@ -16,6 +16,10 @@
 
 #define	MAX_ENT_LEAFS	16
 
+extern idEntVarDef entFieldCameraMode;
+extern idEntVarDef entFieldMoveChain;
+extern idEntVarDef entFieldChainMoved;
+extern idEntVarDef entFieldGravity;
 extern idEntVarDef entFieldSiegeTeam;
 
 struct qhedict_t
@@ -39,6 +43,8 @@ struct qhedict_t
 	entvars_t v;			// C exported fields from progs
 	// other fields from progs come immediately after
 
+	int GetIntField(idEntVarDef& field);
+	void SetIntField(idEntVarDef& field, int value);
 	float GetFloatField(idEntVarDef& field);
 	void SetFloatField(idEntVarDef& field, float value);
 
@@ -51,14 +57,49 @@ struct qhedict_t
 	{ \
 		SetFloatField(entField ## name, value); \
 	}
+#define FIELD_FUNC(name) \
+	func_t Get ## name() \
+	{ \
+		return GetIntField(entField ## name); \
+	} \
+	void Set ## name(func_t value) \
+	{ \
+		SetIntField(entField ## name, value); \
+	}
+#define FIELD_ENTITY(name) \
+	int Get ## name() \
+	{ \
+		return GetIntField(entField ## name); \
+	} \
+	void Set ## name(int value) \
+	{ \
+		SetIntField(entField ## name, value); \
+	}
 
+	//	Hexen 2 and HexenWorld
+	FIELD_ENTITY(CameraMode)
+	FIELD_ENTITY(MoveChain)
+	FIELD_FUNC(ChainMoved)
 	//	HexenWorld
+	FIELD_FLOAT(Gravity)
 	FIELD_FLOAT(SiegeTeam)
 
 #undef FIELD_FLOAT
+#undef FIELD_FUNC
+#undef FIELD_ENTITY
 };
 
 int ED_InitEntityFields();
+
+inline int qhedict_t::GetIntField(idEntVarDef& field)
+{
+	return *(int*)((byte*)&v + field.offset);
+}
+
+inline void qhedict_t::SetIntField(idEntVarDef& field, int value)
+{
+	*(int*)((byte*)&v + field.offset) = value;
+}
 
 inline float qhedict_t::GetFloatField(idEntVarDef& field)
 {

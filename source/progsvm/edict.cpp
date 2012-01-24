@@ -16,6 +16,10 @@
 
 #include "progsvm.h"
 
+idEntVarDef entFieldCameraMode;
+idEntVarDef entFieldMoveChain;
+idEntVarDef entFieldChainMoved;
+idEntVarDef entFieldGravity;
 idEntVarDef entFieldSiegeTeam;
 
 void idEntVarDef::Init(const char* name, int offset)
@@ -42,18 +46,28 @@ int ED_InitEntityFields()
 	{
 		if (GGameType & GAME_HexenWorld)
 		{
-			offset = 696;
+			offset = 680;
 		}
 		else
 		{
-			offset = 664;
+			offset = 652;
 		}
 	}
 
 	if (GGameType & GAME_Hexen2)
 	{
+		entFieldCameraMode.Init("cameramode", offset);
+		offset += 4;
+		entFieldMoveChain.Init("movechain", offset);
+		offset += 4;
+		entFieldChainMoved.Init("chainmoved", offset);
+		offset += 4;
+		//	string_index
+		offset += 4;
 		if (GGameType & GAME_HexenWorld)
 		{
+			entFieldGravity.Init("gravity", offset);
+			offset += 4;
 			entFieldSiegeTeam.Init("siege_team", offset);
 			offset += 4;
 		}

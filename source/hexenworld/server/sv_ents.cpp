@@ -574,7 +574,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 			sc1 |= SC1_ARTIFACT_LOW;
 		if (ent->v.movetype != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
-		if (ent->v.cameramode != host_client->old_v.cameramode)
+		if (ent->GetCameraMode() != host_client->old_v._cameramode)
 			sc1 |= SC1_CAMERAMODE;
 		if (ent->v.hasted != host_client->old_v.hasted)
 			sc1 |= SC1_HASTED;
@@ -727,7 +727,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 	if (sc1 & SC1_MOVETYPE)
 		msg->WriteByte(ent->v.movetype);
 	if (sc1 & SC1_CAMERAMODE)
-		msg->WriteByte(ent->v.cameramode);
+		msg->WriteByte(ent->GetCameraMode());
 	if (sc1 & SC1_HASTED)
 		msg->WriteFloat(ent->v.hasted);
 	if (sc1 & SC1_INVENTORY)
@@ -781,7 +781,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 		msg->WriteFloat(ent->v.flags);
 
 end:
-	Com_Memcpy(&host_client->old_v,&ent->v,sizeof(host_client->old_v));
+	Com_Memcpy(&host_client->old_v, &ent->v, sizeof(host_client->old_v));
 }
 
 

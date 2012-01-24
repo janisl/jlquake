@@ -236,11 +236,11 @@ typedef struct
 	float	cnt_flight;
 	float	cnt_cubeofforce;
 	float	cnt_invincibility;
-	int	cameramode;
-	int	movechain;
-	func_t	chainmoved;
-	float	string_index;
-	float	gravity;
+	int	_cameramode;
+	int	_movechain;
+	func_t	_chainmoved;
+	float	_string_index;
+	float	_gravity;
 	float	_siege_team;
 } entvars_t;
 

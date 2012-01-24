@@ -746,9 +746,9 @@ void SV_PrepareClientEntities (client_t *client, qhedict_t	*clent, QMsg *msg)
 	msg->WriteByte(client->current_sequence);
 
 	// find the client's PVS
-	if (clent->v.cameramode)
+	if (clent->GetCameraMode())
 	{
-		ent = PROG_TO_EDICT(clent->v.cameramode);
+		ent = PROG_TO_EDICT(clent->GetCameraMode());
 		VectorCopy(ent->v.origin, org);
 	}
 	else
@@ -1283,7 +1283,7 @@ void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg)
 			sc1 |= SC1_ARTIFACT_LOW;
 		if (ent->v.movetype != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
-		if (ent->v.cameramode != host_client->old_v.cameramode)
+		if (ent->GetCameraMode() != host_client->old_v._cameramode)
 			sc1 |= SC1_CAMERAMODE;
 		if (ent->v.hasted != host_client->old_v.hasted)
 			sc1 |= SC1_HASTED;
@@ -1440,7 +1440,7 @@ void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg)
 	if (sc1 & SC1_MOVETYPE)
 		host_client->message.WriteByte(ent->v.movetype);
 	if (sc1 & SC1_CAMERAMODE)
-		host_client->message.WriteByte(ent->v.cameramode);
+		host_client->message.WriteByte(ent->GetCameraMode());
 	if (sc1 & SC1_HASTED)
 		host_client->message.WriteFloat(ent->v.hasted);
 	if (sc1 & SC1_INVENTORY)

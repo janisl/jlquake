@@ -1772,7 +1772,7 @@ void SV_Physics (void)
 		if (ent->free)
 			continue;
 
-		ent2 = PROG_TO_EDICT(ent->v.movechain);
+		ent2 = PROG_TO_EDICT(ent->GetMoveChain());
 		if (ent2 != sv.edicts)
 		{
 			VectorCopy(ent->v.origin,oldOrigin);
@@ -1823,14 +1823,14 @@ void SV_Physics (void)
 						VectorAdd(oldAngle,ent2->v.angles,ent2->v.angles);
 					}
 
-					if (originMoved && ent2->v.chainmoved)
+					if (originMoved && ent2->GetChainMoved())
 					{	// callback function
 						pr_global_struct->self = EDICT_TO_PROG(ent2);
 						pr_global_struct->other = EDICT_TO_PROG(ent);
-						PR_ExecuteProgram(ent2->v.chainmoved);
+						PR_ExecuteProgram(ent2->GetChainMoved());
 					}
 
-					ent2 = PROG_TO_EDICT(ent2->v.movechain);
+					ent2 = PROG_TO_EDICT(ent2->GetMoveChain());
 					if (ent2 == sv.edicts) break;
 
 				}
