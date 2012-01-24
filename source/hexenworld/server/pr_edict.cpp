@@ -28,7 +28,7 @@ ED_ClearEdict
 Sets everything to NULL
 =================
 */
-void ED_ClearEdict (edict_t *e)
+void ED_ClearEdict (qhedict_t *e)
 {
 	Com_Memset(&e->v, 0, progs->entityfields * 4);
 	e->free = false;
@@ -45,10 +45,10 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-edict_t *ED_Alloc (void)
+qhedict_t *ED_Alloc (void)
 {
 	int			i;
-	edict_t		*e;
+	qhedict_t		*e;
 
 	for ( i=HWMAX_CLIENTS+max_temp_edicts->value+1 ; i<sv.num_edicts ; i++)
 	{
@@ -77,10 +77,10 @@ edict_t *ED_Alloc (void)
 	return e;
 }
 
-edict_t *ED_Alloc_Temp (void)
+qhedict_t *ED_Alloc_Temp (void)
 {
 	int			i,j,Found;
-	edict_t		*e,*Least;
+	qhedict_t		*e,*Least;
 	float		LeastTime;
 	qboolean	LeastSet;
 
@@ -122,7 +122,7 @@ Marks the edict as free
 FIXME: walk all entities and NULL out references to this entity
 =================
 */
-void ED_Free (edict_t *ed)
+void ED_Free (qhedict_t *ed)
 {
 	SV_UnlinkEdict (ed);		// unlink from world bsp
 
@@ -154,7 +154,7 @@ typedef struct {
 
 static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
-eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
+eval_t *GetEdictFieldValue(qhedict_t *ed, const char *field)
 {
 	ddef_t			*def = NULL;
 	int				i;
@@ -353,7 +353,7 @@ ED_Print
 For debugging
 =============
 */
-void ED_Print (edict_t *ed)
+void ED_Print (qhedict_t *ed)
 {
 	int		l;
 	ddef_t	*d;
@@ -404,7 +404,7 @@ ED_Write
 For savegames
 =============
 */
-void ED_Write (FILE *f, edict_t *ed)
+void ED_Write (FILE *f, qhedict_t *ed)
 {
 	ddef_t	*d;
 	int		*v;
@@ -514,7 +514,7 @@ For debugging
 void ED_Count (void)
 {
 	int		i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		active, models, solid, step;
 
 	active = models = solid = step = 0;
@@ -740,7 +740,7 @@ ed should be a properly initialized empty edict.
 Used for initial level load and for savegames.
 ====================
 */
-const char *ED_ParseEdict (const char *data, edict_t *ent)
+const char *ED_ParseEdict (const char *data, qhedict_t *ent)
 {
 	ddef_t		*key;
 	qboolean	anglehack;
@@ -856,7 +856,7 @@ to call ED_CallSpawnFunctions () to let the objects initialize themselves.
 */
 void ED_LoadFromFile (const char *data)
 {	
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			inhibit;
 	dfunction_t	*func;
 	qboolean	skip;
@@ -1028,7 +1028,7 @@ void PR_LoadProgs (void)
 	pr_global_struct = (globalvars_t *)((byte *)progs + progs->ofs_globals);
 	pr_globals = (float *)pr_global_struct;
 	
-	pr_edict_size = progs->entityfields * 4 + sizeof (edict_t) - sizeof(entvars_t);
+	pr_edict_size = progs->entityfields * 4 + sizeof (qhedict_t) - sizeof(entvars_t);
 	
 // byte swap the lumps
 	for (i=0 ; i<progs->numstatements ; i++)
@@ -1096,14 +1096,14 @@ void PR_Init (void)
 
 
 
-edict_t *EDICT_NUM(int n)
+qhedict_t *EDICT_NUM(int n)
 {
 	if (n < 0 || n >= MAX_EDICTS_H2)
 		SV_Error ("EDICT_NUM: bad number %i", n);
-	return (edict_t *)((byte *)sv.edicts+ (n)*pr_edict_size);
+	return (qhedict_t *)((byte *)sv.edicts+ (n)*pr_edict_size);
 }
 
-int NUM_FOR_EDICT(edict_t *e)
+int NUM_FOR_EDICT(qhedict_t *e)
 {
 	int		b;
 	

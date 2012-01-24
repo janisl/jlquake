@@ -338,7 +338,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -462,8 +462,8 @@ SV_WriteClientdataToMessage
 void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 {
 	int		i;
-	edict_t	*other;
-	edict_t	*ent;
+	qhedict_t	*other;
+	qhedict_t	*ent;
 
 	ent = client->edict;
 
@@ -509,7 +509,7 @@ when a reliable message can be delivered this frame.
 */
 void SV_UpdateClientStats (client_t *client)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		stats[MAX_CL_STATS];
 	int		i;
 	
@@ -608,7 +608,7 @@ void SV_UpdateToReliableMessages (void)
 	int			i, j;
 	client_t *client;
 	eval_t *val;
-	edict_t *ent;
+	qhedict_t *ent;
 
 // check for changes to be sent over the reliable streams to all clients
 	for (i=0, host_client = svs.clients ; i<MAX_CLIENTS_QW ; i++, host_client++)

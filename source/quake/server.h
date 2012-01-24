@@ -52,8 +52,8 @@ typedef struct
 	const char*	lightstyles[MAX_LIGHTSTYLES_Q1];
 	int			num_edicts;
 	int			max_edicts;
-	edict_t		*edicts;			// can NOT be array indexed, because
-									// edict_t is variable sized, but can
+	qhedict_t		*edicts;			// can NOT be array indexed, because
+									// qhedict_t is variable sized, but can
 									// be used to reference the world ent
 	server_state_t	state;			// some actions are only valid during load
 
@@ -91,7 +91,7 @@ typedef struct client_s
 	QMsg			message;			// can be added to at any time,
 										// copied and clear once per frame
 	byte			msgbuf[MAX_MSGLEN_Q1];
-	edict_t			*edict;				// EDICT_NUM(clientnum+1)
+	qhedict_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;
 		
@@ -176,14 +176,14 @@ extern	jmp_buf 	host_abortserver;
 
 extern	double		host_time;
 
-extern	edict_t		*sv_player;
+extern	qhedict_t		*sv_player;
 
 //===========================================================
 
 void SV_Init (void);
 
 void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
 
 void SV_DropClient (qboolean crash);
@@ -205,10 +205,10 @@ void SV_BroadcastPrintf (const char *fmt, ...);
 
 void SV_Physics (void);
 
-qboolean SV_CheckBottom (edict_t *ent);
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
+qboolean SV_CheckBottom (qhedict_t *ent);
+qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink);
 
-void SV_WriteClientdataToMessage (edict_t *ent, QMsg *msg);
+void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg);
 
 void SV_MoveToGoal (void);
 

@@ -59,7 +59,7 @@ error(value)
 void PF_error (void)
 {
 	char	*s;
-	edict_t	*ed;
+	qhedict_t	*ed;
 	
 	s = PF_VarString(0);
 	Con_Printf ("======SERVER ERROR in %s:\n%s\n", PR_GetString(pr_xfunction->s_name) ,s);
@@ -82,7 +82,7 @@ objerror(value)
 void PF_objerror (void)
 {
 	char	*s;
-	edict_t	*ed;
+	qhedict_t	*ed;
 	
 	s = PF_VarString(0);
 	Con_Printf ("======OBJECT ERROR in %s:\n%s\n", PR_GetString(pr_xfunction->s_name),s);
@@ -119,7 +119,7 @@ setorigin (entity, origin)
 */
 void PF_setorigin (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	float	*org;
 	
 	e = G_EDICT(OFS_PARM0);
@@ -140,7 +140,7 @@ setsize (entity, minvector, maxvector)
 */
 void PF_setsize (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	float	*min, *max;
 	
 	e = G_EDICT(OFS_PARM0);
@@ -163,7 +163,7 @@ Also sets size, mins, and maxs for inline bmodels
 */
 void PF_setmodel (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	const char*	m;
 	const char	**check;
 	int		i;
@@ -446,7 +446,7 @@ void PF_sound (void)
 {
 	const char	*sample;
 	int			channel;
-	edict_t		*entity;
+	qhedict_t		*entity;
 	int 		volume;
 	float attenuation;
 		
@@ -489,7 +489,7 @@ void PF_traceline (void)
 	float	*v1, *v2;
 	q1trace_t	trace;
 	int		nomonsters;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 	v1 = G_VECTOR(OFS_PARM0);
 	v2 = G_VECTOR(OFS_PARM1);
@@ -534,7 +534,7 @@ int PF_newcheckclient (int check)
 {
 	int		i;
 	byte	*pvs;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	vec3_t	org;
 
 // cycle to the next one
@@ -598,7 +598,7 @@ name checkclient ()
 int c_invis, c_notvis;
 void PF_checkclient (void)
 {
-	edict_t	*ent, *self;
+	qhedict_t	*ent, *self;
 	vec3_t	view;
 	
 // find a new check if on a new frame
@@ -727,13 +727,13 @@ findradius (origin, radius)
 */
 void PF_findradius (void)
 {
-	edict_t	*ent, *chain;
+	qhedict_t	*ent, *chain;
 	float	rad;
 	float	*org;
 	vec3_t	eorg;
 	int		i, j;
 
-	chain = (edict_t *)sv.edicts;
+	chain = (qhedict_t *)sv.edicts;
 	
 	org = G_VECTOR(OFS_PARM0);
 	rad = G_FLOAT(OFS_PARM1);
@@ -797,14 +797,14 @@ void PF_vtos (void)
 
 void PF_Spawn (void)
 {
-	edict_t	*ed;
+	qhedict_t	*ed;
 	ed = ED_Alloc();
 	RETURN_EDICT(ed);
 }
 
 void PF_Remove (void)
 {
-	edict_t	*ed;
+	qhedict_t	*ed;
 	
 	ed = G_EDICT(OFS_PARM0);
 	ED_Free (ed);
@@ -818,7 +818,7 @@ void PF_Find (void)
 	int		f;
 	const char	*s;
 	const char	*t;
-	edict_t	*ed;
+	qhedict_t	*ed;
 	
 	e = G_EDICTNUM(OFS_PARM0);
 	f = G_INT(OFS_PARM1);
@@ -935,7 +935,7 @@ float(float yaw, float dist) walkmove
 */
 void PF_walkmove (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	float	yaw, dist;
 	vec3_t	move;
 	dfunction_t	*oldf;
@@ -978,7 +978,7 @@ void() droptofloor
 */
 void PF_droptofloor (void)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	vec3_t		end;
 	q1trace_t		trace;
 	
@@ -1060,7 +1060,7 @@ PF_checkbottom
 */
 void PF_checkbottom (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = G_EDICT(OFS_PARM0);
 
@@ -1091,7 +1091,7 @@ entity nextent(entity)
 void PF_nextent (void)
 {
 	int		i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	i = G_EDICTNUM(OFS_PARM0);
 	while (1)
@@ -1122,7 +1122,7 @@ vector aim(entity, missilespeed)
 Cvar*	sv_aim;
 void PF_aim (void)
 {
-	edict_t	*ent, *check, *bestent;
+	qhedict_t	*ent, *check, *bestent;
 	vec3_t	start, dir, end, bestdir;
 	int		i, j;
 	q1trace_t	tr;
@@ -1214,7 +1214,7 @@ This was a major timewaster in progs, so it was converted to C
 */
 void PF_changeyaw (void)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	float		ideal, current, move, speed;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
@@ -1305,7 +1305,7 @@ QMsg *WriteDest (void)
 static client_t *Write_GetClient(void)
 {
 	int		entnum;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 	ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
 	entnum = NUM_FOR_EDICT(ent);
@@ -1404,7 +1404,7 @@ void PF_WriteEntity (void)
 
 void PF_makestatic (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		i;
 	
 	ent = G_EDICT(OFS_PARM0);
@@ -1435,7 +1435,7 @@ PF_setspawnparms
 */
 void PF_setspawnparms (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		i;
 	client_t	*client;
 
@@ -1480,7 +1480,7 @@ logfrag (killer, killee)
 */
 void PF_logfrag (void)
 {
-	edict_t	*ent1, *ent2;
+	qhedict_t	*ent1, *ent2;
 	int		e1, e2;
 	char	*s;
 
@@ -1514,7 +1514,7 @@ string(entity e, string key) infokey
 */
 void PF_infokey (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	int		e1;
 	const char	*value;
 	const char	*key;

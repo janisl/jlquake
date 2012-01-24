@@ -6,7 +6,7 @@
 
 #include "quakedef.h"
 
-edict_t	*sv_player = NULL;
+qhedict_t	*sv_player = NULL;
 
 extern	Cvar*	sv_friction;
 Cvar*	sv_edgefriction;

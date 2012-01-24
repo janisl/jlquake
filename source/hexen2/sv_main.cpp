@@ -86,7 +86,7 @@ void SV_Edicts(const char *Name)
 {
 	fileHandle_t FH;
 	int i;
-	edict_t *e;
+	qhedict_t *e;
 
 	FH = FS_FOpenFileWrite(Name);
 	if (!FH)
@@ -250,7 +250,7 @@ void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int cou
 SV_StopSound
 ==================
 */
-void SV_StopSound (edict_t *entity, int channel)
+void SV_StopSound (qhedict_t *entity, int channel)
 {
 	int			ent;
 
@@ -269,7 +269,7 @@ void SV_StopSound (edict_t *entity, int channel)
 SV_UpdateSoundPos
 ==================
 */
-void SV_UpdateSoundPos (edict_t *entity, int channel)
+void SV_UpdateSoundPos (qhedict_t *entity, int channel)
 {
 	int			ent;
     int			i;
@@ -301,7 +301,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -457,13 +457,13 @@ once for a player each game, not once for each level change.
 */
 void SV_ConnectClient (int clientnum)
 {
-	edict_t			*ent;
+	qhedict_t			*ent;
 	client_t		*client;
 	int				edictnum;
 	struct qsocket_s *netconnection;
 	float			spawn_parms[NUM_SPAWN_PARMS];
 	int				entnum;
-	edict_t			*svent;
+	qhedict_t			*svent;
 
 	client = svs.clients + clientnum;
 
@@ -653,14 +653,14 @@ SV_WriteEntitiesToClient
 #define CLIENT_FRAME_INIT	255
 #define CLIENT_FRAME_RESET	254
 
-void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
+void SV_PrepareClientEntities (client_t *client, qhedict_t	*clent, QMsg *msg)
 {
 	int		e, i;
 	int		bits;
 	byte	*pvs;
 	vec3_t	org;
 	float	miss;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		temp_index;
 	char	NewName[MAX_QPATH];
 	long	flagtest;
@@ -1054,7 +1054,7 @@ SV_CleanupEnts
 void SV_CleanupEnts (void)
 {
 	int		e;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
@@ -1070,12 +1070,12 @@ SV_WriteClientdataToMessage
 
 ==================
 */ 
-void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
+void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg)
 {
 	int		bits,sc1,sc2;
 	byte	test;
 	int		i;
-	edict_t	*other;
+	qhedict_t	*other;
 	static  int next_update = 0;
 	static	int next_count = 0;
 
@@ -1565,7 +1565,7 @@ void SV_UpdateToReliableMessages (void)
 {
 	int			i, j;
 	client_t *client;
-	edict_t *ent;
+	qhedict_t *ent;
 
 // check for changes to be sent over the reliable streams
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
@@ -1738,7 +1738,7 @@ SV_CreateBaseline
 void SV_CreateBaseline (void)
 {
 	int			i;
-	edict_t			*svent;
+	qhedict_t			*svent;
 	int				entnum;	
 //	int client_num = 1<<(MAX_BASELINES-1);
 		
@@ -1858,7 +1858,7 @@ extern float		scr_centertime_off;
 
 void SV_SpawnServer (char *server, char *startspot)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i;
 	qboolean	stats_restored;
 
@@ -1930,7 +1930,7 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	sv.max_edicts = MAX_EDICTS_H2;
 	
-	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
+	sv.edicts = (qhedict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 
 	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
 	

@@ -527,7 +527,7 @@ void SVC_DirectConnect (void)
 	int			i;
 	client_t	*cl, *newcl;
 	client_t	temp;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			edictnum;
 	const char	*s;
 	int			clients, spectators;

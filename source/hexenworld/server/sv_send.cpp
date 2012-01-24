@@ -344,7 +344,7 @@ void SV_MulticastSpecific (unsigned clients, qboolean reliable)
 SV_StopSound
 ==================
 */
-void SV_StopSound (edict_t *entity, int channel)
+void SV_StopSound (qhedict_t *entity, int channel)
 {
 	int			ent,i;
 	vec3_t		origin;
@@ -373,7 +373,7 @@ void SV_StopSound (edict_t *entity, int channel)
 SV_UpdateSoundPos
 ==================
 */
-void SV_UpdateSoundPos (edict_t *entity, int channel)
+void SV_UpdateSoundPos (qhedict_t *entity, int channel)
 {
 	int			ent;
     int			i;
@@ -415,7 +415,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -683,8 +683,8 @@ SV_WriteClientdataToMessage
 void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 {
 	int		i;
-	edict_t	*other;
-	edict_t	*ent;
+	qhedict_t	*other;
+	qhedict_t	*ent;
 
 	ent = client->edict;
 
@@ -739,7 +739,7 @@ when a reliable message can be delivered this frame.
 */
 void SV_UpdateClientStats (client_t *client)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		stats[MAX_CL_STATS];
 	int		i;
 	
@@ -828,7 +828,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 	return true;
 }
 
-static qboolean ValidToShowName(edict_t *edict)
+static qboolean ValidToShowName(qhedict_t *edict)
 {
 	if (edict->v.deadflag)
 		return false;
@@ -900,7 +900,7 @@ void SV_UpdateToReliableMessages (void)
 	int			i, j;
 	client_t	*client;
 	eval_t		*val;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	qboolean	CheckPIV = false;
 
 //	Con_Printf("SV_UpdateToReliableMessages\n");
@@ -1004,7 +1004,7 @@ SV_CleanupEnts
 void SV_CleanupEnts (void)
 {
 	int		e;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))

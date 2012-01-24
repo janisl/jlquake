@@ -117,7 +117,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -244,7 +244,7 @@ once for a player each game, not once for each level change.
 */
 void SV_ConnectClient (int clientnum)
 {
-	edict_t			*ent;
+	qhedict_t			*ent;
 	client_t		*client;
 	int				edictnum;
 	struct qsocket_s *netconnection;
@@ -424,14 +424,14 @@ SV_WriteEntitiesToClient
 
 =============
 */
-void SV_WriteEntitiesToClient (edict_t	*clent, QMsg *msg)
+void SV_WriteEntitiesToClient (qhedict_t	*clent, QMsg *msg)
 {
 	int		e, i;
 	int		bits;
 	byte	*pvs;
 	vec3_t	org;
 	float	miss;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 // find the client's PVS
 	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
@@ -556,7 +556,7 @@ SV_CleanupEnts
 void SV_CleanupEnts (void)
 {
 	int		e;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
@@ -572,11 +572,11 @@ SV_WriteClientdataToMessage
 
 ==================
 */
-void SV_WriteClientdataToMessage (edict_t *ent, QMsg *msg)
+void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 {
 	int		bits;
 	int		i;
-	edict_t	*other;
+	qhedict_t	*other;
 	int		items;
 	eval_t	*val;
 
@@ -914,7 +914,7 @@ SV_CreateBaseline
 void SV_CreateBaseline (void)
 {
 	int			i;
-	edict_t			*svent;
+	qhedict_t			*svent;
 	int				entnum;	
 		
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
@@ -1026,7 +1026,7 @@ extern float		scr_centertime_off;
 
 void SV_SpawnServer (char *server)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i;
 
 	// let's not have any servers with no name
@@ -1073,7 +1073,7 @@ void SV_SpawnServer (char *server)
 // allocate server memory
 	sv.max_edicts = MAX_EDICTS_Q1;
 	
-	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
+	sv.edicts = (qhedict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 
 	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
 	

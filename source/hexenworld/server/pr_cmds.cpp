@@ -51,7 +51,7 @@ error(value)
 void PF_error (void)
 {
 	char	*s;
-	edict_t	*ed;
+	qhedict_t	*ed;
 	
 	s = PF_VarString(0);
 	Con_Printf ("======SERVER ERROR in %s:\n%s\n"
@@ -75,7 +75,7 @@ objerror(value)
 void PF_objerror (void)
 {
 	char	*s;
-	edict_t	*ed;
+	qhedict_t	*ed;
 	
 	s = PF_VarString(0);
 	Con_Printf ("======OBJECT ERROR in %s:\n%s\n"
@@ -113,7 +113,7 @@ setorigin (entity, origin)
 */
 void PF_setorigin (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	float	*org;
 	
 	e = G_EDICT(OFS_PARM0);
@@ -123,7 +123,7 @@ void PF_setorigin (void)
 }
 
 
-void SetMinMaxSize (edict_t *e, float *min, float *max, qboolean rotate)
+void SetMinMaxSize (qhedict_t *e, float *min, float *max, qboolean rotate)
 {
 	float	*angles;
 	vec3_t	rmin, rmax;
@@ -208,7 +208,7 @@ setsize (entity, minvector, maxvector)
 */
 void PF_setsize (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	float	*min, *max;
 	
 	e = G_EDICT(OFS_PARM0);
@@ -232,7 +232,7 @@ Also sets size, mins, and maxs for inline bmodels
 */
 void PF_setmodel (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	const char	*m, **check;
 	int		i;
 	clipHandle_t	mod;
@@ -268,7 +268,7 @@ void PF_setmodel (void)
 
 void PF_setpuzzlemodel (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	const char	*m, **check;
 	clipHandle_t	mod;
 	int		i;
@@ -844,7 +844,7 @@ PF_StopSound
 void PF_StopSound(void)
 {
 	int			channel;
-	edict_t		*entity;
+	qhedict_t		*entity;
 		
 	entity = G_EDICT(OFS_PARM0);
 	channel = G_FLOAT(OFS_PARM1);
@@ -864,7 +864,7 @@ PF_UpdateSoundPos
 void PF_UpdateSoundPos(void)
 {
 	int			channel;
-	edict_t		*entity;
+	qhedict_t		*entity;
 		
 	entity = G_EDICT(OFS_PARM0);
 	channel = G_FLOAT(OFS_PARM1);
@@ -894,7 +894,7 @@ void PF_sound (void)
 {
 	const char		*sample;
 	int			channel;
-	edict_t		*entity;
+	qhedict_t		*entity;
 	int 		volume;
 	float attenuation;
 		
@@ -948,7 +948,7 @@ void PF_traceline (void)
 	float	*v1, *v2;
 	q1trace_t	trace;
 	int		nomonsters;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	float save_hull;
 
 	v1 = G_VECTOR(OFS_PARM0);
@@ -991,7 +991,7 @@ void PF_tracearea (void)
 	float	*v1, *v2, *mins, *maxs;
 	q1trace_t	trace;
 	int		nomonsters;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	float save_hull;
 
 	v1 = G_VECTOR(OFS_PARM0);
@@ -1042,7 +1042,7 @@ int PF_newcheckclient (int check)
 {
 	int		i;
 	byte	*pvs;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	vec3_t	org;
 
 // cycle to the next one
@@ -1106,7 +1106,7 @@ name checkclient ()
 int c_invis, c_notvis;
 void PF_checkclient (void)
 {
-	edict_t	*ent, *self;
+	qhedict_t	*ent, *self;
 	vec3_t	view;
 	
 // find a new check if on a new frame
@@ -1234,13 +1234,13 @@ findradius (origin, radius)
 */
 void PF_findradius (void)
 {
-	edict_t	*ent, *chain;
+	qhedict_t	*ent, *chain;
 	float	rad;
 	float	*org;
 	vec3_t	eorg;
 	int		i, j;
 
-	chain = (edict_t *)sv.edicts;
+	chain = (qhedict_t *)sv.edicts;
 	
 	org = G_VECTOR(OFS_PARM0);
 	rad = G_FLOAT(OFS_PARM1);
@@ -1328,14 +1328,14 @@ void PF_vtos (void)
 
 void PF_Spawn (void)
 {
-	edict_t	*ed;
+	qhedict_t	*ed;
 	ed = ED_Alloc();
 	RETURN_EDICT(ed);
 }
 
 void PF_SpawnTemp (void)
 {
-	edict_t	*ed;
+	qhedict_t	*ed;
 
 	ed = ED_Alloc_Temp();
 
@@ -1344,7 +1344,7 @@ void PF_SpawnTemp (void)
 
 void PF_Remove (void)
 {
-	edict_t	*ed;
+	qhedict_t	*ed;
 	int i;
 	
 	ed = G_EDICT(OFS_PARM0);
@@ -1372,7 +1372,7 @@ void PF_Find (void)
 	int		e;	
 	int		f;
 	const char	*s, *t;
-	edict_t	*ed;
+	qhedict_t	*ed;
 
 	e = G_EDICTNUM(OFS_PARM0);
 	f = G_INT(OFS_PARM1);
@@ -1403,7 +1403,7 @@ void PF_FindFloat (void)
 	int		e;	
 	int		f;
 	float	s, t;
-	edict_t	*ed;
+	qhedict_t	*ed;
 
 	e = G_EDICTNUM(OFS_PARM0);
 	f = G_INT(OFS_PARM1);
@@ -1579,7 +1579,7 @@ float(float yaw, float dist) walkmove
 */
 void PF_walkmove (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	float	yaw, dist;
 	vec3_t	move;
 	dfunction_t	*oldf;
@@ -1624,7 +1624,7 @@ void() droptofloor
 */
 void PF_droptofloor (void)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	vec3_t		end;
 	q1trace_t		trace;
 	
@@ -1790,7 +1790,7 @@ PF_checkbottom
 */
 void PF_checkbottom (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = G_EDICT(OFS_PARM0);
 
@@ -1821,7 +1821,7 @@ entity nextent(entity)
 void PF_nextent (void)
 {
 	int		i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	i = G_EDICTNUM(OFS_PARM0);
 	while (1)
@@ -1852,7 +1852,7 @@ vector aim(entity, missilespeed)
 Cvar*	sv_aim;
 void PF_aim (void)
 {
-	edict_t	*ent, *check, *bestent;
+	qhedict_t	*ent, *check, *bestent;
 	vec3_t	start, dir, end, bestdir,hold_org;
 	int		i, j;
 	q1trace_t	tr;
@@ -1945,7 +1945,7 @@ This was a major timewaster in progs, so it was converted to C
 */
 void PF_changeyaw (void)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	float		ideal, current, move, speed;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
@@ -2000,7 +2000,7 @@ QMsg *WriteDest (void)
 {
 	int		entnum;
 	int		dest;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 	dest = G_FLOAT(OFS_PARM0);
 	switch (dest)
@@ -2079,7 +2079,7 @@ void PF_WriteEntity (void)
 
 void PF_makestatic (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		i;
 	
 	ent = G_EDICT(OFS_PARM0);
@@ -2113,7 +2113,7 @@ PF_setspawnparms
 */
 void PF_setspawnparms (void)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		i;
 	client_t	*client;
 
@@ -2161,7 +2161,7 @@ logfrag (killer, killee)
 */
 void PF_logfrag (void)
 {
-	edict_t	*ent1, *ent2;
+	qhedict_t	*ent1, *ent2;
 	int		e1, e2;
 	char	*s;
 
@@ -2192,7 +2192,7 @@ string(entity e, string key) infokey
 */
 void PF_infokey (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	int		e1;
 	const char	*value;
 	const char	*key;
@@ -2328,7 +2328,7 @@ void PF_particleexplosion (void)
 void PF_movestep (void)
 {
 	vec3_t v;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	dfunction_t	*oldf;
 	int 	oldself;
 	qboolean set_trace;
@@ -2414,7 +2414,7 @@ int TheifExp[MAX_LEVELS+1] =
 	1000        // Required amount for each level afterwards
 };
 
-int FindLevel(edict_t *WhichPlayer)
+int FindLevel(qhedict_t *WhichPlayer)
 {
 	int *Chart;
 	int Amount,counter,Level;
@@ -2456,7 +2456,7 @@ int FindLevel(edict_t *WhichPlayer)
 
 void PF_AwardExperience(void)
 {
-	edict_t	*ToEnt, *FromEnt;
+	qhedict_t	*ToEnt, *FromEnt;
 	float Amount;
 	int AfterLevel;
 	qboolean IsPlayer;
@@ -2539,7 +2539,7 @@ void PF_Sin(void)
 
 void PF_AdvanceFrame(void)
 {
-	edict_t *Ent;
+	qhedict_t *Ent;
 	float Start,End,Result;
 	
 	Ent = PROG_TO_EDICT(pr_global_struct->self);
@@ -2584,7 +2584,7 @@ void PF_AdvanceFrame(void)
 
 void PF_RewindFrame(void)
 {
-	edict_t *Ent;
+	qhedict_t *Ent;
 	float Start,End,Result;
 	
 	Ent = PROG_TO_EDICT(pr_global_struct->self);
@@ -2618,7 +2618,7 @@ void PF_RewindFrame(void)
 
 void PF_advanceweaponframe (void)
 {
-	edict_t *ent;
+	qhedict_t *ent;
 	float startframe,endframe;
 	float state;
 
@@ -2657,7 +2657,7 @@ void PF_setclass (void)
 {
 	float		NewClass;
 	int			entnum;
-	edict_t		*e;
+	qhedict_t		*e;
 	client_t	*client,*old;
 	char		temp[1024];
 	
@@ -2702,7 +2702,7 @@ void PF_setsiegeteam (void)
 {
 	float		NewTeam;
 	int			entnum;
-	edict_t		*e;
+	qhedict_t		*e;
 	client_t	*client,*old;
 	
 	entnum = G_EDICTNUM(OFS_PARM0);
@@ -3060,7 +3060,7 @@ void PF_getmeid(void)
 
 void PF_weapon_sound(void)
 {
-	edict_t *entity;
+	qhedict_t *entity;
 	int sound_num;
 	const char *sample;
 

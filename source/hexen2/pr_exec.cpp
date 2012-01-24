@@ -139,7 +139,7 @@ void PR_ExecuteProgram(func_t fnum)
 	dstatement_t *st;
 	dfunction_t *f, *newf;
 	int runaway;
-	edict_t *ed;
+	qhedict_t *ed;
 	int exitdepth;
 	int startFrame;
 	int endFrame;
@@ -413,7 +413,7 @@ while (1)
 #ifdef PARANOID
 		NUM_FOR_EDICT(ed); // Make sure it's in range
 #endif
-		if(ed == (edict_t *)sv.edicts && sv.state == ss_active)
+		if(ed == (qhedict_t *)sv.edicts && sv.state == ss_active)
 		{
 			PR_RunError("assignment to world entity");
 		}
@@ -625,7 +625,7 @@ while (1)
 #ifdef PARANOID
 		NUM_FOR_EDICT(ed); // Make sure it's in range
 #endif
-		if(ed == (edict_t *)sv.edicts && sv.state == ss_active)
+		if(ed == (qhedict_t *)sv.edicts && sv.state == ss_active)
 		{
 			PR_RunError("assignment to world entity");
 		}

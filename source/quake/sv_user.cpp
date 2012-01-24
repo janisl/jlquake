@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-edict_t	*sv_player;
+qhedict_t	*sv_player;
 
 extern	Cvar*	sv_friction;
 Cvar*	sv_edgefriction;

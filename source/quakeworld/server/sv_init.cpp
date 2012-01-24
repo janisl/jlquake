@@ -81,7 +81,7 @@ baseline will be transmitted
 void SV_CreateBaseline (void)
 {
 	int			i;
-	edict_t			*svent;
+	qhedict_t			*svent;
 	int				entnum;	
 		
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
@@ -200,7 +200,7 @@ This is only called from the SV_Map_f() function.
 */
 void SV_SpawnServer (char *server)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i;
 
 	Con_DPrintf ("SpawnServer: %s\n",server);
@@ -236,7 +236,7 @@ void SV_SpawnServer (char *server)
 	PR_LoadProgs ();
 
 	// allocate edicts
-	sv.edicts = (edict_t*)Hunk_AllocName (MAX_EDICTS_Q1*pr_edict_size, "edicts");
+	sv.edicts = (qhedict_t*)Hunk_AllocName (MAX_EDICTS_Q1*pr_edict_size, "edicts");
 	
 	// leave slots at start for clients only
 	sv.num_edicts = MAX_CLIENTS_QW+1;

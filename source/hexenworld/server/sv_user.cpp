@@ -2,7 +2,7 @@
 
 #include "qwsvdef.h"
 
-edict_t	*sv_player;
+qhedict_t	*sv_player;
 
 hwusercmd_t	cmd;
 
@@ -210,7 +210,7 @@ void SV_Spawn_f (void)
 {
 	int		i;
 	client_t	*client;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	eval_t *val;
 
 	if (host_client->state != cs_connected)
@@ -305,7 +305,7 @@ SV_SpawnSpectator
 void SV_SpawnSpectator (void)
 {
 	int		i;
-	edict_t	*e;
+	qhedict_t	*e;
 
 	VectorCopy (vec3_origin, sv_player->v.origin);
 	VectorCopy (vec3_origin, sv_player->v.view_ofs);
@@ -985,7 +985,7 @@ AddLinksToPmove
 void AddLinksToPmove ( areanode_t *node )
 {
 	link_t		*l, *next;
-	edict_t		*check;
+	qhedict_t		*check;
 	int			pl;
 	int			i;
 	physent_t	*pe;
@@ -1053,7 +1053,7 @@ For debugging
 void AddAllEntsToPmove (void)
 {
 	int			e;
-	edict_t		*check;
+	qhedict_t		*check;
 	int			i;
 	physent_t	*pe;
 	int			pl;
@@ -1119,7 +1119,7 @@ SV_RunCmd
 */
 void SV_RunCmd (hwusercmd_t *ucmd)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i, n;
 	int			oldmsec;
 

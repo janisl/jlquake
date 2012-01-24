@@ -38,7 +38,7 @@ typedef struct
 	float		*start, *end;
 	q1trace_t	trace;
 	int			type;
-	edict_t		*passedict;
+	qhedict_t		*passedict;
 } moveclip_t;
 
 /*
@@ -61,7 +61,7 @@ Offset is filled in to contain the adjustment that must be added to the
 testing object's origin to get a point to use with the returned hull.
 ================
 */
-clipHandle_t SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
+clipHandle_t SV_HullForEntity (qhedict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 {
 	clipHandle_t	model;
 	vec3_t		size;
@@ -200,7 +200,7 @@ SV_UnlinkEdict
 
 ===============
 */
-void SV_UnlinkEdict (edict_t *ent)
+void SV_UnlinkEdict (qhedict_t *ent)
 {
 	if (!ent->area.prev)
 		return;		// not linked in anywhere
@@ -214,10 +214,10 @@ void SV_UnlinkEdict (edict_t *ent)
 SV_TouchLinks
 ====================
 */
-void SV_TouchLinks ( edict_t *ent, areanode_t *node )
+void SV_TouchLinks ( qhedict_t *ent, areanode_t *node )
 {
 	link_t		*l, *next;
-	edict_t		*touch;
+	qhedict_t		*touch;
 	int			old_self, old_other;
 
 // touch linked edicts
@@ -264,7 +264,7 @@ SV_LinkEdict
 
 ===============
 */
-void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
+void SV_LinkEdict (qhedict_t *ent, qboolean touch_triggers)
 {
 	areanode_t	*node;
 
@@ -365,7 +365,7 @@ SV_TestEntityPosition
 This could be a lot more efficient...
 ============
 */
-edict_t	*SV_TestEntityPosition (edict_t *ent)
+qhedict_t	*SV_TestEntityPosition (qhedict_t *ent)
 {
 	q1trace_t	trace;
 
@@ -386,7 +386,7 @@ Handles selection or creation of a clipping hull, and offseting (and
 eventually rotation) of the end points
 ==================
 */
-q1trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
+q1trace_t SV_ClipMoveToEntity (qhedict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 {
 	q1trace_t	trace;
 	vec3_t		offset;
@@ -432,7 +432,7 @@ Mins and maxs enclose the entire area swept by the move
 void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 {
 	link_t		*l, *next;
-	edict_t		*touch;
+	qhedict_t		*touch;
 	q1trace_t	trace;
 
 // touch linked edicts
@@ -538,7 +538,7 @@ boxmaxs[0] = boxmaxs[1] = boxmaxs[2] = 9999;
 SV_Move
 ==================
 */
-q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict)
+q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, qhedict_t *passedict)
 {
 	moveclip_t	clip;
 	int			i;

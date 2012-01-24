@@ -83,12 +83,12 @@ byte *SV_FatPVS (vec3_t org)
 // because there can be a lot of nails, there is a special
 // network protocol for them
 #define	MAX_NAILS	32
-edict_t	*nails[MAX_NAILS];
+qhedict_t	*nails[MAX_NAILS];
 int		numnails;
 
 extern	int	sv_nailmodel, sv_supernailmodel, sv_playermodel;
 
-qboolean SV_AddNailUpdate (edict_t *ent)
+qboolean SV_AddNailUpdate (qhedict_t *ent)
 {
 	if (ent->v.modelindex != sv_nailmodel
 		&& ent->v.modelindex != sv_supernailmodel)
@@ -104,7 +104,7 @@ void SV_EmitNailUpdate (QMsg *msg)
 {
 	byte	bits[6];	// [48 bits] xyzpy 12 12 12 4 8 
 	int		n, i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		x, y, z, p, yaw;
 
 	if (!numnails)
@@ -242,7 +242,7 @@ Writes a delta update of a qwpacket_entities_t to the message.
 */
 void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	client_frame_t	*fromframe;
 	qwpacket_entities_t *from;
 	int		oldindex, newindex;
@@ -312,11 +312,11 @@ SV_WritePlayersToClient
 
 =============
 */
-void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg *msg)
+void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMsg *msg)
 {
 	int			i, j;
 	client_t	*cl;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			msec;
 	qwusercmd_t	cmd;
 	int			pflags;
@@ -447,9 +447,9 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	int		e, i;
 	byte	*pvs;
 	vec3_t	org;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	qwpacket_entities_t	*pack;
-	edict_t	*clent;
+	qhedict_t	*clent;
 	client_frame_t	*frame;
 	q1entity_state_t	*state;
 

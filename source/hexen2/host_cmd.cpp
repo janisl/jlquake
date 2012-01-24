@@ -570,7 +570,7 @@ void Host_Loadgame_f (void)
 	char		mapname[MAX_QPATH];
 	float		time;
 	int			i;
-	edict_t*	ent;
+	qhedict_t*	ent;
 	int			version;
 	float		tempf;
 	int			tempi;
@@ -692,7 +692,7 @@ void SaveGamestate(qboolean ClientsOnly)
 	fileHandle_t	f;
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int start,end;
 
 	if (ClientsOnly)
@@ -776,7 +776,7 @@ void SaveGamestate(qboolean ClientsOnly)
 void RestoreClients(void)
 {
 	int i,j;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	double time_diff;
 
 	if (LoadGamestate(NULL,NULL,1))
@@ -815,7 +815,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 	char		mapname[MAX_QPATH];
 	float		time, sk;
 	int			i;
-	edict_t*	ent;
+	qhedict_t*	ent;
 	int			entnum;
 	int			version;
 //	float	spawn_parms[NUM_SPAWN_PARMS];
@@ -1500,7 +1500,7 @@ void Host_Spawn_f (void)
 {
 	int		i;
 	client_t	*client;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 	if (cmd_source == src_command)
 	{
@@ -1654,7 +1654,7 @@ void Host_Create_f(void)
 {
 	char *FindName;
 	dfunction_t	*Search,*func;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i,Length,NumFound,Diff,NewDiff;
 
 	if (!sv.active)
@@ -2018,10 +2018,10 @@ void Host_Give_f (void)
     }
 }
 
-edict_t	*FindViewthing (void)
+qhedict_t	*FindViewthing (void)
 {
 	int		i;
-	edict_t	*e;
+	qhedict_t	*e;
 	
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
@@ -2040,7 +2040,7 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f (void)
 {
-	edict_t*	e;
+	qhedict_t*	e;
 	qhandle_t	m;
 
 	e = FindViewthing ();
@@ -2065,7 +2065,7 @@ Host_Viewframe_f
 */
 void Host_Viewframe_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	int		f;
 	qhandle_t	m;
 
@@ -2088,7 +2088,7 @@ Host_Viewnext_f
 */
 void Host_Viewnext_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	qhandle_t	m;
 	
 	e = FindViewthing ();
@@ -2110,7 +2110,7 @@ Host_Viewprev_f
 */
 void Host_Viewprev_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	qhandle_t	m;
 
 	e = FindViewthing ();

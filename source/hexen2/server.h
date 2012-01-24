@@ -43,8 +43,8 @@ typedef struct
 	client_state2_t *states;
 	int			num_edicts;
 	int			max_edicts;
-	edict_t		*edicts;			// can NOT be array indexed, because
-									// edict_t is variable sized, but can
+	qhedict_t		*edicts;			// can NOT be array indexed, because
+									// qhedict_t is variable sized, but can
 									// be used to reference the world ent
 	server_state_t	state;			// some actions are only valid during load
 
@@ -86,7 +86,7 @@ typedef struct client_s
 	QMsg			datagram;
 	byte			datagram_buf[MAX_MSGLEN_H2];
 
-	edict_t			*edict;				// EDICT_NUM(clientnum+1)
+	qhedict_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;
 	float			playerclass;
@@ -226,7 +226,7 @@ extern	jmp_buf 	host_abortserver;
 
 extern	double		host_time;
 
-extern	edict_t		*sv_player;
+extern	qhedict_t		*sv_player;
 
 //===========================================================
 
@@ -236,7 +236,7 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count);
 void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int count);
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
 
 void SV_DropClient (qboolean crash);
@@ -258,11 +258,11 @@ void SV_BroadcastPrintf (const char *fmt, ...);
 
 void SV_Physics (void);
 
-qboolean SV_CheckBottom (edict_t *ent);
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noenemy,
+qboolean SV_CheckBottom (qhedict_t *ent);
+qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink, qboolean noenemy,
 					  qboolean set_trace);
 
-void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg);
+void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg);
 
 void SV_MoveToGoal (void);
 
@@ -271,8 +271,8 @@ void SV_RunClients (void);
 void SV_SaveSpawnparms ();
 void SV_SpawnServer (char *server, char *startspot);
 
-void SV_StopSound (edict_t *entity, int channel);
-void SV_UpdateSoundPos (edict_t *entity, int channel);
+void SV_StopSound (qhedict_t *entity, int channel);
+void SV_UpdateSoundPos (qhedict_t *entity, int channel);
 void SV_ParseEffect(QMsg *sb);
 void SV_Edicts(const char *Name);
 void SaveGamestate(qboolean ClientsOnly);

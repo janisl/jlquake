@@ -537,7 +537,7 @@ void Host_Loadgame_f (void)
 	char		mapname[MAX_QPATH];
 	float		time;
 	int			i;
-	edict_t	*	ent;
+	qhedict_t	*	ent;
 	int			entnum;
 	int			version;
 	float		spawn_parms[NUM_SPAWN_PARMS];
@@ -1034,7 +1034,7 @@ void Host_Spawn_f (void)
 {
 	int		i;
 	client_t	*client;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 	if (cmd_source == src_command)
 	{
@@ -1422,10 +1422,10 @@ void Host_Give_f (void)
     }
 }
 
-edict_t	*FindViewthing (void)
+qhedict_t	*FindViewthing (void)
 {
 	int		i;
-	edict_t	*e;
+	qhedict_t	*e;
 	
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
@@ -1444,7 +1444,7 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f (void)
 {
-	edict_t*	e;
+	qhedict_t*	e;
 	qhandle_t	m;
 
 	e = FindViewthing ();
@@ -1469,7 +1469,7 @@ Host_Viewframe_f
 */
 void Host_Viewframe_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	int		f;
 	qhandle_t	m;
 
@@ -1492,7 +1492,7 @@ Host_Viewnext_f
 */
 void Host_Viewnext_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	qhandle_t	m;
 	
 	e = FindViewthing ();
@@ -1514,7 +1514,7 @@ Host_Viewprev_f
 */
 void Host_Viewprev_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	qhandle_t	m;
 
 	e = FindViewthing ();

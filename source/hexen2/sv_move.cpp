@@ -19,7 +19,7 @@ is not a staircase.
 */
 //int c_yes, c_no;//These are never checked!!
 
-qboolean SV_CheckBottom (edict_t *ent)
+qboolean SV_CheckBottom (qhedict_t *ent)
 {//By this point, ent has been moved to it's new position after the
 	//move, and adjusted for steps
 	vec3_t	mins, maxs, start, stop;
@@ -200,14 +200,14 @@ possible, no move is done, false is returned, and
 pr_global_struct->trace_normal is set to the normal of the blocking wall
 =============
 */
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noenemy,
+qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink, qboolean noenemy,
 					  qboolean set_trace)
 {
 	float		dz;
 	vec3_t		oldorg, neworg, end;
 	q1trace_t		trace;
 	int			i;
-	edict_t		*enemy;
+	qhedict_t		*enemy;
 
 // try the move	
 	VectorCopy (ent->v.origin, oldorg);
@@ -354,7 +354,7 @@ facing it.
 ======================
 */
 void PF_changeyaw (void);
-qboolean SV_StepDirection (edict_t *ent, float yaw, float dist)
+qboolean SV_StepDirection (qhedict_t *ent, float yaw, float dist)
 {
 	vec3_t		move, oldorigin;
 	float		delta;
@@ -395,7 +395,7 @@ SV_FixCheckBottom
 
 ======================
 */
-void SV_FixCheckBottom (edict_t *ent)
+void SV_FixCheckBottom (qhedict_t *ent)
 {
 //	Con_Printf ("SV_FixCheckBottom\n");
 	
@@ -411,7 +411,7 @@ SV_NewChaseDir
 ================
 */
 #define	DI_NODIR	-1
-void SV_NewChaseDir (edict_t *actor, edict_t *enemy, float dist)
+void SV_NewChaseDir (qhedict_t *actor, qhedict_t *enemy, float dist)
 {
 	float		deltax,deltay,deltaz;
 	float			d[3];
@@ -513,7 +513,7 @@ SV_CloseEnough
 
 ======================
 */
-qboolean SV_CloseEnough (edict_t *ent, edict_t *goal, float dist)
+qboolean SV_CloseEnough (qhedict_t *ent, qhedict_t *goal, float dist)
 {
 	int		i;
 	
@@ -535,7 +535,7 @@ SV_MoveToGoal
 */
 void SV_MoveToGoal (void)
 {
-	edict_t		*ent, *goal;
+	qhedict_t		*ent, *goal;
 	float		dist;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);//Entity moving
