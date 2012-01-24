@@ -538,52 +538,52 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 			sc1 |= SC1_GREENMANA;
 		if (ent->v.experience != host_client->old_v.experience)
 			sc1 |= SC1_EXPERIENCE;
-		if (ent->v.cnt_torch != host_client->old_v.cnt_torch)
+		if (ent->GetCntTorch() != host_client->old_v.cnt_torch)
 			sc1 |= SC1_CNT_TORCH;
-		if (ent->v.cnt_h_boost != host_client->old_v.cnt_h_boost)
+		if (ent->GetCntHBoost() != host_client->old_v.cnt_h_boost)
 			sc1 |= SC1_CNT_H_BOOST;
-		if (ent->v.cnt_sh_boost != host_client->old_v.cnt_sh_boost)
+		if (ent->GetCntSHBoost() != host_client->old_v.cnt_sh_boost)
 			sc1 |= SC1_CNT_SH_BOOST;
-		if (ent->v.cnt_mana_boost != host_client->old_v.cnt_mana_boost)
+		if (ent->GetCntManaBoost() != host_client->old_v.cnt_mana_boost)
 			sc1 |= SC1_CNT_MANA_BOOST;
-		if (ent->v.cnt_teleport != host_client->old_v.cnt_teleport)
+		if (ent->GetCntTeleport() != host_client->old_v.cnt_teleport)
 			sc1 |= SC1_CNT_TELEPORT;
-		if (ent->v.cnt_tome != host_client->old_v.cnt_tome)
+		if (ent->GetCntTome() != host_client->old_v.cnt_tome)
 			sc1 |= SC1_CNT_TOME;
-		if (ent->v.cnt_summon != host_client->old_v.cnt_summon)
+		if (ent->GetCntSummon() != host_client->old_v.cnt_summon)
 			sc1 |= SC1_CNT_SUMMON;
-		if (ent->v.cnt_invisibility != host_client->old_v.cnt_invisibility)
+		if (ent->GetCntInvisibility() != host_client->old_v.cnt_invisibility)
 			sc1 |= SC1_CNT_INVISIBILITY;
-		if (ent->v.cnt_glyph != host_client->old_v.cnt_glyph)
+		if (ent->GetCntGlyph() != host_client->old_v.cnt_glyph)
 			sc1 |= SC1_CNT_GLYPH;
-		if (ent->v.cnt_haste != host_client->old_v.cnt_haste)
+		if (ent->GetCntHaste() != host_client->old_v.cnt_haste)
 			sc1 |= SC1_CNT_HASTE;
-		if (ent->v.cnt_blast != host_client->old_v.cnt_blast)
+		if (ent->GetCntBlast() != host_client->old_v.cnt_blast)
 			sc1 |= SC1_CNT_BLAST;
-		if (ent->v.cnt_polymorph != host_client->old_v.cnt_polymorph)
+		if (ent->GetCntPolyMorph() != host_client->old_v.cnt_polymorph)
 			sc1 |= SC1_CNT_POLYMORPH;
-		if (ent->v.cnt_flight != host_client->old_v.cnt_flight)
+		if (ent->GetCntFlight() != host_client->old_v.cnt_flight)
 			sc1 |= SC1_CNT_FLIGHT;
-		if (ent->v.cnt_cubeofforce != host_client->old_v.cnt_cubeofforce)
+		if (ent->GetCntCubeOfForce() != host_client->old_v.cnt_cubeofforce)
 			sc1 |= SC1_CNT_CUBEOFFORCE;
-		if (ent->v.cnt_invincibility != host_client->old_v.cnt_invincibility)
+		if (ent->GetCntInvincibility() != host_client->old_v.cnt_invincibility)
 			sc1 |= SC1_CNT_INVINCIBILITY;
-		if (ent->v.artifact_active != host_client->old_v.artifact_active)
+		if (ent->GetArtifactActive() != host_client->old_v.artifact_active)
 			sc1 |= SC1_ARTIFACT_ACTIVE;
-		if (ent->v.artifact_low != host_client->old_v.artifact_low)
+		if (ent->GetArtifactLow() != host_client->old_v.artifact_low)
 			sc1 |= SC1_ARTIFACT_LOW;
 		if (ent->v.movetype != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
 		if (ent->GetCameraMode() != host_client->old_v.cameramode)
 			sc1 |= SC1_CAMERAMODE;
-		if (ent->v.hasted != host_client->old_v.hasted)
+		if (ent->GetHasted() != host_client->old_v.hasted)
 			sc1 |= SC1_HASTED;
-		if (ent->v.inventory != host_client->old_v.inventory)
+		if (ent->GetInventory() != host_client->old_v.inventory)
 			sc1 |= SC1_INVENTORY;
-		if (ent->v.rings_active != host_client->old_v.rings_active)
+		if (ent->GetRingsActive() != host_client->old_v.rings_active)
 			sc1 |= SC1_RINGS_ACTIVE;
 
-		if (ent->v.rings_low != host_client->old_v.rings_low)
+		if (ent->GetRingsLow() != host_client->old_v.rings_low)
 			sc2 |= SC2_RINGS_LOW;
 		if (ent->v.armor_amulet != host_client->old_v.armor_amulet)
 			sc2 |= SC2_AMULET;
@@ -691,52 +691,52 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 	if (sc1 & SC1_EXPERIENCE)
 		msg->WriteLong(ent->v.experience);
 	if (sc1 & SC1_CNT_TORCH)
-		msg->WriteByte(ent->v.cnt_torch);
+		msg->WriteByte(ent->GetCntTorch());
 	if (sc1 & SC1_CNT_H_BOOST)
-		msg->WriteByte(ent->v.cnt_h_boost);
+		msg->WriteByte(ent->GetCntHBoost());
 	if (sc1 & SC1_CNT_SH_BOOST)
-		msg->WriteByte(ent->v.cnt_sh_boost);
+		msg->WriteByte(ent->GetCntSHBoost());
 	if (sc1 & SC1_CNT_MANA_BOOST)
-		msg->WriteByte(ent->v.cnt_mana_boost);
+		msg->WriteByte(ent->GetCntManaBoost());
 	if (sc1 & SC1_CNT_TELEPORT)
-		msg->WriteByte(ent->v.cnt_teleport);
+		msg->WriteByte(ent->GetCntTeleport());
 	if (sc1 & SC1_CNT_TOME)
-		msg->WriteByte(ent->v.cnt_tome);
+		msg->WriteByte(ent->GetCntTome());
 	if (sc1 & SC1_CNT_SUMMON)
-		msg->WriteByte(ent->v.cnt_summon);
+		msg->WriteByte(ent->GetCntSummon());
 	if (sc1 & SC1_CNT_INVISIBILITY)
-		msg->WriteByte(ent->v.cnt_invisibility);
+		msg->WriteByte(ent->GetCntInvisibility());
 	if (sc1 & SC1_CNT_GLYPH)
-		msg->WriteByte(ent->v.cnt_glyph);
+		msg->WriteByte(ent->GetCntGlyph());
 	if (sc1 & SC1_CNT_HASTE)
-		msg->WriteByte(ent->v.cnt_haste);
+		msg->WriteByte(ent->GetCntHaste());
 	if (sc1 & SC1_CNT_BLAST)
-		msg->WriteByte(ent->v.cnt_blast);
+		msg->WriteByte(ent->GetCntBlast());
 	if (sc1 & SC1_CNT_POLYMORPH)
-		msg->WriteByte(ent->v.cnt_polymorph);
+		msg->WriteByte(ent->GetCntPolyMorph());
 	if (sc1 & SC1_CNT_FLIGHT)
-		msg->WriteByte(ent->v.cnt_flight);
+		msg->WriteByte(ent->GetCntFlight());
 	if (sc1 & SC1_CNT_CUBEOFFORCE)
-		msg->WriteByte(ent->v.cnt_cubeofforce);
+		msg->WriteByte(ent->GetCntCubeOfForce());
 	if (sc1 & SC1_CNT_INVINCIBILITY)
-		msg->WriteByte(ent->v.cnt_invincibility);
+		msg->WriteByte(ent->GetCntInvincibility());
 	if (sc1 & SC1_ARTIFACT_ACTIVE)
-		msg->WriteByte(ent->v.artifact_active);
+		msg->WriteByte(ent->GetArtifactActive());
 	if (sc1 & SC1_ARTIFACT_LOW)
-		msg->WriteByte(ent->v.artifact_low);
+		msg->WriteByte(ent->GetArtifactLow());
 	if (sc1 & SC1_MOVETYPE)
 		msg->WriteByte(ent->v.movetype);
 	if (sc1 & SC1_CAMERAMODE)
 		msg->WriteByte(ent->GetCameraMode());
 	if (sc1 & SC1_HASTED)
-		msg->WriteFloat(ent->v.hasted);
+		msg->WriteFloat(ent->GetHasted());
 	if (sc1 & SC1_INVENTORY)
-		msg->WriteByte(ent->v.inventory);
+		msg->WriteByte(ent->GetInventory());
 	if (sc1 & SC1_RINGS_ACTIVE)
-		msg->WriteByte(ent->v.rings_active);
+		msg->WriteByte(ent->GetRingsActive());
 
 	if (sc2 & SC2_RINGS_LOW)
-		msg->WriteByte(ent->v.rings_low);
+		msg->WriteByte(ent->GetRingsLow());
 	if (sc2 & SC2_AMULET)
 		msg->WriteByte(ent->v.armor_amulet);
 	if (sc2 & SC2_BRACER)
@@ -811,27 +811,27 @@ end:
 	host_client->old_v.puzzle_inv8 = ent->v.puzzle_inv8;
 	host_client->old_v.flags = ent->v.flags;
 	host_client->old_v.flags2 = ent->v.flags2;
-	host_client->old_v.rings_active = ent->v.rings_active;
-	host_client->old_v.rings_low = ent->v.rings_low;
-	host_client->old_v.artifact_active = ent->v.artifact_active;
-	host_client->old_v.artifact_low = ent->v.artifact_low;
-	host_client->old_v.hasted = ent->v.hasted;
-	host_client->old_v.inventory = ent->v.inventory;
-	host_client->old_v.cnt_torch = ent->v.cnt_torch;
-	host_client->old_v.cnt_h_boost = ent->v.cnt_h_boost;
-	host_client->old_v.cnt_sh_boost = ent->v.cnt_sh_boost;
-	host_client->old_v.cnt_mana_boost = ent->v.cnt_mana_boost;
-	host_client->old_v.cnt_teleport = ent->v.cnt_teleport;
-	host_client->old_v.cnt_tome = ent->v.cnt_tome;
-	host_client->old_v.cnt_summon = ent->v.cnt_summon;
-	host_client->old_v.cnt_invisibility = ent->v.cnt_invisibility;
-	host_client->old_v.cnt_glyph = ent->v.cnt_glyph;
-	host_client->old_v.cnt_haste = ent->v.cnt_haste;
-	host_client->old_v.cnt_blast = ent->v.cnt_blast;
-	host_client->old_v.cnt_polymorph = ent->v.cnt_polymorph;
-	host_client->old_v.cnt_flight = ent->v.cnt_flight;
-	host_client->old_v.cnt_cubeofforce = ent->v.cnt_cubeofforce;
-	host_client->old_v.cnt_invincibility = ent->v.cnt_invincibility;
+	host_client->old_v.rings_active = ent->GetRingsActive();
+	host_client->old_v.rings_low = ent->GetRingsLow();
+	host_client->old_v.artifact_active = ent->GetArtifactActive();
+	host_client->old_v.artifact_low = ent->GetArtifactLow();
+	host_client->old_v.hasted = ent->GetHasted();
+	host_client->old_v.inventory = ent->GetInventory();
+	host_client->old_v.cnt_torch = ent->GetCntTorch();
+	host_client->old_v.cnt_h_boost = ent->GetCntHBoost();
+	host_client->old_v.cnt_sh_boost = ent->GetCntSHBoost();
+	host_client->old_v.cnt_mana_boost = ent->GetCntManaBoost();
+	host_client->old_v.cnt_teleport = ent->GetCntTeleport();
+	host_client->old_v.cnt_tome = ent->GetCntTome();
+	host_client->old_v.cnt_summon = ent->GetCntSummon();
+	host_client->old_v.cnt_invisibility = ent->GetCntInvisibility();
+	host_client->old_v.cnt_glyph = ent->GetCntGlyph();
+	host_client->old_v.cnt_haste = ent->GetCntHaste();
+	host_client->old_v.cnt_blast = ent->GetCntBlast();
+	host_client->old_v.cnt_polymorph = ent->GetCntPolyMorph();
+	host_client->old_v.cnt_flight = ent->GetCntFlight();
+	host_client->old_v.cnt_cubeofforce = ent->GetCntCubeOfForce();
+	host_client->old_v.cnt_invincibility = ent->GetCntInvincibility();
 	host_client->old_v.cameramode = ent->GetCameraMode();
 }
 

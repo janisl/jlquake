@@ -16,6 +16,28 @@
 
 #define	MAX_ENT_LEAFS	16
 
+extern idEntVarDef entFieldRingsActive;
+extern idEntVarDef entFieldRingsLow;
+extern idEntVarDef entFieldArtifacts;
+extern idEntVarDef entFieldArtifactActive;
+extern idEntVarDef entFieldArtifactLow;
+extern idEntVarDef entFieldHasted;
+extern idEntVarDef entFieldInventory;
+extern idEntVarDef entFieldCntTorch;
+extern idEntVarDef entFieldCntHBoost;
+extern idEntVarDef entFieldCntSHBoost;
+extern idEntVarDef entFieldCntManaBoost;
+extern idEntVarDef entFieldCntTeleport;
+extern idEntVarDef entFieldCntTome;
+extern idEntVarDef entFieldCntSummon;
+extern idEntVarDef entFieldCntInvisibility;
+extern idEntVarDef entFieldCntGlyph;
+extern idEntVarDef entFieldCntHaste;
+extern idEntVarDef entFieldCntBlast;
+extern idEntVarDef entFieldCntPolyMorph;
+extern idEntVarDef entFieldCntFlight;
+extern idEntVarDef entFieldCntCubeOfForce;
+extern idEntVarDef entFieldCntInvincibility;
 extern idEntVarDef entFieldCameraMode;
 extern idEntVarDef entFieldMoveChain;
 extern idEntVarDef entFieldChainMoved;
@@ -77,6 +99,28 @@ struct qhedict_t
 	}
 
 	//	Hexen 2 and HexenWorld
+	FIELD_FLOAT(RingsActive)
+	FIELD_FLOAT(RingsLow)
+	FIELD_FLOAT(Artifacts)
+	FIELD_FLOAT(ArtifactActive)
+	FIELD_FLOAT(ArtifactLow)
+	FIELD_FLOAT(Hasted)
+	FIELD_FLOAT(Inventory)
+	FIELD_FLOAT(CntTorch)
+	FIELD_FLOAT(CntHBoost)
+	FIELD_FLOAT(CntSHBoost)
+	FIELD_FLOAT(CntManaBoost)
+	FIELD_FLOAT(CntTeleport)
+	FIELD_FLOAT(CntTome)
+	FIELD_FLOAT(CntSummon)
+	FIELD_FLOAT(CntInvisibility)
+	FIELD_FLOAT(CntGlyph)
+	FIELD_FLOAT(CntHaste)
+	FIELD_FLOAT(CntBlast)
+	FIELD_FLOAT(CntPolyMorph)
+	FIELD_FLOAT(CntFlight)
+	FIELD_FLOAT(CntCubeOfForce)
+	FIELD_FLOAT(CntInvincibility)
 	FIELD_ENTITY(CameraMode)
 	FIELD_ENTITY(MoveChain)
 	FIELD_FUNC(ChainMoved)

@@ -16,6 +16,28 @@
 
 #include "progsvm.h"
 
+idEntVarDef entFieldRingsActive;
+idEntVarDef entFieldRingsLow;
+idEntVarDef entFieldArtifacts;
+idEntVarDef entFieldArtifactActive;
+idEntVarDef entFieldArtifactLow;
+idEntVarDef entFieldHasted;
+idEntVarDef entFieldInventory;
+idEntVarDef entFieldCntTorch;
+idEntVarDef entFieldCntHBoost;
+idEntVarDef entFieldCntSHBoost;
+idEntVarDef entFieldCntManaBoost;
+idEntVarDef entFieldCntTeleport;
+idEntVarDef entFieldCntTome;
+idEntVarDef entFieldCntSummon;
+idEntVarDef entFieldCntInvisibility;
+idEntVarDef entFieldCntGlyph;
+idEntVarDef entFieldCntHaste;
+idEntVarDef entFieldCntBlast;
+idEntVarDef entFieldCntPolyMorph;
+idEntVarDef entFieldCntFlight;
+idEntVarDef entFieldCntCubeOfForce;
+idEntVarDef entFieldCntInvincibility;
 idEntVarDef entFieldCameraMode;
 idEntVarDef entFieldMoveChain;
 idEntVarDef entFieldChainMoved;
@@ -46,16 +68,62 @@ int ED_InitEntityFields()
 	{
 		if (GGameType & GAME_HexenWorld)
 		{
-			offset = 676;
+			offset = 584;
 		}
 		else
 		{
-			offset = 648;
+			offset = 556;
 		}
 	}
 
 	if (GGameType & GAME_Hexen2)
 	{
+		//	rings
+		offset += 4;
+		entFieldRingsActive.Init("rings_active", offset);
+		offset += 4;
+		entFieldRingsLow.Init("rings_low", offset);
+		offset += 4;
+		entFieldArtifacts.Init("artifacts", offset);
+		offset += 4;
+		entFieldArtifactActive.Init("artifact_active", offset);
+		offset += 4;
+		entFieldArtifactLow.Init("artifact_low", offset);
+		offset += 4;
+		entFieldHasted.Init("hasted", offset);
+		offset += 4;
+		entFieldInventory.Init("inventory", offset);
+		offset += 4;
+		entFieldCntTorch.Init("cnt_torch", offset);
+		offset += 4;
+		entFieldCntHBoost.Init("cnt_h_boost", offset);
+		offset += 4;
+		entFieldCntSHBoost.Init("cnt_sh_boost", offset);
+		offset += 4;
+		entFieldCntManaBoost.Init("cnt_mana_boost", offset);
+		offset += 4;
+		entFieldCntTeleport.Init("cnt_teleport", offset);
+		offset += 4;
+		entFieldCntTome.Init("cnt_tome", offset);
+		offset += 4;
+		entFieldCntSummon.Init("cnt_summon", offset);
+		offset += 4;
+		entFieldCntInvisibility.Init("cnt_invisibility", offset);
+		offset += 4;
+		entFieldCntGlyph.Init("cnt_glyph", offset);
+		offset += 4;
+		entFieldCntHaste.Init("cnt_haste", offset);
+		offset += 4;
+		entFieldCntBlast.Init("cnt_blast", offset);
+		offset += 4;
+		entFieldCntPolyMorph.Init("cnt_polymorph", offset);
+		offset += 4;
+		entFieldCntFlight.Init("cnt_flight", offset);
+		offset += 4;
+		entFieldCntCubeOfForce.Init("cnt_cubeofforce", offset);
+		offset += 4;
+		entFieldCntInvincibility.Init("cnt_invincibility", offset);
+		offset += 4;
 		entFieldCameraMode.Init("cameramode", offset);
 		offset += 4;
 		entFieldMoveChain.Init("movechain", offset);

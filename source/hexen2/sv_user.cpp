@@ -682,7 +682,7 @@ nextmsg:
 				break;
 
 				case h2clc_inv_select:
-					host_client->edict->v.inventory = net_message.ReadByte();
+					host_client->edict->SetInventory(net_message.ReadByte());
 					break;
 
 				case h2clc_frame:

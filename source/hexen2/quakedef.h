@@ -7,7 +7,7 @@
 #include "../client/client.h"
 #include "../client/game/hexen2/local.h"
 
-#define MISSIONPACK
+//#define MISSIONPACK
 
 #define HEXEN2_VERSION		1.12
 

@@ -1192,7 +1192,7 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	pmove.cmd = *ucmd;
 	pmove.dead = sv_player->v.health <= 0;
 	pmove.oldbuttons = host_client->oldbuttons;
-	pmove.hasted = sv_player->v.hasted;
+	pmove.hasted = sv_player->GetHasted();
 	pmove.movetype = sv_player->v.movetype;
 	pmove.crouched = (sv_player->v.hull == HULL_CROUCH);
 	pmove.teleport_time = realtime + (sv_player->v.teleport_time - sv.time);
@@ -1420,7 +1420,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case hwclc_inv_select:
-			cl->edict->v.inventory = net_message.ReadByte();
+			cl->edict->SetInventory(net_message.ReadByte());
 			break;
 
 		case hwclc_get_effect:
