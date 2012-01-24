@@ -21,6 +21,16 @@
 
 #include "progs_file.h"
 
+union eval_t
+{
+	string_t string;
+	float _float;
+	float vector[3];
+	func_t function;
+	int _int;
+	int edict;
+};	
+
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
 extern char* pr_strings;
