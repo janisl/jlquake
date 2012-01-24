@@ -46,7 +46,7 @@ int ED_InitEntityFields()
 	{
 		if (GGameType & GAME_HexenWorld)
 		{
-			offset = 680;
+			offset = 676;
 		}
 		else
 		{

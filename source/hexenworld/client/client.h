@@ -44,55 +44,6 @@ struct clientConnection_t : clientConnectionCommon_t
 
 extern clientConnection_t clc;
 
-struct h2client_entvars_t
-{
-	float	movetype;
-	float	health;
-	float	max_health;
-	float	playerclass;
-	float	bluemana;
-	float	greenmana;
-	float	max_mana;
-	float	armor_amulet;
-	float	armor_bracer;
-	float	armor_breastplate;
-	float	armor_helmet;
-	float	level;
-	float	intelligence;
-	float	wisdom;
-	float	dexterity;
-	float	strength;
-	float	experience;
-	float	ring_flight;
-	float	ring_water;
-	float	ring_turning;
-	float	ring_regeneration;
-	float	flags;
-	float	teleport_time;
-	float	rings_active;
-	float	rings_low;
-	float	artifact_active;
-	float	artifact_low;
-	float	hasted;
-	float	inventory;
-	float	cnt_torch;
-	float	cnt_h_boost;
-	float	cnt_sh_boost;
-	float	cnt_mana_boost;
-	float	cnt_teleport;
-	float	cnt_tome;
-	float	cnt_summon;
-	float	cnt_invisibility;
-	float	cnt_glyph;
-	float	cnt_haste;
-	float	cnt_blast;
-	float	cnt_polymorph;
-	float	cnt_flight;
-	float	cnt_cubeofforce;
-	float	cnt_invincibility;
-	int	cameramode;
-};
-
 //
 // the client_state_t structure is wiped completely at every
 // server signon

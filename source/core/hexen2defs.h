@@ -727,3 +727,83 @@ struct hwpacket_entities_t
 #define MAX_MODELS_H2		512			// Sent over the net as a word
 #define MAX_SOUNDS_H2		512			// Sent over the net as a byte
 #define MAX_SOUNDS_HW		256			// so they cannot be blindly increased
+
+struct h2client_entvars_t
+{
+	float movetype;
+	float health;
+	float max_health;
+	float bluemana;
+	float greenmana;
+	float max_mana;
+	float armor_amulet;
+	float armor_bracer;
+	float armor_breastplate;
+	float armor_helmet;
+	float level;
+	float intelligence;
+	float wisdom;
+	float dexterity;
+	float strength;
+	float experience;
+	float ring_flight;
+	float ring_water;
+	float ring_turning;
+	float ring_regeneration;
+	float flags;
+	float rings_active;
+	float rings_low;
+	float artifact_active;
+	float artifact_low;
+	float hasted;
+	float inventory;
+	float cnt_torch;
+	float cnt_h_boost;
+	float cnt_sh_boost;
+	float cnt_mana_boost;
+	float cnt_teleport;
+	float cnt_tome;
+	float cnt_summon;
+	float cnt_invisibility;
+	float cnt_glyph;
+	float cnt_haste;
+	float cnt_blast;
+	float cnt_polymorph;
+	float cnt_flight;
+	float cnt_cubeofforce;
+	float cnt_invincibility;
+	int cameramode;
+
+	//	Hexen 2 only
+	float weapon;
+	float haste_time;
+	float tome_time;
+
+	//	Server side only
+	int puzzle_inv1;
+	int puzzle_inv2;
+	int puzzle_inv3;
+	int puzzle_inv4;
+	int puzzle_inv5;
+	int puzzle_inv6;
+	int puzzle_inv7;
+	int puzzle_inv8;
+
+	//	Hexen 2 server side only
+	vec3_t velocity;
+	vec3_t punchangle;
+	int weaponmodel;
+	float weaponframe;
+	vec3_t view_ofs;
+	float idealpitch;
+	float idealroll;
+	float armorvalue;
+
+	//	HexenWorld client side only
+	float teleport_time;
+
+	//	HexenWorld server side only
+	//FIXME Only used in stats command, may be better to get actual
+	// value from entity.
+	float flags2;
+};

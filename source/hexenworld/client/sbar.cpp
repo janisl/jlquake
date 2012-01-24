@@ -733,7 +733,9 @@ static int CalcAC(void)
 	int a;
 	int playerClass;
 
-	playerClass = cl.v.playerclass;
+	//playerClass = cl.v.playerclass;
+	//BUG cl.v.playerclass was never assigned and was always 0
+	playerClass = 0;
 	if(playerClass < 1 || playerClass > MAX_PLAYER_CLASS)
 	{
 		playerClass = 1;
