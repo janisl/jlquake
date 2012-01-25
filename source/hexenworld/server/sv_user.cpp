@@ -64,14 +64,14 @@ void SV_New_f (void)
 	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
-	if (sv.edicts->v.message > 0 && sv.edicts->v.message <= pr_string_count)
+	if (sv.edicts->GetMessage() > 0 && sv.edicts->GetMessage() <= pr_string_count)
 	{
-		host_client->netchan.message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
+		host_client->netchan.message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->GetMessage() - 1]]);
 	}
 	else 
 	{//Use netname on map if there is one, so they don't have to edit strings.txt
 	//	host_client->netchan.message.WriteString2("");
-		host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->v.netname));
+		host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->GetNetName()));
 	}
 
 	// send the movevars
@@ -88,7 +88,7 @@ void SV_New_f (void)
 
 	// send music
 	host_client->netchan.message.WriteByte(h2svc_cdtrack);
-	host_client->netchan.message.WriteByte(sv.edicts->v.soundtype);
+	host_client->netchan.message.WriteByte(sv.edicts->GetSoundType());
 
 	host_client->netchan.message.WriteByte(hwsvc_midi_name);
 	host_client->netchan.message.WriteString2(sv.midi_name);
@@ -232,15 +232,15 @@ void SV_Spawn_f (void)
 	ent = host_client->edict;
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
-	ent->v.colormap = NUM_FOR_EDICT(ent);
+	ent->SetColorMap(NUM_FOR_EDICT(ent));
 	if(dmMode->value==DM_SIEGE)
-		ent->v.team = ent->GetSiegeTeam();	// FIXME
+		ent->SetTeam(ent->GetSiegeTeam());	// FIXME
 	else
-		ent->v.team = 0;	// FIXME
-	ent->v.netname = PR_SetString(host_client->name);
+		ent->SetTeam(0);	// FIXME
+	ent->SetNetName(PR_SetString(host_client->name));
 	//ent->v.playerclass = host_client->playerclass = 
-	ent->v.next_playerclass = host_client->next_playerclass;;
-	ent->v.has_portals = host_client->portals;
+	ent->SetNextPlayerClass(host_client->next_playerclass);
+	ent->SetHasPortals(host_client->portals);
 
 	host_client->entgravity = 1.0;
 	val = GetEdictFieldValue(ent, "gravity");
@@ -308,8 +308,8 @@ void SV_SpawnSpectator (void)
 	qhedict_t	*e;
 
 	VectorCopy (vec3_origin, sv_player->v.origin);
-	VectorCopy (vec3_origin, sv_player->v.view_ofs);
-	sv_player->v.view_ofs[2] = 22;
+	sv_player->SetViewOfs(vec3_origin);
+	sv_player->GetViewOfs()[2] = 22;
 
 	// search for an info_playerstart to spawn the spectator at
 	for (i=HWMAX_CLIENTS-1 ; i<sv.num_edicts ; i++)
@@ -998,7 +998,7 @@ void AddLinksToPmove ( areanode_t *node )
 		next = l->next;
 		check = EDICT_FROM_AREA(l);
 
-		if (check->v.owner == pl)
+		if (check->GetOwner() == pl)
 			continue;		// player's own missile
 		if (check->v.solid == SOLID_BSP 
 			|| check->v.solid == SOLID_BBOX 
@@ -1064,7 +1064,7 @@ void AddAllEntsToPmove (void)
 	{
 		if (check->free)
 			continue;
-		if (check->v.owner == pl)
+		if (check->GetOwner() == pl)
 			continue;
 		if (check->v.solid == SOLID_BSP 
 			|| check->v.solid == SOLID_BBOX 
@@ -1137,29 +1137,29 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 		return;
 	}
 
-	if (!sv_player->v.fixangle)
-		VectorCopy (ucmd->angles, sv_player->v.v_angle);
+	if (!sv_player->GetFixAngle())
+		sv_player->SetVAngle(ucmd->angles);
 
-	sv_player->v.button0 = ucmd->buttons & 1;
-	sv_player->v.button2 = (ucmd->buttons & 2)>>1;
+	sv_player->SetButton0(ucmd->buttons & 1);
+	sv_player->SetButton2((ucmd->buttons & 2)>>1);
 
-	if (ucmd->buttons & 4 || sv_player->v.playerclass==CLASS_DWARF) // crouched?
-		sv_player->v.flags2 = ((int)sv_player->v.flags2) | FL2_CROUCHED;
+	if (ucmd->buttons & 4 || sv_player->GetPlayerClass()==CLASS_DWARF) // crouched?
+		sv_player->SetFlags2(((int)sv_player->GetFlags2()) | FL2_CROUCHED);
 	else
-		sv_player->v.flags2 = ((int)sv_player->v.flags2) & (~FL2_CROUCHED);
+		sv_player->SetFlags2(((int)sv_player->GetFlags2()) & (~FL2_CROUCHED));
 
 	if (ucmd->impulse)
-		sv_player->v.impulse = ucmd->impulse;
+		sv_player->SetImpulse(ucmd->impulse);
 
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle	
 	if (sv_player->v.health > 0)
 	{
-		if (!sv_player->v.fixangle)
+		if (!sv_player->GetFixAngle())
 		{
-			sv_player->v.angles[PITCH] = -sv_player->v.v_angle[PITCH]/3;
-			sv_player->v.angles[YAW] = sv_player->v.v_angle[YAW];
+			sv_player->v.angles[PITCH] = -sv_player->GetVAngle()[PITCH]/3;
+			sv_player->v.angles[YAW] = sv_player->GetVAngle()[YAW];
 		}
 		sv_player->v.angles[ROLL] = 
 			V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
@@ -1183,7 +1183,7 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	for (i=0 ; i<3 ; i++)
 		pmove.origin[i] = sv_player->v.origin[i] + (sv_player->v.mins[i] - player_mins[i]);
 	VectorCopy (sv_player->v.velocity, pmove.velocity);
-	VectorCopy (sv_player->v.v_angle, pmove.angles);
+	VectorCopy (sv_player->GetVAngle(), pmove.angles);
 
 	pmove.spectator = host_client->spectator;
 //	pmove.waterjumptime = sv_player->v.teleport_time;
@@ -1195,7 +1195,7 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	pmove.hasted = sv_player->GetHasted();
 	pmove.movetype = sv_player->v.movetype;
 	pmove.crouched = (sv_player->v.hull == HULL_CROUCH);
-	pmove.teleport_time = realtime + (sv_player->v.teleport_time - sv.time);
+	pmove.teleport_time = realtime + (sv_player->GetTeleportTime() - sv.time);
 
 //	movevars.entgravity = host_client->entgravity;
 	movevars.entgravity = sv_player->GetGravity();
@@ -1229,15 +1229,15 @@ if (sv_player->v.health > 0 && before && !after )
 
 	host_client->oldbuttons = pmove.oldbuttons;
 //	sv_player->v.teleport_time = pmove.waterjumptime;
-	sv_player->v.waterlevel = waterlevel;
-	sv_player->v.watertype = watertype;
+	sv_player->SetWaterLevel(waterlevel);
+	sv_player->SetWaterType(watertype);
 	if (onground != -1)
 	{
-		sv_player->v.flags = (int)sv_player->v.flags | FL_ONGROUND;
+		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
 		sv_player->v.groundentity = EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info));
 	}
 	else
-		sv_player->v.flags = (int)sv_player->v.flags & ~FL_ONGROUND;
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
 	for (i=0 ; i<3 ; i++)
 		sv_player->v.origin[i] = pmove.origin[i] - (sv_player->v.mins[i] - player_mins[i]);
 
@@ -1249,7 +1249,7 @@ if (sv_player->v.health > 0 && before && !after )
 	VectorCopy (pmove.velocity, sv_player->v.velocity);
 #endif
 
-	VectorCopy (pmove.angles, sv_player->v.v_angle);
+	sv_player->SetVAngle(pmove.angles);
 
 	if (!host_client->spectator)
 	{

@@ -59,7 +59,7 @@ void SV_SetIdealPitch (void)
 	int		i, j;
 	int		step, dir, steps;
 
-	if (!((int)sv_player->v.flags & FL_ONGROUND))
+	if (!((int)sv_player->GetFlags() & FL_ONGROUND))
 		return;
 		
 	angleval = sv_player->v.angles[YAW] * M_PI*2 / 360;
@@ -70,7 +70,7 @@ void SV_SetIdealPitch (void)
 	{
 		top[0] = sv_player->v.origin[0] + cosval*(i+3)*12;
 		top[1] = sv_player->v.origin[1] + sinval*(i+3)*12;
-		top[2] = sv_player->v.origin[2] + sv_player->v.view_ofs[2];
+		top[2] = sv_player->v.origin[2] + sv_player->GetViewOfs()[2];
 		
 		bottom[0] = top[0];
 		bottom[1] = top[1];
@@ -103,13 +103,13 @@ void SV_SetIdealPitch (void)
 	
 	if (!dir)
 	{
-		sv_player->v.idealpitch = 0;
+		sv_player->SetIdealPitch(0);
 		return;
 	}
 	
 	if (steps < 2)
 		return;
-	sv_player->v.idealpitch = -dir * sv_idealpitchscale->value;
+	sv_player->SetIdealPitch(-dir * sv_idealpitchscale->value);
 }
 
 
@@ -253,7 +253,7 @@ void SV_WaterMove (void)
 //
 // user intentions
 //
-	AngleVectors (sv_player->v.v_angle, forward, right, up);
+	AngleVectors (sv_player->GetVAngle(), forward, right, up);
 
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*cmd.forwardmove + right[i]*cmd.sidemove;
@@ -306,14 +306,14 @@ void SV_WaterMove (void)
 
 void SV_WaterJump (void)
 {
-	if (sv.time > sv_player->v.teleport_time
-	|| !sv_player->v.waterlevel)
+	if (sv.time > sv_player->GetTeleportTime()
+	|| !sv_player->GetWaterLevel())
 	{
-		sv_player->v.flags = (int)sv_player->v.flags & ~FL_WATERJUMP;
-		sv_player->v.teleport_time = 0;
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_WATERJUMP);
+		sv_player->SetTeleportTime(0);
 	}
-	sv_player->v.velocity[0] = sv_player->v.movedir[0];
-	sv_player->v.velocity[1] = sv_player->v.movedir[1];
+	sv_player->v.velocity[0] = sv_player->GetMoveDir()[0];
+	sv_player->v.velocity[1] = sv_player->GetMoveDir()[1];
 }
 
 
@@ -335,7 +335,7 @@ void SV_AirMove (void)
 	smove = cmd.sidemove;
 	
 // hack to not let you back into teleporter
-	if (sv.time < sv_player->v.teleport_time && fmove < 0)
+	if (sv.time < sv_player->GetTeleportTime() && fmove < 0)
 		fmove = 0;
 		
 	for (i=0 ; i<3 ; i++)
@@ -384,7 +384,7 @@ void SV_ClientThink (void)
 	if (sv_player->v.movetype == MOVETYPE_NONE)
 		return;
 	
-	onground = (int)sv_player->v.flags & FL_ONGROUND;
+	onground = (int)sv_player->GetFlags() & FL_ONGROUND;
 
 	origin = sv_player->v.origin;
 	velocity = sv_player->v.velocity;
@@ -403,15 +403,15 @@ void SV_ClientThink (void)
 	cmd = host_client->cmd;
 	angles = sv_player->v.angles;
 	
-	VectorAdd (sv_player->v.v_angle, sv_player->v.punchangle, v_angle);
+	VectorAdd (sv_player->GetVAngle(), sv_player->v.punchangle, v_angle);
 	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
-	if (!sv_player->v.fixangle)
+	if (!sv_player->GetFixAngle())
 	{
 		angles[PITCH] = -v_angle[PITCH]/3;
 		angles[YAW] = v_angle[YAW];
 	}
 
-	if ( (int)sv_player->v.flags & FL_WATERJUMP )
+	if ( (int)sv_player->GetFlags() & FL_WATERJUMP )
 	{
 		SV_WaterJump ();
 		return;
@@ -419,7 +419,7 @@ void SV_ClientThink (void)
 //
 // walk
 //
-	if ( (sv_player->v.waterlevel >= 2)
+	if ( (sv_player->GetWaterLevel() >= 2)
 	&& (sv_player->v.movetype != MOVETYPE_NOCLIP) )
 	{
 		SV_WaterMove ();
@@ -450,7 +450,7 @@ void SV_ReadClientMove (q1usercmd_t *move)
 	for (i=0 ; i<3 ; i++)
 		angle[i] = net_message.ReadAngle();
 
-	VectorCopy (angle, host_client->edict->v.v_angle);
+	host_client->edict->SetVAngle(angle);
 		
 // read movement
 	move->forwardmove = net_message.ReadShort ();
@@ -459,12 +459,12 @@ void SV_ReadClientMove (q1usercmd_t *move)
 	
 // read buttons
 	bits = net_message.ReadByte ();
-	host_client->edict->v.button0 = bits & 1;
-	host_client->edict->v.button2 = (bits & 2)>>1;
+	host_client->edict->SetButton0(bits & 1);
+	host_client->edict->SetButton2((bits & 2)>>1);
 
 	i = net_message.ReadByte ();
 	if (i)
-		host_client->edict->v.impulse = i;
+		host_client->edict->SetImpulse(i);
 }
 
 /*

@@ -182,8 +182,8 @@ void SV_God_f (void)
 	if (!SV_SetPlayer ())
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_GODMODE;
-	if (!((int)sv_player->v.flags & FL_GODMODE) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
+	if (!((int)sv_player->GetFlags() & FL_GODMODE) )
 		SV_ClientPrintf (host_client, PRINT_HIGH, "godmode OFF\n");
 	else
 		SV_ClientPrintf (host_client, PRINT_HIGH, "godmode ON\n");
@@ -246,7 +246,7 @@ void SV_Give_f (void)
 	case '7':
 	case '8':
 	case '9':
-		sv_player->v.items = (int)sv_player->v.items | IT_SHOTGUN<< (t[0] - '2');
+		sv_player->SetItems((int)sv_player->GetItems() | IT_SHOTGUN<< (t[0] - '2'));
 		break;
 	
 	case 's':

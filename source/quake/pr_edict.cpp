@@ -107,9 +107,9 @@ void ED_Free (qhedict_t *ed)
 
 	ed->free = true;
 	ed->v.model = 0;
-	ed->v.takedamage = 0;
+	ed->SetTakeDamage(0);
 	ed->v.modelindex = 0;
-	ed->v.colormap = 0;
+	ed->SetColorMap(0);
 	ed->v.skin = 0;
 	ed->v.frame = 0;
 	VectorCopy (vec3_origin, ed->v.origin);
@@ -832,16 +832,16 @@ void ED_LoadFromFile (const char *data)
 // remove things from different skill levels or deathmatch
 		if (deathmatch->value)
 		{
-			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_DEATHMATCH))
+			if (((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_DEATHMATCH))
 			{
 				ED_Free (ent);	
 				inhibit++;
 				continue;
 			}
 		}
-		else if ((current_skill == 0 && ((int)ent->v.spawnflags & SPAWNFLAG_NOT_EASY))
-				|| (current_skill == 1 && ((int)ent->v.spawnflags & SPAWNFLAG_NOT_MEDIUM))
-				|| (current_skill >= 2 && ((int)ent->v.spawnflags & SPAWNFLAG_NOT_HARD)) )
+		else if ((current_skill == 0 && ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_EASY))
+				|| (current_skill == 1 && ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_MEDIUM))
+				|| (current_skill >= 2 && ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_HARD)) )
 		{
 			ED_Free (ent);	
 			inhibit++;

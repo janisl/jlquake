@@ -458,7 +458,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 	// find the client's PVS
 	clent = client->edict;
-	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
+	VectorAdd (clent->v.origin, clent->GetViewOfs(), org);
 	pvs = SV_FatPVS (org);
 
 	// send over the players in the PVS
@@ -505,7 +505,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 		VectorCopy (ent->v.angles, state->angles);
 		state->modelindex = ent->v.modelindex;
 		state->frame = ent->v.frame;
-		state->colormap = ent->v.colormap;
+		state->colormap = ent->GetColorMap();
 		state->skinnum = ent->v.skin;
 		state->effects = ent->v.effects;
 	}

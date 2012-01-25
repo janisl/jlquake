@@ -93,7 +93,7 @@ void SV_New_f (void)
 	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
-	host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->v.message));
+	host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->GetMessage()));
 
 	// send the movevars
 	host_client->netchan.message.WriteFloat(movevars.gravity);
@@ -109,7 +109,7 @@ void SV_New_f (void)
 
 	// send music
 	host_client->netchan.message.WriteByte(q1svc_cdtrack);
-	host_client->netchan.message.WriteByte(sv.edicts->v.sounds);
+	host_client->netchan.message.WriteByte(sv.edicts->GetSounds());
 
 	// send server info string
 	host_client->netchan.message.WriteByte(q1svc_stufftext);
@@ -352,9 +352,9 @@ void SV_Spawn_f (void)
 	ent = host_client->edict;
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
-	ent->v.colormap = NUM_FOR_EDICT(ent);
-	ent->v.team = 0;	// FIXME
-	ent->v.netname = PR_SetString(host_client->name);
+	ent->SetColorMap(NUM_FOR_EDICT(ent));
+	ent->SetTeam(0);	// FIXME
+	ent->SetNetName(PR_SetString(host_client->name));
 
 	host_client->entgravity = 1.0;
 	val = GetEdictFieldValue(ent, "gravity");
@@ -404,8 +404,8 @@ void SV_SpawnSpectator (void)
 	qhedict_t	*e;
 
 	VectorCopy (vec3_origin, sv_player->v.origin);
-	VectorCopy (vec3_origin, sv_player->v.view_ofs);
-	sv_player->v.view_ofs[2] = 22;
+	sv_player->SetViewOfs(vec3_origin);
+	sv_player->GetViewOfs()[2] = 22;
 
 	// search for an info_playerstart to spawn the spectator at
 	for (i=MAX_CLIENTS_QW-1 ; i<sv.num_edicts ; i++)
@@ -969,7 +969,7 @@ void SV_PTrack_f (void)
 		host_client->spec_track = 0;
 		ent = EDICT_NUM(host_client - svs.clients + 1);
 		tent = EDICT_NUM(0);
-		ent->v.goalentity = EDICT_TO_PROG(tent);
+		ent->SetGoalEntity(EDICT_TO_PROG(tent));
 		return;
 	}
 	
@@ -980,14 +980,14 @@ void SV_PTrack_f (void)
 		host_client->spec_track = 0;
 		ent = EDICT_NUM(host_client - svs.clients + 1);
 		tent = EDICT_NUM(0);
-		ent->v.goalentity = EDICT_TO_PROG(tent);
+		ent->SetGoalEntity(EDICT_TO_PROG(tent));
 		return;
 	}
 	host_client->spec_track = i + 1; // now tracking
 
 	ent = EDICT_NUM(host_client - svs.clients + 1);
 	tent = EDICT_NUM(i + 1);
-	ent->v.goalentity = EDICT_TO_PROG(tent);
+	ent->SetGoalEntity(EDICT_TO_PROG(tent));
 }
 
 
@@ -1247,7 +1247,7 @@ void AddLinksToPmove ( areanode_t *node )
 		next = l->next;
 		check = EDICT_FROM_AREA(l);
 
-		if (check->v.owner == pl)
+		if (check->GetOwner() == pl)
 			continue;		// player's own missile
 		if (check->v.solid == SOLID_BSP 
 			|| check->v.solid == SOLID_BBOX 
@@ -1312,7 +1312,7 @@ void AddAllEntsToPmove (void)
 	{
 		if (check->free)
 			continue;
-		if (check->v.owner == pl)
+		if (check->GetOwner() == pl)
 			continue;
 		if (check->v.solid == SOLID_BSP 
 			|| check->v.solid == SOLID_BBOX 
@@ -1384,23 +1384,23 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 		return;
 	}
 
-	if (!sv_player->v.fixangle)
-		VectorCopy (ucmd->angles, sv_player->v.v_angle);
+	if (!sv_player->GetFixAngle())
+		sv_player->SetVAngle(ucmd->angles);
 
-	sv_player->v.button0 = ucmd->buttons & 1;
-	sv_player->v.button2 = (ucmd->buttons & 2)>>1;
+	sv_player->SetButton0(ucmd->buttons & 1);
+	sv_player->SetButton2((ucmd->buttons & 2)>>1);
 	if (ucmd->impulse)
-		sv_player->v.impulse = ucmd->impulse;
+		sv_player->SetImpulse(ucmd->impulse);
 
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle	
 	if (sv_player->v.health > 0)
 	{
-		if (!sv_player->v.fixangle)
+		if (!sv_player->GetFixAngle())
 		{
-			sv_player->v.angles[PITCH] = -sv_player->v.v_angle[PITCH]/3;
-			sv_player->v.angles[YAW] = sv_player->v.v_angle[YAW];
+			sv_player->v.angles[PITCH] = -sv_player->GetVAngle()[PITCH]/3;
+			sv_player->v.angles[YAW] = sv_player->GetVAngle()[YAW];
 		}
 		sv_player->v.angles[ROLL] = 
 			V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
@@ -1424,10 +1424,10 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 	for (i=0 ; i<3 ; i++)
 		pmove.origin[i] = sv_player->v.origin[i] + (sv_player->v.mins[i] - player_mins[i]);
 	VectorCopy (sv_player->v.velocity, pmove.velocity);
-	VectorCopy (sv_player->v.v_angle, pmove.angles);
+	VectorCopy (sv_player->GetVAngle(), pmove.angles);
 
 	pmove.spectator = host_client->spectator;
-	pmove.waterjumptime = sv_player->v.teleport_time;
+	pmove.waterjumptime = sv_player->GetTeleportTime();
 	pmove.numphysent = 1;
 	pmove.physents[0].model = 0;
 	pmove.cmd = *ucmd;
@@ -1464,16 +1464,16 @@ if (sv_player->v.health > 0 && before && !after )
 #endif
 
 	host_client->oldbuttons = pmove.oldbuttons;
-	sv_player->v.teleport_time = pmove.waterjumptime;
-	sv_player->v.waterlevel = waterlevel;
-	sv_player->v.watertype = watertype;
+	sv_player->SetTeleportTime(pmove.waterjumptime);
+	sv_player->SetWaterLevel(waterlevel);
+	sv_player->SetWaterType(watertype);
 	if (onground != -1)
 	{
-		sv_player->v.flags = (int)sv_player->v.flags | FL_ONGROUND;
+		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
 		sv_player->v.groundentity = EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info));
 	}
 	else
-		sv_player->v.flags = (int)sv_player->v.flags & ~FL_ONGROUND;
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
 	for (i=0 ; i<3 ; i++)
 		sv_player->v.origin[i] = pmove.origin[i] - (sv_player->v.mins[i] - player_mins[i]);
 
@@ -1485,7 +1485,7 @@ if (sv_player->v.health > 0 && before && !after )
 	VectorCopy (pmove.velocity, sv_player->v.velocity);
 #endif
 
-	VectorCopy (pmove.angles, sv_player->v.v_angle);
+	sv_player->SetVAngle(pmove.angles);
 
 	if (!host_client->spectator)
 	{

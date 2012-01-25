@@ -476,26 +476,26 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	}
 
 	// send a damage message if the player got hit this frame
-	if (ent->v.dmg_take || ent->v.dmg_save)
+	if (ent->GetDmgTake() || ent->GetDmgSave())
 	{
-		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
+		other = PROG_TO_EDICT(ent->GetDmgInflictor());
 		msg->WriteByte(q1svc_damage);
-		msg->WriteByte(ent->v.dmg_save);
-		msg->WriteByte(ent->v.dmg_take);
+		msg->WriteByte(ent->GetDmgSave());
+		msg->WriteByte(ent->GetDmgTake());
 		for (i=0 ; i<3 ; i++)
 			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
 	
-		ent->v.dmg_take = 0;
-		ent->v.dmg_save = 0;
+		ent->SetDmgTake(0);
+		ent->SetDmgSave(0);
 	}
 
 	// a fixangle might get lost in a dropped packet.  Oh well.
-	if ( ent->v.fixangle )
+	if ( ent->GetFixAngle())
 	{
 		msg->WriteByte(q1svc_setangle);
 		for (i=0 ; i < 3 ; i++)
 			msg->WriteAngle(ent->v.angles[i] );
-		ent->v.fixangle = 0;
+		ent->SetFixAngle(0);
 	}
 }
 
@@ -524,7 +524,7 @@ void SV_UpdateClientStats (client_t *client)
 	stats[STAT_HEALTH] = ent->v.health;
 	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
 	stats[STAT_AMMO] = ent->v.currentammo;
-	stats[STAT_ARMOR] = ent->v.armorvalue;
+	stats[STAT_ARMOR] = ent->GetArmorValue();
 	stats[STAT_SHELLS] = ent->v.ammo_shells;
 	stats[STAT_NAILS] = ent->v.ammo_nails;
 	stats[STAT_ROCKETS] = ent->v.ammo_rockets;
@@ -532,7 +532,7 @@ void SV_UpdateClientStats (client_t *client)
 	if (!client->spectator)
 		stats[STAT_ACTIVEWEAPON] = ent->v.weapon;
 	// stuff the sigil bits into the high bits of items for sbar
-	stats[STAT_ITEMS] = (int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
+	stats[STAT_ITEMS] = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
 
 	for (i=0 ; i<MAX_CL_STATS ; i++)
 		if (stats[i] != client->stats[i])

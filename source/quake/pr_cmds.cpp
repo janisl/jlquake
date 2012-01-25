@@ -662,7 +662,7 @@ int PF_newcheckclient (int check)
 			continue;
 		if (ent->v.health <= 0)
 			continue;
-		if ((int)ent->v.flags & FL_NOTARGET)
+		if ((int)ent->GetFlags() & FL_NOTARGET)
 			continue;
 
 	// anything that is a client, or has a client as an enemy
@@ -670,7 +670,7 @@ int PF_newcheckclient (int check)
 	}
 
 	// get the PVS for the entity
-	VectorAdd (ent->v.origin, ent->v.view_ofs, org);
+	VectorAdd (ent->v.origin, ent->GetViewOfs(), org);
 	int leaf = CM_PointLeafnum(org);
 	pvs = CM_ClusterPVS(CM_LeafCluster(leaf));
 	Com_Memcpy(checkpvs, pvs, (CM_NumClusters() + 7) >> 3);
@@ -717,7 +717,7 @@ void PF_checkclient (void)
 
 // if current entity can't possibly see the check entity, return 0
 	self = PROG_TO_EDICT(pr_global_struct->self);
-	VectorAdd (self->v.origin, self->v.view_ofs, view);
+	VectorAdd (self->v.origin, self->GetViewOfs(), view);
 	int leaf = CM_PointLeafnum(view);
 	int l = CM_LeafCluster(leaf);
 	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
@@ -845,7 +845,7 @@ void PF_findradius (void)
 		if (VectorLength(eorg) > rad)
 			continue;
 			
-		ent->v.chain = EDICT_TO_PROG(chain);
+		ent->SetChain(EDICT_TO_PROG(chain));
 		chain = ent;
 	}
 
@@ -1040,7 +1040,7 @@ void PF_walkmove (void)
 	yaw = G_FLOAT(OFS_PARM0);
 	dist = G_FLOAT(OFS_PARM1);
 	
-	if ( !( (int)ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM) ) )
+	if ( !( (int)ent->GetFlags() & (FL_ONGROUND|FL_FLY|FL_SWIM) ) )
 	{
 		G_FLOAT(OFS_RETURN) = 0;
 		return;
@@ -1090,7 +1090,7 @@ void PF_droptofloor (void)
 	{
 		VectorCopy (trace.endpos, ent->v.origin);
 		SV_LinkEdict (ent, false);
-		ent->v.flags = (int)ent->v.flags | FL_ONGROUND;
+		ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
 		ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
@@ -1234,8 +1234,8 @@ void PF_aim (void)
 	VectorCopy (pr_global_struct->v_forward, dir);
 	VectorMA (start, 2048, dir, end);
 	tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
-	if (tr.entityNum >= 0 && EDICT_NUM(tr.entityNum)->v.takedamage == DAMAGE_AIM
-	&& (!teamplay->value || ent->v.team <=0 || ent->v.team != EDICT_NUM(tr.entityNum)->v.team) )
+	if (tr.entityNum >= 0 && EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_AIM
+	&& (!teamplay->value || ent->GetTeam() <=0 || ent->GetTeam() != EDICT_NUM(tr.entityNum)->GetTeam()) )
 	{
 		VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -1250,11 +1250,11 @@ void PF_aim (void)
 	check = NEXT_EDICT(sv.edicts);
 	for (i=1 ; i<sv.num_edicts ; i++, check = NEXT_EDICT(check) )
 	{
-		if (check->v.takedamage != DAMAGE_AIM)
+		if (check->GetTakeDamage() != DAMAGE_AIM)
 			continue;
 		if (check == ent)
 			continue;
-		if (teamplay->value && ent->v.team > 0 && ent->v.team == check->v.team)
+		if (teamplay->value && ent->GetTeam() > 0 && ent->GetTeam() == check->GetTeam())
 			continue;	// don't aim at teammate
 		for (j=0 ; j<3 ; j++)
 			end[j] = check->v.origin[j]
@@ -1301,8 +1301,8 @@ void PF_changeyaw (void)
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
 	current = AngleMod( ent->v.angles[1] );
-	ideal = ent->v.ideal_yaw;
-	speed = ent->v.yaw_speed;
+	ideal = ent->GetIdealYaw();
+	speed = ent->GetYawSpeed();
 	
 	if (current == ideal)
 		return;
@@ -1432,7 +1432,7 @@ void PF_makestatic (void)
 	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->v.model)));
 
 	sv.signon.WriteByte(ent->v.frame);
-	sv.signon.WriteByte(ent->v.colormap);
+	sv.signon.WriteByte(ent->GetColorMap());
 	sv.signon.WriteByte(ent->v.skin);
 	for (i=0 ; i<3 ; i++)
 	{

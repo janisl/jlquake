@@ -697,35 +697,35 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	}
 
 	// send a damage message if the player got hit this frame
-	if (ent->v.dmg_take || ent->v.dmg_save)
+	if (ent->GetDmgTake() || ent->GetDmgSave())
 	{
-		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
+		other = PROG_TO_EDICT(ent->GetDmgInflictor());
 		msg->WriteByte(h2svc_damage);
-		msg->WriteByte(ent->v.dmg_save);
-		msg->WriteByte(ent->v.dmg_take);
+		msg->WriteByte(ent->GetDmgSave());
+		msg->WriteByte(ent->GetDmgTake());
 		for (i=0 ; i<3 ; i++)
 			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
 	
-		ent->v.dmg_take = 0;
-		ent->v.dmg_save = 0;
+		ent->SetDmgTake(0);
+		ent->SetDmgSave(0);
 	}
 
 	// a fixangle might get lost in a dropped packet.  Oh well.
-	if ( ent->v.fixangle )
+	if ( ent->GetFixAngle())
 	{
 		msg->WriteByte(h2svc_setangle);
 		for (i=0 ; i < 3 ; i++)
 			msg->WriteAngle(ent->v.angles[i] );
-		ent->v.fixangle = 0;
+		ent->SetFixAngle(0);
 	}
 
 	// if the player has a target, send its info...
-	if (ent->v.targDist)
+	if (ent->GetTargDist())
 	{
 		msg->WriteByte(hwsvc_targetupdate);
-		msg->WriteByte(ent->v.targAng);
-		msg->WriteByte(ent->v.targPitch);
-		msg->WriteByte((ent->v.targDist < 255.0) ? (int)(ent->v.targDist) : 255);
+		msg->WriteByte(ent->GetTargAng());
+		msg->WriteByte(ent->GetTargPitch());
+		msg->WriteByte((ent->GetTargDist() < 255.0) ? (int)(ent->GetTargDist()) : 255);
 	}
 }
 
@@ -830,7 +830,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 
 static qboolean ValidToShowName(qhedict_t *edict)
 {
-	if (edict->v.deadflag)
+	if (edict->GetDeadFlag())
 		return false;
 	if((int)edict->v.effects & EF_NODRAW)
 		return false;
@@ -931,7 +931,7 @@ void SV_UpdateToReliableMessages (void)
 				client->netchan.message.WriteByte(hwsvc_updatedminfo);
 				client->netchan.message.WriteByte(i);
 				client->netchan.message.WriteShort(host_client->edict->v.frags);
-				client->netchan.message.WriteByte((host_client->playerclass<<5)|((int)host_client->edict->v.level&31));
+				client->netchan.message.WriteByte((host_client->playerclass<<5)|((int)host_client->edict->GetLevel()&31));
 
 				if(dmMode->value==DM_SIEGE)
 				{
@@ -1010,7 +1010,7 @@ void SV_CleanupEnts (void)
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		ent->v.effects = (int)ent->v.effects & ~EF_MUZZLEFLASH;
-		ent->v.wpn_sound = 0;
+		ent->SetWpnSound(0);
 	}
 
 }

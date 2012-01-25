@@ -313,7 +313,7 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 		bits |= HWU_EFFECTS;
 
 	temp_index = to->modelindex;
-	if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
+	if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->v.model)
 	{
 		String::Cpy(NewName, PR_GetString(ent->v.model));
 		if (client->playerclass <= 0 || client->playerclass > MAX_PLAYER_CLASS)
@@ -513,17 +513,17 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 
 		if (ent->v.health != host_client->old_v.health)
 			sc1 |= SC1_HEALTH;
-		if(ent->v.level != host_client->old_v.level)
+		if(ent->GetLevel() != host_client->old_v.level)
 			sc1 |= SC1_LEVEL;
-		if(ent->v.intelligence != host_client->old_v.intelligence)
+		if(ent->GetIntelligence() != host_client->old_v.intelligence)
 			sc1 |= SC1_INTELLIGENCE;
-		if(ent->v.wisdom != host_client->old_v.wisdom)
+		if(ent->GetWisdom() != host_client->old_v.wisdom)
 			sc1 |= SC1_WISDOM;
-		if(ent->v.strength != host_client->old_v.strength)
+		if(ent->GetStrength() != host_client->old_v.strength)
 			sc1 |= SC1_STRENGTH;
-		if(ent->v.dexterity != host_client->old_v.dexterity)
+		if(ent->GetDexterity() != host_client->old_v.dexterity)
 			sc1 |= SC1_DEXTERITY;
-		if (ent->v.teleport_time > sv.time)
+		if (ent->GetTeleportTime() > sv.time)
 		{
 //			Con_Printf ("Teleport_time>time, sending bit\n");
 			sc1 |= SC1_TELEPORT_TIME;
@@ -532,11 +532,11 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 
 //		if (ent->v.weapon != host_client->old_v.weapon)
 //			sc1 |= SC1_WEAPON;
-		if (ent->v.bluemana != host_client->old_v.bluemana)
+		if (ent->GetBlueMana() != host_client->old_v.bluemana)
 			sc1 |= SC1_BLUEMANA;
-		if (ent->v.greenmana != host_client->old_v.greenmana)
+		if (ent->GetGreenMana() != host_client->old_v.greenmana)
 			sc1 |= SC1_GREENMANA;
-		if (ent->v.experience != host_client->old_v.experience)
+		if (ent->GetExperience() != host_client->old_v.experience)
 			sc1 |= SC1_EXPERIENCE;
 		if (ent->GetCntTorch() != host_client->old_v.cnt_torch)
 			sc1 |= SC1_CNT_TORCH;
@@ -585,47 +585,47 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 
 		if (ent->GetRingsLow() != host_client->old_v.rings_low)
 			sc2 |= SC2_RINGS_LOW;
-		if (ent->v.armor_amulet != host_client->old_v.armor_amulet)
+		if (ent->GetArmorAmulet() != host_client->old_v.armor_amulet)
 			sc2 |= SC2_AMULET;
-		if (ent->v.armor_bracer != host_client->old_v.armor_bracer)
+		if (ent->GetArmorBracer() != host_client->old_v.armor_bracer)
 			sc2 |= SC2_BRACER;
-		if (ent->v.armor_breastplate != host_client->old_v.armor_breastplate)
+		if (ent->GetArmorBreastPlate() != host_client->old_v.armor_breastplate)
 			sc2 |= SC2_BREASTPLATE;
-		if (ent->v.armor_helmet != host_client->old_v.armor_helmet)
+		if (ent->GetArmorHelmet() != host_client->old_v.armor_helmet)
 			sc2 |= SC2_HELMET;
-		if (ent->v.ring_flight != host_client->old_v.ring_flight)
+		if (ent->GetRingFlight() != host_client->old_v.ring_flight)
 			sc2 |= SC2_FLIGHT_T;
-		if (ent->v.ring_water != host_client->old_v.ring_water)
+		if (ent->GetRingWater() != host_client->old_v.ring_water)
 			sc2 |= SC2_WATER_T;
-		if (ent->v.ring_turning != host_client->old_v.ring_turning)
+		if (ent->GetRingTurning() != host_client->old_v.ring_turning)
 			sc2 |= SC2_TURNING_T;
-		if (ent->v.ring_regeneration != host_client->old_v.ring_regeneration)
+		if (ent->GetRingRegeneration() != host_client->old_v.ring_regeneration)
 			sc2 |= SC2_REGEN_T;
 //		if (ent->v.haste_time != host_client->old_v.haste_time)
 //			sc2 |= SC2_HASTE_T;
 //		if (ent->v.tome_time != host_client->old_v.tome_time)
 //			sc2 |= SC2_TOME_T;
-		if (ent->v.puzzle_inv1 != host_client->old_v.puzzle_inv1)
+		if (ent->GetPuzzleInv1() != host_client->old_v.puzzle_inv1)
 			sc2 |= SC2_PUZZLE1;
-		if (ent->v.puzzle_inv2 != host_client->old_v.puzzle_inv2)
+		if (ent->GetPuzzleInv2() != host_client->old_v.puzzle_inv2)
 			sc2 |= SC2_PUZZLE2;
-		if (ent->v.puzzle_inv3 != host_client->old_v.puzzle_inv3)
+		if (ent->GetPuzzleInv3() != host_client->old_v.puzzle_inv3)
 			sc2 |= SC2_PUZZLE3;
-		if (ent->v.puzzle_inv4 != host_client->old_v.puzzle_inv4)
+		if (ent->GetPuzzleInv4() != host_client->old_v.puzzle_inv4)
 			sc2 |= SC2_PUZZLE4;
-		if (ent->v.puzzle_inv5 != host_client->old_v.puzzle_inv5)
+		if (ent->GetPuzzleInv5() != host_client->old_v.puzzle_inv5)
 			sc2 |= SC2_PUZZLE5;
-		if (ent->v.puzzle_inv6 != host_client->old_v.puzzle_inv6)
+		if (ent->GetPuzzleInv6() != host_client->old_v.puzzle_inv6)
 			sc2 |= SC2_PUZZLE6;
-		if (ent->v.puzzle_inv7 != host_client->old_v.puzzle_inv7)
+		if (ent->GetPuzzleInv7() != host_client->old_v.puzzle_inv7)
 			sc2 |= SC2_PUZZLE7;
-		if (ent->v.puzzle_inv8 != host_client->old_v.puzzle_inv8)
+		if (ent->GetPuzzleInv8() != host_client->old_v.puzzle_inv8)
 			sc2 |= SC2_PUZZLE8;
-		if (ent->v.max_health != host_client->old_v.max_health)
+		if (ent->GetMaxHealth() != host_client->old_v.max_health)
 			sc2 |= SC2_MAXHEALTH;
-		if (ent->v.max_mana != host_client->old_v.max_mana)
+		if (ent->GetMaxMana() != host_client->old_v.max_mana)
 			sc2 |= SC2_MAXMANA;
-		if (ent->v.flags != host_client->old_v.flags)
+		if (ent->GetFlags() != host_client->old_v.flags)
 			sc2 |= SC2_FLAGS;
 	}
 
@@ -673,23 +673,23 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 	if (sc1 & SC1_HEALTH)
 		msg->WriteShort(ent->v.health);
 	if (sc1 & SC1_LEVEL)
-		msg->WriteByte(ent->v.level);
+		msg->WriteByte(ent->GetLevel());
 	if (sc1 & SC1_INTELLIGENCE)
-		msg->WriteByte(ent->v.intelligence);
+		msg->WriteByte(ent->GetIntelligence());
 	if (sc1 & SC1_WISDOM)
-		msg->WriteByte(ent->v.wisdom);
+		msg->WriteByte(ent->GetWisdom());
 	if (sc1 & SC1_STRENGTH)
-		msg->WriteByte(ent->v.strength);
+		msg->WriteByte(ent->GetStrength());
 	if (sc1 & SC1_DEXTERITY)
-		msg->WriteByte(ent->v.dexterity);
+		msg->WriteByte(ent->GetDexterity());
 //	if (sc1 & SC1_WEAPON)
 //		msg->WriteByte(ent->v.weapon);
 	if (sc1 & SC1_BLUEMANA)
-		msg->WriteByte(ent->v.bluemana);
+		msg->WriteByte(ent->GetBlueMana());
 	if (sc1 & SC1_GREENMANA)
-		msg->WriteByte(ent->v.greenmana);
+		msg->WriteByte(ent->GetGreenMana());
 	if (sc1 & SC1_EXPERIENCE)
-		msg->WriteLong(ent->v.experience);
+		msg->WriteLong(ent->GetExperience());
 	if (sc1 & SC1_CNT_TORCH)
 		msg->WriteByte(ent->GetCntTorch());
 	if (sc1 & SC1_CNT_H_BOOST)
@@ -738,79 +738,79 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 	if (sc2 & SC2_RINGS_LOW)
 		msg->WriteByte(ent->GetRingsLow());
 	if (sc2 & SC2_AMULET)
-		msg->WriteByte(ent->v.armor_amulet);
+		msg->WriteByte(ent->GetArmorAmulet());
 	if (sc2 & SC2_BRACER)
-		msg->WriteByte(ent->v.armor_bracer);
+		msg->WriteByte(ent->GetArmorBracer());
 	if (sc2 & SC2_BREASTPLATE)
-		msg->WriteByte(ent->v.armor_breastplate);
+		msg->WriteByte(ent->GetArmorBreastPlate());
 	if (sc2 & SC2_HELMET)
-		msg->WriteByte(ent->v.armor_helmet);
+		msg->WriteByte(ent->GetArmorHelmet());
 	if (sc2 & SC2_FLIGHT_T)
-		msg->WriteByte(ent->v.ring_flight);
+		msg->WriteByte(ent->GetRingFlight());
 	if (sc2 & SC2_WATER_T)
-		msg->WriteByte(ent->v.ring_water);
+		msg->WriteByte(ent->GetRingWater());
 	if (sc2 & SC2_TURNING_T)
-		msg->WriteByte(ent->v.ring_turning);
+		msg->WriteByte(ent->GetRingTurning());
 	if (sc2 & SC2_REGEN_T)
-		msg->WriteByte(ent->v.ring_regeneration);
+		msg->WriteByte(ent->GetRingRegeneration());
 //	if (sc2 & SC2_HASTE_T)
 //		msg->WriteFloat(ent->v.haste_time);
 //	if (sc2 & SC2_TOME_T)
 //		msg->WriteFloat(ent->v.tome_time);
 	if (sc2 & SC2_PUZZLE1)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv1));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv1()));
 	if (sc2 & SC2_PUZZLE2)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv2));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv2()));
 	if (sc2 & SC2_PUZZLE3)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv3));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv3()));
 	if (sc2 & SC2_PUZZLE4)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv4));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv4()));
 	if (sc2 & SC2_PUZZLE5)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv5));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv5()));
 	if (sc2 & SC2_PUZZLE6)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv6));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv6()));
 	if (sc2 & SC2_PUZZLE7)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv7));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv7()));
 	if (sc2 & SC2_PUZZLE8)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv8));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv8()));
 	if (sc2 & SC2_MAXHEALTH)
-		msg->WriteShort(ent->v.max_health);
+		msg->WriteShort(ent->GetMaxHealth());
 	if (sc2 & SC2_MAXMANA)
-		msg->WriteByte(ent->v.max_mana);
+		msg->WriteByte(ent->GetMaxMana());
 	if (sc2 & SC2_FLAGS)
-		msg->WriteFloat(ent->v.flags);
+		msg->WriteFloat(ent->GetFlags());
 
 end:
 	host_client->old_v.movetype = ent->v.movetype;
 	host_client->old_v.health = ent->v.health;
-	host_client->old_v.max_health = ent->v.max_health;
-	host_client->old_v.bluemana = ent->v.bluemana;
-	host_client->old_v.greenmana = ent->v.greenmana;
-	host_client->old_v.max_mana = ent->v.max_mana;
-	host_client->old_v.armor_amulet = ent->v.armor_amulet;
-	host_client->old_v.armor_bracer = ent->v.armor_bracer;
-	host_client->old_v.armor_breastplate = ent->v.armor_breastplate;
-	host_client->old_v.armor_helmet = ent->v.armor_helmet;
-	host_client->old_v.level = ent->v.level;
-	host_client->old_v.intelligence = ent->v.intelligence;
-	host_client->old_v.wisdom = ent->v.wisdom;
-	host_client->old_v.dexterity = ent->v.dexterity;
-	host_client->old_v.strength = ent->v.strength;
-	host_client->old_v.experience = ent->v.experience;
-	host_client->old_v.ring_flight = ent->v.ring_flight;
-	host_client->old_v.ring_water = ent->v.ring_water;
-	host_client->old_v.ring_turning = ent->v.ring_turning;
-	host_client->old_v.ring_regeneration = ent->v.ring_regeneration;
-	host_client->old_v.puzzle_inv1 = ent->v.puzzle_inv1;
-	host_client->old_v.puzzle_inv2 = ent->v.puzzle_inv2;
-	host_client->old_v.puzzle_inv3 = ent->v.puzzle_inv3;
-	host_client->old_v.puzzle_inv4 = ent->v.puzzle_inv4;
-	host_client->old_v.puzzle_inv5 = ent->v.puzzle_inv5;
-	host_client->old_v.puzzle_inv6 = ent->v.puzzle_inv6;
-	host_client->old_v.puzzle_inv7 = ent->v.puzzle_inv7;
-	host_client->old_v.puzzle_inv8 = ent->v.puzzle_inv8;
-	host_client->old_v.flags = ent->v.flags;
-	host_client->old_v.flags2 = ent->v.flags2;
+	host_client->old_v.max_health = ent->GetMaxHealth();
+	host_client->old_v.bluemana = ent->GetBlueMana();
+	host_client->old_v.greenmana = ent->GetGreenMana();
+	host_client->old_v.max_mana = ent->GetMaxMana();
+	host_client->old_v.armor_amulet = ent->GetArmorAmulet();
+	host_client->old_v.armor_bracer = ent->GetArmorBracer();
+	host_client->old_v.armor_breastplate = ent->GetArmorBreastPlate();
+	host_client->old_v.armor_helmet = ent->GetArmorHelmet();
+	host_client->old_v.level = ent->GetLevel();
+	host_client->old_v.intelligence = ent->GetIntelligence();
+	host_client->old_v.wisdom = ent->GetWisdom();
+	host_client->old_v.dexterity = ent->GetDexterity();
+	host_client->old_v.strength = ent->GetStrength();
+	host_client->old_v.experience = ent->GetExperience();
+	host_client->old_v.ring_flight = ent->GetRingFlight();
+	host_client->old_v.ring_water = ent->GetRingWater();
+	host_client->old_v.ring_turning = ent->GetRingTurning();
+	host_client->old_v.ring_regeneration = ent->GetRingRegeneration();
+	host_client->old_v.puzzle_inv1 = ent->GetPuzzleInv1();
+	host_client->old_v.puzzle_inv2 = ent->GetPuzzleInv2();
+	host_client->old_v.puzzle_inv3 = ent->GetPuzzleInv3();
+	host_client->old_v.puzzle_inv4 = ent->GetPuzzleInv4();
+	host_client->old_v.puzzle_inv5 = ent->GetPuzzleInv5();
+	host_client->old_v.puzzle_inv6 = ent->GetPuzzleInv6();
+	host_client->old_v.puzzle_inv7 = ent->GetPuzzleInv7();
+	host_client->old_v.puzzle_inv8 = ent->GetPuzzleInv8();
+	host_client->old_v.flags = ent->GetFlags();
+	host_client->old_v.flags2 = ent->GetFlags2();
 	host_client->old_v.rings_active = ent->GetRingsActive();
 	host_client->old_v.rings_low = ent->GetRingsLow();
 	host_client->old_v.artifact_active = ent->GetArtifactActive();
@@ -1208,7 +1208,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		{
 			if ((int)ent->v.effects & EF_NODRAW)
 			{
-				if(dmMode->value==DM_SIEGE&&clent->v.playerclass==CLASS_DWARF)
+				if(dmMode->value==DM_SIEGE&&clent->GetPlayerClass()==CLASS_DWARF)
 					invis_level = false;
 				else
 					invis_level = true;//still can hear
@@ -1233,13 +1233,13 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		
 		if(invis_level==true)
 		{//ok to send weaponsound
-			if(ent->v.wpn_sound)
+			if(ent->GetWpnSound())
 			{
 				msg->WriteByte(hwsvc_player_sound);
 				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
 					msg->WriteCoord(ent->v.origin[i]);
-				msg->WriteShort(ent->v.wpn_sound);
+				msg->WriteShort(ent->GetWpnSound());
 			}
 		}
 		if(invis_level>0)
@@ -1300,7 +1300,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		{
 			pflags |= PF_ABSLIGHT;
 		}
-		if (ent->v.wpn_sound)
+		if (ent->GetWpnSound())
 		{
 			pflags |= PF_SOUND;
 		}
@@ -1372,7 +1372,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		}
 		if (pflags & PF_SOUND)
 		{
-			msg->WriteShort(ent->v.wpn_sound);
+			msg->WriteShort(ent->GetWpnSound());
 		}
 	}
 }
@@ -1404,7 +1404,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 	// find the client's PVS
 	clent = client->edict;
-	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
+	VectorAdd (clent->v.origin, clent->GetViewOfs(), org);
 	pvs = SV_FatPVS (org);
 
 	// send over the players in the PVS
@@ -1461,14 +1461,14 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 		VectorCopy (ent->v.angles, state->angles);
 		state->modelindex = ent->v.modelindex;
 		state->frame = ent->v.frame;
-		state->colormap = ent->v.colormap;
+		state->colormap = ent->GetColorMap();
 		state->skinnum = ent->v.skin;
 		state->effects = ent->v.effects;
 		state->scale = (int)(ent->v.scale*100.0)&255;
 		state->drawflags = ent->v.drawflags;
 		state->abslight = (int)(ent->v.abslight*255.0)&255;
 		//clear sound so it doesn't send twice
-		state->wpn_sound = ent->v.wpn_sound;
+		state->wpn_sound = ent->GetWpnSound();
 	}
 
 	// encode the packet entities as a delta from the

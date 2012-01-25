@@ -117,8 +117,8 @@ void Host_God_f (void)
 		 pr_global_struct->coop || skill->value > 2) && !host_client->privileged)
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_GODMODE;
-	if (!((int)sv_player->v.flags & FL_GODMODE) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
+	if (!((int)sv_player->GetFlags() & FL_GODMODE) )
 		SV_ClientPrintf ("godmode OFF\n");
 	else
 		SV_ClientPrintf ("godmode ON\n");
@@ -135,8 +135,8 @@ void Host_Notarget_f (void)
 	if ((pr_global_struct->deathmatch || skill->value > 2)&& !host_client->privileged)
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_NOTARGET;
-	if (!((int)sv_player->v.flags & FL_NOTARGET) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_NOTARGET);
+	if (!((int)sv_player->GetFlags() & FL_NOTARGET) )
 		SV_ClientPrintf ("notarget OFF\n");
 	else
 		SV_ClientPrintf ("notarget ON\n");
@@ -667,14 +667,14 @@ void Host_Loadgame_f (void)
 
 	ent = EDICT_NUM(1);
 
-	Cvar_SetValue("_cl_playerclass", ent->v.playerclass);//this better be the same as above...
+	Cvar_SetValue("_cl_playerclass", ent->GetPlayerClass());//this better be the same as above...
 
 #ifdef MISSIONPACK
 	// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
 	pr_global_struct->cl_playerclass = ent->v.playerclass;
 #endif
 
-	svs.clients->playerclass = ent->v.playerclass;
+	svs.clients->playerclass = ent->GetPlayerClass();
 
 	sv.paused = true;		// pause until all clients connect
 	sv.loadgame = true;
@@ -750,7 +750,7 @@ void SaveGamestate(qboolean ClientsOnly)
 	for (i=start ; i<end ; i++)
 	{
 		ent = EDICT_NUM(i);
-		if ((int)ent->v.flags & FL_ARCHIVE_OVERRIDE)
+		if ((int)ent->GetFlags() & FL_ARCHIVE_OVERRIDE)
 			continue;
 		if (ClientsOnly)
 		{
@@ -790,9 +790,9 @@ void RestoreClients(void)
 			ent = host_client->edict;
 
 			//ent->v.colormap = NUM_FOR_EDICT(ent);
-			ent->v.team = (host_client->colors & 15) + 1;
-			ent->v.netname = PR_SetString(host_client->name);
-			ent->v.playerclass = host_client->playerclass;
+			ent->SetTeam((host_client->colors & 15) + 1);
+			ent->SetNetName(PR_SetString(host_client->name));
+			ent->SetPlayerClass(host_client->playerclass);
 
 			// copy spawn parms out of the client_t
 
@@ -1051,7 +1051,7 @@ void Host_Name_f (void)
 		if (String::Cmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
 	String::Cpy (host_client->name, newName);
-	host_client->edict->v.netname = PR_SetString(host_client->name);
+	host_client->edict->SetNetName(PR_SetString(host_client->name));
 	
 // send notification to all clients
 	
@@ -1096,14 +1096,14 @@ void Host_Class_f (void)
 
 	if (sv.loadgame || host_client->playerclass)
 	{
-		if (host_client->edict->v.playerclass)
-			newClass = host_client->edict->v.playerclass;
+		if (host_client->edict->GetPlayerClass())
+			newClass = host_client->edict->GetPlayerClass();
 		else if (host_client->playerclass)
 			newClass = host_client->playerclass;
 	}
 
 	host_client->playerclass = newClass;
-	host_client->edict->v.playerclass = newClass;
+	host_client->edict->SetPlayerClass(newClass);
 	
 	// Change the weapon model used
 	pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
@@ -1277,7 +1277,7 @@ void Host_Say(qboolean teamonly)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
-		if (teamplay->value && teamonly && client->edict->v.team != save->edict->v.team)
+		if (teamplay->value && teamonly && client->edict->GetTeam() != save->edict->GetTeam())
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -1396,7 +1396,7 @@ void Host_Color_f(void)
 	}
 
 	host_client->colors = playercolor;
-	host_client->edict->v.team = bottom + 1;
+	host_client->edict->SetTeam(bottom + 1);
 
 // send notification to all clients
 	sv.reliable_datagram.WriteByte(h2svc_updatecolors);
@@ -1450,11 +1450,11 @@ void Host_Pause_f (void)
 
 		if (sv.paused)
 		{
-			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->v.netname));
+			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 		else
 		{
-			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->v.netname));
+			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 
 	// send notification to all clients
@@ -1534,9 +1534,9 @@ void Host_Spawn_f (void)
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		
 			//ent->v.colormap = NUM_FOR_EDICT(ent);
-			ent->v.team = (host_client->colors & 15) + 1;
-			ent->v.netname = PR_SetString(host_client->name);
-			ent->v.playerclass = host_client->playerclass;
+			ent->SetTeam((host_client->colors & 15) + 1);
+			ent->SetNetName(PR_SetString(host_client->name));
+			ent->SetPlayerClass(host_client->playerclass);
 
 			// copy spawn parms out of the client_t
 
@@ -1914,7 +1914,7 @@ void Host_Give_f (void)
       else
 */    {
          if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+            sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
       }
 		break;
 	

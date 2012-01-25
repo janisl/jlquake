@@ -206,7 +206,7 @@ void SV_SendServerinfo (client_t *client)
 	else
 		client->message.WriteByte(GAME_COOP);
 
-	String::Cpy(message, PR_GetString(sv.edicts->v.message));
+	String::Cpy(message, PR_GetString(sv.edicts->GetMessage()));
 
 	client->message.WriteString2(message);
 
@@ -220,8 +220,8 @@ void SV_SendServerinfo (client_t *client)
 
 // send music
 	client->message.WriteByte(q1svc_cdtrack);
-	client->message.WriteByte(sv.edicts->v.sounds);
-	client->message.WriteByte(sv.edicts->v.sounds);
+	client->message.WriteByte(sv.edicts->GetSounds());
+	client->message.WriteByte(sv.edicts->GetSounds());
 
 // set view	
 	client->message.WriteByte(q1svc_setview);
@@ -434,7 +434,7 @@ void SV_WriteEntitiesToClient (qhedict_t	*clent, QMsg *msg)
 	qhedict_t	*ent;
 
 // find the client's PVS
-	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
+	VectorAdd (clent->v.origin, clent->GetViewOfs(), org);
 	pvs = SV_FatPVS (org);
 
 // send over all entities (excpet the client) that touch the pvs
@@ -489,7 +489,7 @@ void SV_WriteEntitiesToClient (qhedict_t	*clent, QMsg *msg)
 		if (ent->v.movetype == MOVETYPE_STEP)
 			bits |= Q1U_NOLERP;	// don't mess up the step animation
 	
-		if (ent->baseline.colormap != ent->v.colormap)
+		if (ent->baseline.colormap != ent->GetColorMap())
 			bits |= Q1U_COLORMAP;
 			
 		if (ent->baseline.skinnum != ent->v.skin)
@@ -527,7 +527,7 @@ void SV_WriteEntitiesToClient (qhedict_t	*clent, QMsg *msg)
 		if (bits & Q1U_FRAME)
 			msg->WriteByte(ent->v.frame);
 		if (bits & Q1U_COLORMAP)
-			msg->WriteByte(ent->v.colormap);
+			msg->WriteByte(ent->GetColorMap());
 		if (bits & Q1U_SKIN)
 			msg->WriteByte(ent->v.skin);
 		if (bits & Q1U_EFFECTS)
@@ -583,17 +583,17 @@ void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 //
 // send a damage message
 //
-	if (ent->v.dmg_take || ent->v.dmg_save)
+	if (ent->GetDmgTake() || ent->GetDmgSave())
 	{
-		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
+		other = PROG_TO_EDICT(ent->GetDmgInflictor());
 		msg->WriteByte(q1svc_damage);
-		msg->WriteByte(ent->v.dmg_save);
-		msg->WriteByte(ent->v.dmg_take);
+		msg->WriteByte(ent->GetDmgSave());
+		msg->WriteByte(ent->GetDmgTake());
 		for (i=0 ; i<3 ; i++)
 			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
 	
-		ent->v.dmg_take = 0;
-		ent->v.dmg_save = 0;
+		ent->SetDmgTake(0);
+		ent->SetDmgSave(0);
 	}
 
 //
@@ -602,20 +602,20 @@ void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 	SV_SetIdealPitch ();		// how much to look up / down ideally
 
 // a fixangle might get lost in a dropped packet.  Oh well.
-	if ( ent->v.fixangle )
+	if ( ent->GetFixAngle())
 	{
 		msg->WriteByte(q1svc_setangle);
 		for (i=0 ; i < 3 ; i++)
 			msg->WriteAngle(ent->v.angles[i] );
-		ent->v.fixangle = 0;
+		ent->SetFixAngle(0);
 	}
 
 	bits = 0;
 	
-	if (ent->v.view_ofs[2] != DEFAULT_VIEWHEIGHT)
+	if (ent->GetViewOfs()[2] != DEFAULT_VIEWHEIGHT)
 		bits |= SU_VIEWHEIGHT;
 		
-	if (ent->v.idealpitch)
+	if (ent->GetIdealPitch())
 		bits |= SU_IDEALPITCH;
 
 // stuff the sigil bits into the high bits of items for sbar, or else
@@ -623,16 +623,16 @@ void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 	val = GetEdictFieldValue(ent, "items2");
 
 	if (val)
-		items = (int)ent->v.items | ((int)val->_float << 23);
+		items = (int)ent->GetItems() | ((int)val->_float << 23);
 	else
-		items = (int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
+		items = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
 
 	bits |= SU_ITEMS;
 	
-	if ( (int)ent->v.flags & FL_ONGROUND)
+	if ( (int)ent->GetFlags() & FL_ONGROUND)
 		bits |= SU_ONGROUND;
 	
-	if ( ent->v.waterlevel >= 2)
+	if ( ent->GetWaterLevel() >= 2)
 		bits |= SU_INWATER;
 	
 	for (i=0 ; i<3 ; i++)
@@ -646,7 +646,7 @@ void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 	if (ent->v.weaponframe)
 		bits |= SU_WEAPONFRAME;
 
-	if (ent->v.armorvalue)
+	if (ent->GetArmorValue())
 		bits |= SU_ARMOR;
 
 //	if (ent->v.weapon)
@@ -658,10 +658,10 @@ void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 	msg->WriteShort(bits);
 
 	if (bits & SU_VIEWHEIGHT)
-		msg->WriteChar(ent->v.view_ofs[2]);
+		msg->WriteChar(ent->GetViewOfs()[2]);
 
 	if (bits & SU_IDEALPITCH)
-		msg->WriteChar(ent->v.idealpitch);
+		msg->WriteChar(ent->GetIdealPitch());
 
 	for (i=0 ; i<3 ; i++)
 	{
@@ -677,7 +677,7 @@ void SV_WriteClientdataToMessage (qhedict_t *ent, QMsg *msg)
 	if (bits & SU_WEAPONFRAME)
 		msg->WriteByte(ent->v.weaponframe);
 	if (bits & SU_ARMOR)
-		msg->WriteByte(ent->v.armorvalue);
+		msg->WriteByte(ent->GetArmorValue());
 	if (bits & SU_WEAPON)
 		msg->WriteByte(SV_ModelIndex(PR_GetString(ent->v.weaponmodel)));
 	

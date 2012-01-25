@@ -221,7 +221,7 @@ void SV_DropClient (client_t *drop)
 		}
 	}
 	else if(dmMode->value==DM_SIEGE)
-		if(String::ICmp(PR_GetString(drop->edict->v.puzzle_inv1),""))
+		if(String::ICmp(PR_GetString(drop->edict->GetPuzzleInv1()),""))
 		{
 			//this guy has a puzzle piece, call this function anyway
 			//to make sure he leaves it behind
@@ -308,7 +308,7 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 	buf->WriteByte(hwsvc_updatedminfo);
 	buf->WriteByte(i);
 	buf->WriteShort(client->old_frags);
-	buf->WriteByte((client->playerclass<<5)|((int)client->edict->v.level&31));
+	buf->WriteByte((client->playerclass<<5)|((int)client->edict->GetLevel()&31));
 	
 	if(dmMode->value==DM_SIEGE)
 	{
@@ -1514,7 +1514,8 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		{
 			i = 0;
 		}
-		cl->next_playerclass = cl->edict->v.next_playerclass = i;
+		cl->next_playerclass =  i;
+		cl->edict->SetNextPlayerClass(i);
 
 		if (cl->edict->v.health > 0)
 		{

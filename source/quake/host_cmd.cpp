@@ -116,8 +116,8 @@ void Host_God_f (void)
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_GODMODE;
-	if (!((int)sv_player->v.flags & FL_GODMODE) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
+	if (!((int)sv_player->GetFlags() & FL_GODMODE) )
 		SV_ClientPrintf ("godmode OFF\n");
 	else
 		SV_ClientPrintf ("godmode ON\n");
@@ -134,8 +134,8 @@ void Host_Notarget_f (void)
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_NOTARGET;
-	if (!((int)sv_player->v.flags & FL_NOTARGET) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_NOTARGET);
+	if (!((int)sv_player->GetFlags() & FL_NOTARGET) )
 		SV_ClientPrintf ("notarget OFF\n");
 	else
 		SV_ClientPrintf ("notarget ON\n");
@@ -692,7 +692,7 @@ void Host_Name_f (void)
 		if (String::Cmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
 	String::Cpy(host_client->name, newName);
-	host_client->edict->v.netname = PR_SetString(host_client->name);
+	host_client->edict->SetNetName(PR_SetString(host_client->name));
 	
 // send notification to all clients
 	
@@ -814,7 +814,7 @@ void Host_Say(qboolean teamonly)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
-		if (teamplay->value && teamonly && client->edict->v.team != save->edict->v.team)
+		if (teamplay->value && teamonly && client->edict->GetTeam() != save->edict->GetTeam())
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -930,7 +930,7 @@ void Host_Color_f(void)
 	}
 
 	host_client->colors = playercolor;
-	host_client->edict->v.team = bottom + 1;
+	host_client->edict->SetTeam(bottom + 1);
 
 // send notification to all clients
 	sv.reliable_datagram.WriteByte(q1svc_updatecolors);
@@ -984,11 +984,11 @@ void Host_Pause_f (void)
 
 		if (sv.paused)
 		{
-			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->v.netname));
+			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 		else
 		{
-			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->v.netname));
+			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 
 	// send notification to all clients
@@ -1060,9 +1060,9 @@ void Host_Spawn_f (void)
 		ent = host_client->edict;
 
 		Com_Memset(&ent->v, 0, progs->entityfields * 4);
-		ent->v.colormap = NUM_FOR_EDICT(ent);
-		ent->v.team = (host_client->colors & 15) + 1;
-		ent->v.netname = PR_SetString(host_client->name);
+		ent->SetColorMap(NUM_FOR_EDICT(ent));
+		ent->SetTeam((host_client->colors & 15) + 1);
+		ent->SetNetName(PR_SetString(host_client->name));
 
 		// copy spawn parms out of the client_t
 
@@ -1304,21 +1304,21 @@ void Host_Give_f (void)
          if (t[0] == '6')
          {
             if (t[1] == 'a')
-               sv_player->v.items = (int)sv_player->v.items | HIT_PROXIMITY_GUN;
+               sv_player->SetItems((int)sv_player->GetItems() | HIT_PROXIMITY_GUN);
             else
-               sv_player->v.items = (int)sv_player->v.items | IT_GRENADE_LAUNCHER;
+               sv_player->SetItems((int)sv_player->GetItems() | IT_GRENADE_LAUNCHER);
          }
          else if (t[0] == '9')
-            sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
+            sv_player->SetItems((int)sv_player->GetItems() | HIT_LASER_CANNON);
          else if (t[0] == '0')
-            sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
+            sv_player->SetItems((int)sv_player->GetItems() | HIT_MJOLNIR);
          else if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+            sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
       }
       else
       {
          if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+            sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
       }
 		break;
 	

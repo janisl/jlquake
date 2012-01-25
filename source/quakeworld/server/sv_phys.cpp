@@ -289,7 +289,7 @@ int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 			blocked |= 1;		// floor
 			if (EDICT_NUM(trace.entityNum)->v.solid == SOLID_BSP)
 			{
-				ent->v.flags =	(int)ent->v.flags | FL_ONGROUND;
+				ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
 				ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 			}
 		}
@@ -467,7 +467,7 @@ qboolean SV_Push (qhedict_t *pusher, vec3_t move)
 			continue;
 
 	// if the entity is standing on the pusher, it will definately be moved
-		if ( ! ( ((int)check->v.flags & FL_ONGROUND)
+		if ( ! ( ((int)check->GetFlags() & FL_ONGROUND)
 		&& PROG_TO_EDICT(check->v.groundentity) == pusher) )
 		{
 			if ( check->v.absmin[0] >= maxs[0]
@@ -675,30 +675,30 @@ void SV_CheckWaterTransition (qhedict_t *ent)
 	int		cont;
 
 	cont = SV_PointContents (ent->v.origin);
-	if (!ent->v.watertype)
+	if (!ent->GetWaterType())
 	{	// just spawned here
-		ent->v.watertype = cont;
-		ent->v.waterlevel = 1;
+		ent->SetWaterType(cont);
+		ent->SetWaterLevel(1);
 		return;
 	}
 	
 	if (cont <= BSP29CONTENTS_WATER)
 	{
-		if (ent->v.watertype == BSP29CONTENTS_EMPTY)
+		if (ent->GetWaterType() == BSP29CONTENTS_EMPTY)
 		{	// just crossed into water
 			SV_StartSound (ent, 0, "misc/h2ohit1.wav", 255, 1);
 		}		
-		ent->v.watertype = cont;
-		ent->v.waterlevel = 1;
+		ent->SetWaterType(cont);
+		ent->SetWaterLevel(1);
 	}
 	else
 	{
-		if (ent->v.watertype != BSP29CONTENTS_EMPTY)
+		if (ent->GetWaterType() != BSP29CONTENTS_EMPTY)
 		{	// just crossed into water
 			SV_StartSound (ent, 0, "misc/h2ohit1.wav", 255, 1);
 		}		
-		ent->v.watertype = BSP29CONTENTS_EMPTY;
-		ent->v.waterlevel = cont;
+		ent->SetWaterType(BSP29CONTENTS_EMPTY);
+		ent->SetWaterLevel(cont);
 	}
 }
 
@@ -720,10 +720,10 @@ void SV_Physics_Toss (qhedict_t *ent)
 		return;
 
 	if (ent->v.velocity[2] > 0)
-		ent->v.flags = (int)ent->v.flags & ~FL_ONGROUND;
+		ent->SetFlags((int)ent->GetFlags() & ~FL_ONGROUND);
 
 // if onground, return without moving
-	if ( ((int)ent->v.flags & FL_ONGROUND) )
+	if ( ((int)ent->GetFlags() & FL_ONGROUND) )
 		return;
 
 	SV_CheckVelocity (ent);
@@ -756,7 +756,7 @@ void SV_Physics_Toss (qhedict_t *ent)
 	{		
 		if (ent->v.velocity[2] < 60 || ent->v.movetype != MOVETYPE_BOUNCE )
 		{
-			ent->v.flags = (int)ent->v.flags | FL_ONGROUND;
+			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
 			ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 			VectorCopy (vec3_origin, ent->v.velocity);
 			VectorCopy (vec3_origin, ent->v.avelocity);
@@ -792,7 +792,7 @@ void SV_Physics_Step (qhedict_t *ent)
 	qboolean	hitsound;
 
 // frefall if not onground
-	if ( ! ((int)ent->v.flags & (FL_ONGROUND | FL_FLY | FL_SWIM) ) )
+	if ( ! ((int)ent->GetFlags() & (FL_ONGROUND | FL_FLY | FL_SWIM) ) )
 	{
 		if (ent->v.velocity[2] < movevars.gravity*-0.1)
 			hitsound = true;
@@ -804,7 +804,7 @@ void SV_Physics_Step (qhedict_t *ent)
 		SV_FlyMove (ent, host_frametime, NULL);
 		SV_LinkEdict (ent, true);
 
-		if ( (int)ent->v.flags & FL_ONGROUND )	// just hit ground
+		if ( (int)ent->GetFlags() & FL_ONGROUND )	// just hit ground
 		{
 			if (hitsound)
 				SV_StartSound (ent, 0, "demon/dland2.wav", 255, 1);

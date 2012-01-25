@@ -151,9 +151,9 @@ void ED_Free (qhedict_t *ed)
 
 	ed->free = true;
 	ed->v.model = 0;
-	ed->v.takedamage = 0;
+	ed->SetTakeDamage(0);
 	ed->v.modelindex = 0;
-	ed->v.colormap = 0;
+	ed->SetColorMap(0);
 	ed->v.skin = 0;
 	ed->v.frame = 0;
 	VectorCopy (vec3_origin, ed->v.origin);
@@ -919,7 +919,7 @@ void ED_LoadFromFile (const char *data)
 // remove things from different skill levels or deathmatch
 		if (deathmatch->value)
 		{
-			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_DEATHMATCH))
+			if (((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_DEATHMATCH))
 			{
 				ED_Free (ent);	
 				inhibit++;
@@ -928,7 +928,7 @@ void ED_LoadFromFile (const char *data)
 		}
 		else if (coop->value)
 		{
-			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_COOP))
+			if (((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_COOP))
 			{
 				ED_Free (ent);	
 				inhibit++;
@@ -937,7 +937,7 @@ void ED_LoadFromFile (const char *data)
 		}
 		else
 		{ // Gotta be single player
-			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_SINGLE))
+			if (((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_SINGLE))
 			{
 				ED_Free (ent);	
 				inhibit++;
@@ -949,14 +949,14 @@ void ED_LoadFromFile (const char *data)
 			switch ((int)cl_playerclass->value)
 			{		
 			case CLASS_PALADIN:
-				if ((int)ent->v.spawnflags & SPAWNFLAG_NOT_PALADIN)
+				if ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_PALADIN)
 				{
 					skip = 1;
 				}
 				break;
 				
 			case CLASS_CLERIC:
-				if ((int)ent->v.spawnflags & SPAWNFLAG_NOT_CLERIC)
+				if ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_CLERIC)
 				{
 					skip = 1;
 				}
@@ -964,14 +964,14 @@ void ED_LoadFromFile (const char *data)
 				
 			case CLASS_DEMON:
 			case CLASS_NECROMANCER:
-				if ((int)ent->v.spawnflags & SPAWNFLAG_NOT_NECROMANCER)
+				if ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_NECROMANCER)
 				{
 					skip = 1;
 				}
 				break;
 				
 			case CLASS_THEIF:
-				if ((int)ent->v.spawnflags & SPAWNFLAG_NOT_THEIF)
+				if ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_THEIF)
 				{
 					skip = 1;
 				}
@@ -986,9 +986,9 @@ void ED_LoadFromFile (const char *data)
 			}	
 		}
 		
-		if ((current_skill == 0 && ((int)ent->v.spawnflags & SPAWNFLAG_NOT_EASY))
-			|| (current_skill == 1 && ((int)ent->v.spawnflags & SPAWNFLAG_NOT_MEDIUM))
-			|| (current_skill >= 2 && ((int)ent->v.spawnflags & SPAWNFLAG_NOT_HARD)) )
+		if ((current_skill == 0 && ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_EASY))
+			|| (current_skill == 1 && ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_MEDIUM))
+			|| (current_skill >= 2 && ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_HARD)) )
 		{
 			ED_Free (ent);	
 			inhibit++;
