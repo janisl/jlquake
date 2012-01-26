@@ -201,14 +201,14 @@ void SV_Noclip_f (void)
 	if (!SV_SetPlayer ())
 		return;
 
-	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
 	{
-		sv_player->v.movetype = MOVETYPE_NOCLIP;
+		sv_player->SetMoveType(MOVETYPE_NOCLIP);
 		SV_ClientPrintf (host_client, PRINT_HIGH, "noclip ON\n");
 	}
 	else
 	{
-		sv_player->v.movetype = MOVETYPE_WALK;
+		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf (host_client, PRINT_HIGH, "noclip OFF\n");
 	}
 }
@@ -259,7 +259,7 @@ void SV_Give_f (void)
 //rjr		sv_player->v.ammo_rockets = v;
 		break;		
 	case 'h':
-		sv_player->v.health = v;
+		sv_player->SetHealth(v);
 		break;		
 	case 'c':
 //rjr		sv_player->v.ammo_cells = v;
@@ -470,7 +470,7 @@ void SV_Status_f (void)
 
 			Con_Printf ("%-16.16s  ", cl->name);
 
-			Con_Printf ("%6i %5i", cl->userid, (int)cl->edict->v.frags);
+			Con_Printf ("%6i %5i", cl->userid, (int)cl->edict->GetFrags());
 			if (cl->spectator)
 				Con_Printf(" (s)\n");
 			else			
@@ -502,7 +502,7 @@ void SV_Status_f (void)
 		{
 			if (!cl->state)
 				continue;
-			Con_Printf ("%5i %6i ", (int)cl->edict->v.frags,  cl->userid);
+			Con_Printf ("%5i %6i ", (int)cl->edict->GetFrags(),  cl->userid);
 
 			s = SOCK_BaseAdrToString( cl->netchan.remoteAddress);
 			Con_Printf ("%s", s);

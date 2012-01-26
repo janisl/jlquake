@@ -16,7 +16,45 @@
 
 #define	MAX_ENT_LEAFS	16
 
+extern idEntVarDef entFieldLastRunTime;
+extern idEntVarDef entFieldMoveType;
+extern idEntVarDef entFieldSolid;
+extern idEntVarDef entFieldOrigin;
+extern idEntVarDef entFieldOldOrigin;
+extern idEntVarDef entFieldVelocity;
+extern idEntVarDef entFieldAngles;
+extern idEntVarDef entFieldAVelocity;
+extern idEntVarDef entFieldPunchAngle;
+extern idEntVarDef entFieldClassName;
+extern idEntVarDef entFieldModel;
+extern idEntVarDef entFieldFrame;
+extern idEntVarDef entFieldSkin;
+extern idEntVarDef entFieldEffects;
+extern idEntVarDef entFieldScale;
+extern idEntVarDef entFieldDrawFlags;
+extern idEntVarDef entFieldAbsLight;
+extern idEntVarDef entFieldMins;
+extern idEntVarDef entFieldMaxs;
+extern idEntVarDef entFieldSize;
+extern idEntVarDef entFieldHull;
+extern idEntVarDef entFieldTouch;
+extern idEntVarDef entFieldUse;
+extern idEntVarDef entFieldThink;
+extern idEntVarDef entFieldBlocked;
+extern idEntVarDef entFieldNextThink;
+extern idEntVarDef entFieldGroundEntity;
+extern idEntVarDef entFieldHealth;
+extern idEntVarDef entFieldStatsRestored;
+extern idEntVarDef entFieldFrags;
+extern idEntVarDef entFieldWeapon;
+extern idEntVarDef entFieldWeaponModel;
+extern idEntVarDef entFieldWeaponFrame;
 extern idEntVarDef entFieldMaxHealth;
+extern idEntVarDef entFieldCurrentAmmo;
+extern idEntVarDef entFieldAmmoShells;
+extern idEntVarDef entFieldAmmoNails;
+extern idEntVarDef entFieldAmmoRockets;
+extern idEntVarDef entFieldAmmoCells;
 extern idEntVarDef entFieldPlayerClass;
 extern idEntVarDef entFieldNextPlayerClass;
 extern idEntVarDef entFieldHasPortals;
@@ -190,8 +228,57 @@ struct qhedict_t
 		SetIntField(entField ## name, value); \
 	}
 
+	//	QuakeWorld and HexenWorld
+	FIELD_FLOAT(LastRunTime)
+	//	All games
+	FIELD_FLOAT(MoveType)
+	FIELD_FLOAT(Solid)
+	FIELD_VECTOR(Origin)
+	FIELD_VECTOR(OldOrigin)
+	FIELD_VECTOR(Velocity)
+	FIELD_VECTOR(Angles)
+	FIELD_VECTOR(AVelocity)
+	//	Quake, Hexen 2 and HexenWorld
+	FIELD_VECTOR(PunchAngle)
+	//	All games
+	FIELD_STRING(ClassName)
+	FIELD_STRING(Model)
+	FIELD_FLOAT(Frame)
+	FIELD_FLOAT(Skin)
+	FIELD_FLOAT(Effects)
 	//	Hexen 2 and HexenWorld
+	FIELD_FLOAT(Scale)
+	FIELD_FLOAT(DrawFlags)
+	FIELD_FLOAT(AbsLight)
+	//	All games
+	FIELD_VECTOR(Mins)
+	FIELD_VECTOR(Maxs)
+	FIELD_VECTOR(Size)
+	//	Hexen 2 and HexenWorld
+	FIELD_FLOAT(Hull)
+	//	All games
+	FIELD_FUNC(Touch)
+	FIELD_FUNC(Use)
+	FIELD_FUNC(Think)
+	FIELD_FUNC(Blocked)
+	FIELD_FLOAT(NextThink)
+	FIELD_ENTITY(GroundEntity)
+	FIELD_FLOAT(Health)
+	//	Hexen 2 and HexenWorld
+	FIELD_FLOAT(StatsRestored)
+	//	All games
+	FIELD_FLOAT(Frags)
+	FIELD_FLOAT(Weapon)
+	FIELD_STRING(WeaponModel)
+	FIELD_FLOAT(WeaponFrame)
 	FIELD_FLOAT(MaxHealth)
+	//	Quake and QuakeWorld
+	FIELD_FLOAT(CurrentAmmo)
+	FIELD_FLOAT(AmmoShells)
+	FIELD_FLOAT(AmmoNails)
+	FIELD_FLOAT(AmmoRockets)
+	FIELD_FLOAT(AmmoCells)
+	//	Hexen 2 and HexenWorld
 	FIELD_FLOAT(PlayerClass)
 	//	HexenWorld
 	FIELD_FLOAT(NextPlayerClass)

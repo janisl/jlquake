@@ -62,15 +62,15 @@ void SV_SetIdealPitch (void)
 	if (!((int)sv_player->GetFlags() & FL_ONGROUND))
 		return;
 		
-	angleval = sv_player->v.angles[YAW] * M_PI*2 / 360;
+	angleval = sv_player->GetAngles()[YAW] * M_PI*2 / 360;
 	sinval = sin(angleval);
 	cosval = cos(angleval);
 
 	for (i=0 ; i<MAX_FORWARD ; i++)
 	{
-		top[0] = sv_player->v.origin[0] + cosval*(i+3)*12;
-		top[1] = sv_player->v.origin[1] + sinval*(i+3)*12;
-		top[2] = sv_player->v.origin[2] + sv_player->GetViewOfs()[2];
+		top[0] = sv_player->GetOrigin()[0] + cosval*(i+3)*12;
+		top[1] = sv_player->GetOrigin()[1] + sinval*(i+3)*12;
+		top[2] = sv_player->GetOrigin()[2] + sv_player->GetViewOfs()[2];
 		
 		bottom[0] = top[0];
 		bottom[1] = top[1];
@@ -136,7 +136,7 @@ void SV_UserFriction (void)
 // if the leading edge is over a dropoff, increase friction
 	start[0] = stop[0] = origin[0] + vel[0]/speed*16;
 	start[1] = stop[1] = origin[1] + vel[1]/speed*16;
-	start[2] = origin[2] + sv_player->v.mins[2];
+	start[2] = origin[2] + sv_player->GetMins()[2];
 	stop[2] = start[2] - 34;
 
 	trace = SV_Move (start, vec3_origin, vec3_origin, stop, true, sv_player);
@@ -230,12 +230,12 @@ void DropPunchAngle (void)
 {
 	float	len;
 	
-	len = VectorNormalize (sv_player->v.punchangle);
+	len = VectorNormalize (sv_player->GetPunchAngle());
 	
 	len -= 10*host_frametime;
 	if (len < 0)
 		len = 0;
-	VectorScale (sv_player->v.punchangle, len, sv_player->v.punchangle);
+	VectorScale (sv_player->GetPunchAngle(), len, sv_player->GetPunchAngle());
 }
 
 /*
@@ -312,8 +312,8 @@ void SV_WaterJump (void)
 		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_WATERJUMP);
 		sv_player->SetTeleportTime(0);
 	}
-	sv_player->v.velocity[0] = sv_player->GetMoveDir()[0];
-	sv_player->v.velocity[1] = sv_player->GetMoveDir()[1];
+	sv_player->GetVelocity()[0] = sv_player->GetMoveDir()[0];
+	sv_player->GetVelocity()[1] = sv_player->GetMoveDir()[1];
 }
 
 
@@ -329,7 +329,7 @@ void SV_AirMove (void)
 	vec3_t		wishvel;
 	float		fmove, smove;
 
-	AngleVectors (sv_player->v.angles, forward, right, up);
+	AngleVectors (sv_player->GetAngles(), forward, right, up);
 
 	fmove = cmd.forwardmove;
 	smove = cmd.sidemove;
@@ -341,7 +341,7 @@ void SV_AirMove (void)
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*fmove + right[i]*smove;
 
-	if ( (int)sv_player->v.movetype != MOVETYPE_WALK)
+	if ( (int)sv_player->GetMoveType() != MOVETYPE_WALK)
 		wishvel[2] = cmd.upmove;
 	else
 		wishvel[2] = 0;
@@ -354,7 +354,7 @@ void SV_AirMove (void)
 		wishspeed = sv_maxspeed->value;
 	}
 	
-	if ( sv_player->v.movetype == MOVETYPE_NOCLIP)
+	if ( sv_player->GetMoveType() == MOVETYPE_NOCLIP)
 	{	// noclip
 		VectorCopy (wishvel, velocity);
 	}
@@ -381,30 +381,30 @@ void SV_ClientThink (void)
 {
 	vec3_t		v_angle;
 
-	if (sv_player->v.movetype == MOVETYPE_NONE)
+	if (sv_player->GetMoveType() == MOVETYPE_NONE)
 		return;
 	
 	onground = (int)sv_player->GetFlags() & FL_ONGROUND;
 
-	origin = sv_player->v.origin;
-	velocity = sv_player->v.velocity;
+	origin = sv_player->GetOrigin();
+	velocity = sv_player->GetVelocity();
 
 	DropPunchAngle ();
 	
 //
 // if dead, behave differently
 //
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 		return;
 
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle
 	cmd = host_client->cmd;
-	angles = sv_player->v.angles;
+	angles = sv_player->GetAngles();
 	
-	VectorAdd (sv_player->GetVAngle(), sv_player->v.punchangle, v_angle);
-	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
+	VectorAdd (sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
+	angles[ROLL] = V_CalcRoll (sv_player->GetAngles(), sv_player->GetVelocity())*4;
 	if (!sv_player->GetFixAngle())
 	{
 		angles[PITCH] = -v_angle[PITCH]/3;
@@ -420,7 +420,7 @@ void SV_ClientThink (void)
 // walk
 //
 	if ( (sv_player->GetWaterLevel() >= 2)
-	&& (sv_player->v.movetype != MOVETYPE_NOCLIP) )
+	&& (sv_player->GetMoveType() != MOVETYPE_NOCLIP) )
 	{
 		SV_WaterMove ();
 		return;

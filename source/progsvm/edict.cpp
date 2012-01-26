@@ -16,7 +16,45 @@
 
 #include "progsvm.h"
 
+idEntVarDef entFieldLastRunTime;
+idEntVarDef entFieldMoveType;
+idEntVarDef entFieldSolid;
+idEntVarDef entFieldOrigin;
+idEntVarDef entFieldOldOrigin;
+idEntVarDef entFieldVelocity;
+idEntVarDef entFieldAngles;
+idEntVarDef entFieldAVelocity;
+idEntVarDef entFieldPunchAngle;
+idEntVarDef entFieldClassName;
+idEntVarDef entFieldModel;
+idEntVarDef entFieldFrame;
+idEntVarDef entFieldSkin;
+idEntVarDef entFieldEffects;
+idEntVarDef entFieldScale;
+idEntVarDef entFieldDrawFlags;
+idEntVarDef entFieldAbsLight;
+idEntVarDef entFieldMins;
+idEntVarDef entFieldMaxs;
+idEntVarDef entFieldSize;
+idEntVarDef entFieldHull;
+idEntVarDef entFieldTouch;
+idEntVarDef entFieldUse;
+idEntVarDef entFieldThink;
+idEntVarDef entFieldBlocked;
+idEntVarDef entFieldNextThink;
+idEntVarDef entFieldGroundEntity;
+idEntVarDef entFieldHealth;
+idEntVarDef entFieldStatsRestored;
+idEntVarDef entFieldFrags;
+idEntVarDef entFieldWeapon;
+idEntVarDef entFieldWeaponModel;
+idEntVarDef entFieldWeaponFrame;
 idEntVarDef entFieldMaxHealth;
+idEntVarDef entFieldCurrentAmmo;
+idEntVarDef entFieldAmmoShells;
+idEntVarDef entFieldAmmoNails;
+idEntVarDef entFieldAmmoRockets;
+idEntVarDef entFieldAmmoCells;
 idEntVarDef entFieldPlayerClass;
 idEntVarDef entFieldNextPlayerClass;
 idEntVarDef entFieldHasPortals;
@@ -124,32 +162,110 @@ void idEntVarDef::Init(const char* name, int offset)
 
 int ED_InitEntityFields()
 {
-	int offset;
-	if (GGameType & GAME_Quake)
-	{
-		if (GGameType & GAME_QuakeWorld)
-		{
-			offset = 224;
-		}
-		else
-		{
-			offset = 232;
-		}
-	}
-	else
-	{
-		if (GGameType & GAME_HexenWorld)
-		{
-			offset = 236;
-		}
-		else
-		{
-			offset = 232;
-		}
-	}
+	int offset = 32;
 
+	if (((GGameType & GAME_Quake) && (GGameType & GAME_QuakeWorld)) ||
+		((GGameType & GAME_Hexen2) && (GGameType & GAME_HexenWorld)))
+	{
+		entFieldLastRunTime.Init("lastruntime", offset);
+		offset += 4;
+	}
+	entFieldMoveType.Init("movetype", offset);
+	offset += 4;
+	entFieldSolid.Init("solid", offset);
+	offset += 4;
+	entFieldOrigin.Init("origin", offset);
+	offset += 12;
+	entFieldOldOrigin.Init("oldorigin", offset);
+	offset += 12;
+	entFieldVelocity.Init("velocity", offset);
+	offset += 12;
+	entFieldAngles.Init("angles", offset);
+	offset += 12;
+	entFieldAVelocity.Init("avelocity", offset);
+	offset += 12;
+	if (!(GGameType & GAME_QuakeWorld))
+	{
+		entFieldPunchAngle.Init("punchangle", offset);
+		offset += 12;
+	}
+	entFieldClassName.Init("classname", offset);
+	offset += 4;
+	entFieldModel.Init("model", offset);
+	offset += 4;
+	entFieldFrame.Init("frame", offset);
+	offset += 4;
+	entFieldSkin.Init("skin", offset);
+	offset += 4;
+	entFieldEffects.Init("effects", offset);
+	offset += 4;
 	if (GGameType & GAME_Hexen2)
 	{
+		entFieldScale.Init("scale", offset);
+		offset += 4;
+		entFieldDrawFlags.Init("drawflags", offset);
+		offset += 4;
+		entFieldAbsLight.Init("abslight", offset);
+		offset += 4;
+	}
+	entFieldMins.Init("mins", offset);
+	offset += 12;
+	entFieldMaxs.Init("maxs", offset);
+	offset += 12;
+	entFieldSize.Init("size", offset);
+	offset += 12;
+	if (GGameType & GAME_Hexen2)
+	{
+		entFieldHull.Init("hull", offset);
+		offset += 4;
+	}
+	entFieldTouch.Init("touch", offset);
+	offset += 4;
+	entFieldUse.Init("use", offset);
+	offset += 4;
+	entFieldThink.Init("think", offset);
+	offset += 4;
+	entFieldBlocked.Init("blocked", offset);
+	offset += 4;
+	entFieldNextThink.Init("nextthink", offset);
+	offset += 4;
+	entFieldGroundEntity.Init("groundentity", offset);
+	offset += 4;
+	if (GGameType & GAME_Quake)
+	{
+		entFieldHealth.Init("health", offset);
+		offset += 4;
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		entFieldStatsRestored.Init("stats_restored", offset);
+		offset += 4;
+	}
+	entFieldFrags.Init("frags", offset);
+	offset += 4;
+	entFieldWeapon.Init("weapon", offset);
+	offset += 4;
+	entFieldWeaponModel.Init("weaponmodel", offset);
+	offset += 4;
+	entFieldWeaponFrame.Init("weaponframe", offset);
+	offset += 4;
+	if (GGameType & GAME_Quake)
+	{
+		entFieldCurrentAmmo.Init("currentammo", offset);
+		offset += 4;
+		entFieldAmmoShells.Init("ammo_shells", offset);
+		offset += 4;
+		entFieldAmmoNails.Init("ammo_nails", offset);
+		offset += 4;
+		entFieldAmmoRockets.Init("ammo_rockets", offset);
+		offset += 4;
+		entFieldAmmoCells.Init("ammo_cells", offset);
+		offset += 4;
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		entFieldHealth.Init("health", offset);
+		offset += 4;
 		entFieldMaxHealth.Init("max_health", offset);
 		offset += 4;
 		entFieldPlayerClass.Init("playerclass", offset);

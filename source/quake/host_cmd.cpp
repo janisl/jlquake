@@ -92,7 +92,7 @@ void Host_Status_f (void)
 		}
 		else
 			hours = 0;
-		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->v.frags, hours, minutes, seconds);
+		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->GetFrags(), hours, minutes, seconds);
 		print ("   %s\n", client->netconnection->address);
 	}
 }
@@ -154,16 +154,16 @@ void Host_Noclip_f (void)
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
 	{
 		noclip_anglehack = true;
-		sv_player->v.movetype = MOVETYPE_NOCLIP;
+		sv_player->SetMoveType(MOVETYPE_NOCLIP);
 		SV_ClientPrintf ("noclip ON\n");
 	}
 	else
 	{
 		noclip_anglehack = false;
-		sv_player->v.movetype = MOVETYPE_WALK;
+		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf ("noclip OFF\n");
 	}
 }
@@ -186,14 +186,14 @@ void Host_Fly_f (void)
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	if (sv_player->v.movetype != MOVETYPE_FLY)
+	if (sv_player->GetMoveType() != MOVETYPE_FLY)
 	{
-		sv_player->v.movetype = MOVETYPE_FLY;
+		sv_player->SetMoveType(MOVETYPE_FLY);
 		SV_ClientPrintf ("flymode ON\n");
 	}
 	else
 	{
-		sv_player->v.movetype = MOVETYPE_WALK;
+		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf ("flymode OFF\n");
 	}
 }
@@ -457,7 +457,7 @@ void Host_Savegame_f (void)
 		
 	for (i=0 ; i<svs.maxclients ; i++)
 	{
-		if (svs.clients[i].active && (svs.clients[i].edict->v.health <= 0) )
+		if (svs.clients[i].active && (svs.clients[i].edict->GetHealth() <= 0) )
 		{
 			Con_Printf ("Can't savegame with a dead player\n");
 			return;
@@ -951,7 +951,7 @@ void Host_Kill_f (void)
 		return;
 	}
 
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 	{
 		SV_ClientPrintf ("Can't suicide -- allready dead!\n");
 		return;
@@ -1139,7 +1139,7 @@ void Host_Spawn_f (void)
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
 	host_client->message.WriteByte(q1svc_setangle);
 	for (i=0 ; i < 2 ; i++)
-		host_client->message.WriteAngle(ent->v.angles[i] );
+		host_client->message.WriteAngle(ent->GetAngles()[i] );
 	host_client->message.WriteAngle(0);
 
 	SV_WriteClientdataToMessage (sv_player, &host_client->message);
@@ -1330,7 +1330,7 @@ void Host_Give_f (void)
 			    val->_float = v;
 		}
 
-        sv_player->v.ammo_shells = v;
+        sv_player->SetAmmoShells(v);
         break;		
     case 'n':
 		if (rogue)
@@ -1339,13 +1339,13 @@ void Host_Give_f (void)
 			if (val)
 			{
 				val->_float = v;
-				if (sv_player->v.weapon <= IT_LIGHTNING)
-					sv_player->v.ammo_nails = v;
+				if (sv_player->GetWeapon() <= IT_LIGHTNING)
+					sv_player->SetAmmoNails(v);
 			}
 		}
 		else
 		{
-			sv_player->v.ammo_nails = v;
+			sv_player->SetAmmoNails(v);
 		}
         break;		
     case 'l':
@@ -1355,8 +1355,8 @@ void Host_Give_f (void)
 			if (val)
 			{
 				val->_float = v;
-				if (sv_player->v.weapon > IT_LIGHTNING)
-					sv_player->v.ammo_nails = v;
+				if (sv_player->GetWeapon() > IT_LIGHTNING)
+					sv_player->SetAmmoNails(v);
 			}
 		}
         break;
@@ -1367,13 +1367,13 @@ void Host_Give_f (void)
 			if (val)
 			{
 				val->_float = v;
-				if (sv_player->v.weapon <= IT_LIGHTNING)
-					sv_player->v.ammo_rockets = v;
+				if (sv_player->GetWeapon() <= IT_LIGHTNING)
+					sv_player->SetAmmoRockets(v);
 			}
 		}
 		else
 		{
-			sv_player->v.ammo_rockets = v;
+			sv_player->SetAmmoRockets(v);
 		}
         break;		
     case 'm':
@@ -1383,13 +1383,13 @@ void Host_Give_f (void)
 			if (val)
 			{
 				val->_float = v;
-				if (sv_player->v.weapon > IT_LIGHTNING)
-					sv_player->v.ammo_rockets = v;
+				if (sv_player->GetWeapon() > IT_LIGHTNING)
+					sv_player->SetAmmoRockets(v);
 			}
 		}
         break;		
     case 'h':
-        sv_player->v.health = v;
+        sv_player->SetHealth(v);
         break;		
     case 'c':
 		if (rogue)
@@ -1398,13 +1398,13 @@ void Host_Give_f (void)
 			if (val)
 			{
 				val->_float = v;
-				if (sv_player->v.weapon <= IT_LIGHTNING)
-					sv_player->v.ammo_cells = v;
+				if (sv_player->GetWeapon() <= IT_LIGHTNING)
+					sv_player->SetAmmoCells(v);
 			}
 		}
 		else
 		{
-			sv_player->v.ammo_cells = v;
+			sv_player->SetAmmoCells(v);
 		}
         break;		
     case 'p':
@@ -1414,8 +1414,8 @@ void Host_Give_f (void)
 			if (val)
 			{
 				val->_float = v;
-				if (sv_player->v.weapon > IT_LIGHTNING)
-					sv_player->v.ammo_cells = v;
+				if (sv_player->GetWeapon() > IT_LIGHTNING)
+					sv_player->SetAmmoCells(v);
 			}
 		}
         break;		
@@ -1430,7 +1430,7 @@ qhedict_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if ( !String::Cmp(PR_GetString(e->v.classname), "viewthing") )
+		if ( !String::Cmp(PR_GetString(e->GetClassName()), "viewthing") )
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");
@@ -1458,7 +1458,7 @@ void Host_Viewmodel_f (void)
 		return;
 	}
 	
-	e->v.frame = 0;
+	e->SetFrame(0);
 	cl.model_draw[(int)e->v.modelindex] = m;
 }
 
@@ -1482,7 +1482,7 @@ void Host_Viewframe_f (void)
 	if (f >= R_ModelNumFrames(m))
 		f = R_ModelNumFrames(m) - 1;
 
-	e->v.frame = f;		
+	e->SetFrame(f);
 }
 
 /*
@@ -1500,11 +1500,11 @@ void Host_Viewnext_f (void)
 		return;
 	m = cl.model_draw[(int)e->v.modelindex];
 
-	e->v.frame = e->v.frame + 1;
-	if (e->v.frame >= R_ModelNumFrames(m))
-		e->v.frame = R_ModelNumFrames(m) - 1;
+	e->SetFrame(e->GetFrame() + 1);
+	if (e->GetFrame() >= R_ModelNumFrames(m))
+		e->SetFrame(R_ModelNumFrames(m) - 1);
 
-	R_PrintModelFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->GetFrame());		
 }
 
 /*
@@ -1523,11 +1523,11 @@ void Host_Viewprev_f (void)
 
 	m = cl.model_draw[(int)e->v.modelindex];
 
-	e->v.frame = e->v.frame - 1;
-	if (e->v.frame < 0)
-		e->v.frame = 0;
+	e->SetFrame(e->GetFrame() - 1);
+	if (e->GetFrame() < 0)
+		e->SetFrame(0);
 
-	R_PrintModelFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->GetFrame());
 }
 
 /*

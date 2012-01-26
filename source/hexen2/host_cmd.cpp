@@ -92,7 +92,7 @@ void Host_Status_f (void)
 		}
 		else
 			hours = 0;
-		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->v.frags, hours, minutes, seconds);
+		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->GetFrags(), hours, minutes, seconds);
 		print ("   %s\n", client->netconnection->address);
 	}
 }
@@ -156,16 +156,16 @@ void Host_Noclip_f (void)
 		 pr_global_struct->coop|| skill->value > 2) && !host_client->privileged)
 		return;
 
-	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
 	{
 		noclip_anglehack = true;
-		sv_player->v.movetype = MOVETYPE_NOCLIP;
+		sv_player->SetMoveType(MOVETYPE_NOCLIP);
 		SV_ClientPrintf ("noclip ON\n");
 	}
 	else
 	{
 		noclip_anglehack = false;
-		sv_player->v.movetype = MOVETYPE_WALK;
+		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf ("noclip OFF\n");
 	}
 }
@@ -490,7 +490,7 @@ void Host_Savegame_f (void)
 		
 	for (i=0 ; i<svs.maxclients ; i++)
 	{
-		if (svs.clients[i].active && (svs.clients[i].edict->v.health <= 0) )
+		if (svs.clients[i].active && (svs.clients[i].edict->GetHealth() <= 0) )
 		{
 			Con_Printf ("Can't savegame with a dead player\n");
 			return;
@@ -911,15 +911,15 @@ Log::writeLine("Token %s", token);
 			start = ED_ParseEdict(start, ent);
 		
 			if (ClientsMode == 1 || ClientsMode == 2 || ClientsMode == 3)
-				ent->v.stats_restored = true;
+				ent->SetStatsRestored(true);
 
 			// link it into the bsp tree
 			if (!ent->free)
 			{
 				SV_LinkEdict (ent, false);
-				if (ent->v.modelindex && ent->v.model)
+				if (ent->v.modelindex && ent->GetModel())
 				{
-					i = SV_ModelIndex(PR_GetString(ent->v.model));
+					i = SV_ModelIndex(PR_GetString(ent->GetModel()));
 					if (i != ent->v.modelindex)
 					{
 						ent->v.modelindex = i;
@@ -1417,7 +1417,7 @@ void Host_Kill_f (void)
 		return;
 	}
 
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 	{
 		SV_ClientPrintf ("Can't suicide -- allready dead!\n");
 		return;
@@ -1529,7 +1529,7 @@ void Host_Spawn_f (void)
 		ent = host_client->edict;
 		sv.paused = false;
 
-		if (!ent->v.stats_restored || deathmatch->value)
+		if (!ent->GetStatsRestored() || deathmatch->value)
 		{
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		
@@ -1619,7 +1619,7 @@ void Host_Spawn_f (void)
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
 	host_client->message.WriteByte(h2svc_setangle);
 	for (i=0 ; i < 2 ; i++)
-		host_client->message.WriteAngle(ent->v.angles[i] );
+		host_client->message.WriteAngle(ent->GetAngles()[i] );
 	host_client->message.WriteAngle(0 );
 
 	SV_WriteClientdataToMessage (host_client, sv_player, &host_client->message);
@@ -1726,13 +1726,13 @@ void Host_Create_f(void)
 
 	ent = ED_Alloc ();
 
-	ent->v.classname = func->s_name;
-	VectorCopy(cl.refdef.vieworg, ent->v.origin);
-	ent->v.origin[0] += cl.refdef.viewaxis[0][0] * 80;
-	ent->v.origin[1] += cl.refdef.viewaxis[0][1] * 80;
-	ent->v.origin[2] += cl.refdef.viewaxis[0][2] * 80;
-	VectorCopy(ent->v.origin,ent->v.absmin);
-	VectorCopy(ent->v.origin,ent->v.absmax);
+	ent->SetClassName(func->s_name);
+	VectorCopy(cl.refdef.vieworg, ent->GetOrigin());
+	ent->GetOrigin()[0] += cl.refdef.viewaxis[0][0] * 80;
+	ent->GetOrigin()[1] += cl.refdef.viewaxis[0][1] * 80;
+	ent->GetOrigin()[2] += cl.refdef.viewaxis[0][2] * 80;
+	VectorCopy(ent->GetOrigin(),ent->v.absmin);
+	VectorCopy(ent->GetOrigin(),ent->v.absmax);
 	ent->v.absmin[0] -= 16;
 	ent->v.absmin[1] -= 16;
 	ent->v.absmin[2] -= 16;
@@ -1985,7 +1985,7 @@ void Host_Give_f (void)
 		}*/
         break;		
     case 'h':
-        sv_player->v.health = v;
+        sv_player->SetHealth(v);
         break;		
     case 'c':
 /*		if (rogue)
@@ -2026,7 +2026,7 @@ qhedict_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if ( !String::Cmp(PR_GetString(e->v.classname), "viewthing") )
+		if ( !String::Cmp(PR_GetString(e->GetClassName()), "viewthing") )
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");
@@ -2054,7 +2054,7 @@ void Host_Viewmodel_f (void)
 		return;
 	}
 	
-	e->v.frame = 0;
+	e->SetFrame(0);
 	cl.model_draw[(int)e->v.modelindex] = m;
 }
 
@@ -2078,7 +2078,7 @@ void Host_Viewframe_f (void)
 	if (f >= R_ModelNumFrames(m))
 		f = R_ModelNumFrames(m) - 1;
 
-	e->v.frame = f;		
+	e->SetFrame(f);
 }
 
 /*
@@ -2096,11 +2096,11 @@ void Host_Viewnext_f (void)
 		return;
 	m = cl.model_draw[(int)e->v.modelindex];
 
-	e->v.frame = e->v.frame + 1;
-	if (e->v.frame >= R_ModelNumFrames(m))
-		e->v.frame = R_ModelNumFrames(m) - 1;
+	e->SetFrame(e->GetFrame() + 1);
+	if (e->GetFrame() >= R_ModelNumFrames(m))
+		e->SetFrame(R_ModelNumFrames(m) - 1);
 
-	R_PrintModelFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->GetFrame());		
 }
 
 /*
@@ -2119,11 +2119,11 @@ void Host_Viewprev_f (void)
 
 	m = cl.model_draw[(int)e->v.modelindex];
 
-	e->v.frame = e->v.frame - 1;
-	if (e->v.frame < 0)
-		e->v.frame = 0;
+	e->SetFrame(e->GetFrame() - 1);
+	if (e->GetFrame() < 0)
+		e->SetFrame(0);
 
-	R_PrintModelFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->GetFrame());
 }
 
 /*

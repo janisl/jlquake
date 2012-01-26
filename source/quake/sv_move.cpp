@@ -41,8 +41,8 @@ qboolean SV_CheckBottom (qhedict_t *ent)
 	int		x, y;
 	float	mid, bottom;
 	
-	VectorAdd (ent->v.origin, ent->v.mins, mins);
-	VectorAdd (ent->v.origin, ent->v.maxs, maxs);
+	VectorAdd (ent->GetOrigin(), ent->GetMins(), mins);
+	VectorAdd (ent->GetOrigin(), ent->GetMaxs(), maxs);
 
 // if all of the points under the corners are solid world, don't bother
 // with the tougher checks
@@ -116,8 +116,8 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 	qhedict_t		*enemy;
 
 // try the move	
-	VectorCopy (ent->v.origin, oldorg);
-	VectorAdd (ent->v.origin, move, neworg);
+	VectorCopy (ent->GetOrigin(), oldorg);
+	VectorAdd (ent->GetOrigin(), move, neworg);
 
 // flying monsters don't step up
 	if ( (int)ent->GetFlags() & (FL_SWIM | FL_FLY) )
@@ -125,24 +125,24 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 	// try one move with vertical motion, then one without
 		for (i=0 ; i<2 ; i++)
 		{
-			VectorAdd (ent->v.origin, move, neworg);
+			VectorAdd (ent->GetOrigin(), move, neworg);
 			enemy = PROG_TO_EDICT(ent->GetEnemy());
 			if (i == 0 && enemy != sv.edicts)
 			{
-				dz = ent->v.origin[2] - PROG_TO_EDICT(ent->GetEnemy())->v.origin[2];
+				dz = ent->GetOrigin()[2] - PROG_TO_EDICT(ent->GetEnemy())->GetOrigin()[2];
 				if (dz > 40)
 					neworg[2] -= 8;
 				if (dz < 30)
 					neworg[2] += 8;
 			}
-			trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, neworg, false, ent);
+			trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), neworg, false, ent);
 	
 			if (trace.fraction == 1)
 			{
 				if ( ((int)ent->GetFlags() & FL_SWIM) && SV_PointContents(trace.endpos) == BSP29CONTENTS_EMPTY )
 					return false;	// swim monster left water
 	
-				VectorCopy (trace.endpos, ent->v.origin);
+				VectorCopy (trace.endpos, ent->GetOrigin());
 				if (relink)
 					SV_LinkEdict (ent, true);
 				return true;
@@ -160,7 +160,7 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 	VectorCopy (neworg, end);
 	end[2] -= STEPSIZE*2;
 
-	trace = SV_Move (neworg, ent->v.mins, ent->v.maxs, end, false, ent);
+	trace = SV_Move (neworg, ent->GetMins(), ent->GetMaxs(), end, false, ent);
 
 	if (trace.allsolid)
 		return false;
@@ -168,7 +168,7 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 	if (trace.startsolid)
 	{
 		neworg[2] -= STEPSIZE;
-		trace = SV_Move (neworg, ent->v.mins, ent->v.maxs, end, false, ent);
+		trace = SV_Move (neworg, ent->GetMins(), ent->GetMaxs(), end, false, ent);
 		if (trace.allsolid || trace.startsolid)
 			return false;
 	}
@@ -177,7 +177,7 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 	// if monster had the ground pulled out, go ahead and fall
 		if ( (int)ent->GetFlags() & FL_PARTIALGROUND )
 		{
-			VectorAdd (ent->v.origin, move, ent->v.origin);
+			VectorAdd (ent->GetOrigin(), move, ent->GetOrigin());
 			if (relink)
 				SV_LinkEdict (ent, true);
 			ent->SetFlags((int)ent->GetFlags() & ~FL_ONGROUND);
@@ -189,7 +189,7 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 	}
 
 // check point traces down for dangling corners
-	VectorCopy (trace.endpos, ent->v.origin);
+	VectorCopy (trace.endpos, ent->GetOrigin());
 	
 	if (!SV_CheckBottom (ent))
 	{
@@ -200,7 +200,7 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 				SV_LinkEdict (ent, true);
 			return true;
 		}
-		VectorCopy (oldorg, ent->v.origin);
+		VectorCopy (oldorg, ent->GetOrigin());
 		return false;
 	}
 
@@ -209,7 +209,7 @@ qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink)
 //		Con_Printf ("back on ground\n"); 
 		ent->SetFlags((int)ent->GetFlags() & ~FL_PARTIALGROUND);
 	}
-	ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
+	ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
 
 // the move is ok
 	if (relink)
@@ -243,13 +243,13 @@ qboolean SV_StepDirection (qhedict_t *ent, float yaw, float dist)
 	move[1] = sin(yaw)*dist;
 	move[2] = 0;
 
-	VectorCopy (ent->v.origin, oldorigin);
+	VectorCopy (ent->GetOrigin(), oldorigin);
 	if (SV_movestep (ent, move, false))
 	{
-		delta = ent->v.angles[YAW] - ent->GetIdealYaw();
+		delta = ent->GetAngles()[YAW] - ent->GetIdealYaw();
 		if (delta > 45 && delta < 315)
 		{		// not turned far enough, so don't take the step
-			VectorCopy (oldorigin, ent->v.origin);
+			VectorCopy (oldorigin, ent->GetOrigin());
 		}
 		SV_LinkEdict (ent, true);
 		return true;
@@ -290,8 +290,8 @@ void SV_NewChaseDir (qhedict_t *actor, qhedict_t *enemy, float dist)
 	olddir = AngleMod( (int)(actor->GetIdealYaw()/45)*45 );
 	turnaround = AngleMod(olddir - 180);
 
-	deltax = enemy->v.origin[0] - actor->v.origin[0];
-	deltay = enemy->v.origin[1] - actor->v.origin[1];
+	deltax = enemy->GetOrigin()[0] - actor->GetOrigin()[0];
+	deltay = enemy->GetOrigin()[1] - actor->GetOrigin()[1];
 	if (deltax>10)
 		d[1]= 0;
 	else if (deltax<-10)

@@ -115,7 +115,7 @@ void PF_setorigin (void)
 	
 	e = G_EDICT(OFS_PARM0);
 	org = G_VECTOR(OFS_PARM1);
-	VectorCopy (org, e->v.origin);
+	VectorCopy (org, e->GetOrigin());
 	SV_LinkEdict (e, false);
 }
 
@@ -144,7 +144,7 @@ void SetMinMaxSize (qhedict_t *e, float *min, float *max, qboolean rotate)
 	else
 	{
 	// find min / max for rotations
-		angles = e->v.angles;
+		angles = e->GetAngles();
 		
 		a = angles[1]/180 * M_PI;
 		
@@ -187,9 +187,9 @@ void SetMinMaxSize (qhedict_t *e, float *min, float *max, qboolean rotate)
 	}
 	
 // set derived values
-	VectorCopy (rmin, e->v.mins);
-	VectorCopy (rmax, e->v.maxs);
-	VectorSubtract (max, min, e->v.size);
+	e->SetMins(rmin);
+	e->SetMaxs(rmax);
+	VectorSubtract (max, min, e->GetSize());
 	
 	SV_LinkEdict (e, false);
 }
@@ -241,7 +241,7 @@ void PF_setmodel (void)
 		PR_RunError ("no precache: %s\n", m);
 		
 
-	e->v.model = PR_SetString(m);
+	e->SetModel(PR_SetString(m));
 	e->v.modelindex = i; //SV_ModelIndex (m);
 
 	mod = sv.models[ (int)e->v.modelindex];
@@ -276,7 +276,7 @@ void PF_setpuzzlemodel (void)
 		if (!String::Cmp(*check, NewName))
 			break;
 			
-	e->v.model = PR_SetString(ED_NewString(NewName));
+	e->SetModel(PR_SetString(ED_NewString(NewName)));
 
 	if (!*check)
 	{
@@ -284,7 +284,7 @@ void PF_setpuzzlemodel (void)
 		Con_Printf("**** NO PRECACHE FOR PUZZLE PIECE:");
 		Con_Printf("**** %s\n",NewName);
 
-		sv.model_precache[i] = PR_GetString(e->v.model);
+		sv.model_precache[i] = PR_GetString(e->GetModel());
 		sv.models[i] = CM_PrecacheModel(NewName);
 	}
 		
@@ -773,10 +773,10 @@ void PF_traceline (void)
 	nomonsters = G_FLOAT(OFS_PARM2);
 	ent = G_EDICT(OFS_PARM3);
 
-	save_hull = ent->v.hull;
-	ent->v.hull = 0;
+	save_hull = ent->GetHull();
+	ent->SetHull(0);
 	trace = SV_Move (v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
-	ent->v.hull = save_hull;
+	ent->SetHull(save_hull);
 
 	pr_global_struct->trace_allsolid = trace.allsolid;
 	pr_global_struct->trace_startsolid = trace.startsolid;
@@ -818,10 +818,10 @@ void PF_tracearea (void)
 	nomonsters = G_FLOAT(OFS_PARM4);
 	ent = G_EDICT(OFS_PARM5);
 
-	save_hull = ent->v.hull;
-	ent->v.hull = 0;
+	save_hull = ent->GetHull();
+	ent->SetHull(0);
 	trace = SV_Move (v1, mins, maxs, v2, nomonsters, ent);
-	ent->v.hull = save_hull;
+	ent->SetHull(save_hull);
 
 	pr_global_struct->trace_allsolid = trace.allsolid;
 	pr_global_struct->trace_startsolid = trace.startsolid;
@@ -910,7 +910,7 @@ int PF_newcheckclient (int check)
 
 		if (ent->free)
 			continue;
-		if (ent->v.health <= 0)
+		if (ent->GetHealth() <= 0)
 			continue;
 		if ((int)ent->GetFlags() & FL_NOTARGET)
 			continue;
@@ -920,7 +920,7 @@ int PF_newcheckclient (int check)
 	}
 
 	// get the PVS for the entity
-	VectorAdd (ent->v.origin, ent->GetViewOfs(), org);
+	VectorAdd (ent->GetOrigin(), ent->GetViewOfs(), org);
 	int leaf = CM_PointLeafnum(org);
 	pvs = CM_ClusterPVS(CM_LeafCluster(leaf));
 	Com_Memcpy(checkpvs, pvs, (CM_NumClusters() + 7) >> 3);
@@ -959,7 +959,7 @@ void PF_checkclient (void)
 
 // return check if it might be visible	
 	ent = EDICT_NUM(sv.lastcheck);
-	if (ent->free || ent->v.health <= 0)
+	if (ent->free || ent->GetHealth() <= 0)
 	{
 		RETURN_EDICT(sv.edicts);
 		return;
@@ -967,7 +967,7 @@ void PF_checkclient (void)
 
 // if current entity can't possibly see the check entity, return 0
 	self = PROG_TO_EDICT(pr_global_struct->self);
-	VectorAdd (self->v.origin, self->GetViewOfs(), view);
+	VectorAdd (self->GetOrigin(), self->GetViewOfs(), view);
 	int leaf = CM_PointLeafnum(view);
 	int l = CM_LeafCluster(leaf);
 	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
@@ -1088,10 +1088,10 @@ void PF_findradius (void)
 	{
 		if (ent->free)
 			continue;
-		if (ent->v.solid == SOLID_NOT)
+		if (ent->GetSolid() == SOLID_NOT)
 			continue;
 		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (ent->v.origin[j] + (ent->v.mins[j] + ent->v.maxs[j])*0.5);			
+			eorg[j] = org[j] - (ent->GetOrigin()[j] + (ent->GetMins()[j] + ent->GetMaxs()[j])*0.5);			
 		if (VectorLength(eorg) > rad)
 			continue;
 			
@@ -1492,19 +1492,19 @@ void PF_droptofloor (void)
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
 
-	VectorCopy (ent->v.origin, end);
+	VectorCopy (ent->GetOrigin(), end);
 	end[2] -= 256;
 	
-	trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, end, false, ent);
+	trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
 
 	if (trace.fraction == 1 || trace.allsolid)
 		G_FLOAT(OFS_RETURN) = 0;
 	else
 	{
-		VectorCopy (trace.endpos, ent->v.origin);
+		VectorCopy (trace.endpos, ent->GetOrigin());
 		SV_LinkEdict (ent, false);
 		ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-		ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
+		ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
 }
@@ -1728,10 +1728,10 @@ void PF_aim (void)
 	VectorCopy (pr_global_struct->v_forward, dir);
 	VectorMA (start, 2048, dir, end);
 
-	save_hull = ent->v.hull;
-	ent->v.hull = 0;
+	save_hull = ent->GetHull();
+	ent->SetHull(0);
 	tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
-	ent->v.hull = save_hull;
+	ent->SetHull(save_hull);
 
 	if (tr.entityNum >= 0 && EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_YES
 	&& (!teamplay->value || ent->GetTeam() <=0 || ent->GetTeam() != EDICT_NUM(tr.entityNum)->GetTeam()) )
@@ -1756,17 +1756,17 @@ void PF_aim (void)
 		if (teamplay->value && ent->GetTeam() > 0 && ent->GetTeam() == check->GetTeam())
 			continue;	// don't aim at teammate
 		for (j=0 ; j<3 ; j++)
-			end[j] = check->v.origin[j]
-			+ 0.5*(check->v.mins[j] + check->v.maxs[j]);
+			end[j] = check->GetOrigin()[j]
+			+ 0.5*(check->GetMins()[j] + check->GetMaxs()[j]);
 		VectorSubtract (end, start, dir);
 		VectorNormalize (dir);
 		dist = DotProduct (dir, pr_global_struct->v_forward);
 		if (dist < bestdist)
 			continue;	// to far to turn
-	save_hull = ent->v.hull;
-	ent->v.hull = 0;
+	save_hull = ent->GetHull();
+	ent->SetHull(0);
 		tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
-	ent->v.hull = save_hull;
+	ent->SetHull(save_hull);
 		if (EDICT_NUM(tr.entityNum) == check)
 		{	// can shoot at this one
 			bestdist = dist;
@@ -1776,9 +1776,9 @@ void PF_aim (void)
 	
 	if (bestent)
 	{	// Since all origins are at the base, move the point to the middle of the victim model
-		hold_org[0] =bestent->v.origin[0]; 
-		hold_org[1] =bestent->v.origin[1]; 
-		hold_org[2] =bestent->v.origin[2] + (0.5 * bestent->v.maxs[2]);
+		hold_org[0] =bestent->GetOrigin()[0]; 
+		hold_org[1] =bestent->GetOrigin()[1]; 
+		hold_org[2] =bestent->GetOrigin()[2] + (0.5 * bestent->GetMaxs()[2]);
 
 		VectorSubtract (hold_org,shot_org,dir);
 		dist = DotProduct (dir, pr_global_struct->v_forward);
@@ -1806,7 +1806,7 @@ void PF_changeyaw (void)
 	float		ideal, current, move, speed;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
-	current = AngleMod( ent->v.angles[1] );
+	current = AngleMod( ent->GetAngles()[1] );
 	ideal = ent->GetIdealYaw();
 	speed = ent->GetYawSpeed();
 	
@@ -1842,7 +1842,7 @@ void PF_changeyaw (void)
 	}
 
 	
-	ent->v.angles[1] = AngleMod(current + move);
+	ent->GetAngles()[1] = AngleMod(current + move);
 }
 
 /*
@@ -1943,19 +1943,19 @@ void PF_makestatic (void)
 
 	sv.signon.WriteByte(h2svc_spawnstatic);
 
-	sv.signon.WriteShort(SV_ModelIndex(PR_GetString(ent->v.model)));
+	sv.signon.WriteShort(SV_ModelIndex(PR_GetString(ent->GetModel())));
 
-	sv.signon.WriteByte(ent->v.frame);
+	sv.signon.WriteByte(ent->GetFrame());
 	sv.signon.WriteByte(ent->GetColorMap());
-	sv.signon.WriteByte(ent->v.skin);
-	sv.signon.WriteByte((int)(ent->v.scale*100.0)&255);
-	sv.signon.WriteByte(ent->v.drawflags);
-	sv.signon.WriteByte((int)(ent->v.abslight*255.0)&255);
+	sv.signon.WriteByte(ent->GetSkin());
+	sv.signon.WriteByte((int)(ent->GetScale()*100.0)&255);
+	sv.signon.WriteByte(ent->GetDrawFlags());
+	sv.signon.WriteByte((int)(ent->GetAbsLight()*255.0)&255);
 
 	for (i=0 ; i<3 ; i++)
 	{
-		sv.signon.WriteCoord(ent->v.origin[i]);
-		sv.signon.WriteAngle(ent->v.angles[i]);
+		sv.signon.WriteCoord(ent->GetOrigin()[i]);
+		sv.signon.WriteAngle(ent->GetAngles()[i]);
 	}
 
 // throw the entity away now
@@ -2322,20 +2322,20 @@ void PF_AdvanceFrame(void)
 	Start = G_FLOAT(OFS_PARM0);
 	End = G_FLOAT(OFS_PARM1);
 
-	if (Ent->v.frame < Start || Ent->v.frame > End)
+	if (Ent->GetFrame() < Start || Ent->GetFrame() > End)
 	{ // Didn't start in the range
-		Ent->v.frame = Start;
+		Ent->SetFrame(Start);
 		Result = 0;
 	}
-	else if(Ent->v.frame == End)
+	else if(Ent->GetFrame() == End)
 	{  // Wrapping
-		Ent->v.frame = Start;
+		Ent->SetFrame(Start);
 		Result = 1;
 	}
 	else
 	{  // Regular Advance
-		Ent->v.frame++;
-		if (Ent->v.frame == End) Result = 2;
+		Ent->SetFrame(Ent->GetFrame() + 1);
+		if (Ent->GetFrame() == End) Result = 2;
 		else Result = 0;
 	}
 
@@ -2351,20 +2351,20 @@ void PF_RewindFrame(void)
 	Start = G_FLOAT(OFS_PARM0);
 	End = G_FLOAT(OFS_PARM1);
 
-	if (Ent->v.frame > Start || Ent->v.frame < End)
+	if (Ent->GetFrame() > Start || Ent->GetFrame() < End)
 	{ // Didn't start in the range
-		Ent->v.frame = Start;
+		Ent->SetFrame(Start);
 		Result = 0;
 	}
-	else if(Ent->v.frame == End)
+	else if(Ent->GetFrame() == End)
 	{  // Wrapping
-		Ent->v.frame = Start;
+		Ent->SetFrame(Start);
 		Result = 1;
 	}
 	else
 	{  // Regular Advance
-		Ent->v.frame--;
-		if (Ent->v.frame == End) Result = 2;
+		Ent->SetFrame(Ent->GetFrame() - 1);
+		if (Ent->GetFrame() == End) Result = 2;
 		else Result = 0;
 	}
 
@@ -2386,25 +2386,25 @@ void PF_advanceweaponframe (void)
 	startframe = G_FLOAT(OFS_PARM0);
 	endframe = G_FLOAT(OFS_PARM1);
 
-	if ((endframe > startframe && (ent->v.weaponframe > endframe || ent->v.weaponframe < startframe)) ||
-	(endframe < startframe && (ent->v.weaponframe < endframe || ent->v.weaponframe > startframe)) )
+	if ((endframe > startframe && (ent->GetWeaponFrame() > endframe || ent->GetWeaponFrame() < startframe)) ||
+	(endframe < startframe && (ent->GetWeaponFrame() < endframe || ent->GetWeaponFrame() > startframe)) )
 	{
-		ent->v.weaponframe=startframe;
+		ent->SetWeaponFrame(startframe);
 		state = WF_CYCLE_STARTED;
 	}
-	else if(ent->v.weaponframe==endframe)
+	else if(ent->GetWeaponFrame()==endframe)
 	{			  
-		ent->v.weaponframe=startframe;
+		ent->SetWeaponFrame(startframe);
 		state = WF_CYCLE_WRAPPED;
 	}
 	else
 	{
 		if (startframe > endframe)
-			ent->v.weaponframe = ent->v.weaponframe - 1;
+			ent->SetWeaponFrame(ent->GetWeaponFrame() - 1);
 		else if (startframe < endframe)
-			ent->v.weaponframe = ent->v.weaponframe + 1;
+			ent->SetWeaponFrame(ent->GetWeaponFrame() + 1);
 
-		if (ent->v.weaponframe==endframe)
+		if (ent->GetWeaponFrame()==endframe)
 			state = WF_LAST_FRAME;
 		else 
 			state = WF_NORMAL_ADVANCE;
@@ -2618,7 +2618,7 @@ void PF_matchAngleToSlope(void)
 	// OFS_PARM0 is used by PF_vectoangles below
 	actor = G_EDICT(OFS_PARM1);
 
-	AngleVectors(actor->v.angles, old_forward, old_right, pr_global_struct->v_up);
+	AngleVectors(actor->GetAngles(), old_forward, old_right, pr_global_struct->v_up);
 
 	PF_vectoangles();
 
@@ -2637,8 +2637,8 @@ void PF_matchAngleToSlope(void)
 
 	dot = DotProduct(v_forward, old_forward);
 
-	actor->v.angles[0] = dot*pitch;
-	actor->v.angles[2] = (1-Q_fabs(dot))*pitch*mod;
+	actor->GetAngles()[0] = dot*pitch;
+	actor->GetAngles()[2] = (1-Q_fabs(dot))*pitch*mod;
 }
 
 void PF_updateInfoPlaque (void)

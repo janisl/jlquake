@@ -295,14 +295,14 @@ void SV_Multicast (vec3_t origin, int to)
 
 		if (to == MULTICAST_PHS_R || to == MULTICAST_PHS) {
 			vec3_t delta;
-			VectorSubtract(origin, client->edict->v.origin, delta);
+			VectorSubtract(origin, client->edict->GetOrigin(), delta);
 			if (VectorLength(delta) <= 1024)
 				goto inrange;
 		}
 
 		if (mask)
 		{
-			leafnum = CM_PointLeafnum(client->edict->v.origin);
+			leafnum = CM_PointLeafnum(client->edict->GetOrigin());
 			leafnum = CM_LeafCluster(leafnum);
 			if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
 			{
@@ -394,14 +394,14 @@ void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volu
 		channel |= SND_ATTENUATION;
 
 	// use the entity origin unless it is a bmodel
-	if (entity->v.solid == SOLID_BSP)
+	if (entity->GetSolid() == SOLID_BSP)
 	{
 		for (i=0 ; i<3 ; i++)
-			origin[i] = entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]);
+			origin[i] = entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]);
 	}
 	else
 	{
-		VectorCopy (entity->v.origin, origin);
+		VectorCopy (entity->GetOrigin(), origin);
 	}
 
 	sv.multicast.WriteByte(q1svc_sound);
@@ -483,7 +483,7 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 		msg->WriteByte(ent->GetDmgSave());
 		msg->WriteByte(ent->GetDmgTake());
 		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			msg->WriteCoord(other->GetOrigin()[i] + 0.5*(other->GetMins()[i] + other->GetMaxs()[i]));
 	
 		ent->SetDmgTake(0);
 		ent->SetDmgSave(0);
@@ -494,7 +494,7 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	{
 		msg->WriteByte(q1svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			msg->WriteAngle(ent->v.angles[i] );
+			msg->WriteAngle(ent->GetAngles()[i] );
 		ent->SetFixAngle(0);
 	}
 }
@@ -521,16 +521,16 @@ void SV_UpdateClientStats (client_t *client)
 	if (client->spectator && client->spec_track > 0)
 		ent = svs.clients[client->spec_track - 1].edict;
 
-	stats[STAT_HEALTH] = ent->v.health;
-	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
-	stats[STAT_AMMO] = ent->v.currentammo;
+	stats[STAT_HEALTH] = ent->GetHealth();
+	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->GetWeaponModel()));
+	stats[STAT_AMMO] = ent->GetCurrentAmmo();
 	stats[STAT_ARMOR] = ent->GetArmorValue();
-	stats[STAT_SHELLS] = ent->v.ammo_shells;
-	stats[STAT_NAILS] = ent->v.ammo_nails;
-	stats[STAT_ROCKETS] = ent->v.ammo_rockets;
-	stats[STAT_CELLS] = ent->v.ammo_cells;
+	stats[STAT_SHELLS] = ent->GetAmmoShells();
+	stats[STAT_NAILS] = ent->GetAmmoNails();
+	stats[STAT_ROCKETS] = ent->GetAmmoRockets();
+	stats[STAT_CELLS] = ent->GetAmmoCells();
 	if (!client->spectator)
-		stats[STAT_ACTIVEWEAPON] = ent->v.weapon;
+		stats[STAT_ACTIVEWEAPON] = ent->GetWeapon();
 	// stuff the sigil bits into the high bits of items for sbar
 	stats[STAT_ITEMS] = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
 
@@ -620,7 +620,7 @@ void SV_UpdateToReliableMessages (void)
 			host_client->sendinfo = false;
 			SV_FullClientUpdate (host_client, &sv.reliable_datagram);
 		}
-		if (host_client->old_frags != host_client->edict->v.frags)
+		if (host_client->old_frags != host_client->edict->GetFrags())
 		{
 			for (j=0, client = svs.clients ; j<MAX_CLIENTS_QW ; j++, client++)
 			{
@@ -628,10 +628,10 @@ void SV_UpdateToReliableMessages (void)
 					continue;
 				ClientReliableWrite_Begin(client, q1svc_updatefrags, 4);
 				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Short(client, host_client->edict->v.frags);
+				ClientReliableWrite_Short(client, host_client->edict->GetFrags());
 			}
 
-			host_client->old_frags = host_client->edict->v.frags;
+			host_client->old_frags = host_client->edict->GetFrags();
 		}
 
 		// maxspeed/entgravity changes

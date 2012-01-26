@@ -242,7 +242,7 @@ void SV_DropClient (client_t *drop)
 	drop->connection_started = realtime;	// for zombie timeout
 
 	drop->old_frags = 0;
-	drop->edict->v.frags = 0;
+	drop->edict->SetFrags(0);
 	drop->name[0] = 0;
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 

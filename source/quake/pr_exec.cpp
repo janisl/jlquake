@@ -648,12 +648,12 @@ while (1)
 		
 	case OP_STATE:
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time + 0.1;
-		if (a->_float != ed->v.frame)
+		ed->SetNextThink(pr_global_struct->time + 0.1);
+		if (a->_float != ed->GetFrame())
 		{
-			ed->v.frame = a->_float;
+			ed->SetFrame(a->_float);
 		}
-		ed->v.think = b->function;
+		ed->SetThink(b->function);
 		break;
 		
 	default:

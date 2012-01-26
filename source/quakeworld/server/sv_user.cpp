@@ -403,7 +403,7 @@ void SV_SpawnSpectator (void)
 	int		i;
 	qhedict_t	*e;
 
-	VectorCopy (vec3_origin, sv_player->v.origin);
+	VectorCopy (vec3_origin, sv_player->GetOrigin());
 	sv_player->SetViewOfs(vec3_origin);
 	sv_player->GetViewOfs()[2] = 22;
 
@@ -411,9 +411,9 @@ void SV_SpawnSpectator (void)
 	for (i=MAX_CLIENTS_QW-1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if (!String::Cmp(PR_GetString(e->v.classname), "info_player_start"))
+		if (!String::Cmp(PR_GetString(e->GetClassName()), "info_player_start"))
 		{
-			VectorCopy (e->v.origin, sv_player->v.origin);
+			VectorCopy (e->GetOrigin(), sv_player->GetOrigin());
 			return;
 		}
 	}
@@ -868,7 +868,7 @@ SV_Kill_f
 */
 void SV_Kill_f (void)
 {
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 	{
 		SV_ClientPrintf (host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
 		return;
@@ -1249,9 +1249,9 @@ void AddLinksToPmove ( areanode_t *node )
 
 		if (check->GetOwner() == pl)
 			continue;		// player's own missile
-		if (check->v.solid == SOLID_BSP 
-			|| check->v.solid == SOLID_BBOX 
-			|| check->v.solid == SOLID_SLIDEBOX)
+		if (check->GetSolid() == SOLID_BSP 
+			|| check->GetSolid() == SOLID_BBOX 
+			|| check->GetSolid() == SOLID_SLIDEBOX)
 		{
 			if (check == sv_player)
 				continue;
@@ -1267,15 +1267,15 @@ void AddLinksToPmove ( areanode_t *node )
 			pe = &pmove.physents[pmove.numphysent];
 			pmove.numphysent++;
 
-			VectorCopy (check->v.origin, pe->origin);
+			VectorCopy (check->GetOrigin(), pe->origin);
 			pe->info = NUM_FOR_EDICT(check);
-			if (check->v.solid == SOLID_BSP)
+			if (check->GetSolid() == SOLID_BSP)
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
 			{
 				pe->model = -1;
-				VectorCopy (check->v.mins, pe->mins);
-				VectorCopy (check->v.maxs, pe->maxs);
+				VectorCopy (check->GetMins(), pe->mins);
+				VectorCopy (check->GetMaxs(), pe->maxs);
 			}
 		}
 	}
@@ -1314,9 +1314,9 @@ void AddAllEntsToPmove (void)
 			continue;
 		if (check->GetOwner() == pl)
 			continue;
-		if (check->v.solid == SOLID_BSP 
-			|| check->v.solid == SOLID_BBOX 
-			|| check->v.solid == SOLID_SLIDEBOX)
+		if (check->GetSolid() == SOLID_BSP 
+			|| check->GetSolid() == SOLID_BBOX 
+			|| check->GetSolid() == SOLID_SLIDEBOX)
 		{
 			if (check == sv_player)
 				continue;
@@ -1329,15 +1329,15 @@ void AddAllEntsToPmove (void)
 				continue;
 			pe = &pmove.physents[pmove.numphysent];
 
-			VectorCopy (check->v.origin, pe->origin);
+			VectorCopy (check->GetOrigin(), pe->origin);
 			pmove.physents[pmove.numphysent].info = e;
-			if (check->v.solid == SOLID_BSP)
+			if (check->GetSolid() == SOLID_BSP)
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
 			{
 				pe->model = -1;
-				VectorCopy (check->v.mins, pe->mins);
-				VectorCopy (check->v.maxs, pe->maxs);
+				VectorCopy (check->GetMins(), pe->mins);
+				VectorCopy (check->GetMaxs(), pe->maxs);
 			}
 
 			if (++pmove.numphysent == MAX_PHYSENTS)
@@ -1395,15 +1395,15 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle	
-	if (sv_player->v.health > 0)
+	if (sv_player->GetHealth() > 0)
 	{
 		if (!sv_player->GetFixAngle())
 		{
-			sv_player->v.angles[PITCH] = -sv_player->GetVAngle()[PITCH]/3;
-			sv_player->v.angles[YAW] = sv_player->GetVAngle()[YAW];
+			sv_player->GetAngles()[PITCH] = -sv_player->GetVAngle()[PITCH]/3;
+			sv_player->GetAngles()[YAW] = sv_player->GetVAngle()[YAW];
 		}
-		sv_player->v.angles[ROLL] = 
-			V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
+		sv_player->GetAngles()[ROLL] = 
+			V_CalcRoll (sv_player->GetAngles(), sv_player->GetVelocity())*4;
 	}
 
 	host_frametime = ucmd->msec * 0.001;
@@ -1422,8 +1422,8 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 	}
 
 	for (i=0 ; i<3 ; i++)
-		pmove.origin[i] = sv_player->v.origin[i] + (sv_player->v.mins[i] - player_mins[i]);
-	VectorCopy (sv_player->v.velocity, pmove.velocity);
+		pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - player_mins[i]);
+	VectorCopy (sv_player->GetVelocity(), pmove.velocity);
 	VectorCopy (sv_player->GetVAngle(), pmove.angles);
 
 	pmove.spectator = host_client->spectator;
@@ -1431,7 +1431,7 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 	pmove.numphysent = 1;
 	pmove.physents[0].model = 0;
 	pmove.cmd = *ucmd;
-	pmove.dead = sv_player->v.health <= 0;
+	pmove.dead = sv_player->GetHealth() <= 0;
 	pmove.oldbuttons = host_client->oldbuttons;
 
 	movevars.entgravity = host_client->entgravity;
@@ -1470,19 +1470,19 @@ if (sv_player->v.health > 0 && before && !after )
 	if (onground != -1)
 	{
 		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
-		sv_player->v.groundentity = EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info));
+		sv_player->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info)));
 	}
 	else
 		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
 	for (i=0 ; i<3 ; i++)
-		sv_player->v.origin[i] = pmove.origin[i] - (sv_player->v.mins[i] - player_mins[i]);
+		sv_player->GetOrigin()[i] = pmove.origin[i] - (sv_player->GetMins()[i] - player_mins[i]);
 
 #if 0
 	// truncate velocity the same way the net protocol will
 	for (i=0 ; i<3 ; i++)
 		sv_player->v.velocity[i] = (int)pmove.velocity[i];
 #else
-	VectorCopy (pmove.velocity, sv_player->v.velocity);
+	VectorCopy (pmove.velocity, sv_player->GetVelocity());
 #endif
 
 	sv_player->SetVAngle(pmove.angles);
@@ -1497,11 +1497,11 @@ if (sv_player->v.health > 0 && before && !after )
 		{
 			n = pmove.physents[pmove.touchindex[i]].info;
 			ent = EDICT_NUM(n);
-			if (!ent->v.touch || (playertouch[n/8]&(1<<(n%8))))
+			if (!ent->GetTouch() || (playertouch[n/8]&(1<<(n%8))))
 				continue;
 			pr_global_struct->self = EDICT_TO_PROG(ent);
 			pr_global_struct->other = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram (ent->v.touch);
+			PR_ExecuteProgram (ent->GetTouch());
 			playertouch[n/8] |= 1 << (n%8);
 		}
 	}
@@ -1670,7 +1670,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			o[2] = net_message.ReadCoord();
 			// only allowed by spectators
 			if (host_client->spectator) {
-				VectorCopy(o, sv_player->v.origin);
+				VectorCopy(o, sv_player->GetOrigin());
 				SV_LinkEdict(sv_player, false);
 			}
 			break;

@@ -124,7 +124,7 @@ void PF_setorigin (void)
 	
 	e = G_EDICT(OFS_PARM0);
 	org = G_VECTOR(OFS_PARM1);
-	VectorCopy (org, e->v.origin);
+	VectorCopy (org, e->GetOrigin());
 	SV_LinkEdict (e, false);
 }
 
@@ -146,9 +146,9 @@ void PF_setsize (void)
 	e = G_EDICT(OFS_PARM0);
 	min = G_VECTOR(OFS_PARM1);
 	max = G_VECTOR(OFS_PARM2);
-	VectorCopy (min, e->v.mins);
-	VectorCopy (max, e->v.maxs);
-	VectorSubtract (max, min, e->v.size);
+	e->SetMins(min);
+	e->SetMaxs(max);
+	VectorSubtract (max, min, e->GetSize());
 	SV_LinkEdict (e, false);
 }
 
@@ -180,15 +180,15 @@ void PF_setmodel (void)
 	if (!*check)
 		PR_RunError ("no precache: %s\n", m);
 		
-	e->v.model = PR_SetString(m);
+	e->SetModel(PR_SetString(m));
 	e->v.modelindex = i;
 
 // if it is an inline model, get the size information for it
 	if (m[0] == '*')
 	{
 		mod = CM_InlineModel(String::Atoi(m + 1));
-		CM_ModelBounds(mod, e->v.mins, e->v.maxs);
-		VectorSubtract(e->v.maxs, e->v.mins, e->v.size);
+		CM_ModelBounds(mod, e->GetMins(), e->GetMaxs());
+		VectorSubtract(e->GetMaxs(), e->GetMins(), e->GetSize());
 		SV_LinkEdict(e, false);
 	}
 
@@ -561,7 +561,7 @@ int PF_newcheckclient (int check)
 
 		if (ent->free)
 			continue;
-		if (ent->v.health <= 0)
+		if (ent->GetHealth() <= 0)
 			continue;
 		if ((int)ent->GetFlags() & FL_NOTARGET)
 			continue;
@@ -571,7 +571,7 @@ int PF_newcheckclient (int check)
 	}
 
 	// get the PVS for the entity
-	VectorAdd (ent->v.origin, ent->GetViewOfs(), org);
+	VectorAdd (ent->GetOrigin(), ent->GetViewOfs(), org);
 	int leaf = CM_PointLeafnum(org);
 	pvs = CM_ClusterPVS(CM_LeafCluster(leaf));
 	Com_Memcpy(checkpvs, pvs, (CM_NumClusters() + 7) >> 3);
@@ -610,7 +610,7 @@ void PF_checkclient (void)
 
 // return check if it might be visible	
 	ent = EDICT_NUM(sv.lastcheck);
-	if (ent->free || ent->v.health <= 0)
+	if (ent->free || ent->GetHealth() <= 0)
 	{
 		RETURN_EDICT(sv.edicts);
 		return;
@@ -618,7 +618,7 @@ void PF_checkclient (void)
 
 // if current entity can't possibly see the check entity, return 0
 	self = PROG_TO_EDICT(pr_global_struct->self);
-	VectorAdd (self->v.origin, self->GetViewOfs(), view);
+	VectorAdd (self->GetOrigin(), self->GetViewOfs(), view);
 	int leaf = CM_PointLeafnum(view);
 	int l = CM_LeafCluster(leaf);
 	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
@@ -743,10 +743,10 @@ void PF_findradius (void)
 	{
 		if (ent->free)
 			continue;
-		if (ent->v.solid == SOLID_NOT)
+		if (ent->GetSolid() == SOLID_NOT)
 			continue;
 		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (ent->v.origin[j] + (ent->v.mins[j] + ent->v.maxs[j])*0.5);			
+			eorg[j] = org[j] - (ent->GetOrigin()[j] + (ent->GetMins()[j] + ent->GetMaxs()[j])*0.5);			
 		if (VectorLength(eorg) > rad)
 			continue;
 			
@@ -984,19 +984,19 @@ void PF_droptofloor (void)
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
 
-	VectorCopy (ent->v.origin, end);
+	VectorCopy (ent->GetOrigin(), end);
 	end[2] -= 256;
 	
-	trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, end, false, ent);
+	trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
 
 	if (trace.fraction == 1 || trace.allsolid)
 		G_FLOAT(OFS_RETURN) = 0;
 	else
 	{
-		VectorCopy (trace.endpos, ent->v.origin);
+		VectorCopy (trace.endpos, ent->GetOrigin());
 		SV_LinkEdict (ent, false);
 		ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-		ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
+		ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
 }
@@ -1133,7 +1133,7 @@ void PF_aim (void)
 	ent = G_EDICT(OFS_PARM0);
 	speed = G_FLOAT(OFS_PARM1);
 
-	VectorCopy (ent->v.origin, start);
+	VectorCopy (ent->GetOrigin(), start);
 	start[2] += 20;
 
 // noaim option
@@ -1175,8 +1175,8 @@ void PF_aim (void)
 		if (teamplay->value && ent->GetTeam() > 0 && ent->GetTeam() == check->GetTeam())
 			continue;	// don't aim at teammate
 		for (j=0 ; j<3 ; j++)
-			end[j] = check->v.origin[j]
-			+ 0.5*(check->v.mins[j] + check->v.maxs[j]);
+			end[j] = check->GetOrigin()[j]
+			+ 0.5*(check->GetMins()[j] + check->GetMaxs()[j]);
 		VectorSubtract (end, start, dir);
 		VectorNormalize (dir);
 		dist = DotProduct (dir, pr_global_struct->v_forward);
@@ -1192,7 +1192,7 @@ void PF_aim (void)
 	
 	if (bestent)
 	{
-		VectorSubtract (bestent->v.origin, ent->v.origin, dir);
+		VectorSubtract (bestent->GetOrigin(), ent->GetOrigin(), dir);
 		dist = DotProduct (dir, pr_global_struct->v_forward);
 		VectorScale (pr_global_struct->v_forward, dist, end);
 		end[2] = dir[2];
@@ -1218,7 +1218,7 @@ void PF_changeyaw (void)
 	float		ideal, current, move, speed;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
-	current = AngleMod( ent->v.angles[1] );
+	current = AngleMod( ent->GetAngles()[1] );
 	ideal = ent->GetIdealYaw();
 	speed = ent->GetYawSpeed();
 	
@@ -1246,7 +1246,7 @@ void PF_changeyaw (void)
 			move = -speed;
 	}
 	
-	ent->v.angles[1] = AngleMod(current + move);
+	ent->GetAngles()[1] = AngleMod(current + move);
 }
 
 /*
@@ -1411,15 +1411,15 @@ void PF_makestatic (void)
 
 	sv.signon.WriteByte(q1svc_spawnstatic);
 
-	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->v.model)));
+	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->GetModel())));
 
-	sv.signon.WriteByte(ent->v.frame);
+	sv.signon.WriteByte(ent->GetFrame());
 	sv.signon.WriteByte(ent->GetColorMap());
-	sv.signon.WriteByte(ent->v.skin);
+	sv.signon.WriteByte(ent->GetSkin());
 	for (i=0 ; i<3 ; i++)
 	{
-		sv.signon.WriteCoord(ent->v.origin[i]);
-		sv.signon.WriteAngle(ent->v.angles[i]);
+		sv.signon.WriteCoord(ent->GetOrigin()[i]);
+		sv.signon.WriteAngle(ent->GetAngles()[i]);
 	}
 
 // throw the entity away now

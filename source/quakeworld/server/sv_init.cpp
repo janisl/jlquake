@@ -97,10 +97,10 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-		VectorCopy (svent->v.origin, svent->baseline.origin);
-		VectorCopy (svent->v.angles, svent->baseline.angles);
-		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skinnum = svent->v.skin;
+		VectorCopy (svent->GetOrigin(), svent->baseline.origin);
+		VectorCopy (svent->GetAngles(), svent->baseline.angles);
+		svent->baseline.frame = svent->GetFrame();
+		svent->baseline.skinnum = svent->GetSkin();
 		if (entnum > 0 && entnum <= MAX_CLIENTS_QW)
 		{
 			svent->baseline.colormap = entnum;
@@ -110,7 +110,7 @@ void SV_CreateBaseline (void)
 		{
 			svent->baseline.colormap = 0;
 			svent->baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->v.model));
+				SV_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 
 		//
@@ -284,10 +284,10 @@ void SV_SpawnServer (char *server)
 
 	ent = EDICT_NUM(0);
 	ent->free = false;
-	ent->v.model = PR_SetString(sv.modelname);
+	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->v.solid = SOLID_BSP;
-	ent->v.movetype = MOVETYPE_PUSH;
+	ent->SetSolid(SOLID_BSP);
+	ent->SetMoveType(MOVETYPE_PUSH);
 
 	pr_global_struct->mapname = PR_SetString(sv.name);
 	// serverflags are for cross level information (sigils)

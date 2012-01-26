@@ -150,16 +150,16 @@ void ED_Free (qhedict_t *ed)
 	SV_UnlinkEdict (ed);		// unlink from world bsp
 
 	ed->free = true;
-	ed->v.model = 0;
+	ed->SetModel(0);
 	ed->SetTakeDamage(0);
 	ed->v.modelindex = 0;
 	ed->SetColorMap(0);
-	ed->v.skin = 0;
-	ed->v.frame = 0;
-	VectorCopy (vec3_origin, ed->v.origin);
-	VectorCopy (vec3_origin, ed->v.angles);
-	ed->v.nextthink = -1;
-	ed->v.solid = 0;
+	ed->SetSkin(0);
+	ed->SetFrame(0);
+	VectorCopy (vec3_origin, ed->GetOrigin());
+	ed->SetAngles(vec3_origin);
+	ed->SetNextThink(-1);
+	ed->SetSolid(0);
 	
 	ed->freetime = sv.time;
 	ed->alloctime = -1;
@@ -441,8 +441,8 @@ void ED_Write (fileHandle_t f, qhedict_t *ed)
 	
 	RemoveBadReferences = true;
 	
-	if (ed->v.classname)
-		String::Cpy(class_name,PR_GetString(ed->v.classname));
+	if (ed->GetClassName())
+		String::Cpy(class_name,PR_GetString(ed->GetClassName()));
 	else
 		class_name[0] = 0;
 
@@ -538,11 +538,11 @@ void ED_Count (void)
 		if (ent->free)
 			continue;
 		active++;
-		if (ent->v.solid)
+		if (ent->GetSolid())
 			solid++;
-		if (ent->v.model)
+		if (ent->GetModel())
 			models++;
-		if (ent->v.movetype == MOVETYPE_STEP)
+		if (ent->GetMoveType() == MOVETYPE_STEP)
 			step++;
 	}
 
@@ -998,7 +998,7 @@ void ED_LoadFromFile (const char *data)
 //
 // immediately call spawn function
 //
-		if (!ent->v.classname)
+		if (!ent->GetClassName())
 		{
 			Con_Printf ("No classname for:\n");
 			ED_Print (ent);
@@ -1007,7 +1007,7 @@ void ED_LoadFromFile (const char *data)
 		}
 		
 	// look for the spawn function
-		func = ED_FindFunction ( PR_GetString(ent->v.classname) );
+		func = ED_FindFunction ( PR_GetString(ent->GetClassName()) );
 
 		if (!func)
 		{

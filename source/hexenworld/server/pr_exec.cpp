@@ -529,85 +529,85 @@ while (1)
 
 	case OP_STATE:
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time+HX_FRAME_TIME;
-		if(a->_float != ed->v.frame)
+		ed->SetNextThink(pr_global_struct->time+HX_FRAME_TIME);
+		if(a->_float != ed->GetFrame())
 		{
-			ed->v.frame = a->_float;
+			ed->SetFrame(a->_float);
 		}
-		ed->v.think = b->function;
+		ed->SetThink(b->function);
 		break;
 
 	case OP_CSTATE: // Cycle state
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time+HX_FRAME_TIME;
-		ed->v.think = pr_xfunction-pr_functions;
+		ed->SetNextThink(pr_global_struct->time+HX_FRAME_TIME);
+		ed->SetThink(pr_xfunction-pr_functions);
 		pr_global_struct->cycle_wrapped = false;
 		startFrame = (int)a->_float;
 		endFrame = (int)b->_float;
 		if(startFrame <= endFrame)
 		{ // Increment
-			if(ed->v.frame < startFrame || ed->v.frame > endFrame)
+			if(ed->GetFrame() < startFrame || ed->GetFrame() > endFrame)
 			{
-				ed->v.frame = startFrame;
+				ed->SetFrame(startFrame);
 				break;
 			}
-			ed->v.frame++;
-			if(ed->v.frame > endFrame)
+			ed->SetFrame(ed->GetFrame() + 1);
+			if(ed->GetFrame() > endFrame)
 			{
 				pr_global_struct->cycle_wrapped = true;
-				ed->v.frame = startFrame;
+				ed->SetFrame(startFrame);
 			}
 			break;
 		}
 		// Decrement
-		if(ed->v.frame > startFrame || ed->v.frame < endFrame)
+		if(ed->GetFrame() > startFrame || ed->GetFrame() < endFrame)
 		{
-			ed->v.frame = startFrame;
+			ed->SetFrame(startFrame);
 			break;
 		}
-		ed->v.frame--;
-		if(ed->v.frame < endFrame)
+		ed->SetFrame(ed->GetFrame() - 1);
+		if(ed->GetFrame() < endFrame)
 		{
 			pr_global_struct->cycle_wrapped = true;
-			ed->v.frame = startFrame;
+			ed->SetFrame(startFrame);
 		}
 		break;
 
 	case OP_CWSTATE: // Cycle weapon state
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time+HX_FRAME_TIME;
-		ed->v.think = pr_xfunction-pr_functions;
+		ed->SetNextThink(pr_global_struct->time+HX_FRAME_TIME);
+		ed->SetThink(pr_xfunction-pr_functions);
 		pr_global_struct->cycle_wrapped = false;
 		startFrame = (int)a->_float;
 		endFrame = (int)b->_float;
 		if(startFrame <= endFrame)
 		{ // Increment
-			if(ed->v.weaponframe < startFrame
-				|| ed->v.weaponframe > endFrame)
+			if(ed->GetWeaponFrame() < startFrame
+				|| ed->GetWeaponFrame() > endFrame)
 			{
-				ed->v.weaponframe = startFrame;
+				ed->SetWeaponFrame(startFrame);
 				break;
 			}
-			ed->v.weaponframe++;
-			if(ed->v.weaponframe > endFrame)
+			ed->SetWeaponFrame(ed->GetWeaponFrame() + 1);
+			if(ed->GetWeaponFrame() > endFrame)
 			{
 				pr_global_struct->cycle_wrapped = true;
-				ed->v.weaponframe = startFrame;
+				ed->SetWeaponFrame(startFrame);
 			}
 			break;
 		}
 		// Decrement
-		if(ed->v.weaponframe > startFrame
-			|| ed->v.weaponframe < endFrame)
+		if(ed->GetWeaponFrame() > startFrame
+			|| ed->GetWeaponFrame() < endFrame)
 		{
-			ed->v.weaponframe = startFrame;
+			ed->SetWeaponFrame(startFrame);
 			break;
 		}
-		ed->v.weaponframe--;
-		if(ed->v.weaponframe < endFrame)
+		ed->SetWeaponFrame(ed->GetWeaponFrame() - 1);
+		if(ed->GetWeaponFrame() < endFrame)
 		{
 			pr_global_struct->cycle_wrapped = true;
-			ed->v.weaponframe = startFrame;
+			ed->SetWeaponFrame(startFrame);
 		}
 		break;
 
@@ -620,7 +620,7 @@ while (1)
 		{
 			PR_RunError("assignment to world entity");
 		}
-		ed->v.nextthink = pr_global_struct->time+b->_float;
+		ed->SetNextThink(pr_global_struct->time+b->_float);
 		break;
 
 	case OP_BITSET: // f (+) f

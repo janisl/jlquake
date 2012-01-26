@@ -69,9 +69,9 @@ clipHandle_t SV_HullForEntity (qhedict_t *ent, vec3_t mins, vec3_t maxs, vec3_t 
 	clipHandle_t	hull;
 
 // decide which clipping hull to use, based on the size
-	if (ent->v.solid == SOLID_BSP)
+	if (ent->GetSolid() == SOLID_BSP)
 	{	// explicit hulls in the BSP model
-		if (ent->v.movetype != MOVETYPE_PUSH)
+		if (ent->GetMoveType() != MOVETYPE_PUSH)
 			Sys_Error ("SOLID_BSP without MOVETYPE_PUSH");
 
 		model = sv.models[(int)ent->v.modelindex];
@@ -93,16 +93,16 @@ clipHandle_t SV_HullForEntity (qhedict_t *ent, vec3_t mins, vec3_t maxs, vec3_t 
 
 // calculate an offset value to center the origin
 		VectorSubtract(clip_mins, mins, offset);
-		VectorAdd(offset, ent->v.origin, offset);
+		VectorAdd(offset, ent->GetOrigin(), offset);
 	}
 	else
 	{	// create a temp hull from bounding box sizes
 
-		VectorSubtract (ent->v.mins, maxs, hullmins);
-		VectorSubtract (ent->v.maxs, mins, hullmaxs);
+		VectorSubtract (ent->GetMins(), maxs, hullmins);
+		VectorSubtract (ent->GetMaxs(), mins, hullmaxs);
 		hull = CM_TempBoxModel(hullmins, hullmaxs);
 		
-		VectorCopy (ent->v.origin, offset);
+		VectorCopy (ent->GetOrigin(), offset);
 	}
 
 
@@ -227,7 +227,7 @@ void SV_TouchLinks ( qhedict_t *ent, areanode_t *node )
 		touch = EDICT_FROM_AREA(l);
 		if (touch == ent)
 			continue;
-		if (!touch->v.touch || touch->v.solid != SOLID_TRIGGER)
+		if (!touch->GetTouch() || touch->GetSolid() != SOLID_TRIGGER)
 			continue;
 		if (ent->v.absmin[0] > touch->v.absmax[0]
 		|| ent->v.absmin[1] > touch->v.absmax[1]
@@ -242,7 +242,7 @@ void SV_TouchLinks ( qhedict_t *ent, areanode_t *node )
 		pr_global_struct->self = EDICT_TO_PROG(touch);
 		pr_global_struct->other = EDICT_TO_PROG(ent);
 		pr_global_struct->time = sv.time;
-		PR_ExecuteProgram (touch->v.touch);
+		PR_ExecuteProgram (touch->GetTouch());
 
 		pr_global_struct->self = old_self;
 		pr_global_struct->other = old_other;
@@ -279,8 +279,8 @@ void SV_LinkEdict (qhedict_t *ent, qboolean touch_triggers)
 
 // set the abs box
 
-	VectorAdd (ent->v.origin, ent->v.mins, ent->v.absmin);	
-	VectorAdd (ent->v.origin, ent->v.maxs, ent->v.absmax);
+	VectorAdd (ent->GetOrigin(), ent->GetMins(), ent->v.absmin);	
+	VectorAdd (ent->GetOrigin(), ent->GetMaxs(), ent->v.absmax);
 
 //
 // to make items easier to pick up and allow them to be grabbed off
@@ -311,7 +311,7 @@ void SV_LinkEdict (qhedict_t *ent, qboolean touch_triggers)
 		ent->num_leafs = CM_BoxLeafnums(ent->v.absmin, ent->v.absmax, ent->LeafNums, MAX_ENT_LEAFS);
 	}
 
-	if (ent->v.solid == SOLID_NOT)
+	if (ent->GetSolid() == SOLID_NOT)
 		return;
 
 // find the first node that the ent's box crosses
@@ -330,7 +330,7 @@ void SV_LinkEdict (qhedict_t *ent, qboolean touch_triggers)
 	
 // link it in	
 
-	if (ent->v.solid == SOLID_TRIGGER)
+	if (ent->GetSolid() == SOLID_TRIGGER)
 		InsertLinkBefore (&ent->area, &node->trigger_edicts);
 	else
 		InsertLinkBefore (&ent->area, &node->solid_edicts);
@@ -369,7 +369,7 @@ qhedict_t	*SV_TestEntityPosition (qhedict_t *ent)
 {
 	q1trace_t	trace;
 
-	trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent);
+	trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), ent->GetOrigin(), 0, ent);
 	
 	if (trace.startsolid)
 		return sv.edicts;
@@ -440,14 +440,14 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 	{
 		next = l->next;
 		touch = EDICT_FROM_AREA(l);
-		if (touch->v.solid == SOLID_NOT)
+		if (touch->GetSolid() == SOLID_NOT)
 			continue;
 		if (touch == clip->passedict)
 			continue;
-		if (touch->v.solid == SOLID_TRIGGER)
+		if (touch->GetSolid() == SOLID_TRIGGER)
 			Sys_Error ("Trigger in clipping list");
 
-		if (clip->type == MOVE_NOMONSTERS && touch->v.solid != SOLID_BSP)
+		if (clip->type == MOVE_NOMONSTERS && touch->GetSolid() != SOLID_BSP)
 			continue;
 
 		if (clip->boxmins[0] > touch->v.absmax[0]
@@ -458,7 +458,7 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 		|| clip->boxmaxs[2] < touch->v.absmin[2] )
 			continue;
 
-		if (clip->passedict && clip->passedict->v.size[0] && !touch->v.size[0])
+		if (clip->passedict && clip->passedict->GetSize()[0] && !touch->GetSize()[0])
 			continue;	// points never interact
 
 	// might intersect, so do an exact clip

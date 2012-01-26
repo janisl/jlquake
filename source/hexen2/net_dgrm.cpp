@@ -828,7 +828,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteByte(playerNumber);
 		net_message.WriteString2(client->name);
 		net_message.WriteLong(client->colors);
-		net_message.WriteLong((int)client->edict->v.frags);
+		net_message.WriteLong((int)client->edict->GetFrags());
 		net_message.WriteLong((int)(net_time - client->netconnection->connecttime));
 		net_message.WriteString2(client->netconnection->address);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));

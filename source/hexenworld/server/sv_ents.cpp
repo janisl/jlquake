@@ -176,10 +176,10 @@ void SV_EmitMissileUpdate (QMsg *msg)
 	for (n=0 ; n<nummissiles ; n++)
 	{
 		ent = missiles[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		if(fabs(ent->v.scale - 0.1)<0.05)
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		if(fabs(ent->GetScale() - 0.1)<0.05)
 			type = 1;	//assume ice mace
 		else 
 			type = 2;	//assume magic missile
@@ -211,12 +211,12 @@ void SV_EmitRavenUpdate (QMsg *msg)
 	for (n=0 ; n<numravens ; n++)
 	{
 		ent = ravens[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		p = (int)(16*ent->v.angles[0]/360)&15;
-		frame = (int)(ent->v.frame)&7;
-		yaw = (int)(32*ent->v.angles[1]/360)&31;
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		p = (int)(16*ent->GetAngles()[0]/360)&15;
+		frame = (int)(ent->GetFrame())&7;
+		yaw = (int)(32*ent->GetAngles()[1]/360)&31;
 
 		bits[0] = x;
 		bits[1] = (x>>8) | (y<<4);
@@ -233,11 +233,11 @@ void SV_EmitRavenUpdate (QMsg *msg)
 	for (n=0 ; n<numraven2s ; n++)
 	{
 		ent = raven2s[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		p = (int)(16*ent->v.angles[0]/360)&15;
-		yaw = (int)(256*ent->v.angles[1]/360)&255;
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		p = (int)(16*ent->GetAngles()[0]/360)&15;
+		yaw = (int)(256*ent->GetAngles()[1]/360)&255;
 
 		bits[0] = x;
 		bits[1] = (x>>8) | (y<<4);
@@ -313,9 +313,9 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 		bits |= HWU_EFFECTS;
 
 	temp_index = to->modelindex;
-	if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->v.model)
+	if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->GetModel())
 	{
-		String::Cpy(NewName, PR_GetString(ent->v.model));
+		String::Cpy(NewName, PR_GetString(ent->GetModel()));
 		if (client->playerclass <= 0 || client->playerclass > MAX_PLAYER_CLASS)
 		{
 			NewName[String::Length(NewName)-5] = '1';
@@ -511,7 +511,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 	{
 		sc1 = sc2 = 0;
 
-		if (ent->v.health != host_client->old_v.health)
+		if (ent->GetHealth() != host_client->old_v.health)
 			sc1 |= SC1_HEALTH;
 		if(ent->GetLevel() != host_client->old_v.level)
 			sc1 |= SC1_LEVEL;
@@ -572,7 +572,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 			sc1 |= SC1_ARTIFACT_ACTIVE;
 		if (ent->GetArtifactLow() != host_client->old_v.artifact_low)
 			sc1 |= SC1_ARTIFACT_LOW;
-		if (ent->v.movetype != host_client->old_v.movetype)
+		if (ent->GetMoveType() != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
 		if (ent->GetCameraMode() != host_client->old_v.cameramode)
 			sc1 |= SC1_CAMERAMODE;
@@ -671,7 +671,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 		msg->WriteByte((sc2 >> 24) & 0xff);
 
 	if (sc1 & SC1_HEALTH)
-		msg->WriteShort(ent->v.health);
+		msg->WriteShort(ent->GetHealth());
 	if (sc1 & SC1_LEVEL)
 		msg->WriteByte(ent->GetLevel());
 	if (sc1 & SC1_INTELLIGENCE)
@@ -725,7 +725,7 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 	if (sc1 & SC1_ARTIFACT_LOW)
 		msg->WriteByte(ent->GetArtifactLow());
 	if (sc1 & SC1_MOVETYPE)
-		msg->WriteByte(ent->v.movetype);
+		msg->WriteByte(ent->GetMoveType());
 	if (sc1 & SC1_CAMERAMODE)
 		msg->WriteByte(ent->GetCameraMode());
 	if (sc1 & SC1_HASTED)
@@ -781,8 +781,8 @@ void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 		msg->WriteFloat(ent->GetFlags());
 
 end:
-	host_client->old_v.movetype = ent->v.movetype;
-	host_client->old_v.health = ent->v.health;
+	host_client->old_v.movetype = ent->GetMoveType();
+	host_client->old_v.health = ent->GetHealth();
 	host_client->old_v.max_health = ent->GetMaxHealth();
 	host_client->old_v.bluemana = ent->GetBlueMana();
 	host_client->old_v.greenmana = ent->GetGreenMana();
@@ -1206,7 +1206,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		if (ent != clent &&
 			!(client->spec_track && client->spec_track - 1 == j)) 
 		{
-			if ((int)ent->v.effects & EF_NODRAW)
+			if ((int)ent->GetEffects() & EF_NODRAW)
 			{
 				if(dmMode->value==DM_SIEGE&&clent->GetPlayerClass()==CLASS_DWARF)
 					invis_level = false;
@@ -1238,7 +1238,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 				msg->WriteByte(hwsvc_player_sound);
 				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
-					msg->WriteCoord(ent->v.origin[i]);
+					msg->WriteCoord(ent->GetOrigin()[i]);
 				msg->WriteShort(ent->GetWpnSound());
 			}
 		}
@@ -1258,24 +1258,24 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 			playermodel = true;
 
 		for (i=0 ; i<3 ; i++)
-			if (ent->v.velocity[i])
+			if (ent->GetVelocity()[i])
 				pflags |= PF_VELOCITY1<<i;
-		if (((long)ent->v.effects & 0xff))
+		if (((long)ent->GetEffects() & 0xff))
 			pflags |= PF_EFFECTS;
-		if (((long)ent->v.effects & 0xff00))
+		if (((long)ent->GetEffects() & 0xff00))
 			pflags |= PF_EFFECTS2;
-		if (ent->v.skin)
+		if (ent->GetSkin())
 		{
-			if(dmMode->value==DM_SIEGE&&playermodel&&ent->v.skin==1);
+			if(dmMode->value==DM_SIEGE&&playermodel&&ent->GetSkin()==1);
 			//in siege, don't send skin if 2nd skin and using
 			//playermodel, it will know on other side- saves
 			//us 1 byte per client per frame!
 			else
 				pflags |= PF_SKINNUM;
 		}
-		if (ent->v.health <= 0)
+		if (ent->GetHealth() <= 0)
 			pflags |= PF_DEAD;
-		if (ent->v.hull == HULL_CROUCH)
+		if (ent->GetHull() == HULL_CROUCH)
 			pflags |= PF_CROUCH;
 
 		if (cl->spectator)
@@ -1285,18 +1285,18 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		else if (ent == clent)
 		{	// don't send a lot of data on personal entity
 			pflags &= ~(PF_MSEC|PF_COMMAND);
-			if (ent->v.weaponframe)
+			if (ent->GetWeaponFrame())
 				pflags |= PF_WEAPONFRAME;
 		}
-		if (ent->v.drawflags)
+		if (ent->GetDrawFlags())
 		{
 			pflags |= PF_DRAWFLAGS;
 		}
-		if (ent->v.scale != 0 && ent->v.scale != 1.0)
+		if (ent->GetScale() != 0 && ent->GetScale() != 1.0)
 		{
 			pflags |= PF_SCALE;
 		}
-		if (ent->v.abslight != 0)
+		if (ent->GetAbsLight() != 0)
 		{
 			pflags |= PF_ABSLIGHT;
 		}
@@ -1310,9 +1310,9 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		msg->WriteShort(pflags);
 
 		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(ent->v.origin[i]);
+			msg->WriteCoord(ent->GetOrigin()[i]);
 		
-		msg->WriteByte(ent->v.frame);
+		msg->WriteByte(ent->GetFrame());
 
 		if (pflags & PF_MSEC)
 		{
@@ -1326,10 +1326,10 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		{
 			cmd = cl->lastcmd;
 
-			if (ent->v.health <= 0)
+			if (ent->GetHealth() <= 0)
 			{	// don't show the corpse looking around...
 				cmd.angles[0] = 0;
-				cmd.angles[1] = ent->v.angles[1];
+				cmd.angles[1] = ent->GetAngles()[1];
 				cmd.angles[0] = 0;
 			}
 
@@ -1340,35 +1340,35 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 
 		for (i=0 ; i<3 ; i++)
 			if (pflags & (PF_VELOCITY1<<i) )
-				msg->WriteShort(ent->v.velocity[i]);
+				msg->WriteShort(ent->GetVelocity()[i]);
 
 //rjr
 		if (pflags & PF_MODEL)
 			msg->WriteShort(ent->v.modelindex);
 
 		if (pflags & PF_SKINNUM)
-			msg->WriteByte(ent->v.skin);
+			msg->WriteByte(ent->GetSkin());
 
 		if (pflags & PF_EFFECTS)
-			msg->WriteByte(((long)ent->v.effects & 0xff));
+			msg->WriteByte(((long)ent->GetEffects() & 0xff));
 
 		if (pflags & PF_EFFECTS2)
-			msg->WriteByte(((long)ent->v.effects & 0xff00)>>8);
+			msg->WriteByte(((long)ent->GetEffects() & 0xff00)>>8);
 
 		if (pflags & PF_WEAPONFRAME)
-			msg->WriteByte(ent->v.weaponframe);
+			msg->WriteByte(ent->GetWeaponFrame());
 
 		if (pflags & PF_DRAWFLAGS)
 		{
-			msg->WriteByte(ent->v.drawflags);
+			msg->WriteByte(ent->GetDrawFlags());
 		}
 		if (pflags & PF_SCALE)
 		{
-			msg->WriteByte((int)(ent->v.scale*100.0)&255);
+			msg->WriteByte((int)(ent->GetScale()*100.0)&255);
 		}
 		if (pflags & PF_ABSLIGHT)
 		{
-			msg->WriteByte((int)(ent->v.abslight*100.0)&255);
+			msg->WriteByte((int)(ent->GetAbsLight()*100.0)&255);
 		}
 		if (pflags & PF_SOUND)
 		{
@@ -1404,7 +1404,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 	// find the client's PVS
 	clent = client->edict;
-	VectorAdd (clent->v.origin, clent->GetViewOfs(), org);
+	VectorAdd (clent->GetOrigin(), clent->GetViewOfs(), org);
 	pvs = SV_FatPVS (org);
 
 	// send over the players in the PVS
@@ -1422,10 +1422,10 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	for (e=HWMAX_CLIENTS+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
-		if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
+		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))
 			continue;
 	
-		if ((int)ent->v.effects & EF_NODRAW)
+		if ((int)ent->GetEffects() & EF_NODRAW)
 		{
 			continue;
 		}
@@ -1457,16 +1457,16 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 		state->number = e;
 		state->flags = 0;
-		VectorCopy (ent->v.origin, state->origin);
-		VectorCopy (ent->v.angles, state->angles);
+		VectorCopy (ent->GetOrigin(), state->origin);
+		VectorCopy (ent->GetAngles(), state->angles);
 		state->modelindex = ent->v.modelindex;
-		state->frame = ent->v.frame;
+		state->frame = ent->GetFrame();
 		state->colormap = ent->GetColorMap();
-		state->skinnum = ent->v.skin;
-		state->effects = ent->v.effects;
-		state->scale = (int)(ent->v.scale*100.0)&255;
-		state->drawflags = ent->v.drawflags;
-		state->abslight = (int)(ent->v.abslight*255.0)&255;
+		state->skinnum = ent->GetSkin();
+		state->effects = ent->GetEffects();
+		state->scale = (int)(ent->GetScale()*100.0)&255;
+		state->drawflags = ent->GetDrawFlags();
+		state->abslight = (int)(ent->GetAbsLight()*255.0)&255;
 		//clear sound so it doesn't send twice
 		state->wpn_sound = ent->GetWpnSound();
 	}

@@ -116,11 +116,11 @@ void SV_EmitNailUpdate (QMsg *msg)
 	for (n=0 ; n<numnails ; n++)
 	{
 		ent = nails[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		p = (int)(16*ent->v.angles[0]/360)&15;
-		yaw = (int)(256*ent->v.angles[1]/360)&255;
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		p = (int)(16*ent->GetAngles()[0]/360)&15;
+		yaw = (int)(256*ent->GetAngles()[1]/360)&255;
 
 		bits[0] = x;
 		bits[1] = (x>>8) | (y<<4);
@@ -353,15 +353,15 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		if (ent->v.modelindex != sv_playermodel)
 			pflags |= QWPF_MODEL;
 		for (i=0 ; i<3 ; i++)
-			if (ent->v.velocity[i])
+			if (ent->GetVelocity()[i])
 				pflags |= QWPF_VELOCITY1ND<<i;
-		if (ent->v.effects)
+		if (ent->GetEffects())
 			pflags |= QWPF_EFFECTS;
-		if (ent->v.skin)
+		if (ent->GetSkin())
 			pflags |= QWPF_SKINNUM;
-		if (ent->v.health <= 0)
+		if (ent->GetHealth() <= 0)
 			pflags |= QWPF_DEAD;
-		if (ent->v.mins[2] != -24)
+		if (ent->GetMins()[2] != -24)
 			pflags |= QWPF_GIB;
 
 		if (cl->spectator)
@@ -371,12 +371,12 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		else if (ent == clent)
 		{	// don't send a lot of data on personal entity
 			pflags &= ~(QWPF_MSEC|QWPF_COMMAND);
-			if (ent->v.weaponframe)
+			if (ent->GetWeaponFrame())
 				pflags |= QWPF_WEAPONFRAME;
 		}
 
 		if (client->spec_track && client->spec_track - 1 == j &&
-			ent->v.weaponframe) 
+			ent->GetWeaponFrame()) 
 			pflags |= QWPF_WEAPONFRAME;
 
 		msg->WriteByte(qwsvc_playerinfo);
@@ -384,9 +384,9 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		msg->WriteShort(pflags);
 
 		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(ent->v.origin[i]);
+			msg->WriteCoord(ent->GetOrigin()[i]);
 		
-		msg->WriteByte(ent->v.frame);
+		msg->WriteByte(ent->GetFrame());
 
 		if (pflags & QWPF_MSEC)
 		{
@@ -400,10 +400,10 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		{
 			cmd = cl->lastcmd;
 
-			if (ent->v.health <= 0)
+			if (ent->GetHealth() <= 0)
 			{	// don't show the corpse looking around...
 				cmd.angles[0] = 0;
-				cmd.angles[1] = ent->v.angles[1];
+				cmd.angles[1] = ent->GetAngles()[1];
 				cmd.angles[0] = 0;
 			}
 
@@ -415,19 +415,19 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 
 		for (i=0 ; i<3 ; i++)
 			if (pflags & (QWPF_VELOCITY1ND<<i) )
-				msg->WriteShort(ent->v.velocity[i]);
+				msg->WriteShort(ent->GetVelocity()[i]);
 
 		if (pflags & QWPF_MODEL)
 			msg->WriteByte(ent->v.modelindex);
 
 		if (pflags & QWPF_SKINNUM)
-			msg->WriteByte(ent->v.skin);
+			msg->WriteByte(ent->GetSkin());
 
 		if (pflags & QWPF_EFFECTS)
-			msg->WriteByte(ent->v.effects);
+			msg->WriteByte(ent->GetEffects());
 
 		if (pflags & QWPF_WEAPONFRAME)
-			msg->WriteByte(ent->v.weaponframe);
+			msg->WriteByte(ent->GetWeaponFrame());
 	}
 }
 
@@ -458,7 +458,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 	// find the client's PVS
 	clent = client->edict;
-	VectorAdd (clent->v.origin, clent->GetViewOfs(), org);
+	VectorAdd (clent->GetOrigin(), clent->GetViewOfs(), org);
 	pvs = SV_FatPVS (org);
 
 	// send over the players in the PVS
@@ -473,7 +473,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	for (e=MAX_CLIENTS_QW+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
-		if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
+		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))
 			continue;
 
 		// ignore if not touching a PV leaf
@@ -501,13 +501,13 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 		state->number = e;
 		state->flags = 0;
-		VectorCopy (ent->v.origin, state->origin);
-		VectorCopy (ent->v.angles, state->angles);
+		VectorCopy (ent->GetOrigin(), state->origin);
+		VectorCopy (ent->GetAngles(), state->angles);
 		state->modelindex = ent->v.modelindex;
-		state->frame = ent->v.frame;
+		state->frame = ent->GetFrame();
 		state->colormap = ent->GetColorMap();
-		state->skinnum = ent->v.skin;
-		state->effects = ent->v.effects;
+		state->skinnum = ent->GetSkin();
+		state->effects = ent->GetEffects();
 	}
 
 	// encode the packet entities as a delta from the

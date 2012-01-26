@@ -245,7 +245,7 @@ void SV_DropClient (client_t *drop)
 	drop->connection_started = realtime;	// for zombie timeout
 
 	drop->old_frags = 0;
-	drop->edict->v.frags = 0;
+	drop->edict->SetFrags(0);
 	drop->name[0] = 0;
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 
@@ -1517,7 +1517,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		cl->next_playerclass =  i;
 		cl->edict->SetNextPlayerClass(i);
 
-		if (cl->edict->v.health > 0)
+		if (cl->edict->GetHealth() > 0)
 		{
 			sprintf(newname,"%d",cl->playerclass);
 			Info_SetValueForKey(cl->userinfo, "playerclass", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
