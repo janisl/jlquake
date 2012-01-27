@@ -71,12 +71,6 @@ typedef void (*builtin_t) (void);
 extern	builtin_t *pr_builtins;
 extern int pr_numbuiltins;
 
-extern int		pr_argc;
-
-extern	qboolean	pr_trace;
-extern	dfunction_t	*pr_xfunction;
-extern	int			pr_xstatement;
-
 extern func_t SpectatorConnect;
 extern func_t SpectatorThink;
 extern func_t SpectatorDisconnect;

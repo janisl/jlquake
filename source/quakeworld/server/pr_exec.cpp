@@ -20,167 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qwsvdef.h"
 
-
-/*
-
-*/
-
-typedef struct
-{
-	int				s;
-	dfunction_t		*f;
-} prstack_t;
-
-#define	MAX_STACK_DEPTH		32
-prstack_t	pr_stack[MAX_STACK_DEPTH];
-int			pr_depth;
-
-#define	LOCALSTACK_SIZE		2048
-int			localstack[LOCALSTACK_SIZE];
-int			localstack_used;
-
-
-qboolean	pr_trace;
-dfunction_t	*pr_xfunction;
-int			pr_xstatement;
-
-
-int		pr_argc;
-
-const char *pr_opnames[] =
-{
-"DONE",
-
-"MUL_F",
-"MUL_V", 
-"MUL_FV",
-"MUL_VF",
- 
-"DIV",
-
-"ADD_F",
-"ADD_V", 
-  
-"SUB_F",
-"SUB_V",
-
-"EQ_F",
-"EQ_V",
-"EQ_S", 
-"EQ_E",
-"EQ_FNC",
- 
-"NE_F",
-"NE_V", 
-"NE_S",
-"NE_E", 
-"NE_FNC",
- 
-"LE",
-"GE",
-"LT",
-"GT", 
-
-"INDIRECT",
-"INDIRECT",
-"INDIRECT", 
-"INDIRECT", 
-"INDIRECT",
-"INDIRECT", 
-
-"ADDRESS", 
-
-"STORE_F",
-"STORE_V",
-"STORE_S",
-"STORE_ENT",
-"STORE_FLD",
-"STORE_FNC",
-
-"STOREP_F",
-"STOREP_V",
-"STOREP_S",
-"STOREP_ENT",
-"STOREP_FLD",
-"STOREP_FNC",
-
-"RETURN",
-  
-"NOT_F",
-"NOT_V",
-"NOT_S", 
-"NOT_ENT", 
-"NOT_FNC", 
-  
-"IF",
-"IFNOT",
-  
-"CALL0",
-"CALL1",
-"CALL2",
-"CALL3",
-"CALL4",
-"CALL5",
-"CALL6",
-"CALL7",
-"CALL8",
-  
-"STATE",
-  
-"GOTO", 
-  
-"AND",
-"OR", 
-
-"BITAND",
-"BITOR"
-};
-
 char *PR_GlobalString (int ofs);
 char *PR_GlobalStringNoContents (int ofs);
 
-
-//=============================================================================
-
-/*
-=================
-PR_PrintStatement
-=================
-*/
-void PR_PrintStatement (dstatement_t *s)
-{
-	int		i;
-	
-	if ( (unsigned)s->op < sizeof(pr_opnames)/sizeof(pr_opnames[0]))
-	{
-		Con_Printf ("%s ",  pr_opnames[s->op]);
-		i = String::Length(pr_opnames[s->op]);
-		for ( ; i<10 ; i++)
-			Con_Printf (" ");
-	}
-		
-	if (s->op == OP_IF || s->op == OP_IFNOT)
-		Con_Printf ("%sbranch %i",PR_GlobalString(s->a),s->b);
-	else if (s->op == OP_GOTO)
-	{
-		Con_Printf ("branch %i",s->a);
-	}
-	else if ( (unsigned)(s->op - OP_STORE_F) < 6)
-	{
-		Con_Printf ("%s",PR_GlobalString(s->a));
-		Con_Printf ("%s", PR_GlobalStringNoContents(s->b));
-	}
-	else
-	{
-		if (s->a)
-			Con_Printf ("%s",PR_GlobalString(s->a));
-		if (s->b)
-			Con_Printf ("%s",PR_GlobalString(s->b));
-		if (s->c)
-			Con_Printf ("%s", PR_GlobalStringNoContents(s->c));
-	}
-	Con_Printf ("\n");
-}
 
 /*
 ============
@@ -661,4 +503,96 @@ while (1)
 	}
 }
 
+}
+
+const char *pr_opnames[] =
+{
+	"DONE",
+	"MUL_F", "MUL_V", "MUL_FV", "MUL_VF",
+	"DIV",
+	"ADD_F", "ADD_V",
+  	"SUB_F", "SUB_V",
+	"EQ_F", "EQ_V", "EQ_S", "EQ_E", "EQ_FNC",
+ 	"NE_F", "NE_V", "NE_S", "NE_E", "NE_FNC",
+ 	"LE", "GE", "LT", "GT",
+	"INDIRECT", "INDIRECT", "INDIRECT",
+	"INDIRECT", "INDIRECT", "INDIRECT",
+	"ADDRESS",
+	"STORE_F", "STORE_V", "STORE_S",
+	"STORE_ENT", "STORE_FLD", "STORE_FNC",
+	"STOREP_F", "STOREP_V", "STOREP_S",
+	"STOREP_ENT", "STOREP_FLD", "STOREP_FNC",
+	"RETURN",
+	"NOT_F", "NOT_V", "NOT_S", "NOT_ENT", "NOT_FNC",
+	"IF", "IFNOT",
+	"CALL0", "CALL1", "CALL2", "CALL3", "CALL4",
+	"CALL5", "CALL6", "CALL7", "CALL8",
+	"STATE",
+	"GOTO",
+	"AND", "OR", 
+	"BITAND", "BITOR",
+	"OP_MULSTORE_F", "OP_MULSTORE_V", "OP_MULSTOREP_F", "OP_MULSTOREP_V",
+	"OP_DIVSTORE_F", "OP_DIVSTOREP_F",
+	"OP_ADDSTORE_F", "OP_ADDSTORE_V", "OP_ADDSTOREP_F", "OP_ADDSTOREP_V",
+	"OP_SUBSTORE_F", "OP_SUBSTORE_V", "OP_SUBSTOREP_F", "OP_SUBSTOREP_V",
+	"OP_FETCH_GBL_F",
+	"OP_FETCH_GBL_V",
+	"OP_FETCH_GBL_S",
+	"OP_FETCH_GBL_E",
+	"OP_FETCH_GBL_FNC",
+	"OP_CSTATE", "OP_CWSTATE",
+	
+	"OP_THINKTIME",
+
+	"OP_BITSET", "OP_BITSETP", "OP_BITCLR",	"OP_BITCLRP",
+
+	"OP_RAND0", "OP_RAND1",	"OP_RAND2",	"OP_RANDV0", "OP_RANDV1", "OP_RANDV2",
+
+	"OP_SWITCH_F", "OP_SWITCH_V", "OP_SWITCH_S", "OP_SWITCH_E", "OP_SWITCH_FNC",
+
+	"OP_CASE",
+	"OP_CASERANGE"
+};
+
+void PR_PrintStatement(dstatement_t* s)
+{
+	if ((unsigned)s->op < sizeof(pr_opnames) / sizeof(pr_opnames[0]))
+	{
+		Log::write("%s ", pr_opnames[s->op]);
+		int i = String::Length(pr_opnames[s->op]);
+		for (; i < 10; i++)
+		{
+			Log::write(" ");
+		}
+	}
+		
+	if (s->op == OP_IF || s->op == OP_IFNOT)
+	{
+		Log::write("%sbranch %i", PR_GlobalString(s->a), s->b);
+	}
+	else if (s->op == OP_GOTO)
+	{
+		Log::write("branch %i", s->a);
+	}
+	else if ((unsigned)(s->op - OP_STORE_F) < 6)
+	{
+		Log::write("%s", PR_GlobalString(s->a));
+		Log::write("%s", PR_GlobalStringNoContents(s->b));
+	}
+	else
+	{
+		if (s->a)
+		{
+			Log::write("%s", PR_GlobalString(s->a));
+		}
+		if (s->b)
+		{
+			Log::write("%s", PR_GlobalString(s->b));
+		}
+		if (s->c)
+		{
+			Log::write("%s", PR_GlobalStringNoContents(s->c));
+		}
+	}
+	Log::write("\n");
 }

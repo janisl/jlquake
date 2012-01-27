@@ -85,12 +85,6 @@ typedef void (*builtin_t) (void);
 extern	builtin_t *pr_builtins;
 extern int pr_numbuiltins;
 
-extern int		pr_argc;
-
-extern	qboolean	pr_trace;
-extern	dfunction_t	*pr_xfunction;
-extern	int			pr_xstatement;
-
 extern	unsigned short		pr_crc;
 
 void PR_RunError (const char *error, ...);
