@@ -2,7 +2,7 @@
 
 #include "qwsvdef.h"
 
-edict_t	*sv_player;
+qhedict_t	*sv_player;
 
 hwusercmd_t	cmd;
 
@@ -64,14 +64,14 @@ void SV_New_f (void)
 	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
-	if (sv.edicts->v.message > 0 && sv.edicts->v.message <= pr_string_count)
+	if (sv.edicts->GetMessage() > 0 && sv.edicts->GetMessage() <= pr_string_count)
 	{
-		host_client->netchan.message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
+		host_client->netchan.message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->GetMessage() - 1]]);
 	}
 	else 
 	{//Use netname on map if there is one, so they don't have to edit strings.txt
 	//	host_client->netchan.message.WriteString2("");
-		host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->v.netname));
+		host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->GetNetName()));
 	}
 
 	// send the movevars
@@ -88,7 +88,7 @@ void SV_New_f (void)
 
 	// send music
 	host_client->netchan.message.WriteByte(h2svc_cdtrack);
-	host_client->netchan.message.WriteByte(sv.edicts->v.soundtype);
+	host_client->netchan.message.WriteByte(sv.edicts->GetSoundType());
 
 	host_client->netchan.message.WriteByte(hwsvc_midi_name);
 	host_client->netchan.message.WriteString2(sv.midi_name);
@@ -210,7 +210,7 @@ void SV_Spawn_f (void)
 {
 	int		i;
 	client_t	*client;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	eval_t *val;
 
 	if (host_client->state != cs_connected)
@@ -232,15 +232,15 @@ void SV_Spawn_f (void)
 	ent = host_client->edict;
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
-	ent->v.colormap = NUM_FOR_EDICT(ent);
+	ent->SetColorMap(NUM_FOR_EDICT(ent));
 	if(dmMode->value==DM_SIEGE)
-		ent->v.team = ent->v.siege_team;	// FIXME
+		ent->SetTeam(ent->GetSiegeTeam());	// FIXME
 	else
-		ent->v.team = 0;	// FIXME
-	ent->v.netname = PR_SetString(host_client->name);
+		ent->SetTeam(0);	// FIXME
+	ent->SetNetName(PR_SetString(host_client->name));
 	//ent->v.playerclass = host_client->playerclass = 
-	ent->v.next_playerclass = host_client->next_playerclass;;
-	ent->v.has_portals = host_client->portals;
+	ent->SetNextPlayerClass(host_client->next_playerclass);
+	ent->SetHasPortals(host_client->portals);
 
 	host_client->entgravity = 1.0;
 	val = GetEdictFieldValue(ent, "gravity");
@@ -305,19 +305,19 @@ SV_SpawnSpectator
 void SV_SpawnSpectator (void)
 {
 	int		i;
-	edict_t	*e;
+	qhedict_t	*e;
 
-	VectorCopy (vec3_origin, sv_player->v.origin);
-	VectorCopy (vec3_origin, sv_player->v.view_ofs);
-	sv_player->v.view_ofs[2] = 22;
+	VectorCopy (vec3_origin, sv_player->GetOrigin());
+	sv_player->SetViewOfs(vec3_origin);
+	sv_player->GetViewOfs()[2] = 22;
 
 	// search for an info_playerstart to spawn the spectator at
 	for (i=HWMAX_CLIENTS-1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if (!String::Cmp(PR_GetString(e->v.classname), "info_player_start"))
+		if (!String::Cmp(PR_GetString(e->GetClassName()), "info_player_start"))
 		{
-			VectorCopy (e->v.origin, sv_player->v.origin);
+			VectorCopy (e->GetOrigin(), sv_player->GetOrigin());
 			return;
 		}
 	}
@@ -633,7 +633,7 @@ void SV_Say (qboolean team)
 				t2 = Info_ValueForKey (client->userinfo, "team");
 				if(dmMode->value==DM_SIEGE)
 				{
-					if((host_client->edict->v.skin==102&&client->edict->v.skin!=102)||(client->edict->v.skin==102&&host_client->edict->v.skin!=102))
+					if((host_client->edict->GetSkin()==102&&client->edict->GetSkin()!=102)||(client->edict->GetSkin()==102&&host_client->edict->GetSkin()!=102))
 						continue;//noteam players can team chat with each other, cannot recieve team chat of other players
 
 					if(client->siege_team!=host_client->siege_team)
@@ -714,7 +714,7 @@ SV_Kill_f
 */
 void SV_Kill_f (void)
 {
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 	{
 		SV_ClientPrintf (host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
 		return;
@@ -984,8 +984,8 @@ AddLinksToPmove
 */
 void AddLinksToPmove ( areanode_t *node )
 {
-	link_t		*l, *next;
-	edict_t		*check;
+	qhlink_t		*l, *next;
+	qhedict_t		*check;
 	int			pl;
 	int			i;
 	physent_t	*pe;
@@ -998,11 +998,11 @@ void AddLinksToPmove ( areanode_t *node )
 		next = l->next;
 		check = EDICT_FROM_AREA(l);
 
-		if (check->v.owner == pl)
+		if (check->GetOwner() == pl)
 			continue;		// player's own missile
-		if (check->v.solid == SOLID_BSP 
-			|| check->v.solid == SOLID_BBOX 
-			|| check->v.solid == SOLID_SLIDEBOX)
+		if (check->GetSolid() == SOLID_BSP 
+			|| check->GetSolid() == SOLID_BBOX 
+			|| check->GetSolid() == SOLID_SLIDEBOX)
 		{
 			if (check == sv_player)
 				continue;
@@ -1018,16 +1018,16 @@ void AddLinksToPmove ( areanode_t *node )
 			pe = &pmove.physents[pmove.numphysent];
 			pmove.numphysent++;
 
-			VectorCopy (check->v.origin, pe->origin);
-			VectorCopy (check->v.angles, pe->angles);
+			VectorCopy (check->GetOrigin(), pe->origin);
+			VectorCopy (check->GetAngles(), pe->angles);
 			pe->info = NUM_FOR_EDICT(check);
-			if (check->v.solid == SOLID_BSP)
+			if (check->GetSolid() == SOLID_BSP)
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
 			{
 				pe->model = -1;
-				VectorCopy (check->v.mins, pe->mins);
-				VectorCopy (check->v.maxs, pe->maxs);
+				VectorCopy (check->GetMins(), pe->mins);
+				VectorCopy (check->GetMaxs(), pe->maxs);
 			}
 		}
 	}
@@ -1053,7 +1053,7 @@ For debugging
 void AddAllEntsToPmove (void)
 {
 	int			e;
-	edict_t		*check;
+	qhedict_t		*check;
 	int			i;
 	physent_t	*pe;
 	int			pl;
@@ -1064,11 +1064,11 @@ void AddAllEntsToPmove (void)
 	{
 		if (check->free)
 			continue;
-		if (check->v.owner == pl)
+		if (check->GetOwner() == pl)
 			continue;
-		if (check->v.solid == SOLID_BSP 
-			|| check->v.solid == SOLID_BBOX 
-			|| check->v.solid == SOLID_SLIDEBOX)
+		if (check->GetSolid() == SOLID_BSP 
+			|| check->GetSolid() == SOLID_BBOX 
+			|| check->GetSolid() == SOLID_SLIDEBOX)
 		{
 			if (check == sv_player)
 				continue;
@@ -1081,16 +1081,16 @@ void AddAllEntsToPmove (void)
 				continue;
 			pe = &pmove.physents[pmove.numphysent];
 
-			VectorCopy (check->v.origin, pe->origin);
-			VectorCopy (check->v.angles, pe->angles);
+			VectorCopy (check->GetOrigin(), pe->origin);
+			VectorCopy (check->GetAngles(), pe->angles);
 			pmove.physents[pmove.numphysent].info = e;
-			if (check->v.solid == SOLID_BSP)
+			if (check->GetSolid() == SOLID_BSP)
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
 			{
 				pe->model = -1;
-				VectorCopy (check->v.mins, pe->mins);
-				VectorCopy (check->v.maxs, pe->maxs);
+				VectorCopy (check->GetMins(), pe->mins);
+				VectorCopy (check->GetMaxs(), pe->maxs);
 			}
 
 			if (++pmove.numphysent == MAX_PHYSENTS)
@@ -1119,7 +1119,7 @@ SV_RunCmd
 */
 void SV_RunCmd (hwusercmd_t *ucmd)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i, n;
 	int			oldmsec;
 
@@ -1137,32 +1137,32 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 		return;
 	}
 
-	if (!sv_player->v.fixangle)
-		VectorCopy (ucmd->angles, sv_player->v.v_angle);
+	if (!sv_player->GetFixAngle())
+		sv_player->SetVAngle(ucmd->angles);
 
-	sv_player->v.button0 = ucmd->buttons & 1;
-	sv_player->v.button2 = (ucmd->buttons & 2)>>1;
+	sv_player->SetButton0(ucmd->buttons & 1);
+	sv_player->SetButton2((ucmd->buttons & 2)>>1);
 
-	if (ucmd->buttons & 4 || sv_player->v.playerclass==CLASS_DWARF) // crouched?
-		sv_player->v.flags2 = ((int)sv_player->v.flags2) | FL2_CROUCHED;
+	if (ucmd->buttons & 4 || sv_player->GetPlayerClass()==CLASS_DWARF) // crouched?
+		sv_player->SetFlags2(((int)sv_player->GetFlags2()) | FL2_CROUCHED);
 	else
-		sv_player->v.flags2 = ((int)sv_player->v.flags2) & (~FL2_CROUCHED);
+		sv_player->SetFlags2(((int)sv_player->GetFlags2()) & (~FL2_CROUCHED));
 
 	if (ucmd->impulse)
-		sv_player->v.impulse = ucmd->impulse;
+		sv_player->SetImpulse(ucmd->impulse);
 
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle	
-	if (sv_player->v.health > 0)
+	if (sv_player->GetHealth() > 0)
 	{
-		if (!sv_player->v.fixangle)
+		if (!sv_player->GetFixAngle())
 		{
-			sv_player->v.angles[PITCH] = -sv_player->v.v_angle[PITCH]/3;
-			sv_player->v.angles[YAW] = sv_player->v.v_angle[YAW];
+			sv_player->GetAngles()[PITCH] = -sv_player->GetVAngle()[PITCH]/3;
+			sv_player->GetAngles()[YAW] = sv_player->GetVAngle()[YAW];
 		}
-		sv_player->v.angles[ROLL] = 
-			V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
+		sv_player->GetAngles()[ROLL] = 
+			V_CalcRoll (sv_player->GetAngles(), sv_player->GetVelocity())*4;
 	}
 
 	host_frametime = ucmd->msec * 0.001;
@@ -1181,24 +1181,24 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	}
 
 	for (i=0 ; i<3 ; i++)
-		pmove.origin[i] = sv_player->v.origin[i] + (sv_player->v.mins[i] - player_mins[i]);
-	VectorCopy (sv_player->v.velocity, pmove.velocity);
-	VectorCopy (sv_player->v.v_angle, pmove.angles);
+		pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - player_mins[i]);
+	VectorCopy (sv_player->GetVelocity(), pmove.velocity);
+	VectorCopy (sv_player->GetVAngle(), pmove.angles);
 
 	pmove.spectator = host_client->spectator;
 //	pmove.waterjumptime = sv_player->v.teleport_time;
 	pmove.numphysent = 1;
 	pmove.physents[0].model = 0;
 	pmove.cmd = *ucmd;
-	pmove.dead = sv_player->v.health <= 0;
+	pmove.dead = sv_player->GetHealth() <= 0;
 	pmove.oldbuttons = host_client->oldbuttons;
-	pmove.hasted = sv_player->v.hasted;
-	pmove.movetype = sv_player->v.movetype;
-	pmove.crouched = (sv_player->v.hull == HULL_CROUCH);
-	pmove.teleport_time = realtime + (sv_player->v.teleport_time - sv.time);
+	pmove.hasted = sv_player->GetHasted();
+	pmove.movetype = sv_player->GetMoveType();
+	pmove.crouched = (sv_player->GetHull() == HULL_CROUCH);
+	pmove.teleport_time = realtime + (sv_player->GetTeleportTime() - sv.time);
 
 //	movevars.entgravity = host_client->entgravity;
-	movevars.entgravity = sv_player->v.gravity;
+	movevars.entgravity = sv_player->GetGravity();
 	movevars.maxspeed = host_client->maxspeed;
 
 	for (i=0 ; i<3 ; i++)
@@ -1229,27 +1229,27 @@ if (sv_player->v.health > 0 && before && !after )
 
 	host_client->oldbuttons = pmove.oldbuttons;
 //	sv_player->v.teleport_time = pmove.waterjumptime;
-	sv_player->v.waterlevel = waterlevel;
-	sv_player->v.watertype = watertype;
+	sv_player->SetWaterLevel(waterlevel);
+	sv_player->SetWaterType(watertype);
 	if (onground != -1)
 	{
-		sv_player->v.flags = (int)sv_player->v.flags | FL_ONGROUND;
-		sv_player->v.groundentity = EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info));
+		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
+		sv_player->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info)));
 	}
 	else
-		sv_player->v.flags = (int)sv_player->v.flags & ~FL_ONGROUND;
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
 	for (i=0 ; i<3 ; i++)
-		sv_player->v.origin[i] = pmove.origin[i] - (sv_player->v.mins[i] - player_mins[i]);
+		sv_player->GetOrigin()[i] = pmove.origin[i] - (sv_player->GetMins()[i] - player_mins[i]);
 
 #if 0
 	// truncate velocity the same way the net protocol will
 	for (i=0 ; i<3 ; i++)
 		sv_player->v.velocity[i] = (int)pmove.velocity[i];
 #else
-	VectorCopy (pmove.velocity, sv_player->v.velocity);
+	sv_player->SetVelocity(pmove.velocity);
 #endif
 
-	VectorCopy (pmove.angles, sv_player->v.v_angle);
+	sv_player->SetVAngle(pmove.angles);
 
 	if (!host_client->spectator)
 	{
@@ -1263,17 +1263,17 @@ if (sv_player->v.health > 0 && before && !after )
 			ent = EDICT_NUM(n);
 //Why not just do an SV_Impact here?
 //			SV_Impact(sv_player,ent);
-			if (sv_player->v.touch)
+			if (sv_player->GetTouch())
 			{
 				pr_global_struct->self = EDICT_TO_PROG(sv_player);
 				pr_global_struct->other = EDICT_TO_PROG(ent);
-				PR_ExecuteProgram (sv_player->v.touch);
+				PR_ExecuteProgram (sv_player->GetTouch());
 			}
-			if (!ent->v.touch || (playertouch[n/8]&(1<<(n%8))))
+			if (!ent->GetTouch() || (playertouch[n/8]&(1<<(n%8))))
 				continue;
 			pr_global_struct->self = EDICT_TO_PROG(ent);
 			pr_global_struct->other = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram (ent->v.touch);
+			PR_ExecuteProgram (ent->GetTouch());
 			playertouch[n/8] |= 1 << (n%8);
 		}
 	}
@@ -1414,13 +1414,13 @@ void SV_ExecuteClientMessage (client_t *cl)
 			o[2] = net_message.ReadCoord();
 			// only allowed by spectators
 			if (host_client->spectator) {
-				VectorCopy(o, sv_player->v.origin);
+				VectorCopy(o, sv_player->GetOrigin());
 				SV_LinkEdict(sv_player, false);
 			}
 			break;
 
 		case hwclc_inv_select:
-			cl->edict->v.inventory = net_message.ReadByte();
+			cl->edict->SetInventory(net_message.ReadByte());
 			break;
 
 		case hwclc_get_effect:

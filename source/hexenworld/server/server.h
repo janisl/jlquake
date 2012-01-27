@@ -40,8 +40,8 @@ typedef struct
 	struct h2EffectT Effects[MAX_EFFECTS_H2];
 
 	int			num_edicts;			// increases towards MAX_EDICTS_H2
-	edict_t		*edicts;			// can NOT be array indexed, because
-									// edict_t is variable sized, but can
+	qhedict_t		*edicts;			// can NOT be array indexed, because
+									// qhedict_t is variable sized, but can
 									// be used to reference the world ent
 
 	// added to every client's unreliable buffer each frame, then cleared
@@ -111,7 +111,7 @@ typedef struct client_s
 	float			maxspeed;			// localized maxspeed
 	float			entgravity;			// localized ent gravity
 
-	edict_t			*edict;				// EDICT_NUM(clientnum+1)
+	qhedict_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 										// extracted from userinfo
 	int				playerclass;
@@ -152,7 +152,7 @@ typedef struct client_s
 	int				delta_sequence;		// -1 = no compression
 	netchan_t		netchan;
 
-	entvars_t		old_v;
+	h2client_entvars_t	old_v;
 	qboolean        send_all_v;
 
 	unsigned		PIV, LastPIV;		// people in view
@@ -332,7 +332,7 @@ extern	server_t		sv;					// local server
 
 extern	client_t	*host_client;
 
-extern	edict_t		*sv_player;
+extern	qhedict_t		*sv_player;
 
 extern	char		localmodels[MAX_MODELS_H2][5];	// inline model names for precache
 
@@ -359,8 +359,8 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf);
 
 int SV_ModelIndex (const char *name);
 
-qboolean SV_CheckBottom (edict_t *ent);
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noenemy, qboolean set_trace);
+qboolean SV_CheckBottom (qhedict_t *ent);
+qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink, qboolean noenemy, qboolean set_trace);
 
 void SV_WriteClientdataToMessage (client_t *client, QMsg *msg);
 
@@ -368,7 +368,7 @@ void SV_MoveToGoal (void);
 
 void SV_SaveSpawnparms (void);
 
-void SV_Physics_Client (edict_t	*ent);
+void SV_Physics_Client (qhedict_t	*ent);
 
 void SV_ExecuteUserCommand (char *s);
 void SV_InitOperatorCommands (void);
@@ -391,12 +391,12 @@ void SV_SpawnServer (char *server, char *startspot);
 //
 void SV_ProgStartFrame (void);
 void SV_Physics (void);
-void SV_CheckVelocity (edict_t *ent);
-void SV_AddGravity (edict_t *ent, float scale);
-qboolean SV_RunThink (edict_t *ent);
-void SV_Physics_Toss (edict_t *ent);
+void SV_CheckVelocity (qhedict_t *ent);
+void SV_AddGravity (qhedict_t *ent, float scale);
+qboolean SV_RunThink (qhedict_t *ent);
+void SV_Physics_Toss (qhedict_t *ent);
 void SV_RunNewmis (void);
-void SV_Impact (edict_t *e1, edict_t *e2);
+void SV_Impact (qhedict_t *e1, qhedict_t *e2);
 
 //
 // sv_send.c
@@ -407,7 +407,7 @@ void SV_SendClientMessages (void);
 
 void SV_Multicast (vec3_t origin, int to);
 void SV_MulticastSpecific (unsigned clients, qboolean reliable);
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
 void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
@@ -444,11 +444,11 @@ void SV_Status_f (void);
 //
 void SV_WriteEntitiesToClient (client_t *client, QMsg *msg);
 
-void SV_UpdateSoundPos (edict_t *entity, int channel);
-void SV_StopSound (edict_t *entity, int channel);
+void SV_UpdateSoundPos (qhedict_t *entity, int channel);
+void SV_StopSound (qhedict_t *entity, int channel);
 void SV_ParseEffect(QMsg *sb);
 void SV_FlushSignon (void);
 void SV_SetMoveVars(void);
-void ED_ClearEdict (edict_t *e);
-void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg);
+void ED_ClearEdict (qhedict_t *e);
+void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg);
 void SV_SendEffect(QMsg *sb, int index);

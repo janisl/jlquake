@@ -86,7 +86,7 @@ void SV_Edicts(const char *Name)
 {
 	fileHandle_t FH;
 	int i;
-	edict_t *e;
+	qhedict_t *e;
 
 	FH = FS_FOpenFileWrite(Name);
 	if (!FH)
@@ -105,9 +105,9 @@ void SV_Edicts(const char *Name)
 	{
 		e = EDICT_NUM(i);
 		FS_Printf(FH,"%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
-			i,e->v.nextthink,PR_GetString(e->v.classname),PR_GetString(e->v.model),
-			PR_GetString(pr_functions[e->v.think].s_name),PR_GetString(pr_functions[e->v.touch].s_name),
-			PR_GetString(pr_functions[e->v.use].s_name));
+			i,e->GetNextThink(),PR_GetString(e->GetClassName()),PR_GetString(e->GetModel()),
+			PR_GetString(pr_functions[e->GetThink()].s_name),PR_GetString(pr_functions[e->GetTouch()].s_name),
+			PR_GetString(pr_functions[e->GetUse()].s_name));
 	}
 	FS_FCloseFile(FH);
 }
@@ -250,7 +250,7 @@ void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int cou
 SV_StopSound
 ==================
 */
-void SV_StopSound (edict_t *entity, int channel)
+void SV_StopSound (qhedict_t *entity, int channel)
 {
 	int			ent;
 
@@ -269,7 +269,7 @@ void SV_StopSound (edict_t *entity, int channel)
 SV_UpdateSoundPos
 ==================
 */
-void SV_UpdateSoundPos (edict_t *entity, int channel)
+void SV_UpdateSoundPos (qhedict_t *entity, int channel)
 {
 	int			ent;
     int			i;
@@ -283,7 +283,7 @@ void SV_UpdateSoundPos (edict_t *entity, int channel)
 	sv.datagram.WriteByte(h2svc_sound_update_pos);
 	sv.datagram.WriteShort(channel);
 	for (i=0 ; i<3 ; i++)
-		sv.datagram.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		sv.datagram.WriteCoord(entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]));
 }
 
 /*  
@@ -301,7 +301,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -368,7 +368,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 	sv.datagram.WriteShort(channel);
 	sv.datagram.WriteByte(sound_num);
 	for (i=0 ; i<3 ; i++)
-		sv.datagram.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		sv.datagram.WriteCoord(entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]));
 }           
 
 /*
@@ -408,14 +408,14 @@ void SV_SendServerinfo (client_t *client)
 	else
 		client->message.WriteByte(GAME_COOP);
 
-	if (sv.edicts->v.message > 0 && sv.edicts->v.message <= pr_string_count)
+	if (sv.edicts->GetMessage() > 0 && sv.edicts->GetMessage() <= pr_string_count)
 	{
-		client->message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
+		client->message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->GetMessage() - 1]]);
 	}
 	else
 	{
 //		client->message.WriteString2("");
-		client->message.WriteString2(PR_GetString(sv.edicts->v.netname));
+		client->message.WriteString2(PR_GetString(sv.edicts->GetNetName()));
 	}
 
 	for (s = sv.model_precache+1 ; *s ; s++)
@@ -457,13 +457,13 @@ once for a player each game, not once for each level change.
 */
 void SV_ConnectClient (int clientnum)
 {
-	edict_t			*ent;
+	qhedict_t			*ent;
 	client_t		*client;
 	int				edictnum;
 	struct qsocket_s *netconnection;
 	float			spawn_parms[NUM_SPAWN_PARMS];
 	int				entnum;
-	edict_t			*svent;
+	qhedict_t			*svent;
 
 	client = svs.clients + clientnum;
 
@@ -653,14 +653,14 @@ SV_WriteEntitiesToClient
 #define CLIENT_FRAME_INIT	255
 #define CLIENT_FRAME_RESET	254
 
-void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
+void SV_PrepareClientEntities (client_t *client, qhedict_t	*clent, QMsg *msg)
 {
 	int		e, i;
 	int		bits;
 	byte	*pvs;
 	vec3_t	org;
 	float	miss;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		temp_index;
 	char	NewName[MAX_QPATH];
 	long	flagtest;
@@ -704,13 +704,13 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 			{
 				e = reference->states[i].number;
 				ent = EDICT_NUM(e);
-				if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
+				if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 				{
-					ent->baseline.ClearCount[client_num]++;
+					ent->h2_baseline.ClearCount[client_num]++;
 				}
-				else if (ent->baseline.ClearCount[client_num] == CLEAR_LIMIT)
+				else if (ent->h2_baseline.ClearCount[client_num] == CLEAR_LIMIT)
 				{
-					ent->baseline.ClearCount[client_num] = 3;
+					ent->h2_baseline.ClearCount[client_num] = 3;
 					reference->states[i].flags &= ~ENT_CLEARED;
 				}
 			}
@@ -746,13 +746,13 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 	msg->WriteByte(client->current_sequence);
 
 	// find the client's PVS
-	if (clent->v.cameramode)
+	if (clent->GetCameraMode())
 	{
-		ent = PROG_TO_EDICT(clent->v.cameramode);
-		VectorCopy(ent->v.origin, org);
+		ent = PROG_TO_EDICT(clent->GetCameraMode());
+		VectorCopy(ent->GetOrigin(), org);
 	}
 	else
-		VectorAdd (clent->v.origin, clent->v.view_ofs, org);
+		VectorAdd (clent->GetOrigin(), clent->GetViewOfs(), org);
 
 	pvs = SV_FatPVS (org);
 
@@ -762,7 +762,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 	{
 		DoRemove = false;
 		// don't send if flagged for NODRAW and there are no lighting effects
-		if (ent->v.effects == EF_NODRAW)
+		if (ent->GetEffects() == EF_NODRAW)
 		{
 			DoRemove = true;
 			goto skipA;
@@ -771,7 +771,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 		// ignore if not touching a PV leaf
 		if (ent != clent)	// clent is ALWAYS sent
 		{	// ignore ents without visible models
-			if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
+			if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))
 			{
 				DoRemove = true;
 				goto skipA;
@@ -793,7 +793,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 
 skipA:
 		IgnoreEnt = false;
-		flagtest = (long)ent->v.flags;
+		flagtest = (long)ent->GetFlags();
 		if (!DoRemove)
 		{
 			if (flagtest & FL_CLIENT)
@@ -806,9 +806,9 @@ skipA:
 				if (!DoMonsters)
 					IgnoreEnt = true;
 			}
-			else if (ent->v.movetype == MOVETYPE_FLYMISSILE ||
-					 ent->v.movetype == MOVETYPE_BOUNCEMISSILE ||
-					 ent->v.movetype == MOVETYPE_BOUNCE)
+			else if (ent->GetMoveType() == MOVETYPE_FLYMISSILE ||
+					 ent->GetMoveType() == MOVETYPE_BOUNCEMISSILE ||
+					 ent->GetMoveType() == MOVETYPE_BOUNCE)
 			{
 				if (!DoMissiles)
 					IgnoreEnt = true;
@@ -848,20 +848,20 @@ skipA:
 			ref_ent = &build_ent;
 
 			build_ent.number = e;
-			build_ent.origin[0] = ent->baseline.origin[0];
-			build_ent.origin[1] = ent->baseline.origin[1];
-			build_ent.origin[2] = ent->baseline.origin[2];
-			build_ent.angles[0] = ent->baseline.angles[0];
-			build_ent.angles[1] = ent->baseline.angles[1];
-			build_ent.angles[2] = ent->baseline.angles[2];
-			build_ent.modelindex = ent->baseline.modelindex;
-			build_ent.frame = ent->baseline.frame;
-			build_ent.colormap = ent->baseline.colormap;
-			build_ent.skinnum = ent->baseline.skinnum;
-			build_ent.effects = ent->baseline.effects;
-			build_ent.scale = ent->baseline.scale;
-			build_ent.drawflags = ent->baseline.drawflags;
-			build_ent.abslight = ent->baseline.abslight;
+			build_ent.origin[0] = ent->h2_baseline.origin[0];
+			build_ent.origin[1] = ent->h2_baseline.origin[1];
+			build_ent.origin[2] = ent->h2_baseline.origin[2];
+			build_ent.angles[0] = ent->h2_baseline.angles[0];
+			build_ent.angles[1] = ent->h2_baseline.angles[1];
+			build_ent.angles[2] = ent->h2_baseline.angles[2];
+			build_ent.modelindex = ent->h2_baseline.modelindex;
+			build_ent.frame = ent->h2_baseline.frame;
+			build_ent.colormap = ent->h2_baseline.colormap;
+			build_ent.skinnum = ent->h2_baseline.skinnum;
+			build_ent.effects = ent->h2_baseline.effects;
+			build_ent.scale = ent->h2_baseline.scale;
+			build_ent.drawflags = ent->h2_baseline.drawflags;
+			build_ent.abslight = ent->h2_baseline.abslight;
 			build_ent.flags = 0;
 
 			FoundInList = false;
@@ -869,7 +869,7 @@ skipA:
 
 		set_ent = &build->states[build->count];
 		build->count++;
-		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
+		if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
 			Com_Memset(ref_ent,0,sizeof(*ref_ent));
 			ref_ent->number = e;
@@ -882,72 +882,72 @@ skipA:
 		// send an update
 		for (i=0 ; i<3 ; i++)
 		{
-			miss = ent->v.origin[i] - ref_ent->origin[i];
+			miss = ent->GetOrigin()[i] - ref_ent->origin[i];
 			if ( miss < -0.1 || miss > 0.1 )
 			{
 				bits |= H2U_ORIGIN1<<i;
-				set_ent->origin[i] = ent->v.origin[i];
+				set_ent->origin[i] = ent->GetOrigin()[i];
 			}
 		}
 
-		if ( ent->v.angles[0] != ref_ent->angles[0] )
+		if ( ent->GetAngles()[0] != ref_ent->angles[0] )
 		{
 			bits |= H2U_ANGLE1;
-			set_ent->angles[0] = ent->v.angles[0];
+			set_ent->angles[0] = ent->GetAngles()[0];
 		}
 			
-		if ( ent->v.angles[1] != ref_ent->angles[1] )
+		if ( ent->GetAngles()[1] != ref_ent->angles[1] )
 		{
 			bits |= H2U_ANGLE2;
-			set_ent->angles[1] = ent->v.angles[1];
+			set_ent->angles[1] = ent->GetAngles()[1];
 		}
 			
-		if ( ent->v.angles[2] != ref_ent->angles[2] )
+		if ( ent->GetAngles()[2] != ref_ent->angles[2] )
 		{
 			bits |= H2U_ANGLE3;
-			set_ent->angles[2] = ent->v.angles[2];
+			set_ent->angles[2] = ent->GetAngles()[2];
 		}
 			
-		if (ent->v.movetype == MOVETYPE_STEP)
+		if (ent->GetMoveType() == MOVETYPE_STEP)
 			bits |= H2U_NOLERP;	// don't mess up the step animation
 	
-		if (ref_ent->colormap != ent->v.colormap)
+		if (ref_ent->colormap != ent->GetColorMap())
 		{
 			bits |= H2U_COLORMAP;
-			set_ent->colormap = ent->v.colormap;
+			set_ent->colormap = ent->GetColorMap();
 		}
 			
-		if (ref_ent->skinnum != ent->v.skin
-			|| ref_ent->drawflags != ent->v.drawflags)
+		if (ref_ent->skinnum != ent->GetSkin()
+			|| ref_ent->drawflags != ent->GetDrawFlags())
 		{
 			bits |= H2U_SKIN;
-			set_ent->skinnum = ent->v.skin;
-			set_ent->drawflags = ent->v.drawflags;
+			set_ent->skinnum = ent->GetSkin();
+			set_ent->drawflags = ent->GetDrawFlags();
 		}
 
-		if (ref_ent->frame != ent->v.frame)
+		if (ref_ent->frame != ent->GetFrame())
 		{
 			bits |= H2U_FRAME;
-			set_ent->frame = ent->v.frame;
+			set_ent->frame = ent->GetFrame();
 		}
 	
-		if (ref_ent->effects != ent->v.effects)
+		if (ref_ent->effects != ent->GetEffects())
 		{
 			bits |= H2U_EFFECTS;
-			set_ent->effects = ent->v.effects;
+			set_ent->effects = ent->GetEffects();
 		}
 
 //		flagtest = (long)ent->v.flags;
 		if (flagtest & 0xff000000)
 		{
-			Host_Error("Invalid flags setting for class %s", PR_GetString(ent->v.classname));
+			Host_Error("Invalid flags setting for class %s", PR_GetString(ent->GetClassName()));
 			return;
 		}
 
 		temp_index = ent->v.modelindex;
-		if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
+		if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->GetModel())
 		{
-			String::Cpy(NewName, PR_GetString(ent->v.model));
+			String::Cpy(NewName, PR_GetString(ent->GetModel()));
 			NewName[String::Length(NewName)-5] = client->playerclass + 48;
 			temp_index = SV_ModelIndex (NewName);
 		}
@@ -958,15 +958,15 @@ skipA:
 			set_ent->modelindex = temp_index;
 		}
 
-		if (ref_ent->scale != ((int)(ent->v.scale*100.0)&255)
-			|| ref_ent->abslight != ((int)(ent->v.abslight*255.0)&255))
+		if (ref_ent->scale != ((int)(ent->GetScale()*100.0)&255)
+			|| ref_ent->abslight != ((int)(ent->GetAbsLight()*255.0)&255))
 		{
 			bits |= H2U_SCALE;
-			set_ent->scale = ((int)(ent->v.scale*100.0)&255);
-			set_ent->abslight = (int)(ent->v.abslight*255.0)&255;
+			set_ent->scale = ((int)(ent->GetScale()*100.0)&255);
+			set_ent->abslight = (int)(ent->GetAbsLight()*255.0)&255;
 		}
 
-		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
+		if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
 			bits |= H2U_CLEAR_ENT;
 			set_ent->flags |= ENT_CLEARED;
@@ -1007,32 +1007,32 @@ skipA:
 		if (bits & H2U_MODEL)
 			msg->WriteShort(temp_index);
 		if (bits & H2U_FRAME)
-			msg->WriteByte(ent->v.frame);
+			msg->WriteByte(ent->GetFrame());
 		if (bits & H2U_COLORMAP)
-			msg->WriteByte(ent->v.colormap);
+			msg->WriteByte(ent->GetColorMap());
 		if(bits & H2U_SKIN)
 		{ // Used for skin and drawflags
-			msg->WriteByte(ent->v.skin);
-			msg->WriteByte(ent->v.drawflags);
+			msg->WriteByte(ent->GetSkin());
+			msg->WriteByte(ent->GetDrawFlags());
 		}
 		if (bits & H2U_EFFECTS)
-			msg->WriteByte(ent->v.effects);
+			msg->WriteByte(ent->GetEffects());
 		if (bits & H2U_ORIGIN1)
-			msg->WriteCoord(ent->v.origin[0]);		
+			msg->WriteCoord(ent->GetOrigin()[0]);		
 		if (bits & H2U_ANGLE1)
-			msg->WriteAngle(ent->v.angles[0]);
+			msg->WriteAngle(ent->GetAngles()[0]);
 		if (bits & H2U_ORIGIN2)
-			msg->WriteCoord(ent->v.origin[1]);
+			msg->WriteCoord(ent->GetOrigin()[1]);
 		if (bits & H2U_ANGLE2)
-			msg->WriteAngle(ent->v.angles[1]);
+			msg->WriteAngle(ent->GetAngles()[1]);
 		if (bits & H2U_ORIGIN3)
-			msg->WriteCoord(ent->v.origin[2]);
+			msg->WriteCoord(ent->GetOrigin()[2]);
 		if (bits & H2U_ANGLE3)
-			msg->WriteAngle(ent->v.angles[2]);
+			msg->WriteAngle(ent->GetAngles()[2]);
 		if(bits & H2U_SCALE)
 		{ // Used for scale and abslight
-			msg->WriteByte((int)(ent->v.scale*100.0)&255);
-			msg->WriteByte((int)(ent->v.abslight*255.0)&255);
+			msg->WriteByte((int)(ent->GetScale()*100.0)&255);
+			msg->WriteByte((int)(ent->GetAbsLight()*255.0)&255);
 		}
 
 		if (build->count >= MAX_CLIENT_STATES)
@@ -1054,12 +1054,12 @@ SV_CleanupEnts
 void SV_CleanupEnts (void)
 {
 	int		e;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
-		ent->v.effects = (int)ent->v.effects & ~EF_MUZZLEFLASH;
+		ent->SetEffects((int)ent->GetEffects() & ~EF_MUZZLEFLASH);
 	}
 
 }
@@ -1070,29 +1070,29 @@ SV_WriteClientdataToMessage
 
 ==================
 */ 
-void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
+void SV_WriteClientdataToMessage (client_t *client, qhedict_t *ent, QMsg *msg)
 {
 	int		bits,sc1,sc2;
 	byte	test;
 	int		i;
-	edict_t	*other;
+	qhedict_t	*other;
 	static  int next_update = 0;
 	static	int next_count = 0;
 
 //
 // send a damage message
 //
-	if (ent->v.dmg_take || ent->v.dmg_save)
+	if (ent->GetDmgTake() || ent->GetDmgSave())
 	{
-		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
+		other = PROG_TO_EDICT(ent->GetDmgInflictor());
 		msg->WriteByte(h2svc_damage);
-		msg->WriteByte(ent->v.dmg_save);
-		msg->WriteByte(ent->v.dmg_take);
+		msg->WriteByte(ent->GetDmgSave());
+		msg->WriteByte(ent->GetDmgTake());
 		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			msg->WriteCoord(other->GetOrigin()[i] + 0.5*(other->GetMins()[i] + other->GetMaxs()[i]));
 	
-		ent->v.dmg_take = 0;
-		ent->v.dmg_save = 0;
+		ent->SetDmgTake(0);
+		ent->SetDmgSave(0);
 	}
 
 //
@@ -1101,12 +1101,12 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	SV_SetIdealPitch ();		// how much to look up / down ideally
 
 // a fixangle might get lost in a dropped packet.  Oh well.
-	if ( ent->v.fixangle )
+	if ( ent->GetFixAngle() )
 	{
 		msg->WriteByte(h2svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			msg->WriteAngle(ent->v.angles[i] );
-		ent->v.fixangle = 0;
+			msg->WriteAngle(ent->GetAngles()[i] );
+		ent->SetFixAngle(0);
 	}
 
 	bits = 0;
@@ -1120,30 +1120,30 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	}
 	else
 	{
-		if (ent->v.view_ofs[2] != client->old_v.view_ofs[2])
+		if (ent->GetViewOfs()[2] != client->old_v.view_ofs[2])
 			bits |= SU_VIEWHEIGHT;
 		
-		if (ent->v.idealpitch != client->old_v.idealpitch)
+		if (ent->GetIdealPitch() != client->old_v.idealpitch)
 			bits |= SU_IDEALPITCH;
 		
-		if (ent->v.idealroll != client->old_v.idealroll)
+		if (ent->GetIdealRoll() != client->old_v.idealroll)
 			bits |= SU_IDEALROLL;
 		
 		for (i=0 ; i<3 ; i++)
 		{
-			if (ent->v.punchangle[i] != client->old_v.punchangle[i])
+			if (ent->GetPunchAngle()[i] != client->old_v.punchangle[i])
 				bits |= (SU_PUNCH1<<i);
-			if (ent->v.velocity[i] != client->old_v.velocity[i])
+			if (ent->GetVelocity()[i] != client->old_v.velocity[i])
 				bits |= (SU_VELOCITY1<<i);
 		}
 		
-		if (ent->v.weaponframe != client->old_v.weaponframe)
+		if (ent->GetWeaponFrame() != client->old_v.weaponframe)
 			bits |= SU_WEAPONFRAME;
 		
-		if (ent->v.armorvalue != client->old_v.armorvalue)
+		if (ent->GetArmorValue() != client->old_v.armorvalue)
 			bits |= SU_ARMOR;
 		
-		if (ent->v.weaponmodel != client->old_v.weaponmodel)
+		if (ent->GetWeaponModel() != client->old_v.weaponmodel)
 			bits |= SU_WEAPON;
 	}
 
@@ -1151,7 +1151,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
  
 
 	//fjm: this wasn't in here b4, and the centerview command requires it.
-	if ( (int)ent->v.flags & FL_ONGROUND) 
+	if ( (int)ent->GetFlags() & FL_ONGROUND) 
 		bits |= SU_ONGROUND;
 
 	next_count++;
@@ -1195,28 +1195,28 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	msg->WriteShort(bits);
 	
 	if (bits & SU_VIEWHEIGHT)
-		msg->WriteChar(ent->v.view_ofs[2]);
+		msg->WriteChar(ent->GetViewOfs()[2]);
 
 	if (bits & SU_IDEALPITCH)
-		msg->WriteChar(ent->v.idealpitch);
+		msg->WriteChar(ent->GetIdealPitch());
 
 	if (bits & SU_IDEALROLL)
-		msg->WriteChar(ent->v.idealroll);
+		msg->WriteChar(ent->GetIdealRoll());
 
 	for (i=0 ; i<3 ; i++)
 	{
 		if (bits & (SU_PUNCH1<<i))
-			msg->WriteChar(ent->v.punchangle[i]);
+			msg->WriteChar(ent->GetPunchAngle()[i]);
 		if (bits & (SU_VELOCITY1<<i))
-			msg->WriteChar(ent->v.velocity[i]/16);
+			msg->WriteChar(ent->GetVelocity()[i]/16);
 	}
 
 	if (bits & SU_WEAPONFRAME)
-		msg->WriteByte(ent->v.weaponframe);
+		msg->WriteByte(ent->GetWeaponFrame());
 	if (bits & SU_ARMOR)
-		msg->WriteByte(ent->v.armorvalue);
+		msg->WriteByte(ent->GetArmorValue());
 	if (bits & SU_WEAPON)
-		msg->WriteShort(SV_ModelIndex(PR_GetString(ent->v.weaponmodel)));
+		msg->WriteShort(SV_ModelIndex(PR_GetString(ent->GetWeaponModel())));
 
 	if (host_client->send_all_v) 
 	{
@@ -1227,114 +1227,114 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	{
 		sc1 = sc2 = 0;
 
-		if (ent->v.health != host_client->old_v.health)
+		if (ent->GetHealth() != host_client->old_v.health)
 			sc1 |= SC1_HEALTH;
-		if(ent->v.level != host_client->old_v.level)
+		if(ent->GetLevel() != host_client->old_v.level)
 			sc1 |= SC1_LEVEL;
-		if(ent->v.intelligence != host_client->old_v.intelligence)
+		if(ent->GetIntelligence() != host_client->old_v.intelligence)
 			sc1 |= SC1_INTELLIGENCE;
-		if(ent->v.wisdom != host_client->old_v.wisdom)
+		if(ent->GetWisdom() != host_client->old_v.wisdom)
 			sc1 |= SC1_WISDOM;
-		if(ent->v.strength != host_client->old_v.strength)
+		if(ent->GetStrength() != host_client->old_v.strength)
 			sc1 |= SC1_STRENGTH;
-		if(ent->v.dexterity != host_client->old_v.dexterity)
+		if(ent->GetDexterity() != host_client->old_v.dexterity)
 			sc1 |= SC1_DEXTERITY;
-		if (ent->v.weapon != host_client->old_v.weapon)
+		if (ent->GetWeapon() != host_client->old_v.weapon)
 			sc1 |= SC1_WEAPON;
-		if (ent->v.bluemana != host_client->old_v.bluemana)
+		if (ent->GetBlueMana() != host_client->old_v.bluemana)
 			sc1 |= SC1_BLUEMANA;
-		if (ent->v.greenmana != host_client->old_v.greenmana)
+		if (ent->GetGreenMana() != host_client->old_v.greenmana)
 			sc1 |= SC1_GREENMANA;
-		if (ent->v.experience != host_client->old_v.experience)
+		if (ent->GetExperience() != host_client->old_v.experience)
 			sc1 |= SC1_EXPERIENCE;
-		if (ent->v.cnt_torch != host_client->old_v.cnt_torch)
+		if (ent->GetCntTorch() != host_client->old_v.cnt_torch)
 			sc1 |= SC1_CNT_TORCH;
-		if (ent->v.cnt_h_boost != host_client->old_v.cnt_h_boost)
+		if (ent->GetCntHBoost() != host_client->old_v.cnt_h_boost)
 			sc1 |= SC1_CNT_H_BOOST;
-		if (ent->v.cnt_sh_boost != host_client->old_v.cnt_sh_boost)
+		if (ent->GetCntSHBoost() != host_client->old_v.cnt_sh_boost)
 			sc1 |= SC1_CNT_SH_BOOST;
-		if (ent->v.cnt_mana_boost != host_client->old_v.cnt_mana_boost)
+		if (ent->GetCntManaBoost() != host_client->old_v.cnt_mana_boost)
 			sc1 |= SC1_CNT_MANA_BOOST;
-		if (ent->v.cnt_teleport != host_client->old_v.cnt_teleport)
+		if (ent->GetCntTeleport() != host_client->old_v.cnt_teleport)
 			sc1 |= SC1_CNT_TELEPORT;
-		if (ent->v.cnt_tome != host_client->old_v.cnt_tome)
+		if (ent->GetCntTome() != host_client->old_v.cnt_tome)
 			sc1 |= SC1_CNT_TOME;
-		if (ent->v.cnt_summon != host_client->old_v.cnt_summon)
+		if (ent->GetCntSummon() != host_client->old_v.cnt_summon)
 			sc1 |= SC1_CNT_SUMMON;
-		if (ent->v.cnt_invisibility != host_client->old_v.cnt_invisibility)
+		if (ent->GetCntInvisibility() != host_client->old_v.cnt_invisibility)
 			sc1 |= SC1_CNT_INVISIBILITY;
-		if (ent->v.cnt_glyph != host_client->old_v.cnt_glyph)
+		if (ent->GetCntGlyph() != host_client->old_v.cnt_glyph)
 			sc1 |= SC1_CNT_GLYPH;
-		if (ent->v.cnt_haste != host_client->old_v.cnt_haste)
+		if (ent->GetCntHaste() != host_client->old_v.cnt_haste)
 			sc1 |= SC1_CNT_HASTE;
-		if (ent->v.cnt_blast != host_client->old_v.cnt_blast)
+		if (ent->GetCntBlast() != host_client->old_v.cnt_blast)
 			sc1 |= SC1_CNT_BLAST;
-		if (ent->v.cnt_polymorph != host_client->old_v.cnt_polymorph)
+		if (ent->GetCntPolyMorph() != host_client->old_v.cnt_polymorph)
 			sc1 |= SC1_CNT_POLYMORPH;
-		if (ent->v.cnt_flight != host_client->old_v.cnt_flight)
+		if (ent->GetCntFlight() != host_client->old_v.cnt_flight)
 			sc1 |= SC1_CNT_FLIGHT;
-		if (ent->v.cnt_cubeofforce != host_client->old_v.cnt_cubeofforce)
+		if (ent->GetCntCubeOfForce() != host_client->old_v.cnt_cubeofforce)
 			sc1 |= SC1_CNT_CUBEOFFORCE;
-		if (ent->v.cnt_invincibility != host_client->old_v.cnt_invincibility)
+		if (ent->GetCntInvincibility() != host_client->old_v.cnt_invincibility)
 			sc1 |= SC1_CNT_INVINCIBILITY;
-		if (ent->v.artifact_active != host_client->old_v.artifact_active)
+		if (ent->GetArtifactActive() != host_client->old_v.artifact_active)
 			sc1 |= SC1_ARTIFACT_ACTIVE;
-		if (ent->v.artifact_low != host_client->old_v.artifact_low)
+		if (ent->GetArtifactLow() != host_client->old_v.artifact_low)
 			sc1 |= SC1_ARTIFACT_LOW;
-		if (ent->v.movetype != host_client->old_v.movetype)
+		if (ent->GetMoveType() != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
-		if (ent->v.cameramode != host_client->old_v.cameramode)
+		if (ent->GetCameraMode() != host_client->old_v.cameramode)
 			sc1 |= SC1_CAMERAMODE;
-		if (ent->v.hasted != host_client->old_v.hasted)
+		if (ent->GetHasted() != host_client->old_v.hasted)
 			sc1 |= SC1_HASTED;
-		if (ent->v.inventory != host_client->old_v.inventory)
+		if (ent->GetInventory() != host_client->old_v.inventory)
 			sc1 |= SC1_INVENTORY;
-		if (ent->v.rings_active != host_client->old_v.rings_active)
+		if (ent->GetRingsActive() != host_client->old_v.rings_active)
 			sc1 |= SC1_RINGS_ACTIVE;
 
-		if (ent->v.rings_low != host_client->old_v.rings_low)
+		if (ent->GetRingsLow() != host_client->old_v.rings_low)
 			sc2 |= SC2_RINGS_LOW;
-		if (ent->v.armor_amulet != host_client->old_v.armor_amulet)
+		if (ent->GetArmorAmulet() != host_client->old_v.armor_amulet)
 			sc2 |= SC2_AMULET;
-		if (ent->v.armor_bracer != host_client->old_v.armor_bracer)
+		if (ent->GetArmorBracer() != host_client->old_v.armor_bracer)
 			sc2 |= SC2_BRACER;
-		if (ent->v.armor_breastplate != host_client->old_v.armor_breastplate)
+		if (ent->GetArmorBreastPlate() != host_client->old_v.armor_breastplate)
 			sc2 |= SC2_BREASTPLATE;
-		if (ent->v.armor_helmet != host_client->old_v.armor_helmet)
+		if (ent->GetArmorHelmet() != host_client->old_v.armor_helmet)
 			sc2 |= SC2_HELMET;
-		if (ent->v.ring_flight != host_client->old_v.ring_flight)
+		if (ent->GetRingFlight() != host_client->old_v.ring_flight)
 			sc2 |= SC2_FLIGHT_T;
-		if (ent->v.ring_water != host_client->old_v.ring_water)
+		if (ent->GetRingWater() != host_client->old_v.ring_water)
 			sc2 |= SC2_WATER_T;
-		if (ent->v.ring_turning != host_client->old_v.ring_turning)
+		if (ent->GetRingTurning() != host_client->old_v.ring_turning)
 			sc2 |= SC2_TURNING_T;
-		if (ent->v.ring_regeneration != host_client->old_v.ring_regeneration)
+		if (ent->GetRingRegeneration() != host_client->old_v.ring_regeneration)
 			sc2 |= SC2_REGEN_T;
-		if (ent->v.haste_time != host_client->old_v.haste_time)
+		if (ent->GetHasteTime() != host_client->old_v.haste_time)
 			sc2 |= SC2_HASTE_T;
-		if (ent->v.tome_time != host_client->old_v.tome_time)
+		if (ent->GetTomeTime() != host_client->old_v.tome_time)
 			sc2 |= SC2_TOME_T;
-		if (ent->v.puzzle_inv1 != host_client->old_v.puzzle_inv1)
+		if (ent->GetPuzzleInv1() != host_client->old_v.puzzle_inv1)
 			sc2 |= SC2_PUZZLE1;
-		if (ent->v.puzzle_inv2 != host_client->old_v.puzzle_inv2)
+		if (ent->GetPuzzleInv2() != host_client->old_v.puzzle_inv2)
 			sc2 |= SC2_PUZZLE2;
-		if (ent->v.puzzle_inv3 != host_client->old_v.puzzle_inv3)
+		if (ent->GetPuzzleInv3() != host_client->old_v.puzzle_inv3)
 			sc2 |= SC2_PUZZLE3;
-		if (ent->v.puzzle_inv4 != host_client->old_v.puzzle_inv4)
+		if (ent->GetPuzzleInv4() != host_client->old_v.puzzle_inv4)
 			sc2 |= SC2_PUZZLE4;
-		if (ent->v.puzzle_inv5 != host_client->old_v.puzzle_inv5)
+		if (ent->GetPuzzleInv5() != host_client->old_v.puzzle_inv5)
 			sc2 |= SC2_PUZZLE5;
-		if (ent->v.puzzle_inv6 != host_client->old_v.puzzle_inv6)
+		if (ent->GetPuzzleInv6() != host_client->old_v.puzzle_inv6)
 			sc2 |= SC2_PUZZLE6;
-		if (ent->v.puzzle_inv7 != host_client->old_v.puzzle_inv7)
+		if (ent->GetPuzzleInv7() != host_client->old_v.puzzle_inv7)
 			sc2 |= SC2_PUZZLE7;
-		if (ent->v.puzzle_inv8 != host_client->old_v.puzzle_inv8)
+		if (ent->GetPuzzleInv8() != host_client->old_v.puzzle_inv8)
 			sc2 |= SC2_PUZZLE8;
-		if (ent->v.max_health != host_client->old_v.max_health)
+		if (ent->GetMaxHealth() != host_client->old_v.max_health)
 			sc2 |= SC2_MAXHEALTH;
-		if (ent->v.max_mana != host_client->old_v.max_mana)
+		if (ent->GetMaxMana() != host_client->old_v.max_mana)
 			sc2 |= SC2_MAXMANA;
-		if (ent->v.flags != host_client->old_v.flags)
+		if (ent->GetFlags() != host_client->old_v.flags)
 			sc2 |= SC2_FLAGS;
 		if (info_mask != client->info_mask)
 			sc2 |= SC2_OBJ;
@@ -1384,114 +1384,114 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 		host_client->message.WriteByte((sc2 >> 24) & 0xff);
 
 	if (sc1 & SC1_HEALTH)
-		host_client->message.WriteShort(ent->v.health);
+		host_client->message.WriteShort(ent->GetHealth());
 	if (sc1 & SC1_LEVEL)
-		host_client->message.WriteByte(ent->v.level);
+		host_client->message.WriteByte(ent->GetLevel());
 	if (sc1 & SC1_INTELLIGENCE)
-		host_client->message.WriteByte(ent->v.intelligence);
+		host_client->message.WriteByte(ent->GetIntelligence());
 	if (sc1 & SC1_WISDOM)
-		host_client->message.WriteByte(ent->v.wisdom);
+		host_client->message.WriteByte(ent->GetWisdom());
 	if (sc1 & SC1_STRENGTH)
-		host_client->message.WriteByte(ent->v.strength);
+		host_client->message.WriteByte(ent->GetStrength());
 	if (sc1 & SC1_DEXTERITY)
-		host_client->message.WriteByte(ent->v.dexterity);
+		host_client->message.WriteByte(ent->GetDexterity());
 	if (sc1 & SC1_WEAPON)
-		host_client->message.WriteByte(ent->v.weapon);
+		host_client->message.WriteByte(ent->GetWeapon());
 	if (sc1 & SC1_BLUEMANA)
-		host_client->message.WriteByte(ent->v.bluemana);
+		host_client->message.WriteByte(ent->GetBlueMana());
 	if (sc1 & SC1_GREENMANA)
-		host_client->message.WriteByte(ent->v.greenmana);
+		host_client->message.WriteByte(ent->GetGreenMana());
 	if (sc1 & SC1_EXPERIENCE)
-		host_client->message.WriteLong(ent->v.experience);
+		host_client->message.WriteLong(ent->GetExperience());
 	if (sc1 & SC1_CNT_TORCH)
-		host_client->message.WriteByte(ent->v.cnt_torch);
+		host_client->message.WriteByte(ent->GetCntTorch());
 	if (sc1 & SC1_CNT_H_BOOST)
-		host_client->message.WriteByte(ent->v.cnt_h_boost);
+		host_client->message.WriteByte(ent->GetCntHBoost());
 	if (sc1 & SC1_CNT_SH_BOOST)
-		host_client->message.WriteByte(ent->v.cnt_sh_boost);
+		host_client->message.WriteByte(ent->GetCntSHBoost());
 	if (sc1 & SC1_CNT_MANA_BOOST)
-		host_client->message.WriteByte(ent->v.cnt_mana_boost);
+		host_client->message.WriteByte(ent->GetCntManaBoost());
 	if (sc1 & SC1_CNT_TELEPORT)
-		host_client->message.WriteByte(ent->v.cnt_teleport);
+		host_client->message.WriteByte(ent->GetCntTeleport());
 	if (sc1 & SC1_CNT_TOME)
-		host_client->message.WriteByte(ent->v.cnt_tome);
+		host_client->message.WriteByte(ent->GetCntTome());
 	if (sc1 & SC1_CNT_SUMMON)
-		host_client->message.WriteByte(ent->v.cnt_summon);
+		host_client->message.WriteByte(ent->GetCntSummon());
 	if (sc1 & SC1_CNT_INVISIBILITY)
-		host_client->message.WriteByte(ent->v.cnt_invisibility);
+		host_client->message.WriteByte(ent->GetCntInvisibility());
 	if (sc1 & SC1_CNT_GLYPH)
-		host_client->message.WriteByte(ent->v.cnt_glyph);
+		host_client->message.WriteByte(ent->GetCntGlyph());
 	if (sc1 & SC1_CNT_HASTE)
-		host_client->message.WriteByte(ent->v.cnt_haste);
+		host_client->message.WriteByte(ent->GetCntHaste());
 	if (sc1 & SC1_CNT_BLAST)
-		host_client->message.WriteByte(ent->v.cnt_blast);
+		host_client->message.WriteByte(ent->GetCntBlast());
 	if (sc1 & SC1_CNT_POLYMORPH)
-		host_client->message.WriteByte(ent->v.cnt_polymorph);
+		host_client->message.WriteByte(ent->GetCntPolyMorph());
 	if (sc1 & SC1_CNT_FLIGHT)
-		host_client->message.WriteByte(ent->v.cnt_flight);
+		host_client->message.WriteByte(ent->GetCntFlight());
 	if (sc1 & SC1_CNT_CUBEOFFORCE)
-		host_client->message.WriteByte(ent->v.cnt_cubeofforce);
+		host_client->message.WriteByte(ent->GetCntCubeOfForce());
 	if (sc1 & SC1_CNT_INVINCIBILITY)
-		host_client->message.WriteByte(ent->v.cnt_invincibility);
+		host_client->message.WriteByte(ent->GetCntInvincibility());
 	if (sc1 & SC1_ARTIFACT_ACTIVE)
-		host_client->message.WriteFloat(ent->v.artifact_active);
+		host_client->message.WriteFloat(ent->GetArtifactActive());
 	if (sc1 & SC1_ARTIFACT_LOW)
-		host_client->message.WriteFloat(ent->v.artifact_low);
+		host_client->message.WriteFloat(ent->GetArtifactLow());
 	if (sc1 & SC1_MOVETYPE)
-		host_client->message.WriteByte(ent->v.movetype);
+		host_client->message.WriteByte(ent->GetMoveType());
 	if (sc1 & SC1_CAMERAMODE)
-		host_client->message.WriteByte(ent->v.cameramode);
+		host_client->message.WriteByte(ent->GetCameraMode());
 	if (sc1 & SC1_HASTED)
-		host_client->message.WriteFloat(ent->v.hasted);
+		host_client->message.WriteFloat(ent->GetHasted());
 	if (sc1 & SC1_INVENTORY)
-		host_client->message.WriteByte(ent->v.inventory);
+		host_client->message.WriteByte(ent->GetInventory());
 	if (sc1 & SC1_RINGS_ACTIVE)
-		host_client->message.WriteFloat(ent->v.rings_active);
+		host_client->message.WriteFloat(ent->GetRingsActive());
 
 	if (sc2 & SC2_RINGS_LOW)
-		host_client->message.WriteFloat(ent->v.rings_low);
+		host_client->message.WriteFloat(ent->GetRingsLow());
 	if (sc2 & SC2_AMULET)
-		host_client->message.WriteByte(ent->v.armor_amulet);
+		host_client->message.WriteByte(ent->GetArmorAmulet());
 	if (sc2 & SC2_BRACER)
-		host_client->message.WriteByte(ent->v.armor_bracer);
+		host_client->message.WriteByte(ent->GetArmorBracer());
 	if (sc2 & SC2_BREASTPLATE)
-		host_client->message.WriteByte(ent->v.armor_breastplate);
+		host_client->message.WriteByte(ent->GetArmorBreastPlate());
 	if (sc2 & SC2_HELMET)
-		host_client->message.WriteByte(ent->v.armor_helmet);
+		host_client->message.WriteByte(ent->GetArmorHelmet());
 	if (sc2 & SC2_FLIGHT_T)
-		host_client->message.WriteByte(ent->v.ring_flight);
+		host_client->message.WriteByte(ent->GetRingFlight());
 	if (sc2 & SC2_WATER_T)
-		host_client->message.WriteByte(ent->v.ring_water);
+		host_client->message.WriteByte(ent->GetRingWater());
 	if (sc2 & SC2_TURNING_T)
-		host_client->message.WriteByte(ent->v.ring_turning);
+		host_client->message.WriteByte(ent->GetRingTurning());
 	if (sc2 & SC2_REGEN_T)
-		host_client->message.WriteByte(ent->v.ring_regeneration);
+		host_client->message.WriteByte(ent->GetRingRegeneration());
 	if (sc2 & SC2_HASTE_T)
-		host_client->message.WriteFloat(ent->v.haste_time);
+		host_client->message.WriteFloat(ent->GetHasteTime());
 	if (sc2 & SC2_TOME_T)
-		host_client->message.WriteFloat(ent->v.tome_time);
+		host_client->message.WriteFloat(ent->GetTomeTime());
 	if (sc2 & SC2_PUZZLE1)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv1));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv1()));
 	if (sc2 & SC2_PUZZLE2)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv2));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv2()));
 	if (sc2 & SC2_PUZZLE3)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv3));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv3()));
 	if (sc2 & SC2_PUZZLE4)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv4));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv4()));
 	if (sc2 & SC2_PUZZLE5)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv5));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv5()));
 	if (sc2 & SC2_PUZZLE6)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv6));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv6()));
 	if (sc2 & SC2_PUZZLE7)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv7));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv7()));
 	if (sc2 & SC2_PUZZLE8)
-		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv8));
+		host_client->message.WriteString2(PR_GetString(ent->GetPuzzleInv8()));
 	if (sc2 & SC2_MAXHEALTH)
-		host_client->message.WriteShort(ent->v.max_health);
+		host_client->message.WriteShort(ent->GetMaxHealth());
 	if (sc2 & SC2_MAXMANA)
-		host_client->message.WriteByte(ent->v.max_mana);
+		host_client->message.WriteByte(ent->GetMaxMana());
 	if (sc2 & SC2_FLAGS)
-		host_client->message.WriteFloat(ent->v.flags);
+		host_client->message.WriteFloat(ent->GetFlags());
 	if (sc2 & SC2_OBJ)
 	{
 		host_client->message.WriteLong(info_mask);
@@ -1504,7 +1504,68 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	}
 
 end:
-	Com_Memcpy(&client->old_v,&ent->v,sizeof(client->old_v));
+	client->old_v.movetype = ent->GetMoveType();
+	VectorCopy(ent->GetVelocity(), client->old_v.velocity);
+	VectorCopy(ent->GetPunchAngle(), client->old_v.punchangle);
+	client->old_v.weapon = ent->GetWeapon();
+	client->old_v.weaponmodel = ent->GetWeaponModel();
+	client->old_v.weaponframe = ent->GetWeaponFrame();
+	client->old_v.health = ent->GetHealth();
+	client->old_v.max_health = ent->GetMaxHealth();
+	client->old_v.bluemana = ent->GetBlueMana();
+	client->old_v.greenmana = ent->GetGreenMana();
+	client->old_v.max_mana = ent->GetMaxMana();
+	client->old_v.armor_amulet = ent->GetArmorAmulet();
+	client->old_v.armor_bracer = ent->GetArmorBracer();
+	client->old_v.armor_breastplate = ent->GetArmorBreastPlate();
+	client->old_v.armor_helmet = ent->GetArmorHelmet();
+	client->old_v.level = ent->GetLevel();
+	client->old_v.intelligence = ent->GetIntelligence();
+	client->old_v.wisdom = ent->GetWisdom();
+	client->old_v.dexterity = ent->GetDexterity();
+	client->old_v.strength = ent->GetStrength();
+	client->old_v.experience = ent->GetExperience();
+	client->old_v.ring_flight = ent->GetRingFlight();
+	client->old_v.ring_water = ent->GetRingWater();
+	client->old_v.ring_turning = ent->GetRingTurning();
+	client->old_v.ring_regeneration = ent->GetRingRegeneration();
+	client->old_v.haste_time = ent->GetHasteTime();
+	client->old_v.tome_time = ent->GetTomeTime();
+	client->old_v.puzzle_inv1 = ent->GetPuzzleInv1();
+	client->old_v.puzzle_inv2 = ent->GetPuzzleInv2();
+	client->old_v.puzzle_inv3 = ent->GetPuzzleInv3();
+	client->old_v.puzzle_inv4 = ent->GetPuzzleInv4();
+	client->old_v.puzzle_inv5 = ent->GetPuzzleInv5();
+	client->old_v.puzzle_inv6 = ent->GetPuzzleInv6();
+	client->old_v.puzzle_inv7 = ent->GetPuzzleInv7();
+	client->old_v.puzzle_inv8 = ent->GetPuzzleInv8();
+	VectorCopy(ent->GetViewOfs(), client->old_v.view_ofs);
+	client->old_v.idealpitch = ent->GetIdealPitch();
+	client->old_v.idealroll = ent->GetIdealRoll();
+	client->old_v.flags = ent->GetFlags();
+	client->old_v.armorvalue = ent->GetArmorValue();
+	client->old_v.rings_active = ent->GetRingsActive();
+	client->old_v.rings_low = ent->GetRingsLow();
+	client->old_v.artifact_active = ent->GetArtifactActive();
+	client->old_v.artifact_low = ent->GetArtifactLow();
+	client->old_v.hasted = ent->GetHasted();
+	client->old_v.inventory = ent->GetInventory();
+	client->old_v.cnt_torch = ent->GetCntTorch();
+	client->old_v.cnt_h_boost = ent->GetCntHBoost();
+	client->old_v.cnt_sh_boost = ent->GetCntSHBoost();
+	client->old_v.cnt_mana_boost = ent->GetCntManaBoost();
+	client->old_v.cnt_teleport = ent->GetCntTeleport();
+	client->old_v.cnt_tome = ent->GetCntTome();
+	client->old_v.cnt_summon = ent->GetCntSummon();
+	client->old_v.cnt_invisibility = ent->GetCntInvisibility();
+	client->old_v.cnt_glyph = ent->GetCntGlyph();
+	client->old_v.cnt_haste = ent->GetCntHaste();
+	client->old_v.cnt_blast = ent->GetCntBlast();
+	client->old_v.cnt_polymorph = ent->GetCntPolyMorph();
+	client->old_v.cnt_flight = ent->GetCntFlight();
+	client->old_v.cnt_cubeofforce = ent->GetCntCubeOfForce();
+	client->old_v.cnt_invincibility = ent->GetCntInvincibility();
+	client->old_v.cameramode = ent->GetCameraMode();
 }
 
 /*
@@ -1565,13 +1626,13 @@ void SV_UpdateToReliableMessages (void)
 {
 	int			i, j;
 	client_t *client;
-	edict_t *ent;
+	qhedict_t *ent;
 
 // check for changes to be sent over the reliable streams
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{
 		ent = host_client->edict;
-		if (host_client->old_frags != ent->v.frags)
+		if (host_client->old_frags != ent->GetFrags())
 		{
 			for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 			{
@@ -1580,10 +1641,10 @@ void SV_UpdateToReliableMessages (void)
 
 				client->message.WriteByte(h2svc_updatefrags);
 				client->message.WriteByte(i);
-				client->message.WriteShort(host_client->edict->v.frags);
+				client->message.WriteShort(host_client->edict->GetFrags());
 			}
 
-			host_client->old_frags = ent->v.frags;
+			host_client->old_frags = ent->GetFrags();
 		}
 	}
 
@@ -1738,7 +1799,7 @@ SV_CreateBaseline
 void SV_CreateBaseline (void)
 {
 	int			i;
-	edict_t			*svent;
+	qhedict_t			*svent;
 	int				entnum;	
 //	int client_num = 1<<(MAX_BASELINES-1);
 		
@@ -1754,25 +1815,25 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-		VectorCopy (svent->v.origin, svent->baseline.origin);
-		VectorCopy (svent->v.angles, svent->baseline.angles);
-		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skinnum = svent->v.skin;
-		svent->baseline.scale = (int)(svent->v.scale*100.0)&255;
-		svent->baseline.drawflags = svent->v.drawflags;
-		svent->baseline.abslight = (int)(svent->v.abslight*255.0)&255;
+		VectorCopy (svent->GetOrigin(), svent->h2_baseline.origin);
+		VectorCopy (svent->GetAngles(), svent->h2_baseline.angles);
+		svent->h2_baseline.frame = svent->GetFrame();
+		svent->h2_baseline.skinnum = svent->GetSkin();
+		svent->h2_baseline.scale = (int)(svent->GetScale()*100.0)&255;
+		svent->h2_baseline.drawflags = svent->GetDrawFlags();
+		svent->h2_baseline.abslight = (int)(svent->GetAbsLight()*255.0)&255;
 		if (entnum > 0	&& entnum <= svs.maxclients)
 		{
-			svent->baseline.colormap = entnum;
-			svent->baseline.modelindex = 0;//SV_ModelIndex("models/paladin.mdl");
+			svent->h2_baseline.colormap = entnum;
+			svent->h2_baseline.modelindex = 0;//SV_ModelIndex("models/paladin.mdl");
 		}
 		else
 		{
-			svent->baseline.colormap = 0;
-			svent->baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->v.model));
+			svent->h2_baseline.colormap = 0;
+			svent->h2_baseline.modelindex =
+				SV_ModelIndex(PR_GetString(svent->GetModel()));
 		}
-		Com_Memset(svent->baseline.ClearCount,99,sizeof(svent->baseline.ClearCount));
+		Com_Memset(svent->h2_baseline.ClearCount,99,sizeof(svent->h2_baseline.ClearCount));
 		
 	//
 	// add to the message
@@ -1780,17 +1841,17 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteByte(h2svc_spawnbaseline);
 		sv.signon.WriteShort(entnum);
 
-		sv.signon.WriteShort(svent->baseline.modelindex);
-		sv.signon.WriteByte(svent->baseline.frame);
-		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skinnum);
-		sv.signon.WriteByte(svent->baseline.scale);
-		sv.signon.WriteByte(svent->baseline.drawflags);
-		sv.signon.WriteByte(svent->baseline.abslight);
+		sv.signon.WriteShort(svent->h2_baseline.modelindex);
+		sv.signon.WriteByte(svent->h2_baseline.frame);
+		sv.signon.WriteByte(svent->h2_baseline.colormap);
+		sv.signon.WriteByte(svent->h2_baseline.skinnum);
+		sv.signon.WriteByte(svent->h2_baseline.scale);
+		sv.signon.WriteByte(svent->h2_baseline.drawflags);
+		sv.signon.WriteByte(svent->h2_baseline.abslight);
 		for (i=0 ; i<3 ; i++)
 		{
-			sv.signon.WriteCoord(svent->baseline.origin[i]);
-			sv.signon.WriteAngle(svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->h2_baseline.origin[i]);
+			sv.signon.WriteAngle(svent->h2_baseline.angles[i]);
 		}
 	}
 }
@@ -1858,7 +1919,7 @@ extern float		scr_centertime_off;
 
 void SV_SpawnServer (char *server, char *startspot)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i;
 	qboolean	stats_restored;
 
@@ -1930,7 +1991,7 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	sv.max_edicts = MAX_EDICTS_H2;
 	
-	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
+	sv.edicts = (qhedict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 
 	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
 	
@@ -1988,10 +2049,10 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent = EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
-	ent->v.model = PR_SetString(sv.modelname);
+	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->v.solid = SOLID_BSP;
-	ent->v.movetype = MOVETYPE_PUSH;
+	ent->SetSolid(SOLID_BSP);
+	ent->SetMoveType(MOVETYPE_PUSH);
 
 	if (coop->value)
 		pr_global_struct->coop = coop->value;

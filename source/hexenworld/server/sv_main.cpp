@@ -221,7 +221,7 @@ void SV_DropClient (client_t *drop)
 		}
 	}
 	else if(dmMode->value==DM_SIEGE)
-		if(String::ICmp(PR_GetString(drop->edict->v.puzzle_inv1),""))
+		if(String::ICmp(PR_GetString(drop->edict->GetPuzzleInv1()),""))
 		{
 			//this guy has a puzzle piece, call this function anyway
 			//to make sure he leaves it behind
@@ -245,7 +245,7 @@ void SV_DropClient (client_t *drop)
 	drop->connection_started = realtime;	// for zombie timeout
 
 	drop->old_frags = 0;
-	drop->edict->v.frags = 0;
+	drop->edict->SetFrags(0);
 	drop->name[0] = 0;
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 
@@ -308,7 +308,7 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 	buf->WriteByte(hwsvc_updatedminfo);
 	buf->WriteByte(i);
 	buf->WriteShort(client->old_frags);
-	buf->WriteByte((client->playerclass<<5)|((int)client->edict->v.level&31));
+	buf->WriteByte((client->playerclass<<5)|((int)client->edict->GetLevel()&31));
 	
 	if(dmMode->value==DM_SIEGE)
 	{
@@ -483,7 +483,7 @@ void SVC_DirectConnect (void)
 	int			i;
 	client_t	*cl, *newcl;
 	client_t	temp;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			edictnum;
 	const char	*s;
 	int			clients, spectators;
@@ -1514,9 +1514,10 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		{
 			i = 0;
 		}
-		cl->next_playerclass = cl->edict->v.next_playerclass = i;
+		cl->next_playerclass =  i;
+		cl->edict->SetNextPlayerClass(i);
 
-		if (cl->edict->v.health > 0)
+		if (cl->edict->GetHealth() > 0)
 		{
 			sprintf(newname,"%d",cl->playerclass);
 			Info_SetValueForKey(cl->userinfo, "playerclass", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);

@@ -28,8 +28,8 @@ typedef struct areanode_s
 	int		axis;		// -1 = leaf node
 	float	dist;
 	struct areanode_s	*children[2];
-	link_t	trigger_edicts;
-	link_t	solid_edicts;
+	qhlink_t	trigger_edicts;
+	qhlink_t	solid_edicts;
 } areanode_t;
 
 #define	AREA_DEPTH	4
@@ -41,12 +41,12 @@ extern	areanode_t	sv_areanodes[AREA_NODES];
 void SV_ClearWorld (void);
 // called after the world model has been loaded, before linking any entities
 
-void SV_UnlinkEdict (edict_t *ent);
+void SV_UnlinkEdict (qhedict_t *ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 // flags ent->v.modified
 
-void SV_LinkEdict (edict_t *ent, qboolean touch_triggers);
+void SV_LinkEdict (qhedict_t *ent, qboolean touch_triggers);
 // Needs to be called any time an entity changes origin, mins, maxs, or solid
 // flags ent->v.modified
 // sets ent->v.absmin and ent->v.absmax
@@ -56,9 +56,9 @@ int SV_PointContents (vec3_t p);
 // returns the CONTENTS_* value from the world at the given point.
 // does not check any entities at all
 
-edict_t	*SV_TestEntityPosition (edict_t *ent);
+qhedict_t	*SV_TestEntityPosition (qhedict_t *ent);
 
-q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict);
+q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, qhedict_t *passedict);
 // mins and maxs are reletive
 
 // if the entire move stays in a solid volume, trace.allsolid will be set
@@ -72,4 +72,4 @@ q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
 // passedict is explicitly excluded from clipping checks (normally NULL)
 
 
-edict_t	*SV_TestPlayerPosition (edict_t *ent, vec3_t origin);
+qhedict_t	*SV_TestPlayerPosition (qhedict_t *ent, vec3_t origin);

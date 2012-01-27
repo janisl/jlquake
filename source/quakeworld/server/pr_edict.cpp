@@ -40,7 +40,7 @@ ED_ClearEdict
 Sets everything to NULL
 =================
 */
-void ED_ClearEdict (edict_t *e)
+void ED_ClearEdict (qhedict_t *e)
 {
 	Com_Memset(&e->v, 0, progs->entityfields * 4);
 	e->free = false;
@@ -57,10 +57,10 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-edict_t *ED_Alloc (void)
+qhedict_t *ED_Alloc (void)
 {
 	int			i;
-	edict_t		*e;
+	qhedict_t		*e;
 
 	for ( i=MAX_CLIENTS_QW+1 ; i<sv.num_edicts ; i++)
 	{
@@ -97,21 +97,21 @@ Marks the edict as free
 FIXME: walk all entities and NULL out references to this entity
 =================
 */
-void ED_Free (edict_t *ed)
+void ED_Free (qhedict_t *ed)
 {
 	SV_UnlinkEdict (ed);		// unlink from world bsp
 
 	ed->free = true;
-	ed->v.model = 0;
-	ed->v.takedamage = 0;
+	ed->SetModel(0);
+	ed->SetTakeDamage(0);
 	ed->v.modelindex = 0;
-	ed->v.colormap = 0;
-	ed->v.skin = 0;
-	ed->v.frame = 0;
-	VectorCopy (vec3_origin, ed->v.origin);
-	VectorCopy (vec3_origin, ed->v.angles);
-	ed->v.nextthink = -1;
-	ed->v.solid = 0;
+	ed->SetColorMap(0);
+	ed->SetSkin(0);
+	ed->SetFrame(0);
+	VectorCopy (vec3_origin, ed->GetOrigin());
+	ed->SetAngles(vec3_origin);
+	ed->SetNextThink(-1);
+	ed->SetSolid(0);
 	
 	ed->freetime = sv.time;
 }
@@ -128,7 +128,7 @@ typedef struct {
 
 static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
-eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
+eval_t *GetEdictFieldValue(qhedict_t *ed, const char *field)
 {
 	ddef_t			*def = NULL;
 	int				i;
@@ -327,7 +327,7 @@ ED_Print
 For debugging
 =============
 */
-void ED_Print (edict_t *ed)
+void ED_Print (qhedict_t *ed)
 {
 	int		l;
 	ddef_t	*d;
@@ -376,7 +376,7 @@ ED_Write
 For savegames
 =============
 */
-void ED_Write (FILE *f, edict_t *ed)
+void ED_Write (FILE *f, qhedict_t *ed)
 {
 	ddef_t	*d;
 	int		*v;
@@ -466,7 +466,7 @@ For debugging
 void ED_Count (void)
 {
 	int		i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		active, models, solid, step;
 
 	active = models = solid = step = 0;
@@ -476,11 +476,11 @@ void ED_Count (void)
 		if (ent->free)
 			continue;
 		active++;
-		if (ent->v.solid)
+		if (ent->GetSolid())
 			solid++;
-		if (ent->v.model)
+		if (ent->GetModel())
 			models++;
-		if (ent->v.movetype == MOVETYPE_STEP)
+		if (ent->GetMoveType() == MOVETYPE_STEP)
 			step++;
 	}
 
@@ -692,7 +692,7 @@ ed should be a properly initialized empty edict.
 Used for initial level load and for savegames.
 ====================
 */
-const char *ED_ParseEdict (const char *data, edict_t *ent)
+const char *ED_ParseEdict (const char *data, qhedict_t *ent)
 {
 	ddef_t		*key;
 	qboolean	anglehack;
@@ -788,7 +788,7 @@ to call ED_CallSpawnFunctions () to let the objects initialize themselves.
 */
 void ED_LoadFromFile (const char *data)
 {	
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			inhibit;
 	dfunction_t	*func;
 	
@@ -813,7 +813,7 @@ void ED_LoadFromFile (const char *data)
 		data = ED_ParseEdict (data, ent);
 		
 // remove things from different skill levels or deathmatch
-		if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_DEATHMATCH))
+		if (((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_DEATHMATCH))
 		{
 			ED_Free (ent);	
 			inhibit++;
@@ -823,7 +823,7 @@ void ED_LoadFromFile (const char *data)
 //
 // immediately call spawn function
 //
-		if (!ent->v.classname)
+		if (!ent->GetClassName())
 		{
 			Con_Printf ("No classname for:\n");
 			ED_Print (ent);
@@ -832,7 +832,7 @@ void ED_LoadFromFile (const char *data)
 		}
 		
 	// look for the spawn function
-		func = ED_FindFunction ( PR_GetString(ent->v.classname) );
+		func = ED_FindFunction ( PR_GetString(ent->GetClassName()) );
 
 		if (!func)
 		{
@@ -897,7 +897,7 @@ void PR_LoadProgs (void)
 	pr_global_struct = (globalvars_t *)((byte *)progs + progs->ofs_globals);
 	pr_globals = (float *)pr_global_struct;
 	
-	pr_edict_size = progs->entityfields * 4 + sizeof (edict_t) - sizeof(entvars_t);
+	pr_edict_size = progs->entityfields * 4 + sizeof (qhedict_t) - sizeof(entvars_t);
 	
 // byte swap the lumps
 	for (i=0 ; i<progs->numstatements ; i++)
@@ -946,6 +946,8 @@ void PR_LoadProgs (void)
 		SpectatorThink = (func_t)(f - pr_functions);
 	if ((f = ED_FindFunction ("SpectatorDisconnect")) != NULL)
 		SpectatorDisconnect = (func_t)(f - pr_functions);
+
+	ED_InitEntityFields();
 }
 
 
@@ -964,14 +966,14 @@ void PR_Init (void)
 
 
 
-edict_t *EDICT_NUM(int n)
+qhedict_t *EDICT_NUM(int n)
 {
 	if (n < 0 || n >= MAX_EDICTS_Q1)
 		SV_Error ("EDICT_NUM: bad number %i", n);
-	return (edict_t *)((byte *)sv.edicts+ (n)*pr_edict_size);
+	return (qhedict_t *)((byte *)sv.edicts+ (n)*pr_edict_size);
 }
 
-int NUM_FOR_EDICT(edict_t *e)
+int NUM_FOR_EDICT(qhedict_t *e)
 {
 	int		b;
 	

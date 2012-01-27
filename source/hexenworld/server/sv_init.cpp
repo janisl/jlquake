@@ -62,7 +62,7 @@ baseline will be transmitted
 void SV_CreateBaseline (void)
 {
 	int			i;
-	edict_t			*svent;
+	qhedict_t			*svent;
 	int				entnum;	
 		
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
@@ -78,26 +78,26 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-		VectorCopy (svent->v.origin, svent->baseline.origin);
-		VectorCopy (svent->v.angles, svent->baseline.angles);
-		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skinnum = svent->v.skin;
+		VectorCopy (svent->GetOrigin(), svent->h2_baseline.origin);
+		VectorCopy (svent->GetAngles(), svent->h2_baseline.angles);
+		svent->h2_baseline.frame = svent->GetFrame();
+		svent->h2_baseline.skinnum = svent->GetSkin();
 		if (entnum > 0 && entnum <= HWMAX_CLIENTS)
 		{
-			svent->baseline.colormap = entnum;
+			svent->h2_baseline.colormap = entnum;
 //			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
-			svent->baseline.modelindex = SV_ModelIndex("models/paladin.mdl");
+			svent->h2_baseline.modelindex = SV_ModelIndex("models/paladin.mdl");
 		}
 		else
 		{
-			svent->baseline.colormap = 0;
-			svent->baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->v.model));
+			svent->h2_baseline.colormap = 0;
+			svent->h2_baseline.modelindex =
+				SV_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 
-		svent->baseline.scale = (int)(svent->v.scale*100.0)&255;
-		svent->baseline.drawflags = svent->v.drawflags;
-		svent->baseline.abslight = (int)(svent->v.abslight*255.0)&255;
+		svent->h2_baseline.scale = (int)(svent->GetScale()*100.0)&255;
+		svent->h2_baseline.drawflags = svent->GetDrawFlags();
+		svent->h2_baseline.abslight = (int)(svent->GetAbsLight()*255.0)&255;
 		//
 		// flush the signon message out to a seperate buffer if
 		// nearly full
@@ -110,17 +110,17 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteByte(h2svc_spawnbaseline);		
 		sv.signon.WriteShort(entnum);
 
-		sv.signon.WriteShort(svent->baseline.modelindex);
-		sv.signon.WriteByte(svent->baseline.frame);
-		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skinnum);
-		sv.signon.WriteByte(svent->baseline.scale);
-		sv.signon.WriteByte(svent->baseline.drawflags);
-		sv.signon.WriteByte(svent->baseline.abslight);
+		sv.signon.WriteShort(svent->h2_baseline.modelindex);
+		sv.signon.WriteByte(svent->h2_baseline.frame);
+		sv.signon.WriteByte(svent->h2_baseline.colormap);
+		sv.signon.WriteByte(svent->h2_baseline.skinnum);
+		sv.signon.WriteByte(svent->h2_baseline.scale);
+		sv.signon.WriteByte(svent->h2_baseline.drawflags);
+		sv.signon.WriteByte(svent->h2_baseline.abslight);
 		for (i=0 ; i<3 ; i++)
 		{
-			sv.signon.WriteCoord(svent->baseline.origin[i]);
-			sv.signon.WriteAngle(svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->h2_baseline.origin[i]);
+			sv.signon.WriteAngle(svent->h2_baseline.angles[i]);
 		}
 	}
 }
@@ -173,7 +173,7 @@ This is only called from the SV_Map_f() function.
 */
 void SV_SpawnServer (char *server, char *startspot)
 {
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i;
 
 	Con_DPrintf ("SpawnServer: %s\n",server);
@@ -214,7 +214,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	PR_LoadStrings();
 
 	// allocate edicts
-	sv.edicts = (edict_t*)Hunk_AllocName (MAX_EDICTS_H2*pr_edict_size, "edicts");
+	sv.edicts = (qhedict_t*)Hunk_AllocName (MAX_EDICTS_H2*pr_edict_size, "edicts");
 	
 	// leave slots at start for clients only
 	sv.num_edicts = HWMAX_CLIENTS+1+max_temp_edicts->value;
@@ -258,10 +258,10 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	ent = EDICT_NUM(0);
 	ent->free = false;
-	ent->v.model = PR_SetString(sv.modelname);
+	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->v.solid = SOLID_BSP;
-	ent->v.movetype = MOVETYPE_PUSH;
+	ent->SetSolid(SOLID_BSP);
+	ent->SetMoveType(MOVETYPE_PUSH);
 
 	if (coop->value)
 		Cvar_SetValue ("deathmatch", 0);

@@ -278,7 +278,7 @@ void SV_Multicast (vec3_t origin, int to)
 		if (client->state != cs_spawned)
 			continue;
 
-		VectorCopy(client->edict->v.origin, adjust_origin);
+		VectorCopy(client->edict->GetOrigin(), adjust_origin);
 		adjust_origin[2] += 16;
 		if (mask)
 		{
@@ -344,7 +344,7 @@ void SV_MulticastSpecific (unsigned clients, qboolean reliable)
 SV_StopSound
 ==================
 */
-void SV_StopSound (edict_t *entity, int channel)
+void SV_StopSound (qhedict_t *entity, int channel)
 {
 	int			ent,i;
 	vec3_t		origin;
@@ -353,14 +353,14 @@ void SV_StopSound (edict_t *entity, int channel)
 	channel = (ent<<3) | channel;
 
 	// use the entity origin unless it is a bmodel
-	if (entity->v.solid == SOLID_BSP)
+	if (entity->GetSolid() == SOLID_BSP)
 	{
 		for (i=0 ; i<3 ; i++)//FIXME: This may not work- should be using (absmin + absmax)*0.5?
-			origin[i] = entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]);
+			origin[i] = entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]);
 	}
 	else
 	{
-		VectorCopy (entity->v.origin, origin);
+		VectorCopy (entity->GetOrigin(), origin);
 	}
 
 	sv.multicast.WriteByte(h2svc_stopsound);
@@ -373,7 +373,7 @@ void SV_StopSound (edict_t *entity, int channel)
 SV_UpdateSoundPos
 ==================
 */
-void SV_UpdateSoundPos (edict_t *entity, int channel)
+void SV_UpdateSoundPos (qhedict_t *entity, int channel)
 {
 	int			ent;
     int			i;
@@ -383,20 +383,20 @@ void SV_UpdateSoundPos (edict_t *entity, int channel)
 	channel = (ent<<3) | channel;
 
 	// use the entity origin unless it is a bmodel
-	if (entity->v.solid == SOLID_BSP)
+	if (entity->GetSolid() == SOLID_BSP)
 	{
 		for (i=0 ; i<3 ; i++)//FIXME: This may not work- should be using (absmin + absmax)*0.5?
-			origin[i] = entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]);
+			origin[i] = entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]);
 	}
 	else
 	{
-		VectorCopy (entity->v.origin, origin);
+		VectorCopy (entity->GetOrigin(), origin);
 	}
 
 	sv.multicast.WriteByte(hwsvc_sound_update_pos);
 	sv.multicast.WriteShort(channel);
 	for (i=0 ; i<3 ; i++)
-		sv.multicast.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		sv.multicast.WriteCoord(entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]));
 	SV_Multicast (origin, MULTICAST_PHS);
 }
 
@@ -415,7 +415,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
+void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -471,14 +471,14 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 		channel |= SND_ATTENUATION;
 
 	// use the entity origin unless it is a bmodel
-	if (entity->v.solid == SOLID_BSP)
+	if (entity->GetSolid() == SOLID_BSP)
 	{
 		for (i=0 ; i<3 ; i++)//FIXME: This may not work- should be using (absmin + absmax)*0.5?
-			origin[i] = entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]);
+			origin[i] = entity->GetOrigin()[i]+0.5*(entity->GetMins()[i]+entity->GetMaxs()[i]);
 	}
 	else
 	{
-		VectorCopy (entity->v.origin, origin);
+		VectorCopy (entity->GetOrigin(), origin);
 	}
 
 	sv.multicast.WriteByte(h2svc_sound);
@@ -683,8 +683,8 @@ SV_WriteClientdataToMessage
 void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 {
 	int		i;
-	edict_t	*other;
-	edict_t	*ent;
+	qhedict_t	*other;
+	qhedict_t	*ent;
 
 	ent = client->edict;
 
@@ -697,35 +697,35 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 	}
 
 	// send a damage message if the player got hit this frame
-	if (ent->v.dmg_take || ent->v.dmg_save)
+	if (ent->GetDmgTake() || ent->GetDmgSave())
 	{
-		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
+		other = PROG_TO_EDICT(ent->GetDmgInflictor());
 		msg->WriteByte(h2svc_damage);
-		msg->WriteByte(ent->v.dmg_save);
-		msg->WriteByte(ent->v.dmg_take);
+		msg->WriteByte(ent->GetDmgSave());
+		msg->WriteByte(ent->GetDmgTake());
 		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			msg->WriteCoord(other->GetOrigin()[i] + 0.5*(other->GetMins()[i] + other->GetMaxs()[i]));
 	
-		ent->v.dmg_take = 0;
-		ent->v.dmg_save = 0;
+		ent->SetDmgTake(0);
+		ent->SetDmgSave(0);
 	}
 
 	// a fixangle might get lost in a dropped packet.  Oh well.
-	if ( ent->v.fixangle )
+	if ( ent->GetFixAngle())
 	{
 		msg->WriteByte(h2svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			msg->WriteAngle(ent->v.angles[i] );
-		ent->v.fixangle = 0;
+			msg->WriteAngle(ent->GetAngles()[i] );
+		ent->SetFixAngle(0);
 	}
 
 	// if the player has a target, send its info...
-	if (ent->v.targDist)
+	if (ent->GetTargDist())
 	{
 		msg->WriteByte(hwsvc_targetupdate);
-		msg->WriteByte(ent->v.targAng);
-		msg->WriteByte(ent->v.targPitch);
-		msg->WriteByte((ent->v.targDist < 255.0) ? (int)(ent->v.targDist) : 255);
+		msg->WriteByte(ent->GetTargAng());
+		msg->WriteByte(ent->GetTargPitch());
+		msg->WriteByte((ent->GetTargDist() < 255.0) ? (int)(ent->GetTargDist()) : 255);
 	}
 }
 
@@ -739,7 +739,7 @@ when a reliable message can be delivered this frame.
 */
 void SV_UpdateClientStats (client_t *client)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		stats[MAX_CL_STATS];
 	int		i;
 	
@@ -752,7 +752,7 @@ void SV_UpdateClientStats (client_t *client)
 		ent = svs.clients[client->spec_track - 1].edict;
 
 	stats[STAT_HEALTH] = 0;//ent->v.health;
-	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
+	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->GetWeaponModel()));
 	stats[STAT_AMMO] = 0;//ent->v.currentammo;
 	stats[STAT_ARMOR] = 0;//ent->v.armorvalue;
 	stats[STAT_SHELLS] = 0;//ent->v.ammo_shells;
@@ -828,11 +828,11 @@ qboolean SV_SendClientDatagram (client_t *client)
 	return true;
 }
 
-static qboolean ValidToShowName(edict_t *edict)
+static qboolean ValidToShowName(qhedict_t *edict)
 {
-	if (edict->v.deadflag)
+	if (edict->GetDeadFlag())
 		return false;
-	if((int)edict->v.effects & EF_NODRAW)
+	if((int)edict->GetEffects() & EF_NODRAW)
 		return false;
 	return true;
 }
@@ -855,18 +855,18 @@ static void UpdatePIV(void)
 		if (host_client->state != cs_spawned || host_client->spectator)
 			continue;
 
-		VectorCopy(host_client->edict->v.origin, adjust_org1);
+		VectorCopy(host_client->edict->GetOrigin(), adjust_org1);
 		adjust_org1[2] += 24;
 
-		save_hull = host_client->edict->v.hull;
-		host_client->edict->v.hull = 0;
+		save_hull = host_client->edict->GetHull();
+		host_client->edict->SetHull(0);
 
 		for(j=i+1, client = host_client+1 ; j<HWMAX_CLIENTS ; j++, client++)
 		{
 			if (client->state != cs_spawned || client->spectator)
 				continue;
 			
-			VectorSubtract(client->edict->v.origin, host_client->edict->v.origin, distvec);
+			VectorSubtract(client->edict->GetOrigin(), host_client->edict->GetOrigin(), distvec);
 			dist = VectorNormalize(distvec);
 			if(dist > sv_namedistance->value)
 			{
@@ -874,7 +874,7 @@ static void UpdatePIV(void)
 				continue;
 			}
 
-			VectorCopy(client->edict->v.origin, adjust_org2);
+			VectorCopy(client->edict->GetOrigin(), adjust_org2);
 			adjust_org2[2] += 24;
 
 			trace = SV_Move (adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->edict);
@@ -886,7 +886,7 @@ static void UpdatePIV(void)
 					client->PIV |= 1<<i;
 			}
 		}
-		host_client->edict->v.hull = save_hull;
+		host_client->edict->SetHull(save_hull);
 	}
 }
 
@@ -900,7 +900,7 @@ void SV_UpdateToReliableMessages (void)
 	int			i, j;
 	client_t	*client;
 	eval_t		*val;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	qboolean	CheckPIV = false;
 
 //	Con_Printf("SV_UpdateToReliableMessages\n");
@@ -921,7 +921,7 @@ void SV_UpdateToReliableMessages (void)
 			host_client->sendinfo = false;
 			SV_FullClientUpdate (host_client, &sv.reliable_datagram);
 		}
-		if (host_client->old_frags != host_client->edict->v.frags)
+		if (host_client->old_frags != host_client->edict->GetFrags())
 		{
 			for (j=0, client = svs.clients ; j<HWMAX_CLIENTS ; j++, client++)
 			{
@@ -930,8 +930,8 @@ void SV_UpdateToReliableMessages (void)
 //Con_Printf("SV_UpdateToReliableMessages:  Updated frags for client %d to %d\n", i, j);
 				client->netchan.message.WriteByte(hwsvc_updatedminfo);
 				client->netchan.message.WriteByte(i);
-				client->netchan.message.WriteShort(host_client->edict->v.frags);
-				client->netchan.message.WriteByte((host_client->playerclass<<5)|((int)host_client->edict->v.level&31));
+				client->netchan.message.WriteShort(host_client->edict->GetFrags());
+				client->netchan.message.WriteByte((host_client->playerclass<<5)|((int)host_client->edict->GetLevel()&31));
 
 				if(dmMode->value==DM_SIEGE)
 				{
@@ -941,7 +941,7 @@ void SV_UpdateToReliableMessages (void)
 				}
 			}
 
-			host_client->old_frags = host_client->edict->v.frags;
+			host_client->old_frags = host_client->edict->GetFrags();
 		}
 
 		SV_WriteInventory(host_client, host_client->edict, &host_client->netchan.message);
@@ -1004,13 +1004,13 @@ SV_CleanupEnts
 void SV_CleanupEnts (void)
 {
 	int		e;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
-		ent->v.effects = (int)ent->v.effects & ~EF_MUZZLEFLASH;
-		ent->v.wpn_sound = 0;
+		ent->SetEffects((int)ent->GetEffects() & ~EF_MUZZLEFLASH);
+		ent->SetWpnSound(0);
 	}
 
 }

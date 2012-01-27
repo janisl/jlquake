@@ -20,6 +20,26 @@
 #include "../core/core.h"
 
 #include "progs_file.h"
+#include "edict.h"
+
+#define MAX_STACK_DEPTH 32
+#define LOCALSTACK_SIZE 2048
+
+union eval_t
+{
+	string_t string;
+	float _float;
+	float vector[3];
+	func_t function;
+	int _int;
+	int edict;
+};	
+
+struct prstack_t
+{
+	int s;
+	dfunction_t* f;
+};
 
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
@@ -28,6 +48,16 @@ extern ddef_t* pr_globaldefs;
 extern ddef_t* pr_fielddefs;
 extern dstatement_t* pr_statements;
 extern float* pr_globals;			// same as pr_global_struct
+
+extern prstack_t pr_stack[MAX_STACK_DEPTH];
+extern int pr_depth;
+extern int localstack[LOCALSTACK_SIZE];
+extern int localstack_used;
+extern bool pr_trace;
+extern dfunction_t* pr_xfunction;
+extern int pr_xstatement;
+extern int pr_argc;
+extern const char* pr_opnames[];
 
 void PR_ClearStringMap();
 int PR_SetString(const char* string);
@@ -39,5 +69,7 @@ ddef_t* ED_FindField(const char* name);
 ddef_t* ED_FindGlobal(const char* name);
 dfunction_t* ED_FindFunction(const char* name);
 dfunction_t* ED_FindFunctioni(const char* name);
+
+void PR_PrintStatement(dstatement_t* s);
 
 #endif

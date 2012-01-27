@@ -233,7 +233,7 @@ void CL_ParseServerInfo (void)
 	int		nummodels, numsounds;
 	char	model_precache[MAX_MODELS_H2][MAX_QPATH];
 	char	sound_precache[MAX_SOUNDS_H2][MAX_QPATH];
-// rjr	edict_t		*ent;
+// rjr	qhedict_t		*ent;
 	
 	Con_DPrintf ("Serverinfo packet received.\n");
 //

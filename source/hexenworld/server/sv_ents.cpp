@@ -70,12 +70,12 @@ byte *SV_FatPVS (vec3_t org)
 
 
 #define	MAX_NAILS	32
-edict_t	*nails[MAX_NAILS];
+qhedict_t	*nails[MAX_NAILS];
 int		numnails;
 
 extern	int	sv_nailmodel, sv_supernailmodel, sv_playermodel[MAX_PLAYER_CLASS];
 
-qboolean SV_AddNailUpdate (edict_t *ent)
+qboolean SV_AddNailUpdate (qhedict_t *ent)
 {
 	if (ent->v.modelindex != sv_nailmodel
 		&& ent->v.modelindex != sv_supernailmodel)
@@ -91,7 +91,7 @@ void SV_EmitNailUpdate (QMsg *msg)
 {
 	byte	bits[6];	// [48 bits] xyzpy 12 12 12 4 8 
 	int		n, i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		x, y, z, p, yaw;
 
 	if (!numnails)
@@ -123,14 +123,14 @@ void SV_EmitNailUpdate (QMsg *msg)
 */
   
 #define	MAX_MISSILES_H2	32
-edict_t	*missiles[MAX_MISSILES_H2];
-edict_t	*ravens[MAX_MISSILES_H2];
-edict_t	*raven2s[MAX_MISSILES_H2];
+qhedict_t	*missiles[MAX_MISSILES_H2];
+qhedict_t	*ravens[MAX_MISSILES_H2];
+qhedict_t	*raven2s[MAX_MISSILES_H2];
 int		nummissiles, numravens, numraven2s;
 
 extern	int	sv_magicmissmodel, sv_playermodel[MAX_PLAYER_CLASS], sv_ravenmodel, sv_raven2model;
 
-qboolean SV_AddMissileUpdate (edict_t *ent)
+qboolean SV_AddMissileUpdate (qhedict_t *ent)
 {
 
 	if (ent->v.modelindex == sv_magicmissmodel)
@@ -164,7 +164,7 @@ void SV_EmitMissileUpdate (QMsg *msg)
 {
 	byte	bits[5];	// [40 bits] xyz type 12 12 12 4
 	int		n, i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		x, y, z, type;
 
 	if (!nummissiles)
@@ -176,10 +176,10 @@ void SV_EmitMissileUpdate (QMsg *msg)
 	for (n=0 ; n<nummissiles ; n++)
 	{
 		ent = missiles[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		if(fabs(ent->v.scale - 0.1)<0.05)
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		if(fabs(ent->GetScale() - 0.1)<0.05)
 			type = 1;	//assume ice mace
 		else 
 			type = 2;	//assume magic missile
@@ -199,7 +199,7 @@ void SV_EmitRavenUpdate (QMsg *msg)
 {
 	byte	bits[6];	// [48 bits] xyzpy 12 12 12 4 8 
 	int		n, i;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int		x, y, z, p, yaw, frame;
 
 	if ((!numravens) && (!numraven2s))
@@ -211,12 +211,12 @@ void SV_EmitRavenUpdate (QMsg *msg)
 	for (n=0 ; n<numravens ; n++)
 	{
 		ent = ravens[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		p = (int)(16*ent->v.angles[0]/360)&15;
-		frame = (int)(ent->v.frame)&7;
-		yaw = (int)(32*ent->v.angles[1]/360)&31;
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		p = (int)(16*ent->GetAngles()[0]/360)&15;
+		frame = (int)(ent->GetFrame())&7;
+		yaw = (int)(32*ent->GetAngles()[1]/360)&31;
 
 		bits[0] = x;
 		bits[1] = (x>>8) | (y<<4);
@@ -233,11 +233,11 @@ void SV_EmitRavenUpdate (QMsg *msg)
 	for (n=0 ; n<numraven2s ; n++)
 	{
 		ent = raven2s[n];
-		x = (int)(ent->v.origin[0]+4096)>>1;
-		y = (int)(ent->v.origin[1]+4096)>>1;
-		z = (int)(ent->v.origin[2]+4096)>>1;
-		p = (int)(16*ent->v.angles[0]/360)&15;
-		yaw = (int)(256*ent->v.angles[1]/360)&255;
+		x = (int)(ent->GetOrigin()[0]+4096)>>1;
+		y = (int)(ent->GetOrigin()[1]+4096)>>1;
+		z = (int)(ent->GetOrigin()[2]+4096)>>1;
+		p = (int)(16*ent->GetAngles()[0]/360)&15;
+		yaw = (int)(256*ent->GetAngles()[1]/360)&255;
 
 		bits[0] = x;
 		bits[1] = (x>>8) | (y<<4);
@@ -268,7 +268,7 @@ Writes part of a packetentities message.
 Can delta from either a baseline or a previous packet_entity
 ==================
 */
-void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qboolean force, edict_t *ent, client_t *client)
+void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qboolean force, qhedict_t *ent, client_t *client)
 {
 	int		bits;
 	int		i;
@@ -313,9 +313,9 @@ void SV_WriteDelta (h2entity_state_t *from, h2entity_state_t *to, QMsg *msg, qbo
 		bits |= HWU_EFFECTS;
 
 	temp_index = to->modelindex;
-	if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
+	if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->GetModel())
 	{
-		String::Cpy(NewName, PR_GetString(ent->v.model));
+		String::Cpy(NewName, PR_GetString(ent->GetModel()));
 		if (client->playerclass <= 0 || client->playerclass > MAX_PLAYER_CLASS)
 		{
 			NewName[String::Length(NewName)-5] = '1';
@@ -427,7 +427,7 @@ Writes a delta update of a hwpacket_entities_t to the message.
 */
 void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg)
 {
-	edict_t	*ent;
+	qhedict_t	*ent;
 	client_frame_t	*fromframe;
 	hwpacket_entities_t *from;
 	int		oldindex, newindex;
@@ -474,7 +474,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 		{	// this is a new entity, send it from the baseline
 			ent = EDICT_NUM(newnum);
 //Con_Printf ("baseline %i\n", newnum);
-			SV_WriteDelta (&ent->baseline, &to->entities[newindex], msg, true, ent, client);
+			SV_WriteDelta (&ent->h2_baseline, &to->entities[newindex], msg, true, ent, client);
 			newindex++;
 			continue;
 		}
@@ -497,7 +497,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 
 
 
-void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
+void SV_WriteInventory (client_t *host_client, qhedict_t *ent, QMsg *msg)
 {
 	int		sc1,sc2;
 	byte	test;
@@ -511,19 +511,19 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
 	{
 		sc1 = sc2 = 0;
 
-		if (ent->v.health != host_client->old_v.health)
+		if (ent->GetHealth() != host_client->old_v.health)
 			sc1 |= SC1_HEALTH;
-		if(ent->v.level != host_client->old_v.level)
+		if(ent->GetLevel() != host_client->old_v.level)
 			sc1 |= SC1_LEVEL;
-		if(ent->v.intelligence != host_client->old_v.intelligence)
+		if(ent->GetIntelligence() != host_client->old_v.intelligence)
 			sc1 |= SC1_INTELLIGENCE;
-		if(ent->v.wisdom != host_client->old_v.wisdom)
+		if(ent->GetWisdom() != host_client->old_v.wisdom)
 			sc1 |= SC1_WISDOM;
-		if(ent->v.strength != host_client->old_v.strength)
+		if(ent->GetStrength() != host_client->old_v.strength)
 			sc1 |= SC1_STRENGTH;
-		if(ent->v.dexterity != host_client->old_v.dexterity)
+		if(ent->GetDexterity() != host_client->old_v.dexterity)
 			sc1 |= SC1_DEXTERITY;
-		if (ent->v.teleport_time > sv.time)
+		if (ent->GetTeleportTime() > sv.time)
 		{
 //			Con_Printf ("Teleport_time>time, sending bit\n");
 			sc1 |= SC1_TELEPORT_TIME;
@@ -532,100 +532,100 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
 
 //		if (ent->v.weapon != host_client->old_v.weapon)
 //			sc1 |= SC1_WEAPON;
-		if (ent->v.bluemana != host_client->old_v.bluemana)
+		if (ent->GetBlueMana() != host_client->old_v.bluemana)
 			sc1 |= SC1_BLUEMANA;
-		if (ent->v.greenmana != host_client->old_v.greenmana)
+		if (ent->GetGreenMana() != host_client->old_v.greenmana)
 			sc1 |= SC1_GREENMANA;
-		if (ent->v.experience != host_client->old_v.experience)
+		if (ent->GetExperience() != host_client->old_v.experience)
 			sc1 |= SC1_EXPERIENCE;
-		if (ent->v.cnt_torch != host_client->old_v.cnt_torch)
+		if (ent->GetCntTorch() != host_client->old_v.cnt_torch)
 			sc1 |= SC1_CNT_TORCH;
-		if (ent->v.cnt_h_boost != host_client->old_v.cnt_h_boost)
+		if (ent->GetCntHBoost() != host_client->old_v.cnt_h_boost)
 			sc1 |= SC1_CNT_H_BOOST;
-		if (ent->v.cnt_sh_boost != host_client->old_v.cnt_sh_boost)
+		if (ent->GetCntSHBoost() != host_client->old_v.cnt_sh_boost)
 			sc1 |= SC1_CNT_SH_BOOST;
-		if (ent->v.cnt_mana_boost != host_client->old_v.cnt_mana_boost)
+		if (ent->GetCntManaBoost() != host_client->old_v.cnt_mana_boost)
 			sc1 |= SC1_CNT_MANA_BOOST;
-		if (ent->v.cnt_teleport != host_client->old_v.cnt_teleport)
+		if (ent->GetCntTeleport() != host_client->old_v.cnt_teleport)
 			sc1 |= SC1_CNT_TELEPORT;
-		if (ent->v.cnt_tome != host_client->old_v.cnt_tome)
+		if (ent->GetCntTome() != host_client->old_v.cnt_tome)
 			sc1 |= SC1_CNT_TOME;
-		if (ent->v.cnt_summon != host_client->old_v.cnt_summon)
+		if (ent->GetCntSummon() != host_client->old_v.cnt_summon)
 			sc1 |= SC1_CNT_SUMMON;
-		if (ent->v.cnt_invisibility != host_client->old_v.cnt_invisibility)
+		if (ent->GetCntInvisibility() != host_client->old_v.cnt_invisibility)
 			sc1 |= SC1_CNT_INVISIBILITY;
-		if (ent->v.cnt_glyph != host_client->old_v.cnt_glyph)
+		if (ent->GetCntGlyph() != host_client->old_v.cnt_glyph)
 			sc1 |= SC1_CNT_GLYPH;
-		if (ent->v.cnt_haste != host_client->old_v.cnt_haste)
+		if (ent->GetCntHaste() != host_client->old_v.cnt_haste)
 			sc1 |= SC1_CNT_HASTE;
-		if (ent->v.cnt_blast != host_client->old_v.cnt_blast)
+		if (ent->GetCntBlast() != host_client->old_v.cnt_blast)
 			sc1 |= SC1_CNT_BLAST;
-		if (ent->v.cnt_polymorph != host_client->old_v.cnt_polymorph)
+		if (ent->GetCntPolyMorph() != host_client->old_v.cnt_polymorph)
 			sc1 |= SC1_CNT_POLYMORPH;
-		if (ent->v.cnt_flight != host_client->old_v.cnt_flight)
+		if (ent->GetCntFlight() != host_client->old_v.cnt_flight)
 			sc1 |= SC1_CNT_FLIGHT;
-		if (ent->v.cnt_cubeofforce != host_client->old_v.cnt_cubeofforce)
+		if (ent->GetCntCubeOfForce() != host_client->old_v.cnt_cubeofforce)
 			sc1 |= SC1_CNT_CUBEOFFORCE;
-		if (ent->v.cnt_invincibility != host_client->old_v.cnt_invincibility)
+		if (ent->GetCntInvincibility() != host_client->old_v.cnt_invincibility)
 			sc1 |= SC1_CNT_INVINCIBILITY;
-		if (ent->v.artifact_active != host_client->old_v.artifact_active)
+		if (ent->GetArtifactActive() != host_client->old_v.artifact_active)
 			sc1 |= SC1_ARTIFACT_ACTIVE;
-		if (ent->v.artifact_low != host_client->old_v.artifact_low)
+		if (ent->GetArtifactLow() != host_client->old_v.artifact_low)
 			sc1 |= SC1_ARTIFACT_LOW;
-		if (ent->v.movetype != host_client->old_v.movetype)
+		if (ent->GetMoveType() != host_client->old_v.movetype)
 			sc1 |= SC1_MOVETYPE;
-		if (ent->v.cameramode != host_client->old_v.cameramode)
+		if (ent->GetCameraMode() != host_client->old_v.cameramode)
 			sc1 |= SC1_CAMERAMODE;
-		if (ent->v.hasted != host_client->old_v.hasted)
+		if (ent->GetHasted() != host_client->old_v.hasted)
 			sc1 |= SC1_HASTED;
-		if (ent->v.inventory != host_client->old_v.inventory)
+		if (ent->GetInventory() != host_client->old_v.inventory)
 			sc1 |= SC1_INVENTORY;
-		if (ent->v.rings_active != host_client->old_v.rings_active)
+		if (ent->GetRingsActive() != host_client->old_v.rings_active)
 			sc1 |= SC1_RINGS_ACTIVE;
 
-		if (ent->v.rings_low != host_client->old_v.rings_low)
+		if (ent->GetRingsLow() != host_client->old_v.rings_low)
 			sc2 |= SC2_RINGS_LOW;
-		if (ent->v.armor_amulet != host_client->old_v.armor_amulet)
+		if (ent->GetArmorAmulet() != host_client->old_v.armor_amulet)
 			sc2 |= SC2_AMULET;
-		if (ent->v.armor_bracer != host_client->old_v.armor_bracer)
+		if (ent->GetArmorBracer() != host_client->old_v.armor_bracer)
 			sc2 |= SC2_BRACER;
-		if (ent->v.armor_breastplate != host_client->old_v.armor_breastplate)
+		if (ent->GetArmorBreastPlate() != host_client->old_v.armor_breastplate)
 			sc2 |= SC2_BREASTPLATE;
-		if (ent->v.armor_helmet != host_client->old_v.armor_helmet)
+		if (ent->GetArmorHelmet() != host_client->old_v.armor_helmet)
 			sc2 |= SC2_HELMET;
-		if (ent->v.ring_flight != host_client->old_v.ring_flight)
+		if (ent->GetRingFlight() != host_client->old_v.ring_flight)
 			sc2 |= SC2_FLIGHT_T;
-		if (ent->v.ring_water != host_client->old_v.ring_water)
+		if (ent->GetRingWater() != host_client->old_v.ring_water)
 			sc2 |= SC2_WATER_T;
-		if (ent->v.ring_turning != host_client->old_v.ring_turning)
+		if (ent->GetRingTurning() != host_client->old_v.ring_turning)
 			sc2 |= SC2_TURNING_T;
-		if (ent->v.ring_regeneration != host_client->old_v.ring_regeneration)
+		if (ent->GetRingRegeneration() != host_client->old_v.ring_regeneration)
 			sc2 |= SC2_REGEN_T;
 //		if (ent->v.haste_time != host_client->old_v.haste_time)
 //			sc2 |= SC2_HASTE_T;
 //		if (ent->v.tome_time != host_client->old_v.tome_time)
 //			sc2 |= SC2_TOME_T;
-		if (ent->v.puzzle_inv1 != host_client->old_v.puzzle_inv1)
+		if (ent->GetPuzzleInv1() != host_client->old_v.puzzle_inv1)
 			sc2 |= SC2_PUZZLE1;
-		if (ent->v.puzzle_inv2 != host_client->old_v.puzzle_inv2)
+		if (ent->GetPuzzleInv2() != host_client->old_v.puzzle_inv2)
 			sc2 |= SC2_PUZZLE2;
-		if (ent->v.puzzle_inv3 != host_client->old_v.puzzle_inv3)
+		if (ent->GetPuzzleInv3() != host_client->old_v.puzzle_inv3)
 			sc2 |= SC2_PUZZLE3;
-		if (ent->v.puzzle_inv4 != host_client->old_v.puzzle_inv4)
+		if (ent->GetPuzzleInv4() != host_client->old_v.puzzle_inv4)
 			sc2 |= SC2_PUZZLE4;
-		if (ent->v.puzzle_inv5 != host_client->old_v.puzzle_inv5)
+		if (ent->GetPuzzleInv5() != host_client->old_v.puzzle_inv5)
 			sc2 |= SC2_PUZZLE5;
-		if (ent->v.puzzle_inv6 != host_client->old_v.puzzle_inv6)
+		if (ent->GetPuzzleInv6() != host_client->old_v.puzzle_inv6)
 			sc2 |= SC2_PUZZLE6;
-		if (ent->v.puzzle_inv7 != host_client->old_v.puzzle_inv7)
+		if (ent->GetPuzzleInv7() != host_client->old_v.puzzle_inv7)
 			sc2 |= SC2_PUZZLE7;
-		if (ent->v.puzzle_inv8 != host_client->old_v.puzzle_inv8)
+		if (ent->GetPuzzleInv8() != host_client->old_v.puzzle_inv8)
 			sc2 |= SC2_PUZZLE8;
-		if (ent->v.max_health != host_client->old_v.max_health)
+		if (ent->GetMaxHealth() != host_client->old_v.max_health)
 			sc2 |= SC2_MAXHEALTH;
-		if (ent->v.max_mana != host_client->old_v.max_mana)
+		if (ent->GetMaxMana() != host_client->old_v.max_mana)
 			sc2 |= SC2_MAXMANA;
-		if (ent->v.flags != host_client->old_v.flags)
+		if (ent->GetFlags() != host_client->old_v.flags)
 			sc2 |= SC2_FLAGS;
 	}
 
@@ -671,124 +671,175 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
 		msg->WriteByte((sc2 >> 24) & 0xff);
 
 	if (sc1 & SC1_HEALTH)
-		msg->WriteShort(ent->v.health);
+		msg->WriteShort(ent->GetHealth());
 	if (sc1 & SC1_LEVEL)
-		msg->WriteByte(ent->v.level);
+		msg->WriteByte(ent->GetLevel());
 	if (sc1 & SC1_INTELLIGENCE)
-		msg->WriteByte(ent->v.intelligence);
+		msg->WriteByte(ent->GetIntelligence());
 	if (sc1 & SC1_WISDOM)
-		msg->WriteByte(ent->v.wisdom);
+		msg->WriteByte(ent->GetWisdom());
 	if (sc1 & SC1_STRENGTH)
-		msg->WriteByte(ent->v.strength);
+		msg->WriteByte(ent->GetStrength());
 	if (sc1 & SC1_DEXTERITY)
-		msg->WriteByte(ent->v.dexterity);
+		msg->WriteByte(ent->GetDexterity());
 //	if (sc1 & SC1_WEAPON)
 //		msg->WriteByte(ent->v.weapon);
 	if (sc1 & SC1_BLUEMANA)
-		msg->WriteByte(ent->v.bluemana);
+		msg->WriteByte(ent->GetBlueMana());
 	if (sc1 & SC1_GREENMANA)
-		msg->WriteByte(ent->v.greenmana);
+		msg->WriteByte(ent->GetGreenMana());
 	if (sc1 & SC1_EXPERIENCE)
-		msg->WriteLong(ent->v.experience);
+		msg->WriteLong(ent->GetExperience());
 	if (sc1 & SC1_CNT_TORCH)
-		msg->WriteByte(ent->v.cnt_torch);
+		msg->WriteByte(ent->GetCntTorch());
 	if (sc1 & SC1_CNT_H_BOOST)
-		msg->WriteByte(ent->v.cnt_h_boost);
+		msg->WriteByte(ent->GetCntHBoost());
 	if (sc1 & SC1_CNT_SH_BOOST)
-		msg->WriteByte(ent->v.cnt_sh_boost);
+		msg->WriteByte(ent->GetCntSHBoost());
 	if (sc1 & SC1_CNT_MANA_BOOST)
-		msg->WriteByte(ent->v.cnt_mana_boost);
+		msg->WriteByte(ent->GetCntManaBoost());
 	if (sc1 & SC1_CNT_TELEPORT)
-		msg->WriteByte(ent->v.cnt_teleport);
+		msg->WriteByte(ent->GetCntTeleport());
 	if (sc1 & SC1_CNT_TOME)
-		msg->WriteByte(ent->v.cnt_tome);
+		msg->WriteByte(ent->GetCntTome());
 	if (sc1 & SC1_CNT_SUMMON)
-		msg->WriteByte(ent->v.cnt_summon);
+		msg->WriteByte(ent->GetCntSummon());
 	if (sc1 & SC1_CNT_INVISIBILITY)
-		msg->WriteByte(ent->v.cnt_invisibility);
+		msg->WriteByte(ent->GetCntInvisibility());
 	if (sc1 & SC1_CNT_GLYPH)
-		msg->WriteByte(ent->v.cnt_glyph);
+		msg->WriteByte(ent->GetCntGlyph());
 	if (sc1 & SC1_CNT_HASTE)
-		msg->WriteByte(ent->v.cnt_haste);
+		msg->WriteByte(ent->GetCntHaste());
 	if (sc1 & SC1_CNT_BLAST)
-		msg->WriteByte(ent->v.cnt_blast);
+		msg->WriteByte(ent->GetCntBlast());
 	if (sc1 & SC1_CNT_POLYMORPH)
-		msg->WriteByte(ent->v.cnt_polymorph);
+		msg->WriteByte(ent->GetCntPolyMorph());
 	if (sc1 & SC1_CNT_FLIGHT)
-		msg->WriteByte(ent->v.cnt_flight);
+		msg->WriteByte(ent->GetCntFlight());
 	if (sc1 & SC1_CNT_CUBEOFFORCE)
-		msg->WriteByte(ent->v.cnt_cubeofforce);
+		msg->WriteByte(ent->GetCntCubeOfForce());
 	if (sc1 & SC1_CNT_INVINCIBILITY)
-		msg->WriteByte(ent->v.cnt_invincibility);
+		msg->WriteByte(ent->GetCntInvincibility());
 	if (sc1 & SC1_ARTIFACT_ACTIVE)
-		msg->WriteByte(ent->v.artifact_active);
+		msg->WriteByte(ent->GetArtifactActive());
 	if (sc1 & SC1_ARTIFACT_LOW)
-		msg->WriteByte(ent->v.artifact_low);
+		msg->WriteByte(ent->GetArtifactLow());
 	if (sc1 & SC1_MOVETYPE)
-		msg->WriteByte(ent->v.movetype);
+		msg->WriteByte(ent->GetMoveType());
 	if (sc1 & SC1_CAMERAMODE)
-		msg->WriteByte(ent->v.cameramode);
+		msg->WriteByte(ent->GetCameraMode());
 	if (sc1 & SC1_HASTED)
-		msg->WriteFloat(ent->v.hasted);
+		msg->WriteFloat(ent->GetHasted());
 	if (sc1 & SC1_INVENTORY)
-		msg->WriteByte(ent->v.inventory);
+		msg->WriteByte(ent->GetInventory());
 	if (sc1 & SC1_RINGS_ACTIVE)
-		msg->WriteByte(ent->v.rings_active);
+		msg->WriteByte(ent->GetRingsActive());
 
 	if (sc2 & SC2_RINGS_LOW)
-		msg->WriteByte(ent->v.rings_low);
+		msg->WriteByte(ent->GetRingsLow());
 	if (sc2 & SC2_AMULET)
-		msg->WriteByte(ent->v.armor_amulet);
+		msg->WriteByte(ent->GetArmorAmulet());
 	if (sc2 & SC2_BRACER)
-		msg->WriteByte(ent->v.armor_bracer);
+		msg->WriteByte(ent->GetArmorBracer());
 	if (sc2 & SC2_BREASTPLATE)
-		msg->WriteByte(ent->v.armor_breastplate);
+		msg->WriteByte(ent->GetArmorBreastPlate());
 	if (sc2 & SC2_HELMET)
-		msg->WriteByte(ent->v.armor_helmet);
+		msg->WriteByte(ent->GetArmorHelmet());
 	if (sc2 & SC2_FLIGHT_T)
-		msg->WriteByte(ent->v.ring_flight);
+		msg->WriteByte(ent->GetRingFlight());
 	if (sc2 & SC2_WATER_T)
-		msg->WriteByte(ent->v.ring_water);
+		msg->WriteByte(ent->GetRingWater());
 	if (sc2 & SC2_TURNING_T)
-		msg->WriteByte(ent->v.ring_turning);
+		msg->WriteByte(ent->GetRingTurning());
 	if (sc2 & SC2_REGEN_T)
-		msg->WriteByte(ent->v.ring_regeneration);
+		msg->WriteByte(ent->GetRingRegeneration());
 //	if (sc2 & SC2_HASTE_T)
 //		msg->WriteFloat(ent->v.haste_time);
 //	if (sc2 & SC2_TOME_T)
 //		msg->WriteFloat(ent->v.tome_time);
 	if (sc2 & SC2_PUZZLE1)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv1));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv1()));
 	if (sc2 & SC2_PUZZLE2)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv2));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv2()));
 	if (sc2 & SC2_PUZZLE3)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv3));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv3()));
 	if (sc2 & SC2_PUZZLE4)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv4));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv4()));
 	if (sc2 & SC2_PUZZLE5)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv5));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv5()));
 	if (sc2 & SC2_PUZZLE6)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv6));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv6()));
 	if (sc2 & SC2_PUZZLE7)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv7));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv7()));
 	if (sc2 & SC2_PUZZLE8)
-		msg->WriteString2(PR_GetString(ent->v.puzzle_inv8));
+		msg->WriteString2(PR_GetString(ent->GetPuzzleInv8()));
 	if (sc2 & SC2_MAXHEALTH)
-		msg->WriteShort(ent->v.max_health);
+		msg->WriteShort(ent->GetMaxHealth());
 	if (sc2 & SC2_MAXMANA)
-		msg->WriteByte(ent->v.max_mana);
+		msg->WriteByte(ent->GetMaxMana());
 	if (sc2 & SC2_FLAGS)
-		msg->WriteFloat(ent->v.flags);
+		msg->WriteFloat(ent->GetFlags());
 
 end:
-	Com_Memcpy(&host_client->old_v,&ent->v,sizeof(host_client->old_v));
+	host_client->old_v.movetype = ent->GetMoveType();
+	host_client->old_v.health = ent->GetHealth();
+	host_client->old_v.max_health = ent->GetMaxHealth();
+	host_client->old_v.bluemana = ent->GetBlueMana();
+	host_client->old_v.greenmana = ent->GetGreenMana();
+	host_client->old_v.max_mana = ent->GetMaxMana();
+	host_client->old_v.armor_amulet = ent->GetArmorAmulet();
+	host_client->old_v.armor_bracer = ent->GetArmorBracer();
+	host_client->old_v.armor_breastplate = ent->GetArmorBreastPlate();
+	host_client->old_v.armor_helmet = ent->GetArmorHelmet();
+	host_client->old_v.level = ent->GetLevel();
+	host_client->old_v.intelligence = ent->GetIntelligence();
+	host_client->old_v.wisdom = ent->GetWisdom();
+	host_client->old_v.dexterity = ent->GetDexterity();
+	host_client->old_v.strength = ent->GetStrength();
+	host_client->old_v.experience = ent->GetExperience();
+	host_client->old_v.ring_flight = ent->GetRingFlight();
+	host_client->old_v.ring_water = ent->GetRingWater();
+	host_client->old_v.ring_turning = ent->GetRingTurning();
+	host_client->old_v.ring_regeneration = ent->GetRingRegeneration();
+	host_client->old_v.puzzle_inv1 = ent->GetPuzzleInv1();
+	host_client->old_v.puzzle_inv2 = ent->GetPuzzleInv2();
+	host_client->old_v.puzzle_inv3 = ent->GetPuzzleInv3();
+	host_client->old_v.puzzle_inv4 = ent->GetPuzzleInv4();
+	host_client->old_v.puzzle_inv5 = ent->GetPuzzleInv5();
+	host_client->old_v.puzzle_inv6 = ent->GetPuzzleInv6();
+	host_client->old_v.puzzle_inv7 = ent->GetPuzzleInv7();
+	host_client->old_v.puzzle_inv8 = ent->GetPuzzleInv8();
+	host_client->old_v.flags = ent->GetFlags();
+	host_client->old_v.flags2 = ent->GetFlags2();
+	host_client->old_v.rings_active = ent->GetRingsActive();
+	host_client->old_v.rings_low = ent->GetRingsLow();
+	host_client->old_v.artifact_active = ent->GetArtifactActive();
+	host_client->old_v.artifact_low = ent->GetArtifactLow();
+	host_client->old_v.hasted = ent->GetHasted();
+	host_client->old_v.inventory = ent->GetInventory();
+	host_client->old_v.cnt_torch = ent->GetCntTorch();
+	host_client->old_v.cnt_h_boost = ent->GetCntHBoost();
+	host_client->old_v.cnt_sh_boost = ent->GetCntSHBoost();
+	host_client->old_v.cnt_mana_boost = ent->GetCntManaBoost();
+	host_client->old_v.cnt_teleport = ent->GetCntTeleport();
+	host_client->old_v.cnt_tome = ent->GetCntTome();
+	host_client->old_v.cnt_summon = ent->GetCntSummon();
+	host_client->old_v.cnt_invisibility = ent->GetCntInvisibility();
+	host_client->old_v.cnt_glyph = ent->GetCntGlyph();
+	host_client->old_v.cnt_haste = ent->GetCntHaste();
+	host_client->old_v.cnt_blast = ent->GetCntBlast();
+	host_client->old_v.cnt_polymorph = ent->GetCntPolyMorph();
+	host_client->old_v.cnt_flight = ent->GetCntFlight();
+	host_client->old_v.cnt_cubeofforce = ent->GetCntCubeOfForce();
+	host_client->old_v.cnt_invincibility = ent->GetCntInvincibility();
+	host_client->old_v.cameramode = ent->GetCameraMode();
 }
 
 
 #ifdef MGNET
 /*
 =============
-float cardioid_rating (edict_t *targ , edict_t *self)
+float cardioid_rating (qhedict_t *targ , qhedict_t *self)
 
 Determines how important a visclient is- based on offset from
 forward angle and distance.  Resultant pattern is a somewhat
@@ -797,15 +848,15 @@ the surface being equal in priority(0) and increasing linearly
 towards equal priority(1) along a straight line to the center.
 =============
 */
-float cardioid_rating (edict_t *targ , edict_t *self)
+static float cardioid_rating (qhedict_t *targ , qhedict_t *self)
 {
 	vec3_t	vec,spot1,spot2;
 	vec3_t	forward,right,up;
 	float	dot,dist;
 
-    AngleVectors (self->v.v_angle,forward,right,up);
+    AngleVectors (self->GetVAngle(),forward,right,up);
 
-	VectorAdd(self->v.origin,self->v.view_ofs,spot1);
+	VectorAdd(self->GetOrigin(),self->GetViewOfs(),spot1);
 	VectorSubtract(targ->v.absmax,targ->v.absmin,spot2);
 	VectorMA(targ->v.absmin,0.5,spot2,spot2);
 
@@ -826,30 +877,39 @@ float cardioid_rating (edict_t *targ , edict_t *self)
 	return 1 - (dist/dot);//The higher this number is, the more important it is to send this ent
 }
 
-int MAX_VISCLIENTS = 2;
+static int MAX_VISCLIENTS = 2;
+#endif
+
 /*
 =============
 SV_WritePlayersToClient
 
 =============
 */
-void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg *msg)
+void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMsg *msg)
 {
-	int			i, j, k, l;
+	int			i, j;
 	client_t	*cl;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			msec;
 	hwusercmd_t	cmd;
 	int			pflags;
 	int			invis_level;
 	qboolean	playermodel = false;
+
+#ifdef MGNET
+	int			k, l;
 	int			visclient[HWMAX_CLIENTS];
 	int			forcevisclient[HWMAX_CLIENTS];
 	int			cl_v_priority[HWMAX_CLIENTS];
 	int			cl_v_psort[HWMAX_CLIENTS];
-	int			numvc,forcevc,totalvc,num_eliminated;
+	int			totalvc,num_eliminated;
 
-	for (j=0,cl=svs.clients,numvc=0,forcevc=0 ; j<HWMAX_CLIENTS ; j++,cl++)
+	int numvc = 0;
+	int forcevc = 0;
+#endif
+
+	for (j=0,cl=svs.clients ; j<HWMAX_CLIENTS ; j++,cl++)
 	{
 		if (cl->state != cs_spawned)
 			continue;
@@ -862,15 +922,19 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		if (ent != clent &&
 			!(client->spec_track && client->spec_track - 1 == j)) 
 		{
-			if ((int)ent->v.effects & EF_NODRAW)
+			if ((int)ent->GetEffects() & EF_NODRAW)
 			{
-				if(dmMode->value==DM_SIEGE&&clent->v.playerclass==CLASS_DWARF)
+				if(dmMode->value==DM_SIEGE&&clent->GetPlayerClass()==CLASS_DWARF)
 					invis_level = false;
 				else
 					invis_level = true;//still can hear
 			}
+#ifdef MGNET
 			//could be invisiblenow and still sent, cull out by other methods as well
 			if (cl->spectator)
+#else
+			else if (cl->spectator)
+#endif
 			{
 				invis_level = 2;//no vis or weaponsound
 			}
@@ -878,8 +942,11 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			{
 				// ignore if not touching a PV leaf
 				for (i=0 ; i < ent->num_leafs ; i++)
-					if (pvs[ent->LeafNums[i] >> 3] & (1 << (ent->LeafNums[i]&7) ))
+				{
+					int l = CM_LeafCluster(ent->LeafNums[i]);
+					if (pvs[l >> 3] & (1 << (l & 7)))
 						break;
+				}
 				if (i == ent->num_leafs)
 					invis_level = 2;//no vis or weaponsound
 			}
@@ -887,18 +954,19 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		
 		if(invis_level==true)
 		{//ok to send weaponsound
-			if(ent->v.wpn_sound)
+			if(ent->GetWpnSound())
 			{
 				msg->WriteByte(hwsvc_player_sound);
 				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
-					msg->WriteCoord(ent->v.origin[i]);
-				msg->WriteShort(ent->v.wpn_sound);
+					msg->WriteCoord(ent->GetOrigin()[i]);
+				msg->WriteShort(ent->GetWpnSound());
 			}
 		}
 		if(invis_level>0)
 			continue;
 
+#ifdef MGNET
 		if(!cl->skipsend&&ent != clent)
 		{//don't count self
 			visclient[numvc]=j;
@@ -924,7 +992,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		//number of highest priority sent depends on how
 		//many are forced through because they were skipped
 		//last send.  Ideally, no more than 5 are sent.
-		for (j=0; j<numvc, totalvc>MAX_VISCLIENTS ; j++)
+		for (j=0; j<numvc && totalvc>MAX_VISCLIENTS ; j++)
 		{//priority 1 - if behind, cull out
 			for(k=0, cl = svs.clients; k<visclient[j]; k++, cl++);
 //			cl=svs.clients+visclient[j];
@@ -991,341 +1059,139 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		}
 
 		ent = cl->edict;
-
-		pflags = PF_MSEC | PF_COMMAND;
-		
-		if (ent->v.modelindex != sv_playermodel[0] &&//paladin
-		    ent->v.modelindex != sv_playermodel[1] &&//crusader
-		    ent->v.modelindex != sv_playermodel[2] &&//necro
-		    ent->v.modelindex != sv_playermodel[3] &&//assassin
-		    ent->v.modelindex != sv_playermodel[4] &&//succ
-		    ent->v.modelindex != sv_playermodel[5])//dwarf
-			pflags |= PF_MODEL;
-		else
-			playermodel = true;
-
-		for (i=0 ; i<3 ; i++)
-			if (ent->v.velocity[i])
-				pflags |= PF_VELOCITY1<<i;
-		if (((long)ent->v.effects & 0xff))
-			pflags |= PF_EFFECTS;
-		if (((long)ent->v.effects & 0xff00))
-			pflags |= PF_EFFECTS2;
-		if (ent->v.skin)
-		{
-			if(dmMode->value==DM_SIEGE&&playermodel&&ent->v.skin==1);
-			//in siege, don't send skin if 2nd skin and using
-			//playermodel, it will know on other side- saves
-			//us 1 byte per client per frame!
-			else
-				pflags |= PF_SKINNUM;
-		}
-		if (ent->v.health <= 0)
-			pflags |= PF_DEAD;
-		if (ent->v.hull == HULL_CROUCH)
-			pflags |= PF_CROUCH;
-
-		if (cl->spectator)
-		{	// only sent origin and velocity to spectators
-			pflags &= PF_VELOCITY1 | PF_VELOCITY2 | PF_VELOCITY3;
-		}
-		else if (ent == clent)
-		{	// don't send a lot of data on personal entity
-			pflags &= ~(PF_MSEC|PF_COMMAND);
-			if (ent->v.weaponframe)
-				pflags |= PF_WEAPONFRAME;
-		}
-		if (ent->v.drawflags)
-		{
-			pflags |= PF_DRAWFLAGS;
-		}
-		if (ent->v.scale != 0 && ent->v.scale != 1.0)
-		{
-			pflags |= PF_SCALE;
-		}
-		if (ent->v.abslight != 0)
-		{
-			pflags |= PF_ABSLIGHT;
-		}
-		if (ent->v.wpn_sound)
-		{
-			pflags |= PF_SOUND;
-		}
-
-		msg->WriteByte(hwsvc_playerinfo);
-		msg->WriteByte(j);
-		msg->WriteShort(pflags);
-
-		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(ent->v.origin[i]);
-		
-		msg->WriteByte(ent->v.frame);
-
-		if (pflags & PF_MSEC)
-		{
-			msec = 1000*(sv.time - cl->localtime);
-			if (msec > 255)
-				msec = 255;
-			msg->WriteByte(msec);
-		}
-		
-		if (pflags & PF_COMMAND)
-		{
-			cmd = cl->lastcmd;
-
-			if (ent->v.health <= 0)
-			{	// don't show the corpse looking around...
-				cmd.angles[0] = 0;
-				cmd.angles[1] = ent->v.angles[1];
-				cmd.angles[0] = 0;
-			}
-
-			cmd.buttons = 0;	// never send buttons
-			cmd.impulse = 0;	// never send impulses
-			MSG_WriteUsercmd (msg, &cmd, false);
-		}
-
-		for (i=0 ; i<3 ; i++)
-			if (pflags & (PF_VELOCITY1<<i) )
-				msg->WriteShort(ent->v.velocity[i]);
-
-//rjr
-		if (pflags & PF_MODEL)
-			msg->WriteShort(ent->v.modelindex);
-
-		if (pflags & PF_SKINNUM)
-			msg->WriteByte(ent->v.skin);
-
-		if (pflags & PF_EFFECTS)
-			msg->WriteByte(((long)ent->v.effects & 0xff));
-
-		if (pflags & PF_EFFECTS2)
-			msg->WriteByte(((long)ent->v.effects & 0xff00)>>8);
-
-		if (pflags & PF_WEAPONFRAME)
-			msg->WriteByte(ent->v.weaponframe);
-
-		if (pflags & PF_DRAWFLAGS)
-		{
-			msg->WriteByte(ent->v.drawflags);
-		}
-		if (pflags & PF_SCALE)
-		{
-			msg->WriteByte((int)(ent->v.scale*100.0)&255);
-		}
-		if (pflags & PF_ABSLIGHT)
-		{
-			msg->WriteByte((int)(ent->v.abslight*100.0)&255);
-		}
-		if (pflags & PF_SOUND)
-		{
-			msg->WriteShort(ent->v.wpn_sound);
-		}
-	}
-}
-
-#else
-/*
-=============
-SV_WritePlayersToClient
-
-=============
-*/
-void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg *msg)
-{
-	int			i, j;
-	client_t	*cl;
-	edict_t		*ent;
-	int			msec;
-	hwusercmd_t	cmd;
-	int			pflags;
-	int			invis_level;
-	qboolean	playermodel = false;
-
-	for (j=0,cl=svs.clients ; j<HWMAX_CLIENTS ; j++,cl++)
-	{
-		if (cl->state != cs_spawned)
-			continue;
-
-		ent = cl->edict;
-
-
-		// ZOID visibility tracking
-		invis_level = false;
-		if (ent != clent &&
-			!(client->spec_track && client->spec_track - 1 == j)) 
-		{
-			if ((int)ent->v.effects & EF_NODRAW)
-			{
-				if(dmMode->value==DM_SIEGE&&clent->v.playerclass==CLASS_DWARF)
-					invis_level = false;
-				else
-					invis_level = true;//still can hear
-			}
-			else if (cl->spectator)
-			{
-				invis_level = 2;//no vis or weaponsound
-			}
-			else
-			{
-				// ignore if not touching a PV leaf
-				for (i=0 ; i < ent->num_leafs ; i++)
-				{
-					int l = CM_LeafCluster(ent->LeafNums[i]);
-					if (pvs[l >> 3] & (1 << (l & 7)))
-						break;
-				}
-				if (i == ent->num_leafs)
-					invis_level = 2;//no vis or weaponsound
-			}
-		}
-		
-		if(invis_level==true)
-		{//ok to send weaponsound
-			if(ent->v.wpn_sound)
-			{
-				msg->WriteByte(hwsvc_player_sound);
-				msg->WriteByte(j);
-				for (i=0 ; i<3 ; i++)
-					msg->WriteCoord(ent->v.origin[i]);
-				msg->WriteShort(ent->v.wpn_sound);
-			}
-		}
-		if(invis_level>0)
-			continue;
-
-		pflags = PF_MSEC | PF_COMMAND;
-		
-		if (ent->v.modelindex != sv_playermodel[0] &&//paladin
-		    ent->v.modelindex != sv_playermodel[1] &&//crusader
-		    ent->v.modelindex != sv_playermodel[2] &&//necro
-		    ent->v.modelindex != sv_playermodel[3] &&//assassin
-		    ent->v.modelindex != sv_playermodel[4] &&//succ
-		    ent->v.modelindex != sv_playermodel[5])//dwarf
-			pflags |= PF_MODEL;
-		else
-			playermodel = true;
-
-		for (i=0 ; i<3 ; i++)
-			if (ent->v.velocity[i])
-				pflags |= PF_VELOCITY1<<i;
-		if (((long)ent->v.effects & 0xff))
-			pflags |= PF_EFFECTS;
-		if (((long)ent->v.effects & 0xff00))
-			pflags |= PF_EFFECTS2;
-		if (ent->v.skin)
-		{
-			if(dmMode->value==DM_SIEGE&&playermodel&&ent->v.skin==1);
-			//in siege, don't send skin if 2nd skin and using
-			//playermodel, it will know on other side- saves
-			//us 1 byte per client per frame!
-			else
-				pflags |= PF_SKINNUM;
-		}
-		if (ent->v.health <= 0)
-			pflags |= PF_DEAD;
-		if (ent->v.hull == HULL_CROUCH)
-			pflags |= PF_CROUCH;
-
-		if (cl->spectator)
-		{	// only sent origin and velocity to spectators
-			pflags &= PF_VELOCITY1 | PF_VELOCITY2 | PF_VELOCITY3;
-		}
-		else if (ent == clent)
-		{	// don't send a lot of data on personal entity
-			pflags &= ~(PF_MSEC|PF_COMMAND);
-			if (ent->v.weaponframe)
-				pflags |= PF_WEAPONFRAME;
-		}
-		if (ent->v.drawflags)
-		{
-			pflags |= PF_DRAWFLAGS;
-		}
-		if (ent->v.scale != 0 && ent->v.scale != 1.0)
-		{
-			pflags |= PF_SCALE;
-		}
-		if (ent->v.abslight != 0)
-		{
-			pflags |= PF_ABSLIGHT;
-		}
-		if (ent->v.wpn_sound)
-		{
-			pflags |= PF_SOUND;
-		}
-
-		msg->WriteByte(hwsvc_playerinfo);
-		msg->WriteByte(j);
-		msg->WriteShort(pflags);
-
-		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(ent->v.origin[i]);
-		
-		msg->WriteByte(ent->v.frame);
-
-		if (pflags & PF_MSEC)
-		{
-			msec = 1000*(sv.time - cl->localtime);
-			if (msec > 255)
-				msec = 255;
-			msg->WriteByte(msec);
-		}
-		
-		if (pflags & PF_COMMAND)
-		{
-			cmd = cl->lastcmd;
-
-			if (ent->v.health <= 0)
-			{	// don't show the corpse looking around...
-				cmd.angles[0] = 0;
-				cmd.angles[1] = ent->v.angles[1];
-				cmd.angles[0] = 0;
-			}
-
-			cmd.buttons = 0;	// never send buttons
-			cmd.impulse = 0;	// never send impulses
-			MSG_WriteUsercmd (msg, &cmd, false);
-		}
-
-		for (i=0 ; i<3 ; i++)
-			if (pflags & (PF_VELOCITY1<<i) )
-				msg->WriteShort(ent->v.velocity[i]);
-
-//rjr
-		if (pflags & PF_MODEL)
-			msg->WriteShort(ent->v.modelindex);
-
-		if (pflags & PF_SKINNUM)
-			msg->WriteByte(ent->v.skin);
-
-		if (pflags & PF_EFFECTS)
-			msg->WriteByte(((long)ent->v.effects & 0xff));
-
-		if (pflags & PF_EFFECTS2)
-			msg->WriteByte(((long)ent->v.effects & 0xff00)>>8);
-
-		if (pflags & PF_WEAPONFRAME)
-			msg->WriteByte(ent->v.weaponframe);
-
-		if (pflags & PF_DRAWFLAGS)
-		{
-			msg->WriteByte(ent->v.drawflags);
-		}
-		if (pflags & PF_SCALE)
-		{
-			msg->WriteByte((int)(ent->v.scale*100.0)&255);
-		}
-		if (pflags & PF_ABSLIGHT)
-		{
-			msg->WriteByte((int)(ent->v.abslight*100.0)&255);
-		}
-		if (pflags & PF_SOUND)
-		{
-			msg->WriteShort(ent->v.wpn_sound);
-		}
-	}
-}
 #endif
+
+		pflags = PF_MSEC | PF_COMMAND;
+
+		if (ent->v.modelindex != sv_playermodel[0] &&//paladin
+			ent->v.modelindex != sv_playermodel[1] &&//crusader
+			ent->v.modelindex != sv_playermodel[2] &&//necro
+			ent->v.modelindex != sv_playermodel[3] &&//assassin
+			ent->v.modelindex != sv_playermodel[4] &&//succ
+			ent->v.modelindex != sv_playermodel[5])//dwarf
+			pflags |= PF_MODEL;
+		else
+			playermodel = true;
+
+		for (i=0 ; i<3 ; i++)
+			if (ent->GetVelocity()[i])
+				pflags |= PF_VELOCITY1<<i;
+		if (((long)ent->GetEffects() & 0xff))
+			pflags |= PF_EFFECTS;
+		if (((long)ent->GetEffects() & 0xff00))
+			pflags |= PF_EFFECTS2;
+		if (ent->GetSkin())
+		{
+			if(dmMode->value==DM_SIEGE&&playermodel&&ent->GetSkin()==1);
+			//in siege, don't send skin if 2nd skin and using
+			//playermodel, it will know on other side- saves
+			//us 1 byte per client per frame!
+			else
+				pflags |= PF_SKINNUM;
+		}
+		if (ent->GetHealth() <= 0)
+			pflags |= PF_DEAD;
+		if (ent->GetHull() == HULL_CROUCH)
+			pflags |= PF_CROUCH;
+
+		if (cl->spectator)
+		{	// only sent origin and velocity to spectators
+			pflags &= PF_VELOCITY1 | PF_VELOCITY2 | PF_VELOCITY3;
+		}
+		else if (ent == clent)
+		{	// don't send a lot of data on personal entity
+			pflags &= ~(PF_MSEC|PF_COMMAND);
+			if (ent->GetWeaponFrame())
+				pflags |= PF_WEAPONFRAME;
+		}
+		if (ent->GetDrawFlags())
+		{
+			pflags |= PF_DRAWFLAGS;
+		}
+		if (ent->GetScale() != 0 && ent->GetScale() != 1.0)
+		{
+			pflags |= PF_SCALE;
+		}
+		if (ent->GetAbsLight() != 0)
+		{
+			pflags |= PF_ABSLIGHT;
+		}
+		if (ent->GetWpnSound())
+		{
+			pflags |= PF_SOUND;
+		}
+
+		msg->WriteByte(hwsvc_playerinfo);
+		msg->WriteByte(j);
+		msg->WriteShort(pflags);
+
+		for (i=0 ; i<3 ; i++)
+			msg->WriteCoord(ent->GetOrigin()[i]);
+
+		msg->WriteByte(ent->GetFrame());
+
+		if (pflags & PF_MSEC)
+		{
+			msec = 1000*(sv.time - cl->localtime);
+			if (msec > 255)
+				msec = 255;
+			msg->WriteByte(msec);
+		}
+
+		if (pflags & PF_COMMAND)
+		{
+			cmd = cl->lastcmd;
+
+			if (ent->GetHealth() <= 0)
+			{	// don't show the corpse looking around...
+				cmd.angles[0] = 0;
+				cmd.angles[1] = ent->GetAngles()[1];
+				cmd.angles[0] = 0;
+			}
+
+			cmd.buttons = 0;	// never send buttons
+			cmd.impulse = 0;	// never send impulses
+			MSG_WriteUsercmd (msg, &cmd, false);
+		}
+
+		for (i=0 ; i<3 ; i++)
+			if (pflags & (PF_VELOCITY1<<i) )
+				msg->WriteShort(ent->GetVelocity()[i]);
+
+//rjr
+		if (pflags & PF_MODEL)
+			msg->WriteShort(ent->v.modelindex);
+
+		if (pflags & PF_SKINNUM)
+			msg->WriteByte(ent->GetSkin());
+
+		if (pflags & PF_EFFECTS)
+			msg->WriteByte(((long)ent->GetEffects() & 0xff));
+
+		if (pflags & PF_EFFECTS2)
+			msg->WriteByte(((long)ent->GetEffects() & 0xff00)>>8);
+
+		if (pflags & PF_WEAPONFRAME)
+			msg->WriteByte(ent->GetWeaponFrame());
+
+		if (pflags & PF_DRAWFLAGS)
+		{
+			msg->WriteByte(ent->GetDrawFlags());
+		}
+		if (pflags & PF_SCALE)
+		{
+			msg->WriteByte((int)(ent->GetScale()*100.0)&255);
+		}
+		if (pflags & PF_ABSLIGHT)
+		{
+			msg->WriteByte((int)(ent->GetAbsLight()*100.0)&255);
+		}
+		if (pflags & PF_SOUND)
+		{
+			msg->WriteShort(ent->GetWpnSound());
+		}
+	}
+}
 
 /*
 =============
@@ -1342,9 +1208,9 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	int		e, i;
 	byte	*pvs;
 	vec3_t	org;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	hwpacket_entities_t	*pack;
-	edict_t	*clent;
+	qhedict_t	*clent;
 	client_frame_t	*frame;
 	h2entity_state_t	*state;
 
@@ -1353,7 +1219,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 	// find the client's PVS
 	clent = client->edict;
-	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
+	VectorAdd (clent->GetOrigin(), clent->GetViewOfs(), org);
 	pvs = SV_FatPVS (org);
 
 	// send over the players in the PVS
@@ -1371,10 +1237,10 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	for (e=HWMAX_CLIENTS+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
-		if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
+		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))
 			continue;
 	
-		if ((int)ent->v.effects & EF_NODRAW)
+		if ((int)ent->GetEffects() & EF_NODRAW)
 		{
 			continue;
 		}
@@ -1406,18 +1272,18 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 		state->number = e;
 		state->flags = 0;
-		VectorCopy (ent->v.origin, state->origin);
-		VectorCopy (ent->v.angles, state->angles);
+		VectorCopy (ent->GetOrigin(), state->origin);
+		VectorCopy (ent->GetAngles(), state->angles);
 		state->modelindex = ent->v.modelindex;
-		state->frame = ent->v.frame;
-		state->colormap = ent->v.colormap;
-		state->skinnum = ent->v.skin;
-		state->effects = ent->v.effects;
-		state->scale = (int)(ent->v.scale*100.0)&255;
-		state->drawflags = ent->v.drawflags;
-		state->abslight = (int)(ent->v.abslight*255.0)&255;
+		state->frame = ent->GetFrame();
+		state->colormap = ent->GetColorMap();
+		state->skinnum = ent->GetSkin();
+		state->effects = ent->GetEffects();
+		state->scale = (int)(ent->GetScale()*100.0)&255;
+		state->drawflags = ent->GetDrawFlags();
+		state->abslight = (int)(ent->GetAbsLight()*255.0)&255;
 		//clear sound so it doesn't send twice
-		state->wpn_sound = ent->v.wpn_sound;
+		state->wpn_sound = ent->GetWpnSound();
 	}
 
 	// encode the packet entities as a delta from the

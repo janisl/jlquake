@@ -201,8 +201,8 @@ void SV_God_f (void)
 	if (!SV_SetPlayer ())
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_GODMODE;
-	if (!((int)sv_player->v.flags & FL_GODMODE) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
+	if (!((int)sv_player->GetFlags() & FL_GODMODE) )
 		SV_ClientPrintf (host_client, PRINT_HIGH, "godmode OFF\n");
 	else
 		SV_ClientPrintf (host_client, PRINT_HIGH, "godmode ON\n");
@@ -220,14 +220,14 @@ void SV_Noclip_f (void)
 	if (!SV_SetPlayer ())
 		return;
 
-	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
 	{
-		sv_player->v.movetype = MOVETYPE_NOCLIP;
+		sv_player->SetMoveType(MOVETYPE_NOCLIP);
 		SV_ClientPrintf (host_client, PRINT_HIGH, "noclip ON\n");
 	}
 	else
 	{
-		sv_player->v.movetype = MOVETYPE_WALK;
+		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf (host_client, PRINT_HIGH, "noclip OFF\n");
 	}
 }
@@ -265,23 +265,23 @@ void SV_Give_f (void)
 	case '7':
 	case '8':
 	case '9':
-		sv_player->v.items = (int)sv_player->v.items | IT_SHOTGUN<< (t[0] - '2');
+		sv_player->SetItems((int)sv_player->GetItems() | IT_SHOTGUN<< (t[0] - '2'));
 		break;
 	
 	case 's':
-		sv_player->v.ammo_shells = v;
+		sv_player->SetAmmoShells(v);
 		break;		
 	case 'n':
-		sv_player->v.ammo_nails = v;
+		sv_player->SetAmmoNails(v);
 		break;		
 	case 'r':
-		sv_player->v.ammo_rockets = v;
+		sv_player->SetAmmoRockets(v);
 		break;		
 	case 'h':
-		sv_player->v.health = v;
+		sv_player->SetHealth(v);
 		break;		
 	case 'c':
-		sv_player->v.ammo_cells = v;
+		sv_player->SetAmmoCells(v);
 		break;		
 	}
 }
@@ -409,7 +409,7 @@ void SV_Status_f (void)
 
 			Con_Printf ("%-16.16s  ", cl->name);
 
-			Con_Printf ("%6i %5i", cl->userid, (int)cl->edict->v.frags);
+			Con_Printf ("%6i %5i", cl->userid, (int)cl->edict->GetFrags());
 			if (cl->spectator)
 				Con_Printf(" (s)\n");
 			else			
@@ -439,7 +439,7 @@ void SV_Status_f (void)
 		{
 			if (!cl->state)
 				continue;
-			Con_Printf ("%5i %6i ", (int)cl->edict->v.frags,  cl->userid);
+			Con_Printf ("%5i %6i ", (int)cl->edict->GetFrags(),  cl->userid);
 
 			s = SOCK_BaseAdrToString( cl->netchan.remoteAddress);
 			Con_Printf ("%s", s);

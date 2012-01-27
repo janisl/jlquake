@@ -179,7 +179,7 @@ void SV_SendEffect(QMsg *sb, int index)
 			{
 				return;
 			}
-			VectorCopy(PROG_TO_EDICT(sv.Effects[index].Bubble.owner)->v.origin, TestO);
+			VectorCopy(PROG_TO_EDICT(sv.Effects[index].Bubble.owner)->GetOrigin(), TestO);
 			TestDistance = 400;
 			break;
 

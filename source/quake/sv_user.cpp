@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-edict_t	*sv_player;
+qhedict_t	*sv_player;
 
 extern	Cvar*	sv_friction;
 Cvar*	sv_edgefriction;
@@ -59,18 +59,18 @@ void SV_SetIdealPitch (void)
 	int		i, j;
 	int		step, dir, steps;
 
-	if (!((int)sv_player->v.flags & FL_ONGROUND))
+	if (!((int)sv_player->GetFlags() & FL_ONGROUND))
 		return;
 		
-	angleval = sv_player->v.angles[YAW] * M_PI*2 / 360;
+	angleval = sv_player->GetAngles()[YAW] * M_PI*2 / 360;
 	sinval = sin(angleval);
 	cosval = cos(angleval);
 
 	for (i=0 ; i<MAX_FORWARD ; i++)
 	{
-		top[0] = sv_player->v.origin[0] + cosval*(i+3)*12;
-		top[1] = sv_player->v.origin[1] + sinval*(i+3)*12;
-		top[2] = sv_player->v.origin[2] + sv_player->v.view_ofs[2];
+		top[0] = sv_player->GetOrigin()[0] + cosval*(i+3)*12;
+		top[1] = sv_player->GetOrigin()[1] + sinval*(i+3)*12;
+		top[2] = sv_player->GetOrigin()[2] + sv_player->GetViewOfs()[2];
 		
 		bottom[0] = top[0];
 		bottom[1] = top[1];
@@ -103,13 +103,13 @@ void SV_SetIdealPitch (void)
 	
 	if (!dir)
 	{
-		sv_player->v.idealpitch = 0;
+		sv_player->SetIdealPitch(0);
 		return;
 	}
 	
 	if (steps < 2)
 		return;
-	sv_player->v.idealpitch = -dir * sv_idealpitchscale->value;
+	sv_player->SetIdealPitch(-dir * sv_idealpitchscale->value);
 }
 
 
@@ -136,7 +136,7 @@ void SV_UserFriction (void)
 // if the leading edge is over a dropoff, increase friction
 	start[0] = stop[0] = origin[0] + vel[0]/speed*16;
 	start[1] = stop[1] = origin[1] + vel[1]/speed*16;
-	start[2] = origin[2] + sv_player->v.mins[2];
+	start[2] = origin[2] + sv_player->GetMins()[2];
 	stop[2] = start[2] - 34;
 
 	trace = SV_Move (start, vec3_origin, vec3_origin, stop, true, sv_player);
@@ -230,12 +230,12 @@ void DropPunchAngle (void)
 {
 	float	len;
 	
-	len = VectorNormalize (sv_player->v.punchangle);
+	len = VectorNormalize (sv_player->GetPunchAngle());
 	
 	len -= 10*host_frametime;
 	if (len < 0)
 		len = 0;
-	VectorScale (sv_player->v.punchangle, len, sv_player->v.punchangle);
+	VectorScale (sv_player->GetPunchAngle(), len, sv_player->GetPunchAngle());
 }
 
 /*
@@ -253,7 +253,7 @@ void SV_WaterMove (void)
 //
 // user intentions
 //
-	AngleVectors (sv_player->v.v_angle, forward, right, up);
+	AngleVectors (sv_player->GetVAngle(), forward, right, up);
 
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*cmd.forwardmove + right[i]*cmd.sidemove;
@@ -306,14 +306,14 @@ void SV_WaterMove (void)
 
 void SV_WaterJump (void)
 {
-	if (sv.time > sv_player->v.teleport_time
-	|| !sv_player->v.waterlevel)
+	if (sv.time > sv_player->GetTeleportTime()
+	|| !sv_player->GetWaterLevel())
 	{
-		sv_player->v.flags = (int)sv_player->v.flags & ~FL_WATERJUMP;
-		sv_player->v.teleport_time = 0;
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_WATERJUMP);
+		sv_player->SetTeleportTime(0);
 	}
-	sv_player->v.velocity[0] = sv_player->v.movedir[0];
-	sv_player->v.velocity[1] = sv_player->v.movedir[1];
+	sv_player->GetVelocity()[0] = sv_player->GetMoveDir()[0];
+	sv_player->GetVelocity()[1] = sv_player->GetMoveDir()[1];
 }
 
 
@@ -329,19 +329,19 @@ void SV_AirMove (void)
 	vec3_t		wishvel;
 	float		fmove, smove;
 
-	AngleVectors (sv_player->v.angles, forward, right, up);
+	AngleVectors (sv_player->GetAngles(), forward, right, up);
 
 	fmove = cmd.forwardmove;
 	smove = cmd.sidemove;
 	
 // hack to not let you back into teleporter
-	if (sv.time < sv_player->v.teleport_time && fmove < 0)
+	if (sv.time < sv_player->GetTeleportTime() && fmove < 0)
 		fmove = 0;
 		
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*fmove + right[i]*smove;
 
-	if ( (int)sv_player->v.movetype != MOVETYPE_WALK)
+	if ( (int)sv_player->GetMoveType() != MOVETYPE_WALK)
 		wishvel[2] = cmd.upmove;
 	else
 		wishvel[2] = 0;
@@ -354,7 +354,7 @@ void SV_AirMove (void)
 		wishspeed = sv_maxspeed->value;
 	}
 	
-	if ( sv_player->v.movetype == MOVETYPE_NOCLIP)
+	if ( sv_player->GetMoveType() == MOVETYPE_NOCLIP)
 	{	// noclip
 		VectorCopy (wishvel, velocity);
 	}
@@ -381,37 +381,37 @@ void SV_ClientThink (void)
 {
 	vec3_t		v_angle;
 
-	if (sv_player->v.movetype == MOVETYPE_NONE)
+	if (sv_player->GetMoveType() == MOVETYPE_NONE)
 		return;
 	
-	onground = (int)sv_player->v.flags & FL_ONGROUND;
+	onground = (int)sv_player->GetFlags() & FL_ONGROUND;
 
-	origin = sv_player->v.origin;
-	velocity = sv_player->v.velocity;
+	origin = sv_player->GetOrigin();
+	velocity = sv_player->GetVelocity();
 
 	DropPunchAngle ();
 	
 //
 // if dead, behave differently
 //
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 		return;
 
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle
 	cmd = host_client->cmd;
-	angles = sv_player->v.angles;
+	angles = sv_player->GetAngles();
 	
-	VectorAdd (sv_player->v.v_angle, sv_player->v.punchangle, v_angle);
-	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
-	if (!sv_player->v.fixangle)
+	VectorAdd (sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
+	angles[ROLL] = V_CalcRoll (sv_player->GetAngles(), sv_player->GetVelocity())*4;
+	if (!sv_player->GetFixAngle())
 	{
 		angles[PITCH] = -v_angle[PITCH]/3;
 		angles[YAW] = v_angle[YAW];
 	}
 
-	if ( (int)sv_player->v.flags & FL_WATERJUMP )
+	if ( (int)sv_player->GetFlags() & FL_WATERJUMP )
 	{
 		SV_WaterJump ();
 		return;
@@ -419,8 +419,8 @@ void SV_ClientThink (void)
 //
 // walk
 //
-	if ( (sv_player->v.waterlevel >= 2)
-	&& (sv_player->v.movetype != MOVETYPE_NOCLIP) )
+	if ( (sv_player->GetWaterLevel() >= 2)
+	&& (sv_player->GetMoveType() != MOVETYPE_NOCLIP) )
 	{
 		SV_WaterMove ();
 		return;
@@ -450,7 +450,7 @@ void SV_ReadClientMove (q1usercmd_t *move)
 	for (i=0 ; i<3 ; i++)
 		angle[i] = net_message.ReadAngle();
 
-	VectorCopy (angle, host_client->edict->v.v_angle);
+	host_client->edict->SetVAngle(angle);
 		
 // read movement
 	move->forwardmove = net_message.ReadShort ();
@@ -459,12 +459,12 @@ void SV_ReadClientMove (q1usercmd_t *move)
 	
 // read buttons
 	bits = net_message.ReadByte ();
-	host_client->edict->v.button0 = bits & 1;
-	host_client->edict->v.button2 = (bits & 2)>>1;
+	host_client->edict->SetButton0(bits & 1);
+	host_client->edict->SetButton2((bits & 2)>>1);
 
 	i = net_message.ReadByte ();
 	if (i)
-		host_client->edict->v.impulse = i;
+		host_client->edict->SetImpulse(i);
 }
 
 /*

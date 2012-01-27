@@ -4,9 +4,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_STACK_DEPTH 32
-#define LOCALSTACK_SIZE 2048
-
 #if defined(_MSC_VER) && defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
 // Uses the Pentium specific opcode RDTSC (ReaD TimeStamp Counter)
 #define TIMESNAP_ACTIVE
@@ -21,12 +18,6 @@
 
 // TYPES -------------------------------------------------------------------
 
-typedef struct
-{
-	int s;
-	dfunction_t *f;
-} prstack_t;
-
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 char *PR_GlobalString(int ofs);
@@ -38,7 +29,6 @@ char *PR_GlobalStringNoContents(int ofs);
 
 static int EnterFunction(dfunction_t *f);
 static int LeaveFunction(void);
-static void PrintStatement(dstatement_t *s);
 static void PrintCallHistory(void);
 #ifdef TIMESNAP_ACTIVE
 static unsigned int ProgsTimer(void);
@@ -48,67 +38,7 @@ static unsigned int ProgsTimer(void);
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-qboolean pr_trace;
-dfunction_t	*pr_xfunction;
-int pr_xstatement;
-int pr_argc;
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-static prstack_t pr_stack[MAX_STACK_DEPTH];
-static int pr_depth;
-static int localstack[LOCALSTACK_SIZE];
-static int localstack_used;
-
-static const char *pr_opnames[] =
-{
-	"DONE",
-	"MUL_F", "MUL_V",  "MUL_FV", "MUL_VF",
-	"DIV",
-	"ADD_F", "ADD_V",
-  	"SUB_F", "SUB_V",
-	"EQ_F", "EQ_V", "EQ_S", "EQ_E", "EQ_FNC",
- 	"NE_F", "NE_V", "NE_S", "NE_E", "NE_FNC",
- 	"LE", "GE", "LT", "GT",
-	"INDIRECT", "INDIRECT", "INDIRECT",
-	"INDIRECT", "INDIRECT", "INDIRECT",
-	"ADDRESS",
-	"STORE_F", "STORE_V", "STORE_S",
-	"STORE_ENT", "STORE_FLD", "STORE_FNC",
-	"STOREP_F", "STOREP_V", "STOREP_S",
-	"STOREP_ENT", "STOREP_FLD", "STOREP_FNC",
-	"RETURN",
-	"NOT_F", "NOT_V", "NOT_S", "NOT_ENT", "NOT_FNC",
-	"IF", "IFNOT",
-	"CALL0", "CALL1", "CALL2", "CALL3", "CALL4",
-	"CALL5", "CALL6", "CALL7", "CALL8",
-	"STATE",
-	"GOTO",
-	"AND", "OR", 
-	"BITAND", "BITOR",
-	"OP_MULSTORE_F", "OP_MULSTORE_V", "OP_MULSTOREP_F", "OP_MULSTOREP_V",
-	"OP_DIVSTORE_F", "OP_DIVSTOREP_F",
-	"OP_ADDSTORE_F", "OP_ADDSTORE_V", "OP_ADDSTOREP_F", "OP_ADDSTOREP_V",
-	"OP_SUBSTORE_F", "OP_SUBSTORE_V", "OP_SUBSTOREP_F", "OP_SUBSTOREP_V",
-	"OP_FETCH_GBL_F",
-	"OP_FETCH_GBL_V",
-	"OP_FETCH_GBL_S",
-	"OP_FETCH_GBL_E",
-	"OP_FETCH_GBL_FNC",
-	"OP_CSTATE", "OP_CWSTATE",
-	
-	"OP_THINKTIME",
-
-	"OP_BITSET", "OP_BITSETP", "OP_BITCLR",	"OP_BITCLRP",
-
-	"OP_RAND0", "OP_RAND1",	"OP_RAND2",	"OP_RANDV0", "OP_RANDV1", "OP_RANDV2",
-
-	"OP_SWITCH_F", "OP_SWITCH_V", "OP_SWITCH_S", "OP_SWITCH_E", "OP_SWITCH_FNC",
-
-	"OP_CASE",
-	"OP_CASERANGE"
-
-};
 
 // CODE --------------------------------------------------------------------
 
@@ -130,7 +60,7 @@ void PR_ExecuteProgram(func_t fnum)
 	dstatement_t *st;
 	dfunction_t *f, *newf;
 	int runaway;
-	edict_t *ed;
+	qhedict_t *ed;
 	int exitdepth;
 	int startFrame;
 	int endFrame;
@@ -181,7 +111,7 @@ while (1)
 	
 	if(pr_trace)
 	{
-		PrintStatement(st);
+		PR_PrintStatement(st);
 	}
 
 	switch(st->op)
@@ -404,7 +334,7 @@ while (1)
 #ifdef PARANOID
 		NUM_FOR_EDICT(ed); // Make sure it's in range
 #endif
-		if(ed == (edict_t *)sv.edicts && sv.state == ss_active)
+		if(ed == (qhedict_t *)sv.edicts && sv.state == ss_active)
 		{
 			PR_RunError("assignment to world entity");
 		}
@@ -529,85 +459,85 @@ while (1)
 
 	case OP_STATE:
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time+HX_FRAME_TIME;
-		if(a->_float != ed->v.frame)
+		ed->SetNextThink(pr_global_struct->time+HX_FRAME_TIME);
+		if(a->_float != ed->GetFrame())
 		{
-			ed->v.frame = a->_float;
+			ed->SetFrame(a->_float);
 		}
-		ed->v.think = b->function;
+		ed->SetThink(b->function);
 		break;
 
 	case OP_CSTATE: // Cycle state
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time+HX_FRAME_TIME;
-		ed->v.think = pr_xfunction-pr_functions;
+		ed->SetNextThink(pr_global_struct->time+HX_FRAME_TIME);
+		ed->SetThink(pr_xfunction-pr_functions);
 		pr_global_struct->cycle_wrapped = false;
 		startFrame = (int)a->_float;
 		endFrame = (int)b->_float;
 		if(startFrame <= endFrame)
 		{ // Increment
-			if(ed->v.frame < startFrame || ed->v.frame > endFrame)
+			if(ed->GetFrame() < startFrame || ed->GetFrame() > endFrame)
 			{
-				ed->v.frame = startFrame;
+				ed->SetFrame(startFrame);
 				break;
 			}
-			ed->v.frame++;
-			if(ed->v.frame > endFrame)
+			ed->SetFrame(ed->GetFrame() + 1);
+			if(ed->GetFrame() > endFrame)
 			{
 				pr_global_struct->cycle_wrapped = true;
-				ed->v.frame = startFrame;
+				ed->SetFrame(startFrame);
 			}
 			break;
 		}
 		// Decrement
-		if(ed->v.frame > startFrame || ed->v.frame < endFrame)
+		if(ed->GetFrame() > startFrame || ed->GetFrame() < endFrame)
 		{
-			ed->v.frame = startFrame;
+			ed->SetFrame(startFrame);
 			break;
 		}
-		ed->v.frame--;
-		if(ed->v.frame < endFrame)
+		ed->SetFrame(ed->GetFrame() - 1);
+		if(ed->GetFrame() < endFrame)
 		{
 			pr_global_struct->cycle_wrapped = true;
-			ed->v.frame = startFrame;
+			ed->SetFrame(startFrame);
 		}
 		break;
 
 	case OP_CWSTATE: // Cycle weapon state
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-		ed->v.nextthink = pr_global_struct->time+HX_FRAME_TIME;
-		ed->v.think = pr_xfunction-pr_functions;
+		ed->SetNextThink(pr_global_struct->time+HX_FRAME_TIME);
+		ed->SetThink(pr_xfunction-pr_functions);
 		pr_global_struct->cycle_wrapped = false;
 		startFrame = (int)a->_float;
 		endFrame = (int)b->_float;
 		if(startFrame <= endFrame)
 		{ // Increment
-			if(ed->v.weaponframe < startFrame
-				|| ed->v.weaponframe > endFrame)
+			if(ed->GetWeaponFrame() < startFrame
+				|| ed->GetWeaponFrame() > endFrame)
 			{
-				ed->v.weaponframe = startFrame;
+				ed->SetWeaponFrame(startFrame);
 				break;
 			}
-			ed->v.weaponframe++;
-			if(ed->v.weaponframe > endFrame)
+			ed->SetWeaponFrame(ed->GetWeaponFrame() + 1);
+			if(ed->GetWeaponFrame() > endFrame)
 			{
 				pr_global_struct->cycle_wrapped = true;
-				ed->v.weaponframe = startFrame;
+				ed->SetWeaponFrame(startFrame);
 			}
 			break;
 		}
 		// Decrement
-		if(ed->v.weaponframe > startFrame
-			|| ed->v.weaponframe < endFrame)
+		if(ed->GetWeaponFrame() > startFrame
+			|| ed->GetWeaponFrame() < endFrame)
 		{
-			ed->v.weaponframe = startFrame;
+			ed->SetWeaponFrame(startFrame);
 			break;
 		}
-		ed->v.weaponframe--;
-		if(ed->v.weaponframe < endFrame)
+		ed->SetWeaponFrame(ed->GetWeaponFrame() - 1);
+		if(ed->GetWeaponFrame() < endFrame)
 		{
 			pr_global_struct->cycle_wrapped = true;
-			ed->v.weaponframe = startFrame;
+			ed->SetWeaponFrame(startFrame);
 		}
 		break;
 
@@ -616,11 +546,11 @@ while (1)
 #ifdef PARANOID
 		NUM_FOR_EDICT(ed); // Make sure it's in range
 #endif
-		if(ed == (edict_t *)sv.edicts && sv.state == ss_active)
+		if(ed == (qhedict_t *)sv.edicts && sv.state == ss_active)
 		{
 			PR_RunError("assignment to world entity");
 		}
-		ed->v.nextthink = pr_global_struct->time+b->_float;
+		ed->SetNextThink(pr_global_struct->time+b->_float);
 		break;
 
 	case OP_BITSET: // f (+) f
@@ -841,7 +771,7 @@ void PR_RunError(const char *error, ...)
 	Q_vsnprintf(string, 1024, error, argptr);
 	va_end(argptr);
 
-	PrintStatement(pr_statements + pr_xstatement);
+	PR_PrintStatement(pr_statements + pr_xstatement);
 	PrintCallHistory();
 
 	Con_Printf("%s\n", string);
@@ -882,57 +812,6 @@ static void PrintCallHistory(void)
 				PR_GetString(f->s_name));
 		}
 	}
-}
-
-//==========================================================================
-//
-// PrintStatement
-//
-//==========================================================================
-
-static void PrintStatement(dstatement_t *s)
-{
-	int i;
-
-	if((unsigned)s->op < sizeof(pr_opnames)/sizeof(pr_opnames[0]))
-	{
-		Con_Printf("%s ", pr_opnames[s->op]);
-		i = String::Length(pr_opnames[s->op]);
-		for(; i < 10; i++)
-		{
-			Con_Printf(" ");
-		}
-	}
-
-	if(s->op == OP_IF || s->op == OP_IFNOT)
-	{
-		Con_Printf("%sbranch %i", PR_GlobalString(s->a), s->b);
-	}
-	else if(s->op == OP_GOTO)
-	{
-		Con_Printf("branch %i", s->a);
-	}
-	else if((unsigned)(s->op-OP_STORE_F) < 6)
-	{
-		Con_Printf("%s", PR_GlobalString(s->a));
-		Con_Printf("%s", PR_GlobalStringNoContents(s->b));
-	}
-	else
-	{
-		if(s->a)
-		{
-			Con_Printf("%s", PR_GlobalString(s->a));
-		}
-		if(s->b)
-		{
-			Con_Printf("%s", PR_GlobalString(s->b));
-		}
-		if(s->c)
-		{
-			Con_Printf("%s", PR_GlobalStringNoContents(s->c));
-		}
-	}
-	Con_Printf("\n");
 }
 
 //==========================================================================
@@ -1162,3 +1041,95 @@ static unsigned int ProgsTimer(void)
 }
 #endif
 
+
+const char *pr_opnames[] =
+{
+	"DONE",
+	"MUL_F", "MUL_V", "MUL_FV", "MUL_VF",
+	"DIV",
+	"ADD_F", "ADD_V",
+  	"SUB_F", "SUB_V",
+	"EQ_F", "EQ_V", "EQ_S", "EQ_E", "EQ_FNC",
+ 	"NE_F", "NE_V", "NE_S", "NE_E", "NE_FNC",
+ 	"LE", "GE", "LT", "GT",
+	"INDIRECT", "INDIRECT", "INDIRECT",
+	"INDIRECT", "INDIRECT", "INDIRECT",
+	"ADDRESS",
+	"STORE_F", "STORE_V", "STORE_S",
+	"STORE_ENT", "STORE_FLD", "STORE_FNC",
+	"STOREP_F", "STOREP_V", "STOREP_S",
+	"STOREP_ENT", "STOREP_FLD", "STOREP_FNC",
+	"RETURN",
+	"NOT_F", "NOT_V", "NOT_S", "NOT_ENT", "NOT_FNC",
+	"IF", "IFNOT",
+	"CALL0", "CALL1", "CALL2", "CALL3", "CALL4",
+	"CALL5", "CALL6", "CALL7", "CALL8",
+	"STATE",
+	"GOTO",
+	"AND", "OR", 
+	"BITAND", "BITOR",
+	"OP_MULSTORE_F", "OP_MULSTORE_V", "OP_MULSTOREP_F", "OP_MULSTOREP_V",
+	"OP_DIVSTORE_F", "OP_DIVSTOREP_F",
+	"OP_ADDSTORE_F", "OP_ADDSTORE_V", "OP_ADDSTOREP_F", "OP_ADDSTOREP_V",
+	"OP_SUBSTORE_F", "OP_SUBSTORE_V", "OP_SUBSTOREP_F", "OP_SUBSTOREP_V",
+	"OP_FETCH_GBL_F",
+	"OP_FETCH_GBL_V",
+	"OP_FETCH_GBL_S",
+	"OP_FETCH_GBL_E",
+	"OP_FETCH_GBL_FNC",
+	"OP_CSTATE", "OP_CWSTATE",
+	
+	"OP_THINKTIME",
+
+	"OP_BITSET", "OP_BITSETP", "OP_BITCLR",	"OP_BITCLRP",
+
+	"OP_RAND0", "OP_RAND1",	"OP_RAND2",	"OP_RANDV0", "OP_RANDV1", "OP_RANDV2",
+
+	"OP_SWITCH_F", "OP_SWITCH_V", "OP_SWITCH_S", "OP_SWITCH_E", "OP_SWITCH_FNC",
+
+	"OP_CASE",
+	"OP_CASERANGE"
+};
+
+void PR_PrintStatement(dstatement_t* s)
+{
+	if ((unsigned)s->op < sizeof(pr_opnames) / sizeof(pr_opnames[0]))
+	{
+		Log::write("%s ", pr_opnames[s->op]);
+		int i = String::Length(pr_opnames[s->op]);
+		for (; i < 10; i++)
+		{
+			Log::write(" ");
+		}
+	}
+		
+	if (s->op == OP_IF || s->op == OP_IFNOT)
+	{
+		Log::write("%sbranch %i", PR_GlobalString(s->a), s->b);
+	}
+	else if (s->op == OP_GOTO)
+	{
+		Log::write("branch %i", s->a);
+	}
+	else if ((unsigned)(s->op - OP_STORE_F) < 6)
+	{
+		Log::write("%s", PR_GlobalString(s->a));
+		Log::write("%s", PR_GlobalStringNoContents(s->b));
+	}
+	else
+	{
+		if (s->a)
+		{
+			Log::write("%s", PR_GlobalString(s->a));
+		}
+		if (s->b)
+		{
+			Log::write("%s", PR_GlobalString(s->b));
+		}
+		if (s->c)
+		{
+			Log::write("%s", PR_GlobalStringNoContents(s->c));
+		}
+	}
+	Log::write("\n");
+}

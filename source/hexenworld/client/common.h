@@ -4,18 +4,14 @@
 
 //============================================================================
 
-typedef struct link_s
-{
-	struct link_s	*prev, *next;
-} link_t;
+struct qhlink_t;
 
+void ClearLink (qhlink_t *l);
+void RemoveLink (qhlink_t *l);
+void InsertLinkBefore (qhlink_t *l, qhlink_t *before);
+void InsertLinkAfter (qhlink_t *l, qhlink_t *after);
 
-void ClearLink (link_t *l);
-void RemoveLink (link_t *l);
-void InsertLinkBefore (link_t *l, link_t *before);
-void InsertLinkAfter (link_t *l, link_t *after);
-
-// (type *)STRUCT_FROM_LINK(link_t *link, type, member)
+// (type *)STRUCT_FROM_LINK(qhlink_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,h2entity_t,order)
 // FIXME: remove this mess!
 #define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (qintptr)&(((t *)0)->m)))

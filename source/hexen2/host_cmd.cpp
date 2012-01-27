@@ -92,7 +92,7 @@ void Host_Status_f (void)
 		}
 		else
 			hours = 0;
-		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->v.frags, hours, minutes, seconds);
+		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->GetFrags(), hours, minutes, seconds);
 		print ("   %s\n", client->netconnection->address);
 	}
 }
@@ -117,8 +117,8 @@ void Host_God_f (void)
 		 pr_global_struct->coop || skill->value > 2) && !host_client->privileged)
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_GODMODE;
-	if (!((int)sv_player->v.flags & FL_GODMODE) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
+	if (!((int)sv_player->GetFlags() & FL_GODMODE) )
 		SV_ClientPrintf ("godmode OFF\n");
 	else
 		SV_ClientPrintf ("godmode ON\n");
@@ -135,8 +135,8 @@ void Host_Notarget_f (void)
 	if ((pr_global_struct->deathmatch || skill->value > 2)&& !host_client->privileged)
 		return;
 
-	sv_player->v.flags = (int)sv_player->v.flags ^ FL_NOTARGET;
-	if (!((int)sv_player->v.flags & FL_NOTARGET) )
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_NOTARGET);
+	if (!((int)sv_player->GetFlags() & FL_NOTARGET) )
 		SV_ClientPrintf ("notarget OFF\n");
 	else
 		SV_ClientPrintf ("notarget ON\n");
@@ -156,16 +156,16 @@ void Host_Noclip_f (void)
 		 pr_global_struct->coop|| skill->value > 2) && !host_client->privileged)
 		return;
 
-	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
 	{
 		noclip_anglehack = true;
-		sv_player->v.movetype = MOVETYPE_NOCLIP;
+		sv_player->SetMoveType(MOVETYPE_NOCLIP);
 		SV_ClientPrintf ("noclip ON\n");
 	}
 	else
 	{
 		noclip_anglehack = false;
-		sv_player->v.movetype = MOVETYPE_WALK;
+		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf ("noclip OFF\n");
 	}
 }
@@ -490,7 +490,7 @@ void Host_Savegame_f (void)
 		
 	for (i=0 ; i<svs.maxclients ; i++)
 	{
-		if (svs.clients[i].active && (svs.clients[i].edict->v.health <= 0) )
+		if (svs.clients[i].active && (svs.clients[i].edict->GetHealth() <= 0) )
 		{
 			Con_Printf ("Can't savegame with a dead player\n");
 			return;
@@ -570,7 +570,7 @@ void Host_Loadgame_f (void)
 	char		mapname[MAX_QPATH];
 	float		time;
 	int			i;
-	edict_t*	ent;
+	qhedict_t*	ent;
 	int			version;
 	float		tempf;
 	int			tempi;
@@ -667,14 +667,14 @@ void Host_Loadgame_f (void)
 
 	ent = EDICT_NUM(1);
 
-	Cvar_SetValue("_cl_playerclass", ent->v.playerclass);//this better be the same as above...
+	Cvar_SetValue("_cl_playerclass", ent->GetPlayerClass());//this better be the same as above...
 
 #ifdef MISSIONPACK
 	// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
 	pr_global_struct->cl_playerclass = ent->v.playerclass;
 #endif
 
-	svs.clients->playerclass = ent->v.playerclass;
+	svs.clients->playerclass = ent->GetPlayerClass();
 
 	sv.paused = true;		// pause until all clients connect
 	sv.loadgame = true;
@@ -692,7 +692,7 @@ void SaveGamestate(qboolean ClientsOnly)
 	fileHandle_t	f;
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
-	edict_t	*ent;
+	qhedict_t	*ent;
 	int start,end;
 
 	if (ClientsOnly)
@@ -750,7 +750,7 @@ void SaveGamestate(qboolean ClientsOnly)
 	for (i=start ; i<end ; i++)
 	{
 		ent = EDICT_NUM(i);
-		if ((int)ent->v.flags & FL_ARCHIVE_OVERRIDE)
+		if ((int)ent->GetFlags() & FL_ARCHIVE_OVERRIDE)
 			continue;
 		if (ClientsOnly)
 		{
@@ -776,7 +776,7 @@ void SaveGamestate(qboolean ClientsOnly)
 void RestoreClients(void)
 {
 	int i,j;
-	edict_t	*ent;
+	qhedict_t	*ent;
 	double time_diff;
 
 	if (LoadGamestate(NULL,NULL,1))
@@ -790,9 +790,9 @@ void RestoreClients(void)
 			ent = host_client->edict;
 
 			//ent->v.colormap = NUM_FOR_EDICT(ent);
-			ent->v.team = (host_client->colors & 15) + 1;
-			ent->v.netname = PR_SetString(host_client->name);
-			ent->v.playerclass = host_client->playerclass;
+			ent->SetTeam((host_client->colors & 15) + 1);
+			ent->SetNetName(PR_SetString(host_client->name));
+			ent->SetPlayerClass(host_client->playerclass);
 
 			// copy spawn parms out of the client_t
 
@@ -815,7 +815,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 	char		mapname[MAX_QPATH];
 	float		time, sk;
 	int			i;
-	edict_t*	ent;
+	qhedict_t*	ent;
 	int			entnum;
 	int			version;
 //	float	spawn_parms[NUM_SPAWN_PARMS];
@@ -911,15 +911,15 @@ Log::writeLine("Token %s", token);
 			start = ED_ParseEdict(start, ent);
 		
 			if (ClientsMode == 1 || ClientsMode == 2 || ClientsMode == 3)
-				ent->v.stats_restored = true;
+				ent->SetStatsRestored(true);
 
 			// link it into the bsp tree
 			if (!ent->free)
 			{
 				SV_LinkEdict (ent, false);
-				if (ent->v.modelindex && ent->v.model)
+				if (ent->v.modelindex && ent->GetModel())
 				{
-					i = SV_ModelIndex(PR_GetString(ent->v.model));
+					i = SV_ModelIndex(PR_GetString(ent->GetModel()));
 					if (i != ent->v.modelindex)
 					{
 						ent->v.modelindex = i;
@@ -1051,7 +1051,7 @@ void Host_Name_f (void)
 		if (String::Cmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
 	String::Cpy (host_client->name, newName);
-	host_client->edict->v.netname = PR_SetString(host_client->name);
+	host_client->edict->SetNetName(PR_SetString(host_client->name));
 	
 // send notification to all clients
 	
@@ -1096,14 +1096,14 @@ void Host_Class_f (void)
 
 	if (sv.loadgame || host_client->playerclass)
 	{
-		if (host_client->edict->v.playerclass)
-			newClass = host_client->edict->v.playerclass;
+		if (host_client->edict->GetPlayerClass())
+			newClass = host_client->edict->GetPlayerClass();
 		else if (host_client->playerclass)
 			newClass = host_client->playerclass;
 	}
 
 	host_client->playerclass = newClass;
-	host_client->edict->v.playerclass = newClass;
+	host_client->edict->SetPlayerClass(newClass);
 	
 	// Change the weapon model used
 	pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
@@ -1277,7 +1277,7 @@ void Host_Say(qboolean teamonly)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
-		if (teamplay->value && teamonly && client->edict->v.team != save->edict->v.team)
+		if (teamplay->value && teamonly && client->edict->GetTeam() != save->edict->GetTeam())
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -1396,7 +1396,7 @@ void Host_Color_f(void)
 	}
 
 	host_client->colors = playercolor;
-	host_client->edict->v.team = bottom + 1;
+	host_client->edict->SetTeam(bottom + 1);
 
 // send notification to all clients
 	sv.reliable_datagram.WriteByte(h2svc_updatecolors);
@@ -1417,7 +1417,7 @@ void Host_Kill_f (void)
 		return;
 	}
 
-	if (sv_player->v.health <= 0)
+	if (sv_player->GetHealth() <= 0)
 	{
 		SV_ClientPrintf ("Can't suicide -- allready dead!\n");
 		return;
@@ -1450,11 +1450,11 @@ void Host_Pause_f (void)
 
 		if (sv.paused)
 		{
-			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->v.netname));
+			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 		else
 		{
-			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->v.netname));
+			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 
 	// send notification to all clients
@@ -1500,7 +1500,7 @@ void Host_Spawn_f (void)
 {
 	int		i;
 	client_t	*client;
-	edict_t	*ent;
+	qhedict_t	*ent;
 
 	if (cmd_source == src_command)
 	{
@@ -1529,14 +1529,14 @@ void Host_Spawn_f (void)
 		ent = host_client->edict;
 		sv.paused = false;
 
-		if (!ent->v.stats_restored || deathmatch->value)
+		if (!ent->GetStatsRestored() || deathmatch->value)
 		{
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		
 			//ent->v.colormap = NUM_FOR_EDICT(ent);
-			ent->v.team = (host_client->colors & 15) + 1;
-			ent->v.netname = PR_SetString(host_client->name);
-			ent->v.playerclass = host_client->playerclass;
+			ent->SetTeam((host_client->colors & 15) + 1);
+			ent->SetNetName(PR_SetString(host_client->name));
+			ent->SetPlayerClass(host_client->playerclass);
 
 			// copy spawn parms out of the client_t
 
@@ -1619,7 +1619,7 @@ void Host_Spawn_f (void)
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
 	host_client->message.WriteByte(h2svc_setangle);
 	for (i=0 ; i < 2 ; i++)
-		host_client->message.WriteAngle(ent->v.angles[i] );
+		host_client->message.WriteAngle(ent->GetAngles()[i] );
 	host_client->message.WriteAngle(0 );
 
 	SV_WriteClientdataToMessage (host_client, sv_player, &host_client->message);
@@ -1654,7 +1654,7 @@ void Host_Create_f(void)
 {
 	char *FindName;
 	dfunction_t	*Search,*func;
-	edict_t		*ent;
+	qhedict_t		*ent;
 	int			i,Length,NumFound,Diff,NewDiff;
 
 	if (!sv.active)
@@ -1726,13 +1726,13 @@ void Host_Create_f(void)
 
 	ent = ED_Alloc ();
 
-	ent->v.classname = func->s_name;
-	VectorCopy(cl.refdef.vieworg, ent->v.origin);
-	ent->v.origin[0] += cl.refdef.viewaxis[0][0] * 80;
-	ent->v.origin[1] += cl.refdef.viewaxis[0][1] * 80;
-	ent->v.origin[2] += cl.refdef.viewaxis[0][2] * 80;
-	VectorCopy(ent->v.origin,ent->v.absmin);
-	VectorCopy(ent->v.origin,ent->v.absmax);
+	ent->SetClassName(func->s_name);
+	VectorCopy(cl.refdef.vieworg, ent->GetOrigin());
+	ent->GetOrigin()[0] += cl.refdef.viewaxis[0][0] * 80;
+	ent->GetOrigin()[1] += cl.refdef.viewaxis[0][1] * 80;
+	ent->GetOrigin()[2] += cl.refdef.viewaxis[0][2] * 80;
+	VectorCopy(ent->GetOrigin(),ent->v.absmin);
+	VectorCopy(ent->GetOrigin(),ent->v.absmax);
 	ent->v.absmin[0] -= 16;
 	ent->v.absmin[1] -= 16;
 	ent->v.absmin[2] -= 16;
@@ -1914,7 +1914,7 @@ void Host_Give_f (void)
       else
 */    {
          if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+            sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
       }
 		break;
 	
@@ -1985,7 +1985,7 @@ void Host_Give_f (void)
 		}*/
         break;		
     case 'h':
-        sv_player->v.health = v;
+        sv_player->SetHealth(v);
         break;		
     case 'c':
 /*		if (rogue)
@@ -2018,15 +2018,15 @@ void Host_Give_f (void)
     }
 }
 
-edict_t	*FindViewthing (void)
+qhedict_t	*FindViewthing (void)
 {
 	int		i;
-	edict_t	*e;
+	qhedict_t	*e;
 	
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if ( !String::Cmp(PR_GetString(e->v.classname), "viewthing") )
+		if ( !String::Cmp(PR_GetString(e->GetClassName()), "viewthing") )
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");
@@ -2040,7 +2040,7 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f (void)
 {
-	edict_t*	e;
+	qhedict_t*	e;
 	qhandle_t	m;
 
 	e = FindViewthing ();
@@ -2054,7 +2054,7 @@ void Host_Viewmodel_f (void)
 		return;
 	}
 	
-	e->v.frame = 0;
+	e->SetFrame(0);
 	cl.model_draw[(int)e->v.modelindex] = m;
 }
 
@@ -2065,7 +2065,7 @@ Host_Viewframe_f
 */
 void Host_Viewframe_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	int		f;
 	qhandle_t	m;
 
@@ -2078,7 +2078,7 @@ void Host_Viewframe_f (void)
 	if (f >= R_ModelNumFrames(m))
 		f = R_ModelNumFrames(m) - 1;
 
-	e->v.frame = f;		
+	e->SetFrame(f);
 }
 
 /*
@@ -2088,7 +2088,7 @@ Host_Viewnext_f
 */
 void Host_Viewnext_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	qhandle_t	m;
 	
 	e = FindViewthing ();
@@ -2096,11 +2096,11 @@ void Host_Viewnext_f (void)
 		return;
 	m = cl.model_draw[(int)e->v.modelindex];
 
-	e->v.frame = e->v.frame + 1;
-	if (e->v.frame >= R_ModelNumFrames(m))
-		e->v.frame = R_ModelNumFrames(m) - 1;
+	e->SetFrame(e->GetFrame() + 1);
+	if (e->GetFrame() >= R_ModelNumFrames(m))
+		e->SetFrame(R_ModelNumFrames(m) - 1);
 
-	R_PrintModelFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->GetFrame());		
 }
 
 /*
@@ -2110,7 +2110,7 @@ Host_Viewprev_f
 */
 void Host_Viewprev_f (void)
 {
-	edict_t	*e;
+	qhedict_t	*e;
 	qhandle_t	m;
 
 	e = FindViewthing ();
@@ -2119,11 +2119,11 @@ void Host_Viewprev_f (void)
 
 	m = cl.model_draw[(int)e->v.modelindex];
 
-	e->v.frame = e->v.frame - 1;
-	if (e->v.frame < 0)
-		e->v.frame = 0;
+	e->SetFrame(e->GetFrame() - 1);
+	if (e->GetFrame() < 0)
+		e->SetFrame(0);
 
-	R_PrintModelFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->GetFrame());
 }
 
 /*
