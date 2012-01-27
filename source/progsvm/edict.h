@@ -16,6 +16,21 @@
 
 #define MAX_ENT_LEAFS	16
 
+class idEntVarDef
+{
+public:
+	void Init(const char* name, int offset);
+
+	const char* name;
+	int offset;
+};
+
+struct qhlink_t
+{
+	qhlink_t* prev;
+	qhlink_t* next;
+};
+
 struct entvars_t
 {
 	float modelindex;
@@ -398,6 +413,8 @@ struct qhedict_t
 	FIELD_FLOAT(SiegeTeam)
 
 #undef FIELD_FLOAT
+#undef FIELD_VECTOR
+#undef FIELD_STRING
 #undef FIELD_FUNC
 #undef FIELD_ENTITY
 };

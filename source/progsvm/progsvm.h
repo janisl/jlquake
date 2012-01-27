@@ -20,6 +20,7 @@
 #include "../core/core.h"
 
 #include "progs_file.h"
+#include "edict.h"
 
 union eval_t
 {
@@ -30,21 +31,6 @@ union eval_t
 	int _int;
 	int edict;
 };	
-
-class idEntVarDef
-{
-public:
-	void Init(const char* name, int offset);
-
-	const char* name;
-	int offset;
-};
-
-struct qhlink_t
-{
-	qhlink_t* prev;
-	qhlink_t* next;
-};
 
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
