@@ -254,12 +254,12 @@ void CL_AdjustAngles (void)
 	// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
 	// but I don't see where I can get the yaw velocity, I have to get on to other things so here it is
 
-	if ((CL_KeyState (&in_left)!=0) && (cl.v.movetype==MOVETYPE_FLY))
-		cl.idealroll=-10;
-	else if ((CL_KeyState (&in_right)!=0) && (cl.v.movetype==MOVETYPE_FLY))
-		cl.idealroll=10;
+	if ((CL_KeyState (&in_left)!=0) && (cl.h2_v.movetype==MOVETYPE_FLY))
+		cl.h2_idealroll=-10;
+	else if ((CL_KeyState (&in_right)!=0) && (cl.h2_v.movetype==MOVETYPE_FLY))
+		cl.h2_idealroll=10;
 	else
-		cl.idealroll=0;
+		cl.h2_idealroll=0;
 
 	
 	up = CL_KeyState (&in_lookup);
@@ -295,7 +295,7 @@ void CL_BaseMove (h2usercmd_t *cmd)
 	if (clc.qh_signon != SIGNONS)
 		return;
 			
-	if (cl.v.cameramode)	// Stuck in a different camera so don't move
+	if (cl.h2_v.cameramode)	// Stuck in a different camera so don't move
 	{
 		Com_Memset(cmd, 0, sizeof(*cmd));
 		return;
@@ -332,7 +332,7 @@ void CL_BaseMove (h2usercmd_t *cmd)
 //
 // adjust for speed key (but not if always runs has been chosen)
 //
-	if ((cl_forwardspeed->value > 200 || in_speed.state & 1) && cl.v.hasted <= 1)
+	if ((cl_forwardspeed->value > 200 || in_speed.state & 1) && cl.h2_v.hasted <= 1)
 	{
 		cmd->forwardmove *= cl_movespeedkey->value;
 		cmd->sidemove *= cl_movespeedkey->value;
@@ -340,11 +340,11 @@ void CL_BaseMove (h2usercmd_t *cmd)
 	}
 
 	// Hasted player?
-	if (cl.v.hasted)
+	if (cl.h2_v.hasted)
 	{
-		cmd->forwardmove = cmd->forwardmove * cl.v.hasted;
-		cmd->sidemove = cmd->sidemove * cl.v.hasted;
-		cmd->upmove = cmd->upmove * cl.v.hasted;
+		cmd->forwardmove = cmd->forwardmove * cl.h2_v.hasted;
+		cmd->sidemove = cmd->sidemove * cl.h2_v.hasted;
+		cmd->upmove = cmd->upmove * cl.h2_v.hasted;
 	}
 
 	// light level at player's position including dlights
@@ -362,7 +362,7 @@ void CL_MouseEvent(int mx, int my)
 
 void CL_MouseMove(h2usercmd_t *cmd)
 {
-	if (cl.v.cameramode)	// Stuck in a different camera so don't move
+	if (cl.h2_v.cameramode)	// Stuck in a different camera so don't move
 	{
 		Com_Memset(cmd, 0, sizeof(*cmd));
 		return;
@@ -407,12 +407,12 @@ void CL_MouseMove(h2usercmd_t *cmd)
 			cmd->forwardmove -= m_forward->value * mouse_y;
 	}
 
-	if (cl.idealroll == 0) // Did keyboard set it already??
+	if (cl.h2_idealroll == 0) // Did keyboard set it already??
 	{
-		if ((mouse_x <0) && (cl.v.movetype==MOVETYPE_FLY))
-			cl.idealroll=-10;
-		else if ((mouse_x >0) && (cl.v.movetype==MOVETYPE_FLY))
-			cl.idealroll=10;
+		if ((mouse_x <0) && (cl.h2_v.movetype==MOVETYPE_FLY))
+			cl.h2_idealroll=-10;
+		else if ((mouse_x >0) && (cl.h2_v.movetype==MOVETYPE_FLY))
+			cl.h2_idealroll=10;
 	}
 	mouse_move_x = 0;
 	mouse_move_y = 0;

@@ -43,6 +43,8 @@ enum
 	H2MDLEF_BLOODSHOT = 8388608,	// Blood rain shot trail
 };
 
+#define MAX_INVENTORY_H2			15		// Max inventory array size
+
 #define H2MAX_SCOREBOARDNAME	32
 struct h2player_info_t
 {

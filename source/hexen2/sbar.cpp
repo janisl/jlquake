@@ -259,9 +259,9 @@ void SB_Draw(void)
 	Sbar_DrawTransPic(138, -8, R_CachePic("gfx/topbumpm.lmp"));
 	Sbar_DrawTransPic(269, -23, R_CachePic("gfx/topbumpr.lmp"));
 
-	maxMana = (int)cl.v.max_mana;
+	maxMana = (int)cl.h2_v.max_mana;
 	// Blue mana
-	mana = (int)cl.v.bluemana;
+	mana = (int)cl.h2_v.bluemana;
 	if(mana < 0)
 	{
 		mana = 0;
@@ -280,7 +280,7 @@ void SB_Draw(void)
 	}
 
 	// Green mana
-	mana = (int)cl.v.greenmana;
+	mana = (int)cl.h2_v.greenmana;
 	if(mana < 0)
 	{
 		mana = 0;
@@ -299,11 +299,11 @@ void SB_Draw(void)
 	}
 
 	// HP
-	if (cl.v.health < -99)
+	if (cl.h2_v.health < -99)
 		Sbar_DrawNum(58, 14, -99, 3);
 	else
-		Sbar_DrawNum(58, 14, cl.v.health, 3);
-	SetChainPosition(cl.v.health, cl.v.max_health);
+		Sbar_DrawNum(58, 14, cl.h2_v.health, 3);
+	SetChainPosition(cl.h2_v.health, cl.h2_v.max_health);
 	Sbar_DrawTransPic(45+((int)ChainPosition&7), 38,
 		R_CachePic("gfx/hpchain.lmp"));
 	Sbar_DrawTransPic(45+(int)ChainPosition, 36,
@@ -320,9 +320,9 @@ void SB_Draw(void)
 	}
 
 	// Current inventory item
-	if(cl.inv_selected >= 0)
+	if(cl.h2_inv_selected >= 0)
 	{
-		DrawBarArtifactIcon(144, 3, cl.inv_order[cl.inv_selected]);
+		DrawBarArtifactIcon(144, 3, cl.h2_inv_order[cl.h2_inv_selected]);
 
 		//Sbar_DrawTransPic(144, 3, R_CachePic(va("gfx/arti%02d.lmp",
 		//	cl.inv_order[cl.inv_selected])));
@@ -418,9 +418,9 @@ static void DrawFullScreenInfo(void)
 	Sbar_DrawPic(3, y, R_CachePic("gfx/bmmana.lmp"));
 	Sbar_DrawPic(3, y+18, R_CachePic("gfx/gmmana.lmp"));
 
-	maxMana = (int)cl.v.max_mana;
+	maxMana = (int)cl.h2_v.max_mana;
 	// Blue mana
-	mana = (int)cl.v.bluemana;
+	mana = (int)cl.h2_v.bluemana;
 	if(mana < 0)
 	{
 		mana = 0;
@@ -433,7 +433,7 @@ static void DrawFullScreenInfo(void)
 	Sbar_DrawSmallString(10, y+6, tempStr);
 
 	// Green mana
-	mana = (int)cl.v.greenmana;
+	mana = (int)cl.h2_v.greenmana;
 	if(mana < 0)
 	{
 		mana = 0;
@@ -446,12 +446,12 @@ static void DrawFullScreenInfo(void)
 	Sbar_DrawSmallString(10, y+18+6, tempStr);
 
 	// HP
-	Sbar_DrawNum(38, y+18, cl.v.health, 3);
+	Sbar_DrawNum(38, y+18, cl.h2_v.health, 3);
 
 	// Current inventory item
-	if(cl.inv_selected >= 0)
+	if(cl.h2_inv_selected >= 0)
 	{
-		DrawBarArtifactIcon(288, y+7, cl.inv_order[cl.inv_selected]);
+		DrawBarArtifactIcon(288, y+7, cl.h2_inv_order[cl.h2_inv_selected]);
 	}
 }
 
@@ -469,7 +469,7 @@ static void DrawLowerBar(void)
 	int piece;
 	int ringhealth;
 
-	//playerClass = cl.v.playerclass;
+	//playerClass = cl.h2_v.playerclass;
 	playerClass = cl_playerclass->value;
 	if(playerClass < 1 || playerClass > NUM_CLASSES)
 	{ // Default to demoness
@@ -496,27 +496,27 @@ static void DrawLowerBar(void)
 	Sbar_DrawSmallString(11, 48, ClassNames[playerClass-1]);
 
 	Sbar_DrawSmallString(11, 58, "int");
-	sprintf(tempStr, "%02d", (int)cl.v.intelligence);
+	sprintf(tempStr, "%02d", (int)cl.h2_v.intelligence);
 	Sbar_DrawSmallString(33, 58, tempStr);
 
 	Sbar_DrawSmallString(11, 64, "wis");
-	sprintf(tempStr, "%02d", (int)cl.v.wisdom);
+	sprintf(tempStr, "%02d", (int)cl.h2_v.wisdom);
 	Sbar_DrawSmallString(33, 64, tempStr);
 
 	Sbar_DrawSmallString(11, 70, "dex");
-	sprintf(tempStr, "%02d", (int)cl.v.dexterity);
+	sprintf(tempStr, "%02d", (int)cl.h2_v.dexterity);
 	Sbar_DrawSmallString(33, 70, tempStr);
 
 	Sbar_DrawSmallString(58, 58, "str");
-	sprintf(tempStr, "%02d", (int)cl.v.strength);
+	sprintf(tempStr, "%02d", (int)cl.h2_v.strength);
 	Sbar_DrawSmallString(80, 58, tempStr);
 
 	Sbar_DrawSmallString(58, 64, "lvl");
-	sprintf(tempStr, "%02d", (int)cl.v.level);
+	sprintf(tempStr, "%02d", (int)cl.h2_v.level);
 	Sbar_DrawSmallString(80, 64, tempStr);
 
 	Sbar_DrawSmallString(58, 70, "exp");
-	sprintf(tempStr, "%06d", (int)cl.v.experience);
+	sprintf(tempStr, "%06d", (int)cl.h2_v.experience);
 	Sbar_DrawSmallString(80, 70, tempStr);
 
 	// Abilities
@@ -524,12 +524,12 @@ static void DrawLowerBar(void)
 	i = ABILITIES_STR_INDEX+(playerClass-1)*2;
 	if(i+1 < pr_string_count)
 	{
-		if(((int)cl.v.flags)&FL_SPECIAL_ABILITY1)
+		if(((int)cl.h2_v.flags)&FL_SPECIAL_ABILITY1)
 		{
 			Sbar_DrawSmallString(8, 89,
 				&pr_global_strings[pr_string_index[i]]);
 		}
-		if(((int)cl.v.flags)&FL_SPECIAL_ABILITY2)
+		if(((int)cl.h2_v.flags)&FL_SPECIAL_ABILITY2)
 		{
 			Sbar_DrawSmallString(8, 96,
 				&pr_global_strings[pr_string_index[i+1]]);
@@ -541,67 +541,67 @@ static void DrawLowerBar(void)
 	Sbar_DrawPic(134, 50, R_CachePic(tempStr));
 
 	// Armor
-	if(cl.v.armor_helmet > 0)
+	if(cl.h2_v.armor_helmet > 0)
 	{
 		Sbar_DrawPic(164, 115, R_CachePic("gfx/armor1.lmp"));
-		sprintf(tempStr, "+%d", (int)cl.v.armor_helmet);
+		sprintf(tempStr, "+%d", (int)cl.h2_v.armor_helmet);
 		Sbar_DrawSmallString(168, 136, tempStr);
 	}
-	if(cl.v.armor_amulet > 0)
+	if(cl.h2_v.armor_amulet > 0)
 	{
 		Sbar_DrawPic(205, 115, R_CachePic("gfx/armor2.lmp"));
-		sprintf(tempStr, "+%d", (int)cl.v.armor_amulet);
+		sprintf(tempStr, "+%d", (int)cl.h2_v.armor_amulet);
 		Sbar_DrawSmallString(208, 136, tempStr);
 	}
-	if(cl.v.armor_breastplate > 0)
+	if(cl.h2_v.armor_breastplate > 0)
 	{
 		Sbar_DrawPic(246, 115, R_CachePic("gfx/armor3.lmp"));
-		sprintf(tempStr, "+%d", (int)cl.v.armor_breastplate);
+		sprintf(tempStr, "+%d", (int)cl.h2_v.armor_breastplate);
 		Sbar_DrawSmallString(249, 136, tempStr);
 	}
-	if(cl.v.armor_bracer > 0)
+	if(cl.h2_v.armor_bracer > 0)
 	{
 		Sbar_DrawPic(285, 115, R_CachePic("gfx/armor4.lmp"));
-		sprintf(tempStr, "+%d", (int)cl.v.armor_bracer);
+		sprintf(tempStr, "+%d", (int)cl.h2_v.armor_bracer);
 		Sbar_DrawSmallString(288, 136, tempStr);
 	}
 
 	// Rings 
-	if(cl.v.ring_flight > 0)
+	if(cl.h2_v.ring_flight > 0)
 	{
 		Sbar_DrawTransPic(6, 119, R_CachePic("gfx/ring_f.lmp"));
 
-		ringhealth = (int)cl.v.ring_flight;
+		ringhealth = (int)cl.h2_v.ring_flight;
 		if(ringhealth > 100)
 			ringhealth = 100;
 		Sbar_DrawPic(  35 - (int)(26 * (ringhealth/(float)100)),142,R_CachePic("gfx/ringhlth.lmp"));
 		Sbar_DrawPic( 35, 142, R_CachePic("gfx/rhlthcvr.lmp"));
 	}
 
-	if(cl.v.ring_water > 0)
+	if(cl.h2_v.ring_water > 0)
 	{
 		Sbar_DrawTransPic(44, 119, R_CachePic("gfx/ring_w.lmp"));
-		ringhealth = (int)cl.v.ring_water;
+		ringhealth = (int)cl.h2_v.ring_water;
 		if(ringhealth > 100)
 			ringhealth = 100;
 		Sbar_DrawPic(  73 - (int)(26 * (ringhealth/(float)100)),142,R_CachePic("gfx/ringhlth.lmp"));
 		Sbar_DrawPic( 73, 142, R_CachePic("gfx/rhlthcvr.lmp"));
 	}
 
-	if(cl.v.ring_turning > 0)
+	if(cl.h2_v.ring_turning > 0)
 	{
 		Sbar_DrawTransPic(81, 119, R_CachePic("gfx/ring_t.lmp"));
-		ringhealth = (int)cl.v.ring_turning;
+		ringhealth = (int)cl.h2_v.ring_turning;
 		if(ringhealth > 100)
 			ringhealth = 100;
 		Sbar_DrawPic(  110 - (int)(26 * (ringhealth/(float)100)),142,R_CachePic("gfx/ringhlth.lmp"));
 		Sbar_DrawPic( 110, 142, R_CachePic("gfx/rhlthcvr.lmp"));
 	}
 
-	if(cl.v.ring_regeneration > 0)
+	if(cl.h2_v.ring_regeneration > 0)
 	{
 		Sbar_DrawTransPic(119, 119, R_CachePic("gfx/ring_r.lmp"));
-		ringhealth = (int)cl.v.ring_regeneration;
+		ringhealth = (int)cl.h2_v.ring_regeneration;
 		if(ringhealth > 100)
 			ringhealth = 100;
 		Sbar_DrawPic( 148 -(int)(26 * (ringhealth/(float)100)),142,R_CachePic("gfx/ringhlth.lmp"));
@@ -612,12 +612,12 @@ static void DrawLowerBar(void)
 	piece = 0;
 	for(i = 0; i < 8; i++)
 	{
-		if(cl.puzzle_pieces[i][0] == 0)
+		if(cl.h2_puzzle_pieces[i][0] == 0)
 		{
 			continue;
 		}
 		Sbar_DrawPic(194+(piece%4)*31, piece < 4 ? 51 : 82,
-			R_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
+			R_CachePic(va("gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[i])));
 		piece++;
 	}
 }
@@ -633,32 +633,32 @@ static int CalcAC(void)
 	int a;
 	int playerClass;
 
-	//playerClass = cl.v.playerclass;
+	//playerClass = cl.h2_v.playerclass;
 	playerClass = cl_playerclass->value -1 ;
 	if(playerClass < 0 || playerClass >= NUM_CLASSES)
 	{
 		playerClass = NUM_CLASSES-1;
 	}
 	a = 0;
-	if(cl.v.armor_amulet > 0)
+	if(cl.h2_v.armor_amulet > 0)
 	{
 		a += AmuletAC[playerClass];
-		a += cl.v.armor_amulet/5;
+		a += cl.h2_v.armor_amulet/5;
 	}
-	if(cl.v.armor_bracer > 0)
+	if(cl.h2_v.armor_bracer > 0)
 	{
 		a += BracerAC[playerClass];
-		a += cl.v.armor_bracer/5;
+		a += cl.h2_v.armor_bracer/5;
 	}
-	if(cl.v.armor_breastplate > 0)
+	if(cl.h2_v.armor_breastplate > 0)
 	{
 		a += BreastplateAC[playerClass];
-		a += cl.v.armor_breastplate/5;
+		a += cl.h2_v.armor_breastplate/5;
 	}
-	if(cl.v.armor_helmet > 0)
+	if(cl.h2_v.armor_helmet > 0)
 	{
 		a += HelmetAC[playerClass];
-		a += cl.v.armor_helmet/5;
+		a += cl.h2_v.armor_helmet/5;
 	}
 	return a;
 }
@@ -1085,25 +1085,25 @@ void Sbar_NormalOverlay(void)
 	y = 40;
 	for(i = 0; i < 8; i++)
 	{
-		if(cl.puzzle_pieces[i][0] == 0)
+		if(cl.h2_puzzle_pieces[i][0] == 0)
 		{
 			continue;
 		}
 
 		if (piece == 4) y = 40;
 
-		FindName(cl.puzzle_pieces[i],Name);
+		FindName(cl.h2_puzzle_pieces[i],Name);
 
 		if (piece < 4)
 		{
 			M_DrawPic(10, y,
-				R_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
+				R_CachePic(va("gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[i])));
 			M_PrintWhite (45, y, Name);
 		}
 		else
 		{
 			M_DrawPic(310-32, y,
-				R_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
+				R_CachePic(va("gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[i])));
 			M_PrintWhite (310-32-3-(String::Length(Name)*8), 18+y, Name);
 		}
 
@@ -1210,7 +1210,7 @@ static void DrawActiveRings(void)
 
 	ring_row = 1;
 
-	flag = (int)cl.v.rings_active;
+	flag = (int)cl.h2_v.rings_active;
 
 	if(flag&RING_TURNING)
 	{
@@ -1257,7 +1257,7 @@ static void DrawActiveArtifacts(void)
 	if (ring_row != 1)
 		art_col += 50;
 
-	flag = (int)cl.v.artifact_active;
+	flag = (int)cl.h2_v.artifact_active;
 	if (flag & ART_TOMEOFPOWER)
 	{
 		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
@@ -1293,10 +1293,10 @@ void Inv_Update(qboolean force)
 	if(inv_flg || force)
 	{
 		// Just to be safe
-		if (cl.inv_selected >= 0 && cl.inv_count > 0)
-			cl.v.inventory = cl.inv_order[cl.inv_selected] + 1;
+		if (cl.h2_inv_selected >= 0 && cl.h2_inv_count > 0)
+			cl.h2_v.inventory = cl.h2_inv_order[cl.h2_inv_selected] + 1;
 		else
-			cl.v.inventory = 0;
+			cl.h2_v.inventory = 0;
 
 		if (!force) 
 		{
@@ -1305,7 +1305,7 @@ void Inv_Update(qboolean force)
 
 		// This will cause the server to set the client's edict's inventory value
 		clc.netchan.message.WriteByte(h2clc_inv_select);
-		clc.netchan.message.WriteByte(cl.v.inventory);
+		clc.netchan.message.WriteByte(cl.h2_v.inventory);
 	}
 }
 
@@ -1323,8 +1323,8 @@ static void DrawBarArtifactIcon(int x, int y, int artifact)
 		return;
 	Sbar_DrawTransPic(x, y, R_CachePic(va("gfx/arti%02d.lmp",
 		artifact)));
-//	if((count = (int)(&cl.v.cnt_torch)[artifact]) > 1)
-	if((count = (int)(&cl.v.cnt_torch)[artifact]) > 0)
+//	if((count = (int)(&cl.h2_v.cnt_torch)[artifact]) > 1)
+	if((count = (int)(&cl.h2_v.cnt_torch)[artifact]) > 0)
 	{
 		DrawBarArtifactNumber(x+20, y+21, count);
 	}
@@ -1350,7 +1350,7 @@ static void DrawArtifactInventory(void)
 	{
 		return;
 	}
-	if(!cl.inv_count)
+	if(!cl.h2_inv_count)
 	{
 		Inv_Update(false);
 		return;
@@ -1368,15 +1368,15 @@ static void DrawArtifactInventory(void)
 	}
 	for(i = 0, x = 64; i < INV_MAX_ICON; i++, x += 33)
 	{
-		if(cl.inv_startpos+i >= cl.inv_count)
+		if(cl.h2_inv_startpos+i >= cl.h2_inv_count)
 		{
 			break;
 		}
-		if(cl.inv_startpos+i == cl.inv_selected)
+		if(cl.h2_inv_startpos+i == cl.h2_inv_selected)
 		{ // Highlight icon
 			Sbar_DrawTransPic(x+9, y-12, R_CachePic("gfx/artisel.lmp"));
 		}
-		DrawBarArtifactIcon(x, y, cl.inv_order[cl.inv_startpos+i]);
+		DrawBarArtifactIcon(x, y, cl.h2_inv_order[cl.h2_inv_startpos+i]);
 	}
 
 	//Inv_DrawArrows (x, y);
@@ -1461,19 +1461,19 @@ static void ShowInfoUp_f(void)
 
 static void InvLeft_f(void)
 {
-	if(!cl.inv_count || cl.qh_intermission)
+	if(!cl.h2_inv_count || cl.qh_intermission)
 	{
 		return;
 	}
 
 	if(inv_flg)
 	{
-		if(cl.inv_selected > 0)
+		if(cl.h2_inv_selected > 0)
 		{
-			cl.inv_selected--;
-			if(cl.inv_selected < cl.inv_startpos)
+			cl.h2_inv_selected--;
+			if(cl.h2_inv_selected < cl.h2_inv_startpos)
 			{
-				cl.inv_startpos = cl.inv_selected;
+				cl.h2_inv_startpos = cl.h2_inv_selected;
 			}
 		}
 	}
@@ -1493,20 +1493,20 @@ static void InvLeft_f(void)
 
 static void InvRight_f(void)
 {
-	if(!cl.inv_count || cl.qh_intermission)
+	if(!cl.h2_inv_count || cl.qh_intermission)
 	{
 		return;
 	}
 
 	if(inv_flg)
 	{
-		if(cl.inv_selected < cl.inv_count-1)
+		if(cl.h2_inv_selected < cl.h2_inv_count-1)
 		{
-			cl.inv_selected++;
-			if (cl.inv_selected - cl.inv_startpos >= INV_MAX_ICON)
+			cl.h2_inv_selected++;
+			if (cl.h2_inv_selected - cl.h2_inv_startpos >= INV_MAX_ICON)
 			{
 				// could probably be just a cl.inv_startpos++, but just in case
-				cl.inv_startpos = cl.inv_selected - INV_MAX_ICON + 1;
+				cl.h2_inv_startpos = cl.h2_inv_selected - INV_MAX_ICON + 1;
 			}
 		}
 	}
@@ -1526,7 +1526,7 @@ static void InvRight_f(void)
 
 static void InvUse_f(void)
 {
-	if(!cl.inv_count || cl.qh_intermission)
+	if(!cl.h2_inv_count || cl.qh_intermission)
 	{
 		return;
 	}
@@ -1575,18 +1575,18 @@ void SB_InvChanged(void)
 
 	Com_Memset(examined,0,sizeof(examined)); // examined[x] = false
 
-	if(cl.inv_selected >= 0 &&
-	   (&cl.v.cnt_torch)[cl.inv_order[cl.inv_selected]] == 0)
+	if(cl.h2_inv_selected >= 0 &&
+	   (&cl.h2_v.cnt_torch)[cl.h2_inv_order[cl.h2_inv_selected]] == 0)
 		ForceUpdate = true;
 
 	// removed items we no longer have from the order
-	for(counter=position=0;counter<cl.inv_count;counter++)
+	for(counter=position=0;counter<cl.h2_inv_count;counter++)
 	{
 		//if (Inv_GetCount(cl.inv_order[counter]) >= 0)
-		if((&cl.v.cnt_torch)[cl.inv_order[counter]] > 0)
+		if((&cl.h2_v.cnt_torch)[cl.h2_inv_order[counter]] > 0)
 		{
-			cl.inv_order[position] = cl.inv_order[counter];
-			examined[cl.inv_order[position]] = true;
+			cl.h2_inv_order[position] = cl.h2_inv_order[counter];
+			examined[cl.h2_inv_order[position]] = true;
 
 			position++;
 		}
@@ -1597,22 +1597,22 @@ void SB_InvChanged(void)
 		if (!examined[counter])
 		{
 			//if (Inv_GetCount(counter) > 0)
-			if((&cl.v.cnt_torch)[counter] > 0)
+			if((&cl.h2_v.cnt_torch)[counter] > 0)
 			{
-				cl.inv_order[position] = counter;
+				cl.h2_inv_order[position] = counter;
 				position++;
 			}
 		}
 
-	cl.inv_count = position;
-	if (cl.inv_selected >= cl.inv_count) 
+	cl.h2_inv_count = position;
+	if (cl.h2_inv_selected >= cl.h2_inv_count) 
 	{
-		cl.inv_selected = cl.inv_count-1;
+		cl.h2_inv_selected = cl.h2_inv_count-1;
 		ForceUpdate = true;
 	}
-	if (cl.inv_count && cl.inv_selected < 0) 
+	if (cl.h2_inv_count && cl.h2_inv_selected < 0) 
 	{
-		cl.inv_selected = 0;
+		cl.h2_inv_selected = 0;
 		ForceUpdate = true;
 	}
 	if (ForceUpdate)
@@ -1620,10 +1620,10 @@ void SB_InvChanged(void)
 		Inv_Update(true);
 	}
 
-	if (cl.inv_startpos+INV_MAX_ICON > cl.inv_count)
+	if (cl.h2_inv_startpos+INV_MAX_ICON > cl.h2_inv_count)
 	{
-		cl.inv_startpos = cl.inv_count - INV_MAX_ICON;
-		if (cl.inv_startpos < 0) cl.inv_startpos = 0;
+		cl.h2_inv_startpos = cl.h2_inv_count - INV_MAX_ICON;
+		if (cl.h2_inv_startpos < 0) cl.h2_inv_startpos = 0;
 	}
 }
 
@@ -1635,8 +1635,8 @@ void SB_InvChanged(void)
 
 void SB_InvReset(void)
 {
-	cl.inv_count = cl.inv_startpos = 0;
-	cl.inv_selected = -1;
+	cl.h2_inv_count = cl.h2_inv_startpos = 0;
+	cl.h2_inv_selected = -1;
 	inv_flg = false;
 }
 

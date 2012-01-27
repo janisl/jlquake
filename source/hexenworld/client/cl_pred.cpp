@@ -70,11 +70,11 @@ void CL_PredictUsercmd (hwplayer_state_t *from, hwplayer_state_t *to, hwusercmd_
 
 	pmove.oldbuttons = from->oldbuttons;
 	pmove.waterjumptime = from->waterjumptime;
-	pmove.dead = cl.v.health <= 0;
+	pmove.dead = cl.h2_v.health <= 0;
 	pmove.spectator = spectator;
-	pmove.hasted = cl.v.hasted;
-	pmove.movetype = cl.v.movetype;
-	pmove.teleport_time = cl.v.teleport_time;
+	pmove.hasted = cl.h2_v.hasted;
+	pmove.movetype = cl.h2_v.movetype;
+	pmove.teleport_time = cl.h2_v.teleport_time;
 
 	pmove.cmd = *u;
 	pmove.crouched = player_crouching;

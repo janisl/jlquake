@@ -50,22 +50,6 @@ extern clientConnection_t clc;
 //
 struct client_state_t : clientActiveCommon_t
 {
-	int			inv_order[MAX_INVENTORY];
-	int			inv_count, inv_startpos, inv_selected;
-
-	h2client_entvars_t	v; // NOTE: not every field will be update - you must specifically add
-	                   // them in functions SV_WriteClientdatatToMessage() and CL_ParseClientdata()
-
-	char puzzle_pieces[8][10]; // puzzle piece names
-
-	float		idealroll;
-	float		rollvel;
-	
-	char		midi_name[MAX_QPATH];     // midi file name
-
-	h2entity_t	viewent;		// weapon model
-
-	unsigned	PIV;			// players in view
 };
 
 

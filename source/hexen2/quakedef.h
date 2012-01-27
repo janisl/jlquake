@@ -59,8 +59,6 @@
 //#define	STAT_EXPERIENCE		17
 
 
-#define	MAX_INVENTORY			15		// Max inventory array size
-
 // stock defines
 
 #define	IT_SHOTGUN				1

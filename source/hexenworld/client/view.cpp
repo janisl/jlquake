@@ -182,7 +182,7 @@ static void V_DriftPitch (void)
 // don't count small mouse motion
 	if (cl.qh_nodrift)
 	{
-		if ( Q_fabs(cl.hw_frames[(clc.netchan.outgoingSequence-1)&UPDATE_MASK_HW].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed->value)-10 || lookspring->value == 0.0)
+		if ( Q_fabs(cl.hw_frames[(clc.netchan.outgoingSequence-1)&UPDATE_MASK_HW].cmd.forwardmove) < (cl.h2_v.hasted*cl_forwardspeed->value)-10 || lookspring->value == 0.0)
 			cl.qh_driftmove = 0;
 		else
 			cl.qh_driftmove += host_frametime;
@@ -252,36 +252,36 @@ static void V_DriftRoll (void)
 
 	if (view_message->onground == -1 || clc.demoplaying)
 	{
-		if(cl.v.movetype != MOVETYPE_FLY)
+		if(cl.h2_v.movetype != MOVETYPE_FLY)
 		{
-			cl.rollvel = 0;
+			cl.h2_rollvel = 0;
 			return;
 		}
 	}
 
 
-	if(cl.v.movetype != MOVETYPE_FLY)
+	if(cl.h2_v.movetype != MOVETYPE_FLY)
 		rollspeed = v_centerrollspeed->value;
 	else
 		rollspeed = v_centerrollspeed->value * .5;	//slower roll when flying
 
-	delta = cl.idealroll - cl.viewangles[ROLL];
+	delta = cl.h2_idealroll - cl.viewangles[ROLL];
 
 	if (!delta)
 	{
-		cl.rollvel = 0;
+		cl.h2_rollvel = 0;
 		return;
 	}
 
 
-	move = host_frametime * cl.rollvel; 
-	cl.rollvel += host_frametime * rollspeed;
+	move = host_frametime * cl.h2_rollvel; 
+	cl.h2_rollvel += host_frametime * rollspeed;
 
 	if (delta > 0)
 	{
 		if (move > delta)
 		{
-			cl.rollvel = 0;
+			cl.h2_rollvel = 0;
 			move = delta;
 		}
 		cl.viewangles[ROLL] += move;
@@ -290,7 +290,7 @@ static void V_DriftRoll (void)
 	{
 		if (move > -delta)
 		{
-			cl.rollvel = 0;
+			cl.h2_rollvel = 0;
 			move = -delta;
 		}
 		cl.viewangles[ROLL] -= move;
@@ -456,7 +456,7 @@ static void V_CalcPowerupCshift(void)
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
 	}
 */
-	if((int)cl.v.artifact_active&ARTFLAG_DIVINE_INTERVENTION)
+	if((int)cl.h2_v.artifact_active&ARTFLAG_DIVINE_INTERVENTION)
 	{
 		cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 255;
@@ -464,14 +464,14 @@ static void V_CalcPowerupCshift(void)
 		cl.qh_cshifts[CSHIFT_BONUS].percent = 256;
 	}
 
-	if((int)cl.v.artifact_active&ARTFLAG_FROZEN)
+	if((int)cl.h2_v.artifact_active&ARTFLAG_FROZEN)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 20;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 70;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 65;
 	}
-	else if((int)cl.v.artifact_active&ARTFLAG_STONED)
+	else if((int)cl.h2_v.artifact_active&ARTFLAG_STONED)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 205;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 205;
@@ -479,14 +479,14 @@ static void V_CalcPowerupCshift(void)
 		//cl.qh_cshifts[CSHIFT_POWERUP].percent = 80;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 11000;
 	}
-	else if((int)cl.v.artifact_active&ART_INVISIBILITY)
+	else if((int)cl.h2_v.artifact_active&ART_INVISIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
 	}
-	else if((int)cl.v.artifact_active&ART_INVINCIBILITY)
+	else if((int)cl.h2_v.artifact_active&ART_INVINCIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
@@ -603,12 +603,12 @@ CalcGunAngle
 */
 static void CalcGunAngle(vec3_t viewangles)
 {	
-	cl.viewent.state.angles[YAW] = viewangles[YAW];
-	cl.viewent.state.angles[PITCH] = -viewangles[PITCH];
+	cl.h2_viewent.state.angles[YAW] = viewangles[YAW];
+	cl.h2_viewent.state.angles[PITCH] = -viewangles[PITCH];
 
-	cl.viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
-	cl.viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
-	cl.viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
+	cl.h2_viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	cl.h2_viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	cl.h2_viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 /*
@@ -651,7 +651,7 @@ static void V_CalcViewRoll(vec3_t viewangles)
 		v_dmg_time -= host_frametime;
 	}
 
-	if (cl.v.health <= 0 && !cl.qh_spectator)
+	if (cl.h2_v.health <= 0 && !cl.qh_spectator)
 	{
 		viewangles[ROLL] = 80;	// dead view angle
 		return;
@@ -671,7 +671,7 @@ static void V_CalcIntermissionRefdef (void)
 	float		old;
 
 // view is the weapon model
-	view = &cl.viewent;
+	view = &cl.h2_viewent;
 
 	VectorCopy (cl.qh_simorg, cl.refdef.vieworg);
 	vec3_t viewangles;
@@ -700,16 +700,16 @@ static void V_CalcRefdef (void)
 	float		bob;
 	static float oldz = 0;
 
-	if (!cl.v.cameramode)
+	if (!cl.h2_v.cameramode)
 	{		
 		V_DriftPitch ();
 		V_DriftRoll ();
 	}
 
 // view is the weapon model (only visible from inside body)
-	view = &cl.viewent;
+	view = &cl.h2_viewent;
 
-	if (cl.v.movetype != MOVETYPE_FLY)
+	if (cl.h2_v.movetype != MOVETYPE_FLY)
 		bob = V_CalcBob ();
 	else  // no bobbing when you fly
 		bob = 1;
@@ -844,10 +844,10 @@ static void CL_AddViewModel()
 //rjr	if (cl.items & IT_INVISIBILITY)
 //rjr		return;
 
-	if (cl.v.health <= 0)
+	if (cl.h2_v.health <= 0)
 		return;
 
-	if (!cl.viewent.state.modelindex)
+	if (!cl.h2_viewent.state.modelindex)
 		return;
 
 	refEntity_t gun;
@@ -855,12 +855,12 @@ static void CL_AddViewModel()
 	Com_Memset(&gun, 0, sizeof(gun));
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(cl.viewent.state.origin, gun.origin);
-	gun.hModel = cl.model_draw[cl.viewent.state.modelindex];
-	gun.frame = cl.viewent.state.frame;
-	gun.skinNum = cl.viewent.state.skinnum;
-	gun.shaderTime = cl.viewent.syncbase;
-	CLH2_SetRefEntAxis(&gun, cl.viewent.state.angles, vec3_origin, cl.viewent.state.scale, 0, cl.viewent.state.abslight, cl.viewent.state.drawflags);
+	VectorCopy(cl.h2_viewent.state.origin, gun.origin);
+	gun.hModel = cl.model_draw[cl.h2_viewent.state.modelindex];
+	gun.frame = cl.h2_viewent.state.frame;
+	gun.skinNum = cl.h2_viewent.state.skinnum;
+	gun.shaderTime = cl.h2_viewent.syncbase;
+	CLH2_SetRefEntAxis(&gun, cl.h2_viewent.state.angles, vec3_origin, cl.h2_viewent.state.scale, 0, cl.h2_viewent.state.abslight, cl.h2_viewent.state.drawflags);
 	CLH2_HandleCustomSkin(&gun, -1);
 
 	R_AddRefEntityToScene(&gun);

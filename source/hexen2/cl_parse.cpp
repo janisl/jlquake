@@ -691,21 +691,21 @@ void CL_ParseClientdata (int bits)
 	if (bits & SU_VIEWHEIGHT)
 		cl.qh_viewheight = net_message.ReadChar ();
 //rjr	else
-//rjr		cl.viewheight = DEFAULT_VIEWHEIGHT;
+//rjr		cl.h2_viewheight = DEFAULT_VIEWHEIGHT;
 
 	if (bits & SU_IDEALPITCH)
 		cl.qh_idealpitch = net_message.ReadChar ();
 	else
 	{
 		//rjr   is sv_flypitch   useable on the client's end?
-//rjr		if (cl.v.movetype==MOVETYPE_FLY)
+//rjr		if (cl.h2_v.movetype==MOVETYPE_FLY)
 //rjr			cl.idealpitch = sv_flypitch.value;
 //rjr		else
 //rjr			cl.idealpitch = sv_walkpitch.value;
 	}
 
 	if (bits & SU_IDEALROLL)
-		cl.idealroll = net_message.ReadChar ();	
+		cl.h2_idealroll = net_message.ReadChar ();	
 //rjr	else
 //rjr		cl.idealroll = 0;
 	
@@ -751,92 +751,92 @@ void CL_ParseClientdata (int bits)
 		sc2 = net_message.ReadLong ();
 
 	if (sc1 & SC1_HEALTH)
-		cl.v.health = net_message.ReadShort();
+		cl.h2_v.health = net_message.ReadShort();
 	if (sc1 & SC1_LEVEL)
-		cl.v.level = net_message.ReadByte();
+		cl.h2_v.level = net_message.ReadByte();
 	if (sc1 & SC1_INTELLIGENCE)
-		cl.v.intelligence = net_message.ReadByte();
+		cl.h2_v.intelligence = net_message.ReadByte();
 	if (sc1 & SC1_WISDOM)
-		cl.v.wisdom = net_message.ReadByte();
+		cl.h2_v.wisdom = net_message.ReadByte();
 	if (sc1 & SC1_STRENGTH)
-		cl.v.strength = net_message.ReadByte();
+		cl.h2_v.strength = net_message.ReadByte();
 	if (sc1 & SC1_DEXTERITY)
-		cl.v.dexterity = net_message.ReadByte();
+		cl.h2_v.dexterity = net_message.ReadByte();
 	if (sc1 & SC1_WEAPON)
-		cl.v.weapon = net_message.ReadByte();
+		cl.h2_v.weapon = net_message.ReadByte();
 	if (sc1 & SC1_BLUEMANA)
-		cl.v.bluemana = net_message.ReadByte();
+		cl.h2_v.bluemana = net_message.ReadByte();
 	if (sc1 & SC1_GREENMANA)
-		cl.v.greenmana = net_message.ReadByte();
+		cl.h2_v.greenmana = net_message.ReadByte();
 	if (sc1 & SC1_EXPERIENCE)
-		cl.v.experience = net_message.ReadLong();
+		cl.h2_v.experience = net_message.ReadLong();
 	if (sc1 & SC1_CNT_TORCH)
-		cl.v.cnt_torch = net_message.ReadByte();
+		cl.h2_v.cnt_torch = net_message.ReadByte();
 	if (sc1 & SC1_CNT_H_BOOST)
-		cl.v.cnt_h_boost = net_message.ReadByte();
+		cl.h2_v.cnt_h_boost = net_message.ReadByte();
 	if (sc1 & SC1_CNT_SH_BOOST)
-		cl.v.cnt_sh_boost = net_message.ReadByte();
+		cl.h2_v.cnt_sh_boost = net_message.ReadByte();
 	if (sc1 & SC1_CNT_MANA_BOOST)
-		cl.v.cnt_mana_boost = net_message.ReadByte();
+		cl.h2_v.cnt_mana_boost = net_message.ReadByte();
 	if (sc1 & SC1_CNT_TELEPORT)
-		cl.v.cnt_teleport = net_message.ReadByte();
+		cl.h2_v.cnt_teleport = net_message.ReadByte();
 	if (sc1 & SC1_CNT_TOME)
-		cl.v.cnt_tome = net_message.ReadByte();
+		cl.h2_v.cnt_tome = net_message.ReadByte();
 	if (sc1 & SC1_CNT_SUMMON)
-		cl.v.cnt_summon = net_message.ReadByte();
+		cl.h2_v.cnt_summon = net_message.ReadByte();
 	if (sc1 & SC1_CNT_INVISIBILITY)
-		cl.v.cnt_invisibility = net_message.ReadByte();
+		cl.h2_v.cnt_invisibility = net_message.ReadByte();
 	if (sc1 & SC1_CNT_GLYPH)
-		cl.v.cnt_glyph = net_message.ReadByte();
+		cl.h2_v.cnt_glyph = net_message.ReadByte();
 	if (sc1 & SC1_CNT_HASTE)
-		cl.v.cnt_haste = net_message.ReadByte();
+		cl.h2_v.cnt_haste = net_message.ReadByte();
 	if (sc1 & SC1_CNT_BLAST)
-		cl.v.cnt_blast = net_message.ReadByte();
+		cl.h2_v.cnt_blast = net_message.ReadByte();
 	if (sc1 & SC1_CNT_POLYMORPH)
-		cl.v.cnt_polymorph = net_message.ReadByte();
+		cl.h2_v.cnt_polymorph = net_message.ReadByte();
 	if (sc1 & SC1_CNT_FLIGHT)
-		cl.v.cnt_flight = net_message.ReadByte();
+		cl.h2_v.cnt_flight = net_message.ReadByte();
 	if (sc1 & SC1_CNT_CUBEOFFORCE)
-		cl.v.cnt_cubeofforce = net_message.ReadByte();
+		cl.h2_v.cnt_cubeofforce = net_message.ReadByte();
 	if (sc1 & SC1_CNT_INVINCIBILITY)
-		cl.v.cnt_invincibility = net_message.ReadByte();
+		cl.h2_v.cnt_invincibility = net_message.ReadByte();
 	if (sc1 & SC1_ARTIFACT_ACTIVE)
-		cl.v.artifact_active = net_message.ReadFloat();
+		cl.h2_v.artifact_active = net_message.ReadFloat();
 	if (sc1 & SC1_ARTIFACT_LOW)
-		cl.v.artifact_low = net_message.ReadFloat();
+		cl.h2_v.artifact_low = net_message.ReadFloat();
 	if (sc1 & SC1_MOVETYPE)
-		cl.v.movetype = net_message.ReadByte();
+		cl.h2_v.movetype = net_message.ReadByte();
 	if (sc1 & SC1_CAMERAMODE)
-		cl.v.cameramode = net_message.ReadByte();
+		cl.h2_v.cameramode = net_message.ReadByte();
 	if (sc1 & SC1_HASTED)
-		cl.v.hasted = net_message.ReadFloat();
+		cl.h2_v.hasted = net_message.ReadFloat();
 	if (sc1 & SC1_INVENTORY)
-		cl.v.inventory = net_message.ReadByte();
+		cl.h2_v.inventory = net_message.ReadByte();
 	if (sc1 & SC1_RINGS_ACTIVE)
-		cl.v.rings_active = net_message.ReadFloat();
+		cl.h2_v.rings_active = net_message.ReadFloat();
 
 	if (sc2 & SC2_RINGS_LOW)
-		cl.v.rings_low = net_message.ReadFloat();
+		cl.h2_v.rings_low = net_message.ReadFloat();
 	if (sc2 & SC2_AMULET)
-		cl.v.armor_amulet = net_message.ReadByte();
+		cl.h2_v.armor_amulet = net_message.ReadByte();
 	if (sc2 & SC2_BRACER)
-		cl.v.armor_bracer = net_message.ReadByte();
+		cl.h2_v.armor_bracer = net_message.ReadByte();
 	if (sc2 & SC2_BREASTPLATE)
-		cl.v.armor_breastplate = net_message.ReadByte();
+		cl.h2_v.armor_breastplate = net_message.ReadByte();
 	if (sc2 & SC2_HELMET)
-		cl.v.armor_helmet = net_message.ReadByte();
+		cl.h2_v.armor_helmet = net_message.ReadByte();
 	if (sc2 & SC2_FLIGHT_T)
-		cl.v.ring_flight = net_message.ReadByte();
+		cl.h2_v.ring_flight = net_message.ReadByte();
 	if (sc2 & SC2_WATER_T)
-		cl.v.ring_water = net_message.ReadByte();
+		cl.h2_v.ring_water = net_message.ReadByte();
 	if (sc2 & SC2_TURNING_T)
-		cl.v.ring_turning = net_message.ReadByte();
+		cl.h2_v.ring_turning = net_message.ReadByte();
 	if (sc2 & SC2_REGEN_T)
-		cl.v.ring_regeneration = net_message.ReadByte();
+		cl.h2_v.ring_regeneration = net_message.ReadByte();
 	if (sc2 & SC2_HASTE_T)
-		cl.v.haste_time = net_message.ReadFloat();
+		cl.h2_v.haste_time = net_message.ReadFloat();
 	if (sc2 & SC2_TOME_T)
-		cl.v.tome_time = net_message.ReadFloat();
+		cl.h2_v.tome_time = net_message.ReadFloat();
 	if (sc2 & SC2_PUZZLE1)
 		sprintf(cl.puzzle_pieces[0], "%.9s", net_message.ReadString2());
 	if (sc2 & SC2_PUZZLE2)
@@ -854,11 +854,11 @@ void CL_ParseClientdata (int bits)
 	if (sc2 & SC2_PUZZLE8)
 		sprintf(cl.puzzle_pieces[7], "%.9s", net_message.ReadString2());
 	if (sc2 & SC2_MAXHEALTH)
-		cl.v.max_health = net_message.ReadShort();
+		cl.h2_v.max_health = net_message.ReadShort();
 	if (sc2 & SC2_MAXMANA)
-		cl.v.max_mana = net_message.ReadByte();
+		cl.h2_v.max_mana = net_message.ReadByte();
 	if (sc2 & SC2_FLAGS)
-		cl.v.flags = net_message.ReadFloat();
+		cl.h2_v.flags = net_message.ReadFloat();
 
 	if ((sc1 & SC1_STAT_BAR) || (sc2 & SC2_STAT_BAR))
 		SB_Changed();
@@ -1329,11 +1329,14 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case h2svc_midi_name:
-			String::Cpy(cl.midi_name,net_message.ReadString2 ());
+		{
+			char midi_name[MAX_QPATH];     // midi file name
+			String::Cpy(midi_name,net_message.ReadString2 ());
 			if (String::ICmp(bgmtype->string,"midi") == 0)
-				MIDI_Play(cl.midi_name);
+				MIDI_Play(midi_name);
 			else 
 				MIDI_Stop();
+		}
 			break;
 
 		case h2svc_toggle_statbar:
@@ -1345,11 +1348,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 			case h2svc_set_view_flags:
-				cl.viewent.state.drawflags |= net_message.ReadByte();
+				cl.h2_viewent.state.drawflags |= net_message.ReadByte();
 				break;
 
 			case h2svc_clear_view_flags:
-				cl.viewent.state.drawflags &= ~net_message.ReadByte();
+				cl.h2_viewent.state.drawflags &= ~net_message.ReadByte();
 				break;
 
 			case h2svc_start_effect:
@@ -1369,7 +1372,7 @@ void CL_ParseServerMessage (void)
 
 			case h2svc_set_view_tint:
 				i = net_message.ReadByte();
-				cl.viewent.state.colormap = i;
+				cl.h2_viewent.state.colormap = i;
 				break;
 
 			case h2svc_reference:
@@ -1481,114 +1484,114 @@ void CL_ParseServerMessage (void)
 					sc2 |= ((int)net_message.ReadByte())<<24;
 
 				if (sc1 & SC1_HEALTH)
-					cl.v.health = net_message.ReadShort();
+					cl.h2_v.health = net_message.ReadShort();
 				if (sc1 & SC1_LEVEL)
-					cl.v.level = net_message.ReadByte();
+					cl.h2_v.level = net_message.ReadByte();
 				if (sc1 & SC1_INTELLIGENCE)
-					cl.v.intelligence = net_message.ReadByte();
+					cl.h2_v.intelligence = net_message.ReadByte();
 				if (sc1 & SC1_WISDOM)
-					cl.v.wisdom = net_message.ReadByte();
+					cl.h2_v.wisdom = net_message.ReadByte();
 				if (sc1 & SC1_STRENGTH)
-					cl.v.strength = net_message.ReadByte();
+					cl.h2_v.strength = net_message.ReadByte();
 				if (sc1 & SC1_DEXTERITY)
-					cl.v.dexterity = net_message.ReadByte();
+					cl.h2_v.dexterity = net_message.ReadByte();
 				if (sc1 & SC1_WEAPON)
-					cl.v.weapon = net_message.ReadByte();
+					cl.h2_v.weapon = net_message.ReadByte();
 				if (sc1 & SC1_BLUEMANA)
-					cl.v.bluemana = net_message.ReadByte();
+					cl.h2_v.bluemana = net_message.ReadByte();
 				if (sc1 & SC1_GREENMANA)
-					cl.v.greenmana = net_message.ReadByte();
+					cl.h2_v.greenmana = net_message.ReadByte();
 				if (sc1 & SC1_EXPERIENCE)
-					cl.v.experience = net_message.ReadLong();
+					cl.h2_v.experience = net_message.ReadLong();
 				if (sc1 & SC1_CNT_TORCH)
-					cl.v.cnt_torch = net_message.ReadByte();
+					cl.h2_v.cnt_torch = net_message.ReadByte();
 				if (sc1 & SC1_CNT_H_BOOST)
-					cl.v.cnt_h_boost = net_message.ReadByte();
+					cl.h2_v.cnt_h_boost = net_message.ReadByte();
 				if (sc1 & SC1_CNT_SH_BOOST)
-					cl.v.cnt_sh_boost = net_message.ReadByte();
+					cl.h2_v.cnt_sh_boost = net_message.ReadByte();
 				if (sc1 & SC1_CNT_MANA_BOOST)
-					cl.v.cnt_mana_boost = net_message.ReadByte();
+					cl.h2_v.cnt_mana_boost = net_message.ReadByte();
 				if (sc1 & SC1_CNT_TELEPORT)
-					cl.v.cnt_teleport = net_message.ReadByte();
+					cl.h2_v.cnt_teleport = net_message.ReadByte();
 				if (sc1 & SC1_CNT_TOME)
-					cl.v.cnt_tome = net_message.ReadByte();
+					cl.h2_v.cnt_tome = net_message.ReadByte();
 				if (sc1 & SC1_CNT_SUMMON)
-					cl.v.cnt_summon = net_message.ReadByte();
+					cl.h2_v.cnt_summon = net_message.ReadByte();
 				if (sc1 & SC1_CNT_INVISIBILITY)
-					cl.v.cnt_invisibility = net_message.ReadByte();
+					cl.h2_v.cnt_invisibility = net_message.ReadByte();
 				if (sc1 & SC1_CNT_GLYPH)
-					cl.v.cnt_glyph = net_message.ReadByte();
+					cl.h2_v.cnt_glyph = net_message.ReadByte();
 				if (sc1 & SC1_CNT_HASTE)
-					cl.v.cnt_haste = net_message.ReadByte();
+					cl.h2_v.cnt_haste = net_message.ReadByte();
 				if (sc1 & SC1_CNT_BLAST)
-					cl.v.cnt_blast = net_message.ReadByte();
+					cl.h2_v.cnt_blast = net_message.ReadByte();
 				if (sc1 & SC1_CNT_POLYMORPH)
-					cl.v.cnt_polymorph = net_message.ReadByte();
+					cl.h2_v.cnt_polymorph = net_message.ReadByte();
 				if (sc1 & SC1_CNT_FLIGHT)
-					cl.v.cnt_flight = net_message.ReadByte();
+					cl.h2_v.cnt_flight = net_message.ReadByte();
 				if (sc1 & SC1_CNT_CUBEOFFORCE)
-					cl.v.cnt_cubeofforce = net_message.ReadByte();
+					cl.h2_v.cnt_cubeofforce = net_message.ReadByte();
 				if (sc1 & SC1_CNT_INVINCIBILITY)
-					cl.v.cnt_invincibility = net_message.ReadByte();
+					cl.h2_v.cnt_invincibility = net_message.ReadByte();
 				if (sc1 & SC1_ARTIFACT_ACTIVE)
-					cl.v.artifact_active = net_message.ReadFloat();
+					cl.h2_v.artifact_active = net_message.ReadFloat();
 				if (sc1 & SC1_ARTIFACT_LOW)
-					cl.v.artifact_low = net_message.ReadFloat();
+					cl.h2_v.artifact_low = net_message.ReadFloat();
 				if (sc1 & SC1_MOVETYPE)
-					cl.v.movetype = net_message.ReadByte();
+					cl.h2_v.movetype = net_message.ReadByte();
 				if (sc1 & SC1_CAMERAMODE)
-					cl.v.cameramode = net_message.ReadByte();
+					cl.h2_v.cameramode = net_message.ReadByte();
 				if (sc1 & SC1_HASTED)
-					cl.v.hasted = net_message.ReadFloat();
+					cl.h2_v.hasted = net_message.ReadFloat();
 				if (sc1 & SC1_INVENTORY)
-					cl.v.inventory = net_message.ReadByte();
+					cl.h2_v.inventory = net_message.ReadByte();
 				if (sc1 & SC1_RINGS_ACTIVE)
-					cl.v.rings_active = net_message.ReadFloat();
+					cl.h2_v.rings_active = net_message.ReadFloat();
 
 				if (sc2 & SC2_RINGS_LOW)
-					cl.v.rings_low = net_message.ReadFloat();
+					cl.h2_v.rings_low = net_message.ReadFloat();
 				if (sc2 & SC2_AMULET)
-					cl.v.armor_amulet = net_message.ReadByte();
+					cl.h2_v.armor_amulet = net_message.ReadByte();
 				if (sc2 & SC2_BRACER)
-					cl.v.armor_bracer = net_message.ReadByte();
+					cl.h2_v.armor_bracer = net_message.ReadByte();
 				if (sc2 & SC2_BREASTPLATE)
-					cl.v.armor_breastplate = net_message.ReadByte();
+					cl.h2_v.armor_breastplate = net_message.ReadByte();
 				if (sc2 & SC2_HELMET)
-					cl.v.armor_helmet = net_message.ReadByte();
+					cl.h2_v.armor_helmet = net_message.ReadByte();
 				if (sc2 & SC2_FLIGHT_T)
-					cl.v.ring_flight = net_message.ReadByte();
+					cl.h2_v.ring_flight = net_message.ReadByte();
 				if (sc2 & SC2_WATER_T)
-					cl.v.ring_water = net_message.ReadByte();
+					cl.h2_v.ring_water = net_message.ReadByte();
 				if (sc2 & SC2_TURNING_T)
-					cl.v.ring_turning = net_message.ReadByte();
+					cl.h2_v.ring_turning = net_message.ReadByte();
 				if (sc2 & SC2_REGEN_T)
-					cl.v.ring_regeneration = net_message.ReadByte();
+					cl.h2_v.ring_regeneration = net_message.ReadByte();
 				if (sc2 & SC2_HASTE_T)
-					cl.v.haste_time = net_message.ReadFloat();
+					cl.h2_v.haste_time = net_message.ReadFloat();
 				if (sc2 & SC2_TOME_T)
-					cl.v.tome_time = net_message.ReadFloat();
+					cl.h2_v.tome_time = net_message.ReadFloat();
 				if (sc2 & SC2_PUZZLE1)
-					sprintf(cl.puzzle_pieces[0], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[0], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE2)
-					sprintf(cl.puzzle_pieces[1], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[1], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE3)
-					sprintf(cl.puzzle_pieces[2], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[2], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE4)
-					sprintf(cl.puzzle_pieces[3], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[3], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE5)
-					sprintf(cl.puzzle_pieces[4], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[4], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE6)
-					sprintf(cl.puzzle_pieces[5], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[5], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE7)
-					sprintf(cl.puzzle_pieces[6], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[6], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_PUZZLE8)
-					sprintf(cl.puzzle_pieces[7], "%.9s", net_message.ReadString2());
+					sprintf(cl.h2_puzzle_pieces[7], "%.9s", net_message.ReadString2());
 				if (sc2 & SC2_MAXHEALTH)
-					cl.v.max_health = net_message.ReadShort();
+					cl.h2_v.max_health = net_message.ReadShort();
 				if (sc2 & SC2_MAXMANA)
-					cl.v.max_mana = net_message.ReadByte();
+					cl.h2_v.max_mana = net_message.ReadByte();
 				if (sc2 & SC2_FLAGS)
-					cl.v.flags = net_message.ReadFloat();
+					cl.h2_v.flags = net_message.ReadFloat();
 				if (sc2 & SC2_OBJ)
 					cl.info_mask = net_message.ReadLong();
 				if (sc2 & SC2_OBJ2)

@@ -171,7 +171,24 @@ struct clientActiveCommon_t
 
 	h2usercmd_t h2_cmd;			// last command sent to the server
 
+	int h2_inv_order[MAX_INVENTORY_H2];
+	int h2_inv_count;
+	int h2_inv_startpos;
+	int h2_inv_selected;
+
+	h2client_entvars_t h2_v; // NOTE: not every field will be update - you must specifically add
+	                   // them in functions SV_WriteClientdatatToMessage() and CL_ParseClientdata()
+
+	char h2_puzzle_pieces[8][10]; // puzzle piece names
+
+	float h2_idealroll;
+	float h2_rollvel;
+
+	h2entity_t h2_viewent;		// weapon model
+
 	hwframe_t hw_frames[UPDATE_BACKUP_HW];
+
+	unsigned hw_PIV;			// players in view
 
 	q2frame_t q2_frame;		// received from server
 	q2frame_t q2_frames[UPDATE_BACKUP_Q2];

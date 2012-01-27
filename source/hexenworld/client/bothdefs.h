@@ -52,8 +52,6 @@
 #define	STAT_ITEMS			15
 //define	STAT_VIEWHEIGHT		16
 
-#define	MAX_INVENTORY			15		// Max inventory array size
-
 
 //
 // item flags
