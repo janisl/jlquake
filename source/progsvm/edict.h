@@ -14,7 +14,15 @@
 //**
 //**************************************************************************
 
-#define	MAX_ENT_LEAFS	16
+#define MAX_ENT_LEAFS	16
+
+struct entvars_t
+{
+	float modelindex;
+	vec3_t absmin;
+	vec3_t absmax;
+	float ltime;
+};
 
 extern idEntVarDef entFieldLastRunTime;
 extern idEntVarDef entFieldMoveType;
@@ -162,16 +170,11 @@ struct qhedict_t
 	int num_leafs;
 	int LeafNums[MAX_ENT_LEAFS];
 
-#ifdef HEXEN2_EDICT
-	h2entity_state_t baseline;
-#else
-	q1entity_state_t baseline;
-#endif
+	q1entity_state_t q1_baseline;
+	h2entity_state_t h2_baseline;
 	
 	float freetime;			// sv.time when the object was freed
-#ifdef HEXEN2_EDICT
 	float alloctime;		// sv.time when the object was allocated
-#endif
 	entvars_t v;			// C exported fields from progs
 	// other fields from progs come immediately after
 

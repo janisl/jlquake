@@ -55,7 +55,7 @@ Sets everything to NULL
 void ED_ClearEdict (qhedict_t *e)
 {
 	Com_Memset(&e->v, 0, progs->entityfields * 4);
-	Com_Memset(&e->baseline, 0, sizeof(e->baseline));
+	Com_Memset(&e->h2_baseline, 0, sizeof(e->h2_baseline));
 	e->free = false;
 }
 
@@ -1134,9 +1134,7 @@ void PR_LoadProgs (void)
 			((int *)pr_globals)[i] = LittleLong (((int *)pr_globals)[i]);
 	}
 
-	int entSize = ED_InitEntityFields();
-	if (entSize != sizeof(entvars_t))
-		throw Exception(va("Wrong entity size %d should be %d\n", entSize, sizeof(entvars_t)));
+	ED_InitEntityFields();
 #ifdef MISSIONPACK
 	// set the cl_playerclass value after pr_global_struct has been created
 	pr_global_struct->cl_playerclass = cl_playerclass->value;

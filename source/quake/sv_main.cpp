@@ -472,36 +472,36 @@ void SV_WriteEntitiesToClient (qhedict_t	*clent, QMsg *msg)
 		
 		for (i=0 ; i<3 ; i++)
 		{
-			miss = ent->GetOrigin()[i] - ent->baseline.origin[i];
+			miss = ent->GetOrigin()[i] - ent->q1_baseline.origin[i];
 			if ( miss < -0.1 || miss > 0.1 )
 				bits |= Q1U_ORIGIN1<<i;
 		}
 
-		if ( ent->GetAngles()[0] != ent->baseline.angles[0] )
+		if ( ent->GetAngles()[0] != ent->q1_baseline.angles[0] )
 			bits |= Q1U_ANGLE1;
 			
-		if ( ent->GetAngles()[1] != ent->baseline.angles[1] )
+		if ( ent->GetAngles()[1] != ent->q1_baseline.angles[1] )
 			bits |= Q1U_ANGLE2;
 			
-		if ( ent->GetAngles()[2] != ent->baseline.angles[2] )
+		if ( ent->GetAngles()[2] != ent->q1_baseline.angles[2] )
 			bits |= Q1U_ANGLE3;
 			
 		if (ent->GetMoveType() == MOVETYPE_STEP)
 			bits |= Q1U_NOLERP;	// don't mess up the step animation
 	
-		if (ent->baseline.colormap != ent->GetColorMap())
+		if (ent->q1_baseline.colormap != ent->GetColorMap())
 			bits |= Q1U_COLORMAP;
 			
-		if (ent->baseline.skinnum != ent->GetSkin())
+		if (ent->q1_baseline.skinnum != ent->GetSkin())
 			bits |= Q1U_SKIN;
 			
-		if (ent->baseline.frame != ent->GetFrame())
+		if (ent->q1_baseline.frame != ent->GetFrame())
 			bits |= Q1U_FRAME;
 		
-		if (ent->baseline.effects != ent->GetEffects())
+		if (ent->q1_baseline.effects != ent->GetEffects())
 			bits |= Q1U_EFFECTS;
 		
-		if (ent->baseline.modelindex != ent->v.modelindex)
+		if (ent->q1_baseline.modelindex != ent->v.modelindex)
 			bits |= Q1U_MODEL;
 
 		if (e >= 256)
@@ -929,19 +929,19 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-		VectorCopy (svent->GetOrigin(), svent->baseline.origin);
-		VectorCopy (svent->GetAngles(), svent->baseline.angles);
-		svent->baseline.frame = svent->GetFrame();
-		svent->baseline.skinnum = svent->GetSkin();
+		VectorCopy (svent->GetOrigin(), svent->q1_baseline.origin);
+		VectorCopy (svent->GetAngles(), svent->q1_baseline.angles);
+		svent->q1_baseline.frame = svent->GetFrame();
+		svent->q1_baseline.skinnum = svent->GetSkin();
 		if (entnum > 0 && entnum <= svs.maxclients)
 		{
-			svent->baseline.colormap = entnum;
-			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
+			svent->q1_baseline.colormap = entnum;
+			svent->q1_baseline.modelindex = SV_ModelIndex("progs/player.mdl");
 		}
 		else
 		{
-			svent->baseline.colormap = 0;
-			svent->baseline.modelindex =
+			svent->q1_baseline.colormap = 0;
+			svent->q1_baseline.modelindex =
 				SV_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 		
@@ -951,14 +951,14 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteByte(q1svc_spawnbaseline);		
 		sv.signon.WriteShort(entnum);
 
-		sv.signon.WriteByte(svent->baseline.modelindex);
-		sv.signon.WriteByte(svent->baseline.frame);
-		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skinnum);
+		sv.signon.WriteByte(svent->q1_baseline.modelindex);
+		sv.signon.WriteByte(svent->q1_baseline.frame);
+		sv.signon.WriteByte(svent->q1_baseline.colormap);
+		sv.signon.WriteByte(svent->q1_baseline.skinnum);
 		for (i=0 ; i<3 ; i++)
 		{
-			sv.signon.WriteCoord(svent->baseline.origin[i]);
-			sv.signon.WriteAngle(svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->q1_baseline.origin[i]);
+			sv.signon.WriteAngle(svent->q1_baseline.angles[i]);
 		}
 	}
 }

@@ -78,26 +78,26 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-		VectorCopy (svent->GetOrigin(), svent->baseline.origin);
-		VectorCopy (svent->GetAngles(), svent->baseline.angles);
-		svent->baseline.frame = svent->GetFrame();
-		svent->baseline.skinnum = svent->GetSkin();
+		VectorCopy (svent->GetOrigin(), svent->h2_baseline.origin);
+		VectorCopy (svent->GetAngles(), svent->h2_baseline.angles);
+		svent->h2_baseline.frame = svent->GetFrame();
+		svent->h2_baseline.skinnum = svent->GetSkin();
 		if (entnum > 0 && entnum <= HWMAX_CLIENTS)
 		{
-			svent->baseline.colormap = entnum;
+			svent->h2_baseline.colormap = entnum;
 //			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
-			svent->baseline.modelindex = SV_ModelIndex("models/paladin.mdl");
+			svent->h2_baseline.modelindex = SV_ModelIndex("models/paladin.mdl");
 		}
 		else
 		{
-			svent->baseline.colormap = 0;
-			svent->baseline.modelindex =
+			svent->h2_baseline.colormap = 0;
+			svent->h2_baseline.modelindex =
 				SV_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 
-		svent->baseline.scale = (int)(svent->GetScale()*100.0)&255;
-		svent->baseline.drawflags = svent->GetDrawFlags();
-		svent->baseline.abslight = (int)(svent->GetAbsLight()*255.0)&255;
+		svent->h2_baseline.scale = (int)(svent->GetScale()*100.0)&255;
+		svent->h2_baseline.drawflags = svent->GetDrawFlags();
+		svent->h2_baseline.abslight = (int)(svent->GetAbsLight()*255.0)&255;
 		//
 		// flush the signon message out to a seperate buffer if
 		// nearly full
@@ -110,17 +110,17 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteByte(h2svc_spawnbaseline);		
 		sv.signon.WriteShort(entnum);
 
-		sv.signon.WriteShort(svent->baseline.modelindex);
-		sv.signon.WriteByte(svent->baseline.frame);
-		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skinnum);
-		sv.signon.WriteByte(svent->baseline.scale);
-		sv.signon.WriteByte(svent->baseline.drawflags);
-		sv.signon.WriteByte(svent->baseline.abslight);
+		sv.signon.WriteShort(svent->h2_baseline.modelindex);
+		sv.signon.WriteByte(svent->h2_baseline.frame);
+		sv.signon.WriteByte(svent->h2_baseline.colormap);
+		sv.signon.WriteByte(svent->h2_baseline.skinnum);
+		sv.signon.WriteByte(svent->h2_baseline.scale);
+		sv.signon.WriteByte(svent->h2_baseline.drawflags);
+		sv.signon.WriteByte(svent->h2_baseline.abslight);
 		for (i=0 ; i<3 ; i++)
 		{
-			sv.signon.WriteCoord(svent->baseline.origin[i]);
-			sv.signon.WriteAngle(svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->h2_baseline.origin[i]);
+			sv.signon.WriteAngle(svent->h2_baseline.angles[i]);
 		}
 	}
 }

@@ -289,7 +289,7 @@ void SV_EmitPacketEntities (client_t *client, qwpacket_entities_t *to, QMsg *msg
 		{	// this is a new entity, send it from the baseline
 			ent = EDICT_NUM(newnum);
 //Con_Printf ("baseline %i\n", newnum);
-			SV_WriteDelta (&ent->baseline, &to->entities[newindex], msg, true);
+			SV_WriteDelta (&ent->q1_baseline, &to->entities[newindex], msg, true);
 			newindex++;
 			continue;
 		}

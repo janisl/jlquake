@@ -474,7 +474,7 @@ void SV_EmitPacketEntities (client_t *client, hwpacket_entities_t *to, QMsg *msg
 		{	// this is a new entity, send it from the baseline
 			ent = EDICT_NUM(newnum);
 //Con_Printf ("baseline %i\n", newnum);
-			SV_WriteDelta (&ent->baseline, &to->entities[newindex], msg, true, ent, client);
+			SV_WriteDelta (&ent->h2_baseline, &to->entities[newindex], msg, true, ent, client);
 			newindex++;
 			continue;
 		}

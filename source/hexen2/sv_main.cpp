@@ -704,13 +704,13 @@ void SV_PrepareClientEntities (client_t *client, qhedict_t	*clent, QMsg *msg)
 			{
 				e = reference->states[i].number;
 				ent = EDICT_NUM(e);
-				if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
+				if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 				{
-					ent->baseline.ClearCount[client_num]++;
+					ent->h2_baseline.ClearCount[client_num]++;
 				}
-				else if (ent->baseline.ClearCount[client_num] == CLEAR_LIMIT)
+				else if (ent->h2_baseline.ClearCount[client_num] == CLEAR_LIMIT)
 				{
-					ent->baseline.ClearCount[client_num] = 3;
+					ent->h2_baseline.ClearCount[client_num] = 3;
 					reference->states[i].flags &= ~ENT_CLEARED;
 				}
 			}
@@ -848,20 +848,20 @@ skipA:
 			ref_ent = &build_ent;
 
 			build_ent.number = e;
-			build_ent.origin[0] = ent->baseline.origin[0];
-			build_ent.origin[1] = ent->baseline.origin[1];
-			build_ent.origin[2] = ent->baseline.origin[2];
-			build_ent.angles[0] = ent->baseline.angles[0];
-			build_ent.angles[1] = ent->baseline.angles[1];
-			build_ent.angles[2] = ent->baseline.angles[2];
-			build_ent.modelindex = ent->baseline.modelindex;
-			build_ent.frame = ent->baseline.frame;
-			build_ent.colormap = ent->baseline.colormap;
-			build_ent.skinnum = ent->baseline.skinnum;
-			build_ent.effects = ent->baseline.effects;
-			build_ent.scale = ent->baseline.scale;
-			build_ent.drawflags = ent->baseline.drawflags;
-			build_ent.abslight = ent->baseline.abslight;
+			build_ent.origin[0] = ent->h2_baseline.origin[0];
+			build_ent.origin[1] = ent->h2_baseline.origin[1];
+			build_ent.origin[2] = ent->h2_baseline.origin[2];
+			build_ent.angles[0] = ent->h2_baseline.angles[0];
+			build_ent.angles[1] = ent->h2_baseline.angles[1];
+			build_ent.angles[2] = ent->h2_baseline.angles[2];
+			build_ent.modelindex = ent->h2_baseline.modelindex;
+			build_ent.frame = ent->h2_baseline.frame;
+			build_ent.colormap = ent->h2_baseline.colormap;
+			build_ent.skinnum = ent->h2_baseline.skinnum;
+			build_ent.effects = ent->h2_baseline.effects;
+			build_ent.scale = ent->h2_baseline.scale;
+			build_ent.drawflags = ent->h2_baseline.drawflags;
+			build_ent.abslight = ent->h2_baseline.abslight;
 			build_ent.flags = 0;
 
 			FoundInList = false;
@@ -869,7 +869,7 @@ skipA:
 
 		set_ent = &build->states[build->count];
 		build->count++;
-		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
+		if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
 			Com_Memset(ref_ent,0,sizeof(*ref_ent));
 			ref_ent->number = e;
@@ -966,7 +966,7 @@ skipA:
 			set_ent->abslight = (int)(ent->GetAbsLight()*255.0)&255;
 		}
 
-		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
+		if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
 			bits |= H2U_CLEAR_ENT;
 			set_ent->flags |= ENT_CLEARED;
@@ -1815,25 +1815,25 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-		VectorCopy (svent->GetOrigin(), svent->baseline.origin);
-		VectorCopy (svent->GetAngles(), svent->baseline.angles);
-		svent->baseline.frame = svent->GetFrame();
-		svent->baseline.skinnum = svent->GetSkin();
-		svent->baseline.scale = (int)(svent->GetScale()*100.0)&255;
-		svent->baseline.drawflags = svent->GetDrawFlags();
-		svent->baseline.abslight = (int)(svent->GetAbsLight()*255.0)&255;
+		VectorCopy (svent->GetOrigin(), svent->h2_baseline.origin);
+		VectorCopy (svent->GetAngles(), svent->h2_baseline.angles);
+		svent->h2_baseline.frame = svent->GetFrame();
+		svent->h2_baseline.skinnum = svent->GetSkin();
+		svent->h2_baseline.scale = (int)(svent->GetScale()*100.0)&255;
+		svent->h2_baseline.drawflags = svent->GetDrawFlags();
+		svent->h2_baseline.abslight = (int)(svent->GetAbsLight()*255.0)&255;
 		if (entnum > 0	&& entnum <= svs.maxclients)
 		{
-			svent->baseline.colormap = entnum;
-			svent->baseline.modelindex = 0;//SV_ModelIndex("models/paladin.mdl");
+			svent->h2_baseline.colormap = entnum;
+			svent->h2_baseline.modelindex = 0;//SV_ModelIndex("models/paladin.mdl");
 		}
 		else
 		{
-			svent->baseline.colormap = 0;
-			svent->baseline.modelindex =
+			svent->h2_baseline.colormap = 0;
+			svent->h2_baseline.modelindex =
 				SV_ModelIndex(PR_GetString(svent->GetModel()));
 		}
-		Com_Memset(svent->baseline.ClearCount,99,sizeof(svent->baseline.ClearCount));
+		Com_Memset(svent->h2_baseline.ClearCount,99,sizeof(svent->h2_baseline.ClearCount));
 		
 	//
 	// add to the message
@@ -1841,17 +1841,17 @@ void SV_CreateBaseline (void)
 		sv.signon.WriteByte(h2svc_spawnbaseline);
 		sv.signon.WriteShort(entnum);
 
-		sv.signon.WriteShort(svent->baseline.modelindex);
-		sv.signon.WriteByte(svent->baseline.frame);
-		sv.signon.WriteByte(svent->baseline.colormap);
-		sv.signon.WriteByte(svent->baseline.skinnum);
-		sv.signon.WriteByte(svent->baseline.scale);
-		sv.signon.WriteByte(svent->baseline.drawflags);
-		sv.signon.WriteByte(svent->baseline.abslight);
+		sv.signon.WriteShort(svent->h2_baseline.modelindex);
+		sv.signon.WriteByte(svent->h2_baseline.frame);
+		sv.signon.WriteByte(svent->h2_baseline.colormap);
+		sv.signon.WriteByte(svent->h2_baseline.skinnum);
+		sv.signon.WriteByte(svent->h2_baseline.scale);
+		sv.signon.WriteByte(svent->h2_baseline.drawflags);
+		sv.signon.WriteByte(svent->h2_baseline.abslight);
 		for (i=0 ; i<3 ; i++)
 		{
-			sv.signon.WriteCoord(svent->baseline.origin[i]);
-			sv.signon.WriteAngle(svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->h2_baseline.origin[i]);
+			sv.signon.WriteAngle(svent->h2_baseline.angles[i]);
 		}
 	}
 }

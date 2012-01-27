@@ -1078,9 +1078,7 @@ void PR_LoadProgs (void)
 	if ((f = ED_FindFunction ("SpectatorDisconnect")) != NULL)
 		SpectatorDisconnect = (func_t)(f - pr_functions);
 
-	int entSize = ED_InitEntityFields();
-	if (entSize != sizeof(entvars_t))
-		throw Exception(va("Wrong entity size %d should be %d\n", entSize, sizeof(entvars_t)));
+	ED_InitEntityFields();
 }
 
 
