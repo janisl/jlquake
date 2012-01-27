@@ -848,15 +848,15 @@ the surface being equal in priority(0) and increasing linearly
 towards equal priority(1) along a straight line to the center.
 =============
 */
-float cardioid_rating (qhedict_t *targ , qhedict_t *self)
+static float cardioid_rating (qhedict_t *targ , qhedict_t *self)
 {
 	vec3_t	vec,spot1,spot2;
 	vec3_t	forward,right,up;
 	float	dot,dist;
 
-    AngleVectors (self->v.v_angle,forward,right,up);
+    AngleVectors (self->GetVAngle(),forward,right,up);
 
-	VectorAdd(self->v.origin,self->v.view_ofs,spot1);
+	VectorAdd(self->GetOrigin(),self->GetViewOfs(),spot1);
 	VectorSubtract(targ->v.absmax,targ->v.absmin,spot2);
 	VectorMA(targ->v.absmin,0.5,spot2,spot2);
 
@@ -877,7 +877,9 @@ float cardioid_rating (qhedict_t *targ , qhedict_t *self)
 	return 1 - (dist/dot);//The higher this number is, the more important it is to send this ent
 }
 
-int MAX_VISCLIENTS = 2;
+static int MAX_VISCLIENTS = 2;
+#endif
+
 /*
 =============
 SV_WritePlayersToClient
@@ -886,7 +888,7 @@ SV_WritePlayersToClient
 */
 void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMsg *msg)
 {
-	int			i, j, k, l;
+	int			i, j;
 	client_t	*cl;
 	qhedict_t		*ent;
 	int			msec;
@@ -894,13 +896,20 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 	int			pflags;
 	int			invis_level;
 	qboolean	playermodel = false;
+
+#ifdef MGNET
+	int			k, l;
 	int			visclient[HWMAX_CLIENTS];
 	int			forcevisclient[HWMAX_CLIENTS];
 	int			cl_v_priority[HWMAX_CLIENTS];
 	int			cl_v_psort[HWMAX_CLIENTS];
-	int			numvc,forcevc,totalvc,num_eliminated;
+	int			totalvc,num_eliminated;
 
-	for (j=0,cl=svs.clients,numvc=0,forcevc=0 ; j<HWMAX_CLIENTS ; j++,cl++)
+	int numvc = 0;
+	int forcevc = 0;
+#endif
+
+	for (j=0,cl=svs.clients ; j<HWMAX_CLIENTS ; j++,cl++)
 	{
 		if (cl->state != cs_spawned)
 			continue;
@@ -913,15 +922,19 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		if (ent != clent &&
 			!(client->spec_track && client->spec_track - 1 == j)) 
 		{
-			if ((int)ent->v.effects & EF_NODRAW)
+			if ((int)ent->GetEffects() & EF_NODRAW)
 			{
-				if(dmMode->value==DM_SIEGE&&clent->v.playerclass==CLASS_DWARF)
+				if(dmMode->value==DM_SIEGE&&clent->GetPlayerClass()==CLASS_DWARF)
 					invis_level = false;
 				else
 					invis_level = true;//still can hear
 			}
+#ifdef MGNET
 			//could be invisiblenow and still sent, cull out by other methods as well
 			if (cl->spectator)
+#else
+			else if (cl->spectator)
+#endif
 			{
 				invis_level = 2;//no vis or weaponsound
 			}
@@ -929,8 +942,11 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 			{
 				// ignore if not touching a PV leaf
 				for (i=0 ; i < ent->num_leafs ; i++)
-					if (pvs[ent->LeafNums[i] >> 3] & (1 << (ent->LeafNums[i]&7) ))
+				{
+					int l = CM_LeafCluster(ent->LeafNums[i]);
+					if (pvs[l >> 3] & (1 << (l & 7)))
 						break;
+				}
 				if (i == ent->num_leafs)
 					invis_level = 2;//no vis or weaponsound
 			}
@@ -938,18 +954,19 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		
 		if(invis_level==true)
 		{//ok to send weaponsound
-			if(ent->v.wpn_sound)
+			if(ent->GetWpnSound())
 			{
 				msg->WriteByte(hwsvc_player_sound);
 				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
-					msg->WriteCoord(ent->v.origin[i]);
-				msg->WriteShort(ent->v.wpn_sound);
+					msg->WriteCoord(ent->GetOrigin()[i]);
+				msg->WriteShort(ent->GetWpnSound());
 			}
 		}
 		if(invis_level>0)
 			continue;
 
+#ifdef MGNET
 		if(!cl->skipsend&&ent != clent)
 		{//don't count self
 			visclient[numvc]=j;
@@ -975,7 +992,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		//number of highest priority sent depends on how
 		//many are forced through because they were skipped
 		//last send.  Ideally, no more than 5 are sent.
-		for (j=0; j<numvc, totalvc>MAX_VISCLIENTS ; j++)
+		for (j=0; j<numvc && totalvc>MAX_VISCLIENTS ; j++)
 		{//priority 1 - if behind, cull out
 			for(k=0, cl = svs.clients; k<visclient[j]; k++, cl++);
 //			cl=svs.clients+visclient[j];
@@ -1042,217 +1059,16 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		}
 
 		ent = cl->edict;
+#endif
 
 		pflags = PF_MSEC | PF_COMMAND;
-		
+
 		if (ent->v.modelindex != sv_playermodel[0] &&//paladin
-		    ent->v.modelindex != sv_playermodel[1] &&//crusader
-		    ent->v.modelindex != sv_playermodel[2] &&//necro
-		    ent->v.modelindex != sv_playermodel[3] &&//assassin
-		    ent->v.modelindex != sv_playermodel[4] &&//succ
-		    ent->v.modelindex != sv_playermodel[5])//dwarf
-			pflags |= PF_MODEL;
-		else
-			playermodel = true;
-
-		for (i=0 ; i<3 ; i++)
-			if (ent->v.velocity[i])
-				pflags |= PF_VELOCITY1<<i;
-		if (((long)ent->v.effects & 0xff))
-			pflags |= PF_EFFECTS;
-		if (((long)ent->v.effects & 0xff00))
-			pflags |= PF_EFFECTS2;
-		if (ent->v.skin)
-		{
-			if(dmMode->value==DM_SIEGE&&playermodel&&ent->v.skin==1);
-			//in siege, don't send skin if 2nd skin and using
-			//playermodel, it will know on other side- saves
-			//us 1 byte per client per frame!
-			else
-				pflags |= PF_SKINNUM;
-		}
-		if (ent->v.health <= 0)
-			pflags |= PF_DEAD;
-		if (ent->v.hull == HULL_CROUCH)
-			pflags |= PF_CROUCH;
-
-		if (cl->spectator)
-		{	// only sent origin and velocity to spectators
-			pflags &= PF_VELOCITY1 | PF_VELOCITY2 | PF_VELOCITY3;
-		}
-		else if (ent == clent)
-		{	// don't send a lot of data on personal entity
-			pflags &= ~(PF_MSEC|PF_COMMAND);
-			if (ent->v.weaponframe)
-				pflags |= PF_WEAPONFRAME;
-		}
-		if (ent->v.drawflags)
-		{
-			pflags |= PF_DRAWFLAGS;
-		}
-		if (ent->v.scale != 0 && ent->v.scale != 1.0)
-		{
-			pflags |= PF_SCALE;
-		}
-		if (ent->v.abslight != 0)
-		{
-			pflags |= PF_ABSLIGHT;
-		}
-		if (ent->v.wpn_sound)
-		{
-			pflags |= PF_SOUND;
-		}
-
-		msg->WriteByte(hwsvc_playerinfo);
-		msg->WriteByte(j);
-		msg->WriteShort(pflags);
-
-		for (i=0 ; i<3 ; i++)
-			msg->WriteCoord(ent->v.origin[i]);
-		
-		msg->WriteByte(ent->v.frame);
-
-		if (pflags & PF_MSEC)
-		{
-			msec = 1000*(sv.time - cl->localtime);
-			if (msec > 255)
-				msec = 255;
-			msg->WriteByte(msec);
-		}
-		
-		if (pflags & PF_COMMAND)
-		{
-			cmd = cl->lastcmd;
-
-			if (ent->v.health <= 0)
-			{	// don't show the corpse looking around...
-				cmd.angles[0] = 0;
-				cmd.angles[1] = ent->v.angles[1];
-				cmd.angles[0] = 0;
-			}
-
-			cmd.buttons = 0;	// never send buttons
-			cmd.impulse = 0;	// never send impulses
-			MSG_WriteUsercmd (msg, &cmd, false);
-		}
-
-		for (i=0 ; i<3 ; i++)
-			if (pflags & (PF_VELOCITY1<<i) )
-				msg->WriteShort(ent->v.velocity[i]);
-
-//rjr
-		if (pflags & PF_MODEL)
-			msg->WriteShort(ent->v.modelindex);
-
-		if (pflags & PF_SKINNUM)
-			msg->WriteByte(ent->v.skin);
-
-		if (pflags & PF_EFFECTS)
-			msg->WriteByte(((long)ent->v.effects & 0xff));
-
-		if (pflags & PF_EFFECTS2)
-			msg->WriteByte(((long)ent->v.effects & 0xff00)>>8);
-
-		if (pflags & PF_WEAPONFRAME)
-			msg->WriteByte(ent->v.weaponframe);
-
-		if (pflags & PF_DRAWFLAGS)
-		{
-			msg->WriteByte(ent->v.drawflags);
-		}
-		if (pflags & PF_SCALE)
-		{
-			msg->WriteByte((int)(ent->v.scale*100.0)&255);
-		}
-		if (pflags & PF_ABSLIGHT)
-		{
-			msg->WriteByte((int)(ent->v.abslight*100.0)&255);
-		}
-		if (pflags & PF_SOUND)
-		{
-			msg->WriteShort(ent->v.wpn_sound);
-		}
-	}
-}
-
-#else
-/*
-=============
-SV_WritePlayersToClient
-
-=============
-*/
-void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMsg *msg)
-{
-	int			i, j;
-	client_t	*cl;
-	qhedict_t		*ent;
-	int			msec;
-	hwusercmd_t	cmd;
-	int			pflags;
-	int			invis_level;
-	qboolean	playermodel = false;
-
-	for (j=0,cl=svs.clients ; j<HWMAX_CLIENTS ; j++,cl++)
-	{
-		if (cl->state != cs_spawned)
-			continue;
-
-		ent = cl->edict;
-
-
-		// ZOID visibility tracking
-		invis_level = false;
-		if (ent != clent &&
-			!(client->spec_track && client->spec_track - 1 == j)) 
-		{
-			if ((int)ent->GetEffects() & EF_NODRAW)
-			{
-				if(dmMode->value==DM_SIEGE&&clent->GetPlayerClass()==CLASS_DWARF)
-					invis_level = false;
-				else
-					invis_level = true;//still can hear
-			}
-			else if (cl->spectator)
-			{
-				invis_level = 2;//no vis or weaponsound
-			}
-			else
-			{
-				// ignore if not touching a PV leaf
-				for (i=0 ; i < ent->num_leafs ; i++)
-				{
-					int l = CM_LeafCluster(ent->LeafNums[i]);
-					if (pvs[l >> 3] & (1 << (l & 7)))
-						break;
-				}
-				if (i == ent->num_leafs)
-					invis_level = 2;//no vis or weaponsound
-			}
-		}
-		
-		if(invis_level==true)
-		{//ok to send weaponsound
-			if(ent->GetWpnSound())
-			{
-				msg->WriteByte(hwsvc_player_sound);
-				msg->WriteByte(j);
-				for (i=0 ; i<3 ; i++)
-					msg->WriteCoord(ent->GetOrigin()[i]);
-				msg->WriteShort(ent->GetWpnSound());
-			}
-		}
-		if(invis_level>0)
-			continue;
-
-		pflags = PF_MSEC | PF_COMMAND;
-		
-		if (ent->v.modelindex != sv_playermodel[0] &&//paladin
-		    ent->v.modelindex != sv_playermodel[1] &&//crusader
-		    ent->v.modelindex != sv_playermodel[2] &&//necro
-		    ent->v.modelindex != sv_playermodel[3] &&//assassin
-		    ent->v.modelindex != sv_playermodel[4] &&//succ
-		    ent->v.modelindex != sv_playermodel[5])//dwarf
+			ent->v.modelindex != sv_playermodel[1] &&//crusader
+			ent->v.modelindex != sv_playermodel[2] &&//necro
+			ent->v.modelindex != sv_playermodel[3] &&//assassin
+			ent->v.modelindex != sv_playermodel[4] &&//succ
+			ent->v.modelindex != sv_playermodel[5])//dwarf
 			pflags |= PF_MODEL;
 		else
 			playermodel = true;
@@ -1311,7 +1127,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 
 		for (i=0 ; i<3 ; i++)
 			msg->WriteCoord(ent->GetOrigin()[i]);
-		
+
 		msg->WriteByte(ent->GetFrame());
 
 		if (pflags & PF_MSEC)
@@ -1321,7 +1137,7 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 				msec = 255;
 			msg->WriteByte(msec);
 		}
-		
+
 		if (pflags & PF_COMMAND)
 		{
 			cmd = cl->lastcmd;
@@ -1376,7 +1192,6 @@ void SV_WritePlayersToClient (client_t *client, qhedict_t *clent, byte *pvs, QMs
 		}
 	}
 }
-#endif
 
 /*
 =============
