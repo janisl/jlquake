@@ -71,7 +71,7 @@ void CL_LinkPacketEntities (void)
 	pack = &cl.qw_frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
 	qwpacket_entities_t* PrevPack = &cl.qw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
 
-	autorotate = AngleMod(100*cl.serverTimeFloat);
+	autorotate = AngleMod(100*cl.qh_serverTimeFloat);
 
 	f = 0;		// FIXME: no interpolation right now
 

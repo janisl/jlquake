@@ -396,7 +396,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	{
 		angleAdd[0] = 0;
 		angleAdd[1] = 0;
-		angleAdd[2] = 200 * cl.serverTimeFloat;
+		angleAdd[2] = 200 * cl.qh_serverTimeFloat;
 
 		rotateSet = 1;
 
@@ -416,7 +416,7 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec
 	}
 	if (effects & EF_HAMMER_EFFECTS)
 	{
-		angleAdd[0] = 200 * cl.serverTimeFloat;
+		angleAdd[0] = 200 * cl.qh_serverTimeFloat;
 		angleAdd[1] = 0;
 		angleAdd[2] = 0;
 
@@ -467,7 +467,7 @@ void CL_LinkPacketEntities (void)
 	pack = &cl.hw_frames[clc.netchan.incomingSequence&UPDATE_MASK_HW].packet_entities;
 	hwpacket_entities_t* PrevPack = &cl.hw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_HW].packet_entities;
 
-	autorotate = AngleMod(100*cl.serverTimeFloat);
+	autorotate = AngleMod(100*cl.qh_serverTimeFloat);
 
 	f = 0;		// FIXME: no interpolation right now
 

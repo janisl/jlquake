@@ -410,7 +410,7 @@ void CL_SendMove (q1usercmd_t *cmd)
 	
 	buf.InitOOB(data, 128);
 	
-	cl.cmd = *cmd;
+	cl.q1_cmd = *cmd;
 
 //
 // send the movement message
@@ -454,7 +454,7 @@ void CL_SendMove (q1usercmd_t *cmd)
 // allways dump the first two message, because it may contain leftover inputs
 // from the last level
 //
-	if (++cl.movemessages <= 2)
+	if (++cl.qh_movemessages <= 2)
 		return;
 	
 	if (NET_SendUnreliableMessage (cls.netcon, &clc.netchan, &buf) == -1)

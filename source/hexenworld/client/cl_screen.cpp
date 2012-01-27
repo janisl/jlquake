@@ -147,7 +147,7 @@ void SCR_CenterPrint (char *str)
 {
 	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.serverTimeFloat;
+	scr_centertime_start = cl.qh_serverTimeFloat;
 
 	FindTextBreaks(scr_centerstring, 38);
 	scr_center_lines = lines;
@@ -161,8 +161,8 @@ void SCR_DrawCenterString (void)
 	char	temp[80];
 
 // the finale prints the characters one at a time
-	if (cl.intermission)
-		remaining = scr_printspeed->value * (cl.serverTimeFloat - scr_centertime_start);
+	if (cl.qh_intermission)
+		remaining = scr_printspeed->value * (cl.qh_serverTimeFloat - scr_centertime_start);
 	else
 		remaining = 9999;
 
@@ -187,7 +187,7 @@ void SCR_CheckDrawCenterString (void)
 
 	scr_centertime_off -= host_frametime;
 	
-	if (scr_centertime_off <= 0 && !cl.intermission)
+	if (scr_centertime_off <= 0 && !cl.qh_intermission)
 		return;
 	if (in_keyCatchers != 0)
 		return;
@@ -229,7 +229,7 @@ static void SCR_CalcRefdef (void)
 		Cvar_Set ("fov","170");
 
 // intermission is always full screen	
-	if (cl.intermission)
+	if (cl.qh_intermission)
 		size = 110;
 	else
 		size = scr_viewsize->value;
@@ -251,7 +251,7 @@ static void SCR_CalcRefdef (void)
 	}
 
 	size = scr_viewsize->value > 100 ? 100 : scr_viewsize->value;
-	if (cl.intermission)
+	if (cl.qh_intermission)
 	{
 		size = 100;
 
@@ -466,7 +466,7 @@ void SCR_DrawPause (void)
 	if (!scr_showpause->value)		// turn off for screenshots
 		return;
 
-	if (!cl.paused)
+	if (!cl.qh_paused)
 	{
 		newdraw = false;
 		return;
@@ -759,7 +759,7 @@ void SB_IntermissionOverlay(void)
 		return;
 	}
 	
-	switch(cl.intermission)
+	switch(cl.qh_intermission)
 	{
 		case 1:
 			pic = R_CachePic ("gfx/meso.lmp");
@@ -803,31 +803,31 @@ void SB_IntermissionOverlay(void)
 	}
 	UI_DrawPic (((viddef.width - 320)>>1),((viddef.height - 200)>>1), pic);
 
-	if (cl.intermission >= 6 && cl.intermission <= 8)
+	if (cl.qh_intermission >= 6 && cl.qh_intermission <= 8)
 	{
-		elapsed = (cl.serverTimeFloat - cl.completed_time) * 20;
+		elapsed = (cl.qh_serverTimeFloat - cl.qh_completed_time) * 20;
 		elapsed -= 50;
 		if (elapsed < 0) elapsed = 0;
 	}
 	else
 	{
-		elapsed = (cl.serverTimeFloat - cl.completed_time) * 20;
+		elapsed = (cl.qh_serverTimeFloat - cl.qh_completed_time) * 20;
 	}
 
-	if (cl.intermission <= 4 && cl.intermission + 394 <= pr_string_count)
-		message = &pr_global_strings[pr_string_index[cl.intermission + 394]];
-	else if (cl.intermission == 5)
+	if (cl.qh_intermission <= 4 && cl.qh_intermission + 394 <= pr_string_count)
+		message = &pr_global_strings[pr_string_index[cl.qh_intermission + 394]];
+	else if (cl.qh_intermission == 5)
 		message = &pr_global_strings[pr_string_index[408]];
-	else if (cl.intermission >= 6 && cl.intermission <= 8 && cl.intermission + 386 <= pr_string_count)
-		message = &pr_global_strings[pr_string_index[cl.intermission + 386]];
-	else if (cl.intermission == 9)
+	else if (cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= pr_string_count)
+		message = &pr_global_strings[pr_string_index[cl.qh_intermission + 386]];
+	else if (cl.qh_intermission == 9)
 		message = &pr_global_strings[pr_string_index[391]];
 	else
 		message = "";
 
 	FindTextBreaks(message, 38);
 
-	if (cl.intermission == 8)
+	if (cl.qh_intermission == 8)
 		by = 16;
 	else
 		by = ((25-lines) * 8) / 2;
@@ -841,7 +841,7 @@ void SB_IntermissionOverlay(void)
 		temp[size] = 0;
 
 		bx = ((40-String::Length(temp)) * 8) / 2;
-	  	if (cl.intermission < 6)
+	  	if (cl.qh_intermission < 6)
 			I_Print (bx, by, temp);
 		else
 			M_PrintWhite (bx, by, temp);
@@ -850,10 +850,10 @@ void SB_IntermissionOverlay(void)
 		if (elapsed <= 0) break;
 	}
 
-	if (i == lines && elapsed >= 300 && cl.intermission >= 6 && cl.intermission <= 7)
+	if (i == lines && elapsed >= 300 && cl.qh_intermission >= 6 && cl.qh_intermission <= 7)
 	{
-		cl.intermission++;
-		cl.completed_time = cl.serverTimeFloat;
+		cl.qh_intermission++;
+		cl.qh_completed_time = cl.qh_serverTimeFloat;
 	}
 //	Con_Printf("Time is %10.2f\n",elapsed);
 }
@@ -911,7 +911,7 @@ void SCR_UpdateScreen (void)
 //
 	SCR_SetUpToDrawConsole ();
 	
-	if (cl.intermission < 1 || cl.intermission > 12)
+	if (cl.qh_intermission < 1 || cl.qh_intermission > 12)
 	{
 		V_RenderView ();
 	}
@@ -936,11 +936,11 @@ void SCR_UpdateScreen (void)
 		Draw_FadeScreen ();
 		SCR_DrawLoading ();
 	}
-	else if (cl.intermission == 1 && in_keyCatchers == 0)
+	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
 	{
 		Sbar_IntermissionOverlay ();
 	}
-	else if (cl.intermission == 2 && in_keyCatchers == 0)
+	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
 	{
 		Sbar_FinaleOverlay ();
 		SCR_CheckDrawCenterString ();

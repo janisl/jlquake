@@ -56,74 +56,19 @@ extern clientConnection_t clc;
 //
 struct client_state_t : clientActiveCommon_t
 {
-	int			movemessages;	// since connecting to this server
-								// throw out the first couple, so the player
-								// doesn't accidentally do something the 
-								// first frame
-	h2usercmd_t	cmd;			// last command sent to the server
-
-// information for local display
-	int			stats[MAX_CL_STATS];	// health, etc
 	int			inv_order[MAX_INVENTORY];
 	int			inv_count, inv_startpos, inv_selected;
-	int			items;			// inventory bit flags
-	float		item_gettime[32];	// cl.time of aquiring item, for blinking
-	float		faceanimtime;	// use anim frame if cl.time < this
 
 	entvars_t		v; // NOTE: not every field will be update - you must specifically add
 	                   // them in functions SV_WriteClientdatatToMessage() and CL_ParseClientdata()
 
 	char puzzle_pieces[8][10]; // puzzle piece names
 
-// the client maintains its own idea of view angles, which are
-// sent to the server each frame.  The server sets punchangle when
-// the view is temporarliy offset, and an angle reset commands at the start
-// of each level and after teleporting.
-	vec3_t		mviewangles[2];	// during demo playback viewangles is lerped
-								// between these
-	vec3_t		viewangles;
-	
-	vec3_t		mvelocity[2];	// update by server, used for lean+bob
-								// (0 is newest)
-	vec3_t		velocity;		// lerped between mvelocity[0] and [1]
-
-	vec3_t		punchangle;		// temporary offset
-
 	float		idealroll;
 	float		rollvel;
 	
-// pitch drifting vars
-	float		idealpitch;
-	float		pitchvel;
-	qboolean	nodrift;
-	float		driftmove;
-	double		laststop;
-
-	float		viewheight;
-	float		crouch;			// local amount for smoothing stepups
-
-	qboolean	paused;			// send over by server
-	qboolean	onground;
-	qboolean	inwater;
-	
-	int			intermission;	// don't change view angle, full screen, etc
-	int			completed_time;	// latched at intermission start
-	
-	double		serverTimeFloat;// clients view of time, should be between
-								// servertime and oldservertime to generate
-								// a lerp point for other data
-	double		oldtime;		// previous cl.time, time-oldtime is used
-								// to decay light values and smooth step ups
-	
-
-	float		last_received_message;	// (realtime) for net trouble icon
-
-	char		levelname[40];	// for display on solo scoreboard
-	int			gametype;
-
 	h2entity_t	viewent;			// the gun model
 
-	int			cdtrack, looptrack;	// cd audio
 	char		midi_name[128];     // midi file name
 	byte		current_frame, last_frame, reference_frame;
 	byte		current_sequence, last_sequence;

@@ -576,7 +576,7 @@ void CL_ParseServerData (void)
 
 	// get the full level name
 	str = const_cast<char*>(net_message.ReadString2());
-	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname)-1);
 
 	// get the movevars
 	movevars.gravity			= net_message.ReadFloat();
@@ -923,11 +923,11 @@ void CL_SetStat (int stat, int value)
 	if (stat == STAT_ITEMS)
 	{	// set flash times
 		for (j=0 ; j<32 ; j++)
-			if ( (value & (1<<j)) && !(cl.stats[stat] & (1<<j)))
-				cl.item_gettime[j] = cl.serverTimeFloat;
+			if ( (value & (1<<j)) && !(cl.qh_stats[stat] & (1<<j)))
+				cl.q1_item_gettime[j] = cl.qh_serverTimeFloat;
 	}
 
-	cl.stats[stat] = value;
+	cl.qh_stats[stat] = value;
 }
 
 /*
@@ -1107,11 +1107,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case q1svc_killedmonster:
-			cl.stats[STAT_MONSTERS]++;
+			cl.qh_stats[STAT_MONSTERS]++;
 			break;
 
 		case q1svc_foundsecret:
-			cl.stats[STAT_SECRETS]++;
+			cl.qh_stats[STAT_SECRETS]++;
 			break;
 
 		case q1svc_updatestat:
@@ -1130,13 +1130,15 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case q1svc_cdtrack:
-			cl.cdtrack = net_message.ReadByte ();
-			CDAudio_Play ((byte)cl.cdtrack, true);
+		{
+			byte cdtrack = net_message.ReadByte ();
+			CDAudio_Play (cdtrack, true);
+		}
 			break;
 
 		case q1svc_intermission:
-			cl.intermission = 1;
-			cl.completed_time = realtime;
+			cl.qh_intermission = 1;
+			cl.qh_completed_time = realtime;
 			for (i=0 ; i<3 ; i++)
 				cl.simorg[i] = net_message.ReadCoord ();			
 			for (i=0 ; i<3 ; i++)
@@ -1145,8 +1147,8 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case q1svc_finale:
-			cl.intermission = 2;
-			cl.completed_time = realtime;
+			cl.qh_intermission = 2;
+			cl.qh_completed_time = realtime;
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
@@ -1155,10 +1157,10 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case qwsvc_smallkick:
-			cl.punchangle = -2;
+			cl.qh_punchangle = -2;
 			break;
 		case qwsvc_bigkick:
-			cl.punchangle = -4;
+			cl.qh_punchangle = -4;
 			break;
 
 		case qwsvc_muzzleflash:
@@ -1220,8 +1222,8 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case q1svc_setpause:
-			cl.paused = net_message.ReadByte ();
-			if (cl.paused)
+			cl.qh_paused = net_message.ReadByte ();
+			if (cl.qh_paused)
 				CDAudio_Pause ();
 			else
 				CDAudio_Resume ();

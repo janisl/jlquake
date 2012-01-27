@@ -461,7 +461,7 @@ void CL_ParseServerData (void)
 
 	// get the full level name
 	str = const_cast<char*>(net_message.ReadString2());
-	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname)-1);
 
 	// get the movevars
 	if (protover == PROTOCOL_VERSION) {
@@ -827,21 +827,12 @@ CL_SetStat
 */
 void CL_SetStat (int stat, int value)
 {
-	int	j;
 	if (stat < 0 || stat >= MAX_CL_STATS)
 		Sys_Error ("CL_SetStat: %i is invalid", stat);
 
 	Sbar_Changed ();
 	
-	if (stat == STAT_ITEMS)
-	{	// set flash times
-		Sbar_Changed ();
-		for (j=0 ; j<32 ; j++)
-			if ( (value & (1<<j)) && !(cl.stats[stat] & (1<<j)))
-				cl.item_gettime[j] = cl.serverTimeFloat;
-	}
-
-	cl.stats[stat] = value;
+	cl.qh_stats[stat] = value;
 }
 
 /*
@@ -1188,7 +1179,7 @@ void CL_ParseServerMessage (void)
 			break;
 		
 		case h2svc_time:
-			cl_server_time_offset = ((int)net_message.ReadFloat()) - cl.serverTimeFloat;
+			cl_server_time_offset = ((int)net_message.ReadFloat()) - cl.qh_serverTimeFloat;
 			break;
 
 		case h2svc_spawnbaseline:
@@ -1203,11 +1194,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case h2svc_killedmonster:
-			cl.stats[STAT_MONSTERS]++;
+			cl.qh_stats[STAT_MONSTERS]++;
 			break;
 
 		case h2svc_foundsecret:
-			cl.stats[STAT_SECRETS]++;
+			cl.qh_stats[STAT_SECRETS]++;
 			break;
 
 		case h2svc_updatestat:
@@ -1226,15 +1217,17 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case h2svc_cdtrack:
-			cl.cdtrack = net_message.ReadByte ();
-			CDAudio_Play ((byte)cl.cdtrack, true);
+		{
+			byte cdtrack = net_message.ReadByte ();
+			CDAudio_Play (cdtrack, true);
+		}
 			break;
 
 		case h2svc_intermission:
 //			if(cl_siege)
 //			{//MG
-				cl.intermission = net_message.ReadByte();
-				cl.completed_time = realtime;
+				cl.qh_intermission = net_message.ReadByte();
+				cl.qh_completed_time = realtime;
 				break;
 /*			}
 			else
@@ -1251,8 +1244,8 @@ void CL_ParseServerMessage (void)
 			}
 */
 		case h2svc_finale:
-			cl.intermission = 2;
-			cl.completed_time = realtime;
+			cl.qh_intermission = 2;
+			cl.qh_completed_time = realtime;
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
@@ -1261,10 +1254,10 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case hwsvc_smallkick:
-			cl.punchangle = -2;
+			cl.qh_punchangle = -2;
 			break;
 		case hwsvc_bigkick:
-			cl.punchangle = -4;
+			cl.qh_punchangle = -4;
 			break;
 
 		case hwsvc_muzzleflash:

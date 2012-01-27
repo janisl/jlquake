@@ -467,8 +467,8 @@ void Sbar_SoloScoreboard (void)
 	Sbar_DrawPic (0, 0, sb_scorebar);
 
 	// time
-	minutes = cl.serverTimeFloat / 60;
-	seconds = cl.serverTimeFloat - 60*minutes;
+	minutes = cl.qh_serverTimeFloat / 60;
+	seconds = cl.qh_serverTimeFloat - 60*minutes;
 	tens = seconds / 10;
 	units = seconds - 10*tens;
 	sprintf (str,"Time :%3i:%i%i", minutes, tens, units);
@@ -499,15 +499,15 @@ void Sbar_DrawInventory (void)
 // weapons
 	for (i=0 ; i<7 ; i++)
 	{
-		if (cl.stats[STAT_ITEMS] & (IT_SHOTGUN<<i) )
+		if (cl.qh_stats[STAT_ITEMS] & (IT_SHOTGUN<<i) )
 		{
-			time = cl.item_gettime[i];
-			flashon = (int)((cl.serverTimeFloat - time)*10);
+			time = cl.q1_item_gettime[i];
+			flashon = (int)((cl.qh_serverTimeFloat - time)*10);
 			if (flashon < 0)
 				flashon = 0;
 			if (flashon >= 10)
 			{
-				if ( cl.stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN<<i)  )
+				if ( cl.qh_stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN<<i)  )
 					flashon = 1;
 				else
 					flashon = 0;
@@ -527,7 +527,7 @@ void Sbar_DrawInventory (void)
 // ammo counts
 	for (i=0 ; i<4 ; i++)
 	{
-		sprintf (num, "%3i",cl.stats[STAT_SHELLS+i] );
+		sprintf (num, "%3i",cl.qh_stats[STAT_SHELLS+i] );
 		if (headsup) {
 //			Sbar_DrawSubPic(3, -24, sb_ibar, 3, 0, 42,11);
 			Sbar_DrawSubPic((hudswap) ? 0 : (viddef.width-42), -24 - (4-i)*11, sb_ibar, 3+(i*48), 0, 42, 11);
@@ -550,19 +550,19 @@ void Sbar_DrawInventory (void)
 	flashon = 0;
 // items
 	for (i=0 ; i<6 ; i++)
-		if (cl.stats[STAT_ITEMS] & (1<<(17+i)))
+		if (cl.qh_stats[STAT_ITEMS] & (1<<(17+i)))
 		{
-			time = cl.item_gettime[17+i];
-			if (!(time &&	time > cl.serverTimeFloat - 2 && flashon ))
+			time = cl.q1_item_gettime[17+i];
+			if (!(time &&	time > cl.qh_serverTimeFloat - 2 && flashon ))
 				Sbar_DrawPic (192 + i*16, -16, sb_items[i]);		
 		}
 
 // sigils
 	for (i=0 ; i<4 ; i++)
-		if (cl.stats[STAT_ITEMS] & (1<<(28+i)))
+		if (cl.qh_stats[STAT_ITEMS] & (1<<(28+i)))
 		{
-			time = cl.item_gettime[28+i];
-			if (!(time &&	time > cl.serverTimeFloat - 2 && flashon ))
+			time = cl.q1_item_gettime[28+i];
+			if (!(time &&	time > cl.qh_serverTimeFloat - 2 && flashon ))
 				Sbar_DrawPic (320-32 + i*8, -16, sb_sigil[i]);		
 		}
 }
@@ -643,34 +643,34 @@ void Sbar_DrawFace (void)
 {
 	int		f, anim;
 
-	if ( (cl.stats[STAT_ITEMS] & (IT_INVISIBILITY | IT_INVULNERABILITY) )
+	if ( (cl.qh_stats[STAT_ITEMS] & (IT_INVISIBILITY | IT_INVULNERABILITY) )
 	== (IT_INVISIBILITY | IT_INVULNERABILITY) )
 	{
 		Sbar_DrawPic (112, 0, sb_face_invis_invuln);
 		return;
 	}
-	if (cl.stats[STAT_ITEMS] & IT_QUAD) 
+	if (cl.qh_stats[STAT_ITEMS] & IT_QUAD) 
 	{
 		Sbar_DrawPic (112, 0, sb_face_quad );
 		return;
 	}
-	if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY) 
+	if (cl.qh_stats[STAT_ITEMS] & IT_INVISIBILITY) 
 	{
 		Sbar_DrawPic (112, 0, sb_face_invis );
 		return;
 	}
-	if (cl.stats[STAT_ITEMS] & IT_INVULNERABILITY) 
+	if (cl.qh_stats[STAT_ITEMS] & IT_INVULNERABILITY) 
 	{
 		Sbar_DrawPic (112, 0, sb_face_invuln);
 		return;
 	}
 
-	if (cl.stats[STAT_HEALTH] >= 100)
+	if (cl.qh_stats[STAT_HEALTH] >= 100)
 		f = 4;
 	else
-		f = cl.stats[STAT_HEALTH] / 20;
+		f = cl.qh_stats[STAT_HEALTH] / 20;
 	
-	if (cl.serverTimeFloat <= cl.faceanimtime)
+	if (cl.qh_serverTimeFloat <= cl.q1_faceanimtime)
 	{
 		anim = 1;
 	}
@@ -690,20 +690,20 @@ void Sbar_DrawNormal (void)
 	Sbar_DrawPic (0, 0, sb_sbar);
 
 // armor
-	if (cl.stats[STAT_ITEMS] & IT_INVULNERABILITY)
+	if (cl.qh_stats[STAT_ITEMS] & IT_INVULNERABILITY)
 	{
 		Sbar_DrawNum (24, 0, 666, 3, 1);
 		Sbar_DrawPic (0, 0, draw_disc);
 	}
 	else
 	{
-		Sbar_DrawNum (24, 0, cl.stats[STAT_ARMOR], 3
-		, cl.stats[STAT_ARMOR] <= 25);
-		if (cl.stats[STAT_ITEMS] & IT_ARMOR3)
+		Sbar_DrawNum (24, 0, cl.qh_stats[STAT_ARMOR], 3
+		, cl.qh_stats[STAT_ARMOR] <= 25);
+		if (cl.qh_stats[STAT_ITEMS] & IT_ARMOR3)
 			Sbar_DrawPic (0, 0, sb_armor[2]);
-		else if (cl.stats[STAT_ITEMS] & IT_ARMOR2)
+		else if (cl.qh_stats[STAT_ITEMS] & IT_ARMOR2)
 			Sbar_DrawPic (0, 0, sb_armor[1]);
-		else if (cl.stats[STAT_ITEMS] & IT_ARMOR1)
+		else if (cl.qh_stats[STAT_ITEMS] & IT_ARMOR1)
 			Sbar_DrawPic (0, 0, sb_armor[0]);
 	}
 	
@@ -711,21 +711,21 @@ void Sbar_DrawNormal (void)
 	Sbar_DrawFace ();
 	
 // health
-	Sbar_DrawNum (136, 0, cl.stats[STAT_HEALTH], 3
-	, cl.stats[STAT_HEALTH] <= 25);
+	Sbar_DrawNum (136, 0, cl.qh_stats[STAT_HEALTH], 3
+	, cl.qh_stats[STAT_HEALTH] <= 25);
 
 // ammo icon
-	if (cl.stats[STAT_ITEMS] & IT_SHELLS)
+	if (cl.qh_stats[STAT_ITEMS] & IT_SHELLS)
 		Sbar_DrawPic (224, 0, sb_ammo[0]);
-	else if (cl.stats[STAT_ITEMS] & IT_NAILS)
+	else if (cl.qh_stats[STAT_ITEMS] & IT_NAILS)
 		Sbar_DrawPic (224, 0, sb_ammo[1]);
-	else if (cl.stats[STAT_ITEMS] & IT_ROCKETS)
+	else if (cl.qh_stats[STAT_ITEMS] & IT_ROCKETS)
 		Sbar_DrawPic (224, 0, sb_ammo[2]);
-	else if (cl.stats[STAT_ITEMS] & IT_CELLS)
+	else if (cl.qh_stats[STAT_ITEMS] & IT_CELLS)
 		Sbar_DrawPic (224, 0, sb_ammo[3]);
 	
-	Sbar_DrawNum (248, 0, cl.stats[STAT_AMMO], 3
-	, cl.stats[STAT_AMMO] <= 10);
+	Sbar_DrawNum (248, 0, cl.qh_stats[STAT_AMMO], 3
+	, cl.qh_stats[STAT_AMMO] <= 10);
 }
 
 /*
@@ -761,7 +761,7 @@ void Sbar_Draw (void)
 				Sbar_DrawString (160-7*8,4, "SPECTATOR MODE");
 				Sbar_DrawString(160-14*8+4, 12, "Press [ATTACK] for AutoCamera");
 			} else {
-				if (sb_showscores || cl.stats[STAT_HEALTH] <= 0)
+				if (sb_showscores || cl.qh_stats[STAT_HEALTH] <= 0)
 					Sbar_SoloScoreboard ();
 				else
 					Sbar_DrawNormal ();
@@ -771,7 +771,7 @@ void Sbar_Draw (void)
 						cl.q1_players[spec_track].name);
 				Sbar_DrawString(0, -8, st);
 			}
-		} else if (sb_showscores || cl.stats[STAT_HEALTH] <= 0)
+		} else if (sb_showscores || cl.qh_stats[STAT_HEALTH] <= 0)
 			Sbar_SoloScoreboard ();
 		else
 			Sbar_DrawNormal ();
@@ -779,7 +779,7 @@ void Sbar_Draw (void)
 
 // main screen deathmatch rankings
 	// if we're dead show team scores in team games
-	if (cl.stats[STAT_HEALTH] <= 0 && !cl.spectator)
+	if (cl.qh_stats[STAT_HEALTH] <= 0 && !cl.spectator)
 		if (String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 &&
 			!sb_showscores)
 			Sbar_TeamOverlay();
@@ -1030,8 +1030,8 @@ void Sbar_DeathmatchOverlay (int start)
 
 
 		// draw time
-		if (cl.intermission)
-			total = cl.completed_time - s->entertime;
+		if (cl.qh_intermission)
+			total = cl.qh_completed_time - s->entertime;
 		else
 			total = realtime - s->entertime;
 		minutes = (int)total/60;

@@ -119,7 +119,7 @@ void SCR_CenterPrint (const char *str)
 {
 	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.serverTimeFloat;
+	scr_centertime_start = cl.qh_serverTimeFloat;
 
 // count the number of lines for centering
 	scr_center_lines = 1;
@@ -141,8 +141,8 @@ void SCR_DrawCenterString (void)
 	int		remaining;
 
 // the finale prints the characters one at a time
-	if (cl.intermission)
-		remaining = scr_printspeed->value * (cl.serverTimeFloat - scr_centertime_start);
+	if (cl.qh_intermission)
+		remaining = scr_printspeed->value * (cl.qh_serverTimeFloat - scr_centertime_start);
 	else
 		remaining = 9999;
 
@@ -186,7 +186,7 @@ void SCR_CheckDrawCenterString (void)
 
 	scr_centertime_off -= host_frametime;
 	
-	if (scr_centertime_off <= 0 && !cl.intermission)
+	if (scr_centertime_off <= 0 && !cl.qh_intermission)
 		return;
 	if (in_keyCatchers != 0)
 		return;
@@ -245,7 +245,7 @@ static void SCR_CalcRefdef (void)
 		Cvar_Set ("fov","170");
 
 // intermission is always full screen	
-	if (cl.intermission)
+	if (cl.qh_intermission)
 		size = 120;
 	else
 		size = scr_viewsize->value;
@@ -262,7 +262,7 @@ static void SCR_CalcRefdef (void)
 		size = 100.0;
 	} else
 		size = scr_viewsize->value;
-	if (cl.intermission)
+	if (cl.qh_intermission)
 	{
 		full = true;
 		size = 100;
@@ -418,7 +418,7 @@ SCR_DrawNet
 */
 void SCR_DrawNet (void)
 {
-	if (realtime - cl.last_received_message < 0.3)
+	if (realtime - cl.qh_last_received_message < 0.3)
 		return;
 	if (clc.demoplaying)
 		return;
@@ -463,7 +463,7 @@ void SCR_DrawPause (void)
 	if (!scr_showpause->value)		// turn off for screenshots
 		return;
 
-	if (!cl.paused)
+	if (!cl.qh_paused)
 		return;
 
 	pic = R_CachePic ("gfx/pause.lmp");
@@ -754,11 +754,11 @@ void SCR_UpdateScreen (void)
 		SCR_DrawLoading ();
 		Sbar_Draw ();
 	}
-	else if (cl.intermission == 1 && in_keyCatchers == 0)
+	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
 	{
 		Sbar_IntermissionOverlay ();
 	}
-	else if (cl.intermission == 2 && in_keyCatchers == 0)
+	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
 	{
 		Sbar_FinaleOverlay ();
 		SCR_CheckDrawCenterString ();

@@ -74,61 +74,23 @@ struct client_state_t : clientActiveCommon_t
 {
 	char		serverinfo[MAX_SERVERINFO_STRING];
 
-	int			movemessages;	// since connecting to this server
-								// throw out the first couple, so the player
-								// doesn't accidentally do something the 
-								// first frame
-
 	int			spectator;
 
 	double		last_ping_request;	// while showing scoreboard
 	double		last_servermessage;
 
-// information for local display
-	int			stats[MAX_CL_STATS];	// health, etc
-	float		item_gettime[32];	// cl.time of aquiring item, for blinking
-	float		faceanimtime;		// use anim frame if cl.time < this
-
-// the client maintains its own idea of view angles, which are
-// sent to the server each frame.  And only reset at level change
-// and teleport times
-	vec3_t		viewangles;
-
 // the client simulates or interpolates movement to get these values
-	double		serverTimeFloat;// this is the time value that the client
-								// is rendering at.  allways <= realtime
 	vec3_t		simorg;
 	vec3_t		simvel;
 	vec3_t		simangles;
 
-// pitch drifting vars
-	float		pitchvel;
-	qboolean	nodrift;
-	float		driftmove;
-	double		laststop;
-
-
-	float		crouch;			// local amount for smoothing stepups
-
-	qboolean	paused;			// send over by server
-
-	float		punchangle;		// temporar yview kick from weapon firing
-	
-	int			intermission;	// don't change view angle, full screen, etc
-	int			completed_time;	// latched ffrom time at intermission start
-	
 //
 // information that is static for the entire time connected to a server
 //
 	char		model_name[MAX_MODELS_Q1][MAX_QPATH];
 	char		sound_name[MAX_SOUNDS_Q1][MAX_QPATH];
 
-	char		levelname[40];	// for display on solo scoreboard
 	int			playernum;
-
-	int			cdtrack;		// cd audio
-
-	q1entity_t	viewent;		// weapon model
 };
 
 

@@ -156,24 +156,24 @@ static float V_CalcBob (void)
 void V_StartPitchDrift (void)
 {
 #if 1
-	if (cl.laststop == cl.serverTimeFloat)
+	if (cl.qh_laststop == cl.qh_serverTimeFloat)
 	{
 		return;		// something else is keeping it from drifting
 	}
 #endif
-	if (cl.nodrift || !cl.pitchvel)
+	if (cl.qh_nodrift || !cl.qh_pitchvel)
 	{
-		cl.pitchvel = v_centerspeed->value;
-		cl.nodrift = false;
-		cl.driftmove = 0;
+		cl.qh_pitchvel = v_centerspeed->value;
+		cl.qh_nodrift = false;
+		cl.qh_driftmove = 0;
 	}
 }
 
 void V_StopPitchDrift (void)
 {
-	cl.laststop = cl.serverTimeFloat;
-	cl.nodrift = true;
-	cl.pitchvel = 0;
+	cl.qh_laststop = cl.qh_serverTimeFloat;
+	cl.qh_nodrift = true;
+	cl.qh_pitchvel = 0;
 }
 
 /*
@@ -195,20 +195,20 @@ static void V_DriftPitch (void)
 
 	if (view_message->onground == -1 || clc.demoplaying)
 	{
-		cl.driftmove = 0;
-		cl.pitchvel = 0;
+		cl.qh_driftmove = 0;
+		cl.qh_pitchvel = 0;
 		return;
 	}
 
 // don't count small mouse motion
-	if (cl.nodrift)
+	if (cl.qh_nodrift)
 	{
 		if ( abs(cl.qw_frames[(clc.netchan.outgoingSequence-1)&UPDATE_MASK_QW].cmd.forwardmove) < 200)
-			cl.driftmove = 0;
+			cl.qh_driftmove = 0;
 		else
-			cl.driftmove += host_frametime;
+			cl.qh_driftmove += host_frametime;
 	
-		if ( cl.driftmove > v_centermove->value)
+		if ( cl.qh_driftmove > v_centermove->value)
 		{
 			V_StartPitchDrift ();
 		}
@@ -219,12 +219,12 @@ static void V_DriftPitch (void)
 
 	if (!delta)
 	{
-		cl.pitchvel = 0;
+		cl.qh_pitchvel = 0;
 		return;
 	}
 
-	move = host_frametime * cl.pitchvel;
-	cl.pitchvel += host_frametime * v_centerspeed->value;
+	move = host_frametime * cl.qh_pitchvel;
+	cl.qh_pitchvel += host_frametime * v_centerspeed->value;
 	
 //Con_Printf ("move: %f (%f)\n", move, host_frametime);
 
@@ -232,7 +232,7 @@ static void V_DriftPitch (void)
 	{
 		if (move > delta)
 		{
-			cl.pitchvel = 0;
+			cl.qh_pitchvel = 0;
 			move = delta;
 		}
 		cl.viewangles[PITCH] += move;
@@ -241,7 +241,7 @@ static void V_DriftPitch (void)
 	{
 		if (move > -delta)
 		{
-			cl.pitchvel = 0;
+			cl.qh_pitchvel = 0;
 			move = -delta;
 		}
 		cl.viewangles[PITCH] -= move;
@@ -284,7 +284,7 @@ void V_ParseDamage (void)
 	if (count < 10)
 		count = 10;
 
-	cl.faceanimtime = cl.serverTimeFloat + 0.2;		// but sbar face into pain frame
+	cl.q1_faceanimtime = cl.qh_serverTimeFloat + 0.2;		// but sbar face into pain frame
 
 	cl.qh_cshifts[CSHIFT_DAMAGE].percent += 3*count;
 	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent < 0)
@@ -396,28 +396,28 @@ V_CalcPowerupCshift
 */
 static void V_CalcPowerupCshift (void)
 {
-	if (cl.stats[STAT_ITEMS] & IT_QUAD)
+	if (cl.qh_stats[STAT_ITEMS] & IT_QUAD)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
 	}
-	else if (cl.stats[STAT_ITEMS] & IT_SUIT)
+	else if (cl.qh_stats[STAT_ITEMS] & IT_SUIT)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
 	}
-	else if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
+	else if (cl.qh_stats[STAT_ITEMS] & IT_INVISIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
 	}
-	else if (cl.stats[STAT_ITEMS] & IT_INVULNERABILITY)
+	else if (cl.qh_stats[STAT_ITEMS] & IT_INVULNERABILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
@@ -532,8 +532,8 @@ CalcGunAngle
 */
 static void CalcGunAngle(vec3_t viewangles)
 {	
-	cl.viewent.state.angles[YAW] = viewangles[YAW];
-	cl.viewent.state.angles[PITCH] = -viewangles[PITCH];
+	cl.q1_viewent.state.angles[YAW] = viewangles[YAW];
+	cl.q1_viewent.state.angles[PITCH] = -viewangles[PITCH];
 }
 
 /*
@@ -545,13 +545,13 @@ Idle swaying
 */
 static void V_AddIdle(vec3_t viewangles)
 {
-	viewangles[ROLL] += v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
-	viewangles[PITCH] += v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
-	viewangles[YAW] += v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
+	viewangles[ROLL] += v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	viewangles[PITCH] += v_idlescale->value * sin(cl.qh_serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	viewangles[YAW] += v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 
-	cl.viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
-	cl.viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
-	cl.viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
+	cl.q1_viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	cl.q1_viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	cl.q1_viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 
@@ -591,7 +591,7 @@ static void V_CalcIntermissionRefdef (void)
 	float		old;
 
 // view is the weapon model
-	view = &cl.viewent;
+	view = &cl.q1_viewent;
 
 	VectorCopy (cl.simorg, cl.refdef.vieworg);
 	vec3_t viewangles;
@@ -623,7 +623,7 @@ static void V_CalcRefdef (void)
 	V_DriftPitch ();
 
 // view is the weapon model (only visible from inside body)
-	view = &cl.viewent;
+	view = &cl.q1_viewent;
 
 	bob = V_CalcBob ();
 	
@@ -688,11 +688,11 @@ static void V_CalcRefdef (void)
 	if (view_message->flags & (QWPF_GIB|QWPF_DEAD) )
  		view->state.modelindex = 0;
  	else
-		view->state.modelindex = cl.stats[STAT_WEAPON];
+		view->state.modelindex = cl.qh_stats[STAT_WEAPON];
 	view->state.frame = view_message->weaponframe;
 
 // set up the refresh position
-	viewangles[PITCH] += cl.punchangle;
+	viewangles[PITCH] += cl.qh_punchangle;
 	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 // smooth out stair step ups
@@ -721,9 +721,9 @@ DropPunchAngle
 */
 void DropPunchAngle (void)
 {
-	cl.punchangle -= 10*host_frametime;
-	if (cl.punchangle < 0)
-		cl.punchangle = 0;
+	cl.qh_punchangle -= 10*host_frametime;
+	if (cl.qh_punchangle < 0)
+		cl.qh_punchangle = 0;
 }
 
 /*
@@ -741,13 +741,13 @@ static void CL_AddViewModel()
 	if (!Cam_DrawViewModel())
 		return;
 
-	if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
+	if (cl.qh_stats[STAT_ITEMS] & IT_INVISIBILITY)
 		return;
 
-	if (cl.stats[STAT_HEALTH] <= 0)
+	if (cl.qh_stats[STAT_HEALTH] <= 0)
 		return;
 
-	if (!cl.viewent.state.modelindex)
+	if (!cl.q1_viewent.state.modelindex)
 		return;
 
 	refEntity_t gun;
@@ -755,12 +755,12 @@ static void CL_AddViewModel()
 	Com_Memset(&gun, 0, sizeof(gun));
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(cl.viewent.state.origin, gun.origin);
-	gun.hModel = cl.model_draw[cl.viewent.state.modelindex];
-	CLQ1_SetRefEntAxis(&gun, cl.viewent.state.angles);
-	gun.frame = cl.viewent.state.frame;
-	gun.skinNum = cl.viewent.state.skinnum;
-	gun.shaderTime = cl.viewent.syncbase;
+	VectorCopy(cl.q1_viewent.state.origin, gun.origin);
+	gun.hModel = cl.model_draw[cl.q1_viewent.state.modelindex];
+	CLQ1_SetRefEntAxis(&gun, cl.q1_viewent.state.angles);
+	gun.frame = cl.q1_viewent.state.frame;
+	gun.skinNum = cl.q1_viewent.state.skinnum;
+	gun.shaderTime = cl.q1_viewent.syncbase;
 
 	R_AddRefEntityToScene(&gun);
 }
@@ -833,7 +833,7 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle ();
-	if (cl.intermission)
+	if (cl.qh_intermission)
 	{	// intermission / finale rendering
 		V_CalcIntermissionRefdef ();	
 	}

@@ -757,8 +757,8 @@ void M_Difficulty_Key (int key)
 		if (m_enter_portals)
 		{
 			introTime = 0.0;
-			cl.intermission = 12;
-			cl.completed_time = cl.serverTimeFloat;
+			cl.qh_intermission = 12;
+			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 			cls.demonum = m_save_demonum;
@@ -1022,7 +1022,7 @@ void M_Menu_Save_f (void)
 {
 	if (!sv.active)
 		return;
-	if (cl.intermission)
+	if (cl.qh_intermission)
 		return;
 	if (svs.maxclients != 1)
 		return;
@@ -1198,7 +1198,7 @@ void M_Menu_MLoad_f (void)
 
 void M_Menu_MSave_f (void)
 {
-	if (!sv.active || cl.intermission || svs.maxclients == 1)
+	if (!sv.active || cl.qh_intermission || svs.maxclients == 1)
 	{
 		message = "Only a network server";
 		message2 = "can save a multiplayer game";

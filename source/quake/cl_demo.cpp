@@ -107,7 +107,7 @@ int CL_GetMessage (void)
 				if (host_framecount == cls.td_startframe + 1)
 					cls.td_starttime = realtime;
 			}
-			else if ( /* cl.time > 0 && */ cl.serverTimeFloat <= cl.qh_mtime[0])
+			else if ( /* cl.time > 0 && */ cl.qh_serverTimeFloat <= cl.qh_mtime[0])
 			{
 					return 0;		// don't need another message yet
 			}
@@ -115,11 +115,11 @@ int CL_GetMessage (void)
 		
 	// get the next message
 		FS_Read(&net_message.cursize, 4, clc.demofile);
-		VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
+		VectorCopy (cl.qh_mviewangles[0], cl.qh_mviewangles[1]);
 		for (i=0 ; i<3 ; i++)
 		{
 			r = FS_Read(&f, 4, clc.demofile);
-			cl.mviewangles[0][i] = LittleFloat (f);
+			cl.qh_mviewangles[0][i] = LittleFloat (f);
 		}
 		
 		net_message.cursize = LittleLong (net_message.cursize);

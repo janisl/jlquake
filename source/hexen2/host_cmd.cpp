@@ -227,7 +227,7 @@ void Host_Map_f (void)
 
 	if (Cmd_Argc()<2)	//no map name given
 	{
-		Con_Printf ("map <levelname>: start a new server\nCurrently on: %s\n",cl.levelname);
+		Con_Printf ("map <levelname>: start a new server\nCurrently on: %s\n",cl.qh_levelname);
 		Con_Printf ("%s\n",cls.mapstring);
 		return;
 	}
@@ -426,7 +426,7 @@ void Host_SavegameComment (char *text)
 
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		text[i] = ' ';
-	Com_Memcpy(text, cl.levelname, String::Length(cl.levelname));
+	Com_Memcpy(text, cl.qh_levelname, String::Length(cl.qh_levelname));
 //	sprintf (kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
 
 	TempTime = time(NULL);
@@ -462,7 +462,7 @@ void Host_Savegame_f (void)
 		return;
 	}
 
-	if (cl.intermission)
+	if (cl.qh_intermission)
 	{
 		Con_Printf ("Can't save in intermission.\n");
 		return;

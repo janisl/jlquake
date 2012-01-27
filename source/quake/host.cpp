@@ -692,7 +692,7 @@ void _Host_Frame (float time)
 		S_Respatialize(cl.viewentity, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
 		CL_RunDLights ();
 
-		if (cl.serverTimeFloat != cl.oldtime)
+		if (cl.qh_serverTimeFloat != cl.qh_oldtime)
 		{
 			CL_UpdateParticles(sv_gravity->value);
 		}

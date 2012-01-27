@@ -462,7 +462,7 @@ void M_Menu_Save_f (void)
 {
 	if (!sv.active)
 		return;
-	if (cl.intermission)
+	if (cl.qh_intermission)
 		return;
 	if (svs.maxclients != 1)
 		return;

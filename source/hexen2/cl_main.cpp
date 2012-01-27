@@ -322,8 +322,8 @@ float	CL_LerpPoint (void)
 	
 	if (!f || cl_nolerp->value || cls.timedemo || sv.active)
 	{
-		cl.serverTimeFloat = cl.qh_mtime[0];
-		cl.serverTime = (int)(cl.serverTimeFloat * 1000);
+		cl.qh_serverTimeFloat = cl.qh_mtime[0];
+		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
 		return 1;
 	}
 		
@@ -332,14 +332,14 @@ float	CL_LerpPoint (void)
 		cl.qh_mtime[1] = cl.qh_mtime[0] - 0.1;
 		f = 0.1;
 	}
-	frac = (cl.serverTimeFloat - cl.qh_mtime[1]) / f;
+	frac = (cl.qh_serverTimeFloat - cl.qh_mtime[1]) / f;
 //Con_Printf ("frac: %f\n",frac);
 	if (frac < 0)
 	{
 		if (frac < -0.01)
 		{
-			cl.serverTimeFloat = cl.qh_mtime[1];
-			cl.serverTime = (int)(cl.serverTimeFloat * 1000);
+			cl.qh_serverTimeFloat = cl.qh_mtime[1];
+			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
 //				Con_Printf ("low frac\n");
 		}
 		frac = 0;
@@ -348,8 +348,8 @@ float	CL_LerpPoint (void)
 	{
 		if (frac > 1.01)
 		{
-			cl.serverTimeFloat = cl.qh_mtime[0];
-			cl.serverTime = (int)(cl.serverTimeFloat * 1000);
+			cl.qh_serverTimeFloat = cl.qh_mtime[0];
+			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
 //				Con_Printf ("high frac\n");
 		}
 		frac = 1;
@@ -383,20 +383,20 @@ void CL_RelinkEntities (void)
 // interpolate player info
 //
 	for (i=0 ; i<3 ; i++)
-		cl.velocity[i] = cl.mvelocity[1][i] + 
-			frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
+		cl.qh_velocity[i] = cl.qh_mvelocity[1][i] + 
+			frac * (cl.qh_mvelocity[0][i] - cl.qh_mvelocity[1][i]);
 
 	if (clc.demoplaying && !intro_playing)
 	{
 	// interpolate the angles	
 		for (j=0 ; j<3 ; j++)
 		{
-			d = cl.mviewangles[0][j] - cl.mviewangles[1][j];
+			d = cl.qh_mviewangles[0][j] - cl.qh_mviewangles[1][j];
 			if (d > 180)
 				d -= 360;
 			else if (d < -180)
 				d += 360;
-			cl.viewangles[j] = cl.mviewangles[1][j] + frac*d;
+			cl.viewangles[j] = cl.qh_mviewangles[1][j] + frac*d;
 		}
 	}
 	
@@ -626,9 +626,9 @@ int CL_ReadFromServer (void)
 {
 	int		ret;
 
-	cl.oldtime = cl.serverTimeFloat;
-	cl.serverTimeFloat += host_frametime;
-	cl.serverTime = (int)(cl.serverTimeFloat * 1000);
+	cl.qh_oldtime = cl.qh_serverTimeFloat;
+	cl.qh_serverTimeFloat += host_frametime;
+	cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
 	
 	do
 	{
@@ -638,7 +638,7 @@ int CL_ReadFromServer (void)
 		if (!ret)
 			break;
 		
-		cl.last_received_message = realtime;
+		cl.qh_last_received_message = realtime;
 		CL_ParseServerMessage ();
 	} while (ret && cls.state == CA_CONNECTED);
 	

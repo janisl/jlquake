@@ -109,7 +109,7 @@ static float V_CalcBob (void)
 
 //	bobtime += host_frametime;
 //	cycle = bobtime - (int)(bobtime/cl_bobcycle->value)*cl_bobcycle->value;
-	cycle = cl.serverTimeFloat - (int)(cl.serverTimeFloat/cl_bobcycle->value)*cl_bobcycle->value;
+	cycle = cl.qh_serverTimeFloat - (int)(cl.qh_serverTimeFloat/cl_bobcycle->value)*cl_bobcycle->value;
 	cycle /= cl_bobcycle->value;
 	if (cycle < cl_bobup->value)
 		cycle = M_PI * cycle / cl_bobup->value;
@@ -135,24 +135,24 @@ static float V_CalcBob (void)
 void V_StartPitchDrift (void)
 {
 #if 1
-	if (cl.laststop == cl.serverTimeFloat)
+	if (cl.qh_laststop == cl.qh_serverTimeFloat)
 	{
 		return;		// something else is keeping it from drifting
 	}
 #endif
-	if (cl.nodrift || !cl.pitchvel)
+	if (cl.qh_nodrift || !cl.qh_pitchvel)
 	{
-		cl.pitchvel = v_centerspeed->value;
-		cl.nodrift = false;
-		cl.driftmove = 0;
+		cl.qh_pitchvel = v_centerspeed->value;
+		cl.qh_nodrift = false;
+		cl.qh_driftmove = 0;
 	}
 }
 
 void V_StopPitchDrift (void)
 {
-	cl.laststop = cl.serverTimeFloat;
-	cl.nodrift = true;
-	cl.pitchvel = 0;
+	cl.qh_laststop = cl.qh_serverTimeFloat;
+	cl.qh_nodrift = true;
+	cl.qh_pitchvel = 0;
 }
 
 /*
@@ -174,41 +174,41 @@ static void V_DriftPitch (void)
 
 	if (view_message->onground == -1 || clc.demoplaying)
 	{
-		cl.driftmove = 0;
-		cl.pitchvel = 0;
+		cl.qh_driftmove = 0;
+		cl.qh_pitchvel = 0;
 		return;
 	}
 
 // don't count small mouse motion
-	if (cl.nodrift)
+	if (cl.qh_nodrift)
 	{
 		if ( Q_fabs(cl.hw_frames[(clc.netchan.outgoingSequence-1)&UPDATE_MASK_HW].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed->value)-10 || lookspring->value == 0.0)
-			cl.driftmove = 0;
+			cl.qh_driftmove = 0;
 		else
-			cl.driftmove += host_frametime;
+			cl.qh_driftmove += host_frametime;
 
 		if (cl.spectator)
 		{
-			cl.driftmove = 0;
+			cl.qh_driftmove = 0;
 		}
 
-		if ( cl.driftmove > v_centermove->value)
+		if ( cl.qh_driftmove > v_centermove->value)
 		{
 			V_StartPitchDrift ();
 		}
 		return;
 	}
 	
-	delta = cl.idealpitch - cl.viewangles[PITCH];
+	delta = cl.qh_idealpitch - cl.viewangles[PITCH];
 
 	if (!delta)
 	{
-		cl.pitchvel = 0;
+		cl.qh_pitchvel = 0;
 		return;
 	}
 
-	move = host_frametime * cl.pitchvel;
-	cl.pitchvel += host_frametime * v_centerspeed->value;
+	move = host_frametime * cl.qh_pitchvel;
+	cl.qh_pitchvel += host_frametime * v_centerspeed->value;
 	
 //Con_Printf ("move: %f (%f)\n", move, host_frametime);
 
@@ -216,7 +216,7 @@ static void V_DriftPitch (void)
 	{
 		if (move > delta)
 		{
-			cl.pitchvel = 0;
+			cl.qh_pitchvel = 0;
 			move = delta;
 		}
 		cl.viewangles[PITCH] += move;
@@ -225,7 +225,7 @@ static void V_DriftPitch (void)
 	{
 		if (move > -delta)
 		{
-			cl.pitchvel = 0;
+			cl.qh_pitchvel = 0;
 			move = -delta;
 		}
 		cl.viewangles[PITCH] -= move;
@@ -327,8 +327,6 @@ void V_ParseDamage (void)
 	count = blood*0.5 + armor*0.5;
 	if (count < 10)
 		count = 10;
-
-	cl.faceanimtime = cl.serverTimeFloat + 0.2;		// but sbar face into pain frame
 
 	cl.qh_cshifts[CSHIFT_DAMAGE].percent += 3*count;
 	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent < 0)
@@ -608,9 +606,9 @@ static void CalcGunAngle(vec3_t viewangles)
 	cl.viewent.state.angles[YAW] = viewangles[YAW];
 	cl.viewent.state.angles[PITCH] = -viewangles[PITCH];
 
-	cl.viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
-	cl.viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
-	cl.viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
+	cl.viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	cl.viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	cl.viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 /*
@@ -622,9 +620,9 @@ Idle swaying
 */
 static void V_AddIdle(vec3_t viewangles)
 {
-	viewangles[ROLL] += v_idlescale->value * sin(cl.serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
-	viewangles[PITCH] += v_idlescale->value * sin(cl.serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
-	viewangles[YAW] += v_idlescale->value * sin(cl.serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
+	viewangles[ROLL] += v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iroll_cycle->value) * v_iroll_level->value;
+	viewangles[PITCH] += v_idlescale->value * sin(cl.qh_serverTimeFloat*v_ipitch_cycle->value) * v_ipitch_level->value;
+	viewangles[YAW] += v_idlescale->value * sin(cl.qh_serverTimeFloat*v_iyaw_cycle->value) * v_iyaw_level->value;
 
 //	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
 //	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
@@ -784,7 +782,7 @@ static void V_CalcRefdef (void)
 	if (view_message->flags & (PF_DEAD) )
  		view->state.modelindex = 0;
  	else
-		view->state.modelindex = cl.stats[STAT_WEAPON];
+		view->state.modelindex = cl.qh_stats[STAT_WEAPON];
 	view->state.frame = view_message->weaponframe;
 
 	// Place weapon in powered up mode
@@ -794,7 +792,7 @@ static void V_CalcRefdef (void)
 		view->state.drawflags = (view->state.drawflags & H2MLS_MASKOUT) | 0;
 
 // set up the refresh position
-	viewangles[PITCH] += cl.punchangle;
+	viewangles[PITCH] += cl.qh_punchangle;
 	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 // smooth out stair step ups
@@ -823,9 +821,9 @@ DropPunchAngle
 */
 void DropPunchAngle (void)
 {
-	cl.punchangle -= 10*host_frametime;
-	if (cl.punchangle < 0)
-		cl.punchangle = 0;
+	cl.qh_punchangle -= 10*host_frametime;
+	if (cl.qh_punchangle < 0)
+		cl.qh_punchangle = 0;
 }
 
 /*
@@ -931,7 +929,7 @@ void V_RenderView (void)
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle ();
-	if (cl.intermission)
+	if (cl.qh_intermission)
 	{	// intermission / finale rendering
 		V_CalcIntermissionRefdef ();	
 	}

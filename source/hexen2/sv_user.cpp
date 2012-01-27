@@ -256,8 +256,8 @@ void SV_FlightMove (void)
 	vec3_t	wishvel;
 	float	speed, newspeed, wishspeed, addspeed, accelspeed;
 
-	cl.nodrift = false;
-	cl.driftmove = 0;
+	cl.qh_nodrift = false;
+	cl.qh_driftmove = 0;
 
 //
 // user intentions

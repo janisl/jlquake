@@ -54,6 +54,13 @@ struct clientActiveCommon_t
 {
 	int serverTime;			// may be paused during play
 
+	// the client maintains its own idea of view angles, which are
+	// sent to the server each frame.  It is cleared to 0 upon entering each level.
+	// the server sends a delta each frame which is added to the locally
+	// tracked view angles to account for standing on rotating objects,
+	// and teleport direction changes
+	vec3_t viewangles;
+
 	//	Not in Quake 3
 	refdef_t refdef;
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
@@ -81,11 +88,61 @@ struct clientActiveCommon_t
 	int qh_maxclients;
 	int qh_parsecount;		// server message counter
 	int qh_validsequence;	// this is the sequence number of the last good
-								// packetentity_t we got.  If this is 0, we can't
-								// render a frame yet
+							// packetentity_t we got.  If this is 0, we can't
+							// render a frame yet
+	int qh_movemessages;	// since connecting to this server
+							// throw out the first couple, so the player
+							// doesn't accidentally do something the 
+							// first frame
+
+	// information for local display
+	int qh_stats[MAX_CL_STATS];	// health, etc
+
+	vec3_t qh_mviewangles[2];	// during demo playback viewangles is lerped
+								// between these
+	vec3_t qh_mvelocity[2];	// update by server, used for lean+bob
+							// (0 is newest)
+	vec3_t qh_velocity;		// lerped between mvelocity[0] and [1]
+
+	vec3_t qh_punchangles;		// temporary offset
+	float qh_punchangle;		// temporar yview kick from weapon firing
+	
+	// pitch drifting vars
+	float qh_idealpitch;
+	float qh_pitchvel;
+	qboolean qh_nodrift;
+	float qh_driftmove;
+	double qh_laststop;
+
+	float qh_viewheight;
+
+	qboolean qh_paused;			// send over by server
+	qboolean qh_onground;
+
+	int qh_intermission;	// don't change view angle, full screen, etc
+	int qh_completed_time;	// latched at intermission start
+
+	double qh_serverTimeFloat;			// clients view of time, should be between
+								// servertime and oldservertime to generate
+								// a lerp point for other data
+	double qh_oldtime;		// previous cl.time, time-oldtime is used
+							// to decay light values and smooth step ups
+
+	float qh_last_received_message;	// (realtime) for net trouble icon
+
+	char qh_levelname[40];	// for display on solo scoreboard
+	int qh_gametype;
 
 	// all player information
 	q1player_info_t q1_players[BIGGEST_MAX_CLIENTS_Q1];
+
+	q1usercmd_t q1_cmd;			// last command sent to the server
+
+	int q1_items;			// inventory bit flags
+	float q1_item_gettime[32];	// cl.time of aquiring item, for blinking
+	float q1_faceanimtime;	// use anim frame if cl.time < this
+
+	q1entity_t q1_viewent;		// weapon model
 
 	// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK_QW] = cmd
 	qwframe_t qw_frames[UPDATE_BACKUP_QW];
@@ -94,6 +151,8 @@ struct clientActiveCommon_t
 
 	// all player information
 	h2player_info_t h2_players[H2BIGGEST_MAX_CLIENTS];
+
+	h2usercmd_t h2_cmd;			// last command sent to the server
 
 	hwframe_t hw_frames[UPDATE_BACKUP_HW];
 

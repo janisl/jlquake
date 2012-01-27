@@ -402,7 +402,7 @@ void CL_FinishMove (qwusercmd_t *cmd)
 // allways dump the first two message, because it may contain leftover inputs
 // from the last level
 //
-	if (++cl.movemessages <= 2)
+	if (++cl.qh_movemessages <= 2)
 		return;
 //
 // figure button bits

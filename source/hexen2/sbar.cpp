@@ -338,12 +338,12 @@ void SB_Draw(void)
 
 	if (sb_ShowDM)
 	{
-		if (cl.gametype == GAME_DEATHMATCH)
+		if (cl.qh_gametype == GAME_DEATHMATCH)
 			Sbar_DeathmatchOverlay();
 		else
 			Sbar_NormalOverlay();
 	}
-	else if (cl.gametype == GAME_DEATHMATCH && DMMode->value)
+	else if (cl.qh_gametype == GAME_DEATHMATCH && DMMode->value)
 		Sbar_SmallDeathmatchOverlay();
 
 }
@@ -785,23 +785,23 @@ static void SoloScoreboard(void)
 	int		minutes, seconds, tens, units;
 	int		l;
 
-	sprintf (str,"Monsters:%3i /%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
+	sprintf (str,"Monsters:%3i /%3i", cl.qh_stats[STAT_MONSTERS], cl.qh_stats[STAT_TOTALMONSTERS]);
 	Sbar_DrawString (8, 4, str);
 
-	sprintf (str,"Secrets :%3i /%3i", cl.stats[STAT_SECRETS], cl.stats[STAT_TOTALSECRETS]);
+	sprintf (str,"Secrets :%3i /%3i", cl.qh_stats[STAT_SECRETS], cl.qh_stats[STAT_TOTALSECRETS]);
 	Sbar_DrawString (8, 12, str);
 
 	// draw time
-	minutes = cl.serverTimeFloat / 60;
-	seconds = cl.serverTimeFloat - 60*minutes;
+	minutes = cl.qh_serverTimeFloat / 60;
+	seconds = cl.qh_serverTimeFloat - 60*minutes;
 	tens = seconds / 10;
 	units = seconds - 10*tens;
 	sprintf (str,"Time :%3i:%i%i", minutes, tens, units);
 	Sbar_DrawString (184, 4, str);
 	
 	// draw level name
-	l = String::Length(cl.levelname);
-	Sbar_DrawString (232 - l*4, 12, cl.levelname);
+	l = String::Length(cl.qh_levelname);
+	Sbar_DrawString (232 - l*4, 12, cl.qh_levelname);
 }
 
 //==========================================================================
@@ -813,7 +813,7 @@ static void SoloScoreboard(void)
 void Sbar_DrawScoreboard(void)
 {
 	SoloScoreboard();
-	if(cl.gametype == GAME_DEATHMATCH)
+	if(cl.qh_gametype == GAME_DEATHMATCH)
 	{
 		Sbar_DeathmatchOverlay();
 	}
@@ -1214,7 +1214,7 @@ static void DrawActiveRings(void)
 
 	if(flag&RING_TURNING)
 	{
-		frame = 1+((int)(cl.serverTimeFloat*16)&15);
+		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
 		sprintf(tempStr, "gfx/rngtrn%d.lmp", frame);
 		UI_DrawPic(viddef.width - 50, ring_row, R_CachePic(tempStr));
 		ring_row += 33;
@@ -1222,7 +1222,7 @@ static void DrawActiveRings(void)
 
 	if(flag&RING_WATER)
 	{
-		frame = 1+((int)(cl.serverTimeFloat*16)&15);
+		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
 		sprintf(tempStr, "gfx/rngwtr%d.lmp", frame);
 		UI_DrawPic(viddef.width - 50, ring_row, R_CachePic(tempStr));
 		ring_row += 33;
@@ -1230,7 +1230,7 @@ static void DrawActiveRings(void)
 
 	if(flag&RING_FLIGHT)
 	{
-		frame = 1+((int)(cl.serverTimeFloat*16)&15);
+		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
 		sprintf(tempStr, "gfx/rngfly%d.lmp", frame);
 		UI_DrawPic(viddef.width - 50, ring_row, R_CachePic(tempStr));
 		ring_row += 33;
@@ -1260,7 +1260,7 @@ static void DrawActiveArtifacts(void)
 	flag = (int)cl.v.artifact_active;
 	if (flag & ART_TOMEOFPOWER)
 	{
-		frame = 1+((int)(cl.serverTimeFloat*16)&15);
+		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
 		UI_DrawPic(viddef.width-art_col, 1, R_CachePic(tempStr));
 		art_col += 50;
@@ -1268,7 +1268,7 @@ static void DrawActiveArtifacts(void)
 
 	if (flag & ART_HASTE)
 	{
-		frame = 1+((int)(cl.serverTimeFloat*16)&15);
+		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
 		UI_DrawPic(viddef.width-art_col,1, R_CachePic(tempStr));
 		art_col += 50;
@@ -1276,7 +1276,7 @@ static void DrawActiveArtifacts(void)
 
 	if (flag & ART_INVINCIBILITY)
 	{
-		frame = 1+((int)(cl.serverTimeFloat*16)&15);
+		frame = 1+((int)(cl.qh_serverTimeFloat*16)&15);
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);
 		UI_DrawPic(viddef.width-art_col, 1, R_CachePic(tempStr));
 		art_col += 50;
@@ -1341,7 +1341,7 @@ static void DrawArtifactInventory(void)
 	int i;
 	int x, y;
 
-	if(InventoryHideTime < cl.serverTimeFloat)
+	if(InventoryHideTime < cl.qh_serverTimeFloat)
 	{
 		Inv_Update(false);
 		return;
@@ -1424,7 +1424,7 @@ static void ShowDMUp_f(void)
 
 static void ShowInfoDown_f(void)
 {
-	if(sb_ShowInfo || cl.intermission)
+	if(sb_ShowInfo || cl.qh_intermission)
 	{
 		return;
 	}
@@ -1441,7 +1441,7 @@ static void ShowInfoDown_f(void)
 
 static void ShowInfoUp_f(void)
 {
-	if(cl.intermission || scr_viewsize->value >= 110.0)
+	if(cl.qh_intermission || scr_viewsize->value >= 110.0)
 	{
 		BarTargetHeight = 0.0-BAR_BUMP_HEIGHT;
 	}
@@ -1461,7 +1461,7 @@ static void ShowInfoUp_f(void)
 
 static void InvLeft_f(void)
 {
-	if(!cl.inv_count || cl.intermission)
+	if(!cl.inv_count || cl.qh_intermission)
 	{
 		return;
 	}
@@ -1482,7 +1482,7 @@ static void InvLeft_f(void)
 		inv_flg = true;
 	}
 	S_StartLocalSound("misc/invmove.wav");
-	InventoryHideTime = cl.serverTimeFloat+INVENTORY_DISPLAY_TIME;
+	InventoryHideTime = cl.qh_serverTimeFloat+INVENTORY_DISPLAY_TIME;
 }
 
 //==========================================================================
@@ -1493,7 +1493,7 @@ static void InvLeft_f(void)
 
 static void InvRight_f(void)
 {
-	if(!cl.inv_count || cl.intermission)
+	if(!cl.inv_count || cl.qh_intermission)
 	{
 		return;
 	}
@@ -1515,7 +1515,7 @@ static void InvRight_f(void)
 		inv_flg = true;
 	}
 	S_StartLocalSound("misc/invmove.wav");
-	InventoryHideTime = cl.serverTimeFloat+INVENTORY_DISPLAY_TIME;
+	InventoryHideTime = cl.qh_serverTimeFloat+INVENTORY_DISPLAY_TIME;
 }
 
 //==========================================================================
@@ -1526,7 +1526,7 @@ static void InvRight_f(void)
 
 static void InvUse_f(void)
 {
-	if(!cl.inv_count || cl.intermission)
+	if(!cl.inv_count || cl.qh_intermission)
 	{
 		return;
 	}
@@ -1648,7 +1648,7 @@ void SB_InvReset(void)
 
 void SB_ViewSizeChanged(void)
 {
-	if(cl.intermission || scr_viewsize->value >= 110.0)
+	if(cl.qh_intermission || scr_viewsize->value >= 110.0)
 	{
 		BarTargetHeight = 0.0-BAR_BUMP_HEIGHT;
 	}

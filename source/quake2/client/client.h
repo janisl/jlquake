@@ -80,13 +80,6 @@ struct client_state_t : clientActiveCommon_t
 
 	int			surpressCount;		// number of messages rate supressed
 
-	// the client maintains its own idea of view angles, which are
-	// sent to the server each frame.  It is cleared to 0 upon entering each level.
-	// the server sends a delta each frame which is added to the locally
-	// tracked view angles to account for standing on rotating objects,
-	// and teleport direction changes
-	vec3_t		viewangles;
-
 	//
 	// transient data from server
 	//

@@ -684,7 +684,7 @@ drop to full console
 void CL_Changing_f (void)
 {
 	S_StopAllSounds();
-	cl.intermission = 0;
+	cl.qh_intermission = 0;
 	cls.state = CA_CONNECTED;	// not active anymore, but not disconnected
 	Con_Printf ("\nChanging map...\n");
 }

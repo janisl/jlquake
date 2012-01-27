@@ -731,7 +731,7 @@ void _Host_Frame (float time)
 		{
 			CL_ReadFromServer ();
 
-			if (cl.serverTimeFloat != cl.oldtime)
+			if (cl.qh_serverTimeFloat != cl.qh_oldtime)
 			{
 				CL_UpdateParticles(sv_gravity->value);
 			}

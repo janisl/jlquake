@@ -219,11 +219,11 @@ void CL_ParseServerInfo (void)
 	}
 
 // parse gametype
-	cl.gametype = net_message.ReadByte ();
+	cl.qh_gametype = net_message.ReadByte ();
 
 // parse signon message
 	str = net_message.ReadString2 ();
-	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname)-1);
 
 // seperate the printfs so the server message can have a color
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
@@ -307,83 +307,82 @@ void CL_ParseClientdata (int bits)
 	int		i, j;
 	
 	if (bits & SU_VIEWHEIGHT)
-		cl.viewheight = net_message.ReadChar ();
+		cl.qh_viewheight = net_message.ReadChar ();
 	else
-		cl.viewheight = DEFAULT_VIEWHEIGHT;
+		cl.qh_viewheight = DEFAULT_VIEWHEIGHT;
 
 	if (bits & SU_IDEALPITCH)
-		cl.idealpitch = net_message.ReadChar ();
+		cl.qh_idealpitch = net_message.ReadChar ();
 	else
-		cl.idealpitch = 0;
+		cl.qh_idealpitch = 0;
 	
-	VectorCopy (cl.mvelocity[0], cl.mvelocity[1]);
+	VectorCopy (cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
 	for (i=0 ; i<3 ; i++)
 	{
 		if (bits & (SU_PUNCH1<<i) )
-			cl.punchangle[i] = net_message.ReadChar();
+			cl.qh_punchangles[i] = net_message.ReadChar();
 		else
-			cl.punchangle[i] = 0;
+			cl.qh_punchangles[i] = 0;
 		if (bits & (SU_VELOCITY1<<i) )
-			cl.mvelocity[0][i] = net_message.ReadChar()*16;
+			cl.qh_mvelocity[0][i] = net_message.ReadChar()*16;
 		else
-			cl.mvelocity[0][i] = 0;
+			cl.qh_mvelocity[0][i] = 0;
 	}
 
 // [always sent]	if (bits & SU_ITEMS)
 		i = net_message.ReadLong ();
 
-	if (cl.items != i)
+	if (cl.q1_items != i)
 	{	// set flash times
 		for (j=0 ; j<32 ; j++)
-			if ( (i & (1<<j)) && !(cl.items & (1<<j)))
-				cl.item_gettime[j] = cl.serverTimeFloat;
-		cl.items = i;
+			if ( (i & (1<<j)) && !(cl.q1_items & (1<<j)))
+				cl.q1_item_gettime[j] = cl.qh_serverTimeFloat;
+		cl.q1_items = i;
 	}
 		
-	cl.onground = (bits & SU_ONGROUND) != 0;
-	cl.inwater = (bits & SU_INWATER) != 0;
+	cl.qh_onground = (bits & SU_ONGROUND) != 0;
 
 	if (bits & SU_WEAPONFRAME)
-		cl.stats[STAT_WEAPONFRAME] = net_message.ReadByte ();
+		cl.qh_stats[STAT_WEAPONFRAME] = net_message.ReadByte ();
 	else
-		cl.stats[STAT_WEAPONFRAME] = 0;
+		cl.qh_stats[STAT_WEAPONFRAME] = 0;
 
 	if (bits & SU_ARMOR)
 		i = net_message.ReadByte ();
 	else
 		i = 0;
-	if (cl.stats[STAT_ARMOR] != i)
+	if (cl.qh_stats[STAT_ARMOR] != i)
 	{
-		cl.stats[STAT_ARMOR] = i;
+		cl.qh_stats[STAT_ARMOR] = i;
 	}
 
 	if (bits & SU_WEAPON)
 		i = net_message.ReadByte ();
 	else
 		i = 0;
-	if (cl.stats[STAT_WEAPON] != i)
+	if (cl.qh_stats[STAT_WEAPON] != i)
 	{
-		cl.stats[STAT_WEAPON] = i;
+		cl.qh_stats[STAT_WEAPON] = i;
 	}
 	
 	i = net_message.ReadShort ();
-	if (cl.stats[STAT_HEALTH] != i)
+	if (cl.qh_stats[STAT_HEALTH] != i)
 	{
-		cl.stats[STAT_HEALTH] = i;
+		cl.qh_stats[STAT_HEALTH] = i;
 	}
 
 	i = net_message.ReadByte ();
-	if (cl.stats[STAT_AMMO] != i)
+	if (cl.qh_stats[STAT_AMMO] != i)
 	{
-		cl.stats[STAT_AMMO] = i;
+		cl.qh_stats[STAT_AMMO] = i;
 	}
 
 	for (i=0 ; i<4 ; i++)
 	{
 		j = net_message.ReadByte ();
-		if (cl.stats[STAT_SHELLS+i] != j)
+		if (cl.qh_stats[STAT_SHELLS+i] != j)
 		{
-			cl.stats[STAT_SHELLS+i] = j;
+			cl.qh_stats[STAT_SHELLS+i] = j;
 		}
 	}
 
@@ -391,16 +390,16 @@ void CL_ParseClientdata (int bits)
 
 	if (standard_quake)
 	{
-		if (cl.stats[STAT_ACTIVEWEAPON] != i)
+		if (cl.qh_stats[STAT_ACTIVEWEAPON] != i)
 		{
-			cl.stats[STAT_ACTIVEWEAPON] = i;
+			cl.qh_stats[STAT_ACTIVEWEAPON] = i;
 		}
 	}
 	else
 	{
-		if (cl.stats[STAT_ACTIVEWEAPON] != (1<<i))
+		if (cl.qh_stats[STAT_ACTIVEWEAPON] != (1<<i))
 		{
-			cl.stats[STAT_ACTIVEWEAPON] = (1<<i);
+			cl.qh_stats[STAT_ACTIVEWEAPON] = (1<<i);
 		}
 	}
 }
@@ -458,7 +457,7 @@ void CL_ParseServerMessage (void)
 	else if (cl_shownet->value == 2)
 		Con_Printf ("------------------\n");
 	
-	cl.onground = false;	// unless the server says otherwise	
+	cl.qh_onground = false;	// unless the server says otherwise	
 //
 // parse the message
 //
@@ -602,9 +601,9 @@ void CL_ParseServerMessage (void)
 
 		case q1svc_setpause:
 			{
-				cl.paused = net_message.ReadByte ();
+				cl.qh_paused = net_message.ReadByte ();
 
-				if (cl.paused)
+				if (cl.qh_paused)
 				{
 					CDAudio_Pause ();
 				}
@@ -624,18 +623,18 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case q1svc_killedmonster:
-			cl.stats[STAT_MONSTERS]++;
+			cl.qh_stats[STAT_MONSTERS]++;
 			break;
 
 		case q1svc_foundsecret:
-			cl.stats[STAT_SECRETS]++;
+			cl.qh_stats[STAT_SECRETS]++;
 			break;
 
 		case q1svc_updatestat:
 			i = net_message.ReadByte ();
 			if (i < 0 || i >= MAX_CL_STATS)
 				Sys_Error ("q1svc_updatestat: %i is invalid", i);
-			cl.stats[i] = net_message.ReadLong ();;
+			cl.qh_stats[i] = net_message.ReadLong ();;
 			break;
 			
 		case q1svc_spawnstaticsound:
@@ -643,28 +642,30 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case q1svc_cdtrack:
-			cl.cdtrack = net_message.ReadByte ();
-			cl.looptrack = net_message.ReadByte ();
+		{
+			byte cdtrack = net_message.ReadByte();
+			net_message.ReadByte();	//	looptrack
 			if ( (clc.demoplaying || clc.demorecording) && (cls.forcetrack != -1) )
 				CDAudio_Play ((byte)cls.forcetrack, true);
 			else
-				CDAudio_Play ((byte)cl.cdtrack, true);
+				CDAudio_Play (cdtrack, true);
+		}
 			break;
 
 		case q1svc_intermission:
-			cl.intermission = 1;
-			cl.completed_time = cl.serverTimeFloat;
+			cl.qh_intermission = 1;
+			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			break;
 
 		case q1svc_finale:
-			cl.intermission = 2;
-			cl.completed_time = cl.serverTimeFloat;
+			cl.qh_intermission = 2;
+			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 
 		case q1svc_cutscene:
-			cl.intermission = 3;
-			cl.completed_time = cl.serverTimeFloat;
+			cl.qh_intermission = 3;
+			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 

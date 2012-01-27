@@ -168,7 +168,7 @@ qboolean CL_GetDemoMessage (void)
 			cls.td_startframe = host_framecount;
 		}
 		realtime = demotime; // warp
-	} else if (!cl.paused && cls.state >= CA_LOADING) {	// allways grab until fully connected
+	} else if (!cl.qh_paused && cls.state >= CA_LOADING) {	// allways grab until fully connected
 		if (realtime + 1.0 < demotime) {
 			// too far back
 			realtime = demotime - 1.0;
@@ -437,7 +437,7 @@ void CL_Record_f (void)
 		buf.WriteByte(cl.playernum);
 
 	// send full levelname
-	buf.WriteString2(cl.levelname);
+	buf.WriteString2(cl.qh_levelname);
 
 	// send the movevars
 	buf.WriteFloat(movevars.gravity);
@@ -619,7 +619,7 @@ void CL_Record_f (void)
 	for (i = 0; i < MAX_CL_STATS; i++) {
 		buf.WriteByte(qwsvc_updatestatlong);
 		buf.WriteByte(i);
-		buf.WriteLong(cl.stats[i]);
+		buf.WriteLong(cl.qh_stats[i]);
 		if (buf.cursize > MAX_MSGLEN_QW/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
 			buf.Clear(); 

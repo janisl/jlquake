@@ -400,8 +400,8 @@ void Host_SavegameComment (char *text)
 
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		text[i] = ' ';
-	Com_Memcpy(text, cl.levelname, String::Length(cl.levelname));
-	sprintf (kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
+	Com_Memcpy(text, cl.qh_levelname, String::Length(cl.qh_levelname));
+	sprintf (kills,"kills:%3i/%3i", cl.qh_stats[STAT_MONSTERS], cl.qh_stats[STAT_TOTALMONSTERS]);
 	Com_Memcpy(text+22, kills, String::Length(kills));
 // convert space to _ to make stdio happy
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
@@ -431,7 +431,7 @@ void Host_Savegame_f (void)
 		return;
 	}
 
-	if (cl.intermission)
+	if (cl.qh_intermission)
 	{
 		Con_Printf ("Can't save in intermission.\n");
 		return;

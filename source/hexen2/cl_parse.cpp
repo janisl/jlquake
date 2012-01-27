@@ -258,14 +258,14 @@ void CL_ParseServerInfo (void)
 	}
 
 // parse gametype
-	cl.gametype = net_message.ReadByte ();
+	cl.qh_gametype = net_message.ReadByte ();
 	
-	if (cl.gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == GAME_DEATHMATCH)
 		sv_kingofhill = net_message.ReadShort ();
 
 // parse signon message
 	str = const_cast<char*>(net_message.ReadString2());
-	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname)-1);
 
 // seperate the printfs so the server message can have a color
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
@@ -688,16 +688,13 @@ Server information pertaining to this client only
 */
 void CL_ParseClientdata (int bits)
 {
-	int		i, j;
-	
-
 	if (bits & SU_VIEWHEIGHT)
-		cl.viewheight = net_message.ReadChar ();
+		cl.qh_viewheight = net_message.ReadChar ();
 //rjr	else
 //rjr		cl.viewheight = DEFAULT_VIEWHEIGHT;
 
 	if (bits & SU_IDEALPITCH)
-		cl.idealpitch = net_message.ReadChar ();
+		cl.qh_idealpitch = net_message.ReadChar ();
 	else
 	{
 		//rjr   is sv_flypitch   useable on the client's end?
@@ -712,15 +709,15 @@ void CL_ParseClientdata (int bits)
 //rjr	else
 //rjr		cl.idealroll = 0;
 	
-	VectorCopy (cl.mvelocity[0], cl.mvelocity[1]);
-	for (i=0 ; i<3 ; i++)
+	VectorCopy (cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
+	for (int i=0 ; i<3 ; i++)
 	{
 		if (bits & (SU_PUNCH1<<i) )
-			cl.punchangle[i] = net_message.ReadChar();
+			cl.qh_punchangles[i] = net_message.ReadChar();
 //rjr		else
 //rjr			cl.punchangle[i] = 0;
 		if (bits & (SU_VELOCITY1<<i) )
-			cl.mvelocity[0][i] = net_message.ReadChar()*16;
+			cl.qh_mvelocity[0][i] = net_message.ReadChar()*16;
 //rjr		else
 //rjr			cl.mvelocity[0][i] = 0;
 	}
@@ -729,30 +726,21 @@ void CL_ParseClientdata (int bits)
 		i = net_message.ReadLong ();
 */
 
-	if (cl.items != i)
-	{	// set flash times
-		for (j=0 ; j<32 ; j++)
-			if ( (i & (1<<j)) && !(cl.items & (1<<j)))
-				cl.item_gettime[j] = cl.serverTimeFloat;
-		cl.items = i;
-	}
-		
-	cl.onground = (bits & SU_ONGROUND) != 0;
-	cl.inwater = (bits & SU_INWATER) != 0;
+	cl.qh_onground = (bits & SU_ONGROUND) != 0;
 
 	if (bits & SU_WEAPONFRAME)
-		cl.stats[STAT_WEAPONFRAME] = net_message.ReadByte ();
+		cl.qh_stats[STAT_WEAPONFRAME] = net_message.ReadByte ();
 //rjr	else
 //rjr		cl.stats[STAT_WEAPONFRAME] = 0;
 
 	if (bits & SU_ARMOR)
 	{
-		cl.stats[STAT_ARMOR] = net_message.ReadByte ();
+		cl.qh_stats[STAT_ARMOR] = net_message.ReadByte ();
 	}
 
 	if (bits & SU_WEAPON)
 	{
-		cl.stats[STAT_WEAPON] = net_message.ReadShort ();
+		cl.qh_stats[STAT_WEAPON] = net_message.ReadShort ();
 	}
 
 /*	sc1 = sc2 = 0;
@@ -1032,7 +1020,7 @@ void CL_ParseServerMessage (void)
 	else if (cl_shownet->value == 2)
 		Con_Printf ("------------------\n");
 	
-	cl.onground = false;	// unless the server says otherwise	
+	cl.qh_onground = false;	// unless the server says otherwise	
 //
 // parse the message
 //
@@ -1284,9 +1272,9 @@ void CL_ParseServerMessage (void)
 
 		case h2svc_setpause:
 			{
-				cl.paused = net_message.ReadByte ();
+				cl.qh_paused = net_message.ReadByte ();
 
-				if (cl.paused)
+				if (cl.qh_paused)
 				{
 					CDAudio_Pause ();
 				}
@@ -1306,18 +1294,18 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case h2svc_killedmonster:
-			cl.stats[STAT_MONSTERS]++;
+			cl.qh_stats[STAT_MONSTERS]++;
 			break;
 
 		case h2svc_foundsecret:
-			cl.stats[STAT_SECRETS]++;
+			cl.qh_stats[STAT_SECRETS]++;
 			break;
 
 		case h2svc_updatestat:
 			i = net_message.ReadByte ();
 			if (i < 0 || i >= MAX_CL_STATS)
 				Sys_Error ("h2svc_updatestat: %i is invalid", i);
-			cl.stats[i] = net_message.ReadLong ();;
+			cl.qh_stats[i] = net_message.ReadLong ();;
 			break;
 			
 		case h2svc_spawnstaticsound:
@@ -1325,17 +1313,19 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case h2svc_cdtrack:
-			cl.cdtrack = net_message.ReadByte ();
-			cl.looptrack = net_message.ReadByte ();
+		{
+			int cdtrack = net_message.ReadByte ();
+			net_message.ReadByte();	//	looptrack
 			if (String::ICmp(bgmtype->string,"cd") == 0)
 			{
 				if ( (clc.demoplaying || clc.demorecording) && (cls.forcetrack != -1) )
 					CDAudio_Play ((byte)cls.forcetrack, true);
 				else
-					CDAudio_Play ((byte)cl.cdtrack, true);
+					CDAudio_Play(cdtrack, true);
 			}
 			else
 			   CDAudio_Stop();
+		}
 			break;
 
 		case h2svc_midi_name:
@@ -1350,8 +1340,8 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case h2svc_intermission:
-			cl.intermission = net_message.ReadByte();
-			cl.completed_time = cl.serverTimeFloat;
+			cl.qh_intermission = net_message.ReadByte();
+			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			break;
 
 			case h2svc_set_view_flags:

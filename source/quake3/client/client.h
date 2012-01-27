@@ -114,13 +114,6 @@ struct clientActive_t : clientActiveCommon_t
 
 	outPacket_t	outPackets[PACKET_BACKUP];	// information about each packet we have sent out
 
-	// the client maintains its own idea of view angles, which are
-	// sent to the server each frame.  It is cleared to 0 upon entering each level.
-	// the server sends a delta each frame which is added to the locally
-	// tracked view angles to account for standing on rotating objects,
-	// and teleport direction changes
-	vec3_t		viewangles;
-
 	int			serverId;			// included in each client message so the server
 												// can tell if it is for a prior map_restart
 	// big stuff at end of structure so most offsets are 15 bits or less
