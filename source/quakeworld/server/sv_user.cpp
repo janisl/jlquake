@@ -1233,7 +1233,7 @@ AddLinksToPmove
 */
 void AddLinksToPmove ( areanode_t *node )
 {
-	link_t		*l, *next;
+	qhlink_t		*l, *next;
 	qhedict_t		*check;
 	int			pl;
 	int			i;

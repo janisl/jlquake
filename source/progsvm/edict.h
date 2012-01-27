@@ -165,7 +165,7 @@ extern idEntVarDef entFieldSiegeTeam;
 struct qhedict_t
 {
 	bool free;
-	link_t area;			// linked to a division node or leaf
+	qhlink_t area;			// linked to a division node or leaf
 	
 	int num_leafs;
 	int LeafNums[MAX_ENT_LEAFS];

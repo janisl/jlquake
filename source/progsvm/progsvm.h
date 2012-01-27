@@ -40,6 +40,12 @@ public:
 	int offset;
 };
 
+struct qhlink_t
+{
+	qhlink_t* prev;
+	qhlink_t* next;
+};
+
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
 extern char* pr_strings;
