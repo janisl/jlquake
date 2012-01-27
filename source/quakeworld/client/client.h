@@ -72,25 +72,6 @@ extern clientConnection_t clc;
 //
 struct client_state_t : clientActiveCommon_t
 {
-	char		serverinfo[MAX_SERVERINFO_STRING];
-
-	int			spectator;
-
-	double		last_ping_request;	// while showing scoreboard
-	double		last_servermessage;
-
-// the client simulates or interpolates movement to get these values
-	vec3_t		simorg;
-	vec3_t		simvel;
-	vec3_t		simangles;
-
-//
-// information that is static for the entire time connected to a server
-//
-	char		model_name[MAX_MODELS_Q1][MAX_QPATH];
-	char		sound_name[MAX_SOUNDS_Q1][MAX_QPATH];
-
-	int			playernum;
 };
 
 

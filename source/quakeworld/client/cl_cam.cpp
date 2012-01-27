@@ -61,7 +61,7 @@ static float vlen(vec3_t v)
 // returns true if weapon model should be drawn in camera mode
 qboolean Cam_DrawViewModel(void)
 {
-	if (!cl.spectator)
+	if (!cl.qh_spectator)
 		return true;
 
 	if (autocam && locked && cl_chasecam->value)
@@ -72,7 +72,7 @@ qboolean Cam_DrawViewModel(void)
 // returns true if we should draw this player, we don't if we are chase camming
 qboolean Cam_DrawPlayer(int playernum)
 {
-	if (cl.spectator && autocam && locked && cl_chasecam->value && 
+	if (cl.qh_spectator && autocam && locked && cl_chasecam->value && 
 		spec_track == playernum)
 		return false;
 	return true;
@@ -278,7 +278,7 @@ void Cam_Track(qwusercmd_t *cmd)
 	vec3_t vec;
 	float len;
 
-	if (!cl.spectator)
+	if (!cl.qh_spectator)
 		return;
 	
 	if (cl_hightrack->value && !locked)
@@ -358,7 +358,7 @@ void Cam_FinishMove(qwusercmd_t *cmd)
 	if (cls.state != CA_ACTIVE)
 		return;
 
-	if (!cl.spectator) // only in spectator mode
+	if (!cl.qh_spectator) // only in spectator mode
 		return;
 
 	if (cmd->buttons & BUTTON_ATTACK) {

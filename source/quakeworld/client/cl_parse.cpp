@@ -195,35 +195,35 @@ void Model_NextDownload (void)
 
 	clc.downloadType = dl_model;
 	for ( 
-		; cl.model_name[clc.downloadNumber][0]
+		; cl.qh_model_name[clc.downloadNumber][0]
 		; clc.downloadNumber++)
 	{
-		s = cl.model_name[clc.downloadNumber];
+		s = cl.qh_model_name[clc.downloadNumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
 		if (!CLQW_CheckOrDownloadFile(s))
 			return;		// started a download
 	}
 
-	CM_LoadMap(cl.model_name[1], true, NULL);
+	CM_LoadMap(cl.qh_model_name[1], true, NULL);
 	cl.model_clip[1] = 0;
-	R_LoadWorld(cl.model_name[1]);
+	R_LoadWorld(cl.qh_model_name[1]);
 
 	for (i = 2; i < MAX_MODELS_Q1; i++)
 	{
-		if (!cl.model_name[i][0])
+		if (!cl.qh_model_name[i][0])
 			break;
 
-		cl.model_draw[i] = R_RegisterModel(cl.model_name[i]);
-		if (cl.model_name[i][0] == '*')
+		cl.model_draw[i] = R_RegisterModel(cl.qh_model_name[i]);
+		if (cl.qh_model_name[i][0] == '*')
 		{
-			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.model_name[i] + 1));
+			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.qh_model_name[i] + 1));
 		}
 
 		if (!cl.model_draw[i])
 		{
 			Con_Printf ("\nThe required model file '%s' could not be found or downloaded.\n\n"
-				, cl.model_name[i]);
+				, cl.qh_model_name[i]);
 			Con_Printf ("You may need to download or purchase a %s client "
 				"pack in order to play on this server.\n\n", gamedirfile);
 			CL_Disconnect ();
@@ -266,10 +266,10 @@ void Sound_NextDownload (void)
 
 	clc.downloadType = dl_sound;
 	for ( 
-		; cl.sound_name[clc.downloadNumber][0]
+		; cl.qh_sound_name[clc.downloadNumber][0]
 		; clc.downloadNumber++)
 	{
-		s = cl.sound_name[clc.downloadNumber];
+		s = cl.qh_sound_name[clc.downloadNumber];
 		if (!CLQW_CheckOrDownloadFile(va("sound/%s",s)))
 			return;		// started a download
 	}
@@ -277,9 +277,9 @@ void Sound_NextDownload (void)
 	S_BeginRegistration();
 	for (i=1 ; i<MAX_SOUNDS_Q1 ; i++)
 	{
-		if (!cl.sound_name[i][0])
+		if (!cl.qh_sound_name[i][0])
 			break;
-		cl.sound_precache[i] = S_RegisterSound(cl.sound_name[i]);
+		cl.sound_precache[i] = S_RegisterSound(cl.qh_sound_name[i]);
 	}
 	S_EndRegistration();
 
@@ -569,7 +569,7 @@ void CL_ParseServerData (void)
 	cl.playernum = net_message.ReadByte ();
 	if (cl.playernum & 128)
 	{
-		cl.spectator = true;
+		cl.qh_spectator = true;
 		cl.playernum &= ~128;
 	}
 	cl.viewentity = cl.playernum + 1;
@@ -595,7 +595,7 @@ void CL_ParseServerData (void)
 	Con_Printf ("%c%s\n", 2, str);
 
 	// ask for the sound list next
-	Com_Memset(cl.sound_name, 0, sizeof(cl.sound_name));
+	Com_Memset(cl.qh_sound_name, 0, sizeof(cl.qh_sound_name));
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 //	clc.netchan.message.WriteString2(va("soundlist %i 0", cl.servercount));
 	clc.netchan.message.WriteString2(va(soundlist_name, cl.servercount, 0));
@@ -627,7 +627,7 @@ void CL_ParseSoundlist (void)
 		numsounds++;
 		if (numsounds == MAX_SOUNDS_Q1)
 			Host_EndGame ("Server sent too many sound_precache");
-		String::Cpy(cl.sound_name[numsounds], str);
+		String::Cpy(cl.qh_sound_name[numsounds], str);
 	}
 
 	n = net_message.ReadByte();
@@ -666,13 +666,13 @@ void CL_ParseModellist (void)
 		nummodels++;
 		if (nummodels==MAX_MODELS_Q1)
 			Host_EndGame ("Server sent too many model_precache");
-		String::Cpy(cl.model_name[nummodels], str);
+		String::Cpy(cl.qh_model_name[nummodels], str);
 
-		if (!String::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/spike.mdl"))
 			clq1_spikeindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"progs/player.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/player.mdl"))
 			clq1_playerindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
 			cl_flagindex = nummodels;
 	}
 
@@ -904,7 +904,7 @@ void CL_ServerInfo (void)
 
 	if (key[0] != '*')
 	{
-		Info_SetValueForKey(cl.serverinfo, key, value, MAX_SERVERINFO_STRING, 64, 64,
+		Info_SetValueForKey(cl.qh_serverinfo, key, value, MAX_SERVERINFO_STRING, 64, 64,
 			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 }
@@ -962,7 +962,6 @@ void CL_ParseServerMessage (void)
 	int			i, j;
 
 	received_framecount = host_framecount;
-	cl.last_servermessage = realtime;
 	CLQ1_ClearProjectiles ();
 
 //
@@ -1140,10 +1139,10 @@ void CL_ParseServerMessage (void)
 			cl.qh_intermission = 1;
 			cl.qh_completed_time = realtime;
 			for (i=0 ; i<3 ; i++)
-				cl.simorg[i] = net_message.ReadCoord ();			
+				cl.qh_simorg[i] = net_message.ReadCoord ();			
 			for (i=0 ; i<3 ; i++)
-				cl.simangles[i] = net_message.ReadAngle();
-			VectorCopy (vec3_origin, cl.simvel);
+				cl.qh_simangles[i] = net_message.ReadAngle();
+			VectorCopy (vec3_origin, cl.qh_simvel);
 			break;
 
 		case q1svc_finale:

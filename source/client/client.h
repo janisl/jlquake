@@ -76,6 +76,8 @@ struct clientActiveCommon_t
 
 	int servercount;	// server identification for prespawns
 
+	int playernum;
+
 	//	Only for Quake and Hexen 2
 	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
 	cshift_t qh_prev_cshifts[NUM_CSHIFTS];	// and content types
@@ -132,6 +134,21 @@ struct clientActiveCommon_t
 
 	char qh_levelname[40];	// for display on solo scoreboard
 	int qh_gametype;
+
+	char qh_serverinfo[MAX_SERVERINFO_STRING];
+
+	int qh_spectator;
+
+	double qh_last_ping_request;	// while showing scoreboard
+
+	// the client simulates or interpolates movement to get these values
+	vec3_t qh_simorg;
+	vec3_t qh_simvel;
+	vec3_t qh_simangles;
+
+	// information that is static for the entire time connected to a server
+	char qh_model_name[MAX_MODELS_Q1][MAX_QPATH];
+	char qh_sound_name[MAX_SOUNDS_Q1][MAX_QPATH];
 
 	// all player information
 	q1player_info_t q1_players[BIGGEST_MAX_CLIENTS_Q1];

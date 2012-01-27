@@ -547,9 +547,9 @@ void CL_FullServerinfo_f (void)
 		return;
 	}
 
-	String::Cpy(cl.serverinfo, Cmd_Argv(1));
+	String::Cpy(cl.qh_serverinfo, Cmd_Argv(1));
 
-	if ((p = Info_ValueForKey(cl.serverinfo, "*vesion")) && *p) {
+	if ((p = Info_ValueForKey(cl.qh_serverinfo, "*vesion")) && *p) {
 		v = String::Atof(p);
 		if (v) {
 			if (!server_version)
@@ -1502,5 +1502,5 @@ void CIN_FinishCinematic()
 
 float* CL_GetSimOrg()
 {
-	return cl.simorg;
+	return cl.qh_simorg;
 }

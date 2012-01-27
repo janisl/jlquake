@@ -284,7 +284,7 @@ void Sbar_Draw(void)
 		return;
 	}
 
-	if (cl.spectator)
+	if (cl.qh_spectator)
 	{
 		if (sb_ShowDM)
 		{
@@ -1080,9 +1080,9 @@ void Sbar_DeathmatchOverlay(void)
 	float			total;
 	int				minutes;
 
-	if (realtime - cl.last_ping_request > 2)
+	if (realtime - cl.qh_last_ping_request > 2)
 	{
-		cl.last_ping_request = realtime;
+		cl.qh_last_ping_request = realtime;
 		clc.netchan.message.WriteByte(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("pings");
 	}

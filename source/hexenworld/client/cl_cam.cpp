@@ -238,7 +238,7 @@ void Cam_Track(hwusercmd_t *cmd)
 	vec3_t vec;
 	float len;
 
-	if (!cl.spectator)
+	if (!cl.qh_spectator)
 		return;
 	
 	if (cl_hightrack->value && !locked)
@@ -339,7 +339,7 @@ void Cam_FinishMove(hwusercmd_t *cmd)
 	if (cls.state != CA_ACTIVE || server_version < 1.57)
 		return;
 
-	if (!cl.spectator) // only in spectator mode
+	if (!cl.qh_spectator) // only in spectator mode
 		return;
 
 	if (cmd->buttons & BUTTON_ATTACK) {

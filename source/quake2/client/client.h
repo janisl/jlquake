@@ -91,7 +91,6 @@ struct client_state_t : clientActiveCommon_t
 	//
 	qboolean	attractloop;		// running the attract loop, any key will menu
 	char		gamedir[MAX_QPATH];
-	int			playernum;
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
 

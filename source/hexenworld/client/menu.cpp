@@ -2470,7 +2470,7 @@ void M_Setup_Key (int k)
 				Cvar_Set("spectator","1");
 //				spectator.value = 1;
 			}
-			cl.spectator = spectator->value;
+			cl.qh_spectator = spectator->value;
 		}
 		if (setup_cursor == 3)
 		{
@@ -2500,7 +2500,7 @@ forward:
 				Cvar_Set("spectator","1");
 //				spectator.value = 1;
 			}
-			cl.spectator = spectator->value;
+			cl.qh_spectator = spectator->value;
 
 		}
 		if (setup_cursor == 3)

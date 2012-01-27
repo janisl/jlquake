@@ -390,7 +390,7 @@ void Sbar_SortTeams (void)
 // request new ping times every two second
 	scoreboardteams = 0;
 
-	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay"));
 	if (!teamplay)
 		return;
 
@@ -746,7 +746,7 @@ void Sbar_Draw (void)
 // top line
 	if (sb_lines > 24)
 	{
-		if (!cl.spectator || autocam == CAM_TRACK)
+		if (!cl.qh_spectator || autocam == CAM_TRACK)
 			Sbar_DrawInventory ();
 		if (!headsup || viddef.width<512)
 			Sbar_DrawFrags ();
@@ -755,7 +755,7 @@ void Sbar_Draw (void)
 // main area
 	if (sb_lines > 0)
 	{
-		if (cl.spectator) {
+		if (cl.qh_spectator) {
 			if (autocam != CAM_TRACK) {
 				Sbar_DrawPic (0, 0, sb_scorebar);
 				Sbar_DrawString (160-7*8,4, "SPECTATOR MODE");
@@ -779,8 +779,8 @@ void Sbar_Draw (void)
 
 // main screen deathmatch rankings
 	// if we're dead show team scores in team games
-	if (cl.qh_stats[STAT_HEALTH] <= 0 && !cl.spectator)
-		if (String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 &&
+	if (cl.qh_stats[STAT_HEALTH] <= 0 && !cl.qh_spectator)
+		if (String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay")) > 0 &&
 			!sb_showscores)
 			Sbar_TeamOverlay();
 		else
@@ -852,7 +852,7 @@ void Sbar_TeamOverlay (void)
 	int plow, phigh, pavg;
 
 // request new ping times every two second
-	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay"));
 
 	if (!teamplay) {
 		Sbar_DeathmatchOverlay(0);
@@ -949,14 +949,14 @@ void Sbar_DeathmatchOverlay (int start)
 		skip = 8;
 
 // request new ping times every two second
-	if (realtime - cl.last_ping_request > 2)
+	if (realtime - cl.qh_last_ping_request > 2)
 	{
-		cl.last_ping_request = realtime;
+		cl.qh_last_ping_request = realtime;
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("pings");
 	}
 
-	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay"));
 
 	if (!start) {
 		pic = R_CachePic ("gfx/ranking.lmp");
@@ -1110,7 +1110,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	if (viddef.width < 512 || !sb_lines)
 		return; // not enuff room
 
-	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay"));
 
 // scores	
 	Sbar_SortFrags (false);
@@ -1237,7 +1237,7 @@ Sbar_IntermissionOverlay
 */
 void Sbar_IntermissionOverlay (void)
 {
-	if (String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 && !sb_showscores)
+	if (String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay")) > 0 && !sb_showscores)
 		Sbar_TeamOverlay ();
 	else
 		Sbar_DeathmatchOverlay (0);

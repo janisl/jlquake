@@ -431,7 +431,7 @@ void CL_Record_f (void)
 	buf.WriteLong(cl.servercount);
 	buf.WriteString2(gamedirfile);
 
-	if (cl.spectator)
+	if (cl.qh_spectator)
 		buf.WriteByte(cl.playernum | 128);
 	else
 		buf.WriteByte(cl.playernum);
@@ -457,7 +457,7 @@ void CL_Record_f (void)
 
 	// send server info string
 	buf.WriteByte(q1svc_stufftext);
-	buf.WriteString2(va("fullserverinfo \"%s\"\n", cl.serverinfo) );
+	buf.WriteString2(va("fullserverinfo \"%s\"\n", cl.qh_serverinfo) );
 
 	// flush packet
 	CL_WriteRecordDemoMessage (&buf, seq++);
@@ -468,7 +468,7 @@ void CL_Record_f (void)
 	buf.WriteByte(0);
 
 	n = 0;
-	s = cl.sound_name[n+1];
+	s = cl.qh_sound_name[n+1];
 	while (*s) {
 		buf.WriteString2(s);
 		if (buf.cursize > MAX_MSGLEN_QW/2) {
@@ -480,7 +480,7 @@ void CL_Record_f (void)
 			buf.WriteByte(n + 1);
 		}
 		n++;
-		s = cl.sound_name[n+1];
+		s = cl.qh_sound_name[n+1];
 	}
 	if (buf.cursize) {
 		buf.WriteByte(0);
@@ -494,7 +494,7 @@ void CL_Record_f (void)
 	buf.WriteByte(0);
 
 	n = 0;
-	s = cl.model_name[n+1];
+	s = cl.qh_model_name[n+1];
 	while (*s) {
 		buf.WriteString2(s);
 		if (buf.cursize > MAX_MSGLEN_QW/2) {
@@ -506,7 +506,7 @@ void CL_Record_f (void)
 			buf.WriteByte(n + 1);
 		}
 		n++;
-		s = cl.model_name[n+1];
+		s = cl.qh_model_name[n+1];
 	}
 	if (buf.cursize) {
 		buf.WriteByte(0);

@@ -472,7 +472,7 @@ void CL_SendCmd (void)
 	CL_MouseMove(cmd);
 
 	// if we are spectator, try autocam
-	if (cl.spectator)
+	if (cl.qh_spectator)
 		Cam_Track(cmd);
 
 	CL_FinishMove(cmd);

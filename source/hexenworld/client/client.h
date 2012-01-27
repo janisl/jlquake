@@ -99,13 +99,6 @@ struct client_entvars_t
 //
 struct client_state_t : clientActiveCommon_t
 {
-	char		serverinfo[MAX_SERVERINFO_STRING];
-
-	int			spectator;
-
-	double		last_ping_request;	// while showing scoreboard
-	double		last_servermessage;
-
 	int			inv_order[MAX_INVENTORY];
 	int			inv_count, inv_startpos, inv_selected;
 
@@ -114,22 +107,9 @@ struct client_state_t : clientActiveCommon_t
 
 	char puzzle_pieces[8][10]; // puzzle piece names
 
-// the client simulates or interpolates movement to get these values
-	vec3_t		simorg;
-	vec3_t		simvel;
-	vec3_t		simangles;
-
 	float		idealroll;
 	float		rollvel;
 	
-//
-// information that is static for the entire time connected to a server
-//
-	char		model_name[MAX_MODELS_H2][MAX_QPATH];
-	char		sound_name[MAX_SOUNDS_HW][MAX_QPATH];
-
-	int			playernum;
-
 	char		midi_name[MAX_QPATH];     // midi file name
 
 	h2entity_t	viewent;		// weapon model

@@ -191,33 +191,33 @@ void Model_NextDownload (void)
 
 	clc.downloadType = dl_model;
 	for ( 
-		; cl.model_name[clc.downloadNumber][0]
+		; cl.qh_model_name[clc.downloadNumber][0]
 		; clc.downloadNumber++)
 	{
-		s = cl.model_name[clc.downloadNumber];
+		s = cl.qh_model_name[clc.downloadNumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
 		if (!CL_CheckOrDownloadFile(s))
 			return;		// started a download
 	}
 
-	CM_LoadMap(cl.model_name[1], true, NULL);
+	CM_LoadMap(cl.qh_model_name[1], true, NULL);
 	cl.model_clip[1] = 0;
-	R_LoadWorld(cl.model_name[1]);
+	R_LoadWorld(cl.qh_model_name[1]);
 
 	for (i = 2; i < MAX_MODELS_H2; i++)
 	{
-		if (!cl.model_name[i][0])
+		if (!cl.qh_model_name[i][0])
 			break;
-		cl.model_draw[i] = R_RegisterModel(cl.model_name[i]);
-		if (cl.model_name[i][0] == '*')
+		cl.model_draw[i] = R_RegisterModel(cl.qh_model_name[i]);
+		if (cl.qh_model_name[i][0] == '*')
 		{
-			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.model_name[i] + 1));
+			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.qh_model_name[i] + 1));
 		}
 		if (!cl.model_draw[i])
 		{
 			Con_Printf ("\nThe required model file '%s' could not be found or downloaded.\n\n"
-				, cl.model_name[i]);
+				, cl.qh_model_name[i]);
 			Con_Printf ("You may need to download or purchase a %s client "
 				"pack in order to play on this server.\n\n", gamedirfile);
 			CL_Disconnect ();
@@ -256,10 +256,10 @@ void Sound_NextDownload (void)
 
 	clc.downloadType = dl_sound;
 	for ( 
-		; cl.sound_name[clc.downloadNumber][0]
+		; cl.qh_sound_name[clc.downloadNumber][0]
 		; clc.downloadNumber++)
 	{
-		s = cl.sound_name[clc.downloadNumber];
+		s = cl.qh_sound_name[clc.downloadNumber];
 		if (!CL_CheckOrDownloadFile(va("sound/%s",s)))
 			return;		// started a download
 	}
@@ -267,9 +267,9 @@ void Sound_NextDownload (void)
 	S_BeginRegistration();
 	for (i=1 ; i<MAX_SOUNDS_HW ; i++)
 	{
-		if (!cl.sound_name[i][0])
+		if (!cl.qh_sound_name[i][0])
 			break;
-		cl.sound_precache[i] = S_RegisterSound(cl.sound_name[i]);
+		cl.sound_precache[i] = S_RegisterSound(cl.qh_sound_name[i]);
 	}
 	S_EndRegistration();
 
@@ -454,7 +454,7 @@ void CL_ParseServerData (void)
 	cl.playernum = net_message.ReadByte ();
 	if (cl.playernum & 128)
 	{
-		cl.spectator = true;
+		cl.qh_spectator = true;
 		cl.playernum &= ~128;
 	}
 	cl.viewentity = cl.playernum + 1;
@@ -522,7 +522,7 @@ void CL_ParseSoundlist (void)
 			break;
 		if (numsounds==MAX_SOUNDS_HW)
 			Host_EndGame ("Server sent too many sound_precache");
-		String::Cpy(cl.sound_name[numsounds], str);
+		String::Cpy(cl.qh_sound_name[numsounds], str);
 	}
 
 	clc.downloadNumber = 0;
@@ -562,31 +562,31 @@ void CL_ParseModellist (void)
 			break;
 		if (nummodels==MAX_MODELS_H2)
 			Host_EndGame ("Server sent too many model_precache");
-		String::Cpy(cl.model_name[nummodels], str);
+		String::Cpy(cl.qh_model_name[nummodels], str);
 
-		if (!String::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/spike.mdl"))
 			cl_spikeindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/paladin.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/paladin.mdl"))
 			cl_playerindex[0] = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/crusader.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/crusader.mdl"))
 			cl_playerindex[1] = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/necro.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/necro.mdl"))
 			cl_playerindex[2] = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/assassin.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/assassin.mdl"))
 			cl_playerindex[3] = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/succubus.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/succubus.mdl"))
 			cl_playerindex[4] = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/hank.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/hank.mdl"))
 			cl_playerindex[5] = nummodels;//mg-siege
-		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
 			cl_flagindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/ball.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/ball.mdl"))
 			clh2_ballindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/newmmis.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/newmmis.mdl"))
 			clh2_missilestarindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/ravproj.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/ravproj.mdl"))
 			clh2_ravenindex = nummodels;
-		if (!String::Cmp(cl.model_name[nummodels],"models/vindsht1.mdl"))
+		if (!String::Cmp(cl.qh_model_name[nummodels],"models/vindsht1.mdl"))
 			clh2_raven2index = nummodels;
 	}
 
@@ -955,7 +955,6 @@ void CL_ParseServerMessage (void)
 	LastServerMessageSize += net_message.cursize;
 
 	received_framecount = host_framecount;
-	cl.last_servermessage = realtime;
 	CLH2_ClearProjectiles ();
 	CLH2_ClearMissiles ();
 	// This clears out the target field on each netupdate; it won't be drawn unless another update comes...

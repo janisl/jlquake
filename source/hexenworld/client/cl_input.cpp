@@ -250,7 +250,7 @@ void CL_AdjustAngles (void)
 	float	speed;
 	float	up, down;
 	
-	if ((in_speed.state & 1) || cl.spectator)
+	if ((in_speed.state & 1) || cl.qh_spectator)
 		speed = host_frametime * cl_anglespeedkey->value;
 	else
 		speed = host_frametime;
@@ -345,7 +345,7 @@ void CL_BaseMove (hwusercmd_t *cmd)
 //
 // adjust for speed key
 //
-	if ((cl.spectator || cl_forwardspeed->value > 200 || in_speed.state & 1) && cl.v.hasted <= 1)
+	if ((cl.qh_spectator || cl_forwardspeed->value > 200 || in_speed.state & 1) && cl.v.hasted <= 1)
 	{
 		cmd->forwardmove *= cl_movespeedkey->value;
 		cmd->sidemove *= cl_movespeedkey->value;
@@ -527,7 +527,7 @@ void CL_SendCmd (void)
 	CL_MouseMove(cmd);
 
 	// if we are spectator, try autocam
-	if (cl.spectator)
+	if (cl.qh_spectator)
 		Cam_Track(cmd);
 
 	CL_FinishMove(cmd);

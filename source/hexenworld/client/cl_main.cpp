@@ -480,9 +480,9 @@ void CL_FullServerinfo_f (void)
 		return;
 	}
 
-	String::Cpy(cl.serverinfo, Cmd_Argv(1));
+	String::Cpy(cl.qh_serverinfo, Cmd_Argv(1));
 
-	if ((p = Info_ValueForKey(cl.serverinfo, "*version")) && *p) {
+	if ((p = Info_ValueForKey(cl.qh_serverinfo, "*version")) && *p) {
 		v = String::Atof(p);
 		if (v) 
 		{
@@ -1416,5 +1416,5 @@ void CIN_FinishCinematic()
 
 float* CL_GetSimOrg()
 {
-	return cl.simorg;
+	return cl.qh_simorg;
 }

@@ -138,7 +138,7 @@ void CL_PredictMove (void)
 	if (clc.netchan.outgoingSequence - clc.netchan.incomingSequence >= UPDATE_BACKUP_QW-1)
 		return;
 
-	VectorCopy (cl.viewangles, cl.simangles);
+	VectorCopy (cl.viewangles, cl.qh_simangles);
 
 	// this is the last frame received from the server
 	from = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
@@ -157,8 +157,8 @@ void CL_PredictMove (void)
 
 	if (cl_nopred->value)
 	{
-		VectorCopy (from->playerstate[cl.playernum].velocity, cl.simvel);
-		VectorCopy (from->playerstate[cl.playernum].origin, cl.simorg);
+		VectorCopy (from->playerstate[cl.playernum].velocity, cl.qh_simvel);
+		VectorCopy (from->playerstate[cl.playernum].origin, cl.qh_simorg);
 		return;
 	}
 
@@ -173,7 +173,7 @@ void CL_PredictMove (void)
 	{
 		to = &cl.qw_frames[(clc.netchan.incomingSequence+i) & UPDATE_MASK_QW];
 		CL_PredictUsercmd (&from->playerstate[cl.playernum]
-			, &to->playerstate[cl.playernum], &to->cmd, cl.spectator);
+			, &to->playerstate[cl.playernum], &to->cmd, cl.qh_spectator);
 		if (to->senttime >= cl.qh_serverTimeFloat)
 			break;
 		from = to;
@@ -200,16 +200,16 @@ void CL_PredictMove (void)
 	for (i=0 ; i<3 ; i++)
 		if ( fabs(from->playerstate[cl.playernum].origin[i] - to->playerstate[cl.playernum].origin[i]) > 128)
 		{	// teleported, so don't lerp
-			VectorCopy (to->playerstate[cl.playernum].velocity, cl.simvel);
-			VectorCopy (to->playerstate[cl.playernum].origin, cl.simorg);
+			VectorCopy (to->playerstate[cl.playernum].velocity, cl.qh_simvel);
+			VectorCopy (to->playerstate[cl.playernum].origin, cl.qh_simorg);
 			return;
 		}
 		
 	for (i=0 ; i<3 ; i++)
 	{
-		cl.simorg[i] = from->playerstate[cl.playernum].origin[i] 
+		cl.qh_simorg[i] = from->playerstate[cl.playernum].origin[i] 
 			+ f*(to->playerstate[cl.playernum].origin[i] - from->playerstate[cl.playernum].origin[i]);
-		cl.simvel[i] = from->playerstate[cl.playernum].velocity[i] 
+		cl.qh_simvel[i] = from->playerstate[cl.playernum].velocity[i] 
 			+ f*(to->playerstate[cl.playernum].velocity[i] - from->playerstate[cl.playernum].velocity[i]);
 	}		
 }

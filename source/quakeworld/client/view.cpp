@@ -123,7 +123,7 @@ static float V_CalcBob (void)
 	static float	bob;
 	float	cycle;
 	
-	if (cl.spectator)
+	if (cl.qh_spectator)
 		return 0;
 
 	if (onground == -1)
@@ -140,7 +140,7 @@ static float V_CalcBob (void)
 // bob is proportional to simulated velocity in the xy plane
 // (don't count Z, or jumping messes it up)
 
-	bob = sqrt(cl.simvel[0]*cl.simvel[0] + cl.simvel[1]*cl.simvel[1]) * cl_bob->value;
+	bob = sqrt(cl.qh_simvel[0]*cl.qh_simvel[0] + cl.qh_simvel[1]*cl.qh_simvel[1]) * cl_bob->value;
 	bob = bob*0.3 + bob*0.7*sin(cycle);
 	if (bob > 4)
 		bob = 4;
@@ -314,10 +314,10 @@ void V_ParseDamage (void)
 //
 // calculate view angle kicks
 //
-	VectorSubtract (from, cl.simorg, from);
+	VectorSubtract (from, cl.qh_simorg, from);
 	VectorNormalize (from);
 	
-	AngleVectors (cl.simangles, forward, right, up);
+	AngleVectors (cl.qh_simangles, forward, right, up);
 
 	side = DotProduct (from, right);
 	v_dmg_roll = count*side*v_kickroll->value;
@@ -566,7 +566,7 @@ static void V_CalcViewRoll(vec3_t viewangles)
 {
 	float		side;
 		
-	side = V_CalcRoll (cl.simangles, cl.simvel);
+	side = V_CalcRoll (cl.qh_simangles, cl.qh_simvel);
 	viewangles[ROLL] += side;
 
 	if (v_dmg_time > 0)
@@ -593,9 +593,9 @@ static void V_CalcIntermissionRefdef (void)
 // view is the weapon model
 	view = &cl.q1_viewent;
 
-	VectorCopy (cl.simorg, cl.refdef.vieworg);
+	VectorCopy (cl.qh_simorg, cl.refdef.vieworg);
 	vec3_t viewangles;
-	VectorCopy (cl.simangles, viewangles);
+	VectorCopy (cl.qh_simangles, viewangles);
 	view->state.modelindex = 0;
 
 // allways idle in intermission
@@ -628,7 +628,7 @@ static void V_CalcRefdef (void)
 	bob = V_CalcBob ();
 	
 // refresh position from simulated origin
-	VectorCopy (cl.simorg, cl.refdef.vieworg);
+	VectorCopy (cl.qh_simorg, cl.refdef.vieworg);
 
 	cl.refdef.vieworg[2] += bob;
 
@@ -640,7 +640,7 @@ static void V_CalcRefdef (void)
 	cl.refdef.vieworg[2] += 1.0/16;
 
 	vec3_t viewangles;
-	VectorCopy (cl.simangles, viewangles);
+	VectorCopy (cl.qh_simangles, viewangles);
 	V_CalcViewRoll(viewangles);
 	V_AddIdle(viewangles);
 
@@ -656,14 +656,14 @@ static void V_CalcRefdef (void)
 
 
 // offsets
-	AngleVectors (cl.simangles, forward, right, up);
+	AngleVectors (cl.qh_simangles, forward, right, up);
 	
 // set up gun position
-	VectorCopy (cl.simangles, view->state.angles);
+	VectorCopy (cl.qh_simangles, view->state.angles);
 	
 	CalcGunAngle(viewangles);
 
-	VectorCopy (cl.simorg, view->state.origin);
+	VectorCopy (cl.qh_simorg, view->state.origin);
 	view->state.origin[2] += 22;
 
 	for (i=0 ; i<3 ; i++)
@@ -696,22 +696,22 @@ static void V_CalcRefdef (void)
 	AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 // smooth out stair step ups
-	if ( (view_message->onground != -1) && (cl.simorg[2] - oldz > 0) )
+	if ( (view_message->onground != -1) && (cl.qh_simorg[2] - oldz > 0) )
 	{
 		float steptime;
 		
 		steptime = host_frametime;
 	
 		oldz += steptime * 80;
-		if (oldz > cl.simorg[2])
-			oldz = cl.simorg[2];
-		if (cl.simorg[2] - oldz > 12)
-			oldz = cl.simorg[2] - 12;
-		cl.refdef.vieworg[2] += oldz - cl.simorg[2];
-		view->state.origin[2] += oldz - cl.simorg[2];
+		if (oldz > cl.qh_simorg[2])
+			oldz = cl.qh_simorg[2];
+		if (cl.qh_simorg[2] - oldz > 12)
+			oldz = cl.qh_simorg[2] - 12;
+		cl.refdef.vieworg[2] += oldz - cl.qh_simorg[2];
+		view->state.origin[2] += oldz - cl.qh_simorg[2];
 	}
 	else
-		oldz = cl.simorg[2];
+		oldz = cl.qh_simorg[2];
 }
 
 /*
@@ -792,7 +792,7 @@ void V_RenderScene()
 	// don't allow cheats in multiplayer
 	Cvar_Set("r_fullbright", "0");
 	Cvar_Set("r_lightmap", "0");
-	if (!String::Atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
+	if (!String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "watervis")))
 	{
 		Cvar_Set("r_wateralpha", "1");
 	}
@@ -824,7 +824,7 @@ void V_RenderView (void)
 {
 //	if (cl.simangles[ROLL])
 //		Sys_Error ("cl.simangles[ROLL]");	// DEBUG
-cl.simangles[ROLL] = 0;	// FIXME @@@ 
+cl.qh_simangles[ROLL] = 0;	// FIXME @@@ 
 
 	if (cls.state != CA_ACTIVE)
 		return;
