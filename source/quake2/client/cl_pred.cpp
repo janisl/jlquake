@@ -38,16 +38,16 @@ void CL_CheckPredictionError (void)
 
 	// calculate the last q2usercmd_t we sent that the server has processed
 	frame = clc.netchan.incomingAcknowledged;
-	frame &= (CMD_BACKUP-1);
+	frame &= (CMD_BACKUP_Q2-1);
 
 	// compare what the server returned with what we had predicted it to be
-	VectorSubtract (cl.q2_frame.playerstate.pmove.origin, cl.predicted_origins[frame], delta);
+	VectorSubtract (cl.q2_frame.playerstate.pmove.origin, cl.q2_predicted_origins[frame], delta);
 
 	// save the prediction error for interpolation
 	len = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
 	if (len > 640)	// 80 world units
 	{	// a teleport or something
-		VectorClear (cl.prediction_error);
+		VectorClear (cl.q2_prediction_error);
 	}
 	else
 	{
@@ -55,11 +55,11 @@ void CL_CheckPredictionError (void)
 			Com_Printf ("prediction miss on %i: %i\n", cl.q2_frame.serverframe, 
 			delta[0] + delta[1] + delta[2]);
 
-		VectorCopy (cl.q2_frame.playerstate.pmove.origin, cl.predicted_origins[frame]);
+		VectorCopy (cl.q2_frame.playerstate.pmove.origin, cl.q2_predicted_origins[frame]);
 
 		// save for error itnerpolation
 		for (i=0 ; i<3 ; i++)
-			cl.prediction_error[i] = delta[i]*0.125;
+			cl.q2_prediction_error[i] = delta[i]*0.125;
 	}
 }
 
@@ -215,7 +215,7 @@ void CL_PredictMovement (void)
 	{	// just set angles
 		for (i=0 ; i<3 ; i++)
 		{
-			cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[i]);
+			cl.q2_predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[i]);
 		}
 		return;
 	}
@@ -224,10 +224,10 @@ void CL_PredictMovement (void)
 	current = clc.netchan.outgoingSequence;
 
 	// if we are too far out of date, just freeze
-	if (current - ack >= CMD_BACKUP)
+	if (current - ack >= CMD_BACKUP_Q2)
 	{
 		if (cl_showmiss->value)
-			Com_Printf ("exceeded CMD_BACKUP\n");
+			Com_Printf ("exceeded CMD_BACKUP_Q2\n");
 		return;	
 	}
 
@@ -236,7 +236,7 @@ void CL_PredictMovement (void)
 	pm.trace = CL_PMTrace;
 	pm.pointcontents = CL_PMpointcontents;
 
-	pm_airaccelerate = String::Atof(cl.configstrings[CS_AIRACCEL]);
+	pm_airaccelerate = String::Atof(cl.q2_configstrings[Q2CS_AIRACCEL]);
 
 	pm.s = cl.q2_frame.playerstate.pmove;
 
@@ -247,30 +247,30 @@ void CL_PredictMovement (void)
 	// run frames
 	while (++ack < current)
 	{
-		frame = ack & (CMD_BACKUP-1);
-		cmd = &cl.cmds[frame];
+		frame = ack & (CMD_BACKUP_Q2-1);
+		cmd = &cl.q2_cmds[frame];
 
 		pm.cmd = *cmd;
 		Pmove (&pm);
 
 		// save for debug checking
-		VectorCopy (pm.s.origin, cl.predicted_origins[frame]);
+		VectorCopy (pm.s.origin, cl.q2_predicted_origins[frame]);
 	}
 
-	oldframe = (ack-2) & (CMD_BACKUP-1);
-	oldz = cl.predicted_origins[oldframe][2];
+	oldframe = (ack-2) & (CMD_BACKUP_Q2-1);
+	oldz = cl.q2_predicted_origins[oldframe][2];
 	step = pm.s.origin[2] - oldz;
 	if (step > 63 && step < 160 && (pm.s.pm_flags & Q2PMF_ON_GROUND) )
 	{
-		cl.predicted_step = step * 0.125;
-		cl.predicted_step_time = cls.realtime - cls.frametimeFloat * 500;
+		cl.q2_predicted_step = step * 0.125;
+		cl.q2_predicted_step_time = cls.realtime - cls.frametimeFloat * 500;
 	}
 
 
 	// copy results out for rendering
-	cl.predicted_origin[0] = pm.s.origin[0]*0.125;
-	cl.predicted_origin[1] = pm.s.origin[1]*0.125;
-	cl.predicted_origin[2] = pm.s.origin[2]*0.125;
+	cl.q2_predicted_origin[0] = pm.s.origin[0]*0.125;
+	cl.q2_predicted_origin[1] = pm.s.origin[1]*0.125;
+	cl.q2_predicted_origin[2] = pm.s.origin[2]*0.125;
 
-	VectorCopy (pm.viewangles, cl.predicted_angles);
+	VectorCopy (pm.viewangles, cl.q2_predicted_angles);
 }

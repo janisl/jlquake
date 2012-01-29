@@ -210,17 +210,17 @@ void CL_Record_f (void)
 	buf.WriteLong(PROTOCOL_VERSION);
 	buf.WriteLong(0x10000 + cl.servercount);
 	buf.WriteByte(1);	// demos are always attract loops
-	buf.WriteString2(cl.gamedir);
+	buf.WriteString2(cl.q2_gamedir);
 	buf.WriteShort(cl.playernum);
 
-	buf.WriteString2(cl.configstrings[CS_NAME]);
+	buf.WriteString2(cl.q2_configstrings[Q2CS_NAME]);
 
 	// configstrings
-	for (i=0 ; i<MAX_CONFIGSTRINGS ; i++)
+	for (i=0 ; i<MAX_CONFIGSTRINGS_Q2 ; i++)
 	{
-		if (cl.configstrings[i][0])
+		if (cl.q2_configstrings[i][0])
 		{
-			if (buf.cursize + String::Length(cl.configstrings[i]) + 32 > buf.maxsize)
+			if (buf.cursize + String::Length(cl.q2_configstrings[i]) + 32 > buf.maxsize)
 			{	// write it out
 				len = LittleLong (buf.cursize);
 				FS_Write(&len, 4, clc.demofile);
@@ -230,7 +230,7 @@ void CL_Record_f (void)
 
 			buf.WriteByte(q2svc_configstring);
 			buf.WriteShort(i);
-			buf.WriteString2(cl.configstrings[i]);
+			buf.WriteString2(cl.q2_configstrings[i]);
 		}
 
 	}
@@ -616,10 +616,10 @@ void CL_Disconnect (void)
 	{
 		int	time;
 		
-		time = Sys_Milliseconds_ () - cl.timedemo_start;
+		time = Sys_Milliseconds_ () - cl.q2_timedemo_start;
 		if (time > 0)
-			Com_Printf ("%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames,
-			time/1000.0, cl.timedemo_frames*1000.0 / time);
+			Com_Printf ("%i frames, %3.1f seconds: %3.1f fps\n", cl.q2_timedemo_frames,
+			time/1000.0, cl.q2_timedemo_frames*1000.0 / time);
 	}
 
 	VectorClear(v_blend);
@@ -840,9 +840,9 @@ void CL_Skins_f (void)
 
 	for (i=0 ; i<MAX_CLIENTS_Q2 ; i++)
 	{
-		if (!cl.configstrings[CS_PLAYERSKINS+i][0])
+		if (!cl.q2_configstrings[Q2CS_PLAYERSKINS+i][0])
 			continue;
-		Com_Printf ("client %i: %s\n", i, cl.configstrings[CS_PLAYERSKINS+i]); 
+		Com_Printf ("client %i: %s\n", i, cl.q2_configstrings[Q2CS_PLAYERSKINS+i]); 
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();	// pump message loop
 		IN_ProcessEvents();
@@ -1091,7 +1091,7 @@ byte *precache_model; // used for skin checking in alias models
 #define PLAYER_MULT 5
 
 // ENV_CNT is map load, ENV_CNT+1 is first env map
-#define ENV_CNT (CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT)
+#define ENV_CNT (Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT)
 #define TEXTURE_CNT (ENV_CNT+13)
 
 static const char *env_suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
@@ -1109,23 +1109,23 @@ void CL_RequestNextDownload (void)
 		precache_check = ENV_CNT;
 
 //ZOID
-	if (precache_check == CS_MODELS) { // confirm map
-		precache_check = CS_MODELS+2; // 0 isn't used
+	if (precache_check == Q2CS_MODELS) { // confirm map
+		precache_check = Q2CS_MODELS+2; // 0 isn't used
 		if (allow_download_maps->value)
-			if (!CL_CheckOrDownloadFile(cl.configstrings[CS_MODELS+1]))
+			if (!CL_CheckOrDownloadFile(cl.q2_configstrings[Q2CS_MODELS+1]))
 				return; // started a download
 	}
-	if (precache_check >= CS_MODELS && precache_check < CS_MODELS+MAX_MODELS_Q2) {
+	if (precache_check >= Q2CS_MODELS && precache_check < Q2CS_MODELS+MAX_MODELS_Q2) {
 		if (allow_download_models->value) {
-			while (precache_check < CS_MODELS+MAX_MODELS_Q2 &&
-				cl.configstrings[precache_check][0]) {
-				if (cl.configstrings[precache_check][0] == '*' ||
-					cl.configstrings[precache_check][0] == '#') {
+			while (precache_check < Q2CS_MODELS+MAX_MODELS_Q2 &&
+				cl.q2_configstrings[precache_check][0]) {
+				if (cl.q2_configstrings[precache_check][0] == '*' ||
+					cl.q2_configstrings[precache_check][0] == '#') {
 					precache_check++;
 					continue;
 				}
 				if (precache_model_skin == 0) {
-					if (!CL_CheckOrDownloadFile(cl.configstrings[precache_check])) {
+					if (!CL_CheckOrDownloadFile(cl.q2_configstrings[precache_check])) {
 						precache_model_skin = 1;
 						return; // started a download
 					}
@@ -1135,7 +1135,7 @@ void CL_RequestNextDownload (void)
 				// checking for skins in the model
 				if (!precache_model) {
 
-					FS_ReadFile(cl.configstrings[precache_check], (void **)&precache_model);
+					FS_ReadFile(cl.q2_configstrings[precache_check], (void **)&precache_model);
 					if (!precache_model) {
 						precache_model_skin = 0;
 						precache_check++;
@@ -1176,57 +1176,57 @@ void CL_RequestNextDownload (void)
 				precache_check++;
 			}
 		}
-		precache_check = CS_SOUNDS;
+		precache_check = Q2CS_SOUNDS;
 	}
-	if (precache_check >= CS_SOUNDS && precache_check < CS_SOUNDS+MAX_SOUNDS_Q2) { 
+	if (precache_check >= Q2CS_SOUNDS && precache_check < Q2CS_SOUNDS+MAX_SOUNDS_Q2) { 
 		if (allow_download_sounds->value) {
-			if (precache_check == CS_SOUNDS)
+			if (precache_check == Q2CS_SOUNDS)
 				precache_check++; // zero is blank
-			while (precache_check < CS_SOUNDS+MAX_SOUNDS_Q2 &&
-				cl.configstrings[precache_check][0]) {
-				if (cl.configstrings[precache_check][0] == '*') {
+			while (precache_check < Q2CS_SOUNDS+MAX_SOUNDS_Q2 &&
+				cl.q2_configstrings[precache_check][0]) {
+				if (cl.q2_configstrings[precache_check][0] == '*') {
 					precache_check++;
 					continue;
 				}
-				String::Sprintf(fn, sizeof(fn), "sound/%s", cl.configstrings[precache_check++]);
+				String::Sprintf(fn, sizeof(fn), "sound/%s", cl.q2_configstrings[precache_check++]);
 				if (!CL_CheckOrDownloadFile(fn))
 					return; // started a download
 			}
 		}
-		precache_check = CS_IMAGES;
+		precache_check = Q2CS_IMAGES;
 	}
-	if (precache_check >= CS_IMAGES && precache_check < CS_IMAGES+MAX_IMAGES_Q2) {
-		if (precache_check == CS_IMAGES)
+	if (precache_check >= Q2CS_IMAGES && precache_check < Q2CS_IMAGES+MAX_IMAGES_Q2) {
+		if (precache_check == Q2CS_IMAGES)
 			precache_check++; // zero is blank
-		while (precache_check < CS_IMAGES+MAX_IMAGES_Q2 &&
-			cl.configstrings[precache_check][0]) {
-			String::Sprintf(fn, sizeof(fn), "pics/%s.pcx", cl.configstrings[precache_check++]);
+		while (precache_check < Q2CS_IMAGES+MAX_IMAGES_Q2 &&
+			cl.q2_configstrings[precache_check][0]) {
+			String::Sprintf(fn, sizeof(fn), "pics/%s.pcx", cl.q2_configstrings[precache_check++]);
 			if (!CL_CheckOrDownloadFile(fn))
 				return; // started a download
 		}
-		precache_check = CS_PLAYERSKINS;
+		precache_check = Q2CS_PLAYERSKINS;
 	}
 	// skins are special, since a player has three things to download:
 	// model, weapon model and skin
 	// so precache_check is now *3
-	if (precache_check >= CS_PLAYERSKINS && precache_check < CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT) {
+	if (precache_check >= Q2CS_PLAYERSKINS && precache_check < Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT) {
 		if (allow_download_players->value) {
-			while (precache_check < CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT) {
+			while (precache_check < Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 * PLAYER_MULT) {
 				int i, n;
 				char model[MAX_QPATH], skin[MAX_QPATH], *p;
 
-				i = (precache_check - CS_PLAYERSKINS)/PLAYER_MULT;
-				n = (precache_check - CS_PLAYERSKINS)%PLAYER_MULT;
+				i = (precache_check - Q2CS_PLAYERSKINS)/PLAYER_MULT;
+				n = (precache_check - Q2CS_PLAYERSKINS)%PLAYER_MULT;
 
-				if (!cl.configstrings[CS_PLAYERSKINS+i][0]) {
-					precache_check = CS_PLAYERSKINS + (i + 1) * PLAYER_MULT;
+				if (!cl.q2_configstrings[Q2CS_PLAYERSKINS+i][0]) {
+					precache_check = Q2CS_PLAYERSKINS + (i + 1) * PLAYER_MULT;
 					continue;
 				}
 
-				if ((p = strchr(cl.configstrings[CS_PLAYERSKINS+i], '\\')) != NULL)
+				if ((p = strchr(cl.q2_configstrings[Q2CS_PLAYERSKINS+i], '\\')) != NULL)
 					p++;
 				else
-					p = cl.configstrings[CS_PLAYERSKINS+i];
+					p = cl.q2_configstrings[Q2CS_PLAYERSKINS+i];
 				String::Cpy(model, p);
 				p = strchr(model, '/');
 				if (!p)
@@ -1241,7 +1241,7 @@ void CL_RequestNextDownload (void)
 				case 0: // model
 					String::Sprintf(fn, sizeof(fn), "players/%s/tris.md2", model);
 					if (!CL_CheckOrDownloadFile(fn)) {
-						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 1;
+						precache_check = Q2CS_PLAYERSKINS + i * PLAYER_MULT + 1;
 						return; // started a download
 					}
 					n++;
@@ -1250,7 +1250,7 @@ void CL_RequestNextDownload (void)
 				case 1: // weapon model
 					String::Sprintf(fn, sizeof(fn), "players/%s/weapon.md2", model);
 					if (!CL_CheckOrDownloadFile(fn)) {
-						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 2;
+						precache_check = Q2CS_PLAYERSKINS + i * PLAYER_MULT + 2;
 						return; // started a download
 					}
 					n++;
@@ -1259,7 +1259,7 @@ void CL_RequestNextDownload (void)
 				case 2: // weapon skin
 					String::Sprintf(fn, sizeof(fn), "players/%s/weapon.pcx", model);
 					if (!CL_CheckOrDownloadFile(fn)) {
-						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 3;
+						precache_check = Q2CS_PLAYERSKINS + i * PLAYER_MULT + 3;
 						return; // started a download
 					}
 					n++;
@@ -1268,7 +1268,7 @@ void CL_RequestNextDownload (void)
 				case 3: // skin
 					String::Sprintf(fn, sizeof(fn), "players/%s/%s.pcx", model, skin);
 					if (!CL_CheckOrDownloadFile(fn)) {
-						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 4;
+						precache_check = Q2CS_PLAYERSKINS + i * PLAYER_MULT + 4;
 						return; // started a download
 					}
 					n++;
@@ -1277,11 +1277,11 @@ void CL_RequestNextDownload (void)
 				case 4: // skin_i
 					String::Sprintf(fn, sizeof(fn), "players/%s/%s_i.pcx", model, skin);
 					if (!CL_CheckOrDownloadFile(fn)) {
-						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 5;
+						precache_check = Q2CS_PLAYERSKINS + i * PLAYER_MULT + 5;
 						return; // started a download
 					}
 					// move on to next model
-					precache_check = CS_PLAYERSKINS + (i + 1) * PLAYER_MULT;
+					precache_check = Q2CS_PLAYERSKINS + (i + 1) * PLAYER_MULT;
 				}
 			}
 		}
@@ -1292,11 +1292,11 @@ void CL_RequestNextDownload (void)
 	if (precache_check == ENV_CNT) {
 		precache_check = ENV_CNT + 1;
 
-		CM_LoadMap (cl.configstrings[CS_MODELS+1], true, &map_checksum);
+		CM_LoadMap (cl.q2_configstrings[Q2CS_MODELS+1], true, &map_checksum);
 
-		if (map_checksum != String::Atoi(cl.configstrings[CS_MAPCHECKSUM])) {
+		if (map_checksum != String::Atoi(cl.q2_configstrings[Q2CS_MAPCHECKSUM])) {
 			Com_Error (ERR_DROP, "Local map version differs from server: %i != '%s'\n",
-				map_checksum, cl.configstrings[CS_MAPCHECKSUM]);
+				map_checksum, cl.q2_configstrings[Q2CS_MAPCHECKSUM]);
 			return;
 		}
 	}
@@ -1308,10 +1308,10 @@ void CL_RequestNextDownload (void)
 
 				if (n & 1)
 					String::Sprintf(fn, sizeof(fn), "env/%s%s.pcx", 
-						cl.configstrings[CS_SKY], env_suf[n/2]);
+						cl.q2_configstrings[Q2CS_SKY], env_suf[n/2]);
 				else
 					String::Sprintf(fn, sizeof(fn), "env/%s%s.tga", 
-						cl.configstrings[CS_SKY], env_suf[n/2]);
+						cl.q2_configstrings[Q2CS_SKY], env_suf[n/2]);
 				if (!CL_CheckOrDownloadFile(fn))
 					return; // started a download
 			}
@@ -1361,13 +1361,13 @@ void CL_Precache_f (void)
 	if (Cmd_Argc() < 2) {
 		int	map_checksum;		// for detecting cheater maps
 
-		CM_LoadMap (cl.configstrings[CS_MODELS+1], true, &map_checksum);
+		CM_LoadMap (cl.q2_configstrings[Q2CS_MODELS+1], true, &map_checksum);
 		CL_RegisterSounds ();
 		CL_PrepRefresh ();
 		return;
 	}
 
-	precache_check = CS_MODELS;
+	precache_check = Q2CS_MODELS;
 	precache_spawncount = String::Atoi(Cmd_Argv(1));
 	precache_model = 0;
 	precache_model_skin = 0;
@@ -1598,8 +1598,8 @@ void CL_FixCvarCheats (void)
 	int			i;
 	cheatvar_t	*var;
 
-	if ( !String::Cmp(cl.configstrings[CS_MAXCLIENTS], "1") 
-		|| !cl.configstrings[CS_MAXCLIENTS][0] )
+	if ( !String::Cmp(cl.q2_configstrings[Q2CS_MAXCLIENTS], "1") 
+		|| !cl.q2_configstrings[Q2CS_MAXCLIENTS][0] )
 		return;		// single player can cheat
 
 	// find all the cvars if we haven't done it yet
@@ -1665,7 +1665,7 @@ static void VID_CheckChanges (void)
 		** refresh has changed
 		*/
 		vid_restart_requested = false;
-		cl.refresh_prepped = false;
+		cl.q2_refresh_prepped = false;
 		cls.disable_screen = true;
 
 		R_Shutdown(true);
@@ -1711,7 +1711,7 @@ void CL_UpdateSounds()
 	if (cls.state != CA_ACTIVE)
 		return;
 
-	if (!cl.sound_prepped)
+	if (!cl.q2_sound_prepped)
 		return;
 
 	for (int i = 0; i < MAX_EDICTS_Q2; i++)
@@ -1786,7 +1786,7 @@ void CL_Frame (int msec)
 
 	// allow rendering DLL change
 	VID_CheckChanges ();
-	if (!cl.refresh_prepped && cls.state == CA_ACTIVE)
+	if (!cl.q2_refresh_prepped && cls.state == CA_ACTIVE)
 		CL_PrepRefresh ();
 
 	// update the screen

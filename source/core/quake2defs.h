@@ -642,3 +642,59 @@ enum
 #define MAX_IMAGES_Q2			256
 #define MAX_ITEMS_Q2			256
 #define MAX_GENERAL_Q2			(MAX_CLIENTS_Q2 * 2)	// general config strings
+
+// q2entity_state_t->renderfx flags
+#define Q2RF_MINLIGHT		1		// allways have some light (viewmodel)
+#define Q2RF_VIEWERMODEL	2		// don't draw through eyes, only mirrors
+#define Q2RF_WEAPONMODEL	4		// only draw through eyes
+#define Q2RF_FULLBRIGHT		8		// allways draw full intensity
+#define Q2RF_DEPTHHACK		16		// for view weapon Z crunching
+#define Q2RF_TRANSLUCENT	32
+#define Q2RF_FRAMELERP		64
+#define Q2RF_BEAM			128
+#define Q2RF_CUSTOMSKIN		256		// skin is an index in image_precache
+#define Q2RF_GLOW			512		// pulse lighting for bonus items
+#define Q2RF_SHELL_RED		1024
+#define Q2RF_SHELL_GREEN	2048
+#define Q2RF_SHELL_BLUE		4096
+
+//ROGUE
+#define Q2RF_IR_VISIBLE		0x00008000		// 32768
+#define Q2RF_SHELL_DOUBLE	0x00010000		// 65536
+#define Q2RF_SHELL_HALF_DAM	0x00020000
+#define Q2RF_USE_DISGUISE	0x00040000
+//ROGUE
+
+// q2player_state_t->refdef flags
+#define Q2RDF_UNDERWATER	1		// warp the screen as apropriate (UNUSED)
+#define Q2RDF_NOWORLDMODEL	2		// used for player configuration screen
+
+//ROGUE
+#define Q2RDF_IRGOGGLES		4
+#define Q2RDF_UVGOGGLES		8//UNUSED
+//ROGUE
+
+//
+// config strings are a general means of communication from
+// the server to all connected clients.
+// Each config string can be at most MAX_QPATH characters.
+//
+#define	Q2CS_NAME				0
+#define	Q2CS_CDTRACK			1
+#define	Q2CS_SKY				2
+#define	Q2CS_SKYAXIS			3		// %f %f %f format
+#define	Q2CS_SKYROTATE		4
+#define	Q2CS_STATUSBAR		5		// display program string
+
+#define Q2CS_AIRACCEL			29		// air acceleration control
+#define	Q2CS_MAXCLIENTS		30
+#define	Q2CS_MAPCHECKSUM		31		// for catching cheater maps
+
+#define	Q2CS_MODELS			32
+#define	Q2CS_SOUNDS			(Q2CS_MODELS+MAX_MODELS_Q2)
+#define	Q2CS_IMAGES			(Q2CS_SOUNDS+MAX_SOUNDS_Q2)
+#define	Q2CS_LIGHTS			(Q2CS_IMAGES+MAX_IMAGES_Q2)
+#define	Q2CS_ITEMS			(Q2CS_LIGHTS+MAX_LIGHTSTYLES_Q2)
+#define	Q2CS_PLAYERSKINS		(Q2CS_ITEMS+MAX_ITEMS_Q2)
+#define Q2CS_GENERAL			(Q2CS_PLAYERSKINS+MAX_CLIENTS_Q2)
+#define	MAX_CONFIGSTRINGS_Q2	(Q2CS_GENERAL+MAX_GENERAL_Q2)

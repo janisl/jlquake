@@ -168,8 +168,8 @@ void CL_DeltaEntity (q2frame_t *frame, int newnum, q2entity_state_t *old, int bi
 
 	ent = &clq2_entities[newnum];
 
-	state = &cl_parse_entities[cl.parse_entities & (MAX_PARSE_ENTITIES-1)];
-	cl.parse_entities++;
+	state = &cl_parse_entities[cl.parseEntitiesNum & (MAX_PARSE_ENTITIES-1)];
+	cl.parseEntitiesNum++;
 	frame->num_entities++;
 
 	CL_ParseDelta (old, state, newnum, bits);
@@ -229,7 +229,7 @@ void CL_ParsePacketEntities (q2frame_t *oldframe, q2frame_t *newframe)
 	q2entity_state_t	*oldstate;
 	int			oldindex, oldnum;
 
-	newframe->parse_entities = cl.parse_entities;
+	newframe->parse_entities = cl.parseEntitiesNum;
 	newframe->num_entities = 0;
 
 	// delta from the entities present in oldframe
@@ -402,7 +402,7 @@ void CL_ParsePlayerstate (q2frame_t *oldframe, q2frame_t *newframe)
 		state->pmove.delta_angles[2] = net_message.ReadShort();
 	}
 
-	if (cl.attractloop)
+	if (cl.q2_attractloop)
 		state->pmove.pm_type = Q2PM_FREEZE;		// demo playback
 
 	//
@@ -511,7 +511,7 @@ void CL_ParseFrame (void)
 
 	// BIG HACK to let old demos continue to work
 	if (cls.serverProtocol != 26)
-		cl.surpressCount = net_message.ReadByte ();
+		cl.q2_surpressCount = net_message.ReadByte ();
 
 	if (cl_shownet->value == 3)
 		Com_Printf ("   frame:%i  delta:%i\n", cl.q2_frame.serverframe,
@@ -539,7 +539,7 @@ void CL_ParseFrame (void)
 			// is too old, so we can't reconstruct it properly.
 			Com_Printf ("Delta frame too old.\n");
 		}
-		else if (cl.parse_entities - old->parse_entities > MAX_PARSE_ENTITIES-128)
+		else if (cl.parseEntitiesNum - old->parse_entities > MAX_PARSE_ENTITIES-128)
 		{
 			Com_Printf ("Delta parse_entities too old.\n");
 		}
@@ -580,15 +580,15 @@ void CL_ParseFrame (void)
 		if (cls.state != CA_ACTIVE)
 		{
 			cls.state = CA_ACTIVE;
-			cl.predicted_origin[0] = cl.q2_frame.playerstate.pmove.origin[0]*0.125;
-			cl.predicted_origin[1] = cl.q2_frame.playerstate.pmove.origin[1]*0.125;
-			cl.predicted_origin[2] = cl.q2_frame.playerstate.pmove.origin[2]*0.125;
-			VectorCopy (cl.q2_frame.playerstate.viewangles, cl.predicted_angles);
+			cl.q2_predicted_origin[0] = cl.q2_frame.playerstate.pmove.origin[0]*0.125;
+			cl.q2_predicted_origin[1] = cl.q2_frame.playerstate.pmove.origin[1]*0.125;
+			cl.q2_predicted_origin[2] = cl.q2_frame.playerstate.pmove.origin[2]*0.125;
+			VectorCopy (cl.q2_frame.playerstate.viewangles, cl.q2_predicted_angles);
 			if (cls.disable_servercount != cl.servercount
-				&& cl.refresh_prepped)
+				&& cl.q2_refresh_prepped)
 				SCR_EndLoadingPlaque ();	// get rid of loading plaque
 		}
-		cl.sound_prepped = true;	// can start mixing ambient sounds
+		cl.q2_sound_prepped = true;	// can start mixing ambient sounds
 	
 		// fire entity events
 		CL_FireEntityEvents (&cl.q2_frame);
@@ -611,7 +611,7 @@ void CL_AddPacketEntities(q2frame_t *frame)
 	int					pnum;
 	q2centity_t			*cent;
 	int					autoanim;
-	clientinfo_t		*ci;
+	q2clientinfo_t		*ci;
 	unsigned int		effects, renderfx_old, renderfx;
 
 	// bonus items rotate at a fixed rate
@@ -741,13 +741,13 @@ void CL_AddPacketEntities(q2frame_t *frame)
 			if (s1->modelindex == 255)
 			{	// use custom player skin
 				ent.skinNum = 0;
-				ci = &cl.clientinfo[s1->skinnum & 0xff];
+				ci = &cl.q2_clientinfo[s1->skinnum & 0xff];
 				ent.customSkin = R_GetImageHandle(ci->skin);
 				ent.hModel = ci->model;
 				if (!ent.customSkin || !ent.hModel)
 				{
-					ent.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
-					ent.hModel = cl.baseclientinfo.model;
+					ent.customSkin = R_GetImageHandle(cl.q2_baseclientinfo.skin);
+					ent.hModel = cl.q2_baseclientinfo.model;
 				}
 
 //============
@@ -955,16 +955,16 @@ void CL_AddPacketEntities(q2frame_t *frame)
 		{
 			if (s1->modelindex2 == 255)
 			{	// custom weapon
-				ci = &cl.clientinfo[s1->skinnum & 0xff];
+				ci = &cl.q2_clientinfo[s1->skinnum & 0xff];
 				i = (s1->skinnum >> 8); // 0 is default weapon model
-				if (!cl_vwep->value || i > MAX_CLIENTWEAPONMODELS - 1)
+				if (!cl_vwep->value || i > MAX_CLIENTWEAPONMODELS_Q2 - 1)
 					i = 0;
 				ent.hModel = ci->weaponmodel[i];
 				if (!ent.hModel) {
 					if (i != 0)
 						ent.hModel = ci->weaponmodel[0];
 					if (!ent.hModel)
-						ent.hModel = cl.baseclientinfo.weaponmodel[0];
+						ent.hModel = cl.q2_baseclientinfo.weaponmodel[0];
 				}
 			}
 			//PGM - hack to allow translucent linked models (defender sphere's shell)
@@ -1287,15 +1287,15 @@ void CL_CalcViewValues (void)
 		backlerp = 1.0 - lerp;
 		for (i=0 ; i<3 ; i++)
 		{
-			cl.refdef.vieworg[i] = cl.predicted_origin[i] + ops->viewoffset[i] 
+			cl.refdef.vieworg[i] = cl.q2_predicted_origin[i] + ops->viewoffset[i] 
 				+ cl.q2_lerpfrac * (ps->viewoffset[i] - ops->viewoffset[i])
-				- backlerp * cl.prediction_error[i];
+				- backlerp * cl.q2_prediction_error[i];
 		}
 
 		// smooth out stair climbing
-		delta = cls.realtime - cl.predicted_step_time;
+		delta = cls.realtime - cl.q2_predicted_step_time;
 		if (delta < 100)
-			cl.refdef.vieworg[2] -= cl.predicted_step * (100 - delta) * 0.01;
+			cl.refdef.vieworg[2] -= cl.q2_predicted_step * (100 - delta) * 0.01;
 	}
 	else
 	{	// just use interpolated values
@@ -1310,7 +1310,7 @@ void CL_CalcViewValues (void)
 	if ( cl.q2_frame.playerstate.pmove.pm_type < Q2PM_DEAD )
 	{	// use predicted values
 		for (i=0 ; i<3 ; i++)
-			viewangles[i] = cl.predicted_angles[i];
+			viewangles[i] = cl.q2_predicted_angles[i];
 	}
 	else
 	{	// just use interpolated values

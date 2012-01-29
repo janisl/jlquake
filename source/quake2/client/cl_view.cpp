@@ -38,7 +38,7 @@ Cvar*		cl_testblend;
 
 Cvar*		cl_polyblend;
 
-char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
+char cl_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
 int num_cl_weaponmodels;
 
 float		v_blend[4];			// final blending color
@@ -93,8 +93,8 @@ void V_TestEntities()
 		}
 		AxisClear(ent.axis);
 
-		ent.hModel = cl.baseclientinfo.model;
-		ent.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
+		ent.hModel = cl.q2_baseclientinfo.model;
+		ent.customSkin = R_GetImageHandle(cl.q2_baseclientinfo.skin);
 		R_AddRefEntityToScene(&ent);
 	}
 }
@@ -160,11 +160,11 @@ void CL_PrepRefresh (void)
 	float		rotate;
 	vec3_t		axis;
 
-	if (!cl.configstrings[CS_MODELS+1][0])
+	if (!cl.q2_configstrings[Q2CS_MODELS+1][0])
 		return;		// no map loaded
 
 	// let the render dll load the map
-	String::Cpy(mapname, cl.configstrings[CS_MODELS+1] + 5);	// skip "maps/"
+	String::Cpy(mapname, cl.q2_configstrings[Q2CS_MODELS+1] + 5);	// skip "maps/"
 	mapname[String::Length(mapname)-4] = 0;		// cut off ".bsp"
 
 	// register models, pics, and skins
@@ -184,9 +184,9 @@ void CL_PrepRefresh (void)
 	num_cl_weaponmodels = 1;
 	String::Cpy(cl_weaponmodels[0], "weapon.md2");
 
-	for (i=1 ; i<MAX_MODELS_Q2 && cl.configstrings[CS_MODELS+i][0] ; i++)
+	for (i=1 ; i<MAX_MODELS_Q2 && cl.q2_configstrings[Q2CS_MODELS+i][0] ; i++)
 	{
-		String::Cpy(name, cl.configstrings[CS_MODELS+i]);
+		String::Cpy(name, cl.q2_configstrings[Q2CS_MODELS+i]);
 		name[37] = 0;	// never go beyond one line
 		if (name[0] != '*')
 			Com_Printf ("%s\r", name); 
@@ -196,18 +196,18 @@ void CL_PrepRefresh (void)
 		if (name[0] == '#')
 		{
 			// special player weapon model
-			if (num_cl_weaponmodels < MAX_CLIENTWEAPONMODELS)
+			if (num_cl_weaponmodels < MAX_CLIENTWEAPONMODELS_Q2)
 			{
-				String::NCpy(cl_weaponmodels[num_cl_weaponmodels], cl.configstrings[CS_MODELS+i]+1,
+				String::NCpy(cl_weaponmodels[num_cl_weaponmodels], cl.q2_configstrings[Q2CS_MODELS+i]+1,
 					sizeof(cl_weaponmodels[num_cl_weaponmodels]) - 1);
 				num_cl_weaponmodels++;
 			}
 		} 
 		else
 		{
-			cl.model_draw[i] = R_RegisterModel(cl.configstrings[CS_MODELS+i]);
+			cl.model_draw[i] = R_RegisterModel(cl.q2_configstrings[Q2CS_MODELS+i]);
 			if (name[0] == '*')
-				cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.configstrings[CS_MODELS + i] + 1));
+				cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.q2_configstrings[Q2CS_MODELS + i] + 1));
 			else
 				cl.model_clip[i] = 0;
 		}
@@ -217,9 +217,9 @@ void CL_PrepRefresh (void)
 
 	Com_Printf ("images\r", i); 
 	SCR_UpdateScreen ();
-	for (i=1 ; i<MAX_IMAGES_Q2 && cl.configstrings[CS_IMAGES+i][0] ; i++)
+	for (i=1 ; i<MAX_IMAGES_Q2 && cl.q2_configstrings[Q2CS_IMAGES+i][0] ; i++)
 	{
-		cl.image_precache[i] = R_RegisterPic (cl.configstrings[CS_IMAGES+i]);
+		cl.q2_image_precache[i] = R_RegisterPic (cl.q2_configstrings[Q2CS_IMAGES+i]);
 		Sys_SendKeyEvents ();	// pump message loop
 		IN_ProcessEvents();
 	}
@@ -227,7 +227,7 @@ void CL_PrepRefresh (void)
 	Com_Printf ("                                     \r");
 	for (i=0 ; i<MAX_CLIENTS_Q2 ; i++)
 	{
-		if (!cl.configstrings[CS_PLAYERSKINS+i][0])
+		if (!cl.q2_configstrings[Q2CS_PLAYERSKINS+i][0])
 			continue;
 		Com_Printf ("client %i\r", i); 
 		SCR_UpdateScreen ();
@@ -237,15 +237,15 @@ void CL_PrepRefresh (void)
 		Com_Printf ("                                     \r");
 	}
 
-	CL_LoadClientinfo (&cl.baseclientinfo, "unnamed\\male/grunt");
+	CL_LoadClientinfo (&cl.q2_baseclientinfo, "unnamed\\male/grunt");
 
 	// set sky textures and speed
 	Com_Printf ("sky\r", i); 
 	SCR_UpdateScreen ();
-	rotate = String::Atof(cl.configstrings[CS_SKYROTATE]);
-	sscanf (cl.configstrings[CS_SKYAXIS], "%f %f %f", 
+	rotate = String::Atof(cl.q2_configstrings[Q2CS_SKYROTATE]);
+	sscanf (cl.q2_configstrings[Q2CS_SKYAXIS], "%f %f %f", 
 		&axis[0], &axis[1], &axis[2]);
-	R_SetSky (cl.configstrings[CS_SKY], rotate, axis);
+	R_SetSky (cl.q2_configstrings[Q2CS_SKY], rotate, axis);
 	Com_Printf ("                                     \r");
 
 	R_EndRegistration();
@@ -254,10 +254,10 @@ void CL_PrepRefresh (void)
 	Con_ClearNotify ();
 
 	SCR_UpdateScreen ();
-	cl.refresh_prepped = true;
+	cl.q2_refresh_prepped = true;
 
 	// start the cd track
-	CDAudio_Play (String::Atoi(cl.configstrings[CS_CDTRACK]), true);
+	CDAudio_Play (String::Atoi(cl.q2_configstrings[Q2CS_CDTRACK]), true);
 }
 
 /*
@@ -363,14 +363,14 @@ void V_RenderView(float stereo_separation)
 	if (cls.state != CA_ACTIVE)
 		return;
 
-	if (!cl.refresh_prepped)
+	if (!cl.q2_refresh_prepped)
 		return;			// still loading
 
 	if (cl_timedemo->value)
 	{
-		if (!cl.timedemo_start)
-			cl.timedemo_start = Sys_Milliseconds_ ();
-		cl.timedemo_frames++;
+		if (!cl.q2_timedemo_start)
+			cl.q2_timedemo_start = Sys_Milliseconds_ ();
+		cl.q2_timedemo_frames++;
 	}
 
 	// an invalid frame will just use the exact previous refdef

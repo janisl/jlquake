@@ -311,11 +311,11 @@ void SV_WriteServerFile (qboolean autosave)
 		String::Sprintf (comment,sizeof(comment), "%2i:%i%i %2i/%2i  ", newtime->tm_hour
 			, newtime->tm_min/10, newtime->tm_min%10,
 			newtime->tm_mon+1, newtime->tm_mday);
-		String::Cat(comment, sizeof(comment), sv.configstrings[CS_NAME]);
+		String::Cat(comment, sizeof(comment), sv.configstrings[Q2CS_NAME]);
 	}
 	else
 	{	// autosaved
-		String::Sprintf (comment, sizeof(comment), "ENTERING %s", sv.configstrings[CS_NAME]);
+		String::Sprintf (comment, sizeof(comment), "ENTERING %s", sv.configstrings[Q2CS_NAME]);
 	}
 
 	FS_Write(comment, sizeof(comment), f);
@@ -889,9 +889,9 @@ void SV_ServerRecord_f (void)
 	buf.WriteString2(Cvar_VariableString ("gamedir"));
 	buf.WriteShort(-1);
 	// send full levelname
-	buf.WriteString2(sv.configstrings[CS_NAME]);
+	buf.WriteString2(sv.configstrings[Q2CS_NAME]);
 
-	for (i=0 ; i<MAX_CONFIGSTRINGS ; i++)
+	for (i=0 ; i<MAX_CONFIGSTRINGS_Q2 ; i++)
 		if (sv.configstrings[i][0])
 		{
 			buf.WriteByte(q2svc_configstring);

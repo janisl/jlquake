@@ -190,7 +190,7 @@ PF_Configstring
 */
 void PF_Configstring (int index, const char *val)
 {
-	if (index < 0 || index >= MAX_CONFIGSTRINGS)
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
 		Com_Error (ERR_DROP, "configstring: bad index %i\n", index);
 
 	if (!val)

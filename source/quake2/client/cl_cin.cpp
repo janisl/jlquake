@@ -140,7 +140,7 @@ void CIN_SkipCinematic()
 	{
 		return;
 	}
-	if (!cl.attractloop && cls.realtime - cinTable[CL_handle]->StartTime > 1000)
+	if (!cl.q2_attractloop && cls.realtime - cinTable[CL_handle]->StartTime > 1000)
 	{
 		// skip the rest of the cinematic
 		SCR_StopCinematic();

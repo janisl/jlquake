@@ -96,12 +96,12 @@ void CL_AddNetgraph (void)
 	for (i=0 ; i<clc.netchan.dropped ; i++)
 		SCR_DebugGraph (30, 0x40);
 
-	for (i=0 ; i<cl.surpressCount ; i++)
+	for (i=0 ; i<cl.q2_surpressCount ; i++)
 		SCR_DebugGraph (30, 0xdf);
 
 	// see what the latency was on this packet
-	in = clc.netchan.incomingAcknowledged & (CMD_BACKUP-1);
-	ping = cls.realtime - cl.cmd_time[in];
+	in = clc.netchan.incomingAcknowledged & (CMD_BACKUP_Q2-1);
+	ping = cls.realtime - cl.q2_cmd_time[in];
 	ping /= 30;
 	if (ping > 30)
 		ping = 30;
@@ -432,7 +432,7 @@ SCR_DrawNet
 */
 void SCR_DrawNet (void)
 {
-	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP - 1)
+	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1)
 		return;
 
 	UI_DrawNamedPic (scr_vrect.x+64, scr_vrect.y, "net");
@@ -522,7 +522,7 @@ void SCR_DrawConsole (void)
 		return;
 	}
 
-	if (cls.state != CA_ACTIVE || !cl.refresh_prepped)
+	if (cls.state != CA_ACTIVE || !cl.q2_refresh_prepped)
 	{	// connected, but can't render
 		Con_DrawConsole (0.5);
 		UI_FillPal (0, viddef.height/2, viddef.width, viddef.height/2, 0);
@@ -550,7 +550,7 @@ SCR_BeginLoadingPlaque
 void SCR_BeginLoadingPlaque(bool Clear)
 {
 	S_StopAllSounds ();
-	cl.sound_prepped = false;		// don't play ambients
+	cl.q2_sound_prepped = false;		// don't play ambients
 	CDAudio_Stop ();
 	if (cls.disable_screen)
 		return;
@@ -832,9 +832,9 @@ void SCR_ExecuteLayoutString (const char *s)
 	char	*token;
 	int		width;
 	int		index;
-	clientinfo_t	*ci;
+	q2clientinfo_t	*ci;
 
-	if (cls.state != CA_ACTIVE || !cl.refresh_prepped)
+	if (cls.state != CA_ACTIVE || !cl.q2_refresh_prepped)
 		return;
 
 	if (!s[0])
@@ -891,9 +891,9 @@ void SCR_ExecuteLayoutString (const char *s)
 			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
 			if (value >= MAX_IMAGES_Q2)
 				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES_Q2");
-			if (cl.configstrings[CS_IMAGES+value])
+			if (cl.q2_configstrings[Q2CS_IMAGES+value])
 			{
-				UI_DrawNamedPic (x, y, cl.configstrings[CS_IMAGES+value]);
+				UI_DrawNamedPic (x, y, cl.q2_configstrings[Q2CS_IMAGES+value]);
 			}
 			continue;
 		}
@@ -911,7 +911,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			value = String::Atoi(token);
 			if (value >= MAX_CLIENTS_Q2 || value < 0)
 				Com_Error (ERR_DROP, "client >= MAX_CLIENTS_Q2");
-			ci = &cl.clientinfo[value];
+			ci = &cl.q2_clientinfo[value];
 
 			token = String::Parse2 (&s);
 			score = String::Atoi(token);
@@ -929,7 +929,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			DrawString (x+32, y+24, va("Time:  %i", time));
 
 			if (!ci->icon)
-				ci = &cl.baseclientinfo;
+				ci = &cl.q2_baseclientinfo;
 			UI_DrawNamedPic (x, y, ci->iconname);
 			continue;
 		}
@@ -948,7 +948,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			value = String::Atoi(token);
 			if (value >= MAX_CLIENTS_Q2 || value < 0)
 				Com_Error (ERR_DROP, "client >= MAX_CLIENTS_Q2");
-			ci = &cl.clientinfo[value];
+			ci = &cl.q2_clientinfo[value];
 
 			token = String::Parse2 (&s);
 			score = String::Atoi(token);
@@ -1047,12 +1047,12 @@ void SCR_ExecuteLayoutString (const char *s)
 		{
 			token = String::Parse2 (&s);
 			index = String::Atoi(token);
-			if (index < 0 || index >= MAX_CONFIGSTRINGS)
+			if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
 				Com_Error (ERR_DROP, "Bad stat_string index");
 			index = cl.q2_frame.playerstate.stats[index];
-			if (index < 0 || index >= MAX_CONFIGSTRINGS)
+			if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
 				Com_Error (ERR_DROP, "Bad stat_string index");
-			DrawString (x, y, cl.configstrings[index]);
+			DrawString (x, y, cl.q2_configstrings[index]);
 			continue;
 		}
 
@@ -1114,7 +1114,7 @@ is based on the stats array
 */
 void SCR_DrawStats (void)
 {
-	SCR_ExecuteLayoutString (cl.configstrings[CS_STATUSBAR]);
+	SCR_ExecuteLayoutString (cl.q2_configstrings[Q2CS_STATUSBAR]);
 }
 
 
@@ -1130,7 +1130,7 @@ void SCR_DrawLayout (void)
 {
 	if (!cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS])
 		return;
-	SCR_ExecuteLayoutString (cl.layout);
+	SCR_ExecuteLayoutString (cl.q2_layout);
 }
 
 //=======================================================
@@ -1242,7 +1242,7 @@ void SCR_UpdateScreen (void)
 
 	R_EndFrame(NULL, NULL);
 
-	if (cls.state == CA_ACTIVE && cl.refresh_prepped && cl.q2_frame.valid)
+	if (cls.state == CA_ACTIVE && cl.q2_refresh_prepped && cl.q2_frame.valid)
 	{
 		CL_UpdateParticles(800);
 	}

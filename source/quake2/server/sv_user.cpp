@@ -96,7 +96,7 @@ void SV_New_f (void)
 	sv_client->netchan.message.WriteShort(playernum);
 
 	// send full levelname
-	sv_client->netchan.message.WriteString2(sv.configstrings[CS_NAME]);
+	sv_client->netchan.message.WriteString2(sv.configstrings[Q2CS_NAME]);
 
 	//
 	// game server
@@ -146,7 +146,7 @@ void SV_Configstrings_f (void)
 	// write a packet full of data
 
 	while ( sv_client->netchan.message.cursize < MAX_MSGLEN_Q2/2 
-		&& start < MAX_CONFIGSTRINGS)
+		&& start < MAX_CONFIGSTRINGS_Q2)
 	{
 		if (sv.configstrings[start][0])
 		{
@@ -159,7 +159,7 @@ void SV_Configstrings_f (void)
 
 	// send next command
 
-	if (start == MAX_CONFIGSTRINGS)
+	if (start == MAX_CONFIGSTRINGS_Q2)
 	{
 		sv_client->netchan.message.WriteByte(q2svc_stufftext);
 		sv_client->netchan.message.WriteString2(va("cmd baselines %i 0\n",svs.spawncount) );

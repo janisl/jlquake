@@ -34,10 +34,10 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 	// determine what model the client is using
 	model[0] = 0;
 	q2entity_state_t *ent = &clq2_entities[entnum].current;
-	n = CS_PLAYERSKINS + ent->number - 1;
-	if (cl.configstrings[n][0])
+	n = Q2CS_PLAYERSKINS + ent->number - 1;
+	if (cl.q2_configstrings[n][0])
 	{
-		p = strchr(cl.configstrings[n], '\\');
+		p = strchr(cl.q2_configstrings[n], '\\');
 		if (p)
 		{
 			p += 1;

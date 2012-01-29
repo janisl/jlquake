@@ -63,17 +63,17 @@ int SV_FindIndex (char *name, int start, int max, qboolean create)
 
 int SV_ModelIndex (char *name)
 {
-	return SV_FindIndex (name, CS_MODELS, MAX_MODELS_Q2, true);
+	return SV_FindIndex (name, Q2CS_MODELS, MAX_MODELS_Q2, true);
 }
 
 int SV_SoundIndex (char *name)
 {
-	return SV_FindIndex (name, CS_SOUNDS, MAX_SOUNDS_Q2, true);
+	return SV_FindIndex (name, Q2CS_SOUNDS, MAX_SOUNDS_Q2, true);
 }
 
 int SV_ImageIndex (char *name)
 {
-	return SV_FindIndex (name, CS_IMAGES, MAX_IMAGES_Q2, true);
+	return SV_FindIndex (name, Q2CS_IMAGES, MAX_IMAGES_Q2, true);
 }
 
 
@@ -188,15 +188,15 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	sv.attractloop = attractloop;
 
 	// save name for levels that don't set message
-	String::Cpy(sv.configstrings[CS_NAME], server);
+	String::Cpy(sv.configstrings[Q2CS_NAME], server);
 	if (Cvar_VariableValue ("deathmatch"))
 	{
-		sprintf(sv.configstrings[CS_AIRACCEL], "%g", sv_airaccelerate->value);
+		sprintf(sv.configstrings[Q2CS_AIRACCEL], "%g", sv_airaccelerate->value);
 		pm_airaccelerate = sv_airaccelerate->value;
 	}
 	else
 	{
-		String::Cpy(sv.configstrings[CS_AIRACCEL], "0");
+		String::Cpy(sv.configstrings[Q2CS_AIRACCEL], "0");
 		pm_airaccelerate = 0;
 	}
 
@@ -216,7 +216,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	sv.time = 1000;
 	
 	String::Cpy(sv.name, server);
-	String::Cpy(sv.configstrings[CS_NAME], server);
+	String::Cpy(sv.configstrings[Q2CS_NAME], server);
 
 	if (serverstate != ss_game)
 	{
@@ -224,12 +224,12 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	}
 	else
 	{
-		String::Sprintf (sv.configstrings[CS_MODELS+1],sizeof(sv.configstrings[CS_MODELS+1]),
+		String::Sprintf (sv.configstrings[Q2CS_MODELS+1],sizeof(sv.configstrings[Q2CS_MODELS+1]),
 			"maps/%s.bsp", server);
-		CM_LoadMap (sv.configstrings[CS_MODELS+1], false, &checksum);
+		CM_LoadMap (sv.configstrings[Q2CS_MODELS+1], false, &checksum);
 	}
 	sv.models[1] = 0;
-	String::Sprintf (sv.configstrings[CS_MAPCHECKSUM],sizeof(sv.configstrings[CS_MAPCHECKSUM]),
+	String::Sprintf (sv.configstrings[Q2CS_MAPCHECKSUM],sizeof(sv.configstrings[Q2CS_MAPCHECKSUM]),
 		"%i", (unsigned)checksum);
 
 	//
@@ -239,7 +239,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	
 	for (i=1 ; i< CM_NumInlineModels() ; i++)
 	{
-		String::Sprintf (sv.configstrings[CS_MODELS+1+i], sizeof(sv.configstrings[CS_MODELS+1+i]),
+		String::Sprintf (sv.configstrings[Q2CS_MODELS+1+i], sizeof(sv.configstrings[Q2CS_MODELS+1+i]),
 			"*%i", i);
 		sv.models[i+1] = CM_InlineModel(i);
 	}

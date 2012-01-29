@@ -14,6 +14,10 @@
 //**
 //**************************************************************************
 
+#define MAX_CLIENTWEAPONMODELS_Q2		20		// PGM -- upped from 16 to fit the chainfist vwep
+
+#define CMD_BACKUP_Q2		64	// allow a lot of command backups for very fast systems
+
 struct q2centity_t
 {
 	q2entity_state_t baseline;	// delta from this if not from a previous frame
@@ -38,4 +42,15 @@ struct q2frame_t
 	q2player_state_t playerstate;
 	int num_entities;
 	int parse_entities;	// non-masked index into cl_parse_entities array
+};
+
+struct q2clientinfo_t
+{
+	char name[MAX_QPATH];
+	char cinfo[MAX_QPATH];
+	image_t* skin;
+	image_t* icon;
+	char iconname[MAX_QPATH];
+	qhandle_t model;
+	qhandle_t weaponmodel[MAX_CLIENTWEAPONMODELS_Q2];
 };

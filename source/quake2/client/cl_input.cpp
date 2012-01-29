@@ -527,13 +527,11 @@ void CL_SendCmd (void)
 	// build a command even if not connected
 
 	// save this command off for prediction
-	i = clc.netchan.outgoingSequence & (CMD_BACKUP-1);
-	cmd = &cl.cmds[i];
-	cl.cmd_time[i] = cls.realtime;	// for netgraph ping calculation
+	i = clc.netchan.outgoingSequence & (CMD_BACKUP_Q2-1);
+	cmd = &cl.q2_cmds[i];
+	cl.q2_cmd_time[i] = cls.realtime;	// for netgraph ping calculation
 
 	*cmd = CL_CreateCmd ();
-
-	cl.cmd = *cmd;
 
 	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
 		return;
@@ -579,19 +577,19 @@ void CL_SendCmd (void)
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
-	i = (clc.netchan.outgoingSequence-2) & (CMD_BACKUP-1);
-	cmd = &cl.cmds[i];
+	i = (clc.netchan.outgoingSequence-2) & (CMD_BACKUP_Q2-1);
+	cmd = &cl.q2_cmds[i];
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
 	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (clc.netchan.outgoingSequence-1) & (CMD_BACKUP-1);
-	cmd = &cl.cmds[i];
+	i = (clc.netchan.outgoingSequence-1) & (CMD_BACKUP_Q2-1);
+	cmd = &cl.q2_cmds[i];
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
-	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP-1);
-	cmd = &cl.cmds[i];
+	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP_Q2-1);
+	cmd = &cl.q2_cmds[i];
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands

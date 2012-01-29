@@ -80,9 +80,6 @@ extern int g_console_field_width;
 
 struct clientActive_t : clientActiveCommon_t
 {
-	int			timeoutcount;		// it requres several frames in a timeout condition
-									// to disconnect, preventing debugging breaks from
-									// causing immediate disconnects on continue
 	clSnapshot_t	snap;			// latest received from server
 
 	int			oldServerTime;		// to prevent time from flowing bakcwards
@@ -95,8 +92,6 @@ struct clientActive_t : clientActiveCommon_t
 
 	gameState_t	gameState;			// configstrings
 	char		mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
-
-	int			parseEntitiesNum;	// index (not anded off) into cl_parse_entities[]
 
 	int			mouseDx[2], mouseDy[2];	// added to by mouse events
 	int			mouseIndex;

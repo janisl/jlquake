@@ -156,9 +156,9 @@ void CL_RegisterSounds (void)
 	CLQ2_RegisterTEntSounds ();
 	for (i=1 ; i<MAX_SOUNDS_Q2 ; i++)
 	{
-		if (!cl.configstrings[CS_SOUNDS+i][0])
+		if (!cl.q2_configstrings[Q2CS_SOUNDS+i][0])
 			break;
-		cl.sound_precache[i] = S_RegisterSound (cl.configstrings[CS_SOUNDS+i]);
+		cl.sound_precache[i] = S_RegisterSound (cl.q2_configstrings[Q2CS_SOUNDS+i]);
 		Sys_SendKeyEvents ();	// pump message loop
 		IN_ProcessEvents();
 	}
@@ -294,11 +294,11 @@ void CL_ParseServerData (void)
 		Com_Error (ERR_DROP,"Server returned version %i, not %i", i, PROTOCOL_VERSION);
 
 	cl.servercount = net_message.ReadLong();
-	cl.attractloop = net_message.ReadByte ();
+	cl.q2_attractloop = net_message.ReadByte ();
 
 	// game directory
 	str = const_cast<char*>(net_message.ReadString2());
-	String::NCpy(cl.gamedir, str, sizeof(cl.gamedir)-1);
+	String::NCpy(cl.q2_gamedir, str, sizeof(cl.q2_gamedir)-1);
 
 	// set gamedir
 	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || String::Cmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
@@ -322,7 +322,7 @@ void CL_ParseServerData (void)
 		Com_Printf ("%c%s\n", 2, str);
 
 		// need to prep refresh at next oportunity
-		cl.refresh_prepped = false;
+		cl.q2_refresh_prepped = false;
 	}
 }
 
@@ -352,7 +352,7 @@ CL_LoadClientinfo
 
 ================
 */
-void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
+void CL_LoadClientinfo (q2clientinfo_t *ci, const char *s)
 {
 	int i;
 	char		model_name[MAX_QPATH];
@@ -475,11 +475,11 @@ Load the skin, icon, and model for a client
 void CL_ParseClientinfo (int player)
 {
 	char			*s;
-	clientinfo_t	*ci;
+	q2clientinfo_t	*ci;
 
-	s = cl.configstrings[player+CS_PLAYERSKINS];
+	s = cl.q2_configstrings[player+Q2CS_PLAYERSKINS];
 
-	ci = &cl.clientinfo[player];
+	ci = &cl.q2_clientinfo[player];
 
 	CL_LoadClientinfo (ci, s);
 }
@@ -496,47 +496,47 @@ void CL_ParseConfigString (void)
 	char	*s;
 
 	i = net_message.ReadShort();
-	if (i < 0 || i >= MAX_CONFIGSTRINGS)
-		Com_Error (ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
+	if (i < 0 || i >= MAX_CONFIGSTRINGS_Q2)
+		Com_Error (ERR_DROP, "configstring > MAX_CONFIGSTRINGS_Q2");
 	s = const_cast<char*>(net_message.ReadString2());
-	String::Cpy(cl.configstrings[i], s);
+	String::Cpy(cl.q2_configstrings[i], s);
 
 	// do something apropriate 
 
-	if (i >= CS_LIGHTS && i < CS_LIGHTS+MAX_LIGHTSTYLES_Q2)
+	if (i >= Q2CS_LIGHTS && i < Q2CS_LIGHTS+MAX_LIGHTSTYLES_Q2)
 	{
-		CL_SetLightStyle(i - CS_LIGHTS, cl.configstrings[i]);
+		CL_SetLightStyle(i - Q2CS_LIGHTS, cl.q2_configstrings[i]);
 	}
-	else if (i == CS_CDTRACK)
+	else if (i == Q2CS_CDTRACK)
 	{
-		if (cl.refresh_prepped)
-			CDAudio_Play (String::Atoi(cl.configstrings[CS_CDTRACK]), true);
+		if (cl.q2_refresh_prepped)
+			CDAudio_Play (String::Atoi(cl.q2_configstrings[Q2CS_CDTRACK]), true);
 	}
-	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS_Q2)
+	else if (i >= Q2CS_MODELS && i < Q2CS_MODELS+MAX_MODELS_Q2)
 	{
-		if (cl.refresh_prepped)
+		if (cl.q2_refresh_prepped)
 		{
-			cl.model_draw[i-CS_MODELS] = R_RegisterModel(cl.configstrings[i]);
-			if (cl.configstrings[i][0] == '*')
-				cl.model_clip[i-CS_MODELS] = CM_InlineModel(String::Atoi(cl.configstrings[i] + 1));
+			cl.model_draw[i-Q2CS_MODELS] = R_RegisterModel(cl.q2_configstrings[i]);
+			if (cl.q2_configstrings[i][0] == '*')
+				cl.model_clip[i-Q2CS_MODELS] = CM_InlineModel(String::Atoi(cl.q2_configstrings[i] + 1));
 			else
-				cl.model_clip[i-CS_MODELS] = 0;
+				cl.model_clip[i-Q2CS_MODELS] = 0;
 		}
 	}
-	else if (i >= CS_SOUNDS && i < CS_SOUNDS+MAX_MODELS_Q2)
+	else if (i >= Q2CS_SOUNDS && i < Q2CS_SOUNDS+MAX_MODELS_Q2)
 	{
-		if (cl.refresh_prepped)
-			cl.sound_precache[i-CS_SOUNDS] = S_RegisterSound (cl.configstrings[i]);
+		if (cl.q2_refresh_prepped)
+			cl.sound_precache[i-Q2CS_SOUNDS] = S_RegisterSound (cl.q2_configstrings[i]);
 	}
-	else if (i >= CS_IMAGES && i < CS_IMAGES+MAX_MODELS_Q2)
+	else if (i >= Q2CS_IMAGES && i < Q2CS_IMAGES+MAX_MODELS_Q2)
 	{
-		if (cl.refresh_prepped)
-			cl.image_precache[i-CS_IMAGES] = R_RegisterPic (cl.configstrings[i]);
+		if (cl.q2_refresh_prepped)
+			cl.q2_image_precache[i-Q2CS_IMAGES] = R_RegisterPic (cl.q2_configstrings[i]);
 	}
-	else if (i >= CS_PLAYERSKINS && i < CS_PLAYERSKINS+MAX_CLIENTS_Q2)
+	else if (i >= Q2CS_PLAYERSKINS && i < Q2CS_PLAYERSKINS+MAX_CLIENTS_Q2)
 	{
-		if (cl.refresh_prepped)
-			CL_ParseClientinfo (i-CS_PLAYERSKINS);
+		if (cl.q2_refresh_prepped)
+			CL_ParseClientinfo (i-Q2CS_PLAYERSKINS);
 	}
 }
 
@@ -758,7 +758,7 @@ void CL_ParseServerMessage (void)
 
 		case q2svc_layout:
 			s = const_cast<char*>(net_message.ReadString2());
-			String::NCpy(cl.layout, s, sizeof(cl.layout)-1);
+			String::NCpy(cl.q2_layout, s, sizeof(cl.q2_layout)-1);
 			break;
 
 		case q2svc_playerinfo:

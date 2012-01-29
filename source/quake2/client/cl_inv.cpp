@@ -31,7 +31,7 @@ void CL_ParseInventory (void)
 	int		i;
 
 	for (i=0 ; i<MAX_ITEMS_Q2 ; i++)
-		cl.inventory[i] = net_message.ReadShort();
+		cl.q2_inventory[i] = net_message.ReadShort();
 }
 
 
@@ -83,7 +83,7 @@ void CL_DrawInventory (void)
 	{
 		if (i==selected)
 			selected_num = num;
-		if (cl.inventory[i])
+		if (cl.q2_inventory[i])
 		{
 			index[num] = i;
 			num++;
@@ -111,7 +111,7 @@ void CL_DrawInventory (void)
 	{
 		item = index[i];
 		// search for a binding
-		String::Sprintf (binding, sizeof(binding), "use %s", cl.configstrings[CS_ITEMS+item]);
+		String::Sprintf (binding, sizeof(binding), "use %s", cl.q2_configstrings[Q2CS_ITEMS+item]);
 		bind = "";
 		for (j=0 ; j<256 ; j++)
 			if (keybindings[j] && !String::ICmp(keybindings[j], binding))
@@ -120,8 +120,8 @@ void CL_DrawInventory (void)
 				break;
 			}
 
-		String::Sprintf (string, sizeof(string), "%6s %3i %s", bind, cl.inventory[item],
-			cl.configstrings[CS_ITEMS+item] );
+		String::Sprintf (string, sizeof(string), "%6s %3i %s", bind, cl.q2_inventory[item],
+			cl.q2_configstrings[Q2CS_ITEMS+item] );
 		if (item != selected)
 			SetStringHighBit (string);
 		else	// draw a blinky cursor by the selected item

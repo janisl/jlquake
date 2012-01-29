@@ -65,7 +65,7 @@ typedef struct
 	char		name[MAX_QPATH];			// map name, or cinematic name
 	clipHandle_t	models[MAX_MODELS_Q2];
 
-	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
+	char		configstrings[MAX_CONFIGSTRINGS_Q2][MAX_QPATH];
 	q2entity_state_t	baselines[MAX_EDICTS_Q2];
 
 	// the multicast buffer is used to send a message to a set of clients
