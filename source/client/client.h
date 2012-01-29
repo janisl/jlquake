@@ -377,7 +377,6 @@ struct clientStaticCommon_t
 };
 
 extern clientActive_t cl;
-extern clientActive_t* cl_common;
 extern clientConnectionCommon_t* clc_common;
 extern clientStaticCommon_t* cls_common;
 

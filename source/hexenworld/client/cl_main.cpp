@@ -941,7 +941,6 @@ void CL_Init (void)
 {
 	cls_common = &cls;
 	clc_common = &clc;
-	cl_common = &cl;
 	CL_SharedInit();
 
 	cls.state = CA_DISCONNECTED;
