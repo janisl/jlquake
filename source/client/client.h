@@ -51,7 +51,9 @@ struct cshift_t
 	int		percent;		// 0-256
 };
 
-struct clientActiveCommon_t
+//	The clientActive_t structure is wiped completely at every new gamestate_t,
+// potentially several times during an established connection.
+struct clientActive_t
 {
 	int serverTime;			// may be paused during play
 
@@ -374,7 +376,7 @@ struct clientStaticCommon_t
 	char qh_spawnparms[MAX_MAPSTRING];	// to restart a level
 };
 
-extern clientActiveCommon_t* cl_common;
+extern clientActive_t* cl_common;
 extern clientConnectionCommon_t* clc_common;
 extern clientStaticCommon_t* cls_common;
 

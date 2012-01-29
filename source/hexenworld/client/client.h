@@ -44,14 +44,6 @@ struct clientConnection_t : clientConnectionCommon_t
 
 extern clientConnection_t clc;
 
-//
-// the client_state_t structure is wiped completely at every
-// server signon
-//
-struct client_state_t : clientActiveCommon_t
-{
-};
-
 
 // edict->flags
 #define	FL_FLY					1
@@ -131,7 +123,7 @@ extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
 extern	Cvar*	cl_teamcolor;
 
-extern	client_state_t	cl;
+extern	clientActive_t	cl;
 
 //=============================================================================
 

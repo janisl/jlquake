@@ -65,14 +65,6 @@ struct clientConnection_t : clientConnectionCommon_t
 
 extern clientConnection_t clc;
 
-//
-// the client_state_t structure is wiped completely at every
-// server signon
-//
-struct client_state_t : clientActiveCommon_t
-{
-};
-
 
 //
 // cvars
@@ -102,7 +94,7 @@ extern	Cvar*	m_forward;
 extern	Cvar*	m_side;
 
 
-extern	client_state_t	cl;
+extern	clientActive_t	cl;
 
 //=============================================================================
 

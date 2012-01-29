@@ -35,15 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern char cl_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
 extern int num_cl_weaponmodels;
 
-//
-// the client_state_t structure is wiped completely at every
-// server map change
-//
-struct client_state_t : clientActiveCommon_t
-{
-};
-
-extern	client_state_t	cl;
+extern	clientActive_t	cl;
 
 struct clientConnection_t : clientConnectionCommon_t
 {

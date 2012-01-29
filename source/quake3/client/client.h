@@ -31,20 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	RETRANSMIT_TIMEOUT	3000	// time between connection packet retransmits
 
-/*
-=============================================================================
-
-the clientActive_t structure is wiped completely at every
-new gamestate_t, potentially several times during an established connection
-
-=============================================================================
-*/
-
 extern int g_console_field_width;
-
-struct clientActive_t : clientActiveCommon_t
-{
-};
 
 extern	clientActive_t		cl;
 

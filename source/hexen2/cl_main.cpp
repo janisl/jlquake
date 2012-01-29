@@ -35,7 +35,7 @@ Cvar	*cl_lightlevel;
 
 client_static_t	cls;
 clientConnection_t clc;
-client_state_t	cl;
+clientActive_t	cl;
 
 /*
 =====================

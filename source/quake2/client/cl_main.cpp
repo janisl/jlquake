@@ -86,7 +86,7 @@ Cvar	*cl_vwep;
 
 client_static_t	cls;
 clientConnection_t clc;
-client_state_t	cl;
+clientActive_t	cl;
 
 q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
