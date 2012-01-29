@@ -305,7 +305,7 @@ void SVC_Status( netadr_t from ) {
 	char	status[MAX_MSGLEN_Q3];
 	int		i;
 	client_t	*cl;
-	playerState_t	*ps;
+	q3playerState_t	*ps;
 	int		statusLength;
 	int		playerLength;
 	char	infostring[MAX_INFO_STRING_Q3];
@@ -611,7 +611,7 @@ void SV_CalcPings( void ) {
 	client_t	*cl;
 	int			total, count;
 	int			delta;
-	playerState_t	*ps;
+	q3playerState_t	*ps;
 
 	for (i=0 ; i < sv_maxclients->integer ; i++) {
 		cl = &svs.clients[i];
@@ -630,7 +630,7 @@ void SV_CalcPings( void ) {
 
 		total = 0;
 		count = 0;
-		for ( j = 0 ; j < PACKET_BACKUP ; j++ ) {
+		for ( j = 0 ; j < PACKET_BACKUP_Q3 ; j++ ) {
 			if ( cl->frames[j].messageAcked <= 0 ) {
 				continue;
 			}

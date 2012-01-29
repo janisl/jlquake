@@ -49,11 +49,11 @@ A normal server packet will look like:
 =============
 SV_EmitPacketEntities
 
-Writes a delta update of an entityState_t list to the message.
+Writes a delta update of an q3entityState_t list to the message.
 =============
 */
 static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to, QMsg *msg ) {
-	entityState_t	*oldent, *newent;
+	q3entityState_t	*oldent, *newent;
 	int		oldindex, newindex;
 	int		oldnum, newnum;
 	int		from_num_entities;
@@ -126,7 +126,7 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 	int					snapFlags;
 
 	// this is the snapshot we are creating
-	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK ];
+	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK_Q3 ];
 
 	// try to use a previous frame as the source for delta compressing the snapshot
 	if ( client->deltaMessage <= 0 || client->state != CS_ACTIVE ) {
@@ -134,14 +134,14 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 		oldframe = NULL;
 		lastframe = 0;
 	} else if ( client->netchan.outgoingSequence - client->deltaMessage 
-		>= (PACKET_BACKUP - 3) ) {
+		>= (PACKET_BACKUP_Q3 - 3) ) {
 		// client hasn't gotten a good message through in a long time
 		Com_DPrintf ("%s: Delta request from out of date packet.\n", client->name);
 		oldframe = NULL;
 		lastframe = 0;
 	} else {
 		// we have a valid snapshot to delta from
-		oldframe = &client->frames[ client->deltaMessage & PACKET_MASK ];
+		oldframe = &client->frames[ client->deltaMessage & PACKET_MASK_Q3 ];
 		lastframe = client->netchan.outgoingSequence - client->deltaMessage;
 
 		// the snapshot's entities may still have rolled off the buffer, though
@@ -439,17 +439,17 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 	snapshotEntityNumbers_t		entityNumbers;
 	int							i;
 	sharedEntity_t				*ent;
-	entityState_t				*state;
+	q3entityState_t				*state;
 	svEntity_t					*svEnt;
 	sharedEntity_t				*clent;
 	int							clientNum;
-	playerState_t				*ps;
+	q3playerState_t				*ps;
 
 	// bump the counter used to prevent double adding
 	sv.snapshotCounter++;
 
 	// this is the frame we are creating
-	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK ];
+	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK_Q3 ];
 
 	// clear everything in this snapshot
 	entityNumbers.numSnapshotEntities = 0;
@@ -463,7 +463,7 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 		return;
 	}
 
-	// grab the current playerState_t
+	// grab the current q3playerState_t
 	ps = SV_GameClientNum( client - svs.clients );
 	frame->ps = *ps;
 
@@ -557,9 +557,9 @@ void SV_SendMessageToClient( QMsg *msg, client_t *client ) {
 	int			rateMsec;
 
 	// record information about the message
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSize = msg->cursize;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSent = svs.time;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageAcked = -1;
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSize = msg->cursize;
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.time;
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
 
 	// send the datagram
 	SV_Netchan_Transmit( client, msg );	//msg->cursize, msg->data );
@@ -630,8 +630,8 @@ void SV_SendClientSnapshot( client_t *client ) {
 	// (re)send any reliable server commands
 	SV_UpdateServerCommandsToClient( client, &msg );
 
-	// send over all the relevant entityState_t
-	// and the playerState_t
+	// send over all the relevant q3entityState_t
+	// and the q3playerState_t
 	SV_WriteSnapshotToClient( client, &msg );
 
 	// Add any download data if the client is downloading

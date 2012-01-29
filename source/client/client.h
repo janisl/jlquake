@@ -30,6 +30,7 @@
 #include "quakeclientdefs.h"
 #include "hexen2clientdefs.h"
 #include "quake2clientdefs.h"
+#include "quake3clientdefs.h"
 #include "game/particles.h"
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
@@ -252,6 +253,45 @@ struct clientActiveCommon_t
 
 	q2clientinfo_t q2_clientinfo[MAX_CLIENTS_Q2];
 	q2clientinfo_t q2_baseclientinfo;
+
+	q3clSnapshot_t q3_snap;			// latest received from server
+
+	int q3_oldServerTime;		// to prevent time from flowing bakcwards
+	int q3_oldFrameServerTime;	// to check tournament restarts
+	int q3_serverTimeDelta;	// cl.serverTime = cls.realtime + cl.serverTimeDelta
+									// this value changes as net lag varies
+	bool q3_extrapolatedSnapshot;	// set if any cgame frame has been forced to extrapolate
+									// cleared when CL_AdjustTimeDelta looks at it
+	bool q3_newSnapshots;		// set on parse of any valid packet
+
+	q3gameState_t q3_gameState;			// configstrings
+	char q3_mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
+
+	int q3_mouseDx[2];	// added to by mouse events
+	int q3_mouseDy[2];
+	int q3_mouseIndex;
+	int q3_joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
+
+	// cgame communicates a few values to the client system
+	int q3_cgameUserCmdValue;	// current weapon to add to q3usercmd_t
+	float q3_cgameSensitivity;
+
+	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
+	// properly generated command
+	q3usercmd_t q3_cmds[CMD_BACKUP_Q3];	// each mesage will send several old cmds
+	int q3_cmdNumber;			// incremented each frame, because multiple
+									// frames may need to be packed into a single packet
+
+	q3outPacket_t q3_outPackets[PACKET_BACKUP_Q3];	// information about each packet we have sent out
+
+	int q3_serverId;			// included in each client message so the server
+												// can tell if it is for a prior map_restart
+	// big stuff at end of structure so most offsets are 15 bits or less
+	q3clSnapshot_t q3_snapshots[PACKET_BACKUP_Q3];
+
+	q3entityState_t q3_entityBaselines[MAX_GENTITIES_Q3];	// for delta compression when not in previous frame
+
+	q3entityState_t q3_parseEntities[MAX_PARSE_ENTITIES_Q3];
 };
 
 // download type

@@ -24,10 +24,21 @@ enum
 	KEYCATCH_CGAME			= 0x0008,
 };
 
+enum
+{
+	AXIS_SIDE,
+	AXIS_FORWARD,
+	AXIS_UP,
+	AXIS_ROLL,
+	AXIS_YAW,
+	AXIS_PITCH,
+	MAX_JOYSTICK_AXIS
+};
+
 struct keyname_t
 {
-	const char*	name;
-	int			keynum;
+	const char* name;
+	int keynum;
 };
 
 void IN_Init();
@@ -36,6 +47,6 @@ void IN_Frame();
 
 void Sys_SendKeyEvents();
 
-extern int			in_keyCatchers;		// bit flags
+extern int in_keyCatchers;		// bit flags
 
 extern keyname_t keynames[];

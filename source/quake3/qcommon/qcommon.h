@@ -33,23 +33,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void MSG_Init (QMsg *buf, byte *data, int length);
 void MSG_InitOOB( QMsg *buf, byte *data, int length );
 
-struct entityState_s;
-struct playerState_s;
-
-
 void MSG_WriteDeltaUsercmd( QMsg *msg, q3usercmd_t* from, q3usercmd_t* to );
 void MSG_ReadDeltaUsercmd( QMsg *msg, q3usercmd_t* from, q3usercmd_t* to );
 
 void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t *to );
 void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t *to );
 
-void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
+void MSG_WriteDeltaEntity( QMsg *msg, q3entityState_t* from, q3entityState_t* to
 						   , qboolean force );
-void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to, 
+void MSG_ReadDeltaEntity( QMsg *msg, q3entityState_t *from, q3entityState_t *to, 
 						 int number );
 
-void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
-void MSG_ReadDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_WriteDeltaPlayerstate( QMsg *msg, q3playerState_t* from, q3playerState_t* to );
+void MSG_ReadDeltaPlayerstate( QMsg *msg, q3playerState_t* from, q3playerState_t* to );
 
 
 void MSG_ReportChangeVectors_f( void );
@@ -63,10 +59,6 @@ NET
 
 ==============================================================
 */
-
-#define	PACKET_BACKUP	32	// number of old messages that must be kept on client and
-							// server for delta comrpession and ping estimation
-#define	PACKET_MASK		(PACKET_BACKUP-1)
 
 #define	MAX_PACKET_USERCMDS		32		// max number of q3usercmd_t in a packet
 
@@ -430,16 +422,6 @@ NON-PORTABLE SYSTEM SERVICES
 
 ==============================================================
 */
-
-typedef enum {
-	AXIS_SIDE,
-	AXIS_FORWARD,
-	AXIS_UP,
-	AXIS_ROLL,
-	AXIS_YAW,
-	AXIS_PITCH,
-	MAX_JOYSTICK_AXIS
-} joystickAxis_t;
 
 sysEvent_t	Sys_GetEvent( void );
 

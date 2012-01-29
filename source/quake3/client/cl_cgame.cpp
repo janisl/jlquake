@@ -36,8 +36,8 @@ extern qboolean getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
 CL_GetGameState
 ====================
 */
-void CL_GetGameState( gameState_t *gs ) {
-	*gs = cl.gameState;
+void CL_GetGameState( q3gameState_t *gs ) {
+	*gs = cl.q3_gameState;
 }
 
 /*
@@ -59,23 +59,23 @@ qboolean CL_GetUserCmd( int cmdNumber, q3usercmd_t *ucmd ) {
 	// cmds[cmdNumber] is the last properly generated command
 
 	// can't return anything that we haven't created yet
-	if ( cmdNumber > cl.cmdNumber ) {
-		Com_Error( ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.cmdNumber );
+	if ( cmdNumber > cl.q3_cmdNumber ) {
+		Com_Error( ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber );
 	}
 
 	// the usercmd has been overwritten in the wrapping
 	// buffer because it is too far out of date
-	if ( cmdNumber <= cl.cmdNumber - CMD_BACKUP ) {
+	if ( cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3 ) {
 		return qfalse;
 	}
 
-	*ucmd = cl.cmds[ cmdNumber & CMD_MASK ];
+	*ucmd = cl.q3_cmds[ cmdNumber & CMD_MASK_Q3 ];
 
 	return qtrue;
 }
 
 int CL_GetCurrentCmdNumber( void ) {
-	return cl.cmdNumber;
+	return cl.q3_cmdNumber;
 }
 
 
@@ -84,7 +84,7 @@ int CL_GetCurrentCmdNumber( void ) {
 CL_GetParseEntityState
 ====================
 */
-qboolean	CL_GetParseEntityState( int parseEntityNumber, entityState_t *state ) {
+qboolean	CL_GetParseEntityState( int parseEntityNumber, q3entityState_t *state ) {
 	// can't return anything that hasn't been parsed yet
 	if ( parseEntityNumber >= cl.parseEntitiesNum ) {
 		Com_Error( ERR_DROP, "CL_GetParseEntityState: %i >= %i",
@@ -92,11 +92,11 @@ qboolean	CL_GetParseEntityState( int parseEntityNumber, entityState_t *state ) {
 	}
 
 	// can't return anything that has been overwritten in the circular buffer
-	if ( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES ) {
+	if ( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES_Q3 ) {
 		return qfalse;
 	}
 
-	*state = cl.parseEntities[ parseEntityNumber & ( MAX_PARSE_ENTITIES - 1 ) ];
+	*state = cl.q3_parseEntities[ parseEntityNumber & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 	return qtrue;
 }
 
@@ -106,8 +106,8 @@ CL_GetCurrentSnapshotNumber
 ====================
 */
 void	CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime ) {
-	*snapshotNumber = cl.snap.messageNum;
-	*serverTime = cl.snap.serverTime;
+	*snapshotNumber = cl.q3_snap.messageNum;
+	*serverTime = cl.q3_snap.serverTime;
 }
 
 /*
@@ -115,28 +115,28 @@ void	CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime ) {
 CL_GetSnapshot
 ====================
 */
-qboolean	CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
-	clSnapshot_t	*clSnap;
+qboolean	CL_GetSnapshot( int snapshotNumber, q3snapshot_t *snapshot ) {
+	q3clSnapshot_t	*clSnap;
 	int				i, count;
 
-	if ( snapshotNumber > cl.snap.messageNum ) {
+	if ( snapshotNumber > cl.q3_snap.messageNum ) {
 		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
 	}
 
 	// if the frame has fallen out of the circular buffer, we can't return it
-	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP ) {
+	if ( cl.q3_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3 ) {
 		return qfalse;
 	}
 
 	// if the frame is not valid, we can't return it
-	clSnap = &cl.snapshots[snapshotNumber & PACKET_MASK];
+	clSnap = &cl.q3_snapshots[snapshotNumber & PACKET_MASK_Q3];
 	if ( !clSnap->valid ) {
 		return qfalse;
 	}
 
 	// if the entities in the frame have fallen out of their
 	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES ) {
+	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3 ) {
 		return qfalse;
 	}
 
@@ -148,14 +148,14 @@ qboolean	CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 	Com_Memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
 	snapshot->ps = clSnap->ps;
 	count = clSnap->numEntities;
-	if ( count > MAX_ENTITIES_IN_SNAPSHOT ) {
-		Com_DPrintf( "CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT );
-		count = MAX_ENTITIES_IN_SNAPSHOT;
+	if ( count > MAX_ENTITIES_IN_SNAPSHOT_Q3 ) {
+		Com_DPrintf( "CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_Q3 );
+		count = MAX_ENTITIES_IN_SNAPSHOT_Q3;
 	}
 	snapshot->numEntities = count;
 	for ( i = 0 ; i < count ; i++ ) {
 		snapshot->entities[i] = 
-			cl.parseEntities[ ( clSnap->parseEntitiesNum + i ) & (MAX_PARSE_ENTITIES-1) ];
+			cl.q3_parseEntities[ ( clSnap->parseEntitiesNum + i ) & (MAX_PARSE_ENTITIES_Q3-1) ];
 	}
 
 	// FIXME: configstring changes and server commands!!!
@@ -169,8 +169,8 @@ CL_SetUserCmdValue
 =====================
 */
 void CL_SetUserCmdValue( int userCmdValue, float sensitivityScale ) {
-	cl.cgameUserCmdValue = userCmdValue;
-	cl.cgameSensitivity = sensitivityScale;
+	cl.q3_cgameUserCmdValue = userCmdValue;
+	cl.q3_cgameSensitivity = sensitivityScale;
 }
 
 /*
@@ -201,7 +201,7 @@ void CL_ConfigstringModified( void ) {
 	char		*old, *s;
 	int			i, index;
 	char		*dup;
-	gameState_t	oldGs;
+	q3gameState_t	oldGs;
 	int			len;
 
 	index = String::Atoi( Cmd_Argv(1) );
@@ -211,18 +211,18 @@ void CL_ConfigstringModified( void ) {
 	// get everything after "cs <num>"
 	s = Cmd_ArgsFrom(2);
 
-	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
+	old = cl.q3_gameState.stringData + cl.q3_gameState.stringOffsets[ index ];
 	if ( !String::Cmp( old, s ) ) {
 		return;		// unchanged
 	}
 
-	// build the new gameState_t
-	oldGs = cl.gameState;
+	// build the new q3gameState_t
+	oldGs = cl.q3_gameState;
 
-	Com_Memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+	Com_Memset( &cl.q3_gameState, 0, sizeof( cl.q3_gameState ) );
 
 	// leave the first 0 for uninitialized strings
-	cl.gameState.dataCount = 1;
+	cl.q3_gameState.dataCount = 1;
 		
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
 		if ( i == index ) {
@@ -236,14 +236,14 @@ void CL_ConfigstringModified( void ) {
 
 		len = String::Length( dup );
 
-		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
-			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
+		if ( len + 1 + cl.q3_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
+			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 		}
 
 		// append it to the gameState string buffer
-		cl.gameState.stringOffsets[ i ] = cl.gameState.dataCount;
-		Com_Memcpy( cl.gameState.stringData + cl.gameState.dataCount, dup, len + 1 );
-		cl.gameState.dataCount += len + 1;
+		cl.q3_gameState.stringOffsets[ i ] = cl.q3_gameState.dataCount;
+		Com_Memcpy( cl.q3_gameState.stringData + cl.q3_gameState.dataCount, dup, len + 1 );
+		cl.q3_gameState.dataCount += len + 1;
 	}
 
 	if ( index == Q3CS_SYSTEMINFO ) {
@@ -337,7 +337,7 @@ rescan:
 		// clear notify lines and outgoing commands before passing
 		// the restart to the cgame
 		Con_ClearNotify();
-		Com_Memset( cl.cmds, 0, sizeof( cl.cmds ) );
+		Com_Memset( cl.q3_cmds, 0, sizeof( cl.q3_cmds ) );
 		return qtrue;
 	}
 
@@ -604,13 +604,13 @@ int CL_CgameSystemCalls( int *args ) {
 		CL_GetGlconfig( (glconfig_t*)VMA(1) );
 		return 0;
 	case CG_GETGAMESTATE:
-		CL_GetGameState( (gameState_t*)VMA(1) );
+		CL_GetGameState( (q3gameState_t*)VMA(1) );
 		return 0;
 	case CG_GETCURRENTSNAPSHOTNUMBER:
 		CL_GetCurrentSnapshotNumber( (int*)VMA(1), (int*)VMA(2) );
 		return 0;
 	case CG_GETSNAPSHOT:
-		return CL_GetSnapshot( args[1], (snapshot_t*)VMA(2) );
+		return CL_GetSnapshot( args[1], (q3snapshot_t*)VMA(2) );
 	case CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand( args[1] );
 	case CG_GETCURRENTCMDNUMBER:
@@ -743,9 +743,9 @@ void CL_InitCGame( void ) {
 	Con_Close();
 
 	// find the current mapname
-	info = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SERVERINFO ];
+	info = cl.q3_gameState.stringData + cl.q3_gameState.stringOffsets[ Q3CS_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
-	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
+	String::Sprintf( cl.q3_mapname, sizeof( cl.q3_mapname ), "maps/%s.bsp", mapname );
 
 	// load the dll or bytecode
 	if ( cl_connectedToPureServer != 0 ) {
@@ -841,7 +841,7 @@ void CL_AdjustTimeDelta( void ) {
 	int		newDelta;
 	int		deltaDelta;
 
-	cl.newSnapshots = qfalse;
+	cl.q3_newSnapshots = qfalse;
 
 	// the delta never drifts when replaying a demo
 	if ( clc.demoplaying ) {
@@ -855,13 +855,13 @@ void CL_AdjustTimeDelta( void ) {
 		resetTime = RESET_TIME;
 	}
 
-	newDelta = cl.snap.serverTime - cls.realtime;
-	deltaDelta = abs( newDelta - cl.serverTimeDelta );
+	newDelta = cl.q3_snap.serverTime - cls.realtime;
+	deltaDelta = abs( newDelta - cl.q3_serverTimeDelta );
 
 	if ( deltaDelta > RESET_TIME ) {
-		cl.serverTimeDelta = newDelta;
-		cl.oldServerTime = cl.snap.serverTime;	// FIXME: is this a problem for cgame?
-		cl.serverTime = cl.snap.serverTime;
+		cl.q3_serverTimeDelta = newDelta;
+		cl.q3_oldServerTime = cl.q3_snap.serverTime;	// FIXME: is this a problem for cgame?
+		cl.serverTime = cl.q3_snap.serverTime;
 		if ( cl_showTimeDelta->integer ) {
 			Com_Printf( "<RESET> " );
 		}
@@ -870,7 +870,7 @@ void CL_AdjustTimeDelta( void ) {
 		if ( cl_showTimeDelta->integer ) {
 			Com_Printf( "<FAST> " );
 		}
-		cl.serverTimeDelta = ( cl.serverTimeDelta + newDelta ) >> 1;
+		cl.q3_serverTimeDelta = ( cl.q3_serverTimeDelta + newDelta ) >> 1;
 	} else {
 		// slow drift adjust, only move 1 or 2 msec
 
@@ -878,18 +878,18 @@ void CL_AdjustTimeDelta( void ) {
 		// had to be extrapolated, nudge our sense of time back a little
 		// the granularity of +1 / -2 is too high for timescale modified frametimes
 		if ( com_timescale->value == 0 || com_timescale->value == 1 ) {
-			if ( cl.extrapolatedSnapshot ) {
-				cl.extrapolatedSnapshot = qfalse;
-				cl.serverTimeDelta -= 2;
+			if ( cl.q3_extrapolatedSnapshot ) {
+				cl.q3_extrapolatedSnapshot = qfalse;
+				cl.q3_serverTimeDelta -= 2;
 			} else {
 				// otherwise, move our sense of time forward to minimize total latency
-				cl.serverTimeDelta++;
+				cl.q3_serverTimeDelta++;
 			}
 		}
 	}
 
 	if ( cl_showTimeDelta->integer ) {
-		Com_Printf( "%i ", cl.serverTimeDelta );
+		Com_Printf( "%i ", cl.q3_serverTimeDelta );
 	}
 }
 
@@ -901,16 +901,16 @@ CL_FirstSnapshot
 */
 void CL_FirstSnapshot( void ) {
 	// ignore snapshots that don't have entities
-	if ( cl.snap.snapFlags & SNAPFLAG_NOT_ACTIVE ) {
+	if ( cl.q3_snap.snapFlags & SNAPFLAG_NOT_ACTIVE ) {
 		return;
 	}
 	cls.state = CA_ACTIVE;
 
 	// set the timedelta so we are exactly on this first frame
-	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
-	cl.oldServerTime = cl.snap.serverTime;
+	cl.q3_serverTimeDelta = cl.q3_snap.serverTime - cls.realtime;
+	cl.q3_oldServerTime = cl.q3_snap.serverTime;
 
-	clc.timeDemoBaseTime = cl.snap.serverTime;
+	clc.timeDemoBaseTime = cl.q3_snap.serverTime;
 
 	// if this is the first frame of active play,
 	// execute the contents of activeAction now
@@ -944,8 +944,8 @@ void CL_SetCGameTime( void ) {
 			}
 			CL_ReadDemoMessage();
 		}
-		if ( cl.newSnapshots ) {
-			cl.newSnapshots = qfalse;
+		if ( cl.q3_newSnapshots ) {
+			cl.q3_newSnapshots = qfalse;
 			CL_FirstSnapshot();
 		}
 		if ( cls.state != CA_ACTIVE ) {
@@ -954,7 +954,7 @@ void CL_SetCGameTime( void ) {
 	}	
 
 	// if we have gotten to this point, cl.snap is guaranteed to be valid
-	if ( !cl.snap.valid ) {
+	if ( !cl.q3_snap.valid ) {
 		Com_Error( ERR_DROP, "CL_SetCGameTime: !cl.snap.valid" );
 	}
 
@@ -964,10 +964,10 @@ void CL_SetCGameTime( void ) {
 		return;
 	}
 
-	if ( cl.snap.serverTime < cl.oldFrameServerTime ) {
+	if ( cl.q3_snap.serverTime < cl.q3_oldFrameServerTime ) {
 		Com_Error( ERR_DROP, "cl.snap.serverTime < cl.oldFrameServerTime" );
 	}
-	cl.oldFrameServerTime = cl.snap.serverTime;
+	cl.q3_oldFrameServerTime = cl.q3_snap.serverTime;
 
 
 	// get our current view of time
@@ -988,26 +988,26 @@ void CL_SetCGameTime( void ) {
 			tn = 30;
 		}
 
-		cl.serverTime = cls.realtime + cl.serverTimeDelta - tn;
+		cl.serverTime = cls.realtime + cl.q3_serverTimeDelta - tn;
 
 		// guarantee that time will never flow backwards, even if
 		// serverTimeDelta made an adjustment or cl_timeNudge was changed
-		if ( cl.serverTime < cl.oldServerTime ) {
-			cl.serverTime = cl.oldServerTime;
+		if ( cl.serverTime < cl.q3_oldServerTime ) {
+			cl.serverTime = cl.q3_oldServerTime;
 		}
-		cl.oldServerTime = cl.serverTime;
+		cl.q3_oldServerTime = cl.serverTime;
 
 		// note if we are almost past the latest frame (without timeNudge),
 		// so we will try and adjust back a bit when the next snapshot arrives
-		if ( cls.realtime + cl.serverTimeDelta >= cl.snap.serverTime - 5 ) {
-			cl.extrapolatedSnapshot = qtrue;
+		if ( cls.realtime + cl.q3_serverTimeDelta >= cl.q3_snap.serverTime - 5 ) {
+			cl.q3_extrapolatedSnapshot = qtrue;
 		}
 	}
 
 	// if we have gotten new snapshots, drift serverTimeDelta
 	// don't do this every frame, or a period of packet loss would
 	// make a huge adjustment
-	if ( cl.newSnapshots ) {
+	if ( cl.q3_newSnapshots ) {
 		CL_AdjustTimeDelta();
 	}
 
@@ -1031,7 +1031,7 @@ void CL_SetCGameTime( void ) {
 		cl.serverTime = clc.timeDemoBaseTime + clc.timeDemoFrames * 50;
 	}
 
-	while ( cl.serverTime >= cl.snap.serverTime ) {
+	while ( cl.serverTime >= cl.q3_snap.serverTime ) {
 		// feed another messag, which should change
 		// the contents of cl.snap
 		CL_ReadDemoMessage();

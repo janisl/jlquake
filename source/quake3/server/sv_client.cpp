@@ -542,7 +542,7 @@ the wrong gamestate.
 */
 void SV_SendClientGameState( client_t *client ) {
 	int			start;
-	entityState_t	*base, nullstate;
+	q3entityState_t	*base, nullstate;
 	QMsg		msg;
 	byte		msgBuffer[MAX_MSGLEN_Q3];
 
@@ -1367,7 +1367,7 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	}
 
 	// save time for ping calculation
-	cl->frames[ cl->messageAcknowledge & PACKET_MASK ].messageAcked = svs.time;
+	cl->frames[ cl->messageAcknowledge & PACKET_MASK_Q3 ].messageAcked = svs.time;
 
 	// TTimo
 	// catch the no-cp-yet situation before SV_ClientEnterWorld

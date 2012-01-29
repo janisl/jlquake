@@ -81,3 +81,171 @@ enum
 #define MAX_INFO_STRING_Q3	1024
 #define MAX_INFO_KEY_Q3		1024
 #define MAX_INFO_VALUE_Q3	1024
+
+// bit field limits
+#define MAX_STATS_Q3			16
+#define MAX_PERSISTANT_Q3		16
+#define MAX_POWERUPS_Q3			16
+#define MAX_WEAPONS_Q3			16		
+
+#define MAX_PS_EVENTS_Q3		2
+
+#define PS_PMOVEFRAMECOUNTBITS	6
+
+// q3playerState_t is the information needed by both the client and server
+// to predict player motion and actions
+// nothing outside of pmove should modify these, or some degree of prediction error
+// will occur
+
+// you can't add anything to this without modifying the code in msg.c
+
+// q3playerState_t is a full superset of q3entityState_t as it is used by players,
+// so if a q3playerState_t is transmitted, the q3entityState_t can be fully derived
+// from it.
+struct q3playerState_t
+{
+	int commandTime;	// cmd->serverTime of last executed command
+	int pm_type;
+	int bobCycle;		// for view bobbing and footstep generation
+	int pm_flags;		// ducked, jump_held, etc
+	int pm_time;
+
+	vec3_t origin;
+	vec3_t velocity;
+	int weaponTime;
+	int gravity;
+	int speed;
+	int delta_angles[3];	// add to command angles to get view direction
+							// changed by spawns, rotating objects, and teleporters
+
+	int groundEntityNum;// Q3ENTITYNUM_NONE = in air
+
+	int legsTimer;		// don't change low priority animations until this runs out
+	int legsAnim;		// mask off ANIM_TOGGLEBIT
+
+	int torsoTimer;		// don't change low priority animations until this runs out
+	int torsoAnim;		// mask off ANIM_TOGGLEBIT
+
+	int movementDir;	// a number 0 to 7 that represents the reletive angle
+						// of movement to the view angle (axial and diagonals)
+						// when at rest, the value will remain unchanged
+						// used to twist the legs during strafing
+
+	vec3_t grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
+
+	int eFlags;			// copied to q3entityState_t->eFlags
+
+	int eventSequence;	// pmove generated events
+	int events[MAX_PS_EVENTS_Q3];
+	int eventParms[MAX_PS_EVENTS_Q3];
+
+	int externalEvent;	// events set on player from another source
+	int externalEventParm;
+	int externalEventTime;
+
+	int clientNum;		// ranges from 0 to MAX_CLIENTS_Q3-1
+	int weapon;			// copied to q3entityState_t->weapon
+	int weaponstate;
+
+	vec3_t viewangles;		// for fixed views
+	int viewheight;
+
+	// damage feedback
+	int damageEvent;	// when it changes, latch the other parms
+	int damageYaw;
+	int damagePitch;
+	int damageCount;
+
+	int stats[MAX_STATS_Q3];
+	int persistant[MAX_PERSISTANT_Q3];	// stats that aren't cleared on death
+	int powerups[MAX_POWERUPS_Q3];	// level.time that the powerup runs out
+	int ammo[MAX_WEAPONS_Q3];
+
+	int generic1;
+	int loopSound;
+	int jumppad_ent;	// jumppad entity hit this frame
+
+	// not communicated over the net at all
+	int ping;			// server to game info for scoreboard
+	int pmove_framecount;	// FIXME: don't transmit over the network
+	int jumppad_frame;
+	int entityEventSequence;
+};
+
+// if entityState->solid == Q3SOLID_BMODEL, modelindex is an inline model number
+#define Q3SOLID_BMODEL	0xffffff
+
+enum q3trType_t
+{
+	Q3TR_STATIONARY,
+	Q3TR_INTERPOLATE,				// non-parametric, but interpolate between snapshots
+	Q3TR_LINEAR,
+	Q3TR_LINEAR_STOP,
+	Q3TR_SINE,					// value = base + sin( time / duration ) * delta
+	Q3TR_GRAVITY
+};
+
+struct q3trajectory_t
+{
+	q3trType_t trType;
+	int trTime;
+	int trDuration;			// if non 0, trTime + trDuration = stop time
+	vec3_t trBase;
+	vec3_t trDelta;			// velocity, etc
+};
+
+// q3entityState_t is the information conveyed from the server
+// in an update message about entities that the client will
+// need to render in some way
+// Different eTypes may use the information in different ways
+// The messages are delta compressed, so it doesn't really matter if
+// the structure size is fairly large
+
+struct q3entityState_t
+{
+	int number;			// entity index
+	int eType;			// entityType_t
+	int eFlags;
+
+	q3trajectory_t pos;	// for calculating position
+	q3trajectory_t apos;	// for calculating angles
+
+	int time;
+	int time2;
+
+	vec3_t origin;
+	vec3_t origin2;
+
+	vec3_t angles;
+	vec3_t angles2;
+
+	int otherEntityNum;	// shotgun sources, etc
+	int otherEntityNum2;
+
+	int groundEntityNum;	// -1 = in air
+
+	int constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
+	int loopSound;		// constantly loop this sound
+
+	int modelindex;
+	int modelindex2;
+	int clientNum;		// 0 to (MAX_CLIENTS_Q3 - 1), for players and corpses
+	int frame;
+
+	int solid;			// for client side prediction, trap_linkentity sets this properly
+
+	int event;			// impulse events -- muzzle flashes, footsteps, etc
+	int eventParm;
+
+	// for players
+	int powerups;		// bit flags
+	int weapon;			// determines weapon and flash model, etc
+	int legsAnim;		// mask off ANIM_TOGGLEBIT
+	int torsoAnim;		// mask off ANIM_TOGGLEBIT
+
+	int generic1;
+};
+
+#define	PACKET_BACKUP_Q3	32	// number of old messages that must be kept on client and
+							// server for delta comrpession and ping estimation
+#define	PACKET_MASK_Q3		(PACKET_BACKUP_Q3-1)

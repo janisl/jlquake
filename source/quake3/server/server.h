@@ -37,7 +37,7 @@ typedef struct svEntity_s {
 	struct worldSector_s *worldSector;
 	struct svEntity_s *nextEntityInWorldSector;
 	
-	entityState_t	baseline;		// for delta compression of initial sighting
+	q3entityState_t	baseline;		// for delta compression of initial sighting
 	int			numClusters;		// if -1, use headnode instead
 	int			clusternums[MAX_ENT_CLUSTERS];
 	int			lastCluster;		// if all the clusters don't fit in clusternums
@@ -74,8 +74,8 @@ typedef struct {
 	int				gentitySize;
 	int				num_entities;		// current number, <= MAX_GENTITIES_Q3
 
-	playerState_t	*gameClients;
-	int				gameClientSize;		// will be > sizeof(playerState_t) due to game private data
+	q3playerState_t	*gameClients;
+	int				gameClientSize;		// will be > sizeof(q3playerState_t) due to game private data
 
 	int				restartTime;
 } server_t;
@@ -87,7 +87,7 @@ typedef struct {
 typedef struct {
 	int				areabytes;
 	byte			areabits[MAX_MAP_AREA_BYTES];		// portalarea visibility bits
-	playerState_t	ps;
+	q3playerState_t	ps;
 	int				num_entities;
 	int				first_entity;		// into the circular sv_packet_entities[]
 										// the entities MUST be in increasing state number
@@ -152,7 +152,7 @@ typedef struct client_s {
 	int				nextSnapshotTime;	// send another snapshot when svs.time >= nextSnapshotTime
 	qboolean		rateDelayed;		// true if nextSnapshotTime was set based on rate instead of snapshotMsec
 	int				timeoutCount;		// must timeout a few frames in a row so debugging doesn't break
-	clientSnapshot_t	frames[PACKET_BACKUP];	// updates can be delta'd from here
+	clientSnapshot_t	frames[PACKET_BACKUP_Q3];	// updates can be delta'd from here
 	int				ping;
 	int				rate;				// bytes / second
 	int				snapshotMsec;		// requests a snapshot every snapshotMsec unless rate choked
@@ -199,9 +199,9 @@ typedef struct {
 	int			snapFlagServerBit;			// ^= SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
 
 	client_t	*clients;					// [sv_maxclients->integer];
-	int			numSnapshotEntities;		// sv_maxclients->integer*PACKET_BACKUP*MAX_PACKET_ENTITIES
+	int			numSnapshotEntities;		// sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
 	int			nextSnapshotEntities;		// next snapshotEntities to use
-	entityState_t	*snapshotEntities;		// [numSnapshotEntities]
+	q3entityState_t	*snapshotEntities;		// [numSnapshotEntities]
 	int			nextHeartbeatTime;
 	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
 	netadr_t	redirectAddress;			// for rcon return messages
@@ -317,7 +317,7 @@ void SV_SendClientSnapshot( client_t *client );
 //
 int	SV_NumForGentity( sharedEntity_t *ent );
 sharedEntity_t *SV_GentityNum( int num );
-playerState_t *SV_GameClientNum( int num );
+q3playerState_t *SV_GameClientNum( int num );
 svEntity_t	*SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 void		SV_InitGameProgs ( void );

@@ -31,31 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	RETRANSMIT_TIMEOUT	3000	// time between connection packet retransmits
 
-
-// snapshots are a view of the server at a given time
-typedef struct {
-	qboolean		valid;			// cleared if delta parsing was invalid
-	int				snapFlags;		// rate delayed and dropped commands
-
-	int				serverTime;		// server time the message is valid for (in msec)
-
-	int				messageNum;		// copied from netchan->incoming_sequence
-	int				deltaNum;		// messageNum the delta is from
-	int				ping;			// time from when cmdNum-1 was sent to time packet was reeceived
-	byte			areamask[MAX_MAP_AREA_BYTES];		// portalarea visibility bits
-
-	int				cmdNum;			// the next cmdNum the server is expecting
-	playerState_t	ps;						// complete information about the current player at this time
-
-	int				numEntities;			// all of the entities that need to be presented
-	int				parseEntitiesNum;		// at the time of this snapshot
-
-	int				serverCommandNum;		// execute all commands up to this before
-											// making the snapshot current
-} clSnapshot_t;
-
-
-
 /*
 =============================================================================
 
@@ -65,58 +40,10 @@ new gamestate_t, potentially several times during an established connection
 =============================================================================
 */
 
-typedef struct {
-	int		p_cmdNumber;		// cl.cmdNumber when packet was sent
-	int		p_serverTime;		// usercmd->serverTime when packet was sent
-	int		p_realtime;			// cls.realtime when packet was sent
-} outPacket_t;
-
-// the parseEntities array must be large enough to hold PACKET_BACKUP frames of
-// entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original 
-#define	MAX_PARSE_ENTITIES	2048
-
 extern int g_console_field_width;
 
 struct clientActive_t : clientActiveCommon_t
 {
-	clSnapshot_t	snap;			// latest received from server
-
-	int			oldServerTime;		// to prevent time from flowing bakcwards
-	int			oldFrameServerTime;	// to check tournament restarts
-	int			serverTimeDelta;	// cl.serverTime = cls.realtime + cl.serverTimeDelta
-									// this value changes as net lag varies
-	qboolean	extrapolatedSnapshot;	// set if any cgame frame has been forced to extrapolate
-									// cleared when CL_AdjustTimeDelta looks at it
-	qboolean	newSnapshots;		// set on parse of any valid packet
-
-	gameState_t	gameState;			// configstrings
-	char		mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
-
-	int			mouseDx[2], mouseDy[2];	// added to by mouse events
-	int			mouseIndex;
-	int			joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
-
-	// cgame communicates a few values to the client system
-	int			cgameUserCmdValue;	// current weapon to add to q3usercmd_t
-	float		cgameSensitivity;
-
-	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
-	// properly generated command
-	q3usercmd_t	cmds[CMD_BACKUP];	// each mesage will send several old cmds
-	int			cmdNumber;			// incremented each frame, because multiple
-									// frames may need to be packed into a single packet
-
-	outPacket_t	outPackets[PACKET_BACKUP];	// information about each packet we have sent out
-
-	int			serverId;			// included in each client message so the server
-												// can tell if it is for a prior map_restart
-	// big stuff at end of structure so most offsets are 15 bits or less
-	clSnapshot_t	snapshots[PACKET_BACKUP];
-
-	entityState_t	entityBaselines[MAX_GENTITIES_Q3];	// for delta compression when not in previous frame
-
-	entityState_t	parseEntities[MAX_PARSE_ENTITIES];
 };
 
 extern	clientActive_t		cl;

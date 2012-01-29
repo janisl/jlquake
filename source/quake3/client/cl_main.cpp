@@ -257,8 +257,8 @@ void CL_Record_f( void ) {
 	QMsg	buf;
 	int			i;
 	int			len;
-	entityState_t	*ent;
-	entityState_t	nullstate;
+	q3entityState_t	*ent;
+	q3entityState_t	nullstate;
 	char		*s;
 
 	if ( Cmd_Argc() > 2 ) {
@@ -335,10 +335,10 @@ void CL_Record_f( void ) {
 
 	// configstrings
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
-		if ( !cl.gameState.stringOffsets[i] ) {
+		if ( !cl.q3_gameState.stringOffsets[i] ) {
 			continue;
 		}
-		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
+		s = cl.q3_gameState.stringData + cl.q3_gameState.stringOffsets[i];
 		buf.WriteByte(q3svc_configstring);
 		buf.WriteShort(i);
 		buf.WriteBigString(s);
@@ -347,7 +347,7 @@ void CL_Record_f( void ) {
 	// baselines
 	Com_Memset (&nullstate, 0, sizeof(nullstate));
 	for ( i = 0; i < MAX_GENTITIES_Q3 ; i++ ) {
-		ent = &cl.entityBaselines[i];
+		ent = &cl.q3_entityBaselines[i];
 		if ( !ent->number ) {
 			continue;
 		}
@@ -670,7 +670,7 @@ void CL_MapLoading( void ) {
 		cls.state = CA_CONNECTED;		// so the connect screen is drawn
 		Com_Memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
 		Com_Memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
-		Com_Memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+		Com_Memset( &cl.q3_gameState, 0, sizeof( cl.q3_gameState ) );
 		clc.lastPacketSentTime = -9999;
 		SCR_UpdateScreen();
 	} else {
@@ -1138,7 +1138,7 @@ void CL_SendPureChecksums( void ) {
 	// "cp"
 	// "Yf"
 	String::Sprintf(cMsg, sizeof(cMsg), "Yf ");
-	String::Cat(cMsg, sizeof(cMsg), va("%d ", cl.serverId) );
+	String::Cat(cMsg, sizeof(cMsg), va("%d ", cl.q3_serverId) );
 	String::Cat(cMsg, sizeof(cMsg), pChecksums);
 	for (i = 0; i < 2; i++) {
 		cMsg[i] += 10;
@@ -1265,11 +1265,11 @@ void CL_Configstrings_f( void ) {
 	}
 
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_Q3 ; i++ ) {
-		ofs = cl.gameState.stringOffsets[ i ];
+		ofs = cl.q3_gameState.stringOffsets[ i ];
 		if ( !ofs ) {
 			continue;
 		}
-		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
+		Com_Printf( "%4i: %s\n", i, cl.q3_gameState.stringData + ofs );
 	}
 }
 

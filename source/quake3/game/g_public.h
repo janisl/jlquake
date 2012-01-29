@@ -54,7 +54,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 typedef struct {
-	entityState_t	s;				// communicated by server to clients
+	q3entityState_t	s;				// communicated by server to clients
 
 	qboolean	linked;				// qfalse if not in any good cluster
 	int			linkcount;
@@ -92,7 +92,7 @@ typedef struct {
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
 typedef struct {
-	entityState_t	s;				// communicated by server to clients
+	q3entityState_t	s;				// communicated by server to clients
 	entityShared_t	r;				// shared by both the server system and game
 } sharedEntity_t;
 
@@ -143,7 +143,7 @@ typedef enum {
 	//=========== server specific functionality =============
 
 	G_LOCATE_GAME_DATA,		// ( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t,
-	//							playerState_t *clients, int sizeofGameClient );
+	//							q3playerState_t *clients, int sizeofGameClient );
 	// the game needs to let the server system know where and how big the gentities
 	// are, so it can look at them directly without going through an interface
 

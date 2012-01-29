@@ -224,7 +224,7 @@ void SV_Startup( void ) {
 
 	svs.clients = (client_t*)Z_Malloc (sizeof(client_t) * sv_maxclients->integer );
 	if ( com_dedicated->integer ) {
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
+		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	} else {
 		// we don't need nearly as many when playing locally
 		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
@@ -294,7 +294,7 @@ void SV_ChangeMaxClients( void ) {
 	
 	// allocate new snapshot entities
 	if ( com_dedicated->integer ) {
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
+		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	} else {
 		// we don't need nearly as many when playing locally
 		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
@@ -381,7 +381,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	FS_ClearPakReferences(0);
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = (entityState_t*)Hunk_Alloc( sizeof(entityState_t)*svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = (q3entityState_t*)Hunk_Alloc( sizeof(q3entityState_t)*svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a

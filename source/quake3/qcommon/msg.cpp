@@ -308,7 +308,7 @@ void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, q3usercmd_t *from, q3usercmd_t
 /*
 =============================================================================
 
-entityState_t communication
+q3entityState_t communication
   
 =============================================================================
 */
@@ -336,7 +336,7 @@ typedef struct {
 } netField_t;
 
 // using the stringizing operator to save typing...
-#define	NETF(x) #x,(qintptr)&((entityState_t*)0)->x
+#define	NETF(x) #x,(qintptr)&((q3entityState_t*)0)->x
 
 netField_t	entityStateFields[] = 
 {
@@ -410,7 +410,7 @@ If force is not set, then nothing at all will be generated if the entity is
 identical, under the assumption that the in-order delta code will catch it.
 ==================
 */
-void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to, 
+void MSG_WriteDeltaEntity( QMsg *msg, q3entityState_t* from, q3entityState_t* to, 
 						   qboolean force ) {
 	int			i, lc;
 	int			numFields;
@@ -423,7 +423,7 @@ void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityS
 
 	// all fields should be 32 bits to avoid any compiler packing issues
 	// the "number" field is not part of the field list
-	// if this assert fails, someone added a field to the entityState_t
+	// if this assert fails, someone added a field to the q3entityState_t
 	// struct without updating the message fields
 	assert( numFields + 1 == sizeof( *from )/4 );
 
@@ -522,14 +522,14 @@ MSG_ReadDeltaEntity
 The entity number has already been read from the message, which
 is how the from state is identified.
 
-If the delta removes the entity, entityState_t->number will be set to MAX_GENTITIES_Q3-1
+If the delta removes the entity, q3entityState_t->number will be set to MAX_GENTITIES_Q3-1
 
 Can go from either a baseline or a previous packet_entity
 ==================
 */
 extern	Cvar	*cl_shownet;
 
-void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to, 
+void MSG_ReadDeltaEntity( QMsg *msg, q3entityState_t *from, q3entityState_t *to, 
 						 int number) {
 	int			i, lc;
 	int			numFields;
@@ -651,7 +651,7 @@ plyer_state_t communication
 */
 
 // using the stringizing operator to save typing...
-#define	PSF(x) #x,(qintptr)&((playerState_t*)0)->x
+#define	PSF(x) #x,(qintptr)&((q3playerState_t*)0)->x
 
 netField_t	playerStateFields[] = 
 {
@@ -711,9 +711,9 @@ MSG_WriteDeltaPlayerstate
 
 =============
 */
-void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to ) {
+void MSG_WriteDeltaPlayerstate( QMsg *msg, q3playerState_t* from, q3playerState_t* to ) {
 	int				i;
-	playerState_t	dummy;
+	q3playerState_t	dummy;
 	int				statsbits;
 	int				persistantbits;
 	int				ammobits;
@@ -867,7 +867,7 @@ void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct pl
 MSG_ReadDeltaPlayerstate
 ===================
 */
-void MSG_ReadDeltaPlayerstate (QMsg *msg, playerState_t *from, playerState_t *to ) {
+void MSG_ReadDeltaPlayerstate (QMsg *msg, q3playerState_t *from, q3playerState_t *to ) {
 	int			i, lc;
 	int			bits;
 	netField_t	*field;
@@ -876,7 +876,7 @@ void MSG_ReadDeltaPlayerstate (QMsg *msg, playerState_t *from, playerState_t *to
 	int			print;
 	int			*fromF, *toF;
 	int			trunc;
-	playerState_t	dummy;
+	q3playerState_t	dummy;
 
 	if ( !from ) {
 		from = &dummy;

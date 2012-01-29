@@ -255,7 +255,7 @@ void IN_ButtonUp (void) {
 	IN_KeyUp(&in_buttons[1]);}
 
 void IN_CenterView (void) {
-	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
+	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q3_snap.ps.delta_angles[PITCH]);
 }
 
 
@@ -356,8 +356,8 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 	} else if (in_keyCatchers & KEYCATCH_CGAME) {
 		VM_Call (cgvm, CG_MOUSE_EVENT, dx, dy);
 	} else {
-		cl.mouseDx[cl.mouseIndex] += dx;
-		cl.mouseDy[cl.mouseIndex] += dy;
+		cl.q3_mouseDx[cl.q3_mouseIndex] += dx;
+		cl.q3_mouseDy[cl.q3_mouseIndex] += dy;
 	}
 }
 
@@ -372,7 +372,7 @@ void CL_JoystickEvent( int axis, int value, int time ) {
 	if ( axis < 0 || axis >= MAX_JOYSTICK_AXIS ) {
 		Com_Error( ERR_DROP, "CL_JoystickEvent: bad axis %i", axis );
 	}
-	cl.joystickAxis[axis] = value;
+	cl.q3_joystickAxis[axis] = value;
 }
 
 /*
@@ -398,18 +398,18 @@ void CL_JoystickMove( q3usercmd_t *cmd ) {
 	}
 
 	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.joystickAxis[AXIS_SIDE];
+		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.q3_joystickAxis[AXIS_SIDE];
 	} else {
-		cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
+		cmd->rightmove = ClampChar( cmd->rightmove + cl.q3_joystickAxis[AXIS_SIDE] );
 	}
 
 	if ( in_mlooking ) {
-		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.joystickAxis[AXIS_FORWARD];
+		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.q3_joystickAxis[AXIS_FORWARD];
 	} else {
-		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[AXIS_FORWARD] );
+		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.q3_joystickAxis[AXIS_FORWARD] );
 	}
 
-	cmd->upmove = ClampChar( cmd->upmove + cl.joystickAxis[AXIS_UP] );
+	cmd->upmove = ClampChar( cmd->upmove + cl.q3_joystickAxis[AXIS_UP] );
 }
 
 /*
@@ -424,21 +424,21 @@ void CL_MouseMove( q3usercmd_t *cmd ) {
 
 	// allow mouse smoothing
 	if ( m_filter->integer ) {
-		mx = ( cl.mouseDx[0] + cl.mouseDx[1] ) * 0.5;
-		my = ( cl.mouseDy[0] + cl.mouseDy[1] ) * 0.5;
+		mx = ( cl.q3_mouseDx[0] + cl.q3_mouseDx[1] ) * 0.5;
+		my = ( cl.q3_mouseDy[0] + cl.q3_mouseDy[1] ) * 0.5;
 	} else {
-		mx = cl.mouseDx[cl.mouseIndex];
-		my = cl.mouseDy[cl.mouseIndex];
+		mx = cl.q3_mouseDx[cl.q3_mouseIndex];
+		my = cl.q3_mouseDy[cl.q3_mouseIndex];
 	}
-	cl.mouseIndex ^= 1;
-	cl.mouseDx[cl.mouseIndex] = 0;
-	cl.mouseDy[cl.mouseIndex] = 0;
+	cl.q3_mouseIndex ^= 1;
+	cl.q3_mouseDx[cl.q3_mouseIndex] = 0;
+	cl.q3_mouseDy[cl.q3_mouseIndex] = 0;
 
 	rate = sqrt( mx * mx + my * my ) / (float)frame_msec;
 	accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 
 	// scale by FOV
-	accelSensitivity *= cl.cgameSensitivity;
+	accelSensitivity *= cl.q3_cgameSensitivity;
 
 	if ( rate && cl_showMouseRate->integer ) {
 		Com_Printf( "%f : %f\n", rate, accelSensitivity );
@@ -507,7 +507,7 @@ void CL_FinishMove( q3usercmd_t *cmd ) {
 	int		i;
 
 	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.cgameUserCmdValue;
+	cmd->weapon = cl.q3_cgameUserCmdValue;
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
@@ -597,10 +597,10 @@ void CL_CreateNewCommands( void ) {
 
 
 	// generate a command for this frame
-	cl.cmdNumber++;
-	cmdNum = cl.cmdNumber & CMD_MASK;
-	cl.cmds[cmdNum] = CL_CreateCmd ();
-	cmd = &cl.cmds[cmdNum];
+	cl.q3_cmdNumber++;
+	cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
+	cl.q3_cmds[cmdNum] = CL_CreateCmd ();
+	cmd = &cl.q3_cmds[cmdNum];
 }
 
 /*
@@ -654,8 +654,8 @@ qboolean CL_ReadyToSendPacket( void ) {
 	} else if ( cl_maxpackets->integer > 125 ) {
 		Cvar_Set( "cl_maxpackets", "125" );
 	}
-	oldPacketNum = (clc.netchan.outgoingSequence - 1) & PACKET_MASK;
-	delta = cls.realtime -  cl.outPackets[ oldPacketNum ].p_realtime;
+	oldPacketNum = (clc.netchan.outgoingSequence - 1) & PACKET_MASK_Q3;
+	delta = cls.realtime -  cl.q3_outPackets[ oldPacketNum ].p_realtime;
 	if ( delta < 1000 / cl_maxpackets->integer ) {
 		// the accumulated commands will go out in the next packet
 		return qfalse;
@@ -708,7 +708,7 @@ void CL_WritePacket( void ) {
 	buf.Bitstream();
 	// write the current serverId so the server
 	// can tell if this is from the current gameState
-	buf.WriteLong(cl.serverId );
+	buf.WriteLong(cl.q3_serverId );
 
 	// write the last message we received, which can
 	// be used for delta compression, and is also used
@@ -733,8 +733,8 @@ void CL_WritePacket( void ) {
 	} else if ( cl_packetdup->integer > 5 ) {
 		Cvar_Set( "cl_packetdup", "5" );
 	}
-	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer) & PACKET_MASK;
-	count = cl.cmdNumber - cl.outPackets[ oldPacketNum ].p_cmdNumber;
+	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer) & PACKET_MASK_Q3;
+	count = cl.q3_cmdNumber - cl.q3_outPackets[ oldPacketNum ].p_cmdNumber;
 	if ( count > MAX_PACKET_USERCMDS ) {
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf("MAX_PACKET_USERCMDS\n");
@@ -745,8 +745,8 @@ void CL_WritePacket( void ) {
 		}
 
 		// begin a client move command
-		if ( cl_nodelta->integer || !cl.snap.valid || clc.demowaiting
-			|| clc.serverMessageSequence != cl.snap.messageNum ) {
+		if ( cl_nodelta->integer || !cl.q3_snap.valid || clc.demowaiting
+			|| clc.serverMessageSequence != cl.q3_snap.messageNum ) {
 			buf.WriteByte(q3clc_moveNoDelta);
 		} else {
 			buf.WriteByte(q3clc_move);
@@ -764,8 +764,8 @@ void CL_WritePacket( void ) {
 
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {
-			j = (cl.cmdNumber - count + i + 1) & CMD_MASK;
-			cmd = &cl.cmds[j];
+			j = (cl.q3_cmdNumber - count + i + 1) & CMD_MASK_Q3;
+			cmd = &cl.q3_cmds[j];
 			MSG_WriteDeltaUsercmdKey (&buf, key, oldcmd, cmd);
 			oldcmd = cmd;
 		}
@@ -774,10 +774,10 @@ void CL_WritePacket( void ) {
 	//
 	// deliver the message
 	//
-	packetNum = clc.netchan.outgoingSequence & PACKET_MASK;
-	cl.outPackets[ packetNum ].p_realtime = cls.realtime;
-	cl.outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
-	cl.outPackets[ packetNum ].p_cmdNumber = cl.cmdNumber;
+	packetNum = clc.netchan.outgoingSequence & PACKET_MASK_Q3;
+	cl.q3_outPackets[ packetNum ].p_realtime = cls.realtime;
+	cl.q3_outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
+	cl.q3_outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
 	clc.lastPacketSentTime = cls.realtime;
 
 	if ( cl_showSend->integer ) {
