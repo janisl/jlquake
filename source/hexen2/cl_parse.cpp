@@ -413,10 +413,10 @@ void CL_ParseUpdate (int bits)
 
 	ref_ent = NULL;
 
-	for(i=0;i<cl.frames[0].count;i++)
-		if (cl.frames[0].states[i].number == num)
+	for(i=0;i<cl.h2_frames[0].count;i++)
+		if (cl.h2_frames[0].states[i].number == num)
 		{
-			ref_ent = &cl.frames[0].states[i];
+			ref_ent = &cl.h2_frames[0].states[i];
 //			if (num == 2) fprintf(FH,"Found Reference\n");
 			break;
 		}
@@ -442,10 +442,10 @@ void CL_ParseUpdate (int bits)
 		build_ent.abslight = baseline.abslight;
 	}
 
-	if (cl.need_build)
+	if (cl.h2_need_build)
 	{	// new sequence, first valid frame
-		set_ent = &cl.frames[1].states[cl.frames[1].count];
-		cl.frames[1].count++;
+		set_ent = &cl.h2_frames[1].states[cl.h2_frames[1].count];
+		cl.h2_frames[1].count++;
 	}
 	else
 		set_ent = &dummy;
@@ -1377,60 +1377,59 @@ void CL_ParseServerMessage (void)
 
 			case h2svc_reference:
 				packet_loss = false;
-				cl.last_frame = cl.current_frame;
-				cl.last_sequence = cl.current_sequence;
-				cl.current_frame = net_message.ReadByte();
-				cl.current_sequence = net_message.ReadByte();
-				if (cl.need_build == 2)
+				cl.h2_last_sequence = cl.h2_current_sequence;
+				cl.h2_current_frame = net_message.ReadByte();
+				cl.h2_current_sequence = net_message.ReadByte();
+				if (cl.h2_need_build == 2)
 				{
 //					Con_Printf("CL: NB2 CL(%d,%d) R(%d)\n", cl.current_sequence, cl.current_frame,cl.reference_frame);
-					cl.frames[0].count = cl.frames[1].count = cl.frames[2].count = 0;
-					cl.need_build = 1;
-					cl.reference_frame = cl.current_frame;
+					cl.h2_frames[0].count = cl.h2_frames[1].count = cl.h2_frames[2].count = 0;
+					cl.h2_need_build = 1;
+					cl.h2_reference_frame = cl.h2_current_frame;
 				}
-				else if (cl.last_sequence != cl.current_sequence)
+				else if (cl.h2_last_sequence != cl.h2_current_sequence)
 				{
 //					Con_Printf("CL: Sequence CL(%d,%d) R(%d)\n", cl.current_sequence, cl.current_frame,cl.reference_frame);
-					if (cl.reference_frame >= 1 && cl.reference_frame <= MAX_FRAMES)
+					if (cl.h2_reference_frame >= 1 && cl.h2_reference_frame <= MAX_FRAMES)
 					{
 						RemovePlace = OrigPlace = NewPlace = AddedIndex = 0;
 						for(i=0;i<cl.qh_num_entities;i++)
 						{
-							if (RemovePlace >= cl.NumToRemove || cl.RemoveList[RemovePlace] != i)
+							if (RemovePlace >= cl.h2_NumToRemove || cl.h2_RemoveList[RemovePlace] != i)
 							{
-								if (NewPlace < cl.frames[1].count &&
-									cl.frames[1].states[NewPlace].number == i)
+								if (NewPlace < cl.h2_frames[1].count &&
+									cl.h2_frames[1].states[NewPlace].number == i)
 								{
-									cl.frames[2].states[AddedIndex] = cl.frames[1].states[NewPlace];
+									cl.h2_frames[2].states[AddedIndex] = cl.h2_frames[1].states[NewPlace];
 									AddedIndex++;
-									cl.frames[2].count++;
+									cl.h2_frames[2].count++;
 								}
-								else if (OrigPlace < cl.frames[0].count &&
-									     cl.frames[0].states[OrigPlace].number == i)
+								else if (OrigPlace < cl.h2_frames[0].count &&
+									     cl.h2_frames[0].states[OrigPlace].number == i)
 								{
-									cl.frames[2].states[AddedIndex] = cl.frames[0].states[OrigPlace];
+									cl.h2_frames[2].states[AddedIndex] = cl.h2_frames[0].states[OrigPlace];
 									AddedIndex++;
-									cl.frames[2].count++;
+									cl.h2_frames[2].count++;
 								}
 							}
 							else
 								RemovePlace++;
 
-							if (cl.frames[0].states[OrigPlace].number == i)
+							if (cl.h2_frames[0].states[OrigPlace].number == i)
 								OrigPlace++;
-							if (cl.frames[1].states[NewPlace].number == i)
+							if (cl.h2_frames[1].states[NewPlace].number == i)
 								NewPlace++;
 						}
-						cl.frames[0] = cl.frames[2];
+						cl.h2_frames[0] = cl.h2_frames[2];
 					}
-					cl.frames[1].count = cl.frames[2].count = 0;
-					cl.need_build = 1;
-					cl.reference_frame = cl.current_frame;
+					cl.h2_frames[1].count = cl.h2_frames[2].count = 0;
+					cl.h2_need_build = 1;
+					cl.h2_reference_frame = cl.h2_current_frame;
 				}
 				else
 				{
 //					Con_Printf("CL: Normal CL(%d,%d) R(%d)\n", cl.current_sequence, cl.current_frame,cl.reference_frame);
-					cl.need_build = 0;
+					cl.h2_need_build = 0;
 				}
 
 				for (i = 1; i < cl.qh_num_entities; i++)
@@ -1438,25 +1437,25 @@ void CL_ParseServerMessage (void)
 					clh2_baselines[i].flags &= ~BE_ON;
 				}
 
-				for(i=0;i<cl.frames[0].count;i++)
+				for(i=0;i<cl.h2_frames[0].count;i++)
 				{
-					ent = CL_EntityNum (cl.frames[0].states[i].number);
-					ent->state.modelindex = cl.frames[0].states[i].modelindex;
-					clh2_baselines[cl.frames[0].states[i].number].flags |= BE_ON;
+					ent = CL_EntityNum (cl.h2_frames[0].states[i].number);
+					ent->state.modelindex = cl.h2_frames[0].states[i].modelindex;
+					clh2_baselines[cl.h2_frames[0].states[i].number].flags |= BE_ON;
 				}
 				break;
 
 			case h2svc_clear_edicts:
 				j = net_message.ReadByte();
-				if (cl.need_build)
+				if (cl.h2_need_build)
 				{
-					cl.NumToRemove = j;
+					cl.h2_NumToRemove = j;
 				}
 				for(i=0;i<j;i++)
 				{
 					k = net_message.ReadShort();
-					if (cl.need_build)
-						cl.RemoveList[i] = k;
+					if (cl.h2_need_build)
+						cl.h2_RemoveList[i] = k;
 					ent = CL_EntityNum (k);
 					clh2_baselines[k].flags &= ~BE_ON;
 				}
@@ -1593,9 +1592,9 @@ void CL_ParseServerMessage (void)
 				if (sc2 & SC2_FLAGS)
 					cl.h2_v.flags = net_message.ReadFloat();
 				if (sc2 & SC2_OBJ)
-					cl.info_mask = net_message.ReadLong();
+					cl.h2_info_mask = net_message.ReadLong();
 				if (sc2 & SC2_OBJ2)
-					cl.info_mask2 = net_message.ReadLong();
+					cl.h2_info_mask2 = net_message.ReadLong();
 
 				if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
 					SB_InvChanged();

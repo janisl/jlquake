@@ -128,3 +128,9 @@ struct h2entity_t
 	vec3_t msg_origins[2];	// last two updates (0 is newest)	
 	vec3_t msg_angles[2];	// last two updates (0 is newest)
 };
+
+struct h2client_frames2_t
+{
+	h2entity_state_t states[MAX_CLIENT_STATES_H2 * 2];
+	int count;
+};

@@ -671,7 +671,7 @@ void SV_PrepareClientEntities (client_t *client, qhedict_t	*clent, QMsg *msg)
 	client_state2_t  *state;
 	h2entity_state_t *ref_ent,*set_ent,build_ent;
 	qboolean		FoundInList,DoRemove,DoPlayer,DoMonsters,DoMissiles,DoMisc,IgnoreEnt;
-	short			RemoveList[MAX_CLIENT_STATES],NumToRemove;
+	short			RemoveList[MAX_CLIENT_STATES_H2],NumToRemove;
 
 
 	client_num = client-svs.clients;
@@ -974,7 +974,7 @@ skipA:
 
 		if (!bits && FoundInList)
 		{
-			if (build->count >= MAX_CLIENT_STATES)
+			if (build->count >= MAX_CLIENT_STATES_H2)
 				break;
 
 			continue;
@@ -1035,7 +1035,7 @@ skipA:
 			msg->WriteByte((int)(ent->GetAbsLight()*255.0)&255);
 		}
 
-		if (build->count >= MAX_CLIENT_STATES)
+		if (build->count >= MAX_CLIENT_STATES_H2)
 			break;
 	}
 

@@ -186,6 +186,19 @@ struct clientActiveCommon_t
 
 	h2entity_t h2_viewent;		// weapon model
 
+	byte h2_current_frame;
+	byte h2_reference_frame;
+	byte h2_current_sequence;
+	byte h2_last_sequence;
+	byte h2_need_build;
+
+	h2client_frames2_t h2_frames[3]; // 0 = base, 1 = building, 2 = 0 & 1 merged
+	short h2_RemoveList[MAX_CLIENT_STATES_H2];
+	short h2_NumToRemove;
+
+	int h2_info_mask;
+	int h2_info_mask2;
+
 	hwframe_t hw_frames[UPDATE_BACKUP_HW];
 
 	unsigned hw_PIV;			// players in view

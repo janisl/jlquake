@@ -438,8 +438,8 @@ void CL_SendMove (h2usercmd_t *cmd)
 // send the movement message
 //
 	buf.WriteByte(h2clc_frame);
-	buf.WriteByte(cl.reference_frame);
-	buf.WriteByte(cl.current_sequence);
+	buf.WriteByte(cl.h2_reference_frame);
+	buf.WriteByte(cl.h2_current_sequence);
 
 	buf.WriteByte(h2clc_move);
 

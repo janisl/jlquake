@@ -61,9 +61,9 @@ void CL_ClearState (void)
 	CLH2_ClearTEnts();
 	CLH2_ClearEffects();
 
-	cl.current_frame = cl.current_sequence = 99;
-	cl.reference_frame = cl.last_frame = cl.last_sequence = 199;
-	cl.need_build = 2;
+	cl.h2_current_frame = cl.h2_current_sequence = 99;
+	cl.h2_reference_frame = cl.h2_last_sequence = 199;
+	cl.h2_need_build = 2;
 
 	plaquemessage = "";
 

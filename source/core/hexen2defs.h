@@ -20,6 +20,8 @@
 
 #define MAX_EDICTS_H2		768			// FIXME: ouch! ouch! ouch!
 
+#define MAX_CLIENT_STATES_H2	150
+
 // Timing macros
 #define HX_FRAME_TIME		0.05
 

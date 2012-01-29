@@ -130,7 +130,7 @@ void UpdateInfoMessage(void)
 	{
 		check = (1 << i);
 		
-		if (cl.info_mask & check)
+		if (cl.h2_info_mask & check)
 		{
 			newmessage = &pr_global_info_strings[pr_info_string_index[i]];
 			String::Cat(infomessage, sizeof(infomessage), "@@");
@@ -142,7 +142,7 @@ void UpdateInfoMessage(void)
 	{
 		check = (1 << i);
 		
-		if (cl.info_mask2 & check)
+		if (cl.h2_info_mask2 & check)
 		{
 			newmessage = &pr_global_info_strings[pr_info_string_index[i+32]];
 			String::Cat(infomessage, sizeof(infomessage), "@@");

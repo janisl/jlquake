@@ -120,7 +120,6 @@
 //#define BASE_ENT_ON		1
 //#define BASE_ENT_SENT	2
 
-#define MAX_CLIENT_STATES 150
 #define MAX_FRAMES 5
 #define CLEAR_LIMIT 2
 
@@ -129,15 +128,9 @@
 
 typedef struct 
 {
-	h2entity_state_t states[MAX_CLIENT_STATES];
+	h2entity_state_t states[MAX_CLIENT_STATES_H2];
 	int count;
 } client_frames_t;
-
-typedef struct 
-{
-	h2entity_state_t states[MAX_CLIENT_STATES*2];
-	int count;
-} client_frames2_t;
 
 typedef struct
 {

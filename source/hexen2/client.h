@@ -56,15 +56,6 @@ extern clientConnection_t clc;
 //
 struct client_state_t : clientActiveCommon_t
 {
-
-	byte		current_frame, last_frame, reference_frame;
-	byte		current_sequence, last_sequence;
-	byte		need_build;
-
-	client_frames2_t frames[3]; // 0 = base, 1 = building, 2 = 0 & 1 merged
-	short RemoveList[MAX_CLIENT_STATES],NumToRemove;
-
-	long	info_mask, info_mask2;
 };
 
 
