@@ -90,7 +90,7 @@ clipHandle_t SV_HullForEntity (qhedict_t *ent, vec3_t mins, vec3_t maxs, vec3_t 
 			if (size[0] < 3) // Point
 				hull = CM_ModelHull(model, 0, clip_mins, clip_maxs);
 #ifdef MISSIONPACK
-			else if ((size[0] <= 8)&&((int)(sv.edicts->v.spawnflags)&1))  // Pentacles
+			else if ((size[0] <= 8)&&((int)(sv.edicts->GetSpawnFlags())&1))  // Pentacles
 				hull = CM_ModelHull(model, 4, clip_mins, clip_maxs);
 #endif
 			else if (size[0] <= 32 && size[2] <= 28)  // Half Player

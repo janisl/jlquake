@@ -671,7 +671,7 @@ void Host_Loadgame_f (void)
 
 #ifdef MISSIONPACK
 	// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
-	pr_global_struct->cl_playerclass = ent->v.playerclass;
+	pr_global_struct->cl_playerclass = ent->GetPlayerClass();
 #endif
 
 	svs.clients->playerclass = ent->GetPlayerClass();
