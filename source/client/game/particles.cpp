@@ -71,13 +71,13 @@ cparticle_t* CL_AllocParticle()
 	free_particles = p->next;
 	p->next = active_particles;
 	active_particles = p;
-	p->time = cl_common->serverTime;
+	p->time = cl.serverTime;
 	return p;
 }
 
 static void CL_AddParticle(cparticle_t* p, cparticle_t*& active, cparticle_t*& tail)
 {
-	float time = (cl_common->serverTime - p->time) * 0.001;
+	float time = (cl.serverTime - p->time) * 0.001;
 	float alpha;
 	if (p->type == pt_q2static)
 	{
@@ -99,7 +99,7 @@ static void CL_AddParticle(cparticle_t* p, cparticle_t*& active, cparticle_t*& t
 	}
 	else
 	{
-		if (p->die - cl_common->serverTime < 0)
+		if (p->die - cl.serverTime < 0)
 		{
 			p->next = free_particles;
 			free_particles = p;
@@ -619,11 +619,11 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		{
 			if (p->color < 160 && p->color > 143)
 			{
-				p->color = 152 + 7 * ((p->die - cl_common->serverTime) * 2 / 1000);
+				p->color = 152 + 7 * ((p->die - cl.serverTime) * 2 / 1000);
 			}
 			if (p->color < 144 && p->color > 127)
 			{
-				p->color = 136 + 7 * ((p->die - cl_common->serverTime) * 2 / 1000);
+				p->color = 136 + 7 * ((p->die - cl.serverTime) * 2 / 1000);
 			}
 		}
 		break;
@@ -820,7 +820,7 @@ void CL_UpdateParticles(float gravityBase)
 	float time3 = frametime * 15;
 	float time4 = frametime * 20;
 	float dvel = 4 * frametime;
-	int killTime = cl_common->serverTime - 1;
+	int killTime = cl.serverTime - 1;
 	float grav = frametime * gravityBase * 0.05;
 	float grav2 = frametime * gravityBase * 0.025;
 	float percent = frametime / HX_FRAME_TIME;

@@ -57,7 +57,7 @@ static h2stream_t* CLH2_NewStream(int ent, int tag)
 	// Search for a free stream
 	for(i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
-		if(!stream->models[0] || stream->endTime < cl_common->serverTime * 0.001)
+		if(!stream->models[0] || stream->endTime < cl.serverTime * 0.001)
 		{
 			return stream;
 		}
@@ -78,7 +78,7 @@ static void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, i
 	stream->tag = tag;
 	stream->flags = flags;
 	stream->skin = skin;
-	stream->endTime = (cl_common->serverTime + duration) * 0.001;
+	stream->endTime = (cl.serverTime + duration) * 0.001;
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
@@ -256,20 +256,20 @@ void CLH2_UpdateStreams()
 			continue;
 		}
 
-		if (stream->endTime * 1000 < cl_common->serverTime)
+		if (stream->endTime * 1000 < cl.serverTime)
 		{
 			// Inactive
 			if (stream->type != H2TE_STREAM_LIGHTNING && stream->type != H2TE_STREAM_LIGHTNING_SMALL)
 			{
 				continue;
 			}
-			else if (stream->endTime * 1000 + 250 < cl_common->serverTime)
+			else if (stream->endTime * 1000 + 250 < cl.serverTime)
 			{
 				continue;
 			}
 		}
 
-		if (stream->flags & H2STREAM_ATTACHED && stream->endTime * 1000 >= cl_common->serverTime)
+		if (stream->flags & H2STREAM_ATTACHED && stream->endTime * 1000 >= cl.serverTime)
 		{
 			// Attach the start position to owner
 			h2entity_state_t* state = CLH2_FindState(stream->entity);
@@ -295,17 +295,17 @@ void CLH2_UpdateStreams()
 			vec3_t discard;
 			AngleVectors(angles, discard, right, up);
 
-			lifeTime = ((stream->endTime - cl_common->serverTime * 0.001)/.8);
-			cosTime = cos(cl_common->serverTime * 0.001 * 5);
-			sinTime = sin(cl_common->serverTime * 0.001 * 5);
-			cos2Time = cos(cl_common->serverTime * 0.001 * 5 + 3.14);
-			sin2Time = sin(cl_common->serverTime * 0.001 * 5 + 3.14);
+			lifeTime = ((stream->endTime - cl.serverTime * 0.001)/.8);
+			cosTime = cos(cl.serverTime * 0.001 * 5);
+			sinTime = sin(cl.serverTime * 0.001 * 5);
+			cos2Time = cos(cl.serverTime * 0.001 * 5 + 3.14);
+			sin2Time = sin(cl.serverTime * 0.001 * 5 + 3.14);
 		}
 
 		int segmentCount = 0;
 		if(stream->type == H2TE_STREAM_ICECHUNKS)
 		{
-			int offset = (cl_common->serverTime / 25) % 30;
+			int offset = (cl.serverTime / 25) % 30;
 			for (int i = 0; i < 3; i++)
 			{
 				org[i] += dist[i] * offset;
@@ -326,10 +326,10 @@ void CLH2_UpdateStreams()
 				R_AddRefEntityToScene(&ent);
 				break;
 			case H2TE_STREAM_SUNSTAFF1:
-				angles[2] = (cl_common->serverTime / 100) % 360;
+				angles[2] = (cl.serverTime / 100) % 360;
 				if (GGameType & GAME_HexenWorld)
 				{
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl_common->serverTime * 0.001) / .3), 0, 128, H2MLS_ABSLIGHT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTime * 0.001) / .3), 0, 128, H2MLS_ABSLIGHT);
 				}
 				else
 				{
@@ -341,10 +341,10 @@ void CLH2_UpdateStreams()
 				ent.reType = RT_MODEL;
 				VectorCopy(org, ent.origin);
 				ent.hModel = stream->models[1];
-				angles[2] = (cl_common->serverTime / 20) % 360;
+				angles[2] = (cl.serverTime / 20) % 360;
 				if (GGameType & GAME_HexenWorld)
 				{
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl_common->serverTime * 0.001)/.5), 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTime * 0.001)/.5), 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -355,14 +355,14 @@ void CLH2_UpdateStreams()
 			case H2TE_STREAM_SUNSTAFF2:
 				if (!(GGameType & GAME_HexenWorld))
 				{
-					angles[2] = (cl_common->serverTime / 100) % 360;
-					ent.frame = (cl_common->serverTime / 100) % 8;
+					angles[2] = (cl.serverTime / 100) % 360;
+					ent.frame = (cl.serverTime / 100) % 8;
 					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 					R_AddRefEntityToScene(&ent);
 				}
 				else
 				{
-					angles[2] = (int)(cl_common->serverTime * 0.001*100)%360;
+					angles[2] = (int)(cl.serverTime * 0.001*100)%360;
 					VectorMA(ent.origin, cosTime * (40 * lifeTime), right,  ent.origin);
 					VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
 					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
@@ -372,7 +372,7 @@ void CLH2_UpdateStreams()
 					ent.reType = RT_MODEL;
 					VectorCopy(org, ent.origin);
 					ent.hModel = stream->models[0];
-					angles[2] = (int)(cl_common->serverTime * 0.001*100)%360;
+					angles[2] = (int)(cl.serverTime * 0.001*100)%360;
 					VectorMA(ent.origin, cos2Time * (40 * lifeTime), right,  ent.origin);
 					VectorMA(ent.origin, sin2Time * (40 * lifeTime), up,  ent.origin);
 					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
@@ -394,17 +394,17 @@ void CLH2_UpdateStreams()
 							VectorMA(ent.origin, sinTime * (40 * lifeTime), up,  ent.origin);
 						}
 						ent.hModel = stream->models[1];
-						angles[2] = (int)(cl_common->serverTime * 0.001*20)%360;
+						angles[2] = (int)(cl.serverTime * 0.001*20)%360;
 						CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, H2MLS_ABSLIGHT);
 						R_AddRefEntityToScene(&ent);
 					}
 				}
 				break;
 			case H2TE_STREAM_LIGHTNING:
-				if (stream->endTime * 1000 < cl_common->serverTime)
+				if (stream->endTime * 1000 < cl.serverTime)
 				{//fixme: keep last non-translucent frame and angle
 					angles[2] = 0;
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl_common->serverTime / 1000.0) * 192, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTime / 1000.0) * 192, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -416,10 +416,10 @@ void CLH2_UpdateStreams()
 				break;
 			case H2TE_STREAM_LIGHTNING_SMALL:
 			case HWTE_STREAM_LIGHTNING_SMALL:
-				if (stream->endTime * 1000 < cl_common->serverTime)
+				if (stream->endTime * 1000 < cl.serverTime)
 				{
 					angles[2] = 0;
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl_common->serverTime / 1000.0) * 192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTime / 1000.0) * 192, H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -444,7 +444,7 @@ void CLH2_UpdateStreams()
 				break;
 			case H2TE_STREAM_GAZE:
 				angles[2] = 0;
-				ent.frame = (cl_common->serverTime /  25) % 36;
+				ent.frame = (cl.serverTime /  25) % 36;
 				CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT);
 				R_AddRefEntityToScene(&ent);
 				break;
@@ -469,9 +469,9 @@ void CLH2_UpdateStreams()
 		if (stream->type == H2TE_STREAM_SUNSTAFF1 ||
 			(!(GGameType & GAME_HexenWorld) && stream->type == H2TE_STREAM_SUNSTAFF2))
 		{
-			if (stream->lastTrailTime * 1000 + 200 < cl_common->serverTime)
+			if (stream->lastTrailTime * 1000 + 200 < cl.serverTime)
 			{
-				stream->lastTrailTime = cl_common->serverTime / 1000.0;
+				stream->lastTrailTime = cl.serverTime / 1000.0;
 				CLH2_SunStaffTrail(stream->source, stream->dest);
 			}
 

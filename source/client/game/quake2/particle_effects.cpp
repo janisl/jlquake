@@ -673,7 +673,7 @@ void CLQ2_FlyParticles(vec3_t origin, int count)
 		}
 	}
 
-	float ltime = (float)cl_common->serverTime / 1000.0;
+	float ltime = (float)cl.serverTime / 1000.0;
 	for (int i = 0; i < count; i += 2)
 	{
 		float angle = ltime * avelocities[i][0];
@@ -722,7 +722,7 @@ void CLQ2_BfgParticles(vec3_t origin)
 		}
 	}
 
-	float ltime = (float)cl_common->serverTime / 1000.0;
+	float ltime = (float)cl.serverTime / 1000.0;
 	for (int i = 0; i < NUMVERTEXNORMALS; i++)
 	{
 		float angle = ltime * avelocities[i][0];
@@ -1046,13 +1046,13 @@ void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward)
 	float len = VectorNormalize(vec);
 
 	vec3_t right;
-	VectorSubtract(vec3_origin, cl_common->refdef.viewaxis[1], right);
+	VectorSubtract(vec3_origin, cl.refdef.viewaxis[1], right);
 	vec3_t up;
-	VectorCopy(cl_common->refdef.viewaxis[2], up);
+	VectorCopy(cl.refdef.viewaxis[2], up);
 	VectorMA(move, -0.5, right, move);
 	VectorMA(move, -0.5, up, move);
 
-	float ltime = (float)cl_common->serverTime / 1000.0;
+	float ltime = (float)cl.serverTime / 1000.0;
 	float start_pt = fmod(ltime * 96.0f, step);
 	VectorMA(move, start_pt, vec, move);
 

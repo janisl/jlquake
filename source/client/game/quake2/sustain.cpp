@@ -104,17 +104,17 @@ void CLQ2_SustainParticleStream(int id, int cnt, vec3_t pos, vec3_t dir, int r, 
 	VectorCopy(dir, s->dir);
 	s->color = r & 0xff;
 	s->magnitude = magnitude;
-	s->endtime = cl_common->serverTime + interval;
+	s->endtime = cl.serverTime + interval;
 	s->think = CLQ2_ParticleSteamEffect2;
 	s->thinkinterval = 100;
-	s->nextthink = cl_common->serverTime;
+	s->nextthink = cl.serverTime;
 }
 
 static void CLQ2_Widowbeamout(q2cl_sustain_t* self)
 {
 	static int colortable[4] = {2 * 8, 13 * 8, 21 * 8, 18 * 8};
 
-	float ratio = 1.0 - (((float)self->endtime - (float)cl_common->serverTime) / 2100.0);
+	float ratio = 1.0 - (((float)self->endtime - (float)cl.serverTime) / 2100.0);
 
 	for (int i = 0; i < 300; i++)
 	{
@@ -149,17 +149,17 @@ void CLQ2_SustainWindow(int id, vec3_t pos)
 	}
 	s->id = id;
 	VectorCopy(pos, s->org);
-	s->endtime = cl_common->serverTime + 2100;
+	s->endtime = cl.serverTime + 2100;
 	s->think = CLQ2_Widowbeamout;
 	s->thinkinterval = 1;
-	s->nextthink = cl_common->serverTime;
+	s->nextthink = cl.serverTime;
 }
 
 static void CLQ2_Nukeblast(q2cl_sustain_t* self)
 {
 	static int colortable[4] = {110, 112, 114, 116};
 
-	float ratio = 1.0 - (((float)self->endtime - (float)cl_common->serverTime) / 1000.0);
+	float ratio = 1.0 - (((float)self->endtime - (float)cl.serverTime) / 1000.0);
 
 	for (int i = 0; i < 700; i++)
 	{
@@ -194,10 +194,10 @@ void CLQ2_SustainNuke(vec3_t pos)
 	}
 	s->id = 21000;
 	VectorCopy(pos, s->org);
-	s->endtime = cl_common->serverTime + 1000;
+	s->endtime = cl.serverTime + 1000;
 	s->think = CLQ2_Nukeblast;
 	s->thinkinterval = 1;
-	s->nextthink = cl_common->serverTime;
+	s->nextthink = cl.serverTime;
 }
 
 void CLQ2_ProcessSustain()
@@ -209,12 +209,12 @@ void CLQ2_ProcessSustain()
 		{
 			continue;
 		}
-		if (s->endtime < cl_common->serverTime)
+		if (s->endtime < cl.serverTime)
 		{
 			s->id = 0;
 			continue;
 		}
-		if (cl_common->serverTime >= s->nextthink)
+		if (cl.serverTime >= s->nextthink)
 		{
 			s->think(s);
 		}

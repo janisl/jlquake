@@ -84,18 +84,18 @@ h2entity_state_t* CLH2_FindState(int entityNumber)
 
 	if (entityNumber >= 1 && entityNumber <= HWMAX_CLIENTS)
 	{
-		if (entityNumber == cl_common->viewentity)
+		if (entityNumber == cl.viewentity)
 		{
 			VectorCopy(CL_GetSimOrg(), pretend_player.origin);
 		}
 		else
 		{
-			VectorCopy(cl_common->hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].playerstate[entityNumber - 1].origin, pretend_player.origin);
+			VectorCopy(cl.hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].playerstate[entityNumber - 1].origin, pretend_player.origin);
 		}
 		return &pretend_player;
 	}
 
-	hwpacket_entities_t* pack = &cl_common->hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
+	hwpacket_entities_t* pack = &cl.hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
 	for (int pnum = 0; pnum < pack->num_entities; pnum++)
 	{
 		if (pack->entities[pnum].number == entityNumber)
@@ -762,8 +762,8 @@ void CLHW_ParseTEnt(QMsg& message)
 void CLHW_UpdateHammer(refEntity_t* ent, int edict_num)
 {
 	// do this every .3 seconds
-	int testVal = cl_common->serverTime / 100;
-	int testVal2 = (cl_common->serverTime - cls_common->frametime) / 100;
+	int testVal = cl.serverTime / 100;
+	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
 	if (testVal != testVal2)
 	{
 		if (!(testVal % 3))
@@ -775,8 +775,8 @@ void CLHW_UpdateHammer(refEntity_t* ent, int edict_num)
 
 void CLHW_UpdateBug(refEntity_t* ent)
 {
-	int testVal = cl_common->serverTime / 100;
-	int testVal2 = (cl_common->serverTime - cls_common->frametime) / 100;
+	int testVal = cl.serverTime / 100;
+	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
 	if (testVal != testVal2)
 	{
 		S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_buzzbee, 1, 1);

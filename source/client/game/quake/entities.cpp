@@ -31,16 +31,16 @@ int clq1_playerindex;
 //	This error checks and tracks the total number of entities
 q1entity_t* CLQ1_EntityNum(int number)
 {
-	if (number >= cl_common->qh_num_entities)
+	if (number >= cl.qh_num_entities)
 	{
 		if (number >= MAX_EDICTS_Q1)
 		{
 			throw DropException(va("CLQ1_EntityNum: %i is an invalid number", number));
 		}
-		while (cl_common->qh_num_entities <= number)
+		while (cl.qh_num_entities <= number)
 		{
-			clq1_entities[cl_common->qh_num_entities].state.colormap = 0;
-			cl_common->qh_num_entities++;
+			clq1_entities[cl.qh_num_entities].state.colormap = 0;
+			cl.qh_num_entities++;
 		}
 	}
 	return &clq1_entities[number];
@@ -72,13 +72,13 @@ void CLQ1_ParseSpawnBaseline(QMsg& message)
 
 void CLQ1_ParseSpawnStatic(QMsg& message)
 {
-	int i = cl_common->qh_num_statics;
+	int i = cl.qh_num_statics;
 	if (i >= MAX_STATIC_ENTITIES_Q1)
 	{
 		throw DropException("Too many static entities");
 	}
 	q1entity_t* ent = &clq1_static_entities[i];
-	cl_common->qh_num_statics++;
+	cl.qh_num_statics++;
 
 	CLQ1_ParseBaseline(message, &ent->state);
 	ent->state.colormap = 0;
@@ -123,9 +123,9 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 		}
 	}
 
-	bool forcelink = ent->msgtime != cl_common->qh_mtime[1];	// no previous frame to lerp from
+	bool forcelink = ent->msgtime != cl.qh_mtime[1];	// no previous frame to lerp from
 
-	ent->msgtime = cl_common->qh_mtime[0];
+	ent->msgtime = cl.qh_mtime[0];
 
 	int modnum;
 	if (bits & Q1U_MODEL)
@@ -141,7 +141,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 		modnum = baseline.modelindex;
 	}
 
-	qhandle_t model = cl_common->model_draw[modnum];
+	qhandle_t model = cl.model_draw[modnum];
 	if (modnum != ent->state.modelindex)
 	{
 		ent->state.modelindex = modnum;
@@ -162,7 +162,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 		{
 			forcelink = true;	// hack to make null model players work
 		}
-		if (num > 0 && num <= cl_common->qh_maxclients)
+		if (num > 0 && num <= cl.qh_maxclients)
 		{
 			CLQ1_TranslatePlayerSkin(num - 1);
 		}
@@ -185,7 +185,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 	{
 		ent->state.colormap = baseline.colormap;
 	}
-	if (ent->state.colormap > cl_common->qh_maxclients)
+	if (ent->state.colormap > cl.qh_maxclients)
 	{
 		throw Exception("i >= cl.maxclients");
 	}
@@ -202,7 +202,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 	if (skin != ent->state.skinnum)
 	{
 		ent->state.skinnum = skin;
-		if (num > 0 && num <= cl_common->qh_maxclients)
+		if (num > 0 && num <= cl.qh_maxclients)
 		{
 			CLQ1_TranslatePlayerSkin(num - 1);
 		}
@@ -381,8 +381,8 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 	q1entity_state_t olde;
 	Com_Memset(&olde, 0, sizeof(olde));
 
-	cl_common->qh_validsequence = 0;		// can't render a frame
-	cl_common->qw_frames[clc_common->netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
+	cl.qh_validsequence = 0;		// can't render a frame
+	cl.qw_frames[clc_common->netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -408,15 +408,15 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 {
 	int newpacket = clc_common->netchan.incomingSequence & UPDATE_MASK_QW;
-	qwpacket_entities_t* newp = &cl_common->qw_frames[newpacket].packet_entities;
-	cl_common->qw_frames[newpacket].invalid = false;
+	qwpacket_entities_t* newp = &cl.qw_frames[newpacket].packet_entities;
+	cl.qw_frames[newpacket].invalid = false;
 
 	int oldpacket;
 	if (delta)
 	{
 		byte from = message.ReadByte();
 
-		oldpacket = cl_common->qw_frames[newpacket].delta_sequence;
+		oldpacket = cl.qw_frames[newpacket].delta_sequence;
 
 		if ((from & UPDATE_MASK_QW) != (oldpacket & UPDATE_MASK_QW))
 		{
@@ -439,15 +439,15 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 			CLQW_FlushEntityPacket(message);
 			return;
 		}
-		cl_common->qh_validsequence = clc_common->netchan.incomingSequence;
-		oldp = &cl_common->qw_frames[oldpacket & UPDATE_MASK_QW].packet_entities;
+		cl.qh_validsequence = clc_common->netchan.incomingSequence;
+		oldp = &cl.qw_frames[oldpacket & UPDATE_MASK_QW].packet_entities;
 	}
 	else
 	{
 		// this is a full update that we can start delta compressing from now
 		oldp = &dummy;
 		dummy.num_entities = 0;
-		cl_common->qh_validsequence = clc_common->netchan.incomingSequence;
+		cl.qh_validsequence = clc_common->netchan.incomingSequence;
 		full = true;
 	}
 
@@ -509,7 +509,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 			{
 				if (full)
 				{
-					cl_common->qh_validsequence = 0;
+					cl.qh_validsequence = 0;
 					Log::write("WARNING: QWU_REMOVE on full update\n");
 					CLQW_FlushEntityPacket(message);
 					return;
@@ -530,7 +530,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 			// delta from previous
 			if (full)
 			{
-				cl_common->qh_validsequence = 0;
+				cl.qh_validsequence = 0;
 				Log::write("WARNING: delta on full update");
 			}
 			if (word & QWU_REMOVE)
@@ -566,12 +566,12 @@ void CLQW_ParsePlayerinfo(QMsg& message)
 		throw Exception("CLQW_ParsePlayerinfo: bad num");
 	}
 
-	qwframe_t* frame = &cl_common->qw_frames[cl_common->qh_parsecount &  UPDATE_MASK_QW];
+	qwframe_t* frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
 	qwplayer_state_t* state = &frame->playerstate[num];
 
 	int flags = state->flags = message.ReadShort();
 
-	state->messagenum = cl_common->qh_parsecount;
+	state->messagenum = cl.qh_parsecount;
 	state->origin[0] = message.ReadCoord();
 	state->origin[1] = message.ReadCoord();
 	state->origin[2] = message.ReadCoord();
@@ -691,13 +691,13 @@ void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 void CLQ1_LinkStaticEntities()
 {
 	q1entity_t* pent = clq1_static_entities;
-	for (int i = 0; i < cl_common->qh_num_statics; i++, pent++)
+	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
 	{
 		refEntity_t rent;
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl_common->model_draw[pent->state.modelindex];
+		rent.hModel = cl.model_draw[pent->state.modelindex];
 		CLQ1_SetRefEntAxis(&rent, pent->state.angles);
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;
@@ -709,7 +709,7 @@ void CLQ1_LinkStaticEntities()
 //	Translates a skin texture by the per-player color lookup
 void CLQ1_TranslatePlayerSkin(int playernum)
 {
-	q1player_info_t* player = &cl_common->q1_players[playernum];
+	q1player_info_t* player = &cl.q1_players[playernum];
 	if (GGameType & GAME_QuakeWorld)
 	{
 		if (!player->name[0])
@@ -757,7 +757,7 @@ void CLQ1_TranslatePlayerSkin(int playernum)
 		else
 		{
 			R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum),
-				cl_common->model_draw[clq1_playerindex], translate);
+				cl.model_draw[clq1_playerindex], translate);
 		}
 	}
 	else
@@ -765,6 +765,6 @@ void CLQ1_TranslatePlayerSkin(int playernum)
 		q1entity_t* ent = &clq1_entities[1 + playernum];
 
 		R_CreateOrUpdateTranslatedModelSkinQ1(clq1_playertextures[playernum], va("*player%d", playernum),
-			cl_common->model_draw[ent->state.modelindex], translate);
+			cl.model_draw[ent->state.modelindex], translate);
 	}
 }

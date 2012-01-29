@@ -94,7 +94,7 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 		{
 			if (R_ModelFlags(entity->hModel) & H2MDLEF_ROTATE)
 			{
-				angles[YAW] = AngleMod((entity->origin[0] + entity->origin[1]) * 0.8 + (108 * cl_common->serverTime * 0.001));
+				angles[YAW] = AngleMod((entity->origin[0] + entity->origin[1]) * 0.8 + (108 * cl.serverTime * 0.001));
 			}
 			else
 			{
@@ -130,9 +130,9 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 		if (R_ModelFlags(entity->hModel) & H2MDLEF_ROTATE)
 		{
 			// Floating motion
-			float delta = sin(entity->origin[0] + entity->origin[1] + (cl_common->serverTime * 0.001 * 3)) * 5.5;
+			float delta = sin(entity->origin[0] + entity->origin[1] + (cl.serverTime * 0.001 * 3)) * 5.5;
 			VectorMA(entity->origin, delta, entity->axis[2], entity->origin);
-			absoluteLight = 60 + 34 + sin(entity->origin[0] + entity->origin[1] + (cl_common->serverTime * 0.001 * 3.8)) * 34;
+			absoluteLight = 60 + 34 + sin(entity->origin[0] + entity->origin[1] + (cl.serverTime * 0.001 * 3.8)) * 34;
 			drawFlags |= H2MLS_ABSLIGHT;
 		}
 
@@ -219,7 +219,7 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 //	Translates a skin texture by the per-player color lookup
 void CLH2_TranslatePlayerSkin(int playernum)
 {
-	h2player_info_t* player = &cl_common->h2_players[playernum];
+	h2player_info_t* player = &cl.h2_players[playernum];
 	if (GGameType & GAME_HexenWorld)
 	{
 		if (!player->name[0])
@@ -286,7 +286,7 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
 			entity->hModel == clh2_player_models[3] ||
 			entity->hModel == clh2_player_models[4])
 		{
-			if (!cl_common->h2_players[playerIndex].Translated)
+			if (!cl.h2_players[playerIndex].Translated)
 			{
 				CLH2_TranslatePlayerSkin(playerIndex);
 			}

@@ -26,7 +26,7 @@ void CLQ2_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles, float radius, 
 	VectorMA (dl->origin, 16, rv, dl->origin);
 	dl->radius = radius;
 	dl->minlight = 32;
-	dl->die = cl_common->serverTime + delay;
+	dl->die = cl.serverTime + delay;
 	VectorCopy(colour, dl->color);
 }
 
@@ -36,7 +36,7 @@ void CLQ2_MuzzleFlash2Light(int key, vec3_t origin, float radius, int delay, vec
 	VectorCopy(origin,  dl->origin);
 	dl->minlight = 32;
 	dl->radius = radius;
-	dl->die = cl_common->serverTime + delay;
+	dl->die = cl.serverTime + delay;
 	VectorCopy(colour, dl->color);
 }
 
@@ -46,7 +46,7 @@ void CLQ2_Flashlight(int key, vec3_t origin)
 	VectorCopy(origin,  dl->origin);
 	dl->radius = 400;
 	dl->minlight = 250;
-	dl->die = cl_common->serverTime + 100;
+	dl->die = cl.serverTime + 100;
 	dl->color[0] = 1;
 	dl->color[1] = 1;
 	dl->color[2] = 1;
@@ -58,7 +58,7 @@ void CLQ2_ColorFlash(int key, vec3_t origin, int intensity, float r, float g, fl
 	VectorCopy(origin,  dl->origin);
 	dl->radius = intensity;
 	dl->minlight = 250;
-	dl->die = cl_common->serverTime + 100;
+	dl->die = cl.serverTime + 100;
 	dl->color[0] = r;
 	dl->color[1] = g;
 	dl->color[2] = b;

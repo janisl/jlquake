@@ -45,7 +45,7 @@ void CLH2_DarkFieldParticles(const vec3_t origin)
 				{
 					return;
 				}
-				p->die = cl_common->serverTime + 200 + (rand() & 7) * 20;
+				p->die = cl.serverTime + 200 + (rand() & 7) * 20;
 				p->color = 150 + rand() % 6;
 				p->type = pt_h2slowgrav;
 
@@ -75,7 +75,7 @@ void CLH2_ParticleExplosion(const vec3_t origin)
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 5000;
+		p->die = cl.serverTime + 5000;
 		p->color = h2ramp1[0];
 		p->ramp = rand() & 3;
 		p->type = i & 1 ? pt_h2explode : pt_h2explode2;
@@ -97,7 +97,7 @@ void CLH2_BlobExplosion(const vec3_t origin)
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 1000 + (rand() & 8) * 50;
+		p->die = cl.serverTime + 1000 + (rand() & 8) * 50;
 
 		if (i & 1)
 		{
@@ -126,7 +126,7 @@ void CLH2_RunParticleEffect(const vec3_t origin, const vec3_t direction, int cou
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 100 * (rand() % 5);
+		p->die = cl.serverTime + 100 * (rand() % 5);
 		p->color = 256 + 16 + 12 + (rand() & 3);
 		p->type = pt_h2slowgrav;
 		for (int j = 0; j < 3; j++)
@@ -146,7 +146,7 @@ void CLH2_RunParticleEffect2(const vec3_t origin, const vec3_t directionMin, con
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 		p->color = colour;
 		p->type = effect;
 		p->ramp = 0;
@@ -175,7 +175,7 @@ void CLH2_RunParticleEffect3(const vec3_t origin, const vec3_t box, int colour, 
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 		p->color = colour;
 		p->type = effect;
 		p->ramp = 0;
@@ -197,7 +197,7 @@ void CLH2_RunParticleEffect4(const vec3_t origin, float radius, int colour, ptyp
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 		p->color = colour;
 		p->type = effect;
 		p->ramp = 0;
@@ -220,7 +220,7 @@ void CLH2_SplashParticleEffect(const vec3_t origin, float radius, int colour, pt
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 		p->color = colour;
 		p->type = effect;
 		p->ramp = 0;
@@ -254,7 +254,7 @@ void CLH2_LavaSplash(const vec3_t origin)
 				{
 					return;
 				}
-				p->die = cl_common->serverTime + 2000 + (rand() & 31) * 20;
+				p->die = cl.serverTime + 2000 + (rand() & 31) * 20;
 				p->color = 224 + (rand() & 7);
 				p->type = pt_h2slowgrav;
 
@@ -288,7 +288,7 @@ void CLH2_TeleportSplash(const vec3_t origin)
 				{
 					return;
 				}
-				p->die = cl_common->serverTime + 200 + (rand() & 7) * 20;
+				p->die = cl.serverTime + 200 + (rand() & 7) * 20;
 				p->color = 7 + (rand() & 7);
 				p->type = pt_h2slowgrav;
 
@@ -318,7 +318,7 @@ void CLH2_RunQuakeEffect(const vec3_t origin, float distance)
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 300 * (rand() % 5);
+		p->die = cl.serverTime + 300 * (rand() % 5);
 		p->color = (rand() & 3) + ((rand() % 3) * 16) + (13 * 16) + 256 + 11;
 		p->type = pt_h2quake;
 		p->ramp = 0;
@@ -355,7 +355,7 @@ void CLH2_SunStaffTrail(vec3_t source, const vec3_t destination)
 			return;
 		}
 
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 
 		p->ramp = rand() & 3;
 		p->color = h2ramp6[(int)p->ramp];
@@ -385,7 +385,7 @@ void CLH2_RiderParticles(int count, const vec3_t origin)
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 4000;
+		p->die = cl.serverTime + 4000;
 		p->color = 256 + 16 + 15;
 		p->type = pt_h2rd;
 		p->ramp = 0;
@@ -419,7 +419,7 @@ void CLH2_GravityWellParticle(int count, const vec3_t origin, int colour)
 		if (!p)
 			return;
 
-		p->die = cl_common->serverTime + 4000;
+		p->die = cl.serverTime + 4000;
 		p->color = colour + (rand() & 15);
 		p->type = pt_h2gravwell;
 		p->ramp = 0;
@@ -456,7 +456,7 @@ void CLH2_RainEffect(const vec3_t origin, const vec3_t size, int xDirection, int
 		}
 
 		float z_time = -(size[2] / p->vel[2]);
-		p->die = cl_common->serverTime + z_time * 1000;
+		p->die = cl.serverTime + z_time * 1000;
 		p->color = colour;
 		p->ramp = rand() & 3;
 
@@ -488,7 +488,7 @@ void CLH2_RainEffect2(const vec3_t org, const vec3_t e_size, int x_dir, int y_di
 		}
 
 		float z_time = -(e_size[2] / p->vel[2]);
-		p->die = cl_common->serverTime + z_time * 1000;
+		p->die = cl.serverTime + z_time * 1000;
 		p->color = color;
 		p->ramp = (rand() & 3);
 
@@ -544,7 +544,7 @@ void CLH2_SnowEffect(const vec3_t minOrigin, const vec3_t maxOrigin, int flags, 
 			p->color += 256;
 		}
 
-		p->die = cl_common->serverTime + 7000;
+		p->die = cl.serverTime + 7000;
 		p->ramp = (rand() & 3);
 		p->type = pt_h2snow;
 
@@ -581,7 +581,7 @@ void CLH2_ColouredParticleExplosion(const vec3_t org, int color, int radius, int
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 3000;
+		p->die = cl.serverTime + 3000;
 		p->color = color;
 		p->ramp = (rand() & 3);
 		p->type = i & 1 ? pt_h2c_explode : pt_h2c_explode2;
@@ -646,7 +646,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 		}
 		
 		VectorCopy(vec3_origin, p->vel);
-		p->die = cl_common->serverTime + lifetime * 1000;
+		p->die = cl.serverTime + lifetime * 1000;
 
 		switch (type)
 		{
@@ -703,7 +703,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 
 		case rt_tracer:
 		case rt_tracer2:// tracer
-			p->die = cl_common->serverTime + 500;
+			p->die = cl.serverTime + 500;
 			p->type = pt_h2static;
 			if (type == rt_tracer)
 			{
@@ -759,7 +759,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 		case rt_voor_trail:// voor trail
 			p->color = 9 * 16 + 8 + (rand() & 3);
 			p->type = pt_h2static;
-			p->die = cl_common->serverTime + 300;
+			p->die = cl.serverTime + 300;
 			for (int j = 0; j < 3; j++)
 			{
 				p->org[j] = start[j] + ((rand() & 15) - 8);
@@ -786,7 +786,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->type = pt_h2acidball;
 			if (!(GGameType & GAME_HexenWorld))
 			{
-				p->die = cl_common->serverTime + 500;
+				p->die = cl.serverTime + 500;
 			}
 			for (int j = 0; j < 3; j++)
 			{
@@ -933,7 +933,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 
 void CLHW_BrightFieldParticles(vec3_t origin)
 {
-	float height = cos(cl_common->serverTime * 4.0 / 1000.0) * 25;
+	float height = cos(cl.serverTime * 4.0 / 1000.0) * 25;
 
 	for (int i = 0; i < 120 * cls_common->frametime / 1000; i++)
 	{
@@ -942,7 +942,7 @@ void CLHW_BrightFieldParticles(vec3_t origin)
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 500;
+		p->die = cl.serverTime + 500;
 		p->color = 143;
 		p->type = pt_h2quake;
 
@@ -967,7 +967,7 @@ void CLHW_BrightFieldParticles(vec3_t origin)
 		{
 			return;
 		}
-		p->die = cl_common->serverTime + 500;
+		p->die = cl.serverTime + 500;
 		p->color = 159;
 		p->type = pt_h2quake;
 
@@ -990,7 +990,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 {
 	vec3_t ent_angles;
 	ent_angles[0] = ent_angles[2] = 0;
-	ent_angles[1] = cl_common->serverTime * 12.0 / 1000.0;
+	ent_angles[1] = cl.serverTime * 12.0 / 1000.0;
 
 	vec3_t forward;
 	forward[0] = cos(ent_angles[1]) * 32;
@@ -1010,7 +1010,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 			return;
 		}
 		p->ramp = 0;
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 		p->color = 416;
 		p->type = pt_h2fireball;
 		
@@ -1032,7 +1032,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 			return;
 		}
 		p->ramp = 0;
-		p->die = cl_common->serverTime + 2000;
+		p->die = cl.serverTime + 2000;
 		p->color = 135;
 		p->type = pt_h2redfire;
 		
@@ -1057,11 +1057,11 @@ void CLHW_TargetBallEffectParticles(vec3_t origin, float targetDistance)
 		}
 		if (targetDistance < 60)
 		{
-			p->die = cl_common->serverTime + (rand() & 3) * 20 + (230 * (1.0 - (0.23 * (targetDistance - 24.0) / 36.0)));
+			p->die = cl.serverTime + (rand() & 3) * 20 + (230 * (1.0 - (0.23 * (targetDistance - 24.0) / 36.0)));
 		}
 		else
 		{
-			p->die = cl_common->serverTime + (300 * ((256.0 - targetDistance) / 256.0)) + (rand() & 7) * 20;
+			p->die = cl.serverTime + (300 * ((256.0 - targetDistance) / 256.0)) + (rand() & 7) * 20;
 		}
 		p->color = 7 + (rand() % 24);
 		p->type = pt_h2slowgrav;

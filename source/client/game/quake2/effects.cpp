@@ -1053,17 +1053,17 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 void CLQ2_FlyEffect(q2centity_t* ent, vec3_t origin)
 {
 	int starttime;
-	if (ent->fly_stoptime < cl_common->serverTime)
+	if (ent->fly_stoptime < cl.serverTime)
 	{
-		starttime = cl_common->serverTime;
-		ent->fly_stoptime = cl_common->serverTime + 60000;
+		starttime = cl.serverTime;
+		ent->fly_stoptime = cl.serverTime + 60000;
 	}
 	else
 	{
 		starttime = ent->fly_stoptime - 60000;
 	}
 
-	int n = cl_common->serverTime - starttime;
+	int n = cl.serverTime - starttime;
 	int count;
 	if (n < 20000)
 	{
@@ -1071,7 +1071,7 @@ void CLQ2_FlyEffect(q2centity_t* ent, vec3_t origin)
 	}
 	else
 	{
-		n = ent->fly_stoptime - cl_common->serverTime;
+		n = ent->fly_stoptime - cl.serverTime;
 		if (n < 20000)
 		{
 			count = n * 162 / 20000.0;

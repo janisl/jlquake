@@ -78,7 +78,7 @@ static q2explosion_t* CLQ2_AllocExplosion()
 	}
 
 	// find the oldest explosion
-	int time = cl_common->serverTime;
+	int time = cl.serverTime;
 	int index = 0;
 	for (int i = 0; i < MAX_EXPLOSIONS_Q2; i++)
 	{
@@ -95,7 +95,7 @@ static q2explosion_t* CLQ2_AllocExplosion()
 static q2explosion_t* NewExplosion(vec3_t origin)
 {
 	q2explosion_t* explosion = CLQ2_AllocExplosion();
-	explosion->start = cl_common->q2_frame.servertime - 100;
+	explosion->start = cl.q2_frame.servertime - 100;
 	explosion->entity.reType = RT_MODEL;
 	VectorCopy(origin, explosion->entity.origin);
 	return explosion;
@@ -261,7 +261,7 @@ void CLQ2_AddExplosions()
 		{
 			continue;
 		}
-		float fraction = (cl_common->serverTime - explosion->start) / 100.0;
+		float fraction = (cl.serverTime - explosion->start) / 100.0;
 		int frame = (int)floor(fraction);
 
 		refEntity_t* entity = &explosion->entity;
@@ -358,7 +358,7 @@ void CLQ2_AddExplosions()
 		}
 		entity->frame = explosion->baseFrame + frame + 1;
 		entity->oldframe = explosion->baseFrame + frame;
-		entity->backlerp = 1.0 - cl_common->q2_lerpfrac;
+		entity->backlerp = 1.0 - cl.q2_lerpfrac;
 
 		R_AddRefEntityToScene(entity);
 	}

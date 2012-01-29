@@ -37,7 +37,7 @@ void CLQ2_NewLaser(vec3_t start, vec3_t end, int colors)
 	q2laser_t* laser = clq2_lasers;
 	for (int i = 0; i < MAX_LASERS_Q2; i++, laser++)
 	{
-		if (laser->endTime < cl_common->serverTime)
+		if (laser->endTime < cl.serverTime)
 		{
 			Com_Memset(laser, 0, sizeof(*laser));
 			laser->entity.reType = RT_BEAM;
@@ -48,7 +48,7 @@ void CLQ2_NewLaser(vec3_t start, vec3_t end, int colors)
 			laser->entity.skinNum = (colors >> ((rand() % 4)*8)) & 0xff;
 			laser->entity.hModel = 0;
 			laser->entity.frame = 4;
-			laser->endTime = cl_common->serverTime + 100;
+			laser->endTime = cl.serverTime + 100;
 			return;
 		}
 	}
@@ -59,7 +59,7 @@ void CLQ2_AddLasers()
 	q2laser_t* laser = clq2_lasers;
 	for (int i = 0; i < MAX_LASERS_Q2; i++, laser++)
 	{
-		if (laser->endTime >= cl_common->serverTime)
+		if (laser->endTime >= cl.serverTime)
 		{
 			R_AddRefEntityToScene(&laser->entity);
 		}

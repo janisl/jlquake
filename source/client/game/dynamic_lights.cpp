@@ -44,7 +44,7 @@ cdlight_t* CL_AllocDlight(int key)
 	cdlight_t* dl = cl_dlights;
 	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
 	{
-		if (dl->die < cl_common->serverTime)
+		if (dl->die < cl.serverTime)
 		{
 			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
@@ -69,7 +69,7 @@ void CL_RunDLights()
 		{
 			continue;
 		}
-		if (dl->die < cl_common->serverTime)
+		if (dl->die < cl.serverTime)
 		{
 			dl->radius = 0;
 			continue;

@@ -30,7 +30,7 @@ void CLQ1_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles)
 
 	dl->radius = 200 + (rand() & 31);
 	dl->minlight = 32;
-	dl->die = cl_common->serverTime + 100;
+	dl->die = cl.serverTime + 100;
 	if (GGameType & GAME_QuakeWorld)
 	{
 		dl->color[0] = 0.2;
@@ -47,14 +47,14 @@ void CLQ1_BrightLight(int key, vec3_t origin)
 	dl->radius = 400 + (rand() & 31);
 	if (GGameType & GAME_QuakeWorld)
 	{
-		dl->die = cl_common->serverTime + 100;
+		dl->die = cl.serverTime + 100;
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
 		dl->color[2] = 0.05;
 	}
 	else
 	{
-		dl->die = cl_common->serverTime + 1;
+		dl->die = cl.serverTime + 1;
 	}
 }
 
@@ -65,7 +65,7 @@ void CLQ1_DimLight(int key, vec3_t origin, int type)
 	dl->radius = 200 + (rand() & 31);
 	if (GGameType & GAME_QuakeWorld)
 	{
-		dl->die = cl_common->serverTime + 100;
+		dl->die = cl.serverTime + 100;
 		if (type == 0)
 		{
 			dl->color[0] = 0.2;
@@ -93,7 +93,7 @@ void CLQ1_DimLight(int key, vec3_t origin, int type)
 	}
 	else
 	{
-		dl->die = cl_common->serverTime + 10;
+		dl->die = cl.serverTime + 10;
 	}
 }
 
@@ -104,11 +104,11 @@ void CLQ1_RocketLight(int key, vec3_t origin)
 	dl->radius = 200;
 	if (GGameType & GAME_QuakeWorld)
 	{
-		dl->die = cl_common->serverTime + 100;
+		dl->die = cl.serverTime + 100;
 	}
 	else
 	{
-		dl->die = cl_common->serverTime + 10;
+		dl->die = cl.serverTime + 10;
 	}
 }
 
@@ -117,7 +117,7 @@ void CLQ1_ExplosionLight(vec3_t origin)
 	cdlight_t* dl = CL_AllocDlight(0);
 	VectorCopy(origin, dl->origin);
 	dl->radius = 350;
-	dl->die = cl_common->serverTime + 500;
+	dl->die = cl.serverTime + 500;
 	dl->decay = 300;
 	if (GGameType & GAME_QuakeWorld)
 	{

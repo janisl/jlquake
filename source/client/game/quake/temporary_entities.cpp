@@ -83,7 +83,7 @@ static void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 		{
 			beam->entity = entity;
 			beam->model = model;
-			beam->endtime = cl_common->serverTime * 0.001 + 0.2;
+			beam->endtime = cl.serverTime * 0.001 + 0.2;
 			VectorCopy(start, beam->start);
 			VectorCopy(end, beam->end);
 			return;
@@ -94,11 +94,11 @@ static void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 	beam = clq1_beams;
 	for (int i = 0; i < MAX_BEAMS_Q1; i++, beam++)
 	{
-		if (!beam->model || beam->endtime < cl_common->serverTime * 0.001)
+		if (!beam->model || beam->endtime < cl.serverTime * 0.001)
 		{
 			beam->entity = entity;
 			beam->model = model;
-			beam->endtime = cl_common->serverTime * 0.001 + 0.2;
+			beam->endtime = cl.serverTime * 0.001 + 0.2;
 			VectorCopy (start, beam->start);
 			VectorCopy (end, beam->end);
 			return;
@@ -113,13 +113,13 @@ static void CLQ1_UpdateBeams()
 	q1beam_t* beam = clq1_beams;
 	for (int i = 0; i < MAX_BEAMS_Q1; i++, beam++)
 	{
-		if (!beam->model || beam->endtime < cl_common->serverTime * 0.001)
+		if (!beam->model || beam->endtime < cl.serverTime * 0.001)
 		{
 			continue;
 		}
 
 		// if coming from the player, update the start position
-		if (beam->entity == cl_common->viewentity)
+		if (beam->entity == cl.viewentity)
 		{
 			VectorCopy(CL_GetSimOrg(), beam->start);
 		}
@@ -166,7 +166,7 @@ static q1explosion_t* CLQ1_AllocExplosion()
 	}
 
 	// find the oldest explosion
-	float time = cl_common->serverTime * 0.001;
+	float time = cl.serverTime * 0.001;
 	int index = 0;
 	for (int i = 0; i < MAX_EXPLOSIONS_Q1; i++)
 	{
@@ -183,7 +183,7 @@ static void CLQ1_ExplosionSprite(vec3_t position)
 {
 	q1explosion_t* explosion = CLQ1_AllocExplosion();
 	VectorCopy(position, explosion->origin);
-	explosion->start = cl_common->serverTime * 0.001;
+	explosion->start = cl.serverTime * 0.001;
 	explosion->model = R_RegisterModel("progs/s_explod.spr");
 }
 
@@ -196,7 +196,7 @@ static void CLQ1_UpdateExplosions()
 		{
 			continue;
 		}
-		int f = 10 * (cl_common->serverTime * 0.001 - explosion->start);
+		int f = 10 * (cl.serverTime * 0.001 - explosion->start);
 		if (f >= R_ModelNumFrames(explosion->model))
 		{
 			explosion->model = 0;

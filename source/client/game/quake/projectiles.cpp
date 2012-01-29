@@ -77,7 +77,7 @@ void CLQ1_LinkProjectiles()
 		refEntity_t ent;
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
-		ent.hModel = cl_common->model_draw[pr->modelindex];
+		ent.hModel = cl.model_draw[pr->modelindex];
 		VectorCopy(pr->origin, ent.origin);
 		CLQ1_SetRefEntAxis(&ent, pr->angles);
 		R_AddRefEntityToScene(&ent);

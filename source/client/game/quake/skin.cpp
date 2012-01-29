@@ -148,7 +148,7 @@ void CLQW_SkinNextDownload()
 
 	for (; clc_common->downloadNumber != MAX_CLIENTS_QW; clc_common->downloadNumber++)
 	{
-		sc = &cl_common->q1_players[clc_common->downloadNumber];
+		sc = &cl.q1_players[clc_common->downloadNumber];
 		if (!sc->name[0])
 		{
 			continue;
@@ -169,7 +169,7 @@ void CLQW_SkinNextDownload()
 	// now load them in for real
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
-		sc = &cl_common->q1_players[i];
+		sc = &cl.q1_players[i];
 		if (!sc->name[0])
 		{
 			continue;
@@ -182,7 +182,7 @@ void CLQW_SkinNextDownload()
 	{
 		// get next signon phase
 		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2(va("begin %i", cl_common->servercount));
+		clc_common->netchan.message.WriteString2(va("begin %i", cl.servercount));
 	}
 }
 

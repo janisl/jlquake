@@ -158,7 +158,7 @@ void CLH2_LinkProjectiles()
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = cl_common->model_draw[pr->modelindex];
+		ent.hModel = cl.model_draw[pr->modelindex];
 		ent.frame = pr->frame;
 		VectorCopy(pr->origin, ent.origin);
 		CLH2_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
@@ -183,13 +183,13 @@ void CLH2_LinkMissiles()
 		if (pr->type == 1)
 		{
 			//ball
-			ent.hModel = cl_common->model_draw[clh2_ballindex];
+			ent.hModel = cl.model_draw[clh2_ballindex];
 			CLH2_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		else
 		{
 			//missilestar
-			ent.hModel = cl_common->model_draw[clh2_missilestarindex];
+			ent.hModel = cl.model_draw[clh2_missilestarindex];
 			CLH2_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
 		if (rand() % 10 < 3)		

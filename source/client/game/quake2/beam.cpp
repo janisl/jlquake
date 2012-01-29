@@ -59,7 +59,7 @@ static void CLQ2_InitBeam(q2beam_t* b, int ent, int destEnt, qhandle_t model,
 	b->entity = ent;
 	b->dest_entity = destEnt;
 	b->model = model;
-	b->endtime = cl_common->serverTime + duration;
+	b->endtime = cl.serverTime + duration;
 	VectorCopy(start, b->start);
 	VectorCopy(end, b->end);
 	VectorCopy(offset, b->offset);
@@ -82,7 +82,7 @@ static void CLQ2_NewBeamInternal(q2beam_t* beams, int ent, int destEnt, qhandle_
 	b = beams;
 	for (int i = 0; i < MAX_BEAMS_Q2; i++, b++)
 	{
-		if (!b->model || b->endtime < cl_common->serverTime)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
 			CLQ2_InitBeam(b, ent, destEnt, model, duration, start, end, offset);
 			return;
@@ -136,15 +136,15 @@ void CLQ2_AddBeams()
 	q2beam_t* b = clq2_beams;
 	for (int i = 0; i < MAX_BEAMS_Q2; i++, b++)
 	{
-		if (!b->model || b->endtime < cl_common->serverTime)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
 			continue;
 		}
 
 		// if coming from the player, update the start position
-		if (b->entity == cl_common->viewentity)
+		if (b->entity == cl.viewentity)
 		{
-			VectorCopy(cl_common->refdef.vieworg, b->start);
+			VectorCopy(cl.refdef.vieworg, b->start);
 			b->start[2] -= 22;	// adjust for view height
 		}
 		vec3_t org;
@@ -253,7 +253,7 @@ void CLQ2_AddPlayerBeams()
 	q2beam_t* b = clq2_playerbeams;
 	for (int i = 0; i < MAX_BEAMS_Q2; i++, b++)
 	{
-		if (!b->model || b->endtime < cl_common->serverTime)
+		if (!b->model || b->endtime < cl.serverTime)
 		{
 			continue;
 		}
@@ -262,29 +262,29 @@ void CLQ2_AddPlayerBeams()
 		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
 		{
 			// if coming from the player, update the start position
-			if (b->entity == cl_common->viewentity)
+			if (b->entity == cl.viewentity)
 			{
 				// set up gun position
 				// code straight out of CL_AddViewWeapon
-				q2player_state_t* ps = &cl_common->q2_frame.playerstate;
-				int j = (cl_common->q2_frame.serverframe - 1) & UPDATE_MASK_Q2;
-				q2frame_t* oldframe = &cl_common->q2_frames[j];
-				if (oldframe->serverframe != cl_common->q2_frame.serverframe-1 || !oldframe->valid)
+				q2player_state_t* ps = &cl.q2_frame.playerstate;
+				int j = (cl.q2_frame.serverframe - 1) & UPDATE_MASK_Q2;
+				q2frame_t* oldframe = &cl.q2_frames[j];
+				if (oldframe->serverframe != cl.q2_frame.serverframe-1 || !oldframe->valid)
 				{
-					oldframe = &cl_common->q2_frame;		// previous frame was dropped or involid
+					oldframe = &cl.q2_frame;		// previous frame was dropped or involid
 				}
 				q2player_state_t* ops = &oldframe->playerstate;
 				for (j = 0; j < 3; j++)
 				{
-					b->start[j] = cl_common->refdef.vieworg[j] + ops->gunoffset[j]
-						+ cl_common->q2_lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
+					b->start[j] = cl.refdef.vieworg[j] + ops->gunoffset[j]
+						+ cl.q2_lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
 				}
-				VectorMA(b->start, -(hand_multiplier * b->offset[0]), cl_common->refdef.viewaxis[1], org);
-				VectorMA(org, b->offset[1], cl_common->refdef.viewaxis[0], org);
-				VectorMA(org, b->offset[2], cl_common->refdef.viewaxis[2], org);
+				VectorMA(b->start, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], org);
+				VectorMA(org, b->offset[1], cl.refdef.viewaxis[0], org);
+				VectorMA(org, b->offset[2], cl.refdef.viewaxis[2], org);
 				if (q2_hand && (q2_hand->value == 2))
 				{
-					VectorMA(org, -1, cl_common->refdef.viewaxis[2], org);
+					VectorMA(org, -1, cl.refdef.viewaxis[2], org);
 				}
 			}
 			else
@@ -295,9 +295,9 @@ void CLQ2_AddPlayerBeams()
 		else
 		{
 			// if coming from the player, update the start position
-			if (b->entity == cl_common->viewentity)
+			if (b->entity == cl.viewentity)
 			{
-				VectorCopy(cl_common->refdef.vieworg, b->start);
+				VectorCopy(cl.refdef.vieworg, b->start);
 				b->start[2] -= 22;	// adjust for view height
 			}
 			VectorAdd(b->start, b->offset, org);
@@ -307,16 +307,16 @@ void CLQ2_AddPlayerBeams()
 		vec3_t dist;
 		VectorSubtract(b->end, org, dist);
 
-		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl_common->viewentity))
+		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl.viewentity))
 		{
 			vec_t len = VectorLength(dist);
-			VectorScale(cl_common->refdef.viewaxis[0], len, dist);
-			VectorMA(dist, -(hand_multiplier * b->offset[0]), cl_common->refdef.viewaxis[1], dist);
-			VectorMA(dist, b->offset[1], cl_common->refdef.viewaxis[0], dist);
-			VectorMA(dist, b->offset[2], cl_common->refdef.viewaxis[2], dist);
+			VectorScale(cl.refdef.viewaxis[0], len, dist);
+			VectorMA(dist, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], dist);
+			VectorMA(dist, b->offset[1], cl.refdef.viewaxis[0], dist);
+			VectorMA(dist, b->offset[2], cl.refdef.viewaxis[2], dist);
 			if (q2_hand && (q2_hand->value == 2))
 			{
-				VectorMA(org, -1, cl_common->refdef.viewaxis[2], org);
+				VectorMA(org, -1, cl.refdef.viewaxis[2], org);
 			}
 		}
 
@@ -328,7 +328,7 @@ void CLQ2_AddPlayerBeams()
 		int framenum;
 		if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
 		{
-			if (b->entity != cl_common->viewentity)
+			if (b->entity != cl.viewentity)
 			{
 				framenum = 2;
 				vec3_t angles;
@@ -358,7 +358,7 @@ void CLQ2_AddPlayerBeams()
 		}
 
 		// if it's the heatbeam, draw the particle effect
-		if ((clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl_common->viewentity)))
+		if ((clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam) && (b->entity == cl.viewentity)))
 		{
 			CLQ2_HeatbeamPaticles(org, dist);
 		}
@@ -414,7 +414,7 @@ void CLQ2_AddPlayerBeams()
 				ent.radius = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
-				angles[2] = (cl_common->serverTime) % 360;
+				angles[2] = (cl.serverTime) % 360;
 				ent.frame = framenum;
 			}
 			else if (b->model == clq2_mod_lightning)

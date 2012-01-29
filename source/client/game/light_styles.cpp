@@ -67,9 +67,9 @@ void CL_SetLightStyle(int i, const char* s)
 void CL_RunLightStyles()
 {
 	int locusHz[3];
-	locusHz[0] = cl_common->serverTime / 100;
-	locusHz[1] = cl_common->serverTime / 50;
-	locusHz[2] = cl_common->serverTime * 3 / 100;
+	locusHz[0] = cl.serverTime / 100;
+	locusHz[1] = cl.serverTime / 50;
+	locusHz[2] = cl.serverTime * 3 / 100;
 
 	if (!(GGameType & GAME_Hexen2))
 	{
