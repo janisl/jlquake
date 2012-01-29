@@ -99,8 +99,6 @@ extern	Cvar*	m_side;
 extern	Cvar*	name;
 
 
-extern	clientActive_t	cl;
-
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to
 

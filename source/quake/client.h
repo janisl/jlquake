@@ -93,9 +93,6 @@ extern	Cvar*	m_yaw;
 extern	Cvar*	m_forward;
 extern	Cvar*	m_side;
 
-
-extern	clientActive_t	cl;
-
 //=============================================================================
 
 //

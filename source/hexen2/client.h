@@ -84,9 +84,6 @@ extern	Cvar*	m_side;
 
 extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
-
-extern	clientActive_t	cl;
-
 //=============================================================================
 
 //

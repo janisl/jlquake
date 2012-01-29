@@ -38,7 +38,6 @@ Cvar*	m_side;
 
 client_static_t	cls;
 clientConnection_t clc;
-clientActive_t	cl;
 
 /*
 =====================

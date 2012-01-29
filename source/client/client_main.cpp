@@ -38,6 +38,7 @@ Cvar* cl_inGameVideo;
 Cvar* clqh_name;
 Cvar* clqh_color;
 
+clientActive_t cl;
 clientStaticCommon_t* cls_common;
 clientConnectionCommon_t* clc_common;
 clientActive_t* cl_common;

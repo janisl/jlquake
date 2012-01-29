@@ -123,8 +123,6 @@ extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
 extern	Cvar*	cl_teamcolor;
 
-extern	clientActive_t	cl;
-
 //=============================================================================
 
 extern	qboolean	nomaster;

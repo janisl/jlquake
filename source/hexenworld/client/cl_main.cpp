@@ -58,7 +58,6 @@ Cvar*	cl_teamcolor;
 
 client_static_t	cls;
 clientConnection_t clc;
-clientActive_t	cl;
 
 double			connect_time = -1;		// for connection retransmits
 
