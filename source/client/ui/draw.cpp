@@ -61,8 +61,8 @@ vec4_t g_color_table[8] =
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 {
 	// scale for screen sizes
-	float xscale = (float)cls_common->glconfig.vidWidth / viddef.width;
-	float yscale = (float)cls_common->glconfig.vidHeight / viddef.height;
+	float xscale = (float)cls.glconfig.vidWidth / viddef.width;
+	float yscale = (float)cls.glconfig.vidHeight / viddef.height;
 	if (x)
 	{
 		*x *= xscale;
@@ -273,7 +273,7 @@ void SCR_FillRect(float x, float y, float width, float height, const float* colo
 	R_SetColor(color);
 
 	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
-	R_StretchPic(x, y, width, height, 0, 0, 0, 0, cls_common->whiteShader);
+	R_StretchPic(x, y, width, height, 0, 0, 0, 0, cls.whiteShader);
 
 	R_SetColor(NULL);
 }
@@ -337,7 +337,7 @@ static void SCR_DrawChar(int x, int y, float size, int ch)
 	float fcol = col * 0.0625;
 	size = 0.0625;
 
-	R_StretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls_common->charSetShader);
+	R_StretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
 //==========================================================================
@@ -369,7 +369,7 @@ void SCR_DrawSmallChar(int x, int y, int ch)
 	float fcol = col * 0.0625;
 	float size = 0.0625;
 
-	R_StretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls_common->charSetShader);
+	R_StretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
 //==========================================================================

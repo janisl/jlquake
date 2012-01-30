@@ -935,7 +935,7 @@ void CLHW_BrightFieldParticles(vec3_t origin)
 {
 	float height = cos(cl.serverTime * 4.0 / 1000.0) * 25;
 
-	for (int i = 0; i < 120 * cls_common->frametime / 1000; i++)
+	for (int i = 0; i < 120 * cls.frametime / 1000; i++)
 	{
 		cparticle_t* p = CL_AllocParticle();
 		if (!p)
@@ -960,7 +960,7 @@ void CLHW_BrightFieldParticles(vec3_t origin)
 		VectorScale(dir, vel, p->vel);
 	}
 
-	for (int i = 0; i < 120 * cls_common->frametime / 1000; i++)
+	for (int i = 0; i < 120 * cls.frametime / 1000; i++)
 	{
 		cparticle_t* p = CL_AllocParticle();
 		if (!p)
@@ -1001,7 +1001,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 	VectorCopy(origin, org);
 	org[2] += 28;
 
-	int count = 140 * cls_common->frametime / 1000;
+	int count = 140 * cls.frametime / 1000;
 	while (count > 0)
 	{
 		cparticle_t* p = CL_AllocParticle();
@@ -1023,7 +1023,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 		count--;
 	}
 
-	count = 60 * cls_common->frametime / 1000;
+	count = 60 * cls.frametime / 1000;
 	while (count > 0)
 	{
 		cparticle_t* p = CL_AllocParticle();
@@ -1048,7 +1048,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 
 void CLHW_TargetBallEffectParticles(vec3_t origin, float targetDistance)
 {
-	for (int i = 0; i < 40 * cls_common->frametime / 1000; i++)
+	for (int i = 0; i < 40 * cls.frametime / 1000; i++)
 	{
 		cparticle_t* p = CL_AllocParticle();
 		if (!p)

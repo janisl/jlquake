@@ -814,7 +814,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 
 void CL_UpdateParticles(float gravityBase)
 {
-	float frametime = cls_common->frametime * 0.001;
+	float frametime = cls.frametime * 0.001;
 	float time1 = frametime * 5;
 	float time2 = frametime * 10;
 	float time3 = frametime * 15;

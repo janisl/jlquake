@@ -746,13 +746,13 @@ static void ChunkThink(h2explosion_t *ex)
 		moving = false;
 	}
 
-	if (cl.serverTime * 0.001 + cls_common->frametime * 0.001 * 5 > ex->endTime)
+	if (cl.serverTime * 0.001 + cls.frametime * 0.001 * 5 > ex->endTime)
 	{
 		// chunk leaves in 5 frames about
 		switch((int)ex->data)
 		{
 		case H2THINGTYPE_METEOR:
-			if (cl.serverTime * 0.001 + cls_common->frametime * 0.001 * 4 < ex->endTime)
+			if (cl.serverTime * 0.001 + cls.frametime * 0.001 * 4 < ex->endTime)
 			{
 				// just crossed the threshold
 				ex->abslight = 200;
@@ -771,7 +771,7 @@ static void ChunkThink(h2explosion_t *ex)
 		}
 	}
 
-	ex->velocity[2] -= cls_common->frametime * 0.001 * movevars.gravity; // this is gravity
+	ex->velocity[2] -= cls.frametime * 0.001 * movevars.gravity; // this is gravity
 
 	vec3_t oldorg;
 	switch ((int)ex->data)
@@ -783,7 +783,7 @@ static void ChunkThink(h2explosion_t *ex)
 		}
 		break;
 	case H2THINGTYPE_ICE:
-		ex->velocity[2] += cls_common->frametime * 0.001 * movevars.gravity * 0.5; // lower gravity for ice chunks
+		ex->velocity[2] += cls.frametime * 0.001 * movevars.gravity * 0.5; // lower gravity for ice chunks
 		if (moving)
 		{
 			CLH2_TrailParticles(ex->oldorg, ex->origin, rt_ice);
@@ -924,7 +924,7 @@ void CLHW_ParseMeteorHit(QMsg& message)
 	message.ReadPos(pos);
 
 	// always make 8 meteors
-	int i = (cls_common->frametime < 70) ? 0 : 4;	// based on framerate
+	int i = (cls.frametime < 70) ? 0 : 4;	// based on framerate
 	for( ; i < 8; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -958,7 +958,7 @@ void CLHW_ParseMeteorHit(QMsg& message)
 	}
 
 	// make the actual explosion
-	i = (cls_common->frametime < 70) ? 0 : 8;	// based on framerate
+	i = (cls.frametime < 70) ? 0 : 8;	// based on framerate
 	for (; i < 11; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -984,7 +984,7 @@ void CLHW_ParseMeteorHit(QMsg& message)
 			ex->model = R_RegisterModel("models/gen_expl.spr");
 			break;
 		}
-		if (cls_common->frametime * 0.001 < .07)
+		if (cls.frametime * 0.001 < .07)
 		{
 			ex->flags |= H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT;
 		}
@@ -1005,7 +1005,7 @@ void CLHW_ParseIceHit(QMsg& message)
 
 	if (cnt2)
 	{
-		int i = (cls_common->frametime < 70) ? 0 : 5;	// based on framerate
+		int i = (cls.frametime < 70) ? 0 : 5;	// based on framerate
 		for (; i < 9; i++)
 		{
 			h2explosion_t* ex = CLH2_AllocExplosion();
@@ -1091,7 +1091,7 @@ void CLHW_ParsePlayerDeath(QMsg& message)
 	int style = message.ReadByte();
 
 
-	int i = (cls_common->frametime < 70) ? 0 : 8;
+	int i = (cls.frametime < 70) ? 0 : 8;
 	for (; i < 12; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -1167,7 +1167,7 @@ void CLHW_ParseAcidBlob(QMsg& message)
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	int i = (cls_common->frametime < 70) ? 0 : 7;
+	int i = (cls.frametime < 70) ? 0 : 7;
 	for (; i < 12; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -1193,7 +1193,7 @@ void CLHW_ParseAcidBlob(QMsg& message)
 			ex->model = R_RegisterModel("models/axplsn_5.spr");
 			break;
 		}
-		if (cls_common->frametime < 70)
+		if (cls.frametime < 70)
 		{
 			ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 		}
@@ -1205,7 +1205,7 @@ void CLHW_ParseAcidBlob(QMsg& message)
 	}
 
 	// always make 8 meteors
-	i = (cls_common->frametime < 70) ? 0 : 4;
+	i = (cls.frametime < 70) ? 0 : 4;
 	for (; i < 8; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -1425,7 +1425,7 @@ void CLHW_ParseAxeExplode(QMsg& message)
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	int i = (cls_common->frametime < 70) ? 0 : 3;	// based on framerate
+	int i = (cls.frametime < 70) ? 0 : 3;	// based on framerate
 	for (; i < 5; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -1472,7 +1472,7 @@ void CLHW_ParseTimeBomb(QMsg& message)
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	int i = (cls_common->frametime < 70) ? 0 : 14;	// based on framerate
+	int i = (cls.frametime < 70) ? 0 : 14;	// based on framerate
 	for (; i < 20; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -1619,7 +1619,7 @@ void CLHW_ParsePurify2Explode(QMsg& message)
 			ex->model = R_RegisterModel("models/gen_expl.spr");
 			break;
 		}
-		if (cls_common->frametime < 70)
+		if (cls.frametime < 70)
 		{
 			ex->flags |= H2MLS_ABSLIGHT|H2DRF_TRANSLUCENT;
 		}
@@ -1695,7 +1695,7 @@ static void telEffectUpdate(h2explosion_t* ex)
 	}
 
 	int testVal = cl.serverTime / 100;
-	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
+	int testVal2 = (cl.serverTime - cls.frametime) / 100;
 
 	if (testVal != testVal2)
 	{
@@ -1840,7 +1840,7 @@ static void MeteorBlastThink(h2explosion_t* ex)
 {
 	CLH2_TrailParticles (ex->oldorg, ex->origin, rt_fireball);
 
-	ex->data -= 1.6 * cls_common->frametime; // decrease distance, roughly...
+	ex->data -= 1.6 * cls.frametime; // decrease distance, roughly...
 
 	bool hitWall = false;
 	vec3_t oldPos;
@@ -1872,7 +1872,7 @@ static void MeteorBlastThink(h2explosion_t* ex)
 		//collided with world
 		VectorCopy(oldPos, ex->origin);
 
-		int maxI = (cls_common->frametime <= 50) ? 12:5;
+		int maxI = (cls.frametime <= 50) ? 12:5;
 		for (int i = 0; i < maxI; i++)
 		{
 			h2explosion_t* ex2 = CLH2_AllocExplosion();
@@ -1918,13 +1918,13 @@ static void MeteorBlastThink(h2explosion_t* ex)
 static void MeteorCrushSpawnThink(h2explosion_t* ex)
 {
 	float chance;
-	if (cls_common->frametime <= 50)
+	if (cls.frametime <= 50)
 	{
-		chance = (cls_common->frametime / 25.0);
+		chance = (cls.frametime / 25.0);
 	}
 	else
 	{
-		chance = (cls_common->frametime / 50.0);
+		chance = (cls.frametime / 50.0);
 	}
 
 	while (chance > 0)
@@ -1986,7 +1986,7 @@ void CLHW_ParseAcidBall(QMsg& message)
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	int i = (cls_common->frametime < 70) ? 0 : 2;
+	int i = (cls.frametime < 70) ? 0 : 2;
 	for (; i < 5; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -2000,7 +2000,7 @@ void CLHW_ParseAcidBall(QMsg& message)
 		ex->velocity[2] = (ex->origin[2] - pos[2]) * 6;
 
 		ex->model = R_RegisterModel("models/axplsn_2.spr");
-		if (cls_common->frametime < 70)
+		if (cls.frametime < 70)
 		{
 			ex->flags |= H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT;
 		}
@@ -2094,7 +2094,7 @@ void CLHW_ParseFireWallImpact(QMsg& message)
 	vec3_t pos;
 	message.ReadPos(pos);
 
-	int i = (cls_common->frametime < 70) ? 0 : 8;
+	int i = (cls.frametime < 70) ? 0 : 8;
 	for (; i < 12; i++)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
@@ -2189,7 +2189,7 @@ static void updateBloodRain(h2explosion_t* ex)
 {
 	CLH2_TrailParticles(ex->oldorg, ex->origin, rt_blood);
 
-	ex->scale -= cls_common->frametime / 5.0;
+	ex->scale -= cls.frametime / 5.0;
 	if (ex->scale <= 0)
 	{
 		ex->endTime = cl.serverTime * 0.001 - 1;
@@ -2323,7 +2323,7 @@ static void updatePurify2(h2explosion_t* ex)
 	CLH2_TrailParticles(ex->oldorg, ex->origin, rt_purify);
 
 	int numSprites;
-	if (cls_common->frametime <= 50)
+	if (cls.frametime <= 50)
 	{
 		numSprites = 20;
 	}
@@ -2332,7 +2332,7 @@ static void updatePurify2(h2explosion_t* ex)
 		numSprites = 8;
 	}
 
-	if ((rand() % 100) < numSprites * cls_common->frametime / 10)
+	if ((rand() % 100) < numSprites * cls.frametime / 10)
 	{
 		h2explosion_t* ex2 = CLH2_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
@@ -2618,7 +2618,7 @@ static void updateAcidBlob(h2explosion_t* ex)
 	CLH2_TrailParticles(ex->oldorg, ex->origin, rt_acidball);
 
 	int testVal = cl.serverTime / 100;
-	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
+	int testVal2 = (cl.serverTime - cls.frametime) / 100;
 
 	if (testVal != testVal2)
 	{
@@ -2710,13 +2710,13 @@ void CLHW_CreateExplosionWithSound(const vec3_t pos)
 void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles)
 {
 	float smokeCount;
-	if (cls_common->frametime <= 50)
+	if (cls.frametime <= 50)
 	{
-		smokeCount = 32 * cls_common->frametime * 0.001;
+		smokeCount = 32 * cls.frametime * 0.001;
 	}
 	else
 	{
-		smokeCount = 16 * cls_common->frametime * 0.001;
+		smokeCount = 16 * cls.frametime * 0.001;
 	}
 
 	while (smokeCount > 0)
@@ -2756,7 +2756,7 @@ void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles)
 void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles)
 {
 	int testVal = cl.serverTime / 100;
-	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
+	int testVal2 = (cl.serverTime - cls.frametime) / 100;
 
 	if (testVal != testVal2)
 	{
@@ -2785,7 +2785,7 @@ void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles)
 
 void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 {
-	if (rand() % 100 < cls_common->frametime / 2)
+	if (rand() % 100 < cls.frametime / 2)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
@@ -2860,7 +2860,7 @@ static void PowerFlameBurnRemove(h2explosion_t* ex)
 
 void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 {
-	if (rand() % 100 < cls_common->frametime)
+	if (rand() % 100 < cls.frametime)
 	{
 		h2explosion_t* ex = CLH2_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
@@ -2949,9 +2949,9 @@ void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num)
 		side1[2] += 104;
 		vec3_t side2 = { 160, 160, 128 };
 		CLH2_RainEffect2(side1, side2, rand() % 400 - 200, rand() % 400 - 200, rand() % 15 + 9 * 16,
-			cls_common->frametime * 3 / 5);
+			cls.frametime * 3 / 5);
 
-		playIceSound += cls_common->frametime;
+		playIceSound += cls.frametime;
 		if (playIceSound >= 600)
 		{
 			S_StartSound(center, CLH2_TempSoundChannel(), 0, clh2_sfx_icestorm, 1, 1);
@@ -2960,7 +2960,7 @@ void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num)
 	}
 
 	// toss little ice chunks
-	if (rand() % 100 < cls_common->frametime * 3 / 10)
+	if (rand() % 100 < cls.frametime * 3 / 10)
 	{
 		CLHW_CreateIceChunk(ent->origin);
 	}
@@ -3015,19 +3015,19 @@ void CLH2_UpdateExplosions()
 		}
 
 		// apply velocity
-		ex->origin[0] += cls_common->frametime * 0.001 * ex->velocity[0];
-		ex->origin[1] += cls_common->frametime * 0.001 * ex->velocity[1];
-		ex->origin[2] += cls_common->frametime * 0.001 * ex->velocity[2];
+		ex->origin[0] += cls.frametime * 0.001 * ex->velocity[0];
+		ex->origin[1] += cls.frametime * 0.001 * ex->velocity[1];
+		ex->origin[2] += cls.frametime * 0.001 * ex->velocity[2];
 
 		// apply acceleration
-		ex->velocity[0] += cls_common->frametime * 0.001 * ex->accel[0];
-		ex->velocity[1] += cls_common->frametime * 0.001 * ex->accel[1];
-		ex->velocity[2] += cls_common->frametime * 0.001 * ex->accel[2];
+		ex->velocity[0] += cls.frametime * 0.001 * ex->accel[0];
+		ex->velocity[1] += cls.frametime * 0.001 * ex->accel[1];
+		ex->velocity[2] += cls.frametime * 0.001 * ex->accel[2];
 
 		// add in angular velocity
 		if (ex->exflags & EXFLAG_ROTATE)
 		{
-			VectorMA(ex->angles, cls_common->frametime * 0.001, ex->avel, ex->angles);
+			VectorMA(ex->angles, cls.frametime * 0.001, ex->avel, ex->angles);
 		}
 		// you can set startTime to some point in the future to delay the explosion showing up or thinking; it'll still move, though
 		if (ex->startTime > cl.serverTime * 0.001)
@@ -3138,11 +3138,11 @@ void CLHW_UpdateTargetBall()
 		ex1->scale = newScale;
 	}
 
-	VectorScale(ex1->origin, (.75 - cls_common->frametime * 0.001 * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
-	VectorMA(ex1->origin, (.25 + cls_common->frametime * 0.001 * 1.5), newOrg, ex1->origin);
+	VectorScale(ex1->origin, (.75 - cls.frametime * 0.001 * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
+	VectorMA(ex1->origin, (.25 + cls.frametime * 0.001 * 1.5), newOrg, ex1->origin);
 	ex1->startTime = cl.serverTime * 0.001;
-	ex1->endTime = ex1->startTime + cls_common->frametime * 0.001 + 0.2;
-	ex1->scale = (ex1->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
+	ex1->endTime = ex1->startTime + cls.frametime * 0.001 + 0.2;
+	ex1->scale = (ex1->scale * (.75 - cls.frametime * 0.001 * 1.5) + newScale * (.25 + cls.frametime * 0.001 * 1.5));
 	ex1->angles[0] = clh2_targetPitch * 360 / 256.0;
 	ex1->angles[1] = clh2_targetAngle * 360 / 256.0;
 	ex1->angles[2] = cl.serverTime * 0.001 * 240;
@@ -3170,8 +3170,8 @@ void CLHW_UpdateTargetBall()
 	}
 	VectorCopy(ex1->origin, ex2->origin);
 	ex2->startTime = cl.serverTime * 0.001;
-	ex2->endTime = ex2->startTime + cls_common->frametime * 0.001 + 0.2;
-	ex2->scale = (ex2->scale * (.75 - cls_common->frametime * 0.001 * 1.5) + newScale * (.25 + cls_common->frametime * 0.001 * 1.5));
+	ex2->endTime = ex2->startTime + cls.frametime * 0.001 + 0.2;
+	ex2->scale = (ex2->scale * (.75 - cls.frametime * 0.001 * 1.5) + newScale * (.25 + cls.frametime * 0.001 * 1.5));
 	ex2->angles[0] = ex1->angles[0];
 	ex2->angles[1] = ex1->angles[1];
 	ex2->angles[2] = cl.serverTime * 0.001 * -360;

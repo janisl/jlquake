@@ -717,8 +717,6 @@ CL_Init
 */
 void CL_Init (void)
 {
-	cls_common = &cls;
-
 	CL_SharedInit();
 
 	CL_InitInput ();

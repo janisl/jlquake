@@ -3462,7 +3462,7 @@ static void CLHW_UpdateEffect(int index, float frametime)
 
 void CLH2_UpdateEffects()
 {
-	float frametime = cls_common->frametime * 0.001;
+	float frametime = cls.frametime * 0.001;
 	if (!frametime)
 	{
 		return;

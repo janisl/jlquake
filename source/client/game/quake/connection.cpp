@@ -39,7 +39,7 @@ void CLQ1_SignonReply()
 		clc.netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
 	
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		sprintf(str, "spawn %s", cls_common->qh_spawnparms);
+		sprintf(str, "spawn %s", cls.qh_spawnparms);
 		clc.netchan.message.WriteString2(str);
 		break;
 		

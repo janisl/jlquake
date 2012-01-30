@@ -1107,7 +1107,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		lena = DistanceSquared(loopSounds[listener_number].origin, loopSounds[entityNum].origin);
 		VectorAdd(loopSounds[entityNum].origin, loopSounds[entityNum].velocity, out);
 		lenb = DistanceSquared(loopSounds[listener_number].origin, out);
-		if ((loopSounds[entityNum].framenum + 1) != cls_common->framecount)
+		if ((loopSounds[entityNum].framenum + 1) != cls.framecount)
 		{
 			loopSounds[entityNum].oldDopplerScale = 1.0;
 		}
@@ -1122,7 +1122,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		}
 	}
 
-	loopSounds[entityNum].framenum = cls_common->framecount;
+	loopSounds[entityNum].framenum = cls.framecount;
 }
 
 //==========================================================================
@@ -2003,7 +2003,7 @@ static void S_UpdateAmbientSounds()
 	// don't adjust volume too fast
 		if (chan->master_vol < vol)
 		{
-			chan->master_vol += ((float)cls_common->frametime / 1000.0) * s_ambient_fade->value;
+			chan->master_vol += ((float)cls.frametime / 1000.0) * s_ambient_fade->value;
 			if (chan->master_vol > vol)
 			{
 				chan->master_vol = vol;
@@ -2011,7 +2011,7 @@ static void S_UpdateAmbientSounds()
 		}
 		else if (chan->master_vol > vol)
 		{
-			chan->master_vol -= ((float)cls_common->frametime / 1000.0) * s_ambient_fade->value;
+			chan->master_vol -= ((float)cls.frametime / 1000.0) * s_ambient_fade->value;
 			if (chan->master_vol < vol)
 			{
 				chan->master_vol = vol;
@@ -2404,7 +2404,7 @@ void S_Update()
 	// if the laoding plaque is up, clear everything
 	// out to make sure we aren't looping a dirty
 	// dma buffer while loading
-	if (cls_common->disable_screen)
+	if (cls.disable_screen)
 	{
 		S_ClearSoundBuffer();
 		return;

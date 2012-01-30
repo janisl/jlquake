@@ -60,7 +60,7 @@ cdlight_t* CL_AllocDlight(int key)
 
 void CL_RunDLights()
 {
-	float time = cls_common->frametime * 0.001;
+	float time = cls.frametime * 0.001;
 
 	cdlight_t* dl = cl_dlights;
 	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)

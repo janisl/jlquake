@@ -1011,7 +1011,6 @@ void CL_Init (void)
 {
 	char st[80];
 
-	cls_common = &cls;
 	CL_SharedInit();
 
 	cls.state = CA_DISCONNECTED;

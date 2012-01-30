@@ -264,7 +264,7 @@ static void CLHW_ParseIceStorm(QMsg& message)
 	vec3_t center;
 	VectorCopy(state->origin, center);
 
-	playIceSound += cls_common->frametime;
+	playIceSound += cls.frametime;
 	if (playIceSound >= 600)
 	{
 		S_StartSound(center, CLH2_TempSoundChannel(), 0, clh2_sfx_icestorm, 1, 1);
@@ -763,7 +763,7 @@ void CLHW_UpdateHammer(refEntity_t* ent, int edict_num)
 {
 	// do this every .3 seconds
 	int testVal = cl.serverTime / 100;
-	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
+	int testVal2 = (cl.serverTime - cls.frametime) / 100;
 	if (testVal != testVal2)
 	{
 		if (!(testVal % 3))
@@ -776,7 +776,7 @@ void CLHW_UpdateHammer(refEntity_t* ent, int edict_num)
 void CLHW_UpdateBug(refEntity_t* ent)
 {
 	int testVal = cl.serverTime / 100;
-	int testVal2 = (cl.serverTime - cls_common->frametime) / 100;
+	int testVal2 = (cl.serverTime - cls.frametime) / 100;
 	if (testVal != testVal2)
 	{
 		S_StartSound(ent->origin, CLH2_TempSoundChannel(), 1, clh2_sfx_buzzbee, 1, 1);

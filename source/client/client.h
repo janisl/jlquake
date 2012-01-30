@@ -521,7 +521,6 @@ struct clientStatic_t
 extern clientActive_t cl;
 extern clientConnection_t clc;
 extern clientStatic_t cls;
-extern clientStatic_t* cls_common;
 
 extern int bitcounts[32];
 

@@ -18,6 +18,6 @@
 
 void SCR_EndLoadingPlaque()
 {
-	cls_common->disable_screen = 0;
+	cls.disable_screen = 0;
 	Con_ClearNotify();
 }

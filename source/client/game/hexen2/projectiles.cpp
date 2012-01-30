@@ -168,8 +168,8 @@ void CLH2_LinkProjectiles()
 
 void CLH2_LinkMissiles()
 {
-	missilestar_angle[1] += cls_common->frametime * 0.3;
-	missilestar_angle[2] += cls_common->frametime * 0.4;
+	missilestar_angle[1] += cls.frametime * 0.3;
+	missilestar_angle[2] += cls.frametime * 0.4;
 
 	h2missile_t* pr = clh2_missiles;
 	for (int i = 0; i < clh2_num_missiles; i++, pr++)
