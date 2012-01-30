@@ -939,7 +939,6 @@ void Host_SaveConfig_f (void);
 void CL_Init (void)
 {
 	cls_common = &cls;
-	clc_common = &clc;
 	CL_SharedInit();
 
 	cls.state = CA_DISCONNECTED;

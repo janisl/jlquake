@@ -83,7 +83,7 @@ void CLQW_SkinFind(q1player_info_t* sc)
 //	Returns a pointer to the skin bitmap, or NULL to use the default
 byte* CLQW_SkinCache(qw_skin_t* skin)
 {
-	if (clc_common->downloadType == dl_skin)
+	if (clc.downloadType == dl_skin)
 	{
 		return NULL;		// use base until downloaded
 	}
@@ -140,15 +140,15 @@ void CLQW_SkinNextDownload()
 	q1player_info_t	*sc;
 	int			i;
 
-	if (clc_common->downloadNumber == 0)
+	if (clc.downloadNumber == 0)
 	{
 		Log::write("Checking skins...\n");
 	}
-	clc_common->downloadType = dl_skin;
+	clc.downloadType = dl_skin;
 
-	for (; clc_common->downloadNumber != MAX_CLIENTS_QW; clc_common->downloadNumber++)
+	for (; clc.downloadNumber != MAX_CLIENTS_QW; clc.downloadNumber++)
 	{
-		sc = &cl.q1_players[clc_common->downloadNumber];
+		sc = &cl.q1_players[clc.downloadNumber];
 		if (!sc->name[0])
 		{
 			continue;
@@ -164,7 +164,7 @@ void CLQW_SkinNextDownload()
 		}
 	}
 
-	clc_common->downloadType = dl_none;
+	clc.downloadType = dl_none;
 
 	// now load them in for real
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
@@ -181,8 +181,8 @@ void CLQW_SkinNextDownload()
 	if (cls_common->state != CA_ACTIVE)
 	{
 		// get next signon phase
-		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2(va("begin %i", cl.servercount));
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.WriteString2(va("begin %i", cl.servercount));
 	}
 }
 
@@ -199,8 +199,8 @@ void CLQW_SkinSkins_f()
 	}
 	numskins = 0;
 
-	clc_common->downloadNumber = 0;
-	clc_common->downloadType = dl_skin;
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_skin;
 	CLQW_SkinNextDownload();
 }
 

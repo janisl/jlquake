@@ -89,10 +89,10 @@ void CLQ1_ParseSpawnStatic(QMsg& message)
 // relinked.  Other attributes can change without relinking.
 void CLQ1_ParseUpdate(QMsg& message, int bits)
 {
-	if (clc_common->qh_signon == SIGNONS - 1)
+	if (clc.qh_signon == SIGNONS - 1)
 	{
 		// first update is the final signon stage
-		clc_common->qh_signon = SIGNONS;
+		clc.qh_signon = SIGNONS;
 		CLQ1_SignonReply ();
 	}
 
@@ -382,7 +382,7 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.qh_validsequence = 0;		// can't render a frame
-	cl.qw_frames[clc_common->netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
+	cl.qw_frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -407,7 +407,7 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 // rest of the data stream.
 static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 {
-	int newpacket = clc_common->netchan.incomingSequence & UPDATE_MASK_QW;
+	int newpacket = clc.netchan.incomingSequence & UPDATE_MASK_QW;
 	qwpacket_entities_t* newp = &cl.qw_frames[newpacket].packet_entities;
 	cl.qw_frames[newpacket].invalid = false;
 
@@ -433,13 +433,13 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 	qwpacket_entities_t dummy;
 	if (oldpacket != -1)
 	{
-		if (clc_common->netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_QW - 1)
+		if (clc.netchan.outgoingSequence - oldpacket >= UPDATE_BACKUP_QW - 1)
 		{
 			// we can't use this, it is too old
 			CLQW_FlushEntityPacket(message);
 			return;
 		}
-		cl.qh_validsequence = clc_common->netchan.incomingSequence;
+		cl.qh_validsequence = clc.netchan.incomingSequence;
 		oldp = &cl.qw_frames[oldpacket & UPDATE_MASK_QW].packet_entities;
 	}
 	else
@@ -447,7 +447,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 		// this is a full update that we can start delta compressing from now
 		oldp = &dummy;
 		dummy.num_entities = 0;
-		cl.qh_validsequence = clc_common->netchan.incomingSequence;
+		cl.qh_validsequence = clc.netchan.incomingSequence;
 		full = true;
 	}
 

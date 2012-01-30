@@ -494,7 +494,6 @@ CL_Init
 void CL_Init (void)
 {	
 	cls_common = &cls;
-	clc_common = &clc;
 
 	CL_SharedInit();
 

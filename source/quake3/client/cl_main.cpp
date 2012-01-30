@@ -2164,7 +2164,6 @@ void CL_Init( void ) {
 	Com_Printf( "----- Client Initialization -----\n" );
 
 	cls_common = &cls;
-	clc_common = &clc;
 	CL_SharedInit();
 
 	Con_Init ();	

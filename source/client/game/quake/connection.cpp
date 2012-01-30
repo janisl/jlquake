@@ -22,30 +22,30 @@ void CLQ1_SignonReply()
 {
 	char str[8192];
 
-	Log::develWrite("CLQ1_SignonReply: %i\n", clc_common->qh_signon);
+	Log::develWrite("CLQ1_SignonReply: %i\n", clc.qh_signon);
 
-	switch (clc_common->qh_signon)
+	switch (clc.qh_signon)
 	{
 	case 1:
-		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2("prespawn");
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.WriteString2("prespawn");
 		break;
 		
 	case 2:		
-		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
 	
-		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
 	
-		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		sprintf(str, "spawn %s", cls_common->qh_spawnparms);
-		clc_common->netchan.message.WriteString2(str);
+		clc.netchan.message.WriteString2(str);
 		break;
 		
 	case 3:	
-		clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-		clc_common->netchan.message.WriteString2("begin");
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.WriteString2("begin");
 		break;
 		
 	case 4:
@@ -75,30 +75,30 @@ bool CLQW_CheckOrDownloadFile(const char* filename)
 	}
 
 	//ZOID - can't download when recording
-	if (clc_common->demorecording)
+	if (clc.demorecording)
 	{
-		Log::write("Unable to download %s in record mode.\n", clc_common->downloadName);
+		Log::write("Unable to download %s in record mode.\n", clc.downloadName);
 		return true;
 	}
 	//ZOID - can't download when playback
-	if (clc_common->demoplaying)
+	if (clc.demoplaying)
 	{
 		return true;
 	}
 
-	String::Cpy(clc_common->downloadName, filename);
-	Log::write("Downloading %s...\n", clc_common->downloadName);
+	String::Cpy(clc.downloadName, filename);
+	Log::write("Downloading %s...\n", clc.downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	String::StripExtension(clc_common->downloadName, clc_common->downloadTempName);
-	String::Cat(clc_common->downloadTempName, sizeof(clc_common->downloadTempName), ".tmp");
+	String::StripExtension(clc.downloadName, clc.downloadTempName);
+	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
-	clc_common->netchan.message.WriteByte(q1clc_stringcmd);
-	clc_common->netchan.message.WriteString2(va("download %s", clc_common->downloadName));
+	clc.netchan.message.WriteByte(q1clc_stringcmd);
+	clc.netchan.message.WriteString2(va("download %s", clc.downloadName));
 
-	clc_common->downloadNumber++;
+	clc.downloadNumber++;
 
 	return false;
 }

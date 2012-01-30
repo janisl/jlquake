@@ -90,12 +90,12 @@ h2entity_state_t* CLH2_FindState(int entityNumber)
 		}
 		else
 		{
-			VectorCopy(cl.hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].playerstate[entityNumber - 1].origin, pretend_player.origin);
+			VectorCopy(cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW].playerstate[entityNumber - 1].origin, pretend_player.origin);
 		}
 		return &pretend_player;
 	}
 
-	hwpacket_entities_t* pack = &cl.hw_frames[clc_common->netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
+	hwpacket_entities_t* pack = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
 	for (int pnum = 0; pnum < pack->num_entities; pnum++)
 	{
 		if (pack->entities[pnum].number == entityNumber)
