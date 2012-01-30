@@ -625,7 +625,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 
 	// If we are downloading, we send no less than 50ms between packets
 	if ( *clc.downloadTempName &&
-		cls.realtime - clc.lastPacketSentTime < 50 ) {
+		cls.realtime - clc.q3_lastPacketSentTime < 50 ) {
 		return qfalse;
 	}
 
@@ -634,7 +634,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 	if ( cls.state != CA_ACTIVE && 
 		cls.state != CA_PRIMED && 
 		!*clc.downloadTempName &&
-		cls.realtime - clc.lastPacketSentTime < 1000 ) {
+		cls.realtime - clc.q3_lastPacketSentTime < 1000 ) {
 		return qfalse;
 	}
 
@@ -713,16 +713,16 @@ void CL_WritePacket( void ) {
 	// write the last message we received, which can
 	// be used for delta compression, and is also used
 	// to tell if we dropped a gamestate
-	buf.WriteLong(clc.serverMessageSequence );
+	buf.WriteLong(clc.q3_serverMessageSequence );
 
 	// write the last reliable message we received
-	buf.WriteLong(clc.serverCommandSequence );
+	buf.WriteLong(clc.q3_serverCommandSequence );
 
 	// write any unacknowledged clientCommands
-	for ( i = clc.reliableAcknowledge + 1 ; i <= clc.reliableSequence ; i++ ) {
+	for ( i = clc.q3_reliableAcknowledge + 1 ; i <= clc.q3_reliableSequence ; i++ ) {
 		buf.WriteByte(q3clc_clientCommand );
 		buf.WriteLong(i );
-		buf.WriteString(clc.reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
+		buf.WriteString(clc.q3_reliableCommands[ i & (MAX_RELIABLE_COMMANDS_Q3-1) ] );
 	}
 
 	// we want to send all the usercmds that were generated in the last
@@ -745,8 +745,8 @@ void CL_WritePacket( void ) {
 		}
 
 		// begin a client move command
-		if ( cl_nodelta->integer || !cl.q3_snap.valid || clc.demowaiting
-			|| clc.serverMessageSequence != cl.q3_snap.messageNum ) {
+		if ( cl_nodelta->integer || !cl.q3_snap.valid || clc.q3_demowaiting
+			|| clc.q3_serverMessageSequence != cl.q3_snap.messageNum ) {
 			buf.WriteByte(q3clc_moveNoDelta);
 		} else {
 			buf.WriteByte(q3clc_move);
@@ -756,11 +756,11 @@ void CL_WritePacket( void ) {
 		buf.WriteByte(count );
 
 		// use the checksum feed in the key
-		key = clc.checksumFeed;
+		key = clc.q3_checksumFeed;
 		// also use the message acknowledge
-		key ^= clc.serverMessageSequence;
+		key ^= clc.q3_serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= Com_HashKey(clc.serverCommands[ clc.serverCommandSequence & (MAX_RELIABLE_COMMANDS-1) ], 32);
+		key ^= Com_HashKey(clc.q3_serverCommands[ clc.q3_serverCommandSequence & (MAX_RELIABLE_COMMANDS_Q3-1) ], 32);
 
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {
@@ -778,7 +778,7 @@ void CL_WritePacket( void ) {
 	cl.q3_outPackets[ packetNum ].p_realtime = cls.realtime;
 	cl.q3_outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
 	cl.q3_outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
-	clc.lastPacketSentTime = cls.realtime;
+	clc.q3_lastPacketSentTime = cls.realtime;
 
 	if ( cl_showSend->integer ) {
 		Com_Printf( "%i ", buf.cursize );

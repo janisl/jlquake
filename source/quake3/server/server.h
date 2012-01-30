@@ -116,7 +116,7 @@ typedef struct client_s {
 	clientState_t	state;
 	char			userinfo[MAX_INFO_STRING_Q3];		// name, etc
 
-	char			reliableCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
+	char			reliableCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
 	int				reliableSequence;		// last added reliable message, not necesarily sent or acknowledged yet
 	int				reliableAcknowledge;	// last acknowledged reliable message
 	int				reliableSent;			// last sent reliable message, not necesarily acknowledged yet

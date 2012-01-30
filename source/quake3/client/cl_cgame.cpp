@@ -268,7 +268,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 	int argc;
 
 	// if we have irretrievably lost a reliable command, drop the connection
-	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS ) {
+	if ( serverCommandNumber <= clc.q3_serverCommandSequence - MAX_RELIABLE_COMMANDS_Q3 ) {
 		// when a demo record was started after the client got a whole bunch of
 		// reliable commands then the client never got those first reliable commands
 		if ( clc.demoplaying )
@@ -277,13 +277,13 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 		return qfalse;
 	}
 
-	if ( serverCommandNumber > clc.serverCommandSequence ) {
+	if ( serverCommandNumber > clc.q3_serverCommandSequence ) {
 		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
 		return qfalse;
 	}
 
-	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
-	clc.lastExecutedServerCommand = serverCommandNumber;
+	s = clc.q3_serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS_Q3 - 1 ) ];
+	clc.q3_lastExecutedServerCommand = serverCommandNumber;
 
 	Com_DPrintf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 
@@ -764,7 +764,7 @@ void CL_InitCGame( void ) {
 	// init for this gamestate
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
-	VM_Call( cgvm, CG_INIT, clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum );
+	VM_Call( cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum );
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -910,7 +910,7 @@ void CL_FirstSnapshot( void ) {
 	cl.q3_serverTimeDelta = cl.q3_snap.serverTime - cls.realtime;
 	cl.q3_oldServerTime = cl.q3_snap.serverTime;
 
-	clc.timeDemoBaseTime = cl.q3_snap.serverTime;
+	clc.q3_timeDemoBaseTime = cl.q3_snap.serverTime;
 
 	// if this is the first frame of active play,
 	// execute the contents of activeAction now
@@ -938,8 +938,8 @@ void CL_SetCGameTime( void ) {
 		if ( clc.demoplaying ) {
 			// we shouldn't get the first snapshot on the same frame
 			// as the gamestate, because it causes a bad time skip
-			if ( !clc.firstDemoFrameSkipped ) {
-				clc.firstDemoFrameSkipped = qtrue;
+			if ( !clc.q3_firstDemoFrameSkipped ) {
+				clc.q3_firstDemoFrameSkipped = qtrue;
 				return;
 			}
 			CL_ReadDemoMessage();
@@ -1024,11 +1024,11 @@ void CL_SetCGameTime( void ) {
 	// while a normal demo may have different time samples
 	// each time it is played back
 	if ( cl_timedemo->integer ) {
-		if (!clc.timeDemoStart) {
-			clc.timeDemoStart = Sys_Milliseconds();
+		if (!clc.q3_timeDemoStart) {
+			clc.q3_timeDemoStart = Sys_Milliseconds();
 		}
-		clc.timeDemoFrames++;
-		cl.serverTime = clc.timeDemoBaseTime + clc.timeDemoFrames * 50;
+		clc.q3_timeDemoFrames++;
+		cl.serverTime = clc.q3_timeDemoBaseTime + clc.q3_timeDemoFrames * 50;
 	}
 
 	while ( cl.serverTime >= cl.q3_snap.serverTime ) {

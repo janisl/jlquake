@@ -43,12 +43,12 @@ void SCR_DrawDemoRecording( void ) {
 	if ( !clc.demorecording ) {
 		return;
 	}
-	if ( clc.spDemoRecording ) {
+	if ( clc.q3_spDemoRecording ) {
 		return;
 	}
 
 	pos = FS_FTell( clc.demofile );
-	sprintf( string, "RECORDING %s: %ik", clc.demoName, pos / 1024 );
+	sprintf( string, "RECORDING %s: %ik", clc.q3_demoName, pos / 1024 );
 
 	SCR_DrawStringExt( 320 - String::Length( string ) * 4, 20, 8, string, g_color_table[7], qtrue );
 }

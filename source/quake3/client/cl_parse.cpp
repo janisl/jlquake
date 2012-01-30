@@ -215,11 +215,11 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// we will have read any new server commands in this
 	// message before we got to q3svc_snapshot
-	newSnap.serverCommandNum = clc.serverCommandSequence;
+	newSnap.serverCommandNum = clc.q3_serverCommandSequence;
 
 	newSnap.serverTime = msg->ReadLong();
 
-	newSnap.messageNum = clc.serverMessageSequence;
+	newSnap.messageNum = clc.q3_serverMessageSequence;
 
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
@@ -236,7 +236,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	if ( newSnap.deltaNum <= 0 ) {
 		newSnap.valid = qtrue;		// uncompressed frame
 		old = NULL;
-		clc.demowaiting = qfalse;	// we can start recording now
+		clc.q3_demowaiting = qfalse;	// we can start recording now
 	} else {
 		old = &cl.q3_snapshots[newSnap.deltaNum & PACKET_MASK_Q3];
 		if ( !old->valid ) {
@@ -394,13 +394,13 @@ void CL_ParseGamestate( QMsg *msg ) {
 
 	Con_Close();
 
-	clc.connectPacketCount = 0;
+	clc.q3_connectPacketCount = 0;
 
 	// wipe local client state
 	CL_ClearState();
 
 	// a gamestate always marks a server command sequence
-	clc.serverCommandSequence = msg->ReadLong();
+	clc.q3_serverCommandSequence = msg->ReadLong();
 
 	// parse all the configstrings and baselines
 	cl.q3_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
@@ -442,15 +442,15 @@ void CL_ParseGamestate( QMsg *msg ) {
 		}
 	}
 
-	clc.clientNum = msg->ReadLong();
+	clc.q3_clientNum = msg->ReadLong();
 	// read the checksum feed
-	clc.checksumFeed = msg->ReadLong();
+	clc.q3_checksumFeed = msg->ReadLong();
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
 	// reinitialize the filesystem if the game directory has changed
-  FS_ConditionalRestart( clc.checksumFeed );
+  FS_ConditionalRestart( clc.q3_checksumFeed );
 
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the
 	// cgame
@@ -572,13 +572,13 @@ void CL_ParseCommandString( QMsg *msg ) {
 	s = msg->ReadString();
 
 	// see if we have already executed stored it off
-	if ( clc.serverCommandSequence >= seq ) {
+	if ( clc.q3_serverCommandSequence >= seq ) {
 		return;
 	}
-	clc.serverCommandSequence = seq;
+	clc.q3_serverCommandSequence = seq;
 
-	index = seq & (MAX_RELIABLE_COMMANDS-1);
-	String::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
+	index = seq & (MAX_RELIABLE_COMMANDS_Q3-1);
+	String::NCpyZ( clc.q3_serverCommands[ index ], s, sizeof( clc.q3_serverCommands[ index ] ) );
 }
 
 
@@ -599,10 +599,10 @@ void CL_ParseServerMessage( QMsg *msg ) {
 	msg->Bitstream();
 
 	// get the reliable sequence acknowledge number
-	clc.reliableAcknowledge = msg->ReadLong();
+	clc.q3_reliableAcknowledge = msg->ReadLong();
 	// 
-	if ( clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS ) {
-		clc.reliableAcknowledge = clc.reliableSequence;
+	if ( clc.q3_reliableAcknowledge < clc.q3_reliableSequence - MAX_RELIABLE_COMMANDS_Q3 ) {
+		clc.q3_reliableAcknowledge = clc.q3_reliableSequence;
 	}
 
 	//

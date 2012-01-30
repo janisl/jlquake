@@ -62,8 +62,6 @@ NET
 
 #define	MAX_PACKET_USERCMDS		32		// max number of q3usercmd_t in a packet
 
-#define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
-
 void		NET_Init( void );
 void		NET_Shutdown( void );
 void		NET_Restart( void );

@@ -212,7 +212,7 @@ void SV_UpdateServerCommandsToClient( client_t *client, QMsg *msg ) {
 	for ( i = client->reliableAcknowledge + 1 ; i <= client->reliableSequence ; i++ ) {
 		msg->WriteByte(q3svc_serverCommand );
 		msg->WriteLong(i );
-		msg->WriteString(client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
+		msg->WriteString(client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_Q3-1) ] );
 	}
 	client->reliableSent = client->reliableSequence;
 }

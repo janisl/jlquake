@@ -98,7 +98,7 @@ int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
 	int i, index, csnum1, csnum2;
 
 	for ( i = client->reliableSent+1; i <= client->reliableSequence; i++ ) {
-		index = i & ( MAX_RELIABLE_COMMANDS - 1 );
+		index = i & ( MAX_RELIABLE_COMMANDS_Q3 - 1 );
 		//
 		if ( !String::NCmp(cmd, client->reliableCommands[ index ], String::Length("cs")) ) {
 			sscanf(cmd, "cs %i", &csnum1);
@@ -139,16 +139,16 @@ void SV_AddServerCommand( client_t *client, const char *cmd ) {
 	// we must drop the connection
 	// we check == instead of >= so a broadcast print added by SV_DropClient()
 	// doesn't cause a recursive drop client
-	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 ) {
+	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS_Q3 + 1 ) {
 		Com_Printf( "===== pending server commands =====\n" );
 		for ( i = client->reliableAcknowledge + 1 ; i <= client->reliableSequence ; i++ ) {
-			Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
+			Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_Q3-1) ] );
 		}
 		Com_Printf( "cmd %5d: %s\n", i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}
-	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS_Q3 - 1 );
 	String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 }
 

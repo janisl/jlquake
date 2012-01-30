@@ -249,3 +249,5 @@ struct q3entityState_t
 #define	PACKET_BACKUP_Q3	32	// number of old messages that must be kept on client and
 							// server for delta comrpession and ping estimation
 #define	PACKET_MASK_Q3		(PACKET_BACKUP_Q3-1)
+
+#define MAX_RELIABLE_COMMANDS_Q3	64			// max string commands buffered for restransmit

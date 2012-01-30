@@ -48,45 +48,6 @@ demo through a file.
 
 struct clientConnection_t : clientConnectionCommon_t
 {
-
-	int			clientNum;
-	int			lastPacketSentTime;			// for retransmits during connection
-	int			lastPacketTime;				// for timeouts
-
-	netadr_t	serverAddress;
-	int			connectTime;				// for connection retransmits
-	int			connectPacketCount;			// for display on connection dialog
-	char		serverMessage[MAX_TOKEN_CHARS_Q3];	// for display on connection dialog
-
-	int			challenge;					// from the server to use for connecting
-	int			checksumFeed;				// from the server for checksum calculations
-
-	// these are our reliable messages that go to the server
-	int			reliableSequence;
-	int			reliableAcknowledge;		// the last one the server has executed
-	char		reliableCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
-
-	// server message (unreliable) and command (reliable) sequence
-	// numbers are NOT cleared at level changes, but continue to
-	// increase as long as the connection is valid
-
-	// message sequence is used by both the network layer and the
-	// delta compression layer
-	int			serverMessageSequence;
-
-	// reliable messages received from server
-	int			serverCommandSequence;
-	int			lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
-	char		serverCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
-
-	char		demoName[MAX_QPATH];
-	qboolean	spDemoRecording;
-	qboolean	demowaiting;	// don't record until a non-delta message is received
-	qboolean	firstDemoFrameSkipped;
-
-	int			timeDemoFrames;		// counter of rendered frames
-	int			timeDemoStart;		// cls.realtime before first frame
-	int			timeDemoBaseTime;	// each frame will be at this time + frameNum * 50
 };
 
 extern	clientConnection_t clc;

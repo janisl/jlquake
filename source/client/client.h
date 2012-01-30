@@ -333,6 +333,45 @@ struct clientConnectionCommon_t
 	fileHandle_t demofile;
 
 	int qh_signon;			// 0 to SIGNONS
+
+	int q3_clientNum;
+	int q3_lastPacketSentTime;			// for retransmits during connection
+	int q3_lastPacketTime;				// for timeouts
+
+	netadr_t q3_serverAddress;
+	int q3_connectTime;				// for connection retransmits
+	int q3_connectPacketCount;			// for display on connection dialog
+	char q3_serverMessage[MAX_TOKEN_CHARS_Q3];	// for display on connection dialog
+
+	int q3_challenge;					// from the server to use for connecting
+	int q3_checksumFeed;				// from the server for checksum calculations
+
+	// these are our reliable messages that go to the server
+	int q3_reliableSequence;
+	int q3_reliableAcknowledge;		// the last one the server has executed
+	char q3_reliableCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
+
+	// server message (unreliable) and command (reliable) sequence
+	// numbers are NOT cleared at level changes, but continue to
+	// increase as long as the connection is valid
+
+	// message sequence is used by both the network layer and the
+	// delta compression layer
+	int q3_serverMessageSequence;
+
+	// reliable messages received from server
+	int q3_serverCommandSequence;
+	int q3_lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
+	char q3_serverCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
+
+	char q3_demoName[MAX_QPATH];
+	bool q3_spDemoRecording;
+	bool q3_demowaiting;	// don't record until a non-delta message is received
+	bool q3_firstDemoFrameSkipped;
+
+	int q3_timeDemoFrames;		// counter of rendered frames
+	int q3_timeDemoStart;		// cls.realtime before first frame
+	int q3_timeDemoBaseTime;	// each frame will be at this time + frameNum * 50
 };
 
 enum connstate_t
