@@ -44,10 +44,6 @@ struct client_static_t : clientStaticCommon_t
 
 extern client_static_t	cls;
 
-struct clientConnection_t : clientConnectionCommon_t
-{
-};
-
 extern clientConnection_t clc;
 
 

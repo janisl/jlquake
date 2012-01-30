@@ -306,7 +306,19 @@ enum dltype_t
 	dl_single
 };
 
-struct clientConnectionCommon_t
+/*
+=============================================================================
+
+the clientConnection_t structure is wiped when disconnecting from a server,
+either to go to a full screen console, play a demo, or connect to a different server
+
+A connection can be to either a server through the network layer or a
+demo through a file.
+
+=============================================================================
+*/
+
+struct clientConnection_t
 {
 	// big stuff at end of structure so most offsets are 15 bits or less
 	netchan_t netchan;
@@ -416,7 +428,7 @@ struct clientStaticCommon_t
 };
 
 extern clientActive_t cl;
-extern clientConnectionCommon_t* clc_common;
+extern clientConnection_t* clc_common;
 extern clientStaticCommon_t* cls_common;
 
 extern int bitcounts[32];

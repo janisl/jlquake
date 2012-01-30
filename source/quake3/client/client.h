@@ -33,23 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern int g_console_field_width;
 
-/*
-=============================================================================
-
-the clientConnection_t structure is wiped when disconnecting from a server,
-either to go to a full screen console, play a demo, or connect to a different server
-
-A connection can be to either a server through the network layer or a
-demo through a file.
-
-=============================================================================
-*/
-
-
-struct clientConnection_t : clientConnectionCommon_t
-{
-};
-
 extern	clientConnection_t clc;
 
 /*
