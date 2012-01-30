@@ -49,10 +49,6 @@ typedef struct {
 	char		info[MAX_INFO_STRING_Q3];
 } ping_t;
 
-struct clientStatic_t : clientStaticCommon_t
-{
-};
-
 extern	clientStatic_t		cls;
 
 //=============================================================================

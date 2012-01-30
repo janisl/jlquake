@@ -33,7 +33,7 @@ Cvar*	m_side;
 Cvar	*cl_lightlevel;
 
 
-client_static_t	cls;
+clientStatic_t	cls;
 
 /*
 =====================

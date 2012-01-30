@@ -410,7 +410,7 @@ enum connstate_t
 	CA_DEMOSTART
 };
 
-struct clientStaticCommon_t
+struct clientStatic_t
 {
 	connstate_t state;		// connection status
 
@@ -511,7 +511,7 @@ struct clientStaticCommon_t
 
 extern clientActive_t cl;
 extern clientConnection_t clc;
-extern clientStaticCommon_t* cls_common;
+extern clientStatic_t* cls_common;
 
 extern int bitcounts[32];
 

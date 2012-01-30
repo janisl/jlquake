@@ -30,11 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
 //
-struct client_static_t : clientStaticCommon_t
-{
-};
-
-extern client_static_t	cls;
+extern clientStatic_t	cls;
 
 //
 // cvars
