@@ -1194,6 +1194,7 @@ void Host_Frame (float time)
 	if (host_frametime > 0.2)
 		host_frametime = 0.2;
 	cls.frametime = (int)(host_frametime * 1000);
+	cls.realFrametime = cls.frametime;
 		
 	// get new key events
 	Sys_SendKeyEvents ();

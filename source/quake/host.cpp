@@ -550,6 +550,7 @@ qboolean Host_FilterTime (float time)
 	}
 	
 	cls.frametime = (int)(host_frametime * 1000);
+	cls.realFrametime = cls.frametime;
 	return true;
 }
 

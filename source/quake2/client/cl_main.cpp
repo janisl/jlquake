@@ -1768,6 +1768,7 @@ void CL_Frame (int msec)
 		cls.frametimeFloat = (1.0 / 5);
 	if (cls.frametime > 200)
 		cls.frametime = 200;
+	cls.realFrametime = cls.frametime;
 
 	// if in the debugger last frame, don't timeout
 	if (msec > 5000)

@@ -81,8 +81,6 @@ struct clientStatic_t : clientStaticCommon_t
 	qboolean	uiStarted;
 	qboolean	cgameStarted;
 
-	int			realFrametime;		// ignoring pause, so console always works
-
 	int			numlocalservers;
 	serverInfo_t	localServers[MAX_OTHER_SERVERS];
 

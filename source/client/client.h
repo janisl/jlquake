@@ -409,11 +409,12 @@ enum connstate_t
 
 struct clientStaticCommon_t
 {
-	connstate_t state;				// connection status
+	connstate_t state;		// connection status
 
 	int realtime;			// ignores pause
 	int framecount;
 	int frametime;			// msec since last frame
+	int realFrametime;		// ignoring pause, so console always works
 
 	// rendering info
 	glconfig_t glconfig;
