@@ -57,7 +57,6 @@ Cvar	*cl_lightlevel;
 Cvar*	cl_teamcolor;
 
 client_static_t	cls;
-clientConnection_t clc;
 
 double			connect_time = -1;		// for connection retransmits
 

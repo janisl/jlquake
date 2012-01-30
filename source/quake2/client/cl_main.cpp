@@ -85,7 +85,6 @@ Cvar	*gender_auto;
 Cvar	*cl_vwep;
 
 client_static_t	cls;
-clientConnection_t clc;
 
 q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 

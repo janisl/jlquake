@@ -60,9 +60,6 @@ struct client_static_t : clientStaticCommon_t
 
 extern client_static_t	cls;
 
-extern clientConnection_t clc;
-
-
 //
 // cvars
 //

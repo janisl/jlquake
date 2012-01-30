@@ -70,7 +70,6 @@ Cvar	*cl_conXOffset;
 Cvar	*cl_serverStatusResendTime;
 Cvar	*cl_trn;
 
-clientConnection_t	clc;
 clientStatic_t		cls;
 vm_t				*cgvm;
 

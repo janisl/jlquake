@@ -39,6 +39,7 @@ Cvar* clqh_name;
 Cvar* clqh_color;
 
 clientActive_t cl;
+clientConnection_t clc;
 clientStaticCommon_t* cls_common;
 clientConnection_t* clc_common;
 
