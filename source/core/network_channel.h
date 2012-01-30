@@ -84,3 +84,21 @@ struct netchan_t
 	double clearTime;			// if realtime > nc->cleartime, free to go
 	double rate;				// seconds / byte
 };
+
+#define NET_NAMELEN_Q1			64
+
+struct qsocket_t
+{
+	qsocket_t*		next;
+	double			connecttime;
+
+	qboolean		disconnected;
+	qboolean		canSend;
+	qboolean		sendNext;
+	
+	int				driver;
+	int				socket;
+	void			*driverdata;
+
+	char			address[NET_NAMELEN_Q1];
+};

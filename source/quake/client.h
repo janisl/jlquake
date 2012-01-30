@@ -32,9 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 struct client_static_t : clientStaticCommon_t
 {
-
-// connection information
-	struct qsocket_s	*netcon;
 };
 
 extern client_static_t	cls;

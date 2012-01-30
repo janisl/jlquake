@@ -460,7 +460,7 @@ void SV_ConnectClient (int clientnum)
 	qhedict_t			*ent;
 	client_t		*client;
 	int				edictnum;
-	struct qsocket_s *netconnection;
+	qsocket_t* netconnection;
 	float			spawn_parms[NUM_SPAWN_PARMS];
 	int				entnum;
 	qhedict_t			*svent;
@@ -529,7 +529,7 @@ SV_CheckForNewClients
 */
 void SV_CheckForNewClients (void)
 {
-	struct qsocket_s	*ret;
+	qsocket_t* ret;
 	int				i;
 		
 //

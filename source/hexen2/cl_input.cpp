@@ -491,7 +491,7 @@ void CL_SendMove (h2usercmd_t *cmd)
 	if (++cl.qh_movemessages <= 2)
 		return;
 	
-	if (NET_SendUnreliableMessage (cls.netcon, &clc.netchan, &buf) == -1)
+	if (NET_SendUnreliableMessage (cls.qh_netcon, &clc.netchan, &buf) == -1)
 	{
 		Con_Printf ("CL_SendMove: lost server connection\n");
 		CL_Disconnect ();

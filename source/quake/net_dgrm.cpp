@@ -1461,7 +1461,7 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 	const char* host = SOCK_GetHostByAddr(addr);
 	if (host)
 	{
-		String::NCpy(name, host, NET_NAMELEN - 1);
+		String::NCpy(name, host, NET_NAMELEN_Q1 - 1);
 		return 0;
 	}
 

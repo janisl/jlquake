@@ -451,6 +451,9 @@ struct clientStaticCommon_t
 
 	int qh_forcetrack;			// -1 = use normal cd track
 
+	// connection information
+	qsocket_t* qh_netcon;
+
 	// private userinfo for sending to masterless servers
 	char qh_userinfo[MAX_INFO_STRING_QW];
 

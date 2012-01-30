@@ -82,7 +82,7 @@ typedef struct client_s
 	double			last_message;		// reliable messages must be sent
 										// periodically
 
-	struct qsocket_s *netconnection;	// communications handle
+	qsocket_t* netconnection;	// communications handle
 	netchan_t netchan;
 
 	q1usercmd_t		cmd;				// movement
@@ -198,7 +198,7 @@ void SV_SetIdealPitch (void);
 void SV_AddUpdates (void);
 
 void SV_ClientThink (void);
-void SV_AddClientToServer (struct qsocket_s	*ret);
+void SV_AddClientToServer (qsocket_t* ret);
 
 void SV_ClientPrintf (const char *fmt, ...);
 void SV_BroadcastPrintf (const char *fmt, ...);

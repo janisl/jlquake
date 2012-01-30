@@ -17,9 +17,6 @@
 //
 struct client_static_t : clientStaticCommon_t
 {
-
-// connection information
-	struct qsocket_s	*netcon;
 };
 
 extern client_static_t	cls;

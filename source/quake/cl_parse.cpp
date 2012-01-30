@@ -167,7 +167,7 @@ void CL_KeepaliveMessage (void)
 	Con_Printf ("--> client to server keepalive\n");
 
 	clc.netchan.message.WriteByte(q1clc_nop);
-	NET_SendMessage (cls.netcon, &clc.netchan, &clc.netchan.message);
+	NET_SendMessage (cls.qh_netcon, &clc.netchan, &clc.netchan.message);
 	clc.netchan.message.Clear();
 }
 

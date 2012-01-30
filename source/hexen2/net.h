@@ -2,8 +2,6 @@
 
 #define NET_NAME_ID         "HEXENII"
 
-#define	NET_NAMELEN			64
-
 #define NET_HEADERSIZE		(2 * sizeof(unsigned int))
 #define NET_DATAGRAMSIZE	(MAX_DATAGRAM_H2 + NET_HEADERSIZE)
 
@@ -91,23 +89,6 @@
 #define CCREP_PLAYER_INFO	0x84
 #define CCREP_RULE_INFO		0x85
 
-typedef struct qsocket_s
-{
-	struct qsocket_s	*next;
-	double			connecttime;
-
-	qboolean		disconnected;
-	qboolean		canSend;
-	qboolean		sendNext;
-	
-	int				driver;
-	int				socket;
-	void			*driverdata;
-
-	char			address[NET_NAMELEN];
-
-} qsocket_t;
-
 extern qsocket_t	*net_activeSockets;
 extern qsocket_t	*net_freeSockets;
 extern int			net_numsockets;
@@ -187,25 +168,25 @@ extern	int			net_activeconnections;
 void		NET_Init (void);
 void		NET_Shutdown (void);
 
-struct qsocket_s	*NET_CheckNewConnections (netadr_t* outaddr);
+qsocket_t* NET_CheckNewConnections (netadr_t* outaddr);
 // returns a new connection number if there is one pending, else -1
 
-struct qsocket_s	*NET_Connect (const char *host, netchan_t* chan);
+qsocket_t* NET_Connect (const char *host, netchan_t* chan);
 // called by client to connect to a host.  Returns -1 if not able to
 
 qboolean NET_CanSendMessage (qsocket_t *sock, netchan_t* chan);
 // Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
 
-int			NET_GetMessage (struct qsocket_s *sock, netchan_t* chan);
+int			NET_GetMessage (qsocket_t* sock, netchan_t* chan);
 // returns data in net_message sizebuf
 // returns 0 if no data is waiting
 // returns 1 if a message was received
 // returns 2 if an unreliable message was received
 // returns -1 if the connection died
 
-int			NET_SendMessage (struct qsocket_s *sock, netchan_t* chan, QMsg *data);
-int			NET_SendUnreliableMessage (struct qsocket_s *sock, netchan_t* chan, QMsg *data);
+int			NET_SendMessage (qsocket_t* sock, netchan_t* chan, QMsg *data);
+int			NET_SendUnreliableMessage (qsocket_t* sock, netchan_t* chan, QMsg *data);
 // returns 0 if the message connot be delivered reliably, but the connection
 //		is still considered valid
 // returns 1 if the message was sent properly
@@ -215,7 +196,7 @@ int			NET_SendToAll(QMsg *data, int blocktime);
 // This is a reliable *blocking* send to all attached clients.
 
 
-void		NET_Close (struct qsocket_s *sock, netchan_t* chan);
+void		NET_Close (qsocket_t* sock, netchan_t* chan);
 // if a dead connection is returned by a get or send function, this function
 // should be called when it is convenient
 

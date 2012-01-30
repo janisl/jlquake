@@ -782,8 +782,8 @@ void		NET_Shutdown (void)
 			continue;
 		NET_Close(client->netconnection, &client->netchan);
 	}
-	if (cls.netcon)
-		NET_Close(cls.netcon, &clc.netchan);
+	if (cls.qh_netcon)
+		NET_Close(cls.qh_netcon, &clc.netchan);
 
 //
 // shutdown the drivers
