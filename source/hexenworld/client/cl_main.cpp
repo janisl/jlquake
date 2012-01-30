@@ -1179,6 +1179,7 @@ void Host_Frame (float time)
 
 	// decide the simulation time
 	realtime += time;
+	cls.realtime = realtime * 1000;
 	if (oldrealtime > realtime)
 		oldrealtime = 0;
 

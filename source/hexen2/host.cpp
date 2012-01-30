@@ -571,6 +571,7 @@ Returns false if the time is too short to run a frame
 qboolean Host_FilterTime (float time)
 {
 	realtime += time;
+	cls.realtime = realtime * 1000;
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/72.0)
 		return false;		// framerate is too high

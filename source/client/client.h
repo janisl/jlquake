@@ -411,6 +411,7 @@ struct clientStaticCommon_t
 {
 	connstate_t state;				// connection status
 
+	int realtime;			// ignores pause
 	int framecount;
 	int frametime;			// msec since last frame
 

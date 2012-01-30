@@ -46,7 +46,6 @@ of server connections
 
 struct client_static_t : clientStaticCommon_t
 {
-	int			realtime;			// always increasing, no clamping, etc
 	float		frametimeFloat;		// seconds since last frame
 
 // screen rendering information
