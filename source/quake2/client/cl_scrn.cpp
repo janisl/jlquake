@@ -288,7 +288,7 @@ void SCR_DrawCenterString (void)
 
 void SCR_CheckDrawCenterString (void)
 {
-	scr_centertime_off -= cls.frametimeFloat;
+	scr_centertime_off -= cls.q2_frametimeFloat;
 	
 	if (scr_centertime_off <= 0)
 		return;
@@ -493,14 +493,14 @@ void SCR_RunConsole (void)
 	
 	if (scr_conlines < scr_con_current)
 	{
-		scr_con_current -= scr_conspeed->value*cls.frametimeFloat;
+		scr_con_current -= scr_conspeed->value*cls.q2_frametimeFloat;
 		if (scr_conlines > scr_con_current)
 			scr_con_current = scr_conlines;
 
 	}
 	else if (scr_conlines > scr_con_current)
 	{
-		scr_con_current += scr_conspeed->value*cls.frametimeFloat;
+		scr_con_current += scr_conspeed->value*cls.q2_frametimeFloat;
 		if (scr_conlines < scr_con_current)
 			scr_con_current = scr_conlines;
 	}
@@ -563,7 +563,7 @@ void SCR_BeginLoadingPlaque(bool Clear)
 	scr_draw_loading = Clear ? 2 : 1;
 	SCR_UpdateScreen ();
 	cls.disable_screen = Sys_Milliseconds_ ();
-	cls.disable_servercount = cl.servercount;
+	cls.q2_disable_servercount = cl.servercount;
 }
 
 /*
@@ -1181,7 +1181,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 		SCR_CheckDrawCenterString ();
 
 		if (scr_timegraph->value)
-			SCR_DebugGraph (cls.frametimeFloat*300, 0);
+			SCR_DebugGraph (cls.q2_frametimeFloat*300, 0);
 
 		if (scr_debuggraph->value || scr_timegraph->value || scr_netgraph->value)
 			SCR_DrawDebugGraph ();

@@ -46,19 +46,6 @@ of server connections
 
 struct client_static_t : clientStaticCommon_t
 {
-	float		frametimeFloat;		// seconds since last frame
-
-// screen rendering information
-	int			disable_servercount;	// when we receive a frame and cl.servercount
-									// > cls.disable_servercount, clear disable_screen
-
-// connection information
-	float		connect_time;		// for connection retransmits
-
-	int			serverProtocol;		// in case we are doing some kind of version hack
-
-// demo recording info must be here, so it isn't cleared on level change
-	qboolean	demowaiting;	// don't record until a non-delta message is received
 };
 
 extern client_static_t	cls;

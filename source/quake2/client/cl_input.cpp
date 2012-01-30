@@ -251,9 +251,9 @@ void CL_AdjustAngles (void)
 	float	up, down;
 	
 	if (in_speed.state & 1)
-		speed = cls.frametimeFloat * cl_anglespeedkey->value;
+		speed = cls.q2_frametimeFloat * cl_anglespeedkey->value;
 	else
-		speed = cls.frametimeFloat;
+		speed = cls.q2_frametimeFloat;
 
 	if (!(in_strafe.state & 1))
 	{
@@ -394,7 +394,7 @@ void CL_FinishMove (q2usercmd_t *cmd)
 		cmd->buttons |= BUTTON_ANY;
 
 	// send milliseconds of time to apply the move
-	ms = cls.frametimeFloat * 1000;
+	ms = cls.q2_frametimeFloat * 1000;
 	if (ms > 250)
 		ms = 100;		// time was unreasonable
 	cmd->msec = ms;
@@ -570,7 +570,7 @@ void CL_SendCmd (void)
 
 	// let the server know what the last frame we
 	// got was, so the next message can be delta compressed
-	if (cl_nodelta->value || !cl.q2_frame.valid || cls.demowaiting)
+	if (cl_nodelta->value || !cl.q2_frame.valid || cls.q2_demowaiting)
 		buf.WriteLong(-1);	// no compression
 	else
 		buf.WriteLong(cl.q2_frame.serverframe);

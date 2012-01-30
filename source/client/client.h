@@ -455,6 +455,20 @@ struct clientStaticCommon_t
 	char qh_userinfo[MAX_INFO_STRING_QW];
 
 	float qh_latency;		// rolling average
+
+	float q2_frametimeFloat;		// seconds since last frame
+
+	// screen rendering information
+	int q2_disable_servercount;	// when we receive a frame and cl.servercount
+								// > cls.disable_servercount, clear disable_screen
+
+	// connection information
+	float q2_connect_time;		// for connection retransmits
+
+	int q2_serverProtocol;		// in case we are doing some kind of version hack
+
+	// demo recording info must be here, so it isn't cleared on level change
+	bool q2_demowaiting;	// don't record until a non-delta message is received
 };
 
 extern clientActive_t cl;

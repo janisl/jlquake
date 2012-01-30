@@ -284,7 +284,7 @@ void CL_ParseServerData (void)
 
 // parse protocol version number
 	i = net_message.ReadLong();
-	cls.serverProtocol = i;
+	cls.q2_serverProtocol = i;
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
 	if (Com_ServerState() && PROTOCOL_VERSION == 34)
@@ -691,7 +691,7 @@ void CL_ParseServerMessage (void)
 				clc.download = 0;
 			}
 			cls.state = CA_CONNECTING;
-			cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
+			cls.q2_connect_time = -99999;	// CL_CheckForResend() will fire immediately
 			break;
 
 		case q2svc_print:
@@ -775,7 +775,7 @@ void CL_ParseServerMessage (void)
 	// we don't know if it is ok to save a demo message until
 	// after we have parsed the frame
 	//
-	if (clc.demorecording && !cls.demowaiting)
+	if (clc.demorecording && !cls.q2_demowaiting)
 		CL_WriteDemoMessage ();
 
 }

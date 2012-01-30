@@ -196,7 +196,7 @@ void CL_Record_f (void)
 	clc.demorecording = true;
 
 	// don't start saving messages until a non-delta compressed message is received
-	cls.demowaiting = true;
+	cls.q2_demowaiting = true;
 
 	//
 	// write out messages to hold the startup information
@@ -399,7 +399,7 @@ void CL_Drop (void)
 	CL_Disconnect ();
 
 	// drop loading plaque unless this is the initial game start
-	if (cls.disable_servercount != -1)
+	if (cls.q2_disable_servercount != -1)
 		SCR_EndLoadingPlaque ();	// get rid of loading plaque
 }
 
@@ -420,7 +420,7 @@ void CL_SendConnectPacket (void)
 	if (!SOCK_StringToAdr (cls.servername, &adr, PORT_SERVER))
 	{
 		Com_Printf ("Bad server address\n");
-		cls.connect_time = 0;
+		cls.q2_connect_time = 0;
 		return;
 	}
 
@@ -460,7 +460,7 @@ void CL_CheckForResend (void)
 	if (cls.state != CA_CONNECTING)
 		return;
 
-	if (cls.realtime - cls.connect_time < 3000)
+	if (cls.realtime - cls.q2_connect_time < 3000)
 		return;
 
 	if (!SOCK_StringToAdr(cls.servername, &adr, PORT_SERVER))
@@ -470,7 +470,7 @@ void CL_CheckForResend (void)
 		return;
 	}
 
-	cls.connect_time = cls.realtime;	// for retransmit requests
+	cls.q2_connect_time = cls.realtime;	// for retransmit requests
 
 	Com_Printf ("Connecting to %s...\n", cls.servername);
 
@@ -511,7 +511,7 @@ void CL_Connect_f (void)
 
 	cls.state = CA_CONNECTING;
 	String::NCpy(cls.servername, server, sizeof(cls.servername)-1);
-	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
+	cls.q2_connect_time = -99999;	// CL_CheckForResend() will fire immediately
 }
 
 
@@ -624,7 +624,7 @@ void CL_Disconnect (void)
 
 	M_ForceMenuOff ();
 
-	cls.connect_time = 0;
+	cls.q2_connect_time = 0;
 
 	SCR_StopCinematic ();
 
@@ -753,9 +753,9 @@ void CL_Reconnect_f (void)
 	if (*cls.servername) {
 		if (cls.state >= CA_CONNECTED) {
 			CL_Disconnect();
-			cls.connect_time = cls.realtime - 1500;
+			cls.q2_connect_time = cls.realtime - 1500;
 		} else
-			cls.connect_time = -99999; // fire immediately
+			cls.q2_connect_time = -99999; // fire immediately
 
 		cls.state = CA_CONNECTING;
 		Com_Printf ("reconnecting...\n");
@@ -1759,13 +1759,13 @@ void CL_Frame (int msec)
 
 	// decide the simulation time
 	cls.frametime = extratime;
-	cls.frametimeFloat = extratime/1000.0;
+	cls.q2_frametimeFloat = extratime/1000.0;
 	cl.serverTime += extratime;
 	cls.realtime = curtime;
 
 	extratime = 0;
-	if (cls.frametimeFloat > (1.0 / 5))
-		cls.frametimeFloat = (1.0 / 5);
+	if (cls.q2_frametimeFloat > (1.0 / 5))
+		cls.q2_frametimeFloat = (1.0 / 5);
 	if (cls.frametime > 200)
 		cls.frametime = 200;
 	cls.realFrametime = cls.frametime;

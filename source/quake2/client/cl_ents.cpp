@@ -510,7 +510,7 @@ void CL_ParseFrame (void)
 	cl.q2_frame.servertime = cl.q2_frame.serverframe*100;
 
 	// BIG HACK to let old demos continue to work
-	if (cls.serverProtocol != 26)
+	if (cls.q2_serverProtocol != 26)
 		cl.q2_surpressCount = net_message.ReadByte ();
 
 	if (cl_shownet->value == 3)
@@ -525,7 +525,7 @@ void CL_ParseFrame (void)
 	{
 		cl.q2_frame.valid = true;		// uncompressed frame
 		old = NULL;
-		cls.demowaiting = false;	// we can start recording now
+		cls.q2_demowaiting = false;	// we can start recording now
 	}
 	else
 	{
@@ -584,7 +584,7 @@ void CL_ParseFrame (void)
 			cl.q2_predicted_origin[1] = cl.q2_frame.playerstate.pmove.origin[1]*0.125;
 			cl.q2_predicted_origin[2] = cl.q2_frame.playerstate.pmove.origin[2]*0.125;
 			VectorCopy (cl.q2_frame.playerstate.viewangles, cl.q2_predicted_angles);
-			if (cls.disable_servercount != cl.servercount
+			if (cls.q2_disable_servercount != cl.servercount
 				&& cl.q2_refresh_prepped)
 				SCR_EndLoadingPlaque ();	// get rid of loading plaque
 		}
