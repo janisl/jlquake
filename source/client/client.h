@@ -389,6 +389,15 @@ struct clientConnection_t
 	int q3_timeDemoBaseTime;	// each frame will be at this time + frameNum * 50
 };
 
+/*
+==================================================================
+
+the clientStatic_t structure is never wiped, and is used even when
+no client connection is active at all
+
+==================================================================
+*/
+
 enum connstate_t
 {
 	//	!!!!!! Used by Quake 3 UI VM, do not change !!!!!!
@@ -511,6 +520,7 @@ struct clientStatic_t
 
 extern clientActive_t cl;
 extern clientConnection_t clc;
+extern clientStatic_t cls;
 extern clientStatic_t* cls_common;
 
 extern int bitcounts[32];

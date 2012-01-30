@@ -32,9 +32,6 @@ Cvar*	m_side;
 
 Cvar	*cl_lightlevel;
 
-
-clientStatic_t	cls;
-
 /*
 =====================
 CL_ClearState

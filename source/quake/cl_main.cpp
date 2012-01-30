@@ -36,8 +36,6 @@ Cvar*	m_yaw;
 Cvar*	m_forward;
 Cvar*	m_side;
 
-clientStatic_t	cls;
-
 /*
 =====================
 CL_ClearState

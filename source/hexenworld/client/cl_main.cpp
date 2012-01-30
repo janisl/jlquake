@@ -56,8 +56,6 @@ Cvar	*cl_lightlevel;
 
 Cvar*	cl_teamcolor;
 
-clientStatic_t	cls;
-
 double			connect_time = -1;		// for connection retransmits
 
 quakeparms_t host_parms;

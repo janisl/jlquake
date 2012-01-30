@@ -1,17 +1,5 @@
 // client.h
 
-
-//
-// client_state_t should hold all pieces of the client state
-//
-
-
-//
-// the client_static_t structure is persistant through an arbitrary number
-// of server connections
-//
-extern clientStatic_t	cls;
-
 // edict->flags
 #define	FL_FLY					1
 #define	FL_SWIM					2

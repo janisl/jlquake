@@ -40,6 +40,7 @@ Cvar* clqh_color;
 
 clientActive_t cl;
 clientConnection_t clc;
+clientStatic_t cls;
 clientStatic_t* cls_common;
 
 byte* playerTranslation;

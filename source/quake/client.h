@@ -21,17 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	NAME_LENGTH	64
 
-
-//
-// client_state_t should hold all pieces of the client state
-//
-
-//
-// the client_static_t structure is persistant through an arbitrary number
-// of server connections
-//
-extern clientStatic_t	cls;
-
 //
 // cvars
 //
