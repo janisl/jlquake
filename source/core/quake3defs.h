@@ -251,3 +251,5 @@ struct q3entityState_t
 #define	PACKET_MASK_Q3		(PACKET_BACKUP_Q3-1)
 
 #define MAX_RELIABLE_COMMANDS_Q3	64			// max string commands buffered for restransmit
+
+#define MAX_NAME_LENGTH_Q3		32		// max length of a client name

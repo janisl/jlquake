@@ -49,63 +49,8 @@ typedef struct {
 	char		info[MAX_INFO_STRING_Q3];
 } ping_t;
 
-typedef struct {
-	netadr_t	adr;
-	char	  	hostName[MAX_NAME_LENGTH];
-	char	  	mapName[MAX_NAME_LENGTH];
-	char	  	game[MAX_NAME_LENGTH];
-	int			netType;
-	int			gameType;
-	int		  	clients;
-	int		  	maxClients;
-	int			minPing;
-	int			maxPing;
-	int			ping;
-	qboolean	visible;
-	int			punkbuster;
-} serverInfo_t;
-
-typedef struct {
-	byte	ip[4];
-	unsigned short	port;
-} serverAddress_t;
-
 struct clientStatic_t : clientStaticCommon_t
 {
-	qboolean	cddialog;			// bring up the cd needed dialog next frame
-
-	// when the server clears the hunk, all of these must be restarted
-	qboolean	rendererStarted;
-	qboolean	soundStarted;
-	qboolean	soundRegistered;
-	qboolean	uiStarted;
-	qboolean	cgameStarted;
-
-	int			numlocalservers;
-	serverInfo_t	localServers[MAX_OTHER_SERVERS];
-
-	int			numglobalservers;
-	serverInfo_t  globalServers[MAX_GLOBAL_SERVERS];
-	// additional global servers
-	int			numGlobalServerAddresses;
-	serverAddress_t		globalServerAddresses[MAX_GLOBAL_SERVERS];
-
-	int			numfavoriteservers;
-	serverInfo_t	favoriteServers[MAX_OTHER_SERVERS];
-
-	int			nummplayerservers;
-	serverInfo_t	mplayerServers[MAX_OTHER_SERVERS];
-
-	int pingUpdateSource;		// source currently pinging or updating
-
-	int masterNum;
-
-	// update server info
-	netadr_t	updateServer;
-	char		updateChallenge[MAX_TOKEN_CHARS_Q3];
-	char		updateInfoString[MAX_INFO_STRING_Q3];
-
-	netadr_t	authorizeServer;
 };
 
 extern	clientStatic_t		cls;

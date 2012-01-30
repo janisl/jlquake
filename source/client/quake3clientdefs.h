@@ -21,6 +21,9 @@
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP_Q3
 
+#define MAX_GLOBAL_SERVERS_Q3				4096
+#define MAX_OTHER_SERVERS_Q3				128
+
 // the parseEntities array must be large enough to hold PACKET_BACKUP_Q3 frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original 
@@ -63,4 +66,27 @@ struct q3outPacket_t
 	int p_cmdNumber;		// cl.cmdNumber when packet was sent
 	int p_serverTime;		// usercmd->serverTime when packet was sent
 	int p_realtime;			// cls.realtime when packet was sent
+};
+
+struct q3serverInfo_t
+{
+	netadr_t adr;
+	char hostName[MAX_NAME_LENGTH_Q3];
+	char mapName[MAX_NAME_LENGTH_Q3];
+	char game[MAX_NAME_LENGTH_Q3];
+	int netType;
+	int gameType;
+	int clients;
+	int maxClients;
+	int minPing;
+	int maxPing;
+	int ping;
+	qboolean visible;
+	int punkbuster;
+};
+
+struct q3serverAddress_t
+{
+	byte ip[4];
+	unsigned short port;
 };

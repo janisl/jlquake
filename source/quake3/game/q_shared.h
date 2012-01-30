@@ -177,8 +177,6 @@ void Sys_PumpEvents( void );
 enum {qfalse, qtrue};
 
 
-#define	MAX_NAME_LENGTH		32		// max length of a client name
-
 #define	MAX_SAY_TEXT	150
 
 #ifdef ERR_FATAL
@@ -403,8 +401,6 @@ typedef enum _flag_status {
 
 
 
-#define	MAX_GLOBAL_SERVERS				4096
-#define	MAX_OTHER_SERVERS					128
 #define MAX_PINGREQUESTS					32
 #define MAX_SERVERSTATUSREQUESTS	16
 

@@ -469,6 +469,41 @@ struct clientStaticCommon_t
 
 	// demo recording info must be here, so it isn't cleared on level change
 	bool q2_demowaiting;	// don't record until a non-delta message is received
+
+	bool q3_cddialog;			// bring up the cd needed dialog next frame
+
+	// when the server clears the hunk, all of these must be restarted
+	bool q3_rendererStarted;
+	bool q3_soundStarted;
+	bool q3_soundRegistered;
+	bool q3_uiStarted;
+	bool q3_cgameStarted;
+
+	int q3_numlocalservers;
+	q3serverInfo_t q3_localServers[MAX_OTHER_SERVERS_Q3];
+
+	int q3_numglobalservers;
+	q3serverInfo_t q3_globalServers[MAX_GLOBAL_SERVERS_Q3];
+	// additional global servers
+	int q3_numGlobalServerAddresses;
+	q3serverAddress_t q3_globalServerAddresses[MAX_GLOBAL_SERVERS_Q3];
+
+	int q3_numfavoriteservers;
+	q3serverInfo_t q3_favoriteServers[MAX_OTHER_SERVERS_Q3];
+
+	int q3_nummplayerservers;
+	q3serverInfo_t q3_mplayerServers[MAX_OTHER_SERVERS_Q3];
+
+	int q3_pingUpdateSource;		// source currently pinging or updating
+
+	int q3_masterNum;
+
+	// update server info
+	netadr_t q3_updateServer;
+	char q3_updateChallenge[MAX_TOKEN_CHARS_Q3];
+	char q3_updateInfoString[MAX_INFO_STRING_Q3];
+
+	netadr_t q3_authorizeServer;
 };
 
 extern clientActive_t cl;
