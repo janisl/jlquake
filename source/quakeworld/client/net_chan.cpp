@@ -264,7 +264,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 	// send the qport if we are a client
 #ifndef SERVERONLY
-	send.WriteShort(cls.qport);
+	send.WriteShort(cls.quakePort);
 #endif
 
 // copy the reliable message to the packet first

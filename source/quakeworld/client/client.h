@@ -38,10 +38,6 @@ struct client_static_t : clientStaticCommon_t
 // private userinfo for sending to masterless servers
 	char		userinfo[MAX_INFO_STRING_QW];
 
-	char		servername[MAX_OSPATH];	// name of server from original connect
-
-	int			qport;
-
 // demo loop control
 	int			demonum;		// -1 = don't play demos
 	char		demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing
@@ -52,8 +48,6 @@ struct client_static_t : clientStaticCommon_t
 	float		td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
-
-	int			challenge;
 
 	float		latency;		// rolling average
 };

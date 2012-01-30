@@ -192,13 +192,13 @@ void CL_SendConnectPacket (void)
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
 
-	cls.qport = Cvar_VariableValue("qport");
+	cls.quakePort = Cvar_VariableValue("qport");
 
 	Info_SetValueForKey(cls.userinfo, "*ip", SOCK_AdrToString(adr), MAX_INFO_STRING_QW, 64, 64, true, false);
 
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
-		255, 255, 255, 255,	PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
+		255, 255, 255, 255,	PROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.userinfo);
 	NET_SendPacket (String::Length(data), data, adr);
 }
 
@@ -809,7 +809,7 @@ void CL_ConnectionlessPacket (void)
 				Con_Printf ("Dup connect received.  Ignored.\n");
 			return;
 		}
-		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.qport);
+		Netchan_Setup (NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
 		clc.netchan.message.WriteChar(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("new");	
 		cls.state = CA_CONNECTED;

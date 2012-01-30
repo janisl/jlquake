@@ -20,8 +20,6 @@ struct client_static_t : clientStaticCommon_t
 // private userinfo for sending to masterless servers
 	char		userinfo[HWMAX_INFO_STRING];
 
-	char		servername[MAX_OSPATH];	// name of server from original connect
-
 // demo loop control
 	int			demonum;		// -1 = don't play demos
 	char		demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing

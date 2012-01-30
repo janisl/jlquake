@@ -228,7 +228,6 @@ void Host_Map_f (void)
 	if (Cmd_Argc()<2)	//no map name given
 	{
 		Con_Printf ("map <levelname>: start a new server\nCurrently on: %s\n",cl.qh_levelname);
-		Con_Printf ("%s\n",cls.mapstring);
 		return;
 	}
 
@@ -248,14 +247,6 @@ void Host_Map_f (void)
 		info_mask2 = 0x80000000;
 	else
 		info_mask2 = 0;
-
-	cls.mapstring[0] = 0;
-	for (i=0 ; i<Cmd_Argc() ; i++)
-	{
-		String::Cat(cls.mapstring, sizeof(cls.mapstring), Cmd_Argv(i));
-		String::Cat(cls.mapstring, sizeof(cls.mapstring), " ");
-	}
-	String::Cat(cls.mapstring, sizeof(cls.mapstring), "\n");
 
 	svs.serverflags = 0;			// haven't completed an episode yet
 	String::Cpy (name, Cmd_Argv(1));

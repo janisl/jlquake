@@ -22,9 +22,6 @@
 //
 struct client_static_t : clientStaticCommon_t
 {
-// personalization data sent to server	
-	char		mapstring[MAX_QPATH];
-
 // demo loop control
 	int			demonum;		// -1 = don't play demos
 	char		demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing

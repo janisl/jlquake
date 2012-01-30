@@ -264,14 +264,6 @@ void Host_Map_f (void)
 	in_keyCatchers = 0;			// remove console or menu
 	SCR_BeginLoadingPlaque ();
 
-	cls.mapstring[0] = 0;
-	for (i=0 ; i<Cmd_Argc() ; i++)
-	{
-		String::Cat(cls.mapstring, sizeof(cls.mapstring), Cmd_Argv(i));
-		String::Cat(cls.mapstring, sizeof(cls.mapstring), " ");
-	}
-	String::Cat(cls.mapstring, sizeof(cls.mapstring), "\n");
-
 	svs.serverflags = 0;			// haven't completed an episode yet
 	String::Cpy(name, Cmd_Argv(1));
 	SV_SpawnServer (name);

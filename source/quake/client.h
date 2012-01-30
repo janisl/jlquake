@@ -37,9 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 struct client_static_t : clientStaticCommon_t
 {
-// personalization data sent to server	
-	char		mapstring[MAX_QPATH];
-
 // demo loop control
 	int			demonum;		// -1 = don't play demos
 	char		demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing

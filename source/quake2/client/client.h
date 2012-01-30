@@ -46,7 +46,6 @@ of server connections
 
 struct client_static_t : clientStaticCommon_t
 {
-	int			framecount;
 	int			realtime;			// always increasing, no clamping, etc
 	float		frametimeFloat;		// seconds since last frame
 
@@ -55,14 +54,9 @@ struct client_static_t : clientStaticCommon_t
 									// > cls.disable_servercount, clear disable_screen
 
 // connection information
-	char		servername[MAX_OSPATH];	// name of server from original connect
 	float		connect_time;		// for connection retransmits
 
-	int			quakePort;			// a 16 bit value that allows quake servers
-									// to work around address translating routers
 	int			serverProtocol;		// in case we are doing some kind of version hack
-
-	int			challenge;			// from the server to use for connecting
 
 // demo recording info must be here, so it isn't cleared on level change
 	qboolean	demowaiting;	// don't record until a non-delta message is received

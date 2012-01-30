@@ -420,9 +420,16 @@ struct clientStaticCommon_t
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
 
+	char servername[MAX_OSPATH];		// name of server from original connect (used by reconnect)
+
 	int disable_screen;		// showing loading plaque between levels
 							// or changing rendering dlls
 							// if time gets > 30 seconds ahead, break it
+
+	int quakePort;			// a 16 bit value that allows quake servers
+							// to work around address translating routers
+
+	int challenge;			// from the server to use for connecting
 
 	char qh_spawnparms[MAX_MAPSTRING];	// to restart a level
 };
