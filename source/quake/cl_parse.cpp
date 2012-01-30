@@ -645,8 +645,8 @@ void CL_ParseServerMessage (void)
 		{
 			byte cdtrack = net_message.ReadByte();
 			net_message.ReadByte();	//	looptrack
-			if ( (clc.demoplaying || clc.demorecording) && (cls.forcetrack != -1) )
-				CDAudio_Play ((byte)cls.forcetrack, true);
+			if ( (clc.demoplaying || clc.demorecording) && (cls.qh_forcetrack != -1) )
+				CDAudio_Play ((byte)cls.qh_forcetrack, true);
 			else
 				CDAudio_Play (cdtrack, true);
 		}

@@ -24,32 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
 
-#define	MAX_EFRAGS		512
-
-#define	MAX_DEMOS		8
-#define	MAX_DEMONAME	16
-
 //
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
 //
 struct client_static_t : clientStaticCommon_t
 {
-// private userinfo for sending to masterless servers
-	char		userinfo[MAX_INFO_STRING_QW];
-
-// demo loop control
-	int			demonum;		// -1 = don't play demos
-	char		demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing
-
-// demo recording info must be here, because record is started before
-// entering a map (and clearing client_state_t)
-	qboolean	timedemo;
-	float		td_lastframe;		// to meter out one message a frame
-	int			td_startframe;		// host_framecount at start
-	float		td_starttime;		// realtime at second frame of timedemo
-
-	float		latency;		// rolling average
 };
 
 extern client_static_t	cls;

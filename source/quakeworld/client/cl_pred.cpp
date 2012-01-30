@@ -124,7 +124,7 @@ void CL_PredictMove (void)
 	if (cl.qh_paused)
 		return;
 
-	cl.qh_serverTimeFloat = realtime - cls.latency - cl_pushlatency->value*0.001;
+	cl.qh_serverTimeFloat = realtime - cls.qh_latency - cl_pushlatency->value*0.001;
 	if (cl.qh_serverTimeFloat > realtime)
 		cl.qh_serverTimeFloat = realtime;
 	cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);

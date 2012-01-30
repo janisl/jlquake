@@ -616,8 +616,8 @@ void M_Menu_Main_f (void)
 {
 	if (!(in_keyCatchers & KEYCATCH_UI))
 	{
-		m_save_demonum = cls.demonum;
-		cls.demonum = -1;
+		m_save_demonum = cls.qh_demonum;
+		cls.qh_demonum = -1;
 	}
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_main;
@@ -650,8 +650,8 @@ void M_Main_Key (int key)
 	case K_ESCAPE:
 		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
-		cls.demonum = m_save_demonum;
-		if (cls.demonum != -1 && !clc.demoplaying && cls.state != CA_CONNECTED)
+		cls.qh_demonum = m_save_demonum;
+		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state != CA_CONNECTED)
 			CL_NextDemo ();
 		break;
 		
@@ -761,7 +761,7 @@ void M_Difficulty_Key (int key)
 			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
-			cls.demonum = m_save_demonum;
+			cls.qh_demonum = m_save_demonum;
 
 			//Cbuf_AddText ("map keep1\n");
 		}

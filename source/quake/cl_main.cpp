@@ -98,7 +98,7 @@ void CL_Disconnect (void)
 			Host_ShutdownServer(false);
 	}
 
-	clc.demoplaying = cls.timedemo = false;
+	clc.demoplaying = cls.qh_timedemo = false;
 	clc.qh_signon = 0;
 }
 
@@ -138,7 +138,7 @@ void CL_EstablishConnection (const char *host)
 	clc.netchan.lastReceived = net_time * 1000;
 	Con_DPrintf ("CL_EstablishConnection: connected to %s\n", host);
 	
-	cls.demonum = -1;			// not in the demo loop now
+	cls.qh_demonum = -1;			// not in the demo loop now
 	cls.state = CA_CONNECTED;
 	clc.qh_signon = 0;				// need all the signon messages before playing
 }
@@ -154,25 +154,25 @@ void CL_NextDemo (void)
 {
 	char	str[1024];
 
-	if (cls.demonum == -1)
+	if (cls.qh_demonum == -1)
 		return;		// don't play demos
 
 	SCR_BeginLoadingPlaque ();
 
-	if (!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
+	if (!cls.qh_demos[cls.qh_demonum][0] || cls.qh_demonum == MAX_DEMOS)
 	{
-		cls.demonum = 0;
-		if (!cls.demos[cls.demonum][0])
+		cls.qh_demonum = 0;
+		if (!cls.qh_demos[cls.qh_demonum][0])
 		{
 			Con_Printf ("No demos listed with startdemos\n");
-			cls.demonum = -1;
+			cls.qh_demonum = -1;
 			return;
 		}
 	}
 
-	sprintf (str,"playdemo %s\n", cls.demos[cls.demonum]);
+	sprintf (str,"playdemo %s\n", cls.qh_demos[cls.qh_demonum]);
 	Cbuf_InsertText (str);
-	cls.demonum++;
+	cls.qh_demonum++;
 }
 
 /*
@@ -212,7 +212,7 @@ float	CL_LerpPoint (void)
 
 	f = cl.qh_mtime[0] - cl.qh_mtime[1];
 	
-	if (!f || cl_nolerp->value || cls.timedemo || sv.active)
+	if (!f || cl_nolerp->value || cls.qh_timedemo || sv.active)
 	{
 		cl.qh_serverTimeFloat = cl.qh_mtime[0];
 		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);

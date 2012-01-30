@@ -18,7 +18,7 @@ void Cvar_Changed(Cvar* var)
 #else
 	if (var->flags & CVAR_USERINFO && var->name[0] != '*')
 	{
-		Info_SetValueForKey(cls.userinfo, var->name, var->string, HWMAX_INFO_STRING, 64, 64,
+		Info_SetValueForKey(cls.qh_userinfo, var->name, var->string, HWMAX_INFO_STRING, 64, 64,
 			String::ICmp(var->name, "name") != 0, String::ICmp(var->name, "team") == 0);
 		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		{

@@ -52,7 +52,7 @@ void CL_StopPlayback (void)
 	clc.demofile = 0;
 	cls.state = CA_DISCONNECTED;
 
-	if (cls.timedemo)
+	if (cls.qh_timedemo)
 		CL_FinishTimeDemo ();
 }
 
@@ -97,15 +97,15 @@ int CL_GetMessage (void)
 	// decide if it is time to grab the next message		
 		if (clc.qh_signon == SIGNONS)	// allways grab until fully connected
 		{
-			if (cls.timedemo)
+			if (cls.qh_timedemo)
 			{
-				if (host_framecount == cls.td_lastframe)
+				if (host_framecount == cls.qh_td_lastframe)
 					return 0;		// allready read this frame's message
-				cls.td_lastframe = host_framecount;
+				cls.qh_td_lastframe = host_framecount;
 			// if this is the second frame, grab the real td_starttime
 			// so the bogus time on the first frame doesn't count
-				if (host_framecount == cls.td_startframe + 1)
-					cls.td_starttime = realtime;
+				if (host_framecount == cls.qh_td_startframe + 1)
+					cls.qh_td_starttime = realtime;
 			}
 			else if ( /* cl.time > 0 && */ cl.qh_serverTimeFloat <= cl.qh_mtime[0])
 			{
@@ -225,7 +225,7 @@ void CL_Record_f (void)
 	if (c == 4)
 	{
 		track = String::Atoi(Cmd_Argv(3));
-		Con_Printf ("Forcing CD track to %i\n", cls.forcetrack);
+		Con_Printf ("Forcing CD track to %i\n", cls.qh_forcetrack);
 	}
 	else
 		track = -1;	
@@ -251,8 +251,8 @@ void CL_Record_f (void)
 		return;
 	}
 
-	cls.forcetrack = track;
-	FS_Printf(clc.demofile, "%i\n", cls.forcetrack);
+	cls.qh_forcetrack = track;
+	FS_Printf(clc.demofile, "%i\n", cls.qh_forcetrack);
 	
 	clc.demorecording = true;
 }
@@ -296,14 +296,14 @@ void CL_PlayDemo_f (void)
 	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
-		cls.demonum = -1;		// stop demo loop
+		cls.qh_demonum = -1;		// stop demo loop
 		return;
 	}
 
 	clc.demoplaying = true;
 	clc.netchan.message.InitOOB(clc.netchan.messageBuffer, 1024);
 	cls.state = CA_CONNECTED;
-	cls.forcetrack = 0;
+	cls.qh_forcetrack = 0;
 
 	FS_Read(&c, 1, clc.demofile);
 	while (c != '\n')
@@ -311,13 +311,13 @@ void CL_PlayDemo_f (void)
 		if (c == '-')
 			neg = true;
 		else
-			cls.forcetrack = cls.forcetrack * 10 + (c - '0');
+			cls.qh_forcetrack = cls.qh_forcetrack * 10 + (c - '0');
 		if (FS_Read(&c, 1, clc.demofile) != 1)
 			break;
 	}
 
 	if (neg)
-		cls.forcetrack = -cls.forcetrack;
+		cls.qh_forcetrack = -cls.qh_forcetrack;
 // ZOID, fscanf is evil
 //	fscanf (clc.demofile, "%i\n", &cls.forcetrack);
 }
@@ -333,11 +333,11 @@ void CL_FinishTimeDemo (void)
 	int		frames;
 	float	time;
 	
-	cls.timedemo = false;
+	cls.qh_timedemo = false;
 	
 // the first frame didn't count
-	frames = (host_framecount - cls.td_startframe) - 1;
-	time = realtime - cls.td_starttime;
+	frames = (host_framecount - cls.qh_td_startframe) - 1;
+	time = realtime - cls.qh_td_starttime;
 	if (!time)
 		time = 1;
 	Con_Printf ("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames/time);
@@ -366,8 +366,8 @@ void CL_TimeDemo_f (void)
 // cls.td_starttime will be grabbed at the second frame of the demo, so
 // all the loading time doesn't get counted
 	
-	cls.timedemo = true;
-	cls.td_startframe = host_framecount;
-	cls.td_lastframe = -1;		// get a new message this frame
+	cls.qh_timedemo = true;
+	cls.qh_td_startframe = host_framecount;
+	cls.qh_td_lastframe = -1;		// get a new message this frame
 }
 

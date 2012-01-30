@@ -274,7 +274,7 @@ void CL_LinkPlayers (void)
 	qwframe_t			*frame;
 	int				oldphysent;
 
-	playertime = realtime - cls.latency + 0.02;
+	playertime = realtime - cls.qh_latency + 0.02;
 	if (playertime > realtime)
 		playertime = realtime;
 
@@ -421,7 +421,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 	qwframe_t			*frame;
 	struct predicted_player *pplayer;
 
-	playertime = realtime - cls.latency + 0.02;
+	playertime = realtime - cls.qh_latency + 0.02;
 	if (playertime > realtime)
 		playertime = realtime;
 

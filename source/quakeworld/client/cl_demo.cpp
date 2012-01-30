@@ -52,7 +52,7 @@ void CL_StopPlayback (void)
 	cls.state = CA_DISCONNECTED;
 	clc.demoplaying = 0;
 
-	if (cls.timedemo)
+	if (cls.qh_timedemo)
 		CL_FinishTimeDemo ();
 }
 
@@ -153,19 +153,19 @@ qboolean CL_GetDemoMessage (void)
 	demotime = LittleFloat(demotime);
 
 // decide if it is time to grab the next message		
-	if (cls.timedemo) {
-		if (cls.td_lastframe < 0)
-			cls.td_lastframe = demotime;
-		else if (demotime > cls.td_lastframe) {
-			cls.td_lastframe = demotime;
+	if (cls.qh_timedemo) {
+		if (cls.qh_td_lastframe < 0)
+			cls.qh_td_lastframe = demotime;
+		else if (demotime > cls.qh_td_lastframe) {
+			cls.qh_td_lastframe = demotime;
 			// rewind back to time
 			FS_Seek(clc.demofile, FS_FTell(clc.demofile) - sizeof(demotime),
 					FS_SEEK_SET);
 			return 0;		// allready read this frame's message
 		}
-		if (!cls.td_starttime && cls.state == CA_ACTIVE) {
-			cls.td_starttime = Sys_DoubleTime();
-			cls.td_startframe = host_framecount;
+		if (!cls.qh_td_starttime && cls.state == CA_ACTIVE) {
+			cls.qh_td_starttime = Sys_DoubleTime();
+			cls.qh_td_startframe = host_framecount;
 		}
 		realtime = demotime; // warp
 	} else if (!cl.qh_paused && cls.state >= CA_LOADING) {	// allways grab until fully connected
@@ -734,7 +734,7 @@ void CL_PlayDemo_f (void)
 	if (!clc.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
-		cls.demonum = -1;		// stop demo loop
+		cls.qh_demonum = -1;		// stop demo loop
 		return;
 	}
 
@@ -755,11 +755,11 @@ void CL_FinishTimeDemo (void)
 	int		frames;
 	float	time;
 	
-	cls.timedemo = false;
+	cls.qh_timedemo = false;
 	
 // the first frame didn't count
-	frames = (host_framecount - cls.td_startframe) - 1;
-	time = Sys_DoubleTime() - cls.td_starttime;
+	frames = (host_framecount - cls.qh_td_startframe) - 1;
+	time = Sys_DoubleTime() - cls.qh_td_starttime;
 	if (!time)
 		time = 1;
 	Con_Printf ("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames/time);
@@ -788,9 +788,9 @@ void CL_TimeDemo_f (void)
 // cls.td_starttime will be grabbed at the second frame of the demo, so
 // all the loading time doesn't get counted
 	
-	cls.timedemo = true;
-	cls.td_starttime = 0;
-	cls.td_startframe = host_framecount;
-	cls.td_lastframe = -1;		// get a new message this frame
+	cls.qh_timedemo = true;
+	cls.qh_td_starttime = 0;
+	cls.qh_td_startframe = host_framecount;
+	cls.qh_td_lastframe = -1;		// get a new message this frame
 }
 

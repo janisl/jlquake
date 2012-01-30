@@ -45,6 +45,9 @@
 
 #define MAX_MAPSTRING	2048
 
+#define MAX_DEMOS		8
+#define MAX_DEMONAME	16
+
 struct cshift_t
 {
 	int		destcolor[3];
@@ -434,6 +437,24 @@ struct clientStaticCommon_t
 	int challenge;			// from the server to use for connecting
 
 	char qh_spawnparms[MAX_MAPSTRING];	// to restart a level
+
+	// demo loop control
+	int qh_demonum;		// -1 = don't play demos
+	char qh_demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing
+
+	// demo recording info must be here, because record is started before
+	// entering a map (and clearing client_state_t)
+	bool qh_timedemo;
+	int qh_td_lastframe;		// to meter out one message a frame
+	int qh_td_startframe;		// host_framecount at start
+	float qh_td_starttime;		// realtime at second frame of timedemo
+
+	int qh_forcetrack;			// -1 = use normal cd track
+
+	// private userinfo for sending to masterless servers
+	char qh_userinfo[MAX_INFO_STRING_QW];
+
+	float qh_latency;		// rolling average
 };
 
 extern clientActive_t cl;

@@ -157,7 +157,7 @@ void CL_SendConnectPacket (void)
 
 	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %d \"%s\"\n",
-		255, 255, 255, 255,	com_portals, cls.userinfo);
+		255, 255, 255, 255,	com_portals, cls.qh_userinfo);
 	NET_SendPacket (String::Length(data), data, adr);
 }
 
@@ -350,7 +350,7 @@ void CL_Disconnect (void)
 
 		cls.state = CA_DISCONNECTED;
 
-		clc.demoplaying = clc.demorecording = cls.timedemo = false;
+		clc.demoplaying = clc.demorecording = cls.qh_timedemo = false;
 	}
 	Cam_Reset();
 
@@ -433,8 +433,8 @@ void CL_Color_f (void)
 	if (Cmd_Argc() == 1)
 	{
 		Con_Printf ("\"color\" is \"%s %s\"\n",
-			Info_ValueForKey (cls.userinfo, "topcolor"),
-			Info_ValueForKey (cls.userinfo, "bottomcolor") );
+			Info_ValueForKey (cls.qh_userinfo, "topcolor"),
+			Info_ValueForKey (cls.qh_userinfo, "bottomcolor") );
 		Con_Printf ("color <0-13> [0-13]\n");
 		return;
 	}
@@ -552,7 +552,7 @@ void CL_FullInfo_f (void)
 			continue;
 		}
 
-		Info_SetValueForKey(cls.userinfo, key, value, HWMAX_INFO_STRING, 64, 64,
+		Info_SetValueForKey(cls.qh_userinfo, key, value, HWMAX_INFO_STRING, 64, 64,
 			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 }
@@ -568,7 +568,7 @@ void CL_SetInfo_f (void)
 {
 	if (Cmd_Argc() == 1)
 	{
-		Info_Print (cls.userinfo);
+		Info_Print (cls.qh_userinfo);
 		return;
 	}
 	if (Cmd_Argc() != 3)
@@ -585,7 +585,7 @@ void CL_SetInfo_f (void)
 		return;
 	}
 
-	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), HWMAX_INFO_STRING, 64, 64,
+	Info_SetValueForKey(cls.qh_userinfo, Cmd_Argv(1), Cmd_Argv(2), HWMAX_INFO_STRING, 64, 64,
 		String::ICmp(Cmd_Argv(1), "name") != 0, String::ICmp(Cmd_Argv(1), "team") == 0);
 	if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		Cmd_ForwardToServer ();
@@ -651,23 +651,23 @@ void CL_NextDemo (void)
 {
 	char	str[1024];
 
-	if (cls.demonum == -1)
+	if (cls.qh_demonum == -1)
 		return;		// don't play demos
 
-	if (!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
+	if (!cls.qh_demos[cls.qh_demonum][0] || cls.qh_demonum == MAX_DEMOS)
 	{
-		cls.demonum = 0;
-		if (!cls.demos[cls.demonum][0])
+		cls.qh_demonum = 0;
+		if (!cls.qh_demos[cls.qh_demonum][0])
 		{
 //			Con_Printf ("No demos listed with startdemos\n");
-			cls.demonum = -1;
+			cls.qh_demonum = -1;
 			return;
 		}
 	}
 
-	sprintf (str,"playdemo %s\n", cls.demos[cls.demonum]);
+	sprintf (str,"playdemo %s\n", cls.qh_demos[cls.qh_demonum]);
 	Cbuf_InsertText (str);
-	cls.demonum++;
+	cls.qh_demonum++;
 }
 
 
@@ -943,12 +943,12 @@ void CL_Init (void)
 
 	cls.state = CA_DISCONNECTED;
 
-	Info_SetValueForKey(cls.userinfo, "name", "unnamed", HWMAX_INFO_STRING, 64, 64, false, false);
-	Info_SetValueForKey(cls.userinfo, "playerclass", "0", HWMAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "topcolor", "0", HWMAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "bottomcolor", "0", HWMAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "rate", "2500", HWMAX_INFO_STRING, 64, 64, true, false);
-	Info_SetValueForKey(cls.userinfo, "msg", "1", HWMAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.qh_userinfo, "name", "unnamed", HWMAX_INFO_STRING, 64, 64, false, false);
+	Info_SetValueForKey(cls.qh_userinfo, "playerclass", "0", HWMAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.qh_userinfo, "topcolor", "0", HWMAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.qh_userinfo, "bottomcolor", "0", HWMAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.qh_userinfo, "rate", "2500", HWMAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.qh_userinfo, "msg", "1", HWMAX_INFO_STRING, 64, 64, true, false);
 
 	CL_InitInput ();
 	CL_InitPrediction ();
@@ -1100,7 +1100,7 @@ void Host_FatalError (const char *error, ...)
 	Con_Printf ("Host_FatalError: %s\n",string);
 	
 	CL_Disconnect ();
-	cls.demonum = -1;
+	cls.qh_demonum = -1;
 
 	inerror = false;
 
@@ -1187,7 +1187,7 @@ void Host_Frame (float time)
 #define min(a, b)	((a) < (b) ? (a) : (b))
 	fps = max(30.0, min(rate->value/80.0, 72.0));
 
-	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
+	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0/fps)
 		return;			// framerate is too high
 	host_frametime = realtime - oldrealtime;
 	oldrealtime = realtime;

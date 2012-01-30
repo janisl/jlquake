@@ -241,8 +241,8 @@ void M_Menu_Main_f (void)
 {
 	if (!(in_keyCatchers & KEYCATCH_UI))
 	{
-		m_save_demonum = cls.demonum;
-		cls.demonum = -1;
+		m_save_demonum = cls.qh_demonum;
+		cls.qh_demonum = -1;
 	}
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_main;
@@ -273,8 +273,8 @@ void M_Main_Key (int key)
 	case K_ESCAPE:
 		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
-		cls.demonum = m_save_demonum;
-		if (cls.demonum != -1 && !clc.demoplaying && cls.state == CA_DISCONNECTED)
+		cls.qh_demonum = m_save_demonum;
+		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state == CA_DISCONNECTED)
 			CL_NextDemo ();
 		break;
 		

@@ -112,7 +112,7 @@ void Host_EndGame (const char *message, ...)
 	if (cls.state == CA_DEDICATED)
 		Sys_Error ("Host_EndGame: %s\n",string);	// dedicated servers exit
 	
-	if (cls.demonum != -1)
+	if (cls.qh_demonum != -1)
 		CL_NextDemo ();
 	else
 		CL_Disconnect ();
@@ -151,7 +151,7 @@ void Host_Error (const char *error, ...)
 		Sys_Error ("Host_Error: %s\n",string);	// dedicated servers exit
 
 	CL_Disconnect ();
-	cls.demonum = -1;
+	cls.qh_demonum = -1;
 
 	inerror = false;
 
@@ -533,7 +533,7 @@ qboolean Host_FilterTime (float time)
 	realtime += time;
 	cls.realtime = realtime * 1000;
 
-	if (!cls.timedemo && realtime - oldrealtime < 1.0/72.0)
+	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0/72.0)
 		return false;		// framerate is too high
 
 	host_frametime = realtime - oldrealtime;

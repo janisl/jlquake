@@ -234,7 +234,7 @@ void Host_Map_f (void)
 	if (cmd_source != src_command)
 		return;
 
-	cls.demonum = -1;		// stop demo loop in case this fails
+	cls.qh_demonum = -1;		// stop demo loop in case this fails
 	
 	CL_Disconnect ();
 	Host_ShutdownServer(false);		
@@ -376,7 +376,7 @@ void Host_Connect_f (void)
 {
 	char	name[MAX_QPATH];
 	
-	cls.demonum = -1;		// stop demo loop in case this fails
+	cls.qh_demonum = -1;		// stop demo loop in case this fails
 	if (clc.demoplaying)
 	{
 		CL_StopPlayback ();
@@ -579,7 +579,7 @@ void Host_Loadgame_f (void)
 		return;
 	}
 
-	cls.demonum = -1;		// stop demo loop in case this fails
+	cls.qh_demonum = -1;		// stop demo loop in case this fails
 	CL_Disconnect();
 	CL_RemoveGIPFiles(NULL);
 
@@ -2151,15 +2151,15 @@ void Host_Startdemos_f (void)
 	Con_Printf ("%i demo(s) in loop\n", c);
 
 	for (i=1 ; i<c+1 ; i++)
-		String::NCpy(cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);
+		String::NCpy(cls.qh_demos[i-1], Cmd_Argv(i), sizeof(cls.qh_demos[0])-1);
 
-	if (!sv.active && cls.demonum != -1 && !clc.demoplaying)
+	if (!sv.active && cls.qh_demonum != -1 && !clc.demoplaying)
 	{
-		cls.demonum = 0;
+		cls.qh_demonum = 0;
 		CL_NextDemo ();
 	}
 	else
-		cls.demonum = -1;
+		cls.qh_demonum = -1;
 }
 
 
@@ -2174,8 +2174,8 @@ void Host_Demos_f (void)
 {
 	if (cls.state == CA_DEDICATED)
 		return;
-	if (cls.demonum == -1)
-		cls.demonum = 1;
+	if (cls.qh_demonum == -1)
+		cls.qh_demonum = 1;
 	CL_Disconnect_f ();
 	CL_NextDemo ();
 }

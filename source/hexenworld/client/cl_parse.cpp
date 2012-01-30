@@ -762,10 +762,10 @@ void CL_ParseClientdata (void)
 	else
 	{
 	// drift the average latency towards the observed latency
-		if (latency < cls.latency)
-			cls.latency = latency;
+		if (latency < cls.qh_latency)
+			cls.qh_latency = latency;
 		else
-			cls.latency += 0.001;	// drift up, so correction are needed
+			cls.qh_latency += 0.001;	// drift up, so correction are needed
 	}	
 }
 
