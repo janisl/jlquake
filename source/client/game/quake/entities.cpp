@@ -768,3 +768,171 @@ void CLQ1_TranslatePlayerSkin(int playernum)
 			cl.model_draw[ent->state.modelindex], translate);
 	}
 }
+
+static void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
+{
+	// we can't dynamically colormap textures, so they are cached
+	// seperately for the players.  Heads are just uncolored.
+	if (ColorMap && !String::Cmp(R_ModelName(Ent->hModel), "progs/player.mdl"))
+	{
+	    Ent->customSkin = R_GetImageHandle(clq1_playertextures[ColorMap - 1]);
+	}
+}
+
+void CLQ1_RelinkEntities()
+{
+	// determine partial update time	
+	float frac = CLQH_LerpPoint();
+
+	R_ClearScene();
+
+	//
+	// interpolate player info
+	//
+	for (int i = 0; i < 3; i++)
+	{
+		cl.qh_velocity[i] = cl.qh_mvelocity[1][i] + 
+			frac * (cl.qh_mvelocity[0][i] - cl.qh_mvelocity[1][i]);
+	}
+
+	if (clc.demoplaying)
+	{
+		// interpolate the angles	
+		for (int j = 0; j < 3; j++)
+		{
+			float d = cl.qh_mviewangles[0][j] - cl.qh_mviewangles[1][j];
+			if (d > 180)
+			{
+				d -= 360;
+			}
+			else if (d < -180)
+			{
+				d += 360;
+			}
+			cl.viewangles[j] = cl.qh_mviewangles[1][j] + frac * d;
+		}
+	}
+
+	float bobjrotate = AngleMod(100 * cl.qh_serverTimeFloat);
+
+	// start on the entity after the world
+	q1entity_t* ent = clq1_entities + 1;
+	for (int i = 1; i < cl.qh_num_entities; i++,ent++)
+	{
+		if (!ent->state.modelindex)
+		{
+			// empty slot
+			continue;
+		}
+
+		// if the object wasn't included in the last packet, remove it
+		if (ent->msgtime != cl.qh_mtime[0])
+		{
+			ent->state.modelindex = 0;
+			continue;
+		}
+
+		vec3_t oldorg;
+		VectorCopy(ent->state.origin, oldorg);
+
+		// if the delta is large, assume a teleport and don't lerp
+		float f = frac;
+		vec3_t delta;
+		for (int j = 0; j < 3; j++)
+		{
+			delta[j] = ent->msg_origins[0][j] - ent->msg_origins[1][j];
+			if (delta[j] > 100 || delta[j] < -100)
+			{
+				f = 1;		// assume a teleportation, not a motion
+			}
+		}
+
+		// interpolate the origin and angles
+		for (int j = 0; j < 3; j++)
+		{
+			ent->state.origin[j] = ent->msg_origins[1][j] + f * delta[j];
+
+			float d = ent->msg_angles[0][j] - ent->msg_angles[1][j];
+			if (d > 180)
+			{
+				d -= 360;
+			}
+			else if (d < -180)
+			{
+				d += 360;
+			}
+			ent->state.angles[j] = ent->msg_angles[1][j] + f * d;
+		}
+		
+
+		int ModelFlags = R_ModelFlags(cl.model_draw[ent->state.modelindex]);
+		// rotate binary objects locally
+		if (ModelFlags & Q1MDLEF_ROTATE)
+		{
+			ent->state.angles[1] = bobjrotate;
+		}
+
+		if (ent->state.effects & Q1EF_BRIGHTFIELD)
+		{
+			CLQ1_BrightFieldParticles(ent->state.origin);
+		}
+		if (ent->state.effects & Q1EF_MUZZLEFLASH)
+		{
+			CLQ1_MuzzleFlashLight(i, ent->state.origin, ent->state.angles);
+		}
+		if (ent->state.effects & Q1EF_BRIGHTLIGHT)
+		{
+			CLQ1_BrightLight(i, ent->state.origin);
+		}
+		if (ent->state.effects & Q1EF_DIMLIGHT)
+		{			
+			CLQ1_DimLight(i, ent->state.origin, 0);
+		}
+
+		if (ModelFlags & Q1MDLEF_GIB)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 2);
+		}
+		else if (ModelFlags & Q1MDLEF_ZOMGIB)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 4);
+		}
+		else if (ModelFlags & Q1MDLEF_TRACER)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 3);
+		}
+		else if (ModelFlags & Q1MDLEF_TRACER2)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 5);
+		}
+		else if (ModelFlags & Q1MDLEF_ROCKET)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 0);
+			CLQ1_RocketLight(i, ent->state.origin);
+		}
+		else if (ModelFlags & Q1MDLEF_GRENADE)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 1);
+		}
+		else if (ModelFlags & Q1MDLEF_TRACER3)
+		{
+			CLQ1_TrailParticles(oldorg, ent->state.origin, 6);
+		}
+
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(ent->state.origin, rent.origin);
+		rent.hModel = cl.model_draw[ent->state.modelindex];
+		CLQ1_SetRefEntAxis(&rent, ent->state.angles);
+		rent.frame = ent->state.frame;
+		rent.shaderTime = ent->syncbase;
+		R_HandleRefEntColormap(&rent, ent->state.colormap);
+		rent.skinNum = ent->state.skinnum;
+		if (i == cl.viewentity && !chase_active->value)
+		{
+			rent.renderfx |= RF_THIRD_PERSON;
+		}
+		R_AddRefEntityToScene(&rent);
+	}
+}
