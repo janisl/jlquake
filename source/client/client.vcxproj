@@ -627,6 +627,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\quake2\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\quake2\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="chase.cpp" />
     <ClCompile Include="client_main.cpp" />
     <ClCompile Include="system_windows.cpp" />
     <ClCompile Include="utils.cpp" />

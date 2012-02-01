@@ -534,11 +534,16 @@ extern Cvar* clqh_color;
 extern byte* playerTranslation;
 extern int color_offsets[MAX_PLAYER_CLASS];
 
+extern Cvar* chase_active;
+
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
 float CLQH_LerpPoint();
+
+void Chase_Init();
+void Chase_Update();
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 

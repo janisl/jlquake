@@ -309,6 +309,7 @@
     <ClCompile Include="game\quake2\temporary_entities.cpp">
       <Filter>game\quake2</Filter>
     </ClCompile>
+    <ClCompile Include="chase.cpp" />
     <ClCompile Include="client_main.cpp" />
     <ClCompile Include="system_windows.cpp" />
     <ClCompile Include="utils.cpp" />

@@ -6,7 +6,6 @@ add_executable(jlhexen2
 	cl_main.cpp
 	cl_parse.cpp
 	cl_screen.cpp
-	chase.cpp
 	cmd.cpp
 	common.cpp
 	console.cpp

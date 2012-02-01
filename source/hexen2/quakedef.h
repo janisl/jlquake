@@ -218,11 +218,3 @@ extern qboolean		intro_playing;
 extern qboolean		skip_start;
 extern int			num_intro_msg;
 extern qboolean		check_bottom;
-//
-// chase
-//
-extern	Cvar*	chase_active;
-
-void Chase_Init (void);
-void Chase_Reset (void);
-void Chase_Update (void);

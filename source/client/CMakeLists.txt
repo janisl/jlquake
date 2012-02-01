@@ -88,6 +88,7 @@ set(CLIENT_FILES
 	ui/console.cpp
 	ui/draw.cpp
 	ui/screen.cpp
+	chase.cpp
 	client_main.cpp
 	system_unix.cpp
 	utils.cpp
