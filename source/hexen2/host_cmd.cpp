@@ -6,6 +6,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#undef GetClassName
 #endif
 #include <time.h>
 

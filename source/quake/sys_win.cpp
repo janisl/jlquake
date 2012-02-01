@@ -291,7 +291,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		else
 		{
 		// yield the CPU for a little while when paused, minimized, or not the focus
-			if ((cl.paused && !ActiveApp) || Minimized)
+			if ((cl.qh_paused && !ActiveApp) || Minimized)
 			{
 				SleepUntilInput (PAUSE_SLEEP);
 			}
