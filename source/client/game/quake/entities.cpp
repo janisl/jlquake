@@ -769,14 +769,26 @@ void CLQ1_TranslatePlayerSkin(int playernum)
 	}
 }
 
-static void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
+static void CLQ1_HandleRefEntColormap(refEntity_t* entity, int colourMap)
 {
-	// we can't dynamically colormap textures, so they are cached
+	//	We can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (ColorMap && !String::Cmp(R_ModelName(Ent->hModel), "progs/player.mdl"))
+	if (colourMap && !String::Cmp(R_ModelName(entity->hModel), "progs/player.mdl"))
 	{
-	    Ent->customSkin = R_GetImageHandle(clq1_playertextures[ColorMap - 1]);
+	    entity->customSkin = R_GetImageHandle(clq1_playertextures[colourMap - 1]);
 	}
+}
+
+void CLQW_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
+{
+	//	We can't dynamically colormap textures, so they are cached
+	// seperately for the players.  Heads are just uncolored.
+	if (!cl.q1_players[PlayerNum].skin)
+	{
+		CLQW_SkinFind(&cl.q1_players[PlayerNum]);
+		CLQ1_TranslatePlayerSkin(PlayerNum);
+	}
+	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);
 }
 
 void CLQ1_RelinkEntities()
@@ -927,12 +939,172 @@ void CLQ1_RelinkEntities()
 		CLQ1_SetRefEntAxis(&rent, ent->state.angles);
 		rent.frame = ent->state.frame;
 		rent.shaderTime = ent->syncbase;
-		R_HandleRefEntColormap(&rent, ent->state.colormap);
+		CLQ1_HandleRefEntColormap(&rent, ent->state.colormap);
 		rent.skinNum = ent->state.skinnum;
 		if (i == cl.viewentity && !chase_active->value)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;
 		}
 		R_AddRefEntityToScene(&rent);
+	}
+}
+
+void CLQW_LinkPacketEntities()
+{
+	qwpacket_entities_t* pack = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW].packet_entities;
+	qwpacket_entities_t* PrevPack = &cl.qw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
+
+	float autorotate = AngleMod(100 * cl.qh_serverTimeFloat);
+
+	float f = 0;		// FIXME: no interpolation right now
+
+	for (int pnum = 0; pnum < pack->num_entities; pnum++)
+	{
+		q1entity_state_t* s1 = &pack->entities[pnum];
+		q1entity_state_t* s2 = s1;	// FIXME: no interpolation right now
+
+		// spawn light flashes, even ones coming from invisible objects
+		if ((s1->effects & (QWEF_BLUE | QWEF_RED)) == (QWEF_BLUE | QWEF_RED))
+		{
+			CLQ1_DimLight(s1->number, s1->origin, 3);
+		}
+		else if (s1->effects & QWEF_BLUE)
+		{
+			CLQ1_DimLight(s1->number, s1->origin, 1);
+		}
+		else if (s1->effects & QWEF_RED)
+		{
+			CLQ1_DimLight(s1->number, s1->origin, 2);
+		}
+		else if (s1->effects & Q1EF_BRIGHTLIGHT)
+		{
+			CLQ1_BrightLight(s1->number, s1->origin);
+		}
+		else if (s1->effects & Q1EF_DIMLIGHT)
+		{
+			CLQ1_DimLight(s1->number, s1->origin, 0);
+		}
+
+		// if set to invisible, skip
+		if (!s1->modelindex)
+		{
+			continue;
+		}
+
+		// create a new entity
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+
+		qhandle_t model = cl.model_draw[s1->modelindex];
+		ent.hModel = model;
+	
+		// set colormap
+		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == clq1_playerindex)
+		{
+			CLQW_HandlePlayerSkin(&ent, s1->colormap - 1);
+		}
+
+		// set skin
+		ent.skinNum = s1->skinnum;
+		
+		// set frame
+		ent.frame = s1->frame;
+
+		int ModelFlags = R_ModelFlags(model);
+		// rotate binary objects locally
+		vec3_t angles;
+		if (ModelFlags & Q1MDLEF_ROTATE)
+		{
+			angles[0] = 0;
+			angles[1] = autorotate;
+			angles[2] = 0;
+		}
+		else
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				float a1 = s1->angles[i];
+				float a2 = s2->angles[i];
+				if (a1 - a2 > 180)
+				{
+					a1 -= 360;
+				}
+				if (a1 - a2 < -180)
+				{
+					a1 += 360;
+				}
+				angles[i] = a2 + f * (a1 - a2);
+			}
+		}
+		CLQ1_SetRefEntAxis(&ent, angles);
+
+		// calculate origin
+		for (int i = 0; i < 3; i++)
+		{
+			ent.origin[i] = s2->origin[i] + f * (s1->origin[i] - s2->origin[i]);
+		}
+		R_AddRefEntityToScene(&ent);
+
+		// add automatic particle trails
+		if (!ModelFlags)
+		{
+			continue;
+		}
+
+		// scan the old entity display list for a matching
+		int i;
+		vec3_t old_origin;
+		for (i = 0; i < PrevPack->num_entities; i++)
+		{
+			if (PrevPack->entities[i].number == s1->number)
+			{
+				VectorCopy(PrevPack->entities[i].origin, old_origin);
+				break;
+			}
+		}
+		if (i == PrevPack->num_entities)
+		{
+			continue;		// not in last message
+		}
+
+		for (i = 0; i < 3; i++)
+		{
+			if ( abs(old_origin[i] - ent.origin[i]) > 128)
+			{
+				// no trail if too far
+				VectorCopy(ent.origin, old_origin);
+				break;
+			}
+		}
+		if (ModelFlags & Q1MDLEF_ROCKET)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 0);
+			CLQ1_RocketLight(s1->number, ent.origin);
+		}
+		else if (ModelFlags & Q1MDLEF_GRENADE)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 1);
+		}
+		else if (ModelFlags & Q1MDLEF_GIB)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 2);
+		}
+		else if (ModelFlags & Q1MDLEF_ZOMGIB)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 4);
+		}
+		else if (ModelFlags & Q1MDLEF_TRACER)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 3);
+		}
+		else if (ModelFlags & Q1MDLEF_TRACER2)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 5);
+		}
+		else if (ModelFlags & Q1MDLEF_TRACER3)
+		{
+			CLQ1_TrailParticles(old_origin, ent.origin, 6);
+		}
 	}
 }

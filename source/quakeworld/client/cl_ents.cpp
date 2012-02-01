@@ -39,159 +39,6 @@ PACKET ENTITY PARSING / LINKING
 =========================================================================
 */
 
-static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
-{
-	// we can't dynamically colormap textures, so they are cached
-	// seperately for the players.  Heads are just uncolored.
-	if (!cl.q1_players[PlayerNum].skin)
-	{
-		CLQW_SkinFind(&cl.q1_players[PlayerNum]);
-		CLQ1_TranslatePlayerSkin(PlayerNum);
-	}
-	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);
-}
-
-/*
-===============
-CL_LinkPacketEntities
-
-===============
-*/
-void CL_LinkPacketEntities (void)
-{
-	qwpacket_entities_t	*pack;
-	q1entity_state_t		*s1, *s2;
-	float				f;
-	qhandle_t			model;
-	vec3_t				old_origin;
-	float				autorotate;
-	int					i;
-	int					pnum;
-
-	pack = &cl.qw_frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].packet_entities;
-	qwpacket_entities_t* PrevPack = &cl.qw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
-
-	autorotate = AngleMod(100*cl.qh_serverTimeFloat);
-
-	f = 0;		// FIXME: no interpolation right now
-
-	for (pnum=0 ; pnum<pack->num_entities ; pnum++)
-	{
-		s1 = &pack->entities[pnum];
-		s2 = s1;	// FIXME: no interpolation right now
-
-		// spawn light flashes, even ones coming from invisible objects
-		if ((s1->effects & (QWEF_BLUE | QWEF_RED)) == (QWEF_BLUE | QWEF_RED))
-			CLQ1_DimLight (s1->number, s1->origin, 3);
-		else if (s1->effects & QWEF_BLUE)
-			CLQ1_DimLight (s1->number, s1->origin, 1);
-		else if (s1->effects & QWEF_RED)
-			CLQ1_DimLight (s1->number, s1->origin, 2);
-		else if (s1->effects & Q1EF_BRIGHTLIGHT)
-			CLQ1_BrightLight(s1->number, s1->origin);
-		else if (s1->effects & Q1EF_DIMLIGHT)
-			CLQ1_DimLight (s1->number, s1->origin, 0);
-
-		// if set to invisible, skip
-		if (!s1->modelindex)
-			continue;
-
-		// create a new entity
-		refEntity_t ent;
-		Com_Memset(&ent, 0, sizeof(ent));
-		ent.reType = RT_MODEL;
-
-		model = cl.model_draw[s1->modelindex];
-		ent.hModel = model;
-	
-		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == clq1_playerindex)
-		{
-			R_HandlePlayerSkin(&ent, s1->colormap - 1);
-		}
-
-		// set skin
-		ent.skinNum = s1->skinnum;
-		
-		// set frame
-		ent.frame = s1->frame;
-
-		int ModelFlags = R_ModelFlags(model);
-		// rotate binary objects locally
-		vec3_t angles;
-		if (ModelFlags & Q1MDLEF_ROTATE)
-		{
-			angles[0] = 0;
-			angles[1] = autorotate;
-			angles[2] = 0;
-		}
-		else
-		{
-			float	a1, a2;
-
-			for (i=0 ; i<3 ; i++)
-			{
-				a1 = s1->angles[i];
-				a2 = s2->angles[i];
-				if (a1 - a2 > 180)
-					a1 -= 360;
-				if (a1 - a2 < -180)
-					a1 += 360;
-				angles[i] = a2 + f * (a1 - a2);
-			}
-		}
-		CLQ1_SetRefEntAxis(&ent, angles);
-
-		// calculate origin
-		for (i=0 ; i<3 ; i++)
-			ent.origin[i] = s2->origin[i] + 
-			f * (s1->origin[i] - s2->origin[i]);
-		R_AddRefEntityToScene(&ent);
-
-		// add automatic particle trails
-		if (!ModelFlags)
-			continue;
-
-		// scan the old entity display list for a matching
-		for (i = 0; i < PrevPack->num_entities; i++)
-		{
-			if (PrevPack->entities[i].number == s1->number)
-			{
-				VectorCopy(PrevPack->entities[i].origin, old_origin);
-				break;
-			}
-		}
-		if (i == PrevPack->num_entities)
-		{
-			continue;		// not in last message
-		}
-
-		for (i=0 ; i<3 ; i++)
-			if ( abs(old_origin[i] - ent.origin[i]) > 128)
-			{	// no trail if too far
-				VectorCopy (ent.origin, old_origin);
-				break;
-			}
-		if (ModelFlags & Q1MDLEF_ROCKET)
-		{
-			CLQ1_TrailParticles (old_origin, ent.origin, 0);
-			CLQ1_RocketLight(s1->number, ent.origin);
-		}
-		else if (ModelFlags & Q1MDLEF_GRENADE)
-			CLQ1_TrailParticles (old_origin, ent.origin, 1);
-		else if (ModelFlags & Q1MDLEF_GIB)
-			CLQ1_TrailParticles (old_origin, ent.origin, 2);
-		else if (ModelFlags & Q1MDLEF_ZOMGIB)
-			CLQ1_TrailParticles (old_origin, ent.origin, 4);
-		else if (ModelFlags & Q1MDLEF_TRACER)
-			CLQ1_TrailParticles (old_origin, ent.origin, 3);
-		else if (ModelFlags & Q1MDLEF_TRACER2)
-			CLQ1_TrailParticles (old_origin, ent.origin, 5);
-		else if (ModelFlags & Q1MDLEF_TRACER3)
-			CLQ1_TrailParticles (old_origin, ent.origin, 6);
-	}
-}
-
 //========================================
 
 
@@ -319,7 +166,7 @@ void CL_LinkPlayers (void)
 		if (state->modelindex == clq1_playerindex)
 		{
 			// use custom skin
-			R_HandlePlayerSkin(&ent, j);
+			CLQW_HandlePlayerSkin(&ent, j);
 		}
 
 		//
@@ -535,7 +382,7 @@ void CL_EmitEntities (void)
 	R_ClearScene();
 
 	CL_LinkPlayers ();
-	CL_LinkPacketEntities ();
+	CLQW_LinkPacketEntities ();
 	CLQ1_LinkProjectiles ();
 	CLQ1_UpdateTEnts ();
 	CLQ1_LinkStaticEntities();
