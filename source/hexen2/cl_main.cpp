@@ -18,7 +18,6 @@
 Cvar*	cl_playerclass;
 
 Cvar*	cl_shownet;
-Cvar*	cl_nolerp;
 
 Cvar*	lookspring;
 Cvar*	lookstrafe;
@@ -301,56 +300,9 @@ void CL_PrintEntities_f (void)
 	}
 }
 
-/*
-===============
-CL_LerpPoint
-
-Determines the fraction between the last two messages that the objects
-should be put at.
-===============
-*/
-float	CL_LerpPoint (void)
+bool CL_IsServerActive()
 {
-	float	f, frac;
-
-	f = cl.qh_mtime[0] - cl.qh_mtime[1];
-	
-	if (!f || cl_nolerp->value || cls.qh_timedemo || sv.active)
-	{
-		cl.qh_serverTimeFloat = cl.qh_mtime[0];
-		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-		return 1;
-	}
-		
-	if (f > 0.1)
-	{	// dropped packet, or start of demo
-		cl.qh_mtime[1] = cl.qh_mtime[0] - 0.1;
-		f = 0.1;
-	}
-	frac = (cl.qh_serverTimeFloat - cl.qh_mtime[1]) / f;
-//Con_Printf ("frac: %f\n",frac);
-	if (frac < 0)
-	{
-		if (frac < -0.01)
-		{
-			cl.qh_serverTimeFloat = cl.qh_mtime[1];
-			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-//				Con_Printf ("low frac\n");
-		}
-		frac = 0;
-	}
-	else if (frac > 1)
-	{
-		if (frac > 1.01)
-		{
-			cl.qh_serverTimeFloat = cl.qh_mtime[0];
-			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-//				Con_Printf ("high frac\n");
-		}
-		frac = 1;
-	}
-		
-	return frac;
+	return !!sv.active;
 }
 
 /*
@@ -370,7 +322,7 @@ void CL_RelinkEntities (void)
 
 	c = 0;
 // determine partial update time	
-	frac = CL_LerpPoint ();
+	frac = CLQH_LerpPoint ();
 
 	R_ClearScene();
 
@@ -737,7 +689,7 @@ void CL_Init (void)
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
-	cl_nolerp = Cvar_Get("cl_nolerp", "0", 0);
+	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
 	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
 	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);

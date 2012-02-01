@@ -1498,3 +1498,8 @@ float* CL_GetSimOrg()
 {
 	return cl.qh_simorg;
 }
+
+bool CL_IsServerActive()
+{
+	return false;
+}

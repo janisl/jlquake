@@ -14,25 +14,11 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "client.h"
 
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 Cvar* cl_inGameVideo;
+
+Cvar* clqh_nolerp;
 
 // these two are not intended to be set directly
 Cvar* clqh_name;
@@ -56,37 +42,15 @@ int color_offsets[MAX_PLAYER_CLASS] =
 
 int bitcounts[32];	/// just for protocol profiling
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	CL_SharedInit
-//
-//==========================================================================
-
 void CL_SharedInit()
 {
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
 }
 
-//==========================================================================
-//
-//	CL_ScaledMilliseconds
-//
-//==========================================================================
-
 int CL_ScaledMilliseconds()
 {
 	return Sys_Milliseconds() * com_timescale->value;
 }
-
-//==========================================================================
-//
-//	CL_CalcQuakeSkinTranslation
-//
-//==========================================================================
 
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate)
 {
@@ -130,12 +94,6 @@ void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate)
 	}
 }
 
-//==========================================================================
-//
-//	CL_CalcHexen2SkinTranslation
-//
-//==========================================================================
-
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate)
 {
 	for (int i = 0; i < 256; i++)
@@ -170,4 +128,45 @@ void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* tr
 			translate[i] = *sourceB;
 		}
 	}
+}
+
+//	Determines the fraction between the last two messages that the objects
+// should be put at.
+float CLQH_LerpPoint()
+{
+	float f = cl.qh_mtime[0] - cl.qh_mtime[1];
+	
+	if (!f || clqh_nolerp->value || cls.qh_timedemo || CL_IsServerActive())
+	{
+		cl.qh_serverTimeFloat = cl.qh_mtime[0];
+		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
+		return 1;
+	}
+		
+	if (f > 0.1)
+	{
+		// dropped packet, or start of demo
+		cl.qh_mtime[1] = cl.qh_mtime[0] - 0.1;
+		f = 0.1;
+	}
+	float frac = (cl.qh_serverTimeFloat - cl.qh_mtime[1]) / f;
+	if (frac < 0)
+	{
+		if (frac < -0.01)
+		{
+			cl.qh_serverTimeFloat = cl.qh_mtime[1];
+			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
+		}
+		frac = 0;
+	}
+	else if (frac > 1)
+	{
+		if (frac > 1.01)
+		{
+			cl.qh_serverTimeFloat = cl.qh_mtime[0];
+			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
+		}
+		frac = 1;
+	}
+	return frac;
 }
