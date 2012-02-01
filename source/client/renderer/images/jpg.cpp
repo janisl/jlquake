@@ -22,7 +22,7 @@
 
 #include "../../client.h"
 #include "../local.h"
-#include "../../../../libs/jpeg/jpeglib.h"
+#include <jpeglib.h>
 
 // MACROS ------------------------------------------------------------------
 
