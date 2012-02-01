@@ -109,7 +109,7 @@
     <ClInclude Include="virtual_machine\public.h" />
     <ClInclude Include="array.h" />
     <ClInclude Include="command_buffer.h" />
-    <ClInclude Include="common.h" />
+    <ClInclude Include="common_defs.h" />
     <ClInclude Include="console_variable.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="crc.h" />
@@ -258,7 +258,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="command_buffer.cpp" />
-    <ClCompile Include="common.cpp" />
+    <ClCompile Include="common_defs.cpp" />
     <ClCompile Include="console_variable.cpp" />
     <ClCompile Include="crc.cpp" />
     <ClCompile Include="endian.cpp" />
