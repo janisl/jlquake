@@ -31,6 +31,5 @@ endif(INTTYPES_INCLUDE_DIR)
 include(CheckTypeSize)
 check_type_size(void*  SIZEOF_VOID_PTR)
 
-add_subdirectory(libs)
 add_subdirectory(source)
 add_subdirectory(q2game)
