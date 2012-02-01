@@ -158,10 +158,6 @@
       <Project>{ef6fdf6a-80e9-4136-8499-67a11c99865d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\libs\zlib\zlib.vcxproj">
-      <Project>{ca073475-d427-41ce-838d-0bca2fbd443a}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\botlib\botlib.vcxproj">
       <Project>{a410161f-ae9f-485d-a01f-5294891430a6}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

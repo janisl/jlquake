@@ -191,10 +191,6 @@
     <ResourceCompile Include="winquake.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\zlib\zlib.vcxproj">
-      <Project>{ca073475-d427-41ce-838d-0bca2fbd443a}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\client\client.vcxproj">
       <Project>{e1056fe2-3d8c-4778-b075-f4da1c35858d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
