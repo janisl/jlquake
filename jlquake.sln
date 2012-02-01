@@ -37,8 +37,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake3ded", "source\quake
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake2ded", "source\quake2\jlquake2ded.vcxproj", "{C67901ED-51CC-43AD-BA22-E70AF77EF66C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "libs\freetype\freetype.vcxproj", "{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -191,14 +189,6 @@ Global
 		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|Win32.Build.0 = Release|Win32
 		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|x64.ActiveCfg = Release|x64
 		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|x64.Build.0 = Release|x64
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Debug|Win32.Build.0 = Debug|Win32
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Debug|x64.ActiveCfg = Debug|x64
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Debug|x64.Build.0 = Debug|x64
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Release|Win32.ActiveCfg = Release|Win32
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Release|Win32.Build.0 = Release|Win32
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Release|x64.ActiveCfg = Release|x64
-		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

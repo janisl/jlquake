@@ -86,10 +86,6 @@
     <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\freetype\freetype.vcxproj">
-      <Project>{6ee5f6d1-8ae5-4489-884e-54f6f0d9572f}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\core\core.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
