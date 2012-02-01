@@ -41,6 +41,9 @@
 
 #ifndef __GNUC__
 #define __attribute__(whatever)
+#define id_attribute(whatever)
+#else
+#define id_attribute(params) __attribute__(params)
 #endif
 
 #ifndef _WIN32

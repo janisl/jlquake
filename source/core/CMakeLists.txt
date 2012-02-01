@@ -18,6 +18,7 @@ set(CORE_FILES
 	virtual_machine/interpreted.cpp
 	virtual_machine/main.cpp
 	command_buffer.cpp
+	Common.cpp
 	common_defs.cpp
 	console_variable.cpp
 	crc.cpp
