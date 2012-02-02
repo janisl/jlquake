@@ -66,8 +66,8 @@ if (!in_mlook.active &&  lookspring->value)
 
 void IN_UseDown (void) {IN_KeyDown(&in_use);}
 void IN_UseUp (void) {IN_KeyUp(&in_use);}
-void IN_JumpDown (void) {IN_KeyDown(&in_jump);}
-void IN_JumpUp (void) {IN_KeyUp(&in_jump);}
+void IN_JumpDown (void) {IN_KeyDown(&in_buttons[1]);}
+void IN_JumpUp (void) {IN_KeyUp(&in_buttons[1]);}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -290,9 +290,9 @@ void CL_SendMove (q1usercmd_t *cmd)
 		bits |= 1;
 	in_buttons[0].wasPressed = false;
 	
-	if (in_jump.active || in_jump.wasPressed)
+	if (in_buttons[1].active || in_buttons[1].wasPressed)
 		bits |= 2;
-	in_jump.wasPressed = false;
+	in_buttons[1].wasPressed = false;
 	
     buf.WriteByte(bits);
 

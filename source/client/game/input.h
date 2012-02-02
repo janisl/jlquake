@@ -42,7 +42,6 @@ extern kbutton_t in_mlook;
 
 extern kbutton_t in_klook;
 extern kbutton_t in_use;
-extern kbutton_t in_jump;
 
 extern kbutton_t in_crouch;
 

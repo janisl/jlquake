@@ -64,8 +64,8 @@ if ( !in_mlook.active &&  lookspring->value)
 
 void IN_UseDown (void) {IN_KeyDown(&in_use);}
 void IN_UseUp (void) {IN_KeyUp(&in_use);}
-void IN_JumpDown (void) {IN_KeyDown(&in_jump);}
-void IN_JumpUp (void) {IN_KeyUp(&in_jump);}
+void IN_JumpDown (void) {IN_KeyDown(&in_buttons[1]);}
+void IN_JumpUp (void) {IN_KeyUp(&in_buttons[1]);}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -266,9 +266,9 @@ void CL_FinishMove (qwusercmd_t *cmd)
 		cmd->buttons |= 1;
 	in_buttons[0].wasPressed = false;
 	
-	if (in_jump.active || in_jump.wasPressed)
+	if (in_buttons[1].active || in_buttons[1].wasPressed)
 		cmd->buttons |= 2;
-	in_jump.wasPressed = false;
+	in_buttons[1].wasPressed = false;
 
 	// send milliseconds of time to apply the move
 	ms = host_frametime * 1000;

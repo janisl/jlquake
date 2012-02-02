@@ -38,7 +38,6 @@ kbutton_t in_use;
 
 //	Quake and Hexen 2.
 kbutton_t in_mlook;
-kbutton_t in_jump;
 
 //	Hexen 2
 kbutton_t in_crouch;
