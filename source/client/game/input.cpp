@@ -135,6 +135,126 @@ void IN_KeyUp(kbutton_t* b)
 	b->active = false;
 }
 
+static void IN_UpDown()
+{
+	IN_KeyDown(&in_up);
+}
+
+static void IN_UpUp()
+{
+	IN_KeyUp(&in_up);
+}
+
+static void IN_DownDown()
+{
+	IN_KeyDown(&in_down);
+}
+
+static void IN_DownUp()
+{
+	IN_KeyUp(&in_down);
+}
+
+static void IN_LeftDown()
+{
+	IN_KeyDown(&in_left);
+}
+
+static void IN_LeftUp()
+{
+	IN_KeyUp(&in_left);
+}
+
+static void IN_RightDown()
+{
+	IN_KeyDown(&in_right);
+}
+
+static void IN_RightUp()
+{
+	IN_KeyUp(&in_right);
+}
+
+static void IN_ForwardDown()
+{
+	IN_KeyDown(&in_forward);
+}
+
+static void IN_ForwardUp()
+{
+	IN_KeyUp(&in_forward);
+}
+
+static void IN_BackDown()
+{
+	IN_KeyDown(&in_back);
+}
+
+static void IN_BackUp()
+{
+	IN_KeyUp(&in_back);
+}
+
+static void IN_LookupDown()
+{
+	IN_KeyDown(&in_lookup);
+}
+
+static void IN_LookupUp()
+{
+	IN_KeyUp(&in_lookup);
+}
+
+static void IN_LookdownDown()
+{
+	IN_KeyDown(&in_lookdown);
+}
+
+static void IN_LookdownUp()
+{
+	IN_KeyUp(&in_lookdown);
+}
+
+static void IN_MoveleftDown()
+{
+	IN_KeyDown(&in_moveleft);
+}
+
+static void IN_MoveleftUp()
+{
+	IN_KeyUp(&in_moveleft);
+}
+
+static void IN_MoverightDown()
+{
+	IN_KeyDown(&in_moveright);
+}
+
+static void IN_MoverightUp()
+{
+	IN_KeyUp(&in_moveright);
+}
+
+static void IN_SpeedDown()
+{
+	IN_KeyDown(&in_speed);
+}
+
+static void IN_SpeedUp()
+{
+	IN_KeyUp(&in_speed);
+}
+
+static void IN_StrafeDown()
+{
+	IN_KeyDown(&in_strafe);
+}
+
+static void IN_StrafeUp()
+{
+	IN_KeyUp(&in_strafe);
+}
+
 //	Returns the fraction of the frame that the key was down
 float CL_KeyState(kbutton_t* key)
 {
@@ -166,4 +286,32 @@ float CL_KeyState(kbutton_t* key)
 	}
 
 	return val;
+}
+
+void CL_InitInputCommon()
+{
+	Cmd_AddCommand("+moveup",IN_UpDown);
+	Cmd_AddCommand("-moveup",IN_UpUp);
+	Cmd_AddCommand("+movedown",IN_DownDown);
+	Cmd_AddCommand("-movedown",IN_DownUp);
+	Cmd_AddCommand("+left",IN_LeftDown);
+	Cmd_AddCommand("-left",IN_LeftUp);
+	Cmd_AddCommand("+right",IN_RightDown);
+	Cmd_AddCommand("-right",IN_RightUp);
+	Cmd_AddCommand("+forward",IN_ForwardDown);
+	Cmd_AddCommand("-forward",IN_ForwardUp);
+	Cmd_AddCommand("+back",IN_BackDown);
+	Cmd_AddCommand("-back",IN_BackUp);
+	Cmd_AddCommand("+lookup", IN_LookupDown);
+	Cmd_AddCommand("-lookup", IN_LookupUp);
+	Cmd_AddCommand("+lookdown", IN_LookdownDown);
+	Cmd_AddCommand("-lookdown", IN_LookdownUp);
+	Cmd_AddCommand("+moveleft", IN_MoveleftDown);
+	Cmd_AddCommand("-moveleft", IN_MoveleftUp);
+	Cmd_AddCommand("+moveright", IN_MoverightDown);
+	Cmd_AddCommand("-moveright", IN_MoverightUp);
+	Cmd_AddCommand("+strafe", IN_StrafeDown);
+	Cmd_AddCommand("-strafe", IN_StrafeUp);
+	Cmd_AddCommand("+speed", IN_SpeedDown);
+	Cmd_AddCommand("-speed", IN_SpeedUp);
 }

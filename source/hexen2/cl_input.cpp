@@ -46,31 +46,6 @@ IN_KeyUp(&in_mlook);
 if ( !(in_mlook.active) &&  lookspring->value)
 	V_StartPitchDrift();
 }
-void IN_UpDown(void) {IN_KeyDown(&in_up);}
-void IN_UpUp(void) {IN_KeyUp(&in_up);}
-void IN_DownDown(void) {IN_KeyDown(&in_down);}
-void IN_DownUp(void) {IN_KeyUp(&in_down);}
-void IN_LeftDown(void) {IN_KeyDown(&in_left);}
-void IN_LeftUp(void) {IN_KeyUp(&in_left);}
-void IN_RightDown(void) {IN_KeyDown(&in_right);}
-void IN_RightUp(void) {IN_KeyUp(&in_right);}
-void IN_ForwardDown(void) {IN_KeyDown(&in_forward);}
-void IN_ForwardUp(void) {IN_KeyUp(&in_forward);}
-void IN_BackDown(void) {IN_KeyDown(&in_back);}
-void IN_BackUp(void) {IN_KeyUp(&in_back);}
-void IN_LookupDown(void) {IN_KeyDown(&in_lookup);}
-void IN_LookupUp(void) {IN_KeyUp(&in_lookup);}
-void IN_LookdownDown(void) {IN_KeyDown(&in_lookdown);}
-void IN_LookdownUp(void) {IN_KeyUp(&in_lookdown);}
-void IN_MoveleftDown(void) {IN_KeyDown(&in_moveleft);}
-void IN_MoveleftUp(void) {IN_KeyUp(&in_moveleft);}
-void IN_MoverightDown(void) {IN_KeyDown(&in_moveright);}
-void IN_MoverightUp(void) {IN_KeyUp(&in_moveright);}
-
-void IN_SpeedDown(void) {IN_KeyDown(&in_speed);}
-void IN_SpeedUp(void) {IN_KeyUp(&in_speed);}
-void IN_StrafeDown(void) {IN_KeyDown(&in_strafe);}
-void IN_StrafeUp(void) {IN_KeyUp(&in_strafe);}
 
 void IN_AttackDown(void) {IN_KeyDown(&in_attack);}
 void IN_AttackUp(void) {IN_KeyUp(&in_attack);}
@@ -433,30 +408,7 @@ CL_InitInput
 */
 void CL_InitInput (void)
 {
-	Cmd_AddCommand ("+moveup",IN_UpDown);
-	Cmd_AddCommand ("-moveup",IN_UpUp);
-	Cmd_AddCommand ("+movedown",IN_DownDown);
-	Cmd_AddCommand ("-movedown",IN_DownUp);
-	Cmd_AddCommand ("+left",IN_LeftDown);
-	Cmd_AddCommand ("-left",IN_LeftUp);
-	Cmd_AddCommand ("+right",IN_RightDown);
-	Cmd_AddCommand ("-right",IN_RightUp);
-	Cmd_AddCommand ("+forward",IN_ForwardDown);
-	Cmd_AddCommand ("-forward",IN_ForwardUp);
-	Cmd_AddCommand ("+back",IN_BackDown);
-	Cmd_AddCommand ("-back",IN_BackUp);
-	Cmd_AddCommand ("+lookup", IN_LookupDown);
-	Cmd_AddCommand ("-lookup", IN_LookupUp);
-	Cmd_AddCommand ("+lookdown", IN_LookdownDown);
-	Cmd_AddCommand ("-lookdown", IN_LookdownUp);
-	Cmd_AddCommand ("+strafe", IN_StrafeDown);
-	Cmd_AddCommand ("-strafe", IN_StrafeUp);
-	Cmd_AddCommand ("+moveleft", IN_MoveleftDown);
-	Cmd_AddCommand ("-moveleft", IN_MoveleftUp);
-	Cmd_AddCommand ("+moveright", IN_MoverightDown);
-	Cmd_AddCommand ("-moveright", IN_MoverightUp);
-	Cmd_AddCommand ("+speed", IN_SpeedDown);
-	Cmd_AddCommand ("-speed", IN_SpeedUp);
+	CL_InitInputCommon();
 	Cmd_AddCommand ("+attack", IN_AttackDown);
 	Cmd_AddCommand ("-attack", IN_AttackUp);
 	Cmd_AddCommand ("+use", IN_UseDown);

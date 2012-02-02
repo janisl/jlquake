@@ -52,3 +52,4 @@ extern kbutton_t in_buttons[16];
 void IN_KeyDown(kbutton_t* b);
 void IN_KeyUp(kbutton_t* b);
 float CL_KeyState(kbutton_t* key);
+void CL_InitInputCommon();
