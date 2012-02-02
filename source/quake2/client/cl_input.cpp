@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Cvar	*cl_nodelta;
 
 unsigned	sys_frame_time;
-unsigned	frame_msec;
 unsigned	old_sys_frame_time;
 
 /*
@@ -94,7 +93,7 @@ void KeyDown (kbutton_t *b)
 		return;
 	}
 	
-	if (b->state & 1)
+	if (b->active)
 		return;		// still down
 
 	// save timestamp
@@ -103,7 +102,8 @@ void KeyDown (kbutton_t *b)
 	if (!b->downtime)
 		b->downtime = sys_frame_time - 100;
 
-	b->state |= 1 + 2;	// down + impulse down
+	b->active = true;
+	b->wasPressed = true;	// down + impulse down
 }
 
 void KeyUp (kbutton_t *b)
@@ -118,7 +118,8 @@ void KeyUp (kbutton_t *b)
 	else
 	{ // typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
-		b->state = 4;	// impulse up
+		b->active = false;
+		b->wasReleased = true;	// impulse up
 		return;
 	}
 
@@ -131,7 +132,7 @@ void KeyUp (kbutton_t *b)
 	if (b->down[0] || b->down[1])
 		return;		// some other key is still holding it down
 
-	if (!(b->state & 1))
+	if (!b->active)
 		return;		// still up (this should not happen)
 
 	// save timestamp
@@ -142,8 +143,8 @@ void KeyUp (kbutton_t *b)
 	else
 		b->msec += 10;
 
-	b->state &= ~1;		// now up
-	b->state |= 4; 		// impulse up
+	b->active = false;		// now up
+	b->wasReleased = true; 		// impulse up
 }
 
 void IN_KLookDown (void) {KeyDown(&in_klook);}
@@ -194,12 +195,13 @@ float CL_KeyState (kbutton_t *key)
 	float		val;
 	int			msec;
 
-	key->state &= 1;		// clear impulses
+	key->wasPressed = false;
+	key->wasReleased = false;		// clear impulses
 
 	msec = key->msec;
 	key->msec = 0;
 
-	if (key->state)
+	if (key->active)
 	{	// still down
 		msec += sys_frame_time - key->downtime;
 		key->downtime = sys_frame_time;
@@ -250,17 +252,17 @@ void CL_AdjustAngles (void)
 	float	speed;
 	float	up, down;
 	
-	if (in_speed.state & 1)
+	if (in_speed.active)
 		speed = cls.q2_frametimeFloat * cl_anglespeedkey->value;
 	else
 		speed = cls.q2_frametimeFloat;
 
-	if (!(in_strafe.state & 1))
+	if (!in_strafe.active)
 	{
 		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
 		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
 	}
-	if (in_klook.state & 1)
+	if (in_klook.active)
 	{
 		cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_forward);
 		cl.viewangles[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_back);
@@ -287,7 +289,7 @@ void CL_BaseMove (q2usercmd_t *cmd)
 	Com_Memset(cmd, 0, sizeof(*cmd));
 	
 	VectorCopy (cl.viewangles, cmd->angles);
-	if (in_strafe.state & 1)
+	if (in_strafe.active)
 	{
 		cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_right);
 		cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_left);
@@ -299,7 +301,7 @@ void CL_BaseMove (q2usercmd_t *cmd)
 	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
 	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
 
-	if (! (in_klook.state & 1) )
+	if (! in_klook.active )
 	{	
 		cmd->forwardmove += cl_forwardspeed->value * CL_KeyState (&in_forward);
 		cmd->forwardmove -= cl_forwardspeed->value * CL_KeyState (&in_back);
@@ -308,7 +310,7 @@ void CL_BaseMove (q2usercmd_t *cmd)
 //
 // adjust for speed key / running
 //
-	if ( (in_speed.state & 1) ^ (int)(cl_run->value) )
+	if ( (in_speed.active) ^ (int)(cl_run->value) )
 	{
 		cmd->forwardmove *= 2;
 		cmd->sidemove *= 2;
@@ -339,12 +341,12 @@ void CL_MouseMove(q2usercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe->value && mlooking ))
+	if ( in_strafe.active || (lookstrafe->value && mlooking ))
 		cmd->sidemove += m_side->value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
-	if ( (mlooking || freelook->value) && !(in_strafe.state & 1))
+	if ( (mlooking || freelook->value) && !in_strafe.active)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 	}
@@ -382,13 +384,13 @@ void CL_FinishMove (q2usercmd_t *cmd)
 //
 // figure button bits
 //	
-	if ( in_attack.state & 3 )
+	if (in_attack.active || in_attack.wasPressed)
 		cmd->buttons |= BUTTON_ATTACK;
-	in_attack.state &= ~2;
+	in_attack.wasPressed = false;
 	
-	if (in_use.state & 3)
+	if (in_use.active || in_use.wasPressed)
 		cmd->buttons |= BUTTON_USE;
-	in_use.state &= ~2;
+	in_use.wasPressed = false;
 
 	if (anykeydown && in_keyCatchers == 0)
 		cmd->buttons |= BUTTON_ANY;

@@ -69,9 +69,15 @@ void KeyDown (kbutton_t *b)
 		return;
 	}
 	
-	if (b->state & 1)
+	if (b->active)
 		return;		// still down
-	b->state |= 1 + 2;	// down + impulse down
+
+	// save timestamp for partial frame summing
+	c = Cmd_Argv(2);
+	b->downtime = String::Atoi(c);
+
+	b->active = true;
+	b->wasPressed = true;	// down + impulse down
 }
 
 void KeyUp (kbutton_t *b)
@@ -85,7 +91,9 @@ void KeyUp (kbutton_t *b)
 	else
 	{ // typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
-		b->state = 4;	// impulse up
+		b->active = false;
+		b->wasPressed = false;
+		b->wasReleased = true;	// impulse up
 		return;
 	}
 
@@ -98,10 +106,22 @@ void KeyUp (kbutton_t *b)
 	if (b->down[0] || b->down[1])
 		return;		// some other key is still holding it down
 
-	if (!(b->state & 1))
+	if (!b->active)
 		return;		// still up (this should not happen)
-	b->state &= ~1;		// now up
-	b->state |= 4; 		// impulse up
+	b->active = false;		// now up
+	b->wasReleased = true; 		// impulse up
+
+	// save timestamp for partial frame summing
+	c = Cmd_Argv(2);
+	unsigned uptime = String::Atoi(c);
+	if (uptime)
+	{
+		b->msec += uptime - b->downtime;
+	}
+	else
+	{
+		b->msec += frame_msec / 2;
+	}
 }
 
 void IN_KLookDown (void) {KeyDown(&in_klook);}
@@ -109,7 +129,7 @@ void IN_KLookUp (void) {KeyUp(&in_klook);}
 void IN_MLookDown (void) {KeyDown(&in_mlook);}
 void IN_MLookUp (void) {
 KeyUp(&in_mlook);
-if ( !(in_mlook.state&1) &&  lookspring->value)
+if ( !(in_mlook.active) &&  lookspring->value)
 	V_StartPitchDrift();
 }
 void IN_UpDown(void) {KeyDown(&in_up);}
@@ -163,9 +183,9 @@ float CL_KeyState (kbutton_t *key)
 	float		val;
 	qboolean	impulsedown, impulseup, down;
 	
-	impulsedown = key->state & 2;
-	impulseup = key->state & 4;
-	down = key->state & 1;
+	impulsedown = key->wasPressed;
+	impulseup = key->wasReleased;
+	down = key->active;
 	val = 0;
 	
 	if (impulsedown && !impulseup)
@@ -197,7 +217,8 @@ float CL_KeyState (kbutton_t *key)
 			val = 0.25;	// pressed and released this frame
 	}
 
-	key->state &= 1;		// clear impulses
+	key->wasPressed = false;
+	key->wasReleased = false;		// clear impulses
 	
 	return val;
 }
@@ -233,18 +254,18 @@ void CL_AdjustAngles (void)
 	float	speed;
 	float	up, down;
 	
-	if (in_speed.state & 1)
+	if (in_speed.active)
 		speed = host_frametime * cl_anglespeedkey->value;
 	else
 		speed = host_frametime;
 
-	if (!(in_strafe.state & 1))
+	if (!in_strafe.active)
 	{
 		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
 		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
 		cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
 	}
-	if (in_klook.state & 1)
+	if (in_klook.active)
 	{
 		V_StopPitchDrift ();
 		cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_forward);
@@ -301,11 +322,13 @@ void CL_BaseMove (h2usercmd_t *cmd)
 		return;
 	}
 
+	frame_msec = (unsigned)(host_frametime * 1000);
+
 	CL_AdjustAngles ();
 	
 	Com_Memset(cmd, 0, sizeof(*cmd));
 	
-	if (in_strafe.state & 1)
+	if (in_strafe.active)
 	{
 //		cmd->sidemove += cl_sidespeed.value * CL_KeyState (&in_right);
 //		cmd->sidemove -= cl_sidespeed.value * CL_KeyState (&in_left);
@@ -321,7 +344,7 @@ void CL_BaseMove (h2usercmd_t *cmd)
 	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
 	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
 
-	if (! (in_klook.state & 1) )
+	if (!in_klook.active)
 	{	
 //		cmd->forwardmove += cl_forwardspeed.value * CL_KeyState (&in_forward);
 		cmd->forwardmove += 200 * CL_KeyState (&in_forward);
@@ -332,7 +355,7 @@ void CL_BaseMove (h2usercmd_t *cmd)
 //
 // adjust for speed key (but not if always runs has been chosen)
 //
-	if ((cl_forwardspeed->value > 200 || in_speed.state & 1) && cl.h2_v.hasted <= 1)
+	if ((cl_forwardspeed->value > 200 || in_speed.active) && cl.h2_v.hasted <= 1)
 	{
 		cmd->forwardmove *= cl_movespeedkey->value;
 		cmd->sidemove *= cl_movespeedkey->value;
@@ -383,15 +406,15 @@ void CL_MouseMove(h2usercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe->value && (in_mlook.state & 1) ))
+	if (in_strafe.active || (lookstrafe->value && in_mlook.active))
 		cmd->sidemove += m_side->value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
-	if (in_mlook.state & 1)
+	if (in_mlook.active)
 		V_StopPitchDrift ();
 		
-	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
+	if (in_mlook.active && !in_strafe.active)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 		if (cl.viewangles[PITCH] > 80)
@@ -401,7 +424,7 @@ void CL_MouseMove(h2usercmd_t *cmd)
 	}
 	else
 	{
-		if ((in_strafe.state & 1) && noclip_anglehack)
+		if (in_strafe.active && noclip_anglehack)
 			cmd->upmove -= m_forward->value * mouse_y;
 		else
 			cmd->forwardmove -= m_forward->value * mouse_y;
@@ -457,15 +480,15 @@ void CL_SendMove (h2usercmd_t *cmd)
 //
 	bits = 0;
 	
-	if ( in_attack.state & 3 )
+	if (in_attack.active || in_attack.wasPressed)
 		bits |= 1;
-	in_attack.state &= ~2;
+	in_attack.wasPressed = false;
 	
-	if (in_jump.state & 3)
+	if (in_jump.active || in_jump.wasPressed)
 		bits |= 2;
-	in_jump.state &= ~2;
+	in_jump.wasPressed = false;
 	
-	if (in_crouch.state & 1)
+	if (in_crouch.active)
 		bits |= 4;
 
     buf.WriteByte(bits);
@@ -500,29 +523,17 @@ void CL_SendMove (h2usercmd_t *cmd)
 
 void IN_CrouchDown (void)
 {
-	int state;
-
 	if (in_keyCatchers == 0)
 	{
-		state = in_crouch.state;
 		KeyDown(&in_crouch);
-
-//		if (!(state & 1) && (in_crouch.state & 1))
-//			in_impulse = 22;
 	}
 }
 
 void IN_CrouchUp (void)
 {
-	int state;
-
 	if (in_keyCatchers == 0)
 	{
-		state = in_crouch.state;
-
 		KeyUp(&in_crouch);
-//		if ((state & 1) && !(in_crouch.state & 1))
-//			in_impulse = 22;
 	}
 }
 
@@ -622,6 +633,12 @@ void CL_InitInput (void)
     m_filter = Cvar_Get("m_filter", "0", 0);
 }
 
+static void ClearState(kbutton_t& button)
+{
+	button.active = false;
+	button.wasPressed = false;
+	button.wasReleased = false;
+}
 
 /*
 ============
@@ -630,23 +647,22 @@ CL_ClearStates
 */
 void CL_ClearStates (void)
 {
-
-	in_mlook.state = 0;
-	in_klook.state = 0;
-	in_left.state = 0;
-	in_right.state = 0;
-	in_forward.state = 0;
-	in_back.state = 0;
-	in_lookup.state = 0;
-	in_lookdown.state = 0;
-	in_moveleft.state = 0;
-	in_moveright.state = 0;
-	in_strafe.state = 0;
-	in_speed.state = 0;
-	in_use.state = 0;
-	in_jump.state = 0;
-	in_attack.state = 0;
-	in_up.state = 0;
-	in_down.state = 0;
-	in_crouch.state = 0;
+	ClearState(in_mlook);
+	ClearState(in_klook);
+	ClearState(in_left);
+	ClearState(in_right);
+	ClearState(in_forward);
+	ClearState(in_back);
+	ClearState(in_lookup);
+	ClearState(in_lookdown);
+	ClearState(in_moveleft);
+	ClearState(in_moveright);
+	ClearState(in_strafe);
+	ClearState(in_speed);
+	ClearState(in_use);
+	ClearState(in_jump);
+	ClearState(in_attack);
+	ClearState(in_up);
+	ClearState(in_down);
+	ClearState(in_crouch);
 }

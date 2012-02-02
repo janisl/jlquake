@@ -888,7 +888,7 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_ALWAYSMLOOK:	
-		if (in_mlook.state & 1)
+		if (in_mlook.active)
 			//IN_MLookUp();
 			Cbuf_AddText("-mlook");
 		else
@@ -986,7 +986,7 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair->value);
 
 	M_Print (16,60+(OPT_ALWAYSMLOOK*8),	"            Mouse Look");
-	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
+	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlook.active);
 
 	M_Print (16, 60+(OPT_VIDEO*8),	"         Video Options");
 

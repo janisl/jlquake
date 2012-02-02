@@ -34,6 +34,7 @@
 #include "game/particles.h"
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
+#include "game/input.h"
 
 #define CSHIFT_CONTENTS	0
 #define CSHIFT_DAMAGE	1

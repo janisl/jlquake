@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-unsigned	frame_msec;
 int			old_com_frameTime;
 
 /*
@@ -108,7 +107,6 @@ void IN_KeyDown( kbutton_t *b ) {
 void IN_KeyUp( kbutton_t *b ) {
 	int		k;
 	char	*c;
-	unsigned	uptime;
 
 	c = Cmd_Argv(1);
 	if ( c[0] ) {
@@ -135,10 +133,13 @@ void IN_KeyUp( kbutton_t *b ) {
 
 	// save timestamp for partial frame summing
 	c = Cmd_Argv(2);
-	uptime = String::Atoi(c);
-	if ( uptime ) {
+	unsigned uptime = String::Atoi(c);
+	if (uptime)
+	{
 		b->msec += uptime - b->downtime;
-	} else {
+	}
+	else
+	{
 		b->msec += frame_msec / 2;
 	}
 
