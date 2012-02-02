@@ -48,20 +48,14 @@ void IN_UseUp (void) {IN_KeyUp(&in_use);}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
-void IN_CrouchDown (void)
+void IN_Button2Down (void)
 {
-	if (in_keyCatchers == 0)
-	{
-		IN_KeyDown(&in_crouch);
-	}
+	IN_KeyDown(&in_buttons[2]);
 }
 
-void IN_CrouchUp (void)
+void IN_Button2Up (void)
 {
-	if (in_keyCatchers == 0)
-	{
-		IN_KeyUp(&in_crouch);
-	}
+	IN_KeyUp(&in_buttons[2]);
 }
 
 //==========================================================================
@@ -310,7 +304,7 @@ void CL_FinishMove (hwusercmd_t *cmd)
 		cmd->buttons |= 2;
 	in_buttons[1].wasPressed = false;
 
-	if (in_crouch.active)
+	if (in_buttons[2].active)
 		cmd->buttons |= 4;
 
 	// send milliseconds of time to apply the move
@@ -444,8 +438,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("-klook", IN_KLookUp);
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
-	Cmd_AddCommand ("+crouch", IN_CrouchDown);
-	Cmd_AddCommand ("-crouch", IN_CrouchUp);
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
 	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
@@ -476,6 +468,6 @@ void CL_ClearStates (void)
 	in_buttons[0].state = 0;
 	in_up.state = 0;
 	in_down.state = 0;
-	in_crouch.state = 0;*/
+	in_buttons[2].state = 0;*/
 }
 

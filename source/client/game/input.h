@@ -43,8 +43,6 @@ extern kbutton_t in_mlook;
 extern kbutton_t in_klook;
 extern kbutton_t in_use;
 
-extern kbutton_t in_crouch;
-
 extern kbutton_t in_buttons[16];
 
 void IN_KeyDown(kbutton_t* b);

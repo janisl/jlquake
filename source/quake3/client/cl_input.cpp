@@ -61,8 +61,6 @@ void IN_MLookUp( void ) {
 	}
 }
 
-void IN_Button2Down(void) {IN_KeyDown(&in_buttons[2]);}
-void IN_Button2Up(void) {IN_KeyUp(&in_buttons[2]);}
 void IN_Button3Down(void) {IN_KeyDown(&in_buttons[3]);}
 void IN_Button3Up(void) {IN_KeyUp(&in_buttons[3]);}
 void IN_Button4Down(void) {IN_KeyDown(&in_buttons[4]);}
@@ -679,8 +677,6 @@ void CL_InitInput( void ) {
 	CL_InitInputCommon();
 	Cmd_AddCommand ("centerview",IN_CenterView);
 
-	Cmd_AddCommand ("+button2", IN_Button2Down);
-	Cmd_AddCommand ("-button2", IN_Button2Up);
 	Cmd_AddCommand ("+button3", IN_Button3Down);
 	Cmd_AddCommand ("-button3", IN_Button3Up);
 	Cmd_AddCommand ("+button4", IN_Button4Down);

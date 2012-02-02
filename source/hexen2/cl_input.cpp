@@ -317,7 +317,7 @@ void CL_SendMove (h2usercmd_t *cmd)
 		bits |= 2;
 	in_buttons[1].wasPressed = false;
 	
-	if (in_crouch.active)
+	if (in_buttons[2].active)
 		bits |= 4;
 
     buf.WriteByte(bits);
@@ -350,20 +350,14 @@ void CL_SendMove (h2usercmd_t *cmd)
 	}
 }
 
-void IN_CrouchDown (void)
+void IN_Button2Down (void)
 {
-	if (in_keyCatchers == 0)
-	{
-		IN_KeyDown(&in_crouch);
-	}
+	IN_KeyDown(&in_buttons[2]);
 }
 
-void IN_CrouchUp (void)
+void IN_Button2Up (void)
 {
-	if (in_keyCatchers == 0)
-	{
-		IN_KeyUp(&in_crouch);
-	}
+	IN_KeyUp(&in_buttons[2]);
 }
 
 #ifdef MISSIONPACK
@@ -412,9 +406,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
-	Cmd_AddCommand ("+crouch", IN_CrouchDown);
-	Cmd_AddCommand ("-crouch", IN_CrouchUp);
-
 #ifdef MISSIONPACK
 	Cmd_AddCommand ("+infoplaque", IN_infoPlaqueDown);
 	Cmd_AddCommand ("-infoplaque", IN_infoPlaqueUp);
@@ -455,5 +446,5 @@ void CL_ClearStates (void)
 	ClearState(in_buttons[0]);
 	ClearState(in_up);
 	ClearState(in_down);
-	ClearState(in_crouch);
+	ClearState(in_buttons[2]);
 }

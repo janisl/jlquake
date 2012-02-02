@@ -39,9 +39,6 @@ kbutton_t in_use;
 //	Quake and Hexen 2.
 kbutton_t in_mlook;
 
-//	Hexen 2
-kbutton_t in_crouch;
-
 void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
@@ -271,6 +268,16 @@ static void IN_Button1Up()
 	IN_KeyUp(&in_buttons[1]);
 }
 
+static void IN_Button2Down()
+{
+	IN_KeyDown(&in_buttons[2]);
+}
+
+static void IN_Button2Up()
+{
+	IN_KeyUp(&in_buttons[2]);
+}
+
 //	Returns the fraction of the frame that the key was down
 float CL_KeyState(kbutton_t* key)
 {
@@ -337,6 +344,11 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("+jump", IN_Button1Down);
 		Cmd_AddCommand("-jump", IN_Button1Up);
 	}
+	if (GGameType & GAME_Hexen2)
+	{
+		Cmd_AddCommand("+crouch", IN_Button2Down);
+		Cmd_AddCommand("-crouch", IN_Button2Up);
+	}
 	if (GGameType & GAME_Quake2)
 	{
 		Cmd_AddCommand("+use", IN_Button1Down);
@@ -348,5 +360,7 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("-button0", IN_Button0Up);
 		Cmd_AddCommand("+button1", IN_Button1Down);
 		Cmd_AddCommand("-button1", IN_Button1Up);
+		Cmd_AddCommand("+button2", IN_Button2Down);
+		Cmd_AddCommand("-button2", IN_Button2Up);
 	}
 }
