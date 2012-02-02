@@ -34,7 +34,6 @@ kbutton_t in_buttons[16];
 
 //	All except Quake 3
 kbutton_t in_klook;
-kbutton_t in_use;
 
 //	Quake and Hexen 2.
 kbutton_t in_mlook;
