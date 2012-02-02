@@ -123,7 +123,8 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 //
 // cl_input
 //
-typedef struct {
+typedef struct
+{
 	int			down[2];		// key nums holding it down
 	unsigned	downtime;		// msec timestamp
 	unsigned	msec;			// msec down this frame if both a down and up happened

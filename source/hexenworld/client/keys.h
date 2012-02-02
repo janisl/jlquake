@@ -8,7 +8,7 @@ extern char chat_buffer[];
 extern	int chat_bufferlen;
 extern	qboolean	chat_team;
 
-void Key_Event (int key, qboolean down);
+void Key_Event (int key, qboolean down, unsigned time);
 void Key_Init (void);
 void Key_WriteBindings (fileHandle_t f);
 void Key_SetBinding (int keynum, const char *binding);
