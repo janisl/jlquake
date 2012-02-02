@@ -49,8 +49,8 @@ if ( !(in_mlook.active) &&  lookspring->value)
 
 void IN_UseDown (void) {IN_KeyDown(&in_use);}
 void IN_UseUp (void) {IN_KeyUp(&in_use);}
-void IN_JumpDown (void) {IN_KeyDown(&in_buttons[1]);}
-void IN_JumpUp (void) {IN_KeyUp(&in_buttons[1]);}
+void IN_Button1Down (void) {IN_KeyDown(&in_buttons[1]);}
+void IN_Button1Up (void) {IN_KeyUp(&in_buttons[1]);}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -408,8 +408,8 @@ void CL_InitInput (void)
 	CL_InitInputCommon();
 	Cmd_AddCommand ("+use", IN_UseDown);
 	Cmd_AddCommand ("-use", IN_UseUp);
-	Cmd_AddCommand ("+jump", IN_JumpDown);
-	Cmd_AddCommand ("-jump", IN_JumpUp);
+	Cmd_AddCommand ("+jump", IN_Button1Down);
+	Cmd_AddCommand ("-jump", IN_Button1Up);
 	Cmd_AddCommand ("impulse", IN_Impulse);
 	Cmd_AddCommand ("+klook", IN_KLookDown);
 	Cmd_AddCommand ("-klook", IN_KLookUp);

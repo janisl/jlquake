@@ -65,8 +65,8 @@ static qboolean	mlooking;
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
 
-void IN_UseDown (void) {IN_KeyDown(&in_use);}
-void IN_UseUp (void) {IN_KeyUp(&in_use);}
+void IN_Button1Down (void) {IN_KeyDown(&in_buttons[1]);}
+void IN_Button1Up (void) {IN_KeyUp(&in_buttons[1]);}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -232,9 +232,9 @@ void CL_FinishMove (q2usercmd_t *cmd)
 		cmd->buttons |= BUTTON_ATTACK;
 	in_buttons[0].wasPressed = false;
 	
-	if (in_use.active || in_use.wasPressed)
+	if (in_buttons[1].active || in_buttons[1].wasPressed)
 		cmd->buttons |= BUTTON_USE;
-	in_use.wasPressed = false;
+	in_buttons[1].wasPressed = false;
 
 	if (anykeydown && in_keyCatchers == 0)
 		cmd->buttons |= BUTTON_ANY;
@@ -317,8 +317,8 @@ void CL_InitInput (void)
 	CL_InitInputCommon();
 	Cmd_AddCommand ("centerview",IN_CenterView);
 
-	Cmd_AddCommand ("+use", IN_UseDown);
-	Cmd_AddCommand ("-use", IN_UseUp);
+	Cmd_AddCommand ("+use", IN_Button1Down);
+	Cmd_AddCommand ("-use", IN_Button1Up);
 	Cmd_AddCommand ("impulse", IN_Impulse);
 	Cmd_AddCommand ("+klook", IN_KLookDown);
 	Cmd_AddCommand ("-klook", IN_KLookUp);
