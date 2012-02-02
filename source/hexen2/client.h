@@ -76,7 +76,6 @@ void CL_MouseEvent(int mx, int my);
 void CL_MouseMove(h2usercmd_t *cmd);
 
 
-float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 //

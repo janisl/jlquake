@@ -163,7 +163,6 @@ void CL_MouseMove(q2usercmd_t *cmd);
 
 void IN_CenterView (void);
 
-float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 //

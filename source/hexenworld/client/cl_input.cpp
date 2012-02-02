@@ -40,124 +40,47 @@ static int	mouse_move_x;
 static int	mouse_move_y;
 static int	old_mouse_x, old_mouse_y;
 
-void KeyDown (kbutton_t *b)
-{
-	int		k;
-	char	*c;
-	
-	c = Cmd_Argv(1);
-	if (c[0])
-		k = String::Atoi(c);
-	else
-		k = -1;		// typed manually at the console for continuous down
-
-	if (k == b->down[0] || k == b->down[1])
-		return;		// repeating key
-	
-	if (!b->down[0])
-		b->down[0] = k;
-	else if (!b->down[1])
-		b->down[1] = k;
-	else
-	{
-		Con_Printf ("Three keys down for a button!\n");
-		return;
-	}
-	
-	if (b->active)
-		return;		// still down
-
-	// save timestamp for partial frame summing
-	c = Cmd_Argv(2);
-	b->downtime = String::Atoi(c);
-
-	b->active = true;
-	b->wasPressed = true;	// down + impulse down
-}
-
-void KeyUp (kbutton_t *b)
-{
-	int		k;
-	char	*c;
-	
-	c = Cmd_Argv(1);
-	if (c[0])
-		k = String::Atoi(c);
-	else
-	{ // typed manually at the console, assume for unsticking, so clear all
-		b->down[0] = b->down[1] = 0;
-		b->active = false;
-		b->wasPressed = false;
-		return;
-	}
-
-	if (b->down[0] == k)
-		b->down[0] = 0;
-	else if (b->down[1] == k)
-		b->down[1] = 0;
-	else
-		return;		// key up without coresponding down (menu pass through)
-	if (b->down[0] || b->down[1])
-		return;		// some other key is still holding it down
-
-	if (!b->active)
-		return;		// still up (this should not happen)
-	b->active = false;		// now up
-
-	// save timestamp for partial frame summing
-	c = Cmd_Argv(2);
-	unsigned uptime = String::Atoi(c);
-	if (uptime)
-	{
-		b->msec += uptime - b->downtime;
-	}
-	else
-	{
-		b->msec += frame_msec / 2;
-	}
-}
-
-void IN_KLookDown (void) {KeyDown(&in_klook);}
-void IN_KLookUp (void) {KeyUp(&in_klook);}
-void IN_MLookDown (void) {KeyDown(&in_mlook);}
+void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
+void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
+void IN_MLookDown (void) {IN_KeyDown(&in_mlook);}
 void IN_MLookUp (void) {
-KeyUp(&in_mlook);
+IN_KeyUp(&in_mlook);
 if ( !in_mlook.active &&  lookspring->value)
 	V_StartPitchDrift();
 }
-void IN_UpDown(void) {KeyDown(&in_up);}
-void IN_UpUp(void) {KeyUp(&in_up);}
-void IN_DownDown(void) {KeyDown(&in_down);}
-void IN_DownUp(void) {KeyUp(&in_down);}
-void IN_LeftDown(void) {KeyDown(&in_left);}
-void IN_LeftUp(void) {KeyUp(&in_left);}
-void IN_RightDown(void) {KeyDown(&in_right);}
-void IN_RightUp(void) {KeyUp(&in_right);}
-void IN_ForwardDown(void) {KeyDown(&in_forward);}
-void IN_ForwardUp(void) {KeyUp(&in_forward);}
-void IN_BackDown(void) {KeyDown(&in_back);}
-void IN_BackUp(void) {KeyUp(&in_back);}
-void IN_LookupDown(void) {KeyDown(&in_lookup);}
-void IN_LookupUp(void) {KeyUp(&in_lookup);}
-void IN_LookdownDown(void) {KeyDown(&in_lookdown);}
-void IN_LookdownUp(void) {KeyUp(&in_lookdown);}
-void IN_MoveleftDown(void) {KeyDown(&in_moveleft);}
-void IN_MoveleftUp(void) {KeyUp(&in_moveleft);}
-void IN_MoverightDown(void) {KeyDown(&in_moveright);}
-void IN_MoverightUp(void) {KeyUp(&in_moveright);}
+void IN_UpDown(void) {IN_KeyDown(&in_up);}
+void IN_UpUp(void) {IN_KeyUp(&in_up);}
+void IN_DownDown(void) {IN_KeyDown(&in_down);}
+void IN_DownUp(void) {IN_KeyUp(&in_down);}
+void IN_LeftDown(void) {IN_KeyDown(&in_left);}
+void IN_LeftUp(void) {IN_KeyUp(&in_left);}
+void IN_RightDown(void) {IN_KeyDown(&in_right);}
+void IN_RightUp(void) {IN_KeyUp(&in_right);}
+void IN_ForwardDown(void) {IN_KeyDown(&in_forward);}
+void IN_ForwardUp(void) {IN_KeyUp(&in_forward);}
+void IN_BackDown(void) {IN_KeyDown(&in_back);}
+void IN_BackUp(void) {IN_KeyUp(&in_back);}
+void IN_LookupDown(void) {IN_KeyDown(&in_lookup);}
+void IN_LookupUp(void) {IN_KeyUp(&in_lookup);}
+void IN_LookdownDown(void) {IN_KeyDown(&in_lookdown);}
+void IN_LookdownUp(void) {IN_KeyUp(&in_lookdown);}
+void IN_MoveleftDown(void) {IN_KeyDown(&in_moveleft);}
+void IN_MoveleftUp(void) {IN_KeyUp(&in_moveleft);}
+void IN_MoverightDown(void) {IN_KeyDown(&in_moveright);}
+void IN_MoverightUp(void) {IN_KeyUp(&in_moveright);}
 
-void IN_SpeedDown(void) {KeyDown(&in_speed);}
-void IN_SpeedUp(void) {KeyUp(&in_speed);}
-void IN_StrafeDown(void) {KeyDown(&in_strafe);}
-void IN_StrafeUp(void) {KeyUp(&in_strafe);}
+void IN_SpeedDown(void) {IN_KeyDown(&in_speed);}
+void IN_SpeedUp(void) {IN_KeyUp(&in_speed);}
+void IN_StrafeDown(void) {IN_KeyDown(&in_strafe);}
+void IN_StrafeUp(void) {IN_KeyUp(&in_strafe);}
 
-void IN_AttackDown(void) {KeyDown(&in_attack);}
-void IN_AttackUp(void) {KeyUp(&in_attack);}
+void IN_AttackDown(void) {IN_KeyDown(&in_attack);}
+void IN_AttackUp(void) {IN_KeyUp(&in_attack);}
 
-void IN_UseDown (void) {KeyDown(&in_use);}
-void IN_UseUp (void) {KeyUp(&in_use);}
-void IN_JumpDown (void) {KeyDown(&in_jump);}
-void IN_JumpUp (void) {KeyUp(&in_jump);}
+void IN_UseDown (void) {IN_KeyDown(&in_use);}
+void IN_UseUp (void) {IN_KeyUp(&in_use);}
+void IN_JumpDown (void) {IN_KeyDown(&in_jump);}
+void IN_JumpUp (void) {IN_KeyUp(&in_jump);}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -165,7 +88,7 @@ void IN_CrouchDown (void)
 {
 	if (in_keyCatchers == 0)
 	{
-		KeyDown(&in_crouch);
+		IN_KeyDown(&in_crouch);
 	}
 }
 
@@ -173,58 +96,9 @@ void IN_CrouchUp (void)
 {
 	if (in_keyCatchers == 0)
 	{
-		KeyUp(&in_crouch);
+		IN_KeyUp(&in_crouch);
 	}
 }
-
-/*
-===============
-CL_KeyState
-
-Returns 0.25 if a key was pressed and released during the frame,
-0.5 if it was pressed and held
-0 if held then released, and
-1.0 if held for the entire time
-===============
-*/
-float CL_KeyState (kbutton_t *key)
-{
-	float		val;
-	
-	int msec = key->msec;
-	key->msec = 0;
-
-	if ( key->active ) {
-		// still down
-		if ( !key->downtime ) {
-			msec = com_frameTime;
-		} else {
-			msec += com_frameTime - key->downtime;
-		}
-		key->downtime = com_frameTime;
-	}
-
-#if 0
-	if (msec) {
-		Com_Printf ("%i ", msec);
-	}
-#endif
-
-	val = (float)msec / frame_msec;
-	if ( val < 0 ) {
-		val = 0;
-	}
-	if ( val > 1 ) {
-		val = 1;
-	}
-
-	key->wasPressed = false;
-	
-	return val;
-}
-
-
-
 
 //==========================================================================
 
