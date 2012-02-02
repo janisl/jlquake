@@ -402,13 +402,7 @@ void IN_infoPlaqueUp(void)
 	if (in_keyCatchers == 0)
 	{
 		//They want to lower the plaque
-		/*if (!infomessage)
-		{
-			infomessage=Z_Malloc(1028);//"Objectives:@";
-		}*/
-		
 		info_up = 0;
-		IN_KeyUp(&in_infoplaque);
 	}
 }
 
@@ -417,11 +411,7 @@ void IN_infoPlaqueDown(void)
 	if (in_keyCatchers == 0)
 	{
 		//They want to see the plaque
-		/*if (infomessage[0] == '\0')
-			String::Cpy(infomessage, "Objectives:");*/
-
 		info_up = 1;
-		IN_KeyDown(&in_infoplaque);
 	}
 }
 #endif

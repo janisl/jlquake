@@ -40,10 +40,8 @@ kbutton_t in_attack;
 kbutton_t in_mlook;
 kbutton_t in_jump;
 
-//	Hexen 2 and HexenWorld
+//	Hexen 2
 kbutton_t in_crouch;
-//	Hexen 2/
-kbutton_t in_infoplaque;
 
 //	Quake 3
 kbutton_t in_buttons[16];

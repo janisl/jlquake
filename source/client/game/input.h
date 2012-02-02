@@ -46,7 +46,6 @@ extern kbutton_t in_jump;
 extern kbutton_t in_attack;
 
 extern kbutton_t in_crouch;
-extern kbutton_t in_infoplaque;
 
 extern kbutton_t in_buttons[16];
 
