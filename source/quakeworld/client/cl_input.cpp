@@ -195,40 +195,32 @@ Returns 0.25 if a key was pressed and released during the frame,
 float CL_KeyState (kbutton_t *key)
 {
 	float		val;
-	qboolean	impulsedown, impulseup, down;
 	
-	impulsedown = key->wasPressed;
-	impulseup = key->wasReleased;
-	down = key->active;
-	val = 0;
-	
-	if (impulsedown && !impulseup)
-	{
-		if (down)
-			val = 0.5;	// pressed and held this frame
-		else
-			val = 0;	//	I_Error ();
+	int msec = key->msec;
+	key->msec = 0;
+
+	if ( key->active ) {
+		// still down
+		if ( !key->downtime ) {
+			msec = com_frameTime;
+		} else {
+			msec += com_frameTime - key->downtime;
+		}
+		key->downtime = com_frameTime;
 	}
-	if (impulseup && !impulsedown)
-	{
-		if (down)
-			val = 0;	//	I_Error ();
-		else
-			val = 0;	// released this frame
+
+#if 0
+	if (msec) {
+		Com_Printf ("%i ", msec);
 	}
-	if (!impulsedown && !impulseup)
-	{
-		if (down)
-			val = 1.0;	// held the entire frame
-		else
-			val = 0;	// up the entire frame
+#endif
+
+	val = (float)msec / frame_msec;
+	if ( val < 0 ) {
+		val = 0;
 	}
-	if (impulsedown && impulseup)
-	{
-		if (down)
-			val = 0.75;	// released and re-pressed this frame
-		else
-			val = 0.25;	// pressed and released this frame
+	if ( val > 1 ) {
+		val = 1;
 	}
 
 	key->wasPressed = false;
@@ -315,6 +307,9 @@ Send the intended movement message to the server
 */
 void CL_BaseMove (qwusercmd_t *cmd)
 {	
+	// grab frame time 
+	com_frameTime = Sys_Milliseconds();
+
 	frame_msec = (unsigned)(host_frametime * 1000);
 
 	CL_AdjustAngles ();

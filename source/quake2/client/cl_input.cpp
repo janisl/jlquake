@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Cvar	*cl_nodelta;
 
-unsigned	sys_frame_time;
 unsigned	old_sys_frame_time;
 
 /*
@@ -100,7 +99,7 @@ void KeyDown (kbutton_t *b)
 	c = Cmd_Argv(2);
 	b->downtime = String::Atoi(c);
 	if (!b->downtime)
-		b->downtime = sys_frame_time - 100;
+		b->downtime = com_frameTime - 100;
 
 	b->active = true;
 	b->wasPressed = true;	// down + impulse down
@@ -203,8 +202,8 @@ float CL_KeyState (kbutton_t *key)
 
 	if (key->active)
 	{	// still down
-		msec += sys_frame_time - key->downtime;
-		key->downtime = sys_frame_time;
+		msec += com_frameTime - key->downtime;
+		key->downtime = com_frameTime;
 	}
 
 #if 0
@@ -422,9 +421,9 @@ q2usercmd_t CL_CreateCmd (void)
 	q2usercmd_t	cmd;
 
 	// grab frame time 
-	sys_frame_time = Sys_Milliseconds_();
+	com_frameTime = Sys_Milliseconds_();
 
-	frame_msec = sys_frame_time - old_sys_frame_time;
+	frame_msec = com_frameTime - old_sys_frame_time;
 	if (frame_msec < 1)
 		frame_msec = 1;
 	if (frame_msec > 200)
@@ -438,7 +437,7 @@ q2usercmd_t CL_CreateCmd (void)
 
 	CL_FinishMove (&cmd);
 
-	old_sys_frame_time = sys_frame_time;
+	old_sys_frame_time = com_frameTime;
 
 //cmd.impulse = cls.framecount;
 

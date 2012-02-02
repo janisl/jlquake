@@ -57,13 +57,15 @@
 
 int Com_Milliseconds();
 
-extern Cvar*	com_dedicated;
-extern Cvar*	com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
-extern Cvar*	com_timescale;
+extern Cvar* com_dedicated;
+extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
+extern Cvar* com_timescale;
 
-extern Cvar*	com_journal;
+extern Cvar* com_journal;
 
-extern fileHandle_t	com_journalFile;
-extern fileHandle_t	com_journalDataFile;
+extern fileHandle_t com_journalFile;
+extern fileHandle_t com_journalDataFile;
+
+extern int com_frameTime;
 
 #endif

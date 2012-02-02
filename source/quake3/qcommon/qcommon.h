@@ -262,9 +262,6 @@ extern	int		time_game;
 extern	int		time_frontend;
 extern	int		time_backend;		// renderer backend time
 
-extern	int		com_frameTime;
-extern	int		com_frameMsec;
-
 extern	qboolean	com_errorEntered;
 
 typedef enum {

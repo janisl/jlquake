@@ -70,8 +70,6 @@ int		time_game;
 int		time_frontend;		// renderer frontend time
 int		time_backend;		// renderer backend time
 
-int			com_frameTime;
-int			com_frameMsec;
 int			com_frameNumber;
 
 qboolean	com_errorEntered;
@@ -2529,7 +2527,6 @@ void Com_Frame( void )
 	lastTime = com_frameTime;
 
 	// mess with msec if needed
-	com_frameMsec = msec;
 	msec = Com_ModifyMsec( msec );
 
 	//

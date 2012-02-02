@@ -14,49 +14,25 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define MAX_NUM_ARGVS	50
 
-// TYPES -------------------------------------------------------------------
+Cvar* com_dedicated;
+Cvar* com_viewlog;
+Cvar* com_timescale;
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
+Cvar* com_journal;
 
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
+fileHandle_t com_journalFile;			// events are written here
+fileHandle_t com_journalDataFile;		// config files are written here
 
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
+int GGameType;
 
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
+int com_frameTime;
 
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-Cvar*			com_dedicated;
-Cvar*			com_viewlog;
-Cvar*			com_timescale;
-
-Cvar*			com_journal;
-
-fileHandle_t	com_journalFile;			// events are written here
-fileHandle_t	com_journalDataFile;		// config files are written here
-
-int				GGameType;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-static int			com_argc;
-static const char*	com_argv[MAX_NUM_ARGVS+1];
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Interface::~Interface
-//
-//==========================================================================
+static int com_argc;
+static const char* com_argv[MAX_NUM_ARGVS+1];
 
 Interface::~Interface()
 {
@@ -643,22 +619,10 @@ void Com_Memset (void* dest, const int val, const size_t count)
 }
 #endif // bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
 
-//==========================================================================
-//
-//	COM_Argc
-//
-//==========================================================================
-
 int COM_Argc()
 {
 	return com_argc;
 }
-
-//==========================================================================
-//
-//	COM_Argv
-//
-//==========================================================================
 
 const char* COM_Argv(int arg)
 {
@@ -668,12 +632,6 @@ const char* COM_Argv(int arg)
 	}
 	return com_argv[arg];
 }
-
-//==========================================================================
-//
-//	COM_InitArgv
-//
-//==========================================================================
 
 void COM_InitArgv(int argc, const char** argv)
 {
@@ -691,14 +649,7 @@ void COM_InitArgv(int argc, const char** argv)
 	}
 }
 
-//==========================================================================
-//
-//	COM_AddParm
-//
 //	Adds the given string at the end of the current argument list
-//
-//==========================================================================
-
 void COM_AddParm(const char* parm)
 {
 	if (com_argc == MAX_NUM_ARGVS)
@@ -707,12 +658,6 @@ void COM_AddParm(const char* parm)
 	}
 	com_argv[com_argc++] = parm;
 }
-
-//==========================================================================
-//
-//	COM_ClearArgv
-//
-//==========================================================================
 
 void COM_ClearArgv(int arg)
 {
@@ -723,15 +668,8 @@ void COM_ClearArgv(int arg)
 	com_argv[arg] = "";
 }
 
-//==========================================================================
-//
-//	COM_CheckParm
-//
 //	Returns the position (1 to argc-1) in the program's argument list
 // where the given parameter apears, or 0 if not present
-//
-//==========================================================================
-
 int COM_CheckParm(const char *parm)
 {
 	for (int i = 1; i < com_argc; i++)
@@ -744,12 +682,6 @@ int COM_CheckParm(const char *parm)
 
 	return 0;
 }
-
-//==========================================================================
-//
-//	COM_InitCommonCvars
-//
-//==========================================================================
 
 void COM_InitCommonCvars()
 {
