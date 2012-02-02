@@ -118,7 +118,6 @@ void KeyUp (kbutton_t *b)
 	{ // typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
 		b->active = false;
-		b->wasReleased = true;	// impulse up
 		return;
 	}
 
@@ -143,7 +142,6 @@ void KeyUp (kbutton_t *b)
 		b->msec += 10;
 
 	b->active = false;		// now up
-	b->wasReleased = true; 		// impulse up
 }
 
 void IN_KLookDown (void) {KeyDown(&in_klook);}
@@ -195,7 +193,6 @@ float CL_KeyState (kbutton_t *key)
 	int			msec;
 
 	key->wasPressed = false;
-	key->wasReleased = false;		// clear impulses
 
 	msec = key->msec;
 	key->msec = 0;

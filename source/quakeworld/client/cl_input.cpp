@@ -107,7 +107,6 @@ void KeyUp (kbutton_t *b)
 		b->down[0] = b->down[1] = 0;
 		b->active = false;
 		b->wasPressed = false;
-		b->wasReleased = true;	// impulse up
 		return;
 	}
 
@@ -123,7 +122,6 @@ void KeyUp (kbutton_t *b)
 	if (!b->active)
 		return;		// still up (this should not happen)
 	b->active = false;		// now up
-	b->wasReleased = true; 		// impulse up
 
 	// save timestamp for partial frame summing
 	c = Cmd_Argv(2);
@@ -224,7 +222,6 @@ float CL_KeyState (kbutton_t *key)
 	}
 
 	key->wasPressed = false;
-	key->wasReleased = false;		// clear impulses
 	
 	return val;
 }

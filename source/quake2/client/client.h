@@ -150,7 +150,6 @@ typedef struct
 	unsigned	msec;			// msec down this frame if both a down and up happened
 	bool		active;			// current state
 	bool		wasPressed;		// set when down, not cleared when up
-	bool		wasReleased;
 } kbutton_t;
 
 extern	kbutton_t	in_mlook, in_klook;
