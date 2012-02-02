@@ -27,13 +27,6 @@ state bit 2 is edge triggered on the down to up transition
 */
 
 
-kbutton_t	in_mlook, in_klook;
-kbutton_t	in_left, in_right, in_forward, in_back;
-kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
-kbutton_t	in_strafe, in_speed, in_use, in_jump, in_attack;
-kbutton_t	in_up, in_down, in_crouch;
-kbutton_t	in_infoplaque;
-
 int					in_impulse;
 #ifdef MISSIONPACK
 extern qboolean		info_up;

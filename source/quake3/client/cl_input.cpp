@@ -46,13 +46,6 @@ at the same time.
 */
 
 
-kbutton_t	in_left, in_right, in_forward, in_back;
-kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
-kbutton_t	in_strafe, in_speed;
-kbutton_t	in_up, in_down;
-
-kbutton_t	in_buttons[16];
-
 
 qboolean	in_mlooking;
 

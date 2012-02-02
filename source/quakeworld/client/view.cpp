@@ -69,8 +69,6 @@ static Cvar*	cl_polyblend;
 
 static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
-extern	int			in_forward, in_forward2, in_back;
-
 qwframe_t		*view_frame;
 static qwplayer_state_t		*view_message;
 

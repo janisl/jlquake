@@ -25,6 +25,31 @@ struct kbutton_t
 
 extern unsigned frame_msec;
 
+extern kbutton_t in_left;
+extern kbutton_t in_right;
+extern kbutton_t in_forward;
+extern kbutton_t in_back;
+extern kbutton_t in_lookup;
+extern kbutton_t in_lookdown;
+extern kbutton_t in_moveleft;
+extern kbutton_t in_moveright;
+extern kbutton_t in_strafe;
+extern kbutton_t in_speed;
+extern kbutton_t in_up;
+extern kbutton_t in_down;
+
+extern kbutton_t in_mlook;
+
+extern kbutton_t in_klook;
+extern kbutton_t in_use;
+extern kbutton_t in_jump;
+extern kbutton_t in_attack;
+
+extern kbutton_t in_crouch;
+extern kbutton_t in_infoplaque;
+
+extern kbutton_t in_buttons[16];
+
 void IN_KeyDown(kbutton_t* b);
 void IN_KeyUp(kbutton_t* b);
 float CL_KeyState(kbutton_t* key);

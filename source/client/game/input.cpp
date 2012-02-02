@@ -18,6 +18,36 @@
 
 unsigned frame_msec;
 
+kbutton_t in_left;
+kbutton_t in_right;
+kbutton_t in_forward;
+kbutton_t in_back;
+kbutton_t in_lookup;
+kbutton_t in_lookdown;
+kbutton_t in_moveleft;
+kbutton_t in_moveright;
+kbutton_t in_strafe;
+kbutton_t in_speed;
+kbutton_t in_up;
+kbutton_t in_down;
+
+//	All except Quake 3
+kbutton_t in_klook;
+kbutton_t in_use;
+kbutton_t in_attack;
+
+//	Quake and Hexen 2.
+kbutton_t in_mlook;
+kbutton_t in_jump;
+
+//	Hexen 2 and HexenWorld
+kbutton_t in_crouch;
+//	Hexen 2/
+kbutton_t in_infoplaque;
+
+//	Quake 3
+kbutton_t in_buttons[16];
+
 void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
