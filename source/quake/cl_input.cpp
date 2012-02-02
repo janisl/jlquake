@@ -64,9 +64,6 @@ if (!in_mlook.active &&  lookspring->value)
 	V_StartPitchDrift();
 }
 
-void IN_AttackDown(void) {IN_KeyDown(&in_attack);}
-void IN_AttackUp(void) {IN_KeyUp(&in_attack);}
-
 void IN_UseDown (void) {IN_KeyDown(&in_use);}
 void IN_UseUp (void) {IN_KeyUp(&in_use);}
 void IN_JumpDown (void) {IN_KeyDown(&in_jump);}
@@ -289,9 +286,9 @@ void CL_SendMove (q1usercmd_t *cmd)
 //
 	bits = 0;
 	
-	if (in_attack.active || in_attack.wasPressed)
+	if (in_buttons[0].active || in_buttons[0].wasPressed)
 		bits |= 1;
-	in_attack.wasPressed = false;
+	in_buttons[0].wasPressed = false;
 	
 	if (in_jump.active || in_jump.wasPressed)
 		bits |= 2;
@@ -340,8 +337,6 @@ CL_InitInput
 void CL_InitInput (void)
 {
 	CL_InitInputCommon();
-	Cmd_AddCommand ("+attack", IN_AttackDown);
-	Cmd_AddCommand ("-attack", IN_AttackUp);
 	Cmd_AddCommand ("+use", IN_UseDown);
 	Cmd_AddCommand ("-use", IN_UseUp);
 	Cmd_AddCommand ("+jump", IN_JumpDown);

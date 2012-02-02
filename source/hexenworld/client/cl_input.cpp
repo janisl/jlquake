@@ -43,9 +43,6 @@ if ( !in_mlook.active &&  lookspring->value)
 	V_StartPitchDrift();
 }
 
-void IN_AttackDown(void) {IN_KeyDown(&in_attack);}
-void IN_AttackUp(void) {IN_KeyUp(&in_attack);}
-
 void IN_UseDown (void) {IN_KeyDown(&in_use);}
 void IN_UseUp (void) {IN_KeyUp(&in_use);}
 void IN_JumpDown (void) {IN_KeyDown(&in_jump);}
@@ -307,9 +304,9 @@ void CL_FinishMove (hwusercmd_t *cmd)
 //
 // figure button bits
 //	
-	if (in_attack.active || in_attack.wasPressed)
+	if (in_buttons[0].active || in_buttons[0].wasPressed)
 		cmd->buttons |= 1;
-	in_attack.wasPressed = false;
+	in_buttons[0].wasPressed = false;
 	
 	if (in_jump.active || in_jump.wasPressed)
 		cmd->buttons |= 2;
@@ -442,8 +439,6 @@ CL_InitInput
 void CL_InitInput (void)
 {
 	CL_InitInputCommon();
-	Cmd_AddCommand ("+attack", IN_AttackDown);
-	Cmd_AddCommand ("-attack", IN_AttackUp);
 	Cmd_AddCommand ("+use", IN_UseDown);
 	Cmd_AddCommand ("-use", IN_UseUp);
 	Cmd_AddCommand ("+jump", IN_JumpDown);
@@ -482,7 +477,7 @@ void CL_ClearStates (void)
 	in_speed.state = 0;
 	in_use.state = 0;
 	in_jump.state = 0;
-	in_attack.state = 0;
+	in_buttons[0].state = 0;
 	in_up.state = 0;
 	in_down.state = 0;
 	in_crouch.state = 0;*/

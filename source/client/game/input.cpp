@@ -30,11 +30,11 @@ kbutton_t in_strafe;
 kbutton_t in_speed;
 kbutton_t in_up;
 kbutton_t in_down;
+kbutton_t in_buttons[16];
 
 //	All except Quake 3
 kbutton_t in_klook;
 kbutton_t in_use;
-kbutton_t in_attack;
 
 //	Quake and Hexen 2.
 kbutton_t in_mlook;
@@ -42,9 +42,6 @@ kbutton_t in_jump;
 
 //	Hexen 2
 kbutton_t in_crouch;
-
-//	Quake 3
-kbutton_t in_buttons[16];
 
 void IN_KeyDown(kbutton_t* b)
 {
@@ -255,6 +252,9 @@ static void IN_StrafeUp()
 	IN_KeyUp(&in_strafe);
 }
 
+void IN_Button0Down(void) {IN_KeyDown(&in_buttons[0]);}
+void IN_Button0Up(void) {IN_KeyUp(&in_buttons[0]);}
+
 //	Returns the fraction of the frame that the key was down
 float CL_KeyState(kbutton_t* key)
 {
@@ -314,4 +314,11 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("-strafe", IN_StrafeUp);
 	Cmd_AddCommand("+speed", IN_SpeedDown);
 	Cmd_AddCommand("-speed", IN_SpeedUp);
+	Cmd_AddCommand("+attack", IN_Button0Down);
+	Cmd_AddCommand("-attack", IN_Button0Up);
+	if (GGameType & GAME_Quake3)
+	{
+		Cmd_AddCommand("+button0", IN_Button0Down);
+		Cmd_AddCommand("-button0", IN_Button0Up);
+	}
 }

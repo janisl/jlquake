@@ -65,9 +65,6 @@ static qboolean	mlooking;
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
 
-void IN_AttackDown(void) {IN_KeyDown(&in_attack);}
-void IN_AttackUp(void) {IN_KeyUp(&in_attack);}
-
 void IN_UseDown (void) {IN_KeyDown(&in_use);}
 void IN_UseUp (void) {IN_KeyUp(&in_use);}
 
@@ -231,9 +228,9 @@ void CL_FinishMove (q2usercmd_t *cmd)
 //
 // figure button bits
 //	
-	if (in_attack.active || in_attack.wasPressed)
+	if (in_buttons[0].active || in_buttons[0].wasPressed)
 		cmd->buttons |= BUTTON_ATTACK;
-	in_attack.wasPressed = false;
+	in_buttons[0].wasPressed = false;
 	
 	if (in_use.active || in_use.wasPressed)
 		cmd->buttons |= BUTTON_USE;
@@ -320,8 +317,6 @@ void CL_InitInput (void)
 	CL_InitInputCommon();
 	Cmd_AddCommand ("centerview",IN_CenterView);
 
-	Cmd_AddCommand ("+attack", IN_AttackDown);
-	Cmd_AddCommand ("-attack", IN_AttackUp);
 	Cmd_AddCommand ("+use", IN_UseDown);
 	Cmd_AddCommand ("-use", IN_UseUp);
 	Cmd_AddCommand ("impulse", IN_Impulse);
