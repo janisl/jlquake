@@ -251,8 +251,25 @@ static void IN_StrafeUp()
 	IN_KeyUp(&in_strafe);
 }
 
-void IN_Button0Down(void) {IN_KeyDown(&in_buttons[0]);}
-void IN_Button0Up(void) {IN_KeyUp(&in_buttons[0]);}
+static void IN_Button0Down()
+{
+	IN_KeyDown(&in_buttons[0]);
+}
+
+static void IN_Button0Up()
+{
+	IN_KeyUp(&in_buttons[0]);
+}
+
+static void IN_Button1Down()
+{
+	IN_KeyDown(&in_buttons[1]);
+}
+
+static void IN_Button1Up()
+{
+	IN_KeyUp(&in_buttons[1]);
+}
 
 //	Returns the fraction of the frame that the key was down
 float CL_KeyState(kbutton_t* key)
@@ -315,9 +332,21 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("-speed", IN_SpeedUp);
 	Cmd_AddCommand("+attack", IN_Button0Down);
 	Cmd_AddCommand("-attack", IN_Button0Up);
+	if (GGameType & GAME_QuakeHexen)
+	{
+		Cmd_AddCommand("+jump", IN_Button1Down);
+		Cmd_AddCommand("-jump", IN_Button1Up);
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		Cmd_AddCommand("+use", IN_Button1Down);
+		Cmd_AddCommand("-use", IN_Button1Up);
+	}
 	if (GGameType & GAME_Quake3)
 	{
 		Cmd_AddCommand("+button0", IN_Button0Down);
 		Cmd_AddCommand("-button0", IN_Button0Up);
+		Cmd_AddCommand("+button1", IN_Button1Down);
+		Cmd_AddCommand("-button1", IN_Button1Up);
 	}
 }
