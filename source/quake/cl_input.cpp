@@ -55,9 +55,6 @@ static int	mouse_move_x;
 static int	mouse_move_y;
 
 
-void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
-void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
-
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
@@ -97,12 +94,6 @@ void CL_AdjustAngles (void)
 		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
 		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
 		cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
-	}
-	if (in_klook.active)
-	{
-		CLQH_StopPitchDrift ();
-		cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_forward);
-		cl.viewangles[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_back);
 	}
 	
 	up = CL_KeyState (&in_lookup);
@@ -159,11 +150,8 @@ void CL_BaseMove (q1usercmd_t *cmd)
 	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
 	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
 
-	if (!in_klook.active)
-	{	
-		cmd->forwardmove += cl_forwardspeed->value * CL_KeyState (&in_forward);
-		cmd->forwardmove -= cl_backspeed->value * CL_KeyState (&in_back);
-	}	
+	cmd->forwardmove += cl_forwardspeed->value * CL_KeyState (&in_forward);
+	cmd->forwardmove -= cl_backspeed->value * CL_KeyState (&in_back);
 
 //
 // adjust for speed key
@@ -309,16 +297,6 @@ void CL_SendMove (q1usercmd_t *cmd)
 }
 
 /*
-===========
-Force_CenterView_f
-===========
-*/
-void Force_CenterView_f (void)
-{
-	cl.viewangles[PITCH] = 0;
-}
-
-/*
 ============
 CL_InitInput
 ============
@@ -327,9 +305,6 @@ void CL_InitInput (void)
 {
 	CL_InitInputCommon();
 	Cmd_AddCommand ("impulse", IN_Impulse);
-	Cmd_AddCommand ("+klook", IN_KLookDown);
-	Cmd_AddCommand ("-klook", IN_KLookUp);
-	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
 	m_filter = Cvar_Get("m_filter", "0", 0);
 }

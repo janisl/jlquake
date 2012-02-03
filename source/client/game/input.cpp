@@ -32,9 +32,6 @@ kbutton_t in_up;
 kbutton_t in_down;
 kbutton_t in_buttons[16];
 
-//	All except Quake 3
-kbutton_t in_klook;
-
 bool in_mlooking;
 
 Cvar* cl_freelook;
@@ -484,6 +481,11 @@ static void IN_MLookUp()
 	}
 }
 
+static void Force_CenterView_f()
+{
+	cl.viewangles[PITCH] = 0;
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
@@ -519,6 +521,7 @@ void CL_InitInputCommon()
 	{
 		Cmd_AddCommand("+jump", IN_Button1Down);
 		Cmd_AddCommand("-jump", IN_Button1Up);
+		Cmd_AddCommand("force_centerview", Force_CenterView_f);
 	}
 	if (GGameType & GAME_Hexen2)
 	{

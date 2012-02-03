@@ -1213,7 +1213,6 @@ const char *bindnames[][2] =
 {"+lookdown", 		"look down"},
 {"centerview", 		"center view"},
 {"+mlook", 			"mouse look"},
-{"+klook", 			"keyboard look"},
 {"+moveup",			"swim up"},
 {"+movedown",		"swim down"}
 };
