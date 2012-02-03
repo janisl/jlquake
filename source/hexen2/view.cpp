@@ -44,7 +44,6 @@ static Cvar*	r_drawviewmodel;
 Cvar*	crosshair;
 
 static Cvar*	v_centermove;
-static Cvar*	v_centerspeed;
 
 static Cvar*	v_centerrollspeed;
 
@@ -128,29 +127,6 @@ static float V_CalcBob (void)
 
 //=============================================================================
 
-void V_StartPitchDrift (void)
-{
-#if 1
-	if (cl.qh_laststop == cl.qh_serverTimeFloat)
-	{
-		return;		// something else is keeping it from drifting
-	}
-#endif
-	if (cl.qh_nodrift || !cl.qh_pitchvel)
-	{
-		cl.qh_pitchvel = v_centerspeed->value;
-		cl.qh_nodrift = false;
-		cl.qh_driftmove = 0;
-	}
-}
-
-void V_StopPitchDrift (void)
-{
-	cl.qh_laststop = cl.qh_serverTimeFloat;
-	cl.qh_nodrift = true;
-	cl.qh_pitchvel = 0;
-}
-
 /*
 ===============
 V_DriftPitch
@@ -185,7 +161,7 @@ static void V_DriftPitch (void)
 	
 		if ( cl.qh_driftmove > v_centermove->value)
 		{
-			V_StartPitchDrift ();
+			CLQH_StartPitchDrift ();
 		}
 		return;
 	}
@@ -980,10 +956,7 @@ void V_Init (void)
 	Cmd_AddCommand ("df", V_DarkFlash_f);
 	Cmd_AddCommand ("wf", V_WhiteFlash_f);
 
-	Cmd_AddCommand ("centerview", V_StartPitchDrift);
-
 	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
-	v_centerspeed = Cvar_Get("v_centerspeed", "500", 0);
 	v_centerrollspeed = Cvar_Get("v_centerrollspeed", "125", 0);
 
 	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2", 0);

@@ -122,9 +122,6 @@ void CL_StopUpload(void);
 //
 // view.c
 //
-void V_StartPitchDrift (void);
-void V_StopPitchDrift (void);
-
 void V_RenderView (void);
 void V_UpdatePalette (void);
 void V_Register (void);

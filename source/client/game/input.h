@@ -44,7 +44,12 @@ extern kbutton_t in_buttons[16];
 
 extern bool in_mlooking;
 
+extern Cvar* v_centerspeed;
+
 void IN_KeyDown(kbutton_t* b);
 void IN_KeyUp(kbutton_t* b);
 float CL_KeyState(kbutton_t* key);
+void CLQH_StartPitchDrift();
+void CLQH_StopPitchDrift();
+void IN_CenterView();
 void CL_InitInputCommon();

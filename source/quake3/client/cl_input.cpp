@@ -59,11 +59,6 @@ void IN_MLookUp( void ) {
 	}
 }
 
-void IN_CenterView (void) {
-	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q3_snap.ps.delta_angles[PITCH]);
-}
-
-
 //==========================================================================
 
 Cvar	*cl_upspeed;
@@ -641,7 +636,6 @@ CL_InitInput
 */
 void CL_InitInput( void ) {
 	CL_InitInputCommon();
-	Cmd_AddCommand ("centerview",IN_CenterView);
 
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);

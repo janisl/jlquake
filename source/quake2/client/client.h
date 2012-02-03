@@ -157,8 +157,6 @@ void CL_BaseMove (q2usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
 void CL_MouseMove(q2usercmd_t *cmd);
 
-void IN_CenterView (void);
-
 const char *Key_KeynumToString (int keynum);
 
 //

@@ -129,7 +129,6 @@ void CL_ClearState (void);
 void CL_ReadPackets (void);
 
 void CL_WritePacket( void );
-void IN_CenterView (void);
 
 void CL_VerifyCode( void );
 

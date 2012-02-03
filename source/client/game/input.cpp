@@ -37,6 +37,8 @@ kbutton_t in_klook;
 
 bool in_mlooking;
 
+Cvar* v_centerspeed;
+
 void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
@@ -439,6 +441,43 @@ float CL_KeyState(kbutton_t* key)
 	return val;
 }
 
+void CLQH_StartPitchDrift()
+{
+	if (cl.qh_laststop == cl.qh_serverTimeFloat)
+	{
+		return;		// something else is keeping it from drifting
+	}
+	if (cl.qh_nodrift || !cl.qh_pitchvel)
+	{
+		cl.qh_pitchvel = v_centerspeed->value;
+		cl.qh_nodrift = false;
+		cl.qh_driftmove = 0;
+	}
+}
+
+void CLQH_StopPitchDrift()
+{
+	cl.qh_laststop = cl.qh_serverTimeFloat;
+	cl.qh_nodrift = true;
+	cl.qh_pitchvel = 0;
+}
+
+void IN_CenterView()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		CLQH_StartPitchDrift();
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[PITCH]);
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q3_snap.ps.delta_angles[PITCH]);
+	}
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
@@ -467,6 +506,7 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("-speed", IN_SpeedUp);
 	Cmd_AddCommand("+attack", IN_Button0Down);
 	Cmd_AddCommand("-attack", IN_Button0Up);
+	Cmd_AddCommand("centerview",IN_CenterView);
 	if (GGameType & GAME_QuakeHexen)
 	{
 		Cmd_AddCommand("+jump", IN_Button1Down);
@@ -514,5 +554,10 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("-button13", IN_Button13Up);
 		Cmd_AddCommand("+button14", IN_Button14Down);
 		Cmd_AddCommand("-button14", IN_Button14Up);
+	}
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
 	}
 }

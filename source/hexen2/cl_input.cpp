@@ -44,7 +44,7 @@ void IN_MLookDown (void) {in_mlooking = true;}
 void IN_MLookUp (void) {
 in_mlooking = false;
 if (lookspring->value)
-	V_StartPitchDrift();
+	IN_CenterView();
 }
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
@@ -90,7 +90,7 @@ void CL_AdjustAngles (void)
 	}
 	if (in_klook.active)
 	{
-		V_StopPitchDrift ();
+		CLQH_StopPitchDrift ();
 		cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_forward);
 		cl.viewangles[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_back);
 	}
@@ -113,7 +113,7 @@ void CL_AdjustAngles (void)
 	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * down;
 
 	if (up || down)
-		V_StopPitchDrift ();
+		CLQH_StopPitchDrift ();
 		
 	if (cl.viewangles[PITCH] > 80)
 		cl.viewangles[PITCH] = 80;
@@ -238,7 +238,7 @@ void CL_MouseMove(h2usercmd_t *cmd)
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
 	if (in_mlooking)
-		V_StopPitchDrift ();
+		CLQH_StopPitchDrift ();
 		
 	if (in_mlooking && !in_strafe.active)
 	{

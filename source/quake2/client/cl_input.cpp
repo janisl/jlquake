@@ -285,11 +285,6 @@ q2usercmd_t CL_CreateCmd (void)
 }
 
 
-void IN_CenterView (void)
-{
-	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[PITCH]);
-}
-
 static void IN_MLookDown()
 {
 	in_mlooking = true;
@@ -310,7 +305,6 @@ CL_InitInput
 void CL_InitInput (void)
 {
 	CL_InitInputCommon();
-	Cmd_AddCommand ("centerview",IN_CenterView);
 
 	Cmd_AddCommand ("impulse", IN_Impulse);
 	Cmd_AddCommand ("+klook", IN_KLookDown);
