@@ -123,10 +123,6 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 //
 // cl_input
 //
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
 void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_ClearState (void);

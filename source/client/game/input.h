@@ -38,11 +38,11 @@ extern kbutton_t in_speed;
 extern kbutton_t in_up;
 extern kbutton_t in_down;
 
-extern kbutton_t in_mlook;
-
 extern kbutton_t in_klook;
 
 extern kbutton_t in_buttons[16];
+
+extern bool in_mlooking;
 
 void IN_KeyDown(kbutton_t* b);
 void IN_KeyUp(kbutton_t* b);

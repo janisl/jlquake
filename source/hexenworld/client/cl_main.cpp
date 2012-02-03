@@ -1127,7 +1127,7 @@ void Host_WriteConfiguration (const char *fname)
 		Key_WriteBindings (f);
 		Cvar_WriteVariables (f);
 
-		if (in_mlook.active)		//if mlook was down, keep it that way
+		if (in_mlooking)		//if mlook was down, keep it that way
 			FS_Printf(f, "+mlook\n");
 
 		FS_FCloseFile(f);

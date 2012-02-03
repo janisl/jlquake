@@ -55,10 +55,10 @@ static int	mouse_move_y;
 
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
-void IN_MLookDown (void) {IN_KeyDown(&in_mlook);}
+void IN_MLookDown (void) {in_mlooking = true;}
 void IN_MLookUp (void) {
-IN_KeyUp(&in_mlook);
-if ( !in_mlook.active &&  lookspring->value)
+in_mlooking = false;
+if (lookspring->value)
 	V_StartPitchDrift();
 }
 
@@ -201,15 +201,15 @@ void CL_MouseMove(qwusercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( in_strafe.active || (lookstrafe->value && in_mlook.active ))
+	if ( in_strafe.active || (lookstrafe->value && in_mlooking))
 		cmd->sidemove += m_side->value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
-	if (in_mlook.active)
+	if (in_mlooking)
 		V_StopPitchDrift ();
 		
-	if (in_mlook.active && !in_strafe.active)
+	if (in_mlooking && !in_strafe.active)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 		if (cl.viewangles[PITCH] > 80)
@@ -415,13 +415,3 @@ void CL_InitInput (void)
 	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
     m_filter = Cvar_Get("m_filter", "0", 0);
 }
-
-/*
-============
-CL_ClearStates
-============
-*/
-void CL_ClearStates (void)
-{
-}
-

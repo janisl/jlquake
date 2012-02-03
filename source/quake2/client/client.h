@@ -143,10 +143,6 @@ void CL_RequestNextDownload (void);
 //
 // cl_input
 //
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
 void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_SendMove (q2usercmd_t *cmd);

@@ -40,10 +40,10 @@ static int	old_mouse_x, old_mouse_y;
 
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
-void IN_MLookDown (void) {IN_KeyDown(&in_mlook);}
+void IN_MLookDown (void) {in_mlooking = true;}
 void IN_MLookUp (void) {
-IN_KeyUp(&in_mlook);
-if ( !(in_mlook.active) &&  lookspring->value)
+in_mlooking = false;
+if (lookspring->value)
 	V_StartPitchDrift();
 }
 
@@ -232,15 +232,15 @@ void CL_MouseMove(h2usercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if (in_strafe.active || (lookstrafe->value && in_mlook.active))
+	if (in_strafe.active || (lookstrafe->value && in_mlooking))
 		cmd->sidemove += m_side->value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
-	if (in_mlook.active)
+	if (in_mlooking)
 		V_StopPitchDrift ();
 		
-	if (in_mlook.active && !in_strafe.active)
+	if (in_mlooking && !in_strafe.active)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 		if (cl.viewangles[PITCH] > 80)
@@ -409,36 +409,4 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
     m_filter = Cvar_Get("m_filter", "0", 0);
-}
-
-static void ClearState(kbutton_t& button)
-{
-	button.active = false;
-	button.wasPressed = false;
-}
-
-/*
-============
-CL_ClearStates
-============
-*/
-void CL_ClearStates (void)
-{
-	ClearState(in_mlook);
-	ClearState(in_klook);
-	ClearState(in_left);
-	ClearState(in_right);
-	ClearState(in_forward);
-	ClearState(in_back);
-	ClearState(in_lookup);
-	ClearState(in_lookdown);
-	ClearState(in_moveleft);
-	ClearState(in_moveright);
-	ClearState(in_strafe);
-	ClearState(in_speed);
-	ClearState(in_buttons[1]);
-	ClearState(in_buttons[0]);
-	ClearState(in_up);
-	ClearState(in_down);
-	ClearState(in_buttons[2]);
 }

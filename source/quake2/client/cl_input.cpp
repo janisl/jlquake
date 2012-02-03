@@ -60,8 +60,6 @@ static int	mouse_move_x;
 static int	mouse_move_y;
 static int	old_mouse_x, old_mouse_y;
 
-static qboolean	mlooking;
-
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
 
@@ -182,12 +180,12 @@ void CL_MouseMove(q2usercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( in_strafe.active || (lookstrafe->value && mlooking ))
+	if ( in_strafe.active || (lookstrafe->value && in_mlooking ))
 		cmd->sidemove += m_side->value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
-	if ( (mlooking || freelook->value) && !in_strafe.active)
+	if ( (in_mlooking || freelook->value) && !in_strafe.active)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 	}
@@ -294,12 +292,12 @@ void IN_CenterView (void)
 
 static void IN_MLookDown()
 {
-	mlooking = true;
+	in_mlooking = true;
 }
 
 static void IN_MLookUp()
 {
-	mlooking = false;
+	in_mlooking = false;
 	if (!freelook->value && lookspring->value)
 		IN_CenterView ();
 }
