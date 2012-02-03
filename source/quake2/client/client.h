@@ -65,7 +65,6 @@ extern	Cvar	*cl_shownet;
 extern	Cvar	*cl_showmiss;
 extern	Cvar	*cl_showclamp;
 
-extern	Cvar	*lookspring;
 extern	Cvar	*lookstrafe;
 extern	Cvar	*sensitivity;
 

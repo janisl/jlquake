@@ -38,7 +38,6 @@ extern	Cvar*	cl_anglespeedkey;
 
 extern	Cvar*	cl_shownet;
 
-extern	Cvar*	lookspring;
 extern	Cvar*	lookstrafe;
 extern	Cvar*	sensitivity;
 

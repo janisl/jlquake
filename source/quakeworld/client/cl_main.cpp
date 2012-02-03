@@ -43,7 +43,6 @@ Cvar*	cl_sbar;
 Cvar*	cl_hudswap;
 Cvar*	cl_maxfps;
 
-Cvar*	lookspring;
 Cvar*	lookstrafe;
 Cvar*	sensitivity;
 
@@ -1046,7 +1045,6 @@ void CL_Init (void)
 	cl_hudswap	= Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_maxfps	= Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
-	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
 	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
 	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
 

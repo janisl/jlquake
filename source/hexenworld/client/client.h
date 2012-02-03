@@ -62,7 +62,6 @@ extern	Cvar*	cl_shownet;
 extern	Cvar*	cl_sbar;
 extern	Cvar*	cl_hudswap;
 
-extern	Cvar*	lookspring;
 extern	Cvar*	lookstrafe;
 extern	Cvar*	sensitivity;
 

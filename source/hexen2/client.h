@@ -27,7 +27,6 @@ extern  Cvar*	cl_prettylights;
 
 extern	Cvar*	cl_shownet;
 
-extern	Cvar*	lookspring;
 extern	Cvar*	lookstrafe;
 extern	Cvar*	sensitivity;
 

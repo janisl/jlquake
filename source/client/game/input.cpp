@@ -38,6 +38,7 @@ kbutton_t in_klook;
 bool in_mlooking;
 
 Cvar* v_centerspeed;
+Cvar* lookspring;
 
 void IN_KeyDown(kbutton_t* b)
 {
@@ -549,5 +550,9 @@ void CL_InitInputCommon()
 	if (GGameType & GAME_QuakeHexen)
 	{
 		v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
+	}
+	if (!(GGameType & GAME_Quake3))
+	{
+		lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
 	}
 }

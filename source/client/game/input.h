@@ -45,6 +45,7 @@ extern kbutton_t in_buttons[16];
 extern bool in_mlooking;
 
 extern Cvar* v_centerspeed;
+extern Cvar* lookspring;
 
 void IN_KeyDown(kbutton_t* b);
 void IN_KeyUp(kbutton_t* b);
