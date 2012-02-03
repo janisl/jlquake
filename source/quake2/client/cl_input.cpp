@@ -185,7 +185,7 @@ void CL_MouseMove(q2usercmd_t *cmd)
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 
-	if ( (in_mlooking || freelook->value) && !in_strafe.active)
+	if ( (in_mlooking || cl_freelook->value) && !in_strafe.active)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 	}
@@ -293,7 +293,7 @@ static void IN_MLookDown()
 static void IN_MLookUp()
 {
 	in_mlooking = false;
-	if (!freelook->value && lookspring->value)
+	if (!cl_freelook->value && lookspring->value)
 		IN_CenterView ();
 }
 

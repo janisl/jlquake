@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "../../core/file_formats/md2.h"
 
-Cvar	*freelook;
-
 Cvar	*adr0;
 Cvar	*adr1;
 Cvar	*adr2;
@@ -1428,7 +1426,6 @@ void CL_InitLocal (void)
 	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", 0);
 
 	cl_run = Cvar_Get ("cl_run", "0", CVAR_ARCHIVE);
-	freelook = Cvar_Get( "freelook", "0", CVAR_ARCHIVE );
 	lookstrafe = Cvar_Get ("lookstrafe", "0", CVAR_ARCHIVE);
 	sensitivity = Cvar_Get ("sensitivity", "3", CVAR_ARCHIVE);
 

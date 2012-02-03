@@ -37,6 +37,7 @@ kbutton_t in_klook;
 
 bool in_mlooking;
 
+Cvar* cl_freelook;
 Cvar* v_centerspeed;
 Cvar* lookspring;
 
@@ -547,6 +548,7 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("-button14", IN_Button14Up);
 	}
 
+	cl_freelook = Cvar_Get("cl_freelook", "1", CVAR_ARCHIVE);
 	if (GGameType & GAME_QuakeHexen)
 	{
 		v_centerspeed = Cvar_Get("v_centerspeed","500", 0);

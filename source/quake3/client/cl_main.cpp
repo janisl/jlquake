@@ -48,7 +48,6 @@ Cvar	*cl_timedemo;
 Cvar	*cl_avidemo;
 Cvar	*cl_forceavidemo;
 
-Cvar	*cl_freelook;
 Cvar	*cl_sensitivity;
 
 Cvar	*cl_mouseAccel;
@@ -2206,7 +2205,6 @@ void CL_Init( void ) {
 	cl_run = Cvar_Get ("cl_run", "1", CVAR_ARCHIVE);
 	cl_sensitivity = Cvar_Get ("sensitivity", "5", CVAR_ARCHIVE);
 	cl_mouseAccel = Cvar_Get ("cl_mouseAccel", "0", CVAR_ARCHIVE);
-	cl_freelook = Cvar_Get( "cl_freelook", "1", CVAR_ARCHIVE );
 
 	cl_showMouseRate = Cvar_Get ("cl_showmouserate", "0", 0);
 

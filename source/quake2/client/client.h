@@ -73,8 +73,6 @@ extern	Cvar	*m_yaw;
 extern	Cvar	*m_forward;
 extern	Cvar	*m_side;
 
-extern	Cvar	*freelook;
-
 extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
 extern	Cvar	*cl_paused;

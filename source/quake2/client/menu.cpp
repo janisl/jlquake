@@ -1051,7 +1051,7 @@ static void AlwaysRunFunc( void *unused )
 
 static void FreeLookFunc( void *unused )
 {
-	Cvar_SetValueLatched( "freelook", s_options_freelook_box.curvalue );
+	Cvar_SetValueLatched( "cl_freelook", s_options_freelook_box.curvalue );
 }
 
 static void MouseSpeedFunc( void *unused )
@@ -1083,8 +1083,8 @@ static void ControlsSetMenuItemValues( void )
 	Cvar_SetValueLatched( "lookstrafe", ClampCvar( 0, 1, lookstrafe->value ) );
 	s_options_lookstrafe_box.curvalue		= lookstrafe->value;
 
-	Cvar_SetValueLatched( "freelook", ClampCvar( 0, 1, freelook->value ) );
-	s_options_freelook_box.curvalue			= freelook->value;
+	Cvar_SetValueLatched( "cl_freelook", ClampCvar( 0, 1, cl_freelook->value ) );
+	s_options_freelook_box.curvalue			= cl_freelook->value;
 
 	Cvar_SetValueLatched( "crosshair", ClampCvar( 0, 3, crosshair->value ) );
 	s_options_crosshair_box.curvalue		= crosshair->value;

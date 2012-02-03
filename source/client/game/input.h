@@ -44,6 +44,7 @@ extern kbutton_t in_buttons[16];
 
 extern bool in_mlooking;
 
+extern Cvar* cl_freelook;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
