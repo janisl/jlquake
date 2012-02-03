@@ -1845,12 +1845,7 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_ALWAYSMLOOK:	
-		if (in_mlooking)
-			//IN_MLookUp();
-			Cbuf_AddText("-mlook");
-		else
-			//IN_MLookDown();
-			Cbuf_AddText("+mlook");
+		Cvar_SetValue ("cl_freelook", !cl_freelook->value);
 		break;
 	}
 }
@@ -1939,7 +1934,7 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair->value);
 
 	M_Print (16,60+(OPT_ALWAYSMLOOK*8),	"            Mouse Look");
-	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlooking);
+	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), cl_freelook->value);
 
 	M_Print (16, 60+(OPT_VIDEO*8),	"         Video Options");
 
