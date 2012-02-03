@@ -57,12 +57,6 @@ static int	mouse_move_y;
 
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
-void IN_MLookDown (void) {in_mlooking = true;}
-void IN_MLookUp (void) {
-in_mlooking = false;
-if (lookspring->value)
-	IN_CenterView();
-}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -335,8 +329,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("impulse", IN_Impulse);
 	Cmd_AddCommand ("+klook", IN_KLookDown);
 	Cmd_AddCommand ("-klook", IN_KLookUp);
-	Cmd_AddCommand ("+mlook", IN_MLookDown);
-	Cmd_AddCommand ("-mlook", IN_MLookUp);
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
 	m_filter = Cvar_Get("m_filter", "0", 0);

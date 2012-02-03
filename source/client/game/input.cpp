@@ -470,6 +470,20 @@ void IN_CenterView()
 	}
 }
 
+static void IN_MLookDown()
+{
+	in_mlooking = true;
+}
+
+static void IN_MLookUp()
+{
+	in_mlooking = false;
+	if (!cl_freelook->value && (!(GGameType & GAME_Quake3) || lookspring->value))
+	{
+		IN_CenterView();
+	}
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
@@ -498,6 +512,8 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("-speed", IN_SpeedUp);
 	Cmd_AddCommand("+attack", IN_Button0Down);
 	Cmd_AddCommand("-attack", IN_Button0Up);
+	Cmd_AddCommand("+mlook", IN_MLookDown);
+	Cmd_AddCommand("-mlook", IN_MLookUp);
 	Cmd_AddCommand("centerview",IN_CenterView);
 	if (GGameType & GAME_QuakeHexen)
 	{

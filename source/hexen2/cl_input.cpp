@@ -40,12 +40,6 @@ static int	old_mouse_x, old_mouse_y;
 
 void IN_KLookDown (void) {IN_KeyDown(&in_klook);}
 void IN_KLookUp (void) {IN_KeyUp(&in_klook);}
-void IN_MLookDown (void) {in_mlooking = true;}
-void IN_MLookUp (void) {
-in_mlooking = false;
-if (lookspring->value)
-	IN_CenterView();
-}
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
@@ -398,8 +392,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("impulse", IN_Impulse);
 	Cmd_AddCommand ("+klook", IN_KLookDown);
 	Cmd_AddCommand ("-klook", IN_KLookUp);
-	Cmd_AddCommand ("+mlook", IN_MLookDown);
-	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
 #ifdef MISSIONPACK
 	Cmd_AddCommand ("+infoplaque", IN_infoPlaqueDown);

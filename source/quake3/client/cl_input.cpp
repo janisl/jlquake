@@ -47,18 +47,6 @@ at the same time.
 
 
 
-
-void IN_MLookDown( void ) {
-	in_mlooking = qtrue;
-}
-
-void IN_MLookUp( void ) {
-	in_mlooking = qfalse;
-	if ( !cl_freelook->integer ) {
-		IN_CenterView ();
-	}
-}
-
 //==========================================================================
 
 Cvar	*cl_upspeed;
@@ -636,9 +624,6 @@ CL_InitInput
 */
 void CL_InitInput( void ) {
 	CL_InitInputCommon();
-
-	Cmd_AddCommand ("+mlook", IN_MLookDown);
-	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
 	cl_debugMove = Cvar_Get ("cl_debugMove", "0", 0);
