@@ -398,16 +398,6 @@ static void IN_Button14Up()
 	IN_KeyUp(&in_buttons[14]);
 }
 
-static void IN_Button15Down()
-{
-	IN_KeyDown(&in_buttons[15]);
-}
-
-static void IN_Button15Up()
-{
-	IN_KeyUp(&in_buttons[15]);
-}
-
 //	Returns the fraction of the frame that the key was down
 float CL_KeyState(kbutton_t* key)
 {
