@@ -98,7 +98,7 @@ bool Cmd_HandleNullCommand(const char* text)
 
 void Cmd_HandleUnknownCommand()
 {
-    if (cl_warncmd->value || developer->value)
+    if (cl_warncmd->value || com_developer->value)
 		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
 }
 

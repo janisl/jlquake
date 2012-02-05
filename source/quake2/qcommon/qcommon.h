@@ -278,7 +278,6 @@ void		Com_SetServerState (int state);
 
 byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
-extern	Cvar	*developer;
 extern	Cvar	*host_speeds;
 extern	Cvar	*log_stats;
 

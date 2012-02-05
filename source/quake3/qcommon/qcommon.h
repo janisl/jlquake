@@ -244,7 +244,6 @@ void		Com_StartupVariable( const char *match );
 // only a set with the exact name.  Only used during startup.
 
 
-extern	Cvar	*com_developer;
 extern	Cvar	*com_speeds;
 extern	Cvar	*com_sv_running;
 extern	Cvar	*com_cl_running;

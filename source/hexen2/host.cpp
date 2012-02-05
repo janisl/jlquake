@@ -55,8 +55,6 @@ Cvar*	teamplay;
 Cvar*	samelevel;
 Cvar*	noexit;
 
-Cvar*	developer;
-
 Cvar*	skill;						// 0 - 3
 Cvar*	deathmatch;			// 0, 1, or 2
 Cvar*	randomclass;			// 0, 1, or 2
@@ -274,8 +272,6 @@ void Host_InitLocal (void)
 	deathmatch = Cvar_Get("deathmatch", "0", 0);			// 0, 1, or 2
 	randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
 	coop = Cvar_Get("coop", "0", 0);			// 0 or 1
-
-	developer = Cvar_Get("developer", "0", CVAR_ARCHIVE);
 
 	pausable = Cvar_Get("pausable", "1", 0);
 

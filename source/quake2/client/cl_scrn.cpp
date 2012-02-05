@@ -554,7 +554,7 @@ void SCR_BeginLoadingPlaque(bool Clear)
 	CDAudio_Stop ();
 	if (cls.disable_screen)
 		return;
-	if (developer->value)
+	if (com_developer->value)
 		return;
 	if (cls.state == CA_DISCONNECTED)
 		return;	// if at console, don't bring up the plaque

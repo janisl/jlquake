@@ -72,7 +72,6 @@ int			host_hunklevel;
 netadr_t	master_adr;				// address of the master server
 
 Cvar*	host_speeds;
-Cvar*	developer;
 
 int			fps_count;
 
@@ -958,7 +957,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
 
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
-	developer = Cvar_Get("developer", "0", 0);
 
 	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
 	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);

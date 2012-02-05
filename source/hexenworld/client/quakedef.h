@@ -55,8 +55,6 @@ extern qboolean noclip_anglehack;
 //
 extern	quakeparms_t host_parms;
 
-extern	Cvar*		developer;
-
 extern	Cvar*	password;
 extern	Cvar*  talksounds;
 

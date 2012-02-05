@@ -24,6 +24,8 @@ Cvar* com_timescale;
 
 Cvar* com_journal;
 
+Cvar* com_developer;
+
 fileHandle_t com_journalFile;			// events are written here
 fileHandle_t com_journalDataFile;		// config files are written here
 
@@ -687,4 +689,5 @@ void COM_InitCommonCvars()
 {
 	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
 	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
+	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
 }
