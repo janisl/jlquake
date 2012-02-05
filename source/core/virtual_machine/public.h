@@ -15,3 +15,6 @@
 //**************************************************************************
 
 void VM_Debug(int level);
+
+#define VMA(x)	VM_ArgPtr(args[x])
+#define VMF(x)	((float*)args)[x]
