@@ -104,20 +104,20 @@ Dlls will call this directly
   JL: On 64 bit stack contains 64 bit values.
 ============
 */
-int VM_DllSyscall(int arg, ...)
+int VM_DllSyscall(qintptr arg, ...)
 {
 #if id386
 	return currentVM->systemCall(&arg);
 #else
 	// rcg010206 - see commentary above
-	int args[16];
+	qintptr args[16];
 	args[0] = arg;
 
 	va_list ap;
 	va_start(ap, arg);
 	for (int i = 1; i < (int)(sizeof (args) / sizeof (args[i])); i++)
 	{
-		args[i] = va_arg(ap, int);
+		args[i] = va_arg(ap, qintptr);
 	}
 	va_end(ap);
 
@@ -143,7 +143,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	// DLL's can't be restarted in place
 	if ( vm->dllHandle ) {
 		char	name[MAX_QPATH];
-	    int			(*systemCall)( int *parms );
+	    int			(*systemCall)( qintptr *parms );
 		
 		systemCall = vm->systemCall;	
 		String::NCpyZ( name, vm->name, sizeof( name ) );
@@ -214,7 +214,7 @@ it will attempt to load as a system dll
 
 #define	STACK_SIZE	0x20000
 
-vm_t *VM_Create( const char *module, int (*systemCalls)(int *), 
+vm_t *VM_Create( const char *module, int (*systemCalls)(qintptr*), 
 				vmInterpret_t interpret ) {
 	vm_t		*vm;
 	vmHeader_t	*header;
@@ -422,7 +422,7 @@ locals from sp
 #define	MAX_STACK	256
 #define	STACK_MASK	(MAX_STACK-1)
 
-int VM_Call(vm_t* vm, int callnum, ...)
+qintptr VM_Call(vm_t* vm, int callnum, ...)
 {
 	if (!vm)
 	{
@@ -454,7 +454,7 @@ int VM_Call(vm_t* vm, int callnum, ...)
 #endif
 
 	// if we have a dll loaded, call it directly
-	int r;
+	qintptr r;
 	if (vm->entryPoint)
 	{
 		r = vm->entryPoint(callnum,  args[1],  args[2],  args[3], args[4],

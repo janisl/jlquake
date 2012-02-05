@@ -115,7 +115,7 @@ struct vmSymbol_t
 struct vm_t
 {
     int programStack;		// the vm may be recursively entered
-    int (*systemCall)( int *parms );
+    int (*systemCall)(qintptr* parms);
 
 	//------------------------------------
    
@@ -123,7 +123,7 @@ struct vm_t
 
 	// for dynamic linked modules
 	void* dllHandle;
-	int (*entryPoint)(int callNum, ...);
+	qintptr (*entryPoint)(int callNum, ...);
 
 	// for interpreted modules
 	bool currentlyInterpreting;
@@ -156,10 +156,10 @@ extern vm_t* currentVM;
 const char* VM_ValueToSymbol(vm_t* vm, int value);
 vmSymbol_t* VM_ValueToFunctionSymbol(vm_t* vm, int value);
 void VM_LoadSymbols(vm_t* vm);
-void VM_LogSyscalls(int* args);
+void VM_LogSyscalls(qintptr* args);
 
 void VM_PrepareInterpreter(vm_t* vm, vmHeader_t* header);
-int VM_CallInterpreted(vm_t* vm, int* args);
+qintptr VM_CallInterpreted(vm_t* vm, int* args);
 
 void VM_Compile(vm_t* vm, vmHeader_t* header);
-int VM_CallCompiled(vm_t* vm, int* args);
+qintptr VM_CallCompiled(vm_t* vm, int* args);

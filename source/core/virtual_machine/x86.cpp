@@ -1110,7 +1110,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 }
 
 //	This function is called directly by the generated code
-int VM_CallCompiled(vm_t* vm, int* args)
+qintptr VM_CallCompiled(vm_t* vm, int* args)
 {
 	int* oldInstructionPointers = instructionPointers;
 

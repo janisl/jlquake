@@ -110,7 +110,7 @@ void VM_LoadSymbols(vm_t* vm)
 	char symbols[MAX_QPATH];
 	String::Sprintf(symbols, sizeof(symbols), "vm/%s.map", name);
 	void* mapfile;
-	int len = FS_ReadFile(symbols, &mapfile);
+	FS_ReadFile(symbols, &mapfile);
 	if (!mapfile)
 	{
 		Log::write("Couldn't load symbol file: %s\n", symbols);
@@ -178,7 +178,7 @@ void VM_LoadSymbols(vm_t* vm)
 }
 
 //	Insert calls to this while debugging the vm compiler
-void VM_LogSyscalls(int* args)
+void VM_LogSyscalls(qintptr* args)
 {
 	static int callnum;
 	static FILE* f;
@@ -188,11 +188,11 @@ void VM_LogSyscalls(int* args)
 		f = fopen("syscalls.log", "w");
 	}
 	callnum++;
-	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, (int)(args - (int*)currentVM->dataBase),
-		args[0], args[1], args[2], args[3], args[4]);
+	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, (int)((int*)args - (int*)currentVM->dataBase),
+		(int)args[0], (int)args[1], (int)args[2], (int)args[3], (int)args[4]);
 }
 
-void* VM_ArgPtr(int intValue)
+void* VM_ArgPtr(qintptr intValue)
 {
 	if (!intValue)
 	{
@@ -214,7 +214,7 @@ void* VM_ArgPtr(int intValue)
 	}
 }
 
-void* VM_ExplicitArgPtr(vm_t* vm, int intValue)
+void* VM_ExplicitArgPtr(vm_t* vm, qintptr intValue)
 {
 	if (!intValue)
 	{
