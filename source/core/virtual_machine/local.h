@@ -155,6 +155,7 @@ extern vm_t* currentVM;
 
 const char* VM_ValueToSymbol(vm_t* vm, int value);
 vmSymbol_t* VM_ValueToFunctionSymbol(vm_t* vm, int value);
+void VM_LoadSymbols(vm_t* vm);
 void VM_LogSyscalls(int* args);
 
 void VM_PrepareInterpreter(vm_t* vm, vmHeader_t* header);
