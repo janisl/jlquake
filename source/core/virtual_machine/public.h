@@ -14,7 +14,11 @@
 //**
 //**************************************************************************
 
+struct vm_t;
+
 void VM_Debug(int level);
+void* VM_ArgPtr(int intValue);
+void* VM_ExplicitArgPtr(vm_t* vm, int intValue);
 
 #define VMA(x)	VM_ArgPtr(args[x])
 #define VMF(x)	((float*)args)[x]

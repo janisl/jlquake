@@ -396,41 +396,6 @@ void VM_Clear()
 	lastVM = NULL;
 }
 
-void *VM_ArgPtr( int intValue ) {
-	if ( !intValue ) {
-		return NULL;
-	}
-	// bk001220 - currentVM is missing on reconnect
-	if ( currentVM==NULL )
-	  return NULL;
-
-	if ( currentVM->entryPoint ) {
-		return (void *)(currentVM->dataBase + intValue);
-	}
-	else {
-		return (void *)(currentVM->dataBase + (intValue & currentVM->dataMask));
-	}
-}
-
-void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
-	if ( !intValue ) {
-		return NULL;
-	}
-
-	// bk010124 - currentVM is missing on reconnect here as well?
-	if ( currentVM==NULL )
-	  return NULL;
-
-	//
-	if ( vm->entryPoint ) {
-		return (void *)(vm->dataBase + intValue);
-	}
-	else {
-		return (void *)(vm->dataBase + (intValue & vm->dataMask));
-	}
-}
-
-
 /*
 ==============
 VM_Call

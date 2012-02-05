@@ -757,8 +757,6 @@ static int FloatAsInt( float f ) {
 	return temp;
 }
 
-void *VM_ArgPtr( int intValue );
-
 /*
 ====================
 CL_UISystemCalls
