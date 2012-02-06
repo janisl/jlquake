@@ -226,7 +226,7 @@ static void V_DriftRoll (void)
 
 	if (view_message->onground == -1 || clc.demoplaying)
 	{
-		if(cl.h2_v.movetype != MOVETYPE_FLY)
+		if(cl.h2_v.movetype != QHMOVETYPE_FLY)
 		{
 			cl.h2_rollvel = 0;
 			return;
@@ -234,7 +234,7 @@ static void V_DriftRoll (void)
 	}
 
 
-	if(cl.h2_v.movetype != MOVETYPE_FLY)
+	if(cl.h2_v.movetype != QHMOVETYPE_FLY)
 		rollspeed = v_centerrollspeed->value;
 	else
 		rollspeed = v_centerrollspeed->value * .5;	//slower roll when flying
@@ -683,7 +683,7 @@ static void V_CalcRefdef (void)
 // view is the weapon model (only visible from inside body)
 	view = &cl.h2_viewent;
 
-	if (cl.h2_v.movetype != MOVETYPE_FLY)
+	if (cl.h2_v.movetype != QHMOVETYPE_FLY)
 		bob = V_CalcBob ();
 	else  // no bobbing when you fly
 		bob = 1;

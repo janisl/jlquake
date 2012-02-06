@@ -56,13 +56,6 @@ Cvar	*cl_showclamp;
 Cvar	*cl_paused;
 Cvar	*cl_timedemo;
 
-Cvar	*sensitivity;
-
-Cvar	*m_pitch;
-Cvar	*m_yaw;
-Cvar	*m_forward;
-Cvar	*m_side;
-
 Cvar	*cl_lightlevel;
 
 //
@@ -1421,12 +1414,6 @@ void CL_InitLocal (void)
 	cl_pitchspeed = Cvar_Get ("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", 0);
 
-	sensitivity = Cvar_Get ("sensitivity", "3", CVAR_ARCHIVE);
-
-	m_pitch = Cvar_Get ("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get ("m_yaw", "0.022", 0);
-	m_forward = Cvar_Get ("m_forward", "1", 0);
-	m_side = Cvar_Get ("m_side", "1", 0);
 
 	cl_shownet = Cvar_Get ("cl_shownet", "0", 0);
 	cl_showmiss = Cvar_Get ("cl_showmiss", "0", 0);

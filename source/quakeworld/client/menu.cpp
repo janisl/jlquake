@@ -359,12 +359,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("r_gamma", r_gamma->value);
 		break;
 	case 5:	// mouse speed
-		sensitivity->value += dir * 0.5;
-		if (sensitivity->value < 1)
-			sensitivity->value = 1;
-		if (sensitivity->value > 11)
-			sensitivity->value = 11;
-		Cvar_SetValue ("sensitivity", sensitivity->value);
+		cl_sensitivity->value += dir * 0.5;
+		if (cl_sensitivity->value < 1)
+			cl_sensitivity->value = 1;
+		if (cl_sensitivity->value > 11)
+			cl_sensitivity->value = 11;
+		Cvar_SetValue ("sensitivity", cl_sensitivity->value);
 		break;
 	case 6:	// music volume
 #ifdef _WIN32
@@ -469,7 +469,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");
-	r = (sensitivity->value - 1)/10;
+	r = (cl_sensitivity->value - 1)/10;
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");

@@ -324,7 +324,7 @@ void PM_Friction (void)
 	drop = 0;
 
 // apply ground friction
-	if ((onground != -1)||(pmove.movetype == MOVETYPE_FLY))
+	if ((onground != -1)||(pmove.movetype == QHMOVETYPE_FLY))
 	{
 		friction = movevars.friction;
 		control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
@@ -1003,7 +1003,7 @@ void PlayerMove (void)
 	frametime = pmove.cmd.msec * 0.001;
 	pmove.numtouch = 0;
 
-	if(pmove.movetype == MOVETYPE_NONE)
+	if(pmove.movetype == QHMOVETYPE_NONE)
 	{
 		pmove.oldbuttons = 0;
 		pmove.cmd.buttons = 0;
@@ -1049,7 +1049,7 @@ void PlayerMove (void)
 	}
 	else
 	{
-		if (pmove.movetype == MOVETYPE_FLY)
+		if (pmove.movetype == QHMOVETYPE_FLY)
 			PM_FlyingMove();
 		else
 			PM_AirMove ();

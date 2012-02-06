@@ -1068,7 +1068,7 @@ static void ControlsSetMenuItemValues( void )
 {
 	s_options_sfxvolume_slider.curvalue		= Cvar_VariableValue( "s_volume" ) * 10;
 	s_options_cdvolume_box.curvalue 		= !Cvar_VariableValue("cd_nocd");
-	s_options_sensitivity_slider.curvalue	= ( sensitivity->value ) * 2;
+	s_options_sensitivity_slider.curvalue	= ( cl_sensitivity->value ) * 2;
 
 	Cvar_SetValueLatched( "cl_run", ClampCvar( 0, 1, cl_run->value ) );
 	s_options_alwaysrun_box.curvalue		= cl_run->value;

@@ -19,13 +19,7 @@ Cvar*	cl_playerclass;
 
 Cvar*	cl_shownet;
 
-Cvar*	sensitivity;
 static float save_sensitivity;
-
-Cvar*	m_pitch;
-Cvar*	m_yaw;
-Cvar*	m_forward;
-Cvar*	m_side;
 
 Cvar	*cl_lightlevel;
 
@@ -609,7 +603,7 @@ void CL_Sensitivity_save_f (void)
 	}
 
 	if (String::ICmp(Cmd_Argv(1),"save") == 0)
-		save_sensitivity = sensitivity->value;
+		save_sensitivity = cl_sensitivity->value;
 	else if (String::ICmp(Cmd_Argv(1),"restore") == 0)
 		Cvar_SetValue ("sensitivity", save_sensitivity);
 }
@@ -636,12 +630,7 @@ void CL_Init (void)
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
-	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
 
-	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
-	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
-	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);
 
 	cl_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);

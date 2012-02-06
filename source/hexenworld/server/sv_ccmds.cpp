@@ -201,14 +201,14 @@ void SV_Noclip_f (void)
 	if (!SV_SetPlayer ())
 		return;
 
-	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
 	{
-		sv_player->SetMoveType(MOVETYPE_NOCLIP);
+		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
 		SV_ClientPrintf (host_client, PRINT_HIGH, "noclip ON\n");
 	}
 	else
 	{
-		sv_player->SetMoveType(MOVETYPE_WALK);
+		sv_player->SetMoveType(QHMOVETYPE_WALK);
 		SV_ClientPrintf (host_client, PRINT_HIGH, "noclip OFF\n");
 	}
 }

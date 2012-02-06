@@ -65,17 +65,6 @@ extern	Cvar	*cl_yawspeed;
 extern	Cvar	*cl_pitchspeed;
 extern	Cvar	*cl_anglespeedkey;
 
-extern	Cvar	*cl_sensitivity;
-
-extern	Cvar	*cl_mouseAccel;
-extern	Cvar	*cl_showMouseRate;
-
-extern	Cvar	*m_pitch;
-extern	Cvar	*m_yaw;
-extern	Cvar	*m_forward;
-extern	Cvar	*m_side;
-extern	Cvar	*m_filter;
-
 extern	Cvar	*cl_timedemo;
 
 extern	Cvar	*cl_activeAction;

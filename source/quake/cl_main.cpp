@@ -26,13 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Cvar*	cl_shownet;
 
-Cvar*	sensitivity;
-
-Cvar*	m_pitch;
-Cvar*	m_yaw;
-Cvar*	m_forward;
-Cvar*	m_side;
-
 /*
 =====================
 CL_ClearState
@@ -259,12 +252,6 @@ void CL_Init (void)
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
-	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
-
-	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
-	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
-	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 
 	cl_doubleeyes = Cvar_Get("cl_doubleeyes", "1", 0);
 

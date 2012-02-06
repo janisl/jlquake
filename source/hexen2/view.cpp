@@ -718,7 +718,7 @@ static void V_CalcRefdef (void)
 										// the view dir
 										
 	
-	if (cl.h2_v.movetype != MOVETYPE_FLY)
+	if (cl.h2_v.movetype != QHMOVETYPE_FLY)
 		bob = V_CalcBob ();
 	else  // no bobbing when you fly
 		bob = 1;

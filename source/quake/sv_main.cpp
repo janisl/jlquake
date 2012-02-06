@@ -486,7 +486,7 @@ void SV_WriteEntitiesToClient (qhedict_t	*clent, QMsg *msg)
 		if ( ent->GetAngles()[2] != ent->q1_baseline.angles[2] )
 			bits |= Q1U_ANGLE3;
 			
-		if (ent->GetMoveType() == MOVETYPE_STEP)
+		if (ent->GetMoveType() == QHMOVETYPE_STEP)
 			bits |= Q1U_NOLERP;	// don't mess up the step animation
 	
 		if (ent->q1_baseline.colormap != ent->GetColorMap())
@@ -1123,7 +1123,7 @@ void SV_SpawnServer (char *server)
 	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
-	ent->SetMoveType(MOVETYPE_PUSH);
+	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	if (coop->value)
 		pr_global_struct->coop = coop->value;

@@ -806,9 +806,9 @@ skipA:
 				if (!DoMonsters)
 					IgnoreEnt = true;
 			}
-			else if (ent->GetMoveType() == MOVETYPE_FLYMISSILE ||
-					 ent->GetMoveType() == MOVETYPE_BOUNCEMISSILE ||
-					 ent->GetMoveType() == MOVETYPE_BOUNCE)
+			else if (ent->GetMoveType() == QHMOVETYPE_FLYMISSILE ||
+					 ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE ||
+					 ent->GetMoveType() == QHMOVETYPE_BOUNCE)
 			{
 				if (!DoMissiles)
 					IgnoreEnt = true;
@@ -908,7 +908,7 @@ skipA:
 			set_ent->angles[2] = ent->GetAngles()[2];
 		}
 			
-		if (ent->GetMoveType() == MOVETYPE_STEP)
+		if (ent->GetMoveType() == QHMOVETYPE_STEP)
 			bits |= H2U_NOLERP;	// don't mess up the step animation
 	
 		if (ref_ent->colormap != ent->GetColorMap())
@@ -2052,7 +2052,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
-	ent->SetMoveType(MOVETYPE_PUSH);
+	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	if (coop->value)
 		pr_global_struct->coop = coop->value;

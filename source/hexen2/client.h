@@ -11,8 +11,6 @@
 //
 extern	Cvar*	cl_playerclass;
 
-extern	Cvar*	cl_upspeed;
-
 extern	Cvar*	cl_yawspeed;
 extern	Cvar*	cl_pitchspeed;
 
@@ -21,13 +19,6 @@ extern	Cvar*	cl_anglespeedkey;
 extern  Cvar*	cl_prettylights;
 
 extern	Cvar*	cl_shownet;
-
-extern	Cvar*	sensitivity;
-
-extern	Cvar*	m_pitch;
-extern	Cvar*	m_yaw;
-extern	Cvar*	m_forward;
-extern	Cvar*	m_side;
 
 extern	Cvar	*cl_lightlevel;	// FIXME HACK
 

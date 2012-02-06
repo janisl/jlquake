@@ -148,60 +148,6 @@ void CL_JoystickMove( q3usercmd_t *cmd ) {
 }
 
 /*
-=================
-CL_MouseMove
-=================
-*/
-void CL_MouseMove( q3usercmd_t *cmd ) {
-	float	mx, my;
-	float	accelSensitivity;
-	float	rate;
-
-	// allow mouse smoothing
-	if ( m_filter->integer ) {
-		mx = ( cl.mouseDx[0] + cl.mouseDx[1] ) * 0.5;
-		my = ( cl.mouseDy[0] + cl.mouseDy[1] ) * 0.5;
-	} else {
-		mx = cl.mouseDx[cl.mouseIndex];
-		my = cl.mouseDy[cl.mouseIndex];
-	}
-	cl.mouseIndex ^= 1;
-	cl.mouseDx[cl.mouseIndex] = 0;
-	cl.mouseDy[cl.mouseIndex] = 0;
-
-	rate = sqrt( mx * mx + my * my ) / (float)frame_msec;
-	accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
-
-	// scale by FOV
-	accelSensitivity *= cl.q3_cgameSensitivity;
-
-	if ( rate && cl_showMouseRate->integer ) {
-		Com_Printf( "%f : %f\n", rate, accelSensitivity );
-	}
-
-	mx *= accelSensitivity;
-	my *= accelSensitivity;
-
-	if (!mx && !my) {
-		return;
-	}
-
-	// add mouse X/Y movement to cmd
-	if ( in_strafe.active ) {
-		cmd->rightmove = ClampChar( cmd->rightmove + m_side->value * mx );
-	} else {
-		cl.viewangles[YAW] -= m_yaw->value * mx;
-	}
-
-	if ( (in_mlooking || cl_freelook->integer) && !in_strafe.active ) {
-		cl.viewangles[PITCH] += m_pitch->value * my;
-	} else {
-		cmd->forwardmove = ClampChar( cmd->forwardmove - m_forward->value * my );
-	}
-}
-
-
-/*
 ==============
 CL_CmdButtons
 ==============
@@ -289,12 +235,12 @@ q3usercmd_t CL_CreateCmd( void ) {
 	inCmd.sidemove = 0;
 	inCmd.upmove = 0;
 	CL_KeyMove(&inCmd);
+
+	// get basic movement from mouse
+	CL_MouseMove(&inCmd);
 	cmd.forwardmove = ClampChar(inCmd.forwardmove);
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
-
-	// get basic movement from mouse
-	CL_MouseMove( &cmd );
 
 	// get basic movement from joystick
 	CL_JoystickMove( &cmd );

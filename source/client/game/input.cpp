@@ -20,27 +20,35 @@ unsigned frame_msec;
 
 kbutton_t in_left;
 kbutton_t in_right;
-kbutton_t in_forward;
-kbutton_t in_back;
+static kbutton_t in_forward;
+static kbutton_t in_back;
 kbutton_t in_lookup;
 kbutton_t in_lookdown;
-kbutton_t in_moveleft;
-kbutton_t in_moveright;
+static kbutton_t in_moveleft;
+static kbutton_t in_moveright;
 kbutton_t in_strafe;
 kbutton_t in_speed;
-kbutton_t in_up;
-kbutton_t in_down;
+static kbutton_t in_up;
+static kbutton_t in_down;
 kbutton_t in_buttons[16];
 
 bool in_mlooking;
 
 Cvar* cl_forwardspeed;
-Cvar* cl_backspeed;
-Cvar* cl_sidespeed;
-Cvar* cl_upspeed;
-Cvar* cl_movespeedkey;
+static Cvar* cl_backspeed;
+static Cvar* cl_sidespeed;
+static Cvar* cl_upspeed;
+static Cvar* cl_movespeedkey;
 Cvar* cl_run;
 Cvar* cl_freelook;
+Cvar* cl_sensitivity;
+static Cvar* cl_mouseAccel;
+static Cvar* cl_showMouseRate;
+static Cvar* m_filter;
+Cvar* m_pitch;
+static Cvar* m_yaw;
+static Cvar* m_forward;
+static Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
 
@@ -580,6 +588,84 @@ void CL_KeyMove(in_usercmd_t* cmd)
 	cmd->forwardmove -= backspeed * CL_KeyState(&in_back);
 }
 
+void CL_MouseMove(in_usercmd_t* cmd)
+{
+	if ((GGameType & GAME_QuakeHexen) && (in_mlooking || cl_freelook->integer))
+	{
+		CLQH_StopPitchDrift();
+	}
+
+	float mx;
+	float my;
+	// allow mouse smoothing
+	if (m_filter->integer)
+	{
+		mx = (cl.mouseDx[0] + cl.mouseDx[1]) * 0.5;
+		my = (cl.mouseDy[0] + cl.mouseDy[1]) * 0.5;
+	}
+	else
+	{
+		mx = cl.mouseDx[cl.mouseIndex];
+		my = cl.mouseDy[cl.mouseIndex];
+	}
+	cl.mouseIndex ^= 1;
+	cl.mouseDx[cl.mouseIndex] = 0;
+	cl.mouseDy[cl.mouseIndex] = 0;
+
+	float rate = sqrt(mx * mx + my * my) / (float)frame_msec;
+	float accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
+
+	if (GGameType & GAME_Quake3)
+	{
+		// scale by FOV
+		accelSensitivity *= cl.q3_cgameSensitivity;
+	}
+
+	if (rate && cl_showMouseRate->integer)
+	{
+		common->Printf("%f : %f\n", rate, accelSensitivity);
+	}
+
+	mx *= accelSensitivity;
+	my *= accelSensitivity;
+
+	if (!mx && !my)
+	{
+		return;
+	}
+
+	// add mouse X/Y movement to cmd
+	if (in_strafe.active)
+	{
+		cmd->sidemove += m_side->value * mx;
+	}
+	else
+	{
+		cl.viewangles[YAW] -= m_yaw->value * mx;
+	}
+
+	if ((in_mlooking || cl_freelook->integer) && !in_strafe.active)
+	{
+		cl.viewangles[PITCH] += m_pitch->value * my;
+	}
+	else
+	{
+		cmd->forwardmove -= m_forward->value * my;
+	}
+
+	if ((GGameType & GAME_Hexen2) && cl.h2_idealroll == 0) // Did keyboard set it already??
+	{
+		if (mx < 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
+		{
+			cl.h2_idealroll = -10;
+		}
+		else if (mx > 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
+		{
+			cl.h2_idealroll = 10;
+		}
+	}
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
@@ -662,8 +748,21 @@ void CL_InitInputCommon()
 	}
 
 	cl_freelook = Cvar_Get("cl_freelook", "1", CVAR_ARCHIVE);
+	cl_sensitivity = Cvar_Get("sensitivity", "5", CVAR_ARCHIVE);
+	cl_mouseAccel = Cvar_Get("cl_mouseAccel", "0", CVAR_ARCHIVE);
+	cl_showMouseRate = Cvar_Get("cl_showmouserate", "0", 0);
+#ifdef MACOS_X
+	// Input is jittery on OS X w/o this
+	m_filter = Cvar_Get("m_filter", "1", CVAR_ARCHIVE);
+#else
+	m_filter = Cvar_Get("m_filter", "0", CVAR_ARCHIVE);
+#endif
+	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
+	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
 	if (!(GGameType & GAME_Quake3))
 	{
+		m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
+		m_side = Cvar_Get("m_side", "1", CVAR_ARCHIVE);
 		lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
 	}
 	if (GGameType & GAME_QuakeHexen)
@@ -688,5 +787,7 @@ void CL_InitInputCommon()
 	if (GGameType & GAME_Quake3)
 	{
 		cl_run = Cvar_Get("cl_run", "1", CVAR_ARCHIVE);
+		m_forward = Cvar_Get("m_forward", "0.25", CVAR_ARCHIVE);
+		m_side = Cvar_Get("m_side", "0.25", CVAR_ARCHIVE);
 	}
 }

@@ -48,17 +48,6 @@ Cvar	*cl_timedemo;
 Cvar	*cl_avidemo;
 Cvar	*cl_forceavidemo;
 
-Cvar	*cl_sensitivity;
-
-Cvar	*cl_mouseAccel;
-Cvar	*cl_showMouseRate;
-
-Cvar	*m_pitch;
-Cvar	*m_yaw;
-Cvar	*m_forward;
-Cvar	*m_side;
-Cvar	*m_filter;
-
 Cvar	*cl_activeAction;
 
 Cvar	*cl_motdString;
@@ -2202,11 +2191,6 @@ void CL_Init( void ) {
 	cl_maxpackets = Cvar_Get ("cl_maxpackets", "30", CVAR_ARCHIVE );
 	cl_packetdup = Cvar_Get ("cl_packetdup", "1", CVAR_ARCHIVE );
 
-	cl_sensitivity = Cvar_Get ("sensitivity", "5", CVAR_ARCHIVE);
-	cl_mouseAccel = Cvar_Get ("cl_mouseAccel", "0", CVAR_ARCHIVE);
-
-	cl_showMouseRate = Cvar_Get ("cl_showmouserate", "0", 0);
-
 	cl_allowDownload = Cvar_Get ("cl_allowDownload", "0", CVAR_ARCHIVE);
 
 	cl_conXOffset = Cvar_Get ("cl_conXOffset", "0", 0);
@@ -2216,17 +2200,6 @@ void CL_Init( void ) {
 	// init autoswitch so the ui will have it correctly even
 	// if the cgame hasn't been started
 	Cvar_Get ("cg_autoswitch", "1", CVAR_ARCHIVE);
-
-	m_pitch = Cvar_Get ("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get ("m_yaw", "0.022", CVAR_ARCHIVE);
-	m_forward = Cvar_Get ("m_forward", "0.25", CVAR_ARCHIVE);
-	m_side = Cvar_Get ("m_side", "0.25", CVAR_ARCHIVE);
-#ifdef MACOS_X
-        // Input is jittery on OS X w/o this
-	m_filter = Cvar_Get ("m_filter", "1", CVAR_ARCHIVE);
-#else
-	m_filter = Cvar_Get ("m_filter", "0", CVAR_ARCHIVE);
-#endif
 
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
 

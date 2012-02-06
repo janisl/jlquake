@@ -152,14 +152,14 @@ void Host_Noclip_f (void)
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
+	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
 	{
-		sv_player->SetMoveType(MOVETYPE_NOCLIP);
+		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
 		SV_ClientPrintf ("noclip ON\n");
 	}
 	else
 	{
-		sv_player->SetMoveType(MOVETYPE_WALK);
+		sv_player->SetMoveType(QHMOVETYPE_WALK);
 		SV_ClientPrintf ("noclip OFF\n");
 	}
 }
@@ -182,14 +182,14 @@ void Host_Fly_f (void)
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	if (sv_player->GetMoveType() != MOVETYPE_FLY)
+	if (sv_player->GetMoveType() != QHMOVETYPE_FLY)
 	{
-		sv_player->SetMoveType(MOVETYPE_FLY);
+		sv_player->SetMoveType(QHMOVETYPE_FLY);
 		SV_ClientPrintf ("flymode ON\n");
 	}
 	else
 	{
-		sv_player->SetMoveType(MOVETYPE_WALK);
+		sv_player->SetMoveType(QHMOVETYPE_WALK);
 		SV_ClientPrintf ("flymode OFF\n");
 	}
 }
@@ -717,7 +717,7 @@ void Host_Please_f (void)
 		{
 			cl->privileged = false;
 			cl->edict->v.flags = (int)cl->edict->v.flags & ~(FL_GODMODE|FL_NOTARGET);
-			cl->edict->v.movetype = MOVETYPE_WALK;
+			cl->edict->v.movetype = QHMOVETYPE_WALK;
 		}
 		else
 			cl->privileged = true;
@@ -736,7 +736,7 @@ void Host_Please_f (void)
 			{
 				cl->privileged = false;
 				cl->edict->v.flags = (int)cl->edict->v.flags & ~(FL_GODMODE|FL_NOTARGET);
-				cl->edict->v.movetype = MOVETYPE_WALK;
+				cl->edict->v.movetype = QHMOVETYPE_WALK;
 			}
 			else
 				cl->privileged = true;

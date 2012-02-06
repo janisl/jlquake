@@ -47,8 +47,6 @@ state bit 2 is edge triggered on the down to up transition
 
 int			in_impulse;
 
-static Cvar*	m_filter;
-
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
@@ -108,50 +106,6 @@ void CL_MouseEvent(int mx, int my)
 {
 	cl.mouseDx[cl.mouseIndex] += mx;
 	cl.mouseDy[cl.mouseIndex] += my;
-}
-
-void CL_MouseMove(qwusercmd_t *cmd)
-{
-	int mouse_x;
-	int mouse_y;
-	if (m_filter->value)
-	{
-		mouse_x = (cl.mouseDx[0] + cl.mouseDx[1]) * 0.5;
-		mouse_y = (cl.mouseDy[0] + cl.mouseDy[1]) * 0.5;
-	}
-	else
-	{
-		mouse_x = cl.mouseDx[cl.mouseIndex];
-		mouse_y = cl.mouseDy[cl.mouseIndex];
-	}
-	cl.mouseIndex ^= 1;
-	cl.mouseDx[cl.mouseIndex] = 0;
-	cl.mouseDy[cl.mouseIndex] = 0;
-
-	mouse_x *= sensitivity->value;
-	mouse_y *= sensitivity->value;
-
-// add mouse X/Y movement to cmd
-	if ( in_strafe.active)
-		cmd->sidemove += m_side->value * mouse_x;
-	else
-		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
-
-	if (in_mlooking)
-		CLQH_StopPitchDrift ();
-		
-	if (in_mlooking && !in_strafe.active)
-	{
-		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
-		if (cl.viewangles[PITCH] > 80)
-			cl.viewangles[PITCH] = 80;
-		if (cl.viewangles[PITCH] < -70)
-			cl.viewangles[PITCH] = -70;
-	}
-	else
-	{
-		cmd->forwardmove -= m_forward->value * mouse_y;
-	}
 }
 
 int MakeChar (int i)
@@ -258,12 +212,17 @@ void CL_SendCmd (void)
 	inCmd.sidemove = cmd->sidemove;
 	inCmd.upmove = cmd->upmove;
 	CL_KeyMove(&inCmd);
+
+	// allow mice or other external controllers to add to the move
+	CL_MouseMove(&inCmd);
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 
-	// allow mice or other external controllers to add to the move
-	CL_MouseMove(cmd);
+	if (cl.viewangles[PITCH] > 80)
+		cl.viewangles[PITCH] = 80;
+	if (cl.viewangles[PITCH] < -70)
+		cl.viewangles[PITCH] = -70;
 
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)
@@ -340,5 +299,4 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("impulse", IN_Impulse);
 
 	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
-    m_filter = Cvar_Get("m_filter", "0", 0);
 }

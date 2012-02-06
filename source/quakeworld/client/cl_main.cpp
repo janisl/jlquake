@@ -40,13 +40,6 @@ Cvar*	cl_sbar;
 Cvar*	cl_hudswap;
 Cvar*	cl_maxfps;
 
-Cvar*	sensitivity;
-
-Cvar*	m_pitch;
-Cvar*	m_yaw;
-Cvar*	m_forward;
-Cvar*	m_side;
-
 Cvar*	entlatency;
 Cvar*	cl_predict_players;
 Cvar*	cl_predict_players2;
@@ -1036,12 +1029,6 @@ void CL_Init (void)
 	cl_hudswap	= Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_maxfps	= Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
-	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
-
-	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get("m_yaw", "0.022", 0);
-	m_forward = Cvar_Get("m_forward", "1", 0);
-	m_side = Cvar_Get("m_side", "0.8", 0);
 
 	rcon_password = Cvar_Get("rcon_password", "", 0);
 	rcon_address = Cvar_Get("rcon_address", "", 0);

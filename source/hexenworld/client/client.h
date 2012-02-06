@@ -26,27 +26,26 @@
 #define	FL2_CROUCHED			4096
 
 // edict->movetype values
-#define	MOVETYPE_NONE			0		// never moves
-#define	MOVETYPE_ANGLENOCLIP	1
-#define	MOVETYPE_ANGLECLIP		2
-#define	MOVETYPE_WALK			3		// gravity
-#define	MOVETYPE_STEP			4		// gravity, special edge handling
-#define	MOVETYPE_FLY			5
-#define	MOVETYPE_TOSS			6		// gravity
-#define	MOVETYPE_PUSH			7		// no clip to world, push and crush
-#define	MOVETYPE_NOCLIP			8
-#define	MOVETYPE_FLYMISSILE		9		// extra size to monsters
-#define	MOVETYPE_BOUNCE			10
-#define MOVETYPE_BOUNCEMISSILE	11		// bounce w/o gravity
-#define MOVETYPE_FOLLOW			12		// track movement of aiment
-#define MOVETYPE_PUSHPULL		13		// pushable/pullable object
-#define MOVETYPE_SWIM			14		// should keep the object in water
+#define	QHMOVETYPE_NONE			0		// never moves
+#define	QHMOVETYPE_ANGLENOCLIP	1
+#define	QHMOVETYPE_ANGLECLIP		2
+#define	QHMOVETYPE_WALK			3		// gravity
+#define	QHMOVETYPE_STEP			4		// gravity, special edge handling
+#define	QHMOVETYPE_FLY			5
+#define	QHMOVETYPE_TOSS			6		// gravity
+#define	QHMOVETYPE_PUSH			7		// no clip to world, push and crush
+#define	QHMOVETYPE_NOCLIP			8
+#define	QHMOVETYPE_FLYMISSILE		9		// extra size to monsters
+#define	QHMOVETYPE_BOUNCE			10
+#define H2MOVETYPE_BOUNCEMISSILE	11		// bounce w/o gravity
+#define H2MOVETYPE_FOLLOW			12		// track movement of aiment
+#define H2MOVETYPE_PUSHPULL		13		// pushable/pullable object
+#define H2MOVETYPE_SWIM			14		// should keep the object in water
 
 //
 // cvars
 //
 extern  Cvar*	cl_warncmd;
-extern	Cvar*	cl_upspeed;
 
 extern	Cvar*	cl_yawspeed;
 extern	Cvar*	cl_pitchspeed;
@@ -56,13 +55,6 @@ extern	Cvar*	cl_anglespeedkey;
 extern	Cvar*	cl_shownet;
 extern	Cvar*	cl_sbar;
 extern	Cvar*	cl_hudswap;
-
-extern	Cvar*	sensitivity;
-
-extern	Cvar*	m_pitch;
-extern	Cvar*	m_yaw;
-extern	Cvar*	m_forward;
-extern	Cvar*	m_side;
 
 extern	Cvar*	playerclass;
 extern	Cvar*	spectator;

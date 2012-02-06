@@ -50,9 +50,6 @@ extern	Cvar	*cl_predict;
 extern	Cvar	*cl_noskins;
 extern	Cvar	*cl_autoskins;
 
-extern	Cvar	*cl_upspeed;
-extern	Cvar	*cl_sidespeed;
-
 extern	Cvar	*cl_yawspeed;
 extern	Cvar	*cl_pitchspeed;
 
@@ -61,13 +58,6 @@ extern	Cvar	*cl_anglespeedkey;
 extern	Cvar	*cl_shownet;
 extern	Cvar	*cl_showmiss;
 extern	Cvar	*cl_showclamp;
-
-extern	Cvar	*sensitivity;
-
-extern	Cvar	*m_pitch;
-extern	Cvar	*m_yaw;
-extern	Cvar	*m_forward;
-extern	Cvar	*m_side;
 
 extern	Cvar	*cl_lightlevel;	// FIXME HACK
 

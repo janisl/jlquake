@@ -49,7 +49,7 @@ void SV_SetIdealPitch (void)
 	if (!((int)sv_player->GetFlags() & FL_ONGROUND))
 		return;
 
-	if (sv_player->GetMoveType()==MOVETYPE_FLY)
+	if (sv_player->GetMoveType()==QHMOVETYPE_FLY)
 		return;
 
 	angleval = sv_player->GetAngles()[YAW] * M_PI*2 / 360;
@@ -426,7 +426,7 @@ void SV_AirMove (void)
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*fmove + right[i]*smove;
 
-	if ( (int)sv_player->GetMoveType() != MOVETYPE_WALK)
+	if ( (int)sv_player->GetMoveType() != QHMOVETYPE_WALK)
 		wishvel[2] = cmd.upmove;
 	else
 		wishvel[2] = 0;
@@ -439,7 +439,7 @@ void SV_AirMove (void)
 		wishspeed = sv_maxspeed->value;
 	}
 	
-	if ( sv_player->GetMoveType() == MOVETYPE_NOCLIP)
+	if ( sv_player->GetMoveType() == QHMOVETYPE_NOCLIP)
 	{	// noclip
 		VectorCopy (wishvel, velocity);
 	}
@@ -466,7 +466,7 @@ void SV_ClientThink (void)
 {
 	vec3_t		v_angle;
 
-	if (sv_player->GetMoveType() == MOVETYPE_NONE)
+	if (sv_player->GetMoveType() == QHMOVETYPE_NONE)
 		return;
 	
 	onground = (int)sv_player->GetFlags() & FL_ONGROUND;
@@ -505,12 +505,12 @@ void SV_ClientThink (void)
 // walk
 //
 	if ( (sv_player->GetWaterLevel() >= 2)
-	&& (sv_player->GetMoveType() != MOVETYPE_NOCLIP) )
+	&& (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP) )
 	{
 		SV_WaterMove ();
 		return;
 	}
-	else if (sv_player->GetMoveType() == MOVETYPE_FLY)
+	else if (sv_player->GetMoveType() == QHMOVETYPE_FLY)
 	{
 		SV_FlightMove ();
 		return;

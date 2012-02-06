@@ -34,26 +34,20 @@ extern unsigned frame_msec;
 
 extern kbutton_t in_left;
 extern kbutton_t in_right;
-extern kbutton_t in_forward;
-extern kbutton_t in_back;
 extern kbutton_t in_lookup;
 extern kbutton_t in_lookdown;
-extern kbutton_t in_moveleft;
-extern kbutton_t in_moveright;
 extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
-extern kbutton_t in_up;
-extern kbutton_t in_down;
 
 extern kbutton_t in_buttons[16];
 
 extern bool in_mlooking;
 
 extern Cvar* cl_forwardspeed;
-extern Cvar* cl_backspeed;
-extern Cvar* cl_movespeedkey;
-extern Cvar* cl_freelook;
 extern Cvar* cl_run;
+extern Cvar* cl_freelook;
+extern Cvar* cl_sensitivity;
+extern Cvar* m_pitch;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
@@ -65,3 +59,4 @@ void CLQH_StopPitchDrift();
 void IN_CenterView();
 void CL_InitInputCommon();
 void CL_KeyMove(in_usercmd_t* cmd);
+void CL_MouseMove(in_usercmd_t* cmd);

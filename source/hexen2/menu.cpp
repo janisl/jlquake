@@ -1765,12 +1765,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("r_gamma", r_gamma->value);
 		break;
 	case OPT_MOUSESPEED:	// mouse speed
-		sensitivity->value += dir * 0.5;
-		if (sensitivity->value < 1)
-			sensitivity->value = 1;
-		if (sensitivity->value > 11)
-			sensitivity->value = 11;
-		Cvar_SetValue ("sensitivity", sensitivity->value);
+		cl_sensitivity->value += dir * 0.5;
+		if (cl_sensitivity->value < 1)
+			cl_sensitivity->value = 1;
+		if (cl_sensitivity->value > 11)
+			cl_sensitivity->value = 11;
+		Cvar_SetValue ("sensitivity", cl_sensitivity->value);
 		break;
 	case OPT_MUSICTYPE: // bgm type
 		if (String::ICmp(bgmtype->string,"midi") == 0)
@@ -1892,7 +1892,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(4*8), r);
 
 	M_Print (16, 60+(5*8), "           Mouse Speed");
-	r = (sensitivity->value - 1)/10;
+	r = (cl_sensitivity->value - 1)/10;
 	M_DrawSlider (220, 60+(5*8), r);
 
 	M_Print (16, 60+(6*8), "            Music Type");

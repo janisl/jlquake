@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cvars
 //
 extern  Cvar*	cl_warncmd;
-extern	Cvar*	cl_upspeed;
-extern	Cvar*	cl_sidespeed;
 
 extern	Cvar*	cl_yawspeed;
 extern	Cvar*	cl_pitchspeed;
@@ -34,13 +32,6 @@ extern	Cvar*	cl_anglespeedkey;
 extern	Cvar*	cl_shownet;
 extern	Cvar*	cl_sbar;
 extern	Cvar*	cl_hudswap;
-
-extern	Cvar*	sensitivity;
-
-extern	Cvar*	m_pitch;
-extern	Cvar*	m_yaw;
-extern	Cvar*	m_forward;
-extern	Cvar*	m_side;
 
 extern	Cvar*	name;
 
