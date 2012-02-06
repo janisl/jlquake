@@ -68,6 +68,11 @@ struct clientActive_t
 	// and teleport direction changes
 	vec3_t viewangles;
 
+	int mouseDx[2];	// added to by mouse events
+	int mouseDy[2];
+	int mouseIndex;
+	int joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
+
 	//	Not in Quake 3
 	refdef_t refdef;
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
@@ -272,11 +277,6 @@ struct clientActive_t
 
 	q3gameState_t q3_gameState;			// configstrings
 	char q3_mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
-
-	int q3_mouseDx[2];	// added to by mouse events
-	int q3_mouseDy[2];
-	int q3_mouseIndex;
-	int q3_joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
 
 	// cgame communicates a few values to the client system
 	int q3_cgameUserCmdValue;	// current weapon to add to q3usercmd_t

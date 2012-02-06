@@ -91,8 +91,8 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 	} else if (in_keyCatchers & KEYCATCH_CGAME) {
 		VM_Call (cgvm, CG_MOUSE_EVENT, dx, dy);
 	} else {
-		cl.q3_mouseDx[cl.q3_mouseIndex] += dx;
-		cl.q3_mouseDy[cl.q3_mouseIndex] += dy;
+		cl.mouseDx[cl.mouseIndex] += dx;
+		cl.mouseDy[cl.mouseIndex] += dy;
 	}
 }
 
@@ -107,7 +107,7 @@ void CL_JoystickEvent( int axis, int value, int time ) {
 	if ( axis < 0 || axis >= MAX_JOYSTICK_AXIS ) {
 		Com_Error( ERR_DROP, "CL_JoystickEvent: bad axis %i", axis );
 	}
-	cl.q3_joystickAxis[axis] = value;
+	cl.joystickAxis[axis] = value;
 }
 
 /*
@@ -133,18 +133,18 @@ void CL_JoystickMove( q3usercmd_t *cmd ) {
 	}
 
 	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.q3_joystickAxis[AXIS_SIDE];
+		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.joystickAxis[AXIS_SIDE];
 	} else {
-		cmd->rightmove = ClampChar( cmd->rightmove + cl.q3_joystickAxis[AXIS_SIDE] );
+		cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
 	}
 
 	if ( in_mlooking ) {
-		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.q3_joystickAxis[AXIS_FORWARD];
+		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.joystickAxis[AXIS_FORWARD];
 	} else {
-		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.q3_joystickAxis[AXIS_FORWARD] );
+		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[AXIS_FORWARD] );
 	}
 
-	cmd->upmove = ClampChar( cmd->upmove + cl.q3_joystickAxis[AXIS_UP] );
+	cmd->upmove = ClampChar( cmd->upmove + cl.joystickAxis[AXIS_UP] );
 }
 
 /*
@@ -159,15 +159,15 @@ void CL_MouseMove( q3usercmd_t *cmd ) {
 
 	// allow mouse smoothing
 	if ( m_filter->integer ) {
-		mx = ( cl.q3_mouseDx[0] + cl.q3_mouseDx[1] ) * 0.5;
-		my = ( cl.q3_mouseDy[0] + cl.q3_mouseDy[1] ) * 0.5;
+		mx = ( cl.mouseDx[0] + cl.mouseDx[1] ) * 0.5;
+		my = ( cl.mouseDy[0] + cl.mouseDy[1] ) * 0.5;
 	} else {
-		mx = cl.q3_mouseDx[cl.q3_mouseIndex];
-		my = cl.q3_mouseDy[cl.q3_mouseIndex];
+		mx = cl.mouseDx[cl.mouseIndex];
+		my = cl.mouseDy[cl.mouseIndex];
 	}
-	cl.q3_mouseIndex ^= 1;
-	cl.q3_mouseDx[cl.q3_mouseIndex] = 0;
-	cl.q3_mouseDy[cl.q3_mouseIndex] = 0;
+	cl.mouseIndex ^= 1;
+	cl.mouseDx[cl.mouseIndex] = 0;
+	cl.mouseDy[cl.mouseIndex] = 0;
 
 	rate = sqrt( mx * mx + my * my ) / (float)frame_msec;
 	accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;

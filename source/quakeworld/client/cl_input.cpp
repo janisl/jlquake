@@ -49,10 +49,6 @@ int			in_impulse;
 
 static Cvar*	m_filter;
 
-static int	old_mouse_x, old_mouse_y;
-static int	mouse_move_x;
-static int	mouse_move_y;
-
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
@@ -110,22 +106,27 @@ void CL_AdjustAngles (void)
 
 void CL_MouseEvent(int mx, int my)
 {
-	mouse_move_x += mx;
-	mouse_move_y += my;
+	cl.mouseDx[cl.mouseIndex] += mx;
+	cl.mouseDy[cl.mouseIndex] += my;
 }
 
 void CL_MouseMove(qwusercmd_t *cmd)
 {
-	int mouse_x = mouse_move_x;
-	int mouse_y = mouse_move_y;
+	int mouse_x;
+	int mouse_y;
 	if (m_filter->value)
 	{
-		mouse_x = (mouse_x + old_mouse_x) * 0.5;
-		mouse_y = (mouse_x + old_mouse_y) * 0.5;
+		mouse_x = (cl.mouseDx[0] + cl.mouseDx[1]) * 0.5;
+		mouse_y = (cl.mouseDy[0] + cl.mouseDy[1]) * 0.5;
 	}
-
-	old_mouse_x = mouse_move_x;
-	old_mouse_y = mouse_move_y;
+	else
+	{
+		mouse_x = cl.mouseDx[cl.mouseIndex];
+		mouse_y = cl.mouseDy[cl.mouseIndex];
+	}
+	cl.mouseIndex ^= 1;
+	cl.mouseDx[cl.mouseIndex] = 0;
+	cl.mouseDy[cl.mouseIndex] = 0;
 
 	mouse_x *= sensitivity->value;
 	mouse_y *= sensitivity->value;
@@ -154,8 +155,6 @@ void CL_MouseMove(qwusercmd_t *cmd)
 		else
 			cmd->forwardmove -= m_forward->value * mouse_y;
 	}
-	mouse_move_x = 0;
-	mouse_move_y = 0;
 }
 
 int MakeChar (int i)
