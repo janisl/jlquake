@@ -133,7 +133,7 @@ void CL_MouseMove(hwusercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( in_strafe.active || (lookstrafe->value && in_mlooking))
+	if ( in_strafe.active)
 		cmd->sidemove += m_side->value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mouse_x;

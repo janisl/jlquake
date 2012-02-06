@@ -133,7 +133,7 @@ void CL_MouseMove(q1usercmd_t *cmd)
 	mouse_y *= sensitivity->value;
 
 	// add mouse X/Y movement to cmd
-	if (in_strafe.active || (lookstrafe->value && in_mlooking))
+	if (in_strafe.active)
 	{
 		cmd->sidemove += m_side->value * mouse_x;
 	}

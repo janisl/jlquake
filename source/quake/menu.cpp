@@ -1049,10 +1049,6 @@ void M_AdjustSliders (int dir)
 	case 10:	// lookspring
 		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
-
-	case 11:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
-		break;
 	}
 }
 
@@ -1128,10 +1124,7 @@ void M_Options_Draw (void)
 	M_Print (16, 112, "            Lookspring");
 	M_DrawCheckbox (220, 112, lookspring->value);
 
-	M_Print (16, 120, "            Lookstrafe");
-	M_DrawCheckbox (220, 120, lookstrafe->value);
-
-	M_Print (16, 128, "         Video Options");
+	M_Print (16, 120, "         Video Options");
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
@@ -1160,7 +1153,7 @@ void M_Options_Key (int k)
 		case 2:
 			Cbuf_AddText ("exec default.cfg\n");
 			break;
-		case 12:
+		case 11:
 			M_Menu_Video_f ();
 			break;
 		default:

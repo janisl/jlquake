@@ -767,7 +767,6 @@ enum
 	OPT_ALWAYRUN,	//9
 	OPT_INVMOUSE,	//10
 	OPT_LOOKSPRING,	//11
-	OPT_LOOKSTRAFE,	//12
 	OPT_CROSSHAIR,	//13
 	OPT_ALWAYSMLOOK,//14
 	OPT_VIDEO,		//15
@@ -877,10 +876,6 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
 	
-	case OPT_LOOKSTRAFE:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
-		break;
-
 	case OPT_CROSSHAIR:	
 		Cvar_SetValue ("crosshair", !crosshair->value);
 		break;
@@ -971,9 +966,6 @@ void M_Options_Draw (void)
 
 	M_Print (16, 60+(OPT_LOOKSPRING*8),	"            Lookspring");
 	M_DrawCheckbox (220, 60+(OPT_LOOKSPRING*8), lookspring->value);
-
-	M_Print (16, 60+(OPT_LOOKSTRAFE*8),	"            Lookstrafe");
-	M_DrawCheckbox (220, 60+(OPT_LOOKSTRAFE*8), lookstrafe->value);
 
 	M_Print (16, 60+(OPT_CROSSHAIR*8),	"        Show Crosshair");
 	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair->value);

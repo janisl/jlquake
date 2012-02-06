@@ -19,7 +19,6 @@ Cvar*	cl_shownet;
 Cvar*	cl_sbar;
 Cvar*	cl_hudswap;
 
-Cvar*	lookstrafe;
 Cvar*	sensitivity;
 
 Cvar*	m_pitch;
@@ -963,7 +962,6 @@ void CL_Init (void)
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	cl_hudswap	= Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
-	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
 	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
 
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);

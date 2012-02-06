@@ -56,7 +56,6 @@ Cvar	*cl_showclamp;
 Cvar	*cl_paused;
 Cvar	*cl_timedemo;
 
-Cvar	*lookstrafe;
 Cvar	*sensitivity;
 
 Cvar	*m_pitch;
@@ -1422,7 +1421,6 @@ void CL_InitLocal (void)
 	cl_pitchspeed = Cvar_Get ("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", 0);
 
-	lookstrafe = Cvar_Get ("lookstrafe", "0", CVAR_ARCHIVE);
 	sensitivity = Cvar_Get ("sensitivity", "3", CVAR_ARCHIVE);
 
 	m_pitch = Cvar_Get ("m_pitch", "0.022", CVAR_ARCHIVE);

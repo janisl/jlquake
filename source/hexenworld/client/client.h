@@ -57,7 +57,6 @@ extern	Cvar*	cl_shownet;
 extern	Cvar*	cl_sbar;
 extern	Cvar*	cl_hudswap;
 
-extern	Cvar*	lookstrafe;
 extern	Cvar*	sensitivity;
 
 extern	Cvar*	m_pitch;

@@ -22,7 +22,6 @@ extern  Cvar*	cl_prettylights;
 
 extern	Cvar*	cl_shownet;
 
-extern	Cvar*	lookstrafe;
 extern	Cvar*	sensitivity;
 
 extern	Cvar*	m_pitch;
