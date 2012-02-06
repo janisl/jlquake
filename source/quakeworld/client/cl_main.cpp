@@ -28,9 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
-qboolean	noclip_anglehack;		// remnant from old quake
-
-
 Cvar*	rcon_password;
 
 Cvar*	rcon_address;

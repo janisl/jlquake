@@ -360,8 +360,6 @@ void CL_ParseServerInfo (void)
 	puzzle_strings = (char *)COM_LoadHunkFile ("puzzles.txt");
 
 	Hunk_Check ();		// make sure nothing is hurt
-	
-	noclip_anglehack = false;		// noclip is turned off at start	
 }
 
 /*

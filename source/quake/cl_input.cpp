@@ -161,14 +161,7 @@ void CL_MouseMove(q1usercmd_t *cmd)
 	}
 	else
 	{
-		if (in_strafe.active && noclip_anglehack)
-		{
-			cmd->upmove -= m_forward->value * mouse_y;
-		}
-		else
-		{
-			cmd->forwardmove -= m_forward->value * mouse_y;
-		}
+		cmd->forwardmove -= m_forward->value * mouse_y;
 	}
 }
 

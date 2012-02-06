@@ -161,7 +161,7 @@ static void V_DriftPitch (void)
 {
 	float		delta, move;
 
-	if (noclip_anglehack || !cl.qh_onground || clc.demoplaying)
+	if (!cl.qh_onground || clc.demoplaying)
 	{
 		cl.qh_driftmove = 0;
 		cl.qh_pitchvel = 0;

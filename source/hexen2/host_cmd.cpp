@@ -143,8 +143,6 @@ void Host_Notarget_f (void)
 		SV_ClientPrintf ("notarget ON\n");
 }
 
-qboolean noclip_anglehack;
-
 void Host_Noclip_f (void)
 {
 	if (cmd_source == src_command)
@@ -159,13 +157,11 @@ void Host_Noclip_f (void)
 
 	if (sv_player->GetMoveType() != MOVETYPE_NOCLIP)
 	{
-		noclip_anglehack = true;
 		sv_player->SetMoveType(MOVETYPE_NOCLIP);
 		SV_ClientPrintf ("noclip ON\n");
 	}
 	else
 	{
-		noclip_anglehack = false;
 		sv_player->SetMoveType(MOVETYPE_WALK);
 		SV_ClientPrintf ("noclip OFF\n");
 	}
@@ -1185,7 +1181,6 @@ void Host_Please_f (void)
 			cl->privileged = false;
 			cl->edict->v.flags = (int)cl->edict->v.flags & ~(FL_GODMODE|FL_NOTARGET);
 			cl->edict->v.movetype = MOVETYPE_WALK;
-			noclip_anglehack = false;
 		}
 		else
 			cl->privileged = true;
@@ -1205,7 +1200,6 @@ void Host_Please_f (void)
 				cl->privileged = false;
 				cl->edict->v.flags = (int)cl->edict->v.flags & ~(FL_GODMODE|FL_NOTARGET);
 				cl->edict->v.movetype = MOVETYPE_WALK;
-				noclip_anglehack = false;
 			}
 			else
 				cl->privileged = true;

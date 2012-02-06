@@ -8,9 +8,6 @@
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
-qboolean	noclip_anglehack;		// remnant from old quake
-
-
 Cvar*	rcon_password;
 
 Cvar*	rcon_address;

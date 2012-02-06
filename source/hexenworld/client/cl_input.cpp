@@ -151,10 +151,7 @@ void CL_MouseMove(hwusercmd_t *cmd)
 	}
 	else
 	{
-		if (in_strafe.active && noclip_anglehack)
-			cmd->upmove -= m_forward->value * mouse_y;
-		else
-			cmd->forwardmove -= m_forward->value * mouse_y;
+		cmd->forwardmove -= m_forward->value * mouse_y;
 	}
 
 	if (cl.h2_idealroll == 0) // Did keyboard set it already??

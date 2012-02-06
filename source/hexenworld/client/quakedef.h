@@ -46,10 +46,6 @@ typedef struct
 
 //=============================================================================
 
-
-extern qboolean noclip_anglehack;
-
-
 //
 // host
 //
