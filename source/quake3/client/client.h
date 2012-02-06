@@ -63,7 +63,6 @@ extern	Cvar	*cl_freezeDemo;
 
 extern	Cvar	*cl_yawspeed;
 extern	Cvar	*cl_pitchspeed;
-extern	Cvar	*cl_run;
 extern	Cvar	*cl_anglespeedkey;
 
 extern	Cvar	*cl_sensitivity;

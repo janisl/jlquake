@@ -49,14 +49,8 @@ at the same time.
 
 //==========================================================================
 
-Cvar	*cl_upspeed;
-Cvar	*cl_forwardspeed;
-Cvar	*cl_sidespeed;
-
 Cvar	*cl_yawspeed;
 Cvar	*cl_pitchspeed;
-
-Cvar	*cl_run;
 
 Cvar	*cl_anglespeedkey;
 
@@ -84,53 +78,6 @@ void CL_AdjustAngles( void ) {
 
 	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
 	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
-}
-
-/*
-================
-CL_KeyMove
-
-Sets the q3usercmd_t based on key states
-================
-*/
-void CL_KeyMove( q3usercmd_t *cmd ) {
-	int		movespeed;
-	int		forward, side, up;
-
-	//
-	// adjust for speed key / running
-	// the walking flag is to keep animations consistant
-	// even during acceleration and develeration
-	//
-	if ( in_speed.active ^ cl_run->integer ) {
-		movespeed = 127;
-		cmd->buttons &= ~BUTTON_WALKING;
-	} else {
-		cmd->buttons |= BUTTON_WALKING;
-		movespeed = 64;
-	}
-
-	forward = 0;
-	side = 0;
-	up = 0;
-	if ( in_strafe.active ) {
-		side += movespeed * CL_KeyState (&in_right);
-		side -= movespeed * CL_KeyState (&in_left);
-	}
-
-	side += movespeed * CL_KeyState (&in_moveright);
-	side -= movespeed * CL_KeyState (&in_moveleft);
-
-
-	up += movespeed * CL_KeyState (&in_up);
-	up -= movespeed * CL_KeyState (&in_down);
-
-	forward += movespeed * CL_KeyState (&in_forward);
-	forward -= movespeed * CL_KeyState (&in_back);
-
-	cmd->forwardmove = ClampChar( forward );
-	cmd->rightmove = ClampChar( side );
-	cmd->upmove = ClampChar( up );
 }
 
 /*
@@ -326,7 +273,25 @@ q3usercmd_t CL_CreateCmd( void ) {
 	CL_CmdButtons( &cmd );
 
 	// get basic movement from keyboard
-	CL_KeyMove( &cmd );
+	//
+	// adjust for speed key / running
+	// the walking flag is to keep animations consistant
+	// even during acceleration and develeration
+	//
+	if ( in_speed.active ^ cl_run->integer ) {
+		cmd.buttons &= ~BUTTON_WALKING;
+	} else {
+		cmd.buttons |= BUTTON_WALKING;
+	}
+
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = 0;
+	inCmd.sidemove = 0;
+	inCmd.upmove = 0;
+	CL_KeyMove(&inCmd);
+	cmd.forwardmove = ClampChar(inCmd.forwardmove);
+	cmd.rightmove = ClampChar(inCmd.sidemove);
+	cmd.upmove = ClampChar(inCmd.upmove);
 
 	// get basic movement from mouse
 	CL_MouseMove( &cmd );

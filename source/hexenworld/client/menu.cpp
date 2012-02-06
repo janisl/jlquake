@@ -862,12 +862,10 @@ void M_AdjustSliders (int dir)
 		if (cl_forwardspeed->value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
-			Cvar_SetValue ("cl_backspeed", 200);
 		}
 		else
 		{
 			Cvar_SetValue ("cl_forwardspeed", 400);
-			Cvar_SetValue ("cl_backspeed", 400);
 		}
 		break;
 	

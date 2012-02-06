@@ -57,13 +57,6 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-Cvar*	cl_upspeed;
-Cvar*	cl_forwardspeed;
-Cvar*	cl_backspeed;
-Cvar*	cl_sidespeed;
-
-Cvar*	cl_movespeedkey;
-
 Cvar*	cl_yawspeed;
 Cvar*	cl_pitchspeed;
 
@@ -113,51 +106,6 @@ void CL_AdjustAngles (void)
 	if (cl.viewangles[ROLL] < -50)
 		cl.viewangles[ROLL] = -50;
 		
-}
-
-/*
-================
-CL_BaseMove
-
-Send the intended movement message to the server
-================
-*/
-void CL_BaseMove (qwusercmd_t *cmd)
-{	
-	// grab frame time 
-	com_frameTime = Sys_Milliseconds();
-
-	frame_msec = (unsigned)(host_frametime * 1000);
-
-	CL_AdjustAngles ();
-	
-	Com_Memset(cmd, 0, sizeof(*cmd));
-	
-	VectorCopy (cl.viewangles, cmd->angles);
-	if (in_strafe.active)
-	{
-		cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_right);
-		cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_left);
-	}
-
-	cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_moveright);
-	cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_moveleft);
-
-	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
-	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
-
-	cmd->forwardmove += cl_forwardspeed->value * CL_KeyState (&in_forward);
-	cmd->forwardmove -= cl_backspeed->value * CL_KeyState (&in_back);
-
-//
-// adjust for speed key
-//
-	if (in_speed.active)
-	{
-		cmd->forwardmove *= cl_movespeedkey->value;
-		cmd->sidemove *= cl_movespeedkey->value;
-		cmd->upmove *= cl_movespeedkey->value;
-	}	
 }
 
 void CL_MouseEvent(int mx, int my)
@@ -298,7 +246,25 @@ void CL_SendCmd (void)
 	seq_hash = clc.netchan.outgoingSequence;
 
 	// get basic movement from keyboard
-	CL_BaseMove (cmd);
+	// grab frame time 
+	com_frameTime = Sys_Milliseconds();
+
+	frame_msec = (unsigned)(host_frametime * 1000);
+
+	CL_AdjustAngles ();
+	
+	Com_Memset(cmd, 0, sizeof(*cmd));
+	
+	VectorCopy (cl.viewangles, cmd->angles);
+
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = cmd->forwardmove;
+	inCmd.sidemove = cmd->sidemove;
+	inCmd.upmove = cmd->upmove;
+	CL_KeyMove(&inCmd);
+	cmd->forwardmove = inCmd.forwardmove;
+	cmd->sidemove = inCmd.sidemove;
+	cmd->upmove = inCmd.upmove;
 
 	// allow mice or other external controllers to add to the move
 	CL_MouseMove(cmd);

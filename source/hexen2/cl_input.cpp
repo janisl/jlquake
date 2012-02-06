@@ -42,13 +42,6 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-Cvar*	cl_upspeed;
-Cvar*	cl_forwardspeed;
-Cvar*	cl_backspeed;
-Cvar*	cl_sidespeed;
-
-Cvar*	cl_movespeedkey;
-
 Cvar*	cl_yawspeed;
 Cvar*	cl_pitchspeed;
 
@@ -112,79 +105,6 @@ void CL_AdjustAngles (void)
 		
 }
 
-/*
-================
-CL_BaseMove
-
-Send the intended movement message to the server
-================
-*/
-void CL_BaseMove (h2usercmd_t *cmd)
-{	
-	if (clc.qh_signon != SIGNONS)
-		return;
-			
-	if (cl.h2_v.cameramode)	// Stuck in a different camera so don't move
-	{
-		Com_Memset(cmd, 0, sizeof(*cmd));
-		return;
-	}
-
-	// grab frame time 
-	com_frameTime = Sys_Milliseconds();
-
-	frame_msec = (unsigned)(host_frametime * 1000);
-
-	CL_AdjustAngles ();
-	
-	Com_Memset(cmd, 0, sizeof(*cmd));
-	
-	if (in_strafe.active)
-	{
-//		cmd->sidemove += cl_sidespeed.value * CL_KeyState (&in_right);
-//		cmd->sidemove -= cl_sidespeed.value * CL_KeyState (&in_left);
-		cmd->sidemove += 225 * CL_KeyState (&in_right);
-		cmd->sidemove -= 225 * CL_KeyState (&in_left);
-	}
-
-//	cmd->sidemove += cl_sidespeed.value * CL_KeyState (&in_moveright);
-//	cmd->sidemove -= cl_sidespeed.value * CL_KeyState (&in_moveleft);
-	cmd->sidemove += 225 * CL_KeyState (&in_moveright);
-	cmd->sidemove -= 225 * CL_KeyState (&in_moveleft);
-
-	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
-	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
-
-//	cmd->forwardmove += cl_forwardspeed.value * CL_KeyState (&in_forward);
-	cmd->forwardmove += 200 * CL_KeyState (&in_forward);
-//	cmd->forwardmove -= cl_backspeed.value * CL_KeyState (&in_back);
-	cmd->forwardmove -= 200 * CL_KeyState (&in_back);
-
-//
-// adjust for speed key (but not if always runs has been chosen)
-//
-	if ((cl_forwardspeed->value > 200 || in_speed.active) && cl.h2_v.hasted <= 1)
-	{
-		cmd->forwardmove *= cl_movespeedkey->value;
-		cmd->sidemove *= cl_movespeedkey->value;
-		cmd->upmove *= cl_movespeedkey->value;
-	}
-
-	// Hasted player?
-	if (cl.h2_v.hasted)
-	{
-		cmd->forwardmove = cmd->forwardmove * cl.h2_v.hasted;
-		cmd->sidemove = cmd->sidemove * cl.h2_v.hasted;
-		cmd->upmove = cmd->upmove * cl.h2_v.hasted;
-	}
-
-	// light level at player's position including dlights
-	// this is sent back to the server each frame
-	// architectually ugly but it works
-	cmd->lightlevel = (byte)cl_lightlevel->value;
-}
-
-
 void CL_MouseEvent(int mx, int my)
 {
 	mouse_move_x += mx;
@@ -193,12 +113,6 @@ void CL_MouseEvent(int mx, int my)
 
 void CL_MouseMove(h2usercmd_t *cmd)
 {
-	if (cl.h2_v.cameramode)	// Stuck in a different camera so don't move
-	{
-		Com_Memset(cmd, 0, sizeof(*cmd));
-		return;
-	}
-
 	int mouse_x = mouse_move_x;
 	int mouse_y = mouse_move_y;
 	if (m_filter->value)
@@ -375,4 +289,75 @@ void CL_InitInput (void)
 #endif
 
     m_filter = Cvar_Get("m_filter", "0", 0);
+}
+
+/*
+=================
+CL_SendCmd
+=================
+*/
+void CL_SendCmd (void)
+{
+	h2usercmd_t		cmd;
+
+	if (cls.state != CA_CONNECTED)
+		return;
+
+	if (clc.qh_signon == SIGNONS)
+	{
+	// get basic movement from keyboard
+		Com_Memset(&cmd, 0, sizeof(cmd));
+			
+		if (!cl.h2_v.cameramode)	// Stuck in a different camera so don't move
+		{
+			// grab frame time 
+			com_frameTime = Sys_Milliseconds();
+
+			frame_msec = (unsigned)(host_frametime * 1000);
+
+			CL_AdjustAngles ();
+			
+			in_usercmd_t inCmd;
+			inCmd.forwardmove = cmd.forwardmove;
+			inCmd.sidemove = cmd.sidemove;
+			inCmd.upmove = cmd.upmove;
+			CL_KeyMove(&inCmd);
+			cmd.forwardmove = inCmd.forwardmove;
+			cmd.sidemove = inCmd.sidemove;
+			cmd.upmove = inCmd.upmove;
+
+			// light level at player's position including dlights
+			// this is sent back to the server each frame
+			// architectually ugly but it works
+			cmd.lightlevel = (byte)cl_lightlevel->value;
+	
+		// allow mice or other external controllers to add to the move
+			CL_MouseMove(&cmd);
+		}
+	
+	// send the unreliable message
+		CL_SendMove (&cmd);
+	
+	}
+
+	if (clc.demoplaying)
+	{
+		clc.netchan.message.Clear();
+		return;
+	}
+	
+// send the reliable message
+	if (!clc.netchan.message.cursize)
+		return;		// no message at all
+	
+	if (!NET_CanSendMessage (cls.qh_netcon, &clc.netchan))
+	{
+		Con_DPrintf ("CL_WriteToServer: can't send\n");
+		return;
+	}
+
+	if (NET_SendMessage (cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
+		Host_Error ("CL_WriteToServer: lost server connection");
+
+	clc.netchan.message.Clear();
 }

@@ -34,6 +34,12 @@ kbutton_t in_buttons[16];
 
 bool in_mlooking;
 
+Cvar* cl_forwardspeed;
+Cvar* cl_backspeed;
+Cvar* cl_sidespeed;
+Cvar* cl_upspeed;
+Cvar* cl_movespeedkey;
+Cvar* cl_run;
 Cvar* cl_freelook;
 Cvar* v_centerspeed;
 Cvar* lookspring;
@@ -486,6 +492,94 @@ static void Force_CenterView_f()
 	cl.viewangles[PITCH] = 0;
 }
 
+void CL_KeyMove(in_usercmd_t* cmd)
+{
+	float forwardspeed;
+	float backspeed;
+	float sidespeed;
+	float upspeed;
+	float speedAdjust = 1;
+	if (GGameType & GAME_Quake)
+	{
+		forwardspeed = cl_forwardspeed->value;
+		backspeed = cl_backspeed->value;
+		sidespeed = cl_sidespeed->value;
+		upspeed = cl_upspeed->value;
+
+		// adjust for speed key
+		if (in_speed.active)
+		{
+			speedAdjust = cl_movespeedkey->value;
+		}
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		forwardspeed = 200;
+		backspeed = 200;
+		sidespeed = 225;
+		upspeed = cl_upspeed->value;
+
+		// adjust for speed key (but not if always runs has been chosen)
+		if ((((GGameType & GAME_HexenWorld) && cl.qh_spectator) ||
+			cl_forwardspeed->value > 200 || in_speed.active) && cl.h2_v.hasted <= 1)
+		{
+			speedAdjust *= cl_movespeedkey->value;
+		}
+		// Hasted player?
+		if (cl.h2_v.hasted)
+		{
+			speedAdjust *= cl.h2_v.hasted;
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		forwardspeed = cl_forwardspeed->value;
+		backspeed = forwardspeed;
+		sidespeed = cl_sidespeed->value;
+		upspeed = cl_upspeed->value;
+
+		// adjust for speed key / running
+		if (in_speed.active ^ cl_run->integer)
+		{
+			speedAdjust = 2;
+		}
+	}
+	else
+	{
+		if (in_speed.active ^ cl_run->integer)
+		{
+			forwardspeed = 127;
+		}
+		else
+		{
+			forwardspeed = 64;
+		}
+		backspeed = forwardspeed;
+		sidespeed = forwardspeed;
+		upspeed = forwardspeed;
+	}
+
+	forwardspeed *= speedAdjust;
+	backspeed *= speedAdjust;
+	sidespeed *= speedAdjust;
+	upspeed *= speedAdjust;
+
+	if (in_strafe.active)
+	{
+		cmd->sidemove += sidespeed * CL_KeyState(&in_right);
+		cmd->sidemove -= sidespeed * CL_KeyState(&in_left);
+	}
+
+	cmd->sidemove += sidespeed * CL_KeyState(&in_moveright);
+	cmd->sidemove -= sidespeed * CL_KeyState(&in_moveleft);
+
+	cmd->upmove += upspeed * CL_KeyState(&in_up);
+	cmd->upmove -= upspeed * CL_KeyState(&in_down);
+
+	cmd->forwardmove += forwardspeed * CL_KeyState(&in_forward);
+	cmd->forwardmove -= backspeed * CL_KeyState(&in_back);
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
@@ -568,12 +662,31 @@ void CL_InitInputCommon()
 	}
 
 	cl_freelook = Cvar_Get("cl_freelook", "1", CVAR_ARCHIVE);
-	if (GGameType & GAME_QuakeHexen)
-	{
-		v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
-	}
 	if (!(GGameType & GAME_Quake3))
 	{
 		lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_QuakeHexen)
+	{
+		cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
+		cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
+		cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
+		v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
+	}
+	if (GGameType & GAME_Quake)
+	{
+		cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
+		cl_sidespeed = Cvar_Get("cl_sidespeed","350", 0);
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", 0);
+		cl_sidespeed = Cvar_Get("cl_sidespeed", "200", 0);
+		cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
+		cl_run = Cvar_Get("cl_run", "0", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		cl_run = Cvar_Get("cl_run", "1", CVAR_ARCHIVE);
 	}
 }

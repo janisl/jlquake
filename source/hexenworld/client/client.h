@@ -47,11 +47,6 @@
 //
 extern  Cvar*	cl_warncmd;
 extern	Cvar*	cl_upspeed;
-extern	Cvar*	cl_forwardspeed;
-extern	Cvar*	cl_backspeed;
-extern	Cvar*	cl_sidespeed;
-
-extern	Cvar*	cl_movespeedkey;
 
 extern	Cvar*	cl_yawspeed;
 extern	Cvar*	cl_pitchspeed;

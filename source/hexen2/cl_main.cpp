@@ -601,53 +601,6 @@ int CL_ReadFromServer (void)
 	return 0;
 }
 
-/*
-=================
-CL_SendCmd
-=================
-*/
-void CL_SendCmd (void)
-{
-	h2usercmd_t		cmd;
-
-	if (cls.state != CA_CONNECTED)
-		return;
-
-	if (clc.qh_signon == SIGNONS)
-	{
-	// get basic movement from keyboard
-		CL_BaseMove (&cmd);
-	
-	// allow mice or other external controllers to add to the move
-		CL_MouseMove(&cmd);
-	
-	// send the unreliable message
-		CL_SendMove (&cmd);
-	
-	}
-
-	if (clc.demoplaying)
-	{
-		clc.netchan.message.Clear();
-		return;
-	}
-	
-// send the reliable message
-	if (!clc.netchan.message.cursize)
-		return;		// no message at all
-	
-	if (!NET_CanSendMessage (cls.qh_netcon, &clc.netchan))
-	{
-		Con_DPrintf ("CL_WriteToServer: can't send\n");
-		return;
-	}
-
-	if (NET_SendMessage (cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
-		Host_Error ("CL_WriteToServer: lost server connection");
-
-	clc.netchan.message.Clear();
-}
-
 void CL_Sensitivity_save_f (void)
 {
 	if (Cmd_Argc() != 2)
@@ -679,11 +632,6 @@ void CL_Init (void)
 	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
 	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
 	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
-	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
-	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
-	cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
-	cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
-	cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);

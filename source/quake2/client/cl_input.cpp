@@ -64,14 +64,8 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-Cvar	*cl_upspeed;
-Cvar	*cl_forwardspeed;
-Cvar	*cl_sidespeed;
-
 Cvar	*cl_yawspeed;
 Cvar	*cl_pitchspeed;
-
-Cvar	*cl_run;
 
 Cvar	*cl_anglespeedkey;
 
@@ -104,46 +98,6 @@ void CL_AdjustAngles (void)
 	
 	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * up;
 	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * down;
-}
-
-/*
-================
-CL_BaseMove
-
-Send the intended movement message to the server
-================
-*/
-void CL_BaseMove (q2usercmd_t *cmd)
-{	
-	CL_AdjustAngles ();
-	
-	Com_Memset(cmd, 0, sizeof(*cmd));
-	
-	VectorCopy (cl.viewangles, cmd->angles);
-	if (in_strafe.active)
-	{
-		cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_right);
-		cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_left);
-	}
-
-	cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_moveright);
-	cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_moveleft);
-
-	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
-	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
-
-	cmd->forwardmove += cl_forwardspeed->value * CL_KeyState (&in_forward);
-	cmd->forwardmove -= cl_forwardspeed->value * CL_KeyState (&in_back);
-
-//
-// adjust for speed key / running
-//
-	if ( (in_speed.active) ^ (int)(cl_run->value) )
-	{
-		cmd->forwardmove *= 2;
-		cmd->sidemove *= 2;
-		cmd->upmove *= 2;
-	}	
 }
 
 void CL_MouseEvent(int mx, int my)
@@ -259,7 +213,20 @@ q2usercmd_t CL_CreateCmd (void)
 		frame_msec = 200;
 	
 	// get basic movement from keyboard
-	CL_BaseMove (&cmd);
+	CL_AdjustAngles ();
+	
+	Com_Memset(&cmd, 0, sizeof(cmd));
+	
+	VectorCopy (cl.viewangles, cmd.angles);
+
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = cmd.forwardmove;
+	inCmd.sidemove = cmd.sidemove;
+	inCmd.upmove = cmd.upmove;
+	CL_KeyMove(&inCmd);
+	cmd.forwardmove = inCmd.forwardmove;
+	cmd.sidemove = inCmd.sidemove;
+	cmd.upmove = inCmd.upmove;
 
 	// allow mice or other external controllers to add to the move
 	CL_MouseMove(&cmd);

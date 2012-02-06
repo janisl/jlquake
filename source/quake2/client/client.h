@@ -51,13 +51,10 @@ extern	Cvar	*cl_noskins;
 extern	Cvar	*cl_autoskins;
 
 extern	Cvar	*cl_upspeed;
-extern	Cvar	*cl_forwardspeed;
 extern	Cvar	*cl_sidespeed;
 
 extern	Cvar	*cl_yawspeed;
 extern	Cvar	*cl_pitchspeed;
-
-extern	Cvar	*cl_run;
 
 extern	Cvar	*cl_anglespeedkey;
 

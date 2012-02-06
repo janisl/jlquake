@@ -59,13 +59,6 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-Cvar*	cl_upspeed;
-Cvar*	cl_forwardspeed;
-Cvar*	cl_backspeed;
-Cvar*	cl_sidespeed;
-
-Cvar*	cl_movespeedkey;
-
 Cvar*	cl_yawspeed;
 Cvar*	cl_pitchspeed;
 
@@ -115,53 +108,6 @@ void CL_AdjustAngles (void)
 	if (cl.viewangles[ROLL] < -50)
 		cl.viewangles[ROLL] = -50;
 		
-}
-
-/*
-================
-CL_BaseMove
-
-Send the intended movement message to the server
-================
-*/
-void CL_BaseMove (q1usercmd_t *cmd)
-{	
-	if (clc.qh_signon != SIGNONS)
-		return;
-
-	// grab frame time 
-	com_frameTime = Sys_Milliseconds();
-
-	frame_msec = (unsigned)(host_frametime * 1000);
-
-	CL_AdjustAngles ();
-	
-	Com_Memset(cmd, 0, sizeof(*cmd));
-	
-	if (in_strafe.active)
-	{
-		cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_right);
-		cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_left);
-	}
-
-	cmd->sidemove += cl_sidespeed->value * CL_KeyState (&in_moveright);
-	cmd->sidemove -= cl_sidespeed->value * CL_KeyState (&in_moveleft);
-
-	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
-	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
-
-	cmd->forwardmove += cl_forwardspeed->value * CL_KeyState (&in_forward);
-	cmd->forwardmove -= cl_backspeed->value * CL_KeyState (&in_back);
-
-//
-// adjust for speed key
-//
-	if (in_speed.active)
-	{
-		cmd->forwardmove *= cl_movespeedkey->value;
-		cmd->sidemove *= cl_movespeedkey->value;
-		cmd->upmove *= cl_movespeedkey->value;
-	}
 }
 
 void CL_MouseEvent(int mx, int my)
@@ -309,3 +255,66 @@ void CL_InitInput (void)
 	m_filter = Cvar_Get("m_filter", "0", 0);
 }
 
+
+/*
+=================
+CL_SendCmd
+=================
+*/
+void CL_SendCmd (void)
+{
+	q1usercmd_t		cmd;
+
+	if (cls.state != CA_CONNECTED)
+		return;
+
+	if (clc.qh_signon == SIGNONS)
+	{
+		// get basic movement from keyboard
+		// grab frame time 
+		com_frameTime = Sys_Milliseconds();
+
+		frame_msec = (unsigned)(host_frametime * 1000);
+
+		CL_AdjustAngles ();
+		
+		Com_Memset(&cmd, 0, sizeof(cmd));
+		
+		in_usercmd_t inCmd;
+		inCmd.forwardmove = cmd.forwardmove;
+		inCmd.sidemove = cmd.sidemove;
+		inCmd.upmove = cmd.upmove;
+		CL_KeyMove(&inCmd);
+		cmd.forwardmove = inCmd.forwardmove;
+		cmd.sidemove = inCmd.sidemove;
+		cmd.upmove = inCmd.upmove;
+	
+	// allow mice or other external controllers to add to the move
+		CL_MouseMove(&cmd);
+	
+	// send the unreliable message
+		CL_SendMove (&cmd);
+	
+	}
+
+	if (clc.demoplaying)
+	{
+		clc.netchan.message.Clear();
+		return;
+	}
+	
+// send the reliable message
+	if (!clc.netchan.message.cursize)
+		return;		// no message at all
+	
+	if (!NET_CanSendMessage (cls.qh_netcon, &clc.netchan))
+	{
+		Con_DPrintf ("CL_WriteToServer: can't send\n");
+		return;
+	}
+
+	if (NET_SendMessage (cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
+		Host_Error ("CL_WriteToServer: lost server connection");
+
+	clc.netchan.message.Clear();
+}

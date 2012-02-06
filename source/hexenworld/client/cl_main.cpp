@@ -960,11 +960,6 @@ void CL_Init (void)
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 	developer = Cvar_Get("developer", "0", 0);
 
-	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
-	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
-	cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
-	cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
-	cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);

@@ -23,6 +23,13 @@ struct kbutton_t
 	bool wasPressed;	// set when down, not cleared when up
 };
 
+struct in_usercmd_t
+{
+	int forwardmove;
+	int sidemove;
+	int upmove;
+};
+
 extern unsigned frame_msec;
 
 extern kbutton_t in_left;
@@ -42,7 +49,11 @@ extern kbutton_t in_buttons[16];
 
 extern bool in_mlooking;
 
+extern Cvar* cl_forwardspeed;
+extern Cvar* cl_backspeed;
+extern Cvar* cl_movespeedkey;
 extern Cvar* cl_freelook;
+extern Cvar* cl_run;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
@@ -53,3 +64,4 @@ void CLQH_StartPitchDrift();
 void CLQH_StopPitchDrift();
 void IN_CenterView();
 void CL_InitInputCommon();
+void CL_KeyMove(in_usercmd_t* cmd);
