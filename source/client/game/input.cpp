@@ -513,9 +513,38 @@ static void Force_CenterView_f()
 	cl.viewangles[PITCH] = 0;
 }
 
+static void CLH2_SetIdealRoll(float delta)
+{
+	// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
+	// but I don't see where I can get the yaw velocity, I have to get on to other things so here it is
+	if (cl.h2_idealroll != 0)
+	{
+		//	Keyboard set it already.
+		return;
+	}
+	if (cl.h2_v.movetype != QHMOVETYPE_FLY)
+	{
+		return;
+	}
+
+	if (delta < 0)
+	{
+		cl.h2_idealroll = -10;
+	}
+	else if (delta > 0)
+	{
+		cl.h2_idealroll = 10;
+	}
+}
+
 //	Moves the local angle positions
 void CL_AdjustAngles()
 {
+	if (GGameType & GAME_Hexen2)
+	{
+		cl.h2_idealroll = 0;
+	}
+
 	float speed = 0.001 * cls.frametime;
 	if (in_speed.active || ((GGameType & GAME_HexenWorld) && cl.qh_spectator))
 	{
@@ -524,25 +553,13 @@ void CL_AdjustAngles()
 
 	if (!in_strafe.active)
 	{
-		cl.viewangles[YAW] -= speed * cl_yawspeed->value * CL_KeyState(&in_right);
-		cl.viewangles[YAW] += speed * cl_yawspeed->value * CL_KeyState(&in_left);
-	}
-
-	if (GGameType & GAME_Hexen2)
-	{
-		// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
-		// but I don't see where I can get the yaw velocity, I have to get on to other things so here it is
-		if (CL_KeyState(&in_left) != 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
+		float right = CL_KeyState(&in_right);
+		float left = CL_KeyState(&in_left);
+		cl.viewangles[YAW] -= speed * cl_yawspeed->value * right;
+		cl.viewangles[YAW] += speed * cl_yawspeed->value * left;
+		if (GGameType & GAME_Hexen2)
 		{
-			cl.h2_idealroll = -10;
-		}
-		else if (CL_KeyState(&in_right) != 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
-		{
-			cl.h2_idealroll = 10;
-		}
-		else
-		{
-			cl.h2_idealroll = 0;
+			CLH2_SetIdealRoll(right - left);
 		}
 	}
 
@@ -632,8 +649,14 @@ void CL_KeyMove(in_usercmd_t* cmd)
 
 	if (in_strafe.active)
 	{
-		cmd->sidemove += sidespeed * CL_KeyState(&in_right);
-		cmd->sidemove -= sidespeed * CL_KeyState(&in_left);
+		float right = CL_KeyState(&in_right);
+		float left = CL_KeyState(&in_left);
+		cmd->sidemove += sidespeed * right;
+		cmd->sidemove -= sidespeed * left;
+		if (GGameType & GAME_Hexen2)
+		{
+			CLH2_SetIdealRoll(right - left);
+		}
 	}
 
 	cmd->sidemove += sidespeed * CL_KeyState(&in_moveright);
@@ -711,16 +734,9 @@ void CL_MouseMove(in_usercmd_t* cmd)
 		cmd->forwardmove -= m_forward->value * my;
 	}
 
-	if ((GGameType & GAME_Hexen2) && cl.h2_idealroll == 0) // Did keyboard set it already??
+	if (GGameType & GAME_Hexen2)
 	{
-		if (mx < 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
-		{
-			cl.h2_idealroll = -10;
-		}
-		else if (mx > 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
-		{
-			cl.h2_idealroll = 10;
-		}
+		CLH2_SetIdealRoll(mx);
 	}
 }
 
