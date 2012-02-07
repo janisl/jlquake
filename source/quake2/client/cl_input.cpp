@@ -51,11 +51,6 @@ Key_Event (int key, qboolean down, unsigned time);
 ===============================================================================
 */
 
-
-int			in_impulse;
-
-void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
-
 //==========================================================================
 
 void CL_MouseEvent(int mx, int my)
@@ -166,8 +161,6 @@ CL_InitInput
 void CL_InitInput (void)
 {
 	CL_InitInputCommon();
-
-	Cmd_AddCommand ("impulse", IN_Impulse);
 
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
 }

@@ -83,7 +83,6 @@ static void DrawArtifactInventory(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern int in_impulse;
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 int sb_lines; // scan lines to draw

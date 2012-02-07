@@ -45,11 +45,6 @@ state bit 2 is edge triggered on the down to up transition
 ===============================================================================
 */
 
-
-int			in_impulse;
-
-void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
-
 //==========================================================================
 
 void CL_MouseEvent(int mx, int my)
@@ -120,7 +115,6 @@ CL_InitInput
 void CL_InitInput (void)
 {
 	CL_InitInputCommon();
-	Cmd_AddCommand ("impulse", IN_Impulse);
 }
 
 

@@ -64,6 +64,8 @@ static Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
 
+int in_impulse;
+
 static void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
@@ -522,6 +524,11 @@ static void Force_CenterView_f()
 	cl.viewangles[PITCH] = 0;
 }
 
+static void IN_Impulse()
+{
+	in_impulse = String::Atoi(Cmd_Argv(1));
+}
+
 static void CLH2_SetIdealRoll(float delta)
 {
 	// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
@@ -866,6 +873,10 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("+mlook", IN_MLookDown);
 	Cmd_AddCommand("-mlook", IN_MLookUp);
 	Cmd_AddCommand("centerview",IN_CenterView);
+	if (!(GGameType & GAME_Quake3))
+	{
+		Cmd_AddCommand("impulse", IN_Impulse);
+	}
 	if (GGameType & GAME_QuakeHexen)
 	{
 		Cmd_AddCommand("+jump", IN_Button1Down);

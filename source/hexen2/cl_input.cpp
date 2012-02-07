@@ -27,12 +27,9 @@ state bit 2 is edge triggered on the down to up transition
 */
 
 
-int					in_impulse;
 #ifdef MISSIONPACK
 extern qboolean		info_up;
 #endif
-
-void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
@@ -135,8 +132,6 @@ CL_InitInput
 void CL_InitInput (void)
 {
 	CL_InitInputCommon();
-	Cmd_AddCommand ("impulse", IN_Impulse);
-
 #ifdef MISSIONPACK
 	Cmd_AddCommand ("+infoplaque", IN_infoPlaqueDown);
 	Cmd_AddCommand ("-infoplaque", IN_infoPlaqueUp);

@@ -23,6 +23,7 @@ struct in_usercmd_t
 };
 
 extern unsigned frame_msec;
+extern int in_impulse;
 
 extern Cvar* cl_forwardspeed;
 extern Cvar* cl_run;
