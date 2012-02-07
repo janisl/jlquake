@@ -58,12 +58,6 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-Cvar	*cl_yawspeed;
-Cvar	*cl_pitchspeed;
-
-Cvar	*cl_anglespeedkey;
-
-
 /*
 ================
 CL_AdjustAngles
@@ -187,6 +181,9 @@ q2usercmd_t CL_CreateCmd (void)
 
 	// allow mice or other external controllers to add to the move
 	CL_MouseMove(&inCmd);
+
+	// get basic movement from joystick
+	CL_JoystickMove(&inCmd);
 	cmd.forwardmove = inCmd.forwardmove;
 	cmd.sidemove = inCmd.sidemove;
 	cmd.upmove = inCmd.upmove;

@@ -49,12 +49,6 @@ at the same time.
 
 //==========================================================================
 
-Cvar	*cl_yawspeed;
-Cvar	*cl_pitchspeed;
-
-Cvar	*cl_anglespeedkey;
-
-
 /*
 ================
 CL_AdjustAngles
@@ -108,43 +102,6 @@ void CL_JoystickEvent( int axis, int value, int time ) {
 		Com_Error( ERR_DROP, "CL_JoystickEvent: bad axis %i", axis );
 	}
 	cl.joystickAxis[axis] = value;
-}
-
-/*
-=================
-CL_JoystickMove
-=================
-*/
-void CL_JoystickMove( q3usercmd_t *cmd ) {
-	int		movespeed;
-	float	anglespeed;
-
-	if ( in_speed.active ^ cl_run->integer ) {
-		movespeed = 2;
-	} else {
-		movespeed = 1;
-		cmd->buttons |= BUTTON_WALKING;
-	}
-
-	if ( in_speed.active ) {
-		anglespeed = 0.001 * cls.frametime * cl_anglespeedkey->value;
-	} else {
-		anglespeed = 0.001 * cls.frametime;
-	}
-
-	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.joystickAxis[AXIS_SIDE];
-	} else {
-		cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
-	}
-
-	if ( in_mlooking ) {
-		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.joystickAxis[AXIS_FORWARD];
-	} else {
-		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[AXIS_FORWARD] );
-	}
-
-	cmd->upmove = ClampChar( cmd->upmove + cl.joystickAxis[AXIS_UP] );
 }
 
 /*
@@ -238,12 +195,17 @@ q3usercmd_t CL_CreateCmd( void ) {
 
 	// get basic movement from mouse
 	CL_MouseMove(&inCmd);
+
+	// get basic movement from joystick
+	CL_JoystickMove(&inCmd);
 	cmd.forwardmove = ClampChar(inCmd.forwardmove);
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
 
-	// get basic movement from joystick
-	CL_JoystickMove( &cmd );
+	if ( in_speed.active ^ cl_run->integer ) {
+	} else {
+		cmd.buttons |= BUTTON_WALKING;
+	}
 
 	// check to make sure the angles haven't wrapped
 	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {

@@ -34,6 +34,9 @@ kbutton_t in_buttons[16];
 
 bool in_mlooking;
 
+Cvar* cl_yawspeed;
+Cvar* cl_pitchspeed;
+Cvar* cl_anglespeedkey;
 Cvar* cl_forwardspeed;
 static Cvar* cl_backspeed;
 static Cvar* cl_sidespeed;
@@ -666,6 +669,40 @@ void CL_MouseMove(in_usercmd_t* cmd)
 	}
 }
 
+void CL_JoystickMove(in_usercmd_t* cmd)
+{
+	float movespeed = (GGameType & GAME_Quake3) ? 1 : 400.0 / 127.0;
+	float anglespeed;
+	if (in_speed.active)
+	{
+		anglespeed = 0.001 * cls.frametime * cl_anglespeedkey->value;
+	}
+	else
+	{
+		anglespeed = 0.001 * cls.frametime;
+	}
+
+	if (!in_strafe.active)
+	{
+		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.joystickAxis[AXIS_SIDE];
+	}
+	else
+	{
+		cmd->sidemove += movespeed * cl.joystickAxis[AXIS_SIDE];
+	}
+
+	if (in_mlooking)
+	{
+		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.joystickAxis[AXIS_FORWARD];
+	}
+	else
+	{
+		cmd->forwardmove += movespeed * cl.joystickAxis[AXIS_FORWARD];
+	}
+
+	cmd->upmove += cl.joystickAxis[AXIS_UP];
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
@@ -747,6 +784,9 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("-button14", IN_Button14Up);
 	}
 
+	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
+	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
+	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_freelook = Cvar_Get("cl_freelook", "1", CVAR_ARCHIVE);
 	cl_sensitivity = Cvar_Get("sensitivity", "5", CVAR_ARCHIVE);
 	cl_mouseAccel = Cvar_Get("cl_mouseAccel", "0", CVAR_ARCHIVE);

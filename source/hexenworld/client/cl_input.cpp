@@ -42,12 +42,6 @@ void IN_Button2Up (void)
 
 //==========================================================================
 
-Cvar*	cl_yawspeed;
-Cvar*	cl_pitchspeed;
-
-Cvar*	cl_anglespeedkey;
-
-
 /*
 ================
 CL_AdjustAngles
@@ -226,6 +220,9 @@ void CL_SendCmd (void)
 
 		// allow mice or other external controllers to add to the move
 		CL_MouseMove(&inCmd);
+
+		// get basic movement from joystick
+		CL_JoystickMove(&inCmd);
 		cmd->forwardmove = inCmd.forwardmove;
 		cmd->sidemove = inCmd.sidemove;
 		cmd->upmove = inCmd.upmove;

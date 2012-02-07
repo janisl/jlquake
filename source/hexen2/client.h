@@ -11,11 +11,6 @@
 //
 extern	Cvar*	cl_playerclass;
 
-extern	Cvar*	cl_yawspeed;
-extern	Cvar*	cl_pitchspeed;
-
-extern	Cvar*	cl_anglespeedkey;
-
 extern  Cvar*	cl_prettylights;
 
 extern	Cvar*	cl_shownet;

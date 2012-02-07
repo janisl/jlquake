@@ -43,6 +43,9 @@ extern kbutton_t in_buttons[16];
 
 extern bool in_mlooking;
 
+extern Cvar* cl_yawspeed;
+extern Cvar* cl_pitchspeed;
+extern Cvar* cl_anglespeedkey;
 extern Cvar* cl_forwardspeed;
 extern Cvar* cl_run;
 extern Cvar* cl_freelook;
@@ -60,3 +63,4 @@ void IN_CenterView();
 void CL_InitInputCommon();
 void CL_KeyMove(in_usercmd_t* cmd);
 void CL_MouseMove(in_usercmd_t* cmd);
+void CL_JoystickMove(in_usercmd_t* cmd);

@@ -625,9 +625,6 @@ void CL_Init (void)
 	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
 	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
 	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
-	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
-	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
-	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 
