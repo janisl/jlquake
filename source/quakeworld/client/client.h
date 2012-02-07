@@ -65,9 +65,7 @@ void CL_ReadPackets (void);
 
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (qwusercmd_t *cmd);
-void CL_BaseMove (qwusercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(qwusercmd_t *cmd);
 
 
 const char *Key_KeynumToString (int keynum);

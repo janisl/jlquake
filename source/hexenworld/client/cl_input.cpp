@@ -64,19 +64,6 @@ void CL_FinishMove (hwusercmd_t *cmd)
 //
 	if (++cl.qh_movemessages <= 2)
 		return;
-//
-// figure button bits
-//	
-	if (in_buttons[0].active || in_buttons[0].wasPressed)
-		cmd->buttons |= 1;
-	in_buttons[0].wasPressed = false;
-	
-	if (in_buttons[1].active || in_buttons[1].wasPressed)
-		cmd->buttons |= 2;
-	in_buttons[1].wasPressed = false;
-
-	if (in_buttons[2].active)
-		cmd->buttons |= 4;
 
 	// send milliseconds of time to apply the move
 	ms = host_frametime * 1000;
@@ -160,6 +147,7 @@ void CL_SendCmd (void)
 		inCmd.forwardmove = cmd->forwardmove;
 		inCmd.sidemove = cmd->sidemove;
 		inCmd.upmove = cmd->upmove;
+		inCmd.buttons = cmd->buttons;
 		CL_KeyMove(&inCmd);
 
 		cmd->light_level = (byte)cl_lightlevel->value;
@@ -169,9 +157,12 @@ void CL_SendCmd (void)
 
 		// get basic movement from joystick
 		CL_JoystickMove(&inCmd);
+
+		CL_CmdButtons(&inCmd);
 		cmd->forwardmove = inCmd.forwardmove;
 		cmd->sidemove = inCmd.sidemove;
 		cmd->upmove = inCmd.upmove;
+		cmd->buttons = inCmd.buttons;
 
 		if (cl.viewangles[PITCH] > 80)
 			cl.viewangles[PITCH] = 80;

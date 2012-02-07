@@ -30,7 +30,6 @@ key up events are sent even if in console mode
 char	key_lines[32][MAXCMDLINE];
 int		key_linepos;
 int		shift_down=false;
-int	anykeydown;
 
 int		edit_line=0;
 int		history_line=0;
@@ -706,7 +705,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		return;
 	}
 
-	// track if any key is down for BUTTON_ANY
+	// track if any key is down for Q2BUTTON_ANY
 	keydown[key] = down;
 	if (down)
 	{

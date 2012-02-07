@@ -87,20 +87,6 @@ void CL_FinishMove (q2usercmd_t *cmd)
 	int		ms;
 	int		i;
 
-//
-// figure button bits
-//	
-	if (in_buttons[0].active || in_buttons[0].wasPressed)
-		cmd->buttons |= BUTTON_ATTACK;
-	in_buttons[0].wasPressed = false;
-	
-	if (in_buttons[1].active || in_buttons[1].wasPressed)
-		cmd->buttons |= BUTTON_USE;
-	in_buttons[1].wasPressed = false;
-
-	if (anykeydown && in_keyCatchers == 0)
-		cmd->buttons |= BUTTON_ANY;
-
 	// send milliseconds of time to apply the move
 	ms = cls.q2_frametimeFloat * 1000;
 	if (ms > 250)
@@ -147,6 +133,7 @@ q2usercmd_t CL_CreateCmd (void)
 	inCmd.forwardmove = cmd.forwardmove;
 	inCmd.sidemove = cmd.sidemove;
 	inCmd.upmove = cmd.upmove;
+	inCmd.buttons = cmd.buttons;
 	CL_KeyMove(&inCmd);
 
 	// allow mice or other external controllers to add to the move
@@ -154,9 +141,12 @@ q2usercmd_t CL_CreateCmd (void)
 
 	// get basic movement from joystick
 	CL_JoystickMove(&inCmd);
+
+	CL_CmdButtons(&inCmd);
 	cmd.forwardmove = inCmd.forwardmove;
 	cmd.sidemove = inCmd.sidemove;
 	cmd.upmove = inCmd.upmove;
+	cmd.buttons = inCmd.buttons;
 
 	CL_FinishMove (&cmd);
 

@@ -49,10 +49,9 @@ void CL_MouseEvent(int mx, int my)
 CL_SendMove
 ==============
 */
-void CL_SendMove (h2usercmd_t *cmd)
+static void CL_SendMove (h2usercmd_t *cmd, in_usercmd_t* inCmd)
 {
 	int		i;
-	int		bits;
 	QMsg	buf;
 	byte	data[128];
 	
@@ -78,23 +77,7 @@ void CL_SendMove (h2usercmd_t *cmd)
     buf.WriteShort(cmd->sidemove);
     buf.WriteShort(cmd->upmove);
 
-//
-// send button bits
-//
-	bits = 0;
-	
-	if (in_buttons[0].active || in_buttons[0].wasPressed)
-		bits |= 1;
-	in_buttons[0].wasPressed = false;
-	
-	if (in_buttons[1].active || in_buttons[1].wasPressed)
-		bits |= 2;
-	in_buttons[1].wasPressed = false;
-	
-	if (in_buttons[2].active)
-		bits |= 4;
-
-    buf.WriteByte(bits);
+    buf.WriteByte(inCmd->buttons);
 
     buf.WriteByte(in_impulse);
 	in_impulse = 0;
@@ -175,7 +158,9 @@ void CL_SendCmd (void)
 	if (clc.qh_signon == SIGNONS)
 	{
 	// get basic movement from keyboard
+		in_usercmd_t inCmd;
 		Com_Memset(&cmd, 0, sizeof(cmd));
+		Com_Memset(&inCmd, 0, sizeof(inCmd));
 			
 		if (!cl.h2_v.cameramode)	// Stuck in a different camera so don't move
 		{
@@ -197,10 +182,10 @@ void CL_SendCmd (void)
 			if (cl.viewangles[ROLL] < -50)
 				cl.viewangles[ROLL] = -50;
 			
-			in_usercmd_t inCmd;
 			inCmd.forwardmove = cmd.forwardmove;
 			inCmd.sidemove = cmd.sidemove;
 			inCmd.upmove = cmd.upmove;
+			inCmd.buttons = 0;
 			CL_KeyMove(&inCmd);
 
 			// light level at player's position including dlights
@@ -213,6 +198,8 @@ void CL_SendCmd (void)
 
 			// get basic movement from joystick
 			CL_JoystickMove(&inCmd);
+
+			CL_CmdButtons(&inCmd);
 			cmd.forwardmove = inCmd.forwardmove;
 			cmd.sidemove = inCmd.sidemove;
 			cmd.upmove = inCmd.upmove;
@@ -224,7 +211,7 @@ void CL_SendCmd (void)
 		}
 	
 	// send the unreliable message
-		CL_SendMove (&cmd);
+		CL_SendMove (&cmd, &inCmd);
 	
 	}
 

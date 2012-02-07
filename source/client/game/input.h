@@ -14,27 +14,15 @@
 //**
 //**************************************************************************
 
-struct kbutton_t
-{
-	int down[2];		// key nums holding it down
-	unsigned downtime;	// msec timestamp
-	unsigned msec;		// msec down this frame if both a down and up happened
-	bool active;		// current state
-	bool wasPressed;	// set when down, not cleared when up
-};
-
 struct in_usercmd_t
 {
 	int forwardmove;
 	int sidemove;
 	int upmove;
+	int buttons;
 };
 
 extern unsigned frame_msec;
-
-extern kbutton_t in_speed;
-
-extern kbutton_t in_buttons[16];
 
 extern Cvar* cl_forwardspeed;
 extern Cvar* cl_run;
@@ -45,10 +33,10 @@ extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
 void CL_JoystickEvent(int axis, int value, int time);
-float CL_KeyState(kbutton_t* key);
 void CLQH_StartPitchDrift();
 void CL_InitInputCommon();
 void CL_AdjustAngles();
+void CL_CmdButtons(in_usercmd_t* cmd);
 void CL_KeyMove(in_usercmd_t* cmd);
 void CL_MouseMove(in_usercmd_t* cmd);
 void CL_JoystickMove(in_usercmd_t* cmd);

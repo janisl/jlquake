@@ -48,16 +48,13 @@ void CL_NextDemo (void);
 //
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (q1usercmd_t *cmd);
 
 void CL_ClearState (void);
 
 
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (q1usercmd_t *cmd);
-void CL_BaseMove (q1usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(q1usercmd_t *cmd);
 
 
 const char *Key_KeynumToString (int keynum);

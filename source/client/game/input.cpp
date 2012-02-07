@@ -16,6 +16,15 @@
 
 #include "../client.h"
 
+struct kbutton_t
+{
+	int down[2];		// key nums holding it down
+	unsigned downtime;	// msec timestamp
+	unsigned msec;		// msec down this frame if both a down and up happened
+	bool active;		// current state
+	bool wasPressed;	// set when down, not cleared when up
+};
+
 unsigned frame_msec;
 
 static kbutton_t in_left;
@@ -27,10 +36,10 @@ static kbutton_t in_lookdown;
 static kbutton_t in_moveleft;
 static kbutton_t in_moveright;
 static kbutton_t in_strafe;
-kbutton_t in_speed;
+static kbutton_t in_speed;
 static kbutton_t in_up;
 static kbutton_t in_down;
-kbutton_t in_buttons[16];
+static kbutton_t in_buttons[16];
 
 static bool in_mlooking;
 
@@ -425,7 +434,7 @@ static void IN_Button14Up()
 }
 
 //	Returns the fraction of the frame that the key was down
-float CL_KeyState(kbutton_t* key)
+static float CL_KeyState(kbutton_t* key)
 {
 	int msec = key->msec;
 	key->msec = 0;
@@ -575,6 +584,57 @@ void CL_AdjustAngles()
 	}
 }
 
+void CL_CmdButtons(in_usercmd_t* cmd)
+{
+	// figure button bits
+	// send a button bit even if the key was pressed and released in
+	// less than a frame
+	int numButtons = (GGameType & (GAME_Quake | GAME_Quake2)) ? 2 :
+		(GGameType & GAME_Hexen2) ? 3 : 15;
+	for (int i = 0; i < numButtons; i++)
+	{
+		if (in_buttons[i].active || in_buttons[i].wasPressed)
+		{
+			cmd->buttons |= 1 << i;
+		}
+		in_buttons[i].wasPressed = false;
+	}
+
+	if (GGameType & GAME_Quake2)
+	{
+		if (anykeydown && in_keyCatchers == 0)
+		{
+			cmd->buttons |= Q2BUTTON_ANY;
+		}
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		if (in_keyCatchers)
+		{
+			cmd->buttons |= Q3BUTTON_TALK;
+		}
+
+		// allow the game to know if any key at all is
+		// currently pressed, even if it isn't bound to anything
+		if (anykeydown && !in_keyCatchers)
+		{
+			cmd->buttons |= Q3BUTTON_ANY;
+		}
+
+		// the walking flag is to keep animations consistant
+		// even during acceleration and develeration
+		if (in_speed.active ^ cl_run->integer)
+		{
+			cmd->buttons &= ~Q3BUTTON_WALKING;
+		}
+		else
+		{
+			cmd->buttons |= Q3BUTTON_WALKING;
+		}
+	}
+}
+
 void CL_KeyMove(in_usercmd_t* cmd)
 {
 	float forwardspeed;
@@ -629,6 +689,7 @@ void CL_KeyMove(in_usercmd_t* cmd)
 	}
 	else
 	{
+		// adjust for speed key / running
 		if (in_speed.active ^ cl_run->integer)
 		{
 			forwardspeed = 127;

@@ -83,16 +83,6 @@ void CL_FinishMove (qwusercmd_t *cmd)
 //
 	if (++cl.qh_movemessages <= 2)
 		return;
-//
-// figure button bits
-//	
-	if (in_buttons[0].active || in_buttons[0].wasPressed)
-		cmd->buttons |= 1;
-	in_buttons[0].wasPressed = false;
-	
-	if (in_buttons[1].active || in_buttons[1].wasPressed)
-		cmd->buttons |= 2;
-	in_buttons[1].wasPressed = false;
 
 	// send milliseconds of time to apply the move
 	ms = host_frametime * 1000;
@@ -171,6 +161,7 @@ void CL_SendCmd (void)
 	inCmd.forwardmove = cmd->forwardmove;
 	inCmd.sidemove = cmd->sidemove;
 	inCmd.upmove = cmd->upmove;
+	inCmd.buttons = cmd->buttons;
 	CL_KeyMove(&inCmd);
 
 	// allow mice or other external controllers to add to the move
@@ -178,9 +169,12 @@ void CL_SendCmd (void)
 
 	// get basic movement from joystick
 	CL_JoystickMove(&inCmd);
+
+	CL_CmdButtons(&inCmd);
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
+	cmd->buttons = inCmd.buttons;
 
 	if (cl.viewangles[PITCH] > 80)
 		cl.viewangles[PITCH] = 80;

@@ -67,38 +67,6 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 
 /*
 ==============
-CL_CmdButtons
-==============
-*/
-void CL_CmdButtons( q3usercmd_t *cmd ) {
-	int		i;
-
-	//
-	// figure button bits
-	// send a button bit even if the key was pressed and released in
-	// less than a frame
-	//	
-	for (i = 0 ; i < 15 ; i++) {
-		if ( in_buttons[i].active || in_buttons[i].wasPressed ) {
-			cmd->buttons |= 1 << i;
-		}
-		in_buttons[i].wasPressed = qfalse;
-	}
-
-	if ( in_keyCatchers ) {
-		cmd->buttons |= BUTTON_TALK;
-	}
-
-	// allow the game to know if any key at all is
-	// currently pressed, even if it isn't bound to anything
-	if ( anykeydown && !in_keyCatchers ) {
-		cmd->buttons |= BUTTON_ANY;
-	}
-}
-
-
-/*
-==============
 CL_FinishMove
 ==============
 */
@@ -134,24 +102,14 @@ q3usercmd_t CL_CreateCmd( void ) {
 	
 	Com_Memset( &cmd, 0, sizeof( cmd ) );
 
-	CL_CmdButtons( &cmd );
-
-	// get basic movement from keyboard
-	//
-	// adjust for speed key / running
-	// the walking flag is to keep animations consistant
-	// even during acceleration and develeration
-	//
-	if ( in_speed.active ^ cl_run->integer ) {
-		cmd.buttons &= ~BUTTON_WALKING;
-	} else {
-		cmd.buttons |= BUTTON_WALKING;
-	}
-
 	in_usercmd_t inCmd;
 	inCmd.forwardmove = 0;
 	inCmd.sidemove = 0;
 	inCmd.upmove = 0;
+	inCmd.buttons = cmd.buttons;
+	CL_CmdButtons(&inCmd);
+
+	// get basic movement from keyboard
 	CL_KeyMove(&inCmd);
 
 	// get basic movement from mouse
@@ -162,11 +120,7 @@ q3usercmd_t CL_CreateCmd( void ) {
 	cmd.forwardmove = ClampChar(inCmd.forwardmove);
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
-
-	if ( in_speed.active ^ cl_run->integer ) {
-	} else {
-		cmd.buttons |= BUTTON_WALKING;
-	}
+	cmd.buttons = inCmd.buttons;
 
 	// check to make sure the angles haven't wrapped
 	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {

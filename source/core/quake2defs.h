@@ -698,3 +698,10 @@ enum
 #define	Q2CS_PLAYERSKINS		(Q2CS_ITEMS+MAX_ITEMS_Q2)
 #define Q2CS_GENERAL			(Q2CS_PLAYERSKINS+MAX_CLIENTS_Q2)
 #define	MAX_CONFIGSTRINGS_Q2	(Q2CS_GENERAL+MAX_GENERAL_Q2)
+
+//
+// button bits
+//
+#define	Q2BUTTON_ATTACK		1
+#define	Q2BUTTON_USE		2
+#define	Q2BUTTON_ANY		128			// any key whatsoever

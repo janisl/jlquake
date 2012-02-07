@@ -122,14 +122,6 @@ COLLISION DETECTION
 #define	AREA_SOLID		1
 #define	AREA_TRIGGERS	2
 
-
-//
-// button bits
-//
-#define	BUTTON_ATTACK		1
-#define	BUTTON_USE			2
-#define	BUTTON_ANY			128			// any key whatsoever
-
 #define	MAXTOUCH	32
 typedef struct
 {
