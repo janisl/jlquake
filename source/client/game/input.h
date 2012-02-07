@@ -32,18 +32,10 @@ struct in_usercmd_t
 
 extern unsigned frame_msec;
 
-extern kbutton_t in_left;
-extern kbutton_t in_right;
-extern kbutton_t in_lookup;
-extern kbutton_t in_lookdown;
-extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 
 extern kbutton_t in_buttons[16];
 
-extern Cvar* cl_yawspeed;
-extern Cvar* cl_pitchspeed;
-extern Cvar* cl_anglespeedkey;
 extern Cvar* cl_forwardspeed;
 extern Cvar* cl_run;
 extern Cvar* cl_freelook;
@@ -55,8 +47,8 @@ extern Cvar* lookspring;
 void CL_JoystickEvent(int axis, int value, int time);
 float CL_KeyState(kbutton_t* key);
 void CLQH_StartPitchDrift();
-void CLQH_StopPitchDrift();
 void CL_InitInputCommon();
+void CL_AdjustAngles();
 void CL_KeyMove(in_usercmd_t* cmd);
 void CL_MouseMove(in_usercmd_t* cmd);
 void CL_JoystickMove(in_usercmd_t* cmd);

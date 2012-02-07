@@ -18,15 +18,15 @@
 
 unsigned frame_msec;
 
-kbutton_t in_left;
-kbutton_t in_right;
+static kbutton_t in_left;
+static kbutton_t in_right;
 static kbutton_t in_forward;
 static kbutton_t in_back;
-kbutton_t in_lookup;
-kbutton_t in_lookdown;
+static kbutton_t in_lookup;
+static kbutton_t in_lookdown;
 static kbutton_t in_moveleft;
 static kbutton_t in_moveright;
-kbutton_t in_strafe;
+static kbutton_t in_strafe;
 kbutton_t in_speed;
 static kbutton_t in_up;
 static kbutton_t in_down;
@@ -34,9 +34,9 @@ kbutton_t in_buttons[16];
 
 static bool in_mlooking;
 
-Cvar* cl_yawspeed;
-Cvar* cl_pitchspeed;
-Cvar* cl_anglespeedkey;
+static Cvar* cl_yawspeed;
+static Cvar* cl_pitchspeed;
+static Cvar* cl_anglespeedkey;
 Cvar* cl_forwardspeed;
 static Cvar* cl_backspeed;
 static Cvar* cl_sidespeed;
@@ -471,7 +471,7 @@ void CLQH_StartPitchDrift()
 	}
 }
 
-void CLQH_StopPitchDrift()
+static void CLQH_StopPitchDrift()
 {
 	cl.qh_laststop = cl.qh_serverTimeFloat;
 	cl.qh_nodrift = true;
@@ -511,6 +511,51 @@ static void IN_MLookUp()
 static void Force_CenterView_f()
 {
 	cl.viewangles[PITCH] = 0;
+}
+
+//	Moves the local angle positions
+void CL_AdjustAngles()
+{
+	float speed = 0.001 * cls.frametime;
+	if (in_speed.active || ((GGameType & GAME_HexenWorld) && cl.qh_spectator))
+	{
+		speed *= cl_anglespeedkey->value;
+	}
+
+	if (!in_strafe.active)
+	{
+		cl.viewangles[YAW] -= speed * cl_yawspeed->value * CL_KeyState(&in_right);
+		cl.viewangles[YAW] += speed * cl_yawspeed->value * CL_KeyState(&in_left);
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
+		// but I don't see where I can get the yaw velocity, I have to get on to other things so here it is
+		if (CL_KeyState(&in_left) != 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
+		{
+			cl.h2_idealroll = -10;
+		}
+		else if (CL_KeyState(&in_right) != 0 && cl.h2_v.movetype == QHMOVETYPE_FLY)
+		{
+			cl.h2_idealroll = 10;
+		}
+		else
+		{
+			cl.h2_idealroll = 0;
+		}
+	}
+
+	float up = CL_KeyState(&in_lookup);
+	float down = CL_KeyState(&in_lookdown);
+
+	cl.viewangles[PITCH] -= speed * cl_pitchspeed->value * up;
+	cl.viewangles[PITCH] += speed * cl_pitchspeed->value * down;
+
+	if ((GGameType & GAME_QuakeHexen) && (up || down))
+	{
+		CLQH_StopPitchDrift();
+	}
 }
 
 void CL_KeyMove(in_usercmd_t* cmd)

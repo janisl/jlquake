@@ -50,34 +50,6 @@ at the same time.
 //==========================================================================
 
 /*
-================
-CL_AdjustAngles
-
-Moves the local angle positions
-================
-*/
-void CL_AdjustAngles( void ) {
-	float	speed;
-	
-	if ( in_speed.active ) {
-		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
-	} else {
-		speed = 0.001 * cls.frametime;
-	}
-
-	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
-		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
-	}
-
-	float up = CL_KeyState (&in_lookup);
-	float down = CL_KeyState (&in_lookdown);
-
-	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * up;
-	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * down;
-}
-
-/*
 =================
 CL_MouseEvent
 =================
@@ -158,7 +130,7 @@ q3usercmd_t CL_CreateCmd( void ) {
 	VectorCopy( cl.viewangles, oldAngles );
 
 	// keyboard angle adjustment
-	CL_AdjustAngles ();
+	CL_AdjustAngles();
 	
 	Com_Memset( &cmd, 0, sizeof( cmd ) );
 

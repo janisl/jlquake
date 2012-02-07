@@ -58,36 +58,6 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-/*
-================
-CL_AdjustAngles
-
-Moves the local angle positions
-================
-*/
-void CL_AdjustAngles (void)
-{
-	float	speed;
-	float	up, down;
-	
-	if (in_speed.active)
-		speed = cls.q2_frametimeFloat * cl_anglespeedkey->value;
-	else
-		speed = cls.q2_frametimeFloat;
-
-	if (!in_strafe.active)
-	{
-		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
-		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
-	}
-	
-	up = CL_KeyState (&in_lookup);
-	down = CL_KeyState(&in_lookdown);
-	
-	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * up;
-	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * down;
-}
-
 void CL_MouseEvent(int mx, int my)
 {
 	cl.mouseDx[cl.mouseIndex] += mx;
@@ -167,7 +137,7 @@ q2usercmd_t CL_CreateCmd (void)
 		frame_msec = 200;
 	
 	// get basic movement from keyboard
-	CL_AdjustAngles ();
+	CL_AdjustAngles();
 	
 	Com_Memset(&cmd, 0, sizeof(cmd));
 	

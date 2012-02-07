@@ -32,61 +32,6 @@ void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
 //==========================================================================
 
-/*
-================
-CL_AdjustAngles
-
-Moves the local angle positions
-================
-*/
-void CL_AdjustAngles (void)
-{
-	float	speed;
-	float	up, down;
-	
-	if (in_speed.active || cl.qh_spectator)
-		speed = host_frametime * cl_anglespeedkey->value;
-	else
-		speed = host_frametime;
-
-	if (!in_strafe.active)
-	{
-		cl.viewangles[YAW] -= speed*cl_yawspeed->value*CL_KeyState (&in_right);
-		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
-		cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
-	}
-	
-	// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
-	// but I don't see where I can get the yaw velocity, I have to get on to other things so here it is
-
-	if ((CL_KeyState (&in_left)!=0) && (cl.h2_v.movetype==QHMOVETYPE_FLY))
-		cl.h2_idealroll=-10;
-	else if ((CL_KeyState (&in_right)!=0) && (cl.h2_v.movetype==QHMOVETYPE_FLY))
-		cl.h2_idealroll=10;
-	else
-		cl.h2_idealroll=0;
-
-	up = CL_KeyState (&in_lookup);
-	down = CL_KeyState(&in_lookdown);
-	
-	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * up;
-	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * down;
-
-	if (up || down)
-		CLQH_StopPitchDrift ();
-		
-	if (cl.viewangles[PITCH] > 80)
-		cl.viewangles[PITCH] = 80;
-	if (cl.viewangles[PITCH] < -70)
-		cl.viewangles[PITCH] = -70;
-
-	if (cl.viewangles[ROLL] > 50)
-		cl.viewangles[ROLL] = 50;
-	if (cl.viewangles[ROLL] < -50)
-		cl.viewangles[ROLL] = -50;
-		
-}
-
 void CL_MouseEvent(int mx, int my)
 {
 	cl.mouseDx[cl.mouseIndex] += mx;
@@ -186,9 +131,6 @@ void CL_SendCmd (void)
 	cl.hw_frames[i].senttime = realtime;
 	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
-	// get basic movement from keyboard
-	CL_AdjustAngles ();
-	
 	Com_Memset(cmd, 0, sizeof(*cmd));
 
 	if (!cl.h2_v.cameramode)	// Stuck in a different camera so don't move
@@ -198,6 +140,20 @@ void CL_SendCmd (void)
 
 		frame_msec = (unsigned)(host_frametime * 1000);
 
+		// get basic movement from keyboard
+		CL_AdjustAngles();
+		cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
+
+		if (cl.viewangles[PITCH] > 80)
+			cl.viewangles[PITCH] = 80;
+		if (cl.viewangles[PITCH] < -70)
+			cl.viewangles[PITCH] = -70;
+
+		if (cl.viewangles[ROLL] > 50)
+			cl.viewangles[ROLL] = 50;
+		if (cl.viewangles[ROLL] < -50)
+			cl.viewangles[ROLL] = -50;
+	
 		VectorCopy (cl.viewangles, cmd->angles);
 
 		in_usercmd_t inCmd;
