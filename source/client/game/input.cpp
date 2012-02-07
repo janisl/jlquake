@@ -32,7 +32,7 @@ static kbutton_t in_up;
 static kbutton_t in_down;
 kbutton_t in_buttons[16];
 
-bool in_mlooking;
+static bool in_mlooking;
 
 Cvar* cl_yawspeed;
 Cvar* cl_pitchspeed;
@@ -55,7 +55,7 @@ static Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
 
-void IN_KeyDown(kbutton_t* b)
+static void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
 	int k;
@@ -100,7 +100,7 @@ void IN_KeyDown(kbutton_t* b)
 	b->wasPressed = true;
 }
 
-void IN_KeyUp(kbutton_t* b)
+static void IN_KeyUp(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
 	if (!c[0])
@@ -142,6 +142,16 @@ void IN_KeyUp(kbutton_t* b)
 	}
 
 	b->active = false;
+}
+
+//	Joystick values stay set until changed
+void CL_JoystickEvent(int axis, int value, int time)
+{
+	if (axis < 0 || axis >= MAX_JOYSTICK_AXIS)
+	{
+		common->Error("CL_JoystickEvent: bad axis %i", axis);
+	}
+	cl.joystickAxis[axis] = value;
 }
 
 static void IN_UpDown()
@@ -468,7 +478,7 @@ void CLQH_StopPitchDrift()
 	cl.qh_pitchvel = 0;
 }
 
-void IN_CenterView()
+static void IN_CenterView()
 {
 	if (GGameType & GAME_QuakeHexen)
 	{

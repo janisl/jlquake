@@ -30,16 +30,6 @@ int			in_impulse;
 
 void IN_Impulse (void) {in_impulse=String::Atoi(Cmd_Argv(1));}
 
-void IN_Button2Down (void)
-{
-	IN_KeyDown(&in_buttons[2]);
-}
-
-void IN_Button2Up (void)
-{
-	IN_KeyUp(&in_buttons[2]);
-}
-
 //==========================================================================
 
 /*

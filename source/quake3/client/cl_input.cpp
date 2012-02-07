@@ -70,8 +70,11 @@ void CL_AdjustAngles( void ) {
 		cl.viewangles[YAW] += speed*cl_yawspeed->value*CL_KeyState (&in_left);
 	}
 
-	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * CL_KeyState (&in_lookup);
-	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * CL_KeyState (&in_lookdown);
+	float up = CL_KeyState (&in_lookup);
+	float down = CL_KeyState (&in_lookdown);
+
+	cl.viewangles[PITCH] -= speed*cl_pitchspeed->value * up;
+	cl.viewangles[PITCH] += speed*cl_pitchspeed->value * down;
 }
 
 /*
@@ -88,20 +91,6 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 		cl.mouseDx[cl.mouseIndex] += dx;
 		cl.mouseDy[cl.mouseIndex] += dy;
 	}
-}
-
-/*
-=================
-CL_JoystickEvent
-
-Joystick values stay set until changed
-=================
-*/
-void CL_JoystickEvent( int axis, int value, int time ) {
-	if ( axis < 0 || axis >= MAX_JOYSTICK_AXIS ) {
-		Com_Error( ERR_DROP, "CL_JoystickEvent: bad axis %i", axis );
-	}
-	cl.joystickAxis[axis] = value;
 }
 
 /*

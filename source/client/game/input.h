@@ -41,8 +41,6 @@ extern kbutton_t in_speed;
 
 extern kbutton_t in_buttons[16];
 
-extern bool in_mlooking;
-
 extern Cvar* cl_yawspeed;
 extern Cvar* cl_pitchspeed;
 extern Cvar* cl_anglespeedkey;
@@ -54,12 +52,10 @@ extern Cvar* m_pitch;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
-void IN_KeyDown(kbutton_t* b);
-void IN_KeyUp(kbutton_t* b);
+void CL_JoystickEvent(int axis, int value, int time);
 float CL_KeyState(kbutton_t* key);
 void CLQH_StartPitchDrift();
 void CLQH_StopPitchDrift();
-void IN_CenterView();
 void CL_InitInputCommon();
 void CL_KeyMove(in_usercmd_t* cmd);
 void CL_MouseMove(in_usercmd_t* cmd);

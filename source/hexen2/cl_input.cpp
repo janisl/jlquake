@@ -180,16 +180,6 @@ void CL_SendMove (h2usercmd_t *cmd)
 	}
 }
 
-void IN_Button2Down (void)
-{
-	IN_KeyDown(&in_buttons[2]);
-}
-
-void IN_Button2Up (void)
-{
-	IN_KeyUp(&in_buttons[2]);
-}
-
 #ifdef MISSIONPACK
 void IN_infoPlaqueUp(void)
 {
