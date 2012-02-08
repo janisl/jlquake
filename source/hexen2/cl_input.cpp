@@ -165,17 +165,6 @@ void CL_SendCmd (void)
 			frame_msec = (unsigned)(host_frametime * 1000);
 
 			CL_AdjustAngles();
-			cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
-			
-			if (cl.viewangles[PITCH] > 80)
-				cl.viewangles[PITCH] = 80;
-			if (cl.viewangles[PITCH] < -70)
-				cl.viewangles[PITCH] = -70;
-
-			if (cl.viewangles[ROLL] > 50)
-				cl.viewangles[ROLL] = 50;
-			if (cl.viewangles[ROLL] < -50)
-				cl.viewangles[ROLL] = -50;
 			
 			CL_KeyMove(&inCmd);
 
@@ -190,10 +179,7 @@ void CL_SendCmd (void)
 			// get basic movement from joystick
 			CL_JoystickMove(&inCmd);
 
-			if (cl.viewangles[PITCH] > 80)
-				cl.viewangles[PITCH] = 80;
-			if (cl.viewangles[PITCH] < -70)
-				cl.viewangles[PITCH] = -70;
+			CL_ClampAngles(0);
 		}
 
 		CL_CmdButtons(&inCmd);

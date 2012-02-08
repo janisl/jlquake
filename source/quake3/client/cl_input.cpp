@@ -117,17 +117,12 @@ q3usercmd_t CL_CreateCmd( void ) {
 
 	// get basic movement from joystick
 	CL_JoystickMove(&inCmd);
+
+	CL_ClampAngles(oldAngles[PITCH]);
 	cmd.forwardmove = ClampChar(inCmd.forwardmove);
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
 	cmd.buttons = inCmd.buttons;
-
-	// check to make sure the angles haven't wrapped
-	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {
-		cl.viewangles[PITCH] = oldAngles[PITCH] + 90;
-	} else if ( oldAngles[PITCH] - cl.viewangles[PITCH] > 90 ) {
-		cl.viewangles[PITCH] = oldAngles[PITCH] - 90;
-	} 
 
 	// store out the final values
 	CL_FinishMove( &cmd );

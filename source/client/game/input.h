@@ -41,3 +41,4 @@ void CL_CmdButtons(in_usercmd_t* cmd);
 void CL_KeyMove(in_usercmd_t* cmd);
 void CL_MouseMove(in_usercmd_t* cmd);
 void CL_JoystickMove(in_usercmd_t* cmd);
+void CL_ClampAngles(float oldPitch);

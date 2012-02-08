@@ -842,6 +842,60 @@ void CL_JoystickMove(in_usercmd_t* cmd)
 	cmd->upmove += cl.joystickAxis[AXIS_UP];
 }
 
+void CL_ClampAngles(float oldPitch)
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
+
+		if (cl.viewangles[PITCH] > 80)
+		{
+			cl.viewangles[PITCH] = 80;
+		}
+		if (cl.viewangles[PITCH] < -70)
+		{
+			cl.viewangles[PITCH] = -70;
+		}
+
+		if (cl.viewangles[ROLL] > 50)
+		{
+			cl.viewangles[ROLL] = 50;
+		}
+		if (cl.viewangles[ROLL] < -50)
+		{
+			cl.viewangles[ROLL] = -50;
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		oldPitch = SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[PITCH]);
+		if (oldPitch > 180)
+		{
+			oldPitch -= 360;
+		}
+		if (cl.viewangles[PITCH] + oldPitch > 89)
+		{
+			cl.viewangles[PITCH] = 89 - oldPitch;
+		}
+		if (cl.viewangles[PITCH] + oldPitch < -89)
+		{
+			cl.viewangles[PITCH] = -89 - oldPitch;
+		}
+	}
+	else
+	{
+		// check to make sure the angles haven't wrapped
+		if (cl.viewangles[PITCH] - oldPitch > 90)
+		{
+			cl.viewangles[PITCH] = oldPitch + 90;
+		}
+		else if (oldPitch - cl.viewangles[PITCH] > 90)
+		{
+			cl.viewangles[PITCH] = oldPitch - 90;
+		}
+	}
+}
+
 void CL_InitInputCommon()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);

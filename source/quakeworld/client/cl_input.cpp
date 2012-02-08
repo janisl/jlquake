@@ -136,17 +136,6 @@ void CL_SendCmd (void)
 	frame_msec = (unsigned)(host_frametime * 1000);
 
 	CL_AdjustAngles();
-	cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
-	
-	if (cl.viewangles[PITCH] > 80)
-		cl.viewangles[PITCH] = 80;
-	if (cl.viewangles[PITCH] < -70)
-		cl.viewangles[PITCH] = -70;
-
-	if (cl.viewangles[ROLL] > 50)
-		cl.viewangles[ROLL] = 50;
-	if (cl.viewangles[ROLL] < -50)
-		cl.viewangles[ROLL] = -50;
 	
 	Com_Memset(cmd, 0, sizeof(*cmd));
 	
@@ -166,15 +155,12 @@ void CL_SendCmd (void)
 	CL_JoystickMove(&inCmd);
 
 	CL_CmdButtons(&inCmd);
+
+	CL_ClampAngles(0);
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
-
-	if (cl.viewangles[PITCH] > 80)
-		cl.viewangles[PITCH] = 80;
-	if (cl.viewangles[PITCH] < -70)
-		cl.viewangles[PITCH] = -70;
 
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)

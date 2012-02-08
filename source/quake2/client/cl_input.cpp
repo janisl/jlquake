@@ -59,19 +59,6 @@ void CL_MouseEvent(int mx, int my)
 	cl.mouseDy[cl.mouseIndex] += my;
 }
 
-void CL_ClampPitch (void)
-{
-	float	pitch;
-
-	pitch = SHORT2ANGLE(cl.q2_frame.playerstate.pmove.delta_angles[PITCH]);
-	if (pitch > 180)
-		pitch -= 360;
-	if (cl.viewangles[PITCH] + pitch > 89)
-		cl.viewangles[PITCH] = 89 - pitch;
-	if (cl.viewangles[PITCH] + pitch < -89)
-		cl.viewangles[PITCH] = -89 - pitch;
-}
-
 /*
 ==============
 CL_FinishMove
@@ -88,7 +75,6 @@ void CL_FinishMove (q2usercmd_t *cmd)
 		ms = 100;		// time was unreasonable
 	cmd->msec = ms;
 
-	CL_ClampPitch ();
 	for (i=0 ; i<3 ; i++)
 		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
 
@@ -138,6 +124,8 @@ q2usercmd_t CL_CreateCmd (void)
 	CL_JoystickMove(&inCmd);
 
 	CL_CmdButtons(&inCmd);
+
+	CL_ClampAngles(0);
 	cmd.forwardmove = inCmd.forwardmove;
 	cmd.sidemove = inCmd.sidemove;
 	cmd.upmove = inCmd.upmove;
