@@ -62,8 +62,8 @@ void Cam_Lock(int playernum)
 
 q1trace_t Cam_DoTrace(vec3_t vec1, vec3_t vec2)
 {
-	VectorCopy (vec1, pmove.origin);
-	return PM_PlayerMove(pmove.origin, vec2);
+	VectorCopy (vec1, qh_pmove.origin);
+	return PM_PlayerMove(qh_pmove.origin, vec2);
 }
 	
 // Returns distance or 9999 if invalid for some reason
@@ -75,7 +75,7 @@ static float Cam_TryFlyby(hwplayer_state_t *self, hwplayer_state_t *player, vec3
 
 	VecToAnglesBuggy(vec, v);
 //	v[0] = -v[0];
-	VectorCopy (v, pmove.angles);
+	VectorCopy (v, qh_pmove.angles);
 	VectorNormalize(vec);
 	VectorMA(player->origin, 800, vec, v);
 	// v is endpos

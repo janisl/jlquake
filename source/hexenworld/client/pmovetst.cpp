@@ -16,7 +16,7 @@ Returns false if the given player position is not valid (in solid)
 qboolean PM_TestPlayerPosition (vec3_t pos)
 {
 	int			i;
-	physent_t	*pe;
+	qhphysent_t	*pe;
 	vec3_t		mins, maxs, test;
 	clipHandle_t	hull;
 	q1trace_t	trace;
@@ -29,33 +29,33 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 
 	return true;
 
-	for (i=0 ; i< pmove.numphysent ; i++)
+	for (i=0 ; i< qh_pmove.numphysent ; i++)
 	{
-		pe = &pmove.physents[i];
+		pe = &qh_pmove.physents[i];
 		vec3_t clip_mins;
 		vec3_t clip_maxs;
 	// get the clipping hull
 		if(0){}/*shitbox
-			 pmove.hasted==1.666)//hacky- beast speed
+			 qh_pmove.hasted==1.666)//hacky- beast speed
 		{
 			VectorCopy (beast_maxs, maxs);
 			VectorCopy (beast_mins, mins);
-			hull = &pmove.physents[i].model->hulls[5];
+			hull = &qh_pmove.physents[i].model->hulls[5];
 		}*/
 		else if (pe->model >= 0)
 		{
-			if(pmove.crouched)
+			if(qh_pmove.crouched)
 			{
-				hull = CM_ModelHull(pmove.physents[i].model, 3, clip_mins, clip_maxs);
+				hull = CM_ModelHull(qh_pmove.physents[i].model, 3, clip_mins, clip_maxs);
 			}
 			else
 			{
-				hull = CM_ModelHull(pmove.physents[i].model, 1, clip_mins, clip_maxs);
+				hull = CM_ModelHull(qh_pmove.physents[i].model, 1, clip_mins, clip_maxs);
 			}
 		}
 		else
 		{
-			if(pmove.crouched)
+			if(qh_pmove.crouched)
 			{
 				VectorSubtract (pe->mins, player_maxs_crouch, mins);
 			}
@@ -91,7 +91,7 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	vec3_t		start_l, end_l;
 	clipHandle_t	hull;
 	int			i;
-	physent_t	*pe;
+	qhphysent_t	*pe;
 	vec3_t		mins, maxs;
 
 // fill in a default trace
@@ -100,33 +100,33 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	total.entityNum = -1;
 	VectorCopy (end, total.endpos);
 
-	for (i=0 ; i< pmove.numphysent ; i++)
+	for (i=0 ; i< qh_pmove.numphysent ; i++)
 	{
-		pe = &pmove.physents[i];
+		pe = &qh_pmove.physents[i];
 	// get the clipping hull
 		vec3_t clip_mins;
 		vec3_t clip_maxs;
 		if(0){}/*shitbox
-			   pmove.hasted==1.666)//hacky- beast speed
+			   qh_pmove.hasted==1.666)//hacky- beast speed
 		{
 			VectorCopy (beast_maxs, maxs);
 			VectorCopy (beast_mins, mins);
-			hull = &pmove.physents[i].model->hulls[5];
+			hull = &qh_pmove.physents[i].model->hulls[5];
 		}*/
 		else if (pe->model >= 0)
 		{
-			if(pmove.crouched)
+			if(qh_pmove.crouched)
 			{
-				hull = CM_ModelHull(pmove.physents[i].model, 3, clip_mins, clip_maxs);
+				hull = CM_ModelHull(qh_pmove.physents[i].model, 3, clip_mins, clip_maxs);
 			}
 			else
 			{
-				hull = CM_ModelHull(pmove.physents[i].model, 1, clip_mins, clip_maxs);
+				hull = CM_ModelHull(qh_pmove.physents[i].model, 1, clip_mins, clip_maxs);
 			}
 		}
 		else
 		{
-			if(pmove.crouched)
+			if(qh_pmove.crouched)
 			{
 				VectorSubtract (pe->mins, player_maxs_crouch, mins);
 			}

@@ -194,10 +194,10 @@ void CL_LinkPlayers (void)
 			state->command.msec = msec;
 //Con_DPrintf ("predict: %i\n", msec);
 
-			oldphysent = pmove.numphysent;
+			oldphysent = qh_pmove.numphysent;
 			CL_SetSolidPlayers (j);
 			CL_PredictUsercmd (state, &exact, &state->command, false);
-			pmove.numphysent = oldphysent;
+			qh_pmove.numphysent = oldphysent;
 			VectorCopy (exact.origin, ent.origin);
 		}
 		R_AddRefEntityToScene(&ent);
@@ -215,7 +215,7 @@ void CL_LinkPlayers (void)
 ===============
 CL_SetSolid
 
-Builds all the pmove physents for the current frame
+Builds all the qh_pmove physents for the current frame
 ===============
 */
 void CL_SetSolidEntities (void)
@@ -225,10 +225,10 @@ void CL_SetSolidEntities (void)
 	qwpacket_entities_t	*pak;
 	q1entity_state_t		*state;
 
-	pmove.physents[0].model = 0;
-	VectorCopy (vec3_origin, pmove.physents[0].origin);
-	pmove.physents[0].info = 0;
-	pmove.numphysent = 1;
+	qh_pmove.physents[0].model = 0;
+	VectorCopy (vec3_origin, qh_pmove.physents[0].origin);
+	qh_pmove.physents[0].info = 0;
+	qh_pmove.numphysent = 1;
 
 	frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
 	pak = &frame->packet_entities;
@@ -241,9 +241,9 @@ void CL_SetSolidEntities (void)
 			continue;
 		if (!cl.model_clip[state->modelindex])
 			continue;
-		pmove.physents[pmove.numphysent].model = cl.model_clip[state->modelindex];
-		VectorCopy(state->origin, pmove.physents[pmove.numphysent].origin);
-		pmove.numphysent++;
+		qh_pmove.physents[qh_pmove.numphysent].model = cl.model_clip[state->modelindex];
+		VectorCopy(state->origin, qh_pmove.physents[qh_pmove.numphysent].origin);
+		qh_pmove.numphysent++;
 	}
 
 }
@@ -323,9 +323,9 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 ===============
 CL_SetSolid
 
-Builds all the pmove physents for the current frame
+Builds all the qh_pmove physents for the current frame
 Note that CL_SetUpPlayerPrediction() must be called first!
-pmove must be setup with world and solid entity hulls before calling
+qh_pmove must be setup with world and solid entity hulls before calling
 (via CL_PredictMove)
 ===============
 */
@@ -335,12 +335,12 @@ void CL_SetSolidPlayers (int playernum)
 	extern	vec3_t	player_mins;
 	extern	vec3_t	player_maxs;
 	struct predicted_player *pplayer;
-	physent_t *pent;
+	qhphysent_t *pent;
 
 	if (!cl_solid_players->value)
 		return;
 
-	pent = pmove.physents + pmove.numphysent;
+	pent = qh_pmove.physents + qh_pmove.numphysent;
 
 	for (j=0, pplayer = predicted_players; j < MAX_CLIENTS_QW;	j++, pplayer++) {
 
@@ -358,7 +358,7 @@ void CL_SetSolidPlayers (int playernum)
 		VectorCopy(pplayer->origin, pent->origin);
 		VectorCopy(player_mins, pent->mins);
 		VectorCopy(player_maxs, pent->maxs);
-		pmove.numphysent++;
+		qh_pmove.numphysent++;
 		pent++;
 	}
 }

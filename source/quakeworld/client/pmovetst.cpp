@@ -32,17 +32,17 @@ Returns false if the given player position is not valid (in solid)
 qboolean PM_TestPlayerPosition (vec3_t pos)
 {
 	int			i;
-	physent_t	*pe;
+	qhphysent_t	*pe;
 	vec3_t		mins, maxs, test;
 	clipHandle_t	hull;
 
-	for (i=0 ; i< pmove.numphysent ; i++)
+	for (i=0 ; i< qh_pmove.numphysent ; i++)
 	{
-		pe = &pmove.physents[i];
+		pe = &qh_pmove.physents[i];
 	// get the clipping hull
 		if (pe->model >= 0)
 		{
-			hull = CM_ModelHull(pmove.physents[i].model, 1);
+			hull = CM_ModelHull(qh_pmove.physents[i].model, 1);
 		}
 		else
 		{
@@ -72,7 +72,7 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	vec3_t		start_l, end_l;
 	clipHandle_t	hull;
 	int			i;
-	physent_t	*pe;
+	qhphysent_t	*pe;
 	vec3_t		mins, maxs;
 
 // fill in a default trace
@@ -81,15 +81,15 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	total.entityNum = -1;
 	VectorCopy (end, total.endpos);
 
-	for (i=0 ; i< pmove.numphysent ; i++)
+	for (i=0 ; i< qh_pmove.numphysent ; i++)
 	{
-		pe = &pmove.physents[i];
+		pe = &qh_pmove.physents[i];
 		// get the clipping hull
 		if (pe->model >= 0)
 		{
 			vec3_t clip_mins;
 			vec3_t clip_maxs;
-			hull = CM_ModelHull(pmove.physents[i].model, 1, clip_mins, clip_maxs);
+			hull = CM_ModelHull(qh_pmove.physents[i].model, 1, clip_mins, clip_maxs);
 		}
 		else
 		{

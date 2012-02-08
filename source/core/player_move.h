@@ -14,18 +14,94 @@
 //**
 //**************************************************************************
 
+#define QHMAX_PHYSENTS	64
+
 struct movevars_t
 {
-	float	gravity;
-	float	stopspeed;
-	float	maxspeed;
-	float	spectatormaxspeed;
-	float	accelerate;
-	float	airaccelerate;
-	float	wateraccelerate;
-	float	friction;
-	float	waterfriction;
-	float	entgravity;
+	float gravity;
+	float stopspeed;
+	float maxspeed;
+	float spectatormaxspeed;
+	float accelerate;
+	float airaccelerate;
+	float wateraccelerate;
+	float friction;
+	float waterfriction;
+	float entgravity;
+};
+
+struct qhphysent_t
+{
+	vec3_t origin;
+	clipHandle_t model;		// only for bsp models
+	vec3_t mins, maxs;	// only for non-bsp models
+	vec3_t angles;
+	int info;		// for client or server to identify
+};
+
+struct qhpmove_usercmd_t
+{
+	byte msec;
+	vec3_t angles;
+	short forwardmove, sidemove, upmove;
+	byte buttons;
+	byte impulse;
+
+	void Set(const qwusercmd_t& cmd)
+	{
+		msec = cmd.msec;
+		VectorCopy(cmd.angles, angles);
+		forwardmove = cmd.forwardmove;
+		sidemove = cmd.sidemove;
+		upmove = cmd.upmove;
+		buttons = cmd.buttons;
+		impulse = cmd.impulse;
+	}
+
+	void Set(const hwusercmd_t& cmd)
+	{
+		msec = cmd.msec;
+		VectorCopy(cmd.angles, angles);
+		forwardmove = cmd.forwardmove;
+		sidemove = cmd.sidemove;
+		upmove = cmd.upmove;
+		buttons = cmd.buttons;
+		impulse = cmd.impulse;
+	}
+};
+
+struct qhplayermove_t
+{
+	int sequence;	// just for debugging prints
+
+	// player state
+	vec3_t origin;
+	vec3_t angles;
+	vec3_t velocity;
+	int oldbuttons;
+	float waterjumptime;
+	float teleport_time;
+	bool dead;
+	int spectator;
+	float hasted;
+	int movetype;
+	bool crouched;
+
+	// world state
+	int numphysent;
+	qhphysent_t	physents[QHMAX_PHYSENTS];	// 0 should be the world
+
+	// input
+	qhpmove_usercmd_t cmd;
+
+	// results
+	int numtouch;
+	int touchindex[QHMAX_PHYSENTS];
+
+	int onground;
+	int waterlevel;
+	int watertype;
 };
 
 extern movevars_t movevars;
+extern qhplayermove_t qh_pmove;

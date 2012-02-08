@@ -123,7 +123,7 @@ static float V_CalcBob (void)
 	if (cl.qh_spectator)
 		return 0;
 
-	if (onground == -1)
+	if (qh_pmove.onground == -1)
 		return bob;		// just use old value
 
 	bobtime += host_frametime;

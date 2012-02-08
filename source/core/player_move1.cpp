@@ -17,3 +17,4 @@
 #include "core.h"
 
 movevars_t movevars;
+qhplayermove_t qh_pmove;
