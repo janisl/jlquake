@@ -177,10 +177,6 @@ void CL_SendCmd (void)
 			if (cl.viewangles[ROLL] < -50)
 				cl.viewangles[ROLL] = -50;
 			
-			inCmd.forwardmove = cmd.forwardmove;
-			inCmd.sidemove = cmd.sidemove;
-			inCmd.upmove = cmd.upmove;
-			inCmd.buttons = 0;
 			CL_KeyMove(&inCmd);
 
 			// light level at player's position including dlights
@@ -194,16 +190,17 @@ void CL_SendCmd (void)
 			// get basic movement from joystick
 			CL_JoystickMove(&inCmd);
 
-			CL_CmdButtons(&inCmd);
-			cmd.forwardmove = inCmd.forwardmove;
-			cmd.sidemove = inCmd.sidemove;
-			cmd.upmove = inCmd.upmove;
-
 			if (cl.viewangles[PITCH] > 80)
 				cl.viewangles[PITCH] = 80;
 			if (cl.viewangles[PITCH] < -70)
 				cl.viewangles[PITCH] = -70;
 		}
+
+		CL_CmdButtons(&inCmd);
+
+		cmd.forwardmove = inCmd.forwardmove;
+		cmd.sidemove = inCmd.sidemove;
+		cmd.upmove = inCmd.upmove;
 	
 	// send the unreliable message
 		CL_SendMove (&cmd, &inCmd);

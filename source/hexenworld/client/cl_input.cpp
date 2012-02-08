@@ -114,6 +114,11 @@ void CL_SendCmd (void)
 	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
 	Com_Memset(cmd, 0, sizeof(*cmd));
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = cmd->forwardmove;
+	inCmd.sidemove = cmd->sidemove;
+	inCmd.upmove = cmd->upmove;
+	inCmd.buttons = cmd->buttons;
 
 	if (!cl.h2_v.cameramode)	// Stuck in a different camera so don't move
 	{
@@ -138,11 +143,6 @@ void CL_SendCmd (void)
 	
 		VectorCopy (cl.viewangles, cmd->angles);
 
-		in_usercmd_t inCmd;
-		inCmd.forwardmove = cmd->forwardmove;
-		inCmd.sidemove = cmd->sidemove;
-		inCmd.upmove = cmd->upmove;
-		inCmd.buttons = cmd->buttons;
 		CL_KeyMove(&inCmd);
 
 		cmd->light_level = (byte)cl_lightlevel->value;
@@ -153,17 +153,17 @@ void CL_SendCmd (void)
 		// get basic movement from joystick
 		CL_JoystickMove(&inCmd);
 
-		CL_CmdButtons(&inCmd);
-		cmd->forwardmove = inCmd.forwardmove;
-		cmd->sidemove = inCmd.sidemove;
-		cmd->upmove = inCmd.upmove;
-		cmd->buttons = inCmd.buttons;
-
 		if (cl.viewangles[PITCH] > 80)
 			cl.viewangles[PITCH] = 80;
 		if (cl.viewangles[PITCH] < -70)
 			cl.viewangles[PITCH] = -70;
 	}
+
+	CL_CmdButtons(&inCmd);
+	cmd->forwardmove = inCmd.forwardmove;
+	cmd->sidemove = inCmd.sidemove;
+	cmd->upmove = inCmd.upmove;
+	cmd->buttons = inCmd.buttons;
 
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)
