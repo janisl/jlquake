@@ -129,11 +129,11 @@ TTimo: added some verbosity in debug
 // fqpath param added 7/20/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
 // fqpath will be empty if dll not loaded, otherwise will hold fully qualified path of dll module loaded
 // fqpath buffersize must be at least MAX_QPATH+1 bytes long
-void * Sys_LoadDll( const char *name, char *fqpath , int (**entryPoint)(int, ...),
-				  int (*systemcalls)(int, ...) ) {
+void * Sys_LoadDll( const char *name, char *fqpath , qintptr (**entryPoint)(int, ...),
+				  int (*systemcalls)(qintptr, ...) ) {
 	static int	lastWarning = 0;
 	HINSTANCE	libHandle;
-	void	(*dllEntry)( int (*syscallptr)(int, ...) );
+	void	(*dllEntry)( int (*syscallptr)(qintptr, ...) );
 	const char	*basepath;
 	const char	*cdpath;
 	const char	*gamedir;
@@ -215,8 +215,8 @@ void * Sys_LoadDll( const char *name, char *fqpath , int (**entryPoint)(int, ...
 	}
 #endif
 
-	dllEntry = ( void (*)( int (*)( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" ); 
-	*entryPoint = (int (*)(int,...))GetProcAddress( libHandle, "vmMain" );
+	dllEntry = ( void (*)( int (*)( qintptr, ... ) ) )GetProcAddress( libHandle, "dllEntry" ); 
+	*entryPoint = (qintptr (*)(int,...))GetProcAddress( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		FreeLibrary( libHandle );
 		return NULL;

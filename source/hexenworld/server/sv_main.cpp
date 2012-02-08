@@ -22,8 +22,6 @@ client_t	*host_client;			// current client
 Cvar*	sv_mintic;
 Cvar*	sv_maxtic;
 
-Cvar*	developer;
-
 Cvar*	timeout;
 Cvar*	zombietime;
 
@@ -1278,8 +1276,6 @@ void SV_InitLocal (void)
 	spawn = Cvar_Get("spawn", "0", CVAR_SERVERINFO);
 	hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
-
-	developer = Cvar_Get("developer", "0", 0);		// show extra messages
 
 	timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
 	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages

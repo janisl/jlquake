@@ -31,7 +31,6 @@ fileHandle_t		log_stats_file;
 
 Cvar	*host_speeds;
 Cvar	*log_stats;
-Cvar	*developer;
 Cvar	*timescale;
 Cvar	*fixedtime;
 Cvar	*logfile_active;	// 1 = buffer log, 2 = flush after each print
@@ -155,7 +154,7 @@ void Com_DPrintf (const char *fmt, ...)
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 		
-	if (!developer || !developer->value)
+	if (!com_developer || !com_developer->value)
 		return;			// don't confuse non-developers with techie stuff...
 
 	va_start (argptr,fmt);
@@ -963,7 +962,6 @@ void Qcommon_Init (int argc, char **argv)
 
 	host_speeds = Cvar_Get ("host_speeds", "0", 0);
 	log_stats = Cvar_Get ("log_stats", "0", 0);
-	developer = Cvar_Get ("developer", "0", 0);
 	timescale = Cvar_Get ("timescale", "1", 0);
 	fixedtime = Cvar_Get ("fixedtime", "0", 0);
 	logfile_active = Cvar_Get ("logfile", "0", 0);

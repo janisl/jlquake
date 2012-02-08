@@ -121,7 +121,7 @@ void Con_DPrintf (const char *fmt, ...)
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 
-	if (!developer || !developer->value)
+	if (!com_developer || !com_developer->value)
 		return;
 
 	va_start (argptr,fmt);

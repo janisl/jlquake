@@ -80,7 +80,6 @@ int			host_hunklevel;
 netadr_t	master_adr;				// address of the master server
 
 Cvar*	host_speeds;
-Cvar*	developer;
 
 int			fps_count;
 
@@ -1020,7 +1019,6 @@ void CL_Init (void)
 	// register our commands
 	//
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
-	developer = Cvar_Get("developer", "0", 0);
 
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	cl_hudswap	= Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);

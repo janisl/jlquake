@@ -162,7 +162,7 @@ typedef enum {
 } sharedTraps_t;
 
 void	VM_Init( void );
-vm_t	*VM_Create( const char *module, int (*systemCalls)(int *), 
+vm_t	*VM_Create( const char *module, int (*systemCalls)(qintptr*), 
 				   vmInterpret_t interpret );
 // module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
 
@@ -170,10 +170,7 @@ void	VM_Free( vm_t *vm );
 void	VM_Clear(void);
 vm_t	*VM_Restart( vm_t *vm );
 
-int		VM_Call( vm_t *vm, int callNum, ... );
-
-void	*VM_ArgPtr( int intValue );
-void	*VM_ExplicitArgPtr( vm_t *vm, int intValue );
+qintptr VM_Call( vm_t *vm, int callNum, ... );
 
 //===========================================================================
 
@@ -244,7 +241,6 @@ void		Com_StartupVariable( const char *match );
 // only a set with the exact name.  Only used during startup.
 
 
-extern	Cvar	*com_developer;
 extern	Cvar	*com_speeds;
 extern	Cvar	*com_sv_running;
 extern	Cvar	*com_cl_running;
@@ -422,8 +418,8 @@ void	Sys_Init (void);
 
 // general development dll loading for virtual machine testing
 // fqpath param added 7/20/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-void	* Sys_LoadDll( const char *name, char *fqpath , int (**entryPoint)(int, ...),
-				  int (*systemcalls)(int, ...) );
+void	* Sys_LoadDll( const char *name, char *fqpath , qintptr (**entryPoint)(int, ...),
+				  int (*systemcalls)(qintptr, ...) );
 void	Sys_UnloadDll( void *dllHandle );
 
 void	Sys_UnloadGame( void );

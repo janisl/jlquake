@@ -282,7 +282,7 @@ static void VM_StackTrace(vm_t* vm, int programCounter, int programStack)
 }
 #endif
 
-int VM_CallInterpreted(vm_t* vm, int* args)
+qintptr VM_CallInterpreted(vm_t* vm, int* args)
 {
 	int		v1;
 #ifdef DEBUG_VM
@@ -493,8 +493,13 @@ nextInstruction2:
 #endif
 				*(int*)&image[programStack + 4] = -1 - programCounter;
 
-				//VM_LogSyscalls((int*)&image[programStack + 4]);
-				r = vm->systemCall((int*)&image[programStack + 4]);
+				qintptr callArgs[16];
+				for (int i = 0; i < 16; i++)
+				{
+					callArgs[i] = ((int*)&image[programStack + 4])[i];
+				}
+				//VM_LogSyscalls(callArgs);
+				r = vm->systemCall(callArgs);
 
 #ifdef DEBUG_VM
 				// this is just our stack frame pointer, only needed

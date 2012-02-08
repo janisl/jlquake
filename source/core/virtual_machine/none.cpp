@@ -23,7 +23,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 	VM_PrepareInterpreter(vm, header);
 }
 
-int VM_CallCompiled(vm_t* vm, int* args)
+qintptr VM_CallCompiled(vm_t* vm, int* args)
 {
 	return 0;
 }

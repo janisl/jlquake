@@ -76,8 +76,6 @@ typedef struct
 //
 extern	quakeparms_t host_parms;
 
-extern	Cvar*		developer;
-
 extern	Cvar*	password;
 
 extern	qboolean	host_initialized;		// true if into command execution

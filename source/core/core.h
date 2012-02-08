@@ -63,6 +63,8 @@ extern Cvar* com_timescale;
 
 extern Cvar* com_journal;
 
+extern Cvar* com_developer;
+
 extern fileHandle_t com_journalFile;
 extern fileHandle_t com_journalDataFile;
 

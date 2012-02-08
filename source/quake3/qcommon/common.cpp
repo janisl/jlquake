@@ -46,7 +46,6 @@ FILE *debuglogfile;
 static fileHandle_t logfile;
 
 Cvar	*com_speeds;
-Cvar	*com_developer;
 Cvar	*com_fixedtime;
 Cvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
 Cvar	*com_maxfps;
@@ -2240,7 +2239,6 @@ void Com_Init( char *commandLine )
 	com_maxfps = Cvar_Get ("com_maxfps", "85", CVAR_ARCHIVE);
 	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE);
 
-	com_developer = Cvar_Get ("developer", "0", CVAR_TEMP );
 	com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );
 
 	com_fixedtime = Cvar_Get ("fixedtime", "0", CVAR_CHEAT);

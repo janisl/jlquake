@@ -51,8 +51,6 @@ typedef struct
 //
 extern	quakeparms_t host_parms;
 
-extern	Cvar*		developer;
-
 extern	Cvar*	password;
 extern	Cvar*  talksounds;
 
