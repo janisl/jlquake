@@ -152,37 +152,20 @@ void CL_SendCmd (void)
 
 	if (clc.qh_signon == SIGNONS)
 	{
-	// get basic movement from keyboard
-		in_usercmd_t inCmd;
+		// grab frame time 
+		com_frameTime = Sys_Milliseconds();
+
+		frame_msec = (unsigned)(host_frametime * 1000);
+
+		// get basic movement from keyboard
 		Com_Memset(&cmd, 0, sizeof(cmd));
-		Com_Memset(&inCmd, 0, sizeof(inCmd));
 			
-		if (!cl.h2_v.cameramode)	// Stuck in a different camera so don't move
-		{
-			// grab frame time 
-			com_frameTime = Sys_Milliseconds();
+		in_usercmd_t inCmd = CL_CreateCmdCommon();
 
-			frame_msec = (unsigned)(host_frametime * 1000);
-
-			CL_AdjustAngles();
-			
-			CL_KeyMove(&inCmd);
-
-			// light level at player's position including dlights
-			// this is sent back to the server each frame
-			// architectually ugly but it works
-			cmd.lightlevel = (byte)cl_lightlevel->value;
-	
-			// allow mice or other external controllers to add to the move
-			CL_MouseMove(&inCmd);
-
-			// get basic movement from joystick
-			CL_JoystickMove(&inCmd);
-
-			CL_ClampAngles(0);
-		}
-
-		CL_CmdButtons(&inCmd);
+		// light level at player's position including dlights
+		// this is sent back to the server each frame
+		// architectually ugly but it works
+		cmd.lightlevel = (byte)cl_lightlevel->value;
 
 		cmd.forwardmove = inCmd.forwardmove;
 		cmd.sidemove = inCmd.sidemove;

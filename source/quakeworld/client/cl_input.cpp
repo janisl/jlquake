@@ -135,32 +135,15 @@ void CL_SendCmd (void)
 
 	frame_msec = (unsigned)(host_frametime * 1000);
 
-	CL_AdjustAngles();
-	
 	Com_Memset(cmd, 0, sizeof(*cmd));
-	
-	VectorCopy (cl.viewangles, cmd->angles);
 
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd->forwardmove;
-	inCmd.sidemove = cmd->sidemove;
-	inCmd.upmove = cmd->upmove;
-	inCmd.buttons = cmd->buttons;
-	CL_KeyMove(&inCmd);
-
-	// allow mice or other external controllers to add to the move
-	CL_MouseMove(&inCmd);
-
-	// get basic movement from joystick
-	CL_JoystickMove(&inCmd);
-
-	CL_CmdButtons(&inCmd);
-
-	CL_ClampAngles(0);
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
+	
+	VectorCopy (cl.viewangles, cmd->angles);
 
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)

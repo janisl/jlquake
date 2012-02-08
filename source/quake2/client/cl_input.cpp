@@ -103,33 +103,15 @@ q2usercmd_t CL_CreateCmd (void)
 	if (frame_msec > 200)
 		frame_msec = 200;
 	
-	// get basic movement from keyboard
-	CL_AdjustAngles();
-	
 	Com_Memset(&cmd, 0, sizeof(cmd));
-	
-	VectorCopy (cl.viewangles, cmd.angles);
 
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd.forwardmove;
-	inCmd.sidemove = cmd.sidemove;
-	inCmd.upmove = cmd.upmove;
-	inCmd.buttons = cmd.buttons;
-	CL_KeyMove(&inCmd);
-
-	// allow mice or other external controllers to add to the move
-	CL_MouseMove(&inCmd);
-
-	// get basic movement from joystick
-	CL_JoystickMove(&inCmd);
-
-	CL_CmdButtons(&inCmd);
-
-	CL_ClampAngles(0);
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
 	cmd.forwardmove = inCmd.forwardmove;
 	cmd.sidemove = inCmd.sidemove;
 	cmd.upmove = inCmd.upmove;
 	cmd.buttons = inCmd.buttons;
+
+	VectorCopy (cl.viewangles, cmd.angles);
 
 	CL_FinishMove (&cmd);
 

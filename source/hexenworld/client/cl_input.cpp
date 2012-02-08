@@ -113,43 +113,21 @@ void CL_SendCmd (void)
 	cl.hw_frames[i].senttime = realtime;
 	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
+	// grab frame time 
+	com_frameTime = Sys_Milliseconds();
+
+	frame_msec = (unsigned)(host_frametime * 1000);
+
 	Com_Memset(cmd, 0, sizeof(*cmd));
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd->forwardmove;
-	inCmd.sidemove = cmd->sidemove;
-	inCmd.upmove = cmd->upmove;
-	inCmd.buttons = cmd->buttons;
-
-	if (!cl.h2_v.cameramode)	// Stuck in a different camera so don't move
-	{
-		// grab frame time 
-		com_frameTime = Sys_Milliseconds();
-
-		frame_msec = (unsigned)(host_frametime * 1000);
-
-		// get basic movement from keyboard
-		CL_AdjustAngles();
-	
-		VectorCopy (cl.viewangles, cmd->angles);
-
-		CL_KeyMove(&inCmd);
-
-		cmd->light_level = (byte)cl_lightlevel->value;
-
-		// allow mice or other external controllers to add to the move
-		CL_MouseMove(&inCmd);
-
-		// get basic movement from joystick
-		CL_JoystickMove(&inCmd);
-
-		CL_ClampAngles(0);
-	}
-
-	CL_CmdButtons(&inCmd);
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
+
+	cmd->light_level = (byte)cl_lightlevel->value;
+
+	VectorCopy (cl.viewangles, cmd->angles);
 
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)

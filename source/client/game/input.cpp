@@ -554,7 +554,7 @@ static void CLH2_SetIdealRoll(float delta)
 }
 
 //	Moves the local angle positions
-void CL_AdjustAngles()
+static void CL_AdjustAngles()
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -591,58 +591,7 @@ void CL_AdjustAngles()
 	}
 }
 
-void CL_CmdButtons(in_usercmd_t* cmd)
-{
-	// figure button bits
-	// send a button bit even if the key was pressed and released in
-	// less than a frame
-	int numButtons = (GGameType & (GAME_Quake | GAME_Quake2)) ? 2 :
-		(GGameType & GAME_Hexen2) ? 3 : 15;
-	for (int i = 0; i < numButtons; i++)
-	{
-		if (in_buttons[i].active || in_buttons[i].wasPressed)
-		{
-			cmd->buttons |= 1 << i;
-		}
-		in_buttons[i].wasPressed = false;
-	}
-
-	if (GGameType & GAME_Quake2)
-	{
-		if (anykeydown && in_keyCatchers == 0)
-		{
-			cmd->buttons |= Q2BUTTON_ANY;
-		}
-	}
-
-	if (GGameType & GAME_Quake3)
-	{
-		if (in_keyCatchers)
-		{
-			cmd->buttons |= Q3BUTTON_TALK;
-		}
-
-		// allow the game to know if any key at all is
-		// currently pressed, even if it isn't bound to anything
-		if (anykeydown && !in_keyCatchers)
-		{
-			cmd->buttons |= Q3BUTTON_ANY;
-		}
-
-		// the walking flag is to keep animations consistant
-		// even during acceleration and develeration
-		if (in_speed.active ^ cl_run->integer)
-		{
-			cmd->buttons &= ~Q3BUTTON_WALKING;
-		}
-		else
-		{
-			cmd->buttons |= Q3BUTTON_WALKING;
-		}
-	}
-}
-
-void CL_KeyMove(in_usercmd_t* cmd)
+static void CL_KeyMove(in_usercmd_t* cmd)
 {
 	float forwardspeed;
 	float backspeed;
@@ -737,7 +686,7 @@ void CL_KeyMove(in_usercmd_t* cmd)
 	cmd->forwardmove -= backspeed * CL_KeyState(&in_back);
 }
 
-void CL_MouseMove(in_usercmd_t* cmd)
+static void CL_MouseMove(in_usercmd_t* cmd)
 {
 	if ((GGameType & GAME_QuakeHexen) && (in_mlooking || cl_freelook->integer))
 	{
@@ -808,7 +757,7 @@ void CL_MouseMove(in_usercmd_t* cmd)
 	}
 }
 
-void CL_JoystickMove(in_usercmd_t* cmd)
+static void CL_JoystickMove(in_usercmd_t* cmd)
 {
 	float movespeed = (GGameType & GAME_Quake3) ? 1 : 400.0 / 127.0;
 	float anglespeed;
@@ -842,7 +791,7 @@ void CL_JoystickMove(in_usercmd_t* cmd)
 	cmd->upmove += cl.joystickAxis[AXIS_UP];
 }
 
-void CL_ClampAngles(float oldPitch)
+static void CL_ClampAngles(float oldPitch)
 {
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -894,6 +843,87 @@ void CL_ClampAngles(float oldPitch)
 			cl.viewangles[PITCH] = oldPitch - 90;
 		}
 	}
+}
+
+static void CL_CmdButtons(in_usercmd_t* cmd)
+{
+	// figure button bits
+	// send a button bit even if the key was pressed and released in
+	// less than a frame
+	int numButtons = (GGameType & (GAME_Quake | GAME_Quake2)) ? 2 :
+		(GGameType & GAME_Hexen2) ? 3 : 15;
+	for (int i = 0; i < numButtons; i++)
+	{
+		if (in_buttons[i].active || in_buttons[i].wasPressed)
+		{
+			cmd->buttons |= 1 << i;
+		}
+		in_buttons[i].wasPressed = false;
+	}
+
+	if (GGameType & GAME_Quake2)
+	{
+		if (anykeydown && in_keyCatchers == 0)
+		{
+			cmd->buttons |= Q2BUTTON_ANY;
+		}
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		if (in_keyCatchers)
+		{
+			cmd->buttons |= Q3BUTTON_TALK;
+		}
+
+		// allow the game to know if any key at all is
+		// currently pressed, even if it isn't bound to anything
+		if (anykeydown && !in_keyCatchers)
+		{
+			cmd->buttons |= Q3BUTTON_ANY;
+		}
+
+		// the walking flag is to keep animations consistant
+		// even during acceleration and develeration
+		if (in_speed.active ^ cl_run->integer)
+		{
+			cmd->buttons &= ~Q3BUTTON_WALKING;
+		}
+		else
+		{
+			cmd->buttons |= Q3BUTTON_WALKING;
+		}
+	}
+}
+
+in_usercmd_t CL_CreateCmdCommon()
+{
+	vec3_t oldAngles;
+	VectorCopy(cl.viewangles, oldAngles);
+
+	in_usercmd_t cmd;
+	Com_Memset(&cmd, 0, sizeof(cmd));
+
+	if (!(GGameType & GAME_Hexen2) || !cl.h2_v.cameramode)	// Stuck in a different camera so don't move
+	{
+		// keyboard angle adjustment
+		CL_AdjustAngles();
+		
+		// get basic movement from keyboard
+		CL_KeyMove(&cmd);
+
+		// get basic movement from mouse
+		CL_MouseMove(&cmd);
+
+		// get basic movement from joystick
+		CL_JoystickMove(&cmd);
+
+		CL_ClampAngles(oldAngles[PITCH]);
+	}
+
+	CL_CmdButtons(&cmd);
+
+	return cmd;
 }
 
 void CL_InitInputCommon()

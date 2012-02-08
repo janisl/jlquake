@@ -97,28 +97,9 @@ q3usercmd_t CL_CreateCmd( void ) {
 
 	VectorCopy( cl.viewangles, oldAngles );
 
-	// keyboard angle adjustment
-	CL_AdjustAngles();
-	
 	Com_Memset( &cmd, 0, sizeof( cmd ) );
 
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = 0;
-	inCmd.sidemove = 0;
-	inCmd.upmove = 0;
-	inCmd.buttons = cmd.buttons;
-	CL_CmdButtons(&inCmd);
-
-	// get basic movement from keyboard
-	CL_KeyMove(&inCmd);
-
-	// get basic movement from mouse
-	CL_MouseMove(&inCmd);
-
-	// get basic movement from joystick
-	CL_JoystickMove(&inCmd);
-
-	CL_ClampAngles(oldAngles[PITCH]);
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
 	cmd.forwardmove = ClampChar(inCmd.forwardmove);
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
