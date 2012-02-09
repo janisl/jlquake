@@ -30,9 +30,6 @@
     <ClCompile Include="..\client\pmove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\pmovetst.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pr_cmds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

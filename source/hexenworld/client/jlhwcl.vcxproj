@@ -116,7 +116,6 @@
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="net_chan.cpp" />
     <ClCompile Include="pmove.cpp" />
-    <ClCompile Include="pmovetst.cpp" />
     <ClCompile Include="r_part.cpp" />
     <ClCompile Include="sbar.cpp" />
     <ClCompile Include="snd_dma.cpp" />

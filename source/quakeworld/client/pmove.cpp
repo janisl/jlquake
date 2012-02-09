@@ -57,7 +57,7 @@ int PM_FlyMove (void)
 		for (i=0 ; i<3 ; i++)
 			end[i] = qh_pmove.origin[i] + time_left * qh_pmove.velocity[i];
 
-		trace = PM_PlayerMove (qh_pmove.origin, end);
+		trace = PMQH_TestPlayerMove (qh_pmove.origin, end);
 
 		if (trace.startsolid || trace.allsolid)
 		{	// entity is trapped in another solid
@@ -174,7 +174,7 @@ void PM_GroundMove (void)
 
 	// first try moving directly to the next spot
 	VectorCopy (dest, start);
-	trace = PM_PlayerMove (qh_pmove.origin, dest);
+	trace = PMQH_TestPlayerMove (qh_pmove.origin, dest);
 	if (trace.fraction == 1)
 	{
 		VectorCopy (trace.endpos, qh_pmove.origin);
@@ -198,7 +198,7 @@ void PM_GroundMove (void)
 // move up a stair height
 	VectorCopy (qh_pmove.origin, dest);
 	dest[2] += STEPSIZE;
-	trace = PM_PlayerMove (qh_pmove.origin, dest);
+	trace = PMQH_TestPlayerMove (qh_pmove.origin, dest);
 	if (!trace.startsolid && !trace.allsolid)
 	{
 		VectorCopy (trace.endpos, qh_pmove.origin);
@@ -210,7 +210,7 @@ void PM_GroundMove (void)
 // press down the stepheight
 	VectorCopy (qh_pmove.origin, dest);
 	dest[2] -= STEPSIZE;
-	trace = PM_PlayerMove (qh_pmove.origin, dest);
+	trace = PMQH_TestPlayerMove (qh_pmove.origin, dest);
 	if ( trace.plane.normal[2] < 0.7)
 		goto usedown;
 	if (!trace.startsolid && !trace.allsolid)
@@ -277,7 +277,7 @@ void PM_Friction (void)
 		start[2] = qh_pmove.origin[2] + pmqh_player_mins[2];
 		stop[2] = start[2] - 34;
 
-		trace = PM_PlayerMove (start, stop);
+		trace = PMQH_TestPlayerMove (start, stop);
 
 		if (trace.fraction == 1) {
 			friction *= 2;
@@ -407,7 +407,7 @@ void PM_WaterMove (void)
 	VectorMA (qh_pmove.origin, qh_pml.frametime, qh_pmove.velocity, dest);
 	VectorCopy (dest, start);
 	start[2] += STEPSIZE + 1;
-	trace = PM_PlayerMove (start, dest);
+	trace = PMQH_TestPlayerMove (start, dest);
 	if (!trace.startsolid && !trace.allsolid)	// FIXME: check steep slope?
 	{	// walked up the step
 		VectorCopy (trace.endpos, qh_pmove.origin);
@@ -515,7 +515,7 @@ void PM_CatagorizePosition (void)
 	}
 	else
 	{
-		tr = PM_PlayerMove (qh_pmove.origin, point);
+		tr = PMQH_TestPlayerMove (qh_pmove.origin, point);
 		if ( tr.plane.normal[2] < 0.7)
 			qh_pmove.onground = -1;	// too steep
 		else
@@ -672,7 +672,7 @@ void NudgePosition (void)
 
 //	if (qh_pmove.dead)
 //		return;		// might be a squished point, so don'y bother
-//	if (PM_TestPlayerPosition (qh_pmove.origin) )
+//	if (PMQH_TestPlayerPosition (qh_pmove.origin) )
 //		return;
 
 	for (z=0 ; z<=2 ; z++)
@@ -684,7 +684,7 @@ void NudgePosition (void)
 				qh_pmove.origin[0] = base[0] + (sign[x] * 1.0/8);
 				qh_pmove.origin[1] = base[1] + (sign[y] * 1.0/8);
 				qh_pmove.origin[2] = base[2] + (sign[z] * 1.0/8);
-				if (PM_TestPlayerPosition (qh_pmove.origin))
+				if (PMQH_TestPlayerPosition (qh_pmove.origin))
 					return;
 			}
 		}

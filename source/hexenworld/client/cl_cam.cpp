@@ -61,7 +61,7 @@ void Cam_Lock(int playernum)
 q1trace_t Cam_DoTrace(vec3_t vec1, vec3_t vec2)
 {
 	VectorCopy (vec1, qh_pmove.origin);
-	return PM_PlayerMove(qh_pmove.origin, vec2);
+	return PMQH_TestPlayerMove(qh_pmove.origin, vec2);
 }
 	
 // Returns distance or 9999 if invalid for some reason

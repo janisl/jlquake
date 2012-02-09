@@ -26,7 +26,6 @@ add_executable(jlhwsv
 	client/strings.cpp
 	client/zone.cpp
 	client/pmove.cpp
-	client/pmovetst.cpp
 	client/net_chan.cpp
 )
 set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
@@ -54,7 +53,6 @@ add_executable(jlhwcl
 	client/menu.cpp
 	client/net_chan.cpp
 	client/pmove.cpp
-	client/pmovetst.cpp
 	client/r_part.cpp
 	client/sbar.cpp
 	client/snd_dma.cpp

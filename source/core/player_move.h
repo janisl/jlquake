@@ -126,3 +126,5 @@ extern vec3_t pmqh_player_maxs_crouch;
 void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce);
 
 void PMQH_Init();
+q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t stop);
+bool PMQH_TestPlayerPosition(const vec3_t point);

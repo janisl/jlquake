@@ -66,9 +66,6 @@
     <ClCompile Include="pmove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pmovetst.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

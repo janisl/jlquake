@@ -1214,9 +1214,9 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 {
 	int before, after;
 
-before = PM_TestPlayerPosition (qh_pmove.origin);
+before = PMQH_TestPlayerPosition (qh_pmove.origin);
 	PlayerMove ();
-after = PM_TestPlayerPosition (qh_pmove.origin);
+after = PMQH_TestPlayerPosition (qh_pmove.origin);
 
 if (sv_player->v.health > 0 && before && !after )
 	Con_Printf ("player %s got stuck in playermove!!!!\n", host_client->name);
