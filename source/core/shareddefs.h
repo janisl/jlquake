@@ -48,3 +48,6 @@
 #define H2MOVETYPE_FOLLOW			12	// track movement of aiment
 #define H2MOVETYPE_PUSHPULL			13	// pushable/pullable object
 #define H2MOVETYPE_SWIM				14	// should keep the object in water
+
+#define QHBUTTON_ATTACK	1
+#define QHBUTTON_JUMP	2

@@ -19,9 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "quakedef.h"
 
-extern	vec3_t player_mins;
-extern	vec3_t player_maxs;
-
 /*
 ================
 PM_TestPlayerPosition
@@ -46,8 +43,8 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 		}
 		else
 		{
-			VectorSubtract(pe->mins, player_maxs, mins);
-			VectorSubtract(pe->maxs, player_mins, maxs);
+			VectorSubtract(pe->mins, pmqh_player_maxs, mins);
+			VectorSubtract(pe->maxs, pmqh_player_mins, maxs);
 			hull = CM_TempBoxModel(mins, maxs);
 		}
 
@@ -85,16 +82,16 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	{
 		pe = &qh_pmove.physents[i];
 		// get the clipping hull
+		vec3_t clip_mins;
+		vec3_t clip_maxs;
 		if (pe->model >= 0)
 		{
-			vec3_t clip_mins;
-			vec3_t clip_maxs;
 			hull = CM_ModelHull(qh_pmove.physents[i].model, 1, clip_mins, clip_maxs);
 		}
 		else
 		{
-			VectorSubtract(pe->mins, player_maxs, mins);
-			VectorSubtract(pe->maxs, player_mins, maxs);
+			VectorSubtract(pe->mins, pmqh_player_maxs, mins);
+			VectorSubtract(pe->maxs, pmqh_player_mins, maxs);
 			hull = CM_TempBoxModel(mins, maxs);
 		}
 

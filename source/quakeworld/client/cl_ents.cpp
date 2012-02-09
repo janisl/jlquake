@@ -332,8 +332,6 @@ qh_pmove must be setup with world and solid entity hulls before calling
 void CL_SetSolidPlayers (int playernum)
 {
 	int		j;
-	extern	vec3_t	player_mins;
-	extern	vec3_t	player_maxs;
 	struct predicted_player *pplayer;
 	qhphysent_t *pent;
 
@@ -356,8 +354,8 @@ void CL_SetSolidPlayers (int playernum)
 
 		pent->model = -1;
 		VectorCopy(pplayer->origin, pent->origin);
-		VectorCopy(player_mins, pent->mins);
-		VectorCopy(player_maxs, pent->maxs);
+		VectorCopy(pmqh_player_mins, pent->mins);
+		VectorCopy(pmqh_player_maxs, pent->maxs);
 		qh_pmove.numphysent++;
 		pent++;
 	}

@@ -1,27 +1,6 @@
 
 #include "quakedef.h"
 
-float		frametime;
-
-vec3_t		forward, right, up;
-
-vec3_t	player_mins = {-16, -16, 0};
-vec3_t	player_maxs = {16, 16, 56};
-
-vec3_t  player_maxs_crouch = {16, 16, 28};
-
-vec3_t	beast_mins = {-48, -48, 0};
-vec3_t	beast_maxs = {48, 48, 100};
-
-void Pmove_Init (void)
-{
-}
-
-#define	STEPSIZE	18
-
-
-#define	BUTTON_JUMP	2
-
 /*
 ============
 PM_FlyMove
@@ -52,7 +31,7 @@ int PM_FlyMove (void)
 	VectorCopy (qh_pmove.velocity, primal_velocity);
 	numplanes = 0;
 	
-	time_left = frametime;
+	time_left = qh_pml.frametime;
 
 	for (bumpcount=0 ; bumpcount<numbumps ; bumpcount++)
 	{
@@ -170,8 +149,8 @@ void PM_GroundMove (void)
 		return;
 
 	// first try just moving to the destination	
-	dest[0] = qh_pmove.origin[0] + qh_pmove.velocity[0]*frametime;
-	dest[1] = qh_pmove.origin[1] + qh_pmove.velocity[1]*frametime;	
+	dest[0] = qh_pmove.origin[0] + qh_pmove.velocity[0]*qh_pml.frametime;
+	dest[1] = qh_pmove.origin[1] + qh_pmove.velocity[1]*qh_pml.frametime;	
 	dest[2] = qh_pmove.origin[2];
 
 	// first try moving directly to the next spot
@@ -275,12 +254,12 @@ void PM_Friction (void)
 	{
 		friction = movevars.friction;
 		control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
-		drop += control*friction*frametime;
+		drop += control*friction*qh_pml.frametime;
 	}
 
 // apply water friction
 	if (qh_pmove.waterlevel)
-		drop += speed*movevars.waterfriction*qh_pmove.waterlevel*frametime;
+		drop += speed*movevars.waterfriction*qh_pmove.waterlevel*qh_pml.frametime;
 
 // scale the velocity
 	newspeed = speed - drop;
@@ -313,7 +292,7 @@ void PM_Accelerate (vec3_t wishdir, float wishspeed, float accel)
 	addspeed = wishspeed - currentspeed;
 	if (addspeed <= 0)
 		return;
-	accelspeed = accel*frametime*wishspeed;
+	accelspeed = accel*qh_pml.frametime*wishspeed;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 	
@@ -337,7 +316,7 @@ void PM_AirAccelerate (vec3_t wishdir, float wishspeed, float accel)
 	addspeed = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
-	accelspeed = accel * wishspeed * frametime;
+	accelspeed = accel * wishspeed * qh_pml.frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 	
@@ -402,7 +381,7 @@ void PM_WaterMove (void)
 
 
 	for (i=0 ; i<3 ; i++)
-		wishvel[i] = forward[i]*fmove + right[i]*smove;
+		wishvel[i] = qh_pml.forward[i]*fmove + qh_pml.right[i]*smove;
 
 	if ((!qh_pmove.cmd.forwardmove && !qh_pmove.cmd.sidemove && !qh_pmove.cmd.upmove)&&qh_pmove.crouched)
 		wishvel[2] -= 120;		// drift towards bottom
@@ -434,7 +413,7 @@ void PM_WaterMove (void)
 	PM_Accelerate (wishdir, wishspeed, movevars.wateraccelerate);
 
 // assume it is a stair or a slope, so press down from stepheight above
-	VectorMA (qh_pmove.origin, frametime, qh_pmove.velocity, dest);
+	VectorMA (qh_pmove.origin, qh_pml.frametime, qh_pmove.velocity, dest);
 	VectorCopy (dest, start);
 	start[2] += STEPSIZE + 1;
 	trace = PM_PlayerMove (start, dest);
@@ -499,13 +478,13 @@ void PM_AirMove (void)
 	
 //	Con_Printf("fmove %f\n", fmove);
 
-	forward[2] = 0;
-	right[2] = 0;
-	VectorNormalize (forward);
-	VectorNormalize (right);
+	qh_pml.forward[2] = 0;
+	qh_pml.right[2] = 0;
+	VectorNormalize (qh_pml.forward);
+	VectorNormalize (qh_pml.right);
 
 	for (i=0 ; i<2 ; i++)
-		wishvel[i] = forward[i]*fmove*qh_pmove.hasted + right[i]*smove*qh_pmove.hasted;
+		wishvel[i] = qh_pml.forward[i]*fmove*qh_pmove.hasted + qh_pml.right[i]*smove*qh_pmove.hasted;
 	wishvel[2] = 0;
 
 	VectorCopy (wishvel, wishdir);
@@ -534,7 +513,7 @@ void PM_AirMove (void)
 		PM_AirAccelerate (wishdir, wishspeed, movevars.accelerate);
 		PM_FlyMove ();
 		// add gravity
-		qh_pmove.velocity[2] -= movevars.entgravity * movevars.gravity * frametime;
+		qh_pmove.velocity[2] -= movevars.entgravity * movevars.gravity * qh_pml.frametime;
 
 	}
 
@@ -600,12 +579,12 @@ void PM_FlyingMove (void)
 	
 //	Con_Printf("fmove %f\n", fmove);
 
-	VectorNormalize (forward);
-	VectorNormalize (right);
-	VectorNormalize (up);
+	VectorNormalize (qh_pml.forward);
+	VectorNormalize (qh_pml.right);
+	VectorNormalize (qh_pml.up);
 
 	for (i=0 ; i<3 ; i++)
-		wishvel[i] = forward[i]*fmove + right[i]*smove + up[i]*umove;
+		wishvel[i] = qh_pml.forward[i]*fmove + qh_pml.right[i]*smove + qh_pml.up[i]*umove;
 
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
@@ -687,7 +666,7 @@ void PM_CatagorizePosition (void)
 	qh_pmove.waterlevel = 0;
 	qh_pmove.watertype = BSP29CONTENTS_EMPTY;
 
-	point[2] = qh_pmove.origin[2] + player_mins[2] + 1;	
+	point[2] = qh_pmove.origin[2] + pmqh_player_mins[2] + 1;	
 	cont = CM_PointContentsQ1(point, 0);
 
 	if (cont <= BSP29CONTENTS_WATER)
@@ -717,13 +696,13 @@ void JumpButton (void)
 {
 	if (qh_pmove.dead)
 	{
-		qh_pmove.oldbuttons |= BUTTON_JUMP;	// don't jump again until released
+		qh_pmove.oldbuttons |= QHBUTTON_JUMP;	// don't jump again until released
 		return;
 	}
 
 	if (qh_pmove.waterjumptime)
 	{
-		qh_pmove.waterjumptime -= frametime;
+		qh_pmove.waterjumptime -= qh_pml.frametime;
 		if (qh_pmove.waterjumptime < 0)
 			qh_pmove.waterjumptime = 0;
 		return;
@@ -745,13 +724,13 @@ void JumpButton (void)
 	if (qh_pmove.onground == -1)
 		return;		// in air, so no effect
 
-	if ( qh_pmove.oldbuttons & BUTTON_JUMP )
+	if ( qh_pmove.oldbuttons & QHBUTTON_JUMP )
 		return;		// don't pogo stick
 
 	qh_pmove.onground = -1;
 	qh_pmove.velocity[2] += 270;
 
-	qh_pmove.oldbuttons |= BUTTON_JUMP;	// don't jump again until released
+	qh_pmove.oldbuttons |= QHBUTTON_JUMP;	// don't jump again until released
 }
 
 /*
@@ -781,8 +760,8 @@ void CheckWaterJump (void)
 	}
 
 	// see if near an edge
-	flatforward[0] = forward[0];
-	flatforward[1] = forward[1];
+	flatforward[0] = qh_pml.forward[0];
+	flatforward[1] = qh_pml.forward[1];
 	flatforward[2] = 0;
 	VectorNormalize (flatforward);
 
@@ -802,10 +781,10 @@ void CheckWaterJump (void)
 		return;
 	}
 	// jump out of water
-	VectorScale (forward, 200, qh_pmove.velocity);
+	VectorScale (qh_pml.forward, 200, qh_pmove.velocity);
 	qh_pmove.velocity[2] = 275;
 	qh_pmove.waterjumptime = 2;	// safety net
-	qh_pmove.oldbuttons |= BUTTON_JUMP;	// don't jump again until released
+	qh_pmove.oldbuttons |= QHBUTTON_JUMP;	// don't jump again until released
 
 //	Con_Printf ("Waterjump (%6.2f,%6.2f,%6.2f) (%6.2f,%6.2f,%6.2f)\n",
 //		qh_pmove.origin[0], qh_pmove.origin[1], qh_pmove.origin[2],
@@ -885,7 +864,7 @@ void SpectatorMove (void)
 
 		friction = movevars.friction*1.5;	// extra friction
 		control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
-		drop += control*friction*frametime;
+		drop += control*friction*qh_pml.frametime;
 
 		// scale the velocity
 		newspeed = speed - drop;
@@ -900,11 +879,11 @@ void SpectatorMove (void)
 	fmove = qh_pmove.cmd.forwardmove;
 	smove = qh_pmove.cmd.sidemove;
 	
-	VectorNormalize (forward);
-	VectorNormalize (right);
+	VectorNormalize (qh_pml.forward);
+	VectorNormalize (qh_pml.right);
 
 	for (i=0 ; i<3 ; i++)
-		wishvel[i] = forward[i]*fmove + right[i]*smove;
+		wishvel[i] = qh_pml.forward[i]*fmove + qh_pml.right[i]*smove;
 	wishvel[2] += qh_pmove.cmd.upmove;
 
 	VectorCopy (wishvel, wishdir);
@@ -923,7 +902,7 @@ void SpectatorMove (void)
 	addspeed = wishspeed - currentspeed;
 	if (addspeed <= 0)
 		return;
-	accelspeed = movevars.accelerate*frametime*wishspeed;
+	accelspeed = movevars.accelerate*qh_pml.frametime*wishspeed;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 	
@@ -932,7 +911,7 @@ void SpectatorMove (void)
 
 
 	// move
-	VectorMA (qh_pmove.origin, frametime, qh_pmove.velocity, qh_pmove.origin);
+	VectorMA (qh_pmove.origin, qh_pml.frametime, qh_pmove.velocity, qh_pmove.origin);
 }
 
 /*
@@ -947,7 +926,7 @@ were contacted during the move.
 */
 void PlayerMove (void)
 {
-	frametime = qh_pmove.cmd.msec * 0.001;
+	qh_pml.frametime = qh_pmove.cmd.msec * 0.001;
 	qh_pmove.numtouch = 0;
 
 	if(qh_pmove.movetype == QHMOVETYPE_NONE)
@@ -957,7 +936,7 @@ void PlayerMove (void)
 		return;
 	}
 	
-	AngleVectors (qh_pmove.angles, forward, right, up);
+	AngleVectors (qh_pmove.angles, qh_pml.forward, qh_pml.right, qh_pml.up);
 
 	if (qh_pmove.spectator)
 	{
@@ -982,10 +961,10 @@ void PlayerMove (void)
 //		Con_Printf ("Waterjump *OVER*\n");
 	}
 
-	if (qh_pmove.cmd.buttons & BUTTON_JUMP)
+	if (qh_pmove.cmd.buttons & QHBUTTON_JUMP)
 		JumpButton ();
 	else
-		qh_pmove.oldbuttons &= ~BUTTON_JUMP;
+		qh_pmove.oldbuttons &= ~QHBUTTON_JUMP;
 
 	PM_Friction ();
 

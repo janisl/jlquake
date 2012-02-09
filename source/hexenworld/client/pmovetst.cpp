@@ -1,11 +1,5 @@
 #include "quakedef.h"
 
-extern	vec3_t player_mins;
-extern	vec3_t player_maxs;
-extern	vec3_t player_maxs_crouch;
-extern	vec3_t beast_mins;
-extern	vec3_t beast_maxs;
-
 /*
 ================
 PM_TestPlayerPosition
@@ -35,14 +29,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 		vec3_t clip_mins;
 		vec3_t clip_maxs;
 	// get the clipping hull
-		if(0){}/*shitbox
-			 qh_pmove.hasted==1.666)//hacky- beast speed
-		{
-			VectorCopy (beast_maxs, maxs);
-			VectorCopy (beast_mins, mins);
-			hull = &qh_pmove.physents[i].model->hulls[5];
-		}*/
-		else if (pe->model >= 0)
+		if (pe->model >= 0)
 		{
 			if(qh_pmove.crouched)
 			{
@@ -57,13 +44,13 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 		{
 			if(qh_pmove.crouched)
 			{
-				VectorSubtract (pe->mins, player_maxs_crouch, mins);
+				VectorSubtract (pe->mins, pmqh_player_maxs_crouch, mins);
 			}
 			else
 			{
-				VectorSubtract (pe->mins, player_maxs, mins);
+				VectorSubtract (pe->mins, pmqh_player_maxs, mins);
 			}
-			VectorSubtract (pe->maxs, player_mins, maxs);
+			VectorSubtract (pe->maxs, pmqh_player_mins, maxs);
 			hull = CM_TempBoxModel(mins, maxs);
 			clip_mins[2] = 0;
 		}
@@ -86,7 +73,7 @@ PM_PlayerMove
 */
 q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 {
-	q1trace_t		trace, total;
+	q1trace_t	trace, total;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
 	clipHandle_t	hull;
@@ -103,17 +90,10 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	for (i=0 ; i< qh_pmove.numphysent ; i++)
 	{
 		pe = &qh_pmove.physents[i];
-	// get the clipping hull
+		// get the clipping hull
 		vec3_t clip_mins;
 		vec3_t clip_maxs;
-		if(0){}/*shitbox
-			   qh_pmove.hasted==1.666)//hacky- beast speed
-		{
-			VectorCopy (beast_maxs, maxs);
-			VectorCopy (beast_mins, mins);
-			hull = &qh_pmove.physents[i].model->hulls[5];
-		}*/
-		else if (pe->model >= 0)
+		if (pe->model >= 0)
 		{
 			if(qh_pmove.crouched)
 			{
@@ -128,13 +108,13 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		{
 			if(qh_pmove.crouched)
 			{
-				VectorSubtract (pe->mins, player_maxs_crouch, mins);
+				VectorSubtract (pe->mins, pmqh_player_maxs_crouch, mins);
 			}
 			else
 			{
-				VectorSubtract (pe->mins, player_maxs, mins);
+				VectorSubtract (pe->mins, pmqh_player_maxs, mins);
 			}
-			VectorSubtract (pe->maxs, player_mins, maxs);
+			VectorSubtract (pe->maxs, pmqh_player_mins, maxs);
 			hull = CM_TempBoxModel(mins, maxs);
 			clip_mins[2] = 0;
 		}

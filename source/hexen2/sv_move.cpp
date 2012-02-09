@@ -6,8 +6,6 @@
 
 #include "quakedef.h"
 
-#define	STEPSIZE	18
-
 /*
 =============
 SV_CheckBottom

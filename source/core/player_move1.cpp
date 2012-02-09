@@ -18,3 +18,24 @@
 
 movevars_t movevars;
 qhplayermove_t qh_pmove;
+qhpml_t qh_pml;
+
+vec3_t pmqh_player_mins;
+vec3_t pmqh_player_maxs;
+
+vec3_t pmqh_player_maxs_crouch;
+
+void PMQH_Init()
+{
+	if (GGameType & GAME_Quake)
+	{
+		VectorSet(pmqh_player_mins, -16, -16, -24);
+		VectorSet(pmqh_player_maxs, 16, 16, 32);
+	}
+	else
+	{
+		VectorSet(pmqh_player_mins, -16, -16, 0);
+		VectorSet(pmqh_player_maxs, 16, 16, 56);
+		VectorSet(pmqh_player_maxs_crouch, 16, 16, 28);
+	}
+}

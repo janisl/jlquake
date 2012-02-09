@@ -1091,9 +1091,6 @@ qh_pmove must be setup with world and solid entity hulls before calling
 void CL_SetSolidPlayers (int playernum)
 {
 	int		j;
-	extern	vec3_t	player_mins;
-	extern	vec3_t	player_maxs;
-	extern	vec3_t	player_maxs_crouch;
 	struct predicted_player *pplayer;
 	qhphysent_t *pent;
 
@@ -1117,25 +1114,15 @@ void CL_SetSolidPlayers (int playernum)
 
 		pent->model = -1;
 		VectorCopy(pplayer->origin, pent->origin);
-/*shitbox
-		if(!String::ICmp(cl.model_precache[cl.h2_players[playernum].modelindex]->name,"models/yakman.mdl"))
-		{//use golem hull
-			Sys_Error("Using beast model");
-			VectorCopy(beast_mins, pent->mins);
-			VectorCopy(beast_maxs, pent->mins);
+		VectorCopy(pmqh_player_mins, pent->mins);
+		if(pplayer->flags & PF_CROUCH)
+		{
+			VectorCopy(pmqh_player_maxs_crouch, pent->maxs);
 		}
 		else
-		{*/
-			VectorCopy(player_mins, pent->mins);
-			if(pplayer->flags & PF_CROUCH)
-			{
-				VectorCopy(player_maxs_crouch, pent->maxs);
-			}
-			else
-			{
-				VectorCopy(player_maxs, pent->maxs);
-			}
-//		}
+		{
+			VectorCopy(pmqh_player_maxs, pent->maxs);
+		}
 		qh_pmove.numphysent++;
 		pent++;
 	}

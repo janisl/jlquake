@@ -11,8 +11,6 @@
 #define	PM_SPECTATORMAXSPEED	500
 #define	PM_STOPSPEED	100
 #define	PM_MAXSPEED			320
-#define BUTTON_JUMP 2
-#define BUTTON_ATTACK 1
 #define MAX_ANGLE_TURN 10
 
 static vec3_t desired_position; // where the camera wants to be
@@ -342,10 +340,10 @@ void Cam_FinishMove(hwusercmd_t *cmd)
 	if (!cl.qh_spectator) // only in spectator mode
 		return;
 
-	if (cmd->buttons & BUTTON_ATTACK) {
-		if (!(oldbuttons & BUTTON_ATTACK)) {
+	if (cmd->buttons & QHBUTTON_ATTACK) {
+		if (!(oldbuttons & QHBUTTON_ATTACK)) {
 
-			oldbuttons |= BUTTON_ATTACK;
+			oldbuttons |= QHBUTTON_ATTACK;
 			autocam++;
 
 			if (autocam > CAM_TRACK) {
@@ -356,7 +354,7 @@ void Cam_FinishMove(hwusercmd_t *cmd)
 		} else
 			return;
 	} else {
-		oldbuttons &= ~BUTTON_ATTACK;
+		oldbuttons &= ~QHBUTTON_ATTACK;
 		if (!autocam)
 			return;
 	}
@@ -367,14 +365,14 @@ void Cam_FinishMove(hwusercmd_t *cmd)
 	}
 
 	if (locked) {
-		if ((cmd->buttons & BUTTON_JUMP) && (oldbuttons & BUTTON_JUMP))
+		if ((cmd->buttons & QHBUTTON_JUMP) && (oldbuttons & QHBUTTON_JUMP))
 			return;		// don't pogo stick
 
-		if (!(cmd->buttons & BUTTON_JUMP)) {
-			oldbuttons &= ~BUTTON_JUMP;
+		if (!(cmd->buttons & QHBUTTON_JUMP)) {
+			oldbuttons &= ~QHBUTTON_JUMP;
 			return;
 		}
-		oldbuttons |= BUTTON_JUMP;	// don't jump again until released
+		oldbuttons |= QHBUTTON_JUMP;	// don't jump again until released
 	}
 
 //	Con_Printf("Selecting track target...\n");

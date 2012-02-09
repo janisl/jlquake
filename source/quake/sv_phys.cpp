@@ -735,7 +735,6 @@ SV_WalkMove
 Only used by players
 ======================
 */
-#define	STEPSIZE	18
 void SV_WalkMove (qhedict_t *ent)
 {
 	vec3_t		upmove, downmove;

@@ -31,8 +31,6 @@ Cvar*	sv_spectalk;
 
 Cvar*	sv_mapcheck;
 
-extern	vec3_t	player_mins;
-
 extern int fp_messages, fp_persecond, fp_secondsdead;
 extern char fp_msg[];
 extern Cvar* pausable;
@@ -1422,7 +1420,7 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 	}
 
 	for (i=0 ; i<3 ; i++)
-		qh_pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - player_mins[i]);
+		qh_pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - pmqh_player_mins[i]);
 	VectorCopy (sv_player->GetVelocity(), qh_pmove.velocity);
 	VectorCopy (sv_player->GetVAngle(), qh_pmove.angles);
 
@@ -1475,7 +1473,7 @@ if (sv_player->v.health > 0 && before && !after )
 	else
 		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
 	for (i=0 ; i<3 ; i++)
-		sv_player->GetOrigin()[i] = qh_pmove.origin[i] - (sv_player->GetMins()[i] - player_mins[i]);
+		sv_player->GetOrigin()[i] = qh_pmove.origin[i] - (sv_player->GetMins()[i] - pmqh_player_mins[i]);
 
 #if 0
 	// truncate velocity the same way the net protocol will

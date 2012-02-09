@@ -2,8 +2,6 @@
 
 #include "qwsvdef.h"
 
-#define	STEPSIZE	18
-
 /*
 =============
 SV_CheckBottom

@@ -1013,7 +1013,7 @@ void CL_Init (void)
 	CL_InitInput ();
 	CL_InitPrediction ();
 	CL_InitCam ();
-	Pmove_Init ();
+	PMQH_Init ();
 
 	//
 	// register our commands

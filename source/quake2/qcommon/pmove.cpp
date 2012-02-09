@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-#define	STEPSIZE	18
-
 // all of the locals will be zeroed before each
 // pmove, just to make damn sure we don't have
 // any differences when running on client or server

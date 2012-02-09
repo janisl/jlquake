@@ -938,7 +938,7 @@ void CL_Init (void)
 	CL_InitPrediction ();
 	CLHW_InitEffects ();
 	CL_InitCam ();
-	Pmove_Init ();
+	PMQH_Init ();
 	
 //
 // register our commands

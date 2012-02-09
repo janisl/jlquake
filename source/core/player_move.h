@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#define STEPSIZE		18
+
 #define QHMAX_PHYSENTS	64
 
 struct movevars_t
@@ -103,7 +105,24 @@ struct qhplayermove_t
 	int watertype;
 };
 
+struct qhpml_t
+{
+	float frametime;
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+};
+
 extern movevars_t movevars;
 extern qhplayermove_t qh_pmove;
+extern qhpml_t qh_pml;
+
+extern vec3_t pmqh_player_mins;
+extern vec3_t pmqh_player_maxs;
+
+extern vec3_t pmqh_player_maxs_crouch;
 
 void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce);
+
+void PMQH_Init();
