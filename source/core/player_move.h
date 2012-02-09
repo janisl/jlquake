@@ -105,3 +105,5 @@ struct qhplayermove_t
 
 extern movevars_t movevars;
 extern qhplayermove_t qh_pmove;
+
+void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce);

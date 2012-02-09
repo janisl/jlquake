@@ -172,6 +172,7 @@
     <ClCompile Include="md4.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="message.cpp" />
+    <ClCompile Include="player_move.cpp" />
     <ClCompile Include="player_move1.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="socket_windows.cpp" />

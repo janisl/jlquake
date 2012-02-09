@@ -48,42 +48,6 @@ void Pmove_Init (void)
 
 
 /*
-==================
-PM_ClipVelocity
-
-Slide off of the impacting object
-returns the blocked flags (1 = floor, 2 = step / wall)
-==================
-*/
-#define	STOP_EPSILON	0.1
-
-int PM_ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
-{
-	float	backoff;
-	float	change;
-	int		i, blocked;
-	
-	blocked = 0;
-	if (normal[2] > 0)
-		blocked |= 1;		// floor
-	if (!normal[2])
-		blocked |= 2;		// step
-	
-	backoff = DotProduct (in, normal) * overbounce;
-
-	for (i=0 ; i<3 ; i++)
-	{
-		change = normal[i]*backoff;
-		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-			out[i] = 0;
-	}
-	
-	return blocked;
-}
-
-
-/*
 ============
 PM_FlyMove
 

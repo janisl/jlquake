@@ -34,6 +34,7 @@ set(CORE_FILES
 	memory.cpp
 	message.cpp
 	network_channel.cpp
+	player_move.cpp
 	player_move1.cpp
 	socket.cpp
 	socket_unix.cpp

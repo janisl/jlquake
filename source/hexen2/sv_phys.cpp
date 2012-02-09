@@ -157,43 +157,6 @@ void SV_Impact (qhedict_t *e1, qhedict_t *e2)
 	pr_global_struct->other = old_other;
 }
 
-
-/*
-==================
-ClipVelocity
-
-Slide off of the impacting object
-returns the blocked flags (1 = floor, 2 = step / wall)
-==================
-*/
-#define	STOP_EPSILON	0.1
-
-int ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
-{
-	float	backoff;
-	float	change;
-	int		i, blocked;
-	
-	blocked = 0;
-	if (normal[2] > 0)
-		blocked |= 1;		// floor
-	if (!normal[2])
-		blocked |= 2;		// step
-	
-	backoff = DotProduct (in, normal) * overbounce;
-
-	for (i=0 ; i<3 ; i++)
-	{
-		change = normal[i]*backoff;
-		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-			out[i] = 0;
-	}
-	
-	return blocked;
-}
-
-
 /*
 ============
 SV_FlyMove
@@ -308,7 +271,7 @@ int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 //
 		for (i=0 ; i<numplanes ; i++)
 		{
-			ClipVelocity (original_velocity, planes[i], new_velocity, 1);
+			PM_ClipVelocity (original_velocity, planes[i], new_velocity, 1);
 			for (j=0 ; j<numplanes ; j++)
 				if (j != i)
 				{
@@ -1673,7 +1636,7 @@ void SV_Physics_Toss (qhedict_t *ent)
 	else
 		backoff = 1;
 
-	ClipVelocity (ent->GetVelocity(), trace.plane.normal, ent->GetVelocity(), backoff);
+	PM_ClipVelocity (ent->GetVelocity(), trace.plane.normal, ent->GetVelocity(), backoff);
 
 // stop if on ground
 	if ((trace.plane.normal[2] > 0.7) && (ent->GetMoveType() != H2MOVETYPE_BOUNCEMISSILE))
