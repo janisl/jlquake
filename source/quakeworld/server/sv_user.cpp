@@ -1451,14 +1451,14 @@ void SV_RunCmd (qwusercmd_t *ucmd)
 	int before, after;
 
 before = PMQH_TestPlayerPosition (qh_pmove.origin);
-	PlayerMove ();
+	PMQH_PlayerMove ();
 after = PMQH_TestPlayerPosition (qh_pmove.origin);
 
 if (sv_player->v.health > 0 && before && !after )
 	Con_Printf ("player %s got stuck in playermove!!!!\n", host_client->name);
 }
 #else
-	PlayerMove ();
+	PMQH_PlayerMove ();
 #endif
 
 	host_client->oldbuttons = qh_pmove.oldbuttons;

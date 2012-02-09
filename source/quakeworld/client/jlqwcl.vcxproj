@@ -115,7 +115,6 @@
     <ClCompile Include="keys.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="net_chan.cpp" />
-    <ClCompile Include="pmove.cpp" />
     <ClCompile Include="sbar.cpp" />
     <ClCompile Include="snd_dma.cpp" />
     <ClCompile Include="sys_win.cpp" />
@@ -133,7 +132,6 @@
     <ClInclude Include="keys.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="net.h" />
-    <ClInclude Include="pmove.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="r_local.h" />

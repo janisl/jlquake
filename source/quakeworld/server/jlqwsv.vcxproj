@@ -102,7 +102,6 @@
     <ClCompile Include="..\client\common.cpp" />
     <ClCompile Include="..\client\cvar.cpp" />
     <ClCompile Include="..\client\net_chan.cpp" />
-    <ClCompile Include="..\client\pmove.cpp" />
     <ClCompile Include="pr_cmds.cpp" />
     <ClCompile Include="pr_edict.cpp" />
     <ClCompile Include="pr_exec.cpp" />
@@ -134,7 +133,6 @@
     <ClInclude Include="..\client\mathlib.h" />
     <ClInclude Include="..\client\menu.h" />
     <ClInclude Include="..\client\net.h" />
-    <ClInclude Include="..\client\pmove.h" />
     <ClInclude Include="pr_comp.h" />
     <ClInclude Include="progdefs.h" />
     <ClInclude Include="progs.h" />

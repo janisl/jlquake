@@ -74,12 +74,12 @@ void CL_PredictUsercmd (hwplayer_state_t *from, hwplayer_state_t *to, hwusercmd_
 	qh_pmove.spectator = spectator;
 	qh_pmove.hasted = cl.h2_v.hasted;
 	qh_pmove.movetype = cl.h2_v.movetype;
-	qh_pmove.teleport_time = cl.h2_v.teleport_time;
+	qh_pmove.teleport_time = cl.h2_v.teleport_time - realtime;
 
 	qh_pmove.cmd.Set(*u);
 	qh_pmove.crouched = player_crouching;
 
-	PlayerMove ();
+	PMQH_PlayerMove ();
 //for (i=0 ; i<3 ; i++)
 //qh_pmove.origin[i] = ((int)(qh_pmove.origin[i]*8))*0.125;
 	to->waterjumptime = qh_pmove.waterjumptime;

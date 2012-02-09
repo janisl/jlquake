@@ -1193,7 +1193,7 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	qh_pmove.hasted = sv_player->GetHasted();
 	qh_pmove.movetype = sv_player->GetMoveType();
 	qh_pmove.crouched = (sv_player->GetHull() == HULL_CROUCH);
-	qh_pmove.teleport_time = realtime + (sv_player->GetTeleportTime() - sv.time);
+	qh_pmove.teleport_time = (sv_player->GetTeleportTime() - sv.time);
 
 //	movevars.entgravity = host_client->entgravity;
 	movevars.entgravity = sv_player->GetGravity();
@@ -1215,14 +1215,14 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	int before, after;
 
 before = PMQH_TestPlayerPosition (qh_pmove.origin);
-	PlayerMove ();
+	PMQH_PlayerMove ();
 after = PMQH_TestPlayerPosition (qh_pmove.origin);
 
 if (sv_player->v.health > 0 && before && !after )
 	Con_Printf ("player %s got stuck in playermove!!!!\n", host_client->name);
 }
 #else
-	PlayerMove ();
+	PMQH_PlayerMove ();
 #endif
 
 	host_client->oldbuttons = qh_pmove.oldbuttons;

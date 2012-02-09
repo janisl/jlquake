@@ -181,14 +181,13 @@ Returns the clipflags if the velocity was modified (hit something solid)
 If steptrace is not NULL, the trace of any vertical wall hit will be stored
 ============
 */
-#define	MAX_CLIP_PLANES	5
 int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 {
 	int			bumpcount, numbumps;
 	vec3_t		dir;
 	float		d;
 	int			numplanes;
-	vec3_t		planes[MAX_CLIP_PLANES];
+	vec3_t		planes[MAX_FLY_MOVE_CLIP_PLANES];
 	vec3_t		primal_velocity, original_velocity, new_velocity;
 	int			i, j;
 	q1trace_t		trace;
@@ -261,7 +260,7 @@ int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 		time_left -= time_left * trace.fraction;
 		
 	// cliped to another plane
-		if (numplanes >= MAX_CLIP_PLANES)
+		if (numplanes >= MAX_FLY_MOVE_CLIP_PLANES)
 		{	// this shouldn't really happen
 			ent->SetVelocity(vec3_origin);
 			return 3;

@@ -16,6 +16,8 @@
 
 #define STEPSIZE		18
 
+#define MAX_FLY_MOVE_CLIP_PLANES	5
+
 #define QHMAX_PHYSENTS	64
 
 struct movevars_t
@@ -105,18 +107,8 @@ struct qhplayermove_t
 	int watertype;
 };
 
-struct qhpml_t
-{
-	float frametime;
-
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-};
-
 extern movevars_t movevars;
 extern qhplayermove_t qh_pmove;
-extern qhpml_t qh_pml;
 
 extern vec3_t pmqh_player_mins;
 extern vec3_t pmqh_player_maxs;
@@ -128,3 +120,4 @@ void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float ove
 void PMQH_Init();
 q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t stop);
 bool PMQH_TestPlayerPosition(const vec3_t point);
+void PMQH_PlayerMove();

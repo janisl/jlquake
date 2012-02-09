@@ -91,7 +91,7 @@ void CL_PredictUsercmd (qwplayer_state_t *from, qwplayer_state_t *to, qwusercmd_
 
 	qh_pmove.cmd.Set(*u);
 
-	PlayerMove ();
+	PMQH_PlayerMove ();
 //for (i=0 ; i<3 ; i++)
 //qh_pmove.origin[i] = ((int)(qh_pmove.origin[i]*8))*0.125;
 	to->waterjumptime = qh_pmove.waterjumptime;
