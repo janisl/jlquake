@@ -25,17 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //define	PARANOID			// speed sapping error checking
 
 #include "../qcommon/qcommon.h"
-#define cvar_t	Cvar
-#define trace_t	q2trace_t
-#define entity_state_t q2entity_state_t
-#define player_state_t q2player_state_t
-#define usercmd_t q2usercmd_t
 #include "game.h"
-#undef cvar_t
-#undef trace_t
-#undef entity_state_t
-#undef player_state_t
-#undef usercmd_t
 
 //=============================================================================
 

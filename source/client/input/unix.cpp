@@ -940,7 +940,7 @@ static void IN_StartupJoystick()
 	{
 		char filename[PATH_MAX];
 
-		snprintf(filename, PATH_MAX, "/dev/js%d", i);
+		snprintf(filename, PATH_MAX, "/dev/input/js%d", i);
 
 		joy_fd = open(filename, O_RDONLY | O_NONBLOCK);
 

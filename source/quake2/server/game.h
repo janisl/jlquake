@@ -51,10 +51,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef enum
 {
-SOLID_NOT,			// no interaction with other objects
-SOLID_TRIGGER,		// only touch when inside, after moving
-SOLID_BBOX,			// touch on edge
-SOLID_BSP			// bsp clip, touch on edge
+	SOLID_NOT,			// no interaction with other objects
+	SOLID_TRIGGER,		// only touch when inside, after moving
+	SOLID_BBOX,			// touch on edge
+	SOLID_BSP			// bsp clip, touch on edge
 } solid_t;
 
 //===============================================================
@@ -67,26 +67,19 @@ typedef struct link_s
 
 #define	MAX_ENT_CLUSTERS	16
 
-
-typedef struct edict_s edict_t;
-typedef struct gclient_s gclient_t;
-
-
-#ifndef GAME_INCLUDE
-
-struct gclient_s
+struct gclient_t
 {
-	player_state_t	ps;		// communicated by server to clients
+	q2player_state_t	ps;		// communicated by server to clients
 	int				ping;
 	// the game dll can add anything it wants after
 	// this point in the structure
 };
 
 
-struct edict_s
+struct edict_t
 {
-	entity_state_t	s;
-	struct gclient_s	*client;
+	q2entity_state_t	s;
+	gclient_t	*client;
 	qboolean	inuse;
 	int			linkcount;
 
@@ -110,8 +103,6 @@ struct edict_s
 	// the game dll can add anything it wants after
 	// this point in the structure
 };
-
-#endif		// GAME_INCLUDE
 
 //===============================================================
 
@@ -144,7 +135,7 @@ typedef struct
 	void	(*setmodel) (edict_t *ent, char *name);
 
 	// collision detection
-	trace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask);
+	q2trace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask);
 	int		(*pointcontents) (vec3_t point);
 	qboolean	(*inPVS) (vec3_t p1, vec3_t p2);
 	qboolean	(*inPHS) (vec3_t p1, vec3_t p2);
@@ -178,9 +169,9 @@ typedef struct
 	void	(*FreeTags) (int tag);
 
 	// console variable interaction
-	cvar_t	*(*cvar)(const char *var_name, const char *value, int flags);
-	cvar_t	*(*cvar_set)(const char *var_name, const char *value);
-	cvar_t	*(*cvar_forceset)(const char *var_name, const char *value);
+	Cvar	*(*cvar)(const char *var_name, const char *value, int flags);
+	Cvar	*(*cvar_set)(const char *var_name, const char *value);
+	Cvar	*(*cvar_forceset)(const char *var_name, const char *value);
 
 	// ClientCommand and ServerCommand parameter access
 	int		(*argc) (void);
@@ -227,7 +218,7 @@ typedef struct
 	void		(*ClientUserinfoChanged) (edict_t *ent, char *userinfo);
 	void		(*ClientDisconnect) (edict_t *ent);
 	void		(*ClientCommand) (edict_t *ent);
-	void		(*ClientThink) (edict_t *ent, usercmd_t *cmd);
+	void		(*ClientThink) (edict_t *ent, q2usercmd_t *cmd);
 
 	void		(*RunFrame) (void);
 
@@ -245,7 +236,7 @@ typedef struct
 	// can vary in size from one game to another.
 	// 
 	// The size will be fixed when ge->Init() is called
-	struct edict_s	*edicts;
+	edict_t		*edicts;
 	int			edict_size;
 	int			num_edicts;		// current number, <= max_edicts
 	int			max_edicts;

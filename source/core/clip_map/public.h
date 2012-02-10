@@ -51,7 +51,7 @@ struct q2trace_t
 	cplane_t	plane;		// surface normal at impact
 	q2csurface_t	*surface;	// surface hit
 	int			contents;	// contents on other side of surface hit
-	struct edict_s	*ent;		// not set by CM_*() functions
+	struct edict_t	*ent;		// not set by CM_*() functions
 };
 
 // a trace is returned when a box is swept through the world
