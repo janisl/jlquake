@@ -1,3 +1,41 @@
+/*
+Copyright (C) 1997-2001 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
+/*
+Copyright (C) 1997-2001 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
 
 // game.h -- game dll information visible to server
 
@@ -8,10 +46,6 @@
 #define	SVF_NOCLIENT			0x00000001	// don't send entity to clients, even if it has effects
 #define	SVF_DEADMONSTER			0x00000002	// treat as CONTENTS_DEADMONSTER for collision
 #define	SVF_MONSTER				0x00000004	// treat as CONTENTS_MONSTER for collision
-//ROGUE -- added for things that are damageable, but not monsters
-// right now, only the tesla has this
-#define SVF_DAMAGEABLE			0x00000008
-//ROGUE end
 
 // edict->solid values
 
@@ -144,9 +178,9 @@ typedef struct
 	void	(*FreeTags) (int tag);
 
 	// console variable interaction
-	cvar_t	*(*cvar) (char *var_name, char *value, int flags);
-	cvar_t	*(*cvar_set) (char *var_name, char *value);
-	cvar_t	*(*cvar_forceset) (char *var_name, char *value);
+	cvar_t	*(*cvar)(const char *var_name, const char *value, int flags);
+	cvar_t	*(*cvar_set)(const char *var_name, const char *value);
+	cvar_t	*(*cvar_forceset)(const char *var_name, const char *value);
 
 	// ClientCommand and ServerCommand parameter access
 	int		(*argc) (void);
@@ -155,7 +189,7 @@ typedef struct
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
-	void	(*AddCommandString) (char *text);
+	void	(*AddCommandString) (const char *text);
 
 	void	(*DebugGraph) (float value, int color);
 } game_import_t;

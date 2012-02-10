@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define entity_state_t q2entity_state_t
 #define player_state_t q2player_state_t
 #define usercmd_t q2usercmd_t
-#include "../../../q2game/game/game.h"
+#include "game.h"
 #undef cvar_t
 #undef trace_t
 #undef entity_state_t
