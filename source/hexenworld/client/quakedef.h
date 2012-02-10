@@ -26,7 +26,6 @@
 #include "console.h"
 #include "view.h"
 #include "menu.h"
-#include "pmove.h"
 
 //=============================================================================
 
@@ -46,16 +45,10 @@ typedef struct
 
 //=============================================================================
 
-
-extern qboolean noclip_anglehack;
-
-
 //
 // host
 //
 extern	quakeparms_t host_parms;
-
-extern	Cvar*		developer;
 
 extern	Cvar*	password;
 extern	Cvar*  talksounds;

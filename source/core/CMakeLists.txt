@@ -18,6 +18,7 @@ set(CORE_FILES
 	virtual_machine/interpreted.cpp
 	virtual_machine/main.cpp
 	command_buffer.cpp
+	Common.cpp
 	common_defs.cpp
 	console_variable.cpp
 	crc.cpp
@@ -33,6 +34,7 @@ set(CORE_FILES
 	memory.cpp
 	message.cpp
 	network_channel.cpp
+	player_move.cpp
 	player_move1.cpp
 	socket.cpp
 	socket_unix.cpp

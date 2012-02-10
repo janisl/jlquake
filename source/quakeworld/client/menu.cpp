@@ -359,12 +359,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("r_gamma", r_gamma->value);
 		break;
 	case 5:	// mouse speed
-		sensitivity->value += dir * 0.5;
-		if (sensitivity->value < 1)
-			sensitivity->value = 1;
-		if (sensitivity->value > 11)
-			sensitivity->value = 11;
-		Cvar_SetValue ("sensitivity", sensitivity->value);
+		cl_sensitivity->value += dir * 0.5;
+		if (cl_sensitivity->value < 1)
+			cl_sensitivity->value = 1;
+		if (cl_sensitivity->value > 11)
+			cl_sensitivity->value = 11;
+		Cvar_SetValue ("sensitivity", cl_sensitivity->value);
 		break;
 	case 6:	// music volume
 #ifdef _WIN32
@@ -408,15 +408,11 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
 	
-	case 11:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
-		break;
-
-	case 12:
+	case 11:
 		Cvar_SetValue ("cl_sbar", !cl_sbar->value);
 		break;
 
-	case 13:
+	case 12:
 		Cvar_SetValue ("cl_hudswap", !cl_hudswap->value);
 	}
 }
@@ -473,7 +469,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");
-	r = (sensitivity->value - 1)/10;
+	r = (cl_sensitivity->value - 1)/10;
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
@@ -493,16 +489,13 @@ void M_Options_Draw (void)
 	M_Print (16, 112, "            Lookspring");
 	M_DrawCheckbox (220, 112, lookspring->value);
 
-	M_Print (16, 120, "            Lookstrafe");
-	M_DrawCheckbox (220, 120, lookstrafe->value);
-
 	M_Print (16, 128, "    Use old status bar");
-	M_DrawCheckbox (220, 128, cl_sbar->value);
+	M_DrawCheckbox (220, 120, cl_sbar->value);
 
 	M_Print (16, 136, "      HUD on left side");
-	M_DrawCheckbox (220, 136, cl_hudswap->value);
+	M_DrawCheckbox (220, 128, cl_hudswap->value);
 
-	M_Print (16, 144, "         Video Options");
+	M_Print (16, 136, "         Video Options");
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
@@ -531,7 +524,7 @@ void M_Options_Key (int k)
 		case 2:
 			Cbuf_AddText ("exec default.cfg\n");
 			break;
-		case 14:
+		case 13:
 			M_Menu_Video_f ();
 			break;
 		default:
@@ -585,7 +578,6 @@ const char *bindnames[][2] =
 {"+lookdown", 		"look down"},
 {"centerview", 		"center view"},
 {"+mlook", 			"mouse look"},
-{"+klook", 			"keyboard look"},
 {"+moveup",			"swim up"},
 {"+movedown",		"swim down"}
 };

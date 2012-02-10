@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../client/client.h"
 #include <setjmp.h>
 
 int demo_protocols[] =
@@ -45,7 +46,6 @@ FILE *debuglogfile;
 static fileHandle_t logfile;
 
 Cvar	*com_speeds;
-Cvar	*com_developer;
 Cvar	*com_fixedtime;
 Cvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
 Cvar	*com_maxfps;
@@ -70,8 +70,6 @@ int		time_game;
 int		time_frontend;		// renderer frontend time
 int		time_backend;		// renderer backend time
 
-int			com_frameTime;
-int			com_frameMsec;
 int			com_frameNumber;
 
 qboolean	com_errorEntered;
@@ -1916,7 +1914,7 @@ int Com_EventLoop( void ) {
 			CL_CharEvent( ev.evValue );
 			break;
 		case SE_MOUSE:
-			CL_MouseEvent( ev.evValue, ev.evValue2, ev.evTime );
+			CL_MouseEvent(ev.evValue, ev.evValue2, ev.evTime);
 			break;
 		case SE_JOYSTICK_AXIS:
 			CL_JoystickEvent( ev.evValue, ev.evValue2, ev.evTime );
@@ -2241,7 +2239,6 @@ void Com_Init( char *commandLine )
 	com_maxfps = Cvar_Get ("com_maxfps", "85", CVAR_ARCHIVE);
 	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE);
 
-	com_developer = Cvar_Get ("developer", "0", CVAR_TEMP );
 	com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );
 
 	com_fixedtime = Cvar_Get ("fixedtime", "0", CVAR_CHEAT);
@@ -2529,7 +2526,6 @@ void Com_Frame( void )
 	lastTime = com_frameTime;
 
 	// mess with msec if needed
-	com_frameMsec = msec;
 	msec = Com_ModifyMsec( msec );
 
 	//

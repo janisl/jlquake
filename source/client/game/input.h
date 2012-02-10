@@ -14,16 +14,26 @@
 //**
 //**************************************************************************
 
-#include "../core.h"
-#include "local.h"
-
-void VM_Compile(vm_t* vm, vmHeader_t* header)
+struct in_usercmd_t
 {
-	vm->compiled = false;
-	VM_PrepareInterpreter(vm, header);
-}
+	int forwardmove;
+	int sidemove;
+	int upmove;
+	int buttons;
+};
 
-qintptr VM_CallCompiled(vm_t* vm, int* args)
-{
-	return 0;
-}
+extern unsigned frame_msec;
+extern int in_impulse;
+
+extern Cvar* cl_forwardspeed;
+extern Cvar* cl_run;
+extern Cvar* cl_freelook;
+extern Cvar* cl_sensitivity;
+extern Cvar* m_pitch;
+extern Cvar* v_centerspeed;
+extern Cvar* lookspring;
+
+void CL_JoystickEvent(int axis, int value, int time);
+void CLQH_StartPitchDrift();
+void CL_InitInputCommon();
+in_usercmd_t CL_CreateCmdCommon();

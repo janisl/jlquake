@@ -39,15 +39,12 @@ Cvar*  cl_crossx;
 Cvar*  cl_crossy;
 
 static Cvar*	v_centermove;
-static Cvar*	v_centerspeed;
 
 static Cvar*	v_centerrollspeed;
 
 static Cvar*	cl_polyblend;
 
 static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
-
-extern	int			in_forward, in_forward2, in_back;
 
 hwframe_t		*view_frame;
 static hwplayer_state_t		*view_message;
@@ -132,29 +129,6 @@ static float V_CalcBob (void)
 
 //=============================================================================
 
-void V_StartPitchDrift (void)
-{
-#if 1
-	if (cl.qh_laststop == cl.qh_serverTimeFloat)
-	{
-		return;		// something else is keeping it from drifting
-	}
-#endif
-	if (cl.qh_nodrift || !cl.qh_pitchvel)
-	{
-		cl.qh_pitchvel = v_centerspeed->value;
-		cl.qh_nodrift = false;
-		cl.qh_driftmove = 0;
-	}
-}
-
-void V_StopPitchDrift (void)
-{
-	cl.qh_laststop = cl.qh_serverTimeFloat;
-	cl.qh_nodrift = true;
-	cl.qh_pitchvel = 0;
-}
-
 /*
 ===============
 V_DriftPitch
@@ -194,7 +168,7 @@ static void V_DriftPitch (void)
 
 		if ( cl.qh_driftmove > v_centermove->value)
 		{
-			V_StartPitchDrift ();
+			CLQH_StartPitchDrift ();
 		}
 		return;
 	}
@@ -252,7 +226,7 @@ static void V_DriftRoll (void)
 
 	if (view_message->onground == -1 || clc.demoplaying)
 	{
-		if(cl.h2_v.movetype != MOVETYPE_FLY)
+		if(cl.h2_v.movetype != QHMOVETYPE_FLY)
 		{
 			cl.h2_rollvel = 0;
 			return;
@@ -260,7 +234,7 @@ static void V_DriftRoll (void)
 	}
 
 
-	if(cl.h2_v.movetype != MOVETYPE_FLY)
+	if(cl.h2_v.movetype != QHMOVETYPE_FLY)
 		rollspeed = v_centerrollspeed->value;
 	else
 		rollspeed = v_centerrollspeed->value * .5;	//slower roll when flying
@@ -709,7 +683,7 @@ static void V_CalcRefdef (void)
 // view is the weapon model (only visible from inside body)
 	view = &cl.h2_viewent;
 
-	if (cl.h2_v.movetype != MOVETYPE_FLY)
+	if (cl.h2_v.movetype != QHMOVETYPE_FLY)
 		bob = V_CalcBob ();
 	else  // no bobbing when you fly
 		bob = 1;
@@ -958,10 +932,8 @@ void V_Init (void)
 	Cmd_AddCommand ("v_cshift", V_cshift_f);	
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("df", V_DarkFlash_f);
-	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
 	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
-	v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
 	v_centerrollspeed = Cvar_Get("v_centerrollspeed","125", 0);
 
 	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2", 0);

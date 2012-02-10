@@ -23,17 +23,17 @@ void CL_NudgePosition (void)
 	vec3_t	base;
 	int		x, y;
 
-	if (CM_PointContentsQ1(pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
+	if (CM_PointContentsQ1(qh_pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
 		return;
 
-	VectorCopy (pmove.origin, base);
+	VectorCopy (qh_pmove.origin, base);
 	for (x=-1 ; x<=1 ; x++)
 	{
 		for (y=-1 ; y<=1 ; y++)
 		{
-			pmove.origin[0] = base[0] + x * 1.0/8;
-			pmove.origin[1] = base[1] + y * 1.0/8;
-			if (CM_PointContentsQ1(pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
+			qh_pmove.origin[0] = base[0] + x * 1.0/8;
+			qh_pmove.origin[1] = base[1] + y * 1.0/8;
+			if (CM_PointContentsQ1(qh_pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
 				return;
 		}
 	}
@@ -63,31 +63,31 @@ void CL_PredictUsercmd (hwplayer_state_t *from, hwplayer_state_t *to, hwusercmd_
 
 	//Con_Printf("O  %hd %hd %hd\n",u->forwardmove, u->sidemove, u->upmove);
 
-	VectorCopy (from->origin, pmove.origin);
-//	VectorCopy (from->viewangles, pmove.angles);
-	VectorCopy (u->angles, pmove.angles);
-	VectorCopy (from->velocity, pmove.velocity);
+	VectorCopy (from->origin, qh_pmove.origin);
+//	VectorCopy (from->viewangles, qh_pmove.angles);
+	VectorCopy (u->angles, qh_pmove.angles);
+	VectorCopy (from->velocity, qh_pmove.velocity);
 
-	pmove.oldbuttons = from->oldbuttons;
-	pmove.waterjumptime = from->waterjumptime;
-	pmove.dead = cl.h2_v.health <= 0;
-	pmove.spectator = spectator;
-	pmove.hasted = cl.h2_v.hasted;
-	pmove.movetype = cl.h2_v.movetype;
-	pmove.teleport_time = cl.h2_v.teleport_time;
+	qh_pmove.oldbuttons = from->oldbuttons;
+	qh_pmove.waterjumptime = from->waterjumptime;
+	qh_pmove.dead = cl.h2_v.health <= 0;
+	qh_pmove.spectator = spectator;
+	qh_pmove.hasted = cl.h2_v.hasted;
+	qh_pmove.movetype = cl.h2_v.movetype;
+	qh_pmove.teleport_time = cl.h2_v.teleport_time - realtime;
 
-	pmove.cmd = *u;
-	pmove.crouched = player_crouching;
+	qh_pmove.cmd.Set(*u);
+	qh_pmove.crouched = player_crouching;
 
-	PlayerMove ();
+	PMQH_PlayerMove ();
 //for (i=0 ; i<3 ; i++)
-//pmove.origin[i] = ((int)(pmove.origin[i]*8))*0.125;
-	to->waterjumptime = pmove.waterjumptime;
-	to->oldbuttons = pmove.cmd.buttons;
-	VectorCopy (pmove.origin, to->origin);
-	VectorCopy (pmove.angles, to->viewangles);
-	VectorCopy (pmove.velocity, to->velocity);
-	to->onground = onground;
+//qh_pmove.origin[i] = ((int)(qh_pmove.origin[i]*8))*0.125;
+	to->waterjumptime = qh_pmove.waterjumptime;
+	to->oldbuttons = qh_pmove.cmd.buttons;
+	VectorCopy (qh_pmove.origin, to->origin);
+	VectorCopy (qh_pmove.angles, to->viewangles);
+	VectorCopy (qh_pmove.velocity, to->velocity);
+	to->onground = qh_pmove.onground;
 
 	to->weaponframe = from->weaponframe;
 }
@@ -149,7 +149,7 @@ void CL_PredictMove (void)
 	}
 
 	// predict forward until cl.time <= to->senttime
-	oldphysent = pmove.numphysent;
+	oldphysent = qh_pmove.numphysent;
 	CL_SetSolidPlayers (cl.playernum);
 
 //	to = &cl.frames[clc.netchan.incoming_sequence & UPDATE_MASK_HW];
@@ -165,7 +165,7 @@ void CL_PredictMove (void)
 		from = to;
 	}
 
-	pmove.numphysent = oldphysent;
+	qh_pmove.numphysent = oldphysent;
 
 	if (i == UPDATE_BACKUP_HW-1 || !to)
 		return;		// net hasn't deliver packets in a long time...

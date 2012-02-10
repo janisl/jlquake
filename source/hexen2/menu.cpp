@@ -1725,7 +1725,6 @@ enum
 	OPT_ALWAYRUN,	//9
 	OPT_INVMOUSE,	//10
 	OPT_LOOKSPRING,	//11
-	OPT_LOOKSTRAFE,	//12
 	OPT_CROSSHAIR,	//13
 	OPT_ALWAYSMLOOK,//14
 	OPT_VIDEO,		//15
@@ -1766,12 +1765,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("r_gamma", r_gamma->value);
 		break;
 	case OPT_MOUSESPEED:	// mouse speed
-		sensitivity->value += dir * 0.5;
-		if (sensitivity->value < 1)
-			sensitivity->value = 1;
-		if (sensitivity->value > 11)
-			sensitivity->value = 11;
-		Cvar_SetValue ("sensitivity", sensitivity->value);
+		cl_sensitivity->value += dir * 0.5;
+		if (cl_sensitivity->value < 1)
+			cl_sensitivity->value = 1;
+		if (cl_sensitivity->value > 11)
+			cl_sensitivity->value = 11;
+		Cvar_SetValue ("sensitivity", cl_sensitivity->value);
 		break;
 	case OPT_MUSICTYPE: // bgm type
 		if (String::ICmp(bgmtype->string,"midi") == 0)
@@ -1819,12 +1818,10 @@ void M_AdjustSliders (int dir)
 		if (cl_forwardspeed->value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
-			Cvar_SetValue ("cl_backspeed", 200);
 		}
 		else
 		{
 			Cvar_SetValue ("cl_forwardspeed", 400);
-			Cvar_SetValue ("cl_backspeed", 400);
 		}
 		break;
 	
@@ -1836,21 +1833,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
 	
-	case OPT_LOOKSTRAFE:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
-		break;
-
 	case OPT_CROSSHAIR:	
 		Cvar_SetValue ("crosshair", !crosshair->value);
 		break;
 
 	case OPT_ALWAYSMLOOK:	
-		if (in_mlook.state & 1)
-			//IN_MLookUp();
-			Cbuf_AddText("-mlook");
-		else
-			//IN_MLookDown();
-			Cbuf_AddText("+mlook");
+		Cvar_SetValue ("cl_freelook", !cl_freelook->value);
 		break;
 	}
 }
@@ -1904,7 +1892,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(4*8), r);
 
 	M_Print (16, 60+(5*8), "           Mouse Speed");
-	r = (sensitivity->value - 1)/10;
+	r = (cl_sensitivity->value - 1)/10;
 	M_DrawSlider (220, 60+(5*8), r);
 
 	M_Print (16, 60+(6*8), "            Music Type");
@@ -1932,14 +1920,11 @@ void M_Options_Draw (void)
 	M_Print (16, 60+(OPT_LOOKSPRING*8),	"            Lookspring");
 	M_DrawCheckbox (220, 60+(OPT_LOOKSPRING*8), lookspring->value);
 
-	M_Print (16, 60+(OPT_LOOKSTRAFE*8),	"            Lookstrafe");
-	M_DrawCheckbox (220, 60+(OPT_LOOKSTRAFE*8), lookstrafe->value);
-
 	M_Print (16, 60+(OPT_CROSSHAIR*8),	"        Show Crosshair");
 	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair->value);
 
 	M_Print (16,60+(OPT_ALWAYSMLOOK*8),	"            Mouse Look");
-	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
+	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), cl_freelook->value);
 
 	M_Print (16, 60+(OPT_VIDEO*8),	"         Video Options");
 
@@ -2024,7 +2009,6 @@ const char *bindnames[][2] =
 {"+lookdown", 		"look down"},
 {"centerview", 		"center view"},
 {"+mlook", 			"mouse look"},
-{"+klook", 			"keyboard look"},
 {"+moveup",			"swim up"},
 {"+movedown",		"swim down"},
 {"impulse 13", 		"lift object"},

@@ -11,8 +11,6 @@ Cvar*	cl_rollangle;
 Cvar*	sv_spectalk;
 Cvar*	sv_allowtaunts;
 
-extern	vec3_t	player_mins;
-
 extern int fp_messages, fp_persecond, fp_secondsdead;
 extern char fp_msg[];
 
@@ -988,7 +986,7 @@ void AddLinksToPmove ( areanode_t *node )
 	qhedict_t		*check;
 	int			pl;
 	int			i;
-	physent_t	*pe;
+	qhphysent_t	*pe;
 
 	pl = EDICT_TO_PROG(sv_player);
 
@@ -1013,10 +1011,10 @@ void AddLinksToPmove ( areanode_t *node )
 					break;
 			if (i != 3)
 				continue;
-			if (pmove.numphysent == MAX_PHYSENTS)
+			if (qh_pmove.numphysent == QHMAX_PHYSENTS)
 				return;
-			pe = &pmove.physents[pmove.numphysent];
-			pmove.numphysent++;
+			pe = &qh_pmove.physents[qh_pmove.numphysent];
+			qh_pmove.numphysent++;
 
 			VectorCopy (check->GetOrigin(), pe->origin);
 			VectorCopy (check->GetAngles(), pe->angles);
@@ -1055,7 +1053,7 @@ void AddAllEntsToPmove (void)
 	int			e;
 	qhedict_t		*check;
 	int			i;
-	physent_t	*pe;
+	qhphysent_t	*pe;
 	int			pl;
 
 	pl = EDICT_TO_PROG(sv_player);
@@ -1079,11 +1077,11 @@ void AddAllEntsToPmove (void)
 					break;
 			if (i != 3)
 				continue;
-			pe = &pmove.physents[pmove.numphysent];
+			pe = &qh_pmove.physents[qh_pmove.numphysent];
 
 			VectorCopy (check->GetOrigin(), pe->origin);
 			VectorCopy (check->GetAngles(), pe->angles);
-			pmove.physents[pmove.numphysent].info = e;
+			qh_pmove.physents[qh_pmove.numphysent].info = e;
 			if (check->GetSolid() == SOLID_BSP)
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
@@ -1093,7 +1091,7 @@ void AddAllEntsToPmove (void)
 				VectorCopy (check->GetMaxs(), pe->maxs);
 			}
 
-			if (++pmove.numphysent == MAX_PHYSENTS)
+			if (++qh_pmove.numphysent == QHMAX_PHYSENTS)
 				break;
 		}
 	}
@@ -1181,21 +1179,21 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 	}
 
 	for (i=0 ; i<3 ; i++)
-		pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - player_mins[i]);
-	VectorCopy (sv_player->GetVelocity(), pmove.velocity);
-	VectorCopy (sv_player->GetVAngle(), pmove.angles);
+		qh_pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - pmqh_player_mins[i]);
+	VectorCopy (sv_player->GetVelocity(), qh_pmove.velocity);
+	VectorCopy (sv_player->GetVAngle(), qh_pmove.angles);
 
-	pmove.spectator = host_client->spectator;
-//	pmove.waterjumptime = sv_player->v.teleport_time;
-	pmove.numphysent = 1;
-	pmove.physents[0].model = 0;
-	pmove.cmd = *ucmd;
-	pmove.dead = sv_player->GetHealth() <= 0;
-	pmove.oldbuttons = host_client->oldbuttons;
-	pmove.hasted = sv_player->GetHasted();
-	pmove.movetype = sv_player->GetMoveType();
-	pmove.crouched = (sv_player->GetHull() == HULL_CROUCH);
-	pmove.teleport_time = realtime + (sv_player->GetTeleportTime() - sv.time);
+	qh_pmove.spectator = host_client->spectator;
+//	qh_pmove.waterjumptime = sv_player->v.teleport_time;
+	qh_pmove.numphysent = 1;
+	qh_pmove.physents[0].model = 0;
+	qh_pmove.cmd.Set(*ucmd);
+	qh_pmove.dead = sv_player->GetHealth() <= 0;
+	qh_pmove.oldbuttons = host_client->oldbuttons;
+	qh_pmove.hasted = sv_player->GetHasted();
+	qh_pmove.movetype = sv_player->GetMoveType();
+	qh_pmove.crouched = (sv_player->GetHull() == HULL_CROUCH);
+	qh_pmove.teleport_time = (sv_player->GetTeleportTime() - sv.time);
 
 //	movevars.entgravity = host_client->entgravity;
 	movevars.entgravity = sv_player->GetGravity();
@@ -1203,8 +1201,8 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 
 	for (i=0 ; i<3 ; i++)
 	{
-		pmove_mins[i] = pmove.origin[i] - 256;
-		pmove_maxs[i] = pmove.origin[i] + 256;
+		pmove_mins[i] = qh_pmove.origin[i] - 256;
+		pmove_maxs[i] = qh_pmove.origin[i] + 256;
 	}
 #if 1
 	AddLinksToPmove ( sv_areanodes );
@@ -1216,40 +1214,40 @@ void SV_RunCmd (hwusercmd_t *ucmd)
 {
 	int before, after;
 
-before = PM_TestPlayerPosition (pmove.origin);
-	PlayerMove ();
-after = PM_TestPlayerPosition (pmove.origin);
+before = PMQH_TestPlayerPosition (qh_pmove.origin);
+	PMQH_PlayerMove ();
+after = PMQH_TestPlayerPosition (qh_pmove.origin);
 
 if (sv_player->v.health > 0 && before && !after )
 	Con_Printf ("player %s got stuck in playermove!!!!\n", host_client->name);
 }
 #else
-	PlayerMove ();
+	PMQH_PlayerMove ();
 #endif
 
-	host_client->oldbuttons = pmove.oldbuttons;
-//	sv_player->v.teleport_time = pmove.waterjumptime;
-	sv_player->SetWaterLevel(waterlevel);
-	sv_player->SetWaterType(watertype);
-	if (onground != -1)
+	host_client->oldbuttons = qh_pmove.oldbuttons;
+//	sv_player->v.teleport_time = qh_pmove.waterjumptime;
+	sv_player->SetWaterLevel(qh_pmove.waterlevel);
+	sv_player->SetWaterType(qh_pmove.watertype);
+	if (qh_pmove.onground != -1)
 	{
 		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
-		sv_player->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(pmove.physents[onground].info)));
+		sv_player->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
 	}
 	else
 		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
 	for (i=0 ; i<3 ; i++)
-		sv_player->GetOrigin()[i] = pmove.origin[i] - (sv_player->GetMins()[i] - player_mins[i]);
+		sv_player->GetOrigin()[i] = qh_pmove.origin[i] - (sv_player->GetMins()[i] - pmqh_player_mins[i]);
 
 #if 0
 	// truncate velocity the same way the net protocol will
 	for (i=0 ; i<3 ; i++)
-		sv_player->v.velocity[i] = (int)pmove.velocity[i];
+		sv_player->v.velocity[i] = (int)qh_pmove.velocity[i];
 #else
-	sv_player->SetVelocity(pmove.velocity);
+	sv_player->SetVelocity(qh_pmove.velocity);
 #endif
 
-	sv_player->SetVAngle(pmove.angles);
+	sv_player->SetVAngle(qh_pmove.angles);
 
 	if (!host_client->spectator)
 	{
@@ -1257,9 +1255,9 @@ if (sv_player->v.health > 0 && before && !after )
 		SV_LinkEdict (sv_player, true);
 
 		// touch other objects
-		for (i=0 ; i<pmove.numtouch ; i++)
+		for (i=0 ; i<qh_pmove.numtouch ; i++)
 		{
-			n = pmove.physents[pmove.touchindex[i]].info;
+			n = qh_pmove.physents[qh_pmove.touchindex[i]].info;
 			ent = EDICT_NUM(n);
 //Why not just do an SV_Impact here?
 //			SV_Impact(sv_player,ent);

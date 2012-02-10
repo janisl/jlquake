@@ -66,118 +66,6 @@ void VM_Init( void ) {
 }
 
 /*
-===============
-ParseHex
-===============
-*/
-int	ParseHex( const char *text ) {
-	int		value;
-	int		c;
-
-	value = 0;
-	while ( ( c = *text++ ) != 0 ) {
-		if ( c >= '0' && c <= '9' ) {
-			value = value * 16 + c - '0';
-			continue;
-		}
-		if ( c >= 'a' && c <= 'f' ) {
-			value = value * 16 + 10 + c - 'a';
-			continue;
-		}
-		if ( c >= 'A' && c <= 'F' ) {
-			value = value * 16 + 10 + c - 'A';
-			continue;
-		}
-	}
-
-	return value;
-}
-
-/*
-===============
-VM_LoadSymbols
-===============
-*/
-void VM_LoadSymbols( vm_t *vm ) {
-	int		len;
-	char	*mapfile, *token;
-	char	name[MAX_QPATH];
-	char	symbols[MAX_QPATH];
-	vmSymbol_t	**prev, *sym;
-	int		count;
-	int		value;
-	int		chars;
-	int		segment;
-	int		numInstructions;
-
-	// don't load symbols if not developer
-	if ( !com_developer->integer ) {
-		return;
-	}
-
-	String::StripExtension( vm->name, name );
-	String::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
-	len = FS_ReadFile( symbols, (void **)&mapfile );
-	if ( !mapfile ) {
-		Log::write( "Couldn't load symbol file: %s\n", symbols );
-		return;
-	}
-
-	numInstructions = vm->instructionPointersLength >> 2;
-
-	// parse the symbols
-	const char* text_p = mapfile;
-	prev = &vm->symbols;
-	count = 0;
-
-	while ( 1 ) {
-		token = String::Parse3( &text_p );
-		if ( !token[0] ) {
-			break;
-		}
-		segment = ParseHex( token );
-		if ( segment ) {
-			String::Parse3( &text_p );
-			String::Parse3( &text_p );
-			continue;		// only load code segment values
-		}
-
-		token = String::Parse3( &text_p );
-		if ( !token[0] ) {
-			Log::write( "WARNING: incomplete line at end of file\n" );
-			break;
-		}
-		value = ParseHex( token );
-
-		token = String::Parse3( &text_p );
-		if ( !token[0] ) {
-			Log::write( "WARNING: incomplete line at end of file\n" );
-			break;
-		}
-		chars = String::Length( token );
-		sym = (vmSymbol_t*)Mem_Alloc(sizeof( *sym ) + chars);
-		*prev = sym;
-		prev = &sym->next;
-		sym->next = NULL;
-
-		// convert value from an instruction number to a code offset
-		if ( value >= 0 && value < numInstructions ) {
-			value = vm->instructionPointers[value];
-		}
-
-		sym->symValue = value;
-		sym->profileCount = 0;
-		String::NCpyZ( sym->symName, token, chars + 1 );
-
-		count++;
-	}
-
-	vm->numSymbols = count;
-	Log::write( "%i symbols parsed from %s\n", count, symbols );
-	FS_FreeFile( mapfile );
-}
-
-/*
 ============
 VM_DllSyscall
 
@@ -216,20 +104,20 @@ Dlls will call this directly
   JL: On 64 bit stack contains 64 bit values.
 ============
 */
-int VM_DllSyscall(int arg, ...)
+int VM_DllSyscall(qintptr arg, ...)
 {
 #if id386
 	return currentVM->systemCall(&arg);
 #else
 	// rcg010206 - see commentary above
-	int args[16];
+	qintptr args[16];
 	args[0] = arg;
 
 	va_list ap;
 	va_start(ap, arg);
 	for (int i = 1; i < (int)(sizeof (args) / sizeof (args[i])); i++)
 	{
-		args[i] = va_arg(ap, int);
+		args[i] = va_arg(ap, qintptr);
 	}
 	va_end(ap);
 
@@ -255,7 +143,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	// DLL's can't be restarted in place
 	if ( vm->dllHandle ) {
 		char	name[MAX_QPATH];
-	    int			(*systemCall)( int *parms );
+	    int			(*systemCall)( qintptr *parms );
 		
 		systemCall = vm->systemCall;	
 		String::NCpyZ( name, vm->name, sizeof( name ) );
@@ -326,7 +214,7 @@ it will attempt to load as a system dll
 
 #define	STACK_SIZE	0x20000
 
-vm_t *VM_Create( const char *module, int (*systemCalls)(int *), 
+vm_t *VM_Create( const char *module, int (*systemCalls)(qintptr*), 
 				vmInterpret_t interpret ) {
 	vm_t		*vm;
 	vmHeader_t	*header;
@@ -508,41 +396,6 @@ void VM_Clear()
 	lastVM = NULL;
 }
 
-void *VM_ArgPtr( int intValue ) {
-	if ( !intValue ) {
-		return NULL;
-	}
-	// bk001220 - currentVM is missing on reconnect
-	if ( currentVM==NULL )
-	  return NULL;
-
-	if ( currentVM->entryPoint ) {
-		return (void *)(currentVM->dataBase + intValue);
-	}
-	else {
-		return (void *)(currentVM->dataBase + (intValue & currentVM->dataMask));
-	}
-}
-
-void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
-	if ( !intValue ) {
-		return NULL;
-	}
-
-	// bk010124 - currentVM is missing on reconnect here as well?
-	if ( currentVM==NULL )
-	  return NULL;
-
-	//
-	if ( vm->entryPoint ) {
-		return (void *)(vm->dataBase + intValue);
-	}
-	else {
-		return (void *)(vm->dataBase + (intValue & vm->dataMask));
-	}
-}
-
-
 /*
 ==============
 VM_Call
@@ -569,7 +422,7 @@ locals from sp
 #define	MAX_STACK	256
 #define	STACK_MASK	(MAX_STACK-1)
 
-int VM_Call(vm_t* vm, int callnum, ...)
+qintptr VM_Call(vm_t* vm, int callnum, ...)
 {
 	if (!vm)
 	{
@@ -601,7 +454,7 @@ int VM_Call(vm_t* vm, int callnum, ...)
 #endif
 
 	// if we have a dll loaded, call it directly
-	int r;
+	qintptr r;
 	if (vm->entryPoint)
 	{
 		r = vm->entryPoint(callnum,  args[1],  args[2],  args[3], args[4],

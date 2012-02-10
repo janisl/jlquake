@@ -360,8 +360,6 @@ void CL_ParseServerInfo (void)
 	puzzle_strings = (char *)COM_LoadHunkFile ("puzzles.txt");
 
 	Hunk_Check ();		// make sure nothing is hurt
-	
-	noclip_anglehack = false;		// noclip is turned off at start	
 }
 
 /*
@@ -698,7 +696,7 @@ void CL_ParseClientdata (int bits)
 	else
 	{
 		//rjr   is sv_flypitch   useable on the client's end?
-//rjr		if (cl.h2_v.movetype==MOVETYPE_FLY)
+//rjr		if (cl.h2_v.movetype==QHMOVETYPE_FLY)
 //rjr			cl.idealpitch = sv_flypitch.value;
 //rjr		else
 //rjr			cl.idealpitch = sv_walkpitch.value;

@@ -61,23 +61,6 @@ extern	Cvar	*cl_timeNudge;
 extern	Cvar	*cl_showTimeDelta;
 extern	Cvar	*cl_freezeDemo;
 
-extern	Cvar	*cl_yawspeed;
-extern	Cvar	*cl_pitchspeed;
-extern	Cvar	*cl_run;
-extern	Cvar	*cl_anglespeedkey;
-
-extern	Cvar	*cl_sensitivity;
-extern	Cvar	*cl_freelook;
-
-extern	Cvar	*cl_mouseAccel;
-extern	Cvar	*cl_showMouseRate;
-
-extern	Cvar	*m_pitch;
-extern	Cvar	*m_yaw;
-extern	Cvar	*m_forward;
-extern	Cvar	*m_side;
-extern	Cvar	*m_filter;
-
 extern	Cvar	*cl_timedemo;
 
 extern	Cvar	*cl_activeAction;
@@ -123,29 +106,15 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 //
 // cl_input
 //
-typedef struct {
-	int			down[2];		// key nums holding it down
-	unsigned	downtime;		// msec timestamp
-	unsigned	msec;			// msec down this frame if both a down and up happened
-	qboolean	active;			// current state
-	qboolean	wasPressed;		// set when down, not cleared when up
-} kbutton_t;
-
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
 void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_ClearState (void);
 void CL_ReadPackets (void);
 
 void CL_WritePacket( void );
-void IN_CenterView (void);
 
 void CL_VerifyCode( void );
 
-float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 //

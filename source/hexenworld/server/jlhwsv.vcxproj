@@ -109,8 +109,6 @@
     <ClCompile Include="..\client\common.cpp" />
     <ClCompile Include="..\client\cvar.cpp" />
     <ClCompile Include="..\client\net_chan.cpp" />
-    <ClCompile Include="..\client\pmove.cpp" />
-    <ClCompile Include="..\client\pmovetst.cpp" />
     <ClCompile Include="pr_cmds.cpp" />
     <ClCompile Include="pr_edict.cpp" />
     <ClCompile Include="pr_exec.cpp" />

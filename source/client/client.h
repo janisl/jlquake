@@ -34,6 +34,7 @@
 #include "game/particles.h"
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
+#include "game/input.h"
 
 #define CSHIFT_CONTENTS	0
 #define CSHIFT_DAMAGE	1
@@ -66,6 +67,11 @@ struct clientActive_t
 	// tracked view angles to account for standing on rotating objects,
 	// and teleport direction changes
 	vec3_t viewangles;
+
+	int mouseDx[2];	// added to by mouse events
+	int mouseDy[2];
+	int mouseIndex;
+	int joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
 
 	//	Not in Quake 3
 	refdef_t refdef;
@@ -271,11 +277,6 @@ struct clientActive_t
 
 	q3gameState_t q3_gameState;			// configstrings
 	char q3_mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
-
-	int q3_mouseDx[2];	// added to by mouse events
-	int q3_mouseDy[2];
-	int q3_mouseIndex;
-	int q3_joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
 
 	// cgame communicates a few values to the client system
 	int q3_cgameUserCmdValue;	// current weapon to add to q3usercmd_t
@@ -526,16 +527,24 @@ extern int bitcounts[32];
 
 extern Cvar* cl_inGameVideo;
 
+extern Cvar* clqh_nolerp;
+
 extern Cvar* clqh_name;
 extern Cvar* clqh_color;
 
 extern byte* playerTranslation;
 extern int color_offsets[MAX_PLAYER_CLASS];
 
+extern Cvar* chase_active;
+
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
+float CLQH_LerpPoint();
+
+void Chase_Init();
+void Chase_Update();
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 
@@ -547,5 +556,6 @@ float crand();	// -1 to 1
 //	Called by Windows driver.
 void Key_ClearStates();
 float* CL_GetSimOrg();
+bool CL_IsServerActive();
 
 #endif

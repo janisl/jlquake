@@ -465,6 +465,12 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="game\input.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="game\light_styles.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\</ObjectFileName>
@@ -627,6 +633,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\quake2\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\quake2\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="chase.cpp" />
     <ClCompile Include="client_main.cpp" />
     <ClCompile Include="system_windows.cpp" />
     <ClCompile Include="utils.cpp" />
@@ -653,6 +660,7 @@
     <ClInclude Include="input\keycodes.h" />
     <ClInclude Include="input\public.h" />
     <ClInclude Include="game\dynamic_lights.h" />
+    <ClInclude Include="game\input.h" />
     <ClInclude Include="game\light_styles.h" />
     <ClInclude Include="game\particles.h" />
     <ClInclude Include="game\quake\local.h" />

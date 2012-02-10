@@ -226,11 +226,11 @@ changed the load procedure to match VFS logic, and allow developer use
 =================
 */
 void *Sys_LoadDll( const char *name, char *fqpath ,
-                   int (**entryPoint)(int, ...),
-                   int (*systemcalls)(int, ...) ) 
+                   qintptr (**entryPoint)(int, ...),
+                   int (*systemcalls)(qintptr, ...) ) 
 {
   void *libHandle;
-  void  (*dllEntry)( int (*syscallptr)(int, ...) );
+  void  (*dllEntry)( int (*syscallptr)(qintptr, ...) );
   char  fname[MAX_OSPATH];
   const char  *basepath;
   const char  *homepath;
@@ -298,8 +298,8 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   } else
     Com_Printf ( "Sys_LoadDll(%s): succeeded ...\n", fn ); 
 
-  dllEntry = (void (*)(int(*)(int, ...)))dlsym( libHandle, "dllEntry" ); 
-  *entryPoint = (int(*)(int, ...))dlsym( libHandle, "vmMain" );
+  dllEntry = (void (*)(int(*)(qintptr, ...)))dlsym( libHandle, "dllEntry" ); 
+  *entryPoint = (qintptr(*)(int, ...))dlsym( libHandle, "vmMain" );
   if ( !*entryPoint || !dllEntry )
   {
     err = dlerror();

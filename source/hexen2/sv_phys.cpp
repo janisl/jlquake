@@ -13,12 +13,12 @@ pushmove objects do not obey gravity, and do not interact with each other or tri
 
 onground is set for toss objects when they come to a complete rest.  it is set for steping or walking objects 
 
-doors, plats, etc are SOLID_BSP, and MOVETYPE_PUSH
-bonus items are SOLID_TRIGGER touch, and MOVETYPE_TOSS
-corpses are SOLID_NOT and MOVETYPE_TOSS
-crates are SOLID_BBOX and MOVETYPE_TOSS
-walking monsters are SOLID_SLIDEBOX and MOVETYPE_STEP
-flying/floating monsters are SOLID_SLIDEBOX and MOVETYPE_FLY
+doors, plats, etc are SOLID_BSP, and QHMOVETYPE_PUSH
+bonus items are SOLID_TRIGGER touch, and QHMOVETYPE_TOSS
+corpses are SOLID_NOT and QHMOVETYPE_TOSS
+crates are SOLID_BBOX and QHMOVETYPE_TOSS
+walking monsters are SOLID_SLIDEBOX and QHMOVETYPE_STEP
+flying/floating monsters are SOLID_SLIDEBOX and QHMOVETYPE_FLY
 
 solid_edge items only clip against bsp models.
 
@@ -52,9 +52,9 @@ void SV_CheckAllEnts (void)
 	{
 		if (check->free)
 			continue;
-		if (check->GetMoveType() == MOVETYPE_PUSH
-		|| check->GetMoveType() == MOVETYPE_NONE
-		|| check->GetMoveType() == MOVETYPE_NOCLIP)
+		if (check->GetMoveType() == QHMOVETYPE_PUSH
+		|| check->GetMoveType() == QHMOVETYPE_NONE
+		|| check->GetMoveType() == QHMOVETYPE_NOCLIP)
 			continue;
 
 		if (SV_TestEntityPosition (check))
@@ -157,43 +157,6 @@ void SV_Impact (qhedict_t *e1, qhedict_t *e2)
 	pr_global_struct->other = old_other;
 }
 
-
-/*
-==================
-ClipVelocity
-
-Slide off of the impacting object
-returns the blocked flags (1 = floor, 2 = step / wall)
-==================
-*/
-#define	STOP_EPSILON	0.1
-
-int ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
-{
-	float	backoff;
-	float	change;
-	int		i, blocked;
-	
-	blocked = 0;
-	if (normal[2] > 0)
-		blocked |= 1;		// floor
-	if (!normal[2])
-		blocked |= 2;		// step
-	
-	backoff = DotProduct (in, normal) * overbounce;
-
-	for (i=0 ; i<3 ; i++)
-	{
-		change = normal[i]*backoff;
-		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-			out[i] = 0;
-	}
-	
-	return blocked;
-}
-
-
 /*
 ============
 SV_FlyMove
@@ -206,14 +169,13 @@ Returns the clipflags if the velocity was modified (hit something solid)
 If steptrace is not NULL, the trace of any vertical wall hit will be stored
 ============
 */
-#define	MAX_CLIP_PLANES	5
 int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 {
 	int			bumpcount, numbumps;
 	vec3_t		dir;
 	float		d;
 	int			numplanes;
-	vec3_t		planes[MAX_CLIP_PLANES];
+	vec3_t		planes[MAX_FLY_MOVE_CLIP_PLANES];
 	vec3_t		primal_velocity, original_velocity, new_velocity;
 //rjr	vec3_t		before_velocity;
 	int			i, j;
@@ -294,7 +256,7 @@ int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 		time_left -= time_left * trace.fraction;
 		
 	// cliped to another plane
-		if (numplanes >= MAX_CLIP_PLANES)
+		if (numplanes >= MAX_FLY_MOVE_CLIP_PLANES)
 		{	// this shouldn't really happen
 			VectorCopy (vec3_origin, ent->GetVelocity());
 			return 3;
@@ -308,7 +270,7 @@ int SV_FlyMove (qhedict_t *ent, float time, q1trace_t *steptrace)
 //
 		for (i=0 ; i<numplanes ; i++)
 		{
-			ClipVelocity (original_velocity, planes[i], new_velocity, 1);
+			PM_ClipVelocity (original_velocity, planes[i], new_velocity, 1);
 			for (j=0 ; j<numplanes ; j++)
 				if (j != i)
 				{
@@ -431,19 +393,19 @@ q1trace_t SV_PushEntity (qhedict_t *ent, vec3_t push)
 	VectorCopy (ent->GetOrigin(), start);
 	VectorAdd (ent->GetOrigin(), push, end);
 
-	if (ent->GetMoveType() == MOVETYPE_FLYMISSILE  || ent->GetMoveType() == MOVETYPE_BOUNCEMISSILE)
+	if (ent->GetMoveType() == QHMOVETYPE_FLYMISSILE  || ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE)
 		trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_MISSILE, ent);
 	else if (ent->GetSolid() == SOLID_TRIGGER || ent->GetSolid() == SOLID_NOT)
 // only clip against bmodels
 		trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_NOMONSTERS, ent);
-	else if (ent->GetMoveType() == MOVETYPE_SWIM)
+	else if (ent->GetMoveType() == H2MOVETYPE_SWIM)
 		trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_WATER, ent);
 	else
 		trace = SV_Move (ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_NORMAL, ent);
 
 	if (ent->GetSolid() != SOLID_PHASE)
 	{
-		if (ent->GetMoveType() != MOVETYPE_BOUNCE || (trace.allsolid == 0 && trace.startsolid == 0))
+		if (ent->GetMoveType() != QHMOVETYPE_BOUNCE || (trace.allsolid == 0 && trace.startsolid == 0))
 		{
 			VectorCopy (trace.endpos, ent->GetOrigin());   // Macro - watchout
 		}
@@ -459,7 +421,7 @@ q1trace_t SV_PushEntity (qhedict_t *ent, vec3_t push)
 		if (trace.entityNum >= 0)
 		{	// Go through MONSTERS and PLAYERS, can't use FL_CLIENT cause rotating brushes do
 			if (((int) EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) ||
-				(EDICT_NUM(trace.entityNum)->GetMoveType() == MOVETYPE_WALK))
+				(EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK))
 			{
 				VectorCopy (trace.endpos, impact);
 				impact_e = EDICT_NUM(trace.entityNum);
@@ -538,9 +500,9 @@ void SV_PushMove (qhedict_t *pusher, float movetime, qboolean update_time)
 	{
 		if (check->free)
 			continue;
-		if (check->GetMoveType() == MOVETYPE_PUSH
-		|| check->GetMoveType() == MOVETYPE_NONE
-		|| check->GetMoveType() == MOVETYPE_NOCLIP)
+		if (check->GetMoveType() == QHMOVETYPE_PUSH
+		|| check->GetMoveType() == QHMOVETYPE_NONE
+		|| check->GetMoveType() == QHMOVETYPE_NOCLIP)
 			continue;
 
 	// if the entity is standing on the pusher, it will definately be moved
@@ -561,7 +523,7 @@ void SV_PushMove (qhedict_t *pusher, float movetime, qboolean update_time)
 		}
 
 	// remove the onground flag for non-players
-		if (check->GetMoveType() != MOVETYPE_WALK)
+		if (check->GetMoveType() != QHMOVETYPE_WALK)
 			check->SetFlags((int)check->GetFlags() & ~FL_ONGROUND);
 		
 		VectorCopy (check->GetOrigin(), entorig);
@@ -664,10 +626,10 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
 	{
 		if (check->free)
 			continue;
-		if (check->v.movetype == MOVETYPE_PUSH
-		|| check->v.movetype == MOVETYPE_NONE
-		|| check->v.movetype == MOVETYPE_FOLLOW
-		|| check->v.movetype == MOVETYPE_NOCLIP)
+		if (check->v.movetype == QHMOVETYPE_PUSH
+		|| check->v.movetype == QHMOVETYPE_NONE
+		|| check->v.movetype == H2MOVETYPE_FOLLOW
+		|| check->v.movetype == QHMOVETYPE_NOCLIP)
 			continue;
 
 	// if the entity is standing on the pusher, it will definately be moved
@@ -688,7 +650,7 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
 		}
 
 	// remove the onground flag for non-players
-		if (check->v.movetype != MOVETYPE_WALK)
+		if (check->v.movetype != QHMOVETYPE_WALK)
 			check->v.flags = (int)check->v.flags & ~FL_ONGROUND;
 		
 		VectorCopy (check->v.origin, entorig);
@@ -852,10 +814,10 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 	{
 		if (check->free)
 			continue;
-		if (check->GetMoveType() == MOVETYPE_PUSH
-		|| check->GetMoveType() == MOVETYPE_NONE
-		|| check->GetMoveType() == MOVETYPE_FOLLOW
-		|| check->GetMoveType() == MOVETYPE_NOCLIP)
+		if (check->GetMoveType() == QHMOVETYPE_PUSH
+		|| check->GetMoveType() == QHMOVETYPE_NONE
+		|| check->GetMoveType() == H2MOVETYPE_FOLLOW
+		|| check->GetMoveType() == QHMOVETYPE_NOCLIP)
 			continue;
 
 		// if the entity is standing on the pusher, it will definitely be moved
@@ -910,7 +872,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 		}
 
 		// remove the onground flag for non-players
-		if (check->GetMoveType() != MOVETYPE_WALK)
+		if (check->GetMoveType() != QHMOVETYPE_WALK)
 			check->SetFlags((int)check->GetFlags() & ~FL_ONGROUND);
 		
 		VectorCopy (check->GetOrigin(), entorig);
@@ -1367,7 +1329,6 @@ SV_WalkMove
 Only used by players
 ======================
 */
-#define	STEPSIZE	18
 void SV_WalkMove (qhedict_t *ent)
 {
 	vec3_t		upmove, downmove;
@@ -1394,7 +1355,7 @@ void SV_WalkMove (qhedict_t *ent)
 	if (!oldonground && ent->GetWaterLevel() == 0)
 		return;		// don't stair up while jumping
 	
-	if (ent->GetMoveType() != MOVETYPE_WALK)
+	if (ent->GetMoveType() != QHMOVETYPE_WALK)
 		return;		// gibbed by a trigger
 	
 	if (sv_nostep->value)
@@ -1491,12 +1452,12 @@ void SV_Physics_Client (qhedict_t	*ent, int num)
 //
 	switch ((int)ent->GetMoveType())
 	{
-	case MOVETYPE_NONE:
+	case QHMOVETYPE_NONE:
 		if (!SV_RunThink (ent))
 			return;
 		break;
 
-	case MOVETYPE_WALK:
+	case QHMOVETYPE_WALK:
 		if (!SV_RunThink (ent))
 			return;
 		if (!SV_CheckWater (ent) && ! ((int)ent->GetFlags() & FL_WATERJUMP) )
@@ -1505,13 +1466,13 @@ void SV_Physics_Client (qhedict_t	*ent, int num)
 		SV_WalkMove (ent);
 		break;
 		
-	case MOVETYPE_TOSS:
-	case MOVETYPE_BOUNCE:
+	case QHMOVETYPE_TOSS:
+	case QHMOVETYPE_BOUNCE:
 		SV_Physics_Toss (ent);
 		break;
 
-	case MOVETYPE_FLY:
-	case MOVETYPE_SWIM:
+	case QHMOVETYPE_FLY:
+	case H2MOVETYPE_SWIM:
 		if (!SV_RunThink (ent))
 			return;
 		SV_CheckWater (ent);
@@ -1519,7 +1480,7 @@ void SV_Physics_Client (qhedict_t	*ent, int num)
 		SV_FlyExtras (ent, host_frametime, NULL);  // Hover & friction 
 		break;
 		
-	case MOVETYPE_NOCLIP:
+	case QHMOVETYPE_NOCLIP:
 		if (!SV_RunThink (ent))
 			return;
 		VectorMA (ent->GetOrigin(), host_frametime, ent->GetVelocity(), ent->GetOrigin());
@@ -1642,10 +1603,10 @@ void SV_Physics_Toss (qhedict_t *ent)
 	SV_CheckVelocity (ent);
 
 // add gravity
-	if (ent->GetMoveType() != MOVETYPE_FLY
-	&& ent->GetMoveType() != MOVETYPE_BOUNCEMISSILE
-	&& ent->GetMoveType() != MOVETYPE_FLYMISSILE
-	&& ent->GetMoveType() != MOVETYPE_SWIM)
+	if (ent->GetMoveType() != QHMOVETYPE_FLY
+	&& ent->GetMoveType() != H2MOVETYPE_BOUNCEMISSILE
+	&& ent->GetMoveType() != QHMOVETYPE_FLYMISSILE
+	&& ent->GetMoveType() != H2MOVETYPE_SWIM)
 		SV_AddGravity (ent);
 
 // move angles
@@ -1660,11 +1621,11 @@ void SV_Physics_Toss (qhedict_t *ent)
 	if (ent->free)
 		return;
 	
-	if (ent->GetMoveType() == MOVETYPE_BOUNCE)
+	if (ent->GetMoveType() == QHMOVETYPE_BOUNCE)
 		backoff = 1.5;
-	else if (ent->GetMoveType() == MOVETYPE_BOUNCEMISSILE)
+	else if (ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE)
 	{	// Solid phased missiles don't bounce on monsters or players
-		if ((ent->GetSolid()==SOLID_PHASE) && (((int) EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) || ((int) EDICT_NUM(trace.entityNum)->GetMoveType() == MOVETYPE_WALK)))
+		if ((ent->GetSolid()==SOLID_PHASE) && (((int) EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) || ((int) EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK)))
 		{
 			return;
 		}
@@ -1673,12 +1634,12 @@ void SV_Physics_Toss (qhedict_t *ent)
 	else
 		backoff = 1;
 
-	ClipVelocity (ent->GetVelocity(), trace.plane.normal, ent->GetVelocity(), backoff);
+	PM_ClipVelocity (ent->GetVelocity(), trace.plane.normal, ent->GetVelocity(), backoff);
 
 // stop if on ground
-	if ((trace.plane.normal[2] > 0.7) && (ent->GetMoveType() != MOVETYPE_BOUNCEMISSILE))
+	if ((trace.plane.normal[2] > 0.7) && (ent->GetMoveType() != H2MOVETYPE_BOUNCEMISSILE))
 	{		
-		if (ent->GetVelocity()[2] < 60 || ent->GetMoveType() != MOVETYPE_BOUNCE)
+		if (ent->GetVelocity()[2] < 60 || ent->GetMoveType() != QHMOVETYPE_BOUNCE)
 		{
 			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
 			ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
@@ -1786,21 +1747,21 @@ void SV_Physics (void)
 
 		if (i > 0 && i <= svs.maxclients)
 			SV_Physics_Client (ent, i);
-		else if (ent->GetMoveType() == MOVETYPE_PUSH)
+		else if (ent->GetMoveType() == QHMOVETYPE_PUSH)
 			SV_Physics_Pusher (ent);
-		else if (ent->GetMoveType() == MOVETYPE_NONE)
+		else if (ent->GetMoveType() == QHMOVETYPE_NONE)
 			SV_Physics_None (ent);
-		else if (ent->GetMoveType() == MOVETYPE_NOCLIP)
+		else if (ent->GetMoveType() == QHMOVETYPE_NOCLIP)
 			SV_Physics_Noclip (ent);
-		else if ((ent->GetMoveType() == MOVETYPE_STEP) ||
-				(ent->GetMoveType() == MOVETYPE_PUSHPULL))
+		else if ((ent->GetMoveType() == QHMOVETYPE_STEP) ||
+				(ent->GetMoveType() == H2MOVETYPE_PUSHPULL))
 			SV_Physics_Step (ent);
-		else if (ent->GetMoveType() == MOVETYPE_TOSS 
-		|| ent->GetMoveType() == MOVETYPE_BOUNCE
-		|| ent->GetMoveType() == MOVETYPE_BOUNCEMISSILE
-		|| ent->GetMoveType() == MOVETYPE_FLY
-		|| ent->GetMoveType() == MOVETYPE_FLYMISSILE
-		|| ent->GetMoveType() == MOVETYPE_SWIM)
+		else if (ent->GetMoveType() == QHMOVETYPE_TOSS 
+		|| ent->GetMoveType() == QHMOVETYPE_BOUNCE
+		|| ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE
+		|| ent->GetMoveType() == QHMOVETYPE_FLY
+		|| ent->GetMoveType() == QHMOVETYPE_FLYMISSILE
+		|| ent->GetMoveType() == H2MOVETYPE_SWIM)
 			SV_Physics_Toss (ent);
 		else
 			Sys_Error ("SV_Physics: bad movetype %i", (int)ent->GetMoveType());			

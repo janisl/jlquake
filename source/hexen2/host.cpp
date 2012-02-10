@@ -55,8 +55,6 @@ Cvar*	teamplay;
 Cvar*	samelevel;
 Cvar*	noexit;
 
-Cvar*	developer;
-
 Cvar*	skill;						// 0 - 3
 Cvar*	deathmatch;			// 0, 1, or 2
 Cvar*	randomclass;			// 0, 1, or 2
@@ -275,8 +273,6 @@ void Host_InitLocal (void)
 	randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
 	coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
-	developer = Cvar_Get("developer", "0", CVAR_ARCHIVE);
-
 	pausable = Cvar_Get("pausable", "1", 0);
 
 	sys_adaptive = Cvar_Get("sys_adaptive","1", CVAR_ARCHIVE);
@@ -311,9 +307,6 @@ void Host_WriteConfiguration (const char *fname)
 		Key_WriteBindings(f);
 		Cvar_WriteVariables(f);
 		
-		if (in_mlook.state & 1)		//if mlook was down, keep it that way
-			FS_Printf(f, "+mlook\n");
-
 		FS_FCloseFile(f);
 	}
 }

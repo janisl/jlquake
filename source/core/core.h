@@ -25,6 +25,7 @@
 #include <cmath>
 
 #include "common_defs.h"	//	Basic types and defines
+#include "Common.h"
 #include "memory.h"		//	Memory allocation
 #include "endian.h"		//	Endianes handling
 #include "exception.h"	//	Exception handling
@@ -56,13 +57,17 @@
 
 int Com_Milliseconds();
 
-extern Cvar*	com_dedicated;
-extern Cvar*	com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
-extern Cvar*	com_timescale;
+extern Cvar* com_dedicated;
+extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
+extern Cvar* com_timescale;
 
-extern Cvar*	com_journal;
+extern Cvar* com_journal;
 
-extern fileHandle_t	com_journalFile;
-extern fileHandle_t	com_journalDataFile;
+extern Cvar* com_developer;
+
+extern fileHandle_t com_journalFile;
+extern fileHandle_t com_journalDataFile;
+
+extern int com_frameTime;
 
 #endif

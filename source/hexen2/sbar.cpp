@@ -78,8 +78,6 @@ extern qboolean intro_playing;
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern int in_impulse;
-
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 int sb_lines; // scan lines to draw

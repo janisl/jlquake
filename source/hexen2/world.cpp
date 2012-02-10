@@ -61,13 +61,13 @@ clipHandle_t SV_HullForEntity (qhedict_t *ent, vec3_t mins, vec3_t maxs, vec3_t 
 // decide which clipping hull to use, based on the size
 	if (ent->GetSolid() == SOLID_BSP)
 	{	// explicit hulls in the BSP model
-		if (ent->GetMoveType() != MOVETYPE_PUSH)
-			Sys_Error ("SOLID_BSP without MOVETYPE_PUSH");
+		if (ent->GetMoveType() != QHMOVETYPE_PUSH)
+			Sys_Error ("SOLID_BSP without QHMOVETYPE_PUSH");
 
 		model = sv.models[(int)ent->v.modelindex];
 
 		if ((int)ent->v.modelindex != 1 && !model)
-			Sys_Error ("MOVETYPE_PUSH with a non bsp model");
+			Sys_Error ("QHMOVETYPE_PUSH with a non bsp model");
 
 		VectorSubtract (maxs, mins, size);
 //THIS IS WHERE THE MONSTER STEPPING ERROR WAS- IN CHECKBOTTOM,

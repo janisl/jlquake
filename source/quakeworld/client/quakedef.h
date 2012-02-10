@@ -46,7 +46,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "console.h"
 #include "view.h"
 #include "menu.h"
-#include "pmove.h"
 
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -71,16 +70,10 @@ typedef struct
 
 //=============================================================================
 
-
-extern qboolean noclip_anglehack;
-
-
 //
 // host
 //
 extern	quakeparms_t host_parms;
-
-extern	Cvar*		developer;
 
 extern	Cvar*	password;
 

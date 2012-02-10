@@ -19,7 +19,6 @@
 
 #include "server.h"
 #include "world.h"
-#include "pmove.h"
 
 //=============================================================================
 
@@ -43,8 +42,6 @@ typedef struct
 // host
 //
 extern	quakeparms_t host_parms;
-
-extern	Cvar*		developer;
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;

@@ -496,7 +496,7 @@ Called by the system between frames for both key up and key down events
 Should NOT be called during an interrupt!
 ===================
 */
-void Key_Event (int key, qboolean down)
+void Key_Event (int key, qboolean down, unsigned time)
 {
 	char	*kb;
 	char	cmd[1024];
@@ -563,7 +563,7 @@ void Key_Event (int key, qboolean down)
 		kb = keybindings[key];
 		if (kb && kb[0] == '+')
 		{
-			sprintf (cmd, "-%s %i\n", kb+1, key);
+			sprintf (cmd, "-%s %i %d\n", kb+1, key, time);
 			Cbuf_AddText (cmd);
 		}
 		if (keyshift[key] != key)
@@ -571,7 +571,7 @@ void Key_Event (int key, qboolean down)
 			kb = keybindings[keyshift[key]];
 			if (kb && kb[0] == '+')
 			{
-				sprintf (cmd, "-%s %i\n", kb+1, key);
+				sprintf (cmd, "-%s %i %d\n", kb+1, key, time);
 				Cbuf_AddText (cmd);
 			}
 		}
@@ -599,7 +599,7 @@ void Key_Event (int key, qboolean down)
 		{
 			if (kb[0] == '+')
 			{	// button commands add keynum as a parm
-				sprintf (cmd, "%s %i\n", kb, key);
+				sprintf (cmd, "%s %i %d\n", kb, key, time);
 				Cbuf_AddText (cmd);
 			}
 			else
@@ -657,10 +657,13 @@ void IN_ProcessEvents()
 		switch (ev.evType)
 		{
 		case SE_KEY:
-			Key_Event(ev.evValue, ev.evValue2);
+			Key_Event(ev.evValue, ev.evValue2, ev.evTime);
 			break;
 		case SE_MOUSE:
 			CL_MouseEvent(ev.evValue, ev.evValue2);
+			break;
+		case SE_JOYSTICK_AXIS:
+			CL_JoystickEvent(ev.evValue, ev.evValue2, ev.evTime);
 			break;
 		case SE_CONSOLE:
 			Cbuf_AddText((char*)ev.evPtr);

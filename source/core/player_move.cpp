@@ -14,16 +14,21 @@
 //**
 //**************************************************************************
 
-#include "../core.h"
-#include "local.h"
+#include "core.h"
 
-void VM_Compile(vm_t* vm, vmHeader_t* header)
-{
-	vm->compiled = false;
-	VM_PrepareInterpreter(vm, header);
-}
+#define STOP_EPSILON	0.1
 
-qintptr VM_CallCompiled(vm_t* vm, int* args)
+//	Slide off of the impacting object
+void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce)
 {
-	return 0;
+	float backoff = DotProduct(in, normal) * overbounce;
+	for (int i = 0; i < 3; i++)
+	{
+		float change = normal[i] * backoff;
+		out[i] = in[i] - change;
+		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
+		{
+			out[i] = 0;
+		}
+	}
 }

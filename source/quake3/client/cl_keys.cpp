@@ -42,7 +42,6 @@ int			chat_playerNum;
 
 qboolean	key_overstrikeMode;
 
-qboolean	anykeydown;
 qkey_t		keys[MAX_KEYS];
 
 /*
@@ -890,7 +889,7 @@ void CL_KeyEvent (int key, qboolean down, unsigned time) {
 	char	*kb;
 	char	cmd[1024];
 
-	// update auto-repeat status and BUTTON_ANY status
+	// update auto-repeat status and Q3BUTTON_ANY status
 	keys[key].down = down;
 
 	if (down) {

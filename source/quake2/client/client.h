@@ -50,31 +50,9 @@ extern	Cvar	*cl_predict;
 extern	Cvar	*cl_noskins;
 extern	Cvar	*cl_autoskins;
 
-extern	Cvar	*cl_upspeed;
-extern	Cvar	*cl_forwardspeed;
-extern	Cvar	*cl_sidespeed;
-
-extern	Cvar	*cl_yawspeed;
-extern	Cvar	*cl_pitchspeed;
-
-extern	Cvar	*cl_run;
-
-extern	Cvar	*cl_anglespeedkey;
-
 extern	Cvar	*cl_shownet;
 extern	Cvar	*cl_showmiss;
 extern	Cvar	*cl_showclamp;
-
-extern	Cvar	*lookspring;
-extern	Cvar	*lookstrafe;
-extern	Cvar	*sensitivity;
-
-extern	Cvar	*m_pitch;
-extern	Cvar	*m_yaw;
-extern	Cvar	*m_forward;
-extern	Cvar	*m_side;
-
-extern	Cvar	*freelook;
 
 extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
@@ -143,18 +121,6 @@ void CL_RequestNextDownload (void);
 //
 // cl_input
 //
-typedef struct
-{
-	int			down[2];		// key nums holding it down
-	unsigned	downtime;		// msec timestamp
-	unsigned	msec;			// msec down this frame
-	int			state;
-} kbutton_t;
-
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
 void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_SendMove (q2usercmd_t *cmd);
@@ -165,13 +131,8 @@ void CL_ReadPackets (void);
 
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (q2usercmd_t *cmd);
-void CL_BaseMove (q2usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(q2usercmd_t *cmd);
 
-void IN_CenterView (void);
-
-float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 //

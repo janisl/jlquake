@@ -38,7 +38,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "server.h"
 #include "world.h"
-#include "pmove.h"
 
 //=============================================================================
 
@@ -62,8 +61,6 @@ typedef struct
 // host
 //
 extern	quakeparms_t host_parms;
-
-extern	Cvar*		developer;
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;

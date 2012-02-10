@@ -480,7 +480,7 @@ void ED_Count (void)
 			solid++;
 		if (ent->GetModel())
 			models++;
-		if (ent->GetMoveType() == MOVETYPE_STEP)
+		if (ent->GetMoveType() == QHMOVETYPE_STEP)
 			step++;
 	}
 

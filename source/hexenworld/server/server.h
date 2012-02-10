@@ -205,23 +205,6 @@ typedef struct
 
 //=============================================================================
 
-// edict->movetype values
-#define	MOVETYPE_NONE			0		// never moves
-#define	MOVETYPE_ANGLENOCLIP	1
-#define	MOVETYPE_ANGLECLIP		2
-#define	MOVETYPE_WALK			3		// gravity
-#define	MOVETYPE_STEP			4		// gravity, special edge handling
-#define	MOVETYPE_FLY			5
-#define	MOVETYPE_TOSS			6		// gravity
-#define	MOVETYPE_PUSH			7		// no clip to world, push and crush
-#define	MOVETYPE_NOCLIP			8
-#define	MOVETYPE_FLYMISSILE		9		// extra size to monsters
-#define	MOVETYPE_BOUNCE			10
-#define MOVETYPE_BOUNCEMISSILE	11		// bounce w/o gravity
-#define MOVETYPE_FOLLOW			12		// track movement of aiment
-#define MOVETYPE_PUSHPULL		13		// pushable/pullable object
-#define MOVETYPE_SWIM			14		// should keep the object in water
-
 
 // edict->solid values
 #define	SOLID_NOT				0		// no interaction with other objects

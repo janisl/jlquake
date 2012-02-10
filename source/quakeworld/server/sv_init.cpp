@@ -287,7 +287,7 @@ void SV_SpawnServer (char *server)
 	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
-	ent->SetMoveType(MOVETYPE_PUSH);
+	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	pr_global_struct->mapname = PR_SetString(sv.name);
 	// serverflags are for cross level information (sigils)

@@ -8,9 +8,6 @@
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
-qboolean	noclip_anglehack;		// remnant from old quake
-
-
 Cvar*	rcon_password;
 
 Cvar*	rcon_address;
@@ -21,15 +18,6 @@ Cvar*	cl_shownet;
 
 Cvar*	cl_sbar;
 Cvar*	cl_hudswap;
-
-Cvar*	lookspring;
-Cvar*	lookstrafe;
-Cvar*	sensitivity;
-
-Cvar*	m_pitch;
-Cvar*	m_yaw;
-Cvar*	m_forward;
-Cvar*	m_side;
 
 Cvar*	entlatency;
 Cvar*	cl_predict_players;
@@ -73,7 +61,6 @@ int			host_hunklevel;
 netadr_t	master_adr;				// address of the master server
 
 Cvar*	host_speeds;
-Cvar*	developer;
 
 int			fps_count;
 
@@ -893,7 +880,7 @@ void CL_Sensitivity_save_f (void)
 
 	if (String::ICmp(Cmd_Argv(1),"save") == 0)
 	{
-		save_sensitivity = sensitivity->value;
+		save_sensitivity = cl_sensitivity->value;
 	}
 	else if (String::ICmp(Cmd_Argv(1),"restore") == 0)
 	{
@@ -951,7 +938,7 @@ void CL_Init (void)
 	CL_InitPrediction ();
 	CLHW_InitEffects ();
 	CL_InitCam ();
-	Pmove_Init ();
+	PMQH_Init ();
 	
 //
 // register our commands
@@ -959,27 +946,10 @@ void CL_Init (void)
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
 
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
-	developer = Cvar_Get("developer", "0", 0);
 
-	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
-	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
-	cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
-	cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
-	cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
-	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
-	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
-	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	cl_hudswap	= Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
-	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
-	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
-	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
-
-	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get("m_yaw", "0.022", 0);
-	m_forward = Cvar_Get("m_forward", "1", 0);
-	m_side = Cvar_Get("m_side", "0.8", 0);
 
 	rcon_password = Cvar_Get("rcon_password", "", 0);
 	rcon_address = Cvar_Get("rcon_address", "", 0);
@@ -1126,9 +1096,6 @@ void Host_WriteConfiguration (const char *fname)
 		
 		Key_WriteBindings (f);
 		Cvar_WriteVariables (f);
-
-		if (in_mlook.state & 1)		//if mlook was down, keep it that way
-			FS_Printf(f, "+mlook\n");
 
 		FS_FCloseFile(f);
 	}
@@ -1412,4 +1379,9 @@ void CIN_FinishCinematic()
 float* CL_GetSimOrg()
 {
 	return cl.qh_simorg;
+}
+
+bool CL_IsServerActive()
+{
+	return false;
 }

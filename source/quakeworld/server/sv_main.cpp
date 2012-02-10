@@ -36,8 +36,6 @@ client_t	*host_client;			// current client
 Cvar*	sv_mintic;
 Cvar*	sv_maxtic;
 
-Cvar*	developer;
-
 Cvar*	timeout;
 Cvar*	zombietime;
 
@@ -1369,8 +1367,6 @@ void SV_InitLocal (void)
 	watervis = Cvar_Get("watervis", "0", CVAR_SERVERINFO);
 	hostname = Cvar_Get("hostname","unnamed", CVAR_SERVERINFO);
 
-	developer = Cvar_Get("developer", "0", 0);		// show extra messages
-
 	timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
 	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
 												// after disconnect
@@ -1685,7 +1681,7 @@ void SV_Init (quakeparms_t *parms)
 
 	SV_InitLocal ();
 	Sys_Init ();
-	Pmove_Init ();
+	PMQH_Init ();
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();

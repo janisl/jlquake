@@ -261,7 +261,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent->SetModel(PR_SetString(sv.modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
-	ent->SetMoveType(MOVETYPE_PUSH);
+	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	if (coop->value)
 		Cvar_SetValue ("deathmatch", 0);

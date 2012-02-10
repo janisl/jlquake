@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "../../core/file_formats/md2.h"
 
-Cvar	*freelook;
-
 Cvar	*adr0;
 Cvar	*adr1;
 Cvar	*adr2;
@@ -57,15 +55,6 @@ Cvar	*cl_showclamp;
 
 Cvar	*cl_paused;
 Cvar	*cl_timedemo;
-
-Cvar	*lookspring;
-Cvar	*lookstrafe;
-Cvar	*sensitivity;
-
-Cvar	*m_pitch;
-Cvar	*m_yaw;
-Cvar	*m_forward;
-Cvar	*m_side;
 
 Cvar	*cl_lightlevel;
 
@@ -1421,23 +1410,7 @@ void CL_InitLocal (void)
 //	cl_minfps = Cvar_Get ("cl_minfps", "5", 0);
 	cl_maxfps = Cvar_Get ("cl_maxfps", "90", 0);
 
-	cl_upspeed = Cvar_Get ("cl_upspeed", "200", 0);
-	cl_forwardspeed = Cvar_Get ("cl_forwardspeed", "200", 0);
-	cl_sidespeed = Cvar_Get ("cl_sidespeed", "200", 0);
-	cl_yawspeed = Cvar_Get ("cl_yawspeed", "140", 0);
-	cl_pitchspeed = Cvar_Get ("cl_pitchspeed", "150", 0);
-	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", 0);
 
-	cl_run = Cvar_Get ("cl_run", "0", CVAR_ARCHIVE);
-	freelook = Cvar_Get( "freelook", "0", CVAR_ARCHIVE );
-	lookspring = Cvar_Get ("lookspring", "0", CVAR_ARCHIVE);
-	lookstrafe = Cvar_Get ("lookstrafe", "0", CVAR_ARCHIVE);
-	sensitivity = Cvar_Get ("sensitivity", "3", CVAR_ARCHIVE);
-
-	m_pitch = Cvar_Get ("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get ("m_yaw", "0.022", 0);
-	m_forward = Cvar_Get ("m_forward", "1", 0);
-	m_side = Cvar_Get ("m_side", "1", 0);
 
 	cl_shownet = Cvar_Get ("cl_shownet", "0", 0);
 	cl_showmiss = Cvar_Get ("cl_showmiss", "0", 0);
@@ -1908,4 +1881,10 @@ void CL_Shutdown(void)
 float* CL_GetSimOrg()
 {
 	return NULL;
+}
+
+#include "../server/server.h"
+bool CL_IsServerActive()
+{
+	return sv.state == ss_game;
 }

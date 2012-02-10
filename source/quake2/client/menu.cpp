@@ -594,7 +594,6 @@ const char *bindnames[][2] =
 {"+lookdown", 		"look down"},
 {"centerview", 		"center view"},
 {"+mlook", 			"mouse look"},
-{"+klook", 			"keyboard look"},
 {"+moveup",			"up / jump"},
 {"+movedown",		"down / crouch"},
 
@@ -1022,7 +1021,6 @@ static menulist_s		s_options_freelook_box;
 static menulist_s		s_options_alwaysrun_box;
 static menulist_s		s_options_invertmouse_box;
 static menulist_s		s_options_lookspring_box;
-static menulist_s		s_options_lookstrafe_box;
 static menulist_s		s_options_crosshair_box;
 static menuslider_s		s_options_sfxvolume_slider;
 static menulist_s		s_options_joystick_box;
@@ -1051,7 +1049,7 @@ static void AlwaysRunFunc( void *unused )
 
 static void FreeLookFunc( void *unused )
 {
-	Cvar_SetValueLatched( "freelook", s_options_freelook_box.curvalue );
+	Cvar_SetValueLatched( "cl_freelook", s_options_freelook_box.curvalue );
 }
 
 static void MouseSpeedFunc( void *unused )
@@ -1070,7 +1068,7 @@ static void ControlsSetMenuItemValues( void )
 {
 	s_options_sfxvolume_slider.curvalue		= Cvar_VariableValue( "s_volume" ) * 10;
 	s_options_cdvolume_box.curvalue 		= !Cvar_VariableValue("cd_nocd");
-	s_options_sensitivity_slider.curvalue	= ( sensitivity->value ) * 2;
+	s_options_sensitivity_slider.curvalue	= ( cl_sensitivity->value ) * 2;
 
 	Cvar_SetValueLatched( "cl_run", ClampCvar( 0, 1, cl_run->value ) );
 	s_options_alwaysrun_box.curvalue		= cl_run->value;
@@ -1080,11 +1078,8 @@ static void ControlsSetMenuItemValues( void )
 	Cvar_SetValueLatched( "lookspring", ClampCvar( 0, 1, lookspring->value ) );
 	s_options_lookspring_box.curvalue		= lookspring->value;
 
-	Cvar_SetValueLatched( "lookstrafe", ClampCvar( 0, 1, lookstrafe->value ) );
-	s_options_lookstrafe_box.curvalue		= lookstrafe->value;
-
-	Cvar_SetValueLatched( "freelook", ClampCvar( 0, 1, freelook->value ) );
-	s_options_freelook_box.curvalue			= freelook->value;
+	Cvar_SetValueLatched( "cl_freelook", ClampCvar( 0, 1, cl_freelook->value ) );
+	s_options_freelook_box.curvalue			= cl_freelook->value;
 
 	Cvar_SetValueLatched( "crosshair", ClampCvar( 0, 3, crosshair->value ) );
 	s_options_crosshair_box.curvalue		= crosshair->value;
@@ -1116,11 +1111,6 @@ static void InvertMouseFunc( void *unused )
 static void LookspringFunc( void *unused )
 {
 	Cvar_SetValueLatched( "lookspring", s_options_lookspring_box.curvalue );
-}
-
-static void LookstrafeFunc( void *unused )
-{
-	Cvar_SetValueLatched( "lookstrafe", s_options_lookstrafe_box.curvalue );
 }
 
 static void UpdateVolumeFunc( void *unused )
@@ -1231,13 +1221,6 @@ void Options_MenuInit( void )
 	s_options_lookspring_box.generic.callback = LookspringFunc;
 	s_options_lookspring_box.itemnames = yesno_names;
 
-	s_options_lookstrafe_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_lookstrafe_box.generic.x	= 0;
-	s_options_lookstrafe_box.generic.y	= 90;
-	s_options_lookstrafe_box.generic.name	= "lookstrafe";
-	s_options_lookstrafe_box.generic.callback = LookstrafeFunc;
-	s_options_lookstrafe_box.itemnames = yesno_names;
-
 	s_options_freelook_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_freelook_box.generic.x	= 0;
 	s_options_freelook_box.generic.y	= 100;
@@ -1285,7 +1268,6 @@ void Options_MenuInit( void )
 	Menu_AddItem( &s_options_menu, ( void * ) &s_options_alwaysrun_box );
 	Menu_AddItem( &s_options_menu, ( void * ) &s_options_invertmouse_box );
 	Menu_AddItem( &s_options_menu, ( void * ) &s_options_lookspring_box );
-	Menu_AddItem( &s_options_menu, ( void * ) &s_options_lookstrafe_box );
 	Menu_AddItem( &s_options_menu, ( void * ) &s_options_freelook_box );
 	Menu_AddItem( &s_options_menu, ( void * ) &s_options_crosshair_box );
 	Menu_AddItem( &s_options_menu, ( void * ) &s_options_joystick_box );

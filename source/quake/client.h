@@ -24,29 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // cvars
 //
-extern	Cvar*	cl_upspeed;
-extern	Cvar*	cl_forwardspeed;
-extern	Cvar*	cl_backspeed;
-extern	Cvar*	cl_sidespeed;
-
-extern	Cvar*	cl_movespeedkey;
-
-extern	Cvar*	cl_yawspeed;
-extern	Cvar*	cl_pitchspeed;
-
-extern	Cvar*	cl_anglespeedkey;
-
 extern	Cvar*	cl_shownet;
-extern	Cvar*	cl_nolerp;
-
-extern	Cvar*	lookspring;
-extern	Cvar*	lookstrafe;
-extern	Cvar*	sensitivity;
-
-extern	Cvar*	m_pitch;
-extern	Cvar*	m_yaw;
-extern	Cvar*	m_forward;
-extern	Cvar*	m_side;
 
 //=============================================================================
 
@@ -68,31 +46,17 @@ void CL_NextDemo (void);
 //
 // cl_input
 //
-typedef struct
-{
-	int		down[2];		// key nums holding it down
-	int		state;			// low bit is down state
-} kbutton_t;
-
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (q1usercmd_t *cmd);
 
 void CL_ClearState (void);
 
 
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (q1usercmd_t *cmd);
-void CL_BaseMove (q1usercmd_t *cmd);
 void CL_MouseEvent(int mx, int my);
-void CL_MouseMove(q1usercmd_t *cmd);
 
 
-float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 //
@@ -115,9 +79,6 @@ void CL_NewTranslation (int slot);
 //
 // view
 //
-void V_StartPitchDrift (void);
-void V_StopPitchDrift (void);
-
 void V_RenderView (void);
 void V_UpdatePalette (void);
 void V_Register (void);

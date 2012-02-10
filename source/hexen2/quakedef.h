@@ -174,16 +174,12 @@ typedef struct
 
 
 
-extern qboolean noclip_anglehack;
-
-
 //
 // host
 //
 extern	quakeparms_t host_parms;
 
 extern	Cvar*		sys_ticrate;
-extern	Cvar*		developer;
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;
@@ -218,11 +214,3 @@ extern qboolean		intro_playing;
 extern qboolean		skip_start;
 extern int			num_intro_msg;
 extern qboolean		check_bottom;
-//
-// chase
-//
-extern	Cvar*	chase_active;
-
-void Chase_Init (void);
-void Chase_Reset (void);
-void Chase_Update (void);

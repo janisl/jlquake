@@ -18,17 +18,8 @@
 Cvar*	cl_playerclass;
 
 Cvar*	cl_shownet;
-Cvar*	cl_nolerp;
 
-Cvar*	lookspring;
-Cvar*	lookstrafe;
-Cvar*	sensitivity;
 static float save_sensitivity;
-
-Cvar*	m_pitch;
-Cvar*	m_yaw;
-Cvar*	m_forward;
-Cvar*	m_side;
 
 Cvar	*cl_lightlevel;
 
@@ -301,56 +292,9 @@ void CL_PrintEntities_f (void)
 	}
 }
 
-/*
-===============
-CL_LerpPoint
-
-Determines the fraction between the last two messages that the objects
-should be put at.
-===============
-*/
-float	CL_LerpPoint (void)
+bool CL_IsServerActive()
 {
-	float	f, frac;
-
-	f = cl.qh_mtime[0] - cl.qh_mtime[1];
-	
-	if (!f || cl_nolerp->value || cls.qh_timedemo || sv.active)
-	{
-		cl.qh_serverTimeFloat = cl.qh_mtime[0];
-		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-		return 1;
-	}
-		
-	if (f > 0.1)
-	{	// dropped packet, or start of demo
-		cl.qh_mtime[1] = cl.qh_mtime[0] - 0.1;
-		f = 0.1;
-	}
-	frac = (cl.qh_serverTimeFloat - cl.qh_mtime[1]) / f;
-//Con_Printf ("frac: %f\n",frac);
-	if (frac < 0)
-	{
-		if (frac < -0.01)
-		{
-			cl.qh_serverTimeFloat = cl.qh_mtime[1];
-			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-//				Con_Printf ("low frac\n");
-		}
-		frac = 0;
-	}
-	else if (frac > 1)
-	{
-		if (frac > 1.01)
-		{
-			cl.qh_serverTimeFloat = cl.qh_mtime[0];
-			cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-//				Con_Printf ("high frac\n");
-		}
-		frac = 1;
-	}
-		
-	return frac;
+	return !!sv.active;
 }
 
 /*
@@ -370,7 +314,7 @@ void CL_RelinkEntities (void)
 
 	c = 0;
 // determine partial update time	
-	frac = CL_LerpPoint ();
+	frac = CLQH_LerpPoint ();
 
 	R_ClearScene();
 
@@ -650,53 +594,6 @@ int CL_ReadFromServer (void)
 	return 0;
 }
 
-/*
-=================
-CL_SendCmd
-=================
-*/
-void CL_SendCmd (void)
-{
-	h2usercmd_t		cmd;
-
-	if (cls.state != CA_CONNECTED)
-		return;
-
-	if (clc.qh_signon == SIGNONS)
-	{
-	// get basic movement from keyboard
-		CL_BaseMove (&cmd);
-	
-	// allow mice or other external controllers to add to the move
-		CL_MouseMove(&cmd);
-	
-	// send the unreliable message
-		CL_SendMove (&cmd);
-	
-	}
-
-	if (clc.demoplaying)
-	{
-		clc.netchan.message.Clear();
-		return;
-	}
-	
-// send the reliable message
-	if (!clc.netchan.message.cursize)
-		return;		// no message at all
-	
-	if (!NET_CanSendMessage (cls.qh_netcon, &clc.netchan))
-	{
-		Con_DPrintf ("CL_WriteToServer: can't send\n");
-		return;
-	}
-
-	if (NET_SendMessage (cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
-		Host_Error ("CL_WriteToServer: lost server connection");
-
-	clc.netchan.message.Clear();
-}
-
 void CL_Sensitivity_save_f (void)
 {
 	if (Cmd_Argc() != 2)
@@ -706,7 +603,7 @@ void CL_Sensitivity_save_f (void)
 	}
 
 	if (String::ICmp(Cmd_Argv(1),"save") == 0)
-		save_sensitivity = sensitivity->value;
+		save_sensitivity = cl_sensitivity->value;
 	else if (String::ICmp(Cmd_Argv(1),"restore") == 0)
 		Cvar_SetValue ("sensitivity", save_sensitivity);
 }
@@ -728,24 +625,9 @@ void CL_Init (void)
 	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
 	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
 	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
-	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
-	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
-	cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
-	cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
-	cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
-	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
-	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
-	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
-	cl_nolerp = Cvar_Get("cl_nolerp", "0", 0);
-	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
-	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
-	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
+	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 
-	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
-	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
-	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
-	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);
 
 	cl_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);

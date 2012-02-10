@@ -30,7 +30,6 @@ key up events are sent even if in console mode
 char	key_lines[32][MAXCMDLINE];
 int		key_linepos;
 int		shift_down=false;
-int	anykeydown;
 
 int		edit_line=0;
 int		history_line=0;
@@ -706,7 +705,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		return;
 	}
 
-	// track if any key is down for BUTTON_ANY
+	// track if any key is down for Q2BUTTON_ANY
 	keydown[key] = down;
 	if (down)
 	{
@@ -842,6 +841,9 @@ void IN_ProcessEvents()
 			break;
 		case SE_MOUSE:
 			CL_MouseEvent(ev.evValue, ev.evValue2);
+			break;
+		case SE_JOYSTICK_AXIS:
+			CL_JoystickEvent(ev.evValue, ev.evValue2, ev.evTime);
 			break;
 		case SE_CONSOLE:
 			Cbuf_AddText((char*)ev.evPtr);
