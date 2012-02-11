@@ -150,7 +150,7 @@ $env = new cons(
   . $BUILD_DIR . '/unix/jpeglib.a '
   . $BUILD_DIR . '/unix/asmlib.a '
   . $BUILD_DIR . '/unix/inlinelib.a '
-  . '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm'
+  . '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm -lz'
 );
 
 @RENDERER_FILES = qw(

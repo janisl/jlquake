@@ -263,12 +263,12 @@ local_env = g_env.Clone()
 if ( g_os == 'Linux' ):
 	local_env.Append( LIBS = [ 'dl' ] )
 	if ( local_dedicated == 0 ):
-		local_env.Append( LIBS = [ 'X11', 'Xext', 'm', 'Xxf86dga', 'Xxf86vm' ] )
+		local_env.Append( LIBS = [ 'X11', 'Xext', 'm', 'Xxf86dga', 'Xxf86vm', 'z' ] )
 		local_env.Append( LIBPATH = [ '/usr/X11R6/lib' ] )
 		local_env.Append( CPPPATH = [ 'curl-7.12.2/include' ] )
 	else:
 		local_env.Append( CPPDEFINES = [ 'DEDICATED' ] )
-		local_env.Append( LIBS = [ 'm' ] )
+		local_env.Append( LIBS = [ 'm', 'z' ] )
 
 	if gcc3 == 0:
 		g_env.Append(LINKFLAGS=[ os.popen( g_env['CXX'] + ' -print-file-name=libstdc++.a' ).read().rstrip() ])
