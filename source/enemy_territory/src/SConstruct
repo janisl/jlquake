@@ -11,7 +11,7 @@ import scons_utils
 conf_filename='site.conf'
 # choose configuration variables which should be saved between runs
 # ( we handle all those as strings )
-serialized=[ 'CC', 'CXX', 'JOBS', 'BUILD', 'BUILD_ROOT', 'DEDICATED', 'TARGET_CORE', 'TARGET_BSPC', 'TARGET_CGAME', 'TARGET_GAME', 'TARGET_UI', 'MASTER' ]
+serialized=[ 'CC', 'CXX', 'JOBS', 'BUILD', 'BUILD_ROOT', 'DEDICATED', 'MASTER' ]
 
 # help -------------------------------------------
 
@@ -47,21 +47,6 @@ DEDICATED (default 2)
 	1 - dedicated server
 	2 - both
 
-TARGET_CORE (default 1)
-	Build engine
-
-TARGET_BSPC (default 0)
-	Build bspc utility
-
-TARGET_GAME (default 1)
-	Build game module
-
-TARGET_CGAME (default 1)
-	Build cgame module
-
-TARGET_UI (default 1)
-	Build ui module
-
 BUILD_ROOT (default 'build')
 	change the build root directory
 	
@@ -74,8 +59,6 @@ MASTER (default '')
 COPYBINS (default 0, not saved)
 	copy the binaries in a ready-to-release format
 
-BUILDMPBIN (default 0, not saved)
-	build mp_bin.pk3 using bin/ directories and game binaries for all platforms
 """
 )
 
@@ -122,16 +105,10 @@ CXX = 'g++ -m32'
 JOBS = '1'
 BUILD = 'debug'
 DEDICATED = '2'
-TARGET_CORE = '1'
-TARGET_GAME = '1'
-TARGET_CGAME = '1'
-TARGET_UI = '1'
-TARGET_BSPC = '0'
 BUILD_ROOT = 'build'
 NOCONF = '0'
 MASTER = ''
 COPYBINS = '0'
-BUILDMPBIN = '0'
 
 # end default settings ---------------------------
 
@@ -316,7 +293,7 @@ if g_os == 'win32' and os.name != 'nt':
 toplevel_targets = []
 
 # build curl if needed
-if ( TARGET_CORE == '1' and DEDICATED != '1' and OS != 'Darwin' ):
+if ( DEDICATED != '1' and OS != 'Darwin' ):
 	# 1: debug, 2: release
 	if ( BUILD == 'release' ):
 		local_curl = 2
@@ -325,50 +302,25 @@ if ( TARGET_CORE == '1' and DEDICATED != '1' and OS != 'Darwin' ):
 	Export( 'GLOBALS ' + GLOBALS )
 	curl_lib = SConscript( 'SConscript.curl' )
 
-if ( TARGET_CORE == '1' ):
-	if ( DEDICATED == '0' or DEDICATED == '2' ):
-		local_dedicated = 0
-		Export( 'GLOBALS ' + GLOBALS )
-		BuildDir( g_build + '/core', '.', duplicate = 0 )
-		et = SConscript( g_build + '/core/SConscript.core' )
-		if ( g_os == 'win32' ):
-			toplevel_targets.append( InstallAs( '#et.exe', et ) )
-		else:
-			toplevel_targets.append( InstallAs( '#et.' + cpu, et ) )
-
-	if ( DEDICATED == '1' or DEDICATED == '2' ):
-		local_dedicated = 1
-		Export( 'GLOBALS ' + GLOBALS )
-		BuildDir( g_build + '/dedicated', '.', duplicate = 0 )
-		etded = SConscript( g_build + '/dedicated/SConscript.core' )
-		if ( g_os == 'win32' ):
-			toplevel_targets.append( InstallAs( '#etded.exe', etded ) )
-		else:
-			toplevel_targets.append( InstallAs( '#etded.' + cpu, etded ) )
-
-if ( TARGET_BSPC == '1' ):
+if ( DEDICATED == '0' or DEDICATED == '2' ):
+	local_dedicated = 0
 	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/bspc', '.', duplicate = 0 )
-	bspc = SConscript( g_build + '/bspc/SConscript.bspc' )
-	toplevel_targets.append( InstallAs( '#bspc.' + cpu, bspc ) )
+	BuildDir( g_build + '/core', '.', duplicate = 0 )
+	et = SConscript( g_build + '/core/SConscript.core' )
+	if ( g_os == 'win32' ):
+		toplevel_targets.append( InstallAs( '#et.exe', et ) )
+	else:
+		toplevel_targets.append( InstallAs( '#et.' + cpu, et ) )
 
-if ( TARGET_GAME == '1' ):
+if ( DEDICATED == '1' or DEDICATED == '2' ):
+	local_dedicated = 1
 	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/game', '.', duplicate = 0 )
-	game = SConscript( g_build + '/game/SConscript.game' )
-	toplevel_targets.append( InstallAs( '#qagame.mp.%s.so' % dll_cpu, game ) )
-
-if ( TARGET_CGAME == '1' ):
-	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/cgame', '.', duplicate = 0 )
-	cgame = SConscript( g_build + '/cgame/SConscript.cgame' )
-	toplevel_targets.append( InstallAs( '#cgame.mp.%s.so' % dll_cpu, cgame ) )
-
-if ( TARGET_UI == '1' ):
-	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/ui', '.', duplicate = 0 )
-	ui = SConscript( g_build + '/ui/SConscript.ui' )
-	toplevel_targets.append( InstallAs( '#ui.mp.%s.so' % dll_cpu, ui ) )
+	BuildDir( g_build + '/dedicated', '.', duplicate = 0 )
+	etded = SConscript( g_build + '/dedicated/SConscript.core' )
+	if ( g_os == 'win32' ):
+		toplevel_targets.append( InstallAs( '#etded.exe', etded ) )
+	else:
+		toplevel_targets.append( InstallAs( '#etded.' + cpu, etded ) )
 
 class CopyBins(scons_utils.idSetupBase):
 	def copy_bins( self, target, source, env ):
@@ -400,9 +352,5 @@ class MpBin(scons_utils.idSetupBase):
 		self.SimpleCommand( 'cd %s ; zip -r -D %s/cgame_mac.zip cgame_mac.bundle ; mv %s/cgame_mac.zip %s/cgame_mac' % ( mac_bundle_dir, temp_dir, temp_dir, temp_dir ) )
 		mp_bin_path = os.path.abspath( os.path.join ( os.getcwd(), '../etmain/mp_bin.pk3' ) )
 		self.SimpleCommand( 'cd %s ; zip -r -D %s *' % ( temp_dir, mp_bin_path ) )
-
-if ( BUILDMPBIN != '0' ):
-	mp_bin = MpBin()
-	mpbin_target = Command( 'mp_bin', toplevel_targets + copybins_target, Action( mp_bin.mp_bin ) )
 
 # end targets ------------------------------------

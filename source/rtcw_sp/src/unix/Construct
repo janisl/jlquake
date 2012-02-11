@@ -144,23 +144,6 @@ print 'CFLAGS: ' . $BASE_CFLAGS . "\n";
 # by default, build everything below the config dir
 Default '..';
 
-# Disabling BSPC build. We use the one in MP anyway
-##----------------------------------------------
-## build bspc
-#
-#$TARGET_DIR = 'tools/bspc';
-#$BUILD_DIR = $CONFIG_DIR . '/' . $TARGET_DIR;
-#Link $BUILD_DIR => '..';
-#Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK );
-#Build $BUILD_DIR . '/unix/Conscript-bspc';
-
-#----------------------------------------------
-# build the extractfunc tool
-
-$BUILD_DIR = '../extractfuncs/out';
-Link $BUILD_DIR => '../..';
-Build $BUILD_DIR . '/src/extractfuncs/Conscript';
-
 #----------------------------------------------
 $TARGET_DIR = 'full';
 
@@ -171,42 +154,6 @@ Link $BUILD_DIR => '..';
 Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK );
 
 Build $BUILD_DIR . "/unix/Conscript-client";
-
-#---------------------------------------------
-$TARGET_DIR = 'game';
-
-$BUILD_DIR = $CONFIG_DIR . "/" . $TARGET_DIR;
-
-Link $BUILD_DIR => '..';
-
-Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR BASEGAME CC CXX LINK );
-
-Build $BUILD_DIR . "/unix/Conscript-game";
-
-#----------------------------------------------
-# NOTE TTimo for cgame and ui, we have to
-#   link the dir starting below Wolfenstein/
-#   because ui_shared.h reads in ../../MAIN/UI
-$TARGET_DIR = 'cgame';
-
-$BUILD_DIR = $CONFIG_DIR . "/" . $TARGET_DIR;
-
-Link $BUILD_DIR => '../..';
-
-Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR BASEGAME CC CXX LINK );
-
-Build $BUILD_DIR . "/src/unix/Conscript-cgame";
-
-#----------------------------------------------
-$TARGET_DIR = 'ui';
-
-$BUILD_DIR = $CONFIG_DIR . "/" . $TARGET_DIR;
-
-Link $BUILD_DIR => '../..';
-
-Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR BASEGAME CC CXX LINK );
-
-Build $BUILD_DIR . "/src/unix/Conscript-ui";
 
 #----------------------------------------------
 if ($do_setup eq 1)

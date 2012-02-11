@@ -28,7 +28,6 @@ $do_update = 0;
 $do_updateserver = 0;
 #$update_server = '';
 $do_lddabort = 1; 
-$do_pk3 = 0;
 # look for Conscript-client to decide about mod
 if (scalar(stat('Conscript-client')))
 {
@@ -136,11 +135,6 @@ if(@ARGV gt 0)
 	elsif(lc($cmdopt) eq 'noldd')
 	{
 		$do_lddabort = 0;
-		next;
-	}
-	elsif(lc($cmdopt) eq 'pk3')
-	{
-		$do_pk3 = 1;
 		next;
 	}
 	elsif(lc($cmdopt) =~ 'update_server=.*')
@@ -264,14 +258,7 @@ if ($do_light eq 1)
 print 'CFLAGS: ' . $BASE_CFLAGS . "\n";
 
 # by default, build everything below the config dir
-if ($do_pk3 eq 1)
-{
-  Default $CONFIG_DIR . '/out', 'auto-pk3';
-}
-else
-{
-  Default $CONFIG_DIR . '/out';
-}
+Default $CONFIG_DIR . '/out';
 
 #----------------------------------------------
 if ($do_light eq 0 && $do_update eq 0 && $do_mod eq 0)
@@ -299,57 +286,6 @@ Link $BUILD_DIR => '..';
 if ($do_mod eq 0)
 {
   Build $BUILD_DIR . '/unix/Conscript-dedicated';
-}
-
-if ($do_update eq 0)
-{
-  $TARGET_DIR = 'game';
-
-  $BUILD_DIR = $CONFIG_DIR . '/' . $TARGET_DIR;
-
-  Link $BUILD_DIR => '..';
-
-  Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR BASEGAME do_lddabort CC CXX LINK );
-
-  Build $BUILD_DIR . '/unix/Conscript-game';
-	
-  if ($do_light eq 0)
-  {
-    #----------------------------------------------
-    # NOTE TTimo for cgame and ui, we have to
-    #   link the dir starting below Wolfenstein/
-    #   because ui_shared.h reads in ../../MAIN/UI
-    $TARGET_DIR = 'cgame';
-
-    $BUILD_DIR = $CONFIG_DIR . '/' . $TARGET_DIR;
-
-    Link $BUILD_DIR => '../..';
-
-    Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR BASEGAME do_lddabort CC CXX LINK );
-
-    Build $BUILD_DIR . '/src/unix/Conscript-cgame';
-
-    #----------------------------------------------
-    $TARGET_DIR = 'ui';
-  
-    $BUILD_DIR = $CONFIG_DIR . '/' . $TARGET_DIR;
-
-    Link $BUILD_DIR => '../..';
-
-    Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR BASEGAME do_lddabort CC CXX LINK );
-
-    Build $BUILD_DIR . '/src/unix/Conscript-ui';
-  }
-}
-
-#----------------------------------------------
-# rebuild UI pk3 stuff on the fly too unless an override is provided
-if ($do_pk3 eq 1)
-{
-	$INSTALL_DIR = '';
-	$BUILD_DIR = $CONFIG_DIR;
-	Export qw( INSTALL_DIR BUILD_DIR CC CXX LINK );
-	Build "Conscript-pk3";
 }
 
 #----------------------------------------------
@@ -381,9 +317,6 @@ options:
 
 [noldd]
 Don't abort if ldd checks fail
-
-[pk3]
-Build the pk3s from Conscript-pk3 (default off)
 
 [demo]
  This switch uses -DPRE_RELEASE_DEMO and builds for MPTest
