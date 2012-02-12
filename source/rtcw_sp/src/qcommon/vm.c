@@ -55,12 +55,6 @@ void VM_VmInfo_f( void );
 void VM_VmProfile_f( void );
 
 
-// converts a VM pointer to a C pointer and
-// checks to make sure that the range is acceptable
-void    *VM_VM2C( vmptr_t p, int length ) {
-	return (void *)p;
-}
-
 void VM_Debug( int level ) {
 	vm_debugLevel = level;
 }
@@ -151,35 +145,6 @@ int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
 	}
 	return 0;
 }
-
-
-/*
-=====================
-VM_SymbolForCompiledPointer
-=====================
-*/
-const char *VM_SymbolForCompiledPointer( vm_t *vm, void *code ) {
-	int i;
-
-	if ( code < (void *)vm->codeBase ) {
-		return "Before code block";
-	}
-	if ( code >= ( void * )( vm->codeBase + vm->codeLength ) ) {
-		return "After code block";
-	}
-
-	// find which original instruction it is after
-	for ( i = 0 ; i < vm->codeLength ; i++ ) {
-		if ( (void *)vm->instructionPointers[i] > code ) {
-			break;
-		}
-	}
-	i--;
-
-	// now look up the bytecode instruction pointer
-	return VM_ValueToSymbol( vm, i );
-}
-
 
 
 /*
@@ -681,7 +646,7 @@ locals from sp
 #define MAX_STACK   256
 #define STACK_MASK  ( MAX_STACK - 1 )
 
-int QDECL VM_Call( vm_t *vm, int callnum, ... ) {
+intptr_t QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 	vm_t    *oldVM;
 	int r;
 	//rcg010207 see dissertation at top of VM_DllSyscall() in this file.
