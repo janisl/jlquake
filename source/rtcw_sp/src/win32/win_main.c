@@ -595,11 +595,11 @@ Used to load a development dll instead of a virtual machine
 */
 extern char     *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-void * QDECL Sys_LoadDll( const char *name, int( QDECL **entryPoint ) ( int, ... ),
-						  int ( QDECL *systemcalls )( int, ... ) ) {
+void * QDECL Sys_LoadDll( const char *name, intptr_t( QDECL **entryPoint ) ( int, ... ),
+						  intptr_t ( QDECL *systemcalls )( int, ... ) ) {
 	static int lastWarning = 0;
 	HINSTANCE libHandle;
-	void ( QDECL * dllEntry )( int ( QDECL *syscallptr )( int, ... ) );
+	void ( QDECL * dllEntry )( intptr_t ( QDECL *syscallptr )( int, ... ) );
 	char    *basepath;
 	char    *cdpath;
 	char    *gamedir;

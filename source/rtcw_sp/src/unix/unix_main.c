@@ -632,16 +632,16 @@ extern char   *FS_BuildOSPath( const char *base, const char *game, const char *q
 
 #if defined( DO_LOADDLL_WRAP )
 void *Sys_LoadDll_Wrapped( const char *name,
-						   int( **entryPoint ) ( int, ... ),
-						   int ( *systemcalls )( int, ... ) )
+						   intptr_t ( **entryPoint ) ( int, ... ),
+						   intptr_t ( *systemcalls )( int, ... ) )
 #else
 void *Sys_LoadDll( const char *name,
-				   int( **entryPoint ) ( int, ... ),
-				   int ( *systemcalls )( int, ... ) )
+				   intptr_t ( **entryPoint ) ( int, ... ),
+				   intptr_t ( *systemcalls )( int, ... ) )
 #endif
 {
 	void *libHandle;
-	void ( *dllEntry )( int ( *syscallptr )( int, ... ) );
+	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
 	char  *homepath;
 	char  *basepath;
@@ -777,8 +777,8 @@ void *Sys_LoadDll( const char *name,
 
 #if defined( DO_LOADDLL_WRAP )
 void *Sys_LoadDll( const char *name,
-				   int( **entryPoint ) ( int, ... ),
-				   int ( *systemcalls )( int, ... ) ) {
+				   intptr_t ( **entryPoint ) ( int, ... ),
+				   intptr_t ( *systemcalls )( int, ... ) ) {
 	void *ret;
 	Cvar_Set( "cl_noprint", "1" );
 	ret = Sys_LoadDll_Wrapped( name, entryPoint, systemcalls );

@@ -715,10 +715,10 @@ char* Sys_GetDLLName( const char *name ) {
 }
 
 void *Sys_LoadDll( const char *name, char *fqpath,
-				   int( **entryPoint ) ( int, ... ),
-				   int ( *systemcalls )( int, ... ) ) {
+				   intptr_t ( **entryPoint ) ( int, ... ),
+				   intptr_t ( *systemcalls )( int, ... ) ) {
 	void *libHandle;
-	void ( *dllEntry )( int ( *syscallptr )( int, ... ) );
+	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
 	char  *pwdpath;
 	char  *homepath;

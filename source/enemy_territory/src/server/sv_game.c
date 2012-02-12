@@ -364,20 +364,14 @@ SV_GameSystemCalls
 The module is making a system call
 ====================
 */
-//rcg010207 - see my comments in VM_DllSyscall(), in qcommon/vm.c ...
-#if ( ( defined __linux__ ) && ( defined __powerpc__ ) ) || ( defined MACOS_X )
-#define VMA( x ) ( (void *) args[x] )
-#else
 #define VMA( x ) VM_ArgPtr( args[x] )
-#endif
-
-#define VMF( x )  ( (float *)args )[x]
+#define VMF( x )  (*(float*)(&args[x]))
 
 // show_bug.cgi?id=574
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
-int SV_GameSystemCalls( int *args ) {
+intptr_t SV_GameSystemCalls( intptr_t* args ) {
 	switch ( args[0] ) {
 	case G_PRINT:
 		Com_Printf( "%s", (char *)VMA( 1 ) );
