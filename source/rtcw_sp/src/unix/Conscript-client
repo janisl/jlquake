@@ -72,56 +72,6 @@ $BOTLIB_REF = \@BOTLIB_FILES;
 
 Library $env_botlib 'botlib', @$BOTLIB_REF;
 
-# jpeg
-# NOTE TTimo we might need this one on other targets
-$env_jpeglib = new cons(
-	CC => $CC,
-	CXX => $CXX,
-	LINK => $LINK,
-  CFLAGS => $BASE_CFLAGS
-  );
-  
-@JPEGLIB_FILES = qw(
-  ../jpeg-6/jcapimin.c 
-  ../jpeg-6/jcapistd.c 
-  ../jpeg-6/jchuff.c 
-  ../jpeg-6/jcinit.c 
-  ../jpeg-6/jccoefct.c 
-  ../jpeg-6/jccolor.c 
-  ../jpeg-6/jfdctflt.c 
-  ../jpeg-6/jcdctmgr.c 
-  ../jpeg-6/jcphuff.c 
-  ../jpeg-6/jcmainct.c 
-  ../jpeg-6/jcmarker.c 
-  ../jpeg-6/jcmaster.c 
-  ../jpeg-6/jcomapi.c
-  ../jpeg-6/jcparam.c
-  ../jpeg-6/jcprepct.c
-  ../jpeg-6/jcsample.c 
-  ../jpeg-6/jdapimin.c 
-  ../jpeg-6/jdapistd.c 
-  ../jpeg-6/jdatasrc.c 
-  ../jpeg-6/jdcoefct.c 
-  ../jpeg-6/jdcolor.c 
-  ../jpeg-6/jddctmgr.c 
-  ../jpeg-6/jdhuff.c 
-  ../jpeg-6/jdinput.c 
-  ../jpeg-6/jdmainct.c 
-  ../jpeg-6/jdmarker.c 
-  ../jpeg-6/jdmaster.c 
-  ../jpeg-6/jdpostct.c 
-  ../jpeg-6/jdsample.c 
-  ../jpeg-6/jdtrans.c 
-  ../jpeg-6/jerror.c  
-  ../jpeg-6/jidctflt.c 
-  ../jpeg-6/jmemmgr.c 
-  ../jpeg-6/jmemnobs.c   
-  ../jpeg-6/jutils.c 
-  );
-$JPEGLIB_REF = \@JPEGLIB_FILES;  
-  
-Library $env_jpeglib 'jpeglib', @$JPEGLIB_REF;   
-
 # NOTE TTimo this requires patched cons version to work (see unix/cons)
 %nasm_hash = new cons()->copy(
   CC => 'nasm',
@@ -149,10 +99,9 @@ $env = new cons(
 #  LDFLAGS => '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm',
   LIBS => ' ' . $BUILD_DIR . '/unix/splines.a ' 
   . $BUILD_DIR . '/unix/botlib.a ' 
-  . $BUILD_DIR . '/unix/jpeglib.a '
   . $BUILD_DIR . '/unix/asmlib.a '
   . $BUILD_DIR . '/unix/inlinelib.a '
-  . '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm -lz -lfreetype'
+  . '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm -lz -lfreetype -ljpeg'
 );
 
 @RENDERER_FILES = qw(

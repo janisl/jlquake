@@ -9,45 +9,6 @@ import scons_utils
 Import( 'GLOBALS' )
 Import( GLOBALS )
 
-jpeg_string = """
-jcapimin.c
-jcapistd.c 
-jchuff.c
-jcinit.c
-jccoefct.c
-jccolor.c
-jfdctflt.c
-jcdctmgr.c
-jcphuff.c
-jcmainct.c
-jcmarker.c
-jcmaster.c
-jcomapi.c
-jcparam.c
-jcprepct.c
-jcsample.c
-jdapimin.c
-jdapistd.c
-jdatasrc.c
-jdcoefct.c
-jdcolor.c
-jddctmgr.c
-jdhuff.c
-jdinput.c
-jdmainct.c
-jdmarker.c
-jdmaster.c
-jdpostct.c
-jdsample.c
-jdtrans.c
-jerror.c
-jidctflt.c
-jmemmgr.c
-jmemnobs.c
-jutils.c"""
-
-jpeg_list = scons_utils.BuildList( 'jpeg-6', jpeg_string )
-
 renderer_string = """
 tr_animation_mdm.c
 tr_animation_mds.c
@@ -264,7 +225,7 @@ local_env = g_env.Clone()
 if ( g_os == 'Linux' ):
 	local_env.Append( LIBS = [ 'dl' ] )
 	if ( local_dedicated == 0 ):
-		local_env.Append( LIBS = [ 'X11', 'Xext', 'm', 'Xxf86dga', 'Xxf86vm', 'z', 'freetype' ] )
+		local_env.Append( LIBS = [ 'X11', 'Xext', 'm', 'Xxf86dga', 'Xxf86vm', 'z', 'freetype', 'jpeg' ] )
 		local_env.Append( LIBPATH = [ '/usr/X11R6/lib' ] )
 		local_env.Append( CPPPATH = [ 'curl-7.12.2/include', '/usr/include/freetype2' ] )
 	else:
@@ -308,7 +269,6 @@ elif ( g_os == 'Darwin' ):
 source_list += botlib_objs
 
 if ( local_dedicated == 0 ):
-	source_list += jpeg_list
 	source_list += renderer_list
 	source_list += client_list
 	source_list += [ 'qcommon/dl_main_curl.c' ]
