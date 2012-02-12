@@ -109,6 +109,8 @@ else
   $BASEGAME = 'main';
 }
 
+$COMMON_CFLAGS .= '-I/usr/include/freetype2 ';
+
 # NOTE TTimo using -fshort-enums increases warnings on enum issues
 #   this is for debugging and QA ONLY, the flag has ABI issues (OpenGL headers)
 #$COMMON_CFLAGS = $COMMON_CFLAGS . '-fshort-enums ';

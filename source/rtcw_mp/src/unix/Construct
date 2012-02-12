@@ -220,6 +220,8 @@ else
   $BASEGAME = 'main';
 }
 
+$COMMON_CFLAGS .= '-I/usr/include/freetype2 ';
+
 if ($do_updateserver eq 1)
 {
   $COMMON_CFLAGS .= "-DAUTOUPDATE_SERVER_NAME=\\\"$update_server\\\" ";
