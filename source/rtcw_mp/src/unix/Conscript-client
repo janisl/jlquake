@@ -83,6 +83,7 @@ $env_jpeglib = new cons(
   
 @JPEGLIB_FILES = qw(
   ../jpeg-6/jcapimin.c 
+  ../jpeg-6/jcapistd.c 
   ../jpeg-6/jchuff.c 
   ../jpeg-6/jcinit.c 
   ../jpeg-6/jccoefct.c 

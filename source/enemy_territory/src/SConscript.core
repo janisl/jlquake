@@ -11,6 +11,7 @@ Import( GLOBALS )
 
 jpeg_string = """
 jcapimin.c
+jcapistd.c 
 jchuff.c
 jcinit.c
 jccoefct.c
