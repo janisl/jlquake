@@ -153,8 +153,3 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 Except as contained in this notice, the name of a copyright holder shall not
 be used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization of the copyright holder.
-
-FT2 library
------------------------------------------------------------------------------
-src/ft2
-The FT2 library is being used under the GPL v2 as indicated by its LICENSE.txt
