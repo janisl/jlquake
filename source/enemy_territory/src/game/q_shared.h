@@ -124,6 +124,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <limits.h>
 #include <sys/stat.h> // rain
 #include <float.h>
+#include <stdint.h>
 
 #endif
 
