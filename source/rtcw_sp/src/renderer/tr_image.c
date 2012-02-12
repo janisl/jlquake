@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
  * You may also wish to include "jerror.h".
  */
 
-#include "../jpeg-6/jpeglib.h"
+#include <jpeglib.h>
 
 
 static void LoadBMP( const char *name, byte **pic, int *width, int *height );

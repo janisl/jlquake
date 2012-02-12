@@ -109,7 +109,7 @@ nmake /f Makefile.vc6 CFG=debug
     </PreLinkEvent>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;curl-7.12.2\lib\libcurld.lib;zlib_debug.lib;freetype_static_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;curl-7.12.2\lib\libcurld.lib;zlib_debug.lib;freetype_static_debug.lib;jpeg_static_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/ET.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -215,7 +215,7 @@ nmake /f Makefile.vc6 CFG=release
     </PreLinkEvent>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;curl-7.12.2\lib\libcurl.lib;zlib.lib;freetype_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;curl-7.12.2\lib\libcurl.lib;zlib.lib;freetype_static.lib;jpeg_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/ET.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libc;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
