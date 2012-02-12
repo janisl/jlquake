@@ -110,7 +110,7 @@ $env = new cons(
   . $BUILD_DIR . '/unix/botlib.a ' 
   . $asmLibs
   . $BUILD_DIR . '/unix/inlinelib.a '
-  . '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm -lz -lfreetype -ljpeg'
+  . '-rdynamic -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm -lz -lfreetype -ljpeg'
 );
 
 @RENDERER_FILES = qw(

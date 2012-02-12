@@ -52,6 +52,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <signal.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <execinfo.h>
 
 // bk001204
 #include <dlfcn.h>
@@ -695,28 +696,59 @@ static qboolean signalcaught = qfalse;;
 
 void Sys_Exit( int ); // bk010104 - abstraction
 
-static void signal_handler( int sig ) { // bk010104 - replace this... (NOTE TTimo huh?)
+static void signal_handler(int sig, siginfo_t *info, void *secret) { // bk010104 - replace this... (NOTE TTimo huh?)
+	void *trace[64];
+	char **messages = (char **)NULL;
+	int i, trace_size = 0;
 	if ( signalcaught ) {
 		printf( "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig );
 		Sys_Exit( 1 ); // bk010104 - abstraction
 	}
 
 	signalcaught = qtrue;
-	printf( "Received signal %d, exiting...\n", sig );
+#if id386
+	/* Do something useful with siginfo_t */
+	ucontext_t* uc = (ucontext_t*)secret;
+	if (sig == SIGSEGV)
+		printf("Received signal %d, faulty address is %p, "
+			"from %p\n", sig, info->si_addr, 
+			uc->uc_mcontext.gregs[REG_EIP]);
+	else
+#endif
+		printf( "Received signal %d, exiting...\n", sig );
+		
+	trace_size = backtrace(trace, 64);
+#if id386
+	/* overwrite sigaction with caller's address */
+	trace[1] = (void *) uc->uc_mcontext.gregs[REG_EIP];
+#endif
+
+	messages = backtrace_symbols(trace, trace_size);
+	/* skip first stack frame (points here) */
+	printf("[bt] Execution path:\n");
+	for (i=1; i<trace_size; ++i)
+		printf("[bt] %s\n", messages[i]);
+
 	GLimp_Shutdown(); // bk010104 - shouldn't this be CL_Shutdown
 	Sys_Exit( 0 ); // bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
 }
 
 static void InitSig( void ) {
-	signal( SIGHUP, signal_handler );
-	signal( SIGQUIT, signal_handler );
-	signal( SIGILL, signal_handler );
-	signal( SIGTRAP, signal_handler );
-	signal( SIGIOT, signal_handler );
-	signal( SIGBUS, signal_handler );
-	signal( SIGFPE, signal_handler );
-	signal( SIGSEGV, signal_handler );
-	signal( SIGTERM, signal_handler );
+	struct sigaction sa;
+
+	sa.sa_sigaction = signal_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART | SA_SIGINFO;
+
+	sigaction( SIGHUP, &sa, NULL);
+	sigaction( SIGQUIT, &sa, NULL);
+	sigaction( SIGILL, &sa, NULL);
+	sigaction( SIGTRAP, &sa, NULL);
+	sigaction( SIGIOT, &sa, NULL);
+	sigaction( SIGBUS, &sa, NULL);
+	sigaction( SIGFPE, &sa, NULL);
+	sigaction( SIGSEGV, &sa, NULL);
+	sigaction( SIGTERM, &sa, NULL);
 }
 
 /*
