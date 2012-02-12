@@ -101,33 +101,3 @@ RSA Data Security, Inc. makes no representations concerning either the merchanta
 bility of this software or the suitability of this software for any particular p
 urpose. It is provided <93>as is<94> without express or implied warranty of any
 kind.
-
-JPEG library
------------------------------------------------------------------------------
-src/jpeg-6
-Copyright (C) 1991-1995, Thomas G. Lane
-
-Permission is hereby granted to use, copy, modify, and distribute this
-software (or portions thereof) for any purpose, without fee, subject to these
-conditions:
-(1) If any part of the source code for this software is distributed, then this
-README file must be included, with this copyright and no-warranty notice
-unaltered; and any additions, deletions, or changes to the original files
-must be clearly indicated in accompanying documentation.
-(2) If only executable code is distributed, then the accompanying
-documentation must state that "this software is based in part on the work of
-the Independent JPEG Group".
-(3) Permission for use of this software is granted only if the user accepts
-full responsibility for any undesirable consequences; the authors accept
-NO LIABILITY for damages of any kind.
-
-These conditions apply to any software derived from or based on the IJG code,
-not just to the unmodified library.  If you use our work, you ought to
-acknowledge us.
-
-NOTE: unfortunately the README that came with our copy of the library has
-been lost, so the one from release 6b is included instead. There are a few
-'glue type' modifications to the library to make it easier to use from
-the engine, but otherwise the dependency can be easily cleaned up to a
-better release of the library.
-
