@@ -1,6 +1,6 @@
 # full client build script
 
-Import qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK );
+Import qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK cpu );
 
 # splines
 $env_splines = new cons(
@@ -91,6 +91,15 @@ Library $env_inlined 'inlinelib', '../unix/matha.s', '../unix/snd_mixa.s';
 
 # putting it all together
 
+if ($cpu eq 'x86_64')
+{
+  $asmLibs = '';
+}
+else
+{
+  $asmLibs = $BUILD_DIR . '/unix/asmlib.a ';
+}
+
 $env = new cons(
 	CC => $CC,
 	CXX => $CXX,
@@ -99,7 +108,7 @@ $env = new cons(
 #  LDFLAGS => '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm',
   LIBS => ' ' . $BUILD_DIR . '/unix/splines.a ' 
   . $BUILD_DIR . '/unix/botlib.a ' 
-  . $BUILD_DIR . '/unix/asmlib.a '
+  . $asmLibs
   . $BUILD_DIR . '/unix/inlinelib.a '
   . '-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -ldl -lm -lz -lfreetype -ljpeg'
 );
@@ -200,15 +209,26 @@ $SERVER_REF = \@SERVER_FILES;
 
 # FIXME TTimo vm_<cpu>.c
 # anyway, qvm support is not planned in Wolf .. could get rid of it
-@VM_FILES = qw(
-  ../qcommon/vm.c
-  ../qcommon/vm_x86.c
-  ../qcommon/vm_interpreted.c
+if ($cpu eq 'x86_64')
+{
+  @VM_FILES = qw(
+    ../qcommon/vm.c
+    ../qcommon/vm_none.c
+    ../qcommon/vm_interpreted.c
   );
+}
+else
+{
+  @VM_FILES = qw(
+    ../qcommon/vm.c
+    ../qcommon/vm_x86.c
+    ../qcommon/vm_interpreted.c
+  );
+}
 $VM_REF = \@VM_FILES;
 
 # FIXME: import the CPU string to build the name of the target
-Program $env 'wolfsp.x86', '../game/q_shared.c', '../game/q_math.c',
+Program $env 'wolfsp.' . $cpu, '../game/q_shared.c', '../game/q_math.c',
   @$RENDERER_REF, @$CLIENT_REF, @$COMMON_REF, @$SOUND_REF,
   @$UNIX_REF, @$SERVER_REF, @$VM_REF;
-Install $env '#' . $CONFIG_DIR . '/out', 'wolfsp.x86';
+Install $env '#' . $CONFIG_DIR . '/out', 'wolfsp.' . $cpu;

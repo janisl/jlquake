@@ -20,14 +20,14 @@ $do_demo = 0;
 $do_info = 0;
 
 # compiler
-$CC='gcc -m32';
-$CXX='g++ -m32';
+$CC='gcc';
+$CXX='g++';
 $LINK=$CXX;
 
 # detection of CPU type
 $cpu = `uname -m`;
 chop ($cpu);
-if ($cpu +~ /i?86/)
+if ($cpu +~ /i?86/ && $cpu ne 'x86_64')
 {
   $cpu = 'x86';
 }
@@ -153,7 +153,7 @@ $BUILD_DIR = $CONFIG_DIR . "/" . $TARGET_DIR;
 
 Link $BUILD_DIR => '..';
 
-Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK );
+Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK cpu );
 
 Build $BUILD_DIR . "/unix/Conscript-client";
 
@@ -167,7 +167,7 @@ if ($do_setup eq 1)
     exit;
   }
   Link $CONFIG_DIR => '.';
-  Export qw( CONFIG_DIR WOLF_VER BASEGAME do_demo CC CXX LINK );
+  Export qw( CONFIG_DIR WOLF_VER BASEGAME do_demo CC CXX LINK cpu );
   Build $CONFIG_DIR . "/Conscript-setup";
 }
 #--------------------------------------------------

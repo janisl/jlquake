@@ -1,6 +1,6 @@
 # dedicated server build script
 
-Import qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR DEDICATED_NAME CC CXX LINK );
+Import qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR DEDICATED_NAME CC CXX LINK cpu );
 
 $env_botlib = new cons(
 	CC => $CC,
@@ -106,7 +106,16 @@ $env = new cons(
    );
 $FILESREF = \@FILES;
 
+if ($cpu eq 'x86_64')
+{
+  $vmSysFile = '../qcommon/vm_none.c';
+}
+else
+{
+  $vmSysFile = '../qcommon/vm_x86.c';
+}
+
 # DEDICATED_NAME is imported, holds the name of the target
 # wolfded.x86 usually
-Program $env $DEDICATED_NAME, '../qcommon/vm_x86.c', @$FILESREF;
+Program $env $DEDICATED_NAME, $vmSysFile, @$FILESREF;
 Install $env '#' . $CONFIG_DIR . '/out', $DEDICATED_NAME;

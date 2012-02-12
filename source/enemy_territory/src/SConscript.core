@@ -72,6 +72,8 @@ vm_interpreted.c"""
 
 if ( cpu == 'x86' ):
 	qcommon_string += " vm_x86.c"
+else:
+	qcommon_string += " vm_none.c"
 
 qcommon_list = scons_utils.BuildList( 'qcommon', qcommon_string )
 
@@ -253,7 +255,9 @@ if ( MASTER != '' ):
 
 source_list = server_list + qcommon_list
 if ( g_os == 'Linux' ):
-	source_list += linux_sources + snapvector + matha
+	source_list += linux_sources
+	if (cpu == 'x86'):
+		source_list += snapvector + matha
 elif ( g_os == 'win32' ):
 	source_list += win32_sources
 elif ( g_os == 'Darwin' ):
@@ -274,8 +278,9 @@ if ( local_dedicated == 0 ):
 	source_list += [ 'qcommon/dl_main_curl.c' ]
 	source_list += curl_lib
 	if ( g_os == 'Linux' ):
-		source_list += snd_mixa
 		source_list += linux_full_sources
+		if (cpu == 'x86'):
+			source_list += snd_mixa
 	if ( g_os == 'win32' ):
 		source_list += win32_full_sources
 else:

@@ -38,14 +38,14 @@ if (scalar(stat('Conscript-client')))
 }
 
 # compiler
-$CC='gcc -m32';
-$CXX='g++ -m32';
+$CC='gcc';
+$CXX='g++';
 $LINK=$CXX;
 
 # detection of CPU type
 $cpu = `uname -m`;
 chop ($cpu);
-if ($cpu +~ /i?86/)
+if ($cpu +~ /i?86/ && $cpu ne 'x86_64')
 {
   $cpu = 'x86';
 }
@@ -173,7 +173,7 @@ if (($do_demo eq 1) && ($do_light eq 1))
   die "Can't mix demo and light";
 }
 
-$DEDICATED_NAME = 'wolfded.x86';
+$DEDICATED_NAME = 'wolfded.' . $cpu;
 # build the config directory
 $CONFIG_DIR = $config . '-' . $cpu . '-' . $OS . '-' . $libc;
 if ($do_demo eq 1)
@@ -187,7 +187,7 @@ if ($do_light eq 1)
 if ($do_update eq 1)
 {
   $CONFIG_DIR .= '-update';
-  $DEDICATED_NAME = 'wolfupdate.x86';
+  $DEDICATED_NAME = 'wolfupdate.' . $cpu;
 }
 
 # this is a safety, avoid releasing any setup with all debugging symbols :-)
@@ -271,7 +271,7 @@ if ($do_light eq 0 && $do_update eq 0 && $do_mod eq 0)
 
   Link $BUILD_DIR => '..';
 
-  Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK );
+  Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR CC CXX LINK cpu );
 
   Build $BUILD_DIR . '/unix/Conscript-client';
 }
@@ -281,7 +281,7 @@ $TARGET_DIR = 'dedicated';
 
 $BUILD_DIR = $CONFIG_DIR . '/' . $TARGET_DIR;
 
-Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR DEDICATED_NAME CC CXX LINK );
+Export qw( BASE_CFLAGS CONFIG_DIR BUILD_DIR DEDICATED_NAME CC CXX LINK cpu );
 
 Link $BUILD_DIR => '..';
 
