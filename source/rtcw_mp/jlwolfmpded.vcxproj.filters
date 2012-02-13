@@ -11,36 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cgame.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_cin.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_console.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_input.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_keys.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_net_chan.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_parse.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_scrn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_ui.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\cm_load.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,25 +50,19 @@
     <ClCompile Include="qcommon\net_chan.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="null\null_client.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="null\null_input.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="null\null_snddma.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="game\q_math.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game\q_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_adpcm.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_dma.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_mem.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_mix.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_wavelet.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="server\sv_bot.c">
@@ -140,9 +104,6 @@
     <ClCompile Include="qcommon\vm_x86.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_input.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,9 +111,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win32\win_snd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_syscon.c">

@@ -2,45 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4c10f483-1d81-4271-a067-2413b1d6b4cd}</UniqueIdentifier>
+      <UniqueIdentifier>{0e7b641a-acbc-4bb2-b243-0e01071ac732}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{067d71eb-23d1-42d1-accc-2de8e84e49c4}</UniqueIdentifier>
+      <UniqueIdentifier>{d2c78142-b7cd-4edb-873d-e6072b6c2525}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cgame.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_cin.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_console.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_input.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_keys.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_net_chan.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_parse.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_scrn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_ui.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\cm_load.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,25 +50,19 @@
     <ClCompile Include="qcommon\net_chan.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="null\null_client.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="null\null_input.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="null\null_snddma.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="game\q_math.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game\q_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_adpcm.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_dma.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_mem.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_mix.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_wavelet.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="server\sv_bot.c">
@@ -140,7 +104,7 @@
     <ClCompile Include="qcommon\vm_x86.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_input.c">
+    <ClCompile Include="win32\win_eh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_main.c">
@@ -152,9 +116,6 @@
     <ClCompile Include="win32\win_shared.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_snd.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_syscon.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -163,9 +124,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="A3D\a3dWrapperdp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\bg_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -196,9 +154,6 @@
     <ClInclude Include="game\g_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="A3D\ia3dapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ui\keycodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -218,12 +173,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="A3D\snd_A3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="A3D\snd_a3dg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\snd_local.h">
