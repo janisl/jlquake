@@ -66,7 +66,9 @@ Sys_SnapVector
 ================
 */
 long fastftol( float f ) {
-#ifndef __GNUC__
+#if defined _WIN64
+	return (int)f;
+#elif !defined __GNUC__
 	static int tmp;
 
 	__asm fld f
@@ -90,7 +92,7 @@ long fastftol( float f ) {
 }
 
 void Sys_SnapVector( float *v ) {
-#ifndef __GNUC__
+#if !defined __GNUC__ && !defined _WIN64
 	int i;
 	float f;
 
@@ -142,6 +144,7 @@ void Sys_SnapVector( float *v ) {
 **
 ** --------------------------------------------------------------------------------
 */
+#ifndef _WIN64
 static void CPUID( int func, unsigned regs[4] ) {
 #ifndef __GNUC__
 	unsigned regEAX, regEBX, regECX, regEDX;
@@ -366,10 +369,13 @@ static int IsAthlon() {
 
 	return qtrue;
 }
+#endif
 
 int Sys_GetProcessorId( void ) {
 #if defined _M_ALPHA
 	return CPUID_AXP;
+#elif defined _M_X64
+	return CPUID_INTEL_KATMAI;
 #elif !defined _M_IX86
 	return CPUID_GENERIC;
 #else
@@ -402,7 +408,11 @@ int Sys_GetProcessorId( void ) {
 }
 
 int Sys_GetHighQualityCPU() {
+#if defined _M_X64
+	return 1;
+#else
 	return ( !IsP3() && !IsAthlon() ) ? 0 : 1;
+#endif
 }
 
 //bani - defined but not used
@@ -465,7 +475,9 @@ float Sys_RealGetCPUSpeed( void ) {
 			QueryPerformanceCounter( &c1 );
 		}
 
-#ifndef __GNUC__
+#ifdef _WIN64
+		stamp0 = __rdtsc();
+#elif !defined __GNUC__
 		_asm
 		{
 			rdtsc
@@ -488,7 +500,9 @@ float Sys_RealGetCPUSpeed( void ) {
 			QueryPerformanceCounter( &c1 );
 		}
 
-#ifndef __GNUC__
+#ifdef _WIN64
+		stamp1 = __rdtsc();
+#elif !defined __GNUC__
 		_asm
 		{
 			rdtsc

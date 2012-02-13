@@ -122,6 +122,9 @@
     <ClCompile Include="win32\win_wndproc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qcommon\vm_none.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\bg_public.h">

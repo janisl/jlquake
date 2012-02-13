@@ -129,6 +129,30 @@ void BuildDump( char* buffer, int size ) {
 void BuildRegisters( char* buffer, int size ) {
 	char minibuffer[256];
 
+#ifdef _WIN64
+	Com_sprintf( minibuffer, sizeof( minibuffer ),
+				 "Registers      : RAX=%.8x CS=%.4x RIP=%.8x EFLGS=%.8x\r\n"
+				 "               : RBX=%.8x SS=%.4x RSP=%.8x RBP=%.8x\r\n"
+				 "               : RCX=%.8x DS=%.4x RSI=%.8x FS=%.4x\r\n"
+				 "               : RDX=%.8x ES=%.4x RDI=%.8x GS=%.4x\r\n",
+				 m_exPointers->ContextRecord->Rax,
+				 m_exPointers->ContextRecord->SegCs,
+				 m_exPointers->ContextRecord->Rip,
+				 m_exPointers->ContextRecord->EFlags,
+				 m_exPointers->ContextRecord->Rbx,
+				 m_exPointers->ContextRecord->SegSs,
+				 m_exPointers->ContextRecord->Rsp,
+				 m_exPointers->ContextRecord->Rbp,
+				 m_exPointers->ContextRecord->Rcx,
+				 m_exPointers->ContextRecord->SegDs,
+				 m_exPointers->ContextRecord->Rsi,
+				 m_exPointers->ContextRecord->SegFs,
+				 m_exPointers->ContextRecord->Rdx,
+				 m_exPointers->ContextRecord->SegEs,
+				 m_exPointers->ContextRecord->Rdi,
+				 m_exPointers->ContextRecord->SegGs
+				 );
+#else
 	Com_sprintf( minibuffer, sizeof( minibuffer ),
 				 "Registers      : EAX=%.8x CS=%.4x EIP=%.8x EFLGS=%.8x\r\n"
 				 "               : EBX=%.8x SS=%.4x ESP=%.8x EBP=%.8x\r\n"
@@ -151,6 +175,7 @@ void BuildRegisters( char* buffer, int size ) {
 				 m_exPointers->ContextRecord->Edi,
 				 m_exPointers->ContextRecord->SegGs
 				 );
+#endif
 
 	Q_strcat( buffer, size, minibuffer );
 }
@@ -160,7 +185,11 @@ void BuildStackTrace( char* buffer, int size ) {
 	DWORD* sp;
 	DWORD stackTrace[MAX_STACK_TRACE_LINES];
 
+#ifdef _WIN64
+	sp = ( DWORD * )( m_exPointers->ContextRecord->Rbp );
+#else
 	sp = ( DWORD * )( m_exPointers->ContextRecord->Ebp );
+#endif
 	for ( i = 0; i < MAX_STACK_TRACE_LINES; i++ ) {
 		if ( !IsBadReadPtr( sp, sizeof( DWORD ) ) && *sp ) {
 			DWORD* np = (DWORD*)*sp;

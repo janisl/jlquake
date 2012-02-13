@@ -161,12 +161,16 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef NDEBUG
 #ifdef _M_IX86
 #define CPUSTRING   "win-x86"
+#elif defined _M_X64
+#define CPUSTRING   "win-x86_64"
 #elif defined _M_ALPHA
 #define CPUSTRING   "win-AXP"
 #endif
 #else
 #ifdef _M_IX86
 #define CPUSTRING   "win-x86-debug"
+#elif defined _M_X64
+#define CPUSTRING   "win-x86_64-debug"
 #elif defined _M_ALPHA
 #define CPUSTRING   "win-AXP-debug"
 #endif
@@ -600,7 +604,7 @@ float Q_rsqrt( float f );       // reciprocal square root
 // fast float to int conversion
 #if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
 long myftol( float f );
-#elif defined( __MACOS__ )
+#elif defined( __MACOS__ ) || defined _WIN64
 #define myftol( x ) (long)( x )
 #else
 extern long int lrintf( float x );

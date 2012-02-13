@@ -176,6 +176,9 @@
     <ClCompile Include="qcommon\dl_main_stubs.c">
       <Filter>download</Filter>
     </ClCompile>
+    <ClCompile Include="qcommon\vm_none.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\bg_public.h">

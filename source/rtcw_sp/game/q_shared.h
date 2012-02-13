@@ -138,12 +138,16 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef NDEBUG
 #ifdef _M_IX86
 #define CPUSTRING   "win-x86"
+#elif defined _M_X64
+#define CPUSTRING   "win-x86_64"
 #elif defined _M_ALPHA
 #define CPUSTRING   "win-AXP"
 #endif
 #else
 #ifdef _M_IX86
 #define CPUSTRING   "win-x86-debug"
+#elif defined _M_X64
+#define CPUSTRING   "win-x86_64-debug"
 #elif defined _M_ALPHA
 #define CPUSTRING   "win-AXP-debug"
 #endif
