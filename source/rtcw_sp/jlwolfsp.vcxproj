@@ -377,15 +377,15 @@
     <ClInclude Include="win32\win_local.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="botlib\botlib.vcxproj">
+    <ProjectReference Include="botlib\botlib-wolfsp.vcxproj">
       <Project>{86691fdd-e0c6-4d71-9ffd-e0f30f19aa3e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="renderer\renderer.vcxproj">
+    <ProjectReference Include="renderer\renderer-wolfsp.vcxproj">
       <Project>{f45a4f73-0ea1-4eb2-9829-154964adec6a}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="splines\Splines.vcxproj">
+    <ProjectReference Include="splines\splines-wolfsp.vcxproj">
       <Project>{aa96579b-0f16-4614-8453-0b03c8b39a46}</Project>
     </ProjectReference>
   </ItemGroup>
