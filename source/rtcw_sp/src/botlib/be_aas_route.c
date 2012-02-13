@@ -904,6 +904,20 @@ typedef struct routecacheheader_s
 void AAS_DecompressVis( byte *in, int numareas, byte *decompressed );
 int AAS_CompressVis( byte *vis, int numareas, byte *dest );
 
+typedef struct
+{
+	int size;                                   //size of the routing cache
+	float time;                                 //last time accessed or updated
+	int cluster;                                //cluster the cache is for
+	int areanum;                                //area the cache is created for
+	vec3_t origin;                              //origin within the area
+	float starttraveltime;                      //travel time to start with
+	int travelflags;                            //combinations of the travel flags
+	int prev, next;
+	int reachabilities;              //reachabilities used for routing
+	unsigned short int traveltimes[1];          //travel time for every area (variable sized)
+} aas_routingcache_f_t;
+
 void AAS_WriteRouteCache( void ) {
 	int i, j, numportalcache, numareacache, size;
 	aas_routingcache_t *cache;
@@ -999,14 +1013,17 @@ void AAS_WriteRouteCache( void ) {
 // Changes Globals:		-
 //===========================================================================
 aas_routingcache_t *AAS_ReadCache( fileHandle_t fp ) {
-	int i, size;
+	int i, size, realSize;
 	aas_routingcache_t *cache;
 
 	botimport.FS_Read( &size, sizeof( size ), fp );
 	size = LittleLong( size );
-	cache = (aas_routingcache_t *) AAS_RoutingGetMemory( size );
-	cache->size = size;
+	realSize = size - sizeof(aas_routingcache_f_t) + sizeof(aas_routingcache_t);
+	cache = (aas_routingcache_t *) AAS_RoutingGetMemory( realSize );
+	cache->size = realSize;
 	botimport.FS_Read( (unsigned char *)cache + sizeof( size ), size - sizeof( size ), fp );
+
+	memmove(cache->traveltimes, ((aas_routingcache_f_t*)cache)->traveltimes, size - sizeof(aas_routingcache_f_t) + sizeof(short));
 
 	if ( 1 != LittleLong( 1 ) ) {
 		cache->time = LittleFloat( cache->time );
@@ -1022,10 +1039,10 @@ aas_routingcache_t *AAS_ReadCache( fileHandle_t fp ) {
 //	cache->reachabilities = (unsigned char *) cache + sizeof(aas_routingcache_t) - sizeof(unsigned short) +
 //		(size - sizeof(aas_routingcache_t) + sizeof(unsigned short)) / 3 * 2;
 	cache->reachabilities = (unsigned char *) cache + sizeof( aas_routingcache_t ) +
-							( ( size - sizeof( aas_routingcache_t ) ) / 3 ) * 2;
+							( ( realSize - sizeof( aas_routingcache_t ) ) / 3 ) * 2;
 
 	//DAJ BUGFIX for missing byteswaps for traveltimes
-	size = ( size - sizeof( aas_routingcache_t ) ) / 3 + 1;
+	size = ( size - sizeof( aas_routingcache_f_t ) ) / 3 + 1;
 	for ( i = 0; i < size; i++ ) {
 		cache->traveltimes[i] = LittleShort( cache->traveltimes[i] );
 	}
