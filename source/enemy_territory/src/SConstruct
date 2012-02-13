@@ -264,11 +264,8 @@ if ( int(JOBS) > 1 ):
 # mark the globals
 
 local_dedicated = 0
-# curl
-local_curl = 0	# config selection
-curl_lib = []
 
-GLOBALS = 'g_env OS g_os BUILD local_dedicated curl_lib local_curl MASTER gcc3 cpu'
+GLOBALS = 'g_env OS g_os BUILD local_dedicated MASTER gcc3 cpu'
 
 # end general configuration ----------------------
 
@@ -290,16 +287,6 @@ if g_os == 'win32' and os.name != 'nt':
 # targets ----------------------------------------
 
 toplevel_targets = []
-
-# build curl if needed
-if ( DEDICATED != '1' and OS != 'Darwin' ):
-	# 1: debug, 2: release
-	if ( BUILD == 'release' ):
-		local_curl = 2
-	else:
-		local_curl = 1
-	Export( 'GLOBALS ' + GLOBALS )
-	curl_lib = SConscript( 'SConscript.curl' )
 
 if ( DEDICATED == '0' or DEDICATED == '2' ):
 	local_dedicated = 0
