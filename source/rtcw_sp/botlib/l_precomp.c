@@ -691,7 +691,7 @@ void PC_AddBuiltinDefines( source_t *source ) {
 int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *define,
 							token_t **firsttoken, token_t **lasttoken ) {
 	token_t *token;
-	unsigned long t;    //	time_t t; //to prevent LCC warning
+	time_t t; //to prevent LCC warning
 	char *curtime;
 
 	token = PC_CopyToken( deftoken );
@@ -816,15 +816,15 @@ int PC_ExpandDefine( source_t *source, token_t *deftoken, define_t *define,
 		} //end if
 		else
 		{
-			//if stringizing operator
+			//if stringizing operator_
 			if ( dt->string[0] == '#' && dt->string[1] == '\0' ) {
-				//the stringizing operator must be followed by a define parameter
+				//the stringizing operator_ must be followed by a define parameter
 				if ( dt->next ) {
 					parmnum = PC_FindDefineParm( define, dt->next->string );
 				} else { parmnum = -1;}
 				//
 				if ( parmnum >= 0 ) {
-					//step over the stringizing operator
+					//step over the stringizing operator_
 					dt = dt->next;
 					//stringize the define parameter tokens
 					if ( !PC_StringizeTokens( parms[parmnum], &token ) ) {
@@ -835,7 +835,7 @@ int PC_ExpandDefine( source_t *source, token_t *deftoken, define_t *define,
 				} //end if
 				else
 				{
-					SourceWarning( source, "stringizing operator without define parameter" );
+					SourceWarning( source, "stringizing operator_ without define parameter" );
 					continue;
 				} //end if
 			} //end if
@@ -851,11 +851,11 @@ int PC_ExpandDefine( source_t *source, token_t *deftoken, define_t *define,
 			last = t;
 		} //end else
 	} //end for
-	  //check for the merging operator
+	  //check for the merging operator_
 	for ( t = first; t; )
 	{
 		if ( t->next ) {
-			//if the merging operator
+			//if the merging operator_
 			if ( t->next->string[0] == '#' && t->next->string[1] == '#' ) {
 				t1 = t;
 				t2 = t->next->next;
@@ -1298,7 +1298,7 @@ define_t *PC_DefineFromString( char *string ) {
 	strncpy( src.filename, "*extern", _MAX_PATH );
 	src.scriptstack = script;
 #if DEFINEHASHING
-	src.definehash = GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
+	src.definehash = (define_t**)GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
 #endif //DEFINEHASHING
 	   //create a define from the source
 	res = PC_Directive_define( &src );
@@ -1565,7 +1565,7 @@ int PC_Directive_endif( source_t *source ) {
 //============================================================================
 typedef struct operator_s
 {
-	int operator;
+	int operator_;
 	int priority;
 	int parentheses;
 	struct operator_s *prev, *next;
@@ -1632,7 +1632,7 @@ int PC_OperatorPriority( int op ) {
 //
 #define AllocOperator( op )								  \
 	if ( numoperators >= MAX_OPERATORS ) {				  \
-		SourceError( source, "out of operator space\n" );	\
+		SourceError( source, "out of operator_ space\n" );	\
 		error = 1;										\
 		break;											\
 	}													\
@@ -1786,7 +1786,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 					 t->subtype == P_RSHIFT || t->subtype == P_LSHIFT ||
 					 t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
 					 t->subtype == P_BIN_XOR ) {
-					SourceError( source, "illigal operator %s on floating point operands\n", t->string );
+					SourceError( source, "illigal operator_ %s on floating point operands\n", t->string );
 					error = 1;
 					break;
 				}     //end if
@@ -1843,7 +1843,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 			case P_QUESTIONMARK:
 			{
 				if ( !lastwasvalue ) {
-					SourceError( source, "operator %s after operator in #if/#elif", t->string );
+					SourceError( source, "operator_ %s after operator_ in #if/#elif", t->string );
 					error = 1;
 					break;
 				}         //end if
@@ -1851,7 +1851,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 			}         //end case
 			default:
 			{
-				SourceError( source, "invalid operator %s in #if/#elif", t->string );
+				SourceError( source, "invalid operator_ %s in #if/#elif", t->string );
 				error = 1;
 				break;
 			}         //end default
@@ -1859,7 +1859,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 			if ( !error && !negativevalue ) {
 				//o = (operator_t *) GetClearedMemory(sizeof(operator_t));
 				AllocOperator( o );
-				o->operator = t->subtype;
+				o->operator_ = t->subtype;
 				o->priority = PC_OperatorPriority( t->subtype );
 				o->parentheses = parentheses;
 				o->next = NULL;
@@ -1885,7 +1885,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 	} //end for
 	if ( !error ) {
 		if ( !lastwasvalue ) {
-			SourceError( source, "trailing operator in #if/#elif" );
+			SourceError( source, "trailing operator_ in #if/#elif" );
 			error = 1;
 		} //end if
 		else if ( parentheses ) {
@@ -1903,22 +1903,22 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 		v = firstvalue;
 		for ( o = firstoperator; o->next; o = o->next )
 		{
-			//if the current operator is nested deeper in parentheses
-			//than the next operator
+			//if the current operator_ is nested deeper in parentheses
+			//than the next operator_
 			if ( o->parentheses > o->next->parentheses ) {
 				break;
 			}
-			//if the current and next operator are nested equally deep in parentheses
+			//if the current and next operator_ are nested equally deep in parentheses
 			if ( o->parentheses == o->next->parentheses ) {
-				//if the priority of the current operator is equal or higher
-				//than the priority of the next operator
+				//if the priority of the current operator_ is equal or higher
+				//than the priority of the next operator_
 				if ( o->priority >= o->next->priority ) {
 					break;
 				}
 			} //end if
-			  //if the arity of the operator isn't equal to 1
-			if ( o->operator != P_LOGIC_NOT
-				 && o->operator != P_BIN_NOT ) {
+			  //if the arity of the operator_ isn't equal to 1
+			if ( o->operator_ != P_LOGIC_NOT
+				 && o->operator_ != P_BIN_NOT ) {
 				v = v->next;
 			}
 			//if there's no value or no next value
@@ -1935,20 +1935,20 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 		v2 = v->next;
 #ifdef DEBUG_EVAL
 		if ( integer ) {
-			Log_Write( "operator %s, value1 = %d", PunctuationFromNum( source->scriptstack, o->operator ), v1->intvalue );
+			Log_Write( "operator_ %s, value1 = %d", PunctuationFromNum( source->scriptstack, o->operator_ ), v1->intvalue );
 			if ( v2 ) {
 				Log_Write( "value2 = %d", v2->intvalue );
 			}
 		} //end if
 		else
 		{
-			Log_Write( "operator %s, value1 = %f", PunctuationFromNum( source->scriptstack, o->operator ), v1->floatvalue );
+			Log_Write( "operator_ %s, value1 = %f", PunctuationFromNum( source->scriptstack, o->operator_ ), v1->floatvalue );
 			if ( v2 ) {
 				Log_Write( "value2 = %f", v2->floatvalue );
 			}
 		} //end else
 #endif //DEBUG_EVAL
-		switch ( o->operator )
+		switch ( o->operator_ )
 		{
 		case P_LOGIC_NOT:       v1->intvalue = !v1->intvalue;
 			v1->floatvalue = !v1->floatvalue; break;
@@ -2041,12 +2041,12 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 		if ( error ) {
 			break;
 		}
-		lastoperatortype = o->operator;
-		//if not an operator with arity 1
-		if ( o->operator != P_LOGIC_NOT
-			 && o->operator != P_BIN_NOT ) {
-			//remove the second value if not question mark operator
-			if ( o->operator != P_QUESTIONMARK ) {
+		lastoperatortype = o->operator_;
+		//if not an operator_ with arity 1
+		if ( o->operator_ != P_LOGIC_NOT
+			 && o->operator_ != P_BIN_NOT ) {
+			//remove the second value if not question mark operator_
+			if ( o->operator_ != P_QUESTIONMARK ) {
 				v = v->next;
 			}
 			//
@@ -2059,7 +2059,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 			//FreeMemory(v);
 			FreeValue( v );
 		} //end if
-		  //remove the operator
+		  //remove the operator_
 		if ( o->prev ) {
 			o->prev->next = o->next;
 		} else { firstoperator = o->next;}
@@ -2998,7 +2998,7 @@ source_t *LoadSourceFile( const char *filename ) {
 	source->skip = 0;
 
 #if DEFINEHASHING
-	source->definehash = GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
+	source->definehash = (define_t **)GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
 #endif //DEFINEHASHING
 	PC_AddGlobalDefinesToSource( source );
 	return source;
@@ -3032,7 +3032,7 @@ source_t *LoadSourceMemory( char *ptr, int length, char *name ) {
 	source->skip = 0;
 
 #if DEFINEHASHING
-	source->definehash = GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
+	source->definehash = (define_t **)GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
 #endif //DEFINEHASHING
 	PC_AddGlobalDefinesToSource( source );
 	return source;

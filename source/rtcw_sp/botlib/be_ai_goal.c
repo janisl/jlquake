@@ -1550,7 +1550,7 @@ int BotAllocGoalState( int client ) {
 	for ( i = 1; i <= MAX_CLIENTS; i++ )
 	{
 		if ( !botgoalstates[i] ) {
-			botgoalstates[i] = GetClearedMemory( sizeof( bot_goalstate_t ) );
+			botgoalstates[i] = (bot_goalstate_t*)GetClearedMemory( sizeof( bot_goalstate_t ) );
 			botgoalstates[i]->client = client;
 			return i;
 		} //end if
