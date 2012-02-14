@@ -5,6 +5,8 @@ set(ALL_CFLAGS ${DEBUG_CFLAGS})
 
 set(CLIENTS_LIBS client core z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
 set(SERVERS_LIBS core z dl)
+set(WOLF_CLIENTS_LIBS z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
+set(WOLF_SERVERS_LIBS z dl)
 
 include_directories(/usr/include/freetype2)
 
@@ -19,3 +21,6 @@ add_subdirectory(hexen2)
 add_subdirectory(hexenworld)
 add_subdirectory(quake2)
 add_subdirectory(quake3)
+add_subdirectory(rtcw_sp)
+add_subdirectory(rtcw_mp)
+add_subdirectory(enemy_territory)

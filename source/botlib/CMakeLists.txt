@@ -1,8 +1,4 @@
-set(BASE_CFLAGS "-pipe -fsigned-char -I/usr/X11R6/include")
-set(DEBUG_CFLAGS "${BASE_CFLAGS} -g  -Wall -DNO_MOUSEGRAB -O")
-set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium -fomit-frame-pointer -pipe -ffast-math -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
-
-set(BOTLIB_SOURCES
+add_library(botlib STATIC
 	be_aas_bspq3.cpp
 	be_aas_cluster.cpp
 	be_aas_debug.cpp
@@ -31,7 +27,5 @@ set(BOTLIB_SOURCES
 	l_script.cpp
 	l_struct.cpp
 )
-
-add_library(botlib STATIC ${BOTLIB_SOURCES})
-set_target_properties(botlib PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS}")
+set_target_properties(botlib PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 add_dependencies(botlib core)
