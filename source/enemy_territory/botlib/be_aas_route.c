@@ -3533,15 +3533,15 @@ void AAS_InitTeamDeath( void ) {
 	if ( aasworld->teamDeathTime ) {
 		FreeMemory( aasworld->teamDeathTime );
 	}
-	aasworld->teamDeathTime = GetClearedMemory( sizeof( int ) * aasworld->numareas * 2 );
+	aasworld->teamDeathTime = (int*)GetClearedMemory( sizeof( int ) * aasworld->numareas * 2 );
 	if ( aasworld->teamDeathCount ) {
 		FreeMemory( aasworld->teamDeathCount );
 	}
-	aasworld->teamDeathCount = GetClearedMemory( sizeof( byte ) * aasworld->numareas * 2 );
+	aasworld->teamDeathCount = (byte*)GetClearedMemory( sizeof( byte ) * aasworld->numareas * 2 );
 	if ( aasworld->teamDeathAvoid ) {
 		FreeMemory( aasworld->teamDeathAvoid );
 	}
-	aasworld->teamDeathAvoid = GetClearedMemory( sizeof( byte ) * aasworld->numareas * 2 );
+	aasworld->teamDeathAvoid = (byte*)GetClearedMemory( sizeof( byte ) * aasworld->numareas * 2 );
 }
 
 #define TEAM_DEATH_TIMEOUT              120.0

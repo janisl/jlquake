@@ -125,7 +125,7 @@ int BotAllocMoveState( void ) {
 	for ( i = 1; i <= MAX_CLIENTS; i++ )
 	{
 		if ( !botmovestates[i] ) {
-			botmovestates[i] = GetClearedMemory( sizeof( bot_movestate_t ) );
+			botmovestates[i] = (bot_movestate_t*)GetClearedMemory( sizeof( bot_movestate_t ) );
 			return i;
 		} //end if
 	} //end for
