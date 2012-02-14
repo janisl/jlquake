@@ -1055,7 +1055,7 @@ static void ParseDeform( char **text ) {
 		if ( n < 0 || n > 7 ) {
 			n = 0;
 		}
-		ds->deformation = DEFORM_TEXT0 + n;
+		ds->deformation = (deform_t)(DEFORM_TEXT0 + n);
 		return;
 	}
 
@@ -1977,7 +1977,7 @@ static shader_t *GeneratePermanentShader( void ) {
 	}
 
 	// Ridah, caching system
-	newShader = R_CacheShaderAlloc( sizeof( shader_t ) );
+	newShader = (shader_t*)R_CacheShaderAlloc( sizeof( shader_t ) );
 
 	*newShader = shader;
 
@@ -2001,7 +2001,7 @@ static shader_t *GeneratePermanentShader( void ) {
 			break;
 		}
 		// Ridah, caching system
-		newShader->stages[i] = R_CacheShaderAlloc( sizeof( stages[i] ) );
+		newShader->stages[i] = (shaderStage_t*)R_CacheShaderAlloc( sizeof( stages[i] ) );
 
 		*newShader->stages[i] = stages[i];
 
@@ -2013,7 +2013,7 @@ static shader_t *GeneratePermanentShader( void ) {
 			}
 			size = newShader->stages[i]->bundle[b].numTexMods * sizeof( texModInfo_t );
 			// Ridah, caching system
-			newShader->stages[i]->bundle[b].texMods = R_CacheShaderAlloc( size );
+			newShader->stages[i]->bundle[b].texMods = (texModInfo_t*)R_CacheShaderAlloc( size );
 
 			memcpy( newShader->stages[i]->bundle[b].texMods, stages[i].bundle[b].texMods, size );
 		}
@@ -2990,7 +2990,7 @@ static void ScanAndLoadShaderFiles( void ) {
 	}
 
 	// build single large buffer
-	s_shaderText = ri.Hunk_Alloc( sum + numShaders * 2, h_low );
+	s_shaderText = (char*)ri.Hunk_Alloc( sum + numShaders * 2, h_low );
 
 	// free in reverse order, so the temp files are all dumped
 	for ( i = numShaders - 1; i >= 0 ; i-- ) {

@@ -1738,7 +1738,7 @@ void CIN_DrawCinematic( int handle ) {
 		}
 
 		buf3 = (int*)buf;
-		buf2 = Hunk_AllocateTempMemory( 256 * 256 * 4 );
+		buf2 = (int*)Hunk_AllocateTempMemory( 256 * 256 * 4 );
 		if ( xm == 2 && ym == 2 ) {
 			byte *bc2, *bc3;
 			int ic, iiy;

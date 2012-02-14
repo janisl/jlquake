@@ -122,7 +122,7 @@ void R_AddPolygonSurfaces( void ) {
 	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys ; i++, poly++ ) {
 		sh = R_GetShaderByHandle( poly->hShader );
 // GR - not tessellated
-		R_AddDrawSurf( ( void * )poly, sh, poly->fogIndex, qfalse, ATI_TESS_NONE );
+		R_AddDrawSurf( ( surfaceType_t* )poly, sh, poly->fogIndex, qfalse, ATI_TESS_NONE );
 	}
 }
 
@@ -523,10 +523,10 @@ void RE_RenderScene( const refdef_t *fd ) {
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
 
-	VectorCopy( fd->vieworg, parms.or.origin );
-	VectorCopy( fd->viewaxis[0], parms.or.axis[0] );
-	VectorCopy( fd->viewaxis[1], parms.or.axis[1] );
-	VectorCopy( fd->viewaxis[2], parms.or.axis[2] );
+	VectorCopy( fd->vieworg, parms._or.origin );
+	VectorCopy( fd->viewaxis[0], parms._or.axis[0] );
+	VectorCopy( fd->viewaxis[1], parms._or.axis[1] );
+	VectorCopy( fd->viewaxis[2], parms._or.axis[2] );
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 

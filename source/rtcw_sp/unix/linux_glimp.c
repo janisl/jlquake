@@ -843,7 +843,7 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 	}
 #endif
 
-	err = GLW_SetMode( drivername, mode, fullscreen );
+	err = (rserr_t)GLW_SetMode( drivername, mode, fullscreen );
 
 	switch ( err )
 	{

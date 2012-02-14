@@ -817,7 +817,7 @@ CopyString
 char *CopyString( const char *in ) {
 	char    *out;
 
-	out = Z_Malloc( strlen( in ) + 1 );
+	out = (char*)Z_Malloc( strlen( in ) + 1 );
 	strcpy( out, in );
 	return out;
 }
@@ -1090,7 +1090,7 @@ void Com_InitHunkMemory( void ) {
 	}
 
 
-	s_hunkData = malloc( s_hunkTotal + 31 );
+	s_hunkData = (char*)malloc( s_hunkTotal + 31 );
 	if ( !s_hunkData ) {
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / ( 1024 * 1024 ) );
 	}
@@ -1418,9 +1418,9 @@ void Hunk_Trash( void ) {
 	Hunk_SwapBanks();
 
 	if ( hunk_permanent == &hunk_low ) {
-		buf = ( void * )( s_hunkData + hunk_permanent->permanent );
+		buf = ( char* )( s_hunkData + hunk_permanent->permanent );
 	} else {
-		buf = ( void * )( s_hunkData + s_hunkTotal - hunk_permanent->permanent );
+		buf = ( char* )( s_hunkData + s_hunkTotal - hunk_permanent->permanent );
 	}
 	length = hunk_permanent->permanent;
 

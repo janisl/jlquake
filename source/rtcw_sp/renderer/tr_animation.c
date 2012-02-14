@@ -49,7 +49,8 @@ frame.
 
 static float frontlerp, backlerp;
 static float torsoFrontlerp, torsoBacklerp;
-static int             *triangles, *boneRefs, *pIndexes;
+static int             *triangles, *boneRefs;
+static glIndex_t* pIndexes;
 static int indexes;
 static int baseIndex, baseVertex, oldIndexes;
 static int numVerts;
@@ -91,8 +92,8 @@ static float ProjectRadius( float r, vec3_t location ) {
 	vec3_t p;
 	float projected[4];
 
-	c = DotProduct( tr.viewParms.or.axis[0], tr.viewParms.or.origin );
-	dist = DotProduct( tr.viewParms.or.axis[0], location ) - c;
+	c = DotProduct( tr.viewParms._or.axis[0], tr.viewParms._or.origin );
+	dist = DotProduct( tr.viewParms._or.axis[0], location ) - c;
 
 	if ( dist <= 0 ) {
 		return 0;
@@ -399,7 +400,7 @@ void R_AddAnimSurfaces( trRefEntity_t *ent ) {
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel ) {
 			// GR - always tessellate these objects
-			R_AddDrawSurf( (void *)surface, shader, fogNum, qfalse, ATI_TESS_TRUFORM );
+			R_AddDrawSurf( (surfaceType_t *)surface, shader, fogNum, qfalse, ATI_TESS_TRUFORM );
 		}
 
 		surface = ( mdsSurface_t * )( (byte *)surface + surface->ofsEnd );
@@ -1253,7 +1254,7 @@ void RB_SurfaceAnim( mdsSurface_t *surface ) {
 	if ( render_count == surface->numVerts ) {
 		memcpy( pIndexes, triangles, sizeof( triangles[0] ) * indexes );
 		if ( baseVertex ) {
-			int *indexesEnd;
+			glIndex_t* indexesEnd;
 			for ( indexesEnd = pIndexes + indexes ; pIndexes < indexesEnd ; pIndexes++ ) {
 				*pIndexes += baseVertex;
 			}
