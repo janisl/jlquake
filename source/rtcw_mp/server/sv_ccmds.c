@@ -357,10 +357,10 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
-	old_gs = atoi( Cvar_VariableString( "gamestate" ) );
+	old_gs = (gamestate_t)atoi( Cvar_VariableString( "gamestate" ) );
 
 	if ( Cmd_Argc() > 2 ) {
-		new_gs = atoi( Cmd_Argv( 2 ) );
+		new_gs = (gamestate_t)atoi( Cmd_Argv( 2 ) );
 	} else {
 		new_gs = GS_PLAYING;
 	}
@@ -429,7 +429,7 @@ static void SV_MapRestart_f( void ) {
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
+		denied = (char*)VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
 		if ( denied ) {
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
@@ -457,7 +457,7 @@ SV_LoadGame_f
 */
 void    SV_LoadGame_f( void ) {
 	char filename[MAX_QPATH], mapname[MAX_QPATH];
-	byte *buffer;
+	char *buffer;
 	int size;
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
@@ -478,7 +478,7 @@ void    SV_LoadGame_f( void ) {
 		return;
 	}
 
-	buffer = Hunk_AllocateTempMemory( size );
+	buffer = (char*)Hunk_AllocateTempMemory( size );
 	FS_ReadFile( filename, (void **)&buffer );
 
 	// read the mapname, if it is the same as the current map, then do a fast load

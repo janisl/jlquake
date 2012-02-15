@@ -446,7 +446,7 @@ gotnewcl:
 	denied = VM_Call( gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse ); // firstTime = qtrue
 	if ( denied ) {
 		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
-		char* denied_str = VM_ExplicitArgPtr( gvm, denied );
+		char* denied_str = (char*)VM_ExplicitArgPtr( gvm, denied );
 
 		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", denied_str );
 		Com_DPrintf( "Game rejected a connection: %s.\n", denied_str );
@@ -888,7 +888,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
 		curindex = ( cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW );
 
 		if ( !cl->downloadBlocks[curindex] ) {
-			cl->downloadBlocks[curindex] = Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
+			cl->downloadBlocks[curindex] = (byte*)Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
 		}
 
 		cl->downloadBlockSize[curindex] = FS_Read( cl->downloadBlocks[curindex], MAX_DOWNLOAD_BLKSIZE, cl->download );

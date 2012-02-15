@@ -105,10 +105,10 @@ void SND_setup() {
 
 	scs = cv->integer * 512;
 
-	buffer = malloc( scs * sizeof( sndBuffer ) );
+	buffer = (sndBuffer*)malloc( scs * sizeof( sndBuffer ) );
 	// allocate the stack based hunk allocator
 //DAJ HOG	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4);
-	sfxScratchBuffer = Hunk_Alloc( SND_CHUNK_SIZE * sizeof( short ) * 4, h_high );  //DAJ HOG was CO
+	sfxScratchBuffer = (short*)Hunk_Alloc( SND_CHUNK_SIZE * sizeof( short ) * 4, h_high );  //DAJ HOG was CO
 	sfxScratchPointer = NULL;
 
 	inUse = scs * sizeof( sndBuffer );
@@ -392,7 +392,7 @@ qboolean S_LoadSound( sfx_t *sfx ) {
 		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is not a 22kHz wav file\n", sfx->soundName );
 	}
 
-	samples = Hunk_AllocateTempMemory( info.samples * sizeof( short ) * 2 );
+	samples = (short*)Hunk_AllocateTempMemory( info.samples * sizeof( short ) * 2 );
 
 	// DHM - Nerve
 	sfx->lastTimeUsed = Sys_Milliseconds() + 1;

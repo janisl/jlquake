@@ -854,8 +854,8 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 
 	Q_strncpyz( fqpath, fn, MAX_QPATH ) ;           // added 2/15/02 by T.Ray
 
-	dllEntry = dlsym( libHandle, "dllEntry" );
-	*entryPoint = dlsym( libHandle, "vmMain" );
+	dllEntry = (void (*)(intptr_t(*)(int, ...)))dlsym( libHandle, "dllEntry" );
+	*entryPoint = (intptr_t(*)(int, ... ))dlsym( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		err = dlerror();
 #ifndef NDEBUG // in debug abort on failure
@@ -1156,7 +1156,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		int len;
 
 		len = strlen( s ) + 1;
-		b = Z_Malloc( len );
+		b = (char*)Z_Malloc( len );
 		strcpy( b, s );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
@@ -1172,7 +1172,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 		// copy out to a seperate buffer for qeueing
 		len = sizeof( netadr_t ) + netmsg.cursize;
-		buf = Z_Malloc( len );
+		buf = (netadr_t*)Z_Malloc( len );
 		*buf = adr;
 		memcpy( buf + 1, netmsg.data, netmsg.cursize );
 		Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );
@@ -1415,7 +1415,7 @@ int main( int argc, char* argv[] ) {
 	// merge the command line, this is kinda silly
 	for ( len = 1, i = 1; i < argc; i++ )
 		len += strlen( argv[i] ) + 1;
-	cmdline = malloc( len );
+	cmdline = (char*)malloc( len );
 	*cmdline = 0;
 	for ( i = 1; i < argc; i++ )
 	{

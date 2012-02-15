@@ -545,7 +545,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath ) {
 
 	// we are using direct malloc instead of Z_Malloc here, so it
 	// probably won't work on a mac... Its only for developers anyway...
-	buf = malloc( len );
+	buf = (byte*)malloc( len );
 	if ( fread( buf, 1, len, f ) != len ) {
 		Com_Error( ERR_FATAL, "Short read in FS_Copyfiles()\n" );
 	}
@@ -1741,7 +1741,7 @@ int FS_ReadFile( const char *qpath, void **buffer ) {
 				return len;
 			}
 
-			buf = Hunk_AllocateTempMemory( len + 1 );
+			buf = (byte*)Hunk_AllocateTempMemory( len + 1 );
 			*buffer = buf;
 
 			r = FS_Read( buf, len, com_journalDataFile );
@@ -1790,7 +1790,7 @@ int FS_ReadFile( const char *qpath, void **buffer ) {
 	fs_loadCount++;
 	fs_loadStack++;
 
-	buf = Hunk_AllocateTempMemory( len + 1 );
+	buf = (byte*)Hunk_AllocateTempMemory( len + 1 );
 	*buffer = buf;
 
 	FS_Read( buf, len, h );
@@ -1915,9 +1915,9 @@ static pack_t *FS_LoadZipFile( char *zipfile, const char *basename ) {
 		unzGoToNextFile( uf );
 	}
 
-	buildBuffer = Z_Malloc( ( gi.number_entry * sizeof( fileInPack_t ) ) + len );
+	buildBuffer = (fileInPack_t*)Z_Malloc( ( gi.number_entry * sizeof( fileInPack_t ) ) + len );
 	namePtr = ( (char *) buildBuffer ) + gi.number_entry * sizeof( fileInPack_t );
-	fs_headerLongs = Z_Malloc( gi.number_entry * sizeof( int ) );
+	fs_headerLongs = (int*)Z_Malloc( gi.number_entry * sizeof( int ) );
 
 	// get the hash table size from the number of files in the zip
 	// because lots of custom pk3 files have less than 32 or 64 files
@@ -1927,7 +1927,7 @@ static pack_t *FS_LoadZipFile( char *zipfile, const char *basename ) {
 		}
 	}
 
-	pack = Z_Malloc( sizeof( pack_t ) + i * sizeof( fileInPack_t * ) );
+	pack = (pack_t*)Z_Malloc( sizeof( pack_t ) + i * sizeof( fileInPack_t * ) );
 	pack->hashSize = i;
 	pack->hashTable = ( fileInPack_t ** )( ( (char *) pack ) + sizeof( pack_t ) );
 	for ( i = 0; i < pack->hashSize; i++ ) {
@@ -2164,7 +2164,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 		return NULL;
 	}
 
-	listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+	listCopy = (char**)Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 	for ( i = 0 ; i < nfiles ; i++ ) {
 		listCopy[i] = list[i];
 	}
@@ -2275,7 +2275,7 @@ static char** Sys_ConcatenateFileLists( char **list0, char **list1, char **list2
 	totalLength += Sys_CountFileList( list2 );
 
 	/* Create new list. */
-	dst = cat = Z_Malloc( ( totalLength + 1 ) * sizeof( char* ) );
+	dst = cat = (char**)Z_Malloc( ( totalLength + 1 ) * sizeof( char* ) );
 
 	/* Copy over lists. */
 	if ( list0 ) {
@@ -2537,7 +2537,7 @@ void FS_SortFileList( char **filelist, int numfiles ) {
 	int i, j, k, numsortedfiles;
 	char **sortedlist;
 
-	sortedlist = Z_Malloc( ( numfiles + 1 ) * sizeof( *sortedlist ) );
+	sortedlist = (char**)Z_Malloc( ( numfiles + 1 ) * sizeof( *sortedlist ) );
 	sortedlist[0] = NULL;
 	numsortedfiles = 0;
 	for ( i = 0; i < numfiles; i++ ) {
@@ -2694,8 +2694,8 @@ static void FS_AddGameDirectory( const char *path, const char *dir ) {
 	//
 	// add the directory to the search path
 	//
-	search = Z_Malloc( sizeof( searchpath_t ) );
-	search->dir = Z_Malloc( sizeof( *search->dir ) );
+	search = (searchpath_t*)Z_Malloc( sizeof( searchpath_t ) );
+	search->dir = (directory_t*)Z_Malloc( sizeof( *search->dir ) );
 
 	Q_strncpyz( search->dir->path, path, sizeof( search->dir->path ) );
 	Q_strncpyz( search->dir->gamedir, dir, sizeof( search->dir->gamedir ) );
@@ -2742,7 +2742,7 @@ static void FS_AddGameDirectory( const char *path, const char *dir ) {
 			// store the game name for downloading
 			strcpy( pak->pakGamename, dir );
 
-			search = Z_Malloc( sizeof( searchpath_t ) );
+			search = (searchpath_t*)Z_Malloc( sizeof( searchpath_t ) );
 			search->pack = pak;
 			search->next = fs_searchpaths;
 			fs_searchpaths = search;

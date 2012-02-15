@@ -4060,7 +4060,7 @@ static trans_t* AllocTrans( char *original, char *translated[MAX_LANGUAGES] ) {
 	trans_t *t;
 	int i;
 
-	t = malloc( sizeof( trans_t ) );
+	t = (trans_t*)malloc( sizeof( trans_t ) );
 	memset( t, 0, sizeof( trans_t ) );
 
 	if ( original ) {
@@ -4322,7 +4322,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		return;
 	}
 
-	text = malloc( len + 1 );
+	text = (char*)malloc( len + 1 );
 	if ( !text ) {
 		return;
 	}

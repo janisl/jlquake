@@ -1,3 +1,4 @@
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wc++-compat")
 #  $DEDICATED_NAME = 'wolfupdate.' . $cpu;
 
 #  $COMMON_CFLAGS = '-pipe -fsigned-char -DPRE_RELEASE_DEMO ';

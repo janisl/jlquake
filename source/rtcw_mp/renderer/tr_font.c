@@ -123,14 +123,14 @@ FT_Bitmap *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t* glyphOut ) {
 	if ( glyph->format == ft_glyph_format_outline ) {
 		size   = pitch * height;
 
-		bit2 = Z_Malloc( sizeof( FT_Bitmap ) );
+		bit2 = (FT_Bitmap*)Z_Malloc( sizeof( FT_Bitmap ) );
 
 		bit2->width      = width;
 		bit2->rows       = height;
 		bit2->pitch      = pitch;
 		bit2->pixel_mode = ft_pixel_mode_grays;
 		//bit2->pixel_mode = ft_pixel_mode_mono;
-		bit2->buffer     = Z_Malloc( pitch * height );
+		bit2->buffer     = (byte*)Z_Malloc( pitch * height );
 		bit2->num_grays = 256;
 
 		Com_Memset( bit2->buffer, 0, size );
@@ -155,7 +155,7 @@ void WriteTGA( char *filename, byte *data, int width, int height ) {
 	byte    *buffer;
 	int i, c;
 
-	buffer = Z_Malloc( width * height * 4 + 18 );
+	buffer = (byte*)Z_Malloc( width * height * 4 + 18 );
 	Com_Memset( buffer, 0, 18 );
 	buffer[2] = 2;      // uncompressed type
 	buffer[12] = width & 255;
@@ -375,7 +375,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font ) {
 	if ( len == sizeof( fontInfo_t ) ) {
 		ri.FS_ReadFile( name, &faceData );
 		fdOffset = 0;
-		fdFile = faceData;
+		fdFile = (byte*)faceData;
 		for ( i = 0; i < GLYPHS_PER_FONT; i++ ) {
 			font->glyphs[i].height      = readInt();
 			font->glyphs[i].top         = readInt();
@@ -419,7 +419,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font ) {
 	}
 
 	// allocate on the stack first in case we fail
-	if ( FT_New_Memory_Face( ftLibrary, faceData, len, 0, &face ) ) {
+	if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*)faceData, len, 0, &face ) ) {
 		ri.Printf( PRINT_ALL, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
 		return;
 	}
@@ -435,7 +435,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font ) {
 	// make a 256x256 image buffer, once it is full, register it, clean it and keep going
 	// until all glyphs are rendered
 
-	out = Z_Malloc( 1024 * 1024 );
+	out = (byte*)Z_Malloc( 1024 * 1024 );
 	if ( out == NULL ) {
 		ri.Printf( PRINT_ALL, "RE_RegisterFont: Z_Malloc failure during output image creation.\n" );
 		return;
@@ -465,7 +465,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font ) {
 
 			scaledSize = 256 * 256;
 			newSize = scaledSize * 4;
-			imageBuff = Z_Malloc( newSize );
+			imageBuff = (byte*)Z_Malloc( newSize );
 			left = 0;
 			max = 0;
 			satLevels = 255;
