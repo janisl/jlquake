@@ -272,7 +272,8 @@ void Sys_PumpEvents( void );
 
 typedef unsigned char byte;
 
-typedef enum {qfalse, qtrue}    qboolean;
+typedef int qboolean;
+enum {qfalse, qtrue};
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;

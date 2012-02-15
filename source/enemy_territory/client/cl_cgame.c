@@ -336,7 +336,7 @@ rescan:
 	if ( !strcmp( cmd, "disconnect" ) ) {
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 ) {
-			Com_Error( ERR_SERVERDISCONNECT, va( "Server Disconnected - %s", Cmd_Argv( 1 ) ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected - %s", Cmd_Argv( 1 ) );
 		} else {
 			Com_Error( ERR_SERVERDISCONNECT,"Server disconnected\n" );
 		}
@@ -578,30 +578,30 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 	case CG_MILLISECONDS:
 		return Sys_Milliseconds();
 	case CG_CVAR_REGISTER:
-		Cvar_Register( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[4] );
+		Cvar_Register( (vmCvar_t*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 		return 0;
 	case CG_CVAR_UPDATE:
-		Cvar_Update( VMA( 1 ) );
+		Cvar_Update( (vmCvar_t*)VMA( 1 ) );
 		return 0;
 	case CG_CVAR_SET:
-		Cvar_Set( VMA( 1 ), VMA( 2 ) );
+		Cvar_Set( (char*)VMA( 1 ), (char*)VMA( 2 ) );
 		return 0;
 	case CG_CVAR_VARIABLESTRINGBUFFER:
-		Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[3] );
+		Cvar_VariableStringBuffer( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
 		return 0;
 	case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
-		Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[3] );
+		Cvar_LatchedVariableStringBuffer( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
 		return 0;
 	case CG_ARGC:
 		return Cmd_Argc();
 	case CG_ARGV:
-		Cmd_ArgvBuffer( args[1], VMA( 2 ), args[3] );
+		Cmd_ArgvBuffer( args[1], (char*)VMA( 2 ), args[3] );
 		return 0;
 	case CG_ARGS:
-		Cmd_ArgsBuffer( VMA( 1 ), args[2] );
+		Cmd_ArgsBuffer( (char*)VMA( 1 ), args[2] );
 		return 0;
 	case CG_FS_FOPENFILE:
-		return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[3] );
+		return FS_FOpenFileByMode( (char*)VMA( 1 ), (fileHandle_t*)VMA( 2 ), (fsMode_t)args[3] );
 	case CG_FS_READ:
 		FS_Read( VMA( 1 ), args[2], args[3] );
 		return 0;
@@ -611,71 +611,71 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		FS_FCloseFile( args[1] );
 		return 0;
 	case CG_FS_GETFILELIST:
-		return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[4] );
+		return FS_GetFileList( (char*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 	case CG_FS_DELETEFILE:
-		return FS_Delete( VMA( 1 ) );
+		return FS_Delete( (char*)VMA( 1 ) );
 	case CG_SENDCONSOLECOMMAND:
-		Cbuf_AddText( VMA( 1 ) );
+		Cbuf_AddText( (char*)VMA( 1 ) );
 		return 0;
 	case CG_ADDCOMMAND:
-		CL_AddCgameCommand( VMA( 1 ) );
+		CL_AddCgameCommand( (char*)VMA( 1 ) );
 		return 0;
 	case CG_REMOVECOMMAND:
-		Cmd_RemoveCommand( VMA( 1 ) );
+		Cmd_RemoveCommand( (char*)VMA( 1 ) );
 		return 0;
 	case CG_SENDCLIENTCOMMAND:
-		CL_AddReliableCommand( VMA( 1 ) );
+		CL_AddReliableCommand( (char*)VMA( 1 ) );
 		return 0;
 	case CG_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
 	case CG_CM_LOADMAP:
-		CL_CM_LoadMap( VMA( 1 ) );
+		CL_CM_LoadMap( (char*)VMA( 1 ) );
 		return 0;
 	case CG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
 	case CG_CM_INLINEMODEL:
 		return CM_InlineModel( args[1] );
 	case CG_CM_TEMPBOXMODEL:
-		return CM_TempBoxModel( VMA( 1 ), VMA( 2 ), qfalse );
+		return CM_TempBoxModel( (float*)VMA( 1 ), (float*)VMA( 2 ), qfalse );
 	case CG_CM_TEMPCAPSULEMODEL:
-		return CM_TempBoxModel( VMA( 1 ), VMA( 2 ), qtrue );
+		return CM_TempBoxModel( (float*)VMA( 1 ), (float*)VMA( 2 ), qtrue );
 	case CG_CM_POINTCONTENTS:
-		return CM_PointContents( VMA( 1 ), args[2] );
+		return CM_PointContents( (float*)VMA( 1 ), args[2] );
 	case CG_CM_TRANSFORMEDPOINTCONTENTS:
-		return CM_TransformedPointContents( VMA( 1 ), args[2], VMA( 3 ), VMA( 4 ) );
+		return CM_TransformedPointContents( (float*)VMA( 1 ), args[2], (float*)VMA( 3 ), (float*)VMA( 4 ) );
 	case CG_CM_BOXTRACE:
 //		numtraces++;
-		CM_BoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], /*int capsule*/ qfalse );
+		CM_BoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qfalse );
 		return 0;
 	case CG_CM_TRANSFORMEDBOXTRACE:
 //		numtraces++;
-		CM_TransformedBoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], VMA( 8 ), VMA( 9 ), /*int capsule*/ qfalse );
+		CM_TransformedBoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qfalse );
 		return 0;
 	case CG_CM_CAPSULETRACE:
 //		numtraces++;
-		CM_BoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], /*int capsule*/ qtrue );
+		CM_BoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_TRANSFORMEDCAPSULETRACE:
 //		numtraces++;
-		CM_TransformedBoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], VMA( 8 ), VMA( 9 ), /*int capsule*/ qtrue );
+		CM_TransformedBoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_MARKFRAGMENTS:
-		return re.MarkFragments( args[1], VMA( 2 ), VMA( 3 ), args[4], VMA( 5 ), args[6], VMA( 7 ) );
+		return re.MarkFragments( args[1], (const vec3_t*)VMA( 2 ), (float*)VMA( 3 ), args[4], (float*)VMA( 5 ), args[6], (markFragment_t*)VMA( 7 ) );
 
 	case CG_R_PROJECTDECAL:
-		re.ProjectDecal( args[ 1 ], args[ 2 ], VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ] );
+		re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[ 6 ], args[ 7 ] );
 		return 0;
 	case CG_R_CLEARDECALS:
 		re.ClearDecals();
 		return 0;
 
 	case CG_S_STARTSOUND:
-		S_StartSound( VMA( 1 ), args[2], args[3], args[4], args[5] );
+		S_StartSound( (float*)VMA( 1 ), args[2], args[3], args[4], args[5] );
 		return 0;
 //----(SA)	added
 	case CG_S_STARTSOUNDEX:
-		S_StartSoundEx( VMA( 1 ), args[2], args[3], args[4], args[5], args[6] );
+		S_StartSoundEx( (float*)VMA( 1 ), args[2], args[3], args[4], args[5], args[6] );
 		return 0;
 //----(SA)	end
 	case CG_S_STARTLOCALSOUND:
@@ -693,16 +693,16 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
 		// FIXME MrE: handling of looping sounds changed
-		S_AddLoopingSound( VMA( 1 ), VMA( 2 ), args[3], args[4], args[5], args[6] );
+		S_AddLoopingSound( (float*)VMA( 1 ), (float*)VMA( 2 ), args[3], args[4], args[5], args[6] );
 		return 0;
 	case CG_S_ADDREALLOOPINGSOUND:
-		S_AddRealLoopingSound( VMA( 1 ), VMA( 2 ), args[3], args[4], args[5], args[6] );
+		S_AddRealLoopingSound( (float*)VMA( 1 ), (float*)VMA( 2 ), args[3], args[4], args[5], args[6] );
 		return 0;
 	case CG_S_STOPSTREAMINGSOUND:
 		S_StopEntStreamingSound( args[1] );
 		return 0;
 	case CG_S_UPDATEENTITYPOSITION:
-		S_UpdateEntityPosition( args[1], VMA( 2 ) );
+		S_UpdateEntityPosition( args[1], (float*)VMA( 2 ) );
 		return 0;
 // Ridah, talking animations
 	case CG_S_GETVOICEAMPLITUDE:
@@ -716,59 +716,59 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return S_GetCurrentSoundTime();
 
 	case CG_S_RESPATIALIZE:
-		S_Respatialize( args[1], VMA( 2 ), VMA( 3 ), args[4] );
+		S_Respatialize( args[1], (float*)VMA( 2 ), (vec3_t*)VMA( 3 ), args[4] );
 		return 0;
 	case CG_S_REGISTERSOUND:
 #ifdef DOOMSOUND    ///// (SA) DOOMSOUND
 		return S_RegisterSound( VMA( 1 ) );
 #else
-		return S_RegisterSound( VMA( 1 ), args[2] );
+		return S_RegisterSound( (char*)VMA( 1 ), args[2] );
 #endif  ///// (SA) DOOMSOUND
 	case CG_S_STARTBACKGROUNDTRACK:
-		S_StartBackgroundTrack( VMA( 1 ), VMA( 2 ), args[3] );  //----(SA)	added fadeup time
+		S_StartBackgroundTrack( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );  //----(SA)	added fadeup time
 		return 0;
 	case CG_S_FADESTREAMINGSOUND:
 		S_FadeStreamingSound( VMF( 1 ), args[2], args[3] ); //----(SA)	added music/all-streaming options
 		return 0;
 	case CG_S_STARTSTREAMINGSOUND:
-		return S_StartStreamingSound( VMA( 1 ), VMA( 2 ), args[3], args[4], args[5] );
+		return S_StartStreamingSound( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3], args[4], args[5] );
 	case CG_R_LOADWORLDMAP:
-		re.LoadWorld( VMA( 1 ) );
+		re.LoadWorld( (char*)VMA( 1 ) );
 		return 0;
 	case CG_R_REGISTERMODEL:
-		return re.RegisterModel( VMA( 1 ) );
+		return re.RegisterModel( (char*)VMA( 1 ) );
 	case CG_R_REGISTERSKIN:
-		return re.RegisterSkin( VMA( 1 ) );
+		return re.RegisterSkin( (char*)VMA( 1 ) );
 
 		//----(SA)	added
 	case CG_R_GETSKINMODEL:
-		return re.GetSkinModel( args[1], VMA( 2 ), VMA( 3 ) );
+		return re.GetSkinModel( args[1], (char*)VMA( 2 ), (char*)VMA( 3 ) );
 	case CG_R_GETMODELSHADER:
 		return re.GetShaderFromModel( args[1], args[2], args[3] );
 		//----(SA)	end
 
 	case CG_R_REGISTERSHADER:
-		return re.RegisterShader( VMA( 1 ) );
+		return re.RegisterShader( (char*)VMA( 1 ) );
 	case CG_R_REGISTERFONT:
-		re.RegisterFont( VMA( 1 ), args[2], VMA( 3 ) );
+		re.RegisterFont( (char*)VMA( 1 ), args[2], (fontInfo_t*)VMA( 3 ) );
 		return 0;
 	case CG_R_REGISTERSHADERNOMIP:
-		return re.RegisterShaderNoMip( VMA( 1 ) );
+		return re.RegisterShaderNoMip( (char*)VMA( 1 ) );
 	case CG_R_CLEARSCENE:
 		re.ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( VMA( 1 ) );
+		re.AddRefEntityToScene( (refEntity_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
-		re.AddPolyToScene( args[1], args[2], VMA( 3 ) );
+		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ) );
 		return 0;
 		// Ridah
 	case CG_R_ADDPOLYSTOSCENE:
-		re.AddPolysToScene( args[1], args[2], VMA( 3 ), args[4] );
+		re.AddPolysToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
 		return 0;
 	case CG_R_ADDPOLYBUFFERTOSCENE:
-		re.AddPolyBufferToScene( VMA( 1 ) );
+		re.AddPolyBufferToScene( (polyBuffer_t*)VMA( 1 ) );
 		break;
 		// done.
 //	case CG_R_LIGHTFORPOINT:
@@ -776,13 +776,13 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 	case CG_R_ADDLIGHTTOSCENE:
 		// ydnar: new dlight code
 		//%	re.AddLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6] );
-		re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[7], args[8] );
+		re.AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[7], args[8] );
 		return 0;
 //	case CG_R_ADDADDITIVELIGHTTOSCENE:
 //		re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 //		return 0;
 	case CG_R_ADDCORONATOSCENE:
-		re.AddCoronaToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
+		re.AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
 		return 0;
 	case CG_R_SETFOG:
 		re.SetFog( args[1], args[2], args[3], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
@@ -791,7 +791,7 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		re.SetGlobalFog( args[1], args[2], VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ) );
 		return 0;
 	case CG_R_RENDERSCENE:
-		re.RenderScene( VMA( 1 ) );
+		re.RenderScene( (refdef_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_SAVEVIEWPARMS:
 		re.SaveViewParms();
@@ -800,7 +800,7 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		re.RestoreViewParms();
 		return 0;
 	case CG_R_SETCOLOR:
-		re.SetColor( VMA( 1 ) );
+		re.SetColor( (float*)VMA( 1 ) );
 		return 0;
 	case CG_R_DRAWSTRETCHPIC:
 		re.DrawStretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
@@ -809,33 +809,33 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		re.DrawRotatedPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], VMF( 10 ) );
 		return 0;
 	case CG_R_DRAWSTRETCHPIC_GRADIENT:
-		re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], VMA( 10 ), args[11] );
+		re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], (float*)VMA( 10 ), args[11] );
 		return 0;
 	case CG_R_DRAW2DPOLYS:
-		re.Add2dPolys( VMA( 1 ), args[2], args[3] );
+		re.Add2dPolys( (polyVert_t*)VMA( 1 ), args[2], args[3] );
 		return 0;
 	case CG_R_MODELBOUNDS:
-		re.ModelBounds( args[1], VMA( 2 ), VMA( 3 ) );
+		re.ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
 		return 0;
 	case CG_R_LERPTAG:
-		return re.LerpTag( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[4] );
+		return re.LerpTag( (orientation_t*)VMA( 1 ), (refEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 	case CG_GETGLCONFIG:
-		CL_GetGlconfig( VMA( 1 ) );
+		CL_GetGlconfig( (glconfig_t*)VMA( 1 ) );
 		return 0;
 	case CG_GETGAMESTATE:
-		CL_GetGameState( VMA( 1 ) );
+		CL_GetGameState( (gameState_t*)VMA( 1 ) );
 		return 0;
 	case CG_GETCURRENTSNAPSHOTNUMBER:
-		CL_GetCurrentSnapshotNumber( VMA( 1 ), VMA( 2 ) );
+		CL_GetCurrentSnapshotNumber( (int*)VMA( 1 ), (int*)VMA( 2 ) );
 		return 0;
 	case CG_GETSNAPSHOT:
-		return CL_GetSnapshot( args[1], VMA( 2 ) );
+		return CL_GetSnapshot( args[1], (snapshot_t*)VMA( 2 ) );
 	case CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand( args[1] );
 	case CG_GETCURRENTCMDNUMBER:
 		return CL_GetCurrentCmdNumber();
 	case CG_GETUSERCMD:
-		return CL_GetUserCmd( args[1], VMA( 2 ) );
+		return CL_GetUserCmd( args[1], (usercmd_t*)VMA( 2 ) );
 	case CG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue( args[1], args[2], VMF( 3 ), args[4] );
 		return 0;
@@ -852,7 +852,7 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		Key_SetCatcher( args[1] );
 		return 0;
 	case CG_KEY_GETKEY:
-		return Key_GetKey( VMA( 1 ) );
+		return Key_GetKey( (char*)VMA( 1 ) );
 
 	case CG_KEY_GETOVERSTRIKEMODE:
 		return Key_GetOverstrikeMode();
@@ -868,7 +868,7 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 	case CG_MEMCPY:
 		return (intptr_t)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
 	case CG_STRNCPY:
-		return (intptr_t)strncpy( VMA( 1 ), VMA( 2 ), args[3] );
+		return (intptr_t)strncpy( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
 	case CG_SIN:
 		return FloatAsInt( sin( VMF( 1 ) ) );
 	case CG_COS:
@@ -885,15 +885,15 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return FloatAsInt( Q_acos( VMF( 1 ) ) );
 
 	case CG_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine( VMA( 1 ) );
+		return botlib_export->PC_AddGlobalDefine( (char*)VMA( 1 ) );
 	case CG_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle( VMA( 1 ) );
+		return botlib_export->PC_LoadSourceHandle( (char*)VMA( 1 ) );
 	case CG_PC_FREE_SOURCE:
 		return botlib_export->PC_FreeSourceHandle( args[1] );
 	case CG_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle( args[1], VMA( 2 ) );
+		return botlib_export->PC_ReadTokenHandle( args[1], (pc_token_t*)VMA( 2 ) );
 	case CG_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine( args[1], VMA( 2 ), VMA( 3 ) );
+		return botlib_export->PC_SourceFileAndLine( args[1], (char*)VMA( 2 ), (int*)VMA( 3 ) );
 	case CG_PC_UNREAD_TOKEN:
 		botlib_export->PC_UnreadLastTokenHandle( args[1] );
 		return 0;
@@ -903,13 +903,13 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return 0;
 
 	case CG_REAL_TIME:
-		return Com_RealTime( VMA( 1 ) );
+		return Com_RealTime( (qtime_t*)VMA( 1 ) );
 	case CG_SNAPVECTOR:
-		Sys_SnapVector( VMA( 1 ) );
+		Sys_SnapVector( (float*)VMA( 1 ) );
 		return 0;
 
 	case CG_CIN_PLAYCINEMATIC:
-		return CIN_PlayCinematic( VMA( 1 ), args[2], args[3], args[4], args[5], args[6] );
+		return CIN_PlayCinematic( (char*)VMA( 1 ), args[2], args[3], args[4], args[5], args[6] );
 
 	case CG_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic( args[1] );
@@ -926,18 +926,18 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return 0;
 
 	case CG_R_REMAP_SHADER:
-		re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+		re.RemapShader( (char*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ) );
 		return 0;
 
 	case CG_TESTPRINTINT:
-		Com_Printf( "%s%i\n", (char *)VMA( 1 ), args[2] );
+		Com_Printf( "%s%i\n", (char *)VMA( 1 ), (int)args[2] );
 		return 0;
 	case CG_TESTPRINTFLOAT:
 		Com_Printf( "%s%f\n", (char *)VMA( 1 ), VMF( 2 ) );
 		return 0;
 
 	case CG_LOADCAMERA:
-		return loadCamera( args[1], VMA( 2 ) );
+		return loadCamera( args[1], (char*)VMA( 2 ) );
 
 	case CG_STARTCAMERA:
 		if ( args[1] == 0 ) {  // CAM_PRIMARY
@@ -953,10 +953,10 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return 0;
 
 	case CG_GETCAMERAINFO:
-		return getCameraInfo( args[1], args[2], VMA( 3 ), VMA( 4 ), VMA( 5 ) );
+		return getCameraInfo( args[1], args[2], (vec3_t*)VMA( 3 ), (vec3_t*)VMA( 4 ), (float*)VMA( 5 ) );
 
 	case CG_GET_ENTITY_TOKEN:
-		return re.GetEntityToken( VMA( 1 ), args[2] );
+		return re.GetEntityToken( (char*)VMA( 1 ), args[2] );
 
 	case CG_INGAME_POPUP:
 		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
@@ -970,23 +970,23 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return 0;
 
 	case CG_KEY_GETBINDINGBUF:
-		Key_GetBindingBuf( args[1], VMA( 2 ), args[3] );
+		Key_GetBindingBuf( args[1], (char*)VMA( 2 ), args[3] );
 		return 0;
 
 	case CG_KEY_SETBINDING:
-		Key_SetBinding( args[1], VMA( 2 ) );
+		Key_SetBinding( args[1], (char*)VMA( 2 ) );
 		return 0;
 
 	case CG_KEY_KEYNUMTOSTRINGBUF:
-		Key_KeynumToStringBuf( args[1], VMA( 2 ), args[3] );
+		Key_KeynumToStringBuf( args[1], (char*)VMA( 2 ), args[3] );
 		return 0;
 
 	case CG_KEY_BINDINGTOKEYS:
-		Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+		Key_GetBindingByString( (char*)VMA( 1 ), (int*)VMA( 2 ), (int*)VMA( 3 ) );
 		return 0;
 
 	case CG_TRANSLATE_STRING:
-		CL_TranslateString( VMA( 1 ), VMA( 2 ) );
+		CL_TranslateString( (char*)VMA( 1 ), (char*)VMA( 2 ) );
 		return 0;
 
 	case CG_S_FADEALLSOUNDS:
@@ -994,10 +994,10 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return 0;
 
 	case CG_R_INPVS:
-		return re.inPVS( VMA( 1 ), VMA( 2 ) );
+		return re.inPVS( (float*)VMA( 1 ), (float*)VMA( 2 ) );
 
 	case CG_GETHUNKDATA:
-		Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
+		Com_GetHunkInfo( (int*)VMA( 1 ), (int*)VMA( 2 ) );
 		return 0;
 
 	case CG_PUMPEVENTLOOP:
@@ -1007,26 +1007,26 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 
 		//zinx - binary channel
 	case CG_SENDMESSAGE:
-		CL_SendBinaryMessage( VMA( 1 ), args[2] );
+		CL_SendBinaryMessage( (char*)VMA( 1 ), args[2] );
 		return 0;
 	case CG_MESSAGESTATUS:
 		return CL_BinaryMessageStatus();
 		//bani - dynamic shaders
 	case CG_R_LOADDYNAMICSHADER:
-		return re.LoadDynamicShader( VMA( 1 ), VMA( 2 ) );
+		return re.LoadDynamicShader( (char*)VMA( 1 ), (char*)VMA( 2 ) );
 		// fretn - render to texture
 	case CG_R_RENDERTOTEXTURE:
 		re.RenderToTexture( args[1], args[2], args[3], args[4], args[5] );
 		return 0;
 		//bani
 	case CG_R_GETTEXTUREID:
-		return re.GetTextureId( VMA( 1 ) );
+		return re.GetTextureId( (char*)VMA( 1 ) );
 		//bani - flush gl rendering buffers
 	case CG_R_FINISH:
 		re.Finish();
 		return 0;
 	default:
-		Com_Error( ERR_DROP, "Bad cgame system trap: %i", args[0] );
+		Com_Error( ERR_DROP, "Bad cgame system trap: %i", (int)args[0] );
 	}
 	return 0;
 }
@@ -1464,10 +1464,10 @@ void CL_SetCGameTime( void ) {
 CL_GetTag
 ====================
 */
-qboolean CL_GetTag( int clientNum, char *tagname, orientation_t *or ) {
+qboolean CL_GetTag( int clientNum, char *tagname, orientation_t *_or ) {
 	if ( !cgvm ) {
 		return qfalse;
 	}
 
-	return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, _or );
 }

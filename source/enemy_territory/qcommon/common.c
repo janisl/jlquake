@@ -1199,7 +1199,7 @@ char *CopyString( const char *in ) {
 			return ( (char *)&numberstring[in[0] - '0'] ) + sizeof( memblock_t );
 		}
 	}
-	out = S_Malloc( strlen( in ) + 1 );
+	out = (char*)S_Malloc( strlen( in ) + 1 );
 	strcpy( out, in );
 	return out;
 }
@@ -1424,7 +1424,7 @@ Com_InitZoneMemory
 void Com_InitSmallZoneMemory( void ) {
 	s_smallZoneTotal = 512 * 1024;
 	// bk001205 - was malloc
-	smallzone = calloc( s_smallZoneTotal, 1 );
+	smallzone = (memzone_t*)calloc( s_smallZoneTotal, 1 );
 	if ( !smallzone ) {
 		Com_Error( ERR_FATAL, "Small zone data failed to allocate %1.1f megs", (float)s_smallZoneTotal / ( 1024 * 1024 ) );
 	}
@@ -1474,7 +1474,7 @@ void Com_InitZoneMemory( void ) {
 	}
 
 	// bk001205 - was malloc
-	mainzone = calloc( s_zoneTotal, 1 );
+	mainzone = (memzone_t*)calloc( s_zoneTotal, 1 );
 	if ( !mainzone ) {
 		Com_Error( ERR_FATAL, "Zone data failed to allocate %i megs", s_zoneTotal / ( 1024 * 1024 ) );
 	}
@@ -1600,7 +1600,7 @@ void Com_InitHunkMemory( void ) {
 	}
 
 
-	s_hunkData = malloc( s_hunkTotal + 31 );
+	s_hunkData = (byte*)malloc( s_hunkTotal + 31 );
 	if ( !s_hunkData ) {
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / ( 1024 * 1024 ) );
 	}

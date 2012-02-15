@@ -289,7 +289,7 @@ void SV_Startup( void ) {
 	SV_BoundMaxClients( 1 );
 
 	// RF, avoid trying to allocate large chunk on a fragmented zone
-	svs.clients = calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
+	svs.clients = (client_t*)calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
 	if ( !svs.clients ) {
 		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
@@ -336,7 +336,7 @@ void SV_ChangeMaxClients( void ) {
 		return;
 	}
 
-	oldClients = Hunk_AllocateTempMemory( count * sizeof( client_t ) );
+	oldClients = (client_t*)Hunk_AllocateTempMemory( count * sizeof( client_t ) );
 	// copy the clients to hunk memory
 	for ( i = 0 ; i < count ; i++ ) {
 		if ( svs.clients[i].state >= CS_CONNECTED ) {
@@ -352,7 +352,7 @@ void SV_ChangeMaxClients( void ) {
 
 	// allocate new clients
 	// RF, avoid trying to allocate large chunk on a fragmented zone
-	svs.clients = calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
+	svs.clients = (client_t*)calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
 	if ( !svs.clients ) {
 		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
@@ -545,7 +545,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	FS_ClearPakReferences( 0 );
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = (entityState_t*)Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
@@ -644,7 +644,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 			}
 
 			// connect the client again
-			denied = VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );   // firstTime = qfalse
+			denied = (char*)VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );   // firstTime = qfalse
 			if ( denied ) {
 				// this generally shouldn't happen, because the client
 				// was connected before the level change
