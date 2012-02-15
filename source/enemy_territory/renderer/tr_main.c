@@ -482,49 +482,49 @@ Called by both the front end and the back end
 =================
 */
 void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms,
-						orientationr_t *or ) {
+						orientationr_t *_or ) {
 	float glMatrix[16];
 	vec3_t delta;
 	float axisLength;
 
 	if ( ent->e.reType != RT_MODEL ) {
-		*or = viewParms->world;
+		*_or = viewParms->world;
 		return;
 	}
 
-	VectorCopy( ent->e.origin, or->origin );
+	VectorCopy( ent->e.origin, _or->origin );
 
-	VectorCopy( ent->e.axis[0], or->axis[0] );
-	VectorCopy( ent->e.axis[1], or->axis[1] );
-	VectorCopy( ent->e.axis[2], or->axis[2] );
+	VectorCopy( ent->e.axis[0], _or->axis[0] );
+	VectorCopy( ent->e.axis[1], _or->axis[1] );
+	VectorCopy( ent->e.axis[2], _or->axis[2] );
 
-	glMatrix[0] = or->axis[0][0];
-	glMatrix[4] = or->axis[1][0];
-	glMatrix[8] = or->axis[2][0];
-	glMatrix[12] = or->origin[0];
+	glMatrix[0] = _or->axis[0][0];
+	glMatrix[4] = _or->axis[1][0];
+	glMatrix[8] = _or->axis[2][0];
+	glMatrix[12] = _or->origin[0];
 
-	glMatrix[1] = or->axis[0][1];
-	glMatrix[5] = or->axis[1][1];
-	glMatrix[9] = or->axis[2][1];
-	glMatrix[13] = or->origin[1];
+	glMatrix[1] = _or->axis[0][1];
+	glMatrix[5] = _or->axis[1][1];
+	glMatrix[9] = _or->axis[2][1];
+	glMatrix[13] = _or->origin[1];
 
-	glMatrix[2] = or->axis[0][2];
-	glMatrix[6] = or->axis[1][2];
-	glMatrix[10] = or->axis[2][2];
-	glMatrix[14] = or->origin[2];
+	glMatrix[2] = _or->axis[0][2];
+	glMatrix[6] = _or->axis[1][2];
+	glMatrix[10] = _or->axis[2][2];
+	glMatrix[14] = _or->origin[2];
 
 	glMatrix[3] = 0;
 	glMatrix[7] = 0;
 	glMatrix[11] = 0;
 	glMatrix[15] = 1;
 
-	myGlMultMatrix( glMatrix, viewParms->world.modelMatrix, or->modelMatrix );
+	myGlMultMatrix( glMatrix, viewParms->world.modelMatrix, _or->modelMatrix );
 
 	// calculate the viewer origin in the model's space
-	// needed for fog, specular, and environment mapping
-	VectorSubtract( viewParms->orientation.origin, or->origin, delta );
+	// needed f_or fog, specular, and environment mapping
+	VectorSubtract( viewParms->orientation.origin, _or->origin, delta );
 
-	// compensate for scale in the axes if necessary
+	// compensate f_or scale in the axes if necessary
 	if ( ent->e.nonNormalizedAxes ) {
 		axisLength = VectorLength( ent->e.axis[0] );
 		if ( !axisLength ) {
@@ -536,9 +536,9 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms,
 		axisLength = 1.0f;
 	}
 
-	or->viewOrigin[0] = DotProduct( delta, or->axis[0] ) * axisLength;
-	or->viewOrigin[1] = DotProduct( delta, or->axis[1] ) * axisLength;
-	or->viewOrigin[2] = DotProduct( delta, or->axis[2] ) * axisLength;
+	_or->viewOrigin[0] = DotProduct( delta, _or->axis[0] ) * axisLength;
+	_or->viewOrigin[1] = DotProduct( delta, _or->axis[1] ) * axisLength;
+	_or->viewOrigin[2] = DotProduct( delta, _or->axis[2] ) * axisLength;
 }
 
 /*
