@@ -902,7 +902,7 @@ void *Z_TagMallocDebug( int size, int tag, char *label, char *file, int line ) {
 void *Z_TagMalloc( int size, int tag ) {
 #endif
 	int extra, allocSize;
-	memblock_t  *start, *rover, *new, *base;
+	memblock_t  *start, *rover, *_new, *base;
 	memzone_t *zone;
 
 	if ( !tag ) {
@@ -950,14 +950,14 @@ void *Z_TagMalloc( int size, int tag ) {
 	extra = base->size - size;
 	if ( extra > MINFRAGMENT ) {
 		// there will be a free fragment after the allocated block
-		new = ( memblock_t * )( (byte *)base + size );
-		new->size = extra;
-		new->tag = 0;           // free block
-		new->prev = base;
-		new->id = ZONEID;
-		new->next = base->next;
-		new->next->prev = new;
-		base->next = new;
+		_new = ( memblock_t * )( (byte *)base + size );
+		_new->size = extra;
+		_new->tag = 0;           // free block
+		_new->prev = base;
+		_new->id = ZONEID;
+		_new->next = base->next;
+		_new->next->prev = _new;
+		base->next = _new;
 		base->size = size;
 	}
 
