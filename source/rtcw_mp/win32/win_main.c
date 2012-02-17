@@ -551,7 +551,11 @@ extern int cl_connectedToPureServer;
 #endif
 
 char* Sys_GetDLLName( const char *name ) {
+#ifdef _WIN64
+	return va( "%s_mp_x86_64.dll", name );
+#else
 	return va( "%s_mp_x86.dll", name );
+#endif
 }
 
 // fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
@@ -1149,10 +1153,6 @@ void Sys_Init( void ) {
 	{
 		Cvar_Set( "arch", "unknown Windows variant" );
 	}
-
-	// save out a couple things in rom cvars for the renderer to access
-	Cvar_Get( "win_hinstance", va( "%i", (int)g_wv.hInstance ), CVAR_ROM );
-	Cvar_Get( "win_wndproc", va( "%i", (int)MainWndProc ), CVAR_ROM );
 
 	//
 	// figure out our CPU

@@ -610,10 +610,18 @@ void * QDECL Sys_LoadDll( const char *name, intptr_t( QDECL **entryPoint ) ( int
 #endif
 	char filename[MAX_QPATH];
 
+#ifdef _WIN64
+#ifdef WOLF_SP_DEMO
+	Com_sprintf( filename, sizeof( filename ), "%sx86_64_d.dll", name );
+#else
+	Com_sprintf( filename, sizeof( filename ), "%sx86_64.dll", name );
+#endif
+#else
 #ifdef WOLF_SP_DEMO
 	Com_sprintf( filename, sizeof( filename ), "%sx86_d.dll", name );
 #else
 	Com_sprintf( filename, sizeof( filename ), "%sx86.dll", name );
+#endif
 #endif
 
 
@@ -1193,10 +1201,6 @@ void Sys_Init( void ) {
 	{
 		Cvar_Set( "arch", "unknown Windows variant" );
 	}
-
-	// save out a couple things in rom cvars for the renderer to access
-	Cvar_Get( "win_hinstance", va( "%i", (int)g_wv.hInstance ), CVAR_ROM );
-	Cvar_Get( "win_wndproc", va( "%i", (int)MainWndProc ), CVAR_ROM );
 
 	//
 	// figure out our CPU
