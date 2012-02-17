@@ -1688,7 +1688,7 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 
 	tess.xyz =          (vec4hack_t*)surf->pPolyBuffer->xyz;
 	tess.texCoords0 =   (vec2hack_t*)surf->pPolyBuffer->st;
-	tess.indexes =      surf->pPolyBuffer->indicies;
+	tess.indexes =      (glIndex_t*)surf->pPolyBuffer->indicies;
 	tess.vertexColors = (color4ubhack_t*)surf->pPolyBuffer->color;
 
 	tess.maxShaderIndicies =    MAX_PB_INDICIES;

@@ -3482,7 +3482,7 @@ R_LoadCacheImages
 */
 void R_LoadCacheImages( void ) {
 	int len;
-	byte *buf;
+	char *buf;
 	char    *token, *pString;
 	char name[MAX_QPATH];
 	int parms[4], i;
@@ -3497,7 +3497,7 @@ void R_LoadCacheImages( void ) {
 		return;
 	}
 
-	buf = (byte *)ri.Hunk_AllocateTempMemory( len );
+	buf = (char*)ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "image.cache", (void **)&buf );
 	pString = buf;
 

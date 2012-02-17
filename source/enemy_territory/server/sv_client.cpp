@@ -1715,7 +1715,7 @@ static void SV_ParseBinaryMessage( client_t *cl, msg_t *msg ) {
 		return;
 	}
 
-	SV_GameBinaryMessageReceived( cl - svs.clients, &msg->data[msg->readcount], size, cl->lastUsercmd.serverTime );
+	SV_GameBinaryMessageReceived( cl - svs.clients, (char*)&msg->data[msg->readcount], size, cl->lastUsercmd.serverTime );
 }
 
 /*

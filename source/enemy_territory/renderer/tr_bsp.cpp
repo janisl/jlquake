@@ -778,7 +778,7 @@ static void ParseFoliage( dsurface_t *ds, drawVert_t *verts, msurface_t *surf, i
 	foliage->normal = ( vec4_t* )( foliage->xyz + foliage->numVerts );
 	foliage->texCoords = ( vec2_t* )( foliage->normal + foliage->numVerts );
 	foliage->lmTexCoords = ( vec2_t* )( foliage->texCoords + foliage->numVerts );
-	foliage->indexes = ( int* )( foliage->lmTexCoords + foliage->numVerts );
+	foliage->indexes = ( glIndex_t* )( foliage->lmTexCoords + foliage->numVerts );
 	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
 
 	surf->data = (surfaceType_t*) foliage;
@@ -2098,7 +2098,7 @@ static void R_LoadMarksurfaces( lump_t *l ) {
 		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name );
 	}
 	count = l->filelen / sizeof( *in );
-	out = (msurface_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
+	out = (msurface_t**)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;
