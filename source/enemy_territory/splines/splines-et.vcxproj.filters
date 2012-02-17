@@ -26,9 +26,6 @@
     <ClCompile Include="q_parse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="q_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="splines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

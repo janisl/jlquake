@@ -75,7 +75,6 @@
     <ClCompile Include="math_quaternion.cpp" />
     <ClCompile Include="math_vector.cpp" />
     <ClCompile Include="q_parse.cpp" />
-    <ClCompile Include="q_shared.c" />
     <ClCompile Include="splines.cpp" />
     <ClCompile Include="util_str.cpp" />
   </ItemGroup>

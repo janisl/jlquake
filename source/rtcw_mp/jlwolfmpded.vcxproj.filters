@@ -124,9 +124,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="A3D\a3dWrapperdp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\bg_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -134,12 +131,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\botlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cgame\cg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qcommon\cm_local.h">
@@ -157,15 +148,6 @@
     <ClInclude Include="game\g_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="A3D\ia3dapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\keycodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\keys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\q_shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -175,37 +157,10 @@
     <ClInclude Include="qcommon\qfiles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="renderer\qgl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="server\server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="A3D\snd_A3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="A3D\snd_a3dg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\snd_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\snd_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\surfaceflags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer\tr_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer\tr_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cgame\tr_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\ui_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qcommon\unzip.h">

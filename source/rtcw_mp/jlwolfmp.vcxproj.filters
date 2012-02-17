@@ -166,9 +166,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="A3D\a3dWrapperdp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\bg_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -199,9 +196,6 @@
     <ClInclude Include="game\g_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="A3D\ia3dapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ui\keycodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -221,12 +215,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="A3D\snd_A3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="A3D\snd_a3dg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\snd_local.h">

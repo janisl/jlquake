@@ -161,7 +161,6 @@
     <ClCompile Include="win32\win_wndproc.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="A3D\a3dWrapperdp.h" />
     <ClInclude Include="game\bg_public.h" />
     <ClInclude Include="botai\botai.h" />
     <ClInclude Include="game\botlib.h" />
@@ -172,7 +171,6 @@
     <ClInclude Include="qcommon\cm_polylib.h" />
     <ClInclude Include="qcommon\cm_public.h" />
     <ClInclude Include="game\g_public.h" />
-    <ClInclude Include="A3D\ia3dapi.h" />
     <ClInclude Include="ui\keycodes.h" />
     <ClInclude Include="client\keys.h" />
     <ClInclude Include="game\q_shared.h" />
@@ -180,8 +178,6 @@
     <ClInclude Include="qcommon\qfiles.h" />
     <ClInclude Include="renderer\qgl.h" />
     <ClInclude Include="server\server.h" />
-    <ClInclude Include="A3D\snd_A3D.h" />
-    <ClInclude Include="A3D\snd_a3dg.h" />
     <ClInclude Include="client\snd_local.h" />
     <ClInclude Include="client\snd_public.h" />
     <ClInclude Include="game\surfaceflags.h" />

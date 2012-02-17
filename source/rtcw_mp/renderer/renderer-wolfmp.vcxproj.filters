@@ -108,9 +108,6 @@
     <ClInclude Include="..\win32\glw_win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\jpeg-6\jchuff.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\game\q_shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>

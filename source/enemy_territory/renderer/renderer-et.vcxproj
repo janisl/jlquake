@@ -107,7 +107,6 @@
     <ClInclude Include="anorms256.h" />
     <ClInclude Include="..\qcommon\cm_public.h" />
     <ClInclude Include="..\win32\glw_win.h" />
-    <ClInclude Include="..\jpeg-6\jchuff.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
