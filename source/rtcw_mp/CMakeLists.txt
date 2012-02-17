@@ -23,96 +23,96 @@ add_library(splines-wolfmp STATIC
 	splines/math_vector.cpp
 	splines/q_parse.cpp
 	splines/splines.cpp
-	splines/util_str.cpp  
+	splines/util_str.cpp
 )
 
 set(WOLFMP_FILES
-	renderer/tr_animation.c   
-	renderer/tr_backend.c   
-	renderer/tr_bsp.c   
-	renderer/tr_cmds.c   
-	renderer/tr_cmesh.c
-	renderer/tr_curve.c   
-	renderer/tr_flares.c   
-	renderer/tr_font.c    
-	renderer/tr_image.c    
-	renderer/tr_init.c     
-	renderer/tr_light.c   
-	renderer/tr_main.c    
-	renderer/tr_marks.c    
-	renderer/tr_mesh.c    
-	renderer/tr_model.c    
-	renderer/tr_noise.c    
-	renderer/tr_scene.c    
-	renderer/tr_shade.c    
-	renderer/tr_shade_calc.c   
-	renderer/tr_shader.c    
-	renderer/tr_shadows.c    
-	renderer/tr_sky.c    
-	renderer/tr_surface.c   
-	renderer/tr_world.c    
+	renderer/tr_animation.cpp
+	renderer/tr_backend.cpp
+	renderer/tr_bsp.cpp
+	renderer/tr_cmds.cpp
+	renderer/tr_cmesh.cpp
+	renderer/tr_curve.cpp
+	renderer/tr_flares.cpp
+	renderer/tr_font.cpp
+	renderer/tr_image.cpp
+	renderer/tr_init.cpp
+	renderer/tr_light.cpp
+	renderer/tr_main.cpp
+	renderer/tr_marks.cpp
+	renderer/tr_mesh.cpp
+	renderer/tr_model.cpp
+	renderer/tr_noise.cpp
+	renderer/tr_scene.cpp
+	renderer/tr_shade.cpp
+	renderer/tr_shade_calc.cpp
+	renderer/tr_shader.cpp
+	renderer/tr_shadows.cpp
+	renderer/tr_sky.cpp
+	renderer/tr_surface.cpp
+	renderer/tr_world.cpp
 
-	client/cl_cgame.c   
-	client/cl_cin.c       
-	client/cl_console.c  
-	client/cl_input.c   
-	client/cl_keys.c     
-	client/cl_main.c     
-	client/cl_net_chan.c  
-	client/cl_parse.c   
-	client/cl_scrn.c    
-	client/cl_ui.c         
+	client/cl_cgame.cpp
+	client/cl_cin.cpp
+	client/cl_console.cpp
+	client/cl_input.cpp
+	client/cl_keys.cpp
+	client/cl_main.cpp
+	client/cl_net_chan.cpp
+	client/cl_parse.cpp
+	client/cl_scrn.cpp
+	client/cl_ui.cpp
 
-	qcommon/cm_load.c        
-	qcommon/cm_patch.c       
-	qcommon/cm_polylib.c     
-	qcommon/cm_test.c        
-	qcommon/cm_trace.c       
-	qcommon/cmd.c                   
-	qcommon/common.c               
-	qcommon/cvar.c                
-	qcommon/files.c              
-	qcommon/md4.c                   
-	qcommon/msg.c                    
-	qcommon/net_chan.c
-	qcommon/huffman.c
-	qcommon/unzip.c
-	qcommon/vm.c
-	qcommon/vm_interpreted.c
+	qcommon/cm_load.cpp
+	qcommon/cm_patch.cpp
+	qcommon/cm_polylib.cpp
+	qcommon/cm_test.cpp
+	qcommon/cm_trace.cpp
+	qcommon/cmd.cpp 
+	qcommon/common.cpp
+	qcommon/cvar.cpp
+	qcommon/files.cpp
+	qcommon/md4.cpp 
+	qcommon/msg.cpp  
+	qcommon/net_chan.cpp
+	qcommon/huffman.cpp
+	qcommon/unzip.cpp
+	qcommon/vm.cpp
+	qcommon/vm_interpreted.cpp
 
-	client/snd_adpcm.c
-	client/snd_dma.c
-	client/snd_mem.c
-	client/snd_mix.c
-	client/snd_wavelet.c
+	client/snd_adpcm.cpp
+	client/snd_dma.cpp
+	client/snd_mem.cpp
+	client/snd_mix.cpp
+	client/snd_wavelet.cpp
 
-	unix/unix_main.c 
-	unix/unix_net.c 
-	unix/unix_shared.c 
-	unix/linux_common.c
-	unix/linux_qgl.c   
-	unix/linux_glimp.c   
-	unix/linux_joystick.c  
-	unix/linux_snd.c
-	unix/linux_signals.c
+	unix/unix_main.cpp
+	unix/unix_net.cpp
+	unix/unix_shared.cpp
+	unix/linux_common.cpp
+	unix/linux_qgl.cpp
+	unix/linux_glimp.cpp
+	unix/linux_joystick.cpp
+	unix/linux_snd.cpp
+	unix/linux_signals.cpp
 
-	server/sv_bot.c
-	server/sv_ccmds.c
-	server/sv_client.c
-	server/sv_game.c
-	server/sv_init.c
-	server/sv_main.c
-	server/sv_net_chan.c
-	server/sv_snapshot.c
-	server/sv_world.c
+	server/sv_bot.cpp
+	server/sv_ccmds.cpp
+	server/sv_client.cpp
+	server/sv_game.cpp
+	server/sv_init.cpp
+	server/sv_main.cpp
+	server/sv_net_chan.cpp
+	server/sv_snapshot.cpp
+	server/sv_world.cpp
 
-	game/q_math.c
-	game/q_shared.c
+	game/q_math.cpp
+	game/q_shared.cpp
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	list(APPEND WOLFMP_FILES
-		qcommon/vm_x86.c
+		qcommon/vm_x86.cpp
 	)
 
 	set(WOLFMP_NASM_FILES
@@ -145,7 +145,7 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	endforeach(SRC)
 else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	list(APPEND WOLFMP_FILES
-		qcommon/vm_none.c
+		qcommon/vm_none.cpp
 	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
@@ -154,46 +154,46 @@ set_target_properties(jlwolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlwolfmp botlib-wolfmp splines-wolfmp ${WOLF_CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
-	null/null_client.c
-	null/null_input.c
-	null/null_snddma.c
-	server/sv_bot.c
-	server/sv_ccmds.c
-	server/sv_client.c
-	server/sv_game.c
-	server/sv_init.c
-	server/sv_main.c
-	server/sv_net_chan.c
-	server/sv_snapshot.c
-	server/sv_world.c
-	qcommon/cm_load.c
-	qcommon/cm_patch.c
-	qcommon/cm_polylib.c
-	qcommon/cm_test.c
-	qcommon/cm_trace.c
-	qcommon/cmd.c
-	qcommon/common.c
-	qcommon/cvar.c
-	qcommon/files.c
-	qcommon/huffman.c
-	qcommon/md4.c
-	qcommon/msg.c
-	qcommon/net_chan.c
-	qcommon/unzip.c
-	qcommon/vm.c
-	qcommon/vm_interpreted.c
-	game/q_math.c
-	game/q_shared.c
-	unix/linux_common.c
-	unix/unix_main.c
-	unix/unix_net.c
-	unix/unix_shared.c
-	unix/linux_signals.c
+	null/null_client.cpp
+	null/null_input.cpp
+	null/null_snddma.cpp
+	server/sv_bot.cpp
+	server/sv_ccmds.cpp
+	server/sv_client.cpp
+	server/sv_game.cpp
+	server/sv_init.cpp
+	server/sv_main.cpp
+	server/sv_net_chan.cpp
+	server/sv_snapshot.cpp
+	server/sv_world.cpp
+	qcommon/cm_load.cpp
+	qcommon/cm_patch.cpp
+	qcommon/cm_polylib.cpp
+	qcommon/cm_test.cpp
+	qcommon/cm_trace.cpp
+	qcommon/cmd.cpp
+	qcommon/common.cpp
+	qcommon/cvar.cpp
+	qcommon/files.cpp
+	qcommon/huffman.cpp
+	qcommon/md4.cpp
+	qcommon/msg.cpp
+	qcommon/net_chan.cpp
+	qcommon/unzip.cpp
+	qcommon/vm.cpp
+	qcommon/vm_interpreted.cpp
+	game/q_math.cpp
+	game/q_shared.cpp
+	unix/linux_common.cpp
+	unix/unix_main.cpp
+	unix/unix_net.cpp
+	unix/unix_shared.cpp
+	unix/linux_signals.cpp
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	list(APPEND WOLFMPDED_FILES
-		qcommon/vm_x86.c
+		qcommon/vm_x86.cpp
 	)
 
 	set(WOLFMPDED_NASM_FILES
@@ -211,7 +211,7 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	endforeach(SRC)
 else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	list(APPEND WOLFMPDED_FILES
-		qcommon/vm_none.c
+		qcommon/vm_none.cpp
 	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 

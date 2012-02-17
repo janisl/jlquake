@@ -1677,7 +1677,7 @@ void CL_CheckForResend( void ) {
 		data[9 + i] = '\"';     // NERVE - SMF - spaces in name bugfix
 		data[10 + i] = 0;
 
-		NET_OutOfBandData( NS_CLIENT, clc.serverAddress, &data[0], i + 10 );
+		NET_OutOfBandData( NS_CLIENT, clc.serverAddress, (byte*)&data[0], i + 10 );
 		// the most current userinfo has been sent, so watch for any
 		// newer changes to userinfo variables
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
@@ -4126,7 +4126,7 @@ static trans_t* LookupTrans( char *original, char *translated[MAX_LANGUAGES], qb
 
 	// see if we want to save out the translation table everytime a string is added
 	if ( cl_debugTranslation->integer == 2 && !isLoading ) {
-		CL_SaveTransTable();
+		CL_SaveTransTable("scripts/translation.cfg", qfalse);
 	}
 
 	return newt;

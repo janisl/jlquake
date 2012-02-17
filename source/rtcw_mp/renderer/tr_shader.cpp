@@ -1052,7 +1052,7 @@ static void ParseDeform( char **text ) {
 		if ( n < 0 || n > 7 ) {
 			n = 0;
 		}
-		ds->deformation = DEFORM_TEXT0 + n;
+		ds->deformation = (deform_t)(DEFORM_TEXT0 + n);
 		return;
 	}
 
@@ -2065,7 +2065,7 @@ static shader_t *GeneratePermanentShader( void ) {
 			}
 			size = newShader->stages[i]->bundle[b].numTexMods * sizeof( texModInfo_t );
 			// Ridah, caching system
-			newShader->stages[i]->bundle[b].texMods = (texMod_t*)R_CacheShaderAlloc( size );
+			newShader->stages[i]->bundle[b].texMods = (texModInfo_t*)R_CacheShaderAlloc( size );
 
 			memcpy( newShader->stages[i]->bundle[b].texMods, stages[i].bundle[b].texMods, size );
 		}
@@ -3318,7 +3318,7 @@ R_LoadCacheShaders
 */
 void R_LoadCacheShaders( void ) {
 	int len;
-	byte *buf;
+	char *buf;
 	char    *token, *pString;
 	char name[MAX_QPATH];
 
@@ -3337,7 +3337,7 @@ void R_LoadCacheShaders( void ) {
 		return;
 	}
 
-	buf = (byte *)ri.Hunk_AllocateTempMemory( len );
+	buf = (char *)ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "shader.cache", (void **)&buf );
 	pString = buf;
 

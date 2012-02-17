@@ -593,9 +593,6 @@ void Com_Parse2DMatrix( const char *( *buf_p ), int y, int x, float *m );
 void Com_Parse3DMatrix( const char *( *buf_p ), int z, int y, int x, float *m );
 
 //=====================================================================================
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... );
 
@@ -653,10 +650,6 @@ float   LittleFloat( float l );
 
 void    Swap_Init( void );
 char    * QDECL va( char *format, ... );
-
-#ifdef __cplusplus
-}
-#endif
 
 
 //=============================================
@@ -751,17 +744,9 @@ drawVertMesh_t *SubdivideMapPatch( const mapPatch_t *patch, float maxError );
 
 //=========================================
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void QDECL Com_Error( int level, const char *error, ... );
 void QDECL Com_Printf( const char *msg, ... );
 void QDECL Com_DPrintf( const char *msg, ... );
-
-#ifdef __cplusplus
-}
-#endif
 
 
 typedef struct {

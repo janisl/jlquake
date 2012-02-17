@@ -1723,7 +1723,7 @@ static void R_LoadMarksurfaces( lump_t *l ) {
 		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name );
 	}
 	count = l->filelen / sizeof( *in );
-	out = (msurface_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
+	out = (msurface_t**)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;

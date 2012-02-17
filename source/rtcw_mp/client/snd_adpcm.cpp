@@ -82,13 +82,13 @@ S_AdpcmGetSamples
 */
 void S_AdpcmGetSamples( sndBuffer *chunk, short *to ) {
 	adpcm_state_t state;
-	byte            *out;
+	char            *out;
 
 	// get the starting state from the block header
 	state.index = chunk->adpcm.index;
 	state.sample = chunk->adpcm.sample;
 
-	out = (byte *)chunk->sndChunk;
+	out = (char*)chunk->sndChunk;
 	// get samples
 	S_AdpcmDecode( out, to, SND_CHUNK_SIZE_BYTE * 2, &state );
 }
@@ -105,7 +105,7 @@ void S_AdpcmEncodeSound( sfx_t *sfx, short *samples ) {
 	int count;
 	int n;
 	sndBuffer       *newchunk, *chunk;
-	byte            *out;
+	char            *out;
 
 	inOffset = 0;
 	count = sfx->soundLength;
@@ -131,7 +131,7 @@ void S_AdpcmEncodeSound( sfx_t *sfx, short *samples ) {
 		chunk->adpcm.index  = state.index;
 		chunk->adpcm.sample = state.sample;
 
-		out = (byte *)chunk->sndChunk;
+		out = (char *)chunk->sndChunk;
 
 		// encode the samples
 		S_AdpcmEncode( samples + inOffset, out, n, &state );
