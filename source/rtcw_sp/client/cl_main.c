@@ -109,10 +109,6 @@ typedef struct serverStatus_s
 serverStatus_t cl_serverStatusList[MAX_SERVERSTATUSREQUESTS];
 int serverStatusCount;
 
-#if 0 // MrE defined __USEA3D && defined __A3D_GEOM
-void hA3Dg_ExportRenderGeom( refexport_t *incoming_re );
-#endif
-
 extern void SV_BotFrame( int time );
 void CL_CheckForResend( void );
 void CL_ShowIP_f( void );
@@ -2378,10 +2374,6 @@ void CL_InitRef( void ) {
 	ri.CIN_RunCinematic = CIN_RunCinematic;
 
 	ret = GetRefAPI( REF_API_VERSION, &ri );
-
-#if 0 // MrE defined __USEA3D && defined __A3D_GEOM
-	hA3Dg_ExportRenderGeom( ret );
-#endif
 
 	Com_Printf( "-------------------------------\n" );
 

@@ -31,11 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 
-//#ifdef __USEA3D
-//// Defined in snd_a3dg_refcommon.c
-//void RE_A3D_RenderGeometry (void *pVoidA3D, void *pVoidGeom, void *pVoidMat, void *pVoidGeomStatus);
-//#endif
-
 glconfig_t glConfig;
 glstate_t glState;
 
@@ -1404,10 +1399,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.RegisterFont     = RE_RegisterFont;
 	re.RemapShader      = R_RemapShader;
 	re.GetEntityToken   = R_GetEntityToken;
-
-#ifdef BLAH // MrE __USEA3D
-	re.A3D_RenderGeometry = RE_A3D_RenderGeometry;
-#endif
 
 	// RF
 	re.ZombieFXAddNewHit = RB_ZombieFXAddNewHit;

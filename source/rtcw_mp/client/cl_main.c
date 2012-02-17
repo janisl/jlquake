@@ -2704,10 +2704,6 @@ void CL_InitRef( void ) {
 
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 
-#if 0 // MrE defined __USEA3D && defined __A3D_GEOM
-	hA3Dg_ExportRenderGeom( ret );
-#endif
-
 	Com_Printf( "-------------------------------\n" );
 
 	if ( !ret ) {
