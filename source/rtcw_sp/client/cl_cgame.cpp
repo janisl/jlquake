@@ -36,7 +36,7 @@ extern botlib_export_t *botlib_export;
 
 extern qboolean loadCamera( int camNum, const char *name );
 extern void startCamera( int camNum, int time );
-extern qboolean getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov );
+extern qboolean getCameraInfo( int camNum, int time, vec3_t origin, vec3_t angles, float *fov );
 
 // RF, this is only used when running a local server
 extern void SV_SendMoveSpeedsToGame( int entnum, char *text );
@@ -787,7 +787,7 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 //----(SA)	end
 
 	case CG_GETCAMERAINFO:
-		return getCameraInfo( args[1], args[2], (vec3_t*)VMA( 3 ), (vec3_t*)VMA( 4 ), (float*)VMA( 5 ) );
+		return getCameraInfo( args[1], args[2], (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ) );
 
 	case CG_GET_ENTITY_TOKEN:
 		return re.GetEntityToken( (char*)VMA( 1 ), args[2] );

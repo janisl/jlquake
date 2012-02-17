@@ -284,7 +284,7 @@ static void Decode( UINT4 *output, const unsigned char *input, unsigned int len 
 
 //===================================================================
 
-unsigned Com_BlockChecksum( void *buffer, int length ) {
+unsigned Com_BlockChecksum( const void *buffer, int length ) {
 	int digest[4];
 	unsigned val;
 	MD4_CTX ctx;

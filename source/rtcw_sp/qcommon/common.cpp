@@ -1090,7 +1090,7 @@ void Com_InitHunkMemory( void ) {
 	}
 
 
-	s_hunkData = (char*)malloc( s_hunkTotal + 31 );
+	s_hunkData = (byte*)malloc( s_hunkTotal + 31 );
 	if ( !s_hunkData ) {
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / ( 1024 * 1024 ) );
 	}
@@ -2870,7 +2870,7 @@ static void keyConcatArgs( void ) {
 }
 
 static void ConcatRemaining( const char *src, const char *start ) {
-	char *str;
+	const char *str;
 
 	str = strstr( src, start );
 	if ( !str ) {
