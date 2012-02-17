@@ -22,7 +22,6 @@ add_library(splines-wolfmp STATIC
 	splines/math_quaternion.cpp
 	splines/math_vector.cpp
 	splines/q_parse.cpp
-	splines/q_shared.cpp
 	splines/splines.cpp
 	splines/util_str.cpp  
 )
