@@ -514,7 +514,8 @@ void CL_WriteWaveClose() {
 }
 
 extern int s_soundtime;
-extern portable_samplepair_t *paintbuffer;
+#include "snd_local.h"
+extern portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 
 void CL_WriteWaveFilePacket() {
 	int total, i;

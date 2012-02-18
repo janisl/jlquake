@@ -86,63 +86,63 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cgame.c" />
-    <ClCompile Include="client\cl_cin.c" />
-    <ClCompile Include="client\cl_console.c" />
-    <ClCompile Include="client\cl_input.c" />
-    <ClCompile Include="client\cl_keys.c" />
-    <ClCompile Include="client\cl_main.c" />
-    <ClCompile Include="client\cl_net_chan.c" />
-    <ClCompile Include="client\cl_parse.c" />
-    <ClCompile Include="client\cl_scrn.c" />
-    <ClCompile Include="client\cl_ui.c" />
-    <ClCompile Include="qcommon\cm_load.c" />
-    <ClCompile Include="qcommon\cm_patch.c" />
-    <ClCompile Include="qcommon\cm_polylib.c" />
-    <ClCompile Include="qcommon\cm_test.c" />
-    <ClCompile Include="qcommon\cm_trace.c" />
-    <ClCompile Include="qcommon\cmd.c" />
-    <ClCompile Include="qcommon\common.c" />
-    <ClCompile Include="qcommon\cvar.c" />
-    <ClCompile Include="qcommon\files.c" />
-    <ClCompile Include="qcommon\huffman.c" />
-    <ClCompile Include="qcommon\md4.c" />
-    <ClCompile Include="qcommon\msg.c" />
-    <ClCompile Include="qcommon\net_chan.c" />
-    <ClCompile Include="game\q_math.c" />
-    <ClCompile Include="game\q_shared.c" />
-    <ClCompile Include="client\snd_adpcm.c" />
-    <ClCompile Include="client\snd_dma.c" />
-    <ClCompile Include="client\snd_mem.c" />
-    <ClCompile Include="client\snd_mix.c" />
-    <ClCompile Include="client\snd_wavelet.c" />
-    <ClCompile Include="qcommon\vm_none.c">
+    <ClCompile Include="client\cl_cgame.cpp" />
+    <ClCompile Include="client\cl_cin.cpp" />
+    <ClCompile Include="client\cl_console.cpp" />
+    <ClCompile Include="client\cl_input.cpp" />
+    <ClCompile Include="client\cl_keys.cpp" />
+    <ClCompile Include="client\cl_main.cpp" />
+    <ClCompile Include="client\cl_net_chan.cpp" />
+    <ClCompile Include="client\cl_parse.cpp" />
+    <ClCompile Include="client\cl_scrn.cpp" />
+    <ClCompile Include="client\cl_ui.cpp" />
+    <ClCompile Include="qcommon\cm_load.cpp" />
+    <ClCompile Include="qcommon\cm_patch.cpp" />
+    <ClCompile Include="qcommon\cm_polylib.cpp" />
+    <ClCompile Include="qcommon\cm_test.cpp" />
+    <ClCompile Include="qcommon\cm_trace.cpp" />
+    <ClCompile Include="qcommon\cmd.cpp" />
+    <ClCompile Include="qcommon\common.cpp" />
+    <ClCompile Include="qcommon\cvar.cpp" />
+    <ClCompile Include="qcommon\files.cpp" />
+    <ClCompile Include="qcommon\huffman.cpp" />
+    <ClCompile Include="qcommon\md4.cpp" />
+    <ClCompile Include="qcommon\msg.cpp" />
+    <ClCompile Include="qcommon\net_chan.cpp" />
+    <ClCompile Include="game\q_math.cpp" />
+    <ClCompile Include="game\q_shared.cpp" />
+    <ClCompile Include="client\snd_adpcm.cpp" />
+    <ClCompile Include="client\snd_dma.cpp" />
+    <ClCompile Include="client\snd_mem.cpp" />
+    <ClCompile Include="client\snd_mix.cpp" />
+    <ClCompile Include="client\snd_wavelet.cpp" />
+    <ClCompile Include="qcommon\vm_none.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="server\sv_bot.c" />
-    <ClCompile Include="server\sv_ccmds.c" />
-    <ClCompile Include="server\sv_client.c" />
-    <ClCompile Include="server\sv_game.c" />
-    <ClCompile Include="server\sv_init.c" />
-    <ClCompile Include="server\sv_main.c" />
-    <ClCompile Include="server\sv_net_chan.c" />
-    <ClCompile Include="server\sv_snapshot.c" />
-    <ClCompile Include="server\sv_world.c" />
-    <ClCompile Include="qcommon\unzip.c" />
-    <ClCompile Include="qcommon\vm.c" />
-    <ClCompile Include="qcommon\vm_interpreted.c" />
-    <ClCompile Include="qcommon\vm_x86.c">
+    <ClCompile Include="server\sv_bot.cpp" />
+    <ClCompile Include="server\sv_ccmds.cpp" />
+    <ClCompile Include="server\sv_client.cpp" />
+    <ClCompile Include="server\sv_game.cpp" />
+    <ClCompile Include="server\sv_init.cpp" />
+    <ClCompile Include="server\sv_main.cpp" />
+    <ClCompile Include="server\sv_net_chan.cpp" />
+    <ClCompile Include="server\sv_snapshot.cpp" />
+    <ClCompile Include="server\sv_world.cpp" />
+    <ClCompile Include="qcommon\unzip.cpp" />
+    <ClCompile Include="qcommon\vm.cpp" />
+    <ClCompile Include="qcommon\vm_interpreted.cpp" />
+    <ClCompile Include="qcommon\vm_x86.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="win32\win_input.c" />
-    <ClCompile Include="win32\win_main.c" />
-    <ClCompile Include="win32\win_net.c" />
-    <ClCompile Include="win32\win_shared.c" />
-    <ClCompile Include="win32\win_snd.c" />
-    <ClCompile Include="win32\win_syscon.c" />
-    <ClCompile Include="win32\win_wndproc.c" />
+    <ClCompile Include="win32\win_input.cpp" />
+    <ClCompile Include="win32\win_main.cpp" />
+    <ClCompile Include="win32\win_net.cpp" />
+    <ClCompile Include="win32\win_shared.cpp" />
+    <ClCompile Include="win32\win_snd.cpp" />
+    <ClCompile Include="win32\win_syscon.cpp" />
+    <ClCompile Include="win32\win_wndproc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\bg_public.h" />

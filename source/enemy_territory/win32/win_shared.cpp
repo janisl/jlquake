@@ -537,7 +537,7 @@ float Sys_RealGetCPUSpeed( void ) {
 		total = freq1 + freq2 + freq3;
 
 	} while ( ( tries < 3 || tries < 20 ) &&
-			  ( ( abs( 3 * freq1 - total ) > 3 ) || ( abs( 3 * freq2 - total ) > 3 ) || ( abs( 3 * freq3 - total ) > 3 ) ) );
+			  ( ( abs((int)( 3 * freq1 - total) ) > 3 ) || ( abs( (int)(3 * freq2 - total) ) > 3 ) || ( abs( (int)(3 * freq3 - total) ) > 3 ) ) );
 
 	if ( total / 3 != ( total + 1 ) / 3 ) {
 		total++;

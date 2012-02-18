@@ -543,7 +543,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		wc.hInstance     = g_wv.hInstance;
 		wc.hIcon         = LoadIcon( g_wv.hInstance, MAKEINTRESOURCE( IDI_ICON1 ) );
 		wc.hCursor       = LoadCursor( NULL,IDC_ARROW );
-		wc.hbrBackground = (void *)COLOR_GRAYTEXT;
+		wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
 		wc.lpszMenuName  = 0;
 		wc.lpszClassName = WINDOW_CLASS_NAME;
 
@@ -1342,10 +1342,10 @@ void GLimp_Init( void ) {
 	GLW_StartOpenGL();
 
 	// get our config strings
-	Q_strncpyz( glConfig.vendor_string, qglGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
-	Q_strncpyz( glConfig.renderer_string, qglGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
-	Q_strncpyz( glConfig.version_string, qglGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
-	Q_strncpyz( glConfig.extensions_string, qglGetString( GL_EXTENSIONS ), sizeof( glConfig.extensions_string ) );
+	Q_strncpyz( glConfig.vendor_string, (char*)qglGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
+	Q_strncpyz( glConfig.renderer_string, (char*)qglGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
+	Q_strncpyz( glConfig.version_string, (char*)qglGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
+	Q_strncpyz( glConfig.extensions_string, (char*)qglGetString( GL_EXTENSIONS ), sizeof( glConfig.extensions_string ) );
 
 	//
 	// chipset specific configuration
@@ -1522,7 +1522,7 @@ GLimp_SpawnRenderThread
 =======================
 */
 HANDLE renderThreadHandle;
-int renderThreadId;
+DWORD renderThreadId;
 qboolean GLimp_SpawnRenderThread( void ( *function )( void ) ) {
 
 	renderCommandsEvent = CreateEvent( NULL, TRUE, FALSE, NULL );

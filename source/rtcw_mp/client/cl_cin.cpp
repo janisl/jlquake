@@ -1494,7 +1494,7 @@ e_status CIN_RunCinematic( int handle ) {
 
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
 	thisTime = CL_ScaledMilliseconds() * com_timescale->value;
-	if ( cinTable[currentHandle].shader && ( abs( thisTime - cinTable[currentHandle].lastTime ) ) > 100 ) {
+	if ( cinTable[currentHandle].shader && ( abs( thisTime - (int)cinTable[currentHandle].lastTime ) ) > 100 ) {
 		cinTable[currentHandle].startTime += thisTime - cinTable[currentHandle].lastTime;
 	}
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer

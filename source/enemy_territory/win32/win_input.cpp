@@ -384,7 +384,7 @@ qboolean IN_InitDInput( void ) {
 #ifdef __GNUC__
 	hResult = DirectInputCreate( g_wv.hInstance, DIRECTINPUT_VERSION, &g_pdi, NULL );
 #else
-	hResult = DirectInput8Create( g_wv.hInstance, DIRECTINPUT_VERSION, &IID_IDirectInput8A, &g_pdi, NULL );
+	hResult = DirectInput8Create( g_wv.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pdi, NULL );
 #endif
 
 	if ( FAILED( hResult ) ) {
@@ -397,7 +397,7 @@ qboolean IN_InitDInput( void ) {
 	}
 
 	// obtain an interface to the system mouse device.
-	hResult = IDirectInput_CreateDevice( g_pdi, &GUID_SysMouse, &g_pMouse, NULL );
+	hResult = IDirectInput_CreateDevice( g_pdi, GUID_SysMouse, &g_pMouse, NULL );
 
 	if ( FAILED( hResult ) ) {
 		Com_Printf( "Couldn't open DI mouse device\n" );

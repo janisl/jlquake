@@ -68,8 +68,6 @@ HWAVEOUT hWaveOut;
 
 WAVEOUTCAPS wavecaps;
 
-DWORD gSndBufSize;
-
 MMTIME mmstarttime;
 
 HANDLE hData;
@@ -78,7 +76,6 @@ HPSTR lpData, lpData2;
 static qboolean wav_init = qfalse;
 // starts at 0 for disabled
 static int snd_buffer_count = 0;
-static int sample16;
 static int snd_sent, snd_completed;
 
 
@@ -212,7 +209,7 @@ qboolean SNDDMA_InitWav( void ) {
 	Com_DPrintf( "ok\n" );
 
 	Com_DPrintf( "...locking waveform buffer: " );
-	lpData = GlobalLock( hData );
+	lpData = (HPSTR)GlobalLock( hData );
 	if ( !lpData ) {
 		Com_Printf( " failed\n" );
 		FreeSound();
@@ -294,19 +291,19 @@ void SNDDMA_Shutdown( void ) {
 		Com_DPrintf( "Destroying DS buffers\n" );
 		if ( pDS ) {
 			Com_DPrintf( "...setting NORMAL coop level\n" );
-			pDS->lpVtbl->SetCooperativeLevel( pDS, g_wv.hWnd, DSSCL_NORMAL );
+			pDS->SetCooperativeLevel( g_wv.hWnd, DSSCL_NORMAL );
 		}
 
 		if ( pDSBuf ) {
 			Com_DPrintf( "...stopping and releasing sound buffer\n" );
-			pDSBuf->lpVtbl->Stop( pDSBuf );
-			pDSBuf->lpVtbl->Release( pDSBuf );
+			pDSBuf->Stop();
+			pDSBuf->Release();
 		}
 
 		// only release primary buffer if it's not also the mixing buffer we just released
 		if ( pDSPBuf && ( pDSBuf != pDSPBuf ) ) {
 			Com_DPrintf( "...releasing primary buffer\n" );
-			pDSPBuf->lpVtbl->Release( pDSPBuf );
+			pDSPBuf->Release();
 		}
 		pDSBuf = NULL;
 		pDSPBuf = NULL;
@@ -314,7 +311,7 @@ void SNDDMA_Shutdown( void ) {
 		dma.buffer = NULL;
 
 		Com_DPrintf( "...releasing DS object\n" );
-		pDS->lpVtbl->Release( pDS );
+		pDS->Release();
 	}
 
 	if ( hInstDS ) {
@@ -425,7 +422,7 @@ int SNDDMA_InitDS() {
 
 	Com_DPrintf( "...setting DSSCL_NORMAL coop level: " );
 
-	if ( DS_OK != pDS->lpVtbl->SetCooperativeLevel( pDS, g_wv.hWnd, DSSCL_NORMAL ) ) {
+	if ( DS_OK != pDS->SetCooperativeLevel( g_wv.hWnd, DSSCL_NORMAL ) ) {
 		Com_Printf( "failed\n" );
 		SNDDMA_Shutdown();
 		return qfalse;
@@ -467,12 +464,12 @@ int SNDDMA_InitDS() {
 	dsbcaps.dwSize = sizeof( dsbcaps );
 
 	Com_DPrintf( "...creating secondary buffer: " );
-	if ( DS_OK == pDS->lpVtbl->CreateSoundBuffer( pDS, &dsbuf, &pDSBuf, NULL ) ) {
+	if ( DS_OK == pDS->CreateSoundBuffer( &dsbuf, &pDSBuf, NULL ) ) {
 		Com_Printf( "locked hardware.  ok\n" );
 	} else {
 		// Couldn't get hardware, fallback to software.
 		dsbuf.dwFlags = DSBCAPS_LOCSOFTWARE;
-		if ( DS_OK != pDS->lpVtbl->CreateSoundBuffer( pDS, &dsbuf, &pDSBuf, NULL ) ) {
+		if ( DS_OK != pDS->CreateSoundBuffer( &dsbuf, &pDSBuf, NULL ) ) {
 			Com_Printf( "failed\n" );
 			SNDDMA_Shutdown();
 			return qfalse;
@@ -481,14 +478,14 @@ int SNDDMA_InitDS() {
 	}
 
 	// Make sure mixer is active
-	if ( DS_OK != pDSBuf->lpVtbl->Play( pDSBuf, 0, 0, DSBPLAY_LOOPING ) ) {
+	if ( DS_OK != pDSBuf->Play( 0, 0, DSBPLAY_LOOPING ) ) {
 		Com_Printf( "*** Looped sound play failed ***\n" );
 		SNDDMA_Shutdown();
 		return qfalse;
 	}
 
 	// get the returned buffer size
-	if ( DS_OK != pDSBuf->lpVtbl->GetCaps( pDSBuf, &dsbcaps ) ) {
+	if ( DS_OK != pDSBuf->GetCaps( &dsbcaps ) ) {
 		Com_Printf( "*** GetCaps failed ***\n" );
 		SNDDMA_Shutdown();
 		return qfalse;
@@ -548,7 +545,7 @@ int SNDDMA_GetDMAPos( void ) {
 	}
 
 	mmtime.wType = TIME_SAMPLES;
-	pDSBuf->lpVtbl->GetCurrentPosition( pDSBuf, &mmtime.u.sample, &dwWrite );
+	pDSBuf->GetCurrentPosition( &mmtime.u.sample, &dwWrite );
 
 	s = mmtime.u.sample;
 	s >>= sample16;
@@ -576,16 +573,16 @@ void SNDDMA_BeginPainting( void ) {
 	}
 
 	// if the buffer was lost or stopped, restore it and/or restart it
-	if ( pDSBuf->lpVtbl->GetStatus( pDSBuf, &dwStatus ) != DS_OK ) {
+	if ( pDSBuf->GetStatus( &dwStatus ) != DS_OK ) {
 		Com_Printf( "Couldn't get sound buffer status\n" );
 	}
 
 	if ( dwStatus & DSBSTATUS_BUFFERLOST ) {
-		pDSBuf->lpVtbl->Restore( pDSBuf );
+		pDSBuf->Restore();
 	}
 
 	if ( !( dwStatus & DSBSTATUS_PLAYING ) ) {
-		pDSBuf->lpVtbl->Play( pDSBuf, 0, 0, DSBPLAY_LOOPING );
+		pDSBuf->Play( 0, 0, DSBPLAY_LOOPING );
 	}
 
 	// lock the dsound buffer
@@ -593,8 +590,8 @@ void SNDDMA_BeginPainting( void ) {
 	reps = 0;
 	dma.buffer = NULL;
 
-	while ( ( hresult = pDSBuf->lpVtbl->Lock( pDSBuf, 0, gSndBufSize, &pbuf, &locksize,
-											  &pbuf2, &dwSize2, 0 ) ) != DS_OK )
+	while ( ( hresult = pDSBuf->Lock( 0, gSndBufSize, (LPVOID*)&pbuf, &locksize,
+											  (LPVOID*)&pbuf2, &dwSize2, 0 ) ) != DS_OK )
 	{
 		if ( hresult != DSERR_BUFFERLOST ) {
 			Com_Printf( "SNDDMA_BeginPainting: Lock failed with error '%s'\n", DSoundError( hresult ) );
@@ -602,7 +599,7 @@ void SNDDMA_BeginPainting( void ) {
 			return;
 		} else
 		{
-			pDSBuf->lpVtbl->Restore( pDSBuf );
+			pDSBuf->Restore();
 		}
 
 		if ( ++reps > 2 ) {
@@ -626,7 +623,7 @@ void SNDDMA_Submit( void ) {
 
 	// unlock the dsound buffer
 	if ( pDSBuf ) {
-		pDSBuf->lpVtbl->Unlock( pDSBuf, dma.buffer, locksize, NULL, 0 );
+		pDSBuf->Unlock( dma.buffer, locksize, NULL, 0 );
 	}
 	if ( !wav_init ) {
 		return;
@@ -690,7 +687,7 @@ void SNDDMA_Activate( void ) {
 		return;
 	}
 
-	if ( DS_OK != pDS->lpVtbl->SetCooperativeLevel( pDS, g_wv.hWnd, DSSCL_PRIORITY ) ) {
+	if ( DS_OK != pDS->SetCooperativeLevel( g_wv.hWnd, DSSCL_PRIORITY ) ) {
 		Com_Printf( "sound SetCooperativeLevel failed\n" );
 		SNDDMA_Shutdown();
 	}

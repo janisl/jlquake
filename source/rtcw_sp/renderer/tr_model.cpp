@@ -1720,7 +1720,7 @@ void *R_Hunk_Begin( void ) {
 	// this will "reserve" a chunk of memory for use by this application
 	// it will not be "committed" just yet, but the swap file will grow
 	// now if needed
-	membase = VirtualAlloc( NULL, maxsize, MEM_RESERVE, PAGE_NOACCESS );
+	membase = (byte*)VirtualAlloc( NULL, maxsize, MEM_RESERVE, PAGE_NOACCESS );
 
 #elif defined( __MACOS__ )
 

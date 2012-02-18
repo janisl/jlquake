@@ -208,7 +208,8 @@ void Sys_PumpEvents( void );
 
 
 
-typedef enum {qfalse, qtrue}    qboolean;
+typedef int    qboolean;
+typedef enum {qfalse, qtrue};
 
 typedef unsigned char byte;
 

@@ -36,7 +36,7 @@ extern botlib_export_t *botlib_export;
 
 extern qboolean loadCamera( int camNum, const char *name );
 extern void startCamera( int camNum, int time );
-extern qboolean getCameraInfo( int camNum, int time, vec3_t origin, vec3_t angles, float *fov );
+extern qboolean getCameraInfo( int camNum, int time, float* origin, float* angles, float *fov );
 
 // RF, this is only used when running a local server
 extern void SV_SendMoveSpeedsToGame( int entnum, char *text );

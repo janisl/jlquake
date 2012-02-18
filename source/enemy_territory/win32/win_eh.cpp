@@ -46,14 +46,12 @@ typedef enum {
 	FS_APPEND_SYNC
 } fsMode_t;
 
-extern "C" {
 void Com_Frame( void );
 void Q_strcat( char *dest, int size, const char *src );
 void __cdecl Com_sprintf( char *dest, int size, const char *fmt, ... );
 int FS_FOpenFileByMode( const char *qpath, fileHandle_t * f, fsMode_t mode );
 int FS_Write( const void *buffer, int len, fileHandle_t h );
 void FS_FCloseFile( fileHandle_t f );
-}
 
 #define CASE( seCode ) case EXCEPTION_ ## seCode: \
 	Com_sprintf( minibuffer, sizeof( minibuffer ), "Exception %s (0x%.8x) at address 0x%.8x.", # seCode, EXCEPTION_ ## seCode, m_exPointers->ExceptionRecord->ExceptionAddress ); \

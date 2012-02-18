@@ -1198,7 +1198,7 @@ void CL_InitUI( void ) {
 		// if sv_pure is set we only allow qvms to be loaded
 		interpret = VMI_COMPILED;
 	} else {
-		interpret = (vmInterpret_t)Cvar_VariableValue( "vm_ui" );
+		interpret = (vmInterpret_t)Cvar_VariableIntegerValue( "vm_ui" );
 	}
 
 //----(SA)	always dll
@@ -1206,7 +1206,7 @@ void CL_InitUI( void ) {
 #ifdef WOLF_SP_DEMO
 	uivm = VM_Create( "ui", CL_UISystemCalls, VMI_NATIVE );
 #else
-	uivm = VM_Create( "ui", CL_UISystemCalls, (vmInterpret_t)Cvar_VariableValue( "vm_ui" ) );
+	uivm = VM_Create( "ui", CL_UISystemCalls, (vmInterpret_t)Cvar_VariableIntegerValue( "vm_ui" ) );
 #endif
 
 	if ( !uivm ) {

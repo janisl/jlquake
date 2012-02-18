@@ -658,7 +658,7 @@ void PC_FreeDefine( define_t *define ) {
 void PC_AddBuiltinDefines( source_t *source ) {
 	int i;
 	define_t *define;
-	struct builtin
+	struct _builtin
 	{
 		char *string;
 		int builtin;

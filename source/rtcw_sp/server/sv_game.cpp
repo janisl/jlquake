@@ -982,7 +982,7 @@ void SV_InitGameProgs( void ) {
 	}
 
 	// load the dll or bytecode
-	gvm = VM_Create( "qagame", SV_GameSystemCalls, (vmInterpret_t)Cvar_VariableValue( "vm_game" ) );
+	gvm = VM_Create( "qagame", SV_GameSystemCalls, (vmInterpret_t)Cvar_VariableIntegerValue( "vm_game" ) );
 	if ( !gvm ) {
 		Com_Error( ERR_FATAL, "VM_Create on game failed" );
 	}

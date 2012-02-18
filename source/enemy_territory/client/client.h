@@ -443,7 +443,7 @@ extern cvar_t  *cl_profile;
 extern cvar_t  *cl_defaultProfile;
 
 //bani
-extern qboolean sv_cheats;
+extern cvar_t* sv_cheats;
 
 //=================================================
 

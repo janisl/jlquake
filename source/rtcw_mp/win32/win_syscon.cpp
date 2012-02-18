@@ -334,7 +334,7 @@ void Sys_CreateConsole( void ) {
 	wc.hInstance     = g_wv.hInstance;
 	wc.hIcon         = LoadIcon( g_wv.hInstance, MAKEINTRESOURCE( IDI_ICON1 ) );
 	wc.hCursor       = LoadCursor( NULL,IDC_ARROW );
-	wc.hbrBackground = (void *)COLOR_WINDOW;
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	wc.lpszMenuName  = 0;
 	wc.lpszClassName = DEDCLASS;
 

@@ -489,7 +489,7 @@ void AAS_FaceCenter( int facenum, vec3_t center ) {
 int AAS_FallDamageDistance( void ) {
 	float maxzvelocity, gravity, t;
 
-	maxzvelocity = sqrt( 30 * 10000 );
+	maxzvelocity = sqrt( 30.0 * 10000 );
 	gravity = aassettings.sv_gravity;
 	t = maxzvelocity / gravity;
 	return 0.5 * gravity * t * t;

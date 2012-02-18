@@ -36,7 +36,7 @@ extern botlib_export_t *botlib_export;
 
 extern qboolean loadCamera( int camNum, const char *name );
 extern void startCamera( int camNum, int time );
-extern qboolean getCameraInfo( int camNum, int time, vec3_t origin, vec3_t angles, float *fov );
+extern qboolean getCameraInfo( int camNum, int time, float* origin, float* angles, float *fov );
 
 // RF, this is only used when running a local server
 extern void SV_SendMoveSpeedsToGame( int entnum, char *text );
@@ -973,7 +973,7 @@ void CL_InitCGame( void ) {
 		// if sv_pure is set we only allow qvms to be loaded
 		interpret = VMI_COMPILED;
 	} else {
-		interpret = (vmInterpret_t)Cvar_VariableValue( "vm_cgame" );
+		interpret = (vmInterpret_t)Cvar_VariableIntegerValue( "vm_cgame" );
 	}
 	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, interpret );
 //	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
