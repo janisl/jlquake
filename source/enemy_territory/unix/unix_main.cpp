@@ -97,18 +97,6 @@ static field_t tty_con;
 static field_t ttyEditLines[TTY_HISTORY];
 static int hist_current = -1, hist_count = 0;
 
-// =======================================================================
-// General routines
-// =======================================================================
-
-void Com_Memcpy( void* dest, const void* src, const size_t count ) {
-	memcpy( dest, src, count );
-}
-
-void Com_Memset( void* dest, const int val, const size_t count ) {
-	memset( dest, val, count );
-}
-
 // bk001207
 #define MEM_THRESHOLD 96 * 1024 * 1024
 

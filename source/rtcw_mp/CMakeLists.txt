@@ -89,7 +89,6 @@ set(WOLFMP_FILES
 	unix/unix_main.cpp
 	unix/unix_net.cpp
 	unix/unix_shared.cpp
-	unix/linux_common.cpp
 	unix/linux_qgl.cpp
 	unix/linux_glimp.cpp
 	unix/linux_joystick.cpp
@@ -184,7 +183,6 @@ set(WOLFMPDED_FILES
 	qcommon/vm_interpreted.cpp
 	game/q_math.cpp
 	game/q_shared.cpp
-	unix/linux_common.cpp
 	unix/unix_main.cpp
 	unix/unix_net.cpp
 	unix/unix_shared.cpp

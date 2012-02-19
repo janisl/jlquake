@@ -159,7 +159,6 @@ public:
 //
 //==========================================================================
 
-#if 0
 void Com_Memset(void* dest, const int val, const size_t count);
 void Com_Memcpy(void* dest, const void* src, const size_t count);
 
@@ -169,6 +168,7 @@ void Com_Memcpy(void* dest, const void* src, const size_t count);
 //
 //==========================================================================
 
+#if 0
 int COM_Argc();
 const char* COM_Argv(int arg);	// range and null checked
 void COM_InitArgv(int argc, const char** argv);

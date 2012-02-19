@@ -386,9 +386,6 @@ void Snd_Memset( void* dest, const int val, const size_t count );
 #define Snd_Memset Com_Memset
 #endif
 
-void Com_Memset( void* dest, const int val, const size_t count );
-void Com_Memcpy( void* dest, const void* src, const size_t count );
-
 #define CIN_system  1
 #define CIN_loop    2
 #define CIN_hold    4

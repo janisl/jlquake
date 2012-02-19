@@ -42,7 +42,6 @@ Interface::~Interface()
 {
 }
 
-#if 0
 #if 0//id386 && defined _MSC_VER && !defined __VECTORC
 typedef enum
 {
@@ -624,6 +623,7 @@ void Com_Memset (void* dest, const int val, const size_t count)
 }
 #endif // bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
 
+#if 0
 int COM_Argc()
 {
 	return com_argc;
