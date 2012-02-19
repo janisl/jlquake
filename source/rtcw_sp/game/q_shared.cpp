@@ -705,59 +705,6 @@ void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m ) {
 ============================================================================
 */
 
-int Q_isprint( int c ) {
-	if ( c >= 0x20 && c <= 0x7E ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_islower( int c ) {
-	if ( c >= 'a' && c <= 'z' ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_isupper( int c ) {
-	if ( c >= 'A' && c <= 'Z' ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_isalpha( int c ) {
-	if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-//----(SA)	added
-int Q_isnumeric( int c ) {
-	if ( c >= '0' && c <= '9' ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_isalphanumeric( int c ) {
-	if ( Q_isalpha( c ) ||
-		 Q_isnumeric( c ) ) {
-		return( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_isforfilename( int c ) {
-	if ( ( Q_isalphanumeric( c ) || c == '_' ) && c != ' ' ) { // space not allowed in filename
-		return( 1 );
-	}
-	return ( 0 );
-}
-//----(SA)	end
-
-
 char* Q_strrchr( const char* string, int c ) {
 	char cc = c;
 	char *s;
@@ -795,7 +742,7 @@ char *Q_strupr( char *s1 ) {
 
 	s = s1;
 	while ( *s ) {
-		*s = toupper( *s );
+		*s = String::ToUpper( *s );
 		s++;
 	}
 	return s1;
@@ -877,10 +824,10 @@ int Q_strncasecmp( char *s1, char *s2, int n ) {
 
 		}
 		if ( c1 != c2 ) {
-			if ( Q_islower( c1 ) ) {
+			if ( String::IsLower( c1 ) ) {
 				c1 -= ( 'a' - 'A' );
 			}
-			if ( Q_islower( c2 ) ) {
+			if ( String::IsLower( c2 ) ) {
 				c2 -= ( 'a' - 'A' );
 			}
 			if ( c1 != c2 ) {

@@ -196,7 +196,7 @@ qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 		( (struct sockaddr_in *)sadr )->sin_family = AF_INET;
 		( (struct sockaddr_in *)sadr )->sin_port = 0;
 
-		if ( Q_isnumeric( s[0] ) ) {
+		if ( String::IsDigit( s[0] ) ) {
 			*(int *)&( (struct sockaddr_in *)sadr )->sin_addr = inet_addr( s );
 		} else {
 			if ( ( h = gethostbyname( s ) ) == 0 ) {

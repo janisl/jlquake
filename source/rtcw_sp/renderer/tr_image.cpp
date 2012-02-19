@@ -2175,9 +2175,9 @@ image_t *R_FindImageFileExt( const char *name, qboolean mipmap, qboolean allowPi
 		int len;                                          //
 		String::Cpy( altname, name );                          //
 		len = String::Length( altname );                          //
-		altname[len - 3] = toupper( altname[len - 3] );   // and try upper case extension for unix systems
-		altname[len - 2] = toupper( altname[len - 2] );   //
-		altname[len - 1] = toupper( altname[len - 1] );   //
+		altname[len - 3] = String::ToUpper( altname[len - 3] );   // and try upper case extension for unix systems
+		altname[len - 2] = String::ToUpper( altname[len - 2] );   //
+		altname[len - 1] = String::ToUpper( altname[len - 1] );   //
 		ri.Printf( PRINT_DEVELOPER, "trying %s...", altname );
 		R_LoadImage( altname, &pic, &width, &height );      //
 		if ( pic == NULL ) {                              // if that fails

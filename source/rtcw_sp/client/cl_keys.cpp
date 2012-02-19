@@ -1344,7 +1344,7 @@ int Key_StringToKeynum( char *str ) {
 		int n1, n2;
 
 		n1 = str[2];
-		if ( Q_isnumeric( n1 ) ) {
+		if ( String::IsDigit( n1 ) ) {
 			n1 -= '0';
 		} else if ( n1 >= 'a' && n1 <= 'f' ) {
 			n1 = n1 - 'a' + 10;
@@ -1353,7 +1353,7 @@ int Key_StringToKeynum( char *str ) {
 		}
 
 		n2 = str[3];
-		if ( Q_isnumeric( n2 ) ) {
+		if ( String::IsDigit( n2 ) ) {
 			n2 -= '0';
 		} else if ( n2 >= 'a' && n2 <= 'f' ) {
 			n2 = n2 - 'a' + 10;

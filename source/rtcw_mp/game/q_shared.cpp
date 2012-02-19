@@ -692,34 +692,6 @@ void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m ) {
 ============================================================================
 */
 
-int Q_isprint( int c ) {
-	if ( c >= 0x20 && c <= 0x7E ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_islower( int c ) {
-	if ( c >= 'a' && c <= 'z' ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_isupper( int c ) {
-	if ( c >= 'A' && c <= 'Z' ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
-int Q_isalpha( int c ) {
-	if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
-		return ( 1 );
-	}
-	return ( 0 );
-}
-
 char* Q_strrchr( const char* string, int c ) {
 	char cc = c;
 	char *s;
@@ -757,7 +729,7 @@ char *Q_strupr( char *s1 ) {
 
 	s = s1;
 	while ( *s ) {
-		*s = toupper( *s );
+		*s = String::ToUpper( *s );
 		s++;
 	}
 	return s1;

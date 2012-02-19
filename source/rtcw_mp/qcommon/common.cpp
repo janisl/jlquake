@@ -529,7 +529,7 @@ char *Com_StringContains( char *str1, char *str2, int casesensitive ) {
 					break;
 				}
 			} else {
-				if ( toupper( str1[j] ) != toupper( str2[j] ) ) {
+				if ( String::ToUpper( str1[j] ) != String::ToUpper( str2[j] ) ) {
 					break;
 				}
 			}
@@ -587,8 +587,8 @@ int Com_Filter( char *filter, char *name, int casesensitive ) {
 							found = qtrue;
 						}
 					} else {
-						if ( toupper( *name ) >= toupper( *filter ) &&
-							 toupper( *name ) <= toupper( *( filter + 2 ) ) ) {
+						if ( String::ToUpper( *name ) >= String::ToUpper( *filter ) &&
+							 String::ToUpper( *name ) <= String::ToUpper( *( filter + 2 ) ) ) {
 							found = qtrue;
 						}
 					}
@@ -599,7 +599,7 @@ int Com_Filter( char *filter, char *name, int casesensitive ) {
 							found = qtrue;
 						}
 					} else {
-						if ( toupper( *filter ) == toupper( *name ) ) {
+						if ( String::ToUpper( *filter ) == String::ToUpper( *name ) ) {
 							found = qtrue;
 						}
 					}
@@ -623,7 +623,7 @@ int Com_Filter( char *filter, char *name, int casesensitive ) {
 					return qfalse;
 				}
 			} else {
-				if ( toupper( *filter ) != toupper( *name ) ) {
+				if ( String::ToUpper( *filter ) != String::ToUpper( *name ) ) {
 					return qfalse;
 				}
 			}

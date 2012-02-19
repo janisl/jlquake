@@ -494,7 +494,7 @@ int StringContains( char *str1, char *str2, int casesensitive ) {
 			} //end if
 			else
 			{
-				if ( toupper( str1[j] ) != toupper( str2[j] ) ) {
+				if ( String::ToUpper( str1[j] ) != String::ToUpper( str2[j] ) ) {
 					break;
 				}
 			} //end else
@@ -536,7 +536,7 @@ char *StringContainsWord( char *str1, char *str2, int casesensitive ) {
 			} //end if
 			else
 			{
-				if ( toupper( str1[j] ) != toupper( str2[j] ) ) {
+				if ( String::ToUpper( str1[j] ) != String::ToUpper( str2[j] ) ) {
 					break;
 				}
 			} //end else

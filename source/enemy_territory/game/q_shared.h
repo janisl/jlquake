@@ -778,14 +778,6 @@ typedef enum {
 
 //=============================================
 
-int Q_isprint( int c );
-int Q_islower( int c );
-int Q_isupper( int c );
-int Q_isalpha( int c );
-int Q_isnumeric( int c );
-int Q_isalphanumeric( int c );
-int Q_isforfilename( int c );
-
 // portable case insensitive compare
 char    *Q_strlwr( char *s1 );
 char    *Q_strupr( char *s1 );

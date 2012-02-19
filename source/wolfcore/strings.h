@@ -344,17 +344,19 @@ public:
 	static int Atoi(const char* Str);
 	static float Atof(const char* Str);
 	static void Sprintf(char* Dest, int Size, const char* Fmt, ...);
+#endif
 
 	//	Replacements for standard character functions.
-	static int IsPrint(int C);
-	static int IsLower(int C);
-	static int IsUpper(int C);
-	static int IsAlpha(int C);
-	static int IsSpace(int C);
-	static int IsDigit(int C);
-	static char ToUpper(char C);
-	static char ToLower(char C);
+	static int IsPrint(int c);
+	static int IsLower(int c);
+	static int IsUpper(int c);
+	static int IsAlpha(int c);
+	static int IsSpace(int c);
+	static int IsDigit(int c);
+	static char ToUpper(char c);
+	static char ToLower(char c);
 
+#if 0
 	static char* SkipPath(char* PathName);
 	static const char* SkipPath(const char *PathName);
 	static void StripExtension(const char* In, char* Out);

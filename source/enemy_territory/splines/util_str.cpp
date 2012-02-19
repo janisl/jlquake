@@ -72,7 +72,7 @@ char *idStr::toupper
 	s = s1;
 	while ( *s )
 	{
-		*s = ::toupper( *s );
+		*s = ::String::ToUpper( *s );
 		s++;
 	}
 
