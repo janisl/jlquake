@@ -27,6 +27,7 @@
 
 #if 0
 static char		com_token[1024];
+#endif
 
 //==========================================================================
 //
@@ -703,7 +704,6 @@ String String::FromChar(int C)
 	}
 	return Ret;
 }
-#endif
 
 int String::Length(const char* str)
 {

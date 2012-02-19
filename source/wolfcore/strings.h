@@ -20,15 +20,12 @@
 
 class String
 {
-#if 0
 private:
 	char*		Str;
 
 	void Resize(int NewLen);
-#endif
 
 public:
-#if 0
 	//	Constructors.
 	String()
 	: Str(NULL)
@@ -327,7 +324,6 @@ public:
 	static String FromChar(int);
 
 	//	Replacements for standard string functions.
-#endif
 	static int Length(const char* str);
 	static int Cmp(const char* s1, const char* s2);
 	static int NCmp(const char* s1, const char* s2, size_t n);
