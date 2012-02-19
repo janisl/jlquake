@@ -437,7 +437,7 @@ void CL_SetExpectedHunkUsage( const char *mapname ) {
 		// now parse the file, filtering out the current map
 		buftrav = buf;
 		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
-			if ( !Q_strcasecmp( token, (char *)mapname ) ) {
+			if ( !String::ICmp( token, (char *)mapname ) ) {
 				// found a match
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {
@@ -953,7 +953,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 		outbuftrav = outbuf;
 		outbuftrav[0] = '\0';
 		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
-			if ( !Q_strcasecmp( token, cl.mapname ) ) {
+			if ( !String::ICmp( token, cl.mapname ) ) {
 				// found a match
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {

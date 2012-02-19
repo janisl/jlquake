@@ -703,10 +703,6 @@ typedef enum {
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string
 char *Q_CleanStr( char *string );
-// Ridah
-int Q_strncasecmp( char *s1, char *s2, int n );
-int Q_strcasecmp( char *s1, char *s2 );
-// done.
 
 //=============================================
 
