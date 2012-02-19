@@ -275,7 +275,7 @@ void SV_DirectConnect( netadr_t from ) {
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	String::NCpyZ( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
@@ -456,7 +456,7 @@ gotnewcl:
 	// init the netchan queue
 
 	// save the userinfo
-	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
+	String::NCpyZ( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
 	denied = VM_Call( gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse ); // firstTime = qtrue
@@ -804,7 +804,7 @@ void SV_BeginDownload_f( client_t *cl ) {
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	Q_strncpyz( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
+	String::NCpyZ( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
 }
 
 /*
@@ -986,7 +986,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
 					if ( downloadSize ) {
 						FS_FCloseFile( handle ); // don't keep open, we only care about the size
 
-						Q_strncpyz( cl->downloadURL, va( "%s/%s", sv_wwwBaseURL->string, cl->downloadName ), sizeof( cl->downloadURL ) );
+						String::NCpyZ( cl->downloadURL, va( "%s/%s", sv_wwwBaseURL->string, cl->downloadName ), sizeof( cl->downloadURL ) );
 
 						//bani - prevent multiple download notifications
 						if ( cl->downloadnotify & DLNOTIFY_REDIRECT ) {
@@ -1360,7 +1360,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	int i;
 
 	// name for C code
-	Q_strncpyz( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
+	String::NCpyZ( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
 
 	// rate command
 
@@ -1438,7 +1438,7 @@ SV_UpdateUserinfo_f
 ==================
 */
 static void SV_UpdateUserinfo_f( client_t *cl ) {
-	Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
+	String::NCpyZ( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides

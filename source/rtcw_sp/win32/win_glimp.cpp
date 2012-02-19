@@ -1139,7 +1139,7 @@ static qboolean GLW_LoadOpenGL( const char *drivername ) {
 	char buffer[1024];
 	qboolean cdsFullscreen;
 
-	Q_strncpyz( buffer, drivername, sizeof( buffer ) );
+	String::NCpyZ( buffer, drivername, sizeof( buffer ) );
 	Q_strlwr( buffer );
 
 	//
@@ -1342,15 +1342,15 @@ void GLimp_Init( void ) {
 	GLW_StartOpenGL();
 
 	// get our config strings
-	Q_strncpyz( glConfig.vendor_string, (char*)qglGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
-	Q_strncpyz( glConfig.renderer_string, (char*)qglGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
-	Q_strncpyz( glConfig.version_string, (char*)qglGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
-	Q_strncpyz( glConfig.extensions_string, (char*)qglGetString( GL_EXTENSIONS ), sizeof( glConfig.extensions_string ) );
+	String::NCpyZ( glConfig.vendor_string, (char*)qglGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
+	String::NCpyZ( glConfig.renderer_string, (char*)qglGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
+	String::NCpyZ( glConfig.version_string, (char*)qglGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
+	String::NCpyZ( glConfig.extensions_string, (char*)qglGetString( GL_EXTENSIONS ), sizeof( glConfig.extensions_string ) );
 
 	//
 	// chipset specific configuration
 	//
-	Q_strncpyz( buf, glConfig.renderer_string, sizeof( buf ) );
+	String::NCpyZ( buf, glConfig.renderer_string, sizeof( buf ) );
 	Q_strlwr( buf );
 
 	//

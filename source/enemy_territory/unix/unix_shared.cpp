@@ -349,7 +349,7 @@ char *Sys_Cwd( void ) {
 }
 
 void Sys_SetDefaultCDPath( const char *path ) {
-	Q_strncpyz( cdPath, path, sizeof( cdPath ) );
+	String::NCpyZ( cdPath, path, sizeof( cdPath ) );
 }
 
 char *Sys_DefaultCDPath( void ) {
@@ -370,7 +370,7 @@ char *Sys_DefaultBasePath( void ) {
 }
 
 void Sys_SetDefaultInstallPath( const char *path ) {
-	Q_strncpyz( installPath, path, sizeof( installPath ) );
+	String::NCpyZ( installPath, path, sizeof( installPath ) );
 }
 
 char *Sys_DefaultInstallPath( void ) {
@@ -382,7 +382,7 @@ char *Sys_DefaultInstallPath( void ) {
 }
 
 void Sys_SetDefaultHomePath( const char *path ) {
-	Q_strncpyz( homePath, path, sizeof( homePath ) );
+	String::NCpyZ( homePath, path, sizeof( homePath ) );
 }
 
 char *Sys_DefaultHomePath( void ) {
@@ -393,7 +393,7 @@ char *Sys_DefaultHomePath( void ) {
 	}
 
 	if ( ( p = getenv( "HOME" ) ) != NULL ) {
-		Q_strncpyz( homePath, p, sizeof( homePath ) );
+		String::NCpyZ( homePath, p, sizeof( homePath ) );
 #ifdef MACOS_X
 		#error FIXME
 		Q_strcat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinMP" );

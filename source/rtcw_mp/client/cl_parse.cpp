@@ -717,7 +717,7 @@ void CL_ParseCommandString( msg_t *msg ) {
 	clc.serverCommandSequence = seq;
 
 	index = seq & ( MAX_RELIABLE_COMMANDS - 1 );
-	Q_strncpyz( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
+	String::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
 }
 
 

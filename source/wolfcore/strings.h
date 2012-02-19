@@ -335,8 +335,8 @@ public:
 	static int NICmp(const char* s1, const char* s2, size_t n);
 	static void Cpy(char* dst, const char* src);
 	static void NCpy(char* dst, const char* src, size_t count);
+	static void NCpyZ(char* dest, const char* src, int destSize);
 #if 0
-	static void NCpyZ(char* Dest, const char* Src, int DestSize);
 	static void Cat(char* Dest, int Size, const char* Src);
 	static char* ToLower(char* S1);
 	static char* ToUpper(char* S1);

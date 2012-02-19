@@ -73,7 +73,7 @@ static client_t *SV_GetPlayerByName( void ) {
 			return cl;
 		}
 
-		Q_strncpyz( cleanName, cl->name, sizeof( cleanName ) );
+		String::NCpyZ( cleanName, cl->name, sizeof( cleanName ) );
 		Q_CleanStr( cleanName );
 		if ( !String::ICmp( cleanName, s ) ) {
 			return cl;
@@ -209,7 +209,7 @@ static void SV_Map_f( void ) {
 
 		// the mapname is at the very start of the savegame file
 		Com_sprintf( savemap, sizeof( savemap ), ( char * )( buffer + sizeof( int ) ) );  // skip the version
-		Q_strncpyz( smapname, savemap, sizeof( smapname ) );
+		String::NCpyZ( smapname, savemap, sizeof( smapname ) );
 		map = smapname;
 
 		savegameTime = *( int * )( buffer + sizeof( int ) + MAX_QPATH );
@@ -276,7 +276,7 @@ static void SV_Map_f( void ) {
 
 	// save the map name here cause on a map restart we reload the q3config.cfg
 	// and thus nuke the arguments of the map command
-	Q_strncpyz( mapname, map, sizeof( mapname ) );
+	String::NCpyZ( mapname, map, sizeof( mapname ) );
 
 	// start up the map
 	SV_SpawnServer( mapname, killBots );
@@ -345,7 +345,7 @@ static void SV_MapRestart_f( void ) {
 
 		Com_Printf( "variable change -- restarting.\n" );
 		// restart the map the slow way
-		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
+		String::NCpyZ( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
 		SV_SpawnServer( mapname, qfalse );
 		return;
@@ -462,13 +462,13 @@ void    SV_LoadGame_f( void ) {
 		return;
 	}
 
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	if ( !filename[0] ) {
 		Com_Printf( "You must specify a savegame to load\n" );
 		return;
 	}
 	if ( String::NCmp( filename, "save/", 5 ) && String::NCmp( filename, "save\\", 5 ) ) {
-		Q_strncpyz( filename, va( "save/%s", filename ), sizeof( filename ) );
+		String::NCpyZ( filename, va( "save/%s", filename ), sizeof( filename ) );
 	}
 	// enforce .svg extension
 	if ( !strstr( filename, "." ) || String::NCmp( strstr( filename, "." ) + 1, "svg", 3 ) ) {

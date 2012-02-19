@@ -648,8 +648,8 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size ) {
 		return qfalse;
 	}
 
-	//Q_strncpyz( buf, cl->reliableCommands[index], size );
-	Q_strncpyz( buf, msg, size );
+	//String::NCpyZ( buf, cl->reliableCommands[index], size );
+	String::NCpyZ( buf, msg, size );
 	return qtrue;
 }
 

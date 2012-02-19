@@ -117,7 +117,7 @@ void COM_StripExtension2( const char *in, char *out, int destsize ) {
 
 void COM_StripFilename( char *in, char *out ) {
 	char *end;
-	Q_strncpyz( out, in, String::Length( in ) + 1 );
+	String::NCpyZ( out, in, String::Length( in ) + 1 );
 	end = COM_SkipPath( out );
 	*end = 0;
 }
@@ -145,7 +145,7 @@ void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
 		src--;
 	}
 
-	Q_strncpyz( oldPath, path, sizeof( oldPath ) );
+	String::NCpyZ( oldPath, path, sizeof( oldPath ) );
 	Com_sprintf( path, maxSize, "%s%s", oldPath, extension );
 }
 
@@ -776,7 +776,7 @@ int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 			if ( !String::Cmp( token, "}" ) ) {
 				break;
 			}
-			Q_strncpyz( key, token, sizeof( key ) );
+			String::NCpyZ( key, token, sizeof( key ) );
 
 			token = COM_ParseExt( &buf, qfalse );
 			if ( !token[0] ) {
@@ -869,25 +869,6 @@ char* Q_strrchr( const char* string, int c ) {
 	return sp;
 }
 
-/*
-=============
-Q_strncpyz
-
-Safe strncpy that ensures a trailing zero
-=============
-*/
-void Q_strncpyz( char *dest, const char *src, int destsize ) {
-	if ( !src ) {
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
-	}
-	if ( destsize < 1 ) {
-		Com_Error( ERR_FATAL,"Q_strncpyz: destsize < 1" );
-	}
-
-	String::NCpy( dest, src, destsize - 1 );
-	dest[destsize - 1] = 0;
-}
-
 char *Q_strlwr( char *s1 ) {
 	char*   s;
 
@@ -921,7 +902,7 @@ void Q_strcat( char *dest, int size, const char *src ) {
 	if ( l1 >= size ) {
 		Com_Error( ERR_FATAL, "Q_strcat: already overflowed" );
 	}
-	Q_strncpyz( dest + l1, src, size - l1 );
+	String::NCpyZ( dest + l1, src, size - l1 );
 }
 
 

@@ -243,7 +243,7 @@ int PC_ReadTokenHandle( int handle, pc_token_t *token ) {
 	token->subtype = t.subtype;
 	token->intvalue = t.intvalue;
 	token->floatvalue = t.floatvalue;
-	Q_strncpyz( token->string, t.string, MAX_TOKENLENGTH );
+	String::NCpyZ( token->string, t.string, MAX_TOKENLENGTH );
 	token->line = t.line;
 	token->linescrossed = t.linescrossed;
 
@@ -258,7 +258,7 @@ int PC_ReadTokenHandle( int handle, pc_token_t *token ) {
 int PC_SourceFileAndLine( int handle, char *filename, int *line ) {
 	source_t *source = (source_t *)handle;
 
-	Q_strncpyz( filename, source->filename, 128 );
+	String::NCpyZ( filename, source->filename, 128 );
 	// ikkyo - i'm pretty sure token.line is the line of the last token
 	//         parsed, not the line of the token currently being parsed...
 	*line = source->token.line;

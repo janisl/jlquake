@@ -169,7 +169,7 @@ void CL_AddReliableCommand( const char *cmd ) {
 	}
 	clc.reliableSequence++;
 	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	Q_strncpyz( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
+	String::NCpyZ( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
 }
 
 /*
@@ -313,7 +313,7 @@ void CL_Record_f( void ) {
 
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv( 1 );
-		Q_strncpyz( demoName, s, sizeof( demoName ) );
+		String::NCpyZ( demoName, s, sizeof( demoName ) );
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	} else {
 		int number;
@@ -346,7 +346,7 @@ void CL_Record_f( void ) {
 		return;
 	}
 	clc.demorecording = qtrue;
-	Q_strncpyz( clc.demoName, demoName, sizeof( clc.demoName ) );
+	String::NCpyZ( clc.demoName, demoName, sizeof( clc.demoName ) );
 
 	// don't start saving messages until a non-delta compressed message is received
 	clc.demowaiting = qtrue;
@@ -527,13 +527,13 @@ void CL_PlayDemo_f( void ) {
 		Com_Error( ERR_DROP, "couldn't open %s", name );
 		return;
 	}
-	Q_strncpyz( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
+	String::NCpyZ( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
 
 	Con_Close();
 
 	cls.state = CA_CONNECTED;
 	clc.demoplaying = qtrue;
-	Q_strncpyz( cls.servername, Cmd_Argv( 1 ), sizeof( cls.servername ) );
+	String::NCpyZ( cls.servername, Cmd_Argv( 1 ), sizeof( cls.servername ) );
 
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED ) {
@@ -569,7 +569,7 @@ If the "nextdemo" cvar is set, that command will be issued
 void CL_NextDemo( void ) {
 	char v[MAX_STRING_CHARS];
 
-	Q_strncpyz( v, Cvar_VariableString( "nextdemo" ), sizeof( v ) );
+	String::NCpyZ( v, Cvar_VariableString( "nextdemo" ), sizeof( v ) );
 	v[MAX_STRING_CHARS - 1] = 0;
 	Com_DPrintf( "CL_NextDemo: %s\n", v );
 	if ( !v[0] ) {
@@ -670,7 +670,7 @@ void CL_MapLoading( void ) {
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "nextmap", "" );
 		CL_Disconnect( qtrue );
-		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
+		String::NCpyZ( cls.servername, "localhost", sizeof( cls.servername ) );
 		cls.state = CA_CHALLENGING;     // so the connect screen is drawn
 		cls.keyCatchers = 0;
 		SCR_UpdateScreen();
@@ -894,7 +894,7 @@ void CL_RequestAuthorization( void ) {
 	}
 
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
-		Q_strncpyz( nums, "demo", sizeof( nums ) );
+		String::NCpyZ( nums, "demo", sizeof( nums ) );
 	} else {
 		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 		j = 0;
@@ -1049,7 +1049,7 @@ void CL_Connect_f( void ) {
 
 
 
-	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
+	String::NCpyZ( cls.servername, server, sizeof( cls.servername ) );
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress ) ) {
 		Com_Printf( "Bad server address\n" );
@@ -1389,7 +1389,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 				 "Remotename: %s\n"
 				 "****************************\n", localName, remoteName );
 
-	Q_strncpyz( clc.downloadName, localName, sizeof( clc.downloadName ) );
+	String::NCpyZ( clc.downloadName, localName, sizeof( clc.downloadName ) );
 	Com_sprintf( clc.downloadTempName, sizeof( clc.downloadTempName ), "%s.tmp", localName );
 
 	// Set so UI gets access to it
@@ -1520,7 +1520,7 @@ void CL_CheckForResend( void ) {
 		// sending back the challenge
 		port = Cvar_VariableValue( "net_qport" );
 
-		Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
+		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
 		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ) );
 		Info_SetValueForKey( info, "qport", va( "%i", port ) );
 		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
@@ -1593,7 +1593,7 @@ void CL_MotdPacket( netadr_t from ) {
 
 	challenge = Info_ValueForKey( info, "motd" );
 
-	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
+	String::NCpyZ( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
 	Cvar_Set( "cl_motdString", challenge );
 }
 
@@ -1842,7 +1842,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	// echo request from server
 	if ( !String::ICmp( c, "print" ) ) {
 		s = MSG_ReadString( msg );
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 		Com_Printf( "%s", s );
 		return;
 	}
@@ -2128,7 +2128,7 @@ static void CL_Cache_UsedFile_f( void ) {
 	for ( i = 0, item = cacheItems[group]; i < MAX_CACHE_ITEMS; i++, item++ ) {
 		if ( !item->name[0] ) {
 			// didn't find it, so add it here
-			Q_strncpyz( item->name, itemStr, MAX_QPATH );
+			String::NCpyZ( item->name, itemStr, MAX_QPATH );
 			if ( cacheIndex > 9999 ) { // hack, but yeh
 				item->hits = cacheIndex;
 			} else {
@@ -2168,7 +2168,7 @@ static void CL_Cache_EndGather_f( void ) {
 	cachePass = (int)floor( (float)cacheIndex * CACHE_HIT_RATIO );
 
 	for ( i = 0; i < CACHE_NUMGROUPS; i++ ) {
-		Q_strncpyz( filename, cacheGroups[i].name, MAX_QPATH );
+		String::NCpyZ( filename, cacheGroups[i].name, MAX_QPATH );
 		Q_strcat( filename, MAX_QPATH, ".cache" );
 
 #ifdef __MACOS__    //DAJ MacOS file typing
@@ -2683,10 +2683,10 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 	if ( server ) {
 		if ( info ) {
 			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
-			Q_strncpyz( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
-			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
 			server->maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-			Q_strncpyz( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
 			server->gameType = atoi( Info_ValueForKey( info, "gametype" ) );
 			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
@@ -2756,7 +2756,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, NET_AdrToString( from ) );
 
 			// save of info
-			Q_strncpyz( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
+			String::NCpyZ( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
 
 			// tack on the net type
 			// NOTE: make sure these types are in sync with the netnames strings in the UI
@@ -2823,7 +2823,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].netType = from.type;
 	cls.localServers[i].allowAnonymous = 0;
 
-	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
+	String::NCpyZ( info, MSG_ReadString( msg ), MAX_INFO_STRING );
 	if ( String::Length( info ) ) {
 		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
@@ -2900,7 +2900,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	if ( NET_CompareAdr( to, serverStatus->address ) ) {
 		// if we recieved an response for this server status request
 		if ( !serverStatus->pending ) {
-			Q_strncpyz( serverStatusString, serverStatus->string, maxLen );
+			String::NCpyZ( serverStatusString, serverStatus->string, maxLen );
 			serverStatus->retrieved = qtrue;
 			serverStatus->startTime = 0;
 			return qtrue;
@@ -3142,7 +3142,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime ) {
 	}
 
 	str = NET_AdrToString( cl_pinglist[n].adr );
-	Q_strncpyz( buf, str, buflen );
+	String::NCpyZ( buf, str, buflen );
 
 	time = cl_pinglist[n].time;
 	if ( !time ) {
@@ -3190,7 +3190,7 @@ void CL_GetPingInfo( int n, char *buf, int buflen ) {
 		return;
 	}
 
-	Q_strncpyz( buf, cl_pinglist[n].info, buflen );
+	String::NCpyZ( buf, cl_pinglist[n].info, buflen );
 }
 
 /*

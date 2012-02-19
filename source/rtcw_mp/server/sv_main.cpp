@@ -145,7 +145,7 @@ void SV_AddServerCommand( client_t *client, const char *cmd ) {
 		return;
 	}
 	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	Q_strncpyz( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
+	String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 }
 
 
@@ -1016,7 +1016,7 @@ void SV_Frame( int msec ) {
 	// than checking for negative time wraparound everywhere.
 	// 2giga-milliseconds = 23 days, so it won't be too often
 	if ( svs.time > 0x70000000 ) {
-		Q_strncpyz( mapname, sv_mapname->string, MAX_QPATH );
+		String::NCpyZ( mapname, sv_mapname->string, MAX_QPATH );
 		SV_Shutdown( "Restarting server due to time wrapping" );
 		// TTimo
 		// show_bug.cgi?id=388
@@ -1028,7 +1028,7 @@ void SV_Frame( int msec ) {
 	}
 	// this can happen considerably earlier when lots of clients play and the map doesn't change
 	if ( svs.nextSnapshotEntities >= 0x7FFFFFFE - svs.numSnapshotEntities ) {
-		Q_strncpyz( mapname, sv_mapname->string, MAX_QPATH );
+		String::NCpyZ( mapname, sv_mapname->string, MAX_QPATH );
 		SV_Shutdown( "Restarting server due to numSnapshotEntities wrapping" );
 		// TTimo see above
 		Cbuf_AddText( va( "map %s\n", mapname ) );

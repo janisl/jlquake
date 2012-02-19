@@ -1212,7 +1212,7 @@ void Sys_StartProcess( char *cmdline, qboolean doexit ) {
 
 	if ( doexit ) {
 		Com_DPrintf( "Sys_StartProcess %s (delaying to final exit)\n", cmdline );
-		Q_strncpyz( exit_cmdline, cmdline, MAX_CMD );
+		String::NCpyZ( exit_cmdline, cmdline, MAX_CMD );
 		Cbuf_ExecuteText( EXEC_APPEND, "quit" );
 		return;
 	}
@@ -1239,7 +1239,7 @@ void Sys_OpenURL( char *url, qboolean doexit ) {
 	// do the setup before we fork
 	// search for an openurl.sh script
 	// search procedure taken from Sys_LoadDll
-	Q_strncpyz( fname, "openurl.sh", 20 );
+	String::NCpyZ( fname, "openurl.sh", 20 );
 
 	pwdpath = Sys_Cwd();
 	Com_sprintf( fn, MAX_OSPATH, "%s/%s", pwdpath, fname );

@@ -385,7 +385,7 @@ void CL_ParseSnapshot( msg_t *msg ) {
 
 				Com_RealTime( &time );
 
-				Q_strncpyz( mapname, cl.mapname, MAX_QPATH );
+				String::NCpyZ( mapname, cl.mapname, MAX_QPATH );
 				for ( period = mapname; *period; period++ ) {
 					if ( *period == '.' ) {
 						*period = '\0';
@@ -677,8 +677,8 @@ void CL_ParseDownload( msg_t *msg ) {
 	if ( block == -1 ) {
 		if ( !clc.bWWWDl ) {
 			// server is sending us a www download
-			Q_strncpyz( cls.originalDownloadName, cls.downloadName, sizeof( cls.originalDownloadName ) );
-			Q_strncpyz( cls.downloadName, MSG_ReadString( msg ), sizeof( cls.downloadName ) );
+			String::NCpyZ( cls.originalDownloadName, cls.downloadName, sizeof( cls.originalDownloadName ) );
+			String::NCpyZ( cls.downloadName, MSG_ReadString( msg ), sizeof( cls.downloadName ) );
 			clc.downloadSize = MSG_ReadLong( msg );
 			clc.downloadFlags = MSG_ReadLong( msg );
 			if ( clc.downloadFlags & ( 1 << DL_FLAG_URL ) ) {
@@ -700,7 +700,7 @@ void CL_ParseDownload( msg_t *msg ) {
 				return;
 			}
 			// make downloadTempName an OS path
-			Q_strncpyz( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ), sizeof( cls.downloadTempName ) );
+			String::NCpyZ( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ), sizeof( cls.downloadTempName ) );
 			cls.downloadTempName[String::Length( cls.downloadTempName ) - 1] = '\0';
 			if ( !DL_BeginDownload( cls.downloadTempName, cls.downloadName, com_developer->integer ) ) {
 				// setting bWWWDl to false after sending the wwwdl fail doesn't work
@@ -825,7 +825,7 @@ void CL_ParseCommandString( msg_t *msg ) {
 	clc.serverCommandSequence = seq;
 
 	index = seq & ( MAX_RELIABLE_COMMANDS - 1 );
-	Q_strncpyz( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
+	String::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
 }
 
 /*

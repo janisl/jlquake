@@ -252,7 +252,7 @@ void Cmd_Exec_f( void ) {
 		return;
 	}
 
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 	len = FS_ReadFile( filename, (void **)&f );
 	if ( !f ) {
@@ -355,7 +355,7 @@ they can't have pointers returned to them
 ============
 */
 void    Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength ) {
-	Q_strncpyz( buffer, Cmd_Argv( arg ), bufferLength );
+	String::NCpyZ( buffer, Cmd_Argv( arg ), bufferLength );
 }
 
 
@@ -415,7 +415,7 @@ they can't have pointers returned to them
 ============
 */
 void    Cmd_ArgsBuffer( char *buffer, int bufferLength ) {
-	Q_strncpyz( buffer, Cmd_Args(), bufferLength );
+	String::NCpyZ( buffer, Cmd_Args(), bufferLength );
 }
 
 

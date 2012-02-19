@@ -309,7 +309,7 @@ static void Win_FindIndexMatch( const char *s ) {
 	}
 
 	if ( win_findMatchIndex == win_matchIndex ) {
-		Q_strncpyz( win_currentMatch, s, sizeof( win_currentMatch ) );
+		String::NCpyZ( win_currentMatch, s, sizeof( win_currentMatch ) );
 	}
 
 	win_findMatchIndex++;
@@ -325,7 +325,7 @@ static void Win_FindMatches( const char *s ) {
 	}
 	win_matchCount++;
 	if ( win_matchCount == 1 ) {
-		Q_strncpyz( win_currentMatch, s, sizeof( win_currentMatch ) );
+		String::NCpyZ( win_currentMatch, s, sizeof( win_currentMatch ) );
 		return;
 	}
 
@@ -404,9 +404,9 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		// only look at the first token for completion purposes
 		Cmd_TokenizeString( edit->buffer );
 
-		Q_strncpyz( win_completionString, Cmd_Argv( 0 ), sizeof( win_completionString ) );
+		String::NCpyZ( win_completionString, Cmd_Argv( 0 ), sizeof( win_completionString ) );
 		if ( win_completionString[0] == '\\' || win_completionString[0] == '/' ) {
-			Q_strncpyz( win_completionString, win_completionString + 1, sizeof( win_completionString ) );
+			String::NCpyZ( win_completionString, win_completionString + 1, sizeof( win_completionString ) );
 		}
 
 		win_matchCount = 0;
@@ -446,7 +446,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		// get the next match and show instead
 		char lastMatch[MAX_TOKEN_CHARS];
 
-		Q_strncpyz( lastMatch, win_currentMatch, sizeof( lastMatch ) );
+		String::NCpyZ( lastMatch, win_currentMatch, sizeof( lastMatch ) );
 
 		win_matchIndex++;
 		if ( win_matchIndex == win_matchCount ) {
@@ -860,7 +860,7 @@ void Conbuf_AppendText( const char *pMsg ) {
 ** Sys_SetErrorText
 */
 void Sys_SetErrorText( const char *buf ) {
-	Q_strncpyz( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
+	String::NCpyZ( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
 
 	if ( !s_wcd.hwndErrorBox ) {
 		s_wcd.hwndErrorBox = CreateWindow( "static", NULL, WS_CHILD | WS_VISIBLE | SS_SUNKEN,

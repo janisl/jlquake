@@ -138,7 +138,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	}
 
 	// only set the name after the model has been successfully loaded
-	Q_strncpyz( mod->name, name, sizeof( mod->name ) );
+	String::NCpyZ( mod->name, name, sizeof( mod->name ) );
 
 // GR - by default models are not tessellated
 	mod->ATI_tess = qfalse;
@@ -574,7 +574,7 @@ static qboolean R_MDC_ConvertMD3( model_t *mod, int lod, const char *mod_name ) 
 	// success, so fill in the necessary data to the model_t
 	mdcHeader.ident = MDC_IDENT;
 	mdcHeader.version = MDC_VERSION;
-	Q_strncpyz( mdcHeader.name, md3->name, sizeof( mdcHeader.name ) );
+	String::NCpyZ( mdcHeader.name, md3->name, sizeof( mdcHeader.name ) );
 	mdcHeader.flags = md3->flags;
 	mdcHeader.numFrames = md3->numFrames;
 	mdcHeader.numTags = md3->numTags;
@@ -642,7 +642,7 @@ static qboolean R_MDC_ConvertMD3( model_t *mod, int lod, const char *mod_name ) 
 	for ( j = 0 ; j < md3->numSurfaces ; j++ ) {
 
 		cSurf->ident = SF_MDC;
-		Q_strncpyz( cSurf->name, surf->name, sizeof( cSurf->name ) );
+		String::NCpyZ( cSurf->name, surf->name, sizeof( cSurf->name ) );
 		cSurf->flags = surf->flags;
 		cSurf->numCompFrames = ( mdc->numFrames - numBaseFrames );
 		cSurf->numBaseFrames = numBaseFrames;
@@ -1518,7 +1518,7 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 	endFrame = refent->frame;
 	frac = 1.0 - refent->backlerp;
 
-	Q_strncpyz( tagName, tagNameIn, MAX_QPATH );
+	String::NCpyZ( tagName, tagNameIn, MAX_QPATH );
 /*
 	// if the tagName has a space in it, then it is passing through the starting tag number
 	if (ch = strrchr(tagName, ' ')) {
@@ -2125,7 +2125,7 @@ void R_LoadCacheModels( void ) {
 	pString = (char*)buf;       //DAJ added (char*)
 
 	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[0] ) {
-		Q_strncpyz( name, token, sizeof( name ) );
+		String::NCpyZ( name, token, sizeof( name ) );
 		RE_RegisterModel( name );
 	}
 

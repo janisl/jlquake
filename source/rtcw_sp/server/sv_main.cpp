@@ -118,7 +118,7 @@ int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
 			//sscanf(client->reliableCommands[ index ], "cs %i", &csnum2);
 			sscanf( SV_GetReliableCommand( client, index ), "cs %i", &csnum2 );
 			if ( csnum1 == csnum2 ) {
-				//Q_strncpyz( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
+				//String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 
 				/*
 				if ( client->netchan.remoteAddress.type != NA_BOT ) {
@@ -166,7 +166,7 @@ void SV_AddServerCommand( client_t *client, const char *cmd ) {
 		return;
 	}
 	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	//Q_strncpyz( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
+	//String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 	SV_AddReliableCommand( client, index, cmd );
 }
 

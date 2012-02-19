@@ -688,7 +688,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 
 	// allow this to be cached if it is loaded by the server
 	if ( !clientload ) {
-		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
+		String::NCpyZ( cm.name, name, sizeof( cm.name ) );
 	}
 }
 

@@ -48,9 +48,9 @@ GetClientState
 static void GetClientState( uiClientState_t *state ) {
 	state->connectPacketCount = clc.connectPacketCount;
 	state->connState = cls.state;
-	Q_strncpyz( state->servername, cls.servername, sizeof( state->servername ) );
-	Q_strncpyz( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
-	Q_strncpyz( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
+	String::NCpyZ( state->servername, cls.servername, sizeof( state->servername ) );
+	String::NCpyZ( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
+	String::NCpyZ( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
 	state->clientNum = cl.snap.ps.clientNum;
 }
 
@@ -70,7 +70,7 @@ void LAN_LoadCachedServers() {
 	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
 		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	} else {
-		Q_strncpyz( filename, "servercache.dat", sizeof( filename ) );
+		String::NCpyZ( filename, "servercache.dat", sizeof( filename ) );
 	}
 
 	// Arnout: moved to mod/profiles dir
@@ -103,7 +103,7 @@ void LAN_SaveServersToCache() {
 	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
 		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	} else {
-		Q_strncpyz( filename, "servercache.dat", sizeof( filename ) );
+		String::NCpyZ( filename, "servercache.dat", sizeof( filename ) );
 	}
 
 	// Arnout: moved to mod/profiles dir
@@ -186,7 +186,7 @@ static int LAN_AddServer( int source, const char *name, const char *address ) {
 		}
 		if ( i >= *count ) {
 			servers[*count].adr = adr;
-			Q_strncpyz( servers[*count].hostName, name, sizeof( servers[*count].hostName ) );
+			String::NCpyZ( servers[*count].hostName, name, sizeof( servers[*count].hostName ) );
 			servers[*count].visible = qtrue;
 			( *count )++;
 			return 1;
@@ -266,19 +266,19 @@ static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen
 	switch ( source ) {
 	case AS_LOCAL:
 		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			Q_strncpyz( buf, NET_AdrToString( cls.localServers[n].adr ), buflen );
+			String::NCpyZ( buf, NET_AdrToString( cls.localServers[n].adr ), buflen );
 			return;
 		}
 		break;
 	case AS_GLOBAL:
 		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			Q_strncpyz( buf, NET_AdrToString( cls.globalServers[n].adr ), buflen );
+			String::NCpyZ( buf, NET_AdrToString( cls.globalServers[n].adr ), buflen );
 			return;
 		}
 		break;
 	case AS_FAVORITES:
 		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			Q_strncpyz( buf, NET_AdrToString( cls.favoriteServers[n].adr ), buflen );
+			String::NCpyZ( buf, NET_AdrToString( cls.favoriteServers[n].adr ), buflen );
 			return;
 		}
 		break;
@@ -335,7 +335,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ) ); // TTimo
 		Info_SetValueForKey( info, "weaprestrict", va( "%i", server->weaprestrict ) );
 		Info_SetValueForKey( info, "balancedteams", va( "%i", server->balancedteams ) );
-		Q_strncpyz( buf, info, buflen );
+		String::NCpyZ( buf, info, buflen );
 	} else {
 		if ( buf ) {
 			buf[0] = '\0';
@@ -419,9 +419,9 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 	switch ( sortKey ) {
 	case SORT_HOST:
 		//%	res = String::ICmp( server1->hostName, server2->hostName );
-		Q_strncpyz( name1, server1->hostName, sizeof( name1 ) );
+		String::NCpyZ( name1, server1->hostName, sizeof( name1 ) );
 		Q_CleanStr( name1 );
-		Q_strncpyz( name2, server2->hostName, sizeof( name2 ) );
+		String::NCpyZ( name2, server2->hostName, sizeof( name2 ) );
 		Q_CleanStr( name2 );
 		res = String::ICmp( name1, name2 );
 		break;
@@ -663,7 +663,7 @@ static void GetClipboardData( char *buf, int buflen ) {
 		return;
 	}
 
-	Q_strncpyz( buf, cbd, buflen );
+	String::NCpyZ( buf, cbd, buflen );
 
 	Z_Free( cbd );
 }
@@ -674,7 +674,7 @@ Key_KeynumToStringBuf
 ====================
 */
 void Key_KeynumToStringBuf( int keynum, char *buf, int buflen ) {
-	Q_strncpyz( buf, Key_KeynumToString( keynum, qtrue ), buflen );
+	String::NCpyZ( buf, Key_KeynumToString( keynum, qtrue ), buflen );
 }
 
 /*
@@ -687,7 +687,7 @@ void Key_GetBindingBuf( int keynum, char *buf, int buflen ) {
 
 	value = Key_GetBinding( keynum );
 	if ( value ) {
-		Q_strncpyz( buf, value, buflen );
+		String::NCpyZ( buf, value, buflen );
 	} else {
 		*buf = 0;
 	}
@@ -777,7 +777,7 @@ static int GetConfigString( int index, char *buf, int size ) {
 		return qfalse;
 	}
 
-	Q_strncpyz( buf, cl.gameState.stringData + offset, size );
+	String::NCpyZ( buf, cl.gameState.stringData + offset, size );
 
 	return qtrue;
 }

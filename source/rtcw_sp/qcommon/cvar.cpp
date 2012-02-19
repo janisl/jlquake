@@ -169,7 +169,7 @@ void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize 
 	if ( !var ) {
 		*buffer = 0;
 	} else {
-		Q_strncpyz( buffer, var->string, bufsize );
+		String::NCpyZ( buffer, var->string, bufsize );
 	}
 }
 
@@ -821,7 +821,7 @@ Cvar_InfoStringBuffer
 =====================
 */
 void Cvar_InfoStringBuffer( int bit, char* buff, int buffsize ) {
-	Q_strncpyz( buff,Cvar_InfoString( bit ),buffsize );
+	String::NCpyZ( buff,Cvar_InfoString( bit ),buffsize );
 }
 
 /*
@@ -875,12 +875,12 @@ void    Cvar_Update( vmCvar_t *vmCvar ) {
 				   String::Length( cv->string ),
 				   sizeof( vmCvar->string ) );
 	}
-	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
+	// bk001212 - String::NCpyZ guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
 	// bk001129 - paranoia. Never trust the destination string.
 	// bk001129 - beware, sizeof(char*) is always 4 (for cv->string).
 	//            sizeof(vmCvar->string) always MAX_CVAR_VALUE_STRING
-	//Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); // id
-	Q_strncpyz( vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING );
+	//String::NCpyZ( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); // id
+	String::NCpyZ( vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING );
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;

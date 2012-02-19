@@ -130,7 +130,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	/* ET://ip:port */
 	String::Cpy( referer, "ET://" );
-	Q_strncpyz( referer + 5, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
+	String::NCpyZ( referer + 5, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
 
 	dl_request = curl_easy_init();
 	curl_easy_setopt( dl_request, CURLOPT_USERAGENT, va( "%s %s", APP_NAME "/" APP_VERSION, curl_version() ) );

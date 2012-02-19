@@ -2358,7 +2358,7 @@ void Com_ReadCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if ( !f ) {
-		Q_strncpyz( cl_cdkey, "                ", 17 );
+		String::NCpyZ( cl_cdkey, "                ", 17 );
 		return;
 	}
 
@@ -2368,9 +2368,9 @@ void Com_ReadCDKey( const char *filename ) {
 	FS_FCloseFile( f );
 
 	if ( CL_CDKeyValidate( buffer, NULL ) ) {
-		Q_strncpyz( cl_cdkey, buffer, 17 );
+		String::NCpyZ( cl_cdkey, buffer, 17 );
 	} else {
-		Q_strncpyz( cl_cdkey, "                ", 17 );
+		String::NCpyZ( cl_cdkey, "                ", 17 );
 	}
 }
 
@@ -2388,7 +2388,7 @@ void Com_AppendCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if ( !f ) {
-		Q_strncpyz( &cl_cdkey[16], "                ", 17 );
+		String::NCpyZ( &cl_cdkey[16], "                ", 17 );
 		return;
 	}
 
@@ -2400,7 +2400,7 @@ void Com_AppendCDKey( const char *filename ) {
 	if ( CL_CDKeyValidate( buffer, NULL ) ) {
 		strcat( &cl_cdkey[16], buffer );
 	} else {
-		Q_strncpyz( &cl_cdkey[16], "                ", 17 );
+		String::NCpyZ( &cl_cdkey[16], "                ", 17 );
 	}
 }
 
@@ -2419,7 +2419,7 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 	sprintf( fbuffer, "%s/rtcwkey", filename );
 
 
-	Q_strncpyz( key, ikey, 17 );
+	String::NCpyZ( key, ikey, 17 );
 
 	if ( !CL_CDKeyValidate( key, NULL ) ) {
 		return;
@@ -2634,19 +2634,19 @@ void Com_TrackProfile( char *profile_path ) {
 	if ( String::Cmp( last_fs_gamedir, fs_gamedir ) ) {
 		if ( String::Length( last_fs_gamedir ) && String::Length( last_profile_path ) ) {
 			//save current fs_gamedir
-			Q_strncpyz( temp_fs_gamedir, fs_gamedir, sizeof( temp_fs_gamedir ) );
+			String::NCpyZ( temp_fs_gamedir, fs_gamedir, sizeof( temp_fs_gamedir ) );
 			//set fs_gamedir temporarily to make FS_* stuff work "right"
-			Q_strncpyz( fs_gamedir, last_fs_gamedir, sizeof( fs_gamedir ) );
+			String::NCpyZ( fs_gamedir, last_fs_gamedir, sizeof( fs_gamedir ) );
 			if ( FS_FileExists( last_profile_path ) ) {
 				Com_Printf( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path );
 				FS_Delete( last_profile_path );
 			}
 			//restore current fs_gamedir
-			Q_strncpyz( fs_gamedir, temp_fs_gamedir, sizeof( fs_gamedir ) );
+			String::NCpyZ( fs_gamedir, temp_fs_gamedir, sizeof( fs_gamedir ) );
 		}
 		//and save current vars for future reference
-		Q_strncpyz( last_fs_gamedir, fs_gamedir, sizeof( last_fs_gamedir ) );
-		Q_strncpyz( last_profile_path, profile_path, sizeof( last_profile_path ) );
+		String::NCpyZ( last_fs_gamedir, fs_gamedir, sizeof( last_fs_gamedir ) );
+		String::NCpyZ( last_profile_path, profile_path, sizeof( last_profile_path ) );
 	}
 }
 
@@ -3015,7 +3015,7 @@ void Com_WriteConfig_f( void ) {
 		return;
 	}
 
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename );
@@ -3371,7 +3371,7 @@ static void FindMatches( const char *s ) {
 	}
 	matchCount++;
 	if ( matchCount == 1 ) {
-		Q_strncpyz( shortestMatch, s, sizeof( shortestMatch ) );
+		String::NCpyZ( shortestMatch, s, sizeof( shortestMatch ) );
 		return;
 	}
 

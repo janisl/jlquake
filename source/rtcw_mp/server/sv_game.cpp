@@ -260,7 +260,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
-	Q_strncpyz( buffer, Cvar_InfoString( CVAR_SERVERINFO ), bufferSize );
+	String::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO ), bufferSize );
 }
 
 /*
@@ -434,7 +434,7 @@ intptr_t SV_GameSystemCalls( intptr_t* args ) {
 		const char  *s;
 
 		s = COM_Parse( &sv.entityParsePoint );
-		Q_strncpyz( (char*)VMA( 1 ), s, args[2] );
+		String::NCpyZ( (char*)VMA( 1 ), s, args[2] );
 		if ( !sv.entityParsePoint && !s[0] ) {
 			return qfalse;
 		} else {

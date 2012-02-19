@@ -218,7 +218,7 @@ void CL_AddReliableCommand( const char *cmd ) {
 	}
 	clc.reliableSequence++;
 	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	Q_strncpyz( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
+	String::NCpyZ( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
 }
 
 /*
@@ -354,7 +354,7 @@ void CL_Record_f( void ) {
 
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv( 1 );
-		Q_strncpyz( demoName, s, sizeof( demoName ) );
+		String::NCpyZ( demoName, s, sizeof( demoName ) );
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	} else {
 		int number;
@@ -394,7 +394,7 @@ void CL_Record( const char* name ) {
 
 	clc.demorecording = qtrue;
 	Cvar_Set( "cl_demorecording", "1" ); // fretn
-	Q_strncpyz( clc.demoName, demoName, sizeof( clc.demoName ) );
+	String::NCpyZ( clc.demoName, demoName, sizeof( clc.demoName ) );
 	Cvar_Set( "cl_demofilename", clc.demoName ); // bani
 	Cvar_Set( "cl_demooffset", "0" ); // bani
 
@@ -648,7 +648,7 @@ void CL_WriteWaveOpen() {
 
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv( 1 );
-		Q_strncpyz( wavName, s, sizeof( wavName ) );
+		String::NCpyZ( wavName, s, sizeof( wavName ) );
 		Com_sprintf( name, sizeof( name ), "wav/%s.wav", wavName );
 	} else {
 		int number;
@@ -804,7 +804,7 @@ void CL_PlayDemo_f( void ) {
 		Com_Error( ERR_DROP, "couldn't open %s", name );
 		return;
 	}
-	Q_strncpyz( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
+	String::NCpyZ( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
 
 	Con_Close();
 
@@ -815,7 +815,7 @@ void CL_PlayDemo_f( void ) {
 		CL_WriteWaveOpen();
 	}
 
-	Q_strncpyz( cls.servername, Cmd_Argv( 1 ), sizeof( cls.servername ) );
+	String::NCpyZ( cls.servername, Cmd_Argv( 1 ), sizeof( cls.servername ) );
 
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED ) {
@@ -841,7 +841,7 @@ If the "nextdemo" cvar is set, that command will be issued
 void CL_NextDemo( void ) {
 	char v[MAX_STRING_CHARS];
 
-	Q_strncpyz( v, Cvar_VariableString( "nextdemo" ), sizeof( v ) );
+	String::NCpyZ( v, Cvar_VariableString( "nextdemo" ), sizeof( v ) );
 	v[MAX_STRING_CHARS - 1] = 0;
 	Com_DPrintf( "CL_NextDemo: %s\n", v );
 	if ( !v[0] ) {
@@ -954,7 +954,7 @@ void CL_MapLoading( void ) {
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "nextmap", "" );
 		CL_Disconnect( qtrue );
-		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
+		String::NCpyZ( cls.servername, "localhost", sizeof( cls.servername ) );
 		cls.state = CA_CHALLENGING;     // so the connect screen is drawn
 		cls.keyCatchers = 0;
 		SCR_UpdateScreen();
@@ -1205,7 +1205,7 @@ void CL_RequestAuthorization( void ) {
 	}
 
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
-		Q_strncpyz( nums, "ettest", sizeof( nums ) );
+		String::NCpyZ( nums, "ettest", sizeof( nums ) );
 	} else {
 		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 		j = 0;
@@ -1360,7 +1360,7 @@ void CL_Connect_f( void ) {
 	CL_Disconnect( qtrue );
 	Con_Close();
 
-	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
+	String::NCpyZ( cls.servername, server, sizeof( cls.servername ) );
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress ) ) {
 		Com_Printf( "Bad server address\n" );
@@ -1372,7 +1372,7 @@ void CL_Connect_f( void ) {
 		clc.serverAddress.port = BigShort( PORT_SERVER );
 	}
 
-	Q_strncpyz( ip_port, NET_AdrToString( clc.serverAddress ), sizeof( ip_port ) );
+	String::NCpyZ( ip_port, NET_AdrToString( clc.serverAddress ), sizeof( ip_port ) );
 	Com_Printf( "%s resolved to %s\n", cls.servername, ip_port );
 
 	// if we aren't playing on a lan, we need to authenticate
@@ -1843,7 +1843,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 				 "Remotename: %s\n"
 				 "****************************\n", localName, remoteName );
 
-	Q_strncpyz( cls.downloadName, localName, sizeof( cls.downloadName ) );
+	String::NCpyZ( cls.downloadName, localName, sizeof( cls.downloadName ) );
 	Com_sprintf( cls.downloadTempName, sizeof( cls.downloadTempName ), "%s.tmp", localName );
 
 	// Set so UI gets access to it
@@ -1929,8 +1929,8 @@ void CL_InitDownloads( void ) {
 
 	if ( autoupdateStarted && NET_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
 		if ( String::Length( cl_updatefiles->string ) > 4 ) {
-			Q_strncpyz( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
-			Q_strncpyz( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING );
+			String::NCpyZ( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
+			String::NCpyZ( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING );
 			cls.state = CA_CONNECTED;
 			CL_NextDownload();
 			return;
@@ -2014,7 +2014,7 @@ void CL_CheckForResend( void ) {
 		// sending back the challenge
 		port = Cvar_VariableValue( "net_qport" );
 
-		Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
+		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
 		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ) );
 		Info_SetValueForKey( info, "qport", va( "%i", port ) );
 		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
@@ -2116,7 +2116,7 @@ void CL_MotdPacket( netadr_t from ) {
 
 	challenge = Info_ValueForKey( info, "motd" );
 
-	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
+	String::NCpyZ( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
 	Cvar_Set( "cl_motdString", challenge );
 }
 
@@ -2137,22 +2137,22 @@ void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	char *s;
 	s = MSG_ReadBigString( msg );
 	if ( !String::NICmp( s, "[err_dialog]", 12 ) ) {
-		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, clc.serverMessage );
 	} else if ( !String::NICmp( s, "[err_prot]", 10 ) )       {
-		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
 		Com_Error( ERR_DROP, CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
 	} else if ( !String::NICmp( s, "[err_update]", 12 ) )       {
-		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		Com_Error( ERR_AUTOUPDATE, clc.serverMessage );
 	} else if ( !String::NICmp( s, "ET://", 5 ) )       { // fretn
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 		Cvar_Set( "com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, clc.serverMessage );
 	} else {
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	}
 	Com_Printf( "%s", clc.serverMessage );
 }
@@ -2803,7 +2803,7 @@ static void CL_Cache_UsedFile_f( void ) {
 	for ( i = 0, item = cacheItems[group]; i < MAX_CACHE_ITEMS; i++, item++ ) {
 		if ( !item->name[0] ) {
 			// didn't find it, so add it here
-			Q_strncpyz( item->name, itemStr, MAX_QPATH );
+			String::NCpyZ( item->name, itemStr, MAX_QPATH );
 			if ( cacheIndex > 9999 ) { // hack, but yeh
 				item->hits = cacheIndex;
 			} else {
@@ -2843,7 +2843,7 @@ static void CL_Cache_EndGather_f( void ) {
 	cachePass = (int)floor( (float)cacheIndex * CACHE_HIT_RATIO );
 
 	for ( i = 0; i < CACHE_NUMGROUPS; i++ ) {
-		Q_strncpyz( filename, cacheGroups[i].name, MAX_QPATH );
+		String::NCpyZ( filename, cacheGroups[i].name, MAX_QPATH );
 		Q_strcat( filename, MAX_QPATH, ".cache" );
 
 		handle = FS_FOpenFileWrite( filename );
@@ -3108,7 +3108,7 @@ void CL_GetAutoUpdate( void ) {
 	CL_Disconnect( qtrue );
 	Con_Close();
 
-	Q_strncpyz( cls.servername, "Auto-Updater", sizeof( cls.servername ) );
+	String::NCpyZ( cls.servername, "Auto-Updater", sizeof( cls.servername ) );
 
 	if ( cls.autoupdateServer.type == NA_BAD ) {
 		Com_Printf( "Bad server address\n" );
@@ -3455,11 +3455,11 @@ void CL_Init( void ) {
 	cl_updateavailable = Cvar_Get( "cl_updateavailable", "0", CVAR_ROM );
 	cl_updatefiles = Cvar_Get( "cl_updatefiles", "", CVAR_ROM );
 
-	Q_strncpyz( cls.autoupdateServerNames[0], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[1], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[2], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
+	String::NCpyZ( cls.autoupdateServerNames[0], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
+	String::NCpyZ( cls.autoupdateServerNames[1], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
+	String::NCpyZ( cls.autoupdateServerNames[2], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
+	String::NCpyZ( cls.autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
+	String::NCpyZ( cls.autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
 	// DHM - Nerve
 
 	//
@@ -3617,11 +3617,11 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 	if ( server ) {
 		if ( info ) {
 			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
-			Q_strncpyz( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
 			server->load = atoi( Info_ValueForKey( info, "serverload" ) );
-			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
 			server->maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-			Q_strncpyz( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
 			server->gameType = atoi( Info_ValueForKey( info, "gametype" ) );
 			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
@@ -3631,7 +3631,7 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 			server->maxlives = atoi( Info_ValueForKey( info, "maxlives" ) );                 // NERVE - SMF
 			server->needpass = atoi( Info_ValueForKey( info, "needpass" ) );                 // NERVE - SMF
 			server->punkbuster = atoi( Info_ValueForKey( info, "punkbuster" ) );             // DHM - Nerve
-			Q_strncpyz( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
+			String::NCpyZ( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
 			server->antilag = atoi( Info_ValueForKey( info, "g_antilag" ) );
 			server->weaprestrict = atoi( Info_ValueForKey( info, "weaprestrict" ) );
 			server->balancedteams = atoi( Info_ValueForKey( info, "balancedteams" ) );
@@ -3708,7 +3708,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, NET_AdrToString( from ) );
 
 			// save of info
-			Q_strncpyz( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
+			String::NCpyZ( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
 
 			// tack on the net type
 			// NOTE: make sure these types are in sync with the netnames strings in the UI
@@ -3784,7 +3784,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].balancedteams = 0;
 	cls.localServers[i].gameName[0] = '\0';           // Arnout
 
-	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
+	String::NCpyZ( info, MSG_ReadString( msg ), MAX_INFO_STRING );
 	if ( String::Length( info ) ) {
 		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
@@ -3894,7 +3894,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	if ( NET_CompareAdr( to, serverStatus->address ) ) {
 		// if we recieved an response for this server status request
 		if ( !serverStatus->pending ) {
-			Q_strncpyz( serverStatusString, serverStatus->string, maxLen );
+			String::NCpyZ( serverStatusString, serverStatus->string, maxLen );
 			serverStatus->retrieved = qtrue;
 			serverStatus->startTime = 0;
 			return qtrue;
@@ -4132,7 +4132,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime ) {
 	}
 
 	str = NET_AdrToString( cl_pinglist[n].adr );
-	Q_strncpyz( buf, str, buflen );
+	String::NCpyZ( buf, str, buflen );
 
 	time = cl_pinglist[n].time;
 	if ( !time ) {
@@ -4180,7 +4180,7 @@ void CL_GetPingInfo( int n, char *buf, int buflen ) {
 		return;
 	}
 
-	Q_strncpyz( buf, cl_pinglist[n].info, buflen );
+	String::NCpyZ( buf, cl_pinglist[n].info, buflen );
 }
 
 /*

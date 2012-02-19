@@ -952,35 +952,28 @@ void String::NCpy(char* dst, const char* src, size_t count)
 #endif
 }
 
-#if 0
-//==========================================================================
-//
-//	String::NCpy
-//
 //	Safe strncpy that ensures a trailing zero
-//
-//==========================================================================
-
-void String::NCpyZ(char* Dest, const char* Src, int DestSize)
+void String::NCpyZ(char* dest, const char* src, int destSize)
 {
 	// bk001129 - also NULL dest
-	if (!Dest)
+	if (!dest)
 	{
 		throw Exception("Q_strncpyz: NULL dest");
 	}
-	if (!Src)
+	if (!src)
 	{
 		throw Exception("Q_strncpyz: NULL src");
 	}
-	if (DestSize < 1)
+	if (destSize < 1)
 	{
 		throw Exception("Q_strncpyz: destsize < 1"); 
 	}
 
-	NCpy(Dest, Src, DestSize - 1);
-	Dest[DestSize - 1] = 0;
+	NCpy(dest, src, destSize - 1);
+	dest[destSize - 1] = 0;
 }
 
+#if 0
 //==========================================================================
 //
 //	String::ToLower

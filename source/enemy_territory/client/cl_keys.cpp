@@ -984,7 +984,7 @@ static void FindMatches( const char *s ) {
 	}
 	matchCount++;
 	if ( matchCount == 1 ) {
-		Q_strncpyz( currentMatch, s, sizeof( currentMatch ) );
+		String::NCpyZ( currentMatch, s, sizeof( currentMatch ) );
 		return;
 	}
 
@@ -1011,7 +1011,7 @@ static void FindIndexMatch( const char *s ) {
 	}
 
 	if ( findMatchIndex == matchIndex ) {
-		Q_strncpyz( currentMatch, s, sizeof( currentMatch ) );
+		String::NCpyZ( currentMatch, s, sizeof( currentMatch ) );
 	}
 
 	findMatchIndex++;
@@ -1088,10 +1088,10 @@ static void CompleteCommand( void ) {
 		// only look at the first token for completion purposes
 		Cmd_TokenizeString( edit->buffer );
 
-		Q_strncpyz( completionString, Cmd_Argv( 0 ), sizeof( completionString ) );
+		String::NCpyZ( completionString, Cmd_Argv( 0 ), sizeof( completionString ) );
 		if ( completionString[0] == '\\' || completionString[0] == '/' ) {
 			// rain - in String::Cpy, src and dest cannot overlap
-			//Q_strncpyz( completionString, completionString+1, sizeof(completionString) );
+			//String::NCpyZ( completionString, completionString+1, sizeof(completionString) );
 			memmove( completionString, completionString + 1, sizeof( completionString ) - 1 );
 		}
 
@@ -1138,7 +1138,7 @@ static void CompleteCommand( void ) {
 			// get the next match and show instead
 			char lastMatch[MAX_TOKEN_CHARS];
 
-			Q_strncpyz( lastMatch, currentMatch, sizeof( lastMatch ) );
+			String::NCpyZ( lastMatch, currentMatch, sizeof( lastMatch ) );
 
 			matchIndex++;
 			if ( matchIndex == matchCount ) {
@@ -1182,7 +1182,7 @@ void Console_Key( int key ) {
 			 && g_consoleField.buffer[0] != '/' ) {
 			char temp[MAX_STRING_CHARS];
 
-			Q_strncpyz( temp, g_consoleField.buffer, sizeof( temp ) );
+			String::NCpyZ( temp, g_consoleField.buffer, sizeof( temp ) );
 			Com_sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
 			g_consoleField.cursor++;
 		}

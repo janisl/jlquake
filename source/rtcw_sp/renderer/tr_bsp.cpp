@@ -2075,7 +2075,7 @@ void R_LoadEntities( lump_t *l ) {
 		if ( !*token || *token == '}' ) {
 			break;
 		}
-		Q_strncpyz( keyname, token, sizeof( keyname ) );
+		String::NCpyZ( keyname, token, sizeof( keyname ) );
 
 		// parse value
 		token = COM_ParseExt( &p, qtrue );
@@ -2083,7 +2083,7 @@ void R_LoadEntities( lump_t *l ) {
 		if ( !*token || *token == '}' ) {
 			break;
 		}
-		Q_strncpyz( value, token, sizeof( value ) );
+		String::NCpyZ( value, token, sizeof( value ) );
 
 		// check for remapping of shaders for vertex lighting
 		s = "vertexremapshader";
@@ -2128,7 +2128,7 @@ qboolean R_GetEntityToken( char *buffer, int size ) {
 	const char  *s;
 
 	s = COM_Parse( &s_worldData.entityParsePoint );
-	Q_strncpyz( buffer, s, size );
+	String::NCpyZ( buffer, s, size );
 	if ( !s_worldData.entityParsePoint || !s[0] ) {
 		s_worldData.entityParsePoint = s_worldData.entityString;
 		return qfalse;
@@ -2192,9 +2192,9 @@ void RE_LoadWorldMap( const char *name ) {
 	tr.world = NULL;
 
 	memset( &s_worldData, 0, sizeof( s_worldData ) );
-	Q_strncpyz( s_worldData.name, name, sizeof( s_worldData.name ) );
+	String::NCpyZ( s_worldData.name, name, sizeof( s_worldData.name ) );
 
-	Q_strncpyz( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
+	String::NCpyZ( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
 	COM_StripExtension( s_worldData.baseName, s_worldData.baseName );
 
 	startMarker = (byte*)ri.Hunk_Alloc( 0, h_low );

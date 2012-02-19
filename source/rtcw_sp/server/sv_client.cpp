@@ -243,7 +243,7 @@ void SV_DirectConnect( netadr_t from ) {
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	String::NCpyZ( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 
 	version = atoi( Info_ValueForKey( userinfo, "protocol" ) );
 	if ( version != PROTOCOL_VERSION ) {
@@ -410,7 +410,7 @@ gotnewcl:
 	Netchan_Setup( NS_SERVER, &newcl->netchan, from, qport );
 
 	// save the userinfo
-	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
+	String::NCpyZ( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
 	denied = VM_Call( gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse ); // firstTime = qtrue
@@ -736,7 +736,7 @@ void SV_BeginDownload_f( client_t *cl ) {
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	Q_strncpyz( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
+	String::NCpyZ( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
 }
 
 /*
@@ -1099,7 +1099,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	int i;
 
 	// name for C code
-	Q_strncpyz( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
+	String::NCpyZ( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
 
 	// rate command
 
@@ -1151,7 +1151,7 @@ SV_UpdateUserinfo_f
 ==================
 */
 static void SV_UpdateUserinfo_f( client_t *cl ) {
-	Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
+	String::NCpyZ( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides

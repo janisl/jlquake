@@ -70,7 +70,7 @@ void Com_BeginParseSession( const char *filename ) {
 	pi = &parseInfo[parseInfoNum];
 
 	pi->lines = 1;
-	Q_strncpyz( pi->parseFile, filename, sizeof( pi->parseFile ) );
+	String::NCpyZ( pi->parseFile, filename, sizeof( pi->parseFile ) );
 }
 
 /*

@@ -2148,8 +2148,8 @@ int BotLoadChatFile( int chatstate, char *chatfile, char *chatname ) {
 	} //end if
 	if ( !LibVarGetValue( "bot_reloadcharacters" ) ) {
 		ichatdata[avail].chat = cs->chat;
-		Q_strncpyz( ichatdata[avail].chatname, chatname, sizeof( ichatdata[avail].chatname ) );
-		Q_strncpyz( ichatdata[avail].filename, chatfile, sizeof( ichatdata[avail].filename ) );
+		String::NCpyZ( ichatdata[avail].chatname, chatname, sizeof( ichatdata[avail].chatname ) );
+		String::NCpyZ( ichatdata[avail].filename, chatfile, sizeof( ichatdata[avail].filename ) );
 		ichatdata[avail].inuse = qtrue;
 	} //end if
 

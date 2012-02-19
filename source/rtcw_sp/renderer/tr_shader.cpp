@@ -2499,7 +2499,7 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 	// clear the global shader
 	memset( &shader, 0, sizeof( shader ) );
 	memset( &stages, 0, sizeof( stages ) );
-	Q_strncpyz( shader.name, strippedName, sizeof( shader.name ) );
+	String::NCpyZ( shader.name, strippedName, sizeof( shader.name ) );
 	shader.lightmapIndex = lightmapIndex;
 	for ( i = 0 ; i < MAX_SHADER_STAGES ; i++ ) {
 		stages[i].bundle[0].texMods = texMods[i];
@@ -2535,7 +2535,7 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 	// if not defined in the in-memory shader descriptions,
 	// look for a single TGA, BMP, or PCX
 	//
-	Q_strncpyz( fileName, name, sizeof( fileName ) );
+	String::NCpyZ( fileName, name, sizeof( fileName ) );
 	COM_DefaultExtension( fileName, sizeof( fileName ), ".tga" );
 	image = R_FindImageFile( fileName, mipRawImage, mipRawImage, mipRawImage ? GL_REPEAT : GL_CLAMP );
 	if ( !image ) {
@@ -2630,7 +2630,7 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image
 	// clear the global shader
 	Com_Memset( &shader, 0, sizeof( shader ) );
 	Com_Memset( &stages, 0, sizeof( stages ) );
-	Q_strncpyz( shader.name, name, sizeof( shader.name ) );
+	String::NCpyZ( shader.name, name, sizeof( shader.name ) );
 	shader.lightmapIndex = lightmapIndex;
 	for ( i = 0 ; i < MAX_SHADER_STAGES ; i++ ) {
 		stages[i].bundle[0].texMods = texMods[i];
@@ -3023,7 +3023,7 @@ static void CreateInternalShaders( void ) {
 	memset( &shader, 0, sizeof( shader ) );
 	memset( &stages, 0, sizeof( stages ) );
 
-	Q_strncpyz( shader.name, "<default>", sizeof( shader.name ) );
+	String::NCpyZ( shader.name, "<default>", sizeof( shader.name ) );
 
 	shader.lightmapIndex = LIGHTMAP_NONE;
 	stages[0].bundle[0].image[0] = tr.defaultImage;
@@ -3032,7 +3032,7 @@ static void CreateInternalShaders( void ) {
 	tr.defaultShader = FinishShader();
 
 	// shadow shader is just a marker
-	Q_strncpyz( shader.name, "<stencil shadow>", sizeof( shader.name ) );
+	String::NCpyZ( shader.name, "<stencil shadow>", sizeof( shader.name ) );
 	shader.sort = SS_STENCIL_SHADOW;
 	tr.shadowShader = FinishShader();
 }
@@ -3270,7 +3270,7 @@ void R_LoadCacheShaders( void ) {
 	pString = (char*)buf;   //DAJ added (char*)
 
 	while ( ( token = COM_ParseExt( &pString, qtrue ) ) != NULL && token[0] ) {
-		Q_strncpyz( name, token, sizeof( name ) );
+		String::NCpyZ( name, token, sizeof( name ) );
 		RE_RegisterModel( name );
 	}
 

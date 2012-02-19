@@ -345,7 +345,7 @@ weightconfig_t *ReadWeightConfig( char *filename ) {
 	  //
 	config = (weightconfig_t *) GetClearedMemory( sizeof( weightconfig_t ) );
 	config->numweights = 0;
-	Q_strncpyz( config->filename, filename, sizeof( config->filename ) );
+	String::NCpyZ( config->filename, filename, sizeof( config->filename ) );
 	//parse the item config file
 	while ( PC_ReadToken( source, &token ) )
 	{

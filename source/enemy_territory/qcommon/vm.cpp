@@ -248,7 +248,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 		}
 
 		sym->symValue = value;
-		Q_strncpyz( sym->symName, token, chars + 1 );
+		String::NCpyZ( sym->symName, token, chars + 1 );
 
 		count++;
 	}
@@ -337,7 +337,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 		intptr_t ( *systemCall )( intptr_t *parms );
 
 		systemCall = vm->systemCall;
-		Q_strncpyz( name, vm->name, sizeof( name ) );
+		String::NCpyZ( name, vm->name, sizeof( name ) );
 
 		VM_Free( vm );
 
@@ -440,7 +440,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )(intptr_t *),
 
 	vm = &vmTable[i];
 
-	Q_strncpyz( vm->name, module, sizeof( vm->name ) );
+	String::NCpyZ( vm->name, module, sizeof( vm->name ) );
 	vm->systemCall = systemCalls;
 
 	if ( interpret == VMI_NATIVE ) {

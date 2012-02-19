@@ -588,7 +588,7 @@ void Conbuf_AppendText( const char *pMsg ) {
 ** Sys_SetErrorText
 */
 void Sys_SetErrorText( const char *buf ) {
-	Q_strncpyz( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
+	String::NCpyZ( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
 
 	if ( !s_wcd.hwndErrorBox ) {
 		s_wcd.hwndErrorBox = CreateWindow( "static", NULL, WS_CHILD | WS_VISIBLE | SS_SUNKEN,

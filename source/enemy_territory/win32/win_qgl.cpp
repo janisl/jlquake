@@ -2934,7 +2934,7 @@ qboolean QGL_Init( const char *dllname ) {
 		Com_sprintf( libName, sizeof( libName ), "%s\\%s", systemDir, dllname );
 	} else
 	{
-		Q_strncpyz( libName, dllname, sizeof( libName ) );
+		String::NCpyZ( libName, dllname, sizeof( libName ) );
 	}
 
 	ri.Printf( PRINT_ALL, "...calling LoadLibrary( '%s.dll' ): ", libName );

@@ -1901,7 +1901,7 @@ void S_Play_f( void ) {
 		if ( !Q_strrchr( Cmd_Argv( i ), '.' ) ) {
 			Com_sprintf( name, sizeof( name ), "%s.wav", Cmd_Argv( 1 ) );
 		} else {
-			Q_strncpyz( name, Cmd_Argv( i ), sizeof( name ) );
+			String::NCpyZ( name, Cmd_Argv( i ), sizeof( name ) );
 		}
 		h = S_RegisterSound( name, qfalse );
 		if ( h ) {
@@ -1944,7 +1944,7 @@ void S_Music_f( void ) {
 		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 1 ), 0 );
 	} else if ( c == 3 ) {
 		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 2 ), 0 );
-		Q_strncpyz( streamingSounds[0].loop, Cmd_Argv( 2 ), sizeof( streamingSounds[0].loop ) );
+		String::NCpyZ( streamingSounds[0].loop, Cmd_Argv( 2 ), sizeof( streamingSounds[0].loop ) );
 	} else {
 		Com_Printf( "music <musicfile> [loopfile]\n" );
 		return;
@@ -2111,20 +2111,20 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime
 		intro = "";
 	}
 	if ( !loop || !loop[0] ) {
-		Q_strncpyz( loopMusic, intro, sizeof( loopMusic ) );
+		String::NCpyZ( loopMusic, intro, sizeof( loopMusic ) );
 	} else {
-		Q_strncpyz( loopMusic, loop, sizeof( loopMusic ) );
+		String::NCpyZ( loopMusic, loop, sizeof( loopMusic ) );
 	}
 
 	Cvar_Set( "s_currentMusic", "" ); //----(SA)	so the savegame will have the right music
 
 	if ( !String::ICmp( loop, "onetimeonly" ) ) { // don't change the loop if you're playing a single hit
-		Q_strncpyz( loopMusic, ss->loop, sizeof( loopMusic ) );
+		String::NCpyZ( loopMusic, ss->loop, sizeof( loopMusic ) );
 	}
 
-	Q_strncpyz( ss->loop, loopMusic, sizeof( ss->loop ) - 4 );
+	String::NCpyZ( ss->loop, loopMusic, sizeof( ss->loop ) - 4 );
 
-	Q_strncpyz( ss->name, intro, sizeof( ss->name ) - 4 );
+	String::NCpyZ( ss->name, intro, sizeof( ss->name ) - 4 );
 	COM_DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
 
 	// close the current sound if present, but DON'T reset s_rawend
@@ -2408,12 +2408,12 @@ float S_StartStreamingSound( const char *intro, const char *loop, int entnum, in
 	}
 
 	if ( ss->loop && loop ) {
-		Q_strncpyz( ss->loop, loop, sizeof( ss->loop ) - 4 );
+		String::NCpyZ( ss->loop, loop, sizeof( ss->loop ) - 4 );
 	} else {
 		ss->loop[0] = 0;
 	}
 
-	Q_strncpyz( ss->name, intro, sizeof( ss->name ) - 4 );
+	String::NCpyZ( ss->name, intro, sizeof( ss->name ) - 4 );
 	COM_DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
 
 	// close the current sound if present, but DON'T reset s_rawend

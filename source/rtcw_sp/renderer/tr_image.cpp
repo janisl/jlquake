@@ -2670,7 +2670,7 @@ qboolean RE_GetSkinModel( qhandle_t skinid, const char *type, char *name ) {
 	for ( i = 0; i < bar->numModels; i++ )
 	{
 		if ( !String::ICmp( bar->models[i]->type, type ) ) { // (SA) whoops, should've been this way
-			Q_strncpyz( name, bar->models[i]->model, sizeof( bar->models[i]->model ) );
+			String::NCpyZ( name, bar->models[i]->model, sizeof( bar->models[i]->model ) );
 			return qtrue;
 		}
 	}
@@ -2792,7 +2792,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		tr.numSkins++;
 		skin = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 		tr.skins[hSkin] = skin;
-		Q_strncpyz( skin->name, name, sizeof( skin->name ) );
+		String::NCpyZ( skin->name, name, sizeof( skin->name ) );
 		skin->numSurfaces   = 0;
 		skin->numModels     = 0;    //----(SA) added
 		skin->numSurfaces = 1;
@@ -2810,7 +2810,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	tr.numSkins++;
 	skin = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 	tr.skins[hSkin] = skin;
-	Q_strncpyz( skin->name, name, sizeof( skin->name ) );
+	String::NCpyZ( skin->name, name, sizeof( skin->name ) );
 	skin->numSurfaces   = 0;
 	skin->numModels     = 0;    //----(SA) added
 
@@ -2820,7 +2820,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	while ( text_p && *text_p ) {
 		// get surface name
 		token = CommaParse( &text_p );
-		Q_strncpyz( surfName, token, sizeof( surfName ) );
+		String::NCpyZ( surfName, token, sizeof( surfName ) );
 
 		if ( !token[0] ) {
 			break;
@@ -2838,12 +2838,12 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 
 		if ( strstr( token, "md3_" ) ) {  // this is specifying a model
 			model = skin->models[ skin->numModels ] = (skinModel_t*)ri.Hunk_Alloc( sizeof( *skin->models[0] ), h_low );
-			Q_strncpyz( model->type, token, sizeof( model->type ) );
+			String::NCpyZ( model->type, token, sizeof( model->type ) );
 
 			// get the model name
 			token = CommaParse( &text_p );
 
-			Q_strncpyz( model->model, token, sizeof( model->model ) );
+			String::NCpyZ( model->model, token, sizeof( model->model ) );
 
 			skin->numModels++;
 			continue;
@@ -2863,7 +2863,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		token = CommaParse( &text_p );
 
 		surf = skin->surfaces[ skin->numSurfaces ] = (skinSurface_t*)ri.Hunk_Alloc( sizeof( *skin->surfaces[0] ), h_low );
-		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
+		String::NCpyZ( surf->name, surfName, sizeof( surf->name ) );
 		surf->shader = R_FindShader( token, LIGHTMAP_NONE, qtrue );
 		skin->numSurfaces++;
 	}
@@ -2897,7 +2897,7 @@ void    R_InitSkins( void ) {
 
 	// make the default skin have all default shaders
 	skin = tr.skins[0] = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
-	Q_strncpyz( skin->name, "<default skin>", sizeof( skin->name )  );
+	String::NCpyZ( skin->name, "<default skin>", sizeof( skin->name )  );
 	skin->numSurfaces = 1;
 	skin->surfaces[0] = (skinSurface_t*)ri.Hunk_Alloc( sizeof( *skin->surfaces ), h_low );
 	skin->surfaces[0]->shader = tr.defaultShader;
@@ -3804,7 +3804,7 @@ void R_LoadCacheImages( void ) {
 	pString = (char*)buf;   //DAJ added (char*)
 
 	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[0] ) {
-		Q_strncpyz( name, token, sizeof( name ) );
+		String::NCpyZ( name, token, sizeof( name ) );
 		for ( i = 0; i < 4; i++ ) {
 			token = COM_ParseExt( &pString, qfalse );
 			parms[i] = atoi( token );

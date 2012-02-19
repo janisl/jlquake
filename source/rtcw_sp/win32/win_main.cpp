@@ -551,7 +551,7 @@ char *Sys_GetClipboardData( void ) {
 		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
 			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) {
 				data = (char*)Z_Malloc( GlobalSize( hClipboardData ) + 1 );
-				Q_strncpyz( data, cliptext, GlobalSize( hClipboardData ) );
+				String::NCpyZ( data, cliptext, GlobalSize( hClipboardData ) );
 				GlobalUnlock( hClipboardData );
 
 				strtok( data, "\n\r\b" );
@@ -1092,7 +1092,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 		len = String::Length( s ) + 1;
 		b = (char*)Z_Malloc( len );
-		Q_strncpyz( b, s, len - 1 );
+		String::NCpyZ( b, s, len - 1 );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
 
@@ -1288,7 +1288,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	g_wv.hInstance = hInstance;
-	Q_strncpyz( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
+	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
 	Sys_CreateConsole();

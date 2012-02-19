@@ -100,7 +100,7 @@ void SV_SetConfigstring( int index, const char *val ) {
 					} else {
 						cmd = "bcs1";
 					}
-					Q_strncpyz( buf, &val[sent], maxChunkSize );
+					String::NCpyZ( buf, &val[sent], maxChunkSize );
 
 					SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf );
 
@@ -135,7 +135,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize ) {
 		return;
 	}
 
-	Q_strncpyz( buffer, sv.configstrings[index], bufferSize );
+	String::NCpyZ( buffer, sv.configstrings[index], bufferSize );
 }
 
 
@@ -154,8 +154,8 @@ void SV_SetUserinfo( int index, const char *val ) {
 		val = "";
 	}
 
-	Q_strncpyz( svs.clients[index].userinfo, val, sizeof( svs.clients[ index ].userinfo ) );
-	Q_strncpyz( svs.clients[index].name, Info_ValueForKey( val, "name" ), sizeof( svs.clients[index].name ) );
+	String::NCpyZ( svs.clients[index].userinfo, val, sizeof( svs.clients[ index ].userinfo ) );
+	String::NCpyZ( svs.clients[index].name, Info_ValueForKey( val, "name" ), sizeof( svs.clients[index].name ) );
 }
 
 
@@ -173,7 +173,7 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize ) {
 	if ( index < 0 || index >= sv_maxclients->integer ) {
 		Com_Error( ERR_DROP, "SV_GetUserinfo: bad index %i\n", index );
 	}
-	Q_strncpyz( buffer, svs.clients[ index ].userinfo, bufferSize );
+	String::NCpyZ( buffer, svs.clients[ index ].userinfo, bufferSize );
 }
 
 
@@ -354,7 +354,7 @@ qboolean SV_AddReliableCommand( client_t *cl, int index, const char *cmd ) {
 	//
 	// insert the command at the rover
 	cl->reliableCommands.commands[index] = cl->reliableCommands.rover;
-	Q_strncpyz( cl->reliableCommands.commands[index], cmd, length + 1 );
+	String::NCpyZ( cl->reliableCommands.commands[index], cmd, length + 1 );
 	cl->reliableCommands.commandLengths[index] = length;
 	//
 	// move the rover along
@@ -853,7 +853,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	Cvar_Set( "sv_referencedPakNames", p );
 
 	// save systeminfo and serverinfo strings
-	Q_strncpyz( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
+	String::NCpyZ( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
 

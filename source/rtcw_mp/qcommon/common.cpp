@@ -2275,7 +2275,7 @@ void Com_ReadCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if ( !f ) {
-		Q_strncpyz( cl_cdkey, "                ", 17 );
+		String::NCpyZ( cl_cdkey, "                ", 17 );
 		return;
 	}
 
@@ -2285,9 +2285,9 @@ void Com_ReadCDKey( const char *filename ) {
 	FS_FCloseFile( f );
 
 	if ( CL_CDKeyValidate( buffer, NULL ) ) {
-		Q_strncpyz( cl_cdkey, buffer, 17 );
+		String::NCpyZ( cl_cdkey, buffer, 17 );
 	} else {
-		Q_strncpyz( cl_cdkey, "                ", 17 );
+		String::NCpyZ( cl_cdkey, "                ", 17 );
 	}
 }
 
@@ -2305,7 +2305,7 @@ void Com_AppendCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if ( !f ) {
-		Q_strncpyz( &cl_cdkey[16], "                ", 17 );
+		String::NCpyZ( &cl_cdkey[16], "                ", 17 );
 		return;
 	}
 
@@ -2317,7 +2317,7 @@ void Com_AppendCDKey( const char *filename ) {
 	if ( CL_CDKeyValidate( buffer, NULL ) ) {
 		strcat( &cl_cdkey[16], buffer );
 	} else {
-		Q_strncpyz( &cl_cdkey[16], "                ", 17 );
+		String::NCpyZ( &cl_cdkey[16], "                ", 17 );
 	}
 }
 
@@ -2336,7 +2336,7 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 	sprintf( fbuffer, "%s/rtcwkey", filename );
 
 
-	Q_strncpyz( key, ikey, 17 );
+	String::NCpyZ( key, ikey, 17 );
 
 	if ( !CL_CDKeyValidate( key, NULL ) ) {
 		return;
@@ -2661,7 +2661,7 @@ void Com_WriteConfig_f( void ) {
 		return;
 	}
 
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename );
@@ -2986,7 +2986,7 @@ static void FindMatches( const char *s ) {
 	}
 	matchCount++;
 	if ( matchCount == 1 ) {
-		Q_strncpyz( shortestMatch, s, sizeof( shortestMatch ) );
+		String::NCpyZ( shortestMatch, s, sizeof( shortestMatch ) );
 		return;
 	}
 

@@ -502,7 +502,7 @@ char *Sys_GetClipboardData( void ) {
 		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
 			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) {
 				data = (char*)Z_Malloc( GlobalSize( hClipboardData ) + 1 );
-				Q_strncpyz( data, cliptext, GlobalSize( hClipboardData ) );
+				String::NCpyZ( data, cliptext, GlobalSize( hClipboardData ) );
 				GlobalUnlock( hClipboardData );
 
 				strtok( data, "\n\r\b" );
@@ -574,7 +574,7 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QDECL **ent
 
 	*fqpath = 0 ;       // added 2/15/02 by T.Ray
 
-	Q_strncpyz( filename, Sys_GetDLLName( name ), sizeof( filename ) );
+	String::NCpyZ( filename, Sys_GetDLLName( name ), sizeof( filename ) );
 
 	basepath = Cvar_VariableString( "fs_basepath" );
 	cdpath = Cvar_VariableString( "fs_cdpath" );
@@ -611,11 +611,11 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QDECL **ent
 			if ( !libHandle ) {
 				return NULL;
 			}
-			Q_strncpyz( fqpath, filename, MAX_QPATH ) ;         // added 2/15/02 by T.Ray
+			String::NCpyZ( fqpath, filename, MAX_QPATH ) ;         // added 2/15/02 by T.Ray
 
-		} else {Q_strncpyz( fqpath, fn, MAX_QPATH ) ;       // added 2/15/02 by T.Ray
+		} else {String::NCpyZ( fqpath, fn, MAX_QPATH ) ;       // added 2/15/02 by T.Ray
 		}
-	} else {Q_strncpyz( fqpath, fn, MAX_QPATH ) ;       // added 2/15/02 by T.Ray
+	} else {String::NCpyZ( fqpath, fn, MAX_QPATH ) ;       // added 2/15/02 by T.Ray
 	}
 	dllEntry = ( void ( QDECL * )( intptr_t ( QDECL * )( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" );
 	*entryPoint = ( intptr_t ( QDECL * )( int,... ) )GetProcAddress( libHandle, "vmMain" );
@@ -1044,7 +1044,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 		len = String::Length( s ) + 1;
 		b = (char*)Z_Malloc( len );
-		Q_strncpyz( b, s, len - 1 );
+		String::NCpyZ( b, s, len - 1 );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
 
@@ -1240,7 +1240,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	g_wv.hInstance = hInstance;
-	Q_strncpyz( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
+	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
 	Sys_CreateConsole();

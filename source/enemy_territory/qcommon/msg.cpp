@@ -340,7 +340,7 @@ void MSG_WriteString( msg_t *sb, const char *s ) {
 			MSG_WriteData( sb, "", 1 );
 			return;
 		}
-		Q_strncpyz( string, s, sizeof( string ) );
+		String::NCpyZ( string, s, sizeof( string ) );
 
 		// get rid of 0xff chars, because old clients don't like them
 		for ( i = 0 ; i < l ; i++ ) {
@@ -366,7 +366,7 @@ void MSG_WriteBigString( msg_t *sb, const char *s ) {
 			MSG_WriteData( sb, "", 1 );
 			return;
 		}
-		Q_strncpyz( string, s, sizeof( string ) );
+		String::NCpyZ( string, s, sizeof( string ) );
 
 		// get rid of 0xff chars, because old clients don't like them
 		for ( i = 0 ; i < l ; i++ ) {
