@@ -1299,7 +1299,6 @@ char String::ToLower(char c)
 	return c;
 }
 
-#if 0
 //==========================================================================
 //
 //	String::SkipPath
@@ -1355,6 +1354,7 @@ void String::StripExtension(const char* In, char* Out)
 	*Out = 0;
 }
 
+#if 0
 //==========================================================================
 //
 //	String::DefaultExtension

@@ -51,38 +51,6 @@ float Com_Clamp( float min, float max, float value ) {
 	return value;
 }
 
-
-/*
-============
-COM_SkipPath
-============
-*/
-char *COM_SkipPath( char *pathname ) {
-	char    *last;
-
-	last = pathname;
-	while ( *pathname )
-	{
-		if ( *pathname == '/' ) {
-			last = pathname + 1;
-		}
-		pathname++;
-	}
-	return last;
-}
-
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtension( const char *in, char *out ) {
-	while ( *in && *in != '.' ) {
-		*out++ = *in++;
-	}
-	*out = 0;
-}
-
 /*
 ============
 COM_StripExtension2
@@ -101,7 +69,7 @@ void COM_StripExtension2( const char *in, char *out, int destsize ) {
 void COM_StripFilename( char *in, char *out ) {
 	char *end;
 	String::NCpyZ( out, in, String::Length( in ) );
-	end = COM_SkipPath( out );
+	end = String::SkipPath( out );
 	*end = 0;
 }
 

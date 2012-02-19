@@ -500,11 +500,6 @@ float Com_Clamp( float min, float max, float value );
 #define FILE_HASH_SIZE      1024
 int Com_HashString( const char *fname );
 
-char    *Com_SkipPath( char *pathname );
-
-// it is ok for out == in
-void    Com_StripExtension( const char *in, char *out );
-
 // "extension" should include the dot: ".map"
 void    Com_DefaultExtension( char *path, int maxSize, const char *extension );
 

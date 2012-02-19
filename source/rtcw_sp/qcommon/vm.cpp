@@ -197,7 +197,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 		return;
 	}
 
-	COM_StripExtension( vm->name, name );
+	String::StripExtension( vm->name, name );
 	Com_sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
 	len = FS_ReadFile( symbols, (void **)&mapfile );
 	if ( !mapfile ) {

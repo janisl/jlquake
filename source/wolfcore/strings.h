@@ -352,10 +352,10 @@ public:
 	static char ToUpper(char c);
 	static char ToLower(char c);
 
-#if 0
 	static char* SkipPath(char* PathName);
 	static const char* SkipPath(const char *PathName);
 	static void StripExtension(const char* In, char* Out);
+#if 0
 	static void DefaultExtension(char* Path, int MaxSize, const char* Extension);
 	static void FilePath(const char* In, char* Out);
 	static void FileBase(const char* In, char* Out);

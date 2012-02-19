@@ -114,7 +114,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
-	COM_StripExtension( shaderName, strippedName );
+	String::StripExtension( shaderName, strippedName );
 	hash = generateHashValue( strippedName );
 	for ( sh = hashTable[hash]; sh; sh = sh->next ) {
 		if ( String::ICmp( sh->name, strippedName ) == 0 ) {
@@ -2390,7 +2390,7 @@ shader_t *R_FindShaderByName( const char *name ) {
 		return tr.defaultShader;
 	}
 
-	COM_StripExtension( name, strippedName );
+	String::StripExtension( name, strippedName );
 
 	hash = generateHashValue( strippedName );
 
@@ -2458,7 +2458,7 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 		lightmapIndex = LIGHTMAP_BY_VERTEX;
 	}
 
-	COM_StripExtension( name, strippedName );
+	String::StripExtension( name, strippedName );
 
 	hash = generateHashValue( strippedName );
 

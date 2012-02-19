@@ -2578,7 +2578,7 @@ void RE_LoadWorldMap( const char *name ) {
 
 	// ydnar: set map meta dir
 	tr.worldDir = CopyString( name );
-	COM_StripExtension( tr.worldDir, tr.worldDir );
+	String::StripExtension( tr.worldDir, tr.worldDir );
 
 	// clear tr.world so if the level fails to load, the next
 	// try will not look at the partially loaded version
@@ -2587,8 +2587,8 @@ void RE_LoadWorldMap( const char *name ) {
 	memset( &s_worldData, 0, sizeof( s_worldData ) );
 	String::NCpyZ( s_worldData.name, name, sizeof( s_worldData.name ) );
 
-	String::NCpyZ( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
-	COM_StripExtension( s_worldData.baseName, s_worldData.baseName );
+	String::NCpyZ( s_worldData.baseName, String::SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
+	String::StripExtension( s_worldData.baseName, s_worldData.baseName );
 
 	startMarker = (byte*)ri.Hunk_Alloc( 0, h_low );
 	c_gridVerts = 0;
