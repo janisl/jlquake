@@ -257,7 +257,7 @@ void RunFrame( void ) {
 
 		FS_FOpenFileByMode( "crash.log", &handle, FS_APPEND );
 		if ( handle ) {
-			FS_Write( buffer, strlen( buffer ), handle );
+			FS_Write( buffer, String::Length( buffer ), handle );
 			FS_FCloseFile( handle );
 		}
 

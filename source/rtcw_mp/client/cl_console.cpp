@@ -260,7 +260,7 @@ void Con_Dump_f( void ) {
 			}
 		}
 		strcat( buffer, "\n" );
-		FS_Write( buffer, strlen( buffer ), f );
+		FS_Write( buffer, String::Length( buffer ), f );
 	}
 
 	FS_FCloseFile( f );
@@ -616,13 +616,13 @@ void Con_DrawNotify( void ) {
 			char buf[128];
 			CL_TranslateString( "say_team:", buf );
 			SCR_DrawBigString( 8, v, buf, 1.0f );
-			skip = strlen( buf ) + 2;
+			skip = String::Length( buf ) + 2;
 		} else
 		{
 			char buf[128];
 			CL_TranslateString( "say:", buf );
 			SCR_DrawBigString( 8, v, buf, 1.0f );
-			skip = strlen( buf ) + 1;
+			skip = String::Length( buf ) + 1;
 		}
 
 		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, v,
@@ -695,7 +695,7 @@ void Con_DrawSolidConsole( float frac ) {
 
 	re.SetColor( g_color_table[ColorIndex( COLNSOLE_COLOR )] );
 
-	i = strlen( Q3_VERSION );
+	i = String::Length( Q3_VERSION );
 
 	for ( x = 0 ; x < i ; x++ ) {
 

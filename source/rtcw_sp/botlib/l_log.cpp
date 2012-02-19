@@ -62,7 +62,7 @@ static logfile_t logfile;
 // Changes Globals:		-
 //===========================================================================
 void Log_AlwaysOpen( char *filename ) {
-	if ( !filename || !strlen( filename ) ) {
+	if ( !filename || !String::Length( filename ) ) {
 		botimport.Print( PRT_MESSAGE, "openlog <filename>\n" );
 		return;
 	} //end if

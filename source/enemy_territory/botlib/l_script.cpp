@@ -195,7 +195,7 @@ void PS_CreatePunctuationTable( script_t *script, punctuation_t *punctuations ) 
 		//sort the punctuations in this table entry on length (longer punctuations first)
 		for ( p = script->punctuationtable[(unsigned int) newp->p[0]]; p; p = p->next )
 		{
-			if ( strlen( p->p ) < strlen( newp->p ) ) {
+			if ( String::Length( p->p ) < String::Length( newp->p ) ) {
 				newp->next = p;
 				if ( lastp ) {
 					lastp->next = newp;
@@ -812,7 +812,7 @@ int PS_ReadPunctuation( script_t *script, token_t *token ) {
 		punc = &script->punctuations[i];
 #endif //PUNCTABLE
 		p = punc->p;
-		len = strlen( p );
+		len = String::Length( p );
 		//if the script contains at least as much characters as the punctuation
 		if ( script->script_p + len <= script->end_p ) {
 			//if the script contains the punctuation
@@ -1144,10 +1144,10 @@ void StripDoubleQuotes( char *string ) {
 	if ( *string == '\"' ) {
 		//strcpy(string, string+1);
 		// rain - strcpy arguments cannot overlap, memmove string+1 and NUL
-		memmove( string, string + 1, strlen( string + 1 ) + 1 );
+		memmove( string, string + 1, String::Length( string + 1 ) + 1 );
 	} //end if
-	if ( string[strlen( string ) - 1] == '\"' ) {
-		string[strlen( string ) - 1] = '\0';
+	if ( string[String::Length( string ) - 1] == '\"' ) {
+		string[String::Length( string ) - 1] = '\0';
 	} //end if
 } //end of the function StripDoubleQuotes
 //============================================================================
@@ -1158,10 +1158,10 @@ void StripDoubleQuotes( char *string ) {
 //============================================================================
 void StripSingleQuotes( char *string ) {
 	if ( *string == '\'' ) {
-		memmove( string, string + 1, strlen(string) );
+		memmove( string, string + 1, String::Length(string) );
 	} //end if
-	if ( string[strlen( string ) - 1] == '\'' ) {
-		string[strlen( string ) - 1] = '\0';
+	if ( string[String::Length( string ) - 1] == '\'' ) {
+		string[String::Length( string ) - 1] = '\0';
 	} //end if
 } //end of the function StripSingleQuotes
 //============================================================================
@@ -1275,7 +1275,7 @@ int ScriptSkipTo( script_t *script, char *value ) {
 	char firstchar;
 
 	firstchar = *value;
-	len = strlen( value );
+	len = String::Length( value );
 	do
 	{
 		if ( !PS_ReadWhiteSpace( script ) ) {
@@ -1327,7 +1327,7 @@ script_t *LoadScriptFile( const char *filename ) {
 	script_t *script;
 
 #ifdef BOTLIB
-	if ( strlen( basefolder ) ) {
+	if ( String::Length( basefolder ) ) {
 		Com_sprintf( pathname, sizeof( pathname ), "%s/%s", basefolder, filename );
 	} else {
 		Com_sprintf( pathname, sizeof( pathname ), "%s", filename );

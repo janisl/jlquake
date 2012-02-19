@@ -85,7 +85,7 @@ float LibVarStringValue( char *string ) {
 libvar_t *LibVarAlloc( char *var_name ) {
 	libvar_t *v;
 
-	v = (libvar_t *) GetMemory( sizeof( libvar_t ) + strlen( var_name ) + 1 );
+	v = (libvar_t *) GetMemory( sizeof( libvar_t ) + String::Length( var_name ) + 1 );
 	memset( v, 0, sizeof( libvar_t ) );
 	v->name = (char *) v + sizeof( libvar_t );
 	strcpy( v->name, var_name );
@@ -190,7 +190,7 @@ libvar_t *LibVar( char *var_name, char *value ) {
 	//create new variable
 	v = LibVarAlloc( var_name );
 	//variable string
-	v->string = (char *) GetMemory( strlen( value ) + 1 );
+	v->string = (char *) GetMemory( String::Length( value ) + 1 );
 	strcpy( v->string, value );
 	//the value
 	v->value = LibVarStringValue( v->string );
@@ -241,7 +241,7 @@ void LibVarSet( char *var_name, char *value ) {
 		v = LibVarAlloc( var_name );
 	} //end else
 	  //variable string
-	v->string = (char *) GetMemory( strlen( value ) + 1 );
+	v->string = (char *) GetMemory( String::Length( value ) + 1 );
 	strcpy( v->string, value );
 	//the value
 	v->value = LibVarStringValue( v->string );

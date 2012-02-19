@@ -769,7 +769,7 @@ static void SV_Status_f( void ) {
 		}
 
 		Com_Printf( "%s", cl->name );
-		l = 16 - strlen( cl->name );
+		l = 16 - String::Length( cl->name );
 		for ( j = 0 ; j < l ; j++ )
 			Com_Printf( " " );
 
@@ -777,7 +777,7 @@ static void SV_Status_f( void ) {
 
 		s = NET_AdrToString( cl->netchan.remoteAddress );
 		Com_Printf( "%s", s );
-		l = 22 - strlen( s );
+		l = 22 - String::Length( s );
 		for ( j = 0 ; j < l ; j++ )
 			Com_Printf( " " );
 
@@ -814,7 +814,7 @@ static void SV_ConSay_f( void ) {
 
 	if ( *p == '"' ) {
 		p++;
-		p[strlen( p ) - 1] = 0;
+		p[String::Length( p ) - 1] = 0;
 	}
 
 	strcat( text, p );

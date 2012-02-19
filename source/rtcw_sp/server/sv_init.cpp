@@ -85,7 +85,7 @@ void SV_SetConfigstring( int index, const char *val ) {
 
 //			SV_SendServerCommand( client, "cs %i \"%s\"\n", index, val );
 
-			len = strlen( val );
+			len = String::Length( val );
 			if ( len >= maxChunkSize ) {
 				int sent = 0;
 				int remaining = len;
@@ -314,7 +314,7 @@ qboolean SV_AddReliableCommand( client_t *cl, int index, const char *cmd ) {
 		return qfalse;
 	}
 	//
-	length = strlen( cmd );
+	length = String::Length( cmd );
 	//
 	if ( ( cl->reliableCommands.rover - cl->reliableCommands.buf ) + length + 1 >= cl->reliableCommands.bufSize ) {
 		// go back to the start
@@ -830,7 +830,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 		// load pk3s also loaded at the server
 		p = FS_LoadedPakChecksums();
 		Cvar_Set( "sv_paks", p );
-		if ( strlen( p ) == 0 ) {
+		if ( String::Length( p ) == 0 ) {
 			Com_Printf( "WARNING: sv_pure set but no PK3 files loaded\n" );
 		}
 		p = FS_LoadedPakNames();

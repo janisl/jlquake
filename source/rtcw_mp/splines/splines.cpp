@@ -107,7 +107,7 @@ void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label
 	v.y += 1;
 	v.z += 1;
 	qglRasterPos3fv( v );
-	qglCallLists( strlen( label ), GL_UNSIGNED_BYTE, label );
+	qglCallLists( String::Length( label ), GL_UNSIGNED_BYTE, label );
 }
 
 

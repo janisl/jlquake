@@ -125,7 +125,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		return;
 	}
 
-	if ( strlen( subdirs ) ) {
+	if ( String::Length( subdirs ) ) {
 		Com_sprintf( search, sizeof( search ), "%s/%s", basedir, subdirs );
 	} else {
 		Com_sprintf( search, sizeof( search ), "%s", basedir );
@@ -143,7 +143,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 
 		if ( st.st_mode & S_IFDIR ) {
 			if ( Q_stricmp( d->d_name, "." ) && Q_stricmp( d->d_name, ".." ) ) {
-				if ( strlen( subdirs ) ) {
+				if ( String::Length( subdirs ) ) {
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s/%s", subdirs, d->d_name );
 				} else {
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s", d->d_name );
@@ -212,7 +212,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		dironly = qtrue;
 	}
 
-	extLen = strlen( extension );
+	extLen = String::Length( extension );
 
 	// search
 	nfiles = 0;
@@ -233,9 +233,9 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		}
 
 		if ( *extension ) {
-			if ( strlen( d->d_name ) < strlen( extension ) ||
+			if ( String::Length( d->d_name ) < String::Length( extension ) ||
 				 Q_stricmp(
-					 d->d_name + strlen( d->d_name ) - strlen( extension ),
+					 d->d_name + String::Length( d->d_name ) - String::Length( extension ),
 					 extension ) ) {
 				continue; // didn't match
 			}

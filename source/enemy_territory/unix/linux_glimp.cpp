@@ -170,7 +170,7 @@ static const char *Q_stristr( const char *s, const char *find ) {
 		if ( c >= 'a' && c <= 'z' ) {
 			c -= ( 'a' - 'A' );
 		}
-		len = strlen( find );
+		len = String::Length( find );
 		do
 		{
 			do
@@ -1596,14 +1596,14 @@ void GLimp_Init( void ) {
 	// get our config strings
 	Q_strncpyz( glConfig.vendor_string, (char*)qglGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
 	Q_strncpyz( glConfig.renderer_string, (char*)qglGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
-	if ( *glConfig.renderer_string && glConfig.renderer_string[strlen( glConfig.renderer_string ) - 1] == '\n' ) {
-		glConfig.renderer_string[strlen( glConfig.renderer_string ) - 1] = 0;
+	if ( *glConfig.renderer_string && glConfig.renderer_string[String::Length( glConfig.renderer_string ) - 1] == '\n' ) {
+		glConfig.renderer_string[String::Length( glConfig.renderer_string ) - 1] = 0;
 	}
 	Q_strncpyz( glConfig.version_string, (char*)qglGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
 	Q_strncpyz( glConfig.extensions_string, (char*)qglGetString( GL_EXTENSIONS ), sizeof( glConfig.extensions_string ) );
 	// TTimo - safe check
-	if ( strlen( (char*)qglGetString( GL_EXTENSIONS ) ) >= sizeof( glConfig.extensions_string ) ) {
-		Com_Printf( S_COLOR_YELLOW "WARNNING: GL extensions string too long (%d), truncated to %d\n", strlen( (char*)qglGetString( GL_EXTENSIONS ) ), sizeof( glConfig.extensions_string ) );
+	if ( String::Length( (char*)qglGetString( GL_EXTENSIONS ) ) >= sizeof( glConfig.extensions_string ) ) {
+		Com_Printf( S_COLOR_YELLOW "WARNNING: GL extensions string too long (%d), truncated to %d\n", String::Length( (char*)qglGetString( GL_EXTENSIONS ) ), sizeof( glConfig.extensions_string ) );
 	}
 
 	//bani - glx extensions string

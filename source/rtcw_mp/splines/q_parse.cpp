@@ -336,7 +336,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 		int l;
 		int j;
 
-		l = strlen( *punc );
+		l = String::Length( *punc );
 		for ( j = 0 ; j < l ; j++ ) {
 			if ( data[j] != ( *punc )[j] ) {
 				break;

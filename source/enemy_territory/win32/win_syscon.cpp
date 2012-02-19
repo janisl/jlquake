@@ -156,7 +156,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_CLOSE:
 		if ( ( com_dedicated && com_dedicated->integer ) ) {
 			cmdString = CopyString( "quit" );
-			Sys_QueEvent( 0, SE_CONSOLE, 0, 0, strlen( cmdString ) + 1, cmdString );
+			Sys_QueEvent( 0, SE_CONSOLE, 0, 0, String::Length( cmdString ) + 1, cmdString );
 		} else if ( s_wcd.quitOnClose )   {
 			PostQuitMessage( 0 );
 		} else
@@ -204,7 +204,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			} else
 			{
 				cmdString = CopyString( "quit" );
-				Sys_QueEvent( 0, SE_CONSOLE, 0, 0, strlen( cmdString ) + 1, cmdString );
+				Sys_QueEvent( 0, SE_CONSOLE, 0, 0, String::Length( cmdString ) + 1, cmdString );
 			}
 		} else if ( wParam == CLEAR_ID )   {
 			SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
@@ -304,7 +304,7 @@ static int win_historyLine = 0;
 
 static void Win_FindIndexMatch( const char *s ) {
 
-	if ( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) ) {
+	if ( Q_stricmpn( s, win_completionString, String::Length( win_completionString ) ) ) {
 		return;
 	}
 
@@ -320,7 +320,7 @@ static void Win_FindIndexMatch( const char *s ) {
 static void Win_FindMatches( const char *s ) {
 	int i;
 
-	if ( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) ) {
+	if ( Q_stricmpn( s, win_completionString, String::Length( win_completionString ) ) ) {
 		return;
 	}
 	win_matchCount++;
@@ -371,7 +371,7 @@ static void Win_ConcatRemaining( const char *src, const char *start ) {
 		return;
 	}
 
-	str += strlen( start );
+	str += String::Length( start );
 	Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), str );
 }
 
@@ -413,7 +413,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		win_matchIndex = 0;
 		win_currentMatch[0] = 0;
 
-		if ( strlen( win_completionString ) == 0 ) {
+		if ( String::Length( win_completionString ) == 0 ) {
 			return;
 		}
 
@@ -433,12 +433,12 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 			} else {
 				Win_ConcatRemaining( temp.buffer, win_completionString );
 			}
-			edit->cursor = strlen( edit->buffer );
+			edit->cursor = String::Length( edit->buffer );
 		} else
 		{
 			// multiple matches, complete to shortest
 			Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
-			win_acLength = edit->cursor = strlen( edit->buffer );
+			win_acLength = edit->cursor = String::Length( edit->buffer );
 			Win_ConcatRemaining( temp.buffer, win_completionString );
 			showMatches = qtrue;
 		}
@@ -460,13 +460,13 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 
 		// and print it
 		Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
-		edit->cursor = strlen( edit->buffer );
+		edit->cursor = String::Length( edit->buffer );
 		Win_ConcatRemaining( temp.buffer, lastMatch );
 	}
 
 	// hijack it
 	if ( win_matchCount == 1 ) {
-		win_acLength = strlen( win_currentMatch );
+		win_acLength = String::Length( win_currentMatch );
 	}
 
 	// run through again, printing matches
@@ -522,12 +522,12 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		//%	GetWindowText( s_wcd.hwndInputLine, inputBuffer, sizeof( inputBuffer ) );
 		GetWindowText( s_wcd.hwndInputLine, win_consoleField.buffer, sizeof( win_consoleField.buffer ) );
 		SendMessage( s_wcd.hwndInputLine, EM_GETSEL, (WPARAM) NULL, (LPARAM) &win_consoleField.cursor );
-		win_consoleField.widthInChars = strlen( win_consoleField.buffer );
+		win_consoleField.widthInChars = String::Length( win_consoleField.buffer );
 		win_consoleField.scroll = 0;
 
 		// handle enter key
 		if ( wParam == 13 ) {
-			strncat( s_wcd.consoleText, win_consoleField.buffer, sizeof( s_wcd.consoleText ) - strlen( s_wcd.consoleText ) - 5 );
+			strncat( s_wcd.consoleText, win_consoleField.buffer, sizeof( s_wcd.consoleText ) - String::Length( s_wcd.consoleText ) - 5 );
 			strcat( s_wcd.consoleText, "\n" );
 			SetWindowText( s_wcd.hwndInputLine, "" );
 
@@ -565,7 +565,7 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 				#endif
 
 			SetWindowText( s_wcd.hwndInputLine, win_consoleField.buffer );
-			win_consoleField.widthInChars = strlen( win_consoleField.buffer );
+			win_consoleField.widthInChars = String::Length( win_consoleField.buffer );
 			SendMessage( s_wcd.hwndInputLine, EM_SETSEL, win_consoleField.cursor, win_consoleField.cursor );
 
 			return 0;
@@ -798,8 +798,8 @@ void Conbuf_AppendText( const char *pMsg ) {
 	//
 	// if the message is REALLY long, use just the last portion of it
 	//
-	if ( strlen( pMsg ) > CONSOLE_BUFFER_SIZE - 1 ) {
-		msg = pMsg + strlen( pMsg ) - CONSOLE_BUFFER_SIZE + 1;
+	if ( String::Length( pMsg ) > CONSOLE_BUFFER_SIZE - 1 ) {
+		msg = pMsg + String::Length( pMsg ) - CONSOLE_BUFFER_SIZE + 1;
 	} else
 	{
 		msg = pMsg;

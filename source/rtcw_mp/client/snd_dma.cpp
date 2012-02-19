@@ -410,7 +410,7 @@ static sfx_t *S_FindName( const char *name ) {
 		name = "*default*";
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Error( ERR_FATAL, "Sound name too long: %s", name );
 	}
 
@@ -526,7 +526,7 @@ sfxHandle_t S_RegisterSound( const char *name, qboolean compressed ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_DPrintf( "Sound name exceeds MAX_QPATH\n" );
 		return 0;
 	}

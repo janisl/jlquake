@@ -533,7 +533,7 @@ void Cvar_Set_f( void ) {
 	combined[0] = 0;
 	l = 0;
 	for ( i = 2 ; i < c ; i++ ) {
-		len = strlen( Cmd_Argv( i ) + 1 );
+		len = String::Length( Cmd_Argv( i ) + 1 );
 		if ( l + len >= MAX_STRING_TOKENS - 2 ) {
 			break;
 		}
@@ -869,10 +869,10 @@ void    Cvar_Update( vmCvar_t *vmCvar ) {
 	}
 	vmCvar->modificationCount = cv->modificationCount;
 	// bk001129 - mismatches.
-	if ( strlen( cv->string ) + 1 > MAX_CVAR_VALUE_STRING ) {
+	if ( String::Length( cv->string ) + 1 > MAX_CVAR_VALUE_STRING ) {
 		Com_Error( ERR_DROP, "Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
 				   cv->string,
-				   strlen( cv->string ),
+				   String::Length( cv->string ),
 				   sizeof( vmCvar->string ) );
 	}
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0

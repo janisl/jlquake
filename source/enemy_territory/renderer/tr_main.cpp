@@ -1839,7 +1839,7 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 	qglRasterPos3fv( org );
 	qglPushAttrib( GL_LIST_BIT );
 	qglListBase( gl_NormalFontBase );
-	qglCallLists( strlen( text ), GL_UNSIGNED_BYTE, text );
+	qglCallLists( String::Length( text ), GL_UNSIGNED_BYTE, text );
 	qglListBase( 0 );
 	qglPopAttrib();
 

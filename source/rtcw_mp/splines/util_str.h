@@ -178,7 +178,7 @@ inline idStr::idStr
 	assert( text );
 
 	if ( text ) {
-		len = strlen( text );
+		len = String::Length( text );
 		EnsureAlloced( len + 1 );
 		strcpy( m_data->data, text );
 		m_data->len = len;
@@ -250,7 +250,7 @@ inline idStr::idStr
 	int len;
 
 	sprintf( text, "%.3f", num );
-	len = strlen( text );
+	len = String::Length( text );
 	EnsureAlloced( len + 1 );
 	strcpy( m_data->data, text );
 	m_data->len = len;
@@ -264,7 +264,7 @@ inline idStr::idStr
 	int len;
 
 	sprintf( text, "%d", num );
-	len = strlen( text );
+	len = String::Length( text );
 	EnsureAlloced( len + 1 );
 	strcpy( m_data->data, text );
 	m_data->len = len;
@@ -278,7 +278,7 @@ inline idStr::idStr
 	int len;
 
 	sprintf( text, "%u", num );
-	len = strlen( text );
+	len = String::Length( text );
 	EnsureAlloced( len + 1 );
 	strcpy( m_data->data, text );
 	m_data->len = len;
@@ -307,7 +307,7 @@ inline void idStr::append
 	assert( text );
 
 	if ( text ) {
-		len = length() + strlen( text );
+		len = length() + String::Length( text );
 		EnsureAlloced( len + 1 );
 
 		strcat( m_data->data, text );
@@ -403,7 +403,7 @@ inline void idStr::operator=
 	}
 
 	if ( !m_data ) {
-		len = strlen( text );
+		len = String::Length( text );
 		EnsureAlloced( len + 1, false );
 		strcpy( m_data->data, text );
 		m_data->len = len;
@@ -426,7 +426,7 @@ inline void idStr::operator=
 		int diff = text - m_data->data;
 		int i;
 
-		assert( strlen( text ) < (unsigned) m_data->len );
+		assert( String::Length( text ) < (unsigned) m_data->len );
 
 		for ( i = 0; text[i]; i++ )
 		{
@@ -440,7 +440,7 @@ inline void idStr::operator=
 		return;
 	}
 
-	len = strlen( text );
+	len = String::Length( text );
 	EnsureAlloced( len + 1, false );
 	strcpy( m_data->data, text );
 	m_data->len = len;

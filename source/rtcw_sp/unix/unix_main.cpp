@@ -432,7 +432,7 @@ void Sys_ConsoleInputInit() {
 				  characters  EOF,  EOL,  EOL2, ERASE, KILL, REPRINT,
 				  STATUS, and WERASE, and buffers by lines.
 		 ISIG: when any of the characters  INTR,  QUIT,  SUSP,  or
-				  DSUSP are received, generate the corresponding sig­
+				  DSUSP are received, generate the corresponding sigï¿½
 				  nal
 		*/
 		tc.c_lflag &= ~( ECHO | ICANON );
@@ -489,7 +489,7 @@ char *Sys_ConsoleInput( void ) {
 					// Field_CompleteCommand does weird things to the string, do a cleanup
 					//   it adds a '\' at the beginning of the string
 					//   cursor doesn't reflect actual length of the string that's sent back
-					tty_con.cursor = strlen( tty_con.buffer );
+					tty_con.cursor = String::Length( tty_con.buffer );
 					if ( tty_con.cursor > 0 ) {
 						if ( tty_con.buffer[0] == '\\' ) {
 							for ( i = 0; i <= tty_con.cursor; i++ )
@@ -696,7 +696,7 @@ void *Sys_LoadDll( const char *name,
 			if ( !libHandle ) {
 				Com_Printf( "failed (%s)\n", dlerror() );
 
-				if ( strlen( gamedir ) && Q_stricmp( gamedir, BASEGAME ) ) { // begin BASEGAME != fs_game section
+				if ( String::Length( gamedir ) && Q_stricmp( gamedir, BASEGAME ) ) { // begin BASEGAME != fs_game section
 
 					// media-only mods: no DLL whatsoever in the fs_game
 					// start the loop again using the hardcoded BASEDIRNAME
@@ -1063,7 +1063,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		char  *b;
 		int len;
 
-		len = strlen( s ) + 1;
+		len = String::Length( s ) + 1;
 		b = (char*)Z_Malloc( len );
 		strcpy( b, s );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
@@ -1302,7 +1302,7 @@ int main( int argc, char* argv[] ) {
 
 	// merge the command line, this is kinda silly
 	for ( len = 1, i = 1; i < argc; i++ )
-		len += strlen( argv[i] ) + 1;
+		len += String::Length( argv[i] ) + 1;
 	cmdline = (char*)malloc( len );
 	*cmdline = 0;
 	for ( i = 1; i < argc; i++ )

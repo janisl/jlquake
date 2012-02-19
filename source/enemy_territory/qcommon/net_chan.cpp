@@ -469,11 +469,11 @@ qboolean    NET_IsLocalAddress( netadr_t adr ) {
 	return adr.type == NA_LOOPBACK;
 }
 
-// rain - replaces old strlen(s) == 21 && s[8] == '.' checking in
+// rain - replaces old String::Length(s) == 21 && s[8] == '.' checking in
 // Sys_StringToSockaddr
 // ffffffff.ffffffffffff:65535
 qboolean NET_IsIPXAddress( const char *buf ) {
-	int x, len = strlen( buf );
+	int x, len = String::Length( buf );
 
 	if ( len < 21 ) {
 		return qfalse;
@@ -745,7 +745,7 @@ void QDECL NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, 
 	va_end( argptr );
 
 	// send the datagram
-	NET_SendPacket( sock, strlen( string ), string, adr );
+	NET_SendPacket( sock, String::Length( string ), string, adr );
 }
 
 

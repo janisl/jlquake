@@ -2712,7 +2712,7 @@ way to ask for different implicit lighting modes (vertex, lightmap, etc)
 qhandle_t RE_RegisterShaderLightMap( const char *name, int lightmapIndex ) {
 	shader_t    *sh;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -2746,7 +2746,7 @@ way to ask for different implicit lighting modes (vertex, lightmap, etc)
 qhandle_t RE_RegisterShader( const char *name ) {
 	shader_t    *sh;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -2776,7 +2776,7 @@ For menu graphics that should never be picmiped
 qhandle_t RE_RegisterShaderNoMip( const char *name ) {
 	shader_t    *sh;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -2995,7 +2995,7 @@ static void ScanAndLoadShaderFiles( void ) {
 	// free in reverse order, so the temp files are all dumped
 	for ( i = numShaders - 1; i >= 0 ; i-- ) {
 		strcat( s_shaderText, "\n" );
-		p = &s_shaderText[strlen( s_shaderText )];
+		p = &s_shaderText[String::Length( s_shaderText )];
 		strcat( s_shaderText, buffers[i] );
 		ri.FS_FreeFile( buffers[i] );
 		buffers[i] = p;

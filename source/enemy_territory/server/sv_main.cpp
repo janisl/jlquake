@@ -187,7 +187,7 @@ void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) {
 
 	// do not forward server command messages that would be too big to clients
 	// ( q3infoboom / q3msgboom stuff )
-	if ( strlen( (char *)message ) > 1022 ) {
+	if ( String::Length( (char *)message ) > 1022 ) {
 		return;
 	}
 
@@ -393,7 +393,7 @@ qboolean SV_VerifyChallenge( char *challenge ) {
 		return qfalse;
 	}
 
-	j = strlen( challenge );
+	j = String::Length( challenge );
 	if ( j > 64 ) {
 		return qfalse;
 	}
@@ -465,7 +465,7 @@ void SVC_Status( netadr_t from ) {
 			ps = SV_GameClientNum( i );
 			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
 						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
-			playerLength = strlen( player );
+			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more
 			}
@@ -529,7 +529,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 			ps = SV_GameClientNum( i );
 			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
 						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
-			playerLength = strlen( player );
+			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more
 			}
@@ -671,7 +671,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 	}
 	lasttime = time;
 
-	if ( !strlen( sv_rconPassword->string ) ||
+	if ( !String::Length( sv_rconPassword->string ) ||
 		 strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
 		valid = qfalse;
 		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
@@ -690,7 +690,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 	//     (also a Q3 issue)
 	Com_BeginRedirect( sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect );
 
-	if ( !strlen( sv_rconPassword->string ) ) {
+	if ( !String::Length( sv_rconPassword->string ) ) {
 		Com_Printf( "No rconpassword set on the server.\n" );
 	} else if ( !valid ) {
 		Com_Printf( "Bad rconpassword.\n" );

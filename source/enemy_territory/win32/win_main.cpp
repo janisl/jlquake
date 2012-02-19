@@ -262,7 +262,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		return;
 	}
 
-	if ( strlen( subdirs ) ) {
+	if ( String::Length( subdirs ) ) {
 		Com_sprintf( search, sizeof( search ), "%s\\%s\\*", basedir, subdirs );
 	} else {
 		Com_sprintf( search, sizeof( search ), "%s\\*", basedir );
@@ -276,7 +276,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 	do {
 		if ( findinfo.attrib & _A_SUBDIR ) {
 			if ( Q_stricmp( findinfo.name, "." ) && Q_stricmp( findinfo.name, ".." ) ) {
-				if ( strlen( subdirs ) ) {
+				if ( String::Length( subdirs ) ) {
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s\\%s", subdirs, findinfo.name );
 				} else {
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s", findinfo.name );
@@ -301,8 +301,8 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 static qboolean strgtr( const char *s0, const char *s1 ) {
 	int l0, l1, i;
 
-	l0 = strlen( s0 );
-	l1 = strlen( s1 );
+	l0 = String::Length( s0 );
+	l1 = String::Length( s1 );
 
 	if ( l1 < l0 ) {
 		l0 = l1;
@@ -1044,7 +1044,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		char    *b;
 		int len;
 
-		len = strlen( s ) + 1;
+		len = String::Length( s ) + 1;
 		b = (char*)Z_Malloc( len );
 		Q_strncpyz( b, s, len - 1 );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );

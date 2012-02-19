@@ -438,7 +438,7 @@ void BotRemoveTildes( char *message ) {
 	for ( i = 0; message[i]; i++ )
 	{
 		if ( message[i] == '~' ) {
-			memmove( &message[i], &message[i + 1], strlen( &message[i + 1] ) + 1 );
+			memmove( &message[i], &message[i + 1], String::Length( &message[i + 1] ) + 1 );
 		} //end if
 	} //end for
 } //end of the function BotRemoveTildes
@@ -462,7 +462,7 @@ void UnifyWhiteSpaces( char *string ) {
 			}
 			//remove all other white spaces
 			if ( ptr > oldptr ) {
-				memmove( oldptr, ptr, strlen( ptr ) + 1 );
+				memmove( oldptr, ptr, String::Length( ptr ) + 1 );
 			}
 		} //end if
 		while ( *ptr && !IsWhiteSpace( *ptr ) ) ptr++;
@@ -481,7 +481,7 @@ int StringContains( char *str1, char *str2, int casesensitive ) {
 		return -1;
 	}
 
-	len = strlen( str1 ) - strlen( str2 );
+	len = String::Length( str1 ) - String::Length( str2 );
 	index = 0;
 	for ( i = 0; i <= len; i++, str1++, index++ )
 	{
@@ -514,7 +514,7 @@ int StringContains( char *str1, char *str2, int casesensitive ) {
 char *StringContainsWord( char *str1, char *str2, int casesensitive ) {
 	int len, i, j;
 
-	len = strlen( str1 ) - strlen( str2 );
+	len = String::Length( str1 ) - String::Length( str2 );
 	for ( i = 0; i <= len; i++, str1++ )
 	{
 		//if not at the start of the string
@@ -570,18 +570,18 @@ void StringReplaceWords( char *string, char *synonym, char *replacement ) {
 		str2 = StringContainsWord( string, replacement, qfalse );
 		while ( str2 )
 		{
-			if ( str2 <= str && str < str2 + strlen( replacement ) ) {
+			if ( str2 <= str && str < str2 + String::Length( replacement ) ) {
 				break;
 			}
 			str2 = StringContainsWord( str2 + 1, replacement, qfalse );
 		} //end while
 		if ( !str2 ) {
-			memmove( str + strlen( replacement ), str + strlen( synonym ), strlen( str + strlen( synonym ) ) + 1 );
+			memmove( str + String::Length( replacement ), str + String::Length( synonym ), String::Length( str + String::Length( synonym ) ) + 1 );
 			//append the synonum replacement
-			memcpy( str, replacement, strlen( replacement ) );
+			memcpy( str, replacement, String::Length( replacement ) );
 		} //end if
 		  //find the next synonym in the string
-		str = StringContainsWord( str + strlen( replacement ), synonym, qfalse );
+		str = StringContainsWord( str + String::Length( replacement ), synonym, qfalse );
 	} //end if
 } //end of the function StringReplaceWords
 //===========================================================================
@@ -699,17 +699,17 @@ bot_synonymlist_t *BotLoadSynonyms( char *filename ) {
 							return NULL;
 						} //end if
 						StripDoubleQuotes( token.string );
-						if ( strlen( token.string ) <= 0 ) {
+						if ( String::Length( token.string ) <= 0 ) {
 							SourceError( source, "empty string", token.string );
 							FreeSource( source );
 							return NULL;
 						} //end if
-						size += sizeof( bot_synonym_t ) + strlen( token.string ) + 1;
+						size += sizeof( bot_synonym_t ) + String::Length( token.string ) + 1;
 						if ( pass ) {
 							synonym = (bot_synonym_t *) ptr;
 							ptr += sizeof( bot_synonym_t );
 							synonym->string = ptr;
-							ptr += strlen( token.string ) + 1;
+							ptr += String::Length( token.string ) + 1;
 							strcpy( synonym->string, token.string );
 							//
 							if ( lastsynonym ) {
@@ -868,10 +868,10 @@ void BotReplaceReplySynonyms( char *string, unsigned long int context ) {
 					continue;
 				}
 				//
-				memmove( str1 + strlen( replacement ), str1 + strlen( synonym->string ),
-						 strlen( str1 + strlen( synonym->string ) ) + 1 );
+				memmove( str1 + String::Length( replacement ), str1 + String::Length( synonym->string ),
+						 String::Length( str1 + String::Length( synonym->string ) ) + 1 );
 				//append the synonum replacement
-				memcpy( str1, replacement, strlen( replacement ) );
+				memcpy( str1, replacement, String::Length( replacement ) );
 				//
 				break;
 			} //end for
@@ -908,7 +908,7 @@ int BotLoadChatMessage( source_t *source, char *chatmessagestring ) {
 		//fixed string
 		if ( token.type == TT_STRING ) {
 			StripDoubleQuotes( token.string );
-			if ( strlen( ptr ) + strlen( token.string ) + 1 > MAX_MESSAGE_SIZE ) {
+			if ( String::Length( ptr ) + String::Length( token.string ) + 1 > MAX_MESSAGE_SIZE ) {
 				SourceError( source, "chat message too long\n" );
 				return qfalse;
 			} //end if
@@ -916,19 +916,19 @@ int BotLoadChatMessage( source_t *source, char *chatmessagestring ) {
 		} //end else if
 		  //variable string
 		else if ( token.type == TT_NUMBER && ( token.subtype & TT_INTEGER ) ) {
-			if ( strlen( ptr ) + 7 > MAX_MESSAGE_SIZE ) {
+			if ( String::Length( ptr ) + 7 > MAX_MESSAGE_SIZE ) {
 				SourceError( source, "chat message too long\n" );
 				return qfalse;
 			} //end if
-			sprintf( &ptr[strlen( ptr )], "%cv%d%c", ESCAPE_CHAR, (int)token.intvalue, ESCAPE_CHAR );
+			sprintf( &ptr[String::Length( ptr )], "%cv%d%c", ESCAPE_CHAR, (int)token.intvalue, ESCAPE_CHAR );
 		} //end if
 		  //random string
 		else if ( token.type == TT_NAME ) {
-			if ( strlen( ptr ) + 7 > MAX_MESSAGE_SIZE ) {
+			if ( String::Length( ptr ) + 7 > MAX_MESSAGE_SIZE ) {
 				SourceError( source, "chat message too long\n" );
 				return qfalse;
 			} //end if
-			sprintf( &ptr[strlen( ptr )], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR );
+			sprintf( &ptr[String::Length( ptr )], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR );
 		} //end else if
 		else
 		{
@@ -1017,12 +1017,12 @@ bot_randomlist_t *BotLoadRandomStrings( char *filename ) {
 				FreeSource( source );
 				return NULL;
 			} //end if
-			size += sizeof( bot_randomlist_t ) + strlen( token.string ) + 1;
+			size += sizeof( bot_randomlist_t ) + String::Length( token.string ) + 1;
 			if ( pass ) {
 				random = (bot_randomlist_t *) ptr;
 				ptr += sizeof( bot_randomlist_t );
 				random->string = ptr;
-				ptr += strlen( token.string ) + 1;
+				ptr += String::Length( token.string ) + 1;
 				strcpy( random->string, token.string );
 				random->firstrandomstring = NULL;
 				random->numstrings = 0;
@@ -1043,12 +1043,12 @@ bot_randomlist_t *BotLoadRandomStrings( char *filename ) {
 					FreeSource( source );
 					return NULL;
 				} //end if
-				size += sizeof( bot_randomstring_t ) + strlen( chatmessagestring ) + 1;
+				size += sizeof( bot_randomstring_t ) + String::Length( chatmessagestring ) + 1;
 				if ( pass ) {
 					randomstring = (bot_randomstring_t *) ptr;
 					ptr += sizeof( bot_randomstring_t );
 					randomstring->string = ptr;
-					ptr += strlen( chatmessagestring ) + 1;
+					ptr += String::Length( chatmessagestring ) + 1;
 					strcpy( randomstring->string, chatmessagestring );
 					//
 					random->numstrings++;
@@ -1228,10 +1228,10 @@ bot_matchpiece_t *BotLoadMatchPieces( source_t *source, char *endtoken ) {
 					} //end if
 				} //end if
 				StripDoubleQuotes( token.string );
-				matchstring = (bot_matchstring_t *) GetClearedHunkMemory( sizeof( bot_matchstring_t ) + strlen( token.string ) + 1 );
+				matchstring = (bot_matchstring_t *) GetClearedHunkMemory( sizeof( bot_matchstring_t ) + String::Length( token.string ) + 1 );
 				matchstring->string = (char *) matchstring + sizeof( bot_matchstring_t );
 				strcpy( matchstring->string, token.string );
-				if ( !strlen( token.string ) ) {
+				if ( !String::Length( token.string ) ) {
 					emptystring = qtrue;
 				}
 				matchstring->next = NULL;
@@ -1397,7 +1397,7 @@ int StringsMatch( bot_matchpiece_t *pieces, bot_match_t *match ) {
 			newstrptr = NULL;
 			for ( ms = mp->firststring; ms; ms = ms->next )
 			{
-				if ( !strlen( ms->string ) ) {
+				if ( !String::Length( ms->string ) ) {
 					newstrptr = strptr;
 					break;
 				} //end if
@@ -1420,7 +1420,7 @@ int StringsMatch( bot_matchpiece_t *pieces, bot_match_t *match ) {
 			if ( !newstrptr ) {
 				return qfalse;
 			}
-			strptr = newstrptr + strlen( ms->string );
+			strptr = newstrptr + String::Length( ms->string );
 		} //end if
 		  //if it is a variable piece of string
 		else if ( mp->type == MT_VARIABLE ) {
@@ -1430,10 +1430,10 @@ int StringsMatch( bot_matchpiece_t *pieces, bot_match_t *match ) {
 		} //end else if
 	} //end for
 	  //if a match was found
-	if ( !mp && ( lastvariable >= 0 || !strlen( strptr ) ) ) {
+	if ( !mp && ( lastvariable >= 0 || !String::Length( strptr ) ) ) {
 		//if the last piece was a variable string
 		if ( lastvariable >= 0 ) {
-			match->variables[lastvariable].length = strlen( match->variables[lastvariable].ptr );
+			match->variables[lastvariable].length = String::Length( match->variables[lastvariable].ptr );
 		} //end if
 		return qtrue;
 	} //end if
@@ -1451,10 +1451,10 @@ int BotFindMatch( char *str, bot_match_t *match, unsigned long int context ) {
 
 	String::NCpy( match->string, str, MAX_MESSAGE_SIZE );
 	//remove any trailing enters
-	while ( strlen( match->string ) &&
-			match->string[strlen( match->string ) - 1] == '\n' )
+	while ( String::Length( match->string ) &&
+			match->string[String::Length( match->string ) - 1] == '\n' )
 	{
-		match->string[strlen( match->string ) - 1] = '\0';
+		match->string[String::Length( match->string ) - 1] = '\0';
 	} //end while
 	  //compare the string with all the match strings
 	for ( ms = matchtemplates; ms; ms = ms->next )
@@ -1564,7 +1564,7 @@ bot_stringlist_t *BotCheckChatMessageIntegrety( char *message, bot_stringlist_t 
 				if ( !RandomString( temp ) ) {
 					if ( !BotFindStringInList( stringlist, temp ) ) {
 						Log_Write( "%s = {\"%s\"} //MISSING RANDOM\r\n", temp, temp );
-						s = (bot_stringlist_t*)GetClearedMemory( sizeof( bot_stringlist_t ) + strlen( temp ) + 1 );
+						s = (bot_stringlist_t*)GetClearedMemory( sizeof( bot_stringlist_t ) + String::Length( temp ) + 1 );
 						s->string = (char *) s + sizeof( bot_stringlist_t );
 						strcpy( s->string, temp );
 						s->next = stringlist;
@@ -1815,7 +1815,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 						return NULL;
 					} //end if
 					StripDoubleQuotes( token.string );
-					if ( strlen( namebuffer ) ) {
+					if ( String::Length( namebuffer ) ) {
 						strcat( namebuffer, "\\" );
 					}
 					strcat( namebuffer, token.string );
@@ -1825,7 +1825,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 					FreeSource( source );
 					return NULL;
 				} //end if
-				key->string = (char *) GetClearedHunkMemory( strlen( namebuffer ) + 1 );
+				key->string = (char *) GetClearedHunkMemory( String::Length( namebuffer ) + 1 );
 				strcpy( key->string, namebuffer );
 			} //end else if
 			else //normal string key
@@ -1837,7 +1837,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 					return NULL;
 				} //end if
 				StripDoubleQuotes( token.string );
-				key->string = (char *) GetClearedHunkMemory( strlen( token.string ) + 1 );
+				key->string = (char *) GetClearedHunkMemory( String::Length( token.string ) + 1 );
 				strcpy( key->string, token.string );
 			} //end else
 			  //
@@ -1866,7 +1866,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 				FreeSource( source );
 				return NULL;
 			} //end if
-			chatmessage = (bot_chatmessage_t *) GetClearedHunkMemory( sizeof( bot_chatmessage_t ) + strlen( chatmessagestring ) + 1 );
+			chatmessage = (bot_chatmessage_t *) GetClearedHunkMemory( sizeof( bot_chatmessage_t ) + String::Length( chatmessagestring ) + 1 );
 			chatmessage->chatmessage = (char *) chatmessage + sizeof( bot_chatmessage_t );
 			strcpy( chatmessage->chatmessage, chatmessagestring );
 			chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
@@ -2023,11 +2023,11 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 								ptr += sizeof( bot_chatmessage_t );
 								chatmessage->chatmessage = ptr;
 								strcpy( chatmessage->chatmessage, chatmessagestring );
-								ptr += strlen( chatmessagestring ) + 1;
+								ptr += String::Length( chatmessagestring ) + 1;
 								//the number of chat messages increased
 								chattype->numchatmessages++;
 							} //end if
-							size += sizeof( bot_chatmessage_t ) + strlen( chatmessagestring ) + 1;
+							size += sizeof( bot_chatmessage_t ) + String::Length( chatmessagestring ) + 1;
 						} //end if
 					} //end while
 				} //end if
@@ -2207,12 +2207,12 @@ int BotExpandChatMessage( char *outmessage, char *message, unsigned long mcontex
 						BotReplaceSynonyms( temp, vcontext );
 					}     //end else
 						  //
-					if ( len + strlen( temp ) >= MAX_MESSAGE_SIZE ) {
+					if ( len + String::Length( temp ) >= MAX_MESSAGE_SIZE ) {
 						botimport.Print( PRT_ERROR, "BotConstructChat: message %s too long\n", message );
 						return qfalse;
 					}     //end if
 					strcpy( &outputbuf[len], temp );
-					len += strlen( temp );
+					len += String::Length( temp );
 				}     //end if
 				break;
 			}     //end case
@@ -2234,12 +2234,12 @@ int BotExpandChatMessage( char *outmessage, char *message, unsigned long mcontex
 					botimport.Print( PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp );
 					return qfalse;
 				}     //end if
-				if ( len + strlen( ptr ) >= MAX_MESSAGE_SIZE ) {
+				if ( len + String::Length( ptr ) >= MAX_MESSAGE_SIZE ) {
 					botimport.Print( PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message );
 					return qfalse;
 				}     //end if
 				strcpy( &outputbuf[len], ptr );
-				len += strlen( ptr );
+				len += String::Length( ptr );
 				expansion = qtrue;
 				break;
 			}     //end case
@@ -2408,35 +2408,35 @@ void BotInitialChat( int chatstate, char *type, int mcontext, char *var0, char *
 	memset( variables, 0, sizeof( variables ) );
 	if ( var0 ) {
 		variables[0].ptr = var0;
-		variables[0].length = strlen( var0 );
+		variables[0].length = String::Length( var0 );
 	}
 	if ( var1 ) {
 		variables[1].ptr = var1;
-		variables[1].length = strlen( var1 );
+		variables[1].length = String::Length( var1 );
 	}
 	if ( var2 ) {
 		variables[2].ptr = var2;
-		variables[2].length = strlen( var2 );
+		variables[2].length = String::Length( var2 );
 	}
 	if ( var3 ) {
 		variables[3].ptr = var3;
-		variables[3].length = strlen( var3 );
+		variables[3].length = String::Length( var3 );
 	}
 	if ( var4 ) {
 		variables[4].ptr = var4;
-		variables[4].length = strlen( var4 );
+		variables[4].length = String::Length( var4 );
 	}
 	if ( var5 ) {
 		variables[5].ptr = var5;
-		variables[5].length = strlen( var5 );
+		variables[5].length = String::Length( var5 );
 	}
 	if ( var6 ) {
 		variables[6].ptr = var6;
-		variables[6].length = strlen( var6 );
+		variables[6].length = String::Length( var6 );
 	}
 	if ( var7 ) {
 		variables[7].ptr = var7;
-		variables[7].length = strlen( var7 );
+		variables[7].length = String::Length( var7 );
 	}
 	//
 	BotConstructChatMessage( cs, message, mcontext, variables, 0, qfalse );
@@ -2590,35 +2590,35 @@ int BotReplyChat( int chatstate, char *message, int mcontext, int vcontext, char
 	if ( bestchatmessage ) {
 		if ( var0 ) {
 			bestmatch.variables[0].ptr = var0;
-			bestmatch.variables[0].length = strlen( var0 );
+			bestmatch.variables[0].length = String::Length( var0 );
 		}
 		if ( var1 ) {
 			bestmatch.variables[1].ptr = var1;
-			bestmatch.variables[1].length = strlen( var1 );
+			bestmatch.variables[1].length = String::Length( var1 );
 		}
 		if ( var2 ) {
 			bestmatch.variables[2].ptr = var2;
-			bestmatch.variables[2].length = strlen( var2 );
+			bestmatch.variables[2].length = String::Length( var2 );
 		}
 		if ( var3 ) {
 			bestmatch.variables[3].ptr = var3;
-			bestmatch.variables[3].length = strlen( var3 );
+			bestmatch.variables[3].length = String::Length( var3 );
 		}
 		if ( var4 ) {
 			bestmatch.variables[4].ptr = var4;
-			bestmatch.variables[4].length = strlen( var4 );
+			bestmatch.variables[4].length = String::Length( var4 );
 		}
 		if ( var5 ) {
 			bestmatch.variables[5].ptr = var5;
-			bestmatch.variables[5].length = strlen( var5 );
+			bestmatch.variables[5].length = String::Length( var5 );
 		}
 		if ( var6 ) {
 			bestmatch.variables[6].ptr = var6;
-			bestmatch.variables[6].length = strlen( var6 );
+			bestmatch.variables[6].length = String::Length( var6 );
 		}
 		if ( var7 ) {
 			bestmatch.variables[7].ptr = var7;
-			bestmatch.variables[7].length = strlen( var7 );
+			bestmatch.variables[7].length = String::Length( var7 );
 		}
 		if ( LibVarGetValue( "bot_testrchat" ) ) {
 			for ( m = bestrchat->firstchatmessage; m; m = m->next )
@@ -2650,7 +2650,7 @@ int BotChatLength( int chatstate ) {
 	if ( !cs ) {
 		return 0;
 	}
-	return strlen( cs->chatmessage );
+	return String::Length( cs->chatmessage );
 } //end of the function BotChatLength
 //===========================================================================
 //
@@ -2666,7 +2666,7 @@ void BotEnterChat( int chatstate, int client, int sendto ) {
 		return;
 	}
 
-	if ( strlen( cs->chatmessage ) ) {
+	if ( String::Length( cs->chatmessage ) ) {
 		BotRemoveTildes( cs->chatmessage );
 		if ( LibVarGetValue( "bot_testichat" ) ) {
 			botimport.Print( PRT_MESSAGE, "%s\n", cs->chatmessage );

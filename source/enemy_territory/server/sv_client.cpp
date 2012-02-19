@@ -889,7 +889,7 @@ when the cvar is set to something, the download server will effectively never us
 ==================
 */
 static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg ) {
-	if ( !sv_wwwFallbackURL->string || strlen( sv_wwwFallbackURL->string ) == 0 ) {
+	if ( !sv_wwwFallbackURL->string || String::Length( sv_wwwFallbackURL->string ) == 0 ) {
 		return qfalse;
 	}
 
@@ -1370,7 +1370,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 		cl->rate = 99999;   // lans should not rate limit
 	} else {
 		val = Info_ValueForKey( cl->userinfo, "rate" );
-		if ( strlen( val ) ) {
+		if ( String::Length( val ) ) {
 			i = atoi( val );
 			cl->rate = i;
 			if ( cl->rate < 1000 ) {
@@ -1383,16 +1383,16 @@ void SV_UserinfoChanged( client_t *cl ) {
 		}
 	}
 	val = Info_ValueForKey( cl->userinfo, "handicap" );
-	if ( strlen( val ) ) {
+	if ( String::Length( val ) ) {
 		i = atoi( val );
-		if ( i <= -100 || i > 100 || strlen( val ) > 4 ) {
+		if ( i <= -100 || i > 100 || String::Length( val ) > 4 ) {
 			Info_SetValueForKey( cl->userinfo, "handicap", "0" );
 		}
 	}
 
 	// snaps command
 	val = Info_ValueForKey( cl->userinfo, "snaps" );
-	if ( strlen( val ) ) {
+	if ( String::Length( val ) ) {
 		i = atoi( val );
 		if ( i < 1 ) {
 			i = 1;
@@ -1422,7 +1422,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	// download prefs of the client
 	val = Info_ValueForKey( cl->userinfo, "cl_wwwDownload" );
 	cl->bDlOK = qfalse;
-	if ( strlen( val ) ) {
+	if ( String::Length( val ) ) {
 		i = atoi( val );
 		if ( i != 0 ) {
 			cl->bDlOK = qtrue;

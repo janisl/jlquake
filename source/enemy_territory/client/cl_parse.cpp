@@ -601,7 +601,7 @@ void CL_ParseGamestate( msg_t *msg ) {
 				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 			}
 			s = MSG_ReadBigString( msg );
-			len = strlen( s );
+			len = String::Length( s );
 
 			if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
 				Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
@@ -701,7 +701,7 @@ void CL_ParseDownload( msg_t *msg ) {
 			}
 			// make downloadTempName an OS path
 			Q_strncpyz( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ), sizeof( cls.downloadTempName ) );
-			cls.downloadTempName[strlen( cls.downloadTempName ) - 1] = '\0';
+			cls.downloadTempName[String::Length( cls.downloadTempName ) - 1] = '\0';
 			if ( !DL_BeginDownload( cls.downloadTempName, cls.downloadName, com_developer->integer ) ) {
 				// setting bWWWDl to false after sending the wwwdl fail doesn't work
 				// not sure why, but I suspect we have to eat all remaining block -1 that the server has sent us

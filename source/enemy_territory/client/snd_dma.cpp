@@ -376,7 +376,7 @@ static sfx_t *S_FindName( const char *name ) {
 		name = "*default*";
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Error( ERR_FATAL, "Sound name too long: %s", name );
 	}
 
@@ -527,7 +527,7 @@ sfxHandle_t S_RegisterSound( const char *name, qboolean compressed ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Sound name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -2065,7 +2065,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime
 		// -1 - queue to play once then return to music
 		// -2 - queue to set as new looping music
 
-		if ( intro && strlen( intro ) ) {
+		if ( intro && String::Length( intro ) ) {
 			strcpy( snd.nextMusicTrack, intro );
 			snd.nextMusicTrackType = fadeupTime;
 			if ( fadeupTime == -2 ) {

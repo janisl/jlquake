@@ -84,7 +84,7 @@ COM_StripFilename
 */
 void COM_StripFilename( char *in, char *out ) {
 	char *end;
-	Q_strncpyz( out, in, strlen( in ) );
+	Q_strncpyz( out, in, String::Length( in ) );
 	end = COM_SkipPath( out );
 	*end = 0;
 }
@@ -102,7 +102,7 @@ void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
 // if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
-	src = path + strlen( path ) - 1;
+	src = path + String::Length( path ) - 1;
 
 	while ( *src != '/' && src != path ) {
 		if ( *src == '.' ) {
@@ -876,7 +876,7 @@ char *Q_strupr( char *s1 ) {
 void Q_strcat( char *dest, int size, const char *src ) {
 	int l1;
 
-	l1 = strlen( dest );
+	l1 = String::Length( dest );
 	if ( l1 >= size ) {
 		Com_Error( ERR_FATAL, "Q_strcat: already overflowed" );
 	}
@@ -1005,7 +1005,7 @@ char    * QDECL va( char *format, ... ) {
 	vsprintf( temp_buffer, format,argptr );
 	va_end( argptr );
 
-	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING ) {
+	if ( ( len = String::Length( temp_buffer ) ) >= MAX_VA_STRING ) {
 		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()\n" );
 	}
 
@@ -1076,7 +1076,7 @@ char *Info_ValueForKey( const char *s, const char *key ) {
 		return "";
 	}
 
-	if ( strlen( s ) >= BIG_INFO_STRING ) {
+	if ( String::Length( s ) >= BIG_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_ValueForKey: oversize infostring" );
 	}
 
@@ -1171,7 +1171,7 @@ void Info_RemoveKey( char *s, const char *key ) {
 	char value[MAX_INFO_VALUE];
 	char    *o;
 
-	if ( strlen( s ) >= MAX_INFO_STRING ) {
+	if ( String::Length( s ) >= MAX_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_RemoveKey: oversize infostring" );
 	}
 
@@ -1229,7 +1229,7 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 	char value[BIG_INFO_VALUE];
 	char    *o;
 
-	if ( strlen( s ) >= BIG_INFO_STRING ) {
+	if ( String::Length( s ) >= BIG_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_RemoveKey_Big: oversize infostring" );
 	}
 
@@ -1307,7 +1307,7 @@ Changes or adds a key/value pair
 void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 	char newi[MAX_INFO_STRING];
 
-	if ( strlen( s ) >= MAX_INFO_STRING ) {
+	if ( String::Length( s ) >= MAX_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring" );
 	}
 
@@ -1327,13 +1327,13 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 	}
 
 	Info_RemoveKey( s, key );
-	if ( !value || !strlen( value ) ) {
+	if ( !value || !String::Length( value ) ) {
 		return;
 	}
 
 	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + strlen( s ) > MAX_INFO_STRING ) {
+	if ( String::Length( newi ) + String::Length( s ) > MAX_INFO_STRING ) {
 		Com_Printf( "Info string length exceeded\n" );
 		return;
 	}
@@ -1351,7 +1351,7 @@ Changes or adds a key/value pair
 void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	char newi[BIG_INFO_STRING];
 
-	if ( strlen( s ) >= BIG_INFO_STRING ) {
+	if ( String::Length( s ) >= BIG_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring" );
 	}
 
@@ -1371,13 +1371,13 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	}
 
 	Info_RemoveKey_Big( s, key );
-	if ( !value || !strlen( value ) ) {
+	if ( !value || !String::Length( value ) ) {
 		return;
 	}
 
 	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + strlen( s ) > BIG_INFO_STRING ) {
+	if ( String::Length( newi ) + String::Length( s ) > BIG_INFO_STRING ) {
 		Com_Printf( "BIG Info string length exceeded\n" );
 		return;
 	}

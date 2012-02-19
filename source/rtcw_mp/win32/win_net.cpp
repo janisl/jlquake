@@ -178,7 +178,7 @@ qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 	memset( sadr, 0, sizeof( *sadr ) );
 
 	// check for an IPX address
-	if ( ( strlen( s ) == 21 ) && ( s[8] == '.' ) ) {
+	if ( ( String::Length( s ) == 21 ) && ( s[8] == '.' ) ) {
 		( (struct sockaddr_ipx *)sadr )->sa_family = AF_IPX;
 		( (struct sockaddr_ipx *)sadr )->sa_socket = 0;
 		copy[2] = 0;
@@ -612,8 +612,8 @@ void NET_OpenSocks( int port ) {
 		int plen;
 
 		// build the request
-		ulen = strlen( net_socksUsername->string );
-		plen = strlen( net_socksPassword->string );
+		ulen = String::Length( net_socksUsername->string );
+		plen = String::Length( net_socksPassword->string );
 
 		buf[0] = 1;     // username/password authentication version
 		buf[1] = ulen;

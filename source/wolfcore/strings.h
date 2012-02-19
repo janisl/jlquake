@@ -327,14 +327,16 @@ public:
 	static String FromChar(int);
 
 	//	Replacements for standard string functions.
-	static int Length(const char* Str);
-	static int Cmp(const char* S1, const char* S2);
+#endif
+	static int Length(const char* str);
+#if 0
+	static int Cmp(const char* s1, const char* s2);
 	static int NCmp(const char* S1, const char* S2, size_t N);
 	static int ICmp(const char* S1, const char* S2);
 	static int NICmp(const char* S1, const char* S2, size_t N);
 	static void Cpy(char* Dst, const char* Src);
 #endif
-	static void NCpy(char* Dst, const char* Src, size_t N);
+	static void NCpy(char* dst, const char* src, size_t count);
 #if 0
 	static void NCpyZ(char* Dest, const char* Src, int DestSize);
 	static void Cat(char* Dest, int Size, const char* Src);

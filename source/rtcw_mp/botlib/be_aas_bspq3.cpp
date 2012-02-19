@@ -422,14 +422,14 @@ void AAS_ParseBSPEntities( void ) {
 				return;
 			} //end if
 			StripDoubleQuotes( token.string );
-			bufsize += strlen( token.string ) + 1;
+			bufsize += String::Length( token.string ) + 1;
 			if ( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) ) {
 				AAS_FreeBSPEntities();
 				FreeScript( script );
 				return;
 			} //end if
 			StripDoubleQuotes( token.string );
-			bufsize += strlen( token.string ) + 1;
+			bufsize += String::Length( token.string ) + 1;
 		} //end while
 		if ( strcmp( token.string, "}" ) ) {
 			ScriptError( script, "missing }\n" );
@@ -466,7 +466,7 @@ void AAS_ParseBSPEntities( void ) {
 			epair->next = ent->epairs;
 			ent->epairs = epair;
 			StripDoubleQuotes( token.string );
-			epair->key = (char *) buftrav; buftrav += ( strlen( token.string ) + 1 );
+			epair->key = (char *) buftrav; buftrav += ( String::Length( token.string ) + 1 );
 			strcpy( epair->key, token.string );
 			if ( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) ) {
 				AAS_FreeBSPEntities();
@@ -474,7 +474,7 @@ void AAS_ParseBSPEntities( void ) {
 				return;
 			} //end if
 			StripDoubleQuotes( token.string );
-			epair->value = (char *) buftrav; buftrav += ( strlen( token.string ) + 1 );
+			epair->value = (char *) buftrav; buftrav += ( String::Length( token.string ) + 1 );
 			strcpy( epair->value, token.string );
 		} //end while
 	} //end while
@@ -516,7 +516,7 @@ void AAS_DumpBSPData( void ) {
 //===========================================================================
 int AAS_LoadBSPFile( void ) {
 	AAS_DumpBSPData();
-	bspworld.entdatasize = strlen( botimport.BSPEntityData() ) + 1;
+	bspworld.entdatasize = String::Length( botimport.BSPEntityData() ) + 1;
 	bspworld.dentdata = (char *) GetClearedHunkMemory( bspworld.entdatasize );
 	memcpy( bspworld.dentdata, botimport.BSPEntityData(), bspworld.entdatasize );
 	AAS_ParseBSPEntities();

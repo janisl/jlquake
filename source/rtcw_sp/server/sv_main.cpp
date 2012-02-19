@@ -112,8 +112,8 @@ int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
 	for ( i = client->reliableSent + 1; i <= client->reliableSequence; i++ ) {
 		index = i & ( MAX_RELIABLE_COMMANDS - 1 );
 		//
-		//if ( !Q_strncmp(cmd, client->reliableCommands[ index ], strlen("cs")) ) {
-		if ( !Q_strncmp( cmd, SV_GetReliableCommand( client, index ), strlen( "cs" ) ) ) {
+		//if ( !Q_strncmp(cmd, client->reliableCommands[ index ], String::Length("cs")) ) {
+		if ( !Q_strncmp( cmd, SV_GetReliableCommand( client, index ), String::Length( "cs" ) ) ) {
 			sscanf( cmd, "cs %i", &csnum1 );
 			//sscanf(client->reliableCommands[ index ], "cs %i", &csnum2);
 			sscanf( SV_GetReliableCommand( client, index ), "cs %i", &csnum2 );
@@ -366,7 +366,7 @@ void SVC_Status( netadr_t from ) {
 			ps = SV_GameClientNum( i );
 			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
 						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
-			playerLength = strlen( player );
+			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more
 			}
@@ -464,7 +464,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 #define SV_OUTPUTBUF_LENGTH ( MAX_MSGLEN - 16 )
 	char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
-	if ( !strlen( sv_rconPassword->string ) ||
+	if ( !String::Length( sv_rconPassword->string ) ||
 		 strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
 		valid = qfalse;
 		Com_DPrintf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
@@ -477,7 +477,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 	svs.redirectAddress = from;
 	Com_BeginRedirect( sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect );
 
-	if ( !strlen( sv_rconPassword->string ) ) {
+	if ( !String::Length( sv_rconPassword->string ) ) {
 		Com_Printf( "No rconpassword set.\n" );
 	} else if ( !valid ) {
 		Com_Printf( "Bad rconpassword.\n" );

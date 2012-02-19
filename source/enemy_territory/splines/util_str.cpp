@@ -239,7 +239,7 @@ bool idStr::isNumeric
 	}
 
 	dot = false;
-	len = strlen( str );
+	len = String::Length( str );
 	for ( i = 0; i < len; i++ )
 	{
 		if ( !isdigit( str[ i ] ) ) {

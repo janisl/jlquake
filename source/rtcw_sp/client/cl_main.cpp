@@ -182,7 +182,7 @@ void CL_ChangeReliableCommand( void ) {
 
 	r = clc.reliableSequence - ( random() * 5 );
 	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	l = strlen( clc.reliableCommands[ index ] );
+	l = String::Length( clc.reliableCommands[ index ] );
 	if ( l >= MAX_STRING_CHARS - 1 ) {
 		l = MAX_STRING_CHARS - 2;
 	}
@@ -516,7 +516,7 @@ void CL_PlayDemo_f( void ) {
 	// open the demo file
 	arg = Cmd_Argv( 1 );
 	Com_sprintf( extension, sizeof( extension ), ".dm_%d", PROTOCOL_VERSION );
-	if ( !Q_stricmp( arg + strlen( arg ) - strlen( extension ), extension ) ) {
+	if ( !Q_stricmp( arg + String::Length( arg ) - String::Length( extension ), extension ) ) {
 		Com_sprintf( name, sizeof( name ), "demos/%s", arg );
 	} else {
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, PROTOCOL_VERSION );
@@ -898,7 +898,7 @@ void CL_RequestAuthorization( void ) {
 	} else {
 		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 		j = 0;
-		l = strlen( cl_cdkey );
+		l = String::Length( cl_cdkey );
 		if ( l > 32 ) {
 			l = 32;
 		}
@@ -1001,7 +1001,7 @@ CL_Reconnect_f
 ================
 */
 void CL_Reconnect_f( void ) {
-	if ( !strlen( cls.servername ) || !strcmp( cls.servername, "localhost" ) ) {
+	if ( !String::Length( cls.servername ) || !strcmp( cls.servername, "localhost" ) ) {
 		Com_Printf( "Can't reconnect to localhost.\n" );
 		return;
 	}
@@ -1119,7 +1119,7 @@ void CL_Rcon_f( void ) {
 	if ( cls.state >= CA_CONNECTED ) {
 		to = clc.netchan.remoteAddress;
 	} else {
-		if ( !strlen( rconAddress->string ) ) {
+		if ( !String::Length( rconAddress->string ) ) {
 			Com_Printf( "You must either be connected,\n"
 						"or set the 'rconAddress' cvar\n"
 						"to issue rcon commands\n" );
@@ -1132,7 +1132,7 @@ void CL_Rcon_f( void ) {
 		}
 	}
 
-	NET_SendPacket( NS_CLIENT, strlen( message ) + 1, message, to );
+	NET_SendPacket( NS_CLIENT, String::Length( message ) + 1, message, to );
 }
 
 /*
@@ -1235,7 +1235,7 @@ void CL_Vid_Restart_f( void ) {
 	// start music if there was any
 
 	Cvar_Register( &musicCvar, "s_currentMusic", "", CVAR_ROM );
-	if ( strlen( musicCvar.string ) ) {
+	if ( String::Length( musicCvar.string ) ) {
 		S_StartBackgroundTrack( musicCvar.string, musicCvar.string, 1000 );
 	}
 
@@ -1437,7 +1437,7 @@ void CL_NextDownload( void ) {
 		if ( ( s = strchr( s, '@' ) ) != NULL ) {
 			*s++ = 0;
 		} else {
-			s = localName + strlen( localName ); // point at the nul byte
+			s = localName + String::Length( localName ); // point at the nul byte
 
 		}
 		CL_BeginDownload( localName, remoteName );
@@ -1445,7 +1445,7 @@ void CL_NextDownload( void ) {
 		clc.downloadRestart = qtrue;
 
 		// move over the rest
-		memmove( clc.downloadList, s, strlen( s ) + 1 );
+		memmove( clc.downloadList, s, String::Length( s ) + 1 );
 
 		return;
 	}
@@ -2045,7 +2045,7 @@ void CL_Frame( int msec ) {
 //		// if waiting at intermission, don't update sound
 //		char buf[MAX_QPATH];
 //		Cvar_VariableStringBuffer( "g_missionStats", buf, sizeof(buf) );
-//		if (strlen(buf) <= 1 ) {
+//		if (String::Length(buf) <= 1 ) {
 //			// update audio
 	S_Update();
 //		}
@@ -2183,7 +2183,7 @@ static void CL_Cache_EndGather_f( void ) {
 		for ( j = 0; j < MAX_CACHE_ITEMS; j++ ) {
 			// if it's a valid filename, and it's been hit enough times, cache it
 			if ( cacheItems[i][j].hits >= cachePass && strstr( cacheItems[i][j].name, "/" ) ) {
-				FS_Write( cacheItems[i][j].name, strlen( cacheItems[i][j].name ), handle );
+				FS_Write( cacheItems[i][j].name, String::Length( cacheItems[i][j].name ), handle );
 				FS_Write( "\n", 1, handle );
 			}
 		}
@@ -2824,8 +2824,8 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].allowAnonymous = 0;
 
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
-	if ( strlen( info ) ) {
-		if ( info[strlen( info ) - 1] != '\n' ) {
+	if ( String::Length( info ) ) {
+		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
 		}
 		Com_Printf( "%s: %s", NET_AdrToString( from ), info );
@@ -2988,7 +2988,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 		}
 	}
 
-	len = strlen( serverStatus->string );
+	len = String::Length( serverStatus->string );
 	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
 
 	if ( serverStatus->print ) {
@@ -2997,7 +2997,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 	}
 	for ( i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++ ) {
 
-		len = strlen( serverStatus->string );
+		len = String::Length( serverStatus->string );
 		Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\%s", s );
 
 		if ( serverStatus->print ) {
@@ -3015,7 +3015,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 			Com_Printf( "%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
 		}
 	}
-	len = strlen( serverStatus->string );
+	len = String::Length( serverStatus->string );
 	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
 
 	serverStatus->time = Sys_Milliseconds();
@@ -3063,10 +3063,10 @@ void CL_LocalServers_f( void ) {
 			to.port = BigShort( (short)( PORT_SERVER + j ) );
 
 			to.type = NA_BROADCAST;
-			NET_SendPacket( NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( NS_CLIENT, String::Length( message ), message, to );
 
 			to.type = NA_BROADCAST_IPX;
-			NET_SendPacket( NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( NS_CLIENT, String::Length( message ), message, to );
 		}
 	}
 }
@@ -3110,7 +3110,7 @@ void CL_GlobalServers_f( void ) {
 	sprintf( command, "getservers %s", Cmd_Argv( 2 ) );
 
 	// tack on keywords
-	buffptr = command + strlen( command );
+	buffptr = command + String::Length( command );
 	count   = Cmd_Argc();
 	for ( i = 3; i < count; i++ )
 		buffptr += sprintf( buffptr, " %s", Cmd_Argv( i ) );
@@ -3474,12 +3474,12 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 	char chs[3];
 	int i, len;
 
-	len = strlen( key );
+	len = String::Length( key );
 	if ( len != CDKEY_LEN ) {
 		return qfalse;
 	}
 
-	if ( checksum && strlen( checksum ) != CDCHKSUM_LEN ) {
+	if ( checksum && String::Length( checksum ) != CDCHKSUM_LEN ) {
 		return qfalse;
 	}
 

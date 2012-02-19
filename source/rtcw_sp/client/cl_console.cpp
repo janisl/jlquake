@@ -271,7 +271,7 @@ void Con_Dump_f( void ) {
 			}
 		}
 		strcat( buffer, "\n" );
-		FS_Write( buffer, strlen( buffer ), f );
+		FS_Write( buffer, String::Length( buffer ), f );
 	}
 
 	FS_FCloseFile( f );
@@ -666,7 +666,7 @@ void Con_DrawSolidConsole( float frac ) {
 
 	re.SetColor( g_color_table[ColorIndex( COLNSOLE_COLOR )] );
 
-	i = strlen( Q3_VERSION );
+	i = String::Length( Q3_VERSION );
 
 	for ( x = 0 ; x < i ; x++ ) {
 

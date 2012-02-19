@@ -367,7 +367,7 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 //----(SA)	added blink
 			if ( ent->e.renderfx & RF_BLINK ) {
 				char *s = va( "%s_b", surface->name ); // append '_b' for 'blink'
-				hash = Com_HashKey( s, strlen( s ) );
+				hash = Com_HashKey( s, String::Length( s ) );
 				for ( j = 0 ; j < skin->numSurfaces ; j++ ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;

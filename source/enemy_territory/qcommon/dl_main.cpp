@@ -271,7 +271,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 			basic_credentials( dl_request, basic );
 			HTBasic_delete( basic );
 			/* correct the HTTP */
-			url = HT_MALLOC( 7 + strlen( ptr + 1 ) + strlen( path ) + 1 );
+			url = HT_MALLOC( 7 + String::Length( ptr + 1 ) + String::Length( path ) + 1 );
 			sprintf( url, "http://%s%s", ptr + 1, path );
 			Com_DPrintf( "HTTP Basic Auth - %s %s %s\n", login, passwd, url );
 			HT_FREE( login );

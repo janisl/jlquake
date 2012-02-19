@@ -2648,7 +2648,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext ) 
 		return qfalse;
 	}
 
-	if ( shadername && strlen( shadername ) >= MAX_QPATH ) {
+	if ( shadername && String::Length( shadername ) >= MAX_QPATH ) {
 		ri.Printf( PRINT_WARNING, "%s shadername %s exceeds MAX_QPATH\n", func_err, shadername );
 		return qfalse;
 	}
@@ -2694,7 +2694,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext ) 
 	}
 
 	//cant add a new one with empty shadertext
-	if ( !shadertext || !strlen( shadertext ) ) {
+	if ( !shadertext || !String::Length( shadertext ) ) {
 		ri.Printf( PRINT_WARNING, "%s new shader %s has NULL shadertext!\n", func_err, shadername );
 		return qfalse;
 	}
@@ -2707,11 +2707,11 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext ) 
 	if ( lastdptr ) {
 		lastdptr->next = dptr;
 	}
-	dptr->shadertext = (char*)Z_Malloc( strlen( shadertext ) + 1 );
+	dptr->shadertext = (char*)Z_Malloc( String::Length( shadertext ) + 1 );
 	if ( !dptr->shadertext ) {
 		Com_Error( ERR_FATAL, "Couldn't allocate buffer for dynamic shader %s\n", shadername );
 	}
-	Q_strncpyz( dptr->shadertext, shadertext, strlen( shadertext ) + 1 );
+	Q_strncpyz( dptr->shadertext, shadertext, String::Length( shadertext ) + 1 );
 	dptr->next = NULL;
 	if ( !dshader ) {
 		dshader = dptr;
@@ -2756,7 +2756,7 @@ static char *FindShaderInShaderText( const char *shadername ) {
 		dptr = dshader;
 		i = 0;
 		while ( dptr ) {
-			if ( !dptr->shadertext || !strlen( dptr->shadertext ) ) {
+			if ( !dptr->shadertext || !String::Length( dptr->shadertext ) ) {
 				ri.Printf( PRINT_WARNING, "WARNING: dynamic shader %s(%d) has no shadertext\n", shadername, i );
 			} else {
 				q = dptr->shadertext;
@@ -3168,7 +3168,7 @@ way to ask for different implicit lighting modes (vertex, lightmap, etc)
 qhandle_t RE_RegisterShaderLightMap( const char *name, int lightmapIndex ) {
 	shader_t    *sh;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -3202,7 +3202,7 @@ way to ask for different implicit lighting modes (vertex, lightmap, etc)
 qhandle_t RE_RegisterShader( const char *name ) {
 	shader_t    *sh;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -3232,7 +3232,7 @@ For menu graphics that should never be picmiped
 qhandle_t RE_RegisterShaderNoMip( const char *name ) {
 	shader_t    *sh;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -3458,7 +3458,7 @@ static void ScanAndLoadShaderFiles( void ) {
 	// build single large buffer
 	s_shaderText = (char*)ri.Hunk_Alloc( sum + numShaders * 2, h_low );
 
-	// Gordon: optimised to not use strcat/strlen which can be VERY slow for the large strings we're using here
+	// Gordon: optimised to not use strcat/String::Length which can be VERY slow for the large strings we're using here
 	p = s_shaderText;
 	// free in reverse order, so the temp files are all dumped
 	for ( i = numShaders - 1; i >= 0 ; i-- ) {

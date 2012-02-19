@@ -114,7 +114,7 @@ void SV_UpdateConfigStrings( void ) {
 					continue;
 				}
 
-				len = strlen( sv.configstrings[ index ] );
+				len = String::Length( sv.configstrings[ index ] );
 				if ( len >= maxChunkSize ) {
 					int sent = 0;
 					int remaining = len;
@@ -683,7 +683,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 		// load pk3s also loaded at the server
 		p = FS_LoadedPakChecksums();
 		Cvar_Set( "sv_paks", p );
-		if ( strlen( p ) == 0 ) {
+		if ( String::Length( p ) == 0 ) {
 			Com_Printf( "WARNING: sv_pure set but no PK3 files loaded\n" );
 		}
 		p = FS_LoadedPakNames();

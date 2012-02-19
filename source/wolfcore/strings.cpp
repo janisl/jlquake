@@ -723,29 +723,24 @@ String String::FromChar(int C)
 	}
 	return Ret;
 }
+#endif
 
-//==========================================================================
-//
-//	String::Length
-//
-//==========================================================================
-
-int String::Length(const char* S)
+int String::Length(const char* str)
 {
 #if 1
-	return (int)strlen(S);
+	return (int)strlen(str);
 #else
 	//	Quake implementation.
-	int             count;
-	
-	count = 0;
+	int count = 0;
 	while (str[count])
+	{
 		count++;
-
+	}
 	return count;
 #endif
 }
 
+#if 0
 //==========================================================================
 //
 //	String::Cmp

@@ -107,7 +107,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Model name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -199,17 +199,17 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		}
 
 		if ( r_compressModels->integer ) {
-			filename[strlen( filename ) - 1] = '3';  // try MD3 first
+			filename[String::Length( filename ) - 1] = '3';  // try MD3 first
 		} else {
-			filename[strlen( filename ) - 1] = 'c';  // try MDC first
+			filename[String::Length( filename ) - 1] = 'c';  // try MDC first
 		}
 		ri.FS_ReadFile( filename, (void **)&buf );
 
 		if ( !buf ) {
 			if ( r_compressModels->integer ) {
-				filename[strlen( filename ) - 1] = 'c';  // try MDC second
+				filename[String::Length( filename ) - 1] = 'c';  // try MDC second
 			} else {
-				filename[strlen( filename ) - 1] = '3';  // try MD3 second
+				filename[String::Length( filename ) - 1] = '3';  // try MD3 second
 			}
 			ri.FS_ReadFile( filename, (void **)&buf );
 			if ( !buf ) {
@@ -230,7 +230,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 			loaded = R_LoadMD3( mod, lod, buf, name );
 			if ( r_compressModels->integer && r_exportCompressedModels->integer && mod->mdc[lod] ) {
 				// save it out
-				filename[strlen( filename ) - 1] = 'c';
+				filename[String::Length( filename ) - 1] = 'c';
 				ri.FS_WriteFile( filename, mod->mdc[lod], mod->mdc[lod]->ofsEnd );
 				// if building, open the file so it gets copied
 				if ( r_buildScript->integer ) {
@@ -828,7 +828,7 @@ static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		j = strlen( surf->name );
+		j = String::Length( surf->name );
 		if ( j > 2 && surf->name[j - 2] == '_' ) {
 			surf->name[j - 2] = 0;
 		}
@@ -1042,7 +1042,7 @@ static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *mod_
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		j = strlen( surf->name );
+		j = String::Length( surf->name );
 		if ( j > 2 && surf->name[j - 2] == '_' ) {
 			surf->name[j - 2] = 0;
 		}

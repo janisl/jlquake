@@ -188,7 +188,7 @@ void CL_ChangeReliableCommand( void ) {
 	// NOTE TTimo: what is the randomize for?
 	r = clc.reliableSequence - ( random() * 5 );
 	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	l = strlen( clc.reliableCommands[ index ] );
+	l = String::Length( clc.reliableCommands[ index ] );
 	if ( l >= MAX_STRING_CHARS - 1 ) {
 		l = MAX_STRING_CHARS - 2;
 	}
@@ -580,7 +580,7 @@ void CL_PlayDemo_f( void ) {
 	// open the demo file
 	arg = Cmd_Argv( 1 );
 	Com_sprintf( extension, sizeof( extension ), ".dm_%d", PROTOCOL_VERSION );
-	if ( !Q_stricmp( arg + strlen( arg ) - strlen( extension ), extension ) ) {
+	if ( !Q_stricmp( arg + String::Length( arg ) - String::Length( extension ), extension ) ) {
 		Com_sprintf( name, sizeof( name ), "demos/%s", arg );
 	} else {
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, PROTOCOL_VERSION );
@@ -968,7 +968,7 @@ void CL_RequestAuthorization( void ) {
 	} else {
 		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 		j = 0;
-		l = strlen( cl_cdkey );
+		l = String::Length( cl_cdkey );
 		if ( l > 32 ) {
 			l = 32;
 		}
@@ -1072,7 +1072,7 @@ CL_Reconnect_f
 ================
 */
 void CL_Reconnect_f( void ) {
-	if ( !strlen( cls.servername ) || !strcmp( cls.servername, "localhost" ) ) {
+	if ( !String::Length( cls.servername ) || !strcmp( cls.servername, "localhost" ) ) {
 		Com_Printf( "Can't reconnect to localhost.\n" );
 		return;
 	}
@@ -1205,7 +1205,7 @@ void CL_Rcon_f( void ) {
 	if ( cls.state >= CA_CONNECTED ) {
 		to = clc.netchan.remoteAddress;
 	} else {
-		if ( !strlen( rconAddress->string ) ) {
+		if ( !String::Length( rconAddress->string ) ) {
 			Com_Printf( "You must either be connected,\n"
 						"or set the 'rconAddress' cvar\n"
 						"to issue rcon commands\n" );
@@ -1218,7 +1218,7 @@ void CL_Rcon_f( void ) {
 		}
 	}
 
-	NET_SendPacket( NS_CLIENT, strlen( message ) + 1, message, to );
+	NET_SendPacket( NS_CLIENT, String::Length( message ) + 1, message, to );
 }
 
 /*
@@ -1427,7 +1427,7 @@ void CL_DownloadsComplete( void ) {
 	// DHM - Nerve :: Auto-update (not finished yet)
 	if ( autoupdateStarted ) {
 
-		if ( autoupdateFilename && ( strlen( autoupdateFilename ) > 4 ) ) {
+		if ( autoupdateFilename && ( String::Length( autoupdateFilename ) > 4 ) ) {
 #ifdef _WIN32
 			// win32's Sys_StartProcess prepends the current dir
 			fn = va( "%s/%s", FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT ), autoupdateFilename );
@@ -1555,7 +1555,7 @@ void CL_NextDownload( void ) {
 		if ( ( s = strchr( s, '@' ) ) != NULL ) {
 			*s++ = 0;
 		} else {
-			s = localName + strlen( localName ); // point at the nul byte
+			s = localName + String::Length( localName ); // point at the nul byte
 
 		}
 		CL_BeginDownload( localName, remoteName );
@@ -1563,7 +1563,7 @@ void CL_NextDownload( void ) {
 		clc.downloadRestart = qtrue;
 
 		// move over the rest
-		memmove( clc.downloadList, s, strlen( s ) + 1 );
+		memmove( clc.downloadList, s, String::Length( s ) + 1 );
 
 		return;
 	}
@@ -1585,7 +1585,7 @@ void CL_InitDownloads( void ) {
 	char *dir = FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT );
 
 	if ( autoupdateStarted && NET_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
-		if ( strlen( cl_updatefiles->string ) > 4 ) {
+		if ( String::Length( cl_updatefiles->string ) > 4 ) {
 			Q_strncpyz( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
 			Q_strncpyz( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING );
 			cls.state = CA_CONNECTED;
@@ -1672,7 +1672,7 @@ void CL_CheckForResend( void ) {
 
 		data[8] = '\"';           // NERVE - SMF - spaces in name bugfix
 
-		for ( i = 0; i < strlen( info ); i++ ) {
+		for ( i = 0; i < String::Length( info ); i++ ) {
 			data[9 + i] = info[i];    // + (clc.challenge)&0x3;
 		}
 		data[9 + i] = '\"';     // NERVE - SMF - spaces in name bugfix
@@ -2381,7 +2381,7 @@ static void CL_Cache_EndGather_f( void ) {
 		for ( j = 0; j < MAX_CACHE_ITEMS; j++ ) {
 			// if it's a valid filename, and it's been hit enough times, cache it
 			if ( cacheItems[i][j].hits >= cachePass && strstr( cacheItems[i][j].name, "/" ) ) {
-				FS_Write( cacheItems[i][j].name, strlen( cacheItems[i][j].name ), handle );
+				FS_Write( cacheItems[i][j].name, String::Length( cacheItems[i][j].name ), handle );
 				FS_Write( "\n", 1, handle );
 			}
 		}
@@ -2570,7 +2570,7 @@ void CL_GetAutoUpdate( void ) {
 	}
 
 	// Make sure there's a valid update file to request
-	if ( strlen( cl_updatefiles->string ) < 5 ) {
+	if ( String::Length( cl_updatefiles->string ) < 5 ) {
 		return;
 	}
 
@@ -3226,8 +3226,8 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].gameName[0] = '\0';           // Arnout
 
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
-	if ( strlen( info ) ) {
-		if ( info[strlen( info ) - 1] != '\n' ) {
+	if ( String::Length( info ) ) {
+		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
 		}
 		Com_Printf( "%s: %s", NET_AdrToString( from ), info );
@@ -3423,7 +3423,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 		}
 	}
 
-	len = strlen( serverStatus->string );
+	len = String::Length( serverStatus->string );
 	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
 
 	if ( serverStatus->print ) {
@@ -3432,7 +3432,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 	}
 	for ( i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++ ) {
 
-		len = strlen( serverStatus->string );
+		len = String::Length( serverStatus->string );
 		Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\%s", s );
 
 		if ( serverStatus->print ) {
@@ -3450,7 +3450,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 			Com_Printf( "%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
 		}
 	}
-	len = strlen( serverStatus->string );
+	len = String::Length( serverStatus->string );
 	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
 
 	serverStatus->time = Sys_Milliseconds();
@@ -3498,10 +3498,10 @@ void CL_LocalServers_f( void ) {
 			to.port = BigShort( (short)( PORT_SERVER + j ) );
 
 			to.type = NA_BROADCAST;
-			NET_SendPacket( NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( NS_CLIENT, String::Length( message ), message, to );
 
 			to.type = NA_BROADCAST_IPX;
-			NET_SendPacket( NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( NS_CLIENT, String::Length( message ), message, to );
 		}
 	}
 }
@@ -3545,7 +3545,7 @@ void CL_GlobalServers_f( void ) {
 	sprintf( command, "getservers %s", Cmd_Argv( 2 ) );
 
 	// tack on keywords
-	buffptr = command + strlen( command );
+	buffptr = command + String::Length( command );
 	count   = Cmd_Argc();
 	for ( i = 3; i < count; i++ )
 		buffptr += sprintf( buffptr, " %s", Cmd_Argv( i ) );
@@ -3909,12 +3909,12 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 	char chs[3];
 	int i, len;
 
-	len = strlen( key );
+	len = String::Length( key );
 	if ( len != CDKEY_LEN ) {
 		return qfalse;
 	}
 
-	if ( checksum && strlen( checksum ) != CDCHKSUM_LEN ) {
+	if ( checksum && String::Length( checksum ) != CDCHKSUM_LEN ) {
 		return qfalse;
 	}
 
@@ -4160,13 +4160,13 @@ void CL_SaveTransTable( const char *fileName, qboolean newOnly ) {
 	untransnum = 0;
 
 	// write out version, if one
-	if ( strlen( cl.translationVersion ) ) {
+	if ( String::Length( cl.translationVersion ) ) {
 		buf = va( "#version\t\t\"%s\"\n", cl.translationVersion );
 	} else {
 		buf = va( "#version\t\t\"1.0 01/01/01\"\n" );
 	}
 
-	len = strlen( buf );
+	len = String::Length( buf );
 	FS_Write( buf, len, f );
 
 	// write out translated strings
@@ -4184,7 +4184,7 @@ void CL_SaveTransTable( const char *fileName, qboolean newOnly ) {
 			for ( ; t; t = t->next ) {
 				bucketlen++;
 
-				if ( strlen( t->translated[0] ) ) {
+				if ( String::Length( t->translated[0] ) ) {
 					if ( j ) {
 						continue;
 					}
@@ -4197,27 +4197,27 @@ void CL_SaveTransTable( const char *fileName, qboolean newOnly ) {
 				}
 
 				buf = va( "{\n\tenglish\t\t\"%s\"\n", t->original );
-				len = strlen( buf );
+				len = String::Length( buf );
 				FS_Write( buf, len, f );
 
 				buf = va( "\tfrench\t\t\"%s\"\n", t->translated[LANGUAGE_FRENCH] );
-				len = strlen( buf );
+				len = String::Length( buf );
 				FS_Write( buf, len, f );
 
 				buf = va( "\tgerman\t\t\"%s\"\n", t->translated[LANGUAGE_GERMAN] );
-				len = strlen( buf );
+				len = String::Length( buf );
 				FS_Write( buf, len, f );
 
 				buf = va( "\titalian\t\t\"%s\"\n", t->translated[LANGUAGE_ITALIAN] );
-				len = strlen( buf );
+				len = String::Length( buf );
 				FS_Write( buf, len, f );
 
 				buf = va( "\tspanish\t\t\"%s\"\n", t->translated[LANGUAGE_SPANISH] );
-				len = strlen( buf );
+				len = String::Length( buf );
 				FS_Write( buf, len, f );
 
 				buf = va( "}\n", t->original );
-				len = strlen( buf );
+				len = String::Length( buf );
 				FS_Write( buf, len, f );
 			}
 
@@ -4253,7 +4253,7 @@ qboolean CL_CheckTranslationString( char *original, char *translated ) {
 	memset( format_trans, 0, 128 );
 
 	// generate formatting string for original
-	len = strlen( original );
+	len = String::Length( original );
 
 	for ( i = 0; i < len; i++ ) {
 		if ( original[i] != '%' ) {
@@ -4264,7 +4264,7 @@ qboolean CL_CheckTranslationString( char *original, char *translated ) {
 	}
 
 	// generate formatting string for translated
-	len = strlen( translated );
+	len = String::Length( translated );
 	if ( !len ) {
 		return qtrue;
 	}
@@ -4278,9 +4278,9 @@ qboolean CL_CheckTranslationString( char *original, char *translated ) {
 	}
 
 	// compare
-	len = strlen( format_org );
+	len = String::Length( format_org );
 
-	if ( len != strlen( format_trans ) ) {
+	if ( len != String::Length( format_trans ) ) {
 		return qfalse;
 	}
 
@@ -4540,13 +4540,13 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 	if ( !string ) {
 		strcpy( buf, "(null)" );
 		return;
-	} else if ( currentLanguage == -1 || currentLanguage >= MAX_LANGUAGES || !strlen( string ) )   {
+	} else if ( currentLanguage == -1 || currentLanguage >= MAX_LANGUAGES || !String::Length( string ) )   {
 		strcpy( buf, string );
 		return;
 	}
 #if !defined( __MACOS__ )
 	// ignore newlines
-	if ( string[strlen( string ) - 1] == '\n' ) {
+	if ( string[String::Length( string ) - 1] == '\n' ) {
 		newline = qtrue;
 	}
 
@@ -4559,7 +4559,7 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 
 	t = LookupTrans( buf, NULL, qfalse );
 
-	if ( t && strlen( t->translated[currentLanguage] ) ) {
+	if ( t && String::Length( t->translated[currentLanguage] ) ) {
 		int offset = 0;
 
 		if ( cl_debugTranslation->integer >= 1 ) {
@@ -4572,7 +4572,7 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 		strcpy( buf + offset, t->translated[currentLanguage] );
 
 		if ( cl_debugTranslation->integer >= 1 ) {
-			int len2 = strlen( buf );
+			int len2 = String::Length( buf );
 
 			buf[len2] = ']';
 			buf[len2 + 1] = '^';
@@ -4581,7 +4581,7 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 		}
 
 		if ( newline ) {
-			int len2 = strlen( buf );
+			int len2 = String::Length( buf );
 
 			buf[len2] = '\n';
 			buf[len2 + 1] = '\0';
@@ -4599,7 +4599,7 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 		strcpy( buf + offset, string );
 
 		if ( cl_debugTranslation->integer >= 1 ) {
-			int len2 = strlen( buf );
+			int len2 = String::Length( buf );
 			qboolean addnewline = qfalse;
 
 			if ( buf[len2 - 1] == '\n' ) {
@@ -4636,8 +4636,8 @@ const char* CL_TranslateStringBuf( const char *string ) {
 	{
 		*p = '\n';
 		p++;
-		// Com_Memcpy(p, p+1, strlen(p) ); b0rks on win32
-		l = strlen( p );
+		// Com_Memcpy(p, p+1, String::Length(p) ); b0rks on win32
+		l = String::Length( p );
 		for ( i = 0; i < l; i++ )
 		{
 			*p = *( p + 1 );
@@ -4653,7 +4653,7 @@ CL_OpenURLForCvar
 =======================
 */
 void CL_OpenURL( const char *url ) {
-	if ( !url || !strlen( url ) ) {
+	if ( !url || !String::Length( url ) ) {
 		Com_Printf( CL_TranslateStringBuf( "invalid/empty URL\n" ) );
 		return;
 	}

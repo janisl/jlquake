@@ -109,7 +109,7 @@ void R_LoadModelShadow( model_t *mod ) {
 			*shadowBits = '\0';
 			shadowBits++;
 
-			if ( strlen( (char*) buf ) >= MAX_QPATH ) {
+			if ( String::Length( (char*) buf ) >= MAX_QPATH ) {
 				Com_Printf( "R_LoadModelShadow: Shader name exceeds MAX_QPATH\n" );
 				mod->shadowShader = 0;
 			} else {
@@ -159,7 +159,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Model name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -249,11 +249,11 @@ qhandle_t RE_RegisterModel( const char *name ) {
 			strcat( filename, namebuf );
 		}
 
-		filename[strlen( filename ) - 1] = 'c';  // try MDC first
+		filename[String::Length( filename ) - 1] = 'c';  // try MDC first
 		ri.FS_ReadFile( filename, (void **)&buf );
 
 		if ( !buf ) {
-			filename[strlen( filename ) - 1] = '3';  // try MD3 second
+			filename[String::Length( filename ) - 1] = '3';  // try MD3 second
 			ri.FS_ReadFile( filename, (void **)&buf );
 			if ( !buf ) {
 				continue;
@@ -868,7 +868,7 @@ static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		j = strlen( surf->name );
+		j = String::Length( surf->name );
 		if ( j > 2 && surf->name[j - 2] == '_' ) {
 			surf->name[j - 2] = 0;
 		}
@@ -1076,7 +1076,7 @@ static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *mod_
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		j = strlen( surf->name );
+		j = String::Length( surf->name );
 		if ( j > 2 && surf->name[j - 2] == '_' ) {
 			surf->name[j - 2] = 0;
 		}

@@ -474,9 +474,9 @@ int PC_StringizeTokens( token_t *tokens, token_t *token ) {
 	strcat( token->string, "\"" );
 	for ( t = tokens; t; t = t->next )
 	{
-		strncat( token->string, t->string, MAX_TOKEN - strlen( token->string ) );
+		strncat( token->string, t->string, MAX_TOKEN - String::Length( token->string ) );
 	} //end for
-	strncat( token->string, "\"", MAX_TOKEN - strlen( token->string ) );
+	strncat( token->string, "\"", MAX_TOKEN - String::Length( token->string ) );
 	return qtrue;
 } //end of the function PC_StringizeTokens
 //============================================================================
@@ -494,7 +494,7 @@ int PC_MergeTokens( token_t *t1, token_t *t2 ) {
 	  //merging of two strings
 	if ( t1->type == TT_STRING && t2->type == TT_STRING ) {
 		//remove trailing double quote
-		t1->string[strlen( t1->string ) - 1] = '\0';
+		t1->string[String::Length( t1->string ) - 1] = '\0';
 		//concat without leading double quote
 		strcat( t1->string, &t2->string[1] );
 		return qtrue;
@@ -680,7 +680,7 @@ void PC_AddBuiltinDefines( source_t *source ) {
 
 	for ( i = 0; builtin[i].string; i++ )
 	{
-		define = (define_t *) GetMemory( sizeof( define_t ) + strlen( builtin[i].string ) + 1 );
+		define = (define_t *) GetMemory( sizeof( define_t ) + String::Length( builtin[i].string ) + 1 );
 		memset( define, 0, sizeof( define_t ) );
 		define->name = (char *) define + sizeof( define_t );
 		strcpy( define->name, builtin[i].string );
@@ -727,7 +727,7 @@ int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *defin
 	{
 		strcpy( token->string, source->scriptstack->filename );
 		token->type = TT_NAME;
-		token->subtype = strlen( token->string );
+		token->subtype = String::Length( token->string );
 		*firsttoken = token;
 		*lasttoken = token;
 		break;
@@ -742,7 +742,7 @@ int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *defin
 		strcat( token->string, "\"" );
 //			free(curtime);
 		token->type = TT_NAME;
-		token->subtype = strlen( token->string );
+		token->subtype = String::Length( token->string );
 		*firsttoken = token;
 		*lasttoken = token;
 		break;
@@ -756,7 +756,7 @@ int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *defin
 		strcat( token->string, "\"" );
 //			free(curtime);
 		token->type = TT_NAME;
-		token->subtype = strlen( token->string );
+		token->subtype = String::Length( token->string );
 		*firsttoken = token;
 		*lasttoken = token;
 		break;
@@ -938,7 +938,7 @@ void PC_ConvertPath( char *path ) {
 	{
 		if ( ( *ptr == '\\' || *ptr == '/' ) &&
 			 ( *( ptr + 1 ) == '\\' || *( ptr + 1 ) == '/' ) ) {
-			memmove( ptr, ptr + 1, strlen(ptr) );
+			memmove( ptr, ptr + 1, String::Length(ptr) );
 		} //end if
 		else
 		{
@@ -1006,7 +1006,7 @@ int PC_Directive_include( source_t *source ) {
 		if ( *token.string != '>' ) {
 			SourceWarning( source, "#include missing trailing >" );
 		} //end if
-		if ( !strlen( path ) ) {
+		if ( !String::Length( path ) ) {
 			SourceError( source, "#include without file name between < >" );
 			return qfalse;
 		} //end if
@@ -1198,7 +1198,7 @@ int PC_Directive_define( source_t *source ) {
 #endif //DEFINEHASHING
 	} //end if
 	  //allocate define
-	define = (define_t *) GetMemory( sizeof( define_t ) + strlen( token.string ) + 1 );
+	define = (define_t *) GetMemory( sizeof( define_t ) + String::Length( token.string ) + 1 );
 	memset( define, 0, sizeof( define_t ) );
 	define->name = (char *) define + sizeof( define_t );
 	strcpy( define->name, token.string );
@@ -1305,7 +1305,7 @@ define_t *PC_DefineFromString( char *string ) {
 
 	PC_InitTokenHeap();
 
-	script = LoadScriptMemory( string, strlen( string ), "*extern" );
+	script = LoadScriptMemory( string, String::Length( string ), "*extern" );
 	//create a new source
 	memset( &src, 0, sizeof( source_t ) );
 	String::NCpy( src.filename, "*extern", _MAX_PATH );
@@ -1434,7 +1434,7 @@ define_t *PC_CopyDefine( source_t *source, define_t *define ) {
 	define_t *newdefine;
 	token_t *token, *newtoken, *lasttoken;
 
-	newdefine = (define_t *) GetMemory( sizeof( define_t ) + strlen( define->name ) + 1 );
+	newdefine = (define_t *) GetMemory( sizeof( define_t ) + String::Length( define->name ) + 1 );
 	//copy the define name
 	newdefine->name = (char *) newdefine + sizeof( define_t );
 	strcpy( newdefine->name, define->name );
@@ -2740,8 +2740,8 @@ int PC_ReadToken( source_t *source, token_t *token ) {
 			token_t newtoken;
 			if ( PC_ReadToken( source, &newtoken ) ) {
 				if ( newtoken.type == TT_STRING ) {
-					token->string[strlen( token->string ) - 1] = '\0';
-					if ( strlen( token->string ) + strlen( newtoken.string + 1 ) + 1 >= MAX_TOKEN ) {
+					token->string[String::Length( token->string ) - 1] = '\0';
+					if ( String::Length( token->string ) + String::Length( newtoken.string + 1 ) + 1 >= MAX_TOKEN ) {
 						SourceError( source, "string longer than MAX_TOKEN %d\n", MAX_TOKEN );
 						return qfalse;
 					}
@@ -2969,8 +2969,8 @@ void PC_UnreadToken( source_t *source, token_t *token ) {
 void PC_SetIncludePath( source_t *source, char *path ) {
 	String::NCpy( source->includepath, path, _MAX_PATH );
 	//add trailing path seperator
-	if ( source->includepath[strlen( source->includepath ) - 1] != '\\' &&
-		 source->includepath[strlen( source->includepath ) - 1] != '/' ) {
+	if ( source->includepath[String::Length( source->includepath ) - 1] != '\\' &&
+		 source->includepath[String::Length( source->includepath ) - 1] != '/' ) {
 		strcat( source->includepath, PATHSEPERATOR_STR );
 	} //end if
 } //end of the function PC_SetIncludePath

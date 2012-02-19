@@ -880,7 +880,7 @@ image_t *R_CreateImageExt( const char *name, const byte *pic, int width, int hei
 	long hash;
 	qboolean noCompress = qfalse;
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name );
 	}
 	if ( !strncmp( name, "*lightmap", 9 ) ) {
@@ -2075,7 +2075,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 	*width = 0;
 	*height = 0;
 
-	len = strlen( name );
+	len = String::Length( name );
 	if ( len < 5 ) {
 		return;
 	}
@@ -2085,7 +2085,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 		if ( !*pic ) {                              //
 			char altname[MAX_QPATH];                    // try jpg in place of tga
 			strcpy( altname, name );
-			len = strlen( altname );
+			len = String::Length( altname );
 			altname[len - 3] = 'j';
 			altname[len - 2] = 'p';
 			altname[len - 1] = 'g';
@@ -2174,7 +2174,7 @@ image_t *R_FindImageFileExt( const char *name, qboolean mipmap, qboolean allowPi
 		char altname[MAX_QPATH];                            // copy the name
 		int len;                                          //
 		strcpy( altname, name );                          //
-		len = strlen( altname );                          //
+		len = String::Length( altname );                          //
 		altname[len - 3] = toupper( altname[len - 3] );   // and try upper case extension for unix systems
 		altname[len - 2] = toupper( altname[len - 2] );   //
 		altname[len - 1] = toupper( altname[len - 1] );   //
@@ -2756,7 +2756,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( String::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Skin name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -2788,7 +2788,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	R_SyncRenderThread();
 
 	// If not a .skin file, load as a single shader
-	if ( strcmp( name + strlen( name ) - 5, ".skin" ) ) {
+	if ( strcmp( name + String::Length( name ) - 5, ".skin" ) ) {
 		tr.numSkins++;
 		skin = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 		tr.skins[hSkin] = skin;
