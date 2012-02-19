@@ -263,9 +263,9 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 	}
 
 	if ( String::Length( subdirs ) ) {
-		Com_sprintf( search, sizeof( search ), "%s\\%s\\*", basedir, subdirs );
+		String::Sprintf( search, sizeof( search ), "%s\\%s\\*", basedir, subdirs );
 	} else {
-		Com_sprintf( search, sizeof( search ), "%s\\*", basedir );
+		String::Sprintf( search, sizeof( search ), "%s\\*", basedir );
 	}
 
 	findhandle = _findfirst( search, &findinfo );
@@ -277,9 +277,9 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		if ( findinfo.attrib & _A_SUBDIR ) {
 			if ( String::ICmp( findinfo.name, "." ) && String::ICmp( findinfo.name, ".." ) ) {
 				if ( String::Length( subdirs ) ) {
-					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s\\%s", subdirs, findinfo.name );
+					String::Sprintf( newsubdirs, sizeof( newsubdirs ), "%s\\%s", subdirs, findinfo.name );
 				} else {
-					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s", findinfo.name );
+					String::Sprintf( newsubdirs, sizeof( newsubdirs ), "%s", findinfo.name );
 				}
 				Sys_ListFilteredFiles( basedir, newsubdirs, filter, list, numfiles );
 			}
@@ -287,7 +287,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		if ( *numfiles >= MAX_FOUND_FILES - 1 ) {
 			break;
 		}
-		Com_sprintf( filename, sizeof( filename ), "%s\\%s", subdirs, findinfo.name );
+		String::Sprintf( filename, sizeof( filename ), "%s\\%s", subdirs, findinfo.name );
 		if ( !Com_FilterPath( filter, filename, qfalse ) ) {
 			continue;
 		}
@@ -362,7 +362,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		flag = _A_SUBDIR;
 	}
 
-	Com_sprintf( search, sizeof( search ), "%s\\*%s", directory, extension );
+	String::Sprintf( search, sizeof( search ), "%s\\*%s", directory, extension );
 
 	// search
 	nfiles = 0;

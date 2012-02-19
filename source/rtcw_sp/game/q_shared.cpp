@@ -81,7 +81,7 @@ void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
 	}
 
 	String::NCpyZ( oldPath, path, sizeof( oldPath ) );
-	Com_sprintf( path, maxSize, "%s%s", oldPath, extension );
+	String::Sprintf( path, maxSize, "%s%s", oldPath, extension );
 }
 
 //============================================================================
@@ -293,7 +293,7 @@ COM_BeginParseSession
 */
 void COM_BeginParseSession( const char *name ) {
 	com_lines = 0;
-	Com_sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
+	String::Sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
 }
 
 /*
@@ -718,23 +718,6 @@ char *Q_CleanStr( char *string ) {
 }
 
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) {
-	int len;
-	va_list argptr;
-	char bigbuffer[32000];      // big, but small enough to fit in PPC stack
-
-	va_start( argptr,fmt );
-	len = vsprintf( bigbuffer,fmt,argptr );
-	va_end( argptr );
-	if ( len >= sizeof( bigbuffer ) ) {
-		Com_Error( ERR_FATAL, "Com_sprintf: overflowed bigbuffer" );
-	}
-	if ( len >= size ) {
-		Com_Printf( "Com_sprintf: overflow of %i in %i\n", len, size );
-	}
-	String::NCpyZ( dest, bigbuffer, size );
-}
-
 // Ridah, ripped from l_bsp.c
 int Q_strncasecmp( char *s1, char *s2, int n ) {
 	int c1, c2;
@@ -1121,7 +1104,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 		return;
 	}
 
-	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
+	String::Sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
 	if ( String::Length( newi ) + String::Length( s ) > MAX_INFO_STRING ) {
 		Com_Printf( "Info string length exceeded\n" );
@@ -1165,7 +1148,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 		return;
 	}
 
-	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
+	String::Sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
 	if ( String::Length( newi ) + String::Length( s ) > BIG_INFO_STRING ) {
 		Com_Printf( "BIG Info string length exceeded\n" );

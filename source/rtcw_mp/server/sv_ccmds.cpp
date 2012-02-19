@@ -158,7 +158,7 @@ static void SV_Map_f( void ) {
 
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game
-	Com_sprintf( expanded, sizeof( expanded ), "maps/%s.bsp", map );
+	String::Sprintf( expanded, sizeof( expanded ), "maps/%s.bsp", map );
 	if ( FS_ReadFile( expanded, NULL ) == -1 ) {
 		Com_Printf( "Can't find map %s\n", expanded );
 		return;
@@ -482,7 +482,7 @@ void    SV_LoadGame_f( void ) {
 	FS_ReadFile( filename, (void **)&buffer );
 
 	// read the mapname, if it is the same as the current map, then do a fast load
-	Com_sprintf( mapname, sizeof( mapname ), buffer + sizeof( int ) );
+	String::Sprintf( mapname, sizeof( mapname ), buffer + sizeof( int ) );
 
 	if ( com_sv_running->integer && ( com_frameTime != sv.serverId ) ) {
 		// check mapname

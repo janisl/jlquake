@@ -1080,7 +1080,7 @@ static void CompleteCommand( void ) {
 	Com_Memcpy( &temp, edit, sizeof( field_t ) );
 
 	if ( matchCount == 1 ) {
-		Com_sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", shortestMatch );
+		String::Sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", shortestMatch );
 		if ( Cmd_Argc() == 1 ) {
 			String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
 		} else {
@@ -1091,7 +1091,7 @@ static void CompleteCommand( void ) {
 	}
 
 	// multiple matches, complete to shortest
-	Com_sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", shortestMatch );
+	String::Sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", shortestMatch );
 	edit->cursor = String::Length( edit->buffer );
 	ConcatRemaining( temp.buffer, completionString );
 
@@ -1125,7 +1125,7 @@ void Console_Key( int key ) {
 			char temp[MAX_STRING_CHARS];
 
 			String::NCpyZ( temp, g_consoleField.buffer, sizeof( temp ) );
-			Com_sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
+			String::Sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
 			g_consoleField.cursor++;
 		}
 
@@ -1262,19 +1262,19 @@ void Message_Key( int key ) {
 		if ( chatField.buffer[0] && cls.state == CA_ACTIVE ) {
 			if ( chat_playerNum != -1 ) {
 
-				Com_sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
 			} else if ( chat_team ) {
 
-				Com_sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
 			}
 			// NERVE - SMF
 			else if ( chat_limbo ) {
 
-				Com_sprintf( buffer, sizeof( buffer ), "say_limbo \"%s\"\n", chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "say_limbo \"%s\"\n", chatField.buffer );
 			}
 			// -NERVE - SMF
 			else {
-				Com_sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
 			}
 
 
@@ -1777,7 +1777,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		if ( kb && kb[0] == '+' ) {
 			// button commands add keynum and time as parms so that multiple
 			// sources can be discriminated and subframe corrected
-			Com_sprintf( cmd, sizeof( cmd ), "-%s %i %i\n", kb + 1, key, time );
+			String::Sprintf( cmd, sizeof( cmd ), "-%s %i %i\n", kb + 1, key, time );
 			Cbuf_AddText( cmd );
 		}
 
@@ -1847,7 +1847,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		} else if ( kb[0] == '+' ) {
 			// button commands add keynum and time as parms so that multiple
 			// sources can be discriminated and subframe corrected
-			Com_sprintf( cmd, sizeof( cmd ), "%s %i %i\n", kb, key, time );
+			String::Sprintf( cmd, sizeof( cmd ), "%s %i %i\n", kb, key, time );
 			Cbuf_AddText( cmd );
 		} else {
 			// down-only command

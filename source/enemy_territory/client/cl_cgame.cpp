@@ -343,7 +343,7 @@ rescan:
 	}
 
 	if ( !String::Cmp( cmd, "bcs0" ) ) {
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
+		String::Sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
 		return qfalse;
 	}
 
@@ -1114,7 +1114,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 	if ( handle < 0 ) {
 		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full\n" );
 	}
-	Com_sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
+	String::Sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
 	FS_Write( outstr, String::Length( outstr ), handle );
 	FS_FCloseFile( handle );
 
@@ -1145,7 +1145,7 @@ void CL_InitCGame( void ) {
 	// find the current mapname
 	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
-	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
+	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
 	// load the dll
 	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, VMI_NATIVE );

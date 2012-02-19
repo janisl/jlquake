@@ -757,9 +757,6 @@ void Parse1DMatrix( char **buf_p, int x, float *m );
 void Parse2DMatrix( char **buf_p, int y, int x, float *m );
 void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) id_attribute( ( format( printf,3,4 ) ) );
-
-
 // mode parm for FS_FOpenFile
 typedef enum {
 	FS_READ,

@@ -114,7 +114,7 @@ void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
 	}
 
 	String::NCpyZ( oldPath, path, sizeof( oldPath ) );
-	Com_sprintf( path, maxSize, "%s%s", oldPath, extension );
+	String::Sprintf( path, maxSize, "%s%s", oldPath, extension );
 }
 
 //============================================================================
@@ -322,7 +322,7 @@ static char    *backup_text;
 
 void COM_BeginParseSession( const char *name ) {
 	com_lines = 0;
-	Com_sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
+	String::Sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
 }
 
 void COM_BackupParseSession( char **data_p ) {
@@ -847,18 +847,6 @@ char *Q_CleanDirName( char *dirname ) {
 }
 
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) {
-	int ret;
-	va_list argptr;
-
-	va_start( argptr,fmt );
-	ret = Q_vsnprintf( dest, size, fmt, argptr );
-	va_end( argptr );
-	if ( ret == -1 ) {
-		Com_Printf( "Com_sprintf: overflow of %i bytes buffer\n", size );
-	}
-}
-
 /*
 ============
 va
@@ -1213,7 +1201,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 		return;
 	}
 
-	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
+	String::Sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
 	if ( String::Length( newi ) + String::Length( s ) > MAX_INFO_STRING ) {
 		Com_Printf( "Info string length exceeded\n" );
@@ -1257,7 +1245,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 		return;
 	}
 
-	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
+	String::Sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
 	if ( String::Length( newi ) + String::Length( s ) > BIG_INFO_STRING ) {
 		Com_Printf( "BIG Info string length exceeded\n" );

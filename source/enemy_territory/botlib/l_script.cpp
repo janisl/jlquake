@@ -1328,9 +1328,9 @@ script_t *LoadScriptFile( const char *filename ) {
 
 #ifdef BOTLIB
 	if ( String::Length( basefolder ) ) {
-		Com_sprintf( pathname, sizeof( pathname ), "%s/%s", basefolder, filename );
+		String::Sprintf( pathname, sizeof( pathname ), "%s/%s", basefolder, filename );
 	} else {
-		Com_sprintf( pathname, sizeof( pathname ), "%s", filename );
+		String::Sprintf( pathname, sizeof( pathname ), "%s", filename );
 	}
 	length = botimport.FS_FOpenFile( pathname, &fp, FS_READ );
 	if ( !fp ) {
@@ -1439,6 +1439,6 @@ void PS_SetBaseFolder( char *path ) {
 #ifdef BSPC
 	sprintf( basefolder, path );
 #else
-	Com_sprintf( basefolder, sizeof( basefolder ), path );
+	String::Sprintf( basefolder, sizeof( basefolder ), path );
 #endif
 } //end of the function PS_SetBaseFolder

@@ -1194,7 +1194,6 @@ float String::Atof(const char* Str)
 	return Val * Sign;
 }
 
-#if 0
 //==========================================================================
 //
 //	String::Sprintf
@@ -1203,6 +1202,7 @@ float String::Atof(const char* Str)
 
 void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 {
+#if 1
 	va_list		ArgPtr;
 	char		BigBuffer[32000];	// big, but small enough to fit in PPC stack
 
@@ -1215,7 +1215,7 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	}
 	if (Len >= Size)
 	{
-		Log::writeLine("String::Sprintf: overflow of %i in %i", Len, Size);
+		common->Printf("String::Sprintf: overflow of %i in %i\n", Len, Size);
 #if defined _DEBUG && defined _MSC_VER && ! defined _WIN64
 		__asm
 		{
@@ -1224,8 +1224,24 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 #endif
 	}
 	NCpyZ(Dest, BigBuffer, Size);
-}
+#else
+	//	Wolf multiplayer / Enemy territory version.
+	/*
+	C99 for vsnprintf:
+	return the number of characters  (excluding  the  trailing  '\0')
+	which would have been written to the final string if enough space had been available.
+	*/
+	va_list argptr;
+	va_start(argptr,fmt);
+	int len = Q_vsnprintf(dest, size, fmt, argptr);
+	va_end(argptr);
+
+	if (len >= size)
+	{
+		common->Printf("String::Sprintf: overflow of %i in %i\n", len, size);
+	}
 #endif
+}
 
 int String::IsPrint(int c)
 {

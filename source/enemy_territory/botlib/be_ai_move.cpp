@@ -1393,7 +1393,7 @@ char    *vtosf( const vec3_t v ) {
 	s = str[index];
 	index = ( index + 1 ) & 7;
 
-	Com_sprintf( s, 64, "(%f %f %f)", v[0], v[1], v[2] );
+	String::Sprintf( s, 64, "(%f %f %f)", v[0], v[1], v[2] );
 
 	return s;
 }

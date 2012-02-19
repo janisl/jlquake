@@ -402,7 +402,7 @@ void CL_ParseSnapshot( msg_t *msg ) {
 					period++;
 				}
 
-				Com_sprintf( name, sizeof( name ), "demos/%s_%i_%i.dm_%d", period, time.tm_mday, time.tm_mon + 1, PROTOCOL_VERSION );
+				String::Sprintf( name, sizeof( name ), "demos/%s_%i_%i.dm_%d", period, time.tm_mday, time.tm_mon + 1, PROTOCOL_VERSION );
 
 				CL_Record( name );
 			}

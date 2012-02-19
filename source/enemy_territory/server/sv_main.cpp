@@ -451,7 +451,7 @@ void SVC_Status( netadr_t from ) {
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
 		char keywords[MAX_INFO_STRING];
 
-		Com_sprintf( keywords, sizeof( keywords ), "ettest %s",
+		String::Sprintf( keywords, sizeof( keywords ), "ettest %s",
 					 Info_ValueForKey( infostring, "sv_keywords" ) );
 		Info_SetValueForKey( infostring, "sv_keywords", keywords );
 	}
@@ -463,7 +463,7 @@ void SVC_Status( netadr_t from ) {
 		cl = &svs.clients[i];
 		if ( cl->state >= CS_CONNECTED ) {
 			ps = SV_GameClientNum( i );
-			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
+			String::Sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
 						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
 			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {
@@ -515,7 +515,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
 		char keywords[MAX_INFO_STRING];
 
-		Com_sprintf( keywords, sizeof( keywords ), "ettest %s",
+		String::Sprintf( keywords, sizeof( keywords ), "ettest %s",
 					 Info_ValueForKey( infostring, "sv_keywords" ) );
 		Info_SetValueForKey( infostring, "sv_keywords", keywords );
 	}
@@ -527,7 +527,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 		cl = &svs.clients[i];
 		if ( cl->state >= CS_CONNECTED ) {
 			ps = SV_GameClientNum( i );
-			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
+			String::Sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
 						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
 			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {

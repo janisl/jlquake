@@ -1163,7 +1163,7 @@ static void ParseSkyParms( char **text ) {
 	}
 	if ( String::Cmp( token, "-" ) ) {
 		for ( i = 0 ; i < 6 ; i++ ) {
-			Com_sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
+			String::Sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
 						 , token, suf[i] );
 			shader.sky.outerbox[i] = R_FindImageFile( ( char * ) pathname, qtrue, qtrue, GL_CLAMP );
 			if ( !shader.sky.outerbox[i] ) {
@@ -1193,7 +1193,7 @@ static void ParseSkyParms( char **text ) {
 	}
 	if ( String::Cmp( token, "-" ) ) {
 		for ( i = 0 ; i < 6 ; i++ ) {
-			Com_sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
+			String::Sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
 						 , token, suf[i] );
 			shader.sky.innerbox[i] = R_FindImageFile( ( char * ) pathname, qtrue, qtrue, GL_CLAMP );
 			if ( !shader.sky.innerbox[i] ) {
@@ -3052,7 +3052,7 @@ static void ScanAndLoadShaderFiles( void ) {
 	{
 		char filename[MAX_QPATH];
 
-		Com_sprintf( filename, sizeof( filename ), "scripts/%s", shaderFiles[i] );
+		String::Sprintf( filename, sizeof( filename ), "scripts/%s", shaderFiles[i] );
 		ri.Printf( PRINT_DEVELOPER, "...loading '%s'\n", filename ); // JPW NERVE was PRINT_ALL
 		sum += ri.FS_ReadFile( filename, (void **)&buffers[i] );
 		if ( !buffers[i] ) {

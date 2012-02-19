@@ -307,11 +307,11 @@ CL_DemoFilename
 */
 void CL_DemoFilename( int number, char *fileName ) {
 	if ( number < 0 || number > 9999 ) {
-		Com_sprintf( fileName, MAX_OSPATH, "demo9999" ); // fretn - removed .tga
+		String::Sprintf( fileName, MAX_OSPATH, "demo9999" ); // fretn - removed .tga
 		return;
 	}
 
-	Com_sprintf( fileName, MAX_OSPATH, "demo%04i", number );
+	String::Sprintf( fileName, MAX_OSPATH, "demo%04i", number );
 }
 
 /*
@@ -355,14 +355,14 @@ void CL_Record_f( void ) {
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv( 1 );
 		String::NCpyZ( demoName, s, sizeof( demoName ) );
-		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
+		String::Sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	} else {
 		int number;
 
 		// scan for a free demo name
 		for ( number = 0 ; number <= 9999 ; number++ ) {
 			CL_DemoFilename( number, demoName );
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
+			String::Sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 
 			len = FS_ReadFile( name, NULL );
 			if ( len <= 0 ) {
@@ -565,11 +565,11 @@ CL_DemoFilename
 */
 void CL_WavFilename( int number, char *fileName ) {
 	if ( number < 0 || number > 9999 ) {
-		Com_sprintf( fileName, MAX_OSPATH, "wav9999" ); // fretn - removed .tga
+		String::Sprintf( fileName, MAX_OSPATH, "wav9999" ); // fretn - removed .tga
 		return;
 	}
 
-	Com_sprintf( fileName, MAX_OSPATH, "wav%04i", number );
+	String::Sprintf( fileName, MAX_OSPATH, "wav%04i", number );
 }
 
 typedef struct wav_hdr_s {
@@ -649,14 +649,14 @@ void CL_WriteWaveOpen() {
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv( 1 );
 		String::NCpyZ( wavName, s, sizeof( wavName ) );
-		Com_sprintf( name, sizeof( name ), "wav/%s.wav", wavName );
+		String::Sprintf( name, sizeof( name ), "wav/%s.wav", wavName );
 	} else {
 		int number;
 
 		// I STOLE THIS
 		for ( number = 0 ; number <= 9999 ; number++ ) {
 			CL_WavFilename( number, wavName );
-			Com_sprintf( name, sizeof( name ), "wav/%s.wav", wavName );
+			String::Sprintf( name, sizeof( name ), "wav/%s.wav", wavName );
 
 			len = FS_FileExists( name );
 			if ( len <= 0 ) {
@@ -791,11 +791,11 @@ void CL_PlayDemo_f( void ) {
 	arg = Cmd_Argv( 1 );
 	prot_ver = PROTOCOL_VERSION - 1;
 	while ( prot_ver <= PROTOCOL_VERSION && !clc.demofile ) {
-		Com_sprintf( extension, sizeof( extension ), ".dm_%d", prot_ver );
+		String::Sprintf( extension, sizeof( extension ), ".dm_%d", prot_ver );
 		if ( !String::ICmp( arg + String::Length( arg ) - String::Length( extension ), extension ) ) {
-			Com_sprintf( name, sizeof( name ), "demos/%s", arg );
+			String::Sprintf( name, sizeof( name ), "demos/%s", arg );
 		} else {
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, prot_ver );
+			String::Sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, prot_ver );
 		}
 		FS_FOpenFileRead( name, &clc.demofile, qtrue );
 		prot_ver++;
@@ -1133,7 +1133,7 @@ void CL_RequestMotd( void ) {
 				BigShort( cls.updateServer.port ) );
 
 	info[0] = 0;
-	Com_sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", rand() );
+	String::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", rand() );
 
 	Info_SetValueForKey( info, "challenge", cls.updateChallenge );
 	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string );
@@ -1482,7 +1482,7 @@ void CL_SendPureChecksums( void ) {
 	pChecksums = FS_ReferencedPakPureChecksums();
 
 	// "cp"
-	Com_sprintf( cMsg, sizeof( cMsg ), "Va " );
+	String::Sprintf( cMsg, sizeof( cMsg ), "Va " );
 	String::Cat( cMsg, sizeof( cMsg ), va( "%d ", cl.serverId ) );
 	String::Cat( cMsg, sizeof( cMsg ), pChecksums );
 	for ( i = 0; i < 2; i++ ) {
@@ -1844,7 +1844,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 				 "****************************\n", localName, remoteName );
 
 	String::NCpyZ( cls.downloadName, localName, sizeof( cls.downloadName ) );
-	Com_sprintf( cls.downloadTempName, sizeof( cls.downloadTempName ), "%s.tmp", localName );
+	String::Sprintf( cls.downloadTempName, sizeof( cls.downloadTempName ), "%s.tmp", localName );
 
 	// Set so UI gets access to it
 	Cvar_Set( "cl_downloadName", remoteName );
@@ -3951,7 +3951,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 	s = MSG_ReadStringLine( msg );
 
 	len = 0;
-	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "%s", s );
+	String::Sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "%s", s );
 
 	if ( serverStatus->print ) {
 		Com_Printf( "Server settings:\n" );
@@ -3983,7 +3983,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 	}
 
 	len = String::Length( serverStatus->string );
-	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
+	String::Sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
 
 	if ( serverStatus->print ) {
 		Com_Printf( "\nPlayers:\n" );
@@ -3992,7 +3992,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 	for ( i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++ ) {
 
 		len = String::Length( serverStatus->string );
-		Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\%s", s );
+		String::Sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\%s", s );
 
 		if ( serverStatus->print ) {
 			score = ping = 0;
@@ -4010,7 +4010,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 		}
 	}
 	len = String::Length( serverStatus->string );
-	Com_sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
+	String::Sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\" );
 
 	serverStatus->time = Sys_Milliseconds();
 	serverStatus->address = from;

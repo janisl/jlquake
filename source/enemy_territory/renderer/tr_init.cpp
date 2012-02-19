@@ -351,7 +351,7 @@ void GL_CheckErrors( void ) {
 		String::Cpy( s, "GL_OUT_OF_MEMORY" );
 		break;
 	default:
-		Com_sprintf( s, sizeof( s ), "%i", err );
+		String::Sprintf( s, sizeof( s ), "%i", err );
 		break;
 	}
 
@@ -504,11 +504,11 @@ R_ScreenshotFilename
 */
 void R_ScreenshotFilename( int lastNumber, char *fileName ) {
 	if ( lastNumber < 0 || lastNumber > 9999 ) {
-		Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.tga" );
+		String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.tga" );
 		return;
 	}
 
-	Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.tga", lastNumber );
+	String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.tga", lastNumber );
 }
 
 /*
@@ -518,11 +518,11 @@ R_ScreenshotFilenameJPEG
 */
 void R_ScreenshotFilenameJPEG( int lastNumber, char *fileName ) {
 	if ( lastNumber < 0 || lastNumber > 9999 ) {
-		Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.jpg" );
+		String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.jpg" );
 		return;
 	}
 
-	Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.jpg", lastNumber );
+	String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.jpg", lastNumber );
 }
 
 /*
@@ -621,7 +621,7 @@ void R_ScreenShot_f( void ) {
 
 	if ( ri.Cmd_Argc() == 2 && !silent ) {
 		// explicit filename
-		Com_sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", ri.Cmd_Argv( 1 ) );
+		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", ri.Cmd_Argv( 1 ) );
 	} else {
 		// scan for a free filename
 
@@ -676,7 +676,7 @@ void R_ScreenShotJPEG_f( void ) {
 
 	if ( ri.Cmd_Argc() == 2 && !silent ) {
 		// explicit filename
-		Com_sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", ri.Cmd_Argv( 1 ) );
+		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", ri.Cmd_Argv( 1 ) );
 	} else {
 		// scan for a free filename
 

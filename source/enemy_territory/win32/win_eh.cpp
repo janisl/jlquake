@@ -48,13 +48,13 @@ typedef enum {
 
 void Com_Frame( void );
 void String::Cat( char *dest, int size, const char *src );
-void __cdecl Com_sprintf( char *dest, int size, const char *fmt, ... );
+void __cdecl String::Sprintf( char *dest, int size, const char *fmt, ... );
 int FS_FOpenFileByMode( const char *qpath, fileHandle_t * f, fsMode_t mode );
 int FS_Write( const void *buffer, int len, fileHandle_t h );
 void FS_FCloseFile( fileHandle_t f );
 
 #define CASE( seCode ) case EXCEPTION_ ## seCode: \
-	Com_sprintf( minibuffer, sizeof( minibuffer ), "Exception %s (0x%.8x) at address 0x%.8x.", # seCode, EXCEPTION_ ## seCode, m_exPointers->ExceptionRecord->ExceptionAddress ); \
+	String::Sprintf( minibuffer, sizeof( minibuffer ), "Exception %s (0x%.8x) at address 0x%.8x.", # seCode, EXCEPTION_ ## seCode, m_exPointers->ExceptionRecord->ExceptionAddress ); \
 	break;
 
 class CWolfException {
@@ -72,7 +72,7 @@ void BuildErrorMessage( char* buffer, int size ) {
 
 	switch ( m_seCode ) {
 	case EXCEPTION_ACCESS_VIOLATION:
-		Com_sprintf(    minibuffer, sizeof( minibuffer ),
+		String::Sprintf(    minibuffer, sizeof( minibuffer ),
 						"Exception ACCESS_VIOLATION (0x%.8x) at address 0x%.8x trying to %s address 0x%.8x.", EXCEPTION_ACCESS_VIOLATION,
 						m_exPointers->ExceptionRecord->ExceptionAddress,
 						m_exPointers->ExceptionRecord->ExceptionInformation[0] ? "write" : "read",
@@ -100,7 +100,7 @@ void BuildErrorMessage( char* buffer, int size ) {
 		CASE( GUARD_PAGE );
 		CASE( INVALID_HANDLE );
 	default:
-		Com_sprintf( minibuffer, sizeof( minibuffer ), "Unknown exception." );
+		String::Sprintf( minibuffer, sizeof( minibuffer ), "Unknown exception." );
 		break;
 	}
 
@@ -110,7 +110,7 @@ void BuildErrorMessage( char* buffer, int size ) {
 void BuildDump( char* buffer, int size ) {
 	char minibuffer[256];
 
-	Com_sprintf(    minibuffer, sizeof( minibuffer ),
+	String::Sprintf(    minibuffer, sizeof( minibuffer ),
 					"Exception      : %.8x\r\n"
 					"Address        : %.8x\r\n"
 					"Access Type    : %s\r\n"
@@ -128,7 +128,7 @@ void BuildRegisters( char* buffer, int size ) {
 	char minibuffer[256];
 
 #ifdef _WIN64
-	Com_sprintf( minibuffer, sizeof( minibuffer ),
+	String::Sprintf( minibuffer, sizeof( minibuffer ),
 				 "Registers      : RAX=%.8x CS=%.4x RIP=%.8x EFLGS=%.8x\r\n"
 				 "               : RBX=%.8x SS=%.4x RSP=%.8x RBP=%.8x\r\n"
 				 "               : RCX=%.8x DS=%.4x RSI=%.8x FS=%.4x\r\n"
@@ -151,7 +151,7 @@ void BuildRegisters( char* buffer, int size ) {
 				 m_exPointers->ContextRecord->SegGs
 				 );
 #else
-	Com_sprintf( minibuffer, sizeof( minibuffer ),
+	String::Sprintf( minibuffer, sizeof( minibuffer ),
 				 "Registers      : EAX=%.8x CS=%.4x EIP=%.8x EFLGS=%.8x\r\n"
 				 "               : EBX=%.8x SS=%.4x ESP=%.8x EBP=%.8x\r\n"
 				 "               : ECX=%.8x DS=%.4x ESI=%.8x FS=%.4x\r\n"
@@ -208,7 +208,7 @@ void BuildStackTrace( char* buffer, int size ) {
 
 		for ( j = 0; j < 4 && i < MAX_STACK_TRACE_LINES; i++, j++ ) {
 			char minibuffer[16];
-			Com_sprintf( minibuffer, sizeof( minibuffer ), "%.8x ", stackTrace[i] );
+			String::Sprintf( minibuffer, sizeof( minibuffer ), "%.8x ", stackTrace[i] );
 
 			String::Cat( buffer, size, minibuffer );
 		}

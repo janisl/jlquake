@@ -1351,17 +1351,17 @@ void Sys_OpenURL( const char *url, qboolean doexit ) {
 	String::NCpyZ( fname, "openurl.sh", 20 );
 
 	pwdpath = Sys_Cwd();
-	Com_sprintf( fn, MAX_OSPATH, "%s/%s", pwdpath, fname );
+	String::Sprintf( fn, MAX_OSPATH, "%s/%s", pwdpath, fname );
 	if ( access( fn, X_OK ) == -1 ) {
 		Com_DPrintf( "%s not found\n", fn );
 		// try in home path
 		homepath = Cvar_VariableString( "fs_homepath" );
-		Com_sprintf( fn, MAX_OSPATH, "%s/%s", homepath, fname );
+		String::Sprintf( fn, MAX_OSPATH, "%s/%s", homepath, fname );
 		if ( access( fn, X_OK ) == -1 ) {
 			Com_DPrintf( "%s not found\n", fn );
 			// basepath, last resort
 			basepath = Cvar_VariableString( "fs_basepath" );
-			Com_sprintf( fn, MAX_OSPATH, "%s/%s", basepath, fname );
+			String::Sprintf( fn, MAX_OSPATH, "%s/%s", basepath, fname );
 			if ( access( fn, X_OK ) == -1 ) {
 				Com_DPrintf( "%s not found\n", fn );
 				Com_Printf( "Can't find script '%s' to open requested URL (use +set developer 1 for more verbosity)\n", fname );
@@ -1374,7 +1374,7 @@ void Sys_OpenURL( const char *url, qboolean doexit ) {
 	Com_DPrintf( "URL script: %s\n", fn );
 
 	// build the command line
-	Com_sprintf( cmdline, MAX_CMD, "%s '%s' &", fn, url );
+	String::Sprintf( cmdline, MAX_CMD, "%s '%s' &", fn, url );
 
 	Sys_StartProcess( cmdline, doexit );
 

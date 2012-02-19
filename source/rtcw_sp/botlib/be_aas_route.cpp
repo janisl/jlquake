@@ -950,7 +950,7 @@ void AAS_WriteRouteCache( void ) {
 		} //end for
 	} //end for
 	  // open the file for writing
-	Com_sprintf( filename, MAX_QPATH, "maps/%s.rcd", ( *aasworld ).mapname );
+	String::Sprintf( filename, MAX_QPATH, "maps/%s.rcd", ( *aasworld ).mapname );
 	botimport.FS_FOpenFile( filename, &fp, FS_WRITE );
 	if ( !fp ) {
 		AAS_Error( "Unable to open file: %s\n", filename );
@@ -1066,7 +1066,7 @@ int AAS_ReadRouteCache( void ) {
 	routecacheheader_t routecacheheader;
 	aas_routingcache_t *cache;
 
-	Com_sprintf( filename, MAX_QPATH, "maps/%s.rcd", ( *aasworld ).mapname );
+	String::Sprintf( filename, MAX_QPATH, "maps/%s.rcd", ( *aasworld ).mapname );
 	botimport.FS_FOpenFile( filename, &fp, FS_READ );
 	if ( !fp ) {
 		return qfalse;

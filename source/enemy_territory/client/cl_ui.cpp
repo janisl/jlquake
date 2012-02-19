@@ -68,7 +68,7 @@ void LAN_LoadCachedServers() {
 	cls.numGlobalServerAddresses = 0;
 
 	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
-		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
+		String::Sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	} else {
 		String::NCpyZ( filename, "servercache.dat", sizeof( filename ) );
 	}
@@ -101,7 +101,7 @@ void LAN_SaveServersToCache() {
 	char filename[MAX_QPATH];
 
 	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
-		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
+		String::Sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	} else {
 		String::NCpyZ( filename, "servercache.dat", sizeof( filename ) );
 	}

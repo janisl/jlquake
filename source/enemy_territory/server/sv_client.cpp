@@ -954,15 +954,15 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
 			// cannot auto-download file
 			if ( idPack ) {
 				Com_Printf( "clientDownload: %d : \"%s\" cannot download id pk3 files\n", cl - svs.clients, cl->downloadName );
-				Com_sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
+				String::Sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
 			} else {
 				Com_Printf( "clientDownload: %d : \"%s\" download disabled", cl - svs.clients, cl->downloadName );
 				if ( sv_pure->integer ) {
-					Com_sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+					String::Sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																	   "You will need to get this file elsewhere before you "
 																	   "can connect to this pure server.\n", cl->downloadName );
 				} else {
-					Com_sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+					String::Sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																	   "Set autodownload to No in your settings and you might be "
 																	   "able to connect even if you don't have the file.\n", cl->downloadName );
 				}
@@ -1031,7 +1031,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
 		cl->downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &cl->download );
 		if ( cl->downloadSize <= 0 ) {
 			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", cl - svs.clients, cl->downloadName );
-			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName );
+			String::Sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName );
 			SV_BadDownload( cl, msg );
 			MSG_WriteString( msg, errorMessage ); // (could SV_DropClient isntead?)
 			return;
@@ -1562,7 +1562,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	SV_ExecuteClientCommand( cl, s, clientOk, premaprestart );
 
 	cl->lastClientCommand = seq;
-	Com_sprintf( cl->lastClientCommandString, sizeof( cl->lastClientCommandString ), "%s", s );
+	String::Sprintf( cl->lastClientCommandString, sizeof( cl->lastClientCommandString ), "%s", s );
 
 	return qtrue;       // continue procesing
 }

@@ -2663,7 +2663,7 @@ qboolean RE_GetSkinModel( qhandle_t skinid, const char *type, char *name ) {
 	bar = tr.skins[skinid];
 
 	if ( !String::ICmp( type, "playerscale" ) ) {    // client is requesting scale from the skin rather than a model
-		Com_sprintf( name, MAX_QPATH, "%.2f %.2f %.2f", bar->scale[0], bar->scale[1], bar->scale[2] );
+		String::Sprintf( name, MAX_QPATH, "%.2f %.2f %.2f", bar->scale[0], bar->scale[1], bar->scale[2] );
 		return qtrue;
 	}
 
@@ -3400,7 +3400,7 @@ void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, in
 			continue;
 		}
 
-		Com_sprintf( filename, sizeof( filename ), "%s/%s", dir, fileList[j] );
+		String::Sprintf( filename, sizeof( filename ), "%s/%s", dir, fileList[j] );
 		ri.Printf( PRINT_ALL, "...cropping '%s'.. ", filename );
 
 		R_LoadImage( filename, &pic, &width, &height );
@@ -3462,7 +3462,7 @@ void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, in
 		c = lastNumber / 10;
 		lastNumber -= c * 10;
 		d = lastNumber;
-		Com_sprintf( outfilename, sizeof( outfilename ), "%s/spr%i%i%i.tga", filename, b, c, d );
+		String::Sprintf( outfilename, sizeof( outfilename ), "%s/spr%i%i%i.tga", filename, b, c, d );
 
 		if ( withAlpha ) {
 			SaveTGAAlpha( outfilename, &pic, width, height );

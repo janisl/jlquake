@@ -497,9 +497,9 @@ void Cvar_SetValue( const char *var_name, float value ) {
 	char val[32];
 
 	if ( value == (int)value ) {
-		Com_sprintf( val, sizeof( val ), "%i",(int)value );
+		String::Sprintf( val, sizeof( val ), "%i",(int)value );
 	} else {
-		Com_sprintf( val, sizeof( val ), "%f",value );
+		String::Sprintf( val, sizeof( val ), "%f",value );
 	}
 	Cvar_Set( var_name, val );
 }
@@ -776,16 +776,16 @@ void Cvar_WriteVariables( fileHandle_t f ) {
 			// write the latched value, even if it hasn't taken effect yet
 			if ( var->latchedString ) {
 				if ( var->flags & CVAR_UNSAFE ) {
-					Com_sprintf( buffer, sizeof( buffer ), "seta %s \"%s\" unsafe\n", var->name, var->latchedString );
+					String::Sprintf( buffer, sizeof( buffer ), "seta %s \"%s\" unsafe\n", var->name, var->latchedString );
 				} else {
-					Com_sprintf( buffer, sizeof( buffer ), "seta %s \"%s\"\n", var->name, var->latchedString );
+					String::Sprintf( buffer, sizeof( buffer ), "seta %s \"%s\"\n", var->name, var->latchedString );
 				}
 			} else
 			{
 				if ( var->flags & CVAR_UNSAFE ) {
-					Com_sprintf( buffer, sizeof( buffer ), "seta %s \"%s\" unsafe\n", var->name, var->string );
+					String::Sprintf( buffer, sizeof( buffer ), "seta %s \"%s\" unsafe\n", var->name, var->string );
 				} else {
-					Com_sprintf( buffer, sizeof( buffer ), "seta %s \"%s\"\n", var->name, var->string );
+					String::Sprintf( buffer, sizeof( buffer ), "seta %s \"%s\"\n", var->name, var->string );
 				}
 			}
 

@@ -97,7 +97,7 @@ void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
 	}
 
 	String::NCpyZ( oldPath, path, sizeof( oldPath ) );
-	Com_sprintf( path, maxSize, "%s%s", oldPath, extension );
+	String::Sprintf( path, maxSize, "%s%s", oldPath, extension );
 }
 
 //============================================================================
@@ -315,7 +315,7 @@ static char    *backup_text;
 
 void COM_BeginParseSession( const char *name ) {
 	com_lines = 0;
-	Com_sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
+	String::Sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
 }
 
 void COM_BackupParseSession( char **data_p ) {
@@ -701,24 +701,6 @@ char *Q_CleanStr( char *string ) {
 	*d = '\0';
 
 	return string;
-}
-
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) {
-	int len;
-	va_list argptr;
-
-	/*
-	C99 for vsnprintf:
-	return the number of characters  (excluding  the  trailing  '\0')
-	which would have been written to the final string if enough space had been available.
-	*/
-	va_start( argptr,fmt );
-	len = Q_vsnprintf( dest, size, fmt, argptr );
-	va_end( argptr );
-
-	if ( len >= size ) {
-		Com_Printf( "Com_sprintf: overflow of %i in %i\n", len, size );
-	}
 }
 
 // Ridah, ripped from l_bsp.c
@@ -1107,7 +1089,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 		return;
 	}
 
-	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
+	String::Sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
 	if ( String::Length( newi ) + String::Length( s ) > MAX_INFO_STRING ) {
 		Com_Printf( "Info string length exceeded\n" );
@@ -1151,7 +1133,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 		return;
 	}
 
-	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
+	String::Sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
 	if ( String::Length( newi ) + String::Length( s ) > BIG_INFO_STRING ) {
 		Com_Printf( "BIG Info string length exceeded\n" );

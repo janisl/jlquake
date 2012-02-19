@@ -482,9 +482,9 @@ char *FS_BuildOSPath( const char *base, const char *game, const char *qpath ) {
 		game = fs_gamedir;
 	}
 
-	Com_sprintf( temp, sizeof( temp ), "/%s/%s", game, qpath );
+	String::Sprintf( temp, sizeof( temp ), "/%s/%s", game, qpath );
 	FS_ReplaceSeparators( temp );
-	Com_sprintf( ospath[toggle], sizeof( ospath[0] ), "%s%s", base, temp );
+	String::Sprintf( ospath[toggle], sizeof( ospath[0] ), "%s%s", base, temp );
 
 	return ospath[toggle];
 }
@@ -1086,7 +1086,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 		Com_Error( ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed\n" );
 	}
 
-	Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d",PROTOCOL_VERSION );
+	String::Sprintf( demoExt, sizeof( demoExt ), ".dm_%d",PROTOCOL_VERSION );
 	// qpaths are not supposed to have a leading slash
 	if ( filename[0] == '/' || filename[0] == '\\' ) {
 		filename++;
@@ -1500,7 +1500,7 @@ int FS_DeleteDir( char *dirname, qboolean nonEmpty, qboolean recursive ) {
 				continue;
 			}
 
-			Com_sprintf( temp, sizeof( temp ), "%s/%s", dirname, pFiles[i] );
+			String::Sprintf( temp, sizeof( temp ), "%s/%s", dirname, pFiles[i] );
 
 			if ( !FS_DeleteDir( temp, nonEmpty, recursive ) ) {
 				return 0;
@@ -3008,7 +3008,7 @@ qboolean FS_VerifyOfficialPaks( void ) {
 			if ( sp->pack && sp->pack->checksum == fs_serverPaks[i] ) {
 				char packPath[MAX_QPATH];
 
-				Com_sprintf( packPath, sizeof( packPath ), "%s/%s", sp->pack->pakGamename, sp->pack->pakBasename );
+				String::Sprintf( packPath, sizeof( packPath ), "%s/%s", sp->pack->pakGamename, sp->pack->pakBasename );
 
 				if ( FS_idPak( packPath, BASEGAME ) ) {
 					for ( j = 0; j < numOfficialPaksOnServer; j++ ) {
@@ -3106,7 +3106,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 					char st[MAX_ZPATH];
 					// We already have one called this, we need to download it to another name
 					// Make something up with the checksum in it
-					Com_sprintf( st, sizeof( st ), "%s.%08x.pk3", fs_serverReferencedPakNames[i], fs_serverReferencedPaks[i] );
+					String::Sprintf( st, sizeof( st ), "%s.%08x.pk3", fs_serverReferencedPakNames[i], fs_serverReferencedPaks[i] );
 					String::Cat( neededpaks, len, st );
 				} else
 				{
@@ -3418,7 +3418,7 @@ const char *FS_GamePureChecksum( void ) {
 		// is the element a pak file?
 		if ( search->pack ) {
 			if ( search->pack->referenced & FS_QAGAME_REF ) {
-				Com_sprintf( info, sizeof( info ), "%d", search->pack->checksum );
+				String::Sprintf( info, sizeof( info ), "%d", search->pack->checksum );
 			}
 		}
 	}

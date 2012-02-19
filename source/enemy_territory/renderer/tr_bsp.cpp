@@ -1888,7 +1888,7 @@ static void R_LoadSubmodels( lump_t *l ) {
 
 		model->type = MOD_BRUSH;
 		model->model.bmodel = out;
-		Com_sprintf( model->name, sizeof( model->name ), "*%d", i );
+		String::Sprintf( model->name, sizeof( model->name ), "*%d", i );
 
 		for ( j = 0 ; j < 3 ; j++ ) {
 			out->bounds[0][j] = LittleFloat( in->mins[j] );

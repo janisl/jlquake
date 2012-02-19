@@ -338,9 +338,7 @@ public:
 	static char* RChr(const char* string, int c);
 	static int Atoi(const char* Str);
 	static float Atof(const char* Str);
-#if 0
 	static void Sprintf(char* Dest, int Size, const char* Fmt, ...);
-#endif
 
 	//	Replacements for standard character functions.
 	static int IsPrint(int c);

@@ -427,7 +427,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		Com_Memcpy( &temp, edit, sizeof( field_t ) );
 
 		if ( win_matchCount == 1 ) {
-			Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
+			String::Sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
 			if ( Cmd_Argc() == 1 ) {
 				String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
 			} else {
@@ -437,7 +437,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		} else
 		{
 			// multiple matches, complete to shortest
-			Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
+			String::Sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
 			win_acLength = edit->cursor = String::Length( edit->buffer );
 			Win_ConcatRemaining( temp.buffer, win_completionString );
 			showMatches = qtrue;
@@ -459,7 +459,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		Com_Memcpy( &temp, edit, sizeof( field_t ) );
 
 		// and print it
-		Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
+		String::Sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
 		edit->cursor = String::Length( edit->buffer );
 		Win_ConcatRemaining( temp.buffer, lastMatch );
 	}
