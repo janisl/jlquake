@@ -553,9 +553,6 @@ char    *Q_strlwr( char *s1 );
 char    *Q_strupr( char *s1 );
 char    *Q_strrchr( const char* string, int c );
 
-// buffer size safe library replacements
-void    Q_strcat( char *dest, int size, const char *src );
-
 // String::Length that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string

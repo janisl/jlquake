@@ -820,7 +820,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
 		for ( i = 0; i < numVersions; i++ ) {
 
 			String::Cpy( testname, "updates/" );
-			Q_strcat( testname, MAX_QPATH, versionMap[ i ].installer );
+			String::Cat( testname, MAX_QPATH, versionMap[ i ].installer );
 
 			if ( !String::ICmp( cl->downloadName, testname ) ) {
 				break;

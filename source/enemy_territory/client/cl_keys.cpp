@@ -1041,18 +1041,18 @@ static void keyConcatArgs( void ) {
 	char    *arg;
 
 	for ( i = 1 ; i < Cmd_Argc() ; i++ ) {
-		Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
+		String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
 		arg = Cmd_Argv( i );
 		while ( *arg ) {
 			if ( *arg == ' ' ) {
-				Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
+				String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
 				break;
 			}
 			arg++;
 		}
-		Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  Cmd_Argv( i ) );
+		String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  Cmd_Argv( i ) );
 		if ( *arg == ' ' ) {
-			Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
+			String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
 		}
 	}
 }
@@ -1067,7 +1067,7 @@ static void ConcatRemaining( const char *src, const char *start ) {
 	}
 
 	str += String::Length( start );
-	Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), str );
+	String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), str );
 }
 
 
@@ -1115,7 +1115,7 @@ static void CompleteCommand( void ) {
 		if ( matchCount == 1 ) {
 			Com_sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", currentMatch );
 			if ( Cmd_Argc() == 1 ) {
-				Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
+				String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
 			} else {
 				ConcatRemaining( temp.buffer, completionString );
 			}

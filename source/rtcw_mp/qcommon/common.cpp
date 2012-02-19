@@ -144,7 +144,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 			rd_flush( rd_buffer );
 			*rd_buffer = 0;
 		}
-		Q_strcat( rd_buffer, rd_buffersize, msg );
+		String::Cat( rd_buffer, rd_buffersize, msg );
 		// show_bug.cgi?id=51
 		// only flush the rcon buffer when it's necessary, avoid fragmenting
 		//rd_flush(rd_buffer);
@@ -3015,18 +3015,18 @@ static void keyConcatArgs( void ) {
 	char    *arg;
 
 	for ( i = 1 ; i < Cmd_Argc() ; i++ ) {
-		Q_strcat( completionField->buffer, sizeof( completionField->buffer ), " " );
+		String::Cat( completionField->buffer, sizeof( completionField->buffer ), " " );
 		arg = Cmd_Argv( i );
 		while ( *arg ) {
 			if ( *arg == ' ' ) {
-				Q_strcat( completionField->buffer, sizeof( completionField->buffer ),  "\"" );
+				String::Cat( completionField->buffer, sizeof( completionField->buffer ),  "\"" );
 				break;
 			}
 			arg++;
 		}
-		Q_strcat( completionField->buffer, sizeof( completionField->buffer ),  Cmd_Argv( i ) );
+		String::Cat( completionField->buffer, sizeof( completionField->buffer ),  Cmd_Argv( i ) );
 		if ( *arg == ' ' ) {
-			Q_strcat( completionField->buffer, sizeof( completionField->buffer ),  "\"" );
+			String::Cat( completionField->buffer, sizeof( completionField->buffer ),  "\"" );
 		}
 	}
 }
@@ -3041,7 +3041,7 @@ static void ConcatRemaining( const char *src, const char *start ) {
 	}
 
 	str += String::Length( start );
-	Q_strcat( completionField->buffer, sizeof( completionField->buffer ), str );
+	String::Cat( completionField->buffer, sizeof( completionField->buffer ), str );
 }
 
 /*
@@ -3083,7 +3083,7 @@ void Field_CompleteCommand( field_t *field ) {
 	if ( matchCount == 1 ) {
 		Com_sprintf( completionField->buffer, sizeof( completionField->buffer ), "\\%s", shortestMatch );
 		if ( Cmd_Argc() == 1 ) {
-			Q_strcat( completionField->buffer, sizeof( completionField->buffer ), " " );
+			String::Cat( completionField->buffer, sizeof( completionField->buffer ), " " );
 		} else {
 			ConcatRemaining( temp.buffer, completionString );
 		}

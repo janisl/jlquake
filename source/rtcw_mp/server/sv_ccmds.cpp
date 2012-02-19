@@ -469,7 +469,7 @@ void    SV_LoadGame_f( void ) {
 		String::NCpyZ( filename, va( "save/%s", filename ), sizeof( filename ) );
 	}
 	if ( !strstr( filename, ".svg" ) ) {
-		Q_strcat( filename, sizeof( filename ), ".svg" );
+		String::Cat( filename, sizeof( filename ), ".svg" );
 	}
 
 	size = FS_ReadFile( filename, NULL );

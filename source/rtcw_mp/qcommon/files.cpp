@@ -2843,33 +2843,33 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 
 			if ( dlstring ) {
 				// Remote name
-				Q_strcat( neededpaks, len, "@" );
-				Q_strcat( neededpaks, len, fs_serverReferencedPakNames[i] );
-				Q_strcat( neededpaks, len, ".pk3" );
+				String::Cat( neededpaks, len, "@" );
+				String::Cat( neededpaks, len, fs_serverReferencedPakNames[i] );
+				String::Cat( neededpaks, len, ".pk3" );
 
 				// Local name
-				Q_strcat( neededpaks, len, "@" );
+				String::Cat( neededpaks, len, "@" );
 				// Do we have one with the same name?
 				if ( FS_SV_FileExists( va( "%s.pk3", fs_serverReferencedPakNames[i] ) ) ) {
 					char st[MAX_ZPATH];
 					// We already have one called this, we need to download it to another name
 					// Make something up with the checksum in it
 					Com_sprintf( st, sizeof( st ), "%s.%08x.pk3", fs_serverReferencedPakNames[i], fs_serverReferencedPaks[i] );
-					Q_strcat( neededpaks, len, st );
+					String::Cat( neededpaks, len, st );
 				} else
 				{
-					Q_strcat( neededpaks, len, fs_serverReferencedPakNames[i] );
-					Q_strcat( neededpaks, len, ".pk3" );
+					String::Cat( neededpaks, len, fs_serverReferencedPakNames[i] );
+					String::Cat( neededpaks, len, ".pk3" );
 				}
 			} else
 			{
-				Q_strcat( neededpaks, len, fs_serverReferencedPakNames[i] );
-				Q_strcat( neededpaks, len, ".pk3" );
+				String::Cat( neededpaks, len, fs_serverReferencedPakNames[i] );
+				String::Cat( neededpaks, len, ".pk3" );
 				// Do we have one with the same name?
 				if ( FS_SV_FileExists( va( "%s.pk3", fs_serverReferencedPakNames[i] ) ) ) {
-					Q_strcat( neededpaks, len, " (local file exists with wrong checksum)" );
+					String::Cat( neededpaks, len, " (local file exists with wrong checksum)" );
 				}
-				Q_strcat( neededpaks, len, "\n" );
+				String::Cat( neededpaks, len, "\n" );
 			}
 		}
 	}
@@ -3157,7 +3157,7 @@ const char *FS_LoadedPakChecksums( void ) {
 			continue;
 		}
 
-		Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
+		String::Cat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 	}
 
 	return info;
@@ -3184,9 +3184,9 @@ const char *FS_LoadedPakNames( void ) {
 		}
 
 		if ( *info ) {
-			Q_strcat( info, sizeof( info ), " " );
+			String::Cat( info, sizeof( info ), " " );
 		}
-		Q_strcat( info, sizeof( info ), search->pack->pakBasename );
+		String::Cat( info, sizeof( info ), search->pack->pakBasename );
 	}
 
 	return info;
@@ -3213,7 +3213,7 @@ const char *FS_LoadedPakPureChecksums( void ) {
 			continue;
 		}
 
-		Q_strcat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
+		String::Cat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
 	}
 
 	// DO_LIGHT_DEDICATED
@@ -3241,7 +3241,7 @@ const char *FS_ReferencedPakChecksums( void ) {
 		// is the element a pak file?
 		if ( search->pack ) {
 			if ( search->pack->referenced || String::NICmp( search->pack->pakGamename, BASEGAME, String::Length( BASEGAME ) ) ) {
-				Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
+				String::Cat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 			}
 		}
 	}
@@ -3269,12 +3269,12 @@ const char *FS_ReferencedPakNames( void ) {
 		// is the element a pak file?
 		if ( search->pack ) {
 			if ( *info ) {
-				Q_strcat( info, sizeof( info ), " " );
+				String::Cat( info, sizeof( info ), " " );
 			}
 			if ( search->pack->referenced || String::NICmp( search->pack->pakGamename, BASEGAME, String::Length( BASEGAME ) ) ) {
-				Q_strcat( info, sizeof( info ), search->pack->pakGamename );
-				Q_strcat( info, sizeof( info ), "/" );
-				Q_strcat( info, sizeof( info ), search->pack->pakBasename );
+				String::Cat( info, sizeof( info ), search->pack->pakGamename );
+				String::Cat( info, sizeof( info ), "/" );
+				String::Cat( info, sizeof( info ), search->pack->pakBasename );
 			}
 		}
 	}
@@ -3309,7 +3309,7 @@ const char *FS_ReferencedPakPureChecksums( void ) {
 	for ( nFlags = FS_CGAME_REF; nFlags; nFlags = nFlags >> 1 ) {
 		if ( nFlags & FS_GENERAL_REF ) {
 			// add a delimter between must haves and general refs
-			//Q_strcat(info, sizeof(info), "@ ");
+			//String::Cat(info, sizeof(info), "@ ");
 			info[String::Length( info ) + 1] = '\0';
 			info[String::Length( info ) + 2] = '\0';
 			info[String::Length( info )] = '@';
@@ -3318,7 +3318,7 @@ const char *FS_ReferencedPakPureChecksums( void ) {
 		for ( search = fs_searchpaths ; search ; search = search->next ) {
 			// is the element a pak file and has it been referenced based on flag?
 			if ( search->pack && ( search->pack->referenced & nFlags ) ) {
-				Q_strcat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
+				String::Cat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
 				if ( nFlags & ( FS_CGAME_REF | FS_UI_REF ) ) {
 					break;
 				}
@@ -3328,12 +3328,12 @@ const char *FS_ReferencedPakPureChecksums( void ) {
 		}
 		if ( fs_fakeChkSum != 0 ) {
 			// only added if a non-pure file is referenced
-			Q_strcat( info, sizeof( info ), va( "%i ", fs_fakeChkSum ) );
+			String::Cat( info, sizeof( info ), va( "%i ", fs_fakeChkSum ) );
 		}
 	}
 	// last checksum is the encoded number of referenced pk3s
 	checksum ^= numPaks;
-	Q_strcat( info, sizeof( info ), va( "%i ", checksum ) );
+	String::Cat( info, sizeof( info ), va( "%i ", checksum ) );
 
 	return info;
 }
@@ -3472,11 +3472,11 @@ const char *FS_LoadedPakChecksums( void ) {
 
 		if ( String::Cmp( search->pack->pakBasename,"pak0" ) ) {
 			// this is a regular pk3
-			Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
+			String::Cat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 		} else
 		{
 			// this is the light pk3
-			Q_strcat( info, sizeof( info ), va( "%s ", pak_checksums ) );
+			String::Cat( info, sizeof( info ), va( "%s ", pak_checksums ) );
 		}
 	}
 
@@ -3507,15 +3507,15 @@ const char *FS_LoadedPakNames( void ) {
 		}
 
 		if ( *info ) {
-			Q_strcat( info, sizeof( info ), " " );
+			String::Cat( info, sizeof( info ), " " );
 		}
 		if ( String::Cmp( search->pack->pakBasename,"pak0" ) ) {
 			// regular pk3
-			Q_strcat( info, sizeof( info ), search->pack->pakBasename );
+			String::Cat( info, sizeof( info ), search->pack->pakBasename );
 		} else
 		{
 			// light pk3
-			Q_strcat( info, sizeof( info ), pak_names );
+			String::Cat( info, sizeof( info ), pak_names );
 		}
 	}
 
@@ -3555,14 +3555,14 @@ const char *FS_LoadedPakPureChecksums( void ) {
 
 		if ( String::Cmp( search->pack->pakBasename,"pak0" ) ) {
 			// this is a regular pk3
-			Q_strcat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
+			String::Cat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
 		} else
 		{
 			// this is the light pk3
 			// use this if you are running on shifted strings
-			Q_strcat( info, sizeof( info ), va( "%s ", FS_ShiftStr( pak_purechecksums[lookup_randomized[feed_index]], -13 - lookup_randomized[feed_index] ) ) );
+			String::Cat( info, sizeof( info ), va( "%s ", FS_ShiftStr( pak_purechecksums[lookup_randomized[feed_index]], -13 - lookup_randomized[feed_index] ) ) );
 			// use this if you are running on clear checksum strings instead of shifted ones
-			//Q_strcat( info, sizeof( info ), va("%s ", pak_purechecksums[lookup_randomized[feed_index]] ) );
+			//String::Cat( info, sizeof( info ), va("%s ", pak_purechecksums[lookup_randomized[feed_index]] ) );
 		}
 	}
 
@@ -3598,7 +3598,7 @@ const char *FS_ReferencedPakChecksums( void ) {
 			if ( search->pack->referenced ) {
 				if ( String::Cmp( search->pack->pakBasename, "pak0" ) ) {
 					// this is not the light pk3
-					Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
+					String::Cat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 				}
 			}
 		}
@@ -3630,14 +3630,14 @@ const char *FS_ReferencedPakNames( void ) {
 		// is the element a pak file?
 		if ( search->pack ) {
 			if ( *info ) {
-				Q_strcat( info, sizeof( info ), " " );
+				String::Cat( info, sizeof( info ), " " );
 			}
 			if ( search->pack->referenced ) {
 				if ( String::Cmp( search->pack->pakBasename, "pak0" ) ) {
 					// this is not the light pk3
-					Q_strcat( info, sizeof( info ), search->pack->pakGamename );
-					Q_strcat( info, sizeof( info ), "/" );
-					Q_strcat( info, sizeof( info ), search->pack->pakBasename );
+					String::Cat( info, sizeof( info ), search->pack->pakGamename );
+					String::Cat( info, sizeof( info ), "/" );
+					String::Cat( info, sizeof( info ), search->pack->pakBasename );
 				}
 			}
 		}
@@ -3991,9 +3991,9 @@ qboolean FS_VerifyPak( const char *pak ) {
 	for ( search = fs_searchpaths ; search ; search = search->next ) {
 		if ( search->pack ) {
 			String::NCpyZ( teststring, search->pack->pakGamename, sizeof( teststring ) );
-			Q_strcat( teststring, sizeof( teststring ), "/" );
-			Q_strcat( teststring, sizeof( teststring ), search->pack->pakBasename );
-			Q_strcat( teststring, sizeof( teststring ), ".pk3" );
+			String::Cat( teststring, sizeof( teststring ), "/" );
+			String::Cat( teststring, sizeof( teststring ), search->pack->pakBasename );
+			String::Cat( teststring, sizeof( teststring ), ".pk3" );
 			if ( !String::ICmp( teststring, pak ) ) {
 				return qtrue;
 			}

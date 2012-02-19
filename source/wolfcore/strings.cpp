@@ -973,25 +973,18 @@ void String::NCpyZ(char* dest, const char* src, int destSize)
 	dest[destSize - 1] = 0;
 }
 
-#if 0
-//==========================================================================
-//
-//	String::ToLower
-//
 //	Never goes past bounds or leaves without a terminating 0
-//
-//==========================================================================
-
-void String::Cat(char* Dest, int Size, const char* Src)
+void String::Cat(char* dest, int size, const char* src)
 {
-	int L1 = Length(Dest);
-	if (L1 >= Size)
+	int l1 = Length(dest);
+	if (l1 >= size)
 	{
 		throw Exception("Q_strcat: already overflowed");
 	}
-	NCpyZ(Dest + L1, Src, Size - L1);
+	NCpyZ(dest + l1, src, size - l1);
 }
 
+#if 0
 //==========================================================================
 //
 //	String::ToLower

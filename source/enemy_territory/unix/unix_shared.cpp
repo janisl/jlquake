@@ -396,12 +396,12 @@ char *Sys_DefaultHomePath( void ) {
 		String::NCpyZ( homePath, p, sizeof( homePath ) );
 #ifdef MACOS_X
 		#error FIXME
-		Q_strcat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinMP" );
+		String::Cat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinMP" );
 #else
 	#ifndef PRE_RELEASE_DEMO
-		Q_strcat( homePath, sizeof( homePath ), "/.etwolf" );
+		String::Cat( homePath, sizeof( homePath ), "/.etwolf" );
 	#else
-		Q_strcat( homePath, sizeof( homePath ), "/.etwolf-test" );
+		String::Cat( homePath, sizeof( homePath ), "/.etwolf-test" );
 	#endif
 #endif
 		if ( mkdir( homePath, 0777 ) ) {

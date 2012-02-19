@@ -472,7 +472,7 @@ void    SV_LoadGame_f( void ) {
 	}
 	// enforce .svg extension
 	if ( !strstr( filename, "." ) || String::NCmp( strstr( filename, "." ) + 1, "svg", 3 ) ) {
-		Q_strcat( filename, sizeof( filename ), ".svg" );
+		String::Cat( filename, sizeof( filename ), ".svg" );
 	}
 	// use '/' instead of '\' for directories
 	while ( strstr( filename, "\\" ) ) {

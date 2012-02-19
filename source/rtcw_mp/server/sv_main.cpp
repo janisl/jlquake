@@ -686,7 +686,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 		while ( cmd_aux[0] == ' ' )
 			cmd_aux++;
 
-		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
+		String::Cat( remaining, sizeof( remaining ), cmd_aux );
 
 		Cmd_ExecuteString( remaining );
 

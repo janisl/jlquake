@@ -603,7 +603,7 @@ void    SV_LoadGame_f( void ) {
 
 	// enforce .sav extension
 	if ( !strstr( filename, "." ) || String::NCmp( strstr( filename, "." ) + 1, "sav", 3 ) ) {
-		Q_strcat( filename, sizeof( filename ), ".sav" );
+		String::Cat( filename, sizeof( filename ), ".sav" );
 	}
 	// use '/' instead of '\\' for directories
 	while ( strstr( filename, "\\" ) ) {

@@ -897,12 +897,12 @@ void CL_UpdateLevelHunkUsage( void ) {
 					}
 				}
 			} else {    // send it to the outbuf
-				Q_strcat( outbuftrav, len + 1, token );
-				Q_strcat( outbuftrav, len + 1, " " );
+				String::Cat( outbuftrav, len + 1, token );
+				String::Cat( outbuftrav, len + 1, " " );
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {
-					Q_strcat( outbuftrav, len + 1, token );
-					Q_strcat( outbuftrav, len + 1, "\n" );
+					String::Cat( outbuftrav, len + 1, token );
+					String::Cat( outbuftrav, len + 1, "\n" );
 				} else {
 					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt\n" );
 				}

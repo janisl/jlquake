@@ -405,9 +405,9 @@ char *Sys_DefaultHomePath( void ) {
 	if ( ( p = getenv( "HOME" ) ) != NULL ) {
 		String::NCpyZ( homePath, p, sizeof( homePath ) );
 #ifdef MACOS_X
-		Q_strcat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinMP" );
+		String::Cat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinMP" );
 #else
-		Q_strcat( homePath, sizeof( homePath ), "/.wolf" );
+		String::Cat( homePath, sizeof( homePath ), "/.wolf" );
 #endif
 		if ( mkdir( homePath, 0777 ) ) {
 			if ( errno != EEXIST ) {

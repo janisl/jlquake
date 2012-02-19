@@ -344,18 +344,18 @@ static void Win_KeyConcatArgs( void ) {
 	char    *arg;
 
 	for ( i = 1 ; i < Cmd_Argc() ; i++ ) {
-		Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
+		String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
 		arg = Cmd_Argv( i );
 		while ( *arg ) {
 			if ( *arg == ' ' ) {
-				Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  "\"" );
+				String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  "\"" );
 				break;
 			}
 			arg++;
 		}
-		Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  Cmd_Argv( i ) );
+		String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  Cmd_Argv( i ) );
 		if ( *arg == ' ' ) {
-			Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  "\"" );
+			String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  "\"" );
 		}
 	}
 }
@@ -372,7 +372,7 @@ static void Win_ConcatRemaining( const char *src, const char *start ) {
 	}
 
 	str += String::Length( start );
-	Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), str );
+	String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), str );
 }
 
 
@@ -429,7 +429,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		if ( win_matchCount == 1 ) {
 			Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
 			if ( Cmd_Argc() == 1 ) {
-				Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
+				String::Cat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
 			} else {
 				Win_ConcatRemaining( temp.buffer, win_completionString );
 			}

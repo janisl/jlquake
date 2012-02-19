@@ -673,9 +673,6 @@ char    *Q_strrchr( const char* string, int c );
 #define Q_putenv putenv
 #endif
 
-// buffer size safe library replacements
-void    Q_strcat( char *dest, int size, const char *src );
-
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string

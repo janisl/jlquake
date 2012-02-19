@@ -336,8 +336,8 @@ public:
 	static void Cpy(char* dst, const char* src);
 	static void NCpy(char* dst, const char* src, size_t count);
 	static void NCpyZ(char* dest, const char* src, int destSize);
+	static void Cat(char* dest, int size, const char* src);
 #if 0
-	static void Cat(char* Dest, int Size, const char* Src);
 	static char* ToLower(char* S1);
 	static char* ToUpper(char* S1);
 	static char* RChr(const char* string, int C);

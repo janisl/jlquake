@@ -2710,8 +2710,8 @@ qboolean QGL_Init( const char *dllname ) {
 		// if we are not setuid, try current directory
 		if ( getuid() == saved_euid ) {
 			getcwd( fn, sizeof( fn ) );
-			Q_strcat( fn, sizeof( fn ), "/" );
-			Q_strcat( fn, sizeof( fn ), dllname );
+			String::Cat( fn, sizeof( fn ), "/" );
+			String::Cat( fn, sizeof( fn ), dllname );
 
 			if ( ( glw_state.OpenGLLib = dlopen( fn, RTLD_LAZY ) ) == 0 ) {
 				ri.Printf( PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf or current dir: %s\n", dllname, dlerror() );

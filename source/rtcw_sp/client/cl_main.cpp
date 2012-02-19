@@ -1151,7 +1151,7 @@ void CL_SendPureChecksums( void ) {
 	// "cp"
 	// "Yf"
 	Com_sprintf( cMsg, sizeof( cMsg ), "Yf " );
-	Q_strcat( cMsg, sizeof( cMsg ), pChecksums );
+	String::Cat( cMsg, sizeof( cMsg ), pChecksums );
 	for ( i = 0; i < 2; i++ ) {
 		cMsg[i] += 10;
 	}
@@ -2169,7 +2169,7 @@ static void CL_Cache_EndGather_f( void ) {
 
 	for ( i = 0; i < CACHE_NUMGROUPS; i++ ) {
 		String::NCpyZ( filename, cacheGroups[i].name, MAX_QPATH );
-		Q_strcat( filename, MAX_QPATH, ".cache" );
+		String::Cat( filename, MAX_QPATH, ".cache" );
 
 #ifdef __MACOS__    //DAJ MacOS file typing
 		{

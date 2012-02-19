@@ -339,13 +339,13 @@ char *Sys_DefaultHomePath( void ) {
 		String::NCpyZ( homePath, p, sizeof( homePath ) );
 // NOTE TTimo: this still used in OSX build?
 #ifdef MACOS_X
-		Q_strcat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinSP" );
+		String::Cat( homePath, sizeof( homePath ), "/Library/Application Support/WolfensteinSP" );
 #else
 #if defined( WOLF_SP_DEMO )
 		// use a different prefix to be safe
-		Q_strcat( homePath, sizeof( homePath ), "/.wolf-spdemo" );
+		String::Cat( homePath, sizeof( homePath ), "/.wolf-spdemo" );
 #else
-		Q_strcat( homePath, sizeof( homePath ), "/.wolf" );
+		String::Cat( homePath, sizeof( homePath ), "/.wolf" );
 #endif
 #endif
 		if ( mkdir( homePath, 0777 ) ) {

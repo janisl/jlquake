@@ -1483,8 +1483,8 @@ void CL_SendPureChecksums( void ) {
 
 	// "cp"
 	Com_sprintf( cMsg, sizeof( cMsg ), "Va " );
-	Q_strcat( cMsg, sizeof( cMsg ), va( "%d ", cl.serverId ) );
-	Q_strcat( cMsg, sizeof( cMsg ), pChecksums );
+	String::Cat( cMsg, sizeof( cMsg ), va( "%d ", cl.serverId ) );
+	String::Cat( cMsg, sizeof( cMsg ), pChecksums );
 	for ( i = 0; i < 2; i++ ) {
 		cMsg[i] += 13 + ( i * 2 );
 	}
@@ -2844,7 +2844,7 @@ static void CL_Cache_EndGather_f( void ) {
 
 	for ( i = 0; i < CACHE_NUMGROUPS; i++ ) {
 		String::NCpyZ( filename, cacheGroups[i].name, MAX_QPATH );
-		Q_strcat( filename, MAX_QPATH, ".cache" );
+		String::Cat( filename, MAX_QPATH, ".cache" );
 
 		handle = FS_FOpenFileWrite( filename );
 

@@ -47,7 +47,7 @@ typedef enum {
 } fsMode_t;
 
 void Com_Frame( void );
-void Q_strcat( char *dest, int size, const char *src );
+void String::Cat( char *dest, int size, const char *src );
 void __cdecl Com_sprintf( char *dest, int size, const char *fmt, ... );
 int FS_FOpenFileByMode( const char *qpath, fileHandle_t * f, fsMode_t mode );
 int FS_Write( const void *buffer, int len, fileHandle_t h );
@@ -104,7 +104,7 @@ void BuildErrorMessage( char* buffer, int size ) {
 		break;
 	}
 
-	Q_strcat( buffer, size, minibuffer );
+	String::Cat( buffer, size, minibuffer );
 }
 
 void BuildDump( char* buffer, int size ) {
@@ -121,7 +121,7 @@ void BuildDump( char* buffer, int size ) {
 					m_exPointers->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION ? m_exPointers->ExceptionRecord->ExceptionInformation[0] ? "write" : "read" : "NA",
 					m_exPointers->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION ? m_exPointers->ExceptionRecord->ExceptionInformation[1] : 0 );
 
-	Q_strcat( buffer, size, minibuffer );
+	String::Cat( buffer, size, minibuffer );
 }
 
 void BuildRegisters( char* buffer, int size ) {
@@ -175,7 +175,7 @@ void BuildRegisters( char* buffer, int size ) {
 				 );
 #endif
 
-	Q_strcat( buffer, size, minibuffer );
+	String::Cat( buffer, size, minibuffer );
 }
 
 void BuildStackTrace( char* buffer, int size ) {
@@ -201,19 +201,19 @@ void BuildStackTrace( char* buffer, int size ) {
 
 	for ( i = 0; i < MAX_STACK_TRACE_LINES; i++ ) {
 		if ( i == 0 ) {
-			Q_strcat( buffer, size, "Stack Trace    : " );
+			String::Cat( buffer, size, "Stack Trace    : " );
 		} else {
-			Q_strcat( buffer, size, "               : " );
+			String::Cat( buffer, size, "               : " );
 		}
 
 		for ( j = 0; j < 4 && i < MAX_STACK_TRACE_LINES; i++, j++ ) {
 			char minibuffer[16];
 			Com_sprintf( minibuffer, sizeof( minibuffer ), "%.8x ", stackTrace[i] );
 
-			Q_strcat( buffer, size, minibuffer );
+			String::Cat( buffer, size, minibuffer );
 		}
 
-		Q_strcat( buffer, size, "\r\n" );
+		String::Cat( buffer, size, "\r\n" );
 	}
 
 //		MessageBox( g_hWnd, buffer, "Arf!", MB_OK );
@@ -246,14 +246,14 @@ void RunFrame( void ) {
 
 		*buffer = '\0';
 
-		Q_strcat( buffer, sizeof( buffer ), g_Version );
-		Q_strcat( buffer, sizeof( buffer ), "\r\n" );
+		String::Cat( buffer, sizeof( buffer ), g_Version );
+		String::Cat( buffer, sizeof( buffer ), "\r\n" );
 
 		we->BuildDump(          buffer, sizeof( buffer ) );
 		we->BuildRegisters(     buffer, sizeof( buffer ) );
 		we->BuildStackTrace(    buffer, sizeof( buffer ) );
 
-		Q_strcat( buffer, sizeof( buffer ), "\r\n" );
+		String::Cat( buffer, sizeof( buffer ), "\r\n" );
 
 		FS_FOpenFileByMode( "crash.log", &handle, FS_APPEND );
 		if ( handle ) {
