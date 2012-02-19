@@ -2,6 +2,7 @@ set(WOLFCORE_FILES
 	common_defs.cpp
 	exception.cpp
 	../core/log.cpp
+	../core/memory.cpp
 	strings.cpp
 )
 

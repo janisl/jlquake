@@ -27,7 +27,9 @@
 #include "common_defs.h"	//	Basic types and defines
 #if 0
 #include "Common.h"
-#include "memory.h"		//	Memory allocation
+#endif
+#include "../core/memory.h"		//	Memory allocation
+#if 0
 #include "endian.h"		//	Endianes handling
 #endif
 #include "../core/exception.h"	//	Exception handling
