@@ -712,15 +712,6 @@ char *Q_CleanStr( char *string );
 int Q_strncasecmp( char *s1, char *s2, int n );
 int Q_strcasecmp( char *s1, char *s2 );
 // done.
-// TTimo
-// vsnprintf is ISO/IEC 9899:1999
-// abstracting this to make it portable
-#ifdef WIN32
-#define Q_vsnprintf _vsnprintf
-#else
-// TODO: Mac define?
-#define Q_vsnprintf vsnprintf
-#endif
 
 //=============================================
 
