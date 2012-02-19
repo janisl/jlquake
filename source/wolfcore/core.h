@@ -17,7 +17,6 @@
 #ifndef _CORE_H
 #define _CORE_H
 
-#if 0
 //	C headers
 #include <cstdio>
 #include <cstdlib>
@@ -26,6 +25,7 @@
 #include <cmath>
 
 #include "common_defs.h"	//	Basic types and defines
+#if 0
 #include "Common.h"
 #include "memory.h"		//	Memory allocation
 #include "endian.h"		//	Endianes handling

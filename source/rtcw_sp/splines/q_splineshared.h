@@ -67,11 +67,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 #include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 #ifdef WIN32                // mac doesn't have malloc.h

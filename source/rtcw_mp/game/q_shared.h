@@ -99,11 +99,6 @@ If you have questions concerning this license or the applicable additional terms
 #else
 
 #include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 #include <limits.h>
