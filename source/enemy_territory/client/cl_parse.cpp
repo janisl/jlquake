@@ -522,7 +522,6 @@ void CL_SystemInfoChanged( void ) {
 	}
 
 	s = Info_ValueForKey( systemInfo, "sv_cheats" );
-	Cvar_SetValue("sv_cheats", atoi( s ));    //bani
 	if ( atoi( s ) == 0 ) {
 		Cvar_SetCheatState();
 	}

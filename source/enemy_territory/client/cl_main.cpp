@@ -110,7 +110,6 @@ cvar_t  *cl_waveoffset; //bani
 
 cvar_t  *cl_packetloss; //bani
 cvar_t  *cl_packetdelay;    //bani
-extern cvar_t  *sv_cheats;  //bani
 
 clientActive_t cl;
 clientConnection_t clc;

@@ -442,9 +442,6 @@ extern cvar_t  *cl_language;
 extern cvar_t  *cl_profile;
 extern cvar_t  *cl_defaultProfile;
 
-//bani
-extern cvar_t* sv_cheats;
-
 //=================================================
 
 //
