@@ -37,7 +37,9 @@
 #if 0
 #include "info_string.h"
 #include "mathlib.h"
+#endif
 #include "files.h"
+#if 0
 #include "command_buffer.h"
 #include "console_variable.h"
 #include "crc.h"

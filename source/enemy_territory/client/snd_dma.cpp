@@ -2125,7 +2125,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime
 	String::NCpyZ( ss->loop, loopMusic, sizeof( ss->loop ) - 4 );
 
 	String::NCpyZ( ss->name, intro, sizeof( ss->name ) - 4 );
-	COM_DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
+	String::DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
 
 	// close the current sound if present, but DON'T reset s_rawend
 	if ( ss->file ) {
@@ -2414,7 +2414,7 @@ float S_StartStreamingSound( const char *intro, const char *loop, int entnum, in
 	}
 
 	String::NCpyZ( ss->name, intro, sizeof( ss->name ) - 4 );
-	COM_DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
+	String::DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
 
 	// close the current sound if present, but DON'T reset s_rawend
 	if ( ss->file ) {

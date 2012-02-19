@@ -46,44 +46,6 @@ float Com_Clamp( float min, float max, float value ) {
 	return value;
 }
 
-/*
-============
-COM_StripFilename
-============
-*/
-void COM_StripFilename( char *in, char *out ) {
-	char *end;
-	String::NCpyZ( out, in, String::Length( in ) );
-	end = String::SkipPath( out );
-	*end = 0;
-}
-
-/*
-==================
-COM_DefaultExtension
-==================
-*/
-void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
-	char oldPath[MAX_QPATH];
-	char    *src;
-
-//
-// if path doesn't have a .EXT, append extension
-// (extension should include the .)
-//
-	src = path + String::Length( path ) - 1;
-
-	while ( *src != '/' && src != path ) {
-		if ( *src == '.' ) {
-			return;                 // it has an extension
-		}
-		src--;
-	}
-
-	String::NCpyZ( oldPath, path, sizeof( oldPath ) );
-	String::Sprintf( path, maxSize, "%s%s", oldPath, extension );
-}
-
 //============================================================================
 /*
 ==================

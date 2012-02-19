@@ -39,9 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #define SHADER_MAX_INDEXES  ( 6 * SHADER_MAX_VERTEXES )
 
 
-// the maximum size of game reletive pathnames
-#define MAX_QPATH       64
-
 /*
 ========================================================================
 

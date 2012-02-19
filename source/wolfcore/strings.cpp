@@ -1370,7 +1370,6 @@ void String::StripExtension(const char* In, char* Out)
 	*Out = 0;
 }
 
-#if 0
 //==========================================================================
 //
 //	String::DefaultExtension
@@ -1479,6 +1478,7 @@ const char* String::FileExtension(const char* In)
 	return Exten;
 }
 
+#if 0
 //==========================================================================
 //
 //	String::Parse1

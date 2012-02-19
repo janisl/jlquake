@@ -275,7 +275,6 @@ typedef int clipHandle_t;
 #define BIG_INFO_KEY        8192
 #define BIG_INFO_VALUE      8192
 
-#define MAX_QPATH           64      // max length of a quake game pathname
 #define MAX_OSPATH          256     // max length of a filesystem pathname
 
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
@@ -705,8 +704,6 @@ float Com_Clamp( float min, float max, float value );
 
 void    COM_FixPath( char *pathname );
 void    COM_StripExtension2( const char *in, char *out, int destsize );
-void    COM_StripFilename( char *in, char *out );
-void    COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
 void    COM_BeginParseSession( const char *name );
 void    COM_RestoreParseSession( char **data_p );

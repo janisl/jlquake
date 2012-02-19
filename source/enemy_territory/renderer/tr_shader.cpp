@@ -3078,7 +3078,7 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 	} else {
 		String::NCpyZ( fileName, implicitMap, sizeof( fileName ) );
 	}
-	COM_DefaultExtension( fileName, sizeof( fileName ), ".tga" );
+	String::DefaultExtension( fileName, sizeof( fileName ), ".tga" );
 
 	// ydnar: implicit shaders were breaking nopicmip/nomipmaps
 	if ( !mipRawImage ) {

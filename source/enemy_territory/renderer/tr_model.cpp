@@ -97,7 +97,7 @@ void R_LoadModelShadow( model_t *mod ) {
 
 	// build name
 	COM_StripExtension2( mod->name, filename, sizeof( filename ) );
-	COM_DefaultExtension( filename, 1024, ".shadow" );
+	String::DefaultExtension( filename, 1024, ".shadow" );
 
 	// load file
 	ri.FS_ReadFile( filename, (void**) &buf );

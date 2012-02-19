@@ -353,12 +353,12 @@ public:
 	static char* SkipPath(char* PathName);
 	static const char* SkipPath(const char *PathName);
 	static void StripExtension(const char* In, char* Out);
-#if 0
 	static void DefaultExtension(char* Path, int MaxSize, const char* Extension);
 	static void FilePath(const char* In, char* Out);
 	static void FileBase(const char* In, char* Out);
 	static const char* FileExtension(const char* In);
 
+#if 0
 	static char* Parse1(const char** Data_p);
 	static char* Parse2(const char** Data_p);
 	static char* Parse3(const char** Data_p);
