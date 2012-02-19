@@ -119,6 +119,19 @@ char com_errorMessage[MAXPRINTMSG];
 void Com_WriteConfig_f( void );
 void CIN_CloseAllVideos();
 
+class QMainLog : public LogListener
+{
+public:
+	void serialise(const char* text)
+	{
+		Com_Printf("%s", text);
+	}
+	void develSerialise(const char* text)
+	{
+		Com_DPrintf("%s", text);
+	}
+} MainLog;
+
 //============================================================================
 
 static char *rd_buffer;
@@ -2696,6 +2709,8 @@ void Com_Init( char *commandLine ) {
 	}
 
 	GGameType = GAME_ET;
+	Log::addListener(&MainLog);
+
 	// bk001129 - do this before anything else decides to push events
 	Com_InitPushEvent();
 

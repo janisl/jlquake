@@ -61,7 +61,7 @@ void Log::writeLine(const char* format, ...)
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
-	strcat(string, "\n");
+	String::Cat(string, MAXPRINTMSG, "\n");
 
 	sendStringToListeners(string);
 }
@@ -103,7 +103,7 @@ void Log::develWriteLine(const char* format, ...)
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
-	strcat(string, "\n");
+	String::Cat(string, MAXPRINTMSG, "\n");
 
 	sendDevelStringToListeners(string);
 }

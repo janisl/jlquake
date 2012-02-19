@@ -1,6 +1,7 @@
 set(WOLFCORE_FILES
 	common_defs.cpp
 	exception.cpp
+	../core/log.cpp
 	strings.cpp
 )
 
