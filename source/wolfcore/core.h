@@ -29,7 +29,9 @@
 #include "Common.h"
 #include "memory.h"		//	Memory allocation
 #include "endian.h"		//	Endianes handling
-#include "exception.h"	//	Exception handling
+#endif
+#include "../core/exception.h"	//	Exception handling
+#if 0
 #include "log.h"		//	General logging interface
 #include "array.h"		//	Dynamic array
 #endif

@@ -2402,6 +2402,8 @@ Com_Init
 =================
 */
 void Com_Init( char *commandLine ) {
+	try
+	{
 	char    *s;
 	// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
 	volatile qboolean safeMode = qtrue;
@@ -2576,6 +2578,11 @@ void Com_Init( char *commandLine ) {
 
 	com_fullyInitialized = qtrue;
 	Com_Printf( "--- Common Initialization Complete ---\n" );
+	}
+	catch (Exception& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 //==================================================================
@@ -2717,7 +2724,8 @@ Com_Frame
 =================
 */
 void Com_Frame( void ) {
-
+	try
+	{
 	int msec, minMsec;
 	static int lastTime;
 	int key;
@@ -2881,6 +2889,15 @@ void Com_Frame( void ) {
 	key = lastTime * 0x87243987;
 
 	com_frameNumber++;
+	}
+	catch (DropException& e)
+	{
+		Com_Error(ERR_DROP, "%s", e.What());
+	}
+	catch (Exception& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 /*

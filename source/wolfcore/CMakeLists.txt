@@ -1,5 +1,6 @@
 set(WOLFCORE_FILES
 	common_defs.cpp
+	exception.cpp
 	strings.cpp
 )
 
