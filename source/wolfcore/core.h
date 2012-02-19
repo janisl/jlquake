@@ -32,7 +32,9 @@
 #include "exception.h"	//	Exception handling
 #include "log.h"		//	General logging interface
 #include "array.h"		//	Dynamic array
+#endif
 #include "strings.h"	//	Strings
+#if 0
 #include "info_string.h"
 #include "mathlib.h"
 #include "files.h"

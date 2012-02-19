@@ -1,5 +1,6 @@
 set(WOLFCORE_FILES
 	common_defs.cpp
+	strings.cpp
 )
 
 add_library(wolfcore STATIC ${WOLFCORE_FILES})
