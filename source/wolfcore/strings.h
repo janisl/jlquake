@@ -331,8 +331,8 @@ public:
 	static int Length(const char* str);
 	static int Cmp(const char* s1, const char* s2);
 	static int NCmp(const char* s1, const char* s2, size_t n);
+	static int ICmp(const char* s1, const char* s2);
 #if 0
-	static int ICmp(const char* S1, const char* S2);
 	static int NICmp(const char* S1, const char* S2, size_t N);
 	static void Cpy(char* Dst, const char* Src);
 #endif

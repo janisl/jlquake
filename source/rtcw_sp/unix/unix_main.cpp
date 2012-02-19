@@ -696,7 +696,7 @@ void *Sys_LoadDll( const char *name,
 			if ( !libHandle ) {
 				Com_Printf( "failed (%s)\n", dlerror() );
 
-				if ( String::Length( gamedir ) && Q_stricmp( gamedir, BASEGAME ) ) { // begin BASEGAME != fs_game section
+				if ( String::Length( gamedir ) && String::ICmp( gamedir, BASEGAME ) ) { // begin BASEGAME != fs_game section
 
 					// media-only mods: no DLL whatsoever in the fs_game
 					// start the loop again using the hardcoded BASEDIRNAME

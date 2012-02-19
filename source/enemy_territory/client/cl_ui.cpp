@@ -418,16 +418,16 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 	res = 0;
 	switch ( sortKey ) {
 	case SORT_HOST:
-		//%	res = Q_stricmp( server1->hostName, server2->hostName );
+		//%	res = String::ICmp( server1->hostName, server2->hostName );
 		Q_strncpyz( name1, server1->hostName, sizeof( name1 ) );
 		Q_CleanStr( name1 );
 		Q_strncpyz( name2, server2->hostName, sizeof( name2 ) );
 		Q_CleanStr( name2 );
-		res = Q_stricmp( name1, name2 );
+		res = String::ICmp( name1, name2 );
 		break;
 
 	case SORT_MAP:
-		res = Q_stricmp( server1->mapName, server2->mapName );
+		res = String::ICmp( server1->mapName, server2->mapName );
 		break;
 	case SORT_CLIENTS:
 		if ( server1->clients < server2->clients ) {

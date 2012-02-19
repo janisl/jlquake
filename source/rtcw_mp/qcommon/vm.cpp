@@ -421,7 +421,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )(intptr_t *),
 
 	// see if we already have the VM
 	for ( i = 0 ; i < MAX_VM ; i++ ) {
-		if ( !Q_stricmp( vmTable[i].name, module ) ) {
+		if ( !String::ICmp( vmTable[i].name, module ) ) {
 			vm = &vmTable[i];
 			return vm;
 		}

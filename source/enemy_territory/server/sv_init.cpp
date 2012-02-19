@@ -406,7 +406,7 @@ void SV_SetExpectedHunkUsage( char *mapname ) {
 		// now parse the file, filtering out the current map
 		buftrav = buf;
 		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[0] ) {
-			if ( !Q_stricmp( token, mapname ) ) {
+			if ( !String::ICmp( token, mapname ) ) {
 				// found a match
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {

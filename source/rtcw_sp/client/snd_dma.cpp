@@ -380,7 +380,7 @@ static sfx_t *S_FindName( const char *name ) {
 	sfx = snd.sfxHash[hash];
 	// see if already loaded
 	while ( sfx ) {
-		if ( !Q_stricmp( sfx->soundName, name ) ) {
+		if ( !String::ICmp( sfx->soundName, name ) ) {
 			return sfx;
 		}
 		sfx = sfx->next;
@@ -1887,7 +1887,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime
 
 	Cvar_Set( "s_currentMusic", "" ); //----(SA)	so the savegame will have the right music
 
-	if ( !Q_stricmp( loop, "onetimeonly" ) ) { // don't change the loop if you're playing a single hit
+	if ( !String::ICmp( loop, "onetimeonly" ) ) { // don't change the loop if you're playing a single hit
 		Q_strncpyz( loopMusic, ss->loop, sizeof( loopMusic ) );
 	}
 

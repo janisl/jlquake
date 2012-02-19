@@ -1366,7 +1366,7 @@ int Key_StringToKeynum( char *str ) {
 
 	// scan for a text match
 	for ( kn = keynames ; kn->name ; kn++ ) {
-		if ( !Q_stricmp( str,kn->name ) ) {
+		if ( !String::ICmp( str,kn->name ) ) {
 			return kn->keynum;
 		}
 	}
@@ -1491,7 +1491,7 @@ int Key_GetKey( const char *binding ) {
 
 	if ( binding ) {
 		for ( i = 0 ; i < 256 ; i++ ) {
-			if ( keys[i].binding && Q_stricmp( binding, keys[i].binding ) == 0 ) {
+			if ( keys[i].binding && String::ICmp( binding, keys[i].binding ) == 0 ) {
 				return i;
 			}
 		}
@@ -1689,7 +1689,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		CL_ClearKeys();
 		// allow only attack command input
 		kb = keys[key].binding;
-		if ( !Q_stricmp( kb, "+attack" ) ) {
+		if ( !String::ICmp( kb, "+attack" ) ) {
 			// clear the stats out, ignore the keypress
 			Cvar_Set( "g_missionStats", "xx" );       // just remove the stats, but still wait until we're done loading, and player has hit fire to begin playing
 			Cvar_Set( "cl_waitForFire", "0" );
@@ -1706,7 +1706,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		CL_ClearKeys();
 		// allow only attack command input
 		kb = keys[key].binding;
-		if ( !Q_stricmp( kb, "+attack" ) ) {
+		if ( !String::ICmp( kb, "+attack" ) ) {
 			// clear the stats out, ignore the keypress
 			Cvar_Set( "com_expectedhunkusage", "-1" );
 			Cvar_Set( "g_missionStats", "0" );
@@ -1813,13 +1813,13 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 			// when in the notebook, check for the key bound to "notebook" and allow that as an escape key
 
 			if ( kb ) {
-				if ( !Q_stricmp( "notebook", kb ) ) {
+				if ( !String::ICmp( "notebook", kb ) ) {
 					if ( VM_Call( uivm, UI_GET_ACTIVE_MENU ) == UIMENU_NOTEBOOK ) {
 						key = K_ESCAPE;
 					}
 				}
 
-				if ( !Q_stricmp( "help", kb ) ) {
+				if ( !String::ICmp( "help", kb ) ) {
 					if ( VM_Call( uivm, UI_GET_ACTIVE_MENU ) == UIMENU_HELP ) {
 						key = K_ESCAPE;
 					}

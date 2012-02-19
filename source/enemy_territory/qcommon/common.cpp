@@ -449,8 +449,8 @@ qboolean Com_SafeMode( void ) {
 
 	for ( i = 0 ; i < com_numConsoleLines ; i++ ) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( !Q_stricmp( Cmd_Argv( 0 ), "safe" )
-			 || !Q_stricmp( Cmd_Argv( 0 ), "cvar_restart" ) ) {
+		if ( !String::ICmp( Cmd_Argv( 0 ), "safe" )
+			 || !String::ICmp( Cmd_Argv( 0 ), "cvar_restart" ) ) {
 			com_consoleLines[i][0] = 0;
 			return qtrue;
 		}
@@ -1537,7 +1537,7 @@ void Hunk_SmallLog( void ) {
 			if ( block->line != block2->line ) {
 				continue;
 			}
-			if ( Q_stricmp( block->file, block2->file ) ) {
+			if ( String::ICmp( block->file, block2->file ) ) {
 				continue;
 			}
 			size += block2->size;
@@ -2531,39 +2531,39 @@ void Com_GetGameInfo() {
 		buf = f;
 
 		while ( ( token = COM_Parse( &buf ) ) != NULL && token[0] ) {
-			if ( !Q_stricmp( token, "spEnabled" ) ) {
+			if ( !String::ICmp( token, "spEnabled" ) ) {
 				com_gameInfo.spEnabled = qtrue;
-			} else if ( !Q_stricmp( token, "spGameTypes" ) ) {
+			} else if ( !String::ICmp( token, "spGameTypes" ) ) {
 				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.spGameTypes |= ( 1 << atoi( token ) );
 				}
-			} else if ( !Q_stricmp( token, "defaultSPGameType" ) ) {
+			} else if ( !String::ICmp( token, "defaultSPGameType" ) ) {
 				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.defaultSPGameType = atoi( token );
 				} else {
 					FS_FreeFile( f );
 					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
 				}
-			} else if ( !Q_stricmp( token, "coopGameTypes" ) ) {
+			} else if ( !String::ICmp( token, "coopGameTypes" ) ) {
 
 				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.coopGameTypes |= ( 1 << atoi( token ) );
 				}
-			} else if ( !Q_stricmp( token, "defaultCoopGameType" ) ) {
+			} else if ( !String::ICmp( token, "defaultCoopGameType" ) ) {
 				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.defaultCoopGameType = atoi( token );
 				} else {
 					FS_FreeFile( f );
 					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
 				}
-			} else if ( !Q_stricmp( token, "defaultGameType" ) ) {
+			} else if ( !String::ICmp( token, "defaultGameType" ) ) {
 				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.defaultGameType = atoi( token );
 				} else {
 					FS_FreeFile( f );
 					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
 				}
-			} else if ( !Q_stricmp( token, "usesProfiles" ) ) {
+			} else if ( !String::ICmp( token, "usesProfiles" ) ) {
 				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.usesProfiles = atoi( token );
 				} else {

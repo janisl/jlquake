@@ -417,10 +417,10 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		if ( r_ati_truform_pointmode->modified ) {
 			r_ati_truform_pointmode->modified = qfalse;
 			// GR - shorten the mode name
-			if ( !Q_stricmp( r_ati_truform_pointmode->string, "LINEAR" ) ) {
+			if ( !String::ICmp( r_ati_truform_pointmode->string, "LINEAR" ) ) {
 				glConfig.ATIPointMode = (int)GL_PN_TRIANGLES_POINT_MODE_LINEAR_ATI;
 				// GR - fix point mode change
-			} else if ( !Q_stricmp( r_ati_truform_pointmode->string, "CUBIC" ) ) {
+			} else if ( !String::ICmp( r_ati_truform_pointmode->string, "CUBIC" ) ) {
 				glConfig.ATIPointMode = (int)GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI;
 			} else {
 				// bogus value, set to valid
@@ -434,10 +434,10 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		if ( r_ati_truform_normalmode->modified ) {
 			r_ati_truform_normalmode->modified = qfalse;
 			// GR - shorten the mode name
-			if ( !Q_stricmp( r_ati_truform_normalmode->string, "LINEAR" ) ) {
+			if ( !String::ICmp( r_ati_truform_normalmode->string, "LINEAR" ) ) {
 				glConfig.ATINormalMode = (int)GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI;
 				// GR - fix normal mode change
-			} else if ( !Q_stricmp( r_ati_truform_normalmode->string, "QUADRATIC" ) ) {
+			} else if ( !String::ICmp( r_ati_truform_normalmode->string, "QUADRATIC" ) ) {
 				glConfig.ATINormalMode = (int)GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI;
 			} else {
 				// bogus value, set to valid
@@ -455,11 +455,11 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 	// fog control
 	if ( glConfig.NVFogAvailable && r_nv_fogdist_mode->modified ) {
 		r_nv_fogdist_mode->modified = qfalse;
-		if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV" ) ) {
+		if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV" ) ) {
 			glConfig.NVFogMode = (int)GL_EYE_PLANE_ABSOLUTE_NV;
-		} else if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) ) {
+		} else if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) ) {
 			glConfig.NVFogMode = (int)GL_EYE_PLANE;
-		} else if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) ) {
+		} else if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) ) {
 			glConfig.NVFogMode = (int)GL_EYE_RADIAL_NV;
 		} else {
 			// in case this was really 'else', store a valid value for next time
@@ -510,7 +510,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		if ( stereoFrame != STEREO_CENTER ) {
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}
-		if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) ) {
+		if ( !String::ICmp( r_drawBuffer->string, "GL_FRONT" ) ) {
 			cmd->buffer = (int)GL_FRONT;
 		} else {
 			cmd->buffer = (int)GL_BACK;

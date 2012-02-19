@@ -264,7 +264,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 
 	do {
 		if ( findinfo.attrib & _A_SUBDIR ) {
-			if ( Q_stricmp( findinfo.name, "." ) && Q_stricmp( findinfo.name, ".." ) ) {
+			if ( String::ICmp( findinfo.name, "." ) && String::ICmp( findinfo.name, ".." ) ) {
 				if ( String::Length( subdirs ) ) {
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s\\%s", subdirs, findinfo.name );
 				} else {
@@ -1158,7 +1158,7 @@ void Sys_Init( void ) {
 	// figure out our CPU
 	//
 	Cvar_Get( "sys_cpustring", "detect", 0 );
-	if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "detect" ) ) {
+	if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "detect" ) ) {
 		Com_Printf( "...detecting CPU, found " );
 
 		cpuid = Sys_GetProcessorId();
@@ -1193,17 +1193,17 @@ void Sys_Init( void ) {
 	} else
 	{
 		Com_Printf( "...forcing CPU type to " );
-		if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) ) {
+		if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) ) {
 			cpuid = CPUID_GENERIC;
-		} else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )     {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )     {
 			cpuid = CPUID_INTEL_PENTIUM;
-		} else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )     {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )     {
 			cpuid = CPUID_INTEL_MMX;
-		} else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )     {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )     {
 			cpuid = CPUID_AMD_3DNOW;
-		} else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )     {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )     {
 			cpuid = CPUID_INTEL_KATMAI;
-		} else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )     {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )     {
 			cpuid = CPUID_AXP;
 		} else
 		{

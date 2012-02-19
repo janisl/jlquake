@@ -239,7 +239,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	In case of ftp download, we leave no timeout during connect phase cause of libwww bugs
 		show_bug.cgi?id=605
 	*/
-	if ( !Q_stricmp( access, "ftp" ) ) {
+	if ( !String::ICmp( access, "ftp" ) ) {
 		dl_is_ftp = 1;
 		HTHost_setEventTimeout( -1 );
 	} else {
@@ -250,7 +250,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	dl_request = HTRequest_new();
 
 	/* HTTP Basic Auth */
-	if ( !Q_stricmp( access, "http" ) ) {
+	if ( !String::ICmp( access, "http" ) ) {
 		HTBasic *basic;
 		login = HTParse( remoteName,"", PARSE_HOST );
 		path = HTParse( remoteName,"", PARSE_PATH + PARSE_PUNCTUATION );

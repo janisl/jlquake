@@ -543,7 +543,7 @@ void NET_GetInterfaces( void ) {
 				unsigned long ip_a, ip_m;
 //				Com_Printf( "IP Address: %s\n", pIPAddrString->IpAddress.String );
 //				Com_Printf( "IP Mask: %s\n", pIPAddrString->IpMask.String );
-				if ( !Q_stricmp( "127.0.0.1", pIPAddrString->IpAddress.String ) ) {
+				if ( !String::ICmp( "127.0.0.1", pIPAddrString->IpAddress.String ) ) {
 					foundloopback = qtrue;
 				}
 				ip_a = ntohl( inet_addr( pIPAddrString->IpAddress.String ) );
@@ -617,7 +617,7 @@ int NET_IPSocket( char *net_interface, int port ) {
 		return 0;
 	}
 
-	if ( !net_interface || !net_interface[0] || !Q_stricmp( net_interface, "localhost" ) ) {
+	if ( !net_interface || !net_interface[0] || !String::ICmp( net_interface, "localhost" ) ) {
 		address.sin_addr.s_addr = INADDR_ANY;
 	} else {
 		Sys_StringToSockaddr( net_interface, (struct sockaddr *)&address );

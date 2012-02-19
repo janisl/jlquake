@@ -101,7 +101,7 @@ static cvar_t *Cvar_FindVar( const char *var_name ) {
 	hash = generateHashValue( var_name );
 
 	for ( var = hashTable[hash] ; var ; var = var->hashNext ) {
-		if ( !Q_stricmp( var_name, var->name ) ) {
+		if ( !String::ICmp( var_name, var->name ) ) {
 			return var;
 		}
 	}
@@ -769,7 +769,7 @@ void Cvar_WriteVariables( fileHandle_t f ) {
 	char buffer[1024];
 
 	for ( var = cvar_vars ; var ; var = var->next ) {
-		if ( Q_stricmp( var->name, "cl_cdkey" ) == 0 ) {
+		if ( String::ICmp( var->name, "cl_cdkey" ) == 0 ) {
 			continue;
 		}
 		if ( var->flags & CVAR_ARCHIVE ) {

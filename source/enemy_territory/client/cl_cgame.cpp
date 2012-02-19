@@ -445,7 +445,7 @@ void CL_SetExpectedHunkUsage( const char *mapname ) {
 		// now parse the file, filtering out the current map
 		buftrav = buf;
 		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[0] ) {
-			if ( !Q_stricmp( token, (char *)mapname ) ) {
+			if ( !String::ICmp( token, (char *)mapname ) ) {
 				// found a match
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && *token ) {
@@ -1072,7 +1072,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 		outbuftrav = outbuf;
 		outbuftrav[0] = '\0';
 		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[0] ) {
-			if ( !Q_stricmp( token, cl.mapname ) ) {
+			if ( !String::ICmp( token, cl.mapname ) ) {
 				// found a match
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {
@@ -1377,7 +1377,7 @@ void CL_SetCGameTime( void ) {
 
 	if ( cl.snap.serverTime < cl.oldFrameServerTime ) {
 		// Ridah, if this is a localhost, then we are probably loading a savegame
-		if ( !Q_stricmp( cls.servername, "localhost" ) ) {
+		if ( !String::ICmp( cls.servername, "localhost" ) ) {
 			// do nothing?
 			CL_FirstSnapshot();
 		} else {

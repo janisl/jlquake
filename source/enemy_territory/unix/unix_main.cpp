@@ -653,7 +653,7 @@ qboolean CopyDLLForMod( char **p_fn, const char* gamedir, const char *pwdpath, c
 	char *fn = *p_fn;
 
 	// this may be a media only mod, so next we need to search in the basegame
-	if ( String::Length( gamedir ) && Q_stricmp( gamedir, BASEGAME ) ) {
+	if ( String::Length( gamedir ) && String::ICmp( gamedir, BASEGAME ) ) {
 		// walk for a base file
 		// NOTE TTimo: we don't attempt to validate version-wise, it could be a problem
 		// (acceptable tradeoff I say, should not cause major issues)
@@ -753,7 +753,7 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 		cvar_t *lastVersion;
 		cvar_name = va( "cl_lastVersion%s", name );
 		lastVersion = Cvar_Get( cvar_name, "(uninitialized)", CVAR_ARCHIVE );
-		if ( Q_stricmp( Cvar_VariableString( "version" ), lastVersion->string ) ) {
+		if ( String::ICmp( Cvar_VariableString( "version" ), lastVersion->string ) ) {
 			Com_DPrintf( "clearing non matching version of %s .so: %s\n", name, fn );
 			if ( remove( fn ) == -1 ) {
 				Com_Error( ERR_FATAL, "failed to remove outdated '%s' file:\n\"%s\"\n", fn, strerror( errno ) );

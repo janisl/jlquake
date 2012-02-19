@@ -580,7 +580,7 @@ void CL_PlayDemo_f( void ) {
 	// open the demo file
 	arg = Cmd_Argv( 1 );
 	Com_sprintf( extension, sizeof( extension ), ".dm_%d", PROTOCOL_VERSION );
-	if ( !Q_stricmp( arg + String::Length( arg ) - String::Length( extension ), extension ) ) {
+	if ( !String::ICmp( arg + String::Length( arg ) - String::Length( extension ), extension ) ) {
 		Com_sprintf( name, sizeof( name ), "demos/%s", arg );
 	} else {
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, PROTOCOL_VERSION );
@@ -733,7 +733,7 @@ void CL_MapLoading( void ) {
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
-	if ( cls.state >= CA_CONNECTED && !Q_stricmp( cls.servername, "localhost" ) ) {
+	if ( cls.state >= CA_CONNECTED && !String::ICmp( cls.servername, "localhost" ) ) {
 		cls.state = CA_CONNECTED;       // so the connect screen is drawn
 		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
@@ -1956,7 +1956,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToString( from ), c );
 
 	// challenge from the server we are connecting to
-	if ( !Q_stricmp( c, "challengeResponse" ) ) {
+	if ( !String::ICmp( c, "challengeResponse" ) ) {
 		if ( cls.state != CA_CONNECTING ) {
 			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
 		} else {
@@ -1980,7 +1980,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	}
 
 	// server connection
-	if ( !Q_stricmp( c, "connectResponse" ) ) {
+	if ( !String::ICmp( c, "connectResponse" ) ) {
 		if ( cls.state >= CA_CONNECTED ) {
 			Com_Printf( "Dup connect received.  Ignored.\n" );
 			return;
@@ -2011,50 +2011,50 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	}
 
 	// server responding to an info broadcast
-	if ( !Q_stricmp( c, "infoResponse" ) ) {
+	if ( !String::ICmp( c, "infoResponse" ) ) {
 		CL_ServerInfoPacket( from, msg );
 		return;
 	}
 
 	// server responding to a get playerlist
-	if ( !Q_stricmp( c, "statusResponse" ) ) {
+	if ( !String::ICmp( c, "statusResponse" ) ) {
 		CL_ServerStatusResponse( from, msg );
 		return;
 	}
 
 	// a disconnect message from the server, which will happen if the server
 	// dropped the connection but it is still getting packets from us
-	if ( !Q_stricmp( c, "disconnect" ) ) {
+	if ( !String::ICmp( c, "disconnect" ) ) {
 		CL_DisconnectPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "echo" ) ) {
+	if ( !String::ICmp( c, "echo" ) ) {
 		NET_OutOfBandPrint( NS_CLIENT, from, "%s", Cmd_Argv( 1 ) );
 		return;
 	}
 
 	// cd check
-	if ( !Q_stricmp( c, "keyAuthorize" ) ) {
+	if ( !String::ICmp( c, "keyAuthorize" ) ) {
 		// we don't use these now, so dump them on the floor
 		return;
 	}
 
 	// global MOTD from id
-	if ( !Q_stricmp( c, "motd" ) ) {
+	if ( !String::ICmp( c, "motd" ) ) {
 		CL_MotdPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "print" ) ) {
+	if ( !String::ICmp( c, "print" ) ) {
 		CL_PrintPacket( from, msg );
 		return;
 	}
 
 	// DHM - Nerve :: Auto-update server response message
-	if ( !Q_stricmp( c, "updateResponse" ) ) {
+	if ( !String::ICmp( c, "updateResponse" ) ) {
 		CL_UpdateInfoPacket( from );
 		return;
 	}
@@ -3132,7 +3132,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 
 	// Arnout: if this isn't the correct game, ignore it
 	gameName = Info_ValueForKey( infoString, "gamename" );
-	if ( !gameName[0] || Q_stricmp( gameName, GAMENAME_STRING ) ) {
+	if ( !gameName[0] || String::ICmp( gameName, GAMENAME_STRING ) ) {
 		Com_DPrintf( "Different game info packet: %s\n", infoString );
 		return;
 	}
@@ -3260,7 +3260,7 @@ void CL_UpdateInfoPacket( netadr_t from ) {
 
 	Cvar_Set( "cl_updateavailable", Cmd_Argv( 1 ) );
 
-	if ( !Q_stricmp( cl_updateavailable->string, "1" ) ) {
+	if ( !String::ICmp( cl_updateavailable->string, "1" ) ) {
 		Cvar_Set( "cl_updatefiles", Cmd_Argv( 2 ) );
 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_WM_AUTOUPDATE );
 	}
@@ -3952,7 +3952,7 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 
 	sprintf( chs, "%02x", sum );
 
-	if ( checksum && !Q_stricmp( chs, checksum ) ) {
+	if ( checksum && !String::ICmp( chs, checksum ) ) {
 		return qtrue;
 	}
 
@@ -4105,7 +4105,7 @@ static trans_t* LookupTrans( char *original, char *translated[MAX_LANGUAGES], qb
 	hash = generateHashValue( original );
 
 	for ( t = transTable[hash]; t; prev = t, t = t->next ) {
-		if ( !Q_stricmp( original, t->original ) ) {
+		if ( !String::ICmp( original, t->original ) ) {
 			if ( isLoading ) {
 				Com_DPrintf( S_COLOR_YELLOW "WARNING: Duplicate string found: \"%s\"\n", original );
 			}
@@ -4333,9 +4333,9 @@ void CL_LoadTransTable( const char *fileName ) {
 
 	do {
 		token = COM_Parse( &text_p );
-		if ( Q_stricmp( "{", token ) ) {
+		if ( String::ICmp( "{", token ) ) {
 			// parse version number
-			if ( !Q_stricmp( "#version", token ) ) {
+			if ( !String::ICmp( "#version", token ) ) {
 				token = COM_Parse( &text_p );
 				strcpy( cl.translationVersion, token );
 				continue;
@@ -4346,7 +4346,7 @@ void CL_LoadTransTable( const char *fileName ) {
 
 		// english
 		token = COM_Parse( &text_p );
-		if ( Q_stricmp( "english", token ) ) {
+		if ( String::ICmp( "english", token ) ) {
 			aborted = qtrue;
 			break;
 		}
@@ -4360,7 +4360,7 @@ void CL_LoadTransTable( const char *fileName ) {
 
 		// french
 		token = COM_Parse( &text_p );
-		if ( Q_stricmp( "french", token ) ) {
+		if ( String::ICmp( "french", token ) ) {
 			aborted = qtrue;
 			break;
 		}
@@ -4375,7 +4375,7 @@ void CL_LoadTransTable( const char *fileName ) {
 
 		// german
 		token = COM_Parse( &text_p );
-		if ( Q_stricmp( "german", token ) ) {
+		if ( String::ICmp( "german", token ) ) {
 			aborted = qtrue;
 			break;
 		}
@@ -4390,7 +4390,7 @@ void CL_LoadTransTable( const char *fileName ) {
 
 		// italian
 		token = COM_Parse( &text_p );
-		if ( Q_stricmp( "italian", token ) ) {
+		if ( String::ICmp( "italian", token ) ) {
 			aborted = qtrue;
 			break;
 		}
@@ -4405,7 +4405,7 @@ void CL_LoadTransTable( const char *fileName ) {
 
 		// spanish
 		token = COM_Parse( &text_p );
-		if ( Q_stricmp( "spanish", token ) ) {
+		if ( String::ICmp( "spanish", token ) ) {
 			aborted = qtrue;
 			break;
 		}
@@ -4431,7 +4431,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		token = COM_Parse( &text_p );
 
 		// set offset if we have one
-		if ( !Q_stricmp( "offset", token ) ) {
+		if ( !String::ICmp( "offset", token ) ) {
 			token = COM_Parse( &text_p );
 			t->x_offset = atof( token );
 
@@ -4441,7 +4441,7 @@ void CL_LoadTransTable( const char *fileName ) {
 			token = COM_Parse( &text_p );
 		}
 
-		if ( Q_stricmp( "}", token ) ) {
+		if ( String::ICmp( "}", token ) ) {
 			aborted = qtrue;
 			break;
 		}

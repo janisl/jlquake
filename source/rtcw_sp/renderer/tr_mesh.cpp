@@ -372,7 +372,7 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 //		think of it like batman's mask.  the polygons that have eye texture are duplicated
 //		and the 'lids' rendered with polygonoffset shader parm over the top of the open eyes.  this gives
 //		minimal overdraw/alpha blending/texture use without breaking the model and causing seams
-		if ( !Q_stricmp( surface->name, "h_blink" ) ) {
+		if ( !String::ICmp( surface->name, "h_blink" ) ) {
 			if ( !( ent->e.renderfx & RF_BLINK ) ) {
 				surface = ( md3Surface_t * )( (byte *)surface + surface->ofsEnd );
 				continue;

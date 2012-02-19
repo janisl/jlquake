@@ -203,7 +203,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 	s = Cmd_Argv( 2 );
 	r = Cmd_Argv( 3 );          // reason
 
-	if ( !Q_stricmp( s, "ettest" ) ) {
+	if ( !String::ICmp( s, "ettest" ) ) {
 		if ( Cvar_VariableValue( "fs_restrict" ) ) {
 			// a demo client connecting to a demo server
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
@@ -216,7 +216,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
 		return;
 	}
-	if ( !Q_stricmp( s, "accept" ) ) {
+	if ( !String::ICmp( s, "accept" ) ) {
 		if ( sv_onlyVisibleClients->integer ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
 								"challengeResponse %i %i", svs.challenges[i].challenge, sv_onlyVisibleClients->integer );
@@ -226,7 +226,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		}
 		return;
 	}
-	if ( !Q_stricmp( s, "unknown" ) ) {
+	if ( !String::ICmp( s, "unknown" ) ) {
 		if ( !r ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n" );
 		} else {
@@ -823,13 +823,13 @@ void SV_WWWDownload_f( client_t *cl ) {
 		return;
 	}
 
-	if ( !Q_stricmp( subcmd, "ack" ) ) {
+	if ( !String::ICmp( subcmd, "ack" ) ) {
 		if ( cl->bWWWing ) {
 			Com_Printf( "WARNING: dupe wwwdl ack from client '%s'\n", cl->name );
 		}
 		cl->bWWWing = qtrue;
 		return;
-	} else if ( !Q_stricmp( subcmd, "bbl8r" ) ) {
+	} else if ( !String::ICmp( subcmd, "bbl8r" ) ) {
 		SV_DropClient( cl, "acking disconnected download mode" );
 		return;
 	}
@@ -841,12 +841,12 @@ void SV_WWWDownload_f( client_t *cl ) {
 		return;
 	}
 
-	if ( !Q_stricmp( subcmd, "done" ) ) {
+	if ( !String::ICmp( subcmd, "done" ) ) {
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		return;
-	} else if ( !Q_stricmp( subcmd, "fail" ) )        {
+	} else if ( !String::ICmp( subcmd, "fail" ) )        {
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
@@ -854,7 +854,7 @@ void SV_WWWDownload_f( client_t *cl ) {
 		// send a reconnect
 		SV_SendClientGameState( cl );
 		return;
-	} else if ( !Q_stricmp( subcmd, "chkfail" ) )        {
+	} else if ( !String::ICmp( subcmd, "chkfail" ) )        {
 		Com_Printf( "WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n", cl->name, cl->downloadName );
 		Com_Printf( "         you should check your download redirect configuration.\n" );
 		cl->download = 0;
@@ -1531,7 +1531,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 
 	// Gordon: AHA! Need to steal this for some other stuff BOOKMARK
 	// NERVE - SMF - some server game-only commands we cannot have flood protect
-	if ( !String::NCmp( "team", s, 4 ) || !String::NCmp( "setspawnpt", s, 10 ) || !String::NCmp( "score", s, 5 ) || !Q_stricmp( "forcetapout", s ) ) {
+	if ( !String::NCmp( "team", s, 4 ) || !String::NCmp( "setspawnpt", s, 10 ) || !String::NCmp( "score", s, 5 ) || !String::ICmp( "forcetapout", s ) ) {
 //		Com_DPrintf( "Skipping flood protection for: %s\n", s );
 		floodprotect = qfalse;
 	}

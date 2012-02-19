@@ -91,7 +91,6 @@ typedef enum {qfalse, qtrue}    qboolean;
 
 #define qtrue   true
 #define qfalse  false
-#define Q_stricmp   strcasecmp
 
 #define MAX_TOKENLENGTH     1024
 
@@ -230,7 +229,7 @@ void PC_PushScript( source_t *source, script_t *script ) {
 
 	for ( s = source->scriptstack; s; s = s->next )
 	{
-		if ( !Q_stricmp( s->filename, script->filename ) ) {
+		if ( !String::ICmp( s->filename, script->filename ) ) {
 			SourceError( source, "%s recursively included", script->filename );
 			return;
 		} //end if

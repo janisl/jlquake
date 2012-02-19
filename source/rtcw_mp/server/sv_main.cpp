@@ -723,25 +723,25 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	c = Cmd_Argv( 0 );
 	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), c );
 
-	if ( !Q_stricmp( c,"getstatus" ) ) {
+	if ( !String::ICmp( c,"getstatus" ) ) {
 		SVC_Status( from  );
-	} else if ( !Q_stricmp( c,"getinfo" ) ) {
+	} else if ( !String::ICmp( c,"getinfo" ) ) {
 		SVC_Info( from );
-	} else if ( !Q_stricmp( c,"getchallenge" ) ) {
+	} else if ( !String::ICmp( c,"getchallenge" ) ) {
 		SV_GetChallenge( from );
-	} else if ( !Q_stricmp( c,"connect" ) ) {
+	} else if ( !String::ICmp( c,"connect" ) ) {
 		SV_DirectConnect( from );
-	} else if ( !Q_stricmp( c,"ipAuthorize" ) ) {
+	} else if ( !String::ICmp( c,"ipAuthorize" ) ) {
 		SV_AuthorizeIpPacket( from );
-	} else if ( !Q_stricmp( c, "rcon" ) ) {
+	} else if ( !String::ICmp( c, "rcon" ) ) {
 		SVC_RemoteCommand( from, msg );
 // DHM - Nerve
 #ifdef UPDATE_SERVER
-	} else if ( !Q_stricmp( c, "getUpdateInfo" ) ) {
+	} else if ( !String::ICmp( c, "getUpdateInfo" ) ) {
 		SVC_GetUpdateInfo( from );
 #endif
 // DHM - Nerve
-	} else if ( !Q_stricmp( c,"disconnect" ) ) {
+	} else if ( !String::ICmp( c,"disconnect" ) ) {
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
 		// sequenced messages to the old client

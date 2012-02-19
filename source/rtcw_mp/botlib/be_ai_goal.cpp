@@ -781,7 +781,7 @@ int BotGetLevelItemGoal( int index, char *name, bot_goal_t *goal ) {
 			}
 		}
 		//
-		if ( !Q_stricmp( name, itemconfig->iteminfo[li->iteminfo].name ) ) {
+		if ( !String::ICmp( name, itemconfig->iteminfo[li->iteminfo].name ) ) {
 			goal->areanum = li->goalareanum;
 			VectorCopy( li->goalorigin, goal->origin );
 			goal->entitynum = li->entitynum;
@@ -806,7 +806,7 @@ int BotGetMapLocationGoal( char *name, bot_goal_t *goal ) {
 
 	for ( ml = maplocations; ml; ml = ml->next )
 	{
-		if ( !Q_stricmp( ml->name, name ) ) {
+		if ( !String::ICmp( ml->name, name ) ) {
 			goal->areanum = ml->areanum;
 			VectorCopy( ml->origin, goal->origin );
 			goal->entitynum = 0;

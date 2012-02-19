@@ -199,7 +199,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		}
 
 		if ( st.st_mode & S_IFDIR ) {
-			if ( Q_stricmp( d->d_name, "." ) && Q_stricmp( d->d_name, ".." ) ) {
+			if ( String::ICmp( d->d_name, "." ) && String::ICmp( d->d_name, ".." ) ) {
 				if ( String::Length( subdirs ) ) {
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s/%s", subdirs, d->d_name );
 				} else {
@@ -291,7 +291,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 
 		if ( *extension ) {
 			if ( String::Length( d->d_name ) < String::Length( extension ) ||
-				 Q_stricmp(
+				 String::ICmp(
 					 d->d_name + String::Length( d->d_name ) - String::Length( extension ),
 					 extension ) ) {
 				continue; // didn't match

@@ -69,13 +69,13 @@ static client_t *SV_GetPlayerByName( void ) {
 		if ( cl->state <= CS_ZOMBIE ) {
 			continue;
 		}
-		if ( !Q_stricmp( cl->name, s ) ) {
+		if ( !String::ICmp( cl->name, s ) ) {
 			return cl;
 		}
 
 		Q_strncpyz( cleanName, cl->name, sizeof( cleanName ) );
 		Q_CleanStr( cleanName );
-		if ( !Q_stricmp( cleanName, s ) ) {
+		if ( !String::ICmp( cleanName, s ) ) {
 			return cl;
 		}
 	}
@@ -160,7 +160,7 @@ static void SV_Map_f( void ) {
 	}
 
 	if ( !com_gameInfo.spEnabled ) {
-		if ( !Q_stricmp( Cmd_Argv( 0 ), "spdevmap" ) || !Q_stricmp( Cmd_Argv( 0 ), "spmap" ) ) {
+		if ( !String::ICmp( Cmd_Argv( 0 ), "spdevmap" ) || !String::ICmp( Cmd_Argv( 0 ), "spmap" ) ) {
 			Com_Printf( "Single Player is not enabled.\n" );
 			return;
 		}
@@ -202,7 +202,7 @@ static void SV_Map_f( void ) {
 			//buffer = Hunk_AllocateTempMemory(size);
 			FS_ReadFile( savemap, (void **)&buffer );
 
-			if ( Q_stricmp( savemap, va( "%scurrent.sav", savedir ) ) != 0 ) {
+			if ( String::ICmp( savemap, va( "%scurrent.sav", savedir ) ) != 0 ) {
 				// copy it to the current savegame file
 				FS_WriteFile( va( "%scurrent.sav", savedir ), buffer, size );
 				// make sure it is the correct size
@@ -262,7 +262,7 @@ static void SV_Map_f( void ) {
 	Cvar_Set( "g_nextTimeLimit", "0" );           // NERVE - SMF - reset the next time limit
 
 	// START	Mad Doctor I changes, 8/14/2002.  Need a way to force load a single player map as single player
-	if ( !Q_stricmp( Cmd_Argv( 0 ), "spdevmap" ) || !Q_stricmp( Cmd_Argv( 0 ), "spmap" ) ) {
+	if ( !String::ICmp( Cmd_Argv( 0 ), "spdevmap" ) || !String::ICmp( Cmd_Argv( 0 ), "spmap" ) ) {
 		// This is explicitly asking for a single player load of this map
 		Cvar_Set( "g_gametype", va( "%i", com_gameInfo.defaultSPGameType ) );
 		// force latched values to get set
@@ -277,11 +277,11 @@ static void SV_Map_f( void ) {
 
 	cmd = Cmd_Argv( 0 );
 
-	if ( !Q_stricmp( cmd, "devmap" ) ) {
+	if ( !String::ICmp( cmd, "devmap" ) ) {
 		cheat = qtrue;
 		killBots = qtrue;
 	} else
-	if ( !Q_stricmp( Cmd_Argv( 0 ), "spdevmap" ) ) {
+	if ( !String::ICmp( Cmd_Argv( 0 ), "spdevmap" ) ) {
 		cheat = qtrue;
 		killBots = qtrue;
 	} else
@@ -624,9 +624,9 @@ void    SV_LoadGame_f( void ) {
 
 	if ( com_sv_running->integer && ( com_frameTime != sv.serverId ) ) {
 		// check mapname
-		if ( !Q_stricmp( mapname, sv_mapname->string ) ) {    // same
+		if ( !String::ICmp( mapname, sv_mapname->string ) ) {    // same
 
-			if ( Q_stricmp( filename, va( "%scurrent.sav",savedir ) ) != 0 ) {
+			if ( String::ICmp( filename, va( "%scurrent.sav",savedir ) ) != 0 ) {
 				// copy it to the current savegame file
 				FS_WriteFile( va( "%scurrent.sav",savedir ), buffer, size );
 			}
@@ -688,7 +688,7 @@ static void SV_Kick_f( void ) {
 
 	cl = SV_GetPlayerByName();
 	if ( !cl ) {
-		if ( !Q_stricmp(Cmd_Argv(1), "all") ) {
+		if ( !String::ICmp(Cmd_Argv(1), "all") ) {
 			for( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -702,7 +702,7 @@ static void SV_Kick_f( void ) {
 				}
 				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
-		} else if ( !Q_stricmp(Cmd_Argv(1), "allbots") ) {
+		} else if ( !String::ICmp(Cmd_Argv(1), "allbots") ) {
 			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;

@@ -174,7 +174,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	//
 	for ( hModel = 1 ; hModel < tr.numModels; hModel++ ) {
 		mod = tr.models[hModel];
-		if ( !Q_stricmp( mod->name, name ) ) {
+		if ( !String::ICmp( mod->name, name ) ) {
 			if ( mod->type == MOD_BAD ) {
 				return 0;
 			}

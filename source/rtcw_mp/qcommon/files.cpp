@@ -700,7 +700,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp ) {
 	fsh[f].handleSync = qfalse;
 	if ( !fsh[f].handleFiles.file.o ) {
 		// NOTE TTimo on non *nix systems, fs_homepath == fs_basepath, might want to avoid
-		if ( Q_stricmp( fs_homepath->string,fs_basepath->string ) ) {
+		if ( String::ICmp( fs_homepath->string,fs_basepath->string ) ) {
 			// search basepath
 			ospath = FS_BuildOSPath( fs_basepath->string, filename, "" );
 			ospath[String::Length( ospath ) - 1] = '\0';
@@ -1133,14 +1133,14 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 					// from every pk3 file..
 					l = String::Length( filename );
 					if ( !( pak->referenced & FS_GENERAL_REF ) ) {
-						if ( Q_stricmp( filename + l - 7, ".shader" ) != 0 &&
-							 Q_stricmp( filename + l - 4, ".txt" ) != 0 &&
-							 Q_stricmp( filename + l - 4, ".cfg" ) != 0 &&
-							 Q_stricmp( filename + l - 7, ".config" ) != 0 &&
+						if ( String::ICmp( filename + l - 7, ".shader" ) != 0 &&
+							 String::ICmp( filename + l - 4, ".txt" ) != 0 &&
+							 String::ICmp( filename + l - 4, ".cfg" ) != 0 &&
+							 String::ICmp( filename + l - 7, ".config" ) != 0 &&
 							 strstr( filename, "levelshots" ) == NULL &&
-							 Q_stricmp( filename + l - 4, ".bot" ) != 0 &&
-							 Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
-							 Q_stricmp( filename + l - 5, ".menu" ) != 0 ) {
+							 String::ICmp( filename + l - 4, ".bot" ) != 0 &&
+							 String::ICmp( filename + l - 6, ".arena" ) != 0 &&
+							 String::ICmp( filename + l - 5, ".menu" ) != 0 ) {
 							pak->referenced |= FS_GENERAL_REF;
 						}
 					}
@@ -1168,8 +1168,8 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 #if !defined( PRE_RELEASE_DEMO ) && !defined( DO_LIGHT_DEDICATED )
 					// DHM -- Nerve :: Don't allow maps to be loaded from pak0 (singleplayer)
-					if ( Q_stricmp( filename + l - 4, ".bsp" ) == 0 &&
-						 Q_stricmp( pak->pakBasename, "pak0" ) == 0 ) {
+					if ( String::ICmp( filename + l - 4, ".bsp" ) == 0 &&
+						 String::ICmp( pak->pakBasename, "pak0" ) == 0 ) {
 
 						*file = 0;
 						return -1;
@@ -1220,11 +1220,11 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			l = String::Length( filename );
 			if ( fs_restrict->integer || fs_numServerPaks ) {
 
-				if ( Q_stricmp( filename + l - 4, ".cfg" )       // for config files
-					 && Q_stricmp( filename + l - 5, ".menu" )  // menu files
-					 && Q_stricmp( filename + l - 5, ".game" )  // menu files
-					 && Q_stricmp( filename + l - String::Length( demoExt ), demoExt ) // menu files
-					 && Q_stricmp( filename + l - 4, ".dat" ) ) { // for journal files
+				if ( String::ICmp( filename + l - 4, ".cfg" )       // for config files
+					 && String::ICmp( filename + l - 5, ".menu" )  // menu files
+					 && String::ICmp( filename + l - 5, ".game" )  // menu files
+					 && String::ICmp( filename + l - String::Length( demoExt ), demoExt ) // menu files
+					 && String::ICmp( filename + l - 4, ".dat" ) ) { // for journal files
 					continue;
 				}
 			}
@@ -1237,11 +1237,11 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				continue;
 			}
 
-			if ( Q_stricmp( filename + l - 4, ".cfg" )       // for config files
-				 && Q_stricmp( filename + l - 5, ".menu" )  // menu files
-				 && Q_stricmp( filename + l - 5, ".game" )  // menu files
-				 && Q_stricmp( filename + l - String::Length( demoExt ), demoExt ) // menu files
-				 && Q_stricmp( filename + l - 4, ".dat" ) ) { // for journal files
+			if ( String::ICmp( filename + l - 4, ".cfg" )       // for config files
+				 && String::ICmp( filename + l - 5, ".menu" )  // menu files
+				 && String::ICmp( filename + l - 5, ".game" )  // menu files
+				 && String::ICmp( filename + l - String::Length( demoExt ), demoExt ) // menu files
+				 && String::ICmp( filename + l - 4, ".dat" ) ) { // for journal files
 				fs_fakeChkSum = random();
 			}
 
@@ -1254,7 +1254,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 			// if we are getting it from the cdpath, optionally copy it
 			//  to the basepath
-			if ( fs_copyfiles->integer && !Q_stricmp( dir->path, fs_cdpath->string ) ) {
+			if ( fs_copyfiles->integer && !String::ICmp( dir->path, fs_cdpath->string ) ) {
 				char    *copypath;
 
 				copypath = FS_BuildOSPath( fs_basepath->string, dir->gamedir, filename );
@@ -1938,7 +1938,7 @@ static pack_t *FS_LoadZipFile( char *zipfile, const char *basename ) {
 	Q_strncpyz( pack->pakBasename, basename, sizeof( pack->pakBasename ) );
 
 	// strip .pk3 if needed
-	if ( String::Length( pack->pakBasename ) > 4 && !Q_stricmp( pack->pakBasename + String::Length( pack->pakBasename ) - 4, ".pk3" ) ) {
+	if ( String::Length( pack->pakBasename ) > 4 && !String::ICmp( pack->pakBasename + String::Length( pack->pakBasename ) - 4, ".pk3" ) ) {
 		pack->pakBasename[String::Length( pack->pakBasename ) - 4] = 0;
 	}
 
@@ -2028,7 +2028,7 @@ static int FS_AddFileToList( char *name, char *list[MAX_FOUND_FILES], int nfiles
 		return nfiles;
 	}
 	for ( i = 0 ; i < nfiles ; i++ ) {
-		if ( !Q_stricmp( name, list[i] ) ) {
+		if ( !String::ICmp( name, list[i] ) ) {
 			return nfiles;      // allready in list
 		}
 	}
@@ -2123,7 +2123,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 						continue;
 					}
 
-					if ( Q_stricmp( name + length - extensionLength, extension ) ) {
+					if ( String::ICmp( name + length - extensionLength, extension ) ) {
 						continue;
 					}
 					// unique the match
@@ -2219,7 +2219,7 @@ int FS_GetFileList(  const char *path, const char *extension, char *listbuf, int
 	nFiles = 0;
 	nTotal = 0;
 
-	if ( Q_stricmp( path, "$modlist" ) == 0 ) {
+	if ( String::ICmp( path, "$modlist" ) == 0 ) {
 		return FS_GetModList( listbuf, bufsize );
 	}
 
@@ -2356,7 +2356,7 @@ int FS_GetModList( char *listbuf, int bufsize ) {
 			bDrop = qfalse;
 			for ( j = 0; j < i; j++ )
 			{
-				if ( Q_stricmp( pFiles[j],name ) == 0 ) {
+				if ( String::ICmp( pFiles[j],name ) == 0 ) {
 					// this one can be dropped
 					bDrop = qtrue;
 					break;
@@ -2367,7 +2367,7 @@ int FS_GetModList( char *listbuf, int bufsize ) {
 			continue;
 		}
 		// we drop "baseq3" "." and ".."
-		if ( Q_stricmp( name, "main" ) && Q_stricmpn( name, ".", 1 ) ) {
+		if ( String::ICmp( name, "main" ) && Q_stricmpn( name, ".", 1 ) ) {
 			// now we need to find some .pk3 files to validate the mod
 			// NOTE TTimo: (actually I'm not sure why .. what if it's a mod under developement with no .pk3?)
 			// we didn't keep the information when we merged the directory names, as to what OS Path it was found under
@@ -2684,7 +2684,7 @@ static void FS_AddGameDirectory( const char *path, const char *dir ) {
 	// this fixes the case where fs_basepath is the same as fs_cdpath
 	// which happens on full installs
 	for ( sp = fs_searchpaths ; sp ; sp = sp->next ) {
-		if ( sp->dir && !Q_stricmp( sp->dir->path, path ) && !Q_stricmp( sp->dir->gamedir, dir ) ) {
+		if ( sp->dir && !String::ICmp( sp->dir->path, path ) && !String::ICmp( sp->dir->gamedir, dir ) ) {
 			return;         // we've already got this one
 		}
 	}
@@ -3002,32 +3002,32 @@ static void FS_Startup( const char *gameName ) {
 	}
 	// fs_homepath is somewhat particular to *nix systems, only add if relevant
 	// NOTE: same filtering below for mods and basegame
-	if ( fs_basepath->string[0] && Q_stricmp( fs_homepath->string,fs_basepath->string ) ) {
+	if ( fs_basepath->string[0] && String::ICmp( fs_homepath->string,fs_basepath->string ) ) {
 		FS_AddGameDirectory( fs_homepath->string, gameName );
 	}
 
 	// check for additional base game so mods can be based upon other mods
-	if ( fs_basegame->string[0] && !Q_stricmp( gameName, BASEGAME ) && Q_stricmp( fs_basegame->string, gameName ) ) {
+	if ( fs_basegame->string[0] && !String::ICmp( gameName, BASEGAME ) && String::ICmp( fs_basegame->string, gameName ) ) {
 		if ( fs_cdpath->string[0] ) {
 			FS_AddGameDirectory( fs_cdpath->string, fs_basegame->string );
 		}
 		if ( fs_basepath->string[0] ) {
 			FS_AddGameDirectory( fs_basepath->string, fs_basegame->string );
 		}
-		if ( fs_homepath->string[0] && Q_stricmp( fs_homepath->string,fs_basepath->string ) ) {
+		if ( fs_homepath->string[0] && String::ICmp( fs_homepath->string,fs_basepath->string ) ) {
 			FS_AddGameDirectory( fs_homepath->string, fs_basegame->string );
 		}
 	}
 
 	// check for additional game folder for mods
-	if ( fs_gamedirvar->string[0] && !Q_stricmp( gameName, BASEGAME ) && Q_stricmp( fs_gamedirvar->string, gameName ) ) {
+	if ( fs_gamedirvar->string[0] && !String::ICmp( gameName, BASEGAME ) && String::ICmp( fs_gamedirvar->string, gameName ) ) {
 		if ( fs_cdpath->string[0] ) {
 			FS_AddGameDirectory( fs_cdpath->string, fs_gamedirvar->string );
 		}
 		if ( fs_basepath->string[0] ) {
 			FS_AddGameDirectory( fs_basepath->string, fs_gamedirvar->string );
 		}
-		if ( fs_homepath->string[0] && Q_stricmp( fs_homepath->string,fs_basepath->string ) ) {
+		if ( fs_homepath->string[0] && String::ICmp( fs_homepath->string,fs_basepath->string ) ) {
 			FS_AddGameDirectory( fs_homepath->string, fs_gamedirvar->string );
 		}
 	}
@@ -3856,7 +3856,7 @@ void FS_Restart( int checksumFeed ) {
 	}
 
 	// bk010116 - new check before safeMode
-	if ( Q_stricmp( fs_gamedirvar->string, lastValidGame ) ) {
+	if ( String::ICmp( fs_gamedirvar->string, lastValidGame ) ) {
 		// skip the wolfconfig.cfg if "safe" is on the command line
 		if ( !Com_SafeMode() ) {
 			Cbuf_AddText( "exec wolfconfig_mp.cfg\n" );
@@ -3994,7 +3994,7 @@ qboolean FS_VerifyPak( const char *pak ) {
 			Q_strcat( teststring, sizeof( teststring ), "/" );
 			Q_strcat( teststring, sizeof( teststring ), search->pack->pakBasename );
 			Q_strcat( teststring, sizeof( teststring ), ".pk3" );
-			if ( !Q_stricmp( teststring, pak ) ) {
+			if ( !String::ICmp( teststring, pak ) ) {
 				return qtrue;
 			}
 		}

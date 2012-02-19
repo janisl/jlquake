@@ -964,7 +964,7 @@ int numTargets() {
 
 void setActiveTargetByName( const char *name ) {
 	for ( int i = 0; i < targetPositions.Num(); i++ ) {
-		if ( Q_stricmp( name, targetPositions[i]->getName() ) == 0 ) {
+		if ( String::ICmp( name, targetPositions[i]->getName() ) == 0 ) {
 			setActiveTarget( i );
 			return;
 		}

@@ -434,29 +434,29 @@ void idSplineList::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !Q_stricmp( token, "}" ) ) {
+		if ( !String::ICmp( token, "}" ) ) {
 			break;
 		}
 
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !Q_stricmp( token, "(" ) || !Q_stricmp( token, "}" ) ) {
+			if ( !token[0] || !String::ICmp( token, "(" ) || !String::ICmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine( text );
 			const char *token = Com_Parse( text );
-			if ( Q_stricmp( key.c_str(), "granularity" ) == 0 ) {
+			if ( String::ICmp( key.c_str(), "granularity" ) == 0 ) {
 				granularity = atof( token );
-			} else if ( Q_stricmp( key.c_str(), "name" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "name" ) == 0 ) {
 				name = token;
 			}
 			token = Com_Parse( text );
 
 		} while ( 1 );
 
-		if ( !Q_stricmp( token, "}" ) ) {
+		if ( !String::ICmp( token, "}" ) ) {
 			break;
 		}
 
@@ -797,36 +797,36 @@ void idCameraDef::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !Q_stricmp( token, "}" ) ) {
+		if ( !String::ICmp( token, "}" ) ) {
 			break;
 		}
 
-		if ( Q_stricmp( token, "time" ) == 0 ) {
+		if ( String::ICmp( token, "time" ) == 0 ) {
 			baseTime = Com_ParseFloat( text );
-		} else if ( Q_stricmp( token, "camera_fixed" ) == 0 )        {
+		} else if ( String::ICmp( token, "camera_fixed" ) == 0 )        {
 			cameraPosition = new idFixedPosition();
 			cameraPosition->parse( text );
-		} else if ( Q_stricmp( token, "camera_interpolated" ) == 0 )        {
+		} else if ( String::ICmp( token, "camera_interpolated" ) == 0 )        {
 			cameraPosition = new idInterpolatedPosition();
 			cameraPosition->parse( text );
-		} else if ( Q_stricmp( token, "camera_spline" ) == 0 )        {
+		} else if ( String::ICmp( token, "camera_spline" ) == 0 )        {
 			cameraPosition = new idSplinePosition();
 			cameraPosition->parse( text );
-		} else if ( Q_stricmp( token, "target_fixed" ) == 0 )        {
+		} else if ( String::ICmp( token, "target_fixed" ) == 0 )        {
 			idFixedPosition *pos = new idFixedPosition();
 			pos->parse( text );
 			targetPositions.Append( pos );
-		} else if ( Q_stricmp( token, "target_interpolated" ) == 0 )        {
+		} else if ( String::ICmp( token, "target_interpolated" ) == 0 )        {
 			idInterpolatedPosition *pos = new idInterpolatedPosition();
 			pos->parse( text );
 			targetPositions.Append( pos );
-		} else if ( Q_stricmp( token, "target_spline" ) == 0 )        {
+		} else if ( String::ICmp( token, "target_spline" ) == 0 )        {
 			idSplinePosition *pos = new idSplinePosition();
 			pos->parse( text );
 			targetPositions.Append( pos );
-		} else if ( Q_stricmp( token, "fov" ) == 0 )        {
+		} else if ( String::ICmp( token, "fov" ) == 0 )        {
 			fov.parse( text );
-		} else if ( Q_stricmp( token, "event" ) == 0 )        {
+		} else if ( String::ICmp( token, "event" ) == 0 )        {
 			idCameraEvent *event = new idCameraEvent();
 			event->parse( text );
 			addEvent( event );
@@ -956,11 +956,11 @@ void idCameraEvent::parse( const char *( *text )  ) {
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine( text );
 			const char *token = Com_Parse( text );
-			if ( Q_stricmp( key.c_str(), "type" ) == 0 ) {
+			if ( String::ICmp( key.c_str(), "type" ) == 0 ) {
 				type = static_cast<idCameraEvent::eventType>( atoi( token ) );
-			} else if ( Q_stricmp( key.c_str(), "param" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "param" ) == 0 ) {
 				paramStr = token;
-			} else if ( Q_stricmp( key.c_str(), "time" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "time" ) == 0 ) {
 				time = atoi( token );
 			}
 			token = Com_Parse( text );
@@ -1066,13 +1066,13 @@ void idCameraFOV::parse( const char *( *text )  ) {
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine( text );
 			const char *token = Com_Parse( text );
-			if ( Q_stricmp( key.c_str(), "fov" ) == 0 ) {
+			if ( String::ICmp( key.c_str(), "fov" ) == 0 ) {
 				fov = atof( token );
-			} else if ( Q_stricmp( key.c_str(), "startFOV" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "startFOV" ) == 0 ) {
 				startFOV = atof( token );
-			} else if ( Q_stricmp( key.c_str(), "endFOV" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "endFOV" ) == 0 ) {
 				endFOV = atof( token );
-			} else if ( Q_stricmp( key.c_str(), "time" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "time" ) == 0 ) {
 				time = atoi( token );
 			}
 			token = Com_Parse( text );
@@ -1091,13 +1091,13 @@ void idCameraFOV::parse( const char *( *text )  ) {
 
 bool idCameraPosition::parseToken( const char *key, const char *( *text ) ) {
 	const char *token = Com_Parse( text );
-	if ( Q_stricmp( key, "time" ) == 0 ) {
+	if ( String::ICmp( key, "time" ) == 0 ) {
 		time = atol( token );
 		return true;
-	} else if ( Q_stricmp( key, "type" ) == 0 ) {
+	} else if ( String::ICmp( key, "type" ) == 0 ) {
 		type = static_cast<idCameraPosition::positionType>( atoi( token ) );
 		return true;
-	} else if ( Q_stricmp( key, "velocity" ) == 0 ) {
+	} else if ( String::ICmp( key, "velocity" ) == 0 ) {
 		long t = atol( token );
 		token = Com_Parse( text );
 		long d = atol( token );
@@ -1105,13 +1105,13 @@ bool idCameraPosition::parseToken( const char *key, const char *( *text ) ) {
 		float s = atof( token );
 		addVelocity( t, d, s );
 		return true;
-	} else if ( Q_stricmp( key, "baseVelocity" ) == 0 ) {
+	} else if ( String::ICmp( key, "baseVelocity" ) == 0 ) {
 		baseVelocity = atof( token );
 		return true;
-	} else if ( Q_stricmp( key, "name" ) == 0 ) {
+	} else if ( String::ICmp( key, "name" ) == 0 ) {
 		name = token;
 		return true;
-	} else if ( Q_stricmp( key, "time" ) == 0 ) {
+	} else if ( String::ICmp( key, "time" ) == 0 ) {
 		time = atoi( token );
 		return true;
 	}
@@ -1145,7 +1145,7 @@ void idFixedPosition::parse( const char *( *text )  ) {
 			idStr key = Com_ParseOnLine( text );
 
 			const char *token = Com_Parse( text );
-			if ( Q_stricmp( key.c_str(), "pos" ) == 0 ) {
+			if ( String::ICmp( key.c_str(), "pos" ) == 0 ) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, pos );
 			} else {
@@ -1190,10 +1190,10 @@ void idInterpolatedPosition::parse( const char *( *text )  ) {
 			idStr key = Com_ParseOnLine( text );
 
 			const char *token = Com_Parse( text );
-			if ( Q_stricmp( key.c_str(), "startPos" ) == 0 ) {
+			if ( String::ICmp( key.c_str(), "startPos" ) == 0 ) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, startPos );
-			} else if ( Q_stricmp( key.c_str(), "endPos" ) == 0 ) {
+			} else if ( String::ICmp( key.c_str(), "endPos" ) == 0 ) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, endPos );
 			} else {
@@ -1239,7 +1239,7 @@ void idSplinePosition::parse( const char *( *text )  ) {
 			idStr key = Com_ParseOnLine( text );
 
 			const char *token = Com_Parse( text );
-			if ( Q_stricmp( key.c_str(), "target" ) == 0 ) {
+			if ( String::ICmp( key.c_str(), "target" ) == 0 ) {
 				target.parse( text );
 			} else {
 				Com_UngetToken();

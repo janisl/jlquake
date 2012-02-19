@@ -1971,7 +1971,7 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 					return NULL;
 				} //end if
 				  //if the chat name is found
-				if ( !Q_stricmp( token.string, chatname ) ) {
+				if ( !String::ICmp( token.string, chatname ) ) {
 					foundchat = qtrue;
 					//read the chat types
 					while ( 1 )
@@ -2306,7 +2306,7 @@ char *BotChooseInitialChatMessage( bot_chatstate_t *cs, char *type ) {
 	chat = cs->chat;
 	for ( t = chat->types; t; t = t->next )
 	{
-		if ( !Q_stricmp( t->name, type ) ) {
+		if ( !String::ICmp( t->name, type ) ) {
 			numchatmessages = 0;
 			for ( m = t->firstchatmessage; m; m = m->next )
 			{
@@ -2366,7 +2366,7 @@ int BotNumInitialChats( int chatstate, char *type ) {
 
 	for ( t = cs->chat->types; t; t = t->next )
 	{
-		if ( !Q_stricmp( t->name, type ) ) {
+		if ( !String::ICmp( t->name, type ) ) {
 			if ( LibVarGetValue( "bot_testichat" ) ) {
 				botimport.Print( PRT_MESSAGE, "%s has %d chat lines\n", type, t->numchatmessages );
 				botimport.Print( PRT_MESSAGE, "-------------------\n" );

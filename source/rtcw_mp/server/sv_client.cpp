@@ -190,7 +190,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 	s = Cmd_Argv( 2 );
 	r = Cmd_Argv( 3 );          // reason
 
-	if ( !Q_stricmp( s, "demo" ) ) {
+	if ( !String::ICmp( s, "demo" ) ) {
 		if ( Cvar_VariableValue( "fs_restrict" ) ) {
 			// a demo client connecting to a demo server
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
@@ -203,7 +203,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
 		return;
 	}
-	if ( !Q_stricmp( s, "accept" ) ) {
+	if ( !String::ICmp( s, "accept" ) ) {
 		if ( sv_onlyVisibleClients->integer ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
 								"challengeResponse %i %i", svs.challenges[i].challenge, sv_onlyVisibleClients->integer );
@@ -213,7 +213,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		}
 		return;
 	}
-	if ( !Q_stricmp( s, "unknown" ) ) {
+	if ( !String::ICmp( s, "unknown" ) ) {
 		if ( !r ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n" );
 		} else {
@@ -822,7 +822,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
 			strcpy( testname, "updates/" );
 			Q_strcat( testname, MAX_QPATH, versionMap[ i ].installer );
 
-			if ( !Q_stricmp( cl->downloadName, testname ) ) {
+			if ( !String::ICmp( cl->downloadName, testname ) ) {
 				break;
 			}
 		}

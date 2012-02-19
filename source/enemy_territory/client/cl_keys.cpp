@@ -1425,7 +1425,7 @@ int Key_StringToKeynum( char *str ) {
 
 	// scan for a text match
 	for ( kn = keynames ; kn->name ; kn++ ) {
-		if ( !Q_stricmp( str,kn->name ) ) {
+		if ( !String::ICmp( str,kn->name ) ) {
 			return kn->keynum;
 		}
 	}
@@ -1576,7 +1576,7 @@ void Key_GetBindingByString( const char* binding, int* key1, int* key2 ) {
 	*key2 = -1;
 
 	for ( i = 0; i < MAX_KEYS; i++ ) {
-		if ( keys[i].hash == hash && !Q_stricmp( binding, keys[i].binding ) ) {
+		if ( keys[i].hash == hash && !String::ICmp( binding, keys[i].binding ) ) {
 			if ( *key1 == -1 ) {
 				*key1 = i;
 			} else if ( *key2 == -1 ) {
@@ -1598,7 +1598,7 @@ int Key_GetKey( const char *binding ) {
 
 	if ( binding ) {
 		for ( i = 0 ; i < 256 ; i++ ) {
-			if ( keys[i].binding && Q_stricmp( binding, keys[i].binding ) == 0 ) {
+			if ( keys[i].binding && String::ICmp( binding, keys[i].binding ) == 0 ) {
 				return i;
 			}
 		}

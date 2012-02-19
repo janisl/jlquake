@@ -128,7 +128,7 @@ int AAS_IndexFromString( char *indexname, char *stringindex[], int numindexes, c
 		if ( !stringindex[i] ) {
 			continue;
 		}
-		if ( !Q_stricmp( stringindex[i], string ) ) {
+		if ( !String::ICmp( stringindex[i], string ) ) {
 			return i;
 		}
 	} //end for

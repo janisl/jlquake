@@ -177,7 +177,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 	s = Cmd_Argv( 2 );
 	r = Cmd_Argv( 3 );          // reason
 
-	if ( !Q_stricmp( s, "demo" ) ) {
+	if ( !String::ICmp( s, "demo" ) ) {
 		if ( Cvar_VariableValue( "fs_restrict" ) ) {
 			// a demo client connecting to a demo server
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
@@ -190,12 +190,12 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
 		return;
 	}
-	if ( !Q_stricmp( s, "accept" ) ) {
+	if ( !String::ICmp( s, "accept" ) ) {
 		NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
 							"challengeResponse %i", svs.challenges[i].challenge );
 		return;
 	}
-	if ( !Q_stricmp( s, "unknown" ) ) {
+	if ( !String::ICmp( s, "unknown" ) ) {
 		if ( !r ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n" );
 		} else {

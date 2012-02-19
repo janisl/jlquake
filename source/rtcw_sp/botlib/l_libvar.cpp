@@ -133,7 +133,7 @@ libvar_t *LibVarGet( char *var_name ) {
 
 	for ( v = libvarlist; v; v = v->next )
 	{
-		if ( !Q_stricmp( v->name, var_name ) ) {
+		if ( !String::ICmp( v->name, var_name ) ) {
 			return v;
 		} //end if
 	} //end for

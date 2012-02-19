@@ -18,35 +18,15 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
-
-#if 0
-// MACROS ------------------------------------------------------------------
 
 #if !defined _WIN32
 #define stricmp		strcasecmp
 #define strnicmp	strncasecmp
 #endif
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
+#if 0
 static char		com_token[1024];
-
-// CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
@@ -808,23 +788,20 @@ int String::NCmp(const char* s1, const char* s2, size_t n)
 #endif
 }
 
-#if 0
-//==========================================================================
-//
-//	String::ICmp
-//
-//==========================================================================
-
-int String::ICmp(const char* S1, const char* S2)
+int String::ICmp(const char* s1, const char* s2)
 {
 #if 1
-	return stricmp(S1, S2);
+	return stricmp(s1, s2);
+#elif 0
+	//	Quake 3 version
+	return (s1 && s2) ? NICmp(s1, s2, 99999) : -1;
 #else
 	//	Quake implementation.
 	return NICmp(s1, s2, 99999);
 #endif
 }
 
+#if 0
 //==========================================================================
 //
 //	String::NICmp

@@ -966,7 +966,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen ) {
 		colorbits = r_colorbits->value;
 	}
 
-	if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) ) {
+	if ( !String::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) ) {
 		colorbits = 16;
 	}
 
@@ -1120,8 +1120,8 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen ) {
 	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
 
 	// bk010122 - new software token (Indirect)
-	if ( !Q_stricmp( glstring, "Mesa X11" )
-		 || !Q_stricmp( glstring, "Mesa GLX Indirect" ) ) {
+	if ( !String::ICmp( glstring, "Mesa X11" )
+		 || !String::ICmp( glstring, "Mesa GLX Indirect" ) ) {
 		if ( !r_allowSoftwareGL->integer ) {
 			ri.Printf( PRINT_ALL, "\n\n***********************************************************\n" );
 			ri.Printf( PRINT_ALL, " You are using software Mesa (no hardware acceleration)!   \n" );
@@ -1365,9 +1365,9 @@ void GLimp_Init( void ) {
 	// load and initialize the specific OpenGL driver
 	//
 	if ( !GLW_LoadOpenGL( r_glDriver->string ) ) {
-		if ( !Q_stricmp( r_glDriver->string, OPENGL_DRIVER_NAME ) ) {
+		if ( !String::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) ) {
 			attemptedlibGL = qtrue;
-		} else if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) ) {
+		} else if ( !String::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) ) {
 			attempted3Dfx = qtrue;
 		}
 
@@ -1432,7 +1432,7 @@ void GLimp_Init( void ) {
 	// to be overridden when testing driver fixes, etc. but only sets
 	// them to their default state when the hardware is first installed/run.
 	//
-	if ( Q_stricmp( lastValidRenderer->string, glConfig.renderer_string ) ) {
+	if ( String::ICmp( lastValidRenderer->string, glConfig.renderer_string ) ) {
 		glConfig.hardwareType = GLHW_GENERIC;
 
 		ri.Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
@@ -1491,7 +1491,7 @@ void GLimp_Init( void ) {
 */
 void GLimp_EndFrame( void ) {
 	// don't flip if drawing to front buffer
-	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
+	if ( String::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
 		qglXSwapBuffers( dpy, win );
 	}
 

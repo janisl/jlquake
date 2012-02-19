@@ -915,10 +915,6 @@ int Q_stricmpn( const char *s1, const char *s2, int n ) {
 	return 0;       // strings are equal
 }
 
-int Q_stricmp( const char *s1, const char *s2 ) {
-	return ( s1 && s2 ) ? Q_stricmpn( s1, s2, 99999 ) : -1;
-}
-
 char *Q_strlwr( char *s1 ) {
 	char*   s;
 
@@ -1175,7 +1171,7 @@ char *Info_ValueForKey( const char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if ( !Q_stricmp( key, pkey ) ) {
+		if ( !String::ICmp( key, pkey ) ) {
 			return value[valueindex];
 		}
 
@@ -1276,7 +1272,7 @@ void Info_RemoveKey( char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if ( !Q_stricmp( key, pkey ) ) {
+		if ( !String::ICmp( key, pkey ) ) {
 			// rain - arguments to strcpy must not overlap
 			//strcpy (start, s);	// remove this part
 			memmove( start, s, String::Length( s ) + 1 ); // remove this part
@@ -1336,7 +1332,7 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if ( !Q_stricmp( key, pkey ) ) {
+		if ( !String::ICmp( key, pkey ) ) {
 			strcpy( start, s );  // remove this part
 			return;
 		}

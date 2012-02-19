@@ -566,7 +566,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		r.right  = width;
 		r.bottom = height;
 
-		if ( cdsFullscreen || !Q_stricmp( _3DFX_DRIVER_NAME, drivername ) ) {
+		if ( cdsFullscreen || !String::ICmp( _3DFX_DRIVER_NAME, drivername ) ) {
 			exstyle = WS_EX_TOPMOST;
 			stylebits = WS_POPUP | WS_VISIBLE | WS_SYSMENU;
 		} else
@@ -579,7 +579,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		w = r.right - r.left;
 		h = r.bottom - r.top;
 
-		if ( cdsFullscreen || !Q_stricmp( _3DFX_DRIVER_NAME, drivername ) ) {
+		if ( cdsFullscreen || !String::ICmp( _3DFX_DRIVER_NAME, drivername ) ) {
 			x = 0;
 			y = 0;
 		} else
@@ -1167,7 +1167,7 @@ static qboolean GLW_LoadOpenGL( const char *drivername ) {
 	if ( QGL_Init( buffer ) ) {
 #if 0
 // FIXME: newer 3Dfx drivers means this can go away
-		if ( !Q_stricmp( buffer, _3DFX_DRIVER_NAME ) ) {
+		if ( !String::ICmp( buffer, _3DFX_DRIVER_NAME ) ) {
 			cdsFullscreen = qfalse;
 		} else
 #endif
@@ -1225,7 +1225,7 @@ void GLimp_EndFrame( void ) {
 
 
 	// don't flip if drawing to front buffer
-	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
+	if ( String::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
 		if ( glConfig.driverType > GLDRV_ICD ) {
 			if ( !qwglSwapBuffers( glw_state.hDC ) ) {
 				ri.Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
@@ -1271,9 +1271,9 @@ static void GLW_StartOpenGL( void ) {
 	// load and initialize the specific OpenGL driver
 	//
 	if ( !GLW_LoadOpenGL( r_glDriver->string ) ) {
-		if ( !Q_stricmp( r_glDriver->string, OPENGL_DRIVER_NAME ) ) {
+		if ( !String::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) ) {
 			attemptedOpenGL32 = qtrue;
-		} else if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )   {
+		} else if ( !String::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )   {
 			attempted3Dfx = qtrue;
 		}
 
@@ -1358,7 +1358,7 @@ void GLimp_Init( void ) {
 	// to be overridden when testing driver fixes, etc. but only sets
 	// them to their default state when the hardware is first installed/run.
 	//
-	if ( Q_stricmp( lastValidRenderer->string, glConfig.renderer_string ) ) {
+	if ( String::ICmp( lastValidRenderer->string, glConfig.renderer_string ) ) {
 		glConfig.hardwareType = GLHW_GENERIC;
 
 		ri.Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );

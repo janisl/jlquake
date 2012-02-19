@@ -424,7 +424,7 @@ static sfx_t *S_FindName( const char *name ) {
 	sfx = sfxHash[hash];
 	// see if already loaded
 	while ( sfx ) {
-		if ( !Q_stricmp( sfx->soundName, name ) ) {
+		if ( !String::ICmp( sfx->soundName, name ) ) {
 			return sfx;
 		}
 		sfx = sfx->next;

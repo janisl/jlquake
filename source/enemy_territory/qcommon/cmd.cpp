@@ -635,7 +635,7 @@ void    Cmd_ExecuteString( const char *text ) {
 	// check registered command functions
 	for ( prev = &cmd_functions ; *prev ; prev = &cmd->next ) {
 		cmd = *prev;
-		if ( !Q_stricmp( cmd_argv[0],cmd->name ) ) {
+		if ( !String::ICmp( cmd_argv[0],cmd->name ) ) {
 			// rearrange the links so that the command will be
 			// near the head of the list next time it is used
 			*prev = cmd->next;

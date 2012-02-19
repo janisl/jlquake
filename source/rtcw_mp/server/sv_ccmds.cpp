@@ -69,13 +69,13 @@ static client_t *SV_GetPlayerByName( void ) {
 		if ( !cl->state ) {
 			continue;
 		}
-		if ( !Q_stricmp( cl->name, s ) ) {
+		if ( !String::ICmp( cl->name, s ) ) {
 			return cl;
 		}
 
 		Q_strncpyz( cleanName, cl->name, sizeof( cleanName ) );
 		Q_CleanStr( cleanName );
-		if ( !Q_stricmp( cleanName, s ) ) {
+		if ( !String::ICmp( cleanName, s ) ) {
 			return cl;
 		}
 	}
@@ -190,13 +190,13 @@ static void SV_Map_f( void ) {
 #endif
 		cmd += 2;
 		killBots = qtrue;
-		if ( !Q_stricmp( cmd, "devmap" ) ) {
+		if ( !String::ICmp( cmd, "devmap" ) ) {
 			cheat = qtrue;
 		} else {
 			cheat = qfalse;
 		}
 	} else {
-		if ( !Q_stricmp( cmd, "devmap" ) ) {
+		if ( !String::ICmp( cmd, "devmap" ) ) {
 			cheat = qtrue;
 			killBots = qtrue;
 		} else {
@@ -486,9 +486,9 @@ void    SV_LoadGame_f( void ) {
 
 	if ( com_sv_running->integer && ( com_frameTime != sv.serverId ) ) {
 		// check mapname
-		if ( !Q_stricmp( mapname, sv_mapname->string ) ) {    // same
+		if ( !String::ICmp( mapname, sv_mapname->string ) ) {    // same
 
-			if ( Q_stricmp( filename, "save/current.svg" ) != 0 ) {
+			if ( String::ICmp( filename, "save/current.svg" ) != 0 ) {
 				// copy it to the current savegame file
 				FS_WriteFile( "save/current.svg", buffer, size );
 			}
@@ -539,7 +539,7 @@ static void SV_Kick_f( void ) {
 
 	cl = SV_GetPlayerByName();
 	if ( !cl ) {
-		if ( !Q_stricmp( Cmd_Argv( 1 ), "all" ) ) {
+		if ( !String::ICmp( Cmd_Argv( 1 ), "all" ) ) {
 			for ( i = 0, cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -550,7 +550,7 @@ static void SV_Kick_f( void ) {
 				SV_DropClient( cl, "player kicked" ); // JPW NERVE to match front menu message
 				cl->lastPacketTime = svs.time;  // in case there is a funny zombie
 			}
-		} else if ( !Q_stricmp( Cmd_Argv( 1 ), "allbots" ) )        {
+		} else if ( !String::ICmp( Cmd_Argv( 1 ), "allbots" ) )        {
 			for ( i = 0, cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;

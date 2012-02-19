@@ -1144,7 +1144,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation
 
 	if ( tagFileNumber > 0 && tagFileNumber <= sv.num_tagheaders ) {
 		for ( i = sv.tagHeadersExt[tagFileNumber - 1].start; i < sv.tagHeadersExt[tagFileNumber - 1].start + sv.tagHeadersExt[tagFileNumber - 1].count; i++ ) {
-			if ( !Q_stricmp( sv.tags[i].name, tagname ) ) {
+			if ( !String::ICmp( sv.tags[i].name, tagname ) ) {
 				VectorCopy( sv.tags[i].origin, _or->origin );
 				VectorCopy( sv.tags[i].axis[0], _or->axis[0] );
 				VectorCopy( sv.tags[i].axis[1], _or->axis[1] );

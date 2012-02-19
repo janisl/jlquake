@@ -365,7 +365,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font ) {
 
 	Com_sprintf( name, sizeof( name ), "fonts/%s_%i.dat", fontName, pointSize );
 	for ( i = 0; i < registeredFontCount; i++ ) {
-		if ( Q_stricmp( name, registeredFont[i].name ) == 0 ) {
+		if ( String::ICmp( name, registeredFont[i].name ) == 0 ) {
 			memcpy( font, &registeredFont[i], sizeof( fontInfo_t ) );
 			return;
 		}

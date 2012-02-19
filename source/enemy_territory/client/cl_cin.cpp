@@ -1418,7 +1418,7 @@ static void RoQShutdown( void ) {
 		s = Cvar_VariableString( "nextmap" );
 		if ( s[0] ) {
 			Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
-			/*if( com_logosPlaying->integer && !Q_stricmp( s, "cinematic avlogo.roq" ) ) {
+			/*if( com_logosPlaying->integer && !String::ICmp( s, "cinematic avlogo.roq" ) ) {
 				Cvar_Set( "nextmap", "cinematic sdlogo.roq" );	// FIXME: sd logo
 				Cvar_Set( "com_logosPlaying", "0" );
 			} else {*/
@@ -1754,7 +1754,7 @@ void CL_PlayCinematic_f( void ) {
 	s = Cmd_Argv( 2 );
 
 	holdatend = qfalse;
-	if ( ( s && s[0] == '1' ) || Q_stricmp( arg,"demoend.roq" ) == 0 || Q_stricmp( arg,"end.roq" ) == 0 ) {
+	if ( ( s && s[0] == '1' ) || String::ICmp( arg,"demoend.roq" ) == 0 || String::ICmp( arg,"end.roq" ) == 0 ) {
 		bits |= CIN_hold;
 	}
 	if ( s && s[0] == '2' ) {

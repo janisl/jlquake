@@ -40,12 +40,6 @@ void    Cvar_SetValue( const char *var_name, float value );
 void    Cvar_Set( const char *var_name, const char *value );
 char    * va( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
 
-#ifdef WIN32
-  #define Q_stricmp stricmp
-#else
-  #define Q_stricmp strcasecmp
-#endif
-
 extern int com_errorEntered;
 
 #endif

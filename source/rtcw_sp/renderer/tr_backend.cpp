@@ -853,7 +853,7 @@ void RB_ZombieFX( int part, drawSurf_t *drawSurf, int oldNumVerts, int oldNumInd
 	RB_ZombieFXFullAlpha( oldNumVerts, numSurfVerts );
 
 	// if this is the chest surface, do flesh hits
-	if ( !Q_stricmp( surfName, zombieFxFleshHitSurfaceNames[part] ) ) {
+	if ( !String::ICmp( surfName, zombieFxFleshHitSurfaceNames[part] ) ) {
 
 		// check for any new bullet impacts that need to be scanned for triangle collisions
 		if ( fleshHitVerts->numNewHits ) {

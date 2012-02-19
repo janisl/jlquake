@@ -794,30 +794,30 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return re.GetEntityToken( (char*)VMA( 1 ), args[2] );
 
 	case CG_INGAME_POPUP:
-		if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "briefing" ) ) {  //----(SA) added
+		if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "briefing" ) ) {  //----(SA) added
 			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_BRIEFING );
 			return 0;
 		}
 
 		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
 			// NERVE - SMF
-			if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "UIMENU_WM_PICKTEAM" ) ) {
+			if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "UIMENU_WM_PICKTEAM" ) ) {
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_WM_PICKTEAM );
-			} else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "UIMENU_WM_PICKPLAYER" ) )    {
+			} else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "UIMENU_WM_PICKPLAYER" ) )    {
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_WM_PICKPLAYER );
-			} else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "UIMENU_WM_QUICKMESSAGE" ) )    {
+			} else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "UIMENU_WM_QUICKMESSAGE" ) )    {
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_WM_QUICKMESSAGE );
-			} else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "UIMENU_WM_LIMBO" ) )    {
+			} else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "UIMENU_WM_LIMBO" ) )    {
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_WM_LIMBO );
 			}
 			// -NERVE - SMF
-			else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "hbook1" ) ) {   //----(SA)
+			else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "hbook1" ) ) {   //----(SA)
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_BOOK1 );
-			} else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "hbook2" ) )    { //----(SA)
+			} else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "hbook2" ) )    { //----(SA)
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_BOOK2 );
-			} else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "hbook3" ) )    { //----(SA)
+			} else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "hbook3" ) )    { //----(SA)
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_BOOK3 );
-			} else if ( (char*)VMA( 1 ) && !Q_stricmp( (char*)VMA( 1 ), "pregame" ) )    { //----(SA) added
+			} else if ( (char*)VMA( 1 ) && !String::ICmp( (char*)VMA( 1 ), "pregame" ) )    { //----(SA) added
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_PREGAME );
 			} else {
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_CLIPBOARD );
@@ -1194,7 +1194,7 @@ void CL_SetCGameTime( void ) {
 
 	if ( cl.snap.serverTime < cl.oldFrameServerTime ) {
 		// Ridah, if this is a localhost, then we are probably loading a savegame
-		if ( !Q_stricmp( cls.servername, "localhost" ) ) {
+		if ( !String::ICmp( cls.servername, "localhost" ) ) {
 			// do nothing?
 			CL_FirstSnapshot();
 		} else {

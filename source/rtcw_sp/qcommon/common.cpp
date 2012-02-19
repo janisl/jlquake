@@ -407,8 +407,8 @@ qboolean Com_SafeMode( void ) {
 
 	for ( i = 0 ; i < com_numConsoleLines ; i++ ) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( !Q_stricmp( Cmd_Argv( 0 ), "safe" )
-			 || !Q_stricmp( Cmd_Argv( 0 ), "cvar_restart" ) ) {
+		if ( !String::ICmp( Cmd_Argv( 0 ), "safe" )
+			 || !String::ICmp( Cmd_Argv( 0 ), "cvar_restart" ) ) {
 			com_consoleLines[i][0] = 0;
 			return qtrue;
 		}
@@ -1025,7 +1025,7 @@ void Hunk_SmallLog( void ) {
 			if ( block->line != block2->line ) {
 				continue;
 			}
-			if ( Q_stricmp( block->file, block2->file ) ) {
+			if ( String::ICmp( block->file, block2->file ) ) {
 				continue;
 			}
 			size += block2->size;

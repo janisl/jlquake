@@ -165,7 +165,7 @@ void GL_TextureMode( const char *string ) {
 	image_t *glt;
 
 	for ( i = 0 ; i < 6 ; i++ ) {
-		if ( !Q_stricmp( modes[i].name, string ) ) {
+		if ( !String::ICmp( modes[i].name, string ) ) {
 			break;
 		}
 	}
@@ -2080,7 +2080,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 		return;
 	}
 
-	if ( !Q_stricmp( name + len - 4, ".tga" ) ) {
+	if ( !String::ICmp( name + len - 4, ".tga" ) ) {
 		LoadTGA( name, pic, width, height );          // try tga first
 		if ( !*pic ) {                              //
 			char altname[MAX_QPATH];                    // try jpg in place of tga
@@ -2091,11 +2091,11 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 			altname[len - 1] = 'g';
 			LoadJPG( altname, pic, width, height );
 		}
-	} else if ( !Q_stricmp( name + len - 4, ".pcx" ) ) {
+	} else if ( !String::ICmp( name + len - 4, ".pcx" ) ) {
 		LoadPCX32( name, pic, width, height );
-	} else if ( !Q_stricmp( name + len - 4, ".bmp" ) ) {
+	} else if ( !String::ICmp( name + len - 4, ".bmp" ) ) {
 		LoadBMP( name, pic, width, height );
-	} else if ( !Q_stricmp( name + len - 4, ".jpg" ) ) {
+	} else if ( !String::ICmp( name + len - 4, ".jpg" ) ) {
 		LoadJPG( name, pic, width, height );
 	}
 }
@@ -2133,7 +2133,7 @@ image_t *R_FindImageFileExt( const char *name, qboolean mipmap, qboolean allowPi
 	// see if the image is already loaded
 	//
 	for ( image = hashTable[hash]; image; image = image->next ) {
-		if ( !Q_stricmp( name, image->imgName ) ) {
+		if ( !String::ICmp( name, image->imgName ) ) {
 			// the white image can be used with any set of parms, but other mismatches are errors
 			if ( String::Cmp( name, "*white" ) ) {
 				if ( image->mipmap != mipmap ) {
@@ -2662,14 +2662,14 @@ qboolean RE_GetSkinModel( qhandle_t skinid, const char *type, char *name ) {
 
 	bar = tr.skins[skinid];
 
-	if ( !Q_stricmp( type, "playerscale" ) ) {    // client is requesting scale from the skin rather than a model
+	if ( !String::ICmp( type, "playerscale" ) ) {    // client is requesting scale from the skin rather than a model
 		Com_sprintf( name, MAX_QPATH, "%.2f %.2f %.2f", bar->scale[0], bar->scale[1], bar->scale[2] );
 		return qtrue;
 	}
 
 	for ( i = 0; i < bar->numModels; i++ )
 	{
-		if ( !Q_stricmp( bar->models[i]->type, type ) ) { // (SA) whoops, should've been this way
+		if ( !String::ICmp( bar->models[i]->type, type ) ) { // (SA) whoops, should've been this way
 			Q_strncpyz( name, bar->models[i]->model, sizeof( bar->models[i]->model ) );
 			return qtrue;
 		}
@@ -2765,7 +2765,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	// see if the skin is already loaded
 	for ( hSkin = 1; hSkin < tr.numSkins ; hSkin++ ) {
 		skin = tr.skins[hSkin];
-		if ( !Q_stricmp( skin->name, name ) ) {
+		if ( !String::ICmp( skin->name, name ) ) {
 			if ( skin->numSurfaces == 0 ) {
 				return 0;       // default skin
 			}
@@ -3714,7 +3714,7 @@ image_t *R_FindCachedImage( const char *name, int hash ) {
 	bImagePrev = NULL;
 	while ( bImage ) {
 
-		if ( !Q_stricmp( name, bImage->imgName ) ) {
+		if ( !String::ICmp( name, bImage->imgName ) ) {
 			// add it to the current images
 			if ( tr.numImages == MAX_DRAWIMAGES ) {
 				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
