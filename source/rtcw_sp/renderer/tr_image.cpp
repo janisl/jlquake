@@ -2826,7 +2826,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 			break;
 		}
 		// lowercase the surface name so skin compares are faster
-		Q_strlwr( surfName );
+		String::ToLower( surfName );
 
 		if ( *text_p == ',' ) {
 			text_p++;

@@ -824,7 +824,7 @@ static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_
 		surf->ident = SF_MDC;
 
 		// lowercase the surface name so skin compares are faster
-		Q_strlwr( surf->name );
+		String::ToLower( surf->name );
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
@@ -1038,7 +1038,7 @@ static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *mod_
 		surf->ident = SF_MD3;
 
 		// lowercase the surface name so skin compares are faster
-		Q_strlwr( surf->name );
+		String::ToLower( surf->name );
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess

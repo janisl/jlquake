@@ -2141,7 +2141,7 @@ static pack_t *FS_LoadZipFile( char *zipfile, const char *basename ) {
 		if ( file_info.uncompressed_size > 0 ) {
 			fs_headerLongs[fs_numHeaderLongs++] = LittleLong( file_info.crc );
 		}
-		Q_strlwr( filename_inzip );
+		String::ToLower( filename_inzip );
 		hash = FS_HashFileName( filename_inzip, pack->hashSize );
 		buildBuffer[i].name = namePtr;
 		String::Cpy( buildBuffer[i].name, filename_inzip );

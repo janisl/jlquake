@@ -1074,7 +1074,7 @@ static qboolean GLW_LoadOpenGL( const char *drivername ) {
 	qboolean cdsFullscreen;
 
 	String::NCpyZ( buffer, drivername, sizeof( buffer ) );
-	Q_strlwr( buffer );
+	String::ToLower( buffer );
 
 	//
 	// determine if we're on a standalone driver
@@ -1289,7 +1289,7 @@ void GLimp_Init( void ) {
 	// chipset specific configuration
 	//
 	String::NCpyZ( buf, glConfig.renderer_string, sizeof( buf ) );
-	Q_strlwr( buf );
+	String::ToLower( buf );
 
 	//
 	// NOTE: if changing cvars, do it within this block.  This allows them

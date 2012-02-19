@@ -984,50 +984,31 @@ void String::Cat(char* dest, int size, const char* src)
 	NCpyZ(dest + l1, src, size - l1);
 }
 
-#if 0
-//==========================================================================
-//
-//	String::ToLower
-//
-//==========================================================================
-
-char* String::ToLower(char* S1)
+char* String::ToLower(char* s1)
 {
-	char* S = S1;
+	char* S = s1;
 	while (*S)
 	{
 		*S = ToLower(*S);
 		S++;
 	}
-    return S1;
+    return s1;
 }
 
-//==========================================================================
-//
-//	String::ToUpper
-//
-//==========================================================================
-
-char* String::ToUpper(char* S1)
+char* String::ToUpper(char* s1)
 {
-	char* S = S1;
+	char* S = s1;
 	while (*S)
 	{
 		*S = ToUpper(*S);
 		S++;
 	}
-    return S1;
+    return s1;
 }
 
-//==========================================================================
-//
-//	String::RChr
-//
-//==========================================================================
-
-char* String::RChr(const char* string, int C)
+char* String::RChr(const char* string, int c)
 {
-	char cc = C;
+	char cc = c;
 	char *s;
 	char *sp = NULL;
 
@@ -1049,6 +1030,7 @@ char* String::RChr(const char* string, int C)
 	return sp;
 }
 
+#if 0
 //==========================================================================
 //
 //	String::Atoi

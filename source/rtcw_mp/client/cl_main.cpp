@@ -2308,7 +2308,7 @@ static void CL_Cache_UsedFile_f( void ) {
 		strcat( itemStr, " " );
 		strcat( itemStr, Cmd_Argv( i ) );
 	}
-	Q_strlwr( itemStr );
+	String::ToLower( itemStr );
 
 	// find the cache group
 	for ( i = 0; i < CACHE_NUMGROUPS; i++ ) {

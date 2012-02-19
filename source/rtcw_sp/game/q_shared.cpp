@@ -705,50 +705,6 @@ void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m ) {
 ============================================================================
 */
 
-char* Q_strrchr( const char* string, int c ) {
-	char cc = c;
-	char *s;
-	char *sp = (char *)0;
-
-	s = (char*)string;
-
-	while ( *s )
-	{
-		if ( *s == cc ) {
-			sp = s;
-		}
-		s++;
-	}
-	if ( cc == 0 ) {
-		sp = s;
-	}
-
-	return sp;
-}
-
-char *Q_strlwr( char *s1 ) {
-	char    *s;
-
-	s = s1;
-	while ( *s ) {
-		*s = tolower( *s );
-		s++;
-	}
-	return s1;
-}
-
-char *Q_strupr( char *s1 ) {
-	char    *s;
-
-	s = s1;
-	while ( *s ) {
-		*s = String::ToUpper( *s );
-		s++;
-	}
-	return s1;
-}
-
-
 int Q_PrintStrlen( const char *string ) {
 	int len;
 	const char  *p;

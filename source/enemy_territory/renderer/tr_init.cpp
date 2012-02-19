@@ -293,7 +293,7 @@ static void InitOpenGL( void ) {
 		GLimp_Init();
 
 		String::Cpy( renderer_buffer, glConfig.renderer_string );
-		Q_strlwr( renderer_buffer );
+		String::ToLower( renderer_buffer );
 
 		// OpenGL driver constants
 		qglGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );

@@ -798,52 +798,6 @@ int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 ============================================================================
 */
 
-char* Q_strrchr( const char* string, int c ) {
-	char cc = c;
-	char *s;
-	char *sp = (char *)0;
-
-	s = (char*)string;
-
-	while ( *s )
-	{
-		if ( *s == cc ) {
-			sp = s;
-		}
-		s++;
-	}
-	if ( cc == 0 ) {
-		sp = s;
-	}
-
-	return sp;
-}
-
-char *Q_strlwr( char *s1 ) {
-	char*   s;
-
-	for ( s = s1; *s; ++s ) {
-		if ( ( 'A' <= *s ) && ( *s <= 'Z' ) ) {
-			*s -= 'A' - 'a';
-		}
-	}
-
-	return s1;
-}
-
-char *Q_strupr( char *s1 ) {
-	char* cp;
-
-	for ( cp = s1 ; *cp ; ++cp ) {
-		if ( ( 'a' <= *cp ) && ( *cp <= 'z' ) ) {
-			*cp += 'A' - 'a';
-		}
-	}
-
-	return s1;
-}
-
-
 int Q_PrintStrlen( const char *string ) {
 	int len;
 	const char  *p;

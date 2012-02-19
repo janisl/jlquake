@@ -1394,7 +1394,7 @@ int Key_StringToKeynum( char *str ) {
 	}
 	if ( !str[1] ) {
 		// Always lowercase
-		Q_strlwr( str );
+		String::ToLower( str );
 		return str[0];
 	}
 
@@ -1544,7 +1544,7 @@ void Key_SetBinding( int keynum, const char *binding ) {
 	// allocate memory for new binding
 	keys[keynum].binding = CopyString( binding );
 	lcbinding = CopyString( binding );
-	Q_strlwr( lcbinding ); // saves doing it on all the generateHashValues in Key_GetBindingByString
+	String::ToLower( lcbinding ); // saves doing it on all the generateHashValues in Key_GetBindingByString
 
 	keys[keynum].hash = generateHashValue( lcbinding );
 

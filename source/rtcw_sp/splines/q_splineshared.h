@@ -575,11 +575,6 @@ typedef enum {
 
 //=============================================
 
-// portable case insensitive compare
-char    *Q_strlwr( char *s1 );
-char    *Q_strupr( char *s1 );
-char    *Q_strrchr( const char* string, int c );
-
 // String::Length that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string

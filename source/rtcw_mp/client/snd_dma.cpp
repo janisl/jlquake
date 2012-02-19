@@ -1570,7 +1570,7 @@ void S_Play_f( void ) {
 
 	i = 1;
 	while ( i < Cmd_Argc() ) {
-		if ( !Q_strrchr( Cmd_Argv( i ), '.' ) ) {
+		if ( !String::RChr( Cmd_Argv( i ), '.' ) ) {
 			Com_sprintf( name, sizeof( name ), "%s.wav", Cmd_Argv( 1 ) );
 		} else {
 			String::NCpyZ( name, Cmd_Argv( i ), sizeof( name ) );

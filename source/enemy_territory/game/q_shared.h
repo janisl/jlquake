@@ -778,11 +778,6 @@ typedef enum {
 
 //=============================================
 
-// portable case insensitive compare
-char    *Q_strlwr( char *s1 );
-char    *Q_strupr( char *s1 );
-char    *Q_strrchr( const char* string, int c );
-
 #ifdef _WIN32
 #define Q_putenv _putenv
 #else

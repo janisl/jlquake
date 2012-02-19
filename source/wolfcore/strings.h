@@ -337,10 +337,10 @@ public:
 	static void NCpy(char* dst, const char* src, size_t count);
 	static void NCpyZ(char* dest, const char* src, int destSize);
 	static void Cat(char* dest, int size, const char* src);
+	static char* ToLower(char* s1);
+	static char* ToUpper(char* s1);
+	static char* RChr(const char* string, int c);
 #if 0
-	static char* ToLower(char* S1);
-	static char* ToUpper(char* S1);
-	static char* RChr(const char* string, int C);
 	static int Atoi(const char* Str);
 	static float Atof(const char* Str);
 	static void Sprintf(char* Dest, int Size, const char* Fmt, ...);
