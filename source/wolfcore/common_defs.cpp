@@ -36,11 +36,13 @@ int com_frameTime;
 
 static int com_argc;
 static const char* com_argv[MAX_NUM_ARGVS+1];
+#endif
 
 Interface::~Interface()
 {
 }
 
+#if 0
 #if 0//id386 && defined _MSC_VER && !defined __VECTORC
 typedef enum
 {
