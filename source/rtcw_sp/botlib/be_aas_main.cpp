@@ -168,7 +168,7 @@ void AAS_UpdateStringIndexes( int numconfigstrings, char *configstrings[] ) {
 		if ( configstrings[i] ) {
 			//if ((*aasworld).configstrings[i]) FreeMemory((*aasworld).configstrings[i]);
 			( *aasworld ).configstrings[i] = (char *) GetMemory( String::Length( configstrings[i] ) + 1 );
-			strcpy( ( *aasworld ).configstrings[i], configstrings[i] );
+			String::Cpy( ( *aasworld ).configstrings[i], configstrings[i] );
 		} //end if
 	} //end for
 	( *aasworld ).indexessetup = qtrue;
@@ -321,7 +321,7 @@ int AAS_LoadFiles( const char *mapname ) {
 	char aasfile[MAX_PATH];
 //	char bspfile[MAX_PATH];
 
-	strcpy( ( *aasworld ).mapname, mapname );
+	String::Cpy( ( *aasworld ).mapname, mapname );
 	//NOTE: first reset the entity links into the AAS areas and BSP leaves
 	// the AAS link heap and BSP link heap are reset after respectively the
 	// AAS file and BSP file are loaded

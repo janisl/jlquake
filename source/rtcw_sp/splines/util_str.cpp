@@ -399,7 +399,7 @@ void idStr::EnsureAlloced( int amount, bool keepold ) {
 
 	newbuffer = new char[m_data->alloced];
 	if ( wasalloced && keepold ) {
-		strcpy( newbuffer, m_data->data );
+		String::Cpy( newbuffer, m_data->data );
 	}
 
 	if ( m_data->data ) {

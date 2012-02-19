@@ -412,7 +412,7 @@ static sfx_t *S_FindName( const char *name ) {
 
 	sfx = &s_knownSfx[i];
 	Com_Memset( sfx, 0, sizeof( *sfx ) );
-	strcpy( sfx->soundName, name );
+	String::Cpy( sfx->soundName, name );
 
 	sfx->next = snd.sfxHash[hash];
 	snd.sfxHash[hash] = sfx;
@@ -1976,12 +1976,12 @@ void S_SoundList_f( void ) {
 	char type[4][16];
 	char mem[2][16];
 
-	strcpy( type[0], "16bit" );
-	strcpy( type[1], "adpcm" );
-	strcpy( type[2], "daub4" );
-	strcpy( type[3], "mulaw" );
-	strcpy( mem[0], "paged out" );
-	strcpy( mem[1], "resident " );
+	String::Cpy( type[0], "16bit" );
+	String::Cpy( type[1], "adpcm" );
+	String::Cpy( type[2], "daub4" );
+	String::Cpy( type[3], "mulaw" );
+	String::Cpy( mem[0], "paged out" );
+	String::Cpy( mem[1], "resident " );
 	total = 0;
 	for ( sfx = s_knownSfx, i = 0 ; i < snd.s_numSfx ; i++, sfx++ ) {
 		size = sfx->soundLength;
@@ -2066,7 +2066,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime
 		// -2 - queue to set as new looping music
 
 		if ( intro && String::Length( intro ) ) {
-			strcpy( snd.nextMusicTrack, intro );
+			String::Cpy( snd.nextMusicTrack, intro );
 			snd.nextMusicTrackType = fadeupTime;
 			if ( fadeupTime == -2 ) {
 				Cvar_Set( "s_currentMusic", intro ); //----(SA)	so the savegame will have the right music

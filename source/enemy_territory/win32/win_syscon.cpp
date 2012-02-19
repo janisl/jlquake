@@ -776,7 +776,7 @@ char *Sys_ConsoleInput( void ) {
 		return NULL;
 	}
 
-	strcpy( s_wcd.returnedText, s_wcd.consoleText );
+	String::Cpy( s_wcd.returnedText, s_wcd.consoleText );
 	s_wcd.consoleText[0] = 0;
 
 	return s_wcd.returnedText;

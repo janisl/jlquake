@@ -669,7 +669,7 @@ void PC_AddBuiltinDefines( source_t *source ) {
 		define = (define_t *) GetMemory( sizeof( define_t ) + String::Length( builtin[i].string ) + 1 );
 		memset( define, 0, sizeof( define_t ) );
 		define->name = (char *) define + sizeof( define_t );
-		strcpy( define->name, builtin[i].string );
+		String::Cpy( define->name, builtin[i].string );
 		define->flags |= DEFINE_FIXED;
 		define->builtin = builtin[i].builtin;
 		//add the define to the source
@@ -711,7 +711,7 @@ int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *defin
 	}     //end case
 	case BUILTIN_FILE:
 	{
-		strcpy( token->string, source->scriptstack->filename );
+		String::Cpy( token->string, source->scriptstack->filename );
 		token->type = TT_NAME;
 		token->subtype = String::Length( token->string );
 		*firsttoken = token;
@@ -722,7 +722,7 @@ int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *defin
 	{
 		t = time( NULL );
 		curtime = ctime( &t );
-		strcpy( token->string, "\"" );
+		String::Cpy( token->string, "\"" );
 		strncat( token->string, curtime + 4, 7 );
 		strncat( token->string + 7, curtime + 20, 4 );
 		strcat( token->string, "\"" );
@@ -737,7 +737,7 @@ int PC_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *defin
 	{
 		t = time( NULL );
 		curtime = ctime( &t );
-		strcpy( token->string, "\"" );
+		String::Cpy( token->string, "\"" );
 		strncat( token->string, curtime + 11, 8 );
 		strcat( token->string, "\"" );
 		free( curtime );
@@ -971,13 +971,13 @@ int PC_Directive_include( source_t *source ) {
 		PC_ConvertPath( token.string );
 		script = LoadScriptFile( token.string );
 		if ( !script ) {
-			strcpy( path, source->includepath );
+			String::Cpy( path, source->includepath );
 			strcat( path, token.string );
 			script = LoadScriptFile( path );
 		} //end if
 	} //end if
 	else if ( token.type == TT_PUNCTUATION && *token.string == '<' ) {
-		strcpy( path, source->includepath );
+		String::Cpy( path, source->includepath );
 		while ( PC_ReadSourceToken( source, &token ) )
 		{
 			if ( token.linescrossed > 0 ) {
@@ -1187,7 +1187,7 @@ int PC_Directive_define( source_t *source ) {
 	define = (define_t *) GetMemory( sizeof( define_t ) + String::Length( token.string ) + 1 );
 	memset( define, 0, sizeof( define_t ) );
 	define->name = (char *) define + sizeof( define_t );
-	strcpy( define->name, token.string );
+	String::Cpy( define->name, token.string );
 	//add the define to the source
 #if DEFINEHASHING
 	PC_AddDefineToHash( define, source->definehash );
@@ -1421,7 +1421,7 @@ define_t *PC_CopyDefine( source_t *source, define_t *define ) {
 	newdefine = (define_t *) GetMemory( sizeof( define_t ) + String::Length( define->name ) + 1 );
 	//copy the define name
 	newdefine->name = (char *) newdefine + sizeof( define_t );
-	strcpy( newdefine->name, define->name );
+	String::Cpy( newdefine->name, define->name );
 	newdefine->flags = define->flags;
 	newdefine->builtin = define->builtin;
 	newdefine->numparms = define->numparms;
@@ -2378,7 +2378,7 @@ int PC_Directive_line( source_t *source ) {
 int PC_Directive_error( source_t *source ) {
 	token_t token;
 
-	strcpy( token.string, "" );
+	String::Cpy( token.string, "" );
 	PC_ReadSourceToken( source, &token );
 	SourceError( source, "#error directive: %s", token.string );
 	return qfalse;
@@ -2409,7 +2409,7 @@ void UnreadSignToken( source_t *source ) {
 	token.whitespace_p = source->scriptstack->script_p;
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
-	strcpy( token.string, "-" );
+	String::Cpy( token.string, "-" );
 	token.type = TT_PUNCTUATION;
 	token.subtype = P_SUB;
 	PC_UnreadSourceToken( source, &token );
@@ -2794,21 +2794,21 @@ int PC_ExpectTokenType( source_t *source, int type, int subtype, token_t *token 
 	} //end if
 
 	if ( token->type != type ) {
-		strcpy( str, "" );
+		String::Cpy( str, "" );
 		if ( type == TT_STRING ) {
-			strcpy( str, "string" );
+			String::Cpy( str, "string" );
 		}
 		if ( type == TT_LITERAL ) {
-			strcpy( str, "literal" );
+			String::Cpy( str, "literal" );
 		}
 		if ( type == TT_NUMBER ) {
-			strcpy( str, "number" );
+			String::Cpy( str, "number" );
 		}
 		if ( type == TT_NAME ) {
-			strcpy( str, "name" );
+			String::Cpy( str, "name" );
 		}
 		if ( type == TT_PUNCTUATION ) {
-			strcpy( str, "punctuation" );
+			String::Cpy( str, "punctuation" );
 		}
 		SourceError( source, "expected a %s, found %s", str, token->string );
 		return qfalse;
@@ -2816,16 +2816,16 @@ int PC_ExpectTokenType( source_t *source, int type, int subtype, token_t *token 
 	if ( token->type == TT_NUMBER ) {
 		if ( ( token->subtype & subtype ) != subtype ) {
 			if ( subtype & TT_DECIMAL ) {
-				strcpy( str, "decimal" );
+				String::Cpy( str, "decimal" );
 			}
 			if ( subtype & TT_HEX ) {
-				strcpy( str, "hex" );
+				String::Cpy( str, "hex" );
 			}
 			if ( subtype & TT_OCTAL ) {
-				strcpy( str, "octal" );
+				String::Cpy( str, "octal" );
 			}
 			if ( subtype & TT_BINARY ) {
-				strcpy( str, "binary" );
+				String::Cpy( str, "binary" );
 			}
 			if ( subtype & TT_LONG ) {
 				strcat( str, " long" );
@@ -3167,7 +3167,7 @@ int PC_ReadTokenHandle( int handle, pc_token_t *pc_token ) {
 	}
 
 	ret = PC_ReadToken( sourceFiles[handle], &token );
-	strcpy( pc_token->string, token.string );
+	String::Cpy( pc_token->string, token.string );
 	pc_token->type = token.type;
 	pc_token->subtype = token.subtype;
 	pc_token->intvalue = token.intvalue;
@@ -3191,7 +3191,7 @@ int PC_SourceFileAndLine( int handle, char *filename, int *line ) {
 		return qfalse;
 	}
 
-	strcpy( filename, sourceFiles[handle]->filename );
+	String::Cpy( filename, sourceFiles[handle]->filename );
 	if ( sourceFiles[handle]->scriptstack ) {
 		*line = sourceFiles[handle]->scriptstack->line;
 	} else {

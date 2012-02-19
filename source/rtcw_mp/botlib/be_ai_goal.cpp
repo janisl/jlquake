@@ -641,7 +641,7 @@ void BotGoalName( int number, char *name, int size ) {
 			return;
 		} //end for
 	} //end for
-	strcpy( name, "" );
+	String::Cpy( name, "" );
 	return;
 } //end of the function BotGoalName
 //===========================================================================

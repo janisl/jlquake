@@ -1138,7 +1138,7 @@ char *CopyString( const char *in ) {
 		}
 	}
 	out = (char*)S_Malloc( String::Length( in ) + 1 );
-	strcpy( out, in );
+	String::Cpy( out, in );
 	return out;
 }
 

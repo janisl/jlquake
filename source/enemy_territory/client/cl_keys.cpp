@@ -1090,7 +1090,7 @@ static void CompleteCommand( void ) {
 
 		Q_strncpyz( completionString, Cmd_Argv( 0 ), sizeof( completionString ) );
 		if ( completionString[0] == '\\' || completionString[0] == '/' ) {
-			// rain - in strcpy, src and dest cannot overlap
+			// rain - in String::Cpy, src and dest cannot overlap
 			//Q_strncpyz( completionString, completionString+1, sizeof(completionString) );
 			memmove( completionString, completionString + 1, sizeof( completionString ) - 1 );
 		}

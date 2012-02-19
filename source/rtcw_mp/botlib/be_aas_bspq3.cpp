@@ -467,7 +467,7 @@ void AAS_ParseBSPEntities( void ) {
 			ent->epairs = epair;
 			StripDoubleQuotes( token.string );
 			epair->key = (char *) buftrav; buftrav += ( String::Length( token.string ) + 1 );
-			strcpy( epair->key, token.string );
+			String::Cpy( epair->key, token.string );
 			if ( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) ) {
 				AAS_FreeBSPEntities();
 				FreeScript( script );
@@ -475,7 +475,7 @@ void AAS_ParseBSPEntities( void ) {
 			} //end if
 			StripDoubleQuotes( token.string );
 			epair->value = (char *) buftrav; buftrav += ( String::Length( token.string ) + 1 );
-			strcpy( epair->value, token.string );
+			String::Cpy( epair->value, token.string );
 		} //end while
 	} //end while
 	FreeScript( script );

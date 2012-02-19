@@ -1027,7 +1027,7 @@ void CL_Setenv_f( void ) {
 		char buffer[1024];
 		int i;
 
-		strcpy( buffer, Cmd_Argv( 1 ) );
+		String::Cpy( buffer, Cmd_Argv( 1 ) );
 		strcat( buffer, "=" );
 
 		for ( i = 2; i < argc; i++ ) {
@@ -1668,7 +1668,7 @@ void CL_CheckForResend( void ) {
 		Info_SetValueForKey( info, "qport", va( "%i", port ) );
 		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
 
-		strcpy( data, "connect " );
+		String::Cpy( data, "connect " );
 
 		data[8] = '\"';           // NERVE - SMF - spaces in name bugfix
 
@@ -2301,9 +2301,9 @@ static void CL_Cache_UsedFile_f( void ) {
 		return;
 	}
 
-	strcpy( groupStr, Cmd_Argv( 1 ) );
+	String::Cpy( groupStr, Cmd_Argv( 1 ) );
 
-	strcpy( itemStr, Cmd_Argv( 2 ) );
+	String::Cpy( itemStr, Cmd_Argv( 2 ) );
 	for ( i = 3; i < Cmd_Argc(); i++ ) {
 		strcat( itemStr, " " );
 		strcat( itemStr, Cmd_Argv( i ) );
@@ -2754,7 +2754,7 @@ void CL_SaveNewTranslations_f( void ) {
 		return;
 	}
 
-	strcpy( fileName, va( "translations/%s.cfg", Cmd_Argv( 1 ) ) );
+	String::Cpy( fileName, va( "translations/%s.cfg", Cmd_Argv( 1 ) ) );
 
 	CL_SaveTransTable( fileName, qtrue );
 }
@@ -3983,7 +3983,7 @@ void CL_AddToLimboChat( const char *str ) {
 
 	// copy old strings
 	for ( i = cl.limboChatPos; i > 0; i-- ) {
-		strcpy( cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1] );
+		String::Cpy( cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1] );
 	}
 
 	// copy new string
@@ -4337,7 +4337,7 @@ void CL_LoadTransTable( const char *fileName ) {
 			// parse version number
 			if ( !String::ICmp( "#version", token ) ) {
 				token = COM_Parse( &text_p );
-				strcpy( cl.translationVersion, token );
+				String::Cpy( cl.translationVersion, token );
 				continue;
 			}
 
@@ -4352,7 +4352,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		token = COM_Parse( &text_p );
-		strcpy( original, token );
+		String::Cpy( original, token );
 
 		if ( cl_debugTranslation->integer == 3 ) {
 			Com_Printf( "%i Loading: \"%s\"\n", count, original );
@@ -4366,7 +4366,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		token = COM_Parse( &text_p );
-		strcpy( translated[LANGUAGE_FRENCH], token );
+		String::Cpy( translated[LANGUAGE_FRENCH], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_FRENCH] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
 			aborted = qtrue;
@@ -4381,7 +4381,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		token = COM_Parse( &text_p );
-		strcpy( translated[LANGUAGE_GERMAN], token );
+		String::Cpy( translated[LANGUAGE_GERMAN], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_GERMAN] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
 			aborted = qtrue;
@@ -4396,7 +4396,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		token = COM_Parse( &text_p );
-		strcpy( translated[LANGUAGE_ITALIAN], token );
+		String::Cpy( translated[LANGUAGE_ITALIAN], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_ITALIAN] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
 			aborted = qtrue;
@@ -4411,7 +4411,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		token = COM_Parse( &text_p );
-		strcpy( translated[LANGUAGE_SPANISH], token );
+		String::Cpy( translated[LANGUAGE_SPANISH], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_SPANISH] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
 			aborted = qtrue;
@@ -4538,10 +4538,10 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 
 	// early bail if we only want english or bad language type
 	if ( !string ) {
-		strcpy( buf, "(null)" );
+		String::Cpy( buf, "(null)" );
 		return;
 	} else if ( currentLanguage == -1 || currentLanguage >= MAX_LANGUAGES || !String::Length( string ) )   {
-		strcpy( buf, string );
+		String::Cpy( buf, string );
 		return;
 	}
 #if !defined( __MACOS__ )
@@ -4569,7 +4569,7 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 			offset = 3;
 		}
 
-		strcpy( buf + offset, t->translated[currentLanguage] );
+		String::Cpy( buf + offset, t->translated[currentLanguage] );
 
 		if ( cl_debugTranslation->integer >= 1 ) {
 			int len2 = String::Length( buf );
@@ -4596,7 +4596,7 @@ void CL_TranslateString( const char *string, char *dest_buffer ) {
 			offset = 3;
 		}
 
-		strcpy( buf + offset, string );
+		String::Cpy( buf + offset, string );
 
 		if ( cl_debugTranslation->integer >= 1 ) {
 			int len2 = String::Length( buf );

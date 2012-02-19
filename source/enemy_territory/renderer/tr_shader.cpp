@@ -3462,8 +3462,8 @@ static void ScanAndLoadShaderFiles( void ) {
 	p = s_shaderText;
 	// free in reverse order, so the temp files are all dumped
 	for ( i = numShaders - 1; i >= 0 ; i-- ) {
-		strcpy( p++, "\n" );
-		strcpy( p, buffers[i] );
+		String::Cpy( p++, "\n" );
+		String::Cpy( p, buffers[i] );
 		ri.FS_FreeFile( buffers[i] );
 		buffers[i] = p;
 		p += buffersize[i];

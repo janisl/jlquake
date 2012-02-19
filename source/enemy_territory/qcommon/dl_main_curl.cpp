@@ -129,7 +129,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	DL_InitDownload();
 
 	/* ET://ip:port */
-	strcpy( referer, "ET://" );
+	String::Cpy( referer, "ET://" );
 	Q_strncpyz( referer + 5, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
 
 	dl_request = curl_easy_init();
@@ -173,7 +173,7 @@ dlStatus_t DL_DownloadLoop() {
 	}
 
 	if ( msg->data.result != CURLE_OK ) {
-#ifdef __MACOS__ // ¥¥¥
+#ifdef __MACOS__ // ï¿½ï¿½ï¿½
 		err = "unknown curl error.";
 #else
 		err = curl_easy_strerror( msg->data.result );

@@ -719,12 +719,12 @@ void SV_ParseVersionMapping( void ) {
 
 		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
 			// read the version number
-			strcpy( versionMap[ numVersions ].version, token );
+			String::Cpy( versionMap[ numVersions ].version, token );
 
 			// read the platform
 			token = COM_Parse( &buftrav );
 			if ( token && token[0] ) {
-				strcpy( versionMap[ numVersions ].platform, token );
+				String::Cpy( versionMap[ numVersions ].platform, token );
 			} else {
 				Z_Free( buf );
 				Com_Error( ERR_FATAL, "error parsing versionmap.cfg, after %s", versionMap[ numVersions ].version );
@@ -734,7 +734,7 @@ void SV_ParseVersionMapping( void ) {
 			// read the installer name
 			token = COM_Parse( &buftrav );
 			if ( token && token[0] ) {
-				strcpy( versionMap[ numVersions ].installer, token );
+				String::Cpy( versionMap[ numVersions ].installer, token );
 			} else {
 				Z_Free( buf );
 				Com_Error( ERR_FATAL, "error parsing versionmap.cfg, after %s", versionMap[ numVersions ].platform );

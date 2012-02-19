@@ -333,9 +333,7 @@ public:
 	static int NCmp(const char* s1, const char* s2, size_t n);
 	static int ICmp(const char* s1, const char* s2);
 	static int NICmp(const char* s1, const char* s2, size_t n);
-#if 0
-	static void Cpy(char* Dst, const char* Src);
-#endif
+	static void Cpy(char* dst, const char* src);
 	static void NCpy(char* dst, const char* src, size_t count);
 #if 0
 	static void NCpyZ(char* Dest, const char* Src, int DestSize);

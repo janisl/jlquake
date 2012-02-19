@@ -1156,7 +1156,7 @@ void Info_RemoveKey( char *s, const char *key ) {
 		*o = 0;
 
 		if ( !String::Cmp( key, pkey ) ) {
-			strcpy( start, s );  // remove this part
+			String::Cpy( start, s );  // remove this part
 			return;
 		}
 
@@ -1214,7 +1214,7 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 		*o = 0;
 
 		if ( !String::Cmp( key, pkey ) ) {
-			strcpy( start, s );  // remove this part
+			String::Cpy( start, s );  // remove this part
 			return;
 		}
 

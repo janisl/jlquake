@@ -151,7 +151,7 @@ void SV_GetChallenge( netadr_t from ) {
 		game[0] = 0;
 		fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
 		if ( fs && fs->string[0] != 0 ) {
-			strcpy( game, fs->string );
+			String::Cpy( game, fs->string );
 		}
 		Com_DPrintf( "sending getIpAuthorize for %s\n", NET_AdrToString( from ) );
 		fs = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );

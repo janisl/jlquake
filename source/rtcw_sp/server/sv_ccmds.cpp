@@ -172,7 +172,7 @@ static void SV_Map_f( void ) {
 		if ( !( strstr( map, "save/" ) == map ) ) {
 			Com_sprintf( savemap, sizeof( savemap ), "save/%s", map );
 		} else {
-			strcpy( savemap, map );
+			String::Cpy( savemap, map );
 		}
 
 		size = FS_ReadFile( savemap, NULL );
@@ -809,7 +809,7 @@ static void SV_ConSay_f( void ) {
 		return;
 	}
 
-	strcpy( text, "console: " );
+	String::Cpy( text, "console: " );
 	p = Cmd_Args();
 
 	if ( *p == '"' ) {

@@ -550,7 +550,7 @@ bool idCameraDef::getCameraInfo( long time, idVec3 &origin, idVec3 &direction, f
 				//}
 			} else if ( events[i]->getType() == idCameraEvent::EVENT_FOV ) {
 				memset( buff, 0, sizeof( buff ) );
-				strcpy( buff, events[i]->getParam() );
+				String::Cpy( buff, events[i]->getParam() );
 				const char *param1 = strtok( buff, " \t,\0" );
 				const char *param2 = strtok( NULL, " \t,\0" );
 				float len = ( param2 ) ? atof( param2 ) : 0;
@@ -567,7 +567,7 @@ bool idCameraDef::getCameraInfo( long time, idVec3 &origin, idVec3 &direction, f
 				Cbuf_Execute();
 			} else if ( events[i]->getType() == idCameraEvent::EVENT_CAMERA ) {
 				memset( buff, 0, sizeof( buff ) );
-				strcpy( buff, events[i]->getParam() );
+				String::Cpy( buff, events[i]->getParam() );
 				const char *param1 = strtok( buff, " \t,\0" );
 				const char *param2 = strtok( NULL, " \t,\0" );
 

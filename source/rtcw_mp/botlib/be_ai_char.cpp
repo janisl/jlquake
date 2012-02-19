@@ -195,7 +195,7 @@ void BotDefaultCharacteristics( bot_character_t *ch, bot_character_t *defaultch 
 		else if ( defaultch->c[i].type == CT_STRING ) {
 			ch->c[i].type = CT_STRING;
 			ch->c[i].value.string = (char *) GetMemory( String::Length( defaultch->c[i].value.string ) + 1 );
-			strcpy( ch->c[i].value.string, defaultch->c[i].value.string );
+			String::Cpy( ch->c[i].value.string, defaultch->c[i].value.string );
 		} //end else if
 	} //end for
 } //end of the function BotDefaultCharacteristics
@@ -220,7 +220,7 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 	} //end if
 	ch = (bot_character_t *) GetClearedMemory( sizeof( bot_character_t ) +
 											   MAX_CHARACTERISTICS * sizeof( bot_characteristic_t ) );
-	strcpy( ch->filename, charfile );
+	String::Cpy( ch->filename, charfile );
 	while ( PC_ReadToken( source, &token ) )
 	{
 		if ( !String::Cmp( token.string, "skill" ) ) {
@@ -287,7 +287,7 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 					else if ( token.type == TT_STRING ) {
 						StripDoubleQuotes( token.string );
 						ch->c[index].value.string = (char*)GetMemory( String::Length( token.string ) + 1 );
-						strcpy( ch->c[index].value.string, token.string );
+						String::Cpy( ch->c[index].value.string, token.string );
 						ch->c[index].type = CT_STRING;
 					} //end else if
 					else
@@ -507,7 +507,7 @@ int BotInterpolateCharacters( int handle1, int handle2, int desiredskill ) {
 	out = (bot_character_t *) GetClearedMemory( sizeof( bot_character_t ) +
 												MAX_CHARACTERISTICS * sizeof( bot_characteristic_t ) );
 	out->skill = desiredskill;
-	strcpy( out->filename, ch1->filename );
+	String::Cpy( out->filename, ch1->filename );
 	botcharacters[handle] = out;
 
 	scale = (float) ( desiredskill - 1 ) / ( ch2->skill - ch1->skill );
@@ -526,7 +526,7 @@ int BotInterpolateCharacters( int handle1, int handle2, int desiredskill ) {
 		else if ( ch1->c[i].type == CT_STRING ) {
 			out->c[i].type = CT_STRING;
 			out->c[i].value.string = (char *) GetMemory( String::Length( ch1->c[i].value.string ) + 1 );
-			strcpy( out->c[i].value.string, ch1->c[i].value.string );
+			String::Cpy( out->c[i].value.string, ch1->c[i].value.string );
 		} //end else if
 	} //end for
 	return handle;

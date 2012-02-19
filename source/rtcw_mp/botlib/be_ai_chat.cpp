@@ -710,7 +710,7 @@ bot_synonymlist_t *BotLoadSynonyms( char *filename ) {
 							ptr += sizeof( bot_synonym_t );
 							synonym->string = ptr;
 							ptr += String::Length( token.string ) + 1;
-							strcpy( synonym->string, token.string );
+							String::Cpy( synonym->string, token.string );
 							//
 							if ( lastsynonym ) {
 								lastsynonym->next = synonym;
@@ -1023,7 +1023,7 @@ bot_randomlist_t *BotLoadRandomStrings( char *filename ) {
 				ptr += sizeof( bot_randomlist_t );
 				random->string = ptr;
 				ptr += String::Length( token.string ) + 1;
-				strcpy( random->string, token.string );
+				String::Cpy( random->string, token.string );
 				random->firstrandomstring = NULL;
 				random->numstrings = 0;
 				//
@@ -1049,7 +1049,7 @@ bot_randomlist_t *BotLoadRandomStrings( char *filename ) {
 					ptr += sizeof( bot_randomstring_t );
 					randomstring->string = ptr;
 					ptr += String::Length( chatmessagestring ) + 1;
-					strcpy( randomstring->string, chatmessagestring );
+					String::Cpy( randomstring->string, chatmessagestring );
 					//
 					random->numstrings++;
 					randomstring->next = random->firstrandomstring;
@@ -1231,7 +1231,7 @@ bot_matchpiece_t *BotLoadMatchPieces( source_t *source, char *endtoken ) {
 				StripDoubleQuotes( token.string );
 				matchstring = (bot_matchstring_t *) GetClearedHunkMemory( sizeof( bot_matchstring_t ) + String::Length( token.string ) + 1 );
 				matchstring->string = (char *) matchstring + sizeof( bot_matchstring_t );
-				strcpy( matchstring->string, token.string );
+				String::Cpy( matchstring->string, token.string );
 				if ( !String::Length( token.string ) ) {
 					emptystring = qtrue;
 				}
@@ -1483,7 +1483,7 @@ int BotFindMatch( char *str, bot_match_t *match, unsigned long int context ) {
 void BotMatchVariable( bot_match_t *match, int variable, char *buf, int size ) {
 	if ( variable < 0 || variable >= MAX_MATCHVARIABLES ) {
 		botimport.Print( PRT_FATAL, "BotMatchVariable: variable out of range\n" );
-		strcpy( buf, "" );
+		String::Cpy( buf, "" );
 		return;
 	} //end if
 
@@ -1496,7 +1496,7 @@ void BotMatchVariable( bot_match_t *match, int variable, char *buf, int size ) {
 	} //end if
 	else
 	{
-		strcpy( buf, "" );
+		String::Cpy( buf, "" );
 	} //end else
 	return;
 } //end of the function BotMatchVariable
@@ -1567,7 +1567,7 @@ bot_stringlist_t *BotCheckChatMessageIntegrety( char *message, bot_stringlist_t 
 						Log_Write( "%s = {\"%s\"} //MISSING RANDOM\r\n", temp, temp );
 						s = (bot_stringlist_t*)GetClearedMemory( sizeof( bot_stringlist_t ) + String::Length( temp ) + 1 );
 						s->string = (char *) s + sizeof( bot_stringlist_t );
-						strcpy( s->string, temp );
+						String::Cpy( s->string, temp );
 						s->next = stringlist;
 						stringlist = s;
 					}     //end if
@@ -1807,7 +1807,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 			} //end else if
 			else if ( PC_CheckTokenString( source, "<" ) ) { //bot names
 				key->flags |= RCKFL_BOTNAMES;
-				strcpy( namebuffer, "" );
+				String::Cpy( namebuffer, "" );
 				do
 				{
 					if ( !PC_ExpectTokenType( source, TT_STRING, 0, &token ) ) {
@@ -1827,7 +1827,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 					return NULL;
 				} //end if
 				key->string = (char *) GetClearedHunkMemory( String::Length( namebuffer ) + 1 );
-				strcpy( key->string, namebuffer );
+				String::Cpy( key->string, namebuffer );
 			} //end else if
 			else //normal string key
 			{
@@ -1839,7 +1839,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 				} //end if
 				StripDoubleQuotes( token.string );
 				key->string = (char *) GetClearedHunkMemory( String::Length( token.string ) + 1 );
-				strcpy( key->string, token.string );
+				String::Cpy( key->string, token.string );
 			} //end else
 			  //
 			PC_CheckTokenString( source, "," );
@@ -1869,7 +1869,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 			} //end if
 			chatmessage = (bot_chatmessage_t *) GetClearedHunkMemory( sizeof( bot_chatmessage_t ) + String::Length( chatmessagestring ) + 1 );
 			chatmessage->chatmessage = (char *) chatmessage + sizeof( bot_chatmessage_t );
-			strcpy( chatmessage->chatmessage, chatmessagestring );
+			String::Cpy( chatmessage->chatmessage, chatmessagestring );
 			chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
 			chatmessage->next = replychat->firstchatmessage;
 			//add the chat message to the reply chat
@@ -2023,7 +2023,7 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 								//store the chat message
 								ptr += sizeof( bot_chatmessage_t );
 								chatmessage->chatmessage = ptr;
-								strcpy( chatmessage->chatmessage, chatmessagestring );
+								String::Cpy( chatmessage->chatmessage, chatmessagestring );
 								ptr += String::Length( chatmessagestring ) + 1;
 								//the number of chat messages increased
 								chattype->numchatmessages++;
@@ -2212,7 +2212,7 @@ int BotExpandChatMessage( char *outmessage, char *message, unsigned long mcontex
 						botimport.Print( PRT_ERROR, "BotConstructChat: message %s too long\n", message );
 						return qfalse;
 					}     //end if
-					strcpy( &outputbuf[len], temp );
+					String::Cpy( &outputbuf[len], temp );
 					len += String::Length( temp );
 				}     //end if
 				break;
@@ -2239,7 +2239,7 @@ int BotExpandChatMessage( char *outmessage, char *message, unsigned long mcontex
 					botimport.Print( PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message );
 					return qfalse;
 				}     //end if
-				strcpy( &outputbuf[len], ptr );
+				String::Cpy( &outputbuf[len], ptr );
 				len += String::Length( ptr );
 				expansion = qtrue;
 				break;
@@ -2277,13 +2277,13 @@ void BotConstructChatMessage( bot_chatstate_t *chatstate, char *message, unsigne
 	int i;
 	char srcmessage[MAX_MESSAGE_SIZE];
 
-	strcpy( srcmessage, message );
+	String::Cpy( srcmessage, message );
 	for ( i = 0; i < 10; i++ )
 	{
 		if ( !BotExpandChatMessage( chatstate->chatmessage, srcmessage, mcontext, variables, vcontext, reply ) ) {
 			break;
 		} //end if
-		strcpy( srcmessage, chatstate->chatmessage );
+		String::Cpy( srcmessage, chatstate->chatmessage );
 	} //end for
 	if ( i >= 10 ) {
 		botimport.Print( PRT_WARNING, "too many expansions in chat message\n" );
@@ -2510,7 +2510,7 @@ int BotReplyChat( int chatstate, char *message, int mcontext, int vcontext, char
 		return qfalse;
 	}
 	memset( &match, 0, sizeof( bot_match_t ) );
-	strcpy( match.string, message );
+	String::Cpy( match.string, message );
 	bestpriority = -1;
 	bestchatmessage = NULL;
 	bestrchat = NULL;
@@ -2677,7 +2677,7 @@ void BotEnterChat( int chatstate, int client, int sendto ) {
 			} else { EA_Say( client, cs->chatmessage );}
 		}
 		//clear the chat message from the state
-		strcpy( cs->chatmessage, "" );
+		String::Cpy( cs->chatmessage, "" );
 	} //end if
 } //end of the function BotEnterChat
 //===========================================================================
@@ -2698,7 +2698,7 @@ void BotGetChatMessage( int chatstate, char *buf, int size ) {
 	String::NCpy( buf, cs->chatmessage, size - 1 );
 	buf[size - 1] = '\0';
 	//clear the chat message from the state
-	strcpy( cs->chatmessage, "" );
+	String::Cpy( cs->chatmessage, "" );
 } //end of the function BotGetChatMessage
 //===========================================================================
 //

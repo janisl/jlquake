@@ -1958,7 +1958,7 @@ static pack_t *FS_LoadZipFile( char *zipfile, const char *basename ) {
 		Q_strlwr( filename_inzip );
 		hash = FS_HashFileName( filename_inzip, pack->hashSize );
 		buildBuffer[i].name = namePtr;
-		strcpy( buildBuffer[i].name, filename_inzip );
+		String::Cpy( buildBuffer[i].name, filename_inzip );
 		namePtr += String::Length( filename_inzip ) + 1;
 		// store the file position in the zip
 		unzGetCurrentFileInfoPosition( uf, &buildBuffer[i].pos );
@@ -2009,7 +2009,7 @@ static int FS_ReturnPath( const char *zname, char *zpath, int *depth ) {
 		}
 		at++;
 	}
-	strcpy( zpath, zname );
+	String::Cpy( zpath, zname );
 	zpath[len] = 0;
 	*depth = newdep;
 
@@ -2228,7 +2228,7 @@ int FS_GetFileList(  const char *path, const char *extension, char *listbuf, int
 	for ( i = 0; i < nFiles; i++ ) {
 		nLen = String::Length( pFiles[i] ) + 1;
 		if ( nTotal + nLen + 1 < bufsize ) {
-			strcpy( listbuf, pFiles[i] );
+			String::Cpy( listbuf, pFiles[i] );
 			listbuf += nLen;
 			nTotal += nLen;
 		} else {
@@ -2399,7 +2399,7 @@ int FS_GetModList( char *listbuf, int bufsize ) {
 				// nLen is the length of the mod path
 				// we need to see if there is a description available
 				descPath[0] = '\0';
-				strcpy( descPath, name );
+				String::Cpy( descPath, name );
 				strcat( descPath, "/description.txt" );
 				nDescLen = FS_SV_FOpenFileRead( descPath, &descHandle );
 				if ( nDescLen > 0 && descHandle ) {
@@ -2412,14 +2412,14 @@ int FS_GetModList( char *listbuf, int bufsize ) {
 					}
 					FS_FCloseFile( descHandle );
 				} else {
-					strcpy( descPath, name );
+					String::Cpy( descPath, name );
 				}
 				nDescLen = String::Length( descPath ) + 1;
 
 				if ( nTotal + nLen + 1 + nDescLen + 1 < bufsize ) {
-					strcpy( listbuf, name );
+					String::Cpy( listbuf, name );
 					listbuf += nLen;
-					strcpy( listbuf, descPath );
+					String::Cpy( listbuf, descPath );
 					listbuf += nDescLen;
 					nTotal += nLen + nDescLen;
 					nMods++;
@@ -2740,7 +2740,7 @@ static void FS_AddGameDirectory( const char *path, const char *dir ) {
 				continue;
 			}
 			// store the game name for downloading
-			strcpy( pak->pakGamename, dir );
+			String::Cpy( pak->pakGamename, dir );
 
 			search = (searchpath_t*)Z_Malloc( sizeof( searchpath_t ) );
 			search->pack = pak;

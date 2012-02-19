@@ -213,7 +213,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 		// copy the command, since the command number used for encryption is
 		// already compressed in the buffer, and receiving a new command would
 		// otherwise lose the proper encryption key
-		strcpy( netbuf->lastClientCommandString, client->lastClientCommandString );
+		String::Cpy( netbuf->lastClientCommandString, client->lastClientCommandString );
 
 		// insert it in the queue, the message will be encoded and sent later
 		//%	*client->netchan_end_queue = netbuf;

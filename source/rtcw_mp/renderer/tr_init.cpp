@@ -280,7 +280,7 @@ static void InitOpenGL( void ) {
 
 		GLimp_Init();
 
-		strcpy( renderer_buffer, glConfig.renderer_string );
+		String::Cpy( renderer_buffer, glConfig.renderer_string );
 		Q_strlwr( renderer_buffer );
 
 		// OpenGL driver constants
@@ -321,22 +321,22 @@ void GL_CheckErrors( void ) {
 	}
 	switch ( err ) {
 	case GL_INVALID_ENUM:
-		strcpy( s, "GL_INVALID_ENUM" );
+		String::Cpy( s, "GL_INVALID_ENUM" );
 		break;
 	case GL_INVALID_VALUE:
-		strcpy( s, "GL_INVALID_VALUE" );
+		String::Cpy( s, "GL_INVALID_VALUE" );
 		break;
 	case GL_INVALID_OPERATION:
-		strcpy( s, "GL_INVALID_OPERATION" );
+		String::Cpy( s, "GL_INVALID_OPERATION" );
 		break;
 	case GL_STACK_OVERFLOW:
-		strcpy( s, "GL_STACK_OVERFLOW" );
+		String::Cpy( s, "GL_STACK_OVERFLOW" );
 		break;
 	case GL_STACK_UNDERFLOW:
-		strcpy( s, "GL_STACK_UNDERFLOW" );
+		String::Cpy( s, "GL_STACK_UNDERFLOW" );
 		break;
 	case GL_OUT_OF_MEMORY:
-		strcpy( s, "GL_OUT_OF_MEMORY" );
+		String::Cpy( s, "GL_OUT_OF_MEMORY" );
 		break;
 	default:
 		Com_sprintf( s, sizeof( s ), "%i", err );

@@ -799,7 +799,7 @@ static void SV_ConSay_f( void ) {
 		return;
 	}
 
-	strcpy( text, "console: " );
+	String::Cpy( text, "console: " );
 	p = Cmd_Args();
 
 	if ( *p == '"' ) {

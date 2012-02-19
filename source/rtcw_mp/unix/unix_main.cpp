@@ -480,7 +480,7 @@ char *Sys_ConsoleInput( void ) {
 				if ( key == '\n' ) {
 					// push it in history
 					Hist_Add( &tty_con );
-					strcpy( text, tty_con.buffer );
+					String::Cpy( text, tty_con.buffer );
 					Field_Clear( &tty_con );
 					key = '\n';
 					write( 1, &key, 1 );
@@ -1154,7 +1154,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 		len = String::Length( s ) + 1;
 		b = (char*)Z_Malloc( len );
-		strcpy( b, s );
+		String::Cpy( b, s );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
 

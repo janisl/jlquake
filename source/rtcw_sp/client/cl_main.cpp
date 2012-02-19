@@ -957,7 +957,7 @@ void CL_Setenv_f( void ) {
 		char buffer[1024];
 		int i;
 
-		strcpy( buffer, Cmd_Argv( 1 ) );
+		String::Cpy( buffer, Cmd_Argv( 1 ) );
 		strcat( buffer, "=" );
 
 		for ( i = 2; i < argc; i++ ) {
@@ -2103,9 +2103,9 @@ static void CL_Cache_UsedFile_f( void ) {
 		return;
 	}
 
-	strcpy( groupStr, Cmd_Argv( 1 ) );
+	String::Cpy( groupStr, Cmd_Argv( 1 ) );
 
-	strcpy( itemStr, Cmd_Argv( 2 ) );
+	String::Cpy( itemStr, Cmd_Argv( 2 ) );
 	for ( i = 3; i < Cmd_Argc(); i++ ) {
 		strcat( itemStr, " " );
 		strcat( itemStr, Cmd_Argv( i ) );
@@ -3548,7 +3548,7 @@ void CL_AddToLimboChat( const char *str ) {
 
 	// copy old strings
 	for ( i = cl.limboChatPos; i > 0; i-- ) {
-		strcpy( cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1] );
+		String::Cpy( cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1] );
 	}
 
 	// copy new string

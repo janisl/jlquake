@@ -180,7 +180,7 @@ inline idStr::idStr
 	if ( text ) {
 		len = String::Length( text );
 		EnsureAlloced( len + 1 );
-		strcpy( m_data->data, text );
+		String::Cpy( m_data->data, text );
 		m_data->len = len;
 	} else
 	{
@@ -252,7 +252,7 @@ inline idStr::idStr
 	sprintf( text, "%.3f", num );
 	len = String::Length( text );
 	EnsureAlloced( len + 1 );
-	strcpy( m_data->data, text );
+	String::Cpy( m_data->data, text );
 	m_data->len = len;
 }
 
@@ -266,7 +266,7 @@ inline idStr::idStr
 	sprintf( text, "%d", num );
 	len = String::Length( text );
 	EnsureAlloced( len + 1 );
-	strcpy( m_data->data, text );
+	String::Cpy( m_data->data, text );
 	m_data->len = len;
 }
 
@@ -280,7 +280,7 @@ inline idStr::idStr
 	sprintf( text, "%u", num );
 	len = String::Length( text );
 	EnsureAlloced( len + 1 );
-	strcpy( m_data->data, text );
+	String::Cpy( m_data->data, text );
 	m_data->len = len;
 }
 
@@ -405,7 +405,7 @@ inline void idStr::operator=
 	if ( !m_data ) {
 		len = String::Length( text );
 		EnsureAlloced( len + 1, false );
-		strcpy( m_data->data, text );
+		String::Cpy( m_data->data, text );
 		m_data->len = len;
 		return;
 	}
@@ -442,7 +442,7 @@ inline void idStr::operator=
 
 	len = String::Length( text );
 	EnsureAlloced( len + 1, false );
-	strcpy( m_data->data, text );
+	String::Cpy( m_data->data, text );
 	m_data->len = len;
 }
 

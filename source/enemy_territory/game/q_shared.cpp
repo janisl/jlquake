@@ -1246,8 +1246,8 @@ void Info_RemoveKey( char *s, const char *key ) {
 		*o = 0;
 
 		if ( !String::ICmp( key, pkey ) ) {
-			// rain - arguments to strcpy must not overlap
-			//strcpy (start, s);	// remove this part
+			// rain - arguments to String::Cpy must not overlap
+			//String::Cpy (start, s);	// remove this part
 			memmove( start, s, String::Length( s ) + 1 ); // remove this part
 			return;
 		}
@@ -1306,7 +1306,7 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 		*o = 0;
 
 		if ( !String::ICmp( key, pkey ) ) {
-			strcpy( start, s );  // remove this part
+			String::Cpy( start, s );  // remove this part
 			return;
 		}
 

@@ -964,19 +964,19 @@ int PS_ExpectTokenType( script_t *script, int type, int subtype, token_t *token 
 
 	if ( token->type != type ) {
 		if ( type == TT_STRING ) {
-			strcpy( str, "string" );
+			String::Cpy( str, "string" );
 		}
 		if ( type == TT_LITERAL ) {
-			strcpy( str, "literal" );
+			String::Cpy( str, "literal" );
 		}
 		if ( type == TT_NUMBER ) {
-			strcpy( str, "number" );
+			String::Cpy( str, "number" );
 		}
 		if ( type == TT_NAME ) {
-			strcpy( str, "name" );
+			String::Cpy( str, "name" );
 		}
 		if ( type == TT_PUNCTUATION ) {
-			strcpy( str, "punctuation" );
+			String::Cpy( str, "punctuation" );
 		}
 		ScriptError( script, "expected a %s, found %s", str, token->string );
 		return 0;
@@ -984,16 +984,16 @@ int PS_ExpectTokenType( script_t *script, int type, int subtype, token_t *token 
 	if ( token->type == TT_NUMBER ) {
 		if ( ( token->subtype & subtype ) != subtype ) {
 			if ( subtype & TT_DECIMAL ) {
-				strcpy( str, "decimal" );
+				String::Cpy( str, "decimal" );
 			}
 			if ( subtype & TT_HEX ) {
-				strcpy( str, "hex" );
+				String::Cpy( str, "hex" );
 			}
 			if ( subtype & TT_OCTAL ) {
-				strcpy( str, "octal" );
+				String::Cpy( str, "octal" );
 			}
 			if ( subtype & TT_BINARY ) {
-				strcpy( str, "binary" );
+				String::Cpy( str, "binary" );
 			}
 			if ( subtype & TT_LONG ) {
 				strcat( str, " long" );
@@ -1142,8 +1142,8 @@ char PS_NextWhiteSpaceChar( script_t *script ) {
 //============================================================================
 void StripDoubleQuotes( char *string ) {
 	if ( *string == '\"' ) {
-		//strcpy(string, string+1);
-		// rain - strcpy arguments cannot overlap, memmove string+1 and NUL
+		//String::Cpy(string, string+1);
+		// rain - String::Cpy arguments cannot overlap, memmove string+1 and NUL
 		memmove( string, string + 1, String::Length( string + 1 ) + 1 );
 	} //end if
 	if ( string[String::Length( string ) - 1] == '\"' ) {
@@ -1348,7 +1348,7 @@ script_t *LoadScriptFile( const char *filename ) {
 	buffer = GetClearedMemory( sizeof( script_t ) + length + 1 );
 	script = (script_t *) buffer;
 	memset( script, 0, sizeof( script_t ) );
-	strcpy( script->filename, filename );
+	String::Cpy( script->filename, filename );
 	script->buffer = (char *) buffer + sizeof( script_t );
 	script->buffer[length] = 0;
 	script->length = length;
@@ -1393,7 +1393,7 @@ script_t *LoadScriptMemory( char *ptr, int length, char *name ) {
 	buffer = GetClearedMemory( sizeof( script_t ) + length + 1 );
 	script = (script_t *) buffer;
 	memset( script, 0, sizeof( script_t ) );
-	strcpy( script->filename, name );
+	String::Cpy( script->filename, name );
 	script->buffer = (char *) buffer + sizeof( script_t );
 	script->buffer[length] = 0;
 	script->length = length;

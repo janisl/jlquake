@@ -589,11 +589,11 @@ char *Sys_GetCurrentUser( void ) {
 
 
 	if ( !GetUserName( s_userName, &size ) ) {
-		strcpy( s_userName, "player" );
+		String::Cpy( s_userName, "player" );
 	}
 
 	if ( !s_userName[0] ) {
-		strcpy( s_userName, "player" );
+		String::Cpy( s_userName, "player" );
 	}
 
 	return s_userName;

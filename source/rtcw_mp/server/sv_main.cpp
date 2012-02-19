@@ -390,7 +390,7 @@ void SVC_Status( netadr_t from ) {
 	return;
 #endif
 
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -418,7 +418,7 @@ void SVC_Status( netadr_t from ) {
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more
 			}
-			strcpy( status + statusLength, player );
+			String::Cpy( status + statusLength, player );
 			statusLength += playerLength;
 		}
 	}
@@ -449,7 +449,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 		return;
 	}
 
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -477,7 +477,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more
 			}
-			strcpy( status + statusLength, player );
+			String::Cpy( status + statusLength, player );
 			statusLength += playerLength;
 		}
 	}

@@ -446,7 +446,7 @@ static sfx_t *S_FindName( const char *name ) {
 
 	sfx = &s_knownSfx[i];
 	Com_Memset( sfx, 0, sizeof( *sfx ) );
-	strcpy( sfx->soundName, name );
+	String::Cpy( sfx->soundName, name );
 
 	sfx->next = sfxHash[hash];
 	sfxHash[hash] = sfx;
@@ -1624,12 +1624,12 @@ void S_SoundList_f( void ) {
 	char type[4][16];
 	char mem[2][16];
 
-	strcpy( type[0], "16bit" );
-	strcpy( type[1], "adpcm" );
-	strcpy( type[2], "daub4" );
-	strcpy( type[3], "mulaw" );
-	strcpy( mem[0], "paged out" );
-	strcpy( mem[1], "resident " );
+	String::Cpy( type[0], "16bit" );
+	String::Cpy( type[1], "adpcm" );
+	String::Cpy( type[2], "daub4" );
+	String::Cpy( type[3], "mulaw" );
+	String::Cpy( mem[0], "paged out" );
+	String::Cpy( mem[1], "resident " );
 	total = 0;
 	for ( sfx = s_knownSfx, i = 0 ; i < s_numSfx ; i++, sfx++ ) {
 		size = sfx->soundLength;

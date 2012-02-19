@@ -186,7 +186,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	for ( lod = MD3_MAX_LODS - 1 ; lod >= 0 ; lod-- ) {
 		char filename[1024];
 
-		strcpy( filename, name );
+		String::Cpy( filename, name );
 
 		if ( lod != 0 ) {
 			char namebuf[80];

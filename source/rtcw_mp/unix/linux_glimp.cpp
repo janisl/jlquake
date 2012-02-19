@@ -1424,7 +1424,7 @@ void GLimp_Init( void ) {
 	//
 	// chipset specific configuration
 	//
-	strcpy( buf, glConfig.renderer_string );
+	String::Cpy( buf, glConfig.renderer_string );
 	strlwr( buf );
 
 	//
