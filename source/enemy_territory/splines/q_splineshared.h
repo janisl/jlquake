@@ -178,9 +178,6 @@ typedef enum {
 #define YAW                 1       // left / right
 #define ROLL                2       // fall over
 
-// the game guarantees that no string from the network will ever
-// exceed MAX_STRING_CHARS
-#define MAX_STRING_CHARS    1024    // max length of a string passed to Cmd_TokenizeString
 #define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
 #define MAX_TOKEN_CHARS     1024    // max length of an individual token
 
@@ -425,9 +422,6 @@ int Q_log2( int val );
 int     Q_rand( int *seed );
 float   Q_random( int *seed );
 float   Q_crandom( int *seed );
-
-#define random()    ( ( rand() & 0x7fff ) / ( (float)0x7fff ) )
-#define crandom()   ( 2.0 * ( random() - 0.5 ) )
 
 float Q_rint( float in );
 

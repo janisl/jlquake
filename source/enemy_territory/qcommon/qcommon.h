@@ -821,10 +821,6 @@ extern gameInfo_t com_gameInfo;
 
 #define CPUID_AMD_3DNOW         0x30            // AMD K6 3DNOW!
 
-// TTimo
-// centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
-#define MAXPRINTMSG 4096
-
 char        *CopyString( const char *in );
 void        Info_Print( const char *s );
 

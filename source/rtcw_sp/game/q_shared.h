@@ -234,9 +234,6 @@ typedef int clipHandle_t;
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
 #define MAX_SP_CLIENTS      64      // increasing this will increase memory usage significantly
 
-// the game guarantees that no string from the network will ever
-// exceed MAX_STRING_CHARS
-#define MAX_STRING_CHARS    1024    // max length of a string passed to Cmd_TokenizeString
 #define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
 #define MAX_TOKEN_CHARS     1024    // max length of an individual token
 
@@ -544,9 +541,6 @@ float Q_acos( float c );
 int     Q_rand( int *seed );
 float   Q_random( int *seed );
 float   Q_crandom( int *seed );
-
-#define random()    ( ( rand() & 0x7fff ) / ( (float)0x7fff ) )
-#define crandom()   ( 2.0 * ( random() - 0.5 ) )
 
 void vectoangles( const vec3_t value1, vec3_t angles );
 float vectoyaw( const vec3_t vec );
@@ -942,9 +936,6 @@ typedef enum {
 ========================================================================
 */
 #define ANIM_BITS       10
-
-#define ANGLE2SHORT( x )  ( (int)( ( x ) * 65536 / 360 ) & 65535 )
-#define SHORT2ANGLE( x )  ( ( x ) * ( 360.0 / 65536 ) )
 
 #define SNAPFLAG_RATE_DELAYED   1
 #define SNAPFLAG_NOT_ACTIVE     2   // snapshot used during connection and for zombies

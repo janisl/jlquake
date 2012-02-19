@@ -139,7 +139,6 @@ public:
 #define JLQUAKE_VERSION			1.0
 #define JLQUAKE_VERSION_STRING	"1.0"
 
-#if 0
 // the game guarantees that no string from the network will ever
 // exceed MAX_STRING_CHARS
 #define MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
@@ -160,6 +159,7 @@ public:
 //
 //==========================================================================
 
+#if 0
 void Com_Memset(void* dest, const int val, const size_t count);
 void Com_Memcpy(void* dest, const void* src, const size_t count);
 
