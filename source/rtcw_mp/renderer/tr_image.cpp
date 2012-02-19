@@ -844,7 +844,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	if ( String::Length( name ) >= MAX_QPATH ) {
 		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name );
 	}
-	if ( !strncmp( name, "*lightmap", 9 ) ) {
+	if ( !String::NCmp( name, "*lightmap", 9 ) ) {
 		isLightmap = qtrue;
 		noCompress = qtrue;
 	}
@@ -3337,7 +3337,7 @@ void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, in
 	for ( j = 0; j < numFiles; j++ ) {
 		char filename[MAX_QPATH], outfilename[MAX_QPATH];
 
-		if ( !Q_strncmp( fileList[j], "spr", 3 ) ) {
+		if ( !String::NCmp( fileList[j], "spr", 3 ) ) {
 			continue;
 		}
 

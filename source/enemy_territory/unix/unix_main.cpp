@@ -785,7 +785,7 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 	// we have to handle the game dll a little differently
 	// NOTE #2: we may have found a file in fs_basepath, and if the checksum is wrong, FS_Extract will write in fs_homepath
 	//   won't be a problem since we start a brand new scan next
-	if ( cl_connectedToPureServer && Q_strncmp( name, "qagame", 6 ) ) {
+	if ( cl_connectedToPureServer && String::NCmp( name, "qagame", 6 ) ) {
 		if ( !FS_CL_ExtractFromPakFile( fn, gamedir, fname, cvar_name ) ) {
 			Com_Error( ERR_DROP, "Game code(%s) failed Pure Server check", fname );
 		}

@@ -2427,7 +2427,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 
 	// NERVE - SMF - bugfix, make this compare first n chars so it doesnt bail if token is parsed incorrectly
 	// echo request from server
-	if ( !Q_strncmp( c, "getserversResponse", 18 ) ) {
+	if ( !String::NCmp( c, "getserversResponse", 18 ) ) {
 		CL_ServersResponsePacket( from, msg );
 		return;
 	}
@@ -2789,7 +2789,7 @@ static void CL_Cache_UsedFile_f( void ) {
 
 	// find the cache group
 	for ( i = 0; i < CACHE_NUMGROUPS; i++ ) {
-		if ( !Q_strncmp( groupStr, cacheGroups[i].name, MAX_QPATH ) ) {
+		if ( !String::NCmp( groupStr, cacheGroups[i].name, MAX_QPATH ) ) {
 			break;
 		}
 	}
@@ -2812,7 +2812,7 @@ static void CL_Cache_UsedFile_f( void ) {
 			item->lastSetIndex = cacheIndex;
 			break;
 		}
-		if ( item->name[0] == itemStr[0] && !Q_strncmp( item->name, itemStr, MAX_QPATH ) ) {
+		if ( item->name[0] == itemStr[0] && !String::NCmp( item->name, itemStr, MAX_QPATH ) ) {
 			if ( item->lastSetIndex != cacheIndex ) {
 				item->hits++;
 				item->lastSetIndex = cacheIndex;

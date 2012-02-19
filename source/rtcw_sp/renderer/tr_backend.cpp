@@ -820,15 +820,15 @@ void RB_ZombieFX( int part, drawSurf_t *drawSurf, int oldNumVerts, int oldNumInd
 	}
 
 	// ignore all surfaces starting with u_sk (skeleton)
-	if ( !Q_strncmp( surfName, "u_sk", 4 ) ) {
+	if ( !String::NCmp( surfName, "u_sk", 4 ) ) {
 		return;
 	}
 	// legs
-	if ( !Q_strncmp( surfName, "l_sk", 4 ) ) {
+	if ( !String::NCmp( surfName, "l_sk", 4 ) ) {
 		return;
 	}
 	// head
-	if ( !Q_strncmp( surfName, "h_sk", 4 ) ) {
+	if ( !String::NCmp( surfName, "h_sk", 4 ) ) {
 		return;
 	}
 

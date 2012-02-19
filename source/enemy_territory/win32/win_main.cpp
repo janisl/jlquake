@@ -596,7 +596,7 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t( QDECL **entr
 	// we have to handle the game dll a little differently
 	// TTimo - passing the exact path to check against
 	//   (compatibility with other OSes loading procedure)
-	if ( cl_connectedToPureServer && Q_strncmp( name, "qagame", 6 ) ) {
+	if ( cl_connectedToPureServer && String::NCmp( name, "qagame", 6 ) ) {
 		if ( !FS_CL_ExtractFromPakFile( fn, gamedir, filename, NULL ) ) {
 			Com_Error( ERR_DROP, "Game code(%s) failed Pure Server check", filename );
 		}

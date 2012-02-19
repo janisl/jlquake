@@ -192,7 +192,7 @@ static void FindNextChunk( char *name ) {
 		}
 		data_p -= 8;
 		last_chunk = data_p + 8 + ( ( iff_chunk_len + 1 ) & ~1 );
-		if ( !strncmp( (char *)data_p, name, 4 ) ) {
+		if ( !String::NCmp( (char *)data_p, name, 4 ) ) {
 			return;
 		}
 	}
@@ -288,7 +288,7 @@ static wavinfo_t GetWavinfo( char *name, byte *wav, int wavlength ) {
 
 // find "RIFF" chunk
 	FindChunk( "RIFF" );
-	if ( !( data_p && !strncmp( (char *)data_p + 8, "WAVE", 4 ) ) ) {
+	if ( !( data_p && !String::NCmp( (char *)data_p + 8, "WAVE", 4 ) ) ) {
 		Com_Printf( "Missing RIFF/WAVE chunks\n" );
 		return info;
 	}

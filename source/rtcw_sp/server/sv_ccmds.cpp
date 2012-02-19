@@ -467,11 +467,11 @@ void    SV_LoadGame_f( void ) {
 		Com_Printf( "You must specify a savegame to load\n" );
 		return;
 	}
-	if ( Q_strncmp( filename, "save/", 5 ) && Q_strncmp( filename, "save\\", 5 ) ) {
+	if ( String::NCmp( filename, "save/", 5 ) && String::NCmp( filename, "save\\", 5 ) ) {
 		Q_strncpyz( filename, va( "save/%s", filename ), sizeof( filename ) );
 	}
 	// enforce .svg extension
-	if ( !strstr( filename, "." ) || Q_strncmp( strstr( filename, "." ) + 1, "svg", 3 ) ) {
+	if ( !strstr( filename, "." ) || String::NCmp( strstr( filename, "." ) + 1, "svg", 3 ) ) {
 		Q_strcat( filename, sizeof( filename ), ".svg" );
 	}
 	// use '/' instead of '\' for directories

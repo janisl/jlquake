@@ -112,8 +112,8 @@ int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
 	for ( i = client->reliableSent + 1; i <= client->reliableSequence; i++ ) {
 		index = i & ( MAX_RELIABLE_COMMANDS - 1 );
 		//
-		//if ( !Q_strncmp(cmd, client->reliableCommands[ index ], String::Length("cs")) ) {
-		if ( !Q_strncmp( cmd, SV_GetReliableCommand( client, index ), String::Length( "cs" ) ) ) {
+		//if ( !String::NCmp(cmd, client->reliableCommands[ index ], String::Length("cs")) ) {
+		if ( !String::NCmp( cmd, SV_GetReliableCommand( client, index ), String::Length( "cs" ) ) ) {
 			sscanf( cmd, "cs %i", &csnum1 );
 			//sscanf(client->reliableCommands[ index ], "cs %i", &csnum2);
 			sscanf( SV_GetReliableCommand( client, index ), "cs %i", &csnum2 );
@@ -196,7 +196,7 @@ void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) {
 	}
 
 	// hack to echo broadcast prints to console
-	if ( com_dedicated->integer && !strncmp( (char *)message, "print", 5 ) ) {
+	if ( com_dedicated->integer && !String::NCmp( (char *)message, "print", 5 ) ) {
 		Com_Printf( "broadcast: %s\n", SV_ExpandNewlines( (char *)message ) );
 	}
 

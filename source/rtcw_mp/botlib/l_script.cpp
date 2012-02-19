@@ -817,7 +817,7 @@ int PS_ReadPunctuation( script_t *script, token_t *token ) {
 		//if the script contains at least as much characters as the punctuation
 		if ( script->script_p + len <= script->end_p ) {
 			//if the script contains the punctuation
-			if ( !strncmp( script->script_p, p, len ) ) {
+			if ( !String::NCmp( script->script_p, p, len ) ) {
 				String::NCpy( token->string, p, MAX_TOKEN );
 				script->script_p += len;
 				token->type = TT_PUNCTUATION;
@@ -1281,7 +1281,7 @@ int ScriptSkipTo( script_t *script, char *value ) {
 			return 0;
 		}
 		if ( *script->script_p == firstchar ) {
-			if ( !strncmp( script->script_p, value, len ) ) {
+			if ( !String::NCmp( script->script_p, value, len ) ) {
 				return 1;
 			} //end if
 		} //end if

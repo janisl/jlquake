@@ -2087,7 +2087,7 @@ void R_LoadEntities( lump_t *l ) {
 
 		// check for remapping of shaders for vertex lighting
 		s = "vertexremapshader";
-		if ( !Q_strncmp( keyname, s, String::Length( s ) ) ) {
+		if ( !String::NCmp( keyname, s, String::Length( s ) ) ) {
 			s = strchr( value, ';' );
 			if ( !s ) {
 				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in vertexshaderremap '%s'\n", value );
@@ -2101,7 +2101,7 @@ void R_LoadEntities( lump_t *l ) {
 		}
 		// check for remapping of shaders
 		s = "remapshader";
-		if ( !Q_strncmp( keyname, s, String::Length( s ) ) ) {
+		if ( !String::NCmp( keyname, s, String::Length( s ) ) ) {
 			s = strchr( value, ';' );
 			if ( !s ) {
 				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in shaderremap '%s'\n", value );

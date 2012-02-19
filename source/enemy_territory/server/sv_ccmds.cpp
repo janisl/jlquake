@@ -594,7 +594,7 @@ void    SV_LoadGame_f( void ) {
 		Q_strncpyz( savedir, "save/", sizeof( savedir ) );
 	}
 
-	/*if ( Q_strncmp( filename, "save/", 5 ) && Q_strncmp( filename, "save\\", 5 ) ) {
+	/*if ( String::NCmp( filename, "save/", 5 ) && String::NCmp( filename, "save\\", 5 ) ) {
 		Q_strncpyz( filename, va("save/%s", filename), sizeof( filename ) );
 	}*/
 
@@ -602,7 +602,7 @@ void    SV_LoadGame_f( void ) {
 	Q_strncpyz( filename, va( "%s%s", savedir, filename ), sizeof( filename ) );
 
 	// enforce .sav extension
-	if ( !strstr( filename, "." ) || Q_strncmp( strstr( filename, "." ) + 1, "sav", 3 ) ) {
+	if ( !strstr( filename, "." ) || String::NCmp( strstr( filename, "." ) + 1, "sav", 3 ) ) {
 		Q_strcat( filename, sizeof( filename ), ".sav" );
 	}
 	// use '/' instead of '\\' for directories

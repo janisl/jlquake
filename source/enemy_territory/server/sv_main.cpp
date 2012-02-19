@@ -122,7 +122,7 @@ char    *SV_ExpandNewlines( char *in ) {
 			string[l++] = 'n';
 		} else {
 			// NERVE - SMF - HACK - strip out localization tokens before string command is displayed in syscon window
-			if ( !Q_strncmp( in, "[lon]", 5 ) || !Q_strncmp( in, "[lof]", 5 ) ) {
+			if ( !String::NCmp( in, "[lon]", 5 ) || !String::NCmp( in, "[lof]", 5 ) ) {
 				in += 5;
 				continue;
 			}
@@ -197,7 +197,7 @@ void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) {
 	}
 
 	// hack to echo broadcast prints to console
-	if ( com_dedicated->integer && !strncmp( (char *)message, "print", 5 ) ) {
+	if ( com_dedicated->integer && !String::NCmp( (char *)message, "print", 5 ) ) {
 		Com_Printf( "broadcast: %s\n", SV_ExpandNewlines( (char *)message ) );
 	}
 
@@ -736,7 +736,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	MSG_BeginReadingOOB( msg );
 	MSG_ReadLong( msg );        // skip the -1 marker
 
-	if ( !Q_strncmp( "connect", (char*)&msg->data[4], 7 ) ) {
+	if ( !String::NCmp( "connect", (char*)&msg->data[4], 7 ) ) {
 		Huff_Decompress( msg, 12 );
 	}
 

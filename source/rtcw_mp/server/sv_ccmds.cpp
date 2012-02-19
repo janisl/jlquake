@@ -465,7 +465,7 @@ void    SV_LoadGame_f( void ) {
 		Com_Printf( "You must specify a savegame to load\n" );
 		return;
 	}
-	if ( Q_strncmp( filename, "save/", 5 ) && Q_strncmp( filename, "save\\", 5 ) ) {
+	if ( String::NCmp( filename, "save/", 5 ) && String::NCmp( filename, "save\\", 5 ) ) {
 		Q_strncpyz( filename, va( "save/%s", filename ), sizeof( filename ) );
 	}
 	if ( !strstr( filename, ".svg" ) ) {

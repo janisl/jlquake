@@ -763,20 +763,13 @@ int String::Cmp(const char* s1, const char* s2)
 #endif
 }
 
-#if 0
-//==========================================================================
-//
-//	String::NCmp
-//
-//==========================================================================
-
-int String::NCmp(const char* S1, const char* S2, size_t N)
+int String::NCmp(const char* s1, const char* s2, size_t n)
 {
 #if 1
-	return strncmp(S1, S2, N);
+	return strncmp(s1, s2, n);
 #elif 1
 	//	Quake 3 implementation.
-	int		c1, c2;
+	int c1, c2;
 	do
 	{
 		c1 = *s1++;
@@ -789,26 +782,33 @@ int String::NCmp(const char* S1, const char* S2, size_t N)
 		{
 			return c1 < c2 ? -1 : 1;
 		}
-	} while (c1);
+	}
+	while (c1);
 	return 0;		// strings are equal
 #else
 	//	Quake implementation.
 	while (1)
 	{
 		if (!count--)
+		{
 			return 0;
+		}
 		if (*s1 != *s2)
-			return -1;              // strings not equal    
+		{
+			return -1;              // strings not equal
+		}
 		if (!*s1)
+		{
 			return 0;               // strings are equal
+		}
 		s1++;
 		s2++;
 	}
-	
 	return -1;
 #endif
 }
 
+#if 0
 //==========================================================================
 //
 //	String::ICmp

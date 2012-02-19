@@ -1372,7 +1372,7 @@ int FS_Delete( char *filename ) {
 	}
 
 	// for safety, only allow deletion from the save directory
-	if ( Q_strncmp( filename, "save/", 5 ) != 0 ) {
+	if ( String::NCmp( filename, "save/", 5 ) != 0 ) {
 		return 0;
 	}
 
@@ -2670,7 +2670,7 @@ static void FS_AddGameDirectory( const char *path, const char *dir ) {
 //----(SA)	SP mod
 
 		// (SA) sort order to be further clarified later (10/8/01)
-		if ( !Q_strncmp( sorted[i],"sp_",3 ) ) { //	sort sp first
+		if ( !String::NCmp( sorted[i],"sp_",3 ) ) { //	sort sp first
 			memcpy( sorted[i],"zz",2 );
 		}
 
@@ -2680,11 +2680,11 @@ static void FS_AddGameDirectory( const char *path, const char *dir ) {
 
 	for ( i = 0 ; i < numfiles ; i++ ) {
 
-		if ( Q_strncmp( sorted[i],"mp_",3 ) ) { // (SA) SP mod -- exclude mp_*
+		if ( String::NCmp( sorted[i],"mp_",3 ) ) { // (SA) SP mod -- exclude mp_*
 
 // JPW NERVE KLUDGE: fix filenames broken in mp/sp/pak sort above
 //----(SA)	mod for SP
-			if ( !Q_strncmp( sorted[i],"zz_",3 ) ) {
+			if ( !String::NCmp( sorted[i],"zz_",3 ) ) {
 				memcpy( sorted[i],"sp",2 );
 			}
 

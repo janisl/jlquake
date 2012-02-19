@@ -374,7 +374,7 @@ void CL_ConsolePrint( char *txt ) {
 	int prev;                           // NERVE - SMF
 
 	// NERVE - SMF - work around for text that shows up in console but not in notify
-	if ( !Q_strncmp( txt, "[skipnotify]", 12 ) ) {
+	if ( !String::NCmp( txt, "[skipnotify]", 12 ) ) {
 		skipnotify = qtrue;
 		txt += 12;
 	}

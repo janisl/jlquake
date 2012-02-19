@@ -883,7 +883,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	if ( String::Length( name ) >= MAX_QPATH ) {
 		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name );
 	}
-	if ( !strncmp( name, "*lightmap", 9 ) ) {
+	if ( !String::NCmp( name, "*lightmap", 9 ) ) {
 		isLightmap = qtrue;
 		noCompress = qtrue;
 	}

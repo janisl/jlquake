@@ -2011,7 +2011,7 @@ qboolean R_FindCachedModel( const char *name, model_t *newmod ) {
 
 	mod = backupModels;
 	for ( i = 0; i < numBackupModels; i++, mod++ ) {
-		if ( !Q_strncmp( mod->name, name, sizeof( mod->name ) ) ) {
+		if ( !String::NCmp( mod->name, name, sizeof( mod->name ) ) ) {
 			// copy it to a new slot
 			index = newmod->index;
 			memcpy( newmod, mod, sizeof( model_t ) );

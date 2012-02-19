@@ -1531,7 +1531,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 
 	// Gordon: AHA! Need to steal this for some other stuff BOOKMARK
 	// NERVE - SMF - some server game-only commands we cannot have flood protect
-	if ( !Q_strncmp( "team", s, 4 ) || !Q_strncmp( "setspawnpt", s, 10 ) || !Q_strncmp( "score", s, 5 ) || !Q_stricmp( "forcetapout", s ) ) {
+	if ( !String::NCmp( "team", s, 4 ) || !String::NCmp( "setspawnpt", s, 10 ) || !String::NCmp( "score", s, 5 ) || !Q_stricmp( "forcetapout", s ) ) {
 //		Com_DPrintf( "Skipping flood protection for: %s\n", s );
 		floodprotect = qfalse;
 	}

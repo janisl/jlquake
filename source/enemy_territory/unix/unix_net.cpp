@@ -419,7 +419,7 @@ void NET_GetLocalAddress( void ) {
 			inetInterface = (struct ifreq *) ifc.ifc_buf;
 			while ( (char *) inetInterface < &ifc.ifc_buf[ifc.ifc_len] ) {
 				if ( inetInterface->ifr_addr.sa_family == AF_INET &&
-					 !strncmp( inetInterface->ifr_name, linkInterface->ifr_name, sizeof( linkInterface->ifr_name ) ) ) {
+					 !String::NCmp( inetInterface->ifr_name, linkInterface->ifr_name, sizeof( linkInterface->ifr_name ) ) ) {
 
 					for ( nameLength = 0; nameLength < IFNAMSIZ; nameLength++ )
 						if ( !linkInterface->ifr_name[nameLength] ) {
