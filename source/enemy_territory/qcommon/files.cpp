@@ -3765,7 +3765,7 @@ const char *FS_LoadedPakChecksums( void ) {
 			continue;
 		}
 
-		if ( strcmp( search->pack->pakBasename,"pak0" ) ) {
+		if ( String::Cmp( search->pack->pakBasename,"pak0" ) ) {
 			// this is a regular pk3
 			Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 		} else
@@ -3804,7 +3804,7 @@ const char *FS_LoadedPakNames( void ) {
 		if ( *info ) {
 			Q_strcat( info, sizeof( info ), " " );
 		}
-		if ( strcmp( search->pack->pakBasename,"pak0" ) ) {
+		if ( String::Cmp( search->pack->pakBasename,"pak0" ) ) {
 			// regular pk3
 			Q_strcat( info, sizeof( info ), search->pack->pakBasename );
 		} else
@@ -3848,7 +3848,7 @@ const char *FS_LoadedPakPureChecksums( void ) {
 			continue;
 		}
 
-		if ( strcmp( search->pack->pakBasename,"pak0" ) ) {
+		if ( String::Cmp( search->pack->pakBasename,"pak0" ) ) {
 			// this is a regular pk3
 			Q_strcat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
 		} else
@@ -3891,7 +3891,7 @@ const char *FS_ReferencedPakChecksums( void ) {
 		// is the element a pak file?
 		if ( search->pack ) {
 			if ( search->pack->referenced ) {
-				if ( strcmp( search->pack->pakBasename, "pak0" ) ) {
+				if ( String::Cmp( search->pack->pakBasename, "pak0" ) ) {
 					// this is not the light pk3
 					Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 				}
@@ -3928,7 +3928,7 @@ const char *FS_ReferencedPakNames( void ) {
 				Q_strcat( info, sizeof( info ), " " );
 			}
 			if ( search->pack->referenced ) {
-				if ( strcmp( search->pack->pakBasename, "pak0" ) ) {
+				if ( String::Cmp( search->pack->pakBasename, "pak0" ) ) {
 					// this is not the light pk3
 					Q_strcat( info, sizeof( info ), search->pack->pakGamename );
 					Q_strcat( info, sizeof( info ), "/" );

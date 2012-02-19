@@ -395,7 +395,7 @@ void SV_DirectConnect( netadr_t from ) {
 
 	// check for privateClient password
 	password = Info_ValueForKey( userinfo, "password" );
-	if ( !strcmp( password, sv_privatePassword->string ) ) {
+	if ( !String::Cmp( password, sv_privatePassword->string ) ) {
 		startIndex = 0;
 	} else {
 		// skip past the reserved slots
@@ -798,7 +798,7 @@ void SV_BeginDownload_f( client_t *cl ) {
 	SV_CloseDownload( cl );
 
 	//bani - stop us from printing dupe messages
-	if ( strcmp( cl->downloadName, Cmd_Argv( 1 ) ) ) {
+	if ( String::Cmp( cl->downloadName, Cmd_Argv( 1 ) ) ) {
 		cl->downloadnotify = DLNOTIFY_ALL;
 	}
 
@@ -1479,7 +1479,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 
 	// see if it is a server level command
 	for ( u = ucmds ; u->name ; u++ ) {
-		if ( !strcmp( Cmd_Argv( 0 ), u->name ) ) {
+		if ( !String::Cmp( Cmd_Argv( 0 ), u->name ) ) {
 			if ( premaprestart && !u->allowedpostmapchange ) {
 				continue;
 			}

@@ -385,7 +385,7 @@ int PC_ReadDefineParms( source_t *source, define_t *define, token_t **parms, int
 	  //
 	for ( i = 0; i < define->numparms; i++ ) parms[i] = NULL;
 	//if no leading "("
-	if ( strcmp( token.string, "(" ) ) {
+	if ( String::Cmp( token.string, "(" ) ) {
 		PC_UnreadSourceToken( source, &token );
 		SourceError( source, "define %s missing parms", define->name );
 		return qfalse;
@@ -412,7 +412,7 @@ int PC_ReadDefineParms( source_t *source, define_t *define, token_t **parms, int
 				return qfalse;
 			} //end if
 			  //
-			if ( !strcmp( token.string, "," ) ) {
+			if ( !String::Cmp( token.string, "," ) ) {
 				if ( indent <= 0 ) {
 					if ( lastcomma ) {
 						SourceWarning( source, "too many comma's" );
@@ -423,11 +423,11 @@ int PC_ReadDefineParms( source_t *source, define_t *define, token_t **parms, int
 			} //end if
 			lastcomma = 0;
 			//
-			if ( !strcmp( token.string, "(" ) ) {
+			if ( !String::Cmp( token.string, "(" ) ) {
 				indent++;
 				continue;
 			} //end if
-			else if ( !strcmp( token.string, ")" ) ) {
+			else if ( !String::Cmp( token.string, ")" ) ) {
 				if ( --indent <= 0 ) {
 					if ( !parms[define->numparms - 1] ) {
 						SourceWarning( source, "too few define parms" );
@@ -580,7 +580,7 @@ define_t *PC_FindHashedDefine( define_t **definehash, char *name ) {
 	hash = PC_NameHash( name );
 	for ( d = definehash[hash]; d; d = d->hashnext )
 	{
-		if ( !strcmp( d->name, name ) ) {
+		if ( !String::Cmp( d->name, name ) ) {
 			return d;
 		}
 	} //end for
@@ -598,7 +598,7 @@ define_t *PC_FindDefine( define_t *defines, char *name ) {
 
 	for ( d = defines; d; d = d->next )
 	{
-		if ( !strcmp( d->name, name ) ) {
+		if ( !String::Cmp( d->name, name ) ) {
 			return d;
 		}
 	} //end for
@@ -618,7 +618,7 @@ int PC_FindDefineParm( define_t *define, char *name ) {
 	i = 0;
 	for ( p = define->parms; p; p = p->next )
 	{
-		if ( !strcmp( p->string, name ) ) {
+		if ( !String::Cmp( p->string, name ) ) {
 			return i;
 		}
 		i++;
@@ -1055,7 +1055,7 @@ int PC_ReadLine( source_t *source, token_t *token ) {
 			return qfalse;
 		} //end if
 		crossline = 1;
-	} while ( !strcmp( token->string, "\\" ) );
+	} while ( !String::Cmp( token->string, "\\" ) );
 	return qtrue;
 } //end of the function PC_ReadLine
 //============================================================================
@@ -1107,7 +1107,7 @@ int PC_Directive_undef( source_t *source ) {
 	hash = PC_NameHash( token.string );
 	for ( lastdefine = NULL, define = source->definehash[hash]; define; define = define->hashnext )
 	{
-		if ( !strcmp( define->name, token.string ) ) {
+		if ( !String::Cmp( define->name, token.string ) ) {
 			if ( define->flags & DEFINE_FIXED ) {
 				SourceWarning( source, "can't undef %s", token.string );
 			} //end if
@@ -1125,7 +1125,7 @@ int PC_Directive_undef( source_t *source ) {
 #else //DEFINEHASHING
 	for ( lastdefine = NULL, define = source->defines; define; define = define->next )
 	{
-		if ( !strcmp( define->name, token.string ) ) {
+		if ( !String::Cmp( define->name, token.string ) ) {
 			if ( define->flags & DEFINE_FIXED ) {
 				SourceWarning( source, "can't undef %s", token.string );
 			} //end if
@@ -1207,7 +1207,7 @@ int PC_Directive_define( source_t *source ) {
 		return qtrue;
 	}
 	//if it is a define with parameters
-	if ( !PC_WhiteSpaceBeforeToken( &token ) && !strcmp( token.string, "(" ) ) {
+	if ( !PC_WhiteSpaceBeforeToken( &token ) && !String::Cmp( token.string, "(" ) ) {
 		//read the define parameters
 		last = NULL;
 		if ( !PC_CheckTokenString( source, ")" ) ) {
@@ -1242,11 +1242,11 @@ int PC_Directive_define( source_t *source ) {
 					return qfalse;
 				} //end if
 				  //
-				if ( !strcmp( token.string, ")" ) ) {
+				if ( !String::Cmp( token.string, ")" ) ) {
 					break;
 				}
 				//then it must be a comma
-				if ( strcmp( token.string, "," ) ) {
+				if ( String::Cmp( token.string, "," ) ) {
 					SourceError( source, "define not terminated" );
 					return qfalse;
 				} //end if
@@ -1261,7 +1261,7 @@ int PC_Directive_define( source_t *source ) {
 	do
 	{
 		t = PC_CopyToken( &token );
-		if ( t->type == TT_NAME && !strcmp( t->string, define->name ) ) {
+		if ( t->type == TT_NAME && !String::Cmp( t->string, define->name ) ) {
 			SourceError( source, "recursive define (removed recursion)" );
 			continue;
 		} //end if
@@ -1275,8 +1275,8 @@ int PC_Directive_define( source_t *source ) {
 	//
 	if ( last ) {
 		//check for merge operators at the beginning or end
-		if ( !strcmp( define->tokens->string, "##" ) ||
-			 !strcmp( last->string, "##" ) ) {
+		if ( !String::Cmp( define->tokens->string, "##" ) ||
+			 !String::Cmp( last->string, "##" ) ) {
 			SourceError( source, "define with misplaced ##" );
 			return qfalse;
 		} //end if
@@ -1685,13 +1685,13 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 				error = 1;
 				break;
 			}     //end if
-			if ( strcmp( t->string, "defined" ) ) {
+			if ( String::Cmp( t->string, "defined" ) ) {
 				SourceError( source, "undefined name %s in #if/#elif", t->string );
 				error = 1;
 				break;
 			}     //end if
 			t = t->next;
-			if ( !strcmp( t->string, "(" ) ) {
+			if ( !String::Cmp( t->string, "(" ) ) {
 				brace = qtrue;
 				t = t->next;
 			}     //end if
@@ -1725,7 +1725,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 			lastvalue = v;
 			if ( brace ) {
 				t = t->next;
-				if ( !t || strcmp( t->string, ")" ) ) {
+				if ( !t || String::Cmp( t->string, ")" ) ) {
 					SourceError( source, "defined without ) in #if/#elif" );
 					error = 1;
 					break;
@@ -2143,7 +2143,7 @@ int PC_Evaluate( source_t *source, signed long int *intvalue,
 				} else { firsttoken = t;}
 				lasttoken = t;
 			} //end if
-			else if ( !strcmp( token.string, "defined" ) ) {
+			else if ( !String::Cmp( token.string, "defined" ) ) {
 				defined = qtrue;
 				t = PC_CopyToken( &token );
 				t->next = NULL;
@@ -2252,7 +2252,7 @@ int PC_DollarEvaluate( source_t *source, signed long int *intvalue,
 				} else { firsttoken = t;}
 				lasttoken = t;
 			} //end if
-			else if ( !strcmp( token.string, "defined" ) ) {
+			else if ( !String::Cmp( token.string, "defined" ) ) {
 				defined = qtrue;
 				t = PC_CopyToken( &token );
 				t->next = NULL;
@@ -2517,7 +2517,7 @@ int PC_ReadDirective( source_t *source ) {
 		//find the precompiler directive
 		for ( i = 0; directives[i].name; i++ )
 		{
-			if ( !strcmp( directives[i].name, token.string ) ) {
+			if ( !String::Cmp( directives[i].name, token.string ) ) {
 				return directives[i].func( source );
 			} //end if
 		} //end for
@@ -2619,7 +2619,7 @@ int PC_ReadDollarDirective( source_t *source ) {
 		//find the precompiler directive
 		for ( i = 0; dollardirectives[i].name; i++ )
 		{
-			if ( !strcmp( dollardirectives[i].name, token.string ) ) {
+			if ( !String::Cmp( dollardirectives[i].name, token.string ) ) {
 				return dollardirectives[i].func( source );
 			} //end if
 		} //end for
@@ -2672,7 +2672,7 @@ int QuakeCMacro( source_t *source ) {
 	  //find the precompiler directive
 	for ( i = 0; dollardirectives[i].name; i++ )
 	{
-		if ( !strcmp( dollardirectives[i].name, token.string ) ) {
+		if ( !String::Cmp( dollardirectives[i].name, token.string ) ) {
 			PC_UnreadSourceToken( source, &token );
 			return qfalse;
 		} //end if
@@ -2778,7 +2778,7 @@ int PC_ExpectTokenString( source_t *source, char *string ) {
 		return qfalse;
 	} //end if
 
-	if ( strcmp( token.string, string ) ) {
+	if ( String::Cmp( token.string, string ) ) {
 		SourceError( source, "expected %s, found %s", string, token.string );
 		return qfalse;
 	} //end if
@@ -2885,7 +2885,7 @@ int PC_CheckTokenString( source_t *source, char *string ) {
 		return qfalse;
 	}
 	//if the token is available
-	if ( !strcmp( tok.string, string ) ) {
+	if ( !String::Cmp( tok.string, string ) ) {
 		return qtrue;
 	}
 	//
@@ -2925,7 +2925,7 @@ int PC_SkipUntilString( source_t *source, char *string ) {
 
 	while ( PC_ReadToken( source, &token ) )
 	{
-		if ( !strcmp( token.string, string ) ) {
+		if ( !String::Cmp( token.string, string ) ) {
 			return qtrue;
 		}
 	} //end while

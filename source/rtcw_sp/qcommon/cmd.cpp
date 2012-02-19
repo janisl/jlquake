@@ -534,7 +534,7 @@ void    Cmd_AddCommand( const char *cmd_name, xcommand_t function ) {
 
 	// fail if the command already exists
 	for ( cmd = cmd_functions ; cmd ; cmd = cmd->next ) {
-		if ( !strcmp( cmd_name, cmd->name ) ) {
+		if ( !String::Cmp( cmd_name, cmd->name ) ) {
 			// allow completion-only commands to be silently doubled
 			if ( function != NULL ) {
 				Com_Printf( "Cmd_AddCommand: %s already defined\n", cmd_name );
@@ -566,7 +566,7 @@ void    Cmd_RemoveCommand( const char *cmd_name ) {
 			// command wasn't active
 			return;
 		}
-		if ( !strcmp( cmd_name, cmd->name ) ) {
+		if ( !String::Cmp( cmd_name, cmd->name ) ) {
 			*back = cmd->next;
 			if ( cmd->name ) {
 				Z_Free( cmd->name );

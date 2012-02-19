@@ -329,8 +329,8 @@ public:
 	//	Replacements for standard string functions.
 #endif
 	static int Length(const char* str);
-#if 0
 	static int Cmp(const char* s1, const char* s2);
+#if 0
 	static int NCmp(const char* S1, const char* S2, size_t N);
 	static int ICmp(const char* S1, const char* S2);
 	static int NICmp(const char* S1, const char* S2, size_t N);

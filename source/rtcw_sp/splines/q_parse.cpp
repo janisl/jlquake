@@ -398,7 +398,7 @@ void Com_MatchToken( const char *( *buf_p ), const char *match, qboolean warning
 	const char  *token;
 
 	token = Com_Parse( buf_p );
-	if ( strcmp( token, match ) ) {
+	if ( String::Cmp( token, match ) ) {
 		if ( warning ) {
 			Com_ScriptWarning( "MatchToken: %s != %s", token, match );
 		} else {

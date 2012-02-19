@@ -280,7 +280,7 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 			// we don't have a reset string yet
 			Z_Free( var->resetString );
 			var->resetString = CopyString( var_value );
-		} else if ( var_value[0] && strcmp( var->resetString, var_value ) ) {
+		} else if ( var_value[0] && String::Cmp( var->resetString, var_value ) ) {
 			Com_DPrintf( "Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 						 var_name, var->resetString, var_value );
 		}
@@ -299,7 +299,7 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 		// (for instance, seta name "name-with-foreign-chars" in the config file, and toggle to CVAR_USERINFO happens later in CL_Init)
 		if ( flags & CVAR_USERINFO ) {
 			char *cleaned = Cvar_ClearForeignCharacters( var->string ); // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
-			if ( strcmp( var->string, cleaned ) ) {
+			if ( String::Cmp( var->string, cleaned ) ) {
 				Cvar_Set2( var->name, var->string, qfalse ); // call Cvar_Set2 with the value to be cleaned up for verbosity
 			}
 		}
@@ -381,7 +381,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 
 	if ( var->flags & CVAR_USERINFO ) {
 		char *cleaned = Cvar_ClearForeignCharacters( value );
-		if ( strcmp( value, cleaned ) ) {
+		if ( String::Cmp( value, cleaned ) ) {
 #ifdef DEDICATED
 			Com_Printf( FOREIGN_MSG );
 #else
@@ -392,9 +392,9 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		}
 	}
 
-	if ( !strcmp( value, var->string ) ) {
+	if ( !String::Cmp( value, var->string ) ) {
 		if ( ( var->flags & CVAR_LATCH ) && var->latchedString ) {
-			if ( !strcmp( value, var->latchedString ) ) {
+			if ( !String::Cmp( value, var->latchedString ) ) {
 				return var;
 			}
 		} else {
@@ -428,13 +428,13 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 
 		if ( var->flags & CVAR_LATCH ) {
 			if ( var->latchedString ) {
-				if ( strcmp( value, var->latchedString ) == 0 ) {
+				if ( String::Cmp( value, var->latchedString ) == 0 ) {
 					return var;
 				}
 				Z_Free( var->latchedString );
 			} else
 			{
-				if ( strcmp( value, var->string ) == 0 ) {
+				if ( String::Cmp( value, var->string ) == 0 ) {
 					return var;
 				}
 			}
@@ -454,7 +454,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		}
 	}
 
-	if ( !strcmp( value, var->string ) ) {
+	if ( !String::Cmp( value, var->string ) ) {
 		return var;     // not changed
 
 	}
@@ -528,7 +528,7 @@ void Cvar_SetCheatState( void ) {
 	// set all default vars to the safe value
 	for ( var = cvar_vars ; var ; var = var->next ) {
 		if ( var->flags & CVAR_CHEAT ) {
-			if ( strcmp( var->resetString,var->string ) ) {
+			if ( String::Cmp( var->resetString,var->string ) ) {
 				Cvar_Set( var->name, var->resetString );
 			}
 		}
@@ -653,7 +653,7 @@ void Cvar_Set_f( void ) {
 	}
 
 	// ydnar: handle unsafe vars
-	if ( c >= 4 && !strcmp( Cmd_Argv( c - 1 ), "unsafe" ) ) {
+	if ( c >= 4 && !String::Cmp( Cmd_Argv( c - 1 ), "unsafe" ) ) {
 		c--;
 		if ( com_crashed != NULL && com_crashed->integer ) {
 			Com_Printf( "%s is unsafe. Check com_crashed.\n", Cmd_Argv( 1 ) );

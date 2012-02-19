@@ -667,7 +667,7 @@ bot_synonymlist_t *BotLoadSynonyms( char *filename ) {
 				} //end if
 			} //end if
 			else if ( token.type == TT_PUNCTUATION ) {
-				if ( !strcmp( token.string, "}" ) ) {
+				if ( !String::Cmp( token.string, "}" ) ) {
 					contextlevel--;
 					if ( contextlevel < 0 ) {
 						SourceError( source, "too many }" );
@@ -676,7 +676,7 @@ bot_synonymlist_t *BotLoadSynonyms( char *filename ) {
 					} //end if
 					context &= ~contextstack[contextlevel];
 				} //end if
-				else if ( !strcmp( token.string, "[" ) ) {
+				else if ( !String::Cmp( token.string, "[" ) ) {
 					size += sizeof( bot_synonymlist_t );
 					if ( pass ) {
 						syn = (bot_synonymlist_t *) ptr;
@@ -1082,7 +1082,7 @@ char *RandomString( char *name ) {
 
 	for ( random = randomstrings; random; random = random->next )
 	{
-		if ( !strcmp( random->string, name ) ) {
+		if ( !String::Cmp( random->string, name ) ) {
 			i = rand() % random->numstrings;
 			for ( rs = random->firstrandomstring; rs; rs = rs->next )
 			{
@@ -1320,7 +1320,7 @@ bot_matchtemplate_t *BotLoadMatchTemplates( char *matchfile ) {
 		  //
 		while ( PC_ReadToken( source, &token ) )
 		{
-			if ( !strcmp( token.string, "}" ) ) {
+			if ( !String::Cmp( token.string, "}" ) ) {
 				break;
 			}
 			//
@@ -1511,7 +1511,7 @@ bot_stringlist_t *BotFindStringInList( bot_stringlist_t *list, char *string ) {
 
 	for ( s = list; s; s = s->next )
 	{
-		if ( !strcmp( s->string, string ) ) {
+		if ( !String::Cmp( s->string, string ) ) {
 			return s;
 		}
 	} //end for
@@ -1761,7 +1761,7 @@ bot_replychat_t *BotLoadReplyChat( char *filename ) {
 	//
 	while ( PC_ReadToken( source, &token ) )
 	{
-		if ( strcmp( token.string, "[" ) ) {
+		if ( String::Cmp( token.string, "[" ) ) {
 			SourceError( source, "expected [, found %s", token.string );
 			BotFreeReplyChat( replychatlist );
 			FreeSource( source );
@@ -1960,7 +1960,7 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 		//
 		while ( PC_ReadToken( source, &token ) )
 		{
-			if ( !strcmp( token.string, "chat" ) ) {
+			if ( !String::Cmp( token.string, "chat" ) ) {
 				if ( !PC_ExpectTokenType( source, TT_STRING, 0, &token ) ) {
 					FreeSource( source );
 					return NULL;
@@ -1981,10 +1981,10 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 							FreeSource( source );
 							return NULL;
 						} //end if
-						if ( !strcmp( token.string, "}" ) ) {
+						if ( !String::Cmp( token.string, "}" ) ) {
 							break;
 						}
-						if ( strcmp( token.string, "type" ) ) {
+						if ( String::Cmp( token.string, "type" ) ) {
 							SourceError( source, "expected type found %s\n", token.string );
 							FreeSource( source );
 							return NULL;
@@ -2041,9 +2041,9 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 							FreeSource( source );
 							return NULL;
 						} //end if
-						if ( !strcmp( token.string, "{" ) ) {
+						if ( !String::Cmp( token.string, "{" ) ) {
 							indent++;
-						} else if ( !strcmp( token.string, "}" ) ) {
+						} else if ( !String::Cmp( token.string, "}" ) ) {
 							indent--;
 						}
 					} //end while
@@ -2122,10 +2122,10 @@ int BotLoadChatFile( int chatstate, char *chatfile, char *chatname ) {
 				}
 				continue;
 			}
-			if ( strcmp( chatfile, ichatdata[n].filename ) != 0 ) {
+			if ( String::Cmp( chatfile, ichatdata[n].filename ) != 0 ) {
 				continue;
 			}
-			if ( strcmp( chatname, ichatdata[n].chatname ) != 0 ) {
+			if ( String::Cmp( chatname, ichatdata[n].chatname ) != 0 ) {
 				continue;
 			}
 			cs->chat = ichatdata[n].chat;

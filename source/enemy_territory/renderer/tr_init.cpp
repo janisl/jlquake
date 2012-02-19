@@ -608,12 +608,12 @@ void R_ScreenShot_f( void ) {
 	static int lastNumber = -1;
 	qboolean silent;
 
-	if ( !strcmp( ri.Cmd_Argv( 1 ), "levelshot" ) ) {
+	if ( !String::Cmp( ri.Cmd_Argv( 1 ), "levelshot" ) ) {
 		R_LevelShot();
 		return;
 	}
 
-	if ( !strcmp( ri.Cmd_Argv( 1 ), "silent" ) ) {
+	if ( !String::Cmp( ri.Cmd_Argv( 1 ), "silent" ) ) {
 		silent = qtrue;
 	} else {
 		silent = qfalse;
@@ -663,12 +663,12 @@ void R_ScreenShotJPEG_f( void ) {
 	static int lastNumber = -1;
 	qboolean silent;
 
-	if ( !strcmp( ri.Cmd_Argv( 1 ), "levelshot" ) ) {
+	if ( !String::Cmp( ri.Cmd_Argv( 1 ), "levelshot" ) ) {
 		R_LevelShot();
 		return;
 	}
 
-	if ( !strcmp( ri.Cmd_Argv( 1 ), "silent" ) ) {
+	if ( !String::Cmp( ri.Cmd_Argv( 1 ), "silent" ) ) {
 		silent = qtrue;
 	} else {
 		silent = qfalse;

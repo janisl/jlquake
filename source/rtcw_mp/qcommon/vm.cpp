@@ -139,7 +139,7 @@ int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
 	vmSymbol_t  *sym;
 
 	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !strcmp( symbol, sym->symName ) ) {
+		if ( !String::Cmp( symbol, sym->symName ) ) {
 			return sym->symValue;
 		}
 	}

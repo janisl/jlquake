@@ -373,7 +373,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t *ent ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;
 					}
-					if ( !strcmp( skin->surfaces[j]->name, s ) ) {
+					if ( !String::Cmp( skin->surfaces[j]->name, s ) ) {
 						shader = skin->surfaces[j]->shader;
 						break;
 					}
@@ -387,7 +387,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t *ent ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;
 					}
-					if ( !strcmp( skin->surfaces[j]->name, surface->name ) ) {
+					if ( !String::Cmp( skin->surfaces[j]->name, surface->name ) ) {
 						shader = skin->surfaces[j]->shader;
 						break;
 					}
@@ -1802,7 +1802,7 @@ int R_MDM_GetBoneTag( orientation_t *outTag, mdmHeader_t *mdm, int startTagIndex
 	}
 
 	for ( i = startTagIndex; i < mdm->numTags; i++ ) {
-		if ( !strcmp( pTag->name, tagName ) ) {
+		if ( !String::Cmp( pTag->name, tagName ) ) {
 			break;
 		}
 		pTag = ( mdmTag_t * )( (byte *)pTag + pTag->ofsEnd );

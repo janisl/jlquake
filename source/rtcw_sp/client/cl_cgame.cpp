@@ -227,7 +227,7 @@ void CL_ConfigstringModified( void ) {
 	s = Cmd_ArgsFrom( 2 );
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
-	if ( !strcmp( old, s ) ) {
+	if ( !String::Cmp( old, s ) ) {
 		return;     // unchanged
 	}
 
@@ -306,16 +306,16 @@ rescan:
 	Cmd_TokenizeString( s );
 	cmd = Cmd_Argv( 0 );
 
-	if ( !strcmp( cmd, "disconnect" ) ) {
+	if ( !String::Cmp( cmd, "disconnect" ) ) {
 		Com_Error( ERR_SERVERDISCONNECT,"Server disconnected\n" );
 	}
 
-	if ( !strcmp( cmd, "bcs0" ) ) {
+	if ( !String::Cmp( cmd, "bcs0" ) ) {
 		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "bcs1" ) ) {
+	if ( !String::Cmp( cmd, "bcs1" ) ) {
 		s = Cmd_Argv( 2 );
 		if ( String::Length( bigConfigString ) + String::Length( s ) >= BIG_INFO_STRING ) {
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
@@ -324,7 +324,7 @@ rescan:
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "bcs2" ) ) {
+	if ( !String::Cmp( cmd, "bcs2" ) ) {
 		s = Cmd_Argv( 2 );
 		if ( String::Length( bigConfigString ) + String::Length( s ) + 1 >= BIG_INFO_STRING ) {
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
@@ -335,14 +335,14 @@ rescan:
 		goto rescan;
 	}
 
-	if ( !strcmp( cmd, "cs" ) ) {
+	if ( !String::Cmp( cmd, "cs" ) ) {
 		CL_ConfigstringModified();
 		// reparse the string, because CL_ConfigstringModified may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString( s );
 		return qtrue;
 	}
 
-	if ( !strcmp( cmd, "map_restart" ) ) {
+	if ( !String::Cmp( cmd, "map_restart" ) ) {
 		// clear notify lines and outgoing commands before passing
 		// the restart to the cgame
 		Con_ClearNotify();
@@ -350,7 +350,7 @@ rescan:
 		return qtrue;
 	}
 
-	if ( !strcmp( cmd, "popup" ) ) { // direct server to client popup request, bypassing cgame
+	if ( !String::Cmp( cmd, "popup" ) ) { // direct server to client popup request, bypassing cgame
 //		trap_UI_Popup(Cmd_Argv(1));
 //		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
 //			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_CLIPBOARD);
@@ -365,7 +365,7 @@ rescan:
 	// point of levels for the menu system to use
 	// we pass it along to the cgame to make apropriate adjustments,
 	// but we also clear the console and notify lines here
-	if ( !strcmp( cmd, "clientLevelShot" ) ) {
+	if ( !String::Cmp( cmd, "clientLevelShot" ) ) {
 		// don't do it if we aren't running the server locally,
 		// otherwise malicious remote servers could overwrite
 		// the existing thumbnails

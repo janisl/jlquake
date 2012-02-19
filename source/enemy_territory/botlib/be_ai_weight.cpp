@@ -68,7 +68,7 @@ int ReadValue( source_t *source, float *value ) {
 	if ( !PC_ExpectAnyToken( source, &token ) ) {
 		return qfalse;
 	}
-	if ( !strcmp( token.string, "-" ) ) {
+	if ( !String::Cmp( token.string, "-" ) ) {
 		SourceWarning( source, "negative value set to zero\n" );
 		if ( !PC_ExpectTokenType( source, TT_NUMBER, 0, &token ) ) {
 			return qfalse;
@@ -206,8 +206,8 @@ fuzzyseperator_t *ReadFuzzySeperators_r( source_t *source ) {
 	}
 	do
 	{
-		def = !strcmp( token.string, "default" );
-		if ( def || !strcmp( token.string, "case" ) ) {
+		def = !String::Cmp( token.string, "default" );
+		if ( def || !String::Cmp( token.string, "case" ) ) {
 			fs = (fuzzyseperator_t *) GetClearedMemory( sizeof( fuzzyseperator_t ) );
 			fs->index = index;
 			if ( lastfs ) {
@@ -236,20 +236,20 @@ fuzzyseperator_t *ReadFuzzySeperators_r( source_t *source ) {
 				return NULL;
 			} //end if
 			newindent = qfalse;
-			if ( !strcmp( token.string, "{" ) ) {
+			if ( !String::Cmp( token.string, "{" ) ) {
 				newindent = qtrue;
 				if ( !PC_ExpectAnyToken( source, &token ) ) {
 					FreeFuzzySeperators_r( firstfs );
 					return NULL;
 				} //end if
 			} //end if
-			if ( !strcmp( token.string, "return" ) ) {
+			if ( !String::Cmp( token.string, "return" ) ) {
 				if ( !ReadFuzzyWeight( source, fs ) ) {
 					FreeFuzzySeperators_r( firstfs );
 					return NULL;
 				} //end if
 			} //end if
-			else if ( !strcmp( token.string, "switch" ) ) {
+			else if ( !String::Cmp( token.string, "switch" ) ) {
 				fs->child = ReadFuzzySeperators_r( source );
 				if ( !fs->child ) {
 					FreeFuzzySeperators_r( firstfs );
@@ -278,7 +278,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r( source_t *source ) {
 			FreeFuzzySeperators_r( firstfs );
 			return NULL;
 		} //end if
-	} while ( strcmp( token.string, "}" ) );
+	} while ( String::Cmp( token.string, "}" ) );
 	//
 	if ( !founddefault ) {
 		SourceWarning( source, "switch without default\n" );
@@ -325,7 +325,7 @@ weightconfig_t *ReadWeightConfig( char *filename ) {
 				} //end if
 				continue;
 			} //end if
-			if ( strcmp( filename, config->filename ) == 0 ) {
+			if ( String::Cmp( filename, config->filename ) == 0 ) {
 				//botimport.Print( PRT_MESSAGE, "retained %s\n", filename );
 				return config;
 			} //end if
@@ -349,7 +349,7 @@ weightconfig_t *ReadWeightConfig( char *filename ) {
 	//parse the item config file
 	while ( PC_ReadToken( source, &token ) )
 	{
-		if ( !strcmp( token.string, "weight" ) ) {
+		if ( !String::Cmp( token.string, "weight" ) ) {
 			if ( config->numweights >= MAX_WEIGHTS ) {
 				SourceWarning( source, "too many fuzzy weights\n" );
 				break;
@@ -368,7 +368,7 @@ weightconfig_t *ReadWeightConfig( char *filename ) {
 				return NULL;
 			} //end if
 			newindent = qfalse;
-			if ( !strcmp( token.string, "{" ) ) {
+			if ( !String::Cmp( token.string, "{" ) ) {
 				newindent = qtrue;
 				if ( !PC_ExpectAnyToken( source, &token ) ) {
 					FreeWeightConfig( config );
@@ -376,7 +376,7 @@ weightconfig_t *ReadWeightConfig( char *filename ) {
 					return NULL;
 				} //end if
 			} //end if
-			if ( !strcmp( token.string, "switch" ) ) {
+			if ( !String::Cmp( token.string, "switch" ) ) {
 				fs = ReadFuzzySeperators_r( source );
 				if ( !fs ) {
 					FreeWeightConfig( config );
@@ -385,7 +385,7 @@ weightconfig_t *ReadWeightConfig( char *filename ) {
 				} //end if
 				config->weights[config->numweights].firstseperator = fs;
 			} //end if
-			else if ( !strcmp( token.string, "return" ) ) {
+			else if ( !String::Cmp( token.string, "return" ) ) {
 				fs = (fuzzyseperator_t *) GetClearedMemory( sizeof( fuzzyseperator_t ) );
 				fs->index = 0;
 				fs->value = MAX_INVENTORYVALUE;
@@ -623,7 +623,7 @@ int FindFuzzyWeight( weightconfig_t *wc, char *name ) {
 
 	for ( i = 0; i < wc->numweights; i++ )
 	{
-		if ( !strcmp( wc->weights[i].name, name ) ) {
+		if ( !String::Cmp( wc->weights[i].name, name ) ) {
 			return i;
 		} //end if
 	} //end if
@@ -841,7 +841,7 @@ void ScaleWeight( weightconfig_t *config, char *name, float scale ) {
 	}
 	for ( i = 0; i < config->numweights; i++ )
 	{
-		if ( !strcmp( name, config->weights[i].name ) ) {
+		if ( !String::Cmp( name, config->weights[i].name ) ) {
 			ScaleFuzzySeperator_r( config->weights[i].firstseperator, scale );
 			break;
 		} //end if

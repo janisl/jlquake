@@ -391,7 +391,7 @@ void R_AddMDCSurfaces( trRefEntity_t *ent ) {
 			shader = tr.defaultShader;
 			for ( j = 0 ; j < skin->numSurfaces ; j++ ) {
 				// the names have both been lowercased
-				if ( !strcmp( skin->surfaces[j]->name, surface->name ) ) {
+				if ( !String::Cmp( skin->surfaces[j]->name, surface->name ) ) {
 					shader = skin->surfaces[j]->shader;
 					break;
 				}

@@ -672,7 +672,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 	lasttime = time;
 
 	if ( !String::Length( sv_rconPassword->string ) ||
-		 strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
+		 String::Cmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
 		valid = qfalse;
 		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
 	} else {

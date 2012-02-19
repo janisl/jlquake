@@ -2084,9 +2084,9 @@ image_t *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	// see if the image is already loaded
 	//
 	for ( image = hashTable[hash]; image; image = image->next ) {
-		if ( !strcmp( name, image->imgName ) ) {
+		if ( !String::Cmp( name, image->imgName ) ) {
 			// the white image can be used with any set of parms, but other mismatches are errors
-			if ( strcmp( name, "*white" ) ) {
+			if ( String::Cmp( name, "*white" ) ) {
 				if ( image->mipmap != mipmap ) {
 					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
 				}
@@ -2657,7 +2657,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 				// get mipmap info for original texture
 				hash = generateHashValue( surf->shader->name );
 				for ( image = hashTable[hash]; image; image = image->next ) {
-					if ( !strcmp( surf->shader->name, image->imgName ) ) {
+					if ( !String::Cmp( surf->shader->name, image->imgName ) ) {
 						mip = image->mipmap;
 						break;
 					}
@@ -2729,7 +2729,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	R_SyncRenderThread();
 
 	// If not a .skin file, load as a single shader
-	if ( strcmp( name + String::Length( name ) - 5, ".skin" ) ) {
+	if ( String::Cmp( name + String::Length( name ) - 5, ".skin" ) ) {
 		tr.numSkins++;
 		skin = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 		tr.skins[hSkin] = skin;

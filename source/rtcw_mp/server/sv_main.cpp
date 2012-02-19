@@ -584,11 +584,11 @@ void SVC_GetUpdateInfo( netadr_t from ) {
 	Com_DPrintf( "SVC_GetUpdateInfo: version == %s / %s,\n", version, platform );
 
 	for ( i = 0; i < numVersions; i++ ) {
-		if ( !strcmp( versionMap[i].version, version ) &&
-			 !strcmp( versionMap[i].platform, platform ) ) {
+		if ( !String::Cmp( versionMap[i].version, version ) &&
+			 !String::Cmp( versionMap[i].platform, platform ) ) {
 
 			// If the installer is set to "current", we will skip over it
-			if ( strcmp( versionMap[i].installer, "current" ) ) {
+			if ( String::Cmp( versionMap[i].installer, "current" ) ) {
 				found = qtrue;
 			}
 
@@ -648,7 +648,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 	lasttime = time;
 
 	if ( !String::Length( sv_rconPassword->string ) ||
-		 strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
+		 String::Cmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
 		valid = qfalse;
 		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
 	} else {

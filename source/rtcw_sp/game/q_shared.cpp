@@ -592,7 +592,7 @@ void COM_MatchToken( char **buf_p, char *match ) {
 	char    *token;
 
 	token = COM_Parse( buf_p );
-	if ( strcmp( token, match ) ) {
+	if ( String::Cmp( token, match ) ) {
 		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
 	}
 }
@@ -1206,7 +1206,7 @@ void Info_RemoveKey( char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if ( !strcmp( key, pkey ) ) {
+		if ( !String::Cmp( key, pkey ) ) {
 			strcpy( start, s );  // remove this part
 			return;
 		}
@@ -1264,7 +1264,7 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if ( !strcmp( key, pkey ) ) {
+		if ( !String::Cmp( key, pkey ) ) {
 			strcpy( start, s );  // remove this part
 			return;
 		}

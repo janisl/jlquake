@@ -51,7 +51,7 @@ void SV_SetConfigstringNoUpdate( int index, const char *val ) {
 	}
 
 	// don't bother broadcasting an update if no change
-	if ( !strcmp( val, sv.configstrings[ index ] ) ) {
+	if ( !String::Cmp( val, sv.configstrings[ index ] ) ) {
 		return;
 	}
 
@@ -70,7 +70,7 @@ void SV_SetConfigstring( int index, const char *val ) {
 	}
 
 	// don't bother broadcasting an update if no change
-	if ( !strcmp( val, sv.configstrings[ index ] ) ) {
+	if ( !String::Cmp( val, sv.configstrings[ index ] ) ) {
 		return;
 	}
 

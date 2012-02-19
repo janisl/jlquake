@@ -619,7 +619,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
 	Com_DPrintf( "CM_LoadMap( %s, %i )\n", name, clientload );
 
-	if ( !strcmp( cm.name, name ) && clientload ) {
+	if ( !String::Cmp( cm.name, name ) && clientload ) {
 		*checksum = last_checksum;
 		return;
 	}

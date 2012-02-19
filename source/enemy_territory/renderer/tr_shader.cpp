@@ -145,7 +145,7 @@ static qboolean ParseVector( char **text, int count, float *v ) {
 
 	// FIXME: spaces are currently required after parens, should change parseext...
 	token = COM_ParseExt( text, qfalse );
-	if ( strcmp( token, "(" ) ) {
+	if ( String::Cmp( token, "(" ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing parenthesis in shader '%s'\n", shader.name );
 		return qfalse;
 	}
@@ -160,7 +160,7 @@ static qboolean ParseVector( char **text, int count, float *v ) {
 	}
 
 	token = COM_ParseExt( text, qfalse );
-	if ( strcmp( token, ")" ) ) {
+	if ( String::Cmp( token, ")" ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing parenthesis in shader '%s'\n", shader.name );
 		return qfalse;
 	}
@@ -1212,7 +1212,7 @@ static void ParseSkyParms( char **text ) {
 		ri.Printf( PRINT_WARNING, "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
 	}
-	if ( strcmp( token, "-" ) ) {
+	if ( String::Cmp( token, "-" ) ) {
 		for ( i = 0 ; i < 6 ; i++ ) {
 			Com_sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
 						 , token, suf[i] );
@@ -1242,7 +1242,7 @@ static void ParseSkyParms( char **text ) {
 		ri.Printf( PRINT_WARNING, "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
 	}
-	if ( strcmp( token, "-" ) ) {
+	if ( String::Cmp( token, "-" ) ) {
 		for ( i = 0 ; i < 6 ; i++ ) {
 			Com_sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
 						 , token, suf[i] );

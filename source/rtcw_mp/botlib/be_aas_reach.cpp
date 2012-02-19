@@ -2624,7 +2624,7 @@ void AAS_Reachability_Teleport( void ) {
 		if ( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) ) {
 			continue;
 		}
-		if ( !strcmp( classname, "trigger_multiple" ) ) {
+		if ( !String::Cmp( classname, "trigger_multiple" ) ) {
 			AAS_ValueForBSPEpairKey( ent, "model", model, MAX_EPAIRKEY );
 //#ifdef REACHDEBUG
 			botimport.Print( PRT_MESSAGE, "trigger_multiple model = \"%s\"\n", model );
@@ -2641,11 +2641,11 @@ void AAS_Reachability_Teleport( void ) {
 				if ( !AAS_ValueForBSPEpairKey( dest, "classname", classname, MAX_EPAIRKEY ) ) {
 					continue;
 				}
-				if ( !strcmp( classname, "target_teleporter" ) ) {
+				if ( !String::Cmp( classname, "target_teleporter" ) ) {
 					if ( !AAS_ValueForBSPEpairKey( dest, "targetname", targetname, MAX_EPAIRKEY ) ) {
 						continue;
 					}
-					if ( !strcmp( targetname, target ) ) {
+					if ( !String::Cmp( targetname, target ) ) {
 						break;
 					} //end if
 				} //end if
@@ -2658,7 +2658,7 @@ void AAS_Reachability_Teleport( void ) {
 				continue;
 			} //end if
 		} //end else
-		else if ( !strcmp( classname, "trigger_teleport" ) ) {
+		else if ( !String::Cmp( classname, "trigger_teleport" ) ) {
 			AAS_ValueForBSPEpairKey( ent, "model", model, MAX_EPAIRKEY );
 //#ifdef REACHDEBUG
 			botimport.Print( PRT_MESSAGE, "trigger_teleport model = \"%s\"\n", model );
@@ -2682,7 +2682,7 @@ void AAS_Reachability_Teleport( void ) {
 			//but I've also seen target_position and actually any
 			//entity could be used... burp
 			if ( AAS_ValueForBSPEpairKey( dest, "targetname", targetname, MAX_EPAIRKEY ) ) {
-				if ( !strcmp( targetname, target ) ) {
+				if ( !String::Cmp( targetname, target ) ) {
 					break;
 				} //end if
 			} //end if
@@ -2783,7 +2783,7 @@ void AAS_Reachability_Elevator( void ) {
 		if ( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) ) {
 			continue;
 		}
-		if ( !strcmp( classname, "func_plat" ) ) {
+		if ( !String::Cmp( classname, "func_plat" ) ) {
 #ifdef REACHDEBUG
 			Log_Write( "found func plat\r\n" );
 #endif //REACHDEBUG
@@ -3154,7 +3154,7 @@ void AAS_Reachability_FuncBobbing( void ) {
 		if ( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) ) {
 			continue;
 		}
-		if ( strcmp( classname, "func_bobbing" ) ) {
+		if ( String::Cmp( classname, "func_bobbing" ) ) {
 			continue;
 		}
 		AAS_FloatForBSPEpairKey( ent, "height", &height );
@@ -3383,7 +3383,7 @@ void AAS_Reachability_JumpPad( void ) {
 		if ( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) ) {
 			continue;
 		}
-		if ( strcmp( classname, "trigger_push" ) ) {
+		if ( String::Cmp( classname, "trigger_push" ) ) {
 			continue;
 		}
 		//
@@ -3433,7 +3433,7 @@ void AAS_Reachability_JumpPad( void ) {
 			if ( !AAS_ValueForBSPEpairKey( ent2, "targetname", targetname, MAX_EPAIRKEY ) ) {
 				continue;
 			}
-			if ( !strcmp( targetname, target ) ) {
+			if ( !String::Cmp( targetname, target ) ) {
 				break;
 			}
 		} //end for
@@ -3862,18 +3862,18 @@ void AAS_SetWeaponJumpAreaFlags( void ) {
 			continue;
 		}
 		if (
-			!strcmp( classname, "item_armor_body" ) ||
-			!strcmp( classname, "item_armor_combat" ) ||
-			!strcmp( classname, "item_health_mega" ) ||
-			!strcmp( classname, "weapon_grenadelauncher" ) ||
-			!strcmp( classname, "weapon_rocketlauncher" ) ||
-			!strcmp( classname, "weapon_lightning" ) ||
-			!strcmp( classname, "weapon_sp5" ) ||
-			!strcmp( classname, "weapon_railgun" ) ||
-			!strcmp( classname, "weapon_bfg" ) ||
-			!strcmp( classname, "item_quad" ) ||
-			!strcmp( classname, "item_regen" ) ||
-			!strcmp( classname, "item_invulnerability" ) ) {
+			!String::Cmp( classname, "item_armor_body" ) ||
+			!String::Cmp( classname, "item_armor_combat" ) ||
+			!String::Cmp( classname, "item_health_mega" ) ||
+			!String::Cmp( classname, "weapon_grenadelauncher" ) ||
+			!String::Cmp( classname, "weapon_rocketlauncher" ) ||
+			!String::Cmp( classname, "weapon_lightning" ) ||
+			!String::Cmp( classname, "weapon_sp5" ) ||
+			!String::Cmp( classname, "weapon_railgun" ) ||
+			!String::Cmp( classname, "weapon_bfg" ) ||
+			!String::Cmp( classname, "item_quad" ) ||
+			!String::Cmp( classname, "item_regen" ) ||
+			!String::Cmp( classname, "item_invulnerability" ) ) {
 			if ( AAS_VectorForBSPEpairKey( ent, "origin", origin ) ) {
 				spawnflags = 0;
 				AAS_IntForBSPEpairKey( ent, "spawnflags", &spawnflags );

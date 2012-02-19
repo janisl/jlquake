@@ -1381,8 +1381,8 @@ void Sys_OpenURL( const char *url, qboolean doexit ) {
 void Sys_ParseArgs( int argc, char* argv[] ) {
 
 	if ( argc == 2 ) {
-		if ( ( !strcmp( argv[1], "--version" ) )
-			 || ( !strcmp( argv[1], "-v" ) ) ) {
+		if ( ( !String::Cmp( argv[1], "--version" ) )
+			 || ( !String::Cmp( argv[1], "-v" ) ) ) {
 			Sys_PrintBinVersion( argv[0] );
 			Sys_Exit( 0 );
 		}

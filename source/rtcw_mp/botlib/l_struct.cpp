@@ -68,7 +68,7 @@ fielddef_t *FindField( fielddef_t *defs, char *name ) {
 
 	for ( i = 0; defs[i].name; i++ )
 	{
-		if ( !strcmp( defs[i].name, name ) ) {
+		if ( !String::Cmp( defs[i].name, name ) ) {
 			return &defs[i];
 		}
 	} //end for
@@ -97,7 +97,7 @@ qboolean ReadNumber( source_t *source, fielddef_t *fd, void *p ) {
 			return 0;
 		} //end if
 		  //if not a minus sign
-		if ( strcmp( token.string, "-" ) ) {
+		if ( String::Cmp( token.string, "-" ) ) {
 			SourceError( source, "unexpected punctuation %s", token.string );
 			return 0;
 		} //end if
@@ -250,7 +250,7 @@ int ReadStructure( source_t *source, structdef_t *def, char *structure ) {
 			return qfalse;
 		}
 		//if end of structure
-		if ( !strcmp( token.string, "}" ) ) {
+		if ( !String::Cmp( token.string, "}" ) ) {
 			break;
 		}
 		//find the field with the name
@@ -326,10 +326,10 @@ int ReadStructure( source_t *source, structdef_t *def, char *structure ) {
 				if ( !PC_ExpectAnyToken( source, &token ) ) {
 					return qfalse;
 				}
-				if ( !strcmp( token.string, "}" ) ) {
+				if ( !String::Cmp( token.string, "}" ) ) {
 					break;
 				}
-				if ( strcmp( token.string, "," ) ) {
+				if ( String::Cmp( token.string, "," ) ) {
 					SourceError( source, "expected a comma, found %s", token.string );
 					return qfalse;
 				} //end if

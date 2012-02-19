@@ -225,7 +225,7 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 	strcpy( ch->filename, charfile );
 	while ( PC_ReadToken( source, &token ) )
 	{
-		if ( !strcmp( token.string, "skill" ) ) {
+		if ( !String::Cmp( token.string, "skill" ) ) {
 			if ( !PC_ExpectTokenType( source, TT_NUMBER, 0, &token ) ) {
 				FreeSource( source );
 				BotFreeCharacterStrings( ch );
@@ -244,7 +244,7 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 				ch->skill = token.intvalue;
 				while ( PC_ExpectAnyToken( source, &token ) )
 				{
-					if ( !strcmp( token.string, "}" ) ) {
+					if ( !String::Cmp( token.string, "}" ) ) {
 						break;
 					}
 					if ( token.type != TT_NUMBER || !( token.subtype & TT_INTEGER ) ) {
@@ -314,9 +314,9 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 						FreeMemory( ch );
 						return NULL;
 					} //end if
-					if ( !strcmp( token.string, "{" ) ) {
+					if ( !String::Cmp( token.string, "{" ) ) {
 						indent++;
-					} else if ( !strcmp( token.string, "}" ) ) {
+					} else if ( !String::Cmp( token.string, "}" ) ) {
 						indent--;
 					}
 				} //end while
@@ -354,7 +354,7 @@ int BotFindCachedCharacter( char *charfile, int skill ) {
 		if ( !botcharacters[handle] ) {
 			continue;
 		}
-		if ( strcmp( botcharacters[handle]->filename, charfile ) == 0 &&
+		if ( String::Cmp( botcharacters[handle]->filename, charfile ) == 0 &&
 			 ( skill < 0 || botcharacters[handle]->skill == skill ) ) {
 			return handle;
 		} //end if

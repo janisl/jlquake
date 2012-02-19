@@ -477,12 +477,12 @@ void Com_StartupVariable( const char *match ) {
 
 	for ( i = 0 ; i < com_numConsoleLines ; i++ ) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( strcmp( Cmd_Argv( 0 ), "set" ) ) {
+		if ( String::Cmp( Cmd_Argv( 0 ), "set" ) ) {
 			continue;
 		}
 
 		s = Cmd_Argv( 1 );
-		if ( !match || !strcmp( s, match ) ) {
+		if ( !match || !String::Cmp( s, match ) ) {
 			Cvar_Set( s, Cmd_Argv( 2 ) );
 			cv = Cvar_Get( s, "", 0 );
 			cv->flags |= CVAR_USER_CREATED;
@@ -2631,7 +2631,7 @@ void Com_TrackProfile( char *profile_path ) {
 
 //	Com_Printf( "Com_TrackProfile: Tracking profile [%s] [%s]\n", fs_gamedir, profile_path );
 	//have we changed fs_game(dir)?
-	if ( strcmp( last_fs_gamedir, fs_gamedir ) ) {
+	if ( String::Cmp( last_fs_gamedir, fs_gamedir ) ) {
 		if ( String::Length( last_fs_gamedir ) && String::Length( last_profile_path ) ) {
 			//save current fs_gamedir
 			Q_strncpyz( temp_fs_gamedir, fs_gamedir, sizeof( temp_fs_gamedir ) );

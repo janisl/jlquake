@@ -292,7 +292,7 @@ itemconfig_t *LoadItemConfig( char *filename ) {
 	//parse the item config file
 	while ( PC_ReadToken( source, &token ) )
 	{
-		if ( !strcmp( token.string, "iteminfo" ) ) {
+		if ( !String::Cmp( token.string, "iteminfo" ) ) {
 			if ( ic->numiteminfo >= max_iteminfo ) {
 				SourceError( source, "more than %d item info defined\n", max_iteminfo );
 				FreeMemory( ic );
@@ -481,7 +481,7 @@ void BotInitInfoEntities( void ) {
 		}
 
 		//map locations
-		if ( !strcmp( classname, "target_location" ) ) {
+		if ( !String::Cmp( classname, "target_location" ) ) {
 			ml = (maplocation_t *) GetClearedMemory( sizeof( maplocation_t ) );
 			AAS_VectorForBSPEpairKey( ent, "origin", ml->origin );
 			AAS_ValueForBSPEpairKey( ent, "message", ml->name, sizeof( ml->name ) );
@@ -491,7 +491,7 @@ void BotInitInfoEntities( void ) {
 			numlocations++;
 		} //end if
 		  //camp spots
-		else if ( !strcmp( classname, "info_camp" ) ) {
+		else if ( !String::Cmp( classname, "info_camp" ) ) {
 			cs = (campspot_t *) GetClearedMemory( sizeof( campspot_t ) );
 			AAS_VectorForBSPEpairKey( ent, "origin", cs->origin );
 			//cs->origin[2] += 16;
@@ -574,7 +574,7 @@ void BotInitLevelItems( void ) {
 		//
 		for ( i = 0; i < ic->numiteminfo; i++ )
 		{
-			if ( !strcmp( classname, ic->iteminfo[i].classname ) ) {
+			if ( !String::Cmp( classname, ic->iteminfo[i].classname ) ) {
 				//get the origin of the item
 				if ( AAS_VectorForBSPEpairKey( ent, "origin", origin ) ) {
 					li = AllocLevelItem();

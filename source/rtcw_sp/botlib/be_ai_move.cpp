@@ -553,9 +553,9 @@ void BotSetBrushModelTypes( void ) {
 			continue;
 		} //end if
 
-		if ( !strcmp( classname, "func_bobbing" ) ) {
+		if ( !String::Cmp( classname, "func_bobbing" ) ) {
 			modeltypes[modelnum] = MODELTYPE_FUNC_BOB;
-		} else if ( !strcmp( classname, "func_plat" ) ) {
+		} else if ( !String::Cmp( classname, "func_plat" ) ) {
 			modeltypes[modelnum] = MODELTYPE_FUNC_PLAT;
 		}
 	} //end for

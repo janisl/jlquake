@@ -626,7 +626,7 @@ qboolean    NET_StringToAdr( const char *s, netadr_t *a ) {
 	char base[MAX_STRING_CHARS];
 	char    *port;
 
-	if ( !strcmp( s, "localhost" ) ) {
+	if ( !String::Cmp( s, "localhost" ) ) {
 		memset( a, 0, sizeof( *a ) );
 		a->type = NA_LOOPBACK;
 		return qtrue;

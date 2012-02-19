@@ -1685,7 +1685,7 @@ int S_FindWavChunk( fileHandle_t f, char *chunk ) {
 	len = ( len + 1 ) & ~1;      // pad to word boundary
 //	s_nextWavChunk += len + 8;
 
-	if ( strcmp( name, chunk ) ) {
+	if ( String::Cmp( name, chunk ) ) {
 		return 0;
 	}
 

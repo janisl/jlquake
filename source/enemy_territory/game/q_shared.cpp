@@ -627,7 +627,7 @@ void COM_MatchToken( char **buf_p, char *match ) {
 	char    *token;
 
 	token = COM_Parse( buf_p );
-	if ( strcmp( token, match ) ) {
+	if ( String::Cmp( token, match ) ) {
 		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
 	}
 }
@@ -756,7 +756,7 @@ int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( strcmp( token, "{" ) ) {
+		if ( String::Cmp( token, "{" ) ) {
 			Com_Printf( "Missing { in info file\n" );
 			break;
 		}
@@ -773,7 +773,7 @@ int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 				Com_Printf( "Unexpected end of info file\n" );
 				break;
 			}
-			if ( !strcmp( token, "}" ) ) {
+			if ( !String::Cmp( token, "}" ) ) {
 				break;
 			}
 			Q_strncpyz( key, token, sizeof( key ) );

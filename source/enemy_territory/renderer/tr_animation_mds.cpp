@@ -355,7 +355,7 @@ void R_AddAnimSurfaces( trRefEntity_t *ent ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;
 					}
-					if ( !strcmp( skin->surfaces[j]->name, s ) ) {
+					if ( !String::Cmp( skin->surfaces[j]->name, s ) ) {
 						shader = skin->surfaces[j]->shader;
 						break;
 					}
@@ -369,7 +369,7 @@ void R_AddAnimSurfaces( trRefEntity_t *ent ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;
 					}
-					if ( !strcmp( skin->surfaces[j]->name, surface->name ) ) {
+					if ( !String::Cmp( skin->surfaces[j]->name, surface->name ) ) {
 						shader = skin->surfaces[j]->shader;
 						break;
 					}
@@ -1456,7 +1456,7 @@ int R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, co
 	pTag += startTagIndex;
 
 	for ( i = startTagIndex; i < mds->numTags; i++, pTag++ ) {
-		if ( !strcmp( pTag->name, tagName ) ) {
+		if ( !String::Cmp( pTag->name, tagName ) ) {
 			break;
 		}
 	}

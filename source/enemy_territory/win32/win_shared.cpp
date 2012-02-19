@@ -231,7 +231,7 @@ static int Is3DNOW( void ) {
 	processorString[12] = 0;
 
 //  REMOVED because you can have 3DNow! on non-AMD systems
-//	if ( strcmp( processorString, "AuthenticAMD" ) )
+//	if ( String::Cmp( processorString, "AuthenticAMD" ) )
 //		return qfalse;
 
 	// check AMD-specific functions
@@ -325,7 +325,7 @@ static int IsAthlon() {
 	processorString[11] = pstring[11];
 	processorString[12] = 0;
 
-	if ( strcmp( processorString, "AuthenticAMD" ) ) {
+	if ( String::Cmp( processorString, "AuthenticAMD" ) ) {
 		return qfalse;
 	}
 

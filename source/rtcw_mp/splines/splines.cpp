@@ -906,14 +906,14 @@ void idCameraEvent::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp( token, "(" ) || !strcmp( token, "}" ) ) {
+			if ( !token[0] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
@@ -931,7 +931,7 @@ void idCameraEvent::parse( const char *( *text )  ) {
 
 		} while ( 1 );
 
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
@@ -1010,14 +1010,14 @@ void idCameraFOV::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp( token, "(" ) || !strcmp( token, "}" ) ) {
+			if ( !token[0] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
@@ -1037,7 +1037,7 @@ void idCameraFOV::parse( const char *( *text )  ) {
 
 		} while ( 1 );
 
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
@@ -1088,14 +1088,14 @@ void idFixedPosition::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp( token, "(" ) || !strcmp( token, "}" ) ) {
+			if ( !token[0] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
@@ -1114,7 +1114,7 @@ void idFixedPosition::parse( const char *( *text )  ) {
 
 		} while ( 1 );
 
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
@@ -1133,14 +1133,14 @@ void idInterpolatedPosition::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp( token, "(" ) || !strcmp( token, "}" ) ) {
+			if ( !token[0] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
@@ -1162,7 +1162,7 @@ void idInterpolatedPosition::parse( const char *( *text )  ) {
 
 		} while ( 1 );
 
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
@@ -1182,14 +1182,14 @@ void idSplinePosition::parse( const char *( *text )  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp( token, "(" ) || !strcmp( token, "}" ) ) {
+			if ( !token[0] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
@@ -1207,7 +1207,7 @@ void idSplinePosition::parse( const char *( *text )  ) {
 
 		} while ( 1 );
 
-		if ( !strcmp( token, "}" ) ) {
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 

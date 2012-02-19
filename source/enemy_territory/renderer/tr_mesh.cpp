@@ -372,7 +372,7 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;
 					}
-					if ( !strcmp( skin->surfaces[j]->name, s ) ) {
+					if ( !String::Cmp( skin->surfaces[j]->name, s ) ) {
 						shader = skin->surfaces[j]->shader;
 						break;
 					}
@@ -386,7 +386,7 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 					if ( hash != skin->surfaces[j]->hash ) {
 						continue;
 					}
-					if ( !strcmp( skin->surfaces[j]->name, surface->name ) ) {
+					if ( !String::Cmp( skin->surfaces[j]->name, surface->name ) ) {
 						shader = skin->surfaces[j]->shader;
 						break;
 					}

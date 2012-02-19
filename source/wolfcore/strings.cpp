@@ -740,33 +740,30 @@ int String::Length(const char* str)
 #endif
 }
 
-#if 0
-//==========================================================================
-//
-//	String::Cmp
-//
-//==========================================================================
-
-int String::Cmp(const char* S1, const char* S2)
+int String::Cmp(const char* s1, const char* s2)
 {
 #if 1
-	return strcmp(S1, S2);
+	return strcmp(s1, s2);
 #else
 	//	Quake implementation.
 	while (1)
 	{
 		if (*s1 != *s2)
+		{
 			return -1;              // strings not equal    
+		}
 		if (!*s1)
+		{
 			return 0;               // strings are equal
+		}
 		s1++;
 		s2++;
 	}
-	
 	return -1;
 #endif
 }
 
+#if 0
 //==========================================================================
 //
 //	String::NCmp

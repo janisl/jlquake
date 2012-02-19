@@ -2175,9 +2175,9 @@ image_t *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	// see if the image is already loaded
 	//
 	for ( image = hashTable[hash]; image; image = image->next ) {
-		if ( !strcmp( name, image->imgName ) ) {
+		if ( !String::Cmp( name, image->imgName ) ) {
 			// the white image can be used with any set of parms, but other mismatches are errors
-			if ( strcmp( name, "*white" ) ) {
+			if ( String::Cmp( name, "*white" ) ) {
 				if ( image->mipmap != mipmap ) {
 					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
 				}
@@ -2832,7 +2832,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 				// get mipmap info for original texture
 				hash = generateHashValue( surf->shader->name );
 				for ( image = hashTable[hash]; image; image = image->next ) {
-					if ( !strcmp( surf->shader->name, image->imgName ) ) {
+					if ( !String::Cmp( surf->shader->name, image->imgName ) ) {
 						mip = image->mipmap;
 						break;
 					}
@@ -3413,7 +3413,7 @@ int R_GetTextureId( const char *name ) {
 //	ri.Printf( PRINT_ALL, "R_GetTextureId [%s].\n", name );
 
 	for ( i = 0 ; i < tr.numImages ; i++ ) {
-		if ( !strcmp( name, tr.images[ i ]->imgName ) ) {
+		if ( !String::Cmp( name, tr.images[ i ]->imgName ) ) {
 //			ri.Printf( PRINT_ALL, "Found textureid %d\n", i );
 			return i;
 		}

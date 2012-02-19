@@ -1001,7 +1001,7 @@ CL_Reconnect_f
 ================
 */
 void CL_Reconnect_f( void ) {
-	if ( !String::Length( cls.servername ) || !strcmp( cls.servername, "localhost" ) ) {
+	if ( !String::Length( cls.servername ) || !String::Cmp( cls.servername, "localhost" ) ) {
 		Com_Printf( "Can't reconnect to localhost.\n" );
 		return;
 	}
@@ -1033,7 +1033,7 @@ void CL_Connect_f( void ) {
 
 	server = Cmd_Argv( 1 );
 
-	if ( com_sv_running->integer && !strcmp( server, "localhost" ) ) {
+	if ( com_sv_running->integer && !String::Cmp( server, "localhost" ) ) {
 		// if running a local server, kill it
 		SV_Shutdown( "Server quit\n" );
 	}
@@ -1587,7 +1587,7 @@ void CL_MotdPacket( netadr_t from ) {
 
 	// check challenge
 	challenge = Info_ValueForKey( info, "challenge" );
-	if ( strcmp( challenge, cls.updateChallenge ) ) {
+	if ( String::Cmp( challenge, cls.updateChallenge ) ) {
 		return;
 	}
 

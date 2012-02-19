@@ -491,7 +491,7 @@ int AAS_MapContainsTeleporters(void)
 	for (ent = entities; ent; ent = ent->next)
 	{
 		classname = AAS_ValueForBSPEpairKey(ent, "classname");
-		if (classname && !strcmp(classname, "misc_teleporter"))
+		if (classname && !String::Cmp(classname, "misc_teleporter"))
 		{
 			AAS_FreeBSPEntities(entities);
 			return qtrue;
@@ -1317,7 +1317,7 @@ void AAS_AddTeleporterPortals( void ) {
 	for ( ent = entities; ent; ent = ent->next )
 	{
 		classname = AAS_ValueForBSPEpairKey( ent, "classname" );
-		if ( classname && !strcmp( classname, "misc_teleporter" ) ) {
+		if ( classname && !String::Cmp( classname, "misc_teleporter" ) ) {
 			if ( !AAS_VectorForBSPEpairKey( ent, "origin", origin ) ) {
 				botimport.Print( PRT_ERROR, "teleporter (%s) without origin\n", target );
 				continue;
@@ -1331,9 +1331,9 @@ void AAS_AddTeleporterPortals( void ) {
 			for ( dest = entities; dest; dest = dest->next )
 			{
 				classname = AAS_ValueForBSPEpairKey( dest, "classname" );
-				if ( classname && !strcmp( classname, "misc_teleporter_dest" ) ) {
+				if ( classname && !String::Cmp( classname, "misc_teleporter_dest" ) ) {
 					targetname = AAS_ValueForBSPEpairKey( dest, "targetname" );
-					if ( targetname && !strcmp( targetname, target ) ) {
+					if ( targetname && !String::Cmp( targetname, target ) ) {
 						break;
 					} //end if
 				} //end if

@@ -237,7 +237,7 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 			// we don't have a reset string yet
 			Z_Free( var->resetString );
 			var->resetString = CopyString( var_value );
-		} else if ( var_value[0] && strcmp( var->resetString, var_value ) ) {
+		} else if ( var_value[0] && String::Cmp( var->resetString, var_value ) ) {
 			Com_DPrintf( "Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 						 var_name, var->resetString, var_value );
 		}
@@ -329,7 +329,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		value = var->resetString;
 	}
 
-	if ( !strcmp( value,var->string ) ) {
+	if ( !String::Cmp( value,var->string ) ) {
 		return var;
 	}
 	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
@@ -348,13 +348,13 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 
 		if ( var->flags & CVAR_LATCH ) {
 			if ( var->latchedString ) {
-				if ( strcmp( value, var->latchedString ) == 0 ) {
+				if ( String::Cmp( value, var->latchedString ) == 0 ) {
 					return var;
 				}
 				Z_Free( var->latchedString );
 			} else
 			{
-				if ( strcmp( value, var->string ) == 0 ) {
+				if ( String::Cmp( value, var->string ) == 0 ) {
 					return var;
 				}
 			}
@@ -379,7 +379,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		}
 	}
 
-	if ( !strcmp( value, var->string ) ) {
+	if ( !String::Cmp( value, var->string ) ) {
 		return var;     // not changed
 
 	}
@@ -453,7 +453,7 @@ void Cvar_SetCheatState( void ) {
 	// set all default vars to the safe value
 	for ( var = cvar_vars ; var ; var = var->next ) {
 		if ( var->flags & CVAR_CHEAT ) {
-			if ( strcmp( var->resetString,var->string ) ) {
+			if ( String::Cmp( var->resetString,var->string ) ) {
 				Cvar_Set( var->name, var->resetString );
 			}
 		}

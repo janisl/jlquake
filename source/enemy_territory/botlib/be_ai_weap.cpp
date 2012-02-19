@@ -240,7 +240,7 @@ weaponconfig_t *LoadWeaponConfig( char *filename ) {
 	//parse the source file
 	while ( PC_ReadToken( source, &token ) )
 	{
-		if ( !strcmp( token.string, "weaponinfo" ) ) {
+		if ( !String::Cmp( token.string, "weaponinfo" ) ) {
 			memset( &weaponinfo, 0, sizeof( weaponinfo_t ) );
 			if ( !ReadStructure( source, &weaponinfo_struct, (char *) &weaponinfo ) ) {
 				FreeMemory( wc );
@@ -256,7 +256,7 @@ weaponconfig_t *LoadWeaponConfig( char *filename ) {
 			memcpy( &wc->weaponinfo[weaponinfo.number], &weaponinfo, sizeof( weaponinfo_t ) );
 			wc->weaponinfo[weaponinfo.number].valid = qtrue;
 		} //end if
-		else if ( !strcmp( token.string, "projectileinfo" ) ) {
+		else if ( !String::Cmp( token.string, "projectileinfo" ) ) {
 			if ( wc->numprojectiles >= max_projectileinfo ) {
 				botimport.Print( PRT_ERROR, "more than %d projectiles defined in %s\n", max_projectileinfo, path );
 				FreeMemory( wc );
@@ -299,7 +299,7 @@ weaponconfig_t *LoadWeaponConfig( char *filename ) {
 		  //find the projectile info and copy it to the weapon info
 		for ( j = 0; j < wc->numprojectiles; j++ )
 		{
-			if ( !strcmp( wc->projectileinfo[j].name, wc->weaponinfo[i].projectile ) ) {
+			if ( !String::Cmp( wc->projectileinfo[j].name, wc->weaponinfo[i].projectile ) ) {
 				memcpy( &wc->weaponinfo[i].proj, &wc->projectileinfo[j], sizeof( projectileinfo_t ) );
 				break;
 			} //end if

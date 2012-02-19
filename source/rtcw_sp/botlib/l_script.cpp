@@ -952,7 +952,7 @@ int PS_ExpectTokenString( script_t *script, char *string ) {
 		return 0;
 	} //end if
 
-	if ( strcmp( token.string, string ) ) {
+	if ( String::Cmp( token.string, string ) ) {
 		ScriptError( script, "expected %s, found %s", string, token.string );
 		return 0;
 	} //end if
@@ -1063,7 +1063,7 @@ int PS_CheckTokenString( script_t *script, char *string ) {
 		return 0;
 	}
 	//if the token is available
-	if ( !strcmp( tok.string, string ) ) {
+	if ( !String::Cmp( tok.string, string ) ) {
 		return 1;
 	}
 	//token not available
@@ -1103,7 +1103,7 @@ int PS_SkipUntilString( script_t *script, char *string ) {
 
 	while ( PS_ReadToken( script, &token ) )
 	{
-		if ( !strcmp( token.string, string ) ) {
+		if ( !String::Cmp( token.string, string ) ) {
 			return 1;
 		}
 	} //end while
@@ -1183,7 +1183,7 @@ long double ReadSignedFloat( script_t *script ) {
 	long double sign = 1;
 
 	PS_ExpectAnyToken( script, &token );
-	if ( !strcmp( token.string, "-" ) ) {
+	if ( !String::Cmp( token.string, "-" ) ) {
 		sign = -1;
 		PS_ExpectTokenType( script, TT_NUMBER, 0, &token );
 	} //end if
@@ -1203,7 +1203,7 @@ signed long int ReadSignedInt( script_t *script ) {
 	signed long int sign = 1;
 
 	PS_ExpectAnyToken( script, &token );
-	if ( !strcmp( token.string, "-" ) ) {
+	if ( !String::Cmp( token.string, "-" ) ) {
 		sign = -1;
 		PS_ExpectTokenType( script, TT_NUMBER, TT_INTEGER, &token );
 	} //end if

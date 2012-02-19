@@ -1558,7 +1558,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	if ( !( systemBits & CIN_system ) ) {
 		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-			if ( !strcmp( cinTable[i].fileName, name ) ) {
+			if ( !String::Cmp( cinTable[i].fileName, name ) ) {
 				return i;
 			}
 		}

@@ -549,7 +549,7 @@ inline bool operator==
 	const idStr& a,
 	const idStr& b
 ) {
-	return ( !strcmp( a.c_str(), b.c_str() ) );
+	return ( !String::Cmp( a.c_str(), b.c_str() ) );
 }
 
 inline bool operator==
@@ -561,7 +561,7 @@ inline bool operator==
 	if ( !b ) {
 		return false;
 	}
-	return ( !strcmp( a.c_str(), b ) );
+	return ( !String::Cmp( a.c_str(), b ) );
 }
 
 inline bool operator==
@@ -573,7 +573,7 @@ inline bool operator==
 	if ( !a ) {
 		return false;
 	}
-	return ( !strcmp( a, b.c_str() ) );
+	return ( !String::Cmp( a, b.c_str() ) );
 }
 
 inline bool operator!=

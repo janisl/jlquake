@@ -280,7 +280,7 @@ int AAS_ValueForBSPEpairKey( int ent, char *key, char *value, int size ) {
 	}
 	for ( epair = bspworld.entities[ent].epairs; epair; epair = epair->next )
 	{
-		if ( !strcmp( epair->key, key ) ) {
+		if ( !String::Cmp( epair->key, key ) ) {
 			String::NCpy( value, epair->value, size - 1 );
 			value[size - 1] = '\0';
 			return qtrue;
@@ -399,7 +399,7 @@ void AAS_ParseBSPEntities( void ) {
 
 	while ( PS_ReadToken( script, &token ) )
 	{
-		if ( strcmp( token.string, "{" ) ) {
+		if ( String::Cmp( token.string, "{" ) ) {
 			ScriptError( script, "invalid %s\n", token.string );
 			AAS_FreeBSPEntities();
 			FreeScript( script );
@@ -411,7 +411,7 @@ void AAS_ParseBSPEntities( void ) {
 		} //end if
 		while ( PS_ReadToken( script, &token ) )
 		{
-			if ( !strcmp( token.string, "}" ) ) {
+			if ( !String::Cmp( token.string, "}" ) ) {
 				break;
 			}
 			bufsize += sizeof( bsp_epair_t );
@@ -431,7 +431,7 @@ void AAS_ParseBSPEntities( void ) {
 			StripDoubleQuotes( token.string );
 			bufsize += String::Length( token.string ) + 1;
 		} //end while
-		if ( strcmp( token.string, "}" ) ) {
+		if ( String::Cmp( token.string, "}" ) ) {
 			ScriptError( script, "missing }\n" );
 			AAS_FreeBSPEntities();
 			FreeScript( script );
@@ -459,7 +459,7 @@ void AAS_ParseBSPEntities( void ) {
 		ent->epairs = NULL;
 		while ( PS_ReadToken( script, &token ) )
 		{
-			if ( !strcmp( token.string, "}" ) ) {
+			if ( !String::Cmp( token.string, "}" ) ) {
 				break;
 			}
 			epair = (bsp_epair_t *) buftrav; buftrav += sizeof( bsp_epair_t );

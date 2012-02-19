@@ -465,7 +465,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
 	char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
 	if ( !String::Length( sv_rconPassword->string ) ||
-		 strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
+		 String::Cmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
 		valid = qfalse;
 		Com_DPrintf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
 	} else {

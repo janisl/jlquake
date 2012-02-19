@@ -1404,7 +1404,7 @@ static int R_GetTag( byte *mod, int frame, const char *tagName, int startTagInde
 
 	tag = ( md3Tag_t * )( (byte *)mod + md3->ofsTags ) + frame * md3->numTags;
 	for ( i = 0 ; i < md3->numTags ; i++, tag++ ) {
-		if ( ( i >= startTagIndex ) && !strcmp( tag->name, tagName ) ) {
+		if ( ( i >= startTagIndex ) && !String::Cmp( tag->name, tagName ) ) {
 
 			// if we are looking for an indexed tag, wait until we find the correct number of matches
 			//if (startTagIndex) {
@@ -1446,7 +1446,7 @@ static int R_GetMDCTag( byte *mod, int frame, const char *tagName, int startTagI
 
 	pTagName = ( mdcTagName_t * )( (byte *)mod + mdc->ofsTagNames );
 	for ( i = 0 ; i < mdc->numTags ; i++, pTagName++ ) {
-		if ( ( i >= startTagIndex ) && !strcmp( pTagName->name, tagName ) ) {
+		if ( ( i >= startTagIndex ) && !String::Cmp( pTagName->name, tagName ) ) {
 			break;  // found it
 		}
 	}
@@ -1482,7 +1482,7 @@ static int R_GetMDSTag( byte *mod, const char *tagName, int startTagIndex, mdsTa
 
 	tag = (mdsTag_t *)((byte *)mod + mds->ofsTags);
 	for ( i = 0 ; i < mds->numTags ; i++ ) {
-		if ( (i >= startTagIndex) && !strcmp( tag->name, tagName ) ) {
+		if ( (i >= startTagIndex) && !String::Cmp( tag->name, tagName ) ) {
 			break;	// found it
 		}
 
