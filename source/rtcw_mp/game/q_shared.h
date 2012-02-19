@@ -32,6 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
+#include "../../wolfcore/core.h"
+
 #define Q3_VERSION      "Wolf 1.41b-MP"
 // 1.41b-MP: fix autodl sploit
 // 1.4-MP : (== 1.34)

@@ -32,6 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
+#include "../../wolfcore/core.h"
+
 //#define PRE_RELEASE_DEMO
 
 #ifndef PRE_RELEASE_DEMO

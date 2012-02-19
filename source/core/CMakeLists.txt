@@ -85,4 +85,3 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_library(core STATIC ${CORE_FILES})
 set_target_properties(core PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-add_dependencies(core zlib)

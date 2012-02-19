@@ -36,6 +36,8 @@ If you have questions concerning this license or the applicable additional terms
 
 // A user mod should never modify this file
 
+#include "../../wolfcore/core.h"
+
 #define Q3_VERSION      "DOOM 0.01"
 
 // alignment macros for SIMD
