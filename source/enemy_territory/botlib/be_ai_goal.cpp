@@ -260,7 +260,7 @@ itemconfig_t *LoadItemConfig( char *filename ) {
 		LibVarSet( "max_iteminfo", "128" );
 	}
 
-	strncpy( path, filename, MAX_PATH );
+	String::NCpy( path, filename, MAX_PATH );
 	source = LoadSourceFile( path );
 	if ( !source ) {
 		botimport.Print( PRT_ERROR, "counldn't load %s\n", path );
@@ -289,7 +289,7 @@ itemconfig_t *LoadItemConfig( char *filename ) {
 				return NULL;
 			} //end if
 			StripDoubleQuotes( token.string );
-			strncpy( ii->classname, token.string, sizeof( ii->classname ) - 1 );
+			String::NCpy( ii->classname, token.string, sizeof( ii->classname ) - 1 );
 			if ( !ReadStructure( source, &iteminfo_struct, (char *) ii ) ) {
 				FreeMemory( ic );
 				FreeSource( source );
@@ -618,7 +618,7 @@ void BotGoalName( int number, char *name, int size ) {
 	for ( li = levelitems; li; li = li->next )
 	{
 		if ( li->number == number ) {
-			strncpy( name, itemconfig->iteminfo[li->iteminfo].name, size - 1 );
+			String::NCpy( name, itemconfig->iteminfo[li->iteminfo].name, size - 1 );
 			name[size - 1] = '\0';
 			return;
 		} //end for

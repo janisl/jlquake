@@ -333,7 +333,9 @@ public:
 	static int ICmp(const char* S1, const char* S2);
 	static int NICmp(const char* S1, const char* S2, size_t N);
 	static void Cpy(char* Dst, const char* Src);
+#endif
 	static void NCpy(char* Dst, const char* Src, size_t N);
+#if 0
 	static void NCpyZ(char* Dest, const char* Src, int DestSize);
 	static void Cat(char* Dest, int Size, const char* Src);
 	static char* ToLower(char* S1);

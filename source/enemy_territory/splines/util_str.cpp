@@ -28,11 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 
 //need to rewrite this
 
+#include "../../wolfcore/core.h"
 #include "util_str.h"
-#include <stdlib.h>
 #include <ctype.h>
-#include <stdio.h>
-#include <stdarg.h>
 
 #if __MACOS__
 // LBO 2/1/05. Apple's system headers define these as macros. D'oh!
@@ -371,7 +369,7 @@ void idStr::EnsureDataWritable
 	m_data = new strdata;
 
 	EnsureAlloced( len + 1, false );
-	strncpy( m_data->data, olddata->data, len + 1 );
+	String::NCpy( m_data->data, olddata->data, len + 1 );
 	m_data->len = len;
 
 	olddata->DelRef();
@@ -451,7 +449,7 @@ void idStr::snprintf
 
 	assert( len < size );
 
-	strncpy( dst, buffer, size - 1 );
+	String::NCpy( dst, buffer, size - 1 );
 }
 
 #ifdef _WIN32

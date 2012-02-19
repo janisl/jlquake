@@ -4575,7 +4575,7 @@ qboolean CL_GetLimboString( int index, char *buf ) {
 		return qfalse;
 	}
 
-	strncpy( buf, cl.limboChatMsgs[index], 140 );
+	String::NCpy( buf, cl.limboChatMsgs[index], 140 );
 	return qtrue;
 }
 // -NERVE - SMF
@@ -4612,12 +4612,12 @@ static trans_t* AllocTrans( char *original, char *translated[MAX_LANGUAGES] ) {
 	memset( t, 0, sizeof( trans_t ) );
 
 	if ( original ) {
-		strncpy( t->original, original, MAX_TRANS_STRING );
+		String::NCpy( t->original, original, MAX_TRANS_STRING );
 	}
 
 	if ( translated ) {
 		for ( i = 0; i < MAX_LANGUAGES; i++ )
-			strncpy( t->translated[i], translated[i], MAX_TRANS_STRING );
+			String::NCpy( t->translated[i], translated[i], MAX_TRANS_STRING );
 	}
 
 	return t;
@@ -4977,7 +4977,7 @@ void CL_LoadTransTable( const char *fileName ) {
 			t->fromFile = qtrue;
 
 			for ( i = 0; i < MAX_LANGUAGES; i++ )
-				strncpy( t->translated[i], translated[i], MAX_TRANS_STRING );
+				String::NCpy( t->translated[i], translated[i], MAX_TRANS_STRING );
 		}
 
 		token = COM_Parse( &text_p );

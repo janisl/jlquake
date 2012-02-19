@@ -955,27 +955,25 @@ void String::Cpy(char* Dst, const char* Src)
 	*dest++ = 0;
 #endif
 }
+#endif
 
-//==========================================================================
-//
-//	String::NCpy
-//
-//==========================================================================
-
-void String::NCpy(char* Dst, const char* Src, size_t N)
+void String::NCpy(char* dst, const char* src, size_t count)
 {
 #if 1
-	strncpy(Dst, Src, N);
+	strncpy(dst, src, count);
 #else
 	while (*src && count--)
 	{
 		*dest++ = *src++;
 	}
 	if (count)
+	{
 		*dest++ = 0;
+	}
 #endif
 }
 
+#if 0
 //==========================================================================
 //
 //	String::NCpy

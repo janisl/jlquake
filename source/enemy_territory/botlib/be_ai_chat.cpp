@@ -355,7 +355,7 @@ void BotQueueConsoleMessage( int chatstate, int type, char *message ) {
 	m->handle = cs->handle;
 	m->time = AAS_Time();
 	m->type = type;
-	strncpy( m->message, message, MAX_MESSAGE_SIZE );
+	String::NCpy( m->message, message, MAX_MESSAGE_SIZE );
 	m->next = NULL;
 	if ( cs->lastmessage ) {
 		cs->lastmessage->next = m;
@@ -1450,7 +1450,7 @@ int BotFindMatch( char *str, bot_match_t *match, unsigned long int context ) {
 	int i;
 	bot_matchtemplate_t *ms;
 
-	strncpy( match->string, str, MAX_MESSAGE_SIZE );
+	String::NCpy( match->string, str, MAX_MESSAGE_SIZE );
 	//remove any trailing enters
 	while ( strlen( match->string ) &&
 			match->string[strlen( match->string ) - 1] == '\n' )
@@ -1491,7 +1491,7 @@ void BotMatchVariable( bot_match_t *match, int variable, char *buf, int size ) {
 		if ( match->variables[variable].length < size ) {
 			size = match->variables[variable].length + 1;
 		}
-		strncpy( buf, match->variables[variable].ptr, size - 1 );
+		String::NCpy( buf, match->variables[variable].ptr, size - 1 );
 		buf[size - 1] = '\0';
 	} //end if
 	else
@@ -1998,7 +1998,7 @@ bot_chat_t *BotLoadInitialChat( char *chatfile, char *chatname ) {
 						StripDoubleQuotes( token.string );
 						if ( pass ) {
 							chattype = (bot_chattype_t *) ptr;
-							strncpy( chattype->name, token.string, MAX_CHATTYPE_NAME );
+							String::NCpy( chattype->name, token.string, MAX_CHATTYPE_NAME );
 							chattype->firstchatmessage = NULL;
 							//add the chat type to the chat
 							chattype->next = chat->types;
@@ -2699,7 +2699,7 @@ void BotGetChatMessage( int chatstate, char *buf, int size ) {
 	}
 
 	BotRemoveTildes( cs->chatmessage );
-	strncpy( buf, cs->chatmessage, size - 1 );
+	String::NCpy( buf, cs->chatmessage, size - 1 );
 	buf[size - 1] = '\0';
 	//clear the chat message from the state
 	strcpy( cs->chatmessage, "" );
@@ -2738,7 +2738,7 @@ void BotSetChatName( int chatstate, char *name ) {
 		return;
 	}
 	memset( cs->name, 0, sizeof( cs->name ) );
-	strncpy( cs->name, name, sizeof( cs->name ) );
+	String::NCpy( cs->name, name, sizeof( cs->name ) );
 	cs->name[sizeof( cs->name ) - 1] = '\0';
 } //end of the function BotSetChatName
 //===========================================================================

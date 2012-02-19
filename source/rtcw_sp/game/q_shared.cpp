@@ -794,7 +794,7 @@ void Q_strncpyz( char *dest, const char *src, int destsize ) {
 		Com_Error( ERR_FATAL,"Q_strncpyz: destsize < 1" );
 	}
 
-	strncpy( dest, src, destsize - 1 );
+	String::NCpy( dest, src, destsize - 1 );
 	dest[destsize - 1] = 0;
 }
 

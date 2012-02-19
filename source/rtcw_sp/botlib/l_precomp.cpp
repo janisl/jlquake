@@ -1010,7 +1010,7 @@ int PC_Directive_include( source_t *source ) {
 		memset( &file, 0, sizeof( foundfile_t ) );
 		script = LoadScriptFile( path );
 		if ( script ) {
-			strncpy( script->filename, path, _MAX_PATH );
+			String::NCpy( script->filename, path, _MAX_PATH );
 		}
 	} //end if
 #endif //QUAKE
@@ -1295,7 +1295,7 @@ define_t *PC_DefineFromString( char *string ) {
 	script = LoadScriptMemory( string, strlen( string ), "*extern" );
 	//create a new source
 	memset( &src, 0, sizeof( source_t ) );
-	strncpy( src.filename, "*extern", _MAX_PATH );
+	String::NCpy( src.filename, "*extern", _MAX_PATH );
 	src.scriptstack = script;
 #if DEFINEHASHING
 	src.definehash = (define_t**)GetClearedMemory( DEFINEHASHSIZE * sizeof( define_t * ) );
@@ -2952,7 +2952,7 @@ void PC_UnreadToken( source_t *source, token_t *token ) {
 // Changes Globals:		-
 //============================================================================
 void PC_SetIncludePath( source_t *source, char *path ) {
-	strncpy( source->includepath, path, _MAX_PATH );
+	String::NCpy( source->includepath, path, _MAX_PATH );
 	//add trailing path seperator
 	if ( source->includepath[strlen( source->includepath ) - 1] != '\\' &&
 		 source->includepath[strlen( source->includepath ) - 1] != '/' ) {
@@ -2990,7 +2990,7 @@ source_t *LoadSourceFile( const char *filename ) {
 	source = (source_t *) GetMemory( sizeof( source_t ) );
 	memset( source, 0, sizeof( source_t ) );
 
-	strncpy( source->filename, filename, _MAX_PATH );
+	String::NCpy( source->filename, filename, _MAX_PATH );
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;
@@ -3024,7 +3024,7 @@ source_t *LoadSourceMemory( char *ptr, int length, char *name ) {
 	source = (source_t *) GetMemory( sizeof( source_t ) );
 	memset( source, 0, sizeof( source_t ) );
 
-	strncpy( source->filename, name, _MAX_PATH );
+	String::NCpy( source->filename, name, _MAX_PATH );
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;

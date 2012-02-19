@@ -344,7 +344,7 @@ int AAS_LoadFiles( const char *mapname ) {
 	}
 
 	botimport.Print( PRT_MESSAGE, "loaded %s\n", aasfile );
-	strncpy( ( *aasworld ).filename, aasfile, MAX_PATH );
+	String::NCpy( ( *aasworld ).filename, aasfile, MAX_PATH );
 	return BLERR_NOERROR;
 } //end of the function AAS_LoadFiles
 //===========================================================================
@@ -368,7 +368,7 @@ int AAS_LoadMap( const char *mapname ) {
 	{
 		AAS_SetCurrentWorld( i );
 
-		strncpy( this_mapname, mapname, 256 );
+		String::NCpy( this_mapname, mapname, 256 );
 		//strncat( this_mapname, "_b", 256 );
 		//sprintf( intstr, "%i", i );
 		//strncat( this_mapname, intstr, 256 );

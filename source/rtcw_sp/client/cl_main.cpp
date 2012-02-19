@@ -3607,7 +3607,7 @@ qboolean CL_GetLimboString( int index, char *buf ) {
 		return qfalse;
 	}
 
-	strncpy( buf, cl.limboChatMsgs[index], 140 );
+	String::NCpy( buf, cl.limboChatMsgs[index], 140 );
 	return qtrue;
 }
 // -NERVE - SMF

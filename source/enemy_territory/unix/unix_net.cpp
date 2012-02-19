@@ -430,7 +430,7 @@ void NET_GetLocalAddress( void ) {
 					// Skip loopback interfaces
 					if ( sdl->sdl_type != IFT_LOOP ) {
 						// Get the local interface address
-						strncpy( ifr.ifr_name, inetInterface->ifr_name, sizeof( ifr.ifr_name ) );
+						String::NCpy( ifr.ifr_name, inetInterface->ifr_name, sizeof( ifr.ifr_name ) );
 						if ( ioctl( interfaceSocket, OSIOCGIFADDR, (caddr_t)&ifr ) < 0 ) {
 							Com_Printf( "NET_GetLocalAddress: Unable to get local address for interface '%s', errno = %d\n", inetInterface->ifr_name, errno );
 						} else {

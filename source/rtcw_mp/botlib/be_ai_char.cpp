@@ -736,7 +736,7 @@ void Characteristic_String( int character, int index, char *buf, int size ) {
 	}
 	//an integer will be converted to a float
 	if ( ch->c[index].type == CT_STRING ) {
-		strncpy( buf, ch->c[index].value.string, size - 1 );
+		String::NCpy( buf, ch->c[index].value.string, size - 1 );
 		buf[size - 1] = '\0';
 		return;
 	} //end if
