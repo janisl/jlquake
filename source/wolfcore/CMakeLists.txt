@@ -1,4 +1,5 @@
 set(WOLFCORE_FILES
+	../core/Common.cpp
 	common_defs.cpp
 	exception.cpp
 	../core/log.cpp

@@ -25,9 +25,7 @@
 #include <cmath>
 
 #include "common_defs.h"	//	Basic types and defines
-#if 0
-#include "Common.h"
-#endif
+#include "../core/Common.h"
 #include "../core/memory.h"		//	Memory allocation
 #if 0
 #include "endian.h"		//	Endianes handling
