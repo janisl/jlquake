@@ -32,13 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../qcommon/cm_public.h"
 
-//bani
-#ifdef __GNUC__
-#define _attribute( x ) __attribute__( x )
-#else
-#define _attribute( x )
-#endif
-
 //#define PRE_RELEASE_DEMO
 #ifdef PRE_RELEASE_DEMO
 #define PRE_RELEASE_DEMO_NODEVMAP
@@ -837,10 +830,10 @@ void        Info_Print( const char *s );
 
 void Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( char * ) );
 void        Com_EndRedirect( void );
-int QDECL Com_VPrintf( const char *fmt, va_list argptr ) _attribute( ( format( printf,1,0 ) ) ); // conforms to vprintf prototype for print callback passing
-void QDECL Com_Printf( const char *fmt, ... ) _attribute( ( format( printf,1,2 ) ) ); // this one calls to Com_VPrintf now
-void QDECL Com_DPrintf( const char *fmt, ... ) _attribute( ( format( printf,1,2 ) ) );
-void QDECL Com_Error( int code, const char *fmt, ... ) _attribute( ( format( printf,2,3 ) ) );
+int QDECL Com_VPrintf( const char *fmt, va_list argptr ) id_attribute( ( format( printf,1,0 ) ) ); // conforms to vprintf prototype for print callback passing
+void QDECL Com_Printf( const char *fmt, ... ) id_attribute( ( format( printf,1,2 ) ) ); // this one calls to Com_VPrintf now
+void QDECL Com_DPrintf( const char *fmt, ... ) id_attribute( ( format( printf,1,2 ) ) );
+void QDECL Com_Error( int code, const char *fmt, ... ) id_attribute( ( format( printf,2,3 ) ) );
 void        Com_Quit_f( void );
 int         Com_EventLoop( void );
 int         Com_Milliseconds( void );   // will be journaled properly

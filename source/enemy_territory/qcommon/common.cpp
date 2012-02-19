@@ -221,7 +221,7 @@ int QDECL Com_VPrintf( const char *fmt, va_list argptr ) {
 	}
 	return strlen( msg );
 }
-int QDECL Com_VPrintf( const char *fmt, va_list argptr ) _attribute( ( format( printf,1,0 ) ) );
+int QDECL Com_VPrintf( const char *fmt, va_list argptr ) id_attribute( ( format( printf,1,0 ) ) );
 
 void QDECL Com_Printf( const char *fmt, ... ) {
 	va_list argptr;
@@ -230,7 +230,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 	Com_VPrintf( fmt, argptr );
 	va_end( argptr );
 }
-void QDECL Com_Printf( const char *fmt, ... ) _attribute( ( format( printf,1,2 ) ) );
+void QDECL Com_Printf( const char *fmt, ... ) id_attribute( ( format( printf,1,2 ) ) );
 
 /*
 ================
@@ -253,7 +253,7 @@ void QDECL Com_DPrintf( const char *fmt, ... ) {
 
 	Com_Printf( "%s", msg );
 }
-void QDECL Com_DPrintf( const char *fmt, ... ) _attribute( ( format( printf,1,2 ) ) );
+void QDECL Com_DPrintf( const char *fmt, ... ) id_attribute( ( format( printf,1,2 ) ) );
 
 /*
 =============
@@ -361,7 +361,7 @@ void QDECL Com_Error( int code, const char *fmt, ... ) {
 
 	Sys_Error( "%s", com_errorMessage );
 }
-void QDECL Com_Error( int code, const char *fmt, ... ) _attribute( ( format( printf,2,3 ) ) );
+void QDECL Com_Error( int code, const char *fmt, ... ) id_attribute( ( format( printf,2,3 ) ) );
 
 //bani - moved
 void CL_ShutdownCGame( void );

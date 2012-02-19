@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#if 0
 #ifdef _WIN32
 #pragma warning(disable : 4018)     // signed/unsigned mismatch
 #pragma warning(disable : 4032)
@@ -41,7 +40,6 @@
 #endif
 
 #ifndef __GNUC__
-#define __attribute__(whatever)
 #define id_attribute(whatever)
 #else
 #define id_attribute(params) __attribute__(params)
@@ -129,6 +127,7 @@ template<class T> T Clamp(T val, T low, T high)
 //
 //==========================================================================
 
+#if 0
 //
 //  Base class for abstract classes that need virtual destructor.
 //

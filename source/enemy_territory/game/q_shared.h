@@ -64,31 +64,6 @@ If you have questions concerning this license or the applicable additional terms
 #define NEW_ANIMS
 #define MAX_TEAMNAME    32
 
-#if defined _WIN32 && !defined __GNUC__
-
-#pragma warning(disable : 4018) // signed/unsigned mismatch
-#pragma warning(disable : 4032)
-#pragma warning(disable : 4051)
-#pragma warning(disable : 4057) // slightly different base types
-#pragma warning(disable : 4100) // unreferenced formal parameter
-#pragma warning(disable : 4115)
-#pragma warning(disable : 4125) // decimal digit terminates octal escape sequence
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4136)
-#pragma warning(disable	: 4152) // nonstandard extension, function/data pointer conversion in expression
-#pragma warning(disable : 4201)
-#pragma warning(disable : 4214)
-#pragma warning(disable : 4244)
-//#pragma warning(disable	: 4142)		// benign redefinition
-#pragma warning(disable : 4305) // truncation from const double to float
-//#pragma warning(disable : 4310)		// cast truncates constant value
-//#pragma warning(disable :	4505)		// unreferenced local function has been removed
-#pragma warning(disable : 4514)
-#pragma warning(disable : 4702) // unreachable code
-#pragma warning(disable : 4711) // selected for automatic inline expansion
-#pragma warning(disable : 4220) // varargs matches remaining parameters
-#endif
-
 #if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
 #define idppc 1
 #endif
@@ -126,24 +101,9 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 
-// use MSVC inline asm version of C functions
-#if defined _M_IX86
-#define id386   1
-#else
-#define id386   0
-#endif
-
 // for windows fastcall option
 
 #define QDECL
-
-//bani
-//======================= GNUC DEFINES ==================================
-#ifdef __GNUC__
-#define _attribute( x ) __attribute__( x )
-#else
-#define _attribute( x )
-#endif
 
 //======================= WIN32 DEFINES =================================
 
@@ -267,9 +227,6 @@ void Sys_PumpEvents( void );
 //=============================================================
 
 
-typedef unsigned char byte;
-
-typedef int qboolean;
 enum {qfalse, qtrue};
 
 typedef int qhandle_t;
@@ -769,8 +726,8 @@ int     COM_GetCurrentParseLine( void );
 char    *COM_Parse( char **data_p );
 char    *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 int     COM_Compress( char *data_p );
-void    COM_ParseError( char *format, ... ) _attribute( ( format( printf,1,2 ) ) );
-void    COM_ParseWarning( char *format, ... ) _attribute( ( format( printf,1,2 ) ) );
+void    COM_ParseError( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
+void    COM_ParseWarning( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
 int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
 
 qboolean COM_BitCheck( const int array[], int bitNum );
@@ -811,7 +768,7 @@ void Parse1DMatrix( char **buf_p, int x, float *m );
 void Parse2DMatrix( char **buf_p, int y, int x, float *m );
 void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) _attribute( ( format( printf,3,4 ) ) );
+void QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) id_attribute( ( format( printf,3,4 ) ) );
 
 
 // mode parm for FS_FOpenFile
@@ -896,7 +853,7 @@ qint64  BigLong64( qint64 l );
 float   BigFloat( float l );
 
 void    Swap_Init( void );
-char    * QDECL va( char *format, ... ) _attribute( ( format( printf,1,2 ) ) );
+char    * QDECL va( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
 float   *tv( float x, float y, float z );
 
 //=============================================
@@ -913,8 +870,8 @@ qboolean Info_Validate( const char *s );
 void Info_NextPair( const char **s, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL Com_Error( int level, const char *error, ... ) _attribute( ( format( printf,2,3 ) ) );
-void QDECL Com_Printf( const char *msg, ... ) _attribute( ( format( printf,1,2 ) ) );
+void QDECL Com_Error( int level, const char *error, ... ) id_attribute( ( format( printf,2,3 ) ) );
+void QDECL Com_Printf( const char *msg, ... ) id_attribute( ( format( printf,1,2 ) ) );
 
 /*
 ==========================================================

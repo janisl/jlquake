@@ -370,7 +370,7 @@ public:
 	static bool FilterPath(const char* Filter, const char* Name, bool CaseSensitive);
 };
 
-char* va(const char* Format, ...) __attribute__ ((format(printf, 1, 2)));
+char* va(const char* Format, ...) id_attribute((format(printf, 1, 2)));
 
 #define Q_COLOR_ESCAPE	'^'
 #define Q_IsColorString(p)	( p && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) != Q_COLOR_ESCAPE )

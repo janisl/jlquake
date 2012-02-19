@@ -33,13 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/g_public.h"
 #include "../game/bg_public.h"
 
-//bani
-#ifdef __GNUC__
-#define _attribute( x ) __attribute__( x )
-#else
-#define _attribute( x )
-#endif
-
 //=============================================================================
 
 #define PERS_SCORE              0       // !!! MUST NOT CHANGE, SERVER AND

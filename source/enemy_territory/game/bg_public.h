@@ -47,13 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 	#define GAME_VERSION_DATED          ( GAME_VERSION ", " Q3_VERSION )
 #endif
 
-//bani
-#ifdef __GNUC__
-#define _attribute( x ) __attribute__( x )
-#else
-#define _attribute( x )
-#endif
-
 //#define SAVEGAME_SUPPORT	// uncomment to enable savegames
 // enabling this requires you to run extractfuncs.bat as well before compiling qagame
 
