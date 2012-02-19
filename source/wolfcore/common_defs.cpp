@@ -16,9 +16,9 @@
 
 #include "core.h"
 
-#if 0
 #define MAX_NUM_ARGVS	50
 
+#if 0
 Cvar* com_dedicated;
 Cvar* com_viewlog;
 Cvar* com_timescale;
@@ -33,10 +33,10 @@ fileHandle_t com_journalDataFile;		// config files are written here
 int GGameType;
 
 int com_frameTime;
+#endif
 
 static int com_argc;
 static const char* com_argv[MAX_NUM_ARGVS+1];
-#endif
 
 Interface::~Interface()
 {

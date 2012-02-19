@@ -44,15 +44,10 @@ If you have questions concerning this license or the applicable additional terms
 #include <winsock.h>
 #endif
 
-#define MAX_NUM_ARGVS   50
-
 #define MIN_DEDICATED_COMHUNKMEGS 1
 #define MIN_COMHUNKMEGS 42 // JPW NERVE changed this to 42 for MP, was 56 for team arena and 75 for wolfSP
 #define DEF_COMHUNKMEGS "56" // RF, increased this, some maps are exceeding 56mb // JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
 #define DEF_COMZONEMEGS "24" // RF, increased this from 16, to account for botlib/AAS
-
-int com_argc;
-char    *com_argv[MAX_NUM_ARGVS + 1];
 
 jmp_buf abortframe;     // an ERR_DROP occured, exit the entire frame
 

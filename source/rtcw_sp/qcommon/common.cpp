@@ -32,15 +32,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 #include <setjmp.h>
 
-#define MAX_NUM_ARGVS   50
-
 #define MIN_DEDICATED_COMHUNKMEGS 1
 #define MIN_COMHUNKMEGS 54      // RF, optimizing
 #define DEF_COMHUNKMEGS "72"
 #define DEF_COMZONEMEGS "30"
-
-int com_argc;
-char    *com_argv[MAX_NUM_ARGVS + 1];
 
 extern char cl_cdkey[34];
 
