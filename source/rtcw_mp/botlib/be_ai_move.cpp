@@ -544,7 +544,7 @@ void BotSetBrushModelTypes( void ) {
 			continue;
 		}
 		if ( model[0] ) {
-			modelnum = atoi( model + 1 );
+			modelnum = String::Atoi( model + 1 );
 		} else { modelnum = 0;}
 
 		if ( modelnum < 0 || modelnum > MAX_MODELS ) {

@@ -2693,7 +2693,7 @@ void AAS_Reachability_Teleport( void ) {
 //#ifdef REACHDEBUG
 			botimport.Print( PRT_MESSAGE, "trigger_multiple model = \"%s\"\n", model );
 //#endif REACHDEBUG
-			AAS_BSPModelMinsMaxsOrigin( atoi( model + 1 ), angles, mins, maxs, origin );
+			AAS_BSPModelMinsMaxsOrigin( String::Atoi( model + 1 ), angles, mins, maxs, origin );
 			//
 			if ( !AAS_ValueForBSPEpairKey( ent, "target", target, MAX_EPAIRKEY ) ) {
 				botimport.Print( PRT_ERROR, "trigger_multiple at %1.0f %1.0f %1.0f without target\n",
@@ -2727,7 +2727,7 @@ void AAS_Reachability_Teleport( void ) {
 //#ifdef REACHDEBUG
 			botimport.Print( PRT_MESSAGE, "trigger_teleport model = \"%s\"\n", model );
 //#endif REACHDEBUG
-			AAS_BSPModelMinsMaxsOrigin( atoi( model + 1 ), angles, mins, maxs, origin );
+			AAS_BSPModelMinsMaxsOrigin( String::Atoi( model + 1 ), angles, mins, maxs, origin );
 			//
 			if ( !AAS_ValueForBSPEpairKey( ent, "target", target, MAX_EPAIRKEY ) ) {
 				botimport.Print( PRT_ERROR, "trigger_teleport at %1.0f %1.0f %1.0f without target\n",
@@ -2856,7 +2856,7 @@ void AAS_Reachability_Elevator( void ) {
 				continue;
 			} //end if
 			  //get the model number, and skip the leading *
-			modelnum = atoi( model + 1 );
+			modelnum = String::Atoi( model + 1 );
 			if ( modelnum <= 0 ) {
 				botimport.Print( PRT_ERROR, "func_plat with invalid model number\n" );
 				continue;
@@ -3231,7 +3231,7 @@ void AAS_Reachability_FuncBobbing( void ) {
 			continue;
 		} //end if
 		  //get the model number, and skip the leading *
-		modelnum = atoi( model + 1 );
+		modelnum = String::Atoi( model + 1 );
 		if ( modelnum <= 0 ) {
 			botimport.Print( PRT_ERROR, "func_bobbing with invalid model number\n" );
 			continue;
@@ -3462,7 +3462,7 @@ void AAS_Reachability_JumpPad( void ) {
 		//get the mins, maxs and origin of the model
 		AAS_ValueForBSPEpairKey( ent, "model", model, MAX_EPAIRKEY );
 		if ( model[0] ) {
-			modelnum = atoi( model + 1 );
+			modelnum = String::Atoi( model + 1 );
 		} else { modelnum = 0;}
 		AAS_BSPModelMinsMaxsOrigin( modelnum, angles, absmins, absmaxs, origin );
 		VectorAdd( origin, absmins, absmins );

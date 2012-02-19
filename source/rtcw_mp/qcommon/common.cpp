@@ -2241,7 +2241,7 @@ static void Com_Freeze_f( void ) {
 		Com_Printf( "freeze <seconds>\n" );
 		return;
 	}
-	s = atof( Cmd_Argv( 1 ) );
+	s = String::Atof( Cmd_Argv( 1 ) );
 
 	start = Com_Milliseconds();
 

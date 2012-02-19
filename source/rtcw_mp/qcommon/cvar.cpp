@@ -305,8 +305,8 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 	var->string = CopyString( var_value );
 	var->modified = qtrue;
 	var->modificationCount = 1;
-	var->value = atof( var->string );
-	var->integer = atoi( var->string );
+	var->value = String::Atof( var->string );
+	var->integer = String::Atoi( var->string );
 	var->resetString = CopyString( var_value );
 
 	// link the variable in
@@ -431,8 +431,8 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 	Z_Free( var->string );   // free the old value string
 
 	var->string = CopyString( value );
-	var->value = atof( var->string );
-	var->integer = atoi( var->string );
+	var->value = String::Atof( var->string );
+	var->integer = String::Atoi( var->string );
 
 	return var;
 }

@@ -241,7 +241,7 @@ void CL_ConfigstringModified( void ) {
 	gameState_t oldGs;
 	int len;
 
-	index = atoi( Cmd_Argv( 1 ) );
+	index = String::Atoi( Cmd_Argv( 1 ) );
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
 		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 	}
@@ -450,7 +450,7 @@ void CL_SetExpectedHunkUsage( const char *mapname ) {
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && *token ) {
 					// this is the usage
-					com_expectedhunkusage = atoi( token );
+					com_expectedhunkusage = String::Atoi( token );
 					Z_Free( buf );
 					return;
 				}
@@ -1076,7 +1076,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 				// found a match
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {
-					if ( atoi( token ) == memusage ) {  // if it is the same, abort this process
+					if ( String::Atoi( token ) == memusage ) {  // if it is the same, abort this process
 						Z_Free( buf );
 						Z_Free( outbuf );
 						return;

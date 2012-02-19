@@ -1609,7 +1609,7 @@ void S_StreamingSound_f( void ) {
 	if ( c == 2 ) {
 		S_StartStreamingSound( Cmd_Argv( 1 ), 0, -1, 0, 0 );
 	} else if ( c == 5 ) {
-		S_StartStreamingSound( Cmd_Argv( 1 ), 0, atoi( Cmd_Argv( 2 ) ), atoi( Cmd_Argv( 3 ) ), atoi( Cmd_Argv( 4 ) ) );
+		S_StartStreamingSound( Cmd_Argv( 1 ), 0, String::Atoi( Cmd_Argv( 2 ) ), String::Atoi( Cmd_Argv( 3 ) ), String::Atoi( Cmd_Argv( 4 ) ) );
 	} else {
 		Com_Printf( "streamingsound <soundfile> [entnum channel attenuation]\n" );
 		return;

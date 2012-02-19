@@ -118,7 +118,7 @@ static client_t *SV_GetPlayerByNum( void ) {
 			return NULL;
 		}
 	}
-	idnum = atoi( s );
+	idnum = String::Atoi( s );
 	if ( idnum < 0 || idnum >= sv_maxclients->integer ) {
 		Com_Printf( "Bad client slot: %i\n", idnum );
 		return NULL;
@@ -411,7 +411,7 @@ static void SV_MapRestart_f( void ) {
 	//%	}
 
 	if ( Cmd_Argc() > 1 ) {
-		delay = atoi( Cmd_Argv( 1 ) );
+		delay = String::Atoi( Cmd_Argv( 1 ) );
 	}
 
 	if ( delay ) {
@@ -421,13 +421,13 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
-	old_gs = (gamestate_t)atoi( Cvar_VariableString( "gamestate" ) );
+	old_gs = (gamestate_t)String::Atoi( Cvar_VariableString( "gamestate" ) );
 
 	if ( SV_GameIsSinglePlayer() || SV_GameIsCoop() ) {
 		new_gs = GS_PLAYING;
 	} else {
 		if ( Cmd_Argc() > 2 ) {
-			new_gs = (gamestate_t)atoi( Cmd_Argv( 2 ) );
+			new_gs = (gamestate_t)String::Atoi( Cmd_Argv( 2 ) );
 		} else {
 			new_gs = GS_PLAYING;
 		}
@@ -681,7 +681,7 @@ static void SV_Kick_f( void ) {
 	}
 
 	if( Cmd_Argc() == 3 ) {
-		timeout = atoi( Cmd_Argv( 2 ) );
+		timeout = String::Atoi( Cmd_Argv( 2 ) );
 	} else {
 		timeout = 300;
 	}
@@ -911,7 +911,7 @@ static void SV_KickNum_f( void ) {
 	}
 
 	if( Cmd_Argc() == 3 ) {
-		timeout = atoi( Cmd_Argv( 2 ) );
+		timeout = String::Atoi( Cmd_Argv( 2 ) );
 	} else {
 		timeout = 300;
 	}

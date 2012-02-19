@@ -2326,9 +2326,9 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
 		} else {
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi( Cmd_Argv( 1 ) );
+			clc.challenge = String::Atoi( Cmd_Argv( 1 ) );
 			if ( Cmd_Argc() > 2 ) {
-				clc.onlyVisibleClients = atoi( Cmd_Argv( 2 ) );         // DHM - Nerve
+				clc.onlyVisibleClients = String::Atoi( Cmd_Argv( 2 ) );         // DHM - Nerve
 			} else {
 				clc.onlyVisibleClients = 0;
 			}
@@ -2828,7 +2828,7 @@ static void CL_Cache_SetIndex_f( void ) {
 		return;
 	}
 
-	cacheIndex = atoi( Cmd_Argv( 1 ) );
+	cacheIndex = String::Atoi( Cmd_Argv( 1 ) );
 }
 
 static void CL_Cache_MapChange_f( void ) {
@@ -3616,25 +3616,25 @@ void CL_Shutdown( void ) {
 static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping ) {
 	if ( server ) {
 		if ( info ) {
-			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
+			server->clients = String::Atoi( Info_ValueForKey( info, "clients" ) );
 			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
-			server->load = atoi( Info_ValueForKey( info, "serverload" ) );
+			server->load = String::Atoi( Info_ValueForKey( info, "serverload" ) );
 			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
-			server->maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+			server->maxClients = String::Atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
-			server->gameType = atoi( Info_ValueForKey( info, "gametype" ) );
-			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
-			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
-			server->maxPing = atoi( Info_ValueForKey( info, "maxping" ) );
-			server->allowAnonymous = atoi( Info_ValueForKey( info, "sv_allowAnonymous" ) );
-			server->friendlyFire = atoi( Info_ValueForKey( info, "friendlyFire" ) );         // NERVE - SMF
-			server->maxlives = atoi( Info_ValueForKey( info, "maxlives" ) );                 // NERVE - SMF
-			server->needpass = atoi( Info_ValueForKey( info, "needpass" ) );                 // NERVE - SMF
-			server->punkbuster = atoi( Info_ValueForKey( info, "punkbuster" ) );             // DHM - Nerve
+			server->gameType = String::Atoi( Info_ValueForKey( info, "gametype" ) );
+			server->netType = String::Atoi( Info_ValueForKey( info, "nettype" ) );
+			server->minPing = String::Atoi( Info_ValueForKey( info, "minping" ) );
+			server->maxPing = String::Atoi( Info_ValueForKey( info, "maxping" ) );
+			server->allowAnonymous = String::Atoi( Info_ValueForKey( info, "sv_allowAnonymous" ) );
+			server->friendlyFire = String::Atoi( Info_ValueForKey( info, "friendlyFire" ) );         // NERVE - SMF
+			server->maxlives = String::Atoi( Info_ValueForKey( info, "maxlives" ) );                 // NERVE - SMF
+			server->needpass = String::Atoi( Info_ValueForKey( info, "needpass" ) );                 // NERVE - SMF
+			server->punkbuster = String::Atoi( Info_ValueForKey( info, "punkbuster" ) );             // DHM - Nerve
 			String::NCpyZ( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
-			server->antilag = atoi( Info_ValueForKey( info, "g_antilag" ) );
-			server->weaprestrict = atoi( Info_ValueForKey( info, "weaprestrict" ) );
-			server->balancedteams = atoi( Info_ValueForKey( info, "balancedteams" ) );
+			server->antilag = String::Atoi( Info_ValueForKey( info, "g_antilag" ) );
+			server->weaprestrict = String::Atoi( Info_ValueForKey( info, "weaprestrict" ) );
+			server->balancedteams = String::Atoi( Info_ValueForKey( info, "balancedteams" ) );
 		}
 		server->ping = ping;
 	}
@@ -3686,7 +3686,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	infoString = MSG_ReadString( msg );
 
 	// if this isn't the correct protocol version, ignore it
-	prot = atoi( Info_ValueForKey( infoString, "protocol" ) );
+	prot = String::Atoi( Info_ValueForKey( infoString, "protocol" ) );
 	if ( prot != protocol ) {
 		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
 		return;
@@ -4082,7 +4082,7 @@ void CL_GlobalServers_f( void ) {
 		return;
 	}
 
-	cls.masterNum = atoi( Cmd_Argv( 1 ) );
+	cls.masterNum = String::Atoi( Cmd_Argv( 1 ) );
 
 	Com_Printf( "Requesting servers from the master...\n" );
 
@@ -4985,10 +4985,10 @@ void CL_LoadTransTable( const char *fileName ) {
 		// set offset if we have one
 		if ( !String::ICmp( "offset", token ) ) {
 			token = COM_Parse( &text_p );
-			t->x_offset = atof( token );
+			t->x_offset = String::Atof( token );
 
 			token = COM_Parse( &text_p );
-			t->y_offset = atof( token );
+			t->y_offset = String::Atof( token );
 
 			token = COM_Parse( &text_p );
 		}

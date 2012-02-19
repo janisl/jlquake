@@ -486,7 +486,7 @@ float Com_ParseFloat( const char *( *buf_p ) ) {
 	if ( !token[0] ) {
 		return 0;
 	}
-	return atof( token );
+	return String::Atof( token );
 }
 
 int Com_ParseInt( const char *( *buf_p ) ) {
@@ -496,7 +496,7 @@ int Com_ParseInt( const char *( *buf_p ) ) {
 	if ( !token[0] ) {
 		return 0;
 	}
-	return (int)atof( token );
+	return (int)String::Atof( token );
 }
 
 
@@ -509,7 +509,7 @@ void Com_Parse1DMatrix( const char *( *buf_p ), int x, float *m ) {
 
 	for ( i = 0 ; i < x ; i++ ) {
 		token = Com_Parse( buf_p );
-		m[i] = atof( token );
+		m[i] = String::Atof( token );
 	}
 
 	Com_MatchToken( buf_p, ")" );

@@ -448,7 +448,7 @@ void idSplineList::parse( const char *( *text )  ) {
 			idStr key = Com_ParseOnLine( text );
 			const char *token = Com_Parse( text );
 			if ( String::ICmp( key.c_str(), "granularity" ) == 0 ) {
-				granularity = atof( token );
+				granularity = String::Atof( token );
 			} else if ( String::ICmp( key.c_str(), "name" ) == 0 ) {
 				name = token;
 			}
@@ -553,16 +553,16 @@ bool idCameraDef::getCameraInfo( long time, idVec3 &origin, idVec3 &direction, f
 				String::Cpy( buff, events[i]->getParam() );
 				const char *param1 = strtok( buff, " \t,\0" );
 				const char *param2 = strtok( NULL, " \t,\0" );
-				float len = ( param2 ) ? atof( param2 ) : 0;
-				float newfov = ( param1 ) ? atof( param1 ) : 90;
+				float len = ( param2 ) ? String::Atof( param2 ) : 0;
+				float newfov = ( param1 ) ? String::Atof( param1 ) : 90;
 				fov.reset( fov.getFOV( time ), newfov, time, len );
-				//*fv = fov = atof(events[i]->getParam());
+				//*fv = fov = String::Atof(events[i]->getParam());
 			} else if ( events[i]->getType() == idCameraEvent::EVENT_FADEIN ) {
-				float time = atof( events[i]->getParam() );
+				float time = String::Atof( events[i]->getParam() );
 				Cbuf_AddText( va( "fade 0 0 0 0 %f", time ) );
 				Cbuf_Execute();
 			} else if ( events[i]->getType() == idCameraEvent::EVENT_FADEOUT ) {
-				float time = atof( events[i]->getParam() );
+				float time = String::Atof( events[i]->getParam() );
 				Cbuf_AddText( va( "fade 0 0 0 255 %f", time ) );
 				Cbuf_Execute();
 			} else if ( events[i]->getType() == idCameraEvent::EVENT_CAMERA ) {
@@ -572,7 +572,7 @@ bool idCameraDef::getCameraInfo( long time, idVec3 &origin, idVec3 &direction, f
 				const char *param2 = strtok( NULL, " \t,\0" );
 
 				if ( param2 ) {
-					loadCamera( atoi( param1 ), va( "cameras/%s.camera", param2 ) );
+					loadCamera( String::Atoi( param1 ), va( "cameras/%s.camera", param2 ) );
 					startCamera( time );
 				} else {
 					loadCamera( 0, va( "cameras/%s.camera", events[i]->getParam() ) );
@@ -648,7 +648,7 @@ void idCameraDef::buildCamera() {
 			break;
 		}
 		case idCameraEvent::EVENT_WAIT: {
-			waits.Append( atof( events[i]->getParam() ) );
+			waits.Append( String::Atof( events[i]->getParam() ) );
 
 			//FIXME: this is quite hacky for Wolf E3, accel and decel needs
 			// do be parameter based etc..
@@ -664,9 +664,9 @@ void idCameraDef::buildCamera() {
 				speed -= steps;
 				startTime += loopTime;
 			}
-			cameraPosition->addVelocity( events[i]->getTime(), atof( events[i]->getParam() ) * 1000, 0 );
+			cameraPosition->addVelocity( events[i]->getTime(), String::Atof( events[i]->getParam() ) * 1000, 0 );
 
-			startTime = ( long int )( events[i]->getTime() + atof( events[i]->getParam() ) * 1000 );
+			startTime = ( long int )( events[i]->getTime() + String::Atof( events[i]->getParam() ) * 1000 );
 			long endTime = startTime + 1000;
 			speed = 0;
 			while ( startTime <= endTime ) {
@@ -683,7 +683,7 @@ void idCameraDef::buildCamera() {
 		case idCameraEvent::EVENT_SPEED: {
 /*
 				// take the average delay between up to the next five segments
-				float adjust = atof(events[i]->getParam());
+				float adjust = String::Atof(events[i]->getParam());
 				int index = events[i]->getSegment();
 				total = 0;
 				count = 0;
@@ -921,11 +921,11 @@ void idCameraEvent::parse( const char *( *text )  ) {
 			idStr key = Com_ParseOnLine( text );
 			const char *token = Com_Parse( text );
 			if ( String::ICmp( key.c_str(), "type" ) == 0 ) {
-				type = static_cast<idCameraEvent::eventType>( atoi( token ) );
+				type = static_cast<idCameraEvent::eventType>( String::Atoi( token ) );
 			} else if ( String::ICmp( key.c_str(), "param" ) == 0 ) {
 				paramStr = token;
 			} else if ( String::ICmp( key.c_str(), "time" ) == 0 ) {
-				time = atoi( token );
+				time = String::Atoi( token );
 			}
 			token = Com_Parse( text );
 
@@ -1025,13 +1025,13 @@ void idCameraFOV::parse( const char *( *text )  ) {
 			idStr key = Com_ParseOnLine( text );
 			const char *token = Com_Parse( text );
 			if ( String::ICmp( key.c_str(), "fov" ) == 0 ) {
-				fov = atof( token );
+				fov = String::Atof( token );
 			} else if ( String::ICmp( key.c_str(), "startFOV" ) == 0 ) {
-				startFOV = atof( token );
+				startFOV = String::Atof( token );
 			} else if ( String::ICmp( key.c_str(), "endFOV" ) == 0 ) {
-				endFOV = atof( token );
+				endFOV = String::Atof( token );
 			} else if ( String::ICmp( key.c_str(), "time" ) == 0 ) {
-				time = atoi( token );
+				time = String::Atoi( token );
 			}
 			token = Com_Parse( text );
 
@@ -1053,24 +1053,24 @@ bool idCameraPosition::parseToken( const char *key, const char *( *text ) ) {
 		time = atol( token );
 		return true;
 	} else if ( String::ICmp( key, "type" ) == 0 ) {
-		type = static_cast<idCameraPosition::positionType>( atoi( token ) );
+		type = static_cast<idCameraPosition::positionType>( String::Atoi( token ) );
 		return true;
 	} else if ( String::ICmp( key, "velocity" ) == 0 ) {
 		long t = atol( token );
 		token = Com_Parse( text );
 		long d = atol( token );
 		token = Com_Parse( text );
-		float s = atof( token );
+		float s = String::Atof( token );
 		addVelocity( t, d, s );
 		return true;
 	} else if ( String::ICmp( key, "baseVelocity" ) == 0 ) {
-		baseVelocity = atof( token );
+		baseVelocity = String::Atof( token );
 		return true;
 	} else if ( String::ICmp( key, "name" ) == 0 ) {
 		name = token;
 		return true;
 	} else if ( String::ICmp( key, "time" ) == 0 ) {
-		time = atoi( token );
+		time = String::Atoi( token );
 		return true;
 	}
 	Com_UngetToken();

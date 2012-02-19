@@ -411,7 +411,7 @@ void SV_SetExpectedHunkUsage( char *mapname ) {
 				token = COM_Parse( &buftrav );  // read the size
 				if ( token && token[0] ) {
 					// this is the usage
-					com_expectedhunkusage = atoi( token );
+					com_expectedhunkusage = String::Atoi( token );
 					Z_Free( buf );
 					return;
 				}

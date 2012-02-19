@@ -1524,7 +1524,7 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 	if (ch = strrchr(tagName, ' ')) {
 		*ch = 0;
 		ch++;
-		startIndex = atoi(ch);
+		startIndex = String::Atoi(ch);
 	}
 */
 	model = R_GetModelByHandle( handle );
@@ -1632,7 +1632,7 @@ void R_TagInfo_f( void ) {
 	if (ri.Cmd_Argc() < 3) {
 		frame = 0;
 	} else {
-		frame = atoi(ri.Cmd_Argv(3));
+		frame = String::Atoi(ri.Cmd_Argv(3));
 	}
 
 	Com_Printf("using frame %i..\n", frame);

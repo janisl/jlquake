@@ -323,7 +323,7 @@ int AAS_FloatForBSPEpairKey( int ent, char *key, float *value ) {
 	if ( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) ) {
 		return qfalse;
 	}
-	*value = atof( buf );
+	*value = String::Atof( buf );
 	return qtrue;
 } //end of the function AAS_FloatForBSPEpairKey
 //===========================================================================
@@ -339,7 +339,7 @@ int AAS_IntForBSPEpairKey( int ent, char *key, int *value ) {
 	if ( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) ) {
 		return qfalse;
 	}
-	*value = atoi( buf );
+	*value = String::Atoi( buf );
 	return qtrue;
 } //end of the function AAS_IntForBSPEpairKey
 //===========================================================================

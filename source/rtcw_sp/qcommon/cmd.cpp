@@ -58,7 +58,7 @@ bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
 */
 void Cmd_Wait_f( void ) {
 	if ( Cmd_Argc() == 2 ) {
-		cmd_wait = atoi( Cmd_Argv( 1 ) );
+		cmd_wait = String::Atoi( Cmd_Argv( 1 ) );
 	} else {
 		cmd_wait = 1;
 	}

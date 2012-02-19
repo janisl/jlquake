@@ -136,7 +136,7 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 	}
 
 
-	ent->s.modelindex = atoi( name + 1 );
+	ent->s.modelindex = String::Atoi( name + 1 );
 
 	h = CM_InlineModel( ent->s.modelindex );
 	CM_ModelBounds( h, mins, maxs );

@@ -1768,7 +1768,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
 		} else {
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi( Cmd_Argv( 1 ) );
+			clc.challenge = String::Atoi( Cmd_Argv( 1 ) );
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -2153,7 +2153,7 @@ static void CL_Cache_SetIndex_f( void ) {
 		return;
 	}
 
-	cacheIndex = atoi( Cmd_Argv( 1 ) );
+	cacheIndex = String::Atoi( Cmd_Argv( 1 ) );
 }
 
 static void CL_Cache_MapChange_f( void ) {
@@ -2432,7 +2432,7 @@ void CL_ShellExecute_URL_f( void ) {
 	if ( Cmd_Argc() < 4 ) {
 		doexit = qtrue;
 	} else {
-		doexit = (qboolean)( atoi( Cmd_Argv( 3 ) ) );
+		doexit = (qboolean)( String::Atoi( Cmd_Argv( 3 ) ) );
 	}
 
 	Sys_OpenURL( Cmd_Argv( 2 ),doexit );
@@ -2682,16 +2682,16 @@ void CL_Shutdown( void ) {
 static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping ) {
 	if ( server ) {
 		if ( info ) {
-			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
+			server->clients = String::Atoi( Info_ValueForKey( info, "clients" ) );
 			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
 			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
-			server->maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+			server->maxClients = String::Atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
-			server->gameType = atoi( Info_ValueForKey( info, "gametype" ) );
-			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
-			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
-			server->maxPing = atoi( Info_ValueForKey( info, "maxping" ) );
-			server->allowAnonymous = atoi( Info_ValueForKey( info, "sv_allowAnonymous" ) );
+			server->gameType = String::Atoi( Info_ValueForKey( info, "gametype" ) );
+			server->netType = String::Atoi( Info_ValueForKey( info, "nettype" ) );
+			server->minPing = String::Atoi( Info_ValueForKey( info, "minping" ) );
+			server->maxPing = String::Atoi( Info_ValueForKey( info, "maxping" ) );
+			server->allowAnonymous = String::Atoi( Info_ValueForKey( info, "sv_allowAnonymous" ) );
 		}
 		server->ping = ping;
 	}
@@ -2741,7 +2741,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	infoString = MSG_ReadString( msg );
 
 	// if this isn't the correct protocol version, ignore it
-	prot = atoi( Info_ValueForKey( infoString, "protocol" ) );
+	prot = String::Atoi( Info_ValueForKey( infoString, "protocol" ) );
 	if ( prot != PROTOCOL_VERSION ) {
 		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
 //		return;
@@ -3088,7 +3088,7 @@ void CL_GlobalServers_f( void ) {
 		return;
 	}
 
-	cls.masterNum = atoi( Cmd_Argv( 1 ) );
+	cls.masterNum = String::Atoi( Cmd_Argv( 1 ) );
 
 	Com_Printf( "Requesting servers from the master...\n" );
 

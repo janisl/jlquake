@@ -3505,7 +3505,7 @@ void R_LoadCacheImages( void ) {
 		String::NCpyZ( name, token, sizeof( name ) );
 		for ( i = 0; i < 4; i++ ) {
 			token = COM_ParseExt( &pString, qfalse );
-			parms[i] = atoi( token );
+			parms[i] = String::Atoi( token );
 		}
 		R_FindImageFile( name, parms[0], parms[1], parms[2], parms[3] );
 	}

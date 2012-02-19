@@ -475,7 +475,7 @@ void CL_SystemInfoChanged( void ) {
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// show_bug.cgi?id=475
 	// in some cases, outdated cp commands might get sent with this news serverId
-	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
+	cl.serverId = String::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
 	memset( &entLastVisible, 0, sizeof( entLastVisible ) );
 
@@ -485,7 +485,7 @@ void CL_SystemInfoChanged( void ) {
 	}
 
 	s = Info_ValueForKey( systemInfo, "sv_cheats" );
-	if ( atoi( s ) == 0 ) {
+	if ( String::Atoi( s ) == 0 ) {
 		Cvar_SetCheatState();
 	}
 

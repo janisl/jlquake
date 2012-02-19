@@ -709,7 +709,7 @@ qboolean    NET_StringToAdr( const char *s, netadr_t *a ) {
 	}
 
 	if ( port ) {
-		a->port = BigShort( (short)atoi( port ) );
+		a->port = BigShort( (short)String::Atoi( port ) );
 	} else {
 		a->port = BigShort( PORT_SERVER );
 	}

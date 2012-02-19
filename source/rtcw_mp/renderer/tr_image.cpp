@@ -2793,9 +2793,9 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 //----(SA)	added
 		if ( strstr( token, "playerscale" ) ) {
 			token = CommaParse( &text_p );
-			skin->scale[0] = atof( token );   // uniform scaling for now
-			skin->scale[1] = atof( token );
-			skin->scale[2] = atof( token );
+			skin->scale[0] = String::Atof( token );   // uniform scaling for now
+			skin->scale[1] = String::Atof( token );
+			skin->scale[2] = String::Atof( token );
 			continue;
 		}
 //----(SA) end
@@ -3430,7 +3430,7 @@ void R_CropImages_f( void ) {
 		ri.Printf( PRINT_ALL, "syntax: cropimages <dir> <extension> <maxWidth> <maxHeight> <alpha 0/1>\neg: 'cropimages sprites/fire1 .tga 64 64 0'\n" );
 		return;
 	}
-	R_CropAndNumberImagesInDirectory( ri.Cmd_Argv( 1 ), ri.Cmd_Argv( 2 ), atoi( ri.Cmd_Argv( 3 ) ), atoi( ri.Cmd_Argv( 4 ) ), atoi( ri.Cmd_Argv( 5 ) ) );
+	R_CropAndNumberImagesInDirectory( ri.Cmd_Argv( 1 ), ri.Cmd_Argv( 2 ), String::Atoi( ri.Cmd_Argv( 3 ) ), String::Atoi( ri.Cmd_Argv( 4 ) ), String::Atoi( ri.Cmd_Argv( 5 ) ) );
 #else
 	ri.Printf( PRINT_ALL, "This command has been disabled.\n" );
 #endif
@@ -3748,7 +3748,7 @@ void R_LoadCacheImages( void ) {
 		String::NCpyZ( name, token, sizeof( name ) );
 		for ( i = 0; i < 3; i++ ) {
 			token = COM_ParseExt( &pString, qfalse );
-			parms[i] = atoi( token );
+			parms[i] = String::Atoi( token );
 		}
 		R_FindImageFile( name, parms[0], parms[1], parms[2] );
 	}

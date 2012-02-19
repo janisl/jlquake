@@ -116,7 +116,7 @@ static client_t *SV_GetPlayerByNum( void ) {
 			return NULL;
 		}
 	}
-	idnum = atoi( s );
+	idnum = String::Atoi( s );
 	if ( idnum < 0 || idnum >= sv_maxclients->integer ) {
 		Com_Printf( "Bad client slot: %i\n", idnum );
 		return NULL;
@@ -278,7 +278,7 @@ static qboolean SV_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, 
 	}
 
 	if ( new_gs == GS_RESET ) {
-		if ( atoi( Cvar_VariableString( "g_noTeamSwitching" ) ) ) {
+		if ( String::Atoi( Cvar_VariableString( "g_noTeamSwitching" ) ) ) {
 			new_gs = GS_WAITING_FOR_PLAYERS;
 		} else {
 			new_gs = GS_WARMUP;
@@ -347,7 +347,7 @@ static void SV_MapRestart_f( void ) {
 	// dhm
 
 	if ( Cmd_Argc() > 1 ) {
-		delay = atoi( Cmd_Argv( 1 ) );
+		delay = String::Atoi( Cmd_Argv( 1 ) );
 	}
 
 	if ( delay ) {
@@ -357,10 +357,10 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
-	old_gs = (gamestate_t)atoi( Cvar_VariableString( "gamestate" ) );
+	old_gs = (gamestate_t)String::Atoi( Cvar_VariableString( "gamestate" ) );
 
 	if ( Cmd_Argc() > 2 ) {
-		new_gs = (gamestate_t)atoi( Cmd_Argv( 2 ) );
+		new_gs = (gamestate_t)String::Atoi( Cmd_Argv( 2 ) );
 	} else {
 		new_gs = GS_PLAYING;
 	}

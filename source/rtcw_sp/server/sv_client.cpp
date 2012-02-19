@@ -160,7 +160,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		return;
 	}
 
-	challenge = atoi( Cmd_Argv( 1 ) );
+	challenge = String::Atoi( Cmd_Argv( 1 ) );
 
 	for ( i = 0 ; i < MAX_CHALLENGES ; i++ ) {
 		if ( svs.challenges[i].challenge == challenge ) {
@@ -245,15 +245,15 @@ void SV_DirectConnect( netadr_t from ) {
 
 	String::NCpyZ( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 
-	version = atoi( Info_ValueForKey( userinfo, "protocol" ) );
+	version = String::Atoi( Info_ValueForKey( userinfo, "protocol" ) );
 	if ( version != PROTOCOL_VERSION ) {
 		NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i.\n", PROTOCOL_VERSION );
 		Com_DPrintf( "    rejected connect from version %i\n", version );
 		return;
 	}
 
-	qport = atoi( Info_ValueForKey( userinfo, "qport" ) );
-	challenge = atoi( Info_ValueForKey( userinfo, "challenge" ) );
+	qport = String::Atoi( Info_ValueForKey( userinfo, "qport" ) );
+	challenge = String::Atoi( Info_ValueForKey( userinfo, "challenge" ) );
 
 	// quick reject
 	for ( i = 0,cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
@@ -702,7 +702,7 @@ the same as cl->downloadClientBlock
 ==================
 */
 void SV_NextDownload_f( client_t *cl ) {
-	int block = atoi( Cmd_Argv( 1 ) );
+	int block = String::Atoi( Cmd_Argv( 1 ) );
 
 	if ( block == cl->downloadClientBlock ) {
 		Com_DPrintf( "clientDownload: %d : client acknowledge of block %d\n", cl - svs.clients, block );
@@ -978,13 +978,13 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 			}
 			// verify first to be the cgame checksum
 			pArg = Cmd_Argv( nCurArg++ );
-			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum1 ) {
+			if ( !pArg || *pArg == '@' || String::Atoi( pArg ) != nChkSum1 ) {
 				bGood = qfalse;
 				break;
 			}
 			// verify the second to be the ui checksum
 			pArg = Cmd_Argv( nCurArg++ );
-			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum2 ) {
+			if ( !pArg || *pArg == '@' || String::Atoi( pArg ) != nChkSum2 ) {
 				bGood = qfalse;
 				break;
 			}
@@ -996,7 +996,7 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 			}
 			// store checksums since tokenization is not re-entrant
 			for ( i = 0; nCurArg < nClientPaks; i++ ) {
-				nClientChkSum[i] = atoi( Cmd_Argv( nCurArg++ ) );
+				nClientChkSum[i] = String::Atoi( Cmd_Argv( nCurArg++ ) );
 			}
 
 			// store number to compare against (minus one cause the last is the number of checksums)
@@ -1031,7 +1031,7 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 			}
 
 			for ( i = 0; i < nServerPaks; i++ ) {
-				nServerChkSum[i] = atoi( Cmd_Argv( i ) );
+				nServerChkSum[i] = String::Atoi( Cmd_Argv( i ) );
 			}
 
 			// check if the client has provided any pure checksums of pk3 files not loaded by the server
@@ -1110,7 +1110,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	} else {
 		val = Info_ValueForKey( cl->userinfo, "rate" );
 		if ( String::Length( val ) ) {
-			i = atoi( val );
+			i = String::Atoi( val );
 			cl->rate = i;
 			if ( cl->rate < 1000 ) {
 				cl->rate = 1000;
@@ -1123,7 +1123,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	}
 	val = Info_ValueForKey( cl->userinfo, "handicap" );
 	if ( String::Length( val ) ) {
-		i = atoi( val );
+		i = String::Atoi( val );
 		if ( i <= 0 || i > 100 || String::Length( val ) > 4 ) {
 			Info_SetValueForKey( cl->userinfo, "handicap", "100" );
 		}
@@ -1132,7 +1132,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	// snaps command
 	val = Info_ValueForKey( cl->userinfo, "snaps" );
 	if ( String::Length( val ) ) {
-		i = atoi( val );
+		i = String::Atoi( val );
 		if ( i < 1 ) {
 			i = 1;
 		} else if ( i > 30 ) {

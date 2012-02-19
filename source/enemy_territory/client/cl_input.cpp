@@ -84,7 +84,7 @@ void IN_KeyDown( kbutton_t *b ) {
 
 	c = Cmd_Argv( 1 );
 	if ( c[0] ) {
-		k = atoi( c );
+		k = String::Atoi( c );
 	} else {
 		k = -1;     // typed manually at the console for continuous down
 	}
@@ -108,7 +108,7 @@ void IN_KeyDown( kbutton_t *b ) {
 
 	// save timestamp for partial frame summing
 	c = Cmd_Argv( 2 );
-	b->downtime = atoi( c );
+	b->downtime = String::Atoi( c );
 
 	b->active = qtrue;
 	b->wasPressed = qtrue;
@@ -121,7 +121,7 @@ void IN_KeyUp( kbutton_t *b ) {
 
 	c = Cmd_Argv( 1 );
 	if ( c[0] ) {
-		k = atoi( c );
+		k = String::Atoi( c );
 	} else {
 		// typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
@@ -144,7 +144,7 @@ void IN_KeyUp( kbutton_t *b ) {
 
 	// save timestamp for partial frame summing
 	c = Cmd_Argv( 2 );
-	uptime = atoi( c );
+	uptime = String::Atoi( c );
 	if ( uptime ) {
 		b->msec += uptime - b->downtime;
 	} else {

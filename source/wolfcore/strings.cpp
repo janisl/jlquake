@@ -1030,7 +1030,6 @@ char* String::RChr(const char* string, int c)
 	return sp;
 }
 
-#if 0
 //==========================================================================
 //
 //	String::Atoi
@@ -1195,6 +1194,7 @@ float String::Atof(const char* Str)
 	return Val * Sign;
 }
 
+#if 0
 //==========================================================================
 //
 //	String::Sprintf

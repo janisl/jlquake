@@ -116,7 +116,7 @@ static client_t *SV_GetPlayerByNum( void ) {
 			return NULL;
 		}
 	}
-	idnum = atoi( s );
+	idnum = String::Atoi( s );
 	if ( idnum < 0 || idnum >= sv_maxclients->integer ) {
 		Com_Printf( "Bad client slot: %i\n", idnum );
 		return NULL;
@@ -324,7 +324,7 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	if ( Cmd_Argc() > 1 ) {
-		delay = atoi( Cmd_Argv( 1 ) );
+		delay = String::Atoi( Cmd_Argv( 1 ) );
 	} else {
 		if ( sv_gametype->integer == GT_SINGLE_PLAYER ) { // (SA) no pause by default in sp
 			delay = 0;

@@ -338,7 +338,7 @@ void CL_SystemInfoChanged( void ) {
 	char value[BIG_INFO_VALUE];
 
 	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SYSTEMINFO ];
-	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
+	cl.serverId = String::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
 	// don't set any vars when playing a demo
 	if ( clc.demoplaying ) {
@@ -346,7 +346,7 @@ void CL_SystemInfoChanged( void ) {
 	}
 
 	s = Info_ValueForKey( systemInfo, "sv_cheats" );
-	if ( atoi( s ) == 0 ) {
+	if ( String::Atoi( s ) == 0 ) {
 		Cvar_SetCheatState();
 	}
 

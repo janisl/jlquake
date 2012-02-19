@@ -336,9 +336,9 @@ public:
 	static char* ToLower(char* s1);
 	static char* ToUpper(char* s1);
 	static char* RChr(const char* string, int c);
-#if 0
 	static int Atoi(const char* Str);
 	static float Atof(const char* Str);
+#if 0
 	static void Sprintf(char* Dest, int Size, const char* Fmt, ...);
 #endif
 
