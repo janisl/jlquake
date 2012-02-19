@@ -2693,6 +2693,7 @@ void Com_Init( char *commandLine ) {
 		Sys_Error( "Error during initialization" );
 	}
 
+	GGameType = GAME_ET;
 	// bk001129 - do this before anything else decides to push events
 	Com_InitPushEvent();
 

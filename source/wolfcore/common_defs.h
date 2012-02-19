@@ -175,6 +175,7 @@ void COM_InitArgv(int argc, const char** argv);
 void COM_AddParm(const char* parm);
 void COM_ClearArgv(int arg);
 int COM_CheckParm(const char* parm);
+#endif
 
 //==========================================================================
 //
@@ -188,13 +189,17 @@ enum
 	GAME_Hexen2			= 0x02,
 	GAME_Quake2			= 0x04,
 	GAME_Quake3			= 0x08,
+	GAME_WolfSP			= 0x10,
+	GAME_WolfMP			= 0x20,
+	GAME_ET				= 0x40,
 	//	Aditional flags
-	GAME_QuakeWorld		= 0x10,
-	GAME_HexenWorld		= 0x20,
-	GAME_H2Portals		= 0x40,
+	GAME_QuakeWorld		= 0x80,
+	GAME_HexenWorld		= 0x100,
+	GAME_H2Portals		= 0x200,
 
 	//	Combinations
 	GAME_QuakeHexen		= GAME_Quake | GAME_Hexen2,
+	GAME_Tech3			= GAME_Quake3 | GAME_WolfSP | GAME_WolfMP | GAME_ET,
 };
 
 extern int		GGameType;
@@ -205,5 +210,6 @@ extern int		GGameType;
 //
 //==========================================================================
 
+#if 0
 void COM_InitCommonCvars();
 #endif

@@ -29,9 +29,11 @@ Cvar* com_developer;
 
 fileHandle_t com_journalFile;			// events are written here
 fileHandle_t com_journalDataFile;		// config files are written here
+#endif
 
 int GGameType;
 
+#if 0
 int com_frameTime;
 #endif
 
