@@ -801,17 +801,10 @@ int String::ICmp(const char* s1, const char* s2)
 #endif
 }
 
-#if 0
-//==========================================================================
-//
-//	String::NICmp
-//
-//==========================================================================
-
-int String::NICmp(const char* S1, const char* S2, size_t N)
+int String::NICmp(const char* s1, const char* s2, size_t n)
 {
 #if 1
-	return strnicmp(S1, S2, N);
+	return strnicmp(s1, s2, n);
 #elif 0
 	//	Quake 3 implementation.
 	int		c1, c2;
@@ -905,6 +898,7 @@ int String::NICmp(const char* S1, const char* S2, size_t N)
 #endif
 }
 
+#if 0
 //==========================================================================
 //
 //	String::Cpy

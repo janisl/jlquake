@@ -2933,11 +2933,11 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 			text_p++;
 		}
 
-		if ( !Q_stricmpn( token, "tag_", 4 ) ) {
+		if ( !String::NICmp( token, "tag_", 4 ) ) {
 			continue;
 		}
 
-		if ( !Q_stricmpn( token, "md3_", 4 ) ) {
+		if ( !String::NICmp( token, "md3_", 4 ) ) {
 			// this is specifying a model
 			model = skin->models[ skin->numModels ] = (skinModel_t*)ri.Hunk_Alloc( sizeof( *skin->models[0] ), h_low );
 			Q_strncpyz( model->type, token, sizeof( model->type ) );

@@ -663,7 +663,6 @@ int Q_isalphanumeric( int c );  //----(SA)	added
 int Q_isforfilename( int c );       //----(SA)	added
 
 // portable case insensitive compare
-int     Q_stricmpn( const char *s1, const char *s2, int n );
 char    *Q_strlwr( char *s1 );
 char    *Q_strupr( char *s1 );
 char    *Q_strrchr( const char* string, int c );

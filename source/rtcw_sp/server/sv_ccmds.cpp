@@ -248,7 +248,7 @@ static void SV_Map_f( void ) {
 	Cvar_SetValue( "g_episode", 0 ); //----(SA) added
 
 	cmd = Cmd_Argv( 0 );
-	if ( Q_stricmpn( cmd, "sp", 2 ) == 0 ) {
+	if ( String::NICmp( cmd, "sp", 2 ) == 0 ) {
 		Cvar_SetValue( "g_gametype", GT_SINGLE_PLAYER );
 		Cvar_SetValue( "g_doWarmup", 0 );
 		// may not set sv_maxclients directly, always set latched

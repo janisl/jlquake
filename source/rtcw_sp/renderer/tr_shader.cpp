@@ -1048,7 +1048,7 @@ static void ParseDeform( char **text ) {
 		return;
 	}
 
-	if ( !Q_stricmpn( token, "text", 4 ) ) {
+	if ( !String::NICmp( token, "text", 4 ) ) {
 		int n;
 
 		n = token[4] - '0';
@@ -1406,7 +1406,7 @@ static qboolean ParseShader( char **text ) {
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if ( !Q_stricmpn( token, "qer", 3 ) ) {
+		else if ( !String::NICmp( token, "qer", 3 ) ) {
 			SkipRestOfLine( text );
 			continue;
 		}
@@ -1451,7 +1451,7 @@ static qboolean ParseShader( char **text ) {
 			}
 		}
 		// skip stuff that only the q3map needs
-		else if ( !Q_stricmpn( token, "q3map", 5 ) ) {
+		else if ( !String::NICmp( token, "q3map", 5 ) ) {
 			SkipRestOfLine( text );
 			continue;
 		}

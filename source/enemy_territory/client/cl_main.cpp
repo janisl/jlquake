@@ -2136,18 +2136,18 @@ print OOB are the only messages we handle markups in
 void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	char *s;
 	s = MSG_ReadBigString( msg );
-	if ( !Q_stricmpn( s, "[err_dialog]", 12 ) ) {
+	if ( !String::NICmp( s, "[err_dialog]", 12 ) ) {
 		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, clc.serverMessage );
-	} else if ( !Q_stricmpn( s, "[err_prot]", 10 ) )       {
+	} else if ( !String::NICmp( s, "[err_prot]", 10 ) )       {
 		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
 		Com_Error( ERR_DROP, CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
-	} else if ( !Q_stricmpn( s, "[err_update]", 12 ) )       {
+	} else if ( !String::NICmp( s, "[err_update]", 12 ) )       {
 		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		Com_Error( ERR_AUTOUPDATE, clc.serverMessage );
-	} else if ( !Q_stricmpn( s, "ET://", 5 ) )       { // fretn
+	} else if ( !String::NICmp( s, "ET://", 5 ) )       { // fretn
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 		Cvar_Set( "com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, clc.serverMessage );

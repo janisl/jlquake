@@ -1221,7 +1221,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 					// Arnout: let's make this thing work from pakfiles as well
 					// FIXME: doing this seems to break things?
-					/*if ( fs_copyfiles->integer && fs_buildpath->string[0] && Q_stricmpn( fs_buildpath->string, pak->pakFilename, String::Length(fs_buildpath->string) ) ) {
+					/*if ( fs_copyfiles->integer && fs_buildpath->string[0] && String::NICmp( fs_buildpath->string, pak->pakFilename, String::Length(fs_buildpath->string) ) ) {
 						char			copypath[MAX_OSPATH];
 						fileHandle_t	f;
 						byte			*srcData;
@@ -2295,7 +2295,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 
 					zpathLen = FS_ReturnPath( name, zpath, &depth );
 
-					if ( ( depth - pathDepth ) > 2 || pathLength > zpathLen || Q_stricmpn( name, path, pathLength ) ) {
+					if ( ( depth - pathDepth ) > 2 || pathLength > zpathLen || String::NICmp( name, path, pathLength ) ) {
 						continue;
 					}
 
@@ -2327,8 +2327,8 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 			if ( fs_numServerPaks ) {
 				continue;
 			} else if ( fs_restrict->integer &&
-						( !com_gameInfo.usesProfiles || ( com_gameInfo.usesProfiles && Q_stricmpn( path, "profiles", 8 ) ) ) &&
-						Q_stricmpn( path, "demos", 5 ) ) {
+						( !com_gameInfo.usesProfiles || ( com_gameInfo.usesProfiles && String::NICmp( path, "profiles", 8 ) ) ) &&
+						String::NICmp( path, "demos", 5 ) ) {
 				continue;
 			} else {
 				netpath = FS_BuildOSPath( search->dir->path, search->dir->gamedir, path );
@@ -2554,7 +2554,7 @@ int FS_GetModList( char *listbuf, int bufsize ) {
 		}
 
 		// we drop "baseq3" "." and ".."
-		if ( String::ICmp( name, BASEGAME ) && Q_stricmpn( name, ".", 1 ) ) {
+		if ( String::ICmp( name, BASEGAME ) && String::NICmp( name, ".", 1 ) ) {
 			// now we need to find some .pk3 files to validate the mod
 			// NOTE TTimo: (actually I'm not sure why .. what if it's a mod under developement with no .pk3?)
 			// we didn't keep the information when we merged the directory names, as to what OS Path it was found under
@@ -3534,7 +3534,7 @@ const char *FS_ReferencedPakChecksums( void ) {
 	for ( search = fs_searchpaths ; search ; search = search->next ) {
 		// is the element a pak file?
 		if ( search->pack ) {
-			if ( search->pack->referenced || Q_stricmpn( search->pack->pakGamename, BASEGAME, String::Length( BASEGAME ) ) ) {
+			if ( search->pack->referenced || String::NICmp( search->pack->pakGamename, BASEGAME, String::Length( BASEGAME ) ) ) {
 				Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 			}
 		}
@@ -3565,7 +3565,7 @@ const char *FS_ReferencedPakNames( void ) {
 			if ( *info ) {
 				Q_strcat( info, sizeof( info ), " " );
 			}
-			if ( search->pack->referenced || Q_stricmpn( search->pack->pakGamename, BASEGAME, String::Length( BASEGAME ) ) ) {
+			if ( search->pack->referenced || String::NICmp( search->pack->pakGamename, BASEGAME, String::Length( BASEGAME ) ) ) {
 				Q_strcat( info, sizeof( info ), search->pack->pakGamename );
 				Q_strcat( info, sizeof( info ), "/" );
 				Q_strcat( info, sizeof( info ), search->pack->pakBasename );

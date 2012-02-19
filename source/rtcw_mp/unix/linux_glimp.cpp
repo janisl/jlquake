@@ -167,7 +167,7 @@ static const char *Q_stristr( const char *s, const char *find ) {
 					sc -= ( 'a' - 'A' );
 				}
 			} while ( sc != c );
-		} while ( Q_stricmpn( s, find, len ) != 0 );
+		} while ( String::NICmp( s, find, len ) != 0 );
 		s--;
 	}
 	return s;

@@ -978,7 +978,7 @@ FindMatches
 static void FindMatches( const char *s ) {
 	int i;
 
-	if ( Q_stricmpn( s, completionString, String::Length( completionString ) ) ) {
+	if ( String::NICmp( s, completionString, String::Length( completionString ) ) ) {
 		return;
 	}
 	matchCount++;
@@ -1002,7 +1002,7 @@ PrintMatches
 ===============
 */
 static void PrintMatches( const char *s ) {
-	if ( !Q_stricmpn( s, shortestMatch, String::Length( shortestMatch ) ) ) {
+	if ( !String::NICmp( s, shortestMatch, String::Length( shortestMatch ) ) ) {
 		Com_Printf( "    %s\n", s );
 	}
 }

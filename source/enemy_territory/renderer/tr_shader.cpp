@@ -1096,7 +1096,7 @@ static void ParseDeform( char **text ) {
 		return;
 	}
 
-	if ( !Q_stricmpn( token, "text", 4 ) ) {
+	if ( !String::NICmp( token, "text", 4 ) ) {
 		int n;
 
 		n = token[4] - '0';
@@ -1453,7 +1453,7 @@ static qboolean ParseShader( char **text ) {
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if ( !Q_stricmpn( token, "qer", 3 ) ) {
+		else if ( !String::NICmp( token, "qer", 3 ) ) {
 			SkipRestOfLine( text );
 			continue;
 		}
@@ -1498,7 +1498,7 @@ static qboolean ParseShader( char **text ) {
 			}
 		}
 		// skip stuff that only the q3map needs
-		else if ( !Q_stricmpn( token, "q3map", 5 ) ) {
+		else if ( !String::NICmp( token, "q3map", 5 ) ) {
 			SkipRestOfLine( text );
 			continue;
 		}
@@ -1751,7 +1751,7 @@ static qboolean ParseShader( char **text ) {
 			continue;
 		}
 		// ydnar: implicit default mapping to eliminate redundant/incorrect explicit shader stages
-		else if ( !Q_stricmpn( token, "implicit", 8 ) ) {
+		else if ( !String::NICmp( token, "implicit", 8 ) ) {
 			// set implicit mapping state
 			if ( !String::ICmp( token, "implicitBlend" ) ) {
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;

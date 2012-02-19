@@ -979,7 +979,7 @@ FindMatches
 static void FindMatches( const char *s ) {
 	int i;
 
-	if ( Q_stricmpn( s, completionString, String::Length( completionString ) ) ) {
+	if ( String::NICmp( s, completionString, String::Length( completionString ) ) ) {
 		return;
 	}
 	matchCount++;
@@ -1006,7 +1006,7 @@ FindIndexMatch
 static int findMatchIndex;
 static void FindIndexMatch( const char *s ) {
 
-	if ( Q_stricmpn( s, completionString, String::Length( completionString ) ) ) {
+	if ( String::NICmp( s, completionString, String::Length( completionString ) ) ) {
 		return;
 	}
 
@@ -1024,14 +1024,14 @@ PrintMatches
 ===============
 */
 static void PrintMatches( const char *s ) {
-	if ( !Q_stricmpn( s, currentMatch, String::Length( currentMatch ) ) ) {
+	if ( !String::NICmp( s, currentMatch, String::Length( currentMatch ) ) ) {
 		Com_Printf( "  ^9%s^0\n", s );
 	}
 }
 
 // ydnar: to display cvar values
 static void PrintCvarMatches( const char *s ) {
-	if ( !Q_stricmpn( s, currentMatch, String::Length( currentMatch ) ) ) {
+	if ( !String::NICmp( s, currentMatch, String::Length( currentMatch ) ) ) {
 		Com_Printf( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
 	}
 }
