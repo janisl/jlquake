@@ -372,7 +372,6 @@ public:
 
 char* va(const char* Format, ...) id_attribute((format(printf, 1, 2)));
 
-#if 0
 #define Q_COLOR_ESCAPE	'^'
 #define Q_IsColorString(p)	( p && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) != Q_COLOR_ESCAPE )
 
@@ -384,7 +383,22 @@ char* va(const char* Format, ...) id_attribute((format(printf, 1, 2)));
 #define COLOR_CYAN		'5'
 #define COLOR_MAGENTA	'6'
 #define COLOR_WHITE		'7'
-#define ColorIndex(c)	( ( (c) - '0' ) & 7 )
+//	New colours from Enemy territory
+#define COLOR_ORANGE    '8'
+#define COLOR_MDGREY    '9'
+#define COLOR_LTGREY    ':'
+//#define COLOR_LTGREY	';'
+#define COLOR_MDGREEN   '<'
+#define COLOR_MDYELLOW  '='
+#define COLOR_MDBLUE    '>'
+#define COLOR_MDRED     '?'
+#define COLOR_LTORANGE  'A'
+#define COLOR_MDCYAN    'B'
+#define COLOR_MDPURPLE  'C'
+#define COLOR_NULL      '*'
+
+#define COLOR_BITS  31
+#define ColorIndex(c)	(((c) - '0') & COLOR_BITS)
 
 #define S_COLOR_BLACK	"^0"
 #define S_COLOR_RED		"^1"
@@ -394,7 +408,19 @@ char* va(const char* Format, ...) id_attribute((format(printf, 1, 2)));
 #define S_COLOR_CYAN	"^5"
 #define S_COLOR_MAGENTA	"^6"
 #define S_COLOR_WHITE	"^7"
-#endif
+//	New colours from Enemy territory
+#define S_COLOR_ORANGE      "^8"
+#define S_COLOR_MDGREY      "^9"
+#define S_COLOR_LTGREY      "^:"
+//#define S_COLOR_LTGREY		"^;"
+#define S_COLOR_MDGREEN     "^<"
+#define S_COLOR_MDYELLOW    "^="
+#define S_COLOR_MDBLUE      "^>"
+#define S_COLOR_MDRED       "^?"
+#define S_COLOR_LTORANGE    "^A"
+#define S_COLOR_MDCYAN      "^B"
+#define S_COLOR_MDPURPLE    "^C"
+#define S_COLOR_NULL        "^*"
 
 #define _vsnprintf use_Q_vsnprintf
 #define vsnprintf use_Q_vsnprintf

@@ -240,9 +240,6 @@ typedef enum {
 #define UI_INVERSE      0x00002000
 #define UI_PULSE        0x00004000
 
-#define Q_COLOR_ESCAPE  '^'
-#define Q_IsColorString( p )  ( p && *( p ) == Q_COLOR_ESCAPE && *( ( p ) + 1 ) && *( ( p ) + 1 ) != Q_COLOR_ESCAPE )
-
 /*
 ==============================================================
 
@@ -311,25 +308,6 @@ extern idVec4 colorWhite;
 extern idVec4 colorLtGrey;
 extern idVec4 colorMdGrey;
 extern idVec4 colorDkGrey;
-
-#define COLOR_BLACK     '0'
-#define COLOR_RED       '1'
-#define COLOR_GREEN     '2'
-#define COLOR_YELLOW    '3'
-#define COLOR_BLUE      '4'
-#define COLOR_CYAN      '5'
-#define COLOR_MAGENTA   '6'
-#define COLOR_WHITE     '7'
-#define ColorIndex( c )   ( ( ( c ) - '0' ) & 7 )
-
-#define S_COLOR_BLACK   "^0"
-#define S_COLOR_RED     "^1"
-#define S_COLOR_GREEN   "^2"
-#define S_COLOR_YELLOW  "^3"
-#define S_COLOR_BLUE    "^4"
-#define S_COLOR_CYAN    "^5"
-#define S_COLOR_MAGENTA "^6"
-#define S_COLOR_WHITE   "^7"
 
 extern idVec4 g_color_table[8];
 
