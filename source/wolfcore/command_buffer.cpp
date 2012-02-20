@@ -307,7 +307,6 @@ void Cbuf_InsertFromDefer()
 	defer_text_buf[0] = 0;
 }
 
-#if 0
 //==========================================================================
 //
 //	Cbuf_AddEarlyCommands
@@ -422,7 +421,6 @@ bool Cbuf_AddLateCommands(bool Insert)
 
 	return Ret;
 }
-#endif
 
 /*
 ==============================================================================
@@ -454,7 +452,6 @@ static void Cmd_Wait_f()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	Cmd_StuffCmds_f
@@ -470,7 +467,6 @@ static void Cmd_StuffCmds_f()
 {
 	Cbuf_AddLateCommands(true);
 }
-#endif
 
 //==========================================================================
 //
@@ -673,10 +669,8 @@ void Cmd_SharedInit()
 	//
 	Cmd_AddCommand("wait", Cmd_Wait_f);
 	Cmd_AddCommand("echo", Cmd_Echo_f);
-#if 0
 	if (GGameType & GAME_QuakeHexen)
 		Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
-#endif
 	if (!(GGameType & GAME_Tech3))
 		Cmd_AddCommand("alias", Cmd_Alias_f);
 #if 0

@@ -168,14 +168,12 @@ void Com_Memcpy(void* dest, const void* src, const size_t count);
 //
 //==========================================================================
 
-#if 0
 int COM_Argc();
 const char* COM_Argv(int arg);	// range and null checked
 void COM_InitArgv(int argc, const char** argv);
 void COM_AddParm(const char* parm);
 void COM_ClearArgv(int arg);
 int COM_CheckParm(const char* parm);
-#endif
 
 //==========================================================================
 //

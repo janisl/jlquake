@@ -62,7 +62,6 @@ void Cbuf_InsertFromDefer();
 // These two functions are used to defer any pending commands while a map
 // is being loaded
 
-#if 0
 void Cbuf_AddEarlyCommands(bool clear);
 // adds all the +set commands from the command line
 
@@ -70,7 +69,6 @@ bool Cbuf_AddLateCommands(bool Insert = false);
 // adds all the remaining + commands from the command line
 // Returns true if any late commands were added, which
 // will keep the demoloop from immediately starting
-#endif
 
 //==========================================================================
 //

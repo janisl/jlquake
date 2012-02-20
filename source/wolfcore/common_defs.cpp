@@ -625,7 +625,6 @@ void Com_Memset (void* dest, const int val, const size_t count)
 }
 #endif // bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
 
-#if 0
 int COM_Argc()
 {
 	return com_argc;
@@ -690,6 +689,7 @@ int COM_CheckParm(const char *parm)
 	return 0;
 }
 
+#if 0
 void COM_InitCommonCvars()
 {
 	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
