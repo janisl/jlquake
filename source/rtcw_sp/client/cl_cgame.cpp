@@ -863,7 +863,8 @@ void CL_UpdateLevelHunkUsage( void ) {
 	int handle;
 	char *memlistfile = "hunkusage.dat";
 	char *buf, *outbuf;
-	char *buftrav, *outbuftrav;
+	const char *buftrav;
+	char *outbuftrav;
 	char *token;
 	char outstr[256];
 	int len, memusage;
@@ -885,10 +886,10 @@ void CL_UpdateLevelHunkUsage( void ) {
 		buftrav = buf;
 		outbuftrav = outbuf;
 		outbuftrav[0] = '\0';
-		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
+		while ( ( token = String::Parse3( &buftrav ) ) && token[0] ) {
 			if ( !String::ICmp( token, cl.mapname ) ) {
 				// found a match
-				token = COM_Parse( &buftrav );  // read the size
+				token = String::Parse3( &buftrav );  // read the size
 				if ( token && token[0] ) {
 					if ( String::Atoi( token ) == memusage ) {  // if it is the same, abort this process
 						Z_Free( buf );
@@ -899,7 +900,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 			} else {    // send it to the outbuf
 				String::Cat( outbuftrav, len + 1, token );
 				String::Cat( outbuftrav, len + 1, " " );
-				token = COM_Parse( &buftrav );  // read the size
+				token = String::Parse3( &buftrav );  // read the size
 				if ( token && token[0] ) {
 					String::Cat( outbuftrav, len + 1, token );
 					String::Cat( outbuftrav, len + 1, "\n" );

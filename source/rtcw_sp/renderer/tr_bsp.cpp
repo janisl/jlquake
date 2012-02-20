@@ -2045,7 +2045,8 @@ R_LoadEntities
 ================
 */
 void R_LoadEntities( lump_t *l ) {
-	char *p, *token, *s;
+	const char *p;
+	char *token, *s;
 	char keyname[MAX_TOKEN_CHARS_Q3];
 	char value[MAX_TOKEN_CHARS_Q3];
 	world_t *w;
@@ -2062,7 +2063,7 @@ void R_LoadEntities( lump_t *l ) {
 	String::Cpy( w->entityString, p );
 	w->entityParsePoint = w->entityString;
 
-	token = COM_ParseExt( &p, qtrue );
+	token = String::ParseExt( &p, qtrue );
 	if ( !*token || *token != '{' ) {
 		return;
 	}
@@ -2070,7 +2071,7 @@ void R_LoadEntities( lump_t *l ) {
 	// only parse the world spawn
 	while ( 1 ) {
 		// parse key
-		token = COM_ParseExt( &p, qtrue );
+		token = String::ParseExt( &p, qtrue );
 
 		if ( !*token || *token == '}' ) {
 			break;
@@ -2078,7 +2079,7 @@ void R_LoadEntities( lump_t *l ) {
 		String::NCpyZ( keyname, token, sizeof( keyname ) );
 
 		// parse value
-		token = COM_ParseExt( &p, qtrue );
+		token = String::ParseExt( &p, qtrue );
 
 		if ( !*token || *token == '}' ) {
 			break;
@@ -2127,7 +2128,7 @@ R_GetEntityToken
 qboolean R_GetEntityToken( char *buffer, int size ) {
 	const char  *s;
 
-	s = COM_Parse( &s_worldData.entityParsePoint );
+	s = String::Parse3( &s_worldData.entityParsePoint );
 	String::NCpyZ( buffer, s, size );
 	if ( !s_worldData.entityParsePoint || !s[0] ) {
 		s_worldData.entityParsePoint = s_worldData.entityString;

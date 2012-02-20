@@ -358,11 +358,11 @@ public:
 	static void FileBase(const char* In, char* Out);
 	static const char* FileExtension(const char* In);
 
-#if 0
 	static char* Parse1(const char** Data_p);
 	static char* Parse2(const char** Data_p);
 	static char* Parse3(const char** Data_p);
 	static char* ParseExt(const char** Data_p, bool AllowLineBreak);
+#if 0
 	static int Compress(char* data_p);
 	static void SkipBracedSection(const char **program);
 	static void SkipRestOfLine(const char **data);

@@ -25,9 +25,7 @@
 #define strnicmp	strncasecmp
 #endif
 
-#if 0
 static char		com_token[1024];
-#endif
 
 //==========================================================================
 //
@@ -1478,7 +1476,6 @@ const char* String::FileExtension(const char* In)
 	return Exten;
 }
 
-#if 0
 //==========================================================================
 //
 //	String::Parse1
@@ -1787,13 +1784,51 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 		while (1)
 		{
 			c = *data++;
-			if (c=='\"' || !c)
+			if ((GGameType & GAME_ET) && c == '\\' && *data == '\"')
+			{
+				// Arnout: string-in-string
+				if (len < MAX_TOKEN_CHARS_Q3)
+				{
+					com_token[len] = '\"';
+					len++;
+				}
+				data++;
+
+				while (1)
+				{
+					c = *data++;
+
+					if (!c)
+					{
+						com_token[len] = 0;
+						*data_p = data;
+						break;
+					}
+					if (( c == '\\' && *data == '\"' ))
+					{
+						if (len < MAX_TOKEN_CHARS_Q3)
+						{
+							com_token[len] = '\"';
+							len++;
+						}
+						data++;
+						c = *data++;
+						break;
+					}
+					if (len < MAX_TOKEN_CHARS_Q3)
+					{
+						com_token[len] = c;
+						len++;
+					}
+				}
+			}
+			if (c == '\"' || !c)
 			{
 				com_token[len] = 0;
 				*data_p = ( char * ) data;
 				return com_token;
 			}
-			if (len < (int)sizeof(com_token))
+			if (len < MAX_TOKEN_CHARS_Q3)
 			{
 				com_token[len] = c;
 				len++;
@@ -1804,16 +1839,17 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 	// parse a regular word
 	do
 	{
-		if (len < (int)sizeof(com_token))
+		if (len < MAX_TOKEN_CHARS_Q3)
 		{
 			com_token[len] = c;
 			len++;
 		}
 		data++;
 		c = *data;
-	} while (c>32);
+	}
+	while (c > 32);
 
-	if (len == sizeof(com_token))
+	if (len == MAX_TOKEN_CHARS_Q3)
 	{
 //		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
 		len = 0;
@@ -1824,6 +1860,7 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 	return com_token;
 }
 
+#if 0
 //==========================================================================
 //
 //	String::Compress

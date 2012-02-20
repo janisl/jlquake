@@ -704,10 +704,7 @@ float Com_Clamp( float min, float max, float value );
 void    COM_FixPath( char *pathname );
 void    COM_StripExtension2( const char *in, char *out, int destsize );
 
-char    *COM_Parse( char **data_p );
-char    *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 int     COM_Compress( char *data_p );
-int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
 
 qboolean COM_BitCheck( const int array[], int bitNum );
 void COM_BitSet( int array[], int bitNum );
@@ -737,8 +734,8 @@ typedef struct pc_token_s
 
 // data is an in/out parm, returns a parsed out token
 
-void SkipBracedSection( char **program );
-void SkipRestOfLine( char **data );
+void SkipBracedSection( const char **program );
+void SkipRestOfLine( const char **data );
 
 // mode parm for FS_FOpenFile
 typedef enum {

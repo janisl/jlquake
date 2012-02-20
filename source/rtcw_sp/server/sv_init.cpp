@@ -553,7 +553,7 @@ void SV_SetExpectedHunkUsage( char *mapname ) {
 	int handle;
 	char *memlistfile = "hunkusage.dat";
 	char *buf;
-	char *buftrav;
+	const char *buftrav;
 	char *token;
 	int len;
 
@@ -568,10 +568,10 @@ void SV_SetExpectedHunkUsage( char *mapname ) {
 
 		// now parse the file, filtering out the current map
 		buftrav = buf;
-		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
+		while ( ( token = String::Parse3( &buftrav ) ) && token[0] ) {
 			if ( !String::ICmp( token, mapname ) ) {
 				// found a match
-				token = COM_Parse( &buftrav );  // read the size
+				token = String::Parse3( &buftrav );  // read the size
 				if ( token && token[0] ) {
 					// this is the usage
 					Cvar_Set( "com_expectedhunkusage", token );

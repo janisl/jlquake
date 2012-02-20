@@ -241,45 +241,6 @@ PARSING
 ============================================================================
 */
 
-static char com_token[MAX_TOKEN_CHARS_Q3];
-
-/*
-================
-COM_Parse
-================
-*/
-char *COM_Parse( char **data_p ) {
-	return COM_ParseExt( data_p, qtrue );
-}
-
-/*
-==============
-SkipWhitespace
-
-Parse a token out of a string
-Will never return NULL, just empty strings
-
-If "allowLineBreaks" is qtrue then an empty
-string will be returned if the next token is
-a newline.
-==============
-*/
-static char *SkipWhitespace( char *data, qboolean *hasNewLines ) {
-	int c;
-
-	while ( ( c = *data ) <= ' ' ) {
-		if ( !c )   {
-			return NULL;
-		}
-		if ( c == '\n' ) {
-			*hasNewLines = qtrue;
-		}
-		data++;
-	}
-
-	return data;
-}
-
 /*
 ================
 COM_Compress
@@ -341,134 +302,6 @@ int COM_Compress( char *data_p ) {
 }
 
 /*
-================
-COM_ParseExt
-================
-*/
-char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
-	int c = 0, len;
-	qboolean hasNewLines = qfalse;
-	char *data;
-
-	data = *data_p;
-	len = 0;
-	com_token[0] = 0;
-
-	// make sure incoming data is valid
-	if ( !data ) {
-		*data_p = NULL;
-		return com_token;
-	}
-
-	while ( 1 )
-	{
-		// skip whitespace
-		data = SkipWhitespace( data, &hasNewLines );
-		if ( !data ) {
-			*data_p = NULL;
-			return com_token;
-		}
-		if ( hasNewLines && !allowLineBreaks ) {
-			*data_p = data;
-			return com_token;
-		}
-
-		c = *data;
-
-		// skip double slash comments
-		if ( c == '/' && data[1] == '/' ) {
-			data += 2;
-			while ( *data && *data != '\n' ) {
-				data++;
-			}
-		}
-		// skip /* */ comments
-		else if ( c == '/' && data[1] == '*' ) {
-			data += 2;
-			while ( *data && ( *data != '*' || data[1] != '/' ) )
-			{
-				data++;
-			}
-			if ( *data ) {
-				data += 2;
-			}
-		} else
-		{
-			break;
-		}
-	}
-
-	// handle quoted strings
-	if ( c == '\"' ) {
-		data++;
-		while ( 1 )
-		{
-			c = *data++;
-			if ((GGameType & GAME_ET) && c == '\\' && *( data ) == '\"' ) {
-				// Arnout: string-in-string
-				if ( len < MAX_TOKEN_CHARS_Q3 ) {
-					com_token[len] = '\"';
-					len++;
-				}
-				data++;
-
-				while ( 1 ) {
-					c = *data++;
-
-					if ( !c ) {
-						com_token[len] = 0;
-						*data_p = ( char * ) data;
-						break;
-					}
-					if ( ( c == '\\' && *( data ) == '\"' ) ) {
-						if ( len < MAX_TOKEN_CHARS_Q3 ) {
-							com_token[len] = '\"';
-							len++;
-						}
-						data++;
-						c = *data++;
-						break;
-					}
-					if ( len < MAX_TOKEN_CHARS_Q3 ) {
-						com_token[len] = c;
-						len++;
-					}
-				}
-			}
-			if ( c == '\"' || !c ) {
-				com_token[len] = 0;
-				*data_p = ( char * ) data;
-				return com_token;
-			}
-			if ( len < MAX_TOKEN_CHARS_Q3 ) {
-				com_token[len] = c;
-				len++;
-			}
-		}
-	}
-
-	// parse a regular word
-	do
-	{
-		if ( len < MAX_TOKEN_CHARS_Q3 ) {
-			com_token[len] = c;
-			len++;
-		}
-		data++;
-		c = *data;
-	} while ( c > ' ' );
-
-	if ( len == MAX_TOKEN_CHARS_Q3 ) {
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS_Q3);
-		len = 0;
-	}
-	com_token[len] = '\0';
-
-	*data_p = ( char * ) data;
-	return com_token;
-}
-
-/*
 =================
 SkipBracedSection
 
@@ -477,13 +310,13 @@ Skips until a matching close brace is found.
 Internal brace depths are properly skipped.
 =================
 */
-void SkipBracedSection( char **program ) {
+void SkipBracedSection( const char **program ) {
 	char            *token;
 	int depth;
 
 	depth = 0;
 	do {
-		token = COM_ParseExt( program, qtrue );
+		token = String::ParseExt( program, qtrue );
 		if ( token[1] == 0 ) {
 			if ( token[0] == '{' ) {
 				depth++;
@@ -499,8 +332,8 @@ void SkipBracedSection( char **program ) {
 SkipRestOfLine
 =================
 */
-void SkipRestOfLine( char **data ) {
-	char    *p;
+void SkipRestOfLine( const char **data ) {
+	const char    *p;
 	int c;
 
 	p = *data;

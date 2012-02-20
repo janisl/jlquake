@@ -48,7 +48,7 @@ static shader_t*       hashTable[FILE_HASH_SIZE];
 // values.
 typedef struct shaderStringPointer_s
 {
-	char *pStr;
+	const char *pStr;
 	struct shaderStringPointer_s *next;
 } shaderStringPointer_t;
 //
@@ -135,19 +135,19 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 ParseVector
 ===============
 */
-static qboolean ParseVector( char **text, int count, float *v ) {
+static qboolean ParseVector( const char **text, int count, float *v ) {
 	char    *token;
 	int i;
 
 	// FIXME: spaces are currently required after parens, should change parseext...
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( String::Cmp( token, "(" ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing parenthesis in shader '%s'\n", shader.name );
 		return qfalse;
 	}
 
 	for ( i = 0 ; i < count ; i++ ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( !token[0] ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing vector element in shader '%s'\n", shader.name );
 			return qfalse;
@@ -155,7 +155,7 @@ static qboolean ParseVector( char **text, int count, float *v ) {
 		v[i] = String::Atof( token );
 	}
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( String::Cmp( token, ")" ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing parenthesis in shader '%s'\n", shader.name );
 		return qfalse;
@@ -272,10 +272,10 @@ static genFunc_t NameToGenFunc( const char *funcname ) {
 ParseWaveForm
 ===================
 */
-static void ParseWaveForm( char **text, waveForm_t *wave ) {
+static void ParseWaveForm( const char **text, waveForm_t *wave ) {
 	char *token;
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing waveform parm in shader '%s'\n", shader.name );
 		return;
@@ -283,28 +283,28 @@ static void ParseWaveForm( char **text, waveForm_t *wave ) {
 	wave->func = NameToGenFunc( token );
 
 	// BASE, AMP, PHASE, FREQ
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing waveform parm in shader '%s'\n", shader.name );
 		return;
 	}
 	wave->base = String::Atof( token );
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing waveform parm in shader '%s'\n", shader.name );
 		return;
 	}
 	wave->amplitude = String::Atof( token );
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing waveform parm in shader '%s'\n", shader.name );
 		return;
 	}
 	wave->phase = String::Atof( token );
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing waveform parm in shader '%s'\n", shader.name );
 		return;
@@ -318,9 +318,9 @@ static void ParseWaveForm( char **text, waveForm_t *wave ) {
 ParseTexMod
 ===================
 */
-static void ParseTexMod( char *_text, shaderStage_t *stage ) {
+static void ParseTexMod( const char *_text, shaderStage_t *stage ) {
 	const char *token;
-	char **text = &_text;
+	const char **text = &_text;
 	texModInfo_t *tmi;
 
 	if ( stage->bundle[0].numTexMods == TR_MAX_TEXMODS ) {
@@ -331,7 +331,7 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	tmi = &stage->bundle[0].texMods[stage->bundle[0].numTexMods];
 	stage->bundle[0].numTexMods++;
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 
 	//
 	// swap
@@ -344,25 +344,25 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	//
 	// (SA) added 'else' so it wouldn't claim 'swap' was unknown.
 	else if ( !String::ICmp( token, "turb" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing tcMod turb parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.base = String::Atof( token );
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing tcMod turb in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.amplitude = String::Atof( token );
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing tcMod turb in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.phase = String::Atof( token );
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing tcMod turb in shader '%s'\n", shader.name );
 			return;
@@ -375,14 +375,14 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	// scale
 	//
 	else if ( !String::ICmp( token, "scale" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing scale parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->scale[0] = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing scale parms in shader '%s'\n", shader.name );
 			return;
@@ -394,13 +394,13 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	// scroll
 	//
 	else if ( !String::ICmp( token, "scroll" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing scale scroll parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->scroll[0] = String::Atof( token );
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing scale scroll parms in shader '%s'\n", shader.name );
 			return;
@@ -412,35 +412,35 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	// stretch
 	//
 	else if ( !String::ICmp( token, "stretch" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing stretch parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.func = NameToGenFunc( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing stretch parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.base = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing stretch parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.amplitude = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing stretch parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->wave.phase = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing stretch parms in shader '%s'\n", shader.name );
 			return;
@@ -453,42 +453,42 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	// transform
 	//
 	else if ( !String::ICmp( token, "transform" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing transform parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->matrix[0][0] = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing transform parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->matrix[0][1] = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing transform parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->matrix[1][0] = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing transform parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->matrix[1][1] = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing transform parms in shader '%s'\n", shader.name );
 			return;
 		}
 		tmi->translate[0] = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing transform parms in shader '%s'\n", shader.name );
 			return;
@@ -501,7 +501,7 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 	// rotate
 	//
 	else if ( !String::ICmp( token, "rotate" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing tcMod rotate parms in shader '%s'\n", shader.name );
 			return;
@@ -526,7 +526,7 @@ static void ParseTexMod( char *_text, shaderStage_t *stage ) {
 ParseStage
 ===================
 */
-static qboolean ParseStage( shaderStage_t *stage, char **text ) {
+static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 	char *token;
 	int depthMaskBits = GLS_DEPTHMASK_TRUE, blendSrcBits = 0, blendDstBits = 0, atestBits = 0, depthFuncBits = 0;
 	qboolean depthMaskExplicit = qfalse;
@@ -535,7 +535,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 
 	while ( 1 )
 	{
-		token = COM_ParseExt( text, qtrue );
+		token = String::ParseExt( text, qtrue );
 		if ( !token[0] ) {
 			ri.Printf( PRINT_WARNING, "WARNING: no matching '}' found\n" );
 			return qfalse;
@@ -550,28 +550,28 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 			if ( glConfig.colorBits <= 16 ) {
 				token = "map";   // use this map
 			} else {
-				COM_ParseExt( text, qfalse );   // ignore the map
+				String::ParseExt( text, qfalse );   // ignore the map
 				continue;
 			}
 		} else if ( !String::ICmp( token, "map32" ) )    { // only use this texture if 16 bit color depth
 			if ( glConfig.colorBits > 16 ) {
 				token = "map";   // use this map
 			} else {
-				COM_ParseExt( text, qfalse );   // ignore the map
+				String::ParseExt( text, qfalse );   // ignore the map
 				continue;
 			}
 		} else if ( !String::ICmp( token, "mapcomp" ) )    { // only use this texture if compression is enabled
 			if ( glConfig.textureCompression && r_ext_compressed_textures->integer ) {
 				token = "map";   // use this map
 			} else {
-				COM_ParseExt( text, qfalse );   // ignore the map
+				String::ParseExt( text, qfalse );   // ignore the map
 				continue;
 			}
 		} else if ( !String::ICmp( token, "mapnocomp" ) )    { // only use this texture if compression is not available or disabled
 			if ( !glConfig.textureCompression ) {
 				token = "map";   // use this map
 			} else {
-				COM_ParseExt( text, qfalse );   // ignore the map
+				String::ParseExt( text, qfalse );   // ignore the map
 				continue;
 			}
 		} else if ( !String::ICmp( token, "animmapcomp" ) )    { // only use this texture if compression is enabled
@@ -579,7 +579,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 				token = "animmap";   // use this map
 			} else {
 				while ( token[0] )
-					COM_ParseExt( text, qfalse );   // ignore the map
+					String::ParseExt( text, qfalse );   // ignore the map
 				continue;
 			}
 		} else if ( !String::ICmp( token, "animmapnocomp" ) )    { // only use this texture if compression is not available or disabled
@@ -587,7 +587,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 				token = "animmap";   // use this map
 			} else {
 				while ( token[0] )
-					COM_ParseExt( text, qfalse );   // ignore the map
+					String::ParseExt( text, qfalse );   // ignore the map
 				continue;
 			}
 		}
@@ -595,7 +595,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// map <name>
 		//
 		if ( !String::ICmp( token, "map" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'map' keyword in shader '%s'\n", shader.name );
 				return qfalse;
@@ -637,7 +637,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// clampmap <name>
 		//
 		else if ( !String::ICmp( token, "clampmap" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'clampmap' keyword in shader '%s'\n", shader.name );
 				return qfalse;
@@ -653,7 +653,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// animMap <frequency> <image1> .... <imageN>
 		//
 		else if ( !String::ICmp( token, "animMap" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'animMmap' keyword in shader '%s'\n", shader.name );
 				return qfalse;
@@ -664,7 +664,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 			while ( 1 ) {
 				int num;
 
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				if ( !token[0] ) {
 					break;
 				}
@@ -679,7 +679,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 				}
 			}
 		} else if ( !String::ICmp( token, "videoMap" ) )    {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'videoMmap' keyword in shader '%s'\n", shader.name );
 				return qfalse;
@@ -694,7 +694,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// alphafunc <func>
 		//
 		else if ( !String::ICmp( token, "alphaFunc" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'alphaFunc' keyword in shader '%s'\n", shader.name );
 				return qfalse;
@@ -706,7 +706,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// depthFunc <func>
 		//
 		else if ( !String::ICmp( token, "depthfunc" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'depthfunc' keyword in shader '%s'\n", shader.name );
@@ -733,7 +733,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// fog
 		//
 		else if ( !String::ICmp( token, "fog" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parm for fog in shader '%s'\n", shader.name );
 				continue;
@@ -749,7 +749,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// or blendfunc <add|filter|blend>
 		//
 		else if ( !String::ICmp( token, "blendfunc" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name );
 				continue;
@@ -768,7 +768,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 				// complex double blends
 				blendSrcBits = NameToSrcBlendMode( token );
 
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				if ( token[0] == 0 ) {
 					ri.Printf( PRINT_WARNING, "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name );
 					continue;
@@ -785,7 +785,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// rgbGen
 		//
 		else if ( !String::ICmp( token, "rgbGen" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameters for rgbGen in shader '%s'\n", shader.name );
 				continue;
@@ -832,7 +832,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// alphaGen
 		//
 		else if ( !String::ICmp( token, "alphaGen" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parameters for alphaGen in shader '%s'\n", shader.name );
 				continue;
@@ -842,7 +842,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 				ParseWaveForm( text, &stage->alphaWave );
 				stage->alphaGen = AGEN_WAVEFORM;
 			} else if ( !String::ICmp( token, "const" ) )    {
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				stage->constantColor[3] = 255 * String::Atof( token );
 				stage->alphaGen = AGEN_CONST;
 			} else if ( !String::ICmp( token, "identity" ) )    {
@@ -855,17 +855,17 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 			// Ridah
 			else if ( !String::ICmp( token, "normalzfade" ) ) {
 				stage->alphaGen = AGEN_NORMALZFADE;
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				if ( token[0] ) {
 					stage->constantColor[3] = 255 * String::Atof( token );
 				} else {
 					stage->constantColor[3] = 255;
 				}
 
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				if ( token[0] ) {
 					stage->zFadeBounds[0] = String::Atof( token );    // lower range
-					token = COM_ParseExt( text, qfalse );
+					token = String::ParseExt( text, qfalse );
 					stage->zFadeBounds[1] = String::Atof( token );    // upper range
 				} else {
 					stage->zFadeBounds[0] = -1.0;   // lower range
@@ -882,7 +882,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 				stage->alphaGen = AGEN_ONE_MINUS_VERTEX;
 			} else if ( !String::ICmp( token, "portal" ) )    {
 				stage->alphaGen = AGEN_PORTAL;
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				if ( token[0] == 0 ) {
 					shader.portalRange = 256;
 					ri.Printf( PRINT_WARNING, "WARNING: missing range parameter for alphaGen portal in shader '%s', defaulting to 256\n", shader.name );
@@ -900,7 +900,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 		// tcGen <function>
 		//
 		else if ( !String::ICmp( token, "texgen" ) || !String::ICmp( token, "tcGen" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing texgen parm in shader '%s'\n", shader.name );
 				continue;
@@ -932,7 +932,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text ) {
 
 			while ( 1 )
 			{
-				token = COM_ParseExt( text, qfalse );
+				token = String::ParseExt( text, qfalse );
 				if ( token[0] == 0 ) {
 					break;
 				}
@@ -1015,11 +1015,11 @@ deformVertexes autoSprite2
 deformVertexes text[0-7]
 ===============
 */
-static void ParseDeform( char **text ) {
+static void ParseDeform( const char **text ) {
 	char    *token;
 	deformStage_t   *ds;
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing deform parm in shader '%s'\n", shader.name );
 		return;
@@ -1060,21 +1060,21 @@ static void ParseDeform( char **text ) {
 	}
 
 	if ( !String::ICmp( token, "bulge" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name );
 			return;
 		}
 		ds->bulgeWidth = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name );
 			return;
 		}
 		ds->bulgeHeight = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name );
 			return;
@@ -1086,7 +1086,7 @@ static void ParseDeform( char **text ) {
 	}
 
 	if ( !String::ICmp( token, "wave" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
 			return;
@@ -1106,14 +1106,14 @@ static void ParseDeform( char **text ) {
 	}
 
 	if ( !String::ICmp( token, "normal" ) ) {
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
 			return;
 		}
 		ds->deformationWave.amplitude = String::Atof( token );
 
-		token = COM_ParseExt( text, qfalse );
+		token = String::ParseExt( text, qfalse );
 		if ( token[0] == 0 ) {
 			ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
 			return;
@@ -1128,7 +1128,7 @@ static void ParseDeform( char **text ) {
 		int i;
 
 		for ( i = 0 ; i < 3 ; i++ ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
 				return;
@@ -1152,14 +1152,14 @@ ParseSkyParms
 skyParms <outerbox> <cloudheight> <innerbox>
 ===============
 */
-static void ParseSkyParms( char **text ) {
+static void ParseSkyParms( const char **text ) {
 	char        *token;
 	static char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 	char pathname[MAX_QPATH];
 	int i;
 
 	// outerbox
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
@@ -1176,7 +1176,7 @@ static void ParseSkyParms( char **text ) {
 	}
 
 	// cloudheight
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
@@ -1189,7 +1189,7 @@ static void ParseSkyParms( char **text ) {
 
 
 	// innerbox
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
@@ -1214,10 +1214,10 @@ static void ParseSkyParms( char **text ) {
 ParseSort
 =================
 */
-void ParseSort( char **text ) {
+void ParseSort( const char **text ) {
 	char    *token;
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	if ( token[0] == 0 ) {
 		ri.Printf( PRINT_WARNING, "WARNING: missing sort parameter in shader '%s'\n", shader.name );
 		return;
@@ -1343,12 +1343,12 @@ ParseSurfaceParm
 surfaceparm <name>
 ===============
 */
-static void ParseSurfaceParm( char **text ) {
+static void ParseSurfaceParm( const char **text ) {
 	char    *token;
 	int numInfoParms = sizeof( infoParms ) / sizeof( infoParms[0] );
 	int i;
 
-	token = COM_ParseExt( text, qfalse );
+	token = String::ParseExt( text, qfalse );
 	for ( i = 0 ; i < numInfoParms ; i++ ) {
 		if ( !String::ICmp( token, infoParms[i].name ) ) {
 			shader.surfaceFlags |= infoParms[i].surfaceFlags;
@@ -1372,13 +1372,13 @@ shader.  Parse it into the global shader variable.  Later functions
 will optimize it.
 =================
 */
-static qboolean ParseShader( char **text ) {
+static qboolean ParseShader( const char **text ) {
 	char *token;
 	int s;
 
 	s = 0;
 
-	token = COM_ParseExt( text, qtrue );
+	token = String::ParseExt( text, qtrue );
 	if ( token[0] != '{' ) {
 		ri.Printf( PRINT_WARNING, "WARNING: expecting '{', found '%s' instead in shader '%s'\n", token, shader.name );
 		return qfalse;
@@ -1386,7 +1386,7 @@ static qboolean ParseShader( char **text ) {
 
 	while ( 1 )
 	{
-		token = COM_ParseExt( text, qtrue );
+		token = String::ParseExt( text, qtrue );
 		if ( !token[0] ) {
 			ri.Printf( PRINT_WARNING, "WARNING: no concluding '}' in shader %s\n", shader.name );
 			return qfalse;
@@ -1414,24 +1414,24 @@ static qboolean ParseShader( char **text ) {
 		else if ( !String::ICmp( token, "q3map_sun" ) ) {
 			float a, b;
 
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			tr.sunLight[0] = String::Atof( token );
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			tr.sunLight[1] = String::Atof( token );
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			tr.sunLight[2] = String::Atof( token );
 
 			VectorNormalize( tr.sunLight );
 
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			a = String::Atof( token );
 			VectorScale( tr.sunLight, a, tr.sunLight );
 
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			a = String::Atof( token );
 			a = a / 180 * M_PI;
 
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			b = String::Atof( token );
 			b = b / 180 * M_PI;
 
@@ -1445,7 +1445,7 @@ static qboolean ParseShader( char **text ) {
 			SkipRestOfLine( text );
 			continue;
 		} else if ( !String::ICmp( token, "clampTime" ) )    {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] ) {
 				shader.clampTime = String::Atof( token );
 			}
@@ -1495,7 +1495,7 @@ static qboolean ParseShader( char **text ) {
 				return qfalse;
 			}
 
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing parm for 'fogParms' keyword in shader '%s'\n", shader.name );
 				continue;
@@ -1526,7 +1526,7 @@ static qboolean ParseShader( char **text ) {
 			if ( !ParseVector( text, 3, fogColor ) ) {
 				return qfalse;
 			}
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing density value for sky fog\n" );
@@ -1541,7 +1541,7 @@ static qboolean ParseShader( char **text ) {
 			R_SetFog( FOG_SKY, 0, 5, fogColor[0], fogColor[1], fogColor[2], String::Atof( token ) );
 			continue;
 		} else if ( !String::ICmp( token, "sunshader" ) )        {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing shader name for 'sunshader'\n" );
 				continue;
@@ -1550,7 +1550,7 @@ static qboolean ParseShader( char **text ) {
 		}
 //----(SA)	added
 		else if ( !String::ICmp( token, "lightgridmulamb" ) ) { // ambient multiplier for lightgrid
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing value for 'lightgrid ambient multiplier'\n" );
 				continue;
@@ -1559,7 +1559,7 @@ static qboolean ParseShader( char **text ) {
 				tr.lightGridMulAmbient = String::Atof( token );
 			}
 		} else if ( !String::ICmp( token, "lightgridmuldir" ) )        { // directional multiplier for lightgrid
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing value for 'lightgrid directional multiplier'\n" );
 				continue;
@@ -1577,7 +1577,7 @@ static qboolean ParseShader( char **text ) {
 			if ( !ParseVector( text, 3, watercolor ) ) {
 				return qfalse;
 			}
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing density/distance value for water fog\n" );
@@ -1619,7 +1619,7 @@ static qboolean ParseShader( char **text ) {
 				return qfalse;
 			}
 
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( !token[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing density value for the fog\n" );
 				continue;
@@ -1660,12 +1660,12 @@ static qboolean ParseShader( char **text ) {
 		// done.
 		// light <value> determines flaring in q3map, not needed here
 		else if ( !String::ICmp( token, "light" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			continue;
 		}
 		// cull <face>
 		else if ( !String::ICmp( token, "cull" ) ) {
-			token = COM_ParseExt( text, qfalse );
+			token = String::ParseExt( text, qfalse );
 			if ( token[0] == 0 ) {
 				ri.Printf( PRINT_WARNING, "WARNING: missing cull parms in shader '%s'\n", shader.name );
 				continue;
@@ -2316,8 +2316,8 @@ return NULL if not found
 If found, it will return a valid shader
 =====================
 */
-static char *FindShaderInShaderText( const char *shadername ) {
-	char *p = s_shaderText;
+static const char *FindShaderInShaderText( const char *shadername ) {
+	const char *p = s_shaderText;
 	char *token;
 
 	if ( !p ) {
@@ -2336,7 +2336,7 @@ static char *FindShaderInShaderText( const char *shadername ) {
 		while ( pShaderString && pShaderString->pStr ) {
 			p = pShaderString->pStr;
 
-			token = COM_ParseExt( &p, qtrue );
+			token = String::ParseExt( &p, qtrue );
 
 			if ( ( token[0] != 0 ) && !String::ICmp( token, shadername ) ) {
 				return p;
@@ -2353,7 +2353,7 @@ static char *FindShaderInShaderText( const char *shadername ) {
 	// note that this could get confused if a shader name is used inside
 	// another shader definition
 	while ( 1 ) {
-		token = COM_ParseExt( &p, qtrue );
+		token = String::ParseExt( &p, qtrue );
 		if ( token[0] == 0 ) {
 			break;
 		}
@@ -2444,7 +2444,7 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 	char strippedName[MAX_QPATH];
 	char fileName[MAX_QPATH];
 	int i, hash;
-	char        *shaderText;
+	const char        *shaderText;
 	image_t     *image;
 	shader_t    *sh;
 
@@ -2895,7 +2895,8 @@ BuildShaderChecksumLookup
 ====================
 */
 static void BuildShaderChecksumLookup( void ) {
-	char *p = s_shaderText, *pOld;
+	const char *p = s_shaderText;
+	const char *pOld;
 	char *token;
 	unsigned short int checksum;
 	int numShaderStringPointers = 0;
@@ -2912,7 +2913,7 @@ static void BuildShaderChecksumLookup( void ) {
 
 		pOld = p;
 
-		token = COM_ParseExt( &p, qtrue );
+		token = String::ParseExt( &p, qtrue );
 		if ( token[0] == 0 ) {
 			break;
 		}
@@ -3247,7 +3248,8 @@ R_LoadCacheShaders
 void R_LoadCacheShaders( void ) {
 	int len;
 	byte *buf;
-	char    *token, *pString;
+	char    *token;
+	const char *pString;
 	char name[MAX_QPATH];
 
 	if ( !r_cacheShaders->integer ) {
@@ -3269,7 +3271,7 @@ void R_LoadCacheShaders( void ) {
 	ri.FS_ReadFile( "shader.cache", (void **)&buf );
 	pString = (char*)buf;   //DAJ added (char*)
 
-	while ( ( token = COM_ParseExt( &pString, qtrue ) ) != NULL && token[0] ) {
+	while ( ( token = String::ParseExt( &pString, qtrue ) ) != NULL && token[0] ) {
 		String::NCpyZ( name, token, sizeof( name ) );
 		RE_RegisterModel( name );
 	}

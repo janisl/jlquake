@@ -4304,7 +4304,7 @@ void CL_LoadTransTable( const char *fileName ) {
 	qboolean aborted;
 	char *text;
 	fileHandle_t f;
-	char *text_p;
+	const char *text_p;
 	char *token;
 	int len, i;
 	trans_t *t;
@@ -4332,11 +4332,11 @@ void CL_LoadTransTable( const char *fileName ) {
 	text_p = text;
 
 	do {
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		if ( String::ICmp( "{", token ) ) {
 			// parse version number
 			if ( !String::ICmp( "#version", token ) ) {
-				token = COM_Parse( &text_p );
+				token = String::Parse3( &text_p );
 				String::Cpy( cl.translationVersion, token );
 				continue;
 			}
@@ -4345,13 +4345,13 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		// english
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		if ( String::ICmp( "english", token ) ) {
 			aborted = qtrue;
 			break;
 		}
 
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		String::Cpy( original, token );
 
 		if ( cl_debugTranslation->integer == 3 ) {
@@ -4359,13 +4359,13 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		// french
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		if ( String::ICmp( "french", token ) ) {
 			aborted = qtrue;
 			break;
 		}
 
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		String::Cpy( translated[LANGUAGE_FRENCH], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_FRENCH] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
@@ -4374,13 +4374,13 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		// german
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		if ( String::ICmp( "german", token ) ) {
 			aborted = qtrue;
 			break;
 		}
 
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		String::Cpy( translated[LANGUAGE_GERMAN], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_GERMAN] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
@@ -4389,13 +4389,13 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		// italian
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		if ( String::ICmp( "italian", token ) ) {
 			aborted = qtrue;
 			break;
 		}
 
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		String::Cpy( translated[LANGUAGE_ITALIAN], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_ITALIAN] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
@@ -4404,13 +4404,13 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		// spanish
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		if ( String::ICmp( "spanish", token ) ) {
 			aborted = qtrue;
 			break;
 		}
 
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 		String::Cpy( translated[LANGUAGE_SPANISH], token );
 		if ( !CL_CheckTranslationString( original, translated[LANGUAGE_SPANISH] ) ) {
 			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
@@ -4428,17 +4428,17 @@ void CL_LoadTransTable( const char *fileName ) {
 				String::NCpy( t->translated[i], translated[i], MAX_TRANS_STRING );
 		}
 
-		token = COM_Parse( &text_p );
+		token = String::Parse3( &text_p );
 
 		// set offset if we have one
 		if ( !String::ICmp( "offset", token ) ) {
-			token = COM_Parse( &text_p );
+			token = String::Parse3( &text_p );
 			t->x_offset = String::Atof( token );
 
-			token = COM_Parse( &text_p );
+			token = String::Parse3( &text_p );
 			t->y_offset = String::Atof( token );
 
-			token = COM_Parse( &text_p );
+			token = String::Parse3( &text_p );
 		}
 
 		if ( String::ICmp( "}", token ) ) {

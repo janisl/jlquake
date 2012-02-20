@@ -964,7 +964,7 @@ typedef struct {
 	byte        *novis;         // clusterBytes of 0xff
 
 	char        *entityString;
-	char        *entityParsePoint;
+	const char        *entityParsePoint;
 } world_t;
 
 //======================================================================

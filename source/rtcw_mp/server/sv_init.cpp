@@ -349,7 +349,7 @@ void SV_SetExpectedHunkUsage( char *mapname ) {
 	int handle;
 	char *memlistfile = "hunkusage.dat";
 	char *buf;
-	char *buftrav;
+	const char *buftrav;
 	char *token;
 	int len;
 
@@ -364,10 +364,10 @@ void SV_SetExpectedHunkUsage( char *mapname ) {
 
 		// now parse the file, filtering out the current map
 		buftrav = buf;
-		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
+		while ( ( token = String::Parse3( &buftrav ) ) && token[0] ) {
 			if ( !String::ICmp( token, mapname ) ) {
 				// found a match
-				token = COM_Parse( &buftrav );  // read the size
+				token = String::Parse3( &buftrav );  // read the size
 				if ( token && token[0] ) {
 					// this is the usage
 					Cvar_Set( "com_expectedhunkusage", token );
@@ -708,7 +708,7 @@ void SV_ParseVersionMapping( void ) {
 		// now parse the file, setting the version table info
 		buftrav = buf;
 
-		token = COM_Parse( &buftrav );
+		token = String::Parse3( &buftrav );
 		if ( String::Cmp( token, "RTCW-VersionMap" ) ) {
 			Z_Free( buf );
 			Com_Error( ERR_FATAL, "invalid versionmap.cfg" );
@@ -717,12 +717,12 @@ void SV_ParseVersionMapping( void ) {
 
 		Com_Printf( "\n------------Update Server-------------\n\nParsing version map..." );
 
-		while ( ( token = COM_Parse( &buftrav ) ) && token[0] ) {
+		while ( ( token = String::Parse3( &buftrav ) ) && token[0] ) {
 			// read the version number
 			String::Cpy( versionMap[ numVersions ].version, token );
 
 			// read the platform
-			token = COM_Parse( &buftrav );
+			token = String::Parse3( &buftrav );
 			if ( token && token[0] ) {
 				String::Cpy( versionMap[ numVersions ].platform, token );
 			} else {
@@ -732,7 +732,7 @@ void SV_ParseVersionMapping( void ) {
 			}
 
 			// read the installer name
-			token = COM_Parse( &buftrav );
+			token = String::Parse3( &buftrav );
 			if ( token && token[0] ) {
 				String::Cpy( versionMap[ numVersions ].installer, token );
 			} else {

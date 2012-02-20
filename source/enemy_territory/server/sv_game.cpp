@@ -494,7 +494,7 @@ intptr_t SV_GameSystemCalls( intptr_t* args ) {
 	{
 		const char  *s;
 
-		s = COM_Parse( &sv.entityParsePoint );
+		s = String::Parse3( &sv.entityParsePoint );
 		String::NCpyZ( (char*)VMA( 1 ), s, args[2] );
 		if ( !sv.entityParsePoint && !s[0] ) {
 			return qfalse;

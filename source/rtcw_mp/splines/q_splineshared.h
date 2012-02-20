@@ -497,8 +497,6 @@ float Com_Clamp( float min, float max, float value );
 #define FILE_HASH_SIZE      1024
 int Com_HashString( const char *fname );
 
-int Com_ParseInfos( const char *buf, int max, char infos[][MAX_INFO_STRING] );
-
 /*
 =====================================================================================
 

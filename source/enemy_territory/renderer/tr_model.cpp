@@ -2382,7 +2382,8 @@ R_LoadCacheModels
 void R_LoadCacheModels( void ) {
 	int len;
 	char *buf;
-	char    *token, *pString;
+	char    *token;
+	const char *pString;
 	char name[MAX_QPATH];
 
 	if ( !r_cacheModels->integer ) {
@@ -2404,7 +2405,7 @@ void R_LoadCacheModels( void ) {
 	ri.FS_ReadFile( "model.cache", (void **)&buf );
 	pString = buf;
 
-	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[0] ) {
+	while ( ( token = String::ParseExt( &pString, qtrue ) ) && token[0] ) {
 		String::NCpyZ( name, token, sizeof( name ) );
 		RE_RegisterModel( name );
 	}

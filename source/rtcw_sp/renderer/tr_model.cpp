@@ -2100,7 +2100,8 @@ R_LoadCacheModels
 void R_LoadCacheModels( void ) {
 	int len;
 	byte *buf;
-	char    *token, *pString;
+	char    *token;
+	const char* pString;
 	char name[MAX_QPATH];
 
 	//Com_Printf("R_LoadCachedModels\n");
@@ -2124,7 +2125,7 @@ void R_LoadCacheModels( void ) {
 	ri.FS_ReadFile( "model.cache", (void **)&buf );
 	pString = (char*)buf;       //DAJ added (char*)
 
-	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[0] ) {
+	while ( ( token = String::ParseExt( &pString, qtrue ) ) && token[0] ) {
 		String::NCpyZ( name, token, sizeof( name ) );
 		RE_RegisterModel( name );
 	}

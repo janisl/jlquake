@@ -2534,7 +2534,8 @@ void Com_SetRecommended() {
 gameInfo_t com_gameInfo;
 
 void Com_GetGameInfo() {
-	char    *f, *buf;
+	char    *f;
+	const char *buf;
 	char    *token;
 
 	memset( &com_gameInfo, 0, sizeof( com_gameInfo ) );
@@ -2543,15 +2544,15 @@ void Com_GetGameInfo() {
 
 		buf = f;
 
-		while ( ( token = COM_Parse( &buf ) ) != NULL && token[0] ) {
+		while ( ( token = String::Parse3( &buf ) ) != NULL && token[0] ) {
 			if ( !String::ICmp( token, "spEnabled" ) ) {
 				com_gameInfo.spEnabled = qtrue;
 			} else if ( !String::ICmp( token, "spGameTypes" ) ) {
-				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
+				while ( ( token = String::ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.spGameTypes |= ( 1 << String::Atoi( token ) );
 				}
 			} else if ( !String::ICmp( token, "defaultSPGameType" ) ) {
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
+				if ( ( token = String::ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.defaultSPGameType = String::Atoi( token );
 				} else {
 					FS_FreeFile( f );
@@ -2559,25 +2560,25 @@ void Com_GetGameInfo() {
 				}
 			} else if ( !String::ICmp( token, "coopGameTypes" ) ) {
 
-				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
+				while ( ( token = String::ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.coopGameTypes |= ( 1 << String::Atoi( token ) );
 				}
 			} else if ( !String::ICmp( token, "defaultCoopGameType" ) ) {
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
+				if ( ( token = String::ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.defaultCoopGameType = String::Atoi( token );
 				} else {
 					FS_FreeFile( f );
 					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
 				}
 			} else if ( !String::ICmp( token, "defaultGameType" ) ) {
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
+				if ( ( token = String::ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.defaultGameType = String::Atoi( token );
 				} else {
 					FS_FreeFile( f );
 					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
 				}
 			} else if ( !String::ICmp( token, "usesProfiles" ) ) {
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
+				if ( ( token = String::ParseExt( &buf, qfalse ) ) != NULL && token[0] ) {
 					com_gameInfo.usesProfiles = String::Atoi( token );
 				} else {
 					FS_FreeFile( f );
@@ -2775,8 +2776,8 @@ void Com_Init( char *commandLine ) {
 				FS_ReadFile( "profiles/defaultprofile.dat", (void **)&defaultProfile );
 
 				if ( defaultProfile ) {
-					char *text_p = defaultProfile;
-					char *token = COM_Parse( &text_p );
+					const char *text_p = defaultProfile;
+					char *token = String::Parse3( &text_p );
 
 					if ( token && *token ) {
 						Cvar_Set( "cl_defaultProfile", token );

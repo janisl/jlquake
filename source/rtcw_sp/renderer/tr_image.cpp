@@ -3785,7 +3785,8 @@ R_LoadCacheImages
 void R_LoadCacheImages( void ) {
 	int len;
 	byte *buf;
-	char    *token, *pString;
+	char    *token;
+	const char* pString;
 	char name[MAX_QPATH];
 	int parms[3], i;
 
@@ -3803,10 +3804,10 @@ void R_LoadCacheImages( void ) {
 	ri.FS_ReadFile( "image.cache", (void **)&buf );
 	pString = (char*)buf;   //DAJ added (char*)
 
-	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[0] ) {
+	while ( ( token = String::ParseExt( &pString, qtrue ) ) && token[0] ) {
 		String::NCpyZ( name, token, sizeof( name ) );
 		for ( i = 0; i < 4; i++ ) {
-			token = COM_ParseExt( &pString, qfalse );
+			token = String::ParseExt( &pString, qfalse );
 			parms[i] = String::Atoi( token );
 		}
 		R_FindImageFileExt( name, parms[0], parms[1], parms[2], parms[3] );

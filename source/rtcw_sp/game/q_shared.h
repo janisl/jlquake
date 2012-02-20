@@ -582,8 +582,6 @@ void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vP
 
 float Com_Clamp( float min, float max, float value );
 
-char    *COM_Parse( char **data_p );
-char    *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 int     COM_Compress( char *data_p );
 
 // TTimo
@@ -613,8 +611,8 @@ typedef struct pc_token_s
 
 // data is an in/out parm, returns a parsed out token
 
-void SkipBracedSection( char **program );
-void SkipRestOfLine( char **data );
+void SkipBracedSection( const char **program );
+void SkipRestOfLine( const char **data );
 
 // mode parm for FS_FOpenFile
 typedef enum {

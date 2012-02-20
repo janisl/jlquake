@@ -260,7 +260,7 @@ Draws triangle outlines for debugging
 ================
 */
 static void DrawTris( shaderCommands_t *input ) {
-	char            *s = r_trisColor->string;
+	const char            *s = r_trisColor->string;
 	vec4_t trisColor = { 1, 1, 1, 1 };
 	unsigned int stateBits = 0;
 
@@ -282,7 +282,7 @@ static void DrawTris( shaderCommands_t *input ) {
 		char    *token;
 
 		for ( i = 0 ; i < 4 ; i++ ) {
-			token = COM_Parse( &s );
+			token = String::Parse3( &s );
 			if ( token ) {
 				trisColor[i] = String::Atof( token );
 			} else {
