@@ -1,6 +1,8 @@
 set(WOLFCORE_FILES
+	command_buffer.cpp
 	../core/Common.cpp
 	common_defs.cpp
+	console_variable.cpp
 	../core/crc.cpp
 	../core/endian.cpp
 	../core/exception.cpp

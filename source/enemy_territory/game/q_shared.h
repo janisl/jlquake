@@ -270,10 +270,6 @@ typedef int clipHandle_t;
 #define MAX_INFO_KEY        1024
 #define MAX_INFO_VALUE      1024
 
-#define BIG_INFO_STRING     8192    // used for system info key only
-#define BIG_INFO_KEY        8192
-#define BIG_INFO_VALUE      8192
-
 #define MAX_OSPATH          256     // max length of a filesystem pathname
 
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
@@ -289,15 +285,6 @@ typedef enum {
 	MESSAGE_WAITING,        // rate/packet limited
 	MESSAGE_WAITING_OVERFLOW,   // packet too large with message
 } messageStatus_t;
-
-// paramters for command buffer stuffing
-typedef enum {
-	EXEC_NOW,           // don't return until completed, a VM should NEVER use this,
-						// because some commands might cause the VM to be unloaded...
-	EXEC_INSERT,        // insert at current position, but don't run yet
-	EXEC_APPEND         // add to end of the command buffer (normal case)
-} cbufExec_t;
-
 
 //
 // these aren't needed by any of the VMs.  put in another header?

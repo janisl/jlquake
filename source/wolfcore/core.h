@@ -32,13 +32,13 @@
 #include "../core/log.h"		//	General logging interface
 #include "../core/array.h"		//	Dynamic array
 #include "../core/strings.h"	//	Strings
-#if 0
 #include "info_string.h"
+#if 0
 #include "mathlib.h"
 #endif
 #include "files.h"
-#if 0
 #include "command_buffer.h"
+#if 0
 #include "console_variable.h"
 #endif
 #include "../core/crc.h"
