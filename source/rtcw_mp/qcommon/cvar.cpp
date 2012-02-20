@@ -714,7 +714,7 @@ void Cvar_List_f( void ) {
 	i = 0;
 	for ( var = cvar_vars ; var ; var = var->next, i++ )
 	{
-		if ( match && !Com_Filter( match, var->name, qfalse ) ) {
+		if ( match && !String::Filter( match, var->name, qfalse ) ) {
 			continue;
 		}
 

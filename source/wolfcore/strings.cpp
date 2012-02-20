@@ -2069,7 +2069,6 @@ void String::SkipRestOfLine(const char **data)
 	*data = p;
 }
 
-#if 0
 /*
 ============
 Com_StringContains
@@ -2106,7 +2105,7 @@ Com_Filter
 */
 bool String::Filter(const char *filter, const char *name, bool casesensitive)
 {
-	char buf[1024];
+	char buf[MAX_TOKEN_CHARS_Q3];
 	const char *ptr;
 	int i, found;
 
@@ -2114,15 +2113,21 @@ bool String::Filter(const char *filter, const char *name, bool casesensitive)
 		if (*filter == '*') {
 			filter++;
 			for (i = 0; *filter; i++) {
-				if (*filter == '*' || *filter == '?') break;
+				if (*filter == '*' || *filter == '?')
+				{
+					break;
+				}
 				buf[i] = *filter;
 				filter++;
 			}
 			buf[i] = '\0';
-			if (String::Length(buf)) {
+			if (Length(buf)) {
 				ptr = Com_StringContains(name, buf, casesensitive);
-				if (!ptr) return false;
-				name = ptr + String::Length(buf);
+				if (!ptr)
+				{
+					return false;
+				}
+				name = ptr + Length(buf);
 			}
 		}
 		else if (*filter == '?') {
@@ -2136,30 +2141,51 @@ bool String::Filter(const char *filter, const char *name, bool casesensitive)
 			filter++;
 			found = false;
 			while(*filter && !found) {
-				if (*filter == ']' && *(filter+1) != ']') break;
+				if (*filter == ']' && *(filter+1) != ']')
+				{
+					break;
+				}
 				if (*(filter+1) == '-' && *(filter+2) && (*(filter+2) != ']' || *(filter+3) == ']')) {
 					if (casesensitive) {
-						if (*name >= *filter && *name <= *(filter+2)) found = true;
+						if (*name >= *filter && *name <= *(filter+2))
+						{
+							found = true;
+						}
 					}
 					else {
-						if (String::ToUpper(*name) >= String::ToUpper(*filter) &&
-							String::ToUpper(*name) <= String::ToUpper(*(filter+2))) found = true;
+						if (ToUpper(*name) >= ToUpper(*filter) &&
+							ToUpper(*name) <= ToUpper(*(filter+2)))
+						{
+							found = true;
+						}
 					}
 					filter += 3;
 				}
 				else {
 					if (casesensitive) {
-						if (*filter == *name) found = true;
+						if (*filter == *name)
+						{
+							found = true;
+						}
 					}
 					else {
-						if (String::ToUpper(*filter) == String::ToUpper(*name)) found = true;
+						if (ToUpper(*filter) == ToUpper(*name))
+						{
+							found = true;
+						}
 					}
 					filter++;
 				}
 			}
-			if (!found) return false;
+			if (!found)
+			{
+				return false;
+			}
 			while(*filter) {
-				if (*filter == ']' && *(filter+1) != ']') break;
+				if (*filter == ']' && *(filter+1) != ']')
+				{
+					break;
+				}
 				filter++;
 			}
 			filter++;
@@ -2167,10 +2193,16 @@ bool String::Filter(const char *filter, const char *name, bool casesensitive)
 		}
 		else {
 			if (casesensitive) {
-				if (*filter != *name) return false;
+				if (*filter != *name)
+				{
+					return false;
+				}
 			}
 			else {
-				if (String::ToUpper(*filter) != String::ToUpper(*name)) return false;
+				if (String::ToUpper(*filter) != String::ToUpper(*name))
+				{
+					return false;
+				}
 			}
 			filter++;
 			name++;
@@ -2211,6 +2243,7 @@ bool String::FilterPath(const char *filter, const char *name, bool casesensitive
 	return Filter(new_filter, new_name, casesensitive);
 }
 
+#if 0
 //==========================================================================
 //
 //	va

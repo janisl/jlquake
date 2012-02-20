@@ -366,10 +366,8 @@ public:
 	static void SkipBracedSection(const char **program);
 	static void SkipRestOfLine(const char **data);
 
-#if 0
 	static bool Filter(const char* Filter, const char* Name, bool CaseSensitive);
 	static bool FilterPath(const char* Filter, const char* Name, bool CaseSensitive);
-#endif
 };
 
 #if 0

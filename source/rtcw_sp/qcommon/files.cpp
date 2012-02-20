@@ -2060,7 +2060,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 				//
 				if ( filter ) {
 					// case insensitive
-					if ( !Com_FilterPath( filter, name, qfalse ) ) {
+					if ( !String::FilterPath( filter, name, qfalse ) ) {
 						continue;
 					}
 					// unique the match

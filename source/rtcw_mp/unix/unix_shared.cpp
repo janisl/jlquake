@@ -222,7 +222,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 			break;
 		}
 		String::Sprintf( filename, sizeof( filename ), "%s/%s", subdirs, d->d_name );
-		if ( !Com_FilterPath( filter, filename, qfalse ) ) {
+		if ( !String::FilterPath( filter, filename, qfalse ) ) {
 			continue;
 		}
 		list[ *numfiles ] = CopyString( filename );

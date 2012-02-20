@@ -535,10 +535,6 @@ int Q_PrintStrlen( const char *string );
 // removes color sequences from string
 char *Q_CleanStr( char *string );
 
-//int			Com_Filter( const char *filter, const char *name, int casesensitive );
-//const char *Com_StringContains( const char *str1, const char *str2, int casesensitive );
-
-
 //=============================================
 
 short   BigShort( short l );
