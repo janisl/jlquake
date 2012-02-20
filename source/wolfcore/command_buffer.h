@@ -144,7 +144,7 @@ struct field_t
 	char	buffer[MAX_EDIT_LINE];
 };
 
-#if 0
 void Field_Clear(field_t* Edit);
+#if 0
 void Field_CompleteCommand(field_t* Edit);
 #endif

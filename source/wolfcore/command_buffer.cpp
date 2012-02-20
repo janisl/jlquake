@@ -1286,16 +1286,21 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 
 	Cmd_HandleUnknownCommand();
 }
+#endif
 
 //**************************************************************************
 //	command line completion
 //**************************************************************************
 
-static const char*	completionString;
-static char			shortestMatch[MAX_EDIT_LINE];
-static int			matchCount;
+//static 
+const char*	completionString;
+//static 
+char			shortestMatch[MAX_EDIT_LINE];
+//static 
+int			matchCount;
 // field we are working on, passed to Field_CompleteCommand (&g_consoleCommand for instance)
-static field_t*		completionField;
+//static 
+field_t*		completionField;
 
 //==========================================================================
 //
@@ -1310,6 +1315,7 @@ void Field_Clear(field_t* edit)
 	edit->scroll = 0;
 }
 
+#if 0
 //==========================================================================
 //
 //	FindMatches

@@ -614,7 +614,6 @@ Edit fields and command line history/completion
 ==============================================================
 */
 
-void Field_Clear( field_t *edit );
 void Field_CompleteCommand( field_t *edit );
 
 /*

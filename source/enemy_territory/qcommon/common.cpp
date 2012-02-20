@@ -3206,22 +3206,11 @@ command line completion
 ===========================================
 */
 
-/*
-==================
-Field_Clear
-==================
-*/
-void Field_Clear( field_t *edit ) {
-	memset( edit->buffer, 0, MAX_EDIT_LINE );
-	edit->cursor = 0;
-	edit->scroll = 0;
-}
-
-static const char *completionString;
-static char shortestMatch[MAX_TOKEN_CHARS_Q3];
-static int matchCount;
+extern const char *completionString;
+extern char shortestMatch[MAX_EDIT_LINE];
+extern int matchCount;
 // field we are working on, passed to Field_CompleteCommand (&g_consoleCommand for instance)
-static field_t *completionField;
+extern field_t *completionField;
 
 /*
 ===============
