@@ -2046,8 +2046,8 @@ R_LoadEntities
 */
 void R_LoadEntities( lump_t *l ) {
 	char *p, *token, *s;
-	char keyname[MAX_TOKEN_CHARS];
-	char value[MAX_TOKEN_CHARS];
+	char keyname[MAX_TOKEN_CHARS_Q3];
+	char value[MAX_TOKEN_CHARS_Q3];
 	world_t *w;
 
 	w = &s_worldData;

@@ -85,7 +85,7 @@ Assumes a program counter value
 */
 const char *VM_ValueToSymbol( vm_t *vm, int value ) {
 	vmSymbol_t  *sym;
-	static char text[MAX_TOKEN_CHARS];
+	static char text[MAX_TOKEN_CHARS_Q3];
 
 	sym = vm->symbols;
 	if ( !sym ) {

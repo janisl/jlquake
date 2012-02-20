@@ -617,7 +617,7 @@ Com_Filter
 ============
 */
 int Com_Filter( char *filter, char *name, int casesensitive ) {
-	char buf[MAX_TOKEN_CHARS];
+	char buf[MAX_TOKEN_CHARS_Q3];
 	char *ptr;
 	int i, found;
 
@@ -3367,7 +3367,7 @@ void Field_Clear( field_t *edit ) {
 }
 
 static const char *completionString;
-static char shortestMatch[MAX_TOKEN_CHARS];
+static char shortestMatch[MAX_TOKEN_CHARS_Q3];
 static int matchCount;
 // field we are working on, passed to Field_CompleteCommand (&g_consoleCommand for instance)
 static field_t *completionField;

@@ -966,7 +966,7 @@ CONSOLE LINE EDITING
 */
 
 static const char *completionString;
-static char shortestMatch[MAX_TOKEN_CHARS];
+static char shortestMatch[MAX_TOKEN_CHARS_Q3];
 static int matchCount;
 
 /*

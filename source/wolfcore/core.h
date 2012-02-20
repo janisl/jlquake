@@ -53,7 +53,9 @@
 #include "quakedefs.h"
 #include "hexen2defs.h"
 #include "quake2defs.h"
+#endif
 #include "quake3defs.h"
+#if 0
 #include "message.h"
 #include "huffman.h"
 #include "virtual_machine/public.h"

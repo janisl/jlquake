@@ -2676,7 +2676,7 @@ compatable with our normal parsing rules.
 static char *CommaParse( char **data_p ) {
 	int c = 0, len;
 	char *data;
-	static char com_token[MAX_TOKEN_CHARS];
+	static char com_token[MAX_TOKEN_CHARS_Q3];
 
 	data = *data_p;
 	len = 0;
@@ -2735,7 +2735,7 @@ static char *CommaParse( char **data_p ) {
 				*data_p = ( char * ) data;
 				return com_token;
 			}
-			if ( len < MAX_TOKEN_CHARS ) {
+			if ( len < MAX_TOKEN_CHARS_Q3 ) {
 				com_token[len] = c;
 				len++;
 			}
@@ -2745,7 +2745,7 @@ static char *CommaParse( char **data_p ) {
 	// parse a regular word
 	do
 	{
-		if ( len < MAX_TOKEN_CHARS ) {
+		if ( len < MAX_TOKEN_CHARS_Q3 ) {
 			com_token[len] = c;
 			len++;
 		}
@@ -2753,8 +2753,8 @@ static char *CommaParse( char **data_p ) {
 		c = *data;
 	} while ( c > 32 && c != ',' );
 
-	if ( len == MAX_TOKEN_CHARS ) {
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+	if ( len == MAX_TOKEN_CHARS_Q3 ) {
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS_Q3);
 		len = 0;
 	}
 	com_token[len] = 0;

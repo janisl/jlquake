@@ -965,8 +965,8 @@ CONSOLE LINE EDITING
 ==============================================================================
 */
 
-static char completionString[MAX_TOKEN_CHARS];
-static char currentMatch[MAX_TOKEN_CHARS];
+static char completionString[MAX_TOKEN_CHARS_Q3];
+static char currentMatch[MAX_TOKEN_CHARS_Q3];
 static int matchCount;
 static int matchIndex;
 
@@ -1136,7 +1136,7 @@ static void CompleteCommand( void ) {
 	} else {
 		if ( matchCount != 1 ) {
 			// get the next match and show instead
-			char lastMatch[MAX_TOKEN_CHARS];
+			char lastMatch[MAX_TOKEN_CHARS_Q3];
 
 			String::NCpyZ( lastMatch, currentMatch, sizeof( lastMatch ) );
 

@@ -46,7 +46,7 @@ static const char *punctuation[] = {
 };
 
 typedef struct {
-	char token[MAX_TOKEN_CHARS];
+	char token[MAX_TOKEN_CHARS_Q3];
 	int lines;
 	qboolean ungetToken;
 	char parseFile[MAX_QPATH];
@@ -247,7 +247,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 			} else if ( *data == '\n' ) {
 				pi->lines++;
 			}
-			if ( len < MAX_TOKEN_CHARS - 1 ) {
+			if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
 				pi->token[len] = c;
 				len++;
 			}
@@ -260,7 +260,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 		 ( c == '.' && data[ 1 ] >= '0' && data[ 1 ] <= '9' ) ) {
 		do  {
 
-			if ( len < MAX_TOKEN_CHARS - 1 ) {
+			if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
 				pi->token[len] = c;
 				len++;
 			}
@@ -271,7 +271,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 
 		// parse the exponent
 		if ( c == 'e' || c == 'E' ) {
-			if ( len < MAX_TOKEN_CHARS - 1 ) {
+			if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
 				pi->token[len] = c;
 				len++;
 			}
@@ -279,7 +279,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 			c = *data;
 
 			if ( c == '-' || c == '+' ) {
-				if ( len < MAX_TOKEN_CHARS - 1 ) {
+				if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
 					pi->token[len] = c;
 					len++;
 				}
@@ -288,7 +288,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 			}
 
 			do  {
-				if ( len < MAX_TOKEN_CHARS - 1 ) {
+				if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
 					pi->token[len] = c;
 					len++;
 				}
@@ -298,7 +298,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 			} while ( c >= '0' && c <= '9' );
 		}
 
-		if ( len == MAX_TOKEN_CHARS ) {
+		if ( len == MAX_TOKEN_CHARS_Q3 ) {
 			len = 0;
 		}
 		pi->token[len] = 0;
@@ -312,7 +312,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 	// and also colons for drive letters
 	if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) || c == '_' || c == '/' || c == '\\' ) {
 		do  {
-			if ( len < MAX_TOKEN_CHARS - 1 ) {
+			if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
 				pi->token[len] = c;
 				len++;
 			}
@@ -322,7 +322,7 @@ static char *Com_ParseExt( const char *( *data_p ), qboolean allowLineBreaks ) {
 		} while ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) || c == '_'
 				  || ( c >= '0' && c <= '9' ) || c == '/' || c == '\\' || c == ':' || c == '.' );
 
-		if ( len == MAX_TOKEN_CHARS ) {
+		if ( len == MAX_TOKEN_CHARS_Q3 ) {
 			len = 0;
 		}
 		pi->token[len] = 0;
@@ -460,7 +460,7 @@ Com_ParseRestOfLine
 ====================
 */
 const char *Com_ParseRestOfLine( const char *( *data_p ) ) {
-	static char line[MAX_TOKEN_CHARS];
+	static char line[MAX_TOKEN_CHARS_Q3];
 	const char *token;
 
 	line[0] = 0;

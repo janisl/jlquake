@@ -183,7 +183,7 @@ typedef struct {
 	// these are our reliable messages that go to the server
 	int reliableSequence;
 	int reliableAcknowledge;                // the last one the server has executed
-	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS];
+	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS_Q3];
 
 	// server message (unreliable) and command (reliable) sequence
 	// numbers are NOT cleared at level changes, but continue to
@@ -196,7 +196,7 @@ typedef struct {
 	// reliable messages received from server
 	int serverCommandSequence;
 	int lastExecutedServerCommand;              // last server command grabbed or executed with CL_GetServerCommand
-	char serverCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS];
+	char serverCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS_Q3];
 
 	// file transfer from server
 	fileHandle_t download;
@@ -307,7 +307,7 @@ typedef struct {
 
 	// update server info
 	netadr_t updateServer;
-	char updateChallenge[MAX_TOKEN_CHARS];
+	char updateChallenge[MAX_TOKEN_CHARS_Q3];
 	char updateInfoString[MAX_INFO_STRING];
 
 	netadr_t authorizeServer;

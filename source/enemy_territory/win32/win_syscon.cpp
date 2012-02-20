@@ -287,8 +287,8 @@ win32 console commandline completion
 
 static field_t win_consoleField;
 static int win_acLength;
-static char win_completionString[ MAX_TOKEN_CHARS ];
-static char win_currentMatch[ MAX_TOKEN_CHARS ];
+static char win_completionString[ MAX_TOKEN_CHARS_Q3 ];
+static char win_currentMatch[ MAX_TOKEN_CHARS_Q3 ];
 static int win_matchCount;
 static int win_matchIndex;
 static int win_findMatchIndex;
@@ -444,7 +444,7 @@ static void Win_CompleteCommand( qboolean showMatches ) {
 		}
 	} else if ( win_matchCount != 1 )    {
 		// get the next match and show instead
-		char lastMatch[MAX_TOKEN_CHARS];
+		char lastMatch[MAX_TOKEN_CHARS_Q3];
 
 		String::NCpyZ( lastMatch, win_currentMatch, sizeof( lastMatch ) );
 

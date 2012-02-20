@@ -272,7 +272,7 @@ PARSING
 ============================================================================
 */
 
-static char com_token[MAX_TOKEN_CHARS];
+static char com_token[MAX_TOKEN_CHARS_Q3];
 
 char *COM_Parse( char **data_p ) {
 	return COM_ParseExt( data_p, qtrue );
@@ -422,7 +422,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 			c = *data++;
 			if ((GGameType & GAME_ET) && c == '\\' && *( data ) == '\"' ) {
 				// Arnout: string-in-string
-				if ( len < MAX_TOKEN_CHARS ) {
+				if ( len < MAX_TOKEN_CHARS_Q3 ) {
 					com_token[len] = '\"';
 					len++;
 				}
@@ -437,7 +437,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 						break;
 					}
 					if ( ( c == '\\' && *( data ) == '\"' ) ) {
-						if ( len < MAX_TOKEN_CHARS ) {
+						if ( len < MAX_TOKEN_CHARS_Q3 ) {
 							com_token[len] = '\"';
 							len++;
 						}
@@ -445,7 +445,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 						c = *data++;
 						break;
 					}
-					if ( len < MAX_TOKEN_CHARS ) {
+					if ( len < MAX_TOKEN_CHARS_Q3 ) {
 						com_token[len] = c;
 						len++;
 					}
@@ -456,7 +456,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 				*data_p = ( char * ) data;
 				return com_token;
 			}
-			if ( len < MAX_TOKEN_CHARS ) {
+			if ( len < MAX_TOKEN_CHARS_Q3 ) {
 				com_token[len] = c;
 				len++;
 			}
@@ -466,7 +466,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 	// parse a regular word
 	do
 	{
-		if ( len < MAX_TOKEN_CHARS ) {
+		if ( len < MAX_TOKEN_CHARS_Q3 ) {
 			com_token[len] = c;
 			len++;
 		}
@@ -474,8 +474,8 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		c = *data;
 	} while ( c > 32 );
 
-	if ( len == MAX_TOKEN_CHARS ) {
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+	if ( len == MAX_TOKEN_CHARS_Q3 ) {
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS_Q3);
 		len = 0;
 	}
 	com_token[len] = 0;
