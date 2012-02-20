@@ -33,7 +33,7 @@
 #include "../core/exception.h"	//	Exception handling
 #include "../core/log.h"		//	General logging interface
 #include "../core/array.h"		//	Dynamic array
-#include "strings.h"	//	Strings
+#include "../core/strings.h"	//	Strings
 #if 0
 #include "info_string.h"
 #include "mathlib.h"

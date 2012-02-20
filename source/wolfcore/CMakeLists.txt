@@ -4,7 +4,7 @@ set(WOLFCORE_FILES
 	../core/exception.cpp
 	../core/log.cpp
 	../core/memory.cpp
-	strings.cpp
+	../core/strings.cpp
 )
 
 add_library(wolfcore STATIC ${WOLFCORE_FILES})

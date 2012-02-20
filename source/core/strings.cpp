@@ -18,34 +18,14 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
-
-// MACROS ------------------------------------------------------------------
 
 #if !defined _WIN32
 #define stricmp		strcasecmp
 #define strnicmp	strncasecmp
 #endif
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static char		com_token[1024];
-
-// CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
@@ -723,67 +703,51 @@ String String::FromChar(int C)
 	return Ret;
 }
 
-//==========================================================================
-//
-//	String::Length
-//
-//==========================================================================
-
-int String::Length(const char* S)
+int String::Length(const char* str)
 {
 #if 1
-	return (int)strlen(S);
+	return (int)strlen(str);
 #else
 	//	Quake implementation.
-	int             count;
-	
-	count = 0;
+	int count = 0;
 	while (str[count])
+	{
 		count++;
-
+	}
 	return count;
 #endif
 }
 
-//==========================================================================
-//
-//	String::Cmp
-//
-//==========================================================================
-
-int String::Cmp(const char* S1, const char* S2)
+int String::Cmp(const char* s1, const char* s2)
 {
 #if 1
-	return strcmp(S1, S2);
+	return strcmp(s1, s2);
 #else
 	//	Quake implementation.
 	while (1)
 	{
 		if (*s1 != *s2)
+		{
 			return -1;              // strings not equal    
+		}
 		if (!*s1)
+		{
 			return 0;               // strings are equal
+		}
 		s1++;
 		s2++;
 	}
-	
 	return -1;
 #endif
 }
 
-//==========================================================================
-//
-//	String::NCmp
-//
-//==========================================================================
-
-int String::NCmp(const char* S1, const char* S2, size_t N)
+int String::NCmp(const char* s1, const char* s2, size_t n)
 {
 #if 1
-	return strncmp(S1, S2, N);
+	return strncmp(s1, s2, n);
 #elif 1
 	//	Quake 3 implementation.
-	int		c1, c2;
+	int c1, c2;
 	do
 	{
 		c1 = *s1++;
@@ -796,155 +760,170 @@ int String::NCmp(const char* S1, const char* S2, size_t N)
 		{
 			return c1 < c2 ? -1 : 1;
 		}
-	} while (c1);
+	}
+	while (c1);
 	return 0;		// strings are equal
 #else
 	//	Quake implementation.
 	while (1)
 	{
 		if (!count--)
+		{
 			return 0;
+		}
 		if (*s1 != *s2)
-			return -1;              // strings not equal    
+		{
+			return -1;              // strings not equal
+		}
 		if (!*s1)
+		{
 			return 0;               // strings are equal
+		}
 		s1++;
 		s2++;
 	}
-	
 	return -1;
 #endif
 }
 
-//==========================================================================
-//
-//	String::ICmp
-//
-//==========================================================================
-
-int String::ICmp(const char* S1, const char* S2)
+int String::ICmp(const char* s1, const char* s2)
 {
 #if 1
-	return stricmp(S1, S2);
+	return stricmp(s1, s2);
+#elif 0
+	//	Quake 3 version
+	return (s1 && s2) ? NICmp(s1, s2, 99999) : -1;
 #else
 	//	Quake implementation.
 	return NICmp(s1, s2, 99999);
 #endif
 }
 
-//==========================================================================
-//
-//	String::NICmp
-//
-//==========================================================================
-
-int String::NICmp(const char* S1, const char* S2, size_t N)
+int String::NICmp(const char* s1, const char* s2, size_t n)
 {
 #if 1
-	return strnicmp(S1, S2, N);
+	return strnicmp(s1, s2, n);
 #elif 0
 	//	Quake 3 implementation.
-	int		c1, c2;
+	int c1, c2;
 
 	// bk001129 - moved in 1.17 fix not in id codebase
-        if ( s1 == NULL ) {
-           if ( s2 == NULL )
-             return 0;
-           else
-             return -1;
-        }
-        else if ( s2==NULL )
-          return 1;
-
-
-	
-	do {
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if (!n--) {
-			return 0;		// strings are equal until end point
+	if (s1 == NULL)
+	{
+		if (s2 == NULL)
+		{
+			return 0;
 		}
-		
-		if (c1 != c2) {
-			if (c1 >= 'a' && c1 <= 'z') {
-				c1 -= ('a' - 'A');
-			}
-			if (c2 >= 'a' && c2 <= 'z') {
-				c2 -= ('a' - 'A');
-			}
-			if (c1 != c2) {
-				return c1 < c2 ? -1 : 1;
-			}
+		else
+		{
+			return -1;
 		}
-	} while (c1);
-	
-	return 0;		// strings are equal
-#elif 0
-	//	Quake 2 implementation.
-	int		c1, c2;
-	
+	}
+	else if (s2 == NULL)
+	{
+		return 1;
+	}
+
 	do
 	{
 		c1 = *s1++;
 		c2 = *s2++;
 
 		if (!n--)
+		{
 			return 0;		// strings are equal until end point
+		}
 		
 		if (c1 != c2)
 		{
 			if (c1 >= 'a' && c1 <= 'z')
+			{
 				c1 -= ('a' - 'A');
+			}
 			if (c2 >= 'a' && c2 <= 'z')
+			{
 				c2 -= ('a' - 'A');
+			}
 			if (c1 != c2)
-				return -1;		// strings not equal
+			{
+				return c1 < c2 ? -1 : 1;
+			}
 		}
-	} while (c1);
-	
+	}
+	while (c1);
+	return 0;		// strings are equal
+#elif 0
+	//	Quake 2 implementation.
+	int c1, c2;
+	do
+	{
+		c1 = *s1++;
+		c2 = *s2++;
+
+		if (!n--)
+		{
+			return 0;		// strings are equal until end point
+		}
+		
+		if (c1 != c2)
+		{
+			if (c1 >= 'a' && c1 <= 'z')
+			{
+				c1 -= ('a' - 'A');
+			}
+			if (c2 >= 'a' && c2 <= 'z')
+			{
+				c2 -= ('a' - 'A');
+			}
+			if (c1 != c2)
+			{
+				return -1;		// strings not equal
+			}
+		}
+	}
+	while (c1);
 	return 0;		// strings are equal
 #else
 	//	Quake implementation.
-	int             c1, c2;
-	
+	int c1, c2;
 	while (1)
 	{
 		c1 = *s1++;
 		c2 = *s2++;
 
 		if (!n--)
+		{
 			return 0;               // strings are equal until end point
-		
+		}
+
 		if (c1 != c2)
 		{
 			if (c1 >= 'a' && c1 <= 'z')
+			{
 				c1 -= ('a' - 'A');
+			}
 			if (c2 >= 'a' && c2 <= 'z')
+			{
 				c2 -= ('a' - 'A');
+			}
 			if (c1 != c2)
+			{
 				return -1;              // strings not equal
+			}
 		}
 		if (!c1)
+		{
 			return 0;               // strings are equal
-//              s1++;
-//              s2++;
+		}
 	}
-	
 	return -1;
 #endif
 }
 
-//==========================================================================
-//
-//	String::Cpy
-//
-//==========================================================================
-
-void String::Cpy(char* Dst, const char* Src)
+void String::Cpy(char* dst, const char* src)
 {
 #if 1
-	strcpy(Dst, Src);
+	strcpy(dst, src);
 #else
 	//	Quake implementation.
 	while (*src)
@@ -955,115 +934,79 @@ void String::Cpy(char* Dst, const char* Src)
 #endif
 }
 
-//==========================================================================
-//
-//	String::NCpy
-//
-//==========================================================================
-
-void String::NCpy(char* Dst, const char* Src, size_t N)
+void String::NCpy(char* dst, const char* src, size_t count)
 {
 #if 1
-	strncpy(Dst, Src, N);
+	strncpy(dst, src, count);
 #else
 	while (*src && count--)
 	{
 		*dest++ = *src++;
 	}
 	if (count)
+	{
 		*dest++ = 0;
+	}
 #endif
 }
 
-//==========================================================================
-//
-//	String::NCpy
-//
 //	Safe strncpy that ensures a trailing zero
-//
-//==========================================================================
-
-void String::NCpyZ(char* Dest, const char* Src, int DestSize)
+void String::NCpyZ(char* dest, const char* src, int destSize)
 {
 	// bk001129 - also NULL dest
-	if (!Dest)
+	if (!dest)
 	{
 		throw Exception("Q_strncpyz: NULL dest");
 	}
-	if (!Src)
+	if (!src)
 	{
 		throw Exception("Q_strncpyz: NULL src");
 	}
-	if (DestSize < 1)
+	if (destSize < 1)
 	{
 		throw Exception("Q_strncpyz: destsize < 1"); 
 	}
 
-	NCpy(Dest, Src, DestSize - 1);
-	Dest[DestSize - 1] = 0;
+	NCpy(dest, src, destSize - 1);
+	dest[destSize - 1] = 0;
 }
 
-//==========================================================================
-//
-//	String::ToLower
-//
 //	Never goes past bounds or leaves without a terminating 0
-//
-//==========================================================================
-
-void String::Cat(char* Dest, int Size, const char* Src)
+void String::Cat(char* dest, int size, const char* src)
 {
-	int L1 = Length(Dest);
-	if (L1 >= Size)
+	int l1 = Length(dest);
+	if (l1 >= size)
 	{
 		throw Exception("Q_strcat: already overflowed");
 	}
-	NCpyZ(Dest + L1, Src, Size - L1);
+	NCpyZ(dest + l1, src, size - l1);
 }
 
-//==========================================================================
-//
-//	String::ToLower
-//
-//==========================================================================
-
-char* String::ToLower(char* S1)
+char* String::ToLower(char* s1)
 {
-	char* S = S1;
+	char* S = s1;
 	while (*S)
 	{
 		*S = ToLower(*S);
 		S++;
 	}
-    return S1;
+    return s1;
 }
 
-//==========================================================================
-//
-//	String::ToUpper
-//
-//==========================================================================
-
-char* String::ToUpper(char* S1)
+char* String::ToUpper(char* s1)
 {
-	char* S = S1;
+	char* S = s1;
 	while (*S)
 	{
 		*S = ToUpper(*S);
 		S++;
 	}
-    return S1;
+    return s1;
 }
 
-//==========================================================================
-//
-//	String::RChr
-//
-//==========================================================================
-
-char* String::RChr(const char* string, int C)
+char* String::RChr(const char* string, int c)
 {
-	char cc = C;
+	char cc = c;
 	char *s;
 	char *sp = NULL;
 
@@ -1257,6 +1200,7 @@ float String::Atof(const char* Str)
 
 void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 {
+#if 1
 	va_list		ArgPtr;
 	char		BigBuffer[32000];	// big, but small enough to fit in PPC stack
 
@@ -1269,7 +1213,7 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	}
 	if (Len >= Size)
 	{
-		Log::writeLine("String::Sprintf: overflow of %i in %i", Len, Size);
+		common->Printf("String::Sprintf: overflow of %i in %i\n", Len, Size);
 #if defined _DEBUG && defined _MSC_VER && ! defined _WIN64
 		__asm
 		{
@@ -1278,126 +1222,95 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 #endif
 	}
 	NCpyZ(Dest, BigBuffer, Size);
+#else
+	//	Wolf multiplayer / Enemy territory version.
+	/*
+	C99 for vsnprintf:
+	return the number of characters  (excluding  the  trailing  '\0')
+	which would have been written to the final string if enough space had been available.
+	*/
+	va_list argptr;
+	va_start(argptr,fmt);
+	int len = Q_vsnprintf(dest, size, fmt, argptr);
+	va_end(argptr);
+
+	if (len >= size)
+	{
+		common->Printf("String::Sprintf: overflow of %i in %i\n", len, size);
+	}
+#endif
 }
 
-//==========================================================================
-//
-//	String::IsPrint
-//
-//==========================================================================
-
-int String::IsPrint(int C)
+int String::IsPrint(int c)
 {
-	if (C >= 0x20 && C <= 0x7E)
+	if (c >= 0x20 && c <= 0x7E)
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//==========================================================================
-//
-//	String::IsLower
-//
-//==========================================================================
-
-int String::IsLower(int C)
+int String::IsLower(int c)
 {
-	if (C >= 'a' && C <= 'z')
+	if (c >= 'a' && c <= 'z')
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//==========================================================================
-//
-//	String::IsUpper
-//
-//==========================================================================
-
-int String::IsUpper(int C)
+int String::IsUpper(int c)
 {
-	if (C >= 'A' && C <= 'Z')
+	if (c >= 'A' && c <= 'Z')
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//==========================================================================
-//
-//	String::IsAlpha
-//
-//==========================================================================
-
-int String::IsAlpha(int C)
+int String::IsAlpha(int c)
 {
-	if ((C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z'))
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//==========================================================================
-//
-//	String::ToUpper
-//
-//==========================================================================
-
-int String::IsSpace(int C)
+int String::IsSpace(int c)
 {
-	if (C == ' ' || C == '\t' || C == '\n' || C =='\r' || C == '\f')
+	if (c == ' ' || c == '\t' || c == '\n' || c =='\r' || c == '\f')
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//==========================================================================
-//
-//	String::IsDigit
-//
-//==========================================================================
-
-int String::IsDigit(int C)
+int String::IsDigit(int c)
 {
-	if (C >= '0' && C <= '9')
+	if (c >= '0' && c <= '9')
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//==========================================================================
-//
-//	String::ToUpper
-//
-//==========================================================================
-
-char String::ToUpper(char C)
+char String::ToUpper(char c)
 {
-	if (C >= 'a' && C <= 'z')
+	if (c >= 'a' && c <= 'z')
 	{
-		return C - ('a' - 'A');
+		return c - ('a' - 'A');
 	}
-	return C;
+	return c;
 }
 
-//==========================================================================
-//
-//	String::ToLower
-//
-//==========================================================================
-
-char String::ToLower(char C)
+char String::ToLower(char c)
 {
-	if (C >= 'A' && C <= 'Z')
+	if (c >= 'A' && c <= 'Z')
 	{
-		return C + ('a' - 'A');
+		return c + ('a' - 'A');
 	}
-	return C;
+	return c;
 }
 
 //==========================================================================
@@ -1871,13 +1784,51 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 		while (1)
 		{
 			c = *data++;
-			if (c=='\"' || !c)
+			if ((GGameType & GAME_ET) && c == '\\' && *data == '\"')
+			{
+				// Arnout: string-in-string
+				if (len < MAX_TOKEN_CHARS_Q3)
+				{
+					com_token[len] = '\"';
+					len++;
+				}
+				data++;
+
+				while (1)
+				{
+					c = *data++;
+
+					if (!c)
+					{
+						com_token[len] = 0;
+						*data_p = data;
+						break;
+					}
+					if (( c == '\\' && *data == '\"' ))
+					{
+						if (len < MAX_TOKEN_CHARS_Q3)
+						{
+							com_token[len] = '\"';
+							len++;
+						}
+						data++;
+						c = *data++;
+						break;
+					}
+					if (len < MAX_TOKEN_CHARS_Q3)
+					{
+						com_token[len] = c;
+						len++;
+					}
+				}
+			}
+			if (c == '\"' || !c)
 			{
 				com_token[len] = 0;
 				*data_p = ( char * ) data;
 				return com_token;
 			}
-			if (len < (int)sizeof(com_token))
+			if (len < MAX_TOKEN_CHARS_Q3)
 			{
 				com_token[len] = c;
 				len++;
@@ -1888,16 +1839,17 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 	// parse a regular word
 	do
 	{
-		if (len < (int)sizeof(com_token))
+		if (len < MAX_TOKEN_CHARS_Q3)
 		{
 			com_token[len] = c;
 			len++;
 		}
 		data++;
 		c = *data;
-	} while (c>32);
+	}
+	while (c > 32);
 
-	if (len == sizeof(com_token))
+	if (len == MAX_TOKEN_CHARS_Q3)
 	{
 //		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
 		len = 0;
@@ -1916,6 +1868,62 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 
 int String::Compress(char *data_p)
 {
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		//	Version used in Wolf games, I don't have time now to deal with it.
+		char *datai, *datao;
+		int c, pc, size;
+		qboolean ws = false;//Hmmmm, always false.
+
+		size = 0;
+		pc = 0;
+		datai = datao = data_p;
+		if ( datai ) {
+			while ( ( c = *datai ) != 0 ) {
+				if ( c == 13 || c == 10 ) {
+					*datao = c;
+					datao++;
+					ws = false;
+					pc = c;
+					datai++;
+					size++;
+					// skip double slash comments
+				} else if ( c == '/' && datai[1] == '/' ) {
+					while ( *datai && *datai != '\n' ) {
+						datai++;
+					}
+					ws = false;
+					// skip /* */ comments
+				} else if ( c == '/' && datai[1] == '*' ) {
+					if (GGameType & GAME_ET)
+					{
+						datai += 2; // Arnout: skip over '/*'
+					}
+					while ( *datai && ( *datai != '*' || datai[1] != '/' ) )
+					{
+						datai++;
+					}
+					if ( *datai ) {
+						datai += 2;
+					}
+					ws = false;
+				} else {
+					if ( ws ) {
+						*datao = ' ';
+						datao++;
+					}
+					*datao = c;
+					datao++;
+					datai++;
+					ws = false;
+					pc = c;
+					size++;
+				}
+			}
+		}
+		*datao = 0;
+		return size;
+	}
 	char *in, *out;
 	int c;
 	bool newline = false, whitespace = false;
@@ -2097,7 +2105,7 @@ Com_Filter
 */
 bool String::Filter(const char *filter, const char *name, bool casesensitive)
 {
-	char buf[1024];
+	char buf[MAX_TOKEN_CHARS_Q3];
 	const char *ptr;
 	int i, found;
 
@@ -2105,15 +2113,21 @@ bool String::Filter(const char *filter, const char *name, bool casesensitive)
 		if (*filter == '*') {
 			filter++;
 			for (i = 0; *filter; i++) {
-				if (*filter == '*' || *filter == '?') break;
+				if (*filter == '*' || *filter == '?')
+				{
+					break;
+				}
 				buf[i] = *filter;
 				filter++;
 			}
 			buf[i] = '\0';
-			if (String::Length(buf)) {
+			if (Length(buf)) {
 				ptr = Com_StringContains(name, buf, casesensitive);
-				if (!ptr) return false;
-				name = ptr + String::Length(buf);
+				if (!ptr)
+				{
+					return false;
+				}
+				name = ptr + Length(buf);
 			}
 		}
 		else if (*filter == '?') {
@@ -2127,30 +2141,51 @@ bool String::Filter(const char *filter, const char *name, bool casesensitive)
 			filter++;
 			found = false;
 			while(*filter && !found) {
-				if (*filter == ']' && *(filter+1) != ']') break;
+				if (*filter == ']' && *(filter+1) != ']')
+				{
+					break;
+				}
 				if (*(filter+1) == '-' && *(filter+2) && (*(filter+2) != ']' || *(filter+3) == ']')) {
 					if (casesensitive) {
-						if (*name >= *filter && *name <= *(filter+2)) found = true;
+						if (*name >= *filter && *name <= *(filter+2))
+						{
+							found = true;
+						}
 					}
 					else {
-						if (String::ToUpper(*name) >= String::ToUpper(*filter) &&
-							String::ToUpper(*name) <= String::ToUpper(*(filter+2))) found = true;
+						if (ToUpper(*name) >= ToUpper(*filter) &&
+							ToUpper(*name) <= ToUpper(*(filter+2)))
+						{
+							found = true;
+						}
 					}
 					filter += 3;
 				}
 				else {
 					if (casesensitive) {
-						if (*filter == *name) found = true;
+						if (*filter == *name)
+						{
+							found = true;
+						}
 					}
 					else {
-						if (String::ToUpper(*filter) == String::ToUpper(*name)) found = true;
+						if (ToUpper(*filter) == ToUpper(*name))
+						{
+							found = true;
+						}
 					}
 					filter++;
 				}
 			}
-			if (!found) return false;
+			if (!found)
+			{
+				return false;
+			}
 			while(*filter) {
-				if (*filter == ']' && *(filter+1) != ']') break;
+				if (*filter == ']' && *(filter+1) != ']')
+				{
+					break;
+				}
 				filter++;
 			}
 			filter++;
@@ -2158,10 +2193,16 @@ bool String::Filter(const char *filter, const char *name, bool casesensitive)
 		}
 		else {
 			if (casesensitive) {
-				if (*filter != *name) return false;
+				if (*filter != *name)
+				{
+					return false;
+				}
 			}
 			else {
-				if (String::ToUpper(*filter) != String::ToUpper(*name)) return false;
+				if (String::ToUpper(*filter) != String::ToUpper(*name))
+				{
+					return false;
+				}
 			}
 			filter++;
 			name++;
@@ -2212,18 +2253,82 @@ bool String::FilterPath(const char *filter, const char *name, bool casesensitive
 //
 //==========================================================================
 
-char* va(const char* Format, ...)
+char* va(const char* format, ...)
 {
-	va_list			ArgPtr;
-	static char		string[2][32000];	// in case va is called by nested functions
-	static int		Index = 0;
+	enum { MAX_VA_STRING = 32000 };
+#if 1
+	va_list argptr;
+	static char string[2][MAX_VA_STRING];	// in case va is called by nested functions
+	static int index = 0;
 
-	char* Buf = string[Index & 1];
-	Index++;
+	char* buf = string[index & 1];
+	index++;
 
-	va_start(ArgPtr, Format);
-	Q_vsnprintf(Buf, 32000, Format, ArgPtr);
-	va_end(ArgPtr);
+	va_start(argptr, format);
+	Q_vsnprintf(buf, 32000, format, argptr);
+	va_end(argptr);
 
-	return Buf;  
+	return buf;
+#else
+	//	Wolf games use this, looks interesting.
+	va_list argptr;
+	static char temp_buffer[MAX_VA_STRING];
+	static char string[MAX_VA_STRING];      // in case va is called by nested functions
+	static int index = 0;
+
+	va_start(argptr, format);
+	vsprintf(temp_buffer, format, argptr);
+	va_end(argptr);
+
+	int len = String::Length(temp_buffer);
+	if (len >= MAX_VA_STRING)
+	{
+		common->Error("Attempted to overrun string in call to va()\n");
+	}
+
+	if (len + index >= MAX_VA_STRING - 1)
+	{
+		index = 0;
+	}
+
+	char* buf = &string[index];
+	memcpy(buf, temp_buffer, len + 1);
+
+	index += len + 1;
+
+	return buf;
+#endif
+}
+
+/*
+vsnprintf portability:
+
+C99 standard: vsnprintf returns the number of characters (excluding the trailing
+'\0') which would have been written to the final string if enough space had been available
+snprintf and vsnprintf do not write more than size bytes (including the trailing '\0')
+
+win32: _vsnprintf returns the number of characters written, not including the terminating null character,
+or a negative value if an output error occurs. If the number of characters to write exceeds count,
+then count characters are written and -1 is returned and no trailing '\0' is added.
+
+Q_vsnPrintf: always append a trailing '\0', returns number of characters written or
+returns -1 on failure or if the buffer would be overflowed.
+*/
+int Q_vsnprintf(char* dest, int size, const char* fmt, va_list argptr)
+{
+#ifdef _WIN32
+#undef _vsnprintf
+	int ret = _vsnprintf(dest, size - 1, fmt, argptr);
+#define _vsnprintf  use_idStr_vsnPrintf
+#else
+#undef vsnprintf
+	int ret = vsnprintf(dest, size, fmt, argptr);
+#define vsnprintf   use_idStr_vsnPrintf
+#endif
+	dest[size - 1] = '\0';
+	if (ret < 0 || ret >= size)
+	{
+		return -1;
+	}
+	return ret;
 }
