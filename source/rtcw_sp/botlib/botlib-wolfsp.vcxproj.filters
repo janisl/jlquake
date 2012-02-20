@@ -77,9 +77,6 @@
     <ClCompile Include="be_interface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="l_crc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="l_libvar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -179,9 +176,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\game\botlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="l_crc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="l_libvar.h">

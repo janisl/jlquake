@@ -42,7 +42,9 @@
 #if 0
 #include "command_buffer.h"
 #include "console_variable.h"
-#include "crc.h"
+#endif
+#include "../core/crc.h"
+#if 0
 #include "md4.h"
 #include "system.h"
 #include "clip_map/public.h"

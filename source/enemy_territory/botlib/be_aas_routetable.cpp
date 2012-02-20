@@ -69,10 +69,6 @@ static int memorycount, cachememory;
 static unsigned short int *filtered_areas, childcount, num_parents;
 static unsigned short int *rev_filtered_areas;
 
-// misc defines
-unsigned short CRC_ProcessString( unsigned char *data, int length );
-
-
 //===========================================================================
 // Memory debugging/optimization
 
@@ -269,7 +265,7 @@ void AAS_RT_WriteRouteTable() {
 	botimport.FS_Write( &version, sizeof( version ), fp );
 
 	// crc
-	crc_aas = CRC_ProcessString( (unsigned char *)( *aasworld ).areas, sizeof( aas_area_t ) * ( *aasworld ).numareas );
+	crc_aas = CRC_Block( (unsigned char *)( *aasworld ).areas, sizeof( aas_area_t ) * ( *aasworld ).numareas );
 	botimport.FS_Write( &crc_aas, sizeof( crc_aas ), fp );
 
 	// save the table data
@@ -362,7 +358,7 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp ) {
 	crc = LittleShort( crc );
 
 	// calculate a CRC on the AAS areas
-	crc_aas = CRC_ProcessString( (unsigned char *)( *aasworld ).areas, sizeof( aas_area_t ) * ( *aasworld ).numareas );
+	crc_aas = CRC_Block( (unsigned char *)( *aasworld ).areas, sizeof( aas_area_t ) * ( *aasworld ).numareas );
 
 	if ( crc != crc_aas ) {
 		AAS_Error( "Route-table is from different AAS file, ignoring.\n" );

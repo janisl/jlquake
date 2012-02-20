@@ -114,7 +114,6 @@
     <ClCompile Include="be_ai_weight.cpp" />
     <ClCompile Include="be_ea.cpp" />
     <ClCompile Include="be_interface.cpp" />
-    <ClCompile Include="l_crc.cpp" />
     <ClCompile Include="l_libvar.cpp" />
     <ClCompile Include="l_log.cpp" />
     <ClCompile Include="l_memory.cpp" />
@@ -150,7 +149,6 @@
     <ClInclude Include="..\game\be_ea.h" />
     <ClInclude Include="be_interface.h" />
     <ClInclude Include="..\game\botlib.h" />
-    <ClInclude Include="l_crc.h" />
     <ClInclude Include="l_libvar.h" />
     <ClInclude Include="l_log.h" />
     <ClInclude Include="l_memory.h" />

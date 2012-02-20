@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_utils.h"
 #include "l_memory.h"
 #include "l_log.h"
-#include "l_crc.h"
 #include "l_libvar.h"
 #include "l_script.h"
 #include "l_precomp.h"
@@ -976,7 +975,6 @@ void AAS_CreateAllRoutingCache( void ) {
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-unsigned short CRC_ProcessString( unsigned char *data, int length );
 
 //the route cache header
 //this header is followed by numportalcache + numareacache aas_routingcache_t
@@ -1043,9 +1041,9 @@ void AAS_WriteRouteCache( void ) {
 	routecacheheader.version = RCVERSION;
 	routecacheheader.numareas = aasworld->numareas;
 	routecacheheader.numclusters = aasworld->numclusters;
-	routecacheheader.areacrc = CRC_ProcessString( (unsigned char *)aasworld->areas, sizeof( aas_area_t ) * aasworld->numareas );
-	routecacheheader.clustercrc = CRC_ProcessString( (unsigned char *)aasworld->clusters, sizeof( aas_cluster_t ) * aasworld->numclusters );
-	routecacheheader.reachcrc = CRC_ProcessString( (unsigned char *)aasworld->reachability, sizeof( aas_reachability_t ) * aasworld->reachabilitysize );
+	routecacheheader.areacrc = CRC_Block( (unsigned char *)aasworld->areas, sizeof( aas_area_t ) * aasworld->numareas );
+	routecacheheader.clustercrc = CRC_Block( (unsigned char *)aasworld->clusters, sizeof( aas_cluster_t ) * aasworld->numclusters );
+	routecacheheader.reachcrc = CRC_Block( (unsigned char *)aasworld->reachability, sizeof( aas_reachability_t ) * aasworld->reachabilitysize );
 	routecacheheader.numportalcache = numportalcache;
 	routecacheheader.numareacache = numareacache;
 	//write the header
@@ -1170,19 +1168,19 @@ int AAS_ReadRouteCache( void ) {
 	// the crc table stuff is endian orientated....
 #else
 	if ( routecacheheader.areacrc !=
-		 CRC_ProcessString( (unsigned char *)aasworld->areas, sizeof( aas_area_t ) * aasworld->numareas ) ) {
+		 CRC_Block( (unsigned char *)aasworld->areas, sizeof( aas_area_t ) * aasworld->numareas ) ) {
 		botimport.FS_FCloseFile( fp );
 		//AAS_Error("route cache dump area CRC incorrect\n");
 		return qfalse;
 	} //end if
 	if ( routecacheheader.clustercrc !=
-		 CRC_ProcessString( (unsigned char *)aasworld->clusters, sizeof( aas_cluster_t ) * aasworld->numclusters ) ) {
+		 CRC_Block( (unsigned char *)aasworld->clusters, sizeof( aas_cluster_t ) * aasworld->numclusters ) ) {
 		botimport.FS_FCloseFile( fp );
 		//AAS_Error("route cache dump cluster CRC incorrect\n");
 		return qfalse;
 	} //end if
 	if ( routecacheheader.reachcrc !=
-		 CRC_ProcessString( (unsigned char *)aasworld->reachability, sizeof( aas_reachability_t ) * aasworld->reachabilitysize ) ) {
+		 CRC_Block( (unsigned char *)aasworld->reachability, sizeof( aas_reachability_t ) * aasworld->reachabilitysize ) ) {
 		botimport.FS_FCloseFile( fp );
 		//AAS_Error("route cache dump reachability CRC incorrect\n");
 		return qfalse;
