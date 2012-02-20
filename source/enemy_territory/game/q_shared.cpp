@@ -280,59 +280,9 @@ PARSING
 */
 
 static char com_token[MAX_TOKEN_CHARS];
-static char com_parsename[MAX_TOKEN_CHARS];
-static int com_lines;
-
-static int backup_lines;
-static char    *backup_text;
-
-void COM_BeginParseSession( const char *name ) {
-	com_lines = 0;
-	String::Sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
-}
-
-void COM_BackupParseSession( char **data_p ) {
-	backup_lines = com_lines;
-	backup_text = *data_p;
-}
-
-void COM_RestoreParseSession( char **data_p ) {
-	com_lines = backup_lines;
-	*data_p = backup_text;
-}
-
-void COM_SetCurrentParseLine( int line ) {
-	com_lines = line;
-}
-
-int COM_GetCurrentParseLine( void ) {
-	return com_lines;
-}
 
 char *COM_Parse( char **data_p ) {
 	return COM_ParseExt( data_p, qtrue );
-}
-
-void COM_ParseError( char *format, ... ) {
-	va_list argptr;
-	static char string[4096];
-
-	va_start( argptr, format );
-	Q_vsnprintf( string, sizeof( string ), format, argptr );
-	va_end( argptr );
-
-	Com_Printf( "ERROR: %s, line %d: %s\n", com_parsename, com_lines, string );
-}
-
-void COM_ParseWarning( char *format, ... ) {
-	va_list argptr;
-	static char string[4096];
-
-	va_start( argptr, format );
-	Q_vsnprintf( string, sizeof( string ), format, argptr );
-	va_end( argptr );
-
-	Com_Printf( "WARNING: %s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
 /*
@@ -355,7 +305,6 @@ static char *SkipWhitespace( char *data, qboolean *hasNewLines ) {
 			return NULL;
 		}
 		if ( c == '\n' ) {
-			com_lines++;
 			*hasNewLines = qtrue;
 		}
 		data++;
@@ -389,7 +338,10 @@ int COM_Compress( char *data_p ) {
 				ws = qfalse;
 				// skip /* */ comments
 			} else if ( c == '/' && datai[1] == '*' ) {
-				datai += 2; // Arnout: skip over '/*'
+				if (GGameType & GAME_ET)
+				{
+					datai += 2; // Arnout: skip over '/*'
+				}
 				while ( *datai && ( *datai != '*' || datai[1] != '/' ) )
 				{
 					datai++;
@@ -431,9 +383,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		return com_token;
 	}
 
-	// RF, backup the session data so we can unget easily
-	COM_BackupParseSession( data_p );
-
 	while ( 1 )
 	{
 		// skip whitespace
@@ -455,7 +404,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 			while ( *data && *data != '\n' ) {
 				data++;
 			}
-//			com_lines++;
 		}
 		// skip /* */ comments
 		else if ( c == '/' && data[1] == '*' ) {
@@ -463,9 +411,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 			while ( *data && ( *data != '*' || data[1] != '/' ) )
 			{
 				data++;
-				if ( *data == '\n' ) {
-//					com_lines++;
-				}
 			}
 			if ( *data ) {
 				data += 2;
@@ -482,7 +427,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		while ( 1 )
 		{
 			c = *data++;
-			if ( c == '\\' && *( data ) == '\"' ) {
+			if ((GGameType & GAME_ET) && c == '\\' && *( data ) == '\"' ) {
 				// Arnout: string-in-string
 				if ( len < MAX_TOKEN_CHARS ) {
 					com_token[len] = '\"';
@@ -534,9 +479,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		}
 		data++;
 		c = *data;
-		if ( c == '\n' ) {
-			com_lines++;
-		}
 	} while ( c > 32 );
 
 	if ( len == MAX_TOKEN_CHARS ) {
@@ -551,41 +493,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 
 
 
-
-/*
-==================
-COM_MatchToken
-==================
-*/
-void COM_MatchToken( char **buf_p, char *match ) {
-	char    *token;
-
-	token = COM_Parse( buf_p );
-	if ( String::Cmp( token, match ) ) {
-		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
-	}
-}
-
-/*
-=================
-SkipBracedSection_Depth
-
-=================
-*/
-void SkipBracedSection_Depth( char **program, int depth ) {
-	char            *token;
-
-	do {
-		token = COM_ParseExt( program, qtrue );
-		if ( token[1] == 0 ) {
-			if ( token[0] == '{' ) {
-				depth++;
-			} else if ( token[0] == '}' )     {
-				depth--;
-			}
-		}
-	} while ( depth && *program );
-}
 
 /*
 =================
@@ -625,51 +532,11 @@ void SkipRestOfLine( char **data ) {
 	p = *data;
 	while ( ( c = *p++ ) != 0 ) {
 		if ( c == '\n' ) {
-			com_lines++;
 			break;
 		}
 	}
 
 	*data = p;
-}
-
-
-void Parse1DMatrix( char **buf_p, int x, float *m ) {
-	char    *token;
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0 ; i < x ; i++ ) {
-		token = COM_Parse( buf_p );
-		m[i] = String::Atof( token );
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-void Parse2DMatrix( char **buf_p, int y, int x, float *m ) {
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0 ; i < y ; i++ ) {
-		Parse1DMatrix( buf_p, x, m + i * x );
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m ) {
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0 ; i < z ; i++ ) {
-		Parse2DMatrix( buf_p, y, x, m + i * x * y );
-	}
-
-	COM_MatchToken( buf_p, ")" );
 }
 
 

@@ -705,15 +705,9 @@ float Com_Clamp( float min, float max, float value );
 void    COM_FixPath( char *pathname );
 void    COM_StripExtension2( const char *in, char *out, int destsize );
 
-void    COM_BeginParseSession( const char *name );
-void    COM_RestoreParseSession( char **data_p );
-void    COM_SetCurrentParseLine( int line );
-int     COM_GetCurrentParseLine( void );
 char    *COM_Parse( char **data_p );
 char    *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 int     COM_Compress( char *data_p );
-void    COM_ParseError( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
-void    COM_ParseWarning( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
 int Com_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
 
 qboolean COM_BitCheck( const int array[], int bitNum );
@@ -744,15 +738,8 @@ typedef struct pc_token_s
 
 // data is an in/out parm, returns a parsed out token
 
-void    COM_MatchToken( char**buf_p, char *match );
-
 void SkipBracedSection( char **program );
-void SkipBracedSection_Depth( char **program, int depth ); // start at given depth if already
 void SkipRestOfLine( char **data );
-
-void Parse1DMatrix( char **buf_p, int x, float *m );
-void Parse2DMatrix( char **buf_p, int y, int x, float *m );
-void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
 // mode parm for FS_FOpenFile
 typedef enum {

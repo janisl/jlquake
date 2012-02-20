@@ -2416,7 +2416,6 @@ static char *FindShaderInShaderText( const char *shadername ) {
 
 		if ( token[0] == '{' ) {
 			// skip the definition
-//			SkipBracedSection_Depth( &p, 1 );
 			SkipBracedSection( &p );
 		} else if ( !String::ICmp( token, shadername ) ) {
 			return p;
@@ -2989,7 +2988,6 @@ static void BuildShaderChecksumLookup( void ) {
 
 		if ( !String::ICmp( token, "{" ) ) {
 			// skip braced section
-//			SkipBracedSection_Depth( &p, 1 );
 			SkipBracedSection( &p );
 			continue;
 		}

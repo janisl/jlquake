@@ -273,59 +273,9 @@ PARSING
 */
 
 static char com_token[MAX_TOKEN_CHARS];
-static char com_parsename[MAX_TOKEN_CHARS];
-static int com_lines;
-
-static int backup_lines;
-static char    *backup_text;
-
-void COM_BeginParseSession( const char *name ) {
-	com_lines = 0;
-	String::Sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
-}
-
-void COM_BackupParseSession( char **data_p ) {
-	backup_lines = com_lines;
-	backup_text = *data_p;
-}
-
-void COM_RestoreParseSession( char **data_p ) {
-	com_lines = backup_lines;
-	*data_p = backup_text;
-}
-
-void COM_SetCurrentParseLine( int line ) {
-	com_lines = line;
-}
-
-int COM_GetCurrentParseLine( void ) {
-	return com_lines;
-}
 
 char *COM_Parse( char **data_p ) {
 	return COM_ParseExt( data_p, qtrue );
-}
-
-void COM_ParseError( char *format, ... ) {
-	va_list argptr;
-	static char string[4096];
-
-	va_start( argptr, format );
-	Q_vsnprintf( string, sizeof( string ), format, argptr );
-	va_end( argptr );
-
-	Com_Printf( "ERROR: %s, line %d: %s\n", com_parsename, com_lines, string );
-}
-
-void COM_ParseWarning( char *format, ... ) {
-	va_list argptr;
-	static char string[4096];
-
-	va_start( argptr, format );
-	Q_vsnprintf( string, sizeof( string ), format, argptr );
-	va_end( argptr );
-
-	Com_Printf( "WARNING: %s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
 /*
@@ -348,7 +298,6 @@ static char *SkipWhitespace( char *data, qboolean *hasNewLines ) {
 			return NULL;
 		}
 		if ( c == '\n' ) {
-			com_lines++;
 			*hasNewLines = qtrue;
 		}
 		data++;
@@ -382,6 +331,10 @@ int COM_Compress( char *data_p ) {
 				ws = qfalse;
 				// skip /* */ comments
 			} else if ( c == '/' && datai[1] == '*' ) {
+				if (GGameType & GAME_ET)
+				{
+					datai += 2; // Arnout: skip over '/*'
+				}
 				while ( *datai && ( *datai != '*' || datai[1] != '/' ) )
 				{
 					datai++;
@@ -422,9 +375,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		*data_p = NULL;
 		return com_token;
 	}
-
-	// RF, backup the session data so we can unget easily
-	COM_BackupParseSession( data_p );
 
 	while ( 1 )
 	{
@@ -470,6 +420,37 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		while ( 1 )
 		{
 			c = *data++;
+			if ((GGameType & GAME_ET) && c == '\\' && *( data ) == '\"' ) {
+				// Arnout: string-in-string
+				if ( len < MAX_TOKEN_CHARS ) {
+					com_token[len] = '\"';
+					len++;
+				}
+				data++;
+
+				while ( 1 ) {
+					c = *data++;
+
+					if ( !c ) {
+						com_token[len] = 0;
+						*data_p = ( char * ) data;
+						break;
+					}
+					if ( ( c == '\\' && *( data ) == '\"' ) ) {
+						if ( len < MAX_TOKEN_CHARS ) {
+							com_token[len] = '\"';
+							len++;
+						}
+						data++;
+						c = *data++;
+						break;
+					}
+					if ( len < MAX_TOKEN_CHARS ) {
+						com_token[len] = c;
+						len++;
+					}
+				}
+			}
 			if ( c == '\"' || !c ) {
 				com_token[len] = 0;
 				*data_p = ( char * ) data;
@@ -491,9 +472,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 		}
 		data++;
 		c = *data;
-		if ( c == '\n' ) {
-			com_lines++;
-		}
 	} while ( c > 32 );
 
 	if ( len == MAX_TOKEN_CHARS ) {
@@ -507,30 +485,17 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks ) {
 }
 
 
-
-
-/*
-==================
-COM_MatchToken
-==================
-*/
-void COM_MatchToken( char **buf_p, char *match ) {
-	char    *token;
-
-	token = COM_Parse( buf_p );
-	if ( String::Cmp( token, match ) ) {
-		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
-	}
-}
-
-
 /*
 =================
-SkipBracedSection_Depth
+SkipBracedSection
 
+The next token should be an open brace.
+Skips until a matching close brace is found.
+Internal brace depths are properly skipped.
 =================
 */
-void SkipBracedSection_Depth( char **program, int depth ) {
+void SkipBracedSection( char **program ) {
+	int depth = 0;
 	char            *token;
 
 	do {
@@ -547,19 +512,6 @@ void SkipBracedSection_Depth( char **program, int depth ) {
 
 /*
 =================
-SkipBracedSection
-
-The next token should be an open brace.
-Skips until a matching close brace is found.
-Internal brace depths are properly skipped.
-=================
-*/
-void SkipBracedSection( char **program ) {
-	SkipBracedSection_Depth( program, 0 );
-}
-
-/*
-=================
 SkipRestOfLine
 =================
 */
@@ -570,51 +522,11 @@ void SkipRestOfLine( char **data ) {
 	p = *data;
 	while ( ( c = *p++ ) != 0 ) {
 		if ( c == '\n' ) {
-			com_lines++;
 			break;
 		}
 	}
 
 	*data = p;
-}
-
-
-void Parse1DMatrix( char **buf_p, int x, float *m ) {
-	char    *token;
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0 ; i < x ; i++ ) {
-		token = COM_Parse( buf_p );
-		m[i] = String::Atof( token );
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-void Parse2DMatrix( char **buf_p, int y, int x, float *m ) {
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0 ; i < y ; i++ ) {
-		Parse1DMatrix( buf_p, x, m + i * x );
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m ) {
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0 ; i < z ; i++ ) {
-		Parse2DMatrix( buf_p, y, x, m + i * x * y );
-	}
-
-	COM_MatchToken( buf_p, ")" );
 }
 
 
