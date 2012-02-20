@@ -2243,7 +2243,6 @@ bool String::FilterPath(const char *filter, const char *name, bool casesensitive
 	return Filter(new_filter, new_name, casesensitive);
 }
 
-#if 0
 //==========================================================================
 //
 //	va
@@ -2254,22 +2253,52 @@ bool String::FilterPath(const char *filter, const char *name, bool casesensitive
 //
 //==========================================================================
 
-char* va(const char* Format, ...)
+char* va(const char* format, ...)
 {
-	va_list			ArgPtr;
-	static char		string[2][32000];	// in case va is called by nested functions
-	static int		Index = 0;
+	enum { MAX_VA_STRING = 32000 };
+#if 1
+	va_list argptr;
+	static char string[2][MAX_VA_STRING];	// in case va is called by nested functions
+	static int index = 0;
 
-	char* Buf = string[Index & 1];
-	Index++;
+	char* buf = string[index & 1];
+	index++;
 
-	va_start(ArgPtr, Format);
-	Q_vsnprintf(Buf, 32000, Format, ArgPtr);
-	va_end(ArgPtr);
+	va_start(argptr, format);
+	Q_vsnprintf(buf, 32000, format, argptr);
+	va_end(argptr);
 
-	return Buf;  
-}
+	return buf;
+#else
+	//	Wolf games use this, looks interesting.
+	va_list argptr;
+	static char temp_buffer[MAX_VA_STRING];
+	static char string[MAX_VA_STRING];      // in case va is called by nested functions
+	static int index = 0;
+
+	va_start(argptr, format);
+	vsprintf(temp_buffer, format, argptr);
+	va_end(argptr);
+
+	int len = String::Length(temp_buffer);
+	if (len >= MAX_VA_STRING)
+	{
+		common->Error("Attempted to overrun string in call to va()\n");
+	}
+
+	if (len + index >= MAX_VA_STRING - 1)
+	{
+		index = 0;
+	}
+
+	char* buf = &string[index];
+	memcpy(buf, temp_buffer, len + 1);
+
+	index += len + 1;
+
+	return buf;
 #endif
+}
 
 /*
 vsnprintf portability:

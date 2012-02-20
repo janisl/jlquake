@@ -788,7 +788,6 @@ qint64  BigLong64( qint64 l );
 float   BigFloat( float l );
 
 void    Swap_Init( void );
-char    * QDECL va( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
 float   *tv( float x, float y, float z );
 
 //=============================================
