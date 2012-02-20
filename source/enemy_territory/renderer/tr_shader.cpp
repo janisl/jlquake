@@ -1454,7 +1454,7 @@ static qboolean ParseShader( const char **text ) {
 		}
 		// skip stuff that only the QuakeEdRadient needs
 		else if ( !String::NICmp( token, "qer", 3 ) ) {
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		}
 		// sun parms
@@ -1489,7 +1489,7 @@ static qboolean ParseShader( const char **text ) {
 			ParseDeform( text );
 			continue;
 		} else if ( !String::ICmp( token, "tesssize" ) )    {
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		} else if ( !String::ICmp( token, "clampTime" ) )    {
 			token = String::ParseExt( text, qfalse );
@@ -1499,7 +1499,7 @@ static qboolean ParseShader( const char **text ) {
 		}
 		// skip stuff that only the q3map needs
 		else if ( !String::NICmp( token, "q3map", 5 ) ) {
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		}
 		// skip stuff that only q3map or the server needs
@@ -1551,7 +1551,7 @@ static qboolean ParseShader( const char **text ) {
 			shader.fogParms.tcScale = 1.0f / shader.fogParms.depthForOpaque;
 
 			// skip any old gradient directions
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		}
 		// portal
@@ -2827,7 +2827,7 @@ static const char *FindShaderInShaderText( const char *shadername ) {
 			return p;
 		}
 
-		SkipBracedSection( &p );
+		String::SkipBracedSection( &p );
 	}
 
 #ifdef SH_LOADTIMING
@@ -3379,7 +3379,7 @@ static void BuildShaderChecksumLookup( void ) {
 			// Gordon: ok, lets try the unget method
 			COM_RestoreParseSession( &p );
 			// skip braced section
-			SkipBracedSection( &p );
+			String::SkipBracedSection( &p );
 			continue;
 		}*/
 
@@ -3406,7 +3406,7 @@ static void BuildShaderChecksumLookup( void ) {
 		}
 
 		// Gordon: skip the actual shader section
-		SkipBracedSection( &p );
+		String::SkipBracedSection( &p );
 	}
 }
 // done.

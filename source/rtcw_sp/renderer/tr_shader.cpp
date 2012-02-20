@@ -1407,7 +1407,7 @@ static qboolean ParseShader( const char **text ) {
 		}
 		// skip stuff that only the QuakeEdRadient needs
 		else if ( !String::NICmp( token, "qer", 3 ) ) {
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		}
 		// sun parms
@@ -1442,7 +1442,7 @@ static qboolean ParseShader( const char **text ) {
 			ParseDeform( text );
 			continue;
 		} else if ( !String::ICmp( token, "tesssize" ) )    {
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		} else if ( !String::ICmp( token, "clampTime" ) )    {
 			token = String::ParseExt( text, qfalse );
@@ -1452,7 +1452,7 @@ static qboolean ParseShader( const char **text ) {
 		}
 		// skip stuff that only the q3map needs
 		else if ( !String::NICmp( token, "q3map", 5 ) ) {
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		}
 		// skip stuff that only q3map or the server needs
@@ -1503,7 +1503,7 @@ static qboolean ParseShader( const char **text ) {
 			shader.fogParms.depthForOpaque = String::Atof( token );
 
 			// skip any old gradient directions
-			SkipRestOfLine( text );
+			String::SkipRestOfLine( text );
 			continue;
 		}
 		// portal
@@ -2360,12 +2360,12 @@ static const char *FindShaderInShaderText( const char *shadername ) {
 
 		if ( token[0] == '{' ) {
 			// skip the definition
-			SkipBracedSection( &p );
+			String::SkipBracedSection( &p );
 		} else if ( !String::ICmp( token, shadername ) ) {
 			return p;
 		} else {
 			// skip to end of line
-			SkipRestOfLine( &p );
+			String::SkipRestOfLine( &p );
 		}
 	}
 	*/
@@ -2920,7 +2920,7 @@ static void BuildShaderChecksumLookup( void ) {
 
 		if ( !String::ICmp( token, "{" ) ) {
 			// skip braced section
-			SkipBracedSection( &p );
+			String::SkipBracedSection( &p );
 			continue;
 		}
 
@@ -3000,7 +3000,7 @@ static void ScanAndLoadShaderFiles( void ) {
 		strcat( s_shaderText, buffers[i] );
 		ri.FS_FreeFile( buffers[i] );
 		buffers[i] = p;
-//		COM_Compress(p);
+//		String::Compress(p);
 	}
 
 	// free up memory

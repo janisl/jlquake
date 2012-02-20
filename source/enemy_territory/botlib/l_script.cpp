@@ -1314,7 +1314,7 @@ int FileLength( FILE *fp ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int COM_Compress( char *data_p );
+
 script_t *LoadScriptFile( const char *filename ) {
 #ifdef BOTLIB
 	fileHandle_t fp;

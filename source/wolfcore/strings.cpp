@@ -1860,7 +1860,6 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 	return com_token;
 }
 
-#if 0
 //==========================================================================
 //
 //	String::Compress
@@ -1869,6 +1868,62 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 
 int String::Compress(char *data_p)
 {
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		//	Version used in Wolf games, I don't have time now to deal with it.
+		char *datai, *datao;
+		int c, pc, size;
+		qboolean ws = false;//Hmmmm, always false.
+
+		size = 0;
+		pc = 0;
+		datai = datao = data_p;
+		if ( datai ) {
+			while ( ( c = *datai ) != 0 ) {
+				if ( c == 13 || c == 10 ) {
+					*datao = c;
+					datao++;
+					ws = false;
+					pc = c;
+					datai++;
+					size++;
+					// skip double slash comments
+				} else if ( c == '/' && datai[1] == '/' ) {
+					while ( *datai && *datai != '\n' ) {
+						datai++;
+					}
+					ws = false;
+					// skip /* */ comments
+				} else if ( c == '/' && datai[1] == '*' ) {
+					if (GGameType & GAME_ET)
+					{
+						datai += 2; // Arnout: skip over '/*'
+					}
+					while ( *datai && ( *datai != '*' || datai[1] != '/' ) )
+					{
+						datai++;
+					}
+					if ( *datai ) {
+						datai += 2;
+					}
+					ws = false;
+				} else {
+					if ( ws ) {
+						*datao = ' ';
+						datao++;
+					}
+					*datao = c;
+					datao++;
+					datai++;
+					ws = false;
+					pc = c;
+					size++;
+				}
+			}
+		}
+		*datao = 0;
+		return size;
+	}
 	char *in, *out;
 	int c;
 	bool newline = false, whitespace = false;
@@ -2014,6 +2069,7 @@ void String::SkipRestOfLine(const char **data)
 	*data = p;
 }
 
+#if 0
 /*
 ============
 Com_StringContains

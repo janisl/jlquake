@@ -362,11 +362,11 @@ public:
 	static char* Parse2(const char** Data_p);
 	static char* Parse3(const char** Data_p);
 	static char* ParseExt(const char** Data_p, bool AllowLineBreak);
-#if 0
 	static int Compress(char* data_p);
 	static void SkipBracedSection(const char **program);
 	static void SkipRestOfLine(const char **data);
 
+#if 0
 	static bool Filter(const char* Filter, const char* Name, bool CaseSensitive);
 	static bool FilterPath(const char* Filter, const char* Name, bool CaseSensitive);
 #endif

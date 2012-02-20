@@ -80,7 +80,6 @@ typedef enum {qfalse, qtrue}    qboolean;
 #include "../bspc/qbsp.h"
 #include "../bspc/l_log.h"
 #include "../bspc/l_mem.h"
-int COM_Compress( char *data_p );
 
 #define qtrue   true
 #define qfalse  false
@@ -1384,7 +1383,7 @@ script_t *LoadScriptFile( const char *filename ) {
 	fclose( fp );
 #endif
 	//
-	script->length = COM_Compress( script->buffer );
+	script->length = String::Compress( script->buffer );
 
 	return script;
 } //end of the function LoadScriptFile

@@ -626,8 +626,6 @@ float Com_Clamp( float min, float max, float value );
 
 void    COM_StripExtension2( const char *in, char *out, int destsize );
 
-int     COM_Compress( char *data_p );
-
 qboolean COM_BitCheck( const int array[], int bitNum );
 void COM_BitSet( int array[], int bitNum );
 void COM_BitClear( int array[], int bitNum );
@@ -651,11 +649,6 @@ typedef struct pc_token_s
 	float floatvalue;
 	char string[MAX_TOKENLENGTH];
 } pc_token_t;
-
-// data is an in/out parm, returns a parsed out token
-
-void SkipBracedSection( const char **program );
-void SkipRestOfLine( const char **data );
 
 // mode parm for FS_FOpenFile
 typedef enum {
