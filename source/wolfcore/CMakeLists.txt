@@ -2,6 +2,7 @@ set(WOLFCORE_FILES
 	../core/Common.cpp
 	common_defs.cpp
 	../core/crc.cpp
+	../core/endian.cpp
 	../core/exception.cpp
 	../core/log.cpp
 	../core/md4.cpp

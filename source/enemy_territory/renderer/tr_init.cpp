@@ -1137,8 +1137,6 @@ void R_Init( void ) {
 	tess.maxShaderVerts =       SHADER_MAX_VERTEXES;
 	tess.maxShaderIndicies =    SHADER_MAX_INDEXES;
 
-	Swap_Init();
-
 	if ( (intptr_t)tess.xyz & 15 ) {
 		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
 	}

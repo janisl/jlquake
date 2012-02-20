@@ -2185,7 +2185,6 @@ void Com_Init( char *commandLine )
 	// cvar and command buffer management
 	Com_ParseCommandLine( commandLine );
 
-//	Swap_Init ();
 	Cbuf_Init ();
 
 	Com_InitZoneMemory();

@@ -728,17 +728,6 @@ typedef struct
 
 //=============================================
 
-short   LittleShort( short l );
-int     LittleLong( int l );
-qint64  LittleLong64( qint64 l );
-float   LittleFloat( float l );
-
-short   BigShort( short l );
-int BigLong( int l );
-qint64  BigLong64( qint64 l );
-float   BigFloat( float l );
-
-void    Swap_Init( void );
 float   *tv( float x, float y, float z );
 
 //=============================================

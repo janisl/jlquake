@@ -27,9 +27,7 @@
 #include "common_defs.h"	//	Basic types and defines
 #include "../core/Common.h"
 #include "../core/memory.h"		//	Memory allocation
-#if 0
-#include "endian.h"		//	Endianes handling
-#endif
+#include "../core/endian.h"		//	Endianes handling
 #include "../core/exception.h"	//	Exception handling
 #include "../core/log.h"		//	General logging interface
 #include "../core/array.h"		//	Dynamic array

@@ -515,17 +515,6 @@ char *Q_CleanStr( char *string );
 
 //=============================================
 
-short   BigShort( short l );
-short   LittleShort( short l );
-int     BigLong( int l );
-int     LittleLong( int l );
-float   BigFloat( float l );
-float   LittleFloat( float l );
-
-void    Swap_Init( void );
-
-
-//=============================================
 #ifdef __cplusplus
 //
 // mapfile parsing

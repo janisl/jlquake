@@ -118,16 +118,6 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct pl
 
 void MSG_ReportChangeVectors_f( void );
 
-//============================================================================
-
-extern short   BigShort( short l );
-extern short   LittleShort( short l );
-extern int     BigLong( int l );
-extern int     LittleLong( int l );
-extern float   BigFloat( float l );
-extern float   LittleFloat( float l );
-
-
 /*
 ==============================================================
 
