@@ -65,7 +65,6 @@ set(WOLFSP_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/md4.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/huffman.cpp

@@ -4,6 +4,7 @@ set(WOLFCORE_FILES
 	../core/crc.cpp
 	../core/exception.cpp
 	../core/log.cpp
+	../core/md4.cpp
 	../core/memory.cpp
 	../core/strings.cpp
 )

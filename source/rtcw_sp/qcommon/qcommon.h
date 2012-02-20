@@ -701,8 +701,6 @@ void QDECL Com_Error( int code, const char *fmt, ... );
 void        Com_Quit_f( void );
 int         Com_EventLoop( void );
 int         Com_Milliseconds( void );   // will be journaled properly
-unsigned    Com_BlockChecksum( const void *buffer, int length );
-unsigned    Com_BlockChecksumKey( void *buffer, int length, int key );
 int         Com_HashKey( char *string, int maxlen );
 int         Com_RealTime( qtime_t *qtime );
 qboolean    Com_SafeMode( void );

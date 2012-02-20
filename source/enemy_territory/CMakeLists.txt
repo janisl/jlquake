@@ -74,7 +74,6 @@ set (ET_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/huffman.cpp
-	qcommon/md4.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/unzip.cpp
@@ -177,7 +176,6 @@ set (ETDED_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/huffman.cpp
-	qcommon/md4.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/unzip.cpp

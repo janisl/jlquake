@@ -96,7 +96,6 @@
     <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="qcommon\huffman.cpp" />
-    <ClCompile Include="qcommon\md4.cpp" />
     <ClCompile Include="qcommon\msg.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="null\null_client.cpp" />

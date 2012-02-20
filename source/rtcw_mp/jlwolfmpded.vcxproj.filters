@@ -41,9 +41,6 @@
     <ClCompile Include="qcommon\huffman.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\md4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\msg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
