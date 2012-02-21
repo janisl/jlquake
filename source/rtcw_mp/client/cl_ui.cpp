@@ -325,24 +325,24 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 	}
 	if ( server && buf ) {
 		buf[0] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName );
-		Info_SetValueForKey( info, "mapname", server->mapName );
-		Info_SetValueForKey( info, "clients", va( "%i",server->clients ) );
-		Info_SetValueForKey( info, "sv_maxclients", va( "%i",server->maxClients ) );
-		Info_SetValueForKey( info, "ping", va( "%i",server->ping ) );
-		Info_SetValueForKey( info, "minping", va( "%i",server->minPing ) );
-		Info_SetValueForKey( info, "maxping", va( "%i",server->maxPing ) );
-		Info_SetValueForKey( info, "game", server->game );
-		Info_SetValueForKey( info, "gametype", va( "%i",server->gameType ) );
-		Info_SetValueForKey( info, "nettype", va( "%i",server->netType ) );
-		Info_SetValueForKey( info, "addr", NET_AdrToString( server->adr ) );
-		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ) );
-		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ) );               // NERVE - SMF
-		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ) );                       // NERVE - SMF
-		Info_SetValueForKey( info, "tourney", va( "%i", server->tourney ) );                     // NERVE - SMF
-		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ) );                   // DHM - Nerve
-		Info_SetValueForKey( info, "gamename", server->gameName );                                // Arnout
-		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ) ); // TTimo
+		Info_SetValueForKey( info, "hostname", server->hostName, MAX_INFO_STRING );
+		Info_SetValueForKey( info, "mapname", server->mapName, MAX_INFO_STRING );
+		Info_SetValueForKey( info, "clients", va( "%i",server->clients ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "sv_maxclients", va( "%i",server->maxClients ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "ping", va( "%i",server->ping ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "minping", va( "%i",server->minPing ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "maxping", va( "%i",server->maxPing ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING );
+		Info_SetValueForKey( info, "gametype", va( "%i",server->gameType ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "nettype", va( "%i",server->netType ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "addr", NET_AdrToString( server->adr ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), MAX_INFO_STRING );               // NERVE - SMF
+		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ), MAX_INFO_STRING );                       // NERVE - SMF
+		Info_SetValueForKey( info, "tourney", va( "%i", server->tourney ), MAX_INFO_STRING );                     // NERVE - SMF
+		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ), MAX_INFO_STRING );                   // DHM - Nerve
+		Info_SetValueForKey( info, "gamename", server->gameName, MAX_INFO_STRING );                                // Arnout
+		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ), MAX_INFO_STRING ); // TTimo
 		String::NCpyZ( buf, info, buflen );
 	} else {
 		if ( buf ) {

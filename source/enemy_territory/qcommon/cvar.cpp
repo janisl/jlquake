@@ -927,7 +927,7 @@ char    *Cvar_InfoString( int bit ) {
 
 	for ( var = cvar_vars ; var ; var = var->next ) {
 		if ( var->flags & bit ) {
-			Info_SetValueForKey( info, var->name, var->string );
+			Info_SetValueForKey( info, var->name, var->string, MAX_INFO_STRING );
 		}
 	}
 	return info;
@@ -948,7 +948,7 @@ char    *Cvar_InfoString_Big( int bit ) {
 
 	for ( var = cvar_vars ; var ; var = var->next ) {
 		if ( var->flags & bit ) {
-			Info_SetValueForKey_Big( info, var->name, var->string );
+			Info_SetValueForKey( info, var->name, var->string, BIG_INFO_STRING );
 		}
 	}
 	return info;

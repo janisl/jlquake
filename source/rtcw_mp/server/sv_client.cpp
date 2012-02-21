@@ -261,7 +261,7 @@ void SV_DirectConnect( netadr_t from ) {
 #endif
 	int qport;
 	int challenge;
-	char        *password;
+	const char        *password;
 	int startIndex;
 	intptr_t denied;
 	int count;
@@ -318,7 +318,7 @@ void SV_DirectConnect( netadr_t from ) {
 			return;
 		}
 		// force the IP key/value pair so the game can filter based on ip
-		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ) );
+		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ), MAX_INFO_STRING );
 
 		if ( svs.challenges[i].firstPing == 0 ) {
 			ping = svs.time - svs.challenges[i].pingTime;
@@ -345,7 +345,7 @@ void SV_DirectConnect( netadr_t from ) {
 		}
 	} else {
 		// force the "ip" info key to "localhost"
-		Info_SetValueForKey( userinfo, "ip", "localhost" );
+		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING );
 	}
 
 	newcl = &temp;
@@ -1192,7 +1192,7 @@ into a more C friendly form.
 =================
 */
 void SV_UserinfoChanged( client_t *cl ) {
-	char    *val;
+	const char    *val;
 	int i;
 
 	// name for C code
@@ -1222,7 +1222,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	if ( String::Length( val ) ) {
 		i = String::Atoi( val );
 		if ( i <= 0 || i > 100 || String::Length( val ) > 4 ) {
-			Info_SetValueForKey( cl->userinfo, "handicap", "100" );
+			Info_SetValueForKey( cl->userinfo, "handicap", "100", MAX_INFO_STRING );
 		}
 	}
 
@@ -1248,10 +1248,10 @@ void SV_UserinfoChanged( client_t *cl ) {
 	if ( !val[0] ) {
 		//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
 		if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) ) {
-			Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ) );
+			Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING );
 		} else {
 			// force the "ip" info key to "localhost" for local clients
-			Info_SetValueForKey( cl->userinfo, "ip", "localhost" );
+			Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING );
 		}
 	}
 

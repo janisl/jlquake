@@ -896,9 +896,9 @@ void CL_RequestMotd( void ) {
 	info[0] = 0;
 	String::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", rand() );
 
-	Info_SetValueForKey( info, "challenge", cls.updateChallenge );
-	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string );
-	Info_SetValueForKey( info, "version", com_version->string );
+	Info_SetValueForKey( info, "challenge", cls.updateChallenge, MAX_INFO_STRING );
+	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING );
+	Info_SetValueForKey( info, "version", com_version->string, MAX_INFO_STRING );
 
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd \"%s\"\n", info );
 }
@@ -1664,9 +1664,9 @@ void CL_CheckForResend( void ) {
 		port = Cvar_VariableValue( "net_qport" );
 
 		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
-		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ) );
-		Info_SetValueForKey( info, "qport", va( "%i", port ) );
-		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
+		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "qport", va( "%i", port ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), MAX_INFO_STRING );
 
 		String::Cpy( data, "connect " );
 
@@ -1736,7 +1736,7 @@ CL_MotdPacket
 ===================
 */
 void CL_MotdPacket( netadr_t from ) {
-	char    *challenge;
+	const char    *challenge;
 	char    *info;
 
 	// if not from our server, ignore it
@@ -3126,7 +3126,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	char*   str;
 	char    *infoString;
 	int prot;
-	char    *gameName;
+	const char    *gameName;
 
 	infoString = MSG_ReadString( msg );
 
@@ -3176,7 +3176,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 				type = 0;
 				break;
 			}
-			Info_SetValueForKey( cl_pinglist[i].info, "nettype", va( "%d", type ) );
+			Info_SetValueForKey( cl_pinglist[i].info, "nettype", va( "%d", type ), MAX_INFO_STRING );
 			CL_SetServerInfoByAddress( from, infoString, cl_pinglist[i].time );
 
 			return;

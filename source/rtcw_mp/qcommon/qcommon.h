@@ -701,7 +701,6 @@ void Com_ReadCDKey( const char *filename );
 #define CPUID_AMD_3DNOW         0x30            // AMD K6 3DNOW!
 
 char        *CopyString( const char *in );
-void        Info_Print( const char *s );
 
 void Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( char * ) );
 void        Com_EndRedirect( void );

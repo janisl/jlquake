@@ -346,7 +346,7 @@ void SVC_Status( netadr_t from ) {
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING );
 
 	// add "demo" to the sv_keywords if restricted
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
@@ -354,7 +354,7 @@ void SVC_Status( netadr_t from ) {
 
 		String::Sprintf( keywords, sizeof( keywords ), "demo %s",
 					 Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords );
+		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING );
 	}
 
 	status[0] = 0;
@@ -408,31 +408,31 @@ void SVC_Info( netadr_t from ) {
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING );
 
-	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ) );
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string );
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string );
-	Info_SetValueForKey( infostring, "clients", va( "%i", count ) );
+	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "clients", va( "%i", count ), MAX_INFO_STRING );
 	Info_SetValueForKey( infostring, "sv_maxclients",
-						 va( "%i", sv_maxclients->integer - sv_privateClients->integer ) );
-	Info_SetValueForKey( infostring, "gametype", va( "%i", sv_gametype->integer ) );
-	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ) );
+						 va( "%i", sv_maxclients->integer - sv_privateClients->integer ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "gametype", va( "%i", sv_gametype->integer ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), MAX_INFO_STRING );
 
 	if ( sv_minPing->integer ) {
-		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ) );
+		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ), MAX_INFO_STRING );
 	}
 	if ( sv_maxPing->integer ) {
-		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ) );
+		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), MAX_INFO_STRING );
 	}
 	gamedir = Cvar_VariableString( "fs_game" );
 	if ( *gamedir ) {
-		Info_SetValueForKey( infostring, "game", gamedir );
+		Info_SetValueForKey( infostring, "game", gamedir, MAX_INFO_STRING );
 	}
-	Info_SetValueForKey( infostring, "sv_allowAnonymous", va( "%i", sv_allowAnonymous->integer ) );
+	Info_SetValueForKey( infostring, "sv_allowAnonymous", va( "%i", sv_allowAnonymous->integer ), MAX_INFO_STRING );
 
 	// Rafael gameskill
-	Info_SetValueForKey( infostring, "gameskill", va( "%i", sv_gameskill->integer ) );
+	Info_SetValueForKey( infostring, "gameskill", va( "%i", sv_gameskill->integer ), MAX_INFO_STRING );
 	// done
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );

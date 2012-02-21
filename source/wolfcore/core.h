@@ -32,7 +32,7 @@
 #include "../core/log.h"		//	General logging interface
 #include "../core/array.h"		//	Dynamic array
 #include "../core/strings.h"	//	Strings
-#include "info_string.h"
+#include "../core/info_string.h"
 #if 0
 #include "mathlib.h"
 #endif
