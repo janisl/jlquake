@@ -148,9 +148,9 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 		}
 		*o = 0;
 
-		if (!String::Cmp (key, pkey) )
+		if (!String::Cmp (key, pkey))
 		{
-			String::Cpy(start, s);	// remove this part
+			memmove(start, s, String::Length(s) + 1); // remove this part
 			return;
 		}
 
