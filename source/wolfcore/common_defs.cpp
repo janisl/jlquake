@@ -18,7 +18,6 @@
 
 #define MAX_NUM_ARGVS	50
 
-#if 0
 Cvar* com_dedicated;
 Cvar* com_viewlog;
 Cvar* com_timescale;
@@ -26,7 +25,6 @@ Cvar* com_timescale;
 Cvar* com_journal;
 
 Cvar* com_developer;
-#endif
 
 Cvar* com_crashed = NULL;	// ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -37,9 +35,7 @@ fileHandle_t com_journalDataFile;		// config files are written here
 
 int GGameType;
 
-#if 0
 int com_frameTime;
-#endif
 
 static int com_argc;
 static const char* com_argv[MAX_NUM_ARGVS+1];
@@ -693,11 +689,9 @@ int COM_CheckParm(const char *parm)
 	return 0;
 }
 
-#if 0
 void COM_InitCommonCvars()
 {
 	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
 	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
 }
-#endif

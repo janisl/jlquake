@@ -737,17 +737,12 @@ extern Cvar  *com_ignorecrash;    //bani
 
 extern Cvar  *com_pid;    //bani
 
-extern Cvar  *com_developer;
-extern Cvar  *com_dedicated;
 extern Cvar  *com_speeds;
-extern Cvar  *com_timescale;
 extern Cvar  *com_sv_running;
 extern Cvar  *com_cl_running;
-extern Cvar  *com_viewlog;            // 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar  *com_version;
 //extern	Cvar	*com_blood;
 extern Cvar  *com_buildScript;        // for building release pak files
-extern Cvar  *com_journal;
 extern Cvar  *com_cameraMode;
 extern Cvar  *com_logosPlaying;
 
@@ -764,7 +759,6 @@ extern int time_game;
 extern int time_frontend;
 extern int time_backend;            // renderer backend time
 
-extern int com_frameTime;
 extern int com_frameMsec;
 extern int com_expectedhunkusage;
 extern int com_hunkusedvalue;

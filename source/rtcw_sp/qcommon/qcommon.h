@@ -600,17 +600,12 @@ void        Com_SetRecommended( qboolean vid_restart );
 // only a set with the exact name.  Only used during startup.
 
 
-extern Cvar  *com_developer;
-extern Cvar  *com_dedicated;
 extern Cvar  *com_speeds;
-extern Cvar  *com_timescale;
 extern Cvar  *com_sv_running;
 extern Cvar  *com_cl_running;
-extern Cvar  *com_viewlog;            // 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar  *com_version;
 extern Cvar  *com_blood;
 extern Cvar  *com_buildScript;        // for building release pak files
-extern Cvar  *com_journal;
 extern Cvar  *com_cameraMode;
 
 // both client and server must agree to pause
@@ -622,7 +617,6 @@ extern int time_game;
 extern int time_frontend;
 extern int time_backend;            // renderer backend time
 
-extern int com_frameTime;
 extern int com_frameMsec;
 
 extern qboolean com_errorEntered;

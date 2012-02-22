@@ -47,14 +47,9 @@ static fileHandle_t logfile;
 fileHandle_t com_journalFile;               // events are written here
 fileHandle_t com_journalDataFile;           // config files are written here
 
-Cvar  *com_viewlog;
 Cvar  *com_speeds;
-Cvar  *com_developer;
-Cvar  *com_dedicated;
-Cvar  *com_timescale;
 Cvar  *com_fixedtime;
 Cvar  *com_dropsim;       // 0.0 to 1.0, simulated packet drops
-Cvar  *com_journal;
 Cvar  *com_maxfps;
 Cvar  *com_timedemo;
 Cvar  *com_sv_running;
@@ -83,7 +78,6 @@ int time_game;
 int time_frontend;          // renderer frontend time
 int time_backend;           // renderer backend time
 
-int com_frameTime;
 int com_frameMsec;
 int com_frameNumber;
 
@@ -1843,17 +1837,15 @@ void Com_Init( char *commandLine ) {
 	//
 	// init commands and vars
 	//
+	COM_InitCommonCvars();
 	com_maxfps = Cvar_Get( "com_maxfps", "85", CVAR_ARCHIVE );
 	com_blood = Cvar_Get( "com_blood", "1", CVAR_ARCHIVE );
 
-	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
 	com_logfile = Cvar_Get( "logfile", "0", CVAR_TEMP );
 
-	com_timescale = Cvar_Get( "timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
 	com_fixedtime = Cvar_Get( "fixedtime", "0", CVAR_CHEAT );
 	com_showtrace = Cvar_Get( "com_showtrace", "0", CVAR_CHEAT );
 	com_dropsim = Cvar_Get( "com_dropsim", "0", CVAR_CHEAT );
-	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 	com_timedemo = Cvar_Get( "timedemo", "0", CVAR_CHEAT );
 	com_cameraMode = Cvar_Get( "com_cameraMode", "0", CVAR_CHEAT );

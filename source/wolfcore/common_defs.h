@@ -210,6 +210,4 @@ extern int		GGameType;
 //
 //==========================================================================
 
-#if 0
 void COM_InitCommonCvars();
-#endif
