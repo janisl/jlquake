@@ -153,6 +153,8 @@ public:
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
 
+#define BIT(num)	(1 << (num))
+
 //==========================================================================
 //
 //	Library method replacements.

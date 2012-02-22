@@ -24,7 +24,7 @@
 #include <cstdarg>
 #include <cmath>
 
-#include "common_defs.h"	//	Basic types and defines
+#include "../core/common_defs.h"	//	Basic types and defines
 #include "../core/Common.h"
 #include "../core/memory.h"		//	Memory allocation
 #include "../core/endian.h"		//	Endianes handling
