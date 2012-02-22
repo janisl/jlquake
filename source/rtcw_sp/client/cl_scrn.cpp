@@ -32,11 +32,11 @@ If you have questions concerning this license or the applicable additional terms
 
 qboolean scr_initialized;           // ready to draw
 
-cvar_t      *cl_timegraph;
-cvar_t      *cl_debuggraph;
-cvar_t      *cl_graphheight;
-cvar_t      *cl_graphscale;
-cvar_t      *cl_graphshift;
+Cvar      *cl_timegraph;
+Cvar      *cl_debuggraph;
+Cvar      *cl_graphheight;
+Cvar      *cl_graphscale;
+Cvar      *cl_graphshift;
 
 /*
 ================

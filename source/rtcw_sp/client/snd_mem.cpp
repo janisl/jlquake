@@ -57,7 +57,7 @@ short *sfxScratchBuffer = NULL;
 const sfx_t *sfxScratchPointer = NULL;
 int sfxScratchIndex = 0;
 
-extern cvar_t   *s_nocompressed;
+extern Cvar   *s_nocompressed;
 
 /*
 ================
@@ -98,10 +98,10 @@ SND_setup
 */
 void SND_setup() {
 	sndBuffer *p, *q;
-	cvar_t  *cv;
+	Cvar  *cv;
 	int scs;
 
-	cv = Cvar_Get( "com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	scs = cv->integer * 512;
 

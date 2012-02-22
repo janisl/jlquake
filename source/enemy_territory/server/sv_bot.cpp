@@ -111,11 +111,11 @@ BotDrawDebugPolygons
 ==================
 */
 void BotDrawDebugPolygons( BotPolyFunc drawPoly, int value ) {
-	static cvar_t *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
-	static cvar_t *bot_testhidepos;
+	static Cvar *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
+	static Cvar *bot_testhidepos;
 	bot_debugpoly_t *poly;
 	int i, parm0;
-	static cvar_t   *debugSurface;
+	static Cvar   *debugSurface;
 
 #ifdef PRE_RELEASE_DEMO
 	return;
@@ -561,8 +561,8 @@ SV_BotLibSetup
 ===============
 */
 int SV_BotLibSetup( void ) {
-	static cvar_t *bot_norcd;
-	static cvar_t *bot_frameroutingupdates;
+	static Cvar *bot_norcd;
+	static Cvar *bot_frameroutingupdates;
 
 #ifdef PRE_RELEASE_DEMO
 	return 0;

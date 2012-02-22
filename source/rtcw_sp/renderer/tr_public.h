@@ -139,8 +139,8 @@ typedef struct {
 	void    *( *Hunk_AllocateTempMemory )( int size );
 	void ( *Hunk_FreeTempMemory )( void *block );
 
-	cvar_t  *( *Cvar_Get )( const char *name, const char *value, int flags );
-	void ( *Cvar_Set )( const char *name, const char *value );
+	Cvar  *( *Cvar_Get )( const char *name, const char *value, int flags );
+	Cvar* ( *Cvar_Set )( const char *name, const char *value );
 
 	void ( *Cmd_AddCommand )( const char *name, void( *cmd ) ( void ) );
 	void ( *Cmd_RemoveCommand )( const char *name );

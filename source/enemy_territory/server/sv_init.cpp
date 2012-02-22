@@ -706,13 +706,13 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 
 	// save systeminfo and serverinfo strings
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString_Big( CVAR_SYSTEMINFO ) );
+	SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ) );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// NERVE - SMF
-	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO ) );
+	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING ) );
 	cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 
 	// any media configstring setting now should issue a warning
@@ -751,7 +751,7 @@ void SV_Init( void ) {
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 
 	// Rafael gameskill
-//	sv_gameskill = Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH );
+//	sv_gameskill = Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH2 );
 	// done
 
 	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
@@ -761,9 +761,9 @@ void SV_Init( void ) {
 	sv_hostname = Cvar_Get( "sv_hostname", "ETHost", CVAR_SERVERINFO | CVAR_ARCHIVE );
 	//
 #ifdef __MACOS__
-	sv_maxclients = Cvar_Get( "sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH );               //DAJ HOG
+	sv_maxclients = Cvar_Get( "sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH2 );               //DAJ HOG
 #else
-	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );               // NERVE - SMF - changed to 20 from 8
+	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH2 );               // NERVE - SMF - changed to 20 from 8
 #endif
 
 	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
@@ -772,11 +772,11 @@ void SV_Init( void ) {
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_allowAnonymous = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
 	sv_friendlyFire = Cvar_Get( "g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE );           // NERVE - SMF
-	sv_maxlives = Cvar_Get( "g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO );      // NERVE - SMF
+	sv_maxlives = Cvar_Get( "g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_SERVERINFO );      // NERVE - SMF
 	sv_needpass = Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM );
 
 	// systeminfo
-	//bani - added cvar_t for sv_cheats so server engine can reference it
+	//bani - added Cvar for sv_cheats so server engine can reference it
 	sv_cheats = Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
@@ -842,7 +842,7 @@ void SV_Init( void ) {
 
 	Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO );
 
-	g_gameType = Cvar_Get( "g_gametype", va( "%i", com_gameInfo.defaultGameType ), CVAR_SERVERINFO | CVAR_LATCH );
+	g_gameType = Cvar_Get( "g_gametype", va( "%i", com_gameInfo.defaultGameType ), CVAR_SERVERINFO | CVAR_LATCH2 );
 
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
 	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", CVAR_ARCHIVE );

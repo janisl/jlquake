@@ -107,8 +107,8 @@ BotDrawDebugPolygons
 ==================
 */
 void BotDrawDebugPolygons( void ( *drawPoly )( int color, int numPoints, float *points ), int value ) {
-	static cvar_t *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
-	static cvar_t *bot_testhidepos, *bot_testroutevispos;
+	static Cvar *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
+	static Cvar *bot_testhidepos, *bot_testroutevispos;
 	bot_debugpoly_t *poly;
 	int i, parm0;
 

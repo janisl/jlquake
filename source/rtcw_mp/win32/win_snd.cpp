@@ -84,7 +84,7 @@ static int snd_sent, snd_completed;
 #define WAV_MASK                0x3F
 #define WAV_BUFFER_SIZE         0x0400
 
-extern cvar_t       *s_wavonly;
+extern Cvar       *s_wavonly;
 /*
 ==================
 FreeSound

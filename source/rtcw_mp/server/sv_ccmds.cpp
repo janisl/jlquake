@@ -172,10 +172,10 @@ static void SV_Map_f( void ) {
 
 	// force latched values to get set
 	// DHM - Nerve :: default to GT_WOLF
-	Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH );
+	Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2 );
 
 	// Rafael gameskill
-	Cvar_Get( "g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH );
+	Cvar_Get( "g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH2 );
 	// done
 
 	cmd = Cmd_Argv( 0 );
@@ -325,7 +325,7 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	// DHM - Nerve :: Check for invalid gametype
-	sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH );
+	sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2 );
 	nextgt = sv_gametype->integer;
 
 	world = SV_GentityNum( ENTITYNUM_WORLD );
@@ -342,7 +342,7 @@ static void SV_MapRestart_f( void ) {
 			Cvar_Set( "g_gametype", "7" );
 		}
 
-		sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH );
+		sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2 );
 	}
 	// dhm
 
@@ -834,7 +834,7 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void ) {
 	Com_Printf( "Server info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
 }
 
 
@@ -847,7 +847,7 @@ Examine or change the serverinfo string
 */
 static void SV_Systeminfo_f( void ) {
 	Com_Printf( "System info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING ) );
 }
 
 

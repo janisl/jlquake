@@ -21,16 +21,18 @@
 
 // MACROS ------------------------------------------------------------------
 
-#if 0
-#define	MAX_CVARS			1024
+#define	MAX_CVARS			2048
 
-#define FILE_HASH_SIZE		256
+#define FILE_HASH_SIZE		512
+
+#define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
 
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 void Cvar_Changed(Cvar* var);
+const char* Cvar_TranslateString(const char* string);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -64,6 +66,10 @@ static Cvar*		cvar_hashTable[FILE_HASH_SIZE];
 
 static long Cvar_GenerateHashValue(const char *fname)
 {
+	if (!fname)
+	{
+		common->Error("null name in Cvar_GenerateHashValue");
+	}
 	long hash = 0;
 	for (int i = 0; fname[i] != '\0'; i++)
 	{
@@ -73,7 +79,6 @@ static long Cvar_GenerateHashValue(const char *fname)
 	hash &= (FILE_HASH_SIZE - 1);
 	return hash;
 }
-#endif
 
 //==========================================================================
 //
@@ -88,7 +93,6 @@ char* __CopyString(const char* in)
 	return out;
 }
 
-#if 0
 //==========================================================================
 //
 //	Cvar_FindVar
@@ -137,6 +141,25 @@ static bool Cvar_ValidateString(const char* S)
 	return true;
 }
 
+//	Some cvar values need to be safe from foreign characters
+static char* Cvar_ClearForeignCharacters(const char* value)
+{
+	static char clean[MAX_CVAR_VALUE_STRING];
+	int j = 0;
+	for (int i = 0; value[i] != '\0'; i++)
+	{
+		if ((!(GGameType & GAME_ET) && !(value[i] & 128)) ||
+			((GGameType & GAME_ET) && ((byte*)value)[i] != 0xFF && (((byte*)value)[i] <= 127 || ((byte*)value)[i] >= 161)))
+		{
+			clean[j] = value[i];
+			j++;
+		}
+	}
+	clean[j] = '\0';
+
+	return clean;
+}
+
 //==========================================================================
 //
 //	Cvar_Set2
@@ -171,7 +194,7 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		}
 	}
 
-	if (var->flags & (CVAR_USERINFO | CVAR_SERVERINFO))
+	if (!(GGameType & GAME_Tech3) && var->flags & (CVAR_USERINFO | CVAR_SERVERINFO))
 	{
 		if (!Cvar_ValidateString(value))
 		{
@@ -185,6 +208,17 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		value = var->resetString;
 	}
 
+	if ((GGameType & (GAME_WolfMP | GAME_ET)) && (var->flags & CVAR_USERINFO))
+	{
+		char* cleaned = Cvar_ClearForeignCharacters(value);
+		if (String::Cmp(value, cleaned))
+		{
+			common->Printf(Cvar_TranslateString(FOREIGN_MSG));
+			common->Printf("Using %s instead of %s\n", cleaned, value);
+			return Cvar_Set2(var_name, cleaned, force);
+		}
+	}
+
 	if (!String::Cmp(value, var->string) && !var->latchedString)
 	{
 		return var;
@@ -194,6 +228,13 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 
 	if (!force)
 	{
+		// ydnar: don't set unsafe variables when com_crashed is set
+		if ((var->flags & CVAR_UNSAFE) && com_crashed && com_crashed->integer)
+		{
+			common->Printf("%s is unsafe. Check com_crashed.\n", var_name);
+			return var;
+		}
+
 		if (var->flags & CVAR_ROM)
 		{
 			Log::write("%s is read only.\n", var_name);
@@ -203,6 +244,12 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		if (var->flags & CVAR_INIT)
 		{
 			Log::write("%s is write protected.\n", var_name);
+			return var;
+		}
+
+		if ((var->flags & CVAR_CHEAT) && !cvar_cheats->integer)
+		{
+			Log::write("%s is cheat protected.\n", var_name);
 			return var;
 		}
 
@@ -228,12 +275,6 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 			var->latchedString = __CopyString(value);
 			var->modified = true;
 			var->modificationCount++;
-			return var;
-		}
-
-		if ((var->flags & CVAR_CHEAT) && !cvar_cheats->integer)
-		{
-			Log::write("%s is cheat protected.\n", var_name);
 			return var;
 		}
 	}
@@ -398,6 +439,18 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 			Mem_Free(s);
 		}
 
+		// TTimo
+		// if CVAR_USERINFO was toggled on for an existing cvar, check wether the value needs to be cleaned from foreigh characters
+		// (for instance, seta name "name-with-foreign-chars" in the config file, and toggle to CVAR_USERINFO happens later in CL_Init)
+		if ((GGameType & (GAME_WolfMP | GAME_ET)) && (Flags & CVAR_USERINFO))
+		{
+			char *cleaned = Cvar_ClearForeignCharacters(var->string); // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
+			if (String::Cmp(var->string, cleaned))
+			{
+				Cvar_Set2(var->name, var->string, false); // call Cvar_Set2 with the value to be cleaned up for verbosity
+			}
+		}
+
 		return var;
 	}
 
@@ -411,7 +464,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	// ignored flags and it was commented out because variables that are not
 	// info variables can contain characters that are invalid for info srings.
 	// Currently for compatibility it's not done for Quake 3.
-	if (!(GGameType & GAME_Quake3) && (Flags & (CVAR_USERINFO | CVAR_SERVERINFO)))
+	if (!(GGameType & GAME_Tech3) && (Flags & (CVAR_USERINFO | CVAR_SERVERINFO)))
 	{
 		if (!Cvar_ValidateString(VarValue))
 		{
@@ -522,6 +575,26 @@ void Cvar_VariableStringBuffer(const char* var_name, char* buffer, int bufsize)
 	else
 	{
 		String::NCpyZ(buffer, var->string, bufsize);
+	}
+}
+
+void Cvar_LatchedVariableStringBuffer(const char* var_name, char* buffer, int bufsize)
+{
+	Cvar* var = Cvar_FindVar(var_name);
+	if (!var)
+	{
+		*buffer = 0;
+	}
+	else
+	{
+		if (var->latchedString)
+		{
+			String::NCpyZ(buffer, var->latchedString, bufsize);
+		}
+		else
+		{
+			String::NCpyZ(buffer, var->string, bufsize);
+		}
 	}
 }
 
@@ -640,7 +713,6 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 	vmCvar->modificationCount = -1;
 	Cvar_Update(vmCvar);
 }
-
 
 //==========================================================================
 //
@@ -763,7 +835,7 @@ void Cvar_SetCheatState()
 				Mem_Free(var->latchedString);
 				var->latchedString = NULL;
 			}
-			if (String::Cmp(var->resetString,var->string))
+			if (String::Cmp(var->resetString, var->string))
 			{
 				Cvar_Set(var->name, var->resetString);
 			}
@@ -804,6 +876,55 @@ static void Cvar_Toggle_f()
 	Cvar_Set2(Cmd_Argv(1), va("%i", v), false);
 }
 
+//	Cycles a cvar for easy single key binding
+static void Cvar_Cycle_f()
+{
+	if (Cmd_Argc() < 4 || Cmd_Argc() > 5)
+	{
+		common->Printf("usage: cycle <variable> <start> <end> [step]\n");
+		return;
+	}
+
+	int value = Cvar_VariableIntegerValue(Cmd_Argv(1));
+	int oldvalue = value;
+	int start = String::Atoi(Cmd_Argv(2));
+	int end = String::Atoi(Cmd_Argv(3));
+
+	int step;
+	if (Cmd_Argc() == 5)
+	{
+		step = abs(String::Atoi(Cmd_Argv(4)));
+	}
+	else
+	{
+		step = 1;
+	}
+
+	if (abs(end - start) < step)
+	{
+		step = 1;
+	}
+
+	if (end < start)
+	{
+		value -= step;
+		if (value < end)
+		{
+			value = start - (step - (oldvalue - end + 1));
+		}
+	}
+	else
+	{
+		value += step;
+		if (value > end)
+		{
+			value = start + (step - (end - oldvalue + 1));
+		}
+	}
+
+	Cvar_Set2(Cmd_Argv(1), va("%i", value), false);
+}
+
 //==========================================================================
 //
 //	Cvar_Set_f
@@ -818,8 +939,26 @@ static void Cvar_Set_f()
 	int c = Cmd_Argc();
 	if (c < 3)
 	{
-		Log::write("usage: set <variable> <value>\n");
+		if (GGameType & GAME_ET)
+		{
+			common->Printf("usage: set <variable> <value> [unsafe]\n");
+		}
+		else
+		{
+			common->Printf("usage: set <variable> <value>\n");
+		}
 		return;
+	}
+
+	// ydnar: handle unsafe vars
+	if ((GGameType & GAME_ET) && c >= 4 && !String::Cmp(Cmd_Argv(c - 1), "unsafe"))
+	{
+		c--;
+		if (com_crashed != NULL && com_crashed->integer)
+		{
+			common->Printf("%s is unsafe. Check com_crashed.\n", Cmd_Argv(1));
+			return;
+		}
 	}
 
 	String combined;
@@ -844,9 +983,16 @@ static void Cvar_Set_f()
 
 static void Cvar_SetU_f()
 {
-	if (Cmd_Argc() != 3)
+	if (Cmd_Argc() < 3)
 	{
-		Log::write("usage: setu <variable> <value>\n");
+		if (GGameType & GAME_ET)
+		{
+			common->Printf("usage: setu <variable> <value> [unsafe]\n" );
+		}
+		else
+		{
+			common->Printf("usage: setu <variable> <value>\n");
+		}
 		return;
 	}
 	Cvar_Set_f();
@@ -868,9 +1014,16 @@ static void Cvar_SetU_f()
 
 static void Cvar_SetS_f()
 {
-	if (Cmd_Argc() != 3)
+	if (Cmd_Argc() < 3)
 	{
-		Log::write("usage: sets <variable> <value>\n");
+		if (GGameType & GAME_ET)
+		{
+			common->Printf("usage: sets <variable> <value> [unsafe]\n");
+		}
+		else
+		{
+			common->Printf("usage: sets <variable> <value>\n");
+		}
 		return;
 	}
 	Cvar_Set_f();
@@ -892,9 +1045,16 @@ static void Cvar_SetS_f()
 
 static void Cvar_SetA_f()
 {
-	if (Cmd_Argc() != 3)
+	if (Cmd_Argc() < 3)
 	{
-		Log::write("usage: seta <variable> <value>\n");
+		if (GGameType & GAME_ET)
+		{
+			common->Printf("usage: seta <variable> <value> [unsafe]\n");
+		}
+		else
+		{
+			common->Printf("usage: seta <variable> <value>\n");
+		}
 		return;
 	}
 	Cvar_Set_f();
@@ -1082,9 +1242,17 @@ static void Cvar_Restart_f()
 
 void Cvar_Init()
 {
-	cvar_cheats = Cvar_Get("sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO);
+	if (GGameType & GAME_WolfSP)
+	{
+		cvar_cheats = Cvar_Get("sv_cheats", "0", CVAR_ROM | CVAR_SYSTEMINFO);
+	}
+	else
+	{
+		cvar_cheats = Cvar_Get("sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO);
+	}
 
 	Cmd_AddCommand("toggle", Cvar_Toggle_f);
+	Cmd_AddCommand("cycle", Cvar_Cycle_f);  // ydnar
 	Cmd_AddCommand("set", Cvar_Set_f);
 	Cmd_AddCommand("sets", Cvar_SetS_f);
 	Cmd_AddCommand("setu", Cvar_SetU_f);
@@ -1092,8 +1260,15 @@ void Cvar_Init()
 	Cmd_AddCommand("reset", Cvar_Reset_f);
 	Cmd_AddCommand("cvarlist", Cvar_List_f);
 	Cmd_AddCommand("cvar_restart", Cvar_Restart_f);
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// NERVE - SMF - can't rely on autoexec to do this
+		Cvar_Get("devdll", "1", CVAR_ROM);
+	}
 }
 
+#if 0
 //==========================================================================
 //
 //	Cvar_WriteVariables

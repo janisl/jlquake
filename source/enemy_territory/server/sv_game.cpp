@@ -263,7 +263,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
-	String::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ), bufferSize );
+	String::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ), bufferSize );
 }
 
 /*

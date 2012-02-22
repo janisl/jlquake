@@ -66,9 +66,9 @@ int c_traces, c_brush_traces, c_patch_traces;
 byte        *cmod_base;
 
 #ifndef BSPC
-cvar_t      *cm_noAreas;
-cvar_t      *cm_noCurves;
-cvar_t      *cm_playerCurveClip;
+Cvar      *cm_noAreas;
+Cvar      *cm_noCurves;
+Cvar      *cm_playerCurveClip;
 #endif
 
 cmodel_t box_model;

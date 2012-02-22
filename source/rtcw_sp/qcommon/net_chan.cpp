@@ -61,9 +61,9 @@ to the new value before sending out any replies.
 
 #define FRAGMENT_BIT    ( 1 << 31 )
 
-cvar_t      *showpackets;
-cvar_t      *showdrop;
-cvar_t      *qport;
+Cvar      *showpackets;
+Cvar      *showdrop;
+Cvar      *qport;
 
 static char *netsrcString[2] = {
 	"client",

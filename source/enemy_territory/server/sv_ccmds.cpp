@@ -152,7 +152,7 @@ static void SV_Map_f( void ) {
 	qboolean killBots, cheat, buildScript;
 	char expanded[MAX_QPATH];
 	int savegameTime = -1;
-	char        *cl_profileStr = Cvar_VariableString( "cl_profile" );
+	const char        *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	map = Cmd_Argv( 1 );
 	if ( !map ) {
@@ -266,13 +266,13 @@ static void SV_Map_f( void ) {
 		// This is explicitly asking for a single player load of this map
 		Cvar_Set( "g_gametype", va( "%i", com_gameInfo.defaultSPGameType ) );
 		// force latched values to get set
-		Cvar_Get( "g_gametype", va( "%i", com_gameInfo.defaultSPGameType ), CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH );
+		Cvar_Get( "g_gametype", va( "%i", com_gameInfo.defaultSPGameType ), CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2 );
 		// enable bot support for AI
 		Cvar_Set( "bot_enable", "1" );
 	}
 
 	// Rafael gameskill
-//	Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH);
+//	Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH2);
 	// done
 
 	cmd = Cmd_Argv( 0 );
@@ -456,7 +456,7 @@ static void SV_MapRestart_f( void ) {
 		char savemap[MAX_QPATH];
 		byte *buffer;
 		int size, savegameTime;
-		char *cl_profileStr = Cvar_VariableString( "cl_profile" );
+		const char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 		if ( com_gameInfo.usesProfiles ) {
 			String::Sprintf( savemap, sizeof( savemap ), "profiles/%s/save/current.sav", cl_profileStr );
@@ -570,7 +570,7 @@ void    SV_LoadGame_f( void ) {
 	char filename[MAX_QPATH], mapname[MAX_QPATH], savedir[MAX_QPATH];
 	byte *buffer;
 	int size;
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
+	const char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	// dont allow command if another loadgame is pending
 	if ( Cvar_VariableIntegerValue( "savegame_loading" ) ) {
@@ -1049,7 +1049,7 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void ) {
 	Com_Printf( "Server info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
 }
 
 
@@ -1062,7 +1062,7 @@ Examine or change the serverinfo string
 */
 static void SV_Systeminfo_f( void ) {
 	Com_Printf( "System info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
 }
 
 

@@ -653,15 +653,15 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	Cvar_Set( "sv_referencedPakNames", p );
 
 	// save systeminfo and serverinfo strings
-	String::NCpyZ( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
+	String::NCpyZ( systemInfo, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO ) );
+	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// NERVE - SMF
-	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO ) );
+	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING ) );
 	cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 
 	// any media configstring setting now should issue a warning
@@ -776,10 +776,10 @@ void SV_Init( void ) {
 	Cvar_Get( "fraglimit", "0", /*CVAR_SERVERINFO*/ 0 );
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 	// DHM - Nerve :: default to GT_WOLF
-	sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH );
+	sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2 );
 
 	// Rafael gameskill
-	sv_gameskill = Cvar_Get( "g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH );
+	sv_gameskill = Cvar_Get( "g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH2 );
 	// done
 
 	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
@@ -788,9 +788,9 @@ void SV_Init( void ) {
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
 	sv_hostname = Cvar_Get( "sv_hostname", "WolfHost", CVAR_SERVERINFO | CVAR_ARCHIVE );
 #ifdef __MACOS__
-	sv_maxclients = Cvar_Get( "sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH );               //DAJ HOG
+	sv_maxclients = Cvar_Get( "sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH2 );               //DAJ HOG
 #else
-	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );               // NERVE - SMF - changed to 20 from 8
+	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH2 );               // NERVE - SMF - changed to 20 from 8
 #endif
 
 	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
@@ -799,7 +799,7 @@ void SV_Init( void ) {
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_allowAnonymous = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
 	sv_friendlyFire = Cvar_Get( "g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE );           // NERVE - SMF
-	sv_maxlives = Cvar_Get( "g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO );      // NERVE - SMF
+	sv_maxlives = Cvar_Get( "g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_SERVERINFO );      // NERVE - SMF
 	sv_tourney = Cvar_Get( "g_noTeamSwitching", "0", CVAR_ARCHIVE );                               // NERVE - SMF
 
 	// systeminfo

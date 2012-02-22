@@ -57,47 +57,44 @@ static fileHandle_t logfile;
 fileHandle_t com_journalFile;               // events are written here
 fileHandle_t com_journalDataFile;           // config files are written here
 
-cvar_t  *com_crashed = NULL;        // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
-//bani - explicit NULL to make win32 teh happy
+Cvar  *com_ignorecrash = NULL;    // bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
+Cvar  *com_pid;       // bani - process id
 
-cvar_t  *com_ignorecrash = NULL;    // bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
-cvar_t  *com_pid;       // bani - process id
-
-cvar_t  *com_viewlog;
-cvar_t  *com_speeds;
-cvar_t  *com_developer;
-cvar_t  *com_dedicated;
-cvar_t  *com_timescale;
-cvar_t  *com_fixedtime;
-cvar_t  *com_dropsim;       // 0.0 to 1.0, simulated packet drops
-cvar_t  *com_journal;
-cvar_t  *com_maxfps;
-cvar_t  *com_timedemo;
-cvar_t  *com_sv_running;
-cvar_t  *com_cl_running;
-cvar_t  *com_logfile;       // 1 = buffer log, 2 = flush after each print
-cvar_t  *com_showtrace;
-cvar_t  *com_version;
-//cvar_t	*com_blood;
-cvar_t  *com_buildScript;   // for automated data building scripts
-cvar_t  *con_drawnotify;
-cvar_t  *com_introPlayed;
-cvar_t  *com_logosPlaying;
-cvar_t  *cl_paused;
-cvar_t  *sv_paused;
-cvar_t  *com_cameraMode;
+Cvar  *com_viewlog;
+Cvar  *com_speeds;
+Cvar  *com_developer;
+Cvar  *com_dedicated;
+Cvar  *com_timescale;
+Cvar  *com_fixedtime;
+Cvar  *com_dropsim;       // 0.0 to 1.0, simulated packet drops
+Cvar  *com_journal;
+Cvar  *com_maxfps;
+Cvar  *com_timedemo;
+Cvar  *com_sv_running;
+Cvar  *com_cl_running;
+Cvar  *com_logfile;       // 1 = buffer log, 2 = flush after each print
+Cvar  *com_showtrace;
+Cvar  *com_version;
+//Cvar	*com_blood;
+Cvar  *com_buildScript;   // for automated data building scripts
+Cvar  *con_drawnotify;
+Cvar  *com_introPlayed;
+Cvar  *com_logosPlaying;
+Cvar  *cl_paused;
+Cvar  *sv_paused;
+Cvar  *com_cameraMode;
 #if defined( _WIN32 ) && defined( _DEBUG )
-cvar_t  *com_noErrorInterrupt;
+Cvar  *com_noErrorInterrupt;
 #endif
-cvar_t  *com_recommendedSet;
+Cvar  *com_recommendedSet;
 
-cvar_t  *com_watchdog;
-cvar_t  *com_watchdog_cmd;
+Cvar  *com_watchdog;
+Cvar  *com_watchdog_cmd;
 
 // Rafael Notebook
-cvar_t  *cl_notebook;
+Cvar  *cl_notebook;
 
-cvar_t  *com_hunkused;      // Ridah
+Cvar  *com_hunkused;      // Ridah
 
 // com_speeds times
 int time_game;
@@ -486,7 +483,7 @@ be after execing the config and default.
 void Com_StartupVariable( const char *match ) {
 	int i;
 	char    *s;
-	cvar_t  *cv;
+	Cvar  *cv;
 
 	for ( i = 0 ; i < com_numConsoleLines ; i++ ) {
 		Cmd_TokenizeString( com_consoleLines[i] );
@@ -1251,7 +1248,7 @@ void Com_InitSmallZoneMemory( void ) {
 
 /*
 void Com_InitZoneMemory( void ) {
-	cvar_t	*cv;
+	Cvar	*cv;
 	s_smallZoneTotal = 512 * 1024;
 	smallzone = malloc( s_smallZoneTotal );
 	if ( !smallzone ) {
@@ -1260,7 +1257,7 @@ void Com_InitZoneMemory( void ) {
 	Z_ClearZone( smallzone, s_smallZoneTotal );
 
 	// allocate the random block zone
-	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( cv->integer < 16 ) {
 		s_zoneTotal = 1024 * 1024 * 16;
@@ -1276,9 +1273,9 @@ void Com_InitZoneMemory( void ) {
 }
 */
 void Com_InitZoneMemory( void ) {
-	cvar_t  *cv;
+	Cvar  *cv;
 	// allocate the random block zone
-	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
 #ifndef __MACOS__   //DAJ HOG
 	if ( cv->integer < 16 ) {
@@ -1384,7 +1381,7 @@ Com_InitZoneMemory
 =================
 */
 void Com_InitHunkMemory( void ) {
-	cvar_t  *cv;
+	Cvar  *cv;
 	int nMinAlloc;
 	char *pMsg = NULL;
 
@@ -1397,7 +1394,7 @@ void Com_InitHunkMemory( void ) {
 	}
 
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	// if we are not dedicated min allocation is 56, otherwise min is 1
 	if ( com_dedicated && com_dedicated->integer ) {
@@ -2266,7 +2263,7 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 #endif
 
 void Com_SetRecommended() {
-	cvar_t *r_highQualityVideo,* com_recommended;
+	Cvar *r_highQualityVideo,* com_recommended;
 	qboolean goodVideo;
 	float cpuSpeed;
 	//qboolean goodCPU;
@@ -2574,7 +2571,7 @@ void Com_Init( char *commandLine ) {
 
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() ) {
-		char *cl_profileStr = Cvar_VariableString( "cl_profile" );
+		const char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 		safeMode = qfalse;
 		if ( com_gameInfo.usesProfiles ) {
@@ -2637,7 +2634,7 @@ void Com_Init( char *commandLine ) {
 	// TTimo: default to internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 #else
-	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_LATCH );
+	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_LATCH2 );
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
@@ -2650,7 +2647,7 @@ void Com_Init( char *commandLine ) {
 	// init commands and vars
 	//
 	// Gordon: no need to latch this in ET, our recoil is framerate independant
-	com_maxfps = Cvar_Get( "com_maxfps", "85", CVAR_ARCHIVE /*|CVAR_LATCH*/ );
+	com_maxfps = Cvar_Get( "com_maxfps", "85", CVAR_ARCHIVE /*|CVAR_LATCH2*/ );
 //	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
@@ -2792,9 +2789,9 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration( void ) {
 #ifndef DEDICATED
-	cvar_t  *fs;
+	Cvar  *fs;
 #endif
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
+	const char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
@@ -3106,7 +3103,7 @@ Com_Shutdown
 =================
 */
 void Com_Shutdown( qboolean badProfile ) {
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
+	const char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 
 	// delete pid file

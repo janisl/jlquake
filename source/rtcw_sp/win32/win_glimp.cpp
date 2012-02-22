@@ -86,8 +86,8 @@ void     QGL_Shutdown( void );
 //
 glwstate_t glw_state;
 
-cvar_t  *r_allowSoftwareGL;     // don't abort out if the pixelformat claims software
-cvar_t  *r_maskMinidriver;      // allow a different dll name to be treated as if it were opengl32.dll
+Cvar  *r_allowSoftwareGL;     // don't abort out if the pixelformat claims software
+Cvar  *r_maskMinidriver;      // allow a different dll name to be treated as if it were opengl32.dll
 
 
 
@@ -523,7 +523,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
 #define WINDOW_STYLE    ( WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE )
 static qboolean GLW_CreateWindow( const char *drivername, int width, int height, int colorbits, qboolean cdsFullscreen ) {
 	RECT r;
-	cvar_t          *vid_xpos, *vid_ypos;
+	Cvar          *vid_xpos, *vid_ypos;
 	int stylebits;
 	int x, y, w, h;
 	int exstyle;
@@ -1320,8 +1320,8 @@ static void GLW_StartOpenGL( void ) {
 */
 void GLimp_Init( void ) {
 	char buf[1024];
-	cvar_t *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
-	cvar_t  *cv;
+	Cvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
+	Cvar  *cv;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
 
@@ -1335,8 +1335,8 @@ void GLimp_Init( void ) {
 	// save off hInstance and wndproc
 	glw_state.wndproc = MainWndProc;
 
-	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
-	r_maskMinidriver = ri.Cvar_Get( "r_maskMinidriver", "0", CVAR_LATCH );
+	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH2 );
+	r_maskMinidriver = ri.Cvar_Get( "r_maskMinidriver", "0", CVAR_LATCH2 );
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();
@@ -1366,7 +1366,7 @@ void GLimp_Init( void ) {
 		// VOODOO GRAPHICS w/ 2MB
 		if ( strstr( buf, "voodoo graphics/1 tmu/2 mb" ) ) {
 			ri.Cvar_Set( "r_picmip", "2" );
-			ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH );
+			ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 		} else if ( strstr( buf, "matrox" ) ) {
 			ri.Cvar_Set( "r_allowExtensions", "0" );
 		} else {

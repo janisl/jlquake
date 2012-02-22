@@ -260,17 +260,17 @@ extern portable_samplepair_t s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES]
 extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 
-extern cvar_t   *s_volume;
-extern cvar_t   *s_nosound;
-extern cvar_t   *s_khz;
-extern cvar_t   *s_show;
-extern cvar_t   *s_mixahead;
-extern cvar_t   *s_mute;
+extern Cvar   *s_volume;
+extern Cvar   *s_nosound;
+extern Cvar   *s_khz;
+extern Cvar   *s_show;
+extern Cvar   *s_mixahead;
+extern Cvar   *s_mute;
 
-extern cvar_t   *s_testsound;
-extern cvar_t   *s_separation;
-extern cvar_t   *s_currentMusic;    //----(SA)	added
-extern cvar_t   *s_debugMusic;      //----(SA)	added
+extern Cvar   *s_testsound;
+extern Cvar   *s_separation;
+extern Cvar   *s_currentMusic;    //----(SA)	added
+extern Cvar   *s_debugMusic;      //----(SA)	added
 
 qboolean S_LoadSound( sfx_t *sfx );
 

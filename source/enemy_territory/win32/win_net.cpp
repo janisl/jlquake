@@ -43,14 +43,14 @@ static qboolean winsockInitialized = qfalse;
 static qboolean usingSocks = qfalse;
 static qboolean networkingEnabled = qfalse;
 
-static cvar_t   *net_noudp;
-static cvar_t   *net_noipx;
+static Cvar   *net_noudp;
+static Cvar   *net_noipx;
 
-static cvar_t   *net_socksEnabled;
-static cvar_t   *net_socksServer;
-static cvar_t   *net_socksPort;
-static cvar_t   *net_socksUsername;
-static cvar_t   *net_socksPassword;
+static Cvar   *net_socksEnabled;
+static Cvar   *net_socksServer;
+static Cvar   *net_socksPort;
+static Cvar   *net_socksUsername;
+static Cvar   *net_socksPassword;
 static struct sockaddr socksRelayAddr;
 
 static SOCKET ip_socket;
@@ -871,12 +871,12 @@ NET_OpenIP
 ====================
 */
 void NET_OpenIP( void ) {
-	cvar_t  *ip;
+	Cvar  *ip;
 	int port;
 	int i;
 
-	ip = Cvar_Get( "net_ip", "localhost", CVAR_LATCH );
-	port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH )->integer;
+	ip = Cvar_Get( "net_ip", "localhost", CVAR_LATCH2 );
+	port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH2 )->integer;
 
 	// automatically scan for a valid port, so multiple
 	// dedicated servers can be started without requiring
@@ -955,7 +955,7 @@ NET_OpenIPX
 void NET_OpenIPX( void ) {
 	int port;
 
-	port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH )->integer;
+	port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH2 )->integer;
 	ipx_socket = NET_IPXSocket( port );
 }
 
@@ -977,38 +977,38 @@ static qboolean NET_GetCvars( void ) {
 	if ( net_noudp && net_noudp->modified ) {
 		modified = qtrue;
 	}
-	net_noudp = Cvar_Get( "net_noudp", "0", CVAR_LATCH | CVAR_ARCHIVE );
+	net_noudp = Cvar_Get( "net_noudp", "0", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( net_noipx && net_noipx->modified ) {
 		modified = qtrue;
 	}
-	net_noipx = Cvar_Get( "net_noipx", "0", CVAR_LATCH | CVAR_ARCHIVE );
+	net_noipx = Cvar_Get( "net_noipx", "0", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 
 	if ( net_socksEnabled && net_socksEnabled->modified ) {
 		modified = qtrue;
 	}
-	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( net_socksServer && net_socksServer->modified ) {
 		modified = qtrue;
 	}
-	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( net_socksPort && net_socksPort->modified ) {
 		modified = qtrue;
 	}
-	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( net_socksUsername && net_socksUsername->modified ) {
 		modified = qtrue;
 	}
-	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( net_socksPassword && net_socksPassword->modified ) {
 		modified = qtrue;
 	}
-	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 
 	return modified;

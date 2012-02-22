@@ -80,16 +80,16 @@ static joystickInfo_t joy;
 
 
 
-cvar_t  *in_midi;
-cvar_t  *in_midiport;
-cvar_t  *in_midichannel;
-cvar_t  *in_mididevice;
+Cvar  *in_midi;
+Cvar  *in_midiport;
+Cvar  *in_midichannel;
+Cvar  *in_mididevice;
 
-cvar_t  *in_mouse;
-cvar_t  *in_joystick;
-cvar_t  *in_joyBallScale;
-cvar_t  *in_debugJoystick;
-cvar_t  *joy_threshold;
+Cvar  *in_mouse;
+Cvar  *in_joystick;
+Cvar  *in_joyBallScale;
+Cvar  *in_debugJoystick;
+Cvar  *joy_threshold;
 
 qboolean in_appactive;
 
@@ -675,10 +675,10 @@ void IN_Init( void ) {
 	Cmd_AddCommand( "midiinfo", MidiInfo_f );
 
 	// mouse variables
-	in_mouse                = Cvar_Get( "in_mouse",                  "1",     CVAR_ARCHIVE | CVAR_LATCH );
+	in_mouse                = Cvar_Get( "in_mouse",                  "1",     CVAR_ARCHIVE | CVAR_LATCH2 );
 
 	// joystick variables
-	in_joystick             = Cvar_Get( "in_joystick",               "0",     CVAR_ARCHIVE | CVAR_LATCH );
+	in_joystick             = Cvar_Get( "in_joystick",               "0",     CVAR_ARCHIVE | CVAR_LATCH2 );
 	in_joyBallScale         = Cvar_Get( "in_joyBallScale",           "0.02",      CVAR_ARCHIVE );
 	in_debugJoystick        = Cvar_Get( "in_debugjoystick",          "0",     CVAR_TEMP );
 

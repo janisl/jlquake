@@ -42,7 +42,7 @@ static qboolean R_LoadMDX( model_t *mod, void *buffer, const char *name );
 
 model_t *loadmodel;
 
-extern cvar_t *r_buildScript;
+extern Cvar *r_buildScript;
 
 /*
 ** R_GetModelByHandle

@@ -37,13 +37,13 @@ int g_console_field_width = 78;
 
 console_t con;
 
-cvar_t      *con_debug;
-cvar_t      *con_conspeed;
-cvar_t      *con_notifytime;
-cvar_t      *con_autoclear;
+Cvar      *con_debug;
+Cvar      *con_conspeed;
+Cvar      *con_notifytime;
+Cvar      *con_autoclear;
 
 // DHM - Nerve :: Must hold CTRL + SHIFT + ~ to get console
-cvar_t      *con_restricted;
+Cvar      *con_restricted;
 
 #define DEFAULT_CONSOLE_WIDTH   78
 
@@ -729,7 +729,7 @@ void Con_DrawSolidConsole( float frac ) {
 	re.SetColor( NULL );
 }
 
-extern cvar_t   *con_drawnotify;
+extern Cvar   *con_drawnotify;
 
 /*
 ==================

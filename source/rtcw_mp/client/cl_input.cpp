@@ -301,20 +301,20 @@ void IN_Help( void ) {
 
 //==========================================================================
 
-cvar_t  *cl_upspeed;
-cvar_t  *cl_forwardspeed;
-cvar_t  *cl_sidespeed;
+Cvar  *cl_upspeed;
+Cvar  *cl_forwardspeed;
+Cvar  *cl_sidespeed;
 
-cvar_t  *cl_yawspeed;
-cvar_t  *cl_pitchspeed;
+Cvar  *cl_yawspeed;
+Cvar  *cl_pitchspeed;
 
-cvar_t  *cl_run;
+Cvar  *cl_run;
 
-cvar_t  *cl_anglespeedkey;
+Cvar  *cl_anglespeedkey;
 
-cvar_t  *cl_recoilPitch;
+Cvar  *cl_recoilPitch;
 
-cvar_t  *cl_bypassMouseInput;       // NERVE - SMF
+Cvar  *cl_bypassMouseInput;       // NERVE - SMF
 
 /*
 ================

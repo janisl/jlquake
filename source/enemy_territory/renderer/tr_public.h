@@ -174,8 +174,8 @@ typedef struct {
 	void ( *Free )( void *buf );
 	void ( *Tag_Free )( void );
 
-	cvar_t  *( *Cvar_Get )( const char *name, const char *value, int flags );
-	void ( *Cvar_Set )( const char *name, const char *value );
+	Cvar  *( *Cvar_Get )( const char *name, const char *value, int flags );
+	Cvar* ( *Cvar_Set )( const char *name, const char *value );
 
 	void ( *Cmd_AddCommand )( const char *name, void( *cmd ) ( void ) );
 	void ( *Cmd_RemoveCommand )( const char *name );

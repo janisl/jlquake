@@ -113,16 +113,16 @@ static int mx = 0, my = 0;
 static int mouseResetTime = 0;
 #define MOUSE_RESET_DELAY 50
 
-static cvar_t *in_mouse;
-static cvar_t *in_dgamouse;
+static Cvar *in_mouse;
+static Cvar *in_dgamouse;
 
 // bk001130 - from cvs1.17 (mkv), but not static
-cvar_t   *in_joystick      = NULL;
-cvar_t   *in_joystickDebug = NULL;
-cvar_t   *joy_threshold    = NULL;
+Cvar   *in_joystick      = NULL;
+Cvar   *in_joystickDebug = NULL;
+Cvar   *joy_threshold    = NULL;
 
-cvar_t  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
-cvar_t  *r_previousglDriver;
+Cvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
+Cvar  *r_previousglDriver;
 
 qboolean dgamouse = qfalse;
 qboolean vidmode_ext = qfalse;
@@ -1360,10 +1360,10 @@ void GLimp_Init( void ) {
 	qboolean attempted3Dfx = qfalse;
 	qboolean success = qfalse;
 	char buf[1024];
-	cvar_t *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
-	// cvar_t	*cv; // bk001204 - unused
+	Cvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
+	// Cvar	*cv; // bk001204 - unused
 
-	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
+	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH2 );
 
 	r_previousglDriver = ri.Cvar_Get( "r_previousglDriver", "", CVAR_ROM );
 
@@ -1453,7 +1453,7 @@ void GLimp_Init( void ) {
 		// VOODOO GRAPHICS w/ 2MB
 		if ( Q_stristr( buf, "voodoo graphics/1 tmu/2 mb" ) ) {
 			ri.Cvar_Set( "r_picmip", "2" );
-			ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH );
+			ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 		} else
 		{
 			ri.Cvar_Set( "r_picmip", "1" );
@@ -1613,7 +1613,7 @@ void IN_Init( void ) {
 	in_dgamouse = Cvar_Get( "in_dgamouse", "1", CVAR_ARCHIVE );
 
 	// bk001130 - from cvs.17 (mkv), joystick variables
-	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	// bk001130 - changed this to match win32
 	in_joystickDebug = Cvar_Get( "in_debugjoystick", "0", CVAR_TEMP );
 	joy_threshold = Cvar_Get( "joy_threshold", "0.15", CVAR_ARCHIVE ); // FIXME: in_joythreshold

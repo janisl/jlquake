@@ -52,7 +52,7 @@ If you have questions concerning this license or the applicable additional terms
 #import <net/if_dl.h> // for 'struct sockaddr_dl'
 #endif
 
-static cvar_t   *noudp;
+static Cvar   *noudp;
 
 netadr_t net_local_adr;
 
@@ -463,7 +463,7 @@ NET_OpenIP
 // bk001204 - prototype needed
 int NET_IPSocket( char *net_interface, int port );
 void NET_OpenIP( void ) {
-	cvar_t  *ip;
+	Cvar  *ip;
 	int port;
 	int i;
 

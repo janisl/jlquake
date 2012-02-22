@@ -333,50 +333,50 @@ extern refexport_t re;          // interface to refresh .dll
 //
 // cvars
 //
-extern cvar_t  *cl_nodelta;
-extern cvar_t  *cl_debugMove;
-extern cvar_t  *cl_noprint;
-extern cvar_t  *cl_timegraph;
-extern cvar_t  *cl_maxpackets;
-extern cvar_t  *cl_packetdup;
-extern cvar_t  *cl_shownet;
-extern cvar_t  *cl_showSend;
-extern cvar_t  *cl_timeNudge;
-extern cvar_t  *cl_showTimeDelta;
-extern cvar_t  *cl_freezeDemo;
+extern Cvar  *cl_nodelta;
+extern Cvar  *cl_debugMove;
+extern Cvar  *cl_noprint;
+extern Cvar  *cl_timegraph;
+extern Cvar  *cl_maxpackets;
+extern Cvar  *cl_packetdup;
+extern Cvar  *cl_shownet;
+extern Cvar  *cl_showSend;
+extern Cvar  *cl_timeNudge;
+extern Cvar  *cl_showTimeDelta;
+extern Cvar  *cl_freezeDemo;
 
-extern cvar_t  *cl_yawspeed;
-extern cvar_t  *cl_pitchspeed;
-extern cvar_t  *cl_run;
-extern cvar_t  *cl_anglespeedkey;
+extern Cvar  *cl_yawspeed;
+extern Cvar  *cl_pitchspeed;
+extern Cvar  *cl_run;
+extern Cvar  *cl_anglespeedkey;
 
-extern cvar_t  *cl_recoilPitch;     // RF
+extern Cvar  *cl_recoilPitch;     // RF
 
-extern cvar_t  *cl_sensitivity;
-extern cvar_t  *cl_freelook;
+extern Cvar  *cl_sensitivity;
+extern Cvar  *cl_freelook;
 
-extern cvar_t  *cl_mouseAccel;
-extern cvar_t  *cl_showMouseRate;
+extern Cvar  *cl_mouseAccel;
+extern Cvar  *cl_showMouseRate;
 
-extern cvar_t  *m_pitch;
-extern cvar_t  *m_yaw;
-extern cvar_t  *m_forward;
-extern cvar_t  *m_side;
-extern cvar_t  *m_filter;
+extern Cvar  *m_pitch;
+extern Cvar  *m_yaw;
+extern Cvar  *m_forward;
+extern Cvar  *m_side;
+extern Cvar  *m_filter;
 
-extern cvar_t  *cl_timedemo;
+extern Cvar  *cl_timedemo;
 
-extern cvar_t  *cl_activeAction;
+extern Cvar  *cl_activeAction;
 
-extern cvar_t  *cl_allowDownload;
-extern cvar_t  *cl_conXOffset;
-extern cvar_t  *cl_inGameVideo;
+extern Cvar  *cl_allowDownload;
+extern Cvar  *cl_conXOffset;
+extern Cvar  *cl_inGameVideo;
 
-extern cvar_t  *cl_missionStats;
-extern cvar_t  *cl_waitForFire;
+extern Cvar  *cl_missionStats;
+extern Cvar  *cl_waitForFire;
 
 // NERVE - SMF - localization
-extern cvar_t  *cl_language;
+extern Cvar  *cl_language;
 // -NERVE - SMF
 //=================================================
 

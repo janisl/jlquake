@@ -33,83 +33,83 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "snd_local.h" // fretn
 
-cvar_t  *cl_wavefilerecord;
-cvar_t  *cl_nodelta;
-cvar_t  *cl_debugMove;
+Cvar  *cl_wavefilerecord;
+Cvar  *cl_nodelta;
+Cvar  *cl_debugMove;
 
-cvar_t  *cl_noprint;
-cvar_t  *cl_motd;
-cvar_t  *cl_autoupdate;         // DHM - Nerve
+Cvar  *cl_noprint;
+Cvar  *cl_motd;
+Cvar  *cl_autoupdate;         // DHM - Nerve
 
-cvar_t  *rcon_client_password;
-cvar_t  *rconAddress;
+Cvar  *rcon_client_password;
+Cvar  *rconAddress;
 
-cvar_t  *cl_timeout;
-cvar_t  *cl_maxpackets;
-cvar_t  *cl_packetdup;
-cvar_t  *cl_timeNudge;
-cvar_t  *cl_showTimeDelta;
-cvar_t  *cl_freezeDemo;
+Cvar  *cl_timeout;
+Cvar  *cl_maxpackets;
+Cvar  *cl_packetdup;
+Cvar  *cl_timeNudge;
+Cvar  *cl_showTimeDelta;
+Cvar  *cl_freezeDemo;
 
-cvar_t  *cl_shownet = NULL;     // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
-cvar_t  *cl_shownuments;        // DHM - Nerve
-cvar_t  *cl_visibleClients;     // DHM - Nerve
-cvar_t  *cl_showSend;
-cvar_t  *cl_showServerCommands; // NERVE - SMF
-cvar_t  *cl_timedemo;
-cvar_t  *cl_avidemo;
-cvar_t  *cl_forceavidemo;
+Cvar  *cl_shownet = NULL;     // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
+Cvar  *cl_shownuments;        // DHM - Nerve
+Cvar  *cl_visibleClients;     // DHM - Nerve
+Cvar  *cl_showSend;
+Cvar  *cl_showServerCommands; // NERVE - SMF
+Cvar  *cl_timedemo;
+Cvar  *cl_avidemo;
+Cvar  *cl_forceavidemo;
 
-cvar_t  *cl_freelook;
-cvar_t  *cl_sensitivity;
+Cvar  *cl_freelook;
+Cvar  *cl_sensitivity;
 
-cvar_t  *cl_mouseAccel;
-cvar_t  *cl_showMouseRate;
+Cvar  *cl_mouseAccel;
+Cvar  *cl_showMouseRate;
 
-cvar_t  *m_pitch;
-cvar_t  *m_yaw;
-cvar_t  *m_forward;
-cvar_t  *m_side;
-cvar_t  *m_filter;
+Cvar  *m_pitch;
+Cvar  *m_yaw;
+Cvar  *m_forward;
+Cvar  *m_side;
+Cvar  *m_filter;
 
-cvar_t  *cl_activeAction;
+Cvar  *cl_activeAction;
 
-cvar_t  *cl_autorecord;
+Cvar  *cl_autorecord;
 
-cvar_t  *cl_motdString;
+Cvar  *cl_motdString;
 
-cvar_t  *cl_allowDownload;
-cvar_t  *cl_wwwDownload;
-cvar_t  *cl_conXOffset;
-cvar_t  *cl_inGameVideo;
+Cvar  *cl_allowDownload;
+Cvar  *cl_wwwDownload;
+Cvar  *cl_conXOffset;
+Cvar  *cl_inGameVideo;
 
-cvar_t  *cl_serverStatusResendTime;
-cvar_t  *cl_trn;
-cvar_t  *cl_missionStats;
-cvar_t  *cl_waitForFire;
+Cvar  *cl_serverStatusResendTime;
+Cvar  *cl_trn;
+Cvar  *cl_missionStats;
+Cvar  *cl_waitForFire;
 
 // NERVE - SMF - localization
-cvar_t  *cl_language;
-cvar_t  *cl_debugTranslation;
+Cvar  *cl_language;
+Cvar  *cl_debugTranslation;
 // -NERVE - SMF
 // DHM - Nerve :: Auto-Update
-cvar_t  *cl_updateavailable;
-cvar_t  *cl_updatefiles;
+Cvar  *cl_updateavailable;
+Cvar  *cl_updatefiles;
 // DHM - Nerve
 
-cvar_t  *cl_profile;
-cvar_t  *cl_defaultProfile;
+Cvar  *cl_profile;
+Cvar  *cl_defaultProfile;
 
-cvar_t  *cl_demorecording; // fretn
-cvar_t  *cl_demofilename; // bani
-cvar_t  *cl_demooffset; // bani
+Cvar  *cl_demorecording; // fretn
+Cvar  *cl_demofilename; // bani
+Cvar  *cl_demooffset; // bani
 
-cvar_t  *cl_waverecording; //bani
-cvar_t  *cl_wavefilename; //bani
-cvar_t  *cl_waveoffset; //bani
+Cvar  *cl_waverecording; //bani
+Cvar  *cl_wavefilename; //bani
+Cvar  *cl_waveoffset; //bani
 
-cvar_t  *cl_packetloss; //bani
-cvar_t  *cl_packetdelay;    //bani
+Cvar  *cl_packetloss; //bani
+Cvar  *cl_packetdelay;    //bani
 
 clientActive_t cl;
 clientConnection_t clc;
@@ -1185,7 +1185,7 @@ in anyway.
 void CL_RequestAuthorization( void ) {
 	char nums[64];
 	int i, j, l;
-	cvar_t  *fs;
+	Cvar  *fs;
 
 	if ( !cls.authorizeServer.port ) {
 		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
@@ -1670,7 +1670,7 @@ void CL_Clientinfo_f( void ) {
 	Com_Printf( "state: %i\n", cls.state );
 	Com_Printf( "Server: %s\n", cls.servername );
 	Com_Printf( "User info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_USERINFO ) );
+	Info_Print( Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING ) );
 	Com_Printf( "--------------------------------------\n" );
 }
 
@@ -1732,7 +1732,7 @@ Called when all downloading has been completed
 void CL_DownloadsComplete( void ) {
 
 #ifndef _WIN32
-	char    *fs_write_path;
+	const char    *fs_write_path;
 #endif
 	char    *fn;
 
@@ -2014,7 +2014,7 @@ void CL_CheckForResend( void ) {
 		// sending back the challenge
 		port = Cvar_VariableValue( "net_qport" );
 
-		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
+		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING ), sizeof( info ) );
 		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING );
 		Info_SetValueForKey( info, "qport", va( "%i", port ), MAX_INFO_STRING );
 		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), MAX_INFO_STRING );
@@ -2541,7 +2541,7 @@ void CL_CheckUserinfo( void ) {
 	// send a reliable userinfo update if needed
 	if ( cvar_modifiedFlags & CVAR_USERINFO ) {
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) );
+		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING ) ) );
 	}
 }
 

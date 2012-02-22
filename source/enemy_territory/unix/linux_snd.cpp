@@ -49,11 +49,11 @@ int audio_fd;
 int snd_inited = 0;
 
 // fretn - unified with win32
-//cvar_t *sndbits;
-//cvar_t *sndspeed;
-//cvar_t *sndchannels;
+//Cvar *sndbits;
+//Cvar *sndspeed;
+//Cvar *sndchannels;
 
-cvar_t *snddevice;
+Cvar *snddevice;
 
 /* Some devices may work only with 48000 */
 static int tryrates[] = { 22050, 11025, 44100, 48000, 8000 };

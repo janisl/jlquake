@@ -223,36 +223,36 @@ extern vm_t            *gvm;                // game virtual machine
 
 #define MAX_MASTER_SERVERS  5
 
-extern cvar_t  *sv_fps;
-extern cvar_t  *sv_timeout;
-extern cvar_t  *sv_zombietime;
-extern cvar_t  *sv_rconPassword;
-extern cvar_t  *sv_privatePassword;
-extern cvar_t  *sv_allowDownload;
-extern cvar_t  *sv_maxclients;
-extern cvar_t  *sv_privateClients;
-extern cvar_t  *sv_hostname;
-extern cvar_t  *sv_master[MAX_MASTER_SERVERS];
-extern cvar_t  *sv_reconnectlimit;
-extern cvar_t  *sv_showloss;
-extern cvar_t  *sv_padPackets;
-extern cvar_t  *sv_killserver;
-extern cvar_t  *sv_mapname;
-extern cvar_t  *sv_mapChecksum;
-extern cvar_t  *sv_serverid;
-extern cvar_t  *sv_maxRate;
-extern cvar_t  *sv_minPing;
-extern cvar_t  *sv_maxPing;
-extern cvar_t  *sv_gametype;
-extern cvar_t  *sv_pure;
-extern cvar_t  *sv_floodProtect;
-extern cvar_t  *sv_allowAnonymous;
+extern Cvar  *sv_fps;
+extern Cvar  *sv_timeout;
+extern Cvar  *sv_zombietime;
+extern Cvar  *sv_rconPassword;
+extern Cvar  *sv_privatePassword;
+extern Cvar  *sv_allowDownload;
+extern Cvar  *sv_maxclients;
+extern Cvar  *sv_privateClients;
+extern Cvar  *sv_hostname;
+extern Cvar  *sv_master[MAX_MASTER_SERVERS];
+extern Cvar  *sv_reconnectlimit;
+extern Cvar  *sv_showloss;
+extern Cvar  *sv_padPackets;
+extern Cvar  *sv_killserver;
+extern Cvar  *sv_mapname;
+extern Cvar  *sv_mapChecksum;
+extern Cvar  *sv_serverid;
+extern Cvar  *sv_maxRate;
+extern Cvar  *sv_minPing;
+extern Cvar  *sv_maxPing;
+extern Cvar  *sv_gametype;
+extern Cvar  *sv_pure;
+extern Cvar  *sv_floodProtect;
+extern Cvar  *sv_allowAnonymous;
 
 // Rafael gameskill
-extern cvar_t  *sv_gameskill;
+extern Cvar  *sv_gameskill;
 // done
 
-extern cvar_t  *sv_reloading;   //----(SA)	added
+extern Cvar  *sv_reloading;   //----(SA)	added
 
 //===========================================================
 

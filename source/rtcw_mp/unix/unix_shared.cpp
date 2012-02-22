@@ -98,7 +98,7 @@ disable with in_subframe 0
 
 ================
 */
-extern cvar_t *in_subframe;
+extern Cvar *in_subframe;
 int Sys_XTimeToSysTime( unsigned long xtime ) {
 	int ret, time, test;
 

@@ -74,7 +74,7 @@ qboolean stdin_active = qtrue;
 
 // enable/disabled tty input mode
 // NOTE TTimo this is used during startup, cannot be changed during run
-static cvar_t *ttycon = NULL;
+static Cvar *ttycon = NULL;
 // general flag to tell about tty console mode
 static qboolean ttycon_on = qfalse;
 // when printing general stuff to stdout stderr (Sys_Printf)
@@ -718,9 +718,9 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
 	char  *pwdpath;
-	char  *homepath;
-	char  *basepath;
-	char  *gamedir;
+	const char  *homepath;
+	const char  *basepath;
+	const char  *gamedir;
 	char  *fn;
 	const char*  err = NULL; // bk001206 // rb0101023 - now const
 #if !defined( DEDICATED )
@@ -757,7 +757,7 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 		// there is a .so in fs_homepath, but is it a valid one version-wise?
 		// we use a persistent variable in config.cfg to make sure
 		// this is set in FS_CL_ExtractFromPakFile when the file is extracted
-		cvar_t *lastVersion;
+		Cvar *lastVersion;
 		cvar_name = va( "cl_lastVersion%s", name );
 		lastVersion = Cvar_Get( cvar_name, "(uninitialized)", CVAR_ARCHIVE );
 		if ( String::ICmp( Cvar_VariableString( "version" ), lastVersion->string ) ) {
@@ -1336,7 +1336,7 @@ Sys_OpenURL
 =================
 */
 void Sys_OpenURL( const char *url, qboolean doexit ) {
-	char *basepath, *homepath, *pwdpath;
+	const char *basepath, *homepath, *pwdpath;
 	char fname[20];
 	char fn[MAX_OSPATH];
 	char cmdline[MAX_CMD];

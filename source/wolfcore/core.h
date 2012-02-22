@@ -38,9 +38,7 @@
 #endif
 #include "files.h"
 #include "command_buffer.h"
-#if 0
 #include "console_variable.h"
-#endif
 #include "../core/crc.h"
 #include "../core/md4.h"
 #if 0
@@ -71,7 +69,11 @@ extern Cvar* com_timescale;
 extern Cvar* com_journal;
 
 extern Cvar* com_developer;
+#endif
 
+extern Cvar* com_crashed;
+
+#if 0
 extern fileHandle_t com_journalFile;
 extern fileHandle_t com_journalDataFile;
 

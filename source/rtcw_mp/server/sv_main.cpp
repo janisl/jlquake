@@ -38,44 +38,44 @@ versionMapping_t versionMap[MAX_UPDATE_VERSIONS];
 int numVersions = 0;
 #endif
 
-cvar_t  *sv_fps;                // time rate for running non-clients
-cvar_t  *sv_timeout;            // seconds without any message
-cvar_t  *sv_zombietime;         // seconds to sink messages after disconnect
-cvar_t  *sv_rconPassword;       // password for remote server commands
-cvar_t  *sv_privatePassword;    // password for the privateClient slots
-cvar_t  *sv_allowDownload;
-cvar_t  *sv_maxclients;
+Cvar  *sv_fps;                // time rate for running non-clients
+Cvar  *sv_timeout;            // seconds without any message
+Cvar  *sv_zombietime;         // seconds to sink messages after disconnect
+Cvar  *sv_rconPassword;       // password for remote server commands
+Cvar  *sv_privatePassword;    // password for the privateClient slots
+Cvar  *sv_allowDownload;
+Cvar  *sv_maxclients;
 
-cvar_t  *sv_privateClients;     // number of clients reserved for password
-cvar_t  *sv_hostname;
-cvar_t  *sv_master[MAX_MASTER_SERVERS];     // master server ip address
-cvar_t  *sv_reconnectlimit;     // minimum seconds between connect messages
-cvar_t  *sv_showloss;           // report when usercmds are lost
-cvar_t  *sv_padPackets;         // add nop bytes to messages
-cvar_t  *sv_killserver;         // menu system can set to 1 to shut server down
-cvar_t  *sv_mapname;
-cvar_t  *sv_mapChecksum;
-cvar_t  *sv_serverid;
-cvar_t  *sv_maxRate;
-cvar_t  *sv_minPing;
-cvar_t  *sv_maxPing;
-cvar_t  *sv_gametype;
-cvar_t  *sv_pure;
-cvar_t  *sv_floodProtect;
-cvar_t  *sv_allowAnonymous;
-cvar_t  *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
-cvar_t  *sv_onlyVisibleClients; // DHM - Nerve
-cvar_t  *sv_friendlyFire;       // NERVE - SMF
-cvar_t  *sv_maxlives;           // NERVE - SMF
-cvar_t  *sv_tourney;            // NERVE - SMF
+Cvar  *sv_privateClients;     // number of clients reserved for password
+Cvar  *sv_hostname;
+Cvar  *sv_master[MAX_MASTER_SERVERS];     // master server ip address
+Cvar  *sv_reconnectlimit;     // minimum seconds between connect messages
+Cvar  *sv_showloss;           // report when usercmds are lost
+Cvar  *sv_padPackets;         // add nop bytes to messages
+Cvar  *sv_killserver;         // menu system can set to 1 to shut server down
+Cvar  *sv_mapname;
+Cvar  *sv_mapChecksum;
+Cvar  *sv_serverid;
+Cvar  *sv_maxRate;
+Cvar  *sv_minPing;
+Cvar  *sv_maxPing;
+Cvar  *sv_gametype;
+Cvar  *sv_pure;
+Cvar  *sv_floodProtect;
+Cvar  *sv_allowAnonymous;
+Cvar  *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
+Cvar  *sv_onlyVisibleClients; // DHM - Nerve
+Cvar  *sv_friendlyFire;       // NERVE - SMF
+Cvar  *sv_maxlives;           // NERVE - SMF
+Cvar  *sv_tourney;            // NERVE - SMF
 
-cvar_t *sv_dl_maxRate;
+Cvar *sv_dl_maxRate;
 
 // Rafael gameskill
-cvar_t  *sv_gameskill;
+Cvar  *sv_gameskill;
 // done
 
-cvar_t  *sv_showAverageBPS;     // NERVE - SMF - net debugging
+Cvar  *sv_showAverageBPS;     // NERVE - SMF - net debugging
 
 void SVC_GameCompleteStatus( netadr_t from );       // NERVE - SMF
 
@@ -390,7 +390,7 @@ void SVC_Status( netadr_t from ) {
 	return;
 #endif
 
-	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -449,7 +449,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 		return;
 	}
 
-	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -495,9 +495,9 @@ if a user is interested in a server to do a full status
 */
 void SVC_Info( netadr_t from ) {
 	int i, count;
-	char    *gamedir;
+	const char    *gamedir;
 	char infostring[MAX_INFO_STRING];
-	char    *antilag;
+	const char    *antilag;
 
 	// DHM - Nerve
 #ifdef UPDATE_SERVER
@@ -1043,16 +1043,16 @@ void SV_Frame( int msec ) {
 
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO ) {
-		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO ) );
+		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO ) {
-		SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString_Big( CVAR_SYSTEMINFO ) );
+		SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ) );
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 	// NERVE - SMF
 	if ( cvar_modifiedFlags & CVAR_WOLFINFO ) {
-		SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO ) );
+		SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING ) );
 		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 	}
 

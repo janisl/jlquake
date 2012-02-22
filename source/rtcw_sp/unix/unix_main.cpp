@@ -73,7 +73,7 @@ qboolean stdin_active = qtrue;
 
 // enable/disabled tty input mode
 // NOTE TTimo this is used during startup, cannot be changed during run
-static cvar_t *ttycon = NULL;
+static Cvar *ttycon = NULL;
 // general flag to tell about tty console mode
 static qboolean ttycon_on = qfalse;
 // when printing general stuff to stdout stderr (Sys_Printf)
@@ -640,10 +640,10 @@ void *Sys_LoadDll( const char *name,
 	void *libHandle;
 	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
-	char  *homepath;
-	char  *basepath;
-	char  *pwdpath;
-	char  *gamedir;
+	const char  *homepath;
+	const char  *basepath;
+	const char  *pwdpath;
+	const char  *gamedir;
 	char  *fn;
 	const char*  err = NULL; // bk001206 // rb0101023 - now const
 
@@ -1227,7 +1227,7 @@ Sys_OpenURL
 =================
 */
 void Sys_OpenURL( char *url, qboolean doexit ) {
-	char *basepath, *homepath, *pwdpath;
+	const char *basepath, *homepath, *pwdpath;
 	char fname[20];
 	char fn[MAX_OSPATH];
 	char cmdline[MAX_CMD];

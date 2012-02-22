@@ -63,9 +63,9 @@ to the new value before sending out any replies.
 
 #define FRAGMENT_BIT    ( 1 << 31 )
 
-cvar_t      *showpackets;
-cvar_t      *showdrop;
-cvar_t      *qport;
+Cvar      *showpackets;
+Cvar      *showdrop;
+Cvar      *qport;
 
 static char *netsrcString[2] = {
 	"client",
@@ -578,12 +578,12 @@ void NET_SendLoopPacket( netsrc_t sock, int length, const void *data, netadr_t t
 //=============================================================================
 
 //bani
-extern cvar_t *sv_maxclients;
-extern cvar_t *sv_packetloss;
-extern cvar_t *sv_packetdelay;
+extern Cvar *sv_maxclients;
+extern Cvar *sv_packetloss;
+extern Cvar *sv_packetdelay;
 #ifndef DEDICATED
-extern cvar_t *cl_packetloss;
-extern cvar_t *cl_packetdelay;
+extern Cvar *cl_packetloss;
+extern Cvar *cl_packetdelay;
 #endif
 
 typedef struct delaybuf delaybuf_t;

@@ -36,14 +36,14 @@ WinVars_t g_wv;
 #define WM_MOUSEWHEEL ( WM_MOUSELAST + 1 )  // message that will be supported by the OS
 #endif
 
-extern cvar_t       *k_language;
+extern Cvar       *k_language;
 
 static UINT MSH_MOUSEWHEEL;
 
 // Console variables that we need to access from this module
-cvar_t      *vid_xpos;          // X coordinate of window position
-cvar_t      *vid_ypos;          // Y coordinate of window position
-extern cvar_t* r_fullscreen;
+Cvar      *vid_xpos;          // X coordinate of window position
+Cvar      *vid_ypos;          // Y coordinate of window position
+extern Cvar* r_fullscreen;
 
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
 
@@ -353,7 +353,7 @@ LRESULT WINAPI MainWndProc(
 
 		vid_xpos = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
 		vid_ypos = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
-		r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH );
+		r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 
 		MSH_MOUSEWHEEL = RegisterWindowMessage( "MSWHEEL_ROLLMSG" );
 		if ( r_fullscreen->integer ) {

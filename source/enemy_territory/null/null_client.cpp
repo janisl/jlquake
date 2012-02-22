@@ -29,9 +29,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../client/client.h"
 
-cvar_t *cl_shownet;
+Cvar *cl_shownet;
 // TTimo: win32 dedicated
-cvar_t  *cl_language;
+Cvar  *cl_language;
 
 void CL_Shutdown( void ) {
 }

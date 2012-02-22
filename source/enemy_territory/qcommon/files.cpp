@@ -249,16 +249,16 @@ typedef struct searchpath_s {
 
 //bani - made fs_gamedir non-static
 char fs_gamedir[MAX_OSPATH];        // this will be a single file name with no separators
-static cvar_t      *fs_debug;
-static cvar_t      *fs_homepath;
-static cvar_t      *fs_basepath;
-static cvar_t      *fs_buildpath;
-static cvar_t      *fs_buildgame;
-static cvar_t      *fs_basegame;
-static cvar_t      *fs_cdpath;
-static cvar_t      *fs_copyfiles;
-static cvar_t      *fs_gamedirvar;
-static cvar_t      *fs_restrict;
+static Cvar      *fs_debug;
+static Cvar      *fs_homepath;
+static Cvar      *fs_basepath;
+static Cvar      *fs_buildpath;
+static Cvar      *fs_buildgame;
+static Cvar      *fs_basegame;
+static Cvar      *fs_cdpath;
+static Cvar      *fs_copyfiles;
+static Cvar      *fs_gamedirvar;
+static Cvar      *fs_restrict;
 static searchpath_t    *fs_searchpaths;
 static int fs_readCount;                    // total bytes read
 static int fs_loadCount;                    // total files read
@@ -3239,7 +3239,7 @@ FS_Startup
 */
 static void FS_Startup( const char *gameName ) {
 	const char *homePath;
-	cvar_t  *fs;
+	Cvar  *fs;
 
 	Com_Printf( "----- FS_Startup -----\n" );
 
@@ -4161,7 +4161,7 @@ void FS_Restart( int checksumFeed ) {
 	if ( String::ICmp( fs_gamedirvar->string, lastValidGame ) ) {
 		// skip the wolfconfig.cfg if "safe" is on the command line
 		if ( !Com_SafeMode() ) {
-			char *cl_profileStr = Cvar_VariableString( "cl_profile" );
+			const char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 			if ( com_gameInfo.usesProfiles && cl_profileStr[0] ) {
 				// bani - check existing pid file and make sure it's ok

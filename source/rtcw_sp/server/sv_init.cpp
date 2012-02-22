@@ -639,21 +639,21 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 
 	// Ridah, enforce maxclients in single player, so there is enough room for AI characters
 	{
-		static cvar_t   *g_gametype, *bot_enable;
+		static Cvar   *g_gametype, *bot_enable;
 
 		// Rafael gameskill
-		static cvar_t   *g_gameskill;
+		static Cvar   *g_gameskill;
 
 		if ( !g_gameskill ) {
-			g_gameskill = Cvar_Get( "g_gameskill", "2", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE );     // (SA) new default '2' (was '1')
+			g_gameskill = Cvar_Get( "g_gameskill", "2", CVAR_SERVERINFO | CVAR_LATCH2 | CVAR_ARCHIVE );     // (SA) new default '2' (was '1')
 		}
 		// done
 
 		if ( !g_gametype ) {
-			g_gametype = Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE );
+			g_gametype = Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2 | CVAR_ARCHIVE );
 		}
 		if ( !bot_enable ) {
-			bot_enable = Cvar_Get( "bot_enable", "1", CVAR_LATCH );
+			bot_enable = Cvar_Get( "bot_enable", "1", CVAR_LATCH2 );
 		}
 		if ( g_gametype->integer == 2 ) {
 			if ( sv_maxclients->latchedString ) {
@@ -853,11 +853,11 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	Cvar_Set( "sv_referencedPakNames", p );
 
 	// save systeminfo and serverinfo strings
-	String::NCpyZ( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
+	String::NCpyZ( systemInfo, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO ) );
+	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// any media configstring setting now should issue a warning
@@ -898,10 +898,10 @@ void SV_Init( void ) {
 	Cvar_Get( "dmflags", "0", CVAR_SERVERINFO );
 	Cvar_Get( "fraglimit", "20", CVAR_SERVERINFO );
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
-	sv_gametype = Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH );
+	sv_gametype = Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2 );
 
 	// Rafael gameskill
-	sv_gameskill = Cvar_Get( "g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH );
+	sv_gameskill = Cvar_Get( "g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH2 );
 	// done
 
 	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
@@ -909,7 +909,7 @@ void SV_Init( void ) {
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
 	sv_hostname = Cvar_Get( "sv_hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE );
-	sv_maxclients = Cvar_Get( "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH );
+	sv_maxclients = Cvar_Get( "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH2 );
 	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_minPing = Cvar_Get( "sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );

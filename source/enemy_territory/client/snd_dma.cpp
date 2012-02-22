@@ -87,28 +87,28 @@ int s_paintedtime;              // sample PAIRS
 #define     MAX_SFX         4096
 sfx_t s_knownSfx[MAX_SFX];
 
-cvar_t      *s_volume;
-cvar_t      *s_testsound;
-cvar_t      *s_khz;
-cvar_t      *s_show;
-cvar_t      *s_mixahead;
-cvar_t      *s_mixPreStep;
-cvar_t      *s_musicVolume;
-cvar_t      *s_currentMusic;    //----(SA)	added
-cvar_t      *s_separation;
-cvar_t      *s_doppler;
-cvar_t      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
-cvar_t      *s_defaultsound; // (SA) added to silence the default beep sound if desired
-cvar_t      *cl_cacheGathering; // Ridah
-cvar_t      *s_wavonly;
-cvar_t      *s_debugMusic;  //----(SA)	added
+Cvar      *s_volume;
+Cvar      *s_testsound;
+Cvar      *s_khz;
+Cvar      *s_show;
+Cvar      *s_mixahead;
+Cvar      *s_mixPreStep;
+Cvar      *s_musicVolume;
+Cvar      *s_currentMusic;    //----(SA)	added
+Cvar      *s_separation;
+Cvar      *s_doppler;
+Cvar      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
+Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
+Cvar      *cl_cacheGathering; // Ridah
+Cvar      *s_wavonly;
+Cvar      *s_debugMusic;  //----(SA)	added
 
 // Rafael
-cvar_t      *s_nocompressed;
+Cvar      *s_nocompressed;
 
 // fretn
-cvar_t      *s_bits;
-cvar_t      *s_numchannels;
+Cvar      *s_bits;
+Cvar      *s_numchannels;
 
 // for streaming sounds
 int s_rawend[MAX_STREAMING_SOUNDS];
@@ -155,7 +155,7 @@ S_Init
 ================
 */
 void S_Init( void ) {
-	cvar_t  *cv;
+	Cvar  *cv;
 	qboolean r;
 
 	Com_Printf( "\n------- sound initialization -------\n" );
@@ -166,7 +166,7 @@ void S_Init( void ) {
 	s_currentMusic = Cvar_Get( "s_currentMusic", "", CVAR_ROM );
 	s_separation = Cvar_Get( "s_separation", "0.5", CVAR_ARCHIVE );
 	s_doppler = Cvar_Get( "s_doppler", "1", CVAR_ARCHIVE );
-	s_khz = Cvar_Get( "s_khz", "22", CVAR_ARCHIVE | CVAR_LATCH );
+	s_khz = Cvar_Get( "s_khz", "22", CVAR_ARCHIVE | CVAR_LATCH2 );
 	s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
 	s_debugMusic = Cvar_Get( "s_debugMusic", "0", CVAR_TEMP );
 
@@ -174,7 +174,7 @@ void S_Init( void ) {
 	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 	s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
 	s_defaultsound = Cvar_Get( "s_defaultsound", "0", CVAR_ARCHIVE );
-	s_wavonly = Cvar_Get( "s_wavonly", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	s_wavonly = Cvar_Get( "s_wavonly", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	// Ridah
 	cl_cacheGathering = Cvar_Get( "cl_cacheGathering", "0", 0 );
 
@@ -182,8 +182,8 @@ void S_Init( void ) {
 	s_nocompressed = Cvar_Get( "s_nocompressed", "0", CVAR_INIT );
 
 	// fretn
-	s_bits = Cvar_Get( "s_bits", "16", CVAR_LATCH | CVAR_ARCHIVE );
-	s_numchannels = Cvar_Get( "s_channels", "2", CVAR_LATCH | CVAR_ARCHIVE );
+	s_bits = Cvar_Get( "s_bits", "16", CVAR_LATCH2 | CVAR_ARCHIVE );
+	s_numchannels = Cvar_Get( "s_channels", "2", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 
 	cv = Cvar_Get( "s_initsound", "1", 0 );

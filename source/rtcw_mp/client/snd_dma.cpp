@@ -116,19 +116,19 @@ int s_numSfx = 0;
 #define     LOOP_HASH       128
 static sfx_t       *sfxHash[LOOP_HASH];
 
-cvar_t      *s_volume;
-cvar_t      *s_testsound;
-cvar_t      *s_khz;
-cvar_t      *s_show;
-cvar_t      *s_mixahead;
-cvar_t      *s_mixPreStep;
-cvar_t      *s_musicVolume;
-cvar_t      *s_separation;
-cvar_t      *s_doppler;
-cvar_t      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
-cvar_t      *s_defaultsound; // (SA) added to silence the default beep sound if desired
-cvar_t      *cl_cacheGathering; // Ridah
-cvar_t      *s_wavonly;
+Cvar      *s_volume;
+Cvar      *s_testsound;
+Cvar      *s_khz;
+Cvar      *s_show;
+Cvar      *s_mixahead;
+Cvar      *s_mixPreStep;
+Cvar      *s_musicVolume;
+Cvar      *s_separation;
+Cvar      *s_doppler;
+Cvar      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
+Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
+Cvar      *cl_cacheGathering; // Ridah
+Cvar      *s_wavonly;
 
 #define MAX_LOOP_SOUNDS     128
 static int numLoopSounds;
@@ -138,7 +138,7 @@ static channel_t       *freelist = NULL;
 static channel_t       *endflist = NULL;
 
 // Rafael
-cvar_t      *s_nocompressed;
+Cvar      *s_nocompressed;
 
 // for streaming sounds
 int s_rawend[MAX_STREAMING_SOUNDS];
@@ -186,7 +186,7 @@ S_Init
 ================
 */
 void S_Init( void ) {
-	cvar_t  *cv;
+	Cvar  *cv;
 	qboolean r;
 
 	Com_Printf( "\n------- sound initialization -------\n" );
@@ -203,7 +203,7 @@ void S_Init( void ) {
 	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 	s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
 	s_defaultsound = Cvar_Get( "s_defaultsound", "0", CVAR_ARCHIVE );
-	s_wavonly = Cvar_Get( "s_wavonly", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	s_wavonly = Cvar_Get( "s_wavonly", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	// Ridah
 	cl_cacheGathering = Cvar_Get( "cl_cacheGathering", "0", 0 );
 

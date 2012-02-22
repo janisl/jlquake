@@ -122,7 +122,7 @@ void SV_GetChallenge( netadr_t from ) {
 
 	// otherwise send their ip to the authorize server
 	if ( svs.authorizeAddress.type != NA_BAD ) {
-		cvar_t  *fs;
+		Cvar  *fs;
 		char game[1024];
 
 		game[0] = 0;

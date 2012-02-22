@@ -258,14 +258,14 @@ typedef struct searchpath_s {
 } searchpath_t;
 
 static char fs_gamedir[MAX_OSPATH];         // this will be a single file name with no separators
-static cvar_t      *fs_debug;
-static cvar_t      *fs_homepath;
-static cvar_t      *fs_basepath;
-static cvar_t      *fs_basegame;
-static cvar_t      *fs_cdpath;
-static cvar_t      *fs_copyfiles;
-static cvar_t      *fs_gamedirvar;
-static cvar_t      *fs_restrict;
+static Cvar      *fs_debug;
+static Cvar      *fs_homepath;
+static Cvar      *fs_basepath;
+static Cvar      *fs_basegame;
+static Cvar      *fs_cdpath;
+static Cvar      *fs_copyfiles;
+static Cvar      *fs_gamedirvar;
+static Cvar      *fs_restrict;
 static searchpath_t    *fs_searchpaths;
 static int fs_readCount;                    // total bytes read
 static int fs_loadCount;                    // total files read
@@ -2889,7 +2889,7 @@ FS_Startup
 */
 static void FS_Startup( const char *gameName ) {
 	const char *homePath;
-	cvar_t  *fs;
+	Cvar  *fs;
 
 	Com_Printf( "----- FS_Startup -----\n" );
 

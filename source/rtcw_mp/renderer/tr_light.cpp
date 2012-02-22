@@ -128,9 +128,9 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-extern cvar_t  *r_ambientScale;
-extern cvar_t  *r_directedScale;
-extern cvar_t  *r_debugLight;
+extern Cvar  *r_ambientScale;
+extern Cvar  *r_directedScale;
+extern Cvar  *r_debugLight;
 
 /*
 =================
