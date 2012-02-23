@@ -74,6 +74,7 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath);
 void FS_ReorderPurePaks();
 char* FS_NextPath(char* prevpath);
 int FS_GetQuake2GameType();
+#endif
 
 extern bool				com_portals;
 
@@ -89,6 +90,7 @@ extern bool		fs_ProtectKeyFile;
 extern char		fs_gamedir[MAX_OSPATH];
 extern const char*	fs_PrimaryBaseGame;
 
+#if 0
 bool FS_Initialized();
 
 char* FS_BuildOSPath(const char* Base, const char* Game, const char* QPath);

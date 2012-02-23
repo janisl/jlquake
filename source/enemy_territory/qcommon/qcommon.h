@@ -478,11 +478,6 @@ issues.
 #define BASEGAME "ettest"
 #endif
 
-// number of id paks that will never be autodownloaded from baseq3
-#define NUM_ID_PAKS     9
-
-#define MAX_FILE_HANDLES    64
-
 #ifdef WIN32
 	#define Q_rmdir _rmdir
 #else

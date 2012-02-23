@@ -2431,7 +2431,6 @@ qboolean Com_CheckProfile( char *profile_path ) {
 }
 
 //bani - from files.c
-extern char fs_gamedir[MAX_OSPATH];
 char last_fs_gamedir[MAX_OSPATH];
 char last_profile_path[MAX_OSPATH];
 
