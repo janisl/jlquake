@@ -76,7 +76,6 @@ set (ET_FILES
 	qcommon/huffman.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
-	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 	qcommon/dl_main_curl.cpp
@@ -178,7 +177,6 @@ set (ETDED_FILES
 	qcommon/huffman.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
-	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 

@@ -116,7 +116,6 @@
     <ClCompile Include="server\sv_net_chan.cpp" />
     <ClCompile Include="server\sv_snapshot.cpp" />
     <ClCompile Include="server\sv_world.cpp" />
-    <ClCompile Include="qcommon\unzip.cpp" />
     <ClCompile Include="qcommon\vm.cpp" />
     <ClCompile Include="qcommon\vm_interpreted.cpp" />
     <ClCompile Include="qcommon\vm_x86.cpp">
@@ -144,7 +143,6 @@
     <ClInclude Include="qcommon\qfiles.h" />
     <ClInclude Include="server\server.h" />
     <ClInclude Include="game\surfaceflags.h" />
-    <ClInclude Include="qcommon\unzip.h" />
     <ClInclude Include="qcommon\vm_local.h" />
     <ClInclude Include="win32\win_local.h" />
   </ItemGroup>

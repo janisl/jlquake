@@ -75,7 +75,6 @@ set(WOLFMP_FILES
 	qcommon/msg.cpp  
 	qcommon/net_chan.cpp
 	qcommon/huffman.cpp
-	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 
@@ -176,7 +175,6 @@ set(WOLFMPDED_FILES
 	qcommon/huffman.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
-	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 	game/q_math.cpp
