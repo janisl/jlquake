@@ -380,9 +380,9 @@ void * QDECL Sys_LoadDll( const char *name, intptr_t( QDECL **entryPoint ) ( int
 	static int lastWarning = 0;
 	HINSTANCE libHandle;
 	void ( QDECL * dllEntry )( intptr_t ( QDECL *syscallptr )( int, ... ) );
-	char    *basepath;
-	char    *cdpath;
-	char    *gamedir;
+	const char    *basepath;
+	const char    *cdpath;
+	const char    *gamedir;
 	char    *fn;
 #ifdef NDEBUG
 	int timestamp;

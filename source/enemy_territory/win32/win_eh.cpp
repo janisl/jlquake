@@ -26,9 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "../../wolfcore/core.h"
 #include <windows.h>
 #include <eh.h>
 
@@ -37,18 +35,7 @@ If you have questions concerning this license or the applicable additional terms
 HWND g_hWnd =    NULL;
 const char* g_Version = NULL;
 
-typedef int fileHandle_t;
-
-typedef enum {
-	FS_READ,
-	FS_WRITE,
-	FS_APPEND,
-	FS_APPEND_SYNC
-} fsMode_t;
-
 void Com_Frame( void );
-void String::Cat( char *dest, int size, const char *src );
-void __cdecl String::Sprintf( char *dest, int size, const char *fmt, ... );
 int FS_FOpenFileByMode( const char *qpath, fileHandle_t * f, fsMode_t mode );
 int FS_Write( const void *buffer, int len, fileHandle_t h );
 void FS_FCloseFile( fileHandle_t f );
