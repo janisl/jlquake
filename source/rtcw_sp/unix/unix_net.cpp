@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
+#include "../../wolfcore/system_unix.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
@@ -583,7 +584,6 @@ char *NET_ErrorString( void ) {
 void NET_Sleep( int msec ) {
 	struct timeval timeout;
 	fd_set fdset;
-	extern qboolean stdin_active;
 
 	if ( !ip_socket || !com_dedicated->integer ) {
 		return; // we're not a server, just run full speed

@@ -41,8 +41,8 @@
 #include "console_variable.h"
 #include "../core/crc.h"
 #include "../core/md4.h"
-#if 0
 #include "system.h"
+#if 0
 #include "clip_map/public.h"
 #include "content_types.h"
 #include "event_queue.h"

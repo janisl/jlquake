@@ -60,13 +60,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
+#include "../../wolfcore/system_unix.h"
 
 #include "linux_local.h" // bk001204
 
 unsigned sys_frame_time;
 
 uid_t saved_euid;
-qboolean stdin_active = qtrue;
 
 // =============================================================
 // tty console variables
@@ -710,7 +710,7 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 	void *libHandle;
 	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
-	char  *pwdpath;
+	const char  *pwdpath;
 	const char  *homepath;
 	const char  *basepath;
 	const char  *gamedir;

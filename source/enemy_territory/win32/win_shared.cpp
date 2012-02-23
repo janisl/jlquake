@@ -43,25 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 
 /*
 ================
-Sys_Milliseconds
-================
-*/
-int sys_timeBase;
-int Sys_Milliseconds( void ) {
-	int sys_curtime;
-	static qboolean initialized = qfalse;
-
-	if ( !initialized ) {
-		sys_timeBase = timeGetTime();
-		initialized = qtrue;
-	}
-	sys_curtime = timeGetTime() - sys_timeBase;
-
-	return sys_curtime;
-}
-
-/*
-================
 Sys_SnapVector
 ================
 */

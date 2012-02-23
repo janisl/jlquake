@@ -861,15 +861,8 @@ void        Sys_ShowIP( void );
 
 qboolean    Sys_CheckCD( void );
 
-void    Sys_Mkdir( const char *path );
-char    *Sys_Cwd( void );
 char    *Sys_DefaultCDPath( void );
-char    *Sys_DefaultBasePath( void );
-char    *Sys_DefaultInstallPath( void );
-char    *Sys_DefaultHomePath( void );
-
-char **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
-void    Sys_FreeFileList( char **list );
+const char    *Sys_DefaultInstallPath( void );
 
 void    Sys_BeginProfiling( void );
 void    Sys_EndProfiling( void );

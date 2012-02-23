@@ -2508,6 +2508,7 @@ void Com_Init( char *commandLine ) {
 
 	GGameType = GAME_ET;
 	Log::addListener(&MainLog);
+	Sys_SetHomePathSuffix("jlet");
 
 	// bk001129 - do this before anything else decides to push events
 	Com_InitPushEvent();

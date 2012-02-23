@@ -2229,6 +2229,7 @@ void Com_Init( char *commandLine ) {
 
 	GGameType = GAME_WolfMP;
 	Log::addListener(&MainLog);
+	Sys_SetHomePathSuffix("jlwolf");
 
 	// bk001129 - do this before anything else decides to push events
 	Com_InitPushEvent();
