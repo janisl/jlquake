@@ -84,9 +84,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 #endif
 
-
-#define PATH_SEP '\\'
-
 #endif
 
 //======================= MAC DEFINES =================================
@@ -98,8 +95,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #define CPUSTRING   "MacOS-PPC"
 
-#define PATH_SEP ':'
-
 void Sys_PumpEvents( void );
 
 #endif
@@ -109,8 +104,6 @@ void Sys_PumpEvents( void );
 #define MAC_STATIC
 
 #define CPUSTRING   "MacOS-PPC"
-
-#define PATH_SEP ':'
 
 void Sys_PumpEvents( void );
 
@@ -136,8 +129,6 @@ void Sys_PumpEvents( void );
 #define CPUSTRING   "linux-other"
 #endif
 
-#define PATH_SEP '/'
-
 #endif
 
 //=============================================================
@@ -150,7 +141,6 @@ typedef enum {qfalse, qtrue};
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
-typedef int fileHandle_t;
 typedef int clipHandle_t;
 
 typedef enum {
@@ -184,9 +174,6 @@ typedef enum {
 #define MAX_INFO_KEY        1024
 #define MAX_INFO_VALUE      1024
 
-
-#define MAX_QPATH           64      // max length of a quake game pathname
-#define MAX_OSPATH          128     // max length of a filesystem pathname
 
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
 // with very long names
@@ -482,22 +469,6 @@ void Com_Parse2DMatrix( const char *( *buf_p ), int y, int x, float *m );
 void Com_Parse3DMatrix( const char *( *buf_p ), int z, int y, int x, float *m );
 
 //=====================================================================================
-
-// mode parm for FS_FOpenFile
-typedef enum {
-	FS_READ,
-	FS_WRITE,
-	FS_APPEND,
-	FS_APPEND_SYNC
-} fsMode_t;
-
-typedef enum {
-	FS_SEEK_CUR,
-	FS_SEEK_END,
-	FS_SEEK_SET
-} fsOrigin_t;
-
-//=============================================
 
 // String::Length that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );

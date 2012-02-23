@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#if 0
 struct Cvar;
 
 #if defined __MACOS__
@@ -24,10 +23,8 @@ struct Cvar;
 #else
 #define PATH_SEP	'/'
 #endif
-#endif
 
 #define	MAX_QPATH			64		// max length of a quake game pathname
-#if 0
 #ifdef PATH_MAX
 #define MAX_OSPATH			PATH_MAX
 #else
@@ -69,6 +66,7 @@ enum
 	ADDPACKS_None,
 };
 
+#if 0
 void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);
 void FS_SetSearchPathBase();
 void FS_ResetSearchPathToBase();

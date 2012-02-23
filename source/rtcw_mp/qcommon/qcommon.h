@@ -449,12 +449,6 @@ issues.
 
 #define BASEGAME "main"
 
-// referenced flags
-// these are in loop specific order so don't change the order
-#define FS_GENERAL_REF  0x01
-#define FS_UI_REF       0x02
-#define FS_CGAME_REF    0x04
-#define FS_QAGAME_REF   0x08
 // number of id paks that will never be autodownloaded from baseq3
 #define NUM_ID_PAKS     9
 

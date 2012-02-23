@@ -121,8 +121,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 
-#define PATH_SEP '\\'
-
 #endif
 
 //======================= MAC OS X SERVER DEFINES =====================
@@ -132,8 +130,6 @@ If you have questions concerning this license or the applicable additional terms
 #define MAC_STATIC
 
 #define CPUSTRING   "MacOS_X"
-
-#define PATH_SEP    '/'
 
 // Vanilla PPC code, but since PPC has a reciprocal square root estimate instruction,
 // runs *much* faster than calling sqrt(). We'll use two Newton-Raphson
@@ -183,8 +179,6 @@ static inline float idSqrt( float x ) {
 #define MAC_STATIC
 
 #define CPUSTRING   "MacOS-PPC"
-
-#define PATH_SEP ':'
 
 void Sys_PumpEvents( void );
 
@@ -236,8 +230,6 @@ static inline float idSqrt( float x ) {
 #define CPUSTRING   "linux-other"
 #endif
 
-#define PATH_SEP '/'
-
 #endif
 
 //=============================================================
@@ -247,7 +239,6 @@ enum {qfalse, qtrue};
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
-typedef int fileHandle_t;
 typedef int clipHandle_t;
 
 //#define	SND_NORMAL			0x000	// (default) Allow sound to be cut off only by the same sound on this channel
@@ -284,8 +275,6 @@ typedef int clipHandle_t;
 #define MAX_INFO_STRING     1024
 #define MAX_INFO_KEY        1024
 #define MAX_INFO_VALUE      1024
-
-#define MAX_OSPATH          256     // max length of a filesystem pathname
 
 #define MAX_NAME_LENGTH     32      // max length of a client name
 
@@ -614,20 +603,6 @@ typedef struct pc_token_s
 	float floatvalue;
 	char string[MAX_TOKENLENGTH];
 } pc_token_t;
-
-// mode parm for FS_FOpenFile
-typedef enum {
-	FS_READ,
-	FS_WRITE,
-	FS_APPEND,
-	FS_APPEND_SYNC
-} fsMode_t;
-
-typedef enum {
-	FS_SEEK_CUR,
-	FS_SEEK_END,
-	FS_SEEK_SET
-} fsOrigin_t;
 
 //=============================================
 
