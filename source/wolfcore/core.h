@@ -73,10 +73,8 @@ extern Cvar* com_developer;
 
 extern Cvar* com_crashed;
 
-#if 0
 extern fileHandle_t com_journalFile;
 extern fileHandle_t com_journalDataFile;
-#endif
 
 extern int com_frameTime;
 

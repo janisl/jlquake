@@ -678,9 +678,6 @@ extern int com_frameMsec;
 
 extern qboolean com_errorEntered;
 
-extern fileHandle_t com_journalFile;
-extern fileHandle_t com_journalDataFile;
-
 typedef enum {
 	TAG_FREE,
 	TAG_GENERAL,

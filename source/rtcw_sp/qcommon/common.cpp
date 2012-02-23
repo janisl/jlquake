@@ -44,8 +44,6 @@ jmp_buf abortframe;     // an ERR_DROP occured, exit the entire frame
 
 FILE *debuglogfile;
 static fileHandle_t logfile;
-fileHandle_t com_journalFile;               // events are written here
-fileHandle_t com_journalDataFile;           // config files are written here
 
 Cvar  *com_speeds;
 Cvar  *com_fixedtime;

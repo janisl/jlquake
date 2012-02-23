@@ -54,8 +54,6 @@ jmp_buf abortframe;     // an ERR_DROP occured, exit the entire frame
 
 FILE *debuglogfile;
 static fileHandle_t logfile;
-fileHandle_t com_journalFile;               // events are written here
-fileHandle_t com_journalDataFile;           // config files are written here
 
 Cvar  *com_ignorecrash = NULL;    // bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
 Cvar  *com_pid;       // bani - process id
