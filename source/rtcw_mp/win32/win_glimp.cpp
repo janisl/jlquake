@@ -540,8 +540,8 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		wc.lpfnWndProc   = (WNDPROC) glw_state.wndproc;
 		wc.cbClsExtra    = 0;
 		wc.cbWndExtra    = 0;
-		wc.hInstance     = g_wv.hInstance;
-		wc.hIcon         = LoadIcon( g_wv.hInstance, MAKEINTRESOURCE( IDI_ICON1 ) );
+		wc.hInstance     = global_hInstance;
+		wc.hIcon         = LoadIcon( global_hInstance, MAKEINTRESOURCE( IDI_ICON1 ) );
 		wc.hCursor       = LoadCursor( NULL,IDC_ARROW );
 		wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
 		wc.lpszMenuName  = 0;
@@ -617,7 +617,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 			x, y, w, h,
 			NULL,
 			NULL,
-			g_wv.hInstance,
+			global_hInstance,
 			NULL );
 
 		if ( !g_wv.hWnd ) {

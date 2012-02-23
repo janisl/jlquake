@@ -347,12 +347,12 @@ void IN_MouseEvent( int mstate ) {
 	{
 		if ( ( mstate & ( 1 << i ) ) &&
 			 !( s_wmv.oldButtonState & ( 1 << i ) ) ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MOUSE1 + i, qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MOUSE1 + i, qtrue, 0, NULL );
 		}
 
 		if ( !( mstate & ( 1 << i ) ) &&
 			 ( s_wmv.oldButtonState & ( 1 << i ) ) ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MOUSE1 + i, qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MOUSE1 + i, qfalse, 0, NULL );
 		}
 	}
 
@@ -676,10 +676,10 @@ void IN_JoyMove( void ) {
 	buttonstate = joy.ji.dwButtons;
 	for ( i = 0 ; i < joy.jc.wNumButtons ; i++ ) {
 		if ( ( buttonstate & ( 1 << i ) ) && !( joy.oldbuttonstate & ( 1 << i ) ) ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_JOY1 + i, qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_JOY1 + i, qtrue, 0, NULL );
 		}
 		if ( !( buttonstate & ( 1 << i ) ) && ( joy.oldbuttonstate & ( 1 << i ) ) ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_JOY1 + i, qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_JOY1 + i, qfalse, 0, NULL );
 		}
 	}
 	joy.oldbuttonstate = buttonstate;
@@ -719,11 +719,11 @@ void IN_JoyMove( void ) {
 	// determine which bits have changed and key an auxillary event for each change
 	for ( i = 0 ; i < 16 ; i++ ) {
 		if ( ( povstate & ( 1 << i ) ) && !( joy.oldpovstate & ( 1 << i ) ) ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, joyDirectionKeys[i], qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, joyDirectionKeys[i], qtrue, 0, NULL );
 		}
 
 		if ( !( povstate & ( 1 << i ) ) && ( joy.oldpovstate & ( 1 << i ) ) ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, joyDirectionKeys[i], qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, joyDirectionKeys[i], qfalse, 0, NULL );
 		}
 	}
 	joy.oldpovstate = povstate;
@@ -733,7 +733,7 @@ void IN_JoyMove( void ) {
 		x = JoyToI( joy.ji.dwUpos ) * in_joyBallScale->value;
 		y = JoyToI( joy.ji.dwVpos ) * in_joyBallScale->value;
 		if ( x || y ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_MOUSE, x, y, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_MOUSE, x, y, 0, NULL );
 		}
 	}
 }
@@ -755,7 +755,7 @@ static void MIDI_NoteOff( int note ) {
 		return;
 	}
 
-	Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, qkey, qfalse, 0, NULL );
+	Sys_QueEvent( sysMsgTime, SE_KEY, qkey, qfalse, 0, NULL );
 }
 
 static void MIDI_NoteOn( int note, int velocity ) {
@@ -771,7 +771,7 @@ static void MIDI_NoteOn( int note, int velocity ) {
 		return;
 	}
 
-	Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, qkey, qtrue, 0, NULL );
+	Sys_QueEvent( sysMsgTime, SE_KEY, qkey, qtrue, 0, NULL );
 }
 
 static void CALLBACK MidiInProc( HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance,

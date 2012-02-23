@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning(disable : 4201)
 #pragma warning( push )
 #endif
-#include <windows.h>
+#include "../../wolfcore/system_windows.h"
 #if defined ( _MSC_VER ) && ( _MSC_VER >= 1200 )
 #pragma warning( pop )
 #endif
@@ -98,14 +98,9 @@ typedef struct
 	qboolean reflib_active;
 
 	HWND hWnd;
-	HINSTANCE hInstance;
 	qboolean activeApp;
 	qboolean isMinimized;
 	OSVERSIONINFO osversion;
-
-	// when we get a windows message, we store the time off so keyboard processing
-	// can know the exact time of an event
-	unsigned sysMsgTime;
 } WinVars_t;
 
 extern WinVars_t g_wv;

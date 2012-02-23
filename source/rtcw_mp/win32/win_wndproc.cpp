@@ -321,12 +321,12 @@ LRESULT WINAPI MainWndProc(
 
 	if ( uMsg == MSH_MOUSEWHEEL ) {
 		if ( ( ( int ) wParam ) > 0 ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
 		} else
 		{
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
 		}
 		return DefWindowProc( hWnd, uMsg, wParam, lParam );
 	}
@@ -340,12 +340,12 @@ LRESULT WINAPI MainWndProc(
 		// since this message doesn't exist under Win95
 		//
 		if ( ( short ) HIWORD( wParam ) > 0 ) {
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
 		} else
 		{
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
-			Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
+			Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
 		}
 		break;
 
@@ -481,16 +481,16 @@ LRESULT WINAPI MainWndProc(
 		}
 		// fall through
 	case WM_KEYDOWN:
-		Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, MapKey( lParam ), qtrue, 0, NULL );
+		Sys_QueEvent( sysMsgTime, SE_KEY, MapKey( lParam ), qtrue, 0, NULL );
 		break;
 
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
-		Sys_QueEvent( g_wv.sysMsgTime, SE_KEY, MapKey( lParam ), qfalse, 0, NULL );
+		Sys_QueEvent( sysMsgTime, SE_KEY, MapKey( lParam ), qfalse, 0, NULL );
 		break;
 
 	case WM_CHAR:
-		Sys_QueEvent( g_wv.sysMsgTime, SE_CHAR, wParam, 0, 0, NULL );
+		Sys_QueEvent( sysMsgTime, SE_CHAR, wParam, 0, 0, NULL );
 		break;
 	}
 

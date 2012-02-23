@@ -858,7 +858,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		}
 
 		// save the msg time, because wndprocs don't have access to the timestamp
-		g_wv.sysMsgTime = msg.time;
+		sysMsgTime = msg.time;
 
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
@@ -1067,7 +1067,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		return 0;
 	}
 
-	g_wv.hInstance = hInstance;
+	global_hInstance = hInstance;
 	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
