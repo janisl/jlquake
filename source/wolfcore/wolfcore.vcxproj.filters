@@ -21,9 +21,6 @@
     <ClCompile Include="console_variable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="system_windows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\core\strings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,6 +49,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\core\crc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\system_windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

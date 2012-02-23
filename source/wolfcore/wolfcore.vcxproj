@@ -29,9 +29,9 @@
     <ClCompile Include="..\core\md4.cpp" />
     <ClCompile Include="..\core\memory.cpp" />
     <ClCompile Include="..\core\strings.cpp" />
+    <ClCompile Include="..\core\system_windows.cpp" />
     <ClCompile Include="command_buffer.cpp" />
     <ClCompile Include="console_variable.cpp" />
-    <ClCompile Include="system_windows.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}</ProjectGuid>
