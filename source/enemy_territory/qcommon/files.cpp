@@ -112,12 +112,6 @@ extern searchpath_t    *fs_searchpaths;
 static int fs_loadCount;                    // total files read
 static int fs_loadStack;                    // total files in memory
 
-// never load anything from pk3 files that are not present at the server when pure
-// ex: when fs_numServerPaks != 0, FS_FOpenFileRead won't load anything outside of pk3 except .cfg .menu .game .dat
-extern int fs_numServerPaks;
-extern int fs_serverPaks[MAX_SEARCH_PATHS];                     // checksums
-extern char     *fs_serverPakNames[MAX_SEARCH_PATHS];           // pk3 names
-
 // last valid game folder used
 char lastValidBase[MAX_OSPATH];
 char lastValidGame[MAX_OSPATH];
@@ -454,67 +448,6 @@ int FS_Delete( char *filename ) {
 }
 
 //============================================================================
-
-typedef struct {
-	char pakname[MAX_QPATH];
-	qboolean ok;
-} officialpak_t;
-
-/*
-================
-FS_VerifyOfficialPaks
-================
-*/
-qboolean FS_VerifyOfficialPaks( void ) {
-	int i, j;
-	searchpath_t    *sp;
-	int numOfficialPaksOnServer = 0;
-	int numOfficialPaksLocal = 0;
-	officialpak_t officialpaks[64];
-
-	if ( !fs_numServerPaks ) {
-		return qtrue;
-	}
-
-	for ( i = 0; i < fs_numServerPaks; i++ ) {
-		if ( FS_idPak( fs_serverPakNames[i], BASEGAME ) ) {
-			String::NCpyZ( officialpaks[numOfficialPaksOnServer].pakname, fs_serverPakNames[i], sizeof( officialpaks[0].pakname ) );
-			officialpaks[numOfficialPaksOnServer].ok = qfalse;
-			numOfficialPaksOnServer++;
-		}
-	}
-
-	for ( i = 0; i < fs_numServerPaks; i++ ) {
-		for ( sp = fs_searchpaths ; sp ; sp = sp->next ) {
-			if ( sp->pack3 && sp->pack3->checksum == fs_serverPaks[i] ) {
-				char packPath[MAX_QPATH];
-
-				String::Sprintf( packPath, sizeof( packPath ), "%s/%s", sp->pack3->pakGamename, sp->pack3->pakBasename );
-
-				if ( FS_idPak( packPath, BASEGAME ) ) {
-					for ( j = 0; j < numOfficialPaksOnServer; j++ ) {
-						if ( !String::ICmp( packPath, officialpaks[j].pakname ) ) {
-							officialpaks[j].ok = qtrue;
-						}
-					}
-					numOfficialPaksLocal++;
-				}
-				break;
-			}
-		}
-	}
-
-	if ( numOfficialPaksOnServer != numOfficialPaksLocal ) {
-		for ( i = 0; i < numOfficialPaksOnServer; i++ ) {
-			if ( officialpaks[i].ok != qtrue ) {
-				Com_Printf( "ERROR: Missing/corrupt official pak file %s\n", officialpaks[i].pakname );
-			}
-		}
-		return qfalse;
-	} else {
-		return qtrue;
-	}
-}
 
 /*
 ================
@@ -897,10 +830,6 @@ qboolean FS_VerifyPak( const char *pak ) {
 		}
 	}
 	return qfalse;
-}
-
-qboolean FS_IsPure( void ) {
-	return fs_numServerPaks != 0;
 }
 
 unsigned int FS_ChecksumOSPath( char *OSPath ) {

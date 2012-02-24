@@ -499,8 +499,6 @@ int     FS_Delete( char *filename );    // only works inside the 'save' director
 const char *FS_GamePureChecksum( void );
 // Returns the checksum of the pk3 from which the server loaded the qagame.qvm
 
-qboolean FS_VerifyOfficialPaks( void );
-
 #if !defined( DEDICATED )
 extern int cl_connectedToPureServer;
 qboolean FS_CL_ExtractFromPakFile( const char *path, const char *gamedir, const char *filename, const char *cvar_lastVersion );
@@ -514,8 +512,6 @@ char *FS_ShiftedStrStr( const char *string, const char *substring, int shift );
 char *FS_ShiftStr( const char *string, int shift );
 
 qboolean FS_VerifyPak( const char *pak );
-
-qboolean FS_IsPure( void );
 
 unsigned int FS_ChecksumOSPath( char *OSPath );
 

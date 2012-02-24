@@ -305,6 +305,12 @@ struct fileHandleData_t
 	char		name[MAX_ZPATH];
 };
 
+struct officialpak_t
+{
+	char pakname[MAX_QPATH];
+	bool ok;
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 void S_ClearSoundBuffer();
@@ -348,12 +354,9 @@ static Cvar*			fs_copyfiles;
 static filelink_t*		fs_links;
 
 // never load anything from pk3 files that are not present at the server when pure
-//static 
-int				fs_numServerPaks;
-//static 
-int				fs_serverPaks[MAX_SEARCH_PATHS];				// checksums
-//static 
-char*			fs_serverPakNames[MAX_SEARCH_PATHS];			// pk3 names
+static int				fs_numServerPaks;
+static int				fs_serverPaks[MAX_SEARCH_PATHS];				// checksums
+static char*			fs_serverPakNames[MAX_SEARCH_PATHS];			// pk3 names
 
 static int				fs_fakeChkSum;
 
@@ -3638,6 +3641,66 @@ void FS_ReorderPurePaks()
 			p_previous = &s->next; 
 		}
 	}
+}
+
+bool FS_VerifyOfficialPaks()
+{
+
+	if (!fs_numServerPaks)
+	{
+		return true;
+	}
+
+	int numOfficialPaksOnServer = 0;
+	officialpak_t officialpaks[64];
+	for (int i = 0; i < fs_numServerPaks; i++)
+	{
+		if (FS_idPak(fs_serverPakNames[i], fs_PrimaryBaseGame))
+		{
+			String::NCpyZ(officialpaks[numOfficialPaksOnServer].pakname, fs_serverPakNames[i], sizeof(officialpaks[0].pakname));
+			officialpaks[numOfficialPaksOnServer].ok = false;
+			numOfficialPaksOnServer++;
+		}
+	}
+
+	int numOfficialPaksLocal = 0;
+	for (int i = 0; i < fs_numServerPaks; i++)
+	{
+		for (searchpath_t* sp = fs_searchpaths; sp; sp = sp->next)
+		{
+			if (sp->pack3 && sp->pack3->checksum == fs_serverPaks[i])
+			{
+				char packPath[MAX_QPATH];
+				String::Sprintf(packPath, sizeof(packPath), "%s/%s", sp->pack3->pakGamename, sp->pack3->pakBasename);
+
+				if (FS_idPak(packPath, fs_PrimaryBaseGame))
+				{
+					for (int j = 0; j < numOfficialPaksOnServer; j++)
+					{
+						if (!String::ICmp(packPath, officialpaks[j].pakname))
+						{
+							officialpaks[j].ok = true;
+						}
+					}
+					numOfficialPaksLocal++;
+				}
+				break;
+			}
+		}
+	}
+
+	if (numOfficialPaksOnServer == numOfficialPaksLocal)
+	{
+		return true;
+	}
+	for (int i = 0; i < numOfficialPaksOnServer; i++)
+	{
+		if (!officialpaks[i].ok)
+		{
+			common->Printf("ERROR: Missing/corrupt official pak file %s\n", officialpaks[i].pakname);
+		}
+	}
+	return false;
 }
 
 //**************************************************************************

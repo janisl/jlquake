@@ -200,6 +200,8 @@ void FS_PureServerSetLoadedPaks(const char* pakSums, const char* pakNames);
 bool FS_idPak(const char* pak, const char* base);
 bool FS_ComparePaks(char* neededpaks, int len, bool dlstring);
 
+bool FS_VerifyOfficialPaks();
+
 void FS_Path_f();
 
 void FS_SharedStartup();
