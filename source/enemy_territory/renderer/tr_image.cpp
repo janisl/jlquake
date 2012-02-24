@@ -1582,6 +1582,7 @@ typedef struct {
 	struct jpeg_source_mgr pub; /* public fields */
 
 	unsigned char *infile;      /* source stream */
+	int size;
 	JOCTET * buffer;    /* start of buffer */
 	boolean start_of_file;  /* have we gotten any data yet? */
 } my_source_mgr;
@@ -1643,12 +1644,14 @@ static  void init_source( j_decompress_ptr cinfo ) {
 static boolean fill_input_buffer( j_decompress_ptr cinfo ) {
 	my_src_ptr src = (my_src_ptr) cinfo->src;
 
-	memcpy( src->buffer, src->infile, INPUT_BUF_SIZE );
+	int toCopy = Min(src->size, INPUT_BUF_SIZE);
+	memcpy( src->buffer, src->infile, toCopy );
 
-	src->infile += INPUT_BUF_SIZE;
+	src->infile += toCopy;
+	src->size -= toCopy;
 
 	src->pub.next_input_byte = src->buffer;
-	src->pub.bytes_in_buffer = INPUT_BUF_SIZE;
+	src->pub.bytes_in_buffer = toCopy;
 	src->start_of_file = FALSE;
 
 	return TRUE;
@@ -1717,7 +1720,7 @@ static void term_source( j_decompress_ptr cinfo ) {
  * for closing it after finishing decompression.
  */
 
-static void my_jpeg_src( j_decompress_ptr cinfo, unsigned char *infile ) {
+static void my_jpeg_src( j_decompress_ptr cinfo, unsigned char *infile, int size ) {
 	my_src_ptr src;
 
 	/* The source object and input buffer are made permanent so that a series
@@ -1744,6 +1747,7 @@ static void my_jpeg_src( j_decompress_ptr cinfo, unsigned char *infile ) {
 	src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
 	src->pub.term_source = term_source;
 	src->infile = infile;
+	src->size = size;
 	src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
 	src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
@@ -1779,7 +1783,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 	 * requires it in order to read binary files.
 	 */
 
-	ri.FS_ReadFile( ( char * ) filename, (void **)&fbuffer );
+	int size = ri.FS_ReadFile( ( char * ) filename, (void **)&fbuffer );
 	if ( !fbuffer ) {
 		return;
 	}
@@ -1800,7 +1804,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 
 	/* Step 2: specify data source (eg, a file) */
 
-	my_jpeg_src( &cinfo, fbuffer );
+	my_jpeg_src( &cinfo, fbuffer, size );
 
 	/* Step 3: read file parameters with jpeg_read_header() */
 
