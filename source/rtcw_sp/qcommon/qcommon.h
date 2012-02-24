@@ -428,9 +428,6 @@ int     FS_LoadStack();
 
 int     FS_Delete( char *filename );    // only works inside the 'save' directory (for deleting savegames/images)
 
-const char *FS_GamePureChecksum( void );
-// Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-
 void    FS_CopyFileOS(  char *from, char *to ); //DAJ
 
 /*

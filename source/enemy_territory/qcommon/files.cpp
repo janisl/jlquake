@@ -513,31 +513,6 @@ static void FS_Startup( const char *gameName ) {
 	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
 }
 
-/*
-=====================
-FS_GamePureChecksum
-Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-NOTE TTimo: this is not used in RTCW so far
-=====================
-*/
-const char *FS_GamePureChecksum( void ) {
-	static char info[MAX_STRING_TOKENS];
-	searchpath_t *search;
-
-	info[0] = 0;
-
-	for ( search = fs_searchpaths ; search ; search = search->next ) {
-		// is the element a pak file?
-		if ( search->pack3 ) {
-			if ( search->pack3->referenced & FS_QAGAME_REF ) {
-				String::Sprintf( info, sizeof( info ), "%d", search->pack3->checksum );
-			}
-		}
-	}
-
-	return info;
-}
-
 #if defined( DO_LIGHT_DEDICATED )
 static const int feeds[5] = {
 	0x14d48835, 0xc44ed670, 0xd1c8da0d, 0x98df0626, 0xb4e51e7a

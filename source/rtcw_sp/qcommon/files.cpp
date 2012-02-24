@@ -195,79 +195,6 @@ void FS_CopyFileOS( char *from, char *to ) {
 }
 
 /*
-===========
-FS_FileCompare
-
-Do a binary check of the two files, return qfalse if they are different, otherwise qtrue
-===========
-*/
-qboolean FS_FileCompare( const char *s1, const char *s2 ) {
-	FILE    *f1, *f2;
-	int len1, len2, pos;
-	byte    *b1, *b2, *p1, *p2;
-
-	f1 = fopen( s1, "rb" );
-	if ( !f1 ) {
-		Com_Error( ERR_FATAL, "FS_FileCompare: %s does not exist\n", s1 );
-	}
-
-	f2 = fopen( s2, "rb" );
-	if ( !f2 ) {  // this file is allowed to not be there, since it might not exist in the previous build
-		fclose( f1 );
-		return qfalse;
-		//Com_Error( ERR_FATAL, "FS_FileCompare: %s does not exist\n", s2 );
-	}
-
-	// first do a length test
-	pos = ftell( f1 );
-	fseek( f1, 0, SEEK_END );
-	len1 = ftell( f1 );
-	fseek( f1, pos, SEEK_SET );
-
-	pos = ftell( f2 );
-	fseek( f2, 0, SEEK_END );
-	len2 = ftell( f2 );
-	fseek( f2, pos, SEEK_SET );
-
-	if ( len1 != len2 ) {
-		fclose( f1 );
-		fclose( f2 );
-		return qfalse;
-	}
-
-	// now do a binary compare
-	b1 = (byte*)malloc( len1 );
-	if ( fread( b1, 1, len1, f1 ) != len1 ) {
-		Com_Error( ERR_FATAL, "Short read in FS_FileCompare()\n" );
-	}
-	fclose( f1 );
-
-	b2 = (byte*)malloc( len2 );
-	if ( fread( b2, 1, len2, f2 ) != len2 ) {
-		Com_Error( ERR_FATAL, "Short read in FS_FileCompare()\n" );
-	}
-	fclose( f2 );
-
-	//if (!memcmp(b1, b2, (int)min(len1,len2) )) {
-	p1 = b1;
-	p2 = b2;
-	for ( pos = 0; pos < len1; pos++, p1++, p2++ )
-	{
-		if ( *p1 != *p2 ) {
-			free( b1 );
-			free( b2 );
-			return qfalse;
-		}
-	}
-	//}
-
-	// they are identical
-	free( b1 );
-	free( b2 );
-	return qtrue;
-}
-
-/*
 ==============
 FS_Delete
 TTimo - this was not in the 1.30 filesystem code
@@ -377,31 +304,6 @@ static void FS_Startup( const char *gameName ) {
 	}
 #endif
 	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
-}
-
-/*
-=====================
-FS_GamePureChecksum
-
-Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-=====================
-*/
-const char *FS_GamePureChecksum( void ) {
-	static char info[MAX_STRING_TOKENS];
-	searchpath_t *search;
-
-	info[0] = 0;
-
-	for ( search = fs_searchpaths ; search ; search = search->next ) {
-		// is the element a pak file?
-		if ( search->pack3 ) {
-			if ( search->pack3->referenced & FS_QAGAME_REF ) {
-				String::Sprintf( info, sizeof( info ), "%d", search->pack3->checksum );
-			}
-		}
-	}
-
-	return info;
 }
 
 /*
