@@ -66,6 +66,9 @@ enum
 	ADDPACKS_None,
 };
 
+#define FS_EXCLUDE_DIR 0x1
+#define FS_EXCLUDE_PK3 0x2
+
 void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);
 void FS_SetSearchPathBase();
 void FS_ResetSearchPathToBase();
@@ -92,8 +95,9 @@ bool FS_Initialized();
 
 char* FS_BuildOSPath(const char* Base, const char* Game, const char* QPath);
 
+bool FS_CreatePath(const char* OSPath);
+
 bool FS_FileExists(const char *file);
-bool FS_SV_FileExists(const char* file);
 
 int FS_FOpenFileRead(const char* FileName, fileHandle_t* File, bool UniqueFile);
 // if uniqueFILE is true, then a new FILE will be fopened even if the file
@@ -101,6 +105,11 @@ int FS_FOpenFileRead(const char* FileName, fileHandle_t* File, bool UniqueFile);
 // FS_FCloseFile instead of fclose, otherwise the pak FILE would be improperly closed
 // It is generally safe to always set uniqueFILE to true, because the majority of
 // file IO goes through FS_ReadFile, which Does The Right Thing already.
+
+int FS_FOpenFileRead_Filtered(const char* qpath, fileHandle_t* file, bool uniqueFILE, int filter_flag);
+// added exclude flag to filter out regular dirs or pack files on demand
+// would rather have used FS_FOpenFileRead(..., int filter_flag = 0)
+// but that's a C++ construct ..
 
 fileHandle_t FS_FOpenFileWrite(const char* filename);
 // will properly create any needed paths and deal with seperater character issues
@@ -155,7 +164,6 @@ void FS_FreeFile(void* buffer);
 void FS_WriteFile(const char* qpath, const void* buffer, int size);
 // writes a complete file, creating any subdirectories needed
 
-char** FS_ListFilteredFiles(const char* path, const char* extension, char* filter, int* numfiles);
 char** FS_ListFiles(const char* directory, const char* extension, int* numfiles);
 // directory should not have either a leading or trailing /
 // if extension is "/", only subdirectories will be returned

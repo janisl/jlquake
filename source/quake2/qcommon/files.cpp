@@ -198,6 +198,11 @@ void FS_InitFilesystem (void)
 
 
 
+bool CL_WWWBadChecksum(const char* pakname)
+{
+	return false;
+}
+
 void FS_Restart(int checksumFeed)
 {
 }

@@ -6,7 +6,7 @@ set(WOLFCORE_FILES
 	../core/crc.cpp
 	../core/endian.cpp
 	../core/exception.cpp
-	files.cpp
+	../core/files.cpp
 	../core/info_string.cpp
 	../core/log.cpp
 	../core/md4.cpp

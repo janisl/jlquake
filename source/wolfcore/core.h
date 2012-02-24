@@ -36,7 +36,7 @@
 #if 0
 #include "mathlib.h"
 #endif
-#include "files.h"
+#include "../core/files.h"
 #include "command_buffer.h"
 #include "console_variable.h"
 #include "../core/crc.h"

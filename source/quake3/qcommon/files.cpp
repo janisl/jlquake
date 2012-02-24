@@ -51,6 +51,11 @@ int FS_LoadStack()
 	return fs_loadStack;
 }
 
+bool CL_WWWBadChecksum(const char* pakname)
+{
+	return false;
+}
+
 void Com_AppendCDKey( const char *filename );
 void Com_ReadCDKey( const char *filename );
 
