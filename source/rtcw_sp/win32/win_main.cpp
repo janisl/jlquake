@@ -237,15 +237,6 @@ void Sys_Print( const char *msg ) {
 	Conbuf_AppendText( msg );
 }
 
-/*
-==============
-Sys_DefaultCDPath
-==============
-*/
-char *Sys_DefaultCDPath( void ) {
-	return "";
-}
-
 //========================================================
 
 

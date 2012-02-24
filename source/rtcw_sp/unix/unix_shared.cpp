@@ -41,12 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-// Used to determine CD Path
-static char cdPath[MAX_OSPATH];
-
-// Used to determine local installation path
-static char installPath[MAX_OSPATH];
-
 //#if 0 // bk001215 - see snapvector.nasm for replacement
 #if ( defined __APPLE__ ) || defined __x86_64__ // rcg010206 - using this for PPC builds...
 long fastftol( float f ) { // bk001213 - from win32/win_shared.c
@@ -76,26 +70,6 @@ char *strlwr( char *s ) {
 		s++;
 	}
 	return s; // bk001204 - duh
-}
-
-void Sys_SetDefaultCDPath( const char *path ) {
-	String::NCpyZ( cdPath, path, sizeof( cdPath ) );
-}
-
-char *Sys_DefaultCDPath( void ) {
-	return cdPath;
-}
-
-void Sys_SetDefaultInstallPath( const char *path ) {
-	String::NCpyZ( installPath, path, sizeof( installPath ) );
-}
-
-const char *Sys_DefaultInstallPath( void ) {
-	if ( *installPath ) {
-		return installPath;
-	} else {
-		return Sys_Cwd();
-	}
 }
 
 //============================================

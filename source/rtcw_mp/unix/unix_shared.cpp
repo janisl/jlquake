@@ -42,12 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-// Used to determine CD Path
-static char cdPath[MAX_OSPATH];
-
-// Used to determine local installation path
-static char installPath[MAX_OSPATH];
-
 #if !defined( DEDICATED )
 /*
 ================
@@ -137,26 +131,6 @@ char *strlwr( char *s ) {
 		s++;
 	}
 	return s; // bk001204 - duh
-}
-
-void Sys_SetDefaultCDPath( const char *path ) {
-	String::NCpyZ( cdPath, path, sizeof( cdPath ) );
-}
-
-char *Sys_DefaultCDPath( void ) {
-	return cdPath;
-}
-
-void Sys_SetDefaultInstallPath( const char *path ) {
-	String::NCpyZ( installPath, path, sizeof( installPath ) );
-}
-
-const char *Sys_DefaultInstallPath( void ) {
-	if ( *installPath ) {
-		return installPath;
-	} else {
-		return Sys_Cwd();
-	}
 }
 
 //============================================

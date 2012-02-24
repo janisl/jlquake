@@ -200,15 +200,6 @@ void Sys_Print( const char *msg ) {
 	Conbuf_AppendText( msg );
 }
 
-/*
-==============
-Sys_DefaultCDPath
-==============
-*/
-char *Sys_DefaultCDPath( void ) {
-	return "";
-}
-
 //========================================================
 
 
@@ -446,9 +437,6 @@ typedef struct {
 static streamState_t stream;
 #endif
 
-//int FS_ReadDirect( void *buffer, int len, fileHandle_t f );
-int FS_Read2( void *buffer, int len, fileHandle_t f );
-
 void Sys_MusicThread( void ) {
 	while ( 1 ) {
 		Sleep( 33 );
@@ -512,7 +500,7 @@ void Sys_StreamFillBuffer( int i ) {
 		readCount = buffer < count ? buffer : count;
 
 		//r = FS_ReadDirect( stream.sIO[i].buffer + bufferPoint, readCount, stream.sIO[i].file );
-		r = FS_Read2( stream.sIO[i].buffer + bufferPoint, readCount, stream.sIO[i].file );
+		r = FS_Read( stream.sIO[i].buffer + bufferPoint, readCount, stream.sIO[i].file );
 		if ( r != readCount ) {
 			stream.sIO[i].eof = qtrue;
 		}
@@ -1092,10 +1080,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	// never gets here
-}
-
-const char *Sys_DefaultInstallPath( void ) {
-	return Sys_Cwd();
 }
 
 qboolean Sys_IsNumLockDown( void ) {

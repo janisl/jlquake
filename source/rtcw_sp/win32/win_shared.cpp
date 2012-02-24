@@ -379,7 +379,3 @@ char *Sys_GetCurrentUser( void ) {
 
 	return s_userName;
 }
-
-const char *Sys_DefaultInstallPath( void ) {
-	return Sys_Cwd();
-}

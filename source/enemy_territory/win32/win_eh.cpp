@@ -36,7 +36,6 @@ HWND g_hWnd =    NULL;
 const char* g_Version = NULL;
 
 void Com_Frame( void );
-int FS_FOpenFileByMode( const char *qpath, fileHandle_t * f, fsMode_t mode );
 int FS_Write( const void *buffer, int len, fileHandle_t h );
 void FS_FCloseFile( fileHandle_t f );
 

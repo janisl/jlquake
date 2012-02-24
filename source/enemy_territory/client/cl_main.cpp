@@ -2635,7 +2635,7 @@ we can detect files that we got from a www dl redirect with a wrong checksum
 this indicates that the redirect setup is broken, and next dl attempt should NOT redirect
 ==================
 */
-qboolean CL_WWWBadChecksum( const char *pakname ) {
+bool CL_WWWBadChecksum( const char *pakname ) {
 	if ( strstr( clc.redirectedList, va( "@%s", pakname ) ) ) {
 		Com_Printf( "WARNING: file %s obtained through download redirect has wrong checksum\n", pakname );
 		Com_Printf( "         this likely means the server configuration is broken\n" );

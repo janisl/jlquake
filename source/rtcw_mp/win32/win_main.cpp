@@ -189,15 +189,6 @@ void Sys_Print( const char *msg ) {
 	Conbuf_AppendText( msg );
 }
 
-/*
-==============
-Sys_DefaultCDPath
-==============
-*/
-char *Sys_DefaultCDPath( void ) {
-	return "";
-}
-
 //========================================================
 
 
@@ -1079,8 +1070,3 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	// never gets here
 }
-
-const char *Sys_DefaultInstallPath( void ) {
-	return Sys_Cwd();
-}
-

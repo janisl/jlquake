@@ -329,7 +329,7 @@ void Com_Quit_f( void ) {
 		SV_Shutdown( "Server quit\n" );
 		CL_Shutdown();
 		Com_Shutdown();
-		FS_Shutdown( qtrue );
+		FS_Shutdown();
 	}
 	Sys_Quit();
 }
@@ -2391,6 +2391,7 @@ void Com_Init( char *commandLine ) {
 	}
 
 	com_fullyInitialized = qtrue;
+	fs_ProtectKeyFile = true;
 	Com_Printf( "--- Common Initialization Complete ---\n" );
 	}
 	catch (Exception& e)
