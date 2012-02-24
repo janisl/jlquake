@@ -108,7 +108,6 @@ struct searchpath_t
 
 static Cvar      *fs_basegame;
 static Cvar      *fs_gamedirvar;
-extern Cvar      *fs_restrict;
 extern searchpath_t    *fs_searchpaths;
 static int fs_readCount;                    // total bytes read
 static int fs_loadCount;                    // total files read
@@ -376,54 +375,6 @@ static void FS_Startup( const char *gameName ) {
 	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
 }
 
-
-/*
-===================
-FS_SetRestrictions
-
-Looks for product keys and restricts media add on ability
-if the full version is not found
-===================
-*/
-static void FS_SetRestrictions( void ) {
-	searchpath_t    *path;
-
-#ifndef PRE_RELEASE_DEMO
-	// if fs_restrict is set, don't even look for the id file,
-	// which allows the demo release to be tested even if
-	// the full game is present
-	if ( !fs_restrict->integer ) {
-		// look for the full game id
-
-		// NO RESTRICTIONS IN RETAIL GAME
-		return;
-	}
-#endif
-	Cvar_Set( "fs_restrict", "1" );
-
-	Com_Printf( "\nRunning in restricted demo mode.\n\n" );
-
-	// restart the filesystem with just the demo directory
-	FS_Shutdown();
-
-#ifdef PRE_RELEASE_DEMO
-	FS_Startup( DEMOGAME );
-#else
-	FS_Startup( BASEGAME );
-#endif
-
-	// make sure that the pak file has the header checksum we expect
-	for ( path = fs_searchpaths ; path ; path = path->next ) {
-		if ( path->pack3 ) {
-			// a tiny attempt to keep the checksum from being scannable from the exe
-			if ( ( path->pack3->checksum ^ 0x02261994u )
-				 != ( DEMO_PAK_CHECKSUM ^ 0x02261994u ) ) {
-				Com_Error( ERR_FATAL, "Corrupted pak0.pk3: %u", path->pack3->checksum );
-			}
-		}
-	}
-}
-
 /*
 =====================
 FS_GamePureChecksum
@@ -516,9 +467,6 @@ void FS_InitFilesystem( void ) {
 	// try to start up normally
 	FS_Startup( BASEGAME );
 
-	// see if we are going to allow add-ons
-	FS_SetRestrictions();
-
 #ifndef UPDATE_SERVER
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
@@ -552,9 +500,6 @@ void FS_Restart( int checksumFeed ) {
 
 	// try to start up normally
 	FS_Startup( BASEGAME );
-
-	// see if we are going to allow add-ons
-	FS_SetRestrictions();
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable

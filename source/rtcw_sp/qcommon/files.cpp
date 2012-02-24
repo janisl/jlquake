@@ -115,7 +115,6 @@ struct searchpath_t
 
 static Cvar      *fs_basegame;
 static Cvar      *fs_gamedirvar;
-extern Cvar      *fs_restrict;
 extern searchpath_t    *fs_searchpaths;
 static int fs_readCount;                    // total bytes read
 static int fs_loadCount;                    // total files read
@@ -380,40 +379,6 @@ static void FS_Startup( const char *gameName ) {
 	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
 }
 
-
-/*
-===================
-FS_SetRestrictions
-
-Looks for product keys and restricts media add on ability
-if the full version is not found
-===================
-*/
-static void FS_SetRestrictions( void ) {
-//	searchpath_t	*path;
-
-#ifndef WOLF_SP_DEMO
-	// if fs_restrict is set, don't even look for the id file,
-	// which allows the demo release to be tested even if
-	// the full game is present
-	if ( !fs_restrict->integer ) {
-		return; // no restrictions
-	}
-#endif
-	Cvar_Set( "fs_restrict", "1" );
-
-	Com_Printf( "\nRunning in restricted demo mode.\n\n" );
-
-	// restart the filesystem with just the demo directory
-	FS_Shutdown();
-
-#ifdef WOLF_SP_DEMO
-	FS_Startup( DEMOGAME );
-#else
-	FS_Startup( BASEGAME );
-#endif
-}
-
 /*
 =====================
 FS_GamePureChecksum
@@ -463,9 +428,6 @@ void FS_InitFilesystem( void ) {
 	// try to start up normally
 	FS_Startup( BASEGAME );
 
-	// see if we are going to allow add-ons
-	FS_SetRestrictions();
-
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
@@ -496,9 +458,6 @@ void FS_Restart( int checksumFeed ) {
 
 	// try to start up normally
 	FS_Startup( BASEGAME );
-
-	// see if we are going to allow add-ons
-	FS_SetRestrictions();
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable

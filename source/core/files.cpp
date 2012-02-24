@@ -346,8 +346,7 @@ char					fs_gamedir[MAX_OSPATH];	// this will be a single file name with no sepa
 Cvar*					fs_homepath;
 Cvar*					fs_basepath;
 static Cvar*			fs_debug;
-//static 
-Cvar*			fs_restrict;
+static Cvar*			fs_restrict;
 Cvar*					fs_cdpath;
 static Cvar*			fs_copyfiles;
 

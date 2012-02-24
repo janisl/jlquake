@@ -508,7 +508,6 @@ qboolean FS_CL_ExtractFromPakFile( const char *path, const char *gamedir, const 
 int FS_RandChecksumFeed();
 #endif
 
-char *FS_ShiftedStrStr( const char *string, const char *substring, int shift );
 char *FS_ShiftStr( const char *string, int shift );
 
 qboolean FS_VerifyPak( const char *pak );

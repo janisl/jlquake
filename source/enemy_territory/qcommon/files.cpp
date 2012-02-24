@@ -107,7 +107,6 @@ struct searchpath_t
 static Cvar      *fs_buildgame;
 static Cvar      *fs_basegame;
 static Cvar      *fs_gamedirvar;
-extern Cvar      *fs_restrict;
 extern searchpath_t    *fs_searchpaths;
 static int fs_loadCount;                    // total files read
 static int fs_loadStack;                    // total files in memory
@@ -149,22 +148,6 @@ qboolean FS_OS_FileExists( const char *file ) {
 		return qtrue;
 	}
 	return qfalse;
-}
-
-/*
-===========
-FS_ShiftedStrStr
-===========
-*/
-char *FS_ShiftedStrStr( const char *string, const char *substring, int shift ) {
-	char buf[MAX_STRING_TOKENS];
-	int i;
-
-	for ( i = 0; substring[i]; i++ ) {
-		buf[i] = substring[i] + shift;
-	}
-	buf[i] = '\0';
-	return (char*)strstr( string, buf );
 }
 
 /*
@@ -530,77 +513,6 @@ static void FS_Startup( const char *gameName ) {
 	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
 }
 
-
-/*
-===================
-FS_SetRestrictions
-
-Looks for product keys and restricts media add on ability
-if the full version is not found
-===================
-*/
-static void FS_SetRestrictions( void ) {
-	searchpath_t    *path;
-
-#ifndef PRE_RELEASE_DEMO
-	// if fs_restrict is set, don't even look for the id file,
-	// which allows the demo release to be tested even if
-	// the full game is present
-	if ( !fs_restrict->integer ) {
-		// look for the full game id
-
-		// NO RESTRICTIONS IN RETAIL GAME
-		return;
-	}
-#endif
-	Cvar_Set( "fs_restrict", "1" );
-
-	Com_Printf( "\nRunning in restricted demo mode.\n\n" );
-
-	// restart the filesystem with just the demo directory
-	FS_Shutdown();
-
-	FS_Startup( BASEGAME );
-
-	// make sure that the pak file has the header checksum we expect
-	for ( path = fs_searchpaths ; path ; path = path->next ) {
-		if ( path->pack3 ) {
-
-// every time a new demo pk3 file is built, this checksum must be updated.
-// the easiest way to get it is to just run the game and see what it spits out
-//DHM - Nerve :: Wolf Multiplayer demo checksum
-// NOTE TTimo: always needs the 'u' for unsigned int (gcc)
-#define DEMO_MPBIN_CHECKSUM 2217494506u
-#define DEMO_PAK0_CHECKSUM  846032800u
-
-#define SYS_PAKNAME_MPBIN_SHIFT 3
-#define SYS_PAKNAME_MPBIN "psbelq"
-#define SYS_PAKNAME_PAK0_SHIFT 7
-#define SYS_PAKNAME_PAK0 "whr7"
-
-#if 0 // use that stuff for shifted strings
-			Com_Printf( "SYS_PAKNAME_MPBIN + %d: '%s'\n", SYS_PAKNAME_MPBIN_SHIFT, FS_ShiftStr( "mp_bin", SYS_PAKNAME_MPBIN_SHIFT ) );
-			Com_Printf( "SYS_PAKNAME_PAK0 + %d: '%s'\n", SYS_PAKNAME_PAK0_SHIFT, FS_ShiftStr( "pak0", SYS_PAKNAME_PAK0_SHIFT ) );
-#endif
-			if ( FS_ShiftedStrStr( path->pack3->pakBasename, SYS_PAKNAME_MPBIN, -SYS_PAKNAME_MPBIN_SHIFT ) ) {
-				// a tiny attempt to keep the checksum from being scannable from the exe
-				if ( ( path->pack3->checksum ^ 0x01042000u )
-					 != ( DEMO_MPBIN_CHECKSUM ^ 0x01042000u ) ) {
-					Com_Error( ERR_FATAL, "Corrupted pakfile: %u", path->pack3->checksum );
-				}
-			} else if ( FS_ShiftedStrStr( path->pack3->pakBasename, SYS_PAKNAME_PAK0, -SYS_PAKNAME_PAK0_SHIFT ) ) {
-				// a tiny attempt to keep the checksum from being scannable from the exe
-				if ( ( path->pack3->checksum ^ 0x04062001u )
-					 != ( DEMO_PAK0_CHECKSUM ^ 0x04062001u ) ) {
-					Com_Error( ERR_FATAL, "Corrupted pakfile: %u", path->pack3->checksum );
-				}
-			} else {
-				Com_Error( ERR_FATAL, "Corrupted pakfile: %u", path->pack3->checksum );
-			}
-		}
-	}
-}
-
 /*
 =====================
 FS_GamePureChecksum
@@ -694,9 +606,6 @@ void FS_InitFilesystem( void ) {
 	// try to start up normally
 	FS_Startup( BASEGAME );
 
-	// see if we are going to allow add-ons
-	FS_SetRestrictions();
-
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
@@ -734,9 +643,6 @@ void FS_Restart( int checksumFeed ) {
 
 	// try to start up normally
 	FS_Startup( BASEGAME );
-
-	// see if we are going to allow add-ons
-	FS_SetRestrictions();
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
