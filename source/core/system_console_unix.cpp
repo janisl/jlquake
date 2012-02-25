@@ -27,6 +27,7 @@
 #include "system_unix.h"
 #include <signal.h>
 #include <unistd.h>
+#include <errno.h>
 
 // FIXME TTimo should we gard this? most *nix system should comply?
 #include <termios.h>
@@ -113,9 +114,14 @@ void Sys_ConsoleInputInit()
 		return;
 	}
 
-	Log::write("Started tty console (use +set ttycon 0 to disable)\n");
 	Field_Clear(&tty_con);
-	tcgetattr(0, &tty_tc);
+	if (tcgetattr(0, &tty_tc) == -1)
+	{
+		common->Printf("tcgetattr failed: %s\n", strerror(errno));
+		Cvar_Set("ttycon", "0");
+		ttycon_on = false;
+		return;
+	}
 	tty_erase = tty_tc.c_cc[VERASE];
 	tty_eof = tty_tc.c_cc[VEOF];
 	tc = tty_tc;
@@ -136,8 +142,15 @@ void Sys_ConsoleInputInit()
 	tc.c_iflag &= ~(ISTRIP | INPCK);
 	tc.c_cc[VMIN] = 1;
 	tc.c_cc[VTIME] = 0;
-	tcsetattr(0, TCSADRAIN, &tc);    
+	if (tcsetattr(0, TCSADRAIN, &tc) == -1)
+	{
+		common->Printf("tcsetattr failed: %s\n", strerror(errno));
+		Cvar_Set("ttycon", "0");
+		ttycon_on = false;
+		return;
+	}
 	ttycon_on = true;
+	Log::write("Started tty console (use +set ttycon 0 to disable)\n");
 }
 
 //==========================================================================
@@ -478,7 +491,7 @@ char* Sys_ConsoleInput()
 		{
 			return NULL;
 		}
-		returnedText[len - 1] = 0;    // rip off the /n and terminate
+		returnedText[len - 1] = 0;    // rip off the \n and terminate
 
 		return returnedText;
 	}

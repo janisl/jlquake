@@ -701,13 +701,6 @@ void QDECL Sys_Error( const char *error, ... );
 void    Sys_Quit( void );
 char    *Sys_GetClipboardData( void );  // note that this isn't journaled...
 
-void    Sys_Print( const char *msg );
-
-
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int     Sys_Milliseconds( void );
-
 void    Sys_SnapVector( float *v );
 
 // the system console is shown when a dedicated server is running
@@ -720,7 +713,6 @@ void    Sys_EndStreamedFile( fileHandle_t f );
 int     Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f );
 void    Sys_StreamSeek( fileHandle_t f, int offset, int origin );
 
-void    Sys_ShowConsole( int level, qboolean quitOnClose );
 void    Sys_SetErrorText( const char *text );
 
 void    Sys_SendPacket( int length, const void *data, netadr_t to );

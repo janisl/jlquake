@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../wolfcore/system_unix.h"
+#include "../../core/system_unix.h"
 
 #include <unistd.h>
 #include <sys/socket.h>

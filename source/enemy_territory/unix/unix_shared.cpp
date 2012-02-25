@@ -38,7 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../wolfcore/system_unix.h"
+#include "../../core/system_unix.h"
 
 //=============================================================================
 
@@ -145,9 +145,6 @@ float Sys_GetCPUSpeed( void ) {
 	GetClockTicks( &t1 );
 
 	return (float) ( ( t1 - t0 ) / 1000000.0 );
-}
-
-void Sys_ShowConsole( int visLevel, qboolean quitOnClose ) {
 }
 
 char *Sys_GetCurrentUser( void ) {

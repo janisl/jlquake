@@ -85,9 +85,6 @@ int Sys_GetHighQualityCPU() {
 	return 0;
 }
 
-void Sys_ShowConsole( int visLevel, qboolean quitOnClose ) {
-}
-
 char *Sys_GetCurrentUser( void ) {
 	struct passwd *p;
 

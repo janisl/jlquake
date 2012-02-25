@@ -38,7 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../wolfcore/system_unix.h"
+#include "../../core/system_unix.h"
 
 //=============================================================================
 
@@ -144,9 +144,6 @@ int Sys_GetProcessorId( void ) {
 int Sys_GetHighQualityCPU() {
 	// TODO TTimo see win_shared.c IsP3 || IsAthlon
 	return 0;
-}
-
-void Sys_ShowConsole( int visLevel, qboolean quitOnClose ) {
 }
 
 char *Sys_GetCurrentUser( void ) {
