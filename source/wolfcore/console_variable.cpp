@@ -1268,7 +1268,6 @@ void Cvar_Init()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	Cvar_WriteVariables
@@ -1293,11 +1292,25 @@ void Cvar_WriteVariables(fileHandle_t f)
 			// write the latched value, even if it hasn't taken effect yet
 			if (var->latchedString)
 			{
-				String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
+				if (GGameType & GAME_ET && var->flags & CVAR_UNSAFE)
+				{
+					String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\" unsafe\n", var->name, var->latchedString);
+				}
+				else
+				{
+					String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
+				}
 			}
 			else
 			{
-				String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
+				if (GGameType & GAME_ET && var->flags & CVAR_UNSAFE)
+				{
+					String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\" unsafe\n", var->name, var->string);
+				}
+				else
+				{
+					String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
+				}
 			}
 			FS_Printf(f, "%s", buffer);
 		}
@@ -1326,4 +1339,3 @@ void Cvar_UpdateIfExists(const char* name, const char* value)
 		var->integer = String::Atoi(var->string);
 	}
 }
-#endif

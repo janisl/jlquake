@@ -432,37 +432,6 @@ void    Cmd_ExecuteString( const char *text );
 /*
 ==============================================================
 
-CVAR
-
-==============================================================
-*/
-
-/*
-
-Cvar variables are used to hold scalar or string variables that can be changed
-or displayed at the console or prog code as well as accessed directly
-in C code.
-
-The user can access cvars from the console in three ways:
-r_draworder			prints the current value
-r_draworder 0		sets the current value to 0
-set r_draworder 0	as above, but creates the cvar if not present
-
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-
-The are also occasionally used to communicated information between different
-modules of the program.
-
-*/
-
-void    Cvar_WriteVariables( fileHandle_t f );
-// writes lines containing "set variable value" for all variables
-// with the archive flag set to true.
-
-/*
-==============================================================
-
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because

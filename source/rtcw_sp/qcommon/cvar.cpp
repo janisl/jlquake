@@ -39,31 +39,3 @@ const char* Cvar_TranslateString(const char* string)
 void Cvar_Changed(Cvar* var)
 {
 }
-
-/*
-============
-Cvar_WriteVariables
-
-Appends lines containing "set variable value" for all variables
-with the archive flag set to qtrue.
-============
-*/
-void Cvar_WriteVariables( fileHandle_t f ) {
-	Cvar  *var;
-	char buffer[1024];
-
-	for ( var = cvar_vars ; var ; var = var->next ) {
-		if ( String::ICmp( var->name, "cl_cdkey" ) == 0 ) {
-			continue;
-		}
-		if ( var->flags & CVAR_ARCHIVE ) {
-			// write the latched value, even if it hasn't taken effect yet
-			if ( var->latchedString ) {
-				String::Sprintf( buffer, sizeof( buffer ), "seta %s \"%s\"\n", var->name, var->latchedString );
-			} else {
-				String::Sprintf( buffer, sizeof( buffer ), "seta %s \"%s\"\n", var->name, var->string );
-			}
-			FS_Printf( f, "%s", buffer );
-		}
-	}
-}
