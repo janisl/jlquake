@@ -393,7 +393,8 @@ void Console_Key (int key) {
 	// command completion
 
 	if (key == K_TAB) {
-		Field_CompleteCommand(&g_consoleField);
+		int acLength = 0;
+		Field_CompleteCommand(&g_consoleField, acLength);
 		return;
 	}
 

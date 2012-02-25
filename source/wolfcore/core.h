@@ -37,7 +37,7 @@
 #include "mathlib.h"
 #endif
 #include "../core/files.h"
-#include "command_buffer.h"
+#include "../core/command_buffer.h"
 #include "../core/console_variable.h"
 #include "../core/crc.h"
 #include "../core/md4.h"

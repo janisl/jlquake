@@ -1,5 +1,5 @@
 set(WOLFCORE_FILES
-	command_buffer.cpp
+	../core/command_buffer.cpp
 	../core/Common.cpp
 	../core/common_defs.cpp
 	../core/console_variable.cpp
