@@ -67,6 +67,7 @@ static int			tty_eof;
 static termios		tty_tc;
 
 static field_t		tty_con;
+static int tty_acLength = 0;
 
 // history
 // NOTE TTimo this is a bit duplicate of the graphical console history
@@ -360,6 +361,7 @@ char* Sys_ConsoleInput()
 				tty_con.cursor--;
 				tty_con.buffer[tty_con.cursor] = '\0';
 				tty_Back();
+				tty_acLength = 0;
 			}
 			return NULL;
 		}
@@ -375,13 +377,13 @@ char* Sys_ConsoleInput()
 				Field_Clear(&tty_con);
 				key = '\n';
 				write(1, &key, 1);
+				tty_acLength = 0;
 				return returnedText;
 			}
 			if (key == '\t')
 			{
 				tty_Hide();
-				int acLength = 0;
-				Field_CompleteCommand(&tty_con, acLength);
+				Field_CompleteCommand(&tty_con, tty_acLength);
 				// Field_CompleteCommand does weird things to the string, do a cleanup
 				//   it adds a '\' at the beginning of the string
 				//   cursor doesn't reflect actual length of the string that's sent back
@@ -421,6 +423,7 @@ char* Sys_ConsoleInput()
 								tty_Show();
 							}
 							tty_FlushIn();
+							tty_acLength = 0;
 							return NULL;
 						case 'B':
 							history = Hist_Next();
@@ -435,6 +438,7 @@ char* Sys_ConsoleInput()
 							}
 							tty_Show();
 							tty_FlushIn();
+							tty_acLength = 0;
 							return NULL;
 						case 'C':
 							return NULL;
@@ -454,6 +458,7 @@ char* Sys_ConsoleInput()
 		tty_con.cursor++;
 		// print the current line (this is differential)
 		write(1, &key, 1);
+		tty_acLength = 0;
 		return NULL;
 	}
 	else
