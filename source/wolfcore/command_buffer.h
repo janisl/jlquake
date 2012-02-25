@@ -46,7 +46,6 @@ void Cbuf_InsertText(const char* Text);
 // inserted at the beginning of the buffer, before any remaining unexecuted
 // commands.
 
-#if 0
 void Cbuf_ExecuteText(int ExecWhen, const char* Text);
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
 
@@ -55,7 +54,6 @@ void Cbuf_Execute();
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
 // Normally called once per frame, but may be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
-#endif
 
 void Cbuf_CopyToDefer();
 void Cbuf_InsertFromDefer();
@@ -118,11 +116,9 @@ char* Cmd_CompleteCommand(const char* partial);
 void Cmd_CommandCompletion(void(*callback)(const char* s));
 // callback with each valid string
 
-#if 0
 void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
-#endif
 
 void Cmd_SharedInit();
 

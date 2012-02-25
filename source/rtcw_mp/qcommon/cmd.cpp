@@ -31,243 +31,14 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-#define MAX_CMD_BUFFER  131072
-#define MAX_CMD_LINE    1024
-
-struct QCmd
+bool Cmd_HandleNullCommand(const char* text)
 {
-	byte    *data;
-	int maxsize;
-	int cursize;
-};
-
-extern int cmd_wait;
-extern QCmd cmd_text;
-extern byte cmd_text_buf[MAX_CMD_BUFFER];
-
-
-/*
-=============================================================================
-
-						COMMAND BUFFER
-
-=============================================================================
-*/
-
-/*
-============
-Cbuf_ExecuteText
-============
-*/
-void Cbuf_ExecuteText( int exec_when, const char *text ) {
-	switch ( exec_when )
-	{
-	case EXEC_NOW:
-		if ( text && String::Length( text ) > 0 ) {
-			Cmd_ExecuteString( text );
-		} else {
-			Cbuf_Execute();
-		}
-		break;
-	case EXEC_INSERT:
-		Cbuf_InsertText( text );
-		break;
-	case EXEC_APPEND:
-		Cbuf_AddText( text );
-		break;
-	default:
-		Com_Error( ERR_FATAL, "Cbuf_ExecuteText: bad exec_when" );
-	}
+    // let the cgame or game handle it
+	return false;
 }
 
-/*
-============
-Cbuf_Execute
-============
-*/
-void Cbuf_Execute( void ) {
-	int i;
-	char    *text;
-	char line[MAX_CMD_LINE];
-	int quotes;
-
-	while ( cmd_text.cursize )
-	{
-		if ( cmd_wait ) {
-			// skip out while text still remains in buffer, leaving it
-			// for next frame
-			cmd_wait--;
-			break;
-		}
-
-		// find a \n or ; line break
-		text = (char *)cmd_text.data;
-
-		quotes = 0;
-		for ( i = 0 ; i < cmd_text.cursize ; i++ )
-		{
-			if ( text[i] == '"' ) {
-				quotes++;
-			}
-			if ( !( quotes & 1 ) &&  text[i] == ';' ) {
-				break;  // don't break if inside a quoted string
-			}
-			if ( text[i] == '\n' || text[i] == '\r' ) {
-				break;
-			}
-		}
-
-		if ( i >= ( MAX_CMD_LINE - 1 ) ) {
-			i = MAX_CMD_LINE - 1;
-		}
-
-		memcpy( line, text, i );
-		line[i] = 0;
-
-// delete the text from the command buffer and move remaining commands down
-// this is necessary because commands (exec) can insert data at the
-// beginning of the text buffer
-
-		if ( i == cmd_text.cursize ) {
-			cmd_text.cursize = 0;
-		} else
-		{
-			i++;
-			cmd_text.cursize -= i;
-			memmove( text, text + i, cmd_text.cursize );
-		}
-
-// execute the command line
-
-		Cmd_ExecuteString( line );
-	}
-}
-
-
-/*
-==============================================================================
-
-						SCRIPT COMMANDS
-
-==============================================================================
-*/
-
-
-/*
-===============
-Cmd_Exec_f
-===============
-*/
-void Cmd_Exec_f( void ) {
-	char    *f;
-	int len;
-	char filename[MAX_QPATH];
-
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "exec <filename> : execute a script file\n" );
-		return;
-	}
-
-	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof( filename ) );
-	String::DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	len = FS_ReadFile( filename, (void **)&f );
-	if ( !f ) {
-		Com_Printf( "couldn't exec %s\n",Cmd_Argv( 1 ) );
-		return;
-	}
-	Com_Printf( "execing %s\n",Cmd_Argv( 1 ) );
-
-	Cbuf_InsertText( f );
-
-	FS_FreeFile( f );
-}
-
-
-/*
-===============
-Cmd_Vstr_f
-
-Inserts the current value of a variable as command text
-===============
-*/
-void Cmd_Vstr_f( void ) {
-	const char    *v;
-
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "vstr <variablename> : execute a variable command\n" );
-		return;
-	}
-
-	v = Cvar_VariableString( Cmd_Argv( 1 ) );
-	Cbuf_InsertText( va( "%s\n", v ) );
-}
-
-
-/*
-=============================================================================
-
-					COMMAND EXECUTION
-
-=============================================================================
-*/
-
-struct cmd_function_t
+void Cmd_HandleUnknownCommand()
 {
-	cmd_function_t*next;
-	char                    *name;
-	xcommand_t function;
-};
-
-
-extern int cmd_argc;
-extern char        *cmd_argv[1024];        // points into cmd_tokenized
-extern char cmd_tokenized[BIG_INFO_STRING + 1024];         // will have 0 bytes inserted
-extern char cmd_cmd[BIG_INFO_STRING];         // the original command we received (no token processing)
-
-extern cmd_function_t  *cmd_functions;      // possible commands to execute
-
-/*
-============
-Cmd_ExecuteString
-
-A complete command line has been parsed, so try to execute it
-============
-*/
-void    Cmd_ExecuteString( const char *text ) {
-	cmd_function_t  *cmd, **prev;
-
-	// execute the command line
-	Cmd_TokenizeString( text );
-	if ( !Cmd_Argc() ) {
-		return;     // no tokens
-	}
-
-	// check registered command functions
-	for ( prev = &cmd_functions ; *prev ; prev = &cmd->next ) {
-		cmd = *prev;
-		if ( !String::ICmp( cmd_argv[0],cmd->name ) ) {
-			// rearrange the links so that the command will be
-			// near the head of the list next time it is used
-			*prev = cmd->next;
-			cmd->next = cmd_functions;
-			cmd_functions = cmd;
-
-			// perform the action
-			if ( !cmd->function ) {
-				// let the cgame or game handle it
-				break;
-			} else {
-				cmd->function();
-			}
-			return;
-		}
-	}
-
-	// check cvars
-	if ( Cvar_Command() ) {
-		return;
-	}
-
 	// check client game commands
 	if ( com_cl_running && com_cl_running->integer && CL_GameCommand() ) {
 		return;
@@ -285,7 +56,7 @@ void    Cmd_ExecuteString( const char *text ) {
 
 	// send it as a server command if we are connected
 	// this will usually result in a chat message
-	CL_ForwardCommandToServer( text );
+	CL_ForwardCommandToServer(Cmd_Cmd());
 }
 
 /*
@@ -295,7 +66,4 @@ Cmd_Init
 */
 void Cmd_Init( void ) {
 	Cmd_SharedInit();
-	Cmd_AddCommand( "exec",Cmd_Exec_f );
-	Cmd_AddCommand( "vstr",Cmd_Vstr_f );
 }
-

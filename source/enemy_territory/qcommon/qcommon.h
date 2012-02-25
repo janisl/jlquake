@@ -396,38 +396,7 @@ Command text buffering and command execution
 ==============================================================
 */
 
-/*
-
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but entire text
-files can be execed.
-
-*/
-
-void Cbuf_ExecuteText( int exec_when, const char *text );
-// this can be used in place of either Cbuf_AddText or Cbuf_InsertText
-
-void Cbuf_Execute( void );
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
-// Do not call inside a command function, or current args will be destroyed.
-
-//===========================================================================
-
-/*
-
-Command execution takes a null terminated string, breaks it into tokens,
-then searches for a command or variable that matches the first token.
-
-*/
-
 void    Cmd_Init( void );
-
-void    Cmd_ExecuteString( const char *text );
-// Parses a single line of text into arguments and tries to execute it
-// as if it was typed at the console
-
 
 /*
 ==============================================================

@@ -20,9 +20,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#if 0
 #define MAX_CMD_LINE		1024
-#endif
 #define MAX_ARGS			1024
 //#define MAX_CMD_BUFFER		16384	//	Original
 #define MAX_CMD_BUFFER		131072		//	From enemy territory
@@ -54,11 +52,9 @@ struct cmd_function_t
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-#if 0
 //	Game specific.
 bool Cmd_HandleNullCommand(const char* text);
 void Cmd_HandleUnknownCommand();
-#endif
 
 char* __CopyString(const char* in);
 
@@ -78,27 +74,19 @@ static cmdalias_t*		cmd_alias;
 
 static int				alias_count;		// for detecting runaway loops
 
-//static 
-int				cmd_wait;
+static int				cmd_wait;
 
-//static 
-QCmd				cmd_text;
-//static 
-byte				cmd_text_buf[MAX_CMD_BUFFER];
+static QCmd				cmd_text;
+static byte				cmd_text_buf[MAX_CMD_BUFFER];
 
 static byte				defer_text_buf[MAX_CMD_BUFFER];
 
-//static 
-cmd_function_t*	cmd_functions;		// possible commands to execute
+static cmd_function_t*	cmd_functions;		// possible commands to execute
 
-//static 
-int				cmd_argc;
-//static 
-char*			cmd_argv[MAX_ARGS];			// points into cmd_tokenized
-//static 
-char				cmd_tokenized[8192+1024];	// will have 0 bytes inserted
-//static 
-char				cmd_cmd[8192]; // the original command we received (no token processing)
+static int				cmd_argc;
+static char*			cmd_argv[MAX_ARGS];			// points into cmd_tokenized
+static char				cmd_tokenized[8192+1024];	// will have 0 bytes inserted
+static char				cmd_cmd[8192]; // the original command we received (no token processing)
 static char				cmd_args[8192];
 
 // CODE --------------------------------------------------------------------
@@ -178,7 +166,6 @@ void Cbuf_InsertText(const char* Text)
 	cmd_text.cursize += Len;
 }
 
-#if 0
 //==========================================================================
 //
 //	Cbuf_ExecuteText
@@ -280,7 +267,6 @@ void Cbuf_Execute()
 		Cmd_ExecuteString(Line);
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -561,7 +547,6 @@ static void Cmd_Alias_f()
 	a->value = __CopyString(cmd);
 }
 
-#if 0
 //==========================================================================
 //
 //	Cmd_Vstr_f
@@ -613,7 +598,6 @@ static void Cmd_Exec_f()
 
 	Cbuf_InsertText((char*)Buffer.Ptr());
 }
-#endif
 
 //==========================================================================
 //
@@ -673,10 +657,8 @@ void Cmd_SharedInit()
 		Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
 	if (!(GGameType & GAME_Tech3))
 		Cmd_AddCommand("alias", Cmd_Alias_f);
-#if 0
 	Cmd_AddCommand("exec",Cmd_Exec_f);
 	Cmd_AddCommand("vstr", Cmd_Vstr_f);
-#endif
 	Cmd_AddCommand("cmdlist", Cmd_List_f);
 }
 
@@ -883,7 +865,6 @@ char* Cmd_Cmd()
 //
 //==========================================================================
 
-#if 0
 static const char* Cmd_MacroExpandString(const char* Text)
 {
 	static char		Expanded[MAX_STRING_CHARS];
@@ -956,7 +937,6 @@ static const char* Cmd_MacroExpandString(const char* Text)
 
 	return Scan;
 }
-#endif
 
 //==========================================================================
 //
@@ -976,12 +956,10 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 	cmd_args[0] = 0;
 
 	// macro expand the text
-#if 0
 	if (MacroExpand)
 	{
 		TextIn = Cmd_MacroExpandString(TextIn);
 	}
-#endif
 	if (!TextIn)
 	{
 		return;
@@ -1215,7 +1193,6 @@ void Cmd_CommandCompletion(void(*callback)(const char* s))
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	Cmd_ExecuteString
@@ -1286,7 +1263,6 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 
 	Cmd_HandleUnknownCommand();
 }
-#endif
 
 //**************************************************************************
 //	command line completion
