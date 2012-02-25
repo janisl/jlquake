@@ -966,143 +966,6 @@ CONSOLE LINE EDITING
 ==============================================================================
 */
 
-static const char *completionString;
-static char shortestMatch[MAX_TOKEN_CHARS_Q3];
-static int matchCount;
-
-/*
-===============
-FindMatches
-
-===============
-*/
-static void FindMatches( const char *s ) {
-	int i;
-
-	if ( String::NICmp( s, completionString, String::Length( completionString ) ) ) {
-		return;
-	}
-	matchCount++;
-	if ( matchCount == 1 ) {
-		String::NCpyZ( shortestMatch, s, sizeof( shortestMatch ) );
-		return;
-	}
-
-	// cut shortestMatch to the amount common with s
-	for ( i = 0 ; s[i] ; i++ ) {
-		if ( tolower( shortestMatch[i] ) != tolower( s[i] ) ) {
-			shortestMatch[i] = 0;
-		}
-	}
-}
-
-/*
-===============
-PrintMatches
-
-===============
-*/
-static void PrintMatches( const char *s ) {
-	if ( !String::NICmp( s, shortestMatch, String::Length( shortestMatch ) ) ) {
-		Com_Printf( "    %s\n", s );
-	}
-}
-
-static void keyConcatArgs( void ) {
-	int i;
-	char    *arg;
-
-	for ( i = 1 ; i < Cmd_Argc() ; i++ ) {
-		String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
-		arg = Cmd_Argv( i );
-		while ( *arg ) {
-			if ( *arg == ' ' ) {
-				String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
-				break;
-			}
-			arg++;
-		}
-		String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  Cmd_Argv( i ) );
-		if ( *arg == ' ' ) {
-			String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
-		}
-	}
-}
-
-static void ConcatRemaining( const char *src, const char *start ) {
-	const char *str;
-
-	str = strstr( src, start );
-	if ( !str ) {
-		keyConcatArgs();
-		return;
-	}
-
-	str += String::Length( start );
-	String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), str );
-}
-
-
-/*
-===============
-CompleteCommand
-
-Tab expansion
-===============
-*/
-static void CompleteCommand( void ) {
-	field_t *edit;
-	field_t temp;
-
-	edit = &g_consoleField;
-
-	// only look at the first token for completion purposes
-	Cmd_TokenizeString( edit->buffer );
-
-	completionString = Cmd_Argv( 0 );
-	if ( completionString[0] == '\\' || completionString[0] == '/' ) {
-		completionString++;
-	}
-	matchCount = 0;
-	shortestMatch[0] = 0;
-
-	if ( String::Length( completionString ) == 0 ) {
-		return;
-	}
-
-	Cmd_CommandCompletion( FindMatches );
-	Cvar_CommandCompletion( FindMatches );
-
-	if ( matchCount == 0 ) {
-		return; // no matches
-	}
-
-	Com_Memcpy( &temp, edit, sizeof( field_t ) );
-
-	if ( matchCount == 1 ) {
-		String::Sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", shortestMatch );
-		if ( Cmd_Argc() == 1 ) {
-			String::Cat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
-		} else {
-			ConcatRemaining( temp.buffer, completionString );
-		}
-		edit->cursor = String::Length( edit->buffer );
-		return;
-	}
-
-	// multiple matches, complete to shortest
-	String::Sprintf( edit->buffer, sizeof( edit->buffer ), "\\%s", shortestMatch );
-	edit->cursor = String::Length( edit->buffer );
-	ConcatRemaining( temp.buffer, completionString );
-
-	Com_Printf( "]%s\n", edit->buffer );
-
-	// run through again, printing matches
-	Cmd_CommandCompletion( PrintMatches );
-	Cvar_CommandCompletion( PrintMatches );
-}
-
-
 /*
 ====================
 Console_Key
@@ -1164,7 +1027,8 @@ void Console_Key( int key ) {
 	// command completion
 
 	if ( key == K_TAB ) {
-		CompleteCommand();
+		int acLength = 0;
+		Field_CompleteCommand(&g_consoleField, acLength);
 		return;
 	}
 

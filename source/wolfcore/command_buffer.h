@@ -141,6 +141,4 @@ struct field_t
 };
 
 void Field_Clear(field_t* Edit);
-#if 0
-void Field_CompleteCommand(field_t* Edit);
-#endif
+void Field_CompleteCommand(field_t* Edit, int& acLength);

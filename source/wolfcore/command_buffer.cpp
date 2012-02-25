@@ -1268,15 +1268,13 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 //	command line completion
 //**************************************************************************
 
-//static 
-const char*	completionString;
-//static 
-char			shortestMatch[MAX_EDIT_LINE];
-//static 
-int			matchCount;
+static char			completionString[MAX_EDIT_LINE];
+static char			shortestMatch[MAX_EDIT_LINE];
+static int			matchCount;
 // field we are working on, passed to Field_CompleteCommand (&g_consoleCommand for instance)
-//static 
-field_t*		completionField;
+static field_t*		completionField;
+static int matchIndex;
+static int findMatchIndex;
 
 //==========================================================================
 //
@@ -1291,7 +1289,6 @@ void Field_Clear(field_t* edit)
 	edit->scroll = 0;
 }
 
-#if 0
 //==========================================================================
 //
 //	FindMatches
@@ -1322,6 +1319,21 @@ static void FindMatches(const char* s)
 	}
 }
 
+static void FindIndexMatch(const char* s)
+{
+	if (String::NICmp(s, completionString, String::Length(completionString)))
+	{
+		return;
+	}
+
+	if (findMatchIndex == matchIndex)
+	{
+		String::NCpyZ(shortestMatch, s, sizeof(shortestMatch));
+	}
+
+	findMatchIndex++;
+}
+
 //==========================================================================
 //
 //	PrintMatches
@@ -1332,7 +1344,29 @@ static void PrintMatches(const char* s)
 {
 	if (!String::NICmp(s, shortestMatch, String::Length(shortestMatch)))
 	{
-		Log::write("    %s\n", s);
+		if (GGameType & GAME_ET)
+		{
+			common->Printf("  ^9%s^0\n", s);
+		}
+		else
+		{
+			common->Printf("    %s\n", s);
+		}
+	}
+}
+
+static void PrintCvarMatches(const char *s)
+{
+	if (!String::NICmp(s, shortestMatch, String::Length(shortestMatch)))
+	{
+		if (GGameType & GAME_ET)
+		{
+			common->Printf("  ^9%s = ^5%s^0\n", s, Cvar_VariableString(s));
+		}
+		else
+		{
+			common->Printf("    %s\n", s);
+		}
 	}
 }
 
@@ -1394,62 +1428,89 @@ static void ConcatRemaining(const char* src, const char* start)
 //
 //==========================================================================
 
-void Field_CompleteCommand(field_t* field)
+void Field_CompleteCommand(field_t* field, int& acLength)
 {
 	field_t		temp;
 
 	completionField = field;
 
-	// only look at the first token for completion purposes
-	Cmd_TokenizeString(completionField->buffer);
-
-	completionString = Cmd_Argv(0);
-	if (completionString[0] == '\\' || completionString[0] == '/')
+	if (!acLength)
 	{
-		completionString++;
-	}
-	matchCount = 0;
-	shortestMatch[0] = 0;
+		// only look at the first token for completion purposes
+		Cmd_TokenizeString(completionField->buffer);
 
-	if (String::Length(completionString) == 0)
-	{
-		return;
-	}
+		const char* cmd = Cmd_Argv(0);
+		if (cmd[0] == '\\' || cmd[0] == '/')
+		{
+			cmd++;
+		}
+		String::NCpyZ(completionString, cmd, sizeof(completionString));
+		matchCount = 0;
+		matchIndex = 0;
+		shortestMatch[0] = 0;
 
-	Cmd_CommandCompletion(FindMatches);
-	Cvar_CommandCompletion(FindMatches);
+		if (String::Length(completionString) == 0)
+		{
+			return;
+		}
 
-	if (matchCount == 0)
-	{
-		return;	// no matches
-	}
+		Cmd_CommandCompletion(FindMatches);
+		Cvar_CommandCompletion(FindMatches);
 
-	Com_Memcpy(&temp, completionField, sizeof(field_t));
+		if (matchCount == 0)
+		{
+			return;	// no matches
+		}
 
-	if (matchCount == 1)
-	{
+		Com_Memcpy(&temp, completionField, sizeof(field_t));
+
+		if (matchCount == 1)
+		{
+			String::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
+			if (Cmd_Argc() == 1)
+			{
+				String::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
+			}
+			else
+			{
+				ConcatRemaining(temp.buffer, completionString);
+			}
+			completionField->cursor = String::Length(completionField->buffer);
+			return;
+		}
+
+		// multiple matches, complete to shortest
 		String::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
-		if (Cmd_Argc() == 1)
-		{
-			String::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
-		}
-		else
-		{
-			ConcatRemaining(temp.buffer, completionString);
-		}
 		completionField->cursor = String::Length(completionField->buffer);
-		return;
+		acLength = completionField->cursor;
+		ConcatRemaining(temp.buffer, completionString);
+
+		Log::write("]%s\n", completionField->buffer);
+
+		// run through again, printing matches
+		Cmd_CommandCompletion(PrintMatches);
+		Cvar_CommandCompletion(PrintCvarMatches);
 	}
+	else if (matchCount != 1)
+	{
+		// get the next match and show instead
+		char lastMatch[MAX_TOKEN_CHARS_Q3];
+		String::NCpyZ(lastMatch, shortestMatch, sizeof(lastMatch));
 
-	// multiple matches, complete to shortest
-	String::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
-	completionField->cursor = String::Length(completionField->buffer);
-	ConcatRemaining(temp.buffer, completionString);
+		matchIndex++;
+		if (matchIndex == matchCount)
+		{
+			matchIndex = 0;
+		}
+		findMatchIndex = 0;
+		Cmd_CommandCompletion(FindIndexMatch);
+		Cvar_CommandCompletion(FindIndexMatch);
 
-	Log::write("]%s\n", completionField->buffer);
+		Com_Memcpy(&temp, completionField, sizeof(field_t));
 
-	// run through again, printing matches
-	Cmd_CommandCompletion(PrintMatches);
-	Cvar_CommandCompletion(PrintMatches);
+		// and print it
+		String::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
+		completionField->cursor = String::Length(completionField->buffer);
+		ConcatRemaining(temp.buffer, lastMatch);
+	}
 }
-#endif

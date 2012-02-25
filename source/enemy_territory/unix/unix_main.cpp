@@ -481,7 +481,8 @@ char *Sys_ConsoleInput( void ) {
 				}
 				if ( key == '\t' ) {
 					tty_Hide();
-					Field_CompleteCommand( &tty_con );
+					int acLength = 0;
+					Field_CompleteCommand( &tty_con, acLength );
 					// Field_CompleteCommand does weird things to the string, do a cleanup
 					//   it adds a '\' at the beginning of the string
 					//   cursor doesn't reflect actual length of the string that's sent back
