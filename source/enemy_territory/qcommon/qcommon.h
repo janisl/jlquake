@@ -478,12 +478,6 @@ issues.
 #define BASEGAME "ettest"
 #endif
 
-#ifdef WIN32
-	#define Q_rmdir _rmdir
-#else
-	#define Q_rmdir rmdir
-#endif
-
 void    FS_InitFilesystem( void );
 
 qboolean    FS_ConditionalRestart( int checksumFeed );
@@ -493,8 +487,6 @@ void    FS_Restart( int checksumFeed );
 qboolean FS_OS_FileExists( const char *file ); // TTimo - test file existence given OS path
 
 int     FS_LoadStack();
-
-int     FS_Delete( char *filename );    // only works inside the 'save' directory (for deleting savegames/images)
 
 #if !defined( DEDICATED )
 extern int cl_connectedToPureServer;
@@ -506,8 +498,6 @@ int FS_RandChecksumFeed();
 #endif
 
 char *FS_ShiftStr( const char *string, int shift );
-
-qboolean FS_VerifyPak( const char *pak );
 
 unsigned int FS_ChecksumOSPath( char *OSPath );
 

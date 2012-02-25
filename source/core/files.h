@@ -69,14 +69,6 @@ enum
 #define FS_EXCLUDE_DIR 0x1
 #define FS_EXCLUDE_PK3 0x2
 
-void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);
-void FS_SetSearchPathBase();
-void FS_ResetSearchPathToBase();
-void FS_CopyFile(char* fromOSPath, char* toOSPath);
-void FS_ReorderPurePaks();
-char* FS_NextPath(char* prevpath);
-int FS_GetQuake2GameType();
-
 extern bool				com_portals;
 
 extern int			fs_packFiles;
@@ -90,6 +82,14 @@ extern Cvar		*fs_cdpath;
 extern bool		fs_ProtectKeyFile;
 extern char		fs_gamedir[MAX_OSPATH];
 extern const char*	fs_PrimaryBaseGame;
+
+void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);
+void FS_SetSearchPathBase();
+void FS_ResetSearchPathToBase();
+void FS_CopyFile(char* fromOSPath, char* toOSPath);
+void FS_ReorderPurePaks();
+char* FS_NextPath(char* prevpath);
+int FS_GetQuake2GameType();
 
 bool FS_Initialized();
 
@@ -138,6 +138,8 @@ int FS_FTell(fileHandle_t f);
 void FS_Remove(const char* osPath);
 
 void FS_Rename(const char* from, const char* to);
+
+int FS_Delete(const char* filename);    // only works inside the 'save' directory (for deleting savegames/images)
 
 int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp);
 fileHandle_t FS_SV_FOpenFileWrite(const char *filename);
@@ -201,6 +203,8 @@ bool FS_idPak(const char* pak, const char* base);
 bool FS_ComparePaks(char* neededpaks, int len, bool dlstring);
 
 bool FS_VerifyOfficialPaks();
+
+bool FS_VerifyPak(const char* pak);
 
 void FS_Path_f();
 

@@ -38,88 +38,14 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
-#include "../../core/unzip.h"
-
-// TTimo: moved to qcommon.h
-// NOTE: could really do with a cvar
-//#define	BASEGAME			"main"
-#define DEMOGAME            "demomain"
-
-// every time a new demo pk3 file is built, this checksum must be updated.
-// the easiest way to get it is to just run the game and see what it spits out
-//DHM - Nerve :: Wolf Multiplayer demo checksum
-// NOTE TTimo: always needs the 'u' for unsigned int (gcc)
-#define DEMO_PAK_CHECKSUM   2031778175u
-
-#define MAX_SEARCH_PATHS    4096
-
-struct packfile_t
-{
-	char		name[MAX_QPATH];
-	int			filepos;
-	int			filelen;
-};
-
-struct pack_t
-{
-	char		filename[MAX_OSPATH];
-	FILE*		handle;
-	int			numfiles;
-	packfile_t*	files;
-};
-
-struct fileInPack_t
-{
-	char                    *name;      // name of the file
-	unsigned long pos;                  // file info position in zip
-	fileInPack_t*   next;       // next file in the hash
-};
-
-struct pack3_t
-{
-	char pakFilename[MAX_OSPATH];               // c:\quake3\baseq3\pak0.pk3
-	char pakBasename[MAX_OSPATH];               // pak0
-	char pakGamename[MAX_OSPATH];               // baseq3
-	unzFile handle;                             // handle to zip file
-	int checksum;                               // regular checksum
-	int pure_checksum;                          // checksum for pure
-	int numfiles;                               // number of files in pk3
-	int referenced;                             // referenced file flags
-	int hashSize;                               // hash table size (power of 2)
-	fileInPack_t*   *hashTable;                 // hash table
-	fileInPack_t*   buildBuffer;                // buffer with the filenames etc.
-};
-
-struct directory_t
-{
-	char path[MAX_OSPATH];              // c:\quake3
-	char gamedir[MAX_OSPATH];           // baseq3
-	char			fullname[MAX_OSPATH];
-};
-
-struct searchpath_t
-{
-	searchpath_t*next;
-
-	pack_t*			pack;
-	pack3_t      *pack3;      // only one of pack / dir will be non NULL
-	directory_t *dir;
-};
 
 static Cvar      *fs_basegame;
 static Cvar      *fs_gamedirvar;
-extern searchpath_t    *fs_searchpaths;
-static int fs_readCount;                    // total bytes read
-static int fs_loadCount;                    // total files read
 static int fs_loadStack;                    // total files in memory
 
 // last valid game folder used
 char lastValidBase[MAX_OSPATH];
 char lastValidGame[MAX_OSPATH];
-
-#ifdef FS_MISSING
-FILE*       missingFiles = NULL;
-#endif
 
 bool CL_WWWBadChecksum(const char* pakname)
 {
@@ -262,39 +188,6 @@ qboolean FS_CL_ExtractFromPakFile( const char *fullpath, const char *gamedir, co
 }
 #endif
 
-/*
-==============
-FS_Delete
-TTimo - this was not in the 1.30 filesystem code
-using fs_homepath for the file to remove
-==============
-*/
-int FS_Delete( char *filename ) {
-	char *ospath;
-
-	if ( !fs_searchpaths ) {
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
-	}
-
-	if ( !filename || filename[0] == 0 ) {
-		return 0;
-	}
-
-	// for safety, only allow deletion from the save directory
-	if ( String::NCmp( filename, "save/", 5 ) != 0 ) {
-		return 0;
-	}
-
-	ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
-
-	if ( remove( ospath ) != -1 ) {  // success
-		return 1;
-	}
-
-
-	return 0;
-}
-
 //============================================================================
 
 /*
@@ -367,11 +260,6 @@ static void FS_Startup( const char *gameName ) {
 
 	Com_Printf( "----------------------\n" );
 
-#ifdef FS_MISSING
-	if ( missingFiles == NULL ) {
-		missingFiles = fopen( "\\missing.txt", "ab" );
-	}
-#endif
 	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
 }
 
@@ -523,26 +411,6 @@ qboolean FS_ConditionalRestart( int checksumFeed ) {
 	if ( fs_gamedirvar->modified || checksumFeed != fs_checksumFeed ) {
 		FS_Restart( checksumFeed );
 		return qtrue;
-	}
-	return qfalse;
-}
-
-// CVE-2006-2082
-// compared requested pak against the names as we built them in FS_ReferencedPakNames
-qboolean FS_VerifyPak( const char *pak ) {
-	char teststring[ BIG_INFO_STRING ];
-	searchpath_t    *search;
-
-	for ( search = fs_searchpaths ; search ; search = search->next ) {
-		if ( search->pack3 ) {
-			String::NCpyZ( teststring, search->pack3->pakGamename, sizeof( teststring ) );
-			String::Cat( teststring, sizeof( teststring ), "/" );
-			String::Cat( teststring, sizeof( teststring ), search->pack3->pakBasename );
-			String::Cat( teststring, sizeof( teststring ), ".pk3" );
-			if ( !String::ICmp( teststring, pak ) ) {
-				return qtrue;
-			}
-		}
 	}
 	return qfalse;
 }

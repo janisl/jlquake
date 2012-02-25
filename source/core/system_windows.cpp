@@ -14,37 +14,19 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
 #include "system_windows.h"
 #include <direct.h>
 #include <io.h>
 
-// MACROS ------------------------------------------------------------------
-
 #define MAX_FOUND_FILES		0x1000
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
 char* __CopyString(const char* in);
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 HINSTANCE		global_hInstance;
 // when we get a windows message, we store the time off so keyboard processing
 // can know the exact time of an event
 unsigned		sysMsgTime;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static char		HomePathSuffix[MAX_OSPATH];
 
@@ -53,24 +35,33 @@ static double		curtime = 0.0;
 static int			lowshift;
 static double		pfreq;
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Sys_Mkdir
-//
-//==========================================================================
+//	Test an file given OS path:
+//	returns -1 if not found
+//	returns 1 if directory
+//	returns 0 otherwise
+int Sys_StatFile(const char *ospath)
+{
+	struct _stat stat;
+	if (_stat(ospath, &stat) == -1)
+	{
+		return -1;
+	}
+	if (stat.st_mode & _S_IFDIR)
+	{
+		return 1;
+	}
+	return 0;
+}
 
 void Sys_Mkdir(const char* path)
 {
 	_mkdir(path);
 }
 
-//==========================================================================
-//
-//	Sys_Cwd
-//
-//==========================================================================
+int Sys_Rmdir(const char* path)
+{
+	return _rmdir(path);
+}
 
 const char* Sys_Cwd()
 {
@@ -82,33 +73,15 @@ const char* Sys_Cwd()
 	return cwd;
 }
 
-//==========================================================================
-//
-//	Sys_SetHomePathSuffix
-//
-//==========================================================================
-
 void Sys_SetHomePathSuffix(const char* Name)
 {
 	String::NCpyZ(HomePathSuffix, Name, sizeof(HomePathSuffix));
 }
 
-//==========================================================================
-//
-//	Sys_DefaultHomePath
-//
-//==========================================================================
-
 const char* Sys_DefaultHomePath()
 {
 	return NULL;
 }
-
-//==========================================================================
-//
-//	Sys_ListFilteredFiles
-//
-//==========================================================================
 
 static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, const char* filter,
 	char** list, int* numfiles)
@@ -171,12 +144,6 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 	_findclose(findhandle);
 }
 
-//==========================================================================
-//
-//	strgtr
-//
-//==========================================================================
-
 static bool strgtr(const char *s0, const char *s1)
 {
 	int l0 = String::Length(s0);
@@ -200,12 +167,6 @@ static bool strgtr(const char *s0, const char *s1)
 	}
 	return false;
 }
-
-//==========================================================================
-//
-//	Sys_ListFiles
-//
-//==========================================================================
 
 char** Sys_ListFiles(const char* directory, const char* extension, const char* filter,
 	int* numfiles, bool wantsubs)
@@ -318,12 +279,6 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 	return listCopy;
 }
 
-//==========================================================================
-//
-//	Sys_ListFiles
-//
-//==========================================================================
-
 void Sys_FreeFileList(char** list)
 {
 	if (!list)
@@ -339,12 +294,6 @@ void Sys_FreeFileList(char** list)
 	Mem_Free(list);
 }
 
-//==========================================================================
-//
-//	Sys_Milliseconds
-//
-//==========================================================================
-
 int Sys_Milliseconds()
 {
 	static int		base;
@@ -357,12 +306,6 @@ int Sys_Milliseconds()
 	}
 	return timeGetTime() - base;
 }
-
-//==========================================================================
-//
-//	Sys_Milliseconds
-//
-//==========================================================================
 
 double Sys_DoubleTime()
 {

@@ -24,23 +24,9 @@
 #include <dirent.h>
 #include <sys/time.h>
 
-// MACROS ------------------------------------------------------------------
-
 #define MAX_FOUND_FILES		0x1000
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
 char* __CopyString(const char* in);
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 /* base time in seconds, that's our origin
    timeval:tv_sec is an int: 
@@ -50,28 +36,35 @@ unsigned long	sys_timeBase = 0;
 
 bool			stdin_active = true;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static char		HomePathSuffix[MAX_OSPATH];
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Sys_Mkdir
-//
-//==========================================================================
+//	Test an file given OS path:
+//	returns -1 if not found
+//	returns 1 if directory
+//	returns 0 otherwise
+int Sys_StatFile(const char *ospath)
+{
+	struct stat stat_buf;
+	if (stat(ospath, &stat_buf) == -1)
+	{
+		return -1;
+	}
+	if (S_ISDIR(stat_buf.st_mode))
+	{
+		return 1;
+	}
+	return 0;
+}
 
 void Sys_Mkdir(const char* path)
 {
 	mkdir(path, 0777);
 }
 
-//==========================================================================
-//
-//	Sys_Cwd
-//
-//==========================================================================
+int Sys_Rmdir(const char* path)
+{
+	return rmdir(path);
+}
 
 const char* Sys_Cwd() 
 {
@@ -83,22 +76,10 @@ const char* Sys_Cwd()
 	return cwd;
 }
 
-//==========================================================================
-//
-//	Sys_SetHomePathSuffix
-//
-//==========================================================================
-
 void Sys_SetHomePathSuffix(const char* Name)
 {
 	String::NCpyZ(HomePathSuffix, Name, sizeof(HomePathSuffix));
 }
-
-//==========================================================================
-//
-//	Sys_DefaultHomePath
-//
-//==========================================================================
 
 const char* Sys_DefaultHomePath()
 {
@@ -125,12 +106,6 @@ const char* Sys_DefaultHomePath()
 	}
 	return ""; // assume current dir
 }
-
-//==========================================================================
-//
-//	Sys_DefaultHomePath
-//
-//==========================================================================
 
 static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, const char* filter,
 	char** list, int* numfiles)
@@ -198,12 +173,6 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 
 	closedir(fdir);
 }
-
-//==========================================================================
-//
-//	Sys_ListFiles
-//
-//==========================================================================
 
 char** Sys_ListFiles(const char *directory, const char *extension, const char *filter,
 	int *numfiles, bool wantsubs)
@@ -320,12 +289,6 @@ char** Sys_ListFiles(const char *directory, const char *extension, const char *f
 	return listCopy;
 }
 
-//==========================================================================
-//
-//	Sys_FreeFileList
-//
-//==========================================================================
-
 void Sys_FreeFileList(char** list)
 {
 	if (!list)
@@ -341,18 +304,11 @@ void Sys_FreeFileList(char** list)
 	Mem_Free(list);
 }
 
-//==========================================================================
-//
-//	Sys_Milliseconds
-//
 //	current time in ms, using sys_timeBase as origin
 //	NOTE: sys_timeBase*1000 + curtime -> ms since the Epoch
 //	  0x7fffffff ms - ~24 days
 //	although timeval:tv_usec is an int, I'm not sure wether it is actually used as an unsigned int
 //	  (which would affect the wrap period)
-//
-//==========================================================================
-
 int Sys_Milliseconds()
 {
 	timeval tp;
@@ -366,12 +322,6 @@ int Sys_Milliseconds()
 
 	return (tp.tv_sec - sys_timeBase) * 1000 + tp.tv_usec / 1000;
 }
-
-//==========================================================================
-//
-//	Sys_DoubleTime
-//
-//==========================================================================
 
 double Sys_DoubleTime()
 {

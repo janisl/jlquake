@@ -426,8 +426,6 @@ void    FS_Restart( int checksumFeed );
 
 int     FS_LoadStack();
 
-int     FS_Delete( char *filename );    // only works inside the 'save' directory (for deleting savegames/images)
-
 void    FS_CopyFileOS(  char *from, char *to ); //DAJ
 
 /*

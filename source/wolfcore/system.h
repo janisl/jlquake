@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
+int Sys_StatFile(const char *ospath);
 void Sys_Mkdir(const char* path);
+int Sys_Rmdir(const char* path);
 const char* Sys_Cwd();
 void Sys_SetHomePathSuffix(const char* Name);
 const char* Sys_DefaultHomePath();

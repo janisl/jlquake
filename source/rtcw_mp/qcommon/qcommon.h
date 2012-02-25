@@ -457,8 +457,6 @@ void    FS_Restart( int checksumFeed );
 
 int     FS_LoadStack();
 
-int     FS_Delete( char *filename );    // only works inside the 'save' directory (for deleting savegames/images)
-
 #if !defined( DEDICATED )
 extern int cl_connectedToPureServer;
 qboolean FS_CL_ExtractFromPakFile( const char *path, const char *gamedir, const char *filename, const char *cvar_lastVersion );
@@ -469,8 +467,6 @@ int FS_RandChecksumFeed();
 #endif
 
 char *FS_ShiftStr( const char *string, int shift );
-
-qboolean FS_VerifyPak( const char *pak );
 
 /*
 ==============================================================
