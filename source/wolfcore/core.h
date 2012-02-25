@@ -38,7 +38,7 @@
 #endif
 #include "../core/files.h"
 #include "command_buffer.h"
-#include "console_variable.h"
+#include "../core/console_variable.h"
 #include "../core/crc.h"
 #include "../core/md4.h"
 #include "system.h"

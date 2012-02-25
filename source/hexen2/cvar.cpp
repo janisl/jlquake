@@ -12,3 +12,8 @@ void Cvar_Changed(Cvar* var)
 		}
 	}
 }
+
+const char* Cvar_TranslateString(const char* string)
+{
+	return string;
+}

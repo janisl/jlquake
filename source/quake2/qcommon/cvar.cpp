@@ -57,3 +57,8 @@ void Cvar_GetLatchedVars (void)
 		}
 	}
 }
+
+const char* Cvar_TranslateString(const char* string)
+{
+	return string;
+}

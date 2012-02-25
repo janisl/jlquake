@@ -26,3 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void Cvar_Changed(Cvar* var)
 {
 }
+
+const char* Cvar_TranslateString(const char* string)
+{
+	return string;
+}

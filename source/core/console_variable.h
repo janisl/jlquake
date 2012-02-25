@@ -34,25 +34,30 @@
 //**
 //**************************************************************************
 
-#define CVAR_ARCHIVE		1	// set to cause it to be saved to vars.rc
-								// used for system variables, not for player
-								// specific configurations
-#define CVAR_USERINFO		2	// sent to server on connect or change
-#define CVAR_SERVERINFO		4	// sent in response to front end requests
-#define CVAR_INIT			8	// don't allow change from console at all,
-								// but can be set from the command line
-#define CVAR_LATCH			16	// save changes until server restart
-#define CVAR_SYSTEMINFO		32	// these cvars will be duplicated on all clients
-#define CVAR_ROM			64	// display only, cannot be set by user at all
-#define CVAR_USER_CREATED	128	// created by a set command
-#define CVAR_TEMP			256	// can be set even when cheats are disabled, but is not archived
-#define CVAR_CHEAT			512	// can not be changed if cheats are disabled
-#define CVAR_NORESTART		1024	// do not clear when a cvar_restart is issued
-#define CVAR_LATCH2			2048	// will only change when C code next does
-								// a Cvar_Get(), so it can't be changed
-								// without proper initialization.  modified
-								// will be set, even though the value hasn't
-								// changed yet
+#define CVAR_ARCHIVE		BIT(0)	// set to cause it to be saved to vars.rc
+									// used for system variables, not for player
+									// specific configurations
+#define CVAR_USERINFO		BIT(1)	// sent to server on connect or change
+#define CVAR_SERVERINFO		BIT(2)	// sent in response to front end requests
+#define CVAR_INIT			BIT(3)	// don't allow change from console at all,
+									// but can be set from the command line
+#define CVAR_LATCH			BIT(4)	// save changes until server restart
+#define CVAR_SYSTEMINFO		BIT(5)	// these cvars will be duplicated on all clients
+#define CVAR_ROM			BIT(6)	// display only, cannot be set by user at all
+#define CVAR_USER_CREATED	BIT(7)	// created by a set command
+#define CVAR_TEMP			BIT(8)	// can be set even when cheats are disabled, but is not archived
+#define CVAR_CHEAT			BIT(9)	// can not be changed if cheats are disabled
+#define CVAR_NORESTART		BIT(10)	// do not clear when a cvar_restart is issued
+#define CVAR_WOLFINFO		BIT(11)	// DHM - NERVE :: Like userinfo, but for wolf multiplayer info
+#define CVAR_UNSAFE			BIT(12)	// ydnar: unsafe system cvars (renderer,
+									// sound settings, anything that might cause a crash)
+#define CVAR_SERVERINFO_NOUPDATE	BIT(13)	// gordon: WONT automatically send this
+									// to clients, but server browsers will see it
+#define CVAR_LATCH2			BIT(14)	// will only change when C code next does
+									// a Cvar_Get(), so it can't be changed
+									// without proper initialization.  modified
+									// will be set, even though the value hasn't
+									// changed yet
 
 // nothing outside the Cvar_*() functions should modify these fields!
 struct Cvar
@@ -104,6 +109,9 @@ int	Cvar_VariableIntegerValue(const char* VarName);
 const char* Cvar_VariableString(const char* VarName);
 void Cvar_VariableStringBuffer(const char* VarName, char* Buffer, int BufSize);
 // returns an empty string if not defined
+
+void Cvar_LatchedVariableStringBuffer(const char* var_name, char* buffer, int bufsize);
+// Gordon: returns the latched value if there is one, else the normal one, empty string if not defined as usual
 
 Cvar* Cvar_Set(const char* VarName, const char* Value);
 // will create the variable with no flags if it doesn't exist

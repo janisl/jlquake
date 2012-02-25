@@ -34,3 +34,8 @@ void Cvar_Changed(Cvar* var)
 
 //	{	// there is an error in C code if this happens
 //		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
+
+const char* Cvar_TranslateString(const char* string)
+{
+	return string;
+}

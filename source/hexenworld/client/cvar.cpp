@@ -28,3 +28,8 @@ void Cvar_Changed(Cvar* var)
 	}
 #endif
 }
+
+const char* Cvar_TranslateString(const char* string)
+{
+	return string;
+}
