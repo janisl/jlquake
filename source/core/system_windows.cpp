@@ -18,6 +18,7 @@
 #include "system_windows.h"
 #include <direct.h>
 #include <io.h>
+#include <sys/stat.h>
 
 #define MAX_FOUND_FILES		0x1000
 

@@ -117,8 +117,8 @@ BOOL MIDI_Init(void)
 		bMidiInited = 0;
 		return FALSE;
 	}
-	mmrRetVal = midiStreamOpen(&hStream,&uMIDIDeviceID,(DWORD)1,(DWORD)MidiProc,(DWORD)0,CALLBACK_FUNCTION);
-	if(mmrRetVal != MMSYSERR_NOERROR )
+	mmrRetVal = midiStreamOpen(&hStream, &uMIDIDeviceID, (DWORD)1, (DWORD_PTR)MidiProc, 0, CALLBACK_FUNCTION);
+	if (mmrRetVal != MMSYSERR_NOERROR)
 	{
 		bMidiInited = 0;
 		MidiErrorMessageBox( mmrRetVal );
