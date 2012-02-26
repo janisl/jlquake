@@ -14,14 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
 #include "system_windows.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
 
 #define COPY_ID			1
 #define QUIT_ID			2
@@ -73,18 +67,6 @@ struct WinConData
 	WNDPROC		SysInputLineWndProc;
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static WinConData		s_wcd;
 
 static field_t win_consoleField;
@@ -92,14 +74,6 @@ static int win_acLength;
 static field_t win_historyEditLines[ WIN_COMMAND_HISTORY ];
 static int win_nextHistoryLine = 0;
 static int win_historyLine = 0;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	ConWndProc
-//
-//==========================================================================
 
 static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -325,12 +299,6 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-//==========================================================================
-//
-//	InputLineWndProc
-//
-//==========================================================================
-
 static LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -419,12 +387,6 @@ static LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 	return CallWindowProc(s_wcd.SysInputLineWndProc, hWnd, uMsg, wParam, lParam);
 }
-
-//==========================================================================
-//
-//	Sys_CreateConsole
-//
-//==========================================================================
 
 void Sys_CreateConsole(const char* Title)
 {
@@ -527,12 +489,6 @@ void Sys_CreateConsole(const char* Title)
 	s_wcd.visLevel = 1;
 }
 
-//==========================================================================
-//
-//	Sys_DestroyConsole
-//
-//==========================================================================
-
 void Sys_DestroyConsole()
 {
 	if (s_wcd.hWnd)
@@ -543,12 +499,6 @@ void Sys_DestroyConsole()
 		s_wcd.hWnd = 0;
 	}
 }
-
-//==========================================================================
-//
-//	Sys_ShowConsole
-//
-//==========================================================================
 
 void Sys_ShowConsole(int visLevel, bool quitOnClose)
 {
@@ -584,12 +534,6 @@ void Sys_ShowConsole(int visLevel, bool quitOnClose)
 	}
 }
 
-//==========================================================================
-//
-//	Sys_ConsoleInput
-//
-//==========================================================================
-
 char* Sys_ConsoleInput()
 {
 	if (s_wcd.consoleText[0] == 0)
@@ -603,14 +547,7 @@ char* Sys_ConsoleInput()
 	return s_wcd.returnedText;
 }
 
-//==========================================================================
-//
-//	Sys_Print
-//
 //	Print text to the dedicated console
-//
-//==========================================================================
-
 void Sys_Print(const char* pMsg)
 {
 #define CONSOLE_BUFFER_SIZE		16384
@@ -694,12 +631,6 @@ void Sys_Print(const char* pMsg)
 	SendMessage(s_wcd.hwndBuffer, EM_SCROLLCARET, 0, 0);
 	SendMessage(s_wcd.hwndBuffer, EM_REPLACESEL, 0, (LPARAM)buffer);
 }
-
-//==========================================================================
-//
-//	Sys_SetErrorText
-//
-//==========================================================================
 
 void Sys_SetErrorText(const char* buf)
 {
