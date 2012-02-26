@@ -5,6 +5,7 @@ set(WOLFCORE_FILES
 	../core/console_variable.cpp
 	../core/crc.cpp
 	../core/endian.cpp
+	../core/event_queue.cpp
 	../core/exception.cpp
 	../core/files.cpp
 	../core/info_string.cpp

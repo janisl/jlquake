@@ -45,7 +45,9 @@
 #if 0
 #include "clip_map/public.h"
 #include "content_types.h"
-#include "event_queue.h"
+#endif
+#include "../core/event_queue.h"
+#if 0
 #include "socket.h"
 #include "shareddefs.h"
 #include "quakedefs.h"

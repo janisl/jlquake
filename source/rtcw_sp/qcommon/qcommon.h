@@ -592,25 +592,6 @@ typedef enum {
 	MAX_JOYSTICK_AXIS
 } joystickAxis_t;
 
-typedef enum {
-	// bk001129 - make sure SE_NONE is zero
-	SE_NONE = 0,    // evTime is still valid
-	SE_KEY,     // evValue is a key code, evValue2 is the down flag
-	SE_CHAR,    // evValue is an ascii char
-	SE_MOUSE,   // evValue and evValue2 are reletive signed x / y moves
-	SE_JOYSTICK_AXIS,   // evValue is an axis number and evValue2 is the current state (-127 to 127)
-	SE_CONSOLE, // evPtr is a char*
-	SE_PACKET   // evPtr is a netadr_t followed by data bytes to evPtrLength
-} sysEventType_t;
-
-typedef struct {
-	int evTime;
-	sysEventType_t evType;
-	int evValue, evValue2;
-	int evPtrLength;                // bytes of data pointed to by evPtr, for journaling
-	void            *evPtr;         // this must be manually freed if not NULL
-} sysEvent_t;
-
 sysEvent_t  Sys_GetEvent( void );
 
 void    Sys_Init( void );
