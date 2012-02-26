@@ -60,5 +60,11 @@
     <ClCompile Include="..\core\unzip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="system_console_windows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core\event_queue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

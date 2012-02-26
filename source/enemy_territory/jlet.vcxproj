@@ -156,7 +156,6 @@
     <ClCompile Include="win32\win_net.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
     <ClCompile Include="win32\win_snd.cpp" />
-    <ClCompile Include="win32\win_syscon.cpp" />
     <ClCompile Include="win32\win_wndproc.cpp" />
     <ClCompile Include="qcommon\dl_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

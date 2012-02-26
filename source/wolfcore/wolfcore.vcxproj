@@ -25,6 +25,7 @@
     <ClCompile Include="..\core\console_variable.cpp" />
     <ClCompile Include="..\core\crc.cpp" />
     <ClCompile Include="..\core\endian.cpp" />
+    <ClCompile Include="..\core\event_queue.cpp" />
     <ClCompile Include="..\core\exception.cpp" />
     <ClCompile Include="..\core\files.cpp" />
     <ClCompile Include="..\core\info_string.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="..\core\strings.cpp" />
     <ClCompile Include="..\core\system_windows.cpp" />
     <ClCompile Include="..\core\unzip.cpp" />
+    <ClCompile Include="system_console_windows.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}</ProjectGuid>

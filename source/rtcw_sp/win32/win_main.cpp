@@ -191,8 +191,8 @@ void QDECL Sys_Error( const char *error, ... ) {
 	vsprintf( text, error, argptr );
 	va_end( argptr );
 
-	Conbuf_AppendText( text );
-	Conbuf_AppendText( "\n" );
+	Sys_Print( text );
+	Sys_Print( "\n" );
 
 	Sys_SetErrorText( text );
 	Sys_ShowConsole( 1, qtrue );
@@ -226,15 +226,6 @@ void Sys_Quit( void ) {
 	Sys_DestroyConsole();
 
 	exit( 0 );
-}
-
-/*
-==============
-Sys_Print
-==============
-*/
-void Sys_Print( const char *msg ) {
-	Conbuf_AppendText( msg );
 }
 
 //========================================================
@@ -1010,7 +1001,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
-	Sys_CreateConsole();
+	Sys_CreateConsole("Wolf Console");
 
 	// no abort/retry/fail errors
 	SetErrorMode( SEM_FAILCRITICALERRORS );

@@ -62,9 +62,6 @@ void    IN_MouseEvent( int mstate );
 
 void Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 
-void    Sys_CreateConsole( void );
-void    Sys_DestroyConsole( void );
-
 qboolean    Sys_GetPacket( netadr_t *net_from, msg_t *net_message );
 
 // Input subsystem
@@ -87,8 +84,6 @@ LRESULT WINAPI MainWndProc(
 	UINT uMsg,
 	WPARAM wParam,
 	LPARAM lParam );
-
-void Conbuf_AppendText( const char *msg );
 
 void SNDDMA_Activate( void );
 int  SNDDMA_InitDS();

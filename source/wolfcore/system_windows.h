@@ -19,18 +19,15 @@
 
 #include <windows.h>
 
-#if 0
 //	Copied from resources.h
 #define IDI_ICON1                       1
-#endif
 
 extern HINSTANCE	global_hInstance;
 extern unsigned		sysMsgTime;
 
-#if 0
 void Sys_CreateConsole(const char* Title);
 void Sys_DestroyConsole();
 void Sys_SetErrorText(const char* text);
-#endif
+void Sys_ClearViewlog_f();
 
 #endif
