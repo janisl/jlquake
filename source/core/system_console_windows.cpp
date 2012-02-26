@@ -149,7 +149,7 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	case WM_CLOSE:
 		if ((com_dedicated && com_dedicated->integer))
 		{
-			char* cmdString = new char[5];
+			char* cmdString = (char*)Mem_Alloc(5);
 			String::Cpy(cmdString, "quit");
 			Sys_QueEvent(0, SE_CONSOLE, 0, 0, String::Length(cmdString) + 1, cmdString);
 		}
@@ -214,7 +214,7 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 			}
 			else
 			{
-				char* cmdString = new char[5];
+				char* cmdString = (char*)Mem_Alloc(5);
 				String::Cpy(cmdString, "quit");
 				Sys_QueEvent(0, SE_CONSOLE, 0, 0, String::Length(cmdString) + 1, cmdString);
 			}

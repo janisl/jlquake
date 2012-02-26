@@ -757,7 +757,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		int len;
 
 		len = String::Length( s ) + 1;
-		b = (char*)Z_Malloc( len );
+		b = (char*)Mem_Alloc( len );
 		String::Cpy( b, s );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
@@ -773,7 +773,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 		// copy out to a seperate buffer for qeueing
 		len = sizeof( netadr_t ) + netmsg.cursize;
-		buf = (netadr_t*)Z_Malloc( len );
+		buf = (netadr_t*)Mem_Alloc( len );
 		*buf = adr;
 		memcpy( buf + 1, netmsg.data, netmsg.cursize );
 		Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );
