@@ -213,7 +213,7 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		char* cleaned = Cvar_ClearForeignCharacters(value);
 		if (String::Cmp(value, cleaned))
 		{
-			common->Printf(Cvar_TranslateString(FOREIGN_MSG));
+			common->Printf("%s", Cvar_TranslateString(FOREIGN_MSG));
 			common->Printf("Using %s instead of %s\n", cleaned, value);
 			return Cvar_Set2(var_name, cleaned, force);
 		}
