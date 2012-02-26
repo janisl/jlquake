@@ -166,7 +166,7 @@ void CL_SendCmd (void)
 	if ( cls.state == CA_CONNECTED)
 	{
 		if (clc.netchan.message.cursize	|| curtime - clc.netchan.lastSent > 1000 )
-			Netchan_Transmit (&clc.netchan, 0, buf._data);	
+			Netchan_Transmit (&clc.netchan, 0, clc.netchan.message._data);	
 		return;
 	}
 
