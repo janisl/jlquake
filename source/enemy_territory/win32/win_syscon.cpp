@@ -557,7 +557,7 @@ void Sys_DestroyConsole( void ) {
 /*
 ** Sys_ShowConsole
 */
-void Sys_ShowConsole( int visLevel, qboolean quitOnClose ) {
+void Sys_ShowConsole( int visLevel, bool quitOnClose ) {
 	s_wcd.quitOnClose = quitOnClose;
 
 	if ( visLevel == s_wcd.visLevel ) {
