@@ -33,9 +33,9 @@
     <ClCompile Include="..\core\md4.cpp" />
     <ClCompile Include="..\core\memory.cpp" />
     <ClCompile Include="..\core\strings.cpp" />
+    <ClCompile Include="..\core\system_console_windows.cpp" />
     <ClCompile Include="..\core\system_windows.cpp" />
     <ClCompile Include="..\core\unzip.cpp" />
-    <ClCompile Include="system_console_windows.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}</ProjectGuid>

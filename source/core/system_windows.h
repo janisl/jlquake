@@ -28,5 +28,6 @@ extern unsigned		sysMsgTime;
 void Sys_CreateConsole(const char* Title);
 void Sys_DestroyConsole();
 void Sys_SetErrorText(const char* text);
+void Sys_ClearViewlog_f();
 
 #endif

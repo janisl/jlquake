@@ -33,6 +33,11 @@
 #define EDIT_ID			100
 #define INPUT_ID		101
 
+#define SYSCON_DEFAULT_WIDTH    540
+#define SYSCON_DEFAULT_HEIGHT   450
+
+#define WIN_COMMAND_HISTORY     64
+
 struct WinConData
 {
 	HWND		hWnd;
@@ -56,7 +61,7 @@ struct WinConData
 
 	HWND		hwndInputLine;
 
-	char		errorString[80];
+	char		errorString[128];
 
 	char		consoleText[512];
 	char		returnedText[512];
@@ -82,6 +87,12 @@ struct WinConData
 
 static WinConData		s_wcd;
 
+static field_t win_consoleField;
+static int win_acLength;
+static field_t win_historyEditLines[ WIN_COMMAND_HISTORY ];
+static int win_nextHistoryLine = 0;
+static int win_historyLine = 0;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -96,6 +107,45 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	switch (uMsg)
 	{
+	case WM_SIZE:
+		{
+		int cx = LOWORD(lParam);
+		int cy = HIWORD(lParam);
+
+//		if (cx < SYSCON_DEFAULT_WIDTH)
+//			cx = SYSCON_DEFAULT_WIDTH;
+//		if (cy < SYSCON_DEFAULT_HEIGHT)
+//			cy = SYSCON_DEFAULT_HEIGHT;
+
+		float sx = (float)cx / SYSCON_DEFAULT_WIDTH;
+		float sy = (float)cy / SYSCON_DEFAULT_HEIGHT;
+
+		float x = 5;
+		float y = 40;
+		float w = cx - 15;
+		float h = cy - 100;
+		SetWindowPos(s_wcd.hwndBuffer, NULL, x, y, w, h, 0);
+
+		y = y + h + 8;
+		h = 20;
+		SetWindowPos(s_wcd.hwndInputLine, NULL, x, y, w, h, 0);
+
+		y = y + h + 4;
+		w = 72 * sx;
+		h = 24;
+		SetWindowPos(s_wcd.hwndButtonCopy, NULL, x, y, w, h, 0);
+
+		x = x + w + 2;
+		SetWindowPos(s_wcd.hwndButtonClear, NULL, x, y, w, h, 0);
+
+		x = cx - 15 - w;
+		SetWindowPos(s_wcd.hwndButtonQuit, NULL, x, y, w, h, 0);
+
+		s_wcd.windowWidth = cx;
+		s_wcd.windowHeight = cy;
+		}
+		break;
+
 	case WM_ACTIVATE:
 		if (LOWORD(wParam) != WA_INACTIVE)
 		{
@@ -283,8 +333,6 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 static LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	char inputBuffer[1024];
-
 	switch (uMsg)
 	{
 	case WM_KILLFOCUS:
@@ -296,17 +344,76 @@ static LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		}
 		break;
 
+	case WM_KEYDOWN:
+		switch ( wParam )
+		{
+		case VK_UP:
+			// previous history item
+			if ( ( win_nextHistoryLine - win_historyLine < WIN_COMMAND_HISTORY ) && win_historyLine > 0 ) {
+				win_historyLine--;
+			}
+			win_consoleField = win_historyEditLines[ win_historyLine % WIN_COMMAND_HISTORY ];
+			SetWindowText( s_wcd.hwndInputLine, win_consoleField.buffer );
+			SendMessage( s_wcd.hwndInputLine, EM_SETSEL, win_consoleField.cursor, win_consoleField.cursor );
+			win_acLength = 0;
+			return 0;
+
+		case VK_DOWN:
+			// next history item
+			if ( win_historyLine < win_nextHistoryLine ) {
+				win_historyLine++;
+				win_consoleField = win_historyEditLines[ win_historyLine % WIN_COMMAND_HISTORY ];
+				SetWindowText( s_wcd.hwndInputLine, win_consoleField.buffer );
+				SendMessage( s_wcd.hwndInputLine, EM_SETSEL, win_consoleField.cursor, win_consoleField.cursor );
+			}
+			win_acLength = 0;
+			return 0;
+		}
+		break;
+
 	case WM_CHAR:
+		GetWindowText(s_wcd.hwndInputLine, win_consoleField.buffer, sizeof(win_consoleField.buffer));
+		SendMessage(s_wcd.hwndInputLine, EM_GETSEL, (WPARAM)NULL, (LPARAM)&win_consoleField.cursor);
+		win_consoleField.widthInChars = String::Length(win_consoleField.buffer);
+		win_consoleField.scroll = 0;
+
+		// handle enter key
 		if (wParam == 13)
 		{
-			GetWindowText(s_wcd.hwndInputLine, inputBuffer, sizeof(inputBuffer));
-			String::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText) - 5, inputBuffer);
+			String::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText) - 5, win_consoleField.buffer);
 			String::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText), "\n");
 			SetWindowText(s_wcd.hwndInputLine, "");
 
-			Sys_Print(va("]%s\n", inputBuffer));
+			Sys_Print(va("]%s\n", win_consoleField.buffer));
+
+			// clear autocomplete length
+			win_acLength = 0;
+
+			// copy line to history buffer
+			if (win_consoleField.buffer[0] != '\0')
+			{
+				win_historyEditLines[win_nextHistoryLine % WIN_COMMAND_HISTORY] = win_consoleField;
+				win_nextHistoryLine++;
+				win_historyLine = win_nextHistoryLine;
+			}
 
 			return 0;
+		}
+		// handle tab key (commandline completion)
+		else if (wParam == 9)
+		{
+			Field_CompleteCommand(&win_consoleField, win_acLength);
+
+			SetWindowText(s_wcd.hwndInputLine, win_consoleField.buffer);
+			win_consoleField.widthInChars = String::Length(win_consoleField.buffer);
+			SendMessage(s_wcd.hwndInputLine, EM_SETSEL, win_consoleField.cursor, win_consoleField.cursor);
+
+			return 0;
+		}
+		// handle everything else
+		else
+		{
+			win_acLength = 0;
 		}
 	}
 
@@ -321,8 +428,8 @@ static LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 void Sys_CreateConsole(const char* Title)
 {
-	const char* DEDCLASS = "Q3 WinConsole";
-	int DEDSTYLE = WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX;
+	const char* DEDCLASS = "jlQuake WinConsole";
+	int DEDSTYLE = WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_SIZEBOX;
 
 	WNDCLASS wc;
 	Com_Memset(&wc, 0, sizeof(wc));
@@ -345,9 +452,9 @@ void Sys_CreateConsole(const char* Title)
 
 	RECT rect;
 	rect.left = 0;
-	rect.right = 540;
+	rect.right = SYSCON_DEFAULT_WIDTH;
 	rect.top = 0;
-	rect.bottom = 450;
+	rect.bottom = SYSCON_DEFAULT_HEIGHT;
 	AdjustWindowRect(&rect, DEDSTYLE, FALSE);
 
 	HDC hDC = GetDC(GetDesktopWindow());
@@ -381,29 +488,31 @@ void Sys_CreateConsole(const char* Title)
 	//
 	// create the input line
 	//
-	s_wcd.hwndInputLine = CreateWindow("edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
+	s_wcd.hwndInputLine = CreateWindowEx(WS_EX_CLIENTEDGE, "edit", NULL,
+		WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
 		6, 400, 528, 20, s_wcd.hWnd, (HMENU)INPUT_ID, global_hInstance, NULL);
 
 	//
 	// create the buttons
 	//
-	s_wcd.hwndButtonCopy = CreateWindow("button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+	s_wcd.hwndButtonCopy = CreateWindow("button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD,
 		5, 425, 72, 24, s_wcd.hWnd, (HMENU)COPY_ID,	global_hInstance, NULL);
-	SendMessage(s_wcd.hwndButtonCopy, WM_SETTEXT, 0, (LPARAM)"copy");
+	SendMessage(s_wcd.hwndButtonCopy, WM_SETTEXT, 0, (LPARAM)"Copy");
 
-	s_wcd.hwndButtonClear = CreateWindow("button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+	s_wcd.hwndButtonClear = CreateWindow("button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD,
 		82, 425, 72, 24, s_wcd.hWnd, (HMENU)CLEAR_ID, global_hInstance, NULL);
-	SendMessage(s_wcd.hwndButtonClear, WM_SETTEXT, 0, (LPARAM)"clear");
+	SendMessage(s_wcd.hwndButtonClear, WM_SETTEXT, 0, (LPARAM)"Clear");
 
-	s_wcd.hwndButtonQuit = CreateWindow("button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+	s_wcd.hwndButtonQuit = CreateWindow("button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD,
 		462, 425, 72, 24, s_wcd.hWnd, (HMENU)QUIT_ID, global_hInstance, NULL);
-	SendMessage(s_wcd.hwndButtonQuit, WM_SETTEXT, 0, (LPARAM)"quit");
+	SendMessage(s_wcd.hwndButtonQuit, WM_SETTEXT, 0, (LPARAM)"Quit");
 
 	//
 	// create the scrollbuffer
 	//
-	s_wcd.hwndBuffer = CreateWindow("edit", NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER |
-		ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY, 6, 40, 526, 354, s_wcd.hWnd,
+	s_wcd.hwndBuffer = CreateWindowEx(WS_EX_CLIENTEDGE, "edit", NULL,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | ES_LEFT | ES_MULTILINE |
+		ES_AUTOVSCROLL | ES_READONLY, 6, 40, 526, 354, s_wcd.hWnd,
 		(HMENU)EDIT_ID, global_hInstance, NULL);
 	SendMessage(s_wcd.hwndBuffer, WM_SETFONT, (WPARAM)s_wcd.hfBufferFont, 0);
 
@@ -567,10 +676,15 @@ void Sys_Print(const char* pMsg)
 	//
 	// replace selection instead of appending if we're overflowing
 	//
-	if (s_totalChars > 0x7fff)
+	if (s_totalChars > CONSOLE_BUFFER_SIZE)
 	{
 		SendMessage(s_wcd.hwndBuffer, EM_SETSEL, 0, -1);
 		s_totalChars = bufLen;
+	}
+	else
+	{
+		// always append at the bottom of the textbox
+		SendMessage(s_wcd.hwndBuffer, EM_SETSEL, 0xFFFF, 0xFFFF);
 	}
 
 	//
@@ -601,4 +715,9 @@ void Sys_SetErrorText(const char* buf)
 		DestroyWindow(s_wcd.hwndInputLine);
 		s_wcd.hwndInputLine = NULL;
 	}
+}
+
+void Sys_ClearViewlog_f()
+{
+	SendMessage(s_wcd.hwndBuffer, WM_SETTEXT, 0, (LPARAM)"");
 }
