@@ -204,10 +204,11 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
-#define PLANE_X			0
-#define PLANE_Y			1
-#define PLANE_Z			2
-#define PLANE_NON_AXIAL	3
+#define PLANE_X				0
+#define PLANE_Y				1
+#define PLANE_Z				2
+#define PLANE_NON_AXIAL		3
+#define PLANE_NON_PLANAR	4
 
 // 3-5 are non-axial planes snapped to the nearest
 #define PLANE_ANYX		3
@@ -231,7 +232,7 @@ PlaneTypeForNormal
 =================
 */
 
-#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
+#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : (x[0] == 0.f && x[1] == 0.f && x[2] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL))))
 
 void SetPlaneSignbits(cplane_t* out);
 extern "C" int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t *plane);

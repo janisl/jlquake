@@ -217,11 +217,6 @@ typedef int clipHandle_t;
 #define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
 #endif
 
-// angle indexes
-#define PITCH               0       // up / down
-#define YAW                 1       // left / right
-#define ROLL                2       // fall over
-
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
 #define MAX_SP_CLIENTS      64      // increasing this will increase memory usage significantly
 
@@ -328,23 +323,6 @@ MATHLIB
 */
 
 
-typedef float vec_t;
-typedef vec_t vec2_t[2];
-typedef vec_t vec3_t[3];
-typedef vec_t vec4_t[4];
-typedef vec_t vec5_t[5];
-
-typedef int fixed4_t;
-typedef int fixed8_t;
-typedef int fixed16_t;
-
-#ifndef M_PI
-#define M_PI        3.14159265358979323846f // matches value in gcc v2 math.h
-#endif
-
-#define NUMVERTEXNORMALS    162
-extern vec3_t bytedirs[NUMVERTEXNORMALS];
-
 // all drawing is done to a 640*480 virtual screen size
 // and will be automatically scaled to the real resolution
 #define SCREEN_WIDTH        640
@@ -379,17 +357,6 @@ extern vec4_t g_color_table[8];
 #define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
-#define DEG2RAD( a ) ( ( ( a ) * M_PI ) / 180.0F )
-#define RAD2DEG( a ) ( ( ( a ) * 180.0f ) / M_PI )
-
-struct cplane_s;
-
-extern vec3_t vec3_origin;
-extern vec3_t axisDefault[3];
-
-#define nanmask ( 255 << 23 )
-#define IS_NAN( x ) ( ( ( *(int *)&x ) & nanmask ) == nanmask )
-
 // TTimo
 // handy stuff when tracking isnan problems
 #ifndef NDEBUG
@@ -400,135 +367,24 @@ extern vec3_t axisDefault[3];
 #define CHECK_NAN_VEC
 #endif
 
-float Q_fabs( float f );
-float Q_rsqrt( float f );       // reciprocal square root
-
-#define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
-
-signed char ClampChar( int i );
-signed short ClampShort( int i );
-
-// this isn't a real cheap function to call!
-int DirToByte( vec3_t dir );
-void ByteToDir( int b, vec3_t dir );
-
-#if 1
-
-#define DotProduct( x,y )         ( ( x )[0] * ( y )[0] + ( x )[1] * ( y )[1] + ( x )[2] * ( y )[2] )
-#define VectorSubtract( a,b,c )   ( ( c )[0] = ( a )[0] - ( b )[0],( c )[1] = ( a )[1] - ( b )[1],( c )[2] = ( a )[2] - ( b )[2] )
-#define VectorAdd( a,b,c )        ( ( c )[0] = ( a )[0] + ( b )[0],( c )[1] = ( a )[1] + ( b )[1],( c )[2] = ( a )[2] + ( b )[2] )
-#define VectorCopy( a,b )         ( ( b )[0] = ( a )[0],( b )[1] = ( a )[1],( b )[2] = ( a )[2] )
-#define VectorCopy4( a,b )        ( ( b )[0] = ( a )[0],( b )[1] = ( a )[1],( b )[2] = ( a )[2],( b )[3] = ( a )[3] )
-#define VectorScale( v, s, o )    ( ( o )[0] = ( v )[0] * ( s ),( o )[1] = ( v )[1] * ( s ),( o )[2] = ( v )[2] * ( s ) )
-#define VectorMA( v, s, b, o )    ( ( o )[0] = ( v )[0] + ( b )[0] * ( s ),( o )[1] = ( v )[1] + ( b )[1] * ( s ),( o )[2] = ( v )[2] + ( b )[2] * ( s ) )
-
-#else
-
-#define DotProduct( x,y )         _DotProduct( x,y )
-#define VectorSubtract( a,b,c )   _VectorSubtract( a,b,c )
-#define VectorAdd( a,b,c )        _VectorAdd( a,b,c )
-#define VectorCopy( a,b )         _VectorCopy( a,b )
-#define VectorScale( v, s, o )    _VectorScale( v,s,o )
-#define VectorMA( v, s, b, o )    _VectorMA( v,s,b,o )
-
-#endif
-
-#ifdef __LCC__
-#ifdef VectorCopy
-#undef VectorCopy
-// this is a little hack to get more efficient copies in our interpreter
-typedef struct {
-	float v[3];
-} vec3struct_t;
-#define VectorCopy( a,b ) * (vec3struct_t *)b = *(vec3struct_t *)a;
-#endif
-#endif
-
-#define VectorClear( a )              ( ( a )[0] = ( a )[1] = ( a )[2] = 0 )
-#define VectorNegate( a,b )           ( ( b )[0] = -( a )[0],( b )[1] = -( a )[1],( b )[2] = -( a )[2] )
-#define VectorSet( v, x, y, z )       ( ( v )[0] = ( x ), ( v )[1] = ( y ), ( v )[2] = ( z ) )
-
 #define Vector4Set( v, x, y, z, n )   ( ( v )[0] = ( x ),( v )[1] = ( y ),( v )[2] = ( z ),( v )[3] = ( n ) )
-#define Vector4Copy( a,b )            ( ( b )[0] = ( a )[0],( b )[1] = ( a )[1],( b )[2] = ( a )[2],( b )[3] = ( a )[3] )
-#define Vector4MA( v, s, b, o )       ( ( o )[0] = ( v )[0] + ( b )[0] * ( s ),( o )[1] = ( v )[1] + ( b )[1] * ( s ),( o )[2] = ( v )[2] + ( b )[2] * ( s ),( o )[3] = ( v )[3] + ( b )[3] * ( s ) )
-#define Vector4Average( v, b, s, o )  ( ( o )[0] = ( ( v )[0] * ( 1 - ( s ) ) ) + ( ( b )[0] * ( s ) ),( o )[1] = ( ( v )[1] * ( 1 - ( s ) ) ) + ( ( b )[1] * ( s ) ),( o )[2] = ( ( v )[2] * ( 1 - ( s ) ) ) + ( ( b )[2] * ( s ) ),( o )[3] = ( ( v )[3] * ( 1 - ( s ) ) ) + ( ( b )[3] * ( s ) ) )
-
-#define SnapVector( v ) {v[0] = ( (int)( v[0] ) ); v[1] = ( (int)( v[1] ) ); v[2] = ( (int)( v[2] ) );}
-
-// just in case you do't want to use the macros
-vec_t _DotProduct( const vec3_t v1, const vec3_t v2 );
-void _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
-void _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
-void _VectorCopy( const vec3_t in, vec3_t out );
-void _VectorScale( const vec3_t in, float scale, vec3_t out );
-void _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
 
 unsigned ColorBytes3( float r, float g, float b );
 unsigned ColorBytes4( float r, float g, float b, float a );
 
 float NormalizeColor( const vec3_t in, vec3_t out );
 
-float RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
-void ClearBounds( vec3_t mins, vec3_t maxs );
-void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
-int VectorCompare( const vec3_t v1, const vec3_t v2 );
-vec_t VectorLength( const vec3_t v );
-vec_t VectorLengthSquared( const vec3_t v );
-vec_t Distance( const vec3_t p1, const vec3_t p2 );
-vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 );
-void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
-vec_t VectorNormalize( vec3_t v );       // returns vector length
-void VectorNormalizeFast( vec3_t v );     // does NOT return vector length, uses rsqrt approximation
-vec_t VectorNormalize2( const vec3_t v, vec3_t out );
-void VectorInverse( vec3_t v );
-void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
-int Q_log2( int val );
-
-float Q_acos( float c );
-
 int     Q_rand( int *seed );
 float   Q_random( int *seed );
 float   Q_crandom( int *seed );
 
 void vectoangles( const vec3_t value1, vec3_t angles );
-float vectoyaw( const vec3_t vec );
-void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
 // TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
 void AxisToAngles( /*const*/ vec3_t axis[3], vec3_t angles );
 float VectorDistance( vec3_t v1, vec3_t v2 );
 
-void AxisClear( vec3_t axis[3] );
-void AxisCopy( vec3_t in[3], vec3_t out[3] );
-
-void SetPlaneSignbits( struct cplane_s *out );
-int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
-
-float   AngleMod( float a );
-float   LerpAngle( float from, float to, float frac );
-float   AngleSubtract( float a1, float a2 );
-void    AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 );
-
-float AngleNormalize360( float angle );
-float AngleNormalize180( float angle );
-float AngleDelta( float angle1, float angle2 );
-
-qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
-void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
-void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
-void RotateAroundDirection( vec3_t axis[3], float yaw );
-void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
-// perpendicular vector could be replaced by this
-
-int PlaneTypeForNormal( vec3_t normal );
-
-void MatrixMultiply( float in1[3][3], float in2[3][3], float out[3][3] );
-void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
-void PerpendicularVector( vec3_t dst, const vec3_t src );
-
 // Ridah
-void GetPerpendicularViewVector( const vec3_t point, const vec3_t p1, const vec3_t p2, vec3_t up );
 void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
 // done.
 
@@ -646,33 +502,6 @@ COLLISION DETECTION
 */
 
 #include "surfaceflags.h"            // shared with the q3map utility
-
-// plane types are used to speed some tests
-// 0-2 are axial planes
-#define PLANE_X         0
-#define PLANE_Y         1
-#define PLANE_Z         2
-#define PLANE_NON_AXIAL 3
-
-
-/*
-=================
-PlaneTypeForNormal
-=================
-*/
-
-#define PlaneTypeForNormal( x ) ( x[0] == 1.0 ? PLANE_X : ( x[1] == 1.0 ? PLANE_Y : ( x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL ) ) )
-
-// plane_t structure
-// !!! if this is changed, it must be changed in asm code too !!!
-typedef struct cplane_s {
-	vec3_t normal;
-	float dist;
-	byte type;              // for fast side tests: 0,1,2 = axial, 3 = nonaxial
-	byte signbits;          // signx + (signy<<1) + (signz<<2), used as lookup during collision
-	byte pad[2];
-} cplane_t;
-
 
 // a trace is returned when a box is swept through the world
 typedef struct {
@@ -1227,8 +1056,6 @@ typedef struct {
 	float glyphScale;
 	char name[MAX_QPATH];
 } fontInfo_t;
-
-#define Square( x ) ( ( x ) * ( x ) )
 
 // real time
 //=============================================

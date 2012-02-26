@@ -47,38 +47,6 @@ BASIC MATH
 
 /*
 ================
-RotatePoint
-================
-*/
-// TTimo: const vec_t ** would require explicit casts for ANSI C conformance
-// see unix/const-arg.c in Wolf MP source
-void RotatePoint( vec3_t point, /*const*/ vec3_t matrix[3] ) {
-	vec3_t tvec;
-
-	VectorCopy( point, tvec );
-	point[0] = DotProduct( matrix[0], tvec );
-	point[1] = DotProduct( matrix[1], tvec );
-	point[2] = DotProduct( matrix[2], tvec );
-}
-
-/*
-================
-TransposeMatrix
-================
-*/
-// TTimo: const vec_t ** would require explicit casts for ANSI C conformance
-// see unix/const-arg.c in Wolf MP source
-void TransposeMatrix( /*const*/ vec3_t matrix[3], vec3_t transpose[3] ) {
-	int i, j;
-	for ( i = 0; i < 3; i++ ) {
-		for ( j = 0; j < 3; j++ ) {
-			transpose[i][j] = matrix[j][i];
-		}
-	}
-}
-
-/*
-================
 CreateRotationMatrix
 ================
 */

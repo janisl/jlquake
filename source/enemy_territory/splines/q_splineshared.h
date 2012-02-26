@@ -163,11 +163,6 @@ typedef enum {
 #define sign( f )   ( ( f > 0 ) ? 1 : ( ( f < 0 ) ? -1 : 0 ) )
 #endif
 
-// angle indexes
-#define PITCH               0       // up / down
-#define YAW                 1       // left / right
-#define ROLL                2       // fall over
-
 #define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
 
 #define MAX_INFO_STRING     1024
@@ -232,9 +227,6 @@ MATHLIB
 #define SIDE_CROSS      3
 
 #define Q_PI    3.14159265358979323846
-#ifndef M_PI
-#define M_PI        3.14159265358979323846  // matches value in gcc v2 math.h
-#endif
 
 #include "math_vector.h"
 #include "math_angles.h"
@@ -254,9 +246,6 @@ typedef mat3_t &mat3_p;             // for passing matrices as function argument
 typedef const mat3_t &mat3_c;       // for passing matrices as const function arguments
 
 
-
-#define NUMVERTEXNORMALS    162
-extern idVec3 bytedirs[NUMVERTEXNORMALS];
 
 // all drawing is done to a 640*480 virtual screen size
 // and will be automatically scaled to the real resolution
@@ -292,18 +281,7 @@ extern idVec4 g_color_table[8];
 #define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
-#define DEG2RAD( a ) ( ( ( a ) * M_PI ) / 180.0F )
-#define RAD2DEG( a ) ( ( ( a ) * 180.0f ) / M_PI )
-
-struct cplane_s;
-
-extern idVec3 vec3_origin;
 extern idVec4 vec4_origin;
-extern mat3_t axisDefault;
-
-#define nanmask ( 255 << 23 )
-
-#define IS_NAN( x ) ( ( ( *(int *)&x ) & nanmask ) == nanmask )
 
 // TTimo
 // handy stuff when tracking isnan problems
@@ -315,54 +293,8 @@ extern mat3_t axisDefault;
 #define CHECK_NAN_VEC
 #endif
 
-float Q_fabs( float f );
-float Q_rsqrt( float f );       // reciprocal square root
-
-#define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
-
-signed char ClampChar( int i );
-signed short ClampShort( int i );
-
-// this isn't a real cheap function to call!
-int DirToByte( const idVec3 &dir );
-void ByteToDir( int b, vec3_p dir );
-
-#define DotProduct( a,b )         ( ( a )[0] * ( b )[0] + ( a )[1] * ( b )[1] + ( a )[2] * ( b )[2] )
-#define VectorSubtract( a,b,c )   ( ( c )[0] = ( a )[0] - ( b )[0],( c )[1] = ( a )[1] - ( b )[1],( c )[2] = ( a )[2] - ( b )[2] )
-#define VectorAdd( a,b,c )        ( ( c )[0] = ( a )[0] + ( b )[0],( c )[1] = ( a )[1] + ( b )[1],( c )[2] = ( a )[2] + ( b )[2] )
-#define VectorCopy( a,b )         ( ( b )[0] = ( a )[0],( b )[1] = ( a )[1],( b )[2] = ( a )[2] )
-//#define VectorCopy(a,b)			((b).x=(a).x,(b).y=(a).y,(b).z=(a).z])
-
-#define VectorScale( v, s, o )    ( ( o )[0] = ( v )[0] * ( s ),( o )[1] = ( v )[1] * ( s ),( o )[2] = ( v )[2] * ( s ) )
-#define VectorMA( v, s, b, o )    ( ( o )[0] = ( v )[0] + ( b )[0] * ( s ),( o )[1] = ( v )[1] + ( b )[1] * ( s ),( o )[2] = ( v )[2] + ( b )[2] * ( s ) )
-#define CrossProduct( a,b,c )     ( ( c )[0] = ( a )[1] * ( b )[2] - ( a )[2] * ( b )[1],( c )[1] = ( a )[2] * ( b )[0] - ( a )[0] * ( b )[2],( c )[2] = ( a )[0] * ( b )[1] - ( a )[1] * ( b )[0] )
-
-#define DotProduct4( x,y )        ( ( x )[0] * ( y )[0] + ( x )[1] * ( y )[1] + ( x )[2] * ( y )[2] + ( x )[3] * ( y )[3] )
-#define VectorSubtract4( a,b,c )  ( ( c )[0] = ( a )[0] - ( b )[0],( c )[1] = ( a )[1] - ( b )[1],( c )[2] = ( a )[2] - ( b )[2],( c )[3] = ( a )[3] - ( b )[3] )
-#define VectorAdd4( a,b,c )       ( ( c )[0] = ( a )[0] + ( b )[0],( c )[1] = ( a )[1] + ( b )[1],( c )[2] = ( a )[2] + ( b )[2],( c )[3] = ( a )[3] + ( b )[3] )
-#define VectorCopy4( a,b )        ( ( b )[0] = ( a )[0],( b )[1] = ( a )[1],( b )[2] = ( a )[2],( b )[3] = ( a )[3] )
-#define VectorScale4( v, s, o )   ( ( o )[0] = ( v )[0] * ( s ),( o )[1] = ( v )[1] * ( s ),( o )[2] = ( v )[2] * ( s ),( o )[3] = ( v )[3] * ( s ) )
-#define VectorMA4( v, s, b, o )   ( ( o )[0] = ( v )[0] + ( b )[0] * ( s ),( o )[1] = ( v )[1] + ( b )[1] * ( s ),( o )[2] = ( v )[2] + ( b )[2] * ( s ),( o )[3] = ( v )[3] + ( b )[3] * ( s ) )
-
-
-#define VectorClear( a )          ( ( a )[0] = ( a )[1] = ( a )[2] = 0 )
-#define VectorNegate( a,b )       ( ( b )[0] = -( a )[0],( b )[1] = -( a )[1],( b )[2] = -( a )[2] )
-#define VectorSet( v, x, y, z )   ( ( v )[0] = ( x ), ( v )[1] = ( y ), ( v )[2] = ( z ) )
-#define Vector4Copy( a,b )        ( ( b )[0] = ( a )[0],( b )[1] = ( a )[1],( b )[2] = ( a )[2],( b )[3] = ( a )[3] )
-
-#define SnapVector( v ) {v[0] = (int)v[0]; v[1] = (int)v[1]; v[2] = (int)v[2];}
-
 float NormalizeColor( vec3_c in, vec3_p out );
 
-int VectorCompare( vec3_c v1, vec3_c v2 );
-float VectorLength( vec3_c v );
-float Distance( vec3_c p1, vec3_c p2 );
-float DistanceSquared( vec3_c p1, vec3_c p2 );
-float VectorNormalize( vec3_p v );       // returns vector length
-void VectorNormalizeFast( vec3_p v );     // does NOT return vector length, uses rsqrt approximation
-float VectorNormalize2( vec3_c v, vec3_p out );
-void VectorInverse( vec3_p v );
-void VectorRotate( vec3_c in, mat3_c matrix, vec3_p out );
 void VectorPolar( vec3_p v, float radius, float theta, float phi );
 void VectorSnap( vec3_p v );
 void Vector53Copy( const idVec5_t &in, vec3_p out );
@@ -372,8 +304,6 @@ void VectorRotate3( vec3_c vIn, vec3_c vRotation, vec3_p out );
 void VectorRotate3Origin( vec3_c vIn, vec3_c vRotation, vec3_c vOrigin, vec3_p out );
 
 
-int Q_log2( int val );
-
 int     Q_rand( int *seed );
 float   Q_random( int *seed );
 float   Q_crandom( int *seed );
@@ -381,38 +311,14 @@ float   Q_crandom( int *seed );
 float Q_rint( float in );
 
 void vectoangles( vec3_c value1, angles_p angles );
-void AnglesToAxis( angles_c angles, mat3_p axis );
 
-void AxisCopy( mat3_c in, mat3_p out );
 qboolean AxisRotated( mat3_c in );          // assumes a non-degenerate axis
 
 int SignbitsForNormal( vec3_c normal );
-int BoxOnPlaneSide( const Bounds &b, struct cplane_s *p );
 
-float   AngleMod( float a );
-float   LerpAngle( float from, float to, float frac );
-float   AngleSubtract( float a1, float a2 );
-void    AnglesSubtract( angles_c v1, angles_c v2, angles_p v3 );
-
-float AngleNormalize360( float angle );
-float AngleNormalize180( float angle );
-float AngleDelta( float angle1, float angle2 );
-
-qboolean PlaneFromPoints( idVec4 &plane, vec3_c a, vec3_c b, vec3_c c );
-void ProjectPointOnPlane( vec3_p dst, vec3_c p, vec3_c normal );
-void RotatePointAroundVector( vec3_p dst, vec3_c dir, vec3_c point, float degrees );
-void RotateAroundDirection( mat3_p axis, float yaw );
-void MakeNormalVectors( vec3_c forward, vec3_p right, vec3_p up );
-// perpendicular vector could be replaced by this
-
-int PlaneTypeForNormal( vec3_c normal );
-
-void MatrixMultiply( mat3_c in1, mat3_c in2, mat3_p out );
 void MatrixInverseMultiply( mat3_c in1, mat3_c in2, mat3_p out );   // in2 is transposed during multiply
 void MatrixTransformVector( vec3_c in, mat3_c matrix, vec3_p out );
 void MatrixProjectVector( vec3_c in, mat3_c matrix, vec3_p out ); // Places the vector into a new coordinate system.
-void AngleVectors( angles_c angles, vec3_p forward, vec3_p right, vec3_p up );
-void PerpendicularVector( vec3_p dst, vec3_c src );
 
 float TriangleArea( vec3_c a, vec3_c b, vec3_c c );
 #endif                                      // __cplusplus

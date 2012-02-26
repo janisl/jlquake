@@ -127,7 +127,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	endforeach(SRC)
 
 	set(WOLFMP_ASM_FILES
-		unix/matha.s
 		unix/snd_mixa.s
 	)
 	foreach(SRC ${WOLFMP_ASM_FILES})

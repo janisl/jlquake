@@ -33,9 +33,7 @@
 #include "../core/array.h"		//	Dynamic array
 #include "../core/strings.h"	//	Strings
 #include "../core/info_string.h"
-#if 0
-#include "mathlib.h"
-#endif
+#include "../core/mathlib.h"
 #include "../core/files.h"
 #include "../core/command_buffer.h"
 #include "../core/console_variable.h"

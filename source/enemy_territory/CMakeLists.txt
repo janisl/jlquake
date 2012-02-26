@@ -129,8 +129,7 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	endforeach(SRC)
 
 	set(ET_ASM_FILES
-		unix/matha.s
-		unix/snd_mixa.s
+		unix/snd_mixa.spp
 	)
 	foreach(SRC ${ET_ASM_FILES})
 		get_filename_component(FILE_BASE ${SRC} NAME_WE)
