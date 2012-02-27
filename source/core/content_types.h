@@ -119,3 +119,19 @@
 #define	BSP46CONTENTS_TRANSLUCENT	0x20000000	// don't consume surface fragments inside
 #define	BSP46CONTENTS_TRIGGER		0x40000000
 #define	BSP46CONTENTS_NODROP		0x80000000	// don't leave bodies or items (death fog, lava)
+
+//==========================================================================
+//
+//	Wolfenstein content types, in addition to Quake 3 ones
+//
+//==========================================================================
+
+#define BSP47CONTENTS_LIGHTGRID          0x00000004
+#define BSP47CONTENTS_MISSILECLIP        0x00000080
+#define BSP47CONTENTS_ITEM               0x00000100
+#define BSP47CONTENTS_MOVER              0x00004000
+#define BSP47CONTENTS_DONOTENTER_LARGE   0x00400000
+
+//	Only in RTCW single player.
+#define BSP47CONTENTS_AI_NOSIGHT     0x1000  // AI cannot see through this
+#define BSP47CONTENTS_CLIPSHOT       0x2000  // bullets hit this

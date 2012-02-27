@@ -2054,7 +2054,7 @@ void AAS_CreateVisibility( void ) {
 		endpos[2] -= 256;
 		AAS_PresenceTypeBoundingBox( PRESENCE_NORMAL, mins, maxs );
 //		maxs[2] = 0;
-		trace = AAS_Trace( ( *aasworld ).areas[i].center, mins, maxs, endpos, -1, CONTENTS_SOLID );
+		trace = AAS_Trace( ( *aasworld ).areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID );
 		if ( !trace.startsolid && trace.fraction < 1 && AAS_PointAreaNum( trace.endpos ) == i ) {
 			VectorCopy( trace.endpos, ( *aasworld ).areawaypoints[i] );
 			validareas[i] = 1;
@@ -2087,7 +2087,7 @@ void AAS_CreateVisibility( void ) {
 
 			// Ridah, this always returns false?!
 			//if (AAS_inPVS( (*aasworld).areawaypoints[i], (*aasworld).areawaypoints[j] ))
-			trace = AAS_Trace( ( *aasworld ).areawaypoints[i], NULL, NULL, ( *aasworld ).areawaypoints[j], -1, CONTENTS_SOLID );
+			trace = AAS_Trace( ( *aasworld ).areawaypoints[i], NULL, NULL, ( *aasworld ).areawaypoints[j], -1, BSP46CONTENTS_SOLID );
 			if ( trace.fraction >= 1 ) {
 				//if (botimport.inPVS( (*aasworld).areawaypoints[i], (*aasworld).areawaypoints[j] ))
 				( *aasworld ).decompressedvis[j] = 1;

@@ -775,7 +775,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, msurface_t *surf, bmodel_t
 	}
 	//%	if( surf->viewCount == tr.viewCount )
 	//%		return;
-	if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) || ( surf->shader->contentFlags & CONTENTS_FOG ) ) {
+	if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) || ( surf->shader->contentFlags & BSP46CONTENTS_FOG ) ) {
 		return;
 	}
 

@@ -507,8 +507,6 @@ COLLISION DETECTION
 ==============================================================
 */
 
-#include "surfaceflags.h"            // shared with the q3map utility
-
 // a trace is returned when a box is swept through the world
 typedef struct {
 	qboolean allsolid;      // if true, plane is not valid

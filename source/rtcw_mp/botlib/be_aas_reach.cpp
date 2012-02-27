@@ -751,7 +751,7 @@ int AAS_Reachability_Swim( int area1num, int area2num ) {
 			if ( face1num == face2num ) {
 				AAS_FaceCenter( face1num, start );
 				//
-				if ( AAS_PointContents( start ) & ( CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WATER ) ) {
+				if ( AAS_PointContents( start ) & ( BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER ) ) {
 					//
 					face1 = &( *aasworld ).faces[face1num];
 					areasettings = &( *aasworld ).areasettings[area1num];
@@ -2125,8 +2125,8 @@ int AAS_Reachability_Jump( int area1num, int area2num ) {
 		if ( trace.fraction < 1 ) {
 			plane = &( *aasworld ).planes[trace.planenum];
 			if ( DotProduct( plane->normal, up ) >= 0.7 ) {
-				if ( !( AAS_PointContents( trace.endpos ) & CONTENTS_LAVA ) ) { //----(SA)	modified since slime is no longer deadly
-//				if (!(AAS_PointContents(trace.endpos) & (CONTENTS_LAVA|CONTENTS_SLIME)))
+				if ( !( AAS_PointContents( trace.endpos ) & BSP46CONTENTS_LAVA ) ) { //----(SA)	modified since slime is no longer deadly
+//				if (!(AAS_PointContents(trace.endpos) & (BSP46CONTENTS_LAVA|BSP46CONTENTS_SLIME)))
 					if ( teststart[2] - trace.endpos[2] <= aassettings.sv_maxbarrier ) {
 						return qfalse;
 					}
@@ -2146,7 +2146,7 @@ int AAS_Reachability_Jump( int area1num, int area2num ) {
 		if ( trace.fraction < 1 ) {
 			plane = &( *aasworld ).planes[trace.planenum];
 			if ( DotProduct( plane->normal, up ) >= 0.7 ) {
-				if ( !( AAS_PointContents( trace.endpos ) & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) ) {
+				if ( !( AAS_PointContents( trace.endpos ) & ( BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME ) ) ) {
 					if ( teststart[2] - trace.endpos[2] <= aassettings.sv_maxbarrier ) {
 						return qfalse;
 					}
@@ -3710,7 +3710,7 @@ int AAS_Reachability_Grapple( int area1num, int area2num ) {
 	} //end if
 	else
 	{
-		if ( !( AAS_PointContents( start ) & ( CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WATER ) ) ) {
+		if ( !( AAS_PointContents( start ) & ( BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER ) ) ) {
 			return qfalse;
 		}
 	} //end else
@@ -3764,7 +3764,7 @@ int AAS_Reachability_Grapple( int area1num, int area2num ) {
 		VectorCopy( facecenter, start );
 		VectorMA( facecenter, -500, ( *aasworld ).planes[face2->planenum].normal, end );
 		//
-		bsptrace = AAS_Trace( start, NULL, NULL, end, 0, CONTENTS_SOLID );
+		bsptrace = AAS_Trace( start, NULL, NULL, end, 0, BSP46CONTENTS_SOLID );
 		//the grapple won't stick to the sky and the grapple point should be near the AAS wall
 		if ( ( bsptrace.surface.flags & BSP46SURF_SKY ) || ( bsptrace.fraction * 500 > 32 ) ) {
 			continue;

@@ -97,14 +97,14 @@ qboolean isEntVisible( entityState_t *ent ) {
 
 	// First, viewpoint to viewpoint
 	end[2] += view_height;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}
 
 	// First-b, viewpoint to top of head
 	end[2] += 16;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}
@@ -112,7 +112,7 @@ qboolean isEntVisible( entityState_t *ent ) {
 
 	// Second, viewpoint to ent's origin
 	end[2] -= view_height;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}
@@ -120,7 +120,7 @@ qboolean isEntVisible( entityState_t *ent ) {
 	// Third, to ent's right knee
 	VectorAdd( end, right, temp );
 	temp[2] += 8;
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}
@@ -132,7 +132,7 @@ qboolean isEntVisible( entityState_t *ent ) {
 	} else {
 		temp[2] += 52;
 	}
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}
@@ -142,7 +142,7 @@ qboolean isEntVisible( entityState_t *ent ) {
 	VectorScale( right2, -1, right2 );
 	VectorAdd( end, right2, temp );
 	temp[2] += 2;
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}
@@ -154,7 +154,7 @@ qboolean isEntVisible( entityState_t *ent ) {
 	} else {
 		temp[2] += 36;
 	}
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, qfalse );
+	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse );
 	if ( tr.fraction == 1.f ) {
 		return qtrue;
 	}

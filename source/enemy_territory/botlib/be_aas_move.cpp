@@ -66,7 +66,7 @@ int AAS_DropToFloor( vec3_t origin, vec3_t mins, vec3_t maxs ) {
 
 	VectorCopy( origin, end );
 	end[2] -= 100;
-	trace = AAS_Trace( origin, mins, maxs, end, 0, ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) & ~CONTENTS_BODY );
+	trace = AAS_Trace( origin, mins, maxs, end, 0, ( BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP ) & ~BSP46CONTENTS_BODY );
 	if ( trace.startsolid ) {
 		return qfalse;
 	}
@@ -190,7 +190,7 @@ int AAS_OnGround( vec3_t origin, int presencetype, int passent ) {
 
 	//trace = AAS_TraceClientBBox(origin, end, presencetype, passent);
 	AAS_PresenceTypeBoundingBox( presencetype, mins, maxs );
-	trace = AAS_Trace( origin, mins, maxs, end, passent, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	trace = AAS_Trace( origin, mins, maxs, end, passent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 
 	//if in solid
 	if ( trace.startsolid ) {
@@ -224,7 +224,7 @@ int AAS_Swimming( vec3_t origin ) {
 
 	VectorCopy( origin, testorg );
 	testorg[2] -= 2;
-	if ( AAS_PointContents( testorg ) & ( CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WATER ) ) {
+	if ( AAS_PointContents( testorg ) & ( BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER ) ) {
 		return qtrue;
 	}
 	return qfalse;
@@ -313,7 +313,7 @@ float AAS_WeaponJumpZVelocity( vec3_t origin, float radiusdamage ) {
 	//end point of the trace
 	VectorMA( start, 500, forward, end );
 	//trace a line to get the impact point
-	bsptrace = AAS_Trace( start, NULL, NULL, end, 1, CONTENTS_SOLID );
+	bsptrace = AAS_Trace( start, NULL, NULL, end, 1, BSP46CONTENTS_SOLID );
 	//calculate the damage the bot will get from the rocket impact
 	VectorAdd( botmins, botmaxs, v );
 	VectorMA( origin, 0.5, v, v );
@@ -502,11 +502,11 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 	org[2] += 0.25;
 	// test this position, if it's in solid, move it up to adjust for capsules
 	//trace = AAS_TraceClientBBox(org, org, PRESENCE_NORMAL, entnum);
-	trace = AAS_Trace( org, mins, maxs, org, entnum, ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) & ~CONTENTS_BODY );
+	trace = AAS_Trace( org, mins, maxs, org, entnum, ( BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP ) & ~BSP46CONTENTS_BODY );
 	while ( trace.startsolid ) {
 		org[2] += 8;
 		//trace = AAS_TraceClientBBox(org, org, PRESENCE_NORMAL, entnum);
-		trace = AAS_Trace( org, mins, maxs, org, entnum, ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) & ~CONTENTS_BODY );
+		trace = AAS_Trace( org, mins, maxs, org, entnum, ( BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP ) & ~BSP46CONTENTS_BODY );
 		if ( trace.startsolid && ( org[2] - origin[2] > 16 ) ) {
 			move->stopevent = SE_NONE;
 			return qfalse;
@@ -621,7 +621,7 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 			VectorAdd( org, left_test_vel, end );
 			//trace a bounding box
 			//trace = AAS_TraceClientBBox(org, end, PRESENCE_NORMAL, entnum);
-			trace = AAS_Trace( org, mins, maxs, end, entnum, ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) & ~CONTENTS_BODY );
+			trace = AAS_Trace( org, mins, maxs, end, entnum, ( BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP ) & ~BSP46CONTENTS_BODY );
 			//
 //#ifdef AAS_MOVE_DEBUG
 			if ( visualize ) {
@@ -717,7 +717,7 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 					VectorCopy( start, stepend );
 					start[2] += sv_maxstep;
 					//steptrace = AAS_TraceClientBBox(start, stepend, PRESENCE_NORMAL, entnum);
-					steptrace = AAS_Trace( start, mins, maxs, stepend, entnum, ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) & ~CONTENTS_BODY );
+					steptrace = AAS_Trace( start, mins, maxs, stepend, entnum, ( BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP ) & ~BSP46CONTENTS_BODY );
 					//
 					if ( !steptrace.startsolid ) {
 						plane2 = &steptrace.plane;
@@ -817,13 +817,13 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 			pc = AAS_PointContents( feet );
 			//get event from pc
 			event = SE_NONE;
-			if ( pc & CONTENTS_LAVA ) {
+			if ( pc & BSP46CONTENTS_LAVA ) {
 				event |= SE_ENTERLAVA;
 			}
-			if ( pc & CONTENTS_SLIME ) {
+			if ( pc & BSP46CONTENTS_SLIME ) {
 				event |= SE_ENTERSLIME;
 			}
-			if ( pc & CONTENTS_WATER ) {
+			if ( pc & BSP46CONTENTS_WATER ) {
 				event |= SE_ENTERWATER;
 			}
 			//
@@ -889,13 +889,13 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 			VectorCopy( start, end );
 			end[2] -= 48 + aassettings.sv_maxbarrier;
 			//gaptrace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, -1);
-			gaptrace = AAS_Trace( start, mins, maxs, end, -1, ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) & ~CONTENTS_BODY );
+			gaptrace = AAS_Trace( start, mins, maxs, end, -1, ( BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP ) & ~BSP46CONTENTS_BODY );
 			//if solid is found the bot cannot walk any further and will not fall into a gap
 			if ( !gaptrace.startsolid ) {
 				//if it is a gap (lower than one step height)
 				if ( gaptrace.endpos[2] < org[2] - aassettings.sv_maxstep - 1 ) {
-					if ( !( AAS_PointContents( end ) & ( CONTENTS_WATER | CONTENTS_SLIME ) ) ) { //----(SA)	modified since slime is no longer deadly
-//					if (!(AAS_PointContents(end) & CONTENTS_WATER))
+					if ( !( AAS_PointContents( end ) & ( BSP46CONTENTS_WATER | BSP46CONTENTS_SLIME ) ) ) { //----(SA)	modified since slime is no longer deadly
+//					if (!(AAS_PointContents(end) & BSP46CONTENTS_WATER))
 						VectorCopy( lastorg, move->endpos );
 						VectorScale( frame_test_vel, 1 / frametime, move->velocity );
 						move->trace = trace;

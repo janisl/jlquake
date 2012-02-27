@@ -42,8 +42,8 @@
 #include "../core/system.h"
 #if 0
 #include "clip_map/public.h"
-#include "content_types.h"
 #endif
+#include "../core/content_types.h"
 #include "../core/event_queue.h"
 #if 0
 #include "socket.h"

@@ -48,7 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 #include "be_aas_def.h"
 
-#define MASK_SOLID      CONTENTS_PLAYERCLIP
+#define MASK_SOLID      BSP46CONTENTS_PLAYERCLIP
 
 // Ridah, always use the default world for entities
 extern aas_t aasworlds[MAX_AAS_WORLDS];

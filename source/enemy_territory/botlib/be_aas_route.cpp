@@ -2195,9 +2195,9 @@ void AAS_CreateVisibility( qboolean waypointsOnly ) {
 		VectorCopy( aasworld->areas[i].center, endpos );
 		endpos[2] -= 256;
 		AAS_PresenceTypeBoundingBox( PRESENCE_NORMAL, mins, maxs );
-		trace = AAS_Trace( aasworld->areas[i].center, mins, maxs, endpos, -1, CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_MONSTERCLIP );
+		trace = AAS_Trace( aasworld->areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP );
 		if ( trace.startsolid && trace.ent < ENTITYNUM_WORLD ) {
-			trace = AAS_Trace( aasworld->areas[i].center, mins, maxs, endpos, trace.ent, CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_MONSTERCLIP );
+			trace = AAS_Trace( aasworld->areas[i].center, mins, maxs, endpos, trace.ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP );
 		}
 		if ( !trace.startsolid && trace.fraction < 1 && AAS_PointAreaNum( trace.endpos ) == i ) {
 			VectorCopy( trace.endpos, aasworld->areawaypoints[i] );
@@ -2258,9 +2258,9 @@ void AAS_CreateVisibility( qboolean waypointsOnly ) {
 				continue;
 			}
 
-			trace = AAS_Trace( aasworld->areawaypoints[i], NULL, NULL, aasworld->areawaypoints[j], -1, CONTENTS_SOLID );
+			trace = AAS_Trace( aasworld->areawaypoints[i], NULL, NULL, aasworld->areawaypoints[j], -1, BSP46CONTENTS_SOLID );
 			if ( trace.startsolid && trace.ent < ENTITYNUM_WORLD ) {
-				trace = AAS_Trace( aasworld->areas[i].center, mins, maxs, endpos, trace.ent, CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_MONSTERCLIP );
+				trace = AAS_Trace( aasworld->areas[i].center, mins, maxs, endpos, trace.ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP );
 			}
 
 			if ( trace.fraction >= 1 ) {

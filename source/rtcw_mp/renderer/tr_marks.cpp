@@ -166,7 +166,7 @@ void R_BoxSurfaces_r( mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **l
 	}
 
 	// Ridah, don't mark alpha surfaces
-	if ( node->contents & CONTENTS_TRANSLUCENT ) {
+	if ( node->contents & BSP46CONTENTS_TRANSLUCENT ) {
 		return;
 	}
 
@@ -182,7 +182,7 @@ void R_BoxSurfaces_r( mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **l
 		surf = *mark;
 		// check if the surface has NOIMPACT or NOMARKS set
 		if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) )
-			 || ( surf->shader->contentFlags & CONTENTS_FOG ) ) {
+			 || ( surf->shader->contentFlags & BSP46CONTENTS_FOG ) ) {
 			surf->viewCount = tr.viewCount;
 		}
 		// extra check for surfaces to avoid list overflows

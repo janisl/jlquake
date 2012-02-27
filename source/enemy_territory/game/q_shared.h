@@ -569,8 +569,6 @@ COLLISION DETECTION
 ==============================================================
 */
 
-#include "surfaceflags.h"            // shared with the q3map utility
-
 #define CPLANE
 
 

@@ -969,7 +969,7 @@ static void R_MarkLeaves( void ) {
 
 	if ( r_novis->integer || tr.viewCluster == -1 ) {
 		for ( i = 0 ; i < tr.world->numnodes ; i++ ) {
-			if ( tr.world->nodes[i].contents != CONTENTS_SOLID ) {
+			if ( tr.world->nodes[i].contents != BSP46CONTENTS_SOLID ) {
 				tr.world->nodes[i].visframe = tr.visCount;
 			}
 		}

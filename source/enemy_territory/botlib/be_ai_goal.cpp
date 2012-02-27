@@ -1446,7 +1446,7 @@ int BotItemGoalInVisButNotVisible( int viewer, vec3_t eye, vec3_t viewangles, bo
 	VectorScale( middle, 0.5, middle );
 	VectorAdd( goal->origin, middle, middle );
 	//
-	trace = AAS_Trace( eye, NULL, NULL, middle, viewer, CONTENTS_SOLID );
+	trace = AAS_Trace( eye, NULL, NULL, middle, viewer, BSP46CONTENTS_SOLID );
 	//if the goal middle point is visible
 	if ( trace.fraction >= 1 ) {
 		//the goal entity number doesn't have to be valid

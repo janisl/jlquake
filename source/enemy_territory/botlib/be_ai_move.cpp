@@ -276,7 +276,7 @@ int BotFirstReachabilityArea( vec3_t origin, int *areas, int numareas, qboolean 
 					dist += 32 * ( center[2] - origin[2] );
 				}
 				if ( dist < bestDist ) {
-					tr = AAS_Trace( origin, NULL, NULL, center, -1, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+					tr = AAS_Trace( origin, NULL, NULL, center, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 					if ( tr.fraction == 1.0 && !tr.startsolid && !tr.allsolid ) {
 						best = areas[i];
 						bestDist = dist;
@@ -286,7 +286,7 @@ int BotFirstReachabilityArea( vec3_t origin, int *areas, int numareas, qboolean 
 					}
 				}
 			} else {
-				tr = AAS_Trace( origin, NULL, NULL, center, -1, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+				tr = AAS_Trace( origin, NULL, NULL, center, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 				if ( tr.fraction == 1.0 && !tr.startsolid && !tr.allsolid ) {
 					best = areas[i];
 					break;
@@ -442,7 +442,7 @@ int BotReachabilityArea( vec3_t origin, int client ) {
 	//check if the bot is standing on something
 	AAS_PresenceTypeBoundingBox( PRESENCE_CROUCH, mins, maxs );
 	VectorMA( origin, -3, up, end );
-	bsptrace = AAS_Trace( origin, mins, maxs, end, client, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	bsptrace = AAS_Trace( origin, mins, maxs, end, client, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 	if ( !bsptrace.startsolid && bsptrace.fraction < 1 && bsptrace.ent != ENTITYNUM_NONE ) {
 		//if standing on the world the bot should be in a valid area
 		if ( bsptrace.ent == ENTITYNUM_WORLD ) {
@@ -599,7 +599,7 @@ int BotOnMover( vec3_t origin, int entnum, aas_reachability_t *reach ) {
 	VectorCopy( origin, end );
 	end[2] -= 48;
 	//
-	trace = AAS_Trace( org, boxmins, boxmaxs, end, entnum, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	trace = AAS_Trace( org, boxmins, boxmaxs, end, entnum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 	if ( !trace.startsolid && !trace.allsolid ) {
 		//NOTE: the reachability face number is the model number of the elevator
 		if ( trace.ent != ENTITYNUM_NONE && AAS_EntityModelNum( trace.ent ) == modelnum ) {
@@ -681,7 +681,7 @@ int BotOnTopOfEntity( bot_movestate_t *ms ) {
 
 	AAS_PresenceTypeBoundingBox( ms->presencetype, mins, maxs );
 	VectorMA( ms->origin, -3, up, end );
-	trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 	if ( !trace.startsolid && ( trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE ) ) {
 		return trace.ent;
 	} //end if
@@ -931,7 +931,7 @@ int BotMovementViewTarget( int movestate, bot_goal_t *goal, int travelflags, flo
 int BotVisible( int ent, vec3_t eye, vec3_t target ) {
 	bsp_trace_t trace;
 
-	trace = AAS_Trace( eye, NULL, NULL, target, ent, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	trace = AAS_Trace( eye, NULL, NULL, target, ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 	if ( trace.fraction >= 1 ) {
 		return qtrue;
 	}
@@ -1065,10 +1065,10 @@ float BotGapDistance( vec3_t origin, vec3_t hordir, int entnum ) {
 			if ( trace.endpos[2] < startz - sv_maxstep - 8 ) {
 				VectorCopy( trace.endpos, end );
 				end[2] -= 20;
-				if ( AAS_PointContents( end ) & ( CONTENTS_WATER | CONTENTS_SLIME ) ) {
+				if ( AAS_PointContents( end ) & ( BSP46CONTENTS_WATER | BSP46CONTENTS_SLIME ) ) {
 					break;                                                              //----(SA)	modified since slime is no longer deadly
 				}
-//				if (AAS_PointContents(end) & CONTENTS_WATER) break;
+//				if (AAS_PointContents(end) & BSP46CONTENTS_WATER) break;
 				//if a gap is found slow down
 				//botimport.Print(PRT_MESSAGE, "gap at %f\n", dist);
 				return dist;
@@ -1343,7 +1343,7 @@ void BotCheckBlocked( bot_movestate_t *ms, vec3_t dir, int checkbottom, bot_move
 		maxs[2] -= 10; //a little lower to avoid low ceiling
 	} //end if
 	VectorMA( ms->origin, 16, dir, end );
-	trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_BODY );
+	trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_BODY );
 	//if not started in solid and not hitting the world entity
 	if ( !trace.startsolid && ( trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE ) ) {
 		result->blocked = qtrue;
@@ -1357,7 +1357,7 @@ void BotCheckBlocked( bot_movestate_t *ms, vec3_t dir, int checkbottom, bot_move
 		//check if the bot is standing on something
 		AAS_PresenceTypeBoundingBox( ms->presencetype, mins, maxs );
 		VectorMA( ms->origin, -3, up, end );
-		trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+		trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 		if ( !trace.startsolid && ( trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE ) ) {
 			result->blocked = qtrue;
 			result->blockentity = trace.ent;
@@ -1721,7 +1721,7 @@ bot_moveresult_t BotFinishTravel_WaterJump( bot_movestate_t *ms, aas_reachabilit
 	//otherwise the bot sometimes keeps jumping?
 	VectorCopy( ms->origin, pnt );
 	pnt[2] -= 32;   //extra for q2dm4 near red armor/mega health
-	if ( !( AAS_PointContents( pnt ) & ( CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WATER ) ) ) {
+	if ( !( AAS_PointContents( pnt ) & ( BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER ) ) ) {
 		return result;
 	}
 	//swim straight to reachability end

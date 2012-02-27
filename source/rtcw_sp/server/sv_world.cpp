@@ -235,7 +235,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 	// encode the size into the entityState_t for client prediction
 	if ( gEnt->r.bmodel ) {
 		gEnt->s.solid = SOLID_BMODEL;       // a solid_box will never create this value
-	} else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY ) ) {
+	} else if ( gEnt->r.contents & ( BSP46CONTENTS_SOLID | BSP46CONTENTS_BODY ) ) {
 		// assume that x/y are equal and symetric
 		i = gEnt->r.maxs[0];
 		if ( i < 1 ) {

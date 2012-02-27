@@ -370,7 +370,7 @@ qboolean AAS_AreaEntityCollision( int areanum, vec3_t start, vec3_t end,
 		}
 		//
 		if ( AAS_EntityCollision( link->entnum, start, boxmins, boxmaxs, end,
-								  CONTENTS_SOLID | CONTENTS_PLAYERCLIP, &bsptrace ) ) {
+								  BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP, &bsptrace ) ) {
 			collision = qtrue;
 		} //end if
 	} //end for

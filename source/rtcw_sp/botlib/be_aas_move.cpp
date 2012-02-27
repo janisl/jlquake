@@ -66,7 +66,7 @@ int AAS_DropToFloor( vec3_t origin, vec3_t mins, vec3_t maxs ) {
 
 	VectorCopy( origin, end );
 	end[2] -= 100;
-	trace = AAS_Trace( origin, mins, maxs, end, 0, CONTENTS_SOLID );
+	trace = AAS_Trace( origin, mins, maxs, end, 0, BSP46CONTENTS_SOLID );
 	if ( trace.startsolid ) {
 		return qfalse;
 	}
@@ -218,7 +218,7 @@ int AAS_Swimming( vec3_t origin ) {
 
 	VectorCopy( origin, testorg );
 	testorg[2] -= 2;
-	if ( AAS_PointContents( testorg ) & ( CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WATER ) ) {
+	if ( AAS_PointContents( testorg ) & ( BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER ) ) {
 		return qtrue;
 	}
 	return qfalse;
@@ -307,7 +307,7 @@ float AAS_WeaponJumpZVelocity( vec3_t origin, float radiusdamage ) {
 	//end point of the trace
 	VectorMA( start, 500, forward, end );
 	//trace a line to get the impact point
-	bsptrace = AAS_Trace( start, NULL, NULL, end, 1, CONTENTS_SOLID );
+	bsptrace = AAS_Trace( start, NULL, NULL, end, 1, BSP46CONTENTS_SOLID );
 	//calculate the damage the bot will get from the rocket impact
 	VectorAdd( botmins, botmaxs, v );
 	VectorMA( origin, 0.5, v, v );
@@ -720,13 +720,13 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 			pc = AAS_PointContents( feet );
 			//get event from pc
 			event = SE_NONE;
-			if ( pc & CONTENTS_LAVA ) {
+			if ( pc & BSP46CONTENTS_LAVA ) {
 				event |= SE_ENTERLAVA;
 			}
-			if ( pc & CONTENTS_SLIME ) {
+			if ( pc & BSP46CONTENTS_SLIME ) {
 				event |= SE_ENTERSLIME;
 			}
-			if ( pc & CONTENTS_WATER ) {
+			if ( pc & BSP46CONTENTS_WATER ) {
 				event |= SE_ENTERWATER;
 			}
 			//
@@ -790,8 +790,8 @@ int AAS_PredictClientMovement( struct aas_clientmove_s *move,
 			if ( !gaptrace.startsolid ) {
 				//if it is a gap (lower than one step height)
 				if ( gaptrace.endpos[2] < org[2] - aassettings.sv_maxstep - 1 ) {
-					if ( !( AAS_PointContents( end ) & ( CONTENTS_WATER | CONTENTS_SLIME ) ) ) { //----(SA)	modified since slime is no longer deadly
-//					if (!(AAS_PointContents(end) & CONTENTS_WATER))
+					if ( !( AAS_PointContents( end ) & ( BSP46CONTENTS_WATER | BSP46CONTENTS_SLIME ) ) ) { //----(SA)	modified since slime is no longer deadly
+//					if (!(AAS_PointContents(end) & BSP46CONTENTS_WATER))
 						VectorCopy( lastorg, move->endpos );
 						VectorScale( frame_test_vel, 1 / frametime, move->velocity );
 						move->trace = trace;

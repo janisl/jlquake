@@ -1925,7 +1925,7 @@ void R_FindLightGridBounds( vec3_t mins, vec3_t maxs ) {
 			continue;
 		}
 
-		if ( !( shd->contentFlags & CONTENTS_LIGHTGRID ) ) {
+		if ( !( shd->contentFlags & BSP47CONTENTS_LIGHTGRID ) ) {
 			continue;
 		}
 
@@ -1941,7 +1941,7 @@ void R_FindLightGridBounds( vec3_t mins, vec3_t maxs ) {
 			continue;
 		}
 
-		if ( !( shd->contentFlags & CONTENTS_LIGHTGRID ) ) {
+		if ( !( shd->contentFlags & BSP47CONTENTS_LIGHTGRID ) ) {
 			continue;
 		}
 
@@ -1959,7 +1959,7 @@ void R_FindLightGridBounds( vec3_t mins, vec3_t maxs ) {
 //	for ( i = 0 ; i < numbrushes ; i++ ) {
 //		db = &dbrushes[i];
 //
-//		if (!(dshaders[db->shaderNum].contentFlags & CONTENTS_LIGHTGRID)) {
+//		if (!(dshaders[db->shaderNum].contentFlags & BSP47CONTENTS_LIGHTGRID)) {
 //			continue;
 //		}
 //

@@ -1256,33 +1256,33 @@ infoParm_t infoParms[] = {
 	// server relevant contents
 
 //----(SA)	modified
-	{"clipmissile",  1,  0, CONTENTS_MISSILECLIP},       // impact only specific weapons (rl, gl)
+	{"clipmissile",  1,  0, BSP47CONTENTS_MISSILECLIP},       // impact only specific weapons (rl, gl)
 //----(SA)	end
 
-	{"water",        1,  0,  CONTENTS_WATER },
-	{"slag",     1,  0,  CONTENTS_SLIME },       // uses the CONTENTS_SLIME flag, but the shader reference is changed to 'slag'
+	{"water",        1,  0,  BSP46CONTENTS_WATER },
+	{"slag",     1,  0,  BSP46CONTENTS_SLIME },       // uses the BSP46CONTENTS_SLIME flag, but the shader reference is changed to 'slag'
 	// to idendify that this doesn't work the same as 'slime' did.
 	// (slime hurts instantly, slag doesn't)
-//	{"slime",		1,	0,	CONTENTS_SLIME },		// mildly damaging
-	{"lava",     1,  0,  CONTENTS_LAVA },        // very damaging
-	{"playerclip",   1,  0,  CONTENTS_PLAYERCLIP },
-	{"monsterclip",  1,  0,  CONTENTS_MONSTERCLIP },
-	{"nodrop",       1,  0,  CONTENTS_NODROP },      // don't drop items or leave bodies (death fog, lava, etc)
+//	{"slime",		1,	0,	BSP46CONTENTS_SLIME },		// mildly damaging
+	{"lava",     1,  0,  BSP46CONTENTS_LAVA },        // very damaging
+	{"playerclip",   1,  0,  BSP46CONTENTS_PLAYERCLIP },
+	{"monsterclip",  1,  0,  BSP46CONTENTS_MONSTERCLIP },
+	{"nodrop",       1,  0,  BSP46CONTENTS_NODROP },      // don't drop items or leave bodies (death fog, lava, etc)
 	{"nonsolid", 1,  BSP46SURF_NONSOLID,  0},                     // clears the solid flag
 
 	// utility relevant attributes
-	{"origin",       1,  0,  CONTENTS_ORIGIN },      // center of rotating brushes
-	{"trans",        0,  0,  CONTENTS_TRANSLUCENT }, // don't eat contained surfaces
-	{"detail",       0,  0,  CONTENTS_DETAIL },      // don't include in structural bsp
-	{"structural",   0,  0,  CONTENTS_STRUCTURAL },  // force into structural bsp even if trnas
-	{"areaportal",   1,  0,  CONTENTS_AREAPORTAL },  // divides areas
-	{"clusterportal", 1,0,  CONTENTS_CLUSTERPORTAL },    // for bots
-	{"donotenter",  1,  0,  CONTENTS_DONOTENTER },       // for bots
+	{"origin",       1,  0,  BSP46CONTENTS_ORIGIN },      // center of rotating brushes
+	{"trans",        0,  0,  BSP46CONTENTS_TRANSLUCENT }, // don't eat contained surfaces
+	{"detail",       0,  0,  BSP46CONTENTS_DETAIL },      // don't include in structural bsp
+	{"structural",   0,  0,  BSP46CONTENTS_STRUCTURAL },  // force into structural bsp even if trnas
+	{"areaportal",   1,  0,  BSP46CONTENTS_AREAPORTAL },  // divides areas
+	{"clusterportal", 1,0,  BSP46CONTENTS_CLUSTERPORTAL },    // for bots
+	{"donotenter",  1,  0,  BSP46CONTENTS_DONOTENTER },       // for bots
 
 	// Rafael - nopass
-	{"donotenterlarge", 1, 0,    CONTENTS_DONOTENTER_LARGE }, // for larger bots
+	{"donotenterlarge", 1, 0,    BSP47CONTENTS_DONOTENTER_LARGE }, // for larger bots
 
-	{"fog",          1,  0,  CONTENTS_FOG},          // carves surfaces entering
+	{"fog",          1,  0,  BSP46CONTENTS_FOG},          // carves surfaces entering
 	{"sky",          0,  BSP46SURF_SKY,       0 },        // emit light from an environment map
 	{"lightfilter",  0,  BSP46SURF_LIGHTFILTER, 0 },      // filter light going through it
 	{"alphashadow",  0,  BSP46SURF_ALPHASHADOW, 0 },      // test light on a per-pixel basis
@@ -1347,7 +1347,7 @@ static void ParseSurfaceParm( const char **text ) {
 			shader.contentFlags |= infoParms[i].contents;
 #if 0
 			if ( infoParms[i].clearSolid ) {
-				si->contents &= ~CONTENTS_SOLID;
+				si->contents &= ~BSP46CONTENTS_SOLID;
 			}
 #endif
 			break;
@@ -1671,7 +1671,7 @@ static qboolean ParseShader( const char **text ) {
 	//
 	// ignore shaders that don't have any stages, unless it is a sky or fog
 	//
-	if ( s == 0 && !shader.isSky && !( shader.contentFlags & CONTENTS_FOG ) ) {
+	if ( s == 0 && !shader.isSky && !( shader.contentFlags & BSP46CONTENTS_FOG ) ) {
 		return qfalse;
 	}
 
@@ -2035,7 +2035,7 @@ static shader_t *GeneratePermanentShader( void ) {
 
 	if ( shader.sort <= SS_OPAQUE ) {
 		newShader->fogPass = FP_EQUAL;
-	} else if ( shader.contentFlags & CONTENTS_FOG ) {
+	} else if ( shader.contentFlags & BSP46CONTENTS_FOG ) {
 		newShader->fogPass = FP_LE;
 	}
 
