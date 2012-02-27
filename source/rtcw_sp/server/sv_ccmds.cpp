@@ -190,7 +190,7 @@ static void SV_Map_f( void ) {
 			// make sure it is the correct size
 			csize = FS_ReadFile( "save/current.svg", NULL );
 			if ( csize != size ) {
-				Hunk_FreeTempMemory( buffer );
+				FS_FreeFile( buffer );
 				FS_Delete( "save/current.svg" );
 // TTimo
 #ifdef __linux__
@@ -218,7 +218,7 @@ static void SV_Map_f( void ) {
 			svs.time = savegameTime;
 		}
 
-		Hunk_FreeTempMemory( buffer );
+		FS_FreeFile( buffer );
 	} else {
 		Cvar_Set( "savegame_loading", "0" );  // make sure it's turned off
 		// set the filename
@@ -374,7 +374,7 @@ static void SV_MapRestart_f( void ) {
 			svs.time = savegameTime;
 		}
 
-		Hunk_FreeTempMemory( buffer );
+		FS_FreeFile( buffer );
 	}
 	// done.
 
@@ -500,7 +500,7 @@ void    SV_LoadGame_f( void ) {
 				FS_WriteFile( "save/current.svg", buffer, size );
 			}
 
-			Hunk_FreeTempMemory( buffer );
+			FS_FreeFile( buffer );
 
 			Cvar_Set( "savegame_loading", "2" );  // 2 means it's a restart, so stop rendering until we are loaded
 			// set the filename
@@ -512,7 +512,7 @@ void    SV_LoadGame_f( void ) {
 		}
 	}
 
-	Hunk_FreeTempMemory( buffer );
+	FS_FreeFile( buffer );
 
 	// otherwise, do a slow load
 	if ( Cvar_VariableIntegerValue( "sv_cheats" ) ) {

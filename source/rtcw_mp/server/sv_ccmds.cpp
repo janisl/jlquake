@@ -478,7 +478,6 @@ void    SV_LoadGame_f( void ) {
 		return;
 	}
 
-	buffer = (char*)Hunk_AllocateTempMemory( size );
 	FS_ReadFile( filename, (void **)&buffer );
 
 	// read the mapname, if it is the same as the current map, then do a fast load
@@ -493,7 +492,7 @@ void    SV_LoadGame_f( void ) {
 				FS_WriteFile( "save/current.svg", buffer, size );
 			}
 
-			Hunk_FreeTempMemory( buffer );
+			FS_FreeFile( buffer );
 
 			Cvar_Set( "savegame_loading", "2" );  // 2 means it's a restart, so stop rendering until we are loaded
 			SV_MapRestart_f();  // savegame will be loaded after restart
@@ -502,7 +501,7 @@ void    SV_LoadGame_f( void ) {
 		}
 	}
 
-	Hunk_FreeTempMemory( buffer );
+	FS_FreeFile( buffer );
 
 	// otherwise, do a slow load
 	if ( Cvar_VariableIntegerValue( "sv_cheats" ) ) {
