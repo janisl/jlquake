@@ -172,7 +172,6 @@ typedef enum {qfalse, qtrue};
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
-typedef int clipHandle_t;
 
 typedef enum {
 	INVALID_JOINT = -1
@@ -251,11 +250,6 @@ MATHLIB
 ==============================================================
 */
 #ifdef __cplusplus          // so we can include this in C code
-#define SIDE_FRONT      0
-#define SIDE_BACK       1
-#define SIDE_ON         2
-#define SIDE_CROSS      3
-
 #define Q_PI    3.14159265358979323846
 
 #include "math_vector.h"

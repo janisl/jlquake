@@ -2230,9 +2230,6 @@ void Com_Frame( void ) {
 	//
 	if ( com_showtrace->integer ) {
 
-		extern int c_traces, c_brush_traces, c_patch_traces;
-		extern int c_pointcontents;
-
 		Com_Printf( "%4i traces  (%ib %ip) %4i points\n", c_traces,
 					c_brush_traces, c_patch_traces, c_pointcontents );
 		c_traces = 0;

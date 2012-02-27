@@ -1115,7 +1115,7 @@ void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f, vec3_t
 CM_Trace
 ==================
 */
-void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end,
+void CM_Trace( q3trace_t *results, const vec3_t start, const vec3_t end,
 			   const vec3_t mins, const vec3_t maxs,
 			   clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t *sphere ) {
 	int i;
@@ -1318,7 +1318,7 @@ void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end,
 CM_BoxTrace
 ==================
 */
-void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
+void CM_BoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
 				  const vec3_t mins, const vec3_t maxs,
 				  clipHandle_t model, int brushmask, int capsule ) {
 	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, capsule, NULL );
@@ -1332,11 +1332,11 @@ Handles offseting and rotation of the end points for moving and
 rotating entities
 ==================
 */
-void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
+void CM_TransformedBoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
 							 const vec3_t mins, const vec3_t maxs,
 							 clipHandle_t model, int brushmask,
 							 const vec3_t origin, const vec3_t angles, int capsule ) {
-	trace_t trace;
+	q3trace_t trace;
 	vec3_t start_l, end_l;
 	qboolean rotated;
 	vec3_t offset;

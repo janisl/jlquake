@@ -20,7 +20,6 @@
 #include "../local.h"
 #include "../../../core/file_formats/bsp46.h"
 
-#if 0
 #define MAX_FACETS			1024
 #define MAX_PATCH_PLANES	2048
 #define PLANE_TRI_EPSILON	0.1
@@ -30,12 +29,14 @@
 #define SIDE_ON		2
 #define SIDE_CROSS	3
 
+#if 0
 #define MAX_MAP_BOUNDS			65535
+#endif
 
-#define	MAX_SUBMODELS			256
+#define MAX_SUBMODELS			512
 
-#define	BOX_MODEL_HANDLE		255
-#define CAPSULE_MODEL_HANDLE	254
+#define BOX_MODEL_HANDLE		511
+#define CAPSULE_MODEL_HANDLE	510
 
 // keep 1/8 unit away to keep the position valid before network snapping
 // and to avoid various numeric issues
@@ -105,6 +106,11 @@ struct traceWork_t
 	qboolean	isPoint;	// optimized case
 	q3trace_t	trace;		// returned from trace call
 	sphere_t	sphere;		// sphere for oriendted capsule collision
+	cplane_t tracePlane1;
+	cplane_t tracePlane2;
+	float traceDist1;
+	float traceDist2;
+	vec3_t dir;
 };
 
 struct patchPlane_t
@@ -132,6 +138,7 @@ struct cGrid_t
 	bool		wrapHeight;
 	vec3_t		points[MAX_GRID_SIZE][MAX_GRID_SIZE];	// [width][height]
 
+#if 0
 	void SetWrapWidth();
 	void SubdivideColumns();
 	void RemoveDegenerateColumns();
@@ -140,6 +147,7 @@ private:
 	static bool NeedsSubdivision(vec3_t a, vec3_t b, vec3_t c);
 	static void Subdivide(vec3_t a, vec3_t b, vec3_t c, vec3_t out1, vec3_t out2, vec3_t out3);
 	static bool ComparePoints(const float* a, const float* b);
+#endif
 };
 
 struct patchCollide_t
@@ -150,6 +158,7 @@ struct patchCollide_t
 	int			numFacets;
 	facet_t*	facets;
 
+#if 0
 	void FromGrid(cGrid_t* grid);
 	void TraceThrough(traceWork_t* tw) const;
 	bool PositionTest(traceWork_t* tw) const;
@@ -168,6 +177,7 @@ private:
 	static void CM_SnapVector(vec3_t normal);
 	void TracePointThrough(traceWork_t* tw) const;
 	static int CheckFacetPlane(float* plane, vec3_t start, vec3_t end, float* enterFrac, float* leaveFrac, int* hit);
+#endif
 };
 
 struct cPatch_t
@@ -191,6 +201,7 @@ struct cmodel_t
 	cLeaf_t		leaf;			// submodels don't reference the main tree
 };
 
+#if 0
 class QClipMap46 : public QClipMap
 {
 private:
@@ -381,10 +392,10 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 // frees the original if clipped
 void CM46_WindingBounds(winding_t* w, vec3_t mins, vec3_t maxs);
 winding_t* CM46_CopyWinding(winding_t* w);
+#endif
 
 extern	Cvar		*cm_noAreas;
 extern	Cvar		*cm_noCurves;
 extern	Cvar		*cm_playerCurveClip;
-#endif
 
 #endif

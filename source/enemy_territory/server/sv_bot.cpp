@@ -229,7 +229,7 @@ BotImport_Trace
 ==================
 */
 void BotImport_Trace( bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask ) {
-	trace_t trace;
+	q3trace_t trace;
 
 	// always use bounding box for bot stuff ?
 	SV_Trace( &trace, start, mins, maxs, end, passent, contentmask, qfalse );
@@ -255,7 +255,7 @@ BotImport_EntityTrace
 ==================
 */
 void BotImport_EntityTrace( bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int entnum, int contentmask ) {
-	trace_t trace;
+	q3trace_t trace;
 
 	// always use bounding box for bot stuff ?
 	SV_ClipToEntity( &trace, start, mins, maxs, end, entnum, contentmask, qfalse );

@@ -29,18 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // this is only used for visualization tools in cm_ debug functions
 
-typedef struct
-{
-	int numpoints;
-	vec3_t p[4];        // variable sized
-} winding_t;
-
 #define MAX_POINTS_ON_WINDING   64
-
-#define SIDE_FRONT  0
-#define SIDE_BACK   1
-#define SIDE_ON     2
-#define SIDE_CROSS  3
 
 #define CLIP_EPSILON    0.1f
 

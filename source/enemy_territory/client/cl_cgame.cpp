@@ -646,19 +646,19 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 		return CM_TransformedPointContents( (float*)VMA( 1 ), args[2], (float*)VMA( 3 ), (float*)VMA( 4 ) );
 	case CG_CM_BOXTRACE:
 //		numtraces++;
-		CM_BoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qfalse );
+		CM_BoxTrace( (q3trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qfalse );
 		return 0;
 	case CG_CM_TRANSFORMEDBOXTRACE:
 //		numtraces++;
-		CM_TransformedBoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qfalse );
+		CM_TransformedBoxTrace( (q3trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qfalse );
 		return 0;
 	case CG_CM_CAPSULETRACE:
 //		numtraces++;
-		CM_BoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qtrue );
+		CM_BoxTrace( (q3trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_TRANSFORMEDCAPSULETRACE:
 //		numtraces++;
-		CM_TransformedBoxTrace( (trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qtrue );
+		CM_TransformedBoxTrace( (q3trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_MARKFRAGMENTS:
 		return re.MarkFragments( args[1], (const vec3_t*)VMA( 2 ), (float*)VMA( 3 ), args[4], (float*)VMA( 5 ), args[6], (markFragment_t*)VMA( 7 ) );

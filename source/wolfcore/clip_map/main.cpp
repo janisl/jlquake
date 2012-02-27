@@ -38,12 +38,14 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 QClipMap*			CMapShared;
+#endif
 
 int					c_pointcontents;
 int					c_traces;
 int					c_brush_traces;
 int					c_patch_traces;
 
+#if 0
 Cvar*				cm_flushmap;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------

@@ -29,69 +29,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
-#include "cm_polylib.h"
 #include "../../wolfcore/clip_map/bsp46/local.h"
 #include "../../core/file_formats/bsp47.h"
-
-
-//	(SA) DM needs more than 256 since this includes func_static and func_explosives
-//#define	MAX_SUBMODELS		256
-//#define	BOX_MODEL_HANDLE	255
-
-#define MAX_SUBMODELS           512
-#define BOX_MODEL_HANDLE        511
-#define CAPSULE_MODEL_HANDLE    510
-
-
-typedef struct {
-	cplane_t    *plane;
-	int children[2];                // negative numbers are leafs
-} cNode_t;
-
-typedef struct {
-	int cluster;
-	int area;
-
-	int firstLeafBrush;
-	int numLeafBrushes;
-
-	int firstLeafSurface;
-	int numLeafSurfaces;
-} cLeaf_t;
-
-typedef struct cmodel_s {
-	vec3_t mins, maxs;
-	cLeaf_t leaf;               // submodels don't reference the main tree
-} cmodel_t;
-
-typedef struct {
-	cplane_t    *plane;
-	int surfaceFlags;
-	int shaderNum;
-} cbrushside_t;
-
-typedef struct {
-	int shaderNum;              // the shader that determined the contents
-	int contents;
-	vec3_t bounds[2];
-	int numsides;
-	cbrushside_t    *sides;
-	int checkcount;             // to avoid repeated testings
-} cbrush_t;
-
-
-typedef struct {
-	int checkcount;                     // to avoid repeated testings
-	int surfaceFlags;
-	int contents;
-	struct patchCollide_s   *pc;
-} cPatch_t;
-
-
-typedef struct {
-	int floodnum;
-	int floodvalid;
-} cArea_t;
+#include "cm_polylib.h"
 
 typedef struct {
 	char name[MAX_QPATH];
@@ -143,42 +83,7 @@ typedef struct {
 } clipMap_t;
 
 
-// keep 1/8 unit away to keep the position valid before network snapping
-// and to avoid various numeric issues
-#define SURFACE_CLIP_EPSILON    ( 0.125 )
-
 extern clipMap_t cm;
-extern int c_pointcontents;
-extern int c_traces, c_brush_traces, c_patch_traces;
-extern Cvar      *cm_noAreas;
-extern Cvar      *cm_noCurves;
-extern Cvar      *cm_playerCurveClip;
-
-// cm_test.c
-
-// Used for oriented capsule collision detection
-typedef struct
-{
-	qboolean use;
-	float radius;
-	float halfheight;
-	vec3_t offset;
-} sphere_t;
-
-typedef struct {
-	vec3_t start;
-	vec3_t end;
-	vec3_t size[2];         // size of the box being swept through the model
-	vec3_t offsets[8];      // [signbits][x] = either size[0][x] or size[1][x]
-	float maxOffset;        // longest corner length from origin
-	vec3_t extents;         // greatest of abs(size[0]) and abs(size[1])
-	vec3_t bounds[2];       // enclosing box of start and end surrounding by size
-	vec3_t modelOrigin;     // origin of the model tracing through
-	int contents;           // ored contents of the model tracing through
-	qboolean isPoint;       // optimized case
-	trace_t trace;          // returned from trace call
-	sphere_t sphere;        // sphere for oriendted capsule collision
-} traceWork_t;
 
 void CM_StoreLeafs( leafList_t *ll, int nodenum );
 
@@ -188,7 +93,7 @@ cmodel_t    *CM_ClipHandleToModel( clipHandle_t handle );
 
 // cm_patch.c
 
-struct patchCollide_s   *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
-void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
-qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
+struct patchCollide_t   *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
+void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
+qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
 void CM_ClearLevelPatches( void );

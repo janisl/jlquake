@@ -479,7 +479,7 @@ typedef struct {
 	const float *maxs;  // size of the moving object
 	const float *start;
 	vec3_t end;
-	trace_t trace;
+	q3trace_t trace;
 	int passEntityNum;
 	int contentmask;
 	int capsule;
@@ -492,14 +492,14 @@ SV_ClipToEntity
 
 ====================
 */
-void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule ) {
+void SV_ClipToEntity( q3trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule ) {
 	sharedEntity_t  *touch;
 	clipHandle_t clipHandle;
 	float           *origin, *angles;
 
 	touch = SV_GentityNum( entityNum );
 
-	memset( trace, 0, sizeof( trace_t ) );
+	memset( trace, 0, sizeof( q3trace_t ) );
 
 	// if it doesn't have any brushes of a type we
 	// are looking for, ignore it
@@ -548,7 +548,7 @@ void SV_ClipMoveToEntities( moveclip_t *clip ) {
 	int touchlist[MAX_GENTITIES];
 	sharedEntity_t *touch;
 	int passOwnerNum;
-	trace_t trace;
+	q3trace_t trace;
 	clipHandle_t clipHandle;
 	float       *origin, *angles;
 
@@ -654,7 +654,7 @@ Moves the given mins/maxs volume through the world from start to end.
 passEntityNum and entities owned by passEntityNum are explicitly not checked.
 ==================
 */
-void SV_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule ) {
+void SV_Trace( q3trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule ) {
 	moveclip_t clip;
 	int i;
 

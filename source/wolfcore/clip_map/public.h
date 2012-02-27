@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#if 0
 typedef int clipHandle_t;
 
 struct q1plane_t
@@ -70,6 +69,7 @@ struct q3trace_t
 	int			entityNum;	// entity the contacted surface is a part of
 };
 
+#if 0
 void CM_LoadMap(const char* Name, bool ClientLoad, int* CheckSum);
 void CM_ClearMap();
 
@@ -134,9 +134,9 @@ void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 
 void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
+#endif
 	
 extern int			c_pointcontents;
 extern int			c_traces;
 extern int			c_brush_traces;
 extern int			c_patch_traces;
-#endif

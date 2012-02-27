@@ -195,7 +195,7 @@ typedef enum {
 	G_SET_BRUSH_MODEL,  // ( gentity_t *ent, const char *name );
 	// sets mins and maxs based on the brushmodel name
 
-	G_TRACE,    // ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+	G_TRACE,    // ( q3trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
 	// collision detection against all linked entities
 
 	G_POINT_CONTENTS,   // ( const vec3_t point, int passEntityNum );
@@ -243,7 +243,7 @@ typedef enum {
 	G_SNAPVECTOR,
 // MrE:
 
-	G_TRACECAPSULE, // ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+	G_TRACECAPSULE, // ( q3trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
 	// collision detection using capsule against all linked entities
 
 	G_ENTITY_CONTACTCAPSULE,    // ( const vec3_t mins, const vec3_t maxs, const gentity_t *ent );

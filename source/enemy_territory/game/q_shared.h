@@ -223,7 +223,6 @@ enum {qfalse, qtrue};
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
-typedef int clipHandle_t;
 
 //#define	SND_NORMAL			0x000	// (default) Allow sound to be cut off only by the same sound on this channel
 #define     SND_OKTOCUT         0x001   // Allow sound to be cut off by any following sounds on this channel
@@ -572,22 +571,6 @@ COLLISION DETECTION
 #define CPLANE
 
 
-// a trace is returned when a box is swept through the world
-typedef struct {
-	qboolean allsolid;      // if true, plane is not valid
-	qboolean startsolid;    // if true, the initial point was in a solid area
-	float fraction;         // time completed, 1.0 = didn't hit anything
-	vec3_t endpos;          // final position
-	cplane_t plane;         // surface normal at impact, transformed to world space
-	int surfaceFlags;           // surface hit
-	int contents;           // contents on other side of surface hit
-	int entityNum;          // entity the contacted sirface is a part of
-} trace_t;
-
-// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
-// or ENTITYNUM_NONE, ENTITYNUM_WORLD
-
-
 // markfragments are returned by CM_MarkFragments()
 typedef struct {
 	int firstPoint;
@@ -843,7 +826,7 @@ typedef struct playerState_s {
 	int serverCursorHint;               // what type of cursor hint the server is dictating
 	int serverCursorHintVal;            // a value (0-255) associated with the above
 
-	trace_t serverCursorHintTrace;      // not communicated over net, but used to store the current server-side cursorhint trace
+	q3trace_t serverCursorHintTrace;      // not communicated over net, but used to store the current server-side cursorhint trace
 
 	// ----------------------------------------------------------------------
 	// So to use persistent variables here, which don't need to come from the server,

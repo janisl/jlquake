@@ -35,9 +35,9 @@ If you have questions concerning this license or the applicable additional terms
 This file does not reference any globals, and has these entry points:
 
 void CM_ClearLevelPatches( void );
-struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, const vec3_t *points );
-void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
-qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
+struct patchCollide_t	*CM_GeneratePatchCollide( int width, int height, const vec3_t *points );
+void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
+qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, flaot *points) );
 
 
@@ -63,7 +63,7 @@ typedef struct {
 	qboolean	borderNoAdjust[4+6+16];
 } facet_t;
 
-typedef struct patchCollide_s {
+typedef struct patchCollide_t {
 	vec3_t	bounds[2];
 	int		numPlanes;			// surface planes plus edge planes
 	patchPlane_t	*planes;
@@ -1163,7 +1163,7 @@ collision detection with a patch mesh.
 Points is packed as concatenated rows.
 ===================
 */
-struct patchCollide_s   *CM_GeneratePatchCollide( int width, int height, vec3_t *points ) {
+patchCollide_t* CM_GeneratePatchCollide( int width, int height, vec3_t *points ) {
 	patchCollide_t  *pf;
 	MAC_STATIC cGrid_t grid;
 	int i, j;
@@ -1246,7 +1246,7 @@ CM_TracePointThroughPatchCollide
   special case for point traces because the patch collide "brushes" have no volume
 ====================
 */
-void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc ) {
+void CM_TracePointThroughPatchCollide( traceWork_t *tw, const patchCollide_t *pc ) {
 	qboolean frontFacing[MAX_PATCH_PLANES];
 	float intersection[MAX_PATCH_PLANES];
 	float intersect;
@@ -1392,7 +1392,7 @@ int CM_CheckFacetPlane( float *plane, vec3_t start, vec3_t end, float *enterFrac
 CM_TraceThroughPatchCollide
 ====================
 */
-void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc ) {
+void CM_TraceThroughPatchCollide( traceWork_t *tw, const patchCollide_t *pc ) {
 	int i, j, hit, hitnum;
 	float offset, enterFrac, leaveFrac, t;
 	patchPlane_t *planes;
@@ -1527,7 +1527,7 @@ POSITION TEST
 CM_PositionTestInPatchCollide
 ====================
 */
-qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc ) {
+qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const patchCollide_t *pc ) {
 	int i, j;
 	float offset, t;
 	patchPlane_t *planes;

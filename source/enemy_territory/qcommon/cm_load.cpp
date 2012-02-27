@@ -60,16 +60,10 @@ void SetPlaneSignbits( cplane_t *out ) {
 
 
 clipMap_t cm;
-int c_pointcontents;
-int c_traces, c_brush_traces, c_patch_traces;
-
 
 byte        *cmod_base;
 
 #ifndef BSPC
-Cvar      *cm_noAreas;
-Cvar      *cm_noCurves;
-Cvar      *cm_playerCurveClip;
 Cvar      *cm_optimize;
 #endif
 

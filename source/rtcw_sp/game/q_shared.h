@@ -186,7 +186,6 @@ enum {qfalse, qtrue};
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
-typedef int clipHandle_t;
 
 #ifndef ID_INLINE
 #ifdef _WIN32
@@ -501,22 +500,6 @@ COLLISION DETECTION
 ==============================================================
 */
 
-// a trace is returned when a box is swept through the world
-typedef struct {
-	qboolean allsolid;      // if true, plane is not valid
-	qboolean startsolid;    // if true, the initial point was in a solid area
-	float fraction;         // time completed, 1.0 = didn't hit anything
-	vec3_t endpos;          // final position
-	cplane_t plane;         // surface normal at impact, transformed to world space
-	int surfaceFlags;           // surface hit
-	int contents;           // contents on other side of surface hit
-	int entityNum;          // entity the contacted sirface is a part of
-} trace_t;
-
-// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
-// or ENTITYNUM_NONE, ENTITYNUM_WORLD
-
-
 // markfragments are returned by CM_MarkFragments()
 typedef struct {
 	int firstPoint;
@@ -789,7 +772,7 @@ typedef struct playerState_s {
 	int serverCursorHint;               // what type of cursor hint the server is dictating
 	int serverCursorHintVal;            // a value (0-255) associated with the above
 
-	trace_t serverCursorHintTrace;      // not communicated over net, but used to store the current server-side cursorhint trace
+	q3trace_t serverCursorHintTrace;      // not communicated over net, but used to store the current server-side cursorhint trace
 
 	// ----------------------------------------------------------------------
 	// not communicated over the net at all

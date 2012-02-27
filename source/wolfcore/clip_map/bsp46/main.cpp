@@ -33,7 +33,6 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-#if 0
 Cvar*		cm_noAreas;
 Cvar*		cm_noCurves;
 Cvar*		cm_playerCurveClip;
@@ -42,6 +41,7 @@ Cvar*		cm_playerCurveClip;
 
 // CODE --------------------------------------------------------------------
 
+#if 0
 //==========================================================================
 //
 //	CM_CreateQClipMap46
