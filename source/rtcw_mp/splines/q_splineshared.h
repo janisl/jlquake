@@ -486,11 +486,11 @@ typedef struct {
 	idVec3 normal;
 	idVec3 tangents[2];
 	byte smoothing[4];              // colors for silhouette smoothing
-} drawVert_t;
+} bsp46_drawVert_t;
 
 typedef struct {
 	int width, height;
-	drawVert_t  *verts;
+	bsp46_drawVert_t  *verts;
 } drawVertMesh_t;
 
 // Tesselate a map patch into smoothed, drawable vertexes

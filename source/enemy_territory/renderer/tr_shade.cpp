@@ -1438,7 +1438,7 @@ void RB_StageIteratorGeneric( void ) {
 	//%	tess.dlightBits = 255;	// HACK!
 	//%	if( tess.dlightBits && tess.shader->sort <= SS_OPAQUE &&
 	if ( tess.dlightBits && tess.shader->fogPass &&
-		 !( tess.shader->surfaceFlags & ( SURF_NODLIGHT | SURF_SKY ) ) ) {
+		 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 		if ( r_dynamiclight->integer == 2 ) {
 			DynamicLightPass();
 		} else {
@@ -1531,7 +1531,7 @@ void RB_StageIteratorVertexLitTexture( void ) {
 	//
 	//%	if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE )
 	if ( tess.dlightBits && tess.shader->fogPass &&
-		 !( tess.shader->surfaceFlags & ( SURF_NODLIGHT | SURF_SKY ) ) ) {
+		 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 		if ( r_dynamiclight->integer == 2 ) {
 			DynamicLightPass();
 		} else {
@@ -1652,7 +1652,7 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	//
 	//%	if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE )
 	if ( tess.dlightBits && tess.shader->fogPass &&
-		 !( tess.shader->surfaceFlags & ( SURF_NODLIGHT | SURF_SKY ) ) ) {
+		 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 		if ( r_dynamiclight->integer == 2 ) {
 			DynamicLightPass();
 		} else {

@@ -146,7 +146,7 @@ struct bsp46_dbrush_t
 	qint32		shaderNum;		// the shader that determines the contents flags
 };
 
-struct bsp46_dmbrush46_fog_t
+struct bsp46_dfog_t
 {
 	char		shader[MAX_QPATH];
 	qint32		brushNum;

@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
+#include "../../core/file_formats/bsp47.h"
 
 extern int Sys_MilliSeconds( void );
 
@@ -3829,7 +3830,7 @@ int AAS_Reachability_Grapple( int area1num, int area2num ) {
 		//
 		bsptrace = AAS_Trace( start, NULL, NULL, end, 0, CONTENTS_SOLID );
 		//the grapple won't stick to the sky and the grapple point should be near the AAS wall
-		if ( ( bsptrace.surface.flags & SURF_SKY ) || ( bsptrace.fraction * 500 > 32 ) ) {
+		if ( ( bsptrace.surface.flags & BSP46SURF_SKY ) || ( bsptrace.fraction * 500 > 32 ) ) {
 			continue;
 		}
 		//trace a full bounding box from the area center on the ground to

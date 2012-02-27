@@ -344,7 +344,7 @@ RB_SurfaceTriangles
 */
 void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 	int i;
-	drawVert_t  *dv;
+	bsp46_drawVert_t  *dv;
 	float       *xyz, *normal, *texCoords;
 	byte        *color;
 	int dlightBits;
@@ -1193,7 +1193,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 	float   *texCoords;
 	float   *normal;
 	unsigned char *color;
-	drawVert_t  *dv;
+	bsp46_drawVert_t  *dv;
 	int rows, irows, vrows;
 	int used;
 	int widthTable[MAX_GRID_SIZE];

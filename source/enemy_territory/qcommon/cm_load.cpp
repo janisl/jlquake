@@ -96,11 +96,11 @@ void    CM_FloodAreaConnections( void );
 CMod_LoadShaders
 =================
 */
-void CMod_LoadShaders( lump_t *l ) {
-	dshader_t   *in, *out;
+void CMod_LoadShaders( bsp46_lump_t *l ) {
+	bsp46_dshader_t   *in, *out;
 	int i, count;
 
-	in = ( dshader_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dshader_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "CMod_LoadShaders: funny lump size" );
 	}
@@ -109,7 +109,7 @@ void CMod_LoadShaders( lump_t *l ) {
 	if ( count < 1 ) {
 		Com_Error( ERR_DROP, "Map with no shaders" );
 	}
-	cm.shaders = (dshader_t*)Hunk_Alloc( count * sizeof( *cm.shaders ), h_high );
+	cm.shaders = (bsp46_dshader_t*)Hunk_Alloc( count * sizeof( *cm.shaders ), h_high );
 	cm.numShaders = count;
 
 	memcpy( cm.shaders, in, count * sizeof( *cm.shaders ) );
@@ -129,13 +129,13 @@ void CMod_LoadShaders( lump_t *l ) {
 CMod_LoadSubmodels
 =================
 */
-void CMod_LoadSubmodels( lump_t *l ) {
-	dmodel_t    *in;
+void CMod_LoadSubmodels( bsp46_lump_t *l ) {
+	bsp46_dmodel_t    *in;
 	cmodel_t    *out;
 	int i, j, count;
 	int         *indexes;
 
-	in = ( dmodel_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dmodel_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "CMod_LoadSubmodels: funny lump size" );
 	}
@@ -189,13 +189,13 @@ CMod_LoadNodes
 
 =================
 */
-void CMod_LoadNodes( lump_t *l ) {
-	dnode_t     *in;
+void CMod_LoadNodes( bsp46_lump_t *l ) {
+	bsp46_dnode_t     *in;
 	int child;
 	cNode_t     *out;
 	int i, j, count;
 
-	in = ( dnode_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dnode_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
@@ -245,12 +245,12 @@ CMod_LoadBrushes
 
 =================
 */
-void CMod_LoadBrushes( lump_t *l ) {
-	dbrush_t    *in;
+void CMod_LoadBrushes( bsp46_lump_t *l ) {
+	bsp46_dbrush_t    *in;
 	cbrush_t    *out;
 	int i, count;
 
-	in = ( dbrush_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dbrush_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
@@ -281,13 +281,13 @@ void CMod_LoadBrushes( lump_t *l ) {
 CMod_LoadLeafs
 =================
 */
-void CMod_LoadLeafs( lump_t *l ) {
+void CMod_LoadLeafs( bsp46_lump_t *l ) {
 	int i;
 	cLeaf_t     *out;
-	dleaf_t     *in;
+	bsp46_dleaf_t     *in;
 	int count;
 
-	in = ( dleaf_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dleaf_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
@@ -327,14 +327,14 @@ void CMod_LoadLeafs( lump_t *l ) {
 CMod_LoadPlanes
 =================
 */
-void CMod_LoadPlanes( lump_t *l ) {
+void CMod_LoadPlanes( bsp46_lump_t *l ) {
 	int i, j;
 	cplane_t    *out;
-	dplane_t    *in;
+	bsp46_dplane_t    *in;
 	int count;
 	int bits;
 
-	in = ( dplane_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dplane_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
@@ -370,7 +370,7 @@ void CMod_LoadPlanes( lump_t *l ) {
 CMod_LoadLeafBrushes
 =================
 */
-void CMod_LoadLeafBrushes( lump_t *l ) {
+void CMod_LoadLeafBrushes( bsp46_lump_t *l ) {
 	int i;
 	int         *out;
 	int         *in;
@@ -398,7 +398,7 @@ void CMod_LoadLeafBrushes( lump_t *l ) {
 CMod_LoadLeafSurfaces
 =================
 */
-void CMod_LoadLeafSurfaces( lump_t *l ) {
+void CMod_LoadLeafSurfaces( bsp46_lump_t *l ) {
 	int i;
 	int         *out;
 	int         *in;
@@ -425,14 +425,14 @@ void CMod_LoadLeafSurfaces( lump_t *l ) {
 CMod_LoadBrushSides
 =================
 */
-void CMod_LoadBrushSides( lump_t *l ) {
+void CMod_LoadBrushSides( bsp46_lump_t *l ) {
 	int i;
 	cbrushside_t    *out;
-	dbrushside_t    *in;
+	bsp46_dbrushside_t    *in;
 	int count;
 	int num;
 
-	in = ( dbrushside_t* )( cmod_base + l->fileofs );
+	in = ( bsp46_dbrushside_t* )( cmod_base + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
@@ -460,7 +460,7 @@ void CMod_LoadBrushSides( lump_t *l ) {
 CMod_LoadEntityString
 =================
 */
-void CMod_LoadEntityString( lump_t *l ) {
+void CMod_LoadEntityString( bsp46_lump_t *l ) {
 	cm.entityString = (char*)Hunk_Alloc( l->filelen, h_high );
 	cm.numEntityChars = l->filelen;
 	memcpy( cm.entityString, cmod_base + l->fileofs, l->filelen );
@@ -472,7 +472,7 @@ CMod_LoadVisibility
 =================
 */
 #define VIS_HEADER  8
-void CMod_LoadVisibility( lump_t *l ) {
+void CMod_LoadVisibility( bsp46_lump_t *l ) {
 	int len;
 	byte    *buf;
 
@@ -501,9 +501,9 @@ CMod_LoadPatches
 =================
 */
 #define MAX_PATCH_VERTS     1024
-void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
-	drawVert_t  *dv, *dv_p;
-	dsurface_t  *in;
+void CMod_LoadPatches( bsp46_lump_t *surfs, bsp46_lump_t *verts ) {
+	bsp46_drawVert_t  *dv, *dv_p;
+	bsp46_dsurface_t  *in;
 	int count;
 	int i, j;
 	int c;
@@ -512,14 +512,14 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 	int width, height;
 	int shaderNum;
 
-	in = ( dsurface_t* )( cmod_base + surfs->fileofs );
+	in = ( bsp46_dsurface_t* )( cmod_base + surfs->fileofs );
 	if ( surfs->filelen % sizeof( *in ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
 	cm.numSurfaces = count = surfs->filelen / sizeof( *in );
 	cm.surfaces = (cPatch_t**)Hunk_Alloc( cm.numSurfaces * sizeof( cm.surfaces[0] ), h_high );
 
-	dv = ( drawVert_t* )( cmod_base + verts->fileofs );
+	dv = ( bsp46_drawVert_t* )( cmod_base + verts->fileofs );
 	if ( verts->filelen % sizeof( *dv ) ) {
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
 	}
@@ -527,7 +527,7 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 	// scan through all the surfaces, but only load patches,
 	// not planar faces
 	for ( i = 0 ; i < count ; i++, in++ ) {
-		if ( LittleLong( in->surfaceType ) != MST_PATCH ) {
+		if ( LittleLong( in->surfaceType ) != BSP46MST_PATCH ) {
 			continue;       // ignore other surfaces
 		}
 		// FIXME: check for non-colliding patches
@@ -576,23 +576,23 @@ void CM_FreeMap( void ) {
 }
 #endif //BSPC
 
-unsigned CM_LumpChecksum( lump_t *lump ) {
+unsigned CM_LumpChecksum( bsp46_lump_t *lump ) {
 	return LittleLong( Com_BlockChecksum( cmod_base + lump->fileofs, lump->filelen ) );
 }
 
-unsigned CM_Checksum( dheader_t *header ) {
+unsigned CM_Checksum( bsp46_dheader_t *header ) {
 	unsigned checksums[16];
-	checksums[0] = CM_LumpChecksum( &header->lumps[LUMP_SHADERS] );
-	checksums[1] = CM_LumpChecksum( &header->lumps[LUMP_LEAFS] );
-	checksums[2] = CM_LumpChecksum( &header->lumps[LUMP_LEAFBRUSHES] );
-	checksums[3] = CM_LumpChecksum( &header->lumps[LUMP_LEAFSURFACES] );
-	checksums[4] = CM_LumpChecksum( &header->lumps[LUMP_PLANES] );
-	checksums[5] = CM_LumpChecksum( &header->lumps[LUMP_BRUSHSIDES] );
-	checksums[6] = CM_LumpChecksum( &header->lumps[LUMP_BRUSHES] );
-	checksums[7] = CM_LumpChecksum( &header->lumps[LUMP_MODELS] );
-	checksums[8] = CM_LumpChecksum( &header->lumps[LUMP_NODES] );
-	checksums[9] = CM_LumpChecksum( &header->lumps[LUMP_SURFACES] );
-	checksums[10] = CM_LumpChecksum( &header->lumps[LUMP_DRAWVERTS] );
+	checksums[0] = CM_LumpChecksum( &header->lumps[BSP46LUMP_SHADERS] );
+	checksums[1] = CM_LumpChecksum( &header->lumps[BSP46LUMP_LEAFS] );
+	checksums[2] = CM_LumpChecksum( &header->lumps[BSP46LUMP_LEAFBRUSHES] );
+	checksums[3] = CM_LumpChecksum( &header->lumps[BSP46LUMP_LEAFSURFACES] );
+	checksums[4] = CM_LumpChecksum( &header->lumps[BSP46LUMP_PLANES] );
+	checksums[5] = CM_LumpChecksum( &header->lumps[BSP46LUMP_BRUSHSIDES] );
+	checksums[6] = CM_LumpChecksum( &header->lumps[BSP46LUMP_BRUSHES] );
+	checksums[7] = CM_LumpChecksum( &header->lumps[BSP46LUMP_MODELS] );
+	checksums[8] = CM_LumpChecksum( &header->lumps[BSP46LUMP_NODES] );
+	checksums[9] = CM_LumpChecksum( &header->lumps[BSP46LUMP_SURFACES] );
+	checksums[10] = CM_LumpChecksum( &header->lumps[BSP46LUMP_DRAWVERTS] );
 
 	return LittleLong( Com_BlockChecksum( checksums, 11 * 4 ) );
 }
@@ -607,7 +607,7 @@ Loads in the map and all submodels
 void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	int             *buf;
 	int i;
-	dheader_t header;
+	bsp46_dheader_t header;
 	int length;
 	static unsigned last_checksum;
 
@@ -657,31 +657,31 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	last_checksum = LittleLong( Com_BlockChecksum( buf, length ) );
 	*checksum = last_checksum;
 
-	header = *(dheader_t *)buf;
-	for ( i = 0 ; i < sizeof( dheader_t ) / 4 ; i++ ) {
+	header = *(bsp46_dheader_t *)buf;
+	for ( i = 0 ; i < sizeof( bsp46_dheader_t ) / 4 ; i++ ) {
 		( (int *)&header )[i] = LittleLong( ( (int *)&header )[i] );
 	}
 
-	if ( header.version != BSP_VERSION ) {
+	if ( header.version != BSP47_VERSION ) {
 		Com_Error( ERR_DROP, "CM_LoadMap: %s has wrong version number (%i should be %i)"
-				   , name, header.version, BSP_VERSION );
+				   , name, header.version, BSP47_VERSION );
 	}
 
 	cmod_base = (byte *)buf;
 
 	// load into heap
-	CMod_LoadShaders( &header.lumps[LUMP_SHADERS] );
-	CMod_LoadLeafs( &header.lumps[LUMP_LEAFS] );
-	CMod_LoadLeafBrushes( &header.lumps[LUMP_LEAFBRUSHES] );
-	CMod_LoadLeafSurfaces( &header.lumps[LUMP_LEAFSURFACES] );
-	CMod_LoadPlanes( &header.lumps[LUMP_PLANES] );
-	CMod_LoadBrushSides( &header.lumps[LUMP_BRUSHSIDES] );
-	CMod_LoadBrushes( &header.lumps[LUMP_BRUSHES] );
-	CMod_LoadSubmodels( &header.lumps[LUMP_MODELS] );
-	CMod_LoadNodes( &header.lumps[LUMP_NODES] );
-	CMod_LoadEntityString( &header.lumps[LUMP_ENTITIES] );
-	CMod_LoadVisibility( &header.lumps[LUMP_VISIBILITY] );
-	CMod_LoadPatches( &header.lumps[LUMP_SURFACES], &header.lumps[LUMP_DRAWVERTS] );
+	CMod_LoadShaders( &header.lumps[BSP46LUMP_SHADERS] );
+	CMod_LoadLeafs( &header.lumps[BSP46LUMP_LEAFS] );
+	CMod_LoadLeafBrushes( &header.lumps[BSP46LUMP_LEAFBRUSHES] );
+	CMod_LoadLeafSurfaces( &header.lumps[BSP46LUMP_LEAFSURFACES] );
+	CMod_LoadPlanes( &header.lumps[BSP46LUMP_PLANES] );
+	CMod_LoadBrushSides( &header.lumps[BSP46LUMP_BRUSHSIDES] );
+	CMod_LoadBrushes( &header.lumps[BSP46LUMP_BRUSHES] );
+	CMod_LoadSubmodels( &header.lumps[BSP46LUMP_MODELS] );
+	CMod_LoadNodes( &header.lumps[BSP46LUMP_NODES] );
+	CMod_LoadEntityString( &header.lumps[BSP46LUMP_ENTITIES] );
+	CMod_LoadVisibility( &header.lumps[BSP46LUMP_VISIBILITY] );
+	CMod_LoadPatches( &header.lumps[BSP46LUMP_SURFACES], &header.lumps[BSP46LUMP_DRAWVERTS] );
 
 	// we are NOT freeing the file, because it is cached for the ref
 	FS_FreeFile( buf );

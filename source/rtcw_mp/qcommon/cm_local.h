@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "qcommon.h"
 #include "cm_polylib.h"
+#include "../../core/file_formats/bsp47.h"
 
 
 //	(SA) DM needs more than 256 since this includes func_static and func_explosives
@@ -95,7 +96,7 @@ typedef struct {
 	char name[MAX_QPATH];
 
 	int numShaders;
-	dshader_t   *shaders;
+	bsp46_dshader_t   *shaders;
 
 	int numBrushSides;
 	cbrushside_t *brushsides;

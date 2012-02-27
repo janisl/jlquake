@@ -726,7 +726,7 @@ projects a decal onto a grid (patch) surface
 static void ProjectDecalOntoGrid( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel ) {
 	int x, y;
 	srfGridMesh_t   *srf;
-	drawVert_t      *dv;
+	bsp46_drawVert_t      *dv;
 	vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
 
 
@@ -775,7 +775,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, msurface_t *surf, bmodel_t
 	}
 	//%	if( surf->viewCount == tr.viewCount )
 	//%		return;
-	if ( ( surf->shader->surfaceFlags & ( SURF_NOIMPACT | SURF_NOMARKS ) ) || ( surf->shader->contentFlags & CONTENTS_FOG ) ) {
+	if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) || ( surf->shader->contentFlags & CONTENTS_FOG ) ) {
 		return;
 	}
 

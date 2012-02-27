@@ -37,6 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_public.h"
 #include "qgl.h"
 #include "../../core/file_formats/md3.h"
+#include "../../core/file_formats/bsp47.h"
 
 #define GL_INDEX_TYPE       GL_UNSIGNED_INT
 typedef unsigned int glIndex_t;
@@ -712,7 +713,7 @@ typedef struct srfGridMesh_s
 	int width, height;
 	float           *widthLodError;
 	float           *heightLodError;
-	drawVert_t verts[1];            // variable sized
+	bsp46_drawVert_t verts[1];            // variable sized
 } srfGridMesh_t;
 
 
@@ -760,7 +761,7 @@ typedef struct srfTriangles_s
 	int             *indexes;
 
 	int numVerts;
-	drawVert_t      *verts;
+	bsp46_drawVert_t      *verts;
 }
 srfTriangles_t;
 
@@ -922,7 +923,7 @@ typedef struct {
 	int dataSize;
 
 	int numShaders;
-	dshader_t   *shaders;
+	bsp46_dshader_t   *shaders;
 
 	int numBModels;
 	bmodel_t    *bmodels;
@@ -1745,7 +1746,7 @@ CURVE TESSELATION
 #define PATCH_STITCHING
 
 srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
-									   drawVert_t points[MAX_PATCH_SIZE * MAX_PATCH_SIZE] );
+									   bsp46_drawVert_t points[MAX_PATCH_SIZE * MAX_PATCH_SIZE] );
 srfGridMesh_t *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, vec3_t point, float loderror );
 srfGridMesh_t *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_t point, float loderror );
 void R_FreeSurfaceGridMesh( srfGridMesh_t *grid );

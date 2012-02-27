@@ -317,7 +317,7 @@ If you have questions concerning this license or the applicable additional terms
 #define hu_clip_maxs        28
 #define hu_size             40
 
-// dnode_t structure
+// bsp46_dnode_t structure
 // !!! if this is changed, it must be changed in bspfile.h too !!!
 #define nd_planenum     0
 #define nd_children     4

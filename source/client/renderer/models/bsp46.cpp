@@ -1896,7 +1896,7 @@ static unsigned ColorBytes4(float r, float g, float b, float a)
 
 static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t* sidesLump)
 {
-	bsp46_dmbrush46_fog_t* fogs = (bsp46_dmbrush46_fog_t*)(fileBase + l->fileofs);
+	bsp46_dfog_t* fogs = (bsp46_dfog_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*fogs))
 	{
 		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
