@@ -1,4 +1,10 @@
 set(WOLFCORE_FILES
+	clip_map/bsp46/load.cpp
+	clip_map/bsp46/main.cpp
+	clip_map/bsp46/patch.cpp
+	clip_map/bsp46/polylib.cpp
+	clip_map/bsp46/test.cpp
+	clip_map/main.cpp
 	../core/command_buffer.cpp
 	../core/Common.cpp
 	../core/common_defs.cpp
