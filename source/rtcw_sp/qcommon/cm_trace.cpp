@@ -403,9 +403,7 @@ void CM_PositionTest( traceWork_t *tw ) {
 	ll.count = 0;
 	ll.maxcount = MAX_POSITION_LEAFS;
 	ll.list = leafs;
-	ll.storeLeafs = CM_StoreLeafs;
 	ll.lastLeaf = 0;
-	ll.overflowed = qfalse;
 
 	cm.checkcount++;
 

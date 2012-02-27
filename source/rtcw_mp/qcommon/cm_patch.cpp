@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "cm_local.h"
 #include "cm_patch.h"
 
-//#define	CULL_BBOX
-
 /*
 
 This file does not reference any globals, and has these entry points:
@@ -1657,14 +1655,12 @@ qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchColli
 
 //return qfalse;
 
-#ifndef CULL_BBOX
 	for ( i = 0 ; i < 3 ; i++ ) {
 		if ( tw->bounds[0][i] > pc->bounds[1][i]
 			 || tw->bounds[1][i] < pc->bounds[0][i] ) {
 			return qfalse;
 		}
 	}
-#endif
 
 	// determine if the box is in front, behind, or crossing each plane
 	planes = pc->planes;

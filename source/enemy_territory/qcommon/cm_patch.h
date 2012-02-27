@@ -27,8 +27,6 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 
-//#define	CULL_BBOX
-
 /*
 
 This file does not reference any globals, and has these entry points:

@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "cm_local.h"
 #include "cm_patch.h"
 
-//#define	CULL_BBOX
-
 /*
 
 This file does not reference any globals, and has these entry points:

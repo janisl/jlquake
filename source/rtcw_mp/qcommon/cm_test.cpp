@@ -90,53 +90,9 @@ void CM_StoreLeafs( leafList_t *ll, int nodenum ) {
 	}
 
 	if ( ll->count >= ll->maxcount ) {
-		ll->overflowed = qtrue;
 		return;
 	}
 	ll->list[ ll->count++ ] = leafNum;
-}
-
-void CM_StoreBrushes( leafList_t *ll, int nodenum ) {
-	int i, k;
-	int leafnum;
-	int brushnum;
-	cLeaf_t     *leaf;
-	cbrush_t    *b;
-
-	leafnum = -1 - nodenum;
-
-	leaf = &cm.leafs[leafnum];
-
-	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ ) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
-		b = &cm.brushes[brushnum];
-		if ( b->checkcount == cm.checkcount ) {
-			continue;   // already checked this brush in another leaf
-		}
-		b->checkcount = cm.checkcount;
-		for ( i = 0 ; i < 3 ; i++ ) {
-			if ( b->bounds[0][i] >= ll->bounds[1][i] || b->bounds[1][i] <= ll->bounds[0][i] ) {
-				break;
-			}
-		}
-		if ( i != 3 ) {
-			continue;
-		}
-		if ( ll->count >= ll->maxcount ) {
-			ll->overflowed = qtrue;
-			return;
-		}
-		( (cbrush_t **)ll->list )[ ll->count++ ] = b;
-	}
-#if 0
-	// store patches?
-	for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ ) {
-		patch = cm.surfaces[ cm.leafsurfaces[ leaf->firstleafsurface + k ] ];
-		if ( !patch ) {
-			continue;
-		}
-	}
-#endif
 }
 
 /*
@@ -153,7 +109,7 @@ void CM_BoxLeafnums_r( leafList_t *ll, int nodenum ) {
 
 	while ( 1 ) {
 		if ( nodenum < 0 ) {
-			ll->storeLeafs( ll, nodenum );
+			CM_StoreLeafs( ll, nodenum );
 			return;
 		}
 
@@ -188,40 +144,13 @@ int CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int listsiz
 	ll.count = 0;
 	ll.maxcount = listsize;
 	ll.list = list;
-	ll.storeLeafs = CM_StoreLeafs;
 	ll.lastLeaf = 0;
-	ll.overflowed = qfalse;
 
 	CM_BoxLeafnums_r( &ll, 0 );
 
 	*lastLeaf = ll.lastLeaf;
 	return ll.count;
 }
-
-/*
-==================
-CM_BoxBrushes
-==================
-*/
-int CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize ) {
-	leafList_t ll;
-
-	cm.checkcount++;
-
-	VectorCopy( mins, ll.bounds[0] );
-	VectorCopy( maxs, ll.bounds[1] );
-	ll.count = 0;
-	ll.maxcount = listsize;
-	ll.list = (int*)list;
-	ll.storeLeafs = CM_StoreBrushes;
-	ll.lastLeaf = 0;
-	ll.overflowed = qfalse;
-
-	CM_BoxLeafnums_r( &ll, 0 );
-
-	return ll.count;
-}
-
 
 //====================================================================
 

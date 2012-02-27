@@ -21,6 +21,7 @@
 #define CMH_NON_MAP_MASK	0xffff0000
 #define CMH_NON_MAP_SHIFT	16
 #define CMH_MODEL_MASK		0x0000ffff
+#endif
 
 struct leafList_t
 {
@@ -32,6 +33,7 @@ struct leafList_t
 	int		topnode;
 };
 
+#if 0
 class QClipMap
 {
 public:

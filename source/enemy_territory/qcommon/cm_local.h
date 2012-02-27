@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "qcommon.h"
 #include "cm_polylib.h"
+#include "../../wolfcore/clip_map/bsp46/local.h"
 #include "../../core/file_formats/bsp47.h"
 
 
@@ -189,21 +190,7 @@ typedef struct {
 #endif
 } traceWork_t;
 
-typedef struct leafList_s {
-	int count;
-	int maxcount;
-	qboolean overflowed;
-	int     *list;
-	vec3_t bounds[2];
-	int lastLeaf;           // for overflows where each leaf can't be stored individually
-	void ( *storeLeafs )( struct leafList_s *ll, int nodenum );
-} leafList_t;
-
-
-int CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize );
-
 void CM_StoreLeafs( leafList_t *ll, int nodenum );
-void CM_StoreBrushes( leafList_t *ll, int nodenum );
 
 void CM_BoxLeafnums_r( leafList_t *ll, int nodenum );
 
