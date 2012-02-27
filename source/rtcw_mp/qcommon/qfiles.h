@@ -42,30 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 /*
 ========================================================================
 
-QVM files
-
-========================================================================
-*/
-
-#define VM_MAGIC    0x12721444
-typedef struct {
-	int vmMagic;
-
-	int instructionCount;
-
-	int codeOffset;
-	int codeLength;
-
-	int dataOffset;
-	int dataLength;
-	int litLength;              // ( dataLength - litLength ) should be byteswapped on load
-	int bssLength;              // zero filled memory appended to datalength
-} vmHeader_t;
-
-
-/*
-========================================================================
-
 PCX files are used for 8 bit images
 
 ========================================================================

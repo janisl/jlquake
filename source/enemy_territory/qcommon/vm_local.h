@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../core/file_formats/qvm.h"
 
 typedef enum {
 	OP_UNDEF,
