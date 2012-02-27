@@ -42,9 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #define BOX_MODEL_HANDLE        511
 #define CAPSULE_MODEL_HANDLE    510
 
-// enable to make the collision detection a bunch faster
-#define MRE_OPTIMIZE
-
 typedef struct {
 	cplane_t    *plane;
 	int children[2];                // negative numbers are leafs
@@ -181,13 +178,11 @@ typedef struct {
 	qboolean isPoint;       // optimized case
 	trace_t trace;          // returned from trace call
 	sphere_t sphere;        // sphere for oriendted capsule collision
-#ifdef MRE_OPTIMIZE
 	cplane_t tracePlane1;
 	cplane_t tracePlane2;
 	float traceDist1;
 	float traceDist2;
 	vec3_t dir;
-#endif
 } traceWork_t;
 
 void CM_StoreLeafs( leafList_t *ll, int nodenum );
