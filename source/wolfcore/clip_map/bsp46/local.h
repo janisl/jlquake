@@ -138,7 +138,6 @@ struct cGrid_t
 	bool		wrapHeight;
 	vec3_t		points[MAX_GRID_SIZE][MAX_GRID_SIZE];	// [width][height]
 
-#if 0
 	void SetWrapWidth();
 	void SubdivideColumns();
 	void RemoveDegenerateColumns();
@@ -147,7 +146,6 @@ private:
 	static bool NeedsSubdivision(vec3_t a, vec3_t b, vec3_t c);
 	static void Subdivide(vec3_t a, vec3_t b, vec3_t c, vec3_t out1, vec3_t out2, vec3_t out3);
 	static bool ComparePoints(const float* a, const float* b);
-#endif
 };
 
 struct patchCollide_t
@@ -158,7 +156,6 @@ struct patchCollide_t
 	int			numFacets;
 	facet_t*	facets;
 
-#if 0
 	void FromGrid(cGrid_t* grid);
 	void TraceThrough(traceWork_t* tw) const;
 	bool PositionTest(traceWork_t* tw) const;
@@ -177,7 +174,7 @@ private:
 	static void CM_SnapVector(vec3_t normal);
 	void TracePointThrough(traceWork_t* tw) const;
 	static int CheckFacetPlane(float* plane, vec3_t start, vec3_t end, float* enterFrac, float* leaveFrac, int* hit);
-#endif
+	bool PositionTestWolfMP(traceWork_t* tw) const;
 };
 
 struct cPatch_t
@@ -201,10 +198,11 @@ struct cmodel_t
 	cLeaf_t		leaf;			// submodels don't reference the main tree
 };
 
-#if 0
 class QClipMap46 : public QClipMap
 {
-private:
+//private:
+public:
+#if 0
 	//	Main
 	void InitBoxHull();
 	int ContentsToQ1(int Contents) const;
@@ -384,8 +382,8 @@ public:
 	void BoxLeafnums_r(leafList_t* ll, int nodenum) const;
 	void FloodArea_r(int AreaNum, int FloodNum);
 	void FloodAreaConnections();
-};
 #endif
+};
 
 void CM46_FreeWinding(winding_t* w);
 winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist);
@@ -398,4 +396,5 @@ extern	Cvar		*cm_noAreas;
 extern	Cvar		*cm_noCurves;
 extern	Cvar		*cm_playerCurveClip;
 
+extern QClipMap46* cm46;
 #endif

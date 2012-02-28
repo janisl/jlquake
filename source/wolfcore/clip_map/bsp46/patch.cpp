@@ -48,7 +48,6 @@ properly.
 
 // MACROS ------------------------------------------------------------------
 
-#if 0
 #define SUBDIVIDE_DISTANCE	16	//4	// never more than this units away from curve
 #define WRAP_POINT_EPSILON	0.1
 #define POINT_EPSILON		0.1
@@ -70,19 +69,28 @@ properly.
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int				cm_patch_numFacets;
-static facet_t			cm_patch_facets[MAX_PATCH_PLANES]; //maybe MAX_FACETS ??
+//static 
+int				cm_patch_numFacets;
+//static 
+facet_t			cm_patch_facets[MAX_PATCH_PLANES]; //maybe MAX_FACETS ??
 
-static int				cm_patch_numPlanes;
-static patchPlane_t		cm_patch_planes[MAX_PATCH_PLANES];
+//static 
+int				cm_patch_numPlanes;
+//static 
+patchPlane_t		cm_patch_planes[MAX_PATCH_PLANES];
 
-static bool						debugBlock;
-static const patchCollide_t*	debugPatchCollide;
-static const facet_t*			debugFacet;
-static vec3_t					debugBlockPoints[4];
+//static 
+bool						debugBlock;
+//static 
+const patchCollide_t*	debugPatchCollide;
+//static 
+const facet_t*			debugFacet;
+//static 
+vec3_t					debugBlockPoints[4];
 
 // CODE --------------------------------------------------------------------
 
+#if 0
 //==========================================================================
 //
 //	QClipMap46::ClearLevelPatches
@@ -94,7 +102,7 @@ void QClipMap46::ClearLevelPatches()
 	debugPatchCollide = NULL;
 	debugFacet = NULL;
 }
-
+#endif
 /*
 ================================================================================
 
@@ -411,6 +419,7 @@ PATCH COLLIDE GENERATION
 ================================================================================
 */
 
+#if 0
 //==========================================================================
 //
 //	QClipMap46::GeneratePatchCollide
@@ -493,6 +502,7 @@ patchCollide_t* QClipMap46::GeneratePatchCollide(int width, int height, vec3_t* 
 
 	return pf;
 }
+#endif
 
 //==========================================================================
 //
@@ -997,6 +1007,7 @@ bool patchCollide_t::ValidateFacet(facet_t* facet)
 	{
 		if (facet->borderPlanes[j] == -1)
 		{
+			CM46_FreeWinding(w);
 			return false;
 		}
 		Vector4Copy(cm_patch_planes[facet->borderPlanes[j]].plane, plane);
@@ -1097,9 +1108,29 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 			int i;
 			for (i = 0; i < facet->numBorders; i++)
 			{
-				if (PlaneEqual(&cm_patch_planes[facet->borderPlanes[i]], plane, &flipped))
+				if (GGameType & GAME_ET)
 				{
-					break;
+					if (dir > 0)
+					{
+						if (cm_patch_planes[facet->borderPlanes[i]].plane[axis] >= 0.9999f)
+						{
+							break;
+						}
+					}
+					else
+					{
+						if (cm_patch_planes[facet->borderPlanes[i]].plane[axis] <= -0.9999f)
+						{
+							break;
+						}
+					}
+				}
+				else
+				{
+					if (PlaneEqual(&cm_patch_planes[facet->borderPlanes[i]], plane, &flipped))
+					{
+						break;
+					}
 				}
 			}
 
@@ -1133,7 +1164,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 		CM_SnapVector(vec);
 		for (k = 0; k < 3 ; k++ )
 		{
-			if (vec[k] == -1 || vec[k] == 1)
+			if (vec[k] == -1 || vec[k] == 1 || (vec[k] == 0.0f && vec[(k + 1) % 3] == 0.0f))
 			{
 				break;	// axial
 			}
@@ -1162,6 +1193,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 				// if all the points of the facet winding are
 				// behind this plane, it is a proper edge bevel
 				int l;
+				float minBack = 0.0f;
 				for (l = 0; l < w->numpoints; l++)
 				{
 					float d = DotProduct (w->p[l], plane) - plane[3];
@@ -1169,10 +1201,21 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 					{
 						break;	// point in front
 					}
+					if (d < minBack)
+					{
+						minBack = d;
+					}
 				}
+				// if some point was at the front
 				if (l < w->numpoints)
 				{
 					continue;
+				}
+
+				// if no points at the back then the winding is on the bevel plane
+				if (minBack > -0.1f)
+				{
+					break;
 				}
 
 				//if it's the surface plane
@@ -1254,10 +1297,10 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 
 bool patchCollide_t::PlaneEqual(patchPlane_t* p, float plane[4], int* flipped)
 {
-	if (fabs(p->plane[0] - plane[0]) < NORMAL_EPSILON &&
-		fabs(p->plane[1] - plane[1]) < NORMAL_EPSILON &&
-		fabs(p->plane[2] - plane[2]) < NORMAL_EPSILON &&
-		fabs(p->plane[3] - plane[3]) < DIST_EPSILON)
+	if (Q_fabs(p->plane[0] - plane[0]) < NORMAL_EPSILON &&
+		Q_fabs(p->plane[1] - plane[1]) < NORMAL_EPSILON &&
+		Q_fabs(p->plane[2] - plane[2]) < NORMAL_EPSILON &&
+		Q_fabs(p->plane[3] - plane[3]) < DIST_EPSILON)
 	{
 		*flipped = false;
 		return true;
@@ -1267,10 +1310,10 @@ bool patchCollide_t::PlaneEqual(patchPlane_t* p, float plane[4], int* flipped)
 	VectorNegate(plane, invplane);
 	invplane[3] = -plane[3];
 
-	if (fabs(p->plane[0] - invplane[0]) < NORMAL_EPSILON &&
-		fabs(p->plane[1] - invplane[1]) < NORMAL_EPSILON &&
-		fabs(p->plane[2] - invplane[2]) < NORMAL_EPSILON &&
-		fabs(p->plane[3] - invplane[3]) < DIST_EPSILON)
+	if (Q_fabs(p->plane[0] - invplane[0]) < NORMAL_EPSILON &&
+		Q_fabs(p->plane[1] - invplane[1]) < NORMAL_EPSILON &&
+		Q_fabs(p->plane[2] - invplane[2]) < NORMAL_EPSILON &&
+		Q_fabs(p->plane[3] - invplane[3]) < DIST_EPSILON)
 	{
 		*flipped = true;
 		return true;
@@ -1322,13 +1365,13 @@ void patchCollide_t::CM_SnapVector(vec3_t normal)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		if (fabs(normal[i] - 1) < NORMAL_EPSILON)
+		if (Q_fabs(normal[i] - 1) < NORMAL_EPSILON)
 		{
 			VectorClear(normal);
 			normal[i] = 1;
 			break;
 		}
-		if (fabs(normal[i] - -1) < NORMAL_EPSILON)
+		if (Q_fabs(normal[i] - -1) < NORMAL_EPSILON)
 		{
 			VectorClear(normal);
 			normal[i] = -1;
@@ -1445,7 +1488,7 @@ void patchCollide_t::TraceThrough(traceWork_t* tw) const
 			{
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				float offset = DotProduct(tw->offsets[planes->signbits], plane);
-				plane[3] += fabs(offset);
+				plane[3] += Q_fabs(offset);
 				VectorCopy(tw->start, startp);
 				VectorCopy(tw->end, endp);
 			}
@@ -1508,9 +1551,20 @@ void patchCollide_t::TracePointThrough(traceWork_t* tw) const
 {
 	static Cvar *cv;
 
-	if (!cm_playerCurveClip->integer || !tw->isPoint)
+	if (GGameType & (GAME_WolfMP | GAME_ET))
 	{
-		return;
+		if (!cm_playerCurveClip->integer && !tw->isPoint)
+		{
+			// FIXME: until I get player sized clipping working right
+			return;
+		}
+	}
+	else
+	{
+		if (!cm_playerCurveClip->integer || !tw->isPoint)
+		{
+			return;
+		}
 	}
 
 	// determine the trace's relationship to all planes
@@ -1686,6 +1740,11 @@ POSITION TEST
 
 bool patchCollide_t::PositionTest(traceWork_t* tw) const
 {
+	if (GGameType & GAME_WolfMP)
+	{
+		return PositionTestWolfMP(tw);
+	}
+
 	if (tw->isPoint)
 	{
 		return false;
@@ -1761,7 +1820,7 @@ bool patchCollide_t::PositionTest(traceWork_t* tw) const
 			{
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				float offset = DotProduct(tw->offsets[planes->signbits], plane);
-				plane[3] += fabs(offset);
+				plane[3] += Q_fabs(offset);
 				VectorCopy(tw->start, startp);
 			}
 
@@ -1780,6 +1839,79 @@ bool patchCollide_t::PositionTest(traceWork_t* tw) const
 	return false;
 }
 
+bool patchCollide_t::PositionTestWolfMP(traceWork_t* tw) const
+{
+	enum
+	{
+		BOX_FRONT,
+		BOX_BACK,
+		BOX_CROSS
+	};
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (tw->bounds[0][i] > bounds[1][i] || tw->bounds[1][i] < bounds[0][i])
+		{
+			return false;
+		}
+	}
+
+	// determine if the box is in front, behind, or crossing each plane
+	int cross[MAX_PATCH_PLANES];
+	const patchPlane_t* planes = this->planes;
+	for (int i = 0 ; i < numPlanes; i++, planes++)
+	{
+		float d = DotProduct(tw->start, planes->plane) - planes->plane[3];
+		float offset = Q_fabs(DotProduct(tw->offsets[planes->signbits], planes->plane));
+		if (d < -offset)
+		{
+			cross[i] = BOX_FRONT;
+		}
+		else if (d > offset)
+		{
+			cross[i] = BOX_BACK;
+		}
+		else
+		{
+			cross[i] = BOX_CROSS;
+		}
+	}
+
+
+	// see if any of the surface planes are intersected
+	const facet_t* facet = facets;
+	for (int i = 0 ; i < numFacets; i++, facet++)
+	{
+		// the facet plane must be in a cross state
+		if (cross[facet->surfacePlane] != BOX_CROSS)
+		{
+			continue;
+		}
+		// all of the boundaries must be either cross or back
+		int j;
+		for (j = 0; j < facet->numBorders; j++)
+		{
+			int k = facet->borderPlanes[j];
+			if (cross[ k ] == BOX_CROSS)
+			{
+				continue;
+			}
+			if (cross[k] ^ facet->borderInward[j])
+			{
+				break;
+			}
+		}
+		// if we passed all borders, we are definately in this facet
+		if (j == facet->numBorders)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+#if 0
 /*
 =======================================================================
 
@@ -1848,7 +1980,7 @@ void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, flo
 				else v1[n] = mins[n];
 			} //end for
 			VectorNegate(plane, v2);
-			plane[3] += fabs(DotProduct(v1, v2));
+			plane[3] += Q_fabs(DotProduct(v1, v2));
 			//*/
 
 			w = CM46_BaseWindingForPlane( plane,  plane[3] );
@@ -1880,7 +2012,7 @@ void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, flo
 					else v1[n] = mins[n];
 				} //end for
 				VectorNegate(plane, v2);
-				plane[3] -= fabs(DotProduct(v1, v2));
+				plane[3] -= Q_fabs(DotProduct(v1, v2));
 
 				CM46_ChopWindingInPlace( &w, plane, plane[3], 0.1f );
 			}

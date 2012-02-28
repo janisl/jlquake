@@ -33,10 +33,10 @@ struct leafList_t
 	int		topnode;
 };
 
-#if 0
 class QClipMap
 {
 public:
+#if 0
 	String			Name;
 
 	quint32			CheckSum;
@@ -85,8 +85,10 @@ public:
 	virtual void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule) = 0;
 	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
+#endif
 };
 
+#if 0
 QClipMap* CM_CreateQClipMap29();
 QClipMap* CM_CreateQClipMap38();
 QClipMap* CM_CreateQClipMap46();

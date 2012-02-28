@@ -93,6 +93,4 @@ cmodel_t    *CM_ClipHandleToModel( clipHandle_t handle );
 // cm_patch.c
 
 struct patchCollide_t   *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
-void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
-qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
 void CM_ClearLevelPatches( void );

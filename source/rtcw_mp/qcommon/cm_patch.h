@@ -66,6 +66,3 @@ properly.
 
 #define SUBDIVIDE_DISTANCE  16  //4	// never more than this units away from curve
 #define WRAP_POINT_EPSILON  0.1
-
-
-struct patchCollide_t   *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
