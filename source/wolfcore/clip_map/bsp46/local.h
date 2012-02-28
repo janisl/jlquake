@@ -207,6 +207,7 @@ public:
 	void InitBoxHull();
 	int ContentsToQ1(int Contents) const;
 	int ContentsToQ2(int Contents) const;
+#endif
 
 	//	Load
 	void LoadShaders(const quint8* base, const bsp46_lump_t* l);
@@ -221,7 +222,6 @@ public:
 	void LoadEntityString(const quint8* base, const bsp46_lump_t* l);
 	void LoadPatches(const quint8* base, const bsp46_lump_t* surfs, const bsp46_lump_t* verts);
 	void LoadSubmodels(const quint8* base, const bsp46_lump_t* l);
-#endif
 
 	//	Patch
 	static void ClearLevelPatches();
@@ -249,6 +249,7 @@ public:
 	static float SquareRootFloat(float number);
 
 public:
+#endif
 	int			numShaders;
 	bsp46_dshader_t*	shaders;
 
@@ -291,6 +292,7 @@ public:
 	int			numSubModels;
 	cmodel_t	*cmodels;
 
+#if 0
 	cmodel_t	box_model;
 	cplane_t*	box_planes;
 	cbrush_t*	box_brush;
@@ -300,7 +302,6 @@ public:
 #endif
 
 	QClipMap46()
-#if 0
 	: numShaders(0)
 	, shaders(NULL)
 	, numLeafs(0)
@@ -330,6 +331,7 @@ public:
 	, surfaces(NULL)
 	, numSubModels(0)
 	, cmodels(NULL)
+#if 0
 	, box_planes(NULL)
 	, box_brush(NULL)
 	, floodvalid(0)

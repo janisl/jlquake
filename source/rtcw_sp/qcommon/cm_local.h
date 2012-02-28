@@ -35,48 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 typedef struct {
 	char name[MAX_QPATH];
 
-	int numShaders;
-	bsp46_dshader_t   *shaders;
-
-	int numBrushSides;
-	cbrushside_t *brushsides;
-
-	int numPlanes;
-	cplane_t    *planes;
-
-	int numNodes;
-	cNode_t     *nodes;
-
-	int numLeafs;
-	cLeaf_t     *leafs;
-
-	int numLeafBrushes;
-	int         *leafbrushes;
-
-	int numLeafSurfaces;
-	int         *leafsurfaces;
-
-	int numSubModels;
-	cmodel_t    *cmodels;
-
-	int numBrushes;
-	cbrush_t    *brushes;
-
-	int numClusters;
-	int clusterBytes;
-	byte        *visibility;
-	qboolean vised;             // if false, visibility is just a single cluster of ffs
-
-	int numEntityChars;
-	char        *entityString;
-
-	int numAreas;
-	cArea_t     *areas;
-	int         *areaPortals;   // [ numAreas*numAreas ] reference counts
-
-	int numSurfaces;
-	cPatch_t    **surfaces;         // non-patches will be NULL
-
 	int floodvalid;
 	int checkcount;                         // incremented on each trace
 } clipMap_t;

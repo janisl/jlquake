@@ -21,7 +21,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#if 0
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
 #define BOX_BRUSHES			1
@@ -49,6 +48,7 @@
 
 // CODE --------------------------------------------------------------------
 
+#if 0
 //==========================================================================
 //
 //	QClipMap46::LoadMap
@@ -113,6 +113,7 @@ void QClipMap46::ReloadMap(bool ClientLoad)
 		FloodAreaConnections();
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -560,4 +561,3 @@ void QClipMap46::LoadSubmodels(const quint8* base, const bsp46_lump_t* l)
 		}
 	}
 }
-#endif

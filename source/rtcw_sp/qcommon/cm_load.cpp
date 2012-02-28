@@ -30,16 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "cm_local.h"
 
-// to allow boxes to be treated as brush models, we allocate
-// some extra indexes along with those needed by the map
-#define BOX_BRUSHES     1
-#define BOX_SIDES       6
-#define BOX_LEAFS       2
-#define BOX_PLANES      12
-
-#define LL( x ) x = LittleLong( x )
-
-
 clipMap_t cm;
 
 
@@ -54,480 +44,6 @@ cbrush_t    *box_brush;
 void    CM_InitBoxHull( void );
 void    CM_FloodAreaConnections( void );
 
-
-/*
-===============================================================================
-
-					MAP LOADING
-
-===============================================================================
-*/
-
-/*
-=================
-CMod_LoadShaders
-=================
-*/
-void CMod_LoadShaders( bsp46_lump_t *l ) {
-	bsp46_dshader_t   *in, *out;
-	int i, count;
-
-	in = ( bsp46_dshader_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "CMod_LoadShaders: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	if ( count < 1 ) {
-		Com_Error( ERR_DROP, "Map with no shaders" );
-	}
-	cm.shaders = (bsp46_dshader_t*)Hunk_Alloc( count * sizeof( *cm.shaders ), h_high );
-	cm.numShaders = count;
-
-	Com_Memcpy( cm.shaders, in, count * sizeof( *cm.shaders ) );
-
-	if ( LittleLong( 1 ) != 1 ) {
-		out = cm.shaders;
-		for ( i = 0 ; i < count ; i++, in++, out++ ) {
-			out->contentFlags = LittleLong( out->contentFlags );
-			out->surfaceFlags = LittleLong( out->surfaceFlags );
-		}
-	}
-}
-
-
-/*
-=================
-CMod_LoadSubmodels
-=================
-*/
-void CMod_LoadSubmodels( bsp46_lump_t *l ) {
-	bsp46_dmodel_t    *in;
-	cmodel_t    *out;
-	int i, j, count;
-	int         *indexes;
-
-	in = ( bsp46_dmodel_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "CMod_LoadSubmodels: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	if ( count < 1 ) {
-		Com_Error( ERR_DROP, "Map with no models" );
-	}
-	cm.cmodels = (cmodel_t*)Hunk_Alloc( count * sizeof( *cm.cmodels ), h_high );
-	cm.numSubModels = count;
-
-	if ( count > MAX_SUBMODELS ) {
-		Com_Error( ERR_DROP, "MAX_SUBMODELS exceeded" );
-	}
-
-	for ( i = 0 ; i < count ; i++, in++, out++ )
-	{
-		out = &cm.cmodels[i];
-
-		for ( j = 0 ; j < 3 ; j++ )
-		{   // spread the mins / maxs by a pixel
-			out->mins[j] = LittleFloat( in->mins[j] ) - 1;
-			out->maxs[j] = LittleFloat( in->maxs[j] ) + 1;
-		}
-
-		if ( i == 0 ) {
-			continue;   // world model doesn't need other info
-		}
-
-		// make a "leaf" just to hold the model's brushes and surfaces
-		out->leaf.numLeafBrushes = LittleLong( in->numBrushes );
-		indexes = (int*)Hunk_Alloc( out->leaf.numLeafBrushes * 4, h_high );
-		out->leaf.firstLeafBrush = indexes - cm.leafbrushes;
-		for ( j = 0 ; j < out->leaf.numLeafBrushes ; j++ ) {
-			indexes[j] = LittleLong( in->firstBrush ) + j;
-		}
-
-		out->leaf.numLeafSurfaces = LittleLong( in->numSurfaces );
-		indexes = (int*)Hunk_Alloc( out->leaf.numLeafSurfaces * 4, h_high );
-		out->leaf.firstLeafSurface = indexes - cm.leafsurfaces;
-		for ( j = 0 ; j < out->leaf.numLeafSurfaces ; j++ ) {
-			indexes[j] = LittleLong( in->firstSurface ) + j;
-		}
-	}
-}
-
-
-/*
-=================
-CMod_LoadNodes
-
-=================
-*/
-void CMod_LoadNodes( bsp46_lump_t *l ) {
-	bsp46_dnode_t     *in;
-	int child;
-	cNode_t     *out;
-	int i, j, count;
-
-	in = ( bsp46_dnode_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	if ( count < 1 ) {
-		Com_Error( ERR_DROP, "Map has no nodes" );
-	}
-	cm.nodes = (cNode_t*)Hunk_Alloc( count * sizeof( *cm.nodes ), h_high );
-	cm.numNodes = count;
-
-	out = cm.nodes;
-
-	for ( i = 0 ; i < count ; i++, out++, in++ )
-	{
-		out->plane = cm.planes + LittleLong( in->planeNum );
-		for ( j = 0 ; j < 2 ; j++ )
-		{
-			child = LittleLong( in->children[j] );
-			out->children[j] = child;
-		}
-	}
-
-}
-
-/*
-=================
-CM_BoundBrush
-
-=================
-*/
-void CM_BoundBrush( cbrush_t *b ) {
-	b->bounds[0][0] = -b->sides[0].plane->dist;
-	b->bounds[1][0] = b->sides[1].plane->dist;
-
-	b->bounds[0][1] = -b->sides[2].plane->dist;
-	b->bounds[1][1] = b->sides[3].plane->dist;
-
-	b->bounds[0][2] = -b->sides[4].plane->dist;
-	b->bounds[1][2] = b->sides[5].plane->dist;
-}
-
-
-/*
-=================
-CMod_LoadBrushes
-
-=================
-*/
-void CMod_LoadBrushes( bsp46_lump_t *l ) {
-	bsp46_dbrush_t    *in;
-	cbrush_t    *out;
-	int i, count;
-
-	in = ( bsp46_dbrush_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	cm.brushes = (cbrush_t*)Hunk_Alloc( ( BOX_BRUSHES + count ) * sizeof( *cm.brushes ), h_high );
-	cm.numBrushes = count;
-
-	out = cm.brushes;
-
-	for ( i = 0 ; i < count ; i++, out++, in++ ) {
-		out->sides = cm.brushsides + LittleLong( in->firstSide );
-		out->numsides = LittleLong( in->numSides );
-
-		out->shaderNum = LittleLong( in->shaderNum );
-		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
-			Com_Error( ERR_DROP, "CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum );
-		}
-		out->contents = cm.shaders[out->shaderNum].contentFlags;
-
-		CM_BoundBrush( out );
-	}
-
-}
-
-/*
-=================
-CMod_LoadLeafs
-=================
-*/
-void CMod_LoadLeafs( bsp46_lump_t *l ) {
-	int i;
-	cLeaf_t     *out;
-	bsp46_dleaf_t     *in;
-	int count;
-
-	in = ( bsp46_dleaf_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	if ( count < 1 ) {
-		Com_Error( ERR_DROP, "Map with no leafs" );
-	}
-
-	cm.leafs = (cLeaf_t*)Hunk_Alloc( ( BOX_LEAFS + count ) * sizeof( *cm.leafs ), h_high );
-	cm.numLeafs = count;
-
-	out = cm.leafs;
-	for ( i = 0 ; i < count ; i++, in++, out++ )
-	{
-		out->cluster = LittleLong( in->cluster );
-		out->area = LittleLong( in->area );
-		out->firstLeafBrush = LittleLong( in->firstLeafBrush );
-		out->numLeafBrushes = LittleLong( in->numLeafBrushes );
-		out->firstLeafSurface = LittleLong( in->firstLeafSurface );
-		out->numLeafSurfaces = LittleLong( in->numLeafSurfaces );
-
-		if ( out->cluster >= cm.numClusters ) {
-			cm.numClusters = out->cluster + 1;
-		}
-		if ( out->area >= cm.numAreas ) {
-			cm.numAreas = out->area + 1;
-		}
-	}
-
-	cm.areas = (cArea_t*)Hunk_Alloc( cm.numAreas * sizeof( *cm.areas ), h_high );
-	cm.areaPortals = (int*)Hunk_Alloc( cm.numAreas * cm.numAreas * sizeof( *cm.areaPortals ), h_high );
-}
-
-/*
-=================
-CMod_LoadPlanes
-=================
-*/
-void CMod_LoadPlanes( bsp46_lump_t *l ) {
-	int i, j;
-	cplane_t    *out;
-	bsp46_dplane_t    *in;
-	int count;
-	int bits;
-
-	in = ( bsp46_dplane_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	if ( count < 1 ) {
-		Com_Error( ERR_DROP, "Map with no planes" );
-	}
-	cm.planes = (cplane_t*)Hunk_Alloc( ( BOX_PLANES + count ) * sizeof( *cm.planes ), h_high );
-	cm.numPlanes = count;
-
-	out = cm.planes;
-
-	for ( i = 0 ; i < count ; i++, in++, out++ )
-	{
-		bits = 0;
-		for ( j = 0 ; j < 3 ; j++ )
-		{
-			out->normal[j] = LittleFloat( in->normal[j] );
-			if ( out->normal[j] < 0 ) {
-				bits |= 1 << j;
-			}
-		}
-
-		out->dist = LittleFloat( in->dist );
-		out->type = PlaneTypeForNormal( out->normal );
-		out->signbits = bits;
-	}
-}
-
-/*
-=================
-CMod_LoadLeafBrushes
-=================
-*/
-void CMod_LoadLeafBrushes( bsp46_lump_t *l ) {
-	int i;
-	int         *out;
-	int         *in;
-	int count;
-
-	in = ( int* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	cm.leafbrushes = (int*)Hunk_Alloc( count * sizeof( *cm.leafbrushes ), h_high );
-	cm.numLeafBrushes = count;
-
-	out = cm.leafbrushes;
-
-	for ( i = 0 ; i < count ; i++, in++, out++ ) {
-		*out = LittleLong( *in );
-	}
-}
-
-/*
-=================
-CMod_LoadLeafSurfaces
-=================
-*/
-void CMod_LoadLeafSurfaces( bsp46_lump_t *l ) {
-	int i;
-	int         *out;
-	int         *in;
-	int count;
-
-	in = ( int* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	cm.leafsurfaces = (int*)Hunk_Alloc( count * sizeof( *cm.leafsurfaces ), h_high );
-	cm.numLeafSurfaces = count;
-
-	out = cm.leafsurfaces;
-
-	for ( i = 0 ; i < count ; i++, in++, out++ ) {
-		*out = LittleLong( *in );
-	}
-}
-
-/*
-=================
-CMod_LoadBrushSides
-=================
-*/
-void CMod_LoadBrushSides( bsp46_lump_t *l ) {
-	int i;
-	cbrushside_t    *out;
-	bsp46_dbrushside_t    *in;
-	int count;
-	int num;
-
-	in = ( bsp46_dbrushside_t* )( cmod_base + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	count = l->filelen / sizeof( *in );
-
-	cm.brushsides = (cbrushside_t*)Hunk_Alloc( ( BOX_SIDES + count ) * sizeof( *cm.brushsides ), h_high );
-	cm.numBrushSides = count;
-
-	out = cm.brushsides;
-
-	for ( i = 0 ; i < count ; i++, in++, out++ ) {
-		num = LittleLong( in->planeNum );
-		out->plane = &cm.planes[num];
-		out->shaderNum = LittleLong( in->shaderNum );
-		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
-			Com_Error( ERR_DROP, "CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum );
-		}
-		out->surfaceFlags = cm.shaders[out->shaderNum].surfaceFlags;
-	}
-}
-
-
-/*
-=================
-CMod_LoadEntityString
-=================
-*/
-void CMod_LoadEntityString( bsp46_lump_t *l ) {
-	cm.entityString = (char*)Hunk_Alloc( l->filelen, h_high );
-	cm.numEntityChars = l->filelen;
-	Com_Memcpy( cm.entityString, cmod_base + l->fileofs, l->filelen );
-}
-
-/*
-=================
-CMod_LoadVisibility
-=================
-*/
-#define VIS_HEADER  8
-void CMod_LoadVisibility( bsp46_lump_t *l ) {
-	int len;
-	byte    *buf;
-
-	len = l->filelen;
-	if ( !len ) {
-		cm.clusterBytes = ( cm.numClusters + 31 ) & ~31;
-		cm.visibility = (byte*)Hunk_Alloc( cm.clusterBytes, h_high );
-		Com_Memset( cm.visibility, 255, cm.clusterBytes );
-		return;
-	}
-	buf = cmod_base + l->fileofs;
-
-	cm.vised = qtrue;
-	cm.visibility = (byte*)Hunk_Alloc( len, h_high );
-	cm.numClusters = LittleLong( ( (int *)buf )[0] );
-	cm.clusterBytes = LittleLong( ( (int *)buf )[1] );
-	Com_Memcpy( cm.visibility, buf + VIS_HEADER, len - VIS_HEADER );
-}
-
-//==================================================================
-
-
-/*
-=================
-CMod_LoadPatches
-=================
-*/
-#define MAX_PATCH_VERTS     1024
-void CMod_LoadPatches( bsp46_lump_t *surfs, bsp46_lump_t *verts ) {
-	bsp46_drawVert_t  *dv, *dv_p;
-	bsp46_dsurface_t  *in;
-	int count;
-	int i, j;
-	int c;
-	cPatch_t    *patch;
-	vec3_t points[MAX_PATCH_VERTS];
-	int width, height;
-	int shaderNum;
-
-	in = ( bsp46_dsurface_t* )( cmod_base + surfs->fileofs );
-	if ( surfs->filelen % sizeof( *in ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-	cm.numSurfaces = count = surfs->filelen / sizeof( *in );
-	cm.surfaces = (cPatch_t**)Hunk_Alloc( cm.numSurfaces * sizeof( cm.surfaces[0] ), h_high );
-
-	dv = ( bsp46_drawVert_t* )( cmod_base + verts->fileofs );
-	if ( verts->filelen % sizeof( *dv ) ) {
-		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
-	}
-
-	// scan through all the surfaces, but only load patches,
-	// not planar faces
-	for ( i = 0 ; i < count ; i++, in++ ) {
-		if ( LittleLong( in->surfaceType ) != BSP46MST_PATCH ) {
-			continue;       // ignore other surfaces
-		}
-		// FIXME: check for non-colliding patches
-
-		cm.surfaces[ i ] = patch = (cPatch_t*)Hunk_Alloc( sizeof( *patch ), h_high );
-
-		// load the full drawverts onto the stack
-		width = LittleLong( in->patchWidth );
-		height = LittleLong( in->patchHeight );
-		c = width * height;
-		if ( c > MAX_PATCH_VERTS ) {
-			Com_Error( ERR_DROP, "ParseMesh: MAX_PATCH_VERTS" );
-		}
-
-		dv_p = dv + LittleLong( in->firstVert );
-		for ( j = 0 ; j < c ; j++, dv_p++ ) {
-			points[j][0] = LittleFloat( dv_p->xyz[0] );
-			points[j][1] = LittleFloat( dv_p->xyz[1] );
-			points[j][2] = LittleFloat( dv_p->xyz[2] );
-		}
-
-		shaderNum = LittleLong( in->shaderNum );
-		patch->contents = cm.shaders[shaderNum].contentFlags;
-		patch->surfaceFlags = cm.shaders[shaderNum].surfaceFlags;
-
-		// create the internal facet structure
-		patch->pc = QClipMap46::GeneratePatchCollide( width, height, points );
-	}
-}
 
 //==================================================================
 
@@ -600,17 +116,16 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 
 	// free old stuff
 	Com_Memset( &cm, 0, sizeof( cm ) );
-	QClipMap46::ClearLevelPatches();
 	if (cm46)
 		delete cm46;
 	cm46 = new QClipMap46();
 	CMapShared = cm46;
 
 	if ( !name[0] ) {
-		cm.numLeafs = 1;
-		cm.numClusters = 1;
-		cm.numAreas = 1;
-		cm.cmodels = (cmodel_t*)Hunk_Alloc( sizeof( *cm.cmodels ), h_high );
+		cm46->numLeafs = 1;
+		cm46->numClusters = 1;
+		cm46->numAreas = 1;
+		cm46->cmodels = (cmodel_t*)Hunk_Alloc( sizeof( *cm46->cmodels ), h_high );
 		*checksum = 0;
 		return;
 	}
@@ -646,18 +161,18 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	cmod_base = (byte *)buf;
 
 	// load into heap
-	CMod_LoadShaders( &header.lumps[BSP46LUMP_SHADERS] );
-	CMod_LoadLeafs( &header.lumps[BSP46LUMP_LEAFS] );
-	CMod_LoadLeafBrushes( &header.lumps[BSP46LUMP_LEAFBRUSHES] );
-	CMod_LoadLeafSurfaces( &header.lumps[BSP46LUMP_LEAFSURFACES] );
-	CMod_LoadPlanes( &header.lumps[BSP46LUMP_PLANES] );
-	CMod_LoadBrushSides( &header.lumps[BSP46LUMP_BRUSHSIDES] );
-	CMod_LoadBrushes( &header.lumps[BSP46LUMP_BRUSHES] );
-	CMod_LoadSubmodels( &header.lumps[BSP46LUMP_MODELS] );
-	CMod_LoadNodes( &header.lumps[BSP46LUMP_NODES] );
-	CMod_LoadEntityString( &header.lumps[BSP46LUMP_ENTITIES] );
-	CMod_LoadVisibility( &header.lumps[BSP46LUMP_VISIBILITY] );
-	CMod_LoadPatches( &header.lumps[BSP46LUMP_SURFACES], &header.lumps[BSP46LUMP_DRAWVERTS] );
+	cm46->LoadShaders(cmod_base, &header.lumps[BSP46LUMP_SHADERS] );
+	cm46->LoadLeafs(cmod_base, &header.lumps[BSP46LUMP_LEAFS] );
+	cm46->LoadLeafBrushes(cmod_base, &header.lumps[BSP46LUMP_LEAFBRUSHES] );
+	cm46->LoadLeafSurfaces(cmod_base, &header.lumps[BSP46LUMP_LEAFSURFACES] );
+	cm46->LoadPlanes(cmod_base, &header.lumps[BSP46LUMP_PLANES] );
+	cm46->LoadBrushSides(cmod_base, &header.lumps[BSP46LUMP_BRUSHSIDES] );
+	cm46->LoadBrushes(cmod_base, &header.lumps[BSP46LUMP_BRUSHES] );
+	cm46->LoadSubmodels(cmod_base, &header.lumps[BSP46LUMP_MODELS] );
+	cm46->LoadNodes(cmod_base, &header.lumps[BSP46LUMP_NODES] );
+	cm46->LoadEntityString(cmod_base, &header.lumps[BSP46LUMP_ENTITIES] );
+	cm46->LoadVisibility(cmod_base, &header.lumps[BSP46LUMP_VISIBILITY] );
+	cm46->LoadPatches(cmod_base, &header.lumps[BSP46LUMP_SURFACES], &header.lumps[BSP46LUMP_DRAWVERTS] );
 
 	// we are NOT freeing the file, because it is cached for the ref
 	FS_FreeFile( buf );
@@ -681,15 +196,15 @@ cmodel_t    *CM_ClipHandleToModel( clipHandle_t handle ) {
 	if ( handle < 0 ) {
 		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle );
 	}
-	if ( handle < cm.numSubModels ) {
-		return &cm.cmodels[handle];
+	if ( handle < cm46->numSubModels ) {
+		return &cm46->cmodels[handle];
 	}
 	if ( handle == BOX_MODEL_HANDLE || handle == CAPSULE_MODEL_HANDLE ) {
 		return &box_model;
 	}
 	if ( handle < MAX_SUBMODELS ) {
 		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i < %i < %i",
-				   cm.numSubModels, handle, MAX_SUBMODELS );
+				   cm46->numSubModels, handle, MAX_SUBMODELS );
 	}
 	Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle + MAX_SUBMODELS );
 
@@ -703,36 +218,36 @@ CM_InlineModel
 ==================
 */
 clipHandle_t    CM_InlineModel( int index ) {
-	if ( index < 0 || index >= cm.numSubModels ) {
+	if ( index < 0 || index >= cm46->numSubModels ) {
 		Com_Error( ERR_DROP, "CM_InlineModel: bad number" );
 	}
 	return index;
 }
 
 int     CM_NumClusters( void ) {
-	return cm.numClusters;
+	return cm46->numClusters;
 }
 
 int     CM_NumInlineModels( void ) {
-	return cm.numSubModels;
+	return cm46->numSubModels;
 }
 
 char    *CM_EntityString( void ) {
-	return cm.entityString;
+	return cm46->entityString;
 }
 
 int     CM_LeafCluster( int leafnum ) {
-	if ( leafnum < 0 || leafnum >= cm.numLeafs ) {
+	if ( leafnum < 0 || leafnum >= cm46->numLeafs ) {
 		Com_Error( ERR_DROP, "CM_LeafCluster: bad number" );
 	}
-	return cm.leafs[leafnum].cluster;
+	return cm46->leafs[leafnum].cluster;
 }
 
 int     CM_LeafArea( int leafnum ) {
-	if ( leafnum < 0 || leafnum >= cm.numLeafs ) {
+	if ( leafnum < 0 || leafnum >= cm46->numLeafs ) {
 		Com_Error( ERR_DROP, "CM_LeafArea: bad number" );
 	}
-	return cm.leafs[leafnum].area;
+	return cm46->leafs[leafnum].area;
 }
 
 //=======================================================================
@@ -752,25 +267,25 @@ void CM_InitBoxHull( void ) {
 	cplane_t    *p;
 	cbrushside_t    *s;
 
-	box_planes = &cm.planes[cm.numPlanes];
+	box_planes = &cm46->planes[cm46->numPlanes];
 
-	box_brush = &cm.brushes[cm.numBrushes];
+	box_brush = &cm46->brushes[cm46->numBrushes];
 	box_brush->numsides = 6;
-	box_brush->sides = cm.brushsides + cm.numBrushSides;
+	box_brush->sides = cm46->brushsides + cm46->numBrushSides;
 	box_brush->contents = BSP46CONTENTS_BODY;
 
 	box_model.leaf.numLeafBrushes = 1;
-//	box_model.leaf.firstLeafBrush = cm.numBrushes;
-	box_model.leaf.firstLeafBrush = cm.numLeafBrushes;
-	cm.leafbrushes[cm.numLeafBrushes] = cm.numBrushes;
+//	box_model.leaf.firstLeafBrush = cm46->numBrushes;
+	box_model.leaf.firstLeafBrush = cm46->numLeafBrushes;
+	cm46->leafbrushes[cm46->numLeafBrushes] = cm46->numBrushes;
 
 	for ( i = 0 ; i < 6 ; i++ )
 	{
 		side = i & 1;
 
 		// brush sides
-		s = &cm.brushsides[cm.numBrushSides + i];
-		s->plane =  cm.planes + ( cm.numPlanes + i * 2 + side );
+		s = &cm46->brushsides[cm46->numBrushSides + i];
+		s->plane =  cm46->planes + ( cm46->numPlanes + i * 2 + side );
 		s->surfaceFlags = 0;
 
 		// planes

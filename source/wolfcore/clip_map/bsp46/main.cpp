@@ -64,7 +64,6 @@ QClipMap* CM_CreateQClipMap46()
 
 QClipMap46::~QClipMap46()
 {
-#if 0
 	for (int i = 1; i < numSubModels; i++)
 	{
 		delete[] (leafbrushes + cmodels[i].leaf.firstLeafBrush);
@@ -97,7 +96,6 @@ QClipMap46::~QClipMap46()
 	delete[] cmodels;
 
 	ClearLevelPatches();
-#endif
 }
 
 #if 0

@@ -253,8 +253,8 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 
 	// test box position against all brushes in the leaf
 	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ ) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
-		b = &cm.brushes[brushnum];
+		brushnum = cm46->leafbrushes[leaf->firstLeafBrush + k];
+		b = &cm46->brushes[brushnum];
 		if ( b->checkcount == cm.checkcount ) {
 			continue;   // already checked this brush in another leaf
 		}
@@ -277,7 +277,7 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 	if ( !cm_noCurves->integer ) {
 #endif //BSPC
 		for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ ) {
-			patch = cm.surfaces[ cm.leafsurfaces[ leaf->firstLeafSurface + k ] ];
+			patch = cm46->surfaces[ cm46->leafsurfaces[ leaf->firstLeafSurface + k ] ];
 			if ( !patch ) {
 				continue;
 			}
@@ -441,7 +441,7 @@ void CM_PositionTest( traceWork_t *tw ) {
 
 	// test the contents of the leafs
 	for ( i = 0 ; i < ll.count ; i++ ) {
-		CM_TestInLeaf( tw, &cm.leafs[leafs[i]] );
+		CM_TestInLeaf( tw, &cm46->leafs[leafs[i]] );
 		if ( tw->trace.allsolid ) {
 			break;
 		}
@@ -767,9 +767,9 @@ static void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 
 	// trace line against all brushes in the leaf
 	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ ) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
+		brushnum = cm46->leafbrushes[leaf->firstLeafBrush + k];
 
-		brush = &cm.brushes[brushnum];
+		brush = &cm46->brushes[brushnum];
 		if ( brush->checkcount == cm.checkcount ) {
 			continue;   // already checked this brush in another leaf
 		}
@@ -808,7 +808,7 @@ static void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 	if ( !cm_noCurves->integer ) {
 #endif
 		for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ ) {
-			patch = cm.surfaces[ cm.leafsurfaces[ leaf->firstLeafSurface + k ] ];
+			patch = cm46->surfaces[ cm46->leafsurfaces[ leaf->firstLeafSurface + k ] ];
 			if ( !patch ) {
 				continue;
 			}
@@ -1160,7 +1160,7 @@ static void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f,
 
 	// if < 0, we are in a leaf node
 	if ( num < 0 ) {
-		CM_TraceThroughLeaf( tw, &cm.leafs[-1 - num] );
+		CM_TraceThroughLeaf( tw, &cm46->leafs[-1 - num] );
 		return;
 	}
 
@@ -1168,7 +1168,7 @@ static void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f,
 	// find the point distances to the seperating plane
 	// and the offset for the size of the box
 	//
-	node = cm.nodes + num;
+	node = cm46->nodes + num;
 	plane = node->plane;
 
 	// adjust the plane distance apropriately for mins/maxs
@@ -1290,7 +1290,7 @@ static void CM_Trace( q3trace_t *results, const vec3_t start, const vec3_t end,
 	tw.trace.fraction = 1.0f;   // assume it goes the entire distance until shown otherwise
 	VectorCopy( origin, tw.modelOrigin );
 
-	if ( !cm.numNodes ) {
+	if ( !cm46->numNodes ) {
 		*results = tw.trace;
 
 		return; // map not loaded, shouldn't happen
