@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "cm_local.h"
-#include "cm_patch.h"
 
 // always use bbox vs. bbox collision and never capsule vs. bbox or vice versa
 #define ALWAYS_BBOX_VS_BBOX

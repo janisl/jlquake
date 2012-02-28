@@ -86,8 +86,8 @@ public:
 		clipHandle_t Model, int BrushMask, int Capsule) = 0;
 	virtual void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule) = 0;
-	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
 #endif
+	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
 };
 
 #if 0

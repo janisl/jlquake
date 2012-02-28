@@ -58,8 +58,6 @@ typedef struct bot_debugpoly_s {
 	vec3_t points[128];
 } bot_debugpoly_t;
 
-typedef void ( *BotPolyFunc )( int color, int numPoints, float *points );
-
 // RF, these need to be here so the botlib also knows how many bot game entities there are
 #define NUM_BOTGAMEENTITIES 384
 

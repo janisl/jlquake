@@ -221,11 +221,13 @@ public:
 	void LoadEntityString(const quint8* base, const bsp46_lump_t* l);
 	void LoadPatches(const quint8* base, const bsp46_lump_t* surfs, const bsp46_lump_t* verts);
 	void LoadSubmodels(const quint8* base, const bsp46_lump_t* l);
+#endif
 
 	//	Patch
 	static void ClearLevelPatches();
 	static patchCollide_t* GeneratePatchCollide(int width, int height, vec3_t* points);
 
+#if 0
 	//	Trace
 	void Trace(q3trace_t* results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
 		clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t* sphere);
@@ -378,8 +380,10 @@ public:
 		clipHandle_t Model, int BrushMask, int Capsule);
 	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
+#endif
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
+#if 0
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;

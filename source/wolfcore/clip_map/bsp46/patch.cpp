@@ -69,28 +69,19 @@ properly.
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-int				cm_patch_numFacets;
-//static 
-facet_t			cm_patch_facets[MAX_PATCH_PLANES]; //maybe MAX_FACETS ??
+static int				cm_patch_numFacets;
+static facet_t			cm_patch_facets[MAX_PATCH_PLANES]; //maybe MAX_FACETS ??
 
-//static 
-int				cm_patch_numPlanes;
-//static 
-patchPlane_t		cm_patch_planes[MAX_PATCH_PLANES];
+static int				cm_patch_numPlanes;
+static patchPlane_t		cm_patch_planes[MAX_PATCH_PLANES];
 
-//static 
-bool						debugBlock;
-//static 
-const patchCollide_t*	debugPatchCollide;
-//static 
-const facet_t*			debugFacet;
-//static 
-vec3_t					debugBlockPoints[4];
+static bool						debugBlock;
+static const patchCollide_t*	debugPatchCollide;
+static const facet_t*			debugFacet;
+static vec3_t					debugBlockPoints[4];
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	QClipMap46::ClearLevelPatches
@@ -102,7 +93,7 @@ void QClipMap46::ClearLevelPatches()
 	debugPatchCollide = NULL;
 	debugFacet = NULL;
 }
-#endif
+
 /*
 ================================================================================
 
@@ -419,7 +410,6 @@ PATCH COLLIDE GENERATION
 ================================================================================
 */
 
-#if 0
 //==========================================================================
 //
 //	QClipMap46::GeneratePatchCollide
@@ -502,7 +492,6 @@ patchCollide_t* QClipMap46::GeneratePatchCollide(int width, int height, vec3_t* 
 
 	return pf;
 }
-#endif
 
 //==========================================================================
 //
@@ -1911,7 +1900,6 @@ bool patchCollide_t::PositionTestWolfMP(traceWork_t* tw) const
 	return false;
 }
 
-#if 0
 /*
 =======================================================================
 
@@ -2067,4 +2055,3 @@ void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, flo
 	drawPoly( 4, v[0] );
 #endif
 }
-#endif

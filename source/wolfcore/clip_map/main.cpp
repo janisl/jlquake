@@ -622,6 +622,7 @@ void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3
 {
 	GetModel(Model)->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles, Capsule);
 }
+#endif
 
 //==========================================================================
 //
@@ -631,6 +632,9 @@ void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3
 
 void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
 {
+	if (!CMapShared)
+	{
+		return;
+	}
 	CMapShared->DrawDebugSurface(drawPoly);
 }
-#endif

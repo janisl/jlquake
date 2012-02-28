@@ -132,9 +132,9 @@ void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec
 	clipHandle_t Model, int BrushMask, int Capsule);
 void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
+#endif
 
 void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
-#endif
 	
 extern int			c_pointcontents;
 extern int			c_traces;

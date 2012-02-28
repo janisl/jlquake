@@ -525,7 +525,7 @@ void CMod_LoadPatches( bsp46_lump_t *surfs, bsp46_lump_t *verts ) {
 		patch->surfaceFlags = cm.shaders[shaderNum].surfaceFlags;
 
 		// create the internal facet structure
-		patch->pc = CM_GeneratePatchCollide( width, height, points );
+		patch->pc = QClipMap46::GeneratePatchCollide( width, height, points );
 	}
 }
 
@@ -600,7 +600,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 
 	// free old stuff
 	memset( &cm, 0, sizeof( cm ) );
-	CM_ClearLevelPatches();
+	QClipMap46::ClearLevelPatches();
 	if (cm46)
 		delete cm46;
 	cm46 = new QClipMap46();
@@ -677,7 +677,10 @@ CM_ClearMap
 */
 void CM_ClearMap( void ) {
 	Com_Memset( &cm, 0, sizeof( cm ) );
-	CM_ClearLevelPatches();
+	if (cm46)
+		delete cm46;
+	cm46 = NULL;
+	QClipMap46::ClearLevelPatches();
 }
 
 /*
