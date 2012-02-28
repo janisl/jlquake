@@ -41,9 +41,11 @@ public:
 
 	quint32			CheckSum;
 	quint32			CheckSum2;
-
+#endif
+	
 	QClipMap();
 	virtual ~QClipMap();
+#if 0
 	virtual void LoadMap(const char* name, const Array<quint8>& Buffer) = 0;
 	virtual void ReloadMap(bool ClientLoad) = 0;
 	virtual clipHandle_t InlineModel(int Index) const = 0;
@@ -92,9 +94,11 @@ public:
 QClipMap* CM_CreateQClipMap29();
 QClipMap* CM_CreateQClipMap38();
 QClipMap* CM_CreateQClipMap46();
+#endif
 
 extern QClipMap*			CMapShared;
 
+#if 0
 extern Array<QClipMap*>	CMNonMapModels;
 
 extern Cvar*				cm_flushmap;

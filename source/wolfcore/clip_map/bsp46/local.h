@@ -295,8 +295,10 @@ public:
 
 	int			floodvalid;
 	int			checkcount;					// incremented on each trace
+#endif
 
 	QClipMap46()
+#if 0
 	: numShaders(0)
 	, shaders(NULL)
 	, numLeafs(0)
@@ -330,10 +332,12 @@ public:
 	, box_brush(NULL)
 	, floodvalid(0)
 	, checkcount(0)
+#endif
 	{
 	}
 	~QClipMap46();
 
+#if 0
 	void LoadMap(const char* name, const Array<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad);
 	clipHandle_t InlineModel(int Index) const;

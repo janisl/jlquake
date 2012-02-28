@@ -30,24 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "cm_local.h"
 
-#ifdef BSPC
-
-#include "../bspc/l_qfiles.h"
-
-void SetPlaneSignbits( cplane_t *out ) {
-	int bits, j;
-
-	// for fast box on planeside test
-	bits = 0;
-	for ( j = 0 ; j < 3 ; j++ ) {
-		if ( out->normal[j] < 0 ) {
-			bits |= 1 << j;
-		}
-	}
-	out->signbits = bits;
-}
-#endif //BSPC
-
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
 #define BOX_BRUSHES     1
@@ -619,6 +601,10 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	// free old stuff
 	memset( &cm, 0, sizeof( cm ) );
 	CM_ClearLevelPatches();
+	if (cm46)
+		delete cm46;
+	cm46 = new QClipMap46();
+	CMapShared = cm46;
 
 	if ( !name[0] ) {
 		cm.numLeafs = 1;

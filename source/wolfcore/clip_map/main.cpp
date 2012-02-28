@@ -22,6 +22,7 @@
 #include "../file_formats/bsp29.h"
 #include "../file_formats/bsp38.h"
 #include "../file_formats/bsp46.h"
+#endif
 
 // MACROS ------------------------------------------------------------------
 
@@ -38,7 +39,6 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 QClipMap*			CMapShared;
-#endif
 
 int					c_pointcontents;
 int					c_traces;
@@ -72,6 +72,7 @@ static QClipMap* GetModel(clipHandle_t Handle)
 	}
 	return CMNonMapModels[Index];
 }
+#endif
 
 //==========================================================================
 //
@@ -80,8 +81,10 @@ static QClipMap* GetModel(clipHandle_t Handle)
 //==========================================================================
 
 QClipMap::QClipMap()
+#if 0
 : CheckSum(0)
 , CheckSum2(0)
+#endif
 {
 }
 
@@ -95,6 +98,7 @@ QClipMap::~QClipMap()
 {
 }
 
+#if 0
 //==========================================================================
 //
 //	CM_LoadMap
