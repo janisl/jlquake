@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 #include "../../wolfcore/clip_map/bsp46/local.h"
 #include "../../core/file_formats/bsp47.h"
-#include "cm_polylib.h"
 
 typedef struct {
 	char name[MAX_QPATH];

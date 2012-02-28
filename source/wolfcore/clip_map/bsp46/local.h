@@ -29,9 +29,9 @@
 #define SIDE_ON		2
 #define SIDE_CROSS	3
 
-#if 0
 #define MAX_MAP_BOUNDS			65535
-#endif
+//	Wolf single player uses this:
+//#define MAX_MAP_BOUNDS      ( 128*1024 )    // (SA) (9/19/01) new map dimensions (from Q3TA)
 
 #define MAX_SUBMODELS			512
 
@@ -385,6 +385,7 @@ public:
 	void FloodArea_r(int AreaNum, int FloodNum);
 	void FloodAreaConnections();
 };
+#endif
 
 void CM46_FreeWinding(winding_t* w);
 winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist);
@@ -392,7 +393,6 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 // frees the original if clipped
 void CM46_WindingBounds(winding_t* w, vec3_t mins, vec3_t maxs);
 winding_t* CM46_CopyWinding(winding_t* w);
-#endif
 
 extern	Cvar		*cm_noAreas;
 extern	Cvar		*cm_noCurves;

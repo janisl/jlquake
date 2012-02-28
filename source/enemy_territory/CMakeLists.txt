@@ -66,7 +66,6 @@ set (ET_FILES
 
 	qcommon/cm_load.cpp
 	qcommon/cm_patch.cpp
-	qcommon/cm_polylib.cpp
 	qcommon/cm_test.cpp
 	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp
@@ -166,7 +165,6 @@ set (ETDED_FILES
 
 	qcommon/cm_load.cpp
 	qcommon/cm_patch.cpp
-	qcommon/cm_polylib.cpp
 	qcommon/cm_test.cpp
 	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp

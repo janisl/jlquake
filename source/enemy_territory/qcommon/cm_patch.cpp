@@ -796,10 +796,10 @@ static qboolean CM_ValidateFacet( facet_t *facet ) {
 	}
 
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
-	w = BaseWindingForPlane( plane,  plane[3] );
+	w = CM46_BaseWindingForPlane( plane,  plane[3] );
 	for ( j = 0 ; j < facet->numBorders && w ; j++ ) {
 		if ( facet->borderPlanes[j] == -1 ) {
-			FreeWinding( w );
+			CM46_FreeWinding( w );
 			return qfalse;
 		}
 		Vector4Copy( planes[ facet->borderPlanes[j] ].plane, plane );
@@ -807,7 +807,7 @@ static qboolean CM_ValidateFacet( facet_t *facet ) {
 			VectorSubtract( vec3_origin, plane, plane );
 			plane[3] = -plane[3];
 		}
-		ChopWindingInPlace( &w, plane, plane[3], 0.1f );
+		CM46_ChopWindingInPlace( &w, plane, plane[3], 0.1f );
 	}
 
 	if ( !w ) {
@@ -815,8 +815,8 @@ static qboolean CM_ValidateFacet( facet_t *facet ) {
 	}
 
 	// see if the facet is unreasonably large
-	WindingBounds( w, bounds[0], bounds[1] );
-	FreeWinding( w );
+	CM46_WindingBounds( w, bounds[0], bounds[1] );
+	CM46_FreeWinding( w );
 
 	for ( j = 0 ; j < 3 ; j++ ) {
 		if ( bounds[1][j] - bounds[0][j] > MAX_MAP_BOUNDS ) {
@@ -852,7 +852,7 @@ void CM_AddFacetBevels( facet_t *facet ) {
 
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
 
-	w = BaseWindingForPlane( plane,  plane[3] );
+	w = CM46_BaseWindingForPlane( plane,  plane[3] );
 	for ( j = 0 ; j < facet->numBorders && w ; j++ ) {
 		if ( facet->borderPlanes[j] == facet->surfacePlane ) {
 			continue;
@@ -864,13 +864,13 @@ void CM_AddFacetBevels( facet_t *facet ) {
 			plane[3] = -plane[3];
 		}
 
-		ChopWindingInPlace( &w, plane, plane[3], 0.1f );
+		CM46_ChopWindingInPlace( &w, plane, plane[3], 0.1f );
 	}
 	if ( !w ) {
 		return;
 	}
 
-	WindingBounds( w, mins, maxs );
+	CM46_WindingBounds( w, mins, maxs );
 
 	// add the axial planes
 	order = 0;
@@ -996,19 +996,19 @@ void CM_AddFacetBevels( facet_t *facet ) {
 					facet->borderNoAdjust[facet->numBorders] = 0;
 					facet->borderInward[facet->numBorders] = flipped;
 					//
-					w2 = CopyWinding( w );
+					w2 = CM46_CopyWinding( w );
 					Vector4Copy( planes[facet->borderPlanes[facet->numBorders]].plane, newplane );
 					if ( !facet->borderInward[facet->numBorders] ) {
 						VectorNegate( newplane, newplane );
 						newplane[3] = -newplane[3];
 					} //end if
-					ChopWindingInPlace( &w2, newplane, newplane[3], 0.1f );
+					CM46_ChopWindingInPlace( &w2, newplane, newplane[3], 0.1f );
 					if ( !w2 ) {
 						// TTimo: any map load spams with this error .. don't print it anymore
 						//Com_DPrintf("WARNING: CM_AddFacetBevels... invalid bevel\n");
 						continue;
 					} else {
-						FreeWinding( w2 );
+						CM46_FreeWinding( w2 );
 					}
 					//
 					facet->numBorders++;
@@ -1018,7 +1018,7 @@ void CM_AddFacetBevels( facet_t *facet ) {
 			}
 		}
 	}
-	FreeWinding( w );
+	CM46_FreeWinding( w );
 
 #ifndef BSPC
 	//add opposite plane
@@ -1854,7 +1854,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 			plane[3] += Q_fabs( DotProduct( v1, v2 ) );
 			//*/
 
-			w = BaseWindingForPlane( plane,  plane[3] );
+			w = CM46_BaseWindingForPlane( plane,  plane[3] );
 			for ( j = 0 ; j < facet->numBorders + 1 && w; j++ ) {
 				//
 				if ( j < facet->numBorders ) {
@@ -1887,7 +1887,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 				VectorNegate( plane, v2 );
 				plane[3] -= Q_fabs( DotProduct( v1, v2 ) );
 
-				ChopWindingInPlace( &w, plane, plane[3], 0.1f );
+				CM46_ChopWindingInPlace( &w, plane, plane[3], 0.1f );
 			}
 			if ( w ) {
 				if ( facet == debugFacet ) {
@@ -1896,7 +1896,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 				} else {
 					drawPoly( 1, w->numpoints, w->p[0] );
 				}
-				FreeWinding( w );
+				CM46_FreeWinding( w );
 			} else {
 				Com_Printf( "winding chopped away by border planes\n" );
 			}
