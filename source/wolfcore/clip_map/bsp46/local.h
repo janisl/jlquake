@@ -205,10 +205,8 @@ class QClipMap46 : public QClipMap
 public:
 	//	Main
 	void InitBoxHull();
-#if 0
 	int ContentsToQ1(int Contents) const;
 	int ContentsToQ2(int Contents) const;
-#endif
 
 	//	Load
 	void LoadShaders(const quint8* base, const bsp46_lump_t* l);
@@ -341,6 +339,7 @@ public:
 	void LoadMap(const char* name, const Array<quint8>& Buffer);
 #if 0
 	void ReloadMap(bool ClientLoad);
+#endif
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
 	int GetNumInlineModels() const;
@@ -354,6 +353,7 @@ public:
 	const char* GetTextureName(int Index) const;
 	clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule);
 	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
+#if 0
 	int PointLeafnum(const vec3_t p) const;
 	int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List, int ListSize, int *TopNode, int *LastLeaf) const;
 	int PointContentsQ1(const vec3_t P, clipHandle_t Model);
@@ -382,8 +382,8 @@ public:
 #endif
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
-#if 0
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
+#if 0
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;
 	void BoxLeafnums_r(leafList_t* ll, int nodenum) const;

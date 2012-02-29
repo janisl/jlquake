@@ -176,7 +176,7 @@ int CM_PointContents( const vec3_t p, clipHandle_t model ) {
 	}
 
 	if ( model ) {
-		clipm = CM_ClipHandleToModel( model );
+		clipm = cm46->ClipHandleToModel( model );
 		leaf = &clipm->leaf;
 	} else {
 		leafnum = CM_PointLeafnum_r( p, 0 );

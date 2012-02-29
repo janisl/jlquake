@@ -34,5 +34,3 @@ If you have questions concerning this license or the applicable additional terms
 void CM_StoreLeafs( leafList_t *ll, int nodenum );
 
 void CM_BoxLeafnums_r( leafList_t *ll, int nodenum );
-
-cmodel_t    *CM_ClipHandleToModel( clipHandle_t handle );

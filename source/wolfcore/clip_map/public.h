@@ -74,6 +74,7 @@ void CM_LoadMap(const char* Name, bool ClientLoad, int* CheckSum);
 void CM_ClearMap();
 
 clipHandle_t CM_PrecacheModel(const char* Name);
+#endif
 clipHandle_t CM_InlineModel(int Index);		// 0 = world, 1 + are bmodels
 
 int CM_NumClusters();
@@ -96,6 +97,7 @@ clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule 
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum);
 
+#if 0
 int CM_PointLeafnum(const vec3_t Point);
 
 // only returns non-solid leafs

@@ -34,15 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 void        CM_LoadMap( const char *name, qboolean clientload, int *checksum );
 void        CM_ClearMap( void );
 
-clipHandle_t CM_InlineModel( int index );       // 0 = world, 1 + are bmodels
-clipHandle_t CM_TempBoxModel( const vec3_t mins, const vec3_t maxs, int capsule );
 void        CM_SetTempBoxModelContents( int contents );     // DHM - Nerve
-
-void        CM_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
-
-int         CM_NumClusters( void );
-int         CM_NumInlineModels( void );
-char        *CM_EntityString( void );
 
 // returns an ORed contents mask
 int         CM_PointContents( const vec3_t p, clipHandle_t model );
@@ -64,9 +56,6 @@ int         CM_PointLeafnum( const vec3_t p );
 // overflow if return listsize and if *lastLeaf != list[listsize-1]
 int         CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list,
 							int listsize, int *lastLeaf );
-
-int         CM_LeafCluster( int leafnum );
-int         CM_LeafArea( int leafnum );
 
 void        CM_AdjustAreaPortalState( int area1, int area2, qboolean open );
 qboolean    CM_AreasConnected( int area1, int area2 );

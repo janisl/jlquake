@@ -44,7 +44,6 @@ Cvar* cm_optimize;
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	CM_CreateQClipMap46
@@ -55,7 +54,6 @@ QClipMap* CM_CreateQClipMap46()
 {
 	return new QClipMap46();
 }
-#endif
 
 //==========================================================================
 //
@@ -99,7 +97,6 @@ QClipMap46::~QClipMap46()
 	ClearLevelPatches();
 }
 
-#if 0
 //==========================================================================
 //
 //	QClipMap46::InlineModel
@@ -265,7 +262,7 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	{
 		return &cmodels[Handle];
 	}
-	if (Handle == BOX_MODEL_HANDLE)
+	if (Handle == BOX_MODEL_HANDLE || Handle == CAPSULE_MODEL_HANDLE)
 	{
 		return &box_model;
 	}
@@ -276,7 +273,6 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	}
 	throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
 }
-#endif
 
 //==========================================================================
 //
@@ -328,7 +324,6 @@ void QClipMap46::InitBoxHull()
 	}	
 }
 
-#if 0
 //==========================================================================
 //
 //	QClipMap46::TempBoxModel
@@ -344,7 +339,7 @@ clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 	VectorCopy(Mins, box_model.mins);
 	VectorCopy(Maxs, box_model.maxs);
 
-	if (Capsule)
+	if (Capsule && !(GGameType & GAME_WolfSP))
 	{
 		return CAPSULE_MODEL_HANDLE;
 	}
@@ -364,6 +359,11 @@ clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 
 	VectorCopy(Mins, box_brush->bounds[0]);
 	VectorCopy(Maxs, box_brush->bounds[1]);
+
+	if (Capsule)
+	{
+		return CAPSULE_MODEL_HANDLE;
+	}
 
 	return BOX_MODEL_HANDLE;
 }
@@ -389,4 +389,3 @@ int QClipMap46::ContentsToQ2(int Contents) const
 {
 	throw Exception("Not implemented");
 }
-#endif

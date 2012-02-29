@@ -47,6 +47,7 @@ int					c_patch_traces;
 
 #if 0
 Cvar*				cm_flushmap;
+#endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -60,9 +61,12 @@ Cvar*				cm_flushmap;
 
 static QClipMap* GetModel(clipHandle_t Handle)
 {
+#if 0
 	if (!(Handle & CMH_NON_MAP_MASK))
 	{
+#endif
 		return CMapShared;
+#if 0
 	}
 	
 	int Index = ((Handle & CMH_NON_MAP_MASK) >> CMH_NON_MAP_SHIFT) - 1;
@@ -71,8 +75,8 @@ static QClipMap* GetModel(clipHandle_t Handle)
 		throw DropException("Invalid handle");
 	}
 	return CMNonMapModels[Index];
-}
 #endif
+}
 
 //==========================================================================
 //
@@ -210,6 +214,7 @@ void CM_ClearMap()
 		CMapShared = NULL;
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -358,6 +363,7 @@ clipHandle_t CM_ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec
 	return GetModel(Handle)->ModelHull(Handle & CMH_MODEL_MASK, HullNum, ClipMins, ClipMaxs) | (Handle & CMH_NON_MAP_MASK);
 }
 
+
 //==========================================================================
 //
 //	CM_ModelHull
@@ -371,6 +377,7 @@ clipHandle_t CM_ModelHull(clipHandle_t Handle, int HullNum)
 	return CM_ModelHull(Handle, HullNum, ClipMins, ClipMaxs);
 }
 
+#if 0
 //==========================================================================
 //
 //	CM_PointLeafnum

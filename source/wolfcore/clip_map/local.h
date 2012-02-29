@@ -17,11 +17,9 @@
 #ifndef _CM_LOCAL_H
 #define _CM_LOCAL_H
 
-#if 0
 #define CMH_NON_MAP_MASK	0xffff0000
 #define CMH_NON_MAP_SHIFT	16
 #define CMH_MODEL_MASK		0x0000ffff
-#endif
 
 struct leafList_t
 {
@@ -46,6 +44,7 @@ public:
 	virtual void LoadMap(const char* name, const Array<quint8>& Buffer) = 0;
 #if 0
 	virtual void ReloadMap(bool ClientLoad) = 0;
+#endif
 	virtual clipHandle_t InlineModel(int Index) const = 0;
 	virtual int GetNumClusters() const = 0;
 	virtual int GetNumInlineModels() const = 0;
@@ -59,6 +58,7 @@ public:
 	virtual const char* GetTextureName(int Index) const = 0;
 	virtual clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule) = 0;
 	virtual clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs) = 0;
+#if 0
 	virtual int PointLeafnum(const vec3_t p) const = 0;
 	virtual int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf) const = 0;
 	virtual int PointContentsQ1(const vec3_t P, clipHandle_t Model) = 0;
@@ -91,8 +91,8 @@ public:
 #if 0
 QClipMap* CM_CreateQClipMap29();
 QClipMap* CM_CreateQClipMap38();
-QClipMap* CM_CreateQClipMap46();
 #endif
+QClipMap* CM_CreateQClipMap46();
 
 extern QClipMap*			CMapShared;
 
