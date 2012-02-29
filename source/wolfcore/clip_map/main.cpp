@@ -45,9 +45,7 @@ int					c_traces;
 int					c_brush_traces;
 int					c_patch_traces;
 
-#if 0
 Cvar*				cm_flushmap;
-#endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

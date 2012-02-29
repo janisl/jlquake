@@ -42,9 +42,7 @@ public:
 	QClipMap();
 	virtual ~QClipMap();
 	virtual void LoadMap(const char* name, const Array<quint8>& Buffer) = 0;
-#if 0
 	virtual void ReloadMap(bool ClientLoad) = 0;
-#endif
 	virtual clipHandle_t InlineModel(int Index) const = 0;
 	virtual int GetNumClusters() const = 0;
 	virtual int GetNumInlineModels() const = 0;
@@ -87,18 +85,14 @@ public:
 	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
 };
 
-#if 0
 QClipMap* CM_CreateQClipMap29();
 QClipMap* CM_CreateQClipMap38();
-#endif
 QClipMap* CM_CreateQClipMap46();
 
 extern QClipMap*			CMapShared;
 
-#if 0
 extern Array<QClipMap*>	CMNonMapModels;
 
 extern Cvar*				cm_flushmap;
-#endif
 
 #endif

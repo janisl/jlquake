@@ -48,16 +48,15 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 
 	Com_DPrintf( "CM_LoadMap( %s, %i )\n", name, clientload );
 
-	if (cm46 && cm46->Name == name && clientload ) {
-		*checksum = cm46->CheckSum;
+	if (CMapShared && CMapShared->Name == name && clientload ) {
+		*checksum = CMapShared->CheckSum;
 		return;
 	}
 
 	// free old stuff
-	if (cm46)
-		delete cm46;
-	cm46 = new QClipMap46();
-	CMapShared = cm46;
+	if (CMapShared)
+		delete CMapShared;
+	CMapShared = new QClipMap46();
 
 	//
 	// load the file
@@ -69,8 +68,8 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 		Com_Error( ERR_DROP, "Couldn't load %s", name );
 	}
 
-	cm46->LoadMap(name, buffer);
-	*checksum = cm46->CheckSum;
+	CMapShared->LoadMap(name, buffer);
+	*checksum = CMapShared->CheckSum;
 }
 
 /*
@@ -79,7 +78,7 @@ CM_ClearMap
 ==================
 */
 void CM_ClearMap( void ) {
-	if (cm46)
-		delete cm46;
-	cm46 = NULL;
+	if (CMapShared)
+		delete CMapShared;
+	CMapShared = NULL;
 }

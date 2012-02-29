@@ -337,9 +337,7 @@ public:
 	~QClipMap46();
 
 	void LoadMap(const char* name, const Array<quint8>& Buffer);
-#if 0
 	void ReloadMap(bool ClientLoad);
-#endif
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
 	int GetNumInlineModels() const;
@@ -401,5 +399,4 @@ extern	Cvar		*cm_noCurves;
 extern	Cvar		*cm_playerCurveClip;
 extern Cvar* cm_optimize;
 
-extern QClipMap46* cm46;
 #endif

@@ -102,7 +102,6 @@ void QClipMap46::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	Name = AName;
 }
 
-#if 0
 //==========================================================================
 //
 //	QClipMap46::ReloadMap
@@ -117,7 +116,6 @@ void QClipMap46::ReloadMap(bool ClientLoad)
 		FloodAreaConnections();
 	}
 }
-#endif
 
 //==========================================================================
 //
