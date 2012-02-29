@@ -28,7 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 
 // cmodel.c -- model loading
 
-#include "cm_local.h"
+#include "../game/q_shared.h"
+#include "qcommon.h"
+#include "../../wolfcore/clip_map/bsp46/local.h"
 
 /*
 ==================

@@ -353,7 +353,6 @@ public:
 	const char* GetTextureName(int Index) const;
 	clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule);
 	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
-#if 0
 	int PointLeafnum(const vec3_t p) const;
 	int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List, int ListSize, int *TopNode, int *LastLeaf) const;
 	int PointContentsQ1(const vec3_t P, clipHandle_t Model);
@@ -371,6 +370,7 @@ public:
 	int WriteAreaBits(byte* Buffer, int Area);
 	void WritePortalState(fileHandle_t f);
 	void ReadPortalState(fileHandle_t f);
+#if 0
 	bool HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace);
 	q2trace_t BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask);
 	q2trace_t TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model,
@@ -383,11 +383,9 @@ public:
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
-#if 0
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;
 	void BoxLeafnums_r(leafList_t* ll, int nodenum) const;
-#endif
 	void FloodArea_r(int AreaNum, int FloodNum);
 	void FloodAreaConnections();
 };

@@ -641,9 +641,9 @@ intptr_t CL_CgameSystemCalls( intptr_t* args ) {
 	case CG_CM_TEMPCAPSULEMODEL:
 		return CM_TempBoxModel( (float*)VMA( 1 ), (float*)VMA( 2 ), qtrue );
 	case CG_CM_POINTCONTENTS:
-		return CM_PointContents( (float*)VMA( 1 ), args[2] );
+		return CM_PointContentsQ3( (float*)VMA( 1 ), args[2] );
 	case CG_CM_TRANSFORMEDPOINTCONTENTS:
-		return CM_TransformedPointContents( (float*)VMA( 1 ), args[2], (float*)VMA( 3 ), (float*)VMA( 4 ) );
+		return CM_TransformedPointContentsQ3( (float*)VMA( 1 ), args[2], (float*)VMA( 3 ), (float*)VMA( 4 ) );
 	case CG_CM_BOXTRACE:
 //		numtraces++;
 		CM_BoxTrace( (q3trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], /*int capsule*/ qfalse );

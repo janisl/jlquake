@@ -36,10 +36,6 @@ void        CM_ClearMap( void );
 
 void        CM_SetTempBoxModelContents( int contents );     // DHM - Nerve
 
-// returns an ORed contents mask
-int         CM_PointContents( const vec3_t p, clipHandle_t model );
-int         CM_TransformedPointContents( const vec3_t p, clipHandle_t model, const vec3_t origin, const vec3_t angles );
-
 void        CM_BoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
 						 const vec3_t mins, const vec3_t maxs,
 						 clipHandle_t model, int brushmask, int capsule );
@@ -47,20 +43,6 @@ void        CM_TransformedBoxTrace( q3trace_t *results, const vec3_t start, cons
 									const vec3_t mins, const vec3_t maxs,
 									clipHandle_t model, int brushmask,
 									const vec3_t origin, const vec3_t angles, int capsule );
-
-byte        *CM_ClusterPVS( int cluster );
-
-int         CM_PointLeafnum( const vec3_t p );
-
-// only returns non-solid leafs
-// overflow if return listsize and if *lastLeaf != list[listsize-1]
-int         CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list,
-							int listsize, int *lastLeaf );
-
-void        CM_AdjustAreaPortalState( int area1, int area2, qboolean open );
-qboolean    CM_AreasConnected( int area1, int area2 );
-
-int         CM_WriteAreaBits( byte *buffer, int area );
 
 // cm_tag.c
 int         CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );

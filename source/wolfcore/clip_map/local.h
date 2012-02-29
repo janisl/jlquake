@@ -58,7 +58,6 @@ public:
 	virtual const char* GetTextureName(int Index) const = 0;
 	virtual clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule) = 0;
 	virtual clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs) = 0;
-#if 0
 	virtual int PointLeafnum(const vec3_t p) const = 0;
 	virtual int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf) const = 0;
 	virtual int PointContentsQ1(const vec3_t P, clipHandle_t Model) = 0;
@@ -76,6 +75,7 @@ public:
 	virtual int WriteAreaBits(byte* Buffer, int Area) = 0;
 	virtual void WritePortalState(fileHandle_t f) = 0;
 	virtual void ReadPortalState(fileHandle_t f) = 0;
+#if 0
 	virtual bool HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace) = 0;
 	virtual q2trace_t BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask) = 0;
 	virtual q2trace_t TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model,

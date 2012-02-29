@@ -306,7 +306,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 
 	//get all leafs, including solids
 	num_leafs = CM_BoxLeafnums( gEnt->r.absmin, gEnt->r.absmax,
-								leafs, MAX_TOTAL_ENT_LEAFS, &lastLeaf );
+								leafs, MAX_TOTAL_ENT_LEAFS, NULL, &lastLeaf );
 
 	// if none of the leafs were inside the map, the
 	// entity is outside the world and can be considered unlinked
@@ -701,7 +701,7 @@ int SV_PointContents( const vec3_t p, int passEntityNum ) {
 	float       *angles;
 
 	// get base contents from world
-	contents = CM_PointContents( p, 0 );
+	contents = CM_PointContentsQ3( p, 0 );
 
 	// or in contents from all the other entities
 	num = SV_AreaEntities( p, p, touch, MAX_GENTITIES );
@@ -720,7 +720,7 @@ int SV_PointContents( const vec3_t p, int passEntityNum ) {
 
 		// RF, ignore this test if the origin is at the world origin
 		//if (!VectorCompare( hit->s.origin, vec3_origin )) {
-		c2 = CM_TransformedPointContents( p, clipHandle, hit->s.origin, hit->s.angles );
+		c2 = CM_TransformedPointContentsQ3( p, clipHandle, hit->s.origin, hit->s.angles );
 
 		contents |= c2;
 		//}

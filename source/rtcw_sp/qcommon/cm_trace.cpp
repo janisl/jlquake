@@ -26,7 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "cm_local.h"
+#include "../game/q_shared.h"
+#include "qcommon.h"
+#include "../../wolfcore/clip_map/bsp46/local.h"
 
 // always use bbox vs. bbox collision and never capsule vs. bbox or vice versa
 #define ALWAYS_BBOX_VS_BBOX
@@ -407,7 +409,7 @@ void CM_PositionTest( traceWork_t *tw ) {
 
 	cm46->checkcount++;
 
-	CM_BoxLeafnums_r( &ll, 0 );
+	cm46->BoxLeafnums_r( &ll, 0 );
 
 
 	cm46->checkcount++;

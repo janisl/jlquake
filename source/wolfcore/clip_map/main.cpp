@@ -377,7 +377,6 @@ clipHandle_t CM_ModelHull(clipHandle_t Handle, int HullNum)
 	return CM_ModelHull(Handle, HullNum, ClipMins, ClipMaxs);
 }
 
-#if 0
 //==========================================================================
 //
 //	CM_PointLeafnum
@@ -570,6 +569,7 @@ void CM_ReadPortalState(fileHandle_t f)
 	CMapShared->ReadPortalState(f);
 }
 
+#if 0
 //==========================================================================
 //
 //	CM_HullCheckQ1

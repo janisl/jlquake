@@ -97,7 +97,6 @@ clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule 
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum);
 
-#if 0
 int CM_PointLeafnum(const vec3_t Point);
 
 // only returns non-solid leafs
@@ -126,6 +125,7 @@ int CM_WriteAreaBits(byte* Buffer, int Area);
 void CM_WritePortalState(fileHandle_t f);
 void CM_ReadPortalState(fileHandle_t f);
 
+#if 0
 bool CM_HullCheckQ1(clipHandle_t Hull, vec3_t P1, vec3_t P2, q1trace_t* Trace);
 q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask);
 q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs,
