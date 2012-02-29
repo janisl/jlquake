@@ -33,14 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 void        CM_LoadMap( const char *name, qboolean clientload, int *checksum );
 
-void        CM_BoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
-						 const vec3_t mins, const vec3_t maxs,
-						 clipHandle_t model, int brushmask, int capsule );
-void        CM_TransformedBoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
-									const vec3_t mins, const vec3_t maxs,
-									clipHandle_t model, int brushmask,
-									const vec3_t origin, const vec3_t angles, int capsule );
-
 // cm_tag.c
 int         CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 

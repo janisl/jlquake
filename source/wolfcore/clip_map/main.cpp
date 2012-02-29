@@ -569,7 +569,6 @@ void CM_ReadPortalState(fileHandle_t f)
 	CMapShared->ReadPortalState(f);
 }
 
-#if 0
 //==========================================================================
 //
 //	CM_HullCheckQ1
@@ -610,7 +609,7 @@ q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 //
 //==========================================================================
 
-void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, int Capsule)
 {
 	GetModel(Model)->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Capsule);
@@ -622,12 +621,11 @@ void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, ve
 //
 //==========================================================================
 
-void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
 	GetModel(Model)->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles, Capsule);
 }
-#endif
 
 //==========================================================================
 //

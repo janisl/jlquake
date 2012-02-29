@@ -201,8 +201,7 @@ struct cmodel_t
 
 class QClipMap46 : public QClipMap
 {
-//private:
-public:
+private:
 	//	Main
 	void InitBoxHull();
 	int ContentsToQ1(int Contents) const;
@@ -226,12 +225,14 @@ public:
 	static void ClearLevelPatches();
 	static patchCollide_t* GeneratePatchCollide(int width, int height, vec3_t* points);
 
-#if 0
 	//	Trace
-	void Trace(q3trace_t* results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
+	void Trace(q3trace_t* results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs,
 		clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t* sphere);
 	void TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f, vec3_t p1, vec3_t p2);
 	void TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf);
+	static void CalcTraceBounds(traceWork_t* tw, bool expand);
+	static int TraceThroughBounds(const traceWork_t* tw, const vec3_t mins, const vec3_t maxs);
+	static float BoxDistanceFromPlane(const vec3_t center, const vec3_t extents, const cplane_t* plane);
 	static void TraceThroughBrush(traceWork_t *tw, cbrush_t *brush);
 	static void TraceThroughPatch(traceWork_t *tw, cPatch_t *patch);
 	void TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model);
@@ -248,7 +249,6 @@ public:
 	static float SquareRootFloat(float number);
 
 public:
-#endif
 	int			numShaders;
 	bsp46_dshader_t*	shaders;
 
@@ -370,16 +370,14 @@ public:
 	int WriteAreaBits(byte* Buffer, int Area);
 	void WritePortalState(fileHandle_t f);
 	void ReadPortalState(fileHandle_t f);
-#if 0
 	bool HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace);
 	q2trace_t BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask);
 	q2trace_t TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model,
 		int BrushMask, vec3_t Origin, vec3_t Angles);
-	void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, int Capsule);
-	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
-#endif
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);

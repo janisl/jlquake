@@ -4,6 +4,7 @@ set(WOLFCORE_FILES
 	clip_map/bsp46/patch.cpp
 	../core/clip_map/bsp46/polylib.cpp
 	clip_map/bsp46/test.cpp
+	clip_map/bsp46/trace.cpp
 	clip_map/main.cpp
 	../core/command_buffer.cpp
 	../core/Common.cpp

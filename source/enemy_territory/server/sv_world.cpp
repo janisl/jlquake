@@ -520,11 +520,11 @@ void SV_ClipToEntity( q3trace_t *trace, const vec3_t start, const vec3_t mins, c
 
 #ifdef __MACOS__
 	// compiler bug with const
-	CM_TransformedBoxTrace( trace, (float *)start, (float *)end,
+	CM_TransformedBoxTraceQ3( trace, (float *)start, (float *)end,
 							(float *)mins, (float *)maxs, clipHandle,  contentmask,
 							origin, angles, capsule );
 #else
-	CM_TransformedBoxTrace( trace, start, end,
+	CM_TransformedBoxTraceQ3( trace, start, end,
 							mins, maxs, clipHandle, contentmask,
 							origin, angles, capsule );
 #endif
@@ -611,11 +611,11 @@ void SV_ClipMoveToEntities( moveclip_t *clip ) {
 
 #ifdef __MACOS__
 		// compiler bug with const
-		CM_TransformedBoxTrace( &trace, (float *)clip->start, (float *)clip->end,
+		CM_TransformedBoxTraceQ3( &trace, (float *)clip->start, (float *)clip->end,
 								(float *)clip->mins, (float *)clip->maxs, clipHandle,  clip->contentmask,
 								origin, angles, clip->capsule );
 #else
-		CM_TransformedBoxTrace( &trace, clip->start, clip->end,
+		CM_TransformedBoxTraceQ3( &trace, clip->start, clip->end,
 								clip->mins, clip->maxs, clipHandle,  clip->contentmask,
 								origin, angles, clip->capsule );
 #endif
@@ -668,7 +668,7 @@ void SV_Trace( q3trace_t *results, const vec3_t start, const vec3_t mins, const 
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
 	// clip to world
-	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask, capsule );
+	CM_BoxTraceQ3( &clip.trace, start, end, mins, maxs, 0, contentmask, capsule );
 	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	if ( clip.trace.fraction == 0 || passEntityNum == -2 ) {
 		*results = clip.trace;

@@ -64,7 +64,6 @@ set(WOLFMP_FILES
 	client/cl_ui.cpp
 
 	qcommon/cm_load.cpp
-	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp 
 	qcommon/common.cpp
 	qcommon/cvar.cpp
@@ -160,7 +159,6 @@ set(WOLFMPDED_FILES
 	server/sv_snapshot.cpp
 	server/sv_world.cpp
 	qcommon/cm_load.cpp
-	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp

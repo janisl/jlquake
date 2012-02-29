@@ -65,7 +65,6 @@ set (ET_FILES
 	server/sv_world.cpp
 
 	qcommon/cm_load.cpp
-	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp
@@ -162,7 +161,6 @@ set (ETDED_FILES
 	server/sv_world.cpp
 
 	qcommon/cm_load.cpp
-	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp
