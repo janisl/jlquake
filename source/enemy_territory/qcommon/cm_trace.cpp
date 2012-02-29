@@ -255,10 +255,10 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ ) {
 		brushnum = cm46->leafbrushes[leaf->firstLeafBrush + k];
 		b = &cm46->brushes[brushnum];
-		if ( b->checkcount == cm.checkcount ) {
+		if ( b->checkcount == cm46->checkcount ) {
 			continue;   // already checked this brush in another leaf
 		}
-		b->checkcount = cm.checkcount;
+		b->checkcount = cm46->checkcount;
 
 		if ( !( b->contents & tw->contents ) ) {
 			continue;
@@ -281,10 +281,10 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 			if ( !patch ) {
 				continue;
 			}
-			if ( patch->checkcount == cm.checkcount ) {
+			if ( patch->checkcount == cm46->checkcount ) {
 				continue;   // already checked this brush in another leaf
 			}
-			patch->checkcount = cm.checkcount;
+			patch->checkcount = cm46->checkcount;
 
 			if ( !( patch->contents & tw->contents ) ) {
 				continue;
@@ -432,12 +432,12 @@ void CM_PositionTest( traceWork_t *tw ) {
 	ll.list = leafs;
 	ll.lastLeaf = 0;
 
-	cm.checkcount++;
+	cm46->checkcount++;
 
 	CM_BoxLeafnums_r( &ll, 0 );
 
 
-	cm.checkcount++;
+	cm46->checkcount++;
 
 	// test the contents of the leafs
 	for ( i = 0 ; i < ll.count ; i++ ) {
@@ -770,10 +770,10 @@ static void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 		brushnum = cm46->leafbrushes[leaf->firstLeafBrush + k];
 
 		brush = &cm46->brushes[brushnum];
-		if ( brush->checkcount == cm.checkcount ) {
+		if ( brush->checkcount == cm46->checkcount ) {
 			continue;   // already checked this brush in another leaf
 		}
-		brush->checkcount = cm.checkcount;
+		brush->checkcount = cm46->checkcount;
 
 		if ( !( brush->contents & tw->contents ) ) {
 			continue;
@@ -812,10 +812,10 @@ static void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 			if ( !patch ) {
 				continue;
 			}
-			if ( patch->checkcount == cm.checkcount ) {
+			if ( patch->checkcount == cm46->checkcount ) {
 				continue;   // already checked this patch in another leaf
 			}
-			patch->checkcount = cm.checkcount;
+			patch->checkcount = cm46->checkcount;
 
 			if ( !( patch->contents & tw->contents ) ) {
 				continue;
@@ -1281,7 +1281,7 @@ static void CM_Trace( q3trace_t *results, const vec3_t start, const vec3_t end,
 
 	cmod = CM_ClipHandleToModel( model );
 
-	cm.checkcount++;        // for multi-check avoidance
+	cm46->checkcount++;        // for multi-check avoidance
 
 	c_traces++;             // for statistics, may be zeroed
 

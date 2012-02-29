@@ -38,6 +38,7 @@ QClipMap46* cm46;
 Cvar*		cm_noAreas;
 Cvar*		cm_noCurves;
 Cvar*		cm_playerCurveClip;
+Cvar* cm_optimize;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -275,6 +276,7 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	}
 	throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
 }
+#endif
 
 //==========================================================================
 //
@@ -326,6 +328,7 @@ void QClipMap46::InitBoxHull()
 	}	
 }
 
+#if 0
 //==========================================================================
 //
 //	QClipMap46::TempBoxModel

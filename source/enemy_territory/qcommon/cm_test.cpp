@@ -137,7 +137,7 @@ CM_BoxLeafnums
 int CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int listsize, int *lastLeaf ) {
 	leafList_t ll;
 
-	cm.checkcount++;
+	cm46->checkcount++;
 
 	VectorCopy( mins, ll.bounds[0] );
 	VectorCopy( maxs, ll.bounds[1] );
@@ -264,56 +264,6 @@ AREAPORTALS
 ===============================================================================
 */
 
-void CM_FloodArea_r( int areaNum, int floodnum ) {
-	int i;
-	cArea_t *area;
-	int     *con;
-
-	area = &cm46->areas[ areaNum ];
-
-	if ( area->floodvalid == cm.floodvalid ) {
-		if ( area->floodnum == floodnum ) {
-			return;
-		}
-		Com_Error( ERR_DROP, "FloodArea_r: reflooded" );
-	}
-
-	area->floodnum = floodnum;
-	area->floodvalid = cm.floodvalid;
-	con = cm46->areaPortals + areaNum * cm46->numAreas;
-	for ( i = 0 ; i < cm46->numAreas  ; i++ ) {
-		if ( con[i] > 0 ) {
-			CM_FloodArea_r( i, floodnum );
-		}
-	}
-}
-
-/*
-====================
-CM_FloodAreaConnections
-
-====================
-*/
-void    CM_FloodAreaConnections( void ) {
-	int i;
-	cArea_t *area;
-	int floodnum;
-
-	// all current floods are now invalid
-	cm.floodvalid++;
-	floodnum = 0;
-
-	area = cm46->areas;    // Ridah, optimization
-	for ( i = 0 ; i < cm46->numAreas ; i++, area++ ) {
-		if ( area->floodvalid == cm.floodvalid ) {
-			continue;       // already flooded into
-		}
-		floodnum++;
-		CM_FloodArea_r( i, floodnum );
-	}
-
-}
-
 /*
 ====================
 CM_AdjustAreaPortalState
@@ -340,7 +290,7 @@ void    CM_AdjustAreaPortalState( int area1, int area2, qboolean open ) {
 		}
 	}
 
-	CM_FloodAreaConnections();
+	cm46->FloodAreaConnections();
 }
 
 /*

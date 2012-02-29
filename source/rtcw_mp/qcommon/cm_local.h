@@ -30,17 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "qcommon.h"
 #include "../../wolfcore/clip_map/bsp46/local.h"
-#include "../../core/file_formats/bsp47.h"
-
-typedef struct {
-	char name[MAX_QPATH];
-
-	int floodvalid;
-	int checkcount;                         // incremented on each trace
-} clipMap_t;
-
-
-extern clipMap_t cm;
 
 void CM_StoreLeafs( leafList_t *ll, int nodenum );
 

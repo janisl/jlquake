@@ -19,6 +19,7 @@
 
 #include "../local.h"
 #include "../../../core/file_formats/bsp46.h"
+#include "../../../core/file_formats/bsp47.h"
 
 #define MAX_FACETS			1024
 #define MAX_PATCH_PLANES	2048
@@ -202,9 +203,9 @@ class QClipMap46 : public QClipMap
 {
 //private:
 public:
-#if 0
 	//	Main
 	void InitBoxHull();
+#if 0
 	int ContentsToQ1(int Contents) const;
 	int ContentsToQ2(int Contents) const;
 #endif
@@ -292,14 +293,12 @@ public:
 	int			numSubModels;
 	cmodel_t	*cmodels;
 
-#if 0
 	cmodel_t	box_model;
 	cplane_t*	box_planes;
 	cbrush_t*	box_brush;
 
 	int			floodvalid;
 	int			checkcount;					// incremented on each trace
-#endif
 
 	QClipMap46()
 	: numShaders(0)
@@ -331,18 +330,16 @@ public:
 	, surfaces(NULL)
 	, numSubModels(0)
 	, cmodels(NULL)
-#if 0
 	, box_planes(NULL)
 	, box_brush(NULL)
 	, floodvalid(0)
 	, checkcount(0)
-#endif
 	{
 	}
 	~QClipMap46();
 
-#if 0
 	void LoadMap(const char* name, const Array<quint8>& Buffer);
+#if 0
 	void ReloadMap(bool ClientLoad);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
@@ -390,9 +387,9 @@ public:
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;
 	void BoxLeafnums_r(leafList_t* ll, int nodenum) const;
+#endif
 	void FloodArea_r(int AreaNum, int FloodNum);
 	void FloodAreaConnections();
-#endif
 };
 
 void CM46_FreeWinding(winding_t* w);
@@ -405,6 +402,7 @@ winding_t* CM46_CopyWinding(winding_t* w);
 extern	Cvar		*cm_noAreas;
 extern	Cvar		*cm_noCurves;
 extern	Cvar		*cm_playerCurveClip;
+extern Cvar* cm_optimize;
 
 extern QClipMap46* cm46;
 #endif

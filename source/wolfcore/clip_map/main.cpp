@@ -81,10 +81,8 @@ static QClipMap* GetModel(clipHandle_t Handle)
 //==========================================================================
 
 QClipMap::QClipMap()
-#if 0
 : CheckSum(0)
 , CheckSum2(0)
-#endif
 {
 }
 
