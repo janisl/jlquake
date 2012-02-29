@@ -352,6 +352,11 @@ clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
 	return CMapShared->TempBoxModel(Mins, Maxs, Capsule);
 }
 
+void CM_SetTempBoxModelContents(int contents)
+{
+	CMapShared->SetTempBoxModelContents(contents);
+}
+
 //==========================================================================
 //
 //	CM_ModelHull

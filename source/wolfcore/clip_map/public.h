@@ -93,6 +93,7 @@ const char* CM_GetTextureName(int Index);
 
 // creates a clipping hull for an arbitrary box
 clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule = false);
+void CM_SetTempBoxModelContents(int contents);
 
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum);

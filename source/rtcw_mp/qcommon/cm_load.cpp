@@ -83,10 +83,3 @@ void CM_ClearMap( void ) {
 		delete cm46;
 	cm46 = NULL;
 }
-
-// DHM - Nerve
-void CM_SetTempBoxModelContents( int contents ) {
-
-	cm46->box_brush->contents = contents;
-}
-// dhm

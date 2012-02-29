@@ -34,8 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 void        CM_LoadMap( const char *name, qboolean clientload, int *checksum );
 void        CM_ClearMap( void );
 
-void        CM_SetTempBoxModelContents( int contents );     // DHM - Nerve
-
 // cm_tag.c
 int         CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 

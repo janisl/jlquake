@@ -352,6 +352,7 @@ public:
 	int GetNumTextures() const;
 	const char* GetTextureName(int Index) const;
 	clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule);
+	void SetTempBoxModelContents(int contents);
 	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
 	int PointLeafnum(const vec3_t p) const;
 	int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List, int ListSize, int *TopNode, int *LastLeaf) const;
