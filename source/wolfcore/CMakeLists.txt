@@ -1,4 +1,12 @@
 set(WOLFCORE_FILES
+	../core/clip_map/bsp29/load.cpp
+	../core/clip_map/bsp29/main.cpp
+	../core/clip_map/bsp29/test.cpp
+	../core/clip_map/bsp29/trace.cpp
+	../core/clip_map/bsp38/load.cpp
+	../core/clip_map/bsp38/main.cpp
+	../core/clip_map/bsp38/test.cpp
+	../core/clip_map/bsp38/trace.cpp
 	../core/clip_map/bsp46/load.cpp
 	../core/clip_map/bsp46/main.cpp
 	../core/clip_map/bsp46/patch.cpp
@@ -6,6 +14,7 @@ set(WOLFCORE_FILES
 	../core/clip_map/bsp46/test.cpp
 	../core/clip_map/bsp46/trace.cpp
 	clip_map/main.cpp
+	../core/clip_map/non_map.cpp
 	../core/command_buffer.cpp
 	../core/Common.cpp
 	../core/common_defs.cpp
