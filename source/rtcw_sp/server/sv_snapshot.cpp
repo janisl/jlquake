@@ -59,7 +59,7 @@ SV_EmitPacketEntities
 Writes a delta update of an entityState_t list to the message.
 =============
 */
-static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to, msg_t *msg ) {
+static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to, QMsg *msg ) {
 	entityState_t   *oldent, *newent;
 	int oldindex, newindex;
 	int oldnum, newnum;
@@ -126,7 +126,7 @@ static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to,
 SV_WriteSnapshotToClient
 ==================
 */
-static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg ) {
+static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 	clientSnapshot_t    *frame, *oldframe;
 	int lastframe;
 	int i;
@@ -212,7 +212,7 @@ SV_UpdateServerCommandsToClient
 (re)send all server commands the client hasn't acknowledged yet
 ==================
 */
-void SV_UpdateServerCommandsToClient( client_t *client, msg_t *msg ) {
+void SV_UpdateServerCommandsToClient( client_t *client, QMsg *msg ) {
 	int i;
 
 	// write any unacknowledged serverCommands
@@ -680,7 +680,7 @@ SV_SendMessageToClient
 Called by SV_SendClientSnapshot and SV_SendClientGameState
 =======================
 */
-void SV_SendMessageToClient( msg_t *msg, client_t *client ) {
+void SV_SendMessageToClient( QMsg *msg, client_t *client ) {
 	int rateMsec;
 
 	// record information about the message
@@ -734,7 +734,7 @@ Also called by SV_FinalMessage
 */
 void SV_SendClientSnapshot( client_t *client ) {
 	byte msg_buf[MAX_MSGLEN];
-	msg_t msg;
+	QMsg msg;
 
 	//RF, AI don't need snapshots built
 	if ( client->gentity && client->gentity->r.svFlags & SVF_CASTAI ) {

@@ -1406,7 +1406,7 @@ sysEvent_t  Com_GetEvent( void ) {
 Com_RunAndTimeServerPacket
 =================
 */
-void Com_RunAndTimeServerPacket( netadr_t *evFrom, msg_t *buf ) {
+void Com_RunAndTimeServerPacket( netadr_t *evFrom, QMsg *buf ) {
 	int t1, t2, msec;
 
 	t1 = 0;
@@ -1437,7 +1437,7 @@ int Com_EventLoop( void ) {
 	sysEvent_t ev;
 	netadr_t evFrom;
 	byte bufData[MAX_MSGLEN];
-	msg_t buf;
+	QMsg buf;
 
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
 
@@ -1508,7 +1508,7 @@ int Com_EventLoop( void ) {
 				Com_Printf( "Com_EventLoop: oversize packet\n" );
 				continue;
 			}
-			memcpy( buf.data, ( byte * )( (netadr_t *)ev.evPtr + 1 ), buf.cursize );
+			memcpy( buf._data, ( byte * )( (netadr_t *)ev.evPtr + 1 ), buf.cursize );
 			if ( com_sv_running->integer ) {
 				Com_RunAndTimeServerPacket( &evFrom, &buf );
 			} else {

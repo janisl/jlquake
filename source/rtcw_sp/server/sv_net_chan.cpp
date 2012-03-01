@@ -41,7 +41,7 @@ SV_Netchan_Encode
 
 ==============
 */
-static void SV_Netchan_Encode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Encode( client_t *client, QMsg *msg ) {
 	long reliableAcknowledge, i, index;
 	byte key, *string;
 	int srdc, sbit, soob;
@@ -95,7 +95,7 @@ SV_Netchan_Decode
 
 ==============
 */
-static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Decode( client_t *client, QMsg *msg ) {
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
 	byte key, *string;
@@ -152,7 +152,7 @@ SV_Netchan_Transmit
 */
 
 //extern byte chksum[65536];
-void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const byte *data ) {
+void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const byte *data ) {
 //	int i;
 	MSG_WriteByte( msg, svc_EOF );
 //	for(i=SV_ENCODE_START;i<msg->cursize;i++) {
@@ -162,7 +162,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 #if DO_NET_ENCODE
 	SV_Netchan_Encode( client, msg );
 #endif
-	Netchan_Transmit( &client->netchan, msg->cursize, msg->data );
+	Netchan_Transmit( &client->netchan, msg->cursize, msg->_data );
 }
 
 /*
@@ -170,7 +170,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 Netchan_SV_Process
 =================
 */
-qboolean SV_Netchan_Process( client_t *client, msg_t *msg ) {
+qboolean SV_Netchan_Process( client_t *client, QMsg *msg ) {
 	int ret;
 //	int i;
 	ret = Netchan_Process( &client->netchan, msg );

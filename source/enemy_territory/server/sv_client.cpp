@@ -601,7 +601,7 @@ the wrong gamestate.
 void SV_SendClientGameState( client_t *client ) {
 	int start;
 	entityState_t   *base, nullstate;
-	msg_t msg;
+	QMsg msg;
 	byte msgBuffer[MAX_MSGLEN];
 
 
@@ -871,7 +871,7 @@ void SV_WWWDownload_f( client_t *cl ) {
 }
 
 // abort an attempted download
-void SV_BadDownload( client_t *cl, msg_t *msg ) {
+void SV_BadDownload( client_t *cl, QMsg *msg ) {
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, 0 ); // client is expecting block zero
 	MSG_WriteLong( msg, -1 ); // illegal file size
@@ -888,7 +888,7 @@ return true when a redirect URL message was filled up
 when the cvar is set to something, the download server will effectively never use a legacy download strategy
 ==================
 */
-static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg ) {
+static qboolean SV_CheckFallbackURL( client_t *cl, QMsg *msg ) {
 	if ( !sv_wwwFallbackURL->string || String::Length( sv_wwwFallbackURL->string ) == 0 ) {
 		return qfalse;
 	}
@@ -912,7 +912,7 @@ Check to see if the client wants a file, open it if needed and start pumping the
 Fill up msg with data
 ==================
 */
-void SV_WriteDownloadToClient( client_t *cl, msg_t *msg ) {
+void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 	int curindex;
 	int rate;
 	int blockspersnap;
@@ -1505,7 +1505,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 SV_ClientCommand
 ===============
 */
-static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premaprestart ) {
+static qboolean SV_ClientCommand( client_t *cl, QMsg *msg, qboolean premaprestart ) {
 	int seq;
 	const char  *s;
 	qboolean clientOk = qtrue;
@@ -1600,7 +1600,7 @@ On very fast clients, there may be multiple usercmd packed into
 each of the backup packets.
 ==================
 */
-static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta ) {
+static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	int i, key;
 	int cmdCount;
 	usercmd_t nullcmd;
@@ -1705,7 +1705,7 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta ) {
 SV_ParseBinaryMessage
 =====================
 */
-static void SV_ParseBinaryMessage( client_t *cl, msg_t *msg ) {
+static void SV_ParseBinaryMessage( client_t *cl, QMsg *msg ) {
 	int size;
 
 	MSG_BeginReadingUncompressed( msg );
@@ -1715,7 +1715,7 @@ static void SV_ParseBinaryMessage( client_t *cl, msg_t *msg ) {
 		return;
 	}
 
-	SV_GameBinaryMessageReceived( cl - svs.clients, (char*)&msg->data[msg->readcount], size, cl->lastUsercmd.serverTime );
+	SV_GameBinaryMessageReceived( cl - svs.clients, (char*)&msg->_data[msg->readcount], size, cl->lastUsercmd.serverTime );
 }
 
 /*
@@ -1733,7 +1733,7 @@ SV_ExecuteClientMessage
 Parse a client packet
 ===================
 */
-void SV_ExecuteClientMessage( client_t *cl, msg_t *msg ) {
+void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	int c;
 	int serverId;
 

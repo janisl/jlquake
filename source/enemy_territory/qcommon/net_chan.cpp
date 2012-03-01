@@ -110,7 +110,7 @@ Send one fragment of the current message
 =================
 */
 void Netchan_TransmitNextFragment( netchan_t *chan ) {
-	msg_t send;
+	QMsg send;
 	byte send_buf[MAX_PACKETLEN];
 	int fragmentLength;
 
@@ -135,7 +135,7 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 	MSG_WriteData( &send, chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
 
 	// send the datagram
-	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
+	NET_SendPacket( chan->sock, send.cursize, send._data, chan->remoteAddress );
 
 	if ( showpackets->integer ) {
 		Com_Printf( "%s send %4i : s=%i fragment=%i,%i\n"
@@ -167,7 +167,7 @@ A 0 length will still generate a packet.
 ================
 */
 void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
-	msg_t send;
+	QMsg send;
 	byte send_buf[MAX_PACKETLEN];
 
 	if ( length > MAX_MSGLEN ) {
@@ -202,7 +202,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 	MSG_WriteData( &send, data, length );
 
 	// send the datagram
-	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
+	NET_SendPacket( chan->sock, send.cursize, send._data, chan->remoteAddress );
 
 	if ( showpackets->integer ) {
 		Com_Printf( "%s send %4i : s=%i ack=%i\n"
@@ -225,7 +225,7 @@ final fragment of a multi-part message, the entire thing will be
 copied out.
 =================
 */
-qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
+qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	int sequence;
 	int qport;
 	int fragmentStart, fragmentLength;
@@ -337,7 +337,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		}
 
 		Com_Memcpy( chan->fragmentBuffer + chan->fragmentLength,
-					msg->data + msg->readcount, fragmentLength );
+					msg->_data + msg->readcount, fragmentLength );
 
 		chan->fragmentLength += fragmentLength;
 
@@ -356,9 +356,9 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		// copy the full message over the partial fragment
 
 		// make sure the sequence number is still there
-		*(int *)msg->data = LittleLong( sequence );
+		*(int *)msg->_data = LittleLong( sequence );
 
-		Com_Memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
+		Com_Memcpy( msg->_data + 4, chan->fragmentBuffer, chan->fragmentLength );
 		msg->cursize = chan->fragmentLength + 4;
 		chan->fragmentLength = 0;
 		msg->readcount = 4; // past the sequence number
@@ -536,7 +536,7 @@ typedef struct {
 loopback_t loopbacks[2];
 
 
-qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message ) {
+qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, QMsg *net_message ) {
 	int i;
 	loopback_t  *loop;
 
@@ -553,7 +553,7 @@ qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	i = loop->get & ( MAX_LOOPBACK - 1 );
 	loop->get++;
 
-	Com_Memcpy( net_message->data, loop->msgs[i].data, loop->msgs[i].datalen );
+	Com_Memcpy( net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen );
 	net_message->cursize = loop->msgs[i].datalen;
 	Com_Memset( net_from, 0, sizeof( *net_from ) );
 	net_from->type = NA_LOOPBACK;
@@ -760,7 +760,7 @@ Sends a data message in an out-of-band datagram (only used for "connect")
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len ) {
 	byte string[MAX_MSGLEN * 2];
 	int i;
-	msg_t mbuf;
+	QMsg mbuf;
 
 	MSG_InitOOB( &mbuf, string, sizeof( string ) );
 
@@ -777,7 +777,7 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 	mbuf.cursize = len + 4;
 	Huff_Compress( &mbuf, 12 );
 	// send the datagram
-	NET_SendPacket( sock, mbuf.cursize, mbuf.data, adr );
+	NET_SendPacket( sock, mbuf.cursize, mbuf._data, adr );
 }
 
 /*

@@ -37,14 +37,14 @@ If you have questions concerning this license or the applicable additional terms
 extern int bloc;
 int get_bit (byte *fin);
 
-void Huff_Decompress( msg_t *mbuf, int offset ) {
+void Huff_Decompress( QMsg *mbuf, int offset ) {
 	int ch, cch, i, j, size;
 	byte seq[65536];
 	byte*       buffer;
 	huff_t huff;
 
 	size = mbuf->cursize - offset;
-	buffer = mbuf->data + offset;
+	buffer = mbuf->_data + offset;
 
 	if ( size <= 0 ) {
 		return;
@@ -86,19 +86,19 @@ void Huff_Decompress( msg_t *mbuf, int offset ) {
 		Huff_addRef( &huff, (byte)ch );                               /* Increment node */
 	}
 	mbuf->cursize = cch + offset;
-	Com_Memcpy( mbuf->data + offset, seq, cch );
+	Com_Memcpy( mbuf->_data + offset, seq, cch );
 }
 
 extern int oldsize;
 
-void Huff_Compress( msg_t *mbuf, int offset ) {
+void Huff_Compress( QMsg *mbuf, int offset ) {
 	int i, ch, size;
 	byte seq[65536];
 	byte*       buffer;
 	huff_t huff;
 
 	size = mbuf->cursize - offset;
-	buffer = mbuf->data + + offset;
+	buffer = mbuf->_data + + offset;
 
 	if ( size <= 0 ) {
 		return;
@@ -127,5 +127,5 @@ void Huff_Compress( msg_t *mbuf, int offset ) {
 	bloc += 8;                                              // next byte
 
 	mbuf->cursize = ( bloc >> 3 ) + offset;
-	Com_Memcpy( mbuf->data + offset, seq, ( bloc >> 3 ) );
+	Com_Memcpy( mbuf->_data + offset, seq, ( bloc >> 3 ) );
 }

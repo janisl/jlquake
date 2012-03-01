@@ -40,7 +40,7 @@ SV_Netchan_Encode
 
 ==============
 */
-static void SV_Netchan_Encode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Encode( client_t *client, QMsg *msg ) {
 	long reliableAcknowledge, i, index;
 	byte key, *string;
 	int srdc, sbit, soob;
@@ -79,7 +79,7 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg ) {
 		}
 		index++;
 		// encode the data with this key
-		*( msg->data + i ) = *( msg->data + i ) ^ key;
+		*( msg->_data + i ) = *( msg->_data + i ) ^ key;
 	}
 }
 
@@ -94,7 +94,7 @@ SV_Netchan_Decode
 
 ==============
 */
-static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Decode( client_t *client, QMsg *msg ) {
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
 	byte key, *string;
@@ -129,7 +129,7 @@ static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
 		}
 		index++;
 		// decode the data with this key
-		*( msg->data + i ) = *( msg->data + i ) ^ key;
+		*( msg->_data + i ) = *( msg->_data + i ) ^ key;
 	}
 }
 
@@ -152,7 +152,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client ) {
 			netbuf = client->netchan_start_queue;
 
 			SV_Netchan_Encode( client, &netbuf->msg );
-			Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg.data );
+			Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg._data );
 
 			// pop from queue
 			client->netchan_start_queue = netbuf->next;
@@ -181,7 +181,7 @@ and the gamestate are fragmenting, and collide on send for instance)
 then buffer them and make sure they get sent in correct order
 ================
 */
-void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const byte *data ) {
+void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const byte *data ) {
 	MSG_WriteByte( msg, svc_EOF );
 	if ( client->netchan.unsentFragments ) {
 		netchan_buffer_t *netbuf;
@@ -197,7 +197,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 		Netchan_TransmitNextFragment( &client->netchan );
 	} else {
 		SV_Netchan_Encode( client, msg );
-		Netchan_Transmit( &client->netchan, msg->cursize, msg->data );
+		Netchan_Transmit( &client->netchan, msg->cursize, msg->_data );
 	}
 }
 
@@ -206,7 +206,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 Netchan_SV_Process
 =================
 */
-qboolean SV_Netchan_Process( client_t *client, msg_t *msg ) {
+qboolean SV_Netchan_Process( client_t *client, QMsg *msg ) {
 	int ret;
 	ret = Netchan_Process( &client->netchan, msg );
 	if ( !ret ) {

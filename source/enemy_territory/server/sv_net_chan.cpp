@@ -40,7 +40,7 @@ SV_Netchan_Encode
 
 ==============
 */
-static void SV_Netchan_Encode( client_t *client, msg_t *msg, char *commandString ) {
+static void SV_Netchan_Encode( client_t *client, QMsg *msg, char *commandString ) {
 	long reliableAcknowledge, i, index;
 	byte key, *string;
 	int srdc, sbit, soob;
@@ -80,7 +80,7 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg, char *commandString
 		}
 		index++;
 		// encode the data with this key
-		*( msg->data + i ) = *( msg->data + i ) ^ key;
+		*( msg->_data + i ) = *( msg->_data + i ) ^ key;
 	}
 }
 
@@ -95,7 +95,7 @@ SV_Netchan_Decode
 
 ==============
 */
-static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Decode( client_t *client, QMsg *msg ) {
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
 	byte key, *string;
@@ -130,7 +130,7 @@ static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
 		}
 		index++;
 		// decode the data with this key
-		*( msg->data + i ) = *( msg->data + i ) ^ key;
+		*( msg->_data + i ) = *( msg->_data + i ) ^ key;
 	}
 }
 
@@ -159,7 +159,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client ) {
 		if ( !SV_GameIsSinglePlayer() ) {
 			SV_Netchan_Encode( client, &netbuf->msg, netbuf->lastClientCommandString );
 		}
-		Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg.data );
+		Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg._data );
 
 		Z_Free( netbuf );
 	}
@@ -170,7 +170,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client ) {
 SV_WriteBinaryMessage
 ===============
 */
-static void SV_WriteBinaryMessage( msg_t *msg, client_t *cl ) {
+static void SV_WriteBinaryMessage( QMsg *msg, client_t *cl ) {
 	if ( !cl->binaryMessageLength ) {
 		return;
 	}
@@ -198,7 +198,7 @@ and the gamestate are fragmenting, and collide on send for instance)
 then buffer them and make sure they get sent in correct order
 ================
 */
-void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const byte *data ) {
+void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const byte *data ) {
 	MSG_WriteByte( msg, svc_EOF );
 	SV_WriteBinaryMessage( msg, client );
 
@@ -232,7 +232,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 		if ( !SV_GameIsSinglePlayer() ) {
 			SV_Netchan_Encode( client, msg, client->lastClientCommandString );
 		}
-		Netchan_Transmit( &client->netchan, msg->cursize, msg->data );
+		Netchan_Transmit( &client->netchan, msg->cursize, msg->_data );
 	}
 }
 
@@ -241,7 +241,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg ) {   //int length, const
 Netchan_SV_Process
 =================
 */
-qboolean SV_Netchan_Process( client_t *client, msg_t *msg ) {
+qboolean SV_Netchan_Process( client_t *client, QMsg *msg ) {
 	int ret;
 	ret = Netchan_Process( &client->netchan, msg );
 	if ( !ret ) {

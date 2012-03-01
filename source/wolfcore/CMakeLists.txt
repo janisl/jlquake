@@ -30,6 +30,7 @@ set(WOLFCORE_FILES
 	../core/mathlib.cpp
 	../core/md4.cpp
 	../core/memory.cpp
+	message.cpp
 	../core/strings.cpp
 	../core/system_console_unix.cpp
 	../core/system_unix.cpp

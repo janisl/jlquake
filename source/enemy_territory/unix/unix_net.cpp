@@ -156,7 +156,7 @@ qboolean    Sys_StringToAdr( const char *s, netadr_t *a ) {
 
 //=============================================================================
 
-qboolean    Sys_GetPacket( netadr_t *net_from, msg_t *net_message ) {
+qboolean    Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 	int ret;
 	struct sockaddr_in from;
 	int fromlen;
@@ -177,7 +177,7 @@ qboolean    Sys_GetPacket( netadr_t *net_from, msg_t *net_message ) {
 		}
 
 		fromlen = sizeof( from );
-		ret = recvfrom( net_socket, net_message->data, net_message->maxsize
+		ret = recvfrom( net_socket, net_message->_data, net_message->maxsize
 						, 0, (struct sockaddr *)&from, (socklen_t*)&fromlen );
 
 		SockadrToNetadr( &from, net_from );

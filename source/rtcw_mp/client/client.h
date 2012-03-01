@@ -529,13 +529,13 @@ char *Key_KeynumToString( int keynum, qboolean bTranslate );
 extern int cl_connectedToPureServer;
 
 void CL_SystemInfoChanged( void );
-void CL_ParseServerMessage( msg_t *msg );
+void CL_ParseServerMessage( QMsg *msg );
 
 //====================================================================
 
 void    CL_UpdateInfoPacket( netadr_t from );       // DHM - Nerve
 
-void    CL_ServerInfoPacket( netadr_t from, msg_t *msg );
+void    CL_ServerInfoPacket( netadr_t from, QMsg *msg );
 void    CL_LocalServers_f( void );
 void    CL_GlobalServers_f( void );
 void    CL_FavoriteServers_f( void );
@@ -627,6 +627,6 @@ void LAN_SaveServersToCache();
 //
 // cl_net_chan.c
 //
-void CL_Netchan_Transmit( netchan_t *chan, msg_t* msg ); //int length, const byte *data );
+void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ); //int length, const byte *data );
 void CL_Netchan_TransmitNextFragment( netchan_t *chan );
-qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg );
+qboolean CL_Netchan_Process( netchan_t *chan, QMsg *msg );

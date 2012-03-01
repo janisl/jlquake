@@ -110,7 +110,7 @@ more difficult.
 ==============
 */
 #define SCRAMBLE_START  6
-static void Netchan_ScramblePacket( msg_t *buf ) {
+static void Netchan_ScramblePacket( QMsg *buf ) {
 	unsigned seed;
 	int i, j, c, mask, temp;
 	int seq[MAX_PACKETLEN];
@@ -147,7 +147,7 @@ static void Netchan_ScramblePacket( msg_t *buf ) {
 	}
 }
 
-static void Netchan_UnScramblePacket( msg_t *buf ) {
+static void Netchan_UnScramblePacket( QMsg *buf ) {
 	unsigned seed;
 	int i, j, c, mask, temp;
 	int seq[MAX_PACKETLEN];
@@ -193,7 +193,7 @@ Send one fragment of the current message
 =================
 */
 void Netchan_TransmitNextFragment( netchan_t *chan ) {
-	msg_t send;
+	QMsg send;
 	byte send_buf[MAX_PACKETLEN];
 	int fragmentLength;
 
@@ -221,7 +221,7 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 //	Netchan_ScramblePacket( &send );
 
 	// send the datagram
-	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
+	NET_SendPacket( chan->sock, send.cursize, send._data, chan->remoteAddress );
 
 	if ( showpackets->integer ) {
 		Com_Printf( "%s send %4i : s=%i fragment=%i,%i\n"
@@ -253,7 +253,7 @@ A 0 length will still generate a packet.
 ================
 */
 void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
-	msg_t send;
+	QMsg send;
 	byte send_buf[MAX_PACKETLEN];
 
 	if ( length > MAX_MSGLEN ) {
@@ -290,7 +290,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 //	Netchan_ScramblePacket( &send );
 
 	// send the datagram
-	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
+	NET_SendPacket( chan->sock, send.cursize, send._data, chan->remoteAddress );
 
 	if ( showpackets->integer ) {
 		Com_Printf( "%s send %4i : s=%i ack=%i\n"
@@ -313,7 +313,7 @@ final fragment of a multi-part message, the entire thing will be
 copied out.
 =================
 */
-qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
+qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	int sequence;
 	int qport;
 	int fragmentStart, fragmentLength;
@@ -424,7 +424,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		}
 
 		memcpy( chan->fragmentBuffer + chan->fragmentLength,
-				msg->data + msg->readcount, fragmentLength );
+				msg->_data + msg->readcount, fragmentLength );
 
 		chan->fragmentLength += fragmentLength;
 
@@ -443,9 +443,9 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		// copy the full message over the partial fragment
 
 		// make sure the sequence number is still there
-		*(int *)msg->data = LittleLong( sequence );
+		*(int *)msg->_data = LittleLong( sequence );
 
-		memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
+		memcpy( msg->_data + 4, chan->fragmentBuffer, chan->fragmentLength );
 		msg->cursize = chan->fragmentLength + 4;
 		chan->fragmentLength = 0;
 		msg->readcount = 4; // past the sequence number
@@ -579,7 +579,7 @@ typedef struct {
 loopback_t loopbacks[2];
 
 
-qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message ) {
+qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, QMsg *net_message ) {
 	int i;
 	loopback_t  *loop;
 
@@ -596,7 +596,7 @@ qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	i = loop->get & ( MAX_LOOPBACK - 1 );
 	loop->get++;
 
-	memcpy( net_message->data, loop->msgs[i].data, loop->msgs[i].datalen );
+	memcpy( net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen );
 	net_message->cursize = loop->msgs[i].datalen;
 	memset( net_from, 0, sizeof( *net_from ) );
 	net_from->type = NA_LOOPBACK;

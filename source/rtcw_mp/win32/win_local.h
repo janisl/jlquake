@@ -56,7 +56,7 @@ extern "C" {
 
 void    IN_MouseEvent( int mstate );
 
-qboolean    Sys_GetPacket( netadr_t *net_from, msg_t *net_message );
+qboolean    Sys_GetPacket( netadr_t *net_from, QMsg *net_message );
 
 // Input subsystem
 

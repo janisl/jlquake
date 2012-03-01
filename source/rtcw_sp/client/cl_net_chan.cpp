@@ -43,7 +43,7 @@ CL_Netchan_Encode
 
 ==============
 */
-static void CL_Netchan_Encode( msg_t *msg ) {
+static void CL_Netchan_Encode( QMsg *msg ) {
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
 	byte key, *string;
@@ -97,7 +97,7 @@ CL_Netchan_Decode
 
 ==============
 */
-static void CL_Netchan_Decode( msg_t *msg ) {
+static void CL_Netchan_Decode( QMsg *msg ) {
 	long reliableAcknowledge, i, index;
 	byte key, *string;
 	int srdc, sbit, soob;
@@ -151,7 +151,7 @@ void CL_Netchan_TransmitNextFragment( netchan_t *chan ) {
 CL_Netchan_Transmit
 ================
 */
-void CL_Netchan_Transmit( netchan_t *chan, msg_t* msg ) {
+void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
 //	int i;
 	MSG_WriteByte( msg, clc_EOF );
 //	for(i=CL_ENCODE_START;i<msg->cursize;i++) {
@@ -162,7 +162,7 @@ void CL_Netchan_Transmit( netchan_t *chan, msg_t* msg ) {
 #if DO_NET_ENCODE
 	CL_Netchan_Encode( msg );
 #endif
-	Netchan_Transmit( chan, msg->cursize, msg->data );
+	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }
 
 extern int oldsize;
@@ -173,7 +173,7 @@ int newsize = 0;
 CL_Netchan_Process
 =================
 */
-qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg ) {
+qboolean CL_Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	int ret;
 //	int i;
 //	static		int newsize = 0;

@@ -42,7 +42,7 @@ CL_Netchan_Encode
 
 ==============
 */
-static void CL_Netchan_Encode( msg_t *msg ) {
+static void CL_Netchan_Encode( QMsg *msg ) {
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
 	byte key, *string;
@@ -83,7 +83,7 @@ static void CL_Netchan_Encode( msg_t *msg ) {
 		}
 		index++;
 		// encode the data with this key
-		*( msg->data + i ) = ( *( msg->data + i ) ) ^ key;
+		*( msg->_data + i ) = ( *( msg->_data + i ) ) ^ key;
 	}
 }
 
@@ -96,7 +96,7 @@ CL_Netchan_Decode
 
 ==============
 */
-static void CL_Netchan_Decode( msg_t *msg ) {
+static void CL_Netchan_Decode( QMsg *msg ) {
 	long reliableAcknowledge, i, index;
 	byte key, *string;
 	int srdc, sbit, soob;
@@ -116,7 +116,7 @@ static void CL_Netchan_Decode( msg_t *msg ) {
 	string = (byte*)clc.reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
-	key = clc.challenge ^ LittleLong( *(unsigned *)msg->data );
+	key = clc.challenge ^ LittleLong( *(unsigned *)msg->_data );
 	for ( i = msg->readcount + CL_DECODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last sent and with this message acknowledged client command
 		if ( !string[index] ) {
@@ -129,7 +129,7 @@ static void CL_Netchan_Decode( msg_t *msg ) {
 		}
 		index++;
 		// decode the data with this key
-		*( msg->data + i ) = *( msg->data + i ) ^ key;
+		*( msg->_data + i ) = *( msg->_data + i ) ^ key;
 	}
 }
 
@@ -147,10 +147,10 @@ void CL_Netchan_TransmitNextFragment( netchan_t *chan ) {
 CL_Netchan_Transmit
 ================
 */
-void CL_Netchan_Transmit( netchan_t *chan, msg_t* msg ) {
+void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
 	MSG_WriteByte( msg, clc_EOF );
 	CL_Netchan_Encode( msg );
-	Netchan_Transmit( chan, msg->cursize, msg->data );
+	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }
 
 extern int oldsize;
@@ -161,7 +161,7 @@ int newsize = 0;
 CL_Netchan_Process
 =================
 */
-qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg ) {
+qboolean CL_Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	int ret;
 
 	ret = Netchan_Process( chan, msg );

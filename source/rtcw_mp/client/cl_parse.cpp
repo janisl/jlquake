@@ -42,7 +42,7 @@ char *svc_strings[256] = {
 	"svc_snapshot"
 };
 
-void SHOWNET( msg_t *msg, char *s ) {
+void SHOWNET( QMsg *msg, char *s ) {
 	if ( cl_shownet->integer >= 2 ) {
 		Com_Printf( "%3i:%s\n", msg->readcount - 1, s );
 	}
@@ -171,7 +171,7 @@ Parses deltas from the given base and adds the resulting entity
 to the current frame
 ==================
 */
-void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *old,
+void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, entityState_t *old,
 					 qboolean unchanged ) {
 	entityState_t   *state;
 
@@ -215,7 +215,7 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe ) {
+void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe ) {
 	int newnum;
 	entityState_t   *oldstate;
 	int oldindex, oldnum;
@@ -331,7 +331,7 @@ cl.snap and saved in cl.snapshots[].  If the snapshot is invalid
 for any reason, no changes to the state will be made at all.
 ================
 */
-void CL_ParseSnapshot( msg_t *msg ) {
+void CL_ParseSnapshot( QMsg *msg ) {
 	int len;
 	clSnapshot_t    *old;
 	clSnapshot_t newSnap;
@@ -516,7 +516,7 @@ void CL_SystemInfoChanged( void ) {
 CL_ParseGamestate
 ==================
 */
-void CL_ParseGamestate( msg_t *msg ) {
+void CL_ParseGamestate( QMsg *msg ) {
 	int i;
 	entityState_t   *es;
 	int newnum;
@@ -607,7 +607,7 @@ CL_ParseDownload
 A download message has been received from the server
 =====================
 */
-void CL_ParseDownload( msg_t *msg ) {
+void CL_ParseDownload( QMsg *msg ) {
 	int size;
 	unsigned char data[MAX_MSGLEN];
 	int block;
@@ -702,7 +702,7 @@ Command strings are just saved off until cgame asks for them
 when it transitions a snapshot
 =====================
 */
-void CL_ParseCommandString( msg_t *msg ) {
+void CL_ParseCommandString( QMsg *msg ) {
 	char    *s;
 	int seq;
 	int index;
@@ -726,9 +726,9 @@ void CL_ParseCommandString( msg_t *msg ) {
 CL_ParseServerMessage
 =====================
 */
-void CL_ParseServerMessage( msg_t *msg ) {
+void CL_ParseServerMessage( QMsg *msg ) {
 	int cmd;
-	msg_t msgback;
+	QMsg msgback;
 
 	msgback = *msg;
 

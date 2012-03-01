@@ -32,73 +32,59 @@ If you have questions concerning this license or the applicable additional terms
 
 //============================================================================
 
-//
-// msg.c
-//
-typedef struct {
-	qboolean allowoverflow;     // if false, do a Com_Error
-	qboolean overflowed;        // set to true if the buffer size failed (with allowoverflow set)
-	qboolean oob;               // set to true if the buffer size failed (with allowoverflow set)
-	byte    *data;
-	int maxsize;
-	int cursize;
-	int readcount;
-	int bit;                    // for bitwise reads and writes
-} msg_t;
-
-void MSG_Init( msg_t *buf, byte *data, int length );
-void MSG_InitOOB( msg_t *buf, byte *data, int length );
-void MSG_Clear( msg_t *buf );
-void *MSG_GetSpace( msg_t *buf, int length );
-void MSG_WriteData( msg_t *buf, const void *data, int length );
-void MSG_Bitstream( msg_t *buf );
+void MSG_Init( QMsg *buf, byte *data, int length );
+void MSG_InitOOB( QMsg *buf, byte *data, int length );
+void MSG_Clear( QMsg *buf );
+void *MSG_GetSpace( QMsg *buf, int length );
+void MSG_WriteData( QMsg *buf, const void *data, int length );
+void MSG_Bitstream( QMsg *buf );
 
 
 struct usercmd_s;
 struct entityState_s;
 struct playerState_s;
 
-void MSG_WriteBits( msg_t *msg, int value, int bits );
+void MSG_WriteBits( QMsg *msg, int value, int bits );
 
-void MSG_WriteChar( msg_t *sb, int c );
-void MSG_WriteByte( msg_t *sb, int c );
-void MSG_WriteShort( msg_t *sb, int c );
-void MSG_WriteLong( msg_t *sb, int c );
-void MSG_WriteFloat( msg_t *sb, float f );
-void MSG_WriteString( msg_t *sb, const char *s );
-void MSG_WriteBigString( msg_t *sb, const char *s );
-void MSG_WriteAngle16( msg_t *sb, float f );
+void MSG_WriteChar( QMsg *sb, int c );
+void MSG_WriteByte( QMsg *sb, int c );
+void MSG_WriteShort( QMsg *sb, int c );
+void MSG_WriteLong( QMsg *sb, int c );
+void MSG_WriteFloat( QMsg *sb, float f );
+void MSG_WriteString( QMsg *sb, const char *s );
+void MSG_WriteBigString( QMsg *sb, const char *s );
+void MSG_WriteAngle16( QMsg *sb, float f );
 
-void    MSG_BeginReading( msg_t *sb );
-void    MSG_BeginReadingOOB( msg_t *sb );
+void    MSG_BeginReading( QMsg *sb );
+void    MSG_BeginReadingOOB( QMsg *sb );
 
-int     MSG_ReadBits( msg_t *msg, int bits );
+int     MSG_ReadBits( QMsg *msg, int bits );
 
-int     MSG_ReadChar( msg_t *sb );
-int     MSG_ReadByte( msg_t *sb );
-int     MSG_ReadShort( msg_t *sb );
-int     MSG_ReadLong( msg_t *sb );
-float   MSG_ReadFloat( msg_t *sb );
-char    *MSG_ReadString( msg_t *sb );
-char    *MSG_ReadBigString( msg_t *sb );
-char    *MSG_ReadStringLine( msg_t *sb );
-float   MSG_ReadAngle16( msg_t *sb );
-void    MSG_ReadData( msg_t *sb, void *buffer, int size );
+int     MSG_ReadChar( QMsg *sb );
+int     MSG_ReadByte( QMsg *sb );
+int     MSG_ReadShort( QMsg *sb );
+int     MSG_ReadLong( QMsg *sb );
+float   MSG_ReadFloat( QMsg *sb );
+char    *MSG_ReadString( QMsg *sb );
+char    *MSG_ReadBigString( QMsg *sb );
+char    *MSG_ReadStringLine( QMsg *sb );
+float   MSG_ReadAngle16( QMsg *sb );
+void    MSG_ReadData( QMsg *sb, void *buffer, int size );
 
 
-void MSG_WriteDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
-void MSG_ReadDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
 
-void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
-void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
 
-void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to
+void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
 						   , qboolean force );
-void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to,
+void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
 						  int number );
 
-void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
-void MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_ReadDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
 
 
 void MSG_ReportChangeVectors_f( void );
@@ -168,7 +154,7 @@ qboolean    NET_CompareBaseAdr( netadr_t a, netadr_t b );
 qboolean    NET_IsLocalAddress( netadr_t adr );
 const char  *NET_AdrToString( netadr_t a );
 qboolean    NET_StringToAdr( const char *s, netadr_t *a );
-qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message );
+qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, QMsg *net_message );
 void        NET_Sleep( int msec );
 
 
@@ -215,7 +201,7 @@ void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 void Netchan_Transmit( netchan_t *chan, int length, const byte *data );
 void Netchan_TransmitNextFragment( netchan_t *chan );
 
-qboolean Netchan_Process( netchan_t *chan, msg_t *msg );
+qboolean Netchan_Process( netchan_t *chan, QMsg *msg );
 
 
 
@@ -514,7 +500,7 @@ void CL_MouseEvent( int dx, int dy, int time );
 
 void CL_JoystickEvent( int axis, int value, int time );
 
-void CL_PacketEvent( netadr_t from, msg_t *msg );
+void CL_PacketEvent( netadr_t from, QMsg *msg );
 
 void CL_ConsolePrint( char *text );
 
@@ -562,7 +548,7 @@ void SCR_DebugGraph( float value, int color );   // FIXME: move logging to commo
 void SV_Init( void );
 void SV_Shutdown( char *finalmsg );
 void SV_Frame( int msec );
-void SV_PacketEvent( netadr_t from, msg_t *msg );
+void SV_PacketEvent( netadr_t from, QMsg *msg );
 qboolean SV_GameCommand( void );
 
 
@@ -659,7 +645,7 @@ void Sys_StartProcess( char *exeName, qboolean doexit );            // NERVE - S
 void Sys_OpenURL( char *url, qboolean doexit );                     // NERVE - SMF
 int Sys_GetHighQualityCPU();
 
-void    Huff_Compress( msg_t *buf, int offset );
+void    Huff_Compress( QMsg *buf, int offset );
 
 extern huffman_t clientHuffTables;
 

@@ -302,7 +302,7 @@ void SV_DirectConnect( netadr_t from );
 
 void SV_AuthorizeIpPacket( netadr_t from );
 
-void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
+void SV_ExecuteClientMessage( client_t *cl, QMsg *msg );
 void SV_UserinfoChanged( client_t *cl );
 
 void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd );
@@ -311,7 +311,7 @@ void SV_DropClient( client_t *drop, const char *reason );
 void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK );
 void SV_ClientThink( client_t *cl, usercmd_t *cmd );
 
-void SV_WriteDownloadToClient( client_t *cl, msg_t *msg );
+void SV_WriteDownloadToClient( client_t *cl, QMsg *msg );
 
 //
 // sv_ccmds.c
@@ -322,9 +322,9 @@ void SV_Heartbeat_f( void );
 // sv_snapshot.c
 //
 void SV_AddServerCommand( client_t *client, const char *cmd );
-void SV_UpdateServerCommandsToClient( client_t *client, msg_t *msg );
-void SV_WriteFrameToClient( client_t *client, msg_t *msg );
-void SV_SendMessageToClient( msg_t *msg, client_t *client );
+void SV_UpdateServerCommandsToClient( client_t *client, QMsg *msg );
+void SV_WriteFrameToClient( client_t *client, QMsg *msg );
+void SV_SendMessageToClient( QMsg *msg, client_t *client );
 void SV_SendClientMessages( void );
 void SV_SendClientSnapshot( client_t *client );
 
@@ -415,7 +415,7 @@ void SV_ClipToEntity( q3trace_t *trace, const vec3_t start, const vec3_t mins, c
 //
 // sv_net_chan.c
 //
-void SV_Netchan_Transmit( client_t *client, msg_t *msg );    //int length, const byte *data );
+void SV_Netchan_Transmit( client_t *client, QMsg *msg );    //int length, const byte *data );
 void SV_Netchan_TransmitNextFragment( netchan_t *chan );
-qboolean SV_Netchan_Process( client_t *client, msg_t *msg );
+qboolean SV_Netchan_Process( client_t *client, QMsg *msg );
 
