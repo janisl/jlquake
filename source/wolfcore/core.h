@@ -47,11 +47,9 @@
 #include "socket.h"
 #endif
 #include "../core/shareddefs.h"
-#if 0
-#include "quakedefs.h"
-#include "hexen2defs.h"
-#include "quake2defs.h"
-#endif
+#include "../core/quakedefs.h"
+#include "../core/hexen2defs.h"
+#include "../core/quake2defs.h"
 #include "quake3defs.h"
 #include "message.h"
 #include "../core/huffman.h"
