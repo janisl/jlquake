@@ -55,6 +55,7 @@ public:
 	virtual int GetNumTextures() const = 0;
 	virtual const char* GetTextureName(int Index) const = 0;
 	virtual clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule) = 0;
+	virtual void SetTempBoxModelContents(int contents) = 0;
 	virtual clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs) = 0;
 	virtual int PointLeafnum(const vec3_t p) const = 0;
 	virtual int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf) const = 0;
@@ -77,9 +78,9 @@ public:
 	virtual q2trace_t BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask) = 0;
 	virtual q2trace_t TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model,
 		int BrushMask, vec3_t Origin, vec3_t Angles) = 0;
-	virtual void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	virtual void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, int Capsule) = 0;
-	virtual void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	virtual void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule) = 0;
 	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
 };

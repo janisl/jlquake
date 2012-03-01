@@ -17,7 +17,7 @@
 #ifndef _CM46_LOCAL_H
 #define _CM46_LOCAL_H
 
-#include "../local.h"
+#include "../../../core/clip_map/local.h"
 #include "../../../core/file_formats/bsp46.h"
 #include "../../../core/file_formats/bsp47.h"
 

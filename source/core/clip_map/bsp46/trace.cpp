@@ -65,7 +65,7 @@ TRACING
 //==========================================================================
 
 void QClipMap46::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
-	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
+	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
 	Trace(Results, Start, End, Mins, Maxs, Model, vec3_origin, BrushMask, Capsule, NULL);
 }
@@ -80,7 +80,7 @@ void QClipMap46::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t
 //==========================================================================
 
 void QClipMap46::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
-	const vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask,
+	const vec3_t End, const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
 	if (!Mins)
@@ -181,8 +181,9 @@ void QClipMap46::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
 //
 //==========================================================================
 
-void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
-	clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t* sphere)
+void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
+	const vec3_t mins, const vec3_t maxs, clipHandle_t model, const vec3_t origin,
+	int brushmask, int capsule, sphere_t* sphere)
 {
 	int			i;
 	traceWork_t	tw;

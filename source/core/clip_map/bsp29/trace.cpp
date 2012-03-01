@@ -238,7 +238,7 @@ q2trace_t QClipMap29::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 //==========================================================================
 
 void QClipMap29::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
-	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
+	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
 	throw DropException("Not implemented");
 }
@@ -250,7 +250,7 @@ void QClipMap29::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t
 //==========================================================================
 
 void QClipMap29::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
-	const vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask,
+	const vec3_t End, const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
 	throw DropException("Not implemented");

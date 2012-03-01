@@ -17,7 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "../core.h"
-#include "local.h"
+#include "../../core/clip_map/local.h"
 #if 0
 #include "../file_formats/bsp29.h"
 #include "../file_formats/bsp38.h"
