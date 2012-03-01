@@ -68,7 +68,6 @@ set (ET_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/huffman.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
@@ -163,7 +162,6 @@ set (ETDED_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/huffman.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp

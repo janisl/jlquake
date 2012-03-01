@@ -69,7 +69,6 @@ set(WOLFMP_FILES
 	qcommon/files.cpp
 	qcommon/msg.cpp  
 	qcommon/net_chan.cpp
-	qcommon/huffman.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 
@@ -161,7 +160,6 @@ set(WOLFMPDED_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/huffman.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp

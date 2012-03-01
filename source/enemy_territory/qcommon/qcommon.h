@@ -777,9 +777,6 @@ float Sys_GetCPUSpeed( void );
 void Sys_Chmod( char *file, int mode );
 #endif
 
-void    Huff_Compress( QMsg *buf, int offset );
-void    Huff_Decompress( QMsg *buf, int offset );
-
 extern huffman_t clientHuffTables;
 
 #define SV_ENCODE_START     4

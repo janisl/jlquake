@@ -41,8 +41,7 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-int			bloc = 0;
+static int			bloc = 0;
 
 // CODE --------------------------------------------------------------------
 
@@ -85,8 +84,7 @@ static void add_bit (char bit, byte *fout) {
 }
 
 /* Receive one bit from the input file (buffered) */
-//static 
-int get_bit (byte *fin) {
+static int get_bit (byte *fin) {
 	int t;
 	t = (fin[(bloc>>3)] >> (bloc&7)) & 0x1;
 	bloc++;
@@ -370,7 +368,6 @@ void Huff_Init(huffman_t *huff) {
 	huff->compressor.loc[NYT] = huff->compressor.tree;
 }
 
-#if 0
 void Huff_Decompress(QMsg *mbuf, int offset) {
 	int			ch, cch, i, j, size;
 	byte		seq[65536];
@@ -463,4 +460,3 @@ void Huff_Compress(QMsg *mbuf, int offset) {
 	mbuf->cursize = (bloc>>3) + offset;
 	Com_Memcpy(mbuf->_data+offset, seq, (bloc>>3));
 }
-#endif

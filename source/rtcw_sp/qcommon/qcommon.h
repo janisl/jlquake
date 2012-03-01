@@ -645,8 +645,6 @@ void Sys_StartProcess( char *exeName, qboolean doexit );            // NERVE - S
 void Sys_OpenURL( char *url, qboolean doexit );                     // NERVE - SMF
 int Sys_GetHighQualityCPU();
 
-void    Huff_Compress( QMsg *buf, int offset );
-
 extern huffman_t clientHuffTables;
 
 #define SV_ENCODE_START     4

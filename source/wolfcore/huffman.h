@@ -58,7 +58,5 @@ void	Huff_offsetReceive (node_t *node, int *ch, byte *fin, int *offset);
 void	Huff_offsetTransmit (huff_t *huff, int ch, byte *fout, int *offset);
 void	Huff_putBit( int bit, byte *fout, int *offset);
 int		Huff_getBit( byte *fout, int *offset);
-#if 0
 void	Huff_Compress(QMsg *buf, int offset);
 void	Huff_Decompress(QMsg *buf, int offset);
-#endif
