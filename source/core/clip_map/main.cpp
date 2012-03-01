@@ -21,6 +21,7 @@
 #include "../file_formats/bsp29.h"
 #include "../file_formats/bsp38.h"
 #include "../file_formats/bsp46.h"
+#include "../file_formats/bsp47.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -172,6 +173,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 			break;
 
 		case BSP46_VERSION:
+		case BSP47_VERSION:
 			CMapShared = CM_CreateQClipMap46();
 			break;
 
@@ -340,6 +342,11 @@ const char* CM_GetTextureName(int Index)
 clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
 {
 	return CMapShared->TempBoxModel(Mins, Maxs, Capsule);
+}
+
+void CM_SetTempBoxModelContents(int contents)
+{
+	CMapShared->SetTempBoxModelContents(contents);
 }
 
 //==========================================================================
@@ -598,7 +605,7 @@ q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 //
 //==========================================================================
 
-void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, int Capsule)
 {
 	GetModel(Model)->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Capsule);
@@ -610,7 +617,7 @@ void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, ve
 //
 //==========================================================================
 
-void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
 	GetModel(Model)->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles, Capsule);
@@ -624,5 +631,9 @@ void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3
 
 void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
 {
+	if (!CMapShared)
+	{
+		return;
+	}
 	CMapShared->DrawDebugSurface(drawPoly);
 }

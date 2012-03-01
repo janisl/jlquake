@@ -40,7 +40,7 @@
 #include "../core/crc.h"
 #include "../core/md4.h"
 #include "../core/system.h"
-#include "clip_map/public.h"
+#include "../core/clip_map/public.h"
 #include "../core/content_types.h"
 #include "../core/event_queue.h"
 #if 0

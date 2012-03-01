@@ -91,6 +91,7 @@ const char* CM_GetTextureName(int Index);
 
 // creates a clipping hull for an arbitrary box
 clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule = false);
+void CM_SetTempBoxModelContents(int contents);
 
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
 clipHandle_t CM_ModelHull(clipHandle_t Model, int HullNum);
@@ -127,9 +128,9 @@ bool CM_HullCheckQ1(clipHandle_t Hull, vec3_t P1, vec3_t P2, q1trace_t* Trace);
 q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask);
 q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles);
-void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, int Capsule);
-void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 
 void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
