@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef _QCOMMON_H_
 #define _QCOMMON_H_
 
-#include "../qcommon/cm_public.h"
-
 //#define PRE_RELEASE_DEMO
 #ifdef PRE_RELEASE_DEMO
 #define PRE_RELEASE_DEMO_NODEVMAP

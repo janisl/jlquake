@@ -18,11 +18,10 @@
 
 #include "../core.h"
 #include "../../core/clip_map/local.h"
-#if 0
-#include "../file_formats/bsp29.h"
-#include "../file_formats/bsp38.h"
-#include "../file_formats/bsp46.h"
-#endif
+#include "../../core/file_formats/bsp29.h"
+#include "../../core/file_formats/bsp38.h"
+#include "../../core/file_formats/bsp46.h"
+#include "../../core/file_formats/bsp47.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -59,12 +58,9 @@ Cvar*				cm_flushmap;
 
 static QClipMap* GetModel(clipHandle_t Handle)
 {
-#if 0
 	if (!(Handle & CMH_NON_MAP_MASK))
 	{
-#endif
 		return CMapShared;
-#if 0
 	}
 	
 	int Index = ((Handle & CMH_NON_MAP_MASK) >> CMH_NON_MAP_SHIFT) - 1;
@@ -73,7 +69,6 @@ static QClipMap* GetModel(clipHandle_t Handle)
 		throw DropException("Invalid handle");
 	}
 	return CMNonMapModels[Index];
-#endif
 }
 
 //==========================================================================
@@ -98,7 +93,6 @@ QClipMap::~QClipMap()
 {
 }
 
-#if 0
 //==========================================================================
 //
 //	CM_LoadMap
@@ -179,6 +173,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 			break;
 
 		case BSP46_VERSION:
+		case BSP47_VERSION:
 			CMapShared = CM_CreateQClipMap46();
 			break;
 
@@ -212,7 +207,6 @@ void CM_ClearMap()
 		CMapShared = NULL;
 	}
 }
-#endif
 
 //==========================================================================
 //

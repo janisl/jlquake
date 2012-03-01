@@ -56,7 +56,6 @@ set(WOLFSP_FILES
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
 
-	qcommon/cm_load.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp

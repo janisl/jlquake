@@ -69,12 +69,10 @@ struct q3trace_t
 	int			entityNum;	// entity the contacted surface is a part of
 };
 
-#if 0
 void CM_LoadMap(const char* Name, bool ClientLoad, int* CheckSum);
 void CM_ClearMap();
 
 clipHandle_t CM_PrecacheModel(const char* Name);
-#endif
 clipHandle_t CM_InlineModel(int Index);		// 0 = world, 1 + are bmodels
 
 int CM_NumClusters();
