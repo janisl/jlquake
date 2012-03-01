@@ -420,8 +420,6 @@ void Huff_Decompress(QMsg *mbuf, int offset) {
 	Com_Memcpy(mbuf->_data + offset, seq, cch);
 }
 
-extern 	int oldsize;
-
 void Huff_Compress(QMsg *mbuf, int offset) {
 	int			i, ch, size;
 	byte		seq[65536];

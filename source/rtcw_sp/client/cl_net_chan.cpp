@@ -165,7 +165,6 @@ void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
 	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }
 
-extern int oldsize;
 int newsize = 0;
 
 /*
@@ -186,6 +185,5 @@ qboolean CL_Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	CL_Netchan_Decode( msg );
 #endif
 	newsize += msg->cursize;
-//	Com_Printf("saved %d to %d (%d%%)\n", (oldsize>>3), newsize, 100-(newsize*100/(oldsize>>3)));
 	return qtrue;
 }

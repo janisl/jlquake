@@ -147,7 +147,6 @@ void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
 	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }
 
-extern 	int oldsize;
 int newsize = 0;
 
 /*
