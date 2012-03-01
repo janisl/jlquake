@@ -53,7 +53,9 @@
 #include "quake3defs.h"
 #if 0
 #include "message.h"
+#endif
 #include "huffman.h"
+#if 0
 #include "virtual_machine/public.h"
 #include "player_move.h"
 #include "network_channel.h"
