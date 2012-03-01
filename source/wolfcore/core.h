@@ -45,7 +45,9 @@
 #include "../core/event_queue.h"
 #if 0
 #include "socket.h"
-#include "shareddefs.h"
+#endif
+#include "../core/shareddefs.h"
+#if 0
 #include "quakedefs.h"
 #include "hexen2defs.h"
 #include "quake2defs.h"
