@@ -52,7 +52,7 @@
 #endif
 #include "quake3defs.h"
 #include "message.h"
-#include "huffman.h"
+#include "../core/huffman.h"
 #if 0
 #include "virtual_machine/public.h"
 #include "player_move.h"

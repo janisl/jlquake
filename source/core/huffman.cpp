@@ -53,10 +53,13 @@ static int			bloc = 0;
 
 void	Huff_putBit( int bit, byte *fout, int *offset) {
 	bloc = *offset;
-	if ((bloc&7) == 0) {
-		fout[(bloc>>3)] = 0;
+	int x = bloc >> 3;
+	int y = bloc & 7;
+	if (!y)
+	{
+		fout[x] = 0;
 	}
-	fout[(bloc>>3)] |= bit << (bloc&7);
+	fout[x] |= bit << y;
 	bloc++;
 	*offset = bloc;
 }
@@ -72,11 +75,12 @@ int		Huff_getBit( byte *fin, int *offset) {
 
 /* Add a bit to the output file (buffered) */
 static void add_bit (char bit, byte *fout) {
-	if ((bloc&7) == 0) {
-		fout[(bloc>>3)] = 0;
+	int y = bloc >> 3;
+	int x = bloc++ & 7;
+	if (x == 0) {
+		fout[y] = 0;
 	}
-	fout[(bloc>>3)] |= bit << (bloc&7);
-	bloc++;
+	fout[y] |= bit << x;
 }
 
 /* Receive one bit from the input file (buffered) */

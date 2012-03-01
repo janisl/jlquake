@@ -24,7 +24,7 @@ set(WOLFCORE_FILES
 	../core/event_queue.cpp
 	../core/exception.cpp
 	../core/files.cpp
-	huffman.cpp
+	../core/huffman.cpp
 	../core/info_string.cpp
 	../core/log.cpp
 	../core/mathlib.cpp
