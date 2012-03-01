@@ -36,8 +36,6 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-float SquareRootFloat(float number);
-
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
@@ -246,6 +244,8 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 		VectorSet( tw.sphere.offset, 0, 0, tw.size[1][2] - tw.sphere.radius );
 	}
 
+	bool positionTest = start[0] == end[0] && start[1] == end[1] && start[2] == end[2];
+
 	tw.maxOffset = tw.size[1][0] + tw.size[1][1] + tw.size[1][2];
 
 	// tw.offsets[signbits] = vector to apropriate corner from origin
@@ -282,37 +282,99 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	tw.offsets[7][2] = tw.size[1][2];
 
 	//
-	// calculate bounds
+	// check for point special case
 	//
-	if (tw.sphere.use)
+	if (tw.size[0][0] == 0 && tw.size[0][1] == 0 && tw.size[0][2] == 0)
 	{
-		for (i = 0 ; i < 3 ; i++)
+		tw.isPoint = true;
+		VectorClear(tw.extents);
+	}
+	else
+	{
+		tw.isPoint = false;
+		tw.extents[0] = tw.size[1][0];
+		tw.extents[1] = tw.size[1][1];
+		tw.extents[2] = tw.size[1][2];
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		if (positionTest)
 		{
-			if ( tw.start[i] < tw.end[i] )
+			CalcTraceBounds(&tw, false);
+		}
+		else
+		{
+			vec3_t dir;
+			VectorSubtract(tw.end, tw.start, dir);
+			VectorCopy(dir, tw.dir);
+			VectorNormalize(dir);
+			MakeNormalVectors(dir, tw.tracePlane1.normal, tw.tracePlane2.normal);
+			tw.tracePlane1.dist = DotProduct(tw.tracePlane1.normal, tw.start);
+			tw.tracePlane2.dist = DotProduct(tw.tracePlane2.normal, tw.start);
+			if (tw.isPoint)
 			{
-				tw.bounds[0][i] = tw.start[i] - fabs(tw.sphere.offset[i]) - tw.sphere.radius;
-				tw.bounds[1][i] = tw.end[i] + fabs(tw.sphere.offset[i]) + tw.sphere.radius;
+				tw.traceDist1 = tw.traceDist2 = 1.0f;
 			}
 			else
 			{
-				tw.bounds[0][i] = tw.end[i] - fabs(tw.sphere.offset[i]) - tw.sphere.radius;
-				tw.bounds[1][i] = tw.start[i] + fabs(tw.sphere.offset[i]) + tw.sphere.radius;
+				tw.traceDist1 = tw.traceDist2 = 0.0f;
+				for (i = 0; i < 8; i++)
+				{
+					float dist = Q_fabs(DotProduct(tw.tracePlane1.normal, tw.offsets[i]) - tw.tracePlane1.dist);
+					if (dist > tw.traceDist1)
+					{
+						tw.traceDist1 = dist;
+					}
+					dist = Q_fabs(DotProduct(tw.tracePlane2.normal, tw.offsets[i]) - tw.tracePlane2.dist);
+					if (dist > tw.traceDist2)
+					{
+						tw.traceDist2 = dist;
+					}
+				}
+				// expand for epsilon
+				tw.traceDist1 += 1.0f;
+				tw.traceDist2 += 1.0f;
 			}
+
+			CalcTraceBounds(&tw, true);
 		}
 	}
 	else
 	{
-		for ( i = 0 ; i < 3 ; i++ )
+		//
+		// calculate bounds
+		//
+		if (tw.sphere.use)
 		{
-			if ( tw.start[i] < tw.end[i] )
+			for (i = 0 ; i < 3 ; i++)
 			{
-				tw.bounds[0][i] = tw.start[i] + tw.size[0][i];
-				tw.bounds[1][i] = tw.end[i] + tw.size[1][i];
+				if ( tw.start[i] < tw.end[i] )
+				{
+					tw.bounds[0][i] = tw.start[i] - Q_fabs(tw.sphere.offset[i]) - tw.sphere.radius;
+					tw.bounds[1][i] = tw.end[i] + Q_fabs(tw.sphere.offset[i]) + tw.sphere.radius;
+				}
+				else
+				{
+					tw.bounds[0][i] = tw.end[i] - Q_fabs(tw.sphere.offset[i]) - tw.sphere.radius;
+					tw.bounds[1][i] = tw.start[i] + Q_fabs(tw.sphere.offset[i]) + tw.sphere.radius;
+				}
 			}
-			else
+		}
+		else
+		{
+			for ( i = 0 ; i < 3 ; i++ )
 			{
-				tw.bounds[0][i] = tw.end[i] + tw.size[0][i];
-				tw.bounds[1][i] = tw.start[i] + tw.size[1][i];
+				if ( tw.start[i] < tw.end[i] )
+				{
+					tw.bounds[0][i] = tw.start[i] + tw.size[0][i];
+					tw.bounds[1][i] = tw.end[i] + tw.size[1][i];
+				}
+				else
+				{
+					tw.bounds[0][i] = tw.end[i] + tw.size[0][i];
+					tw.bounds[1][i] = tw.start[i] + tw.size[1][i];
+				}
 			}
 		}
 	}
@@ -320,38 +382,50 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	//
 	// check for position test special case
 	//
-	if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2])
+	if (positionTest)
 	{
 		if ( model )
 		{
+			if (GGameType & (GAME_WolfSP | GAME_ET))
+			{
+				//	Always box vs. box.
+				if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				{
+					tw.sphere.use = false;
+				}
+				TestInLeaf(&tw, &cmod->leaf);
+			}
+			else
+			{
 #ifdef ALWAYS_BBOX_VS_BBOX // bk010201 - FIXME - compile time flag?
-			if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
-			{
-				tw.sphere.use = false;
-				TestInLeaf( &tw, &cmod->leaf );
-			}
-			else
+				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				{
+					tw.sphere.use = false;
+					TestInLeaf( &tw, &cmod->leaf );
+				}
+				else
 #elif defined(ALWAYS_CAPSULE_VS_CAPSULE)
-			if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
-			{
-				TestCapsuleInCapsule( &tw, model );
-			}
-			else
-#endif
-			if ( model == CAPSULE_MODEL_HANDLE )
-			{
-				if ( tw.sphere.use )
+				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
 				{
 					TestCapsuleInCapsule( &tw, model );
 				}
 				else
+#endif
+				if ( model == CAPSULE_MODEL_HANDLE )
 				{
-					TestBoundingBoxInCapsule( &tw, model );
+					if ( tw.sphere.use )
+					{
+						TestCapsuleInCapsule( &tw, model );
+					}
+					else
+					{
+						TestBoundingBoxInCapsule( &tw, model );
+					}
 				}
-			}
-			else
-			{
-				TestInLeaf( &tw, &cmod->leaf );
+				else
+				{
+					TestInLeaf( &tw, &cmod->leaf );
+				}
 			}
 		}
 		else
@@ -362,54 +436,50 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	else
 	{
 		//
-		// check for point special case
-		//
-		if ( tw.size[0][0] == 0 && tw.size[0][1] == 0 && tw.size[0][2] == 0 )
-		{
-			tw.isPoint = true;
-			VectorClear( tw.extents );
-		}
-		else
-		{
-			tw.isPoint = false;
-			tw.extents[0] = tw.size[1][0];
-			tw.extents[1] = tw.size[1][1];
-			tw.extents[2] = tw.size[1][2];
-		}
-
-		//
 		// general sweeping through world
 		//
 		if ( model )
 		{
+			if (GGameType & (GAME_WolfSP | GAME_ET))
+			{
+				//	Always box vs. box.
+				if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				{
+					tw.sphere.use = false;
+				}
+				TraceThroughLeaf(&tw, &cmod->leaf);
+			}
+			else
+			{
 #ifdef ALWAYS_BBOX_VS_BBOX
-			if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
-			{
-				tw.sphere.use = false;
-				TraceThroughLeaf( &tw, &cmod->leaf );
-			}
-			else
+				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				{
+					tw.sphere.use = false;
+					TraceThroughLeaf( &tw, &cmod->leaf );
+				}
+				else
 #elif defined(ALWAYS_CAPSULE_VS_CAPSULE)
-			if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
-			{
-				TraceCapsuleThroughCapsule( &tw, model );
-			}
-			else
-#endif
-			if ( model == CAPSULE_MODEL_HANDLE )
-			{
-				if ( tw.sphere.use )
+				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
 				{
 					TraceCapsuleThroughCapsule( &tw, model );
 				}
 				else
+#endif
+				if ( model == CAPSULE_MODEL_HANDLE )
 				{
-					TraceBoundingBoxThroughCapsule( &tw, model );
+					if ( tw.sphere.use )
+					{
+						TraceCapsuleThroughCapsule( &tw, model );
+					}
+					else
+					{
+						TraceBoundingBoxThroughCapsule( &tw, model );
+					}
 				}
-			}
-			else
-			{
-				TraceThroughLeaf( &tw, &cmod->leaf );
+				else
+				{
+					TraceThroughLeaf( &tw, &cmod->leaf );
+				}
 			}
 		}
 		else
@@ -503,8 +573,15 @@ void QClipMap46::TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f
 			offset *= 2;
 			offset = tw->maxOffset;
 #endif
-			// this is silly
-			offset = 2048;
+			if (GGameType & GAME_ET)
+			{
+				offset = tw->maxOffset;
+			}
+			else
+			{
+				// this is silly
+				offset = 2048;
+			}
 		}
 	}
 
@@ -599,10 +676,25 @@ void QClipMap46::TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			continue;
 		}
 
+		if (GGameType & GAME_ET && cm_optimize->integer)
+		{
+			if (!QClipMap46::TraceThroughBounds(tw, b->bounds[0], b->bounds[1]))
+			{
+				continue;
+			}
+		}
+
+		float fraction = tw->trace.fraction;
+
 		TraceThroughBrush( tw, b );
 		if ( !tw->trace.fraction )
 		{
 			return;
+		}
+
+		if (GGameType & GAME_ET && tw->trace.fraction < fraction)
+		{
+			QClipMap46::CalcTraceBounds(tw, true);
 		}
 	}
 
@@ -626,14 +718,126 @@ void QClipMap46::TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			{
 				continue;
 			}
-			
+
+			if (GGameType & GAME_ET && cm_optimize->integer)
+			{
+				if (!QClipMap46::TraceThroughBounds(tw, patch->pc->bounds[0], patch->pc->bounds[1]))
+				{
+					continue;
+				}
+			}
+
+			float fraction = tw->trace.fraction;
+
 			TraceThroughPatch( tw, patch );
 			if ( !tw->trace.fraction )
 			{
 				return;
 			}
+
+			if (GGameType & GAME_ET && tw->trace.fraction < fraction)
+			{
+				QClipMap46::CalcTraceBounds(tw, true);
+			}
 		}
 	}
+}
+
+void QClipMap46::CalcTraceBounds(traceWork_t* tw, bool expand)
+{
+	if (tw->sphere.use)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (tw->start[i] < tw->end[i])
+			{
+				tw->bounds[0][i] = tw->start[i] - Q_fabs(tw->sphere.offset[i]) - tw->sphere.radius;
+				tw->bounds[1][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] + Q_fabs(tw->sphere.offset[i]) + tw->sphere.radius;
+			}
+			else
+			{
+				tw->bounds[0][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] - Q_fabs(tw->sphere.offset[i]) - tw->sphere.radius;
+				tw->bounds[1][i] = tw->start[i] + Q_fabs(tw->sphere.offset[i]) + tw->sphere.radius;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (tw->start[i] < tw->end[i])
+			{
+				tw->bounds[0][i] = tw->start[i] + tw->size[0][i];
+				tw->bounds[1][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] + tw->size[1][i];
+			}
+			else
+			{
+				tw->bounds[0][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] + tw->size[0][i];
+				tw->bounds[1][i] = tw->start[i] + tw->size[1][i];
+			}
+		}
+	}
+
+	if (expand)
+	{
+		// expand for epsilon
+		for (int i = 0; i < 3; i++)
+		{
+			tw->bounds[0][i] -= 1.0f;
+			tw->bounds[1][i] += 1.0f;
+		}
+	}
+}
+
+int QClipMap46::TraceThroughBounds(const traceWork_t* tw, const vec3_t mins, const vec3_t maxs)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (mins[i] > tw->bounds[1][i])
+		{
+			return false;
+		}
+		if (maxs[i] < tw->bounds[0][i])
+		{
+			return false;
+		}
+	}
+
+	vec3_t center;
+	VectorAdd(mins, maxs, center);
+	VectorScale(center, 0.5f, center);
+	vec3_t extents;
+	VectorSubtract(maxs, center, extents);
+
+	if (Q_fabs(BoxDistanceFromPlane(center, extents, &tw->tracePlane1)) > tw->traceDist1)
+	{
+		return false;
+	}
+	if (Q_fabs(BoxDistanceFromPlane(center, extents, &tw->tracePlane2)) > tw->traceDist2)
+	{
+		return false;
+	}
+
+	// trace might go through the bounds
+	return true;
+}
+
+float QClipMap46::BoxDistanceFromPlane(const vec3_t center, const vec3_t extents, const cplane_t* plane)
+{
+	float d1 = DotProduct(center, plane->normal) - plane->dist;
+	float d2 = Q_fabs(extents[0] * plane->normal[0]) +
+		 Q_fabs(extents[1] * plane->normal[1]) +
+		 Q_fabs(extents[2] * plane->normal[2]);
+
+	if (d1 - d2 > 0.0f)
+	{
+		return d1 - d2;
+	}
+	if (d1 + d2 < 0.0f)
+	{
+		return d1 + d2;
+	}
+	return 0.0f;
 }
 
 //==========================================================================
@@ -806,7 +1010,10 @@ void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 		if (!getout) {
 			tw->trace.allsolid = true;
 			tw->trace.fraction = 0;
-			tw->trace.contents = brush->contents;
+			if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+			{
+				tw->trace.contents = brush->contents;
+			}
 		}
 		return;
 	}
@@ -1251,7 +1458,10 @@ void QClipMap46::TestInLeaf(traceWork_t *tw, cLeaf_t *leaf)
 			{
 				tw->trace.startsolid = tw->trace.allsolid = true;
 				tw->trace.fraction = 0;
-				tw->trace.contents = patch->contents;
+				if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+				{
+					tw->trace.contents = patch->contents;
+				}
 				return;
 			}
 		}
@@ -1475,7 +1685,7 @@ float QClipMap46::DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2, vec3
 			(proj[j] < lp1[j] && proj[j] < lp2[j]))
 			break;
 	if (j < 3) {
-		if (fabs(proj[j] - lp1[j]) < fabs(proj[j] - lp2[j]))
+		if (Q_fabs(proj[j] - lp1[j]) < Q_fabs(proj[j] - lp2[j]))
 			VectorSubtract(p, lp1, t);
 		else
 			VectorSubtract(p, lp2, t);
@@ -1508,13 +1718,13 @@ void QClipMap46::ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vDir
 
 float QClipMap46::SquareRootFloat(float number)
 {
-	long i;
+	int i;
 	float x2, y;
 	const float threehalfs = 1.5F;
 
 	x2 = number * 0.5F;
 	y  = number;
-	i  = *(long*)&y;
+	i  = *(int*)&y;
 	i  = 0x5f3759df - (i >> 1);
 	y  = *(float*)&i;
 	y  = y * (threehalfs - (x2 * y * y));

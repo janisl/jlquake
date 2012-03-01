@@ -19,6 +19,7 @@
 
 #include "../local.h"
 #include "../../file_formats/bsp46.h"
+#include "../../file_formats/bsp47.h"
 
 #define MAX_FACETS			1024
 #define MAX_PATCH_PLANES	2048
@@ -30,11 +31,13 @@
 #define SIDE_CROSS	3
 
 #define MAX_MAP_BOUNDS			65535
+//	Wolf single player uses this:
+//#define MAX_MAP_BOUNDS      ( 128*1024 )    // (SA) (9/19/01) new map dimensions (from Q3TA)
 
-#define	MAX_SUBMODELS			256
+#define MAX_SUBMODELS			512
 
-#define	BOX_MODEL_HANDLE		255
-#define CAPSULE_MODEL_HANDLE	254
+#define BOX_MODEL_HANDLE		511
+#define CAPSULE_MODEL_HANDLE	510
 
 // keep 1/8 unit away to keep the position valid before network snapping
 // and to avoid various numeric issues
@@ -104,6 +107,11 @@ struct traceWork_t
 	qboolean	isPoint;	// optimized case
 	q3trace_t	trace;		// returned from trace call
 	sphere_t	sphere;		// sphere for oriendted capsule collision
+	cplane_t tracePlane1;
+	cplane_t tracePlane2;
+	float traceDist1;
+	float traceDist2;
+	vec3_t dir;
 };
 
 struct patchPlane_t
@@ -167,6 +175,7 @@ private:
 	static void CM_SnapVector(vec3_t normal);
 	void TracePointThrough(traceWork_t* tw) const;
 	static int CheckFacetPlane(float* plane, vec3_t start, vec3_t end, float* enterFrac, float* leaveFrac, int* hit);
+	bool PositionTestWolfMP(traceWork_t* tw) const;
 };
 
 struct cPatch_t
@@ -221,6 +230,9 @@ private:
 		clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t* sphere);
 	void TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f, vec3_t p1, vec3_t p2);
 	void TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf);
+	static void CalcTraceBounds(traceWork_t* tw, bool expand);
+	static int TraceThroughBounds(const traceWork_t* tw, const vec3_t mins, const vec3_t maxs);
+	static float BoxDistanceFromPlane(const vec3_t center, const vec3_t extents, const cplane_t* plane);
 	static void TraceThroughBrush(traceWork_t *tw, cbrush_t *brush);
 	static void TraceThroughPatch(traceWork_t *tw, cPatch_t *patch);
 	void TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model);
@@ -385,5 +397,6 @@ winding_t* CM46_CopyWinding(winding_t* w);
 extern	Cvar		*cm_noAreas;
 extern	Cvar		*cm_noCurves;
 extern	Cvar		*cm_playerCurveClip;
+extern Cvar* cm_optimize;
 
 #endif

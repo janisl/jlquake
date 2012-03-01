@@ -414,9 +414,9 @@ void QClipMap46::FloodAreaConnections()
 	floodvalid++;
 	int floodnum = 0;
 
-	for (int i = 0; i < numAreas; i++)
+	cArea_t* area = areas;
+	for (int i = 0; i < numAreas; i++, area++)
 	{
-		cArea_t* area = &areas[i];
 		if (area->floodvalid == floodvalid)
 		{
 			continue;		// already flooded into
@@ -490,7 +490,7 @@ void QClipMap46::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 		areaPortals[Area1 * numAreas + Area2]++;
 		areaPortals[Area2 * numAreas + Area1]++;
 	}
-	else
+	else if ((GGameType & GAME_Quake3) || areaPortals[Area2 * numAreas + Area1]) // Ridah, fixes loadgame issue
 	{
 		areaPortals[Area1 * numAreas + Area2]--;
 		areaPortals[Area2 * numAreas + Area1]--;

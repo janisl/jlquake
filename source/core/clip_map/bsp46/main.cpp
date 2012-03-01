@@ -36,6 +36,7 @@
 Cvar*		cm_noAreas;
 Cvar*		cm_noCurves;
 Cvar*		cm_playerCurveClip;
+Cvar* cm_optimize;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -259,7 +260,7 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	{
 		return &cmodels[Handle];
 	}
-	if (Handle == BOX_MODEL_HANDLE)
+	if (Handle == BOX_MODEL_HANDLE || Handle == CAPSULE_MODEL_HANDLE)
 	{
 		return &box_model;
 	}
@@ -336,7 +337,7 @@ clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 	VectorCopy(Mins, box_model.mins);
 	VectorCopy(Maxs, box_model.maxs);
 
-	if (Capsule)
+	if (Capsule && !(GGameType & GAME_WolfSP))
 	{
 		return CAPSULE_MODEL_HANDLE;
 	}
@@ -356,6 +357,11 @@ clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 
 	VectorCopy(Mins, box_brush->bounds[0]);
 	VectorCopy(Maxs, box_brush->bounds[1]);
+
+	if (Capsule)
+	{
+		return CAPSULE_MODEL_HANDLE;
+	}
 
 	return BOX_MODEL_HANDLE;
 }

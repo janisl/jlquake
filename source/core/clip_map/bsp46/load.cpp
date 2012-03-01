@@ -59,6 +59,10 @@ void QClipMap46::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	cm_noAreas = Cvar_Get("cm_noAreas", "0", CVAR_CHEAT);
 	cm_noCurves = Cvar_Get("cm_noCurves", "0", CVAR_CHEAT);
 	cm_playerCurveClip = Cvar_Get("cm_playerCurveClip", "1", CVAR_ARCHIVE | CVAR_CHEAT);
+	if (GGameType & GAME_ET)
+	{
+		cm_optimize = Cvar_Get("cm_optimize", "1", CVAR_CHEAT);
+	}
 
 	CheckSum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
 	CheckSum2 = CheckSum;
@@ -69,7 +73,7 @@ void QClipMap46::LoadMap(const char* AName, const Array<quint8>& Buffer)
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
 	}
 
-	if (header.version != BSP46_VERSION)
+	if (header.version != BSP46_VERSION && header.version != BSP47_VERSION)
 	{
 		throw DropException(va("CM_LoadMap: %s has wrong version number (%i should be %i)",
 			AName, header.version, BSP46_VERSION));

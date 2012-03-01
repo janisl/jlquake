@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
-#include "../../wolfcore/clip_map/bsp46/local.h"
+#include "../../core/clip_map/local.h"
 
 /*
 ==================
@@ -56,7 +56,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	// free old stuff
 	if (CMapShared)
 		delete CMapShared;
-	CMapShared = new QClipMap46();
+	CMapShared = CM_CreateQClipMap46();
 
 	//
 	// load the file
