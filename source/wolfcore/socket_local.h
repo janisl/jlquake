@@ -17,9 +17,7 @@
 #ifndef _SOCKET_LOCAL_H
 #define _SOCKET_LOCAL_H
 
-#if 0
 bool SOCK_GetAddressByName(const char* string, netadr_t* Address);
-#endif
 
 #define MAX_IPS		16
 extern int			numIP;

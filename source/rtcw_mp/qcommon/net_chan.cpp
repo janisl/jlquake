@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../wolfcore/socket_local.h"
 
 /*
 
@@ -621,7 +622,7 @@ qboolean    NET_StringToAdr( const char *s, netadr_t *a ) {
 		port++;
 	}
 
-	r = Sys_StringToAdr( base, a );
+	r = SOCK_GetAddressByName( base, a );
 
 	if ( !r ) {
 		a->type = NA_BAD;

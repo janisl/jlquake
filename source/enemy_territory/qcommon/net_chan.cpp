@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../wolfcore/socket_local.h"
 
 /*
 
@@ -450,48 +451,6 @@ qboolean    NET_IsLocalAddress( netadr_t adr ) {
 	return adr.type == NA_LOOPBACK;
 }
 
-// rain - replaces old String::Length(s) == 21 && s[8] == '.' checking in
-// Sys_StringToSockaddr
-// ffffffff.ffffffffffff:65535
-qboolean NET_IsIPXAddress( const char *buf ) {
-	int x, len = String::Length( buf );
-
-	if ( len < 21 ) {
-		return qfalse;
-	}
-
-	for ( x = 0; x < 8 ; x++ ) {
-		if ( !isxdigit( buf[x] ) ) {
-			return qfalse;
-		}
-	}
-
-	if ( buf[8] != '.' ) {
-		return qfalse;
-	}
-
-	for ( x = 9; x < 21; x++ ) {
-		if ( !isxdigit( buf[x] ) ) {
-			return qfalse;
-		}
-	}
-
-	// default port
-	if ( buf[21] == '\0' ) {
-		return qtrue;
-	} else if ( buf[21] != ':' ) {
-		return qfalse;
-	}
-
-	for ( x = 22; x < len; x++ ) {
-		if ( !isdigit( buf[x] ) ) {
-			return qfalse;
-		}
-	}
-
-	return qtrue;
-}
-
 /*
 =============================================================================
 
@@ -787,7 +746,7 @@ qboolean    NET_StringToAdr( const char *s, netadr_t *a ) {
 		port++;
 	}
 
-	r = Sys_StringToAdr( base, a );
+	r = SOCK_GetAddressByName( base, a );
 
 	if ( !r ) {
 		a->type = NA_BAD;

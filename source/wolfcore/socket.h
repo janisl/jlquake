@@ -40,7 +40,9 @@ struct netadr_t
 
 #if 0
 bool SOCK_StringToAdr(const char* string, netadr_t* Address, int DefaultPort);
+#endif
 const char* SOCK_GetHostByAddr(netadr_t* Address);
+#if 0
 const char* SOCK_AdrToString(const netadr_t& Address);
 const char* SOCK_BaseAdrToString(const netadr_t& Address);
 bool SOCK_CompareAdr(const netadr_t& AddressA, const netadr_t& AddressB);
@@ -52,12 +54,15 @@ void SOCK_ShowIP();
 int SOCK_GetPort(netadr_t* Address);
 void SOCK_SetPort(netadr_t* Address, int Port);
 void SOCK_CheckAddr(netadr_t* addr);
+#endif
 
 bool SOCK_Init();
 void SOCK_Shutdown();
 void SOCK_GetLocalAddress();
 
+#if 0
 bool SOCK_GetSocksCvars();
+#endif
 void SOCK_OpenSocks(int Port);
 void SOCK_CloseSocks();
 
@@ -67,7 +72,6 @@ int SOCK_Recv(int Socket, void* Buffer, int Length, netadr_t* From);
 int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To);
 bool SOCK_Sleep(int Socket, int MiliSeconds);
 bool SOCK_GetAddr(int Socket, netadr_t* Address);
-#endif
 
 extern Cvar*	net_socksEnabled;
 extern Cvar*	net_socksServer;

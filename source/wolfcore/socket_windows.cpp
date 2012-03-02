@@ -37,7 +37,6 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-#if 0
 static bool		winsockInitialized = false;
 static WSADATA	winsockdata;
 
@@ -741,4 +740,3 @@ const char* SOCK_GetHostByAddr(netadr_t* addr)
 
 	return NULL;
 }
-#endif
