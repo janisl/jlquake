@@ -360,13 +360,13 @@ void CL_Record_f( void ) {
 
 	// write out the gamestate message
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
-	MSG_Bitstream( &buf );
+	buf.Bitstream();
 
 	// NOTE, MRE: all server->client messages now acknowledge
-	MSG_WriteLong( &buf, clc.reliableSequence );
+	buf.WriteLong( clc.reliableSequence );
 
-	MSG_WriteByte( &buf, svc_gamestate );
-	MSG_WriteLong( &buf, clc.serverCommandSequence );
+	buf.WriteByte( svc_gamestate );
+	buf.WriteLong( clc.serverCommandSequence );
 
 	// configstrings
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
@@ -374,9 +374,9 @@ void CL_Record_f( void ) {
 			continue;
 		}
 		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
-		MSG_WriteByte( &buf, svc_configstring );
-		MSG_WriteShort( &buf, i );
-		MSG_WriteBigString( &buf, s );
+		buf.WriteByte( svc_configstring );
+		buf.WriteShort( i );
+		buf.WriteBigString( s );
 	}
 
 	// baselines
@@ -386,21 +386,21 @@ void CL_Record_f( void ) {
 		if ( !ent->number ) {
 			continue;
 		}
-		MSG_WriteByte( &buf, svc_baseline );
+		buf.WriteByte( svc_baseline );
 		MSG_WriteDeltaEntity( &buf, &nullstate, ent, qtrue );
 	}
 
-	MSG_WriteByte( &buf, svc_EOF );
+	buf.WriteByte( svc_EOF );
 
 	// finished writing the gamestate stuff
 
 	// write the client num
-	MSG_WriteLong( &buf, clc.clientNum );
+	buf.WriteLong( clc.clientNum );
 	// write the checksum feed
-	MSG_WriteLong( &buf, clc.checksumFeed );
+	buf.WriteLong( clc.checksumFeed );
 
 	// finished writing the client packet
-	MSG_WriteByte( &buf, svc_EOF );
+	buf.WriteByte( svc_EOF );
 
 	// write it to the demo file
 	len = LittleLong( clc.serverMessageSequence - 1 );
@@ -1772,8 +1772,8 @@ print OOB are the only messages we handle markups in
 ===================
 */
 void CL_PrintPacket( netadr_t from, QMsg *msg ) {
-	char *s;
-	s = MSG_ReadBigString( msg );
+	const char *s;
+	s = msg->ReadBigString();
 	if ( !String::NICmp( s, "[err_dialog]", 12 ) ) {
 		String::NCpyZ( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		Cvar_Set( "com_errorMessage", clc.serverMessage );
@@ -1941,13 +1941,13 @@ Responses to broadcasts, etc
 =================
 */
 void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
-	char    *s;
+	const char    *s;
 	char    *c;
 
-	MSG_BeginReadingOOB( msg );
-	MSG_ReadLong( msg );    // skip the -1
+	msg->BeginReadingOOB();
+	msg->ReadLong();    // skip the -1
 
-	s = MSG_ReadStringLine( msg );
+	s = msg->ReadStringLine();
 
 	Cmd_TokenizeString( s );
 
@@ -3124,11 +3124,11 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	int i, type;
 	char info[MAX_INFO_STRING];
 	char*   str;
-	char    *infoString;
+	const char    *infoString;
 	int prot;
 	const char    *gameName;
 
-	infoString = MSG_ReadString( msg );
+	infoString = msg->ReadString();
 
 	// Arnout: if this isn't the correct game, ignore it
 	gameName = Info_ValueForKey( infoString, "gamename" );
@@ -3225,7 +3225,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	cls.localServers[i].punkbuster = 0;             // DHM - Nerve
 	cls.localServers[i].gameName[0] = '\0';           // Arnout
 
-	String::NCpyZ( info, MSG_ReadString( msg ), MAX_INFO_STRING );
+	String::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING );
 	if ( String::Length( info ) ) {
 		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
@@ -3371,7 +3371,7 @@ CL_ServerStatusResponse
 ===================
 */
 void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
-	char    *s;
+	const char    *s;
 	char info[MAX_INFO_STRING];
 	int i, l, score, ping;
 	int len;
@@ -3389,7 +3389,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 		return;
 	}
 
-	s = MSG_ReadStringLine( msg );
+	s = msg->ReadStringLine();
 
 	len = 0;
 	String::Sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "%s", s );
@@ -3430,7 +3430,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 		Com_Printf( "\nPlayers:\n" );
 		Com_Printf( "num: score: ping: name:\n" );
 	}
-	for ( i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++ ) {
+	for ( i = 0, s = msg->ReadStringLine(); *s; s = msg->ReadStringLine(), i++ ) {
 
 		len = String::Length( serverStatus->string );
 		String::Sprintf( &serverStatus->string[len], sizeof( serverStatus->string ) - len, "\\%s", s );

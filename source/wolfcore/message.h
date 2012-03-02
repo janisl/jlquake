@@ -28,7 +28,6 @@ public:
 	int bit;				// for bitwise reads and writes
 	int uncompsize;			// net debugging
 
-#if 0
 	void Init(byte* NewData, int Length);
 	void InitOOB(byte* NewData, int Length);
 	void Clear();
@@ -78,10 +77,7 @@ public:
 	float ReadAngle();
 	float ReadAngle16();
 	void ReadData(void* Buffer, int Size);
-#endif
 };
 
-#if 0
 void MSGQW_WriteDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
 void MSGQW_ReadDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
-#endif

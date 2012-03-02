@@ -200,11 +200,11 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 	// write the packet header
 	MSG_InitOOB( &send, send_buf, sizeof( send_buf ) );                // <-- only do the oob here
 
-	MSG_WriteLong( &send, chan->outgoingSequence | FRAGMENT_BIT );
+	send.WriteLong( chan->outgoingSequence | FRAGMENT_BIT );
 
 	// send the qport if we are a client
 	if ( chan->sock == NS_CLIENT ) {
-		MSG_WriteShort( &send, qport->integer );
+		send.WriteShort( qport->integer );
 	}
 
 	// copy the reliable message to the packet first
@@ -213,9 +213,9 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 		fragmentLength = chan->unsentLength - chan->unsentFragmentStart;
 	}
 
-	MSG_WriteShort( &send, chan->unsentFragmentStart );
-	MSG_WriteShort( &send, fragmentLength );
-	MSG_WriteData( &send, chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
+	send.WriteShort( chan->unsentFragmentStart );
+	send.WriteShort( fragmentLength );
+	send.WriteData( chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
 
 	// XOR scramble all data in the packet after the header
 //	Netchan_ScramblePacket( &send );
@@ -276,15 +276,15 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 	// write the packet header
 	MSG_InitOOB( &send, send_buf, sizeof( send_buf ) );
 
-	MSG_WriteLong( &send, chan->outgoingSequence );
+	send.WriteLong( chan->outgoingSequence );
 	chan->outgoingSequence++;
 
 	// send the qport if we are a client
 	if ( chan->sock == NS_CLIENT ) {
-		MSG_WriteShort( &send, qport->integer );
+		send.WriteShort( qport->integer );
 	}
 
-	MSG_WriteData( &send, data, length );
+	send.WriteData( data, length );
 
 	// XOR scramble all data in the packet after the header
 //	Netchan_ScramblePacket( &send );
@@ -323,8 +323,8 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 //	Netchan_UnScramblePacket( msg );
 
 	// get sequence numbers
-	MSG_BeginReadingOOB( msg );
-	sequence = MSG_ReadLong( msg );
+	msg->BeginReadingOOB();
+	sequence = msg->ReadLong();
 
 	// check for fragment information
 	if ( sequence & FRAGMENT_BIT ) {
@@ -336,13 +336,13 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 
 	// read the qport if we are a server
 	if ( chan->sock == NS_SERVER ) {
-		qport = MSG_ReadShort( msg );
+		qport = msg->ReadShort();
 	}
 
 	// read the fragment information
 	if ( fragmented ) {
-		fragmentStart = MSG_ReadShort( msg );
-		fragmentLength = MSG_ReadShort( msg );
+		fragmentStart = msg->ReadShort();
+		fragmentLength = msg->ReadShort();
 	} else {
 		fragmentStart = 0;      // stop warning message
 		fragmentLength = 0;

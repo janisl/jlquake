@@ -57,7 +57,7 @@ static void SV_Netchan_Encode( client_t *client, QMsg *msg ) {
 	msg->readcount = 0;
 	msg->oob = 0;
 
-	reliableAcknowledge = MSG_ReadLong( msg );
+	reliableAcknowledge = msg->ReadLong();
 
 	msg->oob = soob;
 	msg->bit = sbit;
@@ -105,9 +105,9 @@ static void SV_Netchan_Decode( client_t *client, QMsg *msg ) {
 
 	msg->oob = 0;
 
-	serverId = MSG_ReadLong( msg );
-	messageAcknowledge = MSG_ReadLong( msg );
-	reliableAcknowledge = MSG_ReadLong( msg );
+	serverId = msg->ReadLong();
+	messageAcknowledge = msg->ReadLong();
+	reliableAcknowledge = msg->ReadLong();
 
 	msg->oob = soob;
 	msg->bit = sbit;
@@ -182,13 +182,13 @@ then buffer them and make sure they get sent in correct order
 ================
 */
 void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const byte *data ) {
-	MSG_WriteByte( msg, svc_EOF );
+	msg->WriteByte( svc_EOF );
 	if ( client->netchan.unsentFragments ) {
 		netchan_buffer_t *netbuf;
 		//Com_DPrintf("SV_Netchan_Transmit: there are unsent fragments remaining\n");
 		netbuf = (netchan_buffer_t *)Z_Malloc( sizeof( netchan_buffer_t ) );
 		// store the msg, we can't store it encoded, as the encoding depends on stuff we still have to finish sending
-		MSG_Copy( &netbuf->msg, netbuf->msgBuffer, sizeof( netbuf->msgBuffer ), msg );
+		netbuf->msg.Copy( netbuf->msgBuffer, sizeof( netbuf->msgBuffer ), *msg );
 		netbuf->next = NULL;
 		// insert it in the queue, the message will be encoded and sent later
 		*client->netchan_end_queue = netbuf;

@@ -36,48 +36,11 @@ If you have questions concerning this license or the applicable additional terms
 
 void MSG_Init( QMsg *buf, byte *data, int length );
 void MSG_InitOOB( QMsg *buf, byte *data, int length );
-void MSG_Clear( QMsg *buf );
 void *MSG_GetSpace( QMsg *buf, int length );
-void MSG_WriteData( QMsg *buf, const void *data, int length );
-void MSG_Bitstream( QMsg *buf );
-
-// TTimo
-// copy a QMsg in case we need to store it as is for a bit
-// (as I needed this to keep an QMsg from a static var for later use)
-// sets data buffer as MSG_Init does prior to do the copy
-void MSG_Copy( QMsg *buf, byte *data, int length, QMsg *src );
 
 struct usercmd_s;
 struct entityState_s;
 struct playerState_s;
-
-void MSG_WriteBits( QMsg *msg, int value, int bits );
-
-void MSG_WriteChar( QMsg *sb, int c );
-void MSG_WriteByte( QMsg *sb, int c );
-void MSG_WriteShort( QMsg *sb, int c );
-void MSG_WriteLong( QMsg *sb, int c );
-void MSG_WriteFloat( QMsg *sb, float f );
-void MSG_WriteString( QMsg *sb, const char *s );
-void MSG_WriteBigString( QMsg *sb, const char *s );
-void MSG_WriteAngle16( QMsg *sb, float f );
-
-void    MSG_BeginReading( QMsg *sb );
-void    MSG_BeginReadingOOB( QMsg *sb );
-
-int     MSG_ReadBits( QMsg *msg, int bits );
-
-int     MSG_ReadChar( QMsg *sb );
-int     MSG_ReadByte( QMsg *sb );
-int     MSG_ReadShort( QMsg *sb );
-int     MSG_ReadLong( QMsg *sb );
-float   MSG_ReadFloat( QMsg *sb );
-char    *MSG_ReadString( QMsg *sb );
-char    *MSG_ReadBigString( QMsg *sb );
-char    *MSG_ReadStringLine( QMsg *sb );
-float   MSG_ReadAngle16( QMsg *sb );
-void    MSG_ReadData( QMsg *sb, void *buffer, int size );
-
 
 void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
 void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );

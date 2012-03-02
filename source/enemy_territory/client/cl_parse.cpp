@@ -241,7 +241,7 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 
 	while ( 1 ) {
 		// read the entity index number
-		newnum = MSG_ReadBits( msg, GENTITYNUM_BITS );
+		newnum = msg->ReadBits( GENTITYNUM_BITS );
 
 		if ( newnum == ( MAX_GENTITIES - 1 ) ) {
 			break;
@@ -342,7 +342,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// get the reliable sequence acknowledge number
 	// NOTE: now sent with all server to client messages
-	//clc.reliableAcknowledge = MSG_ReadLong( msg );
+	//clc.reliableAcknowledge = msg->ReadLong();
 
 	// read in the new snapshot to a temporary buffer
 	// we will only copy to cl.snap if it is valid
@@ -352,17 +352,17 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	// message before we got to svc_snapshot
 	newSnap.serverCommandNum = clc.serverCommandSequence;
 
-	newSnap.serverTime = MSG_ReadLong( msg );
+	newSnap.serverTime = msg->ReadLong();
 
 	newSnap.messageNum = clc.serverMessageSequence;
 
-	deltaNum = MSG_ReadByte( msg );
+	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
 		newSnap.deltaNum = -1;
 	} else {
 		newSnap.deltaNum = newSnap.messageNum - deltaNum;
 	}
-	newSnap.snapFlags = MSG_ReadByte( msg );
+	newSnap.snapFlags = msg->ReadByte();
 
 	// If the frame is delta compressed from data that we
 	// no longer have available, we must suck up the rest of
@@ -424,14 +424,14 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	}
 
 	// read areamask
-	len = MSG_ReadByte( msg );
+	len = msg->ReadByte();
 
 	if ( len > sizeof( newSnap.areamask ) ) {
 		Com_Error( ERR_DROP,"CL_ParseSnapshot: Invalid size %d for areamask.", len );
 		return;
 	}
 
-	MSG_ReadData( msg, &newSnap.areamask, len );
+	msg->ReadData(&newSnap.areamask, len );
 
 	// read playerinfo
 	SHOWNET( msg, "playerstate" );
@@ -572,7 +572,7 @@ void CL_ParseGamestate( QMsg *msg ) {
 	int newnum;
 	entityState_t nullstate;
 	int cmd;
-	char            *s;
+	const char            *s;
 
 	Con_Close();
 
@@ -582,12 +582,12 @@ void CL_ParseGamestate( QMsg *msg ) {
 	CL_ClearState();
 
 	// a gamestate always marks a server command sequence
-	clc.serverCommandSequence = MSG_ReadLong( msg );
+	clc.serverCommandSequence = msg->ReadLong();
 
 	// parse all the configstrings and baselines
 	cl.gameState.dataCount = 1; // leave a 0 at the beginning for uninitialized configstrings
 	while ( 1 ) {
-		cmd = MSG_ReadByte( msg );
+		cmd = msg->ReadByte();
 
 		if ( cmd == svc_EOF ) {
 			break;
@@ -596,11 +596,11 @@ void CL_ParseGamestate( QMsg *msg ) {
 		if ( cmd == svc_configstring ) {
 			int len;
 
-			i = MSG_ReadShort( msg );
+			i = msg->ReadShort();
 			if ( i < 0 || i >= MAX_CONFIGSTRINGS ) {
 				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 			}
-			s = MSG_ReadBigString( msg );
+			s = msg->ReadBigString();
 			len = String::Length( s );
 
 			if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
@@ -612,7 +612,7 @@ void CL_ParseGamestate( QMsg *msg ) {
 			memcpy( cl.gameState.stringData + cl.gameState.dataCount, s, len + 1 );
 			cl.gameState.dataCount += len + 1;
 		} else if ( cmd == svc_baseline ) {
-			newnum = MSG_ReadBits( msg, GENTITYNUM_BITS );
+			newnum = msg->ReadBits( GENTITYNUM_BITS );
 			if ( newnum < 0 || newnum >= MAX_GENTITIES ) {
 				Com_Error( ERR_DROP, "Baseline number out of range: %i", newnum );
 			}
@@ -624,9 +624,9 @@ void CL_ParseGamestate( QMsg *msg ) {
 		}
 	}
 
-	clc.clientNum = MSG_ReadLong( msg );
+	clc.clientNum = msg->ReadLong();
 	// read the checksum feed
-	clc.checksumFeed = MSG_ReadLong( msg );
+	clc.checksumFeed = msg->ReadLong();
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
@@ -670,7 +670,7 @@ void CL_ParseDownload( QMsg *msg ) {
 	}
 
 	// read the data
-	block = MSG_ReadShort( msg );
+	block = msg->ReadShort();
 
 	// TTimo - www dl
 	// if we haven't acked the download redirect yet
@@ -678,9 +678,9 @@ void CL_ParseDownload( QMsg *msg ) {
 		if ( !clc.bWWWDl ) {
 			// server is sending us a www download
 			String::NCpyZ( cls.originalDownloadName, cls.downloadName, sizeof( cls.originalDownloadName ) );
-			String::NCpyZ( cls.downloadName, MSG_ReadString( msg ), sizeof( cls.downloadName ) );
-			clc.downloadSize = MSG_ReadLong( msg );
-			clc.downloadFlags = MSG_ReadLong( msg );
+			String::NCpyZ( cls.downloadName, msg->ReadString(), sizeof( cls.downloadName ) );
+			clc.downloadSize = msg->ReadLong();
+			clc.downloadFlags = msg->ReadLong();
 			if ( clc.downloadFlags & ( 1 << DL_FLAG_URL ) ) {
 				Sys_OpenURL( cls.downloadName, qtrue );
 				Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
@@ -721,33 +721,33 @@ void CL_ParseDownload( QMsg *msg ) {
 		} else
 		{
 			// server keeps sending that message till we ack it, eat and ignore
-			//MSG_ReadLong( msg );
-			MSG_ReadString( msg );
-			MSG_ReadLong( msg );
-			MSG_ReadLong( msg );
+			//msg->ReadLong();
+			msg->ReadString();
+			msg->ReadLong();
+			msg->ReadLong();
 			return;
 		}
 	}
 
 	if ( !block ) {
 		// block zero is special, contains file size
-		clc.downloadSize = MSG_ReadLong( msg );
+		clc.downloadSize = msg->ReadLong();
 
 		Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 
 		if ( clc.downloadSize < 0 ) {
-			Com_Error( ERR_DROP, MSG_ReadString( msg ) );
+			Com_Error( ERR_DROP, msg->ReadString() );
 			return;
 		}
 	}
 
-	size = MSG_ReadShort( msg );
+	size = msg->ReadShort();
 	if ( size < 0 || size > sizeof( data ) ) {
 		Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
 		return;
 	}
 
-	MSG_ReadData( msg, data, size );
+	msg->ReadData(data, size );
 
 	if ( clc.downloadBlock != block ) {
 		Com_DPrintf( "CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block );
@@ -811,12 +811,12 @@ when it transitions a snapshot
 =====================
 */
 void CL_ParseCommandString( QMsg *msg ) {
-	char    *s;
+	const char    *s;
 	int seq;
 	int index;
 
-	seq = MSG_ReadLong( msg );
-	s = MSG_ReadString( msg );
+	seq = msg->ReadLong();
+	s = msg->ReadString();
 
 	// see if we have already executed stored it off
 	if ( clc.serverCommandSequence >= seq ) {
@@ -863,10 +863,10 @@ void CL_ParseServerMessage( QMsg *msg ) {
 		Com_Printf( "------------------\n" );
 	}
 
-	MSG_Bitstream( msg );
+	msg->Bitstream();
 
 	// get the reliable sequence acknowledge number
-	clc.reliableAcknowledge = MSG_ReadLong( msg );
+	clc.reliableAcknowledge = msg->ReadLong();
 	//
 	if ( clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS ) {
 		clc.reliableAcknowledge = clc.reliableSequence;
@@ -881,7 +881,7 @@ void CL_ParseServerMessage( QMsg *msg ) {
 			break;
 		}
 
-		cmd = MSG_ReadByte( msg );
+		cmd = msg->ReadByte();
 
 		if ( cmd == svc_EOF ) {
 			SHOWNET( msg, "END OF MESSAGE" );

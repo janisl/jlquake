@@ -58,7 +58,7 @@ static void SV_Netchan_Encode( client_t *client, QMsg *msg, char *commandString 
 	msg->readcount = 0;
 	msg->oob = 0;
 
-	reliableAcknowledge = MSG_ReadLong( msg );
+	reliableAcknowledge = msg->ReadLong();
 
 	msg->oob = soob;
 	msg->bit = sbit;
@@ -106,9 +106,9 @@ static void SV_Netchan_Decode( client_t *client, QMsg *msg ) {
 
 	msg->oob = 0;
 
-	serverId = MSG_ReadLong( msg );
-	messageAcknowledge = MSG_ReadLong( msg );
-	reliableAcknowledge = MSG_ReadLong( msg );
+	serverId = msg->ReadLong();
+	messageAcknowledge = msg->ReadLong();
+	reliableAcknowledge = msg->ReadLong();
 
 	msg->oob = soob;
 	msg->bit = sbit;
@@ -182,7 +182,7 @@ static void SV_WriteBinaryMessage( QMsg *msg, client_t *cl ) {
 		return;
 	}
 
-	MSG_WriteData( msg, cl->binaryMessage, cl->binaryMessageLength );
+	msg->WriteData( cl->binaryMessage, cl->binaryMessageLength );
 	cl->binaryMessageLength = 0;
 	cl->binaryMessageOverflowed = qfalse;
 }
@@ -199,7 +199,7 @@ then buffer them and make sure they get sent in correct order
 ================
 */
 void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const byte *data ) {
-	MSG_WriteByte( msg, svc_EOF );
+	msg->WriteByte( svc_EOF );
 	SV_WriteBinaryMessage( msg, client );
 
 	if ( client->netchan.unsentFragments ) {
@@ -208,7 +208,7 @@ void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const 
 		netbuf = (netchan_buffer_t *)Z_Malloc( sizeof( netchan_buffer_t ) );
 
 		// store the msg, we can't store it encoded, as the encoding depends on stuff we still have to finish sending
-		MSG_Copy( &netbuf->msg, netbuf->msgBuffer, sizeof( netbuf->msgBuffer ), msg );
+		netbuf->msg.Copy( netbuf->msgBuffer, sizeof( netbuf->msgBuffer ), *msg );
 
 		// copy the command, since the command number used for encryption is
 		// already compressed in the buffer, and receiving a new command would

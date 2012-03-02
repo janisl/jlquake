@@ -22,7 +22,6 @@
 
 #include "core.h"
 
-#if 0
 int oldsize = 0;
 int overflows;
 huffman_t msgHuff;
@@ -89,6 +88,8 @@ void QMsg::BeginReadingOOB()
 void QMsg::WriteBits(int Value, int NumBits)
 {
 	oldsize += NumBits;
+
+	uncompsize += NumBits;
 
 	if (maxsize - cursize < (abs(NumBits) + 7) / 8)
 	{
@@ -727,4 +728,3 @@ void MSGQW_ReadDeltaUsercmd(QMsg* buf, qwusercmd_t* from, qwusercmd_t* move)
 // read time to run command
 	move->msec = buf->ReadByte ();
 }
-#endif

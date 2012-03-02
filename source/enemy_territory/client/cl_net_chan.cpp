@@ -59,9 +59,9 @@ static void CL_Netchan_Encode( QMsg *msg ) {
 	msg->readcount = 0;
 	msg->oob = 0;
 
-	serverId = MSG_ReadLong( msg );
-	messageAcknowledge = MSG_ReadLong( msg );
-	reliableAcknowledge = MSG_ReadLong( msg );
+	serverId = msg->ReadLong();
+	messageAcknowledge = msg->ReadLong();
+	reliableAcknowledge = msg->ReadLong();
 
 	msg->oob = soob;
 	msg->bit = sbit;
@@ -107,7 +107,7 @@ static void CL_Netchan_Decode( QMsg *msg ) {
 
 	msg->oob = 0;
 
-	reliableAcknowledge = MSG_ReadLong( msg );
+	reliableAcknowledge = msg->ReadLong();
 
 	msg->oob = soob;
 	msg->bit = sbit;
@@ -161,7 +161,7 @@ static void CL_WriteBinaryMessage( QMsg *msg ) {
 		return;
 	}
 
-	MSG_WriteData( msg, clc.binaryMessage, clc.binaryMessageLength );
+	msg->WriteData( clc.binaryMessage, clc.binaryMessageLength );
 	clc.binaryMessageLength = 0;
 	clc.binaryMessageOverflowed = qfalse;
 }
@@ -172,7 +172,7 @@ CL_Netchan_Transmit
 ================
 */
 void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
-	MSG_WriteByte( msg, clc_EOF );
+	msg->WriteByte( clc_EOF );
 	CL_WriteBinaryMessage( msg );
 
 	if ( !SV_GameIsSinglePlayer() ) {

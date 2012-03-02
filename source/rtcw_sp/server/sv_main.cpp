@@ -506,13 +506,13 @@ connectionless packets.
 =================
 */
 void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
-	char    *s;
+	const char    *s;
 	char    *c;
 
-	MSG_BeginReadingOOB( msg );
-	MSG_ReadLong( msg );        // skip the -1 marker
+	msg->BeginReadingOOB();
+	msg->ReadLong();        // skip the -1 marker
 
-	s = MSG_ReadStringLine( msg );
+	s = msg->ReadStringLine();
 
 	Cmd_TokenizeString( s );
 
@@ -562,9 +562,9 @@ void SV_PacketEvent( netadr_t from, QMsg *msg ) {
 
 	// read the qport out of the message so we can fix up
 	// stupid address translating routers
-	MSG_BeginReadingOOB( msg );
-	MSG_ReadLong( msg );                // sequence number
-	qport = MSG_ReadShort( msg ) & 0xffff;
+	msg->BeginReadingOOB();
+	msg->ReadLong();                // sequence number
+	qport = msg->ReadShort() & 0xffff;
 
 	// find which client the message is from
 	for ( i = 0, cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
