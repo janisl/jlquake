@@ -26,6 +26,7 @@ public:
 	int cursize;
 	int readcount;
 	int bit;				// for bitwise reads and writes
+	int uncompsize;			// net debugging
 
 	void Init(byte* NewData, int Length);
 	void InitOOB(byte* NewData, int Length);

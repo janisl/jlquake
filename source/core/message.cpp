@@ -89,6 +89,8 @@ void QMsg::WriteBits(int Value, int NumBits)
 {
 	oldsize += NumBits;
 
+	uncompsize += NumBits;
+
 	if (maxsize - cursize < (abs(NumBits) + 7) / 8)
 	{
 		if (!allowoverflow)

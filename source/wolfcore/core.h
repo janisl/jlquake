@@ -51,7 +51,7 @@
 #include "../core/hexen2defs.h"
 #include "../core/quake2defs.h"
 #include "quake3defs.h"
-#include "message.h"
+#include "../core/message.h"
 #include "../core/huffman.h"
 #if 0
 #include "virtual_machine/public.h"
