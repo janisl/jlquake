@@ -44,7 +44,6 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-#if 0
 static bool		usingSocks = false;
 static int		socks_socket;
 static sockaddr	socksRelayAddr;
@@ -697,4 +696,3 @@ const char* SOCK_GetHostByAddr(netadr_t* addr)
 
 	return NULL;
 }
-#endif
