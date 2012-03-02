@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../wolfcore/socket_local.h"
+#include "../../core/socket_local.h"
 
 static Cvar   *noudp;
 

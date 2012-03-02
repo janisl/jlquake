@@ -17,7 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "socket_local.h"
+#include "../core/socket_local.h"
 
 // MACROS ------------------------------------------------------------------
 
