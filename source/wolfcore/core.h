@@ -43,9 +43,7 @@
 #include "../core/clip_map/public.h"
 #include "../core/content_types.h"
 #include "../core/event_queue.h"
-#if 0
 #include "socket.h"
-#endif
 #include "../core/shareddefs.h"
 #include "../core/quakedefs.h"
 #include "../core/hexen2defs.h"

@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "win_local.h"
+#include "../../wolfcore/socket_local.h"
 
 // install the internet SDK from
 // http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
@@ -46,20 +47,11 @@ static qboolean networkingEnabled = qfalse;
 static Cvar   *net_noudp;
 static Cvar   *net_noipx;
 
-static Cvar   *net_socksEnabled;
-static Cvar   *net_socksServer;
-static Cvar   *net_socksPort;
-static Cvar   *net_socksUsername;
-static Cvar   *net_socksPassword;
 static struct sockaddr socksRelayAddr;
 
 static SOCKET ip_socket;
 static SOCKET socks_socket;
 static SOCKET ipx_socket;
-
-#define MAX_IPS     16
-static int numIP;
-static byte localIP[MAX_IPS][4];
 
 //=============================================================================
 

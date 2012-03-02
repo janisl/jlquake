@@ -73,8 +73,6 @@ NET
 
 #define MAX_PACKET_USERCMDS     32      // max number of usercmd_t in a packet
 
-#define PORT_ANY            -1
-
 // RF, increased this, seems to keep causing problems when set to 64, especially when loading
 // a savegame, which is hard to fix on that side, since we can't really spread out a loadgame
 // among several frames
@@ -83,28 +81,9 @@ NET
 #define MAX_RELIABLE_COMMANDS   256 // bigger!
 
 typedef enum {
-	NA_BOT,
-	NA_BAD,                 // an address lookup failed
-	NA_LOOPBACK,
-	NA_BROADCAST,
-	NA_IP,
-	NA_IPX,
-	NA_BROADCAST_IPX
-} netadrtype_t;
-
-typedef enum {
 	NS_CLIENT,
 	NS_SERVER
 } netsrc_t;
-
-typedef struct {
-	netadrtype_t type;
-
-	byte ip[4];
-	byte ipx[10];
-
-	unsigned short port;
-} netadr_t;
 
 void        NET_Init( void );
 void        NET_Shutdown( void );
