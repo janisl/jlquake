@@ -44,21 +44,6 @@
     <ClCompile Include="client\cl_ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\cm_load.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cm_patch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cm_polylib.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cm_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cm_trace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\cmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,9 +54,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\files.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\huffman.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\msg.cpp">
@@ -185,18 +167,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\cm_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\cm_patch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\cm_polylib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\cm_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\g_public.h">

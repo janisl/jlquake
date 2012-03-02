@@ -19,6 +19,102 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\core\clip_map\bsp29\load.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp29\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp29\test.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp29\trace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp29\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp38\load.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp38\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp38\test.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp38\trace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp38\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp46\load.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp46\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp46\patch.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp46\polylib.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp46\test.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\bsp46\trace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\core\clip_map\non_map.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)clip_map\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)clip_map\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\core\command_buffer.cpp" />
     <ClCompile Include="..\core\Common.cpp" />
     <ClCompile Include="..\core\common_defs.cpp" />
@@ -28,14 +124,26 @@
     <ClCompile Include="..\core\event_queue.cpp" />
     <ClCompile Include="..\core\exception.cpp" />
     <ClCompile Include="..\core\files.cpp" />
+    <ClCompile Include="..\core\huffman.cpp" />
     <ClCompile Include="..\core\info_string.cpp" />
     <ClCompile Include="..\core\log.cpp" />
+    <ClCompile Include="..\core\mathlib.cpp" />
     <ClCompile Include="..\core\md4.cpp" />
     <ClCompile Include="..\core\memory.cpp" />
+    <ClCompile Include="..\core\message.cpp" />
     <ClCompile Include="..\core\strings.cpp" />
     <ClCompile Include="..\core\system_console_windows.cpp" />
     <ClCompile Include="..\core\system_windows.cpp" />
     <ClCompile Include="..\core\unzip.cpp" />
+    <ClCompile Include="socket.cpp" />
+    <ClCompile Include="socket_windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\core\clip_map\bsp29\local.h" />
+    <ClInclude Include="..\core\clip_map\bsp38\local.h" />
+    <ClInclude Include="..\core\clip_map\bsp46\local.h" />
+    <ClInclude Include="..\core\clip_map\local.h" />
+    <ClInclude Include="..\core\clip_map\public.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}</ProjectGuid>

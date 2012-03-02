@@ -96,16 +96,10 @@
     <ClCompile Include="client\cl_parse.cpp" />
     <ClCompile Include="client\cl_scrn.cpp" />
     <ClCompile Include="client\cl_ui.cpp" />
-    <ClCompile Include="qcommon\cm_load.cpp" />
-    <ClCompile Include="qcommon\cm_patch.cpp" />
-    <ClCompile Include="qcommon\cm_polylib.cpp" />
-    <ClCompile Include="qcommon\cm_test.cpp" />
-    <ClCompile Include="qcommon\cm_trace.cpp" />
     <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="qcommon\huffman.cpp" />
     <ClCompile Include="qcommon\msg.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="game\q_math.cpp" />
@@ -147,10 +141,6 @@
     <ClInclude Include="game\botlib.h" />
     <ClInclude Include="cgame\cg_public.h" />
     <ClInclude Include="client\client.h" />
-    <ClInclude Include="qcommon\cm_local.h" />
-    <ClInclude Include="qcommon\cm_patch.h" />
-    <ClInclude Include="qcommon\cm_polylib.h" />
-    <ClInclude Include="qcommon\cm_public.h" />
     <ClInclude Include="game\g_public.h" />
     <ClInclude Include="ui\keycodes.h" />
     <ClInclude Include="client\keys.h" />

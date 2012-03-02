@@ -86,16 +86,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="qcommon\cm_load.cpp" />
-    <ClCompile Include="qcommon\cm_patch.cpp" />
-    <ClCompile Include="qcommon\cm_polylib.cpp" />
-    <ClCompile Include="qcommon\cm_test.cpp" />
-    <ClCompile Include="qcommon\cm_trace.cpp" />
     <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="qcommon\huffman.cpp" />
     <ClCompile Include="qcommon\msg.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="null\null_client.cpp" />
@@ -131,10 +125,6 @@
     <ClInclude Include="game\bg_public.h" />
     <ClInclude Include="botai\botai.h" />
     <ClInclude Include="game\botlib.h" />
-    <ClInclude Include="qcommon\cm_local.h" />
-    <ClInclude Include="qcommon\cm_patch.h" />
-    <ClInclude Include="qcommon\cm_polylib.h" />
-    <ClInclude Include="qcommon\cm_public.h" />
     <ClInclude Include="game\g_public.h" />
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />

@@ -828,7 +828,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		len = sizeof( netadr_t ) + netmsg.cursize - netmsg.readcount;
 		buf = (netadr_t*)Mem_Alloc( len );
 		*buf = adr;
-		memcpy( buf + 1, &netmsg.data[netmsg.readcount], netmsg.cursize - netmsg.readcount );
+		memcpy( buf + 1, &netmsg._data[netmsg.readcount], netmsg.cursize - netmsg.readcount );
 		Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );
 	}
 
