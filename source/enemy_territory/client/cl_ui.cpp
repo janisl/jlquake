@@ -180,7 +180,7 @@ static int LAN_AddServer( int source, const char *name, const char *address ) {
 	if ( servers && *count < max ) {
 		NET_StringToAdr( address, &adr );
 		for ( i = 0; i < *count; i++ ) {
-			if ( NET_CompareAdr( servers[i].adr, adr ) ) {
+			if ( SOCK_CompareAdr( servers[i].adr, adr ) ) {
 				break;
 			}
 		}
@@ -223,7 +223,7 @@ static void LAN_RemoveServer( int source, const char *addr ) {
 		netadr_t comp;
 		NET_StringToAdr( addr, &comp );
 		for ( i = 0; i < *count; i++ ) {
-			if ( NET_CompareAdr( comp, servers[i].adr ) ) {
+			if ( SOCK_CompareAdr( comp, servers[i].adr ) ) {
 				int j = i;
 				while ( j < *count - 1 ) {
 					Com_Memcpy( &servers[j], &servers[j + 1], sizeof( servers[j] ) );
@@ -266,19 +266,19 @@ static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen
 	switch ( source ) {
 	case AS_LOCAL:
 		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			String::NCpyZ( buf, NET_AdrToString( cls.localServers[n].adr ), buflen );
+			String::NCpyZ( buf, SOCK_AdrToString( cls.localServers[n].adr ), buflen );
 			return;
 		}
 		break;
 	case AS_GLOBAL:
 		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			String::NCpyZ( buf, NET_AdrToString( cls.globalServers[n].adr ), buflen );
+			String::NCpyZ( buf, SOCK_AdrToString( cls.globalServers[n].adr ), buflen );
 			return;
 		}
 		break;
 	case AS_FAVORITES:
 		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			String::NCpyZ( buf, NET_AdrToString( cls.favoriteServers[n].adr ), buflen );
+			String::NCpyZ( buf, SOCK_AdrToString( cls.favoriteServers[n].adr ), buflen );
 			return;
 		}
 		break;
@@ -325,7 +325,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING );
 		Info_SetValueForKey( info, "gametype", va( "%i",server->gameType ), MAX_INFO_STRING );
 		Info_SetValueForKey( info, "nettype", va( "%i",server->netType ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "addr", NET_AdrToString( server->adr ), MAX_INFO_STRING );
+		Info_SetValueForKey( info, "addr", SOCK_AdrToString( server->adr ), MAX_INFO_STRING );
 		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ), MAX_INFO_STRING );
 		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), MAX_INFO_STRING );               // NERVE - SMF
 		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ), MAX_INFO_STRING );                       // NERVE - SMF
@@ -631,7 +631,7 @@ qboolean LAN_ServerIsInFavoriteList( int source, int n ) {
 	}
 
 	for ( i = 0; i < cls.numfavoriteservers; i++ ) {
-		if ( NET_CompareAdr( cls.favoriteServers[i].adr, server->adr ) ) {
+		if ( SOCK_CompareAdr( cls.favoriteServers[i].adr, server->adr ) ) {
 			return qtrue;
 		}
 	}

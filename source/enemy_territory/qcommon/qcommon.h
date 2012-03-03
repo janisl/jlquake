@@ -100,10 +100,6 @@ void        NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_
 void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... );
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
-qboolean    NET_CompareAdr( netadr_t a, netadr_t b );
-qboolean    NET_CompareBaseAdr( netadr_t a, netadr_t b );
-qboolean    NET_IsLocalAddress( netadr_t adr );
-const char  *NET_AdrToString( netadr_t a );
 qboolean    NET_StringToAdr( const char *s, netadr_t *a );
 qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, QMsg *net_message );
 void        NET_Sleep( int msec );
@@ -692,9 +688,6 @@ void    Sys_StreamSeek( fileHandle_t f, int offset, int origin );
 void    Sys_SetErrorText( const char *text );
 
 void    Sys_SendPacket( int length, const void *data, netadr_t to );
-
-qboolean    Sys_IsLANAddress( netadr_t adr );
-void        Sys_ShowIP( void );
 
 qboolean    Sys_CheckCD( void );
 

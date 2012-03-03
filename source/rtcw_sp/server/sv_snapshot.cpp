@@ -694,7 +694,7 @@ void SV_SendMessageToClient( QMsg *msg, client_t *client ) {
 	// set nextSnapshotTime based on rate and requested number of updates
 
 	// local clients get snapshots every frame
-	if ( client->netchan.remoteAddress.type == NA_LOOPBACK || Sys_IsLANAddress( client->netchan.remoteAddress ) ) {
+	if ( client->netchan.remoteAddress.type == NA_LOOPBACK || SOCK_IsLANAddress( client->netchan.remoteAddress ) ) {
 		client->nextSnapshotTime = svs.time - 1;
 		return;
 	}

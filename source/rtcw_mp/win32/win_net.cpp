@@ -68,7 +68,7 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 	net_message->readcount = 0;
 
 	if ( ret == net_message->maxsize ) {
-		Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
+		Com_Printf( "Oversize packet from %s\n", SOCK_AdrToString( *net_from ) );
 		return qfalse;
 	}
 
@@ -100,85 +100,6 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 	}
 
 	SOCK_Send(net_socket, data, length, &to);
-}
-
-
-//=============================================================================
-
-/*
-==================
-Sys_IsLANAddress
-
-LAN clients will have their rate var ignored
-==================
-*/
-qboolean Sys_IsLANAddress( netadr_t adr ) {
-	int i;
-
-	if ( adr.type == NA_LOOPBACK ) {
-		return qtrue;
-	}
-
-	if ( adr.type != NA_IP ) {
-		return qfalse;
-	}
-
-	// choose which comparison to use based on the class of the address being tested
-	// any local adresses of a different class than the address being tested will fail based on the first byte
-
-	if ( adr.ip[0] == 127 && adr.ip[1] == 0 && adr.ip[2] == 0 && adr.ip[3] == 1 ) {
-		return qtrue;
-	}
-
-	// Class A
-	if ( ( adr.ip[0] & 0x80 ) == 0x00 ) {
-		for ( i = 0 ; i < numIP ; i++ ) {
-			if ( adr.ip[0] == localIP[i][0] ) {
-				return qtrue;
-			}
-		}
-		// the RFC1918 class a block will pass the above test
-		return qfalse;
-	}
-
-	// Class B
-	if ( ( adr.ip[0] & 0xc0 ) == 0x80 ) {
-		for ( i = 0 ; i < numIP ; i++ ) {
-			if ( adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1] ) {
-				return qtrue;
-			}
-			// also check against the RFC1918 class b blocks
-			if ( adr.ip[0] == 172 && localIP[i][0] == 172 && ( adr.ip[1] & 0xf0 ) == 16 && ( localIP[i][1] & 0xf0 ) == 16 ) {
-				return qtrue;
-			}
-		}
-		return qfalse;
-	}
-
-	// Class C
-	for ( i = 0 ; i < numIP ; i++ ) {
-		if ( adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1] && adr.ip[2] == localIP[i][2] ) {
-			return qtrue;
-		}
-		// also check against the RFC1918 class c blocks
-		if ( adr.ip[0] == 192 && localIP[i][0] == 192 && adr.ip[1] == 168 && localIP[i][1] == 168 ) {
-			return qtrue;
-		}
-	}
-	return qfalse;
-}
-
-/*
-==================
-Sys_ShowIP
-==================
-*/
-void Sys_ShowIP( void ) {
-	int i;
-
-	for ( i = 0; i < numIP; i++ ) {
-		Com_Printf( "IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3] );
-	}
 }
 
 
@@ -252,31 +173,9 @@ static qboolean NET_GetCvars( void ) {
 	}
 	net_noudp = Cvar_Get( "net_noudp", "0", CVAR_LATCH2 | CVAR_ARCHIVE );
 
-	if ( net_socksEnabled && net_socksEnabled->modified ) {
+	if (SOCK_GetSocksCvars()) {
 		modified = qtrue;
 	}
-	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH2 | CVAR_ARCHIVE );
-
-	if ( net_socksServer && net_socksServer->modified ) {
-		modified = qtrue;
-	}
-	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH2 | CVAR_ARCHIVE );
-
-	if ( net_socksPort && net_socksPort->modified ) {
-		modified = qtrue;
-	}
-	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH2 | CVAR_ARCHIVE );
-
-	if ( net_socksUsername && net_socksUsername->modified ) {
-		modified = qtrue;
-	}
-	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH2 | CVAR_ARCHIVE );
-
-	if ( net_socksPassword && net_socksPassword->modified ) {
-		modified = qtrue;
-	}
-	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH2 | CVAR_ARCHIVE );
-
 
 	return modified;
 }

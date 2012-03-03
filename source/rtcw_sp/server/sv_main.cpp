@@ -467,10 +467,10 @@ void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 	if ( !String::Length( sv_rconPassword->string ) ||
 		 String::Cmp( Cmd_Argv( 1 ), sv_rconPassword->string ) ) {
 		valid = qfalse;
-		Com_DPrintf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
+		Com_DPrintf( "Bad rcon from %s:\n%s\n", SOCK_AdrToString( from ), Cmd_Argv( 2 ) );
 	} else {
 		valid = qtrue;
-		Com_DPrintf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
+		Com_DPrintf( "Rcon from %s:\n%s\n", SOCK_AdrToString( from ), Cmd_Argv( 2 ) );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -517,7 +517,7 @@ void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 	Cmd_TokenizeString( s );
 
 	c = Cmd_Argv( 0 );
-	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), c );
+	Com_DPrintf( "SV packet %s : %s\n", SOCK_AdrToString( from ), c );
 
 	if ( !String::ICmp( c,"getstatus" ) ) {
 		SVC_Status( from  );
@@ -537,7 +537,7 @@ void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 		// sequenced messages to the old client
 	} else {
 		Com_DPrintf( "bad connectionless packet from %s:\n%s\n"
-					 , NET_AdrToString( from ), s );
+					 , SOCK_AdrToString( from ), s );
 	}
 }
 
@@ -571,7 +571,7 @@ void SV_PacketEvent( netadr_t from, QMsg *msg ) {
 		if ( cl->state == CS_FREE ) {
 			continue;
 		}
-		if ( !NET_CompareBaseAdr( from, cl->netchan.remoteAddress ) ) {
+		if ( !SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress ) ) {
 			continue;
 		}
 		// it is possible to have multiple clients from a single IP

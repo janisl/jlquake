@@ -877,7 +877,7 @@ qboolean SV_TempBanIsBanned( netadr_t address ) {
 
 	for ( i = 0; i < MAX_TEMPBAN_ADDRESSES; i++ ) {
 		if ( svs.tempBanAddresses[ i ].endtime && svs.tempBanAddresses[ i ].endtime > svs.time ) {
-			if ( NET_CompareAdr( address, svs.tempBanAddresses[ i ].adr ) ) {
+			if ( SOCK_CompareAdr( address, svs.tempBanAddresses[ i ].adr ) ) {
 				return qtrue;
 			}
 		}
@@ -980,7 +980,7 @@ static void SV_Status_f( void ) {
 
 		Com_Printf( "%7i ", svs.time - cl->lastPacketTime );
 
-		s = NET_AdrToString( cl->netchan.remoteAddress );
+		s = SOCK_AdrToString( cl->netchan.remoteAddress );
 		Com_Printf( "%s", s );
 		l = 22 - String::Length( s );
 		for ( j = 0 ; j < l ; j++ )

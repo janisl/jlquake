@@ -1066,7 +1066,7 @@ void CL_Connect_f( void ) {
 
 	// if we aren't playing on a lan, we need to authenticate
 	// with the cd key
-	if ( NET_IsLocalAddress( clc.serverAddress ) ) {
+	if ( SOCK_IsLocalAddress( clc.serverAddress ) ) {
 		cls.state = CA_CHALLENGING;
 	} else {
 		cls.state = CA_CONNECTING;
@@ -1510,7 +1510,7 @@ void CL_CheckForResend( void ) {
 	switch ( cls.state ) {
 	case CA_CONNECTING:
 		// requesting a challenge
-		if ( !Sys_IsLANAddress( clc.serverAddress ) ) {
+		if ( !SOCK_IsLANAddress( clc.serverAddress ) ) {
 			CL_RequestAuthorization();
 		}
 		NET_OutOfBandPrint( NS_CLIENT, clc.serverAddress, "getchallenge" );
@@ -1552,7 +1552,7 @@ void CL_DisconnectPacket( netadr_t from ) {
 	}
 
 	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) ) {
+	if ( !SOCK_CompareAdr( from, clc.netchan.remoteAddress ) ) {
 		return;
 	}
 
@@ -1579,7 +1579,7 @@ void CL_MotdPacket( netadr_t from ) {
 	char    *info;
 
 	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, cls.updateServer ) ) {
+	if ( !SOCK_CompareAdr( from, cls.updateServer ) ) {
 		return;
 	}
 
@@ -1760,7 +1760,7 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 
 	c = Cmd_Argv( 0 );
 
-	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToString( from ), c );
+	Com_DPrintf( "CL packet %s: %s\n", SOCK_AdrToString( from ), c );
 
 	// challenge from the server we are connecting to
 	if ( !String::ICmp( c, "challengeResponse" ) ) {
@@ -1790,10 +1790,10 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 			Com_Printf( "connectResponse packet while not connecting.  Ignored.\n" );
 			return;
 		}
-		if ( !NET_CompareBaseAdr( from, clc.serverAddress ) ) {
+		if ( !SOCK_CompareBaseAdr( from, clc.serverAddress ) ) {
 			Com_Printf( "connectResponse from a different address.  Ignored.\n" );
-			Com_Printf( "%s should have been %s\n", NET_AdrToString( from ),
-						NET_AdrToString( clc.serverAddress ) );
+			Com_Printf( "%s should have been %s\n", SOCK_AdrToString( from ),
+						SOCK_AdrToString( clc.serverAddress ) );
 			return;
 		}
 		Netchan_Setup( NS_CLIENT, &clc.netchan, from, Cvar_VariableValue( "net_qport" ) );
@@ -1879,16 +1879,16 @@ void CL_PacketEvent( netadr_t from, QMsg *msg ) {
 	}
 
 	if ( msg->cursize < 4 ) {
-		Com_Printf( "%s: Runt packet\n",NET_AdrToString( from ) );
+		Com_Printf( "%s: Runt packet\n",SOCK_AdrToString( from ) );
 		return;
 	}
 
 	//
 	// packet from server
 	//
-	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) ) {
+	if ( !SOCK_CompareAdr( from, clc.netchan.remoteAddress ) ) {
 		Com_DPrintf( "%s:sequenced packet without connection\n"
-					 ,NET_AdrToString( from ) );
+					 ,SOCK_AdrToString( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -2701,25 +2701,25 @@ static void CL_SetServerInfoByAddress( netadr_t from, const char *info, int ping
 	int i;
 
 	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( NET_CompareAdr( from, cls.localServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
 			CL_SetServerInfo( &cls.localServers[i], info, ping );
 		}
 	}
 
 	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( NET_CompareAdr( from, cls.mplayerServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.mplayerServers[i].adr ) ) {
 			CL_SetServerInfo( &cls.mplayerServers[i], info, ping );
 		}
 	}
 
 	for ( i = 0; i < MAX_GLOBAL_SERVERS; i++ ) {
-		if ( NET_CompareAdr( from, cls.globalServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.globalServers[i].adr ) ) {
 			CL_SetServerInfo( &cls.globalServers[i], info, ping );
 		}
 	}
 
 	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( NET_CompareAdr( from, cls.favoriteServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.favoriteServers[i].adr ) ) {
 			CL_SetServerInfo( &cls.favoriteServers[i], info, ping );
 		}
 	}
@@ -2750,10 +2750,10 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	// iterate servers waiting for ping response
 	for ( i = 0; i < MAX_PINGREQUESTS; i++ )
 	{
-		if ( cl_pinglist[i].adr.port && !cl_pinglist[i].time && NET_CompareAdr( from, cl_pinglist[i].adr ) ) {
+		if ( cl_pinglist[i].adr.port && !cl_pinglist[i].time && SOCK_CompareAdr( from, cl_pinglist[i].adr ) ) {
 			// calc ping time
 			cl_pinglist[i].time = cls.realtime - cl_pinglist[i].start + 1;
-			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, NET_AdrToString( from ) );
+			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, SOCK_AdrToString( from ) );
 
 			// save of info
 			String::NCpyZ( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
@@ -2792,7 +2792,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 		}
 
 		// avoid duplicate
-		if ( NET_CompareAdr( from, cls.localServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
 			return;
 		}
 	}
@@ -2822,7 +2822,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
 		}
-		Com_Printf( "%s: %s", NET_AdrToString( from ), info );
+		Com_Printf( "%s: %s", SOCK_AdrToString( from ), info );
 	}
 }
 
@@ -2837,7 +2837,7 @@ serverStatus_t *CL_GetServerStatus( netadr_t from ) {
 
 	serverStatus = NULL;
 	for ( i = 0; i < MAX_SERVERSTATUSREQUESTS; i++ ) {
-		if ( NET_CompareAdr( from, cl_serverStatusList[i].address ) ) {
+		if ( SOCK_CompareAdr( from, cl_serverStatusList[i].address ) ) {
 			return &cl_serverStatusList[i];
 		}
 	}
@@ -2891,7 +2891,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	}
 
 	// if this server status request has the same address
-	if ( NET_CompareAdr( to, serverStatus->address ) ) {
+	if ( SOCK_CompareAdr( to, serverStatus->address ) ) {
 		// if we recieved an response for this server status request
 		if ( !serverStatus->pending ) {
 			String::NCpyZ( serverStatusString, serverStatus->string, maxLen );
@@ -2938,7 +2938,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 
 	serverStatus = NULL;
 	for ( i = 0; i < MAX_SERVERSTATUSREQUESTS; i++ ) {
-		if ( NET_CompareAdr( from, cl_serverStatusList[i].address ) ) {
+		if ( SOCK_CompareAdr( from, cl_serverStatusList[i].address ) ) {
 			serverStatus = &cl_serverStatusList[i];
 			break;
 		}
@@ -3132,7 +3132,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime ) {
 		return;
 	}
 
-	str = NET_AdrToString( cl_pinglist[n].adr );
+	str = SOCK_AdrToString( cl_pinglist[n].adr );
 	String::NCpyZ( buf, str, buflen );
 
 	time = cl_pinglist[n].time;
@@ -3356,7 +3356,7 @@ qboolean CL_UpdateVisiblePings_f( int source ) {
 						if ( !cl_pinglist[j].adr.port ) {
 							continue;
 						}
-						if ( NET_CompareAdr( cl_pinglist[j].adr, server[i].adr ) ) {
+						if ( SOCK_CompareAdr( cl_pinglist[j].adr, server[i].adr ) ) {
 							// already on the list
 							break;
 						}
@@ -3451,7 +3451,7 @@ CL_ShowIP_f
 ==================
 */
 void CL_ShowIP_f( void ) {
-	Sys_ShowIP();
+	SOCK_ShowIP();
 }
 
 /*

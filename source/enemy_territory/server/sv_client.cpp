@@ -72,7 +72,7 @@ void SV_GetChallenge( netadr_t from ) {
 	// see if we already have a challenge for this ip
 	challenge = &svs.challenges[0];
 	for ( i = 0 ; i < MAX_CHALLENGES ; i++, challenge++ ) {
-		if ( !challenge->connected && NET_CompareAdr( from, challenge->adr ) ) {
+		if ( !challenge->connected && SOCK_CompareAdr( from, challenge->adr ) ) {
 			break;
 		}
 		if ( challenge->time < oldestTime ) {
@@ -99,7 +99,7 @@ void SV_GetChallenge( netadr_t from ) {
 	if ( 1 ) {
 #else
 	// if they are on a lan address, send the challengeResponse immediately
-	if ( Sys_IsLANAddress( from ) ) {
+	if ( SOCK_IsLANAddress( from ) ) {
 #endif
 		challenge->pingTime = svs.time;
 		if ( sv_onlyVisibleClients->integer ) {
@@ -153,7 +153,7 @@ void SV_GetChallenge( netadr_t from ) {
 		if ( fs && fs->string[0] != 0 ) {
 			String::Cpy( game, fs->string );
 		}
-		Com_DPrintf( "sending getIpAuthorize for %s\n", NET_AdrToString( from ) );
+		Com_DPrintf( "sending getIpAuthorize for %s\n", SOCK_AdrToString( from ) );
 		fs = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
 
 		// NERVE - SMF - fixed parsing on sv_allowAnonymous
@@ -181,7 +181,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 	char    *r;
 	char ret[1024];
 
-	if ( !NET_CompareBaseAdr( from, svs.authorizeAddress ) ) {
+	if ( !SOCK_CompareBaseAdr( from, svs.authorizeAddress ) ) {
 		Com_Printf( "SV_AuthorizeIpPacket: not from authorize server\n" );
 		return;
 	}
@@ -300,12 +300,12 @@ void SV_DirectConnect( netadr_t from ) {
 		//if ( cl->state == CS_FREE ) {
 		//continue;
 		//}
-		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
+		if ( SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress )
 			 && ( cl->netchan.qport == qport
 				  || from.port == cl->netchan.remoteAddress.port ) ) {
 			if ( ( svs.time - cl->lastConnectTime )
 				 < ( sv_reconnectlimit->integer * 1000 ) ) {
-				Com_DPrintf( "%s:reconnect rejected : too soon\n", NET_AdrToString( from ) );
+				Com_DPrintf( "%s:reconnect rejected : too soon\n", SOCK_AdrToString( from ) );
 				return;
 			}
 			break;
@@ -313,12 +313,12 @@ void SV_DirectConnect( netadr_t from ) {
 	}
 
 	// see if the challenge is valid (local clients don't need to challenge)
-	if ( !NET_IsLocalAddress( from ) ) {
+	if ( !SOCK_IsLocalAddress( from ) ) {
 		int ping;
 
 
 		for ( i = 0 ; i < MAX_CHALLENGES ; i++ ) {
-			if ( NET_CompareAdr( from, svs.challenges[i].adr ) ) {
+			if ( SOCK_CompareAdr( from, svs.challenges[i].adr ) ) {
 				if ( challenge == svs.challenges[i].challenge ) {
 					break;      // good
 				}
@@ -329,7 +329,7 @@ void SV_DirectConnect( netadr_t from ) {
 			return;
 		}
 		// force the IP key/value pair so the game can filter based on ip
-		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ), MAX_INFO_STRING );
+		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING );
 
 		if ( svs.challenges[i].firstPing == 0 ) {
 			ping = svs.time - svs.challenges[i].pingTime;
@@ -342,7 +342,7 @@ void SV_DirectConnect( netadr_t from ) {
 		svs.challenges[i].connected = qtrue;
 
 		// never reject a LAN client based on ping
-		if ( !Sys_IsLANAddress( from ) ) {
+		if ( !SOCK_IsLANAddress( from ) ) {
 			if ( sv_minPing->value && ping < sv_minPing->value ) {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for high pings only\n" );
 				Com_DPrintf( "Client %i rejected on a too low ping\n", i );
@@ -367,10 +367,10 @@ void SV_DirectConnect( netadr_t from ) {
 		if ( cl->state == CS_FREE ) {
 			continue;
 		}
-		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
+		if ( SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress )
 			 && ( cl->netchan.qport == qport
 				  || from.port == cl->netchan.remoteAddress.port ) ) {
-			Com_Printf( "%s:reconnect\n", NET_AdrToString( from ) );
+			Com_Printf( "%s:reconnect\n", SOCK_AdrToString( from ) );
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -412,7 +412,7 @@ void SV_DirectConnect( netadr_t from ) {
 	}
 
 	if ( !newcl ) {
-		if ( NET_IsLocalAddress( from ) ) {
+		if ( SOCK_IsLocalAddress( from ) ) {
 			count = 0;
 			for ( i = startIndex; i < sv_maxclients->integer ; i++ ) {
 				cl = &svs.clients[i];
@@ -533,7 +533,7 @@ void SV_DropClient( client_t *drop, const char *reason ) {
 		challenge = &svs.challenges[0];
 
 		for ( i = 0 ; i < MAX_CHALLENGES ; i++, challenge++ ) {
-			if ( NET_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) ) {
+			if ( SOCK_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) ) {
 				challenge->connected = qfalse;
 				break;
 			}
@@ -1366,7 +1366,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 
 	// if the client is on the same subnet as the server and we aren't running an
 	// internet public server, assume they don't need a rate choke
-	if ( Sys_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1 ) {
+	if ( SOCK_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1 ) {
 		cl->rate = 99999;   // lans should not rate limit
 	} else {
 		val = Info_ValueForKey( cl->userinfo, "rate" );
@@ -1411,8 +1411,8 @@ void SV_UserinfoChanged( client_t *cl ) {
 	// zinx - modified to always keep this consistent, instead of only
 	// when "ip" is 0-length, so users can't supply their own IP
 	//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
-	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) ) {
-		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING );
+	if ( !SOCK_IsLocalAddress( cl->netchan.remoteAddress ) ) {
+		Info_SetValueForKey( cl->userinfo, "ip", SOCK_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING );
 	} else {
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING );

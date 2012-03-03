@@ -29,7 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
-#include "../../core/socket_local.h"
 
 /*
 
@@ -370,7 +369,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	if ( sequence <= chan->incomingSequence ) {
 		if ( showdrop->integer || showpackets->integer ) {
 			Com_Printf( "%s:Out of order packet %i at %i\n"
-						, NET_AdrToString( chan->remoteAddress )
+						, SOCK_AdrToString( chan->remoteAddress )
 						,  sequence
 						, chan->incomingSequence );
 		}
@@ -384,7 +383,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	if ( chan->dropped > 0 ) {
 		if ( showdrop->integer || showpackets->integer ) {
 			Com_Printf( "%s:Dropped %i packets at %i\n"
-						, NET_AdrToString( chan->remoteAddress )
+						, SOCK_AdrToString( chan->remoteAddress )
 						, chan->dropped
 						, sequence );
 		}
@@ -406,7 +405,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 		if ( fragmentStart != chan->fragmentLength ) {
 			if ( showdrop->integer || showpackets->integer ) {
 				Com_Printf( "%s:Dropped a message fragment\n"
-							, NET_AdrToString( chan->remoteAddress )
+							, SOCK_AdrToString( chan->remoteAddress )
 							, sequence );
 			}
 			// we can still keep the part that we have so far,
@@ -419,7 +418,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 			 chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) ) {
 			if ( showdrop->integer || showpackets->integer ) {
 				Com_Printf( "%s:illegal fragment length\n"
-							, NET_AdrToString( chan->remoteAddress ) );
+							, SOCK_AdrToString( chan->remoteAddress ) );
 			}
 			return qfalse;
 		}
@@ -436,7 +435,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 
 		if ( chan->fragmentLength > msg->maxsize ) {
 			Com_Printf( "%s:fragmentLength %i > msg->maxsize\n"
-						, NET_AdrToString( chan->remoteAddress ),
+						, SOCK_AdrToString( chan->remoteAddress ),
 						chan->fragmentLength );
 			return qfalse;
 		}
@@ -462,78 +461,6 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 
 	return qtrue;
 }
-
-
-//==============================================================================
-
-/*
-===================
-NET_CompareBaseAdr
-
-Compares without the port
-===================
-*/
-qboolean    NET_CompareBaseAdr( netadr_t a, netadr_t b ) {
-	if ( a.type != b.type ) {
-		return qfalse;
-	}
-
-	if ( a.type == NA_LOOPBACK ) {
-		return qtrue;
-	}
-
-	if ( a.type == NA_IP ) {
-		if ( a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] ) {
-			return qtrue;
-		}
-		return qfalse;
-	}
-
-	Com_Printf( "NET_CompareBaseAdr: bad address type\n" );
-	return qfalse;
-}
-
-const char  *NET_AdrToString( netadr_t a ) {
-	static char s[64];
-
-	if ( a.type == NA_LOOPBACK ) {
-		String::Sprintf( s, sizeof( s ), "loopback" );
-	} else if ( a.type == NA_BOT ) {
-		String::Sprintf( s, sizeof( s ), "bot" );
-	} else if ( a.type == NA_IP ) {
-		String::Sprintf( s, sizeof( s ), "%i.%i.%i.%i:%i",
-					 a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort( a.port ) );
-	}
-
-	return s;
-}
-
-
-qboolean    NET_CompareAdr( netadr_t a, netadr_t b ) {
-	if ( a.type != b.type ) {
-		return qfalse;
-	}
-
-	if ( a.type == NA_LOOPBACK ) {
-		return qtrue;
-	}
-
-	if ( a.type == NA_IP ) {
-		if ( a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port ) {
-			return qtrue;
-		}
-		return qfalse;
-	}
-
-	Com_Printf( "NET_CompareAdr: bad address type\n" );
-	return qfalse;
-}
-
-
-qboolean    NET_IsLocalAddress( netadr_t adr ) {
-	return adr.type == NA_LOOPBACK;
-}
-
 
 
 /*
@@ -659,43 +586,6 @@ Traps "localhost" for loopback, passes everything else to system
 =============
 */
 qboolean    NET_StringToAdr( const char *s, netadr_t *a ) {
-	qboolean r;
-	char base[MAX_STRING_CHARS];
-	char    *port;
-
-	if ( !String::Cmp( s, "localhost" ) ) {
-		memset( a, 0, sizeof( *a ) );
-		a->type = NA_LOOPBACK;
-		return qtrue;
-	}
-
-	// look for a port number
-	String::NCpyZ( base, s, sizeof( base ) );
-	port = strstr( base, ":" );
-	if ( port ) {
-		*port = 0;
-		port++;
-	}
-
-	r = SOCK_GetAddressByName( base, a );
-
-	if ( !r ) {
-		a->type = NA_BAD;
-		return qfalse;
-	}
-
-	// inet_addr returns this if out of range
-	if ( a->ip[0] == 255 && a->ip[1] == 255 && a->ip[2] == 255 && a->ip[3] == 255 ) {
-		a->type = NA_BAD;
-		return qfalse;
-	}
-
-	if ( port ) {
-		a->port = BigShort( (short)String::Atoi( port ) );
-	} else {
-		a->port = BigShort( PORT_SERVER );
-	}
-
-	return qtrue;
+	return SOCK_StringToAdr(s, a, PORT_SERVER);
 }
 
