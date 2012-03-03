@@ -959,7 +959,7 @@ void CL_MapLoading( void ) {
 		cls.keyCatchers = 0;
 		SCR_UpdateScreen();
 		clc.connectTime = -RETRANSMIT_TIMEOUT;
-		NET_StringToAdr( cls.servername, &clc.serverAddress );
+		SOCK_StringToAdr( cls.servername, &clc.serverAddress, PORT_SERVER );
 		// we don't need a challenge on the localhost
 
 		CL_CheckForResend();
@@ -1122,11 +1122,10 @@ void CL_RequestMotd( void ) {
 		return;
 	}
 	Com_Printf( "Resolving %s\n", MOTD_SERVER_NAME );
-	if ( !NET_StringToAdr( MOTD_SERVER_NAME, &cls.updateServer  ) ) {
+	if ( !SOCK_StringToAdr( MOTD_SERVER_NAME, &cls.updateServer, PORT_MOTD ) ) {
 		Com_Printf( "Couldn't resolve address\n" );
 		return;
 	}
-	cls.updateServer.port = BigShort( PORT_MOTD );
 	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", MOTD_SERVER_NAME,
 				cls.updateServer.ip[0], cls.updateServer.ip[1],
 				cls.updateServer.ip[2], cls.updateServer.ip[3],
@@ -1189,12 +1188,11 @@ void CL_RequestAuthorization( void ) {
 
 	if ( !cls.authorizeServer.port ) {
 		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
-		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &cls.authorizeServer  ) ) {
+		if ( !SOCK_StringToAdr( AUTHORIZE_SERVER_NAME, &cls.authorizeServer, PORT_AUTHORIZE ) ) {
 			Com_Printf( "Couldn't resolve address\n" );
 			return;
 		}
 
-		cls.authorizeServer.port = BigShort( PORT_AUTHORIZE );
 		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
 					cls.authorizeServer.ip[0], cls.authorizeServer.ip[1],
 					cls.authorizeServer.ip[2], cls.authorizeServer.ip[3],
@@ -1362,7 +1360,7 @@ void CL_Connect_f( void ) {
 
 	String::NCpyZ( cls.servername, server, sizeof( cls.servername ) );
 
-	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress ) ) {
+	if ( !SOCK_StringToAdr( cls.servername, &clc.serverAddress, PORT_SERVER ) ) {
 		Com_Printf( "Bad server address\n" );
 		cls.state = CA_DISCONNECTED;
 		Cvar_Set( "ui_connecting", "0" );
@@ -1459,7 +1457,7 @@ void CL_Rcon_f( void ) {
 
 			return;
 		}
-		NET_StringToAdr( rconAddress->string, &to );
+		SOCK_StringToAdr( rconAddress->string, &to, PORT_SERVER );
 		if ( to.port == 0 ) {
 			to.port = BigShort( PORT_SERVER );
 		}
@@ -2991,7 +2989,7 @@ void CL_CheckAutoUpdate( void ) {
 	srand( Com_Milliseconds() );
 
 	// Resolve update server
-	if ( !NET_StringToAdr( cls.autoupdateServerNames[0], &cls.autoupdateServer  ) ) {
+	if ( !SOCK_StringToAdr( cls.autoupdateServerNames[0], &cls.autoupdateServer, PORT_SERVER ) ) {
 		Com_DPrintf( "Failed to resolve any Auto-update servers.\n" );
 
 		cls.autoUpdateServerChecked[0] = qtrue;
@@ -3006,7 +3004,6 @@ void CL_CheckAutoUpdate( void ) {
 
 	cls.autoUpdateServerChecked[cls.autoupdatServerIndex] = qtrue;
 
-	cls.autoupdateServer.port = BigShort( PORT_SERVER );
 	Com_DPrintf( "autoupdate server at: %i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
 				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
 				 BigShort( cls.autoupdateServer.port ) );
@@ -3052,7 +3049,7 @@ qboolean CL_NextUpdateServer( void ) {
 	servername = cls.autoupdateServerNames[cls.autoupdatServerIndex];
 
 	Com_DPrintf( "Resolving AutoUpdate Server... " );
-	if ( !NET_StringToAdr( servername, &cls.autoupdateServer  ) ) {
+	if ( !SOCK_StringToAdr( servername, &cls.autoupdateServer, PORT_SERVER ) ) {
 		Com_DPrintf( "Couldn't resolve address, trying next one..." );
 
 		cls.autoUpdateServerChecked[cls.autoupdatServerIndex] = qtrue;
@@ -3062,7 +3059,6 @@ qboolean CL_NextUpdateServer( void ) {
 
 	cls.autoUpdateServerChecked[cls.autoupdatServerIndex] = qtrue;
 
-	cls.autoupdateServer.port = BigShort( PORT_SERVER );
 	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
 				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
 				 BigShort( cls.autoupdateServer.port ) );
@@ -3874,7 +3870,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 		return qfalse;
 	}
 	// get the address
-	if ( !NET_StringToAdr( serverAddress, &to ) ) {
+	if ( !SOCK_StringToAdr( serverAddress, &to, PORT_SERVER ) ) {
 		return qfalse;
 	}
 	serverStatus = CL_GetServerStatus( to );
@@ -4081,12 +4077,11 @@ void CL_GlobalServers_f( void ) {
 	// -1 is used to distinguish a "no response"
 
 	if ( cls.masterNum == 0 ) {
-		NET_StringToAdr( MASTER_SERVER_NAME, &to );
+		SOCK_StringToAdr( MASTER_SERVER_NAME, &to, PORT_MASTER );
 		cls.numglobalservers = -1;
 		cls.pingUpdateSource = AS_GLOBAL;
 	}
 	to.type = NA_IP;
-	to.port = BigShort( PORT_MASTER );
 
 	sprintf( command, "getservers %s", Cmd_Argv( 2 ) );
 
@@ -4278,7 +4273,7 @@ void CL_Ping_f( void ) {
 
 	server = Cmd_Argv( 1 );
 
-	if ( !NET_StringToAdr( server, &to ) ) {
+	if ( !SOCK_StringToAdr( server, &to, PORT_SERVER ) ) {
 		return;
 	}
 
@@ -4419,7 +4414,7 @@ void CL_ServerStatus_f( void ) {
 		server = Cmd_Argv( 1 );
 	}
 
-	if ( !NET_StringToAdr( server, &to ) ) {
+	if ( !SOCK_StringToAdr( server, &to, PORT_SERVER ) ) {
 		return;
 	}
 

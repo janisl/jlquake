@@ -67,6 +67,12 @@ Cvar      *showpackets;
 Cvar      *showdrop;
 Cvar      *qport;
 
+static bool networkingEnabled = false;
+
+static Cvar* net_noudp;
+
+static int ip_socket;
+
 static char *netsrcString[2] = {
 	"client",
 	"server"
@@ -536,8 +542,15 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to ) 
 			case NA_LOOPBACK:
 				NET_SendLoopPacket( buf->sock, buf->length, buf->data, buf->to );
 				break;
+			case NA_BROADCAST:
+			case NA_IP:
+				if (ip_socket)
+				{
+					SOCK_Send(ip_socket, buf->data, buf->length, &buf->to);
+				}
+				break;
 			default:
-				Sys_SendPacket( buf->length, buf->data, buf->to );
+				Com_Error( ERR_FATAL, "NET_SendPacket: bad address type" );
 				break;
 			}
 
@@ -589,7 +602,13 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to ) 
 		return;
 	}
 
-	Sys_SendPacket( length, data, to );
+	if (to.type != NA_BROADCAST && to.type != NA_IP)
+	{
+		Com_Error( ERR_FATAL, "NET_SendPacket: bad address type" );
+		return;
+	}
+
+	SOCK_Send(ip_socket, data, length, &to);
 }
 
 /*
@@ -650,13 +669,189 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 }
 
 /*
-=============
-NET_StringToAdr
+==================
+Sys_GetPacket
 
-Traps "localhost" for loopback, passes everything else to system
-=============
+Never called by the game logic, just the system event queing
+==================
 */
-qboolean    NET_StringToAdr( const char *s, netadr_t *a ) {
-	return SOCK_StringToAdr(s, a, PORT_SERVER);
+qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
+	int ret;
+	int net_socket;
+
+	net_socket = ip_socket;
+
+	if ( !net_socket ) {
+		return qfalse;
+	}
+
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
+	if ( ret == SOCKRECV_NO_DATA || ret == SOCKRECV_ERROR) {
+		return qfalse;
+	}
+
+	net_message->readcount = 0;
+
+	if ( ret == net_message->maxsize ) {
+		Com_Printf( "Oversize packet from %s\n", SOCK_AdrToString( *net_from ) );
+		return qfalse;
+	}
+
+	net_message->cursize = ret;
+	return qtrue;
 }
 
+/*
+====================
+NET_GetCvars
+====================
+*/
+static bool NET_GetCvars()
+{
+	bool modified = false;
+
+	if (net_noudp && net_noudp->modified)
+	{
+		modified = true;
+	}
+	net_noudp = Cvar_Get("net_noudp", "0", CVAR_LATCH2 | CVAR_ARCHIVE);
+
+	if (SOCK_GetSocksCvars())
+	{
+		modified = true;
+	}
+
+	return modified;
+}
+
+/*
+====================
+NET_OpenIP
+====================
+*/
+static void NET_OpenIP( void ) {
+	Cvar  *ip;
+	int port;
+	int i;
+
+	ip = Cvar_Get( "net_ip", "localhost", CVAR_LATCH2 );
+	port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH2 )->integer;
+
+	// automatically scan for a valid port, so multiple
+	// dedicated servers can be started without requiring
+	// a different net_port for each one
+	for ( i = 0 ; i < 10 ; i++ ) {
+		ip_socket = SOCK_Open( ip->string, port + i );
+		if ( ip_socket ) {
+			Cvar_SetValue( "net_port", port + i );
+			if ( net_socksEnabled->integer ) {
+				SOCK_OpenSocks( port + i );
+			}
+			SOCK_GetLocalAddress();
+			return;
+		}
+	}
+	Com_Printf( "WARNING: Couldn't allocate IP port\n" );
+}
+
+/*
+====================
+NET_Config
+====================
+*/
+static void NET_Config( qboolean enableNetworking ) {
+	qboolean modified;
+	qboolean stop;
+	qboolean start;
+
+	// get any latched changes to cvars
+	modified = NET_GetCvars();
+
+	if ( net_noudp->integer) {
+		enableNetworking = qfalse;
+	}
+
+	// if enable state is the same and no cvars were modified, we have nothing to do
+	if ( enableNetworking == networkingEnabled && !modified ) {
+		return;
+	}
+
+	if ( enableNetworking == networkingEnabled ) {
+		if ( enableNetworking ) {
+			stop = qtrue;
+			start = qtrue;
+		} else {
+			stop = qfalse;
+			start = qfalse;
+		}
+	} else {
+		if ( enableNetworking ) {
+			stop = qfalse;
+			start = qtrue;
+		} else {
+			stop = qtrue;
+			start = qfalse;
+		}
+		networkingEnabled = enableNetworking;
+	}
+
+	if ( stop ) {
+		if ( ip_socket && ip_socket != -1 ) {
+			SOCK_Close( ip_socket );
+			ip_socket = 0;
+		}
+
+		SOCK_CloseSocks();
+	}
+
+	if ( start ) {
+		if ( !net_noudp->integer ) {
+			NET_OpenIP();
+		}
+	}
+}
+
+/*
+====================
+NET_Init
+====================
+*/
+void NET_Init( void ) {
+	if (!SOCK_Init()) {
+		return;
+	}
+
+	// this is really just to get the cvars registered
+	NET_GetCvars();
+
+	//FIXME testing!
+	NET_Config( qtrue );
+}
+
+/*
+====================
+NET_Shutdown
+====================
+*/
+void NET_Shutdown( void ) {
+	NET_Config( qfalse );
+	SOCK_Shutdown();
+}
+
+/*
+====================
+NET_Restart_f
+====================
+*/
+void NET_Restart( void ) {
+	NET_Config( networkingEnabled );
+}
+
+// sleeps msec or until net socket is ready
+void NET_Sleep( int msec ) {
+	if ( !com_dedicated->integer ) {
+		return; // we're not a server, just run full speed
+
+	}
+	SOCK_Sleep(ip_socket, msec);
+}

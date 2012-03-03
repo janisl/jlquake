@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 // linux_local.h: Linux-specific Quake3 header file
 
-qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message );
 void Sys_SendKeyEvents( void );
 
 // Input subsystem

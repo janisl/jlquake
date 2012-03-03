@@ -88,16 +88,15 @@ typedef enum {
 void        NET_Init( void );
 void        NET_Shutdown( void );
 void        NET_Restart( void );
-void        NET_Config( qboolean enableNetworking );
 
 void        NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
 void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... );
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
-qboolean    NET_StringToAdr( const char *s, netadr_t *a );
 qboolean    NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, QMsg *net_message );
 void        NET_Sleep( int msec );
 
+qboolean    Sys_GetPacket( netadr_t *net_from, QMsg *net_message );
 
 //----(SA)	increased for larger submodel entity counts
 #define MAX_MSGLEN              32768       // max length of a message, which may
@@ -616,8 +615,6 @@ int     Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f );
 void    Sys_StreamSeek( fileHandle_t f, int offset, int origin );
 
 void    Sys_SetErrorText( const char *text );
-
-void    Sys_SendPacket( int length, const void *data, netadr_t to );
 
 qboolean    Sys_CheckCD( void );
 

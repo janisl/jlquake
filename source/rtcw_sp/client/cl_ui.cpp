@@ -182,7 +182,7 @@ static int LAN_AddServer( int source, const char *name, const char *address ) {
 		break;
 	}
 	if ( servers && *count < max ) {
-		NET_StringToAdr( address, &adr );
+		SOCK_StringToAdr( address, &adr, PORT_SERVER );
 		for ( i = 0; i < *count; i++ ) {
 			if ( SOCK_CompareAdr( servers[i].adr, adr ) ) {
 				break;
@@ -229,7 +229,7 @@ static void LAN_RemoveServer( int source, const char *addr ) {
 	}
 	if ( servers ) {
 		netadr_t comp;
-		NET_StringToAdr( addr, &comp );
+		SOCK_StringToAdr( addr, &comp, PORT_SERVER );
 		for ( i = 0; i < *count; i++ ) {
 			if ( SOCK_CompareAdr( comp, servers[i].adr ) ) {
 				int j = i;

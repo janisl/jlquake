@@ -79,7 +79,6 @@ set(WOLFMP_FILES
 	client/snd_wavelet.cpp
 
 	unix/unix_main.cpp
-	unix/unix_net.cpp
 	unix/unix_shared.cpp
 	unix/linux_qgl.cpp
 	unix/linux_glimp.cpp
@@ -167,7 +166,6 @@ set(WOLFMPDED_FILES
 	game/q_math.cpp
 	game/q_shared.cpp
 	unix/unix_main.cpp
-	unix/unix_net.cpp
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp
 )

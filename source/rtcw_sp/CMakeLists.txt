@@ -72,7 +72,6 @@ set(WOLFSP_FILES
 	client/snd_wavelet.cpp
 
 	unix/unix_main.cpp
-	unix/unix_net.cpp
 	unix/unix_shared.cpp
 	unix/linux_qgl.cpp
 	unix/linux_glimp.cpp
