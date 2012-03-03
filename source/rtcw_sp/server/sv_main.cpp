@@ -182,7 +182,7 @@ A NULL client will broadcast to all clients
 */
 void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) {
 	va_list argptr;
-	byte message[MAX_MSGLEN];
+	byte message[MAX_MSGLEN_WOLF];
 	client_t    *client;
 	int j;
 
@@ -326,7 +326,7 @@ the simple info query.
 */
 void SVC_Status( netadr_t from ) {
 	char player[1024];
-	char status[MAX_MSGLEN];
+	char status[MAX_MSGLEN_WOLF];
 	int i;
 	client_t    *cl;
 	playerState_t   *ps;
@@ -458,7 +458,7 @@ void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 	qboolean valid;
 	int i;
 	char remaining[1024];
-#define SV_OUTPUTBUF_LENGTH ( MAX_MSGLEN - 16 )
+#define SV_OUTPUTBUF_LENGTH ( MAX_MSGLEN_WOLF - 16 )
 	char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
 	if ( !String::Length( sv_rconPassword->string ) ||

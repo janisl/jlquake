@@ -54,8 +54,10 @@
 #if 0
 #include "virtual_machine/public.h"
 #include "player_move.h"
-#include "network_channel.h"
+#endif
+#include "../core/network_channel.h"
 
+#if 0
 int Com_Milliseconds();
 #endif
 

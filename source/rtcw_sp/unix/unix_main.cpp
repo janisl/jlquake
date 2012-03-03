@@ -653,7 +653,7 @@ EVENT LOOP
 ========================================================================
 */
 
-byte sys_packetReceived[MAX_MSGLEN];
+byte sys_packetReceived[MAX_MSGLEN_WOLF];
 
 /*
 ================
@@ -908,7 +908,7 @@ int main( int argc, char* argv[] ) {
 
 	// bk000306 - clear queues
 	memset( &eventQue[0], 0, MAX_QUED_EVENTS * sizeof( sysEvent_t ) );
-	memset( &sys_packetReceived[0], 0, MAX_MSGLEN * sizeof( byte ) );
+	memset( &sys_packetReceived[0], 0, MAX_MSGLEN_WOLF * sizeof( byte ) );
 
 	Com_Init( cmdline );
 	NET_Init();

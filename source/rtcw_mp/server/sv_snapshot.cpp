@@ -729,7 +729,7 @@ Also called by SV_FinalMessage
 =======================
 */
 void SV_SendClientSnapshot( client_t *client ) {
-	byte msg_buf[MAX_MSGLEN];
+	byte msg_buf[MAX_MSGLEN_WOLF];
 	QMsg msg;
 
 	// build the snapshot
@@ -801,7 +801,7 @@ void SV_SendClientMessages( void ) {
 		// was too large to send at once
 		if ( c->netchan.unsentFragments ) {
 			c->nextSnapshotTime = svs.time +
-								  SV_RateMsec( c, c->netchan.unsentLength - c->netchan.unsentFragmentStart );
+								  SV_RateMsec( c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart );
 			SV_Netchan_TransmitNextFragment( c );
 			continue;
 		}

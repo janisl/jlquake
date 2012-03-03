@@ -54,8 +54,6 @@ to the new value before sending out any replies.
 */
 
 
-#define MAX_PACKETLEN           1400        // max size of a network packet
-
 #define FRAGMENT_SIZE           ( MAX_PACKETLEN - 100 )
 #define PACKET_HEADER           10          // two ints and a short
 
@@ -215,13 +213,13 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 
 	// copy the reliable message to the packet first
 	fragmentLength = FRAGMENT_SIZE;
-	if ( chan->unsentFragmentStart  + fragmentLength > chan->unsentLength ) {
-		fragmentLength = chan->unsentLength - chan->unsentFragmentStart;
+	if ( chan->unsentFragmentStart  + fragmentLength > chan->reliableOrUnsentLength) {
+		fragmentLength = chan->reliableOrUnsentLength - chan->unsentFragmentStart;
 	}
 
 	send.WriteShort( chan->unsentFragmentStart );
 	send.WriteShort( fragmentLength );
-	send.WriteData( chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
+	send.WriteData( chan->reliableOrUnsentBuffer + chan->unsentFragmentStart, fragmentLength );
 
 	// XOR scramble all data in the packet after the header
 //	Netchan_ScramblePacket( &send );
@@ -243,7 +241,7 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 	// that is exactly the fragment length still needs to send
 	// a second packet of zero length so that the other side
 	// can tell there aren't more to follow
-	if ( chan->unsentFragmentStart == chan->unsentLength && fragmentLength != FRAGMENT_SIZE ) {
+	if ( chan->unsentFragmentStart == chan->reliableOrUnsentLength && fragmentLength != FRAGMENT_SIZE ) {
 		chan->outgoingSequence++;
 		chan->unsentFragments = qfalse;
 	}
@@ -262,7 +260,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 	QMsg send;
 	byte send_buf[MAX_PACKETLEN];
 
-	if ( length > MAX_MSGLEN ) {
+	if ( length > MAX_MSGLEN_WOLF ) {
 		Com_Error( ERR_DROP, "Netchan_Transmit: length = %i", length );
 	}
 	chan->unsentFragmentStart = 0;
@@ -270,8 +268,8 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 	// fragment large reliable messages
 	if ( length >= FRAGMENT_SIZE ) {
 		chan->unsentFragments = qtrue;
-		chan->unsentLength = length;
-		Com_Memcpy( chan->unsentBuffer, data, length );
+		chan->reliableOrUnsentLength = length;
+		Com_Memcpy( chan->reliableOrUnsentBuffer, data, length );
 
 		// only send the first fragment now
 		Netchan_TransmitNextFragment( chan );
@@ -314,7 +312,7 @@ Netchan_Process
 Returns qfalse if the message should not be processed due to being
 out of order or a fragment.
 
-Msg must be large enough to hold MAX_MSGLEN, because if this is the
+Msg must be large enough to hold MAX_MSGLEN_WOLF, because if this is the
 final fragment of a multi-part message, the entire thing will be
 copied out.
 =================
@@ -421,7 +419,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 
 		// copy the fragment to the fragment buffer
 		if ( fragmentLength < 0 || msg->readcount + fragmentLength > msg->cursize ||
-			 chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) ) {
+			 chan->fragmentLength + fragmentLength > MAX_MSGLEN_WOLF ) {
 			if ( showdrop->integer || showpackets->integer ) {
 				Com_Printf( "%s:illegal fragment length\n"
 							, SOCK_AdrToString( chan->remoteAddress ) );
@@ -576,7 +574,7 @@ Sends a text message in an out-of-band datagram
 */
 void QDECL NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, ... ) {
 	va_list argptr;
-	char string[MAX_MSGLEN];
+	char string[MAX_MSGLEN_WOLF];
 
 	// set the header
 	string[0] = -1;

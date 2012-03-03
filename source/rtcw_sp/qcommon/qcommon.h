@@ -84,11 +84,6 @@ NET
 //#define	MAX_RELIABLE_COMMANDS	128			// max string commands buffered for restransmit
 #define MAX_RELIABLE_COMMANDS   256 // bigger!
 
-typedef enum {
-	NS_CLIENT,
-	NS_SERVER
-} netsrc_t;
-
 void        NET_Init( void );
 void        NET_Shutdown( void );
 void        NET_Restart( void );
@@ -101,9 +96,6 @@ void        NET_Sleep( int msec );
 
 qboolean    Sys_GetPacket( netadr_t *net_from, QMsg *net_message );
 
-//----(SA)	increased for larger submodel entity counts
-#define MAX_MSGLEN              32768       // max length of a message, which may
-//#define	MAX_MSGLEN				16384		// max length of a message, which may
 // be fragmented into multiple packets
 #define MAX_DOWNLOAD_WINDOW         8       // max of eight download frames
 #define MAX_DOWNLOAD_BLKSIZE        2048    // 2048 byte block chunks
@@ -112,31 +104,6 @@ qboolean    Sys_GetPacket( netadr_t *net_from, QMsg *net_message );
 /*
 Netchan handles packet fragmentation and out of order / duplicate suppression
 */
-
-typedef struct {
-	netsrc_t sock;
-
-	int dropped;                    // between last packet and previous
-
-	netadr_t remoteAddress;
-	int qport;                      // qport value to write when transmitting
-
-	// sequencing variables
-	int incomingSequence;
-	int outgoingSequence;
-
-	// incoming fragment assembly buffer
-	int fragmentSequence;
-	int fragmentLength;
-	byte fragmentBuffer[MAX_MSGLEN];
-
-	// outgoing fragment buffer
-	// we need to space out the sending of large fragmented messages
-	qboolean unsentFragments;
-	int unsentFragmentStart;
-	int unsentLength;
-	byte unsentBuffer[MAX_MSGLEN];
-} netchan_t;
 
 void Netchan_Init( int qport );
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );

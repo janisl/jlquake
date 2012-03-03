@@ -21,7 +21,8 @@
 #define MAX_MSGLEN_Q2		1400		// max length of a message
 #define MAX_MSGLEN_Q3		16384		// max length of a message, which may
 										// be fragmented into multiple packets
-#define MAX_MSGLEN			16384		// biggest value of all of the above
+#define MAX_MSGLEN_WOLF		32768		// increased for larger submodel entity counts
+#define MAX_MSGLEN			32768		// biggest value of all of the above
 
 #define MAX_DATAGRAM_Q1		1024		// max length of unreliable message
 #define MAX_DATAGRAM_QW		1450		// max length of unreliable message

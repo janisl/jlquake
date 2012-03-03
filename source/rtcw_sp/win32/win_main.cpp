@@ -771,7 +771,7 @@ EVENT LOOP
 ========================================================================
 */
 
-byte sys_packetReceived[MAX_MSGLEN];
+byte sys_packetReceived[MAX_MSGLEN_WOLF];
 
 /*
 ================

@@ -729,7 +729,7 @@ So we send them "idle" packets with the bare minimum required to keep them on th
 =======================
 */
 void SV_SendClientIdle( client_t *client ) {
-	byte msg_buf[MAX_MSGLEN];
+	byte msg_buf[MAX_MSGLEN_WOLF];
 	QMsg msg;
 
 	MSG_Init( &msg, msg_buf, sizeof( msg_buf ) );
@@ -773,7 +773,7 @@ Also called by SV_FinalCommand
 =======================
 */
 void SV_SendClientSnapshot( client_t *client ) {
-	byte msg_buf[MAX_MSGLEN];
+	byte msg_buf[MAX_MSGLEN_WOLF];
 	QMsg msg;
 
 	//bani
@@ -871,7 +871,7 @@ void SV_SendClientMessages( void ) {
 		// was too large to send at once
 		if ( c->netchan.unsentFragments ) {
 			c->nextSnapshotTime = svs.time +
-								  SV_RateMsec( c, c->netchan.unsentLength - c->netchan.unsentFragmentStart );
+								  SV_RateMsec( c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart );
 			SV_Netchan_TransmitNextFragment( c );
 			continue;
 		}

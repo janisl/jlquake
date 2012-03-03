@@ -660,7 +660,7 @@ A download message has been received from the server
 */
 void CL_ParseDownload( QMsg *msg ) {
 	int size;
-	unsigned char data[MAX_MSGLEN];
+	unsigned char data[MAX_MSGLEN_WOLF];
 	int block;
 
 	if ( !*cls.downloadTempName ) {

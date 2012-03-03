@@ -31,6 +31,7 @@ set(WOLFCORE_FILES
 	../core/md4.cpp
 	../core/memory.cpp
 	../core/message.cpp
+	../core/network_channel.cpp
 	../core/socket.cpp
 	../core/socket_unix.cpp
 	../core/strings.cpp

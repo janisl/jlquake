@@ -787,7 +787,7 @@ During normal gameplay, a client packet will contain something like:
 */
 void CL_WritePacket( void ) {
 	QMsg buf;
-	byte data[MAX_MSGLEN];
+	byte data[MAX_MSGLEN_WOLF];
 	int i, j;
 	usercmd_t   *cmd, *oldcmd;
 	usercmd_t nullcmd;

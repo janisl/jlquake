@@ -283,7 +283,7 @@ Begins recording a demo from the current position
 static char demoName[MAX_QPATH];        // compiler bug workaround
 void CL_Record_f( void ) {
 	char name[MAX_OSPATH];
-	byte bufData[MAX_MSGLEN];
+	byte bufData[MAX_MSGLEN_WOLF];
 	QMsg buf;
 	int i;
 	int len;
@@ -442,7 +442,7 @@ CL_ReadDemoMessage
 void CL_ReadDemoMessage( void ) {
 	int r;
 	QMsg buf;
-	byte bufData[ MAX_MSGLEN ];
+	byte bufData[ MAX_MSGLEN_WOLF ];
 	int s;
 
 	if ( !clc.demofile ) {
@@ -473,7 +473,7 @@ void CL_ReadDemoMessage( void ) {
 		return;
 	}
 	if ( buf.cursize > buf.maxsize ) {
-		Com_Error( ERR_DROP, "CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN" );
+		Com_Error( ERR_DROP, "CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_WOLF" );
 	}
 	r = FS_Read( buf._data, buf.cursize, clc.demofile );
 	if ( r != buf.cursize ) {
