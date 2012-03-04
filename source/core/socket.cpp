@@ -99,7 +99,7 @@ bool SOCK_GetSocksCvars()
 
 bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 {
-	if ((GGameType & GAME_Quake2) || (GGameType & GAME_Quake3))
+	if ((GGameType & GAME_Quake2) || (GGameType & GAME_Tech3))
 	{
 		if (!String::Cmp(s, "localhost"))
 		{
