@@ -115,7 +115,7 @@ struct vmSymbol_t
 struct vm_t
 {
     int programStack;		// the vm may be recursively entered
-    int (*systemCall)(qintptr* parms);
+    qintptr (*systemCall)(qintptr* parms);
 
 	//------------------------------------
    
