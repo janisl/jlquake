@@ -378,10 +378,10 @@ char* Sys_GetDLLName( const char *name ) {
 }
 
 void *Sys_LoadDll( const char *name, char *fqpath,
-				   intptr_t ( **entryPoint ) ( int, ... ),
-				   intptr_t ( *systemcalls )( int, ... ) ) {
+				   qintptr ( **entryPoint ) ( int, ... ),
+				   qintptr ( *systemcalls )( int, ... ) ) {
 	void *libHandle;
-	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
+	void ( *dllEntry )( qintptr ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
 	const char  *pwdpath;
 	const char  *homepath;
@@ -517,8 +517,8 @@ void *Sys_LoadDll( const char *name, char *fqpath,
 
 	String::NCpyZ( fqpath, fn, MAX_QPATH ) ;           // added 2/15/02 by T.Ray
 
-	dllEntry = (void (*)(intptr_t(*)(int, ...)))dlsym( libHandle, "dllEntry" );
-	*entryPoint = (intptr_t(*)(int, ... ))dlsym( libHandle, "vmMain" );
+	dllEntry = (void (*)(qintptr(*)(int, ...)))dlsym( libHandle, "dllEntry" );
+	*entryPoint = (qintptr(*)(int, ... ))dlsym( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		err = dlerror();
 #ifndef NDEBUG // in debug abort on failure

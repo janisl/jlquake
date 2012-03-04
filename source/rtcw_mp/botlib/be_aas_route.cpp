@@ -1973,7 +1973,7 @@ void AAS_DecompressVis( byte *in, int numareas, byte *decompressed ) {
 
 	//row = (numareas+7)>>3;
 	out = decompressed;
-	end = ( byte * )( (intptr_t)decompressed + numareas );
+	end = ( byte * )( (qintptr)decompressed + numareas );
 
 	do
 	{

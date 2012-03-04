@@ -63,7 +63,6 @@ set(WOLFSP_FILES
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 
 	client/snd_adpcm.cpp
 	client/snd_dma.cpp
@@ -93,10 +92,6 @@ set(WOLFSP_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND WOLFSP_FILES
-		qcommon/vm_x86.cpp
-	)
-
 	set(WOLFSP_NASM_FILES
 		unix/ftol.nasm
 		unix/snapvector.nasm
@@ -124,10 +119,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		list(APPEND WOLFSP_FILES ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND WOLFSP_FILES
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfsp ${WOLFSP_FILES})

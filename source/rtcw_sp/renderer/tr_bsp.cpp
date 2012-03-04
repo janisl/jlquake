@@ -376,7 +376,7 @@ static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t
 	numIndexes = LittleLong( ds->numIndexes );
 
 	// create the srfSurfaceFace_t
-	sfaceSize = ( intptr_t ) &( (srfSurfaceFace_t *)0 )->points[numPoints];
+	sfaceSize = ( qintptr ) &( (srfSurfaceFace_t *)0 )->points[numPoints];
 	ofsIndexes = sfaceSize;
 	sfaceSize += sizeof( int ) * numIndexes;
 

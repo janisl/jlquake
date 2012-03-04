@@ -71,7 +71,6 @@ set (ET_FILES
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 	qcommon/dl_main_curl.cpp
 
 	client/cl_cgame.cpp
@@ -103,10 +102,6 @@ set (ET_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND ET_FILES
-		qcommon/vm_x86.cpp
-	)
-
 	set(ET_NASM_FILES
 		#unix/ftol.nasm
 		unix/snapvector.nasm
@@ -134,10 +129,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		list(APPEND ET_FILES ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND ET_FILES
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlet ${ET_FILES})
@@ -164,7 +155,6 @@ set (ETDED_FILES
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
@@ -179,10 +169,6 @@ set (ETDED_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND ETDED_FILES
-		qcommon/vm_x86.cpp
-	)
-
 	set(ETDED_NASM_FILES
 		#unix/ftol.nasm
 		unix/snapvector.nasm
@@ -196,10 +182,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		list(APPEND ETDED_FILES ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND ETDED_FILES
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jletded ${ETDED_FILES})

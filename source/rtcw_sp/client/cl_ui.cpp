@@ -779,9 +779,6 @@ static int FloatAsInt( float f ) {
 	return temp;
 }
 
-#define VMA( x ) VM_ArgPtr( args[x] )
-#define VMF( x )  (*(float*)(&args[x]))
-
 /*
 ====================
 CL_UISystemCalls
@@ -789,7 +786,7 @@ CL_UISystemCalls
 The ui module is making a system call
 ====================
 */
-intptr_t CL_UISystemCalls( intptr_t* args ) {
+qintptr CL_UISystemCalls( qintptr* args ) {
 	switch ( args[0] ) {
 	case UI_ERROR:
 		Com_Error( ERR_DROP, "%s", VMA( 1 ) );
@@ -1082,10 +1079,10 @@ intptr_t CL_UISystemCalls( intptr_t* args ) {
 		return 0;
 
 	case UI_MEMSET:
-		return (intptr_t)memset( VMA( 1 ), args[2], args[3] );
+		return (qintptr)memset( VMA( 1 ), args[2], args[3] );
 
 	case UI_MEMCPY:
-		return (intptr_t)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
+		return (qintptr)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
 
 	case UI_STRNCPY:
 		String::NCpy( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );

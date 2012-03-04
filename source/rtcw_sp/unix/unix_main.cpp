@@ -295,16 +295,16 @@ extern char   *FS_BuildOSPath( const char *base, const char *game, const char *q
 
 #if defined( DO_LOADDLL_WRAP )
 void *Sys_LoadDll_Wrapped( const char *name,
-						   intptr_t ( **entryPoint ) ( int, ... ),
-						   intptr_t ( *systemcalls )( int, ... ) )
+						   qintptr ( **entryPoint ) ( int, ... ),
+						   qintptr ( *systemcalls )( int, ... ) )
 #else
 void *Sys_LoadDll( const char *name,
-				   intptr_t ( **entryPoint ) ( int, ... ),
-				   intptr_t ( *systemcalls )( int, ... ) )
+				   qintptr ( **entryPoint ) ( int, ... ),
+				   qintptr ( *systemcalls )( int, ... ) )
 #endif
 {
 	void *libHandle;
-	void ( *dllEntry )( intptr_t ( *syscallptr )( int, ... ) );
+	void ( *dllEntry )( qintptr ( *syscallptr )( int, ... ) );
 	char fname[MAX_OSPATH];
 	const char  *homepath;
 	const char  *basepath;
@@ -416,8 +416,8 @@ void *Sys_LoadDll( const char *name,
 		return NULL;
 	}
 
-	dllEntry = (void(*)(intptr_t(*)(int, ... ) ))dlsym( libHandle, "dllEntry" );
-	*entryPoint = (intptr_t(*)( int, ... ))dlsym( libHandle, "vmMain" );
+	dllEntry = (void(*)(qintptr(*)(int, ... ) ))dlsym( libHandle, "dllEntry" );
+	*entryPoint = (qintptr(*)( int, ... ))dlsym( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		err = dlerror();
 #ifndef NDEBUG // bk001206 - in debug abort on failure
@@ -440,8 +440,8 @@ void *Sys_LoadDll( const char *name,
 
 #if defined( DO_LOADDLL_WRAP )
 void *Sys_LoadDll( const char *name,
-				   intptr_t ( **entryPoint ) ( int, ... ),
-				   intptr_t ( *systemcalls )( int, ... ) ) {
+				   qintptr ( **entryPoint ) ( int, ... ),
+				   qintptr ( *systemcalls )( int, ... ) ) {
 	void *ret;
 	Cvar_Set( "cl_noprint", "1" );
 	ret = Sys_LoadDll_Wrapped( name, entryPoint, systemcalls );

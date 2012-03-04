@@ -357,11 +357,11 @@ Used to load a development dll instead of a virtual machine
 */
 extern char     *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-void * QDECL Sys_LoadDll( const char *name, intptr_t( QDECL **entryPoint ) ( int, ... ),
-						  intptr_t ( QDECL *systemcalls )( int, ... ) ) {
+void * QDECL Sys_LoadDll( const char *name, qintptr( QDECL **entryPoint ) ( int, ... ),
+						  qintptr ( QDECL *systemcalls )( int, ... ) ) {
 	static int lastWarning = 0;
 	HINSTANCE libHandle;
-	void ( QDECL * dllEntry )( intptr_t ( QDECL *syscallptr )( int, ... ) );
+	void ( QDECL * dllEntry )( qintptr ( QDECL *syscallptr )( int, ... ) );
 	const char    *basepath;
 	const char    *cdpath;
 	const char    *gamedir;
@@ -436,8 +436,8 @@ void * QDECL Sys_LoadDll( const char *name, intptr_t( QDECL **entryPoint ) ( int
 
 found_dll:
 
-	dllEntry = ( void ( QDECL * )( intptr_t ( QDECL * )( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" );
-	*entryPoint = ( intptr_t ( QDECL * )( int,... ) )GetProcAddress( libHandle, "vmMain" );
+	dllEntry = ( void ( QDECL * )( qintptr ( QDECL * )( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" );
+	*entryPoint = ( qintptr ( QDECL * )( int,... ) )GetProcAddress( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		FreeLibrary( libHandle );
 		return NULL;

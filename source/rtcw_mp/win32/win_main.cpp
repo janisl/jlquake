@@ -323,11 +323,11 @@ char* Sys_GetDLLName( const char *name ) {
 // fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
 // fqpath will be empty if dll not loaded, otherwise will hold fully qualified path of dll module loaded
 // fqpath buffersize must be at least MAX_QPATH+1 bytes long
-void * QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QDECL **entryPoint ) ( int, ... ),
-						  intptr_t ( QDECL *systemcalls )( int, ... ) ) {
+void * QDECL Sys_LoadDll( const char *name, char *fqpath, qintptr ( QDECL **entryPoint ) ( int, ... ),
+						  qintptr ( QDECL *systemcalls )( int, ... ) ) {
 	static int lastWarning = 0;
 	HINSTANCE libHandle;
-	void ( QDECL * dllEntry )( intptr_t ( QDECL *syscallptr )( int, ... ) );
+	void ( QDECL * dllEntry )( qintptr ( QDECL *syscallptr )( int, ... ) );
 	const char    *basepath;
 	const char    *cdpath;
 	const char    *gamedir;
@@ -379,8 +379,8 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QDECL **ent
 		}
 	} else {String::NCpyZ( fqpath, fn, MAX_QPATH ) ;       // added 2/15/02 by T.Ray
 	}
-	dllEntry = ( void ( QDECL * )( intptr_t ( QDECL * )( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" );
-	*entryPoint = ( intptr_t ( QDECL * )( int,... ) )GetProcAddress( libHandle, "vmMain" );
+	dllEntry = ( void ( QDECL * )( qintptr ( QDECL * )( int, ... ) ) )GetProcAddress( libHandle, "dllEntry" );
+	*entryPoint = ( qintptr ( QDECL * )( int,... ) )GetProcAddress( libHandle, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		FreeLibrary( libHandle );
 		return NULL;

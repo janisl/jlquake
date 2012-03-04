@@ -40,12 +40,12 @@ and one exported function: Perform
 
 */
 
-#include "vm_local.h"
+#include "../game/q_shared.h"
+#include "qcommon.h"
+#include "../../core/virtual_machine/local.h"
 
 
-vm_t    *currentVM = NULL; // bk001212
 vm_t    *lastVM    = NULL; // bk001212
-int vm_debugLevel;
 
 #define MAX_VM      3
 vm_t vmTable[MAX_VM];
@@ -54,10 +54,6 @@ vm_t vmTable[MAX_VM];
 void VM_VmInfo_f( void );
 void VM_VmProfile_f( void );
 
-
-void VM_Debug( int level ) {
-	vm_debugLevel = level;
-}
 
 /*
 ==============
@@ -75,188 +71,6 @@ void VM_Init( void ) {
 	Com_Memset( vmTable, 0, sizeof( vmTable ) );
 }
 
-
-/*
-===============
-VM_ValueToSymbol
-
-Assumes a program counter value
-===============
-*/
-const char *VM_ValueToSymbol( vm_t *vm, int value ) {
-	vmSymbol_t  *sym;
-	static char text[MAX_TOKEN_CHARS_Q3];
-
-	sym = vm->symbols;
-	if ( !sym ) {
-		return "NO SYMBOLS";
-	}
-
-	// find the symbol
-	while ( sym->next && sym->next->symValue <= value ) {
-		sym = sym->next;
-	}
-
-	if ( value == sym->symValue ) {
-		return sym->symName;
-	}
-
-	String::Sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
-
-	return text;
-}
-
-/*
-===============
-VM_ValueToFunctionSymbol
-
-For profiling, find the symbol behind this value
-===============
-*/
-vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value ) {
-	vmSymbol_t  *sym;
-	static vmSymbol_t nullSym;
-
-	sym = vm->symbols;
-	if ( !sym ) {
-		return &nullSym;
-	}
-
-	while ( sym->next && sym->next->symValue <= value ) {
-		sym = sym->next;
-	}
-
-	return sym;
-}
-
-
-/*
-===============
-VM_SymbolToValue
-===============
-*/
-int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
-	vmSymbol_t  *sym;
-
-	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !String::Cmp( symbol, sym->symName ) ) {
-			return sym->symValue;
-		}
-	}
-	return 0;
-}
-
-
-/*
-===============
-ParseHex
-===============
-*/
-int ParseHex( const char *text ) {
-	int value;
-	int c;
-
-	value = 0;
-	while ( ( c = *text++ ) != 0 ) {
-		if ( c >= '0' && c <= '9' ) {
-			value = value * 16 + c - '0';
-			continue;
-		}
-		if ( c >= 'a' && c <= 'f' ) {
-			value = value * 16 + 10 + c - 'a';
-			continue;
-		}
-		if ( c >= 'A' && c <= 'F' ) {
-			value = value * 16 + 10 + c - 'A';
-			continue;
-		}
-	}
-
-	return value;
-}
-
-/*
-===============
-VM_LoadSymbols
-===============
-*/
-void VM_LoadSymbols( vm_t *vm ) {
-	int len;
-	char    *mapfile, *token;
-	char name[MAX_QPATH];
-	char symbols[MAX_QPATH];
-	vmSymbol_t  **prev, *sym;
-	int count;
-	int value;
-	int chars;
-	int segment;
-	int numInstructions;
-
-	// don't load symbols if not developer
-	if ( !com_developer->integer ) {
-		return;
-	}
-
-	String::StripExtension( vm->name, name );
-	String::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
-	len = FS_ReadFile( symbols, (void **)&mapfile );
-	if ( !mapfile ) {
-		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
-		return;
-	}
-
-	numInstructions = vm->instructionPointersLength >> 2;
-
-	// parse the symbols
-	const char* text_p = mapfile;
-	prev = &vm->symbols;
-	count = 0;
-
-	while ( 1 ) {
-		token = String::Parse3( &text_p );
-		if ( !token[0] ) {
-			break;
-		}
-		segment = ParseHex( token );
-		if ( segment ) {
-			String::Parse3( &text_p );
-			String::Parse3( &text_p );
-			continue;       // only load code segment values
-		}
-
-		token = String::Parse3( &text_p );
-		if ( !token[0] ) {
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
-			break;
-		}
-		value = ParseHex( token );
-
-		token = String::Parse3( &text_p );
-		if ( !token[0] ) {
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
-			break;
-		}
-		chars = String::Length( token );
-		sym = (vmSymbol_t*)Hunk_Alloc( sizeof( *sym ) + chars, h_high );
-		*prev = sym;
-		prev = &sym->next;
-		sym->next = NULL;
-
-		// convert value from an instruction number to a code offset
-		if ( value >= 0 && value < numInstructions ) {
-			value = vm->instructionPointers[value];
-		}
-
-		sym->symValue = value;
-		String::NCpyZ( sym->symName, token, chars + 1 );
-
-		count++;
-	}
-
-	vm->numSymbols = count;
-	Com_Printf( "%i symbols parsed from %s\n", count, symbols );
-	FS_FreeFile( mapfile );
-}
 
 /*
 ============
@@ -296,10 +110,10 @@ Dlls will call this directly
 
 ============
 */
-intptr_t QDECL VM_DllSyscall( int arg, ... ) {
+qintptr QDECL VM_DllSyscall( int arg, ... ) {
 #if !id386
 	// rcg010206 - see commentary above
-	intptr_t args[16];
+	qintptr args[16];
 	int i;
 	va_list ap;
 
@@ -307,7 +121,7 @@ intptr_t QDECL VM_DllSyscall( int arg, ... ) {
 
 	va_start( ap, arg );
 	for ( i = 1; i < sizeof( args ) / sizeof( args[i] ); i++ )
-		args[i] = va_arg( ap, intptr_t );
+		args[i] = va_arg( ap, qintptr );
 	va_end( ap );
 
 	return currentVM->systemCall( args );
@@ -334,7 +148,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	// DLL's can't be restarted in place
 	if ( vm->dllHandle ) {
 		char name[MAX_QPATH];
-		intptr_t ( *systemCall )( intptr_t *parms );
+		qintptr ( *systemCall )( qintptr *parms );
 
 		systemCall = vm->systemCall;
 		String::NCpyZ( name, vm->name, sizeof( name ) );
@@ -404,7 +218,7 @@ it will attempt to load as a system dll
 
 #define STACK_SIZE  0x20000
 
-vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )(intptr_t *),
+vm_t *VM_Create( const char *module, qintptr ( *systemCalls )(qintptr *),
 				 vmInterpret_t interpret ) {
 	vm_t        *vm;
 	vmHeader_t  *header;
@@ -585,41 +399,6 @@ void VM_Clear( void ) {
 	lastVM = NULL;
 }
 
-void *VM_ArgPtr( intptr_t intValue ) {
-	if ( !intValue ) {
-		return NULL;
-	}
-	// bk001220 - currentVM is missing on reconnect
-	if ( currentVM == NULL ) {
-		return NULL;
-	}
-
-	if ( currentVM->entryPoint ) {
-		return ( void * )( currentVM->dataBase + intValue );
-	} else {
-		return ( void * )( currentVM->dataBase + ( intValue & currentVM->dataMask ) );
-	}
-}
-
-void *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue ) {
-	if ( !intValue ) {
-		return NULL;
-	}
-
-	// bk010124 - currentVM is missing on reconnect here as well?
-	if ( currentVM == NULL ) {
-		return NULL;
-	}
-
-	//
-	if ( vm->entryPoint ) {
-		return ( void * )( vm->dataBase + intValue );
-	} else {
-		return ( void * )( vm->dataBase + ( intValue & vm->dataMask ) );
-	}
-}
-
-
 /*
 ==============
 VM_Call
@@ -646,13 +425,13 @@ locals from sp
 #define MAX_STACK   256
 #define STACK_MASK  ( MAX_STACK - 1 )
 
-intptr_t QDECL VM_Call( vm_t *vm, int callnum, ... ) {
+qintptr QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 	vm_t    *oldVM;
-	intptr_t r;
+	qintptr r;
 	//rcg010207 see dissertation at top of VM_DllSyscall() in this file.
 #if !id386
 	int i;
-	intptr_t args[16];
+	qintptr args[16];
 	va_list ap;
 #endif
 
@@ -675,7 +454,7 @@ intptr_t QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 #if !id386
 		va_start( ap, callnum );
 		for ( i = 0; i < sizeof( args ) / sizeof( args[i] ); i++ )
-			args[i] = va_arg( ap, intptr_t );
+			args[i] = va_arg( ap, qintptr );
 		va_end( ap );
 
 		r = vm->entryPoint( callnum,  args[0],  args[1],  args[2], args[3],
@@ -794,33 +573,3 @@ void VM_VmInfo_f( void ) {
 		Com_Printf( "    data length : %7i\n", vm->dataMask + 1 );
 	}
 }
-
-/*
-===============
-VM_LogSyscalls
-
-Insert calls to this while debugging the vm compiler
-===============
-*/
-void VM_LogSyscalls( int *args ) {
-	static int callnum;
-	static FILE    *f;
-
-	if ( !f ) {
-		f = fopen( "syscalls.log", "w" );
-	}
-	callnum++;
-	fprintf( f, "%i: %i (%i) = %i %i %i %i\n", callnum, args - (int *)currentVM->dataBase,
-			 args[0], args[1], args[2], args[3], args[4] );
-}
-
-#ifdef __MACOS__
-#define DLL_ONLY    //DAJ
-#endif
-#ifdef DLL_ONLY // bk010215 - for DLL_ONLY dedicated servers/builds w/o VM
-int VM_CallCompiled( vm_t *vm, int *args ) {
-	return( 0 );
-}
-
-void VM_Compile( vm_t *vm, vmHeader_t *header ) {}
-#endif // DLL_ONLY

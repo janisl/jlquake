@@ -1123,7 +1123,7 @@ void R_Init( void ) {
 	memset( &backEnd, 0, sizeof( backEnd ) );
 	memset( &tess, 0, sizeof( tess ) );
 
-	if ( (intptr_t)tess.xyz & 15 ) {
+	if ( (qintptr)tess.xyz & 15 ) {
 		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
 	}
 	memset( tess.constantColor255, 255, sizeof( tess.constantColor255 ) );

@@ -51,15 +51,11 @@
 #include "quake3defs.h"
 #include "../core/message.h"
 #include "../core/huffman.h"
-#if 0
-#include "virtual_machine/public.h"
-#include "player_move.h"
-#endif
+#include "../core/virtual_machine/public.h"
+#include "../core/player_move.h"
 #include "../core/network_channel.h"
 
-#if 0
 int Com_Milliseconds();
-#endif
 
 extern Cvar* com_dedicated;
 extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized

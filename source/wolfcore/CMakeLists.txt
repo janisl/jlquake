@@ -15,6 +15,9 @@ set(WOLFCORE_FILES
 	../core/clip_map/bsp46/trace.cpp
 	../core/clip_map/main.cpp
 	../core/clip_map/non_map.cpp
+	../core/virtual_machine/interpreted.cpp
+	../core/virtual_machine/main.cpp
+	../core/virtual_machine/none.cpp
 	../core/command_buffer.cpp
 	../core/Common.cpp
 	../core/common_defs.cpp

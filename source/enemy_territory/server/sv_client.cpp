@@ -269,7 +269,7 @@ void SV_DirectConnect( netadr_t from ) {
 	int challenge;
 	const char        *password;
 	int startIndex;
-	intptr_t denied;
+	qintptr denied;
 	int count;
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );

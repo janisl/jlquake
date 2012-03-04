@@ -364,14 +364,11 @@ SV_GameSystemCalls
 The module is making a system call
 ====================
 */
-#define VMA( x ) VM_ArgPtr( args[x] )
-#define VMF( x )  (*(float*)(&args[x]))
-
 // show_bug.cgi?id=574
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
-intptr_t SV_GameSystemCalls( intptr_t* args ) {
+qintptr SV_GameSystemCalls( qintptr* args ) {
 	switch ( args[0] ) {
 	case G_PRINT:
 		Com_Printf( "%s", (char *)VMA( 1 ) );

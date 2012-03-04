@@ -207,8 +207,6 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
-typedef struct vm_s vm_t;
-
 typedef enum {
 	VMI_NATIVE,
 	VMI_BYTECODE,
@@ -234,7 +232,7 @@ typedef enum {
 } sharedTraps_t;
 
 void    VM_Init( void );
-vm_t    *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
+vm_t    *VM_Create( const char *module, qintptr ( *systemCalls )( qintptr * ),
 					vmInterpret_t interpret );
 // module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
 
@@ -242,12 +240,7 @@ void    VM_Free( vm_t *vm );
 void    VM_Clear( void );
 vm_t    *VM_Restart( vm_t *vm );
 
-intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-
-void    VM_Debug( int level );
-
-void    *VM_ArgPtr( intptr_t intValue );
-void    *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
+qintptr QDECL VM_Call( vm_t *vm, int callNum, ... );
 
 /*
 ==============================================================
@@ -546,8 +539,8 @@ void Sys_LeaveCriticalSection( void *ptr );
 // FIXME: wants win32 implementation
 char* Sys_GetDLLName( const char *name );
 // fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-void    * QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t( QDECL * *entryPoint ) ( int, ... ),
-							 intptr_t ( QDECL * systemcalls )( int, ... ) );
+void    * QDECL Sys_LoadDll( const char *name, char *fqpath, qintptr( QDECL * *entryPoint ) ( int, ... ),
+							 qintptr ( QDECL * systemcalls )( int, ... ) );
 void    Sys_UnloadDll( void *dllHandle );
 
 void    Sys_UnloadGame( void );

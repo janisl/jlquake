@@ -70,7 +70,6 @@ set(WOLFMP_FILES
 	qcommon/msg.cpp  
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 
 	client/snd_adpcm.cpp
 	client/snd_dma.cpp
@@ -101,10 +100,6 @@ set(WOLFMP_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND WOLFMP_FILES
-		qcommon/vm_x86.cpp
-	)
-
 	set(WOLFMP_NASM_FILES
 		unix/ftol.nasm
 		unix/snapvector.nasm
@@ -132,10 +127,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		list(APPEND WOLFMP_FILES ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND WOLFMP_FILES
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
@@ -162,7 +153,6 @@ set(WOLFMPDED_FILES
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
-	qcommon/vm_interpreted.cpp
 	game/q_math.cpp
 	game/q_shared.cpp
 	unix/unix_main.cpp
@@ -171,10 +161,6 @@ set(WOLFMPDED_FILES
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND WOLFMPDED_FILES
-		qcommon/vm_x86.cpp
-	)
-
 	set(WOLFMPDED_NASM_FILES
 		unix/ftol.nasm
 		unix/snapvector.nasm
@@ -188,10 +174,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		list(APPEND WOLFMPDED_FILES ${OBJ})
 	endforeach(SRC)
-else(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	list(APPEND WOLFMPDED_FILES
-		qcommon/vm_none.cpp
-	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})
