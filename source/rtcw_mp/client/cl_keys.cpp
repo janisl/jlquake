@@ -50,7 +50,6 @@ int chat_playerNum;
 
 qboolean key_overstrikeMode;
 
-qboolean anykeydown;
 qkey_t keys[MAX_KEYS];
 
 
@@ -984,7 +983,7 @@ void Message_Key( int key ) {
 
 
 	if ( key == K_ESCAPE ) {
-		cls.keyCatchers &= ~KEYCATCH_MESSAGE;
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		Field_Clear( &chatField );
 		return;
 	}
@@ -1012,7 +1011,7 @@ void Message_Key( int key ) {
 
 			CL_AddReliableCommand( buffer );
 		}
-		cls.keyCatchers &= ~KEYCATCH_MESSAGE;
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		Field_Clear( &chatField );
 		return;
 	}
@@ -1413,7 +1412,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 
 	// are we waiting to clear stats and move to briefing screen
 	if ( down && cl_waitForFire && cl_waitForFire->integer ) {    //DAJ BUG in dedicated cl_waitForFire don't exist
-		if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {   // get rid of the consol
+		if ( in_keyCatchers & KEYCATCH_CONSOLE ) {   // get rid of the consol
 			Con_ToggleConsole_f();
 		}
 		// clear all input controls
@@ -1430,7 +1429,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 
 	// are we waiting to begin the level
 	if ( down && cl_missionStats && cl_missionStats->string[0] && cl_missionStats->string[1] ) {  //DAJ BUG in dedicated cl_missionStats don't exist
-		if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {   // get rid of the consol
+		if ( in_keyCatchers & KEYCATCH_CONSOLE ) {   // get rid of the consol
 			Con_ToggleConsole_f();
 		}
 		// clear all input controls
@@ -1459,7 +1458,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 
 	// keys can still be used for bound actions
 	if ( down && ( key < 128 || key == K_MOUSE1 )
-		 && ( clc.demoplaying || cls.state == CA_CINEMATIC ) && !cls.keyCatchers ) {
+		 && ( clc.demoplaying || cls.state == CA_CINEMATIC ) && !in_keyCatchers ) {
 
 		Cvar_Set( "nextdemo","" );
 		key = K_ESCAPE;
@@ -1467,20 +1466,20 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 
 	// escape is always handled special
 	if ( key == K_ESCAPE && down ) {
-		if ( cls.keyCatchers & KEYCATCH_MESSAGE ) {
+		if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
 			// clear message mode
 			Message_Key( key );
 			return;
 		}
 
 		// escape always gets out of CGAME stuff
-		if ( cls.keyCatchers & KEYCATCH_CGAME ) {
-			cls.keyCatchers &= ~KEYCATCH_CGAME;
+		if ( in_keyCatchers & KEYCATCH_CGAME ) {
+			in_keyCatchers &= ~KEYCATCH_CGAME;
 			VM_Call( cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE );
 			return;
 		}
 
-		if ( !( cls.keyCatchers & KEYCATCH_UI ) ) {
+		if ( !( in_keyCatchers & KEYCATCH_UI ) ) {
 			if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME );
 			} else {
@@ -1510,9 +1509,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 			Cbuf_AddText( cmd );
 		}
 
-		if ( cls.keyCatchers & KEYCATCH_UI && uivm ) {
+		if ( in_keyCatchers & KEYCATCH_UI && uivm ) {
 			VM_Call( uivm, UI_KEY_EVENT, key, down );
-		} else if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm ) {
+		} else if ( in_keyCatchers & KEYCATCH_CGAME && cgvm ) {
 			VM_Call( cgvm, CG_KEY_EVENT, key, down );
 		}
 
@@ -1531,9 +1530,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 	}
 
 	// distribute the key down event to the apropriate handler
-	if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {
+	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 		Console_Key( key );
-	} else if ( cls.keyCatchers & KEYCATCH_UI && !bypassMenu ) {
+	} else if ( in_keyCatchers & KEYCATCH_UI && !bypassMenu ) {
 		kb = keys[key].binding;
 
 		if ( VM_Call( uivm, UI_GET_ACTIVE_MENU ) == UIMENU_CLIPBOARD ) {
@@ -1559,11 +1558,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		}
 
 		VM_Call( uivm, UI_KEY_EVENT, key, down );
-	} else if ( cls.keyCatchers & KEYCATCH_CGAME ) {
+	} else if ( in_keyCatchers & KEYCATCH_CGAME ) {
 		if ( cgvm ) {
 			VM_Call( cgvm, CG_KEY_EVENT, key, down );
 		}
-	} else if ( cls.keyCatchers & KEYCATCH_MESSAGE ) {
+	} else if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
 		Message_Key( key );
 	} else if ( cls.state == CA_DISCONNECTED ) {
 
@@ -1605,11 +1604,11 @@ void CL_CharEvent( int key ) {
 	}
 
 	// distribute the key down event to the apropriate handler
-	if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {
+	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 		Field_CharEvent( &g_consoleField, key );
-	} else if ( cls.keyCatchers & KEYCATCH_UI )   {
+	} else if ( in_keyCatchers & KEYCATCH_UI )   {
 		VM_Call( uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, qtrue );
-	} else if ( cls.keyCatchers & KEYCATCH_MESSAGE )   {
+	} else if ( in_keyCatchers & KEYCATCH_MESSAGE )   {
 		Field_CharEvent( &chatField, key );
 	} else if ( cls.state == CA_DISCONNECTED )   {
 		Field_CharEvent( &g_consoleField, key );

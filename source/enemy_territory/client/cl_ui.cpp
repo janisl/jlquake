@@ -699,7 +699,7 @@ Key_GetCatcher
 ====================
 */
 int Key_GetCatcher( void ) {
-	return cls.keyCatchers;
+	return in_keyCatchers;
 }
 
 /*
@@ -709,10 +709,10 @@ Ket_SetCatcher
 */
 void Key_SetCatcher( int catcher ) {
 	// NERVE - SMF - console overrides everything
-	if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {
-		cls.keyCatchers = catcher | KEYCATCH_CONSOLE;
+	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
+		in_keyCatchers = catcher | KEYCATCH_CONSOLE;
 	} else {
-		cls.keyCatchers = catcher;
+		in_keyCatchers = catcher;
 	}
 
 }
@@ -1239,7 +1239,7 @@ CL_ShutdownUI
 ====================
 */
 void CL_ShutdownUI( void ) {
-	cls.keyCatchers &= ~KEYCATCH_UI;
+	in_keyCatchers &= ~KEYCATCH_UI;
 	cls.uiStarted = qfalse;
 	if ( !uivm ) {
 		return;

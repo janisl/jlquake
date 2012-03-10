@@ -409,9 +409,9 @@ CL_MouseEvent
 =================
 */
 void CL_MouseEvent( int dx, int dy, int time ) {
-	if ( cls.keyCatchers & KEYCATCH_UI ) {
+	if ( in_keyCatchers & KEYCATCH_UI ) {
 		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
-	} else if ( cls.keyCatchers & KEYCATCH_CGAME ) {
+	} else if ( in_keyCatchers & KEYCATCH_CGAME ) {
 		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
 	} else {
 		cl.mouseDx[cl.mouseIndex] += dx;
@@ -573,13 +573,13 @@ void CL_CmdButtons( wsusercmd_t *cmd ) {
 		kb[KB_WBUTTONS0 + i].wasPressed = qfalse;
 	}
 
-	if ( cls.keyCatchers ) {
+	if ( in_keyCatchers ) {
 		cmd->buttons |= Q3BUTTON_TALK;
 	}
 
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
-	if ( anykeydown && !cls.keyCatchers ) {
+	if ( anykeydown && !in_keyCatchers ) {
 		cmd->buttons |= WSBUTTON_ANY;
 	}
 }

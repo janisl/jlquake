@@ -47,9 +47,9 @@ void IN_Shutdown();
 void IN_Frame();
 
 void Sys_SendKeyEvents();
+#endif
 
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;
-#endif
 
 extern keyname_t keynames[];
