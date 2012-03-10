@@ -1,6 +1,7 @@
 set(WOLFCLIENT_FILES
 	../client/input/keys.cpp
 	../client/input/main.cpp
+	sound/main.cpp
 	client_main.cpp
 )
 

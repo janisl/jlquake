@@ -365,6 +365,7 @@ The module is making a system call
 ====================
 */
 // show_bug.cgi?id=574
+#include "../../wolfclient/client.h"
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 

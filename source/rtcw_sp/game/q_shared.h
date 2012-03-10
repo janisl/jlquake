@@ -185,7 +185,6 @@ void Sys_PumpEvents( void );
 enum {qfalse, qtrue};
 
 typedef int qhandle_t;
-typedef int sfxHandle_t;
 
 #ifndef ID_INLINE
 #ifdef _WIN32

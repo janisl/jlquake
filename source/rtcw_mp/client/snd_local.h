@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // snd_local.h -- private sound definations
 
 
+#include "../../wolfclient/client.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
@@ -193,7 +194,6 @@ extern portable_samplepair_t s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES]
 extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 
-extern Cvar   *s_volume;
 extern Cvar   *s_nosound;
 extern Cvar   *s_khz;
 extern Cvar   *s_show;

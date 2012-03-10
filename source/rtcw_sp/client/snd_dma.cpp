@@ -90,7 +90,6 @@ int s_paintedtime;              // sample PAIRS
 sfx_t s_knownSfx[MAX_SFX];
 
 
-Cvar      *s_volume;
 Cvar      *s_testsound;
 Cvar      *s_khz;
 Cvar      *s_show;

@@ -116,7 +116,6 @@ int s_numSfx = 0;
 #define     LOOP_HASH       128
 static sfx_t       *sfxHash[LOOP_HASH];
 
-Cvar      *s_volume;
 Cvar      *s_testsound;
 Cvar      *s_khz;
 Cvar      *s_show;

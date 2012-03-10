@@ -20,8 +20,8 @@
 #include "../core/core.h"
 #include "../core/file_formats/bsp38.h"
 
-#if 0
 #include "sound/public.h"
+#if 0
 #include "renderer/public.h"
 #endif
 #include "../client/input/keycodes.h"
