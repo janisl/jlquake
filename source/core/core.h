@@ -49,6 +49,7 @@
 #include "hexen2defs.h"
 #include "quake2defs.h"
 #include "quake3defs.h"
+#include "wolfdefs.h"
 #include "message.h"
 #include "huffman.h"
 #include "virtual_machine/public.h"
