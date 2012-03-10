@@ -3,7 +3,7 @@ set(WOLFCLIENT_FILES
 	../client/input/main.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
-	../client/sound/driver_oss.cpp
+	../client/sound/driver_alsa.cpp
 	sound/main.cpp
 	client_main.cpp
 )
