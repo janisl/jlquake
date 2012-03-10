@@ -63,6 +63,7 @@ void S_ExtraUpdate();
 void S_Shutdown();
 void S_Init();
 void S_DisableSounds();
+#endif
 
 qboolean MIDI_Init();
 void MIDI_Cleanup();
@@ -70,7 +71,6 @@ void MIDI_Play(char *Name);
 void MIDI_Stop();
 void MIDI_Pause(int mode);
 void MIDI_Loop(int NewValue);
-#endif
 
 int CDAudio_Init();
 void CDAudio_Play(int track, qboolean looping);
