@@ -23,7 +23,9 @@
 #if 0
 #include "sound/public.h"
 #include "renderer/public.h"
-#include "input/keycodes.h"
+#endif
+#include "../client/input/keycodes.h"
+#if 0
 #include "input/public.h"
 #include "cinematic/public.h"
 #include "ui/ui.h"
