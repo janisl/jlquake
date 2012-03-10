@@ -39,7 +39,7 @@ A normal server packet will look like:
 
 4	sequence number (high bit set if an oversize fragment)
 <optional reliable commands>
-1	svc_snapshot
+1	q3svc_snapshot
 4	last client reliable command
 4	serverTime
 1	lastframe for delta compression
@@ -116,7 +116,7 @@ static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to,
 		}
 	}
 
-	msg->WriteBits( ( MAX_GENTITIES - 1 ), GENTITYNUM_BITS );   // end of packetentities
+	msg->WriteBits( ( MAX_GENTITIES_Q3 - 1 ), GENTITYNUM_BITS_Q3 );   // end of packetentities
 }
 
 
@@ -133,7 +133,7 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 	int snapFlags;
 
 	// this is the snapshot we are creating
-	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK ];
+	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK_Q3 ];
 
 	// try to use a previous frame as the source for delta compressing the snapshot
 	if ( client->deltaMessage <= 0 || client->state != CS_ACTIVE ) {
@@ -141,14 +141,14 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 		oldframe = NULL;
 		lastframe = 0;
 	} else if ( client->netchan.outgoingSequence - client->deltaMessage
-				>= ( PACKET_BACKUP - 3 ) ) {
+				>= ( PACKET_BACKUP_Q3 - 3 ) ) {
 		// client hasn't gotten a good message through in a long time
 		Com_DPrintf( "%s: Delta request from out of date packet.\n", client->name );
 		oldframe = NULL;
 		lastframe = 0;
 	} else {
 		// we have a valid snapshot to delta from
-		oldframe = &client->frames[ client->deltaMessage & PACKET_MASK ];
+		oldframe = &client->frames[ client->deltaMessage & PACKET_MASK_Q3 ];
 		lastframe = client->netchan.outgoingSequence - client->deltaMessage;
 
 		// the snapshot's entities may still have rolled off the buffer, though
@@ -159,7 +159,7 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 		}
 	}
 
-	msg->WriteByte( svc_snapshot );
+	msg->WriteByte( q3svc_snapshot );
 
 	// NOTE, MRE: now sent at the start of every message from server to client
 	// let the client know which reliable clientCommands we have received
@@ -199,7 +199,7 @@ static void SV_WriteSnapshotToClient( client_t *client, QMsg *msg ) {
 	// padding for rate debugging
 	if ( sv_padPackets->integer ) {
 		for ( i = 0 ; i < sv_padPackets->integer ; i++ ) {
-			msg->WriteByte( svc_nop );
+			msg->WriteByte( q3svc_nop );
 		}
 	}
 }
@@ -217,7 +217,7 @@ void SV_UpdateServerCommandsToClient( client_t *client, QMsg *msg ) {
 
 	// write any unacknowledged serverCommands
 	for ( i = client->reliableAcknowledge + 1 ; i <= client->reliableSequence ; i++ ) {
-		msg->WriteByte( svc_serverCommand );
+		msg->WriteByte( q3svc_serverCommand );
 		msg->WriteLong( i );
 		msg->WriteString( client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 	}
@@ -546,7 +546,7 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 	sv.snapshotCounter++;
 
 	// this is the frame we are creating
-	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK ];
+	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK_Q3 ];
 
 	// clear everything in this snapshot
 	entityNumbers.numSnapshotEntities = 0;
@@ -567,7 +567,7 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 	// never send client's own entity, because it can
 	// be regenerated from the playerstate
 	clientNum = frame->ps.clientNum;
-	if ( clientNum < 0 || clientNum >= MAX_GENTITIES ) {
+	if ( clientNum < 0 || clientNum >= MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 	svEnt = &sv.svEntities[ clientNum ];
@@ -675,9 +675,9 @@ void SV_SendMessageToClient( QMsg *msg, client_t *client ) {
 	int rateMsec;
 
 	// record information about the message
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSize = msg->cursize;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSent = svs.time;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageAcked = -1;
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSize = msg->cursize;
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.time;
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
 
 	// send the datagram
 	SV_Netchan_Transmit( client, msg );

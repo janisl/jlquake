@@ -51,7 +51,7 @@ void S_UpdateStreamingSounds( void );
 // !! NOTE: the first streaming sound is always the music
 streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
 int numStreamingSounds = 0;
-static vec3_t entityPositions[MAX_GENTITIES];
+static vec3_t entityPositions[MAX_GENTITIES_Q3];
 
 void    *crit;
 
@@ -699,7 +699,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 		return;
 	}
 
-	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES ) ) {
+	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) ) {
 		Com_Error( ERR_DROP, "S_StartSound: bad entitynum %i", entityNum );
 	}
 
@@ -1258,7 +1258,7 @@ let the sound system know where an entity currently is
 ======================
 */
 void S_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES ) {
+	if ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}
 	VectorCopy( origin, entityPositions[entityNum] );

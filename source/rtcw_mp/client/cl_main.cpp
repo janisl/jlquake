@@ -365,7 +365,7 @@ void CL_Record_f( void ) {
 	// NOTE, MRE: all server->client messages now acknowledge
 	buf.WriteLong( clc.reliableSequence );
 
-	buf.WriteByte( svc_gamestate );
+	buf.WriteByte( q3svc_gamestate );
 	buf.WriteLong( clc.serverCommandSequence );
 
 	// configstrings
@@ -374,23 +374,23 @@ void CL_Record_f( void ) {
 			continue;
 		}
 		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
-		buf.WriteByte( svc_configstring );
+		buf.WriteByte( q3svc_configstring );
 		buf.WriteShort( i );
 		buf.WriteBigString( s );
 	}
 
 	// baselines
 	memset( &nullstate, 0, sizeof( nullstate ) );
-	for ( i = 0; i < MAX_GENTITIES ; i++ ) {
+	for ( i = 0; i < MAX_GENTITIES_Q3 ; i++ ) {
 		ent = &cl.entityBaselines[i];
 		if ( !ent->number ) {
 			continue;
 		}
-		buf.WriteByte( svc_baseline );
+		buf.WriteByte( q3svc_baseline );
 		MSG_WriteDeltaEntity( &buf, &nullstate, ent, qtrue );
 	}
 
-	buf.WriteByte( svc_EOF );
+	buf.WriteByte( q3svc_EOF );
 
 	// finished writing the gamestate stuff
 
@@ -400,7 +400,7 @@ void CL_Record_f( void ) {
 	buf.WriteLong( clc.checksumFeed );
 
 	// finished writing the client packet
-	buf.WriteByte( svc_EOF );
+	buf.WriteByte( q3svc_EOF );
 
 	// write it to the demo file
 	len = LittleLong( clc.serverMessageSequence - 1 );
@@ -877,7 +877,7 @@ CL_RequestMotd
 ===================
 */
 void CL_RequestMotd( void ) {
-	char info[MAX_INFO_STRING];
+	char info[MAX_INFO_STRING_Q3];
 
 	if ( !cl_motd->integer ) {
 		return;
@@ -895,9 +895,9 @@ void CL_RequestMotd( void ) {
 	info[0] = 0;
 	String::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", rand() );
 
-	Info_SetValueForKey( info, "challenge", cls.updateChallenge, MAX_INFO_STRING );
-	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING );
-	Info_SetValueForKey( info, "version", com_version->string, MAX_INFO_STRING );
+	Info_SetValueForKey( info, "challenge", cls.updateChallenge, MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( info, "version", com_version->string, MAX_INFO_STRING_Q3 );
 
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd \"%s\"\n", info );
 }
@@ -1226,7 +1226,7 @@ CL_SendPureChecksums
 */
 void CL_SendPureChecksums( void ) {
 	const char *pChecksums;
-	char cMsg[MAX_INFO_VALUE];
+	char cMsg[MAX_INFO_VALUE_Q3];
 	int i;
 
 	// if we are pure we need to send back a command with our referenced pk3 checksums
@@ -1401,7 +1401,7 @@ void CL_Clientinfo_f( void ) {
 	Com_Printf( "state: %i\n", cls.state );
 	Com_Printf( "Server: %s\n", cls.servername );
 	Com_Printf( "User info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING ) );
+	Info_Print( Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING_Q3 ) );
 	Com_Printf( "--------------------------------------\n" );
 }
 
@@ -1585,7 +1585,7 @@ void CL_InitDownloads( void ) {
 	if ( autoupdateStarted && SOCK_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
 		if ( String::Length( cl_updatefiles->string ) > 4 ) {
 			String::NCpyZ( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
-			String::NCpyZ( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING );
+			String::NCpyZ( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING_Q3 );
 			cls.state = CA_CONNECTED;
 			CL_NextDownload();
 			return;
@@ -1627,8 +1627,8 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend( void ) {
 	int port, i;
-	char info[MAX_INFO_STRING];
-	char data[MAX_INFO_STRING];
+	char info[MAX_INFO_STRING_Q3];
+	char data[MAX_INFO_STRING_Q3];
 
 	// don't send anything if playing back a demo
 	if ( clc.demoplaying ) {
@@ -1661,10 +1661,10 @@ void CL_CheckForResend( void ) {
 		// sending back the challenge
 		port = Cvar_VariableValue( "net_qport" );
 
-		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING ), sizeof( info ) );
-		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "qport", va( "%i", port ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), MAX_INFO_STRING );
+		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING_Q3 ), sizeof( info ) );
+		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "qport", va( "%i", port ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), MAX_INFO_STRING_Q3 );
 
 		String::Cpy( data, "connect " );
 
@@ -2173,7 +2173,7 @@ void CL_CheckUserinfo( void ) {
 	// send a reliable userinfo update if needed
 	if ( cvar_modifiedFlags & CVAR_USERINFO ) {
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING ) ) );
+		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING_Q3 ) ) );
 	}
 }
 
@@ -3120,7 +3120,7 @@ CL_ServerInfoPacket
 */
 void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	int i, type;
-	char info[MAX_INFO_STRING];
+	char info[MAX_INFO_STRING_Q3];
 	char*   str;
 	const char    *infoString;
 	int prot;
@@ -3168,7 +3168,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 				type = 0;
 				break;
 			}
-			Info_SetValueForKey( cl_pinglist[i].info, "nettype", va( "%d", type ), MAX_INFO_STRING );
+			Info_SetValueForKey( cl_pinglist[i].info, "nettype", va( "%d", type ), MAX_INFO_STRING_Q3 );
 			CL_SetServerInfoByAddress( from, infoString, cl_pinglist[i].time );
 
 			return;
@@ -3217,7 +3217,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	cls.localServers[i].punkbuster = 0;             // DHM - Nerve
 	cls.localServers[i].gameName[0] = '\0';           // Arnout
 
-	String::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING );
+	String::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING_Q3 );
 	if ( String::Length( info ) ) {
 		if ( info[String::Length( info ) - 1] != '\n' ) {
 			strncat( info, "\n", sizeof( info ) );
@@ -3364,7 +3364,7 @@ CL_ServerStatusResponse
 */
 void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 	const char    *s;
-	char info[MAX_INFO_STRING];
+	char info[MAX_INFO_STRING_Q3];
 	int i, l, score, ping;
 	int len;
 	serverStatus_t *serverStatus;
@@ -3397,7 +3397,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 				l = 0;
 				while ( *s ) {
 					info[l++] = *s;
-					if ( l >= MAX_INFO_STRING - 1 ) {
+					if ( l >= MAX_INFO_STRING_Q3 - 1 ) {
 						break;
 					}
 					s++;

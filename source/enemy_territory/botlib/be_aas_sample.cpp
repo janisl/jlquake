@@ -404,7 +404,7 @@ aas_trace_t AAS_TraceClientBBox( vec3_t start, vec3_t end, int presencetype,
 
 	//clear the trace structure
 	memset( &trace, 0, sizeof( aas_trace_t ) );
-	trace.ent = ENTITYNUM_NONE;
+	trace.ent = Q3ENTITYNUM_NONE;
 
 	if ( !( *aasworld ).loaded ) {
 		return trace;
@@ -433,7 +433,7 @@ aas_trace_t AAS_TraceClientBBox( vec3_t start, vec3_t end, int presencetype,
 			//endpos is the end of the line
 			VectorCopy( end, trace.endpos );
 			//nothing hit
-			trace.ent = ENTITYNUM_NONE;
+			trace.ent = Q3ENTITYNUM_NONE;
 			trace.area = 0;
 			trace.planenum = 0;
 			return trace;
@@ -473,7 +473,7 @@ aas_trace_t AAS_TraceClientBBox( vec3_t start, vec3_t end, int presencetype,
 					VectorMA(tstack_p->start, -0.125, v1, tstack_p->start);
 				} //end else
 				VectorCopy(tstack_p->start, trace.endpos);
-				trace.ent = ENTITYNUM_NONE;
+				trace.ent = Q3ENTITYNUM_NONE;
 				trace.area = -nodenum;
 //				VectorSubtract(end, start, v1);
 				trace.planenum = tstack_p->planenum;
@@ -523,7 +523,7 @@ aas_trace_t AAS_TraceClientBBox( vec3_t start, vec3_t end, int presencetype,
 				VectorMA( tstack_p->start, -0.125, v1, tstack_p->start );
 			} //end else
 			VectorCopy( tstack_p->start, trace.endpos );
-			trace.ent = ENTITYNUM_NONE;
+			trace.ent = Q3ENTITYNUM_NONE;
 			trace.area = 0; //hit solid leaf
 //			VectorSubtract(end, start, v1);
 			trace.planenum = tstack_p->planenum;

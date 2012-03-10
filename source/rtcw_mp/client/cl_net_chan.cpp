@@ -148,7 +148,7 @@ CL_Netchan_Transmit
 ================
 */
 void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
-	msg->WriteByte( clc_EOF );
+	msg->WriteByte( q3clc_EOF );
 	CL_Netchan_Encode( msg );
 	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }

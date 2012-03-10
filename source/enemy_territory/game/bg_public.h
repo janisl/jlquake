@@ -340,11 +340,10 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 // from the server to all connected clients.
 //
 
-// CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
+// Q3CS_SERVERINFO and Q3CS_SYSTEMINFO are defined in q_shared.h
 #define CS_MUSIC                        2
 #define CS_MESSAGE                      3       // from the map worldspawn's message field
 #define CS_MOTD                         4       // g_motd string for server message of the day
-#define CS_WARMUP                       5       // server time when the match will be restarted
 #define CS_VOTE_TIME                    6
 #define CS_VOTE_STRING                  7
 #define CS_VOTE_YES                     8
@@ -384,7 +383,7 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 #define CS_FILTERCAMS                   39
 
 #define CS_MODELS                       64
-#define CS_SOUNDS                       ( CS_MODELS +               MAX_MODELS                  )
+#define CS_SOUNDS                       ( CS_MODELS +               MAX_MODELS_Q3                  )
 #define CS_SHADERS                      ( CS_SOUNDS +               MAX_SOUNDS                  )
 #define CS_SHADERSTATE                  ( CS_SHADERS +              MAX_CS_SHADERS              ) // Gordon: this MUST be after CS_SHADERS
 #define CS_SKINS                        ( CS_SHADERSTATE +          1                           )
@@ -1628,8 +1627,8 @@ typedef enum {
 
 
 
-void    BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splinePath );
-void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splineData );
+void    BG_EvaluateTrajectory( const q3trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splinePath );
+void BG_EvaluateTrajectoryDelta( const q3trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splineData );
 void    BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out );
 
 void    BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );

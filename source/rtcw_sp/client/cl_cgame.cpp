@@ -136,12 +136,12 @@ qboolean    CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 	}
 
 	// if the frame has fallen out of the circular buffer, we can't return it
-	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP ) {
+	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3 ) {
 		return qfalse;
 	}
 
 	// if the frame is not valid, we can't return it
-	clSnap = &cl.snapshots[snapshotNumber & PACKET_MASK];
+	clSnap = &cl.snapshots[snapshotNumber & PACKET_MASK_Q3];
 	if ( !clSnap->valid ) {
 		return qfalse;
 	}
@@ -261,7 +261,7 @@ void CL_ConfigstringModified( void ) {
 		cl.gameState.dataCount += len + 1;
 	}
 
-	if ( index == CS_SYSTEMINFO ) {
+	if ( index == Q3CS_SYSTEMINFO ) {
 		// parse serverId and other cvars
 		CL_SystemInfoChanged();
 	}
@@ -964,7 +964,7 @@ void CL_InitCGame( void ) {
 	Con_Close();
 
 	// find the current mapname
-	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SERVERINFO ];
+	info = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
 	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 

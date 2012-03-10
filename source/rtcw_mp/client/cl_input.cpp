@@ -362,9 +362,9 @@ void CL_KeyMove( usercmd_t *cmd ) {
 	//
 	if ( kb[KB_SPEED].active ^ cl_run->integer ) {
 		movespeed = 127;
-		cmd->buttons &= ~BUTTON_WALKING;
+		cmd->buttons &= ~Q3BUTTON_WALKING;
 	} else {
-		cmd->buttons |= BUTTON_WALKING;
+		cmd->buttons |= Q3BUTTON_WALKING;
 		movespeed = 64;
 	}
 
@@ -464,7 +464,7 @@ void CL_JoystickMove( usercmd_t *cmd ) {
 		movespeed = 2;
 	} else {
 		movespeed = 1;
-		cmd->buttons |= BUTTON_WALKING;
+		cmd->buttons |= Q3BUTTON_WALKING;
 	}
 
 	if ( kb[KB_SPEED].active ) {
@@ -592,7 +592,7 @@ void CL_CmdButtons( usercmd_t *cmd ) {
 	}
 
 	if ( cls.keyCatchers && !cl_bypassMouseInput->integer ) {
-		cmd->buttons |= BUTTON_TALK;
+		cmd->buttons |= Q3BUTTON_TALK;
 	}
 
 	// allow the game to know if any key at all is
@@ -773,7 +773,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 	} else if ( cl_maxpackets->integer > 100 ) {
 		Cvar_Set( "cl_maxpackets", "100" );
 	}
-	oldPacketNum = ( clc.netchan.outgoingSequence - 1 ) & PACKET_MASK;
+	oldPacketNum = ( clc.netchan.outgoingSequence - 1 ) & PACKET_MASK_Q3;
 	delta = cls.realtime -  cl.outPackets[ oldPacketNum ].p_realtime;
 	if ( delta < 1000 / cl_maxpackets->integer ) {
 		// the accumulated commands will go out in the next packet
@@ -798,7 +798,7 @@ During normal gameplay, a client packet will contain something like:
 4	acknowledged sequence number
 4	clc.serverCommandSequence
 <optional reliable commands>
-1	clc_move or clc_moveNoDelta
+1	q3clc_move or q3clc_moveNoDelta
 1	command count
 <count * usercmds>
 
@@ -841,7 +841,7 @@ void CL_WritePacket( void ) {
 	// NOTE TTimo: if you verbose this, you will see that there are quite a few duplicates
 	// typically several unacknowledged cp or userinfo commands stacked up
 	for ( i = clc.reliableAcknowledge + 1 ; i <= clc.reliableSequence ; i++ ) {
-		buf.WriteByte( clc_clientCommand );
+		buf.WriteByte( q3clc_clientCommand );
 		buf.WriteLong( i );
 		buf.WriteString( clc.reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 	}
@@ -854,7 +854,7 @@ void CL_WritePacket( void ) {
 	} else if ( cl_packetdup->integer > 5 ) {
 		Cvar_Set( "cl_packetdup", "5" );
 	}
-	oldPacketNum = ( clc.netchan.outgoingSequence - 1 - cl_packetdup->integer ) & PACKET_MASK;
+	oldPacketNum = ( clc.netchan.outgoingSequence - 1 - cl_packetdup->integer ) & PACKET_MASK_Q3;
 	count = cl.cmdNumber - cl.outPackets[ oldPacketNum ].p_cmdNumber;
 	if ( count > MAX_PACKET_USERCMDS ) {
 		count = MAX_PACKET_USERCMDS;
@@ -868,9 +868,9 @@ void CL_WritePacket( void ) {
 		// begin a client move command
 		if ( cl_nodelta->integer || !cl.snap.valid || clc.demowaiting
 			 || clc.serverMessageSequence != cl.snap.messageNum ) {
-			buf.WriteByte( clc_moveNoDelta );
+			buf.WriteByte( q3clc_moveNoDelta );
 		} else {
-			buf.WriteByte( clc_move );
+			buf.WriteByte( q3clc_move );
 		}
 
 		// write the command count
@@ -895,7 +895,7 @@ void CL_WritePacket( void ) {
 	//
 	// deliver the message
 	//
-	packetNum = clc.netchan.outgoingSequence & PACKET_MASK;
+	packetNum = clc.netchan.outgoingSequence & PACKET_MASK_Q3;
 	cl.outPackets[ packetNum ].p_realtime = cls.realtime;
 	cl.outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
 	cl.outPackets[ packetNum ].p_cmdNumber = cl.cmdNumber;

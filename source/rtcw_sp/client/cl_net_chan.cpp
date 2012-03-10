@@ -153,7 +153,7 @@ CL_Netchan_Transmit
 */
 void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
 //	int i;
-	msg->WriteByte( clc_EOF );
+	msg->WriteByte( q3clc_EOF );
 //	for(i=CL_ENCODE_START;i<msg->cursize;i++) {
 //		chksum[i-CL_ENCODE_START] = msg->data[i];
 //	}

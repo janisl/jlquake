@@ -101,7 +101,7 @@ void SV_UpdateConfigStrings( void ) {
 					continue;
 				}
 				// do not always send server info to all clients
-				if ( index == CS_SERVERINFO && client->gentity && ( client->gentity->r.svFlags & SVF_NOSERVERINFO ) ) {
+				if ( index == Q3CS_SERVERINFO && client->gentity && ( client->gentity->r.svFlags & SVF_NOSERVERINFO ) ) {
 					continue;
 				}
 
@@ -295,7 +295,7 @@ void SV_Startup( void ) {
 	}
 
 	if ( com_dedicated->integer ) {
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
+		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	} else {
 		// we don't need nearly as many when playing locally
 		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
@@ -371,7 +371,7 @@ void SV_ChangeMaxClients( void ) {
 
 	// allocate new snapshot entities
 	if ( com_dedicated->integer ) {
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
+		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	} else {
 		// we don't need nearly as many when playing locally
 		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
@@ -706,13 +706,13 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 
 	// save systeminfo and serverinfo strings
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ) );
+	SV_SetConfigstring( Q3CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ) );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
+	SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3 ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// NERVE - SMF
-	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING ) );
+	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING_Q3 ) );
 	cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 
 	// any media configstring setting now should issue a warning

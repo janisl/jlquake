@@ -141,7 +141,7 @@ int AAS_IndexFromString( char *indexname, char *stringindex[], int numindexes, c
 // Changes Globals:		-
 //===========================================================================
 char *AAS_ModelFromIndex( int index ) {
-//	return AAS_StringFromIndex("ModelFromIndex", &(*aasworld).configstrings[CS_MODELS], MAX_MODELS, index);
+//	return AAS_StringFromIndex("ModelFromIndex", &(*aasworld).configstrings[CS_MODELS], MAX_MODELS_Q3, index);
 	return 0;   // removed so the CS_ defines could be removed from be_aas_def.h
 } //end of the function AAS_ModelFromIndex
 //===========================================================================
@@ -151,7 +151,7 @@ char *AAS_ModelFromIndex( int index ) {
 // Changes Globals:		-
 //===========================================================================
 int AAS_IndexFromModel( char *modelname ) {
-//	return AAS_IndexFromString("IndexFromModel", &(*aasworld).configstrings[CS_MODELS], MAX_MODELS, modelname);
+//	return AAS_IndexFromString("IndexFromModel", &(*aasworld).configstrings[CS_MODELS], MAX_MODELS_Q3, modelname);
 	return 0;   // removed so the CS_ defines could be removed from be_aas_def.h
 } //end of the function AAS_IndexFromModel
 //===========================================================================

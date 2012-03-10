@@ -423,7 +423,7 @@ void SVC_Status( netadr_t from ) {
 	playerState_t   *ps;
 	int statusLength;
 	int playerLength;
-	char infostring[MAX_INFO_STRING];
+	char infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
 	if ( SV_GameIsSinglePlayer() ) {
@@ -435,19 +435,19 @@ void SVC_Status( netadr_t from ) {
 		return;
 	}
 
-	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3 ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING_Q3 );
 
 	// add "demo" to the sv_keywords if restricted
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
-		char keywords[MAX_INFO_STRING];
+		char keywords[MAX_INFO_STRING_Q3];
 
 		String::Sprintf( keywords, sizeof( keywords ), "ettest %s",
 					 Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING_Q3 );
 	}
 
 	status[0] = 0;
@@ -487,7 +487,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 	playerState_t   *ps;
 	int statusLength;
 	int playerLength;
-	char infostring[MAX_INFO_STRING];
+	char infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
 	if ( SV_GameIsSinglePlayer() ) {
@@ -499,19 +499,19 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 		return;
 	}
 
-	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3 ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING_Q3 );
 
 	// add "demo" to the sv_keywords if restricted
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
-		char keywords[MAX_INFO_STRING];
+		char keywords[MAX_INFO_STRING_Q3];
 
 		String::Sprintf( keywords, sizeof( keywords ), "ettest %s",
 					 Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING_Q3 );
 	}
 
 	status[0] = 0;
@@ -546,7 +546,7 @@ if a user is interested in a server to do a full status
 void SVC_Info( netadr_t from ) {
 	int i, count;
 	const char    *gamedir;
-	char infostring[MAX_INFO_STRING];
+	char infostring[MAX_INFO_STRING_Q3];
 	const char    *antilag;
 	const char    *weaprestrict;
 	const char    *balancedteams;
@@ -573,53 +573,53 @@ void SVC_Info( netadr_t from ) {
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), MAX_INFO_STRING_Q3 );
 
-	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "clients", va( "%i", count ), MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), MAX_INFO_STRING );
-	//Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ), MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "gametype", Cvar_VariableString( "g_gametype" ), MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "clients", va( "%i", count ), MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), MAX_INFO_STRING_Q3 );
+	//Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ), MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "gametype", Cvar_VariableString( "g_gametype" ), MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), MAX_INFO_STRING_Q3 );
 
 	if ( sv_minPing->integer ) {
-		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ), MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ), MAX_INFO_STRING_Q3 );
 	}
 	if ( sv_maxPing->integer ) {
-		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), MAX_INFO_STRING_Q3 );
 	}
 	gamedir = Cvar_VariableString( "fs_game" );
 	if ( *gamedir ) {
-		Info_SetValueForKey( infostring, "game", gamedir, MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "game", gamedir, MAX_INFO_STRING_Q3 );
 	}
-	Info_SetValueForKey( infostring, "sv_allowAnonymous", va( "%i", sv_allowAnonymous->integer ), MAX_INFO_STRING );
+	Info_SetValueForKey( infostring, "sv_allowAnonymous", va( "%i", sv_allowAnonymous->integer ), MAX_INFO_STRING_Q3 );
 
 	// Rafael gameskill
 //	Info_SetValueForKey (infostring, "gameskill", va ("%i", sv_gameskill->integer));
 	// done
 
-	Info_SetValueForKey( infostring, "friendlyFire", va( "%i", sv_friendlyFire->integer ), MAX_INFO_STRING );        // NERVE - SMF
-	Info_SetValueForKey( infostring, "maxlives", va( "%i", sv_maxlives->integer ? 1 : 0 ), MAX_INFO_STRING );        // NERVE - SMF
-	Info_SetValueForKey( infostring, "needpass", va( "%i", sv_needpass->integer ? 1 : 0 ), MAX_INFO_STRING );
-	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, MAX_INFO_STRING );                               // Arnout: to be able to filter out Quake servers
+	Info_SetValueForKey( infostring, "friendlyFire", va( "%i", sv_friendlyFire->integer ), MAX_INFO_STRING_Q3 );        // NERVE - SMF
+	Info_SetValueForKey( infostring, "maxlives", va( "%i", sv_maxlives->integer ? 1 : 0 ), MAX_INFO_STRING_Q3 );        // NERVE - SMF
+	Info_SetValueForKey( infostring, "needpass", va( "%i", sv_needpass->integer ? 1 : 0 ), MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, MAX_INFO_STRING_Q3 );                               // Arnout: to be able to filter out Quake servers
 
 	// TTimo
 	antilag = Cvar_VariableString( "g_antilag" );
 	if ( antilag ) {
-		Info_SetValueForKey( infostring, "g_antilag", antilag, MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "g_antilag", antilag, MAX_INFO_STRING_Q3 );
 	}
 
 	weaprestrict = Cvar_VariableString( "g_heavyWeaponRestriction" );
 	if ( weaprestrict ) {
-		Info_SetValueForKey( infostring, "weaprestrict", weaprestrict, MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "weaprestrict", weaprestrict, MAX_INFO_STRING_Q3 );
 	}
 
 	balancedteams = Cvar_VariableString( "g_balancedteams" );
 	if ( balancedteams ) {
-		Info_SetValueForKey( infostring, "balancedteams", balancedteams, MAX_INFO_STRING );
+		Info_SetValueForKey( infostring, "balancedteams", balancedteams, MAX_INFO_STRING_Q3 );
 	}
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
@@ -862,7 +862,7 @@ void SV_CalcPings( void ) {
 
 		total = 0;
 		count = 0;
-		for ( j = 0 ; j < PACKET_BACKUP ; j++ ) {
+		for ( j = 0 ; j < PACKET_BACKUP_Q3 ; j++ ) {
 			if ( cl->frames[j].messageAcked <= 0 ) {
 				continue;
 			}
@@ -1055,20 +1055,20 @@ void SV_Frame( int msec ) {
 
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO ) {
-		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
+		SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3 ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO_NOUPDATE ) {
-		SV_SetConfigstringNoUpdate( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING ) );
+		SV_SetConfigstringNoUpdate( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3 ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO_NOUPDATE;
 	}
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO ) {
-		SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ) );
+		SV_SetConfigstring( Q3CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ) );
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 	// NERVE - SMF
 	if ( cvar_modifiedFlags & CVAR_WOLFINFO ) {
-		SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING ) );
+		SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING_Q3 ) );
 		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 	}
 

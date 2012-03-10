@@ -81,7 +81,7 @@ typedef struct {
 	int p_realtime;             // cls.realtime when packet was sent
 } outPacket_t;
 
-// the parseEntities array must be large enough to hold PACKET_BACKUP frames of
+// the parseEntities array must be large enough to hold PACKET_BACKUP_Q3 frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original
 #define MAX_PARSE_ENTITIES  2048
@@ -104,7 +104,7 @@ typedef struct {
 	qboolean newSnapshots;          // set on parse of any valid packet
 
 	gameState_t gameState;          // configstrings
-	char mapname[MAX_QPATH];        // extracted from CS_SERVERINFO
+	char mapname[MAX_QPATH];        // extracted from Q3CS_SERVERINFO
 
 	int parseEntitiesNum;           // index (not anded off) into cl_parse_entities[]
 
@@ -126,7 +126,7 @@ typedef struct {
 	int cmdNumber;                  // incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
-	outPacket_t outPackets[PACKET_BACKUP];  // information about each packet we have sent out
+	outPacket_t outPackets[PACKET_BACKUP_Q3];  // information about each packet we have sent out
 
 	// the client maintains its own idea of view angles, which are
 	// sent to the server each frame.  It is cleared to 0 upon entering each level.
@@ -138,9 +138,9 @@ typedef struct {
 	int serverId;                   // included in each client message so the server
 									// can tell if it is for a prior map_restart
 	// big stuff at end of structure so most offsets are 15 bits or less
-	clSnapshot_t snapshots[PACKET_BACKUP];
+	clSnapshot_t snapshots[PACKET_BACKUP_Q3];
 
-	entityState_t entityBaselines[MAX_GENTITIES];   // for delta compression when not in previous frame
+	entityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
 
 	entityState_t parseEntities[MAX_PARSE_ENTITIES];
 
@@ -213,7 +213,7 @@ typedef struct {
 	int downloadBlock;          // block we are waiting for
 	int downloadCount;          // how many bytes we got
 	int downloadSize;           // how many bytes we got
-	char downloadList[MAX_INFO_STRING];        // list of paks we need to download
+	char downloadList[MAX_INFO_STRING_Q3];        // list of paks we need to download
 	qboolean downloadRestart;       // if true, we need to do another FS_Restart because we downloaded a pak
 
 	// demo information
@@ -251,7 +251,7 @@ typedef struct {
 	netadr_t adr;
 	int start;
 	int time;
-	char info[MAX_INFO_STRING];
+	char info[MAX_INFO_STRING_Q3];
 } ping_t;
 
 typedef struct {
@@ -325,7 +325,7 @@ typedef struct {
 	// update server info
 	netadr_t updateServer;
 	char updateChallenge[MAX_TOKEN_CHARS_Q3];
-	char updateInfoString[MAX_INFO_STRING];
+	char updateInfoString[MAX_INFO_STRING_Q3];
 
 	netadr_t authorizeServer;
 

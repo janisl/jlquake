@@ -397,9 +397,9 @@ netField_t entityStateFields[] =
 	{ NETF( angles2[0] ), 0 },
 	{ NETF( angles2[1] ), 0 },
 	{ NETF( angles2[2] ), 0 },
-	{ NETF( otherEntityNum ), GENTITYNUM_BITS },
-	{ NETF( otherEntityNum2 ), GENTITYNUM_BITS },
-	{ NETF( groundEntityNum ), GENTITYNUM_BITS },
+	{ NETF( otherEntityNum ), GENTITYNUM_BITS_Q3 },
+	{ NETF( otherEntityNum2 ), GENTITYNUM_BITS_Q3 },
+	{ NETF( groundEntityNum ), GENTITYNUM_BITS_Q3 },
 	{ NETF( loopSound ), 8 },
 	{ NETF( constantLight ), 32 },
 	{ NETF( dl_intensity ), 32 }, //----(SA)	longer now to carry the corona colors
@@ -478,12 +478,12 @@ void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityS
 		if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) ) {
 			Com_Printf( "W|%3i: #%-3i remove\n", msg->cursize, from->number );
 		}
-		msg->WriteBits( from->number, GENTITYNUM_BITS );
+		msg->WriteBits( from->number, GENTITYNUM_BITS_Q3 );
 		msg->WriteBits( 1, 1 );
 		return;
 	}
 
-	if ( to->number < 0 || to->number >= MAX_GENTITIES ) {
+	if ( to->number < 0 || to->number >= MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_FATAL, "MSG_WriteDeltaEntity: Bad entity number: %i", to->number );
 	}
 
@@ -503,13 +503,13 @@ void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityS
 			return;     // nothing at all
 		}
 		// write two bits for no change
-		msg->WriteBits( to->number, GENTITYNUM_BITS );
+		msg->WriteBits( to->number, GENTITYNUM_BITS_Q3 );
 		msg->WriteBits( 0, 1 );     // not removed
 		msg->WriteBits( 0, 1 );     // no delta
 		return;
 	}
 
-	msg->WriteBits( to->number, GENTITYNUM_BITS );
+	msg->WriteBits( to->number, GENTITYNUM_BITS_Q3 );
 	msg->WriteBits( 0, 1 );         // not removed
 	msg->WriteBits( 1, 1 );         // we have a delta
 
@@ -574,9 +574,9 @@ void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityS
 
 	if ( print ) {
 		if ( msg->bit == 0 ) {
-			endBit = msg->cursize * 8 - GENTITYNUM_BITS;
+			endBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
 		} else {
-			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		Com_Printf( " (%i bits)\n", endBit - startBit  );
 	}
@@ -590,7 +590,7 @@ MSG_ReadDeltaEntity
 The entity number has already been read from the message, which
 is how the from state is identified.
 
-If the delta removes the entity, entityState_t->number will be set to MAX_GENTITIES-1
+If the delta removes the entity, entityState_t->number will be set to MAX_GENTITIES_Q3-1
 
 Can go from either a baseline or a previous packet_entity
 ==================
@@ -607,20 +607,20 @@ void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
 	int trunc;
 	int startBit, endBit;
 
-	if ( number < 0 || number >= MAX_GENTITIES ) {
+	if ( number < 0 || number >= MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "Bad delta entity number: %i", number );
 	}
 
 	if ( msg->bit == 0 ) {
-		startBit = msg->readcount * 8 - GENTITYNUM_BITS;
+		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
 	} else {
-		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
 	// check for a remove
 	if ( msg->ReadBits( 1 ) == 1 ) {
 		memset( to, 0, sizeof( *to ) );
-		to->number = MAX_GENTITIES - 1;
+		to->number = MAX_GENTITIES_Q3 - 1;
 		if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) ) {
 			Com_Printf( "%3i: #%-3i remove\n", msg->readcount, number );
 		}
@@ -705,9 +705,9 @@ void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
 
 	if ( print ) {
 		if ( msg->bit == 0 ) {
-			endBit = msg->readcount * 8 - GENTITYNUM_BITS;
+			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
 		} else {
-			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		Com_Printf( " (%i bits)\n", endBit - startBit  );
 	}
@@ -747,7 +747,7 @@ netField_t playerStateFields[] =
 	{ PSF( delta_angles[0] ), 16 },
 	{ PSF( delta_angles[1] ), 16 },
 	{ PSF( delta_angles[2] ), 16 },
-	{ PSF( groundEntityNum ), GENTITYNUM_BITS },
+	{ PSF( groundEntityNum ), GENTITYNUM_BITS_Q3 },
 	{ PSF( legsTimer ), 16 },
 	{ PSF( torsoTimer ), 16 },
 	{ PSF( legsAnim ), ANIM_BITS },
@@ -836,9 +836,9 @@ void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct pl
 	}
 
 	if ( msg->bit == 0 ) {
-		startBit = msg->cursize * 8 - GENTITYNUM_BITS;
+		startBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
 	} else {
-		startBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+		startBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
 	// shownet 2/3 will interleave with other printed info, -2 will
@@ -1138,9 +1138,9 @@ void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct pl
 
 	if ( print ) {
 		if ( msg->bit == 0 ) {
-			endBit = msg->cursize * 8 - GENTITYNUM_BITS;
+			endBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
 		} else {
-			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		Com_Printf( " (%i bits)\n", endBit - startBit  );
 	}
@@ -1171,9 +1171,9 @@ void MSG_ReadDeltaPlayerstate( QMsg *msg, playerState_t *from, playerState_t *to
 	*to = *from;
 
 	if ( msg->bit == 0 ) {
-		startBit = msg->readcount * 8 - GENTITYNUM_BITS;
+		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
 	} else {
-		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
 	// shownet 2/3 will interleave with other printed info, -2 will
@@ -1341,9 +1341,9 @@ void MSG_ReadDeltaPlayerstate( QMsg *msg, playerState_t *from, playerState_t *to
 
 	if ( print ) {
 		if ( msg->bit == 0 ) {
-			endBit = msg->readcount * 8 - GENTITYNUM_BITS;
+			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
 		} else {
-			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
+			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		Com_Printf( " (%i bits)\n", endBit - startBit  );
 	}

@@ -325,24 +325,24 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 	}
 	if ( server && buf ) {
 		buf[0] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName, MAX_INFO_STRING );
-		Info_SetValueForKey( info, "mapname", server->mapName, MAX_INFO_STRING );
-		Info_SetValueForKey( info, "clients", va( "%i",server->clients ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "sv_maxclients", va( "%i",server->maxClients ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "ping", va( "%i",server->ping ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "minping", va( "%i",server->minPing ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "maxping", va( "%i",server->maxPing ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING );
-		Info_SetValueForKey( info, "gametype", va( "%i",server->gameType ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "nettype", va( "%i",server->netType ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "addr", SOCK_AdrToString( server->adr ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ), MAX_INFO_STRING );
-		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), MAX_INFO_STRING );               // NERVE - SMF
-		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ), MAX_INFO_STRING );                       // NERVE - SMF
-		Info_SetValueForKey( info, "tourney", va( "%i", server->tourney ), MAX_INFO_STRING );                     // NERVE - SMF
-		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ), MAX_INFO_STRING );                   // DHM - Nerve
-		Info_SetValueForKey( info, "gamename", server->gameName, MAX_INFO_STRING );                                // Arnout
-		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ), MAX_INFO_STRING ); // TTimo
+		Info_SetValueForKey( info, "hostname", server->hostName, MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "mapname", server->mapName, MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "clients", va( "%i",server->clients ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "sv_maxclients", va( "%i",server->maxClients ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "ping", va( "%i",server->ping ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "minping", va( "%i",server->minPing ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "maxping", va( "%i",server->maxPing ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "gametype", va( "%i",server->gameType ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "nettype", va( "%i",server->netType ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "addr", SOCK_AdrToString( server->adr ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), MAX_INFO_STRING_Q3 );               // NERVE - SMF
+		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ), MAX_INFO_STRING_Q3 );                       // NERVE - SMF
+		Info_SetValueForKey( info, "tourney", va( "%i", server->tourney ), MAX_INFO_STRING_Q3 );                     // NERVE - SMF
+		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ), MAX_INFO_STRING_Q3 );                   // DHM - Nerve
+		Info_SetValueForKey( info, "gamename", server->gameName, MAX_INFO_STRING_Q3 );                                // Arnout
+		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ), MAX_INFO_STRING_Q3 ); // TTimo
 		String::NCpyZ( buf, info, buflen );
 	} else {
 		if ( buf ) {
@@ -840,7 +840,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_CVAR_INFOSTRINGBUFFER:
-		Cvar_InfoStringBuffer( args[1], MAX_INFO_STRING, (char*)VMA( 2 ), args[3] );
+		Cvar_InfoStringBuffer( args[1], MAX_INFO_STRING_Q3, (char*)VMA( 2 ), args[3] );
 		return 0;
 
 	case UI_ARGC:

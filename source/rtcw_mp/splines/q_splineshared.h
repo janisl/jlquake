@@ -202,11 +202,6 @@ typedef enum {
 
 #define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
 
-#define MAX_INFO_STRING     1024
-#define MAX_INFO_KEY        1024
-#define MAX_INFO_VALUE      1024
-
-
 #define MAX_NAME_LENGTH     32      // max length of a client name
 
 //

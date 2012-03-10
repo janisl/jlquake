@@ -328,7 +328,7 @@ static void SV_MapRestart_f( void ) {
 	sv_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2 );
 	nextgt = sv_gametype->integer;
 
-	world = SV_GentityNum( ENTITYNUM_WORLD );
+	world = SV_GentityNum( Q3ENTITYNUM_WORLD );
 	worldspawnflags = world->r.worldflags;
 	if  (
 		( nextgt == GT_WOLF && ( worldspawnflags & 1 ) ) ||
@@ -352,7 +352,7 @@ static void SV_MapRestart_f( void ) {
 
 	if ( delay ) {
 		sv.restartTime = svs.time + delay * 1000;
-		SV_SetConfigstring( CS_WARMUP, va( "%i", sv.restartTime ) );
+		SV_SetConfigstring( Q3CS_WARMUP, va( "%i", sv.restartTime ) );
 		return;
 	}
 
@@ -831,7 +831,7 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void ) {
 	Com_Printf( "Server info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3 ) );
 }
 
 
@@ -844,7 +844,7 @@ Examine or change the serverinfo string
 */
 static void SV_Systeminfo_f( void ) {
 	Com_Printf( "System info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING_Q3 ) );
 }
 
 

@@ -241,7 +241,7 @@ typedef struct {
 //	qboolean	s_soundMute;
 	int s_soundMute;                // 0 - not muted, 1 - muted, 2 - no new sounds, but play out remaining sounds (so they can die if necessary)
 
-	vec3_t entityPositions[MAX_GENTITIES];
+	vec3_t entityPositions[MAX_GENTITIES_Q3];
 
 	char nextMusicTrack[MAX_QPATH];         // extracted from CS_MUSIC_QUEUE //----(SA)	added
 	int nextMusicTrackType;

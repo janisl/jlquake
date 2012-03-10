@@ -72,16 +72,16 @@ typedef struct {
 	int snapshotCounter;                // incremented for each snapshot built
 	int timeResidual;                   // <= 1000 / sv_frame->value
 	int nextFrameTime;                  // when time > nextFrameTime, process world
-	struct cmodel_s *models[MAX_MODELS];
+	struct cmodel_s *models[MAX_MODELS_Q3];
 	char            *configstrings[MAX_CONFIGSTRINGS];
-	svEntity_t svEntities[MAX_GENTITIES];
+	svEntity_t svEntities[MAX_GENTITIES_Q3];
 
 	const char            *entityParsePoint;  // used during game VM init
 
 	// the game virtual machine will update these on init and changes
 	sharedEntity_t  *gentities;
 	int gentitySize;
-	int num_entities;                   // current number, <= MAX_GENTITIES
+	int num_entities;                   // current number, <= MAX_GENTITIES_Q3
 
 	playerState_t   *gameClients;
 	int gameClientSize;                 // will be > sizeof(playerState_t) due to game private data
@@ -136,7 +136,7 @@ typedef struct netchan_buffer_s {
 
 typedef struct client_s {
 	clientState_t state;
-	char userinfo[MAX_INFO_STRING];                 // name, etc
+	char userinfo[MAX_INFO_STRING_Q3];                 // name, etc
 
 	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 	int reliableSequence;                   // last added reliable message, not necesarily sent or acknowledged yet
@@ -174,7 +174,7 @@ typedef struct client_s {
 	int nextSnapshotTime;               // send another snapshot when svs.time >= nextSnapshotTime
 	qboolean rateDelayed;               // true if nextSnapshotTime was set based on rate instead of snapshotMsec
 	int timeoutCount;                   // must timeout a few frames in a row so debugging doesn't break
-	clientSnapshot_t frames[PACKET_BACKUP];     // updates can be delta'd from here
+	clientSnapshot_t frames[PACKET_BACKUP_Q3];     // updates can be delta'd from here
 	int ping;
 	int rate;                           // bytes / second
 	int snapshotMsec;                   // requests a snapshot every snapshotMsec unless rate choked
@@ -222,7 +222,7 @@ typedef struct {
 	int snapFlagServerBit;                  // ^= SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
 
 	client_t    *clients;                   // [sv_maxclients->integer];
-	int numSnapshotEntities;                // sv_maxclients->integer*PACKET_BACKUP*MAX_PACKET_ENTITIES
+	int numSnapshotEntities;                // sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
 	int nextSnapshotEntities;               // next snapshotEntities to use
 	entityState_t   *snapshotEntities;      // [numSnapshotEntities]
 	int nextHeartbeatTime;
@@ -448,7 +448,7 @@ void SV_Trace( q3trace_t *results, const vec3_t start, const vec3_t mins, const 
 // if the starting point is in a solid, it will be allowed to move out
 // to an open area
 
-// passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUM_NONE)
+// passEntityNum is explicitly excluded from clipping checks (normally Q3ENTITYNUM_NONE)
 
 
 void SV_ClipToEntity( q3trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule );

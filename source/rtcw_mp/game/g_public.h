@@ -55,7 +55,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // recent id changes
 #define SVF_SINGLECLIENT        0x00000800  // only send to a single client (entityShared_t->singleClient)
-#define SVF_NOSERVERINFO        0x00001000  // don't send CS_SERVERINFO updates to this client
+#define SVF_NOSERVERINFO        0x00001000  // don't send Q3CS_SERVERINFO updates to this client
 											// so that it can be updated for ping tools without
 											// lagging clients
 #define SVF_NOTSINGLECLIENT     0x00002000  // send entity to everyone but one client
@@ -88,7 +88,7 @@ typedef struct {
 	vec3_t currentOrigin;
 	vec3_t currentAngles;
 
-	// when a trace call is made and passEntityNum != ENTITYNUM_NONE,
+	// when a trace call is made and passEntityNum != Q3ENTITYNUM_NONE,
 	// an ent will be excluded from testing if:
 	// ent->s.number == passEntityNum	(don't interact with self)
 	// ent->s.ownerNum = passEntityNum	(don't interact with your own missiles)

@@ -154,7 +154,7 @@ SV_Netchan_Transmit
 //extern byte chksum[65536];
 void SV_Netchan_Transmit( client_t *client, QMsg *msg ) {   //int length, const byte *data ) {
 //	int i;
-	msg->WriteByte( svc_EOF );
+	msg->WriteByte( q3svc_EOF );
 //	for(i=SV_ENCODE_START;i<msg->cursize;i++) {
 //		chksum[i-SV_ENCODE_START] = msg->data[i];
 //	}

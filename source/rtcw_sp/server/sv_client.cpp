@@ -226,7 +226,7 @@ A "connect" OOB command has been received
 ==================
 */
 void SV_DirectConnect( netadr_t from ) {
-	char userinfo[MAX_INFO_STRING];
+	char userinfo[MAX_INFO_STRING_Q3];
 	int i;
 	client_t    *cl, *newcl;
 	MAC_STATIC client_t temp;
@@ -289,7 +289,7 @@ void SV_DirectConnect( netadr_t from ) {
 			return;
 		}
 		// force the IP key/value pair so the game can filter based on ip
-		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING );
+		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING_Q3 );
 
 		ping = svs.time - svs.challenges[i].pingTime;
 		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
@@ -313,7 +313,7 @@ void SV_DirectConnect( netadr_t from ) {
 		}
 	} else {
 		// force the "ip" info key to "localhost"
-		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING );
+		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING_Q3 );
 	}
 
 	newcl = &temp;
@@ -568,13 +568,13 @@ void SV_SendClientGameState( client_t *client ) {
 	SV_UpdateServerCommandsToClient( client, &msg );
 
 	// send the gamestate
-	msg.WriteByte( svc_gamestate );
+	msg.WriteByte( q3svc_gamestate );
 	msg.WriteLong( client->reliableSequence );
 
 	// write the configstrings
 	for ( start = 0 ; start < MAX_CONFIGSTRINGS ; start++ ) {
 		if ( sv.configstrings[start][0] ) {
-			msg.WriteByte( svc_configstring );
+			msg.WriteByte( q3svc_configstring );
 			msg.WriteShort( start );
 			msg.WriteBigString( sv.configstrings[start] );
 		}
@@ -582,16 +582,16 @@ void SV_SendClientGameState( client_t *client ) {
 
 	// write the baselines
 	memset( &nullstate, 0, sizeof( nullstate ) );
-	for ( start = 0 ; start < MAX_GENTITIES; start++ ) {
+	for ( start = 0 ; start < MAX_GENTITIES_Q3; start++ ) {
 		base = &sv.svEntities[start].baseline;
 		if ( !base->number ) {
 			continue;
 		}
-		msg.WriteByte( svc_baseline );
+		msg.WriteByte( q3svc_baseline );
 		MSG_WriteDeltaEntity( &msg, &nullstate, base, qtrue );
 	}
 
-	msg.WriteByte( svc_EOF );
+	msg.WriteByte( q3svc_EOF );
 
 	msg.WriteLong( client - svs.clients );
 
@@ -791,7 +791,7 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 				Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", cl - svs.clients, cl->downloadName );
 				String::Sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName );
 			}
-			msg->WriteByte( svc_download );
+			msg->WriteByte( q3svc_download );
 			msg->WriteShort( 0 ); // client is expecting block zero
 			msg->WriteLong( -1 ); // illegal file size
 			msg->WriteString( errorMessage );
@@ -891,7 +891,7 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 		// Send current block
 		curindex = ( cl->downloadXmitBlock % MAX_DOWNLOAD_WINDOW );
 
-		msg->WriteByte( svc_download );
+		msg->WriteByte( q3svc_download );
 		msg->WriteShort( cl->downloadXmitBlock );
 
 		// block zero is special, contains file size
@@ -1124,7 +1124,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	if ( String::Length( val ) ) {
 		i = String::Atoi( val );
 		if ( i <= 0 || i > 100 || String::Length( val ) > 4 ) {
-			Info_SetValueForKey( cl->userinfo, "handicap", "100", MAX_INFO_STRING );
+			Info_SetValueForKey( cl->userinfo, "handicap", "100", MAX_INFO_STRING_Q3 );
 		}
 	}
 
@@ -1336,7 +1336,7 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	}
 
 	// save time for ping calculation
-	cl->frames[ cl->messageAcknowledge & PACKET_MASK ].messageAcked = svs.time;
+	cl->frames[ cl->messageAcknowledge & PACKET_MASK_Q3 ].messageAcked = svs.time;
 
 	// if this is the first usercmd we have received
 	// this gamestate, put the client into the world
@@ -1451,10 +1451,10 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	// read optional clientCommand strings
 	do {
 		c = msg->ReadByte();
-		if ( c == clc_EOF ) {
+		if ( c == q3clc_EOF ) {
 			break;
 		}
-		if ( c != clc_clientCommand ) {
+		if ( c != q3clc_clientCommand ) {
 			break;
 		}
 		if ( !SV_ClientCommand( cl, msg ) ) {
@@ -1466,11 +1466,11 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	} while ( 1 );
 
 	// read the usercmd_t
-	if ( c == clc_move ) {
+	if ( c == q3clc_move ) {
 		SV_UserMove( cl, msg, qtrue );
-	} else if ( c == clc_moveNoDelta ) {
+	} else if ( c == q3clc_moveNoDelta ) {
 		SV_UserMove( cl, msg, qfalse );
-	} else if ( c != clc_EOF ) {
+	} else if ( c != q3clc_EOF ) {
 		Com_Printf( "WARNING: bad command byte for client %i\n", cl - svs.clients );
 	}
 //	if ( msg->readcount != msg->cursize ) {

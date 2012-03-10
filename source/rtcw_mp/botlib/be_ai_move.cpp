@@ -110,7 +110,7 @@ float sv_maxstep;
 float sv_maxbarrier;
 float sv_gravity;
 //type of model, func_plat or func_bobbing
-int modeltypes[MAX_MODELS];
+int modeltypes[MAX_MODELS_Q3];
 
 bot_movestate_t *botmovestates[MAX_CLIENTS + 1];
 
@@ -333,9 +333,9 @@ int BotReachabilityArea( vec3_t origin, int client ) {
 	AAS_PresenceTypeBoundingBox( PRESENCE_CROUCH, mins, maxs );
 	VectorMA( origin, -3, up, end );
 	bsptrace = AAS_Trace( origin, mins, maxs, end, client, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
-	if ( !bsptrace.startsolid && bsptrace.fraction < 1 && bsptrace.ent != ENTITYNUM_NONE ) {
+	if ( !bsptrace.startsolid && bsptrace.fraction < 1 && bsptrace.ent != Q3ENTITYNUM_NONE ) {
 		//if standing on the world the bot should be in a valid area
-		if ( bsptrace.ent == ENTITYNUM_WORLD ) {
+		if ( bsptrace.ent == Q3ENTITYNUM_WORLD ) {
 			return BotFuzzyPointReachabilityArea( origin );
 		} //end if
 
@@ -492,7 +492,7 @@ int BotOnMover( vec3_t origin, int entnum, aas_reachability_t *reach ) {
 	trace = AAS_Trace( org, boxmins, boxmaxs, end, entnum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 	if ( !trace.startsolid && !trace.allsolid ) {
 		//NOTE: the reachability face number is the model number of the elevator
-		if ( trace.ent != ENTITYNUM_NONE && AAS_EntityModelNum( trace.ent ) == modelnum ) {
+		if ( trace.ent != Q3ENTITYNUM_NONE && AAS_EntityModelNum( trace.ent ) == modelnum ) {
 			return qtrue;
 		} //end if
 	} //end if
@@ -533,7 +533,7 @@ void BotSetBrushModelTypes( void ) {
 	int ent, modelnum;
 	char classname[MAX_EPAIRKEY], model[MAX_EPAIRKEY];
 
-	memset( modeltypes, 0, MAX_MODELS * sizeof( int ) );
+	memset( modeltypes, 0, MAX_MODELS_Q3 * sizeof( int ) );
 	//
 	for ( ent = AAS_NextBSPEntity( 0 ); ent; ent = AAS_NextBSPEntity( ent ) )
 	{
@@ -547,7 +547,7 @@ void BotSetBrushModelTypes( void ) {
 			modelnum = String::Atoi( model + 1 );
 		} else { modelnum = 0;}
 
-		if ( modelnum < 0 || modelnum > MAX_MODELS ) {
+		if ( modelnum < 0 || modelnum > MAX_MODELS_Q3 ) {
 			botimport.Print( PRT_MESSAGE, "entity %s model number out of range\n", classname );
 			continue;
 		} //end if
@@ -572,7 +572,7 @@ int BotOnTopOfEntity( bot_movestate_t *ms ) {
 	AAS_PresenceTypeBoundingBox( ms->presencetype, mins, maxs );
 	VectorMA( ms->origin, -3, up, end );
 	trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
-	if ( !trace.startsolid && ( trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE ) ) {
+	if ( !trace.startsolid && ( trace.ent != Q3ENTITYNUM_WORLD && trace.ent != Q3ENTITYNUM_NONE ) ) {
 		return trace.ent;
 	} //end if
 	return -1;
@@ -1220,7 +1220,7 @@ void BotCheckBlocked( bot_movestate_t *ms, vec3_t dir, int checkbottom, bot_move
 	VectorMA( ms->origin, 3, dir, end );
 	trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_BODY );
 	//if not started in solid and not hitting the world entity
-	if ( !trace.startsolid && ( trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE ) ) {
+	if ( !trace.startsolid && ( trace.ent != Q3ENTITYNUM_WORLD && trace.ent != Q3ENTITYNUM_NONE ) ) {
 		result->blocked = qtrue;
 		result->blockentity = trace.ent;
 #ifdef DEBUG
@@ -1233,7 +1233,7 @@ void BotCheckBlocked( bot_movestate_t *ms, vec3_t dir, int checkbottom, bot_move
 		AAS_PresenceTypeBoundingBox( ms->presencetype, mins, maxs );
 		VectorMA( ms->origin, -3, up, end );
 		trace = AAS_Trace( ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
-		if ( !trace.startsolid && ( trace.ent != ENTITYNUM_WORLD && trace.ent != ENTITYNUM_NONE ) ) {
+		if ( !trace.startsolid && ( trace.ent != Q3ENTITYNUM_WORLD && trace.ent != Q3ENTITYNUM_NONE ) ) {
 			result->blocked = qtrue;
 			result->blockentity = trace.ent;
 			result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
@@ -3150,7 +3150,7 @@ void BotMoveToGoal( bot_moveresult_t *result, int movestate, bot_goal_t *goal, i
 
 		if ( ent != -1 ) {
 			modelnum = AAS_EntityModelindex( ent );
-			if ( modelnum >= 0 && modelnum < MAX_MODELS ) {
+			if ( modelnum >= 0 && modelnum < MAX_MODELS_Q3 ) {
 				modeltype = modeltypes[modelnum];
 
 				if ( modeltype == MODELTYPE_FUNC_PLAT ) {

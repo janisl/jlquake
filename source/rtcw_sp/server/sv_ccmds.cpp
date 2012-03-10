@@ -334,7 +334,7 @@ static void SV_MapRestart_f( void ) {
 	}
 	if ( delay && !Cvar_VariableValue( "g_doWarmup" ) ) {
 		sv.restartTime = svs.time + delay * 1000;
-		SV_SetConfigstring( CS_WARMUP, va( "%i", sv.restartTime ) );
+		SV_SetConfigstring( Q3CS_WARMUP, va( "%i", sv.restartTime ) );
 		return;
 	}
 
@@ -842,7 +842,7 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void ) {
 	Com_Printf( "Server info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3 ) );
 }
 
 
@@ -855,7 +855,7 @@ Examine or change the serverinfo string
 */
 static void SV_Systeminfo_f( void ) {
 	Com_Printf( "System info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING_Q3 ) );
 }
 
 

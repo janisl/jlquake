@@ -31,15 +31,15 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 
 char *svc_strings[256] = {
-	"svc_bad",
+	"q3svc_bad",
 
-	"svc_nop",
-	"svc_gamestate",
-	"svc_configstring",
-	"svc_baseline",
-	"svc_serverCommand",
-	"svc_download",
-	"svc_snapshot"
+	"q3svc_nop",
+	"q3svc_gamestate",
+	"q3svc_configstring",
+	"q3svc_baseline",
+	"q3svc_serverCommand",
+	"q3svc_download",
+	"q3svc_snapshot"
 };
 
 void SHOWNET( QMsg *msg, char *s ) {
@@ -185,7 +185,7 @@ void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, entityState_t *
 		MSG_ReadDeltaEntity( msg, old, state, newnum );
 	}
 
-	if ( state->number == ( MAX_GENTITIES - 1 ) ) {
+	if ( state->number == ( MAX_GENTITIES_Q3 - 1 ) ) {
 		return;     // entity was delta removed
 	}
 
@@ -240,9 +240,9 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 
 	while ( 1 ) {
 		// read the entity index number
-		newnum = msg->ReadBits( GENTITYNUM_BITS );
+		newnum = msg->ReadBits( GENTITYNUM_BITS_Q3 );
 
-		if ( newnum == ( MAX_GENTITIES - 1 ) ) {
+		if ( newnum == ( MAX_GENTITIES_Q3 - 1 ) ) {
 			break;
 		}
 
@@ -348,7 +348,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	memset( &newSnap, 0, sizeof( newSnap ) );
 
 	// we will have read any new server commands in this
-	// message before we got to svc_snapshot
+	// message before we got to q3svc_snapshot
 	newSnap.serverCommandNum = clc.serverCommandSequence;
 
 	newSnap.serverTime = msg->ReadLong();
@@ -372,7 +372,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 		old = NULL;
 		clc.demowaiting = qfalse;   // we can start recording now
 	} else {
-		old = &cl.snapshots[newSnap.deltaNum & PACKET_MASK];
+		old = &cl.snapshots[newSnap.deltaNum & PACKET_MASK_Q3];
 		if ( !old->valid ) {
 			// should never happen
 			Com_Printf( "Delta from invalid frame (not supposed to happen!).\n" );
@@ -421,26 +421,26 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	// time we wrap around in the buffer
 	oldMessageNum = cl.snap.messageNum + 1;
 
-	if ( newSnap.messageNum - oldMessageNum >= PACKET_BACKUP ) {
-		oldMessageNum = newSnap.messageNum - ( PACKET_BACKUP - 1 );
+	if ( newSnap.messageNum - oldMessageNum >= PACKET_BACKUP_Q3 ) {
+		oldMessageNum = newSnap.messageNum - ( PACKET_BACKUP_Q3 - 1 );
 	}
 	for ( ; oldMessageNum < newSnap.messageNum ; oldMessageNum++ ) {
-		cl.snapshots[oldMessageNum & PACKET_MASK].valid = qfalse;
+		cl.snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
 	}
 
 	// copy to the current good spot
 	cl.snap = newSnap;
 	cl.snap.ping = 999;
 	// calculate ping time
-	for ( i = 0 ; i < PACKET_BACKUP ; i++ ) {
-		packetNum = ( clc.netchan.outgoingSequence - 1 - i ) & PACKET_MASK;
+	for ( i = 0 ; i < PACKET_BACKUP_Q3 ; i++ ) {
+		packetNum = ( clc.netchan.outgoingSequence - 1 - i ) & PACKET_MASK_Q3;
 		if ( cl.snap.ps.commandTime >= cl.outPackets[ packetNum ].p_serverTime ) {
 			cl.snap.ping = cls.realtime - cl.outPackets[ packetNum ].p_realtime;
 			break;
 		}
 	}
 	// save the frame off in the backup array for later delta comparisons
-	cl.snapshots[cl.snap.messageNum & PACKET_MASK] = cl.snap;
+	cl.snapshots[cl.snap.messageNum & PACKET_MASK_Q3] = cl.snap;
 
 	if ( cl_shownet->integer == 3 ) {
 		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum,
@@ -470,7 +470,7 @@ void CL_SystemInfoChanged( void ) {
 	char key[BIG_INFO_KEY];
 	char value[BIG_INFO_VALUE];
 
-	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SYSTEMINFO ];
+	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SYSTEMINFO ];
 	// NOTE TTimo:
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// show_bug.cgi?id=475
@@ -539,11 +539,11 @@ void CL_ParseGamestate( QMsg *msg ) {
 	while ( 1 ) {
 		cmd = msg->ReadByte();
 
-		if ( cmd == svc_EOF ) {
+		if ( cmd == q3svc_EOF ) {
 			break;
 		}
 
-		if ( cmd == svc_configstring ) {
+		if ( cmd == q3svc_configstring ) {
 			int len;
 
 			i = msg->ReadShort();
@@ -561,9 +561,9 @@ void CL_ParseGamestate( QMsg *msg ) {
 			cl.gameState.stringOffsets[ i ] = cl.gameState.dataCount;
 			memcpy( cl.gameState.stringData + cl.gameState.dataCount, s, len + 1 );
 			cl.gameState.dataCount += len + 1;
-		} else if ( cmd == svc_baseline ) {
-			newnum = msg->ReadBits( GENTITYNUM_BITS );
-			if ( newnum < 0 || newnum >= MAX_GENTITIES ) {
+		} else if ( cmd == q3svc_baseline ) {
+			newnum = msg->ReadBits( GENTITYNUM_BITS_Q3 );
+			if ( newnum < 0 || newnum >= MAX_GENTITIES_Q3 ) {
 				Com_Error( ERR_DROP, "Baseline number out of range: %i", newnum );
 			}
 			memset( &nullstate, 0, sizeof( nullstate ) );
@@ -758,7 +758,7 @@ void CL_ParseServerMessage( QMsg *msg ) {
 
 		cmd = msg->ReadByte();
 
-		if ( cmd == svc_EOF ) {
+		if ( cmd == q3svc_EOF ) {
 			SHOWNET( msg, "END OF MESSAGE" );
 			break;
 		}
@@ -776,18 +776,18 @@ void CL_ParseServerMessage( QMsg *msg ) {
 		default:
 			Com_Error( ERR_DROP,"CL_ParseServerMessage: Illegible server message %d\n", cmd );
 			break;
-		case svc_nop:
+		case q3svc_nop:
 			break;
-		case svc_serverCommand:
+		case q3svc_serverCommand:
 			CL_ParseCommandString( msg );
 			break;
-		case svc_gamestate:
+		case q3svc_gamestate:
 			CL_ParseGamestate( msg );
 			break;
-		case svc_snapshot:
+		case q3svc_snapshot:
 			CL_ParseSnapshot( msg );
 			break;
-		case svc_download:
+		case q3svc_download:
 			CL_ParseDownload( msg );
 			break;
 		}

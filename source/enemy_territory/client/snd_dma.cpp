@@ -729,7 +729,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 		return;
 	}
 
-	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES ) ) {
+	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) ) {
 		Com_Error( ERR_DROP, "S_StartSound: bad entitynum %i", entityNum );
 	}
 
@@ -1249,7 +1249,7 @@ void S_AddLoopSounds( void ) {
 
 		loop->sfx->lastTimeUsed = time;
 
-		for ( j = ( i + 1 ); j < MAX_GENTITIES ; j++ ) {
+		for ( j = ( i + 1 ); j < MAX_GENTITIES_Q3 ; j++ ) {
 			loop2 = &snd.loopSounds[j];
 			if ( !loop2->active || loop2->doppler || loop2->sfx != loop->sfx ||
 				 loop2->startSample != loop->startSample ) { // ydnar
@@ -1463,7 +1463,7 @@ let the sound system know where an entity currently is
 ======================
 */
 void S_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES ) {
+	if ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}
 	VectorCopy( origin, snd.entityPositions[entityNum] );
@@ -1644,7 +1644,7 @@ void S_ClearSounds( qboolean clearStreaming, qboolean clearMusic ) {
 	Sys_EnterCriticalSection( crit );
 
 	// stop looping sounds
-	Com_Memset( snd.loopSounds, 0, MAX_GENTITIES * sizeof( loopSound_t ) );
+	Com_Memset( snd.loopSounds, 0, MAX_GENTITIES_Q3 * sizeof( loopSound_t ) );
 	Com_Memset( loop_channels, 0, MAX_CHANNELS * sizeof( channel_t ) );
 	numLoopChannels = 0;
 

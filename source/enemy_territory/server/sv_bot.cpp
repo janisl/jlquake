@@ -151,7 +151,7 @@ void BotDrawDebugPolygons( void ( *drawPoly )( int color, int numPoints, float *
 	//
 	if ( bot_debug->integer == 1 || bot_debug->integer == 9 ) {
 		parm0 = 0;
-		if ( svs.clients[0].lastUsercmd.buttons & BUTTON_ATTACK ) {
+		if ( svs.clients[0].lastUsercmd.buttons & Q3BUTTON_ATTACK ) {
 			parm0 |= 1;
 		}
 		if ( bot_reachability->integer ) {
@@ -756,7 +756,7 @@ int EntityInPVS( int client, int entityNum ) {
 	int i;
 
 	cl = &svs.clients[client];
-	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK];
+	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK_Q3];
 	for ( i = 0; i < frame->num_entities; i++ ) {
 		if ( svs.snapshotEntities[( frame->first_entity + i ) % svs.numSnapshotEntities].number == entityNum ) {
 			return qtrue;
@@ -776,7 +776,7 @@ int SV_BotGetSnapshotEntity( int client, int sequence ) {
 	clientSnapshot_t    *frame;
 
 	cl = &svs.clients[client];
-	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK];
+	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK_Q3];
 	if ( sequence < 0 || sequence >= frame->num_entities ) {
 		return -1;
 	}

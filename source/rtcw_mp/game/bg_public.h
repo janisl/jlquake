@@ -129,11 +129,10 @@ typedef enum {
 // from the server to all connected clients.
 //
 
-// CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
+// Q3CS_SERVERINFO and Q3CS_SYSTEMINFO are defined in q_shared.h
 #define CS_MUSIC                2
 #define CS_MESSAGE              3       // from the map worldspawn's message field
 #define CS_MOTD                 4       // g_motd string for server message of the day
-#define CS_WARMUP               5       // server time when the match will be restarted
 #define CS_SCORES1              6
 #define CS_SCORES2              7
 #define CS_VOTE_TIME            8
@@ -173,7 +172,7 @@ typedef enum {
 #define CS_WOLFINFO             36      // NERVE - SMF
 
 #define CS_MODELS               64
-#define CS_SOUNDS               ( CS_MODELS + MAX_MODELS )
+#define CS_SOUNDS               ( CS_MODELS + MAX_MODELS_Q3 )
 #define CS_PLAYERS              ( CS_SOUNDS + MAX_SOUNDS )
 #define CS_LOCATIONS            ( CS_PLAYERS + MAX_CLIENTS )
 #define CS_PARTICLES            ( CS_LOCATIONS + MAX_LOCATIONS )
@@ -1390,8 +1389,8 @@ typedef enum {
 
 
 
-void    BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
-void    BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
+void    BG_EvaluateTrajectory( const q3trajectory_t *tr, int atTime, vec3_t result );
+void    BG_EvaluateTrajectoryDelta( const q3trajectory_t *tr, int atTime, vec3_t result );
 void    BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out );
 
 void    BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );

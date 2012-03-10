@@ -144,7 +144,7 @@ void R_AddPolygonSurfaces( void ) {
 	shader_t    *sh;
 	srfPoly_t   *poly;
 
-	tr.currentEntityNum = ENTITYNUM_WORLD;
+	tr.currentEntityNum = Q3ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
 	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys ; i++, poly++ ) {
@@ -321,7 +321,7 @@ void R_AddPolygonBufferSurfaces( void ) {
 	shader_t        *sh;
 	srfPolyBuffer_t *polybuffer;
 
-	tr.currentEntityNum = ENTITYNUM_WORLD;
+	tr.currentEntityNum = Q3ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
 	for ( i = 0, polybuffer = tr.refdef.polybuffers; i < tr.refdef.numPolyBuffers ; i++, polybuffer++ ) {
@@ -392,7 +392,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent ) {
 		return;
 	}
 	// show_bug.cgi?id=402
-	if ( r_numentities >= ENTITYNUM_WORLD ) {
+	if ( r_numentities >= Q3ENTITYNUM_WORLD ) {
 		return;
 	}
 	if ( ent->reType < 0 || ent->reType >= RT_MAX_REF_ENTITY_TYPE ) {

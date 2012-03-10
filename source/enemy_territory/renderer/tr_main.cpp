@@ -1013,7 +1013,7 @@ qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, int entityNum,
 	R_PlaneForSurface( drawSurf->surface, &originalPlane );
 
 	// rotate the plane if necessary
-	if ( entityNum != ENTITYNUM_WORLD ) {
+	if ( entityNum != Q3ENTITYNUM_WORLD ) {
 		tr.currentEntityNum = entityNum;
 		tr.currentEntity = &tr.refdef.entities[entityNum];
 
@@ -1128,7 +1128,7 @@ static qboolean IsMirror( const drawSurf_t *drawSurf, int entityNum ) {
 	R_PlaneForSurface( drawSurf->surface, &originalPlane );
 
 	// rotate the plane if necessary
-	if ( entityNum != ENTITYNUM_WORLD ) {
+	if ( entityNum != Q3ENTITYNUM_WORLD ) {
 		tr.currentEntityNum = entityNum;
 		tr.currentEntity = &tr.refdef.entities[entityNum];
 
@@ -1590,7 +1590,7 @@ void R_DecomposeSort( unsigned sort, int *entityNum, shader_t **shader, int *fog
 	*fogNum = ( sort >> QSORT_FOGNUM_SHIFT ) & 31;
 	*shader = tr.sortedShaders[ ( sort >> QSORT_SHADERNUM_SHIFT ) & ( MAX_SHADERS - 1 ) ];
 //	*entityNum = ( sort >> QSORT_ENTITYNUM_SHIFT ) & 1023;
-	*entityNum = ( sort >> QSORT_ENTITYNUM_SHIFT ) & ( MAX_GENTITIES - 1 );   // (SA) uppded entity count for Wolf to 11 bits
+	*entityNum = ( sort >> QSORT_ENTITYNUM_SHIFT ) & ( MAX_GENTITIES_Q3 - 1 );   // (SA) uppded entity count for Wolf to 11 bits
 	*frontFace = ( sort >> QSORT_FRONTFACE_SHIFT ) & 1;
 	*dlightMap = sort & 1;
 }

@@ -39,14 +39,14 @@ If you have questions concerning this license or the applicable additional terms
 #define AAS_DEBUG
 
 //#define MAX_CLIENTS			128
-//#define	MAX_MODELS			256		// these are sent over the net as 8 bits
+//#define	MAX_MODELS_Q3			256		// these are sent over the net as 8 bits
 //#define	MAX_SOUNDS			256		// so they cannot be blindly increased
 //#define	MAX_CONFIGSTRINGS	1024
 #define MAX_CONFIGSTRINGS   2048    //----(SA)	upped
 
 //#define	CS_SCORES			32
 //#define	CS_MODELS			(CS_SCORES+MAX_CLIENTS)
-//#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS)
+//#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS_Q3)
 
 #define DF_AASENTNUMBER( x )      ( x - ( *aasworlds ).entities )
 #define DF_NUMBERAASENT( x )      ( &( *aasworlds ).entities[x] )

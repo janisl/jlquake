@@ -69,7 +69,7 @@ playerState_t *SV_GameClientNum( int num ) {
 }
 
 svEntity_t  *SV_SvEntityForGentity( sharedEntity_t *gEnt ) {
-	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES ) {
+	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 	return &sv.svEntities[ gEnt->s.number ];
@@ -260,7 +260,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
-	String::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ), bufferSize );
+	String::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3 ), bufferSize );
 }
 
 /*

@@ -90,8 +90,6 @@ enum
 
 #define MAX_PS_EVENTS_Q3		2
 
-#define PS_PMOVEFRAMECOUNTBITS	6
-
 // q3playerState_t is the information needed by both the client and server
 // to predict player motion and actions
 // nothing outside of pmove should modify these, or some degree of prediction error
@@ -175,19 +173,9 @@ struct q3playerState_t
 // if entityState->solid == Q3SOLID_BMODEL, modelindex is an inline model number
 #define Q3SOLID_BMODEL	0xffffff
 
-enum q3trType_t
-{
-	Q3TR_STATIONARY,
-	Q3TR_INTERPOLATE,				// non-parametric, but interpolate between snapshots
-	Q3TR_LINEAR,
-	Q3TR_LINEAR_STOP,
-	Q3TR_SINE,					// value = base + sin( time / duration ) * delta
-	Q3TR_GRAVITY
-};
-
 struct q3trajectory_t
 {
-	q3trType_t trType;
+	int trType;
 	int trTime;
 	int trDuration;			// if non 0, trTime + trDuration = stop time
 	vec3_t trBase;
@@ -260,19 +248,9 @@ struct q3entityState_t
 //
 #define Q3BUTTON_ATTACK			1
 #define Q3BUTTON_TALK			2			// displays talk balloon and disables actions
-#define Q3BUTTON_USE_HOLDABLE	4
-#define Q3BUTTON_GESTURE		8
 #define Q3BUTTON_WALKING		16			// walking can't just be infered from MOVE_RUN
 										// because a key pressed late in the frame will
 										// only generate a small move value for that frame
 										// walking will use different animations and
 										// won't generate footsteps
-#define Q3BUTTON_AFFIRMATIVE	32
-#define Q3BUTTON_NEGATIVE		64
-
-#define Q3BUTTON_GETFLAG		128
-#define Q3BUTTON_GUARDBASE		256
-#define Q3BUTTON_PATROL			512
-#define Q3BUTTON_FOLLOWME		1024
-
 #define Q3BUTTON_ANY			2048			// any key whatsoever

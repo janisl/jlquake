@@ -74,7 +74,7 @@ void SV_SetConfigstring( int index, const char *val ) {
 				continue;
 			}
 			// do not always send server info to all clients
-			if ( index == CS_SERVERINFO && client->gentity && ( client->gentity->r.svFlags & SVF_NOSERVERINFO ) ) {
+			if ( index == Q3CS_SERVERINFO && client->gentity && ( client->gentity->r.svFlags & SVF_NOSERVERINFO ) ) {
 				continue;
 			}
 
@@ -253,7 +253,7 @@ void SV_Startup( void ) {
 	//svs.clients = Z_Malloc (sizeof(client_t) * sv_maxclients->integer );
 
 	if ( com_dedicated->integer ) {
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
+		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	} else {
 		// we don't need nearly as many when playing locally
 		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
@@ -330,7 +330,7 @@ void SV_ChangeMaxClients( void ) {
 
 	// allocate new snapshot entities
 	if ( com_dedicated->integer ) {
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
+		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	} else {
 		// we don't need nearly as many when playing locally
 		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
@@ -447,7 +447,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	int i;
 	int checksum;
 	qboolean isBot;
-	char systemInfo[MAX_INFO_STRING];
+	char systemInfo[MAX_INFO_STRING_Q3];
 	const char  *p;
 
 	// shut down the existing game if it is running
@@ -655,13 +655,13 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	// save systeminfo and serverinfo strings
 	String::NCpyZ( systemInfo, Cvar_InfoString( CVAR_SYSTEMINFO, BIG_INFO_STRING ), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
+	SV_SetConfigstring( Q3CS_SYSTEMINFO, systemInfo );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING ) );
+	SV_SetConfigstring( Q3CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3 ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// NERVE - SMF
-	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING ) );
+	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO, MAX_INFO_STRING_Q3 ) );
 	cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 
 	// any media configstring setting now should issue a warning
