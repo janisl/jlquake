@@ -179,7 +179,7 @@ float MSG_ReadDeltaKeyFloat( QMsg *msg, int key, float oldV ) {
 /*
 ============================================================================
 
-usercmd_t communication
+etusercmd_t communication
 
 ============================================================================
 */
@@ -199,7 +199,7 @@ usercmd_t communication
 MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
+void MSG_WriteDeltaUsercmd( QMsg *msg, etusercmd_t *from, etusercmd_t *to ) {
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits( 1, 1 );
 		msg->WriteBits( to->serverTime - from->serverTime, 8 );
@@ -227,7 +227,7 @@ void MSG_WriteDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
 MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
+void MSG_ReadDeltaUsercmd( QMsg *msg, etusercmd_t *from, etusercmd_t *to ) {
 	if ( msg->ReadBits( 1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits( 8 );
 	} else {
@@ -252,7 +252,7 @@ void MSG_ReadDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
 MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to ) {
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, etusercmd_t *from, etusercmd_t *to ) {
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits( 1, 1 );
 		msg->WriteBits( to->serverTime - from->serverTime, 8 );
@@ -298,7 +298,7 @@ void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *t
 MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to ) {
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, etusercmd_t *from, etusercmd_t *to ) {
 	if ( msg->ReadBits( 1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits( 8 );
 	} else {
@@ -338,7 +338,7 @@ void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to
 /*
 =============================================================================
 
-entityState_t communication
+etentityState_t communication
 
 =============================================================================
 */
@@ -367,7 +367,7 @@ typedef struct {
 } netField_t;
 
 // using the stringizing operator to save typing...
-#define NETF( x ) # x,(qintptr)&( (entityState_t*)0 )->x
+#define NETF( x ) # x,(qintptr)&( (etentityState_t*)0 )->x
 
 netField_t entityStateFields[] = {
 	{ NETF( eType ), 8 },
@@ -494,7 +494,7 @@ If force is not set, then nothing at all will be generated if the entity is
 identical, under the assumption that the in-order delta code will catch it.
 ==================
 */
-void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to,
+void MSG_WriteDeltaEntity( QMsg *msg, struct etentityState_t *from, struct etentityState_t *to,
 						   qboolean force ) {
 	int i, lc;
 	int numFields;
@@ -507,7 +507,7 @@ void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityS
 
 	// all fields should be 32 bits to avoid any compiler packing issues
 	// the "number" field is not part of the field list
-	// if this assert fails, someone added a field to the entityState_t
+	// if this assert fails, someone added a field to the etentityState_t
 	// struct without updating the message fields
 	assert( numFields + 1 == sizeof( *from ) / 4 );
 
@@ -640,14 +640,14 @@ MSG_ReadDeltaEntity
 The entity number has already been read from the message, which
 is how the from state is identified.
 
-If the delta removes the entity, entityState_t->number will be set to MAX_GENTITIES_Q3-1
+If the delta removes the entity, etentityState_t->number will be set to MAX_GENTITIES_Q3-1
 
 Can go from either a baseline or a previous packet_entity
 ==================
 */
 extern Cvar  *cl_shownet;
 
-void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
+void MSG_ReadDeltaEntity( QMsg *msg, etentityState_t *from, etentityState_t *to,
 						  int number ) {
 	int i, lc;
 	int numFields;
@@ -773,7 +773,7 @@ player_state_t communication
 */
 
 // using the stringizing operator to save typing...
-#define PSF( x ) # x,(qintptr)&( (playerState_t*)0 )->x
+#define PSF( x ) # x,(qintptr)&( (etplayerState_t*)0 )->x
 
 netField_t playerStateFields[] = {
 	{ PSF( commandTime ), 32 },
@@ -898,9 +898,9 @@ MSG_WriteDeltaPlayerstate
 
 =============
 */
-void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to ) {
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct etplayerState_t *from, struct etplayerState_t *to ) {
 	int i, j, lc;
-	playerState_t dummy;
+	etplayerState_t dummy;
 	int statsbits;
 	int persistantbits;
 	int ammobits[4];                //----(SA)	modified
@@ -1246,7 +1246,7 @@ void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct pl
 MSG_ReadDeltaPlayerstate
 ===================
 */
-void MSG_ReadDeltaPlayerstate( QMsg *msg, playerState_t *from, playerState_t *to ) {
+void MSG_ReadDeltaPlayerstate( QMsg *msg, etplayerState_t *from, etplayerState_t *to ) {
 	int i, j, lc;
 	int bits;
 	netField_t  *field;
@@ -1255,7 +1255,7 @@ void MSG_ReadDeltaPlayerstate( QMsg *msg, playerState_t *from, playerState_t *to
 	int print;
 	int         *fromF, *toF;
 	int trunc;
-	playerState_t dummy;
+	etplayerState_t dummy;
 
 	if ( !from ) {
 		from = &dummy;

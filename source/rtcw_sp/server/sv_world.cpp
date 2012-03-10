@@ -232,7 +232,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 		SV_UnlinkEntity( gEnt );    // unlink from old position
 	}
 
-	// encode the size into the entityState_t for client prediction
+	// encode the size into the wsentityState_t for client prediction
 	if ( gEnt->r.bmodel ) {
 		gEnt->s.solid = Q3SOLID_BMODEL;       // a solid_box will never create this value
 	} else if ( gEnt->r.contents & ( BSP46CONTENTS_SOLID | BSP46CONTENTS_BODY ) ) {

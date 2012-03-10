@@ -389,7 +389,7 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 #define CS_SKINS                        ( CS_SHADERSTATE +          1                           )
 #define CS_CHARACTERS                   ( CS_SKINS +                MAX_CS_SKINS                )
 #define CS_PLAYERS                      ( CS_CHARACTERS +           MAX_CHARACTERS              )
-#define CS_MULTI_SPAWNTARGETS           ( CS_PLAYERS +              MAX_CLIENTS                 )
+#define CS_MULTI_SPAWNTARGETS           ( CS_PLAYERS +              MAX_CLIENTS_ET                 )
 #define CS_OID_TRIGGERS                 ( CS_MULTI_SPAWNTARGETS +   MAX_MULTI_SPAWNTARGETS      )
 #define CS_OID_DATA                     ( CS_OID_TRIGGERS +         MAX_OID_TRIGGERS            )
 #define CS_DLIGHTS                      ( CS_OID_DATA +             MAX_OID_TRIGGERS            )
@@ -400,8 +400,8 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 #define CS_STRINGS                      ( CS_CUSTMOTD +             MAX_MOTDLINES               )
 #define CS_MAX                          ( CS_STRINGS +              MAX_CSSTRINGS               )
 
-#if ( CS_MAX ) > MAX_CONFIGSTRINGS
-#error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
+#if ( CS_MAX ) > MAX_CONFIGSTRINGS_ET
+#error overflow: (CS_MAX) > MAX_CONFIGSTRINGS_ET
 #endif
 
 //#ifndef GAMETYPES
@@ -436,7 +436,7 @@ typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 PMOVE MODULE
 
-The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t
+The pmove code takes a player_state_t and a etusercmd_t and generates a new player_state_t
 and some other output data.  Used for local prediction on the client game and true
 movement on the server game.
 ===================================================================================
@@ -528,12 +528,12 @@ typedef struct {
 #define MAXTOUCH    32
 typedef struct {
 	// state (in / out)
-	playerState_t           *ps;
+	etplayerState_t           *ps;
 	pmoveExt_t              *pmext;
 	struct bg_character_s   *character;
 
 	// command (in)
-	usercmd_t cmd, oldcmd;
+	etusercmd_t cmd, oldcmd;
 	int tracemask;                  // collide against these types of surfaces
 	int debugLevel;                 // if set, diagnostic output will be printed
 	qboolean noFootsteps;           // if the game is setup for no footsteps by the server
@@ -581,7 +581,7 @@ typedef struct {
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles( playerState_t * ps, pmoveExt_t * pmext, usercmd_t * cmd, void( trace ) ( q3trace_t * results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask ), int tracemask );
+void PM_UpdateViewAngles( etplayerState_t * ps, pmoveExt_t * pmext, etusercmd_t * cmd, void( trace ) ( q3trace_t * results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask ), int tracemask );
 int Pmove( pmove_t *pmove );
 
 //===================================================================================
@@ -638,7 +638,7 @@ typedef enum {
 } persEnum_t;
 
 
-// entityState_t->eFlags
+// etentityState_t->eFlags
 #define EF_DEAD             0x00000001      // don't draw a foe marker over players with EF_DEAD
 #define EF_NONSOLID_BMODEL  0x00000002      // bmodel is visible, but not solid
 #define EF_FORCE_END_FRAME  EF_NONSOLID_BMODEL  // force client to end of current animation (after loading a savegame)
@@ -933,7 +933,7 @@ extern int weapAlts[];  // defined in bg_misc.c
 		BG_IsAkimboWeapon( weapon ) || weapon == WP_MOBILE_MG42_SET	\
 	)
 
-// entityState_t->event values
+// etentityState_t->event values
 // entity events are for effects that take place reletive
 // to an existing entities origin.  Very network efficient.
 
@@ -1544,14 +1544,14 @@ weapon_t BG_FindClipForWeapon( weapon_t weapon );
 
 qboolean BG_AkimboFireSequence( int weapon, int akimboClip, int mainClip );
 qboolean BG_IsAkimboWeapon( int weaponNum );
-qboolean BG_IsAkimboSideArm( int weaponNum, playerState_t *ps );
+qboolean BG_IsAkimboSideArm( int weaponNum, etplayerState_t *ps );
 int BG_AkimboSidearm( int weaponNum );
 
 #define ITEM_INDEX( x ) ( ( x ) - bg_itemlist )
 
 qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon );
 
-qboolean    BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps, int *skill, int teamNum );
+qboolean    BG_CanItemBeGrabbed( const etentityState_t *ent, const etplayerState_t *ps, int *skill, int teamNum );
 
 
 // content masks
@@ -1566,7 +1566,7 @@ qboolean    BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *
 #define MASK_MISSILESHOT        ( MASK_SHOT | BSP47CONTENTS_MISSILECLIP )
 
 //
-// entityState_t->eType
+// etentityState_t->eType
 //
 
 // cursorhints (stored in ent->s.dmgFlags since that's only used for players at the moment)
@@ -1631,20 +1631,20 @@ void    BG_EvaluateTrajectory( const q3trajectory_t *tr, int atTime, vec3_t resu
 void BG_EvaluateTrajectoryDelta( const q3trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splineData );
 void    BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out );
 
-void    BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
+void    BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, etplayerState_t *ps );
 
-//void	BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad );
+//void	BG_TouchJumpPad( etplayerState_t *ps, etentityState_t *jumppad );
 
-void    BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
-void    BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
+void    BG_PlayerStateToEntityState( etplayerState_t *ps, etentityState_t *s, qboolean snap );
+void    BG_PlayerStateToEntityStateExtraPolate( etplayerState_t *ps, etentityState_t *s, int time, qboolean snap );
 weapon_t BG_DuplicateWeapon( weapon_t weap );
 gitem_t* BG_ValidStatWeapon( weapon_t weap );
 weapon_t BG_WeaponForMOD( int MOD );
 
 qboolean    BG_WeaponInWolfMP( int weapon );
-qboolean    BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
-qboolean    BG_PlayerSeesItem( playerState_t *ps, entityState_t *item, int atTime );
-qboolean    BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfClips );
+qboolean    BG_PlayerTouchesItem( etplayerState_t *ps, etentityState_t *item, int atTime );
+qboolean    BG_PlayerSeesItem( etplayerState_t *ps, etentityState_t *item, int atTime );
+qboolean    BG_AddMagicAmmo( etplayerState_t *ps, int *skill, int teamNum, int numOfClips );
 
 #define OVERCLIP        1.001
 
@@ -1875,20 +1875,6 @@ typedef struct
 
 } animModelInfo_t;
 
-// this is the main structure that is duplicated on the client and server
-typedef struct
-{
-//	int					clientModels[MAX_CLIENTS];		// so we know which model each client is using
-	animModelInfo_t modelInfo[MAX_ANIMSCRIPT_MODELS];
-	int clientConditions[MAX_CLIENTS][NUM_ANIM_CONDITIONS][2];
-	//
-	// pointers to functions from the owning module
-	//
-	// TTimo: constify the arg
-	int ( *soundIndex )( const char *name );
-	void ( *playSound )( int soundIndex, vec3_t org, int clientNum );
-} animScriptData_t;
-
 //------------------------------------------------------------------
 // Conditional Constants
 
@@ -2036,39 +2022,11 @@ SAVE
 #define SAVE_VERSION            31
 #define SAVE_INFOSTRING_LENGTH  256
 
-//------------------------------------------------------------------
-// Global Function Decs
-
-//animModelInfo_t *BG_ModelInfoForModelname( char *modelname );
-void BG_InitWeaponStrings( void );
-void BG_AnimParseAnimScript( animModelInfo_t *modelInfo, animScriptData_t *scriptData, const char *filename, char *input );
-int BG_AnimScriptAnimation( playerState_t *ps, animModelInfo_t *modelInfo, scriptAnimMoveTypes_t movetype, qboolean isContinue );
-int BG_AnimScriptCannedAnimation( playerState_t *ps, animModelInfo_t *modelInfo );
-int BG_AnimScriptEvent( playerState_t *ps, animModelInfo_t *modelInfo, scriptAnimEventTypes_t event, qboolean isContinue, qboolean force );
-int BG_IndexForString( char *token, animStringItem_t *strings, qboolean allowFail );
-int BG_PlayAnimName( playerState_t *ps, animModelInfo_t *animModelInfo, char *animName, animBodyPart_t bodyPart, qboolean setTimer, qboolean isContinue, qboolean force );
-void BG_ClearAnimTimer( playerState_t *ps, animBodyPart_t bodyPart );
-qboolean BG_ValidAnimScript( int clientNum );
-char *BG_GetAnimString( animModelInfo_t* animModelInfo, int anim );
-void BG_UpdateConditionValue( int client, int condition, int value, qboolean checkConversion );
-int BG_GetConditionValue( int client, int condition, qboolean checkConversion );
-qboolean BG_GetConditionBitFlag( int client, int condition, int bitNumber );
-void BG_SetConditionBitFlag( int client, int condition, int bitNumber );
-void BG_ClearConditionBitFlag( int client, int condition, int bitNumber );
-int BG_GetAnimScriptAnimation( int client, animModelInfo_t* animModelInfo, aistateEnum_t aistate, scriptAnimMoveTypes_t movetype );
-void BG_AnimUpdatePlayerStateConditions( pmove_t *pmove );
-animation_t *BG_AnimationForString( char *string, animModelInfo_t *animModelInfo );
-animation_t *BG_GetAnimationForIndex( animModelInfo_t* animModelInfo, int index );
-int BG_GetAnimScriptEvent( playerState_t *ps, scriptAnimEventTypes_t event );
-int PM_IdleAnimForWeapon( int weapon );
-int PM_RaiseAnimForWeapon( int weapon );
-void PM_ContinueWeaponAnim( int anim );
-
 extern animStringItem_t animStateStr[];
 extern animStringItem_t animBodyPartsStr[];
 
 bg_playerclass_t* BG_GetPlayerClassInfo( int team, int cls );
-bg_playerclass_t* BG_PlayerClassForPlayerState( playerState_t* ps );
+bg_playerclass_t* BG_PlayerClassForPlayerState( etplayerState_t* ps );
 qboolean BG_ClassHasWeapon( bg_playerclass_t* classInfo, weapon_t weap );
 qboolean BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t weapon );
 int BG_ClassWeaponCount( bg_playerclass_t* classInfo, team_t team );
@@ -2180,7 +2138,7 @@ extern const char* bg_fireteamNames[MAX_FIRETEAMS / 2];
 
 typedef struct {
 	int ident;
-	char joinOrder[MAX_CLIENTS];        // order in which clients joined the fire team (server), client uses to store if a client is on this fireteam
+	char joinOrder[MAX_CLIENTS_ET];        // order in which clients joined the fire team (server), client uses to store if a client is on this fireteam
 	int leader;         // leader = joinOrder[0] on server, stored here on client
 	qboolean inuse;
 	qboolean priv;
@@ -2313,7 +2271,7 @@ typedef struct bg_characterDef_s {
 
 qboolean BG_ParseCharacterFile( const char *filename, bg_characterDef_t* characterDef );
 bg_character_t *BG_GetCharacter( int team, int cls );
-bg_character_t *BG_GetCharacterForPlayerstate( playerState_t *ps );
+bg_character_t *BG_GetCharacterForPlayerstate( etplayerState_t *ps );
 void BG_ClearCharacterPool( void );
 bg_character_t *BG_FindFreeCharacter( const char *characterFile );
 bg_character_t *BG_FindCharacter( const char *characterFile );

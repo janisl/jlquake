@@ -599,7 +599,7 @@ the wrong gamestate.
 */
 void SV_SendClientGameState( client_t *client ) {
 	int start;
-	entityState_t   *base, nullstate;
+	etentityState_t   *base, nullstate;
 	QMsg msg;
 	byte msgBuffer[MAX_MSGLEN_WOLF];
 
@@ -632,7 +632,7 @@ void SV_SendClientGameState( client_t *client ) {
 	msg.WriteLong( client->reliableSequence );
 
 	// write the configstrings
-	for ( start = 0 ; start < MAX_CONFIGSTRINGS ; start++ ) {
+	for ( start = 0 ; start < MAX_CONFIGSTRINGS_ET ; start++ ) {
 		if ( sv.configstrings[start][0] ) {
 			msg.WriteByte( q3svc_configstring );
 			msg.WriteShort( start );
@@ -671,7 +671,7 @@ void SV_SendClientGameState( client_t *client ) {
 SV_ClientEnterWorld
 ==================
 */
-void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd ) {
+void SV_ClientEnterWorld( client_t *client, etusercmd_t *cmd ) {
 	int clientNum;
 	sharedEntity_t *ent;
 
@@ -1577,7 +1577,7 @@ SV_ClientThink
 Also called by bot code
 ==================
 */
-void SV_ClientThink( client_t *cl, usercmd_t *cmd ) {
+void SV_ClientThink( client_t *cl, etusercmd_t *cmd ) {
 	cl->lastUsercmd = *cmd;
 
 	if ( cl->state != CS_ACTIVE ) {
@@ -1602,9 +1602,9 @@ each of the backup packets.
 static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	int i, key;
 	int cmdCount;
-	usercmd_t nullcmd;
-	usercmd_t cmds[MAX_PACKET_USERCMDS];
-	usercmd_t   *cmd, *oldcmd;
+	etusercmd_t nullcmd;
+	etusercmd_t cmds[MAX_PACKET_USERCMDS];
+	etusercmd_t   *cmd, *oldcmd;
 
 	if ( delta ) {
 		cl->deltaMessage = cl->messageAcknowledge;
@@ -1629,7 +1629,7 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	// also use the message acknowledge
 	key ^= cl->messageAcknowledge;
 	// also use the last acknowledged server command in the key
-	key ^= Com_HashKey( cl->reliableCommands[ cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ], 32 );
+	key ^= Com_HashKey( cl->reliableCommands[ cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ], 32 );
 
 	memset( &nullcmd, 0, sizeof( nullcmd ) );
 	oldcmd = &nullcmd;
@@ -1755,7 +1755,7 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	// NOTE: when the client message is fux0red the acknowledgement numbers
 	// can be out of range, this could cause the server to send thousands of server
 	// commands which the server thinks are not yet acknowledged in SV_UpdateServerCommandsToClient
-	if ( cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS ) {
+	if ( cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS_ET ) {
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 #ifndef NDEBUG
@@ -1826,7 +1826,7 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 		}
 	} while ( 1 );
 
-	// read the usercmd_t
+	// read the etusercmd_t
 	if ( c == q3clc_move ) {
 		SV_UserMove( cl, msg, qtrue );
 		c = msg->ReadByte();

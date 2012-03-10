@@ -165,7 +165,7 @@ extern vec3_t listener_up;
 extern dma_t dma;
 
 #ifdef TALKANIM
-extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS];
+extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WM];
 #endif
 
 // Ridah, streaming sounds

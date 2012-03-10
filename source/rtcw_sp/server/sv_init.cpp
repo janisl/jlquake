@@ -46,7 +46,7 @@ void SV_SetConfigstring( int index, const char *val ) {
 	int maxChunkSize = MAX_STRING_CHARS - 24;
 	client_t    *client;
 
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_WS ) {
 		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i\n", index );
 	}
 
@@ -127,7 +127,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetConfigstring: bufferSize == %i", bufferSize );
 	}
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_WS ) {
 		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i\n", index );
 	}
 	if ( !sv.configstrings[index] ) {
@@ -219,8 +219,8 @@ void SV_BoundMaxClients( int minimum ) {
 
 	if ( sv_maxclients->integer < minimum ) {
 		Cvar_Set( "sv_maxclients", va( "%i", minimum ) );
-	} else if ( sv_maxclients->integer > MAX_CLIENTS ) {
-		Cvar_Set( "sv_maxclients", va( "%i", MAX_CLIENTS ) );
+	} else if ( sv_maxclients->integer > MAX_CLIENTS_WS ) {
+		Cvar_Set( "sv_maxclients", va( "%i", MAX_CLIENTS_WS ) );
 	}
 }
 
@@ -254,15 +254,15 @@ void SV_InitReliableCommands( client_t *clients ) {
 	if ( sv_gametype->integer == GT_SINGLE_PLAYER ) {
 		// single player
 		// init the actual player
-		SV_InitReliableCommandsForClient( clients, MAX_RELIABLE_COMMANDS );
+		SV_InitReliableCommandsForClient( clients, MAX_RELIABLE_COMMANDS_WS );
 		// all others can only be bots, so are not required
 		for ( i = 1, cl = &clients[1]; i < sv_maxclients->integer; i++, cl++ ) {
-			SV_InitReliableCommandsForClient( cl, MAX_RELIABLE_COMMANDS );  // TODO, make 0's
+			SV_InitReliableCommandsForClient( cl, MAX_RELIABLE_COMMANDS_WS );  // TODO, make 0's
 		}
 	} else {
 		// multiplayer
 		for ( i = 0, cl = clients; i < sv_maxclients->integer; i++, cl++ ) {
-			SV_InitReliableCommandsForClient( clients, MAX_RELIABLE_COMMANDS );
+			SV_InitReliableCommandsForClient( clients, MAX_RELIABLE_COMMANDS_WS );
 		}
 	}
 }
@@ -375,10 +375,10 @@ void SV_FreeAcknowledgedReliableCommands( client_t *cl ) {
 		return;
 	}
 	//
-	realAck = ( cl->reliableAcknowledge ) & ( MAX_RELIABLE_COMMANDS - 1 );
+	realAck = ( cl->reliableAcknowledge ) & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 	// move backwards one command, since we need the most recently acknowledged
 	// command for netchan decoding
-	ack = ( cl->reliableAcknowledge - 1 ) & ( MAX_RELIABLE_COMMANDS - 1 );
+	ack = ( cl->reliableAcknowledge - 1 ) & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 	//
 	if ( !cl->reliableCommands.commands[ack] ) {
 		return; // no new commands acknowledged
@@ -393,7 +393,7 @@ void SV_FreeAcknowledgedReliableCommands( client_t *cl ) {
 		// move the the previous command
 		ack--;
 		if ( ack < 0 ) {
-			ack = ( MAX_RELIABLE_COMMANDS - 1 );
+			ack = ( MAX_RELIABLE_COMMANDS_WS - 1 );
 		}
 		if ( ack == realAck ) {
 			// never free the actual most recently acknowledged command
@@ -535,7 +535,7 @@ void SV_ChangeMaxClients( void ) {
 			}
 		} else {
 			for ( i = oldMaxClients ; i < sv_maxclients->integer ; i++ ) {
-				SV_InitReliableCommandsForClient( &svs.clients[i], MAX_RELIABLE_COMMANDS );
+				SV_InitReliableCommandsForClient( &svs.clients[i], MAX_RELIABLE_COMMANDS_WS );
 			}
 		}
 	}
@@ -595,7 +595,7 @@ SV_ClearServer
 void SV_ClearServer( void ) {
 	int i;
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
 		if ( sv.configstrings[i] ) {
 			Z_Free( sv.configstrings[i] );
 		}
@@ -660,7 +660,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 				// it's been modified, so grab the new value
 				Cvar_Get( "sv_maxclients", "8", 0 );
 			}
-			if ( sv_maxclients->integer < MAX_CLIENTS ) {
+			if ( sv_maxclients->integer < MAX_CLIENTS_WS ) {
 				Cvar_SetValue( "sv_maxclients", MAX_SP_CLIENTS );
 			}
 			if ( !bot_enable->integer ) {
@@ -693,7 +693,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	SV_ClearServer();
 
 	// allocate empty config strings
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
 		sv.configstrings[i] = CopyString( "" );
 	}
 
@@ -711,7 +711,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	FS_ClearPakReferences( 0 );
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = (entityState_t*)Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = (wsentityState_t*)Hunk_Alloc( sizeof( wsentityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a

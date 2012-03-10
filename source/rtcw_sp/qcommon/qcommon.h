@@ -37,23 +37,22 @@ void MSG_InitOOB( QMsg *buf, byte *data, int length );
 void *MSG_GetSpace( QMsg *buf, int length );
 
 
-struct usercmd_s;
-struct entityState_s;
-struct playerState_s;
+struct wsentityState_t;
+struct wsplayerState_t;
 
-void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
-void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_WriteDeltaUsercmd( QMsg *msg, struct wsusercmd_t *from, struct wsusercmd_t *to );
+void MSG_ReadDeltaUsercmd( QMsg *msg, struct wsusercmd_t *from, struct wsusercmd_t *to );
 
-void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
-void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, wsusercmd_t *from, wsusercmd_t *to );
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, wsusercmd_t *from, wsusercmd_t *to );
 
-void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
+void MSG_WriteDeltaEntity( QMsg *msg, struct wsentityState_t *from, struct wsentityState_t *to
 						   , qboolean force );
-void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
+void MSG_ReadDeltaEntity( QMsg *msg, wsentityState_t *from, wsentityState_t *to,
 						  int number );
 
-void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
-void MSG_ReadDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct wsplayerState_t *from, struct wsplayerState_t *to );
+void MSG_ReadDeltaPlayerstate( QMsg *msg, struct wsplayerState_t *from, struct wsplayerState_t *to );
 
 
 void MSG_ReportChangeVectors_f( void );
@@ -71,14 +70,7 @@ NET
 // show_bug.cgi?id=404
 #define DO_NET_ENCODE 0
 
-#define MAX_PACKET_USERCMDS     32      // max number of usercmd_t in a packet
-
-// RF, increased this, seems to keep causing problems when set to 64, especially when loading
-// a savegame, which is hard to fix on that side, since we can't really spread out a loadgame
-// among several frames
-//#define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
-//#define	MAX_RELIABLE_COMMANDS	128			// max string commands buffered for restransmit
-#define MAX_RELIABLE_COMMANDS   256 // bigger!
+#define MAX_PACKET_USERCMDS     32      // max number of wsusercmd_t in a packet
 
 void        NET_Init( void );
 void        NET_Shutdown( void );

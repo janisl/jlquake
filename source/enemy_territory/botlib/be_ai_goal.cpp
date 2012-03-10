@@ -157,7 +157,7 @@ typedef struct bot_goalstate_s
 	float avoidgoaltimes[MAX_AVOIDGOALS];       //times to avoid the goals
 } bot_goalstate_t;
 
-bot_goalstate_t *botgoalstates[MAX_CLIENTS + 1];
+bot_goalstate_t *botgoalstates[MAX_CLIENTS_ET + 1];
 //item configuration
 itemconfig_t *itemconfig = NULL;
 //level items
@@ -187,7 +187,7 @@ int g_gameskill;
 // Changes Globals:		-
 //========================================================================
 bot_goalstate_t *BotGoalStateFromHandle( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_ET ) {
 		botimport.Print( PRT_FATAL, "goal state handle %d out of range\n", handle );
 		return NULL;
 	} //end if
@@ -1542,7 +1542,7 @@ void BotFreeItemWeights( int goalstate ) {
 int BotAllocGoalState( int client ) {
 	int i;
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_ET; i++ )
 	{
 		if ( !botgoalstates[i] ) {
 			botgoalstates[i] = (bot_goalstate_t*)GetClearedMemory( sizeof( bot_goalstate_t ) );
@@ -1559,7 +1559,7 @@ int BotAllocGoalState( int client ) {
 // Changes Globals:		-
 //========================================================================
 void BotFreeGoalState( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_ET ) {
 		botimport.Print( PRT_FATAL, "goal state handle %d out of range\n", handle );
 		return;
 	} //end if
@@ -1625,7 +1625,7 @@ void BotShutdownGoalAI( void ) {
 
 	BotFreeInfoEntities();
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_ET; i++ )
 	{
 		if ( botgoalstates[i] ) {
 			BotFreeGoalState( i );

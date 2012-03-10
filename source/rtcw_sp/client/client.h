@@ -55,7 +55,7 @@ typedef struct {
 	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
 
 	int cmdNum;                     // the next cmdNum the server is expecting
-	playerState_t ps;                       // complete information about the current player at this time
+	wsplayerState_t ps;                       // complete information about the current player at this time
 
 	int numEntities;                        // all of the entities that need to be presented
 	int parseEntitiesNum;                   // at the time of this snapshot
@@ -113,14 +113,14 @@ typedef struct {
 	int joystickAxis[MAX_JOYSTICK_AXIS];            // set by joystick events
 
 	// cgame communicates a few values to the client system
-	int cgameUserCmdValue;              // current weapon to add to usercmd_t
-	int cgameUserHoldableValue;         // current holdable item to add to usercmd_t	//----(SA)	added
+	int cgameUserCmdValue;              // current weapon to add to wsusercmd_t
+	int cgameUserHoldableValue;         // current holdable item to add to wsusercmd_t	//----(SA)	added
 	float cgameSensitivity;
 	int cgameCld;                       // NERVE - SMF
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
-	usercmd_t cmds[CMD_BACKUP];     // each mesage will send several old cmds
+	wsusercmd_t cmds[CMD_BACKUP];     // each mesage will send several old cmds
 	int cmdNumber;                  // incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
@@ -138,9 +138,9 @@ typedef struct {
 	// big stuff at end of structure so most offsets are 15 bits or less
 	clSnapshot_t snapshots[PACKET_BACKUP_Q3];
 
-	entityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
+	wsentityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
 
-	entityState_t parseEntities[MAX_PARSE_ENTITIES];
+	wsentityState_t parseEntities[MAX_PARSE_ENTITIES];
 
 	// NERVE - SMF
 	char limboChatMsgs[LIMBOCHAT_HEIGHT][LIMBOCHAT_WIDTH * 3 + 1];
@@ -183,7 +183,7 @@ typedef struct {
 	// these are our reliable messages that go to the server
 	int reliableSequence;
 	int reliableAcknowledge;                // the last one the server has executed
-	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS_Q3];
+	char reliableCommands[MAX_RELIABLE_COMMANDS_WS][MAX_TOKEN_CHARS_Q3];
 
 	// server message (unreliable) and command (reliable) sequence
 	// numbers are NOT cleared at level changes, but continue to
@@ -196,7 +196,7 @@ typedef struct {
 	// reliable messages received from server
 	int serverCommandSequence;
 	int lastExecutedServerCommand;              // last server command grabbed or executed with CL_GetServerCommand
-	char serverCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS_Q3];
+	char serverCommands[MAX_RELIABLE_COMMANDS_WS][MAX_TOKEN_CHARS_Q3];
 
 	// file transfer from server
 	fileHandle_t download;
@@ -245,9 +245,9 @@ typedef struct {
 
 typedef struct {
 	netadr_t adr;
-	char hostName[MAX_NAME_LENGTH];
-	char mapName[MAX_NAME_LENGTH];
-	char game[MAX_NAME_LENGTH];
+	char hostName[MAX_NAME_LENGTH_WS];
+	char mapName[MAX_NAME_LENGTH_WS];
+	char game[MAX_NAME_LENGTH_WS];
 	int netType;
 	int gameType;
 	int clients;

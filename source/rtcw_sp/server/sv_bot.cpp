@@ -641,7 +641,7 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size ) {
 	}
 
 	cl->reliableAcknowledge++;
-	index = cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 
 	//if ( !cl->reliableCommands[index][0] ) {
 	if ( !( msg = SV_GetReliableCommand( cl, index ) ) || !msg[0] ) {

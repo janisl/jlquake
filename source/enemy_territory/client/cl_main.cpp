@@ -205,7 +205,7 @@ CLIENT RELIABLE COMMAND COMMUNICATION
 CL_AddReliableCommand
 
 The given command will be transmitted to the server, and is gauranteed to
-not have future usercmd_t executed before it is executed
+not have future etusercmd_t executed before it is executed
 ======================
 */
 void CL_AddReliableCommand( const char *cmd ) {
@@ -213,11 +213,11 @@ void CL_AddReliableCommand( const char *cmd ) {
 
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
-	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS ) {
+	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS_ET ) {
 		Com_Error( ERR_DROP, "Client command overflow" );
 	}
 	clc.reliableSequence++;
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS_ET - 1 );
 	String::NCpyZ( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
 }
 
@@ -231,7 +231,7 @@ void CL_ChangeReliableCommand( void ) {
 
 	// NOTE TTimo: what is the randomize for?
 	r = clc.reliableSequence - ( random() * 5 );
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS_ET - 1 );
 	l = String::Length( clc.reliableCommands[ index ] );
 	if ( l >= MAX_STRING_CHARS - 1 ) {
 		l = MAX_STRING_CHARS - 2;
@@ -378,8 +378,8 @@ void CL_Record( const char* name ) {
 	int i;
 	QMsg buf;
 	byte bufData[MAX_MSGLEN_WOLF];
-	entityState_t   *ent;
-	entityState_t nullstate;
+	etentityState_t   *ent;
+	etentityState_t nullstate;
 	char        *s;
 	int len;
 
@@ -412,7 +412,7 @@ void CL_Record( const char* name ) {
 	buf.WriteLong( clc.serverCommandSequence );
 
 	// configstrings
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_ET ; i++ ) {
 		if ( !cl.gameState.stringOffsets[i] ) {
 			continue;
 		}
@@ -1649,7 +1649,7 @@ void CL_Configstrings_f( void ) {
 		return;
 	}
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_ET ; i++ ) {
 		ofs = cl.gameState.stringOffsets[ i ];
 		if ( !ofs ) {
 			continue;
@@ -3613,11 +3613,11 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 	if ( server ) {
 		if ( info ) {
 			server->clients = String::Atoi( Info_ValueForKey( info, "clients" ) );
-			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH_ET );
 			server->load = String::Atoi( Info_ValueForKey( info, "serverload" ) );
-			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH_ET );
 			server->maxClients = String::Atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH_ET );
 			server->gameType = String::Atoi( Info_ValueForKey( info, "gametype" ) );
 			server->netType = String::Atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = String::Atoi( Info_ValueForKey( info, "minping" ) );
@@ -3627,7 +3627,7 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 			server->maxlives = String::Atoi( Info_ValueForKey( info, "maxlives" ) );                 // NERVE - SMF
 			server->needpass = String::Atoi( Info_ValueForKey( info, "needpass" ) );                 // NERVE - SMF
 			server->punkbuster = String::Atoi( Info_ValueForKey( info, "punkbuster" ) );             // DHM - Nerve
-			String::NCpyZ( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
+			String::NCpyZ( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH_ET );   // Arnout
 			server->antilag = String::Atoi( Info_ValueForKey( info, "g_antilag" ) );
 			server->weaprestrict = String::Atoi( Info_ValueForKey( info, "weaprestrict" ) );
 			server->balancedteams = String::Atoi( Info_ValueForKey( info, "balancedteams" ) );

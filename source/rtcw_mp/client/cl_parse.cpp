@@ -58,9 +58,9 @@ MESSAGE PARSING
 */
 #if 1
 
-int entLastVisible[MAX_CLIENTS];
+int entLastVisible[MAX_CLIENTS_WM];
 
-qboolean isEntVisible( entityState_t *ent ) {
+qboolean isEntVisible( wmentityState_t *ent ) {
 	q3trace_t tr;
 	vec3_t start, end, temp;
 	vec3_t forward, up, right, right2;
@@ -171,9 +171,9 @@ Parses deltas from the given base and adds the resulting entity
 to the current frame
 ==================
 */
-void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, entityState_t *old,
+void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, wmentityState_t *old,
 					 qboolean unchanged ) {
-	entityState_t   *state;
+	wmentityState_t   *state;
 
 	// save the parsed entity state into the big circular buffer so
 	// it can be used as the source for a later delta
@@ -192,7 +192,7 @@ void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, entityState_t *
 #if 1
 	// DHM - Nerve :: Only draw clients if visible
 	if ( clc.onlyVisibleClients ) {
-		if ( state->number < MAX_CLIENTS ) {
+		if ( state->number < MAX_CLIENTS_WM ) {
 			if ( isEntVisible( state ) ) {
 				entLastVisible[state->number] = frame->serverTime;
 				state->eFlags &= ~EF_NODRAW;
@@ -217,7 +217,7 @@ CL_ParsePacketEntities
 */
 void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe ) {
 	int newnum;
-	entityState_t   *oldstate;
+	wmentityState_t   *oldstate;
 	int oldindex, oldnum;
 
 	newframe->parseEntitiesNum = cl.parseEntitiesNum;
@@ -518,9 +518,9 @@ CL_ParseGamestate
 */
 void CL_ParseGamestate( QMsg *msg ) {
 	int i;
-	entityState_t   *es;
+	wmentityState_t   *es;
 	int newnum;
-	entityState_t nullstate;
+	wmentityState_t nullstate;
 	int cmd;
 	const char            *s;
 
@@ -547,8 +547,8 @@ void CL_ParseGamestate( QMsg *msg ) {
 			int len;
 
 			i = msg->ReadShort();
-			if ( i < 0 || i >= MAX_CONFIGSTRINGS ) {
-				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
+			if ( i < 0 || i >= MAX_CONFIGSTRINGS_WM ) {
+				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS_WM" );
 			}
 			s = msg->ReadBigString();
 			len = String::Length( s );
@@ -716,7 +716,7 @@ void CL_ParseCommandString( QMsg *msg ) {
 	}
 	clc.serverCommandSequence = seq;
 
-	index = seq & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = seq & ( MAX_RELIABLE_COMMANDS_WM - 1 );
 	String::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
 }
 
@@ -743,7 +743,7 @@ void CL_ParseServerMessage( QMsg *msg ) {
 	// get the reliable sequence acknowledge number
 	clc.reliableAcknowledge = msg->ReadLong();
 	//
-	if ( clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS ) {
+	if ( clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS_WM ) {
 		clc.reliableAcknowledge = clc.reliableSequence;
 	}
 

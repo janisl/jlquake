@@ -55,7 +55,7 @@ typedef struct {
 	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
 
 	int cmdNum;                     // the next cmdNum the server is expecting
-	playerState_t ps;                       // complete information about the current player at this time
+	etplayerState_t ps;                       // complete information about the current player at this time
 
 	int numEntities;                        // all of the entities that need to be presented
 	int parseEntitiesNum;                   // at the time of this snapshot
@@ -119,7 +119,7 @@ typedef struct {
 	int joystickAxis[MAX_JOYSTICK_AXIS];            // set by joystick events
 
 	// cgame communicates a few values to the client system
-	int cgameUserCmdValue;              // current weapon to add to usercmd_t
+	int cgameUserCmdValue;              // current weapon to add to etusercmd_t
 	int cgameFlags;                     // flags that can be set by the gamecode
 	float cgameSensitivity;
 	int cgameMpIdentClient;             // NERVE - SMF
@@ -127,7 +127,7 @@ typedef struct {
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
-	usercmd_t cmds[CMD_BACKUP];     // each mesage will send several old cmds
+	etusercmd_t cmds[CMD_BACKUP];     // each mesage will send several old cmds
 	int cmdNumber;                  // incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
@@ -148,9 +148,9 @@ typedef struct {
 	// big stuff at end of structure so most offsets are 15 bits or less
 	clSnapshot_t snapshots[PACKET_BACKUP_Q3];
 
-	entityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
+	etentityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
 
-	entityState_t parseEntities[MAX_PARSE_ENTITIES];
+	etentityState_t parseEntities[MAX_PARSE_ENTITIES];
 
 	// NERVE - SMF
 	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH strings (140),
@@ -200,7 +200,7 @@ typedef struct {
 	int reliableSequence;
 	int reliableAcknowledge;                // the last one the server has executed
 	// TTimo - NOTE: incidentally, reliableCommands[0] is never used (always start at reliableAcknowledge+1)
-	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS_Q3];
+	char reliableCommands[MAX_RELIABLE_COMMANDS_ET][MAX_TOKEN_CHARS_Q3];
 
 	// unreliable binary data to send to server
 	int binaryMessageLength;
@@ -218,7 +218,7 @@ typedef struct {
 	// reliable messages received from server
 	int serverCommandSequence;
 	int lastExecutedServerCommand;              // last server command grabbed or executed with CL_GetServerCommand
-	char serverCommands[MAX_RELIABLE_COMMANDS][MAX_TOKEN_CHARS_Q3];
+	char serverCommands[MAX_RELIABLE_COMMANDS_ET][MAX_TOKEN_CHARS_Q3];
 
 	// file transfer from server
 	fileHandle_t download;
@@ -275,10 +275,10 @@ typedef struct {
 
 typedef struct {
 	netadr_t adr;
-	char hostName[MAX_NAME_LENGTH];
+	char hostName[MAX_NAME_LENGTH_ET];
 	int load;
-	char mapName[MAX_NAME_LENGTH];
-	char game[MAX_NAME_LENGTH];
+	char mapName[MAX_NAME_LENGTH_ET];
+	char game[MAX_NAME_LENGTH_ET];
 	int netType;
 	int gameType;
 	int clients;
@@ -295,7 +295,7 @@ typedef struct {
 	int antilag;         // TTimo
 	int weaprestrict;
 	int balancedteams;
-	char gameName[MAX_NAME_LENGTH];         // Arnout
+	char gameName[MAX_NAME_LENGTH_ET];         // Arnout
 } serverInfo_t;
 
 typedef struct {

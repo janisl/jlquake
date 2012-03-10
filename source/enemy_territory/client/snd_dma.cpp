@@ -791,7 +791,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 			// multiple sounds on him.
 			//
 			/*if(entityNum != 0 &&
-			   entityNum < MAX_CLIENTS && s_channels[i].entchannel != CHAN_AUTO && s_channels[i].entchannel != CHAN_WEAPON) {
+			   entityNum < MAX_CLIENTS_ET && s_channels[i].entchannel != CHAN_AUTO && s_channels[i].entchannel != CHAN_WEAPON) {
 				S_ChannelFree(&s_channels[i]);
 				continue;
 			}*/

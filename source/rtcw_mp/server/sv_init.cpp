@@ -46,7 +46,7 @@ void SV_SetConfigstring( int index, const char *val ) {
 	int maxChunkSize = MAX_STRING_CHARS - 24;
 	client_t    *client;
 
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_WM ) {
 		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i\n", index );
 	}
 
@@ -127,7 +127,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetConfigstring: bufferSize == %i", bufferSize );
 	}
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_WM ) {
 		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i\n", index );
 	}
 	if ( !sv.configstrings[index] ) {
@@ -223,8 +223,8 @@ void SV_BoundMaxClients( int minimum ) {
 
 	if ( sv_maxclients->integer < minimum ) {
 		Cvar_Set( "sv_maxclients", va( "%i", minimum ) );
-	} else if ( sv_maxclients->integer > MAX_CLIENTS ) {
-		Cvar_Set( "sv_maxclients", va( "%i", MAX_CLIENTS ) );
+	} else if ( sv_maxclients->integer > MAX_CLIENTS_WM ) {
+		Cvar_Set( "sv_maxclients", va( "%i", MAX_CLIENTS_WM ) );
 	}
 }
 
@@ -391,7 +391,7 @@ SV_ClearServer
 void SV_ClearServer( void ) {
 	int i;
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WM ; i++ ) {
 		if ( sv.configstrings[i] ) {
 			Z_Free( sv.configstrings[i] );
 		}
@@ -477,7 +477,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	Z_LogHeap();
 
 	// allocate empty config strings
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WM ; i++ ) {
 		sv.configstrings[i] = CopyString( "" );
 	}
 
@@ -495,7 +495,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	FS_ClearPakReferences( 0 );
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = (entityState_t*)Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = (wmentityState_t*)Hunk_Alloc( sizeof( wmentityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
@@ -898,7 +898,7 @@ void SV_Init( void ) {
 	{
 		int i;
 
-		for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+		for ( i = 0 ; i < MAX_CONFIGSTRINGS_WM ; i++ ) {
 			sv.configstrings[i] = CopyString( "" );
 		}
 	}

@@ -176,7 +176,7 @@ extern vec3_t listener_up;
 extern dma_t dma;
 
 #ifdef TALKANIM
-extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS];
+extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_ET];
 #endif
 
 //----(SA)	some flags for queued music tracks
@@ -318,6 +318,6 @@ extern short *sfxScratchBuffer;
 extern const sfx_t *sfxScratchPointer;
 extern int sfxScratchIndex;
 
-extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS];
+extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_ET];
 
 extern float S_GetStreamingFade( streamingSound_t *ss );    //----(SA)	added

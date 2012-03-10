@@ -48,7 +48,7 @@ typedef struct svEntity_s {
 	struct worldSector_s *worldSector;
 	struct svEntity_s *nextEntityInWorldSector;
 
-	entityState_t baseline;         // for delta compression of initial sighting
+	etentityState_t baseline;         // for delta compression of initial sighting
 	int numClusters;                // if -1, use headnode instead
 	int clusternums[MAX_ENT_CLUSTERS];
 	int lastCluster;                // if all the clusters don't fit in clusternums
@@ -76,8 +76,8 @@ typedef struct {
 	int timeResidual;                   // <= 1000 / sv_frame->value
 	int nextFrameTime;                  // when time > nextFrameTime, process world
 	struct cmodel_s *models[MAX_MODELS_Q3];
-	char*           configstrings[MAX_CONFIGSTRINGS];
-	qboolean configstringsmodified[MAX_CONFIGSTRINGS];
+	char*           configstrings[MAX_CONFIGSTRINGS_ET];
+	qboolean configstringsmodified[MAX_CONFIGSTRINGS_ET];
 	svEntity_t svEntities[MAX_GENTITIES_Q3];
 
 	const char            *entityParsePoint;  // used during game VM init
@@ -87,8 +87,8 @@ typedef struct {
 	int gentitySize;
 	int num_entities;                   // current number, <= MAX_GENTITIES_Q3
 
-	playerState_t   *gameClients;
-	int gameClientSize;                 // will be > sizeof(playerState_t) due to game private data
+	etplayerState_t   *gameClients;
+	int gameClientSize;                 // will be > sizeof(etplayerState_t) due to game private data
 
 	int restartTime;
 
@@ -120,7 +120,7 @@ typedef struct {
 typedef struct {
 	int areabytes;
 	byte areabits[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
-	playerState_t ps;
+	etplayerState_t ps;
 	int num_entities;
 	int first_entity;                   // into the circular sv_packet_entities[]
 										// the entities MUST be in increasing state number
@@ -149,7 +149,7 @@ typedef struct client_s {
 	clientState_t state;
 	char userinfo[MAX_INFO_STRING_Q3];                 // name, etc
 
-	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
+	char reliableCommands[MAX_RELIABLE_COMMANDS_ET][MAX_STRING_CHARS];
 	int reliableSequence;                   // last added reliable message, not necesarily sent or acknowledged yet
 	int reliableAcknowledge;                // last acknowledged reliable message
 	int reliableSent;                       // last sent reliable message, not necesarily acknowledged yet
@@ -162,12 +162,12 @@ typedef struct client_s {
 	int gamestateMessageNum;                // netchan->outgoingSequence of gamestate
 	int challenge;
 
-	usercmd_t lastUsercmd;
+	etusercmd_t lastUsercmd;
 	int lastMessageNum;                 // for delta compression
 	int lastClientCommand;              // reliable client message sequence
 	char lastClientCommandString[MAX_STRING_CHARS];
 	sharedEntity_t  *gentity;           // SV_GentityNum(clientnum)
-	char name[MAX_NAME_LENGTH];                     // extracted from userinfo, high bits masked
+	char name[MAX_NAME_LENGTH_ET];                     // extracted from userinfo, high bits masked
 
 	// downloading
 	char downloadName[MAX_QPATH];            // if not empty string, we are downloading
@@ -243,7 +243,7 @@ typedef struct tempBan_s {
 
 
 #define MAX_MASTERS                         8               // max recipients for heartbeat packets
-#define MAX_TEMPBAN_ADDRESSES               MAX_CLIENTS
+#define MAX_TEMPBAN_ADDRESSES               MAX_CLIENTS_ET
 
 #define SERVER_PERFORMANCECOUNTER_FRAMES    600
 #define SERVER_PERFORMANCECOUNTER_SAMPLES   6
@@ -259,7 +259,7 @@ typedef struct {
 	client_t    *clients;                   // [sv_maxclients->integer];
 	int numSnapshotEntities;                // sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
 	int nextSnapshotEntities;               // next snapshotEntities to use
-	entityState_t   *snapshotEntities;      // [numSnapshotEntities]
+	etentityState_t   *snapshotEntities;      // [numSnapshotEntities]
 	int nextHeartbeatTime;
 	challenge_t challenges[MAX_CHALLENGES]; // to prevent invalid IPs from connecting
 	netadr_t redirectAddress;               // for rcon return messages
@@ -398,12 +398,12 @@ void SV_AuthorizeIpPacket( netadr_t from );
 void SV_ExecuteClientMessage( client_t *cl, QMsg *msg );
 void SV_UserinfoChanged( client_t *cl );
 
-void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd );
+void SV_ClientEnterWorld( client_t *client, etusercmd_t *cmd );
 void SV_FreeClientNetChan( client_t* client );
 void SV_DropClient( client_t *drop, const char *reason );
 
 void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart );
-void SV_ClientThink( client_t *cl, usercmd_t *cmd );
+void SV_ClientThink( client_t *cl, etusercmd_t *cmd );
 
 void SV_WriteDownloadToClient( client_t *cl, QMsg *msg );
 
@@ -433,10 +433,10 @@ void SV_SendClientIdle( client_t *client );
 int SV_NumForGentity( sharedEntity_t *ent );
 
 //#define SV_GentityNum( num ) ((sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num)))
-//#define SV_GameClientNum( num ) ((playerState_t *)((byte *)sv.gameClients + sv.gameClientSize*(num)))
+//#define SV_GameClientNum( num ) ((etplayerState_t *)((byte *)sv.gameClients + sv.gameClientSize*(num)))
 
 sharedEntity_t *SV_GentityNum( int num );
-playerState_t *SV_GameClientNum( int num );
+etplayerState_t *SV_GameClientNum( int num );
 
 svEntity_t  *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );

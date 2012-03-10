@@ -749,7 +749,7 @@ GetConfigString
 static int GetConfigString( int index, char *buf, int size ) {
 	int offset;
 
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_WS ) {
 		return qfalse;
 	}
 

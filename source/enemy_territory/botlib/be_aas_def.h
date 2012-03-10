@@ -229,7 +229,7 @@ typedef struct aas_s
 	int maxclients;
 	aas_entity_t *entities;
 	//string indexes
-	char *configstrings[MAX_CONFIGSTRINGS];
+	char *configstrings[MAX_CONFIGSTRINGS_ET];
 	int indexessetup;
 	//index to retrieve travel flag for a travel type
 	int travelflagfortype[MAX_TRAVELTYPES];

@@ -153,7 +153,7 @@ CLIENT RELIABLE COMMAND COMMUNICATION
 CL_AddReliableCommand
 
 The given command will be transmitted to the server, and is gauranteed to
-not have future usercmd_t executed before it is executed
+not have future wsusercmd_t executed before it is executed
 ======================
 */
 void CL_AddReliableCommand( const char *cmd ) {
@@ -164,11 +164,11 @@ void CL_AddReliableCommand( const char *cmd ) {
 //	if(cl.cameraMode)
 //		Com_Printf ("cmd: %s\n", cmd);
 
-	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS ) {
+	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS_WS ) {
 		Com_Error( ERR_DROP, "Client command overflow" );
 	}
 	clc.reliableSequence++;
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 	String::NCpyZ( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
 }
 
@@ -181,7 +181,7 @@ void CL_ChangeReliableCommand( void ) {
 	int r, index, l;
 
 	r = clc.reliableSequence - ( random() * 5 );
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 	l = String::Length( clc.reliableCommands[ index ] );
 	if ( l >= MAX_STRING_CHARS - 1 ) {
 		l = MAX_STRING_CHARS - 2;
@@ -287,8 +287,8 @@ void CL_Record_f( void ) {
 	QMsg buf;
 	int i;
 	int len;
-	entityState_t   *ent;
-	entityState_t nullstate;
+	wsentityState_t   *ent;
+	wsentityState_t nullstate;
 	char        *s;
 
 	if ( Cmd_Argc() > 2 ) {
@@ -362,7 +362,7 @@ void CL_Record_f( void ) {
 	buf.WriteLong( clc.serverCommandSequence );
 
 	// configstrings
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
 		if ( !cl.gameState.stringOffsets[i] ) {
 			continue;
 		}
@@ -1290,7 +1290,7 @@ void CL_Configstrings_f( void ) {
 		return;
 	}
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
 		ofs = cl.gameState.stringOffsets[ i ];
 		if ( !ofs ) {
 			continue;
@@ -2681,10 +2681,10 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 	if ( server ) {
 		if ( info ) {
 			server->clients = String::Atoi( Info_ValueForKey( info, "clients" ) );
-			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
-			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->hostName,Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH_WS );
+			String::NCpyZ( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH_WS );
 			server->maxClients = String::Atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
+			String::NCpyZ( server->game,Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH_WS );
 			server->gameType = String::Atoi( Info_ValueForKey( info, "gametype" ) );
 			server->netType = String::Atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = String::Atoi( Info_ValueForKey( info, "minping" ) );

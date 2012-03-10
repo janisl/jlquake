@@ -42,25 +42,24 @@ void MSG_InitOOB( QMsg *buf, byte *data, int length );
 void *MSG_GetSpace( QMsg *buf, int length );
 void MSG_Uncompressed( QMsg *buf );
 
-struct usercmd_s;
-struct entityState_s;
-struct playerState_s;
+struct etentityState_t;
+struct etplayerState_t;
 
 void    MSG_BeginReadingUncompressed( QMsg *msg );
 
-void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
-void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_WriteDeltaUsercmd( QMsg *msg, struct etusercmd_t *from, struct etusercmd_t *to );
+void MSG_ReadDeltaUsercmd( QMsg *msg, struct etusercmd_t *from, struct etusercmd_t *to );
 
-void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
-void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, etusercmd_t *from, etusercmd_t *to );
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, etusercmd_t *from, etusercmd_t *to );
 
-void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
+void MSG_WriteDeltaEntity( QMsg *msg, struct etentityState_t *from, struct etentityState_t *to
 						   , qboolean force );
-void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
+void MSG_ReadDeltaEntity( QMsg *msg, etentityState_t *from, etentityState_t *to,
 						  int number );
 
-void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
-void MSG_ReadDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct etplayerState_t *from, struct etplayerState_t *to );
+void MSG_ReadDeltaPlayerstate( QMsg *msg, struct etplayerState_t *from, struct etplayerState_t *to );
 
 
 void MSG_ReportChangeVectors_f( void );
@@ -73,14 +72,7 @@ NET
 ==============================================================
 */
 
-#define MAX_PACKET_USERCMDS     32      // max number of usercmd_t in a packet
-
-// RF, increased this, seems to keep causing problems when set to 64, especially when loading
-// a savegame, which is hard to fix on that side, since we can't really spread out a loadgame
-// among several frames
-//#define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
-//#define	MAX_RELIABLE_COMMANDS	128			// max string commands buffered for restransmit
-#define MAX_RELIABLE_COMMANDS   256 // bigger!
+#define MAX_PACKET_USERCMDS     32      // max number of etusercmd_t in a packet
 
 void        NET_Init( void );
 void        NET_Shutdown( void );

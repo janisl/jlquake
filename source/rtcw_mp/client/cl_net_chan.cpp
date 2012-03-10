@@ -67,7 +67,7 @@ static void CL_Netchan_Encode( QMsg *msg ) {
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte *)clc.serverCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ];
+	string = (byte *)clc.serverCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ];
 	index = 0;
 	//
 	key = clc.challenge ^ serverId ^ messageAcknowledge;
@@ -113,7 +113,7 @@ static void CL_Netchan_Decode( QMsg *msg ) {
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)clc.reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ];
+	string = (byte*)clc.reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
 	key = clc.challenge ^ LittleLong( *(unsigned *)msg->_data );

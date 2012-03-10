@@ -729,7 +729,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 			}
 
 			// RF, let client voice sounds be overwritten
-			if ( entityNum < MAX_CLIENTS && s_channels[i].entchannel != CHAN_AUTO && s_channels[i].entchannel != CHAN_WEAPON ) {
+			if ( entityNum < MAX_CLIENTS_WS && s_channels[i].entchannel != CHAN_AUTO && s_channels[i].entchannel != CHAN_WEAPON ) {
 				S_ChannelFree( &s_channels[i] );
 				continue;
 			}

@@ -70,7 +70,7 @@ void CL_GetGlconfig( glconfig_t *glconfig ) {
 CL_GetUserCmd
 ====================
 */
-qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd ) {
+qboolean CL_GetUserCmd( int cmdNumber, wmusercmd_t *ucmd ) {
 	// cmds[cmdNumber] is the last properly generated command
 
 	// can't return anything that we haven't created yet
@@ -99,7 +99,7 @@ int CL_GetCurrentCmdNumber( void ) {
 CL_GetParseEntityState
 ====================
 */
-qboolean    CL_GetParseEntityState( int parseEntityNumber, entityState_t *state ) {
+qboolean    CL_GetParseEntityState( int parseEntityNumber, wmentityState_t *state ) {
 	// can't return anything that hasn't been parsed yet
 	if ( parseEntityNumber >= cl.parseEntitiesNum ) {
 		Com_Error( ERR_DROP, "CL_GetParseEntityState: %i >= %i",
@@ -234,8 +234,8 @@ void CL_ConfigstringModified( void ) {
 	int len;
 
 	index = String::Atoi( Cmd_Argv( 1 ) );
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
-		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_WM ) {
+		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS_WM" );
 	}
 //	s = Cmd_Argv(2);
 	// get everything after "cs <num>"
@@ -254,7 +254,7 @@ void CL_ConfigstringModified( void ) {
 	// leave the first 0 for uninitialized strings
 	cl.gameState.dataCount = 1;
 
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
+	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WM ; i++ ) {
 		if ( i == index ) {
 			dup = s;
 		} else {
@@ -298,7 +298,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 	int argc;
 
 	// if we have irretrievably lost a reliable command, drop the connection
-	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS ) {
+	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS_WM ) {
 		// when a demo record was started after the client got a whole bunch of
 		// reliable commands then the client never got those first reliable commands
 		if ( clc.demoplaying ) {
@@ -313,7 +313,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 		return qfalse;
 	}
 
-	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
+	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ];
 	clc.lastExecutedServerCommand = serverCommandNumber;
 
 	if ( cl_showServerCommands->integer ) {         // NERVE - SMF
@@ -734,7 +734,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_GETCURRENTCMDNUMBER:
 		return CL_GetCurrentCmdNumber();
 	case CG_GETUSERCMD:
-		return CL_GetUserCmd( args[1], (usercmd_t*)VMA( 2 ) );
+		return CL_GetUserCmd( args[1], (wmusercmd_t*)VMA( 2 ) );
 	case CG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue( args[1], args[2], VMF( 3 ), args[4], args[5] );
 		return 0;

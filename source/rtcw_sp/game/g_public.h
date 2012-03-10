@@ -67,7 +67,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 typedef struct {
-	entityState_t s;                // communicated by server to clients
+	wsentityState_t s;                // communicated by server to clients
 
 	qboolean linked;                // qfalse if not in any good cluster
 	int linkcount;
@@ -103,7 +103,7 @@ typedef struct {
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
 typedef struct {
-	entityState_t s;                // communicated by server to clients
+	wsentityState_t s;                // communicated by server to clients
 	entityShared_t r;               // shared by both the server system and game
 } sharedEntity_t;
 
@@ -158,7 +158,7 @@ typedef enum {
 	//=========== server specific functionality =============
 
 	G_LOCATE_GAME_DATA,     // ( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t,
-	//							playerState_t *clients, int sizeofGameClient );
+	//							wsplayerState_t *clients, int sizeofGameClient );
 	// the game needs to let the server system know where and how big the gentities
 	// are, so it can look at them directly without going through an interface
 
@@ -225,7 +225,7 @@ typedef enum {
 
 	G_BOT_FREE_CLIENT,  // ( int clientNum );
 
-	G_GET_USERCMD,  // ( int clientNum, usercmd_t *cmd )
+	G_GET_USERCMD,  // ( int clientNum, wsusercmd_t *cmd )
 
 	G_GET_ENTITY_TOKEN, // qboolean ( char *buffer, int bufferSize )
 	// Retrieves the next string token from the entity spawn text, returning
@@ -260,7 +260,7 @@ typedef enum {
 
 	BOTLIB_GET_SNAPSHOT_ENTITY,     // ( int client, int ent );
 	BOTLIB_GET_CONSOLE_MESSAGE,     // ( int client, char *message, int size );
-	BOTLIB_USER_COMMAND,            // ( int client, usercmd_t *ucmd );
+	BOTLIB_USER_COMMAND,            // ( int client, wsusercmd_t *ucmd );
 
 	BOTLIB_AAS_ENTITY_VISIBLE = 300,    //FIXME: remove
 	BOTLIB_AAS_IN_FIELD_OF_VISION,      //FIXME: remove

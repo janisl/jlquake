@@ -164,10 +164,6 @@ typedef enum {
 
 #define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
 
-// rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
-// with very long names
-#define MAX_NAME_LENGTH     36      // max length of a client name
-
 //
 // these aren't needed by any of the VMs.  put in another header?
 //

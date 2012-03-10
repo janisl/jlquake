@@ -131,7 +131,7 @@ typedef struct bot_weaponstate_s
 	int *weaponweightindex;                         //weapon weight index
 } bot_weaponstate_t;
 
-bot_weaponstate_t *botweaponstates[MAX_CLIENTS + 1];
+bot_weaponstate_t *botweaponstates[MAX_CLIENTS_ET + 1];
 weaponconfig_t *weaponconfig;
 
 //========================================================================
@@ -158,7 +158,7 @@ int BotValidWeaponNumber( int weaponnum ) {
 // Changes Globals:		-
 //========================================================================
 bot_weaponstate_t *BotWeaponStateFromHandle( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_ET ) {
 		botimport.Print( PRT_FATAL, "move state handle %d out of range\n", handle );
 		return NULL;
 	} //end if
@@ -479,7 +479,7 @@ void BotResetWeaponState( int weaponstate ) {
 int BotAllocWeaponState( void ) {
 	int i;
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_ET; i++ )
 	{
 		if ( !botweaponstates[i] ) {
 			botweaponstates[i] = (bot_weaponstate_t*)GetClearedMemory( sizeof( bot_weaponstate_t ) );
@@ -495,7 +495,7 @@ int BotAllocWeaponState( void ) {
 // Changes Globals:		-
 //========================================================================
 void BotFreeWeaponState( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_ET ) {
 		botimport.Print( PRT_FATAL, "move state handle %d out of range\n", handle );
 		return;
 	} //end if
@@ -545,7 +545,7 @@ void BotShutdownWeaponAI( void ) {
 	}
 	weaponconfig = NULL;
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_ET; i++ )
 	{
 		if ( botweaponstates[i] ) {
 			BotFreeWeaponState( i );

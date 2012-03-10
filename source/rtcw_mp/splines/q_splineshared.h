@@ -202,8 +202,6 @@ typedef enum {
 
 #define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
 
-#define MAX_NAME_LENGTH     32      // max length of a client name
-
 //
 // these aren't needed by any of the VMs.  put in another header?
 //

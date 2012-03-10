@@ -110,7 +110,7 @@ int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
 	int i, index, csnum1, csnum2;
 
 	for ( i = client->reliableSent + 1; i <= client->reliableSequence; i++ ) {
-		index = i & ( MAX_RELIABLE_COMMANDS - 1 );
+		index = i & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 		//
 		//if ( !String::NCmp(cmd, client->reliableCommands[ index ], String::Length("cs")) ) {
 		if ( !String::NCmp( cmd, SV_GetReliableCommand( client, index ), String::Length( "cs" ) ) ) {
@@ -155,17 +155,17 @@ void SV_AddServerCommand( client_t *client, const char *cmd ) {
 	// we must drop the connection
 	// we check == instead of >= so a broadcast print added by SV_DropClient()
 	// doesn't cause a recursive drop client
-	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 ) {
+	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS_WS + 1 ) {
 		Com_Printf( "===== pending server commands =====\n" );
 		for ( i = client->reliableAcknowledge + 1 ; i <= client->reliableSequence ; i++ ) {
-			//Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
-			Com_Printf( "cmd %5d: %s\n", i, SV_GetReliableCommand( client, i & ( MAX_RELIABLE_COMMANDS - 1 ) ) );
+			//Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_WS-1) ] );
+			Com_Printf( "cmd %5d: %s\n", i, SV_GetReliableCommand( client, i & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ) );
 		}
 		Com_Printf( "cmd %5d: %s\n", i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}
-	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
+	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
 	//String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 	SV_AddReliableCommand( client, index, cmd );
 }
@@ -329,7 +329,7 @@ void SVC_Status( netadr_t from ) {
 	char status[MAX_MSGLEN_WOLF];
 	int i;
 	client_t    *cl;
-	playerState_t   *ps;
+	wsplayerState_t   *ps;
 	int statusLength;
 	int playerLength;
 	char infostring[MAX_INFO_STRING_Q3];
@@ -616,7 +616,7 @@ void SV_CalcPings( void ) {
 	client_t    *cl;
 	int total, count;
 	int delta;
-	playerState_t   *ps;
+	wsplayerState_t   *ps;
 
 	for ( i = 0 ; i < sv_maxclients->integer ; i++ ) {
 		cl = &svs.clients[i];

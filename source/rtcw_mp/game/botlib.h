@@ -120,7 +120,7 @@ struct weaponinfo_s;
 #define ACTION_WALK             4096
 #define ACTION_RELOAD           8192
 
-//the bot input, will be converted to an usercmd_t
+//the bot input, will be converted to an wmusercmd_t
 typedef struct bot_input_s
 {
 	float thinktime;        //time since last output (in seconds)

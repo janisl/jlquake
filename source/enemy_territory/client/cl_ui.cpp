@@ -407,7 +407,7 @@ LAN_CompareServers
 static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 ) {
 	int res;
 	serverInfo_t *server1, *server2;
-	char name1[ MAX_NAME_LENGTH ], name2[ MAX_NAME_LENGTH ];
+	char name1[ MAX_NAME_LENGTH_ET ], name2[ MAX_NAME_LENGTH_ET ];
 
 	server1 = LAN_GetServerPtr( source, s1 );
 	server2 = LAN_GetServerPtr( source, s2 );
@@ -765,7 +765,7 @@ GetConfigString
 static int GetConfigString( int index, char *buf, int size ) {
 	int offset;
 
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS_ET ) {
 		return qfalse;
 	}
 

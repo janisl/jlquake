@@ -38,23 +38,22 @@ void MSG_Init( QMsg *buf, byte *data, int length );
 void MSG_InitOOB( QMsg *buf, byte *data, int length );
 void *MSG_GetSpace( QMsg *buf, int length );
 
-struct usercmd_s;
-struct entityState_s;
-struct playerState_s;
+struct wmentityState_t;
+struct wmplayerState_t;
 
-void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
-void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_WriteDeltaUsercmd( QMsg *msg, struct wmusercmd_t *from, struct wmusercmd_t *to );
+void MSG_ReadDeltaUsercmd( QMsg *msg, struct wmusercmd_t *from, struct wmusercmd_t *to );
 
-void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
-void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, wmusercmd_t *from, wmusercmd_t *to );
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, wmusercmd_t *from, wmusercmd_t *to );
 
-void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
+void MSG_WriteDeltaEntity( QMsg *msg, struct wmentityState_t *from, struct wmentityState_t *to
 						   , qboolean force );
-void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to,
+void MSG_ReadDeltaEntity( QMsg *msg, wmentityState_t *from, wmentityState_t *to,
 						  int number );
 
-void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
-void MSG_ReadDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct wmplayerState_t *from, struct wmplayerState_t *to );
+void MSG_ReadDeltaPlayerstate( QMsg *msg, struct wmplayerState_t *from, struct wmplayerState_t *to );
 
 
 void MSG_ReportChangeVectors_f( void );
@@ -67,14 +66,7 @@ NET
 ==============================================================
 */
 
-#define MAX_PACKET_USERCMDS     32      // max number of usercmd_t in a packet
-
-// RF, increased this, seems to keep causing problems when set to 64, especially when loading
-// a savegame, which is hard to fix on that side, since we can't really spread out a loadgame
-// among several frames
-//#define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
-//#define	MAX_RELIABLE_COMMANDS	128			// max string commands buffered for restransmit
-#define MAX_RELIABLE_COMMANDS   256 // bigger!
+#define MAX_PACKET_USERCMDS     32      // max number of wmusercmd_t in a packet
 
 void        NET_Init( void );
 void        NET_Shutdown( void );

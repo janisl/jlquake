@@ -56,11 +56,11 @@ A normal server packet will look like:
 =============
 SV_EmitPacketEntities
 
-Writes a delta update of an entityState_t list to the message.
+Writes a delta update of an etentityState_t list to the message.
 =============
 */
 static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to, QMsg *msg ) {
-	entityState_t   *oldent, *newent;
+	etentityState_t   *oldent, *newent;
 	int oldindex, newindex;
 	int oldnum, newnum;
 	int from_num_entities;
@@ -226,7 +226,7 @@ void SV_UpdateServerCommandsToClient( client_t *client, QMsg *msg ) {
 	for ( i = client->reliableAcknowledge + 1 ; i <= client->reliableSequence ; i++ ) {
 		msg->WriteByte( q3svc_serverCommand );
 		msg->WriteLong( i );
-		msg->WriteString( client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+		msg->WriteString( client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ] );
 	}
 	client->reliableSent = client->reliableSequence;
 }
@@ -530,11 +530,11 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 	snapshotEntityNumbers_t entityNumbers;
 	int i;
 	sharedEntity_t              *ent;
-	entityState_t               *state;
+	etentityState_t               *state;
 	svEntity_t                  *svEnt;
 	sharedEntity_t              *clent;
 	int clientNum;
-	playerState_t               *ps;
+	etplayerState_t               *ps;
 
 	// bump the counter used to prevent double adding
 	sv.snapshotCounter++;
@@ -554,7 +554,7 @@ static void SV_BuildClientSnapshot( client_t *client ) {
 		return;
 	}
 
-	// grab the current playerState_t
+	// grab the current etplayerState_t
 	ps = SV_GameClientNum( client - svs.clients );
 	frame->ps = *ps;
 
@@ -742,8 +742,8 @@ void SV_SendClientIdle( client_t *client ) {
 	// (re)send any reliable server commands
 	SV_UpdateServerCommandsToClient( client, &msg );
 
-	// send over all the relevant entityState_t
-	// and the playerState_t
+	// send over all the relevant etentityState_t
+	// and the etplayerState_t
 //	SV_WriteSnapshotToClient( client, &msg );
 
 	// Add any download data if the client is downloading
@@ -805,8 +805,8 @@ void SV_SendClientSnapshot( client_t *client ) {
 	// (re)send any reliable server commands
 	SV_UpdateServerCommandsToClient( client, &msg );
 
-	// send over all the relevant entityState_t
-	// and the playerState_t
+	// send over all the relevant etentityState_t
+	// and the etplayerState_t
 	SV_WriteSnapshotToClient( client, &msg );
 
 	// Add any download data if the client is downloading

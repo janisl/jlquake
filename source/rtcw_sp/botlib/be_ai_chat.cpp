@@ -202,9 +202,9 @@ typedef struct {
 	char chatname[MAX_QPATH];
 } bot_ichatdata_t;
 
-bot_ichatdata_t ichatdata[MAX_CLIENTS];
+bot_ichatdata_t ichatdata[MAX_CLIENTS_WS];
 
-bot_chatstate_t *botchatstates[MAX_CLIENTS + 1];
+bot_chatstate_t *botchatstates[MAX_CLIENTS_WS + 1];
 //console message heap
 bot_consolemessage_t *consolemessageheap = NULL;
 bot_consolemessage_t *freeconsolemessages = NULL;
@@ -224,7 +224,7 @@ bot_replychat_t *replychats = NULL;
 // Changes Globals:		-
 //========================================================================
 bot_chatstate_t *BotChatStateFromHandle( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_WS ) {
 		botimport.Print( PRT_FATAL, "chat state handle %d out of range\n", handle );
 		return NULL;
 	} //end if
@@ -2112,7 +2112,7 @@ int BotLoadChatFile( int chatstate, char *chatfile, char *chatname ) {
 
 	if ( !LibVarGetValue( "bot_reloadcharacters" ) ) {
 		avail = -1;
-		for ( n = 0; n < MAX_CLIENTS; n++ ) {
+		for ( n = 0; n < MAX_CLIENTS_WS; n++ ) {
 			if ( !ichatdata[n].inuse ) {
 				if ( avail == -1 ) {
 					avail = n;
@@ -2763,7 +2763,7 @@ void BotResetChatAI( void ) {
 int BotAllocChatState( void ) {
 	int i;
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_WS; i++ )
 	{
 		if ( !botchatstates[i] ) {
 			botchatstates[i] = (bot_chatstate_t*)GetClearedMemory( sizeof( bot_chatstate_t ) );
@@ -2783,7 +2783,7 @@ void BotFreeChatState( int handle ) {
 	bot_consolemessage_t m;
 	int h;
 
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_WS ) {
 		botimport.Print( PRT_FATAL, "chat state handle %d out of range\n", handle );
 		return;
 	} //end if
@@ -2846,14 +2846,14 @@ void BotShutdownChatAI( void ) {
 	int i;
 
 	//free all remaining chat states
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS_WS; i++ )
 	{
 		if ( botchatstates[i] ) {
 			BotFreeChatState( i );
 		} //end if
 	} //end for
 	  //free all cached chats
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS_WS; i++ )
 	{
 		if ( ichatdata[i].inuse ) {
 			FreeMemory( ichatdata[i].chat );

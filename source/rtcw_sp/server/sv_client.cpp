@@ -424,7 +424,7 @@ gotnewcl:
 
 	// RF, create the reliable commands
 	if ( newcl->netchan.remoteAddress.type != NA_BOT ) {
-		SV_InitReliableCommandsForClient( newcl, MAX_RELIABLE_COMMANDS );
+		SV_InitReliableCommandsForClient( newcl, MAX_RELIABLE_COMMANDS_WS );
 	} else {
 		SV_InitReliableCommandsForClient( newcl, 0 );
 	}
@@ -541,7 +541,7 @@ the wrong gamestate.
 */
 void SV_SendClientGameState( client_t *client ) {
 	int start;
-	entityState_t   *base, nullstate;
+	wsentityState_t   *base, nullstate;
 	QMsg msg;
 	byte msgBuffer[MAX_MSGLEN_WOLF];
 
@@ -572,7 +572,7 @@ void SV_SendClientGameState( client_t *client ) {
 	msg.WriteLong( client->reliableSequence );
 
 	// write the configstrings
-	for ( start = 0 ; start < MAX_CONFIGSTRINGS ; start++ ) {
+	for ( start = 0 ; start < MAX_CONFIGSTRINGS_WS ; start++ ) {
 		if ( sv.configstrings[start][0] ) {
 			msg.WriteByte( q3svc_configstring );
 			msg.WriteShort( start );
@@ -608,7 +608,7 @@ void SV_SendClientGameState( client_t *client ) {
 SV_ClientEnterWorld
 ==================
 */
-void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd ) {
+void SV_ClientEnterWorld( client_t *client, wsusercmd_t *cmd ) {
 	int clientNum;
 	sharedEntity_t *ent;
 
@@ -1271,7 +1271,7 @@ SV_ClientThink
 Also called by bot code
 ==================
 */
-void SV_ClientThink( client_t *cl, usercmd_t *cmd ) {
+void SV_ClientThink( client_t *cl, wsusercmd_t *cmd ) {
 	cl->lastUsercmd = *cmd;
 
 	if ( cl->state != CS_ACTIVE ) {
@@ -1296,9 +1296,9 @@ each of the backup packets.
 static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	int i, key;
 	int cmdCount;
-	usercmd_t nullcmd;
-	usercmd_t cmds[MAX_PACKET_USERCMDS];
-	usercmd_t   *cmd, *oldcmd;
+	wsusercmd_t nullcmd;
+	wsusercmd_t cmds[MAX_PACKET_USERCMDS];
+	wsusercmd_t   *cmd, *oldcmd;
 
 	if ( delta ) {
 		cl->deltaMessage = cl->messageAcknowledge;
@@ -1323,8 +1323,8 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	// also use the message acknowledge
 	key ^= cl->messageAcknowledge;
 	// also use the last acknowledged server command in the key
-	//key ^= Com_HashKey(cl->reliableCommands[ cl->reliableAcknowledge & (MAX_RELIABLE_COMMANDS-1) ], 32);
-	key ^= Com_HashKey( SV_GetReliableCommand( cl, cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ), 32 );
+	//key ^= Com_HashKey(cl->reliableCommands[ cl->reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WS-1) ], 32);
+	key ^= Com_HashKey( SV_GetReliableCommand( cl, cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ), 32 );
 
 	memset( &nullcmd, 0, sizeof( nullcmd ) );
 	oldcmd = &nullcmd;
@@ -1416,7 +1416,7 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	// NOTE: when the client message is fux0red the acknowledgement numbers
 	// can be out of range, this could cause the server to send thousands of server
 	// commands which the server thinks are not yet acknowledged in SV_UpdateServerCommandsToClient
-	if ( cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS ) {
+	if ( cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS_WS ) {
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 		//SV_DropClient( cl, "illegible client message" );
@@ -1465,7 +1465,7 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 		}
 	} while ( 1 );
 
-	// read the usercmd_t
+	// read the wsusercmd_t
 	if ( c == q3clc_move ) {
 		SV_UserMove( cl, msg, qtrue );
 	} else if ( c == q3clc_moveNoDelta ) {

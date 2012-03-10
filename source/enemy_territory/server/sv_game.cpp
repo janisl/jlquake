@@ -60,10 +60,10 @@ sharedEntity_t *SV_GentityNum( int num ) {
 	return ent;
 }
 
-playerState_t *SV_GameClientNum( int num ) {
-	playerState_t   *ps;
+etplayerState_t *SV_GameClientNum( int num ) {
+	etplayerState_t   *ps;
 
-	ps = ( playerState_t * )( (byte *)sv.gameClients + sv.gameClientSize * ( num ) );
+	ps = ( etplayerState_t * )( (byte *)sv.gameClients + sv.gameClientSize * ( num ) );
 
 	return ps;
 }
@@ -273,7 +273,7 @@ SV_LocateGameData
 ===============
 */
 void SV_LocateGameData( sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t,
-						playerState_t *clients, int sizeofGameClient ) {
+						etplayerState_t *clients, int sizeofGameClient ) {
 	sv.gentities = gEnts;
 	sv.gentitySize = sizeofGEntity_t;
 	sv.num_entities = numGEntities;
@@ -289,7 +289,7 @@ SV_GetUsercmd
 
 ===============
 */
-void SV_GetUsercmd( int clientNum, usercmd_t *cmd ) {
+void SV_GetUsercmd( int clientNum, etusercmd_t *cmd ) {
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer ) {
 		Com_Error( ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum );
 	}
@@ -421,7 +421,7 @@ qintptr SV_GameSystemCalls( qintptr* args ) {
 		return FS_GetFileList( (char*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 
 	case G_LOCATE_GAME_DATA:
-		SV_LocateGameData( (sharedEntity_t*)VMA( 1 ), args[2], args[3], (playerState_t*)VMA( 4 ), args[5] );
+		SV_LocateGameData( (sharedEntity_t*)VMA( 1 ), args[2], args[3], (etplayerState_t*)VMA( 4 ), args[5] );
 		return 0;
 	case G_DROP_CLIENT:
 		SV_GameDropClient( args[1], (char*)VMA( 2 ), args[3] );
@@ -485,7 +485,7 @@ qintptr SV_GameSystemCalls( qintptr* args ) {
 		return 0;
 
 	case G_GET_USERCMD:
-		SV_GetUsercmd( args[1], (usercmd_t*)VMA( 2 ) );
+		SV_GetUsercmd( args[1], (etusercmd_t*)VMA( 2 ) );
 		return 0;
 	case G_GET_ENTITY_TOKEN:
 	{
@@ -566,7 +566,7 @@ qintptr SV_GameSystemCalls( qintptr* args ) {
 	case BOTLIB_GET_CONSOLE_MESSAGE:
 		return SV_BotGetConsoleMessage( args[1], (char*)VMA( 2 ), args[3] );
 	case BOTLIB_USER_COMMAND:
-		SV_ClientThink( &svs.clients[args[1]], (usercmd_t*)VMA( 2 ) );
+		SV_ClientThink( &svs.clients[args[1]], (etusercmd_t*)VMA( 2 ) );
 		return 0;
 
 	case BOTLIB_AAS_ENTITY_INFO:

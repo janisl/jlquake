@@ -174,7 +174,7 @@ typedef enum {
 #define CS_MODELS               64
 #define CS_SOUNDS               ( CS_MODELS + MAX_MODELS_Q3 )
 #define CS_PLAYERS              ( CS_SOUNDS + MAX_SOUNDS )
-#define CS_LOCATIONS            ( CS_PLAYERS + MAX_CLIENTS )
+#define CS_LOCATIONS            ( CS_PLAYERS + MAX_CLIENTS_WM )
 #define CS_PARTICLES            ( CS_LOCATIONS + MAX_LOCATIONS )
 // JPW NERVE -- for spawnpoint selection
 #define CS_MULTI_SPAWNTARGETS   ( CS_PARTICLES + MAX_PARTICLES_AREAS )
@@ -187,8 +187,8 @@ typedef enum {
 
 #define CS_MAX                  ( CS_TAGCONNECTS + MAX_TAGCONNECTS )
 
-#if ( CS_MAX ) > MAX_CONFIGSTRINGS
-#error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
+#if ( CS_MAX ) > MAX_CONFIGSTRINGS_WM
+#error overflow: (CS_MAX) > MAX_CONFIGSTRINGS_WM
 #endif
 
 typedef enum {
@@ -224,7 +224,7 @@ typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 PMOVE MODULE
 
-The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t
+The pmove code takes a player_state_t and a wmusercmd_t and generates a new player_state_t
 and some other output data.  Used for local prediction on the client game and true
 movement on the server game.
 ===================================================================================
@@ -285,11 +285,11 @@ typedef struct {
 #define MAXTOUCH    32
 typedef struct {
 	// state (in / out)
-	playerState_t   *ps;
+	wmplayerState_t   *ps;
 	pmoveExt_t      *pmext;
 
 	// command (in)
-	usercmd_t cmd, oldcmd;
+	wmusercmd_t cmd, oldcmd;
 	int tracemask;                  // collide against these types of surfaces
 	int debugLevel;                 // if set, diagnostic output will be printed
 	qboolean noFootsteps;           // if the game is setup for no footsteps by the server
@@ -326,7 +326,7 @@ typedef struct {
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles( playerState_t * ps, usercmd_t * cmd, void( trace ) ( q3trace_t * results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask ) );
+void PM_UpdateViewAngles( wmplayerState_t * ps, wmusercmd_t * cmd, void( trace ) ( q3trace_t * results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask ) );
 int Pmove( pmove_t *pmove );
 
 //===================================================================================
@@ -383,7 +383,7 @@ typedef enum {
 } persEnum_t;
 
 
-// entityState_t->eFlags
+// wmentityState_t->eFlags
 #define EF_DEAD             0x00000001      // don't draw a foe marker over players with EF_DEAD
 #define EF_NONSOLID_BMODEL  0x00000002      // bmodel is visible, but not solid
 #define EF_TELEPORT_BIT     0x00000004      // toggled every time the origin abruptly changes
@@ -680,7 +680,7 @@ typedef enum {
 } reward_t;
 
 
-// entityState_t->event values
+// wmentityState_t->event values
 // entity events are for effects that take place reletive
 // to an existing entities origin.  Very network efficient.
 
@@ -1248,11 +1248,11 @@ gitem_t *BG_FindItemForKey( wkey_t k, int *index );
 weapon_t BG_FindAmmoForWeapon( weapon_t weapon );
 weapon_t BG_FindClipForWeapon( weapon_t weapon );
 
-qboolean BG_AkimboFireSequence( playerState_t *ps );    //----(SA)	added
+qboolean BG_AkimboFireSequence( wmplayerState_t *ps );    //----(SA)	added
 
 #define ITEM_INDEX( x ) ( ( x ) - bg_itemlist )
 
-qboolean    BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps );
+qboolean    BG_CanItemBeGrabbed( const wmentityState_t *ent, const wmplayerState_t *ps );
 
 
 // g_dmflags->integer flags
@@ -1273,7 +1273,7 @@ qboolean    BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *
 #define MASK_MISSILESHOT        ( MASK_SHOT | BSP47CONTENTS_MISSILECLIP )
 
 //
-// entityState_t->eType
+// wmentityState_t->eType
 //
 typedef enum {
 	ET_GENERAL,
@@ -1393,16 +1393,16 @@ void    BG_EvaluateTrajectory( const q3trajectory_t *tr, int atTime, vec3_t resu
 void    BG_EvaluateTrajectoryDelta( const q3trajectory_t *tr, int atTime, vec3_t result );
 void    BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out );
 
-void    BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
+void    BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, wmplayerState_t *ps );
 
-//void	BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad );
+//void	BG_TouchJumpPad( wmplayerState_t *ps, wmentityState_t *jumppad );
 
-void    BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
-void    BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
+void    BG_PlayerStateToEntityState( wmplayerState_t *ps, wmentityState_t *s, qboolean snap );
+void    BG_PlayerStateToEntityStateExtraPolate( wmplayerState_t *ps, wmentityState_t *s, int time, qboolean snap );
 
 qboolean    BG_WeaponInWolfMP( int weapon );
-qboolean    BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
-qboolean    BG_PlayerSeesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean    BG_PlayerTouchesItem( wmplayerState_t *ps, wmentityState_t *item, int atTime );
+qboolean    BG_PlayerSeesItem( wmplayerState_t *ps, wmentityState_t *item, int atTime );
 
 //----(SA)	removed PM_ammoNeeded 11/27/00
 void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
@@ -1625,20 +1625,6 @@ typedef struct
 
 } animModelInfo_t;
 
-// this is the main structure that is duplicated on the client and server
-typedef struct
-{
-	int clientModels[MAX_CLIENTS];                      // so we know which model each client is using
-	animModelInfo_t modelInfo[MAX_ANIMSCRIPT_MODELS];
-	int clientConditions[MAX_CLIENTS][NUM_ANIM_CONDITIONS][2];
-	//
-	// pointers to functions from the owning module
-	//
-	// TTimo: constify the arg
-	int ( *soundIndex )( const char *name );
-	void ( *playSound )( int soundIndex, vec3_t org, int clientNum );
-} animScriptData_t;
-
 //------------------------------------------------------------------
 // Conditional Constants
 
@@ -1684,29 +1670,6 @@ typedef enum
 
 	NUM_ANIM_COND_IMPACTPOINT
 } animScriptImpactPoint_t;
-
-//------------------------------------------------------------------
-// Global Function Decs
-
-animModelInfo_t *BG_ModelInfoForModelname( char *modelname );
-qboolean BG_AnimParseAnimConfig( animModelInfo_t *animModelInfo, const char *filename, const char *input );
-void BG_AnimParseAnimScript( animModelInfo_t *modelInfo, animScriptData_t *scriptData, int client, char *filename, char *input );
-int BG_AnimScriptAnimation( playerState_t *ps, aistateEnum_t state, scriptAnimMoveTypes_t movetype, qboolean isContinue );
-int BG_AnimScriptCannedAnimation( playerState_t *ps, aistateEnum_t state );
-int BG_AnimScriptStateChange( playerState_t *ps, aistateEnum_t newState, aistateEnum_t oldState );
-int BG_AnimScriptEvent( playerState_t *ps, scriptAnimEventTypes_t event, qboolean isContinue, qboolean force );
-int BG_IndexForString( char *token, animStringItem_t *strings, qboolean allowFail );
-int BG_PlayAnimName( playerState_t *ps, char *animName, animBodyPart_t bodyPart, qboolean setTimer, qboolean isContinue, qboolean force );
-qboolean BG_ValidAnimScript( int clientNum );
-char *BG_GetAnimString( int client, int anim );
-void BG_UpdateConditionValue( int client, int condition, int value, qboolean checkConversion );
-int BG_GetConditionValue( int client, int condition, qboolean checkConversion );
-int BG_GetAnimScriptAnimation( int client, aistateEnum_t state, scriptAnimMoveTypes_t movetype );
-void BG_AnimUpdatePlayerStateConditions( pmove_t *pmove );
-int BG_AnimationIndexForString( char *string, int client );
-animation_t *BG_AnimationForString( char *string, animModelInfo_t *modelInfo );
-animation_t *BG_GetAnimationForIndex( int client, int index );
-int BG_GetAnimScriptEvent( playerState_t *ps, scriptAnimEventTypes_t event );
 
 extern animStringItem_t animStateStr[];
 extern animStringItem_t animBodyPartsStr[];

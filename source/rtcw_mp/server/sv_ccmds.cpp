@@ -722,7 +722,7 @@ SV_Status_f
 static void SV_Status_f( void ) {
 	int i, j, l;
 	client_t    *cl;
-	playerState_t   *ps;
+	wmplayerState_t   *ps;
 	const char      *s;
 	int ping;
 

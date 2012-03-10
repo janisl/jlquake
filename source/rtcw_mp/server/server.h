@@ -46,7 +46,7 @@ typedef struct svEntity_s {
 	struct worldSector_s *worldSector;
 	struct svEntity_s *nextEntityInWorldSector;
 
-	entityState_t baseline;         // for delta compression of initial sighting
+	wmentityState_t baseline;         // for delta compression of initial sighting
 	int numClusters;                // if -1, use headnode instead
 	int clusternums[MAX_ENT_CLUSTERS];
 	int lastCluster;                // if all the clusters don't fit in clusternums
@@ -73,7 +73,7 @@ typedef struct {
 	int timeResidual;                   // <= 1000 / sv_frame->value
 	int nextFrameTime;                  // when time > nextFrameTime, process world
 	struct cmodel_s *models[MAX_MODELS_Q3];
-	char            *configstrings[MAX_CONFIGSTRINGS];
+	char            *configstrings[MAX_CONFIGSTRINGS_WM];
 	svEntity_t svEntities[MAX_GENTITIES_Q3];
 
 	const char            *entityParsePoint;  // used during game VM init
@@ -83,8 +83,8 @@ typedef struct {
 	int gentitySize;
 	int num_entities;                   // current number, <= MAX_GENTITIES_Q3
 
-	playerState_t   *gameClients;
-	int gameClientSize;                 // will be > sizeof(playerState_t) due to game private data
+	wmplayerState_t   *gameClients;
+	int gameClientSize;                 // will be > sizeof(wmplayerState_t) due to game private data
 
 	int restartTime;
 
@@ -110,7 +110,7 @@ typedef struct {
 typedef struct {
 	int areabytes;
 	byte areabits[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
-	playerState_t ps;
+	wmplayerState_t ps;
 	int num_entities;
 	int first_entity;                   // into the circular sv_packet_entities[]
 										// the entities MUST be in increasing state number
@@ -138,7 +138,7 @@ typedef struct client_s {
 	clientState_t state;
 	char userinfo[MAX_INFO_STRING_Q3];                 // name, etc
 
-	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
+	char reliableCommands[MAX_RELIABLE_COMMANDS_WM][MAX_STRING_CHARS];
 	int reliableSequence;                   // last added reliable message, not necesarily sent or acknowledged yet
 	int reliableAcknowledge;                // last acknowledged reliable message
 	int reliableSent;                       // last sent reliable message, not necesarily acknowledged yet
@@ -147,12 +147,12 @@ typedef struct client_s {
 	int gamestateMessageNum;                // netchan->outgoingSequence of gamestate
 	int challenge;
 
-	usercmd_t lastUsercmd;
+	wmusercmd_t lastUsercmd;
 	int lastMessageNum;                 // for delta compression
 	int lastClientCommand;              // reliable client message sequence
 	char lastClientCommandString[MAX_STRING_CHARS];
 	sharedEntity_t  *gentity;           // SV_GentityNum(clientnum)
-	char name[MAX_NAME_LENGTH];                     // extracted from userinfo, high bits masked
+	char name[MAX_NAME_LENGTH_WM];                     // extracted from userinfo, high bits masked
 
 	// downloading
 	char downloadName[MAX_QPATH];            // if not empty string, we are downloading
@@ -224,7 +224,7 @@ typedef struct {
 	client_t    *clients;                   // [sv_maxclients->integer];
 	int numSnapshotEntities;                // sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
 	int nextSnapshotEntities;               // next snapshotEntities to use
-	entityState_t   *snapshotEntities;      // [numSnapshotEntities]
+	wmentityState_t   *snapshotEntities;      // [numSnapshotEntities]
 	int nextHeartbeatTime;
 	challenge_t challenges[MAX_CHALLENGES]; // to prevent invalid IPs from connecting
 	netadr_t redirectAddress;               // for rcon return messages
@@ -347,11 +347,11 @@ void SV_AuthorizeIpPacket( netadr_t from );
 void SV_ExecuteClientMessage( client_t *cl, QMsg *msg );
 void SV_UserinfoChanged( client_t *cl );
 
-void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd );
+void SV_ClientEnterWorld( client_t *client, wmusercmd_t *cmd );
 void SV_DropClient( client_t *drop, const char *reason );
 
 void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK );
-void SV_ClientThink( client_t *cl, usercmd_t *cmd );
+void SV_ClientThink( client_t *cl, wmusercmd_t *cmd );
 
 void SV_WriteDownloadToClient( client_t *cl, QMsg *msg );
 
@@ -375,7 +375,7 @@ void SV_SendClientSnapshot( client_t *client );
 //
 int SV_NumForGentity( sharedEntity_t *ent );
 sharedEntity_t *SV_GentityNum( int num );
-playerState_t *SV_GameClientNum( int num );
+wmplayerState_t *SV_GameClientNum( int num );
 svEntity_t  *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 void        SV_InitGameProgs( void );

@@ -138,7 +138,7 @@ typedef struct bot_debugpoly_s {
 #define ACTION_PRONE            16384
 // END		xkan, 9/16/2002
 
-//the bot input, will be converted to an usercmd_t
+//the bot input, will be converted to an etusercmd_t
 typedef struct bot_input_s
 {
 	float thinktime;        //time since last output (in seconds)

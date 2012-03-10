@@ -112,7 +112,7 @@ float sv_gravity;
 //type of model, func_plat or func_bobbing
 int modeltypes[MAX_MODELS_Q3];
 
-bot_movestate_t *botmovestates[MAX_CLIENTS + 1];
+bot_movestate_t *botmovestates[MAX_CLIENTS_WM + 1];
 
 //========================================================================
 //
@@ -123,7 +123,7 @@ bot_movestate_t *botmovestates[MAX_CLIENTS + 1];
 int BotAllocMoveState( void ) {
 	int i;
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_WM; i++ )
 	{
 		if ( !botmovestates[i] ) {
 			botmovestates[i] = (bot_movestate_t*)GetClearedMemory( sizeof( bot_movestate_t ) );
@@ -139,7 +139,7 @@ int BotAllocMoveState( void ) {
 // Changes Globals:		-
 //========================================================================
 void BotFreeMoveState( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_WM ) {
 		botimport.Print( PRT_FATAL, "move state handle %d out of range\n", handle );
 		return;
 	} //end if
@@ -157,7 +157,7 @@ void BotFreeMoveState( int handle ) {
 // Changes Globals:		-
 //========================================================================
 bot_movestate_t *BotMoveStateFromHandle( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS ) {
+	if ( handle <= 0 || handle > MAX_CLIENTS_WM ) {
 		botimport.Print( PRT_FATAL, "move state handle %d out of range\n", handle );
 		return NULL;
 	} //end if
@@ -3622,7 +3622,7 @@ int BotSetupMoveAI( void ) {
 void BotShutdownMoveAI( void ) {
 	int i;
 
-	for ( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS_WM; i++ )
 	{
 		if ( botmovestates[i] ) {
 			FreeMemory( botmovestates[i] );

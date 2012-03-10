@@ -335,10 +335,10 @@ void CL_AdjustAngles( void ) {
 ================
 CL_KeyMove
 
-Sets the usercmd_t based on key states
+Sets the wsusercmd_t based on key states
 ================
 */
-void CL_KeyMove( usercmd_t *cmd ) {
+void CL_KeyMove( wsusercmd_t *cmd ) {
 	int movespeed;
 	int forward, side, up;
 	// Rafael Kick
@@ -438,7 +438,7 @@ void CL_JoystickEvent( int axis, int value, int time ) {
 CL_JoystickMove
 =================
 */
-void CL_JoystickMove( usercmd_t *cmd ) {
+void CL_JoystickMove( wsusercmd_t *cmd ) {
 	int movespeed;
 	float anglespeed;
 
@@ -478,7 +478,7 @@ void CL_JoystickMove( usercmd_t *cmd ) {
 CL_MouseMove
 =================
 */
-void CL_MouseMove( usercmd_t *cmd ) {
+void CL_MouseMove( wsusercmd_t *cmd ) {
 	float mx, my;
 	float accelSensitivity;
 	float rate;
@@ -551,7 +551,7 @@ void CL_MouseMove( usercmd_t *cmd ) {
 CL_CmdButtons
 ==============
 */
-void CL_CmdButtons( usercmd_t *cmd ) {
+void CL_CmdButtons( wsusercmd_t *cmd ) {
 	int i;
 
 	//
@@ -580,7 +580,7 @@ void CL_CmdButtons( usercmd_t *cmd ) {
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
 	if ( anykeydown && !cls.keyCatchers ) {
-		cmd->buttons |= BUTTON_ANY;
+		cmd->buttons |= WSBUTTON_ANY;
 	}
 }
 
@@ -590,7 +590,7 @@ void CL_CmdButtons( usercmd_t *cmd ) {
 CL_FinishMove
 ==============
 */
-void CL_FinishMove( usercmd_t *cmd ) {
+void CL_FinishMove( wsusercmd_t *cmd ) {
 	int i;
 
 	// copy the state that the cgame is currently sending
@@ -613,8 +613,8 @@ void CL_FinishMove( usercmd_t *cmd ) {
 CL_CreateCmd
 =================
 */
-usercmd_t CL_CreateCmd( void ) {
-	usercmd_t cmd;
+wsusercmd_t CL_CreateCmd( void ) {
+	wsusercmd_t cmd;
 	vec3_t oldAngles;
 	float recoilAdd;
 
@@ -674,11 +674,11 @@ usercmd_t CL_CreateCmd( void ) {
 =================
 CL_CreateNewCommands
 
-Create a new usercmd_t structure for this frame
+Create a new wsusercmd_t structure for this frame
 =================
 */
 void CL_CreateNewCommands( void ) {
-	usercmd_t   *cmd;
+	wsusercmd_t   *cmd;
 	int cmdNum;
 
 	// no need to create usercmds until we have a gamestate
@@ -789,8 +789,8 @@ void CL_WritePacket( void ) {
 	QMsg buf;
 	byte data[MAX_MSGLEN_WOLF];
 	int i, j;
-	usercmd_t   *cmd, *oldcmd;
-	usercmd_t nullcmd;
+	wsusercmd_t   *cmd, *oldcmd;
+	wsusercmd_t nullcmd;
 	int packetNum;
 	int oldPacketNum;
 	int count, key;
@@ -822,7 +822,7 @@ void CL_WritePacket( void ) {
 	for ( i = clc.reliableAcknowledge + 1 ; i <= clc.reliableSequence ; i++ ) {
 		buf.WriteByte( q3clc_clientCommand );
 		buf.WriteLong( i );
-		buf.WriteString( clc.reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+		buf.WriteString( clc.reliableCommands[ i & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ] );
 	}
 
 	// we want to send all the usercmds that were generated in the last
@@ -860,7 +860,7 @@ void CL_WritePacket( void ) {
 		// also use the message acknowledge
 		key ^= clc.serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= Com_HashKey( clc.serverCommands[ clc.serverCommandSequence & ( MAX_RELIABLE_COMMANDS - 1 ) ], 32 );
+		key ^= Com_HashKey( clc.serverCommands[ clc.serverCommandSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ], 32 );
 
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {

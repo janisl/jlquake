@@ -66,7 +66,7 @@ void    IN_Init( void );
 void    IN_Shutdown( void );
 void    IN_JoystickCommands( void );
 
-void    IN_Move( usercmd_t *cmd );
+void    IN_Move( etusercmd_t *cmd );
 // add additional non keyboard / non mouse movement on top of the keyboard move cmd
 
 void    IN_DeactivateWin32Mouse( void );
