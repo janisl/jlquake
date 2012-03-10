@@ -16,7 +16,6 @@
 
 #include "client.h"
 
-#if 0
 Cvar* cl_inGameVideo;
 
 Cvar* clqh_nolerp;
@@ -25,9 +24,11 @@ Cvar* clqh_nolerp;
 Cvar* clqh_name;
 Cvar* clqh_color;
 
+#if 0
 clientActive_t cl;
 clientConnection_t clc;
 clientStatic_t cls;
+#endif
 
 byte* playerTranslation;
 
@@ -131,6 +132,7 @@ void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* tr
 	}
 }
 
+#if 0
 //	Determines the fraction between the last two messages that the objects
 // should be put at.
 float CLQH_LerpPoint()

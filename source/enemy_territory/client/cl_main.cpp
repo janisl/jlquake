@@ -81,7 +81,6 @@ Cvar  *cl_motdString;
 Cvar  *cl_allowDownload;
 Cvar  *cl_wwwDownload;
 Cvar  *cl_conXOffset;
-Cvar  *cl_inGameVideo;
 
 Cvar  *cl_serverStatusResendTime;
 Cvar  *cl_trn;
@@ -3157,10 +3156,6 @@ void CL_RefTagFree( void ) {
 	return;
 }
 
-int CL_ScaledMilliseconds( void ) {
-	return Sys_Milliseconds() * com_timescale->value;
-}
-
 /*
 ============
 CL_InitRef
@@ -3297,6 +3292,7 @@ void CL_Init( void ) {
 
 	CL_InitInput();
 
+	CL_SharedInit();
 	//
 	// register our variables
 	//
@@ -3356,7 +3352,6 @@ void CL_Init( void ) {
 	// done
 
 	cl_conXOffset = Cvar_Get( "cl_conXOffset", "0", 0 );
-	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 

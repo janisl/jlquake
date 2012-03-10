@@ -523,6 +523,7 @@ struct clientStatic_t
 extern clientActive_t cl;
 extern clientConnection_t clc;
 extern clientStatic_t cls;
+#endif
 
 extern int bitcounts[32];
 
@@ -536,12 +537,15 @@ extern Cvar* clqh_color;
 extern byte* playerTranslation;
 extern int color_offsets[MAX_PLAYER_CLASS];
 
+#if 0
 extern Cvar* chase_active;
+#endif
 
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
+#if 0
 float CLQH_LerpPoint();
 
 void Chase_Init();

@@ -177,8 +177,6 @@ static int CIN_HandleForVideo( void ) {
 }
 
 
-extern int CL_ScaledMilliseconds( void );
-
 //-----------------------------------------------------------------------------
 // RllSetupTable
 //

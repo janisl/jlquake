@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // client.h -- primary header for client
 
 #include "../game/q_shared.h"
+#include "../../wolfclient/client.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "../ui/ui_public.h"
@@ -370,7 +371,6 @@ extern Cvar  *cl_activeAction;
 
 extern Cvar  *cl_allowDownload;
 extern Cvar  *cl_conXOffset;
-extern Cvar  *cl_inGameVideo;
 
 extern Cvar  *cl_missionStats;
 extern Cvar  *cl_waitForFire;
