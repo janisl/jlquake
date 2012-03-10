@@ -113,12 +113,6 @@
     <ClCompile Include="qcommon\vm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\vm_interpreted.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\vm_x86.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_eh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -126,9 +120,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win32\win_net.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_shared.cpp">
@@ -148,9 +139,6 @@
     </ClCompile>
     <ClCompile Include="qcommon\dl_main_stubs.cpp">
       <Filter>download</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\vm_none.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -212,9 +200,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui\ui_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\vm_local.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\win_local.h">

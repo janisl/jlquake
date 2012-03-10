@@ -57,8 +57,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlet", "source\enemy_territ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jletded", "source\enemy_territory\jletded.vcxproj", "{E3B59B92-20E3-485F-BE30-B15E2FAC5E3C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfcore", "source\wolfcore\wolfcore.vcxproj", "{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -291,14 +289,6 @@ Global
 		{E3B59B92-20E3-485F-BE30-B15E2FAC5E3C}.Release|Win32.Build.0 = Release|Win32
 		{E3B59B92-20E3-485F-BE30-B15E2FAC5E3C}.Release|x64.ActiveCfg = Release|x64
 		{E3B59B92-20E3-485F-BE30-B15E2FAC5E3C}.Release|x64.Build.0 = Release|x64
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Debug|Win32.Build.0 = Debug|Win32
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Debug|x64.ActiveCfg = Debug|x64
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Debug|x64.Build.0 = Debug|x64
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Release|Win32.ActiveCfg = Release|Win32
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Release|Win32.Build.0 = Release|Win32
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Release|x64.ActiveCfg = Release|x64
-		{8C1F8633-DC45-4EFE-AF29-32F25F35B8CE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

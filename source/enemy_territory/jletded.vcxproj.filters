@@ -74,28 +74,16 @@
     <ClCompile Include="qcommon\vm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\vm_interpreted.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\vm_x86.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_eh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_net.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_wndproc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\vm_none.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -122,12 +110,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\surfaceflags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\vm_local.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\win_local.h">

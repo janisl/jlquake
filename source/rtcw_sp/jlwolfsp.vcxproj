@@ -109,10 +109,6 @@
     <ClCompile Include="client\snd_mem.cpp" />
     <ClCompile Include="client\snd_mix.cpp" />
     <ClCompile Include="client\snd_wavelet.cpp" />
-    <ClCompile Include="qcommon\vm_none.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="server\sv_bot.cpp" />
     <ClCompile Include="server\sv_ccmds.cpp" />
     <ClCompile Include="server\sv_client.cpp" />
@@ -123,14 +119,8 @@
     <ClCompile Include="server\sv_snapshot.cpp" />
     <ClCompile Include="server\sv_world.cpp" />
     <ClCompile Include="qcommon\vm.cpp" />
-    <ClCompile Include="qcommon\vm_interpreted.cpp" />
-    <ClCompile Include="qcommon\vm_x86.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="win32\win_input.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
-    <ClCompile Include="win32\win_net.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
     <ClCompile Include="win32\win_snd.cpp" />
     <ClCompile Include="win32\win_wndproc.cpp" />
@@ -156,12 +146,11 @@
     <ClInclude Include="renderer\tr_public.h" />
     <ClInclude Include="cgame\tr_types.h" />
     <ClInclude Include="ui\ui_public.h" />
-    <ClInclude Include="qcommon\vm_local.h" />
     <ClInclude Include="win32\win_local.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\wolfcore\wolfcore.vcxproj">
-      <Project>{8c1f8633-dc45-4efe-af29-32f25f35b8ce}</Project>
+    <ProjectReference Include="..\core\core.vcxproj">
+      <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
     </ProjectReference>
     <ProjectReference Include="botlib\botlib-wolfsp.vcxproj">
       <Project>{86691fdd-e0c6-4d71-9ffd-e0f30f19aa3e}</Project>
