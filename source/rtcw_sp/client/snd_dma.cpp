@@ -171,6 +171,10 @@ void S_Init( void ) {
 	// Rafael
 	s_nocompressed = Cvar_Get( "s_nocompressed", "0", CVAR_INIT );
 
+	// fretn
+	s_bits = Cvar_Get( "s_bits", "16", CVAR_LATCH2 | CVAR_ARCHIVE );
+	s_channels_cv = Cvar_Get( "s_channels", "2", CVAR_LATCH2 | CVAR_ARCHIVE );
+
 	cv = Cvar_Get( "s_initsound", "1", 0 );
 	if ( !cv->integer ) {
 		Com_Printf( "not initializing.\n" );
