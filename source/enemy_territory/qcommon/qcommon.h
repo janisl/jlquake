@@ -546,16 +546,6 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-typedef enum {
-	AXIS_SIDE,
-	AXIS_FORWARD,
-	AXIS_UP,
-	AXIS_ROLL,
-	AXIS_YAW,
-	AXIS_PITCH,
-	MAX_JOYSTICK_AXIS
-} joystickAxis_t;
-
 sysEvent_t  Sys_GetEvent( void );
 
 void    Sys_Init( void );

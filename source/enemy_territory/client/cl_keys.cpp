@@ -53,11 +53,6 @@ qboolean anykeydown;
 qkey_t keys[MAX_KEYS];
 
 
-typedef struct {
-	char    *name;
-	int keynum;
-} keyname_t;
-
 qboolean UI_checkKeyExec( int key );        // NERVE - SMF
 qboolean CL_CGameCheckKeyExec( int key );
 
@@ -1247,7 +1242,7 @@ Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) 
 given keynum.
 ===================
 */
-char *Key_KeynumToString( int keynum, qboolean bTranslate ) {
+const char *Key_KeynumToString( int keynum, qboolean bTranslate ) {
 	keyname_t   *kn;
 	static char tinystr[5];
 	int i, j;
