@@ -178,4 +178,4 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})
 set_target_properties(jlwolfmpded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O -DDEDICATED -DC_ONLY")
-target_link_libraries(jlwolfmpded botlib-wolfmp ${WOLF_SERVERS_LIBS} m)
+target_link_libraries(jlwolfmpded botlib-wolfmp ${SERVERS_LIBS} m)

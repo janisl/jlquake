@@ -186,4 +186,4 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jletded ${ETDED_FILES})
 set_target_properties(jletded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O -DDEDICATED")
-target_link_libraries(jletded botlib-et ${WOLF_SERVERS_LIBS} m)
+target_link_libraries(jletded botlib-et ${SERVERS_LIBS} m)

@@ -28,7 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 //need to rewrite this
 
-#include "../../wolfcore/core.h"
+#include "../../core/core.h"
 #include "util_str.h"
 #include <ctype.h>
 

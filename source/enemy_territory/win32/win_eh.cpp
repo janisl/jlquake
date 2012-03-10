@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "../../wolfcore/core.h"
+#include "../../core/core.h"
 #include <windows.h>
 #include <eh.h>
 
