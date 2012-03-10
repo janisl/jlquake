@@ -73,22 +73,12 @@ channel_t s_channels[MAX_CHANNELS];
 channel_t loop_channels[MAX_CHANNELS];
 int numLoopChannels;
 
-dma_t dma;
-
 static int listener_number;
 static vec3_t listener_origin;
 static vec3_t listener_axis[3];
 
-int s_soundtime;                // sample PAIRS
-int s_paintedtime;              // sample PAIRS
-
-// MAX_SFX may be larger than MAX_SOUNDS because
-// of custom player sounds
-#define     MAX_SFX         4096
 sfx_t s_knownSfx[MAX_SFX];
 
-Cvar      *s_testsound;
-Cvar      *s_khz;
 Cvar      *s_show;
 Cvar      *s_mixahead;
 Cvar      *s_mixPreStep;
@@ -104,10 +94,6 @@ Cvar      *s_debugMusic;  //----(SA)	added
 
 // Rafael
 Cvar      *s_nocompressed;
-
-// fretn
-Cvar      *s_bits;
-Cvar      *s_numchannels;
 
 // for streaming sounds
 int s_rawend[MAX_STREAMING_SOUNDS];
@@ -182,7 +168,7 @@ void S_Init( void ) {
 
 	// fretn
 	s_bits = Cvar_Get( "s_bits", "16", CVAR_LATCH2 | CVAR_ARCHIVE );
-	s_numchannels = Cvar_Get( "s_channels", "2", CVAR_LATCH2 | CVAR_ARCHIVE );
+	s_channels_cv = Cvar_Get( "s_channels", "2", CVAR_LATCH2 | CVAR_ARCHIVE );
 
 
 	cv = Cvar_Get( "s_initsound", "1", 0 );

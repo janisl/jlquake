@@ -98,26 +98,17 @@ static int s_soundStarted;
 static qboolean s_soundMuted;
 static qboolean s_soundPainted;
 static int s_clearSoundBuffer = 0;
-dma_t dma;
 
 static int listener_number;
 static vec3_t listener_origin;
 static vec3_t listener_axis[3];
 
-int s_soundtime;                // sample PAIRS
-int s_paintedtime;              // sample PAIRS
-
-// MAX_SFX may be larger than MAX_SOUNDS because
-// of custom player sounds
-#define     MAX_SFX         4096
 sfx_t s_knownSfx[MAX_SFX];
 int s_numSfx = 0;
 
 #define     LOOP_HASH       128
 static sfx_t       *sfxHash[LOOP_HASH];
 
-Cvar      *s_testsound;
-Cvar      *s_khz;
 Cvar      *s_show;
 Cvar      *s_mixahead;
 Cvar      *s_mixPreStep;

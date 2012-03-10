@@ -17,7 +17,6 @@
 #ifndef _SND_LOCAL_H
 #define _SND_LOCAL_H
 
-#if 0
 #define WAV_FORMAT_PCM			1
 
 //#define MAX_CHANNELS			96
@@ -35,6 +34,7 @@ struct portable_samplepair_t
 	int			right;
 };
 
+#if 0
 struct sfx_t
 {
 	char			Name[MAX_QPATH];
@@ -48,6 +48,7 @@ struct sfx_t
 	int				LastTimeUsed;
 	sfx_t*			HashNext;
 };
+#endif
 
 struct dma_t
 {
@@ -60,6 +61,7 @@ struct dma_t
 	byte		*buffer;
 };
 
+#if 0
 struct channel_t
 {
 	//	First part is also used to store ponter to next free channel, so
@@ -124,15 +126,18 @@ void SNDDMA_Shutdown();
 int SNDDMA_GetDMAPos();
 void SNDDMA_BeginPainting();
 void SNDDMA_Submit();
+#endif
 
 extern dma_t					dma;
 
+#if 0
 extern "C"
 {
 extern int*						snd_p;
 extern int						snd_linear_count;
 extern short*					snd_out;
 }
+#endif
 
 extern int						s_soundtime;
 extern int   					s_paintedtime;
@@ -142,6 +147,7 @@ extern Cvar*					s_khz;
 extern Cvar*					s_bits;
 extern Cvar*					s_channels_cv;
 
+#if 0
 extern channel_t				s_channels[MAX_CHANNELS];
 extern channel_t				loop_channels[MAX_CHANNELS];
 extern int						numLoopChannels;

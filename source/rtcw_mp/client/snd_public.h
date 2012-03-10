@@ -96,11 +96,6 @@ void S_DisplayFreeMemory( void );
 int S_GetVoiceAmplitude( int entityNum );
 
 
-typedef struct {
-	int left;           // the final values will be clamped to +/- 0x00ffff00 and shifted down
-	int right;
-} portable_samplepair_t;
-
 #endif  // __snd_public_h__
 
 #ifdef DOOMSOUND    ///// (SA) DOOMSOUND

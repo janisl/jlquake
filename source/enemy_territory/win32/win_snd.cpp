@@ -186,7 +186,7 @@ int SNDDMA_InitDS() {
 	Com_DPrintf( "ok\n" );
 
 	// create the secondary buffer we'll actually work with
-	dma.channels = (int)s_numchannels->value;
+	dma.channels = (int)s_channels_cv->value;
 	dma.samplebits = (int)s_bits->value;
 
 	if ( s_khz->integer == 44 ) {

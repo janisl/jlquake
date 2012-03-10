@@ -65,6 +65,7 @@ struct loopSound_t
 
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
+#endif
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -78,15 +79,12 @@ dma_t				dma;
 
 int					s_soundtime;	// sample PAIRS
 int   				s_paintedtime; 	// sample PAIRS
-#endif
 
 Cvar*				s_volume;
-#if 0
 Cvar*				s_testsound;
 Cvar*				s_khz;
 Cvar*				s_bits;
 Cvar*				s_channels_cv;
-#endif
 Cvar*				bgmvolume;
 Cvar*				bgmtype;
 

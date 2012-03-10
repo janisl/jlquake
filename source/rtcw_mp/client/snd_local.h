@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "../../wolfclient/client.h"
+#include "../../wolfclient/sound/local.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
@@ -65,16 +66,6 @@ typedef struct sfx_s {
 	int lastTimeUsed;
 	struct sfx_s    *next;
 } sfx_t;
-
-typedef struct {
-	int channels;
-	int samples;                        // mono samples in buffer
-	int submission_chunk;               // don't mix less than this #
-	int samplebits;
-	int speed;
-	int samplepos;
-	byte        *buffer;
-} dma_t;
 
 #define START_SAMPLE_IMMEDIATE  0x7fffffff
 
@@ -113,9 +104,6 @@ typedef struct
 } channel_t;
 
 
-#define WAV_FORMAT_PCM      1
-
-
 typedef struct {
 	int format;
 	int rate;
@@ -149,21 +137,13 @@ void    SNDDMA_Submit( void );
 
 //====================================================================
 
-#ifdef __MACOS__
-#define MAX_CHANNELS 64
-#else
-#define MAX_CHANNELS 96
-#endif
-
 extern channel_t s_channels[MAX_CHANNELS];
 extern channel_t loop_channels[MAX_CHANNELS];
 extern int numLoopChannels;
 
-extern int s_paintedtime;
 extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
-extern dma_t dma;
 
 #ifdef TALKANIM
 extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WM];
@@ -186,7 +166,6 @@ typedef struct {
 #else
 #define MAX_STREAMING_SOUNDS    24  // need to keep it low, or the rawsamples will get too big
 #endif
-#define MAX_RAW_SAMPLES         16384
 
 extern streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
 extern int s_rawend[MAX_STREAMING_SOUNDS];
@@ -195,12 +174,10 @@ extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 
 extern Cvar   *s_nosound;
-extern Cvar   *s_khz;
 extern Cvar   *s_show;
 extern Cvar   *s_mixahead;
 extern Cvar   *s_mute;
 
-extern Cvar   *s_testsound;
 extern Cvar   *s_separation;
 
 qboolean S_LoadSound( sfx_t *sfx );

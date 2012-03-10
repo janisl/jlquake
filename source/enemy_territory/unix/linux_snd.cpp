@@ -154,7 +154,7 @@ qboolean SNDDMA_Init( void ) {
 		dma.speed = tryrates[i];
 	}
 
-	dma.channels = (int)s_numchannels->value;
+	dma.channels = (int)s_channels_cv->value;
 	if ( dma.channels < 1 || dma.channels > 2 ) {
 		dma.channels = 2;
 	}

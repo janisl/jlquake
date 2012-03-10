@@ -75,23 +75,13 @@ channel_t s_channels[MAX_CHANNELS];
 channel_t loop_channels[MAX_CHANNELS];
 int numLoopChannels;
 
-dma_t dma;
-
 static int listener_number;
 static vec3_t listener_origin;
 static vec3_t listener_axis[3];
 
-int s_soundtime;                // sample PAIRS
-int s_paintedtime;              // sample PAIRS
-
-// MAX_SFX may be larger than MAX_SOUNDS because
-// of custom player sounds
-#define     MAX_SFX         4096
 sfx_t s_knownSfx[MAX_SFX];
 
 
-Cvar      *s_testsound;
-Cvar      *s_khz;
 Cvar      *s_show;
 Cvar      *s_mixahead;
 Cvar      *s_mixPreStep;
