@@ -97,7 +97,6 @@ set (ET_FILES
 
 	unix/linux_glimp.cpp
 	unix/linux_qgl.cpp
-	unix/linux_snd.cpp
 	unix/linux_joystick.cpp
 )
 

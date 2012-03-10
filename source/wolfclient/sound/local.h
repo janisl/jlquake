@@ -117,6 +117,7 @@ void S_IssuePlaysound(playsound_t* ps);
 bool S_LoadSound(sfx_t* sfx);
 
 void S_PaintChannels(int endtime);
+#endif
 
 // initializes cycling through a DMA buffer and returns information on it
 bool SNDDMA_Init();
@@ -126,7 +127,6 @@ void SNDDMA_Shutdown();
 int SNDDMA_GetDMAPos();
 void SNDDMA_BeginPainting();
 void SNDDMA_Submit();
-#endif
 
 extern dma_t					dma;
 
@@ -159,5 +159,7 @@ extern portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 extern sfx_t					s_knownSfx[MAX_SFX];
 #endif
+
+extern bool s_use_custom_memset;
 
 #endif

@@ -32,23 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../client/client.h"
 
-qboolean SNDDMA_Init( void ) {
-	return qfalse;
-}
-
-int SNDDMA_GetDMAPos( void ) {
-	return 0;
-}
-
-void SNDDMA_Shutdown( void ) {
-}
-
-void SNDDMA_BeginPainting( void ) {
-}
-
-void SNDDMA_Submit( void ) {
-}
-
 // bk001119 - added boolean flag, match client/snd_public.h
 sfxHandle_t S_RegisterSound( const char *name, qboolean compressed ) {
 	return 0;

@@ -104,9 +104,11 @@ sfx_t				s_knownSfx[MAX_SFX];
 
 static int			s_soundStarted;
 static bool			s_soundMuted;
+#endif
 
-static bool			s_use_custom_memset = false;
+bool			s_use_custom_memset = false;
 
+#if 0
 static Cvar*		s_show;
 static Cvar*		s_mixahead;
 static Cvar*		s_mixPreStep;
@@ -143,6 +145,7 @@ static loopSound_t	loopSounds[MAX_LOOPSOUNDS];
 static vec_t		sound_nominal_clip_dist=1000.0;
 
 static int			s_beginofs;
+#endif
 
 // CODE --------------------------------------------------------------------
 
@@ -153,7 +156,8 @@ static int			s_beginofs;
 //==========================================================================
 
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=371 
-static void Snd_Memset(void* dest, const int val, const size_t count)
+//static 
+void Snd_Memset(void* dest, const int val, const size_t count)
 {
 	if (!s_use_custom_memset)
 	{
@@ -174,6 +178,7 @@ static void Snd_Memset(void* dest, const int val, const size_t count)
 //
 //==========================================================================
 
+#if 0
 static void S_ChannelFree(channel_t* v)
 {
 	v->sfx = NULL;

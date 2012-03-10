@@ -152,4 +152,6 @@ extern portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 extern sfx_t					s_knownSfx[MAX_SFX];
 
+extern bool s_use_custom_memset;
+
 #endif

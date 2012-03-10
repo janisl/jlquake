@@ -243,19 +243,29 @@ bool SNDDMA_Init()
 	{
 		dma.buffer = (byte*)mmap(NULL, info.fragstotal * info.fragsize,
 			PROT_WRITE | PROT_READ, MAP_FILE | MAP_SHARED, audio_fd, 0);
+		// LordHavoc MAP_FAILED is a bad value to have outside init code
+		if (dma.buffer == MAP_FAILED)
+		{
+			dma.buffer = NULL;
+		}
 	}
 
-	if (dma.buffer == MAP_FAILED)
+	if (!dma.buffer)
 	{
 		Log::write("Could not mmap dma buffer PROT_WRITE|PROT_READ\n");
 		Log::write("trying mmap PROT_WRITE (with associated better compatibility / less performance code)\n");
 		dma.buffer = (byte*)mmap(NULL, info.fragstotal * info.fragsize,
 			PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0);
+		// LordHavoc MAP_FAILED is a bad value to have outside init code
+		if (dma.buffer == MAP_FAILED)
+		{
+			dma.buffer = NULL;
+		}
 		// NOTE TTimo could add a variable to force using regular memset on systems that are known to be safe
 		s_use_custom_memset = true;
 	}
 
-	if (dma.buffer == MAP_FAILED)
+	if (!dma.buffer)
 	{
 		perror(snddevice->string);
 		Log::write("Could not mmap %s\n", snddevice->string);

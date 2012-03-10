@@ -102,7 +102,7 @@ sfx_t				s_knownSfx[MAX_SFX];
 static int			s_soundStarted;
 static bool			s_soundMuted;
 
-static bool			s_use_custom_memset = false;
+bool			s_use_custom_memset = false;
 
 static Cvar*		s_show;
 static Cvar*		s_mixahead;
