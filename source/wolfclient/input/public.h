@@ -50,6 +50,6 @@ void Sys_SendKeyEvents();
 
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;
+#endif
 
 extern keyname_t keynames[];
-#endif

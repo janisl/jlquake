@@ -1,4 +1,5 @@
 set(WOLFCLIENT_FILES
+	../client/input/keys.cpp
 	client_main.cpp
 )
 
