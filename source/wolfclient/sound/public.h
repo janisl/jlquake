@@ -70,6 +70,7 @@ void MIDI_Play(char *Name);
 void MIDI_Stop();
 void MIDI_Pause(int mode);
 void MIDI_Loop(int NewValue);
+#endif
 
 int CDAudio_Init();
 void CDAudio_Play(int track, qboolean looping);
@@ -79,7 +80,6 @@ void CDAudio_Resume();
 void CDAudio_Shutdown();
 void CDAudio_Update();
 void CDAudio_Activate(qboolean active);
-#endif
 
 extern	Cvar* s_volume;
 extern	Cvar* bgmvolume;
