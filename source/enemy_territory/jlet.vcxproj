@@ -184,6 +184,9 @@
     <ProjectReference Include="..\core\core.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\wolfclient\wolfclient.vcxproj">
+      <Project>{ebc63dde-a074-48e5-8815-feac614b04f4}</Project>
+    </ProjectReference>
     <ProjectReference Include="botlib\botlib-et.vcxproj">
       <Project>{efa65954-05a8-43c4-b4fe-fafe8e678ab7}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

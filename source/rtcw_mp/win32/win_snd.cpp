@@ -335,7 +335,7 @@ Initialize direct sound
 Returns false if failed
 ==================
 */
-int SNDDMA_Init( void ) {
+bool SNDDMA_Init( void ) {
 
 	memset( (void *)&dma, 0, sizeof( dma ) );
 	dsound_init = 0;
