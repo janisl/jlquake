@@ -655,7 +655,7 @@ static void GetClipboardData( char *buf, int buflen ) {
 
 	String::NCpyZ( buf, cbd, buflen );
 
-	Z_Free( cbd );
+	delete[] cbd;
 }
 
 /*
