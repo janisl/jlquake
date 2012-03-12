@@ -934,11 +934,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return re.LerpTag( (orientation_t*)VMA( 1 ), (refEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 
 	case UI_S_REGISTERSOUND:
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-		return S_RegisterSound( VMA( 1 ) );
-#else
 		return S_RegisterSound( (char*)VMA( 1 ), qfalse );
-#endif  ///// (SA) DOOMSOUND
 
 	case UI_S_STARTLOCALSOUND:
 		S_StartLocalSound( args[1], args[2] );

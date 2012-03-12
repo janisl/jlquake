@@ -201,7 +201,6 @@ DIRECT INPUT MOUSE CONTROL
 */
 
 
-#ifndef DOOMSOUND   ///// (SA) DOOMSOUND
 #undef DEFINE_GUID
 
 #define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
@@ -219,8 +218,6 @@ DEFINE_GUID( GUID_ZAxis,   0xA36D02E2,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x5
 
 HRESULT ( WINAPI * pDirectInputCreate )( HINSTANCE hinst, DWORD dwVersion,
 										 LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter );
-
-#endif ///// (SA) DOOMSOUND
 
 static HINSTANCE hInstDI;
 

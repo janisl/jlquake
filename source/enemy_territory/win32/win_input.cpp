@@ -205,7 +205,6 @@ DIRECT INPUT MOUSE CONTROL
 */
 
 
-#ifndef DOOMSOUND   ///// (SA) DOOMSOUND
 #undef DEFINE_GUID
 
 #define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
@@ -224,8 +223,6 @@ static unsigned int mstate_di;
 
 HRESULT ( WINAPI * pDirectInputCreate )( HINSTANCE hinst, DWORD dwVersion,
 										 LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter );
-
-#endif ///// (SA) DOOMSOUND
 
 typedef struct MYDATA {
 	LONG lX;                    // X axis goes here

@@ -27,12 +27,6 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif  ///// (SA) DOOMSOUND
-
 void S_Init( void );
 void S_Shutdown( void );
 void S_UpdateThread( void );
@@ -67,9 +61,6 @@ void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocit
 void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfx );
 void S_StopLoopingSound( int entityNum );
 
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-void S_ClearSoundBuffer( void );
-#endif ///// (SA) DOOMSOUND
 // recompute the reletive volumes for all running sounds
 // reletive to the given entityNum / orientation
 void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater );
@@ -86,20 +77,9 @@ void S_BeginRegistration( void );
 // RegisterSound will allways return a valid sample, even if it
 // has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-sfxHandle_t S_RegisterSound( const char *sample );
-#else
 sfxHandle_t S_RegisterSound( const char *sample, qboolean compressed );
-#endif ///// (SA) DOOMSOUND
 
 void S_DisplayFreeMemory( void );
 
 //
 int S_GetVoiceAmplitude( int entityNum );
-
-
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-#ifdef __cplusplus
-}
-#endif
-#endif  ///// (SA) DOOMSOUND

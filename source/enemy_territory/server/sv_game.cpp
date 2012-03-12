@@ -519,11 +519,7 @@ qintptr SV_GameSystemCalls( qintptr* args ) {
 
 		// START	xkan, 10/28/2002
 	case G_REGISTERSOUND:
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-		return S_RegisterSound( VMA( 1 ) );
-#else
 		return S_RegisterSound( (char*)VMA( 1 ), args[2] );
-#endif  ///// (SA) DOOMSOUND
 	case G_GET_SOUND_LENGTH:
 		return S_GetSoundLength( args[1] );
 		// END		xkan, 10/28/2002

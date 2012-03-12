@@ -414,9 +414,7 @@ LRESULT WINAPI MainWndProc(
 		fMinimized = (BOOL) HIWORD( wParam );
 
 		VID_AppActivate( fActive != WA_INACTIVE, fMinimized );
-#ifndef DOOMSOUND   ///// (SA) DOOMSOUND
 		SNDDMA_Activate();
-#endif  ///// (SA) DOOMSOUND
 	}
 	break;
 

@@ -37,26 +37,15 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning( pop )
 #endif
 
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-#include "../mssdk/include/dinput.h"
-#include "../mssdk/include/dsound.h"
-#else
 #ifndef __GNUC__
 #include <dinput.h>
 #include <dsound.h>
 #else
 #include <directx.h>
 #endif
-#endif  ///// (SA) DOOMSOUND
 
 #include <winsock.h>
 #include <wsipx.h>
-
-#ifdef DOOMSOUND    ///// (SA)DOOMSOUND
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif  ///// (SA) DOOMSOUND
 
 void    IN_MouseEvent( int mstate );
 
@@ -83,12 +72,6 @@ LRESULT WINAPI MainWndProc(
 
 void SNDDMA_Activate( void );
 int  SNDDMA_InitDS();
-
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-#ifdef __cplusplus
-}
-#endif
-#endif  ///// (SA) DOOMSOUND
 
 // ydnar: mousewheel stuff
 #ifndef WM_MOUSEWHEEL

@@ -39,22 +39,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #define DIRECTINPUT_VERSION 0x0800
 
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-#include "../mssdk/include/dinput.h"
-#include "../mssdk/include/dsound.h"
-#else
 #include <dinput.h>
 #include <dsound.h>
-#endif  ///// (SA) DOOMSOUND
 
 #include <winsock.h>
 #include <wsipx.h>
-
-#ifdef DOOMSOUND    ///// (SA)DOOMSOUND
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif  ///// (SA) DOOMSOUND
 
 void    IN_MouseEvent( int mstate );
 
@@ -81,10 +70,3 @@ LRESULT WINAPI MainWndProc(
 
 void SNDDMA_Activate( void );
 int  SNDDMA_InitDS();
-
-#ifdef DOOMSOUND    ///// (SA) DOOMSOUND
-#ifdef __cplusplus
-}
-#endif
-#endif  ///// (SA) DOOMSOUND
-
