@@ -125,9 +125,6 @@
     <ClCompile Include="win32\win_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_snd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_wndproc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

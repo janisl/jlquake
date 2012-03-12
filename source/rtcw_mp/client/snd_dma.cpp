@@ -118,7 +118,6 @@ Cvar      *s_doppler;
 Cvar      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
 Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 Cvar      *cl_cacheGathering; // Ridah
-Cvar      *s_wavonly;
 
 #define MAX_LOOP_SOUNDS     128
 static int numLoopSounds;
@@ -193,7 +192,6 @@ void S_Init( void ) {
 	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 	s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
 	s_defaultsound = Cvar_Get( "s_defaultsound", "0", CVAR_ARCHIVE );
-	s_wavonly = Cvar_Get( "s_wavonly", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	// Ridah
 	cl_cacheGathering = Cvar_Get( "cl_cacheGathering", "0", 0 );
 

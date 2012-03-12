@@ -67,6 +67,3 @@ LRESULT WINAPI MainWndProc(
 	UINT uMsg,
 	WPARAM wParam,
 	LPARAM lParam );
-
-void SNDDMA_Activate( void );
-int  SNDDMA_InitDS();

@@ -139,7 +139,6 @@
     <ClCompile Include="win32\win_input.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
-    <ClCompile Include="win32\win_snd.cpp" />
     <ClCompile Include="win32\win_wndproc.cpp" />
     <ClCompile Include="qcommon\dl_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

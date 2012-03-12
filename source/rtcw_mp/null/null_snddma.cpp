@@ -42,7 +42,3 @@ void S_StartLocalSound( sfxHandle_t sfxHandle, int channelNum ) {
 
 void S_ClearSoundBuffer( void ) {
 }
-
-// TTimo: added for win32 dedicated
-void SNDDMA_Activate( void ) {
-}

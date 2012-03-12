@@ -43,10 +43,6 @@ void S_StartLocalSound( sfxHandle_t sfxHandle, int channelNum, int volume ) {
 void S_ClearSoundBuffer( qboolean killStreaming ) {
 }
 
-// TTimo: added for win32 dedicated
-void SNDDMA_Activate( void ) {
-}
-
 // show_bug.cgi?id=574
 int S_GetSoundLength( sfxHandle_t sfxHandle ) {
 	Com_Error( ERR_DROP, "null_snddma.c: S_GetSoundLength\n" );
