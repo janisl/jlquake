@@ -40,21 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include <io.h>
 #include <conio.h>
 
-#undef DEFINE_GUID
-
-#define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
-	EXTERN_C const GUID name \
-	= { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
-
-// DirectSound Component GUID {47D4D946-62E8-11CF-93BC-444553540000}
-DEFINE_GUID( CLSID_DirectSound, 0x47d4d946, 0x62e8, 0x11cf, 0x93, 0xbc, 0x44, 0x45, 0x53, 0x54, 0x0, 0x0 );
-
-// DirectSound 8.0 Component GUID {3901CC3F-84B5-4FA4-BA35-AA8172B8A09B}
-DEFINE_GUID( CLSID_DirectSound8, 0x3901cc3f, 0x84b5, 0x4fa4, 0xba, 0x35, 0xaa, 0x81, 0x72, 0xb8, 0xa0, 0x9b );
-
-DEFINE_GUID( IID_IDirectSound8, 0xC50A7E93, 0xF395, 0x4834, 0x9E, 0xF6, 0x7F, 0xA9, 0x9D, 0xE5, 0x09, 0x66 );
-DEFINE_GUID( IID_IDirectSound, 0x279AFA83, 0x4981, 0x11CE, 0xA5, 0x21, 0x00, 0x20, 0xAF, 0x0B, 0xE5, 0x60 );
-
 #define CD_BASEDIR  "et"
 #define CD_EXE      "et.exe"
 #define CD_BASEDIR_LINUX    "bin\\x86\\glibc-2.1"

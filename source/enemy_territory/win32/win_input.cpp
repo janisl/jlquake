@@ -205,17 +205,6 @@ DIRECT INPUT MOUSE CONTROL
 */
 
 
-#undef DEFINE_GUID
-
-#define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
-	EXTERN_C const GUID name \
-	= { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
-
-DEFINE_GUID( GUID_SysMouse,   0x6F1D2B60,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-DEFINE_GUID( GUID_XAxis,   0xA36D02E0,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-DEFINE_GUID( GUID_YAxis,   0xA36D02E1,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-DEFINE_GUID( GUID_ZAxis,   0xA36D02E2,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-
 static unsigned int mstate_di;
 
 #define DINPUT_BUFFERSIZE           16
@@ -357,14 +346,6 @@ void IN_DeactivateMouse( void ) {
 IN_InitDInput
 ===========
 */
-
-#undef DEFINE_GUID
-
-#define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
-	EXTERN_C const GUID name \
-	= { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
-
-DEFINE_GUID( IID_IDirectInput8A,     0xBF798030,0x483A,0x4DA2,0xAA,0x99,0x5D,0x64,0xED,0x36,0x97,0x00 );
 
 qboolean IN_InitDInput( void ) {
 	HRESULT hResult;
