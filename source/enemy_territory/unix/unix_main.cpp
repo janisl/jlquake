@@ -791,10 +791,6 @@ qboolean Sys_CheckCD( void ) {
 void Sys_AppActivate( void ) {
 }
 
-char *Sys_GetClipboardData( void ) {
-	return NULL;
-}
-
 void    Sys_ConfigureFPU() { // bk001213 - divide by zero
 #ifdef __linux__
 #ifdef __i386

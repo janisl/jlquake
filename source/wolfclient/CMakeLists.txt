@@ -6,6 +6,7 @@ set(WOLFCLIENT_FILES
 	../client/sound/driver_alsa.cpp
 	sound/main.cpp
 	client_main.cpp
+	../client/system_unix.cpp
 )
 
 add_library(wolfclient STATIC ${WOLFCLIENT_FILES})
