@@ -578,7 +578,6 @@ char    *Sys_GetCurrentUser( void );
 
 void QDECL Sys_Error( const char *error, ... );
 void    Sys_Quit( void );
-char    *Sys_GetClipboardData( void );  // note that this isn't journaled...
 
 void    Sys_SnapVector( float *v );
 

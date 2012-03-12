@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning(disable : 4201)
 #pragma warning( push )
 #endif
-#include "../../core/system_windows.h"
+#include "../../wolfclient/windows_shared.h"
 #if defined ( _MSC_VER ) && ( _MSC_VER >= 1200 )
 #pragma warning( pop )
 #endif
@@ -81,20 +81,6 @@ LRESULT WINAPI MainWndProc(
 
 void SNDDMA_Activate( void );
 int  SNDDMA_InitDS();
-
-typedef struct
-{
-
-	HINSTANCE reflib_library;           // Handle to refresh DLL
-	qboolean reflib_active;
-
-	HWND hWnd;
-	qboolean activeApp;
-	qboolean isMinimized;
-	OSVERSIONINFO osversion;
-} WinVars_t;
-
-extern WinVars_t g_wv;
 
 #ifdef DOOMSOUND    ///// (SA) DOOMSOUND
 #ifdef __cplusplus

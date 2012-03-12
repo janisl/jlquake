@@ -31,6 +31,13 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)input\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)input\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\client\sound\audiocd\windows.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)sound\audiocd\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)sound\audiocd\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)sound\audiocd\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)sound\audiocd\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\client\system_windows.cpp" />
     <ClCompile Include="client_main.cpp" />
     <ClCompile Include="sound\main.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)sound\</ObjectFileName>

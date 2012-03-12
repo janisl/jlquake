@@ -73,7 +73,7 @@ void SNDDMA_Shutdown( void ) {
 		Com_DPrintf( "Destroying DS buffers\n" );
 		if ( pDS ) {
 			Com_DPrintf( "...setting NORMAL coop level\n" );
-			pDS->SetCooperativeLevel( g_wv.hWnd, DSSCL_PRIORITY );
+			pDS->SetCooperativeLevel( GMainWindow, DSSCL_PRIORITY );
 		}
 
 		if ( pDSBuf ) {
@@ -178,7 +178,7 @@ int SNDDMA_InitDS() {
 
 	Com_DPrintf( "...setting DSSCL_PRIORITY coop level: " );
 
-	if ( DS_OK != pDS->SetCooperativeLevel( g_wv.hWnd, DSSCL_PRIORITY ) ) {
+	if ( DS_OK != pDS->SetCooperativeLevel( GMainWindow, DSSCL_PRIORITY ) ) {
 		Com_Printf( "failed\n" );
 		SNDDMA_Shutdown();
 		return qfalse;
@@ -383,7 +383,7 @@ void SNDDMA_Activate( void ) {
 		return;
 	}
 
-	if ( DS_OK != pDS->SetCooperativeLevel( g_wv.hWnd, DSSCL_PRIORITY ) ) {
+	if ( DS_OK != pDS->SetCooperativeLevel( GMainWindow, DSSCL_PRIORITY ) ) {
 		Com_Printf( "sound SetCooperativeLevel failed\n" );
 		SNDDMA_Shutdown();
 	}

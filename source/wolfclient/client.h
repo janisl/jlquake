@@ -552,9 +552,11 @@ float CLQH_LerpPoint();
 
 void Chase_Init();
 void Chase_Update();
+#endif
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 
+#if 0
 float frand();	// 0 to 1
 float crand();	// -1 to 1
 

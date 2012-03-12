@@ -135,7 +135,7 @@ void IN_ActivateWin32Mouse( void ) {
 	width = GetSystemMetrics( SM_CXSCREEN );
 	height = GetSystemMetrics( SM_CYSCREEN );
 
-	GetWindowRect( g_wv.hWnd, &window_rect );
+	GetWindowRect( GMainWindow, &window_rect );
 	if ( window_rect.left < 0 ) {
 		window_rect.left = 0;
 	}
@@ -153,7 +153,7 @@ void IN_ActivateWin32Mouse( void ) {
 
 	SetCursorPos( window_center_x, window_center_y );
 
-	SetCapture( g_wv.hWnd );
+	SetCapture( GMainWindow );
 	// NERVE - SMF - dont do this in developer mode
 	if ( !com_developer->integer ) {
 		ClipCursor( &window_rect );
@@ -413,7 +413,7 @@ qboolean IN_InitDInput( void ) {
 	}
 
 	// set the DirectInput cooperativity level.
-	hResult = IDirectInputDevice_SetCooperativeLevel( g_pMouse, g_wv.hWnd,
+	hResult = IDirectInputDevice_SetCooperativeLevel( g_pMouse, GMainWindow,
 													  DISCL_EXCLUSIVE | DISCL_FOREGROUND );
 
 	if ( FAILED( hResult ) ) {
@@ -642,7 +642,7 @@ void IN_Shutdown( void ) {
 
 		// release our mouse
 		if ( g_pMouse ) {
-			IDirectInputDevice_SetCooperativeLevel( g_pMouse, g_wv.hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND );
+			IDirectInputDevice_SetCooperativeLevel( g_pMouse, GMainWindow, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND );
 			IDirectInputDevice_Release( g_pMouse );
 		}
 

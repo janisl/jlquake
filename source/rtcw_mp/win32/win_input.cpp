@@ -136,7 +136,7 @@ void IN_ActivateWin32Mouse( void ) {
 	width = GetSystemMetrics( SM_CXSCREEN );
 	height = GetSystemMetrics( SM_CYSCREEN );
 
-	GetWindowRect( g_wv.hWnd, &window_rect );
+	GetWindowRect( GMainWindow, &window_rect );
 	if ( window_rect.left < 0 ) {
 		window_rect.left = 0;
 	}
@@ -154,7 +154,7 @@ void IN_ActivateWin32Mouse( void ) {
 
 	SetCursorPos( window_center_x, window_center_y );
 
-	SetCapture( g_wv.hWnd );
+	SetCapture( GMainWindow );
 	// NERVE - SMF - dont do this in developer mode
 	if ( !com_developer->integer ) {
 		ClipCursor( &window_rect );

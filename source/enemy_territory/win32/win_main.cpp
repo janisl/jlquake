@@ -260,34 +260,6 @@ qboolean    Sys_CheckCD( void ) {
 
 
 /*
-================
-Sys_GetClipboardData
-
-================
-*/
-char *Sys_GetClipboardData( void ) {
-	char *data = NULL;
-	char *cliptext;
-
-	if ( OpenClipboard( NULL ) != 0 ) {
-		HANDLE hClipboardData;
-
-		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
-			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) {
-				data = (char*)Z_Malloc( GlobalSize( hClipboardData ) + 1 );
-				String::NCpyZ( data, cliptext, GlobalSize( hClipboardData ) );
-				GlobalUnlock( hClipboardData );
-
-				strtok( data, "\n\r\b" );
-			}
-		}
-		CloseClipboard();
-	}
-	return data;
-}
-
-
-/*
 ========================================================================
 
 LOAD/UNLOAD DLL
@@ -835,30 +807,22 @@ void Sys_Init( void ) {
 	Cmd_AddCommand( "net_restart", Sys_Net_Restart_f );
 	Cmd_AddCommand( "clearviewlog", Sys_ClearViewlog_f );
 
-	g_wv.osversion.dwOSVersionInfoSize = sizeof( g_wv.osversion );
+	OSVERSIONINFO osversion;
+	osversion.dwOSVersionInfoSize = sizeof( osversion );
 
-	if ( !GetVersionEx( &g_wv.osversion ) ) {
+	if ( !GetVersionEx( &osversion ) ) {
 		Sys_Error( "Couldn't get OS info" );
 	}
 
-	if ( g_wv.osversion.dwMajorVersion < 4 ) {
+	if ( osversion.dwMajorVersion < 5 ) {
 		Sys_Error( GAME_VERSION " requires Windows version 4 or greater" );
 	}
-	if ( g_wv.osversion.dwPlatformId == VER_PLATFORM_WIN32s ) {
+	if ( osversion.dwPlatformId == VER_PLATFORM_WIN32s ) {
 		Sys_Error( GAME_VERSION " doesn't run on Win32s" );
 	}
 
-	if ( g_wv.osversion.dwPlatformId == VER_PLATFORM_WIN32_NT ) {
+	if ( osversion.dwPlatformId == VER_PLATFORM_WIN32_NT ) {
 		Cvar_Set( "arch", "winnt" );
-	} else if ( g_wv.osversion.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )   {
-		if ( LOWORD( g_wv.osversion.dwBuildNumber ) >= WIN98_BUILD_NUMBER ) {
-			Cvar_Set( "arch", "win98" );
-		} else if ( LOWORD( g_wv.osversion.dwBuildNumber ) >= OSR2_BUILD_NUMBER )   {
-			Cvar_Set( "arch", "win95 osr2.x" );
-		} else
-		{
-			Cvar_Set( "arch", "win95" );
-		}
 	} else
 	{
 		Cvar_Set( "arch", "unknown Windows variant" );
@@ -988,12 +952,17 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		Sys_ShowConsole( 0, qfalse );
 	}
 
-	SetFocus( g_wv.hWnd );
+#ifndef DEDICATED
+	SetFocus( GMainWindow );
+#endif
 
 	// main game loop
 	while ( 1 ) {
 		// if not running as a game client, sleep a bit
-		if ( g_wv.isMinimized || ( com_dedicated && com_dedicated->integer ) ) {
+#ifndef DEDICATED
+		if ( Minimized || ( com_dedicated && com_dedicated->integer ) )
+#endif
+		{
 			Sleep( 5 );
 		}
 

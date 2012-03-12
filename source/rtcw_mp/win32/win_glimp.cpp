@@ -417,7 +417,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
 	if ( glw_state.hDC == NULL ) {
 		ri.Printf( PRINT_ALL, "...getting DC: " );
 
-		if ( ( glw_state.hDC = GetDC( g_wv.hWnd ) ) == NULL ) {
+		if ( ( glw_state.hDC = GetDC( GMainWindow ) ) == NULL ) {
 			ri.Printf( PRINT_ALL, "failed\n" );
 			return qfalse;
 		}
@@ -469,7 +469,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
 			//
 			if ( ( r_colorbits->integer == glw_state.desktopBitsPixel ) &&
 				 ( stencilbits == 0 ) ) {
-				ReleaseDC( g_wv.hWnd, glw_state.hDC );
+				ReleaseDC( GMainWindow, glw_state.hDC );
 				glw_state.hDC = NULL;
 
 				ri.Printf( PRINT_ALL, "...failed to find an appropriate PIXELFORMAT\n" );
@@ -486,7 +486,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
 			GLW_CreatePFD( &pfd, colorbits, depthbits, 0, r_stereo->integer );
 			if ( GLW_MakeContext( &pfd ) != TRY_PFD_SUCCESS ) {
 				if ( glw_state.hDC ) {
-					ReleaseDC( g_wv.hWnd, glw_state.hDC );
+					ReleaseDC( GMainWindow, glw_state.hDC );
 					glw_state.hDC = NULL;
 				}
 
@@ -557,7 +557,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 	//
 	// create the HWND if one does not already exist
 	//
-	if ( !g_wv.hWnd ) {
+	if ( !GMainWindow ) {
 		//
 		// compute width and height
 		//
@@ -609,7 +609,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 			}
 		}
 
-		g_wv.hWnd = CreateWindowEx(
+		GMainWindow = CreateWindowEx(
 			exstyle,
 			WINDOW_CLASS_NAME,
 			"Wolfenstein",
@@ -620,12 +620,12 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 			global_hInstance,
 			NULL );
 
-		if ( !g_wv.hWnd ) {
+		if ( !GMainWindow ) {
 			ri.Error( ERR_FATAL, "GLW_CreateWindow() - Couldn't create window" );
 		}
 
-		ShowWindow( g_wv.hWnd, SW_SHOW );
-		UpdateWindow( g_wv.hWnd );
+		ShowWindow( GMainWindow, SW_SHOW );
+		UpdateWindow( GMainWindow );
 		ri.Printf( PRINT_ALL, "...created window@%d,%d (%dx%d)\n", x, y, w, h );
 	} else
 	{
@@ -633,15 +633,15 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 	}
 
 	if ( !GLW_InitDriver( drivername, colorbits ) ) {
-		ShowWindow( g_wv.hWnd, SW_HIDE );
-		DestroyWindow( g_wv.hWnd );
-		g_wv.hWnd = NULL;
+		ShowWindow( GMainWindow, SW_HIDE );
+		DestroyWindow( GMainWindow );
+		GMainWindow = NULL;
 
 		return qfalse;
 	}
 
-	SetForegroundWindow( g_wv.hWnd );
-	SetFocus( g_wv.hWnd );
+	SetForegroundWindow( GMainWindow );
+	SetFocus( GMainWindow );
 
 	return qtrue;
 }
@@ -1394,17 +1394,17 @@ void GLimp_Shutdown( void ) {
 
 	// release DC
 	if ( glw_state.hDC ) {
-		retVal = ReleaseDC( g_wv.hWnd, glw_state.hDC ) != 0;
+		retVal = ReleaseDC( GMainWindow, glw_state.hDC ) != 0;
 		ri.Printf( PRINT_ALL, "...releasing DC: %s\n", success[retVal] );
 		glw_state.hDC   = NULL;
 	}
 
 	// destroy window
-	if ( g_wv.hWnd ) {
+	if ( GMainWindow ) {
 		ri.Printf( PRINT_ALL, "...destroying window\n" );
-		ShowWindow( g_wv.hWnd, SW_HIDE );
-		DestroyWindow( g_wv.hWnd );
-		g_wv.hWnd = NULL;
+		ShowWindow( GMainWindow, SW_HIDE );
+		DestroyWindow( GMainWindow );
+		GMainWindow = NULL;
 		glw_state.pixelFormatSet = qfalse;
 	}
 

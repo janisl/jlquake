@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../client/client.h"
 #include "win_local.h"
 
-WinVars_t g_wv;
-
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL ( WM_MOUSELAST + 1 )  // message that will be supported by the OS
 #endif
@@ -88,22 +86,22 @@ VID_AppActivate
 ==================
 */
 static void VID_AppActivate( BOOL fActive, BOOL minimize ) {
-	g_wv.isMinimized = minimize;
+	Minimized = minimize;
 
 	Com_DPrintf( "VID_AppActivate: %i\n", fActive );
 
 	Key_ClearStates();  // FIXME!!!
 
 	// we don't want to act like we're active if we're minimized
-	if ( fActive && !g_wv.isMinimized ) {
-		g_wv.activeApp = qtrue;
+	if ( fActive && !Minimized ) {
+		ActiveApp = qtrue;
 	} else
 	{
-		g_wv.activeApp = qfalse;
+		ActiveApp = qfalse;
 	}
 
 	// minimize/restore mouse-capture on demand
-	if ( !g_wv.activeApp ) {
+	if ( !ActiveApp ) {
 		IN_Activate( qfalse );
 	} else
 	{
@@ -349,7 +347,7 @@ LRESULT WINAPI MainWndProc(
 
 	case WM_CREATE:
 
-		g_wv.hWnd = hWnd;
+		GMainWindow = hWnd;
 
 		vid_xpos = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
 		vid_ypos = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
@@ -380,7 +378,7 @@ LRESULT WINAPI MainWndProc(
 #endif
 	case WM_DESTROY:
 		// let sound and input know about this?
-		g_wv.hWnd = NULL;
+		GMainWindow = NULL;
 		if ( r_fullscreen->integer ) {
 			WIN_EnableAltTab();
 		}
@@ -426,7 +424,7 @@ LRESULT WINAPI MainWndProc(
 			Cvar_SetValue( "vid_ypos", yPos + r.top );
 			vid_xpos->modified = qfalse;
 			vid_ypos->modified = qfalse;
-			if ( g_wv.activeApp ) {
+			if ( ActiveApp ) {
 				IN_Activate( qtrue );
 			}
 		}
