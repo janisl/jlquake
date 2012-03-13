@@ -845,8 +845,8 @@ void S_PaintChannels( int endtime ) {
 
 			sampleOffset = ltime - ch->startSample;
 			count = end - ltime;
-			if ( sampleOffset + count > sc->soundLength ) {
-				count = sc->soundLength - sampleOffset;
+			if ( sampleOffset + count > sc->Length ) {
+				count = sc->Length - sampleOffset;
 			}
 
 			if ( count > 0 ) {
@@ -895,18 +895,18 @@ void S_PaintChannels( int endtime ) {
 
 			ltime = s_paintedtime;
 
-			if ( sc->soundData == NULL || sc->soundLength == 0 ) {
+			if ( sc->soundData == NULL || sc->Length == 0 ) {
 				continue;
 			}
 			// we might have to make two passes if it
 			// is a looping sound effect and the end of
 			// the sample is hit
 			do {
-				sampleOffset = ( ltime % sc->soundLength );
+				sampleOffset = ( ltime % sc->Length );
 
 				count = end - ltime;
-				if ( sampleOffset + count > sc->soundLength ) {
-					count = sc->soundLength - sampleOffset;
+				if ( sampleOffset + count > sc->Length ) {
+					count = sc->Length - sampleOffset;
 				}
 
 				if ( count > 0 ) {

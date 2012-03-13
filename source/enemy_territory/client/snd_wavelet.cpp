@@ -153,7 +153,7 @@ void encodeWavelet( sfx_t *sfx, short *packets ) {
 	}
 	chunk = NULL;
 
-	samples = sfx->soundLength;
+	samples = sfx->Length;
 	while ( samples > 0 ) {
 		size = samples;
 		if ( size > ( SND_CHUNK_SIZE * 2 ) ) {
@@ -230,7 +230,7 @@ void encodeMuLaw( sfx_t *sfx, short *packets ) {
 	}
 
 	chunk = NULL;
-	samples = sfx->soundLength;
+	samples = sfx->Length;
 	grade = 0;
 
 	while ( samples > 0 ) {

@@ -282,8 +282,8 @@ static void ResampleSfx( sfx_t *sfx, int inrate, int inwidth, byte *data, qboole
 
 	stepscale = (float)inrate / dma.speed;  // this is usually 0.5, 1, or 2
 
-	outcount = sfx->soundLength / stepscale;
-	sfx->soundLength = outcount;
+	outcount = sfx->Length / stepscale;
+	sfx->Length = outcount;
 
 	samplefrac = 0;
 	fracstep = stepscale * 256;
@@ -367,35 +367,35 @@ qboolean S_LoadSound( sfx_t *sfx ) {
 	int size;
 
 	// player specific sounds are never directly loaded
-	if ( sfx->soundName[0] == '*' ) {
+	if ( sfx->Name[0] == '*' ) {
 		return qfalse;
 	}
 
 	// load it in
-	size = FS_ReadFile( sfx->soundName, (void **)&data );
+	size = FS_ReadFile( sfx->Name, (void **)&data );
 	if ( !data ) {
 		return qfalse;
 	}
 
-	info = GetWavinfo( sfx->soundName, data, size );
+	info = GetWavinfo( sfx->Name, data, size );
 	if ( info.channels != 1 ) {
-		Com_Printf( "%s is a stereo wav file\n", sfx->soundName );
+		Com_Printf( "%s is a stereo wav file\n", sfx->Name );
 		FS_FreeFile( data );
 		return qfalse;
 	}
 
 	if ( info.width == 1 ) {
-		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is a 8 bit wav file\n", sfx->soundName );
+		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is a 8 bit wav file\n", sfx->Name );
 	}
 
 	if ( info.rate != 22050 ) {
-		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is not a 22kHz wav file\n", sfx->soundName );
+		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is not a 22kHz wav file\n", sfx->Name );
 	}
 
 	samples = (short*)Hunk_AllocateTempMemory( info.samples * sizeof( short ) * 2 );
 
 	// DHM - Nerve
-	sfx->lastTimeUsed = Sys_Milliseconds() + 1;
+	sfx->LastTimeUsed = Sys_Milliseconds() + 1;
 
 	// each of these compression schemes works just fine
 	// but the 16bit quality is much nicer and with a local
@@ -406,13 +406,13 @@ qboolean S_LoadSound( sfx_t *sfx ) {
 
 	if ( s_nocompressed->value ) {
 		sfx->soundCompressionMethod = 0;
-		sfx->soundLength = info.samples;
+		sfx->Length = info.samples;
 		sfx->soundData = NULL;
 		ResampleSfx( sfx, info.rate, info.width, data + info.dataofs, qfalse );
 	} else if ( sfx->soundCompressed == qtrue )     {
 		sfx->soundCompressionMethod = 1;
 		sfx->soundData = NULL;
-		sfx->soundLength = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
+		sfx->Length = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
 		S_AdpcmEncodeSound( sfx, samples );
 #ifdef COMPRESSION
 	} else if ( info.samples > ( SND_CHUNK_SIZE * 16 ) && info.width > 1 ) {
@@ -428,7 +428,7 @@ qboolean S_LoadSound( sfx_t *sfx ) {
 #endif
 	} else {
 		sfx->soundCompressionMethod = 0;
-		sfx->soundLength = info.samples;
+		sfx->Length = info.samples;
 		sfx->soundData = NULL;
 		ResampleSfx( sfx, info.rate, info.width, data + info.dataofs, qfalse );
 	}

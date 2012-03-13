@@ -836,14 +836,14 @@ void S_PaintChannels( int endtime ) {
 			sc = ch->thesfx;
 
 			// (SA) hmm, why was this commented out?
-			if ( !sc->inMemory ) {
+			if ( !sc->InMemory ) {
 				S_memoryLoad( sc );
 			}
 
 			sampleOffset = ltime - ch->startSample;
 			count = end - ltime;
-			if ( sampleOffset + count > sc->soundLength ) {
-				count = sc->soundLength - sampleOffset;
+			if ( sampleOffset + count > sc->Length ) {
+				count = sc->Length - sampleOffset;
 			}
 
 			if ( count > 0 ) {
@@ -857,7 +857,7 @@ void S_PaintChannels( int endtime ) {
 					talktime = ltime + (int)( TALK_FUTURE_SEC * (float)s_khz->integer * 1000 );
 					talkofs = talktime - ch->startSample;
 					talkcnt = 100;
-					if ( talkofs + talkcnt < sc->soundLength ) {
+					if ( talkofs + talkcnt < sc->Length ) {
 						if ( sc->soundCompressionMethod == 1 ) {
 							S_SetVoiceAmplitudeFromADPCM( sc, talkofs, talkcnt, ch->entnum );
 						} else if ( sc->soundCompressionMethod == 2 ) {
@@ -892,18 +892,18 @@ void S_PaintChannels( int endtime ) {
 
 			ltime = s_paintedtime;
 
-			if ( sc->soundData == NULL || sc->soundLength == 0 ) {
+			if ( sc->soundData == NULL || sc->Length == 0 ) {
 				continue;
 			}
 			// we might have to make two passes if it
 			// is a looping sound effect and the end of
 			// the sample is hit
 			do {
-				sampleOffset = ( ltime % sc->soundLength );
+				sampleOffset = ( ltime % sc->Length );
 
 				count = end - ltime;
-				if ( sampleOffset + count > sc->soundLength ) {
-					count = sc->soundLength - sampleOffset;
+				if ( sampleOffset + count > sc->Length ) {
+					count = sc->Length - sampleOffset;
 				}
 
 				if ( count > 0 ) {
@@ -915,9 +915,9 @@ void S_PaintChannels( int endtime ) {
 						// we need to go into the future, since the interpolated behaviour of the facial
 						// animation creates lag in the time it takes to display the current facial frame
 						talktime = ltime + (int)( TALK_FUTURE_SEC * (float)s_khz->integer * 1000 );
-						talkofs = talktime % sc->soundLength;
+						talkofs = talktime % sc->Length;
 						talkcnt = 100;
-						if ( talkofs + talkcnt < sc->soundLength ) {
+						if ( talkofs + talkcnt < sc->Length ) {
 							if ( sc->soundCompressionMethod == 1 ) {
 								S_SetVoiceAmplitudeFromADPCM( sc, talkofs, talkcnt, ch->entnum );
 							} else if ( sc->soundCompressionMethod == 2 ) {

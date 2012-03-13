@@ -58,17 +58,19 @@ typedef struct sndBuffer_s {
 	adpcm_state_t adpcm;
 } sndBuffer;
 
-typedef struct sfx_s {
+struct sfx_t
+{
+	char Name[MAX_QPATH];
+	int Length;
+	bool DefaultSound;                  // couldn't be loaded, so use buzz
+	bool InMemory;                      // not in Memory
+	int LastTimeUsed;
+	sfx_t* HashNext;
+
 	sndBuffer       *soundData;
-	qboolean defaultSound;                  // couldn't be loaded, so use buzz
-	qboolean inMemory;                      // not in Memory
 	qboolean soundCompressed;               // not in Memory
 	int soundCompressionMethod;
-	int soundLength;
-	char soundName[MAX_QPATH];
-	int lastTimeUsed;
-	struct sfx_s    *next;
-} sfx_t;
+};
 
 #define START_SAMPLE_IMMEDIATE  0x7fffffff
 

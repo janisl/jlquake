@@ -108,7 +108,7 @@ void S_AdpcmEncodeSound( sfx_t *sfx, short *samples ) {
 	char            *out;
 
 	inOffset = 0;
-	count = sfx->soundLength;
+	count = sfx->Length;
 	state.index = 0;
 	state.sample = samples[0];
 
