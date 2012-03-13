@@ -126,9 +126,6 @@ static loopSound_t loopSounds[MAX_LOOP_SOUNDS];
 static channel_t       *freelist = NULL;
 static channel_t       *endflist = NULL;
 
-// Rafael
-Cvar      *s_nocompressed;
-
 // for streaming sounds
 int s_rawend[MAX_STREAMING_SOUNDS];
 int s_rawpainted[MAX_STREAMING_SOUNDS];
@@ -194,9 +191,6 @@ void S_Init( void ) {
 	s_defaultsound = Cvar_Get( "s_defaultsound", "0", CVAR_ARCHIVE );
 	// Ridah
 	cl_cacheGathering = Cvar_Get( "cl_cacheGathering", "0", 0 );
-
-	// Rafael
-	s_nocompressed = Cvar_Get( "s_nocompressed", "0", CVAR_INIT );
 
 	// fretn
 	s_bits = Cvar_Get( "s_bits", "16", CVAR_LATCH2 | CVAR_ARCHIVE );

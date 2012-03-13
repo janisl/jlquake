@@ -58,8 +58,6 @@ short *sfxScratchBuffer = NULL;
 const sfx_t *sfxScratchPointer = NULL;
 int sfxScratchIndex = 0;
 
-extern Cvar   *s_nocompressed;
-
 /*
 ================
 SND_free
