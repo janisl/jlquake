@@ -72,15 +72,6 @@ typedef struct
 } channel_t;
 
 
-typedef struct {
-	int format;
-	int rate;
-	int width;
-	int channels;
-	int samples;
-	int dataofs;                // chunk starts this many bytes from file start
-} wavinfo_t;
-
 //====================================================================
 
 extern channel_t s_channels[MAX_CHANNELS];
@@ -190,8 +181,6 @@ extern Cvar   *s_mute;
 extern Cvar   *s_separation;
 extern Cvar   *s_currentMusic;    //----(SA)	added
 extern Cvar   *s_debugMusic;      //----(SA)	added
-
-qboolean S_LoadSound( sfx_t *sfx );
 
 void S_PaintChannels( int endtime );
 

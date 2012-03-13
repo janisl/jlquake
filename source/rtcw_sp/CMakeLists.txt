@@ -65,7 +65,6 @@ set(WOLFSP_FILES
 	qcommon/vm.cpp
 
 	client/snd_dma.cpp
-	client/snd_mem.cpp
 	client/snd_mix.cpp
 
 	unix/unix_main.cpp

@@ -5,6 +5,7 @@ set(WOLFCLIENT_FILES
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp
 	sound/main.cpp
+	sound/memory.cpp
 	client_main.cpp
 	../client/system_unix.cpp
 )
