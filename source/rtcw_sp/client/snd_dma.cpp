@@ -476,10 +476,9 @@ S_RegisterSound
 Creates a default buzz sound if the file can't be loaded
 ==================
 */
-sfxHandle_t S_RegisterSound( const char *name, qboolean compressed ) {
+sfxHandle_t S_RegisterSound( const char *name) {
 	sfx_t   *sfx;
 
-	compressed = qfalse;
 	if ( !snd.s_soundStarted ) {
 		return 0;
 	}
@@ -501,7 +500,6 @@ sfxHandle_t S_RegisterSound( const char *name, qboolean compressed ) {
 	}
 
 	sfx->InMemory = qfalse;
-	sfx->soundCompressed = compressed;
 
 //	if (!compressed) {
 	S_memoryLoad( sfx );
@@ -1663,7 +1661,7 @@ void S_Play_f( void ) {
 		} else {
 			String::NCpyZ( name, Cmd_Argv( i ), sizeof( name ) );
 		}
-		h = S_RegisterSound( name, qfalse );
+		h = S_RegisterSound( name);
 		if ( h ) {
 			S_StartLocalSound( h, CHAN_LOCAL_SOUND );
 		}
@@ -1732,18 +1730,15 @@ void S_SoundList_f( void ) {
 	int i;
 	sfx_t   *sfx;
 	int size, total;
-	char type[2][16];
 	char mem[2][16];
 
-	String::Cpy( type[0], "16bit" );
-	String::Cpy( type[1], "adpcm" );
 	String::Cpy( mem[0], "paged out" );
 	String::Cpy( mem[1], "resident " );
 	total = 0;
 	for ( sfx = s_knownSfx, i = 0 ; i < snd.s_numSfx ; i++, sfx++ ) {
 		size = sfx->Length;
 		total += size;
-		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[sfx->soundCompressionMethod], sfx->Name, mem[sfx->InMemory] );
+		Com_Printf( "%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory] );
 	}
 	Com_Printf( "Total resident: %i\n", total );
 	S_DisplayFreeMemory();

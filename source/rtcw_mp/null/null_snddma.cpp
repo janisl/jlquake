@@ -33,7 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../client/client.h"
 
 // bk001119 - added boolean flag, match client/snd_public.h
-sfxHandle_t S_RegisterSound( const char *name, qboolean compressed ) {
+sfxHandle_t S_RegisterSound( const char *name) {
 	return 0;
 }
 

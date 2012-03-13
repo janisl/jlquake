@@ -402,22 +402,9 @@ qboolean S_LoadSound( sfx_t *sfx ) {
 	// sound in as needed
 
 
-	if ( s_nocompressed->value ) {
-		sfx->soundCompressionMethod = 0;
-		sfx->Length = info.samples;
-		sfx->soundData = NULL;
-		ResampleSfx( sfx, info.rate, info.width, data + info.dataofs, qfalse );
-	} else if ( sfx->soundCompressed == qtrue )     {
-		sfx->soundCompressionMethod = 1;
-		sfx->soundData = NULL;
-		sfx->Length = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
-		S_AdpcmEncodeSound( sfx, samples );
-	} else {
-		sfx->soundCompressionMethod = 0;
-		sfx->Length = info.samples;
-		sfx->soundData = NULL;
-		ResampleSfx( sfx, info.rate, info.width, data + info.dataofs, qfalse );
-	}
+	sfx->Length = info.samples;
+	sfx->soundData = NULL;
+	ResampleSfx( sfx, info.rate, info.width, data + info.dataofs, qfalse );
 	Hunk_FreeTempMemory( samples );
 	FS_FreeFile( data );
 

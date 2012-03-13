@@ -366,7 +366,7 @@ The module is making a system call
 */
 // show_bug.cgi?id=574
 #include "../../wolfclient/client.h"
-extern int S_RegisterSound( const char *name, qboolean compressed );
+extern int S_RegisterSound( const char *name);
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
 qintptr SV_GameSystemCalls( qintptr* args ) {
@@ -519,7 +519,7 @@ qintptr SV_GameSystemCalls( qintptr* args ) {
 
 		// START	xkan, 10/28/2002
 	case G_REGISTERSOUND:
-		return S_RegisterSound( (char*)VMA( 1 ), args[2] );
+		return S_RegisterSound( (char*)VMA( 1 ));
 	case G_GET_SOUND_LENGTH:
 		return S_GetSoundLength( args[1] );
 		// END		xkan, 10/28/2002

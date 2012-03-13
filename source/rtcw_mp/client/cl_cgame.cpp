@@ -638,7 +638,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		S_Respatialize( args[1], (float*)VMA( 2 ), (vec3_t*)VMA( 3 ), args[4] );
 		return 0;
 	case CG_S_REGISTERSOUND:
-		return S_RegisterSound( (char*)VMA( 1 ), qfalse );
+		return S_RegisterSound( (char*)VMA( 1 ));
 	case CG_S_STARTBACKGROUNDTRACK:
 		S_StartBackgroundTrack( (char*)VMA( 1 ), (char*)VMA( 2 ) );
 		return 0;

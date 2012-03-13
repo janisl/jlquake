@@ -38,24 +38,13 @@ If you have questions concerning this license or the applicable additional terms
 #define PAINTBUFFER_SIZE        4096                    // this is in samples
 
 #define SND_CHUNK_SIZE          1024                    // samples
-#define SND_CHUNK_SIZE_FLOAT    ( SND_CHUNK_SIZE / 2 )      // floats
-#define SND_CHUNK_SIZE_BYTE     ( SND_CHUNK_SIZE * 2 )      // floats
 
 #define TALKANIM
-
-typedef struct adpcm_state {
-	short sample;       /* Previous output value */
-	char index;         /* Index into stepsize table */
-#if defined( __MACOS__ )
-	char pad;           /* //DAJ added pad for alignment */
-#endif
-} adpcm_state_t;
 
 typedef struct sndBuffer_s {
 	short sndChunk[SND_CHUNK_SIZE];
 	struct sndBuffer_s      *next;
 	int size;
-	adpcm_state_t adpcm;
 } sndBuffer;
 
 struct sfx_t
@@ -68,8 +57,6 @@ struct sfx_t
 	sfx_t* HashNext;
 
 	sndBuffer       *soundData;
-	qboolean soundCompressed;               // not in Memory
-	int soundCompressionMethod;
 };
 
 #define START_SAMPLE_IMMEDIATE  0x7fffffff
@@ -243,19 +230,7 @@ portable_samplepair_t *S_GetRawSamplePointer();
 // spatializes a channel
 void S_Spatialize( channel_t *ch );
 
-// adpcm functions
-int  S_AdpcmMemoryNeeded( const wavinfo_t *info );
-void S_AdpcmEncodeSound( sfx_t *sfx, short *samples );
-void S_AdpcmGetSamples( sndBuffer *chunk, short *to );
-
-// wavelet function
-
-#define SENTINEL_MULAW_ZERO_RUN 127
-#define SENTINEL_MULAW_FOUR_BIT_RUN 126
-
 void S_FreeOldestSound();
-
-#define NXStream byte
 
 extern short *sfxScratchBuffer;
 extern const sfx_t *sfxScratchPointer;

@@ -64,7 +64,6 @@ set(WOLFSP_FILES
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
 
-	client/snd_adpcm.cpp
 	client/snd_dma.cpp
 	client/snd_mem.cpp
 	client/snd_mix.cpp

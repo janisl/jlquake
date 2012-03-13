@@ -305,62 +305,6 @@ void S_SetVoiceAmplitudeFrom16( const sfx_t *sc, int sampleOffset, int count, in
 
 /*
 ===================
-S_SetVoiceAmplitudeFromADPCM
-===================
-*/
-void S_SetVoiceAmplitudeFromADPCM( const sfx_t *sc, int sampleOffset, int count, int entnum ) {
-	int data, i, sfx_count;
-	sndBuffer *chunk;
-	short *samples;
-
-	if ( count <= 0 ) {
-		return; // must have gone ahead of the end of the sound
-	}
-	i = 0;
-	chunk = sc->soundData;
-	while ( sampleOffset >= ( SND_CHUNK_SIZE * 4 ) ) {
-		chunk = chunk->next;
-		sampleOffset -= ( SND_CHUNK_SIZE * 4 );
-		i++;
-	}
-
-	if ( i != sfxScratchIndex || sfxScratchPointer != sc ) {
-		S_AdpcmGetSamples( chunk, sfxScratchBuffer );
-		sfxScratchIndex = i;
-		sfxScratchPointer = sc;
-	}
-
-	sfx_count = 0;
-	samples = sfxScratchBuffer;
-	for ( i = 0; i < count; i++ ) {
-		if ( sampleOffset >= SND_CHUNK_SIZE * 4 ) {
-			chunk = chunk->next;
-			S_AdpcmGetSamples( chunk, sfxScratchBuffer );
-			sampleOffset = 0;
-			sfxScratchIndex++;
-		}
-		data  = samples[sampleOffset++];
-		if ( abs( data ) > 5000 ) {
-			sfx_count += ( data * 255 ) >> 8;
-		}
-	}
-	//Com_Printf("Voice sfx_count = %d, count = %d\n", sfx_count, count );
-	// adjust the sfx_count according to the frametime (scale down for longer frametimes)
-	sfx_count = abs( sfx_count );
-	sfx_count = (int)( (float)sfx_count / ( 2.0 * (float)count ) );
-	if ( sfx_count > 255 ) {
-		sfx_count = 255;
-	}
-	if ( sfx_count < 25 ) {
-		sfx_count = 0;
-	}
-	//Com_Printf("sfx_count = %d\n", sfx_count );
-	// update the amplitude for this entity
-	s_entityTalkAmplitude[entnum] = (unsigned char)sfx_count;
-}
-
-/*
-===================
 S_GetVoiceAmplitude
 ===================
 */
@@ -464,59 +408,6 @@ static void S_PaintChannelFrom16( channel_t *ch, const sfx_t *sc, int count, int
 			samp[i].left += ( fdata * fleftvol ) / fdiv;
 			samp[i].right += ( fdata * frightvol ) / fdiv;
 		}
-	}
-}
-
-/*
-===================
-S_PaintChannelFromADPCM
-===================
-*/
-void S_PaintChannelFromADPCM( channel_t *ch, sfx_t *sc, int count, int sampleOffset, int bufferOffset ) {
-	int data;
-	int leftvol, rightvol;
-	int i;
-	portable_samplepair_t   *samp;
-	sndBuffer               *chunk;
-	short                   *samples;
-
-	leftvol = ch->leftvol * snd_vol;
-	rightvol = ch->rightvol * snd_vol;
-
-	i = 0;
-	samp = &paintbuffer[ bufferOffset ];
-	chunk = sc->soundData;
-
-	if ( ch->doppler ) {
-		sampleOffset = sampleOffset * ch->oldDopplerScale;
-	}
-
-	while ( sampleOffset >= ( SND_CHUNK_SIZE * 4 ) ) {
-		chunk = chunk->next;
-		sampleOffset -= ( SND_CHUNK_SIZE * 4 );
-		i++;
-	}
-
-	if ( i != sfxScratchIndex || sfxScratchPointer != sc ) {
-		S_AdpcmGetSamples( chunk, sfxScratchBuffer );
-		sfxScratchIndex = i;
-		sfxScratchPointer = sc;
-	}
-
-	samples = sfxScratchBuffer;
-	for ( i = 0; i < count; i++ ) {
-		if ( sampleOffset >= SND_CHUNK_SIZE * 4 ) {
-			chunk = chunk->next;
-			if ( !chunk ) {
-				chunk = sc->soundData;
-			}
-			S_AdpcmGetSamples( chunk, sfxScratchBuffer );
-			sampleOffset = 0;
-			sfxScratchIndex++;
-		}
-		data = samples[sampleOffset++];
-		samp[i].left += ( data * leftvol ) >> 8;
-		samp[i].right += ( data * rightvol ) >> 8;
 	}
 }
 
@@ -650,19 +541,11 @@ void S_PaintChannels( int endtime ) {
 					talkofs = talktime - ch->startSample;
 					talkcnt = 100;
 					if ( talkofs + talkcnt < sc->soundLength ) {
-						if ( sc->soundCompressionMethod == 1 ) {
-							S_SetVoiceAmplitudeFromADPCM( sc, talkofs, talkcnt, ch->entnum );
-						} else {
-							S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
-						}
+						S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
 					}
 				}
 #endif
-				if ( sc->soundCompressionMethod == 1 ) {
-					S_PaintChannelFromADPCM( ch, sc, count, sampleOffset, ltime - s_paintedtime );
-				} else {
-					S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
-				}
+				S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
 			}
 		}
 
@@ -702,19 +585,11 @@ void S_PaintChannels( int endtime ) {
 						talkofs = talktime % sc->soundLength;
 						talkcnt = 100;
 						if ( talkofs + talkcnt < sc->soundLength ) {
-							if ( sc->soundCompressionMethod == 1 ) {
-								S_SetVoiceAmplitudeFromADPCM( sc, talkofs, talkcnt, ch->entnum );
-							} else {
-								S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
-							}
+							S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
 						}
 					}
 #endif
-					if ( sc->soundCompressionMethod == 1 ) {
-						S_PaintChannelFromADPCM( ch, sc, count, sampleOffset, ltime - s_paintedtime );
-					} else {
-						S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
-					}
+					S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
 					ltime += count;
 				}
 			} while ( ltime < end );
