@@ -42,5 +42,8 @@
     <ClCompile Include="..\client\system_windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\sound\driver_directsound.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

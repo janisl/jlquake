@@ -37,6 +37,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)sound\audiocd\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)sound\audiocd\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\client\sound\driver_directsound.cpp" />
     <ClCompile Include="..\client\system_windows.cpp" />
     <ClCompile Include="client_main.cpp" />
     <ClCompile Include="sound\main.cpp">

@@ -54,7 +54,7 @@ static LPDIRECTSOUNDBUFFER	pDSBuf;
 //
 //==========================================================================
 
-const char* DSoundError(int error)
+static const char* DSoundError(int error)
 {
 	switch (error)
 	{
@@ -214,7 +214,10 @@ bool SNDDMA_Init()
 
 	SNDDMA_BeginPainting();
 	if (dma.buffer)
-		Com_Memset(dma.buffer, 0, dma.samples * dma.samplebits / 8);
+	{
+		int clear = dma.samplebits == 8 ? 0x80: 0;
+		Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits / 8);
+	}
 	SNDDMA_Submit();
 
 	dsound_init = true;

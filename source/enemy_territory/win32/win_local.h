@@ -70,9 +70,6 @@ LRESULT WINAPI MainWndProc(
 	WPARAM wParam,
 	LPARAM lParam );
 
-void SNDDMA_Activate( void );
-int  SNDDMA_InitDS();
-
 // ydnar: mousewheel stuff
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL       ( WM_MOUSELAST + 1 )  // message that will be supported by the OS

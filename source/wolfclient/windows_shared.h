@@ -19,9 +19,7 @@
 
 #include "../core/system_windows.h"
 
-#if 0
 void SNDDMA_Activate();
-#endif
 
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
