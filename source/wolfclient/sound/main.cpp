@@ -88,20 +88,20 @@ Cvar*				s_channels_cv;
 Cvar*				bgmvolume;
 Cvar*				bgmtype;
 
-#if 0
 channel_t   		s_channels[MAX_CHANNELS];
 channel_t   		loop_channels[MAX_CHANNELS];
 int					numLoopChannels;
 
 playsound_t			s_pendingplays;
 
-int						s_rawend;
-portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
+int						s_rawend[MAX_STREAMING_SOUNDS];
+portable_samplepair_t	s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
 
 sfx_t				s_knownSfx[MAX_SFX];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+#if 0
 static int			s_soundStarted;
 static bool			s_soundMuted;
 #endif

@@ -90,10 +90,6 @@ typedef struct {
 #define     SOUND_ATTENUATE     0.0008f
 #define     SOUND_RANGE_DEFAULT 1250
 
-channel_t s_channels[MAX_CHANNELS];
-channel_t loop_channels[MAX_CHANNELS];
-int numLoopChannels;
-
 static int s_soundStarted;
 static qboolean s_soundMuted;
 static qboolean s_soundPainted;
@@ -103,7 +99,6 @@ static int listener_number;
 static vec3_t listener_origin;
 static vec3_t listener_axis[3];
 
-sfx_t s_knownSfx[MAX_SFX];
 int s_numSfx = 0;
 
 #define     LOOP_HASH       128
@@ -127,9 +122,7 @@ static channel_t       *freelist = NULL;
 static channel_t       *endflist = NULL;
 
 // for streaming sounds
-int s_rawend[MAX_STREAMING_SOUNDS];
 int s_rawpainted[MAX_STREAMING_SOUNDS];
-portable_samplepair_t s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
 // RF, store the volumes, since now they get adjusted at time of painting, so we can extract talking data first
 portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
@@ -239,7 +232,7 @@ S_ChannelFree
 ================
 */
 void S_ChannelFree( channel_t *v ) {
-	v->thesfx = NULL;
+	v->sfx = NULL;
 	v->threadReady = qfalse;
 	*(channel_t **)endflist = v;
 	endflist = v;
@@ -686,7 +679,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 
 	// shut off other sounds on this channel if necessary
 	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
-		if ( s_channels[i].entnum == entityNum && s_channels[i].thesfx && s_channels[i].entchannel == entchannel ) {
+		if ( s_channels[i].entnum == entityNum && s_channels[i].sfx && s_channels[i].entchannel == entchannel ) {
 
 			// cutoff all on channel
 			if ( flags & SND_CUTOFF_ALL ) {
@@ -718,7 +711,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 	// re-use channel if applicable
 	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
 		if ( s_channels[i].entnum == entityNum && s_channels[i].entchannel == entchannel ) {
-			if ( !( s_channels[i].flags & SND_NOCUT ) && s_channels[i].thesfx == sfx ) {
+			if ( !( s_channels[i].flags & SND_NOCUT ) && s_channels[i].sfx == sfx ) {
 				ch = &s_channels[i];
 				break;
 			}
@@ -735,7 +728,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 
 		oldest = sfx->LastTimeUsed;
 		for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-			if ( ch->entnum == entityNum && ch->thesfx == sfx ) {
+			if ( ch->entnum == entityNum && ch->sfx == sfx ) {
 				chosen = i;
 				break;
 			}
@@ -781,7 +774,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 	ch->flags = flags;  //----(SA)	added
 	ch->master_vol = 127;
 	ch->entnum = entityNum;
-	ch->thesfx = sfx;
+	ch->sfx = sfx;
 	ch->entchannel = entchannel;
 	ch->leftvol = ch->master_vol;       // these will get calced at next spatialize
 	ch->rightvol = ch->master_vol;      // unless the game isn't running
@@ -1032,7 +1025,7 @@ void S_AddLoopSounds( void ) {
 		ch->master_vol = 127;
 		ch->leftvol = left_total;
 		ch->rightvol = right_total;
-		ch->thesfx = loop->sfx;
+		ch->sfx = loop->sfx;
 
 		// RF, disabled doppler for looping sounds for now, since we are reverting to the old looping sound code
 		ch->doppler = qfalse;
@@ -1238,7 +1231,7 @@ void S_ThreadRespatialize() {
 	// update spatialization for dynamic sounds
 	ch = s_channels;
 	for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-		if ( !ch->thesfx ) {
+		if ( !ch->sfx ) {
 			continue;
 		}
 		// anything coming from the view entity will always be full volume
@@ -1273,7 +1266,7 @@ qboolean S_ScanChannelStarts( void ) {
 	ch = s_channels;
 
 	for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-		if ( !ch->thesfx ) {
+		if ( !ch->sfx ) {
 			continue;
 		}
 		// if this channel was just started this frame,
@@ -1286,7 +1279,7 @@ qboolean S_ScanChannelStarts( void ) {
 		}
 
 		// if it is completely finished by now, clear it
-		if ( ch->startSample + ( ch->thesfx->Length ) <= s_paintedtime ) {
+		if ( ch->startSample + ( ch->sfx->Length ) <= s_paintedtime ) {
 			S_ChannelFree( ch );
 		}
 	}
@@ -1319,8 +1312,8 @@ void S_Update( void ) {
 		total = 0;
 		ch = s_channels;
 		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->thesfx && ( ch->leftvol || ch->rightvol ) ) {
-				Com_DPrintf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->thesfx->Name );         // <- this is not thread safe
+			if ( ch->sfx && ( ch->leftvol || ch->rightvol ) ) {
+				Com_DPrintf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name );         // <- this is not thread safe
 				total++;
 			}
 		}

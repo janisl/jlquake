@@ -512,9 +512,7 @@ void CL_WriteWaveClose() {
 	FS_FCloseFile( clc.wavefile );
 }
 
-extern int s_soundtime;
 #include "snd_local.h"
-extern portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 
 void CL_WriteWaveFilePacket() {
 	int total, i;

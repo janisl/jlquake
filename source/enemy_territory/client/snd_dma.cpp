@@ -69,15 +69,9 @@ void    *crit;
 #define     SOUND_ATTENUATE     0.0008f
 #define     SOUND_RANGE_DEFAULT 1250
 
-channel_t s_channels[MAX_CHANNELS];
-channel_t loop_channels[MAX_CHANNELS];
-int numLoopChannels;
-
 static int listener_number;
 static vec3_t listener_origin;
 static vec3_t listener_axis[3];
-
-sfx_t s_knownSfx[MAX_SFX];
 
 Cvar      *s_show;
 Cvar      *s_mixahead;
@@ -92,9 +86,7 @@ Cvar      *cl_cacheGathering; // Ridah
 Cvar      *s_debugMusic;  //----(SA)	added
 
 // for streaming sounds
-int s_rawend[MAX_STREAMING_SOUNDS];
 int s_rawpainted[MAX_STREAMING_SOUNDS];
-portable_samplepair_t s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
 // RF, store the volumes, since now they get adjusted at time of painting, so we can extract talking data first
 portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
@@ -215,7 +207,7 @@ S_ChannelFree
 ================
 */
 void S_ChannelFree( channel_t *v ) {
-	v->thesfx = NULL;
+	v->sfx = NULL;
 	v->threadReady = qfalse;
 #ifdef _DEBUG
 	if ( v >  &s_channels[MAX_CHANNELS] || v <  &s_channels[0] ) {
@@ -743,7 +735,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 
 	// shut off other sounds on this channel if necessary
 	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
-		if ( s_channels[i].entnum == entityNum && s_channels[i].thesfx && s_channels[i].entchannel == entchannel ) {
+		if ( s_channels[i].entnum == entityNum && s_channels[i].sfx && s_channels[i].entchannel == entchannel ) {
 
 			// cutoff all on channel
 			if ( flags & SND_CUTOFF_ALL ) {
@@ -790,7 +782,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 	// re-use channel if applicable
 	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
 		if ( s_channels[i].entnum == entityNum && s_channels[i].entchannel == entchannel && entchannel != CHAN_AUTO ) {
-			if ( !( s_channels[i].flags & SND_NOCUT ) && s_channels[i].thesfx == sfx ) {
+			if ( !( s_channels[i].flags & SND_NOCUT ) && s_channels[i].sfx == sfx ) {
 				ch = &s_channels[i];
 				break;
 			}
@@ -807,7 +799,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 
 		oldest = sfx->LastTimeUsed;
 		for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-			if ( ch->entnum == entityNum && ch->thesfx == sfx ) {
+			if ( ch->entnum == entityNum && ch->sfx == sfx ) {
 				chosen = i;
 				break;
 			}
@@ -861,7 +853,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 	ch->flags = flags;  //----(SA)	added
 	ch->master_vol = volume;
 	ch->entnum = entityNum;
-	ch->thesfx = sfx;
+	ch->sfx = sfx;
 	ch->entchannel = entchannel;
 	ch->leftvol = ch->master_vol;       // these will get calced at next spatialize
 	ch->rightvol = ch->master_vol;      // unless the game isn't running
@@ -1261,7 +1253,7 @@ void S_AddLoopSounds( void ) {
 		ch->master_vol = 127;
 		ch->leftvol = left_total;
 		ch->rightvol = right_total;
-		ch->thesfx = loop->sfx;
+		ch->sfx = loop->sfx;
 		ch->doppler = loop->doppler;
 		ch->dopplerScale = loop->dopplerScale;
 		ch->oldDopplerScale = loop->oldDopplerScale;
@@ -1470,7 +1462,7 @@ void S_ThreadRespatialize() {
 	// update spatialization for dynamic sounds
 	ch = s_channels;
 	for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-		if ( !ch->thesfx ) {
+		if ( !ch->sfx ) {
 			continue;
 		}
 		// anything coming from the view entity will always be full volume
@@ -1505,7 +1497,7 @@ qboolean S_ScanChannelStarts( void ) {
 	ch = s_channels;
 
 	for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-		if ( !ch->thesfx ) {
+		if ( !ch->sfx ) {
 			continue;
 		}
 		// if this channel was just started this frame,
@@ -1518,7 +1510,7 @@ qboolean S_ScanChannelStarts( void ) {
 		}
 
 		// if it is completely finished by now, clear it
-		if ( ch->startSample + ( ch->thesfx->Length ) <= s_paintedtime ) {
+		if ( ch->startSample + ( ch->sfx->Length ) <= s_paintedtime ) {
 //----(SA)	got from TA sound.  correct?
 //			Com_Memset(ch, 0, sizeof(*ch));
 			S_ChannelFree( ch );
@@ -1581,8 +1573,8 @@ void S_Update_Debug( void ) {
 		total = 0;
 		ch = s_channels;
 		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->thesfx && ( ch->leftvol || ch->rightvol ) ) {
-				Com_Printf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->thesfx->Name );          // <- this is not thread safe
+			if ( ch->sfx && ( ch->leftvol || ch->rightvol ) ) {
+				Com_Printf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name );          // <- this is not thread safe
 				total++;
 			}
 		}
@@ -1636,7 +1628,7 @@ void S_ClearSounds( qboolean clearStreaming, qboolean clearMusic ) {
 		// RF, we should also kill all channels, since we are killing streaming sounds anyway (fixes siren in forest playing after a map_restart/loadgame
 		ch = s_channels;
 		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->thesfx ) {
+			if ( ch->sfx ) {
 				S_ChannelFree( ch );
 			}
 		}

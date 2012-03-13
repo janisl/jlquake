@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
 
-#define PAINTBUFFER_SIZE        4096                    // this is in samples
-
 #define TALKANIM
 
 #define START_SAMPLE_IMMEDIATE  0x7fffffff
@@ -58,31 +56,7 @@ typedef struct loopSound_s {
 	int startTime, startSample;         // ydnar: so looping sounds can be out of phase
 } loopSound_t;
 
-typedef struct
-{
-	int         *prt;           //DAJ BUGFIX for freelist/endlist pointer
-	int allocTime;
-	int startSample;            // START_SAMPLE_IMMEDIATE = set immediately on next mix
-	int entnum;                 // to allow overriding a specific sound
-	int entchannel;             // to allow overriding a specific sound
-	int leftvol;                // 0-255 volume after spatialization
-	int rightvol;               // 0-255 volume after spatialization
-	int master_vol;             // 0-255 volume before spatialization
-	float dopplerScale;
-	float oldDopplerScale;
-	vec3_t origin;              // only use if fixed_origin is set
-	qboolean fixed_origin;      // use origin instead of fetching entnum's origin
-	sfx_t       *thesfx;        // sfx structure
-	qboolean doppler;
-	int flags;                  //----(SA)	added
-	qboolean threadReady;
-} channel_t;
-
 //====================================================================
-
-extern channel_t s_channels[MAX_CHANNELS];
-extern channel_t loop_channels[MAX_CHANNELS];
-extern int numLoopChannels;
 
 extern vec3_t listener_forward;
 extern vec3_t listener_right;
@@ -168,11 +142,7 @@ typedef struct {
 
 extern snd_t snd;   // globals for sound
 
-#define MAX_STREAMING_SOUNDS    12  // need to keep it low, or the rawsamples will get too big
-
 extern streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
-extern int s_rawend[MAX_STREAMING_SOUNDS];
-extern portable_samplepair_t s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
 extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 

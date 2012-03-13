@@ -698,9 +698,6 @@ void CL_WriteWaveClose() {
 	clc.wavefile = 0;
 }
 
-extern int s_soundtime;
-extern int s_paintedtime;
-extern portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 portable_samplepair_t wavbuffer[PAINTBUFFER_SIZE];
 
 void CL_WriteWaveFilePacket( int endtime ) {

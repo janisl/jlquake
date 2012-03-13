@@ -37,13 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "snd_local.h"
 
-portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 static int snd_vol;
-
-// TTimo not static, required by unix/snd_mixa.s
-int     *snd_p;
-int snd_linear_count;
-short   *snd_out;
 
 #if !( defined __linux__ && defined __i386__ )
 #if !id386
@@ -467,16 +461,16 @@ void S_PaintChannels( int endtime ) {
 		// paint in the channels.
 		ch = s_channels;
 		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->startSample == START_SAMPLE_IMMEDIATE || !ch->thesfx || ( ch->leftvol < 0.25 && ch->rightvol < 0.25 ) ) {
+			if ( ch->startSample == START_SAMPLE_IMMEDIATE || !ch->sfx || ( ch->leftvol < 0.25 && ch->rightvol < 0.25 ) ) {
 				continue;
 			}
 
 			ltime = s_paintedtime;
-			sc = ch->thesfx;
+			sc = ch->sfx;
 
 			// (SA) hmm, why was this commented out?
 			if ( !sc->InMemory ) {
-				S_memoryLoad( sc );
+				( sc );
 			}
 
 			sampleOffset = ltime - ch->startSample;
@@ -508,8 +502,8 @@ void S_PaintChannels( int endtime ) {
 		// paint in the looped channels.
 		ch = loop_channels;
 		for ( i = 0; i < numLoopChannels ; i++, ch++ ) {
-			sc = ch->thesfx;
-			if ( !ch->thesfx || ( !ch->leftvol && !ch->rightvol ) ) {
+			sc = ch->sfx;
+			if ( !ch->sfx || ( !ch->leftvol && !ch->rightvol ) ) {
 				continue;
 			}
 
