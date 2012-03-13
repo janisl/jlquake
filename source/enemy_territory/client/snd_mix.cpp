@@ -257,29 +257,15 @@ S_SetVoiceAmplitudeFrom16
 */
 void S_SetVoiceAmplitudeFrom16( const sfx_t *sc, int sampleOffset, int count, int entnum ) {
 	int data, i, sfx_count;
-	sndBuffer *chunk;
 	short *samples;
 
 	if ( count <= 0 ) {
 		return; // must have gone ahead of the end of the sound
 	}
-	chunk = sc->soundData;
-	while ( sampleOffset >= SND_CHUNK_SIZE ) {
-		chunk = chunk->next;
-		sampleOffset -= SND_CHUNK_SIZE;
-		if ( !chunk ) {
-			chunk = sc->soundData;
-		}
-	}
 
 	sfx_count = 0;
-	samples = chunk->sndChunk;
+	samples = sc->Data;
 	for ( i = 0; i < count; i++ ) {
-		if ( sampleOffset >= SND_CHUNK_SIZE ) {
-			chunk = chunk->next;
-			samples = chunk->sndChunk;
-			sampleOffset = 0;
-		}
 		data  = samples[sampleOffset++];
 		if ( abs( data ) > 5000 ) {
 			sfx_count += ( data * 255 ) >> 8;
@@ -341,7 +327,6 @@ static void S_PaintChannelFrom16( channel_t *ch, const sfx_t *sc, int count, int
 	int leftvol, rightvol;
 	int i, j;
 	portable_samplepair_t   *samp;
-	sndBuffer               *chunk;
 	short                   *samples;
 	float ooff, fdata, fdiv, fleftvol, frightvol;
 
@@ -351,29 +336,12 @@ static void S_PaintChannelFrom16( channel_t *ch, const sfx_t *sc, int count, int
 		sampleOffset = sampleOffset * ch->oldDopplerScale;
 	}
 
-	chunk = sc->soundData;
-	while ( sampleOffset >= SND_CHUNK_SIZE ) {
-		chunk = chunk->next;
-		sampleOffset -= SND_CHUNK_SIZE;
-		if ( !chunk ) {
-			chunk = sc->soundData;
-		}
-	}
-
 	if ( !ch->doppler ) {
 		leftvol = ch->leftvol * snd_vol;
 		rightvol = ch->rightvol * snd_vol;
 
-		samples = chunk->sndChunk;
+		samples = sc->Data;
 		for ( i = 0; i < count; i++ ) {
-			if ( sampleOffset >= SND_CHUNK_SIZE ) {
-				chunk = chunk->next;
-				if ( chunk == NULL ) {
-					chunk = sc->soundData;
-				}
-				samples = chunk->sndChunk;
-				sampleOffset -= SND_CHUNK_SIZE;
-			}
 			data  = samples[sampleOffset++];
 			samp[i].left += ( data * leftvol ) >> 8;
 			samp[i].right += ( data * rightvol ) >> 8;
@@ -383,7 +351,7 @@ static void S_PaintChannelFrom16( channel_t *ch, const sfx_t *sc, int count, int
 		frightvol = ch->rightvol * snd_vol;
 
 		ooff = sampleOffset;
-		samples = chunk->sndChunk;
+		samples = sc->Data;
 
 		for ( i = 0 ; i < count ; i++ ) {
 			aoff = ooff;
@@ -391,15 +359,7 @@ static void S_PaintChannelFrom16( channel_t *ch, const sfx_t *sc, int count, int
 			boff = ooff;
 			fdata = 0;
 			for ( j = aoff; j < boff; j++ ) {
-				if ( j >= SND_CHUNK_SIZE ) {
-					chunk = chunk->next;
-					if ( !chunk ) {
-						chunk = sc->soundData;
-					}
-					samples = chunk->sndChunk;
-					ooff -= SND_CHUNK_SIZE;
-				}
-				fdata += samples[j & ( SND_CHUNK_SIZE - 1 )];
+				fdata += samples[j];
 			}
 			fdiv = 256 * ( boff - aoff );
 			samp[i].left += ( fdata * fleftvol ) / fdiv;
@@ -563,7 +523,7 @@ void S_PaintChannels( int endtime ) {
 			ltime = s_paintedtime;
 			sc = ch->thesfx;
 
-			if ( sc->soundData == NULL || sc->Length == 0 ) {
+			if ( sc->Data == NULL || sc->Length == 0 ) {
 				continue;
 			}
 			// we might have to make two passes if it

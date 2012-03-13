@@ -339,42 +339,6 @@ static long S_HashSFXName( const char *name ) {
 }
 
 /*
-======================
-S_FreeOldestSound
-======================
-*/
-void S_FreeOldestSound( void ) {
-	int i, oldest, used;
-	sfx_t   *sfx;
-	sndBuffer   *buffer, *nbuffer;
-
-	oldest = Sys_Milliseconds();
-	used = 0;
-
-	for ( i = 1 ; i < s_numSfx ; i++ ) {
-		sfx = &s_knownSfx[i];
-		if ( sfx->InMemory && sfx->LastTimeUsed < oldest ) {
-			used = i;
-			oldest = sfx->LastTimeUsed;
-		}
-	}
-
-	sfx = &s_knownSfx[used];
-
-	// DHM - Nerve :: can cause race conditions
-	//Com_DPrintf("S_FreeOldestSound: freeing sound %s\n", sfx->soundName);
-
-	buffer = sfx->soundData;
-	while ( buffer != NULL ) {
-		nbuffer = buffer->next;
-		SND_free( buffer );
-		buffer = nbuffer;
-	}
-	sfx->InMemory = qfalse;
-	sfx->soundData = NULL;
-}
-
-/*
 ==================
 S_FindName
 
@@ -449,16 +413,15 @@ void S_DefaultSound( sfx_t *sfx ) {
 	int i;
 
 	sfx->Length = 512;
-	sfx->soundData = SND_malloc();
-	sfx->soundData->next = NULL;
+	sfx->Data = new short[512];
 
 	if ( s_defaultsound->integer ) {
 		for ( i = 0 ; i < sfx->Length ; i++ ) {
-			sfx->soundData->sndChunk[i] = i;
+			sfx->Data[i] = i;
 		}
 	} else {
 		for ( i = 0 ; i < sfx->Length ; i++ ) {
-			sfx->soundData->sndChunk[i] = 0;
+			sfx->Data[i] = 0;
 		}
 	}
 }
@@ -487,8 +450,6 @@ void S_BeginRegistration( void ) {
 	s_soundMuted = qfalse;      // we can play again
 
 	if ( s_numSfx == 0 ) {
-		SND_setup();
-
 		s_numSfx = 0;
 		Com_Memset( s_knownSfx, 0, sizeof( s_knownSfx ) );
 		Com_Memset( sfxHash, 0, sizeof( sfx_t * ) * LOOP_HASH );
@@ -518,7 +479,7 @@ sfxHandle_t S_RegisterSound( const char *name) {
 	}
 
 	sfx = S_FindName( name );
-	if ( sfx->soundData ) {
+	if ( sfx->Data ) {
 		if ( sfx->DefaultSound ) {
 			if ( com_developer->integer ) {
 				Com_DPrintf( S_COLOR_YELLOW "WARNING: could not find %s - using default\n", sfx->Name );
@@ -1617,7 +1578,6 @@ void S_SoundList_f( void ) {
 		Com_Printf( "%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory] );
 	}
 	Com_Printf( "Total resident: %i\n", total );
-	S_DisplayFreeMemory();
 }
 
 

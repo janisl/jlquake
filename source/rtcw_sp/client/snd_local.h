@@ -37,27 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #define PAINTBUFFER_SIZE        4096                    // this is in samples
 
-#define SND_CHUNK_SIZE          1024                    // samples
-
 #define TALKANIM
-
-typedef struct sndBuffer_s {
-	short sndChunk[SND_CHUNK_SIZE];
-	struct sndBuffer_s      *next;
-	int size;
-} sndBuffer;
-
-struct sfx_t
-{
-	char Name[MAX_QPATH];
-	int Length;
-	bool DefaultSound;                  // couldn't be loaded, so use buzz
-	bool InMemory;                      // not in Memory
-	int LastTimeUsed;
-	sfx_t* HashNext;
-
-	sndBuffer       *soundData;
-};
 
 #define START_SAMPLE_IMMEDIATE  0x7fffffff
 
@@ -213,10 +193,6 @@ extern Cvar   *s_debugMusic;      //----(SA)	added
 
 qboolean S_LoadSound( sfx_t *sfx );
 
-void        SND_free( sndBuffer *v );
-sndBuffer*  SND_malloc();
-void        SND_setup();
-
 void S_PaintChannels( int endtime );
 
 void S_memoryLoad( sfx_t *sfx );
@@ -224,12 +200,6 @@ portable_samplepair_t *S_GetRawSamplePointer();
 
 // spatializes a channel
 void S_Spatialize( channel_t *ch );
-
-void S_FreeOldestSound();
-
-extern short *sfxScratchBuffer;
-extern const sfx_t *sfxScratchPointer;
-extern int sfxScratchIndex;
 
 extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
 

@@ -411,16 +411,15 @@ void S_DefaultSound( sfx_t *sfx ) {
 		sfx->Length = 8;
 	}
 
-	sfx->soundData = SND_malloc();
-	sfx->soundData->next = NULL;
+	sfx->Data = new short[sfx->Length];
 
 	if ( s_defaultsound->integer ) {
 		for ( i = 0 ; i < sfx->Length ; i++ ) {
-			sfx->soundData->sndChunk[i] = i;
+			sfx->Data[i] = i;
 		}
 	} else {
 		for ( i = 0 ; i < sfx->Length ; i++ ) {
-			sfx->soundData->sndChunk[i] = 0;
+			sfx->Data[i] = 0;
 		}
 	}
 }
@@ -477,8 +476,6 @@ void S_BeginRegistration( void ) {
 	snd.s_soundMute = 0;        // we can play again
 
 	if ( snd.s_numSfx == 0 ) {
-		SND_setup();
-
 		snd.s_numSfx = 0;
 		Com_Memset( s_knownSfx, 0, sizeof( s_knownSfx ) );
 		Com_Memset( snd.sfxHash, 0, sizeof( sfx_t * ) * LOOP_HASH );
@@ -510,7 +507,7 @@ sfxHandle_t S_RegisterSound( const char *name) {
 	}
 
 	sfx = S_FindName( name );
-	if ( sfx->soundData ) {
+	if ( sfx->Data ) {
 		if ( sfx->DefaultSound ) {
 			if ( com_developer->integer ) {
 				Com_Printf( S_COLOR_YELLOW "WARNING: could not find %s - using default\n", sfx->Name );
@@ -1960,7 +1957,6 @@ void S_SoundList_f( void ) {
 		Com_Printf( "%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory] );
 	}
 	Com_Printf( "Total resident: %i\n", total );
-	S_DisplayFreeMemory();
 }
 
 
@@ -2740,41 +2736,6 @@ void S_UpdateStreamingSounds( void ) {
 			}
 		}
 	}
-}
-
-/*
-======================
-S_FreeOldestSound
-======================
-*/
-void S_FreeOldestSound( void ) {
-	int i, oldest, used;
-	sfx_t   *sfx;
-	sndBuffer   *buffer, *nbuffer;
-
-	oldest = Sys_Milliseconds();
-	used = 0;
-
-	for ( i = 1 ; i < snd.s_numSfx ; i++ ) {
-		sfx = &s_knownSfx[i];
-		if ( sfx->InMemory && sfx->LastTimeUsed < oldest ) {
-			used = i;
-			oldest = sfx->LastTimeUsed;
-		}
-	}
-
-	sfx = &s_knownSfx[used];
-
-	Com_DPrintf( "S_FreeOldestSound: freeing sound %s\n", sfx->Name );
-
-	buffer = sfx->soundData;
-	while ( buffer != NULL ) {
-		nbuffer = buffer->next;
-		SND_free( buffer );
-		buffer = nbuffer;
-	}
-	sfx->InMemory = qfalse;
-	sfx->soundData = NULL;
 }
 
 // START	xkan, 9/23/2002

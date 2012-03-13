@@ -34,7 +34,6 @@ struct portable_samplepair_t
 	int			right;
 };
 
-#if 0
 struct sfx_t
 {
 	char			Name[MAX_QPATH];
@@ -48,7 +47,6 @@ struct sfx_t
 	int				LastTimeUsed;
 	sfx_t*			HashNext;
 };
-#endif
 
 struct dma_t
 {
