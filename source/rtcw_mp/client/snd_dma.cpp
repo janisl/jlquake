@@ -1615,13 +1615,11 @@ void S_SoundList_f( void ) {
 	int i;
 	sfx_t   *sfx;
 	int size, total;
-	char type[4][16];
+	char type[2][16];
 	char mem[2][16];
 
 	String::Cpy( type[0], "16bit" );
 	String::Cpy( type[1], "adpcm" );
-	String::Cpy( type[2], "daub4" );
-	String::Cpy( type[3], "mulaw" );
 	String::Cpy( mem[0], "paged out" );
 	String::Cpy( mem[1], "resident " );
 	total = 0;

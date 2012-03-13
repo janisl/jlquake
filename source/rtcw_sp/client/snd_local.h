@@ -252,12 +252,6 @@ void S_FreeOldestSound();
 
 #define NXStream byte
 
-void encodeWavelet( sfx_t *sfx, short *packets );
-void decodeWavelet( sndBuffer *stream, short *packets );
-
-void encodeMuLaw( sfx_t *sfx, short *packets );
-extern short mulawToShort[256];
-
 extern short *sfxScratchBuffer;
 extern const sfx_t *sfxScratchPointer;
 extern int sfxScratchIndex;
