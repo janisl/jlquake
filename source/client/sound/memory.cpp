@@ -27,6 +27,12 @@
 
 // TYPES -------------------------------------------------------------------
 
+struct waveFormat_t
+{
+	const char* name;
+	int format;
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -44,6 +50,48 @@ static byte*	iff_end;
 static byte*	last_chunk;
 static byte*	iff_data;
 static int		iff_chunk_len;
+
+static waveFormat_t waveFormats[] = {
+	{ "Windows PCM", 1 },
+	{ "Antex ADPCM", 14 },
+	{ "Antex ADPCME", 33 },
+	{ "Antex ADPCM", 40 },
+	{ "Audio Processing Technology", 25 },
+	{ "Audiofile, Inc.", 24 },
+	{ "Audiofile, Inc.", 26 },
+	{ "Control Resources Limited", 34 },
+	{ "Control Resources Limited", 37 },
+	{ "Creative ADPCM", 200 },
+	{ "Dolby Laboratories", 30 },
+	{ "DSP Group, Inc", 22 },
+	{ "DSP Solutions, Inc.", 15 },
+	{ "DSP Solutions, Inc.", 16 },
+	{ "DSP Solutions, Inc.", 35 },
+	{ "DSP Solutions ADPCM", 36 },
+	{ "Echo Speech Corporation", 23 },
+	{ "Fujitsu Corp.", 300 },
+	{ "IBM Corporation", 5 },
+	{ "Ing C. Olivetti & C., S.p.A.", 1000 },
+	{ "Ing C. Olivetti & C., S.p.A.", 1001 },
+	{ "Ing C. Olivetti & C., S.p.A.", 1002 },
+	{ "Ing C. Olivetti & C., S.p.A.", 1003 },
+	{ "Ing C. Olivetti & C., S.p.A.", 1004 },
+	{ "Intel ADPCM", 11 },
+	{ "Intel ADPCM", 11 },
+	{ "Unknown", 0 },
+	{ "Microsoft ADPCM", 2 },
+	{ "Microsoft Corporation", 6 },
+	{ "Microsoft Corporation", 7 },
+	{ "Microsoft Corporation", 31 },
+	{ "Microsoft Corporation", 50 },
+	{ "Natural MicroSystems ADPCM", 38 },
+	{ "OKI ADPCM", 10 },
+	{ "Sierra ADPCM", 13 },
+	{ "Speech Compression", 21 },
+	{ "Videologic ADPCM", 12 },
+	{ "Yamaha ADPCM", 20 },
+	{ NULL, 0 }
+};
 
 // CODE --------------------------------------------------------------------
 
@@ -130,6 +178,19 @@ static void FindChunk(const char *name)
 	FindNextChunk(name);
 }
 
+static const char* GetWaveFormatName(const int format)
+{
+	for (int i = 0; waveFormats[i].name; i++)
+	{
+		if (format == waveFormats[i].format)
+		{
+			return waveFormats[i].name;
+		}
+	}
+	return "Unknown";
+
+}
+
 //==========================================================================
 //
 //	GetWavinfo
@@ -176,13 +237,14 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 
 	if (info.format != 1)
 	{
+		Log::write("Unsupported format: %s\n", GetWaveFormatName(info.format));
 		Log::write("Microsoft PCM format only\n");
 		return info;
 	}
 
 	// get cue chunk
 	FindChunk("cue ");
-	if (!(GGameType & GAME_Quake3) && data_p)
+	if (!(GGameType & GAME_Tech3) && data_p)
 	{
 		data_p += 32;
 		info.loopstart = GetLittleLong();
@@ -289,7 +351,7 @@ bool S_LoadSound(sfx_t* sfx)
 	char* name = sfx->TrueName ? sfx->TrueName : sfx->Name;
 
 	char namebuffer[MAX_QPATH];
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		//	Quake 3 uses full names.
 		String::Cpy(namebuffer, name);
@@ -322,7 +384,14 @@ bool S_LoadSound(sfx_t* sfx)
 		return false;
 	}
 
-	sfx->LastTimeUsed = Com_Milliseconds() + 1;
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		sfx->LastTimeUsed = Sys_Milliseconds() + 1;
+	}
+	else
+	{
+		sfx->LastTimeUsed = Com_Milliseconds() + 1;
+	}
 	sfx->Length = info.samples;
 	sfx->LoopStart = info.loopstart;
 
