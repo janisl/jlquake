@@ -25,7 +25,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define PAINTBUFFER_SIZE		4096					// this is in samples
+#define TALK_FUTURE_SEC 0.25        // go this far into the future (seconds)
 
 // TYPES -------------------------------------------------------------------
 
@@ -39,9 +39,11 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static portable_samplepair_t	paintbuffer[PAINTBUFFER_SIZE];
+portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 extern "C"
 {
 int*			snd_p;
@@ -183,6 +185,11 @@ static void S_TransferStereo16(int endtime)
 
 static void S_TransferPaintBuffer(int endtime)
 {
+	if (!dma.buffer)
+	{
+		return;
+	}
+
 	if (s_testsound->integer)
 	{
 		// write a fixed sine wave
@@ -251,6 +258,58 @@ static void S_TransferPaintBuffer(int endtime)
 
 //**************************************************************************
 //
+//	LIP SYNCING
+//
+//**************************************************************************
+
+static void S_SetVoiceAmplitudeFrom16(const sfx_t* sc, int sampleOffset, int count, int entnum)
+{
+	if (count <= 0)
+	{
+		return; // must have gone ahead of the end of the sound
+	}
+	int sfx_count = 0;
+	short* samples = sc->Data;
+	for (int i = 0; i < count; i++)
+	{
+		int data  = samples[sampleOffset++];
+		if (abs(data) > 5000)
+		{
+			sfx_count += (data * 255) >> 8;
+		}
+	}
+	// adjust the sfx_count according to the frametime (scale down for longer frametimes)
+	sfx_count = abs(sfx_count);
+	sfx_count = (int)((float)sfx_count / (2.0 * (float)count));
+	if (sfx_count > 255)
+	{
+		sfx_count = 255;
+	}
+	if (sfx_count < 25)
+	{
+		sfx_count = 0;
+	}
+	// update the amplitude for this entity
+	s_entityTalkAmplitude[entnum] = (unsigned char)sfx_count;
+}
+
+int S_GetVoiceAmplitude(int entityNum)
+{
+	if (!(GGameType & (GAME_WolfSP | GAME_ET)))
+	{
+		return 0;
+	}
+	if (entityNum >= (GGameType & GAME_ET ? MAX_CLIENTS_ET : MAX_CLIENTS_WS))
+	{
+		common->Printf("Error: S_GetVoiceAmplitude() called for a non-client\n");
+		return 0;
+	}
+
+	return (int)s_entityTalkAmplitude[entityNum];
+}
+
+//**************************************************************************
+//
 //	CHANNEL MIXING
 //
 //**************************************************************************
@@ -313,14 +372,29 @@ static void S_PaintChannelFrom16(channel_t *ch, const sfx_t* sc, int count,
 
 void S_PaintChannels(int endtime)
 {
-	int 	i;
+	int 	i, si;
 	int 	end;
 	channel_t *ch;
 	sfx_t	*sc;
 	int		ltime, count;
 	int		sampleOffset;
+	streamingSound_t *ss;
+	bool firstPass = true;
 
-	snd_vol = s_volume->value * 255;
+	if (s_mute->value)
+	{
+		snd_vol = 0;
+	}
+	else
+	{
+		snd_vol = s_volume->value * 255;
+	}
+
+	if (s_volCurrent < 1)
+	{
+		// only when fading (at map start/end)
+		snd_vol = (int)((float)snd_vol * s_volCurrent);
+	}
 
 //Com_Printf ("%i to %i\n", s_paintedtime, endtime);
 	while (s_paintedtime < endtime)
@@ -353,36 +427,64 @@ void S_PaintChannels(int endtime)
 			break;
 		}
 
-		// clear the paint buffer to either music or zeros
-		if (s_rawend < s_paintedtime)
+		// clear pain buffer for the current time
+		Com_Memset(paintbuffer, 0, (end - s_paintedtime) * sizeof(portable_samplepair_t));
+		// mix all streaming sounds into paint buffer
+		for (si = 0, ss = streamingSounds; si < MAX_STREAMING_SOUNDS; si++, ss++)
 		{
-			if (s_rawend)
+			// if this streaming sound is still playing
+			if (s_rawend[si] >= s_paintedtime)
 			{
-				//Com_DPrintf ("background sound underrun\n");
-			}
-			Com_Memset(paintbuffer, 0, (end - s_paintedtime) * sizeof(portable_samplepair_t));
-		}
-		else
-		{
-			// copy from the streaming sound source
-			int		s;
-			int		stop;
+				// copy from the streaming sound source
+				int s;
+				int stop;
 
-			stop = (end < s_rawend) ? end : s_rawend;
+				stop = (end < s_rawend[si]) ? end : s_rawend[si];
 
-			for ( i = s_paintedtime ; i < stop ; i++ )
-			{
-				s = i&(MAX_RAW_SAMPLES-1);
-				paintbuffer[i-s_paintedtime] = s_rawsamples[s];
-			}
-//		if (i != end)
-//			Com_Printf ("partial stream\n");
-//		else
-//			Com_Printf ("full stream\n");
-			for ( ; i < end ; i++ )
-			{
-				paintbuffer[i-s_paintedtime].left =
-				paintbuffer[i-s_paintedtime].right = 0;
+				for (i = s_paintedtime; i < stop; i++)
+				{
+					s = i & (MAX_RAW_SAMPLES - 1);
+					paintbuffer[i - s_paintedtime].left += (s_rawsamples[si][s].left * s_rawVolume[si].left) >> 8;
+					paintbuffer[i - s_paintedtime].right += (s_rawsamples[si][s].right * s_rawVolume[si].right) >> 8;
+				}
+
+				// rain - the announcer is ent -1, so make sure we're >= 0
+				if ((GGameType & (GAME_WolfSP | GAME_ET)) && firstPass && ss->channel == Q3CHAN_VOICE &&
+					ss->entnum >= 0 && ss->entnum < (GGameType & GAME_ET ? MAX_CLIENTS_ET : MAX_CLIENTS_WS))
+				{
+					int talkcnt, talktime;
+					int sfx_count, vstop;
+					int data;
+
+					// we need to go into the future, since the interpolated behaviour of the facial
+					// animation creates lag in the time it takes to display the current facial frame
+					talktime = s_paintedtime + (int)(TALK_FUTURE_SEC * (float)s_khz->integer * 1000);
+					vstop = (talktime + 100 < s_rawend[si] ) ? talktime + 100 : s_rawend[si];
+					talkcnt = 1;
+					sfx_count = 0;
+
+					for (i = talktime; i < vstop; i++)
+					{
+						s = i & (MAX_RAW_SAMPLES - 1);
+						data = abs((s_rawsamples[si][s].left) / 8000);
+						if (data > sfx_count)
+						{
+							sfx_count = data;
+						}
+					}
+
+					if (sfx_count > 255)
+					{
+						sfx_count = 255;
+					}
+					if (sfx_count < 25)
+					{
+						sfx_count = 0;
+					}
+
+					// update the amplitude for this entity
+					s_entityTalkAmplitude[ss->entnum] = (unsigned char)sfx_count;
+				}
 			}
 		}
 
@@ -390,8 +492,9 @@ void S_PaintChannels(int endtime)
 		ch = s_channels;
 		for (i = 0; i < MAX_CHANNELS; i++, ch++)
 		{
-			if (!ch->sfx || (!ch->leftvol && !ch->rightvol))
-			//if (!ch->sfx || (ch->leftvol < 0.25 && ch->rightvol < 0.25))
+			if (ch->startSample == START_SAMPLE_IMMEDIATE || !ch->sfx ||
+				(!ch->leftvol && !ch->rightvol))
+				//(ch->leftvol < 0.25 && ch->rightvol < 0.25))
 			{
 				continue;
 			}
@@ -410,6 +513,22 @@ void S_PaintChannels(int endtime)
 
 				if (count > 0)
 				{
+					// Talking animations
+					// TODO: check that this entity has talking animations enabled!
+					if ((GGameType & (GAME_WolfSP | GAME_ET)) && firstPass && ch->entchannel == Q3CHAN_VOICE &&
+						ch->entnum < (GGameType & GAME_ET ? MAX_CLIENTS_ET : MAX_CLIENTS_WS))
+					{
+						int talkofs, talkcnt, talktime;
+						// we need to go into the future, since the interpolated behaviour of the facial
+						// animation creates lag in the time it takes to display the current facial frame
+						talktime = ltime + (int)(TALK_FUTURE_SEC * (float)s_khz->integer * 1000);
+						talkofs = talktime - ch->startSample;
+						talkcnt = 100;
+						if (talkofs + talkcnt < sc->Length)
+						{
+							S_SetVoiceAmplitudeFrom16(sc, talkofs, talkcnt, ch->entnum);
+						}
+					}
 					S_PaintChannelFrom16(ch, sc, count, sampleOffset, ltime - s_paintedtime);
 					ltime += count;
 				}
@@ -424,7 +543,7 @@ void S_PaintChannels(int endtime)
 					else
 					{
 						// channel just stopped
-						if (!(GGameType & GAME_Quake3))
+						if (!(GGameType & GAME_Tech3))
 						{
 							ch->sfx = NULL;
 						}
@@ -465,6 +584,22 @@ void S_PaintChannels(int endtime)
 
 				if (count > 0)
 				{
+					// Ridah, talking animations
+					// TODO: check that this entity has talking animations enabled!
+					if ((GGameType & (GAME_WolfSP | GAME_ET)) && firstPass && ch->entchannel == Q3CHAN_VOICE &&
+						ch->entnum < (GGameType & GAME_ET ? MAX_CLIENTS_ET : MAX_CLIENTS_WS))
+					{
+						int talkofs, talkcnt, talktime;
+						// we need to go into the future, since the interpolated behaviour of the facial
+						// animation creates lag in the time it takes to display the current facial frame
+						talktime = ltime + (int)( TALK_FUTURE_SEC * (float)s_khz->integer * 1000 );
+						talkofs = talktime % sc->Length;
+						talkcnt = 100;
+						if (talkofs + talkcnt < sc->Length)
+						{
+							S_SetVoiceAmplitudeFrom16(sc, talkofs, talkcnt, ch->entnum);
+						}
+					}
 					S_PaintChannelFrom16(ch, sc, count, sampleOffset, ltime - s_paintedtime);
 					ltime += count;
 				}
@@ -474,6 +609,8 @@ void S_PaintChannels(int endtime)
 
 		// transfer out according to DMA format
 		S_TransferPaintBuffer(end);
+		CL_WriteWaveFilePacket(end);
 		s_paintedtime = end;
+		firstPass = false;
 	}
 }

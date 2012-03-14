@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/sound/local.h"
 #include "../../client/cinematic/local.h"
 
-extern	int		s_rawend;
-
 static int				CL_handle = -1;
 
 void CIN_CloseAllVideos()
@@ -121,7 +119,7 @@ void CIN_StartedPlayback()
 
 	Con_Close();
 
-	s_rawend = s_soundtime;
+	s_rawend[0] = s_soundtime;
 }
 
 void CIN_SetExtents (int handle, int x, int y, int w, int h) {

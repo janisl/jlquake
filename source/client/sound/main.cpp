@@ -31,8 +31,6 @@
 //	This is MAX_EDICTS or MAX_GENTITIES_Q3
 #define MAX_LOOPSOUNDS			1024
 
-#define START_SAMPLE_IMMEDIATE	0x7fffffff
-
 // only begin attenuating sound volumes when outside the FULLVOLUME range
 #define SOUND_FULLVOLUME		80
 
@@ -82,6 +80,7 @@ Cvar*				s_bits;
 Cvar*				s_channels_cv;
 Cvar*				bgmvolume;
 Cvar*				bgmtype;
+Cvar* s_mute;	// (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
 
 channel_t   		s_channels[MAX_CHANNELS];
 channel_t   		loop_channels[MAX_CHANNELS];
@@ -89,10 +88,17 @@ int					numLoopChannels;
 
 playsound_t			s_pendingplays;
 
-int						s_rawend;
-portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
+// Streaming sounds
+// !! NOTE: the first streaming sound is always the music
+streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
+int						s_rawend[MAX_STREAMING_SOUNDS];
+portable_samplepair_t	s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
+// RF, store the volumes, since now they get adjusted at time of painting, so we can extract talking data first
+portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 sfx_t				s_knownSfx[MAX_SFX];
+
+float s_volCurrent;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -559,10 +565,10 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 
 	intVolume = 256 * volume;
 
-	if (s_rawend < s_soundtime)
+	if (s_rawend[0] < s_soundtime)
 	{
-		Log::develWrite("S_RawSamples: resetting minimum: %i < %i\n", s_rawend, s_soundtime);
-		s_rawend = s_soundtime;
+		Log::develWrite("S_RawSamples: resetting minimum: %i < %i\n", s_rawend[0], s_soundtime);
+		s_rawend[0] = s_soundtime;
 	}
 
 	scale = (float)rate / dma.speed;
@@ -574,10 +580,10 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 		{	// optimized case
 			for (i=0 ; i<samples ; i++)
 			{
-				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-				s_rawend++;
-				s_rawsamples[dst].left = ((short*)data)[i * 2] * intVolume;
-				s_rawsamples[dst].right = ((short*)data)[i * 2 + 1] * intVolume;
+				dst = s_rawend[0]&(MAX_RAW_SAMPLES-1);
+				s_rawend[0]++;
+				s_rawsamples[0][dst].left = ((short*)data)[i * 2] * intVolume;
+				s_rawsamples[0][dst].right = ((short*)data)[i * 2 + 1] * intVolume;
 			}
 		}
 		else
@@ -587,10 +593,10 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 				src = i*scale;
 				if (src >= samples)
 					break;
-				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-				s_rawend++;
-				s_rawsamples[dst].left = ((short *)data)[src*2] * intVolume;
-				s_rawsamples[dst].right = ((short *)data)[src*2+1] * intVolume;
+				dst = s_rawend[0]&(MAX_RAW_SAMPLES-1);
+				s_rawend[0]++;
+				s_rawsamples[0][dst].left = ((short *)data)[src*2] * intVolume;
+				s_rawsamples[0][dst].right = ((short *)data)[src*2+1] * intVolume;
 			}
 		}
 	}
@@ -601,10 +607,10 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 			src = i*scale;
 			if (src >= samples)
 				break;
-			dst = s_rawend&(MAX_RAW_SAMPLES-1);
-			s_rawend++;
-			s_rawsamples[dst].left = ((short *)data)[src] * intVolume;
-			s_rawsamples[dst].right = ((short *)data)[src] * intVolume;
+			dst = s_rawend[0]&(MAX_RAW_SAMPLES-1);
+			s_rawend[0]++;
+			s_rawsamples[0][dst].left = ((short *)data)[src] * intVolume;
+			s_rawsamples[0][dst].right = ((short *)data)[src] * intVolume;
 		}
 	}
 	else if (channels == 2 && width == 1)
@@ -616,10 +622,10 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 			src = i*scale;
 			if (src >= samples)
 				break;
-			dst = s_rawend&(MAX_RAW_SAMPLES-1);
-			s_rawend++;
-			s_rawsamples[dst].left = ((char *)data)[src*2] * intVolume;
-			s_rawsamples[dst].right = ((char *)data)[src*2+1] * intVolume;
+			dst = s_rawend[0]&(MAX_RAW_SAMPLES-1);
+			s_rawend[0]++;
+			s_rawsamples[0][dst].left = ((char *)data)[src*2] * intVolume;
+			s_rawsamples[0][dst].right = ((char *)data)[src*2+1] * intVolume;
 		}
 	}
 	else if (channels == 1 && width == 1)
@@ -631,16 +637,16 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 			src = i*scale;
 			if (src >= samples)
 				break;
-			dst = s_rawend&(MAX_RAW_SAMPLES-1);
-			s_rawend++;
-			s_rawsamples[dst].left = (((byte *)data)[src]-128) * intVolume;
-			s_rawsamples[dst].right = (((byte *)data)[src]-128) * intVolume;
+			dst = s_rawend[0]&(MAX_RAW_SAMPLES-1);
+			s_rawend[0]++;
+			s_rawsamples[0][dst].left = (((byte *)data)[src]-128) * intVolume;
+			s_rawsamples[0][dst].right = (((byte *)data)[src]-128) * intVolume;
 		}
 	}
 
-	if (s_rawend > s_soundtime + MAX_RAW_SAMPLES)
+	if (s_rawend[0] > s_soundtime + MAX_RAW_SAMPLES)
 	{
-		Log::develWrite("S_RawSamples: overflowed %i > %i\n", s_rawend, s_soundtime);
+		Log::develWrite("S_RawSamples: overflowed %i > %i\n", s_rawend[0], s_soundtime);
 	}
 }
 
@@ -821,7 +827,7 @@ void S_StopBackgroundTrack()
 	}
 	FS_FCloseFile(s_backgroundFile);
 	s_backgroundFile = 0;
-	s_rawend = 0;
+	s_rawend[0] = 0;
 }
 
 //==========================================================================
@@ -854,14 +860,14 @@ static void S_UpdateBackgroundTrack()
 	}
 
 	// see how many samples should be copied into the raw buffer
-	if (s_rawend < s_soundtime)
+	if (s_rawend[0] < s_soundtime)
 	{
-		s_rawend = s_soundtime;
+		s_rawend[0] = s_soundtime;
 	}
 
-	while (s_rawend < s_soundtime + MAX_RAW_SAMPLES)
+	while (s_rawend[0] < s_soundtime + MAX_RAW_SAMPLES)
 	{
-		bufferSamples = MAX_RAW_SAMPLES - (s_rawend - s_soundtime);
+		bufferSamples = MAX_RAW_SAMPLES - (s_rawend[0] - s_soundtime);
 
 		// decide how much data needs to be read from the file
 		fileSamples = bufferSamples * s_backgroundInfo.rate / dma.speed;
@@ -1363,7 +1369,7 @@ void S_ClearSoundBuffer()
 		S_ChannelSetup();
 	}
 
-	s_rawend = 0;
+	s_rawend[0] = 0;
 
 	if (dma.samplebits == 8)
 		clear = 0x80;
@@ -2318,6 +2324,10 @@ static void S_Update_()
 		return;
 	}
 
+	s_volCurrent = 1;
+	s_rawVolume[0].left = 256;
+	s_rawVolume[0].right = 256;
+
 	float thisTime = Com_Milliseconds();
 
 	//	Updates s_soundtime
@@ -2609,6 +2619,7 @@ void S_Init()
 	}
 	s_show = Cvar_Get("s_show", "0", CVAR_CHEAT);
 	s_testsound = Cvar_Get("s_testsound", "0", CVAR_CHEAT);
+	s_mute = Cvar_Get("s_mute", "0", CVAR_TEMP);
 
 	Cvar* cv = Cvar_Get("s_initsound", "1", 0);
 	if (!cv->integer)

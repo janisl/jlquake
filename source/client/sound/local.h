@@ -28,6 +28,12 @@
 
 #define MAX_RAW_SAMPLES			16384
 
+#define PAINTBUFFER_SIZE		4096					// this is in samples
+
+#define MAX_STREAMING_SOUNDS	12  // need to keep it low, or the rawsamples will get too big
+
+#define START_SAMPLE_IMMEDIATE	0x7fffffff
+
 struct portable_samplepair_t
 {
 	int			left;	// the final values will be clamped to +/- 0x00ffff00 and shifted down
@@ -63,6 +69,7 @@ struct channel_t
 {
 	//	First part is also used to store ponter to next free channel, so
 	// pointer of sfx must be somewhere after.
+	int* ptr;			//DAJ BUGFIX for freelist/endlist pointer
 	int			allocTime;
 	int			startSample;	// START_SAMPLE_IMMEDIATE = set immediately on next mix
 	int			entnum;			// to allow overriding a specific sound
@@ -77,6 +84,8 @@ struct channel_t
 	float		dopplerScale;
 	float		oldDopplerScale;
 	qboolean	doppler;
+	int flags;                  //----(SA)	added
+	bool threadReady;
 };
 
 struct wavinfo_t
@@ -107,6 +116,26 @@ struct playsound_t
 	int				begin;			// begin on this sample
 };
 
+// Streaming sounds
+struct streamingSound_t
+{
+	fileHandle_t file;
+	wavinfo_t info;
+	int samples;
+	char name[MAX_QPATH];
+	char loop[MAX_QPATH];
+	int looped;
+	int entnum;
+	int channel;
+	int attenuation;
+	int kill;
+
+	int fadeStart;
+	int fadeEnd;
+	float fadeStartVol;
+	float fadeTargetVol;
+};
+
 sfx_t* S_FindName(const char* name, bool create = true);
 sfx_t* S_AliasName(const char* aliasname, const char* truename);
 void S_IssuePlaysound(playsound_t* ps);
@@ -126,12 +155,16 @@ void SNDDMA_Submit();
 
 extern dma_t					dma;
 
+extern portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
+
 extern "C"
 {
 extern int*						snd_p;
 extern int						snd_linear_count;
 extern short*					snd_out;
 }
+
+extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
 
 extern int						s_soundtime;
 extern int   					s_paintedtime;
@@ -140,6 +173,7 @@ extern Cvar*					s_testsound;
 extern Cvar*					s_khz;
 extern Cvar*					s_bits;
 extern Cvar*					s_channels_cv;
+extern Cvar* s_mute;
 
 extern channel_t				s_channels[MAX_CHANNELS];
 extern channel_t				loop_channels[MAX_CHANNELS];
@@ -147,11 +181,15 @@ extern int						numLoopChannels;
 
 extern playsound_t				s_pendingplays;
 
-extern int						s_rawend;
-extern portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
+extern streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
+extern int						s_rawend[MAX_STREAMING_SOUNDS];
+extern portable_samplepair_t	s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
+extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 extern sfx_t					s_knownSfx[MAX_SFX];
 
 extern bool s_use_custom_memset;
+
+extern float s_volCurrent;
 
 #endif

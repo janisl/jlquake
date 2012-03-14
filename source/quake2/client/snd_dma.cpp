@@ -80,3 +80,7 @@ int S_GetClFrameServertime()
 {
 	return cl.q2_frame.servertime;
 }
+
+void CL_WriteWaveFilePacket(int endtime)
+{
+}

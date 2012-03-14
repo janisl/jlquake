@@ -32,3 +32,7 @@ int S_GetClFrameServertime()
 {
 	return 0;
 }
+
+void CL_WriteWaveFilePacket(int endtime)
+{
+}

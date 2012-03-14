@@ -785,7 +785,7 @@ redump:
 			if (numQuads == -1)
 			{
 				S_Update();
-				s_rawend = s_soundtime;
+				s_rawend[0] = s_soundtime;
 			}
 			int ssize = RllDecodeStereoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
 			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f);

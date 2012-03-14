@@ -557,5 +557,6 @@ float crand();	// -1 to 1
 void Key_ClearStates();
 float* CL_GetSimOrg();
 bool CL_IsServerActive();
+void CL_WriteWaveFilePacket(int endtime);
 
 #endif
