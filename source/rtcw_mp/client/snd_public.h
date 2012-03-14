@@ -78,7 +78,4 @@ void S_BeginRegistration( void );
 sfxHandle_t S_RegisterSound( const char *sample);
 
 //
-int S_GetVoiceAmplitude( int entityNum );
-
-
 #endif  // __snd_public_h__

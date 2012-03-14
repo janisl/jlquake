@@ -254,3 +254,18 @@ struct q3entityState_t
 										// walking will use different animations and
 										// won't generate footsteps
 #define Q3BUTTON_ANY			2048			// any key whatsoever
+
+// sound channels
+// channel 0 never willingly overrides
+// other channels will allways override a playing sound on that channel
+enum
+{
+	Q3CHAN_AUTO,
+	Q3CHAN_LOCAL,		// menu sounds, etc
+	Q3CHAN_WEAPON,
+	Q3CHAN_VOICE,
+	Q3CHAN_ITEM,
+	Q3CHAN_BODY,
+	Q3CHAN_LOCAL_SOUND,	// chat messages, etc
+	Q3CHAN_ANNOUNCER		// announcer voices, etc
+};

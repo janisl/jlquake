@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
 
-#define START_SAMPLE_IMMEDIATE  0x7fffffff
-
 typedef struct loopSound_s {
 	vec3_t origin;
 	vec3_t velocity;
@@ -57,30 +55,11 @@ extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
 
-// Ridah, streaming sounds
-typedef struct {
-	fileHandle_t file;
-	wavinfo_t info;
-	int samples;
-	char loop[MAX_QPATH];
-	int entnum;
-	int channel;
-	int attenuation;
-	qboolean kill;
-} streamingSound_t;
-
-extern streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
-extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
-
-
 extern Cvar   *s_nosound;
 extern Cvar   *s_show;
 extern Cvar   *s_mixahead;
-extern Cvar   *s_mute;
 
 extern Cvar   *s_separation;
-
-void S_PaintChannels( int endtime );
 
 void S_memoryLoad( sfx_t *sfx );
 portable_samplepair_t *S_GetRawSamplePointer();

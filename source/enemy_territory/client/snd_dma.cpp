@@ -52,9 +52,6 @@ void S_UpdateStreamingSounds( void );
 
 snd_t snd;  // globals for sound
 
-// Ridah, streaming sounds
-// !! NOTE: the first streaming sound is always the music
-streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
 int numStreamingSounds = 0;
 
 void    *crit;
@@ -80,15 +77,12 @@ Cvar      *s_musicVolume;
 Cvar      *s_currentMusic;    //----(SA)	added
 Cvar      *s_separation;
 Cvar      *s_doppler;
-Cvar      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
 Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 Cvar      *cl_cacheGathering; // Ridah
 Cvar      *s_debugMusic;  //----(SA)	added
 
 // for streaming sounds
 int s_rawpainted[MAX_STREAMING_SOUNDS];
-// RF, store the volumes, since now they get adjusted at time of painting, so we can extract talking data first
-portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 /*
 ================
@@ -414,6 +408,7 @@ void S_DefaultSound( sfx_t *sfx ) {
 			sfx->Data[i] = 0;
 		}
 	}
+	sfx->LoopStart = -1;
 }
 
 /*
@@ -651,7 +646,7 @@ void S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t s
 	}
 
 	// RF, we have lots of NULL sounds using up valuable channels, so just ignore them
-/*	if( !sfxHandle && entchannel != CHAN_WEAPON ) {	// let null weapon sounds try to play.  they kill any weapon sounds playing when a guy dies
+/*	if( !sfxHandle && entchannel != Q3CHAN_WEAPON ) {	// let null weapon sounds try to play.  they kill any weapon sounds playing when a guy dies
 		Com_Printf( "^1WARNING: NULL sfx handle\n" );
 		return;
 	}*/
@@ -721,7 +716,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 				continue;
 			}
 			// check to see if this character currently has another sound streaming on the same channel
-			if ( ( entchannel != CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == entchannel ) && ( streamingSounds[i].entnum == entityNum ) ) {
+			if ( ( entchannel != Q3CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == entchannel ) && ( streamingSounds[i].entnum == entityNum ) ) {
 				// found a match, override this channel
 				streamingSounds[i].kill = 1;
 				break;
@@ -756,7 +751,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 			// multiple sounds on him.
 			//
 			/*if(entityNum != 0 &&
-			   entityNum < MAX_CLIENTS_ET && s_channels[i].entchannel != CHAN_AUTO && s_channels[i].entchannel != CHAN_WEAPON) {
+			   entityNum < MAX_CLIENTS_ET && s_channels[i].entchannel != Q3CHAN_AUTO && s_channels[i].entchannel != Q3CHAN_WEAPON) {
 				S_ChannelFree(&s_channels[i]);
 				continue;
 			}*/
@@ -781,7 +776,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 
 	// re-use channel if applicable
 	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
-		if ( s_channels[i].entnum == entityNum && s_channels[i].entchannel == entchannel && entchannel != CHAN_AUTO ) {
+		if ( s_channels[i].entnum == entityNum && s_channels[i].entchannel == entchannel && entchannel != Q3CHAN_AUTO ) {
 			if ( !( s_channels[i].flags & SND_NOCUT ) && s_channels[i].sfx == sfx ) {
 				ch = &s_channels[i];
 				break;
@@ -803,7 +798,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 				chosen = i;
 				break;
 			}
-			if ( ch->entnum != listener_number && ch->entnum == entityNum && ch->allocTime < oldest && ch->entchannel != CHAN_ANNOUNCER ) {
+			if ( ch->entnum != listener_number && ch->entnum == entityNum && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER ) {
 				oldest = ch->allocTime;
 				chosen = i;
 			}
@@ -811,7 +806,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 		if ( chosen == -1 ) {
 			ch = s_channels;
 			for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-				if ( ch->entnum != listener_number && ch->allocTime < oldest && ch->entchannel != CHAN_ANNOUNCER ) {
+				if ( ch->entnum != listener_number && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER ) {
 					oldest = ch->allocTime;
 					chosen = i;
 				}
@@ -939,6 +934,8 @@ void S_StopAllSounds( void ) {
 
 	Sys_EnterCriticalSection( crit );
 
+	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
+
 //DAJ BUGFIX	for(i=0;i<numStreamingSounds;i++) {
 	// Arnout: i = 1, as we ignore music
 	for ( i = 1; i < MAX_STREAMING_SOUNDS; i++ ) {   //DAJ numStreamingSounds can get bigger than the MAX array size
@@ -1062,7 +1059,7 @@ void S_AddLoopingSound( const vec3_t origin, const vec3_t velocity, const int ra
 		volume = 0;
 	}
 
-	snd.loopSounds[snd.numLoopSounds].vol = (int)( (float)volume * snd.volCurrent );  //----(SA)	modified
+	snd.loopSounds[snd.numLoopSounds].vol = (int)( (float)volume * s_volCurrent);  //----(SA)	modified
 
 	if ( s_doppler->integer && VectorLengthSquared( velocity ) > 0.0 ) {
 		vec3_t out;
@@ -1162,7 +1159,7 @@ void S_AddRealLoopingSound( const vec3_t origin, const vec3_t velocity, const in
 		volume = 0;
 	}
 
-	snd.loopSounds[snd.numLoopSounds].vol = (int)( (float)volume * snd.volCurrent );  //----(SA)	modified
+	snd.loopSounds[snd.numLoopSounds].vol = (int)( (float)volume * s_volCurrent);  //----(SA)	modified
 	snd.numLoopSounds++;
 
 	Sys_LeaveCriticalSection( crit );
@@ -1823,15 +1820,12 @@ void S_Update_Mix( void ) {
 	if ( s_soundtime < snd.volTime2 ) {    // still has fading to do
 		if ( s_soundtime > snd.volTime1 ) {    // has started fading
 			snd.volFadeFrac = ( (float)( s_soundtime - snd.volTime1 ) / (float)( snd.volTime2 - snd.volTime1 ) );
-			snd.volCurrent = ( ( 1.0 - snd.volFadeFrac ) * snd.volStart + snd.volFadeFrac * snd.volTarget );
-
-//DAJ			Com_DPrintf( "master vol: %f\n", snd.volCurrent );
-
+			s_volCurrent = ( ( 1.0 - snd.volFadeFrac ) * snd.volStart + snd.volFadeFrac * snd.volTarget );
 		} else {
-			snd.volCurrent = snd.volStart;
+			s_volCurrent = snd.volStart;
 		}
 	} else {
-		snd.volCurrent = snd.volTarget;
+		s_volCurrent = snd.volTarget;
 
 		if ( snd.stopSounds ) {
 			S_StopAllSounds();  // faded out, stop playing
@@ -1868,7 +1862,7 @@ void S_Play_f( void ) {
 		}
 		h = S_RegisterSound( name);
 		if ( h ) {
-			S_StartLocalSound( h, CHAN_LOCAL_SOUND, 127 );
+			S_StartLocalSound( h, Q3CHAN_LOCAL_SOUND, 127 );
 		}
 		i++;
 	}
@@ -2202,7 +2196,7 @@ void S_FadeAllSounds( float targetVol, int time, qboolean stopsounds ) {
 		S_StopAllSounds();
 	}
 
-	snd.volStart = snd.volCurrent;
+	snd.volStart = s_volCurrent;
 	snd.volTarget = targetVol;
 
 	snd.volTime1 = s_soundtime;
@@ -2212,7 +2206,7 @@ void S_FadeAllSounds( float targetVol, int time, qboolean stopsounds ) {
 
 	// instant
 	if ( !time ) {
-		snd.volTarget = snd.volStart = snd.volCurrent = targetVol;  // set it
+		snd.volTarget = snd.volStart = s_volCurrent = targetVol;  // set it
 		snd.volTime1 = snd.volTime2 = 0;    // no fading
 	}
 }
@@ -2339,7 +2333,7 @@ float S_StartStreamingSound( const char *intro, const char *loop, int entnum, in
 				continue;
 			}
 			// check to see if this character currently has another sound streaming on the same channel
-			if ( ( channel != CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == channel ) && ( streamingSounds[i].entnum == entnum ) ) {
+			if ( ( channel != Q3CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == channel ) && ( streamingSounds[i].entnum == entnum ) ) {
 				// found a match, override this channel
 				streamingSounds[i].kill = 1;
 				ss = &streamingSounds[i];   // use this track to start the new stream
@@ -2618,7 +2612,7 @@ void S_UpdateStreamingSounds( void ) {
 			// calculate the volume
 			streamingVol = S_GetStreamingFade( ss );
 
-			streamingVol *= snd.volCurrent; // get current global volume level
+			streamingVol *= s_volCurrent; // get current global volume level
 
 			if ( s_mute->value ) {  //----(SA)	sound is muted.  process to maintain timing, but play at 0 volume
 				streamingVol = 0;
@@ -2743,4 +2737,8 @@ int S_GetSoundLength( sfxHandle_t sfxHandle ) {
 int S_GetCurrentSoundTime( void ) {
 	return s_soundtime + dma.speed;
 //	 return s_paintedtime;
+}
+
+void S_IssuePlaysound(playsound_t* ps)
+{
 }

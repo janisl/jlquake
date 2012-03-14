@@ -47,9 +47,6 @@ void S_StreamingSound_f( void );
 void S_Update_Mix();
 void S_StopAllSounds( void );
 void S_UpdateStreamingSounds( void );
-// Ridah, streaming sounds
-// !! NOTE: the first streaming sound is always the music
-streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
 int numStreamingSounds = 0;
 static vec3_t entityPositions[MAX_GENTITIES_Q3];
 
@@ -110,7 +107,6 @@ Cvar      *s_mixPreStep;
 Cvar      *s_musicVolume;
 Cvar      *s_separation;
 Cvar      *s_doppler;
-Cvar      *s_mute;        // (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
 Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 Cvar      *cl_cacheGathering; // Ridah
 
@@ -123,8 +119,6 @@ static channel_t       *endflist = NULL;
 
 // for streaming sounds
 int s_rawpainted[MAX_STREAMING_SOUNDS];
-// RF, store the volumes, since now they get adjusted at time of painting, so we can extract talking data first
-portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 
 /*
@@ -417,6 +411,7 @@ void S_DefaultSound( sfx_t *sfx ) {
 			sfx->Data[i] = 0;
 		}
 	}
+	sfx->LoopStart = -1;
 }
 
 /*
@@ -665,7 +660,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 				continue;
 			}
 			// check to see if this character currently has another sound streaming on the same channel
-			if ( ( entchannel != CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == entchannel ) && ( streamingSounds[i].entnum == entityNum ) ) {
+			if ( ( entchannel != Q3CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == entchannel ) && ( streamingSounds[i].entnum == entityNum ) ) {
 				// found a match, override this channel
 				streamingSounds[i].kill = qtrue;
 				break;
@@ -732,7 +727,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 				chosen = i;
 				break;
 			}
-			if ( ch->entnum != listener_number && ch->entnum == entityNum && ch->allocTime < oldest && ch->entchannel != CHAN_ANNOUNCER ) {
+			if ( ch->entnum != listener_number && ch->entnum == entityNum && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER ) {
 				oldest = ch->allocTime;
 				chosen = i;
 			}
@@ -740,7 +735,7 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 		if ( chosen == -1 ) {
 			ch = s_channels;
 			for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-				if ( ch->entnum != listener_number && ch->allocTime < oldest && ch->entchannel != CHAN_ANNOUNCER ) {
+				if ( ch->entnum != listener_number && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER ) {
 					oldest = ch->allocTime;
 					chosen = i;
 				}
@@ -854,6 +849,8 @@ void S_StopAllSounds( void ) {
 	if ( !s_soundStarted ) {
 		return;
 	}
+
+	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
 
 //DAJ BUGFIX	for(i=0;i<numStreamingSounds;i++) {
 	for ( i = 0; i < MAX_STREAMING_SOUNDS; i++ ) {   //DAJ numStreamingSounds can get bigger than the MAX array size
@@ -1435,6 +1432,7 @@ void S_Update_Mix( void ) {
 		return;
 	}
 
+	s_volCurrent = 1;
 
 	for ( i = 0; i < tart; i++ ) {
 		if ( pushPop[i].fixedOrigin ) {
@@ -1511,7 +1509,7 @@ void S_Play_f( void ) {
 		}
 		h = S_RegisterSound( name);
 		if ( h ) {
-			S_StartLocalSound( h, CHAN_LOCAL_SOUND );
+			S_StartLocalSound( h, Q3CHAN_LOCAL_SOUND );
 		}
 		i++;
 	}
@@ -1777,7 +1775,7 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 				continue;
 			}
 			// check to see if this character currently has another sound streaming on the same channel
-			if ( ( channel != CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == channel ) && ( streamingSounds[i].entnum == entnum ) ) {
+			if ( ( channel != Q3CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == channel ) && ( streamingSounds[i].entnum == entnum ) ) {
 				// found a match, override this channel
 				streamingSounds[i].kill = qtrue;
 				ss = &streamingSounds[i];   // use this track to start the new stream
@@ -2085,4 +2083,12 @@ void S_UpdateStreamingSounds( void ) {
 			}
 		}
 	}
+}
+
+void CL_WriteWaveFilePacket(int endtime)
+{
+}
+
+void S_IssuePlaysound(playsound_t* ps)
+{
 }

@@ -65,6 +65,8 @@ void S_Init();
 void S_DisableSounds();
 #endif
 
+int S_GetVoiceAmplitude(int entityNum);
+
 qboolean MIDI_Init();
 void MIDI_Cleanup();
 void MIDI_Play(char *Name);

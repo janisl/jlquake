@@ -78,6 +78,3 @@ void S_BeginRegistration( void );
 // has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files
 sfxHandle_t S_RegisterSound( const char *sample);
-
-//
-int S_GetVoiceAmplitude( int entityNum );

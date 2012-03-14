@@ -84,7 +84,6 @@ set (ET_FILES
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
 	client/snd_dma.cpp
-	client/snd_mix.cpp
 
 	unix/linux_signals.cpp
 	unix/unix_main.cpp

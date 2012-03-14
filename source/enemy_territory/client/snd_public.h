@@ -86,8 +86,6 @@ void S_BeginRegistration( void );
 sfxHandle_t S_RegisterSound( const char *sample);
 
 //
-int S_GetVoiceAmplitude( int entityNum );
-
 int S_GetSoundLength( sfxHandle_t sfxHandle );
 int S_GetCurrentSoundTime( void );
 

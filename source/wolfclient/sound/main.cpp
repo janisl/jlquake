@@ -32,13 +32,8 @@
 //	This is MAX_EDICTS or MAX_GENTITIES_Q3
 #define MAX_LOOPSOUNDS			1024
 
-#define START_SAMPLE_IMMEDIATE	0x7fffffff
-
 // only begin attenuating sound volumes when outside the FULLVOLUME range
 #define SOUND_FULLVOLUME		80
-
-#define CHAN_LOCAL_SOUND		6
-#define CHAN_ANNOUNCER			7
 
 #define SOUND_LOOPATTENUATE		0.003
 #define SOUND_ATTENUATE			0.0008f
@@ -87,6 +82,7 @@ Cvar*				s_bits;
 Cvar*				s_channels_cv;
 Cvar*				bgmvolume;
 Cvar*				bgmtype;
+Cvar* s_mute;	// (SA) for DM so he can 'toggle' sound on/off without disturbing volume levels
 
 channel_t   		s_channels[MAX_CHANNELS];
 channel_t   		loop_channels[MAX_CHANNELS];
@@ -94,10 +90,17 @@ int					numLoopChannels;
 
 playsound_t			s_pendingplays;
 
+// Streaming sounds
+// !! NOTE: the first streaming sound is always the music
+streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
 int						s_rawend[MAX_STREAMING_SOUNDS];
 portable_samplepair_t	s_rawsamples[MAX_STREAMING_SOUNDS][MAX_RAW_SAMPLES];
+// RF, store the volumes, since now they get adjusted at time of painting, so we can extract talking data first
+portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 
 sfx_t				s_knownSfx[MAX_SFX];
+
+float s_volCurrent;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -1709,7 +1712,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 			chosen = -1;
 			for (i = 0 ; i < MAX_CHANNELS; i++, ch++)
 			{
-				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER)
+				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != Q3CHAN_ANNOUNCER)
 				{
 					oldest = ch->allocTime;
 					chosen = i;
@@ -1720,7 +1723,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 				ch = s_channels;
 				for (i = 0 ; i < MAX_CHANNELS; i++, ch++)
 				{
-					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER)
+					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != Q3CHAN_ANNOUNCER)
 					{
 						oldest = ch->allocTime;
 						chosen = i;
@@ -2501,7 +2504,7 @@ static void S_Play_f()
 			}
 			else
 			{
-				S_StartLocalSound(h, CHAN_LOCAL_SOUND);
+				S_StartLocalSound(h, Q3CHAN_LOCAL_SOUND);
 			}
 		}
 		i++;
@@ -2543,7 +2546,7 @@ static void S_PlayVol_f()
 			}
 			else
 			{
-				S_StartSound(NULL, listener_number, CHAN_LOCAL_SOUND, h, vol);
+				S_StartSound(NULL, listener_number, Q3CHAN_LOCAL_SOUND, h, vol);
 			}
 		}
 		i += 2;

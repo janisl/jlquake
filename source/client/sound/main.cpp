@@ -36,9 +36,6 @@
 // only begin attenuating sound volumes when outside the FULLVOLUME range
 #define SOUND_FULLVOLUME		80
 
-#define CHAN_LOCAL_SOUND		6
-#define CHAN_ANNOUNCER			7
-
 #define SOUND_LOOPATTENUATE		0.003
 #define SOUND_ATTENUATE			0.0008f
 
@@ -1701,7 +1698,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 			chosen = -1;
 			for (i = 0 ; i < MAX_CHANNELS; i++, ch++)
 			{
-				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER)
+				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != Q3CHAN_ANNOUNCER)
 				{
 					oldest = ch->allocTime;
 					chosen = i;
@@ -1712,7 +1709,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 				ch = s_channels;
 				for (i = 0 ; i < MAX_CHANNELS; i++, ch++)
 				{
-					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER)
+					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != Q3CHAN_ANNOUNCER)
 					{
 						oldest = ch->allocTime;
 						chosen = i;
@@ -2493,7 +2490,7 @@ static void S_Play_f()
 			}
 			else
 			{
-				S_StartLocalSound(h, CHAN_LOCAL_SOUND);
+				S_StartLocalSound(h, Q3CHAN_LOCAL_SOUND);
 			}
 		}
 		i++;
@@ -2535,7 +2532,7 @@ static void S_PlayVol_f()
 			}
 			else
 			{
-				S_StartSound(NULL, listener_number, CHAN_LOCAL_SOUND, h, vol);
+				S_StartSound(NULL, listener_number, Q3CHAN_LOCAL_SOUND, h, vol);
 			}
 		}
 		i += 2;

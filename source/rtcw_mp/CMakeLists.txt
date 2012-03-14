@@ -72,7 +72,6 @@ set(WOLFMP_FILES
 	qcommon/vm.cpp
 
 	client/snd_dma.cpp
-	client/snd_mix.cpp
 
 	unix/unix_main.cpp
 	unix/unix_shared.cpp

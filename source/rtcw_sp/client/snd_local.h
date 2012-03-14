@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
 
-#define START_SAMPLE_IMMEDIATE  0x7fffffff
-
 typedef struct loopSound_s {
 	vec3_t origin;
 	vec3_t velocity;
@@ -53,35 +51,11 @@ extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
 
-extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
-
 //----(SA)	some flags for queued music tracks
 #define QUEUED_PLAY_ONCE    -1
 #define QUEUED_PLAY_LOOPED  -2
 #define QUEUED_PLAY_ONCE_SILENT -3  // when done it goes quiet
 //----(SA)	end
-
-// Ridah, streaming sounds
-typedef struct {
-	fileHandle_t file;
-	wavinfo_t info;
-	int samples;
-	char name[MAX_QPATH];           //----(SA)	added
-	char loop[MAX_QPATH];
-	int looped;                 //----(SA)	added
-	int entnum;
-	int channel;
-	int attenuation;
-	int kill;           //----(SA)	changed
-
-	int fadeStart;              //----(SA)	added
-	int fadeEnd;                //----(SA)	added
-	float fadeStartVol;         //----(SA)	added
-	float fadeTargetVol;        //----(SA)	added
-} streamingSound_t;
-
-
-
 
 typedef struct {
 	vec3_t origin;
@@ -107,7 +81,6 @@ typedef struct {
 	int volTime1;
 	int volTime2;
 	float volFadeFrac;
-	float volCurrent;
 
 	channel_t   *freelist;
 	channel_t   *endflist;
@@ -134,27 +107,18 @@ extern snd_t snd;   // globals for sound
 
 
 
-extern streamingSound_t streamingSounds[MAX_STREAMING_SOUNDS];
-extern portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
-
-
 extern Cvar   *s_nosound;
 extern Cvar   *s_show;
 extern Cvar   *s_mixahead;
-extern Cvar   *s_mute;
 
 extern Cvar   *s_separation;
 extern Cvar   *s_currentMusic;    //----(SA)	added
 extern Cvar   *s_debugMusic;      //----(SA)	added
-
-void S_PaintChannels( int endtime );
 
 void S_memoryLoad( sfx_t *sfx );
 portable_samplepair_t *S_GetRawSamplePointer();
 
 // spatializes a channel
 void S_Spatialize( channel_t *ch );
-
-extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
 
 extern float S_GetStreamingFade( streamingSound_t *ss );    //----(SA)	added

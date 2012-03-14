@@ -500,24 +500,6 @@ typedef struct {
 	vec3_t axis[3];
 } orientation_t;
 
-//=====================================================================
-
-
-// sound channels
-// channel 0 never willingly overrides
-// other channels will allways override a playing sound on that channel
-typedef enum {
-	CHAN_AUTO,
-	CHAN_LOCAL,     // menu sounds, etc
-	CHAN_WEAPON,
-	CHAN_VOICE,
-	CHAN_ITEM,
-	CHAN_BODY,
-	CHAN_LOCAL_SOUND,   // chat messages, etc
-	CHAN_ANNOUNCER      // announcer voices, etc
-} soundChannel_t;
-
-
 /*
 ========================================================================
 
