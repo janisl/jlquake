@@ -50,8 +50,6 @@ LIP SYNCING
 ===============================================================================
 */
 
-#ifdef TALKANIM
-
 unsigned char s_entityTalkAmplitude[MAX_CLIENTS_ET];
 
 /*
@@ -103,15 +101,6 @@ int S_GetVoiceAmplitude( int entityNum ) {
 
 	return (int)s_entityTalkAmplitude[entityNum];
 }
-#else
-
-// NERVE - SMF
-int S_GetVoiceAmplitude( int entityNum ) {
-	return 0;
-}
-// -NERVE - SMF
-
-#endif
 
 /*
 ===============================================================================
@@ -236,7 +225,6 @@ void S_PaintChannels( int endtime ) {
 					paintbuffer[i - s_paintedtime].left += ( s_rawsamples[si][s].left * s_rawVolume[si].left ) >> 8;
 					paintbuffer[i - s_paintedtime].right += ( s_rawsamples[si][s].right * s_rawVolume[si].right ) >> 8;
 				}
-#ifdef TALKANIM
 				if ( firstPass && ss->channel == CHAN_VOICE && ss->entnum < MAX_CLIENTS_ET ) {
 					int talkcnt, talktime;
 					int sfx_count, vstop;
@@ -272,7 +260,6 @@ void S_PaintChannels( int endtime ) {
 						s_entityTalkAmplitude[ss->entnum] = (unsigned char)sfx_count;
 					}
 				}
-#endif
 			}
 		}
 
@@ -298,7 +285,6 @@ void S_PaintChannels( int endtime ) {
 			}
 
 			if ( count > 0 ) {
-#ifdef TALKANIM
 				// Ridah, talking animations
 				// TODO: check that this entity has talking animations enabled!
 				if ( firstPass && ch->entchannel == CHAN_VOICE && ch->entnum < MAX_CLIENTS_ET ) {
@@ -312,7 +298,6 @@ void S_PaintChannels( int endtime ) {
 						S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
 					}
 				}
-#endif
 				S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
 			}
 		}
@@ -344,7 +329,6 @@ void S_PaintChannels( int endtime ) {
 				}
 
 				if ( count > 0 ) {
-#ifdef TALKANIM
 					// Ridah, talking animations
 					// TODO: check that this entity has talking animations enabled!
 					if ( firstPass && ch->entchannel == CHAN_VOICE && ch->entnum < MAX_CLIENTS_ET ) {
@@ -358,7 +342,6 @@ void S_PaintChannels( int endtime ) {
 							S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
 						}
 					}
-#endif
 					S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
 					ltime += count;
 				}

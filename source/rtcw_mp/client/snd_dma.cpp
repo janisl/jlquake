@@ -1332,11 +1332,6 @@ void S_UpdateThread( void ) {
 		return;
 	}
 
-#ifdef TALKANIM
-	// default to ZERO amplitude, overwrite if sound is playing
-	memset( s_entityTalkAmplitude, 0, sizeof( s_entityTalkAmplitude ) );
-#endif
-
 	if ( s_clearSoundBuffer ) {
 		int clear;
 		int i;

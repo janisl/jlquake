@@ -49,8 +49,6 @@ LIP SYNCING
 ===============================================================================
 */
 
-#ifdef TALKANIM
-
 unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
 
 /*
@@ -101,7 +99,6 @@ int S_GetVoiceAmplitude( int entityNum ) {
 
 	return (int)s_entityTalkAmplitude[entityNum];
 }
-#endif
 
 /*
 ===============================================================================
@@ -225,7 +222,6 @@ void S_PaintChannels( int endtime ) {
 					paintbuffer[i - s_paintedtime].right += ( s_rawsamples[si][s].right * s_rawVolume[si].right ) >> 8;
 				}
 
-#ifdef TALKANIM
 				if ( firstPass && ss->channel == CHAN_VOICE && ss->entnum < MAX_CLIENTS_WS ) {
 					int talkcnt, talktime;
 					int sfx_count, vstop;
@@ -258,7 +254,6 @@ void S_PaintChannels( int endtime ) {
 					// update the amplitude for this entity
 					s_entityTalkAmplitude[ss->entnum] = (unsigned char)sfx_count;
 				}
-#endif
 			}
 		}
 
@@ -284,7 +279,6 @@ void S_PaintChannels( int endtime ) {
 			}
 
 			if ( count > 0 ) {
-#ifdef TALKANIM
 				// Ridah, talking animations
 				// TODO: check that this entity has talking animations enabled!
 				if ( firstPass && ch->entchannel == CHAN_VOICE && ch->entnum < MAX_CLIENTS_WS ) {
@@ -298,7 +292,6 @@ void S_PaintChannels( int endtime ) {
 						S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
 					}
 				}
-#endif
 				S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
 			}
 		}
@@ -328,7 +321,6 @@ void S_PaintChannels( int endtime ) {
 				}
 
 				if ( count > 0 ) {
-#ifdef TALKANIM
 					// Ridah, talking animations
 					// TODO: check that this entity has talking animations enabled!
 					if ( firstPass && ch->entchannel == CHAN_VOICE && ch->entnum < MAX_CLIENTS_WS ) {
@@ -342,7 +334,6 @@ void S_PaintChannels( int endtime ) {
 							S_SetVoiceAmplitudeFrom16( sc, talkofs, talkcnt, ch->entnum );
 						}
 					}
-#endif
 					S_PaintChannelFrom16( ch, sc, count, sampleOffset, ltime - s_paintedtime );
 					ltime += count;
 				}

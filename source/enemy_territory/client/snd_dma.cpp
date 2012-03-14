@@ -1681,10 +1681,8 @@ void S_UpdateThread( void ) {
 		return;
 	}
 
-#ifdef TALKANIM
 	// default to ZERO amplitude, overwrite if sound is playing
 	memset( s_entityTalkAmplitude, 0, sizeof( s_entityTalkAmplitude ) );
-#endif
 
 	if ( snd.s_clearSoundBuffer ) {
 		S_ClearSounds( qtrue, (qboolean)( snd.s_clearSoundBuffer >= 4 ) );    //----(SA)	modified

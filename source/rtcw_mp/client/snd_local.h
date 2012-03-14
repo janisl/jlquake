@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
 
-//#define TALKANIM			// NERVE - SMF - we don't want this for multiplayer
-
 #define START_SAMPLE_IMMEDIATE  0x7fffffff
 
 typedef struct loopSound_s {
@@ -58,10 +56,6 @@ typedef struct loopSound_s {
 extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
-
-#ifdef TALKANIM
-extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WM];
-#endif
 
 // Ridah, streaming sounds
 typedef struct {
