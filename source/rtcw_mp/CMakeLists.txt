@@ -109,20 +109,6 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 		)
 		list(APPEND WOLFMP_FILES ${OBJ})
 	endforeach(SRC)
-
-	set(WOLFMP_ASM_FILES
-		unix/snd_mixa.s
-	)
-	foreach(SRC ${WOLFMP_ASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC} ${CMAKE_CURRENT_SOURCE_DIR}/qasm.h
-			COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
-				-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
-		)
-		list(APPEND WOLFMP_FILES ${OBJ})
-	endforeach(SRC)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmp ${WOLFMP_FILES})

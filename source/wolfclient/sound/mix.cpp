@@ -46,8 +46,8 @@ int*			snd_p;
 int				snd_linear_count;
 short*			snd_out;
 }
-#if 0
-static int		snd_vol;
+//static 
+int		snd_vol;
 
 // CODE --------------------------------------------------------------------
 
@@ -180,8 +180,14 @@ static void S_TransferStereo16(int endtime)
 //
 //==========================================================================
 
-static void S_TransferPaintBuffer(int endtime)
+//static 
+void S_TransferPaintBuffer(int endtime)
 {
+	if (!dma.buffer)
+	{
+		return;
+	}
+
 	if (s_testsound->integer)
 	{
 		// write a fixed sine wave
@@ -254,6 +260,7 @@ static void S_TransferPaintBuffer(int endtime)
 //
 //**************************************************************************
 
+#if 0
 //==========================================================================
 //
 //	S_PaintChannelFrom16

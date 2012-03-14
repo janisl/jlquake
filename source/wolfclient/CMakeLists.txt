@@ -11,6 +11,21 @@ set(WOLFCLIENT_FILES
 	../client/system_unix.cpp
 )
 
+set(WOLFCLIENT_ASM_FILES
+	../client/sound/mix_x86.s
+)
+
+foreach(SRC ${WOLFCLIENT_ASM_FILES})
+	get_filename_component(FILE_BASE ${SRC} NAME_WE)
+	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
+	add_custom_command(OUTPUT ${OBJ}
+		DEPENDS ${SRC} ${CMAKE_CURRENT_SOURCE_DIR}/../client/qasm.h
+		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
+			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
+	)
+	set(WOLFCLIENT_FILES ${WOLFCLIENT_FILES} ${OBJ})
+endforeach(SRC)
+
 add_library(wolfclient STATIC ${WOLFCLIENT_FILES})
 set_target_properties(wolfclient PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 add_dependencies(wolfclient core)
