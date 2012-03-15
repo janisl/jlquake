@@ -93,39 +93,3 @@ char *Sys_GetCurrentUser( void ) {
 	}
 	return p->pw_name;
 }
-
-// TTimo
-// show_bug.cgi?id=448
-void *Sys_InitializeCriticalSection() {
-	Com_DPrintf( "WARNING: Sys_InitializeCriticalSection not implemented\n" );
-	return (void *)-1;
-}
-
-void Sys_EnterCriticalSection( void *ptr ) {
-}
-
-void Sys_LeaveCriticalSection( void *ptr ) {
-}
-
-#if 0
-#include <pthread.h>
-
-void *Sys_InitializeCriticalSection() {
-	pthread_mutex_t   *smpMutex;
-	smpMutex = malloc( sizeof( pthread_mutex_t ) );
-	pthread_mutex_init( smpMutex, NULL );
-	return smpMutex;
-}
-
-void Sys_EnterCriticalSection( void *ptr ) {
-	pthread_mutex_t   *crit;
-	crit = ptr;
-	pthread_mutex_lock( crit );
-}
-
-void Sys_LeaveCriticalSection( void *ptr ) {
-	pthread_mutex_t   *crit;
-	crit = ptr;
-	pthread_mutex_unlock( crit );
-}
-#endif

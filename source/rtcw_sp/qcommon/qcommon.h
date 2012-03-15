@@ -432,10 +432,6 @@ sysEvent_t  Sys_GetEvent( void );
 
 void    Sys_Init( void );
 
-void *Sys_InitializeCriticalSection();
-void Sys_EnterCriticalSection( void *ptr );
-void Sys_LeaveCriticalSection( void *ptr );
-
 // general development dll loading for virtual machine testing
 void    * QDECL Sys_LoadDll( const char *name, qintptr ( QDECL * *entryPoint ) ( int, ... ),
 							 qintptr ( QDECL * systemcalls )( int, ... ) );
@@ -465,11 +461,6 @@ void    Sys_SnapVector( float *v );
 void    Sys_DisplaySystemConsole( qboolean show );
 
 int     Sys_GetProcessorId( void );
-
-void    Sys_BeginStreamedFile( fileHandle_t f, int readahead );
-void    Sys_EndStreamedFile( fileHandle_t f );
-int     Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f );
-void    Sys_StreamSeek( fileHandle_t f, int offset, int origin );
 
 void    Sys_SetErrorText( const char *text );
 

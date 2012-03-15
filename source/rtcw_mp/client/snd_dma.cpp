@@ -50,8 +50,6 @@ void S_UpdateStreamingSounds( void );
 int numStreamingSounds = 0;
 static vec3_t entityPositions[MAX_GENTITIES_Q3];
 
-void    *crit;
-
 typedef struct {
 	vec3_t origin;
 	qboolean fixedOrigin;
@@ -190,8 +188,6 @@ void S_Init( void ) {
 		return;
 	}
 
-	crit = Sys_InitializeCriticalSection();
-
 	Cmd_AddCommand( "play", S_Play_f );
 	Cmd_AddCommand( "music", S_Music_f );
 	Cmd_AddCommand( "streamingsound", S_StreamingSound_f );
@@ -229,8 +225,6 @@ void S_Shutdown( void ) {
 	if ( !s_soundStarted ) {
 		return;
 	}
-
-	Sys_EnterCriticalSection( crit );
 
 	SNDDMA_Shutdown();
 
@@ -770,8 +764,6 @@ void S_AddLoopSounds( void ) {
 	loopSound_t *loop, *loop2;
 	static int loopFrame;
 
-//	Sys_EnterCriticalSection(crit);
-
 	numLoopChannels = 0;
 
 	time = Sys_Milliseconds();
@@ -843,7 +835,6 @@ void S_AddLoopSounds( void ) {
 			i = numLoopSounds + 1;
 		}
 	}
-//	Sys_LeaveCriticalSection(crit);
 }
 
 //=============================================================================
@@ -1143,7 +1134,6 @@ void S_UpdateThread( void ) {
 	if ( s_clearSoundBuffer ) {
 		int clear;
 		int i;
-		Sys_EnterCriticalSection( crit );
 		// stop looping sounds
 		S_ClearLoopingSounds();
 
@@ -1167,20 +1157,15 @@ void S_UpdateThread( void ) {
 		}
 		SNDDMA_Submit();
 		s_clearSoundBuffer = 0;
-		Sys_LeaveCriticalSection( crit );
 
 		// NERVE - SMF - clear out channels so they don't finish playing when audio restarts
 		S_ChannelSetup();
 	} else {
-		Sys_EnterCriticalSection( crit );
-
 		S_ThreadRespatialize();
 		// add raw data from streamed samples
 		S_UpdateStreamingSounds();
 		// mix some sound
 		S_Update_Mix();
-
-		Sys_LeaveCriticalSection( crit );
 	}
 }
 /*
@@ -1446,8 +1431,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 //		return;
 //	}
 
-	Sys_EnterCriticalSection( crit );
-
 	if ( !intro ) {
 		intro = "";
 	}
@@ -1468,14 +1451,12 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 
 	// close the current sound if present, but DON'T reset s_rawend
 	if ( ss->file ) {
-		Sys_EndStreamedFile( ss->file );
 		FS_FCloseFile( ss->file );
 		ss->file = 0;
 	}
 
 	if ( !intro[0] ) {
 		Com_DPrintf( "Fail to start: %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1489,7 +1470,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 	FS_FOpenFileRead( name, &fh, qtrue );
 	if ( !fh ) {
 		Com_Printf( "Couldn't open streaming sound file %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1500,7 +1480,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 	if ( !S_FindWavChunk( fh, "fmt " ) ) {
 		Com_Printf( "No fmt chunk in %s\n", name );
 		FS_FCloseFile( fh );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1515,7 +1494,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 	if ( ss->info.format != WAV_FORMAT_PCM ) {
 		FS_FCloseFile( fh );
 		Com_Printf( "Not a microsoft PCM format wav: %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1526,7 +1504,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 	if ( ( len = S_FindWavChunk( fh, "data" ) ) == 0 ) {
 		FS_FCloseFile( fh );
 		Com_Printf( "No data chunk in %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1534,17 +1511,11 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ) {
 
 	ss->samples = ss->info.samples;
 
-	//
-	// start the background streaming
-	//
-	Sys_BeginStreamedFile( fh, 0x10000 );
-
 	ss->file = fh;
 	ss->kill = qfalse;
 	numStreamingSounds++;
 
 	Com_DPrintf( "S_StartBackgroundTrack - Success\n", intro, loop );
-	Sys_LeaveCriticalSection( crit );
 }
 
 /*
@@ -1564,11 +1535,10 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 	streamingSound_t *ss;
 	fileHandle_t fh;
 
-	if ( !crit || !s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE ) {
+	if ( !s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE ) {
 		return;
 	}
 
-	Sys_EnterCriticalSection( crit );
 	if ( !intro || !intro[0] ) {
 		if ( loop && loop[0] ) {
 			intro = loop;
@@ -1607,7 +1577,6 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 		if ( !s_mute->integer ) {  // don't do the print if you're muted
 			Com_Printf( "S_StartStreamingSound: No free streaming tracks\n" );
 		}
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1622,13 +1591,11 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 
 	// close the current sound if present, but DON'T reset s_rawend
 	if ( ss->file ) {
-		Sys_EndStreamedFile( ss->file );
 		FS_FCloseFile( ss->file );
 		ss->file = 0;
 	}
 
 	if ( !intro[0] ) {
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1638,7 +1605,6 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 	FS_FOpenFileRead( name, &fh, qtrue );
 	if ( !fh ) {
 		Com_Printf( "Couldn't open streaming sound file %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1649,7 +1615,6 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 	if ( !S_FindWavChunk( fh, "fmt " ) ) {
 		Com_Printf( "No fmt chunk in %s\n", name );
 		FS_FCloseFile( fh );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1664,7 +1629,6 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 	if ( ss->info.format != WAV_FORMAT_PCM ) {
 		FS_FCloseFile( fh );
 		Com_Printf( "Not a microsoft PCM format wav: %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1675,7 +1639,6 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 	if ( ( len = S_FindWavChunk( fh, "data" ) ) == 0 ) {
 		FS_FCloseFile( fh );
 		Com_Printf( "No data chunk in %s\n", name );
-		Sys_LeaveCriticalSection( crit );
 		return;
 	}
 
@@ -1687,14 +1650,8 @@ void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int
 	ss->entnum = entnum;
 	ss->kill = qfalse;
 
-	//
-	// start the background streaming
-	//
-	Sys_BeginStreamedFile( fh, 0x10000 );
-
 	ss->file = fh;
 	numStreamingSounds++;
-	Sys_LeaveCriticalSection( crit );
 }
 
 /*
@@ -1706,9 +1663,7 @@ void S_StopStreamingSound( int index ) {
 	if ( !streamingSounds[index].file ) {
 		return;
 	}
-	Sys_EnterCriticalSection( crit );
 	streamingSounds[index].kill = qtrue;
-	Sys_LeaveCriticalSection( crit );
 }
 
 /*
@@ -1764,7 +1719,6 @@ void S_UpdateStreamingSounds( void ) {
 			fileHandle_t file;
 			file = ss->file;
 			ss->file = 0;
-			Sys_EndStreamedFile( file );
 			FS_FCloseFile( file );
 			numStreamingSounds--;
 			ss->kill = qfalse;
@@ -1817,7 +1771,7 @@ void S_UpdateStreamingSounds( void ) {
 				fileSamples = fileBytes / ( ss->info.width * ss->info.channels );
 			}
 
-			r = Sys_StreamedRead( raw, 1, fileBytes, ss->file );
+			r = FS_Read( raw, fileBytes, ss->file );
 			if ( r != fileBytes ) {
 				Com_DPrintf( "StreamedRead failure on stream sound\n" );
 				ss->kill = qtrue;
@@ -1863,7 +1817,7 @@ void S_UpdateStreamingSounds( void ) {
 						break;
 					} else {
 						char dump[16];
-						Sys_StreamSeek( ss->file, 0, FS_SEEK_SET );
+						FS_Seek( ss->file, 0, FS_SEEK_SET );
 						FS_Read( dump, 12, ss->file );
 
 						if ( !S_FindWavChunk( ss->file, "fmt " ) ) {

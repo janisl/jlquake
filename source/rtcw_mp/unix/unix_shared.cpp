@@ -154,13 +154,3 @@ char *Sys_GetCurrentUser( void ) {
 	}
 	return p->pw_name;
 }
-
-void *Sys_InitializeCriticalSection() {
-	return (void *)-1;
-}
-
-void Sys_EnterCriticalSection( void *ptr ) {
-}
-
-void Sys_LeaveCriticalSection( void *ptr ) {
-}

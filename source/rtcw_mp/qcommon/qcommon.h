@@ -481,10 +481,6 @@ sysEvent_t  Sys_GetEvent( void );
 
 void    Sys_Init( void );
 
-void *Sys_InitializeCriticalSection();
-void Sys_EnterCriticalSection( void *ptr );
-void Sys_LeaveCriticalSection( void *ptr );
-
 // FIXME: wants win32 implementation
 char* Sys_GetDLLName( const char *name );
 // fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
@@ -516,11 +512,6 @@ void    Sys_SnapVector( float *v );
 void    Sys_DisplaySystemConsole( qboolean show );
 
 int     Sys_GetProcessorId( void );
-
-void    Sys_BeginStreamedFile( fileHandle_t f, int readahead );
-void    Sys_EndStreamedFile( fileHandle_t f );
-int     Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f );
-void    Sys_StreamSeek( fileHandle_t f, int offset, int origin );
 
 void    Sys_SetErrorText( const char *text );
 
