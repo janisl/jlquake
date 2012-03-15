@@ -115,6 +115,8 @@ static Cvar*		s_doppler;
 static Cvar*		s_ambient_level;
 static Cvar*		s_ambient_fade;
 static Cvar*		snd_noextraupdate;
+static Cvar* cl_cacheGathering;
+static Cvar* s_defaultsound;	// added to silence the default beep sound if desired
 
 static int			listener_number;
 static vec3_t		listener_origin;
@@ -287,16 +289,36 @@ sfx_t* S_FindName(const char* Name, bool Create)
 {
 	if (!Name)
 	{
-		throw Exception("S_FindName: NULL\n");
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			Name = "*default*";
+		}
+		else
+		{
+			throw Exception("S_FindName: NULL\n");
+		}
 	}
 	if (!Name[0])
 	{
-		throw Exception("S_FindName: empty name\n");
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			Name = "*default*";
+		}
+		else
+		{
+			throw Exception("S_FindName: empty name\n");
+		}
 	}
 
 	if (String::Length(Name) >= MAX_QPATH)
 	{
 		throw Exception(va("Sound name too long: %s", Name));
+	}
+
+	// Ridah, caching
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) &&  cl_cacheGathering->integer)
+	{
+		Cbuf_ExecuteText(EXEC_NOW, va("cache_usedfile sound %s\n", Name));
 	}
 
 	int Hash = S_HashSFXName(Name);
@@ -391,6 +413,36 @@ sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 	return Sfx;
 }
 
+static void S_DefaultSound(sfx_t* sfx)
+{
+	if (s_defaultsound->integer)
+	{
+		sfx->Length = 512;
+	}
+	else
+	{
+		sfx->Length = 8;
+	}
+
+	sfx->Data = new short[sfx->Length];
+
+	if (s_defaultsound->integer)
+	{
+		for (int i = 0; i < sfx->Length; i++)
+		{
+			sfx->Data[i] = i;
+		}
+	}
+	else
+	{
+		for (int i = 0 ; i < sfx->Length ; i++)
+		{
+			sfx->Data[i] = 0;
+		}
+	}
+	sfx->LoopStart = -1;
+}
+
 //==========================================================================
 //
 //	S_BeginRegistration
@@ -405,7 +457,7 @@ void S_BeginRegistration()
 		s_registering = true;
 	}
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		s_soundMuted = false;		// we can play again
 
@@ -415,7 +467,15 @@ void S_BeginRegistration()
 			Com_Memset(s_knownSfx, 0, sizeof(s_knownSfx));
 			Com_Memset(sfxHash, 0, sizeof(sfx_t*) * LOOP_HASH);
 
-			S_RegisterSound("sound/feedback/hit.wav");		// changed to a sound in baseq3
+			if (GGameType & GAME_Quake3)
+			{
+				S_RegisterSound("sound/feedback/hit.wav");		// changed to a sound in baseq3
+			}
+			else
+			{
+				sfx_t* sfx = S_FindName("***DEFAULT***");
+				S_DefaultSound(sfx);
+			}
 		}
 	}
 }
@@ -445,7 +505,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 	Sfx->RegistrationSequence = s_registration_sequence;
 	if (Sfx->Data)
 	{
-		if ((GGameType & GAME_Quake3) && Sfx->DefaultSound)
+		if ((GGameType & GAME_Tech3) && Sfx->DefaultSound)
 		{
 			Log::write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
 			return 0;
@@ -458,7 +518,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 	if (!(GGameType & GAME_Quake2) || !s_registering)
 		S_LoadSound(Sfx);
 
-	if ((GGameType & GAME_Quake3) && Sfx->DefaultSound)
+	if ((GGameType & GAME_Tech3) && Sfx->DefaultSound)
 	{
 		Log::write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
 		return 0;

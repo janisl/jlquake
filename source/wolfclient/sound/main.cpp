@@ -87,8 +87,6 @@ Cvar*				s_channels_cv;
 Cvar*				bgmvolume;
 Cvar*				bgmtype;
 Cvar* s_mute;	// for DM so he can 'toggle' sound on/off without disturbing volume levels
-Cvar* cl_cacheGathering;
-Cvar* s_defaultsound;	// added to silence the default beep sound if desired
 
 channel_t   		s_channels[MAX_CHANNELS];
 channel_t   		loop_channels[MAX_CHANNELS];
@@ -130,6 +128,8 @@ Cvar*		s_doppler;
 static Cvar*		s_ambient_level;
 static Cvar*		s_ambient_fade;
 static Cvar*		snd_noextraupdate;
+Cvar* cl_cacheGathering;
+Cvar* s_defaultsound;	// added to silence the default beep sound if desired
 
 //static 
 int			listener_number;
@@ -143,7 +143,7 @@ int			s_numSfx = 0;
 //static 
 sfx_t*		sfxHash[LOOP_HASH];
 
-static channel_t*	freelist = NULL;
+static channel_t* freelist = NULL;
 static channel_t* endflist = NULL;
 
 static fileHandle_t s_backgroundFile;
