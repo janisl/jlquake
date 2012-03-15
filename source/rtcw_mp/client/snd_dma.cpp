@@ -107,8 +107,8 @@ extern Cvar      *s_mixPreStep;
 extern Cvar      *s_musicVolume;
 Cvar      *s_separation;
 extern Cvar      *s_doppler;
-Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
-Cvar      *cl_cacheGathering; // Ridah
+extern Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
+extern Cvar      *cl_cacheGathering; // Ridah
 
 #define MAX_LOOPSOUNDS     1024
 static int numLoopSounds;
@@ -120,6 +120,8 @@ int s_rawpainted[MAX_STREAMING_SOUNDS];
 void S_ChannelFree( channel_t *v );
 channel_t*  S_ChannelMalloc();
 void S_ChannelSetup();
+long S_HashSFXName( const char *name );
+void S_DefaultSound(sfx_t* sfx);
 
 /*
 ================
@@ -243,124 +245,6 @@ void S_Shutdown( void ) {
 }
 
 /*
-================
-S_HashSFXName
-
-return a hash value for the sfx name
-================
-*/
-static long S_HashSFXName( const char *name ) {
-	int i;
-	long hash;
-	char letter;
-
-	hash = 0;
-	i = 0;
-	while ( name[i] != '\0' ) {
-		letter = tolower( name[i] );
-		if ( letter == '.' ) {
-			break;                          // don't include extension
-		}
-		if ( letter == '\\' ) {
-			letter = '/';                   // damn path names
-		}
-		hash += (long)( letter ) * ( i + 119 );
-		i++;
-	}
-	hash &= ( LOOP_HASH - 1 );
-	return hash;
-}
-
-/*
-==================
-S_FindName
-
-Will allocate a new sfx if it isn't found
-==================
-*/
-static sfx_t *S_FindName( const char *name ) {
-	int i;
-	int hash;
-
-	sfx_t   *sfx;
-
-	if ( !name ) {
-		//Com_Error (ERR_FATAL, "S_FindName: NULL\n");
-		name = "*default*";
-	}
-	if ( !name[0] ) {
-		//Com_Error (ERR_FATAL, "S_FindName: empty name\n");
-		name = "*default*";
-	}
-
-	if ( String::Length( name ) >= MAX_QPATH ) {
-		Com_Error( ERR_FATAL, "Sound name too long: %s", name );
-	}
-
-	// Ridah, caching
-	if ( cl_cacheGathering->integer ) {
-		Cbuf_ExecuteText( EXEC_NOW, va( "cache_usedfile sound %s\n", name ) );
-	}
-
-	hash = S_HashSFXName( name );
-
-	sfx = sfxHash[hash];
-	// see if already loaded
-	while ( sfx ) {
-		if ( !String::ICmp( sfx->Name, name ) ) {
-			return sfx;
-		}
-		sfx = sfx->HashNext;
-	}
-
-	// find a free sfx
-	for ( i = 0 ; i < s_numSfx ; i++ ) {
-		if ( !s_knownSfx[i].Name[0] ) {
-			break;
-		}
-	}
-
-	if ( i == s_numSfx ) {
-		if ( s_numSfx == MAX_SFX ) {
-			Com_Error( ERR_FATAL, "S_FindName: out of sfx_t" );
-		}
-		s_numSfx++;
-	}
-
-	sfx = &s_knownSfx[i];
-	Com_Memset( sfx, 0, sizeof( *sfx ) );
-	String::Cpy( sfx->Name, name );
-
-	sfx->HashNext = sfxHash[hash];
-	sfxHash[hash] = sfx;
-
-	return sfx;
-}
-
-/*
-=================
-S_DefaultSound
-=================
-*/
-void S_DefaultSound( sfx_t *sfx ) {
-	int i;
-
-	sfx->Length = 512;
-	sfx->Data = new short[512];
-
-	if ( s_defaultsound->integer ) {
-		for ( i = 0 ; i < sfx->Length ; i++ ) {
-			sfx->Data[i] = i;
-		}
-	} else {
-		for ( i = 0 ; i < sfx->Length ; i++ ) {
-			sfx->Data[i] = 0;
-		}
-	}
-	sfx->LoopStart = -1;
-}
-
-/*
 ===================
 S_DisableSounds
 
@@ -372,25 +256,6 @@ are no longer valid.
 void S_DisableSounds( void ) {
 	S_StopAllSounds();
 	s_soundMuted = qtrue;
-}
-
-/*
-=====================
-S_BeginRegistration
-=====================
-*/
-void S_BeginRegistration( void ) {
-	sfx_t   *sfx;
-	s_soundMuted = qfalse;      // we can play again
-
-	if ( s_numSfx == 0 ) {
-		s_numSfx = 0;
-		Com_Memset( s_knownSfx, 0, sizeof( s_knownSfx ) );
-		Com_Memset( sfxHash, 0, sizeof( sfx_t * ) * LOOP_HASH );
-
-		sfx = S_FindName( "***DEFAULT***" );
-		S_DefaultSound( sfx );
-	}
 }
 
 /*

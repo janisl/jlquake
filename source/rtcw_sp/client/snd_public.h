@@ -72,8 +72,6 @@ void S_Update( void );
 
 void S_DisableSounds( void );
 
-void S_BeginRegistration( void );
-
 // RegisterSound will allways return a valid sample, even if it
 // has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files

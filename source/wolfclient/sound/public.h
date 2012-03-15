@@ -16,11 +16,11 @@
 
 typedef int		sfxHandle_t;
 
-#if 0
 //	RegisterSound will allways return a valid sample, even if it
 // has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files.
 void S_BeginRegistration();
+#if 0
 sfxHandle_t S_RegisterSound(const char* Name);
 void S_EndRegistration();
 

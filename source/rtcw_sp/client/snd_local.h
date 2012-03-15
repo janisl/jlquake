@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "../../wolfclient/client.h"
-#include "../../wolfclient/sound/local.h"
+#include "../../client/sound/local.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
