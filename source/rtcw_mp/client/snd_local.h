@@ -38,15 +38,18 @@ If you have questions concerning this license or the applicable additional terms
 typedef struct loopSound_s {
 	vec3_t origin;
 	vec3_t velocity;
-	float range;            //----(SA)	added
 	sfx_t       *sfx;
 	int mergeFrame;
-	int vol;
-	qboolean loudUnderWater;    // (SA) set if this sound should be played at full vol even when under water (under water loop sound for ex.)
+	qboolean active;
+	qboolean kill;
 	qboolean doppler;
 	float dopplerScale;
 	float oldDopplerScale;
 	int framenum;
+	float range;            //----(SA)	added
+	int vol;
+	qboolean loudUnderWater;    // (SA) set if this sound should be played at full vol even when under water (under water loop sound for ex.)
+	int startTime, startSample;         // ydnar: so looping sounds can be out of phase
 } loopSound_t;
 
 //====================================================================

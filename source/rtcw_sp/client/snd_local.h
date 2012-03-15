@@ -38,11 +38,18 @@ If you have questions concerning this license or the applicable additional terms
 typedef struct loopSound_s {
 	vec3_t origin;
 	vec3_t velocity;
-	float range;            //----(SA)	added
 	sfx_t       *sfx;
 	int mergeFrame;
+	qboolean active;
+	qboolean kill;
+	qboolean doppler;
+	float dopplerScale;
+	float oldDopplerScale;
+	int framenum;
+	float range;            //----(SA)	added
 	int vol;
 	qboolean loudUnderWater;    // (SA) set if this sound should be played at full vol even when under water (under water loop sound for ex.)
+	int startTime, startSample;         // ydnar: so looping sounds can be out of phase
 } loopSound_t;
 
 //====================================================================
@@ -68,13 +75,11 @@ typedef struct {
 
 #define MAX_PUSHSTACK   64
 #define LOOP_HASH       128
-#define MAX_LOOP_SOUNDS 128
+#define MAX_LOOPSOUNDS 1024
 
 // removed many statics into a common sound struct
 typedef struct {
-	sfx_t       *sfxHash[LOOP_HASH];
 	int numLoopSounds;
-	loopSound_t loopSounds[MAX_LOOP_SOUNDS];
 
 	float volTarget;
 	float volStart;
@@ -82,20 +87,13 @@ typedef struct {
 	int volTime2;
 	float volFadeFrac;
 
-	channel_t   *freelist;
 	channel_t   *endflist;
-
-	int s_numSfx;
 
 	s_pushStack pushPop[MAX_PUSHSTACK];
 	int tart;
 
 	qboolean s_soundPainted;
 	int s_clearSoundBuffer;
-
-	int s_soundStarted;
-//	qboolean	s_soundMute;
-	int s_soundMute;                // 0 - not muted, 1 - muted, 2 - no new sounds, but play out remaining sounds (so they can die if necessary)
 
 	vec3_t entityPositions[MAX_GENTITIES_Q3];
 

@@ -76,13 +76,11 @@ typedef struct {
 
 #define MAX_PUSHSTACK   64
 #define LOOP_HASH       128
-#define MAX_LOOP_SOUNDS 1024
+#define MAX_LOOPSOUNDS 1024
 
 // removed many statics into a common sound struct
 typedef struct {
-	sfx_t       *sfxHash[LOOP_HASH];
 	int numLoopSounds;
-	loopSound_t loopSounds[MAX_LOOP_SOUNDS];
 
 	float volTarget;
 	float volStart;
@@ -92,19 +90,13 @@ typedef struct {
 
 	qboolean stopSounds;
 
-	channel_t   *freelist;
 	channel_t   *endflist;
-
-	int s_numSfx;
 
 	s_pushStack pushPop[MAX_PUSHSTACK];
 	int tart;
 
 	qboolean s_soundPainted;
 	int s_clearSoundBuffer;
-
-	int s_soundStarted;
-	int s_soundMute;                // 0 - not muted, 1 - muted, 2 - no new sounds, but play out remaining sounds (so they can die if necessary)
 
 	vec3_t entityPositions[MAX_GENTITIES_Q3];
 

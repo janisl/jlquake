@@ -26,7 +26,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#if 0
 #define MAX_PLAYSOUNDS			128
 
 //	This is MAX_EDICTS or MAX_GENTITIES_Q3
@@ -54,10 +53,15 @@ struct loopSound_t
 	float		dopplerScale;
 	float		oldDopplerScale;
 	int			framenum;
+	float range;            //----(SA)	added
+	int vol;
+	qboolean loudUnderWater;    // (SA) set if this sound should be played at full vol even when under water (under water loop sound for ex.)
+	int startTime, startSample;         // ydnar: so looping sounds can be out of phase
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
+#if 0
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
 #endif
@@ -104,31 +108,41 @@ float s_volCurrent;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-#if 0
-static int			s_soundStarted;
-static bool			s_soundMuted;
-#endif
+//static 
+int			s_soundStarted;
+//static 
+bool			s_soundMuted;
 
 bool			s_use_custom_memset = false;
 
-#if 0
-static Cvar*		s_show;
-static Cvar*		s_mixahead;
-static Cvar*		s_mixPreStep;
-static Cvar*		s_musicVolume;
-static Cvar*		s_doppler;
+//static 
+Cvar*		s_show;
+//static 
+Cvar*		s_mixahead;
+//static 
+Cvar*		s_mixPreStep;
+//static 
+Cvar*		s_musicVolume;
+//static 
+Cvar*		s_doppler;
 static Cvar*		s_ambient_level;
 static Cvar*		s_ambient_fade;
 static Cvar*		snd_noextraupdate;
 
-static int			listener_number;
-static vec3_t		listener_origin;
-static vec3_t		listener_axis[3];
+//static 
+int			listener_number;
+//static 
+vec3_t		listener_origin;
+//static 
+vec3_t		listener_axis[3];
 
-static int			s_numSfx = 0;
-static sfx_t*		sfxHash[LOOP_HASH];
+//static 
+int			s_numSfx = 0;
+//static 
+sfx_t*		sfxHash[LOOP_HASH];
 
-static channel_t*	freelist = NULL;
+//static 
+channel_t*	freelist = NULL;
 
 static fileHandle_t s_backgroundFile;
 static wavinfo_t	s_backgroundInfo;
@@ -143,12 +157,12 @@ static bool			s_registering;
 static playsound_t	s_playsounds[MAX_PLAYSOUNDS];
 static playsound_t	s_freeplays;
 
-static loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+//static 
+loopSound_t	loopSounds[MAX_LOOPSOUNDS];
 
 static vec_t		sound_nominal_clip_dist=1000.0;
 
 static int			s_beginofs;
-#endif
 
 // CODE --------------------------------------------------------------------
 

@@ -87,34 +87,34 @@ typedef struct {
 #define     SOUND_ATTENUATE     0.0008f
 #define     SOUND_RANGE_DEFAULT 1250
 
-static int s_soundStarted;
-static qboolean s_soundMuted;
+extern int s_soundStarted;
+extern bool s_soundMuted;
 static qboolean s_soundPainted;
 static int s_clearSoundBuffer = 0;
 
-static int listener_number;
-static vec3_t listener_origin;
-static vec3_t listener_axis[3];
+extern int listener_number;
+extern vec3_t listener_origin;
+extern vec3_t listener_axis[3];
 
-int s_numSfx = 0;
+extern int s_numSfx;
 
 #define     LOOP_HASH       128
-static sfx_t       *sfxHash[LOOP_HASH];
+extern sfx_t       *sfxHash[LOOP_HASH];
 
-Cvar      *s_show;
-Cvar      *s_mixahead;
-Cvar      *s_mixPreStep;
-Cvar      *s_musicVolume;
+extern Cvar      *s_show;
+extern Cvar      *s_mixahead;
+extern Cvar      *s_mixPreStep;
+extern Cvar      *s_musicVolume;
 Cvar      *s_separation;
-Cvar      *s_doppler;
+extern Cvar      *s_doppler;
 Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 Cvar      *cl_cacheGathering; // Ridah
 
-#define MAX_LOOP_SOUNDS     128
+#define MAX_LOOPSOUNDS     1024
 static int numLoopSounds;
-static loopSound_t loopSounds[MAX_LOOP_SOUNDS];
+extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
 
-static channel_t       *freelist = NULL;
+extern channel_t       *freelist;
 static channel_t       *endflist = NULL;
 
 // for streaming sounds
@@ -900,7 +900,7 @@ void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocit
 	if ( !s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE ) {
 		return;
 	}
-	if ( numLoopSounds >= MAX_LOOP_SOUNDS ) {
+	if ( numLoopSounds >= MAX_LOOPSOUNDS ) {
 		return;
 	}
 	if ( !volume ) {
