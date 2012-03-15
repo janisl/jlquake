@@ -78,11 +78,6 @@ void S_Update( void );
 
 void S_DisableSounds( void );
 
-// RegisterSound will allways return a valid sample, even if it
-// has to create a placeholder.  This prevents continuous filesystem
-// checks for missing files
-sfxHandle_t S_RegisterSound( const char *sample);
-
 //
 int S_GetSoundLength( sfxHandle_t sfxHandle );
 int S_GetCurrentSoundTime( void );

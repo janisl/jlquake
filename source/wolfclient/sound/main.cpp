@@ -278,8 +278,7 @@ void S_ChannelSetup()
 //
 //==========================================================================
 
-//static 
-int S_HashSFXName(const char* Name)
+static int S_HashSFXName(const char* Name)
 {
 	int Hash = 0;
 	int i = 0;
@@ -437,7 +436,7 @@ sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 	return Sfx;
 }
 
-void S_DefaultSound(sfx_t* sfx)
+static void S_DefaultSound(sfx_t* sfx)
 {
 	if (s_defaultsound->integer)
 	{
@@ -493,7 +492,7 @@ void S_BeginRegistration()
 
 			if (GGameType & GAME_Quake3)
 			{
-//				S_RegisterSound("sound/feedback/hit.wav");		// changed to a sound in baseq3
+				S_RegisterSound("sound/feedback/hit.wav");		// changed to a sound in baseq3
 			}
 			else
 			{
@@ -504,7 +503,6 @@ void S_BeginRegistration()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	S_RegisterSound
@@ -530,7 +528,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 	Sfx->RegistrationSequence = s_registration_sequence;
 	if (Sfx->Data)
 	{
-		if ((GGameType & GAME_Quake3) && Sfx->DefaultSound)
+		if ((GGameType & GAME_Tech3) && Sfx->DefaultSound)
 		{
 			Log::write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
 			return 0;
@@ -543,7 +541,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 	if (!(GGameType & GAME_Quake2) || !s_registering)
 		S_LoadSound(Sfx);
 
-	if ((GGameType & GAME_Quake3) && Sfx->DefaultSound)
+	if ((GGameType & GAME_Tech3) && Sfx->DefaultSound)
 	{
 		Log::write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
 		return 0;
@@ -608,6 +606,7 @@ void S_EndRegistration()
 	}
 }
 
+#if 0
 //**************************************************************************
 //	Background music functions
 //**************************************************************************

@@ -20,10 +20,10 @@ typedef int		sfxHandle_t;
 // has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files.
 void S_BeginRegistration();
-#if 0
 sfxHandle_t S_RegisterSound(const char* Name);
 void S_EndRegistration();
 
+#if 0
 //	Cinematics and voice-over-network will send raw samples
 // 1.0 volume will be direct output of source samples
 void S_ByteSwapRawSamples(int Samples, int Width, int Channels, const byte* Data);

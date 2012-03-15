@@ -91,8 +91,6 @@ int s_rawpainted[MAX_STREAMING_SOUNDS];
 void S_ChannelFree( channel_t *v );
 channel_t*  S_ChannelMalloc();
 void S_ChannelSetup();
-long S_HashSFXName( const char *name );
-void S_DefaultSound(sfx_t* sfx);
 
 /*
 ================
@@ -253,54 +251,6 @@ are no longer valid.
 void S_DisableSounds( void ) {
 	S_StopAllSounds();
 	s_soundMuted = 1;
-}
-
-/*
-==================
-S_RegisterSound
-
-Creates a default buzz sound if the file can't be loaded
-==================
-*/
-sfxHandle_t S_RegisterSound( const char *name) {
-	sfx_t   *sfx;
-
-	//compressed = qfalse; // Arnout: memory corruption with compressed sounds?
-
-	if ( !s_soundStarted ) {
-		return 0;
-	}
-
-	if ( String::Length( name ) >= MAX_QPATH ) {
-		Com_Printf( "Sound name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sfx = S_FindName( name );
-	if ( sfx->Data ) {
-		if ( sfx->DefaultSound ) {
-			if ( com_developer->integer ) {
-				Com_Printf( S_COLOR_YELLOW "WARNING: could not find %s - using default\n", sfx->Name );
-			}
-			return 0;
-		}
-		return sfx - s_knownSfx;
-	}
-
-	sfx->InMemory = qfalse;
-
-//	if (!compressed) {
-	S_memoryLoad( sfx );
-//	}
-
-	if ( sfx->DefaultSound ) {
-		if ( com_developer->integer ) {
-			Com_Printf( S_COLOR_YELLOW "WARNING: could not find %s - using default\n", sfx->Name );
-		}
-		return 0;
-	}
-
-	return sfx - s_knownSfx;
 }
 
 /*
