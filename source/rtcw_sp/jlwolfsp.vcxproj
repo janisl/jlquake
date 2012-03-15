@@ -104,11 +104,7 @@
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="game\q_math.cpp" />
     <ClCompile Include="game\q_shared.cpp" />
-    <ClCompile Include="client\snd_adpcm.cpp" />
     <ClCompile Include="client\snd_dma.cpp" />
-    <ClCompile Include="client\snd_mem.cpp" />
-    <ClCompile Include="client\snd_mix.cpp" />
-    <ClCompile Include="client\snd_wavelet.cpp" />
     <ClCompile Include="server\sv_bot.cpp" />
     <ClCompile Include="server\sv_ccmds.cpp" />
     <ClCompile Include="server\sv_client.cpp" />

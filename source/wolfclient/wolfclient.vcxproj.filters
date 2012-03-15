@@ -45,5 +45,11 @@
     <ClCompile Include="..\client\sound\driver_directsound.cpp">
       <Filter>sound</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\sound\mix.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\sound\memory.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
