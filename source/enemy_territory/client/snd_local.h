@@ -90,8 +90,6 @@ typedef struct {
 
 	qboolean stopSounds;
 
-	channel_t   *endflist;
-
 	s_pushStack pushPop[MAX_PUSHSTACK];
 	int tart;
 

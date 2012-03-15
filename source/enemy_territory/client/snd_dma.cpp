@@ -74,7 +74,6 @@ extern vec3_t listener_origin;
 extern vec3_t listener_axis[3];
 extern int s_numSfx;
 extern sfx_t       *sfxHash[LOOP_HASH];
-extern channel_t       *freelist;
 extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
 
 extern Cvar      *s_show;
@@ -90,6 +89,10 @@ Cvar      *s_debugMusic;  //----(SA)	added
 
 // for streaming sounds
 int s_rawpainted[MAX_STREAMING_SOUNDS];
+
+void S_ChannelFree( channel_t *v );
+channel_t*  S_ChannelMalloc();
+void S_ChannelSetup();
 
 /*
 ================
@@ -120,8 +123,6 @@ void S_SoundInfo_f( void ) {
 	}
 	Com_Printf( "----------------------\n" );
 }
-
-void S_ChannelSetup();
 
 /*
 ================
@@ -200,74 +201,6 @@ void S_Init( void ) {
 		Sys_LeaveCriticalSection( crit );
 	}
 
-}
-
-/*
-================
-S_ChannelFree
-================
-*/
-void S_ChannelFree( channel_t *v ) {
-	v->sfx = NULL;
-	v->threadReady = qfalse;
-#ifdef _DEBUG
-	if ( v >  &s_channels[MAX_CHANNELS] || v <  &s_channels[0] ) {
-		Com_DPrintf( "s_channel OUT OF BOUNDS\n" );
-		return;
-	}
-#endif
-	*(channel_t **)snd.endflist = v;
-	snd.endflist = v;
-	*(channel_t **)v = NULL;
-}
-
-/*
-================
-S_ChannelMalloc
-================
-*/
-channel_t*  S_ChannelMalloc() {
-	channel_t *v;
-	if ( freelist == NULL ) {
-		return NULL;
-	}
-	// RF, be careful not to lose our freelist
-	if ( *(channel_t **)freelist == NULL ) {
-		return NULL;
-	}
-#ifdef _DEBUG
-	if ( *(channel_t **)snd.freelist > &s_channels[MAX_CHANNELS] || *(channel_t **)snd.freelist < &s_channels[0] ) {   //DAJ	extra check
-		Com_DPrintf( "s_channel OUT OF BOUNDS\n" );
-		return NULL;
-	}
-#endif
-	v = freelist;
-	freelist = *(channel_t **)freelist;
-	v->allocTime = Sys_Milliseconds();
-	return v;
-}
-
-/*
-================
-S_ChannelSetup
-================
-*/
-void S_ChannelSetup() {
-	channel_t *p, *q;
-
-	// clear all the sounds so they don't
-	Com_Memset( s_channels, 0, sizeof( s_channels ) );
-
-	p = s_channels;;
-	q = p + MAX_CHANNELS;
-	while ( --q > p ) {
-		*(channel_t **)q = q - 1;
-	}
-
-	snd.endflist = q;
-	*(channel_t **)q = NULL;
-	freelist = p + MAX_CHANNELS - 1;
-	Com_DPrintf( "Channel memory manager started\n" );
 }
 
 /*

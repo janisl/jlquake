@@ -87,8 +87,6 @@ typedef struct {
 	int volTime2;
 	float volFadeFrac;
 
-	channel_t   *endflist;
-
 	s_pushStack pushPop[MAX_PUSHSTACK];
 	int tart;
 

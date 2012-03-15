@@ -114,12 +114,12 @@ Cvar      *cl_cacheGathering; // Ridah
 static int numLoopSounds;
 extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
 
-extern channel_t       *freelist;
-static channel_t       *endflist = NULL;
-
 // for streaming sounds
 int s_rawpainted[MAX_STREAMING_SOUNDS];
 
+void S_ChannelFree( channel_t *v );
+channel_t*  S_ChannelMalloc();
+void S_ChannelSetup();
 
 /*
 ================
@@ -150,8 +150,6 @@ void S_SoundInfo_f( void ) {
 	}
 	Com_Printf( "----------------------\n" );
 }
-
-void S_ChannelSetup();
 
 /*
 ================
@@ -218,58 +216,6 @@ void S_Init( void ) {
 		S_ChannelSetup();
 	}
 
-}
-
-/*
-================
-S_ChannelFree
-================
-*/
-void S_ChannelFree( channel_t *v ) {
-	v->sfx = NULL;
-	v->threadReady = qfalse;
-	*(channel_t **)endflist = v;
-	endflist = v;
-	*(channel_t **)v = NULL;
-}
-
-/*
-================
-S_ChannelMalloc
-================
-*/
-channel_t*  S_ChannelMalloc() {
-	channel_t *v;
-	if ( freelist == NULL ) {
-		return NULL;
-	}
-	v = freelist;
-	freelist = *(channel_t **)freelist;
-	v->allocTime = Sys_Milliseconds();
-	return v;
-}
-
-/*
-================
-S_ChannelSetup
-================
-*/
-void S_ChannelSetup() {
-	channel_t *p, *q;
-
-	// clear all the sounds so they don't
-	Com_Memset( s_channels, 0, sizeof( s_channels ) );
-
-	p = s_channels;;
-	q = p + MAX_CHANNELS;
-	while ( --q > p ) {
-		*(channel_t **)q = q - 1;
-	}
-
-	endflist = q;
-	*(channel_t **)q = NULL;
-	freelist = p + MAX_CHANNELS - 1;
-	Com_DPrintf( "Channel memory manager started\n" );
 }
 
 /*

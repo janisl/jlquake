@@ -141,8 +141,8 @@ int			s_numSfx = 0;
 //static 
 sfx_t*		sfxHash[LOOP_HASH];
 
-//static 
-channel_t*	freelist = NULL;
+static channel_t*	freelist = NULL;
+static channel_t* endflist = NULL;
 
 static fileHandle_t s_backgroundFile;
 static wavinfo_t	s_backgroundInfo;
@@ -195,12 +195,14 @@ void Snd_Memset(void* dest, const int val, const size_t count)
 //
 //==========================================================================
 
-#if 0
-static void S_ChannelFree(channel_t* v)
+//static 
+void S_ChannelFree(channel_t* v)
 {
 	v->sfx = NULL;
-	*(channel_t**)v = freelist;
-	freelist = (channel_t*)v;
+	v->threadReady = false;
+	*(channel_t**)endflist = v;
+	endflist = v;
+	*(channel_t**)v = NULL;
 }
 
 //==========================================================================
@@ -209,16 +211,29 @@ static void S_ChannelFree(channel_t* v)
 //
 //==========================================================================
 
-static channel_t* S_ChannelMalloc()
+//static 
+channel_t* S_ChannelMalloc()
 {
 	channel_t *v;
 	if (freelist == NULL)
 	{
 		return NULL;
 	}
+	// RF, be careful not to lose our freelist
+	if (*(channel_t**)freelist == NULL)
+	{
+		return NULL;
+	}
 	v = freelist;
 	freelist = *(channel_t**)freelist;
-	v->allocTime = Com_Milliseconds();
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		v->allocTime = Sys_Milliseconds();
+	}
+	else
+	{
+		v->allocTime = Com_Milliseconds();
+	}
 	return v;
 }
 
@@ -228,7 +243,8 @@ static channel_t* S_ChannelMalloc()
 //
 //==========================================================================
 
-static void S_ChannelSetup()
+//static 
+void S_ChannelSetup()
 {
 	channel_t *p, *q;
 
@@ -242,11 +258,13 @@ static void S_ChannelSetup()
 		*(channel_t**)q = q - 1;
 	}
 
+	endflist = q;
 	*(channel_t**)q = NULL;
 	freelist = p + MAX_CHANNELS - 1;
 	Log::develWrite("Channel memory manager started\n");
 }
 
+#if 0
 //**************************************************************************
 //	Registration of sounds
 //**************************************************************************
