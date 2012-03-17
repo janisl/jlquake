@@ -143,7 +143,7 @@ Called by Com_Error when a cd is needed
 ===============
 */
 void CL_CDDialog( void ) {
-	cls.cddialog = qtrue;   // start it next frame
+	cls.q3_cddialog = qtrue;   // start it next frame
 }
 
 
@@ -678,10 +678,10 @@ void CL_ShutdownAll( void ) {
 		re.Shutdown( qfalse );      // don't destroy window or context
 	}
 
-	cls.uiStarted = qfalse;
-	cls.cgameStarted = qfalse;
-	cls.rendererStarted = qfalse;
-	cls.soundRegistered = qfalse;
+	cls.q3_uiStarted = qfalse;
+	cls.q3_cgameStarted = qfalse;
+	cls.q3_rendererStarted = qfalse;
+	cls.q3_soundRegistered = qfalse;
 }
 
 /*
@@ -732,7 +732,7 @@ void CL_MapLoading( void ) {
 	// if we are already connected to the local host, stay connected
 	if ( cls.state >= CA_CONNECTED && !String::ICmp( cls.servername, "localhost" ) ) {
 		cls.state = CA_CONNECTED;       // so the connect screen is drawn
-		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
+		memset( cls.q3_updateInfoString, 0, sizeof( cls.q3_updateInfoString ) );
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
 		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
 		clc.lastPacketSentTime = -9999;
@@ -880,23 +880,23 @@ void CL_RequestMotd( void ) {
 		return;
 	}
 	Com_Printf( "Resolving %s\n", UPDATE_SERVER_NAME );
-	if ( !SOCK_StringToAdr( UPDATE_SERVER_NAME, &cls.updateServer, PORT_UPDATE ) ) {
+	if ( !SOCK_StringToAdr( UPDATE_SERVER_NAME, &cls.q3_updateServer, PORT_UPDATE ) ) {
 		Com_Printf( "Couldn't resolve address\n" );
 		return;
 	}
 	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", UPDATE_SERVER_NAME,
-				cls.updateServer.ip[0], cls.updateServer.ip[1],
-				cls.updateServer.ip[2], cls.updateServer.ip[3],
-				BigShort( cls.updateServer.port ) );
+				cls.q3_updateServer.ip[0], cls.q3_updateServer.ip[1],
+				cls.q3_updateServer.ip[2], cls.q3_updateServer.ip[3],
+				BigShort( cls.q3_updateServer.port ) );
 
 	info[0] = 0;
-	String::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", rand() );
+	String::Sprintf( cls.q3_updateChallenge, sizeof( cls.q3_updateChallenge ), "%i", rand() );
 
-	Info_SetValueForKey( info, "challenge", cls.updateChallenge, MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( info, "challenge", cls.q3_updateChallenge, MAX_INFO_STRING_Q3 );
 	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING_Q3 );
 	Info_SetValueForKey( info, "version", com_version->string, MAX_INFO_STRING_Q3 );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd \"%s\"\n", info );
+	NET_OutOfBandPrint( NS_CLIENT, cls.q3_updateServer, "getmotd \"%s\"\n", info );
 }
 
 /*
@@ -942,19 +942,19 @@ void CL_RequestAuthorization( void ) {
 	int i, j, l;
 	Cvar  *fs;
 
-	if ( !cls.authorizeServer.port ) {
+	if ( !cls.q3_authorizeServer.port ) {
 		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
-		if ( !SOCK_StringToAdr( AUTHORIZE_SERVER_NAME, &cls.authorizeServer, PORT_AUTHORIZE ) ) {
+		if ( !SOCK_StringToAdr( AUTHORIZE_SERVER_NAME, &cls.q3_authorizeServer, PORT_AUTHORIZE ) ) {
 			Com_Printf( "Couldn't resolve address\n" );
 			return;
 		}
 
 		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-					cls.authorizeServer.ip[0], cls.authorizeServer.ip[1],
-					cls.authorizeServer.ip[2], cls.authorizeServer.ip[3],
-					BigShort( cls.authorizeServer.port ) );
+					cls.q3_authorizeServer.ip[0], cls.q3_authorizeServer.ip[1],
+					cls.q3_authorizeServer.ip[2], cls.q3_authorizeServer.ip[3],
+					BigShort( cls.q3_authorizeServer.port ) );
 	}
-	if ( cls.authorizeServer.type == NA_BAD ) {
+	if ( cls.q3_authorizeServer.type == NA_BAD ) {
 		return;
 	}
 
@@ -980,7 +980,7 @@ void CL_RequestAuthorization( void ) {
 	}
 
 	fs = Cvar_Get( "cl_anonymous", "0", CVAR_INIT | CVAR_SYSTEMINFO );
-	NET_OutOfBandPrint( NS_CLIENT, cls.authorizeServer, va( "getKeyAuthorize %i %s", fs->integer, nums ) );
+	NET_OutOfBandPrint( NS_CLIENT, cls.q3_authorizeServer, va( "getKeyAuthorize %i %s", fs->integer, nums ) );
 }
 
 /*
@@ -1280,10 +1280,10 @@ void CL_Vid_Restart_f( void ) {
 
 	S_BeginRegistration();  // all sound handles are now invalid
 
-	cls.rendererStarted = qfalse;
-	cls.uiStarted = qfalse;
-	cls.cgameStarted = qfalse;
-	cls.soundRegistered = qfalse;
+	cls.q3_rendererStarted = qfalse;
+	cls.q3_uiStarted = qfalse;
+	cls.q3_cgameStarted = qfalse;
+	cls.q3_soundRegistered = qfalse;
 	autoupdateChecked = qfalse;
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
@@ -1306,7 +1306,7 @@ void CL_Vid_Restart_f( void ) {
 
 	// start the cgame if connected
 	if ( cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC ) {
-		cls.cgameStarted = qtrue;
+		cls.q3_cgameStarted = qtrue;
 		CL_InitCGame();
 		// send pure checksums
 		CL_SendPureChecksums();
@@ -1476,7 +1476,7 @@ void CL_DownloadsComplete( void ) {
 	CL_FlushMemory();
 
 	// initialize the CGame
-	cls.cgameStarted = qtrue;
+	cls.q3_cgameStarted = qtrue;
 	CL_InitCGame();
 
 	// set pure checksums
@@ -1579,7 +1579,7 @@ void CL_InitDownloads( void ) {
 	char missingfiles[1024];
 	char *dir = FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT );
 
-	if ( autoupdateStarted && SOCK_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
+	if ( autoupdateStarted && SOCK_CompareAdr( cls.wm_autoupdateServer, clc.serverAddress ) ) {
 		if ( String::Length( cl_updatefiles->string ) > 4 ) {
 			String::NCpyZ( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
 			String::NCpyZ( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING_Q3 );
@@ -1735,7 +1735,7 @@ void CL_MotdPacket( netadr_t from ) {
 	char    *info;
 
 	// if not from our server, ignore it
-	if ( !SOCK_CompareAdr( from, cls.updateServer ) ) {
+	if ( !SOCK_CompareAdr( from, cls.q3_updateServer ) ) {
 		return;
 	}
 
@@ -1743,13 +1743,13 @@ void CL_MotdPacket( netadr_t from ) {
 
 	// check challenge
 	challenge = Info_ValueForKey( info, "challenge" );
-	if ( String::Cmp( challenge, cls.updateChallenge ) ) {
+	if ( String::Cmp( challenge, cls.q3_updateChallenge ) ) {
 		return;
 	}
 
 	challenge = Info_ValueForKey( info, "motd" );
 
-	String::NCpyZ( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
+	String::NCpyZ( cls.q3_updateInfoString, info, sizeof( cls.q3_updateInfoString ) );
 	Cvar_Set( "cl_motdString", challenge );
 }
 
@@ -1786,7 +1786,7 @@ void CL_PrintPacket( netadr_t from, QMsg *msg ) {
 CL_InitServerInfo
 ===================
 */
-void CL_InitServerInfo( serverInfo_t *server, serverAddress_t *address ) {
+void CL_InitServerInfo( q3serverInfo_t *server, q3serverAddress_t *address ) {
 	server->adr.type  = NA_IP;
 	server->adr.ip[0] = address->ip[0];
 	server->adr.ip[1] = address->ip[1];
@@ -1815,21 +1815,21 @@ CL_ServersResponsePacket
 */
 void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 	int i, count, max, total;
-	serverAddress_t addresses[MAX_SERVERSPERPACKET];
+	q3serverAddress_t addresses[MAX_SERVERSPERPACKET];
 	int numservers;
 	byte*           buffptr;
 	byte*           buffend;
 
 	Com_Printf( "CL_ServersResponsePacket\n" );
 
-	if ( cls.numglobalservers == -1 ) {
+	if ( cls.q3_numglobalservers == -1 ) {
 		// state to detect lack of servers or lack of response
-		cls.numglobalservers = 0;
-		cls.numGlobalServerAddresses = 0;
+		cls.q3_numglobalservers = 0;
+		cls.q3_numGlobalServerAddresses = 0;
 	}
 
-	if ( cls.nummplayerservers == -1 ) {
-		cls.nummplayerservers = 0;
+	if ( cls.q3_nummplayerservers == -1 ) {
+		cls.q3_nummplayerservers = 0;
 	}
 
 	// parse through server response string
@@ -1883,17 +1883,17 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 		}
 	}
 
-	if ( cls.masterNum == 0 ) {
-		count = cls.numglobalservers;
-		max = MAX_GLOBAL_SERVERS;
+	if ( cls.q3_masterNum == 0 ) {
+		count = cls.q3_numglobalservers;
+		max = MAX_GLOBAL_SERVERS_WM;
 	} else {
-		count = cls.nummplayerservers;
-		max = MAX_OTHER_SERVERS;
+		count = cls.q3_nummplayerservers;
+		max = MAX_OTHER_SERVERS_Q3;
 	}
 
 	for ( i = 0; i < numservers && count < max; i++ ) {
 		// build net address
-		serverInfo_t *server = ( cls.masterNum == 0 ) ? &cls.globalServers[count] : &cls.mplayerServers[count];
+		q3serverInfo_t *server = ( cls.q3_masterNum == 0 ) ? &cls.q3_globalServers[count] : &cls.q3_mplayerServers[count];
 
 		CL_InitServerInfo( server, &addresses[i] );
 		// advance to next slot
@@ -1901,13 +1901,13 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 	}
 
 	// if getting the global list
-	if ( cls.masterNum == 0 ) {
-		if ( cls.numGlobalServerAddresses < MAX_GLOBAL_SERVERS ) {
+	if ( cls.q3_masterNum == 0 ) {
+		if ( cls.q3_numGlobalServerAddresses < MAX_GLOBAL_SERVERS_WM ) {
 			// if we couldn't store the servers in the main list anymore
 			for (; i < numservers && count >= max; i++ ) {
-				serverAddress_t *addr;
+				q3serverAddress_t *addr;
 				// just store the addresses in an additional list
-				addr = &cls.globalServerAddresses[cls.numGlobalServerAddresses++];
+				addr = &cls.q3_globalServerAddresses[cls.q3_numGlobalServerAddresses++];
 				addr->ip[0] = addresses[i].ip[0];
 				addr->ip[1] = addresses[i].ip[1];
 				addr->ip[2] = addresses[i].ip[2];
@@ -1917,11 +1917,11 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 		}
 	}
 
-	if ( cls.masterNum == 0 ) {
-		cls.numglobalservers = count;
-		total = count + cls.numGlobalServerAddresses;
+	if ( cls.q3_masterNum == 0 ) {
+		cls.q3_numglobalservers = count;
+		total = count + cls.q3_numGlobalServerAddresses;
 	} else {
-		cls.nummplayerservers = count;
+		cls.q3_nummplayerservers = count;
 		total = count;
 	}
 
@@ -1992,7 +1992,7 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 		}
 
 		// DHM - Nerve :: If we have completed a connection to the Auto-Update server...
-		if ( autoupdateChecked && SOCK_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
+		if ( autoupdateChecked && SOCK_CompareAdr( cls.wm_autoupdateServer, clc.serverAddress ) ) {
 			// Mark the client as being in the process of getting an update
 			if ( cl_updateavailable->integer ) {
 				autoupdateStarted = qtrue;
@@ -2186,9 +2186,9 @@ void CL_Frame( int msec ) {
 		return;
 	}
 
-	if ( cls.cddialog ) {
+	if ( cls.q3_cddialog ) {
 		// bring up the cd error dialog if needed
-		cls.cddialog = qfalse;
+		cls.q3_cddialog = qfalse;
 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD );
 	} else if ( cls.state == CA_DISCONNECTED && !( in_keyCatchers & KEYCATCH_UI )
 				&& !com_sv_running->integer ) {
@@ -2479,23 +2479,23 @@ void CL_StartHunkUsers( void ) {
 		return;
 	}
 
-	if ( !cls.rendererStarted ) {
-		cls.rendererStarted = qtrue;
+	if ( !cls.q3_rendererStarted ) {
+		cls.q3_rendererStarted = qtrue;
 		CL_InitRenderer();
 	}
 
-	if ( !cls.soundStarted ) {
-		cls.soundStarted = qtrue;
+	if ( !cls.q3_soundStarted ) {
+		cls.q3_soundStarted = qtrue;
 		S_Init();
 	}
 
-	if ( !cls.soundRegistered ) {
-		cls.soundRegistered = qtrue;
+	if ( !cls.q3_soundRegistered ) {
+		cls.q3_soundRegistered = qtrue;
 		S_BeginRegistration();
 	}
 
-	if ( !cls.uiStarted ) {
-		cls.uiStarted = qtrue;
+	if ( !cls.q3_uiStarted ) {
+		cls.q3_uiStarted = qtrue;
 		CL_InitUI();
 	}
 }
@@ -2520,7 +2520,7 @@ void CL_CheckAutoUpdate( void ) {
 
 	// Find out how many update servers have valid DNS listings
 	for ( i = 0; i < MAX_AUTOUPDATE_SERVERS; i++ ) {
-		if ( SOCK_StringToAdr( cls.autoupdateServerNames[i], &temp, PORT_SERVER ) ) {
+		if ( SOCK_StringToAdr( cls.wm_autoupdateServerNames[i], &temp, PORT_SERVER ) ) {
 			validServerNum++;
 		}
 	}
@@ -2532,25 +2532,25 @@ void CL_CheckAutoUpdate( void ) {
 		rnd = 0;
 	}
 
-	servername = cls.autoupdateServerNames[rnd];
+	servername = cls.wm_autoupdateServerNames[rnd];
 
 	Com_DPrintf( "Resolving AutoUpdate Server... " );
-	if ( !SOCK_StringToAdr( servername, &cls.autoupdateServer, PORT_SERVER ) ) {
+	if ( !SOCK_StringToAdr( servername, &cls.wm_autoupdateServer, PORT_SERVER ) ) {
 		Com_DPrintf( "Couldn't resolve first address, trying default..." );
 
 		// Fall back to the first one
-		if ( !SOCK_StringToAdr( cls.autoupdateServerNames[0], &cls.autoupdateServer, PORT_SERVER ) ) {
+		if ( !SOCK_StringToAdr( cls.wm_autoupdateServerNames[0], &cls.wm_autoupdateServer, PORT_SERVER ) ) {
 			Com_DPrintf( "Failed to resolve any Auto-update servers.\n" );
 			autoupdateChecked = qtrue;
 			return;
 		}
 	}
-	cls.autoupdateServer.port = BigShort( PORT_SERVER );
-	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
-				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
-				 BigShort( cls.autoupdateServer.port ) );
+	cls.wm_autoupdateServer.port = BigShort( PORT_SERVER );
+	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.wm_autoupdateServer.ip[0], cls.wm_autoupdateServer.ip[1],
+				 cls.wm_autoupdateServer.ip[2], cls.wm_autoupdateServer.ip[3],
+				 BigShort( cls.wm_autoupdateServer.port ) );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, CPUSTRING );
+	NET_OutOfBandPrint( NS_CLIENT, cls.wm_autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, CPUSTRING );
 
 	CL_RequestMotd();
 
@@ -2593,14 +2593,14 @@ void CL_GetAutoUpdate( void ) {
 
 	String::NCpyZ( cls.servername, "Auto-Updater", sizeof( cls.servername ) );
 
-	if ( cls.autoupdateServer.type == NA_BAD ) {
+	if ( cls.wm_autoupdateServer.type == NA_BAD ) {
 		Com_Printf( "Bad server address\n" );
 		cls.state = CA_DISCONNECTED;
 		return;
 	}
 
 	// Copy auto-update server address to Server connect address
-	memcpy( &clc.serverAddress, &cls.autoupdateServer, sizeof( netadr_t ) );
+	memcpy( &clc.serverAddress, &cls.wm_autoupdateServer, sizeof( netadr_t ) );
 
 	Com_DPrintf( "%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
 				 clc.serverAddress.ip[0], clc.serverAddress.ip[1],
@@ -2911,11 +2911,11 @@ void CL_Init( void ) {
 	cl_updateavailable = Cvar_Get( "cl_updateavailable", "0", CVAR_ROM );
 	cl_updatefiles = Cvar_Get( "cl_updatefiles", "", CVAR_ROM );
 
-	String::NCpyZ( cls.autoupdateServerNames[0], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[1], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[2], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[0], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[1], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[2], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
 	// DHM - Nerve
 
 	//
@@ -3053,7 +3053,7 @@ void CL_Shutdown( void ) {
 }
 
 
-static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping ) {
+static void CL_SetServerInfo( q3serverInfo_t *server, const char *info, int ping ) {
 	if ( server ) {
 		if ( info ) {
 			server->clients = String::Atoi( Info_ValueForKey( info, "clients" ) );
@@ -3080,27 +3080,27 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 static void CL_SetServerInfoByAddress( netadr_t from, const char *info, int ping ) {
 	int i;
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.localServers[i], info, ping );
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_localServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_localServers[i], info, ping );
 		}
 	}
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.mplayerServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.mplayerServers[i], info, ping );
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_mplayerServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_mplayerServers[i], info, ping );
 		}
 	}
 
-	for ( i = 0; i < MAX_GLOBAL_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.globalServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.globalServers[i], info, ping );
+	for ( i = 0; i < MAX_GLOBAL_SERVERS_WM; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_globalServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_globalServers[i], info, ping );
 		}
 	}
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.favoriteServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.favoriteServers[i], info, ping );
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_favoriteServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_favoriteServers[i], info, ping );
 		}
 	}
 
@@ -3169,46 +3169,46 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	}
 
 	// if not just sent a local broadcast or pinging local servers
-	if ( cls.pingUpdateSource != AS_LOCAL ) {
+	if ( cls.q3_pingUpdateSource != AS_LOCAL ) {
 		return;
 	}
 
-	for ( i = 0 ; i < MAX_OTHER_SERVERS ; i++ ) {
+	for ( i = 0 ; i < MAX_OTHER_SERVERS_Q3 ; i++ ) {
 		// empty slot
-		if ( cls.localServers[i].adr.port == 0 ) {
+		if ( cls.q3_localServers[i].adr.port == 0 ) {
 			break;
 		}
 
 		// avoid duplicate
-		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.q3_localServers[i].adr ) ) {
 			return;
 		}
 	}
 
-	if ( i == MAX_OTHER_SERVERS ) {
-		Com_DPrintf( "MAX_OTHER_SERVERS hit, dropping infoResponse\n" );
+	if ( i == MAX_OTHER_SERVERS_Q3 ) {
+		Com_DPrintf( "MAX_OTHER_SERVERS_Q3 hit, dropping infoResponse\n" );
 		return;
 	}
 
 	// add this to the list
-	cls.numlocalservers = i + 1;
-	cls.localServers[i].adr = from;
-	cls.localServers[i].clients = 0;
-	cls.localServers[i].hostName[0] = '\0';
-	cls.localServers[i].mapName[0] = '\0';
-	cls.localServers[i].maxClients = 0;
-	cls.localServers[i].maxPing = 0;
-	cls.localServers[i].minPing = 0;
-	cls.localServers[i].ping = -1;
-	cls.localServers[i].game[0] = '\0';
-	cls.localServers[i].gameType = 0;
-	cls.localServers[i].netType = from.type;
-	cls.localServers[i].allowAnonymous = 0;
-	cls.localServers[i].friendlyFire = 0;           // NERVE - SMF
-	cls.localServers[i].maxlives = 0;               // NERVE - SMF
-	cls.localServers[i].tourney = 0;                // NERVE - SMF
-	cls.localServers[i].punkbuster = 0;             // DHM - Nerve
-	cls.localServers[i].gameName[0] = '\0';           // Arnout
+	cls.q3_numlocalservers = i + 1;
+	cls.q3_localServers[i].adr = from;
+	cls.q3_localServers[i].clients = 0;
+	cls.q3_localServers[i].hostName[0] = '\0';
+	cls.q3_localServers[i].mapName[0] = '\0';
+	cls.q3_localServers[i].maxClients = 0;
+	cls.q3_localServers[i].maxPing = 0;
+	cls.q3_localServers[i].minPing = 0;
+	cls.q3_localServers[i].ping = -1;
+	cls.q3_localServers[i].game[0] = '\0';
+	cls.q3_localServers[i].gameType = 0;
+	cls.q3_localServers[i].netType = from.type;
+	cls.q3_localServers[i].allowAnonymous = 0;
+	cls.q3_localServers[i].friendlyFire = 0;           // NERVE - SMF
+	cls.q3_localServers[i].maxlives = 0;               // NERVE - SMF
+	cls.q3_localServers[i].tourney = 0;                // NERVE - SMF
+	cls.q3_localServers[i].punkbuster = 0;             // DHM - Nerve
+	cls.q3_localServers[i].gameName[0] = '\0';           // Arnout
 
 	String::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING_Q3 );
 	if ( String::Length( info ) ) {
@@ -3226,17 +3226,17 @@ CL_UpdateInfoPacket
 */
 void CL_UpdateInfoPacket( netadr_t from ) {
 
-	if ( cls.autoupdateServer.type == NA_BAD ) {
+	if ( cls.wm_autoupdateServer.type == NA_BAD ) {
 		Com_DPrintf( "CL_UpdateInfoPacket:  Auto-Updater has bad address\n" );
 		return;
 	}
 
 	Com_DPrintf( "Auto-Updater resolved to %i.%i.%i.%i:%i\n",
-				 cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
-				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
-				 BigShort( cls.autoupdateServer.port ) );
+				 cls.wm_autoupdateServer.ip[0], cls.wm_autoupdateServer.ip[1],
+				 cls.wm_autoupdateServer.ip[2], cls.wm_autoupdateServer.ip[3],
+				 BigShort( cls.wm_autoupdateServer.port ) );
 
-	if ( !SOCK_CompareAdr( from, cls.autoupdateServer ) ) {
+	if ( !SOCK_CompareAdr( from, cls.wm_autoupdateServer ) ) {
 		Com_DPrintf( "CL_UpdateInfoPacket:  Received packet from %i.%i.%i.%i:%i\n",
 					 from.ip[0], from.ip[1], from.ip[2], from.ip[3],
 					 BigShort( from.port ) );
@@ -3459,13 +3459,13 @@ void CL_LocalServers_f( void ) {
 	Com_Printf( "Scanning for servers on the local network...\n" );
 
 	// reset the list, waiting for response
-	cls.numlocalservers = 0;
-	cls.pingUpdateSource = AS_LOCAL;
+	cls.q3_numlocalservers = 0;
+	cls.q3_pingUpdateSource = AS_LOCAL;
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		qboolean b = cls.localServers[i].visible;
-		Com_Memset( &cls.localServers[i], 0, sizeof( cls.localServers[i] ) );
-		cls.localServers[i].visible = b;
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		qboolean b = cls.q3_localServers[i].visible;
+		Com_Memset( &cls.q3_localServers[i], 0, sizeof( cls.q3_localServers[i] ) );
+		cls.q3_localServers[i].visible = b;
 	}
 	Com_Memset( &to, 0, sizeof( to ) );
 
@@ -3505,21 +3505,21 @@ void CL_GlobalServers_f( void ) {
 		return;
 	}
 
-	cls.masterNum = String::Atoi( Cmd_Argv( 1 ) );
+	cls.q3_masterNum = String::Atoi( Cmd_Argv( 1 ) );
 
 	Com_Printf( "Requesting servers from the master...\n" );
 
 	// reset the list, waiting for response
 	// -1 is used to distinguish a "no response"
 
-	if ( cls.masterNum == 1 ) {
+	if ( cls.q3_masterNum == 1 ) {
 		SOCK_StringToAdr( "master.quake3world.com", &to, PORT_MASTER );
-		cls.nummplayerservers = -1;
-		cls.pingUpdateSource = AS_MPLAYER;
+		cls.q3_nummplayerservers = -1;
+		cls.q3_pingUpdateSource = AS_MPLAYER;
 	} else {
 		SOCK_StringToAdr( MASTER_SERVER_NAME, &to, PORT_MASTER );
-		cls.numglobalservers = -1;
-		cls.pingUpdateSource = AS_GLOBAL;
+		cls.q3_numglobalservers = -1;
+		cls.q3_pingUpdateSource = AS_GLOBAL;
 	}
 	to.type = NA_IP;
 
@@ -3744,29 +3744,29 @@ qboolean CL_UpdateVisiblePings_f( int source ) {
 		return qfalse;
 	}
 
-	cls.pingUpdateSource = source;
+	cls.q3_pingUpdateSource = source;
 
 	slots = CL_GetPingQueueCount();
 	if ( slots < MAX_PINGREQUESTS ) {
-		serverInfo_t *server = NULL;
+		q3serverInfo_t *server = NULL;
 
-		max = ( source == AS_GLOBAL ) ? MAX_GLOBAL_SERVERS : MAX_OTHER_SERVERS;
+		max = ( source == AS_GLOBAL ) ? MAX_GLOBAL_SERVERS_WM : MAX_OTHER_SERVERS_Q3;
 		switch ( source ) {
 		case AS_LOCAL:
-			server = &cls.localServers[0];
-			max = cls.numlocalservers;
+			server = &cls.q3_localServers[0];
+			max = cls.q3_numlocalservers;
 			break;
 		case AS_MPLAYER:
-			server = &cls.mplayerServers[0];
-			max = cls.nummplayerservers;
+			server = &cls.q3_mplayerServers[0];
+			max = cls.q3_nummplayerservers;
 			break;
 		case AS_GLOBAL:
-			server = &cls.globalServers[0];
-			max = cls.numglobalservers;
+			server = &cls.q3_globalServers[0];
+			max = cls.q3_numglobalservers;
 			break;
 		case AS_FAVORITES:
-			server = &cls.favoriteServers[0];
-			max = cls.numfavoriteservers;
+			server = &cls.q3_favoriteServers[0];
+			max = cls.q3_numfavoriteservers;
 			break;
 		}
 		for ( i = 0; i < max; i++ ) {
@@ -3806,10 +3806,10 @@ qboolean CL_UpdateVisiblePings_f( int source ) {
 					// if we are updating global servers
 					if ( source == AS_GLOBAL ) {
 						//
-						if ( cls.numGlobalServerAddresses > 0 ) {
+						if ( cls.q3_numGlobalServerAddresses > 0 ) {
 							// overwrite this server with one from the additional global servers
-							cls.numGlobalServerAddresses--;
-							CL_InitServerInfo( &server[i], &cls.globalServerAddresses[cls.numGlobalServerAddresses] );
+							cls.q3_numGlobalServerAddresses--;
+							CL_InitServerInfo( &server[i], &cls.q3_globalServerAddresses[cls.q3_numGlobalServerAddresses] );
 							// NOTE: the server[i].visible flag stays untouched
 						}
 					}

@@ -162,19 +162,19 @@ Called by Com_Error when a cd is needed
 ===============
 */
 void CL_CDDialog( void ) {
-	cls.cddialog = qtrue;   // start it next frame
+	cls.q3_cddialog = qtrue;   // start it next frame
 }
 
 void CL_PurgeCache( void ) {
-	cls.doCachePurge = qtrue;
+	cls.et_doCachePurge = qtrue;
 }
 
 void CL_DoPurgeCache( void ) {
-	if ( !cls.doCachePurge ) {
+	if ( !cls.et_doCachePurge ) {
 		return;
 	}
 
-	cls.doCachePurge = qfalse;
+	cls.et_doCachePurge = qfalse;
 
 	if ( !com_cl_running ) {
 		return;
@@ -184,7 +184,7 @@ void CL_DoPurgeCache( void ) {
 		return;
 	}
 
-	if ( !cls.rendererStarted ) {
+	if ( !cls.q3_rendererStarted ) {
 		return;
 	}
 
@@ -878,10 +878,10 @@ void CL_ShutdownAll( void ) {
 		CL_DoPurgeCache();
 	}
 
-	cls.uiStarted = qfalse;
-	cls.cgameStarted = qfalse;
-	cls.rendererStarted = qfalse;
-	cls.soundRegistered = qfalse;
+	cls.q3_uiStarted = qfalse;
+	cls.q3_cgameStarted = qfalse;
+	cls.q3_rendererStarted = qfalse;
+	cls.q3_soundRegistered = qfalse;
 
 	// Gordon: stop recording on map change etc, demos aren't valid over map changes anyway
 	if ( clc.demorecording ) {
@@ -941,7 +941,7 @@ void CL_MapLoading( void ) {
 	// if we are already connected to the local host, stay connected
 	if ( cls.state >= CA_CONNECTED && !String::ICmp( cls.servername, "localhost" ) ) {
 		cls.state = CA_CONNECTED;       // so the connect screen is drawn
-		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
+		memset( cls.q3_updateInfoString, 0, sizeof( cls.q3_updateInfoString ) );
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
 		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
 		clc.lastPacketSentTime = -9999;
@@ -980,11 +980,11 @@ Clear download information that we keep in cls (disconnected download support)
 =====================
 */
 void CL_ClearStaticDownload( void ) {
-	assert( !cls.bWWWDlDisconnected ); // reset before calling
-	cls.downloadRestart = qfalse;
-	cls.downloadTempName[0] = '\0';
-	cls.downloadName[0] = '\0';
-	cls.originalDownloadName[0] = '\0';
+	assert( !cls.et_bWWWDlDisconnected ); // reset before calling
+	cls.et_downloadRestart = qfalse;
+	cls.et_downloadTempName[0] = '\0';
+	cls.et_downloadName[0] = '\0';
+	cls.et_originalDownloadName[0] = '\0';
 }
 
 /*
@@ -1009,12 +1009,12 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		CL_StopRecord_f();
 	}
 
-	if ( !cls.bWWWDlDisconnected ) {
+	if ( !cls.et_bWWWDlDisconnected ) {
 		if ( clc.download ) {
 			FS_FCloseFile( clc.download );
 			clc.download = 0;
 		}
-		*cls.downloadTempName = *cls.downloadName = 0;
+		*cls.et_downloadTempName = *cls.et_downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );
 
 		autoupdateStarted = qfalse;
@@ -1047,7 +1047,7 @@ void CL_Disconnect( qboolean showMainMenu ) {
 	// wipe the client connection
 	Com_Memset( &clc, 0, sizeof( clc ) );
 
-	if ( !cls.bWWWDlDisconnected ) {
+	if ( !cls.et_bWWWDlDisconnected ) {
 		CL_ClearStaticDownload();
 	}
 
@@ -1118,23 +1118,23 @@ void CL_RequestMotd( void ) {
 		return;
 	}
 	Com_Printf( "Resolving %s\n", MOTD_SERVER_NAME );
-	if ( !SOCK_StringToAdr( MOTD_SERVER_NAME, &cls.updateServer, PORT_MOTD ) ) {
+	if ( !SOCK_StringToAdr( MOTD_SERVER_NAME, &cls.q3_updateServer, PORT_MOTD ) ) {
 		Com_Printf( "Couldn't resolve address\n" );
 		return;
 	}
 	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", MOTD_SERVER_NAME,
-				cls.updateServer.ip[0], cls.updateServer.ip[1],
-				cls.updateServer.ip[2], cls.updateServer.ip[3],
-				BigShort( cls.updateServer.port ) );
+				cls.q3_updateServer.ip[0], cls.q3_updateServer.ip[1],
+				cls.q3_updateServer.ip[2], cls.q3_updateServer.ip[3],
+				BigShort( cls.q3_updateServer.port ) );
 
 	info[0] = 0;
-	String::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", rand() );
+	String::Sprintf( cls.q3_updateChallenge, sizeof( cls.q3_updateChallenge ), "%i", rand() );
 
-	Info_SetValueForKey( info, "challenge", cls.updateChallenge, MAX_INFO_STRING_Q3 );
+	Info_SetValueForKey( info, "challenge", cls.q3_updateChallenge, MAX_INFO_STRING_Q3 );
 	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING_Q3 );
 	Info_SetValueForKey( info, "version", com_version->string, MAX_INFO_STRING_Q3 );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd \"%s\"\n", info );
+	NET_OutOfBandPrint( NS_CLIENT, cls.q3_updateServer, "getmotd \"%s\"\n", info );
 }
 
 #ifdef AUTHORIZE_SUPPORT
@@ -1531,10 +1531,10 @@ void CL_Vid_Restart_f( void ) {
 
 	S_BeginRegistration();  // all sound handles are now invalid
 
-	cls.rendererStarted = qfalse;
-	cls.uiStarted = qfalse;
-	cls.cgameStarted = qfalse;
-	cls.soundRegistered = qfalse;
+	cls.q3_rendererStarted = qfalse;
+	cls.q3_uiStarted = qfalse;
+	cls.q3_cgameStarted = qfalse;
+	cls.q3_soundRegistered = qfalse;
 	autoupdateChecked = qfalse;
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
@@ -1560,7 +1560,7 @@ void CL_Vid_Restart_f( void ) {
 #endif
 	// start the cgame if connected
 	if ( cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC ) {
-		cls.cgameStarted = qtrue;
+		cls.q3_cgameStarted = qtrue;
 		CL_InitCGame();
 		// send pure checksums
 		CL_SendPureChecksums();
@@ -1746,8 +1746,8 @@ void CL_DownloadsComplete( void ) {
 #endif
 			// will either exit with a successful process spawn, or will Com_Error ERR_DROP
 			// so we need to clear the disconnected download data if needed
-			if ( cls.bWWWDlDisconnected ) {
-				cls.bWWWDlDisconnected = qfalse;
+			if ( cls.et_bWWWDlDisconnected ) {
+				cls.et_bWWWDlDisconnected = qfalse;
 				CL_ClearStaticDownload();
 			}
 			Sys_StartProcess( fn, qtrue );
@@ -1757,28 +1757,28 @@ void CL_DownloadsComplete( void ) {
 
 		autoupdateStarted = qfalse;
 
-		if ( !cls.bWWWDlDisconnected ) {
+		if ( !cls.et_bWWWDlDisconnected ) {
 			CL_Disconnect( qtrue );
 		}
 		// we can reset that now
-		cls.bWWWDlDisconnected = qfalse;
+		cls.et_bWWWDlDisconnected = qfalse;
 		CL_ClearStaticDownload();
 
 		return;
 	}
 
 	// if we downloaded files we need to restart the file system
-	if ( cls.downloadRestart ) {
-		cls.downloadRestart = qfalse;
+	if ( cls.et_downloadRestart ) {
+		cls.et_downloadRestart = qfalse;
 
 		FS_Restart( clc.checksumFeed ); // We possibly downloaded a pak, restart the file system to load it
 
-		if ( !cls.bWWWDlDisconnected ) {
+		if ( !cls.et_bWWWDlDisconnected ) {
 			// inform the server so we get new gamestate info
 			CL_AddReliableCommand( "donedl" );
 		}
 		// we can reset that now
-		cls.bWWWDlDisconnected = qfalse;
+		cls.et_bWWWDlDisconnected = qfalse;
 		CL_ClearStaticDownload();
 
 		// by sending the donedl command we request a new gamestate
@@ -1787,7 +1787,7 @@ void CL_DownloadsComplete( void ) {
 	}
 
 	// TTimo: I wonder if that happens - it should not but I suspect it could happen if a download fails in the middle or is aborted
-	assert( !cls.bWWWDlDisconnected );
+	assert( !cls.et_bWWWDlDisconnected );
 
 	// let the client game init and load data
 	cls.state = CA_LOADING;
@@ -1811,7 +1811,7 @@ void CL_DownloadsComplete( void ) {
 	CL_FlushMemory();
 
 	// initialize the CGame
-	cls.cgameStarted = qtrue;
+	cls.q3_cgameStarted = qtrue;
 	CL_InitCGame();
 
 	// set pure checksums
@@ -1837,8 +1837,8 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 				 "Remotename: %s\n"
 				 "****************************\n", localName, remoteName );
 
-	String::NCpyZ( cls.downloadName, localName, sizeof( cls.downloadName ) );
-	String::Sprintf( cls.downloadTempName, sizeof( cls.downloadTempName ), "%s.tmp", localName );
+	String::NCpyZ( cls.et_downloadName, localName, sizeof( cls.et_downloadName ) );
+	String::Sprintf( cls.et_downloadTempName, sizeof( cls.et_downloadTempName ), "%s.tmp", localName );
 
 	// Set so UI gets access to it
 	Cvar_Set( "cl_downloadName", remoteName );
@@ -1890,7 +1890,7 @@ void CL_NextDownload( void ) {
 		}
 		CL_BeginDownload( localName, remoteName );
 
-		cls.downloadRestart = qtrue;
+		cls.et_downloadRestart = qtrue;
 
 		// move over the rest
 		memmove( clc.downloadList, s, String::Length( s ) + 1 );
@@ -1918,10 +1918,10 @@ void CL_InitDownloads( void ) {
 	// init some of the www dl data
 	clc.bWWWDl = qfalse;
 	clc.bWWWDlAborting = qfalse;
-	cls.bWWWDlDisconnected = qfalse;
+	cls.et_bWWWDlDisconnected = qfalse;
 	CL_ClearStaticDownload();
 
-	if ( autoupdateStarted && SOCK_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
+	if ( autoupdateStarted && SOCK_CompareAdr( cls.wm_autoupdateServer, clc.serverAddress ) ) {
 		if ( String::Length( cl_updatefiles->string ) > 4 ) {
 			String::NCpyZ( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
 			String::NCpyZ( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ), MAX_INFO_STRING_Q3 );
@@ -2071,7 +2071,7 @@ void CL_DisconnectPacket( netadr_t from ) {
 	}
 
 	// if we are doing a disconnected download, leave the 'connecting' screen on with the progress information
-	if ( !cls.bWWWDlDisconnected ) {
+	if ( !cls.et_bWWWDlDisconnected ) {
 		// drop the connection
 		message = "Server disconnected for unknown reason";
 		Com_Printf( message );
@@ -2096,7 +2096,7 @@ void CL_MotdPacket( netadr_t from ) {
 	char    *info;
 
 	// if not from our server, ignore it
-	if ( !SOCK_CompareAdr( from, cls.updateServer ) ) {
+	if ( !SOCK_CompareAdr( from, cls.q3_updateServer ) ) {
 		return;
 	}
 
@@ -2104,13 +2104,13 @@ void CL_MotdPacket( netadr_t from ) {
 
 	// check challenge
 	challenge = Info_ValueForKey( info, "challenge" );
-	if ( String::Cmp( challenge, cls.updateChallenge ) ) {
+	if ( String::Cmp( challenge, cls.q3_updateChallenge ) ) {
 		return;
 	}
 
 	challenge = Info_ValueForKey( info, "motd" );
 
-	String::NCpyZ( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
+	String::NCpyZ( cls.q3_updateInfoString, info, sizeof( cls.q3_updateInfoString ) );
 	Cvar_Set( "cl_motdString", challenge );
 }
 
@@ -2156,7 +2156,7 @@ void CL_PrintPacket( netadr_t from, QMsg *msg ) {
 CL_InitServerInfo
 ===================
 */
-void CL_InitServerInfo( serverInfo_t *server, serverAddress_t *address ) {
+void CL_InitServerInfo( q3serverInfo_t *server, q3serverAddress_t *address ) {
 	server->adr.type  = NA_IP;
 	server->adr.ip[0] = address->ip[0];
 	server->adr.ip[1] = address->ip[1];
@@ -2185,17 +2185,17 @@ CL_ServersResponsePacket
 */
 void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 	int i, count, max, total;
-	serverAddress_t addresses[MAX_SERVERSPERPACKET];
+	q3serverAddress_t addresses[MAX_SERVERSPERPACKET];
 	int numservers;
 	byte*           buffptr;
 	byte*           buffend;
 
 	Com_Printf( "CL_ServersResponsePacket\n" );
 
-	if ( cls.numglobalservers == -1 ) {
+	if ( cls.q3_numglobalservers == -1 ) {
 		// state to detect lack of servers or lack of response
-		cls.numglobalservers = 0;
-		cls.numGlobalServerAddresses = 0;
+		cls.q3_numglobalservers = 0;
+		cls.q3_numGlobalServerAddresses = 0;
 	}
 
 	// parse through server response string
@@ -2249,9 +2249,9 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 		}
 	}
 
-	if ( cls.masterNum == 0 ) {
-		count = cls.numglobalservers;
-		max = MAX_GLOBAL_SERVERS;
+	if ( cls.q3_masterNum == 0 ) {
+		count = cls.q3_numglobalservers;
+		max = MAX_GLOBAL_SERVERS_ET;
 	} else {
 		// shut up compiler
 		count = 0;
@@ -2260,8 +2260,8 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 
 	for ( i = 0; i < numservers && count < max; i++ ) {
 		// build net address
-		//serverInfo_t *server = (cls.masterNum == 0) ? &cls.globalServers[count] : &cls.mplayerServers[count];
-		serverInfo_t *server = &cls.globalServers[count];
+		//q3serverInfo_t *server = (cls.masterNum == 0) ? &cls.globalServers[count] : &cls.mplayerServers[count];
+		q3serverInfo_t *server = &cls.q3_globalServers[count];
 
 		CL_InitServerInfo( server, &addresses[i] );
 		// advance to next slot
@@ -2269,11 +2269,11 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 	}
 
 	// if getting the global list and there are too many servers
-	if ( cls.masterNum == 0 && count >= max ) {
-		for (; i < numservers && cls.numGlobalServerAddresses < MAX_GLOBAL_SERVERS; i++ ) {
-			serverAddress_t *addr;
+	if ( cls.q3_masterNum == 0 && count >= max ) {
+		for (; i < numservers && cls.q3_numGlobalServerAddresses < MAX_GLOBAL_SERVERS_ET; i++ ) {
+			q3serverAddress_t *addr;
 			// just store the addresses in an additional list
-			addr = &cls.globalServerAddresses[cls.numGlobalServerAddresses++];
+			addr = &cls.q3_globalServerAddresses[cls.q3_numGlobalServerAddresses++];
 			addr->ip[0] = addresses[i].ip[0];
 			addr->ip[1] = addresses[i].ip[1];
 			addr->ip[2] = addresses[i].ip[2];
@@ -2282,11 +2282,11 @@ void CL_ServersResponsePacket( netadr_t from, QMsg *msg ) {
 		}
 	}
 
-	if ( cls.masterNum == 0 ) {
-		cls.numglobalservers = count;
-		total = count + cls.numGlobalServerAddresses;
+	if ( cls.q3_masterNum == 0 ) {
+		cls.q3_numglobalservers = count;
+		total = count + cls.q3_numGlobalServerAddresses;
 	} else {
-		total = cls.numglobalservers = 0;
+		total = cls.q3_numglobalservers = 0;
 	}
 
 	Com_Printf( "%d servers parsed (total %d)\n", numservers, total );
@@ -2356,7 +2356,7 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 		}
 
 		// DHM - Nerve :: If we have completed a connection to the Auto-Update server...
-		if ( autoupdateChecked && SOCK_CompareAdr( cls.autoupdateServer, clc.serverAddress ) ) {
+		if ( autoupdateChecked && SOCK_CompareAdr( cls.wm_autoupdateServer, clc.serverAddress ) ) {
 			// Mark the client as being in the process of getting an update
 			if ( cl_updateavailable->integer ) {
 				autoupdateStarted = qtrue;
@@ -2571,15 +2571,15 @@ void CL_WWWDownload( void ) {
 		// taken from CL_ParseDownload
 		// we work with OS paths
 		clc.download = 0;
-		to_ospath = FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.originalDownloadName, "" );
+		to_ospath = FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.et_originalDownloadName, "" );
 		to_ospath[String::Length( to_ospath ) - 1] = '\0';
-		if ( rename( cls.downloadTempName, to_ospath ) ) {
-			FS_CopyFile( cls.downloadTempName, to_ospath );
-			remove( cls.downloadTempName );
+		if ( rename( cls.et_downloadTempName, to_ospath ) ) {
+			FS_CopyFile( cls.et_downloadTempName, to_ospath );
+			remove( cls.et_downloadTempName );
 		}
-		*cls.downloadTempName = *cls.downloadName = 0;
+		*cls.et_downloadTempName = *cls.et_downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );
-		if ( cls.bWWWDlDisconnected ) {
+		if ( cls.et_bWWWDlDisconnected ) {
 			// for an auto-update in disconnected mode, we'll be spawning the setup in CL_DownloadsComplete
 			if ( !autoupdateStarted ) {
 				// reconnect to the server, which might send us to a new disconnected download
@@ -2588,28 +2588,28 @@ void CL_WWWDownload( void ) {
 		} else {
 			CL_AddReliableCommand( "wwwdl done" );
 			// tracking potential web redirects leading us to wrong checksum - only works in connected mode
-			if ( String::Length( clc.redirectedList ) + String::Length( cls.originalDownloadName ) + 1 >= sizeof( clc.redirectedList ) ) {
+			if ( String::Length( clc.redirectedList ) + String::Length( cls.et_originalDownloadName ) + 1 >= sizeof( clc.redirectedList ) ) {
 				// just to be safe
 				Com_Printf( "ERROR: redirectedList overflow (%s)\n", clc.redirectedList );
 			} else {
 				strcat( clc.redirectedList, "@" );
-				strcat( clc.redirectedList, cls.originalDownloadName );
+				strcat( clc.redirectedList, cls.et_originalDownloadName );
 			}
 		}
 	} else
 	{
-		if ( cls.bWWWDlDisconnected ) {
+		if ( cls.et_bWWWDlDisconnected ) {
 			// in a connected download, we'd tell the server about failure and wait for a reply
 			// but in this case we can't get anything from server
 			// if we just reconnect it's likely we'll get the same disconnected download message, and error out again
 			// this may happen for a regular dl or an auto update
-			const char *error = va( "Download failure while getting '%s'\n", cls.downloadName ); // get the msg before clearing structs
-			cls.bWWWDlDisconnected = qfalse; // need clearing structs before ERR_DROP, or it goes into endless reload
+			const char *error = va( "Download failure while getting '%s'\n", cls.et_downloadName ); // get the msg before clearing structs
+			cls.et_bWWWDlDisconnected = qfalse; // need clearing structs before ERR_DROP, or it goes into endless reload
 			CL_ClearStaticDownload();
 			Com_Error( ERR_DROP, error );
 		} else {
 			// see CL_ParseDownload, same abort strategy
-			Com_Printf( "Download failure while getting '%s'\n", cls.downloadName );
+			Com_Printf( "Download failure while getting '%s'\n", cls.et_downloadName );
 			CL_AddReliableCommand( "wwwdl fail" );
 			clc.bWWWDlAborting = qtrue;
 		}
@@ -2657,9 +2657,9 @@ void CL_Frame( int msec ) {
 		return;
 	}
 
-	if ( cls.cddialog ) {
+	if ( cls.q3_cddialog ) {
 		// bring up the cd error dialog if needed
-		cls.cddialog = qfalse;
+		cls.q3_cddialog = qfalse;
 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD );
 	} else if ( cls.state == CA_DISCONNECTED && !( in_keyCatchers & KEYCATCH_UI )
 				&& !com_sv_running->integer ) {
@@ -2701,7 +2701,7 @@ void CL_Frame( int msec ) {
 	CL_CheckTimeout();
 
 	// wwwdl download may survive a server disconnect
-	if ( ( cls.state == CA_CONNECTED && clc.bWWWDl ) || cls.bWWWDlDisconnected ) {
+	if ( ( cls.state == CA_CONNECTED && clc.bWWWDl ) || cls.et_bWWWDlDisconnected ) {
 		CL_WWWDownload();
 	}
 
@@ -2948,23 +2948,23 @@ void CL_StartHunkUsers( void ) {
 		return;
 	}
 
-	if ( !cls.rendererStarted ) {
-		cls.rendererStarted = qtrue;
+	if ( !cls.q3_rendererStarted ) {
+		cls.q3_rendererStarted = qtrue;
 		CL_InitRenderer();
 	}
 
-	if ( !cls.soundStarted ) {
-		cls.soundStarted = qtrue;
+	if ( !cls.q3_soundStarted ) {
+		cls.q3_soundStarted = qtrue;
 		S_Init();
 	}
 
-	if ( !cls.soundRegistered ) {
-		cls.soundRegistered = qtrue;
+	if ( !cls.q3_soundRegistered ) {
+		cls.q3_soundRegistered = qtrue;
 		S_BeginRegistration();
 	}
 
-	if ( !cls.uiStarted ) {
-		cls.uiStarted = qtrue;
+	if ( !cls.q3_uiStarted ) {
+		cls.q3_uiStarted = qtrue;
 		CL_InitUI();
 	}
 }
@@ -2985,26 +2985,26 @@ void CL_CheckAutoUpdate( void ) {
 	srand( Com_Milliseconds() );
 
 	// Resolve update server
-	if ( !SOCK_StringToAdr( cls.autoupdateServerNames[0], &cls.autoupdateServer, PORT_SERVER ) ) {
+	if ( !SOCK_StringToAdr( cls.wm_autoupdateServerNames[0], &cls.wm_autoupdateServer, PORT_SERVER ) ) {
 		Com_DPrintf( "Failed to resolve any Auto-update servers.\n" );
 
-		cls.autoUpdateServerChecked[0] = qtrue;
+		cls.et_autoUpdateServerChecked[0] = qtrue;
 
 		autoupdateChecked = qtrue;
 		return;
 	}
 
-	cls.autoupdatServerIndex = 0;
+	cls.et_autoupdatServerIndex = 0;
 
-	cls.autoupdatServerFirstIndex = cls.autoupdatServerIndex;
+	cls.et_autoupdatServerFirstIndex = cls.et_autoupdatServerIndex;
 
-	cls.autoUpdateServerChecked[cls.autoupdatServerIndex] = qtrue;
+	cls.et_autoUpdateServerChecked[cls.et_autoupdatServerIndex] = qtrue;
 
-	Com_DPrintf( "autoupdate server at: %i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
-				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
-				 BigShort( cls.autoupdateServer.port ) );
+	Com_DPrintf( "autoupdate server at: %i.%i.%i.%i:%i\n", cls.wm_autoupdateServer.ip[0], cls.wm_autoupdateServer.ip[1],
+				 cls.wm_autoupdateServer.ip[2], cls.wm_autoupdateServer.ip[3],
+				 BigShort( cls.wm_autoupdateServer.port ) );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, CPUSTRING );
+	NET_OutOfBandPrint( NS_CLIENT, cls.wm_autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, CPUSTRING );
 
 #endif // !PRE_RELEASE_DEMO
 
@@ -3029,35 +3029,35 @@ qboolean CL_NextUpdateServer( void ) {
 	return qfalse;
 #endif
 
-	while ( cls.autoUpdateServerChecked[cls.autoupdatServerFirstIndex] ) {
-		cls.autoupdatServerIndex++;
+	while ( cls.et_autoUpdateServerChecked[cls.et_autoupdatServerFirstIndex] ) {
+		cls.et_autoupdatServerIndex++;
 
-		if ( cls.autoupdatServerIndex > MAX_AUTOUPDATE_SERVERS ) {
-			cls.autoupdatServerIndex = 0;
+		if ( cls.et_autoupdatServerIndex > MAX_AUTOUPDATE_SERVERS ) {
+			cls.et_autoupdatServerIndex = 0;
 		}
 
-		if ( cls.autoupdatServerIndex == cls.autoupdatServerFirstIndex ) {
+		if ( cls.et_autoupdatServerIndex == cls.et_autoupdatServerFirstIndex ) {
 			// went through all of them already
 			return qfalse;
 		}
 	}
 
-	servername = cls.autoupdateServerNames[cls.autoupdatServerIndex];
+	servername = cls.wm_autoupdateServerNames[cls.et_autoupdatServerIndex];
 
 	Com_DPrintf( "Resolving AutoUpdate Server... " );
-	if ( !SOCK_StringToAdr( servername, &cls.autoupdateServer, PORT_SERVER ) ) {
+	if ( !SOCK_StringToAdr( servername, &cls.wm_autoupdateServer, PORT_SERVER ) ) {
 		Com_DPrintf( "Couldn't resolve address, trying next one..." );
 
-		cls.autoUpdateServerChecked[cls.autoupdatServerIndex] = qtrue;
+		cls.et_autoUpdateServerChecked[cls.et_autoupdatServerIndex] = qtrue;
 
 		return CL_NextUpdateServer();
 	}
 
-	cls.autoUpdateServerChecked[cls.autoupdatServerIndex] = qtrue;
+	cls.et_autoUpdateServerChecked[cls.et_autoupdatServerIndex] = qtrue;
 
-	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
-				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
-				 BigShort( cls.autoupdateServer.port ) );
+	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.wm_autoupdateServer.ip[0], cls.wm_autoupdateServer.ip[1],
+				 cls.wm_autoupdateServer.ip[2], cls.wm_autoupdateServer.ip[3],
+				 BigShort( cls.wm_autoupdateServer.port ) );
 
 	return qtrue;
 }
@@ -3102,7 +3102,7 @@ void CL_GetAutoUpdate( void ) {
 
 	String::NCpyZ( cls.servername, "Auto-Updater", sizeof( cls.servername ) );
 
-	if ( cls.autoupdateServer.type == NA_BAD ) {
+	if ( cls.wm_autoupdateServer.type == NA_BAD ) {
 		Com_Printf( "Bad server address\n" );
 		cls.state = CA_DISCONNECTED;
 		Cvar_Set( "ui_connecting", "0" );
@@ -3110,7 +3110,7 @@ void CL_GetAutoUpdate( void ) {
 	}
 
 	// Copy auto-update server address to Server connect address
-	memcpy( &clc.serverAddress, &cls.autoupdateServer, sizeof( netadr_t ) );
+	memcpy( &clc.serverAddress, &cls.wm_autoupdateServer, sizeof( netadr_t ) );
 
 	Com_DPrintf( "%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
 				 clc.serverAddress.ip[0], clc.serverAddress.ip[1],
@@ -3443,11 +3443,11 @@ void CL_Init( void ) {
 	cl_updateavailable = Cvar_Get( "cl_updateavailable", "0", CVAR_ROM );
 	cl_updatefiles = Cvar_Get( "cl_updatefiles", "", CVAR_ROM );
 
-	String::NCpyZ( cls.autoupdateServerNames[0], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[1], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[2], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
-	String::NCpyZ( cls.autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[0], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[1], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[2], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
+	String::NCpyZ( cls.wm_autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
 	// DHM - Nerve
 
 	//
@@ -3601,7 +3601,7 @@ void CL_Shutdown( void ) {
 }
 
 
-static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping ) {
+static void CL_SetServerInfo( q3serverInfo_t *server, const char *info, int ping ) {
 	if ( server ) {
 		if ( info ) {
 			server->clients = String::Atoi( Info_ValueForKey( info, "clients" ) );
@@ -3631,21 +3631,21 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 static void CL_SetServerInfoByAddress( netadr_t from, const char *info, int ping ) {
 	int i;
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.localServers[i], info, ping );
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_localServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_localServers[i], info, ping );
 		}
 	}
 
-	for ( i = 0; i < MAX_GLOBAL_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.globalServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.globalServers[i], info, ping );
+	for ( i = 0; i < MAX_GLOBAL_SERVERS_ET; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_globalServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_globalServers[i], info, ping );
 		}
 	}
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		if ( SOCK_CompareAdr( from, cls.favoriteServers[i].adr ) ) {
-			CL_SetServerInfo( &cls.favoriteServers[i], info, ping );
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		if ( SOCK_CompareAdr( from, cls.q3_favoriteServers[i].adr ) ) {
+			CL_SetServerInfo( &cls.q3_favoriteServers[i], info, ping );
 		}
 	}
 
@@ -3721,50 +3721,50 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	}
 
 	// if not just sent a local broadcast or pinging local servers
-	if ( cls.pingUpdateSource != AS_LOCAL ) {
+	if ( cls.q3_pingUpdateSource != AS_LOCAL ) {
 		return;
 	}
 
-	for ( i = 0 ; i < MAX_OTHER_SERVERS ; i++ ) {
+	for ( i = 0 ; i < MAX_OTHER_SERVERS_Q3 ; i++ ) {
 		// empty slot
-		if ( cls.localServers[i].adr.port == 0 ) {
+		if ( cls.q3_localServers[i].adr.port == 0 ) {
 			break;
 		}
 
 		// avoid duplicate
-		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.q3_localServers[i].adr ) ) {
 			return;
 		}
 	}
 
-	if ( i == MAX_OTHER_SERVERS ) {
-		Com_DPrintf( "MAX_OTHER_SERVERS hit, dropping infoResponse\n" );
+	if ( i == MAX_OTHER_SERVERS_Q3 ) {
+		Com_DPrintf( "MAX_OTHER_SERVERS_Q3 hit, dropping infoResponse\n" );
 		return;
 	}
 
 	// add this to the list
-	cls.numlocalservers = i + 1;
-	cls.localServers[i].adr = from;
-	cls.localServers[i].clients = 0;
-	cls.localServers[i].hostName[0] = '\0';
-	cls.localServers[i].load = -1;
-	cls.localServers[i].mapName[0] = '\0';
-	cls.localServers[i].maxClients = 0;
-	cls.localServers[i].maxPing = 0;
-	cls.localServers[i].minPing = 0;
-	cls.localServers[i].ping = -1;
-	cls.localServers[i].game[0] = '\0';
-	cls.localServers[i].gameType = 0;
-	cls.localServers[i].netType = from.type;
-	cls.localServers[i].allowAnonymous = 0;
-	cls.localServers[i].friendlyFire = 0;           // NERVE - SMF
-	cls.localServers[i].maxlives = 0;               // NERVE - SMF
-	cls.localServers[i].needpass = 0;
-	cls.localServers[i].punkbuster = 0;             // DHM - Nerve
-	cls.localServers[i].antilag = 0;
-	cls.localServers[i].weaprestrict = 0;
-	cls.localServers[i].balancedteams = 0;
-	cls.localServers[i].gameName[0] = '\0';           // Arnout
+	cls.q3_numlocalservers = i + 1;
+	cls.q3_localServers[i].adr = from;
+	cls.q3_localServers[i].clients = 0;
+	cls.q3_localServers[i].hostName[0] = '\0';
+	cls.q3_localServers[i].load = -1;
+	cls.q3_localServers[i].mapName[0] = '\0';
+	cls.q3_localServers[i].maxClients = 0;
+	cls.q3_localServers[i].maxPing = 0;
+	cls.q3_localServers[i].minPing = 0;
+	cls.q3_localServers[i].ping = -1;
+	cls.q3_localServers[i].game[0] = '\0';
+	cls.q3_localServers[i].gameType = 0;
+	cls.q3_localServers[i].netType = from.type;
+	cls.q3_localServers[i].allowAnonymous = 0;
+	cls.q3_localServers[i].friendlyFire = 0;           // NERVE - SMF
+	cls.q3_localServers[i].maxlives = 0;               // NERVE - SMF
+	cls.q3_localServers[i].needpass = 0;
+	cls.q3_localServers[i].punkbuster = 0;             // DHM - Nerve
+	cls.q3_localServers[i].antilag = 0;
+	cls.q3_localServers[i].weaprestrict = 0;
+	cls.q3_localServers[i].balancedteams = 0;
+	cls.q3_localServers[i].gameName[0] = '\0';           // Arnout
 
 	String::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING_Q3 );
 	if ( String::Length( info ) ) {
@@ -3782,17 +3782,17 @@ CL_UpdateInfoPacket
 */
 void CL_UpdateInfoPacket( netadr_t from ) {
 
-	if ( cls.autoupdateServer.type == NA_BAD ) {
+	if ( cls.wm_autoupdateServer.type == NA_BAD ) {
 		Com_DPrintf( "CL_UpdateInfoPacket:  Auto-Updater has bad address\n" );
 		return;
 	}
 
 	Com_DPrintf( "Auto-Updater resolved to %i.%i.%i.%i:%i\n",
-				 cls.autoupdateServer.ip[0], cls.autoupdateServer.ip[1],
-				 cls.autoupdateServer.ip[2], cls.autoupdateServer.ip[3],
-				 BigShort( cls.autoupdateServer.port ) );
+				 cls.wm_autoupdateServer.ip[0], cls.wm_autoupdateServer.ip[1],
+				 cls.wm_autoupdateServer.ip[2], cls.wm_autoupdateServer.ip[3],
+				 BigShort( cls.wm_autoupdateServer.port ) );
 
-	if ( !SOCK_CompareAdr( from, cls.autoupdateServer ) ) {
+	if ( !SOCK_CompareAdr( from, cls.wm_autoupdateServer ) ) {
 		Com_DPrintf( "CL_UpdateInfoPacket:  Received packet from %i.%i.%i.%i:%i\n",
 					 from.ip[0], from.ip[1], from.ip[2], from.ip[3],
 					 BigShort( from.port ) );
@@ -4015,13 +4015,13 @@ void CL_LocalServers_f( void ) {
 	Com_Printf( "Scanning for servers on the local network...\n" );
 
 	// reset the list, waiting for response
-	cls.numlocalservers = 0;
-	cls.pingUpdateSource = AS_LOCAL;
+	cls.q3_numlocalservers = 0;
+	cls.q3_pingUpdateSource = AS_LOCAL;
 
-	for ( i = 0; i < MAX_OTHER_SERVERS; i++ ) {
-		qboolean b = cls.localServers[i].visible;
-		Com_Memset( &cls.localServers[i], 0, sizeof( cls.localServers[i] ) );
-		cls.localServers[i].visible = b;
+	for ( i = 0; i < MAX_OTHER_SERVERS_Q3; i++ ) {
+		qboolean b = cls.q3_localServers[i].visible;
+		Com_Memset( &cls.q3_localServers[i], 0, sizeof( cls.q3_localServers[i] ) );
+		cls.q3_localServers[i].visible = b;
 	}
 	Com_Memset( &to, 0, sizeof( to ) );
 
@@ -4061,17 +4061,17 @@ void CL_GlobalServers_f( void ) {
 		return;
 	}
 
-	cls.masterNum = String::Atoi( Cmd_Argv( 1 ) );
+	cls.q3_masterNum = String::Atoi( Cmd_Argv( 1 ) );
 
 	Com_Printf( "Requesting servers from the master...\n" );
 
 	// reset the list, waiting for response
 	// -1 is used to distinguish a "no response"
 
-	if ( cls.masterNum == 0 ) {
+	if ( cls.q3_masterNum == 0 ) {
 		SOCK_StringToAdr( MASTER_SERVER_NAME, &to, PORT_MASTER );
-		cls.numglobalservers = -1;
-		cls.pingUpdateSource = AS_GLOBAL;
+		cls.q3_numglobalservers = -1;
+		cls.q3_pingUpdateSource = AS_GLOBAL;
 	}
 	to.type = NA_IP;
 
@@ -4296,25 +4296,25 @@ qboolean CL_UpdateVisiblePings_f( int source ) {
 		return qfalse;
 	}
 
-	cls.pingUpdateSource = source;
+	cls.q3_pingUpdateSource = source;
 
 	slots = CL_GetPingQueueCount();
 	if ( slots < MAX_PINGREQUESTS ) {
-		serverInfo_t *server = NULL;
+		q3serverInfo_t *server = NULL;
 
-		max = ( source == AS_GLOBAL ) ? MAX_GLOBAL_SERVERS : MAX_OTHER_SERVERS;
+		max = ( source == AS_GLOBAL ) ? MAX_GLOBAL_SERVERS_ET : MAX_OTHER_SERVERS_Q3;
 		switch ( source ) {
 		case AS_LOCAL:
-			server = &cls.localServers[0];
-			max = cls.numlocalservers;
+			server = &cls.q3_localServers[0];
+			max = cls.q3_numlocalservers;
 			break;
 		case AS_GLOBAL:
-			server = &cls.globalServers[0];
-			max = cls.numglobalservers;
+			server = &cls.q3_globalServers[0];
+			max = cls.q3_numglobalservers;
 			break;
 		case AS_FAVORITES:
-			server = &cls.favoriteServers[0];
-			max = cls.numfavoriteservers;
+			server = &cls.q3_favoriteServers[0];
+			max = cls.q3_numfavoriteservers;
 			break;
 		}
 		for ( i = 0; i < max; i++ ) {
@@ -4354,10 +4354,10 @@ qboolean CL_UpdateVisiblePings_f( int source ) {
 					// if we are updating global servers
 					if ( source == AS_GLOBAL ) {
 						//
-						if ( cls.numGlobalServerAddresses > 0 ) {
+						if ( cls.q3_numGlobalServerAddresses > 0 ) {
 							// overwrite this server with one from the additional global servers
-							cls.numGlobalServerAddresses--;
-							CL_InitServerInfo( &server[i], &cls.globalServerAddresses[cls.numGlobalServerAddresses] );
+							cls.q3_numGlobalServerAddresses--;
+							CL_InitServerInfo( &server[i], &cls.q3_globalServerAddresses[cls.q3_numGlobalServerAddresses] );
 							// NOTE: the server[i].visible flag stays untouched
 						}
 					}

@@ -49,7 +49,7 @@ static void GetClientState( uiClientState_t *state ) {
 	state->connectPacketCount = clc.connectPacketCount;
 	state->connState = cls.state;
 	String::NCpyZ( state->servername, cls.servername, sizeof( state->servername ) );
-	String::NCpyZ( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
+	String::NCpyZ( state->updateInfoString, cls.q3_updateInfoString, sizeof( state->updateInfoString ) );
 	String::NCpyZ( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
 	state->clientNum = cl.snap.ps.clientNum;
 }
@@ -64,8 +64,8 @@ void LAN_LoadCachedServers() {
 	fileHandle_t fileIn;
 	char filename[MAX_QPATH];
 
-	cls.numglobalservers = cls.numfavoriteservers = 0;
-	cls.numGlobalServerAddresses = 0;
+	cls.q3_numglobalservers = cls.q3_numfavoriteservers = 0;
+	cls.q3_numGlobalServerAddresses = 0;
 
 	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
 		String::Sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
@@ -76,15 +76,15 @@ void LAN_LoadCachedServers() {
 	// Arnout: moved to mod/profiles dir
 	//if (FS_SV_FOpenFileRead(filename, &fileIn)) {
 	if ( FS_FOpenFileRead( filename, &fileIn, qtrue ) ) {
-		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
-		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
+		FS_Read( &cls.q3_numglobalservers, sizeof( int ), fileIn );
+		FS_Read( &cls.q3_numfavoriteservers, sizeof( int ), fileIn );
 		FS_Read( &size, sizeof( int ), fileIn );
-		if ( size == sizeof( cls.globalServers ) + sizeof( cls.favoriteServers ) ) {
-			FS_Read( &cls.globalServers, sizeof( cls.globalServers ), fileIn );
-			FS_Read( &cls.favoriteServers, sizeof( cls.favoriteServers ), fileIn );
+		if ( size == sizeof( cls.q3_globalServers ) + sizeof( cls.q3_favoriteServers ) ) {
+			FS_Read( &cls.q3_globalServers, sizeof( cls.q3_globalServers ), fileIn );
+			FS_Read( &cls.q3_favoriteServers, sizeof( cls.q3_favoriteServers ), fileIn );
 		} else {
-			cls.numglobalservers = cls.numfavoriteservers = 0;
-			cls.numGlobalServerAddresses = 0;
+			cls.q3_numglobalservers = cls.q3_numfavoriteservers = 0;
+			cls.q3_numGlobalServerAddresses = 0;
 		}
 		FS_FCloseFile( fileIn );
 	}
@@ -109,12 +109,12 @@ void LAN_SaveServersToCache() {
 	// Arnout: moved to mod/profiles dir
 	//fileOut = FS_SV_FOpenFileWrite(filename);
 	fileOut = FS_FOpenFileWrite( filename );
-	FS_Write( &cls.numglobalservers, sizeof( int ), fileOut );
-	FS_Write( &cls.numfavoriteservers, sizeof( int ), fileOut );
-	size = sizeof( cls.globalServers ) + sizeof( cls.favoriteServers );
+	FS_Write( &cls.q3_numglobalservers, sizeof( int ), fileOut );
+	FS_Write( &cls.q3_numfavoriteservers, sizeof( int ), fileOut );
+	size = sizeof( cls.q3_globalServers ) + sizeof( cls.q3_favoriteServers );
 	FS_Write( &size, sizeof( int ), fileOut );
-	FS_Write( &cls.globalServers, sizeof( cls.globalServers ), fileOut );
-	FS_Write( &cls.favoriteServers, sizeof( cls.favoriteServers ), fileOut );
+	FS_Write( &cls.q3_globalServers, sizeof( cls.q3_globalServers ), fileOut );
+	FS_Write( &cls.q3_favoriteServers, sizeof( cls.q3_favoriteServers ), fileOut );
 	FS_FCloseFile( fileOut );
 }
 
@@ -126,21 +126,21 @@ LAN_ResetPings
 */
 static void LAN_ResetPings( int source ) {
 	int count,i;
-	serverInfo_t *servers = NULL;
+	q3serverInfo_t *servers = NULL;
 	count = 0;
 
 	switch ( source ) {
 	case AS_LOCAL:
-		servers = &cls.localServers[0];
-		count = MAX_OTHER_SERVERS;
+		servers = &cls.q3_localServers[0];
+		count = MAX_OTHER_SERVERS_Q3;
 		break;
 	case AS_GLOBAL:
-		servers = &cls.globalServers[0];
-		count = MAX_GLOBAL_SERVERS;
+		servers = &cls.q3_globalServers[0];
+		count = MAX_GLOBAL_SERVERS_ET;
 		break;
 	case AS_FAVORITES:
-		servers = &cls.favoriteServers[0];
-		count = MAX_OTHER_SERVERS;
+		servers = &cls.q3_favoriteServers[0];
+		count = MAX_OTHER_SERVERS_Q3;
 		break;
 	}
 	if ( servers ) {
@@ -158,23 +158,23 @@ LAN_AddServer
 static int LAN_AddServer( int source, const char *name, const char *address ) {
 	int max, *count, i;
 	netadr_t adr;
-	serverInfo_t *servers = NULL;
-	max = MAX_OTHER_SERVERS;
+	q3serverInfo_t *servers = NULL;
+	max = MAX_OTHER_SERVERS_Q3;
 	count = 0;
 
 	switch ( source ) {
 	case AS_LOCAL:
-		count = &cls.numlocalservers;
-		servers = &cls.localServers[0];
+		count = &cls.q3_numlocalservers;
+		servers = &cls.q3_localServers[0];
 		break;
 	case AS_GLOBAL:
-		max = MAX_GLOBAL_SERVERS;
-		count = &cls.numglobalservers;
-		servers = &cls.globalServers[0];
+		max = MAX_GLOBAL_SERVERS_ET;
+		count = &cls.q3_numglobalservers;
+		servers = &cls.q3_globalServers[0];
 		break;
 	case AS_FAVORITES:
-		count = &cls.numfavoriteservers;
-		servers = &cls.favoriteServers[0];
+		count = &cls.q3_numfavoriteservers;
+		servers = &cls.q3_favoriteServers[0];
 		break;
 	}
 	if ( servers && *count < max ) {
@@ -203,20 +203,20 @@ LAN_RemoveServer
 */
 static void LAN_RemoveServer( int source, const char *addr ) {
 	int *count, i;
-	serverInfo_t *servers = NULL;
+	q3serverInfo_t *servers = NULL;
 	count = 0;
 	switch ( source ) {
 	case AS_LOCAL:
-		count = &cls.numlocalservers;
-		servers = &cls.localServers[0];
+		count = &cls.q3_numlocalservers;
+		servers = &cls.q3_localServers[0];
 		break;
 	case AS_GLOBAL:
-		count = &cls.numglobalservers;
-		servers = &cls.globalServers[0];
+		count = &cls.q3_numglobalservers;
+		servers = &cls.q3_globalServers[0];
 		break;
 	case AS_FAVORITES:
-		count = &cls.numfavoriteservers;
-		servers = &cls.favoriteServers[0];
+		count = &cls.q3_numfavoriteservers;
+		servers = &cls.q3_favoriteServers[0];
 		break;
 	}
 	if ( servers ) {
@@ -245,13 +245,13 @@ LAN_GetServerCount
 static int LAN_GetServerCount( int source ) {
 	switch ( source ) {
 	case AS_LOCAL:
-		return cls.numlocalservers;
+		return cls.q3_numlocalservers;
 		break;
 	case AS_GLOBAL:
-		return cls.numglobalservers;
+		return cls.q3_numglobalservers;
 		break;
 	case AS_FAVORITES:
-		return cls.numfavoriteservers;
+		return cls.q3_numfavoriteservers;
 		break;
 	}
 	return 0;
@@ -265,20 +265,20 @@ LAN_GetLocalServerAddressString
 static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen ) {
 	switch ( source ) {
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			String::NCpyZ( buf, SOCK_AdrToString( cls.localServers[n].adr ), buflen );
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			String::NCpyZ( buf, SOCK_AdrToString( cls.q3_localServers[n].adr ), buflen );
 			return;
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			String::NCpyZ( buf, SOCK_AdrToString( cls.globalServers[n].adr ), buflen );
+		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			String::NCpyZ( buf, SOCK_AdrToString( cls.q3_globalServers[n].adr ), buflen );
 			return;
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			String::NCpyZ( buf, SOCK_AdrToString( cls.favoriteServers[n].adr ), buflen );
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			String::NCpyZ( buf, SOCK_AdrToString( cls.q3_favoriteServers[n].adr ), buflen );
 			return;
 		}
 		break;
@@ -293,22 +293,22 @@ LAN_GetServerInfo
 */
 static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 	char info[MAX_STRING_CHARS];
-	serverInfo_t *server = NULL;
+	q3serverInfo_t *server = NULL;
 	info[0] = '\0';
 	switch ( source ) {
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			server = &cls.localServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			server = &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			server = &cls.globalServers[n];
+		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			server = &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			server = &cls.favoriteServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			server = &cls.q3_favoriteServers[n];
 		}
 		break;
 	}
@@ -349,21 +349,21 @@ LAN_GetServerPing
 ====================
 */
 static int LAN_GetServerPing( int source, int n ) {
-	serverInfo_t *server = NULL;
+	q3serverInfo_t *server = NULL;
 	switch ( source ) {
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			server = &cls.localServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			server = &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			server = &cls.globalServers[n];
+		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			server = &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			server = &cls.favoriteServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			server = &cls.q3_favoriteServers[n];
 		}
 		break;
 	}
@@ -378,21 +378,21 @@ static int LAN_GetServerPing( int source, int n ) {
 LAN_GetServerPtr
 ====================
 */
-static serverInfo_t *LAN_GetServerPtr( int source, int n ) {
+static q3serverInfo_t *LAN_GetServerPtr( int source, int n ) {
 	switch ( source ) {
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			return &cls.localServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			return &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			return &cls.globalServers[n];
+		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			return &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			return &cls.favoriteServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			return &cls.q3_favoriteServers[n];
 		}
 		break;
 	}
@@ -406,7 +406,7 @@ LAN_CompareServers
 */
 static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 ) {
 	int res;
-	serverInfo_t *server1, *server2;
+	q3serverInfo_t *server1, *server2;
 	char name1[ MAX_NAME_LENGTH_ET ], name2[ MAX_NAME_LENGTH_ET ];
 
 	server1 = LAN_GetServerPtr( source, s1 );
@@ -513,18 +513,18 @@ LAN_MarkServerVisible
 */
 static void LAN_MarkServerVisible( int source, int n, qboolean visible ) {
 	if ( n == -1 ) {
-		int count = MAX_OTHER_SERVERS;
-		serverInfo_t *server = NULL;
+		int count = MAX_OTHER_SERVERS_Q3;
+		q3serverInfo_t *server = NULL;
 		switch ( source ) {
 		case AS_LOCAL:
-			server = &cls.localServers[0];
+			server = &cls.q3_localServers[0];
 			break;
 		case AS_GLOBAL:
-			server = &cls.globalServers[0];
-			count = MAX_GLOBAL_SERVERS;
+			server = &cls.q3_globalServers[0];
+			count = MAX_GLOBAL_SERVERS_ET;
 			break;
 		case AS_FAVORITES:
-			server = &cls.favoriteServers[0];
+			server = &cls.q3_favoriteServers[0];
 			break;
 		}
 		if ( server ) {
@@ -536,18 +536,18 @@ static void LAN_MarkServerVisible( int source, int n, qboolean visible ) {
 	} else {
 		switch ( source ) {
 		case AS_LOCAL:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-				cls.localServers[n].visible = visible;
+			if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+				cls.q3_localServers[n].visible = visible;
 			}
 			break;
 		case AS_GLOBAL:
-			if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-				cls.globalServers[n].visible = visible;
+			if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+				cls.q3_globalServers[n].visible = visible;
 			}
 			break;
 		case AS_FAVORITES:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-				cls.favoriteServers[n].visible = visible;
+			if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+				cls.q3_favoriteServers[n].visible = visible;
 			}
 			break;
 		}
@@ -563,18 +563,18 @@ LAN_ServerIsVisible
 static int LAN_ServerIsVisible( int source, int n ) {
 	switch ( source ) {
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			return cls.localServers[n].visible;
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			return cls.q3_localServers[n].visible;
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			return cls.globalServers[n].visible;
+		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			return cls.q3_globalServers[n].visible;
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			return cls.favoriteServers[n].visible;
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			return cls.q3_favoriteServers[n].visible;
 		}
 		break;
 	}
@@ -606,21 +606,21 @@ LAN_ServerIsInFavoriteList
 */
 qboolean LAN_ServerIsInFavoriteList( int source, int n ) {
 	int i;
-	serverInfo_t *server = NULL;
+	q3serverInfo_t *server = NULL;
 
 	switch ( source ) {
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
-			server = &cls.localServers[n];
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			server = &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS ) {
-			server = &cls.globalServers[n];
+		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			server = &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS ) {
+		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
 			return qtrue;
 		}
 		break;
@@ -630,8 +630,8 @@ qboolean LAN_ServerIsInFavoriteList( int source, int n ) {
 		return qfalse;
 	}
 
-	for ( i = 0; i < cls.numfavoriteservers; i++ ) {
-		if ( SOCK_CompareAdr( cls.favoriteServers[i].adr, server->adr ) ) {
+	for ( i = 0; i < cls.q3_numfavoriteservers; i++ ) {
+		if ( SOCK_CompareAdr( cls.q3_favoriteServers[i].adr, server->adr ) ) {
 			return qtrue;
 		}
 	}
@@ -1236,7 +1236,7 @@ CL_ShutdownUI
 */
 void CL_ShutdownUI( void ) {
 	in_keyCatchers &= ~KEYCATCH_UI;
-	cls.uiStarted = qfalse;
+	cls.q3_uiStarted = qfalse;
 	if ( !uivm ) {
 		return;
 	}
@@ -1263,7 +1263,7 @@ void CL_InitUI( void ) {
 	v = VM_Call( uivm, UI_GETAPIVERSION );
 	if ( v != UI_API_VERSION ) {
 		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
-		cls.uiStarted = qfalse;
+		cls.q3_uiStarted = qfalse;
 	}
 
 	// init for this gamestate

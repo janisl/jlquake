@@ -488,7 +488,7 @@ CL_ShutdonwCGame
 */
 void CL_ShutdownCGame( void ) {
 	in_keyCatchers &= ~KEYCATCH_CGAME;
-	cls.cgameStarted = qfalse;
+	cls.q3_cgameStarted = qfalse;
 	if ( !cgvm ) {
 		return;
 	}

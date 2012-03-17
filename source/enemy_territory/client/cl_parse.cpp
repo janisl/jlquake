@@ -663,7 +663,7 @@ void CL_ParseDownload( QMsg *msg ) {
 	unsigned char data[MAX_MSGLEN_WOLF];
 	int block;
 
-	if ( !*cls.downloadTempName ) {
+	if ( !*cls.et_downloadTempName ) {
 		Com_Printf( "Server sending download, but no download was requested\n" );
 		CL_AddReliableCommand( "stopdl" );
 		return;
@@ -677,45 +677,45 @@ void CL_ParseDownload( QMsg *msg ) {
 	if ( block == -1 ) {
 		if ( !clc.bWWWDl ) {
 			// server is sending us a www download
-			String::NCpyZ( cls.originalDownloadName, cls.downloadName, sizeof( cls.originalDownloadName ) );
-			String::NCpyZ( cls.downloadName, msg->ReadString(), sizeof( cls.downloadName ) );
+			String::NCpyZ( cls.et_originalDownloadName, cls.et_downloadName, sizeof( cls.et_originalDownloadName ) );
+			String::NCpyZ( cls.et_downloadName, msg->ReadString(), sizeof( cls.et_downloadName ) );
 			clc.downloadSize = msg->ReadLong();
 			clc.downloadFlags = msg->ReadLong();
 			if ( clc.downloadFlags & ( 1 << DL_FLAG_URL ) ) {
-				Sys_OpenURL( cls.downloadName, qtrue );
+				Sys_OpenURL( cls.et_downloadName, qtrue );
 				Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
 				CL_AddReliableCommand( "wwwdl bbl8r" ); // not sure if that's the right msg
 				clc.bWWWDlAborting = qtrue;
 				return;
 			}
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
-			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
+			Com_DPrintf( "Server redirected download: %s\n", cls.et_downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 			// make sure the server is not trying to redirect us again on a bad checksum
-			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) ) {
-				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
+			if ( strstr( clc.badChecksumList, va( "@%s", cls.et_originalDownloadName ) ) ) {
+				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.et_downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
 				return;
 			}
 			// make downloadTempName an OS path
-			String::NCpyZ( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ), sizeof( cls.downloadTempName ) );
-			cls.downloadTempName[String::Length( cls.downloadTempName ) - 1] = '\0';
-			if ( !DL_BeginDownload( cls.downloadTempName, cls.downloadName, com_developer->integer ) ) {
+			String::NCpyZ( cls.et_downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.et_downloadTempName, "" ), sizeof( cls.et_downloadTempName ) );
+			cls.et_downloadTempName[String::Length( cls.et_downloadTempName ) - 1] = '\0';
+			if ( !DL_BeginDownload( cls.et_downloadTempName, cls.et_downloadName, com_developer->integer ) ) {
 				// setting bWWWDl to false after sending the wwwdl fail doesn't work
 				// not sure why, but I suspect we have to eat all remaining block -1 that the server has sent us
 				// still leave a flag so that CL_WWWDownload is inactive
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
-				Com_Printf( "Failed to initialize download for '%s'\n", cls.downloadName );
+				Com_Printf( "Failed to initialize download for '%s'\n", cls.et_downloadName );
 			}
 			// Check for a disconnected download
 			// we'll let the server disconnect us when it gets the bbl8r message
 			if ( clc.downloadFlags & ( 1 << DL_FLAG_DISCON ) ) {
 				CL_AddReliableCommand( "wwwdl bbl8r" );
-				cls.bWWWDlDisconnected = qtrue;
+				cls.et_bWWWDlDisconnected = qtrue;
 			}
 			return;
 		} else
@@ -756,10 +756,10 @@ void CL_ParseDownload( QMsg *msg ) {
 
 	// open the file if not opened yet
 	if ( !clc.download ) {
-		clc.download = FS_SV_FOpenFileWrite( cls.downloadTempName );
+		clc.download = FS_SV_FOpenFileWrite( cls.et_downloadTempName );
 
 		if ( !clc.download ) {
-			Com_Printf( "Could not create %s\n", cls.downloadTempName );
+			Com_Printf( "Could not create %s\n", cls.et_downloadTempName );
 			CL_AddReliableCommand( "stopdl" );
 			CL_NextDownload();
 			return;
@@ -784,9 +784,9 @@ void CL_ParseDownload( QMsg *msg ) {
 			clc.download = 0;
 
 			// rename the file
-			FS_SV_Rename( cls.downloadTempName, cls.downloadName );
+			FS_SV_Rename( cls.et_downloadTempName, cls.et_downloadName );
 		}
-		*cls.downloadTempName = *cls.downloadName = 0;
+		*cls.et_downloadTempName = *cls.et_downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );
 
 		// send intentions now

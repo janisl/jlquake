@@ -244,82 +244,15 @@ typedef struct {
 	char info[MAX_INFO_STRING_Q3];
 } ping_t;
 
-typedef struct {
-	netadr_t adr;
-	char hostName[MAX_NAME_LENGTH_WS];
-	char mapName[MAX_NAME_LENGTH_WS];
-	char game[MAX_NAME_LENGTH_WS];
-	int netType;
-	int gameType;
-	int clients;
-	int maxClients;
-	int minPing;
-	int maxPing;
-	int ping;
-	qboolean visible;
-	int allowAnonymous;
-} serverInfo_t;
-
-typedef struct {
-	byte ip[4];
-	unsigned short port;
-} serverAddress_t;
-
-typedef struct {
-	connstate_t state;              // connection status
-
-	qboolean cddialog;              // bring up the cd needed dialog next frame
-	qboolean endgamemenu;           // bring up the end game credits menu next frame
-
-	char servername[MAX_OSPATH];            // name of server from original connect (used by reconnect)
-
-	// when the server clears the hunk, all of these must be restarted
-	qboolean rendererStarted;
-	qboolean soundStarted;
-	qboolean soundRegistered;
-	qboolean uiStarted;
-	qboolean cgameStarted;
-
-	int framecount;
-	int frametime;                  // msec since last frame
-
-	int realtime;                   // ignores pause
-	int realFrametime;              // ignoring pause, so console always works
-
-	int numlocalservers;
-	serverInfo_t localServers[MAX_OTHER_SERVERS];
-
-	int numglobalservers;
-	serverInfo_t globalServers[MAX_GLOBAL_SERVERS];
-	// additional global servers
-	int numGlobalServerAddresses;
-	serverAddress_t globalServerAddresses[MAX_GLOBAL_SERVERS];
-
-	int numfavoriteservers;
-	serverInfo_t favoriteServers[MAX_OTHER_SERVERS];
-
-	int nummplayerservers;
-	serverInfo_t mplayerServers[MAX_OTHER_SERVERS];
-
-	int pingUpdateSource;       // source currently pinging or updating
-
-	int masterNum;
-
-	// update server info
-	netadr_t updateServer;
-	char updateChallenge[MAX_TOKEN_CHARS_Q3];
-	char updateInfoString[MAX_INFO_STRING_Q3];
-
-	netadr_t authorizeServer;
-
+struct clientStatic_t : clientStatic_t_
+{
 	// rendering info
 	glconfig_t glconfig;
 	qhandle_t charSetShader;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
 	qhandle_t consoleShader2;   //----(SA)	added
-
-} clientStatic_t;
+};
 
 extern clientStatic_t cls;
 

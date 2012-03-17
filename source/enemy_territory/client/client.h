@@ -274,104 +274,15 @@ typedef struct {
 	char info[MAX_INFO_STRING_Q3];
 } ping_t;
 
-typedef struct {
-	netadr_t adr;
-	char hostName[MAX_NAME_LENGTH_ET];
-	int load;
-	char mapName[MAX_NAME_LENGTH_ET];
-	char game[MAX_NAME_LENGTH_ET];
-	int netType;
-	int gameType;
-	int clients;
-	int maxClients;
-	int minPing;
-	int maxPing;
-	int ping;
-	qboolean visible;
-	int allowAnonymous;
-	int friendlyFire;               // NERVE - SMF
-	int maxlives;                   // NERVE - SMF
-	int needpass;
-	int punkbuster;                 // DHM - Nerve
-	int antilag;         // TTimo
-	int weaprestrict;
-	int balancedteams;
-	char gameName[MAX_NAME_LENGTH_ET];         // Arnout
-} serverInfo_t;
-
-typedef struct {
-	byte ip[4];
-	unsigned short port;
-} serverAddress_t;
-
-typedef struct {
-	connstate_t state;              // connection status
-
-	qboolean cddialog;              // bring up the cd needed dialog next frame
-
-	qboolean doCachePurge;          // Arnout: empty the renderer cache as soon as possible
-
-	char servername[MAX_OSPATH];            // name of server from original connect (used by reconnect)
-
-	// when the server clears the hunk, all of these must be restarted
-	qboolean rendererStarted;
-	qboolean soundStarted;
-	qboolean soundRegistered;
-	qboolean uiStarted;
-	qboolean cgameStarted;
-
-	int framecount;
-	int frametime;                  // msec since last frame
-
-	int realtime;                   // ignores pause
-	int realFrametime;              // ignoring pause, so console always works
-
-	int numlocalservers;
-	serverInfo_t localServers[MAX_OTHER_SERVERS];
-
-	int numglobalservers;
-	serverInfo_t globalServers[MAX_GLOBAL_SERVERS];
-	// additional global servers
-	int numGlobalServerAddresses;
-	serverAddress_t globalServerAddresses[MAX_GLOBAL_SERVERS];
-
-	int numfavoriteservers;
-	serverInfo_t favoriteServers[MAX_OTHER_SERVERS];
-
-	int pingUpdateSource;       // source currently pinging or updating
-
-	int masterNum;
-
-	// update server info
-	netadr_t updateServer;
-	char updateChallenge[MAX_TOKEN_CHARS_Q3];
-	char updateInfoString[MAX_INFO_STRING_Q3];
-
-	netadr_t authorizeServer;
-
-	// DHM - Nerve :: Auto-update Info
-	char autoupdateServerNames[MAX_AUTOUPDATE_SERVERS][MAX_QPATH];
-	netadr_t autoupdateServer;
-	qboolean autoUpdateServerChecked[MAX_AUTOUPDATE_SERVERS];
-	int autoupdatServerFirstIndex;          // to know when we went through all of them
-	int autoupdatServerIndex;               // to cycle through them
-
+struct clientStatic_t : clientStatic_t_
+{
 	// rendering info
 	glconfig_t glconfig;
 	qhandle_t charSetShader;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
 	qhandle_t consoleShader2;       // NERVE - SMF - merged from WolfSP
-
-	// www downloading
-	// in the static stuff since this may have to survive server disconnects
-	// if new stuff gets added, CL_ClearStaticDownload code needs to be updated for clear up
-	qboolean bWWWDlDisconnected; // keep going with the download after server disconnect
-	char downloadName[MAX_OSPATH];
-	char downloadTempName[MAX_OSPATH];    // in wwwdl mode, this is OS path (it's a qpath otherwise)
-	char originalDownloadName[MAX_QPATH];    // if we get a redirect, keep a copy of the original file path
-	qboolean downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
-} clientStatic_t;
+};
 
 extern clientStatic_t cls;
 

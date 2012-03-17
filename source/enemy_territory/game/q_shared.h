@@ -771,19 +771,6 @@ typedef enum {
 							// this avoids having to set eFlags and eventNum
 } entityType_t;
 
-typedef enum {
-	CA_UNINITIALIZED,
-	CA_DISCONNECTED,    // not talking to a server
-	CA_AUTHORIZING,     // not used any more, was checking cd key
-	CA_CONNECTING,      // sending request packets to the server
-	CA_CHALLENGING,     // sending challenge packets to the server
-	CA_CONNECTED,       // netchan_t established, getting gamestate
-	CA_LOADING,         // only during cgame initialization, never during main loop
-	CA_PRIMED,          // got gamestate, waiting for first frame
-	CA_ACTIVE,          // game views should be displayed
-	CA_CINEMATIC        // playing a cinematic or a static pic, not connected to a server
-} connstate_t;
-
 // font support
 
 #define GLYPH_START 0
@@ -856,8 +843,6 @@ typedef enum _flag_status {
 
 
 
-#define MAX_GLOBAL_SERVERS          4096
-#define MAX_OTHER_SERVERS           128
 #define MAX_PINGREQUESTS            16
 #define MAX_SERVERSTATUSREQUESTS    16
 

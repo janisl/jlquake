@@ -155,7 +155,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 // TTimo: allow override for easy dev/testing..
 // FIXME: not planning to support more than 1 auto update server
 // see cons -- update_server=myhost
-#define MAX_AUTOUPDATE_SERVERS  5
 #if !defined( AUTOUPDATE_SERVER_NAME )
   #define AUTOUPDATE_SERVER1_NAME   "au2rtcw1.activision.com"            // DHM - Nerve
   #define AUTOUPDATE_SERVER2_NAME   "au2rtcw2.activision.com"            // DHM - Nerve

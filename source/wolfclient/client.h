@@ -33,7 +33,9 @@
 #include "quakeclientdefs.h"
 #include "hexen2clientdefs.h"
 #include "quake2clientdefs.h"
+#endif
 #include "quake3clientdefs.h"
+#if 0
 #include "game/particles.h"
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
@@ -46,12 +48,14 @@
 #define NUM_CSHIFTS		4
 
 #define SIGNONS		4			// signon messages to receive before connected
+#endif
 
 #define MAX_MAPSTRING	2048
 
 #define MAX_DEMOS		8
 #define MAX_DEMONAME	16
 
+#if 0
 struct cshift_t
 {
 	int		destcolor[3];
@@ -401,6 +405,7 @@ no client connection is active at all
 
 ==================================================================
 */
+#endif
 
 enum connstate_t
 {
@@ -423,7 +428,7 @@ enum connstate_t
 	CA_DEMOSTART
 };
 
-struct clientStatic_t
+struct clientStatic_t_
 {
 	connstate_t state;		// connection status
 
@@ -432,11 +437,13 @@ struct clientStatic_t
 	int frametime;			// msec since last frame
 	int realFrametime;		// ignoring pause, so console always works
 
+#if 0
 	// rendering info
 	glconfig_t glconfig;
 	qhandle_t charSetShader;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
+#endif
 
 	char servername[MAX_OSPATH];		// name of server from original connect (used by reconnect)
 
@@ -499,10 +506,10 @@ struct clientStatic_t
 	q3serverInfo_t q3_localServers[MAX_OTHER_SERVERS_Q3];
 
 	int q3_numglobalservers;
-	q3serverInfo_t q3_globalServers[MAX_GLOBAL_SERVERS_Q3];
+	q3serverInfo_t q3_globalServers[BIGGEST_MAX_GLOBAL_SERVERS];
 	// additional global servers
 	int q3_numGlobalServerAddresses;
-	q3serverAddress_t q3_globalServerAddresses[MAX_GLOBAL_SERVERS_Q3];
+	q3serverAddress_t q3_globalServerAddresses[BIGGEST_MAX_GLOBAL_SERVERS];
 
 	int q3_numfavoriteservers;
 	q3serverInfo_t q3_favoriteServers[MAX_OTHER_SERVERS_Q3];
@@ -520,8 +527,29 @@ struct clientStatic_t
 	char q3_updateInfoString[MAX_INFO_STRING_Q3];
 
 	netadr_t q3_authorizeServer;
+
+	bool ws_endgamemenu;           // bring up the end game credits menu next frame
+
+	// DHM - Nerve :: Auto-update Info
+	char wm_autoupdateServerNames[MAX_AUTOUPDATE_SERVERS][MAX_QPATH];
+	netadr_t wm_autoupdateServer;
+	bool et_autoUpdateServerChecked[MAX_AUTOUPDATE_SERVERS];
+	int et_autoupdatServerFirstIndex;          // to know when we went through all of them
+	int et_autoupdatServerIndex;               // to cycle through them
+
+	bool et_doCachePurge;          // Arnout: empty the renderer cache as soon as possible
+
+	// www downloading
+	// in the static stuff since this may have to survive server disconnects
+	// if new stuff gets added, CL_ClearStaticDownload code needs to be updated for clear up
+	bool et_bWWWDlDisconnected; // keep going with the download after server disconnect
+	char et_downloadName[MAX_OSPATH];
+	char et_downloadTempName[MAX_OSPATH];    // in wwwdl mode, this is OS path (it's a qpath otherwise)
+	char et_originalDownloadName[MAX_QPATH];    // if we get a redirect, keep a copy of the original file path
+	bool et_downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
 };
 
+#if 0
 extern clientActive_t cl;
 extern clientConnection_t clc;
 extern clientStatic_t cls;
