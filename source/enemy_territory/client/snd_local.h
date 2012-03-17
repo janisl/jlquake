@@ -59,12 +59,6 @@ extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
 
-//----(SA)	some flags for queued music tracks
-#define QUEUED_PLAY_ONCE    -1
-#define QUEUED_PLAY_LOOPED  -2
-#define QUEUED_PLAY_ONCE_SILENT -3  // when done it goes quiet
-//----(SA)	end
-
 typedef struct {
 	vec3_t origin;
 	qboolean fixedOrigin;
@@ -94,13 +88,7 @@ typedef struct {
 	s_pushStack pushPop[MAX_PUSHSTACK];
 	int tart;
 
-	qboolean s_soundPainted;
 	int s_clearSoundBuffer;
-
-	vec3_t entityPositions[MAX_GENTITIES_Q3];
-
-	char nextMusicTrack[MAX_QPATH];         // extracted from CS_MUSIC_QUEUE //----(SA)	added
-	int nextMusicTrackType;
 } snd_t;
 
 extern snd_t snd;   // globals for sound
@@ -118,5 +106,3 @@ portable_samplepair_t *S_GetRawSamplePointer();
 
 // spatializes a channel
 void S_Spatialize( channel_t *ch );
-
-extern float S_GetStreamingFade( streamingSound_t *ss );    //----(SA)	added

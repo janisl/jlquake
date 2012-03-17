@@ -36,20 +36,8 @@ void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
 void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx, int flags );
 void S_StartLocalSound( sfxHandle_t sfx, int channelNum );
 
-void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime );
-void S_StopBackgroundTrack( void );
 void S_QueueBackgroundTrack( const char *loop );            //----(SA)	added
-void S_FadeStreamingSound( float targetvol, int time, int ssNum );  //----(SA)	added
 void S_FadeAllSounds( float targetvol, int time );    //----(SA)	added
-
-void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int channel, int attenuation );
-void S_StopStreamingSound( int index );
-void S_StopEntStreamingSound( int entNum ); //----(SA)	added
-
-// cinematics and voice-over-network will send raw samples
-// 1.0 volume will be direct output of source samples
-void S_RawSamples( int samples, int rate, int width, int s_channels,
-				   const byte *data, float lvol, float rvol, int streamingIndex );
 
 // stop all sounds and the background track
 void S_StopAllSounds( void );

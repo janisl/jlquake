@@ -640,7 +640,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_S_REGISTERSOUND:
 		return S_RegisterSound( (char*)VMA( 1 ));
 	case CG_S_STARTBACKGROUNDTRACK:
-		S_StartBackgroundTrack( (char*)VMA( 1 ), (char*)VMA( 2 ) );
+		S_StartBackgroundTrack( (char*)VMA( 1 ), (char*)VMA( 2 ), 0 );
 		return 0;
 	case CG_S_STARTSTREAMINGSOUND:
 		S_StartStreamingSound( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3], args[4], args[5] );

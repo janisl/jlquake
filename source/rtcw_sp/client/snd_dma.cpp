@@ -49,10 +49,12 @@ void S_ClearSounds( qboolean clearStreaming, qboolean clearMusic ); //----(SA)	m
 void S_Update_Mix();
 void S_StopAllSounds( void );
 void S_UpdateStreamingSounds( void );
+void S_SpatializeOrigin( vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol, float range, int noAttenuation );
 
 snd_t snd;  // globals for sound
 
-int numStreamingSounds = 0;
+extern int numStreamingSounds;
+extern vec3_t entityPositions[MAX_GENTITIES_Q3];
 
 // =======================================================================
 // Internal sound data & structures
@@ -66,6 +68,7 @@ int numStreamingSounds = 0;
 
 extern int s_soundStarted;
 extern bool s_soundMuted;
+extern bool s_soundPainted;
 
 extern int listener_number;
 extern vec3_t listener_origin;
@@ -73,6 +76,8 @@ extern vec3_t listener_axis[3];
 extern int s_numSfx;
 extern sfx_t       *sfxHash[LOOP_HASH];
 extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
+extern char nextMusicTrack[MAX_QPATH];         // extracted from CS_MUSIC_QUEUE //----(SA)	added
+extern int nextMusicTrackType;
 
 extern Cvar      *s_show;
 extern Cvar      *s_mixahead;
@@ -83,11 +88,7 @@ Cvar      *s_separation;
 extern Cvar      *s_doppler;
 extern Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 extern Cvar      *cl_cacheGathering; // Ridah
-Cvar      *s_debugMusic;  //----(SA)	added
 
-
-// for streaming sounds
-int s_rawpainted[MAX_STREAMING_SOUNDS];
 
 void S_ChannelFree( channel_t *v );
 channel_t*  S_ChannelMalloc();
@@ -245,77 +246,6 @@ void S_memoryLoad( sfx_t *sfx ) {
 }
 
 //=============================================================================
-
-/*
-=================
-S_SpatializeOrigin
-
-Used for spatializing s_channels
-=================
-*/
-void S_SpatializeOrigin( vec3_t origin, int master_vol, int *left_vol, int *right_vol, float range ) {
-	vec_t dot;
-	vec_t dist;
-	vec_t lscale, rscale, scale;
-	vec3_t source_vec;
-	vec3_t vec;
-
-//	const float dist_mult = SOUND_ATTENUATE;
-	float dist_mult, dist_fullvol;
-
-	dist_fullvol = range * 0.064f;        // default range of 1250 gives 80
-	dist_mult = dist_fullvol * 0.00001f;  // default range of 1250 gives .0008
-//	dist_mult = range*0.00000064f;		// default range of 1250 gives .0008
-
-	// calculate stereo seperation and distance attenuation
-	VectorSubtract( origin, listener_origin, source_vec );
-
-	dist = VectorNormalize( source_vec );
-//	dist -= SOUND_FULLVOLUME;
-	dist -= dist_fullvol;
-	if ( dist < 0 ) {
-		dist = 0;           // close enough to be at full volume
-
-	}
-	if ( dist ) {
-		dist = dist / range;  // FIXME: lose the divide again
-	}
-//	dist *= dist_mult;		// different attenuation levels
-
-	VectorRotate( source_vec, listener_axis, vec );
-
-	dot = -vec[1];
-
-	if ( dma.channels == 1 ) { // no attenuation = no spatialization
-		rscale = 1.0;
-		lscale = 1.0;
-	} else
-	{
-		rscale = 0.5 * ( 1.0 + dot );
-		lscale = 0.5 * ( 1.0 - dot );
-		//rscale = s_separation->value + ( 1.0 - s_separation->value ) * dot;
-		//lscale = s_separation->value - ( 1.0 - s_separation->value ) * dot;
-		if ( rscale < 0 ) {
-			rscale = 0;
-		}
-		if ( lscale < 0 ) {
-			lscale = 0;
-		}
-	}
-
-	// add in distance effect
-	scale = ( 1.0 - dist ) * rscale;
-	*right_vol = ( master_vol * scale );
-	if ( *right_vol < 0 ) {
-		*right_vol = 0;
-	}
-
-	scale = ( 1.0 - dist ) * lscale;
-	*left_vol = ( master_vol * scale );
-	if ( *left_vol < 0 ) {
-		*left_vol = 0;
-	}
-}
 
 /*
 ====================
@@ -536,9 +466,9 @@ void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHand
 	ch->doppler = qfalse;
 
 	if ( ch->fixed_origin ) {
-		S_SpatializeOrigin( ch->origin, ch->master_vol, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT );
+		S_SpatializeOrigin( ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false );
 	} else {
-		S_SpatializeOrigin( snd.entityPositions[ ch->entnum ], ch->master_vol, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT );
+		S_SpatializeOrigin( entityPositions[ ch->entnum ], ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false );
 	}
 
 	ch->startSample = START_SAMPLE_IMMEDIATE;
@@ -588,11 +518,11 @@ void S_ClearSoundBuffer( qboolean killStreaming ) {
 		return;
 	}
 
-	if ( !snd.s_soundPainted ) {  // RF, buffers are clear, no point clearing again
+	if ( !s_soundPainted ) {  // RF, buffers are clear, no point clearing again
 		return;
 	}
 
-	snd.s_soundPainted = qfalse;
+	s_soundPainted = qfalse;
 
 //	snd.s_clearSoundBuffer = 4;
 	snd.s_clearSoundBuffer = 3;
@@ -739,7 +669,7 @@ void S_AddLoopSounds( void ) {
 		//if (loop->kill) {
 		//	S_SpatializeOrigin( loop->origin, 127, &left_total, &right_total, loop->range);	// 3d
 		//} else {
-		S_SpatializeOrigin( loop->origin, 90,  &left_total, &right_total, loop->range );    // sphere
+		S_SpatializeOrigin( loop->origin, 90, 1,  &left_total, &right_total, loop->range, false );    // sphere
 		//}
 
 		// adjust according to volume
@@ -758,7 +688,7 @@ void S_AddLoopSounds( void ) {
 			//if (loop2->kill) {
 			//	S_SpatializeOrigin( loop2->origin, 127, &left, &right, loop2->range);	// 3d
 			//} else {
-			S_SpatializeOrigin( loop2->origin, 90,  &left, &right, loop2->range );      // sphere
+			S_SpatializeOrigin( loop2->origin, 90, 1,  &left, &right, loop2->range, false );      // sphere
 			//}
 
 			// adjust according to volume
@@ -802,149 +732,12 @@ void S_AddLoopSounds( void ) {
 //=============================================================================
 
 /*
-=================
-S_ByteSwapRawSamples
-
-If raw data has been loaded in little endien binary form, this must be done.
-If raw data was calculated, as with ADPCM, this should not be called.
-=================
-*/
-//DAJ  void S_ByteSwapRawSamples( int samples, int width, int s_channels, const byte *data ) {
-void S_ByteSwapRawSamples( int samples, int width, int s_channels, short *data ) {
-	int i;
-
-	if ( width != 2 ) {
-		return;
-	}
-#ifndef __MACOS__   //DAJ save this test
-	if ( LittleShort( 256 ) == 256 ) {
-		return;
-	}
-#endif
-	//DAJ use a faster loop technique
-	if ( s_channels == 2 ) {
-		i = samples << 1;
-	} else {
-		i = samples;
-	}
-
-	do {
-		*data = LittleShort( *data );
-		data++;
-//DAJ		((short *)data)[i] = LittleShort( ((short *)data)[i] );
-	} while ( --i );
-}
-
-/*
 ============
 S_GetRawSamplePointer
 ============
 */
 portable_samplepair_t *S_GetRawSamplePointer() {
 	return s_rawsamples[0];
-}
-
-/*
-============
-S_RawSamples
-
-Music streaming
-============
-*/
-void S_RawSamples( int samples, int rate, int width, int s_channels, const byte *data, float lvol, float rvol, int streamingIndex ) {
-	int i;
-	int src, dst;
-	float scale;
-	int intVolumeL, intVolumeR;
-
-	if ( !s_soundStarted || ( s_soundMuted == 1 ) ) {
-		return;
-	}
-
-	// volume taken into account when mixed
-	s_rawVolume[streamingIndex].left = 256 * lvol;
-	s_rawVolume[streamingIndex].right = 256 * rvol;
-
-	intVolumeL = 256;
-	intVolumeR = 256;
-
-	if ( s_rawend[streamingIndex] < s_soundtime ) {
-		Com_DPrintf( "S_RawSamples: resetting minumum: %i\n",s_soundtime - s_rawend[streamingIndex] );
-		s_rawend[streamingIndex] = s_soundtime;
-	}
-
-	scale = (float)rate / dma.speed;
-
-	if ( s_channels == 2 && width == 2 ) {
-		if ( scale == 1.0 ) { // optimized case
-			for ( i = 0; i < samples; i++ )
-			{
-				dst = s_rawend[streamingIndex] & ( MAX_RAW_SAMPLES - 1 );
-				s_rawend[streamingIndex]++;
-				s_rawsamples[streamingIndex][dst].left = ( (short *)data )[i * 2] * intVolumeL;
-				s_rawsamples[streamingIndex][dst].right = ( (short *)data )[i * 2 + 1] * intVolumeR;
-			}
-		} else
-		{
-			for ( i = 0; ; i++ )
-			{
-				src = i * scale;
-				if ( src >= samples ) {
-					break;
-				}
-				dst = s_rawend[streamingIndex] & ( MAX_RAW_SAMPLES - 1 );
-				s_rawend[streamingIndex]++;
-				s_rawsamples[streamingIndex][dst].left = ( (short *)data )[src * 2] * intVolumeL;
-				s_rawsamples[streamingIndex][dst].right = ( (short *)data )[src * 2 + 1] * intVolumeR;
-			}
-		}
-	} else if ( s_channels == 1 && width == 2 )     {
-		for ( i = 0; ; i++ )
-		{
-			src = i * scale;
-			if ( src >= samples ) {
-				break;
-			}
-			dst = s_rawend[streamingIndex] & ( MAX_RAW_SAMPLES - 1 );
-			s_rawend[streamingIndex]++;
-			s_rawsamples[streamingIndex][dst].left = ( (short *)data )[src] * intVolumeL;
-			s_rawsamples[streamingIndex][dst].right = ( (short *)data )[src] * intVolumeR;
-		}
-	} else if ( s_channels == 2 && width == 1 )     {
-		intVolumeL *= 256;
-		intVolumeR *= 256;
-
-		for ( i = 0 ; ; i++ )
-		{
-			src = i * scale;
-			if ( src >= samples ) {
-				break;
-			}
-			dst = s_rawend[streamingIndex] & ( MAX_RAW_SAMPLES - 1 );
-			s_rawend[streamingIndex]++;
-			s_rawsamples[streamingIndex][dst].left = ( (char *)data )[src * 2] * intVolumeL;
-			s_rawsamples[streamingIndex][dst].right = ( (char *)data )[src * 2 + 1] * intVolumeR;
-		}
-	} else if ( s_channels == 1 && width == 1 )     {
-		intVolumeL *= 256;
-		intVolumeR *= 256;
-
-		for ( i = 0; ; i++ )
-		{
-			src = i * scale;
-			if ( src >= samples ) {
-				break;
-			}
-			dst = s_rawend[streamingIndex] & ( MAX_RAW_SAMPLES - 1 );
-			s_rawend[streamingIndex]++;
-			s_rawsamples[streamingIndex][dst].left = ( ( (byte *)data )[src] - 128 ) * intVolumeL;
-			s_rawsamples[streamingIndex][dst].right = ( ( (byte *)data )[src] - 128 ) * intVolumeR;
-		}
-	}
-
-	if ( s_rawend[streamingIndex] > ( s_soundtime + MAX_RAW_SAMPLES ) ) {
-//		Com_DPrintf( "S_RawSamples: overflowed %i\n", s_rawend[streamingIndex]-(s_soundtime+ MAX_RAW_SAMPLES) );
-	}
 }
 
 //=============================================================================
@@ -960,7 +753,7 @@ void S_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
 	if ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) {
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}
-	VectorCopy( origin, snd.entityPositions[entityNum] );
+	VectorCopy( origin, entityPositions[entityNum] );
 }
 
 
@@ -1002,10 +795,10 @@ void S_ThreadRespatialize() {
 			if ( ch->fixed_origin ) {
 				VectorCopy( ch->origin, origin );
 			} else {
-				VectorCopy( snd.entityPositions[ ch->entnum ], origin );
+				VectorCopy( entityPositions[ ch->entnum ], origin );
 			}
 
-			S_SpatializeOrigin( origin, ch->master_vol, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT );
+			S_SpatializeOrigin( origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false );
 		}
 	}
 }
@@ -1047,37 +840,6 @@ qboolean S_ScanChannelStarts( void ) {
 	}
 
 	return newSamples;
-}
-
-/*
-==============
-S_CheckForQueuedMusic
-==============
-*/
-int S_CheckForQueuedMusic( void ) {
-	streamingSound_t *ss;
-	char *nextMusicVA;
-
-	if ( !snd.nextMusicTrack[0] ) {                                    // we didn't actually care about the length
-		return 0;
-	}
-
-	nextMusicVA = va( "%s", snd.nextMusicTrack );
-
-	ss = &streamingSounds[0];
-
-	if ( snd.nextMusicTrackType == QUEUED_PLAY_ONCE_SILENT ) {
-		// do nothing.  current music is dead, don't start another
-	} else if ( snd.nextMusicTrackType == QUEUED_PLAY_ONCE ) {
-		S_StartBackgroundTrack( nextMusicVA, ss->name, 0 );      // play once, then go back to looping what's currently playing
-	} else {        // QUEUED_PLAY_LOOPED
-		S_StartBackgroundTrack( nextMusicVA, nextMusicVA, 0 );   // take over
-	}
-
-	snd.nextMusicTrackType = 0;     // clear out music queue
-//	snd.nextMusicTrack[0] = 0;		// clear out music queue
-
-	return 1;
 }
 
 /*
@@ -1159,8 +921,8 @@ void S_ClearSounds( qboolean clearStreaming, qboolean clearMusic ) {
 		S_UpdateStreamingSounds();  //----(SA)	added so music will get updated if not cleared
 	} else {
 		// music cleanup
-		snd.nextMusicTrack[0] = 0;
-		snd.nextMusicTrackType = 0;
+		nextMusicTrack[0] = 0;
+		nextMusicTrackType = 0;
 	}
 
 	if ( clearStreaming && clearMusic ) {
@@ -1278,7 +1040,7 @@ void S_Update_Mix( void ) {
 
 	snd.tart = 0;
 */
-	snd.s_soundPainted = qtrue;
+	s_soundPainted = qtrue;
 
 	thisTime = Sys_Milliseconds();
 
@@ -1440,234 +1202,6 @@ void S_SoundList_f( void ) {
 	Com_Printf( "Total resident: %i\n", total );
 }
 
-
-/*
-===============================================================================
-
-STREAMING SOUND
-
-===============================================================================
-*/
-
-int FGetLittleLong( const fileHandle_t f ) {
-	int v;
-
-	FS_Read( &v, sizeof( v ), f );
-
-	return LittleLong( v );
-}
-
-int FGetLittleShort( const fileHandle_t f ) {
-	short v;
-
-	FS_Read( &v, sizeof( v ), f );
-
-	return LittleShort( v );
-}
-
-// returns the length of the data in the chunk, or 0 if not found
-int S_FindWavChunk( const fileHandle_t f, const char *chunk ) {
-	char name[5];
-	int len;
-	int r;
-
-	name[4] = 0;
-	len = 0;
-	r = FS_Read( name, 4, f );
-	if ( r != 4 ) {
-		return 0;
-	}
-	len = FGetLittleLong( f );
-	if ( len < 0 || len > 0xfffffff ) {
-		len = 0;
-		return 0;
-	}
-	len = ( len + 1 ) & ~1;      // pad to word boundary
-//	s_nextWavChunk += len + 8;
-
-	if ( String::Cmp( name, chunk ) ) {
-		return 0;
-	}
-
-	return len;
-}
-
-
-
-
-/*
-======================
-S_StartBackgroundTrack
-======================
-*/
-void S_StartBackgroundTrack( const char *intro, const char *loop, int fadeupTime ) {
-	int len;
-	char dump[16];
-//	char	name[MAX_QPATH];
-	char loopMusic[MAX_QPATH];
-	streamingSound_t *ss;
-	fileHandle_t fh;
-
-	// music is always track 0
-	ss = &streamingSounds[0];
-
-//----(SA)	added
-	if ( fadeupTime < 0 ) {    // queue, don't play until music fades to 0 or is stopped
-		// -1 - queue to play once then return to music
-		// -2 - queue to set as new looping music
-
-		if ( intro && String::Length( intro ) ) {
-			String::Cpy( snd.nextMusicTrack, intro );
-			snd.nextMusicTrackType = fadeupTime;
-			if ( fadeupTime == -2 ) {
-				Cvar_Set( "s_currentMusic", intro ); //----(SA)	so the savegame will have the right music
-
-			}
-			if ( s_debugMusic->integer ) {
-				if ( fadeupTime == -1 ) {
-					Com_Printf( "MUSIC: StartBgTrack: queueing '%s' for play once\n", intro );
-				} else if ( fadeupTime == -2 ) {
-					Com_Printf( "MUSIC: StartBgTrack: queueing '%s' as new loop\n", intro );
-				}
-			}
-
-		} else {
-			snd.nextMusicTrack[0] = 0;  // clear out the next track so things go on as they are
-			snd.nextMusicTrackType = 0; // be quiet at the next opportunity
-
-			// clear out looping sound in current music so that it'll stop when it's done
-			if ( ss && ss->loop ) {
-				ss->loop[0] = 0;    // clear loop
-			}
-
-			if ( s_debugMusic->integer ) {
-				Com_Printf( "S_StartBgTrack(): queue cleared\n" );
-			}
-		}
-
-		return; // don't actually start any queued sounds
-	}
-
-	// clear out nextMusic
-//	snd.nextMusicTrack[0] = 0;
-//----(SA)	end
-
-	if ( !s_soundStarted) {
-		return;
-	}
-
-	if ( !intro ) {
-		intro = "";
-	}
-	if ( !loop || !loop[0] ) {
-		String::NCpyZ( loopMusic, intro, sizeof( loopMusic ) );
-	} else {
-		String::NCpyZ( loopMusic, loop, sizeof( loopMusic ) );
-	}
-
-	Cvar_Set( "s_currentMusic", "" ); //----(SA)	so the savegame will have the right music
-
-	if ( !String::ICmp( loop, "onetimeonly" ) ) { // don't change the loop if you're playing a single hit
-		String::NCpyZ( loopMusic, ss->loop, sizeof( loopMusic ) );
-	}
-
-	String::NCpyZ( ss->loop, loopMusic, sizeof( ss->loop ) - 4 );
-
-	String::NCpyZ( ss->name, intro, sizeof( ss->name ) - 4 );
-	String::DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
-
-	// close the current sound if present, but DON'T reset s_rawend
-	if ( ss->file ) {
-		FS_FCloseFile( ss->file );
-		ss->file = 0;
-	}
-
-	if ( !intro[0] ) {
-		Com_DPrintf( "Fail to start: %s\n", ss->name );   // (SA) TEMP
-		return;
-	}
-
-	ss->channel         = 0;
-	ss->entnum          = -1;
-	ss->attenuation     = 0;
-
-	fh = 0;
-	//
-	// open up a wav file and get all the info
-	//
-	FS_FOpenFileRead( ss->name, &fh, qtrue );
-	if ( !fh ) {
-		Com_Printf( "Couldn't open streaming sound file %s\n", ss->name );
-		return;
-	}
-
-	// skip the riff wav header
-
-	FS_Read( dump, 12, fh );
-
-	if ( !S_FindWavChunk( fh, "fmt " ) ) {
-		Com_Printf( "No fmt chunk in %s\n", ss->name );
-		FS_FCloseFile( fh );
-		return;
-	}
-
-	// save name for soundinfo
-	ss->info.format = FGetLittleShort( fh );
-	ss->info.channels = FGetLittleShort( fh );
-	ss->info.rate = FGetLittleLong( fh );
-	FGetLittleLong( fh );
-	FGetLittleShort( fh );
-	ss->info.width = FGetLittleShort( fh ) / 8;
-
-	if ( ss->info.format != WAV_FORMAT_PCM ) {
-		FS_FCloseFile( fh );
-		Com_Printf( "Not a microsoft PCM format wav: %s\n", ss->name );
-		return;
-	}
-
-	if ( ss->info.channels != 2 || ss->info.rate != 22050 ) {
-		Com_Printf( "WARNING: music file %s is not 22k stereo\n", ss->name );
-	}
-
-	if ( ( len = S_FindWavChunk( fh, "data" ) ) == 0 ) {
-		FS_FCloseFile( fh );
-		Com_Printf( "No data chunk in %s\n", ss->name );
-		return;
-	}
-
-	if ( s_debugMusic->integer ) {
-		Com_Printf( "MUSIC: StartBgTrack:\n   playing %s\n   looping %s %d\n", intro, loopMusic, fadeupTime );
-	}
-
-	Cvar_Set( "s_currentMusic", loopMusic ); //----(SA)	so the savegame will have the right music
-
-	ss->info.samples = len / ( ss->info.width * ss->info.channels );
-
-	ss->samples = ss->info.samples;
-
-	ss->fadeStartVol    = 0;
-	ss->fadeStart       = 0;
-	ss->fadeEnd         = 0;
-	ss->fadeTargetVol   = 0;
-
-	if ( fadeupTime ) {
-		ss->fadeStart       = s_soundtime;
-		ss->fadeEnd         = s_soundtime + ( ( (float)( ss->info.rate ) / 1000.0f ) * fadeupTime );
-//		ss->fadeStart		= s_paintedtime;
-//		ss->fadeEnd			= s_paintedtime + (((float)(ss->info.rate)/1000.0f ) * fadeupTime);
-		ss->fadeTargetVol   = 1.0;
-	}
-
-	ss->looped = 0; //----(SA)	added
-
-	ss->file = fh;
-	ss->kill = 0;
-	numStreamingSounds++;
-
-	Com_DPrintf( "S_StartBackgroundTrack - Success\n" );
-}
-
-
 /*
 ==============
 S_FadeAllSounds
@@ -1686,503 +1220,6 @@ void S_FadeAllSounds( float targetVol, int time ) {
 	if ( !time ) {
 		snd.volTarget = snd.volStart = s_volCurrent = targetVol;  // set it
 		snd.volTime1 = snd.volTime2 = 0;    // no fading
-	}
-}
-
-
-//----(SA)	added
-/*
-==============
-S_FadeStreamingSound
-==============
-*/
-void S_FadeStreamingSound( float targetVol, int time, int ssNum ) {
-	streamingSound_t *ss;
-
-	if ( ssNum >= numStreamingSounds ) { // invalid sound
-		return;
-	}
-
-	ss = &streamingSounds[ssNum];
-
-	if ( !ss ) {
-		return;
-	}
-
-	if ( ss->kill ) {
-		return;
-	}
-
-	ss->fadeStartVol    = 1.0f;
-
-	if ( ssNum == 0 ) {
-		if ( s_debugMusic->integer ) {
-			Com_Printf( "MUSIC: Fade: %0.2f %d\n", targetVol, time );
-		}
-	}
-
-	// get current fraction if already fading/faded
-	if ( ss->fadeStart ) {
-		if ( ss->fadeEnd <= s_soundtime ) {
-//		if(ss->fadeEnd <= s_paintedtime)
-			ss->fadeStartVol = ss->fadeTargetVol;
-		} else {
-			ss->fadeStartVol = ( (float)( s_soundtime - ss->fadeStart ) / (float)( ss->fadeEnd - ss->fadeStart ) );
-		}
-//			ss->fadeStartVol = ( (float)(s_paintedtime - ss->fadeStart)/(float)(ss->fadeEnd - ss->fadeStart) );
-	}
-
-	ss->fadeStart       = s_soundtime;
-	ss->fadeEnd         = s_soundtime + ( ( (float)( ss->info.rate ) / 1000.0f ) * time );
-//	ss->fadeStart		= s_paintedtime;
-//	ss->fadeEnd			= s_paintedtime + (((float)(ss->info.rate)/1000.0f ) * time);
-	ss->fadeTargetVol   = targetVol;
-}
-
-
-/*
-==============
-S_GetStreamingFade
-==============
-*/
-float S_GetStreamingFade( streamingSound_t *ss ) {
-	float oldfrac, newfrac;
-
-//	if(ss->kill)
-//		return 0;
-
-	if ( !ss->fadeStart ) {
-		return 1.0f;    // full volume
-
-	}
-	if ( ss->fadeEnd <= s_soundtime ) {    // it's hit it's target
-//	if(ss->fadeEnd <= s_paintedtime) {	// it's hit it's target
-		if ( ss->fadeTargetVol <= 0 ) {    // faded out.  die next update
-			ss->kill = 1;
-		}
-		return ss->fadeTargetVol;
-	}
-
-	newfrac = (float)( s_soundtime - ss->fadeStart ) / (float)( ss->fadeEnd - ss->fadeStart );
-//	newfrac = (float)(s_paintedtime - ss->fadeStart)/(float)(ss->fadeEnd - ss->fadeStart);
-	oldfrac = 1.0f - newfrac;
-
-	return ( oldfrac * ss->fadeStartVol ) + ( newfrac * ss->fadeTargetVol );
-}
-
-//----(SA)	end
-
-/*
-======================
-S_StartStreamingSound
-
-  FIXME: record the starting cg.time of the sound, so we can determine the
-  position by looking at the current cg.time, this way pausing or loading a
-  savegame won't screw up the timing of important sounds
-======================
-*/
-void S_StartStreamingSound( const char *intro, const char *loop, int entnum, int channel, int attenuation ) {
-	int len;
-	char dump[16];
-//	char	name[MAX_QPATH];
-	int i;
-	streamingSound_t *ss;
-	fileHandle_t fh;
-
-	if ( !s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE ) {
-		return;
-	}
-
-	if ( !intro || !intro[0] ) {
-		if ( loop && loop[0] ) {
-			intro = loop;
-		} else {
-			intro = "";
-		}
-	}
-	Com_DPrintf( "S_StartStreamingSound( %s, %s, %i, %i, %i )\n", intro, loop, entnum, channel, attenuation );
-
-	// look for a free track, but first check for overriding a currently playing sound for this entity
-	ss = NULL;
-	if ( entnum >= 0 ) {
-		for ( i = 1; i < MAX_STREAMING_SOUNDS; i++ ) {    // track 0 is music/cinematics
-			if ( !streamingSounds[i].file ) {
-				continue;
-			}
-			// check to see if this character currently has another sound streaming on the same channel
-			if ( ( channel != Q3CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == channel ) && ( streamingSounds[i].entnum == entnum ) ) {
-				// found a match, override this channel
-				streamingSounds[i].kill = 1;
-				ss = &streamingSounds[i];   // use this track to start the new stream
-				break;
-			}
-		}
-	}
-	if ( !ss ) {
-		// no need to override a current stream, so look for a free track
-		for ( i = 1; i < MAX_STREAMING_SOUNDS; i++ ) {    // track 0 is music/cinematics
-			if ( !streamingSounds[i].file ) {
-				ss = &streamingSounds[i];
-				break;
-			}
-		}
-	}
-	if ( !ss ) {
-		if ( !s_mute->integer ) {  // don't do the print if you're muted
-			Com_Printf( "S_StartStreamingSound: No free streaming tracks\n" );
-		}
-		return;
-	}
-
-	if ( ss->loop && loop ) {
-		String::NCpyZ( ss->loop, loop, sizeof( ss->loop ) - 4 );
-	} else {
-		ss->loop[0] = 0;
-	}
-
-	String::NCpyZ( ss->name, intro, sizeof( ss->name ) - 4 );
-	String::DefaultExtension( ss->name, sizeof( ss->name ), ".wav" );
-
-	// close the current sound if present, but DON'T reset s_rawend
-	if ( ss->file ) {
-		FS_FCloseFile( ss->file );
-		ss->file = 0;
-	}
-
-	if ( !intro[0] ) {
-		return;
-	}
-
-	fh = 0;
-	//
-	// open up a wav file and get all the info
-	//
-	FS_FOpenFileRead( ss->name, &fh, qtrue );
-	if ( !fh ) {
-		Com_Printf( "Couldn't open streaming sound file %s\n", ss->name );
-		return;
-	}
-
-	// skip the riff wav header
-
-	FS_Read( dump, 12, fh );
-
-	if ( !S_FindWavChunk( fh, "fmt " ) ) {
-		Com_Printf( "No fmt chunk in %s\n", ss->name );
-		FS_FCloseFile( fh );
-		return;
-	}
-
-	// save name for soundinfo
-	ss->info.format = FGetLittleShort( fh );
-	ss->info.channels = FGetLittleShort( fh );
-	ss->info.rate = FGetLittleLong( fh );
-	FGetLittleLong(  fh );
-	FGetLittleShort(  fh );
-	ss->info.width = FGetLittleShort( fh ) / 8;
-
-	if ( ss->info.format != WAV_FORMAT_PCM ) {
-		FS_FCloseFile( fh );
-		Com_Printf( "Not a microsoft PCM format wav: %s\n", ss->name );
-		return;
-	}
-
-	//if ( ss->info.channels != 2 || ss->info.rate != 22050 ) {
-	//	Com_Printf("WARNING: music file %s is not 22k stereo\n", ss->name );
-	//}
-
-	if ( ( len = S_FindWavChunk( fh, "data" ) ) == 0 ) {
-		FS_FCloseFile( fh );
-		Com_Printf( "No data chunk in %s\n", ss->name );
-		return;
-	}
-
-	ss->info.samples = len / ( ss->info.width * ss->info.channels );
-
-	ss->samples = ss->info.samples;
-	ss->channel = channel;
-	ss->attenuation = attenuation;
-	ss->entnum = entnum;
-	ss->kill = 0;
-
-	ss->fadeStartVol    = 0;
-	ss->fadeStart       = 0;
-	ss->fadeEnd         = 0;
-	ss->fadeTargetVol   = 0;
-
-	ss->file = fh;
-	numStreamingSounds++;
-}
-
-/*
-======================
-S_StopStreamingSound
-======================
-*/
-void S_StopStreamingSound( int index ) {
-	if ( !streamingSounds[index].file ) {
-		return;
-	}
-	streamingSounds[index].kill = 1;
-}
-
-//----(SA)	added
-/*
-==============
-S_StopEntStreamingSound
-==============
-*/
-void S_StopEntStreamingSound( int entNum ) {
-	int i;
-
-	if ( entNum < 0 ) {
-		return;
-	}
-
-	for ( i = 1; i < MAX_STREAMING_SOUNDS; i++ ) {    // track 0 is music/cinematics
-		if ( !streamingSounds[i].file ) {
-			continue;
-		}
-
-		if ( streamingSounds[i].entnum != entNum ) {
-			continue;
-		}
-
-		S_StopStreamingSound( i );
-		s_rawend[i] = 0;    // stop it /now/
-	}
-}
-//----(SA)	end
-
-/*
-======================
-S_StopBackgroundTrack
-======================
-*/
-void S_StopBackgroundTrack( void ) {
-	S_StopStreamingSound( 0 );
-}
-
-/*
-======================
-S_UpdateStreamingSounds
-======================
-*/
-void S_UpdateStreamingSounds( void ) {
-	int bufferSamples;
-	int fileSamples;
-	byte raw[30000];        // just enough to fit in a mac stack frame
-	int fileBytes;
-	int r, i;
-	streamingSound_t *ss;
-	int     *re, *rp;
-//	qboolean looped;
-	float lvol, rvol;
-	int soundMixAheadTime;
-	float streamingVol = 1.0f;
-
-	if ( !s_soundStarted  ) {
-		return;
-	}
-
-	// seems like the mute would be better down lower so no timing gets messed up
-
-//	if ( s_mute->value ) {	//----(SA)	sound is muted, skip everything
-//		return;
-//	}
-
-	soundMixAheadTime = s_soundtime; // + (int)(0.35 * dma.speed);	// allow for talking animations
-
-	snd.s_soundPainted = qtrue;
-
-	for ( i = 0, ss = streamingSounds, re = s_rawend, rp = s_rawpainted; i < MAX_STREAMING_SOUNDS; i++, ss++, re++, rp++ ) {
-		if ( ss->kill && ss->file ) {
-			fileHandle_t file;
-			file = ss->file;
-			ss->file = 0;
-			FS_FCloseFile( file );
-			numStreamingSounds--;
-
-			if ( i == 0 || ss->kill == 2 ) { //  kill whole channel /now/
-//				memset( &s_rawsamples[i], 0, MAX_RAW_SAMPLES*sizeof(portable_samplepair_t) );
-				*re = 0;    // reset rawend
-
-			}
-			ss->kill = 0;
-			continue;
-		}
-
-		*rp = qfalse;
-
-		// don't bother playing anything if musicvolume is 0
-		if ( i == 0 && s_musicVolume->value <= 0 ) {
-			continue;
-		}
-		if ( i > 0 && s_volume->value <= 0 ) {
-			continue;
-		}
-
-		if ( !ss->file ) {
-			if ( i == 0 ) {  // music
-				// quiet now, so start up queued music if it exists
-				S_CheckForQueuedMusic();
-			}
-			continue;                       // skip until next frame
-		}
-
-		// see how many samples should be copied into the raw buffer
-		if ( *re < soundMixAheadTime ) {    // RF, read a bit ahead of time to allow for talking animations
-			*re = soundMixAheadTime;
-		}
-
-//		looped = qfalse;
-
-		while ( *re < soundMixAheadTime + MAX_RAW_SAMPLES ) {
-			bufferSamples = MAX_RAW_SAMPLES - ( *re - soundMixAheadTime );
-
-			// decide how much data needs to be read from the file
-			fileSamples = bufferSamples * ss->info.rate / dma.speed;
-
-			// if there are no samples due to be read this frame, abort painting
-			// but keep the streaming going, since it might just need to wait until
-			// the next frame before it needs to paint some more
-			if ( !fileSamples ) {
-				break;
-			}
-
-			// don't try and read past the end of the file
-			if ( fileSamples > ss->samples ) {
-				fileSamples = ss->samples;
-			}
-
-			// our max buffer size
-			fileBytes = fileSamples * ( ss->info.width * ss->info.channels );
-			if ( fileBytes > sizeof( raw ) ) {
-				fileBytes = sizeof( raw );
-				fileSamples = fileBytes / ( ss->info.width * ss->info.channels );
-			}
-
-			r = FS_Read( raw, fileBytes, ss->file );
-			if ( r != fileBytes ) {
-				Com_DPrintf( "StreamedRead failure on stream sound\n" );
-				ss->kill = 1;
-				break;
-			}
-
-			// byte swap if needed
-			S_ByteSwapRawSamples( fileSamples, ss->info.width, ss->info.channels, (short*)raw );
-
-			// calculate the volume
-			streamingVol = S_GetStreamingFade( ss );
-
-			streamingVol *= s_volCurrent; // get current global volume level
-
-			if ( s_mute->value ) {  //----(SA)	sound is muted.  process to maintain timing, but play at 0 volume
-				streamingVol = 0;
-			}
-
-			if ( i == 0 ) {   // music
-				lvol = rvol = s_musicVolume->value * streamingVol;
-			} else {        // attenuate if required
-				if ( ss->entnum >= 0 && ss->attenuation ) {
-					int r, l;
-					S_SpatializeOrigin( snd.entityPositions[ ss->entnum ], s_volume->value * 255.0f, &l, &r, SOUND_RANGE_DEFAULT );
-					if ( ( lvol = ( (float)l / 255.0 ) ) > 1.0 ) {
-						lvol = 1.0;
-					}
-					if ( ( rvol = ( (float)r / 255.0 ) ) > 1.0 ) {
-						rvol = 1.0;
-					}
-					lvol *= streamingVol;
-					rvol *= streamingVol;
-				} else {
-					lvol = rvol = s_volume->value * streamingVol;
-				}
-			}
-
-			// add to raw buffer
-			S_RawSamples( fileSamples, ss->info.rate,
-						  ss->info.width, ss->info.channels, raw, lvol, rvol, i );
-
-			*rp = qtrue;
-
-			ss->samples -= fileSamples;
-
-			if ( !ss->samples ) {   // at the end of the sound
-
-				// Queued music will take over as the new loop
-				// start up queued music if it exists
-				if ( i == 0 && snd.nextMusicTrackType ) {        // queued music is queued
-					if ( ss->file ) {
-						fileHandle_t file;
-						file = ss->file;
-						ss->file = 0;
-						FS_FCloseFile( file );
-						numStreamingSounds--;
-//						memset( &s_rawsamples[i], 0, MAX_RAW_SAMPLES*sizeof(portable_samplepair_t) );	// really clear it
-						s_rawend[i] = 0;    // reset rawend
-					}
-/*
-					nextMusicVA = va("%s", snd.nextMusicTrack);
-					if(snd.nextMusicTrackType == QUEUED_PLAY_ONCE) {
-						S_StartBackgroundTrack( nextMusicVA, ss->name, 0);		// play once, then go back to looping what's currently playing
-					} else {	// QUEUED_PLAY_LOOPED
-						S_StartBackgroundTrack( nextMusicVA, nextMusicVA, 0);	// take over
-					}
-					snd.nextMusicTrack[0] = 0;		// clear out music queue
-*/
-					break;  // this is now the music ss->file, no need to re-start next time through
-				} else {
-					// loop
-					if ( ss->loop && ss->loop[0] ) {
-						if ( ss->looped ) {
-							char dump[16];
-							FS_Seek( ss->file, 0, FS_SEEK_SET );       // just go back to the beginning
-							FS_Read( dump, 12, ss->file );
-
-							if ( !S_FindWavChunk( ss->file, "fmt " ) ) {
-								ss->kill = 1;
-								break;
-							}
-
-							// save name for soundinfo
-							ss->info.format = FGetLittleShort( ss->file );
-							ss->info.channels = FGetLittleShort( ss->file );
-							ss->info.rate = FGetLittleLong( ss->file );
-							FGetLittleLong( ss->file );
-							FGetLittleShort( ss->file );
-							ss->info.width = FGetLittleShort( ss->file ) / 8;
-							ss->samples = ss->info.samples;
-							if ( ( S_FindWavChunk( ss->file, "data" ) ) == 0 ) {
-								ss->kill = 1;
-							}
-							if ( s_debugMusic->integer ) {
-								Com_Printf( "MUSIC: looping current track\n" );
-							}
-							break;
-						} else {                                            // start up the sound
-							S_StartBackgroundTrack( ss->loop, ss->loop, 0 );
-							ss->looped = qtrue; // this is now the music ss->file, no need to re-start next time through
-							break;
-						}
-
-
-						// no loop, just stop
-					} else {
-						ss->kill = 1;
-						if ( i == 0 ) {
-							Cvar_Set( "s_currentMusic", "" ); //----(SA)	so the savegame know's it's supposed to be quiet
-
-							if ( s_debugMusic->integer ) {
-								Com_Printf( "MUSIC: Ending current track-> no loop\n" );
-							}
-						}
-
-						break;
-					}
-				}
-			}
-		}
 	}
 }
 
