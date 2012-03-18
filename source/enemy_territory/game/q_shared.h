@@ -221,8 +221,6 @@ void Sys_PumpEvents( void );
 
 enum {qfalse, qtrue};
 
-typedef int qhandle_t;
-
 //#define	SND_NORMAL			0x000	// (default) Allow sound to be cut off only by the same sound on this channel
 #define     SND_OKTOCUT         0x001   // Allow sound to be cut off by any following sounds on this channel
 #define     SND_REQUESTCUT      0x002   // Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
@@ -770,35 +768,6 @@ typedef enum {
 							// by setting eType to ET_EVENTS + eventNum
 							// this avoids having to set eFlags and eventNum
 } entityType_t;
-
-// font support
-
-#define GLYPH_START 0
-#define GLYPH_END 255
-#define GLYPH_CHARSTART 32
-#define GLYPH_CHAREND 127
-#define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
-typedef struct {
-	int height;       // number of scan lines
-	int top;          // top of glyph in buffer
-	int bottom;       // bottom of glyph in buffer
-	int pitch;        // width for copying
-	int xSkip;        // x adjustment
-	int imageWidth;   // width of actual image
-	int imageHeight;  // height of actual image
-	float s;          // x offset in image where glyph starts
-	float t;          // y offset in image where glyph starts
-	float s2;
-	float t2;
-	qhandle_t glyph;  // handle to the shader with the glyph
-	char shaderName[32];
-} glyphInfo_t;
-
-typedef struct {
-	glyphInfo_t glyphs [GLYPHS_PER_FONT];
-	float glyphScale;
-	char name[MAX_QPATH];
-} fontInfo_t;
 
 // real time
 //=============================================

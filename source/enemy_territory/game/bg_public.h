@@ -222,35 +222,6 @@ typedef enum
 
 #define MAX_GAMETYPES 16
 
-typedef struct {
-	const char *mapName;
-	const char *mapLoadName;
-	const char *imageName;
-
-	int typeBits;
-	int cinematic;
-
-	// Gordon: FIXME: remove
-	const char *opponentName;
-	int teamMembers;
-	int timeToBeat[MAX_GAMETYPES];
-
-	qhandle_t levelShot;
-	qboolean active;
-
-	// NERVE - SMF
-	int Timelimit;
-	int AxisRespawnTime;
-	int AlliedRespawnTime;
-	// -NERVE - SMF
-
-	vec2_t mappos;
-
-	const char *briefing;
-	const char *lmsbriefing;
-	const char *objectives;
-} mapInfo;
-
 // Campaign saves
 // rain - 128 -> 512, campaigns are commonplace
 #define MAX_CAMPAIGNS           512
@@ -289,30 +260,6 @@ typedef struct {
 
 qboolean BG_LoadCampaignSave( const char *filename, cpsFile_t *file, const char *profile );
 qboolean BG_StoreCampaignSave( const char *filename, cpsFile_t *file, const char *profile );
-
-typedef struct {
-	const char      *campaignShortName;
-	const char      *campaignName;
-	const char      *campaignDescription;
-	const char      *nextCampaignShortName;
-	const char      *maps;
-	int mapCount;
-	mapInfo         *mapInfos[MAX_MAPS_PER_CAMPAIGN];
-	vec2_t mapTC[2];
-	cpsCampaign_t   *cpsCampaign; // if this campaign was found in the campaignsave, more detailed info can be found here
-
-	const char      *campaignShotName;
-	int campaignCinematic;
-	qhandle_t campaignShot;
-
-	qboolean unlocked;
-	int progress;
-
-	qboolean initial;
-	int order;
-
-	int typeBits;
-} campaignInfo_t;
 
 // Random reinforcement seed settings
 #define MAX_REINFSEEDS  8
@@ -1961,19 +1908,6 @@ typedef enum {
 
 #define MAX_WEAPS_PER_CLASS 10
 
-typedef struct {
-	int classNum;
-	const char  *characterFile;
-	const char* iconName;
-	const char* iconArrow;
-
-	weapon_t classWeapons[MAX_WEAPS_PER_CLASS];
-
-	qhandle_t icon;
-	qhandle_t arrow;
-
-} bg_playerclass_t;
-
 typedef struct bg_character_s {
 	char characterFile[MAX_QPATH];
 
@@ -2024,21 +1958,6 @@ SAVE
 
 extern animStringItem_t animStateStr[];
 extern animStringItem_t animBodyPartsStr[];
-
-bg_playerclass_t* BG_GetPlayerClassInfo( int team, int cls );
-bg_playerclass_t* BG_PlayerClassForPlayerState( etplayerState_t* ps );
-qboolean BG_ClassHasWeapon( bg_playerclass_t* classInfo, weapon_t weap );
-qboolean BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t weapon );
-int BG_ClassWeaponCount( bg_playerclass_t* classInfo, team_t team );
-const char* BG_ShortClassnameForNumber( int classNum );
-const char* BG_ClassnameForNumber( int classNum );
-const char* BG_ClassLetterForNumber( int classNum );
-
-void BG_DisableClassWeapon( bg_playerclass_t* classinfo, int weapon );
-void BG_DisableWeaponForAllClasses( int weapon );
-
-extern bg_playerclass_t bg_allies_playerclasses[NUM_PLAYER_CLASSES];
-extern bg_playerclass_t bg_axis_playerclasses[NUM_PLAYER_CLASSES];
 
 #define MAX_PATH_CORNERS        512
 
@@ -2290,33 +2209,6 @@ typedef enum {
 	S_BT_GLOBAL,
 	S_BT_NOPVS
 } speakerBroadcastType_t;
-
-typedef struct bg_speaker_s {
-	char filename[MAX_QPATH];
-	qhandle_t noise;
-	vec3_t origin;
-	char targetname[32];
-	long targetnamehash;
-
-	speakerLoopType_t loop;
-	speakerBroadcastType_t broadcast;
-	int wait;
-	int random;
-	int volume;
-	int range;
-
-	qboolean activated;
-	int nextActivateTime;
-	int soundTime;
-} bg_speaker_t;
-
-void BG_ClearScriptSpeakerPool( void );
-int BG_NumScriptSpeakers( void );
-int BG_GetIndexForSpeaker( bg_speaker_t *speaker );
-bg_speaker_t *BG_GetScriptSpeaker( int index );
-qboolean BG_SS_DeleteSpeaker( int index );
-qboolean BG_SS_StoreSpeaker( bg_speaker_t *speaker );
-qboolean BG_LoadSpeakerScript( const char *filename );
 
 // Lookup table to find ammo table entry
 extern ammotable_t ammoTableMP[WP_NUM_WEAPONS];

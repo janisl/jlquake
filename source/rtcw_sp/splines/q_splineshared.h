@@ -170,8 +170,6 @@ typedef enum {qfalse, qtrue};
 
 #define EQUAL_EPSILON   0.001
 
-typedef int qhandle_t;
-
 typedef enum {
 	INVALID_JOINT = -1
 } jointHandle_t;

@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #define MAX_CORONAS     32          //----(SA)	not really a reason to limit this other than trying to keep a reasonable count
-#define MAX_DLIGHTS     32          // can't be increased, because bit flags are used on surfaces
 #define MAX_ENTITIES    1023        // can't be increased without changing drawsurf bit packing
 
 // renderfx flags
@@ -236,84 +235,34 @@ typedef enum {
 	STEREO_RIGHT
 } stereoFrame_t;
 
+// font support
 
-/*
-** glconfig_t
-**
-** Contains variables specific to the OpenGL configuration
-** being run right now.  These are constant once the OpenGL
-** subsystem is initialized.
-*/
-typedef enum {
-	TC_NONE,
-	TC_S3TC,
-	TC_EXT_COMP_S3TC
-} textureCompression_t;
-
-typedef enum {
-	GLDRV_ICD,                  // driver is integrated with window system
-								// WARNING: there are tests that check for
-								// > GLDRV_ICD for minidriverness, so this
-								// should always be the lowest value in this
-								// enum set
-	GLDRV_STANDALONE,           // driver is a non-3Dfx standalone driver
-	GLDRV_VOODOO                // driver is a 3Dfx standalone driver
-} glDriverType_t;
-
-typedef enum {
-	GLHW_GENERIC,           // where everthing works the way it should
-	GLHW_3DFX_2D3D,         // Voodoo Banshee or Voodoo3, relevant since if this is
-							// the hardware type then there can NOT exist a secondary
-							// display adapter
-	GLHW_RIVA128,           // where you can't interpolate alpha
-	GLHW_RAGEPRO,           // where you can't modulate alpha on alpha textures
-	GLHW_PERMEDIA2          // where you don't have src*dst
-} glHardwareType_t;
+#define GLYPH_START 0
+#define GLYPH_END 255
+#define GLYPH_CHARSTART 32
+#define GLYPH_CHAREND 127
+#define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
+typedef struct {
+	int height;       // number of scan lines
+	int top;          // top of glyph in buffer
+	int bottom;       // bottom of glyph in buffer
+	int pitch;        // width for copying
+	int xSkip;        // x adjustment
+	int imageWidth;   // width of actual image
+	int imageHeight;  // height of actual image
+	float s;          // x offset in image where glyph starts
+	float t;          // y offset in image where glyph starts
+	float s2;
+	float t2;
+	qhandle_t glyph;  // handle to the shader with the glyph
+	char shaderName[32];
+} glyphInfo_t;
 
 typedef struct {
-	char renderer_string[MAX_STRING_CHARS];
-	char vendor_string[MAX_STRING_CHARS];
-	char version_string[MAX_STRING_CHARS];
-	char extensions_string[MAX_STRING_CHARS * 4];                  // TTimo - bumping, some cards have a big extension string
-
-	int maxTextureSize;                             // queried from GL
-	int maxActiveTextures;                          // multitexture ability
-
-	int colorBits, depthBits, stencilBits;
-
-	glDriverType_t driverType;
-	glHardwareType_t hardwareType;
-
-	qboolean deviceSupportsGamma;
-	textureCompression_t textureCompression;
-	qboolean textureEnvAddAvailable;
-	qboolean anisotropicAvailable;                  //----(SA)	added
-	float maxAnisotropy;                            //----(SA)	added
-
-	// vendor-specific support
-	// NVidia
-	qboolean NVFogAvailable;                        //----(SA)	added
-	int NVFogMode;                                  //----(SA)	added
-	// ATI
-	int ATIMaxTruformTess;                          // for truform support
-	int ATINormalMode;                          // for truform support
-	int ATIPointMode;                           // for truform support
-
-	int vidWidth, vidHeight;
-	// aspect is the screen's physical width / height, which may be different
-	// than scrWidth / scrHeight if the pixels are non-square
-	// normal screens should be 4/3, but wide aspect monitors may be 16/9
-	float windowAspect;
-
-	int displayFrequency;
-
-	// synonymous with "does rendering consume the entire screen?", therefore
-	// a Voodoo or Voodoo2 will have this set to TRUE, as will a Win32 ICD that
-	// used CDS.
-	qboolean isFullscreen;
-	qboolean stereoEnabled;
-	qboolean smpActive;                     // dual processor
-} glconfig_t;
+	glyphInfo_t glyphs [GLYPHS_PER_FONT];
+	float glyphScale;
+	char name[MAX_QPATH];
+} fontInfo_t;
 
 
 #if !defined _WIN32

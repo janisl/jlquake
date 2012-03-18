@@ -847,11 +847,7 @@ float S_StartStreamingSound(const char* intro, const char* loop, int entnum, int
 	streamingSound_t *ss;
 	fileHandle_t fh;
 
-#if 0
 	if (!s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE)
-#else
-	if (!s_soundStarted || s_soundMuted)
-#endif
 	{
 		return 0;
 	}

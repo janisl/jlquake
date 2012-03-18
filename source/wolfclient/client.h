@@ -21,9 +21,7 @@
 #include "../core/file_formats/bsp38.h"
 
 #include "sound/public.h"
-#if 0
 #include "renderer/public.h"
-#endif
 #include "../client/input/keycodes.h"
 #include "input/public.h"
 #if 0
@@ -428,7 +426,7 @@ enum connstate_t
 	CA_DEMOSTART
 };
 
-struct clientStatic_t_
+struct clientStatic_t
 {
 	connstate_t state;		// connection status
 
@@ -437,13 +435,12 @@ struct clientStatic_t_
 	int frametime;			// msec since last frame
 	int realFrametime;		// ignoring pause, so console always works
 
-#if 0
 	// rendering info
 	glconfig_t glconfig;
 	qhandle_t charSetShader;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
-#endif
+	qhandle_t consoleShader2;
 
 	char servername[MAX_OSPATH];		// name of server from original connect (used by reconnect)
 
@@ -552,8 +549,8 @@ struct clientStatic_t_
 #if 0
 extern clientActive_t cl;
 extern clientConnection_t clc;
-extern clientStatic_t cls;
 #endif
+extern clientStatic_t cls;
 
 extern int bitcounts[32];
 

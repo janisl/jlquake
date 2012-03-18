@@ -239,33 +239,12 @@ typedef struct {
 
 extern clientConnection_t clc;
 
-/*
-==================================================================
-
-the clientStatic_t structure is never wiped, and is used even when
-no client connection is active at all
-
-==================================================================
-*/
-
 typedef struct {
 	netadr_t adr;
 	int start;
 	int time;
 	char info[MAX_INFO_STRING_Q3];
 } ping_t;
-
-struct clientStatic_t : clientStatic_t_
-{
-	// rendering info
-	glconfig_t glconfig;
-	qhandle_t charSetShader;
-	qhandle_t whiteShader;
-	qhandle_t consoleShader;
-	qhandle_t consoleShader2;       // NERVE - SMF - merged from WolfSP
-};
-
-extern clientStatic_t cls;
 
 //=============================================================================
 

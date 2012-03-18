@@ -184,8 +184,6 @@ void Sys_PumpEvents( void );
 
 enum {qfalse, qtrue};
 
-typedef int qhandle_t;
-
 #ifndef ID_INLINE
 #ifdef _WIN32
 #define ID_INLINE __inline
@@ -610,35 +608,6 @@ typedef enum
 // RF, put this here so we have a central means of defining a Zombie (kind of a hack, but this is to minimize bandwidth usage)
 #define SET_FLAMING_ZOMBIE( x,y ) ( x.frame = y )
 #define IS_FLAMING_ZOMBIE( x )    ( x.frame == 1 )
-
-// font support
-
-#define GLYPH_START 0
-#define GLYPH_END 255
-#define GLYPH_CHARSTART 32
-#define GLYPH_CHAREND 127
-#define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
-typedef struct {
-	int height;     // number of scan lines
-	int top;        // top of glyph in buffer
-	int bottom;     // bottom of glyph in buffer
-	int pitch;      // width for copying
-	int xSkip;      // x adjustment
-	int imageWidth; // width of actual image
-	int imageHeight; // height of actual image
-	float s;        // x offset in image where glyph starts
-	float t;        // y offset in image where glyph starts
-	float s2;
-	float t2;
-	qhandle_t glyph; // handle to the shader with the glyph
-	char shaderName[32];
-} glyphInfo_t;
-
-typedef struct {
-	glyphInfo_t glyphs [GLYPHS_PER_FONT];
-	float glyphScale;
-	char name[MAX_QPATH];
-} fontInfo_t;
 
 // real time
 //=============================================

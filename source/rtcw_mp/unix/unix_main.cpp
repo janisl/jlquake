@@ -57,6 +57,7 @@ If you have questions concerning this license or the applicable additional terms
 // FIXME TTimo should we gard this? most *nix system should comply?
 #include <termios.h>
 
+#include "../client/client.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
@@ -788,9 +789,6 @@ void Sys_ParseArgs( int argc, char* argv[] ) {
 		}
 	}
 }
-
-#include "../client/client.h"
-extern clientStatic_t cls;
 
 int main( int argc, char* argv[] ) {
 	// int  oldtime, newtime; // bk001204 - unused
