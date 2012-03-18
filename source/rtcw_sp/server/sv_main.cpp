@@ -857,3 +857,8 @@ void SV_Frame( int msec ) {
 }
 
 //============================================================================
+
+bool CL_IsServerActive()
+{
+	return sv.state == SS_GAME;
+}

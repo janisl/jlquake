@@ -1227,3 +1227,8 @@ int SV_LoadTag( const char *mod_name ) {
 }
 
 //============================================================================
+
+bool CL_IsServerActive()
+{
+	return sv.state == SS_GAME;
+}

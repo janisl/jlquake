@@ -5196,3 +5196,8 @@ BotImport_DrawPolygon
 void BotImport_DrawPolygon( int color, int numpoints, float* points ) {
 	re.DrawDebugPolygon( color, numpoints, points );
 }
+
+float* CL_GetSimOrg()
+{
+	return NULL;
+}

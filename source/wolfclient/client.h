@@ -629,9 +629,9 @@ void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
-#if 0
 float CLQH_LerpPoint();
 
+#if 0
 void Chase_Init();
 void Chase_Update();
 #endif
@@ -641,6 +641,7 @@ char* Sys_GetClipboardData();	// note that this isn't journaled...
 #if 0
 float frand();	// 0 to 1
 float crand();	// -1 to 1
+#endif
 
 //---------------------------------------------
 //	Must be provided
@@ -648,7 +649,6 @@ float crand();	// -1 to 1
 void Key_ClearStates();
 float* CL_GetSimOrg();
 bool CL_IsServerActive();
-#endif
 void CL_WriteWaveFilePacket(int endtime);
 
 #endif

@@ -3591,3 +3591,8 @@ qboolean CL_GetLimboString( int index, char *buf ) {
 	return qtrue;
 }
 // -NERVE - SMF
+
+float* CL_GetSimOrg()
+{
+	return NULL;
+}

@@ -4637,3 +4637,8 @@ void CL_OpenURL( const char *url ) {
 	}
 	Sys_OpenURL( url, qtrue );
 }
+
+float* CL_GetSimOrg()
+{
+	return NULL;
+}
