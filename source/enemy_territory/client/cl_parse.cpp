@@ -192,7 +192,7 @@ void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, etentityState_t
 
 #if 1
 	// DHM - Nerve :: Only draw clients if visible
-	if ( clc.onlyVisibleClients ) {
+	if ( clc.wm_onlyVisibleClients ) {
 		if ( state->number < MAX_CLIENTS_ET ) {
 			if ( isEntVisible( state ) ) {
 				entLastVisible[state->number] = frame->serverTime;
@@ -342,7 +342,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// get the reliable sequence acknowledge number
 	// NOTE: now sent with all server to client messages
-	//clc.reliableAcknowledge = msg->ReadLong();
+	//clc.q3_reliableAcknowledge = msg->ReadLong();
 
 	// read in the new snapshot to a temporary buffer
 	// we will only copy to cl.snap if it is valid
@@ -350,11 +350,11 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// we will have read any new server commands in this
 	// message before we got to q3svc_snapshot
-	newSnap.serverCommandNum = clc.serverCommandSequence;
+	newSnap.serverCommandNum = clc.q3_serverCommandSequence;
 
 	newSnap.serverTime = msg->ReadLong();
 
-	newSnap.messageNum = clc.serverMessageSequence;
+	newSnap.messageNum = clc.q3_serverMessageSequence;
 
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
@@ -372,7 +372,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 		newSnap.valid = qtrue;      // uncompressed frame
 		old = NULL;
 		if ( clc.demorecording ) {
-			clc.demowaiting = qfalse;   // we can start recording now
+			clc.q3_demowaiting = qfalse;   // we can start recording now
 //			if(cl_autorecord->integer) {
 //				Cvar_Set( "g_synchronousClients", "0" );
 //			}
@@ -385,7 +385,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 				Com_RealTime( &time );
 
-				String::NCpyZ( mapname, cl.mapname, MAX_QPATH );
+				String::NCpyZ( mapname, cl.q3_mapname, MAX_QPATH );
 				for ( period = mapname; *period; period++ ) {
 					if ( *period == '.' ) {
 						*period = '\0';
@@ -483,7 +483,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 					cl.snap.deltaNum, cl.snap.ping );
 	}
 
-	cl.newSnapshots = qtrue;
+	cl.q3_newSnapshots = qtrue;
 }
 
 
@@ -512,7 +512,7 @@ void CL_SystemInfoChanged( void ) {
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// show_bug.cgi?id=475
 	// in some cases, outdated cp commands might get sent with this news serverId
-	cl.serverId = String::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
+	cl.q3_serverId = String::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
 	memset( &entLastVisible, 0, sizeof( entLastVisible ) );
 
@@ -576,13 +576,13 @@ void CL_ParseGamestate( QMsg *msg ) {
 
 	Con_Close();
 
-	clc.connectPacketCount = 0;
+	clc.q3_connectPacketCount = 0;
 
 	// wipe local client state
 	CL_ClearState();
 
 	// a gamestate always marks a server command sequence
-	clc.serverCommandSequence = msg->ReadLong();
+	clc.q3_serverCommandSequence = msg->ReadLong();
 
 	// parse all the configstrings and baselines
 	cl.gameState.dataCount = 1; // leave a 0 at the beginning for uninitialized configstrings
@@ -624,9 +624,9 @@ void CL_ParseGamestate( QMsg *msg ) {
 		}
 	}
 
-	clc.clientNum = msg->ReadLong();
+	clc.q3_clientNum = msg->ReadLong();
 	// read the checksum feed
-	clc.checksumFeed = msg->ReadLong();
+	clc.q3_checksumFeed = msg->ReadLong();
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
@@ -638,7 +638,7 @@ void CL_ParseGamestate( QMsg *msg ) {
 	}
 
 	// reinitialize the filesystem if the game directory has changed
-	FS_ConditionalRestart( clc.checksumFeed );
+	FS_ConditionalRestart( clc.q3_checksumFeed );
 
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the
 	// cgame
@@ -675,7 +675,7 @@ void CL_ParseDownload( QMsg *msg ) {
 	// TTimo - www dl
 	// if we haven't acked the download redirect yet
 	if ( block == -1 ) {
-		if ( !clc.bWWWDl ) {
+		if ( !clc.et_bWWWDl ) {
 			// server is sending us a www download
 			String::NCpyZ( cls.et_originalDownloadName, cls.et_downloadName, sizeof( cls.et_originalDownloadName ) );
 			String::NCpyZ( cls.et_downloadName, msg->ReadString(), sizeof( cls.et_downloadName ) );
@@ -685,18 +685,18 @@ void CL_ParseDownload( QMsg *msg ) {
 				Sys_OpenURL( cls.et_downloadName, qtrue );
 				Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
 				CL_AddReliableCommand( "wwwdl bbl8r" ); // not sure if that's the right msg
-				clc.bWWWDlAborting = qtrue;
+				clc.et_bWWWDlAborting = qtrue;
 				return;
 			}
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 			Com_DPrintf( "Server redirected download: %s\n", cls.et_downloadName );
-			clc.bWWWDl = qtrue; // activate wwwdl client loop
+			clc.et_bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 			// make sure the server is not trying to redirect us again on a bad checksum
-			if ( strstr( clc.badChecksumList, va( "@%s", cls.et_originalDownloadName ) ) ) {
+			if ( strstr( clc.et_badChecksumList, va( "@%s", cls.et_originalDownloadName ) ) ) {
 				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.et_downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
-				clc.bWWWDlAborting = qtrue;
+				clc.et_bWWWDlAborting = qtrue;
 				return;
 			}
 			// make downloadTempName an OS path
@@ -708,7 +708,7 @@ void CL_ParseDownload( QMsg *msg ) {
 				// still leave a flag so that CL_WWWDownload is inactive
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
-				clc.bWWWDlAborting = qtrue;
+				clc.et_bWWWDlAborting = qtrue;
 				Com_Printf( "Failed to initialize download for '%s'\n", cls.et_downloadName );
 			}
 			// Check for a disconnected download
@@ -819,13 +819,13 @@ void CL_ParseCommandString( QMsg *msg ) {
 	s = msg->ReadString();
 
 	// see if we have already executed stored it off
-	if ( clc.serverCommandSequence >= seq ) {
+	if ( clc.q3_serverCommandSequence >= seq ) {
 		return;
 	}
-	clc.serverCommandSequence = seq;
+	clc.q3_serverCommandSequence = seq;
 
 	index = seq & ( MAX_RELIABLE_COMMANDS_ET - 1 );
-	String::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
+	String::NCpyZ( clc.q3_serverCommands[ index ], s, sizeof( clc.q3_serverCommands[ index ] ) );
 }
 
 /*
@@ -839,7 +839,7 @@ void CL_ParseBinaryMessage( QMsg *msg ) {
 	MSG_BeginReadingUncompressed( msg );
 
 	size = msg->cursize - msg->readcount;
-	if ( size <= 0 || size > MAX_BINARY_MESSAGE ) {
+	if ( size <= 0 || size > MAX_BINARY_MESSAGE_ET ) {
 		return;
 	}
 
@@ -866,10 +866,10 @@ void CL_ParseServerMessage( QMsg *msg ) {
 	msg->Bitstream();
 
 	// get the reliable sequence acknowledge number
-	clc.reliableAcknowledge = msg->ReadLong();
+	clc.q3_reliableAcknowledge = msg->ReadLong();
 	//
-	if ( clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS_ET ) {
-		clc.reliableAcknowledge = clc.reliableSequence;
+	if ( clc.q3_reliableAcknowledge < clc.q3_reliableSequence - MAX_RELIABLE_COMMANDS_ET ) {
+		clc.q3_reliableAcknowledge = clc.q3_reliableSequence;
 	}
 
 	//

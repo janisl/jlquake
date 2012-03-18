@@ -71,7 +71,7 @@ static void CL_Netchan_Encode( QMsg *msg ) {
 	string = (byte *)clc.serverCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ];
 	index = 0;
 	//
-	key = clc.challenge ^ serverId ^ messageAcknowledge;
+	key = clc.q3_challenge ^ serverId ^ messageAcknowledge;
 	for ( i = CL_ENCODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last received now acknowledged server command
 		if ( !string[index] ) {
@@ -117,7 +117,7 @@ static void CL_Netchan_Decode( QMsg *msg ) {
 	string = clc.reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
-	key = clc.challenge ^ LittleLong( *(unsigned *)msg->data );
+	key = clc.q3_challenge ^ LittleLong( *(unsigned *)msg->data );
 	for ( i = msg->readcount + CL_DECODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last sent and with this message acknowledged client command
 		if ( !string[index] ) {

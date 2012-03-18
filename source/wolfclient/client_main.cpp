@@ -26,8 +26,8 @@ Cvar* clqh_color;
 
 #if 0
 clientActive_t cl;
-clientConnection_t clc;
 #endif
+clientConnection_t clc;
 clientStatic_t cls;
 
 byte* playerTranslation;

@@ -67,10 +67,10 @@ static void CL_Netchan_Encode( QMsg *msg ) {
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte *)clc.serverCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ];
+	string = (byte *)clc.q3_serverCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ];
 	index = 0;
 	//
-	key = clc.challenge ^ serverId ^ messageAcknowledge;
+	key = clc.q3_challenge ^ serverId ^ messageAcknowledge;
 	for ( i = CL_ENCODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last received now acknowledged server command
 		if ( !string[index] ) {
@@ -113,10 +113,10 @@ static void CL_Netchan_Decode( QMsg *msg ) {
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)clc.reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ];
+	string = (byte*)clc.q3_reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
-	key = clc.challenge ^ LittleLong( *(unsigned *)msg->_data );
+	key = clc.q3_challenge ^ LittleLong( *(unsigned *)msg->_data );
 	for ( i = msg->readcount + CL_DECODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last sent and with this message acknowledged client command
 		if ( !string[index] ) {
@@ -150,20 +150,20 @@ CL_WriteBinaryMessage
 ================
 */
 static void CL_WriteBinaryMessage( QMsg *msg ) {
-	if ( !clc.binaryMessageLength ) {
+	if ( !clc.et_binaryMessageLength ) {
 		return;
 	}
 
 	MSG_Uncompressed( msg );
 
-	if ( ( msg->cursize + clc.binaryMessageLength ) >= msg->maxsize ) {
-		clc.binaryMessageOverflowed = qtrue;
+	if ( ( msg->cursize + clc.et_binaryMessageLength ) >= msg->maxsize ) {
+		clc.et_binaryMessageOverflowed = qtrue;
 		return;
 	}
 
-	msg->WriteData( clc.binaryMessage, clc.binaryMessageLength );
-	clc.binaryMessageLength = 0;
-	clc.binaryMessageOverflowed = qfalse;
+	msg->WriteData( clc.et_binaryMessage, clc.et_binaryMessageLength );
+	clc.et_binaryMessageLength = 0;
+	clc.et_binaryMessageOverflowed = qfalse;
 }
 
 /*

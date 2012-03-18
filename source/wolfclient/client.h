@@ -38,6 +38,7 @@
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
 #include "game/input.h"
+#endif
 
 #define CSHIFT_CONTENTS	0
 #define CSHIFT_DAMAGE	1
@@ -46,14 +47,12 @@
 #define NUM_CSHIFTS		4
 
 #define SIGNONS		4			// signon messages to receive before connected
-#endif
 
 #define MAX_MAPSTRING	2048
 
 #define MAX_DEMOS		8
 #define MAX_DEMONAME	16
 
-#if 0
 struct cshift_t
 {
 	int		destcolor[3];
@@ -62,7 +61,7 @@ struct cshift_t
 
 //	The clientActive_t structure is wiped completely at every new gamestate_t,
 // potentially several times during an established connection.
-struct clientActive_t
+struct clientActive_t_
 {
 	int serverTime;			// may be paused during play
 
@@ -78,8 +77,10 @@ struct clientActive_t
 	int mouseIndex;
 	int joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
 
+#if 0
 	//	Not in Quake 3
 	refdef_t refdef;
+#endif
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
 	int viewentity;			// cl_entitites[cl.viewentity] = player
 
@@ -270,7 +271,9 @@ struct clientActive_t
 	q2clientinfo_t q2_clientinfo[MAX_CLIENTS_Q2];
 	q2clientinfo_t q2_baseclientinfo;
 
+#if 0
 	q3clSnapshot_t q3_snap;			// latest received from server
+#endif
 
 	int q3_oldServerTime;		// to prevent time from flowing bakcwards
 	int q3_oldFrameServerTime;	// to check tournament restarts
@@ -280,7 +283,9 @@ struct clientActive_t
 									// cleared when CL_AdjustTimeDelta looks at it
 	bool q3_newSnapshots;		// set on parse of any valid packet
 
+#if 0
 	q3gameState_t q3_gameState;			// configstrings
+#endif
 	char q3_mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
 
 	// cgame communicates a few values to the client system
@@ -289,20 +294,26 @@ struct clientActive_t
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
+#if 0
 	q3usercmd_t q3_cmds[CMD_BACKUP_Q3];	// each mesage will send several old cmds
+#endif
 	int q3_cmdNumber;			// incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
+#if 0
 	q3outPacket_t q3_outPackets[PACKET_BACKUP_Q3];	// information about each packet we have sent out
+#endif
 
 	int q3_serverId;			// included in each client message so the server
 												// can tell if it is for a prior map_restart
+#if 0
 	// big stuff at end of structure so most offsets are 15 bits or less
 	q3clSnapshot_t q3_snapshots[PACKET_BACKUP_Q3];
 
 	q3entityState_t q3_entityBaselines[MAX_GENTITIES_Q3];	// for delta compression when not in previous frame
 
 	q3entityState_t q3_parseEntities[MAX_PARSE_ENTITIES_Q3];
+#endif
 };
 
 // download type
@@ -347,6 +358,8 @@ struct clientConnection_t
 	int downloadSize;	// how many bytes we got
 	char downloadList[MAX_INFO_STRING_Q3]; // list of paks we need to download
 	bool downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
+	//	Only in Enemy Territory
+	int downloadFlags;         // misc download behaviour flags sent by the server
 
 	// demo information
 	bool demorecording;
@@ -370,7 +383,7 @@ struct clientConnection_t
 	// these are our reliable messages that go to the server
 	int q3_reliableSequence;
 	int q3_reliableAcknowledge;		// the last one the server has executed
-	char q3_reliableCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
+	char q3_reliableCommands[BIGGEST_MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	// server message (unreliable) and command (reliable) sequence
 	// numbers are NOT cleared at level changes, but continue to
@@ -383,7 +396,7 @@ struct clientConnection_t
 	// reliable messages received from server
 	int q3_serverCommandSequence;
 	int q3_lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
-	char q3_serverCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
+	char q3_serverCommands[BIGGEST_MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	char q3_demoName[MAX_QPATH];
 	bool q3_spDemoRecording;
@@ -393,6 +406,23 @@ struct clientConnection_t
 	int q3_timeDemoFrames;		// counter of rendered frames
 	int q3_timeDemoStart;		// cls.realtime before first frame
 	int q3_timeDemoBaseTime;	// each frame will be at this time + frameNum * 50
+
+	int wm_onlyVisibleClients;                 // DHM - Nerve
+
+	bool wm_waverecording;
+	fileHandle_t wm_wavefile;
+	int wm_wavetime;
+
+	// unreliable binary data to send to server
+	int et_binaryMessageLength;
+	char et_binaryMessage[MAX_BINARY_MESSAGE_ET];
+	bool et_binaryMessageOverflowed;
+
+	// www downloading
+	bool et_bWWWDl;    // we have a www download going
+	bool et_bWWWDlAborting;    // disable the CL_WWWDownload until server gets us a gamestate (used for aborts)
+	char et_redirectedList[MAX_INFO_STRING_Q3];        // list of files that we downloaded through a redirect since last FS_ComparePaks
+	char et_badChecksumList[MAX_INFO_STRING_Q3];        // list of files for which wwwdl redirect is broken (wrong checksum)
 };
 
 /*
@@ -403,7 +433,6 @@ no client connection is active at all
 
 ==================================================================
 */
-#endif
 
 enum connstate_t
 {
@@ -548,8 +577,8 @@ struct clientStatic_t
 
 #if 0
 extern clientActive_t cl;
-extern clientConnection_t clc;
 #endif
+extern clientConnection_t clc;
 extern clientStatic_t cls;
 
 extern int bitcounts[32];

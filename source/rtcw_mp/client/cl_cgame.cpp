@@ -102,13 +102,13 @@ qboolean CL_GetUserCmd( int cmdNumber, wmusercmd_t *ucmd ) {
 	// cmds[cmdNumber] is the last properly generated command
 
 	// can't return anything that we haven't created yet
-	if ( cmdNumber > cl.cmdNumber ) {
-		Com_Error( ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.cmdNumber );
+	if ( cmdNumber > cl.q3_cmdNumber ) {
+		Com_Error( ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber );
 	}
 
 	// the usercmd has been overwritten in the wrapping
 	// buffer because it is too far out of date
-	if ( cmdNumber <= cl.cmdNumber - CMD_BACKUP ) {
+	if ( cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP ) {
 		return qfalse;
 	}
 
@@ -118,7 +118,7 @@ qboolean CL_GetUserCmd( int cmdNumber, wmusercmd_t *ucmd ) {
 }
 
 int CL_GetCurrentCmdNumber( void ) {
-	return cl.cmdNumber;
+	return cl.q3_cmdNumber;
 }
 
 
@@ -212,9 +212,9 @@ CL_SetUserCmdValue
 ==============
 */
 void CL_SetUserCmdValue( int userCmdValue, int holdableValue, float sensitivityScale, int mpSetup, int mpIdentClient ) {
-	cl.cgameUserCmdValue        = userCmdValue;
+	cl.q3_cgameUserCmdValue        = userCmdValue;
 	cl.cgameUserHoldableValue   = holdableValue;
-	cl.cgameSensitivity         = sensitivityScale;
+	cl.q3_cgameSensitivity         = sensitivityScale;
 	cl.cgameMpSetup             = mpSetup;              // NERVE - SMF
 	cl.cgameMpIdentClient       = mpIdentClient;        // NERVE - SMF
 }
@@ -326,7 +326,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 	int argc;
 
 	// if we have irretrievably lost a reliable command, drop the connection
-	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS_WM ) {
+	if ( serverCommandNumber <= clc.q3_serverCommandSequence - MAX_RELIABLE_COMMANDS_WM ) {
 		// when a demo record was started after the client got a whole bunch of
 		// reliable commands then the client never got those first reliable commands
 		if ( clc.demoplaying ) {
@@ -336,13 +336,13 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 		return qfalse;
 	}
 
-	if ( serverCommandNumber > clc.serverCommandSequence ) {
+	if ( serverCommandNumber > clc.q3_serverCommandSequence ) {
 		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
 		return qfalse;
 	}
 
-	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ];
-	clc.lastExecutedServerCommand = serverCommandNumber;
+	s = clc.q3_serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ];
+	clc.q3_lastExecutedServerCommand = serverCommandNumber;
 
 	if ( cl_showServerCommands->integer ) {         // NERVE - SMF
 		Com_DPrintf( "serverCommand: %i : %s\n", serverCommandNumber, s );
@@ -1064,7 +1064,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 		outbuftrav = outbuf;
 		outbuftrav[0] = '\0';
 		while ( ( token = String::Parse3( &buftrav ) ) && token[0] ) {
-			if ( !String::ICmp( token, cl.mapname ) ) {
+			if ( !String::ICmp( token, cl.q3_mapname ) ) {
 				// found a match
 				token = String::Parse3( &buftrav );  // read the size
 				if ( token && token[0] ) {
@@ -1113,7 +1113,7 @@ void CL_UpdateLevelHunkUsage( void ) {
 	if ( handle < 0 ) {
 		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full\n" );
 	}
-	String::Sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
+	String::Sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.q3_mapname, memusage );
 	FS_Write( outstr, String::Length( outstr ), handle );
 	FS_FCloseFile( handle );
 
@@ -1144,7 +1144,7 @@ void CL_InitCGame( void ) {
 	// find the current mapname
 	info = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
-	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
+	String::Sprintf( cl.q3_mapname, sizeof( cl.q3_mapname ), "maps/%s.bsp", mapname );
 
 	// load the dll
 	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, VMI_NATIVE );
@@ -1156,7 +1156,7 @@ void CL_InitCGame( void ) {
 	// init for this gamestate
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
-	VM_Call( cgvm, CG_INIT, clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum );
+	VM_Call( cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum );
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -1238,7 +1238,7 @@ void CL_AdjustTimeDelta( void ) {
 	int newDelta;
 	int deltaDelta;
 
-	cl.newSnapshots = qfalse;
+	cl.q3_newSnapshots = qfalse;
 
 	// the delta never drifts when replaying a demo
 	if ( clc.demoplaying ) {
@@ -1253,11 +1253,11 @@ void CL_AdjustTimeDelta( void ) {
 	}
 
 	newDelta = cl.snap.serverTime - cls.realtime;
-	deltaDelta = abs( newDelta - cl.serverTimeDelta );
+	deltaDelta = abs( newDelta - cl.q3_serverTimeDelta );
 
 	if ( deltaDelta > RESET_TIME ) {
-		cl.serverTimeDelta = newDelta;
-		cl.oldServerTime = cl.snap.serverTime;  // FIXME: is this a problem for cgame?
+		cl.q3_serverTimeDelta = newDelta;
+		cl.q3_oldServerTime = cl.snap.serverTime;  // FIXME: is this a problem for cgame?
 		cl.serverTime = cl.snap.serverTime;
 		if ( cl_showTimeDelta->integer ) {
 			Com_Printf( "<RESET> " );
@@ -1267,7 +1267,7 @@ void CL_AdjustTimeDelta( void ) {
 		if ( cl_showTimeDelta->integer ) {
 			Com_Printf( "<FAST> " );
 		}
-		cl.serverTimeDelta = ( cl.serverTimeDelta + newDelta ) >> 1;
+		cl.q3_serverTimeDelta = ( cl.q3_serverTimeDelta + newDelta ) >> 1;
 	} else {
 		// slow drift adjust, only move 1 or 2 msec
 
@@ -1275,18 +1275,18 @@ void CL_AdjustTimeDelta( void ) {
 		// had to be extrapolated, nudge our sense of time back a little
 		// the granularity of +1 / -2 is too high for timescale modified frametimes
 		if ( com_timescale->value == 0 || com_timescale->value == 1 ) {
-			if ( cl.extrapolatedSnapshot ) {
-				cl.extrapolatedSnapshot = qfalse;
-				cl.serverTimeDelta -= 2;
+			if ( cl.q3_extrapolatedSnapshot ) {
+				cl.q3_extrapolatedSnapshot = qfalse;
+				cl.q3_serverTimeDelta -= 2;
 			} else {
 				// otherwise, move our sense of time forward to minimize total latency
-				cl.serverTimeDelta++;
+				cl.q3_serverTimeDelta++;
 			}
 		}
 	}
 
 	if ( cl_showTimeDelta->integer ) {
-		Com_Printf( "%i ", cl.serverTimeDelta );
+		Com_Printf( "%i ", cl.q3_serverTimeDelta );
 	}
 }
 
@@ -1304,10 +1304,10 @@ void CL_FirstSnapshot( void ) {
 	cls.state = CA_ACTIVE;
 
 	// set the timedelta so we are exactly on this first frame
-	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
-	cl.oldServerTime = cl.snap.serverTime;
+	cl.q3_serverTimeDelta = cl.snap.serverTime - cls.realtime;
+	cl.q3_oldServerTime = cl.snap.serverTime;
 
-	clc.timeDemoBaseTime = cl.snap.serverTime;
+	clc.q3_timeDemoBaseTime = cl.snap.serverTime;
 
 	// if this is the first frame of active play,
 	// execute the contents of activeAction now
@@ -1335,14 +1335,14 @@ void CL_SetCGameTime( void ) {
 		if ( clc.demoplaying ) {
 			// we shouldn't get the first snapshot on the same frame
 			// as the gamestate, because it causes a bad time skip
-			if ( !clc.firstDemoFrameSkipped ) {
-				clc.firstDemoFrameSkipped = qtrue;
+			if ( !clc.q3_firstDemoFrameSkipped ) {
+				clc.q3_firstDemoFrameSkipped = qtrue;
 				return;
 			}
 			CL_ReadDemoMessage();
 		}
-		if ( cl.newSnapshots ) {
-			cl.newSnapshots = qfalse;
+		if ( cl.q3_newSnapshots ) {
+			cl.q3_newSnapshots = qfalse;
 			CL_FirstSnapshot();
 		}
 		if ( cls.state != CA_ACTIVE ) {
@@ -1361,7 +1361,7 @@ void CL_SetCGameTime( void ) {
 		return;
 	}
 
-	if ( cl.snap.serverTime < cl.oldFrameServerTime ) {
+	if ( cl.snap.serverTime < cl.q3_oldFrameServerTime ) {
 		// Ridah, if this is a localhost, then we are probably loading a savegame
 		if ( !String::ICmp( cls.servername, "localhost" ) ) {
 			// do nothing?
@@ -1370,7 +1370,7 @@ void CL_SetCGameTime( void ) {
 			Com_Error( ERR_DROP, "cl.snap.serverTime < cl.oldFrameServerTime" );
 		}
 	}
-	cl.oldFrameServerTime = cl.snap.serverTime;
+	cl.q3_oldFrameServerTime = cl.snap.serverTime;
 
 
 	// get our current view of time
@@ -1391,26 +1391,26 @@ void CL_SetCGameTime( void ) {
 			tn = 30;
 		}
 
-		cl.serverTime = cls.realtime + cl.serverTimeDelta - tn;
+		cl.serverTime = cls.realtime + cl.q3_serverTimeDelta - tn;
 
 		// guarantee that time will never flow backwards, even if
 		// serverTimeDelta made an adjustment or cl_timeNudge was changed
-		if ( cl.serverTime < cl.oldServerTime ) {
-			cl.serverTime = cl.oldServerTime;
+		if ( cl.serverTime < cl.q3_oldServerTime ) {
+			cl.serverTime = cl.q3_oldServerTime;
 		}
-		cl.oldServerTime = cl.serverTime;
+		cl.q3_oldServerTime = cl.serverTime;
 
 		// note if we are almost past the latest frame (without timeNudge),
 		// so we will try and adjust back a bit when the next snapshot arrives
-		if ( cls.realtime + cl.serverTimeDelta >= cl.snap.serverTime - 5 ) {
-			cl.extrapolatedSnapshot = qtrue;
+		if ( cls.realtime + cl.q3_serverTimeDelta >= cl.snap.serverTime - 5 ) {
+			cl.q3_extrapolatedSnapshot = qtrue;
 		}
 	}
 
 	// if we have gotten new snapshots, drift serverTimeDelta
 	// don't do this every frame, or a period of packet loss would
 	// make a huge adjustment
-	if ( cl.newSnapshots ) {
+	if ( cl.q3_newSnapshots ) {
 		CL_AdjustTimeDelta();
 	}
 
@@ -1427,11 +1427,11 @@ void CL_SetCGameTime( void ) {
 	// while a normal demo may have different time samples
 	// each time it is played back
 	if ( cl_timedemo->integer ) {
-		if ( !clc.timeDemoStart ) {
-			clc.timeDemoStart = Sys_Milliseconds();
+		if ( !clc.q3_timeDemoStart ) {
+			clc.q3_timeDemoStart = Sys_Milliseconds();
 		}
-		clc.timeDemoFrames++;
-		cl.serverTime = clc.timeDemoBaseTime + clc.timeDemoFrames * 50;
+		clc.q3_timeDemoFrames++;
+		cl.serverTime = clc.q3_timeDemoBaseTime + clc.q3_timeDemoFrames * 50;
 	}
 
 	while ( cl.serverTime >= cl.snap.serverTime ) {

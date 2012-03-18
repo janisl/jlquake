@@ -156,7 +156,7 @@ typedef struct client_s {
 	int messageAcknowledge;
 
 	int binaryMessageLength;
-	char binaryMessage[MAX_BINARY_MESSAGE];
+	char binaryMessage[MAX_BINARY_MESSAGE_ET];
 	qboolean binaryMessageOverflowed;
 
 	int gamestateMessageNum;                // netchan->outgoingSequence of gamestate

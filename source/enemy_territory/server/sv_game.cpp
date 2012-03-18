@@ -307,7 +307,7 @@ static void SV_SendBinaryMessage( int cno, char *buf, int buflen ) {
 		return;
 	}
 
-	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE ) {
+	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE_ET ) {
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
 		svs.clients[cno].binaryMessageLength = 0;
 		return;

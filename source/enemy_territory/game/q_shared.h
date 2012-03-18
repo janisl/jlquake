@@ -250,8 +250,6 @@ enum {qfalse, qtrue};
 
 #define MAX_SAY_TEXT        150
 
-#define MAX_BINARY_MESSAGE  32768   // max length of binary message
-
 typedef enum {
 	MESSAGE_EMPTY = 0,
 	MESSAGE_WAITING,        // rate/packet limited

@@ -89,53 +89,21 @@ typedef struct {
 
 extern int g_console_field_width;
 
-typedef struct {
-	int timeoutcount;               // it requres several frames in a timeout condition
-									// to disconnect, preventing debugging breaks from
-									// causing immediate disconnects on continue
+struct clientActive_t : clientActive_t_
+{
 	clSnapshot_t snap;              // latest received from server
 
-	int serverTime;                 // may be paused during play
-	int oldServerTime;              // to prevent time from flowing bakcwards
-	int oldFrameServerTime;         // to check tournament restarts
-	int serverTimeDelta;            // cl.serverTime = cls.realtime + cl.serverTimeDelta
-									// this value changes as net lag varies
-	qboolean extrapolatedSnapshot;      // set if any cgame frame has been forced to extrapolate
-	// cleared when CL_AdjustTimeDelta looks at it
-	qboolean newSnapshots;          // set on parse of any valid packet
-
 	gameState_t gameState;          // configstrings
-	char mapname[MAX_QPATH];        // extracted from Q3CS_SERVERINFO
 
-	int parseEntitiesNum;           // index (not anded off) into cl_parse_entities[]
-
-	int mouseDx[2], mouseDy[2];         // added to by mouse events
-	int mouseIndex;
-	int joystickAxis[MAX_JOYSTICK_AXIS];            // set by joystick events
-
-	// cgame communicates a few values to the client system
-	int cgameUserCmdValue;              // current weapon to add to wsusercmd_t
 	int cgameUserHoldableValue;         // current holdable item to add to wsusercmd_t	//----(SA)	added
-	float cgameSensitivity;
 	int cgameCld;                       // NERVE - SMF
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
 	wsusercmd_t cmds[CMD_BACKUP];     // each mesage will send several old cmds
-	int cmdNumber;                  // incremented each frame, because multiple
-									// frames may need to be packed into a single packet
 
 	outPacket_t outPackets[PACKET_BACKUP_Q3];  // information about each packet we have sent out
 
-	// the client maintains its own idea of view angles, which are
-	// sent to the server each frame.  It is cleared to 0 upon entering each level.
-	// the server sends a delta each frame which is added to the locally
-	// tracked view angles to account for standing on rotating objects,
-	// and teleport direction changes
-	vec3_t viewangles;
-
-	int serverId;                   // included in each client message so the server
-									// can tell if it is for a prior map_restart
 	// big stuff at end of structure so most offsets are 15 bits or less
 	clSnapshot_t snapshots[PACKET_BACKUP_Q3];
 
@@ -149,84 +117,9 @@ typedef struct {
 	// -NERVE - SMF
 
 	qboolean cameraMode;    //----(SA)	added for control of input while watching cinematics
-
-} clientActive_t;
+};
 
 extern clientActive_t cl;
-
-/*
-=============================================================================
-
-the clientConnection_t structure is wiped when disconnecting from a server,
-either to go to a full screen console, play a demo, or connect to a different server
-
-A connection can be to either a server through the network layer or a
-demo through a file.
-
-=============================================================================
-*/
-
-
-typedef struct {
-
-	int clientNum;
-	int lastPacketSentTime;                 // for retransmits during connection
-	int lastPacketTime;                     // for timeouts
-
-	netadr_t serverAddress;
-	int connectTime;                        // for connection retransmits
-	int connectPacketCount;                 // for display on connection dialog
-	char serverMessage[MAX_STRING_TOKENS];          // for display on connection dialog
-
-	int challenge;                          // from the server to use for connecting
-	int checksumFeed;                       // from the server for checksum calculations
-
-	// these are our reliable messages that go to the server
-	int reliableSequence;
-	int reliableAcknowledge;                // the last one the server has executed
-	char reliableCommands[MAX_RELIABLE_COMMANDS_WS][MAX_TOKEN_CHARS_Q3];
-
-	// server message (unreliable) and command (reliable) sequence
-	// numbers are NOT cleared at level changes, but continue to
-	// increase as long as the connection is valid
-
-	// message sequence is used by both the network layer and the
-	// delta compression layer
-	int serverMessageSequence;
-
-	// reliable messages received from server
-	int serverCommandSequence;
-	int lastExecutedServerCommand;              // last server command grabbed or executed with CL_GetServerCommand
-	char serverCommands[MAX_RELIABLE_COMMANDS_WS][MAX_TOKEN_CHARS_Q3];
-
-	// file transfer from server
-	fileHandle_t download;
-	char downloadTempName[MAX_OSPATH];
-	char downloadName[MAX_OSPATH];
-	int downloadNumber;
-	int downloadBlock;          // block we are waiting for
-	int downloadCount;          // how many bytes we got
-	int downloadSize;           // how many bytes we got
-	char downloadList[MAX_INFO_STRING_Q3];        // list of paks we need to download
-	qboolean downloadRestart;       // if true, we need to do another FS_Restart because we downloaded a pak
-
-	// demo information
-	char demoName[MAX_QPATH];
-	qboolean demorecording;
-	qboolean demoplaying;
-	qboolean demowaiting;       // don't record until a non-delta message is received
-	qboolean firstDemoFrameSkipped;
-	fileHandle_t demofile;
-
-	int timeDemoFrames;             // counter of rendered frames
-	int timeDemoStart;              // cls.realtime before first frame
-	int timeDemoBaseTime;           // each frame will be at this time + frameNum * 50
-
-	// big stuff at end of structure so most offsets are 15 bits or less
-	netchan_t netchan;
-} clientConnection_t;
-
-extern clientConnection_t clc;
 
 typedef struct {
 	netadr_t adr;

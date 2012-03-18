@@ -517,7 +517,7 @@ void CL_MouseMove( wmusercmd_t *cmd ) {
 	accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 
 	// scale by FOV
-	accelSensitivity *= cl.cgameSensitivity;
+	accelSensitivity *= cl.q3_cgameSensitivity;
 
 /*	NERVE - SMF - this has moved to CG_CalcFov to fix zoomed-in/out transition movement bug
 	if ( cl.snap.ps.stats[STAT_ZOOMED_VIEW] ) {
@@ -612,7 +612,7 @@ void CL_FinishMove( wmusercmd_t *cmd ) {
 	int i;
 
 	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.cgameUserCmdValue;
+	cmd->weapon = cl.q3_cgameUserCmdValue;
 
 	cmd->holdable = cl.cgameUserHoldableValue;  //----(SA)	modified
 
@@ -716,8 +716,8 @@ void CL_CreateNewCommands( void ) {
 
 
 	// generate a command for this frame
-	cl.cmdNumber++;
-	cmdNum = cl.cmdNumber & CMD_MASK;
+	cl.q3_cmdNumber++;
+	cmdNum = cl.q3_cmdNumber & CMD_MASK;
 	cl.cmds[cmdNum] = CL_CreateCmd();
 	cmd = &cl.cmds[cmdNum];
 }
@@ -744,7 +744,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 
 	// If we are downloading, we send no less than 50ms between packets
 	if ( *clc.downloadTempName &&
-		 cls.realtime - clc.lastPacketSentTime < 50 ) {
+		 cls.realtime - clc.q3_lastPacketSentTime < 50 ) {
 		return qfalse;
 	}
 
@@ -753,7 +753,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 	if ( cls.state != CA_ACTIVE &&
 		 cls.state != CA_PRIMED &&
 		 !*clc.downloadTempName &&
-		 cls.realtime - clc.lastPacketSentTime < 1000 ) {
+		 cls.realtime - clc.q3_lastPacketSentTime < 1000 ) {
 		return qfalse;
 	}
 
@@ -827,23 +827,23 @@ void CL_WritePacket( void ) {
 	buf.Bitstream();
 	// write the current serverId so the server
 	// can tell if this is from the current gameState
-	buf.WriteLong( cl.serverId );
+	buf.WriteLong( cl.q3_serverId );
 
 	// write the last message we received, which can
 	// be used for delta compression, and is also used
 	// to tell if we dropped a gamestate
-	buf.WriteLong( clc.serverMessageSequence );
+	buf.WriteLong( clc.q3_serverMessageSequence );
 
 	// write the last reliable message we received
-	buf.WriteLong( clc.serverCommandSequence );
+	buf.WriteLong( clc.q3_serverCommandSequence );
 
 	// write any unacknowledged clientCommands
 	// NOTE TTimo: if you verbose this, you will see that there are quite a few duplicates
 	// typically several unacknowledged cp or userinfo commands stacked up
-	for ( i = clc.reliableAcknowledge + 1 ; i <= clc.reliableSequence ; i++ ) {
+	for ( i = clc.q3_reliableAcknowledge + 1 ; i <= clc.q3_reliableSequence ; i++ ) {
 		buf.WriteByte( q3clc_clientCommand );
 		buf.WriteLong( i );
-		buf.WriteString( clc.reliableCommands[ i & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ] );
+		buf.WriteString( clc.q3_reliableCommands[ i & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ] );
 	}
 
 	// we want to send all the usercmds that were generated in the last
@@ -855,7 +855,7 @@ void CL_WritePacket( void ) {
 		Cvar_Set( "cl_packetdup", "5" );
 	}
 	oldPacketNum = ( clc.netchan.outgoingSequence - 1 - cl_packetdup->integer ) & PACKET_MASK_Q3;
-	count = cl.cmdNumber - cl.outPackets[ oldPacketNum ].p_cmdNumber;
+	count = cl.q3_cmdNumber - cl.outPackets[ oldPacketNum ].p_cmdNumber;
 	if ( count > MAX_PACKET_USERCMDS ) {
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf( "MAX_PACKET_USERCMDS\n" );
@@ -866,8 +866,8 @@ void CL_WritePacket( void ) {
 		}
 
 		// begin a client move command
-		if ( cl_nodelta->integer || !cl.snap.valid || clc.demowaiting
-			 || clc.serverMessageSequence != cl.snap.messageNum ) {
+		if ( cl_nodelta->integer || !cl.snap.valid || clc.q3_demowaiting
+			 || clc.q3_serverMessageSequence != cl.snap.messageNum ) {
 			buf.WriteByte( q3clc_moveNoDelta );
 		} else {
 			buf.WriteByte( q3clc_move );
@@ -877,15 +877,15 @@ void CL_WritePacket( void ) {
 		buf.WriteByte( count );
 
 		// use the checksum feed in the key
-		key = clc.checksumFeed;
+		key = clc.q3_checksumFeed;
 		// also use the message acknowledge
-		key ^= clc.serverMessageSequence;
+		key ^= clc.q3_serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= Com_HashKey( clc.serverCommands[ clc.serverCommandSequence & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ], 32 );
+		key ^= Com_HashKey( clc.q3_serverCommands[ clc.q3_serverCommandSequence & ( MAX_RELIABLE_COMMANDS_WM - 1 ) ], 32 );
 
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {
-			j = ( cl.cmdNumber - count + i + 1 ) & CMD_MASK;
+			j = ( cl.q3_cmdNumber - count + i + 1 ) & CMD_MASK;
 			cmd = &cl.cmds[j];
 			MSG_WriteDeltaUsercmdKey( &buf, key, oldcmd, cmd );
 			oldcmd = cmd;
@@ -898,8 +898,8 @@ void CL_WritePacket( void ) {
 	packetNum = clc.netchan.outgoingSequence & PACKET_MASK_Q3;
 	cl.outPackets[ packetNum ].p_realtime = cls.realtime;
 	cl.outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
-	cl.outPackets[ packetNum ].p_cmdNumber = cl.cmdNumber;
-	clc.lastPacketSentTime = cls.realtime;
+	cl.outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
+	clc.q3_lastPacketSentTime = cls.realtime;
 
 	if ( cl_showSend->integer ) {
 		Com_Printf( "%i ", buf.cursize );

@@ -46,11 +46,11 @@ GetClientState
 ====================
 */
 static void GetClientState( uiClientState_t *state ) {
-	state->connectPacketCount = clc.connectPacketCount;
+	state->connectPacketCount = clc.q3_connectPacketCount;
 	state->connState = cls.state;
 	String::NCpyZ( state->servername, cls.servername, sizeof( state->servername ) );
 	String::NCpyZ( state->updateInfoString, cls.q3_updateInfoString, sizeof( state->updateInfoString ) );
-	String::NCpyZ( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
+	String::NCpyZ( state->messageString, clc.q3_serverMessage, sizeof( state->messageString ) );
 	state->clientNum = cl.snap.ps.clientNum;
 }
 

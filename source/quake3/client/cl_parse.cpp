@@ -207,7 +207,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// get the reliable sequence acknowledge number
 	// NOTE: now sent with all server to client messages
-	//clc.reliableAcknowledge = msg->ReadLong();
+	//clc.q3_reliableAcknowledge = msg->ReadLong();
 
 	// read in the new snapshot to a temporary buffer
 	// we will only copy to cl.snap if it is valid

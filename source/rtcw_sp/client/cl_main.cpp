@@ -86,7 +86,6 @@ Cvar  *cl_debugTranslation;
 char cl_cdkey[34] = "                                ";
 
 clientActive_t cl;
-clientConnection_t clc;
 vm_t                *cgvm;
 
 // Structure containing functions exported from refresh DLL
@@ -162,12 +161,12 @@ void CL_AddReliableCommand( const char *cmd ) {
 //	if(cl.cameraMode)
 //		Com_Printf ("cmd: %s\n", cmd);
 
-	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS_WS ) {
+	if ( clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_WS ) {
 		Com_Error( ERR_DROP, "Client command overflow" );
 	}
-	clc.reliableSequence++;
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
-	String::NCpyZ( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
+	clc.q3_reliableSequence++;
+	index = clc.q3_reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
+	String::NCpyZ( clc.q3_reliableCommands[ index ], cmd, sizeof( clc.q3_reliableCommands[ index ] ) );
 }
 
 /*
@@ -178,14 +177,14 @@ CL_ChangeReliableCommand
 void CL_ChangeReliableCommand( void ) {
 	int r, index, l;
 
-	r = clc.reliableSequence - ( random() * 5 );
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
-	l = String::Length( clc.reliableCommands[ index ] );
+	r = clc.q3_reliableSequence - ( random() * 5 );
+	index = clc.q3_reliableSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 );
+	l = String::Length( clc.q3_reliableCommands[ index ] );
 	if ( l >= MAX_STRING_CHARS - 1 ) {
 		l = MAX_STRING_CHARS - 2;
 	}
-	clc.reliableCommands[ index ][ l ] = '\n';
-	clc.reliableCommands[ index ][ l + 1 ] = '\0';
+	clc.q3_reliableCommands[ index ][ l ] = '\n';
+	clc.q3_reliableCommands[ index ][ l + 1 ] = '\0';
 }
 
 /*
@@ -207,7 +206,7 @@ void CL_WriteDemoMessage( QMsg *msg, int headerBytes ) {
 	int len, swlen;
 
 	// write the packet sequence
-	len = clc.serverMessageSequence;
+	len = clc.q3_serverMessageSequence;
 	swlen = LittleLong( len );
 	FS_Write( &swlen, 4, clc.demofile );
 
@@ -344,20 +343,20 @@ void CL_Record_f( void ) {
 		return;
 	}
 	clc.demorecording = qtrue;
-	String::NCpyZ( clc.demoName, demoName, sizeof( clc.demoName ) );
+	String::NCpyZ( clc.q3_demoName, demoName, sizeof( clc.q3_demoName ) );
 
 	// don't start saving messages until a non-delta compressed message is received
-	clc.demowaiting = qtrue;
+	clc.q3_demowaiting = qtrue;
 
 	// write out the gamestate message
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
 	buf.Bitstream();
 
 	// NOTE, MRE: all server->client messages now acknowledge
-	buf.WriteLong( clc.reliableSequence );
+	buf.WriteLong( clc.q3_reliableSequence );
 
 	buf.WriteByte( q3svc_gamestate );
-	buf.WriteLong( clc.serverCommandSequence );
+	buf.WriteLong( clc.q3_serverCommandSequence );
 
 	// configstrings
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
@@ -386,15 +385,15 @@ void CL_Record_f( void ) {
 	// finished writing the gamestate stuff
 
 	// write the client num
-	buf.WriteLong( clc.clientNum );
+	buf.WriteLong( clc.q3_clientNum );
 	// write the checksum feed
-	buf.WriteLong( clc.checksumFeed );
+	buf.WriteLong( clc.q3_checksumFeed );
 
 	// finished writing the client packet
 	buf.WriteByte( q3svc_EOF );
 
 	// write it to the demo file
-	len = LittleLong( clc.serverMessageSequence - 1 );
+	len = LittleLong( clc.q3_serverMessageSequence - 1 );
 	FS_Write( &len, 4, clc.demofile );
 
 	len = LittleLong( buf.cursize );
@@ -421,10 +420,10 @@ void CL_DemoCompleted( void ) {
 	if ( cl_timedemo && cl_timedemo->integer ) {
 		int time;
 
-		time = Sys_Milliseconds() - clc.timeDemoStart;
+		time = Sys_Milliseconds() - clc.q3_timeDemoStart;
 		if ( time > 0 ) {
-			Com_Printf( "%i frames, %3.1f seconds: %3.1f fps\n", clc.timeDemoFrames,
-						time / 1000.0, clc.timeDemoFrames * 1000.0 / time );
+			Com_Printf( "%i frames, %3.1f seconds: %3.1f fps\n", clc.q3_timeDemoFrames,
+						time / 1000.0, clc.q3_timeDemoFrames * 1000.0 / time );
 		}
 	}
 
@@ -454,7 +453,7 @@ void CL_ReadDemoMessage( void ) {
 		CL_DemoCompleted();
 		return;
 	}
-	clc.serverMessageSequence = LittleLong( s );
+	clc.q3_serverMessageSequence = LittleLong( s );
 
 	// init the message
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
@@ -480,7 +479,7 @@ void CL_ReadDemoMessage( void ) {
 		return;
 	}
 
-	clc.lastPacketTime = cls.realtime;
+	clc.q3_lastPacketTime = cls.realtime;
 	buf.readcount = 0;
 	CL_ParseServerMessage( &buf );
 }
@@ -525,7 +524,7 @@ void CL_PlayDemo_f( void ) {
 		Com_Error( ERR_DROP, "couldn't open %s", name );
 		return;
 	}
-	String::NCpyZ( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
+	String::NCpyZ( clc.q3_demoName, Cmd_Argv( 1 ), sizeof( clc.q3_demoName ) );
 
 	Con_Close();
 
@@ -539,7 +538,7 @@ void CL_PlayDemo_f( void ) {
 	}
 	// don't get the first snapshot this frame, to prevent the long
 	// time from the gamestate load from messing causing a time skip
-	clc.firstDemoFrameSkipped = qfalse;
+	clc.q3_firstDemoFrameSkipped = qfalse;
 }
 
 
@@ -660,9 +659,9 @@ void CL_MapLoading( void ) {
 	if ( cls.state >= CA_CONNECTED && !String::ICmp( cls.servername, "localhost" ) ) {
 		cls.state = CA_CONNECTED;       // so the connect screen is drawn
 		memset( cls.q3_updateInfoString, 0, sizeof( cls.q3_updateInfoString ) );
-		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
+		memset( clc.q3_serverMessage, 0, sizeof( clc.q3_serverMessage ) );
 		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
-		clc.lastPacketSentTime = -9999;
+		clc.q3_lastPacketSentTime = -9999;
 		SCR_UpdateScreen();
 	} else {
 		// clear nextmap so the cinematic shutdown doesn't execute it
@@ -672,8 +671,8 @@ void CL_MapLoading( void ) {
 		cls.state = CA_CHALLENGING;     // so the connect screen is drawn
 		in_keyCatchers = 0;
 		SCR_UpdateScreen();
-		clc.connectTime = -RETRANSMIT_TIMEOUT;
-		SOCK_StringToAdr( cls.servername, &clc.serverAddress, PORT_SERVER );
+		clc.q3_connectTime = -RETRANSMIT_TIMEOUT;
+		SOCK_StringToAdr( cls.servername, &clc.q3_serverAddress, PORT_SERVER );
 		// we don't need a challenge on the localhost
 
 		CL_CheckForResend();
@@ -1025,7 +1024,7 @@ void CL_Connect_f( void ) {
 	CL_RequestMotd();
 
 	// clear any previous "server full" type messages
-	clc.serverMessage[0] = 0;
+	clc.q3_serverMessage[0] = 0;
 
 	server = Cmd_Argv( 1 );
 
@@ -1047,30 +1046,30 @@ void CL_Connect_f( void ) {
 
 	String::NCpyZ( cls.servername, server, sizeof( cls.servername ) );
 
-	if ( !SOCK_StringToAdr( cls.servername, &clc.serverAddress, PORT_SERVER ) ) {
+	if ( !SOCK_StringToAdr( cls.servername, &clc.q3_serverAddress, PORT_SERVER ) ) {
 		Com_Printf( "Bad server address\n" );
 		cls.state = CA_DISCONNECTED;
 		return;
 	}
-	if ( clc.serverAddress.port == 0 ) {
-		clc.serverAddress.port = BigShort( PORT_SERVER );
+	if ( clc.q3_serverAddress.port == 0 ) {
+		clc.q3_serverAddress.port = BigShort( PORT_SERVER );
 	}
 	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
-				clc.serverAddress.ip[0], clc.serverAddress.ip[1],
-				clc.serverAddress.ip[2], clc.serverAddress.ip[3],
-				BigShort( clc.serverAddress.port ) );
+				clc.q3_serverAddress.ip[0], clc.q3_serverAddress.ip[1],
+				clc.q3_serverAddress.ip[2], clc.q3_serverAddress.ip[3],
+				BigShort( clc.q3_serverAddress.port ) );
 
 	// if we aren't playing on a lan, we need to authenticate
 	// with the cd key
-	if ( SOCK_IsLocalAddress( clc.serverAddress ) ) {
+	if ( SOCK_IsLocalAddress( clc.q3_serverAddress ) ) {
 		cls.state = CA_CHALLENGING;
 	} else {
 		cls.state = CA_CONNECTING;
 	}
 
 	in_keyCatchers = 0;
-	clc.connectTime = -99999;   // CL_CheckForResend() will fire immediately
-	clc.connectPacketCount = 0;
+	clc.q3_connectTime = -99999;   // CL_CheckForResend() will fire immediately
+	clc.q3_connectPacketCount = 0;
 
 	// server connection string
 	Cvar_Set( "cl_currentServerAddress", server );
@@ -1193,7 +1192,7 @@ void CL_Vid_Restart_f( void ) {
 	// clear pak references
 	FS_ClearPakReferences( FS_UI_REF | FS_CGAME_REF );
 	// reinitialize the filesystem if the game directory or checksum has changed
-	FS_ConditionalRestart( clc.checksumFeed );
+	FS_ConditionalRestart( clc.q3_checksumFeed );
 
 	S_BeginRegistration();  // all sound handles are now invalid
 
@@ -1327,7 +1326,7 @@ void CL_DownloadsComplete( void ) {
 	if ( clc.downloadRestart ) {
 		clc.downloadRestart = qfalse;
 
-		FS_Restart( clc.checksumFeed ); // We possibly downloaded a pak, restart the file system to load it
+		FS_Restart( clc.q3_checksumFeed ); // We possibly downloaded a pak, restart the file system to load it
 
 		// inform the server so we get new gamestate info
 		CL_AddReliableCommand( "donedl" );
@@ -1495,21 +1494,21 @@ void CL_CheckForResend( void ) {
 		return;
 	}
 
-	if ( cls.realtime - clc.connectTime < RETRANSMIT_TIMEOUT ) {
+	if ( cls.realtime - clc.q3_connectTime < RETRANSMIT_TIMEOUT ) {
 		return;
 	}
 
-	clc.connectTime = cls.realtime; // for retransmit requests
-	clc.connectPacketCount++;
+	clc.q3_connectTime = cls.realtime; // for retransmit requests
+	clc.q3_connectPacketCount++;
 
 
 	switch ( cls.state ) {
 	case CA_CONNECTING:
 		// requesting a challenge
-		if ( !SOCK_IsLANAddress( clc.serverAddress ) ) {
+		if ( !SOCK_IsLANAddress( clc.q3_serverAddress ) ) {
 			CL_RequestAuthorization();
 		}
-		NET_OutOfBandPrint( NS_CLIENT, clc.serverAddress, "getchallenge" );
+		NET_OutOfBandPrint( NS_CLIENT, clc.q3_serverAddress, "getchallenge" );
 		break;
 
 	case CA_CHALLENGING:
@@ -1519,8 +1518,8 @@ void CL_CheckForResend( void ) {
 		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING_Q3 ), sizeof( info ) );
 		Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
 		Info_SetValueForKey( info, "qport", va( "%i", port ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), MAX_INFO_STRING_Q3 );
-		NET_OutOfBandPrint( NS_CLIENT, clc.serverAddress, "connect \"%s\"", info );
+		Info_SetValueForKey( info, "challenge", va( "%i", clc.q3_challenge ), MAX_INFO_STRING_Q3 );
+		NET_OutOfBandPrint( NS_CLIENT, clc.q3_serverAddress, "connect \"%s\"", info );
 		// the most current userinfo has been sent, so watch for any
 		// newer changes to userinfo variables
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
@@ -1554,7 +1553,7 @@ void CL_DisconnectPacket( netadr_t from ) {
 
 	// if we have received packets within three seconds, ignore it
 	// (it might be a malicious spoof)
-	if ( cls.realtime - clc.lastPacketTime < 3000 ) {
+	if ( cls.realtime - clc.q3_lastPacketTime < 3000 ) {
 		return;
 	}
 
@@ -1764,14 +1763,14 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
 		} else {
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = String::Atoi( Cmd_Argv( 1 ) );
+			clc.q3_challenge = String::Atoi( Cmd_Argv( 1 ) );
 			cls.state = CA_CHALLENGING;
-			clc.connectPacketCount = 0;
-			clc.connectTime = -99999;
+			clc.q3_connectPacketCount = 0;
+			clc.q3_connectTime = -99999;
 
 			// take this address as the new server address.  This allows
 			// a server proxy to hand off connections to multiple servers
-			clc.serverAddress = from;
+			clc.q3_serverAddress = from;
 		}
 		return;
 	}
@@ -1786,15 +1785,15 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 			Com_Printf( "connectResponse packet while not connecting.  Ignored.\n" );
 			return;
 		}
-		if ( !SOCK_CompareBaseAdr( from, clc.serverAddress ) ) {
+		if ( !SOCK_CompareBaseAdr( from, clc.q3_serverAddress ) ) {
 			Com_Printf( "connectResponse from a different address.  Ignored.\n" );
 			Com_Printf( "%s should have been %s\n", SOCK_AdrToString( from ),
-						SOCK_AdrToString( clc.serverAddress ) );
+						SOCK_AdrToString( clc.q3_serverAddress ) );
 			return;
 		}
 		Netchan_Setup( NS_CLIENT, &clc.netchan, from, Cvar_VariableValue( "net_qport" ) );
 		cls.state = CA_CONNECTED;
-		clc.lastPacketSentTime = -9999;     // send first packet immediately
+		clc.q3_lastPacketSentTime = -9999;     // send first packet immediately
 		return;
 	}
 
@@ -1838,7 +1837,7 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 	// echo request from server
 	if ( !String::ICmp( c, "print" ) ) {
 		s = msg->ReadString();
-		String::NCpyZ( clc.serverMessage, s, sizeof( clc.serverMessage ) );
+		String::NCpyZ( clc.q3_serverMessage, s, sizeof( clc.q3_serverMessage ) );
 		Com_Printf( "%s", s );
 		return;
 	}
@@ -1863,7 +1862,7 @@ A packet has arrived from the main event loop
 void CL_PacketEvent( netadr_t from, QMsg *msg ) {
 	int headerBytes;
 
-	clc.lastPacketTime = cls.realtime;
+	clc.q3_lastPacketTime = cls.realtime;
 
 	if ( msg->cursize >= 4 && *(int *)msg->_data == -1 ) {
 		CL_ConnectionlessPacket( from, msg );
@@ -1899,16 +1898,16 @@ void CL_PacketEvent( netadr_t from, QMsg *msg ) {
 	// track the last message received so it can be returned in
 	// client messages, allowing the server to detect a dropped
 	// gamestate
-	clc.serverMessageSequence = LittleLong( *(int *)msg->_data );
+	clc.q3_serverMessageSequence = LittleLong( *(int *)msg->_data );
 
-	clc.lastPacketTime = cls.realtime;
+	clc.q3_lastPacketTime = cls.realtime;
 	CL_ParseServerMessage( msg );
 
 	//
 	// we don't know if it is ok to save a demo message until
 	// after we have parsed the frame
 	//
-	if ( clc.demorecording && !clc.demowaiting ) {
+	if ( clc.demorecording && !clc.q3_demowaiting ) {
 		CL_WriteDemoMessage( msg, headerBytes );
 	}
 }
@@ -1925,7 +1924,7 @@ void CL_CheckTimeout( void ) {
 	//
 	if ( ( !cl_paused->integer || !sv_paused->integer )
 		 && cls.state >= CA_CONNECTED && cls.state != CA_CINEMATIC
-		 && cls.realtime - clc.lastPacketTime > cl_timeout->value * 1000 ) {
+		 && cls.realtime - clc.q3_lastPacketTime > cl_timeout->value * 1000 ) {
 		if ( ++cl.timeoutcount > 5 ) {    // timeoutcount saves debugger
 			Com_Printf( "\nServer connection timed out.\n" );
 			CL_Disconnect( qtrue );

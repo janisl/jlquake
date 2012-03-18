@@ -1498,7 +1498,7 @@ void CL_CheckForResend( void ) {
     data[8] = '"';
 
 		for(i=0;i<String::Length(info);i++) {
-			data[9+i] = info[i];	// + (clc.challenge)&0x3;
+			data[9+i] = info[i];	// + (clc.q3_challenge)&0x3;
 		}
     data[9+i] = '"';
 		data[10+i] = 0;

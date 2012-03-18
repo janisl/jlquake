@@ -214,7 +214,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// get the reliable sequence acknowledge number
 	// NOTE: now sent with all server to client messages
-	//clc.reliableAcknowledge = msg->ReadLong();
+	//clc.q3_reliableAcknowledge = msg->ReadLong();
 
 	// read in the new snapshot to a temporary buffer
 	// we will only copy to cl.snap if it is valid
@@ -222,11 +222,11 @@ void CL_ParseSnapshot( QMsg *msg ) {
 
 	// we will have read any new server commands in this
 	// message before we got to q3svc_snapshot
-	newSnap.serverCommandNum = clc.serverCommandSequence;
+	newSnap.serverCommandNum = clc.q3_serverCommandSequence;
 
 	newSnap.serverTime = msg->ReadLong();
 
-	newSnap.messageNum = clc.serverMessageSequence;
+	newSnap.messageNum = clc.q3_serverMessageSequence;
 
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
@@ -243,7 +243,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	if ( newSnap.deltaNum <= 0 ) {
 		newSnap.valid = qtrue;      // uncompressed frame
 		old = NULL;
-		clc.demowaiting = qfalse;   // we can start recording now
+		clc.q3_demowaiting = qfalse;   // we can start recording now
 	} else {
 		old = &cl.snapshots[newSnap.deltaNum & PACKET_MASK_Q3];
 		if ( !old->valid ) {
@@ -314,7 +314,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 					cl.snap.deltaNum, cl.snap.ping );
 	}
 
-	cl.newSnapshots = qtrue;
+	cl.q3_newSnapshots = qtrue;
 }
 
 
@@ -338,7 +338,7 @@ void CL_SystemInfoChanged( void ) {
 	char value[BIG_INFO_VALUE];
 
 	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SYSTEMINFO ];
-	cl.serverId = String::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
+	cl.q3_serverId = String::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
 	// don't set any vars when playing a demo
 	if ( clc.demoplaying ) {
@@ -388,13 +388,13 @@ void CL_ParseGamestate( QMsg *msg ) {
 
 	Con_Close();
 
-	clc.connectPacketCount = 0;
+	clc.q3_connectPacketCount = 0;
 
 	// wipe local client state
 	CL_ClearState();
 
 	// a gamestate always marks a server command sequence
-	clc.serverCommandSequence = msg->ReadLong();
+	clc.q3_serverCommandSequence = msg->ReadLong();
 
 	// parse all the configstrings and baselines
 	cl.gameState.dataCount = 1; // leave a 0 at the beginning for uninitialized configstrings
@@ -436,15 +436,15 @@ void CL_ParseGamestate( QMsg *msg ) {
 		}
 	}
 
-	clc.clientNum = msg->ReadLong();
+	clc.q3_clientNum = msg->ReadLong();
 	// read the checksum feed
-	clc.checksumFeed = msg->ReadLong();
+	clc.q3_checksumFeed = msg->ReadLong();
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
 	// reinitialize the filesystem if the game directory has changed
-	if ( FS_ConditionalRestart( clc.checksumFeed ) ) {
+	if ( FS_ConditionalRestart( clc.q3_checksumFeed ) ) {
 		// don't set to true because we yet have to start downloading
 		// enabling this can cause double loading of a map when connecting to
 		// a server which has a different game directory set
@@ -570,13 +570,13 @@ void CL_ParseCommandString( QMsg *msg ) {
 	s = msg->ReadString();
 
 	// see if we have already executed stored it off
-	if ( clc.serverCommandSequence >= seq ) {
+	if ( clc.q3_serverCommandSequence >= seq ) {
 		return;
 	}
-	clc.serverCommandSequence = seq;
+	clc.q3_serverCommandSequence = seq;
 
 	index = seq & ( MAX_RELIABLE_COMMANDS_WS - 1 );
-	String::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
+	String::NCpyZ( clc.q3_serverCommands[ index ], s, sizeof( clc.q3_serverCommands[ index ] ) );
 }
 
 
@@ -600,10 +600,10 @@ void CL_ParseServerMessage( QMsg *msg ) {
 	msg->Bitstream();
 
 	// get the reliable sequence acknowledge number
-	clc.reliableAcknowledge = msg->ReadLong();
+	clc.q3_reliableAcknowledge = msg->ReadLong();
 	//
-	if ( clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS_WS ) {
-		clc.reliableAcknowledge = clc.reliableSequence;
+	if ( clc.q3_reliableAcknowledge < clc.q3_reliableSequence - MAX_RELIABLE_COMMANDS_WS ) {
+		clc.q3_reliableAcknowledge = clc.q3_reliableSequence;
 	}
 
 	//

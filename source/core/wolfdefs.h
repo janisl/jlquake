@@ -811,6 +811,7 @@ struct etentityState_t
 #define MAX_RELIABLE_COMMANDS_WS   256 // bigger!
 #define MAX_RELIABLE_COMMANDS_WM   256 // bigger!
 #define MAX_RELIABLE_COMMANDS_ET   256 // bigger!
+#define BIGGEST_MAX_RELIABLE_COMMANDS   256 // bigger!
 
 #define MAX_NAME_LENGTH_WS     32      // max length of a client name
 #define MAX_NAME_LENGTH_WM     32      // max length of a client name
@@ -821,3 +822,5 @@ struct etentityState_t
 #define WSBUTTON_ANY          128         // any key whatsoever
 #define WMBUTTON_ANY          128         // any key whatsoever
 #define ETBUTTON_ANY          128         // any key whatsoever
+
+#define MAX_BINARY_MESSAGE_ET  32768   // max length of binary message
