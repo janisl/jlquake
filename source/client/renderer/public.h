@@ -34,7 +34,8 @@ typedef int qhandle_t;
 enum textureCompression_t
 {
 	TC_NONE,
-	TC_S3TC
+	TC_S3TC,
+	TC_EXT_COMP_S3TC
 };
 
 enum glDriverType_t
@@ -219,6 +220,24 @@ struct refEntity_t
 	float syncBase;
 };
 
+struct glfog_t
+{
+	int mode;                   // GL_LINEAR, GL_EXP
+	int hint;                   // GL_DONT_CARE
+	int startTime;              // in ms
+	int finishTime;             // in ms
+	float color[4];
+	float start;                // near
+	float end;                  // far
+	bool useEndForClip;     // use the 'far' value for the far clipping plane
+	float density;              // 0.0-1.0
+	bool registered;        // has this fog been set up?
+	bool drawsky;           // draw skybox
+	bool clearscreen;       // clear the GL color buffer
+
+	int dirty;
+};
+
 struct refdef_t
 {
 	int			x;
@@ -240,6 +259,9 @@ struct refdef_t
 
 	// text messages for deform text shaders
 	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+
+	//	needed to pass fog infos into the portal sky scene
+	glfog_t glfog;
 };
 
 struct glconfig_t
@@ -260,6 +282,18 @@ struct glconfig_t
 	qboolean				deviceSupportsGamma;
 	textureCompression_t	textureCompression;
 	qboolean				textureEnvAddAvailable;
+	bool anisotropicAvailable;                  //----(SA)	added
+	bool textureFilterAnisotropicAvailable;                 //DAJ
+	float maxAnisotropy;                            //----(SA)	added
+
+	// vendor-specific support
+	// NVidia
+	bool NVFogAvailable;                        //----(SA)	added
+	int NVFogMode;                                  //----(SA)	added
+	// ATI
+	int ATIMaxTruformTess;                          // for truform support
+	int ATINormalMode;                          // for truform support
+	int ATIPointMode;                           // for truform support
 
 	int						vidWidth, vidHeight;
 	// aspect is the screen's physical width / height, which may be different
