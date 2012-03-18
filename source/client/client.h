@@ -31,6 +31,7 @@
 #include "hexen2clientdefs.h"
 #include "quake2clientdefs.h"
 #include "quake3clientdefs.h"
+#include "wolfclientdefs.h"
 #include "game/particles.h"
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"

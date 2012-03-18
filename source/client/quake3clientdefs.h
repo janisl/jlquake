@@ -22,7 +22,13 @@
 // needs to be larger than PACKET_BACKUP_Q3
 
 #define MAX_GLOBAL_SERVERS_Q3				4096
+#define MAX_GLOBAL_SERVERS_WS				2048
+#define MAX_GLOBAL_SERVERS_WM				2048
+#define MAX_GLOBAL_SERVERS_ET				4096
+#define BIGGEST_MAX_GLOBAL_SERVERS			4096
 #define MAX_OTHER_SERVERS_Q3				128
+
+#define MAX_AUTOUPDATE_SERVERS  5
 
 // the parseEntities array must be large enough to hold PACKET_BACKUP_Q3 frames of
 // entities, so that when a delta compressed message arives from the server
@@ -71,9 +77,9 @@ struct q3outPacket_t
 struct q3serverInfo_t
 {
 	netadr_t adr;
-	char hostName[MAX_NAME_LENGTH_Q3];
-	char mapName[MAX_NAME_LENGTH_Q3];
-	char game[MAX_NAME_LENGTH_Q3];
+	char hostName[MAX_NAME_LENGTH_ET];
+	char mapName[MAX_NAME_LENGTH_ET];
+	char game[MAX_NAME_LENGTH_ET];
 	int netType;
 	int gameType;
 	int clients;
@@ -83,6 +89,16 @@ struct q3serverInfo_t
 	int ping;
 	qboolean visible;
 	int punkbuster;
+	int allowAnonymous;
+	int friendlyFire;               // NERVE - SMF
+	int maxlives;                   // NERVE - SMF
+	int tourney;                    // NERVE - SMF
+	int antilag;         // TTimo
+	char gameName[MAX_NAME_LENGTH_ET];         // Arnout
+	int load;
+	int needpass;
+	int weaprestrict;
+	int balancedteams;
 };
 
 struct q3serverAddress_t
