@@ -39,6 +39,7 @@ vm_t *uivm;
 // ydnar: can we put this in a header, pls?
 void Key_GetBindingByString( const char* binding, int* key1, int* key2 );
 
+void CL_GetGlconfig( etglconfig_t *config );
 
 /*
 ====================
@@ -641,15 +642,6 @@ qboolean LAN_ServerIsInFavoriteList( int source, int n ) {
 
 /*
 ====================
-CL_GetGlConfig
-====================
-*/
-static void CL_GetGlconfig( glconfig_t *config ) {
-	*config = cls.glconfig;
-}
-
-/*
-====================
 GetClipboardData
 ====================
 */
@@ -1020,7 +1012,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_GETGLCONFIG:
-		CL_GetGlconfig( (glconfig_t*)VMA( 1 ) );
+		CL_GetGlconfig( (etglconfig_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_GETCONFIGSTRING:

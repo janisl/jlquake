@@ -68,6 +68,52 @@ typedef enum cgameEvent_e {
 	CGAME_EVENT_FIRETEAMMSG,
 } cgameEvent_t;
 
+struct etglconfig_t
+{
+	char renderer_string[MAX_STRING_CHARS];
+	char vendor_string[MAX_STRING_CHARS];
+	char version_string[MAX_STRING_CHARS];
+	char extensions_string[MAX_STRING_CHARS * 4];                  // TTimo - bumping, some cards have a big extension string
+
+	int maxTextureSize;                             // queried from GL
+	int maxActiveTextures;                          // multitexture ability
+
+	int colorBits, depthBits, stencilBits;
+
+	glDriverType_t driverType;
+	glHardwareType_t hardwareType;
+
+	qboolean deviceSupportsGamma;
+	textureCompression_t textureCompression;
+	qboolean textureEnvAddAvailable;
+	qboolean anisotropicAvailable;                  //----(SA)	added
+	float maxAnisotropy;                            //----(SA)	added
+
+	// vendor-specific support
+	// NVidia
+	qboolean NVFogAvailable;                        //----(SA)	added
+	int NVFogMode;                                  //----(SA)	added
+	// ATI
+	int ATIMaxTruformTess;                          // for truform support
+	int ATINormalMode;                          // for truform support
+	int ATIPointMode;                           // for truform support
+
+	int vidWidth, vidHeight;
+	// aspect is the screen's physical width / height, which may be different
+	// than scrWidth / scrHeight if the pixels are non-square
+	// normal screens should be 4/3, but wide aspect monitors may be 16/9
+	float windowAspect;
+
+	int displayFrequency;
+
+	// synonymous with "does rendering consume the entire screen?", therefore
+	// a Voodoo or Voodoo2 will have this set to TRUE, as will a Win32 ICD that
+	// used CDS.
+	qboolean isFullscreen;
+	qboolean stereoEnabled;
+	qboolean smpActive;                     // dual processor
+};
+
 /*
 ==================================================================
 

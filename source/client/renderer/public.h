@@ -47,40 +47,6 @@ enum glHardwareType_t
 	GLHW_GENERIC,			// where everthing works the way it should
 };
 
-struct glconfig_t
-{
-	char					renderer_string[MAX_STRING_CHARS];
-	char					vendor_string[MAX_STRING_CHARS];
-	char					version_string[MAX_STRING_CHARS];
-	char					extensions_string[BIG_INFO_STRING];
-
-	int						maxTextureSize;			// queried from GL
-	int						maxActiveTextures;		// multitexture ability
-
-	int						colorBits, depthBits, stencilBits;
-
-	glDriverType_t			driverType;
-	glHardwareType_t		hardwareType;
-
-	qboolean				deviceSupportsGamma;
-	textureCompression_t	textureCompression;
-	qboolean				textureEnvAddAvailable;
-
-	int						vidWidth, vidHeight;
-	// aspect is the screen's physical width / height, which may be different
-	// than scrWidth / scrHeight if the pixels are non-square
-	// normal screens should be 4/3, but wide aspect monitors may be 16/9
-	float					windowAspect;
-
-	int						displayFrequency;
-
-	// synonymous with "does rendering consume the entire screen?", therefore
-	// a Win32 ICD that used CDS will have this set to TRUE.
-	qboolean				isFullscreen;
-	qboolean				stereoEnabled;
-	qboolean				smpActive;		// dual processor
-};
-
 enum refEntityType_t
 {
 	RT_MODEL,
@@ -273,6 +239,40 @@ enum stereoFrame_t
 #define MAX_LIGHTSTYLES			256
 
 struct image_t;
+
+struct glconfig_t
+{
+	char					renderer_string[MAX_STRING_CHARS];
+	char					vendor_string[MAX_STRING_CHARS];
+	char					version_string[MAX_STRING_CHARS];
+	char					extensions_string[BIG_INFO_STRING];
+
+	int						maxTextureSize;			// queried from GL
+	int						maxActiveTextures;		// multitexture ability
+
+	int						colorBits, depthBits, stencilBits;
+
+	glDriverType_t			driverType;
+	glHardwareType_t		hardwareType;
+
+	qboolean				deviceSupportsGamma;
+	textureCompression_t	textureCompression;
+	qboolean				textureEnvAddAvailable;
+
+	int						vidWidth, vidHeight;
+	// aspect is the screen's physical width / height, which may be different
+	// than scrWidth / scrHeight if the pixels are non-square
+	// normal screens should be 4/3, but wide aspect monitors may be 16/9
+	float					windowAspect;
+
+	int						displayFrequency;
+
+	// synonymous with "does rendering consume the entire screen?", therefore
+	// a Win32 ICD that used CDS will have this set to TRUE.
+	qboolean				isFullscreen;
+	qboolean				stereoEnabled;
+	qboolean				smpActive;		// dual processor
+};
 
 void R_BeginRegistration(glconfig_t* glconfig);
 void R_EndRegistration();

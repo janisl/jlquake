@@ -28,6 +28,8 @@ extern	botlib_export_t	*botlib_export;
 
 vm_t *uivm;
 
+void CL_GetGlconfig( q3glconfig_t *glconfig );
+
 /*
 ====================
 GetClientState
@@ -609,15 +611,6 @@ int LAN_GetServerStatus( char *serverAddress, char *serverStatus, int maxLen ) {
 
 /*
 ====================
-CL_GetGlConfig
-====================
-*/
-static void CL_GetGlconfig( glconfig_t *config ) {
-	*config = cls.glconfig;
-}
-
-/*
-====================
 GetClipboardData
 ====================
 */
@@ -942,7 +935,7 @@ qintptr CL_UISystemCalls( qintptr *args ) {
 		return 0;		
 
 	case UI_GETGLCONFIG:
-		CL_GetGlconfig( (glconfig_t*)VMA(1) );
+		CL_GetGlconfig( (q3glconfig_t*)VMA(1) );
 		return 0;
 
 	case UI_GETCONFIGSTRING:

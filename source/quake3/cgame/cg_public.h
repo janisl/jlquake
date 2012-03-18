@@ -55,6 +55,40 @@ enum
 };
 
 
+struct q3glconfig_t
+{
+	char renderer_string[MAX_STRING_CHARS];
+	char vendor_string[MAX_STRING_CHARS];
+	char version_string[MAX_STRING_CHARS];
+	char extensions_string[BIG_INFO_STRING];
+
+	int maxTextureSize;			// queried from GL
+	int maxActiveTextures;		// multitexture ability
+
+	int colorBits, depthBits, stencilBits;
+
+	int driverType;
+	int hardwareType;
+
+	qboolean deviceSupportsGamma;
+	int textureCompression;
+	qboolean textureEnvAddAvailable;
+
+	int vidWidth, vidHeight;
+	// aspect is the screen's physical width / height, which may be different
+	// than scrWidth / scrHeight if the pixels are non-square
+	// normal screens should be 4/3, but wide aspect monitors may be 16/9
+	float windowAspect;
+
+	int displayFrequency;
+
+	// synonymous with "does rendering consume the entire screen?", therefore
+	// a Win32 ICD that used CDS will have this set to TRUE.
+	qboolean isFullscreen;
+	qboolean stereoEnabled;
+	qboolean smpActive;		// dual processor
+};
+
 /*
 ==================================================================
 

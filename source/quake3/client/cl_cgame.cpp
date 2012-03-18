@@ -45,8 +45,28 @@ void CL_GetGameState( q3gameState_t *gs ) {
 CL_GetGlconfig
 ====================
 */
-void CL_GetGlconfig( glconfig_t *glconfig ) {
-	*glconfig = cls.glconfig;
+void CL_GetGlconfig( q3glconfig_t *glconfig ) {
+	String::NCpyZ(glconfig->renderer_string, cls.glconfig.renderer_string, sizeof(glconfig->renderer_string));
+	String::NCpyZ(glconfig->vendor_string, cls.glconfig.vendor_string, sizeof(glconfig->vendor_string));
+	String::NCpyZ(glconfig->version_string, cls.glconfig.version_string, sizeof(glconfig->version_string));
+	String::NCpyZ(glconfig->extensions_string, cls.glconfig.extensions_string, sizeof(glconfig->extensions_string));
+	glconfig->maxTextureSize = cls.glconfig.maxTextureSize;
+	glconfig->maxActiveTextures = cls.glconfig.maxActiveTextures;
+	glconfig->colorBits = cls.glconfig.colorBits;
+	glconfig->depthBits = cls.glconfig.depthBits;
+	glconfig->stencilBits = cls.glconfig.stencilBits;
+	glconfig->driverType = cls.glconfig.driverType;
+	glconfig->hardwareType = cls.glconfig.hardwareType;
+	glconfig->deviceSupportsGamma = cls.glconfig.deviceSupportsGamma;
+	glconfig->textureCompression = cls.glconfig.textureCompression;
+	glconfig->textureEnvAddAvailable = cls.glconfig.textureEnvAddAvailable;
+	glconfig->vidWidth = cls.glconfig.vidWidth;
+	glconfig->vidHeight = cls.glconfig.vidHeight;
+	glconfig->windowAspect = cls.glconfig.windowAspect;
+	glconfig->displayFrequency = cls.glconfig.displayFrequency;
+	glconfig->isFullscreen = cls.glconfig.isFullscreen;
+	glconfig->stereoEnabled = cls.glconfig.stereoEnabled;
+	glconfig->smpActive = cls.glconfig.smpActive;
 }
 
 
@@ -599,7 +619,7 @@ qintptr CL_CgameSystemCalls( qintptr *args ) {
 	case CG_R_LERPTAG:
 		return R_LerpTag( (orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6) );
 	case CG_GETGLCONFIG:
-		CL_GetGlconfig( (glconfig_t*)VMA(1) );
+		CL_GetGlconfig( (q3glconfig_t*)VMA(1) );
 		return 0;
 	case CG_GETGAMESTATE:
 		CL_GetGameState( (q3gameState_t*)VMA(1) );
