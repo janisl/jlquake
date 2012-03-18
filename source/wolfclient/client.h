@@ -78,10 +78,8 @@ struct clientActive_t
 	int mouseIndex;
 	int joystickAxis[MAX_JOYSTICK_AXIS];	// set by joystick events
 
-#if 0
 	//	Not in Quake 3
 	refdef_t refdef;
-#endif
 	//	Normally playernum + 1, but Hexen 2 changes this for camera views.
 	int viewentity;			// cl_entitites[cl.viewentity] = player
 
