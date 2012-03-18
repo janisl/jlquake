@@ -1140,7 +1140,7 @@ static void CL_LinkStaticEntities()
 		rent.hModel = cl.model_draw[pent->state.modelindex];
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;
-		rent.shaderTime = pent->syncbase;
+		rent.syncBase = pent->syncbase;
 		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, 0, pent->state.abslight, pent->state.drawflags);
 		CLH2_HandleCustomSkin(&rent, -1);
 		R_AddRefEntityToScene(&rent);

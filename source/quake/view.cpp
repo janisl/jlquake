@@ -769,7 +769,7 @@ static void CL_AddViewModel()
 	gun.hModel = cl.model_draw[cl.q1_viewent.state.modelindex];
 	CLQ1_SetRefEntAxis(&gun, cl.q1_viewent.state.angles);
 	gun.frame = cl.q1_viewent.state.frame;
-	gun.shaderTime = cl.q1_viewent.syncbase;
+	gun.syncBase = cl.q1_viewent.syncbase;
 	gun.skinNum = cl.q1_viewent.state.skinnum;
 
 	R_AddRefEntityToScene(&gun);

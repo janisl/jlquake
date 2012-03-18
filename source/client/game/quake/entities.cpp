@@ -701,7 +701,7 @@ void CLQ1_LinkStaticEntities()
 		CLQ1_SetRefEntAxis(&rent, pent->state.angles);
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;
-		rent.shaderTime = pent->syncbase;
+		rent.syncBase = pent->syncbase;
 		R_AddRefEntityToScene(&rent);
 	}
 }
@@ -938,7 +938,7 @@ void CLQ1_RelinkEntities()
 		rent.hModel = cl.model_draw[ent->state.modelindex];
 		CLQ1_SetRefEntAxis(&rent, ent->state.angles);
 		rent.frame = ent->state.frame;
-		rent.shaderTime = ent->syncbase;
+		rent.syncBase = ent->syncbase;
 		CLQ1_HandleRefEntColormap(&rent, ent->state.colormap);
 		rent.skinNum = ent->state.skinnum;
 		if (i == cl.viewentity && !chase_active->value)

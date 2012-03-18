@@ -833,7 +833,7 @@ static void CL_AddViewModel()
 	gun.hModel = cl.model_draw[cl.h2_viewent.state.modelindex];
 	gun.frame = cl.h2_viewent.state.frame;
 	gun.skinNum = cl.h2_viewent.state.skinnum;
-	gun.shaderTime = cl.h2_viewent.syncbase;
+	gun.syncBase = cl.h2_viewent.syncbase;
 	CLH2_SetRefEntAxis(&gun, cl.h2_viewent.state.angles, vec3_origin, cl.h2_viewent.state.scale, 0, cl.h2_viewent.state.abslight, cl.h2_viewent.state.drawflags);
 	CLH2_HandleCustomSkin(&gun, -1);
 

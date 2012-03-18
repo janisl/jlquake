@@ -517,7 +517,7 @@ void CL_RelinkEntities (void)
 		VectorCopy(ent->state.origin, rent.origin);
 		rent.hModel = cl.model_draw[ent->state.modelindex];
 		rent.frame = ent->state.frame;
-		rent.shaderTime = ent->syncbase;
+		rent.syncBase = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
 		CLH2_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
 		CLH2_HandleCustomSkin(&rent, i <= cl.qh_maxclients ? i - 1 : -1);
@@ -546,7 +546,7 @@ static void CL_LinkStaticEntities()
 		VectorCopy(pent->state.origin, rent.origin);
 		rent.hModel = cl.model_draw[pent->state.modelindex];
 		rent.frame = pent->state.frame;
-		rent.shaderTime = pent->syncbase;
+		rent.syncBase = pent->syncbase;
 		rent.skinNum = pent->state.skinnum;
 		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, pent->state.colormap, pent->state.abslight, pent->state.drawflags);
 		CLH2_HandleCustomSkin(&rent, -1);

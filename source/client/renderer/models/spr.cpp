@@ -249,7 +249,7 @@ static msprite1frame_t* R_GetSpriteFrame(msprite1_t* psprite, trRefEntity_t* cur
 		int numframes = pspritegroup->numframes;
 		float fullinterval = pintervals[numframes - 1];
 
-		float time = tr.refdef.floatTime + currententity->e.shaderTime;
+		float time = tr.refdef.floatTime + currententity->e.syncBase;
 
 		// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 		// are positive, so we don't have to worry about division by 0
