@@ -168,6 +168,7 @@ void S_Init( void ) {
 	s_doppler = Cvar_Get( "s_doppler", "1", CVAR_ARCHIVE );
 	s_khz = Cvar_Get( "s_khz", "22", CVAR_ARCHIVE );
 	s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
+	s_debugMusic = Cvar_Get( "s_debugMusic", "0", CVAR_TEMP );
 
 	s_mixPreStep = Cvar_Get( "s_mixPreStep", "0.05", CVAR_ARCHIVE );
 	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
