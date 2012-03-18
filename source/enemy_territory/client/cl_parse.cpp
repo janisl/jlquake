@@ -172,13 +172,13 @@ Parses deltas from the given base and adds the resulting entity
 to the current frame
 ==================
 */
-void CL_DeltaEntity( QMsg *msg, clSnapshot_t *frame, int newnum, etentityState_t *old,
+void CL_DeltaEntity( QMsg *msg, etclSnapshot_t *frame, int newnum, etentityState_t *old,
 					 qboolean unchanged ) {
 	etentityState_t   *state;
 
 	// save the parsed entity state into the big circular buffer so
 	// it can be used as the source for a later delta
-	state = &cl.parseEntities[cl.parseEntitiesNum & ( MAX_PARSE_ENTITIES - 1 )];
+	state = &cl.parseEntities[cl.parseEntitiesNum & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 
 	if ( unchanged ) {
 		*state = *old;
@@ -216,7 +216,7 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe ) {
+void CL_ParsePacketEntities( QMsg *msg, etclSnapshot_t *oldframe, etclSnapshot_t *newframe ) {
 	int newnum;
 	etentityState_t   *oldstate;
 	int oldindex, oldnum;
@@ -234,7 +234,7 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 			oldnum = 99999;
 		} else {
 			oldstate = &cl.parseEntities[
-				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 )];
+				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 			oldnum = oldstate->number;
 		}
 	}
@@ -264,7 +264,7 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 				oldnum = 99999;
 			} else {
 				oldstate = &cl.parseEntities[
-					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 )];
+					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 				oldnum = oldstate->number;
 			}
 		}
@@ -281,7 +281,7 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 				oldnum = 99999;
 			} else {
 				oldstate = &cl.parseEntities[
-					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 )];
+					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 				oldnum = oldstate->number;
 			}
 			continue;
@@ -312,7 +312,7 @@ void CL_ParsePacketEntities( QMsg *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 			oldnum = 99999;
 		} else {
 			oldstate = &cl.parseEntities[
-				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 )];
+				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 			oldnum = oldstate->number;
 		}
 	}
@@ -334,8 +334,8 @@ for any reason, no changes to the state will be made at all.
 */
 void CL_ParseSnapshot( QMsg *msg ) {
 	int len;
-	clSnapshot_t    *old;
-	clSnapshot_t newSnap;
+	etclSnapshot_t    *old;
+	etclSnapshot_t newSnap;
 	int deltaNum;
 	int oldMessageNum;
 	int i, packetNum;
@@ -416,7 +416,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			Com_DPrintf( "Delta frame too old.\n" );
-		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES - 128 ) {
+		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 ) {
 			Com_DPrintf( "Delta parseEntitiesNum too old.\n" );
 		} else {
 			newSnap.valid = qtrue;  // valid delta parse
@@ -603,8 +603,8 @@ void CL_ParseGamestate( QMsg *msg ) {
 			s = msg->ReadBigString();
 			len = String::Length( s );
 
-			if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
-				Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
+			if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
+				Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 			}
 
 			// append it to the gameState string buffer

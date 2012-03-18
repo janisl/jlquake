@@ -606,13 +606,6 @@ typedef struct {
 
 #define RESERVED_CONFIGSTRINGS  2   // game can't modify below this, only the system can
 
-#define MAX_GAMESTATE_CHARS 16000
-typedef struct {
-	int stringOffsets[MAX_CONFIGSTRINGS_ET];
-	char stringData[MAX_GAMESTATE_CHARS];
-	int dataCount;
-} gameState_t;
-
 // xkan, 1/10/2003 - adapted from original SP
 typedef enum
 {

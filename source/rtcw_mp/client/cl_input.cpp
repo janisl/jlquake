@@ -717,7 +717,7 @@ void CL_CreateNewCommands( void ) {
 
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
-	cmdNum = cl.q3_cmdNumber & CMD_MASK;
+	cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
 	cl.cmds[cmdNum] = CL_CreateCmd();
 	cmd = &cl.cmds[cmdNum];
 }
@@ -885,7 +885,7 @@ void CL_WritePacket( void ) {
 
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {
-			j = ( cl.q3_cmdNumber - count + i + 1 ) & CMD_MASK;
+			j = ( cl.q3_cmdNumber - count + i + 1 ) & CMD_MASK_Q3;
 			cmd = &cl.cmds[j];
 			MSG_WriteDeltaUsercmdKey( &buf, key, oldcmd, cmd );
 			oldcmd = cmd;

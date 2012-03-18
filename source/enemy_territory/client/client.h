@@ -43,28 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 #define LIMBOCHAT_WIDTH     140     // NERVE - SMF - NOTE TTimo buffer size indicator, not related to screen bbox
 #define LIMBOCHAT_HEIGHT    7       // NERVE - SMF
 
-// snapshots are a view of the server at a given time
-typedef struct {
-	qboolean valid;                 // cleared if delta parsing was invalid
-	int snapFlags;                  // rate delayed and dropped commands
-
-	int serverTime;                 // server time the message is valid for (in msec)
-
-	int messageNum;                 // copied from netchan->incoming_sequence
-	int deltaNum;                   // messageNum the delta is from
-	int ping;                       // time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
-
-	int cmdNum;                     // the next cmdNum the server is expecting
-	etplayerState_t ps;                       // complete information about the current player at this time
-
-	int numEntities;                        // all of the entities that need to be presented
-	int parseEntitiesNum;                   // at the time of this snapshot
-
-	int serverCommandNum;                   // execute all commands up to this before
-											// making the snapshot current
-} clSnapshot_t;
-
 // Arnout: for double tapping
 typedef struct {
 	int pressedTime[DT_NUM];
@@ -82,24 +60,13 @@ new gamestate_t, potentially several times during an established connection
 =============================================================================
 */
 
-typedef struct {
-	int p_cmdNumber;            // cl.cmdNumber when packet was sent
-	int p_serverTime;           // usercmd->serverTime when packet was sent
-	int p_realtime;             // cls.realtime when packet was sent
-} outPacket_t;
-
-// the parseEntities array must be large enough to hold PACKET_BACKUP_Q3 frames of
-// entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original
-#define MAX_PARSE_ENTITIES  2048
-
 extern int g_console_field_width;
 
 struct clientActive_t : clientActive_t_
 {
-	clSnapshot_t snap;              // latest received from server
+	etclSnapshot_t snap;              // latest received from server
 
-	gameState_t gameState;          // configstrings
+	etgameState_t gameState;          // configstrings
 
 	int cgameFlags;                     // flags that can be set by the gamecode
 	int cgameMpIdentClient;             // NERVE - SMF
@@ -107,19 +74,19 @@ struct clientActive_t : clientActive_t_
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
-	etusercmd_t cmds[CMD_BACKUP];     // each mesage will send several old cmds
+	etusercmd_t cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
 
 	// Arnout: double tapping
 	doubleTap_t doubleTap;
 
-	outPacket_t outPackets[PACKET_BACKUP_Q3];  // information about each packet we have sent out
+	q3outPacket_t outPackets[PACKET_BACKUP_Q3];  // information about each packet we have sent out
 
 	// big stuff at end of structure so most offsets are 15 bits or less
-	clSnapshot_t snapshots[PACKET_BACKUP_Q3];
+	etclSnapshot_t snapshots[PACKET_BACKUP_Q3];
 
 	etentityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
 
-	etentityState_t parseEntities[MAX_PARSE_ENTITIES];
+	etentityState_t parseEntities[MAX_PARSE_ENTITIES_Q3];
 
 	// NERVE - SMF
 	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH strings (140),

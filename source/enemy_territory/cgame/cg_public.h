@@ -26,15 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-
-
-#define CMD_BACKUP          64
-#define CMD_MASK            ( CMD_BACKUP - 1 )
-// allow a lot of command backups for very fast systems
-// multiple commands may be combined into a single packet, so this
-// needs to be larger than PACKET_BACKUP_Q3
-
-
 #define MAX_ENTITIES_IN_SNAPSHOT    512
 
 // snapshots are a view of the server at a given time

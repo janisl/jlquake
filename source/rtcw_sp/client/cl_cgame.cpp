@@ -48,7 +48,7 @@ extern qboolean SV_GetModelInfo( int clientNum, char *modelName, animModelInfo_t
 CL_GetGameState
 ====================
 */
-void CL_GetGameState( gameState_t *gs ) {
+void CL_GetGameState( wsgameState_t *gs ) {
 	*gs = cl.gameState;
 }
 
@@ -105,11 +105,11 @@ qboolean CL_GetUserCmd( int cmdNumber, wsusercmd_t *ucmd ) {
 
 	// the usercmd has been overwritten in the wrapping
 	// buffer because it is too far out of date
-	if ( cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP ) {
+	if ( cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3 ) {
 		return qfalse;
 	}
 
-	*ucmd = cl.cmds[ cmdNumber & CMD_MASK ];
+	*ucmd = cl.cmds[ cmdNumber & CMD_MASK_Q3 ];
 
 	return qtrue;
 }
@@ -132,11 +132,11 @@ qboolean    CL_GetParseEntityState( int parseEntityNumber, wsentityState_t *stat
 	}
 
 	// can't return anything that has been overwritten in the circular buffer
-	if ( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES ) {
+	if ( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES_Q3 ) {
 		return qfalse;
 	}
 
-	*state = cl.parseEntities[ parseEntityNumber & ( MAX_PARSE_ENTITIES - 1 ) ];
+	*state = cl.parseEntities[ parseEntityNumber & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 	return qtrue;
 }
 
@@ -156,7 +156,7 @@ CL_GetSnapshot
 ====================
 */
 qboolean    CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
-	clSnapshot_t    *clSnap;
+	wsclSnapshot_t    *clSnap;
 	int i, count;
 
 	if ( snapshotNumber > cl.snap.messageNum ) {
@@ -176,7 +176,7 @@ qboolean    CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 
 	// if the entities in the frame have fallen out of their
 	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES ) {
+	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3 ) {
 		return qfalse;
 	}
 
@@ -195,7 +195,7 @@ qboolean    CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 	snapshot->numEntities = count;
 	for ( i = 0 ; i < count ; i++ ) {
 		snapshot->entities[i] =
-			cl.parseEntities[ ( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ];
+			cl.parseEntities[ ( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 	}
 
 	// FIXME: configstring changes and server commands!!!
@@ -243,7 +243,7 @@ void CL_ConfigstringModified( void ) {
 	char        *old, *s;
 	int i, index;
 	char        *dup;
-	gameState_t oldGs;
+	wsgameState_t oldGs;
 	int len;
 
 	index = String::Atoi( Cmd_Argv( 1 ) );
@@ -259,7 +259,7 @@ void CL_ConfigstringModified( void ) {
 		return;     // unchanged
 	}
 
-	// build the new gameState_t
+	// build the new wsgameState_t
 	oldGs = cl.gameState;
 
 	memset( &cl.gameState, 0, sizeof( cl.gameState ) );
@@ -279,8 +279,8 @@ void CL_ConfigstringModified( void ) {
 
 		len = String::Length( dup );
 
-		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
-			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
+		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
+			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 		}
 
 		// append it to the gameState string buffer
@@ -776,7 +776,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		CL_GetGlconfig( (wsglconfig_t*)VMA( 1 ) );
 		return 0;
 	case CG_GETGAMESTATE:
-		CL_GetGameState( (gameState_t*)VMA( 1 ) );
+		CL_GetGameState( (wsgameState_t*)VMA( 1 ) );
 		return 0;
 	case CG_GETCURRENTSNAPSHOTNUMBER:
 		CL_GetCurrentSnapshotNumber( (int*)VMA( 1 ), (int*)VMA( 2 ) );
