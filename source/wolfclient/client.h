@@ -28,10 +28,10 @@
 #include "cinematic/public.h"
 #include "ui/ui.h"
 #include "ui/console.h"
-#include "quakeclientdefs.h"
-#include "hexen2clientdefs.h"
-#include "quake2clientdefs.h"
 #endif
+#include "../client/quakeclientdefs.h"
+#include "../client/hexen2clientdefs.h"
+#include "../client/quake2clientdefs.h"
 #include "quake3clientdefs.h"
 #if 0
 #include "game/particles.h"
