@@ -36,7 +36,9 @@ extern botlib_export_t *botlib_export;
 vm_t *uivm;
 
 void CL_GetGlconfig( wmglconfig_t *config );
+void CL_AddRefEntityToScene(const wmrefEntity_t* ent);
 void CL_RenderScene(const wmrefdef_t* refdef);
+int CL_LerpTag(orientation_t *tag,  const wmrefEntity_t *refent, const char *tagName, int startIndex);
 
 /*
 ====================
@@ -883,7 +885,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( (refEntity_t*)VMA( 1 ) );
+		CL_AddRefEntityToScene( (wmrefEntity_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_ADDPOLYTOSCENE:
@@ -925,7 +927,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_CM_LERPTAG:
-		return re.LerpTag( (orientation_t*)VMA( 1 ), (refEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		return CL_LerpTag( (orientation_t*)VMA( 1 ), (wmrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 
 	case UI_S_REGISTERSOUND:
 		return S_RegisterSound( (char*)VMA( 1 ));

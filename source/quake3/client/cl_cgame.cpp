@@ -400,6 +400,44 @@ void CL_CM_LoadMap( const char *mapname ) {
 	CM_LoadMap( mapname, qtrue, &checksum );
 }
 
+static void CL_GameRefEntToEngine(const q3refEntity_t* gameRefent, refEntity_t* refent)
+{
+	Com_Memset(refent, 0, sizeof(*refent));
+	refent->reType = gameRefent->reType;
+	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
+		RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
+		RF_SHADOW_PLANE | RF_WRAP_FRAMES);
+	refent->hModel = gameRefent->hModel;
+	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
+	refent->shadowPlane = gameRefent->shadowPlane;
+	AxisCopy(gameRefent->axis, refent->axis);
+	refent->nonNormalizedAxes = gameRefent->nonNormalizedAxes;
+	VectorCopy(gameRefent->origin, refent->origin);
+	refent->frame = gameRefent->frame;
+	VectorCopy(gameRefent->oldorigin, refent->oldorigin);
+	refent->oldframe = gameRefent->oldframe;
+	refent->backlerp = gameRefent->backlerp;
+	refent->skinNum = gameRefent->skinNum;
+	refent->customSkin = gameRefent->customSkin;
+	refent->customShader = gameRefent->customShader;
+	refent->shaderRGBA[0] = gameRefent->shaderRGBA[0];
+	refent->shaderRGBA[1] = gameRefent->shaderRGBA[1];
+	refent->shaderRGBA[2] = gameRefent->shaderRGBA[2];
+	refent->shaderRGBA[3] = gameRefent->shaderRGBA[3];
+	refent->shaderTexCoord[0] = gameRefent->shaderTexCoord[0];
+	refent->shaderTexCoord[1] = gameRefent->shaderTexCoord[1];
+	refent->shaderTime = gameRefent->shaderTime;
+	refent->radius = gameRefent->radius;
+	refent->rotation = gameRefent->rotation;
+}
+
+void CL_AddRefEntityToScene(const q3refEntity_t* ent)
+{
+	refEntity_t refent;
+	CL_GameRefEntToEngine(ent, &refent);
+	R_AddRefEntityToScene(&refent);
+}
+
 void CL_RenderScene(const q3refdef_t* gameRefdef)
 {
 	refdef_t rd;
@@ -607,7 +645,7 @@ qintptr CL_CgameSystemCalls( qintptr *args ) {
 		R_ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
-		R_AddRefEntityToScene( (refEntity_t*)VMA(1) );
+		CL_AddRefEntityToScene( (q3refEntity_t*)VMA(1) );
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), 1 );

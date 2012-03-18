@@ -38,7 +38,9 @@ vm_t *uivm;
 extern char cl_cdkey[34];
 
 void CL_GetGlconfig( wsglconfig_t *config );
+void CL_AddRefEntityToScene(const wsrefEntity_t* ent);
 void CL_RenderScene(const wsrefdef_t* refdef);
+int CL_LerpTag(orientation_t *tag,  const wsrefEntity_t *refent, const char *tagName, int startIndex);
 
 /*
 ====================
@@ -879,7 +881,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( (refEntity_t*)VMA( 1 ) );
+		CL_AddRefEntityToScene( (wsrefEntity_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_ADDPOLYTOSCENE:
@@ -921,7 +923,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_CM_LERPTAG:
-		return re.LerpTag( (orientation_t*)VMA( 1 ), (refEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		return CL_LerpTag( (orientation_t*)VMA( 1 ), (wsrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 
 	case UI_S_REGISTERSOUND:
 		return S_RegisterSound( (char*)VMA( 1 ));

@@ -427,6 +427,57 @@ void CL_CM_LoadMap( const char *mapname ) {
 	CM_LoadMap( mapname, qtrue, &checksum );
 }
 
+static void CL_GameRefEntToEngine(const wsrefEntity_t* gameRefent, refEntity_t* refent)
+{
+	Com_Memset(refent, 0, sizeof(*refent));
+	refent->reType = gameRefent->reType;
+	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
+		RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
+		RF_SHADOW_PLANE | RF_WRAP_FRAMES | RF_HILIGHT | RF_BLINK);
+	refent->hModel = gameRefent->hModel;
+	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
+	refent->shadowPlane = gameRefent->shadowPlane;
+	AxisCopy(gameRefent->axis, refent->axis);
+	AxisCopy(gameRefent->torsoAxis, refent->torsoAxis);
+	refent->nonNormalizedAxes = gameRefent->nonNormalizedAxes;
+	VectorCopy(gameRefent->origin, refent->origin);
+	refent->frame = gameRefent->frame;
+	refent->torsoFrame = gameRefent->torsoFrame;
+	VectorCopy(gameRefent->scale, refent->scale);
+	VectorCopy(gameRefent->oldorigin, refent->oldorigin);
+	refent->oldframe = gameRefent->oldframe;
+	refent->oldTorsoFrame = gameRefent->oldTorsoFrame;
+	refent->backlerp = gameRefent->backlerp;
+	refent->torsoBacklerp = gameRefent->torsoBacklerp;
+	refent->skinNum = gameRefent->skinNum;
+	refent->customSkin = gameRefent->customSkin;
+	refent->customShader = gameRefent->customShader;
+	refent->shaderRGBA[0] = gameRefent->shaderRGBA[0];
+	refent->shaderRGBA[1] = gameRefent->shaderRGBA[1];
+	refent->shaderRGBA[2] = gameRefent->shaderRGBA[2];
+	refent->shaderRGBA[3] = gameRefent->shaderRGBA[3];
+	refent->shaderTexCoord[0] = gameRefent->shaderTexCoord[0];
+	refent->shaderTexCoord[1] = gameRefent->shaderTexCoord[1];
+	refent->shaderTime = gameRefent->shaderTime;
+	refent->radius = gameRefent->radius;
+	refent->rotation = gameRefent->rotation;
+	VectorCopy(gameRefent->fireRiseDir, refent->fireRiseDir);
+	refent->fadeStartTime = gameRefent->fadeStartTime;
+	refent->fadeEndTime = gameRefent->fadeEndTime;
+	refent->hilightIntensity = gameRefent->hilightIntensity;
+	refent->reFlags = gameRefent->reFlags & (REFLAG_ONLYHAND  | REFLAG_ZOMBIEFX |
+		REFLAG_ZOMBIEFX2 | REFLAG_FORCE_LOD | REFLAG_ORIENT_LOD | REFLAG_DEAD_LOD |
+		REFLAG_SCALEDSPHERECULL | REFLAG_FULL_LOD);
+	refent->entityNum = gameRefent->entityNum;
+}
+
+void CL_AddRefEntityToScene(const wsrefEntity_t* ent)
+{
+	refEntity_t refent;
+	CL_GameRefEntToEngine(ent, &refent);
+	re.AddRefEntityToScene(&refent);
+}
+
 void CL_RenderScene(const wsrefdef_t* gameRefdef)
 {
 	refdef_t rd;
@@ -458,6 +509,13 @@ void CL_RenderScene(const wsrefdef_t* gameRefdef)
 	rd.glfog.clearscreen = gameRefdef->glfog.clearscreen;
 	rd.glfog.dirty = gameRefdef->glfog.dirty;
 	re.RenderScene(&rd);
+}
+
+int CL_LerpTag(orientation_t *tag,  const wsrefEntity_t* gameRefent, const char *tagName, int startIndex)
+{
+	refEntity_t refent;
+	CL_GameRefEntToEngine(gameRefent, &refent);
+	return re.LerpTag(tag, &refent, tagName, startIndex);
 }
 
 /*
@@ -670,7 +728,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( (refEntity_t*)VMA( 1 ) );
+		CL_AddRefEntityToScene( (wsrefEntity_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
 		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ) );
@@ -713,7 +771,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
 		return 0;
 	case CG_R_LERPTAG:
-		return re.LerpTag( (orientation_t*)VMA( 1 ), (refEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		return CL_LerpTag( (orientation_t*)VMA( 1 ), (wsrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 	case CG_GETGLCONFIG:
 		CL_GetGlconfig( (wsglconfig_t*)VMA( 1 ) );
 		return 0;

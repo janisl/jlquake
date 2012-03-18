@@ -40,7 +40,9 @@ vm_t *uivm;
 void Key_GetBindingByString( const char* binding, int* key1, int* key2 );
 
 void CL_GetGlconfig( etglconfig_t *config );
+void CL_AddRefEntityToScene(const etrefEntity_t* ent);
 void CL_RenderScene(const etrefdef_t* refdef);
+int CL_LerpTag(orientation_t *tag,  const etrefEntity_t *refent, const char *tagName, int startIndex);
 
 /*
 ====================
@@ -897,7 +899,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( (refEntity_t*)VMA( 1 ) );
+		CL_AddRefEntityToScene( (etrefEntity_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_ADDPOLYTOSCENE:
@@ -949,7 +951,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_CM_LERPTAG:
-		return re.LerpTag( (orientation_t*)VMA( 1 ), (refEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		return CL_LerpTag( (orientation_t*)VMA( 1 ), (etrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 
 	case UI_S_REGISTERSOUND:
 		return S_RegisterSound( (char*)VMA( 1 ));
