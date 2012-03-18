@@ -85,7 +85,8 @@ typedef struct {
 	float modelMatrix[16];
 } orientationr_t;
 
-typedef struct image_s {
+struct image_t
+{
 	char imgName[MAX_QPATH];            // game path, including extension
 	int width, height;                      // source image
 	int uploadWidth, uploadHeight;          // after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
@@ -102,8 +103,8 @@ typedef struct image_s {
 
 	int hash;           // for fast building of the backupHash
 
-	struct image_s* next;
-} image_t;
+	image_t* next;
+};
 
 //===============================================================================
 
