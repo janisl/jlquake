@@ -197,8 +197,6 @@ typedef enum {
 #define sign( f )   ( ( f > 0 ) ? 1 : ( ( f < 0 ) ? -1 : 0 ) )
 #endif
 
-#define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
-
 //
 // these aren't needed by any of the VMs.  put in another header?
 //

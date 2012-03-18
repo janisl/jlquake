@@ -1502,7 +1502,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 	}
 
 //----(SA)	added
-	if ( cl.cameraMode ) {
+	if ( cl.wa_cameraMode ) {
 		if ( !( in_keyCatchers & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) ) ) {    // let menu/console handle keys if necessary
 
 			// in cutscenes we need to handle keys specially (pausing not allowed in camera mode)

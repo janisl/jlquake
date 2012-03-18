@@ -62,7 +62,7 @@ struct cshift_t
 
 //	The clientActive_t structure is wiped completely at every new gamestate_t,
 // potentially several times during an established connection.
-struct clientActive_t_
+struct clientActive_t
 {
 	int serverTime;			// may be paused during play
 
@@ -272,9 +272,10 @@ struct clientActive_t_
 	q2clientinfo_t q2_clientinfo[MAX_CLIENTS_Q2];
 	q2clientinfo_t q2_baseclientinfo;
 
-#if 0
 	q3clSnapshot_t q3_snap;			// latest received from server
-#endif
+	wsclSnapshot_t ws_snap;              // latest received from server
+	wmclSnapshot_t wm_snap;              // latest received from server
+	etclSnapshot_t et_snap;              // latest received from server
 
 	int q3_oldServerTime;		// to prevent time from flowing bakcwards
 	int q3_oldFrameServerTime;	// to check tournament restarts
@@ -284,9 +285,10 @@ struct clientActive_t_
 									// cleared when CL_AdjustTimeDelta looks at it
 	bool q3_newSnapshots;		// set on parse of any valid packet
 
-#if 0
 	q3gameState_t q3_gameState;			// configstrings
-#endif
+	wsgameState_t ws_gameState;          // configstrings
+	wmgameState_t wm_gameState;          // configstrings
+	etgameState_t et_gameState;          // configstrings
 	char q3_mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
 
 	// cgame communicates a few values to the client system
@@ -295,26 +297,55 @@ struct clientActive_t_
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
-#if 0
 	q3usercmd_t q3_cmds[CMD_BACKUP_Q3];	// each mesage will send several old cmds
-#endif
+	wsusercmd_t ws_cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
+	wmusercmd_t wm_cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
+	etusercmd_t et_cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
 	int q3_cmdNumber;			// incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
-#if 0
 	q3outPacket_t q3_outPackets[PACKET_BACKUP_Q3];	// information about each packet we have sent out
-#endif
 
 	int q3_serverId;			// included in each client message so the server
 												// can tell if it is for a prior map_restart
-#if 0
 	// big stuff at end of structure so most offsets are 15 bits or less
 	q3clSnapshot_t q3_snapshots[PACKET_BACKUP_Q3];
+	wsclSnapshot_t ws_snapshots[PACKET_BACKUP_Q3];
+	wmclSnapshot_t wm_snapshots[PACKET_BACKUP_Q3];
+	etclSnapshot_t et_snapshots[PACKET_BACKUP_Q3];
 
 	q3entityState_t q3_entityBaselines[MAX_GENTITIES_Q3];	// for delta compression when not in previous frame
+	wsentityState_t ws_entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
+	wmentityState_t wm_entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
+	etentityState_t et_entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
 
 	q3entityState_t q3_parseEntities[MAX_PARSE_ENTITIES_Q3];
-#endif
+	wsentityState_t ws_parseEntities[MAX_PARSE_ENTITIES_Q3];
+	wmentityState_t wm_parseEntities[MAX_PARSE_ENTITIES_Q3];
+	etentityState_t et_parseEntities[MAX_PARSE_ENTITIES_Q3];
+
+	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH_WA strings (140),
+	// but for the processing in CL_AddToLimboChat we need some safe room
+	char wa_limboChatMsgs[LIMBOCHAT_HEIGHT_WA][LIMBOCHAT_WIDTH_WA * 3 + 1];
+	int wa_limboChatPos;
+
+	bool wa_cameraMode;    //----(SA)	added for control of input while watching cinematics
+
+	int wb_cgameUserHoldableValue;         // current holdable item to add to wsusercmd_t	//----(SA)	added
+
+	int ws_cgameCld;                       // NERVE - SMF
+
+	int wm_cgameMpSetup;                   // NERVE - SMF
+	int wm_cgameMpIdentClient;             // NERVE - SMF
+	vec3_t wm_cgameClientLerpOrigin;       // DHM - Nerve
+
+	bool wm_corruptedTranslationFile;
+	char wm_translationVersion[MAX_TOKEN_CHARS_Q3];
+
+	int et_cgameFlags;                     // flags that can be set by the gamecode
+
+	// Arnout: double tapping
+	etdoubleTap_t et_doubleTap;
 };
 
 // download type
@@ -576,9 +607,7 @@ struct clientStatic_t
 	bool et_downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
 };
 
-#if 0
 extern clientActive_t cl;
-#endif
 extern clientConnection_t clc;
 extern clientStatic_t cls;
 

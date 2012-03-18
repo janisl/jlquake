@@ -282,7 +282,7 @@ void IN_CenterView( void ) {
 		ok = VM_Call( cgvm, CG_CHECKCENTERVIEW );
 	}
 	if ( ok ) {
-		cl.viewangles[PITCH] = -SHORT2ANGLE( cl.snap.ps.delta_angles[PITCH] );
+		cl.viewangles[PITCH] = -SHORT2ANGLE( cl.wm_snap.ps.delta_angles[PITCH] );
 	}
 }
 
@@ -401,7 +401,7 @@ void CL_KeyMove( wmusercmd_t *cmd ) {
 	kick = CL_KeyState( &kb[KB_KICK] );
 	// done
 
-	if ( !( cl.snap.ps.persistant[PERS_HWEAPON_USE] ) ) {
+	if ( !( cl.wm_snap.ps.persistant[PERS_HWEAPON_USE] ) ) {
 		cmd->forwardmove = ClampChar( forward );
 		cmd->rightmove = ClampChar( side );
 		cmd->upmove = ClampChar( up );
@@ -520,11 +520,11 @@ void CL_MouseMove( wmusercmd_t *cmd ) {
 	accelSensitivity *= cl.q3_cgameSensitivity;
 
 /*	NERVE - SMF - this has moved to CG_CalcFov to fix zoomed-in/out transition movement bug
-	if ( cl.snap.ps.stats[STAT_ZOOMED_VIEW] ) {
-		if(cl.snap.ps.weapon == WP_SNIPERRIFLE) {
+	if ( cl.wm_snap.ps.stats[STAT_ZOOMED_VIEW] ) {
+		if(cl.wm_snap.ps.weapon == WP_SNIPERRIFLE) {
 			accelSensitivity *= 0.1;
 		}
-		else if(cl.snap.ps.weapon == WP_SNOOPERSCOPE) {
+		else if(cl.wm_snap.ps.weapon == WP_SNOOPERSCOPE) {
 			accelSensitivity *= 0.2;
 		}
 	}
@@ -536,7 +536,7 @@ void CL_MouseMove( wmusercmd_t *cmd ) {
 // Ridah, experimenting with a slow tracking gun
 
 	// Rafael - mg42
-	if ( cl.snap.ps.persistant[PERS_HWEAPON_USE] ) {
+	if ( cl.wm_snap.ps.persistant[PERS_HWEAPON_USE] ) {
 		mx *= 2.5; //(accelSensitivity * 0.1);
 		my *= 2; //(accelSensitivity * 0.075);
 	} else
@@ -614,10 +614,10 @@ void CL_FinishMove( wmusercmd_t *cmd ) {
 	// copy the state that the cgame is currently sending
 	cmd->weapon = cl.q3_cgameUserCmdValue;
 
-	cmd->holdable = cl.cgameUserHoldableValue;  //----(SA)	modified
+	cmd->holdable = cl.wb_cgameUserHoldableValue;  //----(SA)	modified
 
-	cmd->mpSetup = cl.cgameMpSetup;             // NERVE - SMF
-	cmd->identClient = cl.cgameMpIdentClient;   // NERVE - SMF
+	cmd->mpSetup = cl.wm_cgameMpSetup;             // NERVE - SMF
+	cmd->identClient = cl.wm_cgameMpIdentClient;   // NERVE - SMF
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
@@ -718,8 +718,8 @@ void CL_CreateNewCommands( void ) {
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
 	cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
-	cl.cmds[cmdNum] = CL_CreateCmd();
-	cmd = &cl.cmds[cmdNum];
+	cl.wm_cmds[cmdNum] = CL_CreateCmd();
+	cmd = &cl.wm_cmds[cmdNum];
 }
 
 /*
@@ -774,7 +774,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 		Cvar_Set( "cl_maxpackets", "100" );
 	}
 	oldPacketNum = ( clc.netchan.outgoingSequence - 1 ) & PACKET_MASK_Q3;
-	delta = cls.realtime -  cl.outPackets[ oldPacketNum ].p_realtime;
+	delta = cls.realtime -  cl.q3_outPackets[ oldPacketNum ].p_realtime;
 	if ( delta < 1000 / cl_maxpackets->integer ) {
 		// the accumulated commands will go out in the next packet
 		return qfalse;
@@ -855,7 +855,7 @@ void CL_WritePacket( void ) {
 		Cvar_Set( "cl_packetdup", "5" );
 	}
 	oldPacketNum = ( clc.netchan.outgoingSequence - 1 - cl_packetdup->integer ) & PACKET_MASK_Q3;
-	count = cl.q3_cmdNumber - cl.outPackets[ oldPacketNum ].p_cmdNumber;
+	count = cl.q3_cmdNumber - cl.q3_outPackets[ oldPacketNum ].p_cmdNumber;
 	if ( count > MAX_PACKET_USERCMDS ) {
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf( "MAX_PACKET_USERCMDS\n" );
@@ -866,8 +866,8 @@ void CL_WritePacket( void ) {
 		}
 
 		// begin a client move command
-		if ( cl_nodelta->integer || !cl.snap.valid || clc.q3_demowaiting
-			 || clc.q3_serverMessageSequence != cl.snap.messageNum ) {
+		if ( cl_nodelta->integer || !cl.wm_snap.valid || clc.q3_demowaiting
+			 || clc.q3_serverMessageSequence != cl.wm_snap.messageNum ) {
 			buf.WriteByte( q3clc_moveNoDelta );
 		} else {
 			buf.WriteByte( q3clc_move );
@@ -886,7 +886,7 @@ void CL_WritePacket( void ) {
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {
 			j = ( cl.q3_cmdNumber - count + i + 1 ) & CMD_MASK_Q3;
-			cmd = &cl.cmds[j];
+			cmd = &cl.wm_cmds[j];
 			MSG_WriteDeltaUsercmdKey( &buf, key, oldcmd, cmd );
 			oldcmd = cmd;
 		}
@@ -896,9 +896,9 @@ void CL_WritePacket( void ) {
 	// deliver the message
 	//
 	packetNum = clc.netchan.outgoingSequence & PACKET_MASK_Q3;
-	cl.outPackets[ packetNum ].p_realtime = cls.realtime;
-	cl.outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
-	cl.outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
+	cl.q3_outPackets[ packetNum ].p_realtime = cls.realtime;
+	cl.q3_outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
+	cl.q3_outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
 	clc.q3_lastPacketSentTime = cls.realtime;
 
 	if ( cl_showSend->integer ) {

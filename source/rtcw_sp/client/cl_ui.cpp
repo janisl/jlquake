@@ -53,7 +53,7 @@ static void GetClientState( uiClientState_t *state ) {
 	String::NCpyZ( state->servername, cls.servername, sizeof( state->servername ) );
 	String::NCpyZ( state->updateInfoString, cls.q3_updateInfoString, sizeof( state->updateInfoString ) );
 	String::NCpyZ( state->messageString, clc.q3_serverMessage, sizeof( state->messageString ) );
-	state->clientNum = cl.snap.ps.clientNum;
+	state->clientNum = cl.ws_snap.ps.clientNum;
 }
 
 /*
@@ -748,7 +748,7 @@ static int GetConfigString( int index, char *buf, int size ) {
 		return qfalse;
 	}
 
-	offset = cl.gameState.stringOffsets[index];
+	offset = cl.ws_gameState.stringOffsets[index];
 	if ( !offset ) {
 		if ( size ) {
 			buf[0] = 0;
@@ -756,7 +756,7 @@ static int GetConfigString( int index, char *buf, int size ) {
 		return qfalse;
 	}
 
-	String::NCpyZ( buf, cl.gameState.stringData + offset, size );
+	String::NCpyZ( buf, cl.ws_gameState.stringData + offset, size );
 
 	return qtrue;
 }

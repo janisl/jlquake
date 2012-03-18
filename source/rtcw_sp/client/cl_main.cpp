@@ -85,7 +85,6 @@ Cvar  *cl_debugTranslation;
 
 char cl_cdkey[34] = "                                ";
 
-clientActive_t cl;
 vm_t                *cgvm;
 
 // Structure containing functions exported from refresh DLL
@@ -360,10 +359,10 @@ void CL_Record_f( void ) {
 
 	// configstrings
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
-		if ( !cl.gameState.stringOffsets[i] ) {
+		if ( !cl.ws_gameState.stringOffsets[i] ) {
 			continue;
 		}
-		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
+		s = cl.ws_gameState.stringData + cl.ws_gameState.stringOffsets[i];
 		buf.WriteByte( q3svc_configstring );
 		buf.WriteShort( i );
 		buf.WriteBigString( s );
@@ -372,7 +371,7 @@ void CL_Record_f( void ) {
 	// baselines
 	memset( &nullstate, 0, sizeof( nullstate ) );
 	for ( i = 0; i < MAX_GENTITIES_Q3 ; i++ ) {
-		ent = &cl.entityBaselines[i];
+		ent = &cl.ws_entityBaselines[i];
 		if ( !ent->number ) {
 			continue;
 		}
@@ -660,7 +659,7 @@ void CL_MapLoading( void ) {
 		cls.state = CA_CONNECTED;       // so the connect screen is drawn
 		memset( cls.q3_updateInfoString, 0, sizeof( cls.q3_updateInfoString ) );
 		memset( clc.q3_serverMessage, 0, sizeof( clc.q3_serverMessage ) );
-		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+		memset( &cl.ws_gameState, 0, sizeof( cl.ws_gameState ) );
 		clc.q3_lastPacketSentTime = -9999;
 		SCR_UpdateScreen();
 	} else {
@@ -1288,11 +1287,11 @@ void CL_Configstrings_f( void ) {
 	}
 
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_WS ; i++ ) {
-		ofs = cl.gameState.stringOffsets[ i ];
+		ofs = cl.ws_gameState.stringOffsets[ i ];
 		if ( !ofs ) {
 			continue;
 		}
-		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
+		Com_Printf( "%4i: %s\n", i, cl.ws_gameState.stringData + ofs );
 	}
 }
 
@@ -3523,24 +3522,24 @@ void CL_AddToLimboChat( const char *str ) {
 	int chatHeight;
 	int i;
 
-	chatHeight = LIMBOCHAT_HEIGHT;
-	cl.limboChatPos = LIMBOCHAT_HEIGHT - 1;
+	chatHeight = LIMBOCHAT_HEIGHT_WA;
+	cl.wa_limboChatPos = LIMBOCHAT_HEIGHT_WA - 1;
 	len = 0;
 
 	// copy old strings
-	for ( i = cl.limboChatPos; i > 0; i-- ) {
-		String::Cpy( cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1] );
+	for ( i = cl.wa_limboChatPos; i > 0; i-- ) {
+		String::Cpy( cl.wa_limboChatMsgs[i], cl.wa_limboChatMsgs[i - 1] );
 	}
 
 	// copy new string
-	p = cl.limboChatMsgs[0];
+	p = cl.wa_limboChatMsgs[0];
 	*p = 0;
 
 	lastcolor = '7';
 
 	ls = NULL;
 	while ( *str ) {
-		if ( len > LIMBOCHAT_WIDTH - 1 ) {
+		if ( len > LIMBOCHAT_WIDTH_WA - 1 ) {
 #if 0
 			if ( ls ) {
 				str -= ( p - ls );
@@ -3549,10 +3548,10 @@ void CL_AddToLimboChat( const char *str ) {
 			}
 			*p = 0;
 
-			if ( cl.limboChatPos < LIMBOCHAT_HEIGHT - 1 ) {
+			if ( cl.limboChatPos < LIMBOCHAT_HEIGHT_WA - 1 ) {
 				cl.limboChatPos++;
 			}
-			p = cl.limboChatMsgs[cl.limboChatPos];
+			p = cl.wa_limboChatMsgs[cl.limboChatPos];
 			*p = 0;
 			*p++ = Q_COLOR_ESCAPE;
 			*p++ = lastcolor;
@@ -3584,11 +3583,11 @@ CL_GetLimboString
 =======================
 */
 qboolean CL_GetLimboString( int index, char *buf ) {
-	if ( index >= LIMBOCHAT_HEIGHT ) {
+	if ( index >= LIMBOCHAT_HEIGHT_WA ) {
 		return qfalse;
 	}
 
-	String::NCpy( buf, cl.limboChatMsgs[index], 140 );
+	String::NCpy( buf, cl.wa_limboChatMsgs[index], 140 );
 	return qtrue;
 }
 // -NERVE - SMF

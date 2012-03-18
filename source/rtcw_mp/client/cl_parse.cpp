@@ -66,14 +66,14 @@ qboolean isEntVisible( wmentityState_t *ent ) {
 	vec3_t forward, up, right, right2;
 	float view_height;
 
-	VectorCopy( cl.cgameClientLerpOrigin, start );
-	start[2] += ( cl.snap.ps.viewheight - 1 );
-	if ( cl.snap.ps.leanf != 0 ) {
+	VectorCopy( cl.wm_cgameClientLerpOrigin, start );
+	start[2] += ( cl.wm_snap.ps.viewheight - 1 );
+	if ( cl.wm_snap.ps.leanf != 0 ) {
 		vec3_t lright, v3ViewAngles;
-		VectorCopy( cl.snap.ps.viewangles, v3ViewAngles );
-		v3ViewAngles[2] += cl.snap.ps.leanf / 2.0f;
+		VectorCopy( cl.wm_snap.ps.viewangles, v3ViewAngles );
+		v3ViewAngles[2] += cl.wm_snap.ps.leanf / 2.0f;
 		AngleVectors( v3ViewAngles, NULL, lright, NULL );
-		VectorMA( start, cl.snap.ps.leanf, lright, start );
+		VectorMA( start, cl.wm_snap.ps.leanf, lright, start );
 	}
 
 	VectorCopy( ent->pos.trBase, end );
@@ -177,7 +177,7 @@ void CL_DeltaEntity( QMsg *msg, wmclSnapshot_t *frame, int newnum, wmentityState
 
 	// save the parsed entity state into the big circular buffer so
 	// it can be used as the source for a later delta
-	state = &cl.parseEntities[cl.parseEntitiesNum & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
+	state = &cl.wm_parseEntities[cl.parseEntitiesNum & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 
 	if ( unchanged ) {
 		*state = *old;
@@ -232,7 +232,7 @@ void CL_ParsePacketEntities( QMsg *msg, wmclSnapshot_t *oldframe, wmclSnapshot_t
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
 		} else {
-			oldstate = &cl.parseEntities[
+			oldstate = &cl.wm_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 			oldnum = oldstate->number;
 		}
@@ -262,7 +262,7 @@ void CL_ParsePacketEntities( QMsg *msg, wmclSnapshot_t *oldframe, wmclSnapshot_t
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
 			} else {
-				oldstate = &cl.parseEntities[
+				oldstate = &cl.wm_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 				oldnum = oldstate->number;
 			}
@@ -279,7 +279,7 @@ void CL_ParsePacketEntities( QMsg *msg, wmclSnapshot_t *oldframe, wmclSnapshot_t
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
 			} else {
-				oldstate = &cl.parseEntities[
+				oldstate = &cl.wm_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 				oldnum = oldstate->number;
 			}
@@ -291,7 +291,7 @@ void CL_ParsePacketEntities( QMsg *msg, wmclSnapshot_t *oldframe, wmclSnapshot_t
 			if ( cl_shownet->integer == 3 ) {
 				Com_Printf( "%3i:  baseline: %i\n", msg->readcount, newnum );
 			}
-			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[newnum], qfalse );
+			CL_DeltaEntity( msg, newframe, newnum, &cl.wm_entityBaselines[newnum], qfalse );
 			continue;
 		}
 
@@ -310,7 +310,7 @@ void CL_ParsePacketEntities( QMsg *msg, wmclSnapshot_t *oldframe, wmclSnapshot_t
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
 		} else {
-			oldstate = &cl.parseEntities[
+			oldstate = &cl.wm_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 )];
 			oldnum = oldstate->number;
 		}
@@ -327,7 +327,7 @@ void CL_ParsePacketEntities( QMsg *msg, wmclSnapshot_t *oldframe, wmclSnapshot_t
 CL_ParseSnapshot
 
 If the snapshot is parsed properly, it will be copied to
-cl.snap and saved in cl.snapshots[].  If the snapshot is invalid
+cl.wm_snap and saved in cl.wm_snapshots[].  If the snapshot is invalid
 for any reason, no changes to the state will be made at all.
 ================
 */
@@ -344,7 +344,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	//clc.q3_reliableAcknowledge = msg->ReadLong();
 
 	// read in the new snapshot to a temporary buffer
-	// we will only copy to cl.snap if it is valid
+	// we will only copy to cl.wm_snap if it is valid
 	memset( &newSnap, 0, sizeof( newSnap ) );
 
 	// we will have read any new server commands in this
@@ -372,7 +372,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 		old = NULL;
 		clc.q3_demowaiting = qfalse;   // we can start recording now
 	} else {
-		old = &cl.snapshots[newSnap.deltaNum & PACKET_MASK_Q3];
+		old = &cl.wm_snapshots[newSnap.deltaNum & PACKET_MASK_Q3];
 		if ( !old->valid ) {
 			// should never happen
 			Com_Printf( "Delta from invalid frame (not supposed to happen!).\n" );
@@ -419,32 +419,32 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	// received and this one, so if there was a dropped packet
 	// it won't look like something valid to delta from next
 	// time we wrap around in the buffer
-	oldMessageNum = cl.snap.messageNum + 1;
+	oldMessageNum = cl.wm_snap.messageNum + 1;
 
 	if ( newSnap.messageNum - oldMessageNum >= PACKET_BACKUP_Q3 ) {
 		oldMessageNum = newSnap.messageNum - ( PACKET_BACKUP_Q3 - 1 );
 	}
 	for ( ; oldMessageNum < newSnap.messageNum ; oldMessageNum++ ) {
-		cl.snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
+		cl.wm_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
 	}
 
 	// copy to the current good spot
-	cl.snap = newSnap;
-	cl.snap.ping = 999;
+	cl.wm_snap = newSnap;
+	cl.wm_snap.ping = 999;
 	// calculate ping time
 	for ( i = 0 ; i < PACKET_BACKUP_Q3 ; i++ ) {
 		packetNum = ( clc.netchan.outgoingSequence - 1 - i ) & PACKET_MASK_Q3;
-		if ( cl.snap.ps.commandTime >= cl.outPackets[ packetNum ].p_serverTime ) {
-			cl.snap.ping = cls.realtime - cl.outPackets[ packetNum ].p_realtime;
+		if ( cl.wm_snap.ps.commandTime >= cl.q3_outPackets[ packetNum ].p_serverTime ) {
+			cl.wm_snap.ping = cls.realtime - cl.q3_outPackets[ packetNum ].p_realtime;
 			break;
 		}
 	}
 	// save the frame off in the backup array for later delta comparisons
-	cl.snapshots[cl.snap.messageNum & PACKET_MASK_Q3] = cl.snap;
+	cl.wm_snapshots[cl.wm_snap.messageNum & PACKET_MASK_Q3] = cl.wm_snap;
 
 	if ( cl_shownet->integer == 3 ) {
-		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum,
-					cl.snap.deltaNum, cl.snap.ping );
+		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.wm_snap.messageNum,
+					cl.wm_snap.deltaNum, cl.wm_snap.ping );
 	}
 
 	cl.q3_newSnapshots = qtrue;
@@ -470,7 +470,7 @@ void CL_SystemInfoChanged( void ) {
 	char key[BIG_INFO_KEY];
 	char value[BIG_INFO_VALUE];
 
-	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[ Q3CS_SYSTEMINFO ];
+	systemInfo = cl.wm_gameState.stringData + cl.wm_gameState.stringOffsets[ Q3CS_SYSTEMINFO ];
 	// NOTE TTimo:
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// show_bug.cgi?id=475
@@ -535,7 +535,7 @@ void CL_ParseGamestate( QMsg *msg ) {
 	clc.q3_serverCommandSequence = msg->ReadLong();
 
 	// parse all the configstrings and baselines
-	cl.gameState.dataCount = 1; // leave a 0 at the beginning for uninitialized configstrings
+	cl.wm_gameState.dataCount = 1; // leave a 0 at the beginning for uninitialized configstrings
 	while ( 1 ) {
 		cmd = msg->ReadByte();
 
@@ -553,21 +553,21 @@ void CL_ParseGamestate( QMsg *msg ) {
 			s = msg->ReadBigString();
 			len = String::Length( s );
 
-			if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
+			if ( len + 1 + cl.wm_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
 				Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 			}
 
 			// append it to the gameState string buffer
-			cl.gameState.stringOffsets[ i ] = cl.gameState.dataCount;
-			memcpy( cl.gameState.stringData + cl.gameState.dataCount, s, len + 1 );
-			cl.gameState.dataCount += len + 1;
+			cl.wm_gameState.stringOffsets[ i ] = cl.wm_gameState.dataCount;
+			memcpy( cl.wm_gameState.stringData + cl.wm_gameState.dataCount, s, len + 1 );
+			cl.wm_gameState.dataCount += len + 1;
 		} else if ( cmd == q3svc_baseline ) {
 			newnum = msg->ReadBits( GENTITYNUM_BITS_Q3 );
 			if ( newnum < 0 || newnum >= MAX_GENTITIES_Q3 ) {
 				Com_Error( ERR_DROP, "Baseline number out of range: %i", newnum );
 			}
 			memset( &nullstate, 0, sizeof( nullstate ) );
-			es = &cl.entityBaselines[ newnum ];
+			es = &cl.wm_entityBaselines[ newnum ];
 			MSG_ReadDeltaEntity( msg, &nullstate, es, newnum );
 		} else {
 			Com_Error( ERR_DROP, "CL_ParseGamestate: bad command byte" );

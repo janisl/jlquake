@@ -24,9 +24,7 @@ Cvar* clqh_nolerp;
 Cvar* clqh_name;
 Cvar* clqh_color;
 
-#if 0
 clientActive_t cl;
-#endif
 clientConnection_t clc;
 clientStatic_t cls;
 

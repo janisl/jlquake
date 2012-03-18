@@ -57,14 +57,14 @@ static kbutton_t kb[NUM_BUTTONS];
 
 // Arnout: doubleTap button mapping
 static kbuttons_t dtmapping[] = {
-	(kbuttons_t)-1,                 // DT_NONE
-	KB_MOVELEFT,        // DT_MOVELEFT
-	KB_MOVERIGHT,       // DT_MOVERIGHT
-	KB_FORWARD,         // DT_FORWARD
-	KB_BACK,            // DT_BACK
-	KB_WBUTTONS4,       // DT_LEANLEFT
-	KB_WBUTTONS5,       // DT_LEANRIGHT
-	KB_UP               // DT_UP
+	(kbuttons_t)-1,                 // ETDT_NONE
+	KB_MOVELEFT,        // ETDT_MOVELEFT
+	KB_MOVERIGHT,       // ETDT_MOVERIGHT
+	KB_FORWARD,         // ETDT_FORWARD
+	KB_BACK,            // ETDT_BACK
+	KB_WBUTTONS4,       // ETDT_LEANLEFT
+	KB_WBUTTONS5,       // ETDT_LEANRIGHT
+	KB_UP               // ETDT_UP
 };
 
 void IN_MLookDown( void ) {
@@ -276,7 +276,7 @@ void IN_ButtonUp( void ) {
 
 /*
 void IN_CenterView (void) {
-	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
+	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.et_snap.ps.delta_angles[PITCH]);
 }
 */
 
@@ -391,7 +391,7 @@ void CL_KeyMove( etusercmd_t *cmd ) {
 	forward -= movespeed * CL_KeyState( &kb[KB_BACK] );
 
 	// fretn - moved this to bg_pmove.c
-	//if (!(cl.snap.ps.persistant[PERS_HWEAPON_USE]))
+	//if (!(cl.et_snap.ps.persistant[PERS_HWEAPON_USE]))
 	//{
 	cmd->forwardmove = ClampChar( forward );
 	cmd->rightmove = ClampChar( side );
@@ -399,28 +399,28 @@ void CL_KeyMove( etusercmd_t *cmd ) {
 	//}
 
 	// Arnout: double tap
-	cmd->doubleTap = DT_NONE; // reset
-	if ( com_frameTime - cl.doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime ) {   // double tap only once every 500 msecs (add
+	cmd->doubleTap = ETDT_NONE; // reset
+	if ( com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime ) {   // double tap only once every 500 msecs (add
 																											 // frametime for low(-ish) fps situations)
 		int i;
 		qboolean key_down;
 
-		for ( i = 1; i < DT_NUM; i++ ) {
+		for ( i = 1; i < ETDT_NUM; i++ ) {
 			key_down = kb[dtmapping[i]].active || kb[dtmapping[i]].wasPressed;
 
-			if ( key_down && !cl.doubleTap.pressedTime[i] ) {
-				cl.doubleTap.pressedTime[i] = com_frameTime;
-			} else if ( !key_down && !cl.doubleTap.releasedTime[i]
-						&& ( com_frameTime - cl.doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
-				cl.doubleTap.releasedTime[i] = com_frameTime;
-			} else if ( key_down && ( com_frameTime - cl.doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime )
-						&& ( com_frameTime - cl.doubleTap.releasedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
-				cl.doubleTap.pressedTime[i] = cl.doubleTap.releasedTime[i] = 0;
+			if ( key_down && !cl.et_doubleTap.pressedTime[i] ) {
+				cl.et_doubleTap.pressedTime[i] = com_frameTime;
+			} else if ( !key_down && !cl.et_doubleTap.releasedTime[i]
+						&& ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
+				cl.et_doubleTap.releasedTime[i] = com_frameTime;
+			} else if ( key_down && ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime )
+						&& ( com_frameTime - cl.et_doubleTap.releasedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
+				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
 				cmd->doubleTap = i;
-				cl.doubleTap.lastdoubleTap = com_frameTime;
-			} else if ( !key_down && ( cl.doubleTap.pressedTime[i] || cl.doubleTap.releasedTime[i] ) ) {
-				if ( com_frameTime - cl.doubleTap.pressedTime[i] >= ( cl_doubletapdelay->integer + cls.frametime ) ) {
-					cl.doubleTap.pressedTime[i] = cl.doubleTap.releasedTime[i] = 0;
+				cl.et_doubleTap.lastdoubleTap = com_frameTime;
+			} else if ( !key_down && ( cl.et_doubleTap.pressedTime[i] || cl.et_doubleTap.releasedTime[i] ) ) {
+				if ( com_frameTime - cl.et_doubleTap.pressedTime[i] >= ( cl_doubletapdelay->integer + cls.frametime ) ) {
+					cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
 				}
 			}
 		}
@@ -539,11 +539,11 @@ void CL_MouseMove( etusercmd_t *cmd ) {
 	accelSensitivity *= cl.q3_cgameSensitivity;
 
 /*	NERVE - SMF - this has moved to CG_CalcFov to fix zoomed-in/out transition movement bug
-	if ( cl.snap.ps.stats[STAT_ZOOMED_VIEW] ) {
-		if(cl.snap.ps.weapon == WP_SNIPERRIFLE) {
+	if ( cl.et_snap.ps.stats[STAT_ZOOMED_VIEW] ) {
+		if(cl.et_snap.ps.weapon == WP_SNIPERRIFLE) {
 			accelSensitivity *= 0.1;
 		}
-		else if(cl.snap.ps.weapon == WP_SNOOPERSCOPE) {
+		else if(cl.et_snap.ps.weapon == WP_SNOOPERSCOPE) {
 			accelSensitivity *= 0.2;
 		}
 	}
@@ -555,7 +555,7 @@ void CL_MouseMove( etusercmd_t *cmd ) {
 // Ridah, experimenting with a slow tracking gun
 
 	// Rafael - mg42
-	if ( cl.snap.ps.persistant[PERS_HWEAPON_USE] ) {
+	if ( cl.et_snap.ps.persistant[PERS_HWEAPON_USE] ) {
 		mx *= 2.5; //(accelSensitivity * 0.1);
 		my *= 2; //(accelSensitivity * 0.075);
 	} else
@@ -621,7 +621,7 @@ void CL_CmdButtons( etusercmd_t *cmd ) {
 	}
 
 	// Arnout: clear 'waspressed' from double tap buttons
-	for ( i = 1; i < DT_NUM; i++ ) {
+	for ( i = 1; i < ETDT_NUM; i++ ) {
 		kb[dtmapping[i]].wasPressed = qfalse;
 	}
 }
@@ -638,9 +638,9 @@ void CL_FinishMove( etusercmd_t *cmd ) {
 	// copy the state that the cgame is currently sending
 	cmd->weapon = cl.q3_cgameUserCmdValue;
 
-	cmd->flags = cl.cgameFlags;
+	cmd->flags = cl.et_cgameFlags;
 
-	cmd->identClient = cl.cgameMpIdentClient;   // NERVE - SMF
+	cmd->identClient = cl.wm_cgameMpIdentClient;   // NERVE - SMF
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
@@ -741,8 +741,8 @@ void CL_CreateNewCommands( void ) {
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
 	cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
-	cl.cmds[cmdNum] = CL_CreateCmd();
-	cmd = &cl.cmds[cmdNum];
+	cl.et_cmds[cmdNum] = CL_CreateCmd();
+	cmd = &cl.et_cmds[cmdNum];
 }
 
 /*
@@ -797,7 +797,7 @@ qboolean CL_ReadyToSendPacket( void ) {
 		Cvar_Set( "cl_maxpackets", "100" );
 	}
 	oldPacketNum = ( clc.netchan.outgoingSequence - 1 ) & PACKET_MASK_Q3;
-	delta = cls.realtime -  cl.outPackets[ oldPacketNum ].p_realtime;
+	delta = cls.realtime -  cl.q3_outPackets[ oldPacketNum ].p_realtime;
 	if ( delta < 1000 / cl_maxpackets->integer ) {
 		// the accumulated commands will go out in the next packet
 		return qfalse;
@@ -878,7 +878,7 @@ void CL_WritePacket( void ) {
 		Cvar_Set( "cl_packetdup", "5" );
 	}
 	oldPacketNum = ( clc.netchan.outgoingSequence - 1 - cl_packetdup->integer ) & PACKET_MASK_Q3;
-	count = cl.q3_cmdNumber - cl.outPackets[ oldPacketNum ].p_cmdNumber;
+	count = cl.q3_cmdNumber - cl.q3_outPackets[ oldPacketNum ].p_cmdNumber;
 	if ( count > MAX_PACKET_USERCMDS ) {
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf( "MAX_PACKET_USERCMDS\n" );
@@ -889,8 +889,8 @@ void CL_WritePacket( void ) {
 		}
 
 		// begin a client move command
-		if ( cl_nodelta->integer || !cl.snap.valid || clc.q3_demowaiting
-			 || clc.q3_serverMessageSequence != cl.snap.messageNum ) {
+		if ( cl_nodelta->integer || !cl.et_snap.valid || clc.q3_demowaiting
+			 || clc.q3_serverMessageSequence != cl.et_snap.messageNum ) {
 			buf.WriteByte( q3clc_moveNoDelta );
 		} else {
 			buf.WriteByte( q3clc_move );
@@ -909,7 +909,7 @@ void CL_WritePacket( void ) {
 		// write all the commands, including the predicted command
 		for ( i = 0 ; i < count ; i++ ) {
 			j = ( cl.q3_cmdNumber - count + i + 1 ) & CMD_MASK_Q3;
-			cmd = &cl.cmds[j];
+			cmd = &cl.et_cmds[j];
 			MSG_WriteDeltaUsercmdKey( &buf, key, oldcmd, cmd );
 			oldcmd = cmd;
 		}
@@ -919,9 +919,9 @@ void CL_WritePacket( void ) {
 	// deliver the message
 	//
 	packetNum = clc.netchan.outgoingSequence & PACKET_MASK_Q3;
-	cl.outPackets[ packetNum ].p_realtime = cls.realtime;
-	cl.outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
-	cl.outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
+	cl.q3_outPackets[ packetNum ].p_realtime = cls.realtime;
+	cl.q3_outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
+	cl.q3_outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
 	clc.q3_lastPacketSentTime = cls.realtime;
 
 	if ( cl_showSend->integer ) {

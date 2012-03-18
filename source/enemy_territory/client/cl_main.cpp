@@ -110,7 +110,6 @@ Cvar  *cl_waveoffset; //bani
 Cvar  *cl_packetloss; //bani
 Cvar  *cl_packetdelay;    //bani
 
-clientActive_t cl;
 vm_t                *cgvm;
 
 // Structure containing functions exported from refresh DLL
@@ -410,10 +409,10 @@ void CL_Record( const char* name ) {
 
 	// configstrings
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_ET ; i++ ) {
-		if ( !cl.gameState.stringOffsets[i] ) {
+		if ( !cl.et_gameState.stringOffsets[i] ) {
 			continue;
 		}
-		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
+		s = cl.et_gameState.stringData + cl.et_gameState.stringOffsets[i];
 		buf.WriteByte( q3svc_configstring );
 		buf.WriteShort( i );
 		buf.WriteBigString( s );
@@ -422,7 +421,7 @@ void CL_Record( const char* name ) {
 	// baselines
 	memset( &nullstate, 0, sizeof( nullstate ) );
 	for ( i = 0; i < MAX_GENTITIES_Q3 ; i++ ) {
-		ent = &cl.entityBaselines[i];
+		ent = &cl.et_entityBaselines[i];
 		if ( !ent->number ) {
 			continue;
 		}
@@ -941,7 +940,7 @@ void CL_MapLoading( void ) {
 		cls.state = CA_CONNECTED;       // so the connect screen is drawn
 		memset( cls.q3_updateInfoString, 0, sizeof( cls.q3_updateInfoString ) );
 		memset( clc.q3_serverMessage, 0, sizeof( clc.q3_serverMessage ) );
-		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+		memset( &cl.et_gameState, 0, sizeof( cl.et_gameState ) );
 		clc.q3_lastPacketSentTime = -9999;
 		SCR_UpdateScreen();
 	} else {
@@ -1644,11 +1643,11 @@ void CL_Configstrings_f( void ) {
 	}
 
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS_ET ; i++ ) {
-		ofs = cl.gameState.stringOffsets[ i ];
+		ofs = cl.et_gameState.stringOffsets[ i ];
 		if ( !ofs ) {
 			continue;
 		}
-		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
+		Com_Printf( "%4i: %s\n", i, cl.et_gameState.stringData + ofs );
 	}
 }
 
@@ -4504,24 +4503,24 @@ void CL_AddToLimboChat( const char *str ) {
 	int chatHeight;
 	int i;
 
-	chatHeight = LIMBOCHAT_HEIGHT;
-	cl.limboChatPos = LIMBOCHAT_HEIGHT - 1;
+	chatHeight = LIMBOCHAT_HEIGHT_WA;
+	cl.wa_limboChatPos = LIMBOCHAT_HEIGHT_WA - 1;
 	len = 0;
 
 	// copy old strings
-	for ( i = cl.limboChatPos; i > 0; i-- ) {
-		String::Cpy( cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1] );
+	for ( i = cl.wa_limboChatPos; i > 0; i-- ) {
+		String::Cpy( cl.wa_limboChatMsgs[i], cl.wa_limboChatMsgs[i - 1] );
 	}
 
 	// copy new string
-	p = cl.limboChatMsgs[0];
+	p = cl.wa_limboChatMsgs[0];
 	*p = 0;
 
 	lastcolor = '7';
 
 	ls = NULL;
 	while ( *str ) {
-		if ( len > LIMBOCHAT_WIDTH - 1 ) {
+		if ( len > LIMBOCHAT_WIDTH_WA - 1 ) {
 			break;
 		}
 
@@ -4547,11 +4546,11 @@ CL_GetLimboString
 =======================
 */
 qboolean CL_GetLimboString( int index, char *buf ) {
-	if ( index >= LIMBOCHAT_HEIGHT ) {
+	if ( index >= LIMBOCHAT_HEIGHT_WA ) {
 		return qfalse;
 	}
 
-	String::NCpy( buf, cl.limboChatMsgs[index], 140 );
+	String::NCpy( buf, cl.wa_limboChatMsgs[index], 140 );
 	return qtrue;
 }
 // -NERVE - SMF
@@ -4673,7 +4672,7 @@ void CL_SaveTransTable( const char *fileName, qboolean newOnly ) {
 	trans_t *t;
 	int i, j, len;
 
-	if ( cl.corruptedTranslationFile ) {
+	if ( cl.wm_corruptedTranslationFile ) {
 		Com_Printf( S_COLOR_YELLOW "WARNING: Cannot save corrupted translation file. Please reload first." );
 		return;
 	}
@@ -4687,8 +4686,8 @@ void CL_SaveTransTable( const char *fileName, qboolean newOnly ) {
 	untransnum = 0;
 
 	// write out version, if one
-	if ( String::Length( cl.translationVersion ) ) {
-		buf = va( "#version\t\t\"%s\"\n", cl.translationVersion );
+	if ( String::Length( cl.wm_translationVersion ) ) {
+		buf = va( "#version\t\t\"%s\"\n", cl.wm_translationVersion );
 	} else {
 		buf = va( "#version\t\t\"1.0 01/01/01\"\n" );
 	}
@@ -4839,7 +4838,7 @@ void CL_LoadTransTable( const char *fileName ) {
 
 	count = 0;
 	aborted = qfalse;
-	cl.corruptedTranslationFile = qfalse;
+	cl.wm_corruptedTranslationFile = qfalse;
 
 	len = FS_FOpenFileByMode( fileName, &f, FS_READ );
 	if ( len <= 0 ) {
@@ -4865,7 +4864,7 @@ void CL_LoadTransTable( const char *fileName ) {
 			// parse version number
 			if ( !String::ICmp( "#version", token ) ) {
 				token = String::Parse3( &text_p );
-				String::Cpy( cl.translationVersion, token );
+				String::Cpy( cl.wm_translationVersion, token );
 				continue;
 			}
 
@@ -4987,7 +4986,7 @@ void CL_LoadTransTable( const char *fileName ) {
 		}
 
 		Com_Printf( S_COLOR_YELLOW "WARNING: Problem loading %s on line %i\n", fileName, line );
-		cl.corruptedTranslationFile = qtrue;
+		cl.wm_corruptedTranslationFile = qtrue;
 	} else {
 		Com_Printf( "Loaded %i translation strings from %s\n", count, fileName );
 	}

@@ -14,6 +14,23 @@
 //**
 //**************************************************************************
 
+#define LIMBOCHAT_WIDTH_WA     140     // NERVE - SMF
+#define LIMBOCHAT_HEIGHT_WA    7       // NERVE - SMF
+
+// Arnout: doubleTap buttons - ETDT_NUM can be max 8
+enum
+{
+	ETDT_NONE,
+	ETDT_MOVELEFT,
+	ETDT_MOVERIGHT,
+	ETDT_FORWARD,
+	ETDT_BACK,
+	ETDT_LEANLEFT,
+	ETDT_LEANRIGHT,
+	ETDT_UP,
+	ETDT_NUM
+};
+
 // snapshots are a view of the server at a given time
 struct wsclSnapshot_t
 {
@@ -102,4 +119,13 @@ struct etgameState_t
 	int stringOffsets[MAX_CONFIGSTRINGS_ET];
 	char stringData[MAX_GAMESTATE_CHARS_Q3];
 	int dataCount;
+};
+
+// Arnout: for double tapping
+struct etdoubleTap_t
+{
+	int pressedTime[ETDT_NUM];
+	int releasedTime[ETDT_NUM];
+
+	int lastdoubleTap;
 };

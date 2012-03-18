@@ -40,68 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #define RETRANSMIT_TIMEOUT  3000    // time between connection packet retransmits
 
-#define LIMBOCHAT_WIDTH     140     // NERVE - SMF - NOTE TTimo buffer size indicator, not related to screen bbox
-#define LIMBOCHAT_HEIGHT    7       // NERVE - SMF
-
-// Arnout: for double tapping
-typedef struct {
-	int pressedTime[DT_NUM];
-	int releasedTime[DT_NUM];
-
-	int lastdoubleTap;
-} doubleTap_t;
-
-/*
-=============================================================================
-
-the clientActive_t structure is wiped completely at every
-new gamestate_t, potentially several times during an established connection
-
-=============================================================================
-*/
-
 extern int g_console_field_width;
-
-struct clientActive_t : clientActive_t_
-{
-	etclSnapshot_t snap;              // latest received from server
-
-	etgameState_t gameState;          // configstrings
-
-	int cgameFlags;                     // flags that can be set by the gamecode
-	int cgameMpIdentClient;             // NERVE - SMF
-	vec3_t cgameClientLerpOrigin;       // DHM - Nerve
-
-	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
-	// properly generated command
-	etusercmd_t cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
-
-	// Arnout: double tapping
-	doubleTap_t doubleTap;
-
-	q3outPacket_t outPackets[PACKET_BACKUP_Q3];  // information about each packet we have sent out
-
-	// big stuff at end of structure so most offsets are 15 bits or less
-	etclSnapshot_t snapshots[PACKET_BACKUP_Q3];
-
-	etentityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
-
-	etentityState_t parseEntities[MAX_PARSE_ENTITIES_Q3];
-
-	// NERVE - SMF
-	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH strings (140),
-	// but for the processing in CL_AddToLimboChat we need some safe room
-	char limboChatMsgs[LIMBOCHAT_HEIGHT][LIMBOCHAT_WIDTH * 3 + 1];
-	int limboChatPos;
-
-	qboolean corruptedTranslationFile;
-	char translationVersion[MAX_STRING_TOKENS];
-	// -NERVE - SMF
-
-	qboolean cameraMode;
-};
-
-extern clientActive_t cl;
 
 typedef struct {
 	netadr_t adr;

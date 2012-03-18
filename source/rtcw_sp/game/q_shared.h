@@ -216,8 +216,6 @@ enum {qfalse, qtrue};
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
 #define MAX_SP_CLIENTS      64      // increasing this will increase memory usage significantly
 
-#define MAX_STRING_TOKENS   256     // max tokens resulting from Cmd_TokenizeString
-
 #define MAX_SAY_TEXT        150
 
 // print levels from renderer (FIXME: set up for game / cgame?)

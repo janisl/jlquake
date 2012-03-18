@@ -40,51 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #define RETRANSMIT_TIMEOUT  3000    // time between connection packet retransmits
 
-#define LIMBOCHAT_WIDTH     140     // NERVE - SMF
-#define LIMBOCHAT_HEIGHT    7       // NERVE - SMF
-
-/*
-=============================================================================
-
-the clientActive_t structure is wiped completely at every
-new gamestate_t, potentially several times during an established connection
-
-=============================================================================
-*/
-
 extern int g_console_field_width;
-
-struct clientActive_t : clientActive_t_
-{
-	wsclSnapshot_t snap;              // latest received from server
-
-	wsgameState_t gameState;          // configstrings
-
-	int cgameUserHoldableValue;         // current holdable item to add to wsusercmd_t	//----(SA)	added
-	int cgameCld;                       // NERVE - SMF
-
-	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
-	// properly generated command
-	wsusercmd_t cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
-
-	q3outPacket_t outPackets[PACKET_BACKUP_Q3];  // information about each packet we have sent out
-
-	// big stuff at end of structure so most offsets are 15 bits or less
-	wsclSnapshot_t snapshots[PACKET_BACKUP_Q3];
-
-	wsentityState_t entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
-
-	wsentityState_t parseEntities[MAX_PARSE_ENTITIES_Q3];
-
-	// NERVE - SMF
-	char limboChatMsgs[LIMBOCHAT_HEIGHT][LIMBOCHAT_WIDTH * 3 + 1];
-	int limboChatPos;
-	// -NERVE - SMF
-
-	qboolean cameraMode;    //----(SA)	added for control of input while watching cinematics
-};
-
-extern clientActive_t cl;
 
 typedef struct {
 	netadr_t adr;
