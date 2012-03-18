@@ -296,7 +296,7 @@ byte* QCinematicCin::ReadNextFrame()
 
 	S_ByteSwapRawSamples(count, s_width, s_channels, samples);
 
-	S_RawSamples(count, s_rate, s_width, s_channels, samples, 1.0);
+	S_RawSamples(count, s_rate, s_width, s_channels, samples, 1.0, 1.0, 0);
 
 	cblock_t in;
 	in.data = compressed;

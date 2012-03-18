@@ -1070,7 +1070,7 @@ qintptr CL_UISystemCalls( qintptr *args ) {
 		S_StopBackgroundTrack();
 		return 0;
 	case UI_S_STARTBACKGROUNDTRACK:
-		S_StartBackgroundTrack( (char*)VMA(1), (char*)VMA(2));
+		S_StartBackgroundTrack( (char*)VMA(1), (char*)VMA(2), 0);
 		return 0;
 
 	case UI_REAL_TIME:

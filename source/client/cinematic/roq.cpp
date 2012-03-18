@@ -775,7 +775,7 @@ redump:
 		if (!Silent)
 		{
 			int ssize = RllDecodeMonoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
-			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f);
+			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f, 1.0f, 0);
 		}
 		break;
 
@@ -788,7 +788,7 @@ redump:
 				s_rawend[0] = s_soundtime;
 			}
 			int ssize = RllDecodeStereoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
-			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f);
+			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f, 1.0f, 0);
 		}
 		break;
 
