@@ -267,6 +267,9 @@ struct clientActive_t
 	q2clientinfo_t q2_baseclientinfo;
 
 	q3clSnapshot_t q3_snap;			// latest received from server
+	wsclSnapshot_t ws_snap;              // latest received from server
+	wmclSnapshot_t wm_snap;              // latest received from server
+	etclSnapshot_t et_snap;              // latest received from server
 
 	int q3_oldServerTime;		// to prevent time from flowing bakcwards
 	int q3_oldFrameServerTime;	// to check tournament restarts
@@ -277,6 +280,9 @@ struct clientActive_t
 	bool q3_newSnapshots;		// set on parse of any valid packet
 
 	q3gameState_t q3_gameState;			// configstrings
+	wsgameState_t ws_gameState;          // configstrings
+	wmgameState_t wm_gameState;          // configstrings
+	etgameState_t et_gameState;          // configstrings
 	char q3_mapname[MAX_QPATH];	// extracted from Q3CS_SERVERINFO
 
 	// cgame communicates a few values to the client system
@@ -286,6 +292,9 @@ struct clientActive_t
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
 	q3usercmd_t q3_cmds[CMD_BACKUP_Q3];	// each mesage will send several old cmds
+	wsusercmd_t ws_cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
+	wmusercmd_t wm_cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
+	etusercmd_t et_cmds[CMD_BACKUP_Q3];     // each mesage will send several old cmds
 	int q3_cmdNumber;			// incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
@@ -295,10 +304,42 @@ struct clientActive_t
 												// can tell if it is for a prior map_restart
 	// big stuff at end of structure so most offsets are 15 bits or less
 	q3clSnapshot_t q3_snapshots[PACKET_BACKUP_Q3];
+	wsclSnapshot_t ws_snapshots[PACKET_BACKUP_Q3];
+	wmclSnapshot_t wm_snapshots[PACKET_BACKUP_Q3];
+	etclSnapshot_t et_snapshots[PACKET_BACKUP_Q3];
 
 	q3entityState_t q3_entityBaselines[MAX_GENTITIES_Q3];	// for delta compression when not in previous frame
+	wsentityState_t ws_entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
+	wmentityState_t wm_entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
+	etentityState_t et_entityBaselines[MAX_GENTITIES_Q3];   // for delta compression when not in previous frame
 
 	q3entityState_t q3_parseEntities[MAX_PARSE_ENTITIES_Q3];
+	wsentityState_t ws_parseEntities[MAX_PARSE_ENTITIES_Q3];
+	wmentityState_t wm_parseEntities[MAX_PARSE_ENTITIES_Q3];
+	etentityState_t et_parseEntities[MAX_PARSE_ENTITIES_Q3];
+
+	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH_WA strings (140),
+	// but for the processing in CL_AddToLimboChat we need some safe room
+	char wa_limboChatMsgs[LIMBOCHAT_HEIGHT_WA][LIMBOCHAT_WIDTH_WA * 3 + 1];
+	int wa_limboChatPos;
+
+	bool wa_cameraMode;    //----(SA)	added for control of input while watching cinematics
+
+	int wb_cgameUserHoldableValue;         // current holdable item to add to wsusercmd_t	//----(SA)	added
+
+	int ws_cgameCld;                       // NERVE - SMF
+
+	int wm_cgameMpSetup;                   // NERVE - SMF
+	int wm_cgameMpIdentClient;             // NERVE - SMF
+	vec3_t wm_cgameClientLerpOrigin;       // DHM - Nerve
+
+	bool wm_corruptedTranslationFile;
+	char wm_translationVersion[MAX_TOKEN_CHARS_Q3];
+
+	int et_cgameFlags;                     // flags that can be set by the gamecode
+
+	// Arnout: double tapping
+	etdoubleTap_t et_doubleTap;
 };
 
 // download type
@@ -343,6 +384,8 @@ struct clientConnection_t
 	int downloadSize;	// how many bytes we got
 	char downloadList[MAX_INFO_STRING_Q3]; // list of paks we need to download
 	bool downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
+	//	Only in Enemy Territory
+	int downloadFlags;         // misc download behaviour flags sent by the server
 
 	// demo information
 	bool demorecording;
@@ -366,7 +409,7 @@ struct clientConnection_t
 	// these are our reliable messages that go to the server
 	int q3_reliableSequence;
 	int q3_reliableAcknowledge;		// the last one the server has executed
-	char q3_reliableCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
+	char q3_reliableCommands[BIGGEST_MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	// server message (unreliable) and command (reliable) sequence
 	// numbers are NOT cleared at level changes, but continue to
@@ -379,7 +422,7 @@ struct clientConnection_t
 	// reliable messages received from server
 	int q3_serverCommandSequence;
 	int q3_lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
-	char q3_serverCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];
+	char q3_serverCommands[BIGGEST_MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	char q3_demoName[MAX_QPATH];
 	bool q3_spDemoRecording;
@@ -389,6 +432,23 @@ struct clientConnection_t
 	int q3_timeDemoFrames;		// counter of rendered frames
 	int q3_timeDemoStart;		// cls.realtime before first frame
 	int q3_timeDemoBaseTime;	// each frame will be at this time + frameNum * 50
+
+	int wm_onlyVisibleClients;                 // DHM - Nerve
+
+	bool wm_waverecording;
+	fileHandle_t wm_wavefile;
+	int wm_wavetime;
+
+	// unreliable binary data to send to server
+	int et_binaryMessageLength;
+	char et_binaryMessage[MAX_BINARY_MESSAGE_ET];
+	bool et_binaryMessageOverflowed;
+
+	// www downloading
+	bool et_bWWWDl;    // we have a www download going
+	bool et_bWWWDlAborting;    // disable the CL_WWWDownload until server gets us a gamestate (used for aborts)
+	char et_redirectedList[MAX_INFO_STRING_Q3];        // list of files that we downloaded through a redirect since last FS_ComparePaks
+	char et_badChecksumList[MAX_INFO_STRING_Q3];        // list of files for which wwwdl redirect is broken (wrong checksum)
 };
 
 /*
@@ -435,6 +495,7 @@ struct clientStatic_t
 	qhandle_t charSetShader;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
+	qhandle_t consoleShader2;
 
 	char servername[MAX_OSPATH];		// name of server from original connect (used by reconnect)
 
@@ -497,10 +558,10 @@ struct clientStatic_t
 	q3serverInfo_t q3_localServers[MAX_OTHER_SERVERS_Q3];
 
 	int q3_numglobalservers;
-	q3serverInfo_t q3_globalServers[MAX_GLOBAL_SERVERS_Q3];
+	q3serverInfo_t q3_globalServers[BIGGEST_MAX_GLOBAL_SERVERS];
 	// additional global servers
 	int q3_numGlobalServerAddresses;
-	q3serverAddress_t q3_globalServerAddresses[MAX_GLOBAL_SERVERS_Q3];
+	q3serverAddress_t q3_globalServerAddresses[BIGGEST_MAX_GLOBAL_SERVERS];
 
 	int q3_numfavoriteservers;
 	q3serverInfo_t q3_favoriteServers[MAX_OTHER_SERVERS_Q3];
@@ -518,6 +579,26 @@ struct clientStatic_t
 	char q3_updateInfoString[MAX_INFO_STRING_Q3];
 
 	netadr_t q3_authorizeServer;
+
+	bool ws_endgamemenu;           // bring up the end game credits menu next frame
+
+	// DHM - Nerve :: Auto-update Info
+	char wm_autoupdateServerNames[MAX_AUTOUPDATE_SERVERS][MAX_QPATH];
+	netadr_t wm_autoupdateServer;
+	bool et_autoUpdateServerChecked[MAX_AUTOUPDATE_SERVERS];
+	int et_autoupdatServerFirstIndex;          // to know when we went through all of them
+	int et_autoupdatServerIndex;               // to cycle through them
+
+	bool et_doCachePurge;          // Arnout: empty the renderer cache as soon as possible
+
+	// www downloading
+	// in the static stuff since this may have to survive server disconnects
+	// if new stuff gets added, CL_ClearStaticDownload code needs to be updated for clear up
+	bool et_bWWWDlDisconnected; // keep going with the download after server disconnect
+	char et_downloadName[MAX_OSPATH];
+	char et_downloadTempName[MAX_OSPATH];    // in wwwdl mode, this is OS path (it's a qpath otherwise)
+	char et_originalDownloadName[MAX_QPATH];    // if we get a redirect, keep a copy of the original file path
+	bool et_downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
 };
 
 extern clientActive_t cl;
