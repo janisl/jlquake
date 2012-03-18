@@ -557,6 +557,38 @@ void CL_CM_LoadMap( const char *mapname ) {
 	CM_LoadMap( mapname, qtrue, &checksum );
 }
 
+void CL_RenderScene(const etrefdef_t* gameRefdef)
+{
+	refdef_t rd;
+	Com_Memset(&rd, 0, sizeof(rd));
+	rd.x = gameRefdef->x;
+	rd.y = gameRefdef->y;
+	rd.width = gameRefdef->width;
+	rd.height = gameRefdef->height;
+	rd.fov_x = gameRefdef->fov_x;
+	rd.fov_y = gameRefdef->fov_y;
+	VectorCopy(gameRefdef->vieworg, rd.vieworg);
+	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
+	rd.time = gameRefdef->time;
+	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE |
+		RDF_SKYBOXPORTAL | RDF_UNDERWATER | RDF_DRAWINGSKY | RDF_SNOOPERVIEW);
+	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
+	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
+	rd.glfog.mode = gameRefdef->glfog.mode;
+	rd.glfog.hint = gameRefdef->glfog.hint;
+	rd.glfog.startTime = gameRefdef->glfog.startTime;
+	rd.glfog.finishTime = gameRefdef->glfog.finishTime;
+	Vector4Copy(gameRefdef->glfog.color, rd.glfog.color);
+	rd.glfog.start = gameRefdef->glfog.start;
+	rd.glfog.end = gameRefdef->glfog.end;
+	rd.glfog.useEndForClip = gameRefdef->glfog.useEndForClip;
+	rd.glfog.density = gameRefdef->glfog.density;
+	rd.glfog.registered = gameRefdef->glfog.registered;
+	rd.glfog.drawsky = gameRefdef->glfog.drawsky;
+	rd.glfog.clearscreen = gameRefdef->glfog.clearscreen;
+	re.RenderScene(&rd);
+}
+
 /*
 ====================
 CL_ShutdonwCGame
@@ -811,7 +843,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.SetGlobalFog( args[1], args[2], VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ) );
 		return 0;
 	case CG_R_RENDERSCENE:
-		re.RenderScene( (refdef_t*)VMA( 1 ) );
+		CL_RenderScene( (etrefdef_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_SAVEVIEWPARMS:
 		re.SaveViewParms();

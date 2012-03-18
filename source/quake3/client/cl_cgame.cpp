@@ -400,6 +400,25 @@ void CL_CM_LoadMap( const char *mapname ) {
 	CM_LoadMap( mapname, qtrue, &checksum );
 }
 
+void CL_RenderScene(const q3refdef_t* gameRefdef)
+{
+	refdef_t rd;
+	Com_Memset(&rd, 0, sizeof(rd));
+	rd.x = gameRefdef->x;
+	rd.y = gameRefdef->y;
+	rd.width = gameRefdef->width;
+	rd.height = gameRefdef->height;
+	rd.fov_x = gameRefdef->fov_x;
+	rd.fov_y = gameRefdef->fov_y;
+	VectorCopy(gameRefdef->vieworg, rd.vieworg);
+	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
+	rd.time = gameRefdef->time;
+	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE);
+	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
+	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
+	R_RenderScene(&rd);
+}
+
 /*
 ====================
 CL_ShutdonwCGame
@@ -605,7 +624,7 @@ qintptr CL_CgameSystemCalls( qintptr *args ) {
 		R_AddAdditiveLightToScene( (float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 		return 0;
 	case CG_R_RENDERSCENE:
-		R_RenderScene( (refdef_t*)VMA(1) );
+		CL_RenderScene( (q3refdef_t*)VMA(1) );
 		return 0;
 	case CG_R_SETCOLOR:
 		R_SetColor( (float*)VMA(1) );

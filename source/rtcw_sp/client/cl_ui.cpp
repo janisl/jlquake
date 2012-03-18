@@ -38,6 +38,7 @@ vm_t *uivm;
 extern char cl_cdkey[34];
 
 void CL_GetGlconfig( wsglconfig_t *config );
+void CL_RenderScene(const wsrefdef_t* refdef);
 
 /*
 ====================
@@ -900,7 +901,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_RENDERSCENE:
-		re.RenderScene( (refdef_t*)VMA( 1 ) );
+		CL_RenderScene( (wsrefdef_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_SETCOLOR:

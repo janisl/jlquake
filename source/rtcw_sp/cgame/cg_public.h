@@ -67,6 +67,44 @@ enum {
 };
 
 
+struct wsglfog_t
+{
+	int mode;                   // GL_LINEAR, GL_EXP
+	int hint;                   // GL_DONT_CARE
+	int startTime;              // in ms
+	int finishTime;             // in ms
+	float color[4];
+	float start;                // near
+	float end;                  // far
+	qboolean useEndForClip;     // use the 'far' value for the far clipping plane
+	float density;              // 0.0-1.0
+	qboolean registered;        // has this fog been set up?
+	qboolean drawsky;           // draw skybox
+	qboolean clearscreen;       // clear the GL color buffer
+
+	int dirty;
+};
+
+struct wsrefdef_t
+{
+	int x, y, width, height;
+	float fov_x, fov_y;
+	vec3_t vieworg;
+	vec3_t viewaxis[3];             // transformation matrix
+
+	int time;           // time in milliseconds for shader effects and other time dependent rendering issues
+	int rdflags;                    // RDF_NOWORLDMODEL, etc
+
+	// 1 bits will prevent the associated area from rendering at all
+	byte areamask[MAX_MAP_AREA_BYTES];
+
+	// text messages for deform text shaders
+	char text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+
+	//	added (needed to pass fog infos into the portal sky scene)
+	wsglfog_t glfog;
+};
+
 struct wsglconfig_t
 {
 	char renderer_string[MAX_STRING_CHARS];

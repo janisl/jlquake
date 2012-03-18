@@ -40,6 +40,7 @@ vm_t *uivm;
 void Key_GetBindingByString( const char* binding, int* key1, int* key2 );
 
 void CL_GetGlconfig( etglconfig_t *config );
+void CL_RenderScene(const etrefdef_t* refdef);
 
 /*
 ====================
@@ -920,7 +921,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_RENDERSCENE:
-		re.RenderScene( (refdef_t*)VMA( 1 ) );
+		CL_RenderScene( (etrefdef_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_SETCOLOR:

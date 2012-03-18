@@ -36,6 +36,7 @@ extern botlib_export_t *botlib_export;
 vm_t *uivm;
 
 void CL_GetGlconfig( wmglconfig_t *config );
+void CL_RenderScene(const wmrefdef_t* refdef);
 
 /*
 ====================
@@ -904,7 +905,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_RENDERSCENE:
-		re.RenderScene( (refdef_t*)VMA( 1 ) );
+		CL_RenderScene( (wmrefdef_t*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_SETCOLOR:
