@@ -75,8 +75,6 @@ typedef struct {
 
 // removed many statics into a common sound struct
 typedef struct {
-	int numLoopSounds;
-
 	float volTarget;
 	float volStart;
 	int volTime1;
@@ -102,7 +100,6 @@ extern Cvar   *s_currentMusic;    //----(SA)	added
 extern Cvar   *s_debugMusic;      //----(SA)	added
 
 void S_memoryLoad( sfx_t *sfx );
-portable_samplepair_t *S_GetRawSamplePointer();
 
 // spatializes a channel
 void S_Spatialize( channel_t *ch );

@@ -651,7 +651,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		S_StartLocalSound( args[1], args[2] );
 		return 0;
 	case CG_S_CLEARLOOPINGSOUNDS:
-		S_ClearLoopingSounds(); // (SA) modified so no_pvs sounds can function
+		S_ClearLoopingSounds(true); // (SA) modified so no_pvs sounds can function
 		// RF, if killall, then stop all sounds
 		if ( args[1] == 1 ) {
 			S_ClearSounds( qtrue, qfalse );
@@ -661,7 +661,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
 		// FIXME MrE: handling of looping sounds changed
-		S_AddLoopingSound( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ), args[4], args[5], args[6] );
+		S_AddLoopingSound( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ), args[4], args[5], args[6], 0 );
 		return 0;
 // not in use
 //	case CG_S_ADDREALLOOPINGSOUND:

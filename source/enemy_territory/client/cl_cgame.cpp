@@ -798,7 +798,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		S_StartLocalSound( args[1], args[2], args[3] );
 		return 0;
 	case CG_S_CLEARLOOPINGSOUNDS:
-		S_ClearLoopingSounds();
+		S_ClearLoopingSounds(true);
 		return 0;
 	case CG_S_CLEARSOUNDS:
 		if ( args[1] == 0 ) {
@@ -809,10 +809,10 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
 		// FIXME MrE: handling of looping sounds changed
-		S_AddLoopingSound( (float*)VMA( 1 ), (float*)VMA( 2 ), args[3], args[4], args[5], args[6] );
+		S_AddLoopingSound(-1, (float*)VMA( 1 ), (float*)VMA( 2 ), args[3], args[4], args[5], args[6] );
 		return 0;
 	case CG_S_ADDREALLOOPINGSOUND:
-		S_AddRealLoopingSound( (float*)VMA( 1 ), (float*)VMA( 2 ), args[3], args[4], args[5], args[6] );
+		S_AddRealLoopingSound(-1, (float*)VMA( 1 ), (float*)VMA( 2 ), args[3], args[4], args[5], args[6] );
 		return 0;
 	case CG_S_STOPSTREAMINGSOUND:
 		S_StopEntStreamingSound( args[1] );

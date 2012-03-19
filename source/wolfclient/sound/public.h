@@ -35,16 +35,19 @@ float S_StartStreamingSound(const char* intro, const char* loop, int entnum, int
 void S_StopEntStreamingSound(int entNum);
 void S_FadeStreamingSound(float targetvol, int time, int ssNum);
 
-#if 0
 // let the sound system know where an entity currently is
 void S_UpdateEntityPosition(int EntityNumber, const vec3_t Origin);
 
 // all continuous looping sounds must be added before calling S_Update
 void S_ClearLoopingSounds(bool KillAll);
-void S_AddLoopingSound(int EntityNumber, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
+void S_AddLoopingSound(int entityNumber, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime);
+#if 0
 void S_AddRealLoopingSound(int EntityNumber, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
+#endif
 void S_StopLoopingSound(int EntityNumber);
 
+void S_ClearSounds(bool clearStreaming, bool clearMusic);
+#if 0
 // stop all sounds and the background track
 void S_StopAllSounds();
 

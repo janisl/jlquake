@@ -50,6 +50,7 @@ void S_UpdateStreamingSounds( void );
 extern int numStreamingSounds;
 extern vec3_t entityPositions[MAX_GENTITIES_Q3];
 void S_SpatializeOrigin( vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol, float range, int noAttenuation );
+void S_Music_f( void );
 
 typedef struct {
 	vec3_t origin;
@@ -113,42 +114,13 @@ extern Cvar      *cl_cacheGathering; // Ridah
 extern Cvar   *s_debugMusic;      //----(SA)	added
 
 #define MAX_LOOPSOUNDS     1024
-static int numLoopSounds;
+extern int numLoopSounds;
 extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
 
 void S_ChannelFree( channel_t *v );
 channel_t*  S_ChannelMalloc();
 void S_ChannelSetup();
-
-/*
-================
-S_SoundInfo_f
-================
-*/
-void S_SoundInfo_f( void ) {
-	Com_Printf( "----- Sound Info -----\n" );
-	if ( !s_soundStarted ) {
-		Com_Printf( "sound system not started\n" );
-	} else {
-		if ( s_soundMuted ) {
-			Com_Printf( "sound system is muted\n" );
-		}
-
-		Com_Printf( "%5d stereo\n", dma.channels - 1 );
-		Com_Printf( "%5d samples\n", dma.samples );
-		Com_Printf( "%5d samplebits\n", dma.samplebits );
-		Com_Printf( "%5d submission_chunk\n", dma.submission_chunk );
-		Com_Printf( "%5d speed\n", dma.speed );
-		Com_Printf( "0x%x dma buffer\n", dma.buffer );
-		if ( streamingSounds[0].file ) {
-			Com_Printf( "Background file: %s\n", streamingSounds[0].loop );
-		} else {
-			Com_Printf( "No background file.\n" );
-		}
-
-	}
-	Com_Printf( "----------------------\n" );
-}
+void S_SoundInfo_f( void );
 
 /*
 ================
@@ -561,78 +533,6 @@ continuous looping sounds are added each frame
 
 /*
 ==================
-S_ClearLoopingSounds
-
-==================
-*/
-void S_ClearLoopingSounds( void ) {
-	numLoopSounds = 0;
-}
-
-/*
-==================
-S_AddLoopingSound
-
-Called during entity generation for a frame
-Include velocity in case I get around to doing doppler...
-
-NOTE: 'volume' with underwater bit set stays at set volume underwater
-==================
-*/
-
-#define UNDERWATER_BIT  8
-
-void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume ) {
-	sfx_t *sfx;
-
-	if ( !s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE ) {
-		return;
-	}
-	if ( numLoopSounds >= MAX_LOOPSOUNDS ) {
-		return;
-	}
-	if ( !volume ) {
-		return;
-	}
-
-	if ( sfxHandle < 0 || sfxHandle >= s_numSfx ) {
-		Com_Error( ERR_DROP, "S_AddLoopingSound: handle %i out of range", sfxHandle );
-	}
-
-	sfx = &s_knownSfx[ sfxHandle ];
-
-	if ( sfx->InMemory == qfalse ) {
-		S_memoryLoad( sfx );
-	}
-
-	if ( !sfx->Length ) {
-		Com_Error( ERR_DROP, "%s has length 0", sfx->Name );
-	}
-	VectorCopy( origin, loopSounds[numLoopSounds].origin );
-	VectorCopy( velocity, loopSounds[numLoopSounds].velocity );
-	loopSounds[numLoopSounds].sfx = sfx;
-	if ( range ) {
-		loopSounds[numLoopSounds].range = range;
-	} else {
-		loopSounds[numLoopSounds].range = SOUND_RANGE_DEFAULT;
-	}
-
-	if ( volume & 1 << UNDERWATER_BIT ) {
-		loopSounds[numLoopSounds].loudUnderWater = qtrue;
-	}
-
-	if ( volume > 255 ) {
-		volume = 255;
-	} else if ( volume < 0 ) {
-		volume = 0;
-	}
-	loopSounds[numLoopSounds].vol = volume;
-
-	numLoopSounds++;
-}
-
-/*
-==================
 S_AddLoopSounds
 
 Spatialize all of the looping sounds.
@@ -721,32 +621,6 @@ void S_AddLoopSounds( void ) {
 }
 
 //=============================================================================
-
-/*
-============
-S_GetRawSamplePointer
-============
-*/
-portable_samplepair_t *S_GetRawSamplePointer() {
-	return s_rawsamples[0];
-}
-
-//=============================================================================
-
-/*
-=====================
-S_UpdateEntityPosition
-
-let the sound system know where an entity currently is
-======================
-*/
-void S_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) {
-		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
-	}
-	VectorCopy( origin, entityPositions[entityNum] );
-}
-
 
 /*
 ============
@@ -880,7 +754,7 @@ void S_UpdateThread( void ) {
 		int clear;
 		int i;
 		// stop looping sounds
-		S_ClearLoopingSounds();
+		S_ClearLoopingSounds(true);
 
 		for ( i = 0; i < MAX_STREAMING_SOUNDS; i++ ) {
 			s_rawend[i] = 0;
@@ -1054,23 +928,6 @@ void S_Play_f( void ) {
 		}
 		i++;
 	}
-}
-
-void S_Music_f( void ) {
-	int c;
-
-	c = Cmd_Argc();
-
-	if ( c == 2 ) {
-		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 1 ), 0 );
-	} else if ( c == 3 ) {
-		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 2 ), 0 );
-		String::NCpyZ( streamingSounds[0].loop, Cmd_Argv( 2 ), sizeof( streamingSounds[0].loop ) );
-	} else {
-		Com_Printf( "music <musicfile> [loopfile]\n" );
-		return;
-	}
-
 }
 
 // Ridah, just for testing the streaming sounds

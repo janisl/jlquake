@@ -729,14 +729,14 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		S_StartLocalSound( args[1], args[2] );
 		return 0;
 	case CG_S_CLEARLOOPINGSOUNDS:
-		S_ClearLoopingSounds(); // (SA) modified so no_pvs sounds can function
+		S_ClearLoopingSounds(true); // (SA) modified so no_pvs sounds can function
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
 		// FIXME MrE: handling of looping sounds changed
-		S_AddLoopingSound( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ), args[4], args[5], args[6] );
+		S_AddLoopingSound( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ), args[4], args[5], args[6], 0 );
 		return 0;
 	case CG_S_ADDREALLOOPINGSOUND:
-		S_AddLoopingSound( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ), args[4], args[5], args[6] );
+		S_AddLoopingSound( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ), args[4], args[5], args[6], 0 );
 		//S_AddRealLoopingSound( args[1], VMA(2), VMA(3), args[4], args[5] );
 		return 0;
 	case CG_S_STOPLOOPINGSOUND:

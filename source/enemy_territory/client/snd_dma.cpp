@@ -44,12 +44,12 @@ void S_SoundList_f( void );
 void S_Music_f( void );
 void S_QueueMusic_f( void );
 void S_StreamingSound_f( void );
-void S_ClearSounds( qboolean clearStreaming, qboolean clearMusic ); //----(SA)	modified
 
 void S_Update_Mix();
 void S_StopAllSounds( void );
 void S_UpdateStreamingSounds( void );
 void S_SpatializeOrigin( vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol, float range, int noAttenuation );
+void S_Music_f( void );
 
 snd_t snd;  // globals for sound
 
@@ -88,40 +88,12 @@ Cvar      *s_separation;
 extern Cvar      *s_doppler;
 extern Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 extern Cvar      *cl_cacheGathering; // Ridah
+extern int numLoopSounds;
 
 void S_ChannelFree( channel_t *v );
 channel_t*  S_ChannelMalloc();
 void S_ChannelSetup();
-
-/*
-================
-S_SoundInfo_f
-================
-*/
-void S_SoundInfo_f( void ) {
-	Com_Printf( "----- Sound Info -----\n" );
-	if ( !s_soundStarted ) {
-		Com_Printf( "sound system not started\n" );
-	} else {
-		if ( s_soundMuted ) {
-			Com_Printf( "sound system is muted\n" );
-		}
-
-		Com_Printf( "%5d stereo\n", dma.channels - 1 );
-		Com_Printf( "%5d samples\n", dma.samples );
-		Com_Printf( "%5d samplebits\n", dma.samplebits );
-		Com_Printf( "%5d submission_chunk\n", dma.submission_chunk );
-		Com_Printf( "%5d speed\n", dma.speed );
-		Com_Printf( "0x%p dma buffer\n", dma.buffer );
-		if ( streamingSounds[0].file ) {
-			Com_Printf( "Background file: %s\n", streamingSounds[0].loop );
-		} else {
-			Com_Printf( "No background file.\n" );
-		}
-
-	}
-	Com_Printf( "----------------------\n" );
-}
+void S_SoundInfo_f( void );
 
 /*
 ================
@@ -599,200 +571,6 @@ continuous looping sounds are added each frame
 
 /*
 ==================
-S_ClearLoopingSounds
-
-==================
-*/
-void S_ClearLoopingSounds( void ) {
-	int i;
-
-	for ( i = 0 ; i < snd.numLoopSounds ; i++ ) {
-		loopSounds[i].active = qfalse;
-		//%	snd.loopSounds[i].sfx = NULL;
-	}
-	snd.numLoopSounds = 0;
-	numLoopChannels = 0;
-}
-
-/*
-==================
-S_AddLoopingSound
-
-Called during entity generation for a frame
-Include velocity in case I get around to doing doppler...
-
-NOTE: 'volume' with underwater bit set stays at set volume underwater
-==================
-*/
-
-#define UNDERWATER_BIT  16
-
-void S_AddLoopingSound( const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime ) {
-	sfx_t *sfx;
-
-	if ( !s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE ) {
-		return;
-	}
-
-	if ( snd.numLoopSounds >= MAX_LOOPSOUNDS ) {
-		return;
-	}
-
-	if ( !volume ) {
-		return;
-	}
-
-	if ( sfxHandle < 0 || sfxHandle >= s_numSfx ) {
-		Com_Error( ERR_DROP, "S_AddLoopingSound: handle %i out of range", sfxHandle );
-		return;
-	}
-
-	sfx = &s_knownSfx[ sfxHandle ];
-
-	if ( sfx->InMemory == qfalse ) {
-		S_memoryLoad( sfx );
-	}
-
-	if ( !sfx->Length ) {
-		Com_Error( ERR_DROP, "%s has length 0", sfx->Name );
-	}
-
-	// ydnar: allow looped sounds to start when initially triggered, rather than in the middle of the sample
-	loopSounds[ snd.numLoopSounds ].startSample = sfx->Length
-													  ? ( ( s_khz->integer * soundTime ) - s_paintedtime ) % sfx->Length
-													  : 0;
-
-	loopSounds[ snd.numLoopSounds ].startSample = sfx->Length
-													  ?  s_paintedtime - ( (int) ( dma.speed * ( cl.serverTime - soundTime ) / 1000.0f ) )
-													  : 0;
-
-	loopSounds[ snd.numLoopSounds ].startSample = soundTime % sfx->Length;
-
-	VectorCopy( origin, loopSounds[snd.numLoopSounds].origin );
-	VectorCopy( velocity, loopSounds[snd.numLoopSounds].velocity );
-	loopSounds[snd.numLoopSounds].active = qtrue;
-	loopSounds[snd.numLoopSounds].doppler = qfalse;
-	loopSounds[snd.numLoopSounds].oldDopplerScale = 1.0;
-	loopSounds[snd.numLoopSounds].dopplerScale = 1.0;
-	loopSounds[snd.numLoopSounds].sfx = sfx;
-	if ( range ) {
-		loopSounds[snd.numLoopSounds].range = range;
-	} else {
-		loopSounds[snd.numLoopSounds].range = SOUND_RANGE_DEFAULT;
-	}
-
-	if ( volume & 1 << UNDERWATER_BIT ) {
-		loopSounds[snd.numLoopSounds].loudUnderWater = qtrue;
-	}
-
-	if ( volume > 65535 ) {
-		volume = 65535;
-	} else if ( volume < 0 ) {
-		volume = 0;
-	}
-
-	loopSounds[snd.numLoopSounds].vol = (int)( (float)volume * s_volCurrent);  //----(SA)	modified
-
-	if ( s_doppler->integer && VectorLengthSquared( velocity ) > 0.0 ) {
-		vec3_t out;
-		float lena, lenb;
-
-		loopSounds[snd.numLoopSounds].doppler = qtrue;
-		lena = DistanceSquared( entityPositions[listener_number], loopSounds[snd.numLoopSounds].origin );
-		VectorAdd( loopSounds[snd.numLoopSounds].origin, loopSounds[snd.numLoopSounds].velocity, out );
-		lenb = DistanceSquared( entityPositions[listener_number], out );
-		if ( ( loopSounds[snd.numLoopSounds].framenum + 1 ) != cls.framecount ) {
-			loopSounds[snd.numLoopSounds].oldDopplerScale = 1.0;
-		} else {
-			loopSounds[snd.numLoopSounds].oldDopplerScale = loopSounds[snd.numLoopSounds].dopplerScale;
-		}
-		loopSounds[snd.numLoopSounds].dopplerScale = lenb / ( lena * 100 );
-		if ( loopSounds[snd.numLoopSounds].dopplerScale <= 1.0 ) {
-			loopSounds[snd.numLoopSounds].doppler = qfalse;         // don't bother doing the math
-		}
-	}
-
-	loopSounds[snd.numLoopSounds].framenum = cls.framecount;
-	snd.numLoopSounds++;
-}
-
-/*
-==================
-S_AddLoopingSound
-
-Called during entity generation for a frame
-Include velocity in case I get around to doing doppler...
-==================
-*/
-void S_AddRealLoopingSound( const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime ) {
-	sfx_t *sfx;
-
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	if ( snd.numLoopSounds >= MAX_LOOPSOUNDS ) {
-		return;
-	}
-
-	if ( !volume ) {
-		return;
-	}
-
-	if ( sfxHandle < 0 || sfxHandle >= s_numSfx ) {
-		Com_Printf( S_COLOR_YELLOW "S_AddRealLoopingSound: handle %i out of range\n", sfxHandle );
-		return;
-	}
-
-	sfx = &s_knownSfx[ sfxHandle ];
-
-	if ( sfx->InMemory == qfalse ) {
-		S_memoryLoad( sfx );
-	}
-
-	if ( !sfx->Length ) {
-		Com_Error( ERR_DROP, "%s has length 0", sfx->Name );
-	}
-
-	// ydnar: allow looped sounds to start when initially triggered, rather than in the middle of the sample
-	/*snd.loopSounds[ snd.numLoopSounds ].startSample = sfx->soundLength
-		? ((s_khz->integer * soundTime) - s_paintedtime) % sfx->soundLength
-		: 0;
-
-	snd.loopSounds[ snd.numLoopSounds ].startSample = sfx->soundLength
-		?  s_paintedtime - ((int) (dma.speed * (cl.serverTime - soundTime) / 1000.0f))
-		: 0;
-
-	snd.loopSounds[ snd.numLoopSounds ].startSample = soundTime % sfx->soundLength;*/
-
-	VectorCopy( origin, loopSounds[snd.numLoopSounds].origin );
-	VectorCopy( velocity, loopSounds[snd.numLoopSounds].velocity );
-	loopSounds[snd.numLoopSounds].sfx = sfx;
-	loopSounds[snd.numLoopSounds].active = qtrue;
-	loopSounds[snd.numLoopSounds].doppler = qfalse;
-
-	if ( range ) {
-		loopSounds[snd.numLoopSounds].range = range;
-	} else {
-		loopSounds[snd.numLoopSounds].range = SOUND_RANGE_DEFAULT;
-	}
-
-	if ( volume & 1 << UNDERWATER_BIT ) {
-		loopSounds[snd.numLoopSounds].loudUnderWater = qtrue;
-	}
-
-	if ( volume > 65535 ) {
-		volume = 65535;
-	} else if ( volume < 0 ) {
-		volume = 0;
-	}
-
-	loopSounds[snd.numLoopSounds].vol = (int)( (float)volume * s_volCurrent);  //----(SA)	modified
-	snd.numLoopSounds++;
-}
-
-/*
-==================
 S_AddLoopSounds
 
 Spatialize all of the looping sounds.
@@ -817,7 +595,7 @@ void S_AddLoopSounds( void ) {
 	time = Sys_Milliseconds();
 
 	loopFrame++;
-	for ( i = 0 ; i < snd.numLoopSounds ; i++ ) {
+	for ( i = 0 ; i < numLoopSounds ; i++ ) {
 		loop = &loopSounds[i];
 		if ( !loop->active || loop->mergeFrame == loopFrame ) {
 			continue;   // already merged into an earlier sound
@@ -884,38 +662,12 @@ void S_AddLoopSounds( void ) {
 
 		numLoopChannels++;
 		if ( numLoopChannels == MAX_CHANNELS ) {
-			i = snd.numLoopSounds + 1;
+			i = numLoopSounds + 1;
 		}
 	}
 }
 
 //=============================================================================
-
-/*
-============
-S_GetRawSamplePointer
-============
-*/
-portable_samplepair_t *S_GetRawSamplePointer() {
-	return s_rawsamples[0];
-}
-
-//=============================================================================
-
-/*
-=====================
-S_UpdateEntityPosition
-
-let the sound system know where an entity currently is
-======================
-*/
-void S_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) {
-		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
-	}
-	VectorCopy( origin, entityPositions[entityNum] );
-}
-
 
 /*
 ============
@@ -1044,74 +796,6 @@ void S_Update( void ) {
 	S_AddLoopSounds();
 	// do all the rest
 	S_UpdateThread();
-}
-
-/*
-==============
-S_ClearSounds
-==============
-*/
-void S_ClearSounds( qboolean clearStreaming, qboolean clearMusic ) {
-	int clear;
-	int i;
-	channel_t   *ch;
-	streamingSound_t *ss;
-
-	// stop looping sounds
-	Com_Memset( loopSounds, 0, MAX_GENTITIES_Q3 * sizeof( loopSound_t ) );
-	Com_Memset( loop_channels, 0, MAX_CHANNELS * sizeof( channel_t ) );
-	numLoopChannels = 0;
-
-	// RF, moved this up so streaming sounds dont get updated with the music, below, and leave us with a snippet off streaming sounds after we reload
-	if ( clearStreaming ) {    // we don't want to stop guys with long dialogue from getting cut off by a file read
-		// RF, clear talking amplitudes
-		Com_Memset( s_entityTalkAmplitude, 0, sizeof( s_entityTalkAmplitude ) );
-
-		for ( i = 0, ss = streamingSounds; i < MAX_STREAMING_SOUNDS; i++, ss++ ) {
-			if ( i > 0 || clearMusic ) {
-				s_rawend[i] = 0;
-				ss->kill = 2;   // get rid of it next sound update
-			}
-		}
-
-		// RF, we should also kill all channels, since we are killing streaming sounds anyway (fixes siren in forest playing after a map_restart/loadgame
-		ch = s_channels;
-		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->sfx ) {
-				S_ChannelFree( ch );
-			}
-		}
-
-	}
-
-	if ( !clearMusic ) {
-		S_UpdateStreamingSounds();  //----(SA)	added so music will get updated if not cleared
-	} else {
-		// music cleanup
-		nextMusicTrack[0] = 0;
-		nextMusicTrackType = 0;
-	}
-
-	if ( clearStreaming && clearMusic ) {
-		if ( dma.samplebits == 8 ) {
-			clear = 0x80;
-		} else {
-			clear = 0;
-		}
-
-		SNDDMA_BeginPainting();
-		if ( dma.buffer ) {
-			// TTimo: due to a particular bug workaround in linux sound code,
-			//   have to optionally use a custom C implementation of Com_Memset
-			//   not affecting win32, we have #define Snd_Memset Com_Memset
-			// show_bug.cgi?id=371
-			Snd_Memset( dma.buffer, clear, dma.samples * dma.samplebits / 8 );
-		}
-		SNDDMA_Submit();
-
-		// NERVE - SMF - clear out channels so they don't finish playing when audio restarts
-		S_ChannelSetup();
-	}
 }
 
 /*
@@ -1334,23 +1018,6 @@ void S_QueueMusic_f( void ) {
 
 	// NOTE: could actually use this to touch the file now so there's not a hit when the queue'd music is played?
 	S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 1 ), type );
-}
-
-void S_Music_f( void ) {
-	int c;
-
-	c = Cmd_Argc();
-
-	if ( c == 2 ) {
-		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 1 ), 0 );
-	} else if ( c == 3 ) {
-		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 2 ), 0 );
-		String::NCpyZ( streamingSounds[0].loop, Cmd_Argv( 2 ), sizeof( streamingSounds[0].loop ) );
-	} else {
-		Com_Printf( "music <musicfile> [loopfile]\n" );
-		return;
-	}
-
 }
 
 // Ridah, just for testing the streaming sounds

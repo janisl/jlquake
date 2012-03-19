@@ -45,6 +45,9 @@
 #define QUEUED_PLAY_LOOPED		-2
 #define QUEUED_PLAY_ONCE_SILENT	-3  // when done it goes quiet
 
+#define UNDERWATER_BIT_WB		8
+#define UNDERWATER_BIT_ET		16
+
 // TYPES -------------------------------------------------------------------
 
 struct loopSound_t
@@ -169,6 +172,8 @@ static playsound_t	s_freeplays;
 
 //static 
 loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+//static 
+int numLoopSounds;
 
 static vec_t		sound_nominal_clip_dist=1000.0;
 
@@ -1577,7 +1582,6 @@ void S_UpdateStreamingSounds()
 	}
 }
 
-#if 0
 //**************************************************************************
 //	Commands
 //**************************************************************************
@@ -1588,7 +1592,8 @@ void S_UpdateStreamingSounds()
 //
 //==========================================================================
 
-static void S_SoundInfo_f()
+//static 
+void S_SoundInfo_f()
 {
 	Log::write("----- Sound Info -----\n");
 	if (!s_soundStarted)
@@ -1607,10 +1612,10 @@ static void S_SoundInfo_f()
 		Log::write("%5d samplebits\n", dma.samplebits);
 		Log::write("%5d submission_chunk\n", dma.submission_chunk);
 		Log::write("%5d speed\n", dma.speed);
-		Log::write("0x%x dma buffer\n", dma.buffer);
-		if (s_backgroundFile)
+		Log::write("0x%p dma buffer\n", dma.buffer);
+		if (streamingSounds[0].file)
 		{
-			Log::write("Background file: %s\n", s_backgroundLoop);
+			Log::write("Background file: %s\n", streamingSounds[0].loop);
 		}
 		else
 		{
@@ -1626,18 +1631,19 @@ static void S_SoundInfo_f()
 //
 //==========================================================================
 
-static void S_Music_f()
+//static 
+void S_Music_f()
 {
 	int c = Cmd_Argc();
 
 	if (c == 2)
 	{
-		S_StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(1));
-		s_backgroundLoop[0] = 0;
+		S_StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(1), 0);
+		streamingSounds[0].loop[0] = 0;
 	}
 	else if (c == 3)
 	{
-		S_StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(2));
+		S_StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(2), 0);
 	}
 	else
 	{
@@ -1656,11 +1662,22 @@ static void S_Music_f()
 
 void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin)
 {
-	if (EntityNum < 0 || EntityNum > MAX_LOOPSOUNDS)
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
 	{
-		DropException(va("S_UpdateEntityPosition: bad entitynum %i", EntityNum));
+		if (EntityNum < 0 || EntityNum > MAX_GENTITIES_Q3)
+		{
+			common->Error("S_UpdateEntityPosition: bad entitynum %i", EntityNum);
+		}
+		VectorCopy(Origin, entityPositions[EntityNum]);
 	}
-	VectorCopy(Origin, loopSounds[EntityNum].origin);
+	else
+	{
+		if (EntityNum < 0 || EntityNum > MAX_LOOPSOUNDS)
+		{
+			DropException(va("S_UpdateEntityPosition: bad entitynum %i", EntityNum));
+		}
+		VectorCopy(Origin, loopSounds[EntityNum].origin);
+	}
 }
 
 //==========================================================================
@@ -1684,15 +1701,31 @@ void S_StopLoopingSound(int EntityNum)
 
 void S_ClearLoopingSounds(bool KillAll)
 {
-	for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
 	{
-		if (KillAll || loopSounds[i].kill == true || (loopSounds[i].sfx && loopSounds[i].sfx->Length == 0))
-		{
-			loopSounds[i].kill = false;
-			S_StopLoopingSound(i);
-		}
+		numLoopSounds = 0;
 	}
-	numLoopChannels = 0;
+	else if (GGameType & GAME_ET)
+	{
+		for (int i = 0; i < numLoopSounds; i++)
+		{
+			loopSounds[i].active = false;
+		}
+		numLoopSounds = 0;
+		numLoopChannels = 0;
+	}
+	else
+	{
+		for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+		{
+			if (KillAll || loopSounds[i].kill == true || (loopSounds[i].sfx && loopSounds[i].sfx->Length == 0))
+			{
+				loopSounds[i].kill = false;
+				S_StopLoopingSound(i);
+			}
+		}
+		numLoopChannels = 0;
+	}
 }
 
 //==========================================================================
@@ -1704,16 +1737,40 @@ void S_ClearLoopingSounds(bool KillAll)
 //
 //==========================================================================
 
-void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle)
+void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime)
 {
-	if (!s_soundStarted || s_soundMuted)
+	if (!s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE)
 	{
 		return;
 	}
 
+	int index;
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		if (numLoopSounds >= MAX_LOOPSOUNDS)
+		{
+			return;
+		}
+		if (!volume)
+		{
+			return;
+		}
+
+		index = numLoopSounds;
+		numLoopSounds++;
+	}
+	else
+	{
+		index = entityNum;
+	}
+
 	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
 	{
-		if (GGameType & GAME_Quake3)
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			common->Error("S_AddLoopingSound: handle %i out of range", sfxHandle);
+		}
+		else if (GGameType & GAME_Quake3)
 		{
 			Log::write(S_COLOR_YELLOW "S_AddLoopingSound: handle %i out of range\n", sfxHandle);
 		}
@@ -1740,40 +1797,95 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		DropException(va("%s has length 0", sfx->Name));
 	}
 
-	VectorCopy(origin, loopSounds[entityNum].origin);
-	VectorCopy(velocity, loopSounds[entityNum].velocity);
-	loopSounds[entityNum].active = true;
-	loopSounds[entityNum].kill = true;
-	loopSounds[entityNum].doppler = false;
-	loopSounds[entityNum].oldDopplerScale = 1.0;
-	loopSounds[entityNum].dopplerScale = 1.0;
-	loopSounds[entityNum].sfx = sfx;
+	VectorCopy(origin, loopSounds[index].origin);
+	VectorCopy(velocity, loopSounds[index].velocity);
+	loopSounds[index].active = true;
+	loopSounds[index].kill = true;
+	loopSounds[index].doppler = false;
+	loopSounds[index].oldDopplerScale = 1.0;
+	loopSounds[index].dopplerScale = 1.0;
+	loopSounds[index].sfx = sfx;
+	// ydnar: allow looped sounds to start when initially triggered, rather than in the middle of the sample
+	loopSounds[index].startSample = soundTime % sfx->Length;
+
+	if (range)
+	{
+		loopSounds[index].range = range;
+	}
+	else
+	{
+		loopSounds[index].range = SOUND_RANGE_DEFAULT;
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		if (volume & 1 << UNDERWATER_BIT_WB)
+		{
+			loopSounds[index].loudUnderWater = true;
+		}
+
+		if (volume > 255)
+		{
+			volume = 255;
+		}
+		else if (volume < 0)
+		{
+			volume = 0;
+		}
+	}
+	else if (GGameType & GAME_ET)
+	{
+		if (volume & 1 << UNDERWATER_BIT_ET)
+		{
+			loopSounds[index].loudUnderWater = true;
+		}
+
+		if (volume > 65535)
+		{
+			volume = 65535;
+		}
+		else if (volume < 0)
+		{
+			volume = 0;
+		}
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_ET))
+	{
+		loopSounds[index].vol = (int)( (float)volume * s_volCurrent);  //----(SA)	modified
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		loopSounds[index].vol = volume;
+	}
 
 	if (s_doppler->integer && VectorLengthSquared(velocity) > 0.0)
 	{
 		vec3_t	out;
 		float	lena, lenb;
 
-		loopSounds[entityNum].doppler = true;
-		lena = DistanceSquared(loopSounds[listener_number].origin, loopSounds[entityNum].origin);
-		VectorAdd(loopSounds[entityNum].origin, loopSounds[entityNum].velocity, out);
-		lenb = DistanceSquared(loopSounds[listener_number].origin, out);
-		if ((loopSounds[entityNum].framenum + 1) != cls.framecount)
+		loopSounds[index].doppler = true;
+		const float* listenerPos = GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ?
+			entityPositions[listener_number] : loopSounds[listener_number].origin;
+		lena = DistanceSquared(listenerPos, loopSounds[index].origin);
+		VectorAdd(loopSounds[index].origin, loopSounds[index].velocity, out);
+		lenb = DistanceSquared(listenerPos, out);
+		if ((loopSounds[index].framenum + 1) != cls.framecount)
 		{
-			loopSounds[entityNum].oldDopplerScale = 1.0;
+			loopSounds[index].oldDopplerScale = 1.0;
 		}
 		else
 		{
-			loopSounds[entityNum].oldDopplerScale = loopSounds[entityNum].dopplerScale;
+			loopSounds[index].oldDopplerScale = loopSounds[index].dopplerScale;
 		}
-		loopSounds[entityNum].dopplerScale = lenb / (lena * 100);
-		if (loopSounds[entityNum].dopplerScale <= 1.0)
+		loopSounds[index].dopplerScale = lenb / (lena * 100);
+		if (loopSounds[index].dopplerScale <= 1.0)
 		{
-			loopSounds[entityNum].doppler = false;			// don't bother doing the math
+			loopSounds[index].doppler = false;			// don't bother doing the math
 		}
 	}
 
-	loopSounds[entityNum].framenum = cls.framecount;
+	loopSounds[index].framenum = cls.framecount;
 }
 
 //==========================================================================
@@ -1785,16 +1897,36 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 //
 //==========================================================================
 
-void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle)
+void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime)
 {
 	if (!s_soundStarted || s_soundMuted)
 	{
 		return;
 	}
 
+	int index;
+	if (GGameType & GAME_ET)
+	{
+		if (numLoopSounds >= MAX_LOOPSOUNDS)
+		{
+			return;
+		}
+
+		if (!volume)
+		{
+			return;
+		}
+		index = numLoopSounds;
+		numLoopSounds++;
+	}
+	else
+	{
+		index = entityNum;
+	}
+
 	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
 	{
-		if (GGameType & GAME_Quake3)
+		if (GGameType & GAME_Tech3)
 		{
 			Log::write(S_COLOR_YELLOW "S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
 		}
@@ -1817,12 +1949,40 @@ void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velo
 		DropException(va("%s has length 0", sfx->Name));
 	}
 
-	VectorCopy(origin, loopSounds[entityNum].origin);
-	VectorCopy(velocity, loopSounds[entityNum].velocity);
-	loopSounds[entityNum].sfx = sfx;
-	loopSounds[entityNum].active = true;
-	loopSounds[entityNum].kill = false;
-	loopSounds[entityNum].doppler = false;
+	VectorCopy(origin, loopSounds[index].origin);
+	VectorCopy(velocity, loopSounds[index].velocity);
+	loopSounds[index].sfx = sfx;
+	loopSounds[index].active = true;
+	loopSounds[index].kill = false;
+	loopSounds[index].doppler = false;
+
+	if (GGameType & GAME_ET)
+	{
+		if (range)
+		{
+			loopSounds[index].range = range;
+		}
+		else
+		{
+			loopSounds[index].range = SOUND_RANGE_DEFAULT;
+		}
+
+		if (volume & 1 << UNDERWATER_BIT_ET)
+		{
+			loopSounds[index].loudUnderWater = true;
+		}
+
+		if (volume > 65535)
+		{
+			volume = 65535;
+		}
+		else if (volume < 0)
+		{
+			volume = 0;
+		}
+
+		loopSounds[index].vol = (int)((float)volume * s_volCurrent);  //----(SA)	modified
+	}
 }
 
 //==========================================================================
@@ -1885,7 +2045,6 @@ static channel_t* S_PickChannel(int EntNum, int EntChannel)
 
 	return Ch;
 }       
-#endif
 
 //==========================================================================
 //
@@ -1998,7 +2157,6 @@ void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	S_Spatialize
@@ -2026,9 +2184,97 @@ static void S_Spatialize(channel_t *ch)
 		VectorCopy(loopSounds[ch->entnum].origin, origin);
 	}
 
-	S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+	S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false);
 }           
 
+void S_ClearSounds(bool clearStreaming, bool clearMusic)
+{
+	// stop looping sounds
+	if (GGameType & GAME_ET)
+	{
+		Com_Memset(loopSounds, 0, MAX_GENTITIES_Q3 * sizeof(loopSound_t));
+		Com_Memset(loop_channels, 0, MAX_CHANNELS * sizeof(channel_t));
+		numLoopChannels = 0;
+	}
+	else
+	{
+		S_ClearLoopingSounds(true);
+	}
+
+	// RF, moved this up so streaming sounds dont get updated with the music, below,
+	// and leave us with a snippet off streaming sounds after we reload
+	// we don't want to stop guys with long dialogue from getting cut off by a file read
+	if (clearStreaming)
+	{
+		// RF, clear talking amplitudes
+		Com_Memset(s_entityTalkAmplitude, 0, sizeof(s_entityTalkAmplitude));
+
+		streamingSound_t* ss = streamingSounds;
+		for (int i = 0; i < MAX_STREAMING_SOUNDS; i++, ss++)
+		{
+			if (i > 0 || clearMusic)
+			{
+				s_rawend[i] = 0;
+				ss->kill = 2;   // get rid of it next sound update
+			}
+		}
+
+		// RF, we should also kill all channels, since we are killing streaming sounds
+		// anyway (fixes siren in forest playing after a map_restart/loadgame
+		channel_t* ch = s_channels;
+		for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+		{
+			if (ch->sfx)
+			{
+				S_ChannelFree(ch);
+			}
+		}
+
+	}
+
+	if (!clearMusic)
+	{
+		S_UpdateStreamingSounds();  //----(SA)	added so music will get updated if not cleared
+	}
+	else
+	{
+		// music cleanup
+		nextMusicTrack[0] = 0;
+		nextMusicTrackType = 0;
+	}
+
+	if (clearStreaming && clearMusic)
+	{
+		int clear;
+		if (dma.samplebits == 8)
+		{
+			clear = 0x80;
+		}
+		else
+		{
+			clear = 0;
+		}
+
+		SNDDMA_BeginPainting();
+		if (dma.buffer)
+		{
+			// TTimo: due to a particular bug workaround in linux sound code,
+			//   have to optionally use a custom C implementation of Com_Memset
+			//   not affecting win32, we have #define Snd_Memset Com_Memset
+			// show_bug.cgi?id=371
+			Snd_Memset(dma.buffer, clear, dma.samples * dma.samplebits / 8);
+		}
+		SNDDMA_Submit();
+
+		if (GGameType & GAME_ET)
+		{
+			// NERVE - SMF - clear out channels so they don't finish playing when audio restarts
+			S_ChannelSetup();
+		}
+	}
+}
+
+#if 0
 //==========================================================================
 //
 //	S_ClearSoundBuffer
@@ -2116,6 +2362,7 @@ void S_StopAllSounds()
 
 	S_ClearSoundBuffer();
 }
+#endif
 
 //==========================================================================
 //
@@ -2159,6 +2406,7 @@ static void S_FreePlaysound(playsound_t* ps)
 	s_freeplays.next = ps;
 }
 
+#if 0
 //==========================================================================
 //
 //	S_StartSound

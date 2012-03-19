@@ -66,7 +66,3 @@ extern Cvar   *s_mixahead;
 extern Cvar   *s_separation;
 
 void S_memoryLoad( sfx_t *sfx );
-portable_samplepair_t *S_GetRawSamplePointer();
-
-// spatializes a channel
-void S_Spatialize( channel_t *ch );
