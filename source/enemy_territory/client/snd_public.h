@@ -35,11 +35,6 @@ void S_Shutdown( void );
 void S_UpdateThread( void );
 void S_Reload( void );
 
-// if origin is NULL, the sound will be dynamically sourced from the entity
-void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx, int volume );
-void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx, int flags, int volume );
-void S_StartLocalSound( sfxHandle_t sfx, int channelNum, int volume );
-
 void S_QueueBackgroundTrack( const char *loop );            //----(SA)	added
 void S_FadeAllSounds( float targetvol, int time, qboolean stopsounds );   //----(SA)	added
 
@@ -47,8 +42,6 @@ void S_AddLoopSounds( void );
 
 // stop all sounds and the background track
 void S_StopAllSounds( void );
-
-void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime );
 
 // recompute the reletive volumes for all running sounds
 // reletive to the given entityNum / orientation

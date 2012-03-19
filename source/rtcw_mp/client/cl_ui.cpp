@@ -933,7 +933,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return S_RegisterSound( (char*)VMA( 1 ));
 
 	case UI_S_STARTLOCALSOUND:
-		S_StartLocalSound( args[1], args[2] );
+		S_StartLocalSound( args[1], args[2], 127 );
 		return 0;
 
 	case UI_KEY_KEYNUMTOSTRINGBUF:

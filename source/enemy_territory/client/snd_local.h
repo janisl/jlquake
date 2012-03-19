@@ -59,17 +59,6 @@ extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
 
-typedef struct {
-	vec3_t origin;
-	qboolean fixedOrigin;
-	int entityNum;
-	int entityChannel;
-	sfxHandle_t sfx;
-	int flags;
-	int volume;
-} s_pushStack;
-
-#define MAX_PUSHSTACK   64
 #define LOOP_HASH       128
 #define MAX_LOOPSOUNDS 1024
 
@@ -82,9 +71,6 @@ typedef struct {
 	float volFadeFrac;
 
 	qboolean stopSounds;
-
-	s_pushStack pushPop[MAX_PUSHSTACK];
-	int tart;
 
 	int s_clearSoundBuffer;
 } snd_t;

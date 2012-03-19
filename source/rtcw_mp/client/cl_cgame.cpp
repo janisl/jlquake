@@ -718,15 +718,15 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_CM_MARKFRAGMENTS:
 		return re.MarkFragments( args[1], (const vec3_t*)VMA( 2 ), (float*)VMA( 3 ), args[4], (float*)VMA( 5 ), args[6], (markFragment_t*)VMA( 7 ) );
 	case CG_S_STARTSOUND:
-		S_StartSound( (float*)VMA( 1 ), args[2], args[3], args[4] );
+		S_StartSound( (float*)VMA( 1 ), args[2], args[3], args[4], 0.5 );
 		return 0;
 //----(SA)	added
 	case CG_S_STARTSOUNDEX:
-		S_StartSoundEx( (float*)VMA( 1 ), args[2], args[3], args[4], args[5] );
+		S_StartSoundEx( (float*)VMA( 1 ), args[2], args[3], args[4], args[5], 127 );
 		return 0;
 //----(SA)	end
 	case CG_S_STARTLOCALSOUND:
-		S_StartLocalSound( args[1], args[2] );
+		S_StartLocalSound( args[1], args[2], 127 );
 		return 0;
 	case CG_S_CLEARLOOPINGSOUNDS:
 		S_ClearLoopingSounds(true); // (SA) modified so no_pvs sounds can function

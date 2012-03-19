@@ -787,7 +787,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return 0;
 
 	case CG_S_STARTSOUND:
-		S_StartSound( (float*)VMA( 1 ), args[2], args[3], args[4], args[5] );
+		S_StartSound( (float*)VMA( 1 ), args[2], args[3], args[4], args[5] / 255.0 );
 		return 0;
 //----(SA)	added
 	case CG_S_STARTSOUNDEX:

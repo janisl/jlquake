@@ -34,11 +34,6 @@ void S_Init( void );
 void S_Shutdown( void );
 void S_UpdateThread( void );
 
-// if origin is NULL, the sound will be dynamically sourced from the entity
-void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
-void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx, int flags );
-void S_StartLocalSound( sfxHandle_t sfx, int channelNum );
-
 // stop all sounds and the background track
 void S_StopAllSounds( void );
 

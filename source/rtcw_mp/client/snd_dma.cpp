@@ -51,31 +51,7 @@ extern int numStreamingSounds;
 extern vec3_t entityPositions[MAX_GENTITIES_Q3];
 void S_SpatializeOrigin( vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol, float range, int noAttenuation );
 void S_Music_f( void );
-
-typedef struct {
-	vec3_t origin;
-	qboolean fixedOrigin;
-	int entityNum;
-	int entityChannel;
-	sfxHandle_t sfx;
-	int flags;
-} s_pushStack;
-
-#define MAX_PUSHSTACK 64
-static s_pushStack pushPop[MAX_PUSHSTACK];
-static int tart = 0;
-
-typedef struct {
-	char intro[256];
-	char loop[256];
-	qboolean music;
-	int entnum;
-	int channel;
-	int attenuation;
-} s_streamStack;
-
-//static s_streamStack	Sstream[MAX_PUSHSTACK]; // TTimo: unused
-//static int onStream; // TTimo: unused
+void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, int flags, int volume);
 
 // =======================================================================
 // Internal sound data & structures
@@ -239,241 +215,6 @@ void S_memoryLoad( sfx_t *sfx ) {
 }
 
 //=============================================================================
-
-/*
-====================
-S_StartSound
-
-Validates the parms and queues the sound up
-if pos is NULL, the sound will be dynamically sourced from the entity
-Entchannel 0 will never override a playing sound
-
-  flags:  (currently apply only to non-looping sounds)
-	SND_NORMAL			    0	- (default) allow sound to be cut off only by the same sound on this channel
-	SND_OKTOCUT			0x001	- allow sound to be cut off by any following sounds on this channel
-	SND_REQUESTCUT		0x002	- allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
-	SND_CUTOFF			0x004	- cut off sounds on this channel that are marked 'SND_REQUESTCUT'
-	SND_CUTOFF_ALL		0x008	- cut off all sounds on this channel
-====================
-*/
-
-void S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, int flags ) {
-	if ( !s_soundStarted || s_soundMuted || ( cls.state != CA_ACTIVE && cls.state != CA_DISCONNECTED ) ) {
-		return;
-	}
-	if ( tart < MAX_PUSHSTACK ) {
-		sfx_t       *sfx;
-		if ( origin ) {
-			VectorCopy( origin, pushPop[tart].origin );
-			pushPop[tart].fixedOrigin = qtrue;
-		} else {
-			pushPop[tart].fixedOrigin = qfalse;
-		}
-		pushPop[tart].entityNum = entityNum;
-		pushPop[tart].entityChannel = entchannel;
-		pushPop[tart].sfx = sfxHandle;
-		pushPop[tart].flags = flags;
-		sfx = &s_knownSfx[ sfxHandle ];
-
-		if ( sfx->InMemory == qfalse ) {
-			S_memoryLoad( sfx );
-		}
-
-		tart++;
-	}
-}
-
-void S_ThreadStartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, int flags ) {
-	channel_t   *ch;
-	sfx_t       *sfx;
-	int i, oldest, chosen;
-
-	chosen = -1;
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES_Q3 ) ) {
-		Com_Error( ERR_DROP, "S_StartSound: bad entitynum %i", entityNum );
-	}
-
-	if ( sfxHandle < 0 || sfxHandle >= s_numSfx ) {
-		Com_DPrintf( S_COLOR_YELLOW, "S_StartSound: handle %i out of range\n", sfxHandle );
-		return;
-	}
-
-	sfx = &s_knownSfx[ sfxHandle ];
-
-	if ( s_show->integer == 1 ) {
-		Com_Printf( "%i : %s\n", s_paintedtime, sfx->Name );
-	}
-
-//	Com_Printf("playing %s\n", sfx->soundName);
-
-	sfx->LastTimeUsed = Sys_Milliseconds();
-
-	// check for a streaming sound that this entity is playing in this channel
-	// kill it if it exists
-	if ( entityNum >= 0 ) {
-		for ( i = 1; i < MAX_STREAMING_SOUNDS; i++ ) {    // track 0 is music/cinematics
-			if ( !streamingSounds[i].file ) {
-				continue;
-			}
-			// check to see if this character currently has another sound streaming on the same channel
-			if ( ( entchannel != Q3CHAN_AUTO ) && ( streamingSounds[i].entnum >= 0 ) && ( streamingSounds[i].channel == entchannel ) && ( streamingSounds[i].entnum == entityNum ) ) {
-				// found a match, override this channel
-				streamingSounds[i].kill = qtrue;
-				break;
-			}
-		}
-	}
-
-	ch = NULL;
-
-//----(SA)	modified
-
-	// shut off other sounds on this channel if necessary
-	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
-		if ( s_channels[i].entnum == entityNum && s_channels[i].sfx && s_channels[i].entchannel == entchannel ) {
-
-			// cutoff all on channel
-			if ( flags & SND_CUTOFF_ALL ) {
-				S_ChannelFree( &s_channels[i] );
-				continue;
-			}
-
-			if ( s_channels[i].flags & SND_NOCUT ) {
-				continue;
-			}
-
-			// cutoff sounds that expect to be overwritten
-			if ( s_channels[i].flags & SND_OKTOCUT ) {
-				S_ChannelFree( &s_channels[i] );
-				continue;
-			}
-
-			// cutoff 'weak' sounds on channel
-			if ( flags & SND_CUTOFF ) {
-				if ( s_channels[i].flags & SND_REQUESTCUT ) {
-					S_ChannelFree( &s_channels[i] );
-					continue;
-				}
-			}
-
-		}
-	}
-
-	// re-use channel if applicable
-	for ( i = 0 ; i < MAX_CHANNELS ; i++ ) {
-		if ( s_channels[i].entnum == entityNum && s_channels[i].entchannel == entchannel ) {
-			if ( !( s_channels[i].flags & SND_NOCUT ) && s_channels[i].sfx == sfx ) {
-				ch = &s_channels[i];
-				break;
-			}
-		}
-	}
-
-	if ( !ch ) {
-		ch = S_ChannelMalloc();
-	}
-//----(SA)	end
-
-	if ( !ch ) {
-		ch = s_channels;
-
-		oldest = sfx->LastTimeUsed;
-		for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-			if ( ch->entnum == entityNum && ch->sfx == sfx ) {
-				chosen = i;
-				break;
-			}
-			if ( ch->entnum != listener_number && ch->entnum == entityNum && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER ) {
-				oldest = ch->allocTime;
-				chosen = i;
-			}
-		}
-		if ( chosen == -1 ) {
-			ch = s_channels;
-			for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-				if ( ch->entnum != listener_number && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER ) {
-					oldest = ch->allocTime;
-					chosen = i;
-				}
-			}
-			if ( chosen == -1 ) {
-				if ( ch->entnum == listener_number ) {
-					for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-						if ( ch->allocTime < oldest ) {
-							oldest = ch->allocTime;
-							chosen = i;
-						}
-					}
-				}
-				if ( chosen == -1 ) {
-					//Com_Printf("dropping sound\n");
-					return;
-				}
-			}
-		}
-		ch = &s_channels[chosen];
-		ch->allocTime = sfx->LastTimeUsed;
-	}
-
-	if ( origin ) {
-		VectorCopy( origin, ch->origin );
-		ch->fixed_origin = qtrue;
-	} else {
-		ch->fixed_origin = qfalse;
-	}
-
-	ch->flags = flags;  //----(SA)	added
-	ch->master_vol = 127;
-	ch->entnum = entityNum;
-	ch->sfx = sfx;
-	ch->entchannel = entchannel;
-	ch->leftvol = ch->master_vol;       // these will get calced at next spatialize
-	ch->rightvol = ch->master_vol;      // unless the game isn't running
-	ch->doppler = qfalse;
-
-	if ( ch->fixed_origin ) {
-		S_SpatializeOrigin( ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false );
-	} else {
-		S_SpatializeOrigin( entityPositions[ ch->entnum ], ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false );
-	}
-
-	ch->startSample = START_SAMPLE_IMMEDIATE;
-	ch->threadReady = qtrue;
-}
-
-/*
-==============
-S_StartSound
-==============
-*/
-void S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle ) {
-	S_StartSoundEx( origin, entityNum, entchannel, sfxHandle, 0 );
-}
-
-
-
-/*
-==================
-S_StartLocalSound
-==================
-*/
-void S_StartLocalSound( sfxHandle_t sfxHandle, int channelNum ) {
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	if ( sfxHandle < 0 || sfxHandle >= s_numSfx ) {
-		Com_DPrintf( S_COLOR_YELLOW, "S_StartLocalSound: handle %i out of range\n", sfxHandle );
-		return;
-	}
-
-	S_StartSound( NULL, listener_number, channelNum, sfxHandle );
-}
-
 
 /*
 ==================
@@ -849,16 +590,6 @@ void S_Update_Mix( void ) {
 
 	s_volCurrent = 1;
 
-	for ( i = 0; i < tart; i++ ) {
-		if ( pushPop[i].fixedOrigin ) {
-			S_ThreadStartSoundEx( pushPop[i].origin, pushPop[i].entityNum, pushPop[i].entityChannel, pushPop[i].sfx, pushPop[i].flags );
-		} else {
-			S_ThreadStartSoundEx( NULL, pushPop[i].entityNum, pushPop[i].entityChannel, pushPop[i].sfx, pushPop[i].flags );
-		}
-	}
-
-	tart = 0;
-
 	s_soundPainted = qtrue;
 
 	thisTime = Sys_Milliseconds();
@@ -924,7 +655,7 @@ void S_Play_f( void ) {
 		}
 		h = S_RegisterSound( name);
 		if ( h ) {
-			S_StartLocalSound( h, Q3CHAN_LOCAL_SOUND );
+			S_StartLocalSound( h, Q3CHAN_LOCAL_SOUND, 127 );
 		}
 		i++;
 	}
@@ -968,6 +699,12 @@ void CL_WriteWaveFilePacket(int endtime)
 {
 }
 
-void S_IssuePlaysound(playsound_t* ps)
+sfx_t *S_RegisterSexedSound(int entnum, char *base)
 {
+	return NULL;
+}
+
+int S_GetClFrameServertime()
+{
+	return 0;
 }

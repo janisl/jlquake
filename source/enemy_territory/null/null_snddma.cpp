@@ -37,9 +37,6 @@ sfxHandle_t S_RegisterSound( const char *name) {
 	return 0;
 }
 
-void S_StartLocalSound( sfxHandle_t sfxHandle, int channelNum, int volume ) {
-}
-
 void S_ClearSoundBuffer( qboolean killStreaming ) {
 }
 

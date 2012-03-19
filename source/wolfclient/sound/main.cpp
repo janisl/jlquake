@@ -70,10 +70,8 @@ struct loopSound_t
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-#if 0
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
-#endif
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -2406,7 +2404,224 @@ static void S_FreePlaysound(playsound_t* ps)
 	s_freeplays.next = ps;
 }
 
-#if 0
+void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle,
+	int flags, int volume)
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
+		return;
+	}
+
+	if (!origin && (entityNum < 0 || entityNum > MAX_GENTITIES_Q3))
+	{
+		common->Error("S_StartSound: bad entitynum %i", entityNum);
+	}
+
+	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
+	{
+		common->Printf(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
+		return;
+	}
+
+	sfx_t* sfx = &s_knownSfx[sfxHandle];
+
+	if (s_show->integer == 1)
+	{
+		common->Printf("%i : %s\n", s_paintedtime, sfx->Name);
+	}
+
+	sfx->LastTimeUsed = Sys_Milliseconds();
+
+	// check for a streaming sound that this entity is playing in this channel
+	// kill it if it exists
+	if (entityNum >= 0)
+	{
+		for (int i = 1; i < MAX_STREAMING_SOUNDS; i++)	// track 0 is music/cinematics
+		{
+			if (!streamingSounds[i].file)
+			{
+				continue;
+			}
+			// check to see if this character currently has another sound streaming on the same channel
+			if ((entchannel != Q3CHAN_AUTO) && (streamingSounds[i].entnum >= 0) &&
+				(streamingSounds[i].channel == entchannel) && (streamingSounds[i].entnum == entityNum))
+			{
+				// found a match, override this channel
+				streamingSounds[i].kill = 1;
+				break;
+			}
+		}
+	}
+
+	// shut off other sounds on this channel if necessary
+	for (int i = 0; i < MAX_CHANNELS; i++)
+	{
+		if (s_channels[i].entnum == entityNum && s_channels[i].sfx && s_channels[i].entchannel == entchannel)
+		{
+			// cutoff all on channel
+			if (flags & SND_CUTOFF_ALL)
+			{
+				S_ChannelFree(&s_channels[i]);
+				continue;
+			}
+
+			if (s_channels[i].flags & SND_NOCUT)
+			{
+				continue;
+			}
+
+			// RF, let client voice sounds be overwritten
+			if ((GGameType & GAME_WolfSP) && entityNum < MAX_CLIENTS_WS &&
+				s_channels[i].entchannel != Q3CHAN_AUTO && s_channels[i].entchannel != Q3CHAN_WEAPON)
+			{
+				S_ChannelFree(&s_channels[i]);
+				continue;
+			}
+
+			// cutoff sounds that expect to be overwritten
+			if (s_channels[i].flags & SND_OKTOCUT)
+			{
+				S_ChannelFree(&s_channels[i]);
+				continue;
+			}
+
+			// cutoff 'weak' sounds on channel
+			if (flags & SND_CUTOFF)
+			{
+				if (s_channels[i].flags & SND_REQUESTCUT)
+				{
+					S_ChannelFree(&s_channels[i]);
+					continue;
+				}
+			}
+		}
+	}
+
+	channel_t* ch = NULL;
+
+
+	// re-use channel if applicable
+	for (int i = 0; i < MAX_CHANNELS; i++)
+	{
+		if (s_channels[i].entnum == entityNum && s_channels[i].entchannel == entchannel && entchannel != Q3CHAN_AUTO)
+		{
+			if (!(s_channels[i].flags & SND_NOCUT) && s_channels[i].sfx == sfx)
+			{
+				ch = &s_channels[i];
+				break;
+			}
+		}
+	}
+
+	if (!ch)
+	{
+		ch = S_ChannelMalloc();
+	}
+
+	if (!ch)
+	{
+		ch = s_channels;
+
+		int chosen = -1;
+		int oldest = sfx->LastTimeUsed;
+		for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+		{
+			if (ch->entnum == entityNum && ch->sfx == sfx)
+			{
+				chosen = i;
+				break;
+			}
+			if (ch->entnum != listener_number && ch->entnum == entityNum &&
+				ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER)
+			{
+				oldest = ch->allocTime;
+				chosen = i;
+			}
+		}
+		if (chosen == -1)
+		{
+			ch = s_channels;
+			for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+			{
+				if (ch->entnum != listener_number && ch->allocTime < oldest && ch->entchannel != Q3CHAN_ANNOUNCER)
+				{
+					oldest = ch->allocTime;
+					chosen = i;
+				}
+			}
+			if (chosen == -1)
+			{
+				if (ch->entnum == listener_number)
+				{
+					for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+					{
+						if (ch->allocTime < oldest)
+						{
+							oldest = ch->allocTime;
+							chosen = i;
+						}
+					}
+				}
+				if (chosen == -1)
+				{
+					//Com_Printf("dropping sound\n");
+					return;
+				}
+			}
+		}
+		ch = &s_channels[chosen];
+		ch->allocTime = sfx->LastTimeUsed;
+	}
+
+	if ( origin ) {
+		VectorCopy( origin, ch->origin );
+		ch->fixed_origin = true;
+	} else {
+		ch->fixed_origin = false;
+	}
+
+	ch->flags = flags;
+	ch->master_vol = volume;
+	ch->entnum = entityNum;
+	ch->sfx = sfx;
+	ch->entchannel = entchannel;
+	ch->leftvol = ch->master_vol;       // these will get calced at next spatialize
+	ch->rightvol = ch->master_vol;      // unless the game isn't running
+	ch->doppler = false;
+
+	if (ch->fixed_origin)
+	{
+		S_SpatializeOrigin(ch->origin, ch->master_vol, ch->dist_mult,
+			&ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, flags & SND_NO_ATTENUATION);
+	}
+	else
+	{
+		S_SpatializeOrigin(entityPositions[ch->entnum], ch->master_vol, ch->dist_mult,
+			&ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, flags & SND_NO_ATTENUATION);
+	}
+
+	ch->startSample = START_SAMPLE_IMMEDIATE;
+	ch->threadReady = true;
+}
+
+void S_StartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, int flags, int volume)
+{
+	if (!s_soundStarted || s_soundMuted || (cls.state != CA_ACTIVE && cls.state != CA_DISCONNECTED))
+	{
+		return;
+	}
+
+	// RF, we have lots of NULL sounds using up valuable channels, so just ignore them
+	if ((GGameType & GAME_WolfSP) && !sfxHandle && entchannel != Q3CHAN_WEAPON)
+	{
+		// let null weapon sounds try to play.  they kill any weapon sounds playing when a guy dies
+		return;
+	}
+
+	// RF, make the call now, or else we could override following streaming sounds in the same frame, due to the delay
+	S_ThreadStartSoundEx(origin, entityNum, entchannel, sfxHandle, flags, volume);
+}
+
 //==========================================================================
 //
 //	S_StartSound
@@ -2419,6 +2634,12 @@ static void S_FreePlaysound(playsound_t* ps)
 
 void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHandle, float fvol, float attenuation, float timeofs)
 {
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		S_StartSoundEx(origin, entnum, entchannel, sfxHandle, 0, fvol * 255);
+		return;
+	}
+
 	if (!s_soundStarted || s_soundMuted)
 	{
 		return;
@@ -2732,9 +2953,9 @@ void S_StartLocalSound(const char* Sound)
 //
 //==========================================================================
 
-void S_StartLocalSound(sfxHandle_t SfxHandle, int ChannelNumber)
+void S_StartLocalSound(sfxHandle_t sfxHandle, int channelNumber, int volume)
 {
-	S_StartSound(NULL, listener_number, ChannelNumber, SfxHandle);
+	S_StartSound(NULL, listener_number, channelNumber, sfxHandle, volume / 255.0);
 }
 
 //==========================================================================
@@ -2866,6 +3087,7 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 	ss->fixed_origin = true;
 }
 
+#if 0
 //==========================================================================
 //
 //	S_ScanChannelStarts

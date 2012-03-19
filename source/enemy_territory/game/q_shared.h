@@ -221,14 +221,6 @@ void Sys_PumpEvents( void );
 
 enum {qfalse, qtrue};
 
-//#define	SND_NORMAL			0x000	// (default) Allow sound to be cut off only by the same sound on this channel
-#define     SND_OKTOCUT         0x001   // Allow sound to be cut off by any following sounds on this channel
-#define     SND_REQUESTCUT      0x002   // Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
-#define     SND_CUTOFF          0x004   // Cut off sounds on this channel that are marked 'SND_REQUESTCUT'
-#define     SND_CUTOFF_ALL      0x008   // Cut off all sounds on this channel
-#define     SND_NOCUT           0x010   // Don't cut off.  Always let finish (overridden by SND_CUTOFF_ALL)
-#define     SND_NO_ATTENUATION  0x020   // don't attenuate (even though the sound is in voice channel, for example)
-
 
 #ifndef NULL
 #define NULL ( (void *)0 )
