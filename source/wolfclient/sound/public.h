@@ -53,11 +53,13 @@ void S_AddLoopingSound(int entityNumber, const vec3_t origin, const vec3_t veloc
 void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime);
 void S_StopLoopingSound(int EntityNumber);
 
-void S_ClearSounds(bool clearStreaming, bool clearMusic);
 #if 0
 // stop all sounds and the background track
 void S_StopAllSounds();
+#endif
 
+void S_ClearSounds(bool clearStreaming, bool clearMusic);
+#if 0
 void S_ClearSoundBuffer();
 #endif
 

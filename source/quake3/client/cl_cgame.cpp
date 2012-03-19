@@ -603,16 +603,16 @@ qintptr CL_CgameSystemCalls( qintptr *args ) {
 		S_StartSound( (float*)VMA(1), args[2], args[3], args[4] );
 		return 0;
 	case CG_S_STARTLOCALSOUND:
-		S_StartLocalSound( args[1], args[2] );
+		S_StartLocalSound( args[1], args[2], 127 );
 		return 0;
 	case CG_S_CLEARLOOPINGSOUNDS:
 		S_ClearLoopingSounds(args[1]);
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
-		S_AddLoopingSound( args[1], (float*)VMA(2), (float*)VMA(3), args[4] );
+		S_AddLoopingSound( args[1], (float*)VMA(2), (float*)VMA(3), 0, args[4], 0, 0 );
 		return 0;
 	case CG_S_ADDREALLOOPINGSOUND:
-		S_AddRealLoopingSound( args[1], (float*)VMA(2), (float*)VMA(3), args[4] );
+		S_AddRealLoopingSound( args[1], (float*)VMA(2), (float*)VMA(3), 0, args[4], 0, 0 );
 		return 0;
 	case CG_S_STOPLOOPINGSOUND:
 		S_StopLoopingSound( args[1] );

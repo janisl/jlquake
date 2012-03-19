@@ -1697,7 +1697,7 @@ void CL_UpdateSounds()
 		q2entity_state_t* ent = &cl_parse_entities[num];
 		if (!ent->sound)
 			continue;
-		S_AddLoopingSound(num, ent->origin, vec3_origin, cl.sound_precache[ent->sound]);
+		S_AddLoopingSound(num, ent->origin, vec3_origin, 0, cl.sound_precache[ent->sound], 0, 0);
 	}
 }
 
