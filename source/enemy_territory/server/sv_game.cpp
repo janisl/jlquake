@@ -364,11 +364,6 @@ SV_GameSystemCalls
 The module is making a system call
 ====================
 */
-// show_bug.cgi?id=574
-#include "../../wolfclient/client.h"
-extern int S_RegisterSound( const char *name);
-extern int S_GetSoundLength( sfxHandle_t sfxHandle );
-
 qintptr SV_GameSystemCalls( qintptr* args ) {
 	switch ( args[0] ) {
 	case G_PRINT:
@@ -517,12 +512,11 @@ qintptr SV_GameSystemCalls( qintptr* args ) {
 	case G_REGISTERTAG:
 		return SV_LoadTag( (char*)VMA( 1 ) );
 
-		// START	xkan, 10/28/2002
+		//	Not used by actual game code.
 	case G_REGISTERSOUND:
-		return S_RegisterSound( (char*)VMA( 1 ));
+		common->Error("RegisterSound on server");
 	case G_GET_SOUND_LENGTH:
-		return S_GetSoundLength( args[1] );
-		// END		xkan, 10/28/2002
+		common->Error("GetSoundLength on server");
 
 		//====================================
 

@@ -32,15 +32,5 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../client/client.h"
 
-sfxHandle_t S_RegisterSound( const char *name) {
-	return 0;
-}
-
 void S_ClearSoundBuffer( bool killStreaming ) {
-}
-
-// show_bug.cgi?id=574
-int S_GetSoundLength( sfxHandle_t sfxHandle ) {
-	Com_Error( ERR_DROP, "null_snddma.c: S_GetSoundLength\n" );
-	return 0;
 }
