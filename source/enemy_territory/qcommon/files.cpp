@@ -50,10 +50,6 @@ static int fs_loadStack;                    // total files in memory
 char lastValidBase[MAX_OSPATH];
 char lastValidGame[MAX_OSPATH];
 
-void S_ClearSoundBuffer()
-{
-}
-
 #ifdef DEDICATED
 bool CL_WWWBadChecksum(const char* pakname)
 {

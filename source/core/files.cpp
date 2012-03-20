@@ -305,7 +305,7 @@ struct officialpak_t
 	bool ok;
 };
 
-void S_ClearSoundBuffer();
+void S_ClearSoundBuffer(bool killStreaming);
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);
 
@@ -1485,7 +1485,7 @@ static fileHandle_t FS_FOpenFileAppend(const char* filename)
 	String::NCpyZ(fsh[f].name, filename, sizeof(fsh[f].name));
 
 	// don't let sound stutter
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(false);
 
 	char* ospath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, filename);
 
@@ -1580,7 +1580,7 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 	String::NCpyZ(fsh[f].name, filename, sizeof( fsh[f].name));
 
 	// don't let sound stutter
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(false);
 
 	// search homepath
 	char* ospath = FS_BuildOSPath(fs_homepath->string, filename, "");
@@ -2248,7 +2248,7 @@ void FS_Rename(const char* from, const char* to)
 	}
 
 	// don't let sound stutter
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(false);
 
 	char* from_ospath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, from);
 	char* to_ospath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, to);
@@ -2279,7 +2279,7 @@ void FS_SV_Rename(const char* from, const char* to)
 	}
 
 	// don't let sound stutter
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(false);
 
 	char* from_ospath = FS_BuildOSPath(fs_homepath->string, from, "");
 	char* to_ospath = FS_BuildOSPath(fs_homepath->string, to, "");

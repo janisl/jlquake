@@ -37,7 +37,7 @@ sfxHandle_t S_RegisterSound( const char *name) {
 	return 0;
 }
 
-void S_ClearSoundBuffer( qboolean killStreaming ) {
+void S_ClearSoundBuffer( bool killStreaming ) {
 }
 
 // show_bug.cgi?id=574

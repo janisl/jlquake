@@ -79,6 +79,7 @@ int S_GetClFrameServertime();
 
 static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	int *left_vol, int *right_vol, float range, int noAttenuation);
+static void S_UpdateThread();
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -121,6 +122,7 @@ float s_volCurrent;
 static int			s_soundStarted;
 static bool			s_soundMuted;
 static bool s_soundPainted;
+static bool s_clearSoundBuffer;
 
 bool			s_use_custom_memset = false;
 
@@ -605,7 +607,7 @@ void S_EndRegistration()
 }
 
 //**************************************************************************
-//	Background music functions
+//	STREAMING SOUND
 //**************************************************************************
 
 //==========================================================================
@@ -1588,7 +1590,7 @@ static void S_SoundInfo_f()
 		Log::write("%5d samplebits\n", dma.samplebits);
 		Log::write("%5d submission_chunk\n", dma.submission_chunk);
 		Log::write("%5d speed\n", dma.speed);
-		Log::write("0x%x dma buffer\n", dma.buffer);
+		Log::write("0x%p dma buffer\n", dma.buffer);
 		if (streamingSounds[0].file)
 		{
 			Log::write("Background file: %s\n", streamingSounds[0].loop);
@@ -1676,15 +1678,31 @@ void S_StopLoopingSound(int EntityNum)
 
 void S_ClearLoopingSounds(bool KillAll)
 {
-	for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
 	{
-		if (KillAll || loopSounds[i].kill == true || (loopSounds[i].sfx && loopSounds[i].sfx->Length == 0))
-		{
-			loopSounds[i].kill = false;
-			S_StopLoopingSound(i);
-		}
+		numLoopSounds = 0;
 	}
-	numLoopChannels = 0;
+	else if (GGameType & GAME_ET)
+	{
+		for (int i = 0; i < numLoopSounds; i++)
+		{
+			loopSounds[i].active = false;
+		}
+		numLoopSounds = 0;
+		numLoopChannels = 0;
+	}
+	else
+	{
+		for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+		{
+			if (KillAll || loopSounds[i].kill == true || (loopSounds[i].sfx && loopSounds[i].sfx->Length == 0))
+			{
+				loopSounds[i].kill = false;
+				S_StopLoopingSound(i);
+			}
+		}
+		numLoopChannels = 0;
+	}
 }
 
 //==========================================================================
@@ -1816,6 +1834,10 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 	else if (GGameType & GAME_WolfMP)
 	{
 		loopSounds[index].vol = volume;
+	}
+	else
+	{
+		loopSounds[index].vol = 256;
 	}
 
 	if (s_doppler->integer && VectorLengthSquared(velocity) > 0.0)
@@ -2241,12 +2263,35 @@ void S_ClearSounds(bool clearStreaming, bool clearMusic)
 //
 //==========================================================================
 
-void S_ClearSoundBuffer()
+void S_ClearSoundBuffer(bool killStreaming)
 {
 	int		clear;
-		
+
 	if (!s_soundStarted)
 		return;
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		if (!s_soundPainted)
+		{
+			// RF, buffers are clear, no point clearing again
+			return;
+		}
+
+		s_soundPainted = false;
+
+		s_clearSoundBuffer = true;
+
+		if (GGameType & GAME_WolfMP)
+		{
+			S_Update();         // NERVE - SMF - force an update
+		}
+		else
+		{
+			S_ClearSounds(killStreaming, true);    // do this now since you might not be allowed to in a sec (no multi-threaeded)
+		}
+		return;
+	}
 
 	if (GGameType & GAME_Quake3)
 	{
@@ -2301,7 +2346,7 @@ void S_StopAllSounds()
 		s_playsounds[i].next->prev = &s_playsounds[i];
 	}
 
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		//	Clear all the channels.
 		//	Quake 3 does this in S_ClearSoundBuffer.
@@ -2314,10 +2359,21 @@ void S_StopAllSounds()
 		numLoopChannels = BSP29_NUM_AMBIENTS;	// no statics
 	}
 
+	// Arnout: i = 1, as we ignore music
+	for (int i = 1; i < MAX_STREAMING_SOUNDS; i++)
+	{
+		streamingSounds[i].kill = 1;
+	}
+
 	//	Stop the background music.
 	S_StopBackgroundTrack();
 
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(true);
+
+	if (GGameType & (GAME_WolfSP | GAME_ET))
+	{
+		S_UpdateThread();   // clear the stuff that needs to clear
+	}
 }
 
 //==========================================================================
@@ -2362,7 +2418,7 @@ static void S_FreePlaysound(playsound_t* ps)
 	s_freeplays.next = ps;
 }
 
-void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle,
+static void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle,
 	int flags, int volume)
 {
 	if (!s_soundStarted || s_soundMuted)
@@ -2877,6 +2933,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 		ch->rightvol = ch->master_vol;		// unless the game isn't running
 		ch->doppler = false;
 		ch->dist_mult = SOUND_ATTENUATE;
+		ch->threadReady = true;
 	}
 }
 
@@ -3067,7 +3124,7 @@ static bool S_ScanChannelStarts()
 		// if this channel was just started this frame,
 		// set the sample count to it begins mixing
 		// into the very first sample
-		if (ch->startSample == START_SAMPLE_IMMEDIATE)
+		if (ch->startSample == START_SAMPLE_IMMEDIATE && ch->threadReady)
 		{
 			ch->startSample = s_paintedtime;
 			newSamples = true;
@@ -3205,13 +3262,24 @@ static void S_AddLoopSounds()
 {
 	int			left_total, right_total, left, right;
 	static int	loopFrame;
+	int time;
+	int count;
 
 	numLoopChannels = 0;
 
-	int time = Com_Milliseconds();
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		time = Sys_Milliseconds();
+		count = numLoopSounds;
+	}
+	else
+	{
+		time = Com_Milliseconds();
+		count = MAX_LOOPSOUNDS;
+	}
 
 	loopFrame++;
-	for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+	for (int i = 0; i < count; i++)
 	{
 		loopSound_t* loop = &loopSounds[i];
 		if (!loop->active || loop->mergeFrame == loopFrame)
@@ -3221,23 +3289,28 @@ static void S_AddLoopSounds()
 
 		if (GGameType & GAME_Quake2)
 		{
-			S_SpatializeOrigin(loop->origin, 255.0, SOUND_LOOPATTENUATE, &left_total, &right_total, SOUND_RANGE_DEFAULT, false);
+			S_SpatializeOrigin(loop->origin, 255.0, SOUND_LOOPATTENUATE, &left_total, &right_total, loop->range, false);
 		}
-		else if (loop->kill)
+		else if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)) && loop->kill)
 		{
-			S_SpatializeOrigin(loop->origin, 127, SOUND_ATTENUATE, &left_total, &right_total, SOUND_RANGE_DEFAULT, false);			// 3d
+			S_SpatializeOrigin(loop->origin, 127, SOUND_ATTENUATE, &left_total, &right_total, loop->range, false);			// 3d
 		}
 		else
 		{
-			S_SpatializeOrigin(loop->origin, 90,  SOUND_ATTENUATE, &left_total, &right_total, SOUND_RANGE_DEFAULT, false);			// sphere
+			S_SpatializeOrigin(loop->origin, 90,  SOUND_ATTENUATE, &left_total, &right_total, loop->range, false);			// sphere
 		}
+
+		// adjust according to volume
+		left_total = (int)((float)loop->vol * (float)left_total / 256.0);
+		right_total = (int)((float)loop->vol * (float)right_total / 256.0);
 
 		loop->sfx->LastTimeUsed = time;
 
-		for (int j = i + 1; j < MAX_LOOPSOUNDS; j++)
+		for (int j = i + 1; j < count; j++)
 		{
 			loopSound_t* loop2 = &loopSounds[j];
-			if (!loop2->active || loop2->doppler || loop2->sfx != loop->sfx)
+			if (!loop2->active || loop2->doppler || loop2->sfx != loop->sfx ||
+				loop2->startSample != loop->startSample)
 			{
 				continue;
 			}
@@ -3245,16 +3318,20 @@ static void S_AddLoopSounds()
 
 			if (GGameType & GAME_Quake2)
 			{
-				S_SpatializeOrigin(loop2->origin, 255.0, SOUND_LOOPATTENUATE, &left, &right, SOUND_RANGE_DEFAULT, false);
+				S_SpatializeOrigin(loop2->origin, 255.0, SOUND_LOOPATTENUATE, &left, &right, loop2->range, false);
 			}
 			else if (loop2->kill)
 			{
-				S_SpatializeOrigin(loop2->origin, 127, SOUND_ATTENUATE, &left, &right, SOUND_RANGE_DEFAULT, false);				// 3d
+				S_SpatializeOrigin(loop2->origin, 127, SOUND_ATTENUATE, &left, &right, loop2->range, false);				// 3d
 			}
 			else
 			{
-				S_SpatializeOrigin(loop2->origin, 90,  SOUND_ATTENUATE, &left, &right, SOUND_RANGE_DEFAULT, false);				// sphere
+				S_SpatializeOrigin(loop2->origin, 90,  SOUND_ATTENUATE, &left, &right, loop2->range, false);				// sphere
 			}
+
+			// adjust according to volume
+			left = (int)((float)loop2->vol * (float)left / 256.0);
+			right = (int)((float)loop2->vol * (float)right / 256.0);
 
 			loop2->sfx->LastTimeUsed = time;
 			left_total += left;
@@ -3282,9 +3359,20 @@ static void S_AddLoopSounds()
 		ch->leftvol = left_total;
 		ch->rightvol = right_total;
 		ch->sfx = loop->sfx;
-		ch->doppler = loop->doppler;
-		ch->dopplerScale = loop->dopplerScale;
-		ch->oldDopplerScale = loop->oldDopplerScale;
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+		{
+			// RF, disabled doppler for looping sounds for now, since we are reverting to the old looping sound code
+			ch->doppler = false;
+		}
+		else
+		{
+			ch->doppler = loop->doppler;
+			ch->dopplerScale = loop->dopplerScale;
+			ch->oldDopplerScale = loop->oldDopplerScale;
+		}
+		//	allow offsetting of sound samples
+		ch->startSample = loop->startSample;
+
 		numLoopChannels++;
 		if (numLoopChannels == MAX_CHANNELS)
 		{
@@ -3313,6 +3401,11 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 	VectorCopy(axis[0], listener_axis[0]);
 	VectorCopy(axis[1], listener_axis[1]);
 	VectorCopy(axis[2], listener_axis[2]);
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		return;
+	}
 
 	// update spatialization for dynamic sounds	
 	channel_t* ch = s_channels;
@@ -3358,6 +3451,40 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 	{
 		// add loopsounds
 		S_AddLoopSounds();
+	}
+}
+
+void S_ThreadRespatialize()
+{
+	// update spatialization for dynamic sounds
+	channel_t* ch = s_channels;
+	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+	{
+		if (!ch->sfx)
+		{
+			continue;
+		}
+		// anything coming from the view entity will always be full volume
+		if (ch->entnum == listener_number)
+		{
+			ch->leftvol = ch->master_vol;
+			ch->rightvol = ch->master_vol;
+		}
+		else
+		{
+			vec3_t origin;
+			if (ch->fixed_origin)
+			{
+				VectorCopy(ch->origin, origin);
+			}
+			else
+			{
+				VectorCopy(entityPositions[ ch->entnum ], origin);
+			}
+
+			S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol,
+				&ch->rightvol, SOUND_RANGE_DEFAULT, ch->flags & SND_NO_ATTENUATION);
+		}
 	}
 }
 
@@ -3417,6 +3544,10 @@ static void GetSoundtime()
 		}
 #endif
 	}
+}
+
+static void S_UpdateThread()
+{
 }
 
 //==========================================================================
@@ -3524,7 +3655,7 @@ void S_Update()
 	// dma buffer while loading
 	if (cls.disable_screen)
 	{
-		S_ClearSoundBuffer();
+		S_ClearSoundBuffer(true);
 		return;
 	}
 

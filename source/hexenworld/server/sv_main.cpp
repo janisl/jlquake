@@ -98,7 +98,7 @@ public:
 	}
 } MainLog;
 
-void S_ClearSoundBuffer()
+void S_ClearSoundBuffer(bool killStreaming)
 {
 }
 

@@ -718,7 +718,7 @@ int SCR_ModalMessage (const char *text)
 	SCR_UpdateScreen ();
 	scr_drawdialog = false;
 	
-	S_ClearSoundBuffer ();		// so dma doesn't loop current sound
+	S_ClearSoundBuffer (true);		// so dma doesn't loop current sound
 
 	do
 	{
