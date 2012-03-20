@@ -71,8 +71,6 @@ typedef struct {
 	float volFadeFrac;
 
 	qboolean stopSounds;
-
-	int s_clearSoundBuffer;
 } snd_t;
 
 extern snd_t snd;   // globals for sound

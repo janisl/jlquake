@@ -79,6 +79,8 @@ int S_GetClFrameServertime();
 
 static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	int *left_vol, int *right_vol, float range, int noAttenuation);
+//static 
+void S_UpdateThread();
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -124,6 +126,7 @@ int			s_soundStarted;
 bool			s_soundMuted;
 //static
 bool s_soundPainted;
+bool s_clearSoundBuffer;
 
 bool			s_use_custom_memset = false;
 
@@ -2270,7 +2273,6 @@ void S_ClearSounds(bool clearStreaming, bool clearMusic)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	S_ClearSoundBuffer
@@ -2280,12 +2282,35 @@ void S_ClearSounds(bool clearStreaming, bool clearMusic)
 //
 //==========================================================================
 
-void S_ClearSoundBuffer()
+void S_ClearSoundBuffer(bool killStreaming)
 {
 	int		clear;
-		
+
 	if (!s_soundStarted)
 		return;
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		if (!s_soundPainted)
+		{
+			// RF, buffers are clear, no point clearing again
+			return;
+		}
+
+		s_soundPainted = false;
+
+		s_clearSoundBuffer = true;
+
+		if (GGameType & GAME_WolfMP)
+		{
+			S_Update();         // NERVE - SMF - force an update
+		}
+		else
+		{
+			S_ClearSounds(killStreaming, true);    // do this now since you might not be allowed to in a sec (no multi-threaeded)
+		}
+		return;
+	}
 
 	if (GGameType & GAME_Quake3)
 	{
@@ -2297,7 +2322,7 @@ void S_ClearSoundBuffer()
 		S_ChannelSetup();
 	}
 
-	s_rawend = 0;
+	s_rawend[0] = 0;
 
 	if (dma.samplebits == 8)
 		clear = 0x80;
@@ -2340,7 +2365,7 @@ void S_StopAllSounds()
 		s_playsounds[i].next->prev = &s_playsounds[i];
 	}
 
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		//	Clear all the channels.
 		//	Quake 3 does this in S_ClearSoundBuffer.
@@ -2353,12 +2378,22 @@ void S_StopAllSounds()
 		numLoopChannels = BSP29_NUM_AMBIENTS;	// no statics
 	}
 
+	// Arnout: i = 1, as we ignore music
+	for (int i = 1; i < MAX_STREAMING_SOUNDS; i++)
+	{
+		streamingSounds[i].kill = 1;
+	}
+
 	//	Stop the background music.
 	S_StopBackgroundTrack();
 
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(true);
+
+	if (GGameType & (GAME_WolfSP | GAME_ET))
+	{
+		S_UpdateThread();   // clear the stuff that needs to clear
+	}
 }
-#endif
 
 //==========================================================================
 //

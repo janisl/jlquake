@@ -807,7 +807,7 @@ void CL_Disconnect( qboolean showMainMenu ) {
 	}
 
 	SCR_StopCinematic();
-	S_ClearSoundBuffer();
+	S_ClearSoundBuffer(true);
 
 	// send a disconnect message to the server
 	// send it a few times in case one is dropped

@@ -70,6 +70,7 @@ extern int numStreamingSounds;
 extern int s_soundStarted;
 extern bool s_soundMuted;
 extern bool s_soundPainted;
+extern bool s_clearSoundBuffer;
 
 extern int listener_number;
 extern int s_numSfx;
@@ -203,61 +204,6 @@ void S_DisableSounds( void ) {
 //=============================================================================
 
 /*
-==================
-S_ClearSoundBuffer
-
-If we are about to perform file access, clear the buffer
-so sound doesn't stutter.
-==================
-*/
-void S_ClearSoundBuffer( qboolean killStreaming ) {
-	if ( !s_soundStarted ) {
-		return;
-	}
-
-	if ( !s_soundPainted ) {  // RF, buffers are clear, no point clearing again
-		return;
-	}
-
-	s_soundPainted = qfalse;
-
-//	snd.s_clearSoundBuffer = 4;
-	snd.s_clearSoundBuffer = 3;
-
-	S_ClearSounds( killStreaming, qtrue );    // do this now since you might not be allowed to in a sec (no multi-threaeded)
-}
-
-/*
-==================
-S_StopAllSounds
-==================
-*/
-void S_StopAllSounds( void ) {
-	int i;
-	if ( !s_soundStarted ) {
-		return;
-	}
-
-	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
-
-//DAJ BUGFIX	for(i=0;i<numStreamingSounds;i++) {
-	for ( i = 0; i < MAX_STREAMING_SOUNDS; i++ ) {   //DAJ numStreamingSounds can get bigger than the MAX array size
-		if ( i == 0 ) {
-			continue;   // ignore music
-		}
-		streamingSounds[i].kill = 1;
-	}
-	// stop the background music
-	S_StopBackgroundTrack();
-
-	S_ClearSoundBuffer( qtrue );
-
-	S_UpdateThread();   // clear the stuff that needs to clear
-}
-
-//=============================================================================
-
-/*
 ============
 S_Update
 
@@ -310,9 +256,9 @@ void S_UpdateThread( void ) {
 	// default to ZERO amplitude, overwrite if sound is playing
 	memset( s_entityTalkAmplitude, 0, sizeof( s_entityTalkAmplitude ) );
 
-	if ( snd.s_clearSoundBuffer ) {
-		S_ClearSounds( qtrue, (qboolean)( snd.s_clearSoundBuffer >= 4 ) );    //----(SA)	modified
-		snd.s_clearSoundBuffer = 0;
+	if ( s_clearSoundBuffer ) {
+		S_ClearSounds( qtrue, false );
+		s_clearSoundBuffer = false;
 	} else {
 		S_ThreadRespatialize();
 		// add raw data from streamed samples

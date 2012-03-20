@@ -447,9 +447,6 @@ void CL_CheckAutoUpdate( void );
 void Key_WriteBindings( fileHandle_t f );
 // for writing the config files
 
-void S_ClearSoundBuffer( void );
-// call before filesystem access
-
 void SCR_DebugGraph( float value, int color );   // FIXME: move logging to common?
 
 

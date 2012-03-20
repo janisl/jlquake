@@ -66,7 +66,7 @@ void S_ThreadRespatialize();
 extern int s_soundStarted;
 extern bool s_soundMuted;
 extern bool s_soundPainted;
-static int s_clearSoundBuffer = 0;
+extern bool s_clearSoundBuffer;
 
 extern int listener_number;
 
@@ -198,52 +198,9 @@ void S_DisableSounds( void ) {
 
 //=============================================================================
 
-/*
-==================
-S_ClearSoundBuffer
-
-If we are about to perform file access, clear the buffer
-so sound doesn't stutter.
-==================
-*/
-void S_ClearSoundBuffer( void ) {
-	if ( !s_soundStarted ) {
-		return;
-	}
-
-	if ( !s_soundPainted ) {  // RF, buffers are clear, no point clearing again
-		return;
-	}
-
-	s_soundPainted = qfalse;
-
-	s_clearSoundBuffer = 4;
-
-	S_Update();         // NERVE - SMF - force an update
-}
-
-/*
-==================
-S_StopAllSounds
-==================
-*/
-void S_StopAllSounds( void ) {
-	int i;
-	if ( !s_soundStarted ) {
-		return;
-	}
-
-	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
-
-//DAJ BUGFIX	for(i=0;i<numStreamingSounds;i++) {
-	for ( i = 0; i < MAX_STREAMING_SOUNDS; i++ ) {   //DAJ numStreamingSounds can get bigger than the MAX array size
-		streamingSounds[i].kill = qtrue;
-	}
-
-	// stop the background music
-	S_StopBackgroundTrack();
-
-	S_ClearSoundBuffer();
+void S_ClearSoundBuffer()
+{
+	S_ClearSoundBuffer(true);
 }
 
 //=============================================================================
@@ -318,7 +275,7 @@ void S_UpdateThread( void ) {
 			Snd_Memset( dma.buffer, clear, dma.samples * dma.samplebits / 8 );
 		}
 		SNDDMA_Submit();
-		s_clearSoundBuffer = 0;
+		s_clearSoundBuffer = false;
 
 		// NERVE - SMF - clear out channels so they don't finish playing when audio restarts
 		S_ChannelSetup();

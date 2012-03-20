@@ -69,8 +69,6 @@ typedef struct {
 	int volTime1;
 	int volTime2;
 	float volFadeFrac;
-
-	int s_clearSoundBuffer;
 } snd_t;
 
 extern snd_t snd;   // globals for sound

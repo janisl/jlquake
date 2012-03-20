@@ -34,9 +34,6 @@ void S_Init( void );
 void S_Shutdown( void );
 void S_UpdateThread( void );
 
-// stop all sounds and the background track
-void S_StopAllSounds( void );
-
 void S_Update( void );
 
 void S_DisableSounds( void );

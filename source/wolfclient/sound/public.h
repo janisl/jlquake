@@ -53,15 +53,11 @@ void S_AddLoopingSound(int entityNumber, const vec3_t origin, const vec3_t veloc
 void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime);
 void S_StopLoopingSound(int EntityNumber);
 
-#if 0
 // stop all sounds and the background track
 void S_StopAllSounds();
-#endif
 
 void S_ClearSounds(bool clearStreaming, bool clearMusic);
-#if 0
-void S_ClearSoundBuffer();
-#endif
+void S_ClearSoundBuffer(bool killStreaming);
 
 // if origin is NULL, the sound will be dynamically sourced from the entity
 void S_StartSound(const vec3_t Origin, int EntityNumber, int EntityChannel, sfxHandle_t SfxHandle, float FVolume = 1, float Attenuation = 1, float TimeOffset = 0);
@@ -76,8 +72,8 @@ void S_StaticSound(sfxHandle_t SfxHandle, vec3_t Origin, float Volume, float Att
 // reletive to the given entityNum / orientation
 void S_Respatialize(int EntityNumber, const vec3_t Origin, vec3_t Axis[3], int InWater);
 
-#if 0
 void S_Update();
+#if 0
 void S_ExtraUpdate();
 void S_Shutdown();
 void S_Init();

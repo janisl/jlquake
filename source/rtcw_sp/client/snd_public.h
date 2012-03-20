@@ -33,9 +33,6 @@ void S_UpdateThread( void );
 
 void S_FadeAllSounds( float targetvol, int time );    //----(SA)	added
 
-// stop all sounds and the background track
-void S_StopAllSounds( void );
-
 void S_Update( void );
 
 void S_DisableSounds( void );

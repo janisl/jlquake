@@ -37,9 +37,6 @@ void S_Reload( void );
 
 void S_FadeAllSounds( float targetvol, int time, qboolean stopsounds );   //----(SA)	added
 
-// stop all sounds and the background track
-void S_StopAllSounds( void );
-
 void S_Update_Debug( void );
 void S_Update( void );
 
