@@ -36,8 +36,8 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#include "snd_local.h"
 #include "client.h"
+#include "../../client/sound/local.h"
 
 void CL_WriteWaveFilePacket(int endtime)
 {

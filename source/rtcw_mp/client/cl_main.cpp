@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "../../client/sound/local.h"
 #include <limits.h>
 
 #ifdef __linux__
@@ -509,7 +510,6 @@ void CL_WriteWaveClose() {
 	FS_FCloseFile( clc.wm_wavefile );
 }
 
-#include "snd_local.h"
 
 void CL_WriteWaveFilePacket() {
 	int total, i;

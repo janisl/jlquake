@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include <limits.h>
 
-#include "snd_local.h" // fretn
+#include "../../client/sound/local.h"
 
 Cvar  *cl_wavefilerecord;
 Cvar  *cl_nodelta;

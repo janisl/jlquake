@@ -45,7 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "client.h"
-//#include "snd_local.h"
 
 #define MAXSIZE             8
 #define MINSIZE             4
