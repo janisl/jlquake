@@ -45,17 +45,8 @@ void S_Music_f( void );
 void S_QueueMusic_f( void );
 void S_StreamingSound_f( void );
 
-void S_Update_Mix();
 void S_StopAllSounds( void );
-void S_UpdateStreamingSounds( void );
 void S_Music_f( void );
-bool S_ScanChannelStarts();
-void S_AddLoopSounds( void );
-void S_ThreadRespatialize();
-
-snd_t snd;  // globals for sound
-
-extern int numStreamingSounds;
 
 // =======================================================================
 // Internal sound data & structures
@@ -69,15 +60,9 @@ extern int numStreamingSounds;
 
 extern int s_soundStarted;
 extern bool s_soundMuted;
-extern bool s_soundPainted;
-extern bool s_clearSoundBuffer;
 
-extern int listener_number;
 extern int s_numSfx;
 extern sfx_t       *sfxHash[LOOP_HASH];
-extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
-extern char nextMusicTrack[MAX_QPATH];         // extracted from CS_MUSIC_QUEUE //----(SA)	added
-extern int nextMusicTrackType;
 
 extern Cvar      *s_show;
 extern Cvar      *s_mixahead;
@@ -88,7 +73,7 @@ Cvar      *s_separation;
 extern Cvar      *s_doppler;
 extern Cvar      *s_defaultsound; // (SA) added to silence the default beep sound if desired
 extern Cvar      *cl_cacheGathering; // Ridah
-extern int numLoopSounds;
+extern float volTarget;
 
 void S_ChannelSetup();
 void S_SoundInfo_f( void );
@@ -145,14 +130,13 @@ void S_Init( void ) {
 	Com_Printf( "------------------------------------\n" );
 
 	if ( r ) {
-		Com_Memset( &snd, 0, sizeof( snd ) );
 //		Com_Memset(snd.sfxHash, 0, sizeof(sfx_t *)*LOOP_HASH);
 
 		s_soundStarted = 1;
 		s_soundMuted = 1;
 //		snd.s_numSfx = 0;
 
-		snd.volTarget = 0.0f;
+		volTarget = 0.0f;
 		//snd.volTarget = 1.0f;	// full volume
 
 		s_soundtime = 0;
@@ -222,208 +206,6 @@ are no longer valid.
 void S_DisableSounds( void ) {
 	S_StopAllSounds();
 	s_soundMuted = 1;
-}
-
-//=============================================================================
-
-/*
-============
-S_Update
-
-Called once each time through the main loop
-============
-*/
-
-void S_Update_Debug( void ) {
-	int i;
-	int total;
-	channel_t   *ch;
-
-	if ( !s_soundStarted || ( s_soundMuted == 1 ) ) {
-//		Com_DPrintf ("not started or muted\n");
-		return;
-	}
-
-	if ( s_show->integer == 2 ) {
-		total = 0;
-		ch = s_channels;
-		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->sfx && ( ch->leftvol || ch->rightvol ) ) {
-				Com_Printf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name );          // <- this is not thread safe
-				total++;
-			}
-		}
-
-		Com_Printf( "----(%i)---- painted: %i\n", total, s_paintedtime );
-	}
-}
-
-void S_Update( void ) {
-	if ( !s_soundStarted || ( s_soundMuted == 1 ) ) {
-//		Com_DPrintf ("not started or muted\n");
-		return;
-	}
-
-	// add loopsounds
-	S_AddLoopSounds();
-	// do all the rest
-	S_UpdateThread();
-}
-
-/*
-==============
-
-==============
-*/
-void S_UpdateThread( void ) {
-
-	if ( !s_soundStarted || ( s_soundMuted == 1 ) ) {
-//		Com_DPrintf ("not started or muted\n");
-		return;
-	}
-
-	// default to ZERO amplitude, overwrite if sound is playing
-	memset( s_entityTalkAmplitude, 0, sizeof( s_entityTalkAmplitude ) );
-
-	if ( s_clearSoundBuffer ) {
-		S_ClearSounds( qtrue, false );    //----(SA)	modified
-		s_clearSoundBuffer = false;
-	} else {
-		S_ThreadRespatialize();
-		// add raw data from streamed samples
-		S_UpdateStreamingSounds();
-		// mix some sound
-		S_Update_Mix();
-	}
-}
-
-/*
-============
-GetSoundtime
-============
-*/
-void GetSoundtime( void ) {
-	int samplepos;
-	static int buffers;
-	static int oldsamplepos;
-	int fullsamples;
-
-	fullsamples = dma.samples / dma.channels;
-
-	// it is possible to miscount buffers if it has wrapped twice between
-	// calls to S_Update.  Oh well.
-	samplepos = SNDDMA_GetDMAPos();
-	if ( samplepos < oldsamplepos ) {
-		buffers++;                  // buffer wrapped
-
-		if ( s_paintedtime > 0x40000000 ) { // time to chop things off to avoid 32 bit limits
-			buffers = 0;
-			s_paintedtime = fullsamples;
-			S_StopAllSounds();
-		}
-	}
-	oldsamplepos = samplepos;
-
-	s_soundtime = buffers * fullsamples + samplepos / dma.channels;
-
-#if 0
-// check to make sure that we haven't overshot
-	if ( s_paintedtime < s_soundtime ) {
-		Com_DPrintf( "GetSoundtime : overflow\n" );
-		s_paintedtime = s_soundtime;
-	}
-#endif
-
-	if ( dma.submission_chunk < 256 ) {
-		s_paintedtime = s_soundtime + s_mixPreStep->value * dma.speed;
-	} else {
-		s_paintedtime = s_soundtime + dma.submission_chunk;
-	}
-}
-
-/*
-============
-S_Update_Mix
-============
-*/
-void S_Update_Mix( void ) {
-	unsigned endtime;
-	int samps;            //, i;
-	static float lastTime = 0.0f;
-	float ma, op;
-	float thisTime, sane;
-	static int ot = -1;
-
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	s_soundPainted = qtrue;
-
-	thisTime = Sys_Milliseconds();
-
-	// Updates s_soundtime
-
-	GetSoundtime();
-
-	if ( s_soundtime == ot ) {
-		return;
-	}
-	ot = s_soundtime;
-
-	// clear any sound effects that end before the current time,
-	// and start any new sounds
-	S_ScanChannelStarts();
-
-	sane = thisTime - lastTime;
-	if ( sane < 11 ) {
-		sane = 11;          // 85hz
-	}
-
-	ma = s_mixahead->value * dma.speed;
-	op = s_mixPreStep->value + sane * dma.speed * 0.01;
-
-	if ( op < ma ) {
-		ma = op;
-	}
-
-	// mix ahead of current position
-	endtime = s_soundtime + ma;
-
-	// mix to an even submission block size
-	endtime = ( endtime + dma.submission_chunk - 1 )
-			  & ~( dma.submission_chunk - 1 );
-
-	// never mix more than the complete buffer
-	samps = dma.samples >> ( dma.channels - 1 );
-	if ( endtime - s_soundtime > samps ) {
-		endtime = s_soundtime + samps;
-	}
-
-	// global volume fading
-
-	// endtime or s_paintedtime or s_soundtime...
-	if ( s_soundtime < snd.volTime2 ) {    // still has fading to do
-		if ( s_soundtime > snd.volTime1 ) {    // has started fading
-			snd.volFadeFrac = ( (float)( s_soundtime - snd.volTime1 ) / (float)( snd.volTime2 - snd.volTime1 ) );
-			s_volCurrent = ( ( 1.0 - snd.volFadeFrac ) * snd.volStart + snd.volFadeFrac * snd.volTarget );
-		} else {
-			s_volCurrent = snd.volStart;
-		}
-	} else {
-		s_volCurrent = snd.volTarget;
-
-		if ( snd.stopSounds ) {
-			S_StopAllSounds();  // faded out, stop playing
-			snd.stopSounds = qfalse;
-		}
-	}
-
-	SNDDMA_BeginPainting();
-	S_PaintChannels( endtime );
-	SNDDMA_Submit();
-
-	lastTime = thisTime;
 }
 
 /*
@@ -510,35 +292,6 @@ void S_SoundList_f( void ) {
 		Com_Printf( "%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory] );
 	}
 	Com_Printf( "Total resident: %i\n", total );
-}
-
-/*
-==============
-S_FadeAllSounds
-
-==============
-*/
-void S_FadeAllSounds( float targetVol, int time, qboolean stopsounds ) {
-	// TAT 11/15/2002
-	//		Because of strange timing issues, sometimes we try to fade up before the fade down completed
-	//		If that's the case, just force an immediate stop to all sounds
-	if ( s_soundtime < snd.volTime2 && snd.stopSounds ) {
-		S_StopAllSounds();
-	}
-
-	snd.volStart = s_volCurrent;
-	snd.volTarget = targetVol;
-
-	snd.volTime1 = s_soundtime;
-	snd.volTime2 = s_soundtime + ( ( (float)( dma.speed ) / 1000.0f ) * time );
-
-	snd.stopSounds = stopsounds;
-
-	// instant
-	if ( !time ) {
-		snd.volTarget = snd.volStart = s_volCurrent = targetVol;  // set it
-		snd.volTime1 = snd.volTime2 = 0;    // no fading
-	}
 }
 
 

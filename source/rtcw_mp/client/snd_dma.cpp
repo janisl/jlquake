@@ -44,14 +44,7 @@ void S_SoundList_f( void );
 void S_Music_f( void );
 void S_StreamingSound_f( void );
 
-void S_Update_Mix();
-void S_StopAllSounds( void );
-void S_UpdateStreamingSounds( void );
-extern int numStreamingSounds;
 void S_Music_f( void );
-bool S_ScanChannelStarts();
-void S_AddLoopSounds( void );
-void S_ThreadRespatialize();
 
 // =======================================================================
 // Internal sound data & structures
@@ -65,13 +58,7 @@ void S_ThreadRespatialize();
 
 extern int s_soundStarted;
 extern bool s_soundMuted;
-extern bool s_soundPainted;
-extern bool s_clearSoundBuffer;
 
-extern int listener_number;
-
-extern char nextMusicTrack[MAX_QPATH];         // extracted from CS_MUSIC_QUEUE //----(SA)	added
-extern int nextMusicTrackType;
 extern int s_numSfx;
 
 #define     LOOP_HASH       128
@@ -87,9 +74,7 @@ extern Cvar      *s_defaultsound; // (SA) added to silence the default beep soun
 extern Cvar      *cl_cacheGathering; // Ridah
 extern Cvar   *s_debugMusic;      //----(SA)	added
 
-#define MAX_LOOPSOUNDS     1024
-extern int numLoopSounds;
-extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
+extern float volTarget;
 
 void S_ChannelSetup();
 void S_SoundInfo_f( void );
@@ -148,6 +133,7 @@ void S_Init( void ) {
 		s_soundStarted = 1;
 		s_soundMuted = 1;
 //		s_numSfx = 0;
+		volTarget = 1;
 
 		s_soundtime = 0;
 		s_paintedtime = 0;
@@ -201,195 +187,6 @@ void S_DisableSounds( void ) {
 void S_ClearSoundBuffer()
 {
 	S_ClearSoundBuffer(true);
-}
-
-//=============================================================================
-
-/*
-============
-S_Update
-
-Called once each time through the main loop
-============
-*/
-
-void S_Update( void ) {
-	int i;
-	int total;
-	channel_t   *ch;
-
-	if ( !s_soundStarted || s_soundMuted ) {
-//		Com_DPrintf ("not started or muted\n");
-		return;
-	}
-
-	//
-	// debugging output
-	//
-	if ( s_show->integer == 2 ) {
-		total = 0;
-		ch = s_channels;
-		for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-			if ( ch->sfx && ( ch->leftvol || ch->rightvol ) ) {
-				Com_DPrintf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name );         // <- this is not thread safe
-				total++;
-			}
-		}
-
-		Com_Printf( "----(%i)---- painted: %i\n", total, s_paintedtime );
-	}
-	// add loopsounds
-	S_AddLoopSounds();
-	// do all the rest
-	S_UpdateThread();
-}
-
-void S_UpdateThread( void ) {
-	if ( !s_soundStarted || s_soundMuted ) {
-//		Com_DPrintf ("not started or muted\n");
-		return;
-	}
-
-	if ( s_clearSoundBuffer ) {
-		int clear;
-		int i;
-		// stop looping sounds
-		S_ClearLoopingSounds(true);
-
-		for ( i = 0; i < MAX_STREAMING_SOUNDS; i++ ) {
-			s_rawend[i] = 0;
-		}
-
-		if ( dma.samplebits == 8 ) {
-			clear = 0x80;
-		} else {
-			clear = 0;
-		}
-
-		SNDDMA_BeginPainting();
-		if ( dma.buffer ) {
-			// TTimo: due to a particular bug workaround in linux sound code,
-			//   have to optionally use a custom C implementation of Com_Memset
-			//   not affecting win32, we have #define Snd_Memset Com_Memset
-			// show_bug.cgi?id=371
-			Snd_Memset( dma.buffer, clear, dma.samples * dma.samplebits / 8 );
-		}
-		SNDDMA_Submit();
-		s_clearSoundBuffer = false;
-
-		// NERVE - SMF - clear out channels so they don't finish playing when audio restarts
-		S_ChannelSetup();
-	} else {
-		S_ThreadRespatialize();
-		// add raw data from streamed samples
-		S_UpdateStreamingSounds();
-		// mix some sound
-		S_Update_Mix();
-	}
-}
-/*
-============
-GetSoundtime
-============
-*/
-void GetSoundtime( void ) {
-	int samplepos;
-	static int buffers;
-	static int oldsamplepos;
-	int fullsamples;
-
-	fullsamples = dma.samples / dma.channels;
-
-	// it is possible to miscount buffers if it has wrapped twice between
-	// calls to S_Update.  Oh well.
-	samplepos = SNDDMA_GetDMAPos();
-	if ( samplepos < oldsamplepos ) {
-		buffers++;                  // buffer wrapped
-
-		if ( s_paintedtime > 0x40000000 ) { // time to chop things off to avoid 32 bit limits
-			buffers = 0;
-			s_paintedtime = fullsamples;
-			S_StopAllSounds();
-		}
-	}
-	oldsamplepos = samplepos;
-
-	s_soundtime = buffers * fullsamples + samplepos / dma.channels;
-
-#if 0
-// check to make sure that we haven't overshot
-	if ( s_paintedtime < s_soundtime ) {
-		Com_DPrintf( "GetSoundtime : overflow\n" );
-		s_paintedtime = s_soundtime;
-	}
-#endif
-
-	if ( dma.submission_chunk < 256 ) {
-		s_paintedtime = s_soundtime + s_mixPreStep->value * dma.speed;
-	} else {
-		s_paintedtime = s_soundtime + dma.submission_chunk;
-	}
-}
-
-/*
-============
-S_Update_Mix
-============
-*/
-void S_Update_Mix( void ) {
-	unsigned endtime;
-	int samps, i;
-	static float lastTime = 0.0f;
-	float ma, op;
-	float thisTime, sane;
-
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	s_volCurrent = 1;
-
-	s_soundPainted = qtrue;
-
-	thisTime = Sys_Milliseconds();
-
-	// Updates s_soundtime
-	GetSoundtime();
-
-	// clear any sound effects that end before the current time,
-	// and start any new sounds
-	S_ScanChannelStarts();
-
-	sane = thisTime - lastTime;
-	if ( sane < 11 ) {
-		sane = 11;          // 85hz
-	}
-
-	ma = s_mixahead->value * dma.speed;
-	op = s_mixPreStep->value + sane * dma.speed * 0.01;
-
-	if ( op < ma ) {
-		ma = op;
-	}
-
-	// mix ahead of current position
-	endtime = s_soundtime + ma;
-
-	// mix to an even submission block size
-	endtime = ( endtime + dma.submission_chunk - 1 )
-			  & ~( dma.submission_chunk - 1 );
-
-	// never mix more than the complete buffer
-	samps = dma.samples >> ( dma.channels - 1 );
-	if ( endtime - s_soundtime > samps ) {
-		endtime = s_soundtime + samps;
-	}
-
-	SNDDMA_BeginPainting();
-	S_PaintChannels( endtime );
-	SNDDMA_Submit();
-
-	lastTime = thisTime;
 }
 
 /*

@@ -701,7 +701,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		S_StartStreamingSound( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3], args[4], args[5] );
 		return 0;
 	case CG_S_FADEALLSOUNDS:
-		S_FadeAllSounds( VMF( 1 ), args[2] );   //----(SA)	added
+		S_FadeAllSounds( VMF( 1 ), args[2], false );   //----(SA)	added
 		return 0;
 	case CG_R_LOADWORLDMAP:
 		re.LoadWorld( (char*)VMA( 1 ) );

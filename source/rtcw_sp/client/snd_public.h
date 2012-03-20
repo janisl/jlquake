@@ -29,10 +29,5 @@ If you have questions concerning this license or the applicable additional terms
 
 void S_Init( void );
 void S_Shutdown( void );
-void S_UpdateThread( void );
-
-void S_FadeAllSounds( float targetvol, int time );    //----(SA)	added
-
-void S_Update( void );
 
 void S_DisableSounds( void );

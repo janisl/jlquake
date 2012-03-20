@@ -938,7 +938,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_S_FADEALLSOUNDS:
-		S_FadeAllSounds( VMF( 1 ), args[2] );
+		S_FadeAllSounds( VMF( 1 ), args[2], false );
 		return 0;
 //----(SA)	end
 

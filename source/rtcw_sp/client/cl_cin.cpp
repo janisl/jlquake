@@ -1808,7 +1808,7 @@ void CL_PlayCinematic_f( void ) {
 
 	S_StopAllSounds();
 	// make sure volume is up for cine
-	S_FadeAllSounds( 1, 0 );
+	S_FadeAllSounds( 1, 0, false );
 
 	if ( bits & CIN_letterBox ) {
 		CL_handle = CIN_PlayCinematic( arg, 0, LETTERBOX_OFFSET, SCREEN_WIDTH, SCREEN_HEIGHT - ( LETTERBOX_OFFSET * 2 ), bits );

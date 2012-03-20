@@ -72,9 +72,11 @@ void S_StaticSound(sfxHandle_t SfxHandle, vec3_t Origin, float Volume, float Att
 // reletive to the given entityNum / orientation
 void S_Respatialize(int EntityNumber, const vec3_t Origin, vec3_t Axis[3], int InWater);
 
+void S_FadeAllSounds(float targetvol, int time, bool stopsounds);
+
 void S_Update();
-#if 0
 void S_ExtraUpdate();
+#if 0
 void S_Shutdown();
 void S_Init();
 void S_DisableSounds();

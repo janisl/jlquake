@@ -678,7 +678,7 @@ void CL_MapLoading( void ) {
 	}
 
 	// make sure sound is quiet
-	S_FadeAllSounds( 0, 0 );
+	S_FadeAllSounds( 0, 0, false );
 }
 
 /*
@@ -1234,7 +1234,7 @@ void CL_Vid_Restart_f( void ) {
 	}
 
 	// fade up volume
-	S_FadeAllSounds( 1, 0 );
+	S_FadeAllSounds( 1, 0, false );
 }
 
 /*
