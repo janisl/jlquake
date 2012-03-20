@@ -163,12 +163,18 @@ static vec_t		sound_nominal_clip_dist=1000.0;
 
 static int			s_beginofs;
 
-char nextMusicTrack[MAX_QPATH];
-int nextMusicTrackType;
+static char nextMusicTrack[MAX_QPATH];
+static int nextMusicTrackType;
 
-int numStreamingSounds = 0;
+static int numStreamingSounds = 0;
 
-vec3_t entityPositions[MAX_GENTITIES_Q3];
+static vec3_t entityPositions[MAX_GENTITIES_Q3];
+
+static float volTarget;
+static float volStart;
+static int volTime1;
+static int volTime2;
+static bool stopSounds;
 
 // CODE --------------------------------------------------------------------
 
@@ -3454,7 +3460,7 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 	}
 }
 
-void S_ThreadRespatialize()
+static void S_ThreadRespatialize()
 {
 	// update spatialization for dynamic sounds
 	channel_t* ch = s_channels;
@@ -3485,6 +3491,32 @@ void S_ThreadRespatialize()
 			S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol,
 				&ch->rightvol, SOUND_RANGE_DEFAULT, ch->flags & SND_NO_ATTENUATION);
 		}
+	}
+}
+
+void S_FadeAllSounds(float targetVol, int time, bool stopsounds)
+{
+	// TAT 11/15/2002
+	//		Because of strange timing issues, sometimes we try to fade up before the fade down completed
+	//		If that's the case, just force an immediate stop to all sounds
+	if (s_soundtime < volTime2 && stopSounds)
+	{
+		S_StopAllSounds();
+	}
+
+	volStart = s_volCurrent;
+	volTarget = targetVol;
+
+	volTime1 = s_soundtime;
+	volTime2 = s_soundtime + (((float)dma.speed / 1000.0f) * time);
+
+	stopSounds = stopsounds;
+
+	// instant
+	if (!time)
+	{
+		volTarget = volStart = s_volCurrent = targetVol;  // set it
+		volTime1 = volTime2 = 0;    // no fading
 	}
 }
 
@@ -3522,7 +3554,7 @@ static void GetSoundtime()
 
 	s_soundtime = buffers*fullsamples + samplepos/dma.channels;
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 #if 0
 		// check to make sure that we haven't overshot
@@ -3546,10 +3578,6 @@ static void GetSoundtime()
 	}
 }
 
-static void S_UpdateThread()
-{
-}
-
 //==========================================================================
 //
 //	S_Update_
@@ -3560,7 +3588,7 @@ static void S_Update_()
 {
 	static float	lastTime = 0.0f;
 	static int		ot = -1;
-	
+
 	int				samps;
 
 	if (!s_soundStarted || s_soundMuted)
@@ -3568,22 +3596,23 @@ static void S_Update_()
 		return;
 	}
 
-	s_volCurrent = 1;
+	s_soundPainted = true;
 
-	float thisTime = Com_Milliseconds();
+	float thisTime = (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)) ?
+		Sys_Milliseconds() : Com_Milliseconds();
 
 	//	Updates s_soundtime
 	GetSoundtime();
 
 	// check to make sure that we haven't overshot
-	if (!(GGameType & GAME_Quake3) && s_paintedtime < s_soundtime)
+	if (!(GGameType & GAME_Tech3) && s_paintedtime < s_soundtime)
 	{
 		Log::develWrite("S_Update_ : overflow\n");
 		s_paintedtime = s_soundtime;
 	}
 
 	float ma = s_mixahead->value * dma.speed;
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 #ifdef _WIN32
 		if (s_soundtime == ot)
@@ -3625,6 +3654,33 @@ static void S_Update_()
 	if (endtime - s_soundtime > samps)
 		endtime = s_soundtime + samps;
 
+	// global volume fading
+	// endtime or s_paintedtime or s_soundtime...
+	if (s_soundtime < volTime2)
+	{
+		// still has fading to do
+		if (s_soundtime > volTime1)
+		{
+			// has started fading
+			float volFadeFrac = ((float)(s_soundtime - volTime1) / (float)(volTime2 - volTime1));
+			s_volCurrent = ((1.0 - volFadeFrac) * volStart + volFadeFrac * volTarget);
+		}
+		else
+		{
+			s_volCurrent = volStart;
+		}
+	}
+	else
+	{
+		s_volCurrent = volTarget;
+
+		if (stopSounds)
+		{
+			S_StopAllSounds();  // faded out, stop playing
+			stopSounds = false;
+		}
+	}
+
 	SNDDMA_BeginPainting();
 
 	S_PaintChannels(endtime);
@@ -3632,6 +3688,69 @@ static void S_Update_()
 	SNDDMA_Submit();
 
 	lastTime = thisTime;
+}
+
+static void S_UpdateThread()
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
+		return;
+	}
+
+	// default to ZERO amplitude, overwrite if sound is playing
+	memset(s_entityTalkAmplitude, 0, sizeof(s_entityTalkAmplitude));
+
+	if (s_clearSoundBuffer)
+	{
+		if (GGameType & GAME_WolfMP)
+		{
+			// stop looping sounds
+			S_ClearLoopingSounds(true);
+
+			for (int i = 0; i < MAX_STREAMING_SOUNDS; i++)
+			{
+				s_rawend[i] = 0;
+			}
+
+			int clear;
+			if (dma.samplebits == 8)
+			{
+				clear = 0x80;
+			}
+			else
+			{
+				clear = 0;
+			}
+
+			SNDDMA_BeginPainting();
+			if (dma.buffer)
+			{
+				// TTimo: due to a particular bug workaround in linux sound code,
+				//   have to optionally use a custom C implementation of Com_Memset
+				//   not affecting win32, we have #define Snd_Memset Com_Memset
+				// show_bug.cgi?id=371
+				Snd_Memset(dma.buffer, clear, dma.samples * dma.samplebits / 8);
+			}
+			SNDDMA_Submit();
+			s_clearSoundBuffer = false;
+
+			// NERVE - SMF - clear out channels so they don't finish playing when audio restarts
+			S_ChannelSetup();
+		}
+		else
+		{
+			S_ClearSounds(true, false);
+			s_clearSoundBuffer = false;
+		}
+	}
+	else
+	{
+		S_ThreadRespatialize();
+		// add raw data from streamed samples
+		S_UpdateStreamingSounds();
+		// mix some sound
+		S_Update_();
+	}
 }
 
 //==========================================================================
@@ -3678,11 +3797,21 @@ void S_Update()
 		Log::write("----(%i)---- painted: %i\n", total, s_paintedtime);
 	}
 
-	// add raw data from streamed samples
-	S_UpdateStreamingSounds();
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// add loopsounds
+		S_AddLoopSounds();
+		// do all the rest
+		S_UpdateThread();
+	}
+	else
+	{
+		// add raw data from streamed samples
+		S_UpdateStreamingSounds();
 
-	// mix some sound
-	S_Update_();
+		// mix some sound
+		S_Update_();
+	}
 }
 
 //==========================================================================
@@ -3905,6 +4034,8 @@ void S_Init()
 			ambient_sfx[BSP29AMBIENT_WATER] = s_knownSfx + S_RegisterSound("ambience/water1.wav");
 			ambient_sfx[BSP29AMBIENT_SKY] = s_knownSfx + S_RegisterSound("ambience/wind2.wav");
 		}
+
+		volTarget = 1;
 
 		S_StopAllSounds();
 
