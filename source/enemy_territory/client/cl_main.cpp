@@ -1583,18 +1583,6 @@ void CL_UI_Restart_f( void ) {          // NERVE - SMF
 
 /*
 =================
-CL_Snd_Reload_f
-
-Reloads sounddata from disk, retains soundhandles.
-=================
-*/
-void CL_Snd_Reload_f( void ) {
-	S_Reload();
-}
-
-
-/*
-=================
 CL_Snd_Restart_f
 
 Restart the sound subsystem
@@ -3453,7 +3441,6 @@ void CL_Init( void ) {
 	Cmd_AddCommand( "cmd", CL_ForwardToServer_f );
 	Cmd_AddCommand( "configstrings", CL_Configstrings_f );
 	Cmd_AddCommand( "clientinfo", CL_Clientinfo_f );
-	Cmd_AddCommand( "snd_reload", CL_Snd_Reload_f );
 	Cmd_AddCommand( "snd_restart", CL_Snd_Restart_f );
 	Cmd_AddCommand( "vid_restart", CL_Vid_Restart_f );
 	Cmd_AddCommand( "ui_restart", CL_UI_Restart_f );          // NERVE - SMF

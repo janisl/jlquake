@@ -34,7 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/tr_public.h"
 #include "../ui/ui_public.h"
 #include "keys.h"
-#include "snd_public.h"
 #include "../cgame/cg_public.h"
 #include "../game/bg_public.h"
 

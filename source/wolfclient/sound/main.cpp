@@ -119,40 +119,32 @@ float s_volCurrent;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-int			s_soundStarted;
-//static 
-bool			s_soundMuted;
+static int			s_soundStarted;
+static bool			s_soundMuted;
 static bool s_soundPainted;
 static bool s_clearSoundBuffer;
 
 bool			s_use_custom_memset = false;
 
-//static 
-Cvar*		s_show;
-//static 
-Cvar*		s_mixahead;
-//static 
-Cvar*		s_mixPreStep;
-//static 
-Cvar*		s_musicVolume;
-//static 
-Cvar*		s_doppler;
+static Cvar*		s_show;
+static Cvar*		s_mixahead;
+static Cvar*		s_mixPreStep;
+static Cvar*		s_musicVolume;
+static Cvar*		s_doppler;
 static Cvar*		s_ambient_level;
 static Cvar*		s_ambient_fade;
 static Cvar*		snd_noextraupdate;
-Cvar* cl_cacheGathering;
-Cvar* s_defaultsound;	// added to silence the default beep sound if desired
-Cvar* s_debugMusic;
+static Cvar* cl_cacheGathering;
+static Cvar* s_defaultsound;	// added to silence the default beep sound if desired
+static Cvar* s_debugMusic;
+static Cvar* s_currentMusic;
 
 static int			listener_number;
 static vec3_t		listener_origin;
 static vec3_t		listener_axis[3];
 
-//static 
-int			s_numSfx = 0;
-//static 
-sfx_t*		sfxHash[LOOP_HASH];
+static int			s_numSfx = 0;
+static sfx_t*		sfxHash[LOOP_HASH];
 
 static channel_t* freelist = NULL;
 static channel_t* endflist = NULL;
@@ -179,7 +171,7 @@ static int numStreamingSounds = 0;
 
 static vec3_t entityPositions[MAX_GENTITIES_Q3];
 
-float volTarget;
+static float volTarget;
 static float volStart;
 static int volTime1;
 static int volTime2;
@@ -261,8 +253,7 @@ static channel_t* S_ChannelMalloc()
 //
 //==========================================================================
 
-//static 
-void S_ChannelSetup()
+static void S_ChannelSetup()
 {
 	channel_t *p, *q;
 
@@ -1587,8 +1578,7 @@ static void S_UpdateStreamingSounds()
 //
 //==========================================================================
 
-//static 
-void S_SoundInfo_f()
+static void S_SoundInfo_f()
 {
 	Log::write("----- Sound Info -----\n");
 	if (!s_soundStarted)
@@ -1626,8 +1616,7 @@ void S_SoundInfo_f()
 //
 //==========================================================================
 
-//static 
-void S_Music_f()
+static void S_Music_f()
 {
 	int c = Cmd_Argc();
 
@@ -3855,8 +3844,7 @@ void S_ExtraUpdate()
 //
 //==========================================================================
 
-//static 
-void S_Play_f()
+static void S_Play_f()
 {
 	char		name[256];
 
@@ -3939,8 +3927,7 @@ static void S_PlayVol_f()
 //
 //==========================================================================
 
-//static 
-void S_SoundList_f()
+static void S_SoundList_f()
 {
 	int		i;
 	sfx_t	*sfx;
@@ -3971,7 +3958,7 @@ void S_SoundList_f()
 }
 
 //	console interface really just for testing
-void S_QueueMusic_f()
+static void S_QueueMusic_f()
 {
 	int c = Cmd_Argc();
 
@@ -3992,7 +3979,7 @@ void S_QueueMusic_f()
 }
 
 // Ridah, just for testing the streaming sounds
-void S_StreamingSound_f()
+static void S_StreamingSound_f()
 {
 	int c = Cmd_Argc();
 
@@ -4012,7 +3999,6 @@ void S_StreamingSound_f()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	S_Init
@@ -4036,17 +4022,22 @@ void S_Init()
 	}
 	s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
-	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE);
+	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Tech3) ? "1" : "0", CVAR_ARCHIVE);
 	s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);
 	s_bits = Cvar_Get("s_bits", "16", CVAR_ARCHIVE);
 	s_channels_cv = Cvar_Get("s_channels", "2", CVAR_ARCHIVE);
 	s_mixahead = Cvar_Get("s_mixahead", "0.2", CVAR_ARCHIVE);
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		s_mixPreStep = Cvar_Get("s_mixPreStep", "0.05", CVAR_ARCHIVE);
 	}
 	s_show = Cvar_Get("s_show", "0", CVAR_CHEAT);
 	s_testsound = Cvar_Get("s_testsound", "0", CVAR_CHEAT);
+	s_mute = Cvar_Get("s_mute", "0", CVAR_TEMP);
+	s_defaultsound = Cvar_Get("s_defaultsound", "0", CVAR_ARCHIVE);
+	s_debugMusic = Cvar_Get("s_debugMusic", "0", CVAR_TEMP);
+	s_currentMusic = Cvar_Get("s_currentMusic", "", CVAR_ROM);
+	cl_cacheGathering = Cvar_Get("cl_cacheGathering", "0", 0);
 
 	Cvar* cv = Cvar_Get("s_initsound", "1", 0);
 	if (!cv->integer)
@@ -4062,6 +4053,8 @@ void S_Init()
 	Cmd_AddCommand("s_list", S_SoundList_f);
 	Cmd_AddCommand("s_info", S_SoundInfo_f);
 	Cmd_AddCommand("s_stop", S_StopAllSounds);
+	Cmd_AddCommand("streamingsound", S_StreamingSound_f);
+	Cmd_AddCommand("music_queue", S_QueueMusic_f);
 
 	bool r = SNDDMA_Init();
 	Log::write("------------------------------------\n");
@@ -4069,7 +4062,7 @@ void S_Init()
 	if (r)
 	{
 		s_soundStarted = 1;
-		if (GGameType & GAME_Quake3)
+		if (GGameType & GAME_Tech3)
 		{
 			s_soundMuted = 1;
 			//s_numSfx = 0;
@@ -4080,6 +4073,15 @@ void S_Init()
 		}
 
 		Com_Memset(sfxHash, 0, sizeof(sfx_t*) * LOOP_HASH);
+
+		if (GGameType & (GAME_WolfSP | GAME_ET))
+		{
+			volTarget = 0.0f;
+		}
+		else
+		{
+			volTarget = 1;
+		}
 
 		s_soundtime = 0;
 		s_paintedtime = 0;
@@ -4093,6 +4095,11 @@ void S_Init()
 		S_StopAllSounds();
 
 		S_SoundInfo_f();
+
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			S_ChannelSetup();
+		}
 	}
 }
 
@@ -4118,9 +4125,11 @@ void S_Shutdown()
 	Cmd_RemoveCommand("play");
 	Cmd_RemoveCommand("playvol");
 	Cmd_RemoveCommand("music");
-	Cmd_RemoveCommand("s_sound");
+	Cmd_RemoveCommand("s_stop");
 	Cmd_RemoveCommand("s_list");
 	Cmd_RemoveCommand("s_info");
+	Cmd_RemoveCommand("streamingsound");
+	Cmd_RemoveCommand("music_queue");
 
 	if (GGameType & GAME_Quake2)
 	{
@@ -4157,4 +4166,20 @@ void S_DisableSounds()
 	S_StopAllSounds();
 	s_soundMuted = true;
 }
-#endif
+
+// returns how long the sound lasts in milliseconds
+int S_GetSoundLength(sfxHandle_t sfxHandle)
+{
+	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
+	{
+		common->DPrintf(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
+		return -1;
+	}
+	return (int)((float)s_knownSfx[sfxHandle].Length / dma.speed * 1000.0);
+}
+
+//	for looped sound synchronization
+int S_GetCurrentSoundTime()
+{
+	return s_soundtime + dma.speed;
+}

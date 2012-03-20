@@ -33,10 +33,3 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/sound/local.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "snd_public.h"
-
-extern Cvar   *s_nosound;
-extern Cvar   *s_show;
-extern Cvar   *s_mixahead;
-
-extern Cvar   *s_separation;

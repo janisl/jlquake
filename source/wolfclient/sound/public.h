@@ -76,13 +76,14 @@ void S_FadeAllSounds(float targetvol, int time, bool stopsounds);
 
 void S_Update();
 void S_ExtraUpdate();
-#if 0
 void S_Shutdown();
 void S_Init();
 void S_DisableSounds();
-#endif
 
 int S_GetVoiceAmplitude(int entityNum);
+
+int S_GetSoundLength(sfxHandle_t sfxHandle);
+int S_GetCurrentSoundTime();
 
 qboolean MIDI_Init();
 void MIDI_Cleanup();
