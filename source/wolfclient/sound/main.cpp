@@ -3845,7 +3845,6 @@ void S_ExtraUpdate()
 	S_Update_();
 }
 
-#if 0
 //**************************************************************************
 //	Console functions
 //**************************************************************************
@@ -3856,7 +3855,8 @@ void S_ExtraUpdate()
 //
 //==========================================================================
 
-static void S_Play_f()
+//static 
+void S_Play_f()
 {
 	char		name[256];
 
@@ -3884,7 +3884,7 @@ static void S_Play_f()
 			}
 			else
 			{
-				S_StartLocalSound(h, Q3CHAN_LOCAL_SOUND);
+				S_StartLocalSound(h, Q3CHAN_LOCAL_SOUND, 127);
 			}
 		}
 		i++;
@@ -3939,7 +3939,8 @@ static void S_PlayVol_f()
 //
 //==========================================================================
 
-static void S_SoundList_f()
+//static 
+void S_SoundList_f()
 {
 	int		i;
 	sfx_t	*sfx;
@@ -3969,6 +3970,49 @@ static void S_SoundList_f()
 	Log::write("Total resident: %i\n", total);
 }
 
+//	console interface really just for testing
+void S_QueueMusic_f()
+{
+	int c = Cmd_Argc();
+
+	int type = -2;  // default to setting this as the next continual loop
+	if (c == 3)
+	{
+		type = String::Atoi(Cmd_Argv(2));
+	}
+
+	if (type != -1)
+	{
+		// clamp to valid values (-1, -2)
+		type = -2;
+	}
+
+	// NOTE: could actually use this to touch the file now so there's not a hit when the queue'd music is played?
+	S_StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(1), type);
+}
+
+// Ridah, just for testing the streaming sounds
+void S_StreamingSound_f()
+{
+	int c = Cmd_Argc();
+
+	if (c == 2)
+	{
+		S_StartStreamingSound(Cmd_Argv(1), 0, -1, 0, 0);
+	}
+	else if (c == 5)
+	{
+		S_StartStreamingSound(Cmd_Argv(1), 0, String::Atoi(Cmd_Argv(2)),
+			String::Atoi(Cmd_Argv(3)), String::Atoi(Cmd_Argv(4)));
+	}
+	else
+	{
+		common->Printf("streamingsound <soundfile> [entnum channel attenuation]\n");
+		return;
+	}
+}
+
+#if 0
 //==========================================================================
 //
 //	S_Init
