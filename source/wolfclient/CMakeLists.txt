@@ -4,7 +4,7 @@ set(WOLFCLIENT_FILES
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp
-	sound/main.cpp
+	../client/sound/main.cpp
 	../client/sound/memory.cpp
 	../client/sound/mix.cpp
 	../client/client_main.cpp

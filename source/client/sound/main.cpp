@@ -137,6 +137,7 @@ static Cvar*		snd_noextraupdate;
 static Cvar* cl_cacheGathering;
 static Cvar* s_defaultsound;	// added to silence the default beep sound if desired
 static Cvar* s_debugMusic;
+static Cvar* s_currentMusic;
 
 static int			listener_number;
 static vec3_t		listener_origin;
@@ -3956,6 +3957,48 @@ static void S_SoundList_f()
 	Log::write("Total resident: %i\n", total);
 }
 
+//	console interface really just for testing
+static void S_QueueMusic_f()
+{
+	int c = Cmd_Argc();
+
+	int type = -2;  // default to setting this as the next continual loop
+	if (c == 3)
+	{
+		type = String::Atoi(Cmd_Argv(2));
+	}
+
+	if (type != -1)
+	{
+		// clamp to valid values (-1, -2)
+		type = -2;
+	}
+
+	// NOTE: could actually use this to touch the file now so there's not a hit when the queue'd music is played?
+	S_StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(1), type);
+}
+
+// Ridah, just for testing the streaming sounds
+static void S_StreamingSound_f()
+{
+	int c = Cmd_Argc();
+
+	if (c == 2)
+	{
+		S_StartStreamingSound(Cmd_Argv(1), 0, -1, 0, 0);
+	}
+	else if (c == 5)
+	{
+		S_StartStreamingSound(Cmd_Argv(1), 0, String::Atoi(Cmd_Argv(2)),
+			String::Atoi(Cmd_Argv(3)), String::Atoi(Cmd_Argv(4)));
+	}
+	else
+	{
+		common->Printf("streamingsound <soundfile> [entnum channel attenuation]\n");
+		return;
+	}
+}
+
 //==========================================================================
 //
 //	S_Init
@@ -3979,19 +4022,22 @@ void S_Init()
 	}
 	s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
-	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE);
+	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Tech3) ? "1" : "0", CVAR_ARCHIVE);
 	s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);
 	s_bits = Cvar_Get("s_bits", "16", CVAR_ARCHIVE);
 	s_channels_cv = Cvar_Get("s_channels", "2", CVAR_ARCHIVE);
 	s_mixahead = Cvar_Get("s_mixahead", "0.2", CVAR_ARCHIVE);
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		s_mixPreStep = Cvar_Get("s_mixPreStep", "0.05", CVAR_ARCHIVE);
 	}
 	s_show = Cvar_Get("s_show", "0", CVAR_CHEAT);
 	s_testsound = Cvar_Get("s_testsound", "0", CVAR_CHEAT);
 	s_mute = Cvar_Get("s_mute", "0", CVAR_TEMP);
+	s_defaultsound = Cvar_Get("s_defaultsound", "0", CVAR_ARCHIVE);
 	s_debugMusic = Cvar_Get("s_debugMusic", "0", CVAR_TEMP);
+	s_currentMusic = Cvar_Get("s_currentMusic", "", CVAR_ROM);
+	cl_cacheGathering = Cvar_Get("cl_cacheGathering", "0", 0);
 
 	Cvar* cv = Cvar_Get("s_initsound", "1", 0);
 	if (!cv->integer)
@@ -4007,6 +4053,8 @@ void S_Init()
 	Cmd_AddCommand("s_list", S_SoundList_f);
 	Cmd_AddCommand("s_info", S_SoundInfo_f);
 	Cmd_AddCommand("s_stop", S_StopAllSounds);
+	Cmd_AddCommand("streamingsound", S_StreamingSound_f);
+	Cmd_AddCommand("music_queue", S_QueueMusic_f);
 
 	bool r = SNDDMA_Init();
 	Log::write("------------------------------------\n");
@@ -4014,7 +4062,7 @@ void S_Init()
 	if (r)
 	{
 		s_soundStarted = 1;
-		if (GGameType & GAME_Quake3)
+		if (GGameType & GAME_Tech3)
 		{
 			s_soundMuted = 1;
 			//s_numSfx = 0;
@@ -4026,6 +4074,15 @@ void S_Init()
 
 		Com_Memset(sfxHash, 0, sizeof(sfx_t*) * LOOP_HASH);
 
+		if (GGameType & (GAME_WolfSP | GAME_ET))
+		{
+			volTarget = 0.0f;
+		}
+		else
+		{
+			volTarget = 1;
+		}
+
 		s_soundtime = 0;
 		s_paintedtime = 0;
 
@@ -4035,11 +4092,14 @@ void S_Init()
 			ambient_sfx[BSP29AMBIENT_SKY] = s_knownSfx + S_RegisterSound("ambience/wind2.wav");
 		}
 
-		volTarget = 1;
-
 		S_StopAllSounds();
 
 		S_SoundInfo_f();
+
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			S_ChannelSetup();
+		}
 	}
 }
 
@@ -4065,9 +4125,11 @@ void S_Shutdown()
 	Cmd_RemoveCommand("play");
 	Cmd_RemoveCommand("playvol");
 	Cmd_RemoveCommand("music");
-	Cmd_RemoveCommand("s_sound");
+	Cmd_RemoveCommand("s_stop");
 	Cmd_RemoveCommand("s_list");
 	Cmd_RemoveCommand("s_info");
+	Cmd_RemoveCommand("streamingsound");
+	Cmd_RemoveCommand("music_queue");
 
 	if (GGameType & GAME_Quake2)
 	{
@@ -4103,4 +4165,21 @@ void S_DisableSounds()
 {
 	S_StopAllSounds();
 	s_soundMuted = true;
+}
+
+// returns how long the sound lasts in milliseconds
+int S_GetSoundLength(sfxHandle_t sfxHandle)
+{
+	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
+	{
+		common->DPrintf(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
+		return -1;
+	}
+	return (int)((float)s_knownSfx[sfxHandle].Length / dma.speed * 1000.0);
+}
+
+//	for looped sound synchronization
+int S_GetCurrentSoundTime()
+{
+	return s_soundtime + dma.speed;
 }

@@ -82,6 +82,9 @@ void S_DisableSounds();
 
 int S_GetVoiceAmplitude(int entityNum);
 
+int S_GetSoundLength(sfxHandle_t sfxHandle);
+int S_GetCurrentSoundTime();
+
 qboolean MIDI_Init();
 void MIDI_Cleanup();
 void MIDI_Play(char *Name);

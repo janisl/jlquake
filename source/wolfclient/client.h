@@ -20,7 +20,7 @@
 #include "../core/core.h"
 #include "../core/file_formats/bsp38.h"
 
-#include "sound/public.h"
+#include "../client/sound/public.h"
 #include "renderer/public.h"
 #include "../client/input/keycodes.h"
 #include "input/public.h"
