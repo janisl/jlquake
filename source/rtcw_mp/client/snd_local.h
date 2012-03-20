@@ -64,5 +64,3 @@ extern Cvar   *s_show;
 extern Cvar   *s_mixahead;
 
 extern Cvar   *s_separation;
-
-void S_memoryLoad( sfx_t *sfx );

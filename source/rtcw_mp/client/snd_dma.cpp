@@ -48,10 +48,10 @@ void S_Update_Mix();
 void S_StopAllSounds( void );
 void S_UpdateStreamingSounds( void );
 extern int numStreamingSounds;
-extern vec3_t entityPositions[MAX_GENTITIES_Q3];
-void S_SpatializeOrigin( vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol, float range, int noAttenuation );
 void S_Music_f( void );
-void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, int flags, int volume);
+bool S_ScanChannelStarts();
+void S_AddLoopSounds( void );
+void S_ThreadRespatialize();
 
 // =======================================================================
 // Internal sound data & structures
@@ -69,8 +69,6 @@ extern bool s_soundPainted;
 static int s_clearSoundBuffer = 0;
 
 extern int listener_number;
-extern vec3_t listener_origin;
-extern vec3_t listener_axis[3];
 
 extern char nextMusicTrack[MAX_QPATH];         // extracted from CS_MUSIC_QUEUE //----(SA)	added
 extern int nextMusicTrackType;
@@ -93,8 +91,6 @@ extern Cvar   *s_debugMusic;      //----(SA)	added
 extern int numLoopSounds;
 extern loopSound_t loopSounds[MAX_LOOPSOUNDS];
 
-void S_ChannelFree( channel_t *v );
-channel_t*  S_ChannelMalloc();
 void S_ChannelSetup();
 void S_SoundInfo_f( void );
 
@@ -200,20 +196,6 @@ void S_DisableSounds( void ) {
 	s_soundMuted = qtrue;
 }
 
-/*
-=================
-S_memoryLoad
-=================
-*/
-void S_memoryLoad( sfx_t *sfx ) {
-	// load the sound file
-	if ( !S_LoadSound( sfx ) ) {
-//		Com_Printf( S_COLOR_YELLOW "WARNING: couldn't load sound: %s\n", sfx->soundName );
-		sfx->DefaultSound = qtrue;
-	}
-	sfx->InMemory = qtrue;
-}
-
 //=============================================================================
 
 /*
@@ -264,187 +246,7 @@ void S_StopAllSounds( void ) {
 	S_ClearSoundBuffer();
 }
 
-/*
-==============================================================
-
-continuous looping sounds are added each frame
-
-==============================================================
-*/
-
-/*
-==================
-S_AddLoopSounds
-
-Spatialize all of the looping sounds.
-All sounds are on the same cycle, so any duplicates can just
-sum up the channel multipliers.
-==================
-*/
-void S_AddLoopSounds( void ) {
-	int i, j, time;
-	int left_total, right_total, left, right;
-	channel_t   *ch;
-	loopSound_t *loop, *loop2;
-	static int loopFrame;
-
-	numLoopChannels = 0;
-
-	time = Sys_Milliseconds();
-
-	loopFrame++;
-	for ( i = 0 ; i < numLoopSounds ; i++ ) {
-		loop = &loopSounds[i];
-		if ( loop->mergeFrame == loopFrame ) {
-			continue;   // already merged into an earlier sound
-		}
-
-		//if (loop->kill) {
-		//	S_SpatializeOrigin( loop->origin, 127, &left_total, &right_total, loop->range);	// 3d
-		//} else {
-		S_SpatializeOrigin( loop->origin, 90, 1,  &left_total, &right_total, loop->range, false );    // sphere
-		//}
-
-		// adjust according to volume
-		left_total = (int)( (float)loop->vol * (float)left_total / 256.0 );
-		right_total = (int)( (float)loop->vol * (float)right_total / 256.0 );
-
-		loop->sfx->LastTimeUsed = time;
-
-		for ( j = ( i + 1 ); j < numLoopChannels ; j++ ) {
-			loop2 = &loopSounds[j];
-			if ( loop2->sfx != loop->sfx ) {
-				continue;
-			}
-			loop2->mergeFrame = loopFrame;
-
-			//if (loop2->kill) {
-			//	S_SpatializeOrigin( loop2->origin, 127, &left, &right, loop2->range);	// 3d
-			//} else {
-			S_SpatializeOrigin( loop2->origin, 90, 1,  &left, &right, loop2->range, false );      // sphere
-			//}
-
-			// adjust according to volume
-			left = (int)( (float)loop2->vol * (float)left / 256.0 );
-			right = (int)( (float)loop2->vol * (float)right / 256.0 );
-
-			loop2->sfx->LastTimeUsed = time;
-			left_total += left;
-			right_total += right;
-		}
-		if ( left_total == 0 && right_total == 0 ) {
-			continue;       // not audible
-		}
-
-		// allocate a channel
-		ch = &loop_channels[numLoopChannels];
-
-		if ( left_total > 255 ) {
-			left_total = 255;
-		}
-		if ( right_total > 255 ) {
-			right_total = 255;
-		}
-
-		ch->master_vol = 127;
-		ch->leftvol = left_total;
-		ch->rightvol = right_total;
-		ch->sfx = loop->sfx;
-
-		// RF, disabled doppler for looping sounds for now, since we are reverting to the old looping sound code
-		ch->doppler = qfalse;
-
-		numLoopChannels++;
-		if ( numLoopChannels == MAX_CHANNELS ) {
-			i = numLoopSounds + 1;
-		}
-	}
-}
-
 //=============================================================================
-
-/*
-============
-S_Respatialize
-
-Change the volumes of all the playing sounds for changes in their positions
-============
-*/
-void S_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int inwater ) {
-
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	listener_number = entityNum;
-	VectorCopy( head, listener_origin );
-	VectorCopy( axis[0], listener_axis[0] );
-	VectorCopy( axis[1], listener_axis[1] );
-	VectorCopy( axis[2], listener_axis[2] );
-}
-
-void S_ThreadRespatialize() {
-	int i;
-	channel_t   *ch;
-	vec3_t origin;
-	// update spatialization for dynamic sounds
-	ch = s_channels;
-	for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-		if ( !ch->sfx ) {
-			continue;
-		}
-		// anything coming from the view entity will always be full volume
-		if ( ch->entnum == listener_number ) {
-			ch->leftvol = ch->master_vol;
-			ch->rightvol = ch->master_vol;
-		} else {
-			if ( ch->fixed_origin ) {
-				VectorCopy( ch->origin, origin );
-			} else {
-				VectorCopy( entityPositions[ ch->entnum ], origin );
-			}
-
-			S_SpatializeOrigin( origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false );
-		}
-	}
-}
-
-/*
-========================
-S_ScanChannelStarts
-
-Returns qtrue if any new sounds were started since the last mix
-========================
-*/
-qboolean S_ScanChannelStarts( void ) {
-	channel_t       *ch;
-	int i;
-	qboolean newSamples;
-
-	newSamples = qfalse;
-	ch = s_channels;
-
-	for ( i = 0; i < MAX_CHANNELS; i++, ch++ ) {
-		if ( !ch->sfx ) {
-			continue;
-		}
-		// if this channel was just started this frame,
-		// set the sample count to it begins mixing
-		// into the very first sample
-		if ( ch->startSample == START_SAMPLE_IMMEDIATE && ch->threadReady == qtrue ) {
-			ch->startSample = s_paintedtime;
-			newSamples = qtrue;
-			continue;
-		}
-
-		// if it is completely finished by now, clear it
-		if ( ch->startSample + ( ch->sfx->Length ) <= s_paintedtime ) {
-			S_ChannelFree( ch );
-		}
-	}
-
-	return newSamples;
-}
 
 /*
 ============
@@ -530,10 +332,10 @@ void S_UpdateThread( void ) {
 }
 /*
 ============
-S_GetSoundtime
+GetSoundtime
 ============
 */
-void S_GetSoundtime( void ) {
+void GetSoundtime( void ) {
 	int samplepos;
 	static int buffers;
 	static int oldsamplepos;
@@ -560,7 +362,7 @@ void S_GetSoundtime( void ) {
 #if 0
 // check to make sure that we haven't overshot
 	if ( s_paintedtime < s_soundtime ) {
-		Com_DPrintf( "S_GetSoundtime : overflow\n" );
+		Com_DPrintf( "GetSoundtime : overflow\n" );
 		s_paintedtime = s_soundtime;
 	}
 #endif
@@ -595,7 +397,7 @@ void S_Update_Mix( void ) {
 	thisTime = Sys_Milliseconds();
 
 	// Updates s_soundtime
-	S_GetSoundtime();
+	GetSoundtime();
 
 	// clear any sound effects that end before the current time,
 	// and start any new sounds

@@ -37,10 +37,6 @@ void S_UpdateThread( void );
 // stop all sounds and the background track
 void S_StopAllSounds( void );
 
-// recompute the reletive volumes for all running sounds
-// reletive to the given entityNum / orientation
-void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater );
-
 void S_Update( void );
 
 void S_DisableSounds( void );

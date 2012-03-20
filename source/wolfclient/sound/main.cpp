@@ -77,8 +77,7 @@ int S_GetClFrameServertime();
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-//static 
-void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
+static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	int *left_vol, int *right_vol, float range, int noAttenuation);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
@@ -147,10 +146,8 @@ Cvar* s_debugMusic;
 
 //static 
 int			listener_number;
-//static 
-vec3_t		listener_origin;
-//static 
-vec3_t		listener_axis[3];
+static vec3_t		listener_origin;
+static vec3_t		listener_axis[3];
 
 //static 
 int			s_numSfx = 0;
@@ -182,7 +179,7 @@ int nextMusicTrackType;
 
 int numStreamingSounds = 0;
 
-vec3_t entityPositions[MAX_GENTITIES_Q3];
+static vec3_t entityPositions[MAX_GENTITIES_Q3];
 
 // CODE --------------------------------------------------------------------
 
@@ -215,8 +212,7 @@ void Snd_Memset(void* dest, const int val, const size_t count)
 //
 //==========================================================================
 
-//static 
-void S_ChannelFree(channel_t* v)
+static void S_ChannelFree(channel_t* v)
 {
 	v->sfx = NULL;
 	v->threadReady = false;
@@ -231,8 +227,7 @@ void S_ChannelFree(channel_t* v)
 //
 //==========================================================================
 
-//static 
-channel_t* S_ChannelMalloc()
+static channel_t* S_ChannelMalloc()
 {
 	channel_t *v;
 	if (freelist == NULL)
@@ -1856,6 +1851,10 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 	{
 		loopSounds[index].vol = volume;
 	}
+	else
+	{
+		loopSounds[index].vol = 256;
+	}
 
 	if (s_doppler->integer && VectorLengthSquared(velocity) > 0.0)
 	{
@@ -2052,8 +2051,7 @@ static channel_t* S_PickChannel(int EntNum, int EntChannel)
 //
 //==========================================================================
 
-//static 
-void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
+static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	int *left_vol, int *right_vol, float range, int noAttenuation)
 {
 	vec_t		dot;
@@ -2404,7 +2402,7 @@ static void S_FreePlaysound(playsound_t* ps)
 	s_freeplays.next = ps;
 }
 
-void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle,
+static void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle,
 	int flags, int volume)
 {
 	if (!s_soundStarted || s_soundMuted)
@@ -2919,6 +2917,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 		ch->rightvol = ch->master_vol;		// unless the game isn't running
 		ch->doppler = false;
 		ch->dist_mult = SOUND_ATTENUATE;
+		ch->threadReady = true;
 	}
 }
 
@@ -3087,7 +3086,6 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 	ss->fixed_origin = true;
 }
 
-#if 0
 //==========================================================================
 //
 //	S_ScanChannelStarts
@@ -3096,7 +3094,8 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 //
 //==========================================================================
 
-static bool S_ScanChannelStarts()
+//static 
+bool S_ScanChannelStarts()
 {
 	bool newSamples = false;
 	channel_t* ch = s_channels;
@@ -3110,7 +3109,7 @@ static bool S_ScanChannelStarts()
 		// if this channel was just started this frame,
 		// set the sample count to it begins mixing
 		// into the very first sample
-		if (ch->startSample == START_SAMPLE_IMMEDIATE)
+		if (ch->startSample == START_SAMPLE_IMMEDIATE && ch->threadReady)
 		{
 			ch->startSample = s_paintedtime;
 			newSamples = true;
@@ -3190,7 +3189,7 @@ static void S_UpdateAmbientSounds()
 		{
 			continue;
 		}
-		S_SpatializeOrigin(ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+		S_SpatializeOrigin(ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false);
 		if (!ch->leftvol && !ch->rightvol)
 		{
 			continue;
@@ -3244,17 +3243,29 @@ static void S_UpdateAmbientSounds()
 //
 //==========================================================================
 
-static void S_AddLoopSounds()
+//static 
+void S_AddLoopSounds()
 {
 	int			left_total, right_total, left, right;
 	static int	loopFrame;
+	int time;
+	int count;
 
 	numLoopChannels = 0;
 
-	int time = Com_Milliseconds();
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		time = Sys_Milliseconds();
+		count = numLoopSounds;
+	}
+	else
+	{
+		time = Com_Milliseconds();
+		count = MAX_LOOPSOUNDS;
+	}
 
 	loopFrame++;
-	for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+	for (int i = 0; i < count; i++)
 	{
 		loopSound_t* loop = &loopSounds[i];
 		if (!loop->active || loop->mergeFrame == loopFrame)
@@ -3264,23 +3275,28 @@ static void S_AddLoopSounds()
 
 		if (GGameType & GAME_Quake2)
 		{
-			S_SpatializeOrigin(loop->origin, 255.0, SOUND_LOOPATTENUATE, &left_total, &right_total);
+			S_SpatializeOrigin(loop->origin, 255.0, SOUND_LOOPATTENUATE, &left_total, &right_total, loop->range, false);
 		}
-		else if (loop->kill)
+		else if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)) && loop->kill)
 		{
-			S_SpatializeOrigin(loop->origin, 127, SOUND_ATTENUATE, &left_total, &right_total);			// 3d
+			S_SpatializeOrigin(loop->origin, 127, SOUND_ATTENUATE, &left_total, &right_total, loop->range, false);			// 3d
 		}
 		else
 		{
-			S_SpatializeOrigin(loop->origin, 90,  SOUND_ATTENUATE, &left_total, &right_total);			// sphere
+			S_SpatializeOrigin(loop->origin, 90,  SOUND_ATTENUATE, &left_total, &right_total, loop->range, false);			// sphere
 		}
+
+		// adjust according to volume
+		left_total = (int)((float)loop->vol * (float)left_total / 256.0);
+		right_total = (int)((float)loop->vol * (float)right_total / 256.0);
 
 		loop->sfx->LastTimeUsed = time;
 
-		for (int j = i + 1; j < MAX_LOOPSOUNDS; j++)
+		for (int j = i + 1; j < count; j++)
 		{
 			loopSound_t* loop2 = &loopSounds[j];
-			if (!loop2->active || loop2->doppler || loop2->sfx != loop->sfx)
+			if (!loop2->active || loop2->doppler || loop2->sfx != loop->sfx ||
+				loop2->startSample != loop->startSample)
 			{
 				continue;
 			}
@@ -3288,16 +3304,20 @@ static void S_AddLoopSounds()
 
 			if (GGameType & GAME_Quake2)
 			{
-				S_SpatializeOrigin(loop2->origin, 255.0, SOUND_LOOPATTENUATE, &left, &right);
+				S_SpatializeOrigin(loop2->origin, 255.0, SOUND_LOOPATTENUATE, &left, &right, loop2->range, false);
 			}
 			else if (loop2->kill)
 			{
-				S_SpatializeOrigin(loop2->origin, 127, SOUND_ATTENUATE, &left, &right);				// 3d
+				S_SpatializeOrigin(loop2->origin, 127, SOUND_ATTENUATE, &left, &right, loop2->range, false);				// 3d
 			}
 			else
 			{
-				S_SpatializeOrigin(loop2->origin, 90,  SOUND_ATTENUATE, &left, &right);				// sphere
+				S_SpatializeOrigin(loop2->origin, 90,  SOUND_ATTENUATE, &left, &right, loop2->range, false);				// sphere
 			}
+
+			// adjust according to volume
+			left = (int)((float)loop2->vol * (float)left / 256.0);
+			right = (int)((float)loop2->vol * (float)right / 256.0);
 
 			loop2->sfx->LastTimeUsed = time;
 			left_total += left;
@@ -3325,9 +3345,20 @@ static void S_AddLoopSounds()
 		ch->leftvol = left_total;
 		ch->rightvol = right_total;
 		ch->sfx = loop->sfx;
-		ch->doppler = loop->doppler;
-		ch->dopplerScale = loop->dopplerScale;
-		ch->oldDopplerScale = loop->oldDopplerScale;
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+		{
+			// RF, disabled doppler for looping sounds for now, since we are reverting to the old looping sound code
+			ch->doppler = false;
+		}
+		else
+		{
+			ch->doppler = loop->doppler;
+			ch->dopplerScale = loop->dopplerScale;
+			ch->oldDopplerScale = loop->oldDopplerScale;
+		}
+		//	allow offsetting of sound samples
+		ch->startSample = loop->startSample;
+
 		numLoopChannels++;
 		if (numLoopChannels == MAX_CHANNELS)
 		{
@@ -3357,6 +3388,11 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 	VectorCopy(axis[1], listener_axis[1]);
 	VectorCopy(axis[2], listener_axis[2]);
 
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		return;
+	}
+
 	// update spatialization for dynamic sounds	
 	channel_t* ch = s_channels;
 	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
@@ -3383,7 +3419,7 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 				VectorCopy(loopSounds[ch->entnum].origin, origin);
 			}
 
-			S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+			S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol, SOUND_RANGE_DEFAULT, false);
 		}
 		if ((GGameType & GAME_Quake2) && !ch->leftvol && !ch->rightvol)
 		{
@@ -3404,6 +3440,41 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 	}
 }
 
+void S_ThreadRespatialize()
+{
+	// update spatialization for dynamic sounds
+	channel_t* ch = s_channels;
+	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+	{
+		if (!ch->sfx)
+		{
+			continue;
+		}
+		// anything coming from the view entity will always be full volume
+		if (ch->entnum == listener_number)
+		{
+			ch->leftvol = ch->master_vol;
+			ch->rightvol = ch->master_vol;
+		}
+		else
+		{
+			vec3_t origin;
+			if (ch->fixed_origin)
+			{
+				VectorCopy(ch->origin, origin);
+			}
+			else
+			{
+				VectorCopy(entityPositions[ ch->entnum ], origin);
+			}
+
+			S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol,
+				&ch->rightvol, SOUND_RANGE_DEFAULT, ch->flags & SND_NO_ATTENUATION);
+		}
+	}
+}
+
+#if 0
 //==========================================================================
 //
 //	GetSoundtime

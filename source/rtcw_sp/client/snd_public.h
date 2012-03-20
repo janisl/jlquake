@@ -31,15 +31,10 @@ void S_Init( void );
 void S_Shutdown( void );
 void S_UpdateThread( void );
 
-void S_QueueBackgroundTrack( const char *loop );            //----(SA)	added
 void S_FadeAllSounds( float targetvol, int time );    //----(SA)	added
 
 // stop all sounds and the background track
 void S_StopAllSounds( void );
-
-// recompute the reletive volumes for all running sounds
-// reletive to the given entityNum / orientation
-void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater );
 
 void S_Update( void );
 

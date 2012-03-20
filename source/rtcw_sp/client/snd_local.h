@@ -84,5 +84,3 @@ extern Cvar   *s_mixahead;
 extern Cvar   *s_separation;
 extern Cvar   *s_currentMusic;    //----(SA)	added
 extern Cvar   *s_debugMusic;      //----(SA)	added
-
-void S_memoryLoad( sfx_t *sfx );
