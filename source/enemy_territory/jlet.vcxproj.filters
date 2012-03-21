@@ -145,9 +145,6 @@
     <ClInclude Include="game\g_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ui\keycodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -164,12 +161,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\snd_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\snd_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\surfaceflags.h">

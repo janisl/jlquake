@@ -24,17 +24,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\input\keys.cpp">
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="..\client\input\main.cpp">
       <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="sound\main.cpp">
-      <Filter>sound</Filter>
     </ClCompile>
     <ClCompile Include="..\client\sound\audiocd\windows.cpp">
       <Filter>sound\audiocd</Filter>
@@ -49,6 +43,12 @@
       <Filter>sound</Filter>
     </ClCompile>
     <ClCompile Include="..\client\sound\memory.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\client_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\sound\main.cpp">
       <Filter>sound</Filter>
     </ClCompile>
   </ItemGroup>

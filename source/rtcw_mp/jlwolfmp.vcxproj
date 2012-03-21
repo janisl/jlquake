@@ -127,15 +127,12 @@
     <ClInclude Include="cgame\cg_public.h" />
     <ClInclude Include="client\client.h" />
     <ClInclude Include="game\g_public.h" />
-    <ClInclude Include="ui\keycodes.h" />
     <ClInclude Include="client\keys.h" />
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="qcommon\qfiles.h" />
     <ClInclude Include="renderer\qgl.h" />
     <ClInclude Include="server\server.h" />
-    <ClInclude Include="client\snd_local.h" />
-    <ClInclude Include="client\snd_public.h" />
     <ClInclude Include="game\surfaceflags.h" />
     <ClInclude Include="renderer\tr_local.h" />
     <ClInclude Include="renderer\tr_public.h" />
