@@ -77,7 +77,6 @@ set(WOLFMP_FILES
 	unix/unix_shared.cpp
 	unix/linux_qgl.cpp
 	unix/linux_glimp.cpp
-	unix/linux_joystick.cpp
 	unix/linux_signals.cpp
 
 	server/sv_bot.cpp
@@ -116,7 +115,6 @@ target_link_libraries(jlwolfmp botlib-wolfmp splines-wolfmp ${WOLF_CLIENTS_LIBS}
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
-	null/null_input.cpp
 	null/null_snddma.cpp
 	server/sv_bot.cpp
 	server/sv_ccmds.cpp

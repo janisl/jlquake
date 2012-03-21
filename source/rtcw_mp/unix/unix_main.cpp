@@ -91,6 +91,7 @@ qboolean Sys_LowPhysicalMemory() {
 void Sys_BeginProfiling( void ) {
 }
 
+#ifndef DEDICATED
 /*
 =================
 Sys_In_Restart_f
@@ -102,6 +103,7 @@ void Sys_In_Restart_f( void ) {
 	IN_Shutdown();
 	IN_Init();
 }
+#endif
 
 // =============================================================
 // general sys routines
@@ -147,7 +149,9 @@ void Sys_Quit( void ) {
 }
 
 void Sys_Init( void ) {
+#ifndef DEDICATED
 	Cmd_AddCommand( "in_restart", Sys_In_Restart_f );
+#endif
 
 #if defined __linux__
 #if defined __i386__
@@ -191,7 +195,9 @@ void Sys_Init( void ) {
 
 	Cvar_Set( "username", Sys_GetCurrentUser() );
 
+#ifndef DEDICATED
 	IN_Init();
+#endif
 
 }
 
@@ -567,9 +573,11 @@ sysEvent_t Sys_GetEvent( void ) {
 		return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
 	}
 
+#ifndef DEDICATED
 	// pump the message loop
 	// in vga this calls KBD_Update, under X, it calls GetEvent
 	Sys_SendKeyEvents();
+#endif
 
 	// check for console commands
 	s = Sys_ConsoleInput();
@@ -583,8 +591,10 @@ sysEvent_t Sys_GetEvent( void ) {
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
 
+#ifndef DEDICATED
 	// check for other input devices
 	IN_Frame();
+#endif
 
 	// check for network packets
 	MSG_Init( &netmsg, sys_packetReceived, sizeof( sys_packetReceived ) );

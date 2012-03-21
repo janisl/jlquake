@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #define TR_LOCAL_H
 
 #include "../../wolfclient/client.h"
+#include "../../wolfclient/renderer/local.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
@@ -1052,7 +1053,6 @@ typedef struct {
 
 extern backEndState_t backEnd;
 extern trGlobals_t tr;
-extern glconfig_t glConfig;         // outside of TR since it shouldn't be cleared during ref re-init
 extern glstate_t glState;           // outside of TR since it shouldn't be cleared during ref re-init
 
 
@@ -1115,7 +1115,6 @@ extern Cvar  *r_nocurves;
 extern Cvar  *r_showcluster;
 
 extern Cvar   *r_mode;                // video mode
-extern Cvar   *r_fullscreen;
 extern Cvar   *r_gamma;
 extern Cvar   *r_displayRefresh;      // optional display refresh option
 extern Cvar   *r_ignorehwgamma;       // overrides hardware gamma capabilities

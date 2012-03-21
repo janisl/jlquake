@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 
-glconfig_t glConfig;
 glstate_t glState;
 
 static void GfxInfo_f( void );
@@ -154,8 +153,6 @@ Cvar  *r_portalOnly;
 
 Cvar  *r_subdivisions;
 Cvar  *r_lodCurveError;
-
-Cvar  *r_fullscreen;
 
 Cvar  *r_customwidth;
 Cvar  *r_customheight;

@@ -23,7 +23,7 @@
 #include "../client/sound/public.h"
 #include "renderer/public.h"
 #include "../client/input/keycodes.h"
-#include "input/public.h"
+#include "../client/input/public.h"
 #if 0
 #include "cinematic/public.h"
 #include "ui/ui.h"

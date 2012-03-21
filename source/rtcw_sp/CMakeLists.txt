@@ -70,7 +70,6 @@ set(WOLFSP_FILES
 	unix/unix_shared.cpp
 	unix/linux_qgl.cpp
 	unix/linux_glimp.cpp
-	unix/linux_joystick.cpp
 
 	server/sv_bot.cpp
 	server/sv_ccmds.cpp

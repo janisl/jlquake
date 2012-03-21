@@ -93,7 +93,6 @@ set (ET_FILES
 
 	unix/linux_glimp.cpp
 	unix/linux_qgl.cpp
-	unix/linux_joystick.cpp
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
@@ -144,7 +143,6 @@ set (ETDED_FILES
 	game/q_math.cpp
 
 	null/null_client.cpp
-	null/null_input.cpp
 	null/null_snddma.cpp
 	qcommon/dl_main_stubs.cpp
 )

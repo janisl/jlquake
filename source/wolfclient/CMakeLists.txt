@@ -1,6 +1,10 @@
 set(WOLFCLIENT_FILES
 	../client/input/keys.cpp
 	../client/input/main.cpp
+	input/unix.cpp
+	renderer/driver_glx.cpp
+	renderer/init.cpp
+	renderer/main.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp
