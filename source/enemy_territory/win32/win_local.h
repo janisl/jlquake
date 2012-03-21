@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning(disable : 4201)
 #pragma warning( push )
 #endif
-#include "../../wolfclient/windows_shared.h"
+#include "../../client/windows_shared.h"
 #if defined ( _MSC_VER ) && ( _MSC_VER >= 1200 )
 #pragma warning( pop )
 #endif

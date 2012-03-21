@@ -38,6 +38,10 @@ struct MYDATA
 	BYTE		bButtonB;	// Another button goes here
 	BYTE		bButtonC;	// Another button goes here
 	BYTE		bButtonD;	// Another button goes here
+	BYTE bButtonE;              // Another button goes here
+	BYTE bButtonF;              // Another button goes here
+	BYTE bButtonG;              // Another button goes here
+	BYTE bButtonH;              // Another button goes here
 };
 
 //
@@ -81,6 +85,94 @@ static byte s_scantokey[128] =
 	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
 }; 
 
+static byte s_scantokey_german[128] =
+{
+//  0           1       2       3       4       5       6       7
+//  8           9       A       B       C       D       E       F
+	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
+	'7',    '8',    '9',    '0',    '?',    '\'',    K_BACKSPACE, 9, // 0
+	'q',    'w',    'e',    'r',    't',    'z',    'u',    'i',
+	'o',    'p',    '=',    '+',    13,    K_CTRL, 'a',  's',      // 1
+	'd',    'f',    'g',    'h',    'j',    'k',    'l',    '[',
+	']',    '`',    K_SHIFT,'#',  'y',    'x',    'c',    'v',      // 2
+	'b',    'n',    'm',    ',',    '.',    '-',    K_SHIFT,'*',
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
+	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+};
+
+static byte s_scantokey_french[128] =
+{
+//  0           1       2       3       4       5       6       7
+//  8           9       A       B       C       D       E       F
+	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
+	'7',    '8',    '9',    '0',    ')',    '=',    K_BACKSPACE, 9, // 0
+	'a',    'z',    'e',    'r',    't',    'y',    'u',    'i',
+	'o',    'p',    '^',    '$',    13,    K_CTRL, 'q',  's',      // 1
+	'd',    'f',    'g',    'h',    'j',    'k',    'l',    'm',
+	'%',    '`',    K_SHIFT,'*',  'w',    'x',    'c',    'v',      // 2
+	'b',    'n',    ',',    ';',    ':',    '!',    K_SHIFT,'*',
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
+	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+};
+
+static byte s_scantokey_spanish[128] =
+{
+//  0           1       2       3       4       5       6       7
+//  8           9       A       B       C       D       E       F
+	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
+	'7',    '8',    '9',    '0',    '\'',    '!',    K_BACKSPACE, 9, // 0
+	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i',
+	'o',    'p',    '[',    ']',    13,    K_CTRL, 'a',  's',      // 1
+	'd',    'f',    'g',    'h',    'j',    'k',    'l',    '=',
+	'{',    '`',    K_SHIFT,'}',  'z',    'x',    'c',    'v',      // 2
+	'b',    'n',    'm',    ',',    '.',    '-',    K_SHIFT,'*',
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
+	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+};
+
+static byte s_scantokey_italian[128] =
+{
+//  0           1       2       3       4       5       6       7
+//  8           9       A       B       C       D       E       F
+	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
+	'7',    '8',    '9',    '0',    '\'',    '^',    K_BACKSPACE, 9, // 0
+	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i',
+	'o',    'p',    '[',    ']',    13,    K_CTRL, 'a',  's',      // 1
+	'd',    'f',    'g',    'h',    'j',    'k',    'l',    '@',
+	'#',    '`',    K_SHIFT,'=',  'z',    'x',    'c',    'v',      // 2
+	'b',    'n',    'm',    ',',    '.',    '-',    K_SHIFT,'*',
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
+	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+};
+
 static Cvar*			in_mouse;
 
 static int				window_center_x;
@@ -107,6 +199,10 @@ static DIOBJECTDATAFORMAT rgodf[] =
   { 0,              FIELD_OFFSET(MYDATA, bButtonB), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
   { 0,              FIELD_OFFSET(MYDATA, bButtonC), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
   { 0,              FIELD_OFFSET(MYDATA, bButtonD), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0, FIELD_OFFSET(MYDATA, bButtonE), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0, FIELD_OFFSET(MYDATA, bButtonF), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0, FIELD_OFFSET(MYDATA, bButtonG), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0, FIELD_OFFSET(MYDATA, bButtonH), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
 };
 
 // NOTE TTimo: would be easier using c_dfDIMouse or c_dfDIMouse2 
@@ -178,6 +274,25 @@ static int MapKey(int key)
 	bool is_extended = !!(key & (1 << 24));
 
 	int result = s_scantokey[modified];
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		if (cl_language->integer - 1 == LANGUAGE_FRENCH)
+		{
+			result = s_scantokey_french[modified];
+		}
+		else if (cl_language->integer - 1 == LANGUAGE_GERMAN)
+		{
+			result = s_scantokey_german[modified];
+		}
+		else if (cl_language->integer - 1 == LANGUAGE_ITALIAN)
+		{
+			result = s_scantokey_italian[modified];
+		}
+		else if (cl_language->integer - 1 == LANGUAGE_SPANISH)
+		{
+			result = s_scantokey_spanish[modified];
+		}
+	}
 
 	if (!is_extended)
 	{
@@ -238,7 +353,7 @@ static void IN_MouseEvent(int mstate)
 	}
 
 	// perform button actions
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if ((mstate & (1 << i)) && !(mouse_oldButtonState & (1 << i)))
 		{
@@ -288,6 +403,8 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam)
 	case WM_RBUTTONUP:
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
 	case WM_MOUSEMOVE:
 		{
 			int	temp = 0;
@@ -302,6 +419,14 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam)
 			if (wParam & MK_MBUTTON)
 			{
 				temp |= 4;
+			}
+			if (wParam & MK_XBUTTON1)
+			{
+				temp |= 8;
+			}
+			if (wParam & MK_XBUTTON2)
+			{
+				temp |= 16;
 			}
 			IN_MouseEvent(temp);
 		}
