@@ -104,10 +104,6 @@ extern Cvar  *cl_conXOffset;
 extern Cvar  *cl_missionStats;
 extern Cvar  *cl_waitForFire;
 
-// NERVE - SMF - localization
-extern Cvar  *cl_language;
-// -NERVE - SMF
-
 //=================================================
 
 //

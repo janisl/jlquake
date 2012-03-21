@@ -647,13 +647,4 @@ typedef enum _flag_status {
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
 
-// NERVE - SMF - localization
-typedef enum {
-	LANGUAGE_FRENCH = 0,
-	LANGUAGE_GERMAN,
-	LANGUAGE_ITALIAN,
-	LANGUAGE_SPANISH,
-	MAX_LANGUAGES
-} languages_t;
-
 #endif  // __Q_SHARED_H

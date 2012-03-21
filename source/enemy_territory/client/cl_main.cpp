@@ -88,7 +88,6 @@ Cvar  *cl_missionStats;
 Cvar  *cl_waitForFire;
 
 // NERVE - SMF - localization
-Cvar  *cl_language;
 Cvar  *cl_debugTranslation;
 // -NERVE - SMF
 // DHM - Nerve :: Auto-Update

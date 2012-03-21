@@ -398,5 +398,10 @@
     </ClInclude>
     <ClInclude Include="client.h" />
     <ClInclude Include="windows_shared.h" />
+    <ClInclude Include="hexen2clientdefs.h" />
+    <ClInclude Include="quake2clientdefs.h" />
+    <ClInclude Include="quake3clientdefs.h" />
+    <ClInclude Include="quakeclientdefs.h" />
+    <ClInclude Include="wolfclientdefs.h" />
   </ItemGroup>
 </Project>

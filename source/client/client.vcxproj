@@ -639,6 +639,10 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hexen2clientdefs.h" />
+    <ClInclude Include="quake2clientdefs.h" />
+    <ClInclude Include="quake3clientdefs.h" />
+    <ClInclude Include="quakeclientdefs.h" />
     <ClInclude Include="renderer\cvars.h" />
     <ClInclude Include="renderer\local.h" />
     <ClInclude Include="renderer\public.h" />
@@ -667,6 +671,7 @@
     <ClInclude Include="game\quake2\local.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="windows_shared.h" />
+    <ClInclude Include="wolfclientdefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

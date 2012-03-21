@@ -40,10 +40,6 @@ void IN_Shutdown( void ) {
 void Sys_SendKeyEvents( void ) {
 }
 
-// TTimo: added for win32 dedicated
-void IN_MouseEvent( int mstate ) {
-}
-
 void    IN_Activate( qboolean active ) {
 }
 

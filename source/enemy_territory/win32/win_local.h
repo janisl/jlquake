@@ -47,40 +47,12 @@ If you have questions concerning this license or the applicable additional terms
 #include <winsock.h>
 #include <wsipx.h>
 
-void    IN_MouseEvent( int mstate );
-
-// Input subsystem
-
-void    IN_Init( void );
-void    IN_Shutdown( void );
-void    IN_JoystickCommands( void );
-
-void    IN_Move( etusercmd_t *cmd );
-// add additional non keyboard / non mouse movement on top of the keyboard move cmd
-
-void    IN_DeactivateWin32Mouse( void );
-
-void    IN_Activate( qboolean active );
-void    IN_Frame( void );
-
 // window procedure
 LRESULT WINAPI MainWndProc(
 	HWND hWnd,
 	UINT uMsg,
 	WPARAM wParam,
 	LPARAM lParam );
-
-// ydnar: mousewheel stuff
-#ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL       ( WM_MOUSELAST + 1 )  // message that will be supported by the OS
-#endif
-
-#ifndef WM_XBUTTONDOWN
-#define WM_XBUTTONDOWN      ( WM_MOUSELAST + 2 )
-#define WM_XBUTTONUP        ( WM_MOUSELAST + 3 )
-#define MK_XBUTTON1         0x0020
-#define MK_XBUTTON2         0x0040
-#endif
 
 // Gordon: exception handling
 void WinSetExceptionWnd( HWND wnd );

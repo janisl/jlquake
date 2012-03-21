@@ -60,5 +60,8 @@
     <ClCompile Include="renderer\main.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
+    <ClCompile Include="input\windows.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

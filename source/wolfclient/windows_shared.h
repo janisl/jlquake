@@ -23,15 +23,11 @@ void SNDDMA_Activate();
 
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-#if 0
 bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
 void IN_Activate(bool active);
-#endif
 
 extern HWND			GMainWindow;
-#if 0
 extern Cvar*		in_joystick;
-#endif
 extern bool			Minimized;
 extern bool			ActiveApp;
 

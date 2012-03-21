@@ -659,17 +659,6 @@ typedef enum _flag_status {
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
 
-// NERVE - SMF - localization
-typedef enum {
-#ifndef __MACOS__   //DAJ USA
-	LANGUAGE_FRENCH = 0,
-	LANGUAGE_GERMAN,
-	LANGUAGE_ITALIAN,
-	LANGUAGE_SPANISH,
-#endif
-	MAX_LANGUAGES
-} languages_t;
-
 // NERVE - SMF - wolf server/game states
 typedef enum {
 	GS_INITIALIZE = -1,
