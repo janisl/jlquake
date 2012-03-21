@@ -53,6 +53,8 @@ Cvar*					in_joystick;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+static Cvar* in_shiftedkeys;
+
 static bool				mouse_avail;
 static bool				mouse_active;
 static int				mwx, mwy;
@@ -117,12 +119,24 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 {
 	key = 0;
 
+	// get the buffer without messing with shifts, for SE_CHAR
 	static char buf[64];
 	KeySym keysym;
 	int XLookupRet = XLookupString(ev, buf, sizeof(buf), &keysym, 0);
 #ifdef KBD_DBG
 	Log::write("XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym);
 #endif
+
+	static char shiftlessbuf[2];
+	if (!in_shiftedkeys->integer)
+	{
+		// get the keysym and a buffer with no shifts at all, for SE_KEY
+		ev->state = 0;
+		XLookupRet = XLookupString(ev, shiftlessbuf, sizeof(shiftlessbuf), &keysym, 0);
+#ifdef KBD_DBG
+		common->Printf("XLookupString ret (shiftless): %d buf: %s keysym: %x\n", XLookupRet, shiftlessbuf, keysym);
+#endif
+	}
   
 	switch (keysym)
 	{
@@ -344,6 +358,35 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = '0';
 		break;
 
+		// rain - handle some previously unhandled keys...
+	case XK_Caps_Lock:
+		key = K_CAPSLOCK;
+		break;
+	case XK_Num_Lock:
+		key = K_KP_NUMLOCK;
+		break;
+	case XK_KP_Equal:
+		key = K_KP_EQUALS;
+		break;
+
+		// these are unlikely, but we have keys for them from the mac port,
+		// so we might as well...
+	case XK_F13:
+		key = K_F13;
+		break;
+	case XK_F14:
+		key = K_F14;
+		break;
+	case XK_F15:
+		key = K_F15;
+		break;
+
+		// this is to fix Ctrl-`, which is otherwise picked up by the default
+		// case as a NUL, which kept the mini-console from working.
+	case XK_grave:
+		key = '~';
+		break;
+
 	// weird french keyboards ..
 	// NOTE: console toggle is hardcoded in cl_keys.c, can't be unbound
 	//   cleaner would be .. using hardware key codes instead of the key syms
@@ -351,7 +394,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	case XK_twosuperior:
 		key = '~';
 		break;
-		
+
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=472
 	case XK_space:
 	case XK_KP_Space:
@@ -365,16 +408,25 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 			return NULL;
 		}
 		// XK_* tests failed, but XLookupString got a buffer, so let's try it
-		key = *(unsigned char*)buf;
-		if (key >= 'A' && key <= 'Z')
+		if (in_shiftedkeys->integer)
 		{
-			key = key - 'A' + 'a';
+			// old hackish style, for some keyboards that are absolutely strange.
+			// (no shiftless numbers...)
+			key = *(unsigned char*)buf;
+			if (key >= 'A' && key <= 'Z')
+			{
+				key = key - 'A' + 'a';
+			}
+			// if ctrl is pressed, the keys are not between 'A' and 'Z', for instance ctrl-z == 26 ^Z ^C etc.
+			// see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=19
+			else if (key >= 1 && key <= 26)
+			{
+				key = key + 'a' - 1;
+			}
 		}
-		// if ctrl is pressed, the keys are not between 'A' and 'Z', for instance ctrl-z == 26 ^Z ^C etc.
-		// see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=19
-		else if (key >= 1 && key <= 26)
+		else
 		{
-			key = key + 'a' - 1;
+			key = shiftlessbuf[0];
 		}
 		break;
 	}
@@ -530,11 +582,20 @@ static void install_grabs()
 		}
 		else
 		{
-			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+			if (!XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse))
+			{
+				common->Printf("XF86DGADirectVideo failed despite advertised XF86DGAQueryVersion - broken drivers?");
+				Cvar_Set("in_dgamouse", "0");
+			}
+			else
+			{
+				XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+			}
 		}
 	}
-	else
+
+	// don't else, it may have been canceled
+	if (!in_dgamouse->value)
 	{
 		mwx = glConfig.vidWidth / 2;
 		mwy = glConfig.vidHeight / 2;
@@ -839,21 +900,29 @@ void Sys_SendKeyEvents()
 			{
 				if (in_dgamouse->value)
 				{
-					if (abs(event.xmotion.x_root) > 1)
-					{
-						mx += event.xmotion.x_root * 2;
-					}
-					else
+					if (in_dgamouse->value >= 2)
 					{
 						mx += event.xmotion.x_root;
-					}
-					if (abs(event.xmotion.y_root) > 1)
-					{
-						my += event.xmotion.y_root * 2;
+						my += event.xmotion.y_root;
 					}
 					else
 					{
-						my += event.xmotion.y_root;
+						if (abs(event.xmotion.x_root) > 1)
+						{
+							mx += event.xmotion.x_root * 2;
+						}
+						else
+						{
+							mx += event.xmotion.x_root;
+						}
+						if (abs(event.xmotion.y_root) > 1)
+						{
+							my += event.xmotion.y_root * 2;
+						}
+						else
+						{
+							my += event.xmotion.y_root;
+						}
 					}
 					if (t - mouseResetTime > MOUSE_RESET_DELAY)
 					{
@@ -903,6 +972,16 @@ void Sys_SendKeyEvents()
 				}
 			}
 			break;
+
+#if 0//JL FIXME
+		case ClientMessage:
+			if (event.xclient.message_type == wm_protocols &&
+				event.xclient.data.l[0] == wm_delete_window)
+			{
+				Com_Quit_f();
+			}
+			break;
+#endif
 		}
 	}
 
@@ -1135,6 +1214,8 @@ void IN_Init()
 	// bk001130 - changed this to match win32
 	in_joystickDebug = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
 	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE); // FIXME: in_joythreshold
+
+	in_shiftedkeys = Cvar_Get("in_shiftedkeys", "1", CVAR_ARCHIVE);
 
 	if (in_mouse->value)
 	{

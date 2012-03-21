@@ -1,7 +1,7 @@
 set(WOLFCLIENT_FILES
 	../client/input/keys.cpp
 	../client/input/main.cpp
-	input/unix.cpp
+	../client/input/unix.cpp
 	renderer/driver_glx.cpp
 	renderer/init.cpp
 	renderer/main.cpp
