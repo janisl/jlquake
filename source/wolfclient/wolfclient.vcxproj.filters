@@ -22,6 +22,9 @@
     <Filter Include="sound\audiocd">
       <UniqueIdentifier>{478100ae-531f-4a8c-b371-7f75b7394168}</UniqueIdentifier>
     </Filter>
+    <Filter Include="renderer">
+      <UniqueIdentifier>{6e056d90-5274-4aa0-8081-afe164440cca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\client\input\keys.cpp">
@@ -50,6 +53,12 @@
     </ClCompile>
     <ClCompile Include="..\client\sound\main.cpp">
       <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\init.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\main.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
