@@ -1073,7 +1073,6 @@ extern Cvar   *r_ati_fsaa_samples;                //DAJ
 
 extern Cvar  *r_rmse;                         // reduces textures to this root mean square error
 extern Cvar  *r_glDriver;
-extern Cvar  *r_glIgnoreWicked3D;
 
 extern Cvar  *r_portalsky;    // (SA) added
 

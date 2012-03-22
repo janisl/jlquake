@@ -57,11 +57,6 @@ void WG_CheckHardwareGamma( void ) {
 		return;
 	}
 
-	// non-3Dfx standalone drivers don't support gamma changes, period
-	if ( glConfig.driverType == GLDRV_STANDALONE ) {
-		return;
-	}
-
 	if ( !r_ignorehwgamma->integer ) {
 		hDC = GetDC( GetDesktopWindow() );
 		glConfig.deviceSupportsGamma = GetDeviceGammaRamp( hDC, s_oldHardwareGamma );

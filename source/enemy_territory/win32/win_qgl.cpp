@@ -2856,48 +2856,6 @@ void QGL_Shutdown( void ) {
 
 #define GR_NUM_BOARDS 0x0f
 
-qboolean GlideIsValid( void ) {
-	HMODULE hGlide;
-//	int numBoards;
-//	void (__stdcall *grGet)(unsigned int, unsigned int, int*);
-
-	if ( ( hGlide = LoadLibrary( "Glide3X" ) ) != 0 ) {
-		FreeLibrary( hGlide );
-		// FIXME: 3Dfx needs to fix this shit
-		return qtrue;
-	}
-
-	if ( ( hGlide = LoadLibrary( "Glide2X" ) ) != 0 ) {
-		FreeLibrary( hGlide );
-		// FIXME: 3Dfx needs to fix this shit
-		return qtrue;
-	}
-#if 0
-	grGet = (void *)GetProcAddress( hGlide, "_grGet@12" );
-
-	if ( grGet ) {
-		grGet( GR_NUM_BOARDS, sizeof( int ), &numBoards );
-	} else
-	{
-		// if we've reached this point, something is seriously wrong
-		ri.Printf( PRINT_WARNING, "WARNING: could not find grGet in GLIDE3X.DLL\n" );
-		numBoards = 0;
-	}
-
-	FreeLibrary( hGlide );
-	hGlide = NULL;
-
-	if ( numBoards > 0 ) {
-		return qtrue;
-	}
-
-	ri.Printf( PRINT_WARNING, "WARNING: invalid Glide installation!\n" );
-}
-#endif
-
-	return qfalse;
-}
-
 #ifndef __GNUC__
 #   pragma warning (disable : 4113 4133 4047 )
 #endif
@@ -2912,34 +2870,12 @@ qboolean GlideIsValid( void ) {
 ** operating systems we need to do the right thing, whatever that
 ** might be.
 */
-qboolean QGL_Init( const char *dllname ) {
-	char systemDir[1024];
-	char libName[1024];
-
-	GetSystemDirectory( systemDir, sizeof( systemDir ) );
-
+qboolean QGL_Init() {
 	assert( glw_state.hinstOpenGL == 0 );
 
 	ri.Printf( PRINT_ALL, "...initializing QGL\n" );
 
-	// NOTE: this assumes that 'dllname' is lower case (and it should be)!
-	if ( strstr( dllname, _3DFX_DRIVER_NAME ) ) {
-		if ( !GlideIsValid() ) {
-			ri.Printf( PRINT_ALL, "...WARNING: missing Glide installation, assuming no 3Dfx available\n" );
-			return qfalse;
-		}
-	}
-
-	if ( dllname[0] != '!' && strstr( "dllname", ".dll" ) == NULL ) {
-		String::Sprintf( libName, sizeof( libName ), "%s\\%s", systemDir, dllname );
-	} else
-	{
-		String::NCpyZ( libName, dllname, sizeof( libName ) );
-	}
-
-	ri.Printf( PRINT_ALL, "...calling LoadLibrary( '%s.dll' ): ", libName );
-
-	if ( ( glw_state.hinstOpenGL = LoadLibrary( dllname ) ) == 0 ) {
+	if ( ( glw_state.hinstOpenGL = LoadLibrary("opengl32") ) == 0 ) {
 		ri.Printf( PRINT_ALL, "failed\n" );
 		return qfalse;
 	}

@@ -68,8 +68,7 @@ typedef enum {
 #define WINDOW_CLASS_NAME   "Enemy Territory"
 
 static void     GLW_InitExtensions( void );
-static rserr_t  GLW_SetMode( const char *drivername,
-							 int mode,
+static rserr_t  GLW_SetMode( int mode,
 							 int colorbits,
 							 qboolean cdsFullscreen );
 
@@ -79,15 +78,13 @@ static qboolean s_classRegistered = qfalse;
 // function declaration
 //
 void     QGL_EnableLogging( qboolean enable );
-qboolean QGL_Init( const char *dllname );
+qboolean QGL_Init();
 void     QGL_Shutdown( void );
 
 //
 // variable declarations
 //
 glwstate_t glw_state;
-
-Cvar  *r_maskMinidriver;      // allow a different dll name to be treated as if it were opengl32.dll
 
 int gl_NormalFontBase = 0;
 static qboolean fontbase_init = qfalse;
@@ -127,13 +124,12 @@ static const char *Q_stristr( const char *s, const char *find ) {
 /*
 ** GLW_StartDriverAndSetMode
 */
-static qboolean GLW_StartDriverAndSetMode( const char *drivername,
-										   int mode,
+static qboolean GLW_StartDriverAndSetMode( int mode,
 										   int colorbits,
 										   qboolean cdsFullscreen ) {
 	rserr_t err;
 
-	err = GLW_SetMode( drivername, r_mode->integer, colorbits, cdsFullscreen );
+	err = GLW_SetMode( r_mode->integer, colorbits, cdsFullscreen );
 
 	switch ( err )
 	{
@@ -165,12 +161,7 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR *pPFD ) {
 	ri.Printf( PRINT_ALL, "...GLW_ChoosePFD( %d, %d, %d )\n", ( int ) pPFD->cColorBits, ( int ) pPFD->cDepthBits, ( int ) pPFD->cStencilBits );
 
 	// count number of PFDs
-	if ( glConfig.driverType > GLDRV_ICD ) {
-		maxPFD = qwglDescribePixelFormat( hDC, 1, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[0] );
-	} else
-	{
-		maxPFD = DescribePixelFormat( hDC, 1, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[0] );
-	}
+	maxPFD = DescribePixelFormat( hDC, 1, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[0] );
 	if ( maxPFD > MAX_PFDS ) {
 		ri.Printf( PRINT_WARNING, "...numPFDs > MAX_PFDS (%d > %d)\n", maxPFD, MAX_PFDS );
 		maxPFD = MAX_PFDS;
@@ -181,12 +172,7 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR *pPFD ) {
 	// grab information
 	for ( i = 1; i <= maxPFD; i++ )
 	{
-		if ( glConfig.driverType > GLDRV_ICD ) {
-			qwglDescribePixelFormat( hDC, i, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[i] );
-		} else
-		{
-			DescribePixelFormat( hDC, i, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[i] );
-		}
+		DescribePixelFormat( hDC, i, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[i] );
 	}
 
 	// look for a best match
@@ -386,20 +372,11 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD ) {
 		}
 		ri.Printf( PRINT_ALL, "...PIXELFORMAT %d selected\n", pixelformat );
 
-		if ( glConfig.driverType > GLDRV_ICD ) {
-			qwglDescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
-			if ( qwglSetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE ) {
-				ri.Printf( PRINT_ALL, "...qwglSetPixelFormat failed\n" );
-				return TRY_PFD_FAIL_SOFT;
-			}
-		} else
-		{
-			DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
+		DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
 
-			if ( SetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE ) {
-				ri.Printf( PRINT_ALL, "...SetPixelFormat failed\n", glw_state.hDC );
-				return TRY_PFD_FAIL_SOFT;
-			}
+		if ( SetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE ) {
+			ri.Printf( PRINT_ALL, "...SetPixelFormat failed\n", glw_state.hDC );
+			return TRY_PFD_FAIL_SOFT;
 		}
 
 		glw_state.pixelFormatSet = qtrue;
@@ -437,7 +414,7 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD ) {
 ** - get a DC if one doesn't exist
 ** - create an HGLRC if one doesn't exist
 */
-static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
+static qboolean GLW_InitDriver( int colorbits ) {
 	int tpfd;
 	int depthbits, stencilbits;
 	static PIXELFORMATDESCRIPTOR pfd;       // save between frames since 'tr' gets cleared
@@ -554,7 +531,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
 ** Responsible for creating the Win32 window and initializing the OpenGL driver.
 */
 #define WINDOW_STYLE    ( WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE )
-static qboolean GLW_CreateWindow( const char *drivername, int width, int height, int colorbits, qboolean cdsFullscreen ) {
+static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean cdsFullscreen ) {
 	RECT r;
 	Cvar          *vid_xpos, *vid_ypos;
 	int stylebits;
@@ -599,7 +576,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		r.right  = width;
 		r.bottom = height;
 
-		if ( cdsFullscreen || !String::ICmp( _3DFX_DRIVER_NAME, drivername ) ) {
+		if ( cdsFullscreen ) {
 			exstyle = WS_EX_TOPMOST;
 			stylebits = WS_POPUP | WS_VISIBLE | WS_SYSMENU;
 		} else
@@ -612,7 +589,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		w = r.right - r.left;
 		h = r.bottom - r.top;
 
-		if ( cdsFullscreen || !String::ICmp( _3DFX_DRIVER_NAME, drivername ) ) {
+		if ( cdsFullscreen ) {
 			x = 0;
 			y = 0;
 		} else
@@ -666,7 +643,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		ri.Printf( PRINT_ALL, "...window already present, CreateWindowEx skipped\n" );
 	}
 
-	if ( !GLW_InitDriver( drivername, colorbits ) ) {
+	if ( !GLW_InitDriver( colorbits ) ) {
 		ShowWindow( GMainWindow, SW_HIDE );
 		DestroyWindow( GMainWindow );
 		GMainWindow = NULL;
@@ -710,8 +687,7 @@ static void PrintCDSError( int value ) {
 /*
 ** GLW_SetMode
 */
-static rserr_t GLW_SetMode( const char *drivername,
-							int mode,
+static rserr_t GLW_SetMode( int mode,
 							int colorbits,
 							qboolean cdsFullscreen ) {
 	HDC hDC;
@@ -741,21 +717,19 @@ static rserr_t GLW_SetMode( const char *drivername,
 	//
 	// verify desktop bit depth
 	//
-	if ( glConfig.driverType != GLDRV_VOODOO ) {
-		if ( glw_state.desktopBitsPixel < 15 || glw_state.desktopBitsPixel == 24 ) {
-			if ( colorbits == 0 || ( !cdsFullscreen && colorbits >= 15 ) ) {
-				if ( MessageBox( NULL,
-								 "It is highly unlikely that a correct\n"
-								 "windowed display can be initialized with\n"
-								 "the current desktop display depth.  Select\n"
-								 "'OK' to try anyway.  Press 'Cancel' if you\n"
-								 "have a 3Dfx Voodoo, Voodoo-2, or Voodoo Rush\n"
-								 "3D accelerator installed, or if you otherwise\n"
-								 "wish to quit.",
-								 "Low Desktop Color Depth",
-								 MB_OKCANCEL | MB_ICONEXCLAMATION ) != IDOK ) {
-					return RSERR_INVALID_MODE;
-				}
+	if ( glw_state.desktopBitsPixel < 15 || glw_state.desktopBitsPixel == 24 ) {
+		if ( colorbits == 0 || ( !cdsFullscreen && colorbits >= 15 ) ) {
+			if ( MessageBox( NULL,
+								"It is highly unlikely that a correct\n"
+								"windowed display can be initialized with\n"
+								"the current desktop display depth.  Select\n"
+								"'OK' to try anyway.  Press 'Cancel' if you\n"
+								"have a 3Dfx Voodoo, Voodoo-2, or Voodoo Rush\n"
+								"3D accelerator installed, or if you otherwise\n"
+								"wish to quit.",
+								"Low Desktop Color Depth",
+								MB_OKCANCEL | MB_ICONEXCLAMATION ) != IDOK ) {
+				return RSERR_INVALID_MODE;
 			}
 		}
 	}
@@ -803,7 +777,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 		if ( glw_state.cdsFullscreen ) {
 			ri.Printf( PRINT_ALL, "...already fullscreen, avoiding redundant CDS\n" );
 
-			if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
+			if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
 				ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 				ChangeDisplaySettings( 0, 0 );
 				return RSERR_INVALID_MODE;
@@ -821,7 +795,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 			if ( ( cdsRet = ChangeDisplaySettings( &dm, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL ) {
 				ri.Printf( PRINT_ALL, "ok\n" );
 
-				if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
+				if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
 					ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 					ChangeDisplaySettings( 0, 0 );
 					return RSERR_INVALID_MODE;
@@ -857,7 +831,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 
 				if ( modeNum != -1 && ( cdsRet = ChangeDisplaySettings( &devmode, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL ) {
 					ri.Printf( PRINT_ALL, " ok\n" );
-					if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
+					if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
 						ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 						ChangeDisplaySettings( 0, 0 );
 						return RSERR_INVALID_MODE;
@@ -875,7 +849,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 
 					glw_state.cdsFullscreen = qfalse;
 					glConfig.isFullscreen = qfalse;
-					if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) ) {
+					if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) ) {
 						return RSERR_INVALID_MODE;
 					}
 					return RSERR_INVALID_FULLSCREEN;
@@ -889,7 +863,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 		}
 
 		glw_state.cdsFullscreen = qfalse;
-		if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) ) {
+		if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) ) {
 			return RSERR_INVALID_MODE;
 		}
 	}
@@ -1186,66 +1160,33 @@ static qboolean GLW_CheckOSVersion( void ) {
 ** GLimp_win.c internal function that attempts to load and use
 ** a specific OpenGL DLL.
 */
-static qboolean GLW_LoadOpenGL( const char *drivername ) {
-	char buffer[1024];
+static qboolean GLW_LoadOpenGL() {
 	qboolean cdsFullscreen;
-
-	String::NCpyZ( buffer, drivername, sizeof( buffer ) );
-	String::ToLower( buffer );
 
 	//
 	// determine if we're on a standalone driver
 	//
-	if ( strstr( buffer, "opengl32" ) != 0 || r_maskMinidriver->integer ) {
-		glConfig.driverType = GLDRV_ICD;
-	} else
-	{
-		glConfig.driverType = GLDRV_STANDALONE;
-
-		ri.Printf( PRINT_ALL, "...assuming '%s' is a standalone driver\n", drivername );
-
-		if ( strstr( buffer, _3DFX_DRIVER_NAME ) ) {
-			glConfig.driverType = GLDRV_VOODOO;
-		}
-	}
-
-	// disable the 3Dfx splash screen
-	_putenv( "FX_GLIDE_NO_SPLASH=0" );
+	glConfig.driverType = GLDRV_ICD;
 
 	//
 	// load the driver and bind our function pointers to it
 	//
-	if ( QGL_Init( buffer ) ) {
-#if 0
-// FIXME: newer 3Dfx drivers means this can go away
-		if ( !String::ICmp( buffer, _3DFX_DRIVER_NAME ) ) {
-			cdsFullscreen = qfalse;
-		} else
-#endif
+	if ( QGL_Init() ) {
 		{
 			cdsFullscreen = r_fullscreen->integer;
 		}
 
 		// create the window and set up the context
-		if ( !GLW_StartDriverAndSetMode( drivername, r_mode->integer, r_colorbits->integer, cdsFullscreen ) ) {
+		if ( !GLW_StartDriverAndSetMode( r_mode->integer, r_colorbits->integer, cdsFullscreen ) ) {
 			// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
 			// try it again but with a 16-bit desktop
-			if ( glConfig.driverType == GLDRV_ICD ) {
-				if ( r_colorbits->integer != 16 ||
-					 cdsFullscreen != qtrue ||
-					 r_mode->integer != 3 ) {
-					if ( !GLW_StartDriverAndSetMode( drivername, 3, 16, qtrue ) ) {
-						goto fail;
-					}
+			if ( r_colorbits->integer != 16 ||
+					cdsFullscreen != qtrue ||
+					r_mode->integer != 3 ) {
+				if ( !GLW_StartDriverAndSetMode( 3, 16, qtrue ) ) {
+					goto fail;
 				}
-			} else
-			{
-				goto fail;
 			}
-		}
-
-		if ( glConfig.driverType == GLDRV_VOODOO ) {
-			glConfig.isFullscreen = qtrue;
 		}
 
 		return qtrue;
@@ -1277,14 +1218,7 @@ void GLimp_EndFrame( void ) {
 
 	// don't flip if drawing to front buffer
 	if ( String::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
-		if ( glConfig.driverType > GLDRV_ICD ) {
-			if ( !qwglSwapBuffers( glw_state.hDC ) ) {
-				ri.Error( ERR_VID_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
-			}
-		} else
-		{
-			SwapBuffers( glw_state.hDC );
-		}
+		SwapBuffers( glw_state.hDC );
 	}
 
 	// check logging
@@ -1292,70 +1226,12 @@ void GLimp_EndFrame( void ) {
 }
 
 
-extern qboolean GlideIsValid( void );
 static void GLW_StartOpenGL( void ) {
-	qboolean attemptedOpenGL32 = qfalse;
-	qboolean attempted3Dfx = qfalse;
-
-	// this bit will pre-detect voodoo gl and if appropriate
-	// set the r_glDriver to point at one of the wicked 3D drivers
-	if ( !r_glIgnoreWicked3D->integer && GlideIsValid() ) {
-		const char *vid = WICKED3D_V5_DRIVER_NAME;
-		HMODULE handle;
-		handle = LoadLibrary( vid );
-		if ( handle == 0 ) {
-			vid = WICKED3D_V3_DRIVER_NAME;
-			handle = LoadLibrary( vid );
-		}
-
-		if ( handle ) {
-			Cvar_Set( "r_glDriver", vid );
-			FreeLibrary( handle );
-		}
-	}
-
-	if ( r_glIgnoreWicked3D->integer ) {
-		Cvar_Set( "r_glDriver", OPENGL_DRIVER_NAME );
-	}
-
 	//
 	// load and initialize the specific OpenGL driver
 	//
-	if ( !GLW_LoadOpenGL( r_glDriver->string ) ) {
-		if ( !String::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) ) {
-			attemptedOpenGL32 = qtrue;
-		} else if ( !String::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )   {
-			attempted3Dfx = qtrue;
-		}
-
-		if ( !attempted3Dfx ) {
-			attempted3Dfx = qtrue;
-			if ( GLW_LoadOpenGL( _3DFX_DRIVER_NAME ) ) {
-				ri.Cvar_Set( "r_glDriver", _3DFX_DRIVER_NAME );
-				r_glDriver->modified = qfalse;
-			} else
-			{
-				if ( !attemptedOpenGL32 ) {
-					if ( !GLW_LoadOpenGL( OPENGL_DRIVER_NAME ) ) {
-						ri.Error( ERR_VID_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
-					}
-					ri.Cvar_Set( "r_glDriver", OPENGL_DRIVER_NAME );
-					r_glDriver->modified = qfalse;
-				} else
-				{
-					ri.Error( ERR_VID_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
-				}
-			}
-		} else if ( !attemptedOpenGL32 )   {
-			attemptedOpenGL32 = qtrue;
-			if ( GLW_LoadOpenGL( OPENGL_DRIVER_NAME ) ) {
-				ri.Cvar_Set( "r_glDriver", OPENGL_DRIVER_NAME );
-				r_glDriver->modified = qfalse;
-			} else
-			{
-				ri.Error( ERR_VID_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
-			}
-		}
+	if ( !GLW_LoadOpenGL() ) {
+		ri.Error( ERR_VID_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
 	}
 }
 
@@ -1385,8 +1261,6 @@ void GLimp_Init( void ) {
 
 	// save off hInstance and wndproc
 	glw_state.wndproc = MainWndProc;
-
-	r_maskMinidriver = ri.Cvar_Get( "r_maskMinidriver", "0", CVAR_LATCH2 );
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();

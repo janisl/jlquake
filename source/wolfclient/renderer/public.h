@@ -41,8 +41,6 @@ enum textureCompression_t
 enum glDriverType_t
 {
 	GLDRV_ICD,					// driver is integrated with window system
-	GLDRV_STANDALONE,           // driver is a non-3Dfx standalone driver
-	GLDRV_VOODOO                // driver is a 3Dfx standalone driver
 };
 
 enum glHardwareType_t

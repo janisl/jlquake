@@ -64,7 +64,6 @@ Cvar  *r_ati_truform_pointmode;   // linear/cubic
 Cvar  *r_ati_fsaa_samples;        //DAJ valids are 1, 2, 4
 
 Cvar  *r_glDriver;
-Cvar  *r_glIgnoreWicked3D;
 Cvar  *r_portalsky;   //----(SA)	added
 Cvar  *r_lowMemTextureSize;
 Cvar  *r_lowMemTextureThreshold;
@@ -802,7 +801,6 @@ void R_Register( void ) {
 	//
 	r_glDriver = ri.Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_glIgnoreWicked3D = ri.Cvar_Get( "r_glIgnoreWicked3D", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 
 //----(SA)	added
 	r_ext_ATI_pntriangles           = ri.Cvar_Get( "r_ext_ATI_pntriangles", "0", CVAR_ARCHIVE | CVAR_LATCH2 );   //----(SA)	default to '0'
