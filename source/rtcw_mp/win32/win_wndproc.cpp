@@ -31,8 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "win_local.h"
 
 // Console variables that we need to access from this module
-Cvar      *vid_xpos;          // X coordinate of window position
-Cvar      *vid_ypos;          // Y coordinate of window position
+extern Cvar      *vid_xpos;          // X coordinate of window position
+extern Cvar      *vid_ypos;          // Y coordinate of window position
 #ifndef DEDICATED
 extern 
 #endif
@@ -42,7 +42,7 @@ Cvar* r_fullscreen;
 
 LRESULT WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-static qboolean s_alttab_disabled;
+extern bool s_alttab_disabled;
 
 static void WIN_DisableAltTab( void ) {
 	if ( s_alttab_disabled ) {

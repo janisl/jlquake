@@ -29,6 +29,10 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __SPLINES_H
 #define __SPLINES_H
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <GL/gl.h>
 #ifdef Q3RADIANT
 #include "../qgl.h"
 #else

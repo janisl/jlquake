@@ -35,7 +35,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "glw_win.h"
 #include "win_local.h"
 
-static unsigned short s_oldHardwareGamma[3][256];
+extern quint16	s_oldHardwareGamma[3][256];
+extern HDC		maindc;
 
 /*
 ** WG_CheckHardwareGamma
@@ -110,7 +111,7 @@ void mapGammaMax( void ) {
 	for ( i = 0 ; i < 128 ; i++ ) {
 		for ( j = i*2 ; j < 255 ; j++ ) {
 			table[0][i] = table[1][i] = table[2][i] = j<<8;
-			if ( !SetDeviceGammaRamp( glw_state.hDC, table ) ) {
+			if ( !SetDeviceGammaRamp( maindc, table ) ) {
 				break;
 			}
 		}
@@ -131,7 +132,7 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 	int ret;
 	OSVERSIONINFO vinfo;
 
-	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer || !glw_state.hDC ) {
+	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer || !maindc ) {
 		return;
 	}
 
@@ -173,10 +174,10 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 
 
 	if ( qwglSetDeviceGammaRamp3DFX ) {
-		qwglSetDeviceGammaRamp3DFX( glw_state.hDC, table );
+		qwglSetDeviceGammaRamp3DFX( maindc, table );
 	} else
 	{
-		ret = SetDeviceGammaRamp( glw_state.hDC, table );
+		ret = SetDeviceGammaRamp( maindc, table );
 		if ( !ret ) {
 			Com_Printf( "SetDeviceGammaRamp failed.\n" );
 		}
@@ -189,7 +190,7 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 void WG_RestoreGamma( void ) {
 	if ( glConfig.deviceSupportsGamma ) {
 		if ( qwglSetDeviceGammaRamp3DFX ) {
-			qwglSetDeviceGammaRamp3DFX( glw_state.hDC, s_oldHardwareGamma );
+			qwglSetDeviceGammaRamp3DFX( maindc, s_oldHardwareGamma );
 		} else
 		{
 			HDC hDC;

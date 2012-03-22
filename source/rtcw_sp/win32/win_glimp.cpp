@@ -64,14 +64,14 @@ typedef enum {
 #define TRY_PFD_FAIL_SOFT   1
 #define TRY_PFD_FAIL_HARD   2
 
-#define WINDOW_CLASS_NAME   "Wolfenstein"
+#define WINDOW_CLASS_NAME	"JLQuake"
 
 static void     GLW_InitExtensions( void );
 static rserr_t  GLW_SetMode( int mode,
 							 int colorbits,
-							 qboolean cdsFullscreen );
+							 qboolean _cdsFullscreen );
 
-static qboolean s_classRegistered = qfalse;
+extern bool s_classRegistered;
 
 //
 // function declaration
@@ -85,15 +85,23 @@ void     QGL_Shutdown( void );
 //
 glwstate_t glw_state;
 
+extern HDC		maindc;
+extern HGLRC	baseRC;
+extern int		desktopBitsPixel;
+extern int		desktopWidth;
+extern int		desktopHeight;
+extern bool		pixelFormatSet;
+extern bool		cdsFullscreen;
+
 /*
 ** GLW_StartDriverAndSetMode
 */
 static qboolean GLW_StartDriverAndSetMode( int mode,
 										   int colorbits,
-										   qboolean cdsFullscreen ) {
+										   qboolean _cdsFullscreen ) {
 	rserr_t err;
 
-	err = GLW_SetMode( r_mode->integer, colorbits, cdsFullscreen );
+	err = GLW_SetMode( r_mode->integer, colorbits, _cdsFullscreen );
 
 	switch ( err )
 	{
@@ -324,34 +332,34 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD ) {
 	// don't putz around with pixelformat if it's already set (e.g. this is a soft
 	// reset of the graphics system)
 	//
-	if ( !glw_state.pixelFormatSet ) {
+	if ( !pixelFormatSet ) {
 		//
 		// choose, set, and describe our desired pixel format.  If we're
 		// using a minidriver then we need to bypass the GDI functions,
 		// otherwise use the GDI functions.
 		//
-		if ( ( pixelformat = GLW_ChoosePFD( glw_state.hDC, pPFD ) ) == 0 ) {
+		if ( ( pixelformat = GLW_ChoosePFD( maindc, pPFD ) ) == 0 ) {
 			ri.Printf( PRINT_ALL, "...GLW_ChoosePFD failed\n" );
 			return TRY_PFD_FAIL_SOFT;
 		}
 		ri.Printf( PRINT_ALL, "...PIXELFORMAT %d selected\n", pixelformat );
 
-		DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
+		DescribePixelFormat( maindc, pixelformat, sizeof( *pPFD ), pPFD );
 
-		if ( SetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE ) {
-			ri.Printf( PRINT_ALL, "...SetPixelFormat failed\n", glw_state.hDC );
+		if ( SetPixelFormat( maindc, pixelformat, pPFD ) == FALSE ) {
+			ri.Printf( PRINT_ALL, "...SetPixelFormat failed\n", maindc );
 			return TRY_PFD_FAIL_SOFT;
 		}
 
-		glw_state.pixelFormatSet = qtrue;
+		pixelFormatSet = qtrue;
 	}
 
 	//
 	// startup the OpenGL subsystem by creating a context and making it current
 	//
-	if ( !glw_state.hGLRC ) {
+	if ( !baseRC ) {
 		ri.Printf( PRINT_ALL, "...creating GL context: " );
-		if ( ( glw_state.hGLRC = qwglCreateContext( glw_state.hDC ) ) == 0 ) {
+		if ( ( baseRC = qwglCreateContext( maindc ) ) == 0 ) {
 			ri.Printf( PRINT_ALL, "failed\n" );
 
 			return TRY_PFD_FAIL_HARD;
@@ -359,9 +367,9 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD ) {
 		ri.Printf( PRINT_ALL, "succeeded\n" );
 
 		ri.Printf( PRINT_ALL, "...making context current: " );
-		if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
-			qwglDeleteContext( glw_state.hGLRC );
-			glw_state.hGLRC = NULL;
+		if ( !qwglMakeCurrent( maindc, baseRC ) ) {
+			qwglDeleteContext( baseRC );
+			baseRC = NULL;
 			ri.Printf( PRINT_ALL, "failed\n" );
 			return TRY_PFD_FAIL_HARD;
 		}
@@ -388,10 +396,10 @@ static qboolean GLW_InitDriver( int colorbits ) {
 	//
 	// get a DC for our window if we don't already have one allocated
 	//
-	if ( glw_state.hDC == NULL ) {
+	if ( maindc == NULL ) {
 		ri.Printf( PRINT_ALL, "...getting DC: " );
 
-		if ( ( glw_state.hDC = GetDC( GMainWindow ) ) == NULL ) {
+		if ( ( maindc = GetDC( GMainWindow ) ) == NULL ) {
 			ri.Printf( PRINT_ALL, "failed\n" );
 			return qfalse;
 		}
@@ -399,7 +407,7 @@ static qboolean GLW_InitDriver( int colorbits ) {
 	}
 
 	if ( colorbits == 0 ) {
-		colorbits = glw_state.desktopBitsPixel;
+		colorbits = desktopBitsPixel;
 	}
 
 	//
@@ -430,7 +438,7 @@ static qboolean GLW_InitDriver( int colorbits ) {
 	//
 	// first attempt: r_colorbits, depthbits, and r_stencilbits
 	//
-	if ( !glw_state.pixelFormatSet ) {
+	if ( !pixelFormatSet ) {
 		GLW_CreatePFD( &pfd, colorbits, depthbits, stencilbits, r_stereo->integer );
 		if ( ( tpfd = GLW_MakeContext( &pfd ) ) != TRY_PFD_SUCCESS ) {
 			if ( tpfd == TRY_PFD_FAIL_HARD ) {
@@ -441,10 +449,10 @@ static qboolean GLW_InitDriver( int colorbits ) {
 			//
 			// punt if we've already tried the desktop bit depth and no stencil bits
 			//
-			if ( ( r_colorbits->integer == glw_state.desktopBitsPixel ) &&
+			if ( ( r_colorbits->integer == desktopBitsPixel ) &&
 				 ( stencilbits == 0 ) ) {
-				ReleaseDC( GMainWindow, glw_state.hDC );
-				glw_state.hDC = NULL;
+				ReleaseDC( GMainWindow, maindc );
+				maindc = NULL;
 
 				ri.Printf( PRINT_ALL, "...failed to find an appropriate PIXELFORMAT\n" );
 
@@ -454,14 +462,14 @@ static qboolean GLW_InitDriver( int colorbits ) {
 			//
 			// second attempt: desktop's color bits and no stencil
 			//
-			if ( colorbits > glw_state.desktopBitsPixel ) {
-				colorbits = glw_state.desktopBitsPixel;
+			if ( colorbits > desktopBitsPixel ) {
+				colorbits = desktopBitsPixel;
 			}
 			GLW_CreatePFD( &pfd, colorbits, depthbits, 0, r_stereo->integer );
 			if ( GLW_MakeContext( &pfd ) != TRY_PFD_SUCCESS ) {
-				if ( glw_state.hDC ) {
-					ReleaseDC( GMainWindow, glw_state.hDC );
-					glw_state.hDC = NULL;
+				if ( maindc ) {
+					ReleaseDC( GMainWindow, maindc );
+					maindc = NULL;
 				}
 
 				ri.Printf( PRINT_ALL, "...failed to find an appropriate PIXELFORMAT\n" );
@@ -495,7 +503,7 @@ static qboolean GLW_InitDriver( int colorbits ) {
 ** Responsible for creating the Win32 window and initializing the OpenGL driver.
 */
 #define WINDOW_STYLE    ( WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE )
-static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean cdsFullscreen ) {
+static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean _cdsFullscreen ) {
 	RECT r;
 	Cvar          *vid_xpos, *vid_ypos;
 	int stylebits;
@@ -540,7 +548,7 @@ static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean
 		r.right  = width;
 		r.bottom = height;
 
-		if ( cdsFullscreen ) {
+		if ( _cdsFullscreen ) {
 			exstyle = WS_EX_TOPMOST;
 			stylebits = WS_POPUP | WS_VISIBLE | WS_SYSMENU;
 		} else
@@ -553,7 +561,7 @@ static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean
 		w = r.right - r.left;
 		h = r.bottom - r.top;
 
-		if ( cdsFullscreen ) {
+		if ( _cdsFullscreen ) {
 			x = 0;
 			y = 0;
 		} else
@@ -572,13 +580,13 @@ static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean
 				y = 0;
 			}
 
-			if ( w < glw_state.desktopWidth &&
-				 h < glw_state.desktopHeight ) {
-				if ( x + w > glw_state.desktopWidth ) {
-					x = ( glw_state.desktopWidth - w );
+			if ( w < desktopWidth &&
+				 h < desktopHeight ) {
+				if ( x + w > desktopWidth ) {
+					x = ( desktopWidth - w );
 				}
-				if ( y + h > glw_state.desktopHeight ) {
-					y = ( glw_state.desktopHeight - h );
+				if ( y + h > desktopHeight ) {
+					y = ( desktopHeight - h );
 				}
 			}
 		}
@@ -652,7 +660,7 @@ static void PrintCDSError( int value ) {
 */
 static rserr_t GLW_SetMode( int mode,
 							int colorbits,
-							qboolean cdsFullscreen ) {
+							qboolean _cdsFullscreen ) {
 	HDC hDC;
 	const char *win_fs[] = { "W", "FS" };
 	int cdsRet;
@@ -666,22 +674,22 @@ static rserr_t GLW_SetMode( int mode,
 		ri.Printf( PRINT_ALL, " invalid mode\n" );
 		return RSERR_INVALID_MODE;
 	}
-	ri.Printf( PRINT_ALL, " %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[cdsFullscreen] );
+	ri.Printf( PRINT_ALL, " %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[_cdsFullscreen] );
 
 	//
 	// check our desktop attributes
 	//
 	hDC = GetDC( GetDesktopWindow() );
-	glw_state.desktopBitsPixel = GetDeviceCaps( hDC, BITSPIXEL );
-	glw_state.desktopWidth = GetDeviceCaps( hDC, HORZRES );
-	glw_state.desktopHeight = GetDeviceCaps( hDC, VERTRES );
+	desktopBitsPixel = GetDeviceCaps( hDC, BITSPIXEL );
+	desktopWidth = GetDeviceCaps( hDC, HORZRES );
+	desktopHeight = GetDeviceCaps( hDC, VERTRES );
 	ReleaseDC( GetDesktopWindow(), hDC );
 
 	//
 	// verify desktop bit depth
 	//
-	if ( glw_state.desktopBitsPixel < 15 || glw_state.desktopBitsPixel == 24 ) {
-		if ( colorbits == 0 || ( !cdsFullscreen && colorbits >= 15 ) ) {
+	if ( desktopBitsPixel < 15 || desktopBitsPixel == 24 ) {
+		if ( colorbits == 0 || ( !_cdsFullscreen && colorbits >= 15 ) ) {
 			if ( MessageBox( NULL,
 								"It is highly unlikely that a correct\n"
 								"windowed display can be initialized with\n"
@@ -698,7 +706,7 @@ static rserr_t GLW_SetMode( int mode,
 	}
 
 	// do a CDS if needed
-	if ( cdsFullscreen ) {
+	if ( _cdsFullscreen ) {
 		memset( &dm, 0, sizeof( dm ) );
 
 		dm.dmSize = sizeof( dm );
@@ -724,13 +732,13 @@ static rserr_t GLW_SetMode( int mode,
 			}
 		} else
 		{
-			ri.Printf( PRINT_ALL, "...using desktop display depth of %d\n", glw_state.desktopBitsPixel );
+			ri.Printf( PRINT_ALL, "...using desktop display depth of %d\n", desktopBitsPixel );
 		}
 
 		//
 		// if we're already in fullscreen then just create the window
 		//
-		if ( glw_state.cdsFullscreen ) {
+		if ( cdsFullscreen ) {
 			ri.Printf( PRINT_ALL, "...already fullscreen, avoiding redundant CDS\n" );
 
 			if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) ) {
@@ -757,7 +765,7 @@ static rserr_t GLW_SetMode( int mode,
 					return RSERR_INVALID_MODE;
 				}
 
-				glw_state.cdsFullscreen = qtrue;
+				cdsFullscreen = qtrue;
 			} else
 			{
 				//
@@ -793,7 +801,7 @@ static rserr_t GLW_SetMode( int mode,
 						return RSERR_INVALID_MODE;
 					}
 
-					glw_state.cdsFullscreen = qtrue;
+					cdsFullscreen = qtrue;
 				} else
 				{
 					ri.Printf( PRINT_ALL, " failed, " );
@@ -803,7 +811,7 @@ static rserr_t GLW_SetMode( int mode,
 					ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 					ChangeDisplaySettings( 0, 0 );
 
-					glw_state.cdsFullscreen = qfalse;
+					cdsFullscreen = qfalse;
 					glConfig.isFullscreen = qfalse;
 					if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) ) {
 						return RSERR_INVALID_MODE;
@@ -814,11 +822,11 @@ static rserr_t GLW_SetMode( int mode,
 		}
 	} else
 	{
-		if ( glw_state.cdsFullscreen ) {
+		if ( cdsFullscreen ) {
 			ChangeDisplaySettings( 0, 0 );
 		}
 
-		glw_state.cdsFullscreen = qfalse;
+		cdsFullscreen = qfalse;
 		if ( !GLW_CreateWindow( glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) ) {
 			return RSERR_INVALID_MODE;
 		}
@@ -834,7 +842,7 @@ static rserr_t GLW_SetMode( int mode,
 	}
 
 	// NOTE: this is overridden later on standalone 3Dfx drivers
-	glConfig.isFullscreen = cdsFullscreen;
+	glConfig.isFullscreen = _cdsFullscreen;
 
 	return RSERR_OK;
 }
@@ -1107,7 +1115,7 @@ static qboolean GLW_CheckOSVersion( void ) {
 ** a specific OpenGL DLL.
 */
 static qboolean GLW_LoadOpenGL() {
-	qboolean cdsFullscreen;
+	qboolean _cdsFullscreen;
 
 	//
 	// determine if we're on a standalone driver
@@ -1119,15 +1127,15 @@ static qboolean GLW_LoadOpenGL() {
 	//
 	if ( QGL_Init( ) ) {
 		{
-			cdsFullscreen = r_fullscreen->integer;
+			_cdsFullscreen = r_fullscreen->integer;
 		}
 
 		// create the window and set up the context
-		if ( !GLW_StartDriverAndSetMode( r_mode->integer, r_colorbits->integer, cdsFullscreen ) ) {
+		if ( !GLW_StartDriverAndSetMode( r_mode->integer, r_colorbits->integer, _cdsFullscreen ) ) {
 			// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
 			// try it again but with a 16-bit desktop
 			if ( r_colorbits->integer != 16 ||
-					cdsFullscreen != qtrue ||
+					_cdsFullscreen != qtrue ||
 					r_mode->integer != 3 ) {
 				if ( !GLW_StartDriverAndSetMode( 3, 16, qtrue ) ) {
 					goto fail;
@@ -1164,7 +1172,7 @@ void GLimp_EndFrame( void ) {
 
 	// don't flip if drawing to front buffer
 	if ( String::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
-		SwapBuffers( glw_state.hDC );
+		SwapBuffers( maindc );
 	}
 
 	// check logging
@@ -1285,17 +1293,17 @@ void GLimp_Shutdown( void ) {
 	}
 
 	// delete HGLRC
-	if ( glw_state.hGLRC ) {
-		retVal = qwglDeleteContext( glw_state.hGLRC ) != 0;
+	if ( baseRC ) {
+		retVal = qwglDeleteContext( baseRC ) != 0;
 		ri.Printf( PRINT_ALL, "...deleting GL context: %s\n", success[retVal] );
-		glw_state.hGLRC = NULL;
+		baseRC = NULL;
 	}
 
 	// release DC
-	if ( glw_state.hDC ) {
-		retVal = ReleaseDC( GMainWindow, glw_state.hDC ) != 0;
+	if ( maindc ) {
+		retVal = ReleaseDC( GMainWindow, maindc ) != 0;
 		ri.Printf( PRINT_ALL, "...releasing DC: %s\n", success[retVal] );
-		glw_state.hDC   = NULL;
+		maindc   = NULL;
 	}
 
 	// destroy window
@@ -1304,7 +1312,7 @@ void GLimp_Shutdown( void ) {
 		ShowWindow( GMainWindow, SW_HIDE );
 		DestroyWindow( GMainWindow );
 		GMainWindow = NULL;
-		glw_state.pixelFormatSet = qfalse;
+		pixelFormatSet = qfalse;
 	}
 
 	// close the r_logFile
@@ -1314,10 +1322,10 @@ void GLimp_Shutdown( void ) {
 	}
 
 	// reset display settings
-	if ( glw_state.cdsFullscreen ) {
+	if ( cdsFullscreen ) {
 		ri.Printf( PRINT_ALL, "...resetting display\n" );
 		ChangeDisplaySettings( 0, 0 );
-		glw_state.cdsFullscreen = qfalse;
+		cdsFullscreen = qfalse;
 	}
 
 	// shutdown QGL subsystem
@@ -1345,17 +1353,17 @@ SMP acceleration
 ===========================================================
 */
 
-HANDLE renderCommandsEvent;
-HANDLE renderCompletedEvent;
-HANDLE renderActiveEvent;
+extern HANDLE renderCommandsEvent;
+extern HANDLE renderCompletedEvent;
+extern HANDLE renderActiveEvent;
 
-void ( *glimpRenderThread )( void );
+extern void ( *glimpRenderThread )( void );
 
 void GLimp_RenderThreadWrapper( void ) {
 	glimpRenderThread();
 
 	// unbind the context before we die
-	qwglMakeCurrent( glw_state.hDC, NULL );
+	qwglMakeCurrent( maindc, NULL );
 }
 
 /*
@@ -1363,8 +1371,8 @@ void GLimp_RenderThreadWrapper( void ) {
 GLimp_SpawnRenderThread
 =======================
 */
-HANDLE renderThreadHandle;
-DWORD renderThreadId;
+extern HANDLE renderThreadHandle;
+extern DWORD renderThreadId;
 qboolean GLimp_SpawnRenderThread( void ( *function )( void ) ) {
 
 	renderCommandsEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
@@ -1388,13 +1396,13 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) ) {
 	return qtrue;
 }
 
-static void    *smpData;
-static int wglErrors;
+extern void    *smpData;
+extern int wglErrors;
 
 void *GLimp_RendererSleep( void ) {
 	void    *data;
 
-	if ( !qwglMakeCurrent( glw_state.hDC, NULL ) ) {
+	if ( !qwglMakeCurrent( maindc, NULL ) ) {
 		wglErrors++;
 	}
 
@@ -1405,7 +1413,7 @@ void *GLimp_RendererSleep( void ) {
 
 	WaitForSingleObject( renderCommandsEvent, INFINITE );
 
-	if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
+	if ( !qwglMakeCurrent( maindc, baseRC ) ) {
 		wglErrors++;
 	}
 
@@ -1424,7 +1432,7 @@ void *GLimp_RendererSleep( void ) {
 void GLimp_FrontEndSleep( void ) {
 	WaitForSingleObject( renderCompletedEvent, INFINITE );
 
-	if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
+	if ( !qwglMakeCurrent( maindc, baseRC ) ) {
 		wglErrors++;
 	}
 }
@@ -1433,7 +1441,7 @@ void GLimp_FrontEndSleep( void ) {
 void GLimp_WakeRenderer( void *data ) {
 	smpData = data;
 
-	if ( !qwglMakeCurrent( glw_state.hDC, NULL ) ) {
+	if ( !qwglMakeCurrent( maindc, NULL ) ) {
 		wglErrors++;
 	}
 
