@@ -87,7 +87,6 @@ void     QGL_Shutdown( void );
 //
 glwstate_t glw_state;
 
-Cvar  *r_allowSoftwareGL;     // don't abort out if the pixelformat claims software
 Cvar  *r_maskMinidriver;      // allow a different dll name to be treated as if it were opengl32.dll
 
 int gl_NormalFontBase = 0;

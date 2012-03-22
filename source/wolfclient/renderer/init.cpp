@@ -19,11 +19,11 @@
 #include "../client.h"
 #include "local.h"
 
-#if 0
 // MACROS ------------------------------------------------------------------
 
 // TYPES -------------------------------------------------------------------
 
+#if 0
 struct vidmode_t
 {
 	const char*	description;
@@ -31,6 +31,7 @@ struct vidmode_t
 	int			height;
 	float		pixelAspect;		// pixel width / height
 };
+#endif
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -45,12 +46,12 @@ struct vidmode_t
 Cvar*		r_logFile;
 
 Cvar*		r_mode;
-#endif
 Cvar*		r_fullscreen;
 #if 0
 Cvar*		r_customwidth;
 Cvar*		r_customheight;
 Cvar*		r_customaspect;
+#endif
 
 Cvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 Cvar*		r_stencilbits;
@@ -182,6 +183,7 @@ Cvar*		r_portalOnly;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+#if 0
 static vidmode_t r_vidModes[] =
 {
 	{ "Mode  0: 320x240",		320,	240,	1 },

@@ -107,7 +107,6 @@ const char *glx_extensions_string;
 static Atom wm_protocols;
 static Atom wm_delete_window;
 
-Cvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
 Cvar  *r_previousglDriver;
 
 qboolean vidmode_ext = qfalse;

@@ -95,7 +95,6 @@ glwstate_t glw_state;
 static int scrnum;
 static GLXContext ctx = NULL;
 
-Cvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
 Cvar  *r_previousglDriver;
 
 qboolean dgamouse = qfalse;

@@ -17,14 +17,11 @@
 #ifndef _RENDER_CVARS_H
 #define _RENDER_CVARS_H
 
-#if 0
 extern Cvar*	r_logFile;				// number of frames to emit GL logs
 extern Cvar*	r_verbose;				// used for verbose debug spew
 
 extern Cvar*	r_mode;					// video mode
-#endif
 extern Cvar*	r_fullscreen;
-#if 0
 extern Cvar*	r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 extern Cvar*	r_stencilbits;			// number of desired stencil bits
 extern Cvar*	r_depthbits;			// number of desired depth bits
@@ -157,6 +154,5 @@ extern Cvar*	r_particle_att_c;
 
 extern Cvar*	r_noportals;
 extern Cvar*	r_portalOnly;
-#endif
 
 #endif

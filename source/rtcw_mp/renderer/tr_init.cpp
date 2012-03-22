@@ -34,59 +34,12 @@ glstate_t glState;
 
 static void GfxInfo_f( void );
 
-Cvar  *r_flareSize;
-Cvar  *r_flareFade;
-
-Cvar  *r_railWidth;
-Cvar  *r_railCoreWidth;
-Cvar  *r_railSegmentLength;
-
-Cvar  *r_ignoreFastPath;
-
-Cvar  *r_verbose;
-Cvar  *r_ignore;
-
-Cvar  *r_displayRefresh;
-
-Cvar  *r_detailTextures;
-
-Cvar  *r_znear;
 Cvar  *r_zfar;
 
-Cvar  *r_smp;
-Cvar  *r_showSmp;
-Cvar  *r_skipBackEnd;
-
-Cvar  *r_ignorehwgamma;
-Cvar  *r_measureOverdraw;
-
 Cvar  *r_inGameVideo;
-Cvar  *r_fastsky;
-Cvar  *r_drawSun;
-Cvar  *r_dynamiclight;
 Cvar  *r_dlightBacks;
 
-Cvar  *r_lodbias;
-Cvar  *r_lodscale;
-
-Cvar  *r_norefresh;
-Cvar  *r_drawentities;
-Cvar  *r_drawworld;
-Cvar  *r_speeds;
-//Cvar	*r_fullbright; // JPW NERVE removed per atvi request
-Cvar  *r_novis;
-Cvar  *r_nocull;
-Cvar  *r_facePlaneCull;
-Cvar  *r_showcluster;
-Cvar  *r_nocurves;
-
 Cvar  *r_allowExtensions;
-
-Cvar  *r_ext_compressed_textures;
-Cvar  *r_ext_gamma_control;
-Cvar  *r_ext_multitexture;
-Cvar  *r_ext_compiled_vertex_array;
-Cvar  *r_ext_texture_env_add;
 
 //----(SA)	added
 Cvar  *r_ext_texture_filter_anisotropic;
@@ -102,67 +55,13 @@ Cvar  *r_ati_truform_pointmode;   // linear/cubic
 
 Cvar  *r_ati_fsaa_samples;        //DAJ valids are 1, 2, 4
 
-Cvar  *r_ignoreGLErrors;
-Cvar  *r_logFile;
-
-Cvar  *r_stencilbits;
-Cvar  *r_depthbits;
-Cvar  *r_colorbits;
-Cvar  *r_stereo;
-Cvar  *r_primitives;
-Cvar  *r_texturebits;
-
-Cvar  *r_drawBuffer;
 Cvar  *r_glDriver;
 Cvar  *r_glIgnoreWicked3D;
-Cvar  *r_lightmap;
-Cvar  *r_vertexLight;
-Cvar  *r_uiFullScreen;
-Cvar  *r_shadows;
 Cvar  *r_portalsky;   //----(SA)	added
-Cvar  *r_flares;
-Cvar  *r_mode;
-Cvar  *r_nobind;
-Cvar  *r_singleShader;
-Cvar  *r_roundImagesDown;
-Cvar  *r_colorMipLevels;
-Cvar  *r_picmip;
-Cvar  *r_showtris;
-Cvar  *r_showsky;
-Cvar  *r_shownormals;
-Cvar  *r_finish;
-Cvar  *r_clear;
-Cvar  *r_swapInterval;
-Cvar  *r_textureMode;
-Cvar  *r_offsetFactor;
-Cvar  *r_offsetUnits;
-Cvar  *r_gamma;
-Cvar  *r_intensity;
-Cvar  *r_lockpvs;
-Cvar  *r_noportals;
-Cvar  *r_portalOnly;
-
-Cvar  *r_subdivisions;
-Cvar  *r_lodCurveError;
 
 Cvar  *r_customwidth;
 Cvar  *r_customheight;
 Cvar  *r_customaspect;
-
-Cvar  *r_overBrightBits;
-Cvar  *r_mapOverBrightBits;
-
-Cvar  *r_debugSurface;
-Cvar  *r_simpleMipMaps;
-
-Cvar  *r_showImages;
-
-Cvar  *r_ambientScale;
-Cvar  *r_directedScale;
-Cvar  *r_debugLight;
-Cvar  *r_debugSort;
-Cvar  *r_printShaders;
-Cvar  *r_saveFontData;
 
 // Ridah
 Cvar  *r_cache;
@@ -185,9 +84,7 @@ Cvar  *r_wolffog;
 Cvar  *r_highQualityVideo;
 Cvar  *r_rmse;
 
-Cvar  *r_maxpolys;
 int max_polys;
-Cvar  *r_maxpolyverts;
 int max_polyverts;
 
 //----(SA)	added
