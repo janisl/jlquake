@@ -30,6 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
+void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
+void R_Register_();
+
 glstate_t glState;
 
 static void GfxInfo_f( void );
@@ -68,9 +71,9 @@ Cvar  *r_normallength;
 Cvar  *r_showmodelbounds;
 Cvar  *r_textureAnisotropy;
 
-Cvar  *r_customwidth;
-Cvar  *r_customheight;
-Cvar  *r_customaspect;
+extern Cvar  *r_customwidth;
+extern Cvar  *r_customheight;
+extern Cvar  *r_customaspect;
 
 // Ridah
 Cvar  *r_cache;
@@ -140,24 +143,6 @@ MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI	GetIntegerv Z+		1											-
 
 */
 //----(SA)	end
-
-
-static void AssertCvarRange( Cvar *cv, float minVal, float maxVal, qboolean shouldBeIntegral ) {
-	if ( shouldBeIntegral ) {
-		if ( ( int ) cv->value != cv->integer ) {
-			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
-			ri.Cvar_Set( cv->name, va( "%d", cv->integer ) );
-		}
-	}
-
-	if ( cv->value < minVal ) {
-		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
-		ri.Cvar_Set( cv->name, va( "%f", minVal ) );
-	} else if ( cv->value > maxVal )   {
-		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
-		ri.Cvar_Set( cv->name, va( "%f", maxVal ) );
-	}
-}
 
 
 /*
@@ -797,15 +782,12 @@ R_Register
 ===============
 */
 void R_Register( void ) {
+	R_Register_();
 	//
 	// latched and archived variables
 	//
 	r_glDriver = ri.Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
 	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE ); // (SA) ew, a spelling change I missed from the missionpack
-	r_ext_gamma_control = ri.Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_ext_multitexture = ri.Cvar_Get( "r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_ext_compiled_vertex_array = ri.Cvar_Get( "r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
 	r_glIgnoreWicked3D = ri.Cvar_Get( "r_glIgnoreWicked3D", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
 
 //----(SA)	added
@@ -822,112 +804,23 @@ void R_Register( void ) {
 	r_nv_fogdist_mode                   = ri.Cvar_Get( "r_nv_fogdist_mode", "GL_EYE_RADIAL_NV", CVAR_ARCHIVE | CVAR_UNSAFE );  // default to 'looking good'
 //----(SA)	end
 
-#ifdef __linux__ // broken on linux
-	r_ext_texture_env_add = ri.Cvar_Get( "r_ext_texture_env_add", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#else
-	r_ext_texture_env_add = ri.Cvar_Get( "r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#endif
-
 	r_clampToEdge = ri.Cvar_Get( "r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE ); // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
-	r_picmip = ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH2 ); //----(SA)	mod for DM and DK for id build.  was "1" // JPW NERVE pushed back to 1
-	r_roundImagesDown = ri.Cvar_Get( "r_roundImagesDown", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_rmse = ri.Cvar_Get( "r_rmse", "0.0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_colorMipLevels = ri.Cvar_Get( "r_colorMipLevels", "0", CVAR_LATCH2 );
-	AssertCvarRange( r_picmip, 0, 3, qtrue );
-	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_colorbits = ri.Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_stereo = ri.Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#ifdef __linux__
-	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#else
-	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#endif
-	r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0", CVAR_ARCHIVE | CVAR_LATCH2 ); // Arnout: disable overbrightbits by default
 	AssertCvarRange( r_overBrightBits, 0, 1, qtrue );                                   // ydnar: limit to overbrightbits 1 (sorry 1337 players)
-	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2 );        // ydnar: use hw gamma by default
-	r_mode = ri.Cvar_Get( "r_mode", "4", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
 	r_oldMode = ri.Cvar_Get( "r_oldMode", "", CVAR_ARCHIVE );                             // ydnar: previous "good" video mode
-	r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_uiFullScreen = ri.Cvar_Get( "r_uifullscreen", "0", 0 );
-	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2 );
-#ifdef MACOS_X
-	// Default to using SMP on Mac OS X if we have multiple processors
-	r_smp = ri.Cvar_Get( "r_smp", Sys_ProcessorCount() > 1 ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#elif defined WIN32
-	// ydnar: r_smp is nonfunctional on windows
-	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE | CVAR_ROM );
-	Cvar_Set( "r_smp", "0" );
-#else
-	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-#endif
-	r_ignoreFastPath = ri.Cvar_Get( "r_ignoreFastPath", "0", CVAR_ARCHIVE | CVAR_LATCH2 ); // ydnar: use fast path by default
 #if MAC_STVEF_HM || MAC_WOLF2_MP
 	r_ati_fsaa_samples              = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE );       //DAJ valids are 1, 2, 4
 #endif
-	//
-	// temporary latched variables that can only change over a restart
-	//
-	r_displayRefresh = ri.Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH2 | CVAR_UNSAFE );
-	AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
-	r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "2", CVAR_LATCH2 );
 	AssertCvarRange( r_mapOverBrightBits, 0, 3, qtrue );
-	r_intensity = ri.Cvar_Get( "r_intensity", "1", CVAR_LATCH2 );
 	AssertCvarRange( r_intensity, 0, 1.5, qfalse );
-	r_singleShader = ri.Cvar_Get( "r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH2 );
 
-	//
-	// archived variables that can change at any time
-	//
-	r_lodCurveError = ri.Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE );
-	r_lodbias = ri.Cvar_Get( "r_lodbias", "0", CVAR_ARCHIVE );
-	r_flares = ri.Cvar_Get( "r_flares", "1", CVAR_ARCHIVE );
-	r_znear = ri.Cvar_Get( "r_znear", "3", CVAR_CHEAT );  // ydnar: changed it to 3 (from 4) because of lean/fov cheats
-	AssertCvarRange( r_znear, 0.001f, 200, qtrue );
 //----(SA)	added
 	r_zfar = ri.Cvar_Get( "r_zfar", "0", CVAR_CHEAT );
 //----(SA)	end
-	r_ignoreGLErrors = ri.Cvar_Get( "r_ignoreGLErrors", "1", CVAR_ARCHIVE );
-	r_fastsky = ri.Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
-	r_drawSun = ri.Cvar_Get( "r_drawSun", "1", CVAR_ARCHIVE );
-	r_dynamiclight = ri.Cvar_Get( "r_dynamiclight", "1", CVAR_ARCHIVE );
 	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-	r_finish = ri.Cvar_Get( "r_finish", "0", CVAR_ARCHIVE );
-	r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	r_textureAnisotropy = ri.Cvar_Get( "r_textureAnisotropy", "1.0", CVAR_ARCHIVE );
-	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
-#ifdef __MACOS__
-	r_gamma = ri.Cvar_Get( "r_gamma", "1.2", CVAR_ARCHIVE );
-#else
-	r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
-#endif
-	r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
-
-	r_railWidth = ri.Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
-	r_railCoreWidth = ri.Cvar_Get( "r_railCoreWidth", "1", CVAR_ARCHIVE );
-	r_railSegmentLength = ri.Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
-
-	r_primitives = ri.Cvar_Get( "r_primitives", "0", CVAR_ARCHIVE );
-
-	r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.5", CVAR_CHEAT );
-	r_directedScale = ri.Cvar_Get( "r_directedScale", "1", CVAR_CHEAT );
-
-	//
-	// temporary variables that can change at any time
-	//
-	r_showImages = ri.Cvar_Get( "r_showImages", "0", CVAR_TEMP );
-
-	r_debugLight = ri.Cvar_Get( "r_debuglight", "0", CVAR_TEMP );
-	r_debugSort = ri.Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
-	r_printShaders = ri.Cvar_Get( "r_printShaders", "0", 0 );
-	r_saveFontData = ri.Cvar_Get( "r_saveFontData", "0", 0 ); \
 
 	// Ridah
 	// TTimo show_bug.cgi?id=440
@@ -949,45 +842,11 @@ void R_Register( void ) {
 	r_wolffog = ri.Cvar_Get( "r_wolffog", "1", CVAR_CHEAT ); // JPW NERVE cheat protected per id request
 	// done
 
-	r_nocurves = ri.Cvar_Get( "r_nocurves", "0", CVAR_CHEAT );
-	r_drawworld = ri.Cvar_Get( "r_drawworld", "1", CVAR_CHEAT );
 	r_drawfoliage = ri.Cvar_Get( "r_drawfoliage", "1", CVAR_CHEAT );  // ydnar
-	r_lightmap = ri.Cvar_Get( "r_lightmap", "0", CVAR_CHEAT ); // DHM - NERVE :: cheat protect
-	r_portalOnly = ri.Cvar_Get( "r_portalOnly", "0", CVAR_CHEAT );
 
-	r_flareSize = ri.Cvar_Get( "r_flareSize", "40", CVAR_CHEAT );
-	ri.Cvar_Set( "r_flareFade", "5" ); // to force this when people already have "7" in their config
-	r_flareFade = ri.Cvar_Get( "r_flareFade", "5", CVAR_CHEAT );
-
-	r_showSmp = ri.Cvar_Get( "r_showSmp", "0", CVAR_CHEAT );
-	r_skipBackEnd = ri.Cvar_Get( "r_skipBackEnd", "0", CVAR_CHEAT );
-
-	r_measureOverdraw = ri.Cvar_Get( "r_measureOverdraw", "0", CVAR_CHEAT );
-	r_lodscale = ri.Cvar_Get( "r_lodscale", "5", CVAR_CHEAT );
-	r_norefresh = ri.Cvar_Get( "r_norefresh", "0", CVAR_CHEAT );
-	r_drawentities = ri.Cvar_Get( "r_drawentities", "1", CVAR_CHEAT );
-	r_ignore = ri.Cvar_Get( "r_ignore", "1", CVAR_CHEAT );
-	r_nocull = ri.Cvar_Get( "r_nocull", "0", CVAR_CHEAT );
-	r_novis = ri.Cvar_Get( "r_novis", "0", CVAR_CHEAT );
-	r_showcluster = ri.Cvar_Get( "r_showcluster", "0", CVAR_CHEAT );
-	r_speeds = ri.Cvar_Get( "r_speeds", "0", CVAR_CHEAT );
-	r_verbose = ri.Cvar_Get( "r_verbose", "0", CVAR_CHEAT );
-	r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
-	r_debugSurface = ri.Cvar_Get( "r_debugSurface", "0", CVAR_CHEAT );
-	r_nobind = ri.Cvar_Get( "r_nobind", "0", CVAR_CHEAT );
-	r_showtris = ri.Cvar_Get( "r_showtris", "0", CVAR_CHEAT );
 	r_trisColor = ri.Cvar_Get( "r_trisColor", "1.0 1.0 1.0 1.0", CVAR_ARCHIVE );
-	r_showsky = ri.Cvar_Get( "r_showsky", "0", CVAR_CHEAT );
-	r_shownormals = ri.Cvar_Get( "r_shownormals", "0", CVAR_CHEAT );
 	r_normallength = ri.Cvar_Get( "r_normallength", "0.5", CVAR_ARCHIVE );
 	r_showmodelbounds = ri.Cvar_Get( "r_showmodelbounds", "0", CVAR_CHEAT );
-	r_clear = ri.Cvar_Get( "r_clear", "0", CVAR_CHEAT );
-	r_offsetFactor = ri.Cvar_Get( "r_offsetfactor", "-1", CVAR_CHEAT );
-	r_offsetUnits = ri.Cvar_Get( "r_offsetunits", "-2", CVAR_CHEAT );
-	r_drawBuffer = ri.Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
-	r_lockpvs = ri.Cvar_Get( "r_lockpvs", "0", CVAR_CHEAT );
-	r_noportals = ri.Cvar_Get( "r_noportals", "0", CVAR_CHEAT );
-	r_shadows = ri.Cvar_Get( "cg_shadows", "1", 0 );
 
 	r_portalsky = ri.Cvar_Get( "cg_skybox", "1", 0 );
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va( "%d", MAX_POLYS ), 0 );

@@ -1386,7 +1386,6 @@ void GLimp_Init( void ) {
 	// save off hInstance and wndproc
 	glw_state.wndproc = MainWndProc;
 
-	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH2 );
 	r_maskMinidriver = ri.Cvar_Get( "r_maskMinidriver", "0", CVAR_LATCH2 );
 
 	// load appropriate DLL and initialize subsystem

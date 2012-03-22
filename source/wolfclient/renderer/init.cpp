@@ -47,11 +47,9 @@ Cvar*		r_logFile;
 
 Cvar*		r_mode;
 Cvar*		r_fullscreen;
-#if 0
 Cvar*		r_customwidth;
 Cvar*		r_customheight;
 Cvar*		r_customaspect;
-#endif
 
 Cvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 Cvar*		r_stencilbits;
@@ -252,6 +250,7 @@ static void R_ModeList_f()
 	}
 	Log::write("\n");
 }
+#endif
 
 //==========================================================================
 //
@@ -259,7 +258,8 @@ static void R_ModeList_f()
 //
 //==========================================================================
 
-static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
+//static 
+void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
 {
 	if (shouldBeIntegral)
 	{
@@ -282,6 +282,7 @@ static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeI
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	GfxInfo_f
@@ -386,6 +387,7 @@ static void GfxInfo_f()
 		Log::write("Forcing glFinish\n");
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -393,39 +395,40 @@ static void GfxInfo_f()
 //
 //==========================================================================
 
-static void R_Register() 
+//static void R_Register()
+void R_Register_()
 {
 	//
 	// latched and archived variables
 	//
-	r_mode = Cvar_Get("r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_mode = Cvar_Get("r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_fullscreen = Cvar_Get("r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_customwidth = Cvar_Get("r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_customheight = Cvar_Get("r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_customaspect = Cvar_Get("r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_colorbits = Cvar_Get("r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_stencilbits = Cvar_Get("r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_ext_compressed_textures = Cvar_Get("r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_ext_multitexture = Cvar_Get("r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_ext_texture_env_add = Cvar_Get("r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_ext_gamma_control = Cvar_Get("r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_ext_compiled_vertex_array = Cvar_Get("r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_stencilbits = Cvar_Get("r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_compressed_textures = Cvar_Get("r_ext_compressed_textures", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_multitexture = Cvar_Get("r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_texture_env_add = Cvar_Get("r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_gamma_control = Cvar_Get("r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_compiled_vertex_array = Cvar_Get("r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_ext_point_parameters = Cvar_Get("r_ext_point_parameters", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_picmip = Cvar_Get("r_picmip", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	AssertCvarRange(r_picmip, 0, 16, true);
-	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_vertexLight = Cvar_Get("r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_subdivisions = Cvar_Get("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignoreFastPath = Cvar_Get("r_ignoreFastPath", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_detailTextures = Cvar_Get("r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	//	Disabled until I fix it on Linux.
-	r_smp = Cvar_Get("r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_smp = Cvar_Get("r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 
 	//
 	// temporary latched variables that can only change over a restart
@@ -451,7 +454,7 @@ static void R_Register()
 	r_primitives = Cvar_Get("r_primitives", "0", CVAR_ARCHIVE);
 	r_vertex_arrays = Cvar_Get("r_vertex_arrays", "0", CVAR_ARCHIVE);
 	r_modulate = Cvar_Get("r_modulate", "1", CVAR_ARCHIVE);
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		r_shadows = Cvar_Get("cg_shadows", "1", 0);
 	}
@@ -461,14 +464,14 @@ static void R_Register()
 	}
 	r_lodbias = Cvar_Get("r_lodbias", "0", CVAR_ARCHIVE);
 	r_fastsky = Cvar_Get("r_fastsky", "0", CVAR_ARCHIVE);
-	r_drawSun = Cvar_Get("r_drawSun", "0", CVAR_ARCHIVE);
+	r_drawSun = Cvar_Get("r_drawSun", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "1" : "0", CVAR_ARCHIVE);
 	r_lodCurveError = Cvar_Get("r_lodCurveError", "250", CVAR_ARCHIVE | CVAR_CHEAT);
 	r_keeptjunctions = Cvar_Get("r_keeptjunctions", "1", CVAR_ARCHIVE);
 	r_facePlaneCull = Cvar_Get("r_facePlaneCull", "1", CVAR_ARCHIVE);
 	r_railWidth = Cvar_Get("r_railWidth", "16", CVAR_ARCHIVE);
-	r_railCoreWidth = Cvar_Get("r_railCoreWidth", "6", CVAR_ARCHIVE);
+	r_railCoreWidth = Cvar_Get("r_railCoreWidth", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "1" : "6", CVAR_ARCHIVE);
 	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
-	r_flares = Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
+	r_flares = Cvar_Get("r_flares", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "1" : "0", CVAR_ARCHIVE);
 	r_finish = Cvar_Get("r_finish", "0", CVAR_ARCHIVE);
 	r_particle_size = Cvar_Get("r_particle_size", "40", CVAR_ARCHIVE);
 	r_particle_min_size = Cvar_Get("r_particle_min_size", "2", CVAR_ARCHIVE);
@@ -483,18 +486,20 @@ static void R_Register()
 	r_logFile = Cvar_Get("r_logFile", "0", CVAR_CHEAT);
 	r_verbose = Cvar_Get("r_verbose", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get("r_nobind", "0", CVAR_CHEAT);
-	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
+	r_lightmap = Cvar_Get("r_lightmap", "0", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? CVAR_CHEAT : 0);
 	r_uiFullScreen = Cvar_Get("r_uifullscreen", "0", 0);
 	r_printShaders = Cvar_Get("r_printShaders", "0", 0);
 	r_saveFontData = Cvar_Get("r_saveFontData", "0", 0);
+#if 0
 	r_maxpolys = Cvar_Get("r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = Cvar_Get("r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
-	r_znear = Cvar_Get("r_znear", "4", CVAR_CHEAT);
+#endif
+	r_znear = Cvar_Get("r_znear", GGameType & GAME_ET ? "3" : "4", CVAR_CHEAT);
 	AssertCvarRange(r_znear, 0.001f, 200, true);
 	r_nocull = Cvar_Get("r_nocull", "0", CVAR_CHEAT);
 	r_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
 	r_lerpmodels = Cvar_Get("r_lerpmodels", "1", 0);
-	r_ambientScale = Cvar_Get("r_ambientScale", "0.6", CVAR_CHEAT);
+	r_ambientScale = Cvar_Get("r_ambientScale", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "0.5" : "0.6", CVAR_CHEAT);
 	r_directedScale = Cvar_Get("r_directedScale", "1", CVAR_CHEAT);
 	r_debugLight = Cvar_Get("r_debuglight", "0", CVAR_TEMP);
 	r_debugSort = Cvar_Get("r_debugSort", "0", CVAR_CHEAT);
@@ -516,7 +521,11 @@ static void R_Register()
 	r_showcluster = Cvar_Get("r_showcluster", "0", CVAR_CHEAT);
 	r_drawworld = Cvar_Get("r_drawworld", "1", CVAR_CHEAT);
 	r_flareSize = Cvar_Get("r_flareSize", "40", CVAR_CHEAT);
-	r_flareFade = Cvar_Get("r_flareFade", "7", CVAR_CHEAT);
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		Cvar_Set("r_flareFade", "5");	// to force this when people already have "7" in their config
+	}
+	r_flareFade = Cvar_Get("r_flareFade", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "5" : "7", CVAR_CHEAT);
 	r_measureOverdraw = Cvar_Get("r_measureOverdraw", "0", CVAR_CHEAT);
 	r_showImages = Cvar_Get("r_showImages", "0", CVAR_TEMP);
 	r_drawBuffer = Cvar_Get("r_drawBuffer", "GL_BACK", CVAR_CHEAT);
@@ -529,6 +538,7 @@ static void R_Register()
 	r_debugSurface = Cvar_Get("r_debugSurface", "0", CVAR_CHEAT);
 	r_norefresh = Cvar_Get("r_norefresh", "0", CVAR_CHEAT);
 
+#if 0
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
 	Cmd_AddCommand("modelist", R_ModeList_f);
@@ -539,8 +549,10 @@ static void R_Register()
 	Cmd_AddCommand("screenshotJPEG", R_ScreenShotJPEG_f);
 	Cmd_AddCommand("gfxinfo", GfxInfo_f);
 	Cmd_AddCommand("modellist", R_Modellist_f);
+#endif
 }
 
+#if 0
 //==========================================================================
 //
 //	R_GetTitleForWindow

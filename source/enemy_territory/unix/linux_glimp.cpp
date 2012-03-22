@@ -909,8 +909,6 @@ void GLimp_Init( void ) {
 	char buf[1024];
 	Cvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
-	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH2 );
-
 	r_previousglDriver = ri.Cvar_Get( "r_previousglDriver", "", CVAR_ROM );
 
 	InitSig();
