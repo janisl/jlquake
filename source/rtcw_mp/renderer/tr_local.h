@@ -1072,7 +1072,6 @@ extern Cvar   *r_ati_truform_pointmode;   // linear/cubic
 extern Cvar   *r_ati_fsaa_samples;                //DAJ
 
 extern Cvar  *r_rmse;                         // reduces textures to this root mean square error
-extern Cvar  *r_glDriver;
 
 extern Cvar  *r_portalsky;    // (SA) added
 

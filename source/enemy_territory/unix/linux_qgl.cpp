@@ -2711,9 +2711,9 @@ void *qwglGetProcAddress( char *symbol ) {
 **
 */
 
-qboolean QGL_Init( const char *dllname ) {
-	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY | RTLD_GLOBAL ) ) == 0 ) {
-		ri.Printf( PRINT_ALL, "QGL_Init: dlopen %s failed: %s\n", dllname, dlerror() );
+qboolean QGL_Init() {
+	if ( ( glw_state.OpenGLLib = dlopen( "libGL.so.1", RTLD_LAZY | RTLD_GLOBAL ) ) == 0 ) {
+		ri.Printf( PRINT_ALL, "QGL_Init: dlopen %s failed: %s\n", "libGL.so.1", dlerror() );
 		return qfalse;
 	}
 

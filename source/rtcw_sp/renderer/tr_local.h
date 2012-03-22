@@ -1086,7 +1086,6 @@ extern Cvar  *r_lowMemTextureSize;
 extern Cvar  *r_lowMemTextureThreshold;
 extern Cvar  *r_rmse;                         // reduces textures to this root mean square error
 extern Cvar  *r_picmip2;                      // controls picmip values for designated (character skin) textures
-extern Cvar  *r_glDriver;
 
 extern Cvar  *r_portalsky;    // (SA) added
 

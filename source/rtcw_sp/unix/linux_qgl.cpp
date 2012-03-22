@@ -2701,26 +2701,10 @@ void *qwglGetProcAddress( char *symbol ) {
 **
 */
 
-qboolean QGL_Init( const char *dllname ) {
-	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY | RTLD_GLOBAL ) ) == 0 ) {
-		char fn[1024];
-		// FILE *fp; // bk001204 - unused
-		extern uid_t saved_euid; // unix_main.c
-
-		// if we are not setuid, try current directory
-		if ( getuid() == saved_euid ) {
-			getcwd( fn, sizeof( fn ) );
-			String::Cat( fn, sizeof( fn ), "/" );
-			String::Cat( fn, sizeof( fn ), dllname );
-
-			if ( ( glw_state.OpenGLLib = dlopen( fn, RTLD_LAZY ) ) == 0 ) {
-				ri.Printf( PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf or current dir: %s\n", dllname, dlerror() );
-				return qfalse;
-			}
-		} else {
-			ri.Printf( PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf: %s\n", dllname, dlerror() );
-			return qfalse;
-		}
+qboolean QGL_Init() {
+	if ( ( glw_state.OpenGLLib = dlopen( "libGL.so.1", RTLD_LAZY | RTLD_GLOBAL ) ) == 0 ) {
+		ri.Printf( PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf: %s\n", "libGL.so.1", dlerror() );
+		return qfalse;
 	}
 
 #define GLF_0(r, n)				qgl##n = dll##n = (r (APIENTRY *)())GPA( "gl" #n );

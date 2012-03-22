@@ -1284,7 +1284,6 @@ extern Cvar   *r_ext_NV_fog_dist;
 extern Cvar   *r_nv_fogdist_mode;
 
 extern Cvar  *r_rmse;                         // reduces textures to this root mean square error
-extern Cvar  *r_glDriver;
 extern Cvar  *r_textureAnisotropy;
 
 extern Cvar  *r_trisColor;                    // enables modifying of the wireframe colour (in 0xRRGGBB[AA] format, alpha defaults to FF)

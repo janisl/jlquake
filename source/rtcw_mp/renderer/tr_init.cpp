@@ -58,7 +58,6 @@ Cvar  *r_ati_truform_pointmode;   // linear/cubic
 
 Cvar  *r_ati_fsaa_samples;        //DAJ valids are 1, 2, 4
 
-Cvar  *r_glDriver;
 Cvar  *r_portalsky;   //----(SA)	added
 
 extern Cvar  *r_customwidth;
@@ -777,7 +776,6 @@ void R_Register( void ) {
 	//
 	// latched and archived variables
 	//
-	r_glDriver = ri.Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 
 //----(SA)	added
