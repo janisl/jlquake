@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #if defined( __LINT__ )
 
-#include <GL/gl.h>
-
 #elif defined( _WIN32 )
 
 #if !defined( __GNUC__ )
@@ -47,9 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning (disable: 4201)
 #pragma warning (disable: 4214)
 #endif /* __GNUC__ */
-
-#include <windows.h>
-#include <GL/gl.h>
 
 #elif defined( __MACOS__ )
 
@@ -64,14 +59,12 @@ If you have questions concerning this license or the applicable additional terms
 // some GL headers define that, but only partially
 // define and undefine so GL doesn't attempt anything
 #define GL_ARB_multitexture
-#include <GL/gl.h>
 #include <GL/glx.h>
 #undef GL_ARB_multitexture
 #include "glext.h"
 
 #elif defined( __FreeBSD__ ) // rb010123
 
-#include <GL/gl.h>
 #include <GL/glx.h>
 #if defined( __FX__ )
 #include <GL/fxmesa.h>

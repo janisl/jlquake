@@ -34,8 +34,6 @@ void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral
 void R_Register_();
 void R_ModeList_f();
 
-glstate_t glState;
-
 static void GfxInfo_f( void );
 
 Cvar  *r_zfar;

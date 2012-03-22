@@ -17,12 +17,12 @@
 #ifndef _R_LOCAL_H
 #define _R_LOCAL_H
 
-#if 0
 #ifdef _WIN32
 #include <windows.h>
 #endif
 #include <GL/gl.h>
 
+#if 0
 #ifndef APIENTRY
 #define APIENTRY
 #endif
@@ -46,8 +46,8 @@
 #include "images/image.h"
 #include "shader.h"
 #include "models/model.h"
-#include "state.h"
 #endif
+#include "state.h"
 #include "cvars.h"
 
 #if 0

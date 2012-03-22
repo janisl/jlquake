@@ -5,6 +5,7 @@ set(WOLFCLIENT_FILES
 	renderer/driver_glx.cpp
 	renderer/init.cpp
 	renderer/main.cpp
+	renderer/state.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp

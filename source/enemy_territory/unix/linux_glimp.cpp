@@ -72,7 +72,6 @@ If you have questions concerning this license or the applicable additional terms
 // http://oss.sgi.com/projects/ogl-sample/ABI/
 #define GL_GLEXT_LEGACY
 #define GLX_GLXEXT_LEGACY
-#include <GL/gl.h>
 #include <GL/glx.h>
 #include "../renderer/glext.h"
 

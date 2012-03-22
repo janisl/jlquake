@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #if defined( __LINT__ )
 
-#include <GL/gl.h>
-
 #elif defined( _WIN32 )
 
 #pragma warning (disable: 4201)
@@ -54,7 +52,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #elif defined( __linux__ )
 
-#include <GL/gl.h>
 #include <GL/glx.h>
 // bk001129 - from cvs1.17 (mkv)
 #if defined( __FX__ )
@@ -63,7 +60,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #elif defined( __FreeBSD__ ) // rb010123
 
-#include <GL/gl.h>
 #include <GL/glx.h>
 #if defined( __FX__ )
 #include <GL/fxmesa.h>
