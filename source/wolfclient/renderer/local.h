@@ -520,6 +520,7 @@ extern int			c_visible_lightmaps;
 
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
+#endif
 
 /*
 ============================================================
@@ -532,6 +533,7 @@ INIT
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 const char* R_GetTitleForWindow();
 
+#if 0
 /*
 ============================================================
 

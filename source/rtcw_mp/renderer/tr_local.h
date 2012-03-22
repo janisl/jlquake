@@ -1196,7 +1196,6 @@ image_t     *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowP
 
 image_t     *R_CreateImage( const char *name, const byte *pic, int width, int height, qboolean mipmap
 							, qboolean allowPicmip, int wrapClampMode );
-qboolean    R_GetModeInfo( int *width, int *height, float *windowAspect, int mode );
 
 void        R_SetColorMappings( void );
 void        R_GammaCorrect( byte *buffer, int bufSize );

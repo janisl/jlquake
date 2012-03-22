@@ -23,7 +23,6 @@
 
 // TYPES -------------------------------------------------------------------
 
-#if 0
 struct vidmode_t
 {
 	const char*	description;
@@ -31,7 +30,6 @@ struct vidmode_t
 	int			height;
 	float		pixelAspect;		// pixel width / height
 };
-#endif
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -181,8 +179,8 @@ Cvar*		r_portalOnly;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-#if 0
-static vidmode_t r_vidModes[] =
+//static 
+vidmode_t r_vidModes[] =
 {
 	{ "Mode  0: 320x240",		320,	240,	1 },
 	{ "Mode  1: 400x300",		400,	300,	1 },
@@ -197,7 +195,8 @@ static vidmode_t r_vidModes[] =
 	{ "Mode 10: 2048x1536",		2048,	1536,	1 },
 	{ "Mode 11: 856x480 (wide)",856,	480,	1 }
 };
-static int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
+//static 
+int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
 // CODE --------------------------------------------------------------------
 
@@ -241,7 +240,8 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 //
 //==========================================================================
 
-static void R_ModeList_f()
+//static 
+void R_ModeList_f()
 {
 	Log::write("\n");
 	for (int i = 0; i < s_numVidModes; i++ )
@@ -250,7 +250,6 @@ static void R_ModeList_f()
 	}
 	Log::write("\n");
 }
-#endif
 
 //==========================================================================
 //
@@ -552,7 +551,6 @@ void R_Register_()
 #endif
 }
 
-#if 0
 //==========================================================================
 //
 //	R_GetTitleForWindow
@@ -585,9 +583,18 @@ const char* R_GetTitleForWindow()
 	{
 		return "Quake 3: Arena";
 	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		return "Return to Castle Wolfenstein";
+	}
+	if (GGameType & GAME_ET)
+	{
+		return "Enemy Territory";
+	}
 	return "Unknown";
 }
 
+#if 0
 //==========================================================================
 //
 //	R_SetMode
