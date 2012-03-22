@@ -48,12 +48,6 @@ enum glDriverType_t
 enum glHardwareType_t
 {
 	GLHW_GENERIC,			// where everthing works the way it should
-	GLHW_3DFX_2D3D,         // Voodoo Banshee or Voodoo3, relevant since if this is
-							// the hardware type then there can NOT exist a secondary
-							// display adapter
-	GLHW_RIVA128,           // where you can't interpolate alpha
-	GLHW_RAGEPRO,           // where you can't modulate alpha on alpha textures
-	GLHW_PERMEDIA2          // where you don't have src*dst
 };
 
 #if 0

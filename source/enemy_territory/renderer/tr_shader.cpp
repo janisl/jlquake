@@ -2574,16 +2574,6 @@ static shader_t *FinishShader( void ) {
 	}
 
 	//
-	// if we are using permedia hw, never use a lightmap texture
-	//
-	// NERVE - SMF - temp fix, terrain is having problems with lighting collapse
-	if ( 0 && ( stage > 1 && ( glConfig.hardwareType == GLHW_PERMEDIA2 ) ) ) {
-		VertexLightingCollapse();
-		stage = 1;
-		hasLightmapStage = qfalse;
-	}
-
-	//
 	// look for multitexture potential
 	//
 	if ( stage > 1 && CollapseMultitexture() ) {

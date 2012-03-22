@@ -156,14 +156,6 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 	poly->verts = &backEndData[tr.smpFrame]->polyVerts[r_numpolyverts];
 
 	memcpy( poly->verts, verts, numVerts * sizeof( *verts ) );
-	// Ridah
-	if ( glConfig.hardwareType == GLHW_RAGEPRO ) {
-		poly->verts->modulate[0] = 255;
-		poly->verts->modulate[1] = 255;
-		poly->verts->modulate[2] = 255;
-		poly->verts->modulate[3] = 255;
-	}
-	// done.
 	r_numpolys++;
 	r_numpolyverts += numVerts;
 
@@ -232,14 +224,6 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 		poly->verts = &backEndData[tr.smpFrame]->polyVerts[r_numpolyverts];
 
 		memcpy( poly->verts, &verts[numVerts * j], numVerts * sizeof( *verts ) );
-		// Ridah
-		if ( glConfig.hardwareType == GLHW_RAGEPRO ) {
-			poly->verts->modulate[0] = 255;
-			poly->verts->modulate[1] = 255;
-			poly->verts->modulate[2] = 255;
-			poly->verts->modulate[3] = 255;
-		}
-		// done.
 		r_numpolys++;
 		r_numpolyverts += numVerts;
 
@@ -322,10 +306,6 @@ void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, fl
 		return;
 	}
 	if ( intensity <= 0 ) {
-		return;
-	}
-	// these cards don't have the correct blend mode
-	if ( glConfig.hardwareType == GLHW_RIVA128 || glConfig.hardwareType == GLHW_PERMEDIA2 ) {
 		return;
 	}
 	// RF, allow us to force some dlights under all circumstances
@@ -481,7 +461,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 	// dlights if it needs to be disabled or if vertex lighting is enabled
 	if ( /*r_dynamiclight->integer == 0 ||	// RF, disabled so we can force things like lightning dlights
 		 r_vertexLight->integer == 1 ||*/
-		glConfig.hardwareType == GLHW_PERMEDIA2 ) {
+		0 ) {
 		tr.refdef.num_dlights = 0;
 	}
 

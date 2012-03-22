@@ -887,21 +887,6 @@ void GLimp_Init( void ) {
 		}
 	}
 
-	//
-	// this is where hardware specific workarounds that should be
-	// detected/initialized every startup should go.
-	//
-	if ( Q_stristr( buf, "banshee" ) || Q_stristr( buf, "Voodoo_Graphics" ) ) {
-		glConfig.hardwareType = GLHW_3DFX_2D3D;
-	} else if ( Q_stristr( buf, "rage pro" ) || Q_stristr( buf, "RagePro" ) ) {
-		glConfig.hardwareType = GLHW_RAGEPRO;
-	} else if ( Q_stristr( buf, "permedia2" ) ) {
-		glConfig.hardwareType = GLHW_PERMEDIA2;
-	} else if ( Q_stristr( buf, "riva 128" ) ) {
-		glConfig.hardwareType = GLHW_RIVA128;
-	} else if ( Q_stristr( buf, "riva tnt " ) ) {
-	}
-
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	// initialize extensions

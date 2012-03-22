@@ -1106,7 +1106,7 @@ static void readQuadInfo( byte *qData ) {
 	cinTable[currentHandle].drawY = cinTable[currentHandle].CIN_HEIGHT;
 
 	// rage pro is very slow at 512 wide textures, voodoo can't do it at all
-	if ( glConfig.hardwareType == GLHW_RAGEPRO || glConfig.maxTextureSize <= 256 ) {
+	if ( glConfig.maxTextureSize <= 256 ) {
 		if ( cinTable[currentHandle].drawX > 256 ) {
 			cinTable[currentHandle].drawX = 256;
 		}
