@@ -1089,8 +1089,6 @@ extern Cvar  *r_bonesDebug;
 // Rafael - wolf fog
 extern Cvar   *r_wolffog;
 // done
-
-extern Cvar  *r_highQualityVideo;
 //====================================================================
 
 float R_NoiseGet4f( float x, float y, float z, float t );

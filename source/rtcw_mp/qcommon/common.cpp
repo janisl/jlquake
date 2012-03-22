@@ -2183,12 +2183,10 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 #endif
 
 void Com_SetRecommended() {
-	Cvar *cv;
 	qboolean goodVideo;
 	qboolean goodCPU;
 	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
-	cv = Cvar_Get( "r_highQualityVideo", "1", CVAR_ARCHIVE );
-	goodVideo = ( cv && cv->integer );
+	goodVideo = true;
 	goodCPU = Sys_GetHighQualityCPU();
 
 	if ( goodVideo && goodCPU ) {

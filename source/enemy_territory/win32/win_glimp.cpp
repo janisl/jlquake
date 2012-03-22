@@ -1312,23 +1312,6 @@ void GLimp_Init( void ) {
 		}
 	}
 
-	if ( strstr( buf, "geforce3" ) ||
-		 strstr( buf, "geforce4 ti" ) ||
-		 strstr( buf, "geforce fx 5600" ) ||
-		 strstr( buf, "geforce fx 5800" ) ||
-		 strstr( buf, "radeon 8500" ) ||
-		 strstr( buf, "radeon 9000" ) ||
-		 strstr( buf, "radeon 9500" ) ||
-		 strstr( buf, "radeon 9600" ) ||
-		 strstr( buf, "radeon 9700" ) ||
-		 strstr( buf, "radeon 9800" ) ||
-		 strstr( buf, "nv20" ) ||
-		 strstr( buf, "nv30" ) ) {
-		ri.Cvar_Set( "r_highQualityVideo", "1" );
-	} else {
-		ri.Cvar_Set( "r_highQualityVideo", "0" );
-	}
-
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	GLW_InitExtensions();

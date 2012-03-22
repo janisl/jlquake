@@ -90,7 +90,6 @@ Cvar  *r_bonesDebug;
 Cvar  *r_wolffog;
 // done
 
-Cvar  *r_highQualityVideo;
 Cvar  *r_rmse;
 
 int max_polys;
@@ -841,7 +840,6 @@ void R_Register( void ) {
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va( "%d", MAX_POLYS ), 0 );
 	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va( "%d", MAX_POLYVERTS ), 0 );
 
-	r_highQualityVideo = ri.Cvar_Get( "r_highQualityVideo", "1", CVAR_ARCHIVE );
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
 	ri.Cmd_AddCommand( "imagelist", R_ImageList_f );

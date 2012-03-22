@@ -1192,14 +1192,6 @@ void GLimp_Init( void ) {
 		}
 	}
 
-	if ( strstr( buf, "geforce" ) || strstr( buf, "ge-force" ) || strstr( buf, "radeon" ) || strstr( buf, "nv20" ) || strstr( buf, "nv30" )
-		 || strstr( buf, "quadro" ) ) {
-		ri.Cvar_Set( "r_highQualityVideo", "1" );
-	} else {
-		ri.Cvar_Set( "r_highQualityVideo", "0" );
-	}
-
-
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	GLW_InitExtensions();
