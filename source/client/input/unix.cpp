@@ -973,15 +973,13 @@ void Sys_SendKeyEvents()
 			}
 			break;
 
-#if 0//JL FIXME
 		case ClientMessage:
 			if (event.xclient.message_type == wm_protocols &&
 				event.xclient.data.l[0] == wm_delete_window)
 			{
-				Com_Quit_f();
+				Cbuf_ExecuteText(EXEC_APPEND, "quit");
 			}
 			break;
-#endif
 		}
 	}
 
