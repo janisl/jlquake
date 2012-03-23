@@ -92,7 +92,6 @@ set (ET_FILES
 	game/q_math.cpp
 
 	unix/linux_glimp.cpp
-	unix/linux_qgl.cpp
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")

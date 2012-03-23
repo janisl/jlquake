@@ -28,15 +28,4 @@ If you have questions concerning this license or the applicable additional terms
 
 // linux_local.h: Linux-specific Quake3 header file
 
-// GL subsystem
-qboolean QGL_Init();
-void QGL_Shutdown( void );
-
-
-
-
-
-// bk001130 - win32
-// void IN_JoystickCommands (void);
-
 char *strlwr( char *s );

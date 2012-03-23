@@ -162,7 +162,7 @@ static void GLW_InitExtensions( void ) {
 			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) GLimp_GetProcAddress("glClientActiveTextureARB" );
 
 			if ( qglActiveTextureARB ) {
-				qglGetIntegerv( GL_MAX_ACTIVE_TEXTURES_ARB, &glConfig.maxActiveTextures );
+				qglGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &glConfig.maxActiveTextures );
 
 				if ( glConfig.maxActiveTextures > 1 ) {
 					ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
@@ -233,6 +233,7 @@ static void GLW_InitExtensions( void ) {
 
 	// GLX_SGI_swap_control
 	if ( Q_stristr( glx_extensions_string, "GLX_SGI_swap_control" ) ) {
+		qglXSwapIntervalSGI = (int ( *)( int interval ))GLimp_GetProcAddress("glXSwapIntervalSGI");
 		ri.Printf( PRINT_ALL, "...using GLX_SGI_swap_control\n" );
 	} else {
 		ri.Printf( PRINT_ALL, "... GLX_SGI_swap_control not found\n" );

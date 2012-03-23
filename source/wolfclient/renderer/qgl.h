@@ -44,10 +44,8 @@
 #undef GLF_V9
 #undef GLF_V10
 
-#if 0
 void QGL_Init();
 void QGL_Shutdown();
-#endif
 void QGL_EnableLogging(bool Enable);
 void QGL_LogComment(const char* Comment);
 
@@ -61,11 +59,15 @@ extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
 extern	void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 
+extern void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
+extern void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
+
 #if defined( _WIN32 )
 extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
+#else
+extern int ( *qglXSwapIntervalSGI )( int interval );
 #endif
 
-#if 0
 // S3TC compression constants
 #ifndef GL_RGB_S3TC
 #define GL_RGB_S3TC							0x83A0
@@ -90,5 +92,4 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #define GL_POINT_SIZE_MAX_EXT				0x8127
 #define GL_POINT_FADE_THRESHOLD_SIZE_EXT	0x8128
 #define GL_DISTANCE_ATTENUATION_EXT			0x8129
-#endif
 #endif

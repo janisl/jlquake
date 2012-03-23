@@ -1229,12 +1229,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 void        GLimp_Init( void );
 void        GLimp_EndFrame( void );
 
-//
-// function declaration
-//
-qboolean QGL_Init();
-void     QGL_Shutdown( void );
-
 /*
 ====================================================================
 

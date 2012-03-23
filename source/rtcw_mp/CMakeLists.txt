@@ -75,7 +75,6 @@ set(WOLFMP_FILES
 
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	unix/linux_qgl.cpp
 	unix/linux_glimp.cpp
 	unix/linux_signals.cpp
 

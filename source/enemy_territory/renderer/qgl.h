@@ -83,19 +83,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //===========================================================================
 
-/*
-** multitexture extension definitions
-*/
-#define GL_ACTIVE_TEXTURE_ARB               0x84E0
-#define GL_CLIENT_ACTIVE_TEXTURE_ARB        0x84E1
-#define GL_MAX_ACTIVE_TEXTURES_ARB          0x84E2
-
-#define GL_TEXTURE0_ARB                     0x84C0
-#define GL_TEXTURE1_ARB                     0x84C1
-#define GL_TEXTURE2_ARB                     0x84C2
-#define GL_TEXTURE3_ARB                     0x84C3
-
-
 #if !defined( GL_VERSION_1_2 ) || defined( MACOS_X )
 typedef void ( APIENTRY * PFNGLMULTITEXCOORD1DARBPROC )( GLenum target, GLdouble s );
 typedef void ( APIENTRY * PFNGLMULTITEXCOORD1DVARBPROC )( GLenum target, const GLdouble *v );
@@ -163,10 +150,6 @@ typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat para
 /* reuse GL_EYE_PLANE */
 #endif
 
-// S3TC compression constants
-#define GL_RGB_S3TC                         0x83A0
-#define GL_RGB4_S3TC                        0x83A1
-
 // GL_EXT_texture_compression_s3tc constants
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT                   0x83F0
 #define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT                  0x83F1
@@ -184,19 +167,5 @@ typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat para
 #define GL_GENERATE_MIPMAP_SGIS           0x8191
 #define GL_GENERATE_MIPMAP_HINT_SGIS      0x8192
 #endif
-
-// extensions will be function pointers on all platforms
-
-//----(SA)	added
-extern void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
-extern void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
-//----(SA)	end
-
-#if ( ( defined __linux__ )  || ( defined __FreeBSD__ ) ) // rb010123
-
-//GLX Functions
-extern int ( *qglXSwapIntervalSGI )( int interval );
-
-#endif // __linux__ || __FreeBSD__ // rb010123
 
 #endif

@@ -78,8 +78,13 @@ void ( APIENTRY * qglUnlockArraysEXT) ( void );
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 
+void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
+void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
+
 #ifdef _WIN32
 BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
+#else
+int ( *qglXSwapIntervalSGI )( int interval );
 #endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -635,8 +640,7 @@ static bool CheckExtension(const char* Extension)
 //
 //==========================================================================
 
-//void QGL_Init()
-void QGL_Init_()
+void QGL_Init()
 {
 	Log::write("...initializing QGL\n");
 
@@ -680,8 +684,13 @@ void QGL_Init_()
 	qglPointParameterfEXT = NULL;
 	qglPointParameterfvEXT = NULL;
 
+	qglPNTrianglesiATI = NULL;
+	qglPNTrianglesfATI = NULL;
+
 #ifdef _WIN32
 	qwglSwapIntervalEXT = NULL;
+#else
+	qglXSwapIntervalSGI = NULL;
 #endif
 
 #if 0
@@ -835,10 +844,10 @@ void QGL_Init_()
 	{
 		Log::write("...GL_EXT_point_parameters not found\n");
 	}
+#endif
 
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
-#endif
 }
 
 //==========================================================================
@@ -850,8 +859,7 @@ void QGL_Init_()
 //
 //==========================================================================
 
-//void QGL_Shutdown()
-void QGL_Shutdown_()
+void QGL_Shutdown()
 {
 	Log::write("...shutting down QGL\n");
 
@@ -904,6 +912,8 @@ void QGL_Shutdown_()
 
 #ifdef _WIN32
 	qwglSwapIntervalEXT = NULL;
+#else
+	qglXSwapIntervalSGI = NULL;
 #endif
 }
 
