@@ -100,12 +100,9 @@
     <ClCompile Include="tr_surface.cpp" />
     <ClCompile Include="tr_world.cpp" />
     <ClCompile Include="..\win32\win_glimp.cpp" />
-    <ClCompile Include="..\win32\win_qgl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anorms256.h" />
-    <ClInclude Include="..\qcommon\cm_public.h" />
-    <ClInclude Include="..\win32\glw_win.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />

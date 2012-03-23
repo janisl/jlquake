@@ -97,18 +97,9 @@
     <ClCompile Include="..\win32\win_glimp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\win_qgl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anorms256.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\qcommon\cm_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\win32\glw_win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\game\q_shared.h">
