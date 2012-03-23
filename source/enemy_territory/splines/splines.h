@@ -29,23 +29,11 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __SPLINES_H
 #define __SPLINES_H
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-#include <GL/gl.h>
-#ifdef Q3RADIANT
-#include "../qgl.h"
-#else
-#include "../renderer/qgl.h"
-#endif
 #include "util_list.h"
 #include "util_str.h"
 #include "math_vector.h"
 
 typedef int fileHandle_t;
-
-extern void glBox( idVec3 &color, idVec3 &point, float size );
-extern void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label );
 
 static idVec4 blue( 0, 0, 1, 1 );
 static idVec4 red( 1, 0, 0, 1 );
@@ -158,13 +146,6 @@ virtual void updateSelection( const idVec3 &move ) {
 	}
 }
 
-void drawSelection() {
-	int count = selectedPoints.Num();
-	for ( int i = 0; i < count; i++ ) {
-		glBox( red, *getPoint( selectedPoints[i] ), 4 );
-	}
-}
-
 protected:
 idList<int> selectedPoints;
 
@@ -223,7 +204,6 @@ void initPosition( long startTime, long totalTime );
 const idVec3 *getPosition( long time );
 
 
-void draw( bool editMode );
 void addToRenderer();
 
 void setSelectedPoint( idVec3 *p );
@@ -453,8 +433,6 @@ virtual const idVec3 *getPosition( long t ) {
 	return NULL;
 }
 
-virtual void draw( bool editMode ) {};
-
 virtual void parse( const char *( *text ) ) {};
 virtual void write( fileHandle_t file, const char *name );
 virtual bool parseToken( const char *key, const char *( *text ) );
@@ -474,8 +452,6 @@ virtual void startEdit() {      //DAJ added void
 virtual void stopEdit() {       //DAJ added void
 	editMode = false;
 }
-
-virtual void draw() {};
 
 const char *typeStr() {
 	return positionStr[static_cast<int>( type )];
@@ -547,10 +523,6 @@ virtual idVec3 *getPoint( int index ) {
 	return &pos;
 }
 
-virtual void draw( bool editMode ) {
-	glLabeledPoint( blue, pos, ( editMode ) ? 5 : 3, "Fixed point" );
-}
-
 protected:
 idVec3 pos;
 };
@@ -613,15 +585,6 @@ virtual void addPoint( const idVec3 &v ) {
 		endPos = v;
 		first = true;
 	}
-}
-
-virtual void draw( bool editMode ) {
-	glLabeledPoint( blue, startPos, ( editMode ) ? 5 : 3, "Start interpolated" );
-	glLabeledPoint( blue, endPos, ( editMode ) ? 5 : 3, "End interpolated" );
-	qglBegin( GL_LINES );
-	qglVertex3fv( startPos );
-	qglVertex3fv( endPos );
-	qglEnd();
 }
 
 virtual void start( long t ) {
@@ -696,10 +659,6 @@ virtual void addPoint( const idVec3 &v ) {
 
 virtual void addPoint( const float x, const float y, const float z ) {
 	target.addPoint( x, y, z );
-}
-
-virtual void draw( bool editMode ) {
-	target.draw( editMode );
 }
 
 virtual void updateSelection( const idVec3 &move ) {
@@ -1019,18 +978,6 @@ bool getCameraInfo( long time, float *origin, float *direction, float *fv ) {
 	direction[1] = dir[1];
 	direction[2] = dir[2];
 	return b;
-}
-
-void draw( bool editMode ) {
-	// gcc doesn't allow casting away from bools
-	// why?  I've no idea...
-	if ( cameraPosition ) {
-		cameraPosition->draw( (bool)( ( editMode || cameraRunning ) && cameraEdit ) );
-		int count = targetPositions.Num();
-		for ( int i = 0; i < count; i++ ) {
-			targetPositions[i]->draw( (bool)( ( editMode || cameraRunning ) && i == activeTarget && !cameraEdit ) );
-		}
-	}
 }
 
 /*

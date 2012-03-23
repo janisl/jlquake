@@ -96,57 +96,6 @@ idCameraDef *g_splineList = &splineList;
 
 idVec3 idSplineList::zero( 0,0,0 );
 
-void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label ) {
-	qglColor3fv( color );
-	qglPointSize( size );
-	qglBegin( GL_POINTS );
-	qglVertex3fv( point );
-	qglEnd();
-	idVec3 v = point;
-	v.x += 1;
-	v.y += 1;
-	v.z += 1;
-	qglRasterPos3fv( v );
-	qglCallLists( String::Length( label ), GL_UNSIGNED_BYTE, label );
-}
-
-
-void glBox( idVec3 &color, idVec3 &point, float size ) {
-	idVec3 mins( point );
-	idVec3 maxs( point );
-	mins[0] -= size;
-	mins[1] += size;
-	mins[2] -= size;
-	maxs[0] += size;
-	maxs[1] -= size;
-	maxs[2] += size;
-	qglColor3fv( color );
-	qglBegin( GL_LINE_LOOP );
-	qglVertex3f( mins[0],mins[1],mins[2] );
-	qglVertex3f( maxs[0],mins[1],mins[2] );
-	qglVertex3f( maxs[0],maxs[1],mins[2] );
-	qglVertex3f( mins[0],maxs[1],mins[2] );
-	qglEnd();
-	qglBegin( GL_LINE_LOOP );
-	qglVertex3f( mins[0],mins[1],maxs[2] );
-	qglVertex3f( maxs[0],mins[1],maxs[2] );
-	qglVertex3f( maxs[0],maxs[1],maxs[2] );
-	qglVertex3f( mins[0],maxs[1],maxs[2] );
-	qglEnd();
-
-	qglBegin( GL_LINES );
-	qglVertex3f( mins[0],mins[1],mins[2] );
-	qglVertex3f( mins[0],mins[1],maxs[2] );
-	qglVertex3f( mins[0],maxs[1],maxs[2] );
-	qglVertex3f( mins[0],maxs[1],mins[2] );
-	qglVertex3f( maxs[0],mins[1],mins[2] );
-	qglVertex3f( maxs[0],mins[1],maxs[2] );
-	qglVertex3f( maxs[0],maxs[1],maxs[2] );
-	qglVertex3f( maxs[0],maxs[1],mins[2] );
-	qglEnd();
-
-}
-
 void splineTest() {
 	//g_splineList->load("p:/doom/base/maps/test_base1.camera");
 }
@@ -242,62 +191,6 @@ void idSplineList::buildSpline() {
 	//Com_Printf("Spline build took %f seconds\n", (float)(Sys_Milliseconds() - start) / 1000);
 }
 
-
-void idSplineList::draw( bool editMode ) {
-	int i;
-	idVec4 yellow( 1, 1, 0, 1 );
-
-	if ( controlPoints.Num() == 0 ) {
-		return;
-	}
-
-	if ( dirty ) {
-		buildSpline();
-	}
-
-
-	qglColor3fv( controlColor );
-	qglPointSize( 5 );
-
-	qglBegin( GL_POINTS );
-	for ( i = 0; i < controlPoints.Num(); i++ ) {
-		qglVertex3fv( *controlPoints[i] );
-	}
-	qglEnd();
-
-	if ( editMode ) {
-		for ( i = 0; i < controlPoints.Num(); i++ ) {
-			glBox( activeColor, *controlPoints[i], 4 );
-		}
-	}
-
-	//Draw the curve
-	qglColor3fv( pathColor );
-	qglBegin( GL_LINE_STRIP );
-	int count = splinePoints.Num();
-	for ( i = 0; i < count; i++ ) {
-		qglVertex3fv( *splinePoints[i] );
-	}
-	qglEnd();
-
-	if ( editMode ) {
-		qglColor3fv( segmentColor );
-		qglPointSize( 3 );
-		qglBegin( GL_POINTS );
-		for ( i = 0; i < count; i++ ) {
-			qglVertex3fv( *splinePoints[i] );
-		}
-		qglEnd();
-	}
-	if ( count > 0 ) {
-		//assert(activeSegment >=0 && activeSegment < count);
-		if ( activeSegment >= 0 && activeSegment < count ) {
-			glBox( activeColor, *splinePoints[activeSegment], 6 );
-			glBox( yellow, *splinePoints[activeSegment], 8 );
-		}
-	}
-
-}
 
 float idSplineList::totalDistance() {
 
