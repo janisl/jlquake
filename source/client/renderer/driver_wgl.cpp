@@ -61,6 +61,8 @@ static bool		cdsFullscreen;
 static Cvar*	vid_xpos;			// X coordinate of window position
 static Cvar*	vid_ypos;			// Y coordinate of window position
 
+static bool fontbase_init = false;
+
 static quint16	s_oldHardwareGamma[3][256];
 
 static HANDLE	renderCommandsEvent;
@@ -745,6 +747,56 @@ static void WG_CheckHardwareGamma()
 	}
 }
 
+static void GLW_GenDefaultLists()
+{
+	HFONT hfont, oldhfont;
+
+	// keep going, we'll probably just leak some stuff
+	if (fontbase_init)
+	{
+		common->DPrintf("ERROR: GLW_GenDefaultLists: font base is already marked initialized\n");
+	}
+
+	// create font display lists
+	gl_NormalFontBase = glGenLists(256);
+
+	if (gl_NormalFontBase == 0)
+	{
+		common->Printf("ERROR: couldn't create font (glGenLists)\n");
+		return;
+	}
+
+	hfont = CreateFont(
+		12, // logical height of font
+		6,  // logical average character width
+		0,  // angle of escapement
+		0,  // base-line orientation angle
+		0,  // font weight
+		0,  // italic attribute flag
+		0,  // underline attribute flag
+		0,  // strikeout attribute flag
+		0,  // character set identifier
+		0,  // output precision
+		0,  // clipping precision
+		0,  // output quality
+		0,  // pitch and family
+		""); // pointer to typeface name string
+
+	if (!hfont)
+	{
+		common->Printf("ERROR: couldn't create font (CreateFont)\n");
+		return;
+	}
+
+	oldhfont = (HFONT)SelectObject(maindc, hfont);
+	wglUseFontBitmaps(maindc, 0, 255, gl_NormalFontBase);
+
+	SelectObject(maindc, oldhfont);
+	DeleteObject(hfont);
+
+	fontbase_init = true;
+}
+
 //==========================================================================
 //
 //	GLW_CreateWindow
@@ -882,6 +934,9 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 	SetFocus(GMainWindow);
 
 	WG_CheckHardwareGamma();
+
+	// initialise default lists
+	GLW_GenDefaultLists();
 
 	return true;
 }
@@ -1134,6 +1189,18 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	return RSERR_OK;
 }
 
+static void GLW_DeleteDefaultLists()
+{
+	if (!fontbase_init)
+	{
+		common->DPrintf("ERROR: GLW_DeleteDefaultLists: no font list initialized\n");
+		return;
+	}
+
+	glDeleteLists(gl_NormalFontBase, 256);
+	fontbase_init = false;
+}
+
 //==========================================================================
 //
 //	GLimp_Shutdown()
@@ -1148,6 +1215,9 @@ void GLimp_Shutdown()
 	const char *success[] = { "failed", "success" };
 
 	Log::write("Shutting down OpenGL subsystem\n");
+
+	// delete display lists
+	GLW_DeleteDefaultLists();
 
 	// restore gamma.
 	if (glConfig.deviceSupportsGamma)

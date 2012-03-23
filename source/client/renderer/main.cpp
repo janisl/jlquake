@@ -100,6 +100,8 @@ float	r_turbsin[] =
 	-1.56072, -1.3677, -1.17384, -0.979285, -0.784137, -0.588517, -0.392541, -0.19633,
 };
 
+int gl_NormalFontBase = 0;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static sortedent_t		cl_transvisedicts[MAX_ENTITIES];
