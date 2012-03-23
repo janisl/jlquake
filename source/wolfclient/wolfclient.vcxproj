@@ -89,6 +89,12 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)renderer\</ObjectFileName>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="renderer\cvars.h" />
+    <ClInclude Include="renderer\local.h" />
+    <ClInclude Include="renderer\public.h" />
+    <ClInclude Include="renderer\state.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EBC63DDE-A074-48E5-8815-FEAC614B04F4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

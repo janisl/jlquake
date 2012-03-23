@@ -861,8 +861,6 @@ static void GLW_InitExtensions( void ) {
 	qglClientActiveTextureARB = NULL;
 	qglLockArraysEXT = NULL;
 	qglUnlockArraysEXT = NULL;
-	qwglGetDeviceGammaRamp3DFX = NULL;
-	qwglSetDeviceGammaRamp3DFX = NULL;
 	qglPNTrianglesiATI = NULL;
 	qglPNTrianglesfATI = NULL;
 	glConfig.anisotropicAvailable = qfalse;
@@ -980,31 +978,6 @@ static void GLW_InitExtensions( void ) {
 	{
 		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
 	}
-
-	// WGL_3DFX_gamma_control
-
-	if ( strstr( glConfig.extensions_string, "WGL_3DFX_gamma_control" ) ) {
-		if ( !r_ignorehwgamma->integer && r_ext_gamma_control->integer ) {
-			qwglGetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) )qwglGetProcAddress( "wglGetDeviceGammaRamp3DFX" );
-			qwglSetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) )qwglGetProcAddress( "wglSetDeviceGammaRamp3DFX" );
-
-			if ( qwglGetDeviceGammaRamp3DFX && qwglSetDeviceGammaRamp3DFX ) {
-				ri.Printf( PRINT_ALL, "...using WGL_3DFX_gamma_control\n" );
-			} else
-			{
-				qwglGetDeviceGammaRamp3DFX = NULL;
-				qwglSetDeviceGammaRamp3DFX = NULL;
-			}
-		} else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring WGL_3DFX_gamma_control\n" );
-		}
-	} else
-	{
-		ri.Printf( PRINT_ALL, "...WGL_3DFX_gamma_control not found\n" );
-	}
-
-
 
 //----(SA)	added
 
@@ -1406,5 +1379,21 @@ void GLimp_WakeRenderer( void *data ) {
 	SetEvent( renderCommandsEvent );
 
 	WaitForSingleObject( renderActiveEvent, INFINITE );
+}
+
+
+extern quint16	s_oldHardwareGamma[3][256];
+
+/*
+** WG_RestoreGamma
+*/
+void WG_RestoreGamma( void ) {
+	if ( glConfig.deviceSupportsGamma ) {
+		HDC hDC;
+
+		hDC = GetDC( GetDesktopWindow() );
+		SetDeviceGammaRamp( hDC, s_oldHardwareGamma );
+		ReleaseDC( GetDesktopWindow(), hDC );
+	}
 }
 

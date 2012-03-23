@@ -99,7 +99,6 @@
     <ClCompile Include="tr_sky.cpp" />
     <ClCompile Include="tr_surface.cpp" />
     <ClCompile Include="tr_world.cpp" />
-    <ClCompile Include="..\win32\win_gamma.cpp" />
     <ClCompile Include="..\win32\win_glimp.cpp" />
     <ClCompile Include="..\win32\win_qgl.cpp" />
   </ItemGroup>

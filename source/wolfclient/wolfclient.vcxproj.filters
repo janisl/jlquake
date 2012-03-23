@@ -70,4 +70,18 @@
       <Filter>renderer</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="renderer\cvars.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\local.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\public.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\state.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

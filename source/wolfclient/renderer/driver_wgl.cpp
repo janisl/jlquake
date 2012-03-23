@@ -711,6 +711,7 @@ static bool GLW_InitDriver(int colorbits)
 
 	return true;
 }
+#endif
 
 //==========================================================================
 //
@@ -720,7 +721,8 @@ static bool GLW_InitDriver(int colorbits)
 //
 //==========================================================================
 
-static void WG_CheckHardwareGamma()
+//static 
+void WG_CheckHardwareGamma()
 {
 	glConfig.deviceSupportsGamma = false;
 
@@ -766,6 +768,7 @@ static void WG_CheckHardwareGamma()
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	GLW_CreateWindow
@@ -1232,6 +1235,7 @@ void* GLimp_GetProcAddress(const char* Name)
 {
 	return (void*)wglGetProcAddress(Name);
 }
+#endif
 
 //==========================================================================
 //
@@ -1291,6 +1295,7 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	GLimp_SwapBuffers

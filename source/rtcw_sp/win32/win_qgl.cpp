@@ -46,8 +46,6 @@ HINSTANCE hinstOpenGL;  // HINSTANCE for the OpenGL library
 void QGL_EnableLogging( qboolean enable );
 
 int ( WINAPI * qwglSwapIntervalEXT )( int interval );
-BOOL ( WINAPI * qwglGetDeviceGammaRamp3DFX )( HDC, LPVOID );
-BOOL ( WINAPI * qwglSetDeviceGammaRamp3DFX )( HDC, LPVOID );
 
 int ( WINAPI * qwglChoosePixelFormat )( HDC, CONST PIXELFORMATDESCRIPTOR * );
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
@@ -2944,9 +2942,6 @@ qboolean QGL_Init() {
 
 	qglPNTrianglesiATI          = 0;    // ATI truform
 	qglPNTrianglesfATI          = 0;    // ATI truform
-
-	qwglGetDeviceGammaRamp3DFX  = NULL;
-	qwglSetDeviceGammaRamp3DFX  = NULL;
 
 	// check logging
 	QGL_EnableLogging( r_logFile->integer );
