@@ -281,34 +281,21 @@ static void GLW_InitExtensions( void ) {
 static qboolean GLW_LoadOpenGL() {
 	qboolean fullscreen;
 
-	// disable the 3Dfx splash screen and set gamma
-	// we do this all the time, but it shouldn't hurt anything
-	// on non-3Dfx stuff
-	putenv( "FX_GLIDE_NO_SPLASH=0" );
+	fullscreen = r_fullscreen->integer;
 
-	// Mesa VooDoo hacks
-	putenv( "MESA_GLX_FX=fullscreen\n" );
-
-	// load the QGL layer
-	if ( QGL_Init() ) {
-		fullscreen = r_fullscreen->integer;
-
-		// create the window and set up the context
-		if ( !GLW_StartDriverAndSetMode( r_mode->integer, fullscreen ) ) {
-			if ( r_mode->integer != 3 ) {
-				if ( !GLW_StartDriverAndSetMode( 3, fullscreen ) ) {
-					goto fail;
-				}
-			} else {
+	// create the window and set up the context
+	if ( !GLW_StartDriverAndSetMode( r_mode->integer, fullscreen ) ) {
+		if ( r_mode->integer != 3 ) {
+			if ( !GLW_StartDriverAndSetMode( 3, fullscreen ) ) {
 				goto fail;
 			}
+		} else {
+			goto fail;
 		}
-
-		return qtrue;
-	} else
-	{
-		ri.Printf( PRINT_ALL, "failed\n" );
 	}
+
+	QGL_Init();
+	return qtrue;
 fail:
 
 	QGL_Shutdown();

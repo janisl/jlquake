@@ -1256,7 +1256,6 @@ void        GLimp_EndFrame( void );
 //
 // function declaration
 //
-void     QGL_EnableLogging( qboolean enable );
 qboolean QGL_Init();
 void     QGL_Shutdown( void );
 

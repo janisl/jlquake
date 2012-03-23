@@ -257,26 +257,21 @@ static qboolean GLW_LoadOpenGL() {
 	// Mesa VooDoo hacks
 	putenv( "MESA_GLX_FX=fullscreen\n" );
 
-	// load the QGL layer
-	if ( QGL_Init() ) {
-		fullscreen = r_fullscreen->integer;
+	fullscreen = r_fullscreen->integer;
 
-		// create the window and set up the context
-		if ( !GLW_StartDriverAndSetMode( r_mode->integer, fullscreen ) ) {
-			if ( r_mode->integer != 3 ) {
-				if ( !GLW_StartDriverAndSetMode( 3, fullscreen ) ) {
-					goto fail;
-				}
-			} else {
+	// create the window and set up the context
+	if ( !GLW_StartDriverAndSetMode( r_mode->integer, fullscreen ) ) {
+		if ( r_mode->integer != 3 ) {
+			if ( !GLW_StartDriverAndSetMode( 3, fullscreen ) ) {
 				goto fail;
 			}
+		} else {
+			goto fail;
 		}
-
-		return qtrue;
-	} else
-	{
-		ri.Printf( PRINT_ALL, "failed\n" );
 	}
+
+	QGL_Init();
+	return qtrue;
 fail:
 
 	QGL_Shutdown();
