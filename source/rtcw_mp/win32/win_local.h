@@ -42,10 +42,3 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <winsock.h>
 #include <wsipx.h>
-
-// window procedure
-LRESULT WINAPI MainWndProc(
-	HWND hWnd,
-	UINT uMsg,
-	WPARAM wParam,
-	LPARAM lParam );

@@ -74,9 +74,6 @@
     <ClCompile Include="qcommon\vm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_eh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

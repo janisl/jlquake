@@ -46,15 +46,3 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <winsock.h>
 #include <wsipx.h>
-
-// window procedure
-LRESULT WINAPI MainWndProc(
-	HWND hWnd,
-	UINT uMsg,
-	WPARAM wParam,
-	LPARAM lParam );
-
-// Gordon: exception handling
-void WinSetExceptionWnd( HWND wnd );
-void WinSetExceptionVersion( const char* version );
-void Com_FrameExt( void );

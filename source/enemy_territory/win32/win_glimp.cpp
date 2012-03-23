@@ -96,6 +96,13 @@ extern bool		cdsFullscreen;
 int gl_NormalFontBase = 0;
 static qboolean fontbase_init = qfalse;
 
+// window procedure
+LRESULT WINAPI MainWndProc(
+	HWND hWnd,
+	UINT uMsg,
+	WPARAM wParam,
+	LPARAM lParam );
+
 /*
 * Find the first occurrence of find in s.
 */
@@ -554,7 +561,7 @@ static qboolean GLW_CreateWindow( int width, int height, int colorbits, qboolean
 		memset( &wc, 0, sizeof( wc ) );
 
 		wc.style         = 0;
-		wc.lpfnWndProc   = (WNDPROC) glw_state.wndproc;
+		wc.lpfnWndProc   = MainWndProc;
 		wc.cbClsExtra    = 0;
 		wc.cbWndExtra    = 0;
 		wc.hInstance     = global_hInstance;
@@ -1265,9 +1272,6 @@ void GLimp_Init( void ) {
 	if ( !GLW_CheckOSVersion() ) {
 		ri.Error( ERR_VID_FATAL, "GLimp_Init() - incorrect operating system\n" );
 	}
-
-	// save off hInstance and wndproc
-	glw_state.wndproc = MainWndProc;
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();

@@ -107,7 +107,6 @@
     <ClCompile Include="server\sv_snapshot.cpp" />
     <ClCompile Include="server\sv_world.cpp" />
     <ClCompile Include="qcommon\vm.cpp" />
-    <ClCompile Include="win32\win_eh.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>

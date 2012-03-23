@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 typedef struct
 {
-	WNDPROC wndproc;
-
 	HINSTANCE hinstOpenGL;  // HINSTANCE for the OpenGL library
 
 	qboolean allowdisplaydepthchange;

@@ -50,8 +50,7 @@ HDC		maindc;
 //static 
 HGLRC	baseRC;
 
-//static 
-bool		s_alttab_disabled;
+static bool		s_alttab_disabled;
 
 //static 
 int		desktopBitsPixel;
@@ -97,7 +96,6 @@ int		wglErrors;
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	WIN_DisableAltTab
@@ -165,7 +163,8 @@ static void AppActivate(bool fActive, bool minimize)
 //
 //==========================================================================
 
-static LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//static 
+LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
@@ -260,6 +259,7 @@ static LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
+#if 0
 //==========================================================================
 //
 //	GLW_ChoosePFD

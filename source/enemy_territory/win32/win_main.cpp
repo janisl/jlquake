@@ -594,10 +594,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		return 0;
 	}
 
-#ifdef EXCEPTION_HANDLER
-	WinSetExceptionVersion( Q3_VERSION );
-#endif
-
 	global_hInstance = hInstance;
 	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
@@ -655,7 +651,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		// make sure mouse and joystick are only called once a frame
 		IN_Frame();
 
-//		Com_FrameExt();
 		Com_Frame();
 
 		endTime = Sys_Milliseconds();
