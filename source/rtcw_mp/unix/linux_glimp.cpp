@@ -79,16 +79,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #define WINDOW_CLASS_NAME   "Return to Castle Wolfenstein"
 
-typedef enum
-{
-	RSERR_OK,
-
-	RSERR_INVALID_FULLSCREEN,
-	RSERR_INVALID_MODE,
-
-	RSERR_UNKNOWN
-} rserr_t;
-
 glwstate_t glw_state;
 
 static int scrnum;
@@ -929,7 +919,7 @@ void GLimp_WakeRenderer( void *data ) {
 #else
 
 void GLimp_RenderThreadWrapper( void *stub ) {}
-qboolean GLimp_SpawnRenderThread( void ( *function )( void ) ) {
+bool GLimp_SpawnRenderThread( void ( *function )( void ) ) {
 	return qfalse;
 }
 void *GLimp_RendererSleep( void ) {
