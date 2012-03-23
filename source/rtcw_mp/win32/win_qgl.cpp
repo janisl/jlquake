@@ -38,7 +38,10 @@ If you have questions concerning this license or the applicable additional terms
 */
 #include <float.h>
 #include "../renderer/tr_local.h"
-#include "glw_win.h"
+
+FILE *log_fp;
+
+HINSTANCE hinstOpenGL;  // HINSTANCE for the OpenGL library
 
 void QGL_EnableLogging( qboolean enable );
 
@@ -879,37 +882,37 @@ static const char * TypeToString( GLenum t ) {
 }
 
 static void APIENTRY logAccum( GLenum op, GLfloat value ) {
-	fprintf( glw_state.log_fp, "glAccum\n" );
+	fprintf( log_fp, "glAccum\n" );
 	dllAccum( op, value );
 }
 
 static void APIENTRY logAlphaFunc( GLenum func, GLclampf ref ) {
-	fprintf( glw_state.log_fp, "glAlphaFunc( 0x%x, %f )\n", func, ref );
+	fprintf( log_fp, "glAlphaFunc( 0x%x, %f )\n", func, ref );
 	dllAlphaFunc( func, ref );
 }
 
 static GLboolean APIENTRY logAreTexturesResident( GLsizei n, const GLuint *textures, GLboolean *residences ) {
-	fprintf( glw_state.log_fp, "glAreTexturesResident\n" );
+	fprintf( log_fp, "glAreTexturesResident\n" );
 	return dllAreTexturesResident( n, textures, residences );
 }
 
 static void APIENTRY logArrayElement( GLint i ) {
-	fprintf( glw_state.log_fp, "glArrayElement\n" );
+	fprintf( log_fp, "glArrayElement\n" );
 	dllArrayElement( i );
 }
 
 static void APIENTRY logBegin( GLenum mode ) {
-	fprintf( glw_state.log_fp, "glBegin( %s )\n", PrimToString( mode ) );
+	fprintf( log_fp, "glBegin( %s )\n", PrimToString( mode ) );
 	dllBegin( mode );
 }
 
 static void APIENTRY logBindTexture( GLenum target, GLuint texture ) {
-	fprintf( glw_state.log_fp, "glBindTexture( 0x%x, %u )\n", target, texture );
+	fprintf( log_fp, "glBindTexture( 0x%x, %u )\n", target, texture );
 	dllBindTexture( target, texture );
 }
 
 static void APIENTRY logBitmap( GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte *bitmap ) {
-	fprintf( glw_state.log_fp, "glBitmap\n" );
+	fprintf( log_fp, "glBitmap\n" );
 	dllBitmap( width, height, xorig, yorig, xmove, ymove, bitmap );
 }
 
@@ -947,131 +950,131 @@ static void APIENTRY logBlendFunc( GLenum sfactor, GLenum dfactor ) {
 	BlendToName( sf, sfactor );
 	BlendToName( df, dfactor );
 
-	fprintf( glw_state.log_fp, "glBlendFunc( %s, %s )\n", sf, df );
+	fprintf( log_fp, "glBlendFunc( %s, %s )\n", sf, df );
 	dllBlendFunc( sfactor, dfactor );
 }
 
 static void APIENTRY logCallList( GLuint list ) {
-	fprintf( glw_state.log_fp, "glCallList( %u )\n", list );
+	fprintf( log_fp, "glCallList( %u )\n", list );
 	dllCallList( list );
 }
 
 static void APIENTRY logCallLists( GLsizei n, GLenum type, const void *lists ) {
-	fprintf( glw_state.log_fp, "glCallLists\n" );
+	fprintf( log_fp, "glCallLists\n" );
 	dllCallLists( n, type, lists );
 }
 
 static void APIENTRY logClear( GLbitfield mask ) {
-	fprintf( glw_state.log_fp, "glClear( 0x%x = ", mask );
+	fprintf( log_fp, "glClear( 0x%x = ", mask );
 
 	if ( mask & GL_COLOR_BUFFER_BIT ) {
-		fprintf( glw_state.log_fp, "GL_COLOR_BUFFER_BIT " );
+		fprintf( log_fp, "GL_COLOR_BUFFER_BIT " );
 	}
 	if ( mask & GL_DEPTH_BUFFER_BIT ) {
-		fprintf( glw_state.log_fp, "GL_DEPTH_BUFFER_BIT " );
+		fprintf( log_fp, "GL_DEPTH_BUFFER_BIT " );
 	}
 	if ( mask & GL_STENCIL_BUFFER_BIT ) {
-		fprintf( glw_state.log_fp, "GL_STENCIL_BUFFER_BIT " );
+		fprintf( log_fp, "GL_STENCIL_BUFFER_BIT " );
 	}
 	if ( mask & GL_ACCUM_BUFFER_BIT ) {
-		fprintf( glw_state.log_fp, "GL_ACCUM_BUFFER_BIT " );
+		fprintf( log_fp, "GL_ACCUM_BUFFER_BIT " );
 	}
 
-	fprintf( glw_state.log_fp, ")\n" );
+	fprintf( log_fp, ")\n" );
 	dllClear( mask );
 }
 
 static void APIENTRY logClearAccum( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha ) {
-	fprintf( glw_state.log_fp, "glClearAccum\n" );
+	fprintf( log_fp, "glClearAccum\n" );
 	dllClearAccum( red, green, blue, alpha );
 }
 
 static void APIENTRY logClearColor( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha ) {
-	fprintf( glw_state.log_fp, "glClearColor\n" );
+	fprintf( log_fp, "glClearColor\n" );
 	dllClearColor( red, green, blue, alpha );
 }
 
 static void APIENTRY logClearDepth( GLclampd depth ) {
-	fprintf( glw_state.log_fp, "glClearDepth( %f )\n", ( float ) depth );
+	fprintf( log_fp, "glClearDepth( %f )\n", ( float ) depth );
 	dllClearDepth( depth );
 }
 
 static void APIENTRY logClearIndex( GLfloat c ) {
-	fprintf( glw_state.log_fp, "glClearIndex\n" );
+	fprintf( log_fp, "glClearIndex\n" );
 	dllClearIndex( c );
 }
 
 static void APIENTRY logClearStencil( GLint s ) {
-	fprintf( glw_state.log_fp, "glClearStencil( %d )\n", s );
+	fprintf( log_fp, "glClearStencil( %d )\n", s );
 	dllClearStencil( s );
 }
 
 static void APIENTRY logClipPlane( GLenum plane, const GLdouble *equation ) {
-	fprintf( glw_state.log_fp, "glClipPlane\n" );
+	fprintf( log_fp, "glClipPlane\n" );
 	dllClipPlane( plane, equation );
 }
 
 static void APIENTRY logColor3b( GLbyte red, GLbyte green, GLbyte blue ) {
-	fprintf( glw_state.log_fp, "glColor3b\n" );
+	fprintf( log_fp, "glColor3b\n" );
 	dllColor3b( red, green, blue );
 }
 
 static void APIENTRY logColor3bv( const GLbyte *v ) {
-	fprintf( glw_state.log_fp, "glColor3bv\n" );
+	fprintf( log_fp, "glColor3bv\n" );
 	dllColor3bv( v );
 }
 
 static void APIENTRY logColor3d( GLdouble red, GLdouble green, GLdouble blue ) {
-	fprintf( glw_state.log_fp, "glColor3d\n" );
+	fprintf( log_fp, "glColor3d\n" );
 	dllColor3d( red, green, blue );
 }
 
 static void APIENTRY logColor3dv( const GLdouble *v ) {
-	fprintf( glw_state.log_fp, "glColor3dv\n" );
+	fprintf( log_fp, "glColor3dv\n" );
 	dllColor3dv( v );
 }
 
 static void APIENTRY logColor3f( GLfloat red, GLfloat green, GLfloat blue ) {
-	fprintf( glw_state.log_fp, "glColor3f\n" );
+	fprintf( log_fp, "glColor3f\n" );
 	dllColor3f( red, green, blue );
 }
 
 static void APIENTRY logColor3fv( const GLfloat *v ) {
-	fprintf( glw_state.log_fp, "glColor3fv\n" );
+	fprintf( log_fp, "glColor3fv\n" );
 	dllColor3fv( v );
 }
 
 static void APIENTRY logColor3i( GLint red, GLint green, GLint blue ) {
-	fprintf( glw_state.log_fp, "glColor3i\n" );
+	fprintf( log_fp, "glColor3i\n" );
 	dllColor3i( red, green, blue );
 }
 
 static void APIENTRY logColor3iv( const GLint *v ) {
-	fprintf( glw_state.log_fp, "glColor3iv\n" );
+	fprintf( log_fp, "glColor3iv\n" );
 	dllColor3iv( v );
 }
 
 static void APIENTRY logColor3s( GLshort red, GLshort green, GLshort blue ) {
-	fprintf( glw_state.log_fp, "glColor3s\n" );
+	fprintf( log_fp, "glColor3s\n" );
 	dllColor3s( red, green, blue );
 }
 
 static void APIENTRY logColor3sv( const GLshort *v ) {
-	fprintf( glw_state.log_fp, "glColor3sv\n" );
+	fprintf( log_fp, "glColor3sv\n" );
 	dllColor3sv( v );
 }
 
 static void APIENTRY logColor3ub( GLubyte red, GLubyte green, GLubyte blue ) {
-	fprintf( glw_state.log_fp, "glColor3ub\n" );
+	fprintf( log_fp, "glColor3ub\n" );
 	dllColor3ub( red, green, blue );
 }
 
 static void APIENTRY logColor3ubv( const GLubyte *v ) {
-	fprintf( glw_state.log_fp, "glColor3ubv\n" );
+	fprintf( log_fp, "glColor3ubv\n" );
 	dllColor3ubv( v );
 }
 
-#define SIG( x ) fprintf( glw_state.log_fp, x "\n" )
+#define SIG( x ) fprintf( log_fp, x "\n" )
 
 static void APIENTRY logColor3ui( GLuint red, GLuint green, GLuint blue ) {
 	SIG( "glColor3ui" );
@@ -1112,11 +1115,11 @@ static void APIENTRY logColor4dv( const GLdouble *v ) {
 	dllColor4dv( v );
 }
 static void APIENTRY logColor4f( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha ) {
-	fprintf( glw_state.log_fp, "glColor4f( %f,%f,%f,%f )\n", red, green, blue, alpha );
+	fprintf( log_fp, "glColor4f( %f,%f,%f,%f )\n", red, green, blue, alpha );
 	dllColor4f( red, green, blue, alpha );
 }
 static void APIENTRY logColor4fv( const GLfloat *v ) {
-	fprintf( glw_state.log_fp, "glColor4fv( %f,%f,%f,%f )\n", v[0], v[1], v[2], v[3] );
+	fprintf( log_fp, "glColor4fv( %f,%f,%f,%f )\n", v[0], v[1], v[2], v[3] );
 	dllColor4fv( v );
 }
 static void APIENTRY logColor4i( GLint red, GLint green, GLint blue, GLint alpha ) {
@@ -1169,7 +1172,7 @@ static void APIENTRY logColorMaterial( GLenum face, GLenum mode ) {
 }
 
 static void APIENTRY logColorPointer( GLint size, GLenum type, GLsizei stride, const void *pointer ) {
-	fprintf( glw_state.log_fp, "glColorPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
+	fprintf( log_fp, "glColorPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
 	dllColorPointer( size, type, stride, pointer );
 }
 
@@ -1199,7 +1202,7 @@ static void APIENTRY logCopyTexSubImage2D( GLenum target, GLint level, GLint xof
 }
 
 static void APIENTRY logCullFace( GLenum mode ) {
-	fprintf( glw_state.log_fp, "glCullFace( %s )\n", ( mode == GL_FRONT ) ? "GL_FRONT" : "GL_BACK" );
+	fprintf( log_fp, "glCullFace( %s )\n", ( mode == GL_FRONT ) ? "GL_FRONT" : "GL_BACK" );
 	dllCullFace( mode );
 }
 
@@ -1214,27 +1217,27 @@ static void APIENTRY logDeleteTextures( GLsizei n, const GLuint *textures ) {
 }
 
 static void APIENTRY logDepthFunc( GLenum func ) {
-	fprintf( glw_state.log_fp, "glDepthFunc( %s )\n", FuncToString( func ) );
+	fprintf( log_fp, "glDepthFunc( %s )\n", FuncToString( func ) );
 	dllDepthFunc( func );
 }
 
 static void APIENTRY logDepthMask( GLboolean flag ) {
-	fprintf( glw_state.log_fp, "glDepthMask( %s )\n", BooleanToString( flag ) );
+	fprintf( log_fp, "glDepthMask( %s )\n", BooleanToString( flag ) );
 	dllDepthMask( flag );
 }
 
 static void APIENTRY logDepthRange( GLclampd zNear, GLclampd zFar ) {
-	fprintf( glw_state.log_fp, "glDepthRange( %f, %f )\n", ( float ) zNear, ( float ) zFar );
+	fprintf( log_fp, "glDepthRange( %f, %f )\n", ( float ) zNear, ( float ) zFar );
 	dllDepthRange( zNear, zFar );
 }
 
 static void APIENTRY logDisable( GLenum cap ) {
-	fprintf( glw_state.log_fp, "glDisable( %s )\n", CapToString( cap ) );
+	fprintf( log_fp, "glDisable( %s )\n", CapToString( cap ) );
 	dllDisable( cap );
 }
 
 static void APIENTRY logDisableClientState( GLenum array ) {
-	fprintf( glw_state.log_fp, "glDisableClientState( %s )\n", CapToString( array ) );
+	fprintf( log_fp, "glDisableClientState( %s )\n", CapToString( array ) );
 	dllDisableClientState( array );
 }
 
@@ -1249,7 +1252,7 @@ static void APIENTRY logDrawBuffer( GLenum mode ) {
 }
 
 static void APIENTRY logDrawElements( GLenum mode, GLsizei count, GLenum type, const void *indices ) {
-	fprintf( glw_state.log_fp, "glDrawElements( %s, %d, %s, MEM )\n", PrimToString( mode ), count, TypeToString( type ) );
+	fprintf( log_fp, "glDrawElements( %s, %d, %s, MEM )\n", PrimToString( mode ), count, TypeToString( type ) );
 	dllDrawElements( mode, count, type, indices );
 }
 
@@ -1274,12 +1277,12 @@ static void APIENTRY logEdgeFlagv( const GLboolean *flag ) {
 }
 
 static void APIENTRY logEnable( GLenum cap ) {
-	fprintf( glw_state.log_fp, "glEnable( %s )\n", CapToString( cap ) );
+	fprintf( log_fp, "glEnable( %s )\n", CapToString( cap ) );
 	dllEnable( cap );
 }
 
 static void APIENTRY logEnableClientState( GLenum array ) {
-	fprintf( glw_state.log_fp, "glEnableClientState( %s )\n", CapToString( array ) );
+	fprintf( log_fp, "glEnableClientState( %s )\n", CapToString( array ) );
 	dllEnableClientState( array );
 }
 
@@ -1546,7 +1549,7 @@ static void APIENTRY logGetTexParameteriv( GLenum target, GLenum pname, GLint *p
 }
 
 static void APIENTRY logHint( GLenum target, GLenum mode ) {
-	fprintf( glw_state.log_fp, "glHint( 0x%x, 0x%x )\n", target, mode );
+	fprintf( log_fp, "glHint( 0x%x, 0x%x )\n", target, mode );
 	dllHint( target, mode );
 }
 
@@ -1893,7 +1896,7 @@ static void APIENTRY logPointSize( GLfloat size ) {
 }
 
 static void APIENTRY logPolygonMode( GLenum face, GLenum mode ) {
-	fprintf( glw_state.log_fp, "glPolygonMode( 0x%x, 0x%x )\n", face, mode );
+	fprintf( log_fp, "glPolygonMode( 0x%x, 0x%x )\n", face, mode );
 	dllPolygonMode( face, mode );
 }
 
@@ -2117,7 +2120,7 @@ static void APIENTRY logScalef( GLfloat x, GLfloat y, GLfloat z ) {
 }
 
 static void APIENTRY logScissor( GLint x, GLint y, GLsizei width, GLsizei height ) {
-	fprintf( glw_state.log_fp, "glScissor( %d, %d, %d, %d )\n", x, y, width, height );
+	fprintf( log_fp, "glScissor( %d, %d, %d, %d )\n", x, y, width, height );
 	dllScissor( x, y, width, height );
 }
 
@@ -2278,12 +2281,12 @@ static void APIENTRY logTexCoord4sv( const GLshort *v ) {
 	dllTexCoord4sv( v );
 }
 static void APIENTRY logTexCoordPointer( GLint size, GLenum type, GLsizei stride, const void *pointer ) {
-	fprintf( glw_state.log_fp, "glTexCoordPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
+	fprintf( log_fp, "glTexCoordPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
 	dllTexCoordPointer( size, type, stride, pointer );
 }
 
 static void APIENTRY logTexEnvf( GLenum target, GLenum pname, GLfloat param ) {
-	fprintf( glw_state.log_fp, "glTexEnvf( 0x%x, 0x%x, %f )\n", target, pname, param );
+	fprintf( log_fp, "glTexEnvf( 0x%x, 0x%x, %f )\n", target, pname, param );
 	dllTexEnvf( target, pname, param );
 }
 
@@ -2293,7 +2296,7 @@ static void APIENTRY logTexEnvfv( GLenum target, GLenum pname, const GLfloat *pa
 }
 
 static void APIENTRY logTexEnvi( GLenum target, GLenum pname, GLint param ) {
-	fprintf( glw_state.log_fp, "glTexEnvi( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
+	fprintf( log_fp, "glTexEnvi( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
 	dllTexEnvi( target, pname, param );
 }
 static void APIENTRY logTexEnviv( GLenum target, GLenum pname, const GLint *params ) {
@@ -2337,7 +2340,7 @@ static void APIENTRY logTexImage2D( GLenum target, GLint level, GLint internalfo
 }
 
 static void APIENTRY logTexParameterf( GLenum target, GLenum pname, GLfloat param ) {
-	fprintf( glw_state.log_fp, "glTexParameterf( 0x%x, 0x%x, %f )\n", target, pname, param );
+	fprintf( log_fp, "glTexParameterf( 0x%x, 0x%x, %f )\n", target, pname, param );
 	dllTexParameterf( target, pname, param );
 }
 
@@ -2346,7 +2349,7 @@ static void APIENTRY logTexParameterfv( GLenum target, GLenum pname, const GLflo
 	dllTexParameterfv( target, pname, params );
 }
 static void APIENTRY logTexParameteri( GLenum target, GLenum pname, GLint param ) {
-	fprintf( glw_state.log_fp, "glTexParameteri( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
+	fprintf( log_fp, "glTexParameteri( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
 	dllTexParameteri( target, pname, param );
 }
 static void APIENTRY logTexParameteriv( GLenum target, GLenum pname, const GLint *params ) {
@@ -2469,11 +2472,11 @@ static void APIENTRY logVertex4sv( const GLshort *v ) {
 	dllVertex4sv( v );
 }
 static void APIENTRY logVertexPointer( GLint size, GLenum type, GLsizei stride, const void *pointer ) {
-	fprintf( glw_state.log_fp, "glVertexPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
+	fprintf( log_fp, "glVertexPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
 	dllVertexPointer( size, type, stride, pointer );
 }
 static void APIENTRY logViewport( GLint x, GLint y, GLsizei width, GLsizei height ) {
-	fprintf( glw_state.log_fp, "glViewport( %d, %d, %d, %d )\n", x, y, width, height );
+	fprintf( log_fp, "glViewport( %d, %d, %d, %d )\n", x, y, width, height );
 	dllViewport( x, y, width, height );
 }
 
@@ -2486,12 +2489,12 @@ static void APIENTRY logViewport( GLint x, GLint y, GLsizei width, GLsizei heigh
 void QGL_Shutdown( void ) {
 	ri.Printf( PRINT_ALL, "...shutting down QGL\n" );
 
-	if ( glw_state.hinstOpenGL ) {
+	if ( hinstOpenGL ) {
 		ri.Printf( PRINT_ALL, "...unloading OpenGL DLL\n" );
-		FreeLibrary( glw_state.hinstOpenGL );
+		FreeLibrary( hinstOpenGL );
 	}
 
-	glw_state.hinstOpenGL = NULL;
+	hinstOpenGL = NULL;
 
 	qglAccum                     = NULL;
 	qglAlphaFunc                 = NULL;
@@ -2857,7 +2860,7 @@ void QGL_Shutdown( void ) {
 #define GR_NUM_BOARDS 0x0f
 
 #   pragma warning (disable : 4113 4133 4047 )
-#   define GPA( a ) GetProcAddress( glw_state.hinstOpenGL, a )
+#   define GPA( a ) GetProcAddress( hinstOpenGL, a )
 
 /*
 ** QGL_Init
@@ -2869,11 +2872,11 @@ void QGL_Shutdown( void ) {
 ** might be.
 */
 qboolean QGL_Init() {
-	assert( glw_state.hinstOpenGL == 0 );
+	assert( hinstOpenGL == 0 );
 
 	ri.Printf( PRINT_ALL, "...initializing QGL\n" );
 
-	if ( ( glw_state.hinstOpenGL = LoadLibrary("opengl32") ) == 0 ) {
+	if ( ( hinstOpenGL = LoadLibrary("opengl32") ) == 0 ) {
 		ri.Printf( PRINT_ALL, "failed\n" );
 		return qfalse;
 	}
@@ -2968,7 +2971,7 @@ void QGL_EnableLogging( qboolean enable ) {
 	isEnabled = enable;
 
 	if ( enable ) {
-		if ( !glw_state.log_fp ) {
+		if ( !log_fp ) {
 			struct tm *newtime;
 			time_t aclock;
 			char buffer[1024];
@@ -2981,9 +2984,9 @@ void QGL_EnableLogging( qboolean enable ) {
 
 			basedir = ri.Cvar_Get( "fs_basepath", "", 0 );
 			String::Sprintf( buffer, sizeof( buffer ), "%s/gl.log", basedir->string );
-			glw_state.log_fp = fopen( buffer, "wt" );
+			log_fp = fopen( buffer, "wt" );
 
-			fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
+			fprintf( log_fp, "%s\n", asctime( newtime ) );
 		}
 
 		qglAccum                     = logAccum;
@@ -3324,10 +3327,10 @@ void QGL_EnableLogging( qboolean enable ) {
 		qglViewport                  =  logViewport                  ;
 	} else
 	{
-		if ( glw_state.log_fp ) {
-			fprintf( glw_state.log_fp, "*** CLOSING LOG ***\n" );
-			fclose( glw_state.log_fp );
-			glw_state.log_fp = NULL;
+		if ( log_fp ) {
+			fprintf( log_fp, "*** CLOSING LOG ***\n" );
+			fclose( log_fp );
+			log_fp = NULL;
 		}
 		qglAccum                     = dllAccum;
 		qglAlphaFunc                 = dllAlphaFunc;

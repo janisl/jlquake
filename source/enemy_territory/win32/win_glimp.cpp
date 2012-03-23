@@ -45,7 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/tr_local.h"
 #include "../qcommon/qcommon.h"
 #include "resource.h"
-#include "glw_win.h"
 #include "win_local.h"
 
 extern void WG_CheckHardwareGamma( void );
@@ -83,8 +82,6 @@ void     QGL_Shutdown( void );
 //
 // variable declarations
 //
-glwstate_t glw_state;
-
 extern HDC		maindc;
 extern HGLRC	baseRC;
 extern int		desktopBitsPixel;
@@ -92,6 +89,8 @@ extern int		desktopWidth;
 extern int		desktopHeight;
 extern bool		pixelFormatSet;
 extern bool		cdsFullscreen;
+
+extern FILE *log_fp;
 
 int gl_NormalFontBase = 0;
 static qboolean fontbase_init = qfalse;
@@ -772,14 +771,9 @@ static rserr_t GLW_SetMode( int mode,
 
 		// try to change color depth if possible
 		if ( colorbits != 0 ) {
-			if ( glw_state.allowdisplaydepthchange ) {
-				dm.dmBitsPerPel = colorbits;
-				dm.dmFields |= DM_BITSPERPEL;
-				ri.Printf( PRINT_ALL, "...using colorsbits of %d\n", colorbits );
-			} else
-			{
-				ri.Printf( PRINT_ALL, "WARNING:...changing depth not supported on Win95 < pre-OSR 2.x\n" );
-			}
+			dm.dmBitsPerPel = colorbits;
+			dm.dmFields |= DM_BITSPERPEL;
+			ri.Printf( PRINT_ALL, "...using colorsbits of %d\n", colorbits );
 		} else
 		{
 			ri.Printf( PRINT_ALL, "...using desktop display depth of %d\n", desktopBitsPixel );
@@ -1136,39 +1130,6 @@ static void GLW_DeleteDefaultLists( void ) {
 }
 
 /*
-** GLW_CheckOSVersion
-*/
-static qboolean GLW_CheckOSVersion( void ) {
-#define OSR2_BUILD_NUMBER 1111
-
-	OSVERSIONINFO vinfo;
-
-	vinfo.dwOSVersionInfoSize = sizeof( vinfo );
-
-	glw_state.allowdisplaydepthchange = qfalse;
-
-	if ( GetVersionEx( &vinfo ) ) {
-		if ( vinfo.dwMajorVersion > 4 ) {
-			glw_state.allowdisplaydepthchange = qtrue;
-		} else if ( vinfo.dwMajorVersion == 4 )   {
-			if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT ) {
-				glw_state.allowdisplaydepthchange = qtrue;
-			} else if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )   {
-				if ( LOWORD( vinfo.dwBuildNumber ) >= OSR2_BUILD_NUMBER ) {
-					glw_state.allowdisplaydepthchange = qtrue;
-				}
-			}
-		}
-	} else
-	{
-		ri.Printf( PRINT_ALL, "GLW_CheckOSVersion() - GetVersionEx failed\n" );
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
 ** GLW_LoadOpenGL
 **
 ** GLimp_win.c internal function that attempts to load and use
@@ -1265,13 +1226,6 @@ void GLimp_Init( void ) {
 	Cvar  *cv;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
-
-	//
-	// check OS version to see if we can do fullscreen display changes
-	//
-	if ( !GLW_CheckOSVersion() ) {
-		ri.Error( ERR_VID_FATAL, "GLimp_Init() - incorrect operating system\n" );
-	}
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();
@@ -1387,9 +1341,9 @@ void GLimp_Shutdown( void ) {
 	}
 
 	// close the r_logFile
-	if ( glw_state.log_fp ) {
-		fclose( glw_state.log_fp );
-		glw_state.log_fp = 0;
+	if ( log_fp ) {
+		fclose( log_fp );
+		log_fp = 0;
 	}
 
 	// reset display settings
@@ -1410,8 +1364,8 @@ void GLimp_Shutdown( void ) {
 ** GLimp_LogComment
 */
 void GLimp_LogComment( char *comment ) {
-	if ( glw_state.log_fp ) {
-		fprintf( glw_state.log_fp, "%s", comment );
+	if ( log_fp ) {
+		fprintf( log_fp, "%s", comment );
 	}
 }
 
