@@ -1271,6 +1271,11 @@ void GLimp_Shutdown()
 	Com_Memset(&glState, 0, sizeof(glState));
 }
 
+const char* GLimp_GetSystemExtensionsString()
+{
+	return "";
+}
+
 //==========================================================================
 //
 //	GLimp_GetProcAddress
