@@ -36,13 +36,6 @@ static qboolean GLW_StartDriverAndSetMode( int mode,
 static void GLW_InitExtensions( void ) {
 
 //----(SA)	moved these up
-	glConfig.textureCompression = TC_NONE;
-	glConfig.textureEnvAddAvailable = qfalse;
-	qglMultiTexCoord2fARB = NULL;
-	qglActiveTextureARB = NULL;
-	qglClientActiveTextureARB = NULL;
-	qglLockArraysEXT = NULL;
-	qglUnlockArraysEXT = NULL;
 	qglPNTrianglesiATI = NULL;
 	qglPNTrianglesfATI = NULL;
 	glConfig.anisotropicAvailable = qfalse;
@@ -54,115 +47,6 @@ static void GLW_InitExtensions( void ) {
 		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
 		return;
 	}
-
-	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
-
-	// GL_S3_s3tc
-	// RF, check for GL_EXT_texture_compression_s3tc
-	if ( strstr( glConfig.extensions_string, "GL_EXT_texture_compression_s3tc" ) ) {
-		if ( r_ext_compressed_textures->integer ) {
-			glConfig.textureCompression = TC_EXT_COMP_S3TC;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_compression_s3tc\n" );
-		} else
-		{
-			glConfig.textureCompression = TC_NONE;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_compression_s3tc\n" );
-		}
-	}
-	/* RF, disabled this section, since this method produces very ugly results on nvidia hardware
-	else if ( strstr( glConfig.extensions_string, "GL_S3_s3tc" ) )
-	{
-		if ( r_ext_compressed_textures->integer )
-		{
-			glConfig.textureCompression = TC_S3TC;
-			ri.Printf( PRINT_ALL, "...using GL_S3_s3tc\n" );
-		}
-		else
-		{
-			glConfig.textureCompression = TC_NONE;
-			ri.Printf( PRINT_ALL, "...ignoring GL_S3_s3tc\n" );
-		}
-	}
-	*/
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_texture_compression_s3tc not found\n" );
-	}
-
-	// GL_EXT_texture_env_add
-	if ( strstr( glConfig.extensions_string, "EXT_texture_env_add" ) ) {
-		if ( r_ext_texture_env_add->integer ) {
-			glConfig.textureEnvAddAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_env_add\n" );
-		} else
-		{
-			glConfig.textureEnvAddAvailable = qfalse;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_env_add\n" );
-		}
-	} else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
-	}
-
-	// WGL_EXT_swap_control
-	qwglSwapIntervalEXT = ( BOOL ( WINAPI * )(int) )GLimp_GetProcAddress( "wglSwapIntervalEXT" );
-	if ( qwglSwapIntervalEXT ) {
-		ri.Printf( PRINT_ALL, "...using WGL_EXT_swap_control\n" );
-		r_swapInterval->modified = qtrue;   // force a set next frame
-	} else
-	{
-		ri.Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
-	}
-
-	// GL_ARB_multitexture
-	if ( strstr( glConfig.extensions_string, "GL_ARB_multitexture" )  ) {
-		if ( r_ext_multitexture->integer ) {
-			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) GLimp_GetProcAddress( "glMultiTexCoord2fARB" );
-			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) GLimp_GetProcAddress( "glActiveTextureARB" );
-			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) GLimp_GetProcAddress( "glClientActiveTextureARB" );
-
-			if ( qglActiveTextureARB ) {
-				qglGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &glConfig.maxActiveTextures );
-
-				if ( glConfig.maxActiveTextures > 1 ) {
-					ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
-				} else
-				{
-					qglMultiTexCoord2fARB = NULL;
-					qglActiveTextureARB = NULL;
-					qglClientActiveTextureARB = NULL;
-					ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
-				}
-			}
-		} else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_multitexture\n" );
-		}
-	} else
-	{
-		ri.Printf( PRINT_ALL, "...GL_ARB_multitexture not found\n" );
-	}
-
-	// GL_EXT_compiled_vertex_array
-	if ( strstr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) ) {
-		if ( r_ext_compiled_vertex_array->integer ) {
-			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) )GLimp_GetProcAddress( "glLockArraysEXT" );
-			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) )GLimp_GetProcAddress( "glUnlockArraysEXT" );
-			if ( !qglLockArraysEXT || !qglUnlockArraysEXT ) {
-				ri.Error( ERR_FATAL, "bad getprocaddress" );
-			}
-		} else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_compiled_vertex_array\n" );
-		}
-	} else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
-	}
-
-//----(SA)	added
-
 
 	// GL_ATI_pn_triangles - ATI PN-Triangles
 	if ( strstr( glConfig.extensions_string, "GL_ATI_pn_triangles" ) ) {

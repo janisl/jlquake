@@ -609,7 +609,6 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 	glViewport(x, y, width, height);
 }
 
-#if 0
 //==========================================================================
 //
 //	CheckExtension
@@ -629,7 +628,6 @@ static bool CheckExtension(const char* Extension)
 	}
 	return false;
 }
-#endif
 
 //==========================================================================
 //
@@ -693,12 +691,24 @@ void QGL_Init()
 	qglXSwapIntervalSGI = NULL;
 #endif
 
-#if 0
 	Log::write("Initializing OpenGL extensions\n");
 
 	// GL_S3_s3tc
 	glConfig.textureCompression = TC_NONE;
-	if (CheckExtension("GL_S3_s3tc"))
+	if (CheckExtension("GL_EXT_texture_compression_s3tc"))
+	{
+		if (r_ext_compressed_textures->integer)
+		{
+			glConfig.textureCompression = TC_EXT_COMP_S3TC;
+			common->Printf("...using GL_EXT_texture_compression_s3tc\n");
+		}
+		else
+		{
+			glConfig.textureCompression = TC_NONE;
+			common->Printf("...ignoring GL_EXT_texture_compression_s3tc\n");
+		}
+	}
+	else if (CheckExtension("GL_S3_s3tc"))
 	{
 		if (r_ext_compressed_textures->integer)
 		{
@@ -844,7 +854,6 @@ void QGL_Init()
 	{
 		Log::write("...GL_EXT_point_parameters not found\n");
 	}
-#endif
 
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
