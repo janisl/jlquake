@@ -23,8 +23,11 @@
 #include <X11/extensions/Xxf86dga.h>
 #include <GL/glx.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 // MACROS ------------------------------------------------------------------
+
+#define WOLF_SMP
 
 //	Minimum extension version required
 #define GAMMA_MINMAJOR 2
@@ -45,6 +48,9 @@
 Display*				dpy = NULL;
 Window					win;
 
+Atom wm_protocols;
+Atom wm_delete_window;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int						scrnum;
@@ -60,15 +66,25 @@ static int						vidmode_MinorVersion = 0;
 // gamma value of the X display before we start playing with it
 static XF86VidModeGamma			vidmode_InitialGamma;
 
+static bool fontbase_init = false;
+
+#ifdef WOLF_SMP
+static sem_t renderCommandsEvent;
+static sem_t renderCompletedEvent;
+static sem_t renderActiveEvent;
+#else
 static pthread_mutex_t			smpMutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_cond_t			renderCommandsEvent = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t			renderCompletedEvent = PTHREAD_COND_INITIALIZER;
+#endif
 
 static void (*glimpRenderThread)();
 
 static volatile void*			smpData = NULL;
+#ifndef WOLF_SMP
 static volatile bool			smpDataReady;
+#endif
 
 // CODE --------------------------------------------------------------------
 
@@ -92,6 +108,60 @@ static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
 	Log::write("  Minor opcode of failed request: %d\n", ev->minor_code);  
 	Log::write("  Serial number of failed request: %d\n", ev->serial);
 	return 0;
+}
+
+static void GLW_GenDefaultLists()
+{
+	// keep going, we'll probably just leak some stuff
+	if (fontbase_init)
+	{
+		common->DPrintf("ERROR: GLW_GenDefaultLists: font base is already marked initialized\n");
+	}
+
+	XFontStruct* fontInfo = XLoadQueryFont(dpy, "-*-helvetica-medium-r-normal-*-12-*-*-*-p-*-*-*");
+	if (fontInfo == NULL)
+	{
+		// try to load other fonts
+		fontInfo = XLoadQueryFont(dpy, "-*-helvetica-*-*-*-*-*-*-*-*-*-*-*-*");
+
+		// any font will do !
+		if (fontInfo == NULL)
+		{
+			fontInfo = XLoadQueryFont(dpy, "-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+		}
+
+		if (fontInfo == NULL)
+		{
+			common->Printf("ERROR: couldn't create font (XLoadQueryFont)\n");
+			return;
+		}
+	}
+
+	unsigned int first = fontInfo->min_char_or_byte2;
+	unsigned int last = fontInfo->max_char_or_byte2;
+	unsigned int firstrow = fontInfo->min_byte1;
+	unsigned int lastrow = fontInfo->max_byte1;
+	//	How many chars in the charset
+	int maxchars = 256 * lastrow + last;
+	gl_NormalFontBase = glGenLists(maxchars + 1);
+	if (gl_NormalFontBase == 0)
+	{
+		common->Printf("ERROR: couldn't create font (glGenLists)\n");
+		return;
+	}
+
+	//	Get offset to first char in the charset
+	int firstbitmap = 256 * firstrow + first;
+
+	//	for each row of chars, call glXUseXFont to build the bitmaps.
+	for (int i = firstrow; i <= (int)lastrow; i++)
+	{
+		// http://www.atomised.org/docs/XFree86-4.2.1/lib_2GL_2glx_2glxcmds_8c-source.html#l00373
+		glXUseXFont(fontInfo->fid, firstbitmap, last - first + 1, gl_NormalFontBase + firstbitmap);
+		firstbitmap += 256;
+	}
+
+	fontbase_init = true;
 }
 
 //==========================================================================
@@ -421,6 +491,11 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		//XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
 	}
 
+	//	hook to window close
+	wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
+	wm_delete_window = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+	XSetWMProtocols(dpy, win, &wm_delete_window, 1);
+
 	XFlush(dpy);
 
 	XSync(dpy, False); // bk001130 - from cvs1.17 (mkv)
@@ -470,7 +545,20 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		}
 	}
 
+	GLW_GenDefaultLists();
+
 	return RSERR_OK;
+}
+
+static void GLW_DeleteDefaultLists()
+{
+	if (!fontbase_init)
+	{
+		common->DPrintf("ERROR: GLW_DeleteDefaultLists: no font list initialized\n");
+		return;
+	}
+	glDeleteLists(gl_NormalFontBase, 256);
+	fontbase_init = false;
 }
 
 //==========================================================================
@@ -488,6 +576,8 @@ void GLimp_Shutdown()
 	IN_DeactivateMouse();
 	if (dpy)
 	{
+		GLW_DeleteDefaultLists();
+
 		if (ctx)
 		{
 			glXDestroyContext(dpy, ctx);
@@ -517,6 +607,11 @@ void GLimp_Shutdown()
 
 	Com_Memset(&glConfig, 0, sizeof(glConfig));
 	Com_Memset(&glState, 0, sizeof(glState));
+}
+
+const char* GLimp_GetSystemExtensionsString()
+{
+	return glXQueryExtensionsString(dpy, scrnum);
 }
 
 //==========================================================================
@@ -599,10 +694,16 @@ static void* GLimp_RenderThreadWrapper(void *arg)
 
 bool GLimp_SpawnRenderThread(void (*function)())
 {
+#ifdef WOLF_SMP
+	sem_init(&renderCommandsEvent, 0, 0);
+	sem_init(&renderCompletedEvent, 0, 0);
+	sem_init(&renderActiveEvent, 0, 0);
+#else
 	pthread_mutex_init(&smpMutex, NULL);
 
 	pthread_cond_init(&renderCommandsEvent, NULL);
 	pthread_cond_init(&renderCompletedEvent, NULL);
+#endif
 
 	glimpRenderThread = function;
 
@@ -614,11 +715,13 @@ bool GLimp_SpawnRenderThread(void (*function)())
 		return false;
 	}
 
+#ifndef WOLF_SMP
 	ret = pthread_detach(renderThread);
 	if (ret)
 	{
 		Log::write("pthread_detach returned %d: %s", ret, strerror(ret));
 	}
+#endif
 
 	return true;
 }
@@ -631,6 +734,17 @@ bool GLimp_SpawnRenderThread(void (*function)())
 
 void* GLimp_RendererSleep()
 {
+#ifdef WOLF_SMP
+	// after this, the front end can exit GLimp_FrontEndSleep
+	sem_post(&renderCompletedEvent);
+
+	sem_wait(&renderCommandsEvent);
+
+	void* data = (void*)smpData;
+
+	// after this, the main thread can exit GLimp_WakeRenderer
+	sem_post(&renderActiveEvent);
+#else
 	glXMakeCurrent(dpy, None, NULL);
 
 	pthread_mutex_lock(&smpMutex);
@@ -650,6 +764,7 @@ void* GLimp_RendererSleep()
 	pthread_mutex_unlock(&smpMutex);
 
 	glXMakeCurrent(dpy, win, ctx);
+#endif
 
 	return data;
 }
@@ -662,6 +777,9 @@ void* GLimp_RendererSleep()
 
 void GLimp_FrontEndSleep()
 {
+#ifdef WOLF_SMP
+	sem_wait(&renderCompletedEvent);
+#else
 	pthread_mutex_lock(&smpMutex);
 	while (smpData)
 	{
@@ -670,6 +788,7 @@ void GLimp_FrontEndSleep()
 	pthread_mutex_unlock(&smpMutex);
 
 	glXMakeCurrent(dpy, win, ctx);
+#endif
 }
 
 //==========================================================================
@@ -680,6 +799,14 @@ void GLimp_FrontEndSleep()
 
 void GLimp_WakeRenderer(void* data)
 {
+#ifdef WOLF_SMP
+	smpData = data;
+
+	// after this, the renderer can continue through GLimp_RendererSleep
+	sem_post(&renderCommandsEvent);
+
+	sem_wait(&renderActiveEvent);
+#else
 	glXMakeCurrent(dpy, None, NULL);
 
 	pthread_mutex_lock(&smpMutex);
@@ -690,4 +817,5 @@ void GLimp_WakeRenderer(void* data)
 	// after this, the renderer can continue through GLimp_RendererSleep
 	pthread_cond_signal(&renderCommandsEvent);
 	pthread_mutex_unlock(&smpMutex);
+#endif
 }
