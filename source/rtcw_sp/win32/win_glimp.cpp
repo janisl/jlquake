@@ -6,8 +6,6 @@
 
 static void     GLW_InitExtensions( void );
 
-extern FILE *log_fp;
-
 /*
 ** GLW_StartDriverAndSetMode
 */
@@ -375,13 +373,4 @@ void GLimp_Init( void ) {
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	GLW_InitExtensions();
-}
-
-/*
-** GLimp_LogComment
-*/
-void GLimp_LogComment( char *comment ) {
-	if ( log_fp ) {
-		fprintf( log_fp, "%s", comment );
-	}
 }

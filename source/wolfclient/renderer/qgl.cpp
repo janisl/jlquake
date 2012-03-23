@@ -84,7 +84,6 @@ BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-#if 0
 static fileHandle_t		log_fp;
 
 // CODE --------------------------------------------------------------------
@@ -201,7 +200,7 @@ static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 
 	QGL_Log("gl" #n "\n"); \
 	gl##n(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); \
 }
-#include "qgl_functions.h"
+#include "../../client/renderer/qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
 #undef GLF_1
@@ -605,6 +604,7 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 	glViewport(x, y, width, height);
 }
 
+#if 0
 //==========================================================================
 //
 //	CheckExtension
@@ -836,6 +836,7 @@ void QGL_Init()
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
 }
+#endif
 
 //==========================================================================
 //
@@ -846,7 +847,8 @@ void QGL_Init()
 //
 //==========================================================================
 
-void QGL_Shutdown()
+//void QGL_Shutdown()
+void QGL_Shutdown_()
 {
 	Log::write("...shutting down QGL\n");
 
@@ -857,6 +859,7 @@ void QGL_Shutdown()
 		log_fp = 0;
 	}
 
+#if 0
 #define GLF_0(r, n)				qgl##n = NULL;
 #define GLF_V0(n)				qgl##n = NULL;
 #define GLF_1(r, n, t1, p1)		qgl##n = NULL;
@@ -900,6 +903,7 @@ void QGL_Shutdown()
 #ifdef _WIN32
 	qwglSwapIntervalEXT = NULL;
 #endif
+#endif
 }
 
 //==========================================================================
@@ -908,7 +912,8 @@ void QGL_Shutdown()
 //
 //==========================================================================
 
-void QGL_EnableLogging(bool enable)
+//void QGL_EnableLogging(bool enable)
+void QGL_EnableLogging_(bool enable)
 {
 	static bool isEnabled;
 
@@ -961,7 +966,7 @@ void QGL_EnableLogging(bool enable)
 #define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)	qgl##n = log##n;
 #define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)	qgl##n = log##n;
 #define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)	qgl##n = log##n;
-#include "qgl_functions.h"
+#include "../../client/renderer/qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
 #undef GLF_1
@@ -986,6 +991,7 @@ void QGL_EnableLogging(bool enable)
 			log_fp = 0;
 		}
 
+#if 0
 #define GLF_0(r, n)				qgl##n = gl##n;
 #define GLF_V0(n)				qgl##n = gl##n;
 #define GLF_1(r, n, t1, p1)		qgl##n = gl##n;
@@ -1015,6 +1021,7 @@ void QGL_EnableLogging(bool enable)
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
+#endif
 	}
 }
 
@@ -1031,4 +1038,3 @@ void QGL_LogComment(const char* Comment)
 		QGL_Log("%s", Comment);
 	}
 }
-#endif

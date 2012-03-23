@@ -1253,8 +1253,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 void        GLimp_Init( void );
 void        GLimp_EndFrame( void );
 
-void        GLimp_LogComment( char *comment );
-
 //
 // function declaration
 //

@@ -48,8 +48,8 @@
 void QGL_Init();
 void QGL_Shutdown();
 void QGL_EnableLogging(bool Enable);
-void QGL_LogComment(const char* Comment);
 #endif
+void QGL_LogComment(const char* Comment);
 
 extern	void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
 extern	void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
