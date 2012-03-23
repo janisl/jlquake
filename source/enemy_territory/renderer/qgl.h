@@ -562,29 +562,8 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT )( int interval );
 
 #if ( ( defined __linux__ )  || ( defined __FreeBSD__ ) ) // rb010123
 
-//FX Mesa Functions
-// bk001129 - from cvs1.17 (mkv)
-#if defined ( __FX__ )
-extern fxMesaContext ( *qfxMesaCreateContext )( GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[] );
-extern fxMesaContext ( *qfxMesaCreateBestContext )( GLuint win, GLint width, GLint height, const GLint attribList[] );
-extern void ( *qfxMesaDestroyContext )( fxMesaContext ctx );
-extern void ( *qfxMesaMakeCurrent )( fxMesaContext ctx );
-extern fxMesaContext ( *qfxMesaGetCurrentContext )( void );
-extern void ( *qfxMesaSwapBuffers )( void );
-#endif
-
 //GLX Functions
-extern XVisualInfo * ( *qglXChooseVisual )( Display * dpy, int screen, int *attribList );
-extern GLXContext ( *qglXCreateContext )( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct );
-extern void ( *qglXDestroyContext )( Display *dpy, GLXContext ctx );
-extern Bool ( *qglXMakeCurrent )( Display *dpy, GLXDrawable drawable, GLXContext ctx );
-extern void ( *qglXCopyContext )( Display *dpy, GLXContext src, GLXContext dst, GLuint mask );
-extern void ( *qglXSwapBuffers )( Display *dpy, GLXDrawable drawable );
-extern void ( *qglXUseXFont )( Font font, int first, int count, int list );
 extern int ( *qglXSwapIntervalSGI )( int interval );
-extern int ( *qglXGetVideoSyncSGI )( unsigned int *count );
-extern int ( *qglXWaitVideoSyncSGI )( int divisor, int remainder, unsigned int *count );
-extern const char * ( *qglXQueryExtensionsString )( Display * dpy, int screen );
 
 #endif // __linux__ || __FreeBSD__ // rb010123
 

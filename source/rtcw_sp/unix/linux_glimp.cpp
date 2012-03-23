@@ -41,63 +41,12 @@ If you have questions concerning this license or the applicable additional terms
 **
 */
 
-#include <termios.h>
-#include <sys/ioctl.h>
-#ifdef __linux__
-  #include <sys/stat.h>
-  #include <sys/vt.h>
-#endif
-#include <stdarg.h>
-#include <stdio.h>
 #include <signal.h>
-#include <pthread.h>
-#include <semaphore.h>
 #include <execinfo.h>
-
-// bk001204
-#include <dlfcn.h>
-
-// bk001206 - from my Heretic2 by way of Ryan's Fakk2
-// Needed for the new X11_PendingInput() function.
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include "../renderer/tr_local.h"
 #include "../client/client.h"
 #include "linux_local.h" // bk001130
-#include "../../client/unix_shared.h"
-
-#include "unix_glw.h"
-
-#include <GL/glx.h>
-
-#include <X11/keysym.h>
-#include <X11/cursorfont.h>
-
-#include <X11/extensions/xf86dga.h>
-#include <X11/extensions/xf86vmode.h>
-
-#define WINDOW_CLASS_NAME   "Return to Castle Wolfenstein"
-
-glwstate_t glw_state;
-
-static int scrnum;
-static GLXContext ctx = NULL;
-
-qboolean dgamouse = qfalse;
-qboolean vidmode_ext = qfalse;
-static int vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor of XF86VidExtensions
-
-// gamma value of the X display before we start playing with it
-static XF86VidModeGamma vidmode_InitialGamma;
-
-static int win_x, win_y;
-
-static XF86VidModeModeInfo **vidmodes;
-//static int default_dotclock_vidmode; // bk001204 - unused
-static int num_vidmodes;
-static qboolean vidmode_active = qfalse;
 
 /*
 * Find the first occurrence of find in s.
@@ -192,88 +141,13 @@ static void InitSig( void ) {
 }
 
 /*
-** GLimp_SetGamma
-**
-** This routine should only be called if glConfig.deviceSupportsGamma is TRUE
-*/
-void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned char blue[256] ) {
-	// NOTE TTimo we get the gamma value from cvar, because we can't work with the s_gammatable
-	//   the API wasn't changed to avoid breaking other OSes
-	float g = Cvar_Get( "r_gamma", "1.0", 0 )->value;
-	XF86VidModeGamma gamma;
-	assert( glConfig.deviceSupportsGamma );
-	gamma.red = g;
-	gamma.green = g;
-	gamma.blue = g;
-	XF86VidModeSetGamma( dpy, scrnum, &gamma );
-}
-
-/*
-** GLimp_Shutdown
-**
-** This routine does all OS specific shutdown procedures for the OpenGL
-** subsystem.  Under OpenGL this means NULLing out the current DC and
-** HGLRC, deleting the rendering context, and releasing the DC acquired
-** for the window.  The state structure is also nulled out.
-**
-*/
-void GLimp_Shutdown( void ) {
-	if ( !ctx || !dpy ) {
-		return;
-	}
-	IN_DeactivateMouse();
-	// bk001206 - replaced with H2/Fakk2 solution
-	// XAutoRepeatOn(dpy);
-	// autorepeaton = qfalse; // bk001130 - from cvs1.17 (mkv)
-	if ( dpy ) {
-		if ( ctx ) {
-			qglXDestroyContext( dpy, ctx );
-		}
-		if ( win ) {
-			XDestroyWindow( dpy, win );
-		}
-		if ( vidmode_active ) {
-			XF86VidModeSwitchToMode( dpy, scrnum, vidmodes[0] );
-		}
-		if ( glConfig.deviceSupportsGamma ) {
-			XF86VidModeSetGamma( dpy, scrnum, &vidmode_InitialGamma );
-		}
-		// NOTE TTimo opening/closing the display should be necessary only once per run
-		//   but it seems QGL_Shutdown gets called in a lot of occasion
-		//   in some cases, this XCloseDisplay is known to raise some X errors
-		//   ( show_bug.cgi?id=33 )
-		XCloseDisplay( dpy );
-	}
-	vidmode_active = qfalse;
-	dpy = NULL;
-	win = 0;
-	ctx = NULL;
-
-	memset( &glConfig, 0, sizeof( glConfig ) );
-	memset( &glState, 0, sizeof( glState ) );
-
-	QGL_Shutdown();
-}
-
-/*
-** GLimp_LogComment
-*/
-void GLimp_LogComment( char *comment ) {
-	if ( glw_state.log_fp ) {
-		fprintf( glw_state.log_fp, "%s", comment );
-	}
-}
-
-/*
 ** GLW_StartDriverAndSetMode
 */
-// bk001204 - prototype needed
-int GLW_SetMode( int mode, qboolean fullscreen );
 static qboolean GLW_StartDriverAndSetMode( int mode,
 										   qboolean fullscreen ) {
 	rserr_t err;
 
-	err = (rserr_t)GLW_SetMode( mode, fullscreen );
+	err = (rserr_t)GLimp_SetMode( mode, 0, fullscreen );
 
 	switch ( err )
 	{
@@ -287,300 +161,6 @@ static qboolean GLW_StartDriverAndSetMode( int mode,
 		break;
 	}
 	return qtrue;
-}
-
-/*
-** GLW_SetMode
-*/
-int GLW_SetMode( int mode, qboolean fullscreen ) {
-	int attrib[] = {
-		GLX_RGBA,     // 0
-		GLX_RED_SIZE, 4,  // 1, 2
-		GLX_GREEN_SIZE, 4,  // 3, 4
-		GLX_BLUE_SIZE, 4, // 5, 6
-		GLX_DOUBLEBUFFER, // 7
-		GLX_DEPTH_SIZE, 1,  // 8, 9
-		GLX_STENCIL_SIZE, 1, // 10, 11
-		None
-	};
-	// these match in the array
-#define ATTR_RED_IDX 2
-#define ATTR_GREEN_IDX 4
-#define ATTR_BLUE_IDX 6
-#define ATTR_DEPTH_IDX 9
-#define ATTR_STENCIL_IDX 11
-	Window root;
-	XVisualInfo *visinfo;
-	XSetWindowAttributes attr;
-	unsigned long mask;
-	int colorbits, depthbits, stencilbits;
-	int tcolorbits, tdepthbits, tstencilbits;
-	int dga_MajorVersion, dga_MinorVersion;
-	int actualWidth, actualHeight;
-	int i;
-	const char*   glstring; // bk001130 - from cvs1.17 (mkv)
-
-	ri.Printf( PRINT_ALL, "Initializing OpenGL display\n" );
-
-	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
-
-	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) ) {
-		ri.Printf( PRINT_ALL, " invalid mode\n" );
-		return RSERR_INVALID_MODE;
-	}
-	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
-
-	if ( !( dpy = XOpenDisplay( NULL ) ) ) {
-		fprintf( stderr, "Error couldn't open the X display\n" );
-		return RSERR_INVALID_MODE;
-	}
-
-	scrnum = DefaultScreen( dpy );
-	root = RootWindow( dpy, scrnum );
-
-	actualWidth = glConfig.vidWidth;
-	actualHeight = glConfig.vidHeight;
-
-	// Get video mode list
-	if ( !XF86VidModeQueryVersion( dpy, &vidmode_MajorVersion, &vidmode_MinorVersion ) ) {
-		vidmode_ext = qfalse;
-	} else
-	{
-		ri.Printf( PRINT_ALL, "Using XFree86-VidModeExtension Version %d.%d\n",
-				   vidmode_MajorVersion, vidmode_MinorVersion );
-		vidmode_ext = qtrue;
-	}
-
-	// Check for DGA
-	dga_MajorVersion = 0, dga_MinorVersion = 0;
-	if ( in_dgamouse->value ) {
-		if ( !XF86DGAQueryVersion( dpy, &dga_MajorVersion, &dga_MinorVersion ) ) {
-			// unable to query, probalby not supported
-			ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-			ri.Cvar_Set( "in_dgamouse", "0" );
-		} else
-		{
-			ri.Printf( PRINT_ALL, "XF86DGA Mouse (Version %d.%d) initialized\n",
-					   dga_MajorVersion, dga_MinorVersion );
-		}
-	}
-
-	if ( vidmode_ext ) {
-		int best_fit, best_dist, dist, x, y;
-
-		XF86VidModeGetAllModeLines( dpy, scrnum, &num_vidmodes, &vidmodes );
-
-		// Are we going fullscreen?  If so, let's change video mode
-		if ( fullscreen ) {
-			best_dist = 9999999;
-			best_fit = -1;
-
-			for ( i = 0; i < num_vidmodes; i++ )
-			{
-				if ( glConfig.vidWidth > vidmodes[i]->hdisplay ||
-					 glConfig.vidHeight > vidmodes[i]->vdisplay ) {
-					continue;
-				}
-
-				x = glConfig.vidWidth - vidmodes[i]->hdisplay;
-				y = glConfig.vidHeight - vidmodes[i]->vdisplay;
-				dist = ( x * x ) + ( y * y );
-				if ( dist < best_dist ) {
-					best_dist = dist;
-					best_fit = i;
-				}
-			}
-
-			if ( best_fit != -1 ) {
-				actualWidth = vidmodes[best_fit]->hdisplay;
-				actualHeight = vidmodes[best_fit]->vdisplay;
-
-				// change to the mode
-				XF86VidModeSwitchToMode( dpy, scrnum, vidmodes[best_fit] );
-				vidmode_active = qtrue;
-
-				// Move the viewport to top left
-				XF86VidModeSetViewPort( dpy, scrnum, 0, 0 );
-
-				ri.Printf( PRINT_ALL, "XFree86-VidModeExtension Activated at %dx%d\n",
-						   actualWidth, actualHeight );
-
-			} else
-			{
-				fullscreen = 0;
-				ri.Printf( PRINT_ALL, "XFree86-VidModeExtension: No acceptable modes found\n" );
-			}
-		} else
-		{
-			ri.Printf( PRINT_ALL, "XFree86-VidModeExtension:  Ignored on non-fullscreen/Voodoo\n" );
-		}
-	}
-
-
-	if ( !r_colorbits->value ) {
-		colorbits = 24;
-	} else {
-		colorbits = r_colorbits->value;
-	}
-
-	if ( !r_depthbits->value ) {
-		depthbits = 24;
-	} else {
-		depthbits = r_depthbits->value;
-	}
-	stencilbits = r_stencilbits->value;
-
-	for ( i = 0; i < 16; i++ )
-	{
-		// 0 - default
-		// 1 - minus colorbits
-		// 2 - minus depthbits
-		// 3 - minus stencil
-		if ( ( i % 4 ) == 0 && i ) {
-			// one pass, reduce
-			switch ( i / 4 )
-			{
-			case 2:
-				if ( colorbits == 24 ) {
-					colorbits = 16;
-				}
-				break;
-			case 1:
-				if ( depthbits == 24 ) {
-					depthbits = 16;
-				} else if ( depthbits == 16 ) {
-					depthbits = 8;
-				}
-			case 3:
-				if ( stencilbits == 24 ) {
-					stencilbits = 16;
-				} else if ( stencilbits == 16 ) {
-					stencilbits = 8;
-				}
-			}
-		}
-
-		tcolorbits = colorbits;
-		tdepthbits = depthbits;
-		tstencilbits = stencilbits;
-
-		if ( ( i % 4 ) == 3 ) { // reduce colorbits
-			if ( tcolorbits == 24 ) {
-				tcolorbits = 16;
-			}
-		}
-
-		if ( ( i % 4 ) == 2 ) { // reduce depthbits
-			if ( tdepthbits == 24 ) {
-				tdepthbits = 16;
-			} else if ( tdepthbits == 16 ) {
-				tdepthbits = 8;
-			}
-		}
-
-		if ( ( i % 4 ) == 1 ) { // reduce stencilbits
-			if ( tstencilbits == 24 ) {
-				tstencilbits = 16;
-			} else if ( tstencilbits == 16 ) {
-				tstencilbits = 8;
-			} else {
-				tstencilbits = 0;
-			}
-		}
-
-		if ( tcolorbits == 24 ) {
-			attrib[ATTR_RED_IDX] = 8;
-			attrib[ATTR_GREEN_IDX] = 8;
-			attrib[ATTR_BLUE_IDX] = 8;
-		} else
-		{
-			// must be 16 bit
-			attrib[ATTR_RED_IDX] = 4;
-			attrib[ATTR_GREEN_IDX] = 4;
-			attrib[ATTR_BLUE_IDX] = 4;
-		}
-
-		attrib[ATTR_DEPTH_IDX] = tdepthbits; // default to 24 depth
-		attrib[ATTR_STENCIL_IDX] = tstencilbits;
-
-		visinfo = qglXChooseVisual( dpy, scrnum, attrib );
-		if ( !visinfo ) {
-			continue;
-		}
-
-		ri.Printf( PRINT_ALL, "Using %d/%d/%d Color bits, %d depth, %d stencil display.\n",
-				   attrib[ATTR_RED_IDX], attrib[ATTR_GREEN_IDX], attrib[ATTR_BLUE_IDX],
-				   attrib[ATTR_DEPTH_IDX], attrib[ATTR_STENCIL_IDX] );
-
-		glConfig.colorBits = tcolorbits;
-		glConfig.depthBits = tdepthbits;
-		glConfig.stencilBits = tstencilbits;
-		break;
-	}
-
-	if ( !visinfo ) {
-		ri.Printf( PRINT_ALL, "Couldn't get a visual\n" );
-		return RSERR_INVALID_MODE;
-	}
-
-	/* window attributes */
-	attr.background_pixel = BlackPixel( dpy, scrnum );
-	attr.border_pixel = 0;
-	attr.colormap = XCreateColormap( dpy, root, visinfo->visual, AllocNone );
-	attr.event_mask = X_MASK;
-	if ( vidmode_active ) {
-		mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore |
-			   CWEventMask | CWOverrideRedirect;
-		attr.override_redirect = True;
-		attr.backing_store = NotUseful;
-		attr.save_under = False;
-	} else {
-		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-	}
-
-	win = XCreateWindow( dpy, root, 0, 0,
-						 actualWidth, actualHeight,
-						 0, visinfo->depth, InputOutput,
-						 visinfo->visual, mask, &attr );
-
-	XStoreName( dpy, win, WINDOW_CLASS_NAME );
-
-	XMapWindow( dpy, win );
-
-	if ( vidmode_active ) {
-		XMoveWindow( dpy, win, 0, 0 );
-	}
-
-	XFlush( dpy );
-	XSync( dpy,False ); // bk001130 - from cvs1.17 (mkv)
-	ctx = qglXCreateContext( dpy, visinfo, NULL, True );
-	XSync( dpy,False ); // bk001130 - from cvs1.17 (mkv)
-
-	qglXMakeCurrent( dpy, win, ctx );
-
-	// bk001130 - from cvs1.17 (mkv)
-	glstring = (char*)qglGetString( GL_RENDERER );
-	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
-
-	// bk010122 - new software token (Indirect)
-	if ( !String::ICmp( glstring, "Mesa X11" )
-		 || !String::ICmp( glstring, "Mesa GLX Indirect" ) ) {
-		if ( !r_allowSoftwareGL->integer ) {
-			ri.Printf( PRINT_ALL, "\n\n***********************************************************\n" );
-			ri.Printf( PRINT_ALL, " You are using software Mesa (no hardware acceleration)!   \n" );
-			ri.Printf( PRINT_ALL, " If this is intentional, add\n" );
-			ri.Printf( PRINT_ALL, "       \"+set r_allowSoftwareGL 1\"\n" );
-			ri.Printf( PRINT_ALL, " to the command line when starting the game.\n" );
-			ri.Printf( PRINT_ALL, "***********************************************************\n" );
-			GLimp_Shutdown();
-			return RSERR_INVALID_MODE;
-		} else
-		{
-			ri.Printf( PRINT_ALL, "...using software Mesa (r_allowSoftwareGL==1).\n" );
-		}
-	}
-
-	return RSERR_OK;
 }
 
 /*
@@ -632,9 +212,9 @@ static void GLW_InitExtensions( void ) {
 	qglClientActiveTextureARB = NULL;
 	if ( Q_stristr( glConfig.extensions_string, "GL_ARB_multitexture" ) ) {
 		if ( r_ext_multitexture->value ) {
-			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) dlsym( glw_state.OpenGLLib, "glMultiTexCoord2fARB" );
-			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) dlsym( glw_state.OpenGLLib, "glActiveTextureARB" );
-			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) dlsym( glw_state.OpenGLLib, "glClientActiveTextureARB" );
+			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) GLimp_GetProcAddress("glMultiTexCoord2fARB" );
+			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) GLimp_GetProcAddress("glActiveTextureARB" );
+			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) GLimp_GetProcAddress("glClientActiveTextureARB" );
 
 			if ( qglActiveTextureARB ) {
 				qglGetIntegerv( GL_MAX_ACTIVE_TEXTURES_ARB, &glConfig.maxActiveTextures );
@@ -662,8 +242,8 @@ static void GLW_InitExtensions( void ) {
 	if ( Q_stristr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) ) {
 		if ( r_ext_compiled_vertex_array->value ) {
 			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) )dlsym( glw_state.OpenGLLib, "glLockArraysEXT" );
-			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) )dlsym( glw_state.OpenGLLib, "glUnlockArraysEXT" );
+			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) )GLimp_GetProcAddress("glLockArraysEXT" );
+			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) )GLimp_GetProcAddress("glUnlockArraysEXT" );
 			if ( !qglLockArraysEXT || !qglUnlockArraysEXT ) {
 				ri.Error( ERR_FATAL, "bad getprocaddress" );
 			}
@@ -690,25 +270,6 @@ static void GLW_InitExtensions( void ) {
 		ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
 	}
 
-}
-
-static void GLW_InitGamma() {
-	/* Minimum extension version required */
-  #define GAMMA_MINMAJOR 2
-  #define GAMMA_MINMINOR 0
-
-	glConfig.deviceSupportsGamma = qfalse;
-
-	if ( vidmode_ext ) {
-		if ( vidmode_MajorVersion < GAMMA_MINMAJOR ||
-			 ( vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR ) ) {
-			ri.Printf( PRINT_ALL, "XF86 Gamma extension not supported in this version\n" );
-			return;
-		}
-		XF86VidModeGetGamma( dpy, scrnum, &vidmode_InitialGamma );
-		ri.Printf( PRINT_ALL, "XF86 Gamma extension initialized\n" );
-		glConfig.deviceSupportsGamma = qtrue;
-	}
 }
 
 /*
@@ -756,23 +317,6 @@ fail:
 }
 
 /*
-** XErrorHandler
-**   the default X error handler exits the application
-**   I found out that on some hosts some operations would raise X errors (GLXUnsupportedPrivateRequest)
-**   but those don't seem to be fatal .. so the default would be to just ignore them
-**   our implementation mimics the default handler behaviour (not completely cause I'm lazy)
-*/
-int qXErrorHandler( Display *dpy, XErrorEvent *ev ) {
-	static char buf[1024];
-	XGetErrorText( dpy, ev->error_code, buf, 1024 );
-	ri.Printf( PRINT_ALL, "X Error of failed request: %s\n", buf );
-	ri.Printf( PRINT_ALL, "  Major opcode of failed request: %d\n", ev->request_code, buf );
-	ri.Printf( PRINT_ALL, "  Minor opcode of failed request: %d\n", ev->minor_code );
-	ri.Printf( PRINT_ALL, "  Serial number of failed request: %d\n", ev->serial );
-	return 0;
-}
-
-/*
 ** GLimp_Init
 **
 ** This routine is responsible for initializing the OS specific portions
@@ -784,9 +328,6 @@ void GLimp_Init( void ) {
 	// Cvar	*cv; // bk001204 - unused
 
 	InitSig();
-
-	// set up our custom error handler for X failures
-	XSetErrorHandler( &qXErrorHandler );
 
 	//
 	// load and initialize the specific OpenGL driver
@@ -846,7 +387,6 @@ void GLimp_Init( void ) {
 
 	// initialize extensions
 	GLW_InitExtensions();
-	GLW_InitGamma();
 
 	InitSig();
 
@@ -864,111 +404,9 @@ void GLimp_Init( void ) {
 void GLimp_EndFrame( void ) {
 	// don't flip if drawing to front buffer
 	if ( String::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
-		qglXSwapBuffers( dpy, win );
+		GLimp_SwapBuffers();
 	}
 
 	// check logging
 	QGL_EnableLogging( (qboolean)r_logFile->integer ); // bk001205 - was ->value
 }
-
-#ifdef SMP
-/*
-===========================================================
-
-SMP acceleration
-
-===========================================================
-*/
-
-sem_t renderCommandsEvent;
-sem_t renderCompletedEvent;
-sem_t renderActiveEvent;
-
-void ( *glimpRenderThread )( void );
-
-void *GLimp_RenderThreadWrapper( void *stub ) {
-	glimpRenderThread();
-	return NULL;
-}
-
-
-/*
-=======================
-GLimp_SpawnRenderThread
-=======================
-*/
-pthread_t renderThreadHandle;
-qboolean GLimp_SpawnRenderThread( void ( *function )( void ) ) {
-
-	sem_init( &renderCommandsEvent, 0, 0 );
-	sem_init( &renderCompletedEvent, 0, 0 );
-	sem_init( &renderActiveEvent, 0, 0 );
-
-	glimpRenderThread = function;
-
-	if ( pthread_create( &renderThreadHandle, NULL,
-						 GLimp_RenderThreadWrapper, NULL ) ) {
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-static void  *smpData;
-//static	int		glXErrors; // bk001204 - unused
-
-void *GLimp_RendererSleep( void ) {
-	void  *data;
-
-	// after this, the front end can exit GLimp_FrontEndSleep
-	sem_post( &renderCompletedEvent );
-
-	sem_wait( &renderCommandsEvent );
-
-	data = smpData;
-
-	// after this, the main thread can exit GLimp_WakeRenderer
-	sem_post( &renderActiveEvent );
-
-	return data;
-}
-
-
-void GLimp_FrontEndSleep( void ) {
-	sem_wait( &renderCompletedEvent );
-}
-
-
-void GLimp_WakeRenderer( void *data ) {
-	smpData = data;
-
-	// after this, the renderer can continue through GLimp_RendererSleep
-	sem_post( &renderCommandsEvent );
-
-	sem_wait( &renderActiveEvent );
-}
-
-#else
-
-void GLimp_RenderThreadWrapper( void *stub ) {}
-bool GLimp_SpawnRenderThread( void ( *function )( void ) ) {
-	return qfalse;
-}
-void *GLimp_RendererSleep( void ) {
-	return NULL;
-}
-void GLimp_FrontEndSleep( void ) {}
-void GLimp_WakeRenderer( void *data ) {}
-
-#endif
-
-void IN_Activate( void ) {
-}
-
-// bk010216 - added stubs for non-Linux UNIXes here
-// FIXME - use NO_JOYSTICK or something else generic
-
-#if defined( __FreeBSD__ ) // rb010123
-void IN_StartupJoystick( void ) {}
-void IN_JoyMove( void ) {}
-#endif

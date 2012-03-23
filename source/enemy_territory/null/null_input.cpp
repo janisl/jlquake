@@ -39,9 +39,3 @@ void IN_Shutdown( void ) {
 
 void Sys_SendKeyEvents( void ) {
 }
-
-void    IN_Activate( qboolean active ) {
-}
-
-
-

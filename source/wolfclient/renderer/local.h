@@ -70,6 +70,7 @@ enum rserr_t
 
 rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen);
 void GLimp_Shutdown();
+const char* GLimp_GetSystemExtensionsString();
 void* GLimp_GetProcAddress(const char* Name);
 
 // NOTE TTimo linux works with float gamma value, not the gamma table

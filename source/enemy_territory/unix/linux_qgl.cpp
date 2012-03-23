@@ -44,7 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <float.h>
 #include "../renderer/tr_local.h"
-#include "unix_glw.h"
 
 // bk001129 - from cvs1.17 (mkv)
 //#if defined(__FX__)
@@ -54,30 +53,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <dlfcn.h>
 
+void *OpenGLLib; // instance of OpenGL library
+FILE *log_fp;
 
-// bk001129 - from cvs1.17 (mkv)
-#if defined( __FX__ )
-//FX Mesa Functions
-fxMesaContext ( *qfxMesaCreateContext )( GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[] );
-fxMesaContext ( *qfxMesaCreateBestContext )( GLuint win, GLint width, GLint height, const GLint attribList[] );
-void ( *qfxMesaDestroyContext )( fxMesaContext ctx );
-void ( *qfxMesaMakeCurrent )( fxMesaContext ctx );
-fxMesaContext ( *qfxMesaGetCurrentContext )( void );
-void ( *qfxMesaSwapBuffers )( void );
-#endif
-
-//GLX Functions
-XVisualInfo * ( *qglXChooseVisual )( Display * dpy, int screen, int *attribList );
-GLXContext ( *qglXCreateContext )( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct );
-void ( *qglXDestroyContext )( Display *dpy, GLXContext ctx );
-Bool ( *qglXMakeCurrent )( Display *dpy, GLXDrawable drawable, GLXContext ctx );
-void ( *qglXCopyContext )( Display *dpy, GLXContext src, GLXContext dst, GLuint mask );
-void ( *qglXSwapBuffers )( Display *dpy, GLXDrawable drawable );
-void ( *qglXUseXFont )( Font font, int first, int count, int list );
 int ( *qglXSwapIntervalSGI )( int interval );
-int ( *qglXGetVideoSyncSGI )( unsigned int *count );
-int ( *qglXWaitVideoSyncSGI )( int divisor, int remainder, unsigned int *count );
-const char * ( *qglXQueryExtensionsString )( Display * dpy, int screen );
 
 void ( APIENTRY * qglAccum )( GLenum op, GLfloat value );
 void ( APIENTRY * qglAlphaFunc )( GLenum func, GLclampf ref );
@@ -768,151 +747,151 @@ static void ( APIENTRY * dllVertexPointer )( GLint size, GLenum type, GLsizei st
 static void ( APIENTRY * dllViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
 
 static void APIENTRY logAccum( GLenum op, GLfloat value ) {
-	fprintf( glw_state.log_fp, "glAccum\n" );
+	fprintf( log_fp, "glAccum\n" );
 	dllAccum( op, value );
 }
 
 static void APIENTRY logAlphaFunc( GLenum func, GLclampf ref ) {
-	fprintf( glw_state.log_fp, "glAlphaFunc( 0x%x, %f )\n", func, ref );
+	fprintf( log_fp, "glAlphaFunc( 0x%x, %f )\n", func, ref );
 	dllAlphaFunc( func, ref );
 }
 
 static GLboolean APIENTRY logAreTexturesResident( GLsizei n, const GLuint *textures, GLboolean *residences ) {
-	fprintf( glw_state.log_fp, "glAreTexturesResident\n" );
+	fprintf( log_fp, "glAreTexturesResident\n" );
 	return dllAreTexturesResident( n, textures, residences );
 }
 
 static void APIENTRY logArrayElement( GLint i ) {
-	fprintf( glw_state.log_fp, "glArrayElement\n" );
+	fprintf( log_fp, "glArrayElement\n" );
 	dllArrayElement( i );
 }
 
 static void APIENTRY logBegin( GLenum mode ) {
-	fprintf( glw_state.log_fp, "glBegin( 0x%x )\n", mode );
+	fprintf( log_fp, "glBegin( 0x%x )\n", mode );
 	dllBegin( mode );
 }
 
 static void APIENTRY logBindTexture( GLenum target, GLuint texture ) {
-	fprintf( glw_state.log_fp, "glBindTexture( 0x%x, %u )\n", target, texture );
+	fprintf( log_fp, "glBindTexture( 0x%x, %u )\n", target, texture );
 	dllBindTexture( target, texture );
 }
 
 static void APIENTRY logBitmap( GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte *bitmap ) {
-	fprintf( glw_state.log_fp, "glBitmap\n" );
+	fprintf( log_fp, "glBitmap\n" );
 	dllBitmap( width, height, xorig, yorig, xmove, ymove, bitmap );
 }
 
 static void APIENTRY logBlendFunc( GLenum sfactor, GLenum dfactor ) {
-	fprintf( glw_state.log_fp, "glBlendFunc( 0x%x, 0x%x )\n", sfactor, dfactor );
+	fprintf( log_fp, "glBlendFunc( 0x%x, 0x%x )\n", sfactor, dfactor );
 	dllBlendFunc( sfactor, dfactor );
 }
 
 static void APIENTRY logCallList( GLuint list ) {
-	fprintf( glw_state.log_fp, "glCallList( %u )\n", list );
+	fprintf( log_fp, "glCallList( %u )\n", list );
 	dllCallList( list );
 }
 
 static void APIENTRY logCallLists( GLsizei n, GLenum type, const void *lists ) {
-	fprintf( glw_state.log_fp, "glCallLists\n" );
+	fprintf( log_fp, "glCallLists\n" );
 	dllCallLists( n, type, lists );
 }
 
 static void APIENTRY logClear( GLbitfield mask ) {
-	fprintf( glw_state.log_fp, "glClear\n" );
+	fprintf( log_fp, "glClear\n" );
 	dllClear( mask );
 }
 
 static void APIENTRY logClearAccum( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha ) {
-	fprintf( glw_state.log_fp, "glClearAccum\n" );
+	fprintf( log_fp, "glClearAccum\n" );
 	dllClearAccum( red, green, blue, alpha );
 }
 
 static void APIENTRY logClearColor( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha ) {
-	fprintf( glw_state.log_fp, "glClearColor\n" );
+	fprintf( log_fp, "glClearColor\n" );
 	dllClearColor( red, green, blue, alpha );
 }
 
 static void APIENTRY logClearDepth( GLclampd depth ) {
-	fprintf( glw_state.log_fp, "glClearDepth\n" );
+	fprintf( log_fp, "glClearDepth\n" );
 	dllClearDepth( depth );
 }
 
 static void APIENTRY logClearIndex( GLfloat c ) {
-	fprintf( glw_state.log_fp, "glClearIndex\n" );
+	fprintf( log_fp, "glClearIndex\n" );
 	dllClearIndex( c );
 }
 
 static void APIENTRY logClearStencil( GLint s ) {
-	fprintf( glw_state.log_fp, "glClearStencil\n" );
+	fprintf( log_fp, "glClearStencil\n" );
 	dllClearStencil( s );
 }
 
 static void APIENTRY logClipPlane( GLenum plane, const GLdouble *equation ) {
-	fprintf( glw_state.log_fp, "glClipPlane\n" );
+	fprintf( log_fp, "glClipPlane\n" );
 	dllClipPlane( plane, equation );
 }
 
 static void APIENTRY logColor3b( GLbyte red, GLbyte green, GLbyte blue ) {
-	fprintf( glw_state.log_fp, "glColor3b\n" );
+	fprintf( log_fp, "glColor3b\n" );
 	dllColor3b( red, green, blue );
 }
 
 static void APIENTRY logColor3bv( const GLbyte *v ) {
-	fprintf( glw_state.log_fp, "glColor3bv\n" );
+	fprintf( log_fp, "glColor3bv\n" );
 	dllColor3bv( v );
 }
 
 static void APIENTRY logColor3d( GLdouble red, GLdouble green, GLdouble blue ) {
-	fprintf( glw_state.log_fp, "glColor3d\n" );
+	fprintf( log_fp, "glColor3d\n" );
 	dllColor3d( red, green, blue );
 }
 
 static void APIENTRY logColor3dv( const GLdouble *v ) {
-	fprintf( glw_state.log_fp, "glColor3dv\n" );
+	fprintf( log_fp, "glColor3dv\n" );
 	dllColor3dv( v );
 }
 
 static void APIENTRY logColor3f( GLfloat red, GLfloat green, GLfloat blue ) {
-	fprintf( glw_state.log_fp, "glColor3f\n" );
+	fprintf( log_fp, "glColor3f\n" );
 	dllColor3f( red, green, blue );
 }
 
 static void APIENTRY logColor3fv( const GLfloat *v ) {
-	fprintf( glw_state.log_fp, "glColor3fv\n" );
+	fprintf( log_fp, "glColor3fv\n" );
 	dllColor3fv( v );
 }
 
 static void APIENTRY logColor3i( GLint red, GLint green, GLint blue ) {
-	fprintf( glw_state.log_fp, "glColor3i\n" );
+	fprintf( log_fp, "glColor3i\n" );
 	dllColor3i( red, green, blue );
 }
 
 static void APIENTRY logColor3iv( const GLint *v ) {
-	fprintf( glw_state.log_fp, "glColor3iv\n" );
+	fprintf( log_fp, "glColor3iv\n" );
 	dllColor3iv( v );
 }
 
 static void APIENTRY logColor3s( GLshort red, GLshort green, GLshort blue ) {
-	fprintf( glw_state.log_fp, "glColor3s\n" );
+	fprintf( log_fp, "glColor3s\n" );
 	dllColor3s( red, green, blue );
 }
 
 static void APIENTRY logColor3sv( const GLshort *v ) {
-	fprintf( glw_state.log_fp, "glColor3sv\n" );
+	fprintf( log_fp, "glColor3sv\n" );
 	dllColor3sv( v );
 }
 
 static void APIENTRY logColor3ub( GLubyte red, GLubyte green, GLubyte blue ) {
-	fprintf( glw_state.log_fp, "glColor3ub\n" );
+	fprintf( log_fp, "glColor3ub\n" );
 	dllColor3ub( red, green, blue );
 }
 
 static void APIENTRY logColor3ubv( const GLubyte *v ) {
-	fprintf( glw_state.log_fp, "glColor3ubv\n" );
+	fprintf( log_fp, "glColor3ubv\n" );
 	dllColor3ubv( v );
 }
 
-#define SIG( x ) fprintf( glw_state.log_fp, x "\n" )
+#define SIG( x ) fprintf( log_fp, x "\n" )
 
 static void APIENTRY logColor3ui( GLuint red, GLuint green, GLuint blue ) {
 	SIG( "glColor3ui" );
@@ -953,11 +932,11 @@ static void APIENTRY logColor4dv( const GLdouble *v ) {
 	dllColor4dv( v );
 }
 static void APIENTRY logColor4f( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha ) {
-	fprintf( glw_state.log_fp, "glColor4f( %f,%f,%f,%f )\n", red, green, blue, alpha );
+	fprintf( log_fp, "glColor4f( %f,%f,%f,%f )\n", red, green, blue, alpha );
 	dllColor4f( red, green, blue, alpha );
 }
 static void APIENTRY logColor4fv( const GLfloat *v ) {
-	fprintf( glw_state.log_fp, "glColor4fv( %f,%f,%f,%f )\n", v[0], v[1], v[2], v[3] );
+	fprintf( log_fp, "glColor4fv( %f,%f,%f,%f )\n", v[0], v[1], v[2], v[3] );
 	dllColor4fv( v );
 }
 static void APIENTRY logColor4i( GLint red, GLint green, GLint blue, GLint alpha ) {
@@ -1070,7 +1049,7 @@ static void APIENTRY logDepthRange( GLclampd zNear, GLclampd zFar ) {
 }
 
 static void APIENTRY logDisable( GLenum cap ) {
-	fprintf( glw_state.log_fp, "glDisable( 0x%x )\n", cap );
+	fprintf( log_fp, "glDisable( 0x%x )\n", cap );
 	dllDisable( cap );
 }
 
@@ -1115,7 +1094,7 @@ static void APIENTRY logEdgeFlagv( const GLboolean *flag ) {
 }
 
 static void APIENTRY logEnable( GLenum cap ) {
-	fprintf( glw_state.log_fp, "glEnable( 0x%x )\n", cap );
+	fprintf( log_fp, "glEnable( 0x%x )\n", cap );
 	dllEnable( cap );
 }
 
@@ -1387,7 +1366,7 @@ static void APIENTRY logGetTexParameteriv( GLenum target, GLenum pname, GLint *p
 }
 
 static void APIENTRY logHint( GLenum target, GLenum mode ) {
-	fprintf( glw_state.log_fp, "glHint( 0x%x, 0x%x )\n", target, mode );
+	fprintf( log_fp, "glHint( 0x%x, 0x%x )\n", target, mode );
 	dllHint( target, mode );
 }
 
@@ -1734,7 +1713,7 @@ static void APIENTRY logPointSize( GLfloat size ) {
 }
 
 static void APIENTRY logPolygonMode( GLenum face, GLenum mode ) {
-	fprintf( glw_state.log_fp, "glPolygonMode( 0x%x, 0x%x )\n", face, mode );
+	fprintf( log_fp, "glPolygonMode( 0x%x, 0x%x )\n", face, mode );
 	dllPolygonMode( face, mode );
 }
 
@@ -2124,7 +2103,7 @@ static void APIENTRY logTexCoordPointer( GLint size, GLenum type, GLsizei stride
 }
 
 static void APIENTRY logTexEnvf( GLenum target, GLenum pname, GLfloat param ) {
-	fprintf( glw_state.log_fp, "glTexEnvf( 0x%x, 0x%x, %f )\n", target, pname, param );
+	fprintf( log_fp, "glTexEnvf( 0x%x, 0x%x, %f )\n", target, pname, param );
 	dllTexEnvf( target, pname, param );
 }
 
@@ -2134,7 +2113,7 @@ static void APIENTRY logTexEnvfv( GLenum target, GLenum pname, const GLfloat *pa
 }
 
 static void APIENTRY logTexEnvi( GLenum target, GLenum pname, GLint param ) {
-	fprintf( glw_state.log_fp, "glTexEnvi( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
+	fprintf( log_fp, "glTexEnvi( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
 	dllTexEnvi( target, pname, param );
 }
 static void APIENTRY logTexEnviv( GLenum target, GLenum pname, const GLint *params ) {
@@ -2178,7 +2157,7 @@ static void APIENTRY logTexImage2D( GLenum target, GLint level, GLint internalfo
 }
 
 static void APIENTRY logTexParameterf( GLenum target, GLenum pname, GLfloat param ) {
-	fprintf( glw_state.log_fp, "glTexParameterf( 0x%x, 0x%x, %f )\n", target, pname, param );
+	fprintf( log_fp, "glTexParameterf( 0x%x, 0x%x, %f )\n", target, pname, param );
 	dllTexParameterf( target, pname, param );
 }
 
@@ -2187,7 +2166,7 @@ static void APIENTRY logTexParameterfv( GLenum target, GLenum pname, const GLflo
 	dllTexParameterfv( target, pname, params );
 }
 static void APIENTRY logTexParameteri( GLenum target, GLenum pname, GLint param ) {
-	fprintf( glw_state.log_fp, "glTexParameteri( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
+	fprintf( log_fp, "glTexParameteri( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
 	dllTexParameteri( target, pname, param );
 }
 static void APIENTRY logTexParameteriv( GLenum target, GLenum pname, const GLint *params ) {
@@ -2324,12 +2303,12 @@ static void APIENTRY logViewport( GLint x, GLint y, GLsizei width, GLsizei heigh
 ** Unloads the specified DLL then nulls out all the proc pointers.
 */
 void QGL_Shutdown( void ) {
-	if ( glw_state.OpenGLLib ) {
-		dlclose( glw_state.OpenGLLib );
-		glw_state.OpenGLLib = NULL;
+	if ( OpenGLLib ) {
+		dlclose( OpenGLLib );
+		OpenGLLib = NULL;
 	}
 
-	glw_state.OpenGLLib = NULL;
+	OpenGLLib = NULL;
 
 	qglAccum                     = NULL;
 	qglAlphaFunc                 = NULL;
@@ -2668,33 +2647,13 @@ void QGL_Shutdown( void ) {
 	qglVertexPointer             = NULL;
 	qglViewport                  = NULL;
 
-// bk001129 - from cvs1.17 (mkv)
-#if defined( __FX__ )
-	qfxMesaCreateContext         = NULL;
-	qfxMesaCreateBestContext     = NULL;
-	qfxMesaDestroyContext        = NULL;
-	qfxMesaMakeCurrent           = NULL;
-	qfxMesaGetCurrentContext     = NULL;
-	qfxMesaSwapBuffers           = NULL;
-#endif
-
-	qglXChooseVisual             = NULL;
-	qglXCreateContext            = NULL;
-	qglXDestroyContext           = NULL;
-	qglXMakeCurrent              = NULL;
-	qglXCopyContext              = NULL;
-	qglXSwapBuffers              = NULL;
-	qglXUseXFont                 = NULL;
 	qglXSwapIntervalSGI = NULL;
-	qglXGetVideoSyncSGI = NULL;
-	qglXWaitVideoSyncSGI    = NULL;
-	qglXQueryExtensionsString   = NULL;
 }
 
-#define GPA( a ) dlsym( glw_state.OpenGLLib, a )
+#define GPA( a ) dlsym( OpenGLLib, a )
 
 void *qwglGetProcAddress( char *symbol ) {
-	if ( glw_state.OpenGLLib ) {
+	if ( OpenGLLib ) {
 		return GPA( symbol );
 	}
 	return NULL;
@@ -2712,7 +2671,7 @@ void *qwglGetProcAddress( char *symbol ) {
 */
 
 qboolean QGL_Init() {
-	if ( ( glw_state.OpenGLLib = dlopen( "libGL.so.1", RTLD_LAZY | RTLD_GLOBAL ) ) == 0 ) {
+	if ( ( OpenGLLib = dlopen( "libGL.so.1", RTLD_LAZY | RTLD_GLOBAL ) ) == 0 ) {
 		ri.Printf( PRINT_ALL, "QGL_Init: dlopen %s failed: %s\n", "libGL.so.1", dlerror() );
 		return qfalse;
 	}
@@ -2747,27 +2706,7 @@ qboolean QGL_Init() {
 #undef GLF_V9
 #undef GLF_V10
 
-// bk001129 - from cvs1.17 (mkv)
-#if defined( __FX__ )
-	qfxMesaCreateContext         =  GPA( "fxMesaCreateContext" );
-	qfxMesaCreateBestContext     =  GPA( "fxMesaCreateBestContext" );
-	qfxMesaDestroyContext        =  GPA( "fxMesaDestroyContext" );
-	qfxMesaMakeCurrent           =  GPA( "fxMesaMakeCurrent" );
-	qfxMesaGetCurrentContext     =  GPA( "fxMesaGetCurrentContext" );
-	qfxMesaSwapBuffers           =  GPA( "fxMesaSwapBuffers" );
-#endif
-
-	qglXChooseVisual             =  (XVisualInfo * ( *)( Display *, int , int *))GPA( "glXChooseVisual" );
-	qglXCreateContext            =  (GLXContext ( *)( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct ))GPA( "glXCreateContext" );
-	qglXDestroyContext           =  (void ( *)( Display *dpy, GLXContext ctx ))GPA( "glXDestroyContext" );
-	qglXMakeCurrent              =  (Bool ( *)( Display *dpy, GLXDrawable drawable, GLXContext ctx ))GPA( "glXMakeCurrent" );
-	qglXCopyContext              =  (void ( *)( Display *dpy, GLXContext src, GLXContext dst, GLuint mask ))GPA( "glXCopyContext" );
-	qglXSwapBuffers              =  (void ( *)( Display *dpy, GLXDrawable drawable ))GPA( "glXSwapBuffers" );
-	qglXUseXFont                 =  (void ( *)( Font font, int first, int count, int list ))GPA( "glXUseXFont" );
 	qglXSwapIntervalSGI = (int ( *)( int interval ))GPA( "glXSwapIntervalSGI" );
-	qglXGetVideoSyncSGI = (int ( *)( unsigned int *count ))GPA( "glXGetVideoSyncSGI" );
-	qglXWaitVideoSyncSGI    = (int ( *)( int divisor, int remainder, unsigned int *count ))GPA( "glXWaitVideoSyncSGI" );
-	qglXQueryExtensionsString   = (const char * ( *)( Display * dpy, int screen ))GPA( "glXQueryExtensionsString" );
 
 	qglLockArraysEXT = 0;
 	qglUnlockArraysEXT = 0;
@@ -2807,7 +2746,7 @@ void QGL_EnableLogging( qboolean enable ) {
 
 	// bk001205 - old code starts here
 	if ( enable ) {
-		if ( !glw_state.log_fp ) {
+		if ( !log_fp ) {
 			struct tm *newtime;
 			time_t aclock;
 			char buffer[1024];
@@ -2821,11 +2760,11 @@ void QGL_EnableLogging( qboolean enable ) {
 			basedir = ri.Cvar_Get( "fs_basepath", "", 0 ); // FIXME: userdir?
 			assert( basedir );
 			String::Sprintf( buffer, sizeof( buffer ), "%s/gl.log", basedir->string );
-			glw_state.log_fp = fopen( buffer, "wt" );
-			assert( glw_state.log_fp );
+			log_fp = fopen( buffer, "wt" );
+			assert( log_fp );
 			ri.Printf( PRINT_ALL, "QGL_EnableLogging(%d): writing %s\n", r_logFile->integer, buffer );
 
-			fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
+			fprintf( log_fp, "%s\n", asctime( newtime ) );
 		}
 
 		qglAccum                     = logAccum;
@@ -3507,5 +3446,14 @@ void QGL_EnableLogging( qboolean enable ) {
 
 
 void GLimp_LogNewFrame( void ) {
-	fprintf( glw_state.log_fp, "*** R_BeginFrame ***\n" );
+	fprintf( log_fp, "*** R_BeginFrame ***\n" );
+}
+
+/*
+** GLimp_LogComment
+*/
+void GLimp_LogComment( char *comment ) {
+	if ( log_fp ) {
+		fprintf( log_fp, "%s", comment );
+	}
 }
