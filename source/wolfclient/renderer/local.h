@@ -50,7 +50,6 @@
 #include "state.h"
 #include "cvars.h"
 
-#if 0
 /*
 ====================================================================
 
@@ -70,14 +69,14 @@ enum rserr_t
 };
 
 rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen);
+#if 0
 void GLimp_Shutdown();
-void* GLimp_GetProcAddress(const char* Name);
 #endif
+void* GLimp_GetProcAddress(const char* Name);
 
 // NOTE TTimo linux works with float gamma value, not the gamma table
 //   the params won't be used, getting the r_gamma cvar directly
 void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256]);
-#if 0
 void GLimp_SwapBuffers();
 
 bool GLimp_SpawnRenderThread(void (*function)());
@@ -93,6 +92,7 @@ init
 ====================================================================
 */
 
+#if 0
 #define MAX_DRAWIMAGES			2048
 #define MAX_LIGHTMAPS			256
 #define MAX_MOD_KNOWN			1500
@@ -523,6 +523,8 @@ extern int			c_visible_lightmaps;
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
 #endif
+
+extern int gl_NormalFontBase;
 
 /*
 ============================================================

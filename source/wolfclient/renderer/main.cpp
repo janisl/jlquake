@@ -102,9 +102,13 @@ float	r_turbsin[] =
 	-3.06147, -2.87916, -2.69512, -2.50945, -2.32228, -2.1337, -1.94384, -1.75281,
 	-1.56072, -1.3677, -1.17384, -0.979285, -0.784137, -0.588517, -0.392541, -0.19633,
 };
+#endif
+
+int gl_NormalFontBase = 0;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+#if 0
 static sortedent_t		cl_transvisedicts[MAX_ENTITIES];
 static sortedent_t		cl_transwateredicts[MAX_ENTITIES];
 

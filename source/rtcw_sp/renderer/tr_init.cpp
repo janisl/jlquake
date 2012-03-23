@@ -957,6 +957,9 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	if ( destroyWindow ) {
 		GLimp_Shutdown();
 
+		// shutdown QGL subsystem
+		QGL_Shutdown();
+
 		// Ridah, release the virtual memory
 		R_Hunk_End();
 		R_FreeImageBuffer();
