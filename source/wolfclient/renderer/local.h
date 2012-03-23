@@ -22,11 +22,11 @@
 #endif
 #include <GL/gl.h>
 
-#if 0
 #ifndef APIENTRY
 #define APIENTRY
 #endif
 
+#if 0
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
 // parallel on a dual cpu machine
@@ -41,8 +41,10 @@
 #include "../../core/file_formats/md4.h"
 #include "../../core/file_formats/spr.h"
 #include "../../core/file_formats/sp2.h"
+#endif
 
 #include "qgl.h"
+#if 0
 #include "images/image.h"
 #include "shader.h"
 #include "models/model.h"
