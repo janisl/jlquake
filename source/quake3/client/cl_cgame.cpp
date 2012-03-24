@@ -400,10 +400,22 @@ void CL_CM_LoadMap( const char *mapname ) {
 	CM_LoadMap( mapname, qtrue, &checksum );
 }
 
+static refEntityType_t gameRefEntTypeToEngine[] =
+{
+	RT_MODEL,
+	RT_POLY,
+	RT_SPRITE,
+	RT_BEAM,
+	RT_RAIL_CORE,
+	RT_RAIL_RINGS,
+	RT_LIGHTNING,
+	RT_PORTALSURFACE,
+};
+
 static void CL_GameRefEntToEngine(const q3refEntity_t* gameRefent, refEntity_t* refent)
 {
 	Com_Memset(refent, 0, sizeof(*refent));
-	refent->reType = gameRefent->reType;
+	refent->reType = gameRefEntTypeToEngine[gameRefent->reType];
 	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
 		RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
 		RF_SHADOW_PLANE | RF_WRAP_FRAMES);
