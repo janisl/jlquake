@@ -958,9 +958,6 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 			  &image->uploadHeight,
 			  noCompress );
 
-	// ydnar: opengl 1.2 GL_CLAMP_TO_EDGE SUPPORT
-	// only 1.1 headers, joy
-	#define GL_CLAMP_TO_EDGE    0x812F
 	if ( r_clampToEdge->integer && glWrapClampMode == GL_CLAMP ) {
 		glWrapClampMode = GL_CLAMP_TO_EDGE;
 	}

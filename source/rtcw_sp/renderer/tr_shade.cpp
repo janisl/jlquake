@@ -478,15 +478,6 @@ static void ProjectDlightTexture( void ) {
 
 			VectorSubtract( origin, tess.xyz[i], dist );
 
-//			if(!r_dlightBacks->integer) {
-//				vec3_t	dir;
-//				VectorNormalize2(dist, dir);
-//				if( DotProduct( tess.normal[i], dir) < 0) {
-//					clipBits[i] = 255;	// not lighted (backface)
-//					continue;
-//				}
-//			}
-
 			backEnd.pc.c_dlightVertexes++;
 
 			texCoords[0] = 0.5f + dist[0] * scale;
@@ -537,15 +528,6 @@ static void ProjectDlightTexture( void ) {
 			if ( clipBits[a] & clipBits[b] & clipBits[c] ) {
 				continue;   // not lighted
 			}
-
-//			if(!r_dlightBacks->integer) {
-//				vec3_t	dir;
-//				VectorSubtract( origin, tess.xyz[a], dir );
-//				VectorNormalize(dir);
-//				if( DotProduct( tess.normal[i], dir) < 0) {
-//					continue;	// not lighted (backface)
-//				}
-//			}
 
 			hitIndexes[numIndexes] = a;
 			hitIndexes[numIndexes + 1] = b;

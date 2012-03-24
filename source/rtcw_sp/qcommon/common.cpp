@@ -1744,10 +1744,6 @@ void Com_SetRecommended( qboolean vidrestart ) {
 	if ( lowMemory ) {
 		Com_Printf( "Found minimum memory requirement\n" );
 		Cvar_Set( "s_khz", "11" );
-		if ( !goodVideo ) {
-			Cvar_Set( "r_lowMemTextureSize", "256" );
-			Cvar_Set( "r_lowMemTextureThreshold", "40.0" );
-		}
 	}
 	if ( vidrestart ) {
 		Cbuf_AddText( "vid_restart\n" );

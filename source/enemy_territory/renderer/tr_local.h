@@ -1247,45 +1247,6 @@ extern backEndState_t backEnd;
 extern trGlobals_t tr;
 extern glstate_t glState;           // outside of TR since it shouldn't be cleared during ref re-init
 
-
-//
-// cvars
-//
-extern Cvar   *r_zfar;                // far Z clip plane
-
-extern Cvar   *r_inGameVideo;             // controls whether in game video should be draw
-extern Cvar   *r_dlightBacks;         // dlight non-facing surfaces for continuity
-
-extern Cvar  *r_drawfoliage;          // ydnar: disable/enable foliage rendering
-
-extern Cvar   *r_oldMode;             // ydnar: previous "good" video mode
-
-extern Cvar   *r_ext_texenv_op;
-extern Cvar   *r_ati_fsaa_samples;                //DAJ
-
-extern Cvar   *r_clampToEdge;         // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
-
-extern Cvar  *r_rmse;                         // reduces textures to this root mean square error
-
-extern Cvar  *r_trisColor;                    // enables modifying of the wireframe colour (in 0xRRGGBB[AA] format, alpha defaults to FF)
-extern Cvar  *r_normallength;                 // length of the normals
-extern Cvar  *r_showmodelbounds;
-
-extern Cvar  *r_portalsky;    // (SA) added
-
-// Ridah
-extern Cvar  *r_cache;
-extern Cvar  *r_cacheShaders;
-extern Cvar  *r_cacheModels;
-
-extern Cvar  *r_cacheGathering;
-
-extern Cvar  *r_bonesDebug;
-// done.
-
-// Rafael - wolf fog
-extern Cvar   *r_wolffog;
-// done
 //====================================================================
 
 float R_NoiseGet4f( float x, float y, float z, float t );

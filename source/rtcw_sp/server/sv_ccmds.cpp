@@ -234,10 +234,6 @@ static void SV_Map_f( void ) {
 		return;
 	}
 
-	Cvar_Set( "r_mapFogColor", "0" );       //----(SA)	added
-	Cvar_Set( "r_waterFogColor", "0" );     //----(SA)	added
-	Cvar_Set( "r_savegameFogColor", "0" );      //----(SA)	added
-
 	// force latched values to get set
 	Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2 );
 

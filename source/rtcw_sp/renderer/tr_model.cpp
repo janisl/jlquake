@@ -40,10 +40,6 @@ static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *name );
 
 model_t *loadmodel;
 
-extern Cvar *r_compressModels;
-extern Cvar *r_exportCompressedModels;
-extern Cvar *r_buildScript;
-
 /*
 ** R_GetModelByHandle
 */

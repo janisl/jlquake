@@ -30,52 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_Register_();
-void R_ModeList_f();
 
 static void GfxInfo_f( void );
-
-Cvar  *r_zfar;
-
-Cvar  *r_inGameVideo;
-Cvar  *r_dlightBacks;
-
-Cvar  *r_drawfoliage;     // ydnar
-
-Cvar  *r_clampToEdge; // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE SUPPORT
-
-//----(SA)	added
-Cvar  *r_ati_truform_tess;        //
-Cvar  *r_ati_truform_normalmode;  // linear/quadratic
-Cvar  *r_ati_truform_pointmode;   // linear/cubic
-//----(SA)	end
-
-Cvar  *r_ati_fsaa_samples;        //DAJ valids are 1, 2, 4
-
-Cvar  *r_portalsky;   //----(SA)	added
-Cvar  *r_oldMode;     // ydnar
-Cvar  *r_trisColor;
-Cvar  *r_normallength;
-Cvar  *r_showmodelbounds;
-
-// Ridah
-Cvar  *r_cache;
-Cvar  *r_cacheShaders;
-Cvar  *r_cacheModels;
-
-Cvar  *r_cacheGathering;
-
-Cvar  *r_buildScript;
-
-Cvar  *r_bonesDebug;
-// done.
-
-// Rafael - wolf fog
-Cvar  *r_wolffog;
-// done
-
-Cvar  *r_rmse;
 
 int max_polys;
 int max_polyverts;
@@ -685,57 +642,6 @@ R_Register
 */
 void R_Register( void ) {
 	R_Register_();
-	//
-	// latched and archived variables
-	//
-//----(SA)	added
-	r_ati_fsaa_samples              = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE | CVAR_UNSAFE );        //DAJ valids are 1, 2, 4
-//----(SA)	end
-
-	r_clampToEdge = ri.Cvar_Get( "r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE ); // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
-
-	r_rmse = ri.Cvar_Get( "r_rmse", "0.0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	AssertCvarRange( r_overBrightBits, 0, 1, qtrue );                                   // ydnar: limit to overbrightbits 1 (sorry 1337 players)
-	r_oldMode = ri.Cvar_Get( "r_oldMode", "", CVAR_ARCHIVE );                             // ydnar: previous "good" video mode
-#if MAC_STVEF_HM || MAC_WOLF2_MP
-	r_ati_fsaa_samples              = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE );       //DAJ valids are 1, 2, 4
-#endif
-	AssertCvarRange( r_mapOverBrightBits, 0, 3, qtrue );
-	AssertCvarRange( r_intensity, 0, 1.5, qfalse );
-
-//----(SA)	added
-	r_zfar = ri.Cvar_Get( "r_zfar", "0", CVAR_CHEAT );
-//----(SA)	end
-	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
-	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-
-	// Ridah
-	// TTimo show_bug.cgi?id=440
-	//   with r_cache enabled, non-win32 OSes were leaking 24Mb per R_Init..
-	r_cache = ri.Cvar_Get( "r_cache", "1", CVAR_LATCH2 );  // leaving it as this for backwards compability. but it caches models and shaders also
-// (SA) disabling cacheshaders
-//	ri.Cvar_Set( "r_cacheShaders", "0");
-	// Gordon: enabling again..
-	r_cacheShaders = ri.Cvar_Get( "r_cacheShaders", "1", CVAR_LATCH2 );
-//----(SA)	end
-
-	r_cacheModels = ri.Cvar_Get( "r_cacheModels", "1", CVAR_LATCH2 );
-	r_cacheGathering = ri.Cvar_Get( "cl_cacheGathering", "0", 0 );
-	r_buildScript = ri.Cvar_Get( "com_buildscript", "0", 0 );
-	r_bonesDebug = ri.Cvar_Get( "r_bonesDebug", "0", CVAR_CHEAT );
-	// done.
-
-	// Rafael - wolf fog
-	r_wolffog = ri.Cvar_Get( "r_wolffog", "1", CVAR_CHEAT ); // JPW NERVE cheat protected per id request
-	// done
-
-	r_drawfoliage = ri.Cvar_Get( "r_drawfoliage", "1", CVAR_CHEAT );  // ydnar
-
-	r_trisColor = ri.Cvar_Get( "r_trisColor", "1.0 1.0 1.0 1.0", CVAR_ARCHIVE );
-	r_normallength = ri.Cvar_Get( "r_normallength", "0.5", CVAR_ARCHIVE );
-	r_showmodelbounds = ri.Cvar_Get( "r_showmodelbounds", "0", CVAR_CHEAT );
-
-	r_portalsky = ri.Cvar_Get( "cg_skybox", "1", 0 );
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va( "%d", MAX_POLYS ), 0 );
 	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va( "%d", MAX_POLYVERTS ), 0 );
 
@@ -745,7 +651,6 @@ void R_Register( void ) {
 	ri.Cmd_AddCommand( "shaderlist", R_ShaderList_f );
 	ri.Cmd_AddCommand( "skinlist", R_SkinList_f );
 	ri.Cmd_AddCommand( "modellist", R_Modellist_f );
-	ri.Cmd_AddCommand( "modelist", R_ModeList_f );
 	ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
 	ri.Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );

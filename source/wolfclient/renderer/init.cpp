@@ -184,10 +184,42 @@ Cvar* r_nv_fogdist_mode;
 
 Cvar* r_textureAnisotropy;
 
+Cvar* r_ati_truform_tess;
+Cvar* r_ati_truform_normalmode;	// linear/quadratic
+Cvar* r_ati_truform_pointmode;	// linear/cubic
+
+Cvar* r_zfar;
+
+Cvar* r_dlightScale;
+
+Cvar* r_rmse;
+Cvar* r_picmip2;
+
+Cvar* r_portalsky;
+
+Cvar* r_cache;
+Cvar* r_cacheShaders;
+Cvar* r_cacheModels;
+Cvar* r_cacheGathering;
+
+Cvar* r_bonesDebug;
+
+Cvar* r_wolffog;
+
+Cvar* r_drawfoliage;
+
+Cvar* r_clampToEdge;
+
+Cvar* r_trisColor;
+Cvar* r_normallength;
+
+Cvar* r_compressModels;
+Cvar* r_exportCompressedModels;
+Cvar* r_buildScript;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-vidmode_t r_vidModes[] =
+static vidmode_t r_vidModes[] =
 {
 	{ "Mode  0: 320x240",		320,	240,	1 },
 	{ "Mode  1: 400x300",		400,	300,	1 },
@@ -202,8 +234,7 @@ vidmode_t r_vidModes[] =
 	{ "Mode 10: 2048x1536",		2048,	1536,	1 },
 	{ "Mode 11: 856x480 (wide)",856,	480,	1 }
 };
-//static 
-int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
+static int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
 // CODE --------------------------------------------------------------------
 
@@ -247,8 +278,7 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 //
 //==========================================================================
 
-//static 
-void R_ModeList_f()
+static void R_ModeList_f()
 {
 	Log::write("\n");
 	for (int i = 0; i < s_numVidModes; i++ )
@@ -264,8 +294,7 @@ void R_ModeList_f()
 //
 //==========================================================================
 
-//static 
-void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
+static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
 {
 	if (shouldBeIntegral)
 	{
@@ -427,6 +456,10 @@ void R_Register_()
 	r_ext_ATI_pntriangles = Cvar_Get("r_ext_ATI_pntriangles", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	if (GGameType & GAME_ET)
+	{
+		AssertCvarRange(r_overBrightBits, 0, 1, true);	// ydnar: limit to overbrightbits 1 (sorry 1337 players)
+	}
 	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_picmip = Cvar_Get("r_picmip", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	AssertCvarRange(r_picmip, 0, 16, true);
@@ -438,6 +471,10 @@ void R_Register_()
 	r_detailTextures = Cvar_Get("r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	//	Disabled until I fix it on Linux.
 	r_smp = Cvar_Get("r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_rmse = Cvar_Get("r_rmse", "0.0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_picmip2 = Cvar_Get("r_picmip2", "2", CVAR_ARCHIVE | CVAR_LATCH2);   // used for character skins picmipping at a different level from the rest of the game
+	AssertCvarRange(r_picmip2, 0, 16, true);
+	r_clampToEdge = Cvar_Get("r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE); // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
 	//
 	// temporary latched variables that can only change over a restart
@@ -446,10 +483,30 @@ void R_Register_()
 	r_displayRefresh = Cvar_Get("r_displayRefresh", "0", CVAR_LATCH2);
 	AssertCvarRange(r_displayRefresh, 0, 200, true);
 	r_intensity = Cvar_Get("r_intensity", "1", CVAR_LATCH2);
+	if (GGameType & GAME_ET)
+	{
+		AssertCvarRange(r_intensity, 0, 1.5, false);
+	}
 	r_colorMipLevels = Cvar_Get("r_colorMipLevels", "0", CVAR_LATCH2);
 	r_mapOverBrightBits = Cvar_Get("r_mapOverBrightBits", "2", CVAR_LATCH2);
+	if (GGameType & GAME_ET)
+	{
+		AssertCvarRange(r_mapOverBrightBits, 0, 3, true);
+	}
 	r_fullbright = Cvar_Get("r_fullbright", "0", CVAR_LATCH2 | CVAR_CHEAT);
 	r_singleShader = Cvar_Get("r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH2);
+	if (GGameType & GAME_WolfSP)
+	{
+		// NOTE TTimo: r_cache is disabled by default in SP
+		Cvar_Set("r_cache", "0");
+		// (SA) disabling cacheshaders
+		Cvar_Set("r_cacheShaders", "0");
+	}
+	// TTimo show_bug.cgi?id=440
+	//   with r_cache enabled, non-win32 OSes were leaking 24Mb per R_Init..
+	r_cache = Cvar_Get("r_cache", "1", CVAR_LATCH2);  // leaving it as this for backwards compability. but it caches models and shaders also
+	r_cacheShaders = Cvar_Get("r_cacheShaders", "1", CVAR_LATCH2);
+	r_cacheModels = Cvar_Get("r_cacheModels", "1", CVAR_LATCH2);
 
 	//
 	// archived variables that can change at any time
@@ -493,6 +550,9 @@ void R_Register_()
 	r_ati_truform_tess = Cvar_Get("r_ati_truform_tess", "1", CVAR_ARCHIVE);
 	r_ati_truform_normalmode = Cvar_Get("r_ati_truform_normalmode", "QUADRATIC", CVAR_ARCHIVE);
 	r_ati_truform_pointmode = Cvar_Get("r_ati_truform_pointmode", "CUBIC", CVAR_ARCHIVE);
+	r_dlightScale = Cvar_Get("r_dlightScale", "1.0", CVAR_ARCHIVE);
+	r_trisColor = Cvar_Get("r_trisColor", "1.0 1.0 1.0 1.0", CVAR_ARCHIVE);
+	r_normallength = Cvar_Get("r_normallength", "0.5", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -551,11 +611,20 @@ void R_Register_()
 	r_portalOnly = Cvar_Get("r_portalOnly", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get("r_debugSurface", "0", CVAR_CHEAT);
 	r_norefresh = Cvar_Get("r_norefresh", "0", CVAR_CHEAT);
+	r_zfar = Cvar_Get("r_zfar", "0", CVAR_CHEAT);
+	r_portalsky = Cvar_Get("cg_skybox", "1", 0);
+	r_cacheGathering = Cvar_Get("cl_cacheGathering", "0", 0);
+	r_bonesDebug = Cvar_Get("r_bonesDebug", "0", CVAR_CHEAT);
+	r_wolffog = Cvar_Get("r_wolffog", "1", 0);
+	r_drawfoliage = Cvar_Get("r_drawfoliage", "1", CVAR_CHEAT);
+	r_compressModels = Cvar_Get("r_compressModels", "0", 0);     // converts MD3 -> MDC at run-time
+	r_exportCompressedModels = Cvar_Get("r_exportCompressedModels", "0", 0); // saves compressed models
+	r_buildScript = Cvar_Get("com_buildscript", "0", 0);
 
-#if 0
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
 	Cmd_AddCommand("modelist", R_ModeList_f);
+#if 0
 	Cmd_AddCommand("imagelist", R_ImageList_f);
 	Cmd_AddCommand("shaderlist", R_ShaderList_f);
 	Cmd_AddCommand("skinlist", R_SkinList_f);

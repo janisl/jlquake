@@ -1605,8 +1605,6 @@ static qboolean ParseShader( const char **text ) {
 //		density
 //		r,g,b
 //		time to complete
-			ri.Cvar_Set( "r_waterFogColor", fogString );
-
 			continue;
 		}
 		// fogvars
@@ -1637,7 +1635,6 @@ static qboolean ParseShader( const char **text ) {
 			}
 
 //			R_SetFog(FOG_MAP, 0, fogFar, fogColor[0], fogColor[1], fogColor[2], fogDensity);
-			ri.Cvar_Set( "r_mapFogColor", va( "0 %d %f %f %f %f 0", fogFar, fogDensity, fogColor[0], fogColor[1], fogColor[2] ) );
 //			R_SetFog(FOG_CMD_SWITCHFOG, FOG_MAP, 50, 0, 0, 0, 0);
 
 			continue;
@@ -3281,10 +3278,6 @@ R_InitShaders
 void R_InitShaders( void ) {
 
 	glfogNum = FOG_NONE;
-	ri.Cvar_Set( "r_waterFogColor", "0" );  // clear fog
-	ri.Cvar_Set( "r_mapFogColor", "0" );        //
-	ri.Cvar_Set( "r_savegameFogColor", "0" );
-
 	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
 
 	memset( hashTable, 0, sizeof( hashTable ) );

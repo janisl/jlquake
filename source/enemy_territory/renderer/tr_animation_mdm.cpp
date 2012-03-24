@@ -1704,65 +1704,6 @@ void RB_MDM_SurfaceAnim( mdmSurface_t *surface ) {
 		}
 	}
 
-/*	if( r_showmodelbounds->integer ) {
-		vec3_t diff, v1, v2, v3, v4, v5, v6;
-		mdxHeader_t	*mdxHeader = R_GetModelByHandle( refent->frameModel )->model.mdx;
-		mdxFrame_t	*mdxFrame = (mdxFrame_t *)((byte *)mdxHeader + mdxHeader->ofsFrames +
-								refent->frame * (int) ( sizeof( mdxBoneFrameCompressed_t ) ) * mdxHeader->numBones +
-								refent->frame * sizeof(mdxFrame_t));
-
-		// show model bounds
-		GL_Bind( tr.whiteImage );
-		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
-		qglLineWidth( 1 );
-		qglColor3f( .0,.8,.0 );
-		qglBegin( GL_LINES );
-
-		VectorSubtract( mdxFrame->bounds[0], mdxFrame->bounds[1], diff);
-
-		VectorCopy( mdxFrame->bounds[0], v1 );
-		VectorCopy( mdxFrame->bounds[0], v2 );
-		VectorCopy( mdxFrame->bounds[0], v3 );
-		v1[0] -= diff[0];
-		v2[1] -= diff[1];
-		v3[2] -= diff[2];
-		qglVertex3fv( mdxFrame->bounds[0] );
-		qglVertex3fv( v1 );
-		qglVertex3fv( mdxFrame->bounds[0] );
-		qglVertex3fv( v2 );
-		qglVertex3fv( mdxFrame->bounds[0] );
-		qglVertex3fv( v3 );
-
-		VectorCopy( mdxFrame->bounds[1], v4 );
-		VectorCopy( mdxFrame->bounds[1], v5 );
-		VectorCopy( mdxFrame->bounds[1], v6 );
-		v4[0] += diff[0];
-		v5[1] += diff[1];
-		v6[2] += diff[2];
-		qglVertex3fv( mdxFrame->bounds[1] );
-		qglVertex3fv( v4 );
-		qglVertex3fv( mdxFrame->bounds[1] );
-		qglVertex3fv( v5 );
-		qglVertex3fv( mdxFrame->bounds[1] );
-		qglVertex3fv( v6 );
-
-		qglVertex3fv( v2 );
-		qglVertex3fv( v6 );
-		qglVertex3fv( v6 );
-		qglVertex3fv( v1 );
-		qglVertex3fv( v1 );
-		qglVertex3fv( v5 );
-
-		qglVertex3fv( v2 );
-		qglVertex3fv( v4 );
-		qglVertex3fv( v4 );
-		qglVertex3fv( v3 );
-		qglVertex3fv( v3 );
-		qglVertex3fv( v5 );
-
-		qglEnd();
-	}*/
-
 	if ( r_bonesDebug->integer > 1 ) {
 		// dont draw the actual surface
 		tess.numIndexes = oldIndexes;

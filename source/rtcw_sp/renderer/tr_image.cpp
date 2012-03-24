@@ -683,29 +683,6 @@ static void Upload32(   unsigned *data,
 
 	rmse = R_RMSE( (byte *)data, width, height );
 
-	if ( r_lowMemTextureSize->integer && ( scaled_width > r_lowMemTextureSize->integer || scaled_height > r_lowMemTextureSize->integer ) && rmse < r_lowMemTextureThreshold->value ) {
-		int scale;
-
-		for ( scale = 1 ; scale < r_lowMemTextureSize->integer; scale <<= 1 ) {
-			;
-		}
-
-		while ( scaled_width > scale || scaled_height > scale ) {
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-		}
-
-		ri.Printf( PRINT_ALL, "r_lowMemTextureSize forcing reduction from %i x %i to %i x %i\n", width, height, scaled_width, scaled_height );
-
-		resampledBuffer = (unsigned int*)R_GetImageBuffer( scaled_width * scaled_height * 4, BUFFER_RESAMPLED );
-		ResampleTexture( data, width, height, resampledBuffer, scaled_width, scaled_height );
-		data = resampledBuffer;
-		width = scaled_width;
-		height = scaled_height;
-
-	}
-
-
 	//
 	// clamp to minimum size
 	//

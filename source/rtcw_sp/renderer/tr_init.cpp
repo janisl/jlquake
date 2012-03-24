@@ -30,53 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_Register_();
-void R_ModeList_f();
 
 static void GfxInfo_f( void );
-
-Cvar  *r_zfar;
-
-Cvar  *r_inGameVideo;
-Cvar  *r_dlightBacks;
-Cvar  *r_dlightScale; //----(SA)	added
-
-Cvar  *r_waterFogColor;   //----(SA)	added
-Cvar  *r_mapFogColor;
-Cvar  *r_savegameFogColor;    //----(SA)	added
-
-Cvar  *r_ati_truform_tess;        //
-Cvar  *r_ati_truform_normalmode;  // linear/quadratic
-Cvar  *r_ati_truform_pointmode;   // linear/cubic
-//----(SA)	end
-
-Cvar  *r_ati_fsaa_samples;        //DAJ valids are 1, 2, 4
-
-Cvar  *r_portalsky;   //----(SA)	added
-Cvar  *r_lowMemTextureSize;
-Cvar  *r_lowMemTextureThreshold;
-Cvar  *r_picmip2;
-
-// Ridah
-Cvar  *r_cache;
-Cvar  *r_cacheShaders;
-Cvar  *r_cacheModels;
-Cvar  *r_compressModels;
-Cvar  *r_exportCompressedModels;
-
-Cvar  *r_cacheGathering;
-
-Cvar  *r_buildScript;
-
-Cvar  *r_bonesDebug;
-// done.
-
-// Rafael - wolf fog
-Cvar  *r_wolffog;
-// done
-
-Cvar  *r_rmse;
 
 int max_polys;
 int max_polyverts;
@@ -707,54 +663,6 @@ R_Register
 */
 void R_Register( void ) {
 	R_Register_();
-	//
-	// latched and archived variables
-	//
-//----(SA)	added
-	r_ati_fsaa_samples              = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE );       //DAJ valids are 1, 2, 4
-//----(SA)	end
-
-	r_picmip2 = ri.Cvar_Get( "r_picmip2", "2", CVAR_ARCHIVE | CVAR_LATCH2 );   // used for character skins picmipping at a different level from the rest of the game
-	r_lowMemTextureSize = ri.Cvar_Get( "r_lowMemTextureSize", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_lowMemTextureThreshold = ri.Cvar_Get( "r_lowMemTextureThreshold", "15.0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_rmse = ri.Cvar_Get( "r_rmse", "0.0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	AssertCvarRange( r_picmip2, 0, 16, qtrue );
-
-//----(SA)	added
-	r_zfar = ri.Cvar_Get( "r_zfar", "0", CVAR_CHEAT );
-//----(SA)	end
-	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
-	r_dlightScale = ri.Cvar_Get( "r_dlightScale", "1.0", CVAR_ARCHIVE );   //----(SA)	added
-	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-
-	r_waterFogColor = ri.Cvar_Get( "r_waterFogColor", "0", CVAR_ROM );  //----(SA)	added
-	r_mapFogColor = ri.Cvar_Get( "r_mapFogColor", "0", CVAR_ROM );  //----(SA)	added
-	r_savegameFogColor = ri.Cvar_Get( "r_savegameFogColor", "0", CVAR_ROM );    //----(SA)	added
-
-	// Ridah
-	// show_bug.cgi?id=440
-	// NOTE TTimo: r_cache is disabled by default in SP
-	ri.Cvar_Set( "r_cache", "0" );
-	r_cache = ri.Cvar_Get( "r_cache", "1", CVAR_LATCH2 );  // leaving it as this for backwards compability. but it caches models and shaders also
-// (SA) disabling cacheshaders
-	ri.Cvar_Set( "r_cacheShaders", "0" );
-	r_cacheShaders = ri.Cvar_Get( "r_cacheShaders", "0", CVAR_LATCH2 );
-//----(SA)	end
-
-	r_cacheModels = ri.Cvar_Get( "r_cacheModels", "1", CVAR_LATCH2 );
-	r_compressModels = ri.Cvar_Get( "r_compressModels", "0", 0 );     // converts MD3 -> MDC at run-time
-	r_exportCompressedModels = ri.Cvar_Get( "r_exportCompressedModels", "0", 0 ); // saves compressed models
-	r_cacheGathering = ri.Cvar_Get( "cl_cacheGathering", "0", 0 );
-	r_buildScript = ri.Cvar_Get( "com_buildscript", "0", 0 );
-	r_bonesDebug = ri.Cvar_Get( "r_bonesDebug", "0", CVAR_CHEAT );
-	// done.
-
-	// Rafael - wolf fog
-	r_wolffog = ri.Cvar_Get( "r_wolffog", "1", 0 );
-	// done
-
-	r_portalsky = ri.Cvar_Get( "cg_skybox", "1", 0 );
-
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va( "%d", MAX_POLYS ), 0 );
 	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va( "%d", MAX_POLYVERTS ), 0 );
 
@@ -764,7 +672,6 @@ void R_Register( void ) {
 	ri.Cmd_AddCommand( "shaderlist", R_ShaderList_f );
 	ri.Cmd_AddCommand( "skinlist", R_SkinList_f );
 	ri.Cmd_AddCommand( "modellist", R_Modellist_f );
-	ri.Cmd_AddCommand( "modelist", R_ModeList_f );
 	ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
 	ri.Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );
