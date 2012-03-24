@@ -5,7 +5,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp
 	renderer/main.cpp
-	renderer/qgl.cpp
+	../client/renderer/qgl.cpp
 	renderer/state.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp

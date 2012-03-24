@@ -59,8 +59,13 @@ extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
 extern	void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 
+extern void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
+extern void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
+
 #if defined( _WIN32 )
 extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
+#else
+extern int ( *qglXSwapIntervalSGI )( int interval );
 #endif
 
 // S3TC compression constants
@@ -87,4 +92,47 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #define GL_POINT_SIZE_MAX_EXT				0x8127
 #define GL_POINT_FADE_THRESHOLD_SIZE_EXT	0x8128
 #define GL_DISTANCE_ATTENUATION_EXT			0x8129
+#endif
+
+// GL_EXT_texture_compression_s3tc constants
+#ifndef GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT		0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT	0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT	0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT	0x83F3
+#endif
+
+// for NV fog distance
+#ifndef GL_NV_fog_distance
+#define GL_FOG_DISTANCE_MODE_NV				0x855A
+#define GL_EYE_RADIAL_NV					0x855B
+#define GL_EYE_PLANE_ABSOLUTE_NV			0x855C
+/* reuse GL_EYE_PLANE */
+#endif
+
+// GL_EXT_texture_filter_anisotropic constants
+#ifndef GL_EXT_texture_filter_anisotropic
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT		0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT	0x84FF
+#endif
+
+// GL_ATI_pn_triangles
+#ifndef GL_ATI_pn_triangles
+#define GL_ATI_pn_triangles 1
+#define GL_PN_TRIANGLES_ATI							0x87F0
+#define GL_MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI	0x87F1
+#define GL_PN_TRIANGLES_POINT_MODE_ATI				0x87F2
+#define GL_PN_TRIANGLES_NORMAL_MODE_ATI				0x87F3
+#define GL_PN_TRIANGLES_TESSELATION_LEVEL_ATI		0x87F4
+#define GL_PN_TRIANGLES_POINT_MODE_LINEAR_ATI		0x87F5
+#define GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI		0x87F6
+#define GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI		0x87F7
+#define GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI	0x87F8
+
+typedef void ( APIENTRY * PFNGLPNTRIANGLESIATIPROC )( GLenum pname, GLint param );
+typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat param );
+#endif
+
+#ifndef GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_EDGE					0x812F
 #endif
