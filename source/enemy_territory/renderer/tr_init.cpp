@@ -43,17 +43,9 @@ Cvar  *r_dlightBacks;
 
 Cvar  *r_drawfoliage;     // ydnar
 
-Cvar  *r_allowExtensions;
-
 Cvar  *r_clampToEdge; // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE SUPPORT
 
 //----(SA)	added
-Cvar  *r_ext_texture_filter_anisotropic;
-
-Cvar  *r_ext_NV_fog_dist;
-Cvar  *r_nv_fogdist_mode;
-
-Cvar  *r_ext_ATI_pntriangles;
 Cvar  *r_ati_truform_tess;        //
 Cvar  *r_ati_truform_normalmode;  // linear/quadratic
 Cvar  *r_ati_truform_pointmode;   // linear/cubic
@@ -66,7 +58,6 @@ Cvar  *r_oldMode;     // ydnar
 Cvar  *r_trisColor;
 Cvar  *r_normallength;
 Cvar  *r_showmodelbounds;
-Cvar  *r_textureAnisotropy;
 
 // Ridah
 Cvar  *r_cache;
@@ -697,20 +688,8 @@ void R_Register( void ) {
 	//
 	// latched and archived variables
 	//
-	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-
 //----(SA)	added
-	r_ext_ATI_pntriangles           = ri.Cvar_Get( "r_ext_ATI_pntriangles", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE ); //----(SA)	default to '0'
-	r_ati_truform_tess              = ri.Cvar_Get( "r_ati_truform_tess", "1", CVAR_ARCHIVE | CVAR_UNSAFE );
-	r_ati_truform_normalmode        = ri.Cvar_Get( "r_ati_truform_normalmode", "GL_PN_TRIANGLES_NORMAL_MODE_LINEAR", CVAR_ARCHIVE | CVAR_UNSAFE );
-	r_ati_truform_pointmode         = ri.Cvar_Get( "r_ati_truform_pointmode", "GL_PN_TRIANGLES_POINT_MODE_LINEAR", CVAR_ARCHIVE | CVAR_UNSAFE );
-
 	r_ati_fsaa_samples              = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE | CVAR_UNSAFE );        //DAJ valids are 1, 2, 4
-
-	r_ext_texture_filter_anisotropic    = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-
-	r_ext_NV_fog_dist                   = ri.Cvar_Get( "r_ext_NV_fog_dist", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE );
-	r_nv_fogdist_mode                   = ri.Cvar_Get( "r_nv_fogdist_mode", "GL_EYE_RADIAL_NV", CVAR_ARCHIVE | CVAR_UNSAFE );  // default to 'looking good'
 //----(SA)	end
 
 	r_clampToEdge = ri.Cvar_Get( "r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE ); // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
@@ -729,7 +708,6 @@ void R_Register( void ) {
 //----(SA)	end
 	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-	r_textureAnisotropy = ri.Cvar_Get( "r_textureAnisotropy", "1.0", CVAR_ARCHIVE );
 
 	// Ridah
 	// TTimo show_bug.cgi?id=440

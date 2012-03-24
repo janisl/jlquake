@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#include "qgl.h"
 #include "../../core/file_formats/md3.h"
 #include "../../core/file_formats/bsp47.h"
 
@@ -1261,19 +1260,12 @@ extern Cvar  *r_drawfoliage;          // ydnar: disable/enable foliage rendering
 
 extern Cvar   *r_oldMode;             // ydnar: previous "good" video mode
 
-extern Cvar   *r_allowExtensions;             // global enable/disable of OpenGL extensions
 extern Cvar   *r_ext_texenv_op;
-extern Cvar   *r_ext_texture_filter_anisotropic;  //DAJ from EF
 extern Cvar   *r_ati_fsaa_samples;                //DAJ
 
 extern Cvar   *r_clampToEdge;         // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
-// TTimo
-extern Cvar   *r_ext_NV_fog_dist;
-extern Cvar   *r_nv_fogdist_mode;
-
 extern Cvar  *r_rmse;                         // reduces textures to this root mean square error
-extern Cvar  *r_textureAnisotropy;
 
 extern Cvar  *r_trisColor;                    // enables modifying of the wireframe colour (in 0xRRGGBB[AA] format, alpha defaults to FF)
 extern Cvar  *r_normallength;                 // length of the normals

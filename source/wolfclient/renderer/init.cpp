@@ -66,6 +66,9 @@ Cvar*		r_ext_texture_env_add;
 Cvar*		r_ext_gamma_control;
 Cvar*		r_ext_compiled_vertex_array;
 Cvar*		r_ext_point_parameters;
+Cvar* r_ext_NV_fog_dist;
+Cvar* r_ext_texture_filter_anisotropic;
+Cvar* r_ext_ATI_pntriangles;
 
 Cvar*		r_gamma;
 Cvar*		r_ignorehwgamma;
@@ -176,6 +179,10 @@ Cvar*		r_particle_att_c;
 
 Cvar*		r_noportals;
 Cvar*		r_portalOnly;
+
+Cvar* r_nv_fogdist_mode;
+
+Cvar* r_textureAnisotropy;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -415,6 +422,9 @@ void R_Register_()
 	r_ext_gamma_control = Cvar_Get("r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_ext_compiled_vertex_array = Cvar_Get("r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_ext_point_parameters = Cvar_Get("r_ext_point_parameters", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_ext_NV_fog_dist = Cvar_Get("r_ext_NV_fog_dist", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_texture_filter_anisotropic = Cvar_Get("r_ext_texture_filter_anisotropic", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
+	r_ext_ATI_pntriangles = Cvar_Get("r_ext_ATI_pntriangles", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "0", CVAR_ARCHIVE | CVAR_LATCH2);
@@ -478,6 +488,11 @@ void R_Register_()
 	r_particle_att_a = Cvar_Get("r_particle_att_a", "0.01", CVAR_ARCHIVE);
 	r_particle_att_b = Cvar_Get("r_particle_att_b", "0.0", CVAR_ARCHIVE);
 	r_particle_att_c = Cvar_Get("r_particle_att_c", "0.01", CVAR_ARCHIVE);
+	r_nv_fogdist_mode = Cvar_Get("r_nv_fogdist_mode", "GL_EYE_RADIAL_NV", CVAR_ARCHIVE | CVAR_UNSAFE);  // default to 'looking good'
+	r_textureAnisotropy = Cvar_Get("r_textureAnisotropy", "1.0", CVAR_ARCHIVE);
+	r_ati_truform_tess = Cvar_Get("r_ati_truform_tess", "1", CVAR_ARCHIVE);
+	r_ati_truform_normalmode = Cvar_Get("r_ati_truform_normalmode", "QUADRATIC", CVAR_ARCHIVE);
+	r_ati_truform_pointmode = Cvar_Get("r_ati_truform_pointmode", "CUBIC", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time

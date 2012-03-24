@@ -100,31 +100,6 @@ static qboolean GLW_StartDriverAndSetMode( int mode,
 }
 
 /*
-** GLW_InitExtensions
-*/
-static void GLW_InitExtensions( void ) {
-	if ( !r_allowExtensions->integer ) {
-		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
-		return;
-	}
-
-	// GL_NV_fog_distance
-	if ( Q_stristr( glConfig.extensions_string, "GL_NV_fog_distance" ) ) {
-		if ( r_ext_NV_fog_dist->integer ) {
-			glConfig.NVFogAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_NV_fog_distance\n" );
-		} else {
-			ri.Printf( PRINT_ALL, "...ignoring GL_NV_fog_distance\n" );
-			ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-		}
-	} else {
-		ri.Printf( PRINT_ALL, "...GL_NV_fog_distance not found\n" );
-		ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-	}
-
-}
-
-/*
 ** GLW_LoadOpenGL
 **
 ** GLimp_win.c internal function that that attempts to load and use
@@ -234,9 +209,6 @@ void GLimp_Init( void ) {
 	}
 
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
-
-	// initialize extensions
-	GLW_InitExtensions();
 
 	InitSig();
 

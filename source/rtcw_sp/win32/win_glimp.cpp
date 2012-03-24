@@ -4,8 +4,6 @@
 #include "resource.h"
 #include "win_local.h"
 
-static void     GLW_InitExtensions( void );
-
 /*
 ** GLW_StartDriverAndSetMode
 */
@@ -28,90 +26,6 @@ static qboolean GLW_StartDriverAndSetMode( int mode,
 		break;
 	}
 	return qtrue;
-}
-
-/*
-** GLW_InitExtensions
-*/
-static void GLW_InitExtensions( void ) {
-
-//----(SA)	moved these up
-	qglPNTrianglesiATI = NULL;
-	qglPNTrianglesfATI = NULL;
-	glConfig.anisotropicAvailable = qfalse;
-	glConfig.NVFogAvailable = qfalse;
-	glConfig.NVFogMode = 0;
-//----(SA)	end
-
-	if ( !r_allowExtensions->integer ) {
-		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
-		return;
-	}
-
-	// GL_ATI_pn_triangles - ATI PN-Triangles
-	if ( strstr( glConfig.extensions_string, "GL_ATI_pn_triangles" ) ) {
-		if ( r_ext_ATI_pntriangles->integer ) {
-			ri.Printf( PRINT_ALL, "...using GL_ATI_pn_triangles\n" );
-
-			qglPNTrianglesiATI = ( PFNGLPNTRIANGLESIATIPROC ) GLimp_GetProcAddress( "glPNTrianglesiATI" );
-			qglPNTrianglesfATI = ( PFNGLPNTRIANGLESFATIPROC ) GLimp_GetProcAddress( "glPNTrianglesfATI" );
-
-			if ( !qglPNTrianglesiATI || !qglPNTrianglesfATI ) {
-				ri.Error( ERR_FATAL, "bad getprocaddress 0" );
-			}
-		} else {
-			ri.Printf( PRINT_ALL, "...ignoring GL_ATI_pn_triangles\n" );
-			ri.Cvar_Set( "r_ext_ATI_pntriangles", "0" );
-		}
-	} else {
-		ri.Printf( PRINT_ALL, "...GL_ATI_pn_triangles not found\n" );
-		ri.Cvar_Set( "r_ext_ATI_pntriangles", "0" );
-	}
-
-
-
-	// GL_EXT_texture_filter_anisotropic
-	if ( strstr( glConfig.extensions_string, "GL_EXT_texture_filter_anisotropic" ) ) {
-		if ( r_ext_texture_filter_anisotropic->integer ) {
-//			glConfig.anisotropicAvailable = qtrue;
-//			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_filter_anisotropic\n" );
-
-			// always ignored.  unsupported.
-			glConfig.anisotropicAvailable = qfalse;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_filter_anisotropic\n" );
-			ri.Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
-
-		} else {
-			glConfig.anisotropicAvailable = qfalse;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_filter_anisotropic\n" );
-			ri.Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
-		}
-	} else {
-//		ri.Printf( PRINT_ALL, "...GL_EXT_texture_filter_anisotropic not found\n" );
-		ri.Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
-	}
-
-
-
-	// GL_NV_fog_distance
-	if ( strstr( glConfig.extensions_string, "GL_NV_fog_distance" ) ) {
-		if ( r_ext_NV_fog_dist->integer ) {
-			glConfig.NVFogAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_NV_fog_distance\n" );
-		} else {
-			ri.Printf( PRINT_ALL, "...ignoring GL_NV_fog_distance\n" );
-			ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-		}
-	} else {
-		ri.Printf( PRINT_ALL, "...GL_NV_fog_distance not found\n" );
-		ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-	}
-
-//----(SA)	end
-
-	// support?
-//	SGIS_generate_mipmap
-//	ARB_multisample
 }
 
 /*
@@ -236,7 +150,6 @@ void GLimp_Init( void ) {
 			ri.Cvar_Set( "r_picmip", "2" );
 			ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 		} else if ( strstr( buf, "matrox" ) ) {
-			ri.Cvar_Set( "r_allowExtensions", "0" );
 		} else {
 			if ( strstr( buf, "rage 128" ) || strstr( buf, "rage128" ) ) {
 				ri.Cvar_Set( "r_finish", "0" );
@@ -249,6 +162,4 @@ void GLimp_Init( void ) {
 	}
 
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
-
-	GLW_InitExtensions();
 }

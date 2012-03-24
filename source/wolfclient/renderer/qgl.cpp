@@ -629,6 +629,20 @@ static bool CheckExtension(const char* Extension)
 	return false;
 }
 
+static bool CheckSystemExtension(const char* Extension)
+{
+	Array<String> Extensions;
+	String(GLimp_GetSystemExtensionsString()).Split(' ', Extensions);
+	for (int i = 0; i < Extensions.Num(); i++)
+	{
+		if (Extensions[i] == Extension)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 //==========================================================================
 //
 //	QGL_Init
@@ -808,6 +822,17 @@ void QGL_Init()
 	{
 		Log::write("...WGL_EXT_swap_control not found\n");
 	}
+#else
+	// GLX_SGI_swap_control
+	if (CheckSystemExtension("GLX_SGI_swap_control"))
+	{
+		qglXSwapIntervalSGI = (int (*)(int interval))GLimp_GetProcAddress("glXSwapIntervalSGI");
+		common->Printf("...using GLX_SGI_swap_control\n");
+	}
+	else
+	{
+		common->Printf("... GLX_SGI_swap_control not found\n");
+	}
 #endif
 
 	// GL_EXT_compiled_vertex_array
@@ -853,6 +878,69 @@ void QGL_Init()
 	else
 	{
 		Log::write("...GL_EXT_point_parameters not found\n");
+	}
+
+	// GL_NV_fog_distance
+	glConfig.NVFogAvailable = false;
+	glConfig.NVFogMode = 0;
+	if (CheckExtension("GL_NV_fog_distance"))
+	{
+		if (r_ext_NV_fog_dist->integer)
+		{
+			glConfig.NVFogAvailable = true;
+			common->Printf("...using GL_NV_fog_distance\n");
+		} 
+		else
+		{
+			common->Printf("...ignoring GL_NV_fog_distance\n");
+		}
+	}
+	else
+	{
+		common->Printf("...GL_NV_fog_distance not found\n");
+	}
+
+	// GL_EXT_texture_filter_anisotropic
+	if (CheckExtension("GL_EXT_texture_filter_anisotropic"))
+	{
+		if (r_ext_texture_filter_anisotropic->integer)
+		{
+			glConfig.anisotropicAvailable = true;
+			common->Printf("...using GL_EXT_texture_filter_anisotropic\n");
+		}
+		else
+		{
+			common->Printf("...ignoring GL_EXT_texture_filter_anisotropic\n");
+		}
+	}
+	else
+	{
+		common->Printf("... GL_EXT_texture_filter_anisotropic not found\n");
+	}
+
+	// GL_ATI_pn_triangles - ATI PN-Triangles
+	if (CheckExtension("GL_ATI_pn_triangles"))
+	{
+		if (r_ext_ATI_pntriangles->integer)
+		{
+			common->Printf("...using GL_ATI_pn_triangles\n");
+
+			qglPNTrianglesiATI = (PFNGLPNTRIANGLESIATIPROC)GLimp_GetProcAddress("glPNTrianglesiATI");
+			qglPNTrianglesfATI = (PFNGLPNTRIANGLESFATIPROC)GLimp_GetProcAddress("glPNTrianglesfATI");
+
+			if (!qglPNTrianglesiATI || !qglPNTrianglesfATI)
+			{
+				common->FatalError("bad getprocaddress 0");
+			}
+		}
+		else
+		{
+			common->Printf("...ignoring GL_ATI_pn_triangles\n");
+		}
+	}
+	else
+	{
+		common->Printf("...GL_ATI_pn_triangles not found\n");
 	}
 
 	// check logging

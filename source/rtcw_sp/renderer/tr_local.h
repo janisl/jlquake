@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#include "qgl.h"
 #include "../../core/file_formats/md3.h"
 #include "../../core/file_formats/bsp47.h"
 
@@ -1054,17 +1053,9 @@ extern Cvar   *r_inGameVideo;             // controls whether in game video shou
 extern Cvar   *r_dlightScale;         // global user attenuation of dlights
 extern Cvar   *r_dlightBacks;         // dlight non-facing surfaces for continuity
 
-extern Cvar   *r_allowExtensions;             // global enable/disable of OpenGL extensions
 extern Cvar   *r_ext_texenv_op;
 //----(SA)	added
-extern Cvar   *r_ext_ATI_pntriangles;
-extern Cvar   *r_ati_truform_tess;
-extern Cvar   *r_ati_truform_pointmode;   //----(SA)
-extern Cvar   *r_ati_truform_normalmode;  //----(SA)
 extern Cvar   *r_ati_fsaa_samples;        //DAJ
-extern Cvar   *r_ext_texture_filter_anisotropic;
-extern Cvar   *r_ext_NV_fog_dist;
-extern Cvar   *r_nv_fogdist_mode;
 //----(SA)	end
 
 extern Cvar  *r_waterFogColor;        //----(SA)	added

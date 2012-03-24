@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#include "qgl.h"
 #include "../../core/file_formats/md3.h"
 #include "../../core/file_formats/bsp47.h"
 
@@ -1043,19 +1042,7 @@ extern Cvar   *r_zfar;                // far Z clip plane
 extern Cvar   *r_inGameVideo;             // controls whether in game video should be draw
 extern Cvar   *r_dlightBacks;         // dlight non-facing surfaces for continuity
 
-extern Cvar   *r_allowExtensions;             // global enable/disable of OpenGL extensions
 extern Cvar   *r_ext_texenv_op;
-extern Cvar   *r_ext_texture_filter_anisotropic;  //DAJ from EF
-
-//----(SA)	added
-extern Cvar   *r_ext_NV_fog_dist;
-extern Cvar   *r_nv_fogdist_mode;
-
-extern Cvar   *r_ext_ATI_pntriangles;
-extern Cvar   *r_ati_truform_tess;        //
-extern Cvar   *r_ati_truform_normalmode;  // linear/quadratic
-extern Cvar   *r_ati_truform_pointmode;   // linear/cubic
-//----(SA)	end
 
 extern Cvar   *r_ati_fsaa_samples;                //DAJ
 

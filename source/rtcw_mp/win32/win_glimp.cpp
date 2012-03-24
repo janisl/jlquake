@@ -4,8 +4,6 @@
 #include "resource.h"
 #include "win_local.h"
 
-static void     GLW_InitExtensions( void );
-
 /*
 ** GLW_StartDriverAndSetMode
 */
@@ -28,30 +26,6 @@ static qboolean GLW_StartDriverAndSetMode( int mode,
 		break;
 	}
 	return qtrue;
-}
-
-/*
-** GLW_InitExtensions
-*/
-static void GLW_InitExtensions( void ) {
-	if ( !r_allowExtensions->integer ) {
-		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
-		return;
-	}
-
-	// GL_NV_fog_distance
-	if ( strstr( glConfig.extensions_string, "GL_NV_fog_distance" ) ) {
-		if ( r_ext_NV_fog_dist->integer ) {
-			glConfig.NVFogAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_NV_fog_distance\n" );
-		} else {
-			ri.Printf( PRINT_ALL, "...ignoring GL_NV_fog_distance\n" );
-			ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-		}
-	} else {
-		ri.Printf( PRINT_ALL, "...GL_NV_fog_distance not found\n" );
-		ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-	}
 }
 
 /*
@@ -197,6 +171,4 @@ void GLimp_Init( void ) {
 	}
 
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
-
-	GLW_InitExtensions();
 }

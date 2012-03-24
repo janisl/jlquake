@@ -45,13 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../client/client.h"
 #include "linux_local.h" // bk001130
 
-// using our local glext.h
-// http://oss.sgi.com/projects/ogl-sample/ABI/
-#define GL_GLEXT_LEGACY
-#define GLX_GLXEXT_LEGACY
-#include <GL/glx.h>
-#include "../renderer/glext.h"
-
 const char *glx_extensions_string;
 
 /*
@@ -106,55 +99,6 @@ static qboolean GLW_StartDriverAndSetMode( int mode,
 		break;
 	}
 	return qtrue;
-}
-
-/*
-** GLW_InitExtensions
-*/
-static void GLW_InitExtensions( void ) {
-	if ( !r_allowExtensions->integer ) {
-		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
-		return;
-	}
-
-	// GL_NV_fog_distance
-	if ( Q_stristr( glConfig.extensions_string, "GL_NV_fog_distance" ) ) {
-		if ( r_ext_NV_fog_dist->integer ) {
-			glConfig.NVFogAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_NV_fog_distance\n" );
-		} else {
-			ri.Printf( PRINT_ALL, "...ignoring GL_NV_fog_distance\n" );
-			ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-		}
-	} else {
-		ri.Printf( PRINT_ALL, "...GL_NV_fog_distance not found\n" );
-		ri.Cvar_Set( "r_ext_NV_fog_dist", "0" );
-	}
-
-	// GL_EXT_texture_filter_anisotropic
-	if ( Q_stristr( glConfig.extensions_string, "GL_EXT_texture_filter_anisotropic" ) ) {
-		if ( r_ext_texture_filter_anisotropic->integer ) {
-			glConfig.anisotropicAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_filter_anisotropic\n" );
-		} else {
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_filter_anisotropic\n" );
-			ri.Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
-		}
-	} else {
-		ri.Printf( PRINT_ALL, "... GL_EXT_texture_filter_anisotropic not found\n" );
-		ri.Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
-	}
-
-	ri.Printf( PRINT_ALL, "Initializing GLX extensions\n" );
-
-	// GLX_SGI_swap_control
-	if ( Q_stristr( glx_extensions_string, "GLX_SGI_swap_control" ) ) {
-		qglXSwapIntervalSGI = (int ( *)( int interval ))GLimp_GetProcAddress("glXSwapIntervalSGI");
-		ri.Printf( PRINT_ALL, "...using GLX_SGI_swap_control\n" );
-	} else {
-		ri.Printf( PRINT_ALL, "... GLX_SGI_swap_control not found\n" );
-		qglXSwapIntervalSGI = NULL;
-	}
 }
 
 /*
@@ -270,9 +214,6 @@ void GLimp_Init( void ) {
 	}
 
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
-
-	// initialize extensions
-	GLW_InitExtensions();
 
 	InitSig();
 

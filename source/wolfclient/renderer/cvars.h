@@ -37,6 +37,9 @@ extern Cvar*	r_ext_texture_env_add;
 extern Cvar*	r_ext_gamma_control;
 extern Cvar*	r_ext_compiled_vertex_array;
 extern Cvar*	r_ext_point_parameters;
+extern Cvar* r_ext_NV_fog_dist;
+extern Cvar* r_ext_texture_filter_anisotropic;
+extern Cvar* r_ext_ATI_pntriangles;
 
 extern Cvar*	r_gamma;
 extern Cvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
@@ -154,5 +157,13 @@ extern Cvar*	r_particle_att_c;
 
 extern Cvar*	r_noportals;
 extern Cvar*	r_portalOnly;
+
+extern Cvar* r_nv_fogdist_mode;
+
+extern Cvar* r_textureAnisotropy;
+
+extern Cvar* r_ati_truform_tess;
+extern Cvar* r_ati_truform_pointmode;
+extern Cvar* r_ati_truform_normalmode;
 
 #endif
