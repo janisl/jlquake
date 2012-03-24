@@ -37,6 +37,9 @@ extern Cvar*	r_ext_texture_env_add;
 extern Cvar*	r_ext_gamma_control;
 extern Cvar*	r_ext_compiled_vertex_array;
 extern Cvar*	r_ext_point_parameters;
+extern Cvar* r_ext_NV_fog_dist;
+extern Cvar* r_ext_texture_filter_anisotropic;
+extern Cvar* r_ext_ATI_pntriangles;
 
 extern Cvar*	r_gamma;
 extern Cvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
@@ -154,5 +157,42 @@ extern Cvar*	r_particle_att_c;
 
 extern Cvar*	r_noportals;
 extern Cvar*	r_portalOnly;
+
+extern Cvar* r_nv_fogdist_mode;
+
+extern Cvar* r_textureAnisotropy;
+
+extern Cvar* r_ati_truform_tess;
+extern Cvar* r_ati_truform_pointmode;
+extern Cvar* r_ati_truform_normalmode;
+
+extern Cvar* r_zfar;					// far Z clip plane
+
+extern Cvar* r_dlightScale;				// global user attenuation of dlights
+
+extern Cvar* r_rmse;					// reduces textures to this root mean square error
+extern Cvar* r_picmip2;					// controls picmip values for designated (character skin) textures
+
+extern Cvar* r_portalsky;
+
+extern Cvar* r_cache;
+extern Cvar* r_cacheShaders;
+extern Cvar* r_cacheModels;
+extern Cvar* r_cacheGathering;
+
+extern Cvar* r_bonesDebug;
+
+extern Cvar* r_wolffog;
+
+extern Cvar* r_drawfoliage;				// ydnar: disable/enable foliage rendering
+
+extern Cvar* r_clampToEdge;				// ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
+
+extern Cvar* r_trisColor;				// enables modifying of the wireframe colour (in 0xRRGGBB[AA] format, alpha defaults to FF)
+extern Cvar* r_normallength;			// length of the normals
+
+extern Cvar* r_compressModels;
+extern Cvar* r_exportCompressedModels;
+extern Cvar* r_buildScript;
 
 #endif

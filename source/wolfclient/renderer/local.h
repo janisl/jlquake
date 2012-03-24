@@ -50,7 +50,7 @@
 #include "models/model.h"
 #endif
 #include "state.h"
-#include "cvars.h"
+#include "../../client/renderer/cvars.h"
 
 /*
 ====================================================================
