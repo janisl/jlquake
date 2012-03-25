@@ -49,6 +49,14 @@ frame.
 // Static Vars, ugly but easiest (and fastest) means of seperating RB_SurfaceAnim
 // and R_CalcBones
 
+// NOTE: this only used at run-time
+// FIXME: do we really need this?
+struct mdxBoneFrame_t
+{
+	float matrix[3][3];             // 3x3 rotation
+	vec3_t translation;             // translation vector
+};
+
 static float frontlerp, backlerp;
 static float torsoFrontlerp, torsoBacklerp;
 static int             *triangles, *boneRefs;
@@ -1301,7 +1309,7 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 				continue;
 			}
 
-			//if ( !(thisBoneInfo->flags & BONEFLAG_TAG) ) {
+			//if ( !(thisBoneInfo->flags & MDS_BONEFLAG_TAG) ) {
 
 			// 1st multiply with the bone->matrix
 			// 2nd translation for rotation relative to bone around torso parent offset
