@@ -22,10 +22,10 @@
 typedef unsigned int glIndex_t;
 
 // surface geometry should not exceed these limits
-#define SHADER_MAX_VERTEXES	1000
+#define SHADER_MAX_VERTEXES	4000//1000
 #define SHADER_MAX_INDEXES	(6 * SHADER_MAX_VERTEXES)
 
-#define MAX_IMAGE_ANIMATIONS	8
+#define MAX_IMAGE_ANIMATIONS	16
 #define TR_MAX_TEXMODS			4
 #define NUM_TEXTURE_BUNDLES		2
 #define MAX_SHADER_STAGES		8
@@ -105,6 +105,7 @@ enum texCoordGen_t
 	TCGEN_LIGHTMAP,
 	TCGEN_TEXTURE,
 	TCGEN_ENVIRONMENT_MAPPED,
+	TCGEN_FIRERISEENV_MAPPED,
 	TCGEN_FOG,
 	TCGEN_VECTOR			// S and T from world coordinates
 };
@@ -131,6 +132,7 @@ enum alphaGen_t
 	AGEN_SKIP,
 	AGEN_ENTITY,
 	AGEN_ONE_MINUS_ENTITY,
+	AGEN_NORMALZFADE,
 	AGEN_VERTEX,
 	AGEN_ONE_MINUS_VERTEX,
 	AGEN_LIGHTING_SPECULAR,
@@ -148,7 +150,8 @@ enum texMod_t
 	TMOD_SCALE,
 	TMOD_STRETCH,
 	TMOD_ROTATE,
-	TMOD_ENTITY_TRANSLATE
+	TMOD_ENTITY_TRANSLATE,
+	TMOD_SWAP
 };
 
 enum acff_t
@@ -243,7 +246,10 @@ struct shaderStage_t
 
 	acff_t			adjustColorsForFog;
 
+	float zFadeBounds[2];
+
 	bool			isDetail;
+	bool isFogged;								// used only for shaders that have fog disabled, so we can enable it for individual stages
 };
 
 struct deformStage_t
@@ -270,6 +276,8 @@ struct fogParms_t
 {
 	vec3_t	color;
 	float	depthForOpaque;
+	unsigned colorInt;                  // in packed byte format
+	float tcScale;                      // texture coordinate vector scales
 };
 
 struct shader_t
@@ -307,6 +315,7 @@ struct shader_t
 	bool		polygonOffset;			// set for decals and other items that must be offset 
 	bool		noMipMaps;				// for console fonts, 2D elements, etc.
 	bool		noPicMip;				// for images that must always be full resolution
+	bool characterMip;					// use r_picmip2 rather than r_picmip
 
 	fogPass_t	fogPass;				// draw a blended pass, possibly with depth test equals
 
@@ -314,6 +323,10 @@ struct shader_t
 	bool		needsST1;
 	bool		needsST2;
 	bool		needsColor;
+
+	bool noFog;
+
+	vec4_t distanceCull;                // ydnar: opaque alpha range for foliage (inner, outer, alpha threshold, 1/(outer-inner))
 
 	int			numDeforms;
 	deformStage_t	deforms[MAX_SHADER_DEFORMS];
@@ -368,6 +381,8 @@ struct shaderCommands_t
 
 	int			numIndexes;
 	int			numVertexes;
+
+	bool ATI_tess;
 
 	// info extracted from current shader
 	int			numPasses;

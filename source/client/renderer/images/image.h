@@ -44,8 +44,10 @@ struct image_t
 
 	bool		mipmap;
 	bool		allowPicmip;
+	bool characterMIP;						// independant 'character' mip scale
 	GLenum		wrapClampMode;				// GL_CLAMP or GL_REPEAT
 
+	int hash;								// for fast building of the backupHash
 	image_t*	next;
 
 	float		sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
