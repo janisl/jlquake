@@ -823,41 +823,6 @@ TESSELATOR/SHADER DECLARATIONS
 
 ====================================================================
 */
-typedef byte color4ub_t[4];
-
-typedef struct stageVars
-{
-	color4ub_t colors[SHADER_MAX_VERTEXES];
-	vec2_t texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
-} stageVars_t;
-
-typedef struct shaderCommands_s
-{
-	glIndex_t indexes[SHADER_MAX_INDEXES];
-	vec4_t xyz[SHADER_MAX_VERTEXES];
-	vec4_t normal[SHADER_MAX_VERTEXES];
-	vec2_t texCoords[SHADER_MAX_VERTEXES][2];
-	color4ub_t vertexColors[SHADER_MAX_VERTEXES];
-	int vertexDlightBits[SHADER_MAX_VERTEXES];
-
-	stageVars_t svars;
-
-	color4ub_t constantColor255[SHADER_MAX_VERTEXES];
-
-	shader_t    *shader;
-	float shaderTime;
-	int fogNum;
-
-	int dlightBits;         // or together of all vertexDlightBits
-
-	int numIndexes;
-	int numVertexes;
-
-	// info extracted from current shader
-	int numPasses;
-	void ( *currentStageIteratorFunc )( void );
-	shaderStage_t   **xstages;
-} shaderCommands_t;
 
 extern shaderCommands_t tess;
 

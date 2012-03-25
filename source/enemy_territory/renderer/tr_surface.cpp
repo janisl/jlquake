@@ -341,60 +341,6 @@ void RB_SurfacePolychain( srfPoly_t *p ) {
 RB_SurfaceTriangles
 =============
 */
-#if 0
-void RB_SurfaceTriangles( srfTriangles2_t *srf ) {
-	vec4hack_t*     oldXYZ;
-	vec4hack_t*     oldNormal;
-	vec2hack_t*     oldST;
-	vec2hack_t*     oldLightmap;
-	glIndex_t*      oldIndicies;
-	color4ubhack_t* oldColor;
-
-	int oldMaxVerts;
-	int oldMaxIndicies;
-
-	RB_EndSurface();
-
-	RB_BeginSurface( tess.shader, tess.fogNum );
-
-	oldXYZ =            tess.xyz;
-	oldST =             tess.texCoords0;
-	oldLightmap =       tess.texCoords1;
-	oldIndicies =       tess.indexes;
-	oldNormal =         tess.normal;
-	oldColor =          tess.vertexColors;
-
-	oldMaxVerts =       SHADER_MAX_VERTEXES;
-	oldMaxIndicies =    tess.maxShaderIndicies;
-
-	// ===================================================
-	tess.numIndexes =           srf->numIndexes;
-	tess.numVertexes =          srf->numVerts;
-
-	tess.xyz =                  srf->xyz;
-	tess.texCoords0 =           srf->st;
-	tess.texCoords1 =           srf->lightmap;
-	tess.indexes =              srf->indexes;
-	tess.normal =               srf->normal;
-	tess.vertexColors =         srf->color;
-
-	tess.maxShaderIndicies =    srf->numIndexes + 1;
-	SHADER_MAX_VERTEXES =       srf->numVerts + 1;
-	// ===================================================
-
-	RB_EndSurface();
-
-	tess.xyz =                  oldXYZ;
-	tess.texCoords0 =           oldST;
-	tess.texCoords1 =           oldLightmap;
-	tess.indexes =              oldIndicies;
-	tess.normal =               oldNormal;
-	tess.vertexColors =         oldColor;
-
-	SHADER_MAX_VERTEXES =       oldMaxVerts;
-	tess.maxShaderIndicies =    oldMaxIndicies;
-}
-#else
 void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 	int i;
 	bsp46_drawVert_t  *dv;
@@ -460,7 +406,6 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 
 	tess.numVertexes += srf->numVerts;
 }
-#endif // 1
 
 
 
@@ -1674,6 +1619,7 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 	RB_BeginSurface( tess.shader, tess.fogNum );
 
 	// ===================================================
+	//	Originally tess was pointed to different arrays.
 	tess.numIndexes =   surf->pPolyBuffer->numIndicies;
 	tess.numVertexes =  surf->pPolyBuffer->numVerts;
 
@@ -1685,7 +1631,6 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 	}
 	Com_Memcpy(tess.indexes, surf->pPolyBuffer->indicies, tess.numIndexes * sizeof(glIndex_t));
 	Com_Memcpy(tess.vertexColors, surf->pPolyBuffer->color, tess.numVertexes * sizeof(color4ub_t));
-
 	// ===================================================
 
 	RB_EndSurface();
@@ -1748,5 +1693,3 @@ void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfacePolyBuffer,   // SF_POLYBUFFER
 	( void( * ) ( void* ) )RB_SurfaceDecal,        // SF_DECAL
 };
-
-

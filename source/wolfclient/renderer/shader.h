@@ -352,7 +352,6 @@ struct shader_t
 	shader_t*	next;
 };
 
-#if 0
 typedef byte color4ub_t[4];
 
 struct stageVars_t
@@ -383,12 +382,15 @@ struct shaderCommands_t
 	int			numIndexes;
 	int			numVertexes;
 
+	bool ATI_tess;
+
 	// info extracted from current shader
 	int			numPasses;
 	void		(*currentStageIteratorFunc)( void );
 	shaderStage_t**	xstages;
 };
 
+#if 0
 void R_InitShaders();
 void R_FreeShaders();
 shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);

@@ -262,8 +262,6 @@ typedef struct drawSurf_s {
 #define MAX_PATCH_SIZE      32          // max dimensions of a patch mesh in map file
 #define MAX_GRID_SIZE       65          // max dimensions of a grid mesh in memory
 
-typedef byte color4ub_t[4];
-
 typedef struct color4ubhack_s {
 	color4ub_t v;
 } color4ubhack_t;
@@ -1047,38 +1045,6 @@ TESSELATOR/SHADER DECLARATIONS
 
 ====================================================================
 */
-typedef struct stageVars
-{
-	color4ub_t colors[SHADER_MAX_VERTEXES];
-	vec2_t texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
-} stageVars_t;
-
-typedef struct shaderCommands_s
-{
-	glIndex_t indexes[SHADER_MAX_INDEXES];
-	vec4_t xyz[SHADER_MAX_VERTEXES];
-	vec4_t normal[SHADER_MAX_VERTEXES];
-	color4ub_t vertexColors[SHADER_MAX_VERTEXES];
-	vec2_t texCoords[SHADER_MAX_VERTEXES][2];
-
-	stageVars_t svars;
-
-	color4ub_t constantColor255[SHADER_MAX_VERTEXES];
-
-	shader_t    *shader;
-	float shaderTime;
-	int fogNum;
-
-	int dlightBits;         // or together of all vertexDlightBits
-
-	int numIndexes;
-	int numVertexes;
-
-	// info extracted from current shader
-	int numPasses;
-	void ( *currentStageIteratorFunc )( void );
-	shaderStage_t   **xstages;
-} shaderCommands_t;
 
 extern shaderCommands_t tess;
 
