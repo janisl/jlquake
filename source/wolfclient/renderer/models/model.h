@@ -776,7 +776,6 @@ enum modtype_t
 	MOD_MDX
 };
 
-#if 0
 struct model_t
 {
 	char		name[MAX_QPATH];
@@ -918,6 +917,7 @@ struct model_t
 	int q3_ATI_tess;
 };
 
+#if 0
 struct trRefEntity_t;
 
 model_t* R_AllocModel();

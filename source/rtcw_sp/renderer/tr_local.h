@@ -222,24 +222,6 @@ BRUSH MODELS
 
 //======================================================================
 
-typedef struct model_s {
-	char name[MAX_QPATH];
-	modtype_t type;
-	int index;                      // model = tr.models[model->index]
-
-	int q3_dataSize;                   // just for listing purposes
-	mbrush46_model_t    *q3_bmodel;            // only if type == MOD_BRUSH46
-	md3Header_t *q3_md3[MD3_MAX_LODS]; // only if type == MOD_MESH3
-	mdsHeader_t *q3_mds;               // only if type == MOD_MDS
-	mdcHeader_t *q3_mdc[MD3_MAX_LODS]; // only if type == MOD_MDC
-
-	int q3_numLods;
-
-// GR - model tessellation capability flag
-	int q3_ATI_tess;
-} model_t;
-
-
 void        R_ModelInit( void );
 model_t     *R_GetModelByHandle( qhandle_t hModel );
 int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
