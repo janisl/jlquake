@@ -1248,7 +1248,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[128
 			shortest = len;
 		}
 
-		if ( ( dot = DotProduct( normal, tess.normal[tess.indexes[i]].v ) ) >= 0 ) {
+		if ( ( dot = DotProduct( normal, tess.normal[tess.indexes[i]] ) ) >= 0 ) {
 			numTriangles--;
 		}
 	}

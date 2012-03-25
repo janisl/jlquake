@@ -322,7 +322,7 @@ void DeformText( const char *text ) {
 	height[0] = 0;
 	height[1] = 0;
 	height[2] = -1;
-	CrossProduct( tess.normal[0].v, height, width );
+	CrossProduct( tess.normal[0], height, width );
 
 	// find the midpoint of the box
 	VectorClear( mid );
@@ -1032,7 +1032,7 @@ void RB_CalcEnvironmentTexCoords( float *st ) {
 
 	// setup
 	v = tess.xyz[ 0 ];
-	normal = tess.normal[ 0 ].v;
+	normal = tess.normal[ 0 ];
 	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
 
 	// ydnar: origin of entity affects its environment map (every 256 units)
@@ -1148,7 +1148,7 @@ void RB_CalcFireRiseEnvTexCoords( float *st ) {
 	float d;
 
 	v = tess.xyz[0];
-	normal = tess.normal[0].v;
+	normal = tess.normal[0];
 	VectorNegate( backEnd.currentEntity->e.fireRiseDir, viewer );
 
 	for ( i = 0 ; i < tess.numVertexes ; i++, v += 4, normal += 4, st += 2 )
@@ -1298,7 +1298,7 @@ void RB_CalcSpecularAlpha( unsigned char *alphas ) {
 	int numVertexes;
 
 	v = tess.xyz[0];
-	normal = tess.normal[0].v;
+	normal = tess.normal[0];
 
 	alphas += 3;
 
@@ -1361,7 +1361,7 @@ void RB_CalcDiffuseColor( unsigned char *colors ) {
 	ent = backEnd.currentEntity;
 	VectorCopy( ent->lightDir, lightDir );
 
-	normal = tess.normal[ 0 ].v;
+	normal = tess.normal[ 0 ];
 	colorsInt = (int*) colors;
 
 	numVertexes = tess.numVertexes;

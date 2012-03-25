@@ -401,7 +401,7 @@ static void DrawNormals( shaderCommands_t *input ) {
 		qglBegin( GL_LINES );
 		for ( i = 0 ; i < input->numVertexes ; i++ ) {
 			qglVertex3fv( input->xyz[i] );
-			VectorMA( input->xyz[i], r_normallength->value, input->normal[i].v, temp );
+			VectorMA( input->xyz[i], r_normallength->value, input->normal[i], temp );
 			qglVertex3fv( temp );
 		}
 		qglEnd();
@@ -567,7 +567,7 @@ static void DynamicLightSinglePass( void ) {
 			// directional dlight, origin is a directional normal
 			if ( dl->flags & REF_DIRECTED_DLIGHT ) {
 				// twosided surfaces use absolute value of the calculated lighting
-				modulate = intensity * DotProduct( dl->origin, tess.normal[ i ].v );
+				modulate = intensity * DotProduct( dl->origin, tess.normal[ i ] );
 				if ( tess.shader->cullType == CT_TWO_SIDED ) {
 					modulate = fabs( modulate );
 				}
@@ -707,7 +707,7 @@ static void DynamicLightPass( void ) {
 			// directional dlight, origin is a directional normal
 			if ( dl->flags & REF_DIRECTED_DLIGHT ) {
 				// twosided surfaces use absolute value of the calculated lighting
-				modulate = intensity * DotProduct( dl->origin, tess.normal[ i ].v );
+				modulate = intensity * DotProduct( dl->origin, tess.normal[ i ] );
 				if ( tess.shader->cullType == CT_TWO_SIDED ) {
 					modulate = fabs( modulate );
 				}
@@ -984,7 +984,7 @@ static void ComputeColors( shaderStage_t *pStage ) {
 		}
 		range = highest - lowest;
 		for ( i = 0; i < tess.numVertexes; i++ ) {
-			dot = DotProduct( tess.normal[i].v, worldUp );
+			dot = DotProduct( tess.normal[i], worldUp );
 
 			// special handling for Zombie fade effect
 			if ( zombieEffect ) {

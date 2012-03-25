@@ -126,9 +126,9 @@ void RB_AddQuadStampFadingCornersExt( vec3_t origin, vec3_t left, vec3_t up, byt
 	// constant normal all the way around
 	VectorSubtract( vec3_origin, backEnd.viewParms.orientation.axis[0], normal );
 
-	tess.normal[ndx].v[0] = tess.normal[ndx + 1].v[0] = tess.normal[ndx + 2].v[0] = tess.normal[ndx + 3].v[0] = tess.normal[ndx + 4].v[0] = normal[0];
-	tess.normal[ndx].v[1] = tess.normal[ndx + 1].v[1] = tess.normal[ndx + 2].v[1] = tess.normal[ndx + 3].v[1] = tess.normal[ndx + 4].v[1] = normal[1];
-	tess.normal[ndx].v[2] = tess.normal[ndx + 1].v[2] = tess.normal[ndx + 2].v[2] = tess.normal[ndx + 3].v[2] = tess.normal[ndx + 4].v[2] = normal[2];
+	tess.normal[ndx][0] = tess.normal[ndx + 1][0] = tess.normal[ndx + 2][0] = tess.normal[ndx + 3][0] = tess.normal[ndx + 4][0] = normal[0];
+	tess.normal[ndx][1] = tess.normal[ndx + 1][1] = tess.normal[ndx + 2][1] = tess.normal[ndx + 3][1] = tess.normal[ndx + 4][1] = normal[1];
+	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = tess.normal[ndx + 4][2] = normal[2];
 
 	// standard square texture coordinates
 	tess.texCoords0[ndx].v[0] = tess.texCoords1[ndx].v[0] = s1;
@@ -206,9 +206,9 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, flo
 	// constant normal all the way around
 	VectorSubtract( vec3_origin, backEnd.viewParms.orientation.axis[0], normal );
 
-	tess.normal[ndx].v[0] = tess.normal[ndx + 1].v[0] = tess.normal[ndx + 2].v[0] = tess.normal[ndx + 3].v[0] = normal[0];
-	tess.normal[ndx].v[1] = tess.normal[ndx + 1].v[1] = tess.normal[ndx + 2].v[1] = tess.normal[ndx + 3].v[1] = normal[1];
-	tess.normal[ndx].v[2] = tess.normal[ndx + 1].v[2] = tess.normal[ndx + 2].v[2] = tess.normal[ndx + 3].v[2] = normal[2];
+	tess.normal[ndx][0] = tess.normal[ndx + 1][0] = tess.normal[ndx + 2][0] = tess.normal[ndx + 3][0] = normal[0];
+	tess.normal[ndx][1] = tess.normal[ndx + 1][1] = tess.normal[ndx + 2][1] = tess.normal[ndx + 3][1] = normal[1];
+	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = normal[2];
 
 	// standard square texture coordinates
 	tess.texCoords0[ndx].v[0] = tess.texCoords1[ndx].v[0] = s1;
@@ -418,7 +418,7 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 
 	dv = srf->verts;
 	xyz = tess.xyz[ tess.numVertexes ];
-	normal = tess.normal[ tess.numVertexes ].v;
+	normal = tess.normal[ tess.numVertexes ];
 	texCoords0 = tess.texCoords0[ tess.numVertexes ].v;
 	texCoords1 = tess.texCoords1[ tess.numVertexes ].v;
 	color = tess.vertexColors[ tess.numVertexes ].v;
@@ -579,7 +579,7 @@ void RB_SurfaceFoliage( srfFoliage_t *srf ) {
 		xyz = tess.xyz[ tess.numVertexes ];
 		memcpy( xyz, srf->xyz, numVerts * sizeof( srf->xyz[ 0 ] ) );
 		if ( tess.shader->needsNormal ) {
-			memcpy( &tess.normal[ tess.numVertexes ].v, srf->normal, numVerts * sizeof( srf->xyz[ 0 ] ) );
+			memcpy( &tess.normal[ tess.numVertexes ], srf->normal, numVerts * sizeof( srf->xyz[ 0 ] ) );
 		}
 		memcpy( &tess.texCoords0[ tess.numVertexes ], srf->texCoords, numVerts * sizeof( srf->texCoords[ 0 ] ) );
 		memcpy( &tess.texCoords1[ tess.numVertexes ], srf->lmTexCoords, numVerts * sizeof( srf->lmTexCoords[ 0 ] ) );
@@ -899,7 +899,7 @@ static void LerpMeshVertexes( md3Surface_t *surf, float backlerp ) {
 	int numVerts;
 
 	outXyz = tess.xyz[tess.numVertexes];
-	outNormal = tess.normal[tess.numVertexes].v;
+	outNormal = tess.normal[tess.numVertexes];
 
 	newXyz = ( short * )( (byte *)surf + surf->ofsXyzNormals )
 			 + ( backEnd.currentEntity->e.frame * surf->numVerts * 4 );
@@ -1094,7 +1094,7 @@ static void LerpCMeshVertexes( mdcSurface_t *surf, float backlerp ) {
 	qboolean hasComp;
 
 	outXyz = tess.xyz[tess.numVertexes];
-	outNormal = tess.normal[tess.numVertexes].v;
+	outNormal = tess.normal[tess.numVertexes];
 
 	newBase = (int)*( ( short * )( (byte *)surf + surf->ofsFrameBaseFrames ) + backEnd.currentEntity->e.frame );
 	newXyz = ( short * )( (byte *)surf + surf->ofsXyzNormals )
@@ -1313,7 +1313,7 @@ void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 	if ( tess.shader->needsNormal ) {
 		normal = surf->plane.normal;
 		for ( i = 0, ndx = tess.numVertexes; i < numPoints; i++, ndx++ ) {
-			VectorCopy( normal, tess.normal[ndx].v );
+			VectorCopy( normal, tess.normal[ndx] );
 		}
 	}
 
@@ -1448,7 +1448,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 		numVertexes = tess.numVertexes;
 
 		xyz = tess.xyz[numVertexes];
-		normal = tess.normal[numVertexes].v;
+		normal = tess.normal[numVertexes];
 		texCoords0 = tess.texCoords0[numVertexes].v;
 		texCoords1 = tess.texCoords1[numVertexes].v;
 		color = ( unsigned char * ) &tess.vertexColors[numVertexes].v;

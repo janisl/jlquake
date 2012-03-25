@@ -1053,7 +1053,6 @@ typedef struct stageVars
 	vec2_t texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
 } stageVars_t;
 
-extern vec4hack_t tess_normal[SHADER_MAX_VERTEXES];
 extern vec2hack_t tess_texCoords0[SHADER_MAX_VERTEXES];
 extern vec2hack_t tess_texCoords1[SHADER_MAX_VERTEXES];
 extern color4ubhack_t tess_vertexColors[SHADER_MAX_VERTEXES];
@@ -1062,7 +1061,7 @@ typedef struct shaderCommands_s
 {
 	glIndex_t indexes[SHADER_MAX_INDEXES];
 	vec4_t xyz[SHADER_MAX_VERTEXES];
-	vec4hack_t*     normal;
+	vec4_t normal[SHADER_MAX_VERTEXES];
 	color4ubhack_t* vertexColors;
 	vec2hack_t*     texCoords0;
 	vec2hack_t*     texCoords1;
