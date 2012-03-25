@@ -59,6 +59,13 @@ typedef enum cgameEvent_e {
 	CGAME_EVENT_FIRETEAMMSG,
 } cgameEvent_t;
 
+#define ETRF_NOSHADOW			0x000010
+#define ETRF_LIGHTING_ORIGIN	0x000020
+#define ETRF_SHADOW_PLANE		0x000040
+#define ETRF_WRAP_FRAMES		0x000080
+#define ETRF_BLINK				0x000200
+#define ETRF_FORCENOLOD			0x000400
+
 struct etrefEntity_t
 {
 	refEntityType_t reType;

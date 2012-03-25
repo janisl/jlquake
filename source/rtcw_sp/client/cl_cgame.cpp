@@ -454,7 +454,11 @@ static void CL_GameRefEntToEngine(const wsrefEntity_t* gameRefent, refEntity_t* 
 	}
 	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
 		RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
-		RF_SHADOW_PLANE | RF_WRAP_FRAMES | RF_HILIGHT | RF_BLINK);
+		RF_SHADOW_PLANE | RF_WRAP_FRAMES);
+	if (gameRefent->renderfx & WSRF_BLINK)
+	{
+		refent->renderfx |= RF_BLINK;
+	}
 	refent->hModel = gameRefent->hModel;
 	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
 	refent->shadowPlane = gameRefent->shadowPlane;
@@ -513,7 +517,11 @@ void CL_RenderScene(const wsrefdef_t* gameRefdef)
 	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
 	rd.time = gameRefdef->time;
 	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE |
-		RDF_SKYBOXPORTAL | RDF_DRAWSKYBOX | RDF_UNDERWATER | RDF_DRAWINGSKY | RDF_SNOOPERVIEW);
+		RDF_SKYBOXPORTAL | RDF_UNDERWATER | RDF_DRAWINGSKY | RDF_SNOOPERVIEW);
+	if (gameRefdef->rdflags & WSRDF_DRAWSKYBOX)
+	{
+		rd.rdflags |= RDF_DRAWSKYBOX;
+	}
 	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
 	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
 	rd.glfog.mode = gameRefdef->glfog.mode;

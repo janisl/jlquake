@@ -57,6 +57,9 @@ enum {
 	CGAME_EVENT_EDITHUD
 };
 
+//	Overlaps with RF_WRAP_FRAMES
+#define WMRF_BLINK            ( 1 << 9 )  // eyes in 'blink' state
+
 struct wmrefEntity_t
 {
 	refEntityType_t reType;

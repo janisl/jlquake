@@ -583,8 +583,31 @@ static void CL_GameRefEntToEngine(const etrefEntity_t* gameRefent, refEntity_t* 
 		refent->reType = gameRefEntTypeToEngine[gameRefent->reType];
 	}
 	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
-		RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
-		RF_SHADOW_PLANE | RF_WRAP_FRAMES | RF_HILIGHT | RF_BLINK | RF_FORCENOLOD);
+		RF_FIRST_PERSON | RF_DEPTHHACK);
+	if (gameRefent->renderfx & ETRF_NOSHADOW)
+	{
+		refent->renderfx |= RF_NOSHADOW;
+	}
+	if (gameRefent->renderfx & ETRF_LIGHTING_ORIGIN)
+	{
+		refent->renderfx |= RF_LIGHTING_ORIGIN;
+	}
+	if (gameRefent->renderfx & ETRF_SHADOW_PLANE)
+	{
+		refent->renderfx |= RF_SHADOW_PLANE;
+	}
+	if (gameRefent->renderfx & ETRF_WRAP_FRAMES)
+	{
+		refent->renderfx |= RF_WRAP_FRAMES;
+	}
+	if (gameRefent->renderfx & ETRF_BLINK)
+	{
+		refent->renderfx |= RF_BLINK;
+	}
+	if (gameRefent->renderfx & ETRF_FORCENOLOD)
+	{
+		refent->renderfx |= RF_FORCENOLOD;
+	}
 	refent->hModel = gameRefent->hModel;
 	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
 	refent->shadowPlane = gameRefent->shadowPlane;

@@ -57,6 +57,9 @@ enum {
 	CGAME_EVENT_EDITHUD
 };
 
+//	Overlaps with RF_WRAP_FRAMES
+#define WSRF_BLINK            ( 1 << 9 )  // eyes in 'blink' state
+
 struct wsrefEntity_t
 {
 	refEntityType_t reType;
@@ -128,6 +131,9 @@ struct wsglfog_t
 
 	int dirty;
 };
+
+//	Overlaps with RDF_UNDERWATER
+#define WSRDF_DRAWSKYBOX	16
 
 struct wsrefdef_t
 {

@@ -475,14 +475,6 @@ COLLISION DETECTION
 ==============================================================
 */
 
-// markfragments are returned by CM_MarkFragments()
-typedef struct {
-	int firstPoint;
-	int numPoints;
-} markFragment_t;
-
-
-
 typedef struct {
 	vec3_t origin;
 	vec3_t axis[3];

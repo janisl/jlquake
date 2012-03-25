@@ -24,6 +24,8 @@ typedef int qhandle_t;
 
 #define MAX_DLIGHTS		32			// can't be increased, because bit flags are used on surfaces
 
+#define ZOMBIEFX_FADEOUT_TIME	10000
+
 /*
 ** glconfig_t
 **
@@ -48,14 +50,15 @@ enum glHardwareType_t
 	GLHW_GENERIC,			// where everthing works the way it should
 };
 
-#if 0
 enum refEntityType_t
 {
 	RT_MODEL,
 	RT_POLY,
 	RT_SPRITE,
+	RT_SPLASH,  // ripple effect
 	RT_BEAM,
 	RT_RAIL_CORE,
+	RT_RAIL_CORE_TAPER, // a modified core that creates a properly texture mapped core that's wider at one end
 	RT_RAIL_RINGS,
 	RT_LIGHTNING,
 	RT_PORTALSURFACE,		// doesn't draw anything, just info for portals
@@ -85,6 +88,18 @@ enum refEntityType_t
 #define RF_GLOW				8192	// pulse lighting for bonus items
 #define RF_IR_VISIBLE		16384	// in red light when infrared googles are on
 #define RF_LEFTHAND			0x8000	// left hand weapon, flip projection matrix.
+#define RF_BLINK			BIT(16)	// eyes in 'blink' state
+#define RF_FORCENOLOD       BIT(17)
+
+//	reFlags flags
+#define REFLAG_ONLYHAND			1   // only draw hand surfaces
+#define REFLAG_ZOMBIEFX			2   // special post-tesselation processing for zombie skin
+#define REFLAG_ZOMBIEFX2		4   // special post-tesselation processing for zombie skin
+#define REFLAG_FORCE_LOD		8   // force a low lod
+#define REFLAG_ORIENT_LOD		16  // on LOD switch, align the model to the player's camera
+#define REFLAG_DEAD_LOD			32  // allow the LOD to go lower than recommended
+#define REFLAG_SCALEDSPHERECULL	64  // on LOD switch, align the model to the player's camera
+#define REFLAG_FULL_LOD			8   // force a FULL lod
 
 struct polyVert_t
 {
@@ -100,17 +115,63 @@ struct poly_t
 	polyVert_t		*verts;
 };
 
+// Gordon, these MUST NOT exceed the values for SHADER_MAX_VERTEXES/SHADER_MAX_INDEXES
+#define MAX_PB_VERTS		1025
+#define MAX_PB_INDICIES		(MAX_PB_VERTS * 6)
+
+struct polyBuffer_t
+{
+	vec4_t xyz[MAX_PB_VERTS];
+	vec2_t st[MAX_PB_VERTS];
+	byte color[MAX_PB_VERTS][4];
+	int numVerts;
+
+	int indicies[MAX_PB_INDICIES];
+	int numIndicies;
+
+	qhandle_t shader;
+};
+
 // refdef flags
 #define RDF_NOWORLDMODEL	1		// used for player configuration screen
 #define RDF_HYPERSPACE		4		// teleportation effect
+#define RDF_SKYBOXPORTAL	BIT(3)
+#define RDF_UNDERWATER		BIT(4)	// so the renderer knows to use underwater fog when the player is underwater
+#define RDF_DRAWINGSKY		BIT(5)
+#define RDF_SNOOPERVIEW		BIT(6)
+#define RDF_DRAWSKYBOX		BIT(7)	// the above marks a scene as being a 'portal sky'.  this flag says to draw it or not
 //	New flags
 #define RDF_IRGOGGLES		2
-#endif
 
 #define MAX_RENDER_STRINGS			8
 #define MAX_RENDER_STRING_LENGTH	32
 
-#if 0
+//                                                                  //
+// WARNING:: synch FOG_SERVER in sv_ccmds.c if you change anything	//
+//                                                                  //
+enum glfogType_t
+{
+	FOG_NONE,       //	0
+
+	FOG_SKY,        //	1	fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
+	FOG_PORTALVIEW, //	2	used by the portal sky scene
+	FOG_HUD,        //	3	used by the 3D hud scene
+
+	//		The result of these for a given frame is copied to the scene.glFog when the scene is rendered
+
+	// the following are fogs applied to the main world scene
+	FOG_MAP,        //	4	use fog parameter specified using the "fogvars" in the sky shader
+	FOG_WATER,      //	5	used when underwater
+	FOG_SERVER,     //	6	the server has set my fog (probably a target_fog) (keep synch in sv_ccmds.c !!!)
+	FOG_CURRENT,    //	7	stores the current values when a transition starts
+	FOG_LAST,       //	8	stores the current values when a transition starts
+	FOG_TARGET,     //	9	the values it's transitioning to.
+
+	FOG_CMD_SWITCHFOG,  // 10	transition to the fog specified in the second parameter of R_SetFog(...) (keep synch in sv_ccmds.c !!!)
+
+	NUM_FOGS
+};
+
 // markfragments are returned by R_MarkFragments()
 struct markFragment_t
 {
@@ -118,11 +179,13 @@ struct markFragment_t
 	int		numPoints;
 };
 
+#if 0
 struct orientation_t
 {
 	vec3_t		origin;
 	vec3_t		axis[3];
 };
+#endif
 
 // font support 
 
@@ -181,11 +244,9 @@ enum stereoFrame_t
 //	Games must have their own constants because in Quake/Hexen 2 it's
 // 64 and it's used by server.
 #define MAX_LIGHTSTYLES			256
-#endif
 
 struct image_t;
 
-#if 0
 struct refEntity_t
 {
 	refEntityType_t reType;
@@ -198,14 +259,22 @@ struct refEntity_t
 	float shadowPlane;			// projection shadows go here, stencils go slightly lower
 
 	vec3_t axis[3];				// rotation vectors
+	vec3_t torsoAxis[3];		// rotation vectors for torso section of skeletal animation
 	bool nonNormalizedAxes;		// axis are not normalized, i.e. they have scale
 	vec3_t origin;				// also used as MODEL_BEAM's "from"
 	int frame;					// also used as MODEL_BEAM's diameter
+	qhandle_t frameModel;
+	int torsoFrame;				// skeletal torso can have frame independant of legs frame
+	qhandle_t torsoFrameModel;
 
 	// previous data for frame interpolation
 	vec3_t oldorigin;			// also used as MODEL_BEAM's "to"
 	int oldframe;
+	qhandle_t oldframeModel;
+	int oldTorsoFrame;
+	qhandle_t oldTorsoFrameModel;
 	float backlerp;				// 0.0 = current, 1.0 = old
+	float torsoBacklerp;
 
 	// texturing
 	int skinNum;				// inline skin index
@@ -216,15 +285,27 @@ struct refEntity_t
 	byte shaderRGBA[4];			// colors used by rgbgen entity shaders
 	float shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
 	float shaderTime;			// subtracted from refdef time to control effect start times
-								// Also used for synctime
 
 	// extra sprite information
 	float radius;
 	float rotation;
 
 	float syncBase;
+
+	vec3_t scale;       //----(SA)	added
+
+	// Ridah
+	vec3_t fireRiseDir;
+
+	// Ridah, entity fading (gibs, debris, etc)
+	int fadeStartTime, fadeEndTime;
+
+	float hilightIntensity;         //----(SA)	added
+
+	int reFlags;
+
+	int entityNum;                  // currentState.number, so we can attach rendering effects to specific entities (Zombie)
 };
-#endif
 
 struct glfog_t
 {
