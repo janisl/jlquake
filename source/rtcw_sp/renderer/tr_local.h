@@ -232,46 +232,6 @@ void        R_Modellist_f( void );
 //====================================================
 extern refimport_t ri;
 
-/*
-
-the drawsurf sort data is packed into a single 32 bit value so it can be
-compared quickly during the qsorting process
-
-the bits are allocated as follows:
-
-(SA) modified for Wolf (11 bits of entity num)
-
-old:
-
-22 - 31	: sorted shader index
-12 - 21	: entity index
-3 - 7	: fog index
-2		: used to be clipped flag
-0 - 1	: dlightmap index
-
-#define	QSORT_SHADERNUM_SHIFT	22
-#define	QSORT_ENTITYNUM_SHIFT	12
-#define	QSORT_FOGNUM_SHIFT		3
-
-new:
-
-22 - 31	: sorted shader index
-11 - 21	: entity index
-2 - 6	: fog index
-removed	: used to be clipped flag
-0 - 1	: dlightmap index
-
-*/
-#define QSORT_SHADERNUM_SHIFT   22
-#define QSORT_ENTITYNUM_SHIFT   11
-#define QSORT_FOGNUM_SHIFT      2
-
-// GR - tessellation flag in bit 8
-#define QSORT_ATI_TESS_SHIFT    8
-// GR - TruForm flags
-#define ATI_TESS_TRUFORM    1
-#define ATI_TESS_NONE       0
-
 extern int gl_filter_min, gl_filter_max;
 
 /*

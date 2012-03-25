@@ -302,11 +302,15 @@ the bits are allocated as follows:
 2-6   : fog index
 0-1   : dlightmap index
 */
-#if 0
-#define QSORT_SHADERNUM_SHIFT	17
-#define QSORT_ENTITYNUM_SHIFT	7
+#define QSORT_SHADERNUM_SHIFT	18
+#define QSORT_ENTITYNUM_SHIFT	8
+#define QSORT_ATI_TESS_SHIFT	7	//	Remove
 #define QSORT_FOGNUM_SHIFT		2
-#endif
+#define QSORT_FRONTFACE_SHIFT   1
+
+// GR - TruForm flags
+#define ATI_TESS_NONE		0
+#define ATI_TESS_TRUFORM	1
 
 #define BRUSH46_VERTEXSIZE	8
 
