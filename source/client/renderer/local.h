@@ -34,6 +34,7 @@
 #include "../../core/file_formats/bsp29.h"
 #include "../../core/file_formats/bsp38.h"
 #include "../../core/file_formats/bsp46.h"
+#include "../../core/file_formats/bsp47.h"
 #include "../../core/file_formats/mdl.h"
 #include "../../core/file_formats/md2.h"
 #include "../../core/file_formats/md3.h"
@@ -91,7 +92,7 @@ init
 
 #define MAX_DRAWIMAGES			2048
 #define MAX_LIGHTMAPS			256
-#define MAX_MOD_KNOWN			1500
+#define MAX_MOD_KNOWN			2048
 
 // 12 bits
 // see QSORT_SHADERNUM_SHIFT
@@ -100,9 +101,9 @@ init
 #define MAX_SKINS				1024
 
 #define FOG_TABLE_SIZE			256
-#define FUNCTABLE_SIZE			1024
+#define FUNCTABLE_SIZE			4096
 #define FUNCTABLE_MASK			(FUNCTABLE_SIZE - 1)
-#define FUNCTABLE_SIZE2			10
+#define FUNCTABLE_SIZE2			12
 
 struct dlight_t
 {
@@ -366,7 +367,7 @@ RENDERER BACK END COMMAND QUEUE
 
 #define MAX_RENDER_COMMANDS		0x40000
 
-#define MAX_DRAWSURFS			0x10000
+#define MAX_DRAWSURFS			0x40000
 #define DRAWSURF_MASK			(MAX_DRAWSURFS-1)
 
 #define MAX_ENTITIES			1023		// can't be increased without changing drawsurf bit packing
@@ -375,19 +376,26 @@ RENDERER BACK END COMMAND QUEUE
 // these are sort of arbitrary limits.
 // the limits apply to the sum of all scenes in a frame --
 // the main view, all the 3D icons, etc
-#define MAX_POLYS		600
-#define MAX_POLYVERTS	3000
+#define MAX_POLYS		4096
+#define MAX_POLYVERTS	8192
 
 #define MAX_REF_PARTICLES		(8 * 1024)
+
+#define MAX_CORONAS		32          //----(SA)	not really a reason to limit this other than trying to keep a reasonable count
 
 enum renderCommand_t
 {
 	RC_END_OF_LIST,
 	RC_SET_COLOR,
 	RC_STRETCH_PIC,
+	RC_STRETCH_PIC_GRADIENT,
+	RC_ROTATED_PIC,
+	RC_2DPOLYS,
 	RC_DRAW_SURFS,
 	RC_DRAW_BUFFER,
 	RC_SWAP_BUFFERS,
+	RC_RENDERTOTEXTURE,
+	RC_FINISH,
 	RC_SCREENSHOT
 };
 
