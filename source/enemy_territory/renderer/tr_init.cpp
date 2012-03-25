@@ -642,8 +642,6 @@ R_Register
 */
 void R_Register( void ) {
 	R_Register_();
-	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va( "%d", MAX_POLYS ), 0 );
-	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va( "%d", MAX_POLYVERTS ), 0 );
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

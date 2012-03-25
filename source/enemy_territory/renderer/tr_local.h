@@ -37,18 +37,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#include "../../core/file_formats/md3.h"
-#include "../../core/file_formats/bsp47.h"
 
 #define GL_INDEX_TYPE       GL_UNSIGNED_INT
 typedef unsigned int glIndex_t;
-
-// everything that is needed by the backend needs
-// to be double buffered to allow it to run in
-// parallel on a dual cpu machine
-#define SMP_FRAMES      2
-
-#define MAX_SHADERS     8192
 
 #define MAX_SHADER_STATES 2048
 #define MAX_STATES_PER_SHADER 32
@@ -1009,8 +1000,6 @@ typedef struct model_s {
 } model_t;
 
 
-#define MAX_MOD_KNOWN   2048
-
 void        R_ModelInit( void );
 model_t     *R_GetModelByHandle( qhandle_t hModel );
 int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
@@ -1020,14 +1009,6 @@ void        R_Modellist_f( void );
 
 //====================================================
 extern refimport_t ri;
-
-#define MAX_DRAWIMAGES          2048
-#define MAX_LIGHTMAPS           256
-#define MAX_SKINS               1024
-
-
-#define MAX_DRAWSURFS           0x40000
-#define DRAWSURF_MASK           ( MAX_DRAWSURFS - 1 )
 
 /*
 
@@ -1091,12 +1072,6 @@ typedef struct {
 
 	int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
 } frontEndCounters_t;
-
-#define FOG_TABLE_SIZE      256
-
-#define FUNCTABLE_SIZE      4096    //%	1024
-#define FUNCTABLE_SIZE2     12      //%	10
-#define FUNCTABLE_MASK      ( FUNCTABLE_SIZE - 1 )
 
 typedef struct {
 	int c_surfaces, c_shaders, c_vertexes, c_indexes, c_totalIndexes;
@@ -1274,9 +1249,6 @@ void R_DecomposeSort( unsigned sort, int *entityNum, shader_t **shader,
 void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogNum, int frontFace, int dlightMap );
 
 
-#define CULL_IN     0       // completely unclipped
-#define CULL_CLIP   1       // clipped by one or more planes
-#define CULL_OUT    2       // completely outside the clipping planes
 void R_LocalNormalToWorld( vec3_t local, vec3_t world );
 void R_LocalPointToWorld( vec3_t local, vec3_t world );
 int R_CullLocalBox( vec3_t bounds[2] );
@@ -1705,8 +1677,6 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
-#define MAX_RENDER_COMMANDS 0x40000
-
 typedef struct {
 	byte cmds[MAX_RENDER_COMMANDS];
 	int used;
@@ -1782,30 +1752,6 @@ typedef struct {
 	int commandId;
 } renderFinishCommand_t;
 
-typedef enum {
-	RC_END_OF_LIST,
-	RC_SET_COLOR,
-	RC_STRETCH_PIC,
-	RC_2DPOLYS,
-	RC_ROTATED_PIC,
-	RC_STRETCH_PIC_GRADIENT,    // (SA) added
-	RC_DRAW_SURFS,
-	RC_DRAW_BUFFER,
-	RC_SWAP_BUFFERS,
-	RC_RENDERTOTEXTURE, //bani
-	RC_FINISH   //bani
-} renderCommand_t;
-
-// these are sort of arbitrary limits.
-// the limits apply to the sum of all scenes in a frame --
-// the main view, all the 3D icons, etc
-
-// Ridah, these aren't enough for cool effects
-//#define	MAX_POLYS		256
-//#define	MAX_POLYVERTS	1024
-#define MAX_POLYS       4096
-#define MAX_POLYVERTS   8192
-// done.
 // Gordon: testing
 #define MAX_POLYINDICIES 8192
 

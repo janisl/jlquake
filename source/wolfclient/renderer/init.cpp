@@ -564,10 +564,8 @@ void R_Register_()
 	r_uiFullScreen = Cvar_Get("r_uifullscreen", "0", 0);
 	r_printShaders = Cvar_Get("r_printShaders", "0", 0);
 	r_saveFontData = Cvar_Get("r_saveFontData", "0", 0);
-#if 0
 	r_maxpolys = Cvar_Get("r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = Cvar_Get("r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
-#endif
 	r_znear = Cvar_Get("r_znear", GGameType & GAME_ET ? "3" : "4", CVAR_CHEAT);
 	AssertCvarRange(r_znear, 0.001f, 200, true);
 	r_nocull = Cvar_Get("r_nocull", "0", CVAR_CHEAT);
