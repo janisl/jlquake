@@ -50,22 +50,6 @@ enum glHardwareType_t
 	GLHW_GENERIC,			// where everthing works the way it should
 };
 
-enum refEntityType_t
-{
-	RT_MODEL,
-	RT_POLY,
-	RT_SPRITE,
-	RT_SPLASH,  // ripple effect
-	RT_BEAM,
-	RT_RAIL_CORE,
-	RT_RAIL_CORE_TAPER, // a modified core that creates a properly texture mapped core that's wider at one end
-	RT_RAIL_RINGS,
-	RT_LIGHTNING,
-	RT_PORTALSURFACE,		// doesn't draw anything, just info for portals
-
-	RT_MAX_REF_ENTITY_TYPE
-};
-
 // renderfx flags
 #define RF_MINLIGHT			1		// allways have some light (viewmodel, some items)
 #define RF_THIRD_PERSON		2		// don't draw through eyes, only mirrors (player bodies, chat sprites)
@@ -215,6 +199,22 @@ struct fontInfo_t
 //	End of definitions used by Quake 3 vms.
 //
 //==========================================================================
+
+enum refEntityType_t
+{
+	RT_MODEL,
+	RT_POLY,
+	RT_SPRITE,
+	RT_SPLASH,  // ripple effect
+	RT_BEAM,
+	RT_RAIL_CORE,
+	RT_RAIL_CORE_TAPER, // a modified core that creates a properly texture mapped core that's wider at one end
+	RT_RAIL_RINGS,
+	RT_LIGHTNING,
+	RT_PORTALSURFACE,		// doesn't draw anything, just info for portals
+
+	RT_MAX_REF_ENTITY_TYPE
+};
 
 enum QParticleTexture
 {
