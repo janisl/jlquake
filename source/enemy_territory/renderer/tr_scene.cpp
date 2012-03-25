@@ -164,7 +164,7 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 	srfPoly_t   *poly;
 	int i;
 	int fogIndex;
-	fog_t       *fog;
+	mbrush46_fog_t       *fog;
 	vec3_t bounds[2];
 
 	if ( !tr.registered ) {
@@ -229,7 +229,7 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 	srfPoly_t   *poly;
 	int i;
 	int fogIndex;
-	fog_t       *fog;
+	mbrush46_fog_t       *fog;
 	vec3_t bounds[2];
 	int j;
 
@@ -324,7 +324,7 @@ RE_AddPolyBufferToScene
 void RE_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer ) {
 	srfPolyBuffer_t*    pPolySurf;
 	int fogIndex;
-	fog_t*              fog;
+	mbrush46_fog_t*              fog;
 	vec3_t bounds[2];
 	int i;
 

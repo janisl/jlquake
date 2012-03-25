@@ -673,7 +673,7 @@ Blends a fog texture on top of everything else
 ===================
 */
 static void RB_FogPass( void ) {
-	fog_t       *fog;
+	mbrush46_fog_t       *fog;
 	int i;
 
 	if ( tr.refdef.rdflags & RDF_SNOOPERVIEW ) { // no fog pass in snooper
@@ -770,7 +770,7 @@ static void ComputeColors( shaderStage_t *pStage ) {
 		break;
 	case CGEN_FOG:
 	{
-		fog_t       *fog;
+		mbrush46_fog_t       *fog;
 
 		fog = tr.world->fogs + tess.fogNum;
 

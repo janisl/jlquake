@@ -214,9 +214,9 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	{
 		// try sphere cull
 		if ( tr.currentEntityNum != Q3ENTITYNUM_WORLD ) {
-			cull = R_CullLocalPointAndRadius( gen->origin, gen->radius );
+			cull = R_CullLocalPointAndRadius( gen->localOrigin, gen->radius );
 		} else {
-			cull = R_CullPointAndRadius( gen->origin, gen->radius );
+			cull = R_CullPointAndRadius( gen->localOrigin, gen->radius );
 		}
 		if ( cull == CULL_OUT ) {
 			tr.pc.c_sphere_cull_out++;
@@ -349,7 +349,7 @@ more dlights if possible.
 
 #if 0
 
-static int R_DlightSurface( msurface_t *surf, int dlightBits ) {
+static int R_DlightSurface( mbrush46_surface_t *surf, int dlightBits ) {
 	if ( *surf->data == SF_FACE ) {
 		dlightBits = R_DlightFace( (srfSurfaceFace_t *)surf->data, dlightBits );
 	} else if ( *surf->data == SF_GRID ) {
@@ -371,7 +371,7 @@ static int R_DlightSurface( msurface_t *surf, int dlightBits ) {
 
 // ydnar: made this use generic surface
 
-static int R_DlightSurface( msurface_t *surface, int dlightBits ) {
+static int R_DlightSurface( mbrush46_surface_t *surface, int dlightBits ) {
 	int i;
 	vec3_t origin;
 	float radius;
@@ -421,12 +421,12 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits ) {
 		VectorCopy( tr.refdef.dlights[ i ].transformed, origin );
 		radius = tr.refdef.dlights[ i ].radius;
 
-		if ( ( gen->origin[ 0 ] + gen->radius ) < ( origin[ 0 ] - radius ) ||
-			 ( gen->origin[ 0 ] - gen->radius ) > ( origin[ 0 ] + radius ) ||
-			 ( gen->origin[ 1 ] + gen->radius ) < ( origin[ 1 ] - radius ) ||
-			 ( gen->origin[ 1 ] - gen->radius ) > ( origin[ 1 ] + radius ) ||
-			 ( gen->origin[ 2 ] + gen->radius ) < ( origin[ 2 ] - radius ) ||
-			 ( gen->origin[ 2 ] - gen->radius ) > ( origin[ 2 ] + radius ) ) {
+		if ( ( gen->localOrigin[ 0 ] + gen->radius ) < ( origin[ 0 ] - radius ) ||
+			 ( gen->localOrigin[ 0 ] - gen->radius ) > ( origin[ 0 ] + radius ) ||
+			 ( gen->localOrigin[ 1 ] + gen->radius ) < ( origin[ 1 ] - radius ) ||
+			 ( gen->localOrigin[ 1 ] - gen->radius ) > ( origin[ 1 ] + radius ) ||
+			 ( gen->localOrigin[ 2 ] + gen->radius ) < ( origin[ 2 ] - radius ) ||
+			 ( gen->localOrigin[ 2 ] - gen->radius ) > ( origin[ 2 ] + radius ) ) {
 			dlightBits &= ~( 1 << i );
 		}
 	}
@@ -454,7 +454,7 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits ) {
 R_AddWorldSurface
 ======================
 */
-static void R_AddWorldSurface( msurface_t *surf, shader_t *shader, int dlightMap, int decalBits ) {
+static void R_AddWorldSurface( mbrush46_surface_t *surf, shader_t *shader, int dlightMap, int decalBits ) {
 	int i, frontFace;
 
 
@@ -510,13 +510,13 @@ Return positive with /any part/ of the brush falling within a fog volume
 */
 
 // ydnar: the original implementation of this function is a bit flaky...
-int R_BmodelFogNum( trRefEntity_t *re, bmodel_t *bmodel )
+int R_BmodelFogNum( trRefEntity_t *re, mbrush46_model_t *bmodel )
 
 #if 1
 
 {
 	int i, j;
-	fog_t           *fog;
+	mbrush46_fog_t           *fog;
 
 	for ( i = 1; i < tr.world->numfogs; i++ )
 	{
@@ -542,7 +542,7 @@ int R_BmodelFogNum( trRefEntity_t *re, bmodel_t *bmodel )
 
 {
 	int i, j;
-	fog_t           *fog;
+	mbrush46_fog_t           *fog;
 
 	for ( i = 1 ; i < tr.world->numfogs ; i++ ) {
 		fog = &tr.world->fogs[i];
@@ -588,14 +588,14 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 	int i, clip, fognum, decalBits;
 	vec3_t mins, maxs;
 	model_t             *pModel;
-	bmodel_t            *bmodel;
+	mbrush46_model_t            *bmodel;
 	int savedNumDecalProjectors, numLocalProjectors;
 	decalProjector_t    *savedDecalProjectors, localProjectors[ MAX_DECAL_PROJECTORS ];
 
 
 	pModel = R_GetModelByHandle( ent->e.hModel );
 
-	bmodel = pModel->model.bmodel;
+	bmodel = pModel->q3_bmodel;
 
 	clip = R_CullLocalBox( bmodel->bounds );
 	if ( clip == CULL_OUT ) {
@@ -657,7 +657,7 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 		if ( ent->e.customShader ) {
 			R_AddWorldSurface( bmodel->firstSurface + i, R_GetShaderByHandle( ent->e.customShader ), tr.currentEntity->needDlights, decalBits );
 		} else {
-			R_AddWorldSurface( bmodel->firstSurface + i, ( ( msurface_t * )( bmodel->firstSurface + i ) )->shader, tr.currentEntity->needDlights, decalBits );
+			R_AddWorldSurface( bmodel->firstSurface + i, ( ( mbrush46_surface_t * )( bmodel->firstSurface + i ) )->shader, tr.currentEntity->needDlights, decalBits );
 		}
 	}
 
@@ -687,9 +687,9 @@ R_AddLeafSurfaces() - ydnar
 adds a leaf's drawsurfaces
 */
 
-static void R_AddLeafSurfaces( mnode_t *node, int dlightBits, int decalBits ) {
+static void R_AddLeafSurfaces( mbrush46_node_t *node, int dlightBits, int decalBits ) {
 	int c;
-	msurface_t  *surf, **mark;
+	mbrush46_surface_t  *surf, **mark;
 
 
 	// add to count
@@ -734,7 +734,7 @@ static void R_AddLeafSurfaces( mnode_t *node, int dlightBits, int decalBits ) {
 R_RecursiveWorldNode
 ================
 */
-static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, int decalBits ) {
+static void R_RecursiveWorldNode( mbrush46_node_t *node, int planeBits, int dlightBits, int decalBits ) {
 	int i, r;
 	dlight_t    *dl;
 
@@ -865,8 +865,8 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 R_PointInLeaf
 ===============
 */
-static mnode_t *R_PointInLeaf( const vec3_t p ) {
-	mnode_t     *node;
+static mbrush46_node_t *R_PointInLeaf( const vec3_t p ) {
+	mbrush46_node_t     *node;
 	float d;
 	cplane_t    *plane;
 
@@ -910,7 +910,7 @@ R_inPVS
 =================
 */
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 ) {
-	mnode_t *leaf;
+	mbrush46_node_t *leaf;
 	byte    *vis;
 
 	leaf = R_PointInLeaf( p1 );
@@ -934,7 +934,7 @@ cluster
 */
 static void R_MarkLeaves( void ) {
 	const byte  *vis;
-	mnode_t *leaf, *parent;
+	mbrush46_node_t *leaf, *parent;
 	int i;
 	int cluster;
 
@@ -1043,7 +1043,7 @@ void R_AddWorldSurfaces( void ) {
 	// render sky or world?
 	if ( tr.refdef.rdflags & RDF_SKYBOXPORTAL && tr.world->numSkyNodes > 0 ) {
 		int i;
-		mnode_t **node;
+		mbrush46_node_t **node;
 
 		for ( i = 0, node = tr.world->skyNodes; i < tr.world->numSkyNodes; i++, node++ )
 			R_AddLeafSurfaces( *node, tr.refdef.dlightBits, 0 );    // no decals on skybox nodes

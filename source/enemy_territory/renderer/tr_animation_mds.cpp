@@ -266,7 +266,7 @@ R_ComputeFogNum
 */
 static int R_ComputeFogNum( mdsHeader_t *header, trRefEntity_t *ent ) {
 	int i, j;
-	fog_t           *fog;
+	mbrush46_fog_t           *fog;
 	mdsFrame_t      *mdsFrame;
 	vec3_t localOrigin;
 
@@ -310,7 +310,7 @@ void R_AddAnimSurfaces( trRefEntity_t *ent ) {
 	// don't add third_person objects if not in a portal
 	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
 
-	header = tr.currentModel->model.mds;
+	header = tr.currentModel->q3_mds;
 
 	//
 	// cull the entire model if merged bounding box of both frames

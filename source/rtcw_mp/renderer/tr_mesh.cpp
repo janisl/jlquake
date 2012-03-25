@@ -172,7 +172,7 @@ int R_ComputeLOD( trRefEntity_t *ent ) {
 	md3Frame_t *frame;
 	int lod;
 
-	if ( tr.currentModel->numLods < 2 ) {
+	if ( tr.currentModel->q3_numLods < 2 ) {
 		// model has only 1 LOD level, skip computations and bias
 		lod = 0;
 	} else
@@ -182,10 +182,10 @@ int R_ComputeLOD( trRefEntity_t *ent ) {
 
 		// RF, checked for a forced lowest LOD
 		if ( ent->e.reFlags & REFLAG_FORCE_LOD ) {
-			return ( tr.currentModel->numLods - 1 );
+			return ( tr.currentModel->q3_numLods - 1 );
 		}
 
-		frame = ( md3Frame_t * )( ( ( unsigned char * ) tr.currentModel->md3[0] ) + tr.currentModel->md3[0]->ofsFrames );
+		frame = ( md3Frame_t * )( ( ( unsigned char * ) tr.currentModel->q3_md3[0] ) + tr.currentModel->q3_md3[0]->ofsFrames );
 
 		frame += ent->e.frame;
 
@@ -212,20 +212,20 @@ int R_ComputeLOD( trRefEntity_t *ent ) {
 			flod = 0;
 		}
 
-		flod *= tr.currentModel->numLods;
+		flod *= tr.currentModel->q3_numLods;
 		lod = myftol( flod );
 
 		if ( lod < 0 ) {
 			lod = 0;
-		} else if ( lod >= tr.currentModel->numLods )   {
-			lod = tr.currentModel->numLods - 1;
+		} else if ( lod >= tr.currentModel->q3_numLods )   {
+			lod = tr.currentModel->q3_numLods - 1;
 		}
 	}
 
 	lod += r_lodbias->integer;
 
-	if ( lod >= tr.currentModel->numLods ) {
-		lod = tr.currentModel->numLods - 1;
+	if ( lod >= tr.currentModel->q3_numLods ) {
+		lod = tr.currentModel->q3_numLods - 1;
 	}
 	if ( lod < 0 ) {
 		lod = 0;
@@ -242,7 +242,7 @@ R_ComputeFogNum
 */
 static int R_ComputeFogNum( md3Header_t *header, trRefEntity_t *ent ) {
 	int i, j;
-	fog_t           *fog;
+	mbrush46_fog_t           *fog;
 	md3Frame_t      *md3Frame;
 	vec3_t localOrigin;
 
@@ -292,8 +292,8 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
 
 	if ( ent->e.renderfx & RF_WRAP_FRAMES ) {
-		ent->e.frame %= tr.currentModel->md3[0]->numFrames;
-		ent->e.oldframe %= tr.currentModel->md3[0]->numFrames;
+		ent->e.frame %= tr.currentModel->q3_md3[0]->numFrames;
+		ent->e.oldframe %= tr.currentModel->q3_md3[0]->numFrames;
 	}
 
 	//
@@ -302,9 +302,9 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
 	//
-	if ( ( ent->e.frame >= tr.currentModel->md3[0]->numFrames )
+	if ( ( ent->e.frame >= tr.currentModel->q3_md3[0]->numFrames )
 		 || ( ent->e.frame < 0 )
-		 || ( ent->e.oldframe >= tr.currentModel->md3[0]->numFrames )
+		 || ( ent->e.oldframe >= tr.currentModel->q3_md3[0]->numFrames )
 		 || ( ent->e.oldframe < 0 ) ) {
 		ri.Printf( PRINT_DEVELOPER, "R_AddMD3Surfaces: no such frame %d to %d for '%s'\n",
 				   ent->e.oldframe, ent->e.frame,
@@ -318,7 +318,7 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 	//
 	lod = R_ComputeLOD( ent );
 
-	header = tr.currentModel->md3[lod];
+	header = tr.currentModel->q3_md3[lod];
 
 	//
 	// cull the entire model if merged bounding box of both frames

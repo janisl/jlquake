@@ -916,10 +916,10 @@ void RB_CalcFogTexCoords( float *st ) {
 	float s, t;
 	float eyeT;
 	qboolean eyeInside;
-	fog_t       *fog;
+	mbrush46_fog_t       *fog;
 	vec3_t local, viewOrigin;
 	vec4_t fogSurface, fogDistanceVector, fogDepthVector;
-	bmodel_t    *bmodel;
+	mbrush46_model_t    *bmodel;
 
 
 	// Gordon: rarrrrr, stop stupid msvc debug thing

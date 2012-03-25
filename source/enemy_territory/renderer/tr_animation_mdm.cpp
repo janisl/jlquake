@@ -146,8 +146,8 @@ static int R_CullModel( trRefEntity_t *ent ) {
 	mdxFrame_t  *oldFrame, *newFrame;
 	int i;
 
-	newFrameHeader = R_GetModelByHandle( ent->e.frameModel )->model.mdx;
-	oldFrameHeader = R_GetModelByHandle( ent->e.oldframeModel )->model.mdx;
+	newFrameHeader = R_GetModelByHandle( ent->e.frameModel )->q3_mdx;
+	oldFrameHeader = R_GetModelByHandle( ent->e.oldframeModel )->q3_mdx;
 
 	if ( !newFrameHeader || !oldFrameHeader ) {
 		return CULL_OUT;
@@ -277,7 +277,7 @@ R_ComputeFogNum
 */
 static int R_ComputeFogNum( trRefEntity_t *ent ) {
 	int i, j;
-	fog_t           *fog;
+	mbrush46_fog_t           *fog;
 	mdxHeader_t     *header;
 	mdxFrame_t      *mdxFrame;
 	vec3_t localOrigin;
@@ -286,7 +286,7 @@ static int R_ComputeFogNum( trRefEntity_t *ent ) {
 		return 0;
 	}
 
-	header = R_GetModelByHandle( ent->e.frameModel )->model.mdx;
+	header = R_GetModelByHandle( ent->e.frameModel )->q3_mdx;
 
 	// compute frame pointers
 	mdxFrame = ( mdxFrame_t * )( ( byte * ) header + header->ofsFrames +
@@ -328,7 +328,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t *ent ) {
 	// don't add third_person objects if not in a portal
 	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
 
-	header = tr.currentModel->model.mdm;
+	header = tr.currentModel->q3_mdm;
 
 	//
 	// cull the entire model if merged bounding box of both frames
@@ -1158,10 +1158,10 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 	int i;
 	int     *boneRefs;
 	float torsoWeight;
-	mdxHeader_t *mdxFrameHeader = R_GetModelByHandle( refent->frameModel )->model.mdx;
-	mdxHeader_t *mdxOldFrameHeader = R_GetModelByHandle( refent->oldframeModel )->model.mdx;
-	mdxHeader_t *mdxTorsoFrameHeader = R_GetModelByHandle( refent->torsoFrameModel )->model.mdx;
-	mdxHeader_t *mdxOldTorsoFrameHeader = R_GetModelByHandle( refent->oldTorsoFrameModel )->model.mdx;
+	mdxHeader_t *mdxFrameHeader = R_GetModelByHandle( refent->frameModel )->q3_mdx;
+	mdxHeader_t *mdxOldFrameHeader = R_GetModelByHandle( refent->oldframeModel )->q3_mdx;
+	mdxHeader_t *mdxTorsoFrameHeader = R_GetModelByHandle( refent->torsoFrameModel )->q3_mdx;
+	mdxHeader_t *mdxOldTorsoFrameHeader = R_GetModelByHandle( refent->oldTorsoFrameModel )->q3_mdx;
 
 	if ( !mdxFrameHeader || !mdxOldFrameHeader || !mdxTorsoFrameHeader || !mdxOldTorsoFrameHeader ) {
 		return;
@@ -1553,7 +1553,7 @@ void RB_MDM_SurfaceAnim( mdmSurface_t *surface ) {
 			if ( r_bonesDebug->integer == 8 ) {
 				// FIXME: Actually draw the whole skeleton
 				//if( surface == (mdmSurface_t *)((byte *)header + header->ofsSurfaces) ) {
-				mdxHeader_t *mdxHeader = R_GetModelByHandle( refent->frameModel )->model.mdx;
+				mdxHeader_t *mdxHeader = R_GetModelByHandle( refent->frameModel )->q3_mdx;
 				boneRefs = ( int * )( (byte *)surface + surface->ofsBoneReferences );
 
 				qglDepthRange( 0, 0 );      // never occluded

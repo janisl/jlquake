@@ -391,7 +391,7 @@ handles final surface classification
 
 static void FinishGenericSurface( bsp46_dsurface_t *ds, srfGeneric_t *gen, vec3_t pt ) {
 	// set bounding sphere
-	SphereFromBounds( gen->bounds[ 0 ], gen->bounds[ 1 ], gen->origin, &gen->radius );
+	SphereFromBounds( gen->bounds[ 0 ], gen->bounds[ 1 ], gen->localOrigin, &gen->radius );
 
 	// take the plane normal from the lightmap vector and classify it
 	gen->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
@@ -409,7 +409,7 @@ static void FinishGenericSurface( bsp46_dsurface_t *ds, srfGeneric_t *gen, vec3_
 ParseMesh
 ===============
 */
-static void ParseMesh( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf ) {
+static void ParseMesh( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf ) {
 	srfGridMesh_t   *grid;
 	int i, j;
 	int width, height, numPoints;
@@ -481,7 +481,7 @@ ParseFace
 ===============
 */
 #if 0 // rain - unused
-static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes  ) {
+static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes  ) {
 	int i, j;
 	srfSurfaceFace_t    *cv;
 	int numPoints, numIndexes;
@@ -559,99 +559,7 @@ static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t
 #endif
 
 
-/*
-===============
-ParseTriSurf
-===============
-*/
-#if 0
-static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes ) {
-	srfTriangles2_t     *tri;
-	int i, j;
-	int numVerts, numIndexes;
-	int lightmapNum;
-
-
-	// get lightmap num
-	lightmapNum = LittleLong( ds->lightmapNum );
-
-	// get fog volume
-	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
-
-	// get shader
-	surf->shader = ShaderForShaderNum( ds->shaderNum, lightmapNum );    //%	LIGHTMAP_BY_VERTEX );
-	if ( r_singleShader->integer && !surf->shader->isSky ) {
-		surf->shader = tr.defaultShader;
-	}
-
-	numVerts = LittleLong( ds->numVerts );
-	numIndexes = LittleLong( ds->numIndexes );
-
-
-	tri = R_GetSurfMemory( sizeof( *tri ) + ( numVerts + 1 ) * ( sizeof( vec4hack_t ) + sizeof( vec2hack_t ) + sizeof( vec2hack_t ) + sizeof( vec4hack_t ) + sizeof( color4ubhack_t ) ) + numIndexes * sizeof( tri->indexes[0] ) );
-
-	tri->surfaceType = SF_TRIANGLES;
-	tri->numVerts = numVerts;
-	tri->numIndexes = numIndexes;
-
-	tri->xyz =      ( vec4hack_t* )( tri +              1 );
-	tri->st =       ( vec2hack_t* )( tri->xyz +         tri->numVerts + 1 );
-	tri->lightmap = ( vec2hack_t* )( tri->st +          tri->numVerts + 1 );
-	tri->normal =   ( vec4hack_t* )( tri->lightmap +    tri->numVerts + 1 );
-	tri->color =    ( color4ubhack_t* )( tri->normal +      tri->numVerts + 1 );
-	tri->indexes =  ( int* )( tri->color +       tri->numVerts + 1 );
-
-	surf->data = (surfaceType_t *)tri;
-
-	// copy vertexes
-	ClearBounds( tri->bounds[0], tri->bounds[1] );
-	verts += LittleLong( ds->firstVert );
-
-
-	if ( LittleLong( 256 ) != 256 ) {
-		for ( i = 0 ; i < numVerts ; i++ ) {
-			for ( j = 0 ; j < 3 ; j++ ) {
-				tri->xyz[i].v[j] =      LittleFloat( verts[i].xyz[j] );
-				tri->normal[i].v[j] =   LittleFloat( verts[i].normal[j] );
-			}
-			AddPointToBounds( tri->xyz[i].v, tri->bounds[0], tri->bounds[1] );
-			for ( j = 0 ; j < 2 ; j++ ) {
-				tri->st[i].v[j] =       LittleFloat( verts[i].st[j] );
-				tri->lightmap[i].v[j] = LittleFloat( verts[i].lightmap[j] );
-			}
-
-			R_ColorShiftLightingBytes( verts[i].color, tri->color[i].v );
-		}
-	} else { // Gordon: OPT: removed the littlefloats from when they aint needed
-		for ( i = 0 ; i < numVerts ; i++ ) {
-			for ( j = 0 ; j < 3 ; j++ ) {
-				tri->xyz[i].v[j] =      verts[i].xyz[j];
-				tri->normal[i].v[j] =   verts[i].normal[j];
-			}
-			AddPointToBounds( tri->xyz[i].v, tri->bounds[0], tri->bounds[1] );
-			for ( j = 0 ; j < 2 ; j++ ) {
-				tri->st[i].v[j] =       verts[i].st[j];
-				tri->lightmap[i].v[j] = verts[i].lightmap[j];
-			}
-
-			R_ColorShiftLightingBytes( verts[i].color, tri->color[i].v );
-		}
-	}
-
-	// copy indexes
-	indexes += LittleLong( ds->firstIndex );
-	for ( i = 0 ; i < numIndexes ; i++ ) {
-		tri->indexes[i] = LittleLong( indexes[i] );
-		if ( tri->indexes[i] < 0 || tri->indexes[i] >= numVerts ) {
-			ri.Error( ERR_DROP, "Bad index in triangle surface" );
-		}
-	}
-
-	// finish surface
-	FinishGenericSurface( ds, (srfGeneric_t*) tri, tri->xyz[0].v );
-}
-#else
-static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes ) {
+static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes ) {
 	srfTriangles_t      *tri;
 	int i, j;
 	int numVerts, numIndexes;
@@ -715,7 +623,6 @@ static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurfac
 	// finish surface
 	FinishGenericSurface( ds, (srfGeneric_t*) tri, tri->verts[ 0 ].xyz );
 }
-#endif // 0
 
 
 
@@ -724,7 +631,7 @@ ParseFoliage() - ydnar
 parses a foliage drawsurface
 */
 
-static void ParseFoliage( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes ) {
+static void ParseFoliage( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes ) {
 	srfFoliage_t    *foliage;
 	int i, j, numVerts, numIndexes, numInstances, size;
 	vec4_t          *xyz, *normal /*, *origin*/;
@@ -850,7 +757,7 @@ ParseFlare
 ===============
 */
 
-static void ParseFlare( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes ) {
+static void ParseFlare( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes ) {
 	srfFlare_t      *flare;
 	int i;
 
@@ -1766,7 +1673,7 @@ R_LoadSurfaces
 */
 static void R_LoadSurfaces( bsp46_lump_t *surfs, bsp46_lump_t *verts, bsp46_lump_t *indexLump ) {
 	bsp46_dsurface_t  *in;
-	msurface_t  *out;
+	mbrush46_surface_t  *out;
 	bsp46_drawVert_t  *dv;
 	int         *indexes;
 	int count;
@@ -1795,7 +1702,7 @@ static void R_LoadSurfaces( bsp46_lump_t *surfs, bsp46_lump_t *verts, bsp46_lump
 		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name );
 	}
 
-	out = (msurface_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
+	out = (mbrush46_surface_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
 
 	s_worldData.surfaces = out;
 	s_worldData.numsurfaces = count;
@@ -1857,7 +1764,7 @@ R_LoadSubmodels
 */
 static void R_LoadSubmodels( bsp46_lump_t *l ) {
 	bsp46_dmodel_t    *in;
-	bmodel_t    *out;
+	mbrush46_model_t    *out;
 	int i, j, count;
 
 	in = ( bsp46_dmodel_t* )( fileBase + l->fileofs );
@@ -1868,7 +1775,7 @@ static void R_LoadSubmodels( bsp46_lump_t *l ) {
 
 	s_worldData.numBModels = count;
 
-	s_worldData.bmodels = out = (bmodel_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
+	s_worldData.bmodels = out = (mbrush46_model_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
 
 	for ( i = 0 ; i < count ; i++, in++, out++ ) {
 		model_t *model;
@@ -1877,8 +1784,8 @@ static void R_LoadSubmodels( bsp46_lump_t *l ) {
 
 		assert( model != NULL );            // this should never happen
 
-		model->type = MOD_BRUSH;
-		model->model.bmodel = out;
+		model->type = MOD_BRUSH46;
+		model->q3_bmodel = out;
 		String::Sprintf( model->name, sizeof( model->name ), "*%d", i );
 
 		for ( j = 0 ; j < 3 ; j++ ) {
@@ -1895,7 +1802,7 @@ static void R_LoadSubmodels( bsp46_lump_t *l ) {
 
 		// ydnar: allocate decal memory
 		j = ( i == 0 ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS );
-		out->decals = (decal_t*)ri.Hunk_Alloc( j * sizeof( *out->decals ), h_low );
+		out->decals = (mbrush46_decal_t*)ri.Hunk_Alloc( j * sizeof( *out->decals ), h_low );
 		memset( out->decals, 0, j * sizeof( *out->decals ) );
 	}
 }
@@ -1910,7 +1817,7 @@ R_SetParent
 =================
 */
 
-static void R_SetParent( mnode_t *node, mnode_t *parent ) {
+static void R_SetParent( mbrush46_node_t *node, mbrush46_node_t *parent ) {
 	//  set parent
 	node->parent = parent;
 
@@ -1919,7 +1826,7 @@ static void R_SetParent( mnode_t *node, mnode_t *parent ) {
 		// add node surfaces to bounds
 		if ( node->nummarksurfaces > 0 ) {
 			int c;
-			msurface_t      **mark;
+			mbrush46_surface_t      **mark;
 			srfGeneric_t    *gen;
 
 
@@ -1965,7 +1872,7 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump 
 	int i, j, p;
 	bsp46_dnode_t     *in;
 	bsp46_dleaf_t     *inLeaf;
-	mnode_t     *out;
+	mbrush46_node_t     *out;
 	int numNodes, numLeafs;
 
 	in = ( bsp46_dnode_t* )( fileBase + nodeLump->fileofs );
@@ -1976,7 +1883,7 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump 
 	numNodes = nodeLump->filelen / sizeof( bsp46_dnode_t );
 	numLeafs = leafLump->filelen / sizeof( bsp46_dleaf_t );
 
-	out = (mnode_t*)ri.Hunk_Alloc( ( numNodes + numLeafs ) * sizeof( *out ), h_low );
+	out = (mbrush46_node_t*)ri.Hunk_Alloc( ( numNodes + numLeafs ) * sizeof( *out ), h_low );
 
 	s_worldData.nodes = out;
 	s_worldData.numnodes = numNodes + numLeafs;
@@ -1984,7 +1891,7 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump 
 
 	// ydnar: skybox optimization
 	s_worldData.numSkyNodes = 0;
-	s_worldData.skyNodes = (mnode_t**)ri.Hunk_Alloc( WORLD_MAX_SKY_NODES * sizeof( *s_worldData.skyNodes ), h_low );
+	s_worldData.skyNodes = (mbrush46_node_t**)ri.Hunk_Alloc( WORLD_MAX_SKY_NODES * sizeof( *s_worldData.skyNodes ), h_low );
 
 	// load nodes
 	for ( i = 0 ; i < numNodes; i++, in++, out++ )
@@ -2002,7 +1909,7 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump 
 		p = LittleLong( in->planeNum );
 		out->plane = s_worldData.planes + p;
 
-		out->contents = CONTENTS_NODE;  // differentiate from leafs
+		out->contents = BRUSH46_CONTENTS_NODE;  // differentiate from leafs
 
 		for ( j = 0 ; j < 2 ; j++ )
 		{
@@ -2082,14 +1989,14 @@ R_LoadMarksurfaces
 static void R_LoadMarksurfaces( bsp46_lump_t *l ) {
 	int i, j, count;
 	int     *in;
-	msurface_t **out;
+	mbrush46_surface_t **out;
 
 	in = ( int* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof( *in ) ) {
 		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name );
 	}
 	count = l->filelen / sizeof( *in );
-	out = (msurface_t**)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
+	out = (mbrush46_surface_t**)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;
@@ -2147,7 +2054,7 @@ R_LoadFogs
 */
 static void R_LoadFogs( bsp46_lump_t *l, bsp46_lump_t *brushesLump, bsp46_lump_t *sidesLump ) {
 	int i, j;
-	fog_t       *out;
+	mbrush46_fog_t       *out;
 	bsp46_dfog_t      *fogs;
 	bsp46_dbrush_t    *brushes, *brush;
 	bsp46_dbrushside_t    *sides;
@@ -2165,7 +2072,7 @@ static void R_LoadFogs( bsp46_lump_t *l, bsp46_lump_t *brushesLump, bsp46_lump_t
 
 	// create fog strucutres for them
 	s_worldData.numfogs = count + 1;
-	s_worldData.fogs = (fog_t*)ri.Hunk_Alloc( s_worldData.numfogs * sizeof( *out ), h_low );
+	s_worldData.fogs = (mbrush46_fog_t*)ri.Hunk_Alloc( s_worldData.numfogs * sizeof( *out ), h_low );
 	out = s_worldData.fogs + 1;
 
 	// ydnar: reset global fog
@@ -2285,7 +2192,7 @@ R_FindLightGridBounds
 */
 void R_FindLightGridBounds( vec3_t mins, vec3_t maxs ) {
 	world_t *w;
-	msurface_t  *surf;
+	mbrush46_surface_t  *surf;
 	srfSurfaceFace_t *surfFace;
 //	cplane_t	*plane;
 	shader_t     *shd;
@@ -2507,7 +2414,7 @@ R_GetEntityToken
 qboolean R_GetEntityToken( char *buffer, int size ) {
 	const char  *s;
 
-	s = String::Parse3( &s_worldData.entityParsePoint );
+	s = String::Parse3(const_cast<const char**>(&s_worldData.entityParsePoint));
 	String::NCpyZ( buffer, s, size );
 	if ( !s_worldData.entityParsePoint || !s[0] ) {
 		s_worldData.entityParsePoint = s_worldData.entityString;

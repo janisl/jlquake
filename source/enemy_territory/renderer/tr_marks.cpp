@@ -142,10 +142,10 @@ R_BoxSurfaces_r
 
 =================
 */
-void R_BoxSurfaces_r( mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **list, int listsize, int *listlength, vec3_t dir ) {
+void R_BoxSurfaces_r( mbrush46_node_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **list, int listsize, int *listlength, vec3_t dir ) {
 
 	int s, c;
-	msurface_t  *surf, **mark;
+	mbrush46_surface_t  *surf, **mark;
 
 	// RF, if this node hasn't been rendered recently, ignore it
 	if ( node->visframe < tr.visCount - 2 ) { // allow us to be a few frames behind
@@ -464,28 +464,6 @@ int R_OldMarkFragments( int numPoints, const vec3_t *points, const vec3_t projec
 		// Arnout: projection on models (mainly for terrain though)
 		else if ( *surfaces[i] == SF_TRIANGLES ) {
 
-#if 0
-			srfTriangles2_t *cts;
-			cts = ( srfTriangles2_t * ) surfaces[i];
-
-			indexes = cts->indexes;
-			for ( k = 0 ; k < cts->numIndexes ; k += 3 ) {
-				for ( j = 0 ; j < 3 ; j++ ) {
-					VectorMA( cts->xyz[indexes[k + j]].v, MARKER_OFFSET, cts->normal[indexes[k + j]].v, clipPoints[0][j] );
-				}
-				// add the fragments of this face
-				R_AddMarkFragments( 3, clipPoints,
-									numPlanes, normals, dists,
-									maxPoints, pointBuffer,
-									maxFragments, fragmentBuffer,
-									&returnedPoints, &returnedFragments, mins, maxs );
-
-				if ( returnedFragments == maxFragments ) {
-					return returnedFragments;   // not enough space for more fragments
-				}
-			}
-			continue;
-#else
 			srfTriangles_t  *cts;
 			cts = ( srfTriangles_t * ) surfaces[i];
 
@@ -514,7 +492,6 @@ int R_OldMarkFragments( int numPoints, const vec3_t *points, const vec3_t projec
 				}
 			}
 			continue;
-#endif
 		} else {
 			// ignore all other world surfaces
 			// might be cool to also project polygons on a triangle soup
@@ -887,61 +864,6 @@ int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t project
 		// Arnout: projection on models (mainly for terrain though)
 		else if ( *surfaces[i] == SF_TRIANGLES ) {
 
-#if 0
-			// duplicated so we don't mess with the original clips for the curved surfaces
-			vec3_t lnormals[MAX_VERTS_ON_POLY + 2];
-			float ldists[MAX_VERTS_ON_POLY + 2];
-
-			srfTriangles2_t *cts;
-			cts = ( srfTriangles2_t * ) surfaces[i];
-			if ( !oldMapping ) {
-				for ( k = 0 ; k < numPoints ; k++ ) {
-					VectorNegate( normals[k], lnormals[k] );
-					ldists[k] = -dists[k];
-				}
-				VectorNegate( normals[numPoints], lnormals[numPoints] );
-				ldists[numPoints] = dists[numPoints + 1];
-				VectorNegate( normals[numPoints + 1], lnormals[numPoints + 1] );
-				ldists[numPoints + 1] = dists[numPoints];
-
-				indexes = cts->indexes;
-				for ( k = 0 ; k < cts->numIndexes ; k += 3 ) {
-					for ( j = 0 ; j < 3 ; j++ ) {
-						VectorMA( cts->xyz[indexes[k + j]].v, MARKER_OFFSET, cts->normal[indexes[k + j]].v, clipPoints[0][j] );
-					}
-					// add the fragments of this face
-					R_AddMarkFragments( 3, clipPoints,
-										numPlanes, lnormals, ldists,
-										maxPoints, pointBuffer,
-										maxFragments, fragmentBuffer,
-										&returnedPoints, &returnedFragments, mins, maxs );
-
-					if ( returnedFragments == maxFragments ) {
-						return returnedFragments;   // not enough space for more fragments
-					}
-				}
-			} else {
-
-				indexes = cts->indexes;
-				for ( k = 0 ; k < cts->numIndexes ; k += 3 ) {
-					for ( j = 0 ; j < 3 ; j++ ) {
-						VectorMA( cts->xyz[indexes[k + j]].v, MARKER_OFFSET, cts->normal[indexes[k + j]].v, clipPoints[0][j] );
-					}
-					// add the fragments of this face
-					R_AddMarkFragments( 3, clipPoints,
-										numPlanes, normals, dists,
-										maxPoints, pointBuffer,
-										maxFragments, fragmentBuffer,
-										&returnedPoints, &returnedFragments, mins, maxs );
-
-					if ( returnedFragments == maxFragments ) {
-						return returnedFragments;   // not enough space for more fragments
-					}
-				}
-			}
-
-			continue;
-#else
 			// duplicated so we don't mess with the original clips for the curved surfaces
 			vec3_t lnormals[MAX_VERTS_ON_POLY + 2];
 			float ldists[MAX_VERTS_ON_POLY + 2];
@@ -1027,7 +949,6 @@ int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t project
 			}
 
 			continue;
-#endif // 1
 		} else {
 			// ignore all other world surfaces
 			// might be cool to also project polygons on a triangle soup

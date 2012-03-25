@@ -66,9 +66,9 @@ static qboolean R_CullGrid( srfGridMesh_t *cv ) {
 	}
 
 	if ( tr.currentEntityNum != Q3ENTITYNUM_WORLD ) {
-		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->meshRadius );
+		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->radius );
 	} else {
-		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->meshRadius );
+		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->radius );
 	}
 	boxCull = CULL_OUT;
 
@@ -81,7 +81,7 @@ static qboolean R_CullGrid( srfGridMesh_t *cv ) {
 	else if ( sphereCull == CULL_CLIP ) {
 		tr.pc.c_sphere_cull_patch_clip++;
 
-		boxCull = R_CullLocalBox( cv->meshBounds );
+		boxCull = R_CullLocalBox( cv->bounds );
 
 		if ( boxCull == CULL_OUT ) {
 			tr.pc.c_box_cull_patch_out++;
@@ -194,12 +194,12 @@ static int R_DlightGrid( srfGridMesh_t *grid, int dlightBits ) {
 			continue;
 		}
 		dl = &tr.refdef.dlights[i];
-		if ( dl->origin[0] - dl->radius > grid->meshBounds[1][0]
-			 || dl->origin[0] + dl->radius < grid->meshBounds[0][0]
-											 || dl->origin[1] - dl->radius > grid->meshBounds[1][1]
-			 || dl->origin[1] + dl->radius < grid->meshBounds[0][1]
-											 || dl->origin[2] - dl->radius > grid->meshBounds[1][2]
-			 || dl->origin[2] + dl->radius < grid->meshBounds[0][2] ) {
+		if ( dl->origin[0] - dl->radius > grid->bounds[1][0]
+			 || dl->origin[0] + dl->radius < grid->bounds[0][0]
+											 || dl->origin[1] - dl->radius > grid->bounds[1][1]
+			 || dl->origin[1] + dl->radius < grid->bounds[0][1]
+											 || dl->origin[2] - dl->radius > grid->bounds[1][2]
+			 || dl->origin[2] + dl->radius < grid->bounds[0][2] ) {
 			// dlight doesn't reach the bounds
 			dlightBits &= ~( 1 << i );
 		}
@@ -227,12 +227,12 @@ static int R_DlightTrisurf( srfTriangles_t *surf, int dlightBits ) {
 			continue;
 		}
 		dl = &tr.refdef.dlights[i];
-		if ( dl->origin[0] - dl->radius > grid->meshBounds[1][0]
-			 || dl->origin[0] + dl->radius < grid->meshBounds[0][0]
-											 || dl->origin[1] - dl->radius > grid->meshBounds[1][1]
-			 || dl->origin[1] + dl->radius < grid->meshBounds[0][1]
-											 || dl->origin[2] - dl->radius > grid->meshBounds[1][2]
-			 || dl->origin[2] + dl->radius < grid->meshBounds[0][2] ) {
+		if ( dl->origin[0] - dl->radius > grid->bounds[1][0]
+			 || dl->origin[0] + dl->radius < grid->bounds[0][0]
+											 || dl->origin[1] - dl->radius > grid->bounds[1][1]
+			 || dl->origin[1] + dl->radius < grid->bounds[0][1]
+											 || dl->origin[2] - dl->radius > grid->bounds[1][2]
+			 || dl->origin[2] + dl->radius < grid->bounds[0][2] ) {
 			// dlight doesn't reach the bounds
 			dlightBits &= ~( 1 << i );
 		}
@@ -256,7 +256,7 @@ that is touched by one or more dlights, so try to throw out
 more dlights if possible.
 ====================
 */
-static int R_DlightSurface( msurface_t *surf, int dlightBits ) {
+static int R_DlightSurface( mbrush46_surface_t *surf, int dlightBits ) {
 	if ( *surf->data == SF_FACE ) {
 		dlightBits = R_DlightFace( (srfSurfaceFace_t *)surf->data, dlightBits );
 	} else if ( *surf->data == SF_GRID ) {
@@ -281,7 +281,7 @@ static int R_DlightSurface( msurface_t *surf, int dlightBits ) {
 R_AddWorldSurface
 ======================
 */
-static void R_AddWorldSurface( msurface_t *surf, int dlightBits ) {
+static void R_AddWorldSurface( mbrush46_surface_t *surf, int dlightBits ) {
 	if ( surf->viewCount == tr.viewCount ) {
 		return;     // already in this view
 	}
@@ -322,9 +322,9 @@ See if a sprite is inside a fog volume
 Return positive with /any part/ of the brush falling within a fog volume
 =================
 */
-int R_BmodelFogNum( trRefEntity_t *re, bmodel_t *bmodel ) {
+int R_BmodelFogNum( trRefEntity_t *re, mbrush46_model_t *bmodel ) {
 	int i, j;
-	fog_t           *fog;
+	mbrush46_fog_t           *fog;
 
 	for ( i = 1 ; i < tr.world->numfogs ; i++ ) {
 		fog = &tr.world->fogs[i];
@@ -364,7 +364,7 @@ R_AddBrushModelSurfaces
 =================
 */
 void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
-	bmodel_t    *bmodel;
+	mbrush46_model_t    *bmodel;
 	int clip;
 	model_t     *pModel;
 	int i;
@@ -372,7 +372,7 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 
 	pModel = R_GetModelByHandle( ent->e.hModel );
 
-	bmodel = pModel->bmodel;
+	bmodel = pModel->q3_bmodel;
 
 	clip = R_CullLocalBox( bmodel->bounds );
 	if ( clip == CULL_OUT ) {
@@ -407,7 +407,7 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 R_RecursiveWorldNode
 ================
 */
-static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits ) {
+static void R_RecursiveWorldNode( mbrush46_node_t *node, int planeBits, int dlightBits ) {
 
 	do {
 		int newDlights[2];
@@ -508,7 +508,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits )
 	{
 		// leaf node, so add mark surfaces
 		int c;
-		msurface_t  *surf, **mark;
+		mbrush46_surface_t  *surf, **mark;
 
 		// RF, hack, dlight elimination above is unreliable
 		dlightBits = 0xffffffff;
@@ -556,8 +556,8 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits )
 R_PointInLeaf
 ===============
 */
-static mnode_t *R_PointInLeaf( vec3_t p ) {
-	mnode_t     *node;
+static mbrush46_node_t *R_PointInLeaf( vec3_t p ) {
+	mbrush46_node_t     *node;
 	float d;
 	cplane_t    *plane;
 
@@ -607,7 +607,7 @@ cluster
 */
 static void R_MarkLeaves( void ) {
 	const byte  *vis;
-	mnode_t *leaf, *parent;
+	mbrush46_node_t *leaf, *parent;
 	int i;
 	int cluster;
 

@@ -65,11 +65,11 @@ R_DlightBmodel
 Determine which dynamic lights may effect this bmodel
 =============
 */
-void R_DlightBmodel( bmodel_t *bmodel ) {
+void R_DlightBmodel( mbrush46_model_t *bmodel ) {
 	int i, j;
 	dlight_t    *dl;
 	int mask;
-	msurface_t  *surf;
+	mbrush46_surface_t  *surf;
 
 	// transform all the lights
 	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr._or );

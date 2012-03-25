@@ -2611,8 +2611,8 @@ RE_GetShaderFromModel
 */
 qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap ) {
 	model_t     *model;
-	bmodel_t    *bmodel;
-	msurface_t  *surf;
+	mbrush46_model_t    *bmodel;
+	mbrush46_surface_t  *surf;
 	shader_t    *shd;
 
 	if ( surfnum < 0 ) {
@@ -2622,7 +2622,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 	model = R_GetModelByHandle( modelid );  // (SA) should be correct now
 
 	if ( model ) {
-		bmodel  = model->bmodel;
+		bmodel  = model->q3_bmodel;
 		if ( bmodel && bmodel->firstSurface ) {
 			if ( surfnum >= bmodel->numSurfaces ) { // if it's out of range, return the first surface
 				surfnum = 0;

@@ -313,27 +313,27 @@ void R_AddModelShadow( refEntity_t *ent ) {
 
 	/* get model */
 	m = R_GetModelByHandle( ent->hModel );
-	if ( m == NULL || m->shadowShader == 0 ) {
+	if ( m == NULL || m->q3_shadowShader == 0 ) {
 		return;
 	}
 
 	/* calculate projection */
 	VectorSubtract( vec3_origin, ent->axis[ 2 ], projection );
 	VectorSet( projection, 0, 0, -1.0f );
-	projection[ 3 ] = m->shadowParms[ 4 ];
+	projection[ 3 ] = m->q3_shadowParms[ 4 ];
 
 	/* push origin */
-	VectorMA( ent->origin, m->shadowParms[ 5 ], projection, pushedOrigin );
+	VectorMA( ent->origin, m->q3_shadowParms[ 5 ], projection, pushedOrigin );
 
 	/* make shadow polygon */
-	VectorMA( pushedOrigin, m->shadowParms[ 0 ], ent->axis[ 1 ], points[ 0 ] );
-	VectorMA( points[ 0 ], m->shadowParms[ 1 ], ent->axis[ 0 ], points[ 0 ] );
-	VectorMA( points[ 0 ], m->shadowParms[ 2 ], ent->axis[ 1 ], points[ 1 ] );
-	VectorMA( points[ 1 ], m->shadowParms[ 3 ], ent->axis[ 0 ], points[ 2 ] );
-	VectorMA( points[ 0 ], m->shadowParms[ 3 ], ent->axis[ 0 ], points[ 3 ] );
+	VectorMA( pushedOrigin, m->q3_shadowParms[ 0 ], ent->axis[ 1 ], points[ 0 ] );
+	VectorMA( points[ 0 ], m->q3_shadowParms[ 1 ], ent->axis[ 0 ], points[ 0 ] );
+	VectorMA( points[ 0 ], m->q3_shadowParms[ 2 ], ent->axis[ 1 ], points[ 1 ] );
+	VectorMA( points[ 1 ], m->q3_shadowParms[ 3 ], ent->axis[ 0 ], points[ 2 ] );
+	VectorMA( points[ 0 ], m->q3_shadowParms[ 3 ], ent->axis[ 0 ], points[ 3 ] );
 
 	/* add the decal */
-	RE_ProjectDecal( m->shadowShader, 4, points, projection, color, -1, -1 );
+	RE_ProjectDecal( m->q3_shadowShader, 4, points, projection, color, -1, -1 );
 }
 
 
@@ -556,12 +556,12 @@ ProjectDecalOntoWinding()
 projects decal onto a polygon
 */
 
-static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ], msurface_t *surf, bmodel_t *bmodel ) {
+static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ], mbrush46_surface_t *surf, mbrush46_model_t *bmodel ) {
 	int i, pingPong, count, axis;
 	float pd, d, d2, alpha = 1.f;
 	vec4_t plane;
 	vec3_t absNormal;
-	decal_t     *decal, *oldest;
+	mbrush46_decal_t     *decal, *oldest;
 	polyVert_t  *vert;
 
 
@@ -694,7 +694,7 @@ ProjectDecalOntoTriangles()
 projects a decal onto a triangle surface (brush faces, misc_models, metasurfaces)
 */
 
-static void ProjectDecalOntoTriangles( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel ) {
+static void ProjectDecalOntoTriangles( decalProjector_t *dp, mbrush46_surface_t *surf, mbrush46_model_t *bmodel ) {
 	int i;
 	srfTriangles_t *srf;
 	vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
@@ -723,7 +723,7 @@ ProjectDecalOntoGrid()
 projects a decal onto a grid (patch) surface
 */
 
-static void ProjectDecalOntoGrid( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel ) {
+static void ProjectDecalOntoGrid( decalProjector_t *dp, mbrush46_surface_t *surf, mbrush46_model_t *bmodel ) {
 	int x, y;
 	srfGridMesh_t   *srf;
 	bsp46_drawVert_t      *dv;
@@ -764,7 +764,7 @@ R_ProjectDecalOntoSurface()
 projects a decal onto a world surface
 */
 
-void R_ProjectDecalOntoSurface( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel ) {
+void R_ProjectDecalOntoSurface( decalProjector_t *dp, mbrush46_surface_t *surf, mbrush46_model_t *bmodel ) {
 	float d;
 	srfGeneric_t    *gen;
 
@@ -793,7 +793,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, msurface_t *surf, bmodel_t
 	}
 
 	/* test bounding sphere */
-	if ( !R_TestDecalBoundingSphere( dp, gen->origin, ( gen->radius * gen->radius ) ) ) {
+	if ( !R_TestDecalBoundingSphere( dp, gen->localOrigin, ( gen->radius * gen->radius ) ) ) {
 		return;
 	}
 
@@ -839,7 +839,7 @@ AddDecalSurface()
 adds a decal surface to the scene
 */
 
-void R_AddDecalSurface( decal_t *decal ) {
+void R_AddDecalSurface( mbrush46_decal_t *decal ) {
 	int i, dlightMap;
 	float fade;
 	srfDecal_t      *srf;
@@ -898,9 +898,9 @@ R_AddDecalSurfaces()
 adds decal surfaces to the scene
 */
 
-void R_AddDecalSurfaces( bmodel_t *bmodel ) {
+void R_AddDecalSurfaces( mbrush46_model_t *bmodel ) {
 	int i, count;
-	decal_t     *decal;
+	mbrush46_decal_t     *decal;
 
 	/* get decal count */
 	count = ( bmodel == tr.world->bmodels ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS );

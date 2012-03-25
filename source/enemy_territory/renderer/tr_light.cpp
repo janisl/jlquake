@@ -101,11 +101,11 @@ R_DlightBmodel
 Determine which dynamic lights may effect this bmodel
 =============
 */
-void R_DlightBmodel( bmodel_t *bmodel ) {
+void R_DlightBmodel( mbrush46_model_t *bmodel ) {
 	int i, j;
 	dlight_t    *dl;
 	int mask;
-	msurface_t  *surf;
+	mbrush46_surface_t  *surf;
 
 	// transform all the lights
 	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr.orientation );
@@ -153,8 +153,7 @@ void R_DlightBmodel( bmodel_t *bmodel ) {
 		} else if ( *surf->data == SF_GRID ) {
 			( (srfGridMesh_t *)surf->data )->dlightBits[ tr.smpFrame ] = mask;
 		} else if ( *surf->data == SF_TRIANGLES ) {
-//			((srfTriangles_t *)surf->data)->dlightBits[ tr.smpFrame ] = mask;
-			( (srfTriangles2_t *)surf->data )->dlightBits[ tr.smpFrame ] = mask;
+			((srfTriangles_t *)surf->data)->dlightBits[ tr.smpFrame ] = mask;
 		} else if ( *surf->data == SF_FOLIAGE ) {   // ydnar
 			( (srfFoliage_t *)surf->data )->dlightBits[ tr.smpFrame ] = mask;
 		}

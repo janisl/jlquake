@@ -447,7 +447,7 @@ void RB_SurfaceFoliage( srfFoliage_t *srf ) {
 	if ( distanceCull[ 1 ] > 0 ) {
 		//VectorSubtract( srf->localOrigin, viewOrigin, delta );
 		//alpha = (distanceCull[ 1 ] - VectorLength( delta ) + srf->radius) * distanceCull[ 3 ];
-		z = fovScale * ( DotProduct( srf->origin, distanceVector ) + distanceVector[ 3 ] - srf->radius );
+		z = fovScale * ( DotProduct( srf->localOrigin, distanceVector ) + distanceVector[ 3 ] - srf->radius );
 		alpha = ( distanceCull[ 1 ] - z ) * distanceCull[ 3 ];
 		if ( alpha < distanceCull[ 2 ] ) {
 			return;
