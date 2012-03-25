@@ -444,7 +444,14 @@ static refEntityType_t gameRefEntTypeToEngine[] =
 static void CL_GameRefEntToEngine(const wsrefEntity_t* gameRefent, refEntity_t* refent)
 {
 	Com_Memset(refent, 0, sizeof(*refent));
-	refent->reType = gameRefEntTypeToEngine[gameRefent->reType];
+	if (gameRefent->reType < 0 || gameRefent->reType >= 10)
+	{
+		refent->reType = RT_MAX_REF_ENTITY_TYPE;
+	}
+	else
+	{
+		refent->reType = gameRefEntTypeToEngine[gameRefent->reType];
+	}
 	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
 		RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
 		RF_SHADOW_PLANE | RF_WRAP_FRAMES | RF_HILIGHT | RF_BLINK);
