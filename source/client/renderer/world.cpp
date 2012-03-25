@@ -69,11 +69,11 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 	int sphereCull;
 	if (tr.currentEntityNum != REF_ENTITYNUM_WORLD)
 	{
-		sphereCull = R_CullLocalPointAndRadius(cv->localOrigin, cv->meshRadius);
+		sphereCull = R_CullLocalPointAndRadius(cv->localOrigin, cv->radius);
 	}
 	else
 	{
-		sphereCull = R_CullPointAndRadius(cv->localOrigin, cv->meshRadius);
+		sphereCull = R_CullPointAndRadius(cv->localOrigin, cv->radius);
 	}
 
 	// check for trivial reject
@@ -87,7 +87,7 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 	{
 		tr.pc.c_sphere_cull_patch_clip++;
 
-		int boxCull = R_CullLocalBox(cv->meshBounds);
+		int boxCull = R_CullLocalBox(cv->bounds);
 
 		if (boxCull == CULL_OUT) 
 		{
@@ -226,12 +226,12 @@ static int R_DlightGrid(srfGridMesh_t* grid, int dlightBits)
 			continue;
 		}
 		dlight_t* dl = &tr.refdef.dlights[i];
-		if (dl->origin[0] - dl->radius > grid->meshBounds[1][0] ||
-			dl->origin[0] + dl->radius < grid->meshBounds[0][0] ||
-			dl->origin[1] - dl->radius > grid->meshBounds[1][1] ||
-			dl->origin[1] + dl->radius < grid->meshBounds[0][1] ||
-			dl->origin[2] - dl->radius > grid->meshBounds[1][2] ||
-			dl->origin[2] + dl->radius < grid->meshBounds[0][2])
+		if (dl->origin[0] - dl->radius > grid->bounds[1][0] ||
+			dl->origin[0] + dl->radius < grid->bounds[0][0] ||
+			dl->origin[1] - dl->radius > grid->bounds[1][1] ||
+			dl->origin[1] + dl->radius < grid->bounds[0][1] ||
+			dl->origin[2] - dl->radius > grid->bounds[1][2] ||
+			dl->origin[2] + dl->radius < grid->bounds[0][2])
 		{
 			// dlight doesn't reach the bounds
 			dlightBits &= ~(1 << i);

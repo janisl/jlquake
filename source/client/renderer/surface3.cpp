@@ -975,10 +975,16 @@ void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])( void *) =
 	(void(*)(void*))RB_SurfaceFace,			// SF_FACE,
 	(void(*)(void*))RB_SurfaceGrid,			// SF_GRID,
 	(void(*)(void*))RB_SurfaceTriangles,	// SF_TRIANGLES,
+	NULL,//SF_FOLIAGE
 	(void(*)(void*))RB_SurfacePolychain,	// SF_POLY,
 	(void(*)(void*))RB_SurfaceMesh,			// SF_MD3,
 	(void(*)(void*))RB_SurfaceAnim,			// SF_MD4,
+	NULL,//SF_MDC,
+	NULL,//SF_MDS,
+	NULL,//SF_MDM,
 	(void(*)(void*))RB_SurfaceFlare,		// SF_FLARE,
 	(void(*)(void*))RB_SurfaceEntity,		// SF_ENTITY
-	(void(*)(void*))RB_SurfaceDisplayList	// SF_DISPLAY_LIST
+	(void(*)(void*))RB_SurfaceDisplayList,	// SF_DISPLAY_LIST
+	NULL,//SF_POLYBUFFER,
+	NULL//SF_DECAL,
 };

@@ -39,6 +39,10 @@
 #include "../../core/file_formats/md2.h"
 #include "../../core/file_formats/md3.h"
 #include "../../core/file_formats/md4.h"
+#include "../../core/file_formats/mdc.h"
+#include "../../core/file_formats/mds.h"
+#include "../../core/file_formats/mdm.h"
+#include "../../core/file_formats/mdx.h"
 #include "../../core/file_formats/spr.h"
 #include "../../core/file_formats/sp2.h"
 

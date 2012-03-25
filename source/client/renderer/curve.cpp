@@ -346,26 +346,26 @@ static srfGridMesh_t* R_CreateSurfaceGridMesh(int width, int height,
 	grid->width = width;
 	grid->height = height;
 	grid->surfaceType = SF_GRID;
-	ClearBounds(grid->meshBounds[0], grid->meshBounds[1]);
+	ClearBounds(grid->bounds[0], grid->bounds[1]);
 	for (int i = 0; i < width; i++)
 	{
 		for (int j = 0; j < height; j++)
 		{
 			bsp46_drawVert_t* vert = &grid->verts[j * width + i];
 			*vert = ctrl[j][i];
-			AddPointToBounds(vert->xyz, grid->meshBounds[0], grid->meshBounds[1]);
+			AddPointToBounds(vert->xyz, grid->bounds[0], grid->bounds[1]);
 		}
 	}
 
 	// compute local origin and bounds
-	VectorAdd(grid->meshBounds[0], grid->meshBounds[1], grid->localOrigin);
+	VectorAdd(grid->bounds[0], grid->bounds[1], grid->localOrigin);
 	VectorScale(grid->localOrigin, 0.5f, grid->localOrigin);
 	vec3_t tmpVec;
-	VectorSubtract(grid->meshBounds[0], grid->localOrigin, tmpVec);
-	grid->meshRadius = VectorLength(tmpVec);
+	VectorSubtract(grid->bounds[0], grid->localOrigin, tmpVec);
+	grid->radius = VectorLength(tmpVec);
 
 	VectorCopy(grid->localOrigin, grid->lodOrigin);
-	grid->lodRadius = grid->meshRadius;
+	grid->lodRadius = grid->radius;
 
 	return grid;
 }
