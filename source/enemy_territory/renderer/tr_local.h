@@ -228,39 +228,12 @@ SURFACES
 ==============================================================================
 */
 
-// any changes in surfaceType must be mirrored in rb_surfaceTable[]
-// NOTE: also mirror changes to max2skl.c - Arnout: not anymore
-typedef enum {
-	SF_BAD,
-	SF_SKIP,                // ignore
-	SF_FACE,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_FOLIAGE,
-	SF_POLY,
-	SF_MD3,
-	SF_MDC,
-	SF_MDS,
-	SF_MDM,
-	SF_FLARE,
-	SF_ENTITY,              // beams, rails, lightning, etc that can be determined by entity
-	SF_DISPLAY_LIST,
-	SF_POLYBUFFER,
-	SF_DECAL,               // ydnar: decal surfaces
-
-	SF_NUM_SURFACE_TYPES,
-	SF_MAX = 0xffffffff     // ensures that sizeof( surfaceType_t ) == sizeof( int )
-} surfaceType_t;
-
 typedef struct drawSurf_s {
 	unsigned sort;                      // bit combination for fast compares
 	surfaceType_t       *surface;       // any of surface*_t
 } drawSurf_t;
 
 #define MAX_FACE_POINTS     1024
-
-#define MAX_PATCH_SIZE      32          // max dimensions of a patch mesh in map file
-#define MAX_GRID_SIZE       65          // max dimensions of a grid mesh in memory
 
 typedef struct color4ubhack_s {
 	color4ub_t v;
@@ -361,8 +334,6 @@ typedef struct srfGridMesh_s
 } srfGridMesh_t;
 
 
-#define VERTEXSIZE  8
-
 typedef struct srfSurfaceFace_s
 {
 	surfaceType_t surfaceType;
@@ -380,7 +351,7 @@ typedef struct srfSurfaceFace_s
 	int numPoints;
 	int numIndices;
 	int ofsIndices;
-	float points[1][VERTEXSIZE];            // variable sized
+	float points[1][BRUSH46_VERTEXSIZE];            // variable sized
 											// there is a variable length list of indices here also
 }
 srfSurfaceFace_t;

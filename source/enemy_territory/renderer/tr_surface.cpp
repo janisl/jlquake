@@ -1267,7 +1267,7 @@ void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 		}
 	}
 
-	for ( i = 0, v = surf->points[0], ndx = tess.numVertexes; i < numPoints; i++, v += VERTEXSIZE, ndx++ ) {
+	for ( i = 0, v = surf->points[0], ndx = tess.numVertexes; i < numPoints; i++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
 		VectorCopy( v, tess.xyz[ndx] );
 		tess.texCoords[ndx][0][0] = v[3];
 		tess.texCoords[ndx][0][1] = v[4];
@@ -1684,6 +1684,7 @@ void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfaceFoliage,      // SF_FOLIAGE,
 	( void( * ) ( void* ) )RB_SurfacePolychain,    // SF_POLY,
 	( void( * ) ( void* ) )RB_SurfaceMesh,         // SF_MD3,
+	NULL,//SF_MD4
 	( void( * ) ( void* ) )RB_SurfaceCMesh,        // SF_MDC,
 	( void( * ) ( void* ) )RB_SurfaceAnim,         // SF_MDS,
 	( void( * ) ( void* ) )RB_MDM_SurfaceAnim,     // SF_MDM,

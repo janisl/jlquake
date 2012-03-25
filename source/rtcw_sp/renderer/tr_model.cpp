@@ -1212,6 +1212,9 @@ static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *mod_name ) {
 			LL( surf->ofsEnd );
 		}
 
+		// change to surface identifier
+		surf->ident = SF_MDS;
+
 		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDS: %s has more than %i verts on a surface (%i)",
 					  mod_name, SHADER_MAX_VERTEXES, surf->numVerts );

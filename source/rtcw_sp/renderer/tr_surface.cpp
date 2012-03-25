@@ -1135,7 +1135,7 @@ void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 		}
 	}
 
-	for ( i = 0, v = surf->points[0], ndx = tess.numVertexes; i < numPoints; i++, v += VERTEXSIZE, ndx++ ) {
+	for ( i = 0, v = surf->points[0], ndx = tess.numVertexes; i < numPoints; i++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
 		VectorCopy( v, tess.xyz[ndx] );
 		tess.texCoords[ndx][0][0] = v[3];
 		tess.texCoords[ndx][0][1] = v[4];
@@ -1485,6 +1485,30 @@ void RB_SurfaceDisplayList( srfDisplayList_t *surf ) {
 void RB_SurfaceSkip( void *surf ) {
 }
 
+void NewTypeFoliage(void*)
+{
+	common->Error("New unsupported surface type foliage");
+}
+
+void NewTypeMD4(void*)
+{
+	common->Error("New unsupported surface type MD4");
+}
+
+void NewTypeMDM(void*)
+{
+	common->Error("New unsupported surface type MDM");
+}
+
+void NewTypePolyBuffer(void*)
+{
+	common->Error("New unsupported surface type poly buffer");
+}
+
+void NewTypeDecal(void*)
+{
+	common->Error("New unsupported surface type decal");
+}
 
 void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfaceBad,          // SF_BAD,
@@ -1492,11 +1516,16 @@ void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfaceFace,         // SF_FACE,
 	( void( * ) ( void* ) )RB_SurfaceGrid,         // SF_GRID,
 	( void( * ) ( void* ) )RB_SurfaceTriangles,    // SF_TRIANGLES,
+	NewTypeFoliage,//SF_FOLIAGE,
 	( void( * ) ( void* ) )RB_SurfacePolychain,    // SF_POLY,
 	( void( * ) ( void* ) )RB_SurfaceMesh,         // SF_MD3,
+	NewTypeMD4,//SF_MD4
 	( void( * ) ( void* ) )RB_SurfaceCMesh,        // SF_MDC,
 	( void( * ) ( void* ) )RB_SurfaceAnim,         // SF_MDS,
+	NewTypeMDM,//SF_MDM
 	( void( * ) ( void* ) )RB_SurfaceFlare,        // SF_FLARE,
 	( void( * ) ( void* ) )RB_SurfaceEntity,       // SF_ENTITY
-	( void( * ) ( void* ) )RB_SurfaceDisplayList   // SF_DISPLAY_LIST
+	( void( * ) ( void* ) )RB_SurfaceDisplayList,  // SF_DISPLAY_LIST
+	NewTypePolyBuffer,//SF_POLYBUFFER,
+	NewTypeDecal//SF_DECAL,
 };
