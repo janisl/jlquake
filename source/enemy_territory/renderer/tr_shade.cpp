@@ -52,7 +52,7 @@ static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	} else {
 		qglTexCoord2fv( tess.svars.texcoords[ 0 ][ index ] );
 	}
-	qglVertex3fv( tess.xyz[ index ].v );
+	qglVertex3fv( tess.xyz[ index ] );
 }
 
 /*
@@ -400,8 +400,8 @@ static void DrawNormals( shaderCommands_t *input ) {
 	{
 		qglBegin( GL_LINES );
 		for ( i = 0 ; i < input->numVertexes ; i++ ) {
-			qglVertex3fv( input->xyz[i].v );
-			VectorMA( input->xyz[i].v, r_normallength->value, input->normal[i].v, temp );
+			qglVertex3fv( input->xyz[i] );
+			VectorMA( input->xyz[i], r_normallength->value, input->normal[i].v, temp );
 			qglVertex3fv( temp );
 		}
 		qglEnd();
@@ -576,15 +576,15 @@ static void DynamicLightSinglePass( void ) {
 			// ball dlight
 			else
 			{
-				dir[ 0 ] = radius - fabs( origin[ 0 ] - tess.xyz[ i ].v[ 0 ] );
+				dir[ 0 ] = radius - fabs( origin[ 0 ] - tess.xyz[ i ][ 0 ] );
 				if ( dir[ 0 ] <= 0.0f ) {
 					continue;
 				}
-				dir[ 1 ] = radius - fabs( origin[ 1 ] - tess.xyz[ i ].v[ 1 ] );
+				dir[ 1 ] = radius - fabs( origin[ 1 ] - tess.xyz[ i ][ 1 ] );
 				if ( dir[ 1 ] <= 0.0f ) {
 					continue;
 				}
-				dir[ 2 ] = radius - fabs( origin[ 2 ] - tess.xyz[ i ].v[ 2 ] );
+				dir[ 2 ] = radius - fabs( origin[ 2 ] - tess.xyz[ i ][ 2 ] );
 				if ( dir[ 2 ] <= 0.0f ) {
 					continue;
 				}
@@ -716,15 +716,15 @@ static void DynamicLightPass( void ) {
 			// ball dlight
 			else
 			{
-				dir[ 0 ] = radius - fabs( origin[ 0 ] - tess.xyz[ i ].v[ 0 ] );
+				dir[ 0 ] = radius - fabs( origin[ 0 ] - tess.xyz[ i ][ 0 ] );
 				if ( dir[ 0 ] <= 0.0f ) {
 					continue;
 				}
-				dir[ 1 ] = radius - fabs( origin[ 1 ] - tess.xyz[ i ].v[ 1 ] );
+				dir[ 1 ] = radius - fabs( origin[ 1 ] - tess.xyz[ i ][ 1 ] );
 				if ( dir[ 1 ] <= 0.0f ) {
 					continue;
 				}
-				dir[ 2 ] = radius - fabs( origin[ 2 ] - tess.xyz[ i ].v[ 2 ] );
+				dir[ 2 ] = radius - fabs( origin[ 2 ] - tess.xyz[ i ][ 2 ] );
 				if ( dir[ 2 ] <= 0.0f ) {
 					continue;
 				}
@@ -1050,7 +1050,7 @@ static void ComputeColors( shaderStage_t *pStage ) {
 			float len;
 			vec3_t v;
 
-			VectorSubtract( tess.xyz[i].v, backEnd.viewParms.orientation.origin, v );
+			VectorSubtract( tess.xyz[i], backEnd.viewParms.orientation.origin, v );
 			len = VectorLength( v );
 
 			len /= tess.shader->portalRange;
@@ -1125,8 +1125,8 @@ static void ComputeTexCoords( shaderStage_t *pStage ) {
 			break;
 		case TCGEN_VECTOR:
 			for ( i = 0 ; i < tess.numVertexes ; i++ ) {
-				tess.svars.texcoords[b][i][0] = DotProduct( tess.xyz[i].v, pStage->bundle[b].tcGenVectors[0] );
-				tess.svars.texcoords[b][i][1] = DotProduct( tess.xyz[i].v, pStage->bundle[b].tcGenVectors[1] );
+				tess.svars.texcoords[b][i][0] = DotProduct( tess.xyz[i], pStage->bundle[b].tcGenVectors[0] );
+				tess.svars.texcoords[b][i][1] = DotProduct( tess.xyz[i], pStage->bundle[b].tcGenVectors[1] );
 			}
 			break;
 		case TCGEN_FOG:
@@ -1691,8 +1691,8 @@ void RB_EndSurface( void ) {
 	if ( input->indexes[SHADER_MAX_INDEXES - 1] != 0 ) {
 		ri.Error( ERR_DROP, "RB_EndSurface() - SHADER_MAX_INDEXES(%i) hit", SHADER_MAX_INDEXES );
 	}
-	if ( input->xyz[input->maxShaderVerts - 1].v[0] != 0 ) {
-		ri.Error( ERR_DROP, "RB_EndSurface() - input->maxShaderVerts(%i) hit", input->maxShaderVerts );
+	if ( input->xyz[SHADER_MAX_VERTEXES - 1][0] != 0 ) {
+		ri.Error( ERR_DROP, "RB_EndSurface() - SHADER_MAX_VERTEXES(%i) hit", SHADER_MAX_VERTEXES );
 	}
 
 	if ( tess.shader == tr.shadowShader ) {

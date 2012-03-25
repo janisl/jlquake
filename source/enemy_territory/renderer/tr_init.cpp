@@ -37,7 +37,6 @@ static void GfxInfo_f( void );
 int max_polys;
 int max_polyverts;
 
-vec4hack_t tess_xyz[SHADER_MAX_VERTEXES];
 vec4hack_t tess_normal[SHADER_MAX_VERTEXES];
 vec2hack_t tess_texCoords0[SHADER_MAX_VERTEXES];
 vec2hack_t tess_texCoords1[SHADER_MAX_VERTEXES];
@@ -670,13 +669,10 @@ void R_Init( void ) {
 	memset( &backEnd, 0, sizeof( backEnd ) );
 	memset( &tess, 0, sizeof( tess ) );
 
-	tess.xyz =              tess_xyz;
 	tess.texCoords0 =       tess_texCoords0;
 	tess.texCoords1 =       tess_texCoords1;
 	tess.normal =           tess_normal;
 	tess.vertexColors =     tess_vertexColors;
-
-	tess.maxShaderVerts =       SHADER_MAX_VERTEXES;
 
 	if ( (qintptr)tess.xyz & 15 ) {
 		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );

@@ -276,7 +276,7 @@ void RB_ClipSkyPolygons( shaderCommands_t *input ) {
 	{
 		for ( j = 0 ; j < 3 ; j++ )
 		{
-			VectorSubtract( input->xyz[input->indexes[i + j]].v,
+			VectorSubtract( input->xyz[input->indexes[i + j]],
 							backEnd.viewParms.orientation.origin,
 							p[j] );
 		}
@@ -584,14 +584,14 @@ static void FillCloudySkySide( const int mins[2], const int maxs[2], qboolean ad
 	{
 		for ( s = mins[0] + HALF_SKY_SUBDIVISIONS; s <= maxs[0] + HALF_SKY_SUBDIVISIONS; s++ )
 		{
-			VectorAdd( s_skyPoints[t][s], backEnd.viewParms.orientation.origin, tess.xyz[tess.numVertexes].v );
+			VectorAdd( s_skyPoints[t][s], backEnd.viewParms.orientation.origin, tess.xyz[tess.numVertexes] );
 			tess.texCoords0[tess.numVertexes].v[0] = s_skyTexCoords[t][s][0];
 			tess.texCoords0[tess.numVertexes].v[1] = s_skyTexCoords[t][s][1];
 
 			tess.numVertexes++;
 
-			if ( tess.numVertexes >= tess.maxShaderVerts ) {
-				ri.Error( ERR_DROP, "tess.maxShaderVerts(%i) hit in FillCloudySkySide()\n", tess.maxShaderVerts );
+			if ( tess.numVertexes >= SHADER_MAX_VERTEXES ) {
+				ri.Error( ERR_DROP, "SHADER_MAX_VERTEXES(%i) hit in FillCloudySkySide()\n", SHADER_MAX_VERTEXES );
 			}
 		}
 	}

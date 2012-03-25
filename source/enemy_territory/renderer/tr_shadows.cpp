@@ -132,10 +132,10 @@ void R_RenderShadowEdges( void ) {
 			// triangle, it is a sil edge
 			if ( hit[ 1 ] == 0 ) {
 				qglBegin( GL_TRIANGLE_STRIP );
-				qglVertex3fv( tess.xyz[ i ].v );
-				qglVertex3fv( tess.xyz[ i + tess.numVertexes ].v );
-				qglVertex3fv( tess.xyz[ i2 ].v );
-				qglVertex3fv( tess.xyz[ i2 + tess.numVertexes ].v );
+				qglVertex3fv( tess.xyz[ i ] );
+				qglVertex3fv( tess.xyz[ i + tess.numVertexes ] );
+				qglVertex3fv( tess.xyz[ i2 ] );
+				qglVertex3fv( tess.xyz[ i2 + tess.numVertexes ] );
 				qglEnd();
 				c_edges++;
 			} else {
@@ -164,7 +164,7 @@ void RB_ShadowTessEnd( void ) {
 	vec3_t lightDir;
 
 	// we can only do this if we have enough space in the vertex buffers
-	if ( tess.numVertexes >= tess.maxShaderVerts / 2 ) {
+	if ( tess.numVertexes >= SHADER_MAX_VERTEXES / 2 ) {
 		return;
 	}
 
@@ -176,7 +176,7 @@ void RB_ShadowTessEnd( void ) {
 
 	// project vertexes away from light direction
 	for ( i = 0 ; i < tess.numVertexes ; i++ ) {
-		VectorMA( tess.xyz[i].v, -512, lightDir, tess.xyz[i + tess.numVertexes].v );
+		VectorMA( tess.xyz[i], -512, lightDir, tess.xyz[i + tess.numVertexes] );
 	}
 
 	// decide which triangles face the light
@@ -193,9 +193,9 @@ void RB_ShadowTessEnd( void ) {
 		i2 = tess.indexes[ i * 3 + 1 ];
 		i3 = tess.indexes[ i * 3 + 2 ];
 
-		v1 = tess.xyz[ i1 ].v;
-		v2 = tess.xyz[ i2 ].v;
-		v3 = tess.xyz[ i3 ].v;
+		v1 = tess.xyz[ i1 ];
+		v2 = tess.xyz[ i2 ];
+		v3 = tess.xyz[ i3 ];
 
 		VectorSubtract( v2, v1, d1 );
 		VectorSubtract( v3, v1, d2 );

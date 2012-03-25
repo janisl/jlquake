@@ -1053,7 +1053,6 @@ typedef struct stageVars
 	vec2_t texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
 } stageVars_t;
 
-extern vec4hack_t tess_xyz[SHADER_MAX_VERTEXES];
 extern vec4hack_t tess_normal[SHADER_MAX_VERTEXES];
 extern vec2hack_t tess_texCoords0[SHADER_MAX_VERTEXES];
 extern vec2hack_t tess_texCoords1[SHADER_MAX_VERTEXES];
@@ -1062,17 +1061,15 @@ extern color4ubhack_t tess_vertexColors[SHADER_MAX_VERTEXES];
 typedef struct shaderCommands_s
 {
 	glIndex_t indexes[SHADER_MAX_INDEXES];
+	vec4_t xyz[SHADER_MAX_VERTEXES];
 	vec4hack_t*     normal;
 	color4ubhack_t* vertexColors;
-	vec4hack_t*     xyz;
 	vec2hack_t*     texCoords0;
 	vec2hack_t*     texCoords1;
 
 	stageVars_t svars;
 
 	color4ub_t constantColor255[SHADER_MAX_VERTEXES];
-
-	int maxShaderVerts;
 
 	shader_t    *shader;
 	float shaderTime;
@@ -1094,7 +1091,7 @@ extern shaderCommands_t tess;
 void RB_BeginSurface( shader_t *shader, int fogNum );
 void RB_EndSurface( void );
 void RB_CheckOverflow( int verts, int indexes );
-#define RB_CHECKOVERFLOW( v,i ) if ( tess.numVertexes + ( v ) >= tess.maxShaderVerts || tess.numIndexes + ( i ) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow( v,i );}
+#define RB_CHECKOVERFLOW( v,i ) if ( tess.numVertexes + ( v ) >= SHADER_MAX_VERTEXES || tess.numIndexes + ( i ) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow( v,i );}
 
 void RB_StageIteratorGeneric( void );
 void RB_StageIteratorSky( void );

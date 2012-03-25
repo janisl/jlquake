@@ -849,9 +849,9 @@ static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_
 		LL( surf->ofsFrameCompFrames );
 		LL( surf->ofsEnd );
 
-		if ( surf->numVerts > tess.maxShaderVerts ) {
+		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDC: %s has more than %i verts on a surface (%i)",
-					  mod_name, tess.maxShaderVerts, surf->numVerts );
+					  mod_name, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 		if ( surf->numTriangles * 3 > SHADER_MAX_INDEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDC: %s has more than %i triangles on a surface (%i)",
@@ -1057,9 +1057,9 @@ static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *mod_
 		LL( surf->ofsXyzNormals );
 		LL( surf->ofsEnd );
 
-		if ( surf->numVerts > tess.maxShaderVerts ) {
+		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMD3: %s has more than %i verts on a surface (%i)",
-					  mod_name, tess.maxShaderVerts, surf->numVerts );
+					  mod_name, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 		if ( surf->numTriangles * 3 > SHADER_MAX_INDEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMD3: %s has more than %i triangles on a surface (%i)",
@@ -1244,9 +1244,9 @@ static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *mod_name ) {
 		// change to surface identifier
 		surf->ident = SF_MDS;
 
-		if ( surf->numVerts > tess.maxShaderVerts ) {
+		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDS: %s has more than %i verts on a surface (%i)",
-					  mod_name, tess.maxShaderVerts, surf->numVerts );
+					  mod_name, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 		if ( surf->numTriangles * 3 > SHADER_MAX_INDEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDS: %s has more than %i triangles on a surface (%i)",
@@ -1452,9 +1452,9 @@ static qboolean R_LoadMDM( model_t *mod, void *buffer, const char *mod_name ) {
 		// change to surface identifier
 		surf->ident = SF_MDM;
 
-		if ( surf->numVerts > tess.maxShaderVerts ) {
+		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDM: %s has more than %i verts on a surface (%i)",
-					  mod_name, tess.maxShaderVerts, surf->numVerts );
+					  mod_name, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 		if ( surf->numTriangles * 3 > SHADER_MAX_INDEXES ) {
 			ri.Error( ERR_DROP, "R_LoadMDM: %s has more than %i triangles on a surface (%i)",

@@ -329,12 +329,12 @@ void DeformText( const char *text ) {
 	bottom = 999999;
 	top = -999999;
 	for ( i = 0 ; i < 4 ; i++ ) {
-		VectorAdd( tess.xyz[i].v, mid, mid );
-		if ( tess.xyz[i].v[2] < bottom ) {
-			bottom = tess.xyz[i].v[2];
+		VectorAdd( tess.xyz[i], mid, mid );
+		if ( tess.xyz[i][2] < bottom ) {
+			bottom = tess.xyz[i][2];
 		}
-		if ( tess.xyz[i].v[2] > top ) {
-			top = tess.xyz[i].v[2];
+		if ( tess.xyz[i][2] > top ) {
+			top = tess.xyz[i][2];
 		}
 	}
 	VectorScale( mid, 0.25f, origin );
@@ -427,7 +427,7 @@ static void AutospriteDeform( void ) {
 
 	for ( i = 0 ; i < oldVerts ; i += 4 ) {
 		// find the midpoint
-		xyz = tess.xyz[i].v;
+		xyz = tess.xyz[i];
 
 		mid[0] = 0.25f * ( xyz[0] + xyz[4] + xyz[8] + xyz[12] );
 		mid[1] = 0.25f * ( xyz[1] + xyz[5] + xyz[9] + xyz[13] );
@@ -507,7 +507,7 @@ static void Autosprite2Deform( void ) {
 		float   *v1, *v2;
 
 		// find the midpoint
-		xyz = tess.xyz[i].v;
+		xyz = tess.xyz[i];
 
 		// identify the two shortest edges
 		nums[0] = nums[1] = 0;
@@ -985,7 +985,7 @@ void RB_CalcFogTexCoords( float *st ) {
 		eyeInside = eyeT < 0 ? qfalse : qtrue;
 
 		// calculate density for each point
-		for ( i = 0, v = tess.xyz[ 0 ].v ; i < tess.numVertexes; i++, v += 4 )
+		for ( i = 0, v = tess.xyz[ 0 ] ; i < tess.numVertexes; i++, v += 4 )
 		{
 			// calculate the length in fog
 			s = DotProduct( v, fogDistanceVector ) + fogDistanceVector[ 3 ];
@@ -1006,7 +1006,7 @@ void RB_CalcFogTexCoords( float *st ) {
 	else
 	{
 		// calculate density for each point
-		for ( i = 0, v = tess.xyz[ 0 ].v; i < tess.numVertexes; i++, v += 4 )
+		for ( i = 0, v = tess.xyz[ 0 ]; i < tess.numVertexes; i++, v += 4 )
 		{
 			// calculate the length in fog (t is always 0 if eye is in fog)
 			st[ 0 ] = DotProduct( v, fogDistanceVector ) + fogDistanceVector[ 3 ];
@@ -1031,7 +1031,7 @@ void RB_CalcEnvironmentTexCoords( float *st ) {
 
 
 	// setup
-	v = tess.xyz[ 0 ].v;
+	v = tess.xyz[ 0 ];
 	normal = tess.normal[ 0 ].v;
 	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
 
@@ -1147,7 +1147,7 @@ void RB_CalcFireRiseEnvTexCoords( float *st ) {
 	vec3_t viewer, reflected;
 	float d;
 
-	v = tess.xyz[0].v;
+	v = tess.xyz[0];
 	normal = tess.normal[0].v;
 	VectorNegate( backEnd.currentEntity->e.fireRiseDir, viewer );
 
@@ -1197,8 +1197,8 @@ void RB_CalcTurbulentTexCoords( const waveForm_t *wf, float *st ) {
 		float s = st[0];
 		float t = st[1];
 
-		st[0] = s + tr.sinTable[ ( ( int ) ( ( ( tess.xyz[i].v[0] + tess.xyz[i].v[2] ) * 1.0 / 128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
-		st[1] = t + tr.sinTable[ ( ( int ) ( ( tess.xyz[i].v[1] * 1.0 / 128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
+		st[0] = s + tr.sinTable[ ( ( int ) ( ( ( tess.xyz[i][0] + tess.xyz[i][2] ) * 1.0 / 128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
+		st[1] = t + tr.sinTable[ ( ( int ) ( ( tess.xyz[i][1] * 1.0 / 128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
 	}
 }
 
@@ -1297,7 +1297,7 @@ void RB_CalcSpecularAlpha( unsigned char *alphas ) {
 	vec3_t lightDir;
 	int numVertexes;
 
-	v = tess.xyz[0].v;
+	v = tess.xyz[0];
 	normal = tess.normal[0].v;
 
 	alphas += 3;
