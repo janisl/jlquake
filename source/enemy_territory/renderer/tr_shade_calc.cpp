@@ -251,7 +251,7 @@ RB_CalcBulgeVertexes
 */
 void RB_CalcBulgeVertexes( deformStage_t *ds ) {
 	int i;
-	const float *st = ( const float * ) tess.texCoords0;
+	const float *st = ( const float * ) tess.texCoords[0];
 	float       *xyz = ( float * ) tess.xyz;
 	float       *normal = ( float * ) tess.normal;
 	float now;

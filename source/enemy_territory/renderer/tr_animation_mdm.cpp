@@ -1506,8 +1506,8 @@ void RB_MDM_SurfaceAnim( mdmSurface_t *surface ) {
 
 		LocalMatrixTransformVector( v->normal, bones[v->weights[0].boneIndex].matrix, tempNormal );
 
-		tess.texCoords0[baseVertex + j].v[0] = v->texCoords[0];
-		tess.texCoords0[baseVertex + j].v[1] = v->texCoords[1];
+		tess.texCoords[baseVertex + j][0][0] = v->texCoords[0];
+		tess.texCoords[baseVertex + j][0][1] = v->texCoords[1];
 
 		v = (mdmVertex_t *)&v->weights[v->numWeights];
 	}

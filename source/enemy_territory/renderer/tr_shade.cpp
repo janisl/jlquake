@@ -1113,8 +1113,8 @@ static void ComputeTexCoords( shaderStage_t *pStage ) {
 			break;
 		case TCGEN_TEXTURE:
 			for ( i = 0 ; i < tess.numVertexes ; i++ ) {
-				tess.svars.texcoords[b][i][0] = tess.texCoords0[i].v[0];
-				tess.svars.texcoords[b][i][1] = tess.texCoords0[i].v[1];
+				tess.svars.texcoords[b][i][0] = tess.texCoords[i][0][0];
+				tess.svars.texcoords[b][i][1] = tess.texCoords[i][0][1];
 			}
 			break;
 		case TCGEN_LIGHTMAP:
@@ -1511,7 +1511,7 @@ void RB_StageIteratorVertexLitTexture( void ) {
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
-	qglTexCoordPointer( 2, GL_FLOAT, 8, tess.texCoords0 );
+	qglTexCoordPointer( 2, GL_FLOAT, 16, tess.texCoords[0] );
 	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz );
 
 	if ( qglLockArraysEXT ) {
@@ -1602,7 +1602,7 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	R_BindAnimatedImage( &tess.xstages[0]->bundle[0] );
-	qglTexCoordPointer( 2, GL_FLOAT, 8, tess.texCoords0 );
+	qglTexCoordPointer( 2, GL_FLOAT, 16, tess.texCoords[0] );
 
 	//
 	// configure second stage

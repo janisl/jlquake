@@ -131,20 +131,20 @@ void RB_AddQuadStampFadingCornersExt( vec3_t origin, vec3_t left, vec3_t up, byt
 	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = tess.normal[ndx + 4][2] = normal[2];
 
 	// standard square texture coordinates
-	tess.texCoords0[ndx].v[0] = tess.texCoords1[ndx].v[0] = s1;
-	tess.texCoords0[ndx].v[1] = tess.texCoords1[ndx].v[1] = t1;
+	tess.texCoords[ndx][0][0] = tess.texCoords1[ndx].v[0] = s1;
+	tess.texCoords[ndx][0][1] = tess.texCoords1[ndx].v[1] = t1;
 
-	tess.texCoords0[ndx + 1].v[0] = tess.texCoords1[ndx + 1].v[0] = s2;
-	tess.texCoords0[ndx + 1].v[1] = tess.texCoords1[ndx + 1].v[1] = t1;
+	tess.texCoords[ndx + 1][0][0] = tess.texCoords1[ndx + 1].v[0] = s2;
+	tess.texCoords[ndx + 1][0][1] = tess.texCoords1[ndx + 1].v[1] = t1;
 
-	tess.texCoords0[ndx + 2].v[0] = tess.texCoords1[ndx + 2].v[0] = s2;
-	tess.texCoords0[ndx + 2].v[1] = tess.texCoords1[ndx + 2].v[1] = t2;
+	tess.texCoords[ndx + 2][0][0] = tess.texCoords1[ndx + 2].v[0] = s2;
+	tess.texCoords[ndx + 2][0][1] = tess.texCoords1[ndx + 2].v[1] = t2;
 
-	tess.texCoords0[ndx + 3].v[0] = tess.texCoords1[ndx + 3].v[0] = s1;
-	tess.texCoords0[ndx + 3].v[1] = tess.texCoords1[ndx + 3].v[1] = t2;
+	tess.texCoords[ndx + 3][0][0] = tess.texCoords1[ndx + 3].v[0] = s1;
+	tess.texCoords[ndx + 3][0][1] = tess.texCoords1[ndx + 3].v[1] = t2;
 
-	tess.texCoords0[ndx + 4].v[0] = tess.texCoords1[ndx + 4].v[0] = ( s1 + s2 ) / 2.0;
-	tess.texCoords0[ndx + 4].v[1] = tess.texCoords1[ndx + 4].v[1] = ( t1 + t2 ) / 2.0;
+	tess.texCoords[ndx + 4][0][0] = tess.texCoords1[ndx + 4].v[0] = ( s1 + s2 ) / 2.0;
+	tess.texCoords[ndx + 4][0][1] = tess.texCoords1[ndx + 4].v[1] = ( t1 + t2 ) / 2.0;
 
 	// center uses full alpha
 	*( unsigned int * ) &tess.vertexColors[ndx + 4] =
@@ -211,17 +211,17 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, flo
 	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = normal[2];
 
 	// standard square texture coordinates
-	tess.texCoords0[ndx].v[0] = tess.texCoords1[ndx].v[0] = s1;
-	tess.texCoords0[ndx].v[1] = tess.texCoords1[ndx].v[1] = t1;
+	tess.texCoords[ndx][0][0] = tess.texCoords1[ndx].v[0] = s1;
+	tess.texCoords[ndx][0][1] = tess.texCoords1[ndx].v[1] = t1;
 
-	tess.texCoords0[ndx + 1].v[0] = tess.texCoords1[ndx + 1].v[0] = s2;
-	tess.texCoords0[ndx + 1].v[1] = tess.texCoords1[ndx + 1].v[1] = t1;
+	tess.texCoords[ndx + 1][0][0] = tess.texCoords1[ndx + 1].v[0] = s2;
+	tess.texCoords[ndx + 1][0][1] = tess.texCoords1[ndx + 1].v[1] = t1;
 
-	tess.texCoords0[ndx + 2].v[0] = tess.texCoords1[ndx + 2].v[0] = s2;
-	tess.texCoords0[ndx + 2].v[1] = tess.texCoords1[ndx + 2].v[1] = t2;
+	tess.texCoords[ndx + 2][0][0] = tess.texCoords1[ndx + 2].v[0] = s2;
+	tess.texCoords[ndx + 2][0][1] = tess.texCoords1[ndx + 2].v[1] = t2;
 
-	tess.texCoords0[ndx + 3].v[0] = tess.texCoords1[ndx + 3].v[0] = s1;
-	tess.texCoords0[ndx + 3].v[1] = tess.texCoords1[ndx + 3].v[1] = t2;
+	tess.texCoords[ndx + 3][0][0] = tess.texCoords1[ndx + 3].v[0] = s1;
+	tess.texCoords[ndx + 3][0][1] = tess.texCoords1[ndx + 3].v[1] = t2;
 
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
@@ -317,8 +317,8 @@ void RB_SurfacePolychain( srfPoly_t *p ) {
 	numv = tess.numVertexes;
 	for ( i = 0; i < p->numVerts; i++ ) {
 		VectorCopy( p->verts[i].xyz, tess.xyz[numv] );
-		tess.texCoords0[numv].v[0] = p->verts[i].st[0];
-		tess.texCoords0[numv].v[1] = p->verts[i].st[1];
+		tess.texCoords[numv][0][0] = p->verts[i].st[0];
+		tess.texCoords[numv][0][1] = p->verts[i].st[1];
 		*(int *)&tess.vertexColors[numv] = *(int *)p->verts[ i ].modulate;
 
 		numv++;
@@ -419,13 +419,13 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 	dv = srf->verts;
 	xyz = tess.xyz[ tess.numVertexes ];
 	normal = tess.normal[ tess.numVertexes ];
-	texCoords0 = tess.texCoords0[ tess.numVertexes ].v;
+	texCoords0 = tess.texCoords[ tess.numVertexes ][0];
 	texCoords1 = tess.texCoords1[ tess.numVertexes ].v;
 	color = tess.vertexColors[ tess.numVertexes ];
 	needsNormal = tess.shader->needsNormal;
 
 	if ( needsNormal ) {
-		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 2, texCoords1 += 2, color += 4 ) {
+		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 4, texCoords1 += 2, color += 4 ) {
 			xyz[0] = dv->xyz[0];
 			xyz[1] = dv->xyz[1];
 			xyz[2] = dv->xyz[2];
@@ -443,7 +443,7 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 			*(int *)color = *(int *)dv->color;
 		}
 	} else {
-		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 2, texCoords1 += 2, color += 4 ) {
+		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 4, texCoords1 += 2, color += 4 ) {
 			xyz[0] = dv->xyz[0];
 			xyz[1] = dv->xyz[1];
 			xyz[2] = dv->xyz[2];
@@ -581,7 +581,11 @@ void RB_SurfaceFoliage( srfFoliage_t *srf ) {
 		if ( tess.shader->needsNormal ) {
 			memcpy( &tess.normal[ tess.numVertexes ], srf->normal, numVerts * sizeof( srf->xyz[ 0 ] ) );
 		}
-		memcpy( &tess.texCoords0[ tess.numVertexes ], srf->texCoords, numVerts * sizeof( srf->texCoords[ 0 ] ) );
+		for (i = 0; i < numVerts; i++)
+		{
+			tess.texCoords[ tess.numVertexes + i][0][0] = srf->texCoords[i][0];
+			tess.texCoords[ tess.numVertexes + i][0][1] = srf->texCoords[i][1];
+		}
 		memcpy( &tess.texCoords1[ tess.numVertexes ], srf->lmTexCoords, numVerts * sizeof( srf->lmTexCoords[ 0 ] ) );
 
 		// offset xyz
@@ -680,8 +684,8 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 
 	// FIXME: use quad stamp?
 	VectorMA( start, spanWidth, up, tess.xyz[tess.numVertexes] );
-	tess.texCoords0[tess.numVertexes].v[0] = 0;
-	tess.texCoords0[tess.numVertexes].v[1] = 0;
+	tess.texCoords[tess.numVertexes][0][0] = 0;
+	tess.texCoords[tess.numVertexes][0][1] = 0;
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
@@ -689,8 +693,8 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 	tess.numVertexes++;
 
 	VectorMA( start, spanWidth2, up, tess.xyz[tess.numVertexes] );
-	tess.texCoords0[tess.numVertexes].v[0] = 0;
-	tess.texCoords0[tess.numVertexes].v[1] = 1;
+	tess.texCoords[tess.numVertexes][0][0] = 0;
+	tess.texCoords[tess.numVertexes][0][1] = 1;
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
@@ -699,8 +703,8 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 
 	VectorMA( end, spanWidth, up, tess.xyz[tess.numVertexes] );
 
-	tess.texCoords0[tess.numVertexes].v[0] = t;
-	tess.texCoords0[tess.numVertexes].v[1] = 0;
+	tess.texCoords[tess.numVertexes][0][0] = t;
+	tess.texCoords[tess.numVertexes][0][1] = 0;
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
@@ -708,8 +712,8 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 	tess.numVertexes++;
 
 	VectorMA( end, spanWidth2, up, tess.xyz[tess.numVertexes] );
-	tess.texCoords0[tess.numVertexes].v[0] = t;
-	tess.texCoords0[tess.numVertexes].v[1] = 1;
+	tess.texCoords[tess.numVertexes][0][0] = t;
+	tess.texCoords[tess.numVertexes][0][1] = 1;
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
@@ -766,8 +770,8 @@ static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, cons
 		for ( j = 0; j < 4; j++ )
 		{
 			VectorCopy( pos[j], tess.xyz[tess.numVertexes] );
-			tess.texCoords0[tess.numVertexes].v[0] = ( j < 2 );
-			tess.texCoords0[tess.numVertexes].v[1] = ( j && j != 3 );
+			tess.texCoords[tess.numVertexes][0][0] = ( j < 2 );
+			tess.texCoords[tess.numVertexes][0][1] = ( j && j != 3 );
 			tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 			tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 			tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
@@ -1044,8 +1048,8 @@ void RB_SurfaceMesh( md3Surface_t *surface ) {
 
 	numVerts = surface->numVerts;
 	for ( j = 0; j < numVerts; j++ ) {
-		tess.texCoords0[Doug + j].v[0] = texCoords[j * 2 + 0];
-		tess.texCoords0[Doug + j].v[1] = texCoords[j * 2 + 1];
+		tess.texCoords[Doug + j][0][0] = texCoords[j * 2 + 0];
+		tess.texCoords[Doug + j][0][1] = texCoords[j * 2 + 1];
 		// FIXME: fill in lightmapST for completeness?
 	}
 
@@ -1264,8 +1268,8 @@ void RB_SurfaceCMesh( mdcSurface_t *surface ) {
 
 	numVerts = surface->numVerts;
 	for ( j = 0; j < numVerts; j++ ) {
-		tess.texCoords0[Doug + j].v[0] = texCoords[j * 2 + 0];
-		tess.texCoords0[Doug + j].v[1] = texCoords[j * 2 + 1];
+		tess.texCoords[Doug + j][0][0] = texCoords[j * 2 + 0];
+		tess.texCoords[Doug + j][0][1] = texCoords[j * 2 + 1];
 		// FIXME: fill in lightmapST for completeness?
 	}
 
@@ -1319,8 +1323,8 @@ void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 
 	for ( i = 0, v = surf->points[0], ndx = tess.numVertexes; i < numPoints; i++, v += VERTEXSIZE, ndx++ ) {
 		VectorCopy( v, tess.xyz[ndx] );
-		tess.texCoords0[ndx].v[0] = v[3];
-		tess.texCoords0[ndx].v[1] = v[4];
+		tess.texCoords[ndx][0][0] = v[3];
+		tess.texCoords[ndx][0][1] = v[4];
 		tess.texCoords1[ndx].v[0] = v[5];
 		tess.texCoords1[ndx].v[1] = v[6];
 		*( unsigned int * ) &tess.vertexColors[ndx] = *( unsigned int * ) &v[7];
@@ -1449,7 +1453,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 
 		xyz = tess.xyz[numVertexes];
 		normal = tess.normal[numVertexes];
-		texCoords0 = tess.texCoords0[numVertexes].v;
+		texCoords0 = tess.texCoords[numVertexes][0];
 		texCoords1 = tess.texCoords1[numVertexes].v;
 		color = ( unsigned char * ) &tess.vertexColors[numVertexes];
 		needsNormal = tess.shader->needsNormal;
@@ -1474,7 +1478,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 				*( unsigned int * ) color = *( unsigned int * ) dv->color;
 				xyz += 4;
 				normal += 4;
-				texCoords0 += 2;
+				texCoords0 += 4;
 				texCoords1 += 2;
 				color += 4;
 			}
@@ -1664,28 +1668,26 @@ void RB_SurfaceDisplayList( srfDisplayList_t *surf ) {
 }
 
 void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
-	vec2hack_t* oldST;
-
 	RB_EndSurface();
 
 	RB_BeginSurface( tess.shader, tess.fogNum );
-
-	oldST =             tess.texCoords0;
 
 	// ===================================================
 	tess.numIndexes =   surf->pPolyBuffer->numIndicies;
 	tess.numVertexes =  surf->pPolyBuffer->numVerts;
 
 	Com_Memcpy(tess.xyz, surf->pPolyBuffer->xyz, tess.numVertexes * sizeof(vec4_t));
-	tess.texCoords0 =   (vec2hack_t*)surf->pPolyBuffer->st;
+	for (int i = 0; i < tess.numVertexes; i++)
+	{
+		tess.texCoords[i][0][0] = surf->pPolyBuffer->st[i][0];
+		tess.texCoords[i][0][1] = surf->pPolyBuffer->st[i][1];
+	}
 	Com_Memcpy(tess.indexes, surf->pPolyBuffer->indicies, tess.numIndexes * sizeof(glIndex_t));
 	Com_Memcpy(tess.vertexColors, surf->pPolyBuffer->color, tess.numVertexes * sizeof(color4ub_t));
 
 	// ===================================================
 
 	RB_EndSurface();
-
-	tess.texCoords0 =           oldST;
 }
 
 
@@ -1702,8 +1704,8 @@ void RB_SurfaceDecal( srfDecal_t *srf ) {
 	for ( i = 0; i < srf->numVerts; i++ )
 	{
 		VectorCopy( srf->verts[ i ].xyz, tess.xyz[ numv ] );
-		tess.texCoords0[ numv ].v[ 0 ] = srf->verts[ i ].st[ 0 ];
-		tess.texCoords0[ numv ].v[ 1 ] = srf->verts[ i ].st[ 1 ];
+		tess.texCoords[ numv ][0][ 0 ] = srf->verts[ i ].st[ 0 ];
+		tess.texCoords[ numv ][0][ 1 ] = srf->verts[ i ].st[ 1 ];
 		*(int*) &tess.vertexColors[ numv ] = *(int*) srf->verts[  i  ].modulate;
 		numv++;
 	}

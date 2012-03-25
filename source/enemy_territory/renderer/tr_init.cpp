@@ -37,7 +37,6 @@ static void GfxInfo_f( void );
 int max_polys;
 int max_polyverts;
 
-vec2hack_t tess_texCoords0[SHADER_MAX_VERTEXES];
 vec2hack_t tess_texCoords1[SHADER_MAX_VERTEXES];
 
 /*
@@ -667,7 +666,6 @@ void R_Init( void ) {
 	memset( &backEnd, 0, sizeof( backEnd ) );
 	memset( &tess, 0, sizeof( tess ) );
 
-	tess.texCoords0 =       tess_texCoords0;
 	tess.texCoords1 =       tess_texCoords1;
 
 	if ( (qintptr)tess.xyz & 15 ) {

@@ -585,8 +585,8 @@ static void FillCloudySkySide( const int mins[2], const int maxs[2], qboolean ad
 		for ( s = mins[0] + HALF_SKY_SUBDIVISIONS; s <= maxs[0] + HALF_SKY_SUBDIVISIONS; s++ )
 		{
 			VectorAdd( s_skyPoints[t][s], backEnd.viewParms.orientation.origin, tess.xyz[tess.numVertexes] );
-			tess.texCoords0[tess.numVertexes].v[0] = s_skyTexCoords[t][s][0];
-			tess.texCoords0[tess.numVertexes].v[1] = s_skyTexCoords[t][s][1];
+			tess.texCoords[tess.numVertexes][0][0] = s_skyTexCoords[t][s][0];
+			tess.texCoords[tess.numVertexes][0][1] = s_skyTexCoords[t][s][1];
 
 			tess.numVertexes++;
 
