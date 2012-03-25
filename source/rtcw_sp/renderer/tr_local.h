@@ -79,29 +79,6 @@ typedef struct {
 	float modelMatrix[16];
 } orientationr_t;
 
-struct image_t
-{
-	char imgName[MAX_QPATH];            // game path, including extension
-	int width, height;                      // source image
-	int uploadWidth, uploadHeight;          // after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
-	GLuint texnum;                      // gl texture binding
-
-	int frameUsed;                  // for texture usage in frame statistics
-
-	int internalFormat;
-	int TMU;                        // only needed for voodoo2
-
-	qboolean mipmap;
-	qboolean allowPicmip;
-	qboolean characterMIP;      // independant 'character' mip scale ----(SA)	added
-
-	int wrapClampMode;              // GL_CLAMP or GL_REPEAT
-
-	int hash;           // for fast building of the backupHash
-
-	image_t* next;
-};
-
 //===============================================================================
 
 typedef enum {

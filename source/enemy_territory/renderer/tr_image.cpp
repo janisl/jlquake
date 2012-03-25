@@ -269,8 +269,8 @@ void R_ImageList_f( void ) {
 		image = tr.images[ i ];
 
 		texels += image->uploadWidth * image->uploadHeight;
-		ri.Printf( PRINT_ALL,  "%4i: %4i %4i  %s   %d   %5d ",
-				   i, image->uploadWidth, image->uploadHeight, yesno[image->mipmap], image->TMU, image->texnum );
+		ri.Printf( PRINT_ALL,  "%4i: %4i %4i  %s   %5d ",
+				   i, image->uploadWidth, image->uploadHeight, yesno[image->mipmap], image->texnum );
 		switch ( image->internalFormat ) {
 		case 1:
 			ri.Printf( PRINT_ALL, "I    " );
@@ -935,17 +935,6 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	image->height = height;
 	image->wrapClampMode = glWrapClampMode;
 
-	// lightmaps are always allocated on TMU 1
-	if ( qglActiveTextureARB && isLightmap ) {
-		image->TMU = 1;
-	} else {
-		image->TMU = 0;
-	}
-
-	if ( qglActiveTextureARB ) {
-		GL_SelectTexture( image->TMU );
-	}
-
 	GL_Bind( image );
 
 	Upload32( (unsigned *)pic,
@@ -966,10 +955,6 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode );
 
 	qglBindTexture( GL_TEXTURE_2D, 0 );
-
-	if ( image->TMU == 1 ) {
-		GL_SelectTexture( 0 );
-	}
 
 	hash = generateHashValue( name );
 	image->next = hashTable[hash];

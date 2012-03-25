@@ -43,8 +43,8 @@
 #include "../../core/file_formats/sp2.h"
 
 #include "../../client/renderer/qgl.h"
-#if 0
 #include "images/image.h"
+#if 0
 #include "shader.h"
 #include "models/model.h"
 #endif
