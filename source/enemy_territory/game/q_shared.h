@@ -533,11 +533,6 @@ COLLISION DETECTION
 
 #define CPLANE
 
-typedef struct {
-	vec3_t origin;
-	vec3_t axis[3];
-} orientation_t;
-
 /*
 ========================================================================
 

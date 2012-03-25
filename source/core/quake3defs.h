@@ -269,3 +269,9 @@ enum
 	Q3CHAN_LOCAL_SOUND,	// chat messages, etc
 	Q3CHAN_ANNOUNCER		// announcer voices, etc
 };
+
+struct orientation_t
+{
+	vec3_t origin;
+	vec3_t axis[3];
+};

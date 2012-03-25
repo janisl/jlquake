@@ -464,20 +464,6 @@ float   *tv( float x, float y, float z );
 void QDECL Com_Error( int level, const char *error, ... );
 void QDECL Com_Printf( const char *msg, ... );
 
-
-/*
-==============================================================
-
-COLLISION DETECTION
-
-==============================================================
-*/
-
-typedef struct {
-	vec3_t origin;
-	vec3_t axis[3];
-} orientation_t;
-
 /*
 ========================================================================
 

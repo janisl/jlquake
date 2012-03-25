@@ -115,12 +115,6 @@ struct markFragment_t
 	int		numPoints;
 };
 
-struct orientation_t
-{
-	vec3_t		origin;
-	vec3_t		axis[3];
-};
-
 // font support 
 
 #define GLYPH_START 0
