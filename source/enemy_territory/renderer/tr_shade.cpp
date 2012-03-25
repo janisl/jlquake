@@ -858,7 +858,7 @@ static void ComputeColors( shaderStage_t *pStage ) {
 		RB_CalcDiffuseColor( ( unsigned char * ) tess.svars.colors );
 		break;
 	case CGEN_EXACT_VERTEX:
-		memcpy( tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof( tess.vertexColors[0].v ) );
+		memcpy( tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof( tess.vertexColors[0] ) );
 		break;
 	case CGEN_CONST:
 		for ( i = 0; i < tess.numVertexes; i++ ) {
@@ -867,15 +867,15 @@ static void ComputeColors( shaderStage_t *pStage ) {
 		break;
 	case CGEN_VERTEX:
 		if ( tr.identityLight == 1 ) {
-			memcpy( tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof( tess.vertexColors[0].v ) );
+			memcpy( tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof( tess.vertexColors[0] ) );
 		} else
 		{
 			for ( i = 0; i < tess.numVertexes; i++ )
 			{
-				tess.svars.colors[i][0] = tess.vertexColors[i].v[0] * tr.identityLight;
-				tess.svars.colors[i][1] = tess.vertexColors[i].v[1] * tr.identityLight;
-				tess.svars.colors[i][2] = tess.vertexColors[i].v[2] * tr.identityLight;
-				tess.svars.colors[i][3] = tess.vertexColors[i].v[3];
+				tess.svars.colors[i][0] = tess.vertexColors[i][0] * tr.identityLight;
+				tess.svars.colors[i][1] = tess.vertexColors[i][1] * tr.identityLight;
+				tess.svars.colors[i][2] = tess.vertexColors[i][2] * tr.identityLight;
+				tess.svars.colors[i][3] = tess.vertexColors[i][3];
 			}
 		}
 		break;
@@ -883,17 +883,17 @@ static void ComputeColors( shaderStage_t *pStage ) {
 		if ( tr.identityLight == 1 ) {
 			for ( i = 0; i < tess.numVertexes; i++ )
 			{
-				tess.svars.colors[i][0] = 255 - tess.vertexColors[i].v[0];
-				tess.svars.colors[i][1] = 255 - tess.vertexColors[i].v[1];
-				tess.svars.colors[i][2] = 255 - tess.vertexColors[i].v[2];
+				tess.svars.colors[i][0] = 255 - tess.vertexColors[i][0];
+				tess.svars.colors[i][1] = 255 - tess.vertexColors[i][1];
+				tess.svars.colors[i][2] = 255 - tess.vertexColors[i][2];
 			}
 		} else
 		{
 			for ( i = 0; i < tess.numVertexes; i++ )
 			{
-				tess.svars.colors[i][0] = ( 255 - tess.vertexColors[i].v[0] ) * tr.identityLight;
-				tess.svars.colors[i][1] = ( 255 - tess.vertexColors[i].v[1] ) * tr.identityLight;
-				tess.svars.colors[i][2] = ( 255 - tess.vertexColors[i].v[2] ) * tr.identityLight;
+				tess.svars.colors[i][0] = ( 255 - tess.vertexColors[i][0] ) * tr.identityLight;
+				tess.svars.colors[i][1] = ( 255 - tess.vertexColors[i][1] ) * tr.identityLight;
+				tess.svars.colors[i][2] = ( 255 - tess.vertexColors[i][2] ) * tr.identityLight;
 			}
 		}
 		break;
@@ -1031,14 +1031,14 @@ static void ComputeColors( shaderStage_t *pStage ) {
 	case AGEN_VERTEX:
 		if ( pStage->rgbGen != CGEN_VERTEX ) {
 			for ( i = 0; i < tess.numVertexes; i++ ) {
-				tess.svars.colors[i][3] = tess.vertexColors[i].v[3];
+				tess.svars.colors[i][3] = tess.vertexColors[i][3];
 			}
 		}
 		break;
 	case AGEN_ONE_MINUS_VERTEX:
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			tess.svars.colors[i][3] = 255 - tess.vertexColors[i].v[3];
+			tess.svars.colors[i][3] = 255 - tess.vertexColors[i][3];
 		}
 		break;
 	case AGEN_PORTAL:

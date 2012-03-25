@@ -938,10 +938,10 @@ const void *RB_StretchPic( const void *data ) {
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	*(int *)tess.vertexColors[ numVerts ].v =
-		*(int *)tess.vertexColors[ numVerts + 1 ].v =
-			*(int *)tess.vertexColors[ numVerts + 2 ].v =
-				*(int *)tess.vertexColors[ numVerts + 3 ].v = *(int *)backEnd.color2D;
+	*(int *)tess.vertexColors[ numVerts ] =
+		*(int *)tess.vertexColors[ numVerts + 1 ] =
+			*(int *)tess.vertexColors[ numVerts + 2 ] =
+				*(int *)tess.vertexColors[ numVerts + 3 ] = *(int *)backEnd.color2D;
 
 	tess.xyz[ numVerts ][0] = cmd->x;
 	tess.xyz[ numVerts ][1] = cmd->y;
@@ -1011,10 +1011,10 @@ const void* RB_Draw2dPolys( const void* data ) {
 		tess.texCoords0[ tess.numVertexes ].v[0] = cmd->verts[i].st[0];
 		tess.texCoords0[ tess.numVertexes ].v[1] = cmd->verts[i].st[1];
 
-		tess.vertexColors[ tess.numVertexes ].v[0] = cmd->verts[i].modulate[0];
-		tess.vertexColors[ tess.numVertexes ].v[1] = cmd->verts[i].modulate[1];
-		tess.vertexColors[ tess.numVertexes ].v[2] = cmd->verts[i].modulate[2];
-		tess.vertexColors[ tess.numVertexes ].v[3] = cmd->verts[i].modulate[3];
+		tess.vertexColors[ tess.numVertexes ][0] = cmd->verts[i].modulate[0];
+		tess.vertexColors[ tess.numVertexes ][1] = cmd->verts[i].modulate[1];
+		tess.vertexColors[ tess.numVertexes ][2] = cmd->verts[i].modulate[2];
+		tess.vertexColors[ tess.numVertexes ][3] = cmd->verts[i].modulate[3];
 		tess.numVertexes++;
 	}
 
@@ -1063,10 +1063,10 @@ const void *RB_RotatedPic( const void *data ) {
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	*(int *)tess.vertexColors[ numVerts ].v =
-		*(int *)tess.vertexColors[ numVerts + 1 ].v =
-			*(int *)tess.vertexColors[ numVerts + 2 ].v =
-				*(int *)tess.vertexColors[ numVerts + 3 ].v = *(int *)backEnd.color2D;
+	*(int *)tess.vertexColors[ numVerts ] =
+		*(int *)tess.vertexColors[ numVerts + 1 ] =
+			*(int *)tess.vertexColors[ numVerts + 2 ] =
+				*(int *)tess.vertexColors[ numVerts + 3 ] = *(int *)backEnd.color2D;
 
 	angle = cmd->angle * pi2;
 	tess.xyz[ numVerts ][0] = cmd->x + ( cos( angle ) * cmd->w );
@@ -1148,11 +1148,11 @@ const void *RB_StretchPicGradient( const void *data ) {
 //		*(int *)tess.vertexColors[ numVerts + 2 ].v =
 //		*(int *)tess.vertexColors[ numVerts + 3 ].v = *(int *)backEnd.color2D;
 
-	*(int *)tess.vertexColors[ numVerts ].v =
-		*(int *)tess.vertexColors[ numVerts + 1 ].v = *(int *)backEnd.color2D;
+	*(int *)tess.vertexColors[ numVerts ] =
+		*(int *)tess.vertexColors[ numVerts + 1 ] = *(int *)backEnd.color2D;
 
-	*(int *)tess.vertexColors[ numVerts + 2 ].v =
-		*(int *)tess.vertexColors[ numVerts + 3 ].v = *(int *)cmd->gradientColor;
+	*(int *)tess.vertexColors[ numVerts + 2 ] =
+		*(int *)tess.vertexColors[ numVerts + 3 ] = *(int *)cmd->gradientColor;
 
 	tess.xyz[ numVerts ][0] = cmd->x;
 	tess.xyz[ numVerts ][1] = cmd->y;

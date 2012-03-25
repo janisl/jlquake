@@ -147,16 +147,16 @@ void RB_AddQuadStampFadingCornersExt( vec3_t origin, vec3_t left, vec3_t up, byt
 	tess.texCoords0[ndx + 4].v[1] = tess.texCoords1[ndx + 4].v[1] = ( t1 + t2 ) / 2.0;
 
 	// center uses full alpha
-	*( unsigned int * ) &tess.vertexColors[ndx + 4].v =
+	*( unsigned int * ) &tess.vertexColors[ndx + 4] =
 		*( unsigned int * )color;
 
 	// fade around edges
 	memcpy( lColor, color, sizeof( byte ) * 4 );
 	lColor[3] = 0;
-	*( unsigned int * ) &tess.vertexColors[ndx].v =
-		*( unsigned int * ) &tess.vertexColors[ndx + 1].v =
-			*( unsigned int * ) &tess.vertexColors[ndx + 2].v =
-				*( unsigned int * ) &tess.vertexColors[ndx + 3].v =
+	*( unsigned int * ) &tess.vertexColors[ndx] =
+		*( unsigned int * ) &tess.vertexColors[ndx + 1] =
+			*( unsigned int * ) &tess.vertexColors[ndx + 2] =
+				*( unsigned int * ) &tess.vertexColors[ndx + 3] =
 					*( unsigned int * )lColor;
 
 
@@ -225,10 +225,10 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, flo
 
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
-	*( unsigned int * ) &tess.vertexColors[ndx].v =
-		*( unsigned int * ) &tess.vertexColors[ndx + 1].v =
-			*( unsigned int * ) &tess.vertexColors[ndx + 2].v =
-				*( unsigned int * ) &tess.vertexColors[ndx + 3].v =
+	*( unsigned int * ) &tess.vertexColors[ndx] =
+		*( unsigned int * ) &tess.vertexColors[ndx + 1] =
+			*( unsigned int * ) &tess.vertexColors[ndx + 2] =
+				*( unsigned int * ) &tess.vertexColors[ndx + 3] =
 					*( unsigned int * )color;
 
 
@@ -319,7 +319,7 @@ void RB_SurfacePolychain( srfPoly_t *p ) {
 		VectorCopy( p->verts[i].xyz, tess.xyz[numv] );
 		tess.texCoords0[numv].v[0] = p->verts[i].st[0];
 		tess.texCoords0[numv].v[1] = p->verts[i].st[1];
-		*(int *)&tess.vertexColors[numv].v = *(int *)p->verts[ i ].modulate;
+		*(int *)&tess.vertexColors[numv] = *(int *)p->verts[ i ].modulate;
 
 		numv++;
 	}
@@ -421,7 +421,7 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 	normal = tess.normal[ tess.numVertexes ];
 	texCoords0 = tess.texCoords0[ tess.numVertexes ].v;
 	texCoords1 = tess.texCoords1[ tess.numVertexes ].v;
-	color = tess.vertexColors[ tess.numVertexes ].v;
+	color = tess.vertexColors[ tess.numVertexes ];
 	needsNormal = tess.shader->needsNormal;
 
 	if ( needsNormal ) {
@@ -589,7 +589,7 @@ void RB_SurfaceFoliage( srfFoliage_t *srf ) {
 			VectorAdd( xyz, instance->origin, xyz );
 
 		// copy color
-		color = (int*) tess.vertexColors[ tess.numVertexes ].v;
+		color = (int*) tess.vertexColors[ tess.numVertexes ];
 		for ( i = 0; i < numVerts; i++ )
 			color[ i ] = srcColor;
 
@@ -682,38 +682,38 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 	VectorMA( start, spanWidth, up, tess.xyz[tess.numVertexes] );
 	tess.texCoords0[tess.numVertexes].v[0] = 0;
 	tess.texCoords0[tess.numVertexes].v[1] = 0;
-	tess.vertexColors[tess.numVertexes].v[0] = backEnd.currentEntity->e.shaderRGBA[0];
-	tess.vertexColors[tess.numVertexes].v[1] = backEnd.currentEntity->e.shaderRGBA[1];
-	tess.vertexColors[tess.numVertexes].v[2] = backEnd.currentEntity->e.shaderRGBA[2];
-	tess.vertexColors[tess.numVertexes].v[3] = backEnd.currentEntity->e.shaderRGBA[3];
+	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
+	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
+	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
 	tess.numVertexes++;
 
 	VectorMA( start, spanWidth2, up, tess.xyz[tess.numVertexes] );
 	tess.texCoords0[tess.numVertexes].v[0] = 0;
 	tess.texCoords0[tess.numVertexes].v[1] = 1;
-	tess.vertexColors[tess.numVertexes].v[0] = backEnd.currentEntity->e.shaderRGBA[0];
-	tess.vertexColors[tess.numVertexes].v[1] = backEnd.currentEntity->e.shaderRGBA[1];
-	tess.vertexColors[tess.numVertexes].v[2] = backEnd.currentEntity->e.shaderRGBA[2];
-	tess.vertexColors[tess.numVertexes].v[3] = backEnd.currentEntity->e.shaderRGBA[3];
+	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
+	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
+	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
 	tess.numVertexes++;
 
 	VectorMA( end, spanWidth, up, tess.xyz[tess.numVertexes] );
 
 	tess.texCoords0[tess.numVertexes].v[0] = t;
 	tess.texCoords0[tess.numVertexes].v[1] = 0;
-	tess.vertexColors[tess.numVertexes].v[0] = backEnd.currentEntity->e.shaderRGBA[0];
-	tess.vertexColors[tess.numVertexes].v[1] = backEnd.currentEntity->e.shaderRGBA[1];
-	tess.vertexColors[tess.numVertexes].v[2] = backEnd.currentEntity->e.shaderRGBA[2];
-	tess.vertexColors[tess.numVertexes].v[3] = backEnd.currentEntity->e.shaderRGBA[3];
+	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
+	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
+	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
 	tess.numVertexes++;
 
 	VectorMA( end, spanWidth2, up, tess.xyz[tess.numVertexes] );
 	tess.texCoords0[tess.numVertexes].v[0] = t;
 	tess.texCoords0[tess.numVertexes].v[1] = 1;
-	tess.vertexColors[tess.numVertexes].v[0] = backEnd.currentEntity->e.shaderRGBA[0];
-	tess.vertexColors[tess.numVertexes].v[1] = backEnd.currentEntity->e.shaderRGBA[1];
-	tess.vertexColors[tess.numVertexes].v[2] = backEnd.currentEntity->e.shaderRGBA[2];
-	tess.vertexColors[tess.numVertexes].v[3] = backEnd.currentEntity->e.shaderRGBA[3];
+	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
+	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
+	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
 	tess.numVertexes++;
 
 	tess.indexes[tess.numIndexes++] = vbase;
@@ -768,9 +768,9 @@ static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, cons
 			VectorCopy( pos[j], tess.xyz[tess.numVertexes] );
 			tess.texCoords0[tess.numVertexes].v[0] = ( j < 2 );
 			tess.texCoords0[tess.numVertexes].v[1] = ( j && j != 3 );
-			tess.vertexColors[tess.numVertexes].v[0] = backEnd.currentEntity->e.shaderRGBA[0];
-			tess.vertexColors[tess.numVertexes].v[1] = backEnd.currentEntity->e.shaderRGBA[1];
-			tess.vertexColors[tess.numVertexes].v[2] = backEnd.currentEntity->e.shaderRGBA[2];
+			tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
+			tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
+			tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
 			tess.numVertexes++;
 
 			VectorAdd( pos[j], dir, pos[j] );
@@ -1323,7 +1323,7 @@ void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 		tess.texCoords0[ndx].v[1] = v[4];
 		tess.texCoords1[ndx].v[0] = v[5];
 		tess.texCoords1[ndx].v[1] = v[6];
-		*( unsigned int * ) &tess.vertexColors[ndx].v = *( unsigned int * ) &v[7];
+		*( unsigned int * ) &tess.vertexColors[ndx] = *( unsigned int * ) &v[7];
 	}
 
 
@@ -1451,7 +1451,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 		normal = tess.normal[numVertexes];
 		texCoords0 = tess.texCoords0[numVertexes].v;
 		texCoords1 = tess.texCoords1[numVertexes].v;
-		color = ( unsigned char * ) &tess.vertexColors[numVertexes].v;
+		color = ( unsigned char * ) &tess.vertexColors[numVertexes];
 		needsNormal = tess.shader->needsNormal;
 
 		for ( i = 0 ; i < rows ; i++ ) {
@@ -1665,14 +1665,12 @@ void RB_SurfaceDisplayList( srfDisplayList_t *surf ) {
 
 void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 	vec2hack_t* oldST;
-	color4ubhack_t* oldColor;
 
 	RB_EndSurface();
 
 	RB_BeginSurface( tess.shader, tess.fogNum );
 
 	oldST =             tess.texCoords0;
-	oldColor =          tess.vertexColors;
 
 	// ===================================================
 	tess.numIndexes =   surf->pPolyBuffer->numIndicies;
@@ -1681,14 +1679,13 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 	Com_Memcpy(tess.xyz, surf->pPolyBuffer->xyz, tess.numVertexes * sizeof(vec4_t));
 	tess.texCoords0 =   (vec2hack_t*)surf->pPolyBuffer->st;
 	Com_Memcpy(tess.indexes, surf->pPolyBuffer->indicies, tess.numIndexes * sizeof(glIndex_t));
-	tess.vertexColors = (color4ubhack_t*)surf->pPolyBuffer->color;
+	Com_Memcpy(tess.vertexColors, surf->pPolyBuffer->color, tess.numVertexes * sizeof(color4ub_t));
 
 	// ===================================================
 
 	RB_EndSurface();
 
 	tess.texCoords0 =           oldST;
-	tess.vertexColors =         oldColor;
 }
 
 
@@ -1707,7 +1704,7 @@ void RB_SurfaceDecal( srfDecal_t *srf ) {
 		VectorCopy( srf->verts[ i ].xyz, tess.xyz[ numv ] );
 		tess.texCoords0[ numv ].v[ 0 ] = srf->verts[ i ].st[ 0 ];
 		tess.texCoords0[ numv ].v[ 1 ] = srf->verts[ i ].st[ 1 ];
-		*(int*) &tess.vertexColors[ numv ].v = *(int*) srf->verts[  i  ].modulate;
+		*(int*) &tess.vertexColors[ numv ] = *(int*) srf->verts[  i  ].modulate;
 		numv++;
 	}
 

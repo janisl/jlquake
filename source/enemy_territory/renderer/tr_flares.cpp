@@ -395,10 +395,10 @@ void RB_RenderFlare( flare_t *f ) {
 	tess.xyz[tess.numVertexes][1] = f->windowY - size;
 	tess.texCoords0[tess.numVertexes].v[0] = 0;
 	tess.texCoords0[tess.numVertexes].v[1] = 0;
-	tess.vertexColors[tess.numVertexes].v[0] = iColor[0];
-	tess.vertexColors[tess.numVertexes].v[1] = iColor[1];
-	tess.vertexColors[tess.numVertexes].v[2] = iColor[2];
-	tess.vertexColors[tess.numVertexes].v[3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
+	tess.vertexColors[tess.numVertexes][0] = iColor[0];
+	tess.vertexColors[tess.numVertexes][1] = iColor[1];
+	tess.vertexColors[tess.numVertexes][2] = iColor[2];
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
 //	tess.vertexColors[tess.numVertexes].v[3] = 255;		//----(SA)	mod for alpha blend rather than additive
 	tess.numVertexes++;
 
@@ -406,10 +406,10 @@ void RB_RenderFlare( flare_t *f ) {
 	tess.xyz[tess.numVertexes][1] = f->windowY + size;
 	tess.texCoords0[tess.numVertexes].v[0] = 0;
 	tess.texCoords0[tess.numVertexes].v[1] = 1;
-	tess.vertexColors[tess.numVertexes].v[0] = iColor[0];
-	tess.vertexColors[tess.numVertexes].v[1] = iColor[1];
-	tess.vertexColors[tess.numVertexes].v[2] = iColor[2];
-	tess.vertexColors[tess.numVertexes].v[3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
+	tess.vertexColors[tess.numVertexes][0] = iColor[0];
+	tess.vertexColors[tess.numVertexes][1] = iColor[1];
+	tess.vertexColors[tess.numVertexes][2] = iColor[2];
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
 //	tess.vertexColors[tess.numVertexes].v[3] = 255;		//----(SA)	mod for alpha blend rather than additive
 	tess.numVertexes++;
 
@@ -417,10 +417,10 @@ void RB_RenderFlare( flare_t *f ) {
 	tess.xyz[tess.numVertexes][1] = f->windowY + size;
 	tess.texCoords0[tess.numVertexes].v[0] = 1;
 	tess.texCoords0[tess.numVertexes].v[1] = 1;
-	tess.vertexColors[tess.numVertexes].v[0] = iColor[0];
-	tess.vertexColors[tess.numVertexes].v[1] = iColor[1];
-	tess.vertexColors[tess.numVertexes].v[2] = iColor[2];
-	tess.vertexColors[tess.numVertexes].v[3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
+	tess.vertexColors[tess.numVertexes][0] = iColor[0];
+	tess.vertexColors[tess.numVertexes][1] = iColor[1];
+	tess.vertexColors[tess.numVertexes][2] = iColor[2];
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
 //	tess.vertexColors[tess.numVertexes].v[3] = 255;		//----(SA)	mod for alpha blend rather than additive
 	tess.numVertexes++;
 
@@ -428,10 +428,10 @@ void RB_RenderFlare( flare_t *f ) {
 	tess.xyz[tess.numVertexes][1] = f->windowY - size;
 	tess.texCoords0[tess.numVertexes].v[0] = 1;
 	tess.texCoords0[tess.numVertexes].v[1] = 0;
-	tess.vertexColors[tess.numVertexes].v[0] = iColor[0];
-	tess.vertexColors[tess.numVertexes].v[1] = iColor[1];
-	tess.vertexColors[tess.numVertexes].v[2] = iColor[2];
-	tess.vertexColors[tess.numVertexes].v[3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
+	tess.vertexColors[tess.numVertexes][0] = iColor[0];
+	tess.vertexColors[tess.numVertexes][1] = iColor[1];
+	tess.vertexColors[tess.numVertexes][2] = iColor[2];
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;        //----(SA)	mod for alpha blend rather than additive
 //	tess.vertexColors[tess.numVertexes].v[3] = 255;		//----(SA)	mod for alpha blend rather than additive
 	tess.numVertexes++;
 
