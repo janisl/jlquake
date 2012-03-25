@@ -1057,12 +1057,11 @@ extern vec4hack_t tess_xyz[SHADER_MAX_VERTEXES];
 extern vec4hack_t tess_normal[SHADER_MAX_VERTEXES];
 extern vec2hack_t tess_texCoords0[SHADER_MAX_VERTEXES];
 extern vec2hack_t tess_texCoords1[SHADER_MAX_VERTEXES];
-extern glIndex_t tess_indexes[SHADER_MAX_INDEXES];
 extern color4ubhack_t tess_vertexColors[SHADER_MAX_VERTEXES];
 
 typedef struct shaderCommands_s
 {
-	glIndex_t*      indexes;
+	glIndex_t indexes[SHADER_MAX_INDEXES];
 	vec4hack_t*     normal;
 	color4ubhack_t* vertexColors;
 	vec4hack_t*     xyz;
@@ -1074,7 +1073,6 @@ typedef struct shaderCommands_s
 	color4ub_t constantColor255[SHADER_MAX_VERTEXES];
 
 	int maxShaderVerts;
-	int maxShaderIndicies;
 
 	shader_t    *shader;
 	float shaderTime;

@@ -53,7 +53,7 @@ RB_CheckOverflow
 ==============
 */
 void RB_CheckOverflow( int verts, int indexes ) {
-	if ( tess.numVertexes + verts < tess.maxShaderVerts && tess.numIndexes + indexes < tess.maxShaderIndicies ) {
+	if ( tess.numVertexes + verts < tess.maxShaderVerts && tess.numIndexes + indexes < SHADER_MAX_INDEXES ) {
 		return;
 	}
 
@@ -62,8 +62,8 @@ void RB_CheckOverflow( int verts, int indexes ) {
 	if ( verts >= tess.maxShaderVerts ) {
 		ri.Error( ERR_DROP, "RB_CheckOverflow: verts > MAX (%d > %d)", verts, tess.maxShaderVerts );
 	}
-	if ( indexes >= tess.maxShaderIndicies ) {
-		ri.Error( ERR_DROP, "RB_CheckOverflow: indices > MAX (%d > %d)", indexes, tess.maxShaderIndicies );
+	if ( indexes >= SHADER_MAX_INDEXES ) {
+		ri.Error( ERR_DROP, "RB_CheckOverflow: indices > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES );
 	}
 
 	RB_BeginSurface( tess.shader, tess.fogNum );
@@ -1425,7 +1425,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 		// see how many rows of both verts and indexes we can add without overflowing
 		do {
 			vrows = ( tess.maxShaderVerts - tess.numVertexes ) / lodWidth;
-			irows = ( tess.maxShaderIndicies - tess.numIndexes ) / ( lodWidth * 6 );
+			irows = ( SHADER_MAX_INDEXES - tess.numIndexes ) / ( lodWidth * 6 );
 
 			// if we don't have enough space for at least one strip, flush the buffer
 			if ( vrows < 2 || irows < 1 ) {
@@ -1666,10 +1666,8 @@ void RB_SurfaceDisplayList( srfDisplayList_t *surf ) {
 void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 	vec4hack_t* oldXYZ;
 	vec2hack_t* oldST;
-	glIndex_t*  oldIndicies;
 	color4ubhack_t* oldColor;
 	int oldMaxVerts;
-	int oldMaxIndicies;
 
 	RB_EndSurface();
 
@@ -1677,9 +1675,7 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 
 	oldXYZ =            tess.xyz;
 	oldST =             tess.texCoords0;
-	oldIndicies =       tess.indexes;
 	oldMaxVerts =       tess.maxShaderVerts;
-	oldMaxIndicies =    tess.maxShaderIndicies;
 	oldColor =          tess.vertexColors;
 
 	// ===================================================
@@ -1688,10 +1684,9 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 
 	tess.xyz =          (vec4hack_t*)surf->pPolyBuffer->xyz;
 	tess.texCoords0 =   (vec2hack_t*)surf->pPolyBuffer->st;
-	tess.indexes =      (glIndex_t*)surf->pPolyBuffer->indicies;
+	Com_Memcpy(tess.indexes, surf->pPolyBuffer->indicies, tess.numIndexes * sizeof(glIndex_t));
 	tess.vertexColors = (color4ubhack_t*)surf->pPolyBuffer->color;
 
-	tess.maxShaderIndicies =    MAX_PB_INDICIES;
 	tess.maxShaderVerts =       MAX_PB_VERTS;
 	// ===================================================
 
@@ -1699,9 +1694,7 @@ void RB_SurfacePolyBuffer( srfPolyBuffer_t *surf ) {
 
 	tess.xyz =                  oldXYZ;
 	tess.texCoords0 =           oldST;
-	tess.indexes =              oldIndicies;
 	tess.maxShaderVerts =       oldMaxVerts;
-	tess.maxShaderIndicies =    oldMaxIndicies;
 	tess.vertexColors =         oldColor;
 }
 

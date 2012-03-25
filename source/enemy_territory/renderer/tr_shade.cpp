@@ -1688,8 +1688,8 @@ void RB_EndSurface( void ) {
 		return;
 	}
 
-	if ( input->indexes[input->maxShaderIndicies - 1] != 0 ) {
-		ri.Error( ERR_DROP, "RB_EndSurface() - input->maxShaderIndicies(%i) hit", input->maxShaderIndicies );
+	if ( input->indexes[SHADER_MAX_INDEXES - 1] != 0 ) {
+		ri.Error( ERR_DROP, "RB_EndSurface() - SHADER_MAX_INDEXES(%i) hit", SHADER_MAX_INDEXES );
 	}
 	if ( input->xyz[input->maxShaderVerts - 1].v[0] != 0 ) {
 		ri.Error( ERR_DROP, "RB_EndSurface() - input->maxShaderVerts(%i) hit", input->maxShaderVerts );
