@@ -37,8 +37,6 @@ static void GfxInfo_f( void );
 int max_polys;
 int max_polyverts;
 
-vec2hack_t tess_texCoords1[SHADER_MAX_VERTEXES];
-
 /*
 The tessellation level and normal generation mode are specified with:
 
@@ -665,8 +663,6 @@ void R_Init( void ) {
 	memset( &tr, 0, sizeof( tr ) );
 	memset( &backEnd, 0, sizeof( backEnd ) );
 	memset( &tess, 0, sizeof( tess ) );
-
-	tess.texCoords1 =       tess_texCoords1;
 
 	if ( (qintptr)tess.xyz & 15 ) {
 		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );

@@ -131,20 +131,20 @@ void RB_AddQuadStampFadingCornersExt( vec3_t origin, vec3_t left, vec3_t up, byt
 	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = tess.normal[ndx + 4][2] = normal[2];
 
 	// standard square texture coordinates
-	tess.texCoords[ndx][0][0] = tess.texCoords1[ndx].v[0] = s1;
-	tess.texCoords[ndx][0][1] = tess.texCoords1[ndx].v[1] = t1;
+	tess.texCoords[ndx][0][0] = tess.texCoords[ndx][1][0] = s1;
+	tess.texCoords[ndx][0][1] = tess.texCoords[ndx][1][1] = t1;
 
-	tess.texCoords[ndx + 1][0][0] = tess.texCoords1[ndx + 1].v[0] = s2;
-	tess.texCoords[ndx + 1][0][1] = tess.texCoords1[ndx + 1].v[1] = t1;
+	tess.texCoords[ndx + 1][0][0] = tess.texCoords[ndx + 1][1][0] = s2;
+	tess.texCoords[ndx + 1][0][1] = tess.texCoords[ndx + 1][1][1] = t1;
 
-	tess.texCoords[ndx + 2][0][0] = tess.texCoords1[ndx + 2].v[0] = s2;
-	tess.texCoords[ndx + 2][0][1] = tess.texCoords1[ndx + 2].v[1] = t2;
+	tess.texCoords[ndx + 2][0][0] = tess.texCoords[ndx + 2][1][0] = s2;
+	tess.texCoords[ndx + 2][0][1] = tess.texCoords[ndx + 2][1][1] = t2;
 
-	tess.texCoords[ndx + 3][0][0] = tess.texCoords1[ndx + 3].v[0] = s1;
-	tess.texCoords[ndx + 3][0][1] = tess.texCoords1[ndx + 3].v[1] = t2;
+	tess.texCoords[ndx + 3][0][0] = tess.texCoords[ndx + 3][1][0] = s1;
+	tess.texCoords[ndx + 3][0][1] = tess.texCoords[ndx + 3][1][1] = t2;
 
-	tess.texCoords[ndx + 4][0][0] = tess.texCoords1[ndx + 4].v[0] = ( s1 + s2 ) / 2.0;
-	tess.texCoords[ndx + 4][0][1] = tess.texCoords1[ndx + 4].v[1] = ( t1 + t2 ) / 2.0;
+	tess.texCoords[ndx + 4][0][0] = tess.texCoords[ndx + 4][1][0] = ( s1 + s2 ) / 2.0;
+	tess.texCoords[ndx + 4][0][1] = tess.texCoords[ndx + 4][1][1] = ( t1 + t2 ) / 2.0;
 
 	// center uses full alpha
 	*( unsigned int * ) &tess.vertexColors[ndx + 4] =
@@ -211,17 +211,17 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, flo
 	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = normal[2];
 
 	// standard square texture coordinates
-	tess.texCoords[ndx][0][0] = tess.texCoords1[ndx].v[0] = s1;
-	tess.texCoords[ndx][0][1] = tess.texCoords1[ndx].v[1] = t1;
+	tess.texCoords[ndx][0][0] = tess.texCoords[ndx][1][0] = s1;
+	tess.texCoords[ndx][0][1] = tess.texCoords[ndx][1][1] = t1;
 
-	tess.texCoords[ndx + 1][0][0] = tess.texCoords1[ndx + 1].v[0] = s2;
-	tess.texCoords[ndx + 1][0][1] = tess.texCoords1[ndx + 1].v[1] = t1;
+	tess.texCoords[ndx + 1][0][0] = tess.texCoords[ndx + 1][1][0] = s2;
+	tess.texCoords[ndx + 1][0][1] = tess.texCoords[ndx + 1][1][1] = t1;
 
-	tess.texCoords[ndx + 2][0][0] = tess.texCoords1[ndx + 2].v[0] = s2;
-	tess.texCoords[ndx + 2][0][1] = tess.texCoords1[ndx + 2].v[1] = t2;
+	tess.texCoords[ndx + 2][0][0] = tess.texCoords[ndx + 2][1][0] = s2;
+	tess.texCoords[ndx + 2][0][1] = tess.texCoords[ndx + 2][1][1] = t2;
 
-	tess.texCoords[ndx + 3][0][0] = tess.texCoords1[ndx + 3].v[0] = s1;
-	tess.texCoords[ndx + 3][0][1] = tess.texCoords1[ndx + 3].v[1] = t2;
+	tess.texCoords[ndx + 3][0][0] = tess.texCoords[ndx + 3][1][0] = s1;
+	tess.texCoords[ndx + 3][0][1] = tess.texCoords[ndx + 3][1][1] = t2;
 
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
@@ -420,12 +420,12 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 	xyz = tess.xyz[ tess.numVertexes ];
 	normal = tess.normal[ tess.numVertexes ];
 	texCoords0 = tess.texCoords[ tess.numVertexes ][0];
-	texCoords1 = tess.texCoords1[ tess.numVertexes ].v;
+	texCoords1 = tess.texCoords[ tess.numVertexes ][1];
 	color = tess.vertexColors[ tess.numVertexes ];
 	needsNormal = tess.shader->needsNormal;
 
 	if ( needsNormal ) {
-		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 4, texCoords1 += 2, color += 4 ) {
+		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 4, texCoords1 += 4, color += 4 ) {
 			xyz[0] = dv->xyz[0];
 			xyz[1] = dv->xyz[1];
 			xyz[2] = dv->xyz[2];
@@ -443,7 +443,7 @@ void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 			*(int *)color = *(int *)dv->color;
 		}
 	} else {
-		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 4, texCoords1 += 2, color += 4 ) {
+		for ( i = 0 ; i < srf->numVerts ; i++, dv++, xyz += 4, normal += 4, texCoords0 += 4, texCoords1 += 4, color += 4 ) {
 			xyz[0] = dv->xyz[0];
 			xyz[1] = dv->xyz[1];
 			xyz[2] = dv->xyz[2];
@@ -585,8 +585,9 @@ void RB_SurfaceFoliage( srfFoliage_t *srf ) {
 		{
 			tess.texCoords[ tess.numVertexes + i][0][0] = srf->texCoords[i][0];
 			tess.texCoords[ tess.numVertexes + i][0][1] = srf->texCoords[i][1];
+			tess.texCoords[ tess.numVertexes + i][1][0] = srf->lmTexCoords[i][0];
+			tess.texCoords[ tess.numVertexes + i][1][1] = srf->lmTexCoords[i][1];
 		}
-		memcpy( &tess.texCoords1[ tess.numVertexes ], srf->lmTexCoords, numVerts * sizeof( srf->lmTexCoords[ 0 ] ) );
 
 		// offset xyz
 		for ( i = 0; i < numVerts; i++, xyz += 4 )
@@ -1325,8 +1326,8 @@ void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 		VectorCopy( v, tess.xyz[ndx] );
 		tess.texCoords[ndx][0][0] = v[3];
 		tess.texCoords[ndx][0][1] = v[4];
-		tess.texCoords1[ndx].v[0] = v[5];
-		tess.texCoords1[ndx].v[1] = v[6];
+		tess.texCoords[ndx][1][0] = v[5];
+		tess.texCoords[ndx][1][1] = v[6];
 		*( unsigned int * ) &tess.vertexColors[ndx] = *( unsigned int * ) &v[7];
 	}
 
@@ -1454,7 +1455,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 		xyz = tess.xyz[numVertexes];
 		normal = tess.normal[numVertexes];
 		texCoords0 = tess.texCoords[numVertexes][0];
-		texCoords1 = tess.texCoords1[numVertexes].v;
+		texCoords1 = tess.texCoords[numVertexes][1];
 		color = ( unsigned char * ) &tess.vertexColors[numVertexes];
 		needsNormal = tess.shader->needsNormal;
 
@@ -1479,7 +1480,7 @@ void RB_SurfaceGrid( srfGridMesh_t *cv ) {
 				xyz += 4;
 				normal += 4;
 				texCoords0 += 4;
-				texCoords1 += 2;
+				texCoords1 += 4;
 				color += 4;
 			}
 		}

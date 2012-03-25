@@ -1119,8 +1119,8 @@ static void ComputeTexCoords( shaderStage_t *pStage ) {
 			break;
 		case TCGEN_LIGHTMAP:
 			for ( i = 0 ; i < tess.numVertexes ; i++ ) {
-				tess.svars.texcoords[b][i][0] = tess.texCoords1[i].v[0];
-				tess.svars.texcoords[b][i][1] = tess.texCoords1[i].v[1];
+				tess.svars.texcoords[b][i][0] = tess.texCoords[i][1][0];
+				tess.svars.texcoords[b][i][1] = tess.texCoords[i][1][1];
 			}
 			break;
 		case TCGEN_VECTOR:
@@ -1623,7 +1623,7 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	}
 
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglTexCoordPointer( 2, GL_FLOAT, 8, tess.texCoords1 );
+	qglTexCoordPointer( 2, GL_FLOAT, 16, &tess.texCoords[0][1][0] );
 
 	//
 	// lock arrays
