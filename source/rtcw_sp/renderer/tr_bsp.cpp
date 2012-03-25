@@ -1896,7 +1896,7 @@ void R_FindLightGridBounds( vec3_t mins, vec3_t maxs ) {
 	msurface_t  *surf;
 	srfSurfaceFace_t *surfFace;
 //	cplane_t	*plane;
-	struct shader_s     *shd;
+	shader_t     *shd;
 
 	qboolean foundGridBrushes = qfalse;
 	int i,j;

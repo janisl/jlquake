@@ -44,8 +44,8 @@
 
 #include "../../client/renderer/qgl.h"
 #include "images/image.h"
-#if 0
 #include "shader.h"
+#if 0
 #include "models/model.h"
 #endif
 #include "state.h"

@@ -34,11 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 // This file must be identical in the quake and utils directories
 //
 
-// surface geometry should not exceed these limits
-#define SHADER_MAX_VERTEXES 1000 // JPW NERVE was 4000, 1000 in q3ta
-#define SHADER_MAX_INDEXES  ( 6 * SHADER_MAX_VERTEXES )
-
-
 /*
 ========================================================================
 
