@@ -200,7 +200,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float s
 	// fade the intensity of the flare down as the
 	// light surface turns away from the viewer
 	if ( normal ) {
-		VectorSubtract( backEnd.viewParms._or.origin, point, local );
+		VectorSubtract( backEnd.viewParms.orient.origin, point, local );
 		VectorNormalizeFast( local );
 		d = DotProduct( local, normal );
 		VectorScale( f->color, d, f->color );
@@ -290,7 +290,7 @@ void RB_AddCoronaFlares( void ) {
 		if ( j == tr.world->numfogs ) {
 			j = 0;
 		}
-		RB_AddFlare( (void *)cor, j, cor->origin, cor->color, cor->scale, NULL, cor->id, cor->visible );
+		RB_AddFlare( (void *)cor, j, cor->origin, cor->color, cor->scale, NULL, cor->id, cor->flags );
 	}
 }
 

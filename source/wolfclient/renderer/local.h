@@ -109,7 +109,11 @@ init
 #define FUNCTABLE_MASK			(FUNCTABLE_SIZE - 1)
 #define FUNCTABLE_SIZE2			12
 
-#if 0
+// ydnar: optimizing diffuse lighting calculation with a table lookup
+#define ENTITY_LIGHT_STEPS		16
+
+#define MAX_PART_MODELS			5
+
 struct dlight_t
 {
 	vec3_t	origin;
@@ -118,6 +122,16 @@ struct dlight_t
 
 	vec3_t	transformed;		// origin in local coordinate system
 	int		additive;			// texture detail is lost tho when the lightmap is dark
+
+	int overdraw;
+
+	shader_t* shader;			//----(SA) adding a shader to dlights, so, if desired, we can change the blend or texture of a dlight
+
+	bool forced;				//----(SA)	use this dlight when r_dynamiclight is either 1 or 2 (rather than just 1) for "important" gameplay lights (alarm lights, etc)
+
+	float radiusInverseCubed;	// ydnar: attenuation optimization
+	float intensity;			// 1.0 = fullbright, > 1.0 = overbright
+	int flags;
 };
 
 struct lightstyle_t
@@ -155,9 +169,13 @@ struct viewParms_t
 	int			viewportX, viewportY, viewportWidth, viewportHeight;
 	float		fovX, fovY;
 	float		projectionMatrix[16];
-	cplane_t	frustum[4];
+	cplane_t frustum[5];			// ydnar: added farplane
 	vec3_t		visBounds[2];
 	float		zFar;
+
+	glfog_t glFog;					// fog parameters
+
+	int dirty;
 };
 
 // a trRefEntity_t has all the information passed in by
@@ -174,6 +192,33 @@ struct trRefEntity_t
 	vec3_t		ambientLight;	// color normalized to 0-255
 	int			ambientLightInt;	// 32 bit rgba packed
 	vec3_t		directedLight;
+	float brightness;
+	int entityLightInt[ENTITY_LIGHT_STEPS];
+};
+
+struct corona_t
+{
+	vec3_t origin;
+	vec3_t color;			// range from 0.0 to 1.0, should be color normalized
+	vec3_t transformed;		// origin in local coordinate system
+	float scale;			// uses r_flaresize as the baseline (1.0)
+	int id;
+	int flags;				// still send the corona request, even if not visible, for proper fading
+};
+
+// ydnar: decal projection
+struct decalProjector_t
+{
+	shader_t* shader;
+	byte color[4];
+	int fadeStartTime, fadeEndTime;
+	vec3_t mins, maxs;
+	vec3_t center;
+	float radius, radius2;
+	qboolean omnidirectional;
+	int numPlanes;                  // either 5 or 6, for quad or triangle projectors
+	vec4_t planes[6];
+	vec4_t texMat[3][2];
 };
 
 // trRefdef_t holds everything that comes in refdef_t,
@@ -206,6 +251,7 @@ struct trRefdef_t
 
 	int				num_dlights;
 	dlight_t*		dlights;
+	int dlightBits;					// ydnar: optimization
 
 	int				numPolys;
 	srfPoly_t*		polys;
@@ -218,6 +264,19 @@ struct trRefdef_t
 
 	int				num_particles;
 	particle_t*		particles;
+
+	int num_coronas;
+	corona_t *coronas;
+
+	int numPolyBuffers;
+	srfPolyBuffer_t* polybuffers;
+
+	int decalBits;                  // ydnar: optimization
+	int numDecalProjectors;
+	decalProjector_t* decalProjectors;
+
+	int numDecals;
+	srfDecal_t* decals;
 };
 
 // skins allow models to be retextured without modifying the model file
@@ -225,6 +284,14 @@ struct skinSurface_t
 {
 	char		name[MAX_QPATH];
 	shader_t*	shader;
+	int hash;
+};
+
+struct skinModel_t
+{
+	char type[MAX_QPATH];		// md3_lower, md3_lbelt, md3_rbelt, etc.
+	char model[MAX_QPATH];		// lower.md3, belt1.md3, etc.
+	int hash;
 };
 
 struct skin_t
@@ -232,6 +299,9 @@ struct skin_t
 	char			name[MAX_QPATH];		// game path, including extension
 	int				numSurfaces;
 	skinSurface_t*	surfaces[MD3_MAX_SURFACES];
+	int numModels;
+	skinModel_t* models[MAX_PART_MODELS];
+	vec3_t scale;       //----(SA)	added
 };
 
 struct frontEndCounters_t
@@ -244,6 +314,11 @@ struct frontEndCounters_t
 	int		c_leafs;
 	int		c_dlightSurfaces;
 	int		c_dlightSurfacesCulled;
+
+	int c_sphere_cull_in, c_sphere_cull_out;
+	int c_plane_cull_in, c_plane_cull_out;
+
+	int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
 };
 
 struct backEndCounters_t
@@ -286,6 +361,7 @@ struct trGlobals_t
 	bool					worldMapLoaded;
 	world_t*				world;
 	model_t*				worldModel;
+	char* worldDir;      // ydnar: for referencing external lightmaps
 
 	image_t*				defaultImage;
 	image_t*				scrapImage;			// for small graphics
@@ -304,7 +380,10 @@ struct trGlobals_t
 	shader_t*				projectionShadowShader;
 
 	shader_t*				flareShader;
+	shader_t* spotFlareShader;
+	char* sunShaderName;
 	shader_t*				sunShader;
+	shader_t* sunflareShader;  //----(SA) for the camera lens flare effect for sun
 
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
@@ -320,6 +399,7 @@ struct trGlobals_t
 	int						currentEntityNum;
 	int						shiftedEntityNum;	// currentEntityNum << QSORT_ENTITYNUM_SHIFT
 	model_t*				currentModel;
+	mbrush46_model_t* currentBModel;     // only valid when rendering brush models
 
 	viewParms_t				viewParms;
 
@@ -329,6 +409,12 @@ struct trGlobals_t
 
 	frontEndCounters_t		pc;
 	int						frontEndMsec;		// not in pc due to clearing issue
+
+	float lightGridMulAmbient;          // lightgrid multipliers specified in sky shader
+	float lightGridMulDirected;         //
+
+	// RF, temp var used while parsing shader only
+	int allowCompress;
 
 	//
 	// put large tables at the end, so most elements will be
@@ -361,7 +447,6 @@ struct trGlobals_t
 	float					sawToothTable[FUNCTABLE_SIZE];
 	float					inverseSawToothTable[FUNCTABLE_SIZE];
 };
-#endif
 
 /*
 =============================================================

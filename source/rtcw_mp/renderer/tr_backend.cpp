@@ -543,10 +543,10 @@ void RB_BeginDrawingView( void ) {
 		plane[2] = backEnd.viewParms.portalPlane.normal[2];
 		plane[3] = backEnd.viewParms.portalPlane.dist;
 
-		plane2[0] = DotProduct( backEnd.viewParms._or.axis[0], plane );
-		plane2[1] = DotProduct( backEnd.viewParms._or.axis[1], plane );
-		plane2[2] = DotProduct( backEnd.viewParms._or.axis[2], plane );
-		plane2[3] = DotProduct( plane, backEnd.viewParms._or.origin ) - plane[3];
+		plane2[0] = DotProduct( backEnd.viewParms.orient.axis[0], plane );
+		plane2[1] = DotProduct( backEnd.viewParms.orient.axis[1], plane );
+		plane2[2] = DotProduct( backEnd.viewParms.orient.axis[2], plane );
+		plane2[3] = DotProduct( plane, backEnd.viewParms.orient.origin ) - plane[3];
 
 		qglLoadMatrixf( s_flipMatrix );
 		qglClipPlane( GL_CLIP_PLANE0, plane2 );

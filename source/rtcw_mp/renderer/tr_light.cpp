@@ -72,7 +72,7 @@ void R_DlightBmodel( mbrush46_model_t *bmodel ) {
 	mbrush46_surface_t  *surf;
 
 	// transform all the lights
-	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr._or );
+	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr.orient );
 
 	mask = 0;
 	for ( i = 0 ; i < tr.refdef.num_dlights ; i++ ) {
@@ -354,7 +354,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent ) {
 	for ( i = 0 ; i < refdef->num_dlights ; i++ ) {
 		dl = &refdef->dlights[i];
 
-		if ( dl->dlshader ) {  //----(SA)	if the dlight has a diff shader specified, you don't know what it does, so don't let it affect entities lighting
+		if ( dl->shader ) {  //----(SA)	if the dlight has a diff shader specified, you don't know what it does, so don't let it affect entities lighting
 			continue;
 		}
 

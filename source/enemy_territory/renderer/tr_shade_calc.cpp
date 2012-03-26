@@ -418,11 +418,11 @@ static void AutospriteDeform( void ) {
 	tess.numIndexes = 0;
 
 	if ( backEnd.currentEntity != &tr.worldEntity ) {
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[1], leftDir );
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[2], upDir );
+		GlobalVectorToLocal( backEnd.viewParms.orient.axis[1], leftDir );
+		GlobalVectorToLocal( backEnd.viewParms.orient.axis[2], upDir );
 	} else {
-		VectorCopy( backEnd.viewParms.orientation.axis[1], leftDir );
-		VectorCopy( backEnd.viewParms.orientation.axis[2], upDir );
+		VectorCopy( backEnd.viewParms.orient.axis[1], leftDir );
+		VectorCopy( backEnd.viewParms.orient.axis[2], upDir );
 	}
 
 	for ( i = 0 ; i < oldVerts ; i += 4 ) {
@@ -491,9 +491,9 @@ static void Autosprite2Deform( void ) {
 	}
 
 	if ( backEnd.currentEntity != &tr.worldEntity ) {
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[0], forward );
+		GlobalVectorToLocal( backEnd.viewParms.orient.axis[0], forward );
 	} else {
-		VectorCopy( backEnd.viewParms.orientation.axis[0], forward );
+		VectorCopy( backEnd.viewParms.orient.axis[0], forward );
 	}
 
 	// this is a lot of work for two triangles...
@@ -937,12 +937,12 @@ void RB_CalcFogTexCoords( float *st ) {
 //		return;
 
 	// all fogging distance is based on world Z units
-	VectorSubtract( backEnd.orientation.origin, backEnd.viewParms.orientation.origin, local );
+	VectorSubtract( backEnd.orientation.origin, backEnd.viewParms.orient.origin, local );
 	//%	VectorSubtract( local, bmodel->origin[ backEnd.smpFrame ], local );
 	fogDistanceVector[ 0 ] = -backEnd.orientation.modelMatrix[ 2 ];
 	fogDistanceVector[ 1 ] = -backEnd.orientation.modelMatrix[ 6 ];
 	fogDistanceVector[ 2 ] = -backEnd.orientation.modelMatrix[ 10 ];
-	fogDistanceVector[ 3 ] = DotProduct( local, backEnd.viewParms.orientation.axis[ 0 ] );
+	fogDistanceVector[ 3 ] = DotProduct( local, backEnd.viewParms.orient.axis[ 0 ] );
 
 	// scale the fog vectors based on the fog's thickness
 	fogDistanceVector[ 0 ] *= fog->shader->fogParms.tcScale * 1.0;

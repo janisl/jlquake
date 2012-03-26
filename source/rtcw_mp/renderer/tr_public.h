@@ -60,10 +60,6 @@ typedef struct {
 	qboolean ( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );    //----(SA)	added
 	qhandle_t ( *GetShaderFromModel )( qhandle_t modelid, int surfnum, int withlightmap );                //----(SA)	added
 
-	// the vis data is a large enough block of data that we go to the trouble
-	// of sharing it with the clipmodel subsystem
-	void ( *SetWorldVisData )( const byte *vis );
-
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory
 	void ( *EndRegistration )( void );

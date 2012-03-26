@@ -248,20 +248,6 @@ static void R_LoadLightmaps( bsp46_lump_t *l ) {
 	}
 }
 
-
-/*
-=================
-RE_SetWorldVisData
-
-This is called by the clipmodel subsystem so we can share the 1.8 megs of
-space in big maps...
-=================
-*/
-void        RE_SetWorldVisData( const byte *vis ) {
-	tr.externalVisData = vis;
-}
-
-
 /*
 =================
 R_LoadVisibility
@@ -284,17 +270,11 @@ static void R_LoadVisibility( bsp46_lump_t *l ) {
 	s_worldData.numClusters = LittleLong( ( (int *)buf )[0] );
 	s_worldData.clusterBytes = LittleLong( ( (int *)buf )[1] );
 
-	// CM_Load should have given us the vis data to share, so
-	// we don't need to allocate another copy
-	if ( tr.externalVisData ) {
-		s_worldData.vis = tr.externalVisData;
-	} else {
-		byte    *dest;
+	byte    *dest;
 
-		dest = (byte*)ri.Hunk_Alloc( len - 8, h_low );
-		memcpy( dest, buf + 8, len - 8 );
-		s_worldData.vis = dest;
-	}
+	dest = (byte*)ri.Hunk_Alloc( len - 8, h_low );
+	memcpy( dest, buf + 8, len - 8 );
+	s_worldData.vis = dest;
 }
 
 //===============================================================================

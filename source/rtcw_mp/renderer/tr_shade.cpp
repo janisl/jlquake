@@ -539,7 +539,7 @@ static void ProjectDlightTexture( void ) {
 
 		//----(SA) creating dlight shader to allow for special blends or alternate dlight texture
 		{
-			shader_t *dls = dl->dlshader;
+			shader_t *dls = dl->shader;
 			if ( dls ) {
 //				if (!qglActiveTextureARB || dls->numUnfoggedPasses < 2) {
 				for ( i = 0; i < dls->numUnfoggedPasses; i++ )
@@ -921,7 +921,7 @@ static void ComputeColors( shaderStage_t *pStage ) {
 			float len;
 			vec3_t v;
 
-			VectorSubtract( tess.xyz[i], backEnd.viewParms._or.origin, v );
+			VectorSubtract( tess.xyz[i], backEnd.viewParms.orient.origin, v );
 			len = VectorLength( v );
 
 			len /= tess.shader->portalRange;

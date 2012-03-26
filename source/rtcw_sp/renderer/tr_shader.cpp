@@ -3032,8 +3032,7 @@ static void CreateExternalShaders( void ) {
 	tr.flareShader = R_FindShader( "flareShader", LIGHTMAP_NONE, qtrue );
 	tr.spotFlareShader = R_FindShader( "spotLight", LIGHTMAP_NONE, qtrue );
 //	tr.sunShader = R_FindShader( "sun", LIGHTMAP_NONE, qtrue );	//----(SA)	let sky shader set this
-	tr.sunflareShader[0] = R_FindShader( "sunflare1", LIGHTMAP_NONE, qtrue );
-	tr.dlightShader = R_FindShader( "dlightshader", LIGHTMAP_NONE, qtrue );
+	tr.sunflareShader = R_FindShader( "sunflare1", LIGHTMAP_NONE, qtrue );
 }
 
 //=============================================================================

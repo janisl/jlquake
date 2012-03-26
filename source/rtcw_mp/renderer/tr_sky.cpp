@@ -277,7 +277,7 @@ void RB_ClipSkyPolygons( shaderCommands_t *input ) {
 		for ( j = 0 ; j < 3 ; j++ )
 		{
 			VectorSubtract( input->xyz[input->indexes[i + j]],
-							backEnd.viewParms._or.origin,
+							backEnd.viewParms.orient.origin,
 							p[j] );
 		}
 		ClipSkyPolygon( 3, p[0], 0 );
@@ -580,7 +580,7 @@ static void FillCloudySkySide( const int mins[2], const int maxs[2], qboolean ad
 	{
 		for ( s = mins[0] + HALF_SKY_SUBDIVISIONS; s <= maxs[0] + HALF_SKY_SUBDIVISIONS; s++ )
 		{
-			VectorAdd( s_skyPoints[t][s], backEnd.viewParms._or.origin, tess.xyz[tess.numVertexes] );
+			VectorAdd( s_skyPoints[t][s], backEnd.viewParms.orient.origin, tess.xyz[tess.numVertexes] );
 			tess.texCoords[tess.numVertexes][0][0] = s_skyTexCoords[t][s][0];
 			tess.texCoords[tess.numVertexes][0][1] = s_skyTexCoords[t][s][1];
 
@@ -827,7 +827,7 @@ void RB_DrawSun( void ) {
 		return;
 	}
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
-	qglTranslatef( backEnd.viewParms._or.origin[0], backEnd.viewParms._or.origin[1], backEnd.viewParms._or.origin[2] );
+	qglTranslatef( backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1], backEnd.viewParms.orient.origin[2] );
 
 	dist =  backEnd.viewParms.zFar / 1.75;      // div sqrt(3)
 
@@ -918,7 +918,7 @@ void RB_DrawSun( void ) {
 		VectorScale( vec2, 0.5f, vec2 );
 
 		// add the vectors to give an 'off angle' result
-		VectorAdd( tr.sunDirection, backEnd.viewParms._or.axis[0], temp );
+		VectorAdd( tr.sunDirection, backEnd.viewParms.orient.axis[0], temp );
 		VectorNormalize( temp );
 
 		// amplify the result
@@ -929,7 +929,7 @@ void RB_DrawSun( void ) {
 		// (SA) FIXME: todo: flare effect should render last (on top of everything else) and only when sun is in view (sun moving out of camera past degree n should start to cause flare dimming until view angle to sun is off by angle n + x.
 
 		// draw the flare
-		RB_BeginSurface( tr.sunflareShader[0], tess.fogNum );
+		RB_BeginSurface( tr.sunflareShader, tess.fogNum );
 		RB_AddQuadStamp( origin, vec1, vec2, color );
 		RB_EndSurface();
 	}
@@ -996,7 +996,7 @@ void RB_StageIteratorSky( void ) {
 
 		qglPushMatrix();
 		GL_State( 0 );
-		qglTranslatef( backEnd.viewParms._or.origin[0], backEnd.viewParms._or.origin[1], backEnd.viewParms._or.origin[2] );
+		qglTranslatef( backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1], backEnd.viewParms.orient.origin[2] );
 
 		DrawSkyBox( tess.shader );
 
@@ -1016,7 +1016,7 @@ void RB_StageIteratorSky( void ) {
 
 		qglPushMatrix();
 		GL_State( 0 );
-		qglTranslatef( backEnd.viewParms._or.origin[0], backEnd.viewParms._or.origin[1], backEnd.viewParms._or.origin[2] );
+		qglTranslatef( backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1], backEnd.viewParms.orient.origin[2] );
 
 		DrawSkyBoxInner( tess.shader );
 

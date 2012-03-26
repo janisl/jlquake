@@ -188,7 +188,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 
 	// plane cull
 	if ( gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer ) {
-		d = DotProduct( tr.orientation.viewOrigin, gen->plane.normal ) - gen->plane.dist;
+		d = DotProduct( tr.orient.viewOrigin, gen->plane.normal ) - gen->plane.dist;
 		if ( d > 0.0f ) {
 			*frontFace = 1;
 		}
@@ -629,12 +629,12 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 		}
 
 		// transform entity bbox (fixme: rotated entities have invalid bounding boxes)
-		VectorAdd( bmodel->bounds[ 0 ], tr.orientation.origin, mins );
-		VectorAdd( bmodel->bounds[ 1 ], tr.orientation.origin, maxs );
+		VectorAdd( bmodel->bounds[ 0 ], tr.orient.origin, mins );
+		VectorAdd( bmodel->bounds[ 1 ], tr.orient.origin, maxs );
 
 		// set bit
 		if ( R_TestDecalBoundingBox( &tr.refdef.decalProjectors[ i ], mins, maxs ) ) {
-			R_TransformDecalProjector( &tr.refdef.decalProjectors[ i ], tr.orientation.axis, tr.orientation.origin, &localProjectors[ numLocalProjectors ] );
+			R_TransformDecalProjector( &tr.refdef.decalProjectors[ i ], tr.orient.axis, tr.orient.origin, &localProjectors[ numLocalProjectors ] );
 			numLocalProjectors++;
 			decalBits <<= 1;
 			decalBits |= 1;

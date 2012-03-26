@@ -327,13 +327,13 @@ void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, fl
 	dl->color[0] = r;
 	dl->color[1] = g;
 	dl->color[2] = b;
-	dl->dlshader = NULL;
+	dl->shader = NULL;
 	dl->overdraw = 0;
 
 	if ( overdraw == 10 ) { // sorry, hijacking 10 for a quick hack (SA)
-		dl->dlshader = R_GetShaderByHandle( RE_RegisterShader( "negdlightshader" ) );
+		dl->shader = R_GetShaderByHandle( RE_RegisterShader( "negdlightshader" ) );
 	} else if ( overdraw == 11 ) { // 11 is flames
-		dl->dlshader = R_GetShaderByHandle( RE_RegisterShader( "flamedlightshader" ) );
+		dl->shader = R_GetShaderByHandle( RE_RegisterShader( "flamedlightshader" ) );
 	} else {
 		dl->overdraw = overdraw;
 	}
@@ -363,7 +363,7 @@ void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float sca
 	cor->color[2] = b;
 	cor->scale = scale;
 	cor->id = id;
-	cor->visible = visible;
+	cor->flags = visible;
 }
 
 /*
@@ -489,10 +489,10 @@ void RE_RenderScene( const refdef_t *fd ) {
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
 
-	VectorCopy( fd->vieworg, parms._or.origin );
-	VectorCopy( fd->viewaxis[0], parms._or.axis[0] );
-	VectorCopy( fd->viewaxis[1], parms._or.axis[1] );
-	VectorCopy( fd->viewaxis[2], parms._or.axis[2] );
+	VectorCopy( fd->vieworg, parms.orient.origin );
+	VectorCopy( fd->viewaxis[0], parms.orient.axis[0] );
+	VectorCopy( fd->viewaxis[1], parms.orient.axis[1] );
+	VectorCopy( fd->viewaxis[2], parms.orient.axis[2] );
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 
