@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#if 0
 #define GLS_SRCBLEND_ZERO						0x00000001
 #define GLS_SRCBLEND_ONE						0x00000002
 #define GLS_SRCBLEND_DST_COLOR					0x00000003
@@ -49,7 +48,6 @@
 #define		GLS_ATEST_BITS						0x70000000
 
 #define GLS_DEFAULT			GLS_DEPTHMASK_TRUE
-#endif
 
 // the renderer front end should never modify glstate_t
 struct glstate_t
