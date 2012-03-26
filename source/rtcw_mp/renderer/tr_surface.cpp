@@ -1160,12 +1160,12 @@ static float    LodErrorForVolume( vec3_t local, float radius ) {
 		return 0;
 	}
 
-	world[0] = local[0] * backEnd._or.axis[0][0] + local[1] * backEnd._or.axis[1][0] +
-			   local[2] * backEnd._or.axis[2][0] + backEnd._or.origin[0];
-	world[1] = local[0] * backEnd._or.axis[0][1] + local[1] * backEnd._or.axis[1][1] +
-			   local[2] * backEnd._or.axis[2][1] + backEnd._or.origin[1];
-	world[2] = local[0] * backEnd._or.axis[0][2] + local[1] * backEnd._or.axis[1][2] +
-			   local[2] * backEnd._or.axis[2][2] + backEnd._or.origin[2];
+	world[0] = local[0] * backEnd.orient.axis[0][0] + local[1] * backEnd.orient.axis[1][0] +
+			   local[2] * backEnd.orient.axis[2][0] + backEnd.orient.origin[0];
+	world[1] = local[0] * backEnd.orient.axis[0][1] + local[1] * backEnd.orient.axis[1][1] +
+			   local[2] * backEnd.orient.axis[2][1] + backEnd.orient.origin[1];
+	world[2] = local[0] * backEnd.orient.axis[0][2] + local[1] * backEnd.orient.axis[1][2] +
+			   local[2] * backEnd.orient.axis[2][2] + backEnd.orient.origin[2];
 
 	VectorSubtract( world, backEnd.viewParms.orient.origin, world );
 	d = DotProduct( world, backEnd.viewParms.orient.axis[0] );

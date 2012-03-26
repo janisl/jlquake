@@ -474,6 +474,12 @@ RENDERER BACK END COMMAND QUEUE
 
 #define MAX_CORONAS		32          //----(SA)	not really a reason to limit this other than trying to keep a reasonable count
 
+// ydnar: max decal projectors per frame, each can generate lots of polys
+#define MAX_DECAL_PROJECTORS	32  // uses bitmasks, don't increase
+#define DECAL_PROJECTOR_MASK	(MAX_DECAL_PROJECTORS - 1)
+#define MAX_DECALS				1024
+#define DECAL_MASK				(MAX_DECALS - 1)
+
 enum renderCommand_t
 {
 	RC_END_OF_LIST,
@@ -490,7 +496,6 @@ enum renderCommand_t
 	RC_SCREENSHOT
 };
 
-#if 0
 struct renderCommandList_t
 {
 	byte	cmds[MAX_RENDER_COMMANDS];
@@ -511,6 +516,10 @@ struct stretchPicCommand_t
 	float	w, h;
 	float	s1, t1;
 	float	s2, t2;
+
+	byte gradientColor[4];	// color values 0-255
+	int gradientType;
+	float angle;
 };
 
 struct drawSurfsCommand_t
@@ -542,6 +551,29 @@ struct screenshotCommand_t
 	int height;
 	char *fileName;
 	qboolean jpeg;
+};
+
+struct poly2dCommand_t
+{
+	int commandId;
+	polyVert_t* verts;
+	int numverts;
+	shader_t* shader;
+};
+
+struct renderToTextureCommand_t
+{
+	int commandId;
+	image_t* image;
+	int x;
+	int y;
+	int w;
+	int h;
+};
+
+struct renderFinishCommand_t
+{
+	int commandId;
 };
 
 // all state modified by the back end is seperated
@@ -576,9 +608,12 @@ struct backEndData_t
 	polyVert_t*			polyVerts;//[MAX_POLYVERTS];
 	lightstyle_t		lightstyles[MAX_LIGHTSTYLES];
 	particle_t			particles[MAX_REF_PARTICLES];
+	corona_t coronas[MAX_CORONAS];
+	srfPolyBuffer_t polybuffers[MAX_POLYS];
+	decalProjector_t decalProjectors[MAX_DECAL_PROJECTORS];
+	srfDecal_t decals[MAX_DECALS];
 	renderCommandList_t	commands;
 };
-#endif
 
 #define CULL_IN		0		// completely unclipped
 #define CULL_CLIP	1		// clipped by one or more planes

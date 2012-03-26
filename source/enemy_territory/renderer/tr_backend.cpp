@@ -666,11 +666,11 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 //				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 
 				// set up the transformation matrix
-				R_RotateForEntity( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
+				R_RotateForEntity( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orient );
 
 				// set up the dynamic lighting if needed
 				if ( backEnd.currentEntity->needDlights ) {
-					R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orientation );
+					R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient );
 				}
 
 				if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK ) {
@@ -680,16 +680,16 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			} else {
 				backEnd.currentEntity = &tr.worldEntity;
 				backEnd.refdef.floatTime = originalTime;
-				backEnd.orientation = backEnd.viewParms.world;
+				backEnd.orient = backEnd.viewParms.world;
 
 				// we have to reset the shaderTime as well otherwise image animations on
 				// the world (like water) continue with the wrong frame
 //				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 
-				R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orientation );
+				R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient );
 			}
 
-			qglLoadMatrixf( backEnd.orientation.modelMatrix );
+			qglLoadMatrixf( backEnd.orient.modelMatrix );
 
 			//
 			// change depthrange if needed
@@ -718,8 +718,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	// go back to the world modelview matrix
 	backEnd.currentEntity = &tr.worldEntity;
 	backEnd.refdef.floatTime = originalTime;
-	backEnd.orientation = backEnd.viewParms.world;
-	R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orientation );
+	backEnd.orient = backEnd.viewParms.world;
+	R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient );
 
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 	if ( depthRange ) {

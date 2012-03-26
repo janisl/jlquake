@@ -384,9 +384,9 @@ GlobalVectorToLocal
 ==================
 */
 void GlobalVectorToLocal( const vec3_t in, vec3_t out ) {
-	out[0] = DotProduct( in, backEnd.orientation.axis[0] );
-	out[1] = DotProduct( in, backEnd.orientation.axis[1] );
-	out[2] = DotProduct( in, backEnd.orientation.axis[2] );
+	out[0] = DotProduct( in, backEnd.orient.axis[0] );
+	out[1] = DotProduct( in, backEnd.orient.axis[1] );
+	out[2] = DotProduct( in, backEnd.orient.axis[2] );
 }
 
 /*
@@ -937,11 +937,11 @@ void RB_CalcFogTexCoords( float *st ) {
 //		return;
 
 	// all fogging distance is based on world Z units
-	VectorSubtract( backEnd.orientation.origin, backEnd.viewParms.orient.origin, local );
+	VectorSubtract( backEnd.orient.origin, backEnd.viewParms.orient.origin, local );
 	//%	VectorSubtract( local, bmodel->origin[ backEnd.smpFrame ], local );
-	fogDistanceVector[ 0 ] = -backEnd.orientation.modelMatrix[ 2 ];
-	fogDistanceVector[ 1 ] = -backEnd.orientation.modelMatrix[ 6 ];
-	fogDistanceVector[ 2 ] = -backEnd.orientation.modelMatrix[ 10 ];
+	fogDistanceVector[ 0 ] = -backEnd.orient.modelMatrix[ 2 ];
+	fogDistanceVector[ 1 ] = -backEnd.orient.modelMatrix[ 6 ];
+	fogDistanceVector[ 2 ] = -backEnd.orient.modelMatrix[ 10 ];
 	fogDistanceVector[ 3 ] = DotProduct( local, backEnd.viewParms.orient.axis[ 0 ] );
 
 	// scale the fog vectors based on the fog's thickness
@@ -951,8 +951,8 @@ void RB_CalcFogTexCoords( float *st ) {
 	fogDistanceVector[ 3 ] *= fog->shader->fogParms.tcScale * 1.0;
 
 	// offset view origin by fog brush origin (fixme: really necessary?)
-	//%	VectorSubtract( backEnd.orientation.viewOrigin, bmodel->origin[ backEnd.smpFrame ], viewOrigin );
-	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
+	//%	VectorSubtract( backEnd.orient.viewOrigin, bmodel->origin[ backEnd.smpFrame ], viewOrigin );
+	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
 
 	// offset fog surface
 	VectorCopy( fog->surface, fogSurface );
@@ -962,13 +962,13 @@ void RB_CalcFogTexCoords( float *st ) {
 	if ( fog->originalBrushNumber >= 0 ) {
 		// rotate the gradient vector for this orientation
 		if ( fog->hasSurface ) {
-			fogDepthVector[ 0 ] = fogSurface[ 0 ] * backEnd.orientation.axis[ 0 ][ 0 ] +
-								  fogSurface[ 1 ] * backEnd.orientation.axis[ 0 ][ 1 ] + fogSurface[ 2 ] * backEnd.orientation.axis[ 0 ][ 2 ];
-			fogDepthVector[ 1 ] = fogSurface[ 0 ] * backEnd.orientation.axis[ 1 ][ 0 ] +
-								  fogSurface[ 1 ] * backEnd.orientation.axis[ 1 ][ 1 ] + fogSurface[ 2 ] * backEnd.orientation.axis[ 1 ][ 2 ];
-			fogDepthVector[ 2 ] = fogSurface[ 0 ] * backEnd.orientation.axis[ 2 ][ 0 ] +
-								  fogSurface[ 1 ] * backEnd.orientation.axis[ 2 ][ 1 ] + fogSurface[ 2 ] * backEnd.orientation.axis[ 2 ][ 2 ];
-			fogDepthVector[ 3 ] = -fogSurface[ 3 ] + DotProduct( backEnd.orientation.origin, fogSurface );
+			fogDepthVector[ 0 ] = fogSurface[ 0 ] * backEnd.orient.axis[ 0 ][ 0 ] +
+								  fogSurface[ 1 ] * backEnd.orient.axis[ 0 ][ 1 ] + fogSurface[ 2 ] * backEnd.orient.axis[ 0 ][ 2 ];
+			fogDepthVector[ 1 ] = fogSurface[ 0 ] * backEnd.orient.axis[ 1 ][ 0 ] +
+								  fogSurface[ 1 ] * backEnd.orient.axis[ 1 ][ 1 ] + fogSurface[ 2 ] * backEnd.orient.axis[ 1 ][ 2 ];
+			fogDepthVector[ 2 ] = fogSurface[ 0 ] * backEnd.orient.axis[ 2 ][ 0 ] +
+								  fogSurface[ 1 ] * backEnd.orient.axis[ 2 ][ 1 ] + fogSurface[ 2 ] * backEnd.orient.axis[ 2 ][ 2 ];
+			fogDepthVector[ 3 ] = -fogSurface[ 3 ] + DotProduct( backEnd.orient.origin, fogSurface );
 
 			// scale the fog vectors based on the fog's thickness
 			fogDepthVector[ 0 ] *= fog->shader->fogParms.tcScale * 1.0;
@@ -1033,16 +1033,16 @@ void RB_CalcEnvironmentTexCoords( float *st ) {
 	// setup
 	v = tess.xyz[ 0 ];
 	normal = tess.normal[ 0 ];
-	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
+	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
 
 	// ydnar: origin of entity affects its environment map (every 256 units)
 	// this is similar to racing game hacks where the env map seems to move
 	// as the car passes through the world
-	sAdjust = VectorLength( backEnd.orientation.origin ) * 0.00390625;
-	//%	 sAdjust = backEnd.orientation.origin[ 0 ] * 0.00390625;
+	sAdjust = VectorLength( backEnd.orient.origin ) * 0.00390625;
+	//%	 sAdjust = backEnd.orient.origin[ 0 ] * 0.00390625;
 	sAdjust = 0.5 -  ( sAdjust - floor( sAdjust ) );
 
-	tAdjust = backEnd.orientation.origin[ 2 ] * 0.00390625;
+	tAdjust = backEnd.orient.origin[ 2 ] * 0.00390625;
 	tAdjust = 0.5 - ( tAdjust - floor( tAdjust ) );
 
 	// ydnar: the final reflection vector must be converted into world-space again
@@ -1050,12 +1050,12 @@ void RB_CalcEnvironmentTexCoords( float *st ) {
 	// of the transform matrix (the 3x3 part) is just the transpose
 	// additionally, we don't need all 3 rows, so we just calculate 2
 	// and we also scale by 0.5 to eliminate two per-vertex multiplies
-	ia1[ 0 ] = backEnd.orientation.axis[ 0 ][ 1 ] * 0.5;
-	ia1[ 1 ] = backEnd.orientation.axis[ 1 ][ 1 ] * 0.5;
-	ia1[ 2 ] = backEnd.orientation.axis[ 2 ][ 1 ] * 0.5;
-	ia2[ 0 ] = backEnd.orientation.axis[ 0 ][ 2 ] * 0.5;
-	ia2[ 1 ] = backEnd.orientation.axis[ 1 ][ 2 ] * 0.5;
-	ia2[ 2 ] = backEnd.orientation.axis[ 2 ][ 2 ] * 0.5;
+	ia1[ 0 ] = backEnd.orient.axis[ 0 ][ 1 ] * 0.5;
+	ia1[ 1 ] = backEnd.orient.axis[ 1 ][ 1 ] * 0.5;
+	ia1[ 2 ] = backEnd.orient.axis[ 2 ][ 1 ] * 0.5;
+	ia2[ 0 ] = backEnd.orient.axis[ 0 ][ 2 ] * 0.5;
+	ia2[ 1 ] = backEnd.orient.axis[ 1 ][ 2 ] * 0.5;
+	ia2[ 2 ] = backEnd.orient.axis[ 2 ][ 2 ] * 0.5;
 
 	// walk verts
 	for ( i = 0; i < tess.numVertexes; i++, v += 4, normal += 4, st += 2 )
@@ -1084,7 +1084,7 @@ void RB_CalcEnvironmentTexCoords( float *st ) {
 
 
 	// ydnar: optimization
-	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
+	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
 
 	// debug
 	#undef DEBUG_ENVMAPPING
@@ -1113,9 +1113,9 @@ void RB_CalcEnvironmentTexCoords( float *st ) {
 		reflected[1] = normal[1] * 2 * d - viewer[1];
 		reflected[2] = normal[2] * 2 * d - viewer[2];
 
-		reflectedTransformed[0] = reflected[0] * backEnd.orientation.axis[0][0] + reflected[1] * backEnd.orientation.axis[1][0] + reflected[2] * backEnd.orientation.axis[2][0];
-		reflectedTransformed[1] = reflected[0] * backEnd.orientation.axis[0][1] + reflected[1] * backEnd.orientation.axis[1][1] + reflected[2] * backEnd.orientation.axis[2][1];
-		reflectedTransformed[2] = reflected[0] * backEnd.orientation.axis[0][2] + reflected[1] * backEnd.orientation.axis[1][2] + reflected[2] * backEnd.orientation.axis[2][2];
+		reflectedTransformed[0] = reflected[0] * backEnd.orient.axis[0][0] + reflected[1] * backEnd.orient.axis[1][0] + reflected[2] * backEnd.orient.axis[2][0];
+		reflectedTransformed[1] = reflected[0] * backEnd.orient.axis[0][1] + reflected[1] * backEnd.orient.axis[1][1] + reflected[2] * backEnd.orient.axis[2][1];
+		reflectedTransformed[2] = reflected[0] * backEnd.orient.axis[0][2] + reflected[1] * backEnd.orient.axis[1][2] + reflected[2] * backEnd.orient.axis[2][2];
 
 		VectorCopy( reflectedTransformed, reflected );
 
@@ -1320,7 +1320,7 @@ void RB_CalcSpecularAlpha( unsigned char *alphas ) {
 		reflected[1] = normal[1] * 2 * d - lightDir[1];
 		reflected[2] = normal[2] * 2 * d - lightDir[2];
 
-		VectorSubtract( backEnd.orientation.viewOrigin, v, viewer );
+		VectorSubtract( backEnd.orient.viewOrigin, v, viewer );
 		ilength = Q_rsqrt( DotProduct( viewer, viewer ) );
 		l = DotProduct( reflected, viewer );
 		l *= ilength;

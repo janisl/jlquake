@@ -319,11 +319,11 @@ void RB_ProjectionShadowDeform( void ) {
 
 	xyz = ( float * ) tess.xyz;
 
-	ground[0] = backEnd._or.axis[0][2];
-	ground[1] = backEnd._or.axis[1][2];
-	ground[2] = backEnd._or.axis[2][2];
+	ground[0] = backEnd.orient.axis[0][2];
+	ground[1] = backEnd.orient.axis[1][2];
+	ground[2] = backEnd.orient.axis[2][2];
 
-	groundDist = backEnd._or.origin[2] - backEnd.currentEntity->e.shadowPlane;
+	groundDist = backEnd.orient.origin[2] - backEnd.currentEntity->e.shadowPlane;
 
 	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
 	d = DotProduct( lightDir, ground );

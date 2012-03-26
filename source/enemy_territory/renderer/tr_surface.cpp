@@ -429,16 +429,16 @@ void RB_SurfaceFoliage( srfFoliage_t *srf ) {
 	// basic setup
 	numVerts = srf->numVerts;
 	numIndexes = srf->numIndexes;
-	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
+	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
 
 	// set fov scale
 	fovScale = backEnd.viewParms.fovX * ( 1.0 / 90.0 );
 
 	// calculate distance vector
-	VectorSubtract( backEnd.orientation.origin, backEnd.viewParms.orient.origin, local );
-	distanceVector[ 0 ] = -backEnd.orientation.modelMatrix[ 2 ];
-	distanceVector[ 1 ] = -backEnd.orientation.modelMatrix[ 6 ];
-	distanceVector[ 2 ] = -backEnd.orientation.modelMatrix[ 10 ];
+	VectorSubtract( backEnd.orient.origin, backEnd.viewParms.orient.origin, local );
+	distanceVector[ 0 ] = -backEnd.orient.modelMatrix[ 2 ];
+	distanceVector[ 1 ] = -backEnd.orient.modelMatrix[ 6 ];
+	distanceVector[ 2 ] = -backEnd.orient.modelMatrix[ 10 ];
 	distanceVector[ 3 ] = DotProduct( local, backEnd.viewParms.orient.axis[ 0 ] );
 
 	// attempt distance cull
@@ -1290,12 +1290,12 @@ static float    LodErrorForVolume( vec3_t local, float radius ) {
 		return 1;
 	}
 
-	world[0] = local[0] * backEnd.orientation.axis[0][0] + local[1] * backEnd.orientation.axis[1][0] +
-			   local[2] * backEnd.orientation.axis[2][0] + backEnd.orientation.origin[0];
-	world[1] = local[0] * backEnd.orientation.axis[0][1] + local[1] * backEnd.orientation.axis[1][1] +
-			   local[2] * backEnd.orientation.axis[2][1] + backEnd.orientation.origin[1];
-	world[2] = local[0] * backEnd.orientation.axis[0][2] + local[1] * backEnd.orientation.axis[1][2] +
-			   local[2] * backEnd.orientation.axis[2][2] + backEnd.orientation.origin[2];
+	world[0] = local[0] * backEnd.orient.axis[0][0] + local[1] * backEnd.orient.axis[1][0] +
+			   local[2] * backEnd.orient.axis[2][0] + backEnd.orient.origin[0];
+	world[1] = local[0] * backEnd.orient.axis[0][1] + local[1] * backEnd.orient.axis[1][1] +
+			   local[2] * backEnd.orient.axis[2][1] + backEnd.orient.origin[1];
+	world[2] = local[0] * backEnd.orient.axis[0][2] + local[1] * backEnd.orient.axis[1][2] +
+			   local[2] * backEnd.orient.axis[2][2] + backEnd.orient.origin[2];
 
 	VectorSubtract( world, backEnd.viewParms.orient.origin, world );
 	d = DotProduct( world, backEnd.viewParms.orient.axis[0] );

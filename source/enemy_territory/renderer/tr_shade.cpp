@@ -367,13 +367,13 @@ static void DrawNormals( shaderCommands_t *input ) {
 		vec3_t temp2;
 
 		if ( ent->e.renderfx & RF_LIGHTING_ORIGIN ) {
-			VectorSubtract( ent->e.lightingOrigin, backEnd.orientation.origin, temp2 );
+			VectorSubtract( ent->e.lightingOrigin, backEnd.orient.origin, temp2 );
 		} else {
 			VectorClear( temp2 );
 		}
-		temp[ 0 ] = DotProduct( temp2, backEnd.orientation.axis[ 0 ] );
-		temp[ 1 ] = DotProduct( temp2, backEnd.orientation.axis[ 1 ] );
-		temp[ 2 ] = DotProduct( temp2, backEnd.orientation.axis[ 2 ] );
+		temp[ 0 ] = DotProduct( temp2, backEnd.orient.axis[ 0 ] );
+		temp[ 1 ] = DotProduct( temp2, backEnd.orient.axis[ 1 ] );
+		temp[ 2 ] = DotProduct( temp2, backEnd.orient.axis[ 2 ] );
 
 		qglColor3f( ent->ambientLight[ 0 ] / 255, ent->ambientLight[ 1 ] / 255, ent->ambientLight[ 2 ] / 255 );
 		qglPointSize( 5 );

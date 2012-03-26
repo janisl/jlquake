@@ -95,24 +95,6 @@ extern refimport_t ri;
 
 extern int gl_filter_min, gl_filter_max;
 
-// all state modified by the back end is seperated
-// from the front end state
-typedef struct {
-	int smpFrame;
-	trRefdef_t refdef;
-	viewParms_t viewParms;
-	orientationr_t  _or;
-	backEndCounters_t pc;
-	qboolean isHyperspace;
-	trRefEntity_t   *currentEntity;
-	qboolean skyRenderedThisView;       // flag for drawing sun
-
-	qboolean projection2D;      // if qtrue, drawstretchpic doesn't need to change modes
-	byte color2D[4];
-	qboolean vertexes2D;        // shader needs to be finished
-	trRefEntity_t entity2D;     // currentEntity will point at this when doing 2D rendering
-} backEndState_t;
-
 extern backEndState_t backEnd;
 extern trGlobals_t tr;
 extern glstate_t glState;           // outside of TR since it shouldn't be cleared during ref re-init
@@ -439,73 +421,6 @@ RENDERER BACK END COMMAND QUEUE
 
 =============================================================
 */
-
-typedef struct {
-	byte cmds[MAX_RENDER_COMMANDS];
-	int used;
-} renderCommandList_t;
-
-typedef struct {
-	int commandId;
-	float color[4];
-} setColorCommand_t;
-
-typedef struct {
-	int commandId;
-	int buffer;
-} drawBufferCommand_t;
-
-typedef struct {
-	int commandId;
-	image_t *image;
-	int width;
-	int height;
-	void    *data;
-} subImageCommand_t;
-
-typedef struct {
-	int commandId;
-} swapBuffersCommand_t;
-
-typedef struct {
-	int commandId;
-	int buffer;
-} endFrameCommand_t;
-
-typedef struct {
-	int commandId;
-	shader_t    *shader;
-	float x, y;
-	float w, h;
-	float s1, t1;
-	float s2, t2;
-
-	byte gradientColor[4];      // color values 0-255
-	int gradientType;       //----(SA)	added
-	float angle;            // NERVE - SMF
-} stretchPicCommand_t;
-
-typedef struct {
-	int commandId;
-	trRefdef_t refdef;
-	viewParms_t viewParms;
-	drawSurf_t *drawSurfs;
-	int numDrawSurfs;
-} drawSurfsCommand_t;
-
-// all of the information needed by the back end must be
-// contained in a backEndData_t.  This entire structure is
-// duplicated so the front and back end can run in parallel
-// on an SMP machine
-typedef struct {
-	drawSurf_t drawSurfs[MAX_DRAWSURFS];
-	dlight_t dlights[MAX_DLIGHTS];
-	corona_t coronas[MAX_CORONAS];          //----(SA)
-	trRefEntity_t entities[MAX_ENTITIES];
-	srfPoly_t polys[MAX_POLYS];
-	polyVert_t polyVerts[MAX_POLYVERTS];
-	renderCommandList_t commands;
-} backEndData_t;
 
 extern int max_polys;
 extern int max_polyverts;
