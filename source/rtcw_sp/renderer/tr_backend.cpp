@@ -28,20 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-backEndData_t   *backEndData[SMP_FRAMES];
-backEndState_t backEnd;
-
-
-static float s_flipMatrix[16] = {
-	// convert from our coordinate system (looking down X)
-	// to OpenGL's coordinate system (looking down -Z)
-	0, 0, -1, 0,
-	-1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 0, 1
-};
-
-
 /*
 ** GL_Bind
 */

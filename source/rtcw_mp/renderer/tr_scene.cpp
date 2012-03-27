@@ -29,21 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-int r_firstSceneDrawSurf;
-
-int r_numdlights;
-int r_firstSceneDlight;
-
 int r_numcoronas;
 int r_firstSceneCorona;
-
-int r_numentities;
-int r_firstSceneEntity;
-
-int r_numpolys;
-int r_firstScenePoly;
-
-int r_numpolyverts;
 
 int skyboxportal;
 /*

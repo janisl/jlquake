@@ -479,6 +479,6 @@ extern byte			r_palette[256][4];
 
 extern int			ColorIndex[16];
 extern unsigned		ColorPercent[16];
+#endif
 
 extern void (*BotDrawDebugPolygonsFunc)(void (*drawPoly)(int color, int numPoints, float *points), int value);
-#endif

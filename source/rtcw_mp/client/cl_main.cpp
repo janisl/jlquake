@@ -124,6 +124,8 @@ char autoupdateFilename[MAX_QPATH];
 #define AUTOUPDATE_DIR "ni]Zm^l"
 #define AUTOUPDATE_DIR_SHIFT 7
 
+void BotDrawDebugPolygons( void ( *drawPoly )( int color, int numPoints, float *points ), int value );
+
 extern void SV_BotFrame( int time );
 void CL_CheckForResend( void );
 void CL_ShowIP_f( void );
@@ -2649,6 +2651,8 @@ void CL_InitRef( void ) {
 	refexport_t *ret;
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
+
+	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;

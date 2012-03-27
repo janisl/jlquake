@@ -35,23 +35,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-trGlobals_t tr;
-
-static float s_flipMatrix[16] = {
-	// convert from our coordinate system (looking down X)
-	// to OpenGL's coordinate system (looking down -Z)
-	0, 0, -1, 0,
-	-1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 0, 1
-};
-
-
 refimport_t ri;
 
 // entities that will have procedurally generated surfaces will just
 // point at this for their sorting surface
-surfaceType_t entitySurface = SF_ENTITY;
+extern surfaceType_t entitySurface;
 
 // fog stuff
 glfog_t glfogsettings[NUM_FOGS];
@@ -1797,8 +1785,6 @@ void R_DebugPolygon( int color, int numPoints, float *points ) {
 	qglDepthRange( 0, 1 );
 }
 
-void BotDrawDebugPolygons( void ( *drawPoly )( int color, int numPoints, float *points ), int value );
-
 /*
 ====================
 R_DebugGraphics
@@ -1824,7 +1810,7 @@ void R_DebugGraphics( void ) {
 	}
 	else
 	{
-		BotDrawDebugPolygons(R_DebugPolygon, r_debugSurface->integer);
+		BotDrawDebugPolygonsFunc(R_DebugPolygon, r_debugSurface->integer);
 	}
 }
 

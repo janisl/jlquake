@@ -630,7 +630,6 @@ long myftol(float f);
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
-#if 0
 extern trGlobals_t	tr;
 
 extern int			r_firstSceneDrawSurf;
@@ -655,7 +654,6 @@ extern int			c_visible_lightmaps;
 
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
-#endif
 
 extern int gl_NormalFontBase;
 
@@ -715,6 +713,7 @@ int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 void R_RenderView(viewParms_t* parms);
+#endif
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;
@@ -727,6 +726,7 @@ FONTS
 ============================================================
 */
 
+#if 0
 // font stuff
 void R_InitFreeType();
 void R_DoneFreeType();
@@ -747,6 +747,7 @@ void RB_ShowImages();
 void RB_SwapBuffersCommon();
 void RB_ExecuteRenderCommands(const void* data);
 void RB_RenderThread();
+#endif
 
 extern backEndState_t	backEnd;
 extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allocated
@@ -764,6 +765,7 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
+#if 0
 void R_InitCommandBuffers();
 void R_ShutdownCommandBuffers();
 void R_IssueRenderCommands(bool runPerformanceCounters);
@@ -813,6 +815,7 @@ WAD files
 
 void R_LoadWadFile();
 void* R_GetWadLumpByName(const char* name);
+#endif
 
 /*
 ====================================================================
@@ -842,6 +845,7 @@ struct gllightmapstate_t
 	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
 };
 
+#if 0
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override);
 void R_DrawSequentialPoly(mbrush29_surface_t* s);
@@ -897,6 +901,7 @@ void R_DrawSkyBoxQ2();
 void R_InitSkyTexCoords(float cloudLayerHeight);
 void RB_StageIteratorSky();
 void RB_DrawSun();
+#endif
 
 extern float	speedscale;		// for top sky and bottom sky
 
@@ -910,6 +915,7 @@ WORLD MAP
 
 #define BACKFACE_EPSILON	0.01
 
+#if 0
 void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent);
 void R_DrawWorldQ1();
 void R_DrawBrushModelQ2(trRefEntity_t* e);

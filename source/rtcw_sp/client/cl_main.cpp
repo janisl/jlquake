@@ -104,6 +104,8 @@ typedef struct serverStatus_s
 serverStatus_t cl_serverStatusList[MAX_SERVERSTATUSREQUESTS];
 int serverStatusCount;
 
+void BotDrawDebugPolygons( void ( *drawPoly )( int color, int numPoints, float *points ), int value );
+
 extern void SV_BotFrame( int time );
 void CL_CheckForResend( void );
 void CL_ShowIP_f( void );
@@ -2328,6 +2330,8 @@ void CL_InitRef( void ) {
 	refexport_t *ret;
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
+
+	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;

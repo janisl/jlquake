@@ -34,9 +34,6 @@ void R_Register_();
 
 static void GfxInfo_f( void );
 
-int max_polys;
-int max_polyverts;
-
 /*
 The tessellation level and normal generation mode are specified with:
 

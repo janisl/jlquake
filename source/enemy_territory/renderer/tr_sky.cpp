@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #define SKY_SUBDIVISIONS        8
 #define HALF_SKY_SUBDIVISIONS   ( SKY_SUBDIVISIONS / 2 )
 
-static float s_cloudTexCoords[6][SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
+extern float s_cloudTexCoords[6][SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
 static float s_cloudTexP[6][SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1];
 
 /*
@@ -43,18 +43,10 @@ POLYGON TO BOX SIDE PROJECTION
 ===================================================================================
 */
 
-static vec3_t sky_clip[6] =
-{
-	{1,1,0},
-	{1,-1,0},
-	{0,-1,1},
-	{0,1,1},
-	{1,0,1},
-	{-1,0,1}
-};
+extern vec3_t sky_clip[6];
 
-static float sky_mins[2][6], sky_maxs[2][6];
-static float sky_min, sky_max;
+extern float sky_mins[2][6], sky_maxs[2][6];
+extern float sky_min, sky_max;
 
 /*
 ================
@@ -68,20 +60,7 @@ static void AddSkyPolygon( int nump, vec3_t vecs ) {
 	int axis;
 	float   *vp;
 	// s = [0]/[2], t = [1]/[2]
-	static int vec_to_st[6][3] =
-	{
-		{-2,3,1},
-		{2,3,-1},
-
-		{1,3,2},
-		{-1,3,-2},
-
-		{-2,-1,3},
-		{-2,1,-3}
-
-		//	{-1,2,3},
-		//	{1,2,-3}
-	};
+	extern int vec_to_st[6][3];
 
 	// decide which face it maps to
 	VectorCopy( vec3_origin, v );
@@ -299,17 +278,7 @@ CLOUD VERTEX GENERATION
 */
 static void MakeSkyVec( float s, float t, int axis, float outSt[2], vec3_t outXYZ ) {
 	// 1 = s, 2 = t, 3 = 2048
-	static int st_to_vec[6][3] =
-	{
-		{3,-1,2},
-		{-3,1,2},
-
-		{1,3,2},
-		{-1,-3,2},
-
-		{-2,-1,3},      // 0 degrees yaw, look straight up
-		{2,-1,-3}       // look straight down
-	};
+	extern int st_to_vec[6][3];
 
 	vec3_t b;
 	int j, k;
@@ -371,9 +340,9 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[2], vec3_t outXY
 	}
 }
 
-static int sky_texorder[6] = {0,2,1,3,4,5};
-static vec3_t s_skyPoints[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1];
-static float s_skyTexCoords[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
+extern int sky_texorder[6];
+extern vec3_t s_skyPoints[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1];
+extern float s_skyTexCoords[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
 
 static void DrawSkySide( image_t *image, const int mins[2], const int maxs[2] ) {
 	int s, t;

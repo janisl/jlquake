@@ -30,9 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 volatile renderCommandList_t    *renderCommandList;
 
-volatile qboolean renderThreadActive;
-
-
 /*
 =====================
 R_PerformanceCounters

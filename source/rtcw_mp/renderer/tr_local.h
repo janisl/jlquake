@@ -95,10 +95,6 @@ extern refimport_t ri;
 
 extern int gl_filter_min, gl_filter_max;
 
-extern backEndState_t backEnd;
-extern trGlobals_t tr;
-extern glstate_t glState;           // outside of TR since it shouldn't be cleared during ref re-init
-
 //====================================================================
 
 float R_NoiseGet4f( float x, float y, float z, float t );
@@ -422,15 +418,7 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
-extern int max_polys;
-extern int max_polyverts;
-
-extern backEndData_t   *backEndData[SMP_FRAMES];    // the second one may not be allocated
-
 extern volatile renderCommandList_t    *renderCommandList;
-
-extern volatile qboolean renderThreadActive;
-
 
 void *R_GetCommandBuffer( int bytes );
 void RB_ExecuteRenderCommands( const void *data );
