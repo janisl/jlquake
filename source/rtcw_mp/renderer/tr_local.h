@@ -131,14 +131,9 @@ void R_RotateForEntity( const trRefEntity_t * ent, const viewParms_t * viewParms
 /*
 ** GL wrapper/helper functions
 */
-void    GL_Bind( image_t *image );
 void    GL_SetDefaultState( void );
-void    GL_SelectTexture( int unit );
 void    GL_TextureMode( const char *string );
 void    GL_CheckErrors( void );
-void    GL_State( unsigned long stateVector );
-void    GL_TexEnv( int env );
-void    GL_Cull( int cullType );
 
 void    RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
 void    RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );

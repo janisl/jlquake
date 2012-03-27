@@ -50,7 +50,7 @@
 #include "images/image.h"
 #include "shader.h"
 #include "models/model.h"
-#include "state.h"
+#include "../../client/renderer/state.h"
 #include "../../client/renderer/cvars.h"
 
 /*

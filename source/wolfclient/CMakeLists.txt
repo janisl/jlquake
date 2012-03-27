@@ -10,7 +10,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/qgl.cpp
 	renderer/scene.cpp
 	renderer/sky.cpp
-	renderer/state.cpp
+	../client/renderer/state.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp
