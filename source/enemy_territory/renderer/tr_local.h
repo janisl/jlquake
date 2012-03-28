@@ -489,7 +489,6 @@ void RE_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader );
 void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void RE_BeginFrame( stereoFrame_t stereoFrame );
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
-void SaveJPG( char * filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 
 // font stuff
 void R_InitFreeType();

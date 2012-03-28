@@ -3,6 +3,7 @@ set(WOLFCLIENT_FILES
 	../client/input/main.cpp
 	../client/input/unix.cpp
 	../client/renderer/images/bmp.cpp
+	../client/renderer/images/jpg.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp

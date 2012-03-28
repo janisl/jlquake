@@ -79,10 +79,10 @@ int R_SumOfUsedImages();
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
-#if 0
 void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* Buffer);
 
+#if 0
 void R_LoadPCX(const char* FileName, byte** Pic, byte** Palette, int* Width, int* Height);
 void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int Mode);
 void R_SavePCXMem(Array<byte>& buffer, byte* data, int width, int height, byte* palette);

@@ -442,7 +442,6 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 							float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType );
 void RE_BeginFrame( stereoFrame_t stereoFrame );
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
-void SaveJPG( char * filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 
 // font stuff
 void R_InitFreeType();
