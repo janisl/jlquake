@@ -2,6 +2,7 @@ set(WOLFCLIENT_FILES
 	../client/input/keys.cpp
 	../client/input/main.cpp
 	../client/input/unix.cpp
+	../client/renderer/images/bmp.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp

@@ -75,9 +75,11 @@ void GL_TextureMode(const char* string);
 void R_ScrapUpload();
 void R_ImageList_f();
 int R_SumOfUsedImages();
+#endif
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
+#if 0
 void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* Buffer);
 
