@@ -1834,7 +1834,7 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 	}
 */
 	model = R_GetModelByHandle( handle );
-	if ( !model->q3_md3[0] && !model->q3_mdc[0] && !model->q3_mds ) {
+	if ( !model->q3_md3[0] && !model->q3_mdc[0] && !model->q3_mds && !model->q3_mdm ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
 		return -1;
