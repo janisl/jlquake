@@ -68,6 +68,8 @@ unsigned sys_frame_time;
 
 uid_t saved_euid;
 
+void InitSig( void );
+
 // =======================================================================
 // General routines
 // =======================================================================
@@ -689,6 +691,8 @@ int main( int argc, char* argv[] ) {
 	// go back to real user for config loads
 	saved_euid = geteuid();
 	seteuid( getuid() );
+
+	InitSig();
 
 	Sys_ParseArgs( argc, argv ); // bk010104 - added this for support
 

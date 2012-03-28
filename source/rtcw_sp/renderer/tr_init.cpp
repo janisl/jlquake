@@ -80,37 +80,10 @@ MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI	GetIntegerv Z+		1											-
 ** setting variables, checking GL constants, and reporting the gfx system config
 ** to the user.
 */
+void InitOpenGLSubsystem();
 static void InitOpenGL( void ) {
-	char renderer_buffer[1024];
-
-	//
-	// initialize OS specific portions of the renderer
-	//
-	// GLimp_Init directly or indirectly references the following cvars:
-	//		- r_fullscreen
-	//		- r_glDriver
-	//		- r_mode
-	//		- r_(color|depth|stencil)bits
-	//		- r_ignorehwgamma
-	//		- r_gamma
-	//
-
 	if ( glConfig.vidWidth == 0 ) {
-		GLint temp;
-
-		GLimp_Init();
-
-		String::Cpy( renderer_buffer, glConfig.renderer_string );
-		String::ToLower( renderer_buffer );
-
-		// OpenGL driver constants
-		qglGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
-		glConfig.maxTextureSize = temp;
-
-		// stubbed or broken drivers may have reported 0...
-		if ( glConfig.maxTextureSize <= 0 ) {
-			glConfig.maxTextureSize = 0;
-		}
+		InitOpenGLSubsystem();
 	}
 
 	// init command buffers and SMP

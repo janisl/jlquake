@@ -214,7 +214,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 ====================================================================
 */
 
-void        GLimp_Init( void );
 void        GLimp_EndFrame( void );
 
 /*

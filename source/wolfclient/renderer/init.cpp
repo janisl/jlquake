@@ -236,6 +236,8 @@ static vidmode_t r_vidModes[] =
 };
 static int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
+const char* gl_system_extensions_string;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -676,7 +678,6 @@ const char* R_GetTitleForWindow()
 	return "Unknown";
 }
 
-#if 0
 //==========================================================================
 //
 //	R_SetMode
@@ -742,7 +743,8 @@ static void R_SetMode()
 //
 //==========================================================================
 
-static void InitOpenGLSubsystem()
+//static 
+void InitOpenGLSubsystem()
 {	
 	Log::write("Initializing OpenGL subsystem\n");
 
@@ -759,14 +761,22 @@ static void InitOpenGLSubsystem()
 	//	Get our config strings.
 	String::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
 	String::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
+	if (*glConfig.renderer_string && glConfig.renderer_string[String::Length(glConfig.renderer_string) - 1] == '\n')
+	{
+		glConfig.renderer_string[String::Length(glConfig.renderer_string) - 1] = 0;
+	}
 	String::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
 	String::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+
+	//bani - glx extensions string
+	gl_system_extensions_string = GLimp_GetSystemExtensionsString();
 
 	// OpenGL driver constants
 	GLint temp;
 	qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
 	glConfig.maxTextureSize = temp;
 
+#if 0
 	//	Load palette used by 8-bit graphics files.
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -781,8 +791,10 @@ static void InitOpenGLSubsystem()
 	{
 		Cvar_SetValue("r_texsort", 0.0);
 	}
+#endif
 }
 
+#if 0
 //==========================================================================
 //
 //	GL_SetDefaultState

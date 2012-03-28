@@ -80,37 +80,10 @@ MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI	GetIntegerv Z+		1											-
 ** setting variables, checking GL constants, and reporting the gfx system config
 ** to the user.
 */
+void InitOpenGLSubsystem();
 static void InitOpenGL( void ) {
-	char renderer_buffer[1024];
-
-	//
-	// initialize OS specific portions of the renderer
-	//
-	// GLimp_Init directly or indirectly references the following cvars:
-	//		- r_fullscreen
-	//		- r_glDriver
-	//		- r_mode
-	//		- r_(color|depth|stencil)bits
-	//		- r_ignorehwgamma
-	//		- r_gamma
-	//
-
 	if ( glConfig.vidWidth == 0 ) {
-		GLint temp;
-
-		GLimp_Init();
-
-		String::Cpy( renderer_buffer, glConfig.renderer_string );
-		String::ToLower( renderer_buffer );
-
-		// OpenGL driver constants
-		qglGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
-		glConfig.maxTextureSize = temp;
-
-		// stubbed or broken drivers may have reported 0...
-		if ( glConfig.maxTextureSize <= 0 ) {
-			glConfig.maxTextureSize = 0;
-		}
+		InitOpenGLSubsystem();
 	}
 
 	// init command buffers and SMP
@@ -532,7 +505,7 @@ void GL_SetDefaultState( void ) {
 }
 
 #ifdef __linux__
-extern const char *glx_extensions_string;
+extern const char *gl_system_extensions_string;
 #endif
 
 /*
@@ -558,7 +531,7 @@ void GfxInfo_f( void ) {
 	ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
 	ri.Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 #ifdef __linux__
-	ri.Printf( PRINT_ALL, "GLX_EXTENSIONS: %s\n", glx_extensions_string );
+	ri.Printf( PRINT_ALL, "GLX_EXTENSIONS: %s\n", gl_system_extensions_string );
 #endif
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );

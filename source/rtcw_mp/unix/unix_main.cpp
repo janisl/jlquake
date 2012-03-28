@@ -809,6 +809,8 @@ int main( int argc, char* argv[] ) {
 	saved_euid = geteuid();
 	seteuid( getuid() );
 
+	InitSig();
+
 	Sys_ParseArgs( argc, argv ); // bk010104 - added this for support
 
 	// merge the command line, this is kinda silly
@@ -834,11 +836,6 @@ int main( int argc, char* argv[] ) {
 	Sys_ConsoleInputInit();
 
 	fcntl( 0, F_SETFL, fcntl( 0, F_GETFL, 0 ) | FNDELAY );
-
-#ifdef DEDICATED
-	// init here for dedicated, as we don't have GLimp_Init
-	InitSig();
-#endif
 
 	while ( 1 )
 	{
