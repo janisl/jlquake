@@ -5,6 +5,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/images/bmp.cpp
 	renderer/images/image.cpp
 	../client/renderer/images/jpg.cpp
+	../client/renderer/images/pcx.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp

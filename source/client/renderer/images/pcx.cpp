@@ -97,12 +97,12 @@ void R_LoadPCX(const char* filename, byte** pic, byte** palette, int* width, int
 
 	int MaxWidth;
 	int MaxHeight;
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		MaxWidth = 1024;
 		MaxHeight = 1024;
 	}
-	else if (GGameType & GAME_Quake3)
+	else if (GGameType & GAME_Quake2)
 	{
 		MaxWidth = 640;
 		MaxHeight = 480;
@@ -144,9 +144,10 @@ void R_LoadPCX(const char* filename, byte** pic, byte** palette, int* width, int
 	}
 
 	byte* pix = out;
+	int lsize = pcx->color_planes * LittleShort(pcx->bytes_per_line);
 	for (int y = 0; y <= ymax; y++, pix += xmax + 1)
 	{
-		for (int x = 0; x <= xmax; )
+		for (int x = 0; x < lsize; )
 		{
 			int dataByte = *raw++;
 
@@ -161,9 +162,13 @@ void R_LoadPCX(const char* filename, byte** pic, byte** palette, int* width, int
 				runLength = 1;
 			}
 
-			while (runLength-- > 0 && x <= xmax)
+			while (runLength-- > 0)
 			{
-				pix[x++] = dataByte;
+				if (x <= xmax)
+				{
+					pix[x] = dataByte;
+				}
+				x++;
 			}
 		}
 	}

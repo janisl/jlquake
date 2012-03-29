@@ -895,139 +895,6 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 //----(SA)	end
 
 /*
-=================================================================
-
-PCX LOADING
-
-=================================================================
-*/
-
-
-/*
-==============
-LoadPCX
-==============
-*/
-static void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int *height ) {
-	byte    *raw;
-	pcx_t   *pcx;
-	int x, y;
-	int len;
-	int dataByte, runLength;
-	byte    *out, *pix;
-	int xmax, ymax;
-
-	*pic = NULL;
-	*palette = NULL;
-
-	//
-	// load the file
-	//
-	len = ri.FS_ReadFile( ( char * ) filename, (void **)&raw );
-	if ( !raw ) {
-		return;
-	}
-
-	//
-	// parse the PCX file
-	//
-	pcx = (pcx_t *)raw;
-	raw = &pcx->data;
-
-	xmax = LittleShort( pcx->xmax );
-	ymax = LittleShort( pcx->ymax );
-
-	if ( pcx->manufacturer != 0x0a
-		 || pcx->version != 5
-		 || pcx->encoding != 1
-		 || pcx->bits_per_pixel != 8
-		 || xmax >= 1024
-		 || ymax >= 1024 ) {
-		ri.Printf( PRINT_ALL, "Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax );
-		return;
-	}
-
-	out = (byte*)R_GetImageBuffer( ( ymax + 1 ) * ( xmax + 1 ), BUFFER_IMAGE );
-
-	*pic = out;
-
-	pix = out;
-
-	if ( palette ) {
-		*palette = (byte*)malloc( 768 );
-		memcpy( *palette, (byte *)pcx + len - 768, 768 );
-	}
-
-	if ( width ) {
-		*width = xmax + 1;
-	}
-	if ( height ) {
-		*height = ymax + 1;
-	}
-// FIXME: use bytes_per_line here?
-
-	for ( y = 0 ; y <= ymax ; y++, pix += xmax + 1 )
-	{
-		for ( x = 0 ; x <= xmax ; )
-		{
-			dataByte = *raw++;
-
-			if ( ( dataByte & 0xC0 ) == 0xC0 ) {
-				runLength = dataByte & 0x3F;
-				dataByte = *raw++;
-			} else {
-				runLength = 1;
-			}
-
-			while ( runLength-- > 0 )
-				pix[x++] = dataByte;
-		}
-
-	}
-
-	if ( raw - (byte *)pcx > len ) {
-		ri.Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
-		free( *pic );
-		*pic = NULL;
-	}
-
-	ri.FS_FreeFile( pcx );
-}
-
-
-/*
-==============
-LoadPCX32
-==============
-*/
-static void LoadPCX32( const char *filename, byte **pic, int *width, int *height ) {
-	byte    *palette;
-	byte    *pic8;
-	int i, c, p;
-	byte    *pic32;
-
-	LoadPCX( filename, &pic8, &palette, width, height );
-	if ( !pic8 ) {
-		*pic = NULL;
-		return;
-	}
-
-	c = ( *width ) * ( *height );
-	pic32 = *pic = (byte*)R_GetImageBuffer( 4 * c, BUFFER_IMAGE );
-	for ( i = 0 ; i < c ; i++ ) {
-		p = pic8[i];
-		pic32[0] = palette[p * 3];
-		pic32[1] = palette[p * 3 + 1];
-		pic32[2] = palette[p * 3 + 2];
-		pic32[3] = 255;
-		pic32 += 4;
-	}
-
-	free( pic8 );
-	free( palette );
-}
-
-/*
 =========================================================
 
 TARGA LOADING
@@ -1287,7 +1154,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 			R_LoadJPG( altname, pic, width, height );
 		}
 	} else if ( !String::ICmp( name + len - 4, ".pcx" ) ) {
-		LoadPCX32( name, pic, width, height );
+		R_LoadPCX32( name, pic, width, height, IMG8MODE_Normal );
 	} else if ( !String::ICmp( name + len - 4, ".bmp" ) ) {
 		R_LoadBMP( name, pic, width, height );
 	} else if ( !String::ICmp( name + len - 4, ".jpg" ) ) {
