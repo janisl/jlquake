@@ -195,6 +195,7 @@ void R_InitQ2Palette()
 	delete[] pic;
 	delete[] pal;
 }
+#endif
 
 //==========================================================================
 //
@@ -433,6 +434,7 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 	return DataOut;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_LoadImage
