@@ -91,10 +91,8 @@ void R_SavePCXMem(Array<byte>& buffer, byte* data, int width, int height, byte* 
 void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
 void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
 
-#if 0
 void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);
-#endif
 
 void R_LoadWAL(const char* FileName, byte** Pic, int* Width, int* Height);
 

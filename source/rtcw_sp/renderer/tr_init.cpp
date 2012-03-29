@@ -154,34 +154,17 @@ R_TakeScreenshot
 */
 void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 	byte        *buffer;
-	int i, c, temp;
 
-	buffer = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 3 + 18 );
+	buffer = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 3 );
 
-	memset( buffer, 0, 18 );
-	buffer[2] = 2;      // uncompressed type
-	buffer[12] = width & 255;
-	buffer[13] = width >> 8;
-	buffer[14] = height & 255;
-	buffer[15] = height >> 8;
-	buffer[16] = 24;    // pixel size
-
-	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18 );
-
-	// swap rgb to bgr
-	c = 18 + width * height * 3;
-	for ( i = 18 ; i < c ; i += 3 ) {
-		temp = buffer[i];
-		buffer[i] = buffer[i + 2];
-		buffer[i + 2] = temp;
-	}
+	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer );
 
 	// gamma correct
 	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer + 18, glConfig.vidWidth * glConfig.vidHeight * 3 );
+		R_GammaCorrect( buffer, glConfig.vidWidth * glConfig.vidHeight * 3 );
 	}
 
-	ri.FS_WriteFile( fileName, buffer, c );
+	R_SaveTGA(fileName, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
 
 	ri.Hunk_FreeTempMemory( buffer );
 }
