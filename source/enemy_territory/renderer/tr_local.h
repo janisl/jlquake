@@ -91,8 +91,6 @@ void        R_Modellist_f( void );
 //====================================================
 extern refimport_t ri;
 
-extern int gl_filter_min, gl_filter_max;
-
 //====================================================================
 
 float R_NoiseGet4f( float x, float y, float z, float t );

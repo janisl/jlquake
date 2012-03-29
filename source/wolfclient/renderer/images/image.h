@@ -94,9 +94,9 @@ void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);
 
 void R_LoadWAL(const char* FileName, byte** Pic, int* Width, int* Height);
+#endif
 
 extern byte			host_basepal[768];
 extern unsigned*	d_8to24table;
 
 extern bool			scrap_dirty;
-#endif

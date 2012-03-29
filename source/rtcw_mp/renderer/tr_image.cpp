@@ -37,14 +37,14 @@ If you have questions concerning this license or the applicable additional terms
 
 static void LoadTGA( const char *name, byte **pic, int *width, int *height );
 
-static byte s_intensitytable[256];
-static unsigned char s_gammatable[256];
+extern byte s_intensitytable[256];
+extern unsigned char s_gammatable[256];
 
-int gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
-int gl_filter_max = GL_LINEAR;
+extern int gl_filter_min;
+extern int gl_filter_max;
 
-#define FILE_HASH_SIZE      4096
-static image_t*        hashTable[FILE_HASH_SIZE];
+#define IMAGE_HASH_SIZE      4096
+extern image_t*        ImageHashTable[IMAGE_HASH_SIZE];
 
 // Ridah, in order to prevent zone fragmentation, all images will
 // be read into this buffer. In order to keep things as fast as possible,
@@ -105,19 +105,13 @@ void R_GammaCorrect( byte *buffer, int bufSize ) {
 	}
 }
 
-typedef struct {
+struct textureMode_t
+{
 	char *name;
 	int minimize, maximize;
-} textureMode_t;
-
-textureMode_t modes[] = {
-	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
 };
+
+extern textureMode_t modes[];
 
 /*
 ================
@@ -142,7 +136,7 @@ static long generateHashValue( const char *fname ) {
 		hash += (long)( letter ) * ( i + 119 );
 		i++;
 	}
-	hash &= ( FILE_HASH_SIZE - 1 );
+	hash &= ( IMAGE_HASH_SIZE - 1 );
 	return hash;
 }
 
@@ -560,24 +554,7 @@ static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[4] ) {
 	}
 }
 
-byte mipBlendColors[16][4] = {
-	{0,0,0,0},
-	{255,0,0,128},
-	{0,255,0,128},
-	{0,0,255,128},
-	{255,0,0,128},
-	{0,255,0,128},
-	{0,0,255,128},
-	{255,0,0,128},
-	{0,255,0,128},
-	{0,0,255,128},
-	{255,0,0,128},
-	{0,255,0,128},
-	{0,0,255,128},
-	{255,0,0,128},
-	{0,255,0,128},
-	{0,0,255,128},
-};
+extern byte mipBlendColors[16][4];
 
 
 /*
@@ -884,8 +861,8 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	qglBindTexture( GL_TEXTURE_2D, 0 );
 
 	hash = generateHashValue( name );
-	image->next = hashTable[hash];
-	hashTable[hash] = image;
+	image->next = ImageHashTable[hash];
+	ImageHashTable[hash] = image;
 
 	// Ridah
 	image->hash = hash;
@@ -1324,7 +1301,7 @@ image_t *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	//
 	// see if the image is already loaded
 	//
-	for ( image = hashTable[hash]; image; image = image->next ) {
+	for ( image = ImageHashTable[hash]; image; image = image->next ) {
 		if ( !String::Cmp( name, image->imgName ) ) {
 			// the white image can be used with any set of parms, but other mismatches are errors
 			if ( String::Cmp( name, "*white" ) ) {
@@ -1676,7 +1653,7 @@ R_InitImages
 ===============
 */
 void    R_InitImages( void ) {
-	memset( hashTable, 0, sizeof( hashTable ) );
+	memset( ImageHashTable, 0, sizeof( ImageHashTable ) );
 
 	// Ridah, caching system
 	R_InitTexnumImages( qfalse );
@@ -1894,7 +1871,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 
 				// get mipmap info for original texture
 				hash = generateHashValue( surf->shader->name );
-				for ( image = hashTable[hash]; image; image = image->next ) {
+				for ( image = ImageHashTable[hash]; image; image = image->next ) {
 					if ( !String::Cmp( surf->shader->name, image->imgName ) ) {
 						mip = image->mipmap;
 						break;
@@ -2679,7 +2656,7 @@ void R_CropImages_f( void ) {
 // Ridah, caching system
 
 static int numBackupImages = 0;
-static image_t  *backupHashTable[FILE_HASH_SIZE];
+static image_t  *backupHashTable[IMAGE_HASH_SIZE];
 
 static image_t  *texnumImages[MAX_DRAWIMAGES * 2];
 
@@ -2752,9 +2729,9 @@ qboolean R_TouchImage( image_t *inImage ) {
 				backupHashTable[hash] = bImage->next;
 			}
 
-			// add it to the hashTable
-			bImage->next = hashTable[hash];
-			hashTable[hash] = bImage;
+			// add it to the ImageHashTable
+			bImage->next = ImageHashTable[hash];
+			ImageHashTable[hash] = bImage;
 
 			// get the new texture
 			tr.numImages++;
@@ -2817,7 +2794,7 @@ void R_PurgeBackupImages( int purgeCount ) {
 	R_SyncRenderThread();
 
 	cnt = 0;
-	for ( i = lastPurged; i < FILE_HASH_SIZE; ) {
+	for ( i = lastPurged; i < IMAGE_HASH_SIZE; ) {
 		lastPurged = i;
 		// TTimo: assignment used as truth value
 		if ( ( image = backupHashTable[i] ) ) {
@@ -2853,8 +2830,8 @@ void R_BackupImages( void ) {
 		return;
 	}
 
-	// backup the hashTable
-	memcpy( backupHashTable, hashTable, sizeof( backupHashTable ) );
+	// backup the ImageHashTable
+	memcpy( backupHashTable, ImageHashTable, sizeof( backupHashTable ) );
 
 	// pretend we have cleared the list
 	numBackupImages = tr.numImages;
