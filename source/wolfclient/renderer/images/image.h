@@ -88,15 +88,15 @@ void R_LoadPCX(const char* FileName, byte** Pic, byte** Palette, int* Width, int
 void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int Mode);
 void R_SavePCXMem(Array<byte>& buffer, byte* data, int width, int height, byte* palette);
 
-#if 0
 void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
 void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
 
+#if 0
 void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);
+#endif
 
 void R_LoadWAL(const char* FileName, byte** Pic, int* Width, int* Height);
-#endif
 
 extern byte			host_basepal[768];
 extern unsigned*	d_8to24table;
