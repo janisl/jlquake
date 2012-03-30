@@ -97,49 +97,6 @@ static void InitOpenGL( void ) {
 }
 
 /*
-==================
-GL_CheckErrors
-==================
-*/
-void GL_CheckErrors( void ) {
-	int err;
-	char s[64];
-
-	err = qglGetError();
-	if ( err == GL_NO_ERROR ) {
-		return;
-	}
-	if ( r_ignoreGLErrors->integer ) {
-		return;
-	}
-	switch ( err ) {
-	case GL_INVALID_ENUM:
-		String::Cpy( s, "GL_INVALID_ENUM" );
-		break;
-	case GL_INVALID_VALUE:
-		String::Cpy( s, "GL_INVALID_VALUE" );
-		break;
-	case GL_INVALID_OPERATION:
-		String::Cpy( s, "GL_INVALID_OPERATION" );
-		break;
-	case GL_STACK_OVERFLOW:
-		String::Cpy( s, "GL_STACK_OVERFLOW" );
-		break;
-	case GL_STACK_UNDERFLOW:
-		String::Cpy( s, "GL_STACK_UNDERFLOW" );
-		break;
-	case GL_OUT_OF_MEMORY:
-		String::Cpy( s, "GL_OUT_OF_MEMORY" );
-		break;
-	default:
-		String::Sprintf( s, sizeof( s ), "%i", err );
-		break;
-	}
-
-	ri.Error( ERR_FATAL, "GL_CheckErrors: %s", s );
-}
-
-/*
 ==============================================================================
 
 						SCREEN SHOTS

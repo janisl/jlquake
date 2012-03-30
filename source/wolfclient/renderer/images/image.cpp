@@ -434,7 +434,6 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 	return DataOut;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_LoadImage
@@ -504,7 +503,8 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 //
 //==========================================================================
 
-static void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
+//static 
+void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
 {
 	if (outwidth > 2048)
 	{
@@ -612,7 +612,8 @@ static void R_MipMap2(byte* in, int inWidth, int inHeight)
 //
 //==========================================================================
 
-static void R_MipMap(byte* in, int width, int height)
+//static 
+void R_MipMap(byte* in, int width, int height)
 {
 	if (!r_simpleMipMaps->integer)
 	{
@@ -663,7 +664,8 @@ static void R_MipMap(byte* in, int width, int height)
 //
 //==========================================================================
 
-static void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma)
+//static 
+void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma)
 {
 	if (only_gamma)
 	{
@@ -714,7 +716,8 @@ static void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean on
 //
 //==========================================================================
 
-static void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
+//static 
+void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
 {
 	int inverseAlpha = 255 - blend[3];
 	int premult[3];
@@ -736,7 +739,8 @@ static void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
 //
 //==========================================================================
 
-static void GL_CheckErrors()
+//static 
+void GL_CheckErrors()
 {
 	int err = qglGetError();
 	if (err == GL_NO_ERROR)
@@ -776,6 +780,7 @@ static void GL_CheckErrors()
 	throw Exception(va("GL_CheckErrors: %s", s));
 }
 
+#if 0
 //==========================================================================
 //
 //	R_UploadImage

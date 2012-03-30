@@ -35,6 +35,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
+void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight);
+void R_MipMap(byte* in, int width, int height);
+void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma);
+void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4]);
+void    GL_CheckErrors( void );
+
 extern byte s_intensitytable[256];
 extern unsigned char s_gammatable[256];
 
@@ -267,213 +273,6 @@ void R_ImageList_f( void ) {
 
 /*
 ================
-ResampleTexture
-
-Used to resample images in a more general than quartering fashion.
-
-This will only be filtered properly if the resampled size
-is greater than half the original size.
-
-If a larger shrinking is needed, use the mipmap function
-before or after.
-================
-*/
-static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *out,
-							 int outwidth, int outheight ) {
-	int i, j;
-	unsigned    *inrow, *inrow2;
-	unsigned frac, fracstep;
-	unsigned p1[1024], p2[1024];
-	byte        *pix1, *pix2, *pix3, *pix4;
-
-	fracstep = inwidth * 0x10000 / outwidth;
-
-	frac = fracstep >> 2;
-	for ( i = 0 ; i < outwidth ; i++ ) {
-		p1[i] = 4 * ( frac >> 16 );
-		frac += fracstep;
-	}
-	frac = 3 * ( fracstep >> 2 );
-	for ( i = 0 ; i < outwidth ; i++ ) {
-		p2[i] = 4 * ( frac >> 16 );
-		frac += fracstep;
-	}
-
-	for ( i = 0 ; i < outheight ; i++, out += outwidth ) {
-		inrow = in + inwidth * (int)( ( i + 0.25 ) * inheight / outheight );
-		inrow2 = in + inwidth * (int)( ( i + 0.75 ) * inheight / outheight );
-		frac = fracstep >> 1;
-		for ( j = 0 ; j < outwidth ; j++ ) {
-			pix1 = (byte *)inrow + p1[j];
-			pix2 = (byte *)inrow + p2[j];
-			pix3 = (byte *)inrow2 + p1[j];
-			pix4 = (byte *)inrow2 + p2[j];
-			( ( byte * )( out + j ) )[0] = ( pix1[0] + pix2[0] + pix3[0] + pix4[0] ) >> 2;
-			( ( byte * )( out + j ) )[1] = ( pix1[1] + pix2[1] + pix3[1] + pix4[1] ) >> 2;
-			( ( byte * )( out + j ) )[2] = ( pix1[2] + pix2[2] + pix3[2] + pix4[2] ) >> 2;
-			( ( byte * )( out + j ) )[3] = ( pix1[3] + pix2[3] + pix3[3] + pix4[3] ) >> 2;
-		}
-	}
-}
-
-/*
-================
-R_LightScaleTexture
-
-Scale up the pixel values in a texture to increase the
-lighting range
-================
-*/
-void R_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean only_gamma ) {
-	if ( only_gamma ) {
-		if ( !glConfig.deviceSupportsGamma ) {
-			int i, c;
-			byte    *p;
-
-			p = (byte *)in;
-
-			c = inwidth * inheight;
-			for ( i = 0 ; i < c ; i++, p += 4 )
-			{
-				p[0] = s_gammatable[p[0]];
-				p[1] = s_gammatable[p[1]];
-				p[2] = s_gammatable[p[2]];
-			}
-		}
-	} else
-	{
-		int i, c;
-		byte    *p;
-
-		p = (byte *)in;
-
-		c = inwidth * inheight;
-
-		if ( glConfig.deviceSupportsGamma ) {
-			for ( i = 0 ; i < c ; i++, p += 4 )
-			{
-				p[0] = s_intensitytable[p[0]];
-				p[1] = s_intensitytable[p[1]];
-				p[2] = s_intensitytable[p[2]];
-			}
-		} else
-		{
-			for ( i = 0 ; i < c ; i++, p += 4 )
-			{
-				p[0] = s_gammatable[s_intensitytable[p[0]]];
-				p[1] = s_gammatable[s_intensitytable[p[1]]];
-				p[2] = s_gammatable[s_intensitytable[p[2]]];
-			}
-		}
-	}
-}
-
-
-/*
-================
-R_MipMap2
-
-Operates in place, quartering the size of the texture
-Proper linear filter
-================
-*/
-static void R_MipMap2( unsigned *in, int inWidth, int inHeight ) {
-	int i, j, k;
-	byte        *outpix;
-	int inWidthMask, inHeightMask;
-	int total;
-	int outWidth, outHeight;
-	unsigned    *temp;
-
-	outWidth = inWidth >> 1;
-	outHeight = inHeight >> 1;
-	temp = (unsigned int*)ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
-
-	inWidthMask = inWidth - 1;
-	inHeightMask = inHeight - 1;
-
-	for ( i = 0 ; i < outHeight ; i++ ) {
-		for ( j = 0 ; j < outWidth ; j++ ) {
-			outpix = ( byte * )( temp + i * outWidth + j );
-			for ( k = 0 ; k < 4 ; k++ ) {
-				total =
-					1 * ( (byte *)&in[ ( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] )[k] +
-					2 * ( (byte *)&in[ ( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] )[k] +
-					2 * ( (byte *)&in[ ( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] )[k] +
-					1 * ( (byte *)&in[ ( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] )[k] +
-
-					2 * ( (byte *)&in[ ( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] )[k] +
-					4 * ( (byte *)&in[ ( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] )[k] +
-					4 * ( (byte *)&in[ ( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] )[k] +
-					2 * ( (byte *)&in[ ( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] )[k] +
-
-					2 * ( (byte *)&in[ ( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] )[k] +
-					4 * ( (byte *)&in[ ( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] )[k] +
-					4 * ( (byte *)&in[ ( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] )[k] +
-					2 * ( (byte *)&in[ ( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] )[k] +
-
-					1 * ( (byte *)&in[ ( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] )[k] +
-					2 * ( (byte *)&in[ ( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] )[k] +
-					2 * ( (byte *)&in[ ( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] )[k] +
-					1 * ( (byte *)&in[ ( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] )[k];
-				outpix[k] = total / 36;
-			}
-		}
-	}
-
-	memcpy( in, temp, outWidth * outHeight * 4 );
-	ri.Hunk_FreeTempMemory( temp );
-}
-
-/*
-================
-R_MipMap
-
-Operates in place, quartering the size of the texture
-================
-*/
-static void R_MipMap( byte *in, int width, int height ) {
-	int i, j;
-	byte    *out;
-	int row;
-
-	if ( !r_simpleMipMaps->integer ) {
-		R_MipMap2( (unsigned *)in, width, height );
-		return;
-	}
-
-	if ( width == 1 && height == 1 ) {
-		return;
-	}
-
-	row = width * 4;
-	out = in;
-	width >>= 1;
-	height >>= 1;
-
-	if ( width == 0 || height == 0 ) {
-		width += height;    // get largest
-		for ( i = 0 ; i < width ; i++, out += 4, in += 8 ) {
-			out[0] = ( in[0] + in[4] ) >> 1;
-			out[1] = ( in[1] + in[5] ) >> 1;
-			out[2] = ( in[2] + in[6] ) >> 1;
-			out[3] = ( in[3] + in[7] ) >> 1;
-		}
-		return;
-	}
-
-	for ( i = 0 ; i < height ; i++, in += row ) {
-		for ( j = 0 ; j < width ; j++, out += 4, in += 8 ) {
-			out[0] = ( in[0] + in[4] + in[row + 0] + in[row + 4] ) >> 2;
-			out[1] = ( in[1] + in[5] + in[row + 1] + in[row + 5] ) >> 2;
-			out[2] = ( in[2] + in[6] + in[row + 2] + in[row + 6] ) >> 2;
-			out[3] = ( in[3] + in[7] + in[row + 3] + in[row + 7] ) >> 2;
-		}
-	}
-}
-
-/*
-================
 R_MipMap
 
 Operates in place, quartering the size of the texture
@@ -519,31 +318,6 @@ static float R_RMSE( byte *in, int width, int height ) {
 	return rmse;
 }
 
-
-/*
-==================
-R_BlendOverTexture
-
-Apply a color blend over a set of pixels
-==================
-*/
-static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[4] ) {
-	int i;
-	int inverseAlpha;
-	int premult[3];
-
-	inverseAlpha = 255 - blend[3];
-	premult[0] = blend[0] * blend[3];
-	premult[1] = blend[1] * blend[3];
-	premult[2] = blend[2] * blend[3];
-
-	for ( i = 0 ; i < pixelCount ; i++, data += 4 ) {
-		data[0] = ( data[0] * inverseAlpha + premult[0] ) >> 9;
-		data[1] = ( data[1] * inverseAlpha + premult[1] ) >> 9;
-		data[2] = ( data[2] * inverseAlpha + premult[2] ) >> 9;
-	}
-}
-
 extern byte mipBlendColors[16][4];
 
 
@@ -578,7 +352,7 @@ static void Upload32(   unsigned *data,
 		while ( R_RMSE( (byte *)data, width, height ) < r_rmse->value ) {
 			rmse_saved += ( height * width * 4 ) - ( ( width >> 1 ) * ( height >> 1 ) * 4 );
 			resampledBuffer = (unsigned int*)R_GetImageBuffer( ( width >> 1 ) * ( height >> 1 ) * 4, BUFFER_RESAMPLED );
-			ResampleTexture( data, width, height, resampledBuffer, width >> 1, height >> 1 );
+			R_ResampleTexture( (byte*)data, width, height, (byte*)resampledBuffer, width >> 1, height >> 1 );
 			data = resampledBuffer;
 			width = width >> 1;
 			height = height >> 1;
@@ -589,7 +363,7 @@ static void Upload32(   unsigned *data,
 		while ( R_RMSE( (byte *)data, width, height ) < 1.0 ) {
 			rmse_saved += ( height * width * 4 ) - ( ( width >> 1 ) * ( height >> 1 ) * 4 );
 			resampledBuffer = (unsigned int*)R_GetImageBuffer( ( width >> 1 ) * ( height >> 1 ) * 4, BUFFER_RESAMPLED );
-			ResampleTexture( data, width, height, resampledBuffer, width >> 1, height >> 1 );
+			R_ResampleTexture( (byte*)data, width, height, (byte*)resampledBuffer, width >> 1, height >> 1 );
 			data = resampledBuffer;
 			width = width >> 1;
 			height = height >> 1;
@@ -613,7 +387,7 @@ static void Upload32(   unsigned *data,
 	if ( scaled_width != width || scaled_height != height ) {
 		//resampledBuffer = ri.Hunk_AllocateTempMemory( scaled_width * scaled_height * 4 );
 		resampledBuffer = (unsigned int*)R_GetImageBuffer( scaled_width * scaled_height * 4, BUFFER_RESAMPLED );
-		ResampleTexture( data, width, height, resampledBuffer, scaled_width, scaled_height );
+		R_ResampleTexture( (byte*)data, width, height, (byte*)resampledBuffer, scaled_width, scaled_height );
 		data = resampledBuffer;
 		width = scaled_width;
 		height = scaled_height;
@@ -742,7 +516,7 @@ static void Upload32(   unsigned *data,
 		memcpy( scaledBuffer, data, width * height * 4 );
 	}
 
-	R_LightScaleTexture( scaledBuffer, scaled_width, scaled_height, !mipmap );
+	R_LightScaleTexture( (byte*)scaledBuffer, scaled_width, scaled_height, !mipmap );
 
 	*pUploadWidth = scaled_width;
 	*pUploadHeight = scaled_height;
@@ -891,47 +665,6 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 }
 
 //----(SA)	end
-
-/*
-=================
-R_LoadImage
-
-Loads any of the supported image types into a cannonical
-32 bit format.
-=================
-*/
-void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
-	int len;
-
-	*pic = NULL;
-	*width = 0;
-	*height = 0;
-
-	len = String::Length( name );
-	if ( len < 5 ) {
-		return;
-	}
-
-	if ( !String::ICmp( name + len - 4, ".tga" ) ) {
-		R_LoadTGA( name, pic, width, height );          // try tga first
-		if ( !*pic ) {                              //
-			char altname[MAX_QPATH];                    // try jpg in place of tga
-			String::Cpy( altname, name );
-			len = String::Length( altname );
-			altname[len - 3] = 'j';
-			altname[len - 2] = 'p';
-			altname[len - 1] = 'g';
-			R_LoadJPG( altname, pic, width, height );
-		}
-	} else if ( !String::ICmp( name + len - 4, ".pcx" ) ) {
-		R_LoadPCX32( name, pic, width, height, IMG8MODE_Normal );
-	} else if ( !String::ICmp( name + len - 4, ".bmp" ) ) {
-		R_LoadBMP( name, pic, width, height );
-	} else if ( !String::ICmp( name + len - 4, ".jpg" ) ) {
-		R_LoadJPG( name, pic, width, height );
-	}
-}
-
 
 //----(SA)	modified
 /*
@@ -2147,7 +1880,7 @@ void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, in
 				}
 				newHeight = newWidth;
 				temppic = ri.Z_Malloc( sizeof( unsigned int ) * newWidth * newHeight );
-				ResampleTexture( (unsigned int *)pic, width, height, (unsigned int *)temppic, newWidth, newHeight );
+				R_ResampleTexture( (unsigned int *)pic, width, height, (unsigned int *)temppic, newWidth, newHeight );
 				memcpy( pic, temppic, sizeof( unsigned int ) * newWidth * newHeight );
 				ri.Free( temppic );
 				width = height = newWidth;
@@ -2159,7 +1892,7 @@ void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, in
 			newWidth = maxWidth;
 			newHeight = maxWidth;
 			temppic = ri.Z_Malloc( sizeof( unsigned int ) * newWidth * newHeight );
-			ResampleTexture( (unsigned int *)pic, width, height, (unsigned int *)temppic, newWidth, newHeight );
+			R_ResampleTexture( (unsigned int *)pic, width, height, (unsigned int *)temppic, newWidth, newHeight );
 			memcpy( pic, temppic, sizeof( unsigned int ) * newWidth * newHeight );
 			ri.Free( temppic );
 			width = newWidth;
@@ -2169,7 +1902,7 @@ void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, in
 		newWidth = maxWidth;
 		newHeight = maxHeight;
 		temppic = (byte*)malloc( sizeof( unsigned int ) * newWidth * newHeight );
-		ResampleTexture( (unsigned int *)pic, width, height, (unsigned int *)temppic, newWidth, newHeight );
+		R_ResampleTexture( pic, width, height, temppic, newWidth, newHeight );
 		memcpy( pic, temppic, sizeof( unsigned int ) * newWidth * newHeight );
 		free( temppic );
 		width = newWidth;
