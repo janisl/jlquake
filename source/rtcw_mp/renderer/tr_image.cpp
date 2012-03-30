@@ -626,10 +626,6 @@ R_InitImages
 void    R_InitImages( void ) {
 	memset( ImageHashTable, 0, sizeof( ImageHashTable ) );
 
-	// Ridah, caching system
-	R_InitTexnumImages( qfalse );
-	// done.
-
 	// build brightness translation tables
 	R_SetColorMappings();
 
@@ -653,9 +649,6 @@ void R_DeleteTextures( void ) {
 		qglDeleteTextures( 1, &tr.images[i]->texnum );
 	}
 	memset( tr.images, 0, sizeof( tr.images ) );
-	// Ridah
-	R_InitTexnumImages( qtrue );
-	// done.
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 	if ( qglBindTexture ) {
@@ -1071,24 +1064,6 @@ void    R_SkinList_f( void ) {
 static int numBackupImages = 0;
 static image_t  *backupHashTable[IMAGE_HASH_SIZE];
 
-static image_t  *texnumImages[MAX_DRAWIMAGES * 2];
-
-/*
-===============
-R_CacheImageAlloc
-
-  this will only get called to allocate the image_t structures, not that actual image pixels
-===============
-*/
-void *R_CacheImageAlloc( int size ) {
-	if ( r_cache->integer && r_cacheShaders->integer ) {
-		return malloc( size );
-//DAJ TEST		return ri.Z_Malloc( size );	//DAJ was CO
-	} else {
-		return ri.Hunk_Alloc( size, h_low );
-	}
-}
-
 /*
 ===============
 R_CacheImageFree
@@ -1165,8 +1140,6 @@ R_PurgeImage
 ===============
 */
 void R_PurgeImage( image_t *image ) {
-
-	texnumImages[image->texnum - 1024] = NULL;
 
 	qglDeleteTextures( 1, &image->texnum );
 
@@ -1298,52 +1271,6 @@ image_t *R_FindCachedImage( const char *name, int hash ) {
 	}
 
 	return NULL;
-}
-
-/*
-===============
-R_InitTexnumImages
-===============
-*/
-static int last_i;
-void R_InitTexnumImages( qboolean force ) {
-	if ( force || !numBackupImages ) {
-		memset( texnumImages, 0, sizeof( texnumImages ) );
-		last_i = 0;
-	}
-}
-
-/*
-============
-R_FindFreeTexnum
-============
-*/
-void R_FindFreeTexnum( image_t *inImage ) {
-	int i, max;
-	image_t **image;
-
-	max = ( MAX_DRAWIMAGES * 2 );
-	if ( last_i && !texnumImages[last_i + 1] ) {
-		i = last_i + 1;
-	} else {
-		i = 0;
-		image = (image_t **)&texnumImages;
-		while ( i < max && *( image++ ) ) {
-			i++;
-		}
-	}
-
-	if ( i < max ) {
-		if ( i < max - 1 ) {
-			last_i = i;
-		} else {
-			last_i = 0;
-		}
-		inImage->texnum = 1024 + i;
-		texnumImages[i] = inImage;
-	} else {
-		ri.Error( ERR_DROP, "R_FindFreeTexnum: MAX_DRAWIMAGES hit\n" );
-	}
 }
 
 /*

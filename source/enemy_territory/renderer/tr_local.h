@@ -489,10 +489,6 @@ void R_InitFreeType();
 void R_DoneFreeType();
 void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 
-// Ridah, caching system
-// NOTE: to disable this for development, set "r_cache 0" in autoexec.cfg
-void R_InitTexnumImages( qboolean force );
-
 void *R_CacheModelAlloc( int size );
 void R_CacheModelFree( void *ptr );
 void R_PurgeModels( int count );
@@ -500,11 +496,9 @@ void R_BackupModels( void );
 qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
 
-void *R_CacheImageAlloc( int size );
 void R_CacheImageFree( void *ptr );
 qboolean R_TouchImage( image_t *inImage );
 image_t *R_FindCachedImage( const char *name, int hash );
-void R_FindFreeTexnum( image_t *image );
 void R_LoadCacheImages( void );
 void R_PurgeBackupImages( int purgeCount );
 void R_BackupImages( void );
