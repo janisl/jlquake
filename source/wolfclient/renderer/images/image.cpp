@@ -79,12 +79,13 @@ int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
 //static 
 int			gl_filter_max = GL_LINEAR;
 
+float gl_anisotropy = 1.0;
+
 static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 static byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 static int			scrap_uploads;
 
-//static 
-byte mipBlendColors[16][4] =
+static byte mipBlendColors[16][4] =
 {
 	{0,0,0,0},
 	{255,0,0,128},
@@ -503,8 +504,7 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 //
 //==========================================================================
 
-//static 
-void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
+static void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
 {
 	if (outwidth > 2048)
 	{
@@ -612,8 +612,7 @@ static void R_MipMap2(byte* in, int inWidth, int inHeight)
 //
 //==========================================================================
 
-//static 
-void R_MipMap(byte* in, int width, int height)
+static void R_MipMap(byte* in, int width, int height)
 {
 	if (!r_simpleMipMaps->integer)
 	{
@@ -664,8 +663,7 @@ void R_MipMap(byte* in, int width, int height)
 //
 //==========================================================================
 
-//static 
-void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma)
+static void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma)
 {
 	if (only_gamma)
 	{
@@ -716,8 +714,7 @@ void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamm
 //
 //==========================================================================
 
-//static 
-void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
+static void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
 {
 	int inverseAlpha = 255 - blend[3];
 	int premult[3];
@@ -739,8 +736,7 @@ void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
 //
 //==========================================================================
 
-//static 
-void GL_CheckErrors()
+static void GL_CheckErrors()
 {
 	int err = qglGetError();
 	if (err == GL_NO_ERROR)
@@ -780,15 +776,15 @@ void GL_CheckErrors()
 	throw Exception(va("GL_CheckErrors: %s", s));
 }
 
-#if 0
 //==========================================================================
 //
 //	R_UploadImage
 //
 //==========================================================================
 
-static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool picmip,
-	bool lightMap, int* format, int* pUploadWidth, int* pUploadHeight)
+static void R_UploadImage(byte* data, int width, int height, bool mipmap,
+	bool picmip, bool characterMip, bool lightMap, int* format,
+	int* pUploadWidth, int* pUploadHeight, bool noCompress)
 {
 	//
 	// convert to exact power of 2 sizes
@@ -827,8 +823,27 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 	//
 	if (picmip)
 	{
-		scaled_width >>= r_picmip->integer;
-		scaled_height >>= r_picmip->integer;
+		if (characterMip)
+		{
+			scaled_width >>= r_picmip2->integer;
+			scaled_height >>= r_picmip2->integer;
+		}
+		else
+		{
+			scaled_width >>= r_picmip->integer;
+			scaled_height >>= r_picmip->integer;
+		}
+	}
+
+	//
+	// clamp to the current upper OpenGL limit
+	// scale both axis down equally so we don't have to
+	// deal with a half mip resampling
+	//
+	while (scaled_width > glConfig.maxTextureSize || scaled_height > glConfig.maxTextureSize)
+	{
+		scaled_width >>= 1;
+		scaled_height >>= 1;
 	}
 
 	//
@@ -841,17 +856,6 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 	if (scaled_height < 1)
 	{
 		scaled_height = 1;
-	}
-
-	//
-	// clamp to the current upper OpenGL limit
-	// scale both axis down equally so we don't have to
-	// deal with a half mip resampling
-	//
-	while (scaled_width > glConfig.maxTextureSize || scaled_height > glConfig.maxTextureSize)
-	{
-		scaled_width >>= 1;
-		scaled_height >>= 1;
 	}
 
 	GLenum internalFormat;
@@ -871,7 +875,11 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 		// select proper internal format
 		if (samples == 3)
 		{
-			if (glConfig.textureCompression == TC_S3TC)
+			if (!noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC)
+			{
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			}
+			else if (!noCompress && glConfig.textureCompression == TC_S3TC)
 			{
 				internalFormat = GL_RGB4_S3TC;
 			}
@@ -890,7 +898,11 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 		}
 		else
 		{
-			if (r_texturebits->integer == 16)
+			if (!noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC)
+			{
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			}
+			else if (r_texturebits->integer == 16)
 			{
 				internalFormat = GL_RGBA4;
 			}
@@ -1001,6 +1013,11 @@ done:
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
+	if (glConfig.anisotropicAvailable)
+	{
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_anisotropy);
+	}
+
 	GL_CheckErrors();
 }
 
@@ -1077,7 +1094,8 @@ void R_ScrapUpload()
 //
 //==========================================================================
 
-static long generateHashValue(const char* fname)
+//static 
+long generateHashValue(const char* fname)
 {
 	int		i;
 	long	hash;
@@ -1111,7 +1129,8 @@ static long generateHashValue(const char* fname)
 //
 //==========================================================================
 
-image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap)
+image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap,
+	bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap, bool characterMip)
 {
 	if (String::Length(name) >= MAX_QPATH)
 	{
@@ -1124,6 +1143,35 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 
 	bool isLightmap = !String::NCmp(name, "*lightmap", 9);
 
+	bool noCompress = false;
+	if (!String::NCmp(name, "*lightmap", 9))
+	{
+		noCompress = true;
+	}
+	if (!noCompress && strstr(name, "skies"))
+	{
+		noCompress = true;
+	}
+	if (!noCompress && strstr(name, "weapons"))
+	{
+		// don't compress view weapon skins
+		noCompress = true;
+	}
+	// RF, if the shader hasn't specifically asked for it, don't allow compression
+	if (r_ext_compressed_textures->integer == 2 && (tr.allowCompress != true))
+	{
+		noCompress = true;
+	}
+	else if (r_ext_compressed_textures->integer == 1 && (tr.allowCompress < 0))
+	{
+		noCompress = true;
+	}
+	// ydnar: don't compress textures smaller or equal to 128x128 pixels
+	else if ((width * height) <= (128 * 128))
+	{
+		noCompress = true;
+	}
+
 	image_t* image = new image_t;
 	Com_Memset(image, 0, sizeof(image_t));
 	tr.images[tr.numImages] = image;
@@ -1131,6 +1179,7 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 
 	image->mipmap = mipmap;
 	image->allowPicmip = allowPicmip;
+	image->characterMIP = characterMip;
 
 	String::Cpy(image->imgName, name);
 
@@ -1172,13 +1221,19 @@ nonscrap:
 
 		GL_Bind(image);
 
-		R_UploadImage(data, width, height, mipmap, allowPicmip, isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
+		R_UploadImage(data, width, height, mipmap, allowPicmip, characterMip,
+			isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, noCompress);
 
 		image->scrap = false;
 		image->sl = 0;
 		image->sh = 1;
 		image->tl = 0;
 		image->th = 1;
+
+		if (r_clampToEdge->integer && glWrapClampMode == GL_CLAMP)
+		{
+			glWrapClampMode = GL_CLAMP_TO_EDGE;
+		}
 
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode);
@@ -1190,6 +1245,7 @@ nonscrap:
 	long hash = generateHashValue(name);
 	image->next = ImageHashTable[hash];
 	ImageHashTable[hash] = image;
+	image->hash = hash;
 
 	return image;
 }
@@ -1209,10 +1265,11 @@ void R_ReUploadImage(image_t* image, byte* data)
 {
 	GL_Bind(image);
 	bool isLightmap = !String::NCmp(image->imgName, "*lightmap", 9);
-	R_UploadImage(data, image->width, image->height, image->mipmap, image->allowPicmip,
-		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
+	R_UploadImage(data, image->width, image->height, image->mipmap, image->allowPicmip, false,
+		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, true);
 }
 
+#if 0
 //==========================================================================
 //
 //	R_FindImage

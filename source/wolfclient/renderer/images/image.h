@@ -62,9 +62,9 @@ void R_InitQ2Palette();
 #endif
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
-#if 0
-image_t* R_CreateImage(const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool AllowScrap);
+image_t* R_CreateImage(const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool AllowScrap, bool characterMip);
 void R_ReUploadImage(image_t* image, byte* data);
+#if 0
 image_t* R_FindImage(const char* name);
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap = false, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 void R_SetColorMappings();
@@ -74,7 +74,9 @@ float R_FogFactor(float S, float T);
 void R_InitImages();
 void R_DeleteTextures();
 void GL_TextureMode(const char* string);
+#endif
 void R_ScrapUpload();
+#if 0
 void R_ImageList_f();
 int R_SumOfUsedImages();
 #endif
