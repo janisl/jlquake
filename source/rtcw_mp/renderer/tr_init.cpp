@@ -572,13 +572,6 @@ void R_Register( void ) {
 	ri.Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );
 	ri.Cmd_AddCommand( "taginfo", R_TagInfo_f );
-
-	// Ridah
-	{
-		void R_CropImages_f( void );
-		ri.Cmd_AddCommand( "cropimages", R_CropImages_f );
-	}
-	// done.
 }
 
 /*

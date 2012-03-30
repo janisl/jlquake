@@ -1515,40 +1515,6 @@ void    R_SkinList_f( void ) {
 	ri.Printf( PRINT_ALL, "------------------\n" );
 }
 
-// Ridah, utility for automatically cropping and numbering a bunch of images in a directory
-/*
-==============
-R_CropImage
-==============
-*/
-#define CROPIMAGES_ENABLED
-//#define FUNNEL_HACK
-#define RESIZE
-//#define QUICKTIME_BANNER
-#define TWILTB2_HACK
-
-qboolean R_CropImage( char *name, byte **pic, int border, int *width, int *height, int lastBox[2] ) {
-	return qtrue;   // shutup the compiler
-}
-
-
-/*
-===============
-R_CropAndNumberImagesInDirectory
-===============
-*/
-void    R_CropAndNumberImagesInDirectory( char *dir, char *ext, int maxWidth, int maxHeight, int withAlpha ) {
-}
-
-/*
-==============
-R_CropImages_f
-==============
-*/
-void R_CropImages_f( void ) {
-}
-// done.
-
 //==========================================================================================
 // Ridah, caching system
 
