@@ -75,6 +75,11 @@ byte			s_intensitytable[256];
 image_t*		ImageHashTable[IMAGE_HASH_SIZE];
 
 //static 
+int numBackupImages = 0;
+//static 
+image_t* backupHashTable[IMAGE_HASH_SIZE];
+
+//static 
 int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
 //static 
 int			gl_filter_max = GL_LINEAR;
@@ -1269,7 +1274,60 @@ void R_ReUploadImage(image_t* image, byte* data)
 		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, true);
 }
 
-#if 0
+//  remove this image from the backupHashTable and make sure it doesn't get overwritten
+bool R_TouchImage(image_t* inImage)
+{
+	if (inImage == tr.dlightImage ||
+		inImage == tr.whiteImage ||
+		inImage == tr.defaultImage ||
+		inImage->imgName[0] == '*') // can't use lightmaps since they might have the same name, but different maps will have different actual lightmap pixels
+	{
+		return false;
+	}
+
+	int hash = inImage->hash;
+
+	image_t *bImage = backupHashTable[hash];
+	image_t *bImagePrev = NULL;
+	while (bImage)
+	{
+		if (bImage == inImage)
+		{
+			// add it to the current images
+			if (tr.numImages == MAX_DRAWIMAGES)
+			{
+				common->Error("R_CreateImage: MAX_DRAWIMAGES hit\n");
+			}
+
+			tr.images[tr.numImages] = bImage;
+
+			// remove it from the backupHashTable
+			if (bImagePrev)
+			{
+				bImagePrev->next = bImage->next;
+			}
+			else
+			{
+				backupHashTable[hash] = bImage->next;
+			}
+
+			// add it to the ImageHashTable
+			bImage->next = ImageHashTable[hash];
+			ImageHashTable[hash] = bImage;
+
+			// get the new texture
+			tr.numImages++;
+
+			return true;
+		}
+
+		bImagePrev = bImage;
+		bImage = bImage->next;
+	}
+
+	return true;
+}
+
 //==========================================================================
 //
 //	R_FindImage
@@ -1289,6 +1347,30 @@ image_t* R_FindImage(const char* name)
 	return NULL;
 }
 
+image_t *R_FindCachedImage(const char* name, int hash)
+{
+	if (!r_cacheShaders->integer)
+	{
+		return NULL;
+	}
+
+	if (!numBackupImages)
+	{
+		return NULL;
+	}
+
+	for (image_t *bImage = backupHashTable[hash]; bImage; bImage = bImage->next)
+	{
+		if (!String::ICmp(name, bImage->imgName))
+		{
+			R_TouchImage(bImage);
+			return bImage;
+		}
+	}
+	return NULL;
+}
+
+#if 0
 //==========================================================================
 //
 //	R_FindImageFile

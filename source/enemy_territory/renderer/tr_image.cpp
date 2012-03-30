@@ -314,22 +314,21 @@ image_t *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	//
 	// see if the image is already loaded
 	//
-	for ( image = ImageHashTable[hash]; image; image = image->next ) {
-		if ( !String::Cmp( name, image->imgName ) ) {
-			// the white image can be used with any set of parms, but other mismatches are errors
-			if ( String::Cmp( name, "*white" ) ) {
-				if ( image->mipmap != mipmap ) {
-					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
-				}
-				if ( image->allowPicmip != allowPicmip ) {
-					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
-				}
-				if ( image->wrapClampMode != glWrapClampMode ) {
-					ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
-				}
+	image = R_FindImage(name);
+	if (image) {
+		// the white image can be used with any set of parms, but other mismatches are errors
+		if ( String::Cmp( name, "*white" ) ) {
+			if ( image->mipmap != mipmap ) {
+				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
 			}
-			return image;
+			if ( image->allowPicmip != allowPicmip ) {
+				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
+			}
+			if ( image->wrapClampMode != glWrapClampMode ) {
+				ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
+			}
 		}
+		return image;
 	}
 
 	// Ridah, check the cache
@@ -1159,8 +1158,8 @@ void    R_SkinList_f( void ) {
 //==========================================================================================
 // Ridah, caching system
 
-static int numBackupImages = 0;
-static image_t  *backupHashTable[IMAGE_HASH_SIZE];
+extern int numBackupImages;
+extern image_t  *backupHashTable[IMAGE_HASH_SIZE];
 
 /*
 ===============
@@ -1173,64 +1172,6 @@ void R_CacheImageFree( void *ptr ) {
 		free( ptr );
 //DAJ TEST		ri.Free( ptr );	//DAJ was CO
 	}
-}
-
-/*
-===============
-R_TouchImage
-
-  remove this image from the backupHashTable and make sure it doesn't get overwritten
-===============
-*/
-qboolean R_TouchImage( image_t *inImage ) {
-	image_t *bImage, *bImagePrev;
-	int hash;
-	char *name;
-
-	if ( inImage == tr.dlightImage ||
-		 inImage == tr.whiteImage ||
-		 inImage == tr.defaultImage ||
-		 inImage->imgName[0] == '*' ) { // can't use lightmaps since they might have the same name, but different maps will have different actual lightmap pixels
-		return qfalse;
-	}
-
-	hash = inImage->hash;
-	name = inImage->imgName;
-
-	bImage = backupHashTable[hash];
-	bImagePrev = NULL;
-	while ( bImage ) {
-
-		if ( bImage == inImage ) {
-			// add it to the current images
-			if ( tr.numImages == MAX_DRAWIMAGES ) {
-				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
-			}
-
-			tr.images[tr.numImages] = bImage;
-
-			// remove it from the backupHashTable
-			if ( bImagePrev ) {
-				bImagePrev->next = bImage->next;
-			} else {
-				backupHashTable[hash] = bImage->next;
-			}
-
-			// add it to the ImageHashTable
-			bImage->next = ImageHashTable[hash];
-			ImageHashTable[hash] = bImage;
-
-			// get the new texture
-			tr.numImages++;
-
-			return qtrue;
-		}
-
-		bImagePrev = bImage;
-		bImage = bImage->next;
-	}
-
-	return qtrue;
 }
 
 /*
@@ -1335,43 +1276,6 @@ void R_BackupImages( void ) {
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}
-}
-
-/*
-=============
-R_FindCachedImage
-=============
-*/
-image_t *R_FindCachedImage( const char *name, int hash ) {
-	image_t *bImage, *bImagePrev;
-
-	if ( !r_cacheShaders->integer ) {
-		return NULL;
-	}
-
-	if ( !numBackupImages ) {
-		return NULL;
-	}
-
-	bImage = backupHashTable[hash];
-	bImagePrev = NULL;
-	while ( bImage ) {
-
-		if ( !String::ICmp( name, bImage->imgName ) ) {
-			// add it to the current images
-			if ( tr.numImages == MAX_DRAWIMAGES ) {
-				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
-			}
-
-			R_TouchImage( bImage );
-			return bImage;
-		}
-
-		bImagePrev = bImage;
-		bImage = bImage->next;
-	}
-
-	return NULL;
 }
 
 //bani
