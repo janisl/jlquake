@@ -48,87 +48,47 @@ int c_gridVerts;
 
 //===============================================================================
 
-static void HSVtoRGB( float h, float s, float v, float rgb[3] ) {
-	int i;
-	float f;
-	float p, q, t;
+void HSVtoRGB( float h, float s, float v, float rgb[3] );
+void R_ColorShiftLightingBytes( byte in[4], byte out[4] );
 
-	h *= 5;
+float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte* image)
+{
+	float maxIntensity = 0;
+	if ( r_lightmap->integer == 2 ) { // color code by intensity as development tool	(FIXME: check range)
+		for (int j = 0; j < width * height; j++ )
+		{
+			float r = buf_p[j * in_padding + 0];
+			float g = buf_p[j * in_padding + 1];
+			float b = buf_p[j * in_padding + 2];
+			float intensity;
+			float out[3];
 
-	i = floor( h );
-	f = h - i;
+			intensity = 0.33f * r + 0.685f * g + 0.063f * b;
 
-	p = v * ( 1 - s );
-	q = v * ( 1 - s * f );
-	t = v * ( 1 - s * ( 1 - f ) );
+			if ( intensity > 255 ) {
+				intensity = 1.0f;
+			} else {
+				intensity /= 255.0f;
+			}
 
-	switch ( i )
-	{
-	case 0:
-		rgb[0] = v;
-		rgb[1] = t;
-		rgb[2] = p;
-		break;
-	case 1:
-		rgb[0] = q;
-		rgb[1] = v;
-		rgb[2] = p;
-		break;
-	case 2:
-		rgb[0] = p;
-		rgb[1] = v;
-		rgb[2] = t;
-		break;
-	case 3:
-		rgb[0] = p;
-		rgb[1] = q;
-		rgb[2] = v;
-		break;
-	case 4:
-		rgb[0] = t;
-		rgb[1] = p;
-		rgb[2] = v;
-		break;
-	case 5:
-		rgb[0] = v;
-		rgb[1] = p;
-		rgb[2] = q;
-		break;
+			if ( intensity > maxIntensity ) {
+				maxIntensity = intensity;
+			}
+
+			HSVtoRGB( intensity, 1.00, 0.50, out );
+
+			image[j * 4 + 0] = out[0] * 255;
+			image[j * 4 + 1] = out[1] * 255;
+			image[j * 4 + 2] = out[2] * 255;
+			image[j * 4 + 3] = 255;
+		}
+	} else {
+		for (int j = 0 ; j < width * height; j++ ) {
+			R_ColorShiftLightingBytes( &buf_p[j * 3], &image[j * 4] );
+			image[j * 4 + 3] = 255;
+		}
 	}
-}
-
-/*
-===============
-R_ColorShiftLightingBytes
-
-===============
-*/
-static void R_ColorShiftLightingBytes( byte in[4], byte out[4] ) {
-	int shift, r, g, b;
-
-	// shift the color data based on overbright range
-	shift = r_mapOverBrightBits->integer - tr.overbrightBits;
-
-	// shift the data based on overbright range
-	r = in[0] << shift;
-	g = in[1] << shift;
-	b = in[2] << shift;
-
-	// normalize by color instead of saturating to white
-	if ( ( r | g | b ) > 255 ) {
-		int max;
-
-		max = r > g ? r : g;
-		max = max > b ? max : b;
-		r = r * 255 / max;
-		g = g * 255 / max;
-		b = b * 255 / max;
-	}
-
-	out[0] = r;
-	out[1] = g;
-	out[2] = b;
-	out[3] = in[3];
+	return maxIntensity;
 }
 
 /*
@@ -142,9 +102,8 @@ static void R_LoadLightmaps( bsp46_lump_t *l ) {
 	byte        *buf, *buf_p;
 	int len;
 	MAC_STATIC byte image[LIGHTMAP_SIZE * LIGHTMAP_SIZE * 4];
-	int i, j;
+	int i;
 	float maxIntensity = 0;
-	double sumIntensity = 0;
 
 	len = l->filelen;
 	if ( !len ) {
@@ -172,41 +131,10 @@ static void R_LoadLightmaps( bsp46_lump_t *l ) {
 		// expand the 24 bit on-disk to 32 bit
 		buf_p = buf + i * LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3;
 
-		if ( r_lightmap->integer == 2 ) { // color code by intensity as development tool	(FIXME: check range)
-			for ( j = 0; j < LIGHTMAP_SIZE * LIGHTMAP_SIZE; j++ )
-			{
-				float r = buf_p[j * 3 + 0];
-				float g = buf_p[j * 3 + 1];
-				float b = buf_p[j * 3 + 2];
-				float intensity;
-				float out[3];
+		float intensity = R_ProcessLightmap(buf_p, 3, LIGHTMAP_SIZE, LIGHTMAP_SIZE, image);
 
-				intensity = 0.33f * r + 0.685f * g + 0.063f * b;
-
-				if ( intensity > 255 ) {
-					intensity = 1.0f;
-				} else {
-					intensity /= 255.0f;
-				}
-
-				if ( intensity > maxIntensity ) {
-					maxIntensity = intensity;
-				}
-
-				HSVtoRGB( intensity, 1.00, 0.50, out );
-
-				image[j * 4 + 0] = out[0] * 255;
-				image[j * 4 + 1] = out[1] * 255;
-				image[j * 4 + 2] = out[2] * 255;
-				image[j * 4 + 3] = 255;
-
-				sumIntensity += intensity;
-			}
-		} else {
-			for ( j = 0 ; j < LIGHTMAP_SIZE * LIGHTMAP_SIZE; j++ ) {
-				R_ColorShiftLightingBytes( &buf_p[j * 3], &image[j * 4] );
-				image[j * 4 + 3] = 255;
-			}
+		if ( intensity > maxIntensity ) {
+			maxIntensity = intensity;
 		}
 		tr.lightmaps[i] = R_CreateImage( va( "*lightmap%d",i ), image,
 										 LIGHTMAP_SIZE, LIGHTMAP_SIZE, qfalse, qfalse, GL_CLAMP, false, false );

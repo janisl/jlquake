@@ -9,6 +9,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/images/pic.cpp
 	../client/renderer/images/tga.cpp
 	../client/renderer/images/wal.cpp
+	renderer/models/bsp46.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp

@@ -50,88 +50,8 @@ surfaceType_t skipData = SF_SKIP;
 
 //===============================================================================
 
-static void HSVtoRGB( float h, float s, float v, float rgb[3] ) {
-	int i;
-	float f;
-	float p, q, t;
-
-	h *= 5;
-
-	i = floor( h );
-	f = h - i;
-
-	p = v * ( 1 - s );
-	q = v * ( 1 - s * f );
-	t = v * ( 1 - s * ( 1 - f ) );
-
-	switch ( i )
-	{
-	case 0:
-		rgb[0] = v;
-		rgb[1] = t;
-		rgb[2] = p;
-		break;
-	case 1:
-		rgb[0] = q;
-		rgb[1] = v;
-		rgb[2] = p;
-		break;
-	case 2:
-		rgb[0] = p;
-		rgb[1] = v;
-		rgb[2] = t;
-		break;
-	case 3:
-		rgb[0] = p;
-		rgb[1] = q;
-		rgb[2] = v;
-		break;
-	case 4:
-		rgb[0] = t;
-		rgb[1] = p;
-		rgb[2] = v;
-		break;
-	case 5:
-		rgb[0] = v;
-		rgb[1] = p;
-		rgb[2] = q;
-		break;
-	}
-}
-
-/*
-===============
-R_ColorShiftLightingBytes
-
-===============
-*/
-static void R_ColorShiftLightingBytes( byte in[4], byte out[4] ) {
-	int shift, r, g, b;
-
-	// shift the color data based on overbright range
-	shift = r_mapOverBrightBits->integer - tr.overbrightBits;
-
-	// shift the data based on overbright range
-	r = in[0] << shift;
-	g = in[1] << shift;
-	b = in[2] << shift;
-
-	// normalize by color instead of saturating to white
-	if ( ( r | g | b ) > 255 ) {
-		int max;
-
-		max = r > g ? r : g;
-		max = max > b ? max : b;
-		r = r * 255 / max;
-		g = g * 255 / max;
-		b = b * 255 / max;
-	}
-
-	out[0] = r;
-	out[1] = g;
-	out[2] = b;
-	out[3] = in[3];
-}
+void HSVtoRGB( float h, float s, float v, float rgb[3] );
+void R_ColorShiftLightingBytes( byte in[4], byte out[4] );
 
 /*
 ===============
@@ -140,7 +60,7 @@ R_ProcessLightmap
 	returns maxIntensity
 ===============
 */
-float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out ) {
+float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out ) {
 	int j;
 	float maxIntensity = 0;
 	double sumIntensity = 0;
@@ -148,9 +68,9 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	if ( r_lightmap->integer > 1 ) { // color code by intensity as development tool	(FIXME: check range)
 		for ( j = 0; j < width * height; j++ )
 		{
-			float r = ( *pic )[j * in_padding + 0];
-			float g = ( *pic )[j * in_padding + 1];
-			float b = ( *pic )[j * in_padding + 2];
+			float r = pic[j * in_padding + 0];
+			float g = pic[j * in_padding + 1];
+			float b = pic[j * in_padding + 2];
 			float intensity;
 			float out[3];
 
@@ -170,22 +90,22 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 
 			if ( r_lightmap->integer == 3 ) {
 				// Arnout: artists wanted the colours to be inversed
-				( *pic_out )[j * 4 + 0] = out[2] * 255;
-				( *pic_out )[j * 4 + 1] = out[1] * 255;
-				( *pic_out )[j * 4 + 2] = out[0] * 255;
+				pic_out[j * 4 + 0] = out[2] * 255;
+				pic_out[j * 4 + 1] = out[1] * 255;
+				pic_out[j * 4 + 2] = out[0] * 255;
 			} else {
-				( *pic_out )[j * 4 + 0] = out[0] * 255;
-				( *pic_out )[j * 4 + 1] = out[1] * 255;
-				( *pic_out )[j * 4 + 2] = out[2] * 255;
+				pic_out[j * 4 + 0] = out[0] * 255;
+				pic_out[j * 4 + 1] = out[1] * 255;
+				pic_out[j * 4 + 2] = out[2] * 255;
 			}
-			( *pic_out )[j * 4 + 3] = 255;
+			pic_out[j * 4 + 3] = 255;
 
 			sumIntensity += intensity;
 		}
 	} else {
 		for ( j = 0 ; j < width * height; j++ ) {
-			R_ColorShiftLightingBytes( &( *pic )[j * in_padding], &( *pic_out )[j * 4] );
-			( *pic_out )[j * 4 + 3] = 255;
+			R_ColorShiftLightingBytes( &pic[j * in_padding], &pic_out[j * 4] );
+			pic_out[j * 4 + 3] = 255;
 		}
 	}
 
@@ -234,7 +154,7 @@ static void R_LoadLightmaps( bsp46_lump_t *l ) {
 		buf_p = buf + i * LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3;
 		image_p = image;
 
-		intensity = R_ProcessLightmap( &buf_p, 3, LIGHTMAP_SIZE, LIGHTMAP_SIZE, &image_p );
+		intensity = R_ProcessLightmap( buf_p, 3, LIGHTMAP_SIZE, LIGHTMAP_SIZE, image_p );
 		if ( intensity > maxIntensity ) {
 			maxIntensity = intensity;
 		}
