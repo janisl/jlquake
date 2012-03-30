@@ -170,7 +170,6 @@ extern Cvar* r_zfar;					// far Z clip plane
 
 extern Cvar* r_dlightScale;				// global user attenuation of dlights
 
-extern Cvar* r_rmse;					// reduces textures to this root mean square error
 extern Cvar* r_picmip2;					// controls picmip values for designated (character skin) textures
 
 extern Cvar* r_portalsky;

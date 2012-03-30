@@ -315,55 +315,6 @@ void R_ImageList_f( void ) {
 
 //=======================================================================
 
-/*
-================
-R_MipMap
-
-Operates in place, quartering the size of the texture
-================
-*/
-#if 0 // rain - unused
-static float R_RMSE( byte *in, int width, int height ) {
-	int i, j;
-	float out, rmse, rtemp;
-	int row;
-
-	rmse = 0.0f;
-
-	if ( width <= 32 || height <= 32 ) {
-		return 9999.0f;
-	}
-
-	row = width * 4;
-
-	width >>= 1;
-	height >>= 1;
-
-	for ( i = 0 ; i < height ; i++, in += row ) {
-		for ( j = 0 ; j < width ; j++, out += 4, in += 8 ) {
-			out = ( in[0] + in[4] + in[row + 0] + in[row + 4] ) >> 2;
-			rtemp = ( ( Q_fabs( out - in[0] ) + Q_fabs( out - in[4] ) + Q_fabs( out - in[row + 0] ) + Q_fabs( out - in[row + 4] ) ) );
-			rtemp = rtemp * rtemp;
-			rmse += rtemp;
-			out = ( in[1] + in[5] + in[row + 1] + in[row + 5] ) >> 2;
-			rtemp = ( ( Q_fabs( out - in[1] ) + Q_fabs( out - in[5] ) + Q_fabs( out - in[row + 1] ) + Q_fabs( out - in[row + 5] ) ) );
-			rtemp = rtemp * rtemp;
-			rmse += rtemp;
-			out = ( in[2] + in[6] + in[row + 2] + in[row + 6] ) >> 2;
-			rtemp = ( ( Q_fabs( out - in[2] ) + Q_fabs( out - in[6] ) + Q_fabs( out - in[row + 2] ) + Q_fabs( out - in[row + 6] ) ) );
-			rtemp = rtemp * rtemp;
-			rmse += rtemp;
-			out = ( in[3] + in[7] + in[row + 3] + in[row + 7] ) >> 2;
-			rtemp = ( ( Q_fabs( out - in[3] ) + Q_fabs( out - in[7] ) + Q_fabs( out - in[row + 3] ) + Q_fabs( out - in[row + 7] ) ) );
-			rtemp = rtemp * rtemp;
-			rmse += rtemp;
-		}
-	}
-	rmse = sqrt( rmse / ( height * width * 4 ) );
-	return rmse;
-}
-#endif
-
 extern byte mipBlendColors[16][4];
 
 
@@ -388,21 +339,7 @@ static void Upload32(   unsigned *data,
 	int i, c;
 	byte        *scan;
 	GLenum internalFormat = GL_RGB;
-// rain - unused
-//	static		int rmse_saved = 0;
 
-	// do the root mean square error stuff first
-/*	if (r_rmse->value) {
-		while (R_RMSE((byte *)data, width, height) < r_rmse->value) {
-			rmse_saved += (height*width*4)-((width>>1)*(height>>1)*4);
-			resampledBuffer = R_GetImageBuffer( (width>>1) * (height>>1) * 4, BUFFER_RESAMPLED );
-			R_ResampleTexture (data, width, height, resampledBuffer, width>>1, height>>1);
-			data = resampledBuffer;
-			width = width>>1;
-			height = height>>1;
-			ri.Printf (PRINT_ALL, "r_rmse of %f has saved %dkb\n", r_rmse->value, (rmse_saved/1024));
-		}
-	}*/
 	//
 	// convert to exact power of 2 sizes
 	//

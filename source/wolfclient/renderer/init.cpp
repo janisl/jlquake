@@ -192,7 +192,6 @@ Cvar* r_zfar;
 
 Cvar* r_dlightScale;
 
-Cvar* r_rmse;
 Cvar* r_picmip2;
 
 Cvar* r_portalsky;
@@ -473,7 +472,6 @@ void R_Register_()
 	r_detailTextures = Cvar_Get("r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	//	Disabled until I fix it on Linux.
 	r_smp = Cvar_Get("r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
-	r_rmse = Cvar_Get("r_rmse", "0.0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_picmip2 = Cvar_Get("r_picmip2", "2", CVAR_ARCHIVE | CVAR_LATCH2);   // used for character skins picmipping at a different level from the rest of the game
 	AssertCvarRange(r_picmip2, 0, 16, true);
 	r_clampToEdge = Cvar_Get("r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE); // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
