@@ -968,7 +968,10 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer);
 void Mod_FreeBsp38(model_t* mod);
 byte* Mod_ClusterPVS(int cluster, model_t* model);
 mbrush38_leaf_t* Mod_PointInLeafQ2(float* p, model_t* model);
+#endif
 
+float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte* image);
+#if 0
 void R_LoadBrush46Model(void* buffer);
 void R_FreeBsp46(world_t* mod);
 void R_FreeBsp46Model(model_t* mod);

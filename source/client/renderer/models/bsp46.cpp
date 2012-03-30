@@ -132,7 +132,7 @@ static void R_ColorShiftLightingBytes(byte in[4], byte out[4])
 float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte* image)
 {
 	float maxIntensity = 0;
-	if (r_lightmap->integer == 2)
+	if (r_lightmap->integer > 1)
 	{
 		// color code by intensity as development tool	(FIXME: check range)
 		for (int j = 0; j < width * height; j++)
@@ -161,10 +161,20 @@ float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte
 
 			HSVtoRGB(intensity, 1.00, 0.50, out);
 
-			image[j * 4 + 0] = out[0] * 255;
-			image[j * 4 + 1] = out[1] * 255;
-			image[j * 4 + 2] = out[2] * 255;
-			image[j * 4 + 3] = 255;
+			if (r_lightmap->integer == 3)
+			{
+				// Arnout: artists wanted the colours to be inversed
+				image[j * 4 + 0] = out[2] * 255;
+				image[j * 4 + 1] = out[1] * 255;
+				image[j * 4 + 2] = out[0] * 255;
+			}
+			else
+			{
+				image[j * 4 + 0] = out[0] * 255;
+				image[j * 4 + 1] = out[1] * 255;
+				image[j * 4 + 2] = out[2] * 255;
+				image[j * 4 + 3] = 255;
+			}
 		}
 	}
 	else
