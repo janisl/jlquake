@@ -66,10 +66,8 @@ bool		scrap_dirty;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-byte			s_gammatable[256];
-//static 
-byte			s_intensitytable[256];
+static byte			s_gammatable[256];
+static byte			s_intensitytable[256];
 
 //static 
 image_t*		ImageHashTable[IMAGE_HASH_SIZE];
@@ -1337,7 +1335,7 @@ image_t* R_FindImage(const char* name)
 	long hash = generateHashValue(name);
 	for (image_t* image = ImageHashTable[hash]; image; image=image->next)
 	{
-		if (!String::Cmp(name, image->imgName))
+		if (!String::ICmp(name, image->imgName))
 		{
 			return image;
 		}
@@ -1485,7 +1483,6 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 	return image;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_SetColorMappings
@@ -1601,6 +1598,7 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_CreateDefaultImage
