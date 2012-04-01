@@ -424,9 +424,9 @@ int R_GetImageWidth(image_t* pic);
 int R_GetImageHeight(image_t* pic);
 void R_GetPicSize(int* w, int* h, const char* name);
 
-#if 0
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
 
+#if 0
 void R_LoadWorld(const char* Name);
 bool R_GetEntityToken(char* Buffer, int Size);
 int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,

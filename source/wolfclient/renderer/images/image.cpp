@@ -2152,7 +2152,6 @@ const char* R_GetImageName(qhandle_t Handle)
 	return tr.images[Handle]->imgName;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_UploadCinematic
@@ -2209,7 +2208,6 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 		delete[] resampled;
 	}
 }
-#endif
 
 //==========================================================================
 //
