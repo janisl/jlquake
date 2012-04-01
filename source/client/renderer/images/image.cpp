@@ -21,7 +21,8 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define IMAGE_HASH_SIZE		1024
+//#define IMAGE_HASH_SIZE		1024
+#define IMAGE_HASH_SIZE		4096
 
 #define SCRAP_BLOCK_WIDTH	256
 #define SCRAP_BLOCK_HEIGHT	256
@@ -70,8 +71,13 @@ static byte			s_intensitytable[256];
 
 static image_t*		ImageHashTable[IMAGE_HASH_SIZE];
 
+static int numBackupImages = 0;
+static image_t* backupHashTable[IMAGE_HASH_SIZE];
+
 static int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
 static int			gl_filter_max = GL_LINEAR;
+
+static float gl_anisotropy = 1.0;
 
 static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 static byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
@@ -771,8 +777,9 @@ static void GL_CheckErrors()
 //
 //==========================================================================
 
-static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool picmip,
-	bool lightMap, int* format, int* pUploadWidth, int* pUploadHeight)
+static void R_UploadImage(byte* data, int width, int height, bool mipmap,
+	bool picmip, bool characterMip, bool lightMap, int* format,
+	int* pUploadWidth, int* pUploadHeight, bool noCompress)
 {
 	//
 	// convert to exact power of 2 sizes
@@ -811,8 +818,27 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 	//
 	if (picmip)
 	{
-		scaled_width >>= r_picmip->integer;
-		scaled_height >>= r_picmip->integer;
+		if (characterMip)
+		{
+			scaled_width >>= r_picmip2->integer;
+			scaled_height >>= r_picmip2->integer;
+		}
+		else
+		{
+			scaled_width >>= r_picmip->integer;
+			scaled_height >>= r_picmip->integer;
+		}
+	}
+
+	//
+	// clamp to the current upper OpenGL limit
+	// scale both axis down equally so we don't have to
+	// deal with a half mip resampling
+	//
+	while (scaled_width > glConfig.maxTextureSize || scaled_height > glConfig.maxTextureSize)
+	{
+		scaled_width >>= 1;
+		scaled_height >>= 1;
 	}
 
 	//
@@ -825,17 +851,6 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 	if (scaled_height < 1)
 	{
 		scaled_height = 1;
-	}
-
-	//
-	// clamp to the current upper OpenGL limit
-	// scale both axis down equally so we don't have to
-	// deal with a half mip resampling
-	//
-	while (scaled_width > glConfig.maxTextureSize || scaled_height > glConfig.maxTextureSize)
-	{
-		scaled_width >>= 1;
-		scaled_height >>= 1;
 	}
 
 	GLenum internalFormat;
@@ -855,7 +870,11 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 		// select proper internal format
 		if (samples == 3)
 		{
-			if (glConfig.textureCompression == TC_S3TC)
+			if (!noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC)
+			{
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			}
+			else if (!noCompress && glConfig.textureCompression == TC_S3TC)
 			{
 				internalFormat = GL_RGB4_S3TC;
 			}
@@ -874,7 +893,11 @@ static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool p
 		}
 		else
 		{
-			if (r_texturebits->integer == 16)
+			if (!noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC)
+			{
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			}
+			else if (r_texturebits->integer == 16)
 			{
 				internalFormat = GL_RGBA4;
 			}
@@ -983,6 +1006,11 @@ done:
 	{
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
+	if (glConfig.anisotropicAvailable)
+	{
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_anisotropy);
 	}
 
 	GL_CheckErrors();
@@ -1095,7 +1123,8 @@ static long generateHashValue(const char* fname)
 //
 //==========================================================================
 
-image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap)
+image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap,
+	bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap, bool characterMip)
 {
 	if (String::Length(name) >= MAX_QPATH)
 	{
@@ -1108,6 +1137,35 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 
 	bool isLightmap = !String::NCmp(name, "*lightmap", 9);
 
+	bool noCompress = false;
+	if (!String::NCmp(name, "*lightmap", 9))
+	{
+		noCompress = true;
+	}
+	if (!noCompress && strstr(name, "skies"))
+	{
+		noCompress = true;
+	}
+	if (!noCompress && strstr(name, "weapons"))
+	{
+		// don't compress view weapon skins
+		noCompress = true;
+	}
+	// RF, if the shader hasn't specifically asked for it, don't allow compression
+	if (r_ext_compressed_textures->integer == 2 && (tr.allowCompress != true))
+	{
+		noCompress = true;
+	}
+	else if (r_ext_compressed_textures->integer == 1 && (tr.allowCompress < 0))
+	{
+		noCompress = true;
+	}
+	// ydnar: don't compress textures smaller or equal to 128x128 pixels
+	else if ((width * height) <= (128 * 128))
+	{
+		noCompress = true;
+	}
+
 	image_t* image = new image_t;
 	Com_Memset(image, 0, sizeof(image_t));
 	tr.images[tr.numImages] = image;
@@ -1115,6 +1173,7 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 
 	image->mipmap = mipmap;
 	image->allowPicmip = allowPicmip;
+	image->characterMIP = characterMip;
 
 	String::Cpy(image->imgName, name);
 
@@ -1156,13 +1215,19 @@ nonscrap:
 
 		GL_Bind(image);
 
-		R_UploadImage(data, width, height, mipmap, allowPicmip, isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
+		R_UploadImage(data, width, height, mipmap, allowPicmip, characterMip,
+			isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, noCompress);
 
 		image->scrap = false;
 		image->sl = 0;
 		image->sh = 1;
 		image->tl = 0;
 		image->th = 1;
+
+		if (r_clampToEdge->integer && glWrapClampMode == GL_CLAMP)
+		{
+			glWrapClampMode = GL_CLAMP_TO_EDGE;
+		}
 
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode);
@@ -1174,6 +1239,7 @@ nonscrap:
 	long hash = generateHashValue(name);
 	image->next = ImageHashTable[hash];
 	ImageHashTable[hash] = image;
+	image->hash = hash;
 
 	return image;
 }
@@ -1193,8 +1259,62 @@ void R_ReUploadImage(image_t* image, byte* data)
 {
 	GL_Bind(image);
 	bool isLightmap = !String::NCmp(image->imgName, "*lightmap", 9);
-	R_UploadImage(data, image->width, image->height, image->mipmap, image->allowPicmip,
-		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
+	R_UploadImage(data, image->width, image->height, image->mipmap, image->allowPicmip, false,
+		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, true);
+}
+
+//  remove this image from the backupHashTable and make sure it doesn't get overwritten
+bool R_TouchImage(image_t* inImage)
+{
+	if (inImage == tr.dlightImage ||
+		inImage == tr.whiteImage ||
+		inImage == tr.defaultImage ||
+		inImage->imgName[0] == '*') // can't use lightmaps since they might have the same name, but different maps will have different actual lightmap pixels
+	{
+		return false;
+	}
+
+	int hash = inImage->hash;
+
+	image_t *bImage = backupHashTable[hash];
+	image_t *bImagePrev = NULL;
+	while (bImage)
+	{
+		if (bImage == inImage)
+		{
+			// add it to the current images
+			if (tr.numImages == MAX_DRAWIMAGES)
+			{
+				common->Error("R_CreateImage: MAX_DRAWIMAGES hit\n");
+			}
+
+			tr.images[tr.numImages] = bImage;
+
+			// remove it from the backupHashTable
+			if (bImagePrev)
+			{
+				bImagePrev->next = bImage->next;
+			}
+			else
+			{
+				backupHashTable[hash] = bImage->next;
+			}
+
+			// add it to the ImageHashTable
+			bImage->next = ImageHashTable[hash];
+			ImageHashTable[hash] = bImage;
+
+			// get the new texture
+			tr.numImages++;
+
+			return true;
+		}
+
+		bImagePrev = bImage;
+		bImage = bImage->next;
+	}
+
+	return true;
 }
 
 //==========================================================================
@@ -1216,6 +1336,30 @@ image_t* R_FindImage(const char* name)
 	return NULL;
 }
 
+static image_t* R_FindCachedImage(const char* name)
+{
+	if (!r_cacheShaders->integer)
+	{
+		return NULL;
+	}
+
+	if (!numBackupImages)
+	{
+		return NULL;
+	}
+
+	int hash = generateHashValue(name);
+	for (image_t *bImage = backupHashTable[hash]; bImage; bImage = bImage->next)
+	{
+		if (!String::ICmp(name, bImage->imgName))
+		{
+			R_TouchImage(bImage);
+			return bImage;
+		}
+	}
+	return NULL;
+}
+
 //==========================================================================
 //
 //	R_FindImageFile
@@ -1225,11 +1369,25 @@ image_t* R_FindImage(const char* name)
 //==========================================================================
 
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
-	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels)
+	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels,
+	bool characterMIP, bool lightmap)
 {
 	if (!name)
 	{
 		return NULL;
+	}
+
+	// Ridah, caching
+	if (r_cacheGathering->integer)
+	{
+		if (GGameType & GAME_WolfSP)
+		{
+			Cbuf_ExecuteText(EXEC_NOW, va("cache_usedfile image %s %i %i %i %i\n", name, mipmap, allowPicmip, characterMIP, glWrapClampMode));
+		}
+		else
+		{
+			Cbuf_ExecuteText(EXEC_NOW, va("cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode));
+		}
 	}
 
 	//
@@ -1249,12 +1407,27 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 			{
 				Log::develWrite(S_COLOR_RED "WARNING: reused image %s with mixed allowPicmip parm\n", name);
 			}
+			if (image->characterMIP != characterMIP)
+			{
+				common->DPrintf(S_COLOR_RED "WARNING: reused image %s with mixed characterMIP parm\n", name);
+			}
 			if (image->wrapClampMode != glWrapClampMode)
 			{
 				Log::write("WARNING: reused image %s with mixed glWrapClampMode parm\n", name);
 			}
 		}
 		return image;
+	}
+
+	// Ridah, check the cache
+	// ydnar: don't do this for lightmaps
+	if (!lightmap)
+	{
+		image = R_FindCachedImage(name);
+		if (image)
+		{
+			return image;
+		}
 	}
 
 	//
@@ -1282,8 +1455,24 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 		}
 	}
 
-	image = R_CreateImage(name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, AllowScrap);
+	// Arnout: apply lightmap colouring
+	int allowCompress = tr.allowCompress;
+	if (lightmap)
+	{
+		R_ProcessLightmap(pic, 4, width, height, pic);
+		// ydnar: no texture compression
+		tr.allowCompress = -1;
+	}
+
+	image = R_CreateImage(name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, AllowScrap, characterMIP);
 	delete[] pic;
+
+	// ydnar: no texture compression
+	if (lightmap)
+	{
+		tr.allowCompress = allowCompress;
+	}
+
 	return image;
 }
 

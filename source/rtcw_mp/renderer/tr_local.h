@@ -439,7 +439,6 @@ qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
 
 void R_CacheImageFree( void *ptr );
-image_t *R_FindCachedImage( const char *name, int hash );
 void R_LoadCacheImages( void );
 void R_PurgeBackupImages( int purgeCount );
 void R_BackupImages( void );

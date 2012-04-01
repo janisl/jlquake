@@ -1347,7 +1347,7 @@ image_t* R_FindImage(const char* name)
 	return NULL;
 }
 
-image_t *R_FindCachedImage(const char* name, int hash)
+static image_t* R_FindCachedImage(const char* name)
 {
 	if (!r_cacheShaders->integer)
 	{
@@ -1359,6 +1359,7 @@ image_t *R_FindCachedImage(const char* name, int hash)
 		return NULL;
 	}
 
+	int hash = generateHashValue(name);
 	for (image_t *bImage = backupHashTable[hash]; bImage; bImage = bImage->next)
 	{
 		if (!String::ICmp(name, bImage->imgName))
@@ -1433,8 +1434,7 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 	// ydnar: don't do this for lightmaps
 	if (!lightmap)
 	{
-		int hash = generateHashValue(name);
-		image = R_FindCachedImage(name, hash);
+		image = R_FindCachedImage(name);
 		if (image)
 		{
 			return image;
