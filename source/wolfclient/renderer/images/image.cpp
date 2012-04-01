@@ -69,8 +69,7 @@ bool		scrap_dirty;
 static byte			s_gammatable[256];
 static byte			s_intensitytable[256];
 
-//static 
-image_t*		ImageHashTable[IMAGE_HASH_SIZE];
+static image_t*		ImageHashTable[IMAGE_HASH_SIZE];
 
 //static 
 int numBackupImages = 0;
@@ -1826,8 +1825,7 @@ static void R_CreateFogImageET()
 //
 //==========================================================================
 
-//static 
-void R_CreateBuiltinImages()
+static void R_CreateBuiltinImages()
 {
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
 

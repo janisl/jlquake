@@ -36,7 +36,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 #define IMAGE_HASH_SIZE      4096
-extern image_t*        ImageHashTable[IMAGE_HASH_SIZE];
 
 /*
 ============================================================================

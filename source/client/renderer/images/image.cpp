@@ -1328,7 +1328,7 @@ image_t* R_FindImage(const char* name)
 	long hash = generateHashValue(name);
 	for (image_t* image = ImageHashTable[hash]; image; image=image->next)
 	{
-		if (!String::Cmp(name, image->imgName))
+		if (!String::ICmp(name, image->imgName))
 		{
 			return image;
 		}
@@ -1759,6 +1759,64 @@ static void R_CreateFogImage()
 	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
+static void R_CreateFogImageET()
+{
+	enum { FOG_S = 16 };
+	enum { FOG_T = 16 };
+	float borderColor[4];
+
+	// allocate table for image
+	byte* data = new byte[FOG_S * FOG_T * 4];
+
+	// ydnar: new, linear fog texture generating algo for GL_CLAMP_TO_EDGE (OpenGL 1.2+)
+
+	// S is distance, T is depth
+	for (int x = 0; x < FOG_S; x++)
+	{
+		for (int y = 0; y < FOG_T; y++)
+		{
+			int alpha = 270 * ((float)x / FOG_S) * ((float)y / FOG_T);    // need slop room for fp round to 0
+			if (alpha < 0 )
+			{
+				alpha = 0;
+			}
+			else if (alpha > 255)
+			{
+				alpha = 255;
+			}
+
+			// ensure edge/corner cases are fully transparent (at 0,0) or fully opaque (at 1,N where N is 0-1.0)
+			if (x == 0)
+			{
+				alpha = 0;
+			}
+			else if (x == (FOG_S - 1))
+			{
+				alpha = 255;
+			}
+
+			data[(y * FOG_S + x) * 4 + 0] =
+			data[(y * FOG_S + x) * 4 + 1] =
+			data[(y * FOG_S + x) * 4 + 2] = 255;
+			data[(y * FOG_S + x) * 4 + 3] = alpha;
+		}
+	}
+
+	// standard openGL clamping doesn't really do what we want -- it includes
+	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
+	// what we want.
+	tr.fogImage = R_CreateImage("*fog", (byte *)data, FOG_S, FOG_T, false, false, GL_CLAMP, false, false);
+	delete[] data;
+
+	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
+	borderColor[0] = 1.0;
+	borderColor[1] = 1.0;
+	borderColor[2] = 1.0;
+	borderColor[3] = 1;
+
+	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+}
+
 //==========================================================================
 //
 //	R_CreateBuiltinImages
@@ -1783,11 +1841,63 @@ static void R_CreateBuiltinImages()
 
 	R_CreateDlightImage();
 
-	R_CreateFogImage();
+	if (GGameType & GAME_ET)
+	{
+		R_CreateFogImageET();
+	}
+	else
+	{
+		R_CreateFogImage();
+	}
 
 	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 
 	R_InitParticleTexture();
+}
+
+static void R_LoadCacheImages()
+{
+	if (numBackupImages)
+	{
+		return;
+	}
+
+	int len = FS_ReadFile("image.cache", NULL);
+	if ( len <= 0 )
+	{
+		return;
+	}
+
+	void* buf;
+	FS_ReadFile("image.cache", &buf);
+	const char* pString = (char*)buf;
+
+	char* token;
+	while ((token = String::ParseExt(&pString, true)) && token[0])
+	{
+		char name[MAX_QPATH];
+		String::NCpyZ(name, token, sizeof(name));
+		int parms[4];
+		for (int i = 0; i < (GGameType & (GAME_WolfSP | GAME_ET) ? 4 : 3); i++)
+		{
+			token = String::ParseExt(&pString, false);
+			parms[i] = String::Atoi(token);
+		}
+		if (GGameType & GAME_WolfSP)
+		{
+			R_FindImageFile(name, parms[0], parms[1], parms[3], false, IMG8MODE_Normal, NULL, parms[2]);
+		}
+		else if (GGameType & GAME_ET)
+		{
+			R_FindImageFile(name, parms[0], parms[1], parms[2], false, IMG8MODE_Normal, NULL, false, parms[3]);
+		}
+		else
+		{
+			R_FindImageFile(name, parms[0], parms[1], parms[2]);
+		}
+	}
+
+	FS_FreeFile(buf);
 }
 
 //==========================================================================
@@ -1805,6 +1915,9 @@ void R_InitImages()
 
 	// create default texture and white texture
 	R_CreateBuiltinImages();
+
+	// Ridah, load the cache media, if they were loaded previously, they'll be restored from the backupImages
+	R_LoadCacheImages();
 
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -1883,6 +1996,33 @@ void GL_TextureMode(const char* string)
 	}
 }
 
+void GL_TextureAnisotropy(float anisotropy)
+{
+	if (r_ext_texture_filter_anisotropic->integer == 1)
+	{
+		if (anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy)
+		{
+			common->Printf("anisotropy out of range\n");
+			return;
+		}
+	}
+
+	gl_anisotropy = anisotropy;
+
+	if (!glConfig.anisotropicAvailable)
+	{
+		return;
+	}
+
+	// change all the existing texture objects
+	for (int i = 0; i < tr.numImages ; i++)
+	{
+		image_t* glt = tr.images[i];
+		GL_Bind(glt);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_anisotropy);
+	}
+}
+
 //==========================================================================
 //
 //	R_ImageList_f
@@ -1918,6 +2058,12 @@ void R_ImageList_f()
 			break;
 		case GL_RGB8:
 			Log::write("RGB8 ");
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+			common->Printf("DXT3 ");
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			common->Printf("DXT5 ");
 			break;
 		case GL_RGB4_S3TC:
 			Log::write("S3TC ");
@@ -2324,4 +2470,39 @@ void R_GetPicSize(int* w, int* h, const char* pic)
 	}
 	*w = gl->width;
 	*h = gl->height;
+}
+
+void R_BackupImages()
+{
+	if (!r_cache->integer)
+	{
+		return;
+	}
+	if (!r_cacheShaders->integer)
+	{
+		return;
+	}
+
+	// backup the ImageHashTable
+	Com_Memcpy(backupHashTable, ImageHashTable, sizeof(backupHashTable));
+
+	// pretend we have cleared the list
+	numBackupImages = tr.numImages;
+	tr.numImages = 0;
+
+	Com_Memset(glState.currenttextures, 0, sizeof(glState.currenttextures));
+	if (qglBindTexture)
+	{
+		if (qglActiveTextureARB)
+		{
+			GL_SelectTexture(1);
+			qglBindTexture(GL_TEXTURE_2D, 0);
+			GL_SelectTexture(0);
+			qglBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else
+		{
+			qglBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
 }
