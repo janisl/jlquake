@@ -1598,14 +1598,14 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_CreateDefaultImage
 //
 //==========================================================================
 
-static void R_CreateDefaultImage()
+//static 
+void R_CreateDefaultImage()
 {
 	// the default image will be a box, to allow you to see the mapping coordinates
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
@@ -1641,7 +1641,8 @@ static void R_CreateDefaultImage()
 //
 //==========================================================================
 
-static void R_CreateDlightImage()
+//static 
+void R_CreateDlightImage()
 {
 	enum { DLIGHT_SIZE = 16 };
 	byte data[DLIGHT_SIZE][DLIGHT_SIZE][4];
@@ -1733,7 +1734,8 @@ float R_FogFactor(float s, float t)
 //
 //==========================================================================
 
-static void R_CreateFogImage()
+//static 
+void R_CreateFogImage()
 {
 	enum { FOG_S = 256 };
 	enum { FOG_T = 32 };
@@ -1767,6 +1769,66 @@ static void R_CreateFogImage()
 	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
+//static 
+void R_CreateFogImageET()
+{
+	enum { FOG_S = 16 };
+	enum { FOG_T = 16 };
+	float borderColor[4];
+
+	// allocate table for image
+	byte* data = new byte[FOG_S * FOG_T * 4];
+
+	// ydnar: new, linear fog texture generating algo for GL_CLAMP_TO_EDGE (OpenGL 1.2+)
+
+	// S is distance, T is depth
+	for (int x = 0; x < FOG_S; x++)
+	{
+		for (int y = 0; y < FOG_T; y++)
+		{
+			int alpha = 270 * ((float)x / FOG_S) * ((float)y / FOG_T);    // need slop room for fp round to 0
+			if (alpha < 0 )
+			{
+				alpha = 0;
+			}
+			else if (alpha > 255)
+			{
+				alpha = 255;
+			}
+
+			// ensure edge/corner cases are fully transparent (at 0,0) or fully opaque (at 1,N where N is 0-1.0)
+			if (x == 0)
+			{
+				alpha = 0;
+			}
+			else if (x == (FOG_S - 1))
+			{
+				alpha = 255;
+			}
+
+			data[(y * FOG_S + x) * 4 + 0] =
+			data[(y * FOG_S + x) * 4 + 1] =
+			data[(y * FOG_S + x) * 4 + 2] = 255;
+			data[(y * FOG_S + x) * 4 + 3] = alpha;
+		}
+	}
+
+	// standard openGL clamping doesn't really do what we want -- it includes
+	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
+	// what we want.
+	tr.fogImage = R_CreateImage("*fog", (byte *)data, FOG_S, FOG_T, false, false, GL_CLAMP, false, false);
+	delete[] data;
+
+	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
+	borderColor[0] = 1.0;
+	borderColor[1] = 1.0;
+	borderColor[2] = 1.0;
+	borderColor[3] = 1;
+
+	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+}
+
+#if 0
 //==========================================================================
 //
 //	R_CreateBuiltinImages

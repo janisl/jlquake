@@ -67,9 +67,9 @@ image_t* R_FindImage(const char* name);
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap = false, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL, bool characterMIP = false, bool lightmap = false);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
-#if 0
 void R_InitFogTable();
 float R_FogFactor(float S, float T);
+#if 0
 void R_InitImages();
 void R_DeleteTextures();
 void GL_TextureMode(const char* string);

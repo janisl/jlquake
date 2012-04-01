@@ -270,175 +270,8 @@ void R_ImageList_f( void ) {
 
 //=======================================================================
 
-/*
-================
-R_CreateDlightImage
-================
-*/
-#define DLIGHT_SIZE 16
-static void R_CreateDlightImage( void ) {
-	int x,y;
-	byte data[DLIGHT_SIZE][DLIGHT_SIZE][4];
-	int b;
-
-	// make a centered inverse-square falloff blob for dynamic lighting
-	for ( x = 0 ; x < DLIGHT_SIZE ; x++ ) {
-		for ( y = 0 ; y < DLIGHT_SIZE ; y++ ) {
-			float d;
-
-			d = ( DLIGHT_SIZE / 2 - 0.5f - x ) * ( DLIGHT_SIZE / 2 - 0.5f - x ) +
-				( DLIGHT_SIZE / 2 - 0.5f - y ) * ( DLIGHT_SIZE / 2 - 0.5f - y );
-			b = 4000 / d;
-			if ( b > 255 ) {
-				b = 255;
-			} else if ( b < 75 ) {
-				b = 0;
-			}
-			data[y][x][0] =
-				data[y][x][1] =
-					data[y][x][2] = b;
-			data[y][x][3] = 255;
-		}
-	}
-	tr.dlightImage = R_CreateImage( "*dlight", (byte *)data, DLIGHT_SIZE, DLIGHT_SIZE, qfalse, qfalse, GL_CLAMP, false, false );
-}
-
-
-/*
-=================
-R_InitFogTable
-=================
-*/
-void R_InitFogTable( void ) {
-	int i;
-	float d;
-	float exp;
-
-	exp = 0.5;
-
-	for ( i = 0 ; i < FOG_TABLE_SIZE ; i++ ) {
-		d = pow( (float)i / ( FOG_TABLE_SIZE - 1 ), exp );
-
-		// ydnar: changed to linear fog
-		tr.fogTable[ i ] = d;
-		//%	tr.fogTable[ i ] = (i / 255.0f);
-	}
-}
-
-/*
-================
-R_FogFactor
-
-Returns a 0.0 to 1.0 fog density value
-This is called for each texel of the fog texture on startup
-and for each vertex of transparent shaders in fog dynamically
-================
-*/
-float   R_FogFactor( float s, float t ) {
-	float d;
-
-	s -= 1.0 / 512;
-	if ( s < 0 ) {
-		return 0;
-	}
-	if ( t < 1.0 / 32 ) {
-		return 0;
-	}
-	if ( t < 31.0 / 32 ) {
-		s *= ( t - 1.0f / 32.0f ) / ( 30.0f / 32.0f );
-	}
-
-	// we need to leave a lot of clamp range
-	s *= 8;
-
-	if ( s > 1.0 ) {
-		s = 1.0;
-	}
-
-	d = tr.fogTable[ (int)( s * ( FOG_TABLE_SIZE - 1 ) ) ];
-
-	return d;
-}
-
-
-void SaveTGAAlpha( char *name, byte **pic, int width, int height );
-
-/*
-================
-R_CreateFogImage
-================
-*/
-#define FOG_S       16
-#define FOG_T       16  // ydnar: used to be 32
-						// arnout: yd changed it to 256, changing to 16
-static void R_CreateFogImage( void ) {
-	int x, y, alpha;
-	byte    *data;
-	//float	d;
-	float borderColor[4];
-
-
-	// allocate table for image
-	data = (byte*)ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
-
-	// ydnar: old fog texture generating algo
-
-	// S is distance, T is depth
-	/*for (x=0 ; x<FOG_S ; x++) {
-		for (y=0 ; y<FOG_T ; y++) {
-			d = R_FogFactor( ( x + 0.5f ) / FOG_S, ( y + 0.5f ) / FOG_T );
-
-			data[(y*FOG_S+x)*4+0] =
-			data[(y*FOG_S+x)*4+1] =
-			data[(y*FOG_S+x)*4+2] = 255;
-			data[(y*FOG_S+x)*4+3] = 255 * d;
-		}
-	}*/
-
-	//%	SaveTGAAlpha( "fog_q3.tga", &data, FOG_S, FOG_T );
-
-	// ydnar: new, linear fog texture generating algo for GL_CLAMP_TO_EDGE (OpenGL 1.2+)
-
-	// S is distance, T is depth
-	for ( x = 0 ; x < FOG_S ; x++ ) {
-		for ( y = 0 ; y < FOG_T ; y++ ) {
-			alpha = 270 * ( (float) x / FOG_S ) * ( (float) y / FOG_T );    // need slop room for fp round to 0
-			if ( alpha < 0 ) {
-				alpha = 0;
-			} else if ( alpha > 255 ) {
-				alpha = 255;
-			}
-
-			// ensure edge/corner cases are fully transparent (at 0,0) or fully opaque (at 1,N where N is 0-1.0)
-			if ( x == 0 ) {
-				alpha = 0;
-			} else if ( x == ( FOG_S - 1 ) ) {
-				alpha = 255;
-			}
-
-			data[( y * FOG_S + x ) * 4 + 0] =
-				data[( y * FOG_S + x ) * 4 + 1] =
-					data[( y * FOG_S + x ) * 4 + 2] = 255;
-			data[( y * FOG_S + x ) * 4 + 3] = alpha;  //%	255*d;
-		}
-	}
-
-	//%	SaveTGAAlpha( "fog_yd.tga", &data, FOG_S, FOG_T );
-
-	// standard openGL clamping doesn't really do what we want -- it includes
-	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
-	// what we want.
-	tr.fogImage = R_CreateImage( "*fog", (byte *)data, FOG_S, FOG_T, qfalse, qfalse, GL_CLAMP, false, false );
-	ri.Hunk_FreeTempMemory( data );
-
-	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
-	borderColor[0] = 1.0;
-	borderColor[1] = 1.0;
-	borderColor[2] = 1.0;
-	borderColor[3] = 1;
-
-	qglTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
-}
+void R_CreateDlightImage( void );
+void R_CreateFogImageET( void );
 
 /*
 ==================
@@ -446,37 +279,7 @@ R_CreateDefaultImage
 ==================
 */
 #define DEFAULT_SIZE    16
-static void R_CreateDefaultImage( void ) {
-	int x, y;
-	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
-
-	// the default image will be a box, to allow you to see the mapping coordinates
-	memset( data, 0, sizeof( data ) );
-	for ( x = 0 ; x < DEFAULT_SIZE ; x++ ) {
-		for ( y = 0 ; y < 2; y++ ) {
-			data[y][x][0] = 255;
-			data[y][x][1] = 128;
-			data[y][x][2] = 0;
-			data[y][x][3] = 255;
-
-			data[x][y][0] = 255;
-			data[x][y][1] = 128;
-			data[x][y][2] = 0;
-			data[x][y][3] = 255;
-
-			data[DEFAULT_SIZE - 1 - y][x][0] = 255;
-			data[DEFAULT_SIZE - 1 - y][x][1] = 128;
-			data[DEFAULT_SIZE - 1 - y][x][2] = 0;
-			data[DEFAULT_SIZE - 1 - y][x][3] = 255;
-
-			data[x][DEFAULT_SIZE - 1 - y][0] = 255;
-			data[x][DEFAULT_SIZE - 1 - y][1] = 128;
-			data[x][DEFAULT_SIZE - 1 - y][2] = 0;
-			data[x][DEFAULT_SIZE - 1 - y][3] = 255;
-		}
-	}
-	tr.defaultImage = R_CreateImage( "*default", (byte *)data, DEFAULT_SIZE, DEFAULT_SIZE, qtrue, qfalse, GL_REPEAT, false, false );
-}
+void R_CreateDefaultImage( void );
 
 /*
 ==================
@@ -510,7 +313,7 @@ void R_CreateBuiltinImages( void ) {
 	}
 
 	R_CreateDlightImage();
-	R_CreateFogImage();
+	R_CreateFogImageET();
 }
 
 
