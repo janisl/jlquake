@@ -774,7 +774,6 @@ void InitOpenGLSubsystem()
 	qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
 	glConfig.maxTextureSize = temp;
 
-#if 0
 	//	Load palette used by 8-bit graphics files.
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -789,7 +788,6 @@ void InitOpenGLSubsystem()
 	{
 		Cvar_SetValue("r_texsort", 0.0);
 	}
-#endif
 }
 
 #if 0
