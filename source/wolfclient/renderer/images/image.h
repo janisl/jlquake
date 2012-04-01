@@ -70,15 +70,12 @@ void R_GammaCorrect(byte* Buffer, int BufferSize);
 void R_InitFogTable();
 float R_FogFactor(float S, float T);
 void R_InitImages();
-#if 0
 void R_DeleteTextures();
 void GL_TextureMode(const char* string);
-#endif
+void GL_TextureAnisotropy(float anisotropy);
 void R_ScrapUpload();
-#if 0
 void R_ImageList_f();
 int R_SumOfUsedImages();
-#endif
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 

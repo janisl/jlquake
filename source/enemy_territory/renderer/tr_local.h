@@ -131,8 +131,6 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, 
 ** GL wrapper/helper functions
 */
 void    GL_SetDefaultState( void );
-void    GL_TextureMode( const char *string );
-void    GL_TextureAnisotropy( float anisotropy );
 
 void    RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
 void    RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
@@ -157,13 +155,10 @@ model_t     *R_AllocModel( void );
 
 void        R_Init( void );
 
-void    R_ImageList_f( void );
 void    R_SkinList_f( void );
 void    R_ScreenShot_f( void );
 void    R_ScreenShotJPEG_f( void );
 
-void    R_DeleteTextures( void );
-int     R_SumOfUsedImages( void );
 void    R_InitSkins( void );
 skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
 
@@ -570,7 +565,6 @@ extern int skyboxportal;
 // Ridah, virtual memory
 void *R_Hunk_Begin( void );
 void R_Hunk_End( void );
-void R_FreeImageBuffer( void );
 
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 

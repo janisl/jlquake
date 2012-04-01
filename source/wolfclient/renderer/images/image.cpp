@@ -77,10 +77,8 @@ int numBackupImages = 0;
 //static 
 image_t* backupHashTable[IMAGE_HASH_SIZE];
 
-//static 
-int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
-//static 
-int			gl_filter_max = GL_LINEAR;
+static int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
+static int			gl_filter_max = GL_LINEAR;
 
 float gl_anisotropy = 1.0;
 
@@ -108,8 +106,7 @@ static byte mipBlendColors[16][4] =
 	{0,0,255,128},
 };
 
-//static 
-textureMode_t modes[] =
+static textureMode_t modes[] =
 {
 	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
 	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
@@ -1933,7 +1930,6 @@ void R_InitImages()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_DeleteTextures
@@ -2005,6 +2001,33 @@ void GL_TextureMode(const char* string)
 	}
 }
 
+void GL_TextureAnisotropy(float anisotropy)
+{
+	if (r_ext_texture_filter_anisotropic->integer == 1)
+	{
+		if (anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy)
+		{
+			common->Printf("anisotropy out of range\n");
+			return;
+		}
+	}
+
+	gl_anisotropy = anisotropy;
+
+	if (!glConfig.anisotropicAvailable)
+	{
+		return;
+	}
+
+	// change all the existing texture objects
+	for (int i = 0; i < tr.numImages ; i++)
+	{
+		image_t* glt = tr.images[i];
+		GL_Bind(glt);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_anisotropy);
+	}
+}
+
 //==========================================================================
 //
 //	R_ImageList_f
@@ -2040,6 +2063,12 @@ void R_ImageList_f()
 			break;
 		case GL_RGB8:
 			Log::write("RGB8 ");
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+			common->Printf("DXT3 ");
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			common->Printf("DXT5 ");
 			break;
 		case GL_RGB4_S3TC:
 			Log::write("S3TC ");
@@ -2123,6 +2152,7 @@ const char* R_GetImageName(qhandle_t Handle)
 	return tr.images[Handle]->imgName;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_UploadCinematic
@@ -2179,6 +2209,7 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 		delete[] resampled;
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -2447,4 +2478,3 @@ void R_GetPicSize(int* w, int* h, const char* pic)
 	*w = gl->width;
 	*h = gl->height;
 }
-#endif

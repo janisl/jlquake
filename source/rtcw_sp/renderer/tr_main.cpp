@@ -1836,7 +1836,6 @@ void R_RenderView( viewParms_t *parms ) {
 		static int lastTime;
 
 		if ( ( lastTime > tr.refdef.time ) || ( lastTime < ( tr.refdef.time - 200 ) ) ) {
-			R_FreeImageBuffer();    // clear all image buffers
 			R_PurgeShaders( 10 );
 			R_PurgeBackupImages( 1 );
 			R_PurgeModels( 1 );

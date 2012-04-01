@@ -400,7 +400,6 @@ void R_EndFrame(int* frontEndMsec, int* backEndMsec);
 
 image_t* R_PicFromWad(const char* Name);
 image_t* R_PicFromWadRepeat(const char* name);
-#if 0
 qhandle_t R_GetImageHandle(image_t* Image);
 void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height);
 void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height);
@@ -414,15 +413,18 @@ image_t* R_CachePicRepeat(const char* path);
 image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels);
 image_t* R_RegisterPic(const char* name);
 image_t* R_RegisterPicRepeat(const char* name);
+#if 0
 void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation);
 void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation, int classIndex);
 byte* R_LoadQuakeWorldSkinData(const char* name);
+#endif
 
 const char* R_GetImageName(qhandle_t Handle);
 int R_GetImageWidth(image_t* pic);
 int R_GetImageHeight(image_t* pic);
 void R_GetPicSize(int* w, int* h, const char* name);
 
+#if 0
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
 
 void R_LoadWorld(const char* Name);

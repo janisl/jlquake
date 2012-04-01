@@ -736,7 +736,6 @@ void RE_Shutdown( qboolean destroyWindow ) {
 
 		// Ridah, release the virtual memory
 		R_Hunk_End();
-		R_FreeImageBuffer();
 		ri.Tag_Free();  // wipe all render alloc'd zone memory
 	}
 
