@@ -983,7 +983,7 @@ R_CacheImageFree
 */
 void R_CacheImageFree( void *ptr ) {
 	if ( r_cache->integer && r_cacheShaders->integer ) {
-		free( ptr );
+		Mem_Free( ptr );
 //DAJ TEST		ri.Free( ptr );	//DAJ was CO
 	}
 }
