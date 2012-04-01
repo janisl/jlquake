@@ -156,7 +156,6 @@ qhandle_t   RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlight
 model_t     *R_AllocModel( void );
 
 void        R_Init( void );
-image_t     *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmip, int glWrapClampMode, qboolean lightmap );
 
 void        R_SetColorMappings( void );
 void        R_GammaCorrect( byte *buffer, int bufSize );

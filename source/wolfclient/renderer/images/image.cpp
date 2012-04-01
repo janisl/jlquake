@@ -1370,7 +1370,6 @@ image_t *R_FindCachedImage(const char* name, int hash)
 	return NULL;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_FindImageFile
@@ -1380,11 +1379,25 @@ image_t *R_FindCachedImage(const char* name, int hash)
 //==========================================================================
 
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
-	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels)
+	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels,
+	bool characterMIP, bool lightmap)
 {
 	if (!name)
 	{
 		return NULL;
+	}
+
+	// Ridah, caching
+	if (r_cacheGathering->integer)
+	{
+		if (GGameType & GAME_WolfSP)
+		{
+			Cbuf_ExecuteText(EXEC_NOW, va("cache_usedfile image %s %i %i %i %i\n", name, mipmap, allowPicmip, characterMIP, glWrapClampMode));
+		}
+		else
+		{
+			Cbuf_ExecuteText(EXEC_NOW, va("cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode));
+		}
 	}
 
 	//
@@ -1404,12 +1417,28 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 			{
 				Log::develWrite(S_COLOR_RED "WARNING: reused image %s with mixed allowPicmip parm\n", name);
 			}
+			if (image->characterMIP != characterMIP)
+			{
+				common->DPrintf(S_COLOR_RED "WARNING: reused image %s with mixed characterMIP parm\n", name);
+			}
 			if (image->wrapClampMode != glWrapClampMode)
 			{
 				Log::write("WARNING: reused image %s with mixed glWrapClampMode parm\n", name);
 			}
 		}
 		return image;
+	}
+
+	// Ridah, check the cache
+	// ydnar: don't do this for lightmaps
+	if (!lightmap)
+	{
+		int hash = generateHashValue(name);
+		image = R_FindCachedImage(name, hash);
+		if (image)
+		{
+			return image;
+		}
 	}
 
 	//
@@ -1437,11 +1466,28 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 		}
 	}
 
-	image = R_CreateImage(name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, AllowScrap);
+	// Arnout: apply lightmap colouring
+	int allowCompress = tr.allowCompress;
+	if (lightmap)
+	{
+		R_ProcessLightmap(pic, 4, width, height, pic);
+		// ydnar: no texture compression
+		tr.allowCompress = -1;
+	}
+
+	image = R_CreateImage(name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, AllowScrap, characterMIP);
 	delete[] pic;
+
+	// ydnar: no texture compression
+	if (lightmap)
+	{
+		tr.allowCompress = allowCompress;
+	}
+
 	return image;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_SetColorMappings

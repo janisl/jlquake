@@ -627,7 +627,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				continue;
 			} else
 			{
-				stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, qfalse );
+				stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT );
 				if ( !stage->bundle[0].image[0] ) {
 					ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 					return qfalse;
@@ -644,7 +644,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				return qfalse;
 			}
 
-			stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_CLAMP, qfalse );
+			stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_CLAMP );
 			if ( !stage->bundle[0].image[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 				return qfalse;
@@ -681,7 +681,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				}
 				continue;
 			} else {
-				stage->bundle[0].image[0] = R_FindImageFile( token, qfalse, qfalse, GL_CLAMP, qtrue );
+				stage->bundle[0].image[0] = R_FindImageFile( token, qfalse, qfalse, GL_CLAMP, false, IMG8MODE_Normal, NULL, false, qtrue );
 				if ( !stage->bundle[0].image[0] ) {
 					ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 					return qfalse;
@@ -710,7 +710,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				}
 				num = stage->bundle[0].numImageAnimations;
 				if ( num < MAX_IMAGE_ANIMATIONS ) {
-					stage->bundle[0].image[num] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, qfalse );
+					stage->bundle[0].image[num] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT );
 					if ( !stage->bundle[0].image[num] ) {
 						ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 						return qfalse;
@@ -1216,7 +1216,7 @@ static void ParseSkyParms( const char **text ) {
 		for ( i = 0 ; i < 6 ; i++ ) {
 			String::Sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
 						 , token, suf[i] );
-			shader.sky.outerbox[i] = R_FindImageFile( ( char * ) pathname, qtrue, qtrue, GL_CLAMP, qfalse );
+			shader.sky.outerbox[i] = R_FindImageFile( ( char * ) pathname, qtrue, qtrue, GL_CLAMP );
 			if ( !shader.sky.outerbox[i] ) {
 				shader.sky.outerbox[i] = tr.defaultImage;
 			}
@@ -1246,7 +1246,7 @@ static void ParseSkyParms( const char **text ) {
 		for ( i = 0 ; i < 6 ; i++ ) {
 			String::Sprintf( pathname, sizeof( pathname ), "%s_%s.tga"
 						 , token, suf[i] );
-			shader.sky.innerbox[i] = R_FindImageFile( ( char * ) pathname, qtrue, qtrue, GL_REPEAT, qfalse );
+			shader.sky.innerbox[i] = R_FindImageFile( ( char * ) pathname, qtrue, qtrue, GL_REPEAT );
 			if ( !shader.sky.innerbox[i] ) {
 				shader.sky.innerbox[i] = tr.defaultImage;
 			}
@@ -2894,7 +2894,7 @@ void R_FindLightmap( int *lightmapIndex ) {
 
 	// attempt to load an external lightmap
 	sprintf( fileName, "%s/" EXTERNAL_LIGHTMAP, tr.worldDir, *lightmapIndex );
-	image = R_FindImageFile( fileName, qfalse, qfalse, GL_CLAMP, qtrue );
+	image = R_FindImageFile( fileName, qfalse, qfalse, GL_CLAMP, false, IMG8MODE_Normal, NULL, false, qtrue );
 	if ( image == NULL ) {
 		*lightmapIndex = LIGHTMAP_BY_VERTEX;
 		return;
@@ -3071,7 +3071,7 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 
 	// if not defined in the in-memory shader descriptions,
 	// look for a single TGA, BMP, or PCX
-	image = R_FindImageFile( fileName, !shader.noMipMaps, !shader.noPicMip, mipRawImage ? GL_REPEAT : GL_CLAMP, qfalse );
+	image = R_FindImageFile( fileName, !shader.noMipMaps, !shader.noPicMip, mipRawImage ? GL_REPEAT : GL_CLAMP );
 	if ( !image ) {
 		//ri.Printf( PRINT_DEVELOPER, "Couldn't find image for shader %s\n", name );
 		ri.Printf( PRINT_WARNING, "WARNING: Couldn't find image for shader %s\n", name );

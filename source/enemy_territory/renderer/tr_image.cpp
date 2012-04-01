@@ -285,127 +285,6 @@ void R_ImageList_f( void ) {
 //=======================================================================
 
 /*
-===============
-R_FindImageFile
-
-Finds or loads the given image.
-Returns NULL if it fails, not a default image.
-==============
-*/
-image_t *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmip, int glWrapClampMode, qboolean lightmap ) {
-	image_t     *image;
-	int width, height;
-	byte        *pic;
-	long hash;
-	qboolean allowCompress = qfalse;
-
-
-	if ( !name ) {
-		return NULL;
-	}
-
-	hash = generateHashValue( name );
-
-	// Ridah, caching
-	if ( r_cacheGathering->integer ) {
-		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode ) );
-	}
-
-	//
-	// see if the image is already loaded
-	//
-	image = R_FindImage(name);
-	if (image) {
-		// the white image can be used with any set of parms, but other mismatches are errors
-		if ( String::Cmp( name, "*white" ) ) {
-			if ( image->mipmap != mipmap ) {
-				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
-			}
-			if ( image->allowPicmip != allowPicmip ) {
-				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
-			}
-			if ( image->wrapClampMode != glWrapClampMode ) {
-				ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
-			}
-		}
-		return image;
-	}
-
-	// Ridah, check the cache
-	// TTimo: assignment used as truth value
-	// ydnar: don't do this for lightmaps
-	if ( !lightmap ) {
-		image = R_FindCachedImage( name, hash );
-		if ( image != NULL ) {
-			return image;
-		}
-	}
-
-	//
-	// load the pic from disk
-	//
-	R_LoadImage( name, &pic, &width, &height );
-	if ( pic == NULL ) {                                    // if we dont get a successful load
-// TTimo: Duane changed to _DEBUG in all cases
-// I'd still want that code in the release builds on linux
-// (possibly for mod authors)
-// /me maintained off for win32, using otherwise but printing diagnostics as developer
-#if !defined( _WIN32 )
-		char altname[MAX_QPATH];                              // copy the name
-		int len;                                              //
-		String::Cpy( altname, name );                              //
-		len = String::Length( altname );                              //
-		altname[len - 3] = String::ToUpper( altname[len - 3] );             // and try upper case extension for unix systems
-		altname[len - 2] = String::ToUpper( altname[len - 2] );             //
-		altname[len - 1] = String::ToUpper( altname[len - 1] );             //
-		ri.Printf( PRINT_DEVELOPER, "trying %s...", altname ); //
-		R_LoadImage( altname, &pic, &width, &height );        //
-		if ( pic == NULL ) {                                    // if that fails
-			ri.Printf( PRINT_DEVELOPER, "no\n" );              //
-			return NULL;                                      // bail
-		}                                                     //
-		ri.Printf( PRINT_DEVELOPER, "yes\n" );                 //
-#else
-		return NULL;
-#endif
-	}
-
-	// Arnout: apply lightmap colouring
-	if ( lightmap ) {
-		R_ProcessLightmap( pic, 4, width, height, pic );
-
-		// ydnar: no texture compression
-		if ( lightmap ) {
-			allowCompress = tr.allowCompress;
-		}
-		tr.allowCompress = -1;
-	}
-
-//#ifdef _DEBUG
-#define CHECKPOWEROF2
-//#endif // _DEBUG
-
-#ifdef CHECKPOWEROF2
-	if ( ( ( width - 1 ) & width ) || ( ( height - 1 ) & height ) ) {
-		Com_Printf( "^1Image not power of 2 scaled: %s\n", name );
-		return NULL;
-	}
-#endif // CHECKPOWEROF2
-
-	image = R_CreateImage( ( char * ) name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, false, false );
-
-	//ri.Free( pic );
-
-	// ydnar: no texture compression
-	if ( lightmap ) {
-		tr.allowCompress = allowCompress;
-	}
-
-	return image;
-}
-
-
-/*
 ================
 R_CreateDlightImage
 ================
@@ -1331,7 +1210,7 @@ void R_LoadCacheImages( void ) {
 			token = String::ParseExt( &pString, qfalse );
 			parms[i] = String::Atoi( token );
 		}
-		R_FindImageFile( name, parms[0], parms[1], parms[2], parms[3] );
+		R_FindImageFile( name, parms[0], parms[1], parms[2], false, IMG8MODE_Normal, NULL, false, parms[3] );
 	}
 
 	ri.Hunk_FreeTempMemory( buf );

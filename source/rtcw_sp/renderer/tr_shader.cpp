@@ -623,10 +623,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				continue;
 			} else
 			{
-//----(SA)	modified
-//				stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT );
-				stage->bundle[0].image[0] = R_FindImageFileExt( token, !shader.noMipMaps, !shader.noPicMip, shader.characterMip, GL_REPEAT );
-//----(SA)	end
+				stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, false, IMG8MODE_Normal, NULL, shader.characterMip );
 				if ( !stage->bundle[0].image[0] ) {
 					ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 					return qfalse;
@@ -643,7 +640,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				return qfalse;
 			}
 
-			stage->bundle[0].image[0] = R_FindImageFileExt( token, !shader.noMipMaps, !shader.noPicMip, shader.characterMip, GL_CLAMP );
+			stage->bundle[0].image[0] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_CLAMP, false, IMG8MODE_Normal, NULL, shader.characterMip );
 			if ( !stage->bundle[0].image[0] ) {
 				ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 				return qfalse;
@@ -670,7 +667,7 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text ) {
 				}
 				num = stage->bundle[0].numImageAnimations;
 				if ( num < MAX_IMAGE_ANIMATIONS ) {
-					stage->bundle[0].image[num] = R_FindImageFileExt( token, !shader.noMipMaps, !shader.noPicMip, shader.characterMip, GL_REPEAT );
+					stage->bundle[0].image[num] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, false, IMG8MODE_Normal, NULL, shader.characterMip );
 					if ( !stage->bundle[0].image[num] ) {
 						ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 						return qfalse;
