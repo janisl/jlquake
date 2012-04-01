@@ -162,7 +162,6 @@ void    R_SkinList_f( void );
 void    R_ScreenShot_f( void );
 void    R_ScreenShotJPEG_f( void );
 
-void    R_InitImages( void );
 void    R_DeleteTextures( void );
 int     R_SumOfUsedImages( void );
 void    R_InitSkins( void );
@@ -491,7 +490,6 @@ qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
 
 void R_CacheImageFree( void *ptr );
-void R_LoadCacheImages( void );
 void R_PurgeBackupImages( int purgeCount );
 void R_BackupImages( void );
 

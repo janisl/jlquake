@@ -1604,8 +1604,7 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 //
 //==========================================================================
 
-//static 
-void R_CreateDefaultImage()
+static void R_CreateDefaultImage()
 {
 	// the default image will be a box, to allow you to see the mapping coordinates
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
@@ -1641,8 +1640,7 @@ void R_CreateDefaultImage()
 //
 //==========================================================================
 
-//static 
-void R_CreateDlightImage()
+static void R_CreateDlightImage()
 {
 	enum { DLIGHT_SIZE = 16 };
 	byte data[DLIGHT_SIZE][DLIGHT_SIZE][4];
@@ -1734,8 +1732,7 @@ float R_FogFactor(float s, float t)
 //
 //==========================================================================
 
-//static 
-void R_CreateFogImage()
+static void R_CreateFogImage()
 {
 	enum { FOG_S = 256 };
 	enum { FOG_T = 32 };
@@ -1769,8 +1766,7 @@ void R_CreateFogImage()
 	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
-//static 
-void R_CreateFogImageET()
+static void R_CreateFogImageET()
 {
 	enum { FOG_S = 16 };
 	enum { FOG_T = 16 };
@@ -1828,14 +1824,14 @@ void R_CreateFogImageET()
 	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
-#if 0
 //==========================================================================
 //
 //	R_CreateBuiltinImages
 //
 //==========================================================================
 
-static void R_CreateBuiltinImages()
+//static 
+void R_CreateBuiltinImages()
 {
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
 
@@ -1853,11 +1849,63 @@ static void R_CreateBuiltinImages()
 
 	R_CreateDlightImage();
 
-	R_CreateFogImage();
+	if (GGameType & GAME_ET)
+	{
+		R_CreateFogImageET();
+	}
+	else
+	{
+		R_CreateFogImage();
+	}
 
 	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 
 	R_InitParticleTexture();
+}
+
+static void R_LoadCacheImages()
+{
+	if (numBackupImages)
+	{
+		return;
+	}
+
+	int len = FS_ReadFile("image.cache", NULL);
+	if ( len <= 0 )
+	{
+		return;
+	}
+
+	void* buf;
+	FS_ReadFile("image.cache", &buf);
+	const char* pString = (char*)buf;
+
+	char* token;
+	while ((token = String::ParseExt(&pString, true)) && token[0])
+	{
+		char name[MAX_QPATH];
+		String::NCpyZ(name, token, sizeof(name));
+		int parms[4];
+		for (int i = 0; i < (GGameType & (GAME_WolfSP | GAME_ET) ? 4 : 3); i++)
+		{
+			token = String::ParseExt(&pString, false);
+			parms[i] = String::Atoi(token);
+		}
+		if (GGameType & GAME_WolfSP)
+		{
+			R_FindImageFile(name, parms[0], parms[1], parms[3], false, IMG8MODE_Normal, NULL, parms[2]);
+		}
+		else if (GGameType & GAME_ET)
+		{
+			R_FindImageFile(name, parms[0], parms[1], parms[2], false, IMG8MODE_Normal, NULL, false, parms[3]);
+		}
+		else
+		{
+			R_FindImageFile(name, parms[0], parms[1], parms[2]);
+		}
+	}
+
+	FS_FreeFile(buf);
 }
 
 //==========================================================================
@@ -1876,12 +1924,16 @@ void R_InitImages()
 	// create default texture and white texture
 	R_CreateBuiltinImages();
 
+	// Ridah, load the cache media, if they were loaded previously, they'll be restored from the backupImages
+	R_LoadCacheImages();
+
 	if (GGameType & GAME_QuakeHexen)
 	{
 		R_LoadWadFile();
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_DeleteTextures
