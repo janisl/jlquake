@@ -193,8 +193,6 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-extern shaderCommands_t tess;
-
 void RB_BeginSurface( shader_t *shader, int fogNum );
 void RB_EndSurface( void );
 void RB_CheckOverflow( int verts, int indexes );

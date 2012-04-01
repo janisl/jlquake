@@ -18,6 +18,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/particle.cpp
 	../client/renderer/qgl.cpp
 	renderer/scene.cpp
+	renderer/shade.cpp
 	renderer/sky.cpp
 	../client/renderer/state.cpp
 	../client/renderer/wad.cpp
