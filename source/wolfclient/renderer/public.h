@@ -396,9 +396,11 @@ void R_Shutdown(bool destroyWindow);
 
 void R_BeginFrame(stereoFrame_t stereoFrame);
 void R_EndFrame(int* frontEndMsec, int* backEndMsec);
+#endif
 
 image_t* R_PicFromWad(const char* Name);
 image_t* R_PicFromWadRepeat(const char* name);
+#if 0
 qhandle_t R_GetImageHandle(image_t* Image);
 void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height);
 void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height);

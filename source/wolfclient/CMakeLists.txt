@@ -19,6 +19,7 @@ set(WOLFCLIENT_FILES
 	renderer/scene.cpp
 	renderer/sky.cpp
 	../client/renderer/state.cpp
+	../client/renderer/wad.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp

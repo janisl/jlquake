@@ -804,6 +804,7 @@ void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node);
 void R_PushDlightsQ2();
 void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient);
 void R_DlightBmodel(mbrush46_model_t* bmodel);
+#endif
 
 /*
 ====================================================================
@@ -815,7 +816,6 @@ WAD files
 
 void R_LoadWadFile();
 void* R_GetWadLumpByName(const char* name);
-#endif
 
 /*
 ====================================================================
