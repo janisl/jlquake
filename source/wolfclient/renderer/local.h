@@ -945,6 +945,7 @@ Screenshots
 const void* RB_TakeScreenshotCmd(const void* data);
 void R_ScreenShot_f();
 void R_ScreenShotJPEG_f();
+#endif
 
 /*
 ============================================================
@@ -956,6 +957,5 @@ Particles
 
 void R_InitParticleTexture();
 void R_DrawParticles();
-#endif
 
 #endif
