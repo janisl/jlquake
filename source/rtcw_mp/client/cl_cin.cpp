@@ -76,16 +76,15 @@ static void RoQ_init( void );
 *
 ******************************************************************************/
 
-static long ROQ_YY_tab[256];
-static long ROQ_UB_tab[256];
-static long ROQ_UG_tab[256];
-static long ROQ_VG_tab[256];
-static long ROQ_VR_tab[256];
+extern long ROQ_YY_tab[256];
+extern long ROQ_UB_tab[256];
+extern long ROQ_UG_tab[256];
+extern long ROQ_VG_tab[256];
+extern long ROQ_VR_tab[256];
 
+extern short sqrTable[256];
 
 typedef struct {
-	short sqrTable[256];
-
 	long oldXOff, oldYOff, oldysize, oldxsize;
 
 	int currentHandle;
@@ -156,8 +155,8 @@ static void RllSetupTable() {
 	int z;
 
 	for ( z = 0; z < 128; z++ ) {
-		cin.sqrTable[z] = (short)( z * z );
-		cin.sqrTable[z + 128] = (short)( -cin.sqrTable[z] );
+		sqrTable[z] = (short)( z * z );
+		sqrTable[z + 128] = (short)( -sqrTable[z] );
 	}
 }
 
@@ -187,7 +186,7 @@ long RllDecodeMonoToMono( unsigned char *from,short *to,unsigned int size,char s
 	}
 
 	for ( z = 0; z < size; z++ ) {
-		prev = to[z] = (short)( prev + cin.sqrTable[from[z]] );
+		prev = to[z] = (short)( prev + sqrTable[from[z]] );
 	}
 	return size;    //*sizeof(short));
 }
@@ -218,7 +217,7 @@ long RllDecodeMonoToStereo( unsigned char *from,short *to,unsigned int size,char
 	}
 
 	for ( z = 0; z < size; z++ ) {
-		prev = (short)( prev + cin.sqrTable[from[z]] );
+		prev = (short)( prev + sqrTable[from[z]] );
 		to[z * 2 + 0] = to[z * 2 + 1] = (short)( prev );
 	}
 
@@ -253,8 +252,8 @@ long RllDecodeStereoToStereo( unsigned char *from,short *to,unsigned int size,ch
 	}
 
 	for ( z = 0; z < size; z += 2 ) {
-		prevL = (short)( prevL + cin.sqrTable[*zz++] );
-		prevR = (short)( prevR + cin.sqrTable[*zz++] );
+		prevL = (short)( prevL + sqrTable[*zz++] );
+		prevR = (short)( prevR + sqrTable[*zz++] );
 		to[z + 0] = (short)( prevL );
 		to[z + 1] = (short)( prevR );
 	}
@@ -289,8 +288,8 @@ long RllDecodeStereoToMono( unsigned char *from,short *to,unsigned int size,char
 	}
 
 	for ( z = 0; z < size; z += 1 ) {
-		prevL = prevL + cin.sqrTable[from[z * 2]];
-		prevR = prevR + cin.sqrTable[from[z * 2 + 1]];
+		prevL = prevL + sqrTable[from[z * 2]];
+		prevR = prevR + sqrTable[from[z * 2 + 1]];
 		to[z] = (short)( ( prevL + prevR ) / 2 );
 	}
 

@@ -1,4 +1,5 @@
 set(WOLFCLIENT_FILES
+	cinematic/roq.cpp
 	../client/input/keys.cpp
 	../client/input/main.cpp
 	../client/input/unix.cpp
