@@ -76,6 +76,7 @@ void GL_TextureAnisotropy(float anisotropy);
 void R_ScrapUpload();
 void R_ImageList_f();
 int R_SumOfUsedImages();
+void R_BackupImages();
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 

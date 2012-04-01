@@ -2475,3 +2475,38 @@ void R_GetPicSize(int* w, int* h, const char* pic)
 	*w = gl->width;
 	*h = gl->height;
 }
+
+void R_BackupImages()
+{
+	if (!r_cache->integer)
+	{
+		return;
+	}
+	if (!r_cacheShaders->integer)
+	{
+		return;
+	}
+
+	// backup the ImageHashTable
+	Com_Memcpy(backupHashTable, ImageHashTable, sizeof(backupHashTable));
+
+	// pretend we have cleared the list
+	numBackupImages = tr.numImages;
+	tr.numImages = 0;
+
+	Com_Memset(glState.currenttextures, 0, sizeof(glState.currenttextures));
+	if (qglBindTexture)
+	{
+		if (qglActiveTextureARB)
+		{
+			GL_SelectTexture(1);
+			qglBindTexture(GL_TEXTURE_2D, 0);
+			GL_SelectTexture(0);
+			qglBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else
+		{
+			qglBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
+}

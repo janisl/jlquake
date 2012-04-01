@@ -413,29 +413,13 @@ extern image_t  *backupHashTable[IMAGE_HASH_SIZE];
 
 /*
 ===============
-R_CacheImageFree
-===============
-*/
-void R_CacheImageFree( void *ptr ) {
-	if ( r_cache->integer && r_cacheShaders->integer ) {
-//		ri.Free( ptr );
-		Mem_Free( ptr );
-//DAJ TEST		ri.Free( ptr );	//DAJ was CO
-	}
-}
-
-/*
-===============
 R_PurgeImage
 ===============
 */
-void R_PurgeImage( image_t *image ) {
-
-	//%	texnumImages[image->texnum - 1024] = NULL;
+static void R_PurgeImage( image_t *image ) {
 
 	qglDeleteTextures( 1, &image->texnum );
-
-	R_CacheImageFree( image );
+	delete image;
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 	if ( qglBindTexture ) {
@@ -492,40 +476,6 @@ void R_PurgeBackupImages( int purgeCount ) {
 	// all done
 	numBackupImages = 0;
 	lastPurged = 0;
-}
-
-/*
-===============
-R_BackupImages
-===============
-*/
-void R_BackupImages( void ) {
-
-	if ( !r_cache->integer ) {
-		return;
-	}
-	if ( !r_cacheShaders->integer ) {
-		return;
-	}
-
-	// backup the ImageHashTable
-	memcpy( backupHashTable, ImageHashTable, sizeof( backupHashTable ) );
-
-	// pretend we have cleared the list
-	numBackupImages = tr.numImages;
-	tr.numImages = 0;
-
-	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
-	if ( qglBindTexture ) {
-		if ( qglActiveTextureARB ) {
-			GL_SelectTexture( 1 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-			GL_SelectTexture( 0 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else {
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		}
-	}
 }
 
 //bani
