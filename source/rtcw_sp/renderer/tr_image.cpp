@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-long generateHashValue( const char *fname );
-
 #define IMAGE_HASH_SIZE      4096
 extern image_t*        ImageHashTable[IMAGE_HASH_SIZE];
 
@@ -211,12 +209,10 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 				qboolean mip = qtrue;   // mip generation on by default
 
 				// get mipmap info for original texture
-				hash = generateHashValue( surf->shader->name );
-				for ( image = ImageHashTable[hash]; image; image = image->next ) {
-					if ( !String::Cmp( surf->shader->name, image->imgName ) ) {
-						mip = image->mipmap;
-						break;
-					}
+				image = R_FindImage(surf->shader->name);
+				if (image)
+				{
+					mip = image->mipmap;
 				}
 				shd = R_FindShader( surf->shader->name, LIGHTMAP_NONE, mip );
 				shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new

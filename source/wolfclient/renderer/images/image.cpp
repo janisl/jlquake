@@ -80,7 +80,7 @@ image_t* backupHashTable[IMAGE_HASH_SIZE];
 static int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
 static int			gl_filter_max = GL_LINEAR;
 
-float gl_anisotropy = 1.0;
+static float gl_anisotropy = 1.0;
 
 static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 static byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
@@ -1092,8 +1092,7 @@ void R_ScrapUpload()
 //
 //==========================================================================
 
-//static 
-long generateHashValue(const char* fname)
+static long generateHashValue(const char* fname)
 {
 	int		i;
 	long	hash;
