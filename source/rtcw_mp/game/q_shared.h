@@ -324,13 +324,6 @@ void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, in
 void *Hunk_Alloc( int size, ha_pref preference );
 #endif
 
-#define CIN_system  1
-#define CIN_loop    2
-#define CIN_hold    4
-#define CIN_silent  8
-#define CIN_shader  16
-
-
 /*
 ==============================================================
 
@@ -604,18 +597,6 @@ typedef struct qtime_s {
 #define AS_GLOBAL       1           // NERVE - SMF - modified
 #define AS_FAVORITES    2
 #define AS_MPLAYER      3
-
-
-// cinematic states
-typedef enum {
-	FMV_IDLE,
-	FMV_PLAY,       // play
-	FMV_EOF,        // all other conditions, i.e. stop/EOF/abort
-	FMV_ID_BLT,
-	FMV_ID_IDLE,
-	FMV_LOOPED,
-	FMV_ID_WAIT
-} e_status;
 
 typedef enum _flag_status {
 	FLAG_ATBASE = 0,
