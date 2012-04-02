@@ -38,12 +38,10 @@ public:
 	{
 		Name[0] = 0;
 	}
-#if 0
 	virtual bool Open(const char* FileName) = 0;
 	virtual bool Update(int NewTime) = 0;
 	virtual int GetCinematicTime() const = 0;
 	virtual void Reset() = 0;
-#endif
 };
 
 #if 0
@@ -124,8 +122,7 @@ public:
 //
 class QCinematicRoq : public QCinematic
 {
-//private:
-public:
+private:
 	enum
 	{
 		DEFAULT_CIN_WIDTH = 512,
@@ -150,6 +147,7 @@ public:
 	long				roqFPS;
 	fileHandle_t		iFile;
 	long				numQuads;
+	bool sound;
 
 	byte				file[65536];
 
@@ -162,7 +160,6 @@ public:
 
 	int					mcomp[256];
 
-#if 0
 	void init();
 	void recurseQuad(long startX, long startY, long quadSize);
 	void readQuadInfo(byte* qData);
@@ -171,7 +168,6 @@ public:
 	void blitVQQuad32fs(byte** status, unsigned char* data);
 	void decodeCodeBook(byte* input);
 	bool ReadFrame();
-#endif
 
 public:
 	QCinematicRoq()
@@ -192,14 +188,13 @@ public:
 	, roqFPS(0)
 	, iFile(0)
 	, numQuads(0)
+	, sound(false)
 	{}
 	~QCinematicRoq();
-#if 0
 	bool Open(const char* FileName);
 	bool Update(int NewTime);
 	int GetCinematicTime() const;
 	void Reset();
-#endif
 };
 
 #if 0

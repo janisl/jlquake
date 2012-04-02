@@ -49,19 +49,13 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-long				ROQ_YY_tab[256];
-//static 
-long				ROQ_UB_tab[256];
-//static 
-long				ROQ_UG_tab[256];
-//static 
-long				ROQ_VG_tab[256];
-//static 
-long				ROQ_VR_tab[256];
+static long				ROQ_YY_tab[256];
+static long				ROQ_UB_tab[256];
+static long				ROQ_UG_tab[256];
+static long				ROQ_VG_tab[256];
+static long				ROQ_VR_tab[256];
 
-//static 
-short			sqrTable[256];
+static short			sqrTable[256];
 
 // CODE --------------------------------------------------------------------
 
@@ -127,14 +121,12 @@ static void RllSetupTable()
 //
 //==========================================================================
 
-//static 
-void initRoQ()
+static void initRoQ()
 {
 	ROQ_GenYUVTables();
 	RllSetupTable();
 }
 
-#if 0
 //==========================================================================
 //
 //	QCinematicRoq::Open
@@ -200,13 +192,32 @@ void QCinematicRoq::init()
 
 bool QCinematicRoq::Update(int NewTime)
 {
-	int tfps = (NewTime * 3) / 100;
+	int tfps = (NewTime * roqFPS) / 1000;
+	bool played = false;
 
 	while (tfps != numQuads)
 	{
 		if (!ReadFrame())
 		{
 			return false;
+		}
+		played = true;
+	}
+
+	//	Wolf SP does this, I don't know if it helps anything.
+	if (played && sound)
+	{
+		if (s_rawend[CIN_STREAM] < s_soundtime && (s_soundtime - s_rawend[CIN_STREAM]) < 100)
+		{
+			//cinTable[currentHandle].startTime -= ( s_soundtime - s_rawend[CIN_STREAM] );
+			do
+			{
+				if (!ReadFrame())
+				{
+					return false;
+				}
+			}
+			while (s_rawend[CIN_STREAM] < s_soundtime);
 		}
 	}
 	return true;
@@ -286,7 +297,6 @@ void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 		recurseQuad(startX + quadSize, startY + quadSize, quadSize);
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -305,8 +315,7 @@ void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 //
 //==========================================================================
 
-//static 
-long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
+static long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
 {
 	int prev;
 	if (signedOutput)
@@ -343,8 +352,7 @@ long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, ch
 //
 //==========================================================================
 
-//static 
-long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
+static long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
 {
 	int prevL, prevR;
 	if (signedOutput)
@@ -370,7 +378,6 @@ long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, 
 	return (size>>1);	//*sizeof(short));
 }
 
-#if 0
 //==========================================================================
 //
 //	QCinematicRoq::RoQPrepMcomp
@@ -397,7 +404,6 @@ void QCinematicRoq::RoQPrepMcomp(long xoff, long yoff)
 		}
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -405,8 +411,7 @@ void QCinematicRoq::RoQPrepMcomp(long xoff, long yoff)
 //
 //==========================================================================
 
-//static 
-void move8_32(byte* src, byte* dst, int spl)
+static void move8_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -435,8 +440,7 @@ void move8_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-//static 
-void move4_32(byte* src, byte* dst, int spl)
+static void move4_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -457,8 +461,7 @@ void move4_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-//static 
-void blit8_32(byte* src, byte* dst, int spl)
+static void blit8_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -487,8 +490,7 @@ void blit8_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-//static 
-void blit4_32(byte* src, byte* dst, int spl)
+static void blit4_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -509,8 +511,7 @@ void blit4_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-//static 
-void blit2_32(byte* src, byte* dst, int spl)
+static void blit2_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -520,7 +521,6 @@ void blit2_32(byte* src, byte* dst, int spl)
 	ddst[dspl] = dsrc[1];
 }
 
-#if 0
 //==========================================================================
 //
 //	QCinematicRoq::blitVQQuad32fs
@@ -615,7 +615,6 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 	}
 	while (status[index] != NULL);
 }
-#endif
  
 //==========================================================================
 //
@@ -623,8 +622,7 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 //
 //==========================================================================
 
-//static 
-void yuv_to_rgb24(long y, long u, long v, byte* out)
+static void yuv_to_rgb24(long y, long u, long v, byte* out)
 { 
 	long YY = (long)ROQ_YY_tab[y];
 
@@ -663,7 +661,6 @@ void yuv_to_rgb24(long y, long u, long v, byte* out)
 	out[3] = 255;
 }
 
-#if 0
 //==========================================================================
 //
 //	QCinematicRoq::decodeCodeBook
@@ -797,7 +794,8 @@ redump:
 		if (!Silent)
 		{
 			int ssize = RllDecodeMonoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
-			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f, 1.0f, 0);
+			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f, 1.0f, CIN_STREAM);
+			sound = true;
 		}
 		break;
 
@@ -807,10 +805,11 @@ redump:
 			if (numQuads == -1)
 			{
 				S_Update();
-				s_rawend[0] = s_soundtime;
+				s_rawend[CIN_STREAM] = s_soundtime;
 			}
 			int ssize = RllDecodeStereoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
-			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f, 1.0f, 0);
+			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f, 1.0f, CIN_STREAM);
+			sound = true;
 		}
 		break;
 
@@ -885,7 +884,7 @@ redump:
 
 int QCinematicRoq::GetCinematicTime() const
 {
-	return numQuads * 1000 / 30;
+	return numQuads * 1000 / roqFPS;
 }
 
 //==========================================================================
@@ -902,4 +901,3 @@ void QCinematicRoq::Reset()
 
 	init();
 }
-#endif
