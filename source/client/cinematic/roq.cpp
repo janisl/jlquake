@@ -192,13 +192,32 @@ void QCinematicRoq::init()
 
 bool QCinematicRoq::Update(int NewTime)
 {
-	int tfps = (NewTime * 3) / 100;
+	int tfps = (NewTime * roqFPS) / 1000;
+	bool played = false;
 
 	while (tfps != numQuads)
 	{
 		if (!ReadFrame())
 		{
 			return false;
+		}
+		played = true;
+	}
+
+	//	Wolf SP does this, I don't know if it helps anything.
+	if (played && sound)
+	{
+		if (s_rawend[CIN_STREAM] < s_soundtime && (s_soundtime - s_rawend[CIN_STREAM]) < 100)
+		{
+			//cinTable[currentHandle].startTime -= ( s_soundtime - s_rawend[CIN_STREAM] );
+			do
+			{
+				if (!ReadFrame())
+				{
+					return false;
+				}
+			}
+			while (s_rawend[CIN_STREAM] < s_soundtime);
 		}
 	}
 	return true;
@@ -775,7 +794,8 @@ redump:
 		if (!Silent)
 		{
 			int ssize = RllDecodeMonoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
-			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f, 1.0f, 0);
+			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f, 1.0f, CIN_STREAM);
+			sound = true;
 		}
 		break;
 
@@ -785,10 +805,11 @@ redump:
 			if (numQuads == -1)
 			{
 				S_Update();
-				s_rawend[0] = s_soundtime;
+				s_rawend[CIN_STREAM] = s_soundtime;
 			}
 			int ssize = RllDecodeStereoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
-			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f, 1.0f, 0);
+			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f, 1.0f, CIN_STREAM);
+			sound = true;
 		}
 		break;
 
@@ -863,7 +884,7 @@ redump:
 
 int QCinematicRoq::GetCinematicTime() const
 {
-	return numQuads * 1000 / 30;
+	return numQuads * 1000 / roqFPS;
 }
 
 //==========================================================================

@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#define CIN_STREAM	0	//	Const for the sound stream used for cinematics
+
 //
 //	Base class for cinematics.
 //
@@ -143,6 +145,7 @@ private:
 	long				roqFPS;
 	fileHandle_t		iFile;
 	long				numQuads;
+	bool sound;
 
 	byte				file[65536];
 
@@ -183,6 +186,7 @@ public:
 	, roqFPS(0)
 	, iFile(0)
 	, numQuads(0)
+	, sound(false)
 	{}
 	~QCinematicRoq();
 	bool Open(const char* FileName);
