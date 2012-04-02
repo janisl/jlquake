@@ -99,11 +99,6 @@ typedef struct {
 	unsigned int lastTime;
 	long tfps;
 
-	void ( *VQ0 )( byte *status, void *qdata );
-	void ( *VQ1 )( byte *status, void *qdata );
-	void ( *VQNormal )( byte *status, void *qdata );
-	void ( *VQBuffer )( byte *status, void *qdata );
-
 	unsigned int xsize, ysize;
 
 	int playonwalls;
@@ -442,9 +437,6 @@ static void readQuadInfo( byte *qData ) {
 	cinTable[currentHandle].Cin->samplesPerLine = cinTable[currentHandle].Cin->Width * 4;
 	cinTable[currentHandle].Cin->screenDelta = cinTable[currentHandle].Cin->Height * cinTable[currentHandle].Cin->samplesPerLine;
 
-	cinTable[currentHandle].VQ0 = cinTable[currentHandle].VQNormal;
-	cinTable[currentHandle].VQ1 = cinTable[currentHandle].VQBuffer;
-
 	cinTable[currentHandle].Cin->t[0] = cinTable[currentHandle].Cin->screenDelta;
 	cinTable[currentHandle].Cin->t[1] = -cinTable[currentHandle].Cin->screenDelta;
 
@@ -503,16 +495,6 @@ static void RoQPrepMcomp( long xoff, long yoff ) {
 ******************************************************************************/
 
 void initRoQ();
-
-static void initRoQ_() {
-	if ( currentHandle < 0 ) {
-		return;
-	}
-
-	cinTable[currentHandle].VQNormal = ( void( * ) ( byte *, void * ) )blitVQQuad32fs;
-	cinTable[currentHandle].VQBuffer = ( void( * ) ( byte *, void * ) )blitVQQuad32fs;
-	initRoQ();
-}
 
 /******************************************************************************
 *
@@ -596,12 +578,12 @@ redump:
 		if ( ( cinTable[currentHandle].Cin->numQuads & 1 ) ) {
 			cinTable[currentHandle].Cin->normalBuffer0 = cinTable[currentHandle].Cin->t[1];
 			RoQPrepMcomp( cinTable[currentHandle].Cin->roqF0, cinTable[currentHandle].Cin->roqF1 );
-			cinTable[currentHandle].VQ1( (byte *)cinTable[currentHandle].Cin->qStatus[1], framedata );
+			blitVQQuad32fs( cinTable[currentHandle].Cin->qStatus[1], framedata );
 			cinTable[currentHandle].Cin->OutputFrame =   cinTable[currentHandle].Cin->linbuf + cinTable[currentHandle].Cin->screenDelta;
 		} else {
 			cinTable[currentHandle].Cin->normalBuffer0 = cinTable[currentHandle].Cin->t[0];
 			RoQPrepMcomp( cinTable[currentHandle].Cin->roqF0, cinTable[currentHandle].Cin->roqF1 );
-			cinTable[currentHandle].VQ0( (byte *)cinTable[currentHandle].Cin->qStatus[0], framedata );
+			blitVQQuad32fs( cinTable[currentHandle].Cin->qStatus[0], framedata );
 			cinTable[currentHandle].Cin->OutputFrame =   cinTable[currentHandle].Cin->linbuf;
 		}
 		if ( cinTable[currentHandle].Cin->numQuads == 0 ) {          // first frame
@@ -936,7 +918,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		cinTable[currentHandle].playonwalls = cl_inGameVideo->integer;
 	}
 
-	initRoQ_();
+	initRoQ();
 
 	FS_Read( cinTable[currentHandle].Cin->file, 16, cinTable[currentHandle].Cin->iFile );
 
