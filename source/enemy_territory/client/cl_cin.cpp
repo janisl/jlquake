@@ -104,10 +104,8 @@ typedef struct {
 	void ( *VQNormal )( byte *status, void *qdata );
 	void ( *VQBuffer )( byte *status, void *qdata );
 
-	byte*               gray;
 	unsigned int xsize, ysize;
 
-	qboolean half, smootheddouble;
 	int playonwalls;
 	long drawX, drawY;
 } cin_cache;
@@ -307,95 +305,29 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags ) {
 
 	bptr = (unsigned short *)cinTable[currentHandle].Cin->vq2;
 
-	if ( !cinTable[currentHandle].half ) {
-		if ( !cinTable[currentHandle].smootheddouble ) {
-//
-// normal height
-//
-			byte* rgb_ptr = (byte*)bptr;
-			for ( i = 0; i < two; i++ ) {
-				y0 = (long)*input++;
-				y1 = (long)*input++;
-				y2 = (long)*input++;
-				y3 = (long)*input++;
-				cr = (long)*input++;
-				cb = (long)*input++;
-				yuv_to_rgb24( y0, cr, cb, rgb_ptr );
-				yuv_to_rgb24( y1, cr, cb, rgb_ptr + 4 );
-				yuv_to_rgb24( y2, cr, cb, rgb_ptr + 8 );
-				yuv_to_rgb24( y3, cr, cb, rgb_ptr + 12 );
-				rgb_ptr += 16;
-			}
+	byte* rgb_ptr = (byte*)bptr;
+	for ( i = 0; i < two; i++ ) {
+		y0 = (long)*input++;
+		y1 = (long)*input++;
+		y2 = (long)*input++;
+		y3 = (long)*input++;
+		cr = (long)*input++;
+		cb = (long)*input++;
+		yuv_to_rgb24( y0, cr, cb, rgb_ptr );
+		yuv_to_rgb24( y1, cr, cb, rgb_ptr + 4 );
+		yuv_to_rgb24( y2, cr, cb, rgb_ptr + 8 );
+		yuv_to_rgb24( y3, cr, cb, rgb_ptr + 12 );
+		rgb_ptr += 16;
+	}
 
-			icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
-			idptr = (unsigned int *)cinTable[currentHandle].Cin->vq8;
+	icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
+	idptr = (unsigned int *)cinTable[currentHandle].Cin->vq8;
 
-			for ( i = 0; i < four; i++ ) {
-				iaptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 4;
-				ibptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 4;
-				for ( j = 0; j < 2; j++ )
-					VQ2TO4( iaptr, ibptr, icptr, idptr );
-			}
-		} else {
-//
-// double height, smoothed
-//
-			byte* rgb_ptr = (byte*)bptr;
-			for ( i = 0; i < two; i++ ) {
-				y0 = (long)*input++;
-				y1 = (long)*input++;
-				y2 = (long)*input++;
-				y3 = (long)*input++;
-				cr = (long)*input++;
-				cb = (long)*input++;
-				yuv_to_rgb24( y0, cr, cb, rgb_ptr );
-				yuv_to_rgb24( y1, cr, cb, rgb_ptr + 4 );
-				yuv_to_rgb24( ( ( y0 * 3 ) + y2 ) / 4, cr, cb, rgb_ptr + 8 );
-				yuv_to_rgb24( ( ( y1 * 3 ) + y3 ) / 4, cr, cb, rgb_ptr + 12 );
-				yuv_to_rgb24( ( y0 + ( y2 * 3 ) ) / 4, cr, cb, rgb_ptr + 16 );
-				yuv_to_rgb24( ( y1 + ( y3 * 3 ) ) / 4, cr, cb, rgb_ptr + 20 );
-				yuv_to_rgb24( y2, cr, cb, rgb_ptr + 24 );
-				yuv_to_rgb24( y3, cr, cb, rgb_ptr + 28 );
-				rgb_ptr += 32;
-			}
-
-			icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
-			idptr = (unsigned int *)cinTable[currentHandle].Cin->vq8;
-
-			for ( i = 0; i < four; i++ ) {
-				iaptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 8;
-				ibptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 8;
-				for ( j = 0; j < 2; j++ ) {
-					VQ2TO4( iaptr, ibptr, icptr, idptr );
-					VQ2TO4( iaptr, ibptr, icptr, idptr );
-				}
-			}
-		}
-	} else {
-//
-// 1/4 screen
-//
-		byte* rgb_ptr = (byte*) bptr;
-		for ( i = 0; i < two; i++ ) {
-			y0 = (long)*input; input += 2;
-			y2 = (long)*input; input += 2;
-			cr = (long)*input++;
-			cb = (long)*input++;
-			yuv_to_rgb24( y0, cr, cb, rgb_ptr );
-			yuv_to_rgb24( y2, cr, cb, rgb_ptr + 4 );
-			rgb_ptr += 8;
-		}
-
-		icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
-		idptr = (unsigned int *)cinTable[currentHandle].Cin->vq8;
-
-		for ( i = 0; i < four; i++ ) {
-			iaptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 2;
-			ibptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 2;
-			for ( j = 0; j < 2; j++ ) {
-				VQ2TO2( iaptr,ibptr,icptr,idptr );
-			}
-		}
+	for ( i = 0; i < four; i++ ) {
+		iaptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 4;
+		ibptr = (unsigned int *)cinTable[currentHandle].Cin->vq2 + ( *input++ ) * 4;
+		for ( j = 0; j < 2; j++ )
+			VQ2TO4( iaptr, ibptr, icptr, idptr );
 	}
 }
 
@@ -510,9 +442,6 @@ static void readQuadInfo( byte *qData ) {
 	cinTable[currentHandle].Cin->samplesPerLine = cinTable[currentHandle].Cin->Width * 4;
 	cinTable[currentHandle].Cin->screenDelta = cinTable[currentHandle].Cin->Height * cinTable[currentHandle].Cin->samplesPerLine;
 
-	cinTable[currentHandle].half = qfalse;
-	cinTable[currentHandle].smootheddouble = qfalse;
-
 	cinTable[currentHandle].VQ0 = cinTable[currentHandle].VQNormal;
 	cinTable[currentHandle].VQ1 = cinTable[currentHandle].VQBuffer;
 
@@ -552,7 +481,7 @@ static void RoQPrepMcomp( long xoff, long yoff ) {
 	long i, j, x, y, temp, temp2;
 
 	i = cinTable[currentHandle].Cin->samplesPerLine; j = 4;
-	if ( cinTable[currentHandle].xsize == ( cinTable[currentHandle].ysize * 4 ) && !cinTable[currentHandle].half ) {
+	if ( cinTable[currentHandle].xsize == ( cinTable[currentHandle].ysize * 4 ) ) {
 		j = j + j; i = i + i;
 	}
 
