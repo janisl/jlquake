@@ -65,7 +65,6 @@ short			sqrTable[256];
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	QCinematicRoq::~QCinematicRoq
@@ -128,12 +127,14 @@ static void RllSetupTable()
 //
 //==========================================================================
 
-static void initRoQ()
+//static 
+void initRoQ()
 {
 	ROQ_GenYUVTables();
 	RllSetupTable();
 }
 
+#if 0
 //==========================================================================
 //
 //	QCinematicRoq::Open
@@ -285,6 +286,7 @@ void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 		recurseQuad(startX + quadSize, startY + quadSize, quadSize);
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -303,7 +305,8 @@ void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 //
 //==========================================================================
 
-static long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
+//static 
+long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
 {
 	int prev;
 	if (signedOutput)
@@ -340,7 +343,8 @@ static long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int s
 //
 //==========================================================================
 
-static long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
+//static 
+long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
 {
 	int prevL, prevR;
 	if (signedOutput)
@@ -366,6 +370,7 @@ static long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int
 	return (size>>1);	//*sizeof(short));
 }
 
+#if 0
 //==========================================================================
 //
 //	QCinematicRoq::RoQPrepMcomp
@@ -392,6 +397,7 @@ void QCinematicRoq::RoQPrepMcomp(long xoff, long yoff)
 		}
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -399,7 +405,8 @@ void QCinematicRoq::RoQPrepMcomp(long xoff, long yoff)
 //
 //==========================================================================
 
-static void move8_32(byte* src, byte* dst, int spl)
+//static 
+void move8_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -428,7 +435,8 @@ static void move8_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-static void move4_32(byte* src, byte* dst, int spl)
+//static 
+void move4_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -449,7 +457,8 @@ static void move4_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-static void blit8_32(byte* src, byte* dst, int spl)
+//static 
+void blit8_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -478,7 +487,8 @@ static void blit8_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-static void blit4_32(byte* src, byte* dst, int spl)
+//static 
+void blit4_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -499,7 +509,8 @@ static void blit4_32(byte* src, byte* dst, int spl)
 //
 //==========================================================================
 
-static void blit2_32(byte* src, byte* dst, int spl)
+//static 
+void blit2_32(byte* src, byte* dst, int spl)
 {
 	double* dsrc = (double*)src;
 	double* ddst = (double*)dst;
@@ -509,6 +520,7 @@ static void blit2_32(byte* src, byte* dst, int spl)
 	ddst[dspl] = dsrc[1];
 }
 
+#if 0
 //==========================================================================
 //
 //	QCinematicRoq::blitVQQuad32fs
@@ -603,6 +615,7 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 	}
 	while (status[index] != NULL);
 }
+#endif
  
 //==========================================================================
 //
@@ -610,7 +623,8 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 //
 //==========================================================================
 
-static void yuv_to_rgb24(long y, long u, long v, byte* out)
+//static 
+void yuv_to_rgb24(long y, long u, long v, byte* out)
 { 
 	long YY = (long)ROQ_YY_tab[y];
 
@@ -649,6 +663,7 @@ static void yuv_to_rgb24(long y, long u, long v, byte* out)
 	out[3] = 255;
 }
 
+#if 0
 //==========================================================================
 //
 //	QCinematicRoq::decodeCodeBook

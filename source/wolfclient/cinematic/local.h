@@ -193,8 +193,8 @@ public:
 	, iFile(0)
 	, numQuads(0)
 	{}
-#if 0
 	~QCinematicRoq();
+#if 0
 	bool Open(const char* FileName);
 	bool Update(int NewTime);
 	int GetCinematicTime() const;

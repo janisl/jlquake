@@ -141,296 +141,13 @@ static int CIN_HandleForVideo( void ) {
 	return -1;
 }
 
-
-//-----------------------------------------------------------------------------
-// RllSetupTable
-//
-// Allocates and initializes the square table.
-//
-// Parameters:	None
-//
-// Returns:		Nothing
-//-----------------------------------------------------------------------------
-static void RllSetupTable() {
-	int z;
-
-	for ( z = 0; z < 128; z++ ) {
-		sqrTable[z] = (short)( z * z );
-		sqrTable[z + 128] = (short)( -sqrTable[z] );
-	}
-}
-
-
-
-//-----------------------------------------------------------------------------
-// RllDecodeMonoToMono
-//
-// Decode mono source data into a mono buffer.
-//
-// Parameters:	from -> buffer holding encoded data
-//				to ->	buffer to hold decoded data
-//				size =	number of bytes of input (= # of shorts of output)
-//				signedOutput = 0 for unsigned output, non-zero for signed output
-//				flag = flags from asset header
-//
-// Returns:		Number of samples placed in output buffer
-//-----------------------------------------------------------------------------
-long RllDecodeMonoToMono( unsigned char *from,short *to,unsigned int size,char signedOutput,unsigned short flag ) {
-	unsigned int z;
-	int prev;
-
-	if ( signedOutput ) {
-		prev =  flag - 0x8000;
-	} else {
-		prev = flag;
-	}
-
-	for ( z = 0; z < size; z++ ) {
-		prev = to[z] = (short)( prev + sqrTable[from[z]] );
-	}
-	return size;    //*sizeof(short));
-}
-
-
-//-----------------------------------------------------------------------------
-// RllDecodeMonoToStereo
-//
-// Decode mono source data into a stereo buffer. Output is 4 times the number
-// of bytes in the input.
-//
-// Parameters:	from -> buffer holding encoded data
-//				to ->	buffer to hold decoded data
-//				size =	number of bytes of input (= 1/4 # of bytes of output)
-//				signedOutput = 0 for unsigned output, non-zero for signed output
-//				flag = flags from asset header
-//
-// Returns:		Number of samples placed in output buffer
-//-----------------------------------------------------------------------------
-long RllDecodeMonoToStereo( unsigned char *from,short *to,unsigned int size,char signedOutput,unsigned short flag ) {
-	unsigned int z;
-	int prev;
-
-	if ( signedOutput ) {
-		prev =  flag - 0x8000;
-	} else {
-		prev = flag;
-	}
-
-	for ( z = 0; z < size; z++ ) {
-		prev = (short)( prev + sqrTable[from[z]] );
-		to[z * 2 + 0] = to[z * 2 + 1] = (short)( prev );
-	}
-
-	return size;    // * 2 * sizeof(short));
-}
-
-
-//-----------------------------------------------------------------------------
-// RllDecodeStereoToStereo
-//
-// Decode stereo source data into a stereo buffer.
-//
-// Parameters:	from -> buffer holding encoded data
-//				to ->	buffer to hold decoded data
-//				size =	number of bytes of input (= 1/2 # of bytes of output)
-//				signedOutput = 0 for unsigned output, non-zero for signed output
-//				flag = flags from asset header
-//
-// Returns:		Number of samples placed in output buffer
-//-----------------------------------------------------------------------------
-long RllDecodeStereoToStereo( unsigned char *from,short *to,unsigned int size,char signedOutput, unsigned short flag ) {
-	unsigned int z;
-	unsigned char *zz = from;
-	int prevL, prevR;
-
-	if ( signedOutput ) {
-		prevL = ( flag & 0xff00 ) - 0x8000;
-		prevR = ( ( flag & 0x00ff ) << 8 ) - 0x8000;
-	} else {
-		prevL = flag & 0xff00;
-		prevR = ( flag & 0x00ff ) << 8;
-	}
-
-	for ( z = 0; z < size; z += 2 ) {
-		prevL = (short)( prevL + sqrTable[*zz++] );
-		prevR = (short)( prevR + sqrTable[*zz++] );
-		to[z + 0] = (short)( prevL );
-		to[z + 1] = (short)( prevR );
-	}
-
-	return ( size >> 1 );   //*sizeof(short));
-}
-
-
-//-----------------------------------------------------------------------------
-// RllDecodeStereoToMono
-//
-// Decode stereo source data into a mono buffer.
-//
-// Parameters:	from -> buffer holding encoded data
-//				to ->	buffer to hold decoded data
-//				size =	number of bytes of input (= # of bytes of output)
-//				signedOutput = 0 for unsigned output, non-zero for signed output
-//				flag = flags from asset header
-//
-// Returns:		Number of samples placed in output buffer
-//-----------------------------------------------------------------------------
-long RllDecodeStereoToMono( unsigned char *from,short *to,unsigned int size,char signedOutput, unsigned short flag ) {
-	unsigned int z;
-	int prevL,prevR;
-
-	if ( signedOutput ) {
-		prevL = ( flag & 0xff00 ) - 0x8000;
-		prevR = ( ( flag & 0x00ff ) << 8 ) - 0x8000;
-	} else {
-		prevL = flag & 0xff00;
-		prevR = ( flag & 0x00ff ) << 8;
-	}
-
-	for ( z = 0; z < size; z += 1 ) {
-		prevL = prevL + sqrTable[from[z * 2]];
-		prevR = prevR + sqrTable[from[z * 2 + 1]];
-		to[z] = (short)( ( prevL + prevR ) / 2 );
-	}
-
-	return size;
-}
-
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-
-static void move8_32( byte *src, byte *dst, int spl ) {
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl >> 3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-}
-
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-
-static void move4_32( byte *src, byte *dst, int spl  ) {
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl >> 3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-}
-
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-
-static void blit8_32( byte *src, byte *dst, int spl  ) {
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl >> 3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-}
-
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-#define movs double
-static void blit4_32( byte *src, byte *dst, int spl  ) {
-	movs *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (movs *)src;
-	ddst = (movs *)dst;
-	dspl = spl >> 3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += 2; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += 2; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += 2; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-}
-
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-
-static void blit2_32( byte *src, byte *dst, int spl  ) {
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl >> 3;
-
-	ddst[0] = dsrc[0];
-	ddst[dspl] = dsrc[1];
-}
+long RllDecodeMonoToStereo( unsigned char *from,short *to,unsigned int size,char signedOutput,unsigned short flag );
+long RllDecodeStereoToStereo( unsigned char *from,short *to,unsigned int size,char signedOutput, unsigned short flag );
+void move8_32( byte *src, byte *dst, int spl );
+void move4_32( byte *src, byte *dst, int spl  );
+void blit8_32( byte *src, byte *dst, int spl  );
+void blit4_32( byte *src, byte *dst, int spl  );
+void blit2_32( byte *src, byte *dst, int spl  );
 
 /******************************************************************************
 *
@@ -525,25 +242,6 @@ static void blitVQQuad32fs( byte **status, unsigned char *data ) {
 *
 ******************************************************************************/
 
-static void ROQ_GenYUVTables( void ) {
-	float t_ub,t_vr,t_ug,t_vg;
-	long i;
-
-	t_ub = ( 1.77200f / 2.0f ) * (float)( 1 << 6 ) + 0.5f;
-	t_vr = ( 1.40200f / 2.0f ) * (float)( 1 << 6 ) + 0.5f;
-	t_ug = ( 0.34414f / 2.0f ) * (float)( 1 << 6 ) + 0.5f;
-	t_vg = ( 0.71414f / 2.0f ) * (float)( 1 << 6 ) + 0.5f;
-	for ( i = 0; i < 256; i++ ) {
-		float x = (float)( 2 * i - 255 );
-
-		ROQ_UB_tab[i] = (long)( ( t_ub * x ) + ( 1 << 5 ) );
-		ROQ_VR_tab[i] = (long)( ( t_vr * x ) + ( 1 << 5 ) );
-		ROQ_UG_tab[i] = (long)( ( -t_ug * x )      );
-		ROQ_VG_tab[i] = (long)( ( -t_vg * x ) + ( 1 << 5 ) );
-		ROQ_YY_tab[i] = (long)( ( i << 6 ) | ( i >> 2 ) );
-	}
-}
-
 #define VQ2TO4( a,b,c,d ) {	\
 		*c++ = a[0];	\
 		*d++ = a[0];	\
@@ -617,76 +315,7 @@ static unsigned short yuv_to_rgb( long y, long u, long v ) {
 	return ( unsigned short )( ( r << 11 ) + ( g << 5 ) + ( b ) );
 }
 
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-#if defined( MACOS_X )
-
-static inline unsigned int yuv_to_rgb24( long y, long u, long v ) {
-	long r,g,b,YY;
-
-	YY = (long)( ROQ_YY_tab[( y )] );
-
-	r = ( YY + ROQ_VR_tab[v] ) >> 6;
-	g = ( YY + ROQ_UG_tab[u] + ROQ_VG_tab[v] ) >> 6;
-	b = ( YY + ROQ_UB_tab[u] ) >> 6;
-
-	if ( r < 0 ) {
-		r = 0;
-	}
-	if ( g < 0 ) {
-		g = 0;
-	}
-	if ( b < 0 ) {
-		b = 0;
-	}
-	if ( r > 255 ) {
-		r = 255;
-	}
-	if ( g > 255 ) {
-		g = 255;
-	}
-	if ( b > 255 ) {
-		b = 255;
-	}
-
-	return ( ( r << 24 ) | ( g << 16 ) | ( b << 8 ) ) | ( 255 );  //+(255<<24));
-}
-
-#else
-static unsigned int yuv_to_rgb24( long y, long u, long v ) {
-	long r,g,b,YY = (long)( ROQ_YY_tab[( y )] );
-
-	r = ( YY + ROQ_VR_tab[v] ) >> 6;
-	g = ( YY + ROQ_UG_tab[u] + ROQ_VG_tab[v] ) >> 6;
-	b = ( YY + ROQ_UB_tab[u] ) >> 6;
-
-	if ( r < 0 ) {
-		r = 0;
-	}
-	if ( g < 0 ) {
-		g = 0;
-	}
-	if ( b < 0 ) {
-		b = 0;
-	}
-	if ( r > 255 ) {
-		r = 255;
-	}
-	if ( g > 255 ) {
-		g = 255;
-	}
-	if ( b > 255 ) {
-		b = 255;
-	}
-
-	return LittleLong( ( r ) | ( g << 8 ) | ( b << 16 ) | ( 255 << 24 ) );
-}
-#endif
+void yuv_to_rgb24(long y, long u, long v, byte* out);
 
 /******************************************************************************
 *
@@ -746,7 +375,7 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags ) {
 						VQ2TO4( aptr,bptr,cptr,dptr );
 				}
 			} else if ( cinTable[currentHandle].samplesPerPixel == 4 ) {
-				ibptr = (unsigned int *)bptr;
+				byte* rgb_ptr = (byte*)bptr;
 				for ( i = 0; i < two; i++ ) {
 					y0 = (long)*input++;
 					y1 = (long)*input++;
@@ -754,10 +383,11 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags ) {
 					y3 = (long)*input++;
 					cr = (long)*input++;
 					cb = (long)*input++;
-					*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y1, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y2, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y3, cr, cb );
+					yuv_to_rgb24( y0, cr, cb, rgb_ptr );
+					yuv_to_rgb24( y1, cr, cb, rgb_ptr + 4 );
+					yuv_to_rgb24( y2, cr, cb, rgb_ptr + 8 );
+					yuv_to_rgb24( y3, cr, cb, rgb_ptr + 12 );
+					rgb_ptr += 16;
 				}
 
 				icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
@@ -822,7 +452,7 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags ) {
 					}
 				}
 			} else if ( cinTable[currentHandle].samplesPerPixel == 4 ) {
-				ibptr = (unsigned int *)bptr;
+				byte* rgb_ptr = (byte*)bptr;
 				for ( i = 0; i < two; i++ ) {
 					y0 = (long)*input++;
 					y1 = (long)*input++;
@@ -830,14 +460,15 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags ) {
 					y3 = (long)*input++;
 					cr = (long)*input++;
 					cb = (long)*input++;
-					*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y1, cr, cb );
-					*ibptr++ = yuv_to_rgb24( ( ( y0 * 3 ) + y2 ) / 4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( ( ( y1 * 3 ) + y3 ) / 4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( ( y0 + ( y2 * 3 ) ) / 4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( ( y1 + ( y3 * 3 ) ) / 4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y2, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y3, cr, cb );
+					yuv_to_rgb24( y0, cr, cb, rgb_ptr );
+					yuv_to_rgb24( y1, cr, cb, rgb_ptr + 4 );
+					yuv_to_rgb24( ( ( y0 * 3 ) + y2 ) / 4, cr, cb, rgb_ptr + 8 );
+					yuv_to_rgb24( ( ( y1 * 3 ) + y3 ) / 4, cr, cb, rgb_ptr + 12 );
+					yuv_to_rgb24( ( y0 + ( y2 * 3 ) ) / 4, cr, cb, rgb_ptr + 16 );
+					yuv_to_rgb24( ( y1 + ( y3 * 3 ) ) / 4, cr, cb, rgb_ptr + 20 );
+					yuv_to_rgb24( y2, cr, cb, rgb_ptr + 24 );
+					yuv_to_rgb24( y3, cr, cb, rgb_ptr + 28 );
+					rgb_ptr += 32;
 				}
 
 				icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
@@ -924,14 +555,15 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags ) {
 				}
 			}
 		} else if ( cinTable[currentHandle].samplesPerPixel == 4 ) {
-			ibptr = (unsigned int *) bptr;
+			byte* rgb_ptr = (byte*) bptr;
 			for ( i = 0; i < two; i++ ) {
 				y0 = (long)*input; input += 2;
 				y2 = (long)*input; input += 2;
 				cr = (long)*input++;
 				cb = (long)*input++;
-				*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-				*ibptr++ = yuv_to_rgb24( y2, cr, cb );
+				yuv_to_rgb24( y0, cr, cb, rgb_ptr );
+				yuv_to_rgb24( y2, cr, cb, rgb_ptr + 4 );
+				rgb_ptr += 8;
 			}
 
 			icptr = (unsigned int *)cinTable[currentHandle].Cin->vq4;
@@ -1122,7 +754,9 @@ static void RoQPrepMcomp( long xoff, long yoff ) {
 *
 ******************************************************************************/
 
-static void initRoQ() {
+void initRoQ();
+
+static void initRoQ_() {
 	if ( currentHandle < 0 ) {
 		return;
 	}
@@ -1130,8 +764,7 @@ static void initRoQ() {
 	cinTable[currentHandle].VQNormal = ( void( * ) ( byte *, void * ) )blitVQQuad32fs;
 	cinTable[currentHandle].VQBuffer = ( void( * ) ( byte *, void * ) )blitVQQuad32fs;
 	cinTable[currentHandle].samplesPerPixel = 4;
-	ROQ_GenYUVTables();
-	RllSetupTable();
+	initRoQ();
 }
 
 /******************************************************************************
@@ -1369,11 +1002,6 @@ static void RoQShutdown( void ) {
 	Com_DPrintf( "finished cinematic\n" );
 	cinTable[currentHandle].status = FMV_IDLE;
 
-	if ( cinTable[currentHandle].Cin->iFile ) {
-		FS_FCloseFile( cinTable[currentHandle].Cin->iFile );
-		cinTable[currentHandle].Cin->iFile = 0;
-	}
-
 	if ( cinTable[currentHandle].alterGameState ) {
 		cls.state = CA_DISCONNECTED;
 		// we can't just do a vstr nextmap, because
@@ -1570,7 +1198,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		cinTable[currentHandle].playonwalls = cl_inGameVideo->integer;
 	}
 
-	initRoQ();
+	initRoQ_();
 
 	FS_Read( cinTable[currentHandle].Cin->file, 16, cinTable[currentHandle].Cin->iFile );
 
