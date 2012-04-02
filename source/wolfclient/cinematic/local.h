@@ -44,7 +44,6 @@ public:
 	virtual void Reset() = 0;
 };
 
-#if 0
 //
 //	Quake 2 CIN file.
 //
@@ -115,7 +114,6 @@ public:
 	int GetCinematicTime() const;
 	void Reset();
 };
-#endif
 
 //
 //	Quake 3 RoQ file.
