@@ -37,14 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
 
-// fast float to int conversion
-#if id386 && !( ( defined __linux__ || defined __FreeBSD__ ) && ( defined __i386__ ) ) // rb010123
-long myftol( float f );
-#else
-#define myftol( x ) ( (int)( x ) )
-#endif
-
-
 #define MAX_SHADER_STATES 2048
 #define MAX_STATE_NAME 32
 

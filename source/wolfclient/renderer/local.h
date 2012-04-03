@@ -619,15 +619,6 @@ struct backEndData_t
 #define CULL_CLIP	1		// clipped by one or more planes
 #define CULL_OUT	2		// completely outside the clipping planes
 
-#if 0
-// fast float to int conversion
-#if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
-long myftol(float f);
-#else
-#define	myftol(x) ((int)(x))
-#endif
-#endif
-
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern trGlobals_t	tr;

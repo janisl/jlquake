@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 
-#define WAVEVALUE( table, base, amplitude, phase, freq )  ( ( base ) + table[ myftol( ( ( ( phase ) + tess.shaderTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ) )
+#define WAVEVALUE( table, base, amplitude, phase, freq )  ( ( base ) + table[ Q_ftol( ( ( ( phase ) + tess.shaderTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ) )
 
 static float *TableForFunc( genFunc_t func ) {
 	switch ( func )
@@ -745,7 +745,7 @@ void RB_CalcWaveColor( const waveForm_t *wf, unsigned char *dstColors ) {
 		glow = 1;
 	}
 
-	v = myftol( 255 * glow );
+	v = Q_ftol( 255 * glow );
 	color[0] = color[1] = color[2] = v;
 	color[3] = 255;
 	v = *(int *)color;
@@ -1367,7 +1367,7 @@ void RB_CalcDiffuseColor( unsigned char *colors ) {
 	numVertexes = tess.numVertexes;
 	for ( i = 0; i < numVertexes; i++, normal += 4, colorsInt++ )
 	{
-		dp = myftol( ENTITY_LIGHT_STEPS * DotProduct( normal, lightDir ) );
+		dp = Q_ftol( ENTITY_LIGHT_STEPS * DotProduct( normal, lightDir ) );
 
 		// ydnar: enable this for twosided lighting
 		//%	if( tess.shader->cullType == CT_TWO_SIDED )
@@ -1417,19 +1417,19 @@ void RB_CalcDiffuseColor( unsigned char *colors ) {
 			*(int *)&colors[i * 4] = ambientLightInt;
 			continue;
 		}
-		j = myftol( ambientLight[0] + incoming * directedLight[0] );
+		j = Q_ftol( ambientLight[0] + incoming * directedLight[0] );
 		if ( j > 255 ) {
 			j = 255;
 		}
 		colors[i * 4 + 0] = j;
 
-		j = myftol( ambientLight[1] + incoming * directedLight[1] );
+		j = Q_ftol( ambientLight[1] + incoming * directedLight[1] );
 		if ( j > 255 ) {
 			j = 255;
 		}
 		colors[i * 4 + 1] = j;
 
-		j = myftol( ambientLight[2] + incoming * directedLight[2] );
+		j = Q_ftol( ambientLight[2] + incoming * directedLight[2] );
 		if ( j > 255 ) {
 			j = 255;
 		}

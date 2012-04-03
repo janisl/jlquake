@@ -502,7 +502,7 @@ unsigned short int AAS_AreaTravelTime( int areanum, vec3_t start, vec3_t end ) {
 		dist *= DISTANCEFACTOR_WALK; //normal walk area
 	}
 
-	intdist = myftol( dist );
+	intdist = Q_ftol( dist );
 
 	//make sure the distance isn't zero
 	if ( intdist <= 0 ) {

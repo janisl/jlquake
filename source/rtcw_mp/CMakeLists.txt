@@ -93,7 +93,6 @@ set(WOLFMP_FILES
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(WOLFMP_NASM_FILES
-		unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 	foreach(SRC ${WOLFMP_NASM_FILES})
@@ -139,7 +138,6 @@ set(WOLFMPDED_FILES
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(WOLFMPDED_NASM_FILES
-		unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 	foreach(SRC ${WOLFMPDED_NASM_FILES})

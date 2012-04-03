@@ -95,7 +95,6 @@ set (ET_FILES
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(ET_NASM_FILES
-		#unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 	foreach(SRC ${ET_NASM_FILES})
@@ -147,7 +146,6 @@ set (ETDED_FILES
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(ETDED_NASM_FILES
-		#unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 	foreach(SRC ${ETDED_NASM_FILES})

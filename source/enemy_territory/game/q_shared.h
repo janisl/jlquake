@@ -391,16 +391,6 @@ extern vec4_t g_color_table[32];
 #define Q_IsHexColorString( p ) ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
 
-// fast float to int conversion
-#if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
-long myftol( float f );
-#elif defined( __MACOS__ ) || defined _WIN64
-#define myftol( x ) (long)( x )
-#else
-extern long int lrintf( float x );
-#define myftol( x ) lrintf( x )
-#endif
-
 #define Vector4Set( v, x, y, z, n )   ( ( v )[0] = ( x ),( v )[1] = ( y ),( v )[2] = ( z ),( v )[3] = ( n ) )
 
 unsigned ColorBytes3( float r, float g, float b );

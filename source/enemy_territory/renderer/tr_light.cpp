@@ -465,9 +465,9 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent ) {
 	//%	VectorClear( ent->ambientLight );
 
 	// save out the byte packet version
-	( (byte *)&ent->ambientLightInt )[0] = myftol( ent->ambientLight[0] );
-	( (byte *)&ent->ambientLightInt )[1] = myftol( ent->ambientLight[1] );
-	( (byte *)&ent->ambientLightInt )[2] = myftol( ent->ambientLight[2] );
+	( (byte *)&ent->ambientLightInt )[0] = Q_ftol( ent->ambientLight[0] );
+	( (byte *)&ent->ambientLightInt )[1] = Q_ftol( ent->ambientLight[1] );
+	( (byte *)&ent->ambientLightInt )[2] = Q_ftol( ent->ambientLight[2] );
 	( (byte *)&ent->ambientLightInt )[3] = 0xff;
 
 	// ydnar: save out the light table
@@ -477,9 +477,9 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent ) {
 	for ( i = 0; i < ENTITY_LIGHT_STEPS; i++ )
 	{
 		VectorMA( ent->ambientLight, d, ent->directedLight, lightValue );
-		entityLight[ 0 ] = lightValue[ 0 ] > 255.0f ? 255 : myftol( lightValue[ 0 ] );
-		entityLight[ 1 ] = lightValue[ 1 ] > 255.0f ? 255 : myftol( lightValue[ 1 ] );
-		entityLight[ 2 ] = lightValue[ 2 ] > 255.0f ? 255 : myftol( lightValue[ 2 ] );
+		entityLight[ 0 ] = lightValue[ 0 ] > 255.0f ? 255 : Q_ftol( lightValue[ 0 ] );
+		entityLight[ 1 ] = lightValue[ 1 ] > 255.0f ? 255 : Q_ftol( lightValue[ 1 ] );
+		entityLight[ 2 ] = lightValue[ 2 ] > 255.0f ? 255 : Q_ftol( lightValue[ 2 ] );
 		entityLight[ 3 ] = 0xFF;
 
 		d += modulate;

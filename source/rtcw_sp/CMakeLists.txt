@@ -85,7 +85,6 @@ set(WOLFSP_FILES
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(WOLFSP_NASM_FILES
-		unix/ftol.nasm
 		unix/snapvector.nasm
 	)
 	foreach(SRC ${WOLFSP_NASM_FILES})
