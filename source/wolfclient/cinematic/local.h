@@ -242,11 +242,9 @@ public:
 	}
 	~QCinematicPlayer();
 	void SetExtents(int x, int y, int w, int h);
-#if 0
 	e_status Run();
 	void Reset();
 	void Upload(int Handle);
-#endif
 };
 
 #if 0

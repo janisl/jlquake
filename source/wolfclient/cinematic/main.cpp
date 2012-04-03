@@ -241,7 +241,6 @@ void QCinematicPlayer::SetExtents(int x, int y, int w, int h)
 	Cin->Dirty = true;
 }
 
-#if 0
 //==========================================================================
 //
 //	QCinematicPlayer::Run
@@ -366,4 +365,3 @@ void QCinematicPlayer::Upload(int Handle)
 		PlayOnWalls--;
 	}
 }
-#endif

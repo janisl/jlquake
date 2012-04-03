@@ -117,27 +117,6 @@ static int CIN_HandleForVideo( void ) {
 *
 ******************************************************************************/
 
-static void RoQReset() {
-
-	if ( currentHandle < 0 ) {
-		return;
-	}
-
-	cinTable[currentHandle].player->Cin->Reset();
-	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	cinTable[currentHandle].player->StartTime = cinTable[currentHandle].player->LastTime = CL_ScaledMilliseconds() * com_timescale->value;
-
-	cinTable[currentHandle].player->Status = FMV_LOOPED;
-}
-
-/******************************************************************************
-*
-* Function:
-*
-* Description:
-*
-******************************************************************************/
-
 void CIN_FinishCinematic()
 {
 	cls.state = CA_DISCONNECTED;
@@ -154,22 +133,19 @@ void CIN_FinishCinematic()
 }
 
 static void RoQShutdown( void ) {
-	if ( !cinTable[currentHandle].player->Cin->OutputFrame ) {
-		return;
-	}
+	if ( cinTable[currentHandle].player->Cin->OutputFrame ) {
+		if ( cinTable[currentHandle].player->Status != FMV_IDLE ) {
+			Com_DPrintf( "finished cinematic\n" );
+			cinTable[currentHandle].player->Status = FMV_IDLE;
 
-	if ( cinTable[currentHandle].player->Status == FMV_IDLE ) {
-		return;
+			if ( cinTable[currentHandle].player->AlterGameState ) {
+				CIN_FinishCinematic();
+			}
+			delete cinTable[currentHandle].player;
+			cinTable[currentHandle].player = NULL;
+			currentHandle = -1;
+		}
 	}
-	Com_DPrintf( "finished cinematic\n" );
-	cinTable[currentHandle].player->Status = FMV_IDLE;
-
-	if ( cinTable[currentHandle].player->AlterGameState ) {
-		CIN_FinishCinematic();
-	}
-	delete cinTable[currentHandle].player;
-	cinTable[currentHandle].player = NULL;
-	currentHandle = -1;
 }
 
 /*
@@ -191,7 +167,7 @@ e_status CIN_StopCinematic( int handle ) {
 	}
 
 	if ( cinTable[currentHandle].player->AlterGameState ) {
-		if ( cls.state != CA_CINEMATIC ) {
+		if (!CIN_IsInCinematicState()) {
 			return cinTable[currentHandle].player->Status;
 		}
 	}
@@ -211,10 +187,6 @@ Fetch and decompress the pending frame
 
 
 e_status CIN_RunCinematic( int handle ) {
-	// bk001204 - init
-	int start = 0;
-	int thisTime = 0;
-
 	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle].player->Status == FMV_EOF ) {
 		return FMV_EOF;
 	}
@@ -223,60 +195,21 @@ e_status CIN_RunCinematic( int handle ) {
 		currentHandle = handle;
 		cin.currentHandle = currentHandle;
 		cinTable[currentHandle].player->Status = FMV_EOF;
-		RoQReset();
-	}
-
-	if ( cinTable[handle].player->PlayOnWalls < -1 ) {
-		return cinTable[handle].player->Status;
+		cinTable[currentHandle].player->Reset();
 	}
 
 	currentHandle = handle;
 
-	if ( cinTable[currentHandle].player->AlterGameState ) {
-		if ( cls.state != CA_CINEMATIC ) {
-			return cinTable[currentHandle].player->Status;
-		}
-	}
-
-	if ( cinTable[currentHandle].player->Status == FMV_IDLE ) {
-		return cinTable[currentHandle].player->Status;
-	}
-
-	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	thisTime = CL_ScaledMilliseconds() * com_timescale->value;
-	if ( cinTable[currentHandle].player->Shader && ( abs( thisTime - (int)cinTable[currentHandle].player->LastTime ) ) > 100 ) {
-		cinTable[currentHandle].player->StartTime += thisTime - cinTable[currentHandle].player->LastTime;
-	}
-	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	start = cinTable[currentHandle].player->StartTime;
-	if (!cinTable[currentHandle].player->Cin->Update(CL_ScaledMilliseconds() - cinTable[currentHandle].player->StartTime))
-	{
-		if ( cinTable[currentHandle].player->HoldAtEnd == qfalse ) {
-			if ( cinTable[currentHandle].player->Looping ) {
-				RoQReset();
-			} else {
-				cinTable[currentHandle].player->Status = FMV_EOF;
-			}
-		} else {
-			cinTable[currentHandle].player->Status = FMV_IDLE;
-		}
-	}
-
-	cinTable[currentHandle].player->LastTime = thisTime;
-
-	if ( cinTable[currentHandle].player->Status == FMV_LOOPED ) {
-		cinTable[currentHandle].player->Status = FMV_PLAY;
-	}
-
+	e_status ret = cinTable[currentHandle].player->Run();
 	if ( cinTable[currentHandle].player->Status == FMV_EOF ) {
-		if ( cinTable[currentHandle].player->Looping ) {
-			RoQReset();
-		} else {
-			RoQShutdown();
-		}
+		ret = FMV_IDLE;
+
+		delete cinTable[currentHandle].player;
+		cinTable[currentHandle].player = NULL;
+		currentHandle = -1;
 	}
 
-	return cinTable[currentHandle].player->Status;
+	return ret;
 }
 
 void CIN_StartedPlayback()
@@ -437,23 +370,6 @@ void SCR_StopCinematic( void ) {
 
 void CIN_UploadCinematic( int handle ) {
 	if ( handle >= 0 && handle < MAX_VIDEO_HANDLES && cinTable[handle].player ) {
-		if ( !cinTable[handle].player->Cin->OutputFrame ) {
-			return;
-		}
-		if ( cinTable[handle].player->PlayOnWalls <= 0 && cinTable[handle].player->Cin->Dirty ) {
-			if ( cinTable[handle].player->PlayOnWalls == 0 ) {
-				cinTable[handle].player->PlayOnWalls = -1;
-			} else {
-				if ( cinTable[handle].player->PlayOnWalls == -1 ) {
-					cinTable[handle].player->PlayOnWalls = -2;
-				} else {
-					cinTable[handle].player->Cin->Dirty = qfalse;
-				}
-			}
-		}
-		R_UploadCinematic( 256, 256, cinTable[handle].player->Cin->OutputFrame, handle, cinTable[handle].player->Cin->Dirty );
-		if ( cl_inGameVideo->integer == 0 && cinTable[handle].player->PlayOnWalls == 1 ) {
-			cinTable[handle].player->PlayOnWalls--;
-		}
+		cinTable[handle].player->Upload(handle);
 	}
 }
