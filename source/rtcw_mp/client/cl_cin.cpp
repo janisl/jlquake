@@ -46,18 +46,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 #include "../../client/sound/local.h"
-#include "../../wolfclient/cinematic/local.h"
-
-extern glconfig_t glConfig;
-
-/******************************************************************************
-*
-* Class:		trFMV
-*
-* Description:	RoQ/RnR manipulation routines
-*				not entirely complete for first run
-*
-******************************************************************************/
+#include "../../client/cinematic/local.h"
 
 static int currentHandle = -1;
 static int CL_handle = -1;

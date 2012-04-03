@@ -24,7 +24,7 @@
 #include "renderer/public.h"
 #include "../client/input/keycodes.h"
 #include "../client/input/public.h"
-#include "cinematic/public.h"
+#include "../client/cinematic/public.h"
 #if 0
 #include "ui/ui.h"
 #include "ui/console.h"

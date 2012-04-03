@@ -1,6 +1,6 @@
 set(WOLFCLIENT_FILES
 	../client/cinematic/cin.cpp
-	cinematic/main.cpp
+	../client/cinematic/main.cpp
 	../client/cinematic/pcx.cpp
 	../client/cinematic/roq.cpp
 	../client/input/keys.cpp

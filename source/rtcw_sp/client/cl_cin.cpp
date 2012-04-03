@@ -45,23 +45,10 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "client.h"
-#include "../../wolfclient/cinematic/local.h"
+#include "../../client/cinematic/local.h"
+#include "../../client/sound/local.h"
 
 #define LETTERBOX_OFFSET 105
-
-extern glconfig_t glConfig;
-extern int s_paintedtime;
-extern int s_soundtime;
-extern int s_rawend[];          //DAJ added [] to match definition
-
-/******************************************************************************
-*
-* Class:		trFMV
-*
-* Description:	RoQ/RnR manipulation routines
-*				not entirely complete for first run
-*
-******************************************************************************/
 
 static int currentHandle = -1;
 static int CL_handle = -1;

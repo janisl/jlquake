@@ -53,7 +53,7 @@ void CIN_MakeFullName(const char* Name, char* FullName)
 		// static pcx image
 		String::Sprintf(FullName, MAX_QPATH, "pics/%s", Name);
 	}
-	if (strstr(Name, "/") == NULL && strstr(Name, "\\") == NULL)
+	else if (strstr(Name, "/") == NULL && strstr(Name, "\\") == NULL)
 	{
 		String::Sprintf(FullName, MAX_QPATH, "video/%s", Name);
 	}
@@ -137,7 +137,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 	{
 		for (int i = 0; i < MAX_VIDEO_HANDLES; i++ )
 		{
-			if (cinTable[i] && !String::Cmp(cinTable[i]->Cin->Name, name))
+			if (cinTable[i] && !String::ICmp(cinTable[i]->Cin->Name, name))
 			{
 				return i;
 			}
@@ -190,6 +190,7 @@ e_status CIN_RunCinematic(int handle)
 	{
 		delete cinTable[handle];
 		cinTable[handle] = NULL;
+		Status = FMV_IDLE;
 	}
 
 	return Status;
