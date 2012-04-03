@@ -41,9 +41,9 @@ enum e_status
 int CIN_PlayCinematic(const char* Name, int XPos, int YPos, int Width, int Height, int Bits);
 e_status CIN_RunCinematic(int Handle);
 void CIN_UploadCinematic(int Handle);
+#endif
 
 //	callbacks
 void CIN_StartedPlayback();
 bool CIN_IsInCinematicState();
 void CIN_FinishCinematic();
-#endif

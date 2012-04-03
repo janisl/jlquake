@@ -138,9 +138,22 @@ static void RoQReset() {
 *
 ******************************************************************************/
 
-static void RoQShutdown( void ) {
-	const char *s;
+void CIN_FinishCinematic()
+{
+	cls.state = CA_DISCONNECTED;
+	// we can't just do a vstr nextmap, because
+	// if we are aborting the intro cinematic with
+	// a devmap command, nextmap would be valid by
+	// the time it was referenced
+	const char* s = Cvar_VariableString( "nextmap" );
+	if ( s[0] ) {
+		Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
+		Cvar_Set( "nextmap", "" );
+	}
+	CL_handle = -1;
+}
 
+static void RoQShutdown( void ) {
 	if ( !cinTable[currentHandle].player->Cin->OutputFrame ) {
 		return;
 	}
@@ -152,17 +165,7 @@ static void RoQShutdown( void ) {
 	cinTable[currentHandle].player->Status = FMV_IDLE;
 
 	if ( cinTable[currentHandle].player->AlterGameState ) {
-		cls.state = CA_DISCONNECTED;
-		// we can't just do a vstr nextmap, because
-		// if we are aborting the intro cinematic with
-		// a devmap command, nextmap would be valid by
-		// the time it was referenced
-		s = Cvar_VariableString( "nextmap" );
-		if ( s[0] ) {
-			Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
-			Cvar_Set( "nextmap", "" );
-		}
-		CL_handle = -1;
+		CIN_FinishCinematic();
 	}
 	delete cinTable[currentHandle].player;
 	cinTable[currentHandle].player = NULL;
@@ -276,6 +279,20 @@ e_status CIN_RunCinematic( int handle ) {
 	return cinTable[currentHandle].player->Status;
 }
 
+void CIN_StartedPlayback()
+{
+	// close the menu
+	if ( uivm ) {
+		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+	}
+
+	cls.state = CA_CINEMATIC;
+
+	Con_Close();
+
+//		s_rawend = s_soundtime;
+}
+
 /*
 ==================
 CL_PlayCinematic
@@ -317,21 +334,10 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	cinTable[currentHandle].player = new QCinematicPlayer(Cin, x, y, w, h, systemBits);
 
 	if ( cinTable[currentHandle].player->AlterGameState ) {
-		// close the menu
-		if ( uivm ) {
-			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
-		}
+		CIN_StartedPlayback();
 	}
 
 	Com_DPrintf( "trFMV::play(), playing %s\n", arg );
-
-	if ( cinTable[currentHandle].player->AlterGameState ) {
-		cls.state = CA_CINEMATIC;
-	}
-
-	Con_Close();
-
-//		s_rawend = s_soundtime;
 
 	return currentHandle;
 }
@@ -372,13 +378,18 @@ void CIN_DrawCinematic( int handle ) {
 	cinTable[handle].player->Cin->Dirty = qfalse;
 }
 
+bool CIN_IsInCinematicState()
+{
+	return cls.state == CA_CINEMATIC;
+}
+
 void CL_PlayCinematic_f( void ) {
 	char    *arg, *s;
 	qboolean holdatend;
 	int bits = CIN_system;
 
 	Com_DPrintf( "CL_PlayCinematic_f\n" );
-	if ( cls.state == CA_CINEMATIC ) {
+	if (CIN_IsInCinematicState()) {
 		SCR_StopCinematic();
 	}
 
