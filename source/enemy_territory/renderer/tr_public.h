@@ -191,11 +191,6 @@ typedef struct {
 	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
 	bool ( *FS_FileExists )( const char *file );
 
-	// cinematic stuff
-	void ( *CIN_UploadCinematic )( int handle );
-	int ( *CIN_PlayCinematic )( const char *arg0, int xpos, int ypos, int width, int height, int bits );
-	e_status ( *CIN_RunCinematic )( int handle );
-
 } refimport_t;
 
 

@@ -60,11 +60,6 @@ extern int s_soundtime;
 *
 ******************************************************************************/
 
-typedef struct {
-	int currentHandle;
-} cinematics_t;
-
-static cinematics_t cin;
 static int currentHandle = -1;
 static int CL_handle = -1;
 
@@ -151,41 +146,6 @@ e_status CIN_StopCinematic( int handle ) {
 	return FMV_EOF;
 }
 
-/*
-==================
-SCR_RunCinematic
-
-Fetch and decompress the pending frame
-==================
-*/
-
-
-e_status CIN_RunCinematic( int handle ) {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
-		return FMV_EOF;
-	}
-
-	if ( cin.currentHandle != handle ) {
-		currentHandle = handle;
-		cin.currentHandle = currentHandle;
-		cinTable[currentHandle]->Status = FMV_EOF;
-		cinTable[currentHandle]->Reset();
-	}
-
-	currentHandle = handle;
-
-	e_status ret = cinTable[currentHandle]->Run();
-	if ( cinTable[currentHandle]->Status == FMV_EOF ) {
-		ret = FMV_IDLE;
-
-		delete cinTable[currentHandle];
-		cinTable[currentHandle] = NULL;
-		currentHandle = -1;
-	}
-
-	return ret;
-}
-
 void CIN_StartedPlayback()
 {
 	// close the menu
@@ -199,50 +159,6 @@ void CIN_StartedPlayback()
 
 //		s_rawend = s_soundtime;
 	s_rawend[0] = s_soundtime;
-}
-
-/*
-==================
-CL_PlayCinematic
-
-==================
-*/
-int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBits ) {
-	char name[MAX_OSPATH];
-	int i;
-
-	CIN_MakeFullName(arg, name);
-
-	if ( !( systemBits & CIN_system ) ) {
-		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-			if ( cinTable[i] && !String::Cmp( cinTable[i]->Cin->Name, name ) ) {
-				return i;
-			}
-		}
-	}
-
-	Com_DPrintf( "SCR_PlayCinematic( %s )\n", arg );
-
-	Com_Memset( &cin, 0, sizeof( cinematics_t ) );
-	currentHandle = CIN_HandleForVideo();
-
-	cin.currentHandle = currentHandle;
-
-	QCinematic* Cin = CIN_Open(name);
-	if (!Cin)
-	{
-		return -1;
-	}
-
-	cinTable[currentHandle] = new QCinematicPlayer(Cin, x, y, w, h, systemBits);
-
-	if ( cinTable[currentHandle]->AlterGameState ) {
-		CIN_StartedPlayback();
-	}
-
-	Com_DPrintf( "trFMV::play(), playing %s\n", arg );
-
-	return currentHandle;
 }
 
 void CIN_SetExtents( int handle, int x, int y, int w, int h ) {
@@ -340,11 +256,5 @@ void SCR_StopCinematic( void ) {
 		CIN_StopCinematic( CL_handle );
 		S_StopAllSounds();
 		CL_handle = -1;
-	}
-}
-
-void CIN_UploadCinematic( int handle ) {
-	if ( handle >= 0 && handle < MAX_VIDEO_HANDLES && cinTable[handle] ) {
-		cinTable[handle]->Upload(handle);
 	}
 }

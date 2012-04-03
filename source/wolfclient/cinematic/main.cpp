@@ -122,7 +122,6 @@ int CIN_HandleForVideo()
 	throw DropException("CIN_HandleForVideo: none free");
 }
 
-#if 0
 //==========================================================================
 //
 //	CIN_PlayCinematic
@@ -138,7 +137,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 	{
 		for (int i = 0; i < MAX_VIDEO_HANDLES; i++ )
 		{
-			if (cinTable[i] && !String::Cmp(cinTable[i]->Cin->Name, name))
+			if (cinTable[i] && !String::ICmp(cinTable[i]->Cin->Name, name))
 			{
 				return i;
 			}
@@ -191,6 +190,7 @@ e_status CIN_RunCinematic(int handle)
 	{
 		delete cinTable[handle];
 		cinTable[handle] = NULL;
+		Status = FMV_IDLE;
 	}
 
 	return Status;
@@ -209,7 +209,6 @@ void CIN_UploadCinematic(int handle)
 		cinTable[handle]->Upload(handle);
 	}
 }
-#endif
 
 //==========================================================================
 //
