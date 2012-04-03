@@ -131,7 +131,6 @@ void R_RotateForEntity( const trRefEntity_t * ent, const viewParms_t * viewParms
 void    GL_SetDefaultState( void );
 
 void    RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
-void    RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
 
 void        RE_BeginFrame( stereoFrame_t stereoFrame );
 void        RE_BeginRegistration( glconfig_t *glconfig );

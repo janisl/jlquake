@@ -501,7 +501,7 @@ void CIN_UploadCinematic( int handle ) {
 				}
 			}
 		}
-		re.UploadCinematic( 256, 256, 256, 256, cinTable[handle].player->Cin->OutputFrame, handle, cinTable[handle].player->Cin->Dirty );
+		R_UploadCinematic( 256, 256, cinTable[handle].player->Cin->OutputFrame, handle, cinTable[handle].player->Cin->Dirty );
 		if ( cl_inGameVideo->integer == 0 && cinTable[handle].player->PlayOnWalls == 1 ) {
 			cinTable[handle].player->PlayOnWalls--;
 		}

@@ -813,7 +813,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.Add2dPolys       = RE_2DPolyies;
 	re.DrawStretchPicGradient   = RE_StretchPicGradient;
 	re.DrawStretchRaw   = RE_StretchRaw;
-	re.UploadCinematic  = RE_UploadCinematic;
 	re.RegisterFont     = RE_RegisterFont;
 	re.RemapShader      = R_RemapShader;
 	re.GetEntityToken   = R_GetEntityToken;
