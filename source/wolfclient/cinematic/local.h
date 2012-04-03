@@ -195,7 +195,6 @@ public:
 	void Reset();
 };
 
-#if 0
 //
 //	Handles playback of cinematic
 //
@@ -211,6 +210,7 @@ public:
 	bool			Looping;
 	bool			HoldAtEnd;
 	bool			Shader;
+	bool letterBox;
 	e_status		Status;
 	unsigned int	StartTime;
 	unsigned int	LastTime;
@@ -226,6 +226,7 @@ public:
 	, Looping((SystemBits & CIN_loop) != 0)
 	, HoldAtEnd((SystemBits & CIN_hold) != 0)
 	, Shader((SystemBits & CIN_shader) != 0)
+	, letterBox((SystemBits & CIN_letterBox) != 0)
 	, Status(FMV_PLAY)
 	, StartTime(0)
 	, LastTime(0)
@@ -239,13 +240,16 @@ public:
 		}
 		StartTime = LastTime = CL_ScaledMilliseconds();
 	}
+#if 0
 	~QCinematicPlayer();
 	void SetExtents(int x, int y, int w, int h);
 	e_status Run();
 	void Reset();
 	void Upload(int Handle);
+#endif
 };
 
+#if 0
 void CIN_MakeFullName(const char* Name, char* FullName);
 QCinematic* CIN_Open(const char* Name);
 int CIN_HandleForVideo();

@@ -335,7 +335,6 @@ e_status CIN_StopCinematic( int handle );
 e_status CIN_RunCinematic( int handle );
 void CIN_DrawCinematic( int handle );
 void CIN_SetExtents( int handle, int x, int y, int w, int h );
-void CIN_SetLooping( int handle, qboolean loop );
 void CIN_UploadCinematic( int handle );
 void CIN_CloseAllVideos( void );
 
