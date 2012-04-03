@@ -27,6 +27,13 @@
 
 // MACROS ------------------------------------------------------------------
 
+// Hex Color string support
+#define gethex( ch ) ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
+#define ishex( ch )  ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
+// check if it's format rrggbb r,g,b e {0..9} U {A...F}
+#define Q_IsHexColorString( p ) ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
+#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -215,19 +222,25 @@ SURFACE SHADERS
 =============================================================
 */
 
-#if 0
 //==========================================================================
 //
 //	R_BindAnimatedImage
 //
 //==========================================================================
 
-static void R_BindAnimatedImage(textureBundle_t* bundle)
+//static 
+void R_BindAnimatedImage(textureBundle_t* bundle)
 {
 	if (bundle->isVideoMap)
 	{
 		CIN_RunCinematic(bundle->videoMapHandle);
 		CIN_UploadCinematic(bundle->videoMapHandle);
+		return;
+	}
+
+	if (bundle->isLightmap && (backEnd.refdef.rdflags & RDF_SNOOPERVIEW))
+	{
+		GL_Bind(tr.whiteImage);
 		return;
 	}
 
@@ -259,13 +272,70 @@ static void R_BindAnimatedImage(textureBundle_t* bundle)
 //
 //==========================================================================
 
-static void DrawTris(shaderCommands_t* input)
+//static 
+void DrawTris(shaderCommands_t* input)
 {
 	GL_Bind(tr.whiteImage);
-	qglColor3f(1, 1, 1);
 
-	GL_State(GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE);
-	qglDepthRange(0, 0);
+	const char* s = r_trisColor->string;
+	vec4_t trisColor = { 1, 1, 1, 1 };
+	if (*s == '0' && (*(s + 1) == 'x' || *(s + 1) == 'X'))
+	{
+		s += 2;
+		if (Q_IsHexColorString(s))
+		{
+			trisColor[0] = ((float)(gethex(*(s)) * 16 + gethex(*(s + 1)))) / 255.00;
+			trisColor[1] = ((float)(gethex(*(s + 2)) * 16 + gethex(*(s + 3)))) / 255.00;
+			trisColor[2] = ((float)(gethex(*(s + 4)) * 16 + gethex(*(s + 5)))) / 255.00;
+
+			if (Q_HexColorStringHasAlpha(s))
+			{
+				trisColor[3] = ((float)(gethex(*(s + 6)) * 16 + gethex(*(s + 7)))) / 255.00;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			char* token = String::Parse3(&s);
+			if (token)
+			{
+				trisColor[i] = String::Atof(token);
+			}
+			else
+			{
+				trisColor[i] = 1.f;
+			}
+		}
+
+		if (!trisColor[3])
+		{
+			trisColor[3] = 1.f;
+		}
+	}
+
+	unsigned int stateBits = 0;
+	if (trisColor[3] < 1.f)
+	{
+		stateBits |= (GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	}
+
+	qglColor4fv(trisColor);
+
+	if (r_showtris->integer == 2)
+	{
+		stateBits |= GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE;
+		GL_State(stateBits);
+		qglDepthRange(0, 0);
+	}
+	else
+	{
+		stateBits |= GLS_POLYMODE_LINE;
+		GL_State(stateBits);
+		qglEnable(GL_POLYGON_OFFSET_LINE);
+		qglPolygonOffset(r_offsetFactor->value, r_offsetUnits->value);
+	}
 
 	qglDisableClientState(GL_COLOR_ARRAY);
 	qglDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -286,6 +356,7 @@ static void DrawTris(shaderCommands_t* input)
 		QGL_LogComment("glUnlockArraysEXT\n");
 	}
 	qglDepthRange(0, 1);
+	qglDisable(GL_POLYGON_OFFSET_LINE);
 }
 
 //==========================================================================
@@ -296,22 +367,68 @@ static void DrawTris(shaderCommands_t* input)
 //
 //==========================================================================
 
-static void DrawNormals(shaderCommands_t* input)
+//static 
+void DrawNormals(shaderCommands_t* input)
 {
 	GL_Bind(tr.whiteImage);
 	qglColor3f(1, 1, 1);
 	qglDepthRange(0, 0);	// never occluded
 	GL_State(GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE);
 
-	qglBegin(GL_LINES);
-	for (int i = 0 ; i < input->numVertexes ; i++)
+	if (r_shownormals->integer == 2)
 	{
-		qglVertex3fv(input->xyz[i]);
+		// ydnar: light direction
+		trRefEntity_t* ent = backEnd.currentEntity;
+		vec3_t temp2;
+		if (ent->e.renderfx & RF_LIGHTING_ORIGIN)
+		{
+			VectorSubtract(ent->e.lightingOrigin, backEnd.orient.origin, temp2);
+		}
+		else
+		{
+			VectorClear(temp2);
+		}
 		vec3_t temp;
-		VectorMA(input->xyz[i], 2, input->normal[i], temp);
+		temp[0] = DotProduct(temp2, backEnd.orient.axis[0]);
+		temp[1] = DotProduct(temp2, backEnd.orient.axis[1]);
+		temp[2] = DotProduct(temp2, backEnd.orient.axis[2]);
+
+		qglColor3f(ent->ambientLight[0] / 255, ent->ambientLight[1] / 255, ent->ambientLight[2] / 255);
+		qglPointSize(5);
+		qglBegin(GL_POINTS);
 		qglVertex3fv(temp);
+		qglEnd();
+		qglPointSize(1);
+
+		if (fabs(VectorLengthSquared(ent->lightDir) - 1.0f) > 0.2f)
+		{
+			qglColor3f(1, 0, 0);
+		}
+		else
+		{
+			qglColor3f(ent->directedLight[0] / 255, ent->directedLight[1] / 255, ent->directedLight[2] / 255);
+		}
+		qglLineWidth(3);
+		qglBegin(GL_LINES);
+		qglVertex3fv(temp);
+		VectorMA(temp, 32, ent->lightDir, temp);
+		qglVertex3fv(temp);
+		qglEnd();
+		qglLineWidth(1);
 	}
-	qglEnd();
+	else
+	{
+		// ydnar: normals drawing
+		qglBegin(GL_LINES);
+		for (int i = 0 ; i < input->numVertexes ; i++)
+		{
+			qglVertex3fv(input->xyz[i]);
+			vec3_t temp;
+			VectorMA(input->xyz[i], r_normallength->value, input->normal[i], temp);
+			qglVertex3fv(temp);
+		}
+		qglEnd();
+	}
 
 	qglDepthRange(0, 1);
 }
@@ -337,6 +454,7 @@ void RB_BeginSurface(shader_t* shader, int fogNum)
 	tess.xstages = state->stages;
 	tess.numPasses = state->numUnfoggedPasses;
 	tess.currentStageIteratorFunc = state->optimalStageIteratorFunc;
+	tess.ATI_tess = false;
 
 	tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 	if (tess.shader->clampTime && tess.shaderTime >= tess.shader->clampTime)
@@ -345,6 +463,7 @@ void RB_BeginSurface(shader_t* shader, int fogNum)
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	DrawMultitextured
