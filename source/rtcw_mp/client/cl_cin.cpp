@@ -47,20 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/sound/local.h"
 #include "../../wolfclient/cinematic/local.h"
-#define MAXSIZE             8
-#define MINSIZE             4
-
-#define ROQ_QUAD            0x1000
-#define ROQ_QUAD_INFO       0x1001
-#define ROQ_CODEBOOK        0x1002
-#define ROQ_QUAD_VQ         0x1011
-#define ROQ_QUAD_JPEG       0x1012
-#define ROQ_QUAD_HANG       0x1013
-#define ROQ_PACKET          0x1030
-#define ZA_SOUND_MONO       0x1020
-#define ZA_SOUND_STEREO     0x1021
-
-#define MAX_VIDEO_HANDLES   16
 
 extern glconfig_t glConfig;
 
@@ -77,12 +63,7 @@ typedef struct {
 	int currentHandle;
 } cinematics_t;
 
-typedef struct {
-	QCinematicPlayer* player;
-} cin_cache;
-
 static cinematics_t cin;
-static cin_cache cinTable[MAX_VIDEO_HANDLES];
 static int currentHandle = -1;
 static int CL_handle = -1;
 
@@ -90,7 +71,7 @@ void CIN_CloseAllVideos( void ) {
 	int i;
 
 	for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-		if ( cinTable[i].player ) {
+		if ( cinTable[i] ) {
 			CIN_StopCinematic( i );
 		}
 	}
@@ -101,7 +82,7 @@ static int CIN_HandleForVideo( void ) {
 	int i;
 
 	for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-		if ( !cinTable[i].player ) {
+		if ( !cinTable[i] ) {
 			return i;
 		}
 	}
@@ -133,16 +114,16 @@ void CIN_FinishCinematic()
 }
 
 static void RoQShutdown( void ) {
-	if ( cinTable[currentHandle].player->Cin->OutputFrame ) {
-		if ( cinTable[currentHandle].player->Status != FMV_IDLE ) {
+	if ( cinTable[currentHandle]->Cin->OutputFrame ) {
+		if ( cinTable[currentHandle]->Status != FMV_IDLE ) {
 			Com_DPrintf( "finished cinematic\n" );
-			cinTable[currentHandle].player->Status = FMV_IDLE;
+			cinTable[currentHandle]->Status = FMV_IDLE;
 
-			if ( cinTable[currentHandle].player->AlterGameState ) {
+			if ( cinTable[currentHandle]->AlterGameState ) {
 				CIN_FinishCinematic();
 			}
-			delete cinTable[currentHandle].player;
-			cinTable[currentHandle].player = NULL;
+			delete cinTable[currentHandle];
+			cinTable[currentHandle] = NULL;
 			currentHandle = -1;
 		}
 	}
@@ -155,23 +136,23 @@ SCR_StopCinematic
 */
 e_status CIN_StopCinematic( int handle ) {
 
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle].player->Status == FMV_EOF ) {
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
 		return FMV_EOF;
 	}
 	currentHandle = handle;
 
-	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[currentHandle].player->Cin->Name );
+	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[currentHandle]->Cin->Name );
 
-	if ( !cinTable[currentHandle].player->Cin->OutputFrame ) {
+	if ( !cinTable[currentHandle]->Cin->OutputFrame ) {
 		return FMV_EOF;
 	}
 
-	if ( cinTable[currentHandle].player->AlterGameState ) {
+	if ( cinTable[currentHandle]->AlterGameState ) {
 		if (!CIN_IsInCinematicState()) {
-			return cinTable[currentHandle].player->Status;
+			return cinTable[currentHandle]->Status;
 		}
 	}
-	cinTable[currentHandle].player->Status = FMV_EOF;
+	cinTable[currentHandle]->Status = FMV_EOF;
 	RoQShutdown();
 
 	return FMV_EOF;
@@ -187,25 +168,25 @@ Fetch and decompress the pending frame
 
 
 e_status CIN_RunCinematic( int handle ) {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle].player->Status == FMV_EOF ) {
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
 		return FMV_EOF;
 	}
 
 	if ( cin.currentHandle != handle ) {
 		currentHandle = handle;
 		cin.currentHandle = currentHandle;
-		cinTable[currentHandle].player->Status = FMV_EOF;
-		cinTable[currentHandle].player->Reset();
+		cinTable[currentHandle]->Status = FMV_EOF;
+		cinTable[currentHandle]->Reset();
 	}
 
 	currentHandle = handle;
 
-	e_status ret = cinTable[currentHandle].player->Run();
-	if ( cinTable[currentHandle].player->Status == FMV_EOF ) {
+	e_status ret = cinTable[currentHandle]->Run();
+	if ( cinTable[currentHandle]->Status == FMV_EOF ) {
 		ret = FMV_IDLE;
 
-		delete cinTable[currentHandle].player;
-		cinTable[currentHandle].player = NULL;
+		delete cinTable[currentHandle];
+		cinTable[currentHandle] = NULL;
 		currentHandle = -1;
 	}
 
@@ -244,7 +225,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	if ( !( systemBits & CIN_system ) ) {
 		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-			if ( cinTable[i].player && !String::Cmp( cinTable[i].player->Cin->Name, name ) ) {
+			if ( cinTable[i] && !String::Cmp( cinTable[i]->Cin->Name, name ) ) {
 				return i;
 			}
 		}
@@ -264,9 +245,9 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		return -1;
 	}
 
-	cinTable[currentHandle].player = new QCinematicPlayer(Cin, x, y, w, h, systemBits);
+	cinTable[currentHandle] = new QCinematicPlayer(Cin, x, y, w, h, systemBits);
 
-	if ( cinTable[currentHandle].player->AlterGameState ) {
+	if ( cinTable[currentHandle]->AlterGameState ) {
 		CIN_StartedPlayback();
 	}
 
@@ -276,10 +257,10 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 }
 
 void CIN_SetExtents( int handle, int x, int y, int w, int h ) {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle].player || cinTable[handle].player->Status == FMV_EOF ) {
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle] || cinTable[handle]->Status == FMV_EOF ) {
 		return;
 	}
-	cinTable[handle].player->SetExtents(x, y, w, h);
+	cinTable[handle]->SetExtents(x, y, w, h);
 }
 
 /*
@@ -292,23 +273,23 @@ void CIN_DrawCinematic( int handle ) {
 	float x, y, w, h;
 	byte    *buf;
 
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle].player->Status == FMV_EOF ) {
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
 		return;
 	}
 
-	if ( !cinTable[handle].player->Cin->OutputFrame ) {
+	if ( !cinTable[handle]->Cin->OutputFrame ) {
 		return;
 	}
 
-	x = cinTable[handle].player->XPos;
-	y = cinTable[handle].player->YPos;
-	w = cinTable[handle].player->Width;
-	h = cinTable[handle].player->Height;
-	buf = cinTable[handle].player->Cin->OutputFrame;
+	x = cinTable[handle]->XPos;
+	y = cinTable[handle]->YPos;
+	w = cinTable[handle]->Width;
+	h = cinTable[handle]->Height;
+	buf = cinTable[handle]->Cin->OutputFrame;
 	SCR_AdjustFrom640( &x, &y, &w, &h );
 
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle].player->Cin->Width, cinTable[handle].player->Cin->Height, buf, handle, cinTable[handle].player->Cin->Dirty );
-	cinTable[handle].player->Cin->Dirty = qfalse;
+	re.DrawStretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );
+	cinTable[handle]->Cin->Dirty = qfalse;
 }
 
 bool CIN_IsInCinematicState()
@@ -343,7 +324,7 @@ void CL_PlayCinematic_f( void ) {
 	if ( CL_handle >= 0 ) {
 		do {
 			SCR_RunCinematic();
-		} while ( cinTable[currentHandle].player->Cin->OutputFrame == NULL && cinTable[currentHandle].player->Status == FMV_PLAY );        // wait for first frame (load codebook and sound)
+		} while ( cinTable[currentHandle]->Cin->OutputFrame == NULL && cinTable[currentHandle]->Status == FMV_PLAY );        // wait for first frame (load codebook and sound)
 	}
 }
 
@@ -369,7 +350,7 @@ void SCR_StopCinematic( void ) {
 }
 
 void CIN_UploadCinematic( int handle ) {
-	if ( handle >= 0 && handle < MAX_VIDEO_HANDLES && cinTable[handle].player ) {
-		cinTable[handle].player->Upload(handle);
+	if ( handle >= 0 && handle < MAX_VIDEO_HANDLES && cinTable[handle] ) {
+		cinTable[handle]->Upload(handle);
 	}
 }

@@ -251,8 +251,8 @@ public:
 void CIN_MakeFullName(const char* Name, char* FullName);
 QCinematic* CIN_Open(const char* Name);
 int CIN_HandleForVideo();
+#endif
 
 #define MAX_VIDEO_HANDLES	16
 
 extern QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
-#endif
