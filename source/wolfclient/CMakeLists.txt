@@ -19,6 +19,7 @@ set(WOLFCLIENT_FILES
 	renderer/init.cpp
 	renderer/light.cpp
 	renderer/main.cpp
+	../client/renderer/noise.cpp
 	../client/renderer/particle.cpp
 	../client/renderer/qgl.cpp
 	renderer/scene.cpp

@@ -668,7 +668,6 @@ INIT
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 const char* R_GetTitleForWindow();
 
-#if 0
 /*
 ============================================================
 
@@ -688,6 +687,7 @@ SCENE
 ============================================================
 */
 
+#if 0
 void R_ToggleSmpFrame();
 
 /*
