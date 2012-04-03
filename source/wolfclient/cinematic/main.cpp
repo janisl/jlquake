@@ -209,6 +209,7 @@ void CIN_UploadCinematic(int handle)
 		cinTable[handle]->Upload(handle);
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -240,6 +241,7 @@ void QCinematicPlayer::SetExtents(int x, int y, int w, int h)
 	Cin->Dirty = true;
 }
 
+#if 0
 //==========================================================================
 //
 //	QCinematicPlayer::Run

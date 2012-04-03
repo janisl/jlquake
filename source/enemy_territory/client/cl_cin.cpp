@@ -170,7 +170,6 @@ static void RoQShutdown( void ) {
 		}
 		CL_handle = -1;
 	}
-	delete cinTable[currentHandle].player->Cin;
 	delete cinTable[currentHandle].player;
 	cinTable[currentHandle].player = NULL;
 	currentHandle = -1;
@@ -345,14 +344,10 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 }
 
 void CIN_SetExtents( int handle, int x, int y, int w, int h ) {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle].player->Status == FMV_EOF ) {
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle].player || cinTable[handle].player->Status == FMV_EOF ) {
 		return;
 	}
-	cinTable[handle].player->XPos = x;
-	cinTable[handle].player->YPos = y;
-	cinTable[handle].player->Width = w;
-	cinTable[handle].player->Height = h;
-	cinTable[handle].player->Cin->Dirty = qtrue;
+	cinTable[handle].player->SetExtents(x, y, w, h);
 }
 
 /*
@@ -442,7 +437,7 @@ void SCR_StopCinematic( void ) {
 }
 
 void CIN_UploadCinematic( int handle ) {
-	if ( handle >= 0 && handle < MAX_VIDEO_HANDLES ) {
+	if ( handle >= 0 && handle < MAX_VIDEO_HANDLES && cinTable[handle].player ) {
 		if ( !cinTable[handle].player->Cin->OutputFrame ) {
 			return;
 		}
