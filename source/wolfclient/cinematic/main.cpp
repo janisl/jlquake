@@ -39,7 +39,6 @@ QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	CIN_MakeFullName
@@ -54,7 +53,7 @@ void CIN_MakeFullName(const char* Name, char* FullName)
 		// static pcx image
 		String::Sprintf(FullName, MAX_QPATH, "pics/%s", Name);
 	}
-	if (strstr(Name, "/") == NULL && strstr(Name, "\\") == NULL)
+	else if (strstr(Name, "/") == NULL && strstr(Name, "\\") == NULL)
 	{
 		String::Sprintf(FullName, MAX_QPATH, "video/%s", Name);
 	}
@@ -123,6 +122,7 @@ int CIN_HandleForVideo()
 	throw DropException("CIN_HandleForVideo: none free");
 }
 
+#if 0
 //==========================================================================
 //
 //	CIN_PlayCinematic

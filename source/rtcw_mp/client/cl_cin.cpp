@@ -77,19 +77,6 @@ void CIN_CloseAllVideos( void ) {
 	}
 }
 
-
-static int CIN_HandleForVideo( void ) {
-	int i;
-
-	for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-		if ( !cinTable[i] ) {
-			return i;
-		}
-	}
-	Com_Error( ERR_DROP, "CIN_HandleForVideo: none free" );
-	return -1;
-}
-
 /******************************************************************************
 *
 * Function:
@@ -217,11 +204,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	char name[MAX_OSPATH];
 	int i;
 
-	if ( strstr( arg, "/" ) == NULL && strstr( arg, "\\" ) == NULL ) {
-		String::Sprintf( name, sizeof( name ), "video/%s", arg );
-	} else {
-		String::Sprintf( name, sizeof( name ), "%s", arg );
-	}
+	CIN_MakeFullName(arg, name);
 
 	if ( !( systemBits & CIN_system ) ) {
 		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
@@ -238,10 +221,9 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	cin.currentHandle = currentHandle;
 
-	QCinematic* Cin = new QCinematicRoq();
-	if (!Cin->Open(name))
+	QCinematic* Cin = CIN_Open(name);
+	if (!Cin)
 	{
-		delete Cin;
 		return -1;
 	}
 
