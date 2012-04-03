@@ -26,29 +26,10 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-
-/*****************************************************************************
- * name:		cl_cin.c
- *
- * desc:		video and cinematic playback
- *
- *
- * cl_glconfig.hwtype trtypes 3dfx/ragepro need 256x256
- *
- *****************************************************************************/
-
-//#define ADAPTED_TO_STREAMING_SOUND
-//	(SA) MISSIONPACK MERGE
-//	s_rawend for wolf is [] and for q3 is just a single value
-//  I need to ask Ryan if it's as simple as a constant index or
-// if some more coding needs to be done.
-
-
 #include "client.h"
 #include "../../client/sound/local.h"
 #include "../../client/cinematic/local.h"
 
-static int currentHandle = -1;
 static int CL_handle = -1;
 
 void CIN_CloseAllVideos( void ) {
@@ -84,22 +65,6 @@ void CIN_FinishCinematic()
 	CL_handle = -1;
 }
 
-static void RoQShutdown( void ) {
-	if ( cinTable[currentHandle]->Cin->OutputFrame ) {
-		if ( cinTable[currentHandle]->Status != FMV_IDLE ) {
-			Com_DPrintf( "finished cinematic\n" );
-			cinTable[currentHandle]->Status = FMV_IDLE;
-
-			if ( cinTable[currentHandle]->AlterGameState ) {
-				CIN_FinishCinematic();
-			}
-			delete cinTable[currentHandle];
-			cinTable[currentHandle] = NULL;
-			currentHandle = -1;
-		}
-	}
-}
-
 /*
 ==================
 SCR_StopCinematic
@@ -110,21 +75,27 @@ e_status CIN_StopCinematic( int handle ) {
 	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
 		return FMV_EOF;
 	}
-	currentHandle = handle;
 
-	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[currentHandle]->Cin->Name );
+	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[handle]->Cin->Name );
 
-	if ( !cinTable[currentHandle]->Cin->OutputFrame ) {
+	if ( !cinTable[handle]->Cin->OutputFrame ) {
 		return FMV_EOF;
 	}
 
-	if ( cinTable[currentHandle]->AlterGameState ) {
+	if ( cinTable[handle]->AlterGameState ) {
 		if (!CIN_IsInCinematicState()) {
-			return cinTable[currentHandle]->Status;
+			return cinTable[handle]->Status;
 		}
 	}
-	cinTable[currentHandle]->Status = FMV_EOF;
-	RoQShutdown();
+	cinTable[handle]->Status = FMV_EOF;
+	Com_DPrintf( "finished cinematic\n" );
+	cinTable[handle]->Status = FMV_IDLE;
+
+	if ( cinTable[handle]->AlterGameState ) {
+		CIN_FinishCinematic();
+	}
+	delete cinTable[handle];
+	cinTable[handle] = NULL;
 
 	return FMV_EOF;
 }
@@ -211,7 +182,7 @@ void CL_PlayCinematic_f( void ) {
 	if ( CL_handle >= 0 ) {
 		do {
 			SCR_RunCinematic();
-		} while ( cinTable[currentHandle]->Cin->OutputFrame == NULL && cinTable[currentHandle]->Status == FMV_PLAY );        // wait for first frame (load codebook and sound)
+		} while ( cinTable[CL_handle]->Cin->OutputFrame == NULL && cinTable[CL_handle]->Status == FMV_PLAY );        // wait for first frame (load codebook and sound)
 	}
 }
 
