@@ -499,9 +499,6 @@ SAVE
 
 #define RESERVED_CONFIGSTRINGS  2   // game can't modify below this, only the system can
 
-#define REF_FORCE_DLIGHT    ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
-#define REF_JUNIOR_DLIGHT   ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
-
 //=========================================================
 // shared by AI and animation scripting
 //

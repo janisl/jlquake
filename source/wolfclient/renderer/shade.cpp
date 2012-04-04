@@ -463,7 +463,6 @@ void RB_BeginSurface(shader_t* shader, int fogNum)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	DrawMultitextured
@@ -475,9 +474,24 @@ void RB_BeginSurface(shader_t* shader, int fogNum)
 //
 //==========================================================================
 
-static void DrawMultitextured(shaderCommands_t* input, int stage)
+//static 
+void DrawMultitextured(shaderCommands_t* input, int stage)
 {
 	shaderStage_t* pStage = tess.xstages[stage];
+
+	if (tess.shader->noFog && pStage->isFogged)
+	{
+		R_FogOn();
+	}
+	else if (tess.shader->noFog && !pStage->isFogged)
+	{
+		R_FogOff(); // turn it back off
+	}
+	else
+	{
+		// make sure it's on
+		R_FogOn();
+	}
 
 	GL_State(pStage->stateBits);
 
@@ -526,6 +540,7 @@ static void DrawMultitextured(shaderCommands_t* input, int stage)
 	GL_SelectTexture(0);
 }
 
+#if 0
 //==========================================================================
 //
 //	RB_IterateStagesGeneric
@@ -592,6 +607,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 		}
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -601,10 +617,17 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 //
 //==========================================================================
 
-static void ProjectDlightTexture()
+//static 
+void ProjectDlightTexture()
 {
 	if (!backEnd.refdef.num_dlights)
 	{
+		return;
+	}
+
+	if (backEnd.refdef.rdflags & RDF_SNOOPERVIEW)
+	{
+		// no dlights for snooper
 		return;
 	}
 
@@ -717,23 +740,345 @@ static void ProjectDlightTexture()
 		qglEnableClientState(GL_COLOR_ARRAY);
 		qglColorPointer(4, GL_UNSIGNED_BYTE, 0, colorArray);
 
-		GL_Bind(tr.dlightImage);
-		// include GLS_DEPTHFUNC_EQUAL so alpha tested surfaces don't add light
-		// where they aren't rendered
-		if (dl->additive)
+		//	Creating dlight shader to allow for special blends or alternate dlight texture
+		shader_t* dls = dl->shader;
+		if (dls)
 		{
-			GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL);
+			for (int i = 0; i < dls->numUnfoggedPasses; i++)
+			{
+				shaderStage_t *stage = dls->stages[i];
+				R_BindAnimatedImage(&dls->stages[i]->bundle[0]);
+				GL_State(stage->stateBits | GLS_DEPTHFUNC_EQUAL);
+				R_DrawElements(numIndexes, hitIndexes);
+				backEnd.pc.c_totalIndexes += numIndexes;
+				backEnd.pc.c_dlightIndexes += numIndexes;
+			}
 		}
 		else
 		{
-			GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL);
+			R_FogOff();
+
+			GL_Bind(tr.dlightImage);
+			// include GLS_DEPTHFUNC_EQUAL so alpha tested surfaces don't add light
+			// where they aren't rendered
+			if (dl->additive)
+			{
+				GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL);
+			}
+			else
+			{
+				GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL);
+			}
+			R_DrawElements(numIndexes, hitIndexes);
+			backEnd.pc.c_totalIndexes += numIndexes;
+			backEnd.pc.c_dlightIndexes += numIndexes;
+
+			// Ridah, overdraw lights several times, rather than sending
+			//	multiple lights through
+			for (int i = 0; i < dl->overdraw; i++)
+			{
+				R_DrawElements(numIndexes, hitIndexes);
+				backEnd.pc.c_totalIndexes += numIndexes;
+				backEnd.pc.c_dlightIndexes += numIndexes;
+			}
+
+			R_FogOn();
 		}
-		R_DrawElements(numIndexes, hitIndexes);
-		backEnd.pc.c_totalIndexes += numIndexes;
-		backEnd.pc.c_dlightIndexes += numIndexes;
 	}
 }
 
+//	perform all dynamic lighting with a single rendering pass
+//static 
+void DynamicLightSinglePass()
+{
+	// early out
+	if (backEnd.refdef.num_dlights == 0)
+	{
+		return;
+	}
+
+	// clear colors
+	Com_Memset(tess.svars.colors, 0, sizeof(tess.svars.colors));
+
+	// walk light list
+	for (int l = 0; l < backEnd.refdef.num_dlights; l++)
+	{
+		// early out
+		if (!(tess.dlightBits & (1 << l)))
+		{
+			continue;
+		}
+
+		// setup
+		dlight_t* dl = &backEnd.refdef.dlights[l];
+		vec3_t origin;
+		VectorCopy(dl->transformed, origin);
+		float radius = dl->radius;
+		float radiusInverseCubed = dl->radiusInverseCubed;
+		float intensity = dl->intensity;
+		vec3_t floatColor;
+		floatColor[0] = dl->color[0] * 255.0f;
+		floatColor[1] = dl->color[1] * 255.0f;
+		floatColor[2] = dl->color[2] * 255.0f;
+
+		// directional lights have max intensity and washout remainder intensity
+		float remainder;
+		if (dl->flags & REF_DIRECTED_DLIGHT)
+		{
+			remainder = intensity * 0.125;
+		}
+		else
+		{
+			remainder = 0.0f;
+		}
+
+		// illuminate vertexes
+		byte* colors = tess.svars.colors[0];
+		for (int i = 0; i < tess.numVertexes; i++, colors += 4)
+		{
+			backEnd.pc.c_dlightVertexes++;
+
+			float modulate;
+			// directional dlight, origin is a directional normal
+			if (dl->flags & REF_DIRECTED_DLIGHT)
+			{
+				// twosided surfaces use absolute value of the calculated lighting
+				modulate = intensity * DotProduct(dl->origin, tess.normal[i]);
+				if (tess.shader->cullType == CT_TWO_SIDED)
+				{
+					modulate = fabs(modulate);
+				}
+				modulate += remainder;
+			}
+			// ball dlight
+			else
+			{
+				vec3_t dir;
+				dir[0] = radius - fabs(origin[0] - tess.xyz[i][0]);
+				if (dir[0] <= 0.0f)
+				{
+					continue;
+				}
+				dir[1] = radius - fabs(origin[1] - tess.xyz[i][1]);
+				if (dir[1] <= 0.0f)
+				{
+					continue;
+				}
+				dir[2] = radius - fabs(origin[2] - tess.xyz[i][2]);
+				if (dir[2] <= 0.0f)
+				{
+					continue;
+				}
+
+				modulate = intensity * dir[0] * dir[1] * dir[2] * radiusInverseCubed;
+			}
+
+			// optimizations
+			if (modulate < (1.0f / 128.0f))
+			{
+				continue;
+			}
+			else if (modulate > 1.0f)
+			{
+				modulate = 1.0f;
+			}
+
+			// add to color
+			int color = colors[0] + Q_ftol(floatColor[0] * modulate);
+			colors[0] = color > 255 ? 255 : color;
+			color = colors[1] + Q_ftol(floatColor[1] * modulate);
+			colors[1] = color > 255 ? 255 : color;
+			color = colors[2] + Q_ftol(floatColor[2] * modulate);
+			colors[2] = color > 255 ? 255 : color;
+		}
+	}
+
+	// build a list of triangles that need light
+	int* intColors = (int*)tess.svars.colors;
+	int numIndexes = 0;
+	unsigned hitIndexes[SHADER_MAX_INDEXES];
+	for (int i = 0; i < tess.numIndexes; i += 3)
+	{
+		int a = tess.indexes[i];
+		int b = tess.indexes[i + 1];
+		int c = tess.indexes[i + 2];
+		if (!(intColors[a] | intColors[b] | intColors[c]))
+		{
+			continue;
+		}
+		hitIndexes[numIndexes++] = a;
+		hitIndexes[numIndexes++] = b;
+		hitIndexes[numIndexes++] = c;
+	}
+
+	if (numIndexes == 0)
+	{
+		return;
+	}
+
+	// debug code
+	//%	for( i = 0; i < numIndexes; i++ )
+	//%		intColors[ hitIndexes[ i ] ] = 0x000000FF;
+
+	qglEnableClientState(GL_COLOR_ARRAY);
+	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.svars.colors);
+
+	// render the dynamic light pass
+	R_FogOff();
+	GL_Bind(tr.whiteImage);
+	GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL);
+	R_DrawElements(numIndexes, hitIndexes);
+	backEnd.pc.c_totalIndexes += numIndexes;
+	backEnd.pc.c_dlightIndexes += numIndexes;
+	R_FogOn();
+}
+
+//	Perform dynamic lighting with multiple rendering passes
+//static 
+void DynamicLightPass()
+{
+	// early out
+	if (backEnd.refdef.num_dlights == 0)
+	{
+		return;
+	}
+
+	// walk light list
+	for (int l = 0; l < backEnd.refdef.num_dlights; l++)
+	{
+		// early out
+		if (!(tess.dlightBits & (1 << l)))
+		{
+			continue;
+		}
+
+		// clear colors
+		Com_Memset(tess.svars.colors, 0, sizeof(tess.svars.colors));
+
+		// setup
+		dlight_t* dl = &backEnd.refdef.dlights[l];
+		vec3_t origin;
+		VectorCopy(dl->transformed, origin);
+		float radius = dl->radius;
+		float radiusInverseCubed = dl->radiusInverseCubed;
+		float intensity = dl->intensity;
+		vec3_t floatColor;
+		floatColor[0] = dl->color[0] * 255.0f;
+		floatColor[1] = dl->color[1] * 255.0f;
+		floatColor[2] = dl->color[2] * 255.0f;
+
+		// directional lights have max intensity and washout remainder intensity
+		float remainder;
+		if (dl->flags & REF_DIRECTED_DLIGHT)
+		{
+			remainder = intensity * 0.125;
+		}
+		else
+		{
+			remainder = 0.0f;
+		}
+
+		// illuminate vertexes
+		byte* colors = tess.svars.colors[0];
+		for (int i = 0; i < tess.numVertexes; i++, colors += 4)
+		{
+			backEnd.pc.c_dlightVertexes++;
+
+			// directional dlight, origin is a directional normal
+			float modulate;
+			if (dl->flags & REF_DIRECTED_DLIGHT)
+			{
+				// twosided surfaces use absolute value of the calculated lighting
+				modulate = intensity * DotProduct(dl->origin, tess.normal[i]);
+				if (tess.shader->cullType == CT_TWO_SIDED)
+				{
+					modulate = fabs(modulate);
+				}
+				modulate += remainder;
+			}
+			// ball dlight
+			else
+			{
+				vec3_t dir;
+				dir[0] = radius - fabs(origin[0] - tess.xyz[i][0]);
+				if (dir[0] <= 0.0f)
+				{
+					continue;
+				}
+				dir[1] = radius - fabs(origin[1] - tess.xyz[i][1]);
+				if (dir[1] <= 0.0f)
+				{
+					continue;
+				}
+				dir[2] = radius - fabs(origin[2] - tess.xyz[i][2]);
+				if (dir[2] <= 0.0f)
+				{
+					continue;
+				}
+
+				modulate = intensity * dir[0] * dir[1] * dir[2] * radiusInverseCubed;
+			}
+
+			// optimizations
+			if (modulate < (1.0f / 128.0f))
+			{
+				continue;
+			}
+			else if (modulate > 1.0f)
+			{
+				modulate = 1.0f;
+			}
+
+			// set color
+			int color = Q_ftol(floatColor[0] * modulate);
+			colors[0] = color > 255 ? 255 : color;
+			color = Q_ftol(floatColor[1] * modulate);
+			colors[1] = color > 255 ? 255 : color;
+			color = Q_ftol(floatColor[2] * modulate);
+			colors[2] = color > 255 ? 255 : color;
+		}
+
+		// build a list of triangles that need light
+		int* intColors = (int*)tess.svars.colors;
+		int numIndexes = 0;
+		unsigned hitIndexes[SHADER_MAX_INDEXES];
+		for (int i = 0; i < tess.numIndexes; i += 3)
+		{
+			int a = tess.indexes[i];
+			int b = tess.indexes[i + 1];
+			int c = tess.indexes[i + 2];
+			if (!(intColors[a] | intColors[b] | intColors[c]))
+			{
+				continue;
+			}
+			hitIndexes[numIndexes++] = a;
+			hitIndexes[numIndexes++] = b;
+			hitIndexes[numIndexes++] = c;
+		}
+
+		if (numIndexes == 0)
+		{
+			continue;
+		}
+
+		// debug code (fixme, there's a bug in this function!)
+		//%	for( i = 0; i < numIndexes; i++ )
+		//%		intColors[ hitIndexes[ i ] ] = 0x000000FF;
+
+		qglEnableClientState(GL_COLOR_ARRAY);
+		qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.svars.colors);
+
+		R_FogOff();
+		GL_Bind(tr.whiteImage);
+		GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL);
+		R_DrawElements(numIndexes, hitIndexes);
+		backEnd.pc.c_totalIndexes += numIndexes;
+		backEnd.pc.c_dlightIndexes += numIndexes;
+		R_FogOn();
+	}
+}
+
+#if 0
 //==========================================================================
 //
 //	RB_FogPass

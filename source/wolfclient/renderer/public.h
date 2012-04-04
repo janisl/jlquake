@@ -156,6 +156,10 @@ enum glfogType_t
 	NUM_FOGS
 };
 
+#define REF_FORCE_DLIGHT	BIT(31)	// RF, passed in through overdraw parameter, force this dlight under all conditions
+#define REF_JUNIOR_DLIGHT	BIT(30)	// (SA) this dlight does not light surfaces.  it only affects dynamic light grid
+#define REF_DIRECTED_DLIGHT	BIT(29)	// ydnar: global directional light, origin should be interpreted as a normal vector
+
 // markfragments are returned by R_MarkFragments()
 struct markFragment_t
 {
