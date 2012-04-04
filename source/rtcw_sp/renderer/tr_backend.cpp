@@ -237,7 +237,6 @@ RB_ZombieFX
 ============
 */
 
-extern void GlobalVectorToLocal( const vec3_t in, vec3_t out );
 extern vec_t VectorLengthSquared( const vec3_t v );
 
 #define ZOMBIEFX_MAX_VERTS              2048

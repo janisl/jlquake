@@ -397,28 +397,6 @@ void    R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec
 
 void    RB_DeformTessGeometry( void );
 
-void    RB_CalcEnvironmentTexCoords( float *dstTexCoords );
-void    RB_CalcFireRiseEnvTexCoords( float *st );
-void    RB_CalcFogTexCoords( float *dstTexCoords );
-void    RB_CalcScrollTexCoords( const float scroll[2], float *dstTexCoords );
-void    RB_CalcRotateTexCoords( float rotSpeed, float *dstTexCoords );
-void    RB_CalcScaleTexCoords( const float scale[2], float *dstTexCoords );
-void    RB_CalcSwapTexCoords( float *dstTexCoords );
-void    RB_CalcTurbulentTexCoords( const waveForm_t *wf, float *dstTexCoords );
-void    RB_CalcTransformTexCoords( const texModInfo_t *tmi, float *dstTexCoords );
-void    RB_CalcModulateColorsByFog( unsigned char *dstColors );
-void    RB_CalcModulateAlphasByFog( unsigned char *dstColors );
-void    RB_CalcModulateRGBAsByFog( unsigned char *dstColors );
-void    RB_CalcWaveAlpha( const waveForm_t *wf, unsigned char *dstColors );
-void    RB_CalcWaveColor( const waveForm_t *wf, unsigned char *dstColors );
-void    RB_CalcAlphaFromEntity( unsigned char *dstColors );
-void    RB_CalcAlphaFromOneMinusEntity( unsigned char *dstColors );
-void    RB_CalcStretchTexCoords( const waveForm_t *wf, float *texCoords );
-void    RB_CalcColorFromEntity( unsigned char *dstColors );
-void    RB_CalcColorFromOneMinusEntity( unsigned char *dstColors );
-void    RB_CalcSpecularAlpha( unsigned char *alphas );
-void    RB_CalcDiffuseColor( unsigned char *colors );
-
 /*
 =============================================================
 

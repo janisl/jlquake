@@ -405,8 +405,12 @@ void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();
 void RB_StageIteratorLightmappedMultitexture();
 void RB_EndSurface();
+#endif
 
+void GlobalVectorToLocal(const vec3_t in, vec3_t out);
+#if 0
 void RB_DeformTessGeometry();
+#endif
 void RB_CalcDiffuseColor(byte* colors);
 void ComputeColors(shaderStage_t* pStage);
 void RB_CalcFogTexCoords(float* dstTexCoords);
@@ -415,6 +419,7 @@ void ComputeTexCoords(shaderStage_t* pStage);
 //
 //	SHADOWS
 //
+#if 0
 void RB_ProjectionShadowDeform();
 void RB_ShadowTessEnd();
 void RB_ShadowFinish();
