@@ -652,6 +652,9 @@ extern glfog_t glfogsettings[NUM_FOGS];		// [0] never used (FOG_NONE)
 extern glfogType_t glfogNum;				// fog type to use (from the mbrush46_fog_t enum list)
 extern bool fogIsOn;
 
+extern int skyboxportal;
+extern int drawskyboxportal;
+
 /*
 ============================================================
 

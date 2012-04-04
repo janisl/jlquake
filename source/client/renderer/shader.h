@@ -403,6 +403,7 @@ void RB_StageIteratorVertexLitTexture();
 void RB_StageIteratorLightmappedMultitexture();
 void RB_EndSurface();
 
+void GlobalVectorToLocal(const vec3_t in, vec3_t out);
 void RB_DeformTessGeometry();
 void RB_CalcDiffuseColor(byte* colors);
 void ComputeColors(shaderStage_t* pStage);
