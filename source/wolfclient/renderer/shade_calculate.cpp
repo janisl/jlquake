@@ -133,8 +133,7 @@ DEFORMATIONS
 //
 //==========================================================================
 
-//static 
-void RB_CalcDeformNormals(deformStage_t* ds)
+static void RB_CalcDeformNormals(deformStage_t* ds)
 {
 	float* xyz = (float*)tess.xyz;
 	float* normal = (float*)tess.normal;
@@ -166,8 +165,7 @@ void RB_CalcDeformNormals(deformStage_t* ds)
 //
 //==========================================================================
 
-//static 
-void RB_CalcDeformVertexes(deformStage_t* ds)
+static void RB_CalcDeformVertexes(deformStage_t* ds)
 {
 	float* xyz = (float*)tess.xyz;
 	float* normal = (float*)tess.normal;
@@ -274,8 +272,7 @@ void RB_CalcDeformVertexes(deformStage_t* ds)
 //
 //==========================================================================
 
-//static 
-void RB_CalcBulgeVertexes(deformStage_t* ds)
+static void RB_CalcBulgeVertexes(deformStage_t* ds)
 {
 	const float* st = (const float*)tess.texCoords[0];
 	float* xyz = (float*) tess.xyz;
@@ -303,8 +300,7 @@ void RB_CalcBulgeVertexes(deformStage_t* ds)
 //
 //==========================================================================
 
-//static 
-void RB_CalcMoveVertexes(deformStage_t* ds)
+static void RB_CalcMoveVertexes(deformStage_t* ds)
 {
 	float* table = TableForFunc(ds->deformationWave.func);
 
@@ -323,7 +319,6 @@ void RB_CalcMoveVertexes(deformStage_t* ds)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	DeformText
@@ -399,7 +394,6 @@ static void DeformText(const char* text)
 		VectorMA(origin, -2, width, origin);
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -414,7 +408,6 @@ void GlobalVectorToLocal(const vec3_t in, vec3_t out)
 	out[2] = DotProduct(in, backEnd.orient.axis[2]);
 }
 
-#if 0
 //==========================================================================
 //
 //	AutospriteDeform
@@ -493,7 +486,6 @@ static void AutospriteDeform()
 		RB_AddQuadStamp(mid, left, up, tess.vertexColors[i]);
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -503,8 +495,7 @@ static void AutospriteDeform()
 //
 //==========================================================================
 
-//static 
-void Autosprite2Deform()
+static void Autosprite2Deform()
 {
 	if (tess.numVertexes & 3)
 	{
@@ -616,7 +607,6 @@ void Autosprite2Deform()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_DeformTessGeometry
@@ -675,7 +665,6 @@ void RB_DeformTessGeometry()
 		}
 	}
 }
-#endif
 
 /*
 ====================================================================

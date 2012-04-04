@@ -408,9 +408,7 @@ void RB_StageIteratorLightmappedMultitexture();
 void RB_EndSurface();
 
 void GlobalVectorToLocal(const vec3_t in, vec3_t out);
-#if 0
 void RB_DeformTessGeometry();
-#endif
 void RB_CalcDiffuseColor(byte* colors);
 void ComputeColors(shaderStage_t* pStage);
 void RB_CalcFogTexCoords(float* dstTexCoords);
