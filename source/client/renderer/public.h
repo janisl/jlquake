@@ -474,6 +474,8 @@ void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* da
 
 void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, Array<byte>& buffer);
 
+void R_SetFog(int fogvar, int var1, int var2, float r, float g, float b, float density);
+
 extern byte			r_palette[256][4];
 
 extern int			ColorIndex[16];
