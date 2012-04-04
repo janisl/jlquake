@@ -240,18 +240,6 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 /*
 ============================================================
 
-SHADOWS
-
-============================================================
-*/
-
-void RB_ShadowTessEnd( void );
-void RB_ShadowFinish( void );
-void RB_ProjectionShadowDeform( void );
-
-/*
-============================================================
-
 SKIES
 
 ============================================================

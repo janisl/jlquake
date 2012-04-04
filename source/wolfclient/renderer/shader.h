@@ -419,11 +419,9 @@ void ComputeTexCoords(shaderStage_t* pStage);
 //
 //	SHADOWS
 //
-#if 0
 void RB_ProjectionShadowDeform();
 void RB_ShadowTessEnd();
 void RB_ShadowFinish();
-#endif
 
 extern shaderCommands_t		tess;
 extern bool	setArraysOnce;
