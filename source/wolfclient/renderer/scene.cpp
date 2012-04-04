@@ -49,6 +49,9 @@ int			r_numpolyverts;
 int			r_numparticles;
 int			r_firstSceneParticle;
 
+int skyboxportal;
+int drawskyboxportal;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------

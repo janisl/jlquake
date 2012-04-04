@@ -1417,6 +1417,7 @@ void RB_StageIteratorLightmappedMultitexture()
 		QGL_LogComment("glUnlockArraysEXT\n");
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -1454,6 +1455,31 @@ void RB_EndSurface()
 		return;
 	}
 
+	if (GGameType & GAME_WolfSP && skyboxportal)
+	{
+		// world
+		if (!(backEnd.refdef.rdflags & RDF_SKYBOXPORTAL))
+		{
+			if (tess.currentStageIteratorFunc == RB_StageIteratorSky)
+			{
+				// don't process these tris at all
+				return;
+			}
+		}
+		// portal sky
+		else
+		{
+			if (!drawskyboxportal)
+			{
+				if (!(tess.currentStageIteratorFunc == RB_StageIteratorSky))
+				{
+					// /only/ process sky tris
+					return;
+				}
+			}
+		}
+	}
+
 	//
 	// update performance counters
 	//
@@ -1483,4 +1509,3 @@ void RB_EndSurface()
 
 	QGL_LogComment("----------\n");
 }
-#endif

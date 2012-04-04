@@ -437,9 +437,6 @@ GL FOG
 ============================================================
 */
 
-extern int skyboxportal;
-extern int drawskyboxportal;
-
 // Ridah, virtual memory
 void *R_Hunk_Begin( void );
 void R_Hunk_End( void );

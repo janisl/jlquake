@@ -32,9 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 int r_numcoronas;
 int r_firstSceneCorona;
 
-int skyboxportal;
-int drawskyboxportal;
-
 /*
 ====================
 R_ToggleSmpFrame

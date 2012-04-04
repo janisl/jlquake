@@ -42,7 +42,6 @@ int r_numDecalProjectors;
 int r_firstSceneDecal;
 int r_numDecals;
 
-int skyboxportal;
 /*
 ====================
 R_ToggleSmpFrame
