@@ -648,6 +648,10 @@ extern float		r_turbsin[256];
 
 extern int gl_NormalFontBase;
 
+extern glfog_t glfogsettings[NUM_FOGS];		// [0] never used (FOG_NONE)
+extern glfogType_t glfogNum;				// fog type to use (from the mbrush46_fog_t enum list)
+extern bool fogIsOn;
+
 /*
 ============================================================
 
@@ -705,6 +709,10 @@ int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 void R_RenderView(viewParms_t* parms);
 #endif
+
+void R_FogOn();
+void R_FogOff();
+void R_Fog(glfog_t* curfog);
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;

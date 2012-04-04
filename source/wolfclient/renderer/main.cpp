@@ -102,6 +102,11 @@ float	r_turbsin[] =
 
 int gl_NormalFontBase = 0;
 
+// fog stuff
+glfog_t glfogsettings[NUM_FOGS];
+glfogType_t glfogNum = FOG_NONE;
+bool fogIsOn = false;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static sortedent_t		cl_transvisedicts[MAX_ENTITIES];
@@ -2112,3 +2117,233 @@ bool R_GetScreenPosFromWorldPos(vec3_t origin, int& u, int& v)
 	return true;
 }
 #endif
+
+void R_FogOn()
+{
+	if (fogIsOn)
+	{
+		return;
+	}
+
+	if (GGameType & GAME_WolfSP && backEnd.projection2D)
+	{
+		// no fog in 2d
+		return;
+	}
+
+	if (GGameType & GAME_WolfMP && r_uiFullScreen->integer)
+	{
+		// don't fog in the menu
+		return;
+	}
+
+	if (!r_wolffog->integer)
+	{
+		return;
+	}
+
+	if (backEnd.refdef.rdflags & RDF_SKYBOXPORTAL)
+	{
+		// don't force world fog on portal sky
+		if (!(glfogsettings[FOG_PORTALVIEW].registered))
+		{
+			return;
+		}
+	}
+	else if (!glfogNum)
+	{
+		return;
+	}
+
+	qglEnable(GL_FOG);
+	fogIsOn = true;
+}
+
+//	Allow disabling fog temporarily
+void R_FogOff()
+{
+	if (!fogIsOn)
+	{
+		return;
+	}
+	qglDisable(GL_FOG);
+	fogIsOn = false;
+}
+
+void R_Fog(glfog_t* curfog)
+{
+	if (!r_wolffog->integer)
+	{
+		R_FogOff();
+		return;
+	}
+
+	if (!curfog->registered)
+	{
+		R_FogOff();
+		return;
+	}
+
+	//	Assme values of '0' for these parameters means 'use default'
+	if (!curfog->density)
+	{
+		curfog->density = 1;
+	}
+	if (!curfog->hint)
+	{
+		curfog->hint = GL_DONT_CARE;
+	}
+	if (!curfog->mode)
+	{
+		curfog->mode = GL_LINEAR;
+	}
+
+	R_FogOn();
+
+	qglFogi(GL_FOG_MODE, curfog->mode);
+	qglFogfv(GL_FOG_COLOR, curfog->color);
+	qglFogf(GL_FOG_DENSITY, curfog->density);
+	qglHint(GL_FOG_HINT, curfog->hint);
+	if (GGameType & GAME_WolfSP && backEnd.refdef.rdflags & RDF_SNOOPERVIEW)
+	{
+		qglFogf(GL_FOG_START, curfog->end);		// snooper starts GL fog out further
+	}
+	else
+	{
+		qglFogf(GL_FOG_START, curfog->start);
+	}
+
+	if (r_zfar->value)
+	{
+		//	Allow override for helping level designers test fog distances
+		qglFogf(GL_FOG_END, r_zfar->value);
+	}
+	else
+	{
+		if (GGameType & GAME_WolfSP && backEnd.refdef.rdflags & RDF_SNOOPERVIEW)
+		{
+			// snooper ends GL fog out further.  this works fine with our maps, but could be 'funky' with later maps
+			qglFogf(GL_FOG_END, curfog->end + 1000);
+		}
+		else
+		{
+			qglFogf(GL_FOG_END, curfog->end);
+		}
+	}
+
+	// NV fog mode
+	if (glConfig.NVFogAvailable)
+	{
+		qglFogi(GL_FOG_DISTANCE_MODE_NV, glConfig.NVFogMode);
+	}
+
+	qglClearColor(curfog->color[0], curfog->color[1], curfog->color[2], curfog->color[3]);
+}
+
+//  if fogvar == FOG_CMD_SWITCHFOG
+//	{
+//		fogvar is the command
+//		var1 is the fog to switch to
+//		var2 is the time to transition
+//  }
+//  else
+//	{
+//		fogvar is the fog that's being set
+//		var1 is the near fog z value
+//		var2 is the far fog z value
+//		rgb = color
+//		density is density, and is used to derive the values of 'mode', 'drawsky', and 'clearscreen'
+//  }
+void R_SetFog(int fogvar, int var1, int var2, float r, float g, float b, float density)
+{
+	if (fogvar != FOG_CMD_SWITCHFOG)
+	{
+		// just set the parameters and return
+		if (var1 == 0 && var2 == 0)
+		{
+			// clear this fog
+			glfogsettings[fogvar].registered = false;
+			return;
+		}
+
+		glfogsettings[fogvar].color[0] = r * tr.identityLight;
+		glfogsettings[fogvar].color[1] = g * tr.identityLight;
+		glfogsettings[fogvar].color[2] = b * tr.identityLight;
+		glfogsettings[fogvar].color[3] = 1;
+		glfogsettings[fogvar].start = var1;
+		glfogsettings[fogvar].end = var2;
+		if (GGameType & GAME_WolfSP ? density >= 1 : density > 1)
+		{
+			glfogsettings[fogvar].mode = GL_LINEAR;
+			glfogsettings[fogvar].drawsky = false;
+			glfogsettings[fogvar].clearscreen = true;
+			glfogsettings[fogvar].density = 1.0;
+		}
+		else
+		{
+			glfogsettings[fogvar].mode = GL_EXP;
+			glfogsettings[fogvar].drawsky = true;
+			glfogsettings[fogvar].clearscreen = false;
+			glfogsettings[fogvar].density = density;
+		}
+		glfogsettings[fogvar].hint = GL_DONT_CARE;
+		glfogsettings[fogvar].registered = true;
+		return;
+	}
+
+	// FOG_MAP now used to mean 'no fog'
+	if (GGameType & GAME_WolfSP && var1 == FOG_MAP)
+	{
+		// transitioning from...
+		if (glfogsettings[FOG_CURRENT].registered)
+		{
+			memcpy(&glfogsettings[FOG_LAST], &glfogsettings[FOG_CURRENT], sizeof(glfog_t));
+		}
+
+		memcpy(&glfogsettings[FOG_TARGET], &glfogsettings[glfogNum], sizeof(glfog_t));
+
+		// clear, clear, clear
+		memset(&glfogsettings[FOG_MAP], 0, sizeof(glfog_t));
+		memset(&glfogsettings[FOG_TARGET], 0, sizeof(glfog_t));
+		glfogNum = FOG_NONE;
+		return;
+	}
+
+	// don't switch to invalid fogs
+	if (glfogsettings[var1].registered != true)
+	{
+		return;
+	}
+
+	glfogNum = (glfogType_t)var1;
+
+	// transitioning to new fog, store the current values as the 'from'
+
+	if (glfogsettings[FOG_CURRENT].registered)
+	{
+		memcpy(&glfogsettings[FOG_LAST], &glfogsettings[FOG_CURRENT], sizeof(glfog_t));
+	}
+	else
+	{
+		// if no current fog fall back to world fog
+		// FIXME: handle transition if there is no FOG_MAP fog
+		memcpy(&glfogsettings[FOG_LAST], &glfogsettings[GGameType & GAME_WolfSP ? glfogNum : FOG_MAP], sizeof(glfog_t));
+	}
+
+	memcpy(&glfogsettings[FOG_TARGET], &glfogsettings[glfogNum], sizeof(glfog_t));
+
+	if (GGameType & GAME_WolfSP && !var2)
+	{
+		// instant
+		glfogsettings[FOG_TARGET].startTime = 0;
+		glfogsettings[FOG_TARGET].finishTime = 0;
+		glfogsettings[FOG_TARGET].dirty = 1;
+		glfogsettings[FOG_CURRENT].dirty = 1;
+	}
+	else
+	{
+		// setup transition times
+		glfogsettings[FOG_TARGET].startTime = tr.refdef.time;
+		glfogsettings[FOG_TARGET].finishTime = tr.refdef.time + var2;
+	}
+}

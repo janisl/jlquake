@@ -822,7 +822,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.AddLightToScene  = RE_AddLightToScene;
 //----(SA)
 	re.AddCoronaToScene = RE_AddCoronaToScene;
-	re.SetFog           = R_SetFog;
 //----(SA)
 	re.RenderScene      = RE_RenderScene;
 

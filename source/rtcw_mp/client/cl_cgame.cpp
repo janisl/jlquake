@@ -833,7 +833,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
 		return 0;
 	case CG_R_SETFOG:
-		re.SetFog( args[1], args[2], args[3], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
+		R_SetFog( args[1], args[2], args[3], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
 		return 0;
 	case CG_R_RENDERSCENE:
 		CL_RenderScene( (wmrefdef_t*)VMA( 1 ) );

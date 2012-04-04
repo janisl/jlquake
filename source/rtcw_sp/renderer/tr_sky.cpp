@@ -904,8 +904,6 @@ void RB_DrawSun( void ) {
 	qglDepthRange( 0.0, 1.0 );
 }
 
-extern void R_Fog( glfog_t *curfog );
-
 /*
 ================
 RB_StageIteratorSky

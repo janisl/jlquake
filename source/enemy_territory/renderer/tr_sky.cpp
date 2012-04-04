@@ -919,10 +919,6 @@ void RB_DrawSun( void ) {
 	qglPopMatrix();
 }
 
-
-
-extern void R_Fog( glfog_t *curfog );
-
 /*
 ================
 RB_StageIteratorSky

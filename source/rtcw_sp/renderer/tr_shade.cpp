@@ -765,10 +765,6 @@ static void ComputeTexCoords( shaderStage_t *pStage ) {
 	}
 }
 
-
-
-extern void R_Fog( glfog_t *curfog );
-
 /*
 ==============
 SetIteratorFog
