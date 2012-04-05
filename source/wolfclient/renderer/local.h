@@ -899,15 +899,15 @@ void R_InitSky(mbrush29_texture_t* mt);
 void EmitSkyPolys(mbrush29_surface_t* fa);
 void EmitBothSkyLayers(mbrush29_surface_t* fa);
 void R_DrawSkyChain(mbrush29_surface_t* s);
+#endif
 void R_ClearSkyBox();
+#if 0
 void R_AddSkySurface(mbrush38_surface_t* fa);
 void R_DrawSkyBoxQ2();
+#endif
 void R_InitSkyTexCoords(float cloudLayerHeight);
-#endif
 void RB_StageIteratorSky();
-#if 0
 void RB_DrawSun();
-#endif
 
 extern float	speedscale;		// for top sky and bottom sky
 

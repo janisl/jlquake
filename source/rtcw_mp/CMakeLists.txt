@@ -44,7 +44,6 @@ set(WOLFMP_FILES
 	renderer/tr_model.cpp
 	renderer/tr_scene.cpp
 	renderer/tr_shader.cpp
-	renderer/tr_sky.cpp
 	renderer/tr_surface.cpp
 	renderer/tr_world.cpp
 

@@ -735,6 +735,4 @@ typedef enum {
 	GS_RESET
 } gamestate_t;
 
-#define SQR( a ) ( ( a ) * ( a ) )
-
 #endif  // __Q_SHARED_H

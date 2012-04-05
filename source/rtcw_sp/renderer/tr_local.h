@@ -183,8 +183,6 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-void RB_StageIteratorSky( void );
-
 void RB_AddQuadStampFadingCornersExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, float s1, float t1, float s2, float t2 );
 
 void RB_ShowImages( void );
@@ -229,20 +227,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent );
 void R_TransformDlights( int count, dlight_t * dl, orientationr_t * _or );
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
-
-/*
-============================================================
-
-SKIES
-
-============================================================
-*/
-
-void R_BuildCloudData( shaderCommands_t *shader );
-void R_InitSkyTexCoords( float cloudLayerHeight );
-void R_DrawSkyBox( shaderCommands_t *shader );
-void RB_DrawSun( void );
-void RB_ClipSkyPolygons( shaderCommands_t *shader );
 
 /*
 ============================================================
