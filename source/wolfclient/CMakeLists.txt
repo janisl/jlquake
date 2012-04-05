@@ -23,7 +23,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/particle.cpp
 	../client/renderer/qgl.cpp
 	renderer/scene.cpp
-	renderer/shade.cpp
+	../client/renderer/shade.cpp
 	../client/renderer/shade_calculate.cpp
 	../client/renderer/shadows.cpp
 	renderer/sky.cpp
