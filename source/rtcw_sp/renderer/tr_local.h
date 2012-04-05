@@ -183,10 +183,7 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-void RB_StageIteratorGeneric( void );
 void RB_StageIteratorSky( void );
-void RB_StageIteratorVertexLitTexture( void );
-void RB_StageIteratorLightmappedMultitexture( void );
 
 void RB_AddQuadStampFadingCornersExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, float s1, float t1, float s2, float t2 );
 

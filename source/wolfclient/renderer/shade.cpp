@@ -175,8 +175,7 @@ static void R_DrawStripElements(int numIndexes, const glIndex_t *indexes, void (
 //
 //==========================================================================
 
-//static 
-void R_DrawElements(int numIndexes, const glIndex_t* indexes)
+static void R_DrawElements(int numIndexes, const glIndex_t* indexes)
 {
 	int primitives = r_primitives->integer;
 
@@ -228,8 +227,7 @@ SURFACE SHADERS
 //
 //==========================================================================
 
-//static 
-void R_BindAnimatedImage(textureBundle_t* bundle)
+static void R_BindAnimatedImage(textureBundle_t* bundle)
 {
 	if (bundle->isVideoMap)
 	{
@@ -272,8 +270,7 @@ void R_BindAnimatedImage(textureBundle_t* bundle)
 //
 //==========================================================================
 
-//static 
-void DrawTris(shaderCommands_t* input)
+static void DrawTris(shaderCommands_t* input)
 {
 	GL_Bind(tr.whiteImage);
 
@@ -367,8 +364,7 @@ void DrawTris(shaderCommands_t* input)
 //
 //==========================================================================
 
-//static 
-void DrawNormals(shaderCommands_t* input)
+static void DrawNormals(shaderCommands_t* input)
 {
 	GL_Bind(tr.whiteImage);
 	qglColor3f(1, 1, 1);
@@ -474,8 +470,7 @@ void RB_BeginSurface(shader_t* shader, int fogNum)
 //
 //==========================================================================
 
-//static 
-void DrawMultitextured(shaderCommands_t* input, int stage)
+static void DrawMultitextured(shaderCommands_t* input, int stage)
 {
 	shaderStage_t* pStage = tess.xstages[stage];
 
@@ -540,7 +535,6 @@ void DrawMultitextured(shaderCommands_t* input, int stage)
 	GL_SelectTexture(0);
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_IterateStagesGeneric
@@ -593,7 +587,66 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 				R_BindAnimatedImage(&pStage->bundle[0]);
 			}
 
-			GL_State(pStage->stateBits);
+			// Ridah, per stage fogging (detail textures)
+			if (tess.shader->noFog && pStage->isFogged)
+			{
+				R_FogOn();
+			}
+			else if (tess.shader->noFog && !pStage->isFogged)
+			{
+				R_FogOff(); // turn it back off
+			}
+			else
+			{    // make sure it's on
+				R_FogOn();
+			}
+
+			int fadeStart = backEnd.currentEntity->e.fadeStartTime;
+			if (fadeStart)
+			{
+				int fadeEnd = backEnd.currentEntity->e.fadeEndTime;
+				if (fadeStart > tr.refdef.time)
+				{
+					// has not started to fade yet
+					GL_State(pStage->stateBits);
+				}
+				else
+				{
+					if (fadeEnd < tr.refdef.time)
+					{     // entity faded out completely
+						continue;
+					}
+
+					float alphaval = (float)(fadeEnd - tr.refdef.time) / (float)(fadeEnd - fadeStart);
+
+					unsigned int tempState = pStage->stateBits;
+					// remove the current blend, and don't write to Z buffer
+					tempState &= ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE);
+					// set the blend to src_alpha, dst_one_minus_src_alpha
+					tempState |= (GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+					GL_State(tempState);
+					GL_Cull(CT_FRONT_SIDED);
+					// modulate the alpha component of each vertex in the render list
+					for (int i = 0; i < tess.numVertexes; i++)
+					{
+						tess.svars.colors[i][0] *= alphaval;
+						tess.svars.colors[i][1] *= alphaval;
+						tess.svars.colors[i][2] *= alphaval;
+						tess.svars.colors[i][3] *= alphaval;
+					}
+				}
+			}
+			else if (r_lightmap->integer && (pStage->bundle[0].isLightmap || pStage->bundle[1].isLightmap))
+			{
+				// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
+				unsigned int stateBits = (pStage->stateBits & ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) |
+					(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);
+				GL_State(stateBits);
+			}
+			else
+			{
+				GL_State(pStage->stateBits);
+			}
 
 			//
 			// draw
@@ -607,7 +660,6 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 		}
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -617,8 +669,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 //
 //==========================================================================
 
-//static 
-void ProjectDlightTexture()
+static void ProjectDlightTexture()
 {
 	if (!backEnd.refdef.num_dlights)
 	{
@@ -788,8 +839,7 @@ void ProjectDlightTexture()
 }
 
 //	perform all dynamic lighting with a single rendering pass
-//static 
-void DynamicLightSinglePass()
+static void DynamicLightSinglePass()
 {
 	// early out
 	if (backEnd.refdef.num_dlights == 0)
@@ -934,8 +984,7 @@ void DynamicLightSinglePass()
 }
 
 //	Perform dynamic lighting with multiple rendering passes
-//static 
-void DynamicLightPass()
+static void DynamicLightPass()
 {
 	// early out
 	if (backEnd.refdef.num_dlights == 0)
@@ -1078,7 +1127,6 @@ void DynamicLightPass()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_FogPass
@@ -1089,6 +1137,26 @@ void DynamicLightPass()
 
 static void RB_FogPass()
 {
+	if (tr.refdef.rdflags & RDF_SNOOPERVIEW)
+	{
+		// no fog pass in snooper
+		return;
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		if (tess.shader->noFog || !r_wolffog->integer)
+		{
+			return;
+		}
+
+		// ydnar: no world, no fogging
+		if (backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+		{
+			return;
+		}
+	}
+
 	qglEnableClientState(GL_COLOR_ARRAY);
 	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.svars.colors);
 
@@ -1099,7 +1167,7 @@ static void RB_FogPass()
 
 	for (int i = 0; i < tess.numVertexes; i++)
 	{
-		*(int*)&tess.svars.colors[i] = fog->colorInt;
+		*(int*)&tess.svars.colors[i] = GGameType & GAME_ET ? fog->shader->fogParms.colorInt: fog->colorInt;
 	}
 
 	RB_CalcFogTexCoords((float*)tess.svars.texcoords[0]);
@@ -1116,6 +1184,52 @@ static void RB_FogPass()
 	}
 
 	R_DrawElements(tess.numIndexes, tess.indexes);
+}
+
+//	Set the fog parameters for this pass.
+static void SetIteratorFog()
+{
+	if (backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		R_FogOff();
+		return;
+	}
+
+	if (backEnd.refdef.rdflags & RDF_DRAWINGSKY)
+	{
+		if (glfogsettings[FOG_SKY].registered)
+		{
+			R_Fog(&glfogsettings[FOG_SKY]);
+		}
+		else
+		{
+			R_FogOff();
+		}
+		return;
+	}
+
+	if (skyboxportal && backEnd.refdef.rdflags & RDF_SKYBOXPORTAL)
+	{
+		if (glfogsettings[FOG_PORTALVIEW].registered)
+		{
+			R_Fog(&glfogsettings[FOG_PORTALVIEW]);
+		}
+		else
+		{
+			R_FogOff();
+		}
+	}
+	else
+	{
+		if (glfogNum > FOG_NONE)
+		{
+			R_Fog(&glfogsettings[FOG_CURRENT]);
+		}
+		else
+		{
+			R_FogOff();
+		}
+	}
 }
 
 //==========================================================================
@@ -1138,6 +1252,16 @@ void RB_StageIteratorGeneric()
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
 		QGL_LogComment(va("--- RB_StageIteratorGeneric( %s ) ---\n", tess.shader->name));
+	}
+
+	// set GL fog
+	SetIteratorFog();
+
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		// RF< so we can send the normals as an array
+		qglEnableClientState(GL_NORMAL_ARRAY);
+		qglEnable(GL_PN_TRIANGLES_ATI); // ATI PN-Triangles extension
 	}
 
 	//
@@ -1175,6 +1299,14 @@ void RB_StageIteratorGeneric()
 		qglTexCoordPointer(2, GL_FLOAT, 0, tess.svars.texcoords[0]);
 	}
 
+	// RF, send normals only if required
+	// This must be done first, since we can't change the arrays once they have been
+	// locked
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		qglNormalPointer(GL_FLOAT, 16, input->normal);
+	}
+
 	//
 	// lock XYZ
 	//
@@ -1202,10 +1334,31 @@ void RB_StageIteratorGeneric()
 	// 
 	// now do any dynamic lighting needed
 	//
-	if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE &&
-		!(tess.shader->surfaceFlags & (BSP46SURF_NODLIGHT | BSP46SURF_SKY)))
+	//
+	// now do any dynamic lighting needed
+	//
+	if (GGameType & GAME_ET)
 	{
-		ProjectDlightTexture();
+		if (tess.dlightBits && tess.shader->fogPass &&
+			!(tess.shader->surfaceFlags & (BSP46SURF_NODLIGHT | BSP46SURF_SKY)))
+		{
+			if (r_dynamiclight->integer == 2)
+			{
+				DynamicLightPass();
+			}
+			else
+			{
+				DynamicLightSinglePass();
+			}
+		}
+	}
+	else
+	{
+		if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE &&
+			!(tess.shader->surfaceFlags & (BSP46SURF_NODLIGHT | BSP46SURF_SKY)))
+		{
+			ProjectDlightTexture();
+		}
 	}
 
 	//
@@ -1231,6 +1384,13 @@ void RB_StageIteratorGeneric()
 	if (input->shader->polygonOffset)
 	{
 		qglDisable(GL_POLYGON_OFFSET_FILL);
+	}
+
+	// turn truform back off
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		qglDisable(GL_PN_TRIANGLES_ATI);    // ATI PN-Triangles extension
+		qglDisableClientState(GL_NORMAL_ARRAY);
 	}
 }
 
@@ -1259,6 +1419,9 @@ void RB_StageIteratorVertexLitTexture()
 		QGL_LogComment(va("--- RB_StageIteratorVertexLitTexturedUnfogged( %s ) ---\n", tess.shader->name));
 	}
 
+	// set GL fog
+	SetIteratorFog();
+
 	//
 	// set face culling appropriately
 	//
@@ -1269,6 +1432,13 @@ void RB_StageIteratorVertexLitTexture()
 	//
 	qglEnableClientState(GL_COLOR_ARRAY);
 	qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		qglEnable(GL_PN_TRIANGLES_ATI); // ATI PN-Triangles extension
+		qglEnableClientState(GL_NORMAL_ARRAY);         // RF< so we can send the normals as an array
+		qglNormalPointer(GL_FLOAT, 16, input->normal);
+	}
 
 	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.svars.colors);
 	qglTexCoordPointer(2, GL_FLOAT, 16, tess.texCoords[0][0]);
@@ -1290,9 +1460,27 @@ void RB_StageIteratorVertexLitTexture()
 	// 
 	// now do any dynamic lighting needed
 	//
-	if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE)
+	if (GGameType & GAME_ET)
 	{
-		ProjectDlightTexture();
+		if (tess.dlightBits && tess.shader->fogPass &&
+			!(tess.shader->surfaceFlags & (BSP46SURF_NODLIGHT | BSP46SURF_SKY)))
+		{
+			if (r_dynamiclight->integer == 2)
+			{
+				DynamicLightPass();
+			}
+			else
+			{
+				DynamicLightSinglePass();
+			}
+		}
+	}
+	else
+	{
+		if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE)
+		{
+			ProjectDlightTexture();
+		}
 	}
 
 	//
@@ -1310,6 +1498,11 @@ void RB_StageIteratorVertexLitTexture()
 	{
 		qglUnlockArraysEXT();
 		QGL_LogComment("glUnlockArraysEXT\n");
+	}
+
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		qglDisable(GL_PN_TRIANGLES_ATI);	// ATI PN-Triangles extension
 	}
 }
 
@@ -1333,6 +1526,9 @@ void RB_StageIteratorLightmappedMultitexture()
 		QGL_LogComment(va("--- RB_StageIteratorLightmappedMultitexture( %s ) ---\n", tess.shader->name));
 	}
 
+	// set GL fog
+	SetIteratorFog();
+
 	//
 	// set face culling appropriately
 	//
@@ -1343,6 +1539,12 @@ void RB_StageIteratorLightmappedMultitexture()
 	//
 	GL_State(GLS_DEFAULT);
 	qglVertexPointer(3, GL_FLOAT, 16, input->xyz);
+
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		qglEnable(GL_PN_TRIANGLES_ATI);		// ATI PN-Triangles extension
+		qglNormalPointer(GL_FLOAT, 16, input->normal);
+	}
 
 	qglEnableClientState(GL_COLOR_ARRAY);
 	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.constantColor255);
@@ -1369,7 +1571,14 @@ void RB_StageIteratorLightmappedMultitexture()
 	{
 		GL_TexEnv(GL_MODULATE);
 	}
-	R_BindAnimatedImage(&tess.xstages[0]->bundle[1]);
+	if (tess.xstages[0]->bundle[1].isLightmap && (backEnd.refdef.rdflags & RDF_SNOOPERVIEW))
+	{
+		GL_Bind(tr.whiteImage);
+	}
+	else
+	{
+		R_BindAnimatedImage(&tess.xstages[0]->bundle[1]);
+	}
 	qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	qglTexCoordPointer(2, GL_FLOAT, 16, tess.texCoords[0][1]);
 
@@ -1395,9 +1604,27 @@ void RB_StageIteratorLightmappedMultitexture()
 	// 
 	// now do any dynamic lighting needed
 	//
-	if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE)
+	if (GGameType & GAME_ET)
 	{
-		ProjectDlightTexture();
+		if (tess.dlightBits && tess.shader->fogPass &&
+			!(tess.shader->surfaceFlags & (BSP46SURF_NODLIGHT | BSP46SURF_SKY)))
+		{
+			if (r_dynamiclight->integer == 2)
+			{
+				DynamicLightPass();
+			}
+			else
+			{
+				DynamicLightSinglePass();
+			}
+		}
+	}
+	else
+	{
+		if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE)
+		{
+			ProjectDlightTexture();
+		}
 	}
 
 	//
@@ -1416,8 +1643,12 @@ void RB_StageIteratorLightmappedMultitexture()
 		qglUnlockArraysEXT();
 		QGL_LogComment("glUnlockArraysEXT\n");
 	}
+
+	if (qglPNTrianglesiATI && tess.ATI_tess)
+	{
+		qglDisable(GL_PN_TRIANGLES_ATI);	// ATI PN-Triangles extension
+	}
 }
-#endif
 
 //==========================================================================
 //

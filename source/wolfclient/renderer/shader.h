@@ -400,11 +400,9 @@ void R_ShaderList_f();
 #endif
 
 void RB_BeginSurface(shader_t* shader, int fogNum );
-#if 0
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();
 void RB_StageIteratorLightmappedMultitexture();
-#endif
 void RB_EndSurface();
 
 void GlobalVectorToLocal(const vec3_t in, vec3_t out);
