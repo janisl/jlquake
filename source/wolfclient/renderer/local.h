@@ -886,6 +886,7 @@ extern mbrush38_surface_t	*r_alpha_surfaces;
 extern int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void*);
+#endif
 
 /*
 ====================================================================
@@ -899,12 +900,9 @@ void R_InitSky(mbrush29_texture_t* mt);
 void EmitSkyPolys(mbrush29_surface_t* fa);
 void EmitBothSkyLayers(mbrush29_surface_t* fa);
 void R_DrawSkyChain(mbrush29_surface_t* s);
-#endif
 void R_ClearSkyBox();
-#if 0
 void R_AddSkySurface(mbrush38_surface_t* fa);
 void R_DrawSkyBoxQ2();
-#endif
 void R_InitSkyTexCoords(float cloudLayerHeight);
 void RB_StageIteratorSky();
 void RB_DrawSun();
