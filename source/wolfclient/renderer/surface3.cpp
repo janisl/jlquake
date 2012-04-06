@@ -720,7 +720,6 @@ void RB_SurfaceFlare(srfFlare_t* surf)
 #endif
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_SurfaceSprite
@@ -823,7 +822,8 @@ static void RB_SurfaceBeam()
 
 static void DoRailCore(const vec3_t start, const vec3_t end, const vec3_t up, float len, float spanWidth)
 {
-	float		t = len / 256.0f;
+	// Gordon: configurable tile
+	float t = len / (GGameType & GAME_ET && backEnd.currentEntity->e.radius > 0 ? backEnd.currentEntity->e.radius : 256.f);
 
 	int vbase = tess.numVertexes;
 
@@ -833,9 +833,19 @@ static void DoRailCore(const vec3_t start, const vec3_t end, const vec3_t up, fl
 	VectorMA(start, spanWidth, up, tess.xyz[tess.numVertexes]);
 	tess.texCoords[tess.numVertexes][0][0] = 0;
 	tess.texCoords[tess.numVertexes][0][1] = 0;
-	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0] * 0.25;
-	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1] * 0.25;
-	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2] * 0.25;
+	if (GGameType & GAME_ET)
+	{
+		tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
+		tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
+		tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+		tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
+	}
+	else
+	{
+		tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0] * 0.25;
+		tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1] * 0.25;
+		tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2] * 0.25;
+	}
 	tess.numVertexes++;
 
 	VectorMA(start, spanWidth2, up, tess.xyz[tess.numVertexes]);
@@ -844,6 +854,10 @@ static void DoRailCore(const vec3_t start, const vec3_t end, const vec3_t up, fl
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	if (GGameType & GAME_ET)
+	{
+		tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
+	}
 	tess.numVertexes++;
 
 	VectorMA(end, spanWidth, up, tess.xyz[tess.numVertexes]);
@@ -853,6 +867,10 @@ static void DoRailCore(const vec3_t start, const vec3_t end, const vec3_t up, fl
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	if (GGameType & GAME_ET)
+	{
+		tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
+	}
 	tess.numVertexes++;
 
 	VectorMA(end, spanWidth2, up, tess.xyz[tess.numVertexes]);
@@ -861,6 +879,10 @@ static void DoRailCore(const vec3_t start, const vec3_t end, const vec3_t up, fl
 	tess.vertexColors[tess.numVertexes][0] = backEnd.currentEntity->e.shaderRGBA[0];
 	tess.vertexColors[tess.numVertexes][1] = backEnd.currentEntity->e.shaderRGBA[1];
 	tess.vertexColors[tess.numVertexes][2] = backEnd.currentEntity->e.shaderRGBA[2];
+	if (GGameType & GAME_ET)
+	{
+		tess.vertexColors[tess.numVertexes][3] = backEnd.currentEntity->e.shaderRGBA[3];
+	}
 	tess.numVertexes++;
 
 	tess.indexes[tess.numIndexes++] = vbase;
@@ -901,7 +923,14 @@ static void RB_SurfaceRailCore()
 	CrossProduct(v1, v2, right);
 	VectorNormalize(right);
 
-	DoRailCore(start, end, right, len, r_railCoreWidth->integer);
+	if (GGameType & GAME_ET)
+	{
+		DoRailCore(start, end, right, len, e->frame > 0 ? e->frame : 1);
+	}
+	else
+	{
+		DoRailCore(start, end, right, len, r_railCoreWidth->integer);
+	}
 }
 
 //==========================================================================
@@ -1038,6 +1067,23 @@ static void RB_SurfaceLightningBolt()
 	}
 }
 
+static void RB_SurfaceSplash()
+{
+	vec3_t left, up;
+	float radius;
+
+	// calculate the xyz locations for the four corners
+	radius = backEnd.currentEntity->e.radius;
+
+	VectorSet( left, -radius, 0, 0 );
+	VectorSet( up, 0, radius, 0 );
+	if ( backEnd.viewParms.isMirror ) {
+		VectorSubtract( vec3_origin, left, left );
+	}
+
+	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );
+}
+
 //==========================================================================
 //
 //	RB_SurfaceAxis
@@ -1072,7 +1118,8 @@ static void RB_SurfaceAxis()
 //
 //==========================================================================
 
-static void RB_SurfaceEntity(surfaceType_t* surfType)
+//static 
+void RB_SurfaceEntity(surfaceType_t* surfType)
 {
 	switch(backEnd.currentEntity->e.reType)
 	{
@@ -1096,12 +1143,17 @@ static void RB_SurfaceEntity(surfaceType_t* surfType)
 		RB_SurfaceLightningBolt();
 		break;
 
+	case RT_SPLASH:
+		RB_SurfaceSplash();
+		break;
+
 	default:
 		RB_SurfaceAxis();
 		break;
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	RB_SurfaceDisplayList
