@@ -2344,3 +2344,24 @@ void R_SetFog(int fogvar, int var1, int var2, float r, float g, float b, float d
 		glfogsettings[FOG_TARGET].finishTime = tr.refdef.time + var2;
 	}
 }
+
+void R_DebugText(const vec3_t org, float r, float g, float b, const char* text, bool neverOcclude)
+{
+	if (neverOcclude)
+	{
+		qglDepthRange(0, 0);  // never occluded
+
+	}
+	qglColor3f(r, g, b);
+	qglRasterPos3fv(org);
+	qglPushAttrib(GL_LIST_BIT);
+	qglListBase(gl_NormalFontBase);
+	qglCallLists(String::Length(text), GL_UNSIGNED_BYTE, text);
+	qglListBase(0);
+	qglPopAttrib();
+
+	if (neverOcclude)
+	{
+		qglDepthRange(0, 1);
+	}
+}

@@ -796,30 +796,49 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 			outXyz[2] = oldXyz[2] * oldXyzScale + newXyz[2] * newXyzScale;
 
 			// FIXME: interpolate lat/long instead?
-			unsigned lat = (newNormals[0] >> 8) & 0xff;
-			unsigned lng = (newNormals[0] & 0xff);
-			lat *= 4;
-			lng *= 4;
-			vec3_t uncompressedNewNormal;
-			uncompressedNewNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
-			uncompressedNewNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-			uncompressedNewNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
+			if (GGameType & GAME_ET)
+			{
+				// ydnar: ok :)
+				unsigned lat = Q_ftol((((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
+					(((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
+				unsigned lng = Q_ftol(((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
+					((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
 
-			lat = (oldNormals[0] >> 8) & 0xff;
-			lng = (oldNormals[0] & 0xff);
-			lat *= 4;
-			lng *= 4;
+				outNormal[ 0 ] = tr.sinTable[ ( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
+				outNormal[ 1 ] = tr.sinTable[ lat ] * tr.sinTable[ lng ];
+				outNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
+			}
+			else
+			{
+				unsigned lat = (newNormals[0] >> 8) & 0xff;
+				unsigned lng = (newNormals[0] & 0xff);
+				lat *= (FUNCTABLE_SIZE / 256);
+				lng *= (FUNCTABLE_SIZE / 256);
+				vec3_t uncompressedNewNormal;
+				uncompressedNewNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
+				uncompressedNewNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
+				uncompressedNewNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
 
-			vec3_t uncompressedOldNormal;
-			uncompressedOldNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
-			uncompressedOldNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-			uncompressedOldNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
+				lat = (oldNormals[0] >> 8) & 0xff;
+				lng = (oldNormals[0] & 0xff);
+				lat *= (FUNCTABLE_SIZE / 256);
+				lng *= (FUNCTABLE_SIZE / 256);
 
-			outNormal[0] = uncompressedOldNormal[0] * oldNormalScale + uncompressedNewNormal[0] * newNormalScale;
-			outNormal[1] = uncompressedOldNormal[1] * oldNormalScale + uncompressedNewNormal[1] * newNormalScale;
-			outNormal[2] = uncompressedOldNormal[2] * oldNormalScale + uncompressedNewNormal[2] * newNormalScale;
+				vec3_t uncompressedOldNormal;
+				uncompressedOldNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
+				uncompressedOldNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
+				uncompressedOldNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
+
+				outNormal[0] = uncompressedOldNormal[0] * oldNormalScale + uncompressedNewNormal[0] * newNormalScale;
+				outNormal[1] = uncompressedOldNormal[1] * oldNormalScale + uncompressedNewNormal[1] * newNormalScale;
+				outNormal[2] = uncompressedOldNormal[2] * oldNormalScale + uncompressedNewNormal[2] * newNormalScale;
+			}
 		}
-		VectorArrayNormalize((vec4_t*)tess.normal[tess.numVertexes], numVerts);
+		// ydnar: unecessary because of lat/lng lerping
+		if (!(GGameType & GAME_ET))
+		{
+			VectorArrayNormalize((vec4_t*)tess.normal[tess.numVertexes], numVerts);
+		}
 	}
 }
 
@@ -831,6 +850,15 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 
 void RB_SurfaceMesh(md3Surface_t* surface)
 {
+	// RF, check for REFLAG_HANDONLY
+	if (backEnd.currentEntity->e.reFlags & REFLAG_ONLYHAND)
+	{
+		if (!strstr(surface->name, "hand"))
+		{
+			return;
+		}
+	}
+
 	float backlerp;
 	if (backEnd.currentEntity->e.oldframe == backEnd.currentEntity->e.frame)
 	{

@@ -957,6 +957,36 @@ void R_FreeMd4(model_t* mod);
 void R_AddAnimSurfaces(trRefEntity_t* ent);
 void RB_SurfaceAnim(md4Surface_t* surfType);
 
+#define NUMMDCVERTEXNORMALS  256
+
+extern float r_anormals[NUMMDCVERTEXNORMALS][3];
+
+// NOTE: MDC_MAX_ERROR is effectively the compression level. the lower this value, the higher
+// the accuracy, but with lower compression ratios.
+#define MDC_MAX_ERROR       0.1     // if any compressed vert is off by more than this from the
+									// actual vert, make this a baseframe
+
+#define MDC_DIST_SCALE      0.05    // lower for more accuracy, but less range
+
+// note: we are locked in at 8 or less bits since changing to byte-encoded normals
+#define MDC_BITS_PER_AXIS   8
+#define MDC_MAX_OFS         127.0   // to be safe
+
+#define MDC_MAX_DIST        ( MDC_MAX_OFS * MDC_DIST_SCALE )
+
+#define R_MDC_DecodeXyzCompressed( ofsVec, out, normal ) \
+	( out )[0] = ( (float)( ( ofsVec ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
+	( out )[1] = ( (float)( ( ofsVec >> 8 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
+	( out )[2] = ( (float)( ( ofsVec >> 16 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
+	VectorCopy( ( r_anormals )[( ofsVec >> 24 )], normal );
+void RB_SurfaceCMesh(mdcSurface_t *surface);
+
+void RB_SurfaceAnimMds(mdsSurface_t *surfType);
+int R_GetBoneTagMds(orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName);
+
+void RB_MDM_SurfaceAnim(mdmSurface_t* surfType);
+int R_MDM_GetBoneTag(orientation_t* outTag, mdmHeader_t* mdm, int startTagIndex, const refEntity_t* refent, const char* tagName);
+
 void R_InitBsp29NoTextureMip();
 void Mod_LoadBrush29Model(model_t* mod, void* buffer);
 void Mod_FreeBsp29(model_t* mod);

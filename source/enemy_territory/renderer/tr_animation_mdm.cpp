@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "tr_local.h"
-#include "../../wolfclient/renderer/models/skeletal_model_inlines.h"
 
 
 /*
