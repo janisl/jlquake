@@ -82,7 +82,6 @@ BRUSH MODELS
 //======================================================================
 
 void        R_ModelInit( void );
-model_t     *R_GetModelByHandle( qhandle_t hModel );
 int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void        R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs );
 
@@ -157,8 +156,6 @@ void    R_ScreenShotJPEG_f( void );
 
 void    R_InitSkins( void );
 skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
-
-void    R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
 
 //
 // tr_shader.c
@@ -342,8 +339,6 @@ void R_AddAnimSurfaces( trRefEntity_t *ent );
 //
 void R_MDM_MakeAnimModel( model_t *model );
 void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-void RB_MDM_SurfaceAnim( mdmSurface_t *surfType );
-int R_MDM_GetBoneTag( orientation_t *outTag, mdmHeader_t *mdm, int startTagIndex, const refEntity_t *refent, const char *tagName );
 
 /*
 =============================================================

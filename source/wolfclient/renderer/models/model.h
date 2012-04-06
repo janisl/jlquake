@@ -921,13 +921,15 @@ struct model_t
 	int q3_ATI_tess;
 };
 
-#if 0
 struct trRefEntity_t;
 
+#if 0
 model_t* R_AllocModel();
 void R_ModelInit();
 void R_FreeModels();
+#endif
 model_t* R_GetModelByHandle(qhandle_t Index);
+#if 0
 void R_Modellist_f();
 
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
@@ -987,6 +989,9 @@ void RB_SurfaceCMesh(mdcSurface_t *surface);
 
 void RB_SurfaceAnimMds(mdsSurface_t *surfType);
 int R_GetBoneTagMds(orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName);
+
+void RB_MDM_SurfaceAnim(mdmSurface_t* surfType);
+int R_MDM_GetBoneTag(orientation_t* outTag, mdmHeader_t* mdm, int startTagIndex, const refEntity_t* refent, const char* tagName);
 
 #if 0
 void R_InitBsp29NoTextureMip();

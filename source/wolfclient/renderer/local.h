@@ -717,6 +717,8 @@ void R_FogOn();
 void R_FogOff();
 void R_Fog(glfog_t* curfog);
 
+void R_DebugText(const vec3_t org, float r, float g, float b, const char* text, bool neverOcclude);
+
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;
 

@@ -61,11 +61,6 @@ void NewTypeMD4(void*)
 	common->Error("New unsupported surface type MD4");
 }
 
-void NewTypeMDM(void*)
-{
-	common->Error("New unsupported surface type MDM");
-}
-
 void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfaceBad,          // SF_BAD,
 	( void( * ) ( void* ) )RB_SurfaceSkip,         // SF_SKIP,
@@ -78,7 +73,7 @@ void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	NewTypeMD4,//SF_MD4
 	( void( * ) ( void* ) )RB_SurfaceCMesh,        // SF_MDC,
 	( void( * ) ( void* ) )RB_SurfaceAnimMds,      // SF_MDS,
-	NewTypeMDM,//SF_MDM
+	( void( * ) ( void* ) )RB_MDM_SurfaceAnim,     // SF_MDM,
 	( void( * ) ( void* ) )RB_SurfaceFlare,        // SF_FLARE,
 	( void( * ) ( void* ) )RB_SurfaceEntity,       // SF_ENTITY
 	( void( * ) ( void* ) )RB_SurfaceDisplayList,  // SF_DISPLAY_LIST

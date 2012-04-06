@@ -75,7 +75,6 @@ BRUSH MODELS
 //======================================================================
 
 void        R_ModelInit( void );
-model_t     *R_GetModelByHandle( qhandle_t hModel );
 int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void        R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs );
 

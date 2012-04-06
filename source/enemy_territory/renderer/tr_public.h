@@ -111,8 +111,6 @@ typedef struct {
 
 	void ( *DrawDebugPolygon )( int color, int numpoints, float* points );
 
-	void ( *DrawDebugText )( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
-
 	qboolean ( *GetEntityToken )( char *buffer, int size );
 
 	void ( *AddPolyBufferToScene )( polyBuffer_t* pPolyBuffer );

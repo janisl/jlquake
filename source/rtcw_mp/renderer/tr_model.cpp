@@ -43,24 +43,6 @@ static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *name );
 model_t *loadmodel;
 
 /*
-** R_GetModelByHandle
-*/
-model_t *R_GetModelByHandle( qhandle_t index ) {
-	model_t     *mod;
-
-	// out of range gets the defualt model
-	if ( index < 1 || index >= tr.numModels ) {
-		return tr.models[0];
-	}
-
-	mod = tr.models[index];
-
-	return mod;
-}
-
-//===============================================================================
-
-/*
 ** R_AllocModel
 */
 model_t *R_AllocModel( void ) {

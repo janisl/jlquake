@@ -16,7 +16,9 @@ set(WOLFCLIENT_FILES
 	renderer/models/bsp46.cpp
 	renderer/models/md3.cpp
 	renderer/models/mdc.cpp
+	renderer/models/mdm.cpp
 	renderer/models/mds.cpp
+	renderer/models/model.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp

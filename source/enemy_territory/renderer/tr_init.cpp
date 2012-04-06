@@ -817,7 +817,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.GetEntityToken   = R_GetEntityToken;
 
 	re.DrawDebugPolygon = R_DebugPolygon;
-	re.DrawDebugText    = R_DebugText;
 
 	re.AddPolyBufferToScene =   RE_AddPolyBufferToScene;
 
