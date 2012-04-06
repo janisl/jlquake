@@ -34,7 +34,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/shadows.cpp
 	../client/renderer/sky.cpp
 	../client/renderer/state.cpp
-	renderer/surface3.cpp
+	../client/renderer/surface3.cpp
 	../client/renderer/wad.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
