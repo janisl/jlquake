@@ -986,6 +986,7 @@ extern float r_anormals[NUMMDCVERTEXNORMALS][3];
 void RB_SurfaceCMesh(mdcSurface_t *surface);
 
 void RB_SurfaceAnimMds(mdsSurface_t *surfType);
+int R_GetBoneTagMds(orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName);
 
 #if 0
 void R_InitBsp29NoTextureMip();

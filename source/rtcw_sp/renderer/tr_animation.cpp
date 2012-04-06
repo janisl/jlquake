@@ -28,35 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "tr_local.h"
-#include "../../wolfclient/renderer/models/skeletal_model_inlines.h"
-
-/*
-
-All bones should be an identity orientation to display the mesh exactly
-as it is specified.
-
-For all other frames, the bones represent the transformation from the
-orientation of the bone in the base frame to the orientation in this
-frame.
-
-*/
-
-//#define HIGH_PRECISION_BONES	// enable this for 32bit precision bones
-//#define DBG_PROFILE_BONES
-
-//-----------------------------------------------------------------------------
-// Static Vars, ugly but easiest (and fastest) means of seperating RB_SurfaceAnimMds
-// and R_CalcBones
-
-struct mdsBoneFrame_t
-{
-	float matrix[3][3];             // 3x3 rotation
-	vec3_t translation;             // translation vector
-};
-
-extern mdsBoneFrame_t bones[MDS_MAX_BONES], rawBones[MDS_MAX_BONES], oldBones[MDS_MAX_BONES];
-
-//-----------------------------------------------------------------------------
 
 /*
 =============
@@ -264,77 +235,4 @@ void R_AddAnimSurfaces( trRefEntity_t *ent ) {
 
 		surface = ( mdsSurface_t * )( (byte *)surface + surface->ofsEnd );
 	}
-}
-
-void R_CalcBones( mdsHeader_t *header, const refEntity_t *refent, int *boneList, int numBones );
-
-/*
-===============
-R_RecursiveBoneListAdd
-===============
-*/
-void R_RecursiveBoneListAdd( int bi, int *boneList, int *numBones, mdsBoneInfo_t *boneInfoList ) {
-
-	if ( boneInfoList[ bi ].parent >= 0 ) {
-
-		R_RecursiveBoneListAdd( boneInfoList[ bi ].parent, boneList, numBones, boneInfoList );
-
-	}
-
-	boneList[ ( *numBones )++ ] = bi;
-
-}
-
-/*
-===============
-R_GetBoneTag
-===============
-*/
-int R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, const refEntity_t *refent, const char *tagName ) {
-
-	int i;
-	mdsTag_t    *pTag;
-	mdsBoneInfo_t *boneInfoList;
-	int boneList[ MDS_MAX_BONES ];
-	int numBones;
-
-	if ( startTagIndex > mds->numTags ) {
-		memset( outTag, 0, sizeof( *outTag ) );
-		return -1;
-	}
-
-	// find the correct tag
-
-	pTag = ( mdsTag_t * )( (byte *)mds + mds->ofsTags );
-
-	pTag += startTagIndex;
-
-	for ( i = startTagIndex; i < mds->numTags; i++, pTag++ ) {
-		if ( !String::Cmp( pTag->name, tagName ) ) {
-			break;
-		}
-	}
-
-	if ( i >= mds->numTags ) {
-		memset( outTag, 0, sizeof( *outTag ) );
-		return -1;
-	}
-
-	// now build the list of bones we need to calc to get this tag's bone information
-
-	boneInfoList = ( mdsBoneInfo_t * )( (byte *)mds + mds->ofsBones );
-	numBones = 0;
-
-	R_RecursiveBoneListAdd( pTag->boneIndex, boneList, &numBones, boneInfoList );
-
-	// calc the bones
-
-	R_CalcBones( (mdsHeader_t *)mds, refent, boneList, numBones );
-
-	// now extract the orientation for the bone that represents our tag
-
-	memcpy( outTag->axis, bones[ pTag->boneIndex ].matrix, sizeof( outTag->axis ) );
-	VectorCopy( bones[ pTag->boneIndex ].translation, outTag->origin );
-
-	return i;
 }

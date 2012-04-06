@@ -1523,7 +1523,7 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 
 	} else if ( model->type == MOD_MDS ) {    // use bone lerping
 
-		retval = R_GetBoneTag( tag, model->q3_mds, startIndex, refent, tagNameIn );
+		retval = R_GetBoneTagMds( tag, model->q3_mds, startIndex, refent, tagNameIn );
 
 		if ( retval >= 0 ) {
 			return retval;

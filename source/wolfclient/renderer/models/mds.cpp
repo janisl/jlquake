@@ -58,8 +58,7 @@ static int indexes;
 static int baseIndex, baseVertex, oldIndexes;
 static int numVerts;
 static mdsVertex_t     *v;
-//static 
-mdsBoneFrame_t bones[MDS_MAX_BONES], rawBones[MDS_MAX_BONES], oldBones[MDS_MAX_BONES];
+static mdsBoneFrame_t bones[MDS_MAX_BONES], rawBones[MDS_MAX_BONES], oldBones[MDS_MAX_BONES];
 static char validBones[MDS_MAX_BONES];
 static char newBones[ MDS_MAX_BONES ];
 static mdsBoneFrame_t  *bonePtr, *bone, *parentBone;
@@ -443,7 +442,7 @@ static void R_CalcBoneLerp(mdsHeader_t* header, const refEntity_t* refent, int b
 }
 
 //	The list of bones[] should only be built and modified from within here
-void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* boneList, int numBones)
+static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* boneList, int numBones)
 {
 	//
 	// if the entity has changed since the last time the bones were built, reset them
@@ -960,4 +959,63 @@ void RB_SurfaceAnimMds(mdsSurface_t* surface)
 #ifdef DBG_PROFILE_BONES
 	common->Printf("\n");
 #endif
+}
+
+static void R_RecursiveBoneListAdd(int bi, int* boneList, int* numBones, mdsBoneInfo_t* boneInfoList)
+{
+	if (boneInfoList[bi].parent >= 0)
+	{
+		R_RecursiveBoneListAdd(boneInfoList[bi].parent, boneList, numBones, boneInfoList);
+	}
+
+	boneList[(*numBones)++] = bi;
+}
+
+int R_GetBoneTagMds(orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName)
+{
+	if (startTagIndex > mds->numTags)
+	{
+		Com_Memset(outTag, 0, sizeof(*outTag));
+		return -1;
+	}
+
+	// find the correct tag
+
+	mdsTag_t* pTag = (mdsTag_t*)((byte*)mds + mds->ofsTags);
+
+	pTag += startTagIndex;
+
+	int i;
+	for (i = startTagIndex; i < mds->numTags; i++, pTag++)
+	{
+		if (!String::Cmp(pTag->name, tagName))
+		{
+			break;
+		}
+	}
+
+	if (i >= mds->numTags)
+	{
+		Com_Memset(outTag, 0, sizeof(*outTag));
+		return -1;
+	}
+
+	// now build the list of bones we need to calc to get this tag's bone information
+
+	mdsBoneInfo_t* boneInfoList = (mdsBoneInfo_t*)((byte*)mds + mds->ofsBones);
+	int numBones = 0;
+
+	int boneList[MDS_MAX_BONES];
+	R_RecursiveBoneListAdd(pTag->boneIndex, boneList, &numBones, boneInfoList);
+
+	// calc the bones
+
+	R_CalcBones((mdsHeader_t*)mds, refent, boneList, numBones);
+
+	// now extract the orientation for the bone that represents our tag
+
+	Com_Memcpy(outTag->axis, bones[pTag->boneIndex].matrix, sizeof(outTag->axis));
+	VectorCopy(bones[pTag->boneIndex].translation, outTag->origin);
+
+	return i;
 }
