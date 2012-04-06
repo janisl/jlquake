@@ -66,16 +66,6 @@ void NewTypeMDM(void*)
 	common->Error("New unsupported surface type MDM");
 }
 
-void NewTypePolyBuffer(void*)
-{
-	common->Error("New unsupported surface type poly buffer");
-}
-
-void NewTypeDecal(void*)
-{
-	common->Error("New unsupported surface type decal");
-}
-
 void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfaceBad,          // SF_BAD,
 	( void( * ) ( void* ) )RB_SurfaceSkip,         // SF_SKIP,
@@ -87,7 +77,7 @@ void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * ) = {
 	( void( * ) ( void* ) )RB_SurfaceMesh,         // SF_MD3,
 	NewTypeMD4,//SF_MD4
 	( void( * ) ( void* ) )RB_SurfaceCMesh,        // SF_MDC,
-	( void( * ) ( void* ) )RB_SurfaceAnim,         // SF_MDS,
+	( void( * ) ( void* ) )RB_SurfaceAnimMds,      // SF_MDS,
 	NewTypeMDM,//SF_MDM
 	( void( * ) ( void* ) )RB_SurfaceFlare,        // SF_FLARE,
 	( void( * ) ( void* ) )RB_SurfaceEntity,       // SF_ENTITY

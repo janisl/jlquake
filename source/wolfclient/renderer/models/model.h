@@ -985,6 +985,8 @@ extern float r_anormals[NUMMDCVERTEXNORMALS][3];
 	VectorCopy( ( r_anormals )[( ofsVec >> 24 )], normal );
 void RB_SurfaceCMesh(mdcSurface_t *surface);
 
+void RB_SurfaceAnimMds(mdsSurface_t *surfType);
+
 #if 0
 void R_InitBsp29NoTextureMip();
 void Mod_LoadBrush29Model(model_t* mod, void* buffer);
