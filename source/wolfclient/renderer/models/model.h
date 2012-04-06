@@ -951,8 +951,10 @@ void R_DrawMd2Model(trRefEntity_t* e);
 bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);
 void R_AddMD3Surfaces(trRefEntity_t* e);
+#endif
 void RB_SurfaceMesh(md3Surface_t* surface);
 
+#if 0
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);
 void R_AddAnimSurfaces(trRefEntity_t* ent);

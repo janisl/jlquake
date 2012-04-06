@@ -14,6 +14,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/images/tga.cpp
 	../client/renderer/images/wal.cpp
 	renderer/models/bsp46.cpp
+	renderer/models/md3.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
 	renderer/init.cpp
