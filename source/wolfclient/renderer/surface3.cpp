@@ -1153,20 +1153,72 @@ void RB_SurfaceEntity(surfaceType_t* surfType)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_SurfaceDisplayList
 //
 //==========================================================================
 
-static void RB_SurfaceDisplayList(srfDisplayList_t* surf)
+//static 
+void RB_SurfaceDisplayList(srfDisplayList_t* surf)
 {
 	// all apropriate state must be set in RB_BeginSurface
 	// this isn't implemented yet...
 	qglCallList(surf->listNum);
 }
 
+void RB_SurfacePolyBuffer(srfPolyBuffer_t *surf)
+{
+	RB_EndSurface();
+
+	RB_BeginSurface(tess.shader, tess.fogNum);
+
+	// ===================================================
+	//	Originally tess was pointed to different arrays.
+	tess.numIndexes =   surf->pPolyBuffer->numIndicies;
+	tess.numVertexes =  surf->pPolyBuffer->numVerts;
+
+	Com_Memcpy(tess.xyz, surf->pPolyBuffer->xyz, tess.numVertexes * sizeof(vec4_t));
+	for (int i = 0; i < tess.numVertexes; i++)
+	{
+		tess.texCoords[i][0][0] = surf->pPolyBuffer->st[i][0];
+		tess.texCoords[i][0][1] = surf->pPolyBuffer->st[i][1];
+	}
+	Com_Memcpy(tess.indexes, surf->pPolyBuffer->indicies, tess.numIndexes * sizeof(glIndex_t));
+	Com_Memcpy(tess.vertexColors, surf->pPolyBuffer->color, tess.numVertexes * sizeof(color4ub_t));
+	// ===================================================
+
+	RB_EndSurface();
+}
+
+void RB_SurfaceDecal(srfDecal_t* srf)
+{
+	RB_CHECKOVERFLOW(srf->numVerts, 3 * (srf->numVerts - 2));
+
+	// fan triangles into the tess array
+	int numv = tess.numVertexes;
+	for (int i = 0; i < srf->numVerts; i++)
+	{
+		VectorCopy(srf->verts[i].xyz, tess.xyz[numv]);
+		tess.texCoords[numv][0][0] = srf->verts[i].st[0];
+		tess.texCoords[numv][0][1] = srf->verts[i].st[1];
+		*(int*)&tess.vertexColors[numv] = *(int*)srf->verts[i].modulate;
+		numv++;
+	}
+
+	//	generate fan indexes into the tess array
+	for (int i = 0; i < srf->numVerts - 2; i++)
+	{
+		tess.indexes[tess.numIndexes + 0] = tess.numVertexes;
+		tess.indexes[tess.numIndexes + 1] = tess.numVertexes + i + 1;
+		tess.indexes[tess.numIndexes + 2] = tess.numVertexes + i + 2;
+		tess.numIndexes += 3;
+	}
+
+	tess.numVertexes = numv;
+}
+
+#if 0
 void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])( void *) =
 {
 	(void(*)(void*))RB_SurfaceBad,			// SF_BAD, 
