@@ -735,8 +735,7 @@ static void VectorArrayNormalize(vec4_t* normals, unsigned int count)
 //
 //==========================================================================
 
-//static 
-void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
+static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 {
 	float* outXyz = tess.xyz[tess.numVertexes];
 	float* outNormal = tess.normal[tess.numVertexes];

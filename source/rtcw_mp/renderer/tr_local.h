@@ -361,40 +361,10 @@ void R_LoadCacheShaders( void );
 // done.
 
 //------------------------------------------------------------------------------
-// Ridah, mesh compression
-#define NUMMDCVERTEXNORMALS  256
-
-extern float r_anormals[NUMMDCVERTEXNORMALS][3];
-
-// NOTE: MDC_MAX_ERROR is effectively the compression level. the lower this value, the higher
-// the accuracy, but with lower compression ratios.
-#define MDC_MAX_ERROR       0.1     // if any compressed vert is off by more than this from the
-									// actual vert, make this a baseframe
-
-#define MDC_DIST_SCALE      0.05    // lower for more accuracy, but less range
-
-// note: we are locked in at 8 or less bits since changing to byte-encoded normals
-#define MDC_BITS_PER_AXIS   8
-#define MDC_MAX_OFS         127.0   // to be safe
-
-#define MDC_MAX_DIST        ( MDC_MAX_OFS * MDC_DIST_SCALE )
-
-#if 0
-void R_MDC_DecodeXyzCompressed( mdcXyzCompressed_t *xyzComp, vec3_t out, vec3_t normal );
-#else   // optimized version
-#define R_MDC_DecodeXyzCompressed( ofsVec, out, normal ) \
-	( out )[0] = ( (float)( ( ofsVec ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	( out )[1] = ( (float)( ( ofsVec >> 8 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	( out )[2] = ( (float)( ( ofsVec >> 16 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	VectorCopy( ( r_anormals )[( ofsVec >> 24 )], normal );
-#endif
 
 void R_AddMDCSurfaces( trRefEntity_t *ent );
 // done.
 //------------------------------------------------------------------------------
-
-void R_LatLongToNormal( vec3_t outNormal, short latLong );
-
 
 /*
 ============================================================

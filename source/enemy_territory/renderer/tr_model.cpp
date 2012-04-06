@@ -32,6 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #define LL( x ) x = LittleLong( x )
 
+void R_LatLongToNormal(vec3_t outNormal, short latLong);
+
 // Ridah
 static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_name );
 // done.
@@ -326,18 +328,6 @@ fail:
 
 //-------------------------------------------------------------------------------
 // Ridah, mesh compression
-float r_anormals[NUMMDCVERTEXNORMALS][3] = {
-#include "anorms256.h"
-};
-
-/*
-=============
-R_MDC_GetVec
-=============
-*/
-void R_MDC_GetVec( unsigned char anorm, vec3_t dir ) {
-	VectorCopy( r_anormals[anorm], dir );
-}
 
 /*
 =============
@@ -443,22 +433,6 @@ qboolean R_MDC_EncodeXyzCompressed( const vec3_t vec, const vec3_t normal, mdcXy
 	*out = retval;
 	return qtrue;
 }
-
-/*
-=================
-R_MDC_DecodeXyzCompressed
-=================
-*/
-#if 0   // unoptimized version, used for finding right settings
-void R_MDC_DecodeXyzCompressed( mdcXyzCompressed_t *xyzComp, vec3_t out, vec3_t normal ) {
-	int i;
-
-	for ( i = 0; i < 3; i++ ) {
-		out[i] = ( (float)( ( xyzComp->ofsVec >> ( i * MDC_BITS_PER_AXIS ) ) & ( ( 1 << MDC_BITS_PER_AXIS ) - 1 ) ) - MDC_MAX_OFS ) * MDC_DIST_SCALE;
-	}
-	R_MDC_GetVec( ( unsigned char )( xyzComp->ofsVec >> 24 ), normal );
-}
-#endif
 
 // rain - unused
 #if 0
