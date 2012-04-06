@@ -886,9 +886,9 @@ extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 extern gllightmapstate_t gl_lms;
 extern mbrush38_surface_t	*r_alpha_surfaces;
 extern int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+#endif
 
 extern void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void*);
-#endif
 
 /*
 ====================================================================

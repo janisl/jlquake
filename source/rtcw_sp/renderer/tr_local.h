@@ -53,8 +53,6 @@ SURFACES
 
 #define MAX_FACE_POINTS     64
 
-extern void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * );
-
 /*
 ==============================================================================
 

@@ -57,8 +57,6 @@ SURFACES
 #define MAX_WORLD_DECALS        1024
 #define MAX_ENTITY_DECALS       128
 
-extern void( *rb_surfaceTable[SF_NUM_SURFACE_TYPES] ) ( void * );
-
 /*
 ==============================================================================
 
