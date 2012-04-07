@@ -83,9 +83,6 @@ typedef struct {
 	void ( *DrawStretchPicGradient )( float x, float y, float w, float h,
 									  float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType );
 
-	// Draw images for cinematic rendering, pass as 32 bit rgba
-	void ( *DrawStretchRaw )( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
-
 	void ( *BeginFrame )( stereoFrame_t stereoFrame );
 
 	// if the pointers are not NULL, timing info will be returned

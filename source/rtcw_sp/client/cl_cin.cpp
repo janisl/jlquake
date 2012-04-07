@@ -165,7 +165,7 @@ void CIN_DrawCinematic( int handle ) {
 		re.DrawStretchPic( 0, vh - barheight - 1, w, barheight + 1, 0, 0, 0, 0, cls.whiteShader );
 	}
 
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );
+	R_StretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );
 	cinTable[handle]->Cin->Dirty = qfalse;
 }
 

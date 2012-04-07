@@ -1218,7 +1218,6 @@ void RB_RenderThread()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_StretchRaw
@@ -1275,4 +1274,3 @@ void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* da
 	qglVertex2f(x, y + h);
 	qglEnd();
 }
-#endif

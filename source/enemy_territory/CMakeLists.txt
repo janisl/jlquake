@@ -29,7 +29,6 @@ add_library(splines-et STATIC
 set (ET_FILES
 	renderer/tr_animation_mdm.cpp
 	renderer/tr_animation_mds.cpp
-	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp
 	renderer/tr_cmds.cpp
 	renderer/tr_cmesh.cpp

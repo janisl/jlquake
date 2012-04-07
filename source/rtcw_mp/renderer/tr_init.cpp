@@ -606,7 +606,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.DrawStretchPic   = RE_StretchPic;
 	re.DrawRotatedPic   = RE_RotatedPic;        // NERVE - SMF
 	re.DrawStretchPicGradient   = RE_StretchPicGradient;
-	re.DrawStretchRaw   = RE_StretchRaw;
 	re.RegisterFont     = RE_RegisterFont;
 	re.RemapShader      = R_RemapShader;
 	re.GetEntityToken   = R_GetEntityToken;

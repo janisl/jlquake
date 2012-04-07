@@ -616,7 +616,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.SetColor         = RE_SetColor;
 	re.DrawStretchPic   = RE_StretchPic;
 	re.DrawStretchPicGradient   = RE_StretchPicGradient;
-	re.DrawStretchRaw   = RE_StretchRaw;
 	re.RegisterFont     = RE_RegisterFont;
 	re.RemapShader      = R_RemapShader;
 	re.GetEntityToken   = R_GetEntityToken;

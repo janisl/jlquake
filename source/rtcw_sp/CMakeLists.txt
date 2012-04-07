@@ -21,7 +21,6 @@ add_library(splines-wolfsp STATIC
 
 set(WOLFSP_FILES
 	renderer/tr_animation.cpp
-	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp
 	renderer/tr_cmds.cpp
 	renderer/tr_cmesh.cpp

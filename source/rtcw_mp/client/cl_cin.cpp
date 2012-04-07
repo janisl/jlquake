@@ -146,7 +146,7 @@ void CIN_DrawCinematic( int handle ) {
 	buf = cinTable[handle]->Cin->OutputFrame;
 	SCR_AdjustFrom640( &x, &y, &w, &h );
 
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );
+	R_StretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );
 	cinTable[handle]->Cin->Dirty = qfalse;
 }
 
