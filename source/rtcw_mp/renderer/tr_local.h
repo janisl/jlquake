@@ -215,8 +215,6 @@ SCENE GENERATION
 ============================================================
 */
 
-void R_ToggleSmpFrame( void );
-
 void RE_ClearScene( void );
 void RE_AddRefEntityToScene( const refEntity_t *ent );
 void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts );

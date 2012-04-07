@@ -633,6 +633,7 @@ extern int			r_firstScenePoly;
 extern int			r_numpolyverts;
 extern int			r_numparticles;
 extern int			r_firstSceneParticle;
+extern int r_numDecalProjectors;
 
 extern float		s_flipMatrix[16];
 
@@ -685,9 +686,7 @@ SCENE
 ============================================================
 */
 
-#if 0
 void R_ToggleSmpFrame();
-#endif
 
 /*
 ============================================================

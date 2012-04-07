@@ -32,8 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 
-extern int r_numDecalProjectors;
-
 typedef struct decalVert_s
 {
 	vec3_t xyz;

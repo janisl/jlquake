@@ -29,43 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-int r_numcoronas;
-int r_firstSceneCorona;
-
-/*
-====================
-R_ToggleSmpFrame
-
-====================
-*/
-void R_ToggleSmpFrame( void ) {
-	if ( r_smp->integer ) {
-		// use the other buffers next frame, because another CPU
-		// may still be rendering into the current ones
-		tr.smpFrame ^= 1;
-	} else {
-		tr.smpFrame = 0;
-	}
-
-	backEndData[tr.smpFrame]->commands.used = 0;
-
-	r_firstSceneDrawSurf = 0;
-
-	r_numdlights = 0;
-	r_firstSceneDlight = 0;
-
-	r_numcoronas = 0;
-	r_firstSceneCorona = 0;
-
-	r_numentities = 0;
-	r_firstSceneEntity = 0;
-
-	r_numpolys = 0;
-	r_firstScenePoly = 0;
-
-	r_numpolyverts = 0;
-}
-
+extern int r_numcoronas;
+extern int r_firstSceneCorona;
 
 /*
 ====================
