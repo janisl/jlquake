@@ -106,20 +106,3 @@ void InitSig( void ) {
 	sigaction( SIGSEGV, &sa, NULL);
 	sigaction( SIGTERM, &sa, NULL);
 }
-
-/*
-** GLimp_EndFrame
-**
-** Responsible for doing a swapbuffers and possibly for other stuff
-** as yet to be determined.  Probably better not to make this a GLimp
-** function and instead do a call to GLimp_SwapBuffers.
-*/
-void GLimp_EndFrame( void ) {
-	// don't flip if drawing to front buffer
-	if ( String::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 ) {
-		GLimp_SwapBuffers();
-	}
-
-	// check logging
-	QGL_EnableLogging( (qboolean)r_logFile->integer ); // bk001205 - was ->value
-}

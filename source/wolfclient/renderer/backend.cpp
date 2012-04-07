@@ -1035,14 +1035,14 @@ void RB_ShowImages()
 	Log::write("%i msec to draw all images\n", end - start);
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_SwapBuffers
 //
 //==========================================================================
 
-static const void* RB_SwapBuffers(const void* data)
+//static 
+const void* RB_SwapBuffers(const void* data)
 {
 	// finish any 2D drawing if needed
 	if (tess.numIndexes)
@@ -1083,20 +1083,25 @@ static const void* RB_SwapBuffers(const void* data)
 	//
 	// swapinterval stuff
 	//
-#ifdef _WIN32
 	if (r_swapInterval->modified)
 	{
 		r_swapInterval->modified = false;
 
 		if (!glConfig.stereoEnabled)	// why?
 		{	
+#ifdef _WIN32
 			if (qwglSwapIntervalEXT)
 			{
 				qwglSwapIntervalEXT(r_swapInterval->integer);
 			}
+#else
+			if (qglXSwapIntervalSGI)
+			{
+				qglXSwapIntervalSGI(r_swapInterval->integer);
+			}
+#endif
 		}
 	}
-#endif
 
 	// don't flip if drawing to front buffer
 	if (String::ICmp(r_drawBuffer->string, "GL_FRONT") != 0)
@@ -1113,6 +1118,7 @@ static const void* RB_SwapBuffers(const void* data)
 	return (const void*)(cmd + 1);
 }
 
+#if 0
 //==========================================================================
 //
 //	RB_ExecuteRenderCommands

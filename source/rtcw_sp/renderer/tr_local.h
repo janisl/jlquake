@@ -157,16 +157,6 @@ void        R_ShaderList_f( void );
 void    R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 
 /*
-====================================================================
-
-IMPLEMENTATION SPECIFIC FUNCTIONS
-
-====================================================================
-*/
-
-void        GLimp_EndFrame( void );
-
-/*
 ============================================================
 
 WORLD MAP

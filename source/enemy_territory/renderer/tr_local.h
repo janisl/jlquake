@@ -174,16 +174,6 @@ void RE_Finish( void );
 int R_GetTextureId( const char *name );
 
 /*
-====================================================================
-
-IMPLEMENTATION SPECIFIC FUNCTIONS
-
-====================================================================
-*/
-
-void        GLimp_EndFrame( void );
-
-/*
 ============================================================
 
 WORLD MAP

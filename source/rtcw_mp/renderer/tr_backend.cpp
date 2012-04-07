@@ -82,59 +82,7 @@ const void *RB_RotatedPic( const void *data );
 const void *RB_StretchPicGradient( const void *data );
 const void  *RB_DrawSurfs( const void *data );
 const void  *RB_DrawBuffer( const void *data );
-
-/*
-=============
-RB_SwapBuffers
-
-=============
-*/
-const void  *RB_SwapBuffers( const void *data ) {
-	const swapBuffersCommand_t  *cmd;
-
-	// finish any 2D drawing if needed
-	if ( tess.numIndexes ) {
-		RB_EndSurface();
-	}
-
-	// texture swapping test
-	if ( r_showImages->integer ) {
-		RB_ShowImages();
-	}
-
-	cmd = (const swapBuffersCommand_t *)data;
-
-	// we measure overdraw by reading back the stencil buffer and
-	// counting up the number of increments that have happened
-	if ( r_measureOverdraw->integer ) {
-		int i;
-		long sum = 0;
-		unsigned char *stencilReadback;
-
-		stencilReadback = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
-		qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
-
-		for ( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ ) {
-			sum += stencilReadback[i];
-		}
-
-		backEnd.pc.c_overDraw += sum;
-		ri.Hunk_FreeTempMemory( stencilReadback );
-	}
-
-
-	if ( !glState.finishCalled ) {
-		qglFinish();
-	}
-
-	QGL_LogComment( "***************** RB_SwapBuffers *****************\n\n\n" );
-
-	GLimp_EndFrame();
-
-	backEnd.projection2D = qfalse;
-
-	return (const void *)( cmd + 1 );
-}
+const void  *RB_SwapBuffers( const void *data );
 
 /*
 ====================
