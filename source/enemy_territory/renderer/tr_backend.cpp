@@ -98,56 +98,6 @@ const void* RB_DrawBuffer(const void* data);
 
 /*
 =============
-RB_DrawBounds - ydnar
-=============
-*/
-
-void RB_DrawBounds(vec3_t mins, vec3_t maxs)
-{
-	vec3_t center;
-
-
-	GL_Bind(tr.whiteImage);
-	GL_State(GLS_POLYMODE_LINE);
-
-	// box corners
-	qglBegin(GL_LINES);
-	qglColor3f(1, 1, 1);
-
-	qglVertex3f(mins[0], mins[1], mins[2]);
-	qglVertex3f(maxs[0], mins[1], mins[2]);
-	qglVertex3f(mins[0], mins[1], mins[2]);
-	qglVertex3f(mins[0], maxs[1], mins[2]);
-	qglVertex3f(mins[0], mins[1], mins[2]);
-	qglVertex3f(mins[0], mins[1], maxs[2]);
-
-	qglVertex3f(maxs[0], maxs[1], maxs[2]);
-	qglVertex3f(mins[0], maxs[1], maxs[2]);
-	qglVertex3f(maxs[0], maxs[1], maxs[2]);
-	qglVertex3f(maxs[0], mins[1], maxs[2]);
-	qglVertex3f(maxs[0], maxs[1], maxs[2]);
-	qglVertex3f(maxs[0], maxs[1], mins[2]);
-	qglEnd();
-
-	center[0] = (mins[0] + maxs[0]) * 0.5;
-	center[1] = (mins[1] + maxs[1]) * 0.5;
-	center[2] = (mins[2] + maxs[2]) * 0.5;
-
-	// center axis
-	qglBegin(GL_LINES);
-	qglColor3f(1, 0.85, 0);
-
-	qglVertex3f(mins[0], center[1], center[2]);
-	qglVertex3f(maxs[0], center[1], center[2]);
-	qglVertex3f(center[0], mins[1], center[2]);
-	qglVertex3f(center[0], maxs[1], center[2]);
-	qglVertex3f(center[0], center[1], mins[2]);
-	qglVertex3f(center[0], center[1], maxs[2]);
-	qglEnd();
-}
-
-/*
-=============
 RB_SwapBuffers
 
 =============

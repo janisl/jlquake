@@ -184,17 +184,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 void        GLimp_EndFrame( void );
 
 /*
-====================================================================
-
-TESSELATOR/SHADER DECLARATIONS
-
-====================================================================
-*/
-
-void RB_DrawBounds( vec3_t mins, vec3_t maxs ); // ydnar
-
-
-/*
 ============================================================
 
 WORLD MAP
