@@ -146,12 +146,22 @@ void myGlMultMatrix(const float* a, const float* b, float* out)
 //==========================================================================
 
 void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader, 
-	int* fogNum, int* dlightMap)
+	int* fogNum, int* dlightMap, int* frontFace, int* atiTess)
 {
 	*fogNum = (sort >> QSORT_FOGNUM_SHIFT) & 31;
 	*shader = tr.sortedShaders[(sort >> QSORT_SHADERNUM_SHIFT) & (MAX_SHADERS - 1)];
 	*entityNum = (sort >> QSORT_ENTITYNUM_SHIFT) & 1023;
-	*dlightMap = sort & 3;
+	if (GGameType & GAME_ET)
+	{
+		*frontFace = (sort >> QSORT_FRONTFACE_SHIFT) & 1;
+		*dlightMap = sort & 1;
+	}
+	else
+	{
+		*frontFace = 0;
+		*dlightMap = sort & 3;
+	}
+	*atiTess = (sort >> QSORT_ATI_TESS_SHIFT) & 1;
 }
 
 //==========================================================================
@@ -1332,7 +1342,9 @@ static bool SurfIsOffscreen(const drawSurf_t* drawSurf, vec4_t clipDest[128])
 	shader_t* shader;
 	int fogNum;
 	int dlighted;
-	R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted);
+	int frontFace;
+	int atiTess;
+	R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted, &frontFace, &atiTess);
 	RB_BeginSurface(shader, fogNum);
 	rb_surfaceTable[*drawSurf->surface](drawSurf->surface);
 
@@ -1905,7 +1917,9 @@ static void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs)
 		shader_t* shader;
 		int fogNum;
 		int dlighted;
-		R_DecomposeSort((drawSurfs + i)->sort, &entityNum, &shader, &fogNum, &dlighted);
+		int frontFace;
+		int atiTess;
+		R_DecomposeSort((drawSurfs + i)->sort, &entityNum, &shader, &fogNum, &dlighted, &frontFace, &atiTess);
 
 		if (shader->sort > SS_PORTAL)
 		{

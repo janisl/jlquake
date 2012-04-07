@@ -2001,7 +2001,9 @@ static void FixRenderCommandList(int newShader)
 				shader_t* shader;
 				int fogNum;
 				int dlightMap;
-				R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlightMap);
+				int frontFace;
+				int atiTess;
+				R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlightMap, &frontFace, &atiTess);
 				int sortedIndex = ((drawSurf->sort >> QSORT_SHADERNUM_SHIFT) & (MAX_SHADERS - 1));
 				if (sortedIndex >= newShader)
 				{

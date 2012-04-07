@@ -697,7 +697,8 @@ MAIN
 */
 
 void myGlMultMatrix(const float* a, const float* b, float* out);
-void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
+void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
+	int* fogNum, int* dlightMap, int* frontFace, int* atiTess);
 void R_SetupProjection();
 void R_LocalNormalToWorld(vec3_t local, vec3_t world);
 void R_LocalPointToWorld(vec3_t local, vec3_t world);
