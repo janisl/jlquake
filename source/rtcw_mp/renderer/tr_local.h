@@ -248,14 +248,10 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
-extern volatile renderCommandList_t    *renderCommandList;
-
 void *R_GetCommandBuffer( int bytes );
 
 void R_InitCommandBuffers( void );
 void R_ShutdownCommandBuffers( void );
-
-void R_SyncRenderThread( void );
 
 void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs );
 

@@ -302,15 +302,11 @@ RENDERER BACK END COMMAND QUEUE
 // Gordon: testing
 #define MAX_POLYINDICIES 8192
 
-extern volatile renderCommandList_t    *renderCommandList;
-
 void *R_GetCommandBuffer( int bytes );
 void RB_ExecuteRenderCommands( const void *data );
 
 void R_InitCommandBuffers( void );
 void R_ShutdownCommandBuffers( void );
-
-void R_SyncRenderThread( void );
 
 void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs );
 
