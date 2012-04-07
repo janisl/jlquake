@@ -58,7 +58,7 @@ this culls the basic subset of all triangle/mesh map drawsurfaces
 		return qtrue;
 
 	// try sphere cull
-	if( tr.currentEntityNum != Q3ENTITYNUM_WORLD )
+	if( tr.currentEntityNum != REF_ENTITYNUM_WORLD )
 		cull = R_CullLocalPointAndRadius( surface->origin, surface->radius );
 	else
 		cull = R_CullPointAndRadius( surface->origin, surface->radius );
@@ -99,7 +99,7 @@ static qboolean R_CullGrid( srfGridMesh_t *cv ) {
 		return qtrue;
 	}
 
-	if ( tr.currentEntityNum != Q3ENTITYNUM_WORLD ) {
+	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
 		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->meshRadius );
 	} else {
 		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->meshRadius );
@@ -213,7 +213,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 
 	{
 		// try sphere cull
-		if ( tr.currentEntityNum != Q3ENTITYNUM_WORLD ) {
+		if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
 			cull = R_CullLocalPointAndRadius( gen->localOrigin, gen->radius );
 		} else {
 			cull = R_CullPointAndRadius( gen->localOrigin, gen->radius );
@@ -1031,7 +1031,7 @@ void R_AddWorldSurfaces( void ) {
 		return;
 	}
 
-	tr.currentEntityNum = Q3ENTITYNUM_WORLD;
+	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
 	// ydnar: set current brush model to world

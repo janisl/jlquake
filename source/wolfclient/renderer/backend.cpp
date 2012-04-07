@@ -438,14 +438,14 @@ void RB_BeginDrawingView()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_RenderDrawSurfList
 //
 //==========================================================================
 
-static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
+//static 
+void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 {
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
@@ -462,6 +462,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 	int oldDlighted = false;
 	unsigned int oldSort = -1;
 	bool depthRange = false;
+	int oldAtiTess = -1;
 
 	backEnd.pc.c_surfaces += numDrawSurfs;
 
@@ -479,23 +480,30 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 		shader_t* shader;
 		int fogNum;
 		int dlighted;
-		R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted);
+		int frontFace;
+		int atiTess;
+		R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted, &frontFace, &atiTess);
 
 		//
 		// change the tess parameters if needed
 		// a "entityMergable" shader is a shader that can have surfaces from seperate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		if (shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted ||
-			(entityNum != oldEntityNum && !shader->entityMergable))
+			(entityNum != oldEntityNum && !shader->entityMergable) ||
+			(atiTess != oldAtiTess))
 		{
 			if (oldShader != NULL)
 			{
+				// GR - pass tessellation flag to the shader command
+				//		make sure to use oldAtiTess!!!
+				tess.ATI_tess = (oldAtiTess == ATI_TESS_TRUFORM);
 				RB_EndSurface();
 			}
 			RB_BeginSurface(shader, fogNum);
 			oldShader = shader;
 			oldFogNum = fogNum;
 			oldDlighted = dlighted;
+			oldAtiTess = atiTess;
 		}
 
 		//
@@ -508,10 +516,20 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 			if (entityNum != REF_ENTITYNUM_WORLD)
 			{
 				backEnd.currentEntity = &backEnd.refdef.entities[entityNum];
-				backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
+				if (GGameType & (GAME_WolfMP | GAME_ET))
+				{
+					backEnd.refdef.floatTime = originalTime;
+				}
+				else
+				{
+					backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
+				}
 				// we have to reset the shaderTime as well otherwise image animations start
 				// from the wrong frame
-				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+				{
+					tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				}
 
 				// set up the transformation matrix
 				R_RotateForEntity(backEnd.currentEntity, &backEnd.viewParms, &backEnd.orient);
@@ -535,7 +553,10 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 				backEnd.orient = backEnd.viewParms.world;
 				// we have to reset the shaderTime as well otherwise image animations on
 				// the world (like water) continue with the wrong frame
-				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+				{
+					tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				}
 				R_TransformDlights(backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient);
 			}
 
@@ -564,24 +585,32 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 		rb_surfaceTable[*drawSurf->surface](drawSurf->surface);
 	}
 
-	backEnd.refdef.floatTime = originalTime;
-
 	// draw the contents of the last shader batch
 	if (oldShader != NULL)
 	{
+		// GR - pass tessellation flag to the shader command
+		//		make sure to use oldAtiTess!!!
+		tess.ATI_tess = (oldAtiTess == ATI_TESS_TRUFORM);
 		RB_EndSurface();
 	}
 
 	// go back to the world modelview matrix
+	backEnd.currentEntity = &tr.worldEntity;
+	backEnd.refdef.floatTime = originalTime;
+	backEnd.orient = backEnd.viewParms.world;
+	R_TransformDlights(backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient);
 	qglLoadMatrixf(backEnd.viewParms.world.modelMatrix);
 	if (depthRange)
 	{
 		qglDepthRange(0, 1);
 	}
 
-#if 0
-	RB_DrawSun();
-#endif
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// (SA) draw sun
+		RB_DrawSun();
+	}
+
 	// darken down any stencil shadows
 	RB_ShadowFinish();		
 
@@ -589,6 +618,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 	RB_RenderFlares();
 }
 
+#if 0
 //==========================================================================
 //
 //	RB_DrawSurfs

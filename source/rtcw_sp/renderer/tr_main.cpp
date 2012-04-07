@@ -599,7 +599,7 @@ qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, int entityNum,
 	R_PlaneForSurface( drawSurf->surface, &originalPlane );
 
 	// rotate the plane if necessary
-	if ( entityNum != Q3ENTITYNUM_WORLD ) {
+	if ( entityNum != REF_ENTITYNUM_WORLD ) {
 		tr.currentEntityNum = entityNum;
 		tr.currentEntity = &tr.refdef.entities[entityNum];
 
@@ -714,7 +714,7 @@ static qboolean IsMirror( const drawSurf_t *drawSurf, int entityNum ) {
 	R_PlaneForSurface( drawSurf->surface, &originalPlane );
 
 	// rotate the plane if necessary
-	if ( entityNum != Q3ENTITYNUM_WORLD ) {
+	if ( entityNum != REF_ENTITYNUM_WORLD ) {
 		tr.currentEntityNum = entityNum;
 		tr.currentEntity = &tr.refdef.entities[entityNum];
 
