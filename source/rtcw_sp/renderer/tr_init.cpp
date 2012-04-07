@@ -675,8 +675,6 @@ void R_Init( void ) {
 
 	R_InitFreeType();
 
-	RB_ZombieFXInit();
-
 	err = qglGetError();
 	if ( err != GL_NO_ERROR ) {
 		ri.Printf( PRINT_ALL, "glGetError() = 0x%x\n", err );
@@ -832,9 +830,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.RegisterFont     = RE_RegisterFont;
 	re.RemapShader      = R_RemapShader;
 	re.GetEntityToken   = R_GetEntityToken;
-
-	// RF
-	re.ZombieFXAddNewHit = RB_ZombieFXAddNewHit;
 
 	return &re;
 }

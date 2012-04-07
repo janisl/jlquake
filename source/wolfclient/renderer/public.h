@@ -77,8 +77,6 @@ enum glHardwareType_t
 
 //	reFlags flags
 #define REFLAG_ONLYHAND			1   // only draw hand surfaces
-#define REFLAG_ZOMBIEFX			2   // special post-tesselation processing for zombie skin
-#define REFLAG_ZOMBIEFX2		4   // special post-tesselation processing for zombie skin
 #define REFLAG_FORCE_LOD		8   // force a low lod
 #define REFLAG_ORIENT_LOD		16  // on LOD switch, align the model to the player's camera
 #define REFLAG_DEAD_LOD			32  // allow the LOD to go lower than recommended

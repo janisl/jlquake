@@ -266,14 +266,6 @@ void R_AddAnimSurfaces( trRefEntity_t *ent );
 
 /*
 =============================================================
-=============================================================
-*/
-void    RB_ZombieFXInit( void );
-void    RB_ZombieFXAddNewHit( int entityNum, const vec3_t hitPos, const vec3_t hitDir );
-
-
-/*
-=============================================================
 
 RENDERER BACK END FUNCTIONS
 

@@ -100,8 +100,6 @@ typedef struct {
 
 	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 	void ( *RemapShader )( const char *oldShader, const char *newShader, const char *offsetTime );
-	// RF
-	void ( *ZombieFXAddNewHit )( int entityNum, const vec3_t hitPos, const vec3_t hitDir );
 
 	qboolean ( *GetEntityToken )( char *buffer, int size );
 } refexport_t;

@@ -490,9 +490,8 @@ static void CL_GameRefEntToEngine(const wsrefEntity_t* gameRefent, refEntity_t* 
 	refent->fadeStartTime = gameRefent->fadeStartTime;
 	refent->fadeEndTime = gameRefent->fadeEndTime;
 	refent->hilightIntensity = gameRefent->hilightIntensity;
-	refent->reFlags = gameRefent->reFlags & (REFLAG_ONLYHAND  | REFLAG_ZOMBIEFX |
-		REFLAG_ZOMBIEFX2 | REFLAG_FORCE_LOD | REFLAG_ORIENT_LOD | REFLAG_DEAD_LOD |
-		REFLAG_SCALEDSPHERECULL | REFLAG_FULL_LOD);
+	refent->reFlags = gameRefent->reFlags & (REFLAG_ONLYHAND  | REFLAG_FORCE_LOD |
+		REFLAG_ORIENT_LOD | REFLAG_DEAD_LOD | REFLAG_SCALEDSPHERECULL | REFLAG_FULL_LOD);
 	refent->entityNum = gameRefent->entityNum;
 }
 
@@ -767,7 +766,6 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.AddPolysToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
 		return 0;
 	case CG_RB_ZOMBIEFXADDNEWHIT:
-		re.ZombieFXAddNewHit( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
 		return 0;
 		// done.
 //	case CG_R_LIGHTFORPOINT:
