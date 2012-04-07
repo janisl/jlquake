@@ -935,6 +935,7 @@ void R_DrawBrushModelQ2(trRefEntity_t* e);
 void R_DrawWorldQ2();
 void R_AddBrushModelSurfaces(trRefEntity_t* e);
 void R_AddWorldSurfaces();
+#endif
 
 /*
 ============================================================
@@ -955,6 +956,7 @@ Screenshots
 ============================================================
 */
 
+#if 0
 const void* RB_TakeScreenshotCmd(const void* data);
 void R_ScreenShot_f();
 void R_ScreenShotJPEG_f();

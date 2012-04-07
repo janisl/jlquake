@@ -22,6 +22,7 @@ set(WOLFCLIENT_FILES
 	renderer/models/model.cpp
 	renderer/backend.cpp
 	../client/renderer/driver_glx.cpp
+	renderer/flares.cpp
 	renderer/init.cpp
 	renderer/light.cpp
 	renderer/main.cpp

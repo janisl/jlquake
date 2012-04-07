@@ -35,7 +35,6 @@ set (ET_FILES
 	renderer/tr_cmesh.cpp
 	renderer/tr_curve.cpp
 	renderer/tr_decals.cpp
-	renderer/tr_flares.cpp
 	renderer/tr_font.cpp
 	renderer/tr_image.cpp
 	renderer/tr_init.cpp
