@@ -52,6 +52,17 @@ int			r_firstSceneParticle;
 int skyboxportal;
 int drawskyboxportal;
 
+int r_numcoronas;
+int r_firstSceneCorona;
+
+int r_firstScenePolybuffer;
+int r_numpolybuffers;
+
+int r_firstSceneDecalProjector;
+int r_numDecalProjectors;
+int r_firstSceneDecal;
+int r_numDecals;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -92,6 +103,17 @@ void R_ToggleSmpFrame()
 
 	r_numparticles = 0;
 	r_firstSceneParticle = 0;
+
+	r_numcoronas = 0;
+	r_firstSceneCorona = 0;
+
+	r_numpolybuffers = 0;
+	r_firstScenePolybuffer = 0;
+
+	r_numDecalProjectors = 0;
+	r_firstSceneDecalProjector = 0;
+	r_numDecals = 0;
+	r_firstSceneDecal = 0;
 }
 
 //==========================================================================
