@@ -36,29 +36,6 @@ If you have questions concerning this license or the applicable additional terms
 #define DLIGHT_MINIMUM_RADIUS   16
 // never calculate a range less than this to prevent huge light numbers
 
-
-/*
-===============
-R_TransformDlights
-
-Transforms the origins of an array of dlights.
-Used by both the front end (for DlightBmodel) and
-the back end (before doing the lighting calculation)
-===============
-*/
-void R_TransformDlights( int count, dlight_t *dl, orientationr_t *_or ) {
-	int i;
-	vec3_t temp;
-
-	for ( i = 0 ; i < count ; i++, dl++ ) {
-		VectorSubtract( dl->origin, _or->origin, temp );
-		dl->transformed[0] = DotProduct( temp, _or->axis[0] );
-		dl->transformed[1] = DotProduct( temp, _or->axis[1] );
-		dl->transformed[2] = DotProduct( temp, _or->axis[2] );
-	}
-}
-
-
 /*
 R_CullDlights()
 frustum culls dynamic lights

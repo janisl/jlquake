@@ -765,6 +765,7 @@ void R_PushDlightsQ2()
 		R_MarkLightsQ2(l, 1 << i, tr.worldModel->brush38_nodes);
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -787,6 +788,7 @@ void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient)
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_DlightBmodel

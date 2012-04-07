@@ -197,7 +197,6 @@ LIGHTS
 
 void R_DlightBmodel( mbrush46_model_t *bmodel );
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent );
-void R_TransformDlights( int count, dlight_t * dl, orientationr_t * _or );
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
 

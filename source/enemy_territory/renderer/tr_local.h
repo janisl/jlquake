@@ -215,7 +215,6 @@ LIGHTS
 ============================================================
 */
 
-void R_TransformDlights( int count, dlight_t *dl, orientationr_t *orientation );
 void R_CullDlights( void );
 void R_DlightBmodel( mbrush46_model_t *bmodel );
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent );
