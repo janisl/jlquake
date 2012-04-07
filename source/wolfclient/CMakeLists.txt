@@ -20,7 +20,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/models/mdm.cpp
 	../client/renderer/models/mds.cpp
 	renderer/models/model.cpp
-	renderer/backend.cpp
+	../client/renderer/backend.cpp
 	renderer/commands.cpp
 	../client/renderer/driver_glx.cpp
 	../client/renderer/flares.cpp

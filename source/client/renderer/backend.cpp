@@ -223,23 +223,178 @@ void RB_BeginDrawingView()
 
 	// ensures that depth writes are enabled for the depth clear
 	GL_State(GLS_DEFAULT);
-	// clear relevant buffers
-	int clearBits = GL_DEPTH_BUFFER_BIT;
 
-	if (r_measureOverdraw->integer || ((GGameType & GAME_Quake3) && r_shadows->integer == 2))
+	// clear relevant buffers
+	int clearBits;
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
 	{
-		clearBits |= GL_STENCIL_BUFFER_BIT;
+		// (SA) modified to ensure one glclear() per frame at most
+		clearBits = 0;
+
+		if (r_measureOverdraw->integer || r_shadows->integer == 2)
+		{
+			clearBits |= GL_STENCIL_BUFFER_BIT;
+		}
+
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP) && r_uiFullScreen->integer)
+		{
+			clearBits = GL_DEPTH_BUFFER_BIT;    // (SA) always just clear depth for menus
+
+		}
+		else if (GGameType & GAME_ET && tr.world && tr.world->globalFog >= 0)
+		{
+			clearBits |= GL_DEPTH_BUFFER_BIT;
+			clearBits |= GL_COLOR_BUFFER_BIT;
+			qglClearColor(tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] * tr.identityLight,
+				tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] * tr.identityLight,
+				tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] * tr.identityLight, 1.0);
+		}
+		else if (skyboxportal)
+		{
+			if (backEnd.refdef.rdflags & RDF_SKYBOXPORTAL)
+			{
+				// portal scene, clear whatever is necessary
+				clearBits |= GL_DEPTH_BUFFER_BIT;
+
+				if (r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+				{
+					// fastsky: clear color
+
+					// try clearing first with the portal sky fog color, then the world fog color, then finally a default
+					clearBits |= GL_COLOR_BUFFER_BIT;
+					if (glfogsettings[FOG_PORTALVIEW].registered)
+					{
+						qglClearColor(glfogsettings[FOG_PORTALVIEW].color[0], glfogsettings[FOG_PORTALVIEW].color[1], glfogsettings[FOG_PORTALVIEW].color[2], glfogsettings[FOG_PORTALVIEW].color[3]);
+					}
+					else if (glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered)
+					{
+						qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+					}
+					else
+					{
+						qglClearColor(0.5, 0.5, 0.5, 1.0);
+					}
+				}
+				else
+				{
+					// rendered sky (either clear color or draw quake sky)
+					if (glfogsettings[FOG_PORTALVIEW].registered)
+					{
+						qglClearColor(glfogsettings[FOG_PORTALVIEW].color[0], glfogsettings[FOG_PORTALVIEW].color[1], glfogsettings[FOG_PORTALVIEW].color[2], glfogsettings[FOG_PORTALVIEW].color[3]);
+
+						if (glfogsettings[FOG_PORTALVIEW].clearscreen)
+						{
+							// portal fog requests a screen clear (distance fog rather than quake sky)
+							clearBits |= GL_COLOR_BUFFER_BIT;
+						}
+					}
+				}
+			}
+			else
+			{
+				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
+				clearBits |= GL_DEPTH_BUFFER_BIT;   // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
+
+				if (glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered)
+				{
+					if (backEnd.refdef.rdflags & RDF_UNDERWATER)
+					{
+						if (glfogsettings[FOG_CURRENT].mode == GL_LINEAR)
+						{
+							clearBits |= GL_COLOR_BUFFER_BIT;
+						}
+					}
+					else if (!(r_portalsky->integer))
+					{
+						// portal skies have been manually turned off, clear bg color
+						clearBits |= GL_COLOR_BUFFER_BIT;
+					}
+					qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+				}
+				else if (!(r_portalsky->integer))
+				{
+					// ydnar: portal skies have been manually turned off, clear bg color
+					clearBits |= GL_COLOR_BUFFER_BIT;
+					qglClearColor(0.5, 0.5, 0.5, 1.0);
+				}
+			}
+		}
+		else
+		{
+			// world scene with no portal sky
+			clearBits |= GL_DEPTH_BUFFER_BIT;
+
+			// NERVE - SMF - we don't want to clear the buffer when no world model is specified
+			if (backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+			{
+				clearBits &= ~GL_COLOR_BUFFER_BIT;
+			}
+			// -NERVE - SMF
+			else if (r_fastsky->integer || (!(GGameType & GAME_WolfSP) && backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+			{
+				clearBits |= GL_COLOR_BUFFER_BIT;
+
+				if (glfogsettings[FOG_CURRENT].registered)
+				{
+					// try to clear fastsky with current fog color
+					qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+				}
+				else
+				{
+					if (GGameType & GAME_WolfSP)
+					{
+						qglClearColor( 0.5, 0.5, 0.5, 1.0 );
+					}
+					else
+					{
+						qglClearColor( 0.05, 0.05, 0.05, 1.0 );  // JPW NERVE changed per id req was 0.5s
+					}
+				}
+			}
+			else
+			{
+				// world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
+				if (glfogsettings[FOG_CURRENT].registered)
+				{
+					// try to clear fastsky with current fog color
+					qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+					if (glfogsettings[FOG_CURRENT].clearscreen)
+					{
+						// world fog requests a screen clear (distance fog rather than quake sky)
+						clearBits |= GL_COLOR_BUFFER_BIT;
+					}
+				}
+			}
+		}
+
+		// ydnar: don't clear the color buffer when no world model is specified
+		if (GGameType & GAME_ET && backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+		{
+			clearBits &= ~GL_COLOR_BUFFER_BIT;
+		}
 	}
-	if (r_fastsky->integer && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+	else
 	{
-		clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
+		clearBits = GL_DEPTH_BUFFER_BIT;
+
+		if (r_measureOverdraw->integer || ((GGameType & GAME_Quake3) && r_shadows->integer == 2))
+		{
+			clearBits |= GL_STENCIL_BUFFER_BIT;
+		}
+		if (r_fastsky->integer && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+		{
+			clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
 #ifdef _DEBUG
-		qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);	// FIXME: get color of sky
+			qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);	// FIXME: get color of sky
 #else
-		qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
+			qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
 #endif
+		}
 	}
-	qglClear(clearBits);
+	if (clearBits)
+	{
+		qglClear(clearBits);
+	}
 
 	if (backEnd.refdef.rdflags & RDF_HYPERSPACE)
 	{
@@ -304,6 +459,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 	int oldDlighted = false;
 	unsigned int oldSort = -1;
 	bool depthRange = false;
+	int oldAtiTess = -1;
 
 	backEnd.pc.c_surfaces += numDrawSurfs;
 
@@ -330,16 +486,21 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 		// a "entityMergable" shader is a shader that can have surfaces from seperate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		if (shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted ||
-			(entityNum != oldEntityNum && !shader->entityMergable))
+			(entityNum != oldEntityNum && !shader->entityMergable) ||
+			(atiTess != oldAtiTess))
 		{
 			if (oldShader != NULL)
 			{
+				// GR - pass tessellation flag to the shader command
+				//		make sure to use oldAtiTess!!!
+				tess.ATI_tess = (oldAtiTess == ATI_TESS_TRUFORM);
 				RB_EndSurface();
 			}
 			RB_BeginSurface(shader, fogNum);
 			oldShader = shader;
 			oldFogNum = fogNum;
 			oldDlighted = dlighted;
+			oldAtiTess = atiTess;
 		}
 
 		//
@@ -352,10 +513,20 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 			if (entityNum != REF_ENTITYNUM_WORLD)
 			{
 				backEnd.currentEntity = &backEnd.refdef.entities[entityNum];
-				backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
+				if (GGameType & (GAME_WolfMP | GAME_ET))
+				{
+					backEnd.refdef.floatTime = originalTime;
+				}
+				else
+				{
+					backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
+				}
 				// we have to reset the shaderTime as well otherwise image animations start
 				// from the wrong frame
-				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+				{
+					tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				}
 
 				// set up the transformation matrix
 				R_RotateForEntity(backEnd.currentEntity, &backEnd.viewParms, &backEnd.orient);
@@ -379,7 +550,10 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 				backEnd.orient = backEnd.viewParms.world;
 				// we have to reset the shaderTime as well otherwise image animations on
 				// the world (like water) continue with the wrong frame
-				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+				{
+					tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+				}
 				R_TransformDlights(backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient);
 			}
 
@@ -408,24 +582,32 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 		rb_surfaceTable[*drawSurf->surface](drawSurf->surface);
 	}
 
-	backEnd.refdef.floatTime = originalTime;
-
 	// draw the contents of the last shader batch
 	if (oldShader != NULL)
 	{
+		// GR - pass tessellation flag to the shader command
+		//		make sure to use oldAtiTess!!!
+		tess.ATI_tess = (oldAtiTess == ATI_TESS_TRUFORM);
 		RB_EndSurface();
 	}
 
 	// go back to the world modelview matrix
+	backEnd.currentEntity = &tr.worldEntity;
+	backEnd.refdef.floatTime = originalTime;
+	backEnd.orient = backEnd.viewParms.world;
+	R_TransformDlights(backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient);
 	qglLoadMatrixf(backEnd.viewParms.world.modelMatrix);
 	if (depthRange)
 	{
 		qglDepthRange(0, 1);
 	}
 
-#if 0
-	RB_DrawSun();
-#endif
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// (SA) draw sun
+		RB_DrawSun();
+	}
+
 	// darken down any stencil shadows
 	RB_ShadowFinish();		
 
@@ -477,6 +659,11 @@ void RB_SetGL2D()
     qglLoadIdentity();
 
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
+	if (GGameType & GAME_WolfSP)
+	{
+		qglDisable(GL_FOG);
+	}
 
 	qglDisable(GL_CULL_FACE);
 	qglDisable(GL_CLIP_PLANE0);
@@ -558,6 +745,227 @@ static const void* RB_StretchPic(const void* data)
 
 	tess.texCoords[numVerts + 3][0][0] = cmd->s1;
 	tess.texCoords[numVerts + 3][0][1] = cmd->t2;
+
+	return (const void*)(cmd + 1);
+}
+
+static const void* RB_StretchPicGradient(const void* data)
+{
+	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
+
+	if (!backEnd.projection2D)
+	{
+		RB_SetGL2D();
+	}
+
+	shader_t* shader = cmd->shader;
+	if (shader != tess.shader)
+	{
+		if (tess.numIndexes)
+		{
+			RB_EndSurface();
+		}
+		backEnd.currentEntity = &backEnd.entity2D;
+		RB_BeginSurface(shader, 0);
+	}
+
+	RB_CHECKOVERFLOW(4, 6);
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
+
+	tess.numVertexes += 4;
+	tess.numIndexes += 6;
+
+	tess.indexes[numIndexes] = numVerts + 3;
+	tess.indexes[numIndexes + 1] = numVerts + 0;
+	tess.indexes[numIndexes + 2] = numVerts + 2;
+	tess.indexes[numIndexes + 3] = numVerts + 2;
+	tess.indexes[numIndexes + 4] = numVerts + 0;
+	tess.indexes[numIndexes + 5] = numVerts + 1;
+
+	*(int*)tess.vertexColors[numVerts] =
+		*(int*)tess.vertexColors[numVerts + 1] = *(int*)backEnd.color2D;
+
+	*(int*)tess.vertexColors[numVerts + 2] =
+		*(int*)tess.vertexColors[numVerts + 3] = *(int*)cmd->gradientColor;
+
+	tess.xyz[numVerts][0] = cmd->x;
+	tess.xyz[numVerts][1] = cmd->y;
+	tess.xyz[numVerts][2] = 0;
+
+	tess.texCoords[numVerts][0][0] = cmd->s1;
+	tess.texCoords[numVerts][0][1] = cmd->t1;
+
+	tess.xyz[numVerts + 1][0] = cmd->x + cmd->w;
+	tess.xyz[numVerts + 1][1] = cmd->y;
+	tess.xyz[numVerts + 1][2] = 0;
+
+	tess.texCoords[numVerts + 1][0][0] = cmd->s2;
+	tess.texCoords[numVerts + 1][0][1] = cmd->t1;
+
+	tess.xyz[numVerts + 2][0] = cmd->x + cmd->w;
+	tess.xyz[numVerts + 2][1] = cmd->y + cmd->h;
+	tess.xyz[numVerts + 2][2] = 0;
+
+	tess.texCoords[numVerts + 2][0][0] = cmd->s2;
+	tess.texCoords[numVerts + 2][0][1] = cmd->t2;
+
+	tess.xyz[numVerts + 3][0] = cmd->x;
+	tess.xyz[numVerts + 3][1] = cmd->y + cmd->h;
+	tess.xyz[numVerts + 3][2] = 0;
+
+	tess.texCoords[numVerts + 3][0][0] = cmd->s1;
+	tess.texCoords[numVerts + 3][0][1] = cmd->t2;
+
+	return (const void*)(cmd + 1);
+}
+
+static const void* RB_RotatedPic(const void* data)
+{
+	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
+
+	if (!backEnd.projection2D)
+	{
+		RB_SetGL2D();
+	}
+
+	shader_t* shader = cmd->shader;
+	if (shader != tess.shader)
+	{
+		if (tess.numIndexes)
+		{
+			RB_EndSurface();
+		}
+		backEnd.currentEntity = &backEnd.entity2D;
+		RB_BeginSurface(shader, 0);
+	}
+
+	RB_CHECKOVERFLOW(4, 6);
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
+
+	tess.numVertexes += 4;
+	tess.numIndexes += 6;
+
+	tess.indexes[numIndexes] = numVerts + 3;
+	tess.indexes[numIndexes + 1] = numVerts + 0;
+	tess.indexes[numIndexes + 2] = numVerts + 2;
+	tess.indexes[numIndexes + 3] = numVerts + 2;
+	tess.indexes[numIndexes + 4] = numVerts + 0;
+	tess.indexes[numIndexes + 5] = numVerts + 1;
+
+	*(int*)tess.vertexColors[numVerts] =
+		*(int*)tess.vertexColors[numVerts + 1] =
+			*(int*)tess.vertexColors[numVerts + 2] =
+				*(int*)tess.vertexColors[numVerts + 3] = *(int*)backEnd.color2D;
+
+	float pi2 = M_PI * 2;
+	float angle = cmd->angle * pi2;
+	tess.xyz[numVerts][0] = cmd->x + (cos(angle) * cmd->w);
+	tess.xyz[numVerts][1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts][2] = 0;
+
+	tess.texCoords[numVerts][0][0] = cmd->s1;
+	tess.texCoords[numVerts][0][1] = cmd->t1;
+
+	angle = cmd->angle * pi2 + 0.25 * pi2;
+	tess.xyz[numVerts + 1][0] = cmd->x + (cos(angle) * cmd->w);
+	tess.xyz[numVerts + 1][1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts + 1][2] = 0;
+
+	tess.texCoords[numVerts + 1][0][0] = cmd->s2;
+	tess.texCoords[numVerts + 1][0][1] = cmd->t1;
+
+	angle = cmd->angle * pi2 + 0.50 * pi2;
+	tess.xyz[numVerts + 2][0] = cmd->x + (cos(angle) * cmd->w);
+	tess.xyz[numVerts + 2][1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts + 2][2] = 0;
+
+	tess.texCoords[numVerts + 2][0][0] = cmd->s2;
+	tess.texCoords[numVerts + 2][0][1] = cmd->t2;
+
+	angle = cmd->angle * pi2 + 0.75 * pi2;
+	tess.xyz[numVerts + 3][0] = cmd->x + (cos(angle) * cmd->w);
+	tess.xyz[numVerts + 3][1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts + 3][2] = 0;
+
+	tess.texCoords[numVerts + 3][0][0] = cmd->s1;
+	tess.texCoords[numVerts + 3][0][1] = cmd->t2;
+
+	return (const void*)(cmd + 1);
+}
+
+static const void* RB_Draw2dPolys(const void* data)
+{
+	const poly2dCommand_t* cmd;
+	shader_t* shader;
+	int i;
+
+	cmd = (const poly2dCommand_t*)data;
+
+	if (!backEnd.projection2D)
+	{
+		RB_SetGL2D();
+	}
+
+	shader = cmd->shader;
+	if (shader != tess.shader)
+	{
+		if (tess.numIndexes)
+		{
+			RB_EndSurface();
+		}
+		backEnd.currentEntity = &backEnd.entity2D;
+		RB_BeginSurface(shader, 0);
+	}
+
+	RB_CHECKOVERFLOW(cmd->numverts, (cmd->numverts - 2) * 3);
+
+	for (i = 0; i < cmd->numverts - 2; i++)
+	{
+		tess.indexes[tess.numIndexes + 0] = tess.numVertexes;
+		tess.indexes[tess.numIndexes + 1] = tess.numVertexes + i + 1;
+		tess.indexes[tess.numIndexes + 2] = tess.numVertexes + i + 2;
+		tess.numIndexes += 3;
+	}
+
+	for (i = 0; i < cmd->numverts; i++)
+	{
+		tess.xyz[tess.numVertexes][0] = cmd->verts[i].xyz[0];
+		tess.xyz[tess.numVertexes][1] = cmd->verts[i].xyz[1];
+		tess.xyz[tess.numVertexes][2] = 0;
+
+		tess.texCoords[tess.numVertexes][0][0] = cmd->verts[i].st[0];
+		tess.texCoords[tess.numVertexes][0][1] = cmd->verts[i].st[1];
+
+		tess.vertexColors[tess.numVertexes][0] = cmd->verts[i].modulate[0];
+		tess.vertexColors[tess.numVertexes][1] = cmd->verts[i].modulate[1];
+		tess.vertexColors[tess.numVertexes][2] = cmd->verts[i].modulate[2];
+		tess.vertexColors[tess.numVertexes][3] = cmd->verts[i].modulate[3];
+		tess.numVertexes++;
+	}
+
+	return (const void*)(cmd + 1);
+}
+
+static const void* RB_RenderToTexture(const void* data)
+{
+	const renderToTextureCommand_t* cmd = (const renderToTextureCommand_t*)data;
+
+	GL_Bind(cmd->image);
+	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_LINEAR);
+	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_LINEAR);
+	qglTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+	qglCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, cmd->x, cmd->y, cmd->w, cmd->h, 0);
+
+	return (const void*)(cmd + 1);
+}
+
+static const void* RB_Finish(const void* data)
+{
+	const renderFinishCommand_t* cmd = (const renderFinishCommand_t*)data;
+
+	qglFinish();
 
 	return (const void*)(cmd + 1);
 }
@@ -668,20 +1076,25 @@ static const void* RB_SwapBuffers(const void* data)
 	//
 	// swapinterval stuff
 	//
-#ifdef _WIN32
 	if (r_swapInterval->modified)
 	{
 		r_swapInterval->modified = false;
 
 		if (!glConfig.stereoEnabled)	// why?
 		{	
+#ifdef _WIN32
 			if (qwglSwapIntervalEXT)
 			{
 				qwglSwapIntervalEXT(r_swapInterval->integer);
 			}
+#else
+			if (qglXSwapIntervalSGI)
+			{
+				qglXSwapIntervalSGI(r_swapInterval->integer);
+			}
+#endif
 		}
 	}
-#endif
 
 	// don't flip if drawing to front buffer
 	if (String::ICmp(r_drawBuffer->string, "GL_FRONT") != 0)
@@ -732,6 +1145,18 @@ void RB_ExecuteRenderCommands(const void* data)
 			data = RB_StretchPic(data);
 			break;
 
+		case RC_STRETCH_PIC_GRADIENT:
+			data = RB_StretchPicGradient(data);
+			break;
+
+		case RC_ROTATED_PIC:
+			data = RB_RotatedPic(data);
+			break;
+
+		case RC_2DPOLYS:
+			data = RB_Draw2dPolys(data);
+			break;
+
 		case RC_DRAW_SURFS:
 			data = RB_DrawSurfs(data);
 			break;
@@ -746,6 +1171,14 @@ void RB_ExecuteRenderCommands(const void* data)
 
 		case RC_SCREENSHOT:
 			data = RB_TakeScreenshotCmd(data);
+			break;
+
+		case RC_RENDERTOTEXTURE:
+			data = RB_RenderToTexture(data);
+			break;
+
+		case RC_FINISH:
+			data = RB_Finish(data);
 			break;
 
 		case RC_END_OF_LIST:
