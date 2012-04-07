@@ -106,9 +106,6 @@ void R_AddPolygonSurfaces( void );
 void R_AddPolygonBufferSurfaces( void );
 
 
-void R_DecomposeSort( unsigned sort, int *entityNum, shader_t **shader,
-					  int *fogNum, int *frontFace, int *dlightMap );
-
 void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogNum, int frontFace, int dlightMap );
 
 
@@ -117,9 +114,6 @@ void R_LocalPointToWorld( vec3_t local, vec3_t world );
 int R_CullLocalBox( vec3_t bounds[2] );
 int R_CullPointAndRadius( vec3_t origin, float radius );
 int R_CullLocalPointAndRadius( vec3_t origin, float radius );
-
-
-void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, orientationr_t *orientation );
 
 /*
 ** GL wrapper/helper functions
@@ -337,14 +331,6 @@ void R_AddAnimSurfaces( trRefEntity_t *ent );
 //
 void R_MDM_MakeAnimModel( model_t *model );
 void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-
-/*
-=============================================================
-=============================================================
-*/
-void    R_TransformModelToClip( const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
-								vec4_t eye, vec4_t dst );
-void    R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t normalized, vec4_t window );
 
 /*
 =============================================================

@@ -687,6 +687,7 @@ SCENE
 
 #if 0
 void R_ToggleSmpFrame();
+#endif
 
 /*
 ============================================================
@@ -697,15 +698,19 @@ MAIN
 */
 
 void myGlMultMatrix(const float* a, const float* b, float* out);
-void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
+void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
+	int* fogNum, int* dlightMap, int* frontFace, int* atiTess);
+#if 0
 void R_SetupProjection();
 void R_LocalNormalToWorld(vec3_t local, vec3_t world);
 void R_LocalPointToWorld(vec3_t local, vec3_t world);
+#endif
 void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
 	vec4_t eye, vec4_t dst);
 void R_TransformClipToWindow(const vec4_t clip, const viewParms_t* view, vec4_t normalized, vec4_t window);
 void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
 	orientationr_t* orient);
+#if 0
 int R_CullLocalBox(vec3_t bounds[2]);
 int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);

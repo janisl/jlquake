@@ -186,142 +186,6 @@ void R_WorldToLocal( vec3_t world, vec3_t local ) {
 }
 
 /*
-==========================
-R_TransformModelToClip
-
-==========================
-*/
-void R_TransformModelToClip( const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
-							 vec4_t eye, vec4_t dst ) {
-	int i;
-
-	for ( i = 0 ; i < 4 ; i++ ) {
-		eye[i] =
-			src[0] * modelMatrix[ i + 0 * 4 ] +
-			src[1] * modelMatrix[ i + 1 * 4 ] +
-			src[2] * modelMatrix[ i + 2 * 4 ] +
-			1 * modelMatrix[ i + 3 * 4 ];
-	}
-
-	for ( i = 0 ; i < 4 ; i++ ) {
-		dst[i] =
-			eye[0] * projectionMatrix[ i + 0 * 4 ] +
-			eye[1] * projectionMatrix[ i + 1 * 4 ] +
-			eye[2] * projectionMatrix[ i + 2 * 4 ] +
-			eye[3] * projectionMatrix[ i + 3 * 4 ];
-	}
-}
-
-/*
-==========================
-R_TransformClipToWindow
-
-==========================
-*/
-void R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t normalized, vec4_t window ) {
-	normalized[0] = clip[0] / clip[3];
-	normalized[1] = clip[1] / clip[3];
-	normalized[2] = ( clip[2] + clip[3] ) / ( 2 * clip[3] );
-
-	window[0] = 0.5f * ( 1.0f + normalized[0] ) * view->viewportWidth;
-	window[1] = 0.5f * ( 1.0f + normalized[1] ) * view->viewportHeight;
-	window[2] = normalized[2];
-
-	window[0] = (int) ( window[0] + 0.5 );
-	window[1] = (int) ( window[1] + 0.5 );
-}
-
-
-/*
-==========================
-myGlMultMatrix
-
-==========================
-*/
-void myGlMultMatrix( const float *a, const float *b, float *out ) {
-	int i, j;
-
-	for ( i = 0 ; i < 4 ; i++ ) {
-		for ( j = 0 ; j < 4 ; j++ ) {
-			out[ i * 4 + j ] =
-				a [ i * 4 + 0 ] * b [ 0 * 4 + j ]
-				+ a [ i * 4 + 1 ] * b [ 1 * 4 + j ]
-				+ a [ i * 4 + 2 ] * b [ 2 * 4 + j ]
-				+ a [ i * 4 + 3 ] * b [ 3 * 4 + j ];
-		}
-	}
-}
-
-/*
-=================
-R_RotateForEntity
-
-Generates an orientation for an entity and viewParms
-Does NOT produce any GL calls
-Called by both the front end and the back end
-=================
-*/
-void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms,
-						orientationr_t *_or ) {
-	float glMatrix[16];
-	vec3_t delta;
-	float axisLength;
-
-	if ( ent->e.reType != RT_MODEL ) {
-		*_or = viewParms->world;
-		return;
-	}
-
-	VectorCopy( ent->e.origin, _or->origin );
-
-	VectorCopy( ent->e.axis[0], _or->axis[0] );
-	VectorCopy( ent->e.axis[1], _or->axis[1] );
-	VectorCopy( ent->e.axis[2], _or->axis[2] );
-
-	glMatrix[0] = _or->axis[0][0];
-	glMatrix[4] = _or->axis[1][0];
-	glMatrix[8] = _or->axis[2][0];
-	glMatrix[12] = _or->origin[0];
-
-	glMatrix[1] = _or->axis[0][1];
-	glMatrix[5] = _or->axis[1][1];
-	glMatrix[9] = _or->axis[2][1];
-	glMatrix[13] = _or->origin[1];
-
-	glMatrix[2] = _or->axis[0][2];
-	glMatrix[6] = _or->axis[1][2];
-	glMatrix[10] = _or->axis[2][2];
-	glMatrix[14] = _or->origin[2];
-
-	glMatrix[3] = 0;
-	glMatrix[7] = 0;
-	glMatrix[11] = 0;
-	glMatrix[15] = 1;
-
-	myGlMultMatrix( glMatrix, viewParms->world.modelMatrix, _or->modelMatrix );
-
-	// calculate the viewer origin in the model's space
-	// needed for fog, specular, and environment mapping
-	VectorSubtract( viewParms->orient.origin, _or->origin, delta );
-
-	// compensate for scale in the axes if necessary
-	if ( ent->e.nonNormalizedAxes ) {
-		axisLength = VectorLength( ent->e.axis[0] );
-		if ( !axisLength ) {
-			axisLength = 0;
-		} else {
-			axisLength = 1.0f / axisLength;
-		}
-	} else {
-		axisLength = 1.0f;
-	}
-
-	_or->viewOrigin[0] = DotProduct( delta, _or->axis[0] ) * axisLength;
-	_or->viewOrigin[1] = DotProduct( delta, _or->axis[1] ) * axisLength;
-	_or->viewOrigin[2] = DotProduct( delta, _or->axis[2] ) * axisLength;
-}
-
-/*
 =================
 R_RotateForViewer
 
@@ -922,7 +786,8 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[128
 	R_RotateForViewer();
 
 // GR - decompose with tessellation flag
-	R_DecomposeSort( drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted, &atiTess );
+	int frontFace;
+	R_DecomposeSort( drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted, &frontFace, &atiTess );
 	RB_BeginSurface( shader, fogNum );
 	rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
 
@@ -1306,23 +1171,6 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader,
 
 /*
 =================
-R_DecomposeSort
-=================
-*/
-// GR - decompose  with tessellation flag
-void R_DecomposeSort( unsigned sort, int *entityNum, shader_t **shader,
-					  int *fogNum, int *dlightMap, int *atiTess ) {
-	*fogNum = ( sort >> QSORT_FOGNUM_SHIFT ) & 31;
-	*shader = tr.sortedShaders[ ( sort >> QSORT_SHADERNUM_SHIFT ) & ( MAX_SHADERS - 1 ) ];
-//	*entityNum = ( sort >> QSORT_ENTITYNUM_SHIFT ) & 1023;
-	*entityNum = ( sort >> QSORT_ENTITYNUM_SHIFT ) & ( MAX_GENTITIES_Q3 - 1 );   // (SA) uppded entity count for Wolf to 11 bits
-	*dlightMap = sort & 3;
-//GR - extract tessellation flag
-	*atiTess = ( sort >> QSORT_ATI_TESS_SHIFT ) & 1;
-}
-
-/*
-=================
 R_SortDrawSurfs
 =================
 */
@@ -1356,7 +1204,8 @@ void R_SortDrawSurfs( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	// may cause another view to be rendered first
 	for ( i = 0 ; i < numDrawSurfs ; i++ ) {
 // GR - decompose with tessellation flag
-		R_DecomposeSort( ( drawSurfs + i )->sort, &entityNum, &shader, &fogNum, &dlighted, &atiTess );
+		int frontFace;
+		R_DecomposeSort( ( drawSurfs + i )->sort, &entityNum, &shader, &fogNum, &dlighted, &frontFace, &atiTess );
 
 		if ( shader->sort > SS_PORTAL ) {
 			break;

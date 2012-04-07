@@ -119,7 +119,6 @@ surfaceType_t	entitySurface = SF_ENTITY;
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	myGlMultMatrix
@@ -148,14 +147,25 @@ void myGlMultMatrix(const float* a, const float* b, float* out)
 //==========================================================================
 
 void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader, 
-	int* fogNum, int* dlightMap)
+	int* fogNum, int* dlightMap, int* frontFace, int* atiTess)
 {
 	*fogNum = (sort >> QSORT_FOGNUM_SHIFT) & 31;
 	*shader = tr.sortedShaders[(sort >> QSORT_SHADERNUM_SHIFT) & (MAX_SHADERS - 1)];
 	*entityNum = (sort >> QSORT_ENTITYNUM_SHIFT) & 1023;
-	*dlightMap = sort & 3;
+	if (GGameType & GAME_ET)
+	{
+		*frontFace = (sort >> QSORT_FRONTFACE_SHIFT) & 1;
+		*dlightMap = sort & 1;
+	}
+	else
+	{
+		*frontFace = 0;
+		*dlightMap = sort & 3;
+	}
+	*atiTess = (sort >> QSORT_ATI_TESS_SHIFT) & 1;
 }
 
+#if 0
 //==========================================================================
 //
 //	SetFarClip
@@ -385,6 +395,7 @@ void R_LocalPointToWorld(vec3_t local, vec3_t world)
 	world[1] = local[0] * tr.orient.axis[0][1] + local[1] * tr.orient.axis[1][1] + local[2] * tr.orient.axis[2][1] + tr.orient.origin[1];
 	world[2] = local[0] * tr.orient.axis[0][2] + local[1] * tr.orient.axis[1][2] + local[2] * tr.orient.axis[2][2] + tr.orient.origin[2];
 }
+#endif
 
 //==========================================================================
 //
@@ -553,6 +564,7 @@ void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_CullLocalBox
