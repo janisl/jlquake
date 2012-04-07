@@ -738,6 +738,7 @@ FONTS
 // font stuff
 void R_InitFreeType();
 void R_DoneFreeType();
+#endif
 
 /*
 ============================================================
@@ -749,7 +750,6 @@ BACK END
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
-#endif
 void RB_BeginDrawingView();
 void RB_SetGL2D();
 void RB_ShowImages();

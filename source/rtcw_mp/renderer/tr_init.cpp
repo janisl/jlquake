@@ -437,30 +437,7 @@ void R_Init( void ) {
 
 	R_Register();
 
-	max_polys = r_maxpolys->integer;
-	if ( max_polys < MAX_POLYS ) {
-		max_polys = MAX_POLYS;
-	}
-
-	max_polyverts = r_maxpolyverts->integer;
-	if ( max_polyverts < MAX_POLYVERTS ) {
-		max_polyverts = MAX_POLYVERTS;
-	}
-
-//	backEndData[0] = ri.Hunk_Alloc( sizeof( *backEndData[0] ), h_low );
-	backEndData[0] = (backEndData_t*)ri.Hunk_Alloc( sizeof( *backEndData[0] ) + sizeof( srfPoly_t ) * max_polys + sizeof( polyVert_t ) * max_polyverts, h_low );
-	backEndData[0]->polys = (srfPoly_t*)((char*)backEndData[0] + sizeof(*backEndData[0]));
-	backEndData[0]->polyVerts = (polyVert_t*)((char*)backEndData[0] + sizeof(*backEndData[0]) + sizeof(srfPoly_t) * max_polys);
-
-	if ( r_smp->integer ) {
-//		backEndData[1] = ri.Hunk_Alloc( sizeof( *backEndData[1] ), h_low );
-		backEndData[1] = (backEndData_t*)ri.Hunk_Alloc( sizeof( *backEndData[1] ) + sizeof( srfPoly_t ) * max_polys + sizeof( polyVert_t ) * max_polyverts, h_low );
-		backEndData[1]->polys = (srfPoly_t*)((char*)backEndData[1] + sizeof(*backEndData[1]));
-		backEndData[1]->polyVerts = (polyVert_t*)((char*)backEndData[1] + sizeof(*backEndData[1]) + sizeof(srfPoly_t) * max_polys);
-	} else {
-		backEndData[1] = NULL;
-	}
-	R_ToggleSmpFrame();
+	R_InitBackEndData();
 
 	InitOpenGL();
 
@@ -520,9 +497,11 @@ void RE_Shutdown( qboolean destroyWindow ) {
 				R_SyncRenderThread();
 				R_ShutdownCommandBuffers();
 				R_DeleteTextures();
+				R_FreeBackEndData();
 			} else {
 				// backup the current media
 				R_ShutdownCommandBuffers();
+				R_FreeBackEndData();
 
 				R_BackupModels();
 				R_BackupShaders();
@@ -533,6 +512,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 		R_SyncRenderThread();
 		R_ShutdownCommandBuffers();
 		R_DeleteTextures();
+		R_FreeBackEndData();
 	}
 
 	R_DoneFreeType();
