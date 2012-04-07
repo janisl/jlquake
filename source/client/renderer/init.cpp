@@ -532,7 +532,7 @@ static void R_Register()
 	r_railWidth = Cvar_Get("r_railWidth", "16", CVAR_ARCHIVE);
 	r_railCoreWidth = Cvar_Get("r_railCoreWidth", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "1" : "6", CVAR_ARCHIVE);
 	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
-	r_flares = Cvar_Get("r_flares", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? "1" : "0", CVAR_ARCHIVE);
+	r_flares = Cvar_Get("r_flares", "1", CVAR_ARCHIVE);
 	r_finish = Cvar_Get("r_finish", "0", CVAR_ARCHIVE);
 	r_particle_size = Cvar_Get("r_particle_size", "40", CVAR_ARCHIVE);
 	r_particle_min_size = Cvar_Get("r_particle_min_size", "2", CVAR_ARCHIVE);

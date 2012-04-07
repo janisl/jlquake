@@ -71,6 +71,7 @@ struct flare_t
 
 	int			fadeTime;
 
+	int flags;						// for coronas, the client determines current visibility, but it's still inserted so it will fade out properly
 	bool		visible;			// state of last test
 	float		drawIntensity;		// may be non 0 even if !visible due to fading
 
@@ -78,6 +79,9 @@ struct flare_t
 	float		eyeZ;
 
 	vec3_t		color;
+	float scale;
+
+	int id;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -125,7 +129,7 @@ void R_ClearFlares()
 //
 //==========================================================================
 
-static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, vec3_t normal)
+static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, float scale, vec3_t normal, int id, int flags)
 {
 	backEnd.pc.c_flareAdds++;
 
@@ -157,7 +161,7 @@ static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, v
 	flare_t* f;
 	for (f = r_activeFlares; f; f = f->next)
 	{
-		if (f->surface == surface && f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
+		if (f->id == id && f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
 			f->inPortal == backEnd.viewParms.isPortal)
 		{
 			break;
@@ -181,7 +185,10 @@ static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, v
 		f->frameSceneNum = backEnd.viewParms.frameSceneNum;
 		f->inPortal = backEnd.viewParms.isPortal;
 		f->addedFrame = -1;
+		f->id = id;
 	}
+
+	f->flags = flags;
 
 	if (f->addedFrame != backEnd.viewParms.frameCount - 1)
 	{
@@ -193,6 +200,8 @@ static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, v
 	f->fogNum = fogNum;
 
 	VectorCopy(color, f->color);
+
+	f->scale = scale;
 
 	// fade the intensity of the flare down as the
 	// light surface turns away from the viewer
@@ -220,11 +229,12 @@ static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, v
 
 static void RB_AddDlightFlares()
 {
-	if (!r_flares->integer)
+	if (r_flares->integer < 2)
 	{
 		return;
 	}
 
+	int id = 0;
 	dlight_t* l = backEnd.refdef.dlights;
 	mbrush46_fog_t* fog = tr.world->fogs;
 	for (int i = 0 ; i < backEnd.refdef.num_dlights; i++, l++)
@@ -252,7 +262,49 @@ static void RB_AddDlightFlares()
 			j = 0;
 		}
 
-		RB_AddFlare((void*)l, j, l->origin, l->color, NULL);
+		RB_AddFlare((void*)l, j, l->origin, l->color, 1.0f, NULL, id++, true);
+	}
+}
+
+static void RB_AddCoronaFlares()
+{
+	if (r_flares->integer != 1 && r_flares->integer != 3)
+	{
+		return;
+	}
+
+	if (!tr.world)	// (SA) possible currently at the player model selection menu
+	{
+		return;
+	}
+
+	corona_t* cor = backEnd.refdef.coronas;
+	mbrush46_fog_t* fog = tr.world->fogs;
+	for (int i = 0; i < backEnd.refdef.num_coronas; i++, cor++)
+	{
+		// find which fog volume the corona is in
+		int j;
+		for (j = 1; j < tr.world->numfogs; j++)
+		{
+			fog = &tr.world->fogs[j];
+			int k;
+			for (k = 0; k < 3; k++)
+			{
+				if (cor->origin[k] < fog->bounds[0][k] || cor->origin[k] > fog->bounds[1][k])
+				{
+					break;
+				}
+			}
+			if (k == 3)
+			{
+				break;
+			}
+		}
+		if (j == tr.world->numfogs)
+		{
+			j = 0;
+		}
+		RB_AddFlare((void*)cor, j, cor->origin, cor->color, cor->scale, NULL, cor->id, cor->flags);
 	}
 }
 
@@ -266,6 +318,8 @@ static void RB_TestFlare(flare_t* f)
 {
 	backEnd.pc.c_flareTests++;
 
+	//	Original Quake 3 code.
+#if 0
 	// doing a readpixels is as good as doing a glFinish(), so
 	// don't bother with another sync
 	glState.finishCalled = false;
@@ -278,6 +332,8 @@ static void RB_TestFlare(flare_t* f)
 		((2 * depth - 1) * backEnd.viewParms.projectionMatrix[11] - backEnd.viewParms.projectionMatrix[10]);
 
 	bool visible = (-f->eyeZ - -screenZ) < 24;
+#endif
+	bool visible = f->flags & 1;
 
 	float fade;
 	if (visible)
@@ -321,16 +377,30 @@ static void RB_RenderFlare(flare_t* f)
 {
 	backEnd.pc.c_flareRenders++;
 
+	//----(SA)	changed to use alpha blend rather than additive blend
+	//			this is to accomidate the fact we can't right now do
+	//			additive blends and have them fog correctly with our distance fog.
+	//		/when/ we fix the blend problems with distance fog, this should
+	//		be changed back to additive since there's nearly no hit for that
+	//		but the alpha blend is noticably slower.
+
 	vec3_t color;
-	VectorScale(f->color, f->drawIntensity * tr.identityLight, color);
+	VectorScale(f->color, tr.identityLight, color);
 	int iColor[3];
 	iColor[0] = color[0] * 255;
 	iColor[1] = color[1] * 255;
 	iColor[2] = color[2] * 255;
 
-	float size = backEnd.viewParms.viewportWidth * (r_flareSize->value / 640.0f + 8 / -f->eyeZ);
+	float size = backEnd.viewParms.viewportWidth * (r_flareSize->value * f->scale / 640.0f + 8 / -f->eyeZ);
 
-	RB_BeginSurface(tr.flareShader, f->fogNum);
+	if (f->flags & 2 && tr.spotFlareShader)		// spotlight flare
+	{
+		RB_BeginSurface(tr.spotFlareShader, f->fogNum);
+	}
+	else
+	{
+		RB_BeginSurface(tr.flareShader, f->fogNum);
+	}
 
 	// FIXME: use quadstamp?
 	tess.xyz[tess.numVertexes][0] = f->windowX - size;
@@ -340,7 +410,7 @@ static void RB_RenderFlare(flare_t* f)
 	tess.vertexColors[tess.numVertexes][0] = iColor[0];
 	tess.vertexColors[tess.numVertexes][1] = iColor[1];
 	tess.vertexColors[tess.numVertexes][2] = iColor[2];
-	tess.vertexColors[tess.numVertexes][3] = 255;
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;
 	tess.numVertexes++;
 
 	tess.xyz[tess.numVertexes][0] = f->windowX - size;
@@ -350,7 +420,7 @@ static void RB_RenderFlare(flare_t* f)
 	tess.vertexColors[tess.numVertexes][0] = iColor[0];
 	tess.vertexColors[tess.numVertexes][1] = iColor[1];
 	tess.vertexColors[tess.numVertexes][2] = iColor[2];
-	tess.vertexColors[tess.numVertexes][3] = 255;
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;
 	tess.numVertexes++;
 
 	tess.xyz[tess.numVertexes][0] = f->windowX + size;
@@ -360,7 +430,7 @@ static void RB_RenderFlare(flare_t* f)
 	tess.vertexColors[tess.numVertexes][0] = iColor[0];
 	tess.vertexColors[tess.numVertexes][1] = iColor[1];
 	tess.vertexColors[tess.numVertexes][2] = iColor[2];
-	tess.vertexColors[tess.numVertexes][3] = 255;
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;
 	tess.numVertexes++;
 
 	tess.xyz[tess.numVertexes][0] = f->windowX + size;
@@ -370,7 +440,7 @@ static void RB_RenderFlare(flare_t* f)
 	tess.vertexColors[tess.numVertexes][0] = iColor[0];
 	tess.vertexColors[tess.numVertexes][1] = iColor[1];
 	tess.vertexColors[tess.numVertexes][2] = iColor[2];
-	tess.vertexColors[tess.numVertexes][3] = 255;
+	tess.vertexColors[tess.numVertexes][3] = f->drawIntensity * 255;
 	tess.numVertexes++;
 
 	tess.indexes[tess.numIndexes++] = 0;
@@ -407,7 +477,9 @@ void RB_RenderFlares()
 		return;
 	}
 
+	// (SA) turned light flares back on.  must evaluate problem id had with this
 	RB_AddDlightFlares();
+	RB_AddCoronaFlares();
 
 	// perform z buffer readback on each flare in this view
 	bool draw = false;
