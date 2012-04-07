@@ -296,17 +296,6 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
 /*
 =============================================================
 
-RENDERER BACK END FUNCTIONS
-
-=============================================================
-*/
-
-void RB_RenderThread( void );
-void RB_ExecuteRenderCommands( const void *data );
-
-/*
-=============================================================
-
 RENDERER BACK END COMMAND QUEUE
 
 =============================================================

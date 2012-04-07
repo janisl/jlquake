@@ -117,8 +117,7 @@ RENDER BACK END THREAD FUNCTIONS
 //
 //==========================================================================
 
-//static 
-const void* RB_SetColor(const void* data)
+static const void* RB_SetColor(const void* data)
 {
 	const setColorCommand_t* cmd = (const setColorCommand_t*)data;
 
@@ -136,8 +135,7 @@ const void* RB_SetColor(const void* data)
 //
 //==========================================================================
 
-//static 
-const void* RB_DrawBuffer(const void* data)
+static const void* RB_DrawBuffer(const void* data)
 {
 	const drawBufferCommand_t* cmd = (const drawBufferCommand_t*)data;
 
@@ -625,8 +623,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 //
 //==========================================================================
 
-//static 
-const void* RB_DrawSurfs(const void* data)
+static const void* RB_DrawSurfs(const void* data)
 {
 	// finish any 2D drawing if needed
 	if (tess.numIndexes)
@@ -684,8 +681,7 @@ void RB_SetGL2D()
 //
 //==========================================================================
 
-//static 
-const void* RB_StretchPic(const void* data)
+static const void* RB_StretchPic(const void* data)
 {
 	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
 
@@ -755,7 +751,7 @@ const void* RB_StretchPic(const void* data)
 	return (const void*)(cmd + 1);
 }
 
-const void* RB_StretchPicGradient(const void* data)
+static const void* RB_StretchPicGradient(const void* data)
 {
 	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
 
@@ -826,7 +822,7 @@ const void* RB_StretchPicGradient(const void* data)
 	return (const void*)(cmd + 1);
 }
 
-const void* RB_RotatedPic(const void* data)
+static const void* RB_RotatedPic(const void* data)
 {
 	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
 
@@ -901,7 +897,7 @@ const void* RB_RotatedPic(const void* data)
 	return (const void*)(cmd + 1);
 }
 
-const void* RB_Draw2dPolys(const void* data)
+static const void* RB_Draw2dPolys(const void* data)
 {
 	const poly2dCommand_t* cmd;
 	shader_t* shader;
@@ -954,7 +950,7 @@ const void* RB_Draw2dPolys(const void* data)
 	return (const void*)(cmd + 1);
 }
 
-const void* RB_RenderToTexture(const void* data)
+static const void* RB_RenderToTexture(const void* data)
 {
 	const renderToTextureCommand_t* cmd = (const renderToTextureCommand_t*)data;
 
@@ -967,7 +963,7 @@ const void* RB_RenderToTexture(const void* data)
 	return (const void*)(cmd + 1);
 }
 
-const void* RB_Finish(const void* data)
+static const void* RB_Finish(const void* data)
 {
 	const renderFinishCommand_t* cmd = (const renderFinishCommand_t*)data;
 
@@ -1041,8 +1037,7 @@ void RB_ShowImages()
 //
 //==========================================================================
 
-//static 
-const void* RB_SwapBuffers(const void* data)
+static const void* RB_SwapBuffers(const void* data)
 {
 	// finish any 2D drawing if needed
 	if (tess.numIndexes)
@@ -1118,7 +1113,6 @@ const void* RB_SwapBuffers(const void* data)
 	return (const void*)(cmd + 1);
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_ExecuteRenderCommands
@@ -1153,6 +1147,18 @@ void RB_ExecuteRenderCommands(const void* data)
 			data = RB_StretchPic(data);
 			break;
 
+		case RC_STRETCH_PIC_GRADIENT:
+			data = RB_StretchPicGradient(data);
+			break;
+
+		case RC_ROTATED_PIC:
+			data = RB_RotatedPic(data);
+			break;
+
+		case RC_2DPOLYS:
+			data = RB_Draw2dPolys(data);
+			break;
+
 		case RC_DRAW_SURFS:
 			data = RB_DrawSurfs(data);
 			break;
@@ -1167,6 +1173,14 @@ void RB_ExecuteRenderCommands(const void* data)
 
 		case RC_SCREENSHOT:
 			data = RB_TakeScreenshotCmd(data);
+			break;
+
+		case RC_RENDERTOTEXTURE:
+			data = RB_RenderToTexture(data);
+			break;
+
+		case RC_FINISH:
+			data = RB_Finish(data);
 			break;
 
 		case RC_END_OF_LIST:
@@ -1206,6 +1220,7 @@ void RB_RenderThread()
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_StretchRaw

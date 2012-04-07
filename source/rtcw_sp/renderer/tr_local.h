@@ -246,17 +246,6 @@ void R_AddAnimSurfaces( trRefEntity_t *ent );
 /*
 =============================================================
 
-RENDERER BACK END FUNCTIONS
-
-=============================================================
-*/
-
-void RB_RenderThread( void );
-void RB_ExecuteRenderCommands( const void *data );
-
-/*
-=============================================================
-
 RENDERER BACK END COMMAND QUEUE
 
 =============================================================
@@ -265,7 +254,6 @@ RENDERER BACK END COMMAND QUEUE
 extern volatile renderCommandList_t    *renderCommandList;
 
 void *R_GetCommandBuffer( int bytes );
-void RB_ExecuteRenderCommands( const void *data );
 
 void R_InitCommandBuffers( void );
 void R_ShutdownCommandBuffers( void );

@@ -754,11 +754,8 @@ void R_FreeBackEndData();
 void RB_BeginDrawingView();
 void RB_SetGL2D();
 void RB_ShowImages();
-#if 0
-void RB_SwapBuffersCommon();
 void RB_ExecuteRenderCommands(const void* data);
 void RB_RenderThread();
-#endif
 
 extern backEndState_t	backEnd;
 extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allocated
