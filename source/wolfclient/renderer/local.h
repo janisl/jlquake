@@ -745,7 +745,9 @@ BACK END
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
+#endif
 void RB_BeginDrawingView();
+#if 0
 void RB_SetGL2D();
 void RB_ShowImages();
 void RB_SwapBuffersCommon();

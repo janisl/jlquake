@@ -149,6 +149,7 @@ static const void* RB_DrawBuffer(const void* data)
 
 	return (const void*)(cmd + 1);
 }
+#endif
 
 //==========================================================================
 //
@@ -224,23 +225,178 @@ void RB_BeginDrawingView()
 
 	// ensures that depth writes are enabled for the depth clear
 	GL_State(GLS_DEFAULT);
-	// clear relevant buffers
-	int clearBits = GL_DEPTH_BUFFER_BIT;
 
-	if (r_measureOverdraw->integer || ((GGameType & GAME_Quake3) && r_shadows->integer == 2))
+	// clear relevant buffers
+	int clearBits;
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
 	{
-		clearBits |= GL_STENCIL_BUFFER_BIT;
+		// (SA) modified to ensure one glclear() per frame at most
+		clearBits = 0;
+
+		if (r_measureOverdraw->integer || r_shadows->integer == 2)
+		{
+			clearBits |= GL_STENCIL_BUFFER_BIT;
+		}
+
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP) && r_uiFullScreen->integer)
+		{
+			clearBits = GL_DEPTH_BUFFER_BIT;    // (SA) always just clear depth for menus
+
+		}
+		else if (GGameType & GAME_ET && tr.world && tr.world->globalFog >= 0)
+		{
+			clearBits |= GL_DEPTH_BUFFER_BIT;
+			clearBits |= GL_COLOR_BUFFER_BIT;
+			qglClearColor(tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] * tr.identityLight,
+				tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] * tr.identityLight,
+				tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] * tr.identityLight, 1.0);
+		}
+		else if (skyboxportal)
+		{
+			if (backEnd.refdef.rdflags & RDF_SKYBOXPORTAL)
+			{
+				// portal scene, clear whatever is necessary
+				clearBits |= GL_DEPTH_BUFFER_BIT;
+
+				if (r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+				{
+					// fastsky: clear color
+
+					// try clearing first with the portal sky fog color, then the world fog color, then finally a default
+					clearBits |= GL_COLOR_BUFFER_BIT;
+					if (glfogsettings[FOG_PORTALVIEW].registered)
+					{
+						qglClearColor(glfogsettings[FOG_PORTALVIEW].color[0], glfogsettings[FOG_PORTALVIEW].color[1], glfogsettings[FOG_PORTALVIEW].color[2], glfogsettings[FOG_PORTALVIEW].color[3]);
+					}
+					else if (glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered)
+					{
+						qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+					}
+					else
+					{
+						qglClearColor(0.5, 0.5, 0.5, 1.0);
+					}
+				}
+				else
+				{
+					// rendered sky (either clear color or draw quake sky)
+					if (glfogsettings[FOG_PORTALVIEW].registered)
+					{
+						qglClearColor(glfogsettings[FOG_PORTALVIEW].color[0], glfogsettings[FOG_PORTALVIEW].color[1], glfogsettings[FOG_PORTALVIEW].color[2], glfogsettings[FOG_PORTALVIEW].color[3]);
+
+						if (glfogsettings[FOG_PORTALVIEW].clearscreen)
+						{
+							// portal fog requests a screen clear (distance fog rather than quake sky)
+							clearBits |= GL_COLOR_BUFFER_BIT;
+						}
+					}
+				}
+			}
+			else
+			{
+				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
+				clearBits |= GL_DEPTH_BUFFER_BIT;   // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
+
+				if (glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered)
+				{
+					if (backEnd.refdef.rdflags & RDF_UNDERWATER)
+					{
+						if (glfogsettings[FOG_CURRENT].mode == GL_LINEAR)
+						{
+							clearBits |= GL_COLOR_BUFFER_BIT;
+						}
+					}
+					else if (!(r_portalsky->integer))
+					{
+						// portal skies have been manually turned off, clear bg color
+						clearBits |= GL_COLOR_BUFFER_BIT;
+					}
+					qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+				}
+				else if (!(r_portalsky->integer))
+				{
+					// ydnar: portal skies have been manually turned off, clear bg color
+					clearBits |= GL_COLOR_BUFFER_BIT;
+					qglClearColor(0.5, 0.5, 0.5, 1.0);
+				}
+			}
+		}
+		else
+		{
+			// world scene with no portal sky
+			clearBits |= GL_DEPTH_BUFFER_BIT;
+
+			// NERVE - SMF - we don't want to clear the buffer when no world model is specified
+			if (backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+			{
+				clearBits &= ~GL_COLOR_BUFFER_BIT;
+			}
+			// -NERVE - SMF
+			else if (r_fastsky->integer || (!(GGameType & GAME_WolfSP) && backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+			{
+				clearBits |= GL_COLOR_BUFFER_BIT;
+
+				if (glfogsettings[FOG_CURRENT].registered)
+				{
+					// try to clear fastsky with current fog color
+					qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+				}
+				else
+				{
+					if (GGameType & GAME_WolfSP)
+					{
+						qglClearColor( 0.5, 0.5, 0.5, 1.0 );
+					}
+					else
+					{
+						qglClearColor( 0.05, 0.05, 0.05, 1.0 );  // JPW NERVE changed per id req was 0.5s
+					}
+				}
+			}
+			else
+			{
+				// world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
+				if (glfogsettings[FOG_CURRENT].registered)
+				{
+					// try to clear fastsky with current fog color
+					qglClearColor(glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3]);
+					if (glfogsettings[FOG_CURRENT].clearscreen)
+					{
+						// world fog requests a screen clear (distance fog rather than quake sky)
+						clearBits |= GL_COLOR_BUFFER_BIT;
+					}
+				}
+			}
+		}
+
+		// ydnar: don't clear the color buffer when no world model is specified
+		if (GGameType & GAME_ET && backEnd.refdef.rdflags & RDF_NOWORLDMODEL)
+		{
+			clearBits &= ~GL_COLOR_BUFFER_BIT;
+		}
 	}
-	if (r_fastsky->integer && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+	else
 	{
-		clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
+		clearBits = GL_DEPTH_BUFFER_BIT;
+
+		if (r_measureOverdraw->integer || ((GGameType & GAME_Quake3) && r_shadows->integer == 2))
+		{
+			clearBits |= GL_STENCIL_BUFFER_BIT;
+		}
+		if (r_fastsky->integer && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+		{
+			clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
 #ifdef _DEBUG
-		qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);	// FIXME: get color of sky
+			qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);	// FIXME: get color of sky
 #else
-		qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
+			qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
 #endif
+		}
 	}
-	qglClear(clearBits);
+	if (clearBits)
+	{
+		qglClear(clearBits);
+	}
 
 	if (backEnd.refdef.rdflags & RDF_HYPERSPACE)
 	{
@@ -282,6 +438,7 @@ void RB_BeginDrawingView()
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	RB_RenderDrawSurfList
