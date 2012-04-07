@@ -166,17 +166,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 void        GLimp_EndFrame( void );
 
 /*
-====================================================================
-
-TESSELATOR/SHADER DECLARATIONS
-
-====================================================================
-*/
-
-void RB_ShowImages( void );
-
-
-/*
 ============================================================
 
 WORLD MAP

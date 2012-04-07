@@ -191,8 +191,6 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-void RB_ShowImages( void );
-
 void RB_DrawBounds( vec3_t mins, vec3_t maxs ); // ydnar
 
 

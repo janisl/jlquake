@@ -101,6 +101,7 @@ void R_FreeBackEndData()
 		backEndData[1] = NULL;
 	}
 }
+#endif
 
 /*
 ============================================================================
@@ -116,7 +117,8 @@ RENDER BACK END THREAD FUNCTIONS
 //
 //==========================================================================
 
-static const void* RB_SetColor(const void* data)
+//static 
+const void* RB_SetColor(const void* data)
 {
 	const setColorCommand_t* cmd = (const setColorCommand_t*)data;
 
@@ -134,7 +136,8 @@ static const void* RB_SetColor(const void* data)
 //
 //==========================================================================
 
-static const void* RB_DrawBuffer(const void* data)
+//static 
+const void* RB_DrawBuffer(const void* data)
 {
 	const drawBufferCommand_t* cmd = (const drawBufferCommand_t*)data;
 
@@ -149,7 +152,6 @@ static const void* RB_DrawBuffer(const void* data)
 
 	return (const void*)(cmd + 1);
 }
-#endif
 
 //==========================================================================
 //
@@ -444,8 +446,7 @@ void RB_BeginDrawingView()
 //
 //==========================================================================
 
-//static 
-void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
+static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 {
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
@@ -618,14 +619,14 @@ void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 	RB_RenderFlares();
 }
 
-#if 0
 //==========================================================================
 //
 //	RB_DrawSurfs
 //
 //==========================================================================
 
-static const void* RB_DrawSurfs(const void* data)
+//static 
+const void* RB_DrawSurfs(const void* data)
 {
 	// finish any 2D drawing if needed
 	if (tess.numIndexes)
@@ -664,6 +665,11 @@ void RB_SetGL2D()
 
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
+	if (GGameType & GAME_WolfSP)
+	{
+		qglDisable(GL_FOG);
+	}
+
 	qglDisable(GL_CULL_FACE);
 	qglDisable(GL_CLIP_PLANE0);
 
@@ -678,7 +684,8 @@ void RB_SetGL2D()
 //
 //==========================================================================
 
-static const void* RB_StretchPic(const void* data)
+//static 
+const void* RB_StretchPic(const void* data)
 {
 	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
 
@@ -807,6 +814,7 @@ void RB_ShowImages()
 	Log::write("%i msec to draw all images\n", end - start);
 }
 
+#if 0
 //==========================================================================
 //
 //	RB_SwapBuffers
