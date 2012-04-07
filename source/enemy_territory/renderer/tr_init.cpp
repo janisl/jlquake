@@ -104,143 +104,9 @@ static void InitOpenGL( void ) {
 ==============================================================================
 */
 
-/*
-==================
-R_TakeScreenshot
-==================
-*/
-void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
-	byte        *buffer;
-
-	buffer = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 3 );
-
-	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer );
-
-	// gamma correct
-	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer, glConfig.vidWidth * glConfig.vidHeight * 3 );
-	}
-
-	R_SaveTGA(fileName, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
-
-	ri.Hunk_FreeTempMemory( buffer );
-}
-
-/*
-==============
-R_TakeScreenshotJPEG
-==============
-*/
-void R_TakeScreenshotJPEG( int x, int y, int width, int height, char *fileName ) {
-	byte        *buffer;
-
-	buffer = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 4 );
-
-	qglReadPixels( x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
-
-	// gamma correct
-	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer, glConfig.vidWidth * glConfig.vidHeight * 4 );
-	}
-
-	ri.FS_WriteFile( fileName, buffer, 1 );     // create path
-	R_SaveJPG( fileName, 95, glConfig.vidWidth, glConfig.vidHeight, buffer );
-
-	ri.Hunk_FreeTempMemory( buffer );
-}
-
-/*
-==================
-R_ScreenshotFilename
-==================
-*/
-void R_ScreenshotFilename( int lastNumber, char *fileName ) {
-	if ( lastNumber < 0 || lastNumber > 9999 ) {
-		String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.tga" );
-		return;
-	}
-
-	String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.tga", lastNumber );
-}
-
-/*
-==============
-R_ScreenshotFilenameJPEG
-==============
-*/
-void R_ScreenshotFilenameJPEG( int lastNumber, char *fileName ) {
-	if ( lastNumber < 0 || lastNumber > 9999 ) {
-		String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.jpg" );
-		return;
-	}
-
-	String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.jpg", lastNumber );
-}
-
-/*
-====================
-R_LevelShot
-
-levelshots are specialized 128*128 thumbnails for
-the menu system, sampled down from full screen distorted images
-====================
-*/
-void R_LevelShot( void ) {
-	char checkname[MAX_OSPATH];
-	byte        *buffer;
-	byte        *source;
-	byte        *src, *dst;
-	int x, y;
-	int r, g, b;
-	float xScale, yScale;
-	int xx, yy;
-
-	sprintf( checkname, "levelshots/%s.tga", tr.world->baseName );
-
-	source = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 3 );
-
-	buffer = (byte*)ri.Hunk_AllocateTempMemory( 128 * 128 * 3 + 18 );
-	memset( buffer, 0, 18 );
-	buffer[2] = 2;      // uncompressed type
-	buffer[12] = 128;
-	buffer[14] = 128;
-	buffer[16] = 24;    // pixel size
-
-	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source );
-
-	// resample from source
-	xScale = glConfig.vidWidth / 512.0f;
-	yScale = glConfig.vidHeight / 384.0f;
-	for ( y = 0 ; y < 128 ; y++ ) {
-		for ( x = 0 ; x < 128 ; x++ ) {
-			r = g = b = 0;
-			for ( yy = 0 ; yy < 3 ; yy++ ) {
-				for ( xx = 0 ; xx < 4 ; xx++ ) {
-					src = source + 3 * ( glConfig.vidWidth * (int)( ( y * 3 + yy ) * yScale ) + (int)( ( x * 4 + xx ) * xScale ) );
-					r += src[0];
-					g += src[1];
-					b += src[2];
-				}
-			}
-			dst = buffer + 18 + 3 * ( y * 128 + x );
-			dst[0] = b / 12;
-			dst[1] = g / 12;
-			dst[2] = r / 12;
-		}
-	}
-
-	// gamma correct
-	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer + 18, 128 * 128 * 3 );
-	}
-
-	ri.FS_WriteFile( checkname, buffer, 128 * 128 * 3 + 18 );
-
-	ri.Hunk_FreeTempMemory( buffer );
-	ri.Hunk_FreeTempMemory( source );
-
-	ri.Printf( PRINT_ALL, "Wrote %s\n", checkname );
-}
+void RB_TakeScreenshot(int x, int y, int width, int height, const char* fileName, bool IsJpeg);
+bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const char* Extension);
+void R_LevelShot( void );
 
 /*
 ==================
@@ -276,25 +142,8 @@ void R_ScreenShot_f( void ) {
 		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", ri.Cmd_Argv( 1 ) );
 	} else {
 		// scan for a free filename
-
-		// if we have saved a previous screenshot, don't scan
-		// again, because recording demo avis can involve
-		// thousands of shots
-		if ( lastNumber == -1 ) {
-			lastNumber = 0;
-		}
-		// scan for a free number
-		for ( ; lastNumber <= 9999 ; lastNumber++ ) {
-			R_ScreenshotFilename( lastNumber, checkname );
-
-			len = ri.FS_ReadFile( checkname, NULL );
-			if ( len <= 0 ) {
-				break;  // file doesn't exist
-			}
-		}
-
-		if ( lastNumber >= 9999 ) {
-			ri.Printf( PRINT_ALL, "ScreenShot: Couldn't create a file\n" );
+		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "tga"))
+		{
 			return;
 		}
 
@@ -302,7 +151,7 @@ void R_ScreenShot_f( void ) {
 	}
 
 
-	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname );
+	RB_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false );
 
 	if ( !silent ) {
 		ri.Printf( PRINT_ALL, "Wrote %s\n", checkname );
@@ -331,25 +180,8 @@ void R_ScreenShotJPEG_f( void ) {
 		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", ri.Cmd_Argv( 1 ) );
 	} else {
 		// scan for a free filename
-
-		// if we have saved a previous screenshot, don't scan
-		// again, because recording demo avis can involve
-		// thousands of shots
-		if ( lastNumber == -1 ) {
-			lastNumber = 0;
-		}
-		// scan for a free number
-		for ( ; lastNumber <= 9999 ; lastNumber++ ) {
-			R_ScreenshotFilenameJPEG( lastNumber, checkname );
-
-			len = ri.FS_ReadFile( checkname, NULL );
-			if ( len <= 0 ) {
-				break;  // file doesn't exist
-			}
-		}
-
-		if ( lastNumber == 10000 ) {
-			ri.Printf( PRINT_ALL, "ScreenShot: Couldn't create a file\n" );
+		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "jpg"))
+		{
 			return;
 		}
 
@@ -357,7 +189,7 @@ void R_ScreenShotJPEG_f( void ) {
 	}
 
 
-	R_TakeScreenshotJPEG( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname );
+	RB_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true );
 
 	if ( !silent ) {
 		ri.Printf( PRINT_ALL, "Wrote %s\n", checkname );

@@ -478,9 +478,9 @@ void R_Draw2DQuad(float x, float y, float width, float height,
 bool R_GetScreenPosFromWorldPos(vec3_t origin, int& u, int& v);
 
 void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty);
+#endif
 
 void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, Array<byte>& buffer);
-#endif
 
 void R_SetFog(int fogvar, int var1, int var2, float r, float g, float b, float density);
 
