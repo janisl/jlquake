@@ -47,7 +47,7 @@
 #include "../../core/file_formats/sp2.h"
 
 #include "../../client/renderer/qgl.h"
-#include "images/image.h"
+#include "../../client/renderer/images/image.h"
 #include "shader.h"
 #include "models/model.h"
 #include "../../client/renderer/state.h"

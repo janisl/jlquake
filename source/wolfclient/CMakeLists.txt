@@ -7,7 +7,7 @@ set(WOLFCLIENT_FILES
 	../client/input/main.cpp
 	../client/input/unix.cpp
 	../client/renderer/images/bmp.cpp
-	renderer/images/image.cpp
+	../client/renderer/images/image.cpp
 	../client/renderer/images/jpg.cpp
 	../client/renderer/images/pcx.cpp
 	../client/renderer/images/pic.cpp

@@ -2506,3 +2506,79 @@ void R_BackupImages()
 		}
 	}
 }
+
+static void R_PurgeImage(image_t* image)
+{
+	qglDeleteTextures(1, &image->texnum);
+	delete image;
+
+	Com_Memset(glState.currenttextures, 0, sizeof(glState.currenttextures));
+	if (qglBindTexture)
+	{
+		if (qglActiveTextureARB)
+		{
+			GL_SelectTexture(1);
+			qglBindTexture(GL_TEXTURE_2D, 0);
+			GL_SelectTexture(0);
+			qglBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else
+		{
+			qglBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
+}
+
+//	Can specify the number of Images to purge this call (used for background purging)
+void R_PurgeBackupImages(int purgeCount)
+{
+	static int lastPurged = 0;
+
+	if (!numBackupImages)
+	{
+		// nothing to purge
+		lastPurged = 0;
+		return;
+	}
+
+	R_SyncRenderThread();
+
+	int cnt = 0;
+	for (int i = lastPurged; i < IMAGE_HASH_SIZE;)
+	{
+		lastPurged = i;
+		image_t* image = backupHashTable[i];
+		if (image)
+		{
+			// kill it
+			backupHashTable[i] = image->next;
+			R_PurgeImage(image);
+			cnt++;
+
+			if (cnt >= purgeCount)
+			{
+				return;
+			}
+		}
+		else
+		{
+			i++;    // no images in this slot, so move to the next one
+		}
+	}
+
+	// all done
+	numBackupImages = 0;
+	lastPurged = 0;
+}
+
+int R_GetTextureId(const char* name)
+{
+	for (int i = 0; i < tr.numImages; i++)
+	{
+		if (!String::Cmp(name, tr.images[i]->imgName))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
