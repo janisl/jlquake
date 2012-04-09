@@ -82,17 +82,6 @@ unsigned ColorBytes3( float r, float g, float b ) {
 	return i;
 }
 
-unsigned ColorBytes4( float r, float g, float b, float a ) {
-	unsigned i;
-
-	( (byte *)&i )[0] = r * 255;
-	( (byte *)&i )[1] = g * 255;
-	( (byte *)&i )[2] = b * 255;
-	( (byte *)&i )[3] = a * 255;
-
-	return i;
-}
-
 float NormalizeColor( const vec3_t in, vec3_t out ) {
 	float max;
 

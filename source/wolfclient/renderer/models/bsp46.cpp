@@ -1891,6 +1891,7 @@ static void R_LoadPlanes(bsp46_lump_t* l)
 		SetPlaneSignbits(out);
 	}
 }
+#endif
 
 //==========================================================================
 //
@@ -1898,7 +1899,7 @@ static void R_LoadPlanes(bsp46_lump_t* l)
 //
 //==========================================================================
 
-static unsigned ColorBytes4(float r, float g, float b, float a)
+unsigned ColorBytes4(float r, float g, float b, float a)
 {
 	unsigned	i;
 
@@ -1910,6 +1911,7 @@ static unsigned ColorBytes4(float r, float g, float b, float a)
 	return i;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_LoadFogs
