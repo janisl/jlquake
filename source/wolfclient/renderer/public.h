@@ -415,6 +415,7 @@ image_t* R_CachePicRepeat(const char* path);
 image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels);
 image_t* R_RegisterPic(const char* name);
 image_t* R_RegisterPicRepeat(const char* name);
+int R_GetTextureId(const char* name);
 #if 0
 void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation);
 void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation, int classIndex);

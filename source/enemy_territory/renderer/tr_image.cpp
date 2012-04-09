@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-#define IMAGE_HASH_SIZE      4096
-
 /*
 ============================================================================
 
@@ -402,97 +400,4 @@ void    R_SkinList_f( void ) {
 		}
 	}
 	ri.Printf( PRINT_ALL, "------------------\n" );
-}
-
-//==========================================================================================
-// Ridah, caching system
-
-extern int numBackupImages;
-extern image_t  *backupHashTable[IMAGE_HASH_SIZE];
-
-/*
-===============
-R_PurgeImage
-===============
-*/
-static void R_PurgeImage( image_t *image ) {
-
-	qglDeleteTextures( 1, &image->texnum );
-	delete image;
-
-	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
-	if ( qglBindTexture ) {
-		if ( qglActiveTextureARB ) {
-			GL_SelectTexture( 1 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-			GL_SelectTexture( 0 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else {
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		}
-	}
-}
-
-
-/*
-===============
-R_PurgeBackupImages
-
-  Can specify the number of Images to purge this call (used for background purging)
-===============
-*/
-void R_PurgeBackupImages( int purgeCount ) {
-	int i, cnt;
-	static int lastPurged = 0;
-	image_t *image;
-
-	if ( !numBackupImages ) {
-		// nothing to purge
-		lastPurged = 0;
-		return;
-	}
-
-	R_SyncRenderThread();
-
-	cnt = 0;
-	for ( i = lastPurged; i < IMAGE_HASH_SIZE; ) {
-		lastPurged = i;
-		// TTimo: assignment used as truth value
-		if ( ( image = backupHashTable[i] ) ) {
-			// kill it
-			backupHashTable[i] = image->next;
-			R_PurgeImage( image );
-			cnt++;
-
-			if ( cnt >= purgeCount ) {
-				return;
-			}
-		} else {
-			i++;    // no images in this slot, so move to the next one
-		}
-	}
-
-	// all done
-	numBackupImages = 0;
-	lastPurged = 0;
-}
-
-//bani
-/*
-R_GetTextureId
-*/
-int R_GetTextureId( const char *name ) {
-	int i;
-
-//	ri.Printf( PRINT_ALL, "R_GetTextureId [%s].\n", name );
-
-	for ( i = 0 ; i < tr.numImages ; i++ ) {
-		if ( !String::Cmp( name, tr.images[ i ]->imgName ) ) {
-//			ri.Printf( PRINT_ALL, "Found textureid %d\n", i );
-			return i;
-		}
-	}
-
-//	ri.Printf( PRINT_ALL, "Image not found.\n" );
-	return -1;
 }

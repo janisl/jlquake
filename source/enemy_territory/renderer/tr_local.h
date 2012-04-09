@@ -169,7 +169,6 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 void RE_RenderToTexture( int textureid, int x, int y, int w, int h );
 // bani
 void RE_Finish( void );
-int R_GetTextureId( const char *name );
 
 /*
 ============================================================
@@ -331,8 +330,6 @@ void R_PurgeModels( int count );
 void R_BackupModels( void );
 qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
-
-void R_PurgeBackupImages( int purgeCount );
 
 //void *R_CacheShaderAlloc( int size );
 //void R_CacheShaderFree( void *ptr );

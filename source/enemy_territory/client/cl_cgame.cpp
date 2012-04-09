@@ -1177,7 +1177,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return 0;
 		//bani
 	case CG_R_GETTEXTUREID:
-		return re.GetTextureId( (char*)VMA( 1 ) );
+		return R_GetTextureId( (char*)VMA( 1 ) );
 		//bani - flush gl rendering buffers
 	case CG_R_FINISH:
 		re.Finish();

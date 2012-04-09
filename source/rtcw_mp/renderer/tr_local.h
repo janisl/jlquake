@@ -275,8 +275,6 @@ void R_BackupModels( void );
 qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
 
-void R_PurgeBackupImages( int purgeCount );
-
 void *R_CacheShaderAlloc( int size );
 void R_CacheShaderFree( void *ptr );
 shader_t *R_FindCachedShader( const char *name, int lightmapIndex, int hash );

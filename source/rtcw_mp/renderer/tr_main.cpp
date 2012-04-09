@@ -1415,7 +1415,6 @@ void R_RenderView( viewParms_t *parms ) {
 
 	// Ridah, purge media that were left over from the last level
 	if ( r_cache->integer ) {
-		extern void R_PurgeBackupImages( int purgeCount );
 		static int lastTime;
 
 		if ( ( lastTime > tr.refdef.time ) || ( lastTime < ( tr.refdef.time - 200 ) ) ) {

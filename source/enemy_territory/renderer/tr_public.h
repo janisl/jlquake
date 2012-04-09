@@ -123,7 +123,6 @@ typedef struct {
 	// fretn
 	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
 	//bani
-	int ( *GetTextureId )( const char *imagename );
 	void ( *Finish )( void );
 } refexport_t;
 

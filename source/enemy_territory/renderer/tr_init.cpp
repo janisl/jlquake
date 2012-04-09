@@ -639,7 +639,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 
 	//bani
 	re.LoadDynamicShader = RE_LoadDynamicShader;
-	re.GetTextureId = R_GetTextureId;
 	// fretn
 	re.RenderToTexture = RE_RenderToTexture;
 	//bani
