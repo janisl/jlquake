@@ -2273,10 +2273,10 @@ void CL_InitRenderer( void ) {
 	re.BeginRegistration( &cls.glconfig );
 
 	// load character sets
-	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars" );
-	cls.whiteShader = re.RegisterShader( "white" );
-	cls.consoleShader = re.RegisterShader( "console" );
-	cls.consoleShader2 = re.RegisterShader( "console2" );
+	cls.charSetShader = R_RegisterShader( "gfx/2d/bigchars" );
+	cls.whiteShader = R_RegisterShader( "white" );
+	cls.consoleShader = R_RegisterShader( "console" );
+	cls.consoleShader2 = R_RegisterShader( "console2" );
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
 }

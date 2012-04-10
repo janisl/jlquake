@@ -52,8 +52,6 @@ typedef struct {
 	void ( *BeginRegistration )( glconfig_t *config );
 	qhandle_t ( *RegisterModel )( const char *name );
 	qhandle_t ( *RegisterSkin )( const char *name );
-	qhandle_t ( *RegisterShader )( const char *name );
-	qhandle_t ( *RegisterShaderNoMip )( const char *name );
 	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 
 	void ( *LoadWorld )( const char *name );
@@ -98,8 +96,6 @@ typedef struct {
 
 	int ( *LerpTag )( orientation_t *tag,  const refEntity_t *refent, const char *tagName, int startIndex );
 	void ( *ModelBounds )( qhandle_t model, vec3_t mins, vec3_t maxs );
-
-	void ( *RemapShader )( const char *oldShader, const char *newShader, const char *offsetTime );
 
 	qboolean ( *GetEntityToken )( char *buffer, int size );
 } refexport_t;

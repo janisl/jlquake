@@ -282,9 +282,9 @@ void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, fl
 	dl->overdraw = 0;
 
 	if ( overdraw == 10 ) { // sorry, hijacking 10 for a quick hack (SA)
-		dl->shader = R_GetShaderByHandle( RE_RegisterShader( "negdlightshader" ) );
+		dl->shader = R_GetShaderByHandle( R_RegisterShader( "negdlightshader" ) );
 	} else if ( overdraw == 11 ) { // 11 is flames
-		dl->shader = R_GetShaderByHandle( RE_RegisterShader( "flamedlightshader" ) );
+		dl->shader = R_GetShaderByHandle( R_RegisterShader( "flamedlightshader" ) );
 	} else {
 		dl->overdraw = overdraw;
 	}

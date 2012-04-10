@@ -2905,13 +2905,13 @@ void CL_InitRenderer( void ) {
 	re.BeginRegistration( &cls.glconfig );
 
 	// load character sets
-	cls.charSetShader = re.RegisterShader( "gfx/2d/consolechars" );
-	cls.whiteShader = re.RegisterShader( "white" );
+	cls.charSetShader = R_RegisterShader( "gfx/2d/consolechars" );
+	cls.whiteShader = R_RegisterShader( "white" );
 
 // JPW NERVE
 
-	cls.consoleShader = re.RegisterShader( "console-16bit" ); // JPW NERVE shader works with 16bit
-	cls.consoleShader2 = re.RegisterShader( "console2-16bit" ); // JPW NERVE same
+	cls.consoleShader = R_RegisterShader( "console-16bit" ); // JPW NERVE shader works with 16bit
+	cls.consoleShader2 = R_RegisterShader( "console2-16bit" ); // JPW NERVE same
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;

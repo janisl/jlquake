@@ -81,12 +81,9 @@ shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
 
 // the shader is parsed into these global variables, then copied into
 // dynamically allocated memory if it is valid.
-//static 
-shader_t			shader;
-//static 
-shaderStage_t	stages[MAX_SHADER_STAGES];
-//static 
-texModInfo_t		texMods[MAX_SHADER_STAGES][TR_MAX_TEXMODS];
+static shader_t			shader;
+static shaderStage_t	stages[MAX_SHADER_STAGES];
+static texModInfo_t		texMods[MAX_SHADER_STAGES][TR_MAX_TEXMODS];
 
 // ydnar: these are here because they are only referenced while parsing a shader
 static char implicitMap[MAX_QPATH];
@@ -2746,8 +2743,7 @@ static shader_t* GeneratePermanentShader()
 //
 //==========================================================================
 
-//static 
-shader_t* FinishShader()
+static shader_t* FinishShader()
 {
 	int stage;
 	qboolean		hasLightmapStage;
@@ -3275,8 +3271,7 @@ static shader_t* R_FindCachedShader(const char* name, int lightmapIndex, int has
 	return NULL;
 }
 
-//static 
-void SetImplicitShaderStages(image_t* image)
+static void SetImplicitShaderStages(image_t* image)
 {
 	// set implicit cull type
 	if (implicitCullType && !shader.cullType)
@@ -3557,7 +3552,6 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 	return FinishShader();
 }
 
-#if 0
 //==========================================================================
 //
 //	R_RegisterShaderFromImage
@@ -3731,7 +3725,8 @@ static shader_t* R_FindShaderByName(const char* name)
 	}
 
 	char strippedName[MAX_QPATH];
-	String::StripExtension(name, strippedName);
+	String::StripExtension2(name, strippedName, sizeof(strippedName));
+	String::FixPath(strippedName);
 
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 
@@ -3787,7 +3782,7 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	char strippedName[MAX_QPATH];
-	String::StripExtension(shaderName, strippedName);
+	String::StripExtension2(shaderName, strippedName, sizeof(strippedName));
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 	for (sh = ShaderHashTable[hash]; sh; sh = sh->next)
 	{
@@ -3815,7 +3810,8 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 //
 //==========================================================================
 
-static void CreateInternalShaders()
+//static 
+void CreateInternalShaders()
 {
 	tr.numShaders = 0;
 
@@ -3837,6 +3833,7 @@ static void CreateInternalShaders()
 	tr.shadowShader = FinishShader();
 }
 
+#if 0
 //==========================================================================
 //
 //	ScanAndLoadShaderFiles

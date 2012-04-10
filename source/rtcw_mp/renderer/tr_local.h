@@ -140,17 +140,10 @@ skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
 //
 // tr_shader.c
 //
-qhandle_t        RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
-qhandle_t        RE_RegisterShader( const char *name );
-qhandle_t        RE_RegisterShaderNoMip( const char *name );
-qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage );
-
 shader_t    *R_GetShaderByHandle( qhandle_t hShader );
 shader_t    *R_GetShaderByState( int index, long *cycleTime );
-shader_t *R_FindShaderByName( const char *name );
 void        R_InitShaders( void );
 void        R_ShaderList_f( void );
-void    R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 
 /*
 ============================================================
