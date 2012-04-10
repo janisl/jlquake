@@ -1894,7 +1894,7 @@ static void R_LoadPlanes(bsp46_lump_t* l)
 //
 //==========================================================================
 
-static unsigned ColorBytes4(float r, float g, float b, float a)
+unsigned ColorBytes4(float r, float g, float b, float a)
 {
 	unsigned	i;
 
