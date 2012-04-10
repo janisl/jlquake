@@ -391,8 +391,6 @@ void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vP
 
 float Com_Clamp( float min, float max, float value );
 
-void    COM_StripExtension2( const char *in, char *out, int destsize );
-
 qboolean COM_BitCheck( const int array[], int bitNum );
 void COM_BitSet( int array[], int bitNum );
 void COM_BitClear( int array[], int bitNum );

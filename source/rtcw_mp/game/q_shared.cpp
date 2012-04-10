@@ -51,21 +51,6 @@ float Com_Clamp( float min, float max, float value ) {
 	return value;
 }
 
-/*
-============
-COM_StripExtension2
-a safer version
-============
-*/
-void COM_StripExtension2( const char *in, char *out, int destsize ) {
-	int len = 0;
-	while ( len < destsize - 1 && *in && *in != '.' ) {
-		*out++ = *in++;
-		len++;
-	}
-	*out = 0;
-}
-
 //============================================================================
 /*
 ==================

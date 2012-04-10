@@ -1368,6 +1368,18 @@ void String::StripExtension(const char* In, char* Out)
 	*Out = 0;
 }
 
+//	a safer version
+void String::StripExtension2(const char* in, char* out, int destsize)
+{
+	int len = 0;
+	while (len < destsize - 1 && *in && *in != '.')
+	{
+		*out++ = *in++;
+		len++;
+	}
+	*out = 0;
+}
+
 //==========================================================================
 //
 //	String::DefaultExtension
@@ -1474,6 +1486,19 @@ const char* String::FileExtension(const char* In)
 	}
 	Exten[i] = 0;
 	return Exten;
+}
+
+//	unixifies a pathname
+void String::FixPath(char* pathname)
+{
+	while (*pathname)
+	{
+		if (*pathname == '\\')
+		{
+			*pathname = '/';
+		}
+		pathname++;
+	}
 }
 
 //==========================================================================

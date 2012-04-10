@@ -155,7 +155,6 @@ qhandle_t        RE_RegisterShader( const char *name );
 qhandle_t        RE_RegisterShaderNoMip( const char *name );
 qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage );
 
-shader_t    *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t    *R_GetShaderByHandle( qhandle_t hShader );
 shader_t    *R_GetShaderByState( int index, long *cycleTime );
 shader_t *R_FindShaderByName( const char *name );
@@ -340,7 +339,6 @@ void* R_CacheShaderAllocExt( const char* name, int size, const char* file, int l
 #define R_CacheShaderAlloc( name, size ) R_CacheShaderAllocExt( name, size, __FILE__, __LINE__ )
 #define R_CacheShaderFree( name, ptr ) R_CacheShaderFreeExt( name, ptr, __FILE__, __LINE__ )
 
-shader_t *R_FindCachedShader( const char *name, int lightmapIndex, int hash );
 void R_BackupShaders( void );
 void R_PurgeShaders( int count );
 void R_PurgeLightmapShaders( void );

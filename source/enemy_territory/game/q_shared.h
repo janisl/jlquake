@@ -413,9 +413,6 @@ float DistanceFromVectorSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
 
 float Com_Clamp( float min, float max, float value );
 
-void    COM_FixPath( char *pathname );
-void    COM_StripExtension2( const char *in, char *out, int destsize );
-
 qboolean COM_BitCheck( const int array[], int bitNum );
 void COM_BitSet( int array[], int bitNum );
 void COM_BitClear( int array[], int bitNum );
