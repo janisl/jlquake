@@ -958,9 +958,9 @@ void R_AddMD3Surfaces(trRefEntity_t* e);
 #endif
 void RB_SurfaceMesh(md3Surface_t* surface);
 
-#if 0
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);
+#if 0
 void R_AddAnimSurfaces(trRefEntity_t* ent);
 #endif
 void RB_SurfaceAnim(md4Surface_t* surfType);
