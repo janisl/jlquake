@@ -45,8 +45,7 @@
 //
 //==========================================================================
 
-//static 
-bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* mod_name)
+static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* mod_name)
 {
 	md3Header_t* pinmodel = (md3Header_t*)buffer;
 
@@ -328,7 +327,6 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 	return true;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_FreeMd3
@@ -347,6 +345,7 @@ void R_FreeMd3(model_t* mod)
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	ProjectRadius
