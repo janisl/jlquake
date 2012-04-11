@@ -96,8 +96,7 @@ static const char**		shaderTextHashTable[MAX_SHADERTEXT_HASH];
 static shaderStringPointer_t shaderChecksumLookup[SHADER_HASH_SIZE];
 static shaderStringPointer_t shaderStringPointerList[MAX_SHADER_STRING_POINTERS];
 
-//static 
-dynamicshader_t* dshader = NULL;
+static dynamicshader_t* dshader = NULL;
 
 // Ridah, shader caching
 //static 
@@ -4396,4 +4395,97 @@ void R_BackupShaders()
 
 	// Gordon: ditch all lightmapped shaders
 	R_PurgeLightmapShaders();
+}
+
+//	bani - load a new dynamic shader
+//
+//	if shadertext is NULL, looks for matching shadername and removes it
+//
+//	returns qtrue if request was successful, qfalse if the gods were angered
+bool R_LoadDynamicShader(const char* shadername, const char* shadertext)
+{
+	const char *func_err = "WARNING: R_LoadDynamicShader";
+
+	if (!shadername && shadertext)
+	{
+		common->Printf(S_COLOR_YELLOW "%s called with NULL shadername and non-NULL shadertext:\n%s\n", func_err, shadertext);
+		return false;
+	}
+
+	if (shadername && String::Length(shadername) >= MAX_QPATH)
+	{
+		common->Printf(S_COLOR_YELLOW "%s shadername %s exceeds MAX_QPATH\n", func_err, shadername);
+		return false;
+	}
+
+	//empty the whole list
+	if (!shadername && !shadertext)
+	{
+		dynamicshader_t* dptr = dshader;
+		while (dptr)
+		{
+			dynamicshader_t* lastdptr = dptr->next;
+			delete[] dptr->shadertext;
+			delete dptr;
+			dptr = lastdptr;
+		}
+		dshader = NULL;
+		return true;
+	}
+
+	//walk list for existing shader to delete, or end of the list
+	dynamicshader_t* dptr = dshader;
+	dynamicshader_t* lastdptr = NULL;
+	while (dptr)
+	{
+		const char* q = dptr->shadertext;
+
+		char* token = String::ParseExt(&q, true);
+
+		if ((token[0] != 0) && !String::ICmp(token, shadername))
+		{
+			//request to nuke this dynamic shader
+			if (!shadertext)
+			{
+				if (!lastdptr)
+				{
+					dshader = NULL;
+				}
+				else
+				{
+					lastdptr->next = dptr->next;
+				}
+				delete[] dptr->shadertext;
+				delete dptr;
+				return true;
+			}
+			common->Printf(S_COLOR_YELLOW "%s shader %s already exists!\n", func_err, shadername);
+			return false;
+		}
+		lastdptr = dptr;
+		dptr = dptr->next;
+	}
+
+	//cant add a new one with empty shadertext
+	if (!shadertext || !String::Length(shadertext))
+	{
+		common->Printf(S_COLOR_YELLOW "%s new shader %s has NULL shadertext!\n", func_err, shadername);
+		return false;
+	}
+
+	//create a new shader
+	dptr = new dynamicshader_t;
+	if (lastdptr)
+	{
+		lastdptr->next = dptr;
+	}
+	dptr->shadertext = new char[String::Length(shadertext) + 1];
+	String::NCpyZ(dptr->shadertext, shadertext, String::Length(shadertext) + 1);
+	dptr->next = NULL;
+	if (!dshader)
+	{
+		dshader = dptr;
+	}
+
+	return true;
 }

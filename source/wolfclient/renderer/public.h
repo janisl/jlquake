@@ -451,6 +451,7 @@ bool R_LerpTag(orientation_t* Tag, qhandle_t Handle, int StartFrame, int EndFram
 qhandle_t R_RegisterShader(const char* Name);
 qhandle_t R_RegisterShaderNoMip(const char* Name);
 void R_RemapShader(const char* OldShader, const char* NewShader, const char* TimeOffset);
+bool R_LoadDynamicShader(const char* shadername, const char* shadertext);
 
 #if 0
 qhandle_t R_RegisterSkin(const char* Name);

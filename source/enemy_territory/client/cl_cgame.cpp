@@ -1170,7 +1170,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return CL_BinaryMessageStatus();
 		//bani - dynamic shaders
 	case CG_R_LOADDYNAMICSHADER:
-		return re.LoadDynamicShader( (char*)VMA( 1 ), (char*)VMA( 2 ) );
+		return R_LoadDynamicShader( (char*)VMA( 1 ), (char*)VMA( 2 ) );
 		// fretn - render to texture
 	case CG_R_RENDERTOTEXTURE:
 		re.RenderToTexture( args[1], args[2], args[3], args[4], args[5] );

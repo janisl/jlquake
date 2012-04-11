@@ -634,8 +634,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 
 	re.purgeCache       = R_PurgeCache;
 
-	//bani
-	re.LoadDynamicShader = RE_LoadDynamicShader;
 	// fretn
 	re.RenderToTexture = RE_RenderToTexture;
 	//bani

@@ -151,8 +151,6 @@ skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
 // tr_shader.c
 //
 void        R_InitShaders( void );
-//bani
-qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
 // fretn - renderToTexture
 void RE_RenderToTexture( int textureid, int x, int y, int w, int h );

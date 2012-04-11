@@ -114,8 +114,6 @@ typedef struct {
 
 	void ( *purgeCache )( void );
 
-	//bani
-	qboolean ( *LoadDynamicShader )( const char *shadername, const char *shadertext );
 	// fretn
 	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
 	//bani
