@@ -392,14 +392,12 @@ struct shaderCommands_t
 
 #if 0
 void R_InitShaders();
-void R_FreeShaders();
 #endif
+void R_FreeShaders();
 shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);
 qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage);
-#if 0
 shader_t* R_GetShaderByHandle(qhandle_t hShader);
 void R_ShaderList_f();
-#endif
 
 void RB_BeginSurface(shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();

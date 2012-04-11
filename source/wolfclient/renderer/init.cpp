@@ -622,9 +622,9 @@ void R_Register_()
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
 	Cmd_AddCommand("modelist", R_ModeList_f);
-#if 0
 	Cmd_AddCommand("imagelist", R_ImageList_f);
 	Cmd_AddCommand("shaderlist", R_ShaderList_f);
+#if 0
 	Cmd_AddCommand("skinlist", R_SkinList_f);
 	Cmd_AddCommand("screenshot", R_ScreenShot_f);
 	Cmd_AddCommand("screenshotJPEG", R_ScreenShotJPEG_f);

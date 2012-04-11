@@ -28,6 +28,7 @@
 #define SHADER_HASH_SIZE	4096
 #define MAX_SHADERTEXT_HASH	2048
 #define MAX_SHADER_FILES	4096
+#define MAX_SHADER_STRING_POINTERS	100000
 
 // TYPES -------------------------------------------------------------------
 
@@ -90,11 +91,10 @@ static char implicitMap[MAX_QPATH];
 static unsigned implicitStateBits;
 static cullType_t implicitCullType;
 
-//static 
-char*			s_shaderText;
-//static 
-const char**		shaderTextHashTable[MAX_SHADERTEXT_HASH];
-shaderStringPointer_t shaderChecksumLookup[SHADER_HASH_SIZE];
+static char*			s_shaderText;
+static const char**		shaderTextHashTable[MAX_SHADERTEXT_HASH];
+static shaderStringPointer_t shaderChecksumLookup[SHADER_HASH_SIZE];
+static shaderStringPointer_t shaderStringPointerList[MAX_SHADER_STRING_POINTERS];
 
 //static 
 dynamicshader_t* dshader = NULL;
@@ -3833,7 +3833,68 @@ void CreateInternalShaders()
 	tr.shadowShader = FinishShader();
 }
 
-#if 0
+static void BuildShaderChecksumLookup()
+{
+	// initialize the checksums
+	memset(shaderChecksumLookup, 0, sizeof(shaderChecksumLookup));
+
+	const char* p = s_shaderText;
+	if (!p)
+	{
+		return;
+	}
+
+	// loop for all labels
+	int numShaderStringPointers = 0;
+	while (1)
+	{
+		const char* pOld = p;
+
+		const char* token = String::ParseExt(&p, true);
+		if (!*token)
+		{
+			break;
+		}
+
+		if (!(GGameType & GAME_ET) && !String::ICmp(token, "{"))
+		{
+			// skip braced section
+			String::SkipBracedSection(&p);
+			continue;
+		}
+
+		// get it's checksum
+		unsigned short int checksum = GenerateShaderHashValue(token, SHADER_HASH_SIZE);
+
+		// if it's not currently used
+		if (!shaderChecksumLookup[checksum].pStr)
+		{
+			shaderChecksumLookup[checksum].pStr = pOld;
+		}
+		else
+		{
+			// create a new list item
+			shaderStringPointer_t *newStrPtr;
+
+			if (numShaderStringPointers >= MAX_SHADER_STRING_POINTERS)
+			{
+				common->Error("MAX_SHADER_STRING_POINTERS exceeded, too many shaders");
+			}
+
+			newStrPtr = &shaderStringPointerList[numShaderStringPointers++];
+			newStrPtr->pStr = pOld;
+			newStrPtr->next = shaderChecksumLookup[checksum].next;
+			shaderChecksumLookup[checksum].next = newStrPtr;
+		}
+
+		if (GGameType & GAME_ET)
+		{
+			// Gordon: skip the actual shader section
+			String::SkipBracedSection(&p);
+		}
+	}
+}
+
 //==========================================================================
 //
 //	ScanAndLoadShaderFiles
@@ -3843,7 +3904,8 @@ void CreateInternalShaders()
 //
 //==========================================================================
 
-static void ScanAndLoadShaderFiles()
+//static 
+void ScanAndLoadShaderFiles()
 {
 	long sum = 0;
 	// scan for shader files
@@ -3853,7 +3915,7 @@ static void ScanAndLoadShaderFiles()
 
 	if (!shaderFiles || !numShaders)
 	{
-		if (GGameType & GAME_Quake3)
+		if (GGameType & GAME_Tech3)
 		{
 			Log::write(S_COLOR_YELLOW "WARNING: no shader files found\n");
 		}
@@ -3867,12 +3929,14 @@ static void ScanAndLoadShaderFiles()
 
 	// load and parse shader files
 	char* buffers[MAX_SHADER_FILES];
+	int buffersize[MAX_SHADER_FILES];
 	for (int i = 0; i < numShaders; i++)
 	{
 		char filename[MAX_QPATH];
 		String::Sprintf(filename, sizeof(filename), "scripts/%s", shaderFiles[i]);
 		Log::write("...loading '%s'\n", filename);
-		sum += FS_ReadFile(filename, (void**)&buffers[i]);
+		buffersize[i] = FS_ReadFile(filename, (void**)&buffers[i]);
+		sum += buffersize[i];
 		if (!buffers[i])
 		{
 			throw DropException(va("Couldn't load %s", filename));
@@ -3883,19 +3947,49 @@ static void ScanAndLoadShaderFiles()
 	s_shaderText = new char[sum + numShaders * 2];
 	s_shaderText[0] = 0;
 
+	// Gordon: optimised to not use strcat/String::Length which can be VERY slow for the large strings we're using here
+	char* p = s_shaderText;
 	// free in reverse order, so the temp files are all dumped
 	for (int i = numShaders - 1; i >= 0 ; i--)
 	{
-		String::Cat(s_shaderText, sum + numShaders * 2, "\n");
-		char* p = &s_shaderText[String::Length(s_shaderText)];
-		String::Cat(s_shaderText, sum + numShaders * 2, buffers[i]);
+		if (GGameType & GAME_ET)
+		{
+			String::Cpy(p++, "\n");
+			String::Cpy(p, buffers[i]);
+		}
+		else
+		{
+			String::Cat(s_shaderText, sum + numShaders * 2, "\n");
+			p = &s_shaderText[String::Length(s_shaderText)];
+			String::Cat(s_shaderText, sum + numShaders * 2, buffers[i]);
+		}
 		FS_FreeFile(buffers[i]);
 		buffers[i] = p;
-		String::Compress(p);
+		if (GGameType & GAME_ET)
+		{
+			p += buffersize[i];
+		}
+		else if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
+		{
+			String::Compress(p);
+		}
 	}
+
+	// ydnar: unixify all shaders
+	String::FixPath(s_shaderText);
 
 	// free up memory
 	FS_FreeFileList(shaderFiles);
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// Ridah, optimized shader loading (18ms on a P3-500 for sfm1.bsp)
+		if (GGameType & GAME_WolfSP || r_cacheShaders->integer)
+		{
+			BuildShaderChecksumLookup();
+		}
+		return;
+	}
 
 	int shaderTextHashTableSizes[MAX_SHADERTEXT_HASH];
 	Com_Memset(shaderTextHashTableSizes, 0, sizeof(shaderTextHashTableSizes));
@@ -3977,13 +4071,28 @@ static void ScanAndLoadShaderFiles()
 //
 //==========================================================================
 
-static void CreateExternalShaders()
+//static 
+void CreateExternalShaders()
 {
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
-		tr.projectionShadowShader = R_FindShader("projectionShadow", LIGHTMAP_NONE, true);
+		if (!(GGameType & GAME_WolfSP))
+		{
+			tr.projectionShadowShader = R_FindShader("projectionShadow", LIGHTMAP_NONE, true);
+		}
 		tr.flareShader = R_FindShader("flareShader", LIGHTMAP_NONE, true);
-		tr.sunShader = R_FindShader("sun", LIGHTMAP_NONE, true);
+		if (GGameType & GAME_Quake3)
+		{
+			tr.sunShader = R_FindShader("sun", LIGHTMAP_NONE, true);
+		}
+		else
+		{
+			tr.sunflareShader = R_FindShader("sunflare1", LIGHTMAP_NONE, true);
+		}
+		if (GGameType & GAME_WolfSP)
+		{
+			tr.spotFlareShader = R_FindShader("spotLight", LIGHTMAP_NONE, true);
+		}
 	}
 	else
 	{
@@ -3993,6 +4102,7 @@ static void CreateExternalShaders()
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_InitShaders
@@ -4011,6 +4121,7 @@ void R_InitShaders()
 
 	CreateExternalShaders();
 }
+#endif
 
 //==========================================================================
 //
@@ -4165,4 +4276,3 @@ void R_ShaderList_f()
 	Log::write("%i total shaders\n", count);
 	Log::write("------------------\n");
 }
-#endif

@@ -141,10 +141,7 @@ skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
 //
 // tr_shader.c
 //
-shader_t    *R_GetShaderByHandle( qhandle_t hShader );
-shader_t    *R_GetShaderByState( int index, long *cycleTime );
 void        R_InitShaders( void );
-void        R_ShaderList_f( void );
 
 /*
 ============================================================
@@ -266,8 +263,6 @@ void R_BackupModels( void );
 qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
 
-void *R_CacheShaderAlloc( int size );
-void R_CacheShaderFree( void *ptr );
 void R_BackupShaders( void );
 void R_PurgeShaders( int count );
 void R_LoadCacheShaders( void );

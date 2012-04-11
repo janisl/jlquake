@@ -380,8 +380,6 @@ void R_Register( void ) {
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
-	ri.Cmd_AddCommand( "imagelist", R_ImageList_f );
-	ri.Cmd_AddCommand( "shaderlist", R_ShaderList_f );
 	ri.Cmd_AddCommand( "skinlist", R_SkinList_f );
 	ri.Cmd_AddCommand( "modellist", R_Modellist_f );
 	ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
@@ -506,6 +504,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 			if ( destroyWindow ) {
 				R_SyncRenderThread();
 				R_ShutdownCommandBuffers();
+				R_FreeShaders();
 				R_DeleteTextures();
 				R_FreeBackEndData();
 			} else {
@@ -521,6 +520,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	} else if ( tr.registered ) {
 		R_SyncRenderThread();
 		R_ShutdownCommandBuffers();
+		R_FreeShaders();
 		R_DeleteTextures();
 		R_FreeBackEndData();
 	}
