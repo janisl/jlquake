@@ -68,12 +68,9 @@ asked for again.
 */
 qhandle_t RE_RegisterModel( const char *name ) {
 	model_t     *mod;
-	unsigned    *buf;
-	int lod;
 	int ident = 0;         // TTimo: init
 	qboolean loaded;
 	qhandle_t hModel;
-	int numLoaded;
 
 	if ( !name || !name[0] ) {
 		// Ridah, disabled this, we can see models that can't be found because they won't be there
@@ -153,37 +150,28 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		goto fail;
 	ident = LittleLong( *(unsigned *)buffer );
 
-	if ( strstr( name, ".mds" ) ) {  // try loading skeletal file
-		loaded = qfalse;
-		buf = (unsigned*)buffer;
-		loadmodel = mod;
+	loaded = qfalse;
+	loadmodel = mod;
 
-		if ( ident == MDS_IDENT ) {
-			loaded = R_LoadMDS( mod, buf, name );
-		}
-
-		ri.FS_FreeFile( buf );
-
-		if ( loaded ) {
-			return mod->index;
-		}
+	switch (ident)
+	{
+	case MDS_IDENT:
+		loaded = R_LoadMDS(mod, buffer, name);
+		break;
+	case MD3_IDENT:
+		loaded = R_LoadMd3(mod, buffer);
+		break;
+	case MDC_IDENT:
+		loaded = R_LoadMdc(mod, buffer);
+		break;
 	}
-
-	if ( ident == MD3_IDENT ) {
-		loaded = R_LoadMd3( mod, buf );
-		FS_FreeFile(buffer);
-		if ( loaded ) {
-			return mod->index;
-		}
-		goto fail;
-	}
-
-	loaded = R_LoadMdc(mod, buffer);
 
 	FS_FreeFile(buffer);
-		if ( loaded ) {
-			return mod->index;
-		}
+
+	if (loaded)
+	{
+		return mod->index;
+	}
 
 fail:
 	// we still keep the model_t around, so if the model name is asked for
