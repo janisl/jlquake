@@ -212,8 +212,6 @@ Cvar* r_clampToEdge;
 Cvar* r_trisColor;
 Cvar* r_normallength;
 
-Cvar* r_compressModels;
-Cvar* r_exportCompressedModels;
 Cvar* r_buildScript;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -610,8 +608,6 @@ static void R_Register()
 	r_bonesDebug = Cvar_Get("r_bonesDebug", "0", CVAR_CHEAT);
 	r_wolffog = Cvar_Get("r_wolffog", "1", 0);
 	r_drawfoliage = Cvar_Get("r_drawfoliage", "1", CVAR_CHEAT);
-	r_compressModels = Cvar_Get("r_compressModels", "0", 0);     // converts MD3 -> MDC at run-time
-	r_exportCompressedModels = Cvar_Get("r_exportCompressedModels", "0", 0); // saves compressed models
 	r_buildScript = Cvar_Get("com_buildscript", "0", 0);
 
 	// make sure all the commands added here are also
