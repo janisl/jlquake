@@ -949,8 +949,10 @@ bool R_MdlHasHexen2Transparency(model_t* Model);
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
 void R_DrawMd2Model(trRefEntity_t* e);
+#endif
 
 bool R_LoadMd3(model_t* mod, void* buffer);
+#if 0
 void R_FreeMd3(model_t* mod);
 void R_AddMD3Surfaces(trRefEntity_t* e);
 #endif

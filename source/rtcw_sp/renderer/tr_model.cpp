@@ -37,7 +37,7 @@ void R_LatLongToNormal(vec3_t outNormal, short latLong);
 // Ridah
 static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_name );
 // done.
-static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *name );
+bool R_LoadMd3Lod( model_t *mod, int lod, const void *buffer, const char *name );
 static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *name );
 
 model_t *loadmodel;
@@ -124,7 +124,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	mod->q3_ATI_tess = qfalse;
 // GR - check if can be tessellated...
 //		make sure to tessellate model heads
-	if ( strstr( name, "head" ) ) {
+	if (GGameType & GAME_WolfSP && strstr( name, "head" ) ) {
 		mod->q3_ATI_tess = qtrue;
 	}
 
@@ -137,31 +137,59 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	}
 	// done.
 
+	void* buffer;
+	FS_ReadFile(name, &buffer);
+	if (!buffer)
+	{
+		char filename[1024];
+		String::Cpy(filename, name);
+
+		//	try MDC first
+		filename[String::Length(filename) - 1] = 'c';
+		FS_ReadFile(filename, &buffer);
+
+		if (!buffer)
+		{
+			// try MD3 second
+			filename[String::Length(filename) - 1] = '3';
+			ri.FS_ReadFile(filename, &buffer);
+		}
+	}
+	if (!buffer)
+		goto fail;
+	ident = LittleLong( *(unsigned *)buffer );
+
+	if ( strstr( name, ".mds" ) ) {  // try loading skeletal file
+		loaded = qfalse;
+		buf = (unsigned*)buffer;
+		loadmodel = mod;
+
+		if ( ident == MDS_IDENT ) {
+			loaded = R_LoadMDS( mod, buf, name );
+		}
+
+		ri.FS_FreeFile( buf );
+
+		if ( loaded ) {
+			return mod->index;
+		}
+	}
+
+	if ( ident == MD3_IDENT ) {
+		loaded = R_LoadMd3( mod, buf );
+		FS_FreeFile(buffer);
+		if ( loaded ) {
+			return mod->index;
+		}
+		goto fail;
+	}
+
 	mod->q3_numLods = 0;
 
 	//
 	// load the files
 	//
 	numLoaded = 0;
-
-	if ( strstr( name, ".mds" ) ) {  // try loading skeletal file
-		loaded = qfalse;
-		ri.FS_ReadFile( name, (void **)&buf );
-		if ( buf ) {
-			loadmodel = mod;
-
-			ident = LittleLong( *(unsigned *)buf );
-			if ( ident == MDS_IDENT ) {
-				loaded = R_LoadMDS( mod, buf, name );
-			}
-
-			ri.FS_FreeFile( buf );
-		}
-
-		if ( loaded ) {
-			return mod->index;
-		}
-	}
 
 	for ( lod = MD3_MAX_LODS - 1 ; lod >= 0 ; lod-- ) {
 		char filename[1024];
@@ -174,19 +202,20 @@ qhandle_t RE_RegisterModel( const char *name ) {
 			if ( strrchr( filename, '.' ) ) {
 				*strrchr( filename, '.' ) = 0;
 			}
-			sprintf( namebuf, "_%d.md3", lod );
+			if ( ident == MD3_IDENT )
+				sprintf( namebuf, "_%d.md3", lod );
+			else
+				sprintf( namebuf, "_%d.mdc", lod );
 			strcat( filename, namebuf );
-		}
 
-		filename[String::Length( filename ) - 1] = 'c';  // try MDC first
-		ri.FS_ReadFile( filename, (void **)&buf );
-
-		if ( !buf ) {
-			filename[String::Length( filename ) - 1] = '3';  // try MD3 second
 			ri.FS_ReadFile( filename, (void **)&buf );
 			if ( !buf ) {
 				continue;
 			}
+		}
+		else
+		{
+			buf = (unsigned*)buffer;
 		}
 
 		loadmodel = mod;
@@ -199,13 +228,14 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		}
 
 		if ( ident == MD3_IDENT ) {
-			loaded = R_LoadMD3( mod, lod, buf, name );
+			loaded = R_LoadMd3Lod( mod, lod, buf, name );
 		} else {
 			loaded = R_LoadMDC( mod, lod, buf, name );
 		}
 		// done.
 
-		ri.FS_FreeFile( buf );
+		if (lod != 0)
+			ri.FS_FreeFile( buf );
 
 		if ( !loaded ) {
 			if ( lod == 0 ) {
@@ -246,6 +276,8 @@ qhandle_t RE_RegisterModel( const char *name ) {
 
 		return mod->index;
 	}
+
+	FS_FreeFile(buffer);
 
 fail:
 	// we still keep the model_t around, so if the model name is asked for
@@ -457,193 +489,6 @@ static qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, const char *mod_
 
 // done.
 //-------------------------------------------------------------------------------
-
-/*
-=================
-R_LoadMD3
-=================
-*/
-static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *mod_name ) {
-	int i, j;
-	md3Header_t         *pinmodel;
-	md3Frame_t          *frame;
-	md3Surface_t        *surf;
-	md3Shader_t         *shader;
-	md3Triangle_t       *tri;
-	md3St_t             *st;
-	md3XyzNormal_t      *xyz;
-	md3Tag_t            *tag;
-	int version;
-	int size;
-	qboolean fixRadius = qfalse;
-
-	pinmodel = (md3Header_t *)buffer;
-
-	version = LittleLong( pinmodel->version );
-	if ( version != MD3_VERSION ) {
-		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has wrong version (%i should be %i)\n",
-				   mod_name, version, MD3_VERSION );
-		return qfalse;
-	}
-
-	mod->type = MOD_MESH3;
-	size = LittleLong( pinmodel->ofsEnd );
-	mod->q3_dataSize += size;
-	mod->q3_md3[lod] = (md3Header_t*)ri.Hunk_Alloc( size, h_low );
-
-	memcpy( mod->q3_md3[lod], buffer, LittleLong( pinmodel->ofsEnd ) );
-
-	LL( mod->q3_md3[lod]->ident );
-	LL( mod->q3_md3[lod]->version );
-	LL( mod->q3_md3[lod]->numFrames );
-	LL( mod->q3_md3[lod]->numTags );
-	LL( mod->q3_md3[lod]->numSurfaces );
-	LL( mod->q3_md3[lod]->ofsFrames );
-	LL( mod->q3_md3[lod]->ofsTags );
-	LL( mod->q3_md3[lod]->ofsSurfaces );
-	LL( mod->q3_md3[lod]->ofsEnd );
-
-	if ( mod->q3_md3[lod]->numFrames < 1 ) {
-		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has no frames\n", mod_name );
-		return qfalse;
-	}
-
-	if ( strstr( mod->name,"sherman" ) || strstr( mod->name, "mg42" ) ) {
-		fixRadius = qtrue;
-	}
-
-	// swap all the frames
-	frame = ( md3Frame_t * )( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsFrames );
-	for ( i = 0 ; i < mod->q3_md3[lod]->numFrames ; i++, frame++ ) {
-		frame->radius = LittleFloat( frame->radius );
-		if ( fixRadius ) {
-			frame->radius = 256;
-			for ( j = 0 ; j < 3 ; j++ ) {
-				frame->bounds[0][j] = 128;
-				frame->bounds[1][j] = -128;
-				frame->localOrigin[j] = LittleFloat( frame->localOrigin[j] );
-			}
-		}
-		// Hack for Bug using plugin generated model
-		else if ( frame->radius == 1 ) {
-			frame->radius = 256;
-			for ( j = 0 ; j < 3 ; j++ ) {
-				frame->bounds[0][j] = 128;
-				frame->bounds[1][j] = -128;
-				frame->localOrigin[j] = LittleFloat( frame->localOrigin[j] );
-			}
-		} else
-		{
-			for ( j = 0 ; j < 3 ; j++ ) {
-				frame->bounds[0][j] = LittleFloat( frame->bounds[0][j] );
-				frame->bounds[1][j] = LittleFloat( frame->bounds[1][j] );
-				frame->localOrigin[j] = LittleFloat( frame->localOrigin[j] );
-			}
-		}
-	}
-
-	// swap all the tags
-	tag = ( md3Tag_t * )( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsTags );
-	for ( i = 0 ; i < mod->q3_md3[lod]->numTags * mod->q3_md3[lod]->numFrames ; i++, tag++ ) {
-		for ( j = 0 ; j < 3 ; j++ ) {
-			tag->origin[j] = LittleFloat( tag->origin[j] );
-			tag->axis[0][j] = LittleFloat( tag->axis[0][j] );
-			tag->axis[1][j] = LittleFloat( tag->axis[1][j] );
-			tag->axis[2][j] = LittleFloat( tag->axis[2][j] );
-		}
-	}
-
-	// swap all the surfaces
-	surf = ( md3Surface_t * )( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces );
-	for ( i = 0 ; i < mod->q3_md3[lod]->numSurfaces ; i++ ) {
-
-		LL( surf->ident );
-		LL( surf->flags );
-		LL( surf->numFrames );
-		LL( surf->numShaders );
-		LL( surf->numTriangles );
-		LL( surf->ofsTriangles );
-		LL( surf->numVerts );
-		LL( surf->ofsShaders );
-		LL( surf->ofsSt );
-		LL( surf->ofsXyzNormals );
-		LL( surf->ofsEnd );
-
-		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
-			ri.Error( ERR_DROP, "R_LoadMD3: %s has more than %i verts on a surface (%i)",
-					  mod_name, SHADER_MAX_VERTEXES, surf->numVerts );
-		}
-		if ( surf->numTriangles * 3 > SHADER_MAX_INDEXES ) {
-			ri.Error( ERR_DROP, "R_LoadMD3: %s has more than %i triangles on a surface (%i)",
-					  mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles );
-		}
-
-		// change to surface identifier
-		surf->ident = SF_MD3;
-
-		// lowercase the surface name so skin compares are faster
-		String::ToLower( surf->name );
-
-		// strip off a trailing _1 or _2
-		// this is a crutch for q3data being a mess
-		j = String::Length( surf->name );
-		if ( j > 2 && surf->name[j - 2] == '_' ) {
-			surf->name[j - 2] = 0;
-		}
-
-		// register the shaders
-		shader = ( md3Shader_t * )( (byte *)surf + surf->ofsShaders );
-		for ( j = 0 ; j < surf->numShaders ; j++, shader++ ) {
-			shader_t    *sh;
-
-			sh = R_FindShader( shader->name, LIGHTMAP_NONE, qtrue );
-			if ( sh->defaultShader ) {
-				shader->shaderIndex = 0;
-			} else {
-				shader->shaderIndex = sh->index;
-			}
-		}
-
-		// Ridah, optimization, only do the swapping if we really need to
-		if ( LittleShort( 1 ) != 1 ) {
-
-			// swap all the triangles
-			tri = ( md3Triangle_t * )( (byte *)surf + surf->ofsTriangles );
-			for ( j = 0 ; j < surf->numTriangles ; j++, tri++ ) {
-				LL( tri->indexes[0] );
-				LL( tri->indexes[1] );
-				LL( tri->indexes[2] );
-			}
-
-			// swap all the ST
-			st = ( md3St_t * )( (byte *)surf + surf->ofsSt );
-			for ( j = 0 ; j < surf->numVerts ; j++, st++ ) {
-				st->st[0] = LittleFloat( st->st[0] );
-				st->st[1] = LittleFloat( st->st[1] );
-			}
-
-			// swap all the XyzNormals
-			xyz = ( md3XyzNormal_t * )( (byte *)surf + surf->ofsXyzNormals );
-			for ( j = 0 ; j < surf->numVerts * surf->numFrames ; j++, xyz++ )
-			{
-				xyz->xyz[0] = LittleShort( xyz->xyz[0] );
-				xyz->xyz[1] = LittleShort( xyz->xyz[1] );
-				xyz->xyz[2] = LittleShort( xyz->xyz[2] );
-
-				xyz->normal = LittleShort( xyz->normal );
-			}
-
-		}
-		// done.
-
-		// find the next surface
-		surf = ( md3Surface_t * )( (byte *)surf + surf->ofsEnd );
-	}
-
-	return qtrue;
-}
-
-
 
 /*
 =================
