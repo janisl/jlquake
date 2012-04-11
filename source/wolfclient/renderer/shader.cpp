@@ -102,10 +102,10 @@ dynamicshader_t* dshader = NULL;
 // Ridah, shader caching
 //static 
 int numBackupShaders = 0;
-//static 
-shader_t* backupShaders[MAX_SHADERS];
-//static 
-shader_t* backupHashTable[SHADER_HASH_SIZE];
+static shader_t* backupShaders[MAX_SHADERS];
+static shader_t* backupHashTable[SHADER_HASH_SIZE];
+
+static bool purgeallshaders = false;
 
 // this table is also present in q3map
 
@@ -2644,8 +2644,7 @@ static void SortNewShader()
 //
 //==========================================================================
 
-//static 
-int GenerateShaderHashValue(const char* fname, const int size)
+static int GenerateShaderHashValue(const char* fname, const int size)
 {
 	int hash = 0;
 	int i = 0;
@@ -4275,4 +4274,126 @@ void R_ShaderList_f()
 	}
 	Log::write("%i total shaders\n", count);
 	Log::write("------------------\n");
+}
+
+static bool R_ShaderCanBeCached(shader_t* sh)
+{
+	if (purgeallshaders)
+	{
+		return false;
+	}
+
+	if (sh->isSky)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < sh->numUnfoggedPasses; i++)
+	{
+		if (sh->stages[i] && sh->stages[i]->active)
+		{
+			for (int b = 0; b < NUM_TEXTURE_BUNDLES; b++)
+			{
+				for (int j = 0; j < MAX_IMAGE_ANIMATIONS && sh->stages[i]->bundle[b].image[j]; j++)
+				{
+					if (sh->stages[i]->bundle[b].image[j]->imgName[0] == '*')
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+static void R_PurgeLightmapShaders()
+{
+	for (size_t i = 0; i < sizeof(backupHashTable) / sizeof(backupHashTable[0]); i++)
+	{
+		shader_t* sh = backupHashTable[i];
+
+		shader_t* shPrev = NULL;
+		shader_t* next = NULL;
+
+		while (sh)
+		{
+			if (sh->lightmapIndex >= 0 || !R_ShaderCanBeCached(sh))
+			{
+				next = sh->next;
+
+				if (!shPrev)
+				{
+					backupHashTable[i] = sh->next;
+				}
+				else
+				{
+					shPrev->next = sh->next;
+				}
+
+				backupShaders[sh->index] = NULL;    // make sure we don't try and free it
+
+				numBackupShaders--;
+
+				for (int j = 0; j < sh->numUnfoggedPasses; j++)
+				{
+					if (!sh->stages[j])
+					{
+						break;
+					}
+					for (int b = 0; b < NUM_TEXTURE_BUNDLES; b++)
+					{
+						if (sh->stages[j]->bundle[b].texMods)
+						{
+							delete[] sh->stages[j]->bundle[b].texMods;
+						}
+					}
+					delete sh->stages[j];
+				}
+				delete sh;
+
+				sh = next;
+
+				continue;
+			}
+
+			shPrev = sh;
+			sh = sh->next;
+		}
+	}
+}
+
+void R_PurgeShaders()
+{
+	if (!numBackupShaders)
+	{
+		return;
+	}
+
+	purgeallshaders = true;
+
+	R_PurgeLightmapShaders();
+
+	purgeallshaders = false;
+	numBackupShaders = 0;
+}
+
+void R_BackupShaders()
+{
+	if ( !r_cache->integer ) {
+		return;
+	}
+	if ( !r_cacheShaders->integer ) {
+		return;
+	}
+
+	// copy each model in memory across to the backupModels
+	memcpy( backupShaders, tr.shaders, sizeof( backupShaders ) );
+	// now backup the ShaderHashTable
+	memcpy( backupHashTable, ShaderHashTable, sizeof( ShaderHashTable ) );
+
+	numBackupShaders = tr.numShaders;
+
+	// Gordon: ditch all lightmapped shaders
+	R_PurgeLightmapShaders();
 }

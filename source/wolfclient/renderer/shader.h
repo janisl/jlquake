@@ -398,6 +398,8 @@ shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);
 qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage);
 shader_t* R_GetShaderByHandle(qhandle_t hShader);
 void R_ShaderList_f();
+void R_PurgeShaders();
+void R_BackupShaders();
 
 void RB_BeginSurface(shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();

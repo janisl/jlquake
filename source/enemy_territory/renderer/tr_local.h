@@ -320,9 +320,6 @@ void R_BackupModels( void );
 qboolean R_FindCachedModel( const char *name, model_t *newmod );
 void R_LoadCacheModels( void );
 
-void R_BackupShaders( void );
-void R_PurgeShaders( int count );
-void R_PurgeLightmapShaders( void );
 void R_LoadCacheShaders( void );
 // done.
 

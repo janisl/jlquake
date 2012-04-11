@@ -32,17 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 extern shader_t*       ShaderHashTable[SHADER_HASH_SIZE];
 
-// Ridah
-// Table containing string indexes for each shader found in the scripts, referenced by their checksum
-// values.
-struct shaderStringPointer_t
-{
-	const char* pStr;
-	shaderStringPointer_t* next;
-};
-
-int GenerateShaderHashValue(const char* fname, const int size);
-
 void ScanAndLoadShaderFiles( void );
 void CreateInternalShaders( void );
 void CreateExternalShaders( void );
@@ -50,75 +39,6 @@ void CreateExternalShaders( void );
 //=============================================================================
 // Ridah, shader caching
 extern int numBackupShaders;
-extern shader_t *backupShaders[MAX_SHADERS];
-extern shader_t *backupHashTable[SHADER_HASH_SIZE];
-
-/*
-===============
-R_PurgeShaders
-===============
-*/
-void R_PurgeShaders( int count ) {
-	int i, j, c, b;
-	shader_t **sh;
-	static int lastPurged = 0;
-
-	if ( !numBackupShaders ) {
-		lastPurged = 0;
-		return;
-	}
-
-	// find the first shader still in memory
-	c = 0;
-	sh = (shader_t **)&backupShaders;
-	for ( i = lastPurged; i < numBackupShaders; i++, sh++ ) {
-		if ( *sh ) {
-			// free all memory associated with this shader
-			for ( j = 0 ; j < ( *sh )->numUnfoggedPasses ; j++ ) {
-				if ( !( *sh )->stages[j] ) {
-					break;
-				}
-				for ( b = 0 ; b < NUM_TEXTURE_BUNDLES ; b++ ) {
-					if ( ( *sh )->stages[j]->bundle[b].texMods ) {
-						delete[] ( *sh )->stages[j]->bundle[b].texMods;
-					}
-				}
-				delete ( *sh )->stages[j];
-			}
-			delete *sh;
-			*sh = NULL;
-
-			if ( ++c >= count ) {
-				lastPurged = i;
-				return;
-			}
-		}
-	}
-	lastPurged = 0;
-	numBackupShaders = 0;
-}
-
-/*
-===============
-R_BackupShaders
-===============
-*/
-void R_BackupShaders( void ) {
-
-	if ( !r_cache->integer ) {
-		return;
-	}
-	if ( !r_cacheShaders->integer ) {
-		return;
-	}
-
-	// copy each model in memory across to the backupModels
-	memcpy( backupShaders, tr.shaders, sizeof( backupShaders ) );
-	// now backup the ShaderHashTable
-	memcpy( backupHashTable, ShaderHashTable, sizeof( ShaderHashTable ) );
-
-	numBackupShaders = tr.numShaders;
-}
 
 /*
 ===============

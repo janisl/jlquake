@@ -496,7 +496,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 
 	// Ridah, keep a backup of the current images if possible
 	// clean out any remaining unused media from the last backup
-	R_PurgeShaders( 9999999 );
+	R_PurgeShaders();
 	R_PurgeBackupImages( 9999999 );
 	R_PurgeModels( 9999999 );
 
