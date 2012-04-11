@@ -33,9 +33,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-#if 0
 model_t*		loadmodel;
 
+#if 0
 // precalculated dot products for quantized angles
 float			r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 {

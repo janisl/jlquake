@@ -36,8 +36,6 @@ static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *name );
 static qboolean R_LoadMDM( model_t *mod, void *buffer, const char *name );
 static qboolean R_LoadMDX( model_t *mod, void *buffer, const char *name );
 
-model_t *loadmodel;
-
 /*
 ** R_AllocModel
 */

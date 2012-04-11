@@ -34,8 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 
 static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *name );
 
-model_t *loadmodel;
-
 /*
 ** R_AllocModel
 */

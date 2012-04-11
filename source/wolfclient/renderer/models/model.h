@@ -1005,8 +1005,10 @@ srfGridMesh_t* R_SubdividePatchToGrid(int Width, int Height,
 srfGridMesh_t* R_GridInsertColumn(srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError);
 srfGridMesh_t* R_GridInsertRow(srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError);
 void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
+#endif
 
 extern model_t*	loadmodel;
+#if 0
 extern byte		q1_player_8bit_texels[320 * 200];
 extern byte		h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
