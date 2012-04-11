@@ -28,6 +28,7 @@
 #define SHADER_HASH_SIZE	4096
 #define MAX_SHADERTEXT_HASH	2048
 #define MAX_SHADER_FILES	4096
+#define MAX_SHADER_STRING_POINTERS	100000
 
 // TYPES -------------------------------------------------------------------
 
@@ -92,6 +93,7 @@ static cullType_t implicitCullType;
 static char*			s_shaderText;
 static const char**		shaderTextHashTable[MAX_SHADERTEXT_HASH];
 static shaderStringPointer_t shaderChecksumLookup[SHADER_HASH_SIZE];
+static shaderStringPointer_t shaderStringPointerList[MAX_SHADER_STRING_POINTERS];
 
 static dynamicshader_t* dshader = NULL;
 
@@ -99,6 +101,8 @@ static dynamicshader_t* dshader = NULL;
 static int numBackupShaders = 0;
 static shader_t* backupShaders[MAX_SHADERS];
 static shader_t* backupHashTable[SHADER_HASH_SIZE];
+
+static bool purgeallshaders = false;
 
 // this table is also present in q3map
 
@@ -3717,7 +3721,8 @@ static shader_t* R_FindShaderByName(const char* name)
 	}
 
 	char strippedName[MAX_QPATH];
-	String::StripExtension(name, strippedName);
+	String::StripExtension2(name, strippedName, sizeof(strippedName));
+	String::FixPath(strippedName);
 
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 
@@ -3773,7 +3778,7 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	char strippedName[MAX_QPATH];
-	String::StripExtension(shaderName, strippedName);
+	String::StripExtension2(shaderName, strippedName, sizeof(strippedName));
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 	for (sh = ShaderHashTable[hash]; sh; sh = sh->next)
 	{
@@ -3823,6 +3828,68 @@ static void CreateInternalShaders()
 	tr.shadowShader = FinishShader();
 }
 
+static void BuildShaderChecksumLookup()
+{
+	// initialize the checksums
+	memset(shaderChecksumLookup, 0, sizeof(shaderChecksumLookup));
+
+	const char* p = s_shaderText;
+	if (!p)
+	{
+		return;
+	}
+
+	// loop for all labels
+	int numShaderStringPointers = 0;
+	while (1)
+	{
+		const char* pOld = p;
+
+		const char* token = String::ParseExt(&p, true);
+		if (!*token)
+		{
+			break;
+		}
+
+		if (!(GGameType & GAME_ET) && !String::ICmp(token, "{"))
+		{
+			// skip braced section
+			String::SkipBracedSection(&p);
+			continue;
+		}
+
+		// get it's checksum
+		unsigned short int checksum = GenerateShaderHashValue(token, SHADER_HASH_SIZE);
+
+		// if it's not currently used
+		if (!shaderChecksumLookup[checksum].pStr)
+		{
+			shaderChecksumLookup[checksum].pStr = pOld;
+		}
+		else
+		{
+			// create a new list item
+			shaderStringPointer_t *newStrPtr;
+
+			if (numShaderStringPointers >= MAX_SHADER_STRING_POINTERS)
+			{
+				common->Error("MAX_SHADER_STRING_POINTERS exceeded, too many shaders");
+			}
+
+			newStrPtr = &shaderStringPointerList[numShaderStringPointers++];
+			newStrPtr->pStr = pOld;
+			newStrPtr->next = shaderChecksumLookup[checksum].next;
+			shaderChecksumLookup[checksum].next = newStrPtr;
+		}
+
+		if (GGameType & GAME_ET)
+		{
+			// Gordon: skip the actual shader section
+			String::SkipBracedSection(&p);
+		}
+	}
+}
+
 //==========================================================================
 //
 //	ScanAndLoadShaderFiles
@@ -3842,7 +3909,7 @@ static void ScanAndLoadShaderFiles()
 
 	if (!shaderFiles || !numShaders)
 	{
-		if (GGameType & GAME_Quake3)
+		if (GGameType & GAME_Tech3)
 		{
 			Log::write(S_COLOR_YELLOW "WARNING: no shader files found\n");
 		}
@@ -3856,12 +3923,14 @@ static void ScanAndLoadShaderFiles()
 
 	// load and parse shader files
 	char* buffers[MAX_SHADER_FILES];
+	int buffersize[MAX_SHADER_FILES];
 	for (int i = 0; i < numShaders; i++)
 	{
 		char filename[MAX_QPATH];
 		String::Sprintf(filename, sizeof(filename), "scripts/%s", shaderFiles[i]);
 		Log::write("...loading '%s'\n", filename);
-		sum += FS_ReadFile(filename, (void**)&buffers[i]);
+		buffersize[i] = FS_ReadFile(filename, (void**)&buffers[i]);
+		sum += buffersize[i];
 		if (!buffers[i])
 		{
 			throw DropException(va("Couldn't load %s", filename));
@@ -3872,19 +3941,49 @@ static void ScanAndLoadShaderFiles()
 	s_shaderText = new char[sum + numShaders * 2];
 	s_shaderText[0] = 0;
 
+	// Gordon: optimised to not use strcat/String::Length which can be VERY slow for the large strings we're using here
+	char* p = s_shaderText;
 	// free in reverse order, so the temp files are all dumped
 	for (int i = numShaders - 1; i >= 0 ; i--)
 	{
-		String::Cat(s_shaderText, sum + numShaders * 2, "\n");
-		char* p = &s_shaderText[String::Length(s_shaderText)];
-		String::Cat(s_shaderText, sum + numShaders * 2, buffers[i]);
+		if (GGameType & GAME_ET)
+		{
+			String::Cpy(p++, "\n");
+			String::Cpy(p, buffers[i]);
+		}
+		else
+		{
+			String::Cat(s_shaderText, sum + numShaders * 2, "\n");
+			p = &s_shaderText[String::Length(s_shaderText)];
+			String::Cat(s_shaderText, sum + numShaders * 2, buffers[i]);
+		}
 		FS_FreeFile(buffers[i]);
 		buffers[i] = p;
-		String::Compress(p);
+		if (GGameType & GAME_ET)
+		{
+			p += buffersize[i];
+		}
+		else if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
+		{
+			String::Compress(p);
+		}
 	}
+
+	// ydnar: unixify all shaders
+	String::FixPath(s_shaderText);
 
 	// free up memory
 	FS_FreeFileList(shaderFiles);
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// Ridah, optimized shader loading (18ms on a P3-500 for sfm1.bsp)
+		if (GGameType & GAME_WolfSP || r_cacheShaders->integer)
+		{
+			BuildShaderChecksumLookup();
+		}
+		return;
+	}
 
 	int shaderTextHashTableSizes[MAX_SHADERTEXT_HASH];
 	Com_Memset(shaderTextHashTableSizes, 0, sizeof(shaderTextHashTableSizes));
@@ -3968,11 +4067,25 @@ static void ScanAndLoadShaderFiles()
 
 static void CreateExternalShaders()
 {
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
-		tr.projectionShadowShader = R_FindShader("projectionShadow", LIGHTMAP_NONE, true);
+		if (!(GGameType & GAME_WolfSP))
+		{
+			tr.projectionShadowShader = R_FindShader("projectionShadow", LIGHTMAP_NONE, true);
+		}
 		tr.flareShader = R_FindShader("flareShader", LIGHTMAP_NONE, true);
-		tr.sunShader = R_FindShader("sun", LIGHTMAP_NONE, true);
+		if (GGameType & GAME_Quake3)
+		{
+			tr.sunShader = R_FindShader("sun", LIGHTMAP_NONE, true);
+		}
+		else
+		{
+			tr.sunflareShader = R_FindShader("sunflare1", LIGHTMAP_NONE, true);
+		}
+		if (GGameType & GAME_WolfSP)
+		{
+			tr.spotFlareShader = R_FindShader("spotLight", LIGHTMAP_NONE, true);
+		}
 	}
 	else
 	{
@@ -4153,4 +4266,219 @@ void R_ShaderList_f()
 	}
 	Log::write("%i total shaders\n", count);
 	Log::write("------------------\n");
+}
+
+static bool R_ShaderCanBeCached(shader_t* sh)
+{
+	if (purgeallshaders)
+	{
+		return false;
+	}
+
+	if (sh->isSky)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < sh->numUnfoggedPasses; i++)
+	{
+		if (sh->stages[i] && sh->stages[i]->active)
+		{
+			for (int b = 0; b < NUM_TEXTURE_BUNDLES; b++)
+			{
+				for (int j = 0; j < MAX_IMAGE_ANIMATIONS && sh->stages[i]->bundle[b].image[j]; j++)
+				{
+					if (sh->stages[i]->bundle[b].image[j]->imgName[0] == '*')
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+static void R_PurgeLightmapShaders()
+{
+	for (size_t i = 0; i < sizeof(backupHashTable) / sizeof(backupHashTable[0]); i++)
+	{
+		shader_t* sh = backupHashTable[i];
+
+		shader_t* shPrev = NULL;
+		shader_t* next = NULL;
+
+		while (sh)
+		{
+			if (sh->lightmapIndex >= 0 || !R_ShaderCanBeCached(sh))
+			{
+				next = sh->next;
+
+				if (!shPrev)
+				{
+					backupHashTable[i] = sh->next;
+				}
+				else
+				{
+					shPrev->next = sh->next;
+				}
+
+				backupShaders[sh->index] = NULL;    // make sure we don't try and free it
+
+				numBackupShaders--;
+
+				for (int j = 0; j < sh->numUnfoggedPasses; j++)
+				{
+					if (!sh->stages[j])
+					{
+						break;
+					}
+					for (int b = 0; b < NUM_TEXTURE_BUNDLES; b++)
+					{
+						if (sh->stages[j]->bundle[b].texMods)
+						{
+							delete[] sh->stages[j]->bundle[b].texMods;
+						}
+					}
+					delete sh->stages[j];
+				}
+				delete sh;
+
+				sh = next;
+
+				continue;
+			}
+
+			shPrev = sh;
+			sh = sh->next;
+		}
+	}
+}
+
+void R_PurgeShaders()
+{
+	if (!numBackupShaders)
+	{
+		return;
+	}
+
+	purgeallshaders = true;
+
+	R_PurgeLightmapShaders();
+
+	purgeallshaders = false;
+	numBackupShaders = 0;
+}
+
+void R_BackupShaders()
+{
+	if ( !r_cache->integer ) {
+		return;
+	}
+	if ( !r_cacheShaders->integer ) {
+		return;
+	}
+
+	// copy each model in memory across to the backupModels
+	memcpy( backupShaders, tr.shaders, sizeof( backupShaders ) );
+	// now backup the ShaderHashTable
+	memcpy( backupHashTable, ShaderHashTable, sizeof( ShaderHashTable ) );
+
+	numBackupShaders = tr.numShaders;
+
+	// Gordon: ditch all lightmapped shaders
+	R_PurgeLightmapShaders();
+}
+
+//	bani - load a new dynamic shader
+//
+//	if shadertext is NULL, looks for matching shadername and removes it
+//
+//	returns qtrue if request was successful, qfalse if the gods were angered
+bool R_LoadDynamicShader(const char* shadername, const char* shadertext)
+{
+	const char *func_err = "WARNING: R_LoadDynamicShader";
+
+	if (!shadername && shadertext)
+	{
+		common->Printf(S_COLOR_YELLOW "%s called with NULL shadername and non-NULL shadertext:\n%s\n", func_err, shadertext);
+		return false;
+	}
+
+	if (shadername && String::Length(shadername) >= MAX_QPATH)
+	{
+		common->Printf(S_COLOR_YELLOW "%s shadername %s exceeds MAX_QPATH\n", func_err, shadername);
+		return false;
+	}
+
+	//empty the whole list
+	if (!shadername && !shadertext)
+	{
+		dynamicshader_t* dptr = dshader;
+		while (dptr)
+		{
+			dynamicshader_t* lastdptr = dptr->next;
+			delete[] dptr->shadertext;
+			delete dptr;
+			dptr = lastdptr;
+		}
+		dshader = NULL;
+		return true;
+	}
+
+	//walk list for existing shader to delete, or end of the list
+	dynamicshader_t* dptr = dshader;
+	dynamicshader_t* lastdptr = NULL;
+	while (dptr)
+	{
+		const char* q = dptr->shadertext;
+
+		char* token = String::ParseExt(&q, true);
+
+		if ((token[0] != 0) && !String::ICmp(token, shadername))
+		{
+			//request to nuke this dynamic shader
+			if (!shadertext)
+			{
+				if (!lastdptr)
+				{
+					dshader = NULL;
+				}
+				else
+				{
+					lastdptr->next = dptr->next;
+				}
+				delete[] dptr->shadertext;
+				delete dptr;
+				return true;
+			}
+			common->Printf(S_COLOR_YELLOW "%s shader %s already exists!\n", func_err, shadername);
+			return false;
+		}
+		lastdptr = dptr;
+		dptr = dptr->next;
+	}
+
+	//cant add a new one with empty shadertext
+	if (!shadertext || !String::Length(shadertext))
+	{
+		common->Printf(S_COLOR_YELLOW "%s new shader %s has NULL shadertext!\n", func_err, shadername);
+		return false;
+	}
+
+	//create a new shader
+	dptr = new dynamicshader_t;
+	if (lastdptr)
+	{
+		lastdptr->next = dptr;
+	}
+	dptr->shadertext = new char[String::Length(shadertext) + 1];
+	String::NCpyZ(dptr->shadertext, shadertext, String::Length(shadertext) + 1);
+	dptr->next = NULL;
+	if (!dshader)
+	{
+		dshader = dptr;
+	}
+
+	return true;
 }
