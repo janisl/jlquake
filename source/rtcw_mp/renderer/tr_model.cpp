@@ -54,26 +54,6 @@ void RE_BeginRegistration( glconfig_t *glconfigOut ) {
 }
 
 /*
-===============
-R_ModelInit
-===============
-*/
-void R_ModelInit( void ) {
-	model_t     *mod;
-
-	// leave a space for NULL model
-	tr.numModels = 0;
-
-	mod = R_AllocModel();
-	mod->type = MOD_BAD;
-
-	// Ridah, load in the cacheModels
-	R_LoadCacheModels();
-	// done.
-}
-
-
-/*
 ================
 R_Modellist_f
 ================
@@ -655,45 +635,3 @@ void R_BackupModels( void ) {
 		}
 	}
 }
-
-
-/*
-===============
-R_LoadCacheModels
-===============
-*/
-void R_LoadCacheModels( void ) {
-	int len;
-	char *buf;
-	char    *token;
-	const char* pString;
-	char name[MAX_QPATH];
-
-	if ( !r_cacheModels->integer ) {
-		return;
-	}
-
-	// don't load the cache list in between level loads, only on startup, or after a vid_restart
-	if ( numBackupModels > 0 ) {
-		return;
-	}
-
-	len = ri.FS_ReadFile( "model.cache", NULL );
-
-	if ( len <= 0 ) {
-		return;
-	}
-
-	buf = (char *)ri.Hunk_AllocateTempMemory( len );
-	ri.FS_ReadFile( "model.cache", (void **)&buf );
-	pString = buf;
-
-	while ( ( token = String::ParseExt( &pString, qtrue ) ) && token[0] ) {
-		String::NCpyZ( name, token, sizeof( name ) );
-		R_RegisterModel( name );
-	}
-
-	ri.Hunk_FreeTempMemory( buf );
-}
-// done.
-//========================================================================
