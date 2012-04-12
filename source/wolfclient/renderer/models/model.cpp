@@ -63,6 +63,11 @@ float*			shadedots = r_avertexnormal_dots[0];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+//static 
+model_t backupModels[MAX_MOD_KNOWN];
+//static 
+int numBackupModels = 0;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -308,7 +313,130 @@ model_t* R_GetModelByHandle(qhandle_t index)
 	return tr.models[index];
 }
 
-#if 0
+//	loads a model's shadow script
+static void R_LoadModelShadow(model_t* mod)
+{
+	// set default shadow
+	mod->q3_shadowShader = 0;
+
+	// build name
+	char filename[1024];
+	String::StripExtension2(mod->name, filename, sizeof(filename));
+	String::DefaultExtension(filename, 1024, ".shadow");
+
+	// load file
+	char* buf;
+	FS_ReadFile(filename, (void**) &buf);
+	if (!buf)
+	{
+		return;
+	}
+
+	char* shadowBits = strchr(buf, ' ');
+	if (shadowBits != NULL)
+	{
+		*shadowBits = '\0';
+		shadowBits++;
+
+		if (String::Length(buf) >= MAX_QPATH)
+		{
+			common->Printf("R_LoadModelShadow: Shader name exceeds MAX_QPATH\n");
+			mod->q3_shadowShader = 0;
+		}
+		else
+		{
+			shader_t* sh = R_FindShader(buf, LIGHTMAP_NONE, true);
+
+			if (sh->defaultShader)
+			{
+				mod->q3_shadowShader = 0;
+			}
+			else
+			{
+				mod->q3_shadowShader = sh->index;
+			}
+		}
+		sscanf(shadowBits, "%f %f %f %f %f %f",
+			&mod->q3_shadowParms[0], &mod->q3_shadowParms[1], &mod->q3_shadowParms[2],
+			&mod->q3_shadowParms[3], &mod->q3_shadowParms[4], &mod->q3_shadowParms[5]);
+	}
+	FS_FreeFile(buf);
+}
+
+//	look for the given model in the list of backupModels
+static bool R_FindCachedModel(const char* name, model_t* newmod)
+{
+	// NOTE TTimo
+	// would need an r_cache check here too?
+
+	if (!r_cacheModels->integer)
+	{
+		return false;
+	}
+
+	if (!numBackupModels)
+	{
+		return false;
+	}
+
+	model_t* mod = backupModels;
+	for (int i = 0; i < numBackupModels; i++, mod++)
+	{
+		if (!String::NCmp(mod->name, name, sizeof(mod->name)))
+		{
+			// copy it to a new slot
+			int index = newmod->index;
+			memcpy(newmod, mod, sizeof(model_t));
+			newmod->index = index;
+			switch (mod->type)
+			{
+			case MOD_MESH3:
+				for (int j = MD3_MAX_LODS - 1; j >= 0; j--)
+				{
+					if (j < mod->q3_numLods && mod->q3_md3[j])
+					{
+						if ((j == MD3_MAX_LODS - 1) || (mod->q3_md3[j] != mod->q3_md3[j + 1]))
+						{
+							newmod->q3_md3[j] = mod->q3_md3[j];
+							R_RegisterMd3Shaders(newmod, j);
+						}
+						else
+						{
+							newmod->q3_md3[j] = mod->q3_md3[j + 1];
+						}
+					}
+				}
+				break;
+			case MOD_MDC:
+				for (int j = MD3_MAX_LODS - 1; j >= 0; j--)
+				{
+					if (j < mod->q3_numLods && mod->q3_mdc[j])
+					{
+						if ((j == MD3_MAX_LODS - 1) || (mod->q3_mdc[j] != mod->q3_mdc[j + 1]))
+						{
+							newmod->q3_mdc[j] = mod->q3_mdc[j];
+							R_RegisterMdcShaders(newmod, j);
+						}
+						else
+						{
+							newmod->q3_mdc[j] = mod->q3_mdc[j + 1];
+						}
+					}
+				}
+				break;
+			default:
+				return false;  // not supported yet
+			}
+
+			mod->type = MOD_BAD;    // don't try and purge it later
+			mod->name[0] = 0;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //==========================================================================
 //
 //	R_RegisterModel
@@ -334,13 +462,19 @@ int R_RegisterModel(const char* name)
 		return 0;
 	}
 
+	// Ridah, caching
+	if (r_cacheGathering->integer)
+	{
+		Cbuf_ExecuteText(EXEC_NOW, va("cache_usedfile model %s\n", name));
+	}
+
 	//
 	// search the currently loaded models
 	//
 	for (int hModel = 1; hModel < tr.numModels; hModel++)
 	{
 		model_t* mod = tr.models[hModel];
-		if (!String::Cmp(mod->name, name))
+		if (!String::ICmp(mod->name, name))
 		{
 			if (mod->type == MOD_BAD)
 			{
@@ -361,11 +495,45 @@ int R_RegisterModel(const char* name)
 	// only set the name after the model has been successfully loaded
 	String::NCpyZ(mod->name, name, sizeof(mod->name));
 
+	// GR - by default models are not tessellated
+	mod->q3_ATI_tess = false;
+	// GR - check if can be tessellated...
+	//		make sure to tessellate model heads
+	if (GGameType & GAME_WolfSP && strstr(name, "head"))
+	{
+		mod->q3_ATI_tess = true;
+	}
+
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
+	// Ridah, look for it cached
+	if (R_FindCachedModel(name, mod))
+	{
+		R_LoadModelShadow(mod);
+		return mod->index;
+	}
+
+	R_LoadModelShadow( mod );
+
 	void* buf;
 	int modfilelen = FS_ReadFile(name, &buf);
+	if (!buf && (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+	{
+		char filename[1024];
+		String::Cpy(filename, name);
+
+		//	try MDC first
+		filename[String::Length(filename) - 1] = 'c';
+		FS_ReadFile(filename, &buf);
+
+		if (!buf)
+		{
+			// try MD3 second
+			filename[String::Length(filename) - 1] = '3';
+			FS_ReadFile(filename, &buf);
+		}
+	}
 	if (!buf)
 	{
 		Log::write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
@@ -419,6 +587,22 @@ int R_RegisterModel(const char* name)
 		loaded = R_LoadMD4(mod, buf, name);
 		break;
 
+	case MDC_IDENT:
+		loaded = R_LoadMdc(mod, buf);
+		break;
+
+	case MDS_IDENT:
+		loaded = R_LoadMds(mod, buf);
+		break;
+
+	case MDM_IDENT:
+		loaded = R_LoadMdm(mod, buf);
+		break;
+
+	case MDX_IDENT:
+		loaded = R_LoadMdx(mod, buf);
+		break;
+
 	default:
 		Log::write(S_COLOR_YELLOW "R_RegisterModel: unknown fileid for %s\n", name);
 		loaded = false;
@@ -438,6 +622,7 @@ int R_RegisterModel(const char* name)
 	return mod->index;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_ModelBounds

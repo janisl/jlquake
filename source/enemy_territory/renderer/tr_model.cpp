@@ -31,192 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 /*
-R_LoadModelShadow()
-loads a model's shadow script
-*/
-
-void R_LoadModelShadow( model_t *mod ) {
-	unsigned    *buf;
-	char filename[ 1024 ];
-	shader_t    *sh;
-
-	// set default shadow
-	mod->q3_shadowShader = 0;
-
-	// build name
-	String::StripExtension2( mod->name, filename, sizeof( filename ) );
-	String::DefaultExtension( filename, 1024, ".shadow" );
-
-	// load file
-	ri.FS_ReadFile( filename, (void**) &buf );
-	if ( buf != NULL ) {
-		char    *shadowBits;
-
-		shadowBits = strchr( (char*) buf, ' ' );
-		if ( shadowBits != NULL ) {
-			*shadowBits = '\0';
-			shadowBits++;
-
-			if ( String::Length( (char*) buf ) >= MAX_QPATH ) {
-				Com_Printf( "R_LoadModelShadow: Shader name exceeds MAX_QPATH\n" );
-				mod->q3_shadowShader = 0;
-			} else {
-				sh = R_FindShader( (char*) buf, LIGHTMAP_NONE, qtrue );
-
-				if ( sh->defaultShader ) {
-					mod->q3_shadowShader = 0;
-				} else {
-					mod->q3_shadowShader = sh->index;
-				}
-			}
-			sscanf( shadowBits, "%f %f %f %f %f %f",
-					&mod->q3_shadowParms[ 0 ], &mod->q3_shadowParms[ 1 ], &mod->q3_shadowParms[ 2 ],
-					&mod->q3_shadowParms[ 3 ], &mod->q3_shadowParms[ 4 ], &mod->q3_shadowParms[ 5 ] );
-		}
-		ri.FS_FreeFile( buf );
-	}
-}
-
-
-
-/*
-====================
-RE_RegisterModel
-
-Loads in a model for the given name
-
-Zero will be returned if the model fails to load.
-An entry will be retained for failed models as an
-optimization to prevent disk rescanning if they are
-asked for again.
-====================
-*/
-qhandle_t RE_RegisterModel( const char *name ) {
-	model_t     *mod;
-	int ident = 0;         // TTimo: init
-	qboolean loaded;
-	qhandle_t hModel;
-
-	if ( !name || !name[0] ) {
-		// Ridah, disabled this, we can see models that can't be found because they won't be there
-		//ri.Printf( PRINT_ALL, "RE_RegisterModel: NULL name\n" );
-		return 0;
-	}
-
-	if ( String::Length( name ) >= MAX_QPATH ) {
-		Com_Printf( "Model name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	// Ridah, caching
-	if ( r_cacheGathering->integer ) {
-		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile model %s\n", name ) );
-	}
-
-	//
-	// search the currently loaded models
-	//
-	for ( hModel = 1 ; hModel < tr.numModels; hModel++ ) {
-		mod = tr.models[hModel];
-		if ( !String::ICmp( mod->name, name ) ) {
-			if ( mod->type == MOD_BAD ) {
-				return 0;
-			}
-			return hModel;
-		}
-	}
-
-	// allocate a new model_t
-
-	if ( ( mod = R_AllocModel() ) == NULL ) {
-		ri.Printf( PRINT_WARNING, "RE_RegisterModel: R_AllocModel() failed for '%s'\n", name );
-		return 0;
-	}
-
-	// only set the name after the model has been successfully loaded
-	String::NCpyZ( mod->name, name, sizeof( mod->name ) );
-
-// GR - by default models are not tessellated
-	mod->q3_ATI_tess = qfalse;
-// GR - check if can be tessellated...
-//		make sure to tessellate model heads
-	if (GGameType & GAME_WolfSP && strstr( name, "head" ) ) {
-		mod->q3_ATI_tess = qtrue;
-	}
-
-	// make sure the render thread is stopped
-	R_SyncRenderThread();
-
-	// Ridah, look for it cached
-	if ( R_FindCachedModel( name, mod ) ) {
-		R_LoadModelShadow( mod );
-		return mod->index;
-	}
-	// done.
-
-	R_LoadModelShadow( mod );
-
-	void* buffer;
-	FS_ReadFile(name, &buffer);
-	if (!buffer)
-	{
-		char filename[1024];
-		String::Cpy(filename, name);
-
-		//	try MDC first
-		filename[String::Length(filename) - 1] = 'c';
-		FS_ReadFile(filename, &buffer);
-
-		if (!buffer)
-		{
-			// try MD3 second
-			filename[String::Length(filename) - 1] = '3';
-			ri.FS_ReadFile(filename, &buffer);
-		}
-	}
-	if (!buffer)
-		goto fail;
-	ident = LittleLong( *(unsigned *)buffer );
-
-	loaded = qfalse;
-	loadmodel = mod;
-
-	switch (ident)
-	{
-	case MDS_IDENT:
-		loaded = R_LoadMds(mod, buffer);
-		break;
-	case MDM_IDENT:
-		loaded = R_LoadMdm(mod, buffer);
-		break;
-	case MDX_IDENT:
-		loaded = R_LoadMdx(mod, buffer);
-		break;
-	case MD3_IDENT:
-		loaded = R_LoadMd3(mod, buffer);
-		break;
-	case MDC_IDENT:
-		loaded = R_LoadMdc(mod, buffer);
-		break;
-	}
-
-	FS_FreeFile(buffer);
-
-	if (loaded)
-	{
-		return mod->index;
-	}
-
-fail:
-	// we still keep the model_t around, so if the model name is asked for
-	// again, we won't bother scanning the filesystem
-	mod->type = MOD_BAD;
-	return 0;
-}
-
-//=============================================================================
-
-/*
 ** RE_BeginRegistration
 */
 void RE_BeginRegistration( glconfig_t *glconfigOut ) {
@@ -553,7 +367,7 @@ void R_TagInfo_f( void ) {
 		return;
 	}
 
-	handle = RE_RegisterModel( ri.Cmd_Argv(1) );
+	handle = R_RegisterModel( ri.Cmd_Argv(1) );
 
 	if (handle) {
 		Com_Printf("found model %s..\n", ri.Cmd_Argv(1));
@@ -739,8 +553,8 @@ void R_Hunk_Reset( void ) {
 // TODO: convert the Hunk_Alloc's in the model loading to malloc's, so we don't have
 // to move so much memory around during transitions
 
-static model_t backupModels[MAX_MOD_KNOWN];
-static int numBackupModels = 0;
+extern model_t backupModels[MAX_MOD_KNOWN];
+extern int numBackupModels;
 
 /*
 ===============
@@ -852,143 +666,6 @@ void R_BackupModels( void ) {
 
 
 /*
-=================
-R_RegisterMDCShaders
-=================
-*/
-static void R_RegisterMDCShaders( model_t *mod, int lod ) {
-	mdcSurface_t        *surf;
-	md3Shader_t         *shader;
-	int i, j;
-
-	// swap all the surfaces
-	surf = ( mdcSurface_t * )( (byte *)mod->q3_mdc[lod] + mod->q3_mdc[lod]->ofsSurfaces );
-	for ( i = 0 ; i < mod->q3_mdc[lod]->numSurfaces ; i++ ) {
-		// register the shaders
-		shader = ( md3Shader_t * )( (byte *)surf + surf->ofsShaders );
-		for ( j = 0 ; j < surf->numShaders ; j++, shader++ ) {
-			shader_t    *sh;
-
-			sh = R_FindShader( shader->name, LIGHTMAP_NONE, qtrue );
-			if ( sh->defaultShader ) {
-				shader->shaderIndex = 0;
-			} else {
-				shader->shaderIndex = sh->index;
-			}
-		}
-		// find the next surface
-		surf = ( mdcSurface_t * )( (byte *)surf + surf->ofsEnd );
-	}
-}
-
-/*
-=================
-R_RegisterMD3Shaders
-=================
-*/
-static void R_RegisterMD3Shaders( model_t *mod, int lod ) {
-	md3Surface_t        *surf;
-	md3Shader_t         *shader;
-	int i, j;
-
-	// swap all the surfaces
-	surf = ( md3Surface_t * )( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces );
-	for ( i = 0 ; i < mod->q3_md3[lod]->numSurfaces ; i++ ) {
-		// register the shaders
-		shader = ( md3Shader_t * )( (byte *)surf + surf->ofsShaders );
-		for ( j = 0 ; j < surf->numShaders ; j++, shader++ ) {
-			shader_t    *sh;
-
-			sh = R_FindShader( shader->name, LIGHTMAP_NONE, qtrue );
-			if ( sh->defaultShader ) {
-				shader->shaderIndex = 0;
-			} else {
-				shader->shaderIndex = sh->index;
-			}
-		}
-		// find the next surface
-		surf = ( md3Surface_t * )( (byte *)surf + surf->ofsEnd );
-	}
-}
-
-/*
-===============
-R_FindCachedModel
-
-  look for the given model in the list of backupModels
-===============
-*/
-qboolean R_FindCachedModel( const char *name, model_t *newmod ) {
-	int i,j, index;
-	model_t *mod;
-
-	// NOTE TTimo
-	// would need an r_cache check here too?
-
-	if ( !r_cacheModels->integer ) {
-		return qfalse;
-	}
-
-	if ( !numBackupModels ) {
-		return qfalse;
-	}
-
-	mod = backupModels;
-	for ( i = 0; i < numBackupModels; i++, mod++ ) {
-		if ( !String::NCmp( mod->name, name, sizeof( mod->name ) ) ) {
-			// copy it to a new slot
-			index = newmod->index;
-			memcpy( newmod, mod, sizeof( model_t ) );
-			newmod->index = index;
-			switch ( mod->type ) {
-			case MOD_MDS:
-				return qfalse;  // not supported yet
-			case MOD_MDM:
-				return qfalse;  // not supported yet
-			case MOD_MDX:
-				return qfalse;  // not supported yet
-			case MOD_MESH3:
-				for ( j = MD3_MAX_LODS - 1; j >= 0; j-- ) {
-					if ( j < mod->q3_numLods && mod->q3_md3[j] ) {
-						if ( ( j == MD3_MAX_LODS - 1 ) || ( mod->q3_md3[j] != mod->q3_md3[j + 1] ) ) {
-							newmod->q3_md3[j] = (md3Header_t*)ri.Hunk_Alloc( mod->q3_md3[j]->ofsEnd, h_low );
-							memcpy( newmod->q3_md3[j], mod->q3_md3[j], mod->q3_md3[j]->ofsEnd );
-							R_RegisterMD3Shaders( newmod, j );
-							R_CacheModelFree( mod->q3_md3[j] );
-						} else {
-							newmod->q3_md3[j] = mod->q3_md3[j + 1];
-						}
-					}
-				}
-				break;
-			case MOD_MDC:
-				for ( j = MD3_MAX_LODS - 1; j >= 0; j-- ) {
-					if ( j < mod->q3_numLods && mod->q3_mdc[j] ) {
-						if ( ( j == MD3_MAX_LODS - 1 ) || ( mod->q3_mdc[j] != mod->q3_mdc[j + 1] ) ) {
-							newmod->q3_mdc[j] = (mdcHeader_t*)ri.Hunk_Alloc( mod->q3_mdc[j]->ofsEnd, h_low );
-							memcpy( newmod->q3_mdc[j], mod->q3_mdc[j], mod->q3_mdc[j]->ofsEnd );
-							R_RegisterMDCShaders( newmod, j );
-							R_CacheModelFree( mod->q3_mdc[j] );
-						} else {
-							newmod->q3_mdc[j] = mod->q3_mdc[j + 1];
-						}
-					}
-				}
-				break;
-			default:
-				break; // MOD_BAD MOD_BRUSH46
-			}
-
-			mod->type = MOD_BAD;    // don't try and purge it later
-			mod->name[0] = 0;
-			return qtrue;
-		}
-	}
-
-	return qfalse;
-}
-
-/*
 ===============
 R_LoadCacheModels
 ===============
@@ -1021,7 +698,7 @@ void R_LoadCacheModels( void ) {
 
 	while ( ( token = String::ParseExt( &pString, qtrue ) ) && token[0] ) {
 		String::NCpyZ( name, token, sizeof( name ) );
-		RE_RegisterModel( name );
+		R_RegisterModel( name );
 	}
 
 	ri.Hunk_FreeTempMemory( buf );

@@ -868,7 +868,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return FS_GetFileList( (char*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
 
 	case UI_R_REGISTERMODEL:
-		return re.RegisterModel( (char*)VMA( 1 ) );
+		return R_RegisterModel( (char*)VMA( 1 ) );
 
 	case UI_R_REGISTERSKIN:
 		return re.RegisterSkin( (char*)VMA( 1 ) );

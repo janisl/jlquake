@@ -583,7 +583,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.Shutdown = RE_Shutdown;
 
 	re.BeginRegistration = RE_BeginRegistration;
-	re.RegisterModel    = RE_RegisterModel;
 	re.RegisterSkin     = RE_RegisterSkin;
 //----(SA) added
 	re.GetSkinModel         = RE_GetSkinModel;

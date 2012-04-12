@@ -50,7 +50,6 @@ typedef struct {
 	// and height, which can be used by the client to intelligently
 	// size display elements
 	void ( *BeginRegistration )( glconfig_t *config );
-	qhandle_t ( *RegisterModel )( const char *name );
 	qhandle_t ( *RegisterSkin )( const char *name );
 	void ( *LoadWorld )( const char *name );
 	qboolean ( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );    //----(SA)	added

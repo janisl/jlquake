@@ -435,8 +435,10 @@ bool R_GetEntityToken(char* Buffer, int Size);
 int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
 	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
 int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
+#endif
 
 qhandle_t R_RegisterModel(const char* Name);
+#if 0
 void R_ModelBounds(qhandle_t Handle, vec3_t Mins, vec3_t Maxs);
 int R_ModelNumFrames(qhandle_t Handle);
 int R_ModelFlags(qhandle_t Handle);

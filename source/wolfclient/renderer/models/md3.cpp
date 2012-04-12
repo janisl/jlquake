@@ -345,6 +345,31 @@ void R_FreeMd3(model_t* mod)
 	}
 }
 
+void R_RegisterMd3Shaders(model_t* mod, int lod)
+{
+	// swap all the surfaces
+	md3Surface_t* surf = (md3Surface_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces);
+	for (int i = 0; i < mod->q3_md3[lod]->numSurfaces; i++)
+	{
+		// register the shaders
+		md3Shader_t* shader = (md3Shader_t*)((byte*)surf + surf->ofsShaders);
+		for (int j = 0; j < surf->numShaders; j++, shader++)
+		{
+			shader_t* sh = R_FindShader(shader->name, LIGHTMAP_NONE, true);
+			if (sh->defaultShader)
+			{
+				shader->shaderIndex = 0;
+			}
+			else
+			{
+				shader->shaderIndex = sh->index;
+			}
+		}
+		// find the next surface
+		surf = (md3Surface_t*)((byte*)surf + surf->ofsEnd);
+	}
+}
+
 #if 0
 //==========================================================================
 //

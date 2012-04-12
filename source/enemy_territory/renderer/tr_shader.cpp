@@ -72,7 +72,7 @@ void R_LoadCacheShaders( void ) {
 
 	while ( ( token = String::ParseExt( &pString, qtrue ) ) && token[0] ) {
 		String::NCpyZ( name, token, sizeof( name ) );
-		RE_RegisterModel( name );
+		R_RegisterModel( name );
 	}
 
 	ri.Hunk_FreeTempMemory( buf );

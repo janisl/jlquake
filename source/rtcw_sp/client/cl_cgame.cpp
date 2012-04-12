@@ -735,7 +735,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.LoadWorld( (char*)VMA( 1 ) );
 		return 0;
 	case CG_R_REGISTERMODEL:
-		return re.RegisterModel( (char*)VMA( 1 ) );
+		return R_RegisterModel( (char*)VMA( 1 ) );
 	case CG_R_REGISTERSKIN:
 		return re.RegisterSkin( (char*)VMA( 1 ) );
 

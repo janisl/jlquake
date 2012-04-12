@@ -348,6 +348,31 @@ void R_FreeMdc(model_t* mod)
 	}
 }
 
+void R_RegisterMdcShaders(model_t* mod, int lod)
+{
+	// swap all the surfaces
+	mdcSurface_t* surf = (mdcSurface_t*)((byte*)mod->q3_mdc[lod] + mod->q3_mdc[lod]->ofsSurfaces);
+	for (int i = 0; i < mod->q3_mdc[lod]->numSurfaces; i++)
+	{
+		// register the shaders
+		md3Shader_t* shader = (md3Shader_t*)((byte*)surf + surf->ofsShaders);
+		for (int j = 0; j < surf->numShaders; j++, shader++)
+		{
+			shader_t* sh = R_FindShader(shader->name, LIGHTMAP_NONE, true);
+			if (sh->defaultShader)
+			{
+				shader->shaderIndex = 0;
+			}
+			else
+			{
+				shader->shaderIndex = sh->index;
+			}
+		}
+		// find the next surface
+		surf = (mdcSurface_t*)((byte*)surf + surf->ofsEnd);
+	}
+}
+
 static void LerpCMeshVertexes(mdcSurface_t* surf, float backlerp)
 {
 	float* outXyz = tess.xyz[tess.numVertexes];
