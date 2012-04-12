@@ -923,8 +923,8 @@ struct model_t
 
 struct trRefEntity_t;
 
-#if 0
 model_t* R_AllocModel();
+#if 0
 void R_ModelInit();
 void R_FreeModels();
 #endif

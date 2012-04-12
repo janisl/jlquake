@@ -125,8 +125,6 @@ qboolean    RE_GetSkinModel( qhandle_t skinid, const char *type, char *name );
 qhandle_t   RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );    //----(SA)
 //----(SA) end
 
-model_t     *R_AllocModel( void );
-
 void        R_Init( void );
 
 void    R_SkinList_f( void );

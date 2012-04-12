@@ -59,6 +59,7 @@ float			r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 
 vec3_t			shadevector;
 float*			shadedots = r_avertexnormal_dots[0];
+#endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -86,6 +87,7 @@ model_t* R_AllocModel()
 	return mod;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_ModelInit

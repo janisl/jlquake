@@ -30,28 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-#define LL( x ) x = LittleLong( x )
-
-/*
-** R_AllocModel
-*/
-model_t *R_AllocModel( void ) {
-	model_t     *mod;
-
-	if ( tr.numModels == MAX_MOD_KNOWN ) {
-		return NULL;
-	}
-
-	mod = (model_t*)ri.Hunk_Alloc( sizeof( *tr.models[tr.numModels] ), h_low );
-	mod->index = tr.numModels;
-	tr.models[tr.numModels] = mod;
-	tr.numModels++;
-
-	return mod;
-}
-
-
-
 /*
 R_LoadModelShadow()
 loads a model's shadow script
