@@ -80,16 +80,47 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 		return false;
 	}
 
+	bool fixRadius = false;
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) &&
+		(strstr(mod->name,"sherman") || strstr(mod->name, "mg42")))
+	{
+		fixRadius = true;
+	}
+
 	// swap all the frames
 	md3Frame_t* frame = (md3Frame_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsFrames);
 	for (int i = 0; i < mod->q3_md3[lod]->numFrames; i++, frame++)
 	{
 		frame->radius = LittleFloat(frame->radius);
-		for (int j = 0; j < 3; j++)
+		if (fixRadius)
 		{
-			frame->bounds[0][j] = LittleFloat(frame->bounds[0][j]);
-			frame->bounds[1][j] = LittleFloat(frame->bounds[1][j]);
-			frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+			frame->radius = 256;
+			for (int j = 0; j < 3; j++)
+			{
+				frame->bounds[0][j] = 128;
+				frame->bounds[1][j] = -128;
+				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+			}
+		}
+		// Hack for Bug using plugin generated model
+		else if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) && frame->radius == 1)
+		{
+			frame->radius = 256;
+			for (int j = 0; j < 3; j++)
+			{
+				frame->bounds[0][j] = 128;
+				frame->bounds[1][j] = -128;
+				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+			}
+		}
+		else
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				frame->bounds[0][j] = LittleFloat(frame->bounds[0][j]);
+				frame->bounds[1][j] = LittleFloat(frame->bounds[1][j]);
+				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+			}
 		}
 	}
 
@@ -121,7 +152,7 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 		LL(surf->ofsSt);
 		LL(surf->ofsXyzNormals);
 		LL(surf->ofsEnd);
-		
+
 		if (surf->numVerts > SHADER_MAX_VERTEXES)
 		{
 			throw DropException(va("R_LoadMD3: %s has more than %i verts on a surface (%i)",
@@ -311,6 +342,31 @@ void R_FreeMd3(model_t* mod)
 		{
 			Mem_Free(mod->q3_md3[lod]);
 		}
+	}
+}
+
+void R_RegisterMd3Shaders(model_t* mod, int lod)
+{
+	// swap all the surfaces
+	md3Surface_t* surf = (md3Surface_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces);
+	for (int i = 0; i < mod->q3_md3[lod]->numSurfaces; i++)
+	{
+		// register the shaders
+		md3Shader_t* shader = (md3Shader_t*)((byte*)surf + surf->ofsShaders);
+		for (int j = 0; j < surf->numShaders; j++, shader++)
+		{
+			shader_t* sh = R_FindShader(shader->name, LIGHTMAP_NONE, true);
+			if (sh->defaultShader)
+			{
+				shader->shaderIndex = 0;
+			}
+			else
+			{
+				shader->shaderIndex = sh->index;
+			}
+		}
+		// find the next surface
+		surf = (md3Surface_t*)((byte*)surf + surf->ofsEnd);
 	}
 }
 

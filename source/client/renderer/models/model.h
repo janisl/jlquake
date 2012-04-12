@@ -949,6 +949,7 @@ void R_DrawMd2Model(trRefEntity_t* e);
 
 bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);
+void R_RegisterMd3Shaders(model_t* mod, int lod);
 void R_AddMD3Surfaces(trRefEntity_t* e);
 void RB_SurfaceMesh(md3Surface_t* surface);
 
