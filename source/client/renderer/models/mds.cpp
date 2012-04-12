@@ -18,6 +18,8 @@
 #include "../local.h"
 #include "skeletal_model_inlines.h"
 
+#define LL(x) x = LittleLong(x)
+
 /*
 
 All bones should be an identity orientation to display the mesh exactly
@@ -32,7 +34,7 @@ frame.
 //#define HIGH_PRECISION_BONES	// enable this for 32bit precision bones
 //#define DBG_PROFILE_BONES
 
-#define ANGLES_SHORT_TO_FLOAT( pf, sh )     { *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); }
+#define ANGLES_SHORT_TO_FLOAT(pf, sh)     { *(pf++) = SHORT2ANGLE(*(sh++)); *(pf++) = SHORT2ANGLE(*(sh++)); *(pf++) = SHORT2ANGLE(*(sh++)); }
 
 #ifdef DBG_PROFILE_BONES
 #define DBG_SHOWTIME    common->Printf("%i: %i, ", di++, (dt = Sys_Milliseconds()) - ldt); ldt = dt;
@@ -52,31 +54,31 @@ struct mdsBoneFrame_t
 
 static float frontlerp, backlerp;
 static float torsoFrontlerp, torsoBacklerp;
-static int             *triangles, *boneRefs;
+static int* triangles, * boneRefs;
 static glIndex_t* pIndexes;
 static int indexes;
 static int baseIndex, baseVertex, oldIndexes;
 static int numVerts;
-static mdsVertex_t     *v;
+static mdsVertex_t* v;
 static mdsBoneFrame_t bones[MDS_MAX_BONES], rawBones[MDS_MAX_BONES], oldBones[MDS_MAX_BONES];
 static char validBones[MDS_MAX_BONES];
-static char newBones[ MDS_MAX_BONES ];
-static mdsBoneFrame_t  *bonePtr, *bone, *parentBone;
-static mdsBoneFrameCompressed_t    *cBonePtr, *cTBonePtr, *cOldBonePtr, *cOldTBonePtr, *cBoneList, *cOldBoneList, *cBoneListTorso, *cOldBoneListTorso;
-static mdsBoneInfo_t   *boneInfo, *thisBoneInfo, *parentBoneInfo;
-static mdsFrame_t      *frame, *torsoFrame;
-static mdsFrame_t      *oldFrame, *oldTorsoFrame;
+static char newBones[MDS_MAX_BONES];
+static mdsBoneFrame_t* bonePtr, * bone, * parentBone;
+static mdsBoneFrameCompressed_t* cBonePtr, * cTBonePtr, * cOldBonePtr, * cOldTBonePtr, * cBoneList, * cOldBoneList, * cBoneListTorso, * cOldBoneListTorso;
+static mdsBoneInfo_t* boneInfo, * thisBoneInfo, * parentBoneInfo;
+static mdsFrame_t* frame, * torsoFrame;
+static mdsFrame_t* oldFrame, * oldTorsoFrame;
 static int frameSize;
-static short           *sh, *sh2;
-static float           *pf;
+static short* sh, * sh2;
+static float* pf;
 static vec3_t angles, tangles, torsoParentOffset, torsoAxis[3], tmpAxis[3];
-static float           *tempVert, *tempNormal;
+static float* tempVert, * tempNormal;
 static vec3_t vec, v2, dir;
 static float diff, a1, a2;
 static int render_count;
 static float lodRadius, lodScale;
-static int             *collapse_map, *pCollapseMap;
-static int collapse[ MDS_MAX_VERTS ], *pCollapse;
+static int* collapse_map, * pCollapseMap;
+static int collapse[MDS_MAX_VERTS], * pCollapse;
 static int p0, p1, p2;
 static bool isTorso, fullTorso;
 static vec4_t m1[4], m2[4];
@@ -84,6 +86,198 @@ static vec3_t t;
 static refEntity_t lastBoneEntity;
 
 static int totalrv, totalrt, totalv, totalt;    //----(SA)
+
+bool R_LoadMds(model_t* mod, const void* buffer)
+{
+	mdsHeader_t* pinmodel = (mdsHeader_t*)buffer;
+
+	int version = LittleLong(pinmodel->version);
+	if (version != MDS_VERSION)
+	{
+		common->Printf(S_COLOR_YELLOW "R_LoadMds: %s has wrong version (%i should be %i)\n",
+			mod->name, version, MDS_VERSION);
+		return false;
+	}
+
+	mod->type = MOD_MDS;
+	int size = LittleLong(pinmodel->ofsEnd);
+	mod->q3_dataSize += size;
+	mdsHeader_t* mds = (mdsHeader_t*)Mem_Alloc(size);
+	mod->q3_mds = mds;
+
+	memcpy(mds, buffer, LittleLong(pinmodel->ofsEnd));
+
+	LL(mds->ident);
+	LL(mds->version);
+	LL(mds->numFrames);
+	LL(mds->numBones);
+	LL(mds->numTags);
+	LL(mds->numSurfaces);
+	LL(mds->ofsFrames);
+	LL(mds->ofsBones);
+	LL(mds->ofsTags);
+	LL(mds->ofsEnd);
+	LL(mds->ofsSurfaces);
+	mds->lodBias = LittleFloat(mds->lodBias);
+	mds->lodScale = LittleFloat(mds->lodScale);
+	LL(mds->torsoParent);
+
+	if (mds->numFrames < 1)
+	{
+		common->Printf(S_COLOR_YELLOW "R_LoadMds: %s has no frames\n", mod->name);
+		return false;
+	}
+
+	if (LittleLong(1) != 1)
+	{
+		// swap all the frames
+		//frameSize = (int)( &((mdsFrame_t *)0)->bones[ mds->numBones ] );
+		int frameSize = (int)(sizeof(mdsFrame_t) - sizeof(mdsBoneFrameCompressed_t) + mds->numBones * sizeof(mdsBoneFrameCompressed_t));
+		for (int i = 0; i < mds->numFrames; i++)
+		{
+			mdsFrame_t* frame = (mdsFrame_t*)((byte*)mds + mds->ofsFrames + i * frameSize);
+			frame->radius = LittleFloat(frame->radius);
+			for (int j = 0; j < 3; j++)
+			{
+				frame->bounds[0][j] = LittleFloat(frame->bounds[0][j]);
+				frame->bounds[1][j] = LittleFloat(frame->bounds[1][j]);
+				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+				frame->parentOffset[j] = LittleFloat(frame->parentOffset[j]);
+			}
+			for (int j = 0; j < mds->numBones * sizeof(mdsBoneFrameCompressed_t) / sizeof(short); j++)
+			{
+				((short*)frame->bones)[j] = LittleShort(((short*)frame->bones)[j]);
+			}
+		}
+
+		// swap all the tags
+		mdsTag_t* tag = (mdsTag_t*)((byte*)mds + mds->ofsTags);
+		for (int i = 0; i < mds->numTags; i++, tag++)
+		{
+			LL(tag->boneIndex);
+			tag->torsoWeight = LittleFloat(tag->torsoWeight);
+		}
+
+		// swap all the bones
+		for (int i = 0; i < mds->numBones; i++)
+		{
+			mdsBoneInfo_t* bi = (mdsBoneInfo_t*)((byte*)mds + mds->ofsBones + i * sizeof(mdsBoneInfo_t));
+			LL(bi->parent);
+			bi->torsoWeight = LittleFloat(bi->torsoWeight);
+			bi->parentDist = LittleFloat(bi->parentDist);
+			LL(bi->flags);
+		}
+	}
+
+	// swap all the surfaces
+	mdsSurface_t* surf = (mdsSurface_t*)((byte*)mds + mds->ofsSurfaces);
+	for (int i = 0; i < mds->numSurfaces; i++)
+	{
+		if (LittleLong(1) != 1)
+		{
+			LL(surf->ident);
+			LL(surf->shaderIndex);
+			LL(surf->minLod);
+			LL(surf->ofsHeader);
+			LL(surf->ofsCollapseMap);
+			LL(surf->numTriangles);
+			LL(surf->ofsTriangles);
+			LL(surf->numVerts);
+			LL(surf->ofsVerts);
+			LL(surf->numBoneReferences);
+			LL(surf->ofsBoneReferences);
+			LL(surf->ofsEnd);
+		}
+
+		// change to surface identifier
+		surf->ident = SF_MDS;
+
+		if (surf->numVerts > SHADER_MAX_VERTEXES)
+		{
+			common->Error("R_LoadMds: %s has more than %i verts on a surface (%i)",
+				mod->name, SHADER_MAX_VERTEXES, surf->numVerts);
+		}
+		if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
+		{
+			common->Error("R_LoadMds: %s has more than %i triangles on a surface (%i)",
+				mod->name, SHADER_MAX_INDEXES / 3, surf->numTriangles);
+		}
+
+		// register the shaders
+		if (surf->shader[0])
+		{
+			shader_t* sh = R_FindShader(surf->shader, LIGHTMAP_NONE, true);
+			if (sh->defaultShader)
+			{
+				surf->shaderIndex = 0;
+			}
+			else
+			{
+				surf->shaderIndex = sh->index;
+			}
+		}
+		else
+		{
+			surf->shaderIndex = 0;
+		}
+
+		if (LittleLong(1) != 1)
+		{
+			// swap all the triangles
+			mdsTriangle_t* tri = (mdsTriangle_t*)((byte*)surf + surf->ofsTriangles);
+			for (int j = 0; j < surf->numTriangles; j++, tri++)
+			{
+				LL(tri->indexes[0]);
+				LL(tri->indexes[1]);
+				LL(tri->indexes[2]);
+			}
+
+			// swap all the vertexes
+			mdsVertex_t* v = (mdsVertex_t*)((byte*)surf + surf->ofsVerts);
+			for (int j = 0; j < surf->numVerts; j++)
+			{
+				v->normal[0] = LittleFloat(v->normal[0]);
+				v->normal[1] = LittleFloat(v->normal[1]);
+				v->normal[2] = LittleFloat(v->normal[2]);
+
+				v->texCoords[0] = LittleFloat(v->texCoords[0]);
+				v->texCoords[1] = LittleFloat(v->texCoords[1]);
+
+				v->numWeights = LittleLong(v->numWeights);
+
+				for (int k = 0; k < v->numWeights; k++)
+				{
+					v->weights[k].boneIndex = LittleLong(v->weights[k].boneIndex);
+					v->weights[k].boneWeight = LittleFloat(v->weights[k].boneWeight);
+					v->weights[k].offset[0] = LittleFloat(v->weights[k].offset[0]);
+					v->weights[k].offset[1] = LittleFloat(v->weights[k].offset[1]);
+					v->weights[k].offset[2] = LittleFloat(v->weights[k].offset[2]);
+				}
+
+				v = (mdsVertex_t*)&v->weights[v->numWeights];
+			}
+
+			// swap the collapse map
+			int* collapseMap = (int*)((byte*)surf + surf->ofsCollapseMap);
+			for (int j = 0; j < surf->numVerts; j++, collapseMap++)
+			{
+				*collapseMap = LittleLong(*collapseMap);
+			}
+
+			// swap the bone references
+			int* boneref = (int*)((byte*)surf + surf->ofsBoneReferences);
+			for (int j = 0; j < surf->numBoneReferences; j++, boneref++)
+			{
+				*boneref = LittleLong(*boneref);
+			}
+		}
+
+		// find the next surface
+		surf = (mdsSurface_t*)((byte*)surf + surf->ofsEnd);
+	}
+
+	return true;
+}
 
 static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneNum)
 {
@@ -302,7 +496,7 @@ static void R_CalcBoneLerp(mdsHeader_t* header, const refEntity_t* refent, int b
 
 	bonePtr = &bones[boneNum];
 
-	newBones[ boneNum ] = 1;
+	newBones[boneNum] = 1;
 
 	// rotation (take into account 170 to -170 lerps, which need to take the shortest route)
 	if (fullTorso)
@@ -456,12 +650,12 @@ static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* bon
 		if (r_bonesDebug->integer == 4 && totalrt)
 		{
 			common->Printf("Lod %.2f  verts %4d/%4d  tris %4d/%4d  (%.2f%%)\n",
-					   lodScale,
-					   totalrv,
-					   totalv,
-					   totalrt,
-					   totalt,
-					   (float)(100.0 * totalrt) / (float)totalt);
+				lodScale,
+				totalrv,
+				totalv,
+				totalrt,
+				totalt,
+				(float)(100.0 * totalrt) / (float)totalt);
 		}
 		totalrv = totalrt = totalv = totalt = 0;
 	}
@@ -494,8 +688,8 @@ static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* bon
 
 	frame = (mdsFrame_t*)((byte*)header + header->ofsFrames + refent->frame * frameSize);
 	torsoFrame = (mdsFrame_t*)((byte*)header + header->ofsFrames + refent->torsoFrame * frameSize);
-	oldFrame = (mdsFrame_t*)((byte *)header + header->ofsFrames + refent->oldframe * frameSize);
-	oldTorsoFrame = (mdsFrame_t*)((byte *)header + header->ofsFrames + refent->oldTorsoFrame * frameSize);
+	oldFrame = (mdsFrame_t*)((byte*)header + header->ofsFrames + refent->oldframe * frameSize);
+	oldTorsoFrame = (mdsFrame_t*)((byte*)header + header->ofsFrames + refent->oldTorsoFrame * frameSize);
 
 	//
 	// lerp all the needed bones (torsoParent is always the first bone in the list)
@@ -524,7 +718,7 @@ static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* bon
 			}
 
 			// find our parent, and make sure it has been calculated
-			if (( boneInfo[*boneRefs].parent >= 0 ) && (!validBones[boneInfo[*boneRefs].parent] && !newBones[boneInfo[*boneRefs].parent]))
+			if ((boneInfo[*boneRefs].parent >= 0) && (!validBones[boneInfo[*boneRefs].parent] && !newBones[boneInfo[*boneRefs].parent]))
 			{
 				R_CalcBone(header, refent, boneInfo[*boneRefs].parent);
 			}
@@ -548,7 +742,7 @@ static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* bon
 			}
 
 			// find our parent, and make sure it has been calculated
-			if ((boneInfo[*boneRefs].parent >= 0 ) && (!validBones[boneInfo[*boneRefs].parent] && !newBones[boneInfo[*boneRefs].parent]))
+			if ((boneInfo[*boneRefs].parent >= 0) && (!validBones[boneInfo[*boneRefs].parent] && !newBones[boneInfo[*boneRefs].parent]))
 			{
 				R_CalcBoneLerp(header, refent, boneInfo[*boneRefs].parent);
 			}
@@ -593,7 +787,7 @@ static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* bon
 			}
 			else
 			{    // tag's require special handling
-				// rotate each of the axis by the torsoAngles
+				 // rotate each of the axis by the torsoAngles
 				LocalScaledMatrixTransformVector(bonePtr->matrix[0], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[0]);
 				LocalScaledMatrixTransformVector(bonePtr->matrix[1], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[1]);
 				LocalScaledMatrixTransformVector(bonePtr->matrix[2], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[2]);
@@ -787,7 +981,7 @@ void RB_SurfaceAnimMds(mdsSurface_t* surface)
 		Com_Memcpy(pIndexes, triangles, sizeof(triangles[0]) * indexes);
 		if (baseVertex)
 		{
-			for (glIndex_t* indexesEnd = pIndexes + indexes; pIndexes < indexesEnd ; pIndexes++)
+			for (glIndex_t* indexesEnd = pIndexes + indexes; pIndexes < indexesEnd; pIndexes++)
 			{
 				*pIndexes += baseVertex;
 			}
