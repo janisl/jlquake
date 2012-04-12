@@ -858,7 +858,6 @@ struct gllightmapstate_t
 	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
 };
 
-#if 0
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override);
 void R_DrawSequentialPoly(mbrush29_surface_t* s);
@@ -877,14 +876,12 @@ void R_BlendLightmapsQ2();
 void GL_RenderLightmappedPoly(mbrush38_surface_t* surf);
 void R_DrawAlphaSurfaces();
 void R_DrawTriangleOutlines();
-#endif
 
 void RB_CheckOverflow(int verts, int indexes);
 #define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES) {RB_CheckOverflow(v,i);}
 void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color);
 void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2);
 
-#if 0
 extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 extern mbrush29_leaf_t		*r_viewleaf;
 extern mbrush29_leaf_t		*r_oldviewleaf;
@@ -895,7 +892,6 @@ extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 extern gllightmapstate_t gl_lms;
 extern mbrush38_surface_t	*r_alpha_surfaces;
 extern int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
-#endif
 
 extern void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void*);
 
