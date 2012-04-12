@@ -985,13 +985,13 @@ void R_FreeMdx(model_t* mod);
 void RB_MDM_SurfaceAnim(mdmSurface_t* surfType);
 int R_MDM_GetBoneTag(orientation_t* outTag, mdmHeader_t* mdm, int startTagIndex, const refEntity_t* refent, const char* tagName);
 
-#if 0
 void R_InitBsp29NoTextureMip();
 void Mod_LoadBrush29Model(model_t* mod, void* buffer);
 void Mod_FreeBsp29(model_t* mod);
 byte* Mod_LeafPVS(mbrush29_leaf_t* Leaf, model_t* Model);
 mbrush29_leaf_t* Mod_PointInLeafQ1(vec3_t P, model_t* Model);
 
+#if 0
 void Mod_LoadBrush38Model(model_t* mod, void* buffer);
 void Mod_FreeBsp38(model_t* mod);
 byte* Mod_ClusterPVS(int cluster, model_t* model);
@@ -1018,10 +1018,10 @@ void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
 #endif
 
 extern model_t*	loadmodel;
-#if 0
 extern byte		q1_player_8bit_texels[320 * 200];
 extern byte		h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
+#if 0
 extern world_t		s_worldData;
 extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];
 extern vec3_t	shadevector;
