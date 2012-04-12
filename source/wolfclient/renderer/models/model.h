@@ -924,8 +924,8 @@ struct model_t
 struct trRefEntity_t;
 
 model_t* R_AllocModel();
-#if 0
 void R_ModelInit();
+#if 0
 void R_FreeModels();
 #endif
 model_t* R_GetModelByHandle(qhandle_t Index);
@@ -1006,6 +1006,7 @@ void R_FreeBsp46(world_t* mod);
 void R_FreeBsp46Model(model_t* mod);
 const byte* R_ClusterPVS(int cluster);
 mbrush46_node_t* R_PointInLeaf(const vec3_t p);
+#endif
 
 //
 //	CURVE TESSELATION
@@ -1015,7 +1016,6 @@ srfGridMesh_t* R_SubdividePatchToGrid(int Width, int Height,
 srfGridMesh_t* R_GridInsertColumn(srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError);
 srfGridMesh_t* R_GridInsertRow(srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError);
 void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
-#endif
 
 extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
@@ -1023,7 +1023,7 @@ extern byte		h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
 #if 0
 extern world_t		s_worldData;
+#endif
 extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];
 extern vec3_t	shadevector;
 extern float*			shadedots;
-#endif

@@ -72,7 +72,6 @@ BRUSH MODELS
 
 //======================================================================
 
-void        R_ModelInit( void );
 int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void        R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs );
 
@@ -156,23 +155,6 @@ void R_DlightBmodel( mbrush46_model_t *bmodel );
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent );
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
-
-/*
-============================================================
-
-CURVE TESSELATION
-
-============================================================
-*/
-
-#define PATCH_STITCHING
-
-srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
-									   bsp46_drawVert_t points[MAX_PATCH_SIZE * MAX_PATCH_SIZE] );
-srfGridMesh_t *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, vec3_t point, float loderror );
-srfGridMesh_t *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_t point, float loderror );
-void R_FreeSurfaceGridMesh( srfGridMesh_t *grid );
-
 /*
 ============================================================
 
@@ -252,7 +234,6 @@ void *R_CacheModelAlloc( int size );
 void R_CacheModelFree( void *ptr );
 void R_PurgeModels( int count );
 void R_BackupModels( void );
-void R_LoadCacheModels( void );
 
 //------------------------------------------------------------------------------
 

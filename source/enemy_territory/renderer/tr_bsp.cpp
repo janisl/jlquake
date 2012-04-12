@@ -1581,15 +1581,11 @@ static void R_LoadSurfaces( bsp46_lump_t *surfs, bsp46_lump_t *verts, bsp46_lump
 		}
 	}
 
-#ifdef PATCH_STITCHING
 	R_StitchAllPatches();
-#endif
 
 	R_FixSharedVertexLodError();
 
-#ifdef PATCH_STITCHING
 	R_MovePatchSurfacesToHunk();
-#endif
 
 	ri.Printf( PRINT_ALL, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
 			   numFaces, numMeshes, numTriSurfs, numFlares, numFoliage );
