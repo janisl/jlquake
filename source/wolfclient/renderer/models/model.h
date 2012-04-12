@@ -520,6 +520,9 @@ struct srfFoliage_t
 
 #define BRUSH46_CONTENTS_NODE		-1
 
+// ydnar: optimization
+#define WORLD_MAX_SKY_NODES		32
+
 struct mbrush46_surface_t
 {
 	int						viewCount;		// if == tr.viewCount, already added
@@ -1021,9 +1024,7 @@ extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
 extern byte		h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
-#if 0
 extern world_t		s_worldData;
-#endif
 extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];
 extern vec3_t	shadevector;
 extern float*			shadedots;

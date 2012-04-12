@@ -74,9 +74,6 @@ BRUSH MODELS
 #define SIDE_BACK   1
 #define SIDE_ON     2
 
-// ydnar: optimization
-#define WORLD_MAX_SKY_NODES 32
-
 //======================================================================
 
 int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );

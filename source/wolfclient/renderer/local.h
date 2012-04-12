@@ -114,6 +114,9 @@ init
 
 #define MAX_PART_MODELS			5
 
+#define MAX_WORLD_COORD			(128 * 1024)
+#define MIN_WORLD_COORD			(-128 * 1024)
+
 struct dlight_t
 {
 	vec3_t	origin;
