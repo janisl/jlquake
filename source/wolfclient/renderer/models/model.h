@@ -991,12 +991,10 @@ void Mod_FreeBsp29(model_t* mod);
 byte* Mod_LeafPVS(mbrush29_leaf_t* Leaf, model_t* Model);
 mbrush29_leaf_t* Mod_PointInLeafQ1(vec3_t P, model_t* Model);
 
-#if 0
 void Mod_LoadBrush38Model(model_t* mod, void* buffer);
 void Mod_FreeBsp38(model_t* mod);
 byte* Mod_ClusterPVS(int cluster, model_t* model);
 mbrush38_leaf_t* Mod_PointInLeafQ2(float* p, model_t* model);
-#endif
 
 float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte* image);
 unsigned ColorBytes4(float r, float g, float b, float a);
