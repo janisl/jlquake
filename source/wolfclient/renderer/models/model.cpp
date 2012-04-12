@@ -35,7 +35,6 @@
 
 model_t*		loadmodel;
 
-#if 0
 // precalculated dot products for quantized angles
 float			r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 {
@@ -59,7 +58,6 @@ float			r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 
 vec3_t			shadevector;
 float*			shadedots = r_avertexnormal_dots[0];
-#endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -92,7 +90,39 @@ model_t* R_AllocModel()
 	return mod;
 }
 
-#if 0
+static void R_LoadCacheModels()
+{
+	if (!r_cacheModels->integer)
+	{
+		return;
+	}
+
+	// don't load the cache list in between level loads, only on startup, or after a vid_restart
+	if (numBackupModels > 0)
+	{
+		return;
+	}
+
+	char* buf;
+	int len = FS_ReadFile("model.cache", (void**)&buf);
+	if (len <= 0)
+	{
+		return;
+	}
+
+	const char* pString = buf;
+
+	char* token;
+	while ((token = String::ParseExt(&pString, true)) && token[0])
+	{
+		char name[MAX_QPATH];
+		String::NCpyZ(name, token, sizeof(name));
+		R_RegisterModel(name);
+	}
+
+	FS_FreeFile(buf);
+}
+
 //==========================================================================
 //
 //	R_ModelInit
@@ -108,8 +138,11 @@ void R_ModelInit()
 	mod->type = MOD_BAD;
 
 	R_InitBsp29NoTextureMip();
+
+	R_LoadCacheModels();
 }
 
+#if 0
 //==========================================================================
 //
 //	R_FreeModel
