@@ -77,8 +77,7 @@ struct dynamicshader_t
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
+static shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
 
 // the shader is parsed into these global variables, then copied into
 // dynamically allocated memory if it is valid.
@@ -99,8 +98,7 @@ static shaderStringPointer_t shaderStringPointerList[MAX_SHADER_STRING_POINTERS]
 static dynamicshader_t* dshader = NULL;
 
 // Ridah, shader caching
-//static 
-int numBackupShaders = 0;
+static int numBackupShaders = 0;
 static shader_t* backupShaders[MAX_SHADERS];
 static shader_t* backupHashTable[SHADER_HASH_SIZE];
 
@@ -3808,8 +3806,7 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 //
 //==========================================================================
 
-//static 
-void CreateInternalShaders()
+static void CreateInternalShaders()
 {
 	tr.numShaders = 0;
 
@@ -3902,8 +3899,7 @@ static void BuildShaderChecksumLookup()
 //
 //==========================================================================
 
-//static 
-void ScanAndLoadShaderFiles()
+static void ScanAndLoadShaderFiles()
 {
 	long sum = 0;
 	// scan for shader files
@@ -4069,8 +4065,7 @@ void ScanAndLoadShaderFiles()
 //
 //==========================================================================
 
-//static 
-void CreateExternalShaders()
+static void CreateExternalShaders()
 {
 	if (GGameType & GAME_Tech3)
 	{
@@ -4100,7 +4095,39 @@ void CreateExternalShaders()
 	}
 }
 
-#if 0
+//JL This is almost identical to loading of models cache. Totaly useless.
+static void R_LoadCacheShaders()
+{
+	if (!r_cacheShaders->integer)
+	{
+		return;
+	}
+
+	// don't load the cache list in between level loads, only on startup, or after a vid_restart
+	if (numBackupShaders > 0)
+	{
+		return;
+	}
+
+	char* buf;
+	int len = FS_ReadFile("shader.cache", (void**)&buf);
+	if (len <= 0)
+	{
+		return;
+	}
+
+	const char* pString = buf;
+	char* token;
+	while ((token = String::ParseExt(&pString, true)) && token[0])
+	{
+		char name[MAX_QPATH];
+		String::NCpyZ(name, token, sizeof(name));
+		R_RegisterModel(name);
+	}
+
+	FS_FreeFile(buf);
+}
+
 //==========================================================================
 //
 //	R_InitShaders
@@ -4111,6 +4138,14 @@ void R_InitShaders()
 {
 	Log::write("Initializing Shaders\n");
 
+	glfogNum = FOG_NONE;
+	if (GGameType & GAME_WolfSP)
+	{
+		Cvar_Set("r_waterFogColor", "0");
+		Cvar_Set("r_mapFogColor", "0");
+		Cvar_Set("r_savegameFogColor", "0");
+	}
+
 	Com_Memset(ShaderHashTable, 0, sizeof(ShaderHashTable));
 
 	CreateInternalShaders();
@@ -4118,8 +4153,10 @@ void R_InitShaders()
 	ScanAndLoadShaderFiles();
 
 	CreateExternalShaders();
+
+	// Ridah
+	R_LoadCacheShaders();
 }
-#endif
 
 //==========================================================================
 //

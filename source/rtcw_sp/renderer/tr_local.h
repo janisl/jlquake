@@ -134,12 +134,6 @@ void    R_ScreenShotJPEG_f( void );
 void    R_InitSkins( void );
 skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
 
-
-//
-// tr_shader.c
-//
-void        R_InitShaders( void );
-
 /*
 ============================================================
 
@@ -258,9 +252,6 @@ void R_CacheModelFree( void *ptr );
 void R_PurgeModels( int count );
 void R_BackupModels( void );
 void R_LoadCacheModels( void );
-
-void R_LoadCacheShaders( void );
-// done.
 
 //------------------------------------------------------------------------------
 

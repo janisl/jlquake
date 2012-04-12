@@ -34,7 +34,6 @@ set(WOLFSP_FILES
 	renderer/tr_mesh.cpp
 	renderer/tr_model.cpp
 	renderer/tr_scene.cpp
-	renderer/tr_shader.cpp
 	renderer/tr_world.cpp
 
 	client/cl_cgame.cpp

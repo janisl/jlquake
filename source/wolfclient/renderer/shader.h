@@ -390,9 +390,7 @@ struct shaderCommands_t
 	shaderStage_t**	xstages;
 };
 
-#if 0
 void R_InitShaders();
-#endif
 void R_FreeShaders();
 shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);
 qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage);
