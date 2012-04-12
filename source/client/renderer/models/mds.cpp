@@ -279,6 +279,11 @@ bool R_LoadMds(model_t* mod, const void* buffer)
 	return true;
 }
 
+void R_FreeMds(model_t* mod)
+{
+	Mem_Free(mod->q3_mds);
+}
+
 static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneNum)
 {
 	thisBoneInfo = &boneInfo[boneNum];
