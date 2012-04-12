@@ -47,7 +47,6 @@ static vec3_t	pointcolor;
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 /*
 =============================================================================
 
@@ -344,6 +343,7 @@ void R_LightPointQ2(vec3_t p, vec3_t color)
 	VectorScale(color, r_modulate->value, color);
 }
 
+#if 0
 //==========================================================================
 //
 //	R_SetupEntityLightingGrid
@@ -640,6 +640,7 @@ int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec
 
 	return true;
 }
+#endif
 
 /*
 =============================================================================
@@ -765,7 +766,6 @@ void R_PushDlightsQ2()
 		R_MarkLightsQ2(l, 1 << i, tr.worldModel->brush38_nodes);
 	}
 }
-#endif
 
 //==========================================================================
 //
