@@ -388,7 +388,6 @@ void R_Register( void ) {
 	ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
 	ri.Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );
-	ri.Cmd_AddCommand( "taginfo", R_TagInfo_f );
 }
 
 /*
@@ -486,7 +485,6 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	ri.Cmd_RemoveCommand( "gfxinfo" );
 	ri.Cmd_RemoveCommand( "modelist" );
 	ri.Cmd_RemoveCommand( "shaderstate" );
-	ri.Cmd_RemoveCommand( "taginfo" );
 
 	// Ridah
 	ri.Cmd_RemoveCommand( "cropimages" );
@@ -588,8 +586,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.EndFrame         = RE_EndFrame;
 
 	re.MarkFragments    = R_MarkFragments;
-	re.LerpTag          = R_LerpTag;
-	re.ModelBounds      = R_ModelBounds;
 
 	re.ClearScene       = RE_ClearScene;
 	re.AddRefEntityToScene = RE_AddRefEntityToScene;

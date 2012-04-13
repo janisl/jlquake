@@ -70,13 +70,6 @@ BRUSH MODELS
 #define SIDE_BACK   1
 #define SIDE_ON     2
 
-//======================================================================
-
-int         R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
-void        R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs );
-
-void        R_Modellist_f( void );
-
 //====================================================
 extern refimport_t ri;
 
@@ -91,8 +84,6 @@ void R_AddNullModelSurfaces( trRefEntity_t *e );
 void R_AddBeamSurfaces( trRefEntity_t *e );
 void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
 void R_AddLightningBoltSurfaces( trRefEntity_t *e );
-
-void R_TagInfo_f( void );
 
 void R_AddPolygonSurfaces( void );
 

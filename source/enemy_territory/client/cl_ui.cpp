@@ -943,7 +943,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_MODELBOUNDS:
-		re.ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
+		R_ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
 		return 0;
 
 	case UI_UPDATESCREEN:

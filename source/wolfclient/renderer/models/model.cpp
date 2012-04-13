@@ -705,7 +705,6 @@ int R_RegisterModel(const char* name)
 	return mod->index;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_ModelBounds
@@ -741,6 +740,15 @@ void R_ModelBounds(qhandle_t handle, vec3_t mins, vec3_t maxs)
 		md3Header_t* header = model->q3_md3[0];
 
 		md3Frame_t* frame = (md3Frame_t*)((byte*)header + header->ofsFrames);
+
+		VectorCopy(frame->bounds[0], mins);
+		VectorCopy(frame->bounds[1], maxs);
+	}
+		break;
+
+	case MOD_MDC:
+	{
+		md3Frame_t* frame = (md3Frame_t*)((byte*)model->q3_mdc[0] + model->q3_mdc[0]->ofsFrames);
 
 		VectorCopy(frame->bounds[0], mins);
 		VectorCopy(frame->bounds[1], maxs);
@@ -784,6 +792,18 @@ int R_ModelNumFrames(qhandle_t Handle)
 	case MOD_MD4:
 		return Model->q3_md4->numFrames;
 
+	case MOD_MDC:
+		return Model->q3_mdc[0]->numFrames;
+
+	case MOD_MDS:
+		return Model->q3_mds->numFrames;
+
+	case MOD_MDM:
+		return 1;
+
+	case MOD_MDX:
+		return Model->q3_mdx->numFrames;
+
 	default:
 		return 0;
 	}
@@ -817,7 +837,8 @@ bool R_IsMeshModel(qhandle_t Handle)
 {
 	model_t* Model = R_GetModelByHandle(Handle);
 	return Model->type == MOD_MESH1 || Model->type == MOD_MESH2 ||
-		Model->type == MOD_MESH3 || Model->type == MOD_MD4;
+		Model->type == MOD_MESH3 || Model->type == MOD_MD4 ||
+		Model->type == MOD_MDC || Model->type == MOD_MDS || Model->type == MOD_MDM;
 }
 
 //==========================================================================
@@ -963,6 +984,180 @@ bool R_LerpTag(orientation_t* tag, qhandle_t handle, int startFrame, int endFram
 	return true;
 }
 
+static int R_GetTag(byte* mod, int frame, const char* tagName, int startTagIndex, md3Tag_t** outTag)
+{
+	md3Header_t* md3 = (md3Header_t*)mod;
+
+	if (frame >= md3->numFrames)
+	{
+		// it is possible to have a bad frame while changing models, so don't error
+		frame = md3->numFrames - 1;
+	}
+
+	if (startTagIndex > md3->numTags)
+	{
+		*outTag = NULL;
+		return -1;
+	}
+
+	md3Tag_t* tag = (md3Tag_t*)((byte*)mod + md3->ofsTags) + frame * md3->numTags;
+	for (int i = 0; i < md3->numTags; i++, tag++)
+	{
+		if ((i >= startTagIndex) && !String::Cmp(tag->name, tagName))
+		{
+			*outTag = tag;
+			return i;   // found it
+		}
+	}
+
+	*outTag = NULL;
+	return -1;
+}
+
+static int R_GetMDCTag(byte* mod, int frame, const char* tagName, int startTagIndex, mdcTag_t** outTag)
+{
+	mdcHeader_t* mdc = (mdcHeader_t*)mod;
+
+	if (frame >= mdc->numFrames)
+	{
+		// it is possible to have a bad frame while changing models, so don't error
+		frame = mdc->numFrames - 1;
+	}
+
+	if (startTagIndex > mdc->numTags)
+	{
+		*outTag = NULL;
+		return -1;
+	}
+
+	mdcTagName_t* pTagName = (mdcTagName_t*)((byte*)mod + mdc->ofsTagNames);
+	for (int i = 0; i < mdc->numTags; i++, pTagName++)
+	{
+		if ((i >= startTagIndex) && !String::Cmp(pTagName->name, tagName))
+		{
+			mdcTag_t* tag = (mdcTag_t*)((byte*)mod + mdc->ofsTags) + frame * mdc->numTags + i;
+			*outTag = tag;
+			return i;
+		}
+	}
+
+	*outTag = NULL;
+	return -1;
+}
+
+//	returns the index of the tag it found, for cycling through tags with the same name
+int R_LerpTag(orientation_t* tag, const refEntity_t* refent, const char* tagName, int startIndex)
+{
+
+	qhandle_t handle = refent->hModel;
+	int startFrame = refent->oldframe;
+	int endFrame = refent->frame;
+	float frac = 1.0 - refent->backlerp;
+
+	model_t* model = R_GetModelByHandle(handle);
+	if (!model->q3_md3[0] && !model->q3_mdc[0] && !model->q3_mds && !model->q3_mdm)
+	{
+		AxisClear(tag->axis);
+		VectorClear(tag->origin);
+		return -1;
+	}
+
+	float frontLerp = frac;
+	float backLerp = 1.0 - frac;
+
+	int retval;
+	md3Tag_t* start;
+	md3Tag_t* end;
+	md3Tag_t ustart, uend;
+	if (model->type == MOD_MESH3)
+	{
+		// old MD3 style
+		retval = R_GetTag((byte*)model->q3_md3[0], startFrame, tagName, startIndex, &start);
+		retval = R_GetTag((byte*)model->q3_md3[0], endFrame, tagName, startIndex, &end);
+
+	}
+	else if (model->type == MOD_MDS)
+	{
+		// use bone lerping
+		retval = R_GetBoneTagMds(tag, model->q3_mds, startIndex, refent, tagName);
+
+		if (retval >= 0)
+		{
+			return retval;
+		}
+
+		// failed
+		return -1;
+	}
+	else if (model->type == MOD_MDM)
+	{
+		// use bone lerping
+		retval = R_MDM_GetBoneTag(tag, model->q3_mdm, startIndex, refent, tagName);
+
+		if (retval >= 0)
+		{
+			return retval;
+		}
+
+		// failed
+		return -1;
+	}
+	else
+	{
+		// psuedo-compressed MDC tags
+		mdcTag_t* cstart;
+		mdcTag_t* cend;
+
+		retval = R_GetMDCTag((byte*)model->q3_mdc[0], startFrame, tagName, startIndex, &cstart);
+		retval = R_GetMDCTag((byte*)model->q3_mdc[0], endFrame, tagName, startIndex, &cend);
+
+		// uncompress the MDC tags into MD3 style tags
+		if (cstart && cend)
+		{
+			vec3_t sangles, eangles;
+			for (int i = 0; i < 3; i++)
+			{
+				ustart.origin[i] = (float)cstart->xyz[i] * MD3_XYZ_SCALE;
+				uend.origin[i] = (float)cend->xyz[i] * MD3_XYZ_SCALE;
+				sangles[i] = (float)cstart->angles[i] * MDC_TAG_ANGLE_SCALE;
+				eangles[i] = (float)cend->angles[i] * MDC_TAG_ANGLE_SCALE;
+			}
+
+			AnglesToAxis(sangles, ustart.axis);
+			AnglesToAxis(eangles, uend.axis);
+
+			start = &ustart;
+			end = &uend;
+		}
+		else
+		{
+			start = NULL;
+			end = NULL;
+		}
+	}
+
+	if (!start || !end)
+	{
+		AxisClear(tag->axis);
+		VectorClear(tag->origin);
+		return -1;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		tag->origin[i] = start->origin[i] * backLerp +  end->origin[i] * frontLerp;
+		tag->axis[0][i] = start->axis[0][i] * backLerp +  end->axis[0][i] * frontLerp;
+		tag->axis[1][i] = start->axis[1][i] * backLerp +  end->axis[1][i] * frontLerp;
+		tag->axis[2][i] = start->axis[2][i] * backLerp +  end->axis[2][i] * frontLerp;
+	}
+
+	VectorNormalize(tag->axis[0]);
+	VectorNormalize(tag->axis[1]);
+	VectorNormalize(tag->axis[2]);
+
+	return retval;
+}
+
 //==========================================================================
 //
 //	R_Modellist_f
@@ -987,6 +1182,9 @@ void R_Modellist_f()
 
 		case MOD_BRUSH46:
 		case MOD_MD4:
+		case MOD_MDS:
+		case MOD_MDM:
+		case MOD_MDX:
 			DataSize = mod->q3_dataSize;
 			break;
 
@@ -1001,6 +1199,17 @@ void R_Modellist_f()
 			}
 			break;
 
+		case MOD_MDC:
+			DataSize = mod->q3_dataSize;
+			for (int j = 1; j < MD3_MAX_LODS; j++)
+			{
+				if (mod->q3_mdc[j] && mod->q3_mdc[j] != mod->q3_mdc[j - 1])
+				{
+					lods++;
+				}
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -1009,4 +1218,3 @@ void R_Modellist_f()
 	}
 	Log::write("%8i : Total models\n", total);
 }
-#endif

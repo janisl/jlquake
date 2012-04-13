@@ -930,9 +930,7 @@ model_t* R_AllocModel();
 void R_ModelInit();
 void R_FreeModels();
 model_t* R_GetModelByHandle(qhandle_t Index);
-#if 0
 void R_Modellist_f();
-#endif
 
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
 void Mod_FreeSpriteModel(model_t* mod);

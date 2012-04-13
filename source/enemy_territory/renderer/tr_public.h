@@ -97,9 +97,6 @@ typedef struct {
 	void ( *ProjectDecal )( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
 	void ( *ClearDecals )( void );
 
-	int ( *LerpTag )( orientation_t *tag,  const refEntity_t *refent, const char *tagName, int startIndex );
-	void ( *ModelBounds )( qhandle_t model, vec3_t mins, vec3_t maxs );
-
 	void ( *DrawDebugPolygon )( int color, int numpoints, float* points );
 
 	void ( *AddPolyBufferToScene )( polyBuffer_t* pPolyBuffer );

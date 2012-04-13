@@ -690,7 +690,7 @@ int CL_LerpTag(orientation_t *tag,  const etrefEntity_t *gameRefent, const char 
 {
 	refEntity_t refent;
 	CL_GameRefEntToEngine(gameRefent, &refent);
-	return re.LerpTag(tag, &refent, tagName, startIndex);
+	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
 /*
@@ -971,7 +971,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.Add2dPolys( (polyVert_t*)VMA( 1 ), args[2], args[3] );
 		return 0;
 	case CG_R_MODELBOUNDS:
-		re.ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
+		R_ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
 		return 0;
 	case CG_R_LERPTAG:
 		return CL_LerpTag( (orientation_t*)VMA( 1 ), (etrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );

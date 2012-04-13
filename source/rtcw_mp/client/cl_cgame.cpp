@@ -635,7 +635,7 @@ int CL_LerpTag(orientation_t *tag,  const wmrefEntity_t *gameRefent, const char 
 {
 	refEntity_t refent;
 	CL_GameRefEntToEngine(gameRefent, &refent);
-	return re.LerpTag(tag, &refent, tagName, startIndex);
+	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
 static int  FloatAsInt( float f ) {
@@ -851,7 +851,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], (float*)VMA( 10 ), args[11] );
 		return 0;
 	case CG_R_MODELBOUNDS:
-		re.ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
+		R_ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
 		return 0;
 	case CG_R_LERPTAG:
 		return CL_LerpTag( (orientation_t*)VMA( 1 ), (wmrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
