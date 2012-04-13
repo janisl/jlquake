@@ -520,6 +520,9 @@ struct srfFoliage_t
 
 #define BRUSH46_CONTENTS_NODE		-1
 
+// ydnar: optimization
+#define WORLD_MAX_SKY_NODES		32
+
 struct mbrush46_surface_t
 {
 	int						viewCount;		// if == tr.viewCount, already added
