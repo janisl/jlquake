@@ -861,50 +861,6 @@ static void R_RecursiveWorldNode( mbrush46_node_t *node, int planeBits, int dlig
 
 
 /*
-===============
-R_PointInLeaf
-===============
-*/
-static mbrush46_node_t *R_PointInLeaf( const vec3_t p ) {
-	mbrush46_node_t     *node;
-	float d;
-	cplane_t    *plane;
-
-	if ( !tr.world ) {
-		ri.Error( ERR_DROP, "R_PointInLeaf: bad model" );
-	}
-
-	node = tr.world->nodes;
-	while ( 1 ) {
-		if ( node->contents != -1 ) {
-			break;
-		}
-		plane = node->plane;
-		d = DotProduct( p,plane->normal ) - plane->dist;
-		if ( d > 0 ) {
-			node = node->children[0];
-		} else {
-			node = node->children[1];
-		}
-	}
-
-	return node;
-}
-
-/*
-==============
-R_ClusterPVS
-==============
-*/
-static const byte *R_ClusterPVS( int cluster ) {
-	if ( !tr.world || !tr.world->vis || cluster < 0 || cluster >= tr.world->numClusters ) {
-		return tr.world->novis;
-	}
-
-	return tr.world->vis + cluster * tr.world->clusterBytes;
-}
-
-/*
 =================
 R_inPVS
 =================

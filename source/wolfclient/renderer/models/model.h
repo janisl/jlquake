@@ -1006,10 +1006,8 @@ unsigned ColorBytes4(float r, float g, float b, float a);
 void R_LoadBrush46Model(void* buffer);
 void R_FreeBsp46(world_t* mod);
 void R_FreeBsp46Model(model_t* mod);
-#if 0
 const byte* R_ClusterPVS(int cluster);
 mbrush46_node_t* R_PointInLeaf(const vec3_t p);
-#endif
 
 //
 //	CURVE TESSELATION

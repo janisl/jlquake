@@ -2561,7 +2561,6 @@ void R_FreeBsp46Model(model_t* mod)
 	delete[] mod->q3_bmodel->decals;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_ClusterPVS
@@ -2612,4 +2611,3 @@ mbrush46_node_t* R_PointInLeaf(const vec3_t p)
 
 	return node;
 }
-#endif
