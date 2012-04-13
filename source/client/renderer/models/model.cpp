@@ -1273,5 +1273,10 @@ void R_BackupModels()
 			modBack++;
 			numBackupModels++;
 		}
+		else
+		{
+			R_FreeModel(mod);
+		}
 	}
+	tr.numModels = 0;
 }

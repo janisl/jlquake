@@ -4416,19 +4416,22 @@ void R_PurgeShaders()
 
 void R_BackupShaders()
 {
-	if ( !r_cache->integer ) {
+	if (!r_cache->integer)
+	{
 		return;
 	}
-	if ( !r_cacheShaders->integer ) {
+	if (!r_cacheShaders->integer)
+	{
 		return;
 	}
 
 	// copy each model in memory across to the backupModels
-	memcpy( backupShaders, tr.shaders, sizeof( backupShaders ) );
+	memcpy(backupShaders, tr.shaders, sizeof(backupShaders));
 	// now backup the ShaderHashTable
-	memcpy( backupHashTable, ShaderHashTable, sizeof( ShaderHashTable ) );
+	memcpy(backupHashTable, ShaderHashTable, sizeof(ShaderHashTable));
 
 	numBackupShaders = tr.numShaders;
+	tr.numShaders = 0;
 
 	// Gordon: ditch all lightmapped shaders
 	R_PurgeLightmapShaders();
