@@ -582,7 +582,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.GetSkinModel         = RE_GetSkinModel;
 	re.GetShaderFromModel   = RE_GetShaderFromModel;
 //----(SA) end
-	re.LoadWorld        = RE_LoadWorldMap;
 	re.EndRegistration  = RE_EndRegistration;
 
 	re.BeginFrame       = RE_BeginFrame;
@@ -615,7 +614,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.Add2dPolys       = RE_2DPolyies;
 	re.DrawStretchPicGradient   = RE_StretchPicGradient;
 	re.RegisterFont     = RE_RegisterFont;
-	re.GetEntityToken   = R_GetEntityToken;
 
 	re.DrawDebugPolygon = R_DebugPolygon;
 

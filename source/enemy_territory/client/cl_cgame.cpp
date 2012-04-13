@@ -889,7 +889,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_S_STARTSTREAMINGSOUND:
 		return S_StartStreamingSound( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3], args[4], args[5] );
 	case CG_R_LOADWORLDMAP:
-		re.LoadWorld( (char*)VMA( 1 ) );
+		R_LoadWorld( (char*)VMA( 1 ) );
 		return 0;
 	case CG_R_REGISTERMODEL:
 		return R_RegisterModel( (char*)VMA( 1 ) );
@@ -1113,7 +1113,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return getCameraInfo( args[1], args[2], (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ) );
 
 	case CG_GET_ENTITY_TOKEN:
-		return re.GetEntityToken( (char*)VMA( 1 ), args[2] );
+		return R_GetEntityToken( (char*)VMA( 1 ), args[2] );
 
 	case CG_INGAME_POPUP:
 		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {

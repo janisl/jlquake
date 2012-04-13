@@ -53,7 +53,6 @@ typedef struct {
 	qhandle_t ( *RegisterSkin )( const char *name );
 	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 
-	void ( *LoadWorld )( const char *name );
 	qboolean ( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );    //----(SA)	added
 	qhandle_t ( *GetShaderFromModel )( qhandle_t modelid, int surfnum, int withlightmap );                //----(SA)	added
 
@@ -95,8 +94,6 @@ typedef struct {
 
 	int ( *LerpTag )( orientation_t *tag,  const refEntity_t *refent, const char *tagName, int startIndex );
 	void ( *ModelBounds )( qhandle_t model, vec3_t mins, vec3_t maxs );
-
-	qboolean ( *GetEntityToken )( char *buffer, int size );
 } refexport_t;
 
 //

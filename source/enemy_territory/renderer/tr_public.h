@@ -54,7 +54,6 @@ typedef struct {
 	qhandle_t ( *RegisterSkin )( const char *name );
 	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 
-	void ( *LoadWorld )( const char *name );
 	qboolean ( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );    //----(SA)	added
 	qhandle_t ( *GetShaderFromModel )( qhandle_t modelid, int surfnum, int withlightmap );                //----(SA)	added
 
@@ -102,8 +101,6 @@ typedef struct {
 	void ( *ModelBounds )( qhandle_t model, vec3_t mins, vec3_t maxs );
 
 	void ( *DrawDebugPolygon )( int color, int numpoints, float* points );
-
-	qboolean ( *GetEntityToken )( char *buffer, int size );
 
 	void ( *AddPolyBufferToScene )( polyBuffer_t* pPolyBuffer );
 

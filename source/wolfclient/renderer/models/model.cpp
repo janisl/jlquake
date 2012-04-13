@@ -25,6 +25,8 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
+char* __CopyString(const char* in);
+
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
@@ -230,7 +232,6 @@ void R_FreeModels()
 	r_notexture_mip = NULL;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_LoadWorld
@@ -244,6 +245,8 @@ void R_LoadWorld(const char* name)
 		throw DropException("ERROR: attempted to redundantly load world map\n");
 	}
 
+	skyboxportal = 0;
+
 	// set default sun direction to be used if it isn't
 	// overridden by a shader
 	tr.sunDirection[0] = 0.45f;
@@ -252,7 +255,23 @@ void R_LoadWorld(const char* name)
 
 	VectorNormalize(tr.sunDirection);
 
+	tr.sunShader = 0;	// clear sunshader so it's not there if the level doesn't specify it
+
+	// invalidate fogs (likely to be re-initialized to new values by the current map)
+	// TODO:(SA)this is sort of silly.  I'm going to do a general cleanup on fog stuff
+	//			now that I can see how it's been used.  (functionality can narrow since
+	//			it's not used as much as it's designed for.)
+	R_SetFog(FOG_SKY, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_PORTALVIEW, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_HUD, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_MAP, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_CURRENT, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_TARGET, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_WATER, 0, 0, 0, 0, 0, 0);
+	R_SetFog(FOG_SERVER, 0, 0, 0, 0, 0, 0);
+
 	tr.worldMapLoaded = true;
+	tr.worldDir = NULL;
 
 	// load it
 	void* buffer;
@@ -263,12 +282,16 @@ void R_LoadWorld(const char* name)
 	}
 
 	model_t* mod = NULL;
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		mod = R_AllocModel();
 		String::NCpyZ(mod->name, name, sizeof(mod->name));
 		loadmodel = mod;
 	}
+
+	// ydnar: set map meta dir
+	tr.worldDir = __CopyString(name);
+	String::StripExtension(tr.worldDir, tr.worldDir);
 
 	// clear tr.world so if the level fails to load, the next
 	// try will not look at the partially loaded version
@@ -320,6 +343,18 @@ void R_LoadWorld(const char* name)
 	tr.world = &s_worldData;
 	tr.worldModel = mod;
 
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// reset fog to world fog (if present)
+		R_SetFog(FOG_CMD_SWITCHFOG, FOG_MAP, 20, 0, 0, 0, 0);
+	}
+
+	//	set the sun shader if there is one
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) && tr.sunShaderName)
+	{
+		tr.sunShader = R_FindShader(tr.sunShaderName, LIGHTMAP_NONE, true);
+	}
+
 	FS_FreeFile(buffer);
 }
 
@@ -343,7 +378,6 @@ bool R_GetEntityToken(char* buffer, int size)
 		return true;
 	}
 }
-#endif
 
 //==========================================================================
 //

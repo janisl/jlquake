@@ -114,11 +114,8 @@ void    GL_SetDefaultState( void );
 
 void        RE_BeginFrame( stereoFrame_t stereoFrame );
 void        RE_BeginRegistration( glconfig_t *glconfig );
-void        RE_LoadWorldMap( const char *mapname );
 qhandle_t   RE_RegisterSkin( const char *name );
 void        RE_Shutdown( qboolean destroyWindow );
-
-qboolean    R_GetEntityToken( char *buffer, int size );
 
 float       R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out ); // Arnout
 

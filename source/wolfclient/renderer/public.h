@@ -429,9 +429,9 @@ void R_GetPicSize(int* w, int* h, const char* name);
 
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
 
-#if 0
 void R_LoadWorld(const char* Name);
 bool R_GetEntityToken(char* Buffer, int Size);
+#if 0
 int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
 	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
 int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
