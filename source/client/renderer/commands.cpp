@@ -134,6 +134,9 @@ static void R_PerformanceCounters()
 		Log::write("(md3) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
 			tr.pc.c_sphere_cull_md3_in, tr.pc.c_sphere_cull_md3_clip, tr.pc.c_sphere_cull_md3_out,
 			tr.pc.c_box_cull_md3_in, tr.pc.c_box_cull_md3_clip, tr.pc.c_box_cull_md3_out);
+		common->Printf("(gen) %i sin %i sout %i pin %i pout\n",
+			tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out,
+			tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
 	}
 	else if (r_speeds->integer == 3)
 	{
@@ -156,6 +159,11 @@ static void R_PerformanceCounters()
 	{
 		Log::write("flare adds:%i tests:%i renders:%i\n", 
 			backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders);
+	}
+	else if (r_speeds->integer == 7)
+	{
+		common->Printf("decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
+			tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces, tr.pc.c_decalSurfacesCreated);
 	}
 
 	Com_Memset(&tr.pc, 0, sizeof(tr.pc));
@@ -261,10 +269,10 @@ void* R_GetCommandBuffer(int bytes)
 {
 	renderCommandList_t* cmdList = &backEndData[tr.smpFrame]->commands;
 
-	// always leave room for the end of list command
-	if (cmdList->used + bytes + 4 > MAX_RENDER_COMMANDS)
+	// always leave room for the swap buffers and end of list commands
+	if (cmdList->used + bytes + sizeof(swapBuffersCommand_t) + 4 > MAX_RENDER_COMMANDS)
 	{
-		if (bytes > MAX_RENDER_COMMANDS - 4)
+		if (bytes > MAX_RENDER_COMMANDS - (int)sizeof(swapBuffersCommand_t) - 4)
 		{
 			throw Exception(va("R_GetCommandBuffer: bad size %i", bytes));
 		}
@@ -362,6 +370,104 @@ void R_StretchPic(float x, float y, float w, float h,
 	cmd->t2 = t2;
 }
 
+void R_StretchPicGradient(float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	stretchPicCommand_t* cmd = (stretchPicCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_STRETCH_PIC_GRADIENT;
+	cmd->shader = R_GetShaderByHandle(hShader);
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = w;
+	cmd->h = h;
+	cmd->s1 = s1;
+	cmd->t1 = t1;
+	cmd->s2 = s2;
+	cmd->t2 = t2;
+
+	if (!gradientColor)
+	{
+		static float colorWhite[4] = { 1, 1, 1, 1 };
+
+		gradientColor = colorWhite;
+	}
+
+	cmd->gradientColor[0] = gradientColor[0] * 255;
+	cmd->gradientColor[1] = gradientColor[1] * 255;
+	cmd->gradientColor[2] = gradientColor[2] * 255;
+	cmd->gradientColor[3] = gradientColor[3] * 255;
+	cmd->gradientType = gradientType;
+}
+
+void R_RotatedPic(float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader, float angle)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	stretchPicCommand_t* cmd = (stretchPicCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_ROTATED_PIC;
+	cmd->shader = R_GetShaderByHandle(hShader);
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = w;
+	cmd->h = h;
+
+	// fixup
+	cmd->w /= 2;
+	cmd->h /= 2;
+	cmd->x += cmd->w;
+	cmd->y += cmd->h;
+	cmd->w = sqrt((cmd->w * cmd->w) + (cmd->h * cmd->h));
+	cmd->h = cmd->w;
+
+	cmd->angle = angle;
+	cmd->s1 = s1;
+	cmd->t1 = t1;
+	cmd->s2 = s2;
+	cmd->t2 = t2;
+}
+
+void R_2DPolyies(polyVert_t* verts, int numverts, qhandle_t hShader)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+
+	if (r_numpolyverts + numverts > max_polyverts)
+	{
+		return;
+	}
+
+	poly2dCommand_t* cmd = (poly2dCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+
+	cmd->commandId = RC_2DPOLYS;
+	cmd->verts = &backEndData[tr.smpFrame]->polyVerts[r_numpolyverts];
+	cmd->numverts = numverts;
+	memcpy(cmd->verts, verts, sizeof(polyVert_t) * numverts);
+	cmd->shader = R_GetShaderByHandle(hShader);
+
+	r_numpolyverts += numverts;
+}
+
 //==========================================================================
 //
 //	R_BeginFrame
@@ -429,6 +535,109 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 		R_SyncRenderThread();
 		GL_TextureMode(r_textureMode->string);
 		r_textureMode->modified = false;
+	}
+
+	//
+	// anisotropic filtering stuff
+	//
+	if (r_textureAnisotropy->modified)
+	{
+		R_SyncRenderThread();
+		GL_TextureAnisotropy(r_textureAnisotropy->value);
+		r_textureAnisotropy->modified = false;
+	}
+
+	//
+	// ATI stuff
+	//
+	// TRUFORM
+	if (qglPNTrianglesiATI)
+	{
+		// tess
+		if (r_ati_truform_tess->modified)
+		{
+			r_ati_truform_tess->modified = false;
+			// cap if necessary
+			if (r_ati_truform_tess->value > glConfig.ATIMaxTruformTess)
+			{
+				Cvar_Set("r_ati_truform_tess", va("%d", glConfig.ATIMaxTruformTess));
+			}
+
+			qglPNTrianglesiATI(GL_PN_TRIANGLES_TESSELATION_LEVEL_ATI, r_ati_truform_tess->value);
+		}
+
+		// point mode
+		if (r_ati_truform_pointmode->modified)
+		{
+			r_ati_truform_pointmode->modified = false;
+			// GR - shorten the mode name
+			if (!String::ICmp(r_ati_truform_pointmode->string, "LINEAR"))
+			{
+				glConfig.ATIPointMode = (int)GL_PN_TRIANGLES_POINT_MODE_LINEAR_ATI;
+				// GR - fix point mode change
+			}
+			else if (!String::ICmp(r_ati_truform_pointmode->string, "CUBIC"))
+			{
+				glConfig.ATIPointMode = (int)GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI;
+			}
+			else
+			{
+				// bogus value, set to valid
+				glConfig.ATIPointMode = (int)GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI;
+				Cvar_Set("r_ati_truform_pointmode", "LINEAR");
+			}
+			qglPNTrianglesiATI(GL_PN_TRIANGLES_POINT_MODE_ATI, glConfig.ATIPointMode);
+		}
+
+		// normal mode
+		if (r_ati_truform_normalmode->modified)
+		{
+			r_ati_truform_normalmode->modified = false;
+			// GR - shorten the mode name
+			if (!String::ICmp(r_ati_truform_normalmode->string, "LINEAR"))
+			{
+				glConfig.ATINormalMode = (int)GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI;
+				// GR - fix normal mode change
+			}
+			else if (!String::ICmp(r_ati_truform_normalmode->string, "QUADRATIC"))
+			{
+				glConfig.ATINormalMode = (int)GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI;
+			}
+			else
+			{
+				// bogus value, set to valid
+				glConfig.ATINormalMode = (int)GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI;
+				Cvar_Set("r_ati_truform_normalmode", "LINEAR");
+			}
+			qglPNTrianglesiATI(GL_PN_TRIANGLES_NORMAL_MODE_ATI, glConfig.ATINormalMode);
+		}
+	}
+
+	//
+	// NVidia stuff
+	//
+	// fog control
+	if (glConfig.NVFogAvailable && r_nv_fogdist_mode->modified)
+	{
+		r_nv_fogdist_mode->modified = false;
+		if (!String::ICmp(r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV"))
+		{
+			glConfig.NVFogMode = (int)GL_EYE_PLANE_ABSOLUTE_NV;
+		}
+		else if (!String::ICmp(r_nv_fogdist_mode->string, "GL_EYE_PLANE"))
+		{
+			glConfig.NVFogMode = (int)GL_EYE_PLANE;
+		}
+		else if (!String::ICmp(r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV"))
+		{
+			glConfig.NVFogMode = (int)GL_EYE_RADIAL_NV;
+		}
+		else
+		{
+			// in case this was really 'else', store a valid value for next time
+			glConfig.NVFogMode = (int)GL_EYE_RADIAL_NV;
+			Cvar_Set("r_nv_fogdist_mode", "GL_EYE_RADIAL_NV");
+		}
 	}
 
 	//
@@ -515,12 +724,24 @@ void R_EndFrame(int* frontEndMsec, int* backEndMsec)
 	{
 		return;
 	}
-	swapBuffersCommand_t* cmd = (swapBuffersCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
-	if (!cmd)
+	if (GGameType & GAME_ET)
 	{
-		return;
+		// Needs to use reserved space, so no R_GetCommandBuffer.
+		renderCommandList_t* cmdList = &backEndData[tr.smpFrame]->commands;
+		qassert(cmdList);
+		// add swap-buffers command
+		*(int*)(cmdList->cmds + cmdList->used) = RC_SWAP_BUFFERS;
+		cmdList->used += sizeof(swapBuffersCommand_t);
 	}
-	cmd->commandId = RC_SWAP_BUFFERS;
+	else
+	{
+		swapBuffersCommand_t* cmd = (swapBuffersCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+		if (!cmd)
+		{
+			return;
+		}
+		cmd->commandId = RC_SWAP_BUFFERS;
+	}
 
 	R_IssueRenderCommands(true);
 
@@ -538,4 +759,47 @@ void R_EndFrame(int* frontEndMsec, int* backEndMsec)
 		*backEndMsec = backEnd.pc.msec;
 	}
 	backEnd.pc.msec = 0;
+}
+
+void R_RenderToTexture(qhandle_t textureid, int x, int y, int w, int h)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+
+	if (textureid > tr.numImages || textureid < 0)
+	{
+		common->Printf("Warning: trap_R_RenderToTexture textureid %d out of range.\n", textureid);
+		return;
+	}
+
+	renderToTextureCommand_t* cmd = (renderToTextureCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_RENDERTOTEXTURE;
+	cmd->image = tr.images[textureid];
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = w;
+	cmd->h = h;
+}
+
+void R_Finish()
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+
+	common->Printf("R_Finish\n");
+
+	renderFinishCommand_t* cmd = (renderFinishCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_FINISH;
 }
