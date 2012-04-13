@@ -142,7 +142,6 @@ void R_ModelInit()
 	R_LoadCacheModels();
 }
 
-#if 0
 //==========================================================================
 //
 //	R_FreeModel
@@ -174,6 +173,22 @@ static void R_FreeModel(model_t* mod)
 	else if (mod->type == MOD_MD4)
 	{
 		R_FreeMd4(mod);
+	}
+	else if (mod->type == MOD_MDC)
+	{
+		R_FreeMdc(mod);
+	}
+	else if (mod->type == MOD_MDS)
+	{
+		R_FreeMds(mod);
+	}
+	else if (mod->type == MOD_MDM)
+	{
+		R_FreeMdm(mod);
+	}
+	else if (mod->type == MOD_MDX)
+	{
+		R_FreeMdx(mod);
 	}
 	else if (mod->type == MOD_BRUSH29)
 	{
@@ -215,6 +230,7 @@ void R_FreeModels()
 	r_notexture_mip = NULL;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_LoadWorld

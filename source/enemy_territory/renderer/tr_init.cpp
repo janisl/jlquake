@@ -499,29 +499,23 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	// clean out any remaining unused media from the last backup
 	R_PurgeCache();
 
-	if ( r_cache->integer ) {
-		if ( tr.registered ) {
-			if ( destroyWindow ) {
-				R_SyncRenderThread();
-				R_ShutdownCommandBuffers();
-				R_FreeShaders();
-				R_DeleteTextures();
-				R_FreeBackEndData();
-			} else {
-				// backup the current media
-				R_ShutdownCommandBuffers();
-				R_FreeBackEndData();
-
-				R_BackupModels();
-				R_BackupShaders();
-				R_BackupImages();
-			}
-		}
-	} else if ( tr.registered ) {
+	if (r_cache->integer && tr.registered && !destroyWindow)
+	{
+		R_BackupModels();
+		R_BackupShaders();
+		R_BackupImages();
+	}
+	if (tr.registered)
+	{
 		R_SyncRenderThread();
 		R_ShutdownCommandBuffers();
+
+		R_FreeModels();
+
 		R_FreeShaders();
+
 		R_DeleteTextures();
+
 		R_FreeBackEndData();
 	}
 

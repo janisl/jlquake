@@ -928,9 +928,7 @@ struct trRefEntity_t;
 
 model_t* R_AllocModel();
 void R_ModelInit();
-#if 0
 void R_FreeModels();
-#endif
 model_t* R_GetModelByHandle(qhandle_t Index);
 #if 0
 void R_Modellist_f();
