@@ -267,11 +267,6 @@ void R_InitFreeType();
 void R_DoneFreeType();
 void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 
-void *R_CacheModelAlloc( int size );
-void R_CacheModelFree( void *ptr );
-void R_PurgeModels( int count );
-void R_BackupModels( void );
-
 //------------------------------------------------------------------------------
 // Ridah, mesh compression
 
@@ -286,10 +281,6 @@ GL FOG
 
 ============================================================
 */
-
-// Ridah, virtual memory
-void *R_Hunk_Begin( void );
-void R_Hunk_End( void );
 
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 

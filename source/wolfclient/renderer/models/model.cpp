@@ -63,10 +63,8 @@ float*			shadedots = r_avertexnormal_dots[0];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-model_t backupModels[MAX_MOD_KNOWN];
-//static 
-int numBackupModels = 0;
+static model_t* backupModels[MAX_MOD_KNOWN];
+static int numBackupModels = 0;
 
 // CODE --------------------------------------------------------------------
 
@@ -462,30 +460,30 @@ static bool R_FindCachedModel(const char* name, model_t* newmod)
 		return false;
 	}
 
-	model_t* mod = backupModels;
+	model_t** mod = backupModels;
 	for (int i = 0; i < numBackupModels; i++, mod++)
 	{
-		if (!String::NCmp(mod->name, name, sizeof(mod->name)))
+		if (*mod && !String::NCmp((*mod)->name, name, sizeof((*mod)->name)))
 		{
 			// copy it to a new slot
 			int index = newmod->index;
-			memcpy(newmod, mod, sizeof(model_t));
+			memcpy(newmod, *mod, sizeof(model_t));
 			newmod->index = index;
-			switch (mod->type)
+			switch ((*mod)->type)
 			{
 			case MOD_MESH3:
 				for (int j = MD3_MAX_LODS - 1; j >= 0; j--)
 				{
-					if (j < mod->q3_numLods && mod->q3_md3[j])
+					if (j < (*mod)->q3_numLods && (*mod)->q3_md3[j])
 					{
-						if ((j == MD3_MAX_LODS - 1) || (mod->q3_md3[j] != mod->q3_md3[j + 1]))
+						if ((j == MD3_MAX_LODS - 1) || ((*mod)->q3_md3[j] != (*mod)->q3_md3[j + 1]))
 						{
-							newmod->q3_md3[j] = mod->q3_md3[j];
+							newmod->q3_md3[j] = (*mod)->q3_md3[j];
 							R_RegisterMd3Shaders(newmod, j);
 						}
 						else
 						{
-							newmod->q3_md3[j] = mod->q3_md3[j + 1];
+							newmod->q3_md3[j] = (*mod)->q3_md3[j + 1];
 						}
 					}
 				}
@@ -493,16 +491,16 @@ static bool R_FindCachedModel(const char* name, model_t* newmod)
 			case MOD_MDC:
 				for (int j = MD3_MAX_LODS - 1; j >= 0; j--)
 				{
-					if (j < mod->q3_numLods && mod->q3_mdc[j])
+					if (j < (*mod)->q3_numLods && (*mod)->q3_mdc[j])
 					{
-						if ((j == MD3_MAX_LODS - 1) || (mod->q3_mdc[j] != mod->q3_mdc[j + 1]))
+						if ((j == MD3_MAX_LODS - 1) || ((*mod)->q3_mdc[j] != (*mod)->q3_mdc[j + 1]))
 						{
-							newmod->q3_mdc[j] = mod->q3_mdc[j];
+							newmod->q3_mdc[j] = (*mod)->q3_mdc[j];
 							R_RegisterMdcShaders(newmod, j);
 						}
 						else
 						{
-							newmod->q3_mdc[j] = mod->q3_mdc[j + 1];
+							newmod->q3_mdc[j] = (*mod)->q3_mdc[j + 1];
 						}
 					}
 				}
@@ -511,8 +509,8 @@ static bool R_FindCachedModel(const char* name, model_t* newmod)
 				return false;  // not supported yet
 			}
 
-			mod->type = MOD_BAD;    // don't try and purge it later
-			mod->name[0] = 0;
+			delete *mod;
+			*mod = NULL;
 			return true;
 		}
 	}
@@ -1217,4 +1215,63 @@ void R_Modellist_f()
 		total += DataSize;
 	}
 	Log::write("%8i : Total models\n", total);
+}
+
+void R_PurgeModels(int count)
+{
+	static int lastPurged = 0;
+
+	if (!numBackupModels)
+	{
+		return;
+	}
+
+	for (int i = lastPurged; i < numBackupModels; i++)
+	{
+		if (backupModels[i])
+		{
+			R_FreeModel(backupModels[i]);
+			backupModels[i] = NULL;
+			count--;
+			if (count <= 0)
+			{
+				lastPurged = i + 1;
+				return;
+			}
+		}
+	}
+
+	lastPurged = 0;
+	numBackupModels = 0;
+}
+
+void R_BackupModels()
+{
+	if (!r_cache->integer)
+	{
+		return;
+	}
+	if (!r_cacheModels->integer)
+	{
+		return;
+	}
+
+	if (numBackupModels)
+	{
+		R_PurgeModels(numBackupModels + 1); // get rid of them all
+	}
+
+	// copy each model in memory across to the backupModels
+	model_t** modBack = backupModels;
+	for (int i = 0; i < tr.numModels; i++)
+	{
+		model_t* mod = tr.models[i];
+
+		if (mod->type == MOD_MESH3 || mod->type == MOD_MDC)
+		{
+			*modBack = mod;
+			modBack++;
+			numBackupModels++;
+		}
+	}
 }

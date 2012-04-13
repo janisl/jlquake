@@ -218,27 +218,11 @@ void R_InitFreeType();
 void R_DoneFreeType();
 void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 
-void *R_CacheModelAlloc( int size );
-void R_CacheModelFree( void *ptr );
-void R_PurgeModels( int count );
-void R_BackupModels( void );
-
 //------------------------------------------------------------------------------
 
 void R_AddMDCSurfaces( trRefEntity_t *ent );
 // done.
 //------------------------------------------------------------------------------
 
-/*
-============================================================
-
-GL FOG
-
-============================================================
-*/
-
-// Ridah, virtual memory
-void *R_Hunk_Begin( void );
-void R_Hunk_End( void );
 
 #endif //TR_LOCAL_H (THIS MUST BE LAST!!)

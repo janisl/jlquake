@@ -432,8 +432,6 @@ void R_Init( void ) {
 	}
 
 	// Ridah, init the virtual memory
-	R_Hunk_Begin();
-
 	R_InitFogTable();
 
 	R_NoiseInit();
@@ -526,8 +524,6 @@ void RE_Shutdown( qboolean destroyWindow ) {
 		// shutdown QGL subsystem
 		QGL_Shutdown();
 
-		// Ridah, release the virtual memory
-		R_Hunk_End();
 		ri.Tag_Free();  // wipe all render alloc'd zone memory
 	}
 
