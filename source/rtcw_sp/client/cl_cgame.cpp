@@ -786,13 +786,13 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		CL_RenderScene( (wsrefdef_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_SETCOLOR:
-		re.SetColor( (float*)VMA( 1 ) );
+		R_SetColor( (float*)VMA( 1 ) );
 		return 0;
 	case CG_R_DRAWSTRETCHPIC:
-		re.DrawStretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
+		R_StretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
 		return 0;
 	case CG_R_DRAWSTRETCHPIC_GRADIENT:
-		re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], (float*)VMA( 10 ), args[11] );
+		R_StretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], (float*)VMA( 10 ), args[11] );
 		return 0;
 	case CG_R_MODELBOUNDS:
 		R_ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );

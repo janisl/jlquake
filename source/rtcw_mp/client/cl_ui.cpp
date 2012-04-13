@@ -911,11 +911,11 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_SETCOLOR:
-		re.SetColor( (float*)VMA( 1 ) );
+		R_SetColor( (float*)VMA( 1 ) );
 		return 0;
 
 	case UI_R_DRAWSTRETCHPIC:
-		re.DrawStretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
+		R_StretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
 		return 0;
 
 	case UI_R_MODELBOUNDS:

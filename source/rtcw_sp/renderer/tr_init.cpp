@@ -577,9 +577,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 //----(SA) end
 	re.EndRegistration  = RE_EndRegistration;
 
-	re.BeginFrame       = RE_BeginFrame;
-	re.EndFrame         = RE_EndFrame;
-
 	re.MarkFragments    = R_MarkFragments;
 
 	re.ClearScene       = RE_ClearScene;
@@ -594,9 +591,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 //----(SA)
 	re.RenderScene      = RE_RenderScene;
 
-	re.SetColor         = RE_SetColor;
-	re.DrawStretchPic   = RE_StretchPic;
-	re.DrawStretchPicGradient   = RE_StretchPicGradient;
 	re.RegisterFont     = RE_RegisterFont;
 
 	return &re;

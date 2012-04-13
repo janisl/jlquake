@@ -28,7 +28,6 @@ add_library(splines-wolfmp STATIC
 
 set(WOLFMP_FILES
 	renderer/tr_animation.cpp
-	renderer/tr_cmds.cpp
 	renderer/tr_cmesh.cpp
 	renderer/tr_font.cpp
 	renderer/tr_image.cpp

@@ -79,18 +79,6 @@ typedef struct {
 	void ( *SaveViewParms )();
 	void ( *RestoreViewParms )();
 
-	void ( *SetColor )( const float *rgba );    // NULL = 1,1,1,1
-	void ( *DrawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );      // 0 = white
-	void ( *DrawRotatedPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );     // NERVE - SMF
-	void ( *DrawStretchPicGradient )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType );
-	void ( *Add2dPolys )( polyVert_t* polys, int numverts, qhandle_t hShader );
-
-	void ( *BeginFrame )( stereoFrame_t stereoFrame );
-
-	// if the pointers are not NULL, timing info will be returned
-	void ( *EndFrame )( int *frontEndMsec, int *backEndMsec );
-
-
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
 							int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
@@ -106,11 +94,6 @@ typedef struct {
 	qboolean ( *inPVS )( const vec3_t p1, const vec3_t p2 );
 
 	void ( *purgeCache )( void );
-
-	// fretn
-	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
-	//bani
-	void ( *Finish )( void );
 } refexport_t;
 
 //

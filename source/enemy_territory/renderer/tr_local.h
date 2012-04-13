@@ -103,7 +103,7 @@ int R_CullLocalPointAndRadius( vec3_t origin, float radius );
 */
 void    GL_SetDefaultState( void );
 
-void        RE_BeginFrame( stereoFrame_t stereoFrame );
+void        R_BeginFrame( stereoFrame_t stereoFrame );
 void        RE_BeginRegistration( glconfig_t *glconfig );
 qhandle_t   RE_RegisterSkin( const char *name );
 void        RE_Shutdown( qboolean destroyWindow );
@@ -123,11 +123,6 @@ void    R_ScreenShotJPEG_f( void );
 
 void    R_InitSkins( void );
 skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
-
-// fretn - renderToTexture
-void RE_RenderToTexture( int textureid, int x, int y, int w, int h );
-// bani
-void RE_Finish( void );
 
 /*
 ============================================================
@@ -242,25 +237,9 @@ RENDERER BACK END COMMAND QUEUE
 // Gordon: testing
 #define MAX_POLYINDICIES 8192
 
-void *R_GetCommandBuffer( int bytes );
 void RB_ExecuteRenderCommands( const void *data );
 
-void R_InitCommandBuffers( void );
-void R_ShutdownCommandBuffers( void );
-
-void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs );
-
-void RE_SetColor( const float *rgba );
-void RE_StretchPic( float x, float y, float w, float h,
-					float s1, float t1, float s2, float t2, qhandle_t hShader );
-void RE_RotatedPic( float x, float y, float w, float h,
-					float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );       // NERVE - SMF
-void RE_StretchPicGradient( float x, float y, float w, float h,
-							float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType );
-void RE_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader );
 void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
-void RE_BeginFrame( stereoFrame_t stereoFrame );
-void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 
 // font stuff
 void R_InitFreeType();

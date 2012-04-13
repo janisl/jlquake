@@ -157,12 +157,12 @@ void CIN_DrawCinematic( int handle ) {
 
 		barheight = ( (float)LETTERBOX_OFFSET / 480.0f ) * vh;  //----(SA)	added
 
-		re.SetColor( &colorBlack[0] );
-//		re.DrawStretchPic( 0, 0, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
-//		re.DrawStretchPic( 0, SCREEN_HEIGHT-LETTERBOX_OFFSET, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
+		R_SetColor( &colorBlack[0] );
+//		R_StretchPic( 0, 0, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
+//		R_StretchPic( 0, SCREEN_HEIGHT-LETTERBOX_OFFSET, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
 		//----(SA)	adjust for 640x480
-		re.DrawStretchPic( 0, 0, w, barheight, 0, 0, 0, 0, cls.whiteShader );
-		re.DrawStretchPic( 0, vh - barheight - 1, w, barheight + 1, 0, 0, 0, 0, cls.whiteShader );
+		R_StretchPic( 0, 0, w, barheight, 0, 0, 0, 0, cls.whiteShader );
+		R_StretchPic( 0, vh - barheight - 1, w, barheight + 1, 0, 0, 0, 0, cls.whiteShader );
 	}
 
 	R_StretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );

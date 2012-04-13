@@ -578,9 +578,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 //----(SA) end
 	re.EndRegistration  = RE_EndRegistration;
 
-	re.BeginFrame       = RE_BeginFrame;
-	re.EndFrame         = RE_EndFrame;
-
 	re.MarkFragments    = R_MarkFragments;
 	re.ProjectDecal     = RE_ProjectDecal;
 	re.ClearDecals      = RE_ClearDecals;
@@ -599,11 +596,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.SaveViewParms    = RE_SaveViewParms;
 	re.RestoreViewParms = RE_RestoreViewParms;
 
-	re.SetColor         = RE_SetColor;
-	re.DrawStretchPic   = RE_StretchPic;
-	re.DrawRotatedPic   = RE_RotatedPic;        // NERVE - SMF
-	re.Add2dPolys       = RE_2DPolyies;
-	re.DrawStretchPicGradient   = RE_StretchPicGradient;
 	re.RegisterFont     = RE_RegisterFont;
 
 	re.DrawDebugPolygon = R_DebugPolygon;
@@ -615,11 +607,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.inPVS = R_inPVS;
 
 	re.purgeCache       = R_PurgeCache;
-
-	// fretn
-	re.RenderToTexture = RE_RenderToTexture;
-	//bani
-	re.Finish = RE_Finish;
 
 	return &re;
 }

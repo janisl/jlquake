@@ -395,10 +395,10 @@ struct glconfig_t
 void R_BeginRegistration(glconfig_t* glconfig);
 void R_EndRegistration();
 void R_Shutdown(bool destroyWindow);
+#endif
 
 void R_BeginFrame(stereoFrame_t stereoFrame);
 void R_EndFrame(int* frontEndMsec, int* backEndMsec);
-#endif
 
 image_t* R_PicFromWad(const char* Name);
 image_t* R_PicFromWadRepeat(const char* name);
@@ -472,11 +472,20 @@ void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QP
 void R_RenderScene(const refdef_t* fd);
 
 float R_CalcEntityLight(refEntity_t* e);
+#endif
 void R_SetSky(const char* name, float rotate, vec3_t axis);
 
 void R_SetColor(const float* rgba);
 void R_StretchPic(float x, float y, float w, float h, 
 	float s1, float t1, float s2, float t2, qhandle_t hShader);
+void R_StretchPicGradient(float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType);
+void R_RotatedPic(float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader, float angle);
+void R_2DPolyies(polyVert_t* verts, int numverts, qhandle_t hShader);
+void R_RenderToTexture(qhandle_t textureid, int x, int y, int w, int h);
+void R_Finish();
+#if 0
 void R_Draw2DQuad(float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
 	float r, float g, float b, float a);

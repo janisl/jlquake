@@ -779,13 +779,10 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
-#if 0
 void R_InitCommandBuffers();
 void R_ShutdownCommandBuffers();
-#endif
 void R_IssueRenderCommands(bool runPerformanceCounters);
 void R_SyncRenderThread();
-#if 0
 void* R_GetCommandBuffer(int bytes);
 void R_AddDrawSurfCmd(drawSurf_t* drawSurfs, int numDrawSurfs);
 
@@ -797,6 +794,7 @@ SKINS
 ============================================================
 */
 
+#if 0
 void R_InitSkins();
 skin_t* R_GetSkinByHandle(qhandle_t hSkin);
 void R_SkinList_f();
