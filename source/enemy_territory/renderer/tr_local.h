@@ -53,10 +53,6 @@ SURFACES
 
 #define MAX_FACE_POINTS     1024
 
-// ydnar: decals
-#define MAX_WORLD_DECALS        1024
-#define MAX_ENTITY_DECALS       128
-
 /*
 ==============================================================================
 

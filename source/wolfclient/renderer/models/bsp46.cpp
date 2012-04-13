@@ -41,8 +41,7 @@ world_t		s_worldData;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-//static 
-byte*		fileBase;
+static byte*		fileBase;
 
 // CODE --------------------------------------------------------------------
 
@@ -104,8 +103,7 @@ static void HSVtoRGB(float h, float s, float v, float rgb[3])
 //
 //==========================================================================
 
-//static 
-void R_ColorShiftLightingBytes(byte in[4], byte out[4])
+static void R_ColorShiftLightingBytes(byte in[4], byte out[4])
 {
 	// shift the color data based on overbright range
 	int shift = r_mapOverBrightBits->integer - tr.overbrightBits;
@@ -196,8 +194,7 @@ float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte
 //
 //==========================================================================
 
-//static 
-void R_LoadLightmaps(bsp46_lump_t* l)
+static void R_LoadLightmaps(bsp46_lump_t* l)
 {
 	// ydnar: clear lightmaps first
 	tr.numLightmaps = 0;
@@ -256,8 +253,7 @@ void R_LoadLightmaps(bsp46_lump_t* l)
 //
 //==========================================================================
 
-//static 
-void R_LoadVisibility(bsp46_lump_t* l)
+static void R_LoadVisibility(bsp46_lump_t* l)
 {
 	int len = (s_worldData.numClusters + 63) & ~63;
 	s_worldData.novis = new byte[len];
@@ -1794,8 +1790,7 @@ static void R_StitchAllPatches()
 //
 //==========================================================================
 
-//static 
-void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_t* indexLump)
+static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_t* indexLump)
 {
 	bsp46_dsurface_t* in = (bsp46_dsurface_t*)(fileBase + surfs->fileofs);
 	if (surfs->filelen % sizeof(*in))
@@ -1923,8 +1918,7 @@ static void R_SetParent(mbrush46_node_t* node, mbrush46_node_t* parent)
 //
 //==========================================================================
 
-//static 
-void R_LoadNodesAndLeafs(bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump)
+static void R_LoadNodesAndLeafs(bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump)
 {
 	bsp46_dnode_t* in = (bsp46_dnode_t*)(fileBase + nodeLump->fileofs);
 	if (nodeLump->filelen % sizeof(bsp46_dnode_t) ||
@@ -2014,8 +2008,7 @@ void R_LoadNodesAndLeafs(bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump)
 //
 //==========================================================================
 
-//static 
-void R_LoadShaders(bsp46_lump_t* l)
+static void R_LoadShaders(bsp46_lump_t* l)
 {	
 	bsp46_dshader_t* in = (bsp46_dshader_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -2043,8 +2036,7 @@ void R_LoadShaders(bsp46_lump_t* l)
 //
 //==========================================================================
 
-//static 
-void R_LoadMarksurfaces(bsp46_lump_t* l)
+static void R_LoadMarksurfaces(bsp46_lump_t* l)
 {	
 	int* in = (int*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -2070,8 +2062,7 @@ void R_LoadMarksurfaces(bsp46_lump_t* l)
 //
 //==========================================================================
 
-//static 
-void R_LoadPlanes(bsp46_lump_t* l)
+static void R_LoadPlanes(bsp46_lump_t* l)
 {
 	bsp46_dplane_t* in = (bsp46_dplane_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -2123,8 +2114,7 @@ unsigned ColorBytes4(float r, float g, float b, float a)
 //
 //==========================================================================
 
-//static 
-void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t* sidesLump)
+static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t* sidesLump)
 {
 	bsp46_dfog_t* fogs = (bsp46_dfog_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*fogs))
@@ -2270,8 +2260,7 @@ void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t* sidesL
 //
 //==========================================================================
 
-//static 
-void R_LoadLightGrid(bsp46_lump_t* l)
+static void R_LoadLightGrid(bsp46_lump_t* l)
 {
 	world_t* w = &s_worldData;
 
@@ -2310,7 +2299,6 @@ void R_LoadLightGrid(bsp46_lump_t* l)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_LoadEntities
@@ -2361,26 +2349,29 @@ static void R_LoadEntities(bsp46_lump_t* l)
 		char value[MAX_TOKEN_CHARS_Q3];
 		String::NCpyZ(value, token, sizeof(value));
 
-		// check for remapping of shaders for vertex lighting
-		const char* keybase = "vertexremapshader";
-		if (!String::NCmp(keyname, keybase, String::Length(keybase)))
+		if (!(GGameType & (GAME_WolfMP | GAME_ET)))
 		{
-			char* s = strchr(value, ';');
-			if (!s)
+			// check for remapping of shaders for vertex lighting
+			const char* keybase = "vertexremapshader";
+			if (!String::NCmp(keyname, keybase, String::Length(keybase)))
 			{
-				Log::write(S_COLOR_YELLOW "WARNING: no semi colon in vertexshaderremap '%s'\n", value);
-				break;
+				char* s = strchr(value, ';');
+				if (!s)
+				{
+					Log::write(S_COLOR_YELLOW "WARNING: no semi colon in vertexshaderremap '%s'\n", value);
+					break;
+				}
+				*s++ = 0;
+				if (r_vertexLight->integer)
+				{
+					R_RemapShader(value, s, "0");
+				}
+				continue;
 			}
-			*s++ = 0;
-			if (r_vertexLight->integer)
-			{
-				R_RemapShader(value, s, "0");
-			}
-			continue;
 		}
 
 		// check for remapping of shaders
-		keybase = "remapshader";
+		const char* keybase = "remapshader";
 		if (!String::NCmp(keyname, keybase, String::Length(keybase)))
 		{
 			char* s = strchr(value, ';');
@@ -2419,6 +2410,7 @@ static void R_LoadSubmodels(bsp46_lump_t* l)
 	int count = l->filelen / sizeof(*in);
 
 	mbrush46_model_t* out = new mbrush46_model_t[count];
+	s_worldData.numBModels = count;
 	s_worldData.bmodels = out;
 
 	for (int i = 0; i < count; i++, in++, out++)
@@ -2439,6 +2431,23 @@ static void R_LoadSubmodels(bsp46_lump_t* l)
 
 		out->firstSurface = s_worldData.surfaces + LittleLong(in->firstSurface);
 		out->numSurfaces = LittleLong(in->numSurfaces);
+
+		// ydnar: for attaching fog brushes to models
+		out->firstBrush = LittleLong(in->firstBrush);
+		out->numBrushes = LittleLong(in->numBrushes);
+
+		// ydnar: allocate decal memory
+		int j = (i == 0 ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS);
+		out->decals = new mbrush46_decal_t[j];
+		memset(out->decals, 0, j * sizeof(*out->decals));
+	}
+}
+
+static void ExecUpdateScreen()
+{
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		Cbuf_ExecuteText(EXEC_NOW, "updatescreen\n");
 	}
 }
 
@@ -2454,7 +2463,7 @@ void R_LoadBrush46Model(void* buffer)
 	fileBase = (byte*)buffer;
 
 	int version = LittleLong(header->version);
-	if (version != BSP46_VERSION)
+	if (version != BSP46_VERSION && version != BSP47_VERSION)
 	{
 		throw DropException(va("RE_LoadWorldMap: %s has wrong version number (%i should be %i)", 
 			s_worldData.name, version, BSP46_VERSION));
@@ -2467,17 +2476,30 @@ void R_LoadBrush46Model(void* buffer)
 	}
 
 	// load into heap
+	ExecUpdateScreen();
 	R_LoadShaders(&header->lumps[BSP46LUMP_SHADERS]);
+	ExecUpdateScreen();
 	R_LoadLightmaps(&header->lumps[BSP46LUMP_LIGHTMAPS]);
+	ExecUpdateScreen();
 	R_LoadPlanes(&header->lumps[BSP46LUMP_PLANES]);
-	R_LoadFogs(&header->lumps[BSP46LUMP_FOGS], &header->lumps[BSP46LUMP_BRUSHES], &header->lumps[BSP46LUMP_BRUSHSIDES]);
+	ExecUpdateScreen();
 	R_LoadSurfaces(&header->lumps[BSP46LUMP_SURFACES], &header->lumps[BSP46LUMP_DRAWVERTS], &header->lumps[BSP46LUMP_DRAWINDEXES]);
+	ExecUpdateScreen();
 	R_LoadMarksurfaces(&header->lumps[BSP46LUMP_LEAFSURFACES]);
+	ExecUpdateScreen();
 	R_LoadNodesAndLeafs(&header->lumps[BSP46LUMP_NODES], &header->lumps[BSP46LUMP_LEAFS]);
+	ExecUpdateScreen();
 	R_LoadSubmodels(&header->lumps[BSP46LUMP_MODELS]);
+	//	moved fog lump loading here, so fogs can be tagged with a model num
+	ExecUpdateScreen();
+	R_LoadFogs(&header->lumps[BSP46LUMP_FOGS], &header->lumps[BSP46LUMP_BRUSHES], &header->lumps[BSP46LUMP_BRUSHSIDES]);
+	ExecUpdateScreen();
 	R_LoadVisibility(&header->lumps[BSP46LUMP_VISIBILITY]);
+	ExecUpdateScreen();
 	R_LoadEntities(&header->lumps[BSP46LUMP_ENTITIES]);
+	ExecUpdateScreen();
 	R_LoadLightGrid(&header->lumps[BSP46LUMP_LIGHTGRID]);
+	ExecUpdateScreen();
 }
 
 //==========================================================================
@@ -2536,8 +2558,10 @@ void R_FreeBsp46(world_t* mod)
 
 void R_FreeBsp46Model(model_t* mod)
 {
+	delete[] mod->q3_bmodel->decals;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_ClusterPVS

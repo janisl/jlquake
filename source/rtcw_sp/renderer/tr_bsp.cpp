@@ -40,144 +40,6 @@ void RE_LoadWorldMap( const char *name );
 
 */
 
-extern byte        *fileBase;
-
-int c_gridVerts;
-
-//===============================================================================
-
-void R_ColorShiftLightingBytes( byte in[4], byte out[4] );
-void R_LoadLightmaps( bsp46_lump_t *l );
-void R_LoadVisibility( bsp46_lump_t *l );
-void R_LoadSurfaces( bsp46_lump_t *surfs, bsp46_lump_t *verts, bsp46_lump_t *indexLump );
-
-/*
-=================
-R_LoadSubmodels
-=================
-*/
-static void R_LoadSubmodels( bsp46_lump_t *l ) {
-	bsp46_dmodel_t    *in;
-	mbrush46_model_t    *out;
-	int i, j, count;
-
-	in = ( bsp46_dmodel_t* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof( *in ) ) {
-		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name );
-	}
-	count = l->filelen / sizeof( *in );
-
-	s_worldData.bmodels = out = (mbrush46_model_t*)ri.Hunk_Alloc( count * sizeof( *out ), h_low );
-
-	for ( i = 0 ; i < count ; i++, in++, out++ ) {
-		model_t *model;
-
-		model = R_AllocModel();
-
-		assert( model != NULL );            // this should never happen
-
-		model->type = MOD_BRUSH46;
-		model->q3_bmodel = out;
-		String::Sprintf( model->name, sizeof( model->name ), "*%d", i );
-
-		for ( j = 0 ; j < 3 ; j++ ) {
-			out->bounds[0][j] = LittleFloat( in->mins[j] );
-			out->bounds[1][j] = LittleFloat( in->maxs[j] );
-		}
-
-		out->firstSurface = s_worldData.surfaces + LittleLong( in->firstSurface );
-		out->numSurfaces = LittleLong( in->numSurfaces );
-	}
-}
-
-void R_LoadNodesAndLeafs( bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump );
-void R_LoadShaders( bsp46_lump_t *l );
-void R_LoadMarksurfaces( bsp46_lump_t *l );
-void R_LoadPlanes( bsp46_lump_t *l );
-void R_LoadFogs( bsp46_lump_t *l, bsp46_lump_t *brushesLump, bsp46_lump_t *sidesLump );
-void R_LoadLightGrid( bsp46_lump_t *l );
-
-/*
-================
-R_LoadEntities
-================
-*/
-void R_LoadEntities( bsp46_lump_t *l ) {
-	const char *p;
-	char *token, *s;
-	char keyname[MAX_TOKEN_CHARS_Q3];
-	char value[MAX_TOKEN_CHARS_Q3];
-	world_t *w;
-
-	w = &s_worldData;
-	w->lightGridSize[0] = 64;
-	w->lightGridSize[1] = 64;
-	w->lightGridSize[2] = 128;
-
-	p = ( char * )( fileBase + l->fileofs );
-
-	// store for reference by the cgame
-	w->entityString = (char*)ri.Hunk_Alloc( l->filelen + 1, h_low );
-	String::Cpy( w->entityString, p );
-	w->entityParsePoint = w->entityString;
-
-	token = String::ParseExt( &p, qtrue );
-	if ( !*token || *token != '{' ) {
-		return;
-	}
-
-	// only parse the world spawn
-	while ( 1 ) {
-		// parse key
-		token = String::ParseExt( &p, qtrue );
-
-		if ( !*token || *token == '}' ) {
-			break;
-		}
-		String::NCpyZ( keyname, token, sizeof( keyname ) );
-
-		// parse value
-		token = String::ParseExt( &p, qtrue );
-
-		if ( !*token || *token == '}' ) {
-			break;
-		}
-		String::NCpyZ( value, token, sizeof( value ) );
-
-		// check for remapping of shaders for vertex lighting
-		s = "vertexremapshader";
-		if ( !String::NCmp( keyname, s, String::Length( s ) ) ) {
-			s = strchr( value, ';' );
-			if ( !s ) {
-				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in vertexshaderremap '%s'\n", value );
-				break;
-			}
-			*s++ = 0;
-			if ( r_vertexLight->integer ) {
-				R_RemapShader( value, s, "0" );
-			}
-			continue;
-		}
-		// check for remapping of shaders
-		s = "remapshader";
-		if ( !String::NCmp( keyname, s, String::Length( s ) ) ) {
-			s = strchr( value, ';' );
-			if ( !s ) {
-				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in shaderremap '%s'\n", value );
-				break;
-			}
-			*s++ = 0;
-			R_RemapShader( value, s, "0" );
-			continue;
-		}
-		// check for a different grid size
-		if ( !String::ICmp( keyname, "gridsize" ) ) {
-			sscanf( value, "%f %f %f", &w->lightGridSize[0], &w->lightGridSize[1], &w->lightGridSize[2] );
-			continue;
-		}
-	}
-}
-
 /*
 =================
 R_GetEntityToken
@@ -204,8 +66,6 @@ Called directly from cgame
 =================
 */
 void RE_LoadWorldMap( const char *name ) {
-	int i;
-	bsp46_dheader_t   *header;
 	byte        *buffer;
 	byte        *startMarker;
 
@@ -257,48 +117,8 @@ void RE_LoadWorldMap( const char *name ) {
 	String::StripExtension( s_worldData.baseName, s_worldData.baseName );
 
 	startMarker = (byte*)ri.Hunk_Alloc( 0, h_low );
-	c_gridVerts = 0;
 
-	header = (bsp46_dheader_t *)buffer;
-	fileBase = (byte *)header;
-
-	i = LittleLong( header->version );
-#ifndef _SKIP_BSP_CHECK
-	if ( i != BSP47_VERSION ) {
-		ri.Error( ERR_DROP, "RE_LoadWorldMap: %s has wrong version number (%i should be %i)",
-				  name, i, BSP47_VERSION );
-	}
-#endif
-
-	// swap all the lumps
-	for ( i = 0 ; i < sizeof( bsp46_dheader_t ) / 4 ; i++ ) {
-		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
-	}
-
-	// load into heap
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadShaders( &header->lumps[BSP46LUMP_SHADERS] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadLightmaps( &header->lumps[BSP46LUMP_LIGHTMAPS] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadPlanes( &header->lumps[BSP46LUMP_PLANES] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadFogs( &header->lumps[BSP46LUMP_FOGS], &header->lumps[BSP46LUMP_BRUSHES], &header->lumps[BSP46LUMP_BRUSHSIDES] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadSurfaces( &header->lumps[BSP46LUMP_SURFACES], &header->lumps[BSP46LUMP_DRAWVERTS], &header->lumps[BSP46LUMP_DRAWINDEXES] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadMarksurfaces( &header->lumps[BSP46LUMP_LEAFSURFACES] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadNodesAndLeafs( &header->lumps[BSP46LUMP_NODES], &header->lumps[BSP46LUMP_LEAFS] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadSubmodels( &header->lumps[BSP46LUMP_MODELS] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadVisibility( &header->lumps[BSP46LUMP_VISIBILITY] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadEntities( &header->lumps[BSP46LUMP_ENTITIES] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-	R_LoadLightGrid( &header->lumps[BSP46LUMP_LIGHTGRID] );
-	ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
+	R_LoadBrush46Model(buffer);
 
 	s_worldData.dataSize = (byte *)ri.Hunk_Alloc( 0, h_low ) - startMarker;
 

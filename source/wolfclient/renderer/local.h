@@ -117,6 +117,10 @@ init
 #define MAX_WORLD_COORD			(128 * 1024)
 #define MIN_WORLD_COORD			(-128 * 1024)
 
+// ydnar: decals
+#define MAX_WORLD_DECALS		1024
+#define MAX_ENTITY_DECALS		128
+
 struct dlight_t
 {
 	vec3_t	origin;
