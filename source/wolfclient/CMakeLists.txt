@@ -23,7 +23,7 @@ set(WOLFCLIENT_FILES
 	renderer/models/mdl.cpp
 	../client/renderer/models/mdm.cpp
 	../client/renderer/models/mds.cpp
-	renderer/models/model.cpp
+	../client/renderer/models/model.cpp
 	../client/renderer/models/sp2.cpp
 	../client/renderer/models/spr.cpp
 	../client/renderer/backend.cpp

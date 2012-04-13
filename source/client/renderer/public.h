@@ -441,6 +441,7 @@ int R_ModelSyncType(qhandle_t Handle);
 void R_PrintModelFrameName(qhandle_t Handle, int Frame);
 void R_CalculateModelScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 bool R_LerpTag(orientation_t* Tag, qhandle_t Handle, int StartFrame, int EndFrame, float Frac, const char* TagName);
+int R_LerpTag(orientation_t* tag, const refEntity_t* refent, const char* tagName, int startIndex);
 
 qhandle_t R_RegisterShader(const char* Name);
 qhandle_t R_RegisterShaderNoMip(const char* Name);
