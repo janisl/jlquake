@@ -370,14 +370,14 @@ void R_RegisterMd3Shaders(model_t* mod, int lod)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	ProjectRadius
 //
 //==========================================================================
 
-static float ProjectRadius(float r, vec3_t location)
+//static 
+float ProjectRadius(float r, vec3_t location)
 {
 	float c = DotProduct(tr.viewParms.orient.axis[0], tr.viewParms.orient.origin);
 	float dist = DotProduct(tr.viewParms.orient.axis[0], location) - c;
@@ -389,7 +389,7 @@ static float ProjectRadius(float r, vec3_t location)
 
 	vec3_t p;
 	p[0] = 0;
-	p[1] = fabs(r);
+	p[1] = Q_fabs(r);
 	p[2] = -dist;
 
 	float projected[4];
@@ -430,7 +430,8 @@ static float ProjectRadius(float r, vec3_t location)
 //
 //==========================================================================
 
-static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
+//static 
+int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
 {
 	// compute frame pointers
 	md3Frame_t* newFrame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.frame;
@@ -520,7 +521,8 @@ static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
 //
 //==========================================================================
 
-static int R_ComputeLOD(trRefEntity_t* ent)
+//static 
+int R_ComputeLOD(trRefEntity_t* ent)
 {
 	int lod;
 	if (tr.currentModel->q3_numLods < 2)
@@ -532,6 +534,12 @@ static int R_ComputeLOD(trRefEntity_t* ent)
 	{
 		// multiple LODs exist, so compute projected bounding sphere
 		// and use that as a criteria for selecting LOD
+
+		// RF, checked for a forced lowest LOD
+		if (ent->e.reFlags & REFLAG_FORCE_LOD)
+		{
+			return tr.currentModel->q3_numLods - 1;
+		}
 
 		md3Frame_t* frame = (md3Frame_t*)(((byte*)tr.currentModel->q3_md3[0]) + tr.currentModel->q3_md3[0]->ofsFrames);
 
@@ -589,7 +597,8 @@ static int R_ComputeLOD(trRefEntity_t* ent)
 //
 //==========================================================================
 
-static int R_ComputeFogNum(md3Header_t* header, trRefEntity_t* ent)
+//static 
+int R_ComputeFogNum(md3Header_t* header, trRefEntity_t* ent)
 {
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 	{
@@ -624,6 +633,7 @@ static int R_ComputeFogNum(md3Header_t* header, trRefEntity_t* ent)
 	return 0;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_AddMD3Surfaces
