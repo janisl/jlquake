@@ -792,11 +792,9 @@ SKINS
 ============================================================
 */
 
-#if 0
 void R_InitSkins();
 skin_t* R_GetSkinByHandle(qhandle_t hSkin);
 void R_SkinList_f();
-#endif
 
 /*
 ============================================================

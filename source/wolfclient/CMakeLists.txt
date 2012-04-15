@@ -43,6 +43,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/shade_calculate.cpp
 	../client/renderer/shader.cpp
 	../client/renderer/shadows.cpp
+	renderer/skin.cpp
 	../client/renderer/sky.cpp
 	../client/renderer/state.cpp
 	../client/renderer/surface1.cpp

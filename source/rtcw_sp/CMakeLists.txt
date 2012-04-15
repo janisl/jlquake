@@ -23,7 +23,6 @@ set(WOLFSP_FILES
 	renderer/tr_animation.cpp
 	renderer/tr_cmesh.cpp
 	renderer/tr_font.cpp
-	renderer/tr_image.cpp
 	renderer/tr_init.cpp
 	renderer/tr_light.cpp
 	renderer/tr_main.cpp

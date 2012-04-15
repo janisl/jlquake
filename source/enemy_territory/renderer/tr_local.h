@@ -95,24 +95,14 @@ void    GL_SetDefaultState( void );
 
 void        R_BeginFrame( stereoFrame_t stereoFrame );
 void        RE_BeginRegistration( glconfig_t *glconfig );
-qhandle_t   RE_RegisterSkin( const char *name );
 void        RE_Shutdown( qboolean destroyWindow );
 
 float       R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out ); // Arnout
 
-//----(SA)
-qboolean    RE_GetSkinModel( qhandle_t skinid, const char *type, char *name );
-qhandle_t   RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );    //----(SA)
-//----(SA) end
-
 void        R_Init( void );
 
-void    R_SkinList_f( void );
 void    R_ScreenShot_f( void );
 void    R_ScreenShotJPEG_f( void );
-
-void    R_InitSkins( void );
-skin_t  *R_GetSkinByHandle( qhandle_t hSkin );
 
 /*
 ============================================================

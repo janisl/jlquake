@@ -737,13 +737,13 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_R_REGISTERMODEL:
 		return R_RegisterModel( (char*)VMA( 1 ) );
 	case CG_R_REGISTERSKIN:
-		return re.RegisterSkin( (char*)VMA( 1 ) );
+		return R_RegisterSkin( (char*)VMA( 1 ) );
 
 		//----(SA)	added
 	case CG_R_GETSKINMODEL:
-		return re.GetSkinModel( args[1], (char*)VMA( 2 ), (char*)VMA( 3 ) );
+		return R_GetSkinModel( args[1], (char*)VMA( 2 ), (char*)VMA( 3 ) );
 	case CG_R_GETMODELSHADER:
-		return re.GetShaderFromModel( args[1], args[2], args[3] );
+		return R_GetShaderFromModel( args[1], args[2], args[3] );
 		//----(SA)	end
 
 	case CG_R_REGISTERSHADER:

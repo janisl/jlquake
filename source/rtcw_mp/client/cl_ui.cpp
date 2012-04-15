@@ -875,7 +875,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return R_RegisterModel( (char*)VMA( 1 ) );
 
 	case UI_R_REGISTERSKIN:
-		return re.RegisterSkin( (char*)VMA( 1 ) );
+		return R_RegisterSkin( (char*)VMA( 1 ) );
 
 	case UI_R_REGISTERSHADERNOMIP:
 		return R_RegisterShaderNoMip( (char*)VMA( 1 ) );

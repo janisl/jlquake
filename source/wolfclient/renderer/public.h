@@ -416,11 +416,9 @@ image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels);
 image_t* R_RegisterPic(const char* name);
 image_t* R_RegisterPicRepeat(const char* name);
 int R_GetTextureId(const char* name);
-#if 0
 void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation);
 void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation, int classIndex);
 byte* R_LoadQuakeWorldSkinData(const char* name);
-#endif
 
 const char* R_GetImageName(qhandle_t Handle);
 int R_GetImageWidth(image_t* pic);
@@ -454,10 +452,12 @@ qhandle_t R_RegisterShaderNoMip(const char* Name);
 void R_RemapShader(const char* OldShader, const char* NewShader, const char* TimeOffset);
 bool R_LoadDynamicShader(const char* shadername, const char* shadertext);
 
-#if 0
 qhandle_t R_RegisterSkin(const char* Name);
 image_t* R_RegisterSkinQ2(const char* name);
+bool R_GetSkinModel(qhandle_t skinid, const char* type, char* name);
+qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap);
 
+#if 0
 void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
 
 // a scene is built up by calls to R_ClearScene and the various R_Add functions.

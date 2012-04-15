@@ -571,11 +571,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.Shutdown = RE_Shutdown;
 
 	re.BeginRegistration = RE_BeginRegistration;
-	re.RegisterSkin     = RE_RegisterSkin;
-//----(SA) added
-	re.GetSkinModel         = RE_GetSkinModel;
-	re.GetShaderFromModel   = RE_GetShaderFromModel;
-//----(SA) end
 	re.EndRegistration  = RE_EndRegistration;
 
 	re.MarkFragments    = R_MarkFragments;
