@@ -348,6 +348,247 @@ void R_FreeMdx(model_t* mod)
 	Mem_Free(mod->q3_mdx);
 }
 
+static int R_CullModel(trRefEntity_t* ent)
+{
+	mdxHeader_t* newFrameHeader = R_GetModelByHandle(ent->e.frameModel)->q3_mdx;
+	mdxHeader_t* oldFrameHeader = R_GetModelByHandle(ent->e.oldframeModel)->q3_mdx;
+
+	if (!newFrameHeader || !oldFrameHeader)
+	{
+		return CULL_OUT;
+	}
+
+	// compute frame pointers
+	mdxFrame_t* newFrame = (mdxFrame_t*)((byte*)newFrameHeader + newFrameHeader->ofsFrames +
+		ent->e.frame * (int)(sizeof(mdxBoneFrameCompressed_t)) * newFrameHeader->numBones +
+		ent->e.frame * sizeof(mdxFrame_t));
+	mdxFrame_t* oldFrame = (mdxFrame_t*)((byte*)oldFrameHeader + oldFrameHeader->ofsFrames +
+		ent->e.oldframe * (int)(sizeof(mdxBoneFrameCompressed_t)) * oldFrameHeader->numBones +
+		ent->e.oldframe * sizeof(mdxFrame_t));
+
+	// cull bounding sphere ONLY if this is not an upscaled entity
+	if (!ent->e.nonNormalizedAxes)
+	{
+		if (ent->e.frame == ent->e.oldframe && ent->e.frameModel == ent->e.oldframeModel)
+		{
+			switch (R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius))
+			{
+			case CULL_OUT:
+				tr.pc.c_sphere_cull_md3_out++;
+				return CULL_OUT;
+
+			case CULL_IN:
+				tr.pc.c_sphere_cull_md3_in++;
+				return CULL_IN;
+
+			case CULL_CLIP:
+				tr.pc.c_sphere_cull_md3_clip++;
+				break;
+			}
+		}
+		else
+		{
+			int sphereCull, sphereCullB;
+
+			sphereCull  = R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius);
+			if (newFrame == oldFrame)
+			{
+				sphereCullB = sphereCull;
+			}
+			else
+			{
+				sphereCullB = R_CullLocalPointAndRadius(oldFrame->localOrigin, oldFrame->radius);
+			}
+
+			if (sphereCull == sphereCullB)
+			{
+				if (sphereCull == CULL_OUT)
+				{
+					tr.pc.c_sphere_cull_md3_out++;
+					return CULL_OUT;
+				}
+				else if (sphereCull == CULL_IN)
+				{
+					tr.pc.c_sphere_cull_md3_in++;
+					return CULL_IN;
+				}
+				else
+				{
+					tr.pc.c_sphere_cull_md3_clip++;
+				}
+			}
+		}
+	}
+
+	// calculate a bounding box in the current coordinate system
+	vec3_t bounds[2];
+	for (int i = 0; i < 3; i++)
+	{
+		bounds[0][i] = oldFrame->bounds[0][i] < newFrame->bounds[0][i] ? oldFrame->bounds[0][i] : newFrame->bounds[0][i];
+		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
+	}
+
+	switch (R_CullLocalBox(bounds))
+	{
+	case CULL_IN:
+		tr.pc.c_box_cull_md3_in++;
+		return CULL_IN;
+	case CULL_CLIP:
+		tr.pc.c_box_cull_md3_clip++;
+		return CULL_CLIP;
+	case CULL_OUT:
+	default:
+		tr.pc.c_box_cull_md3_out++;
+		return CULL_OUT;
+	}
+}
+
+static int R_ComputeFogNum(trRefEntity_t* ent)
+{
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		return 0;
+	}
+
+	mdxHeader_t* header = R_GetModelByHandle(ent->e.frameModel)->q3_mdx;
+
+	// compute frame pointers
+	mdxFrame_t* mdxFrame = (mdxFrame_t*)((byte*)header + header->ofsFrames +
+		ent->e.frame * (int)(sizeof(mdxBoneFrameCompressed_t)) * header->numBones +
+		ent->e.frame * sizeof(mdxFrame_t));
+
+	// FIXME: non-normalized axis issues
+	vec3_t localOrigin;
+	VectorAdd(ent->e.origin, mdxFrame->localOrigin, localOrigin);
+	for (int i = 1; i < tr.world->numfogs; i++)
+	{
+		mbrush46_fog_t* fog = &tr.world->fogs[i];
+		int j;
+		for (j = 0; j < 3; j++)
+		{
+			if (localOrigin[j] - mdxFrame->radius >= fog->bounds[1][j])
+			{
+				break;
+			}
+			if (localOrigin[j] + mdxFrame->radius <= fog->bounds[0][j])
+			{
+				break;
+			}
+		}
+		if (j == 3)
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+void R_MDM_AddAnimSurfaces(trRefEntity_t* ent)
+{
+	// don't add third_person objects if not in a portal
+	bool personalModel = (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal;
+
+	mdmHeader_t* header = tr.currentModel->q3_mdm;
+
+	//
+	// cull the entire model if merged bounding box of both frames
+	// is outside the view frustum.
+	//
+	int cull = R_CullModel(ent);
+	if (cull == CULL_OUT)
+	{
+		return;
+	}
+
+	//
+	// set up lighting now that we know we aren't culled
+	//
+	if (!personalModel || r_shadows->integer > 1)
+	{
+		R_SetupEntityLighting(&tr.refdef, ent);
+	}
+
+	//
+	// see if we are in a fog volume
+	//
+	int fogNum = R_ComputeFogNum(ent);
+
+	mdmSurface_t* surface = (mdmSurface_t*)((byte*)header + header->ofsSurfaces);
+	for (int i = 0; i < header->numSurfaces; i++)
+	{
+		shader_t* shader;
+		if (ent->e.customShader)
+		{
+			shader = R_GetShaderByHandle(ent->e.customShader);
+		}
+		else if (ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins)
+		{
+			skin_t* skin = R_GetSkinByHandle(ent->e.customSkin);
+
+			// match the surface name to something in the skin file
+			shader = tr.defaultShader;
+
+			if (ent->e.renderfx & RF_BLINK)
+			{
+				char* s = va("%s_b", surface->name);   // append '_b' for 'blink'
+				int hash = Com_HashKey(s, String::Length(s));
+				for (int j = 0; j < skin->numSurfaces; j++)
+				{
+					if (hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, s))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+
+			if (shader == tr.defaultShader)      // blink reference in skin was not found
+			{
+				int hash = Com_HashKey(surface->name, sizeof(surface->name));
+				for (int j = 0; j < skin->numSurfaces; j++)
+				{
+					// the names have both been lowercased
+					if (hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, surface->name))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+
+			if (shader == tr.defaultShader)
+			{
+				common->DPrintf(S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name);
+			}
+			else if (shader->defaultShader)
+			{
+				common->DPrintf(S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name);
+			}
+		}
+		else
+		{
+			shader = R_GetShaderByHandle(surface->shaderIndex);
+		}
+
+		// don't add third_person objects if not viewing through a portal
+		if (!personalModel)
+		{
+			R_AddDrawSurf((surfaceType_t*)surface, shader, fogNum, 0, 0, 0);
+		}
+
+		surface = (mdmSurface_t*)((byte*)surface + surface->ofsEnd);
+	}
+}
+
 static float ProjectRadius(float r, vec3_t location)
 {
 	float pr;

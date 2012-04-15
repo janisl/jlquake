@@ -178,20 +178,6 @@ void RE_RestoreViewParms();
 /*
 =============================================================
 
-ANIMATED MODELS
-
-=============================================================
-*/
-
-//
-// MDM / MDX
-//
-void R_MDM_MakeAnimModel( model_t *model );
-void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-
-/*
-=============================================================
-
 RENDERER BACK END COMMAND QUEUE
 
 =============================================================
