@@ -300,7 +300,7 @@ static void R_AddWorldSurface( mbrush46_surface_t *surf, shader_t *shader, int d
 		dlightBits = ( dlightBits != 0 );
 	}
 
-	R_AddDrawSurf( surf->data, shader, surf->fogIndex, dlightBits );
+	R_AddDrawSurf( surf->data, shader, surf->fogIndex, dlightBits, 0, 0 );
 }
 
 /*

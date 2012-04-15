@@ -880,7 +880,7 @@ void R_AddDecalSurface( mbrush46_decal_t *decal ) {
 	}
 
 	/* add surface to scene */
-	R_AddDrawSurf( (surfaceType_t*) srf, decal->shader, decal->fogIndex, 0, dlightMap );
+	R_AddDrawSurf( (surfaceType_t*) srf, decal->shader, decal->fogIndex, dlightMap, 0, 0 );
 	tr.pc.c_decalSurfaces++;
 
 	/* free temporary decal */

@@ -88,9 +88,6 @@ void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 void R_AddPolygonSurfaces( void );
 void R_AddPolygonBufferSurfaces( void );
 
-
-void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogNum, int frontFace, int dlightMap );
-
 /*
 ** GL wrapper/helper functions
 */

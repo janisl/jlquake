@@ -231,7 +231,7 @@ void R_AddAnimSurfaces(trRefEntity_t* ent)
 	for (int i = 0; i < lod->numSurfaces; i++)
 	{
 		shader_t* shader = R_GetShaderByHandle(surface->shaderIndex);
-		R_AddDrawSurf((surfaceType_t*)surface, shader, 0 /*fogNum*/, false);
+		R_AddDrawSurf((surfaceType_t*)surface, shader, 0 /*fogNum*/, false, 0, 0);
 		surface = (md4Surface_t*)((byte*)surface + surface->ofsEnd);
 	}
 }

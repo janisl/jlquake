@@ -729,14 +729,14 @@ int R_CullLocalPointAndRadius(vec3_t pt, float radius)
 	return R_CullPointAndRadius(transformed, radius);
 }
 
-#if 0
 //==========================================================================
 //
 //	R_AddDrawSurf
 //
 //==========================================================================
 
-void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap)
+void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex,
+	int dlightMap, int frontFace, int atiTess)
 {
 	// instead of checking for overflow, we just mask the index
 	// so it wraps around
@@ -744,11 +744,14 @@ void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int d
 	// the sort data is packed into a single 32 bit value so it can be
 	// compared quickly during the qsorting process
 	tr.refdef.drawSurfs[index].sort = (shader->sortedIndex << QSORT_SHADERNUM_SHIFT) |
-		tr.shiftedEntityNum | (fogIndex << QSORT_FOGNUM_SHIFT) | (int)dlightMap;
+		tr.shiftedEntityNum | (atiTess << QSORT_ATI_TESS_SHIFT) |
+		(fogIndex << QSORT_FOGNUM_SHIFT) | dlightMap |
+		(GGameType & GAME_ET ? (frontFace << QSORT_FRONTFACE_SHIFT) : 0);
 	tr.refdef.drawSurfs[index].surface = surface;
 	tr.refdef.numDrawSurfs++;
 }
 
+#if 0
 //==========================================================================
 //
 //	R_SpriteFogNum

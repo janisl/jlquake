@@ -414,7 +414,7 @@ void R_AddMDCSurfaces( trRefEntity_t *ent ) {
 			 && !( ent->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
 			 && shader->sort == SS_OPAQUE ) {
 // GR - tessellate according to model capabilities
-			R_AddDrawSurf( (surfaceType_t *)surface, tr.shadowShader, 0, qfalse, tr.currentModel->q3_ATI_tess );
+			R_AddDrawSurf( (surfaceType_t *)surface, tr.shadowShader, 0, qfalse, 0, tr.currentModel->q3_ATI_tess );
 		}
 
 //----(SA)
@@ -436,7 +436,7 @@ void R_AddMDCSurfaces( trRefEntity_t *ent ) {
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel ) {
 // GR - tessellate according to model capabilities
-			R_AddDrawSurf( (surfaceType_t *)surface, shader, fogNum, qfalse, tr.currentModel->q3_ATI_tess );
+			R_AddDrawSurf( (surfaceType_t *)surface, shader, fogNum, qfalse, 0, tr.currentModel->q3_ATI_tess );
 		}
 
 		surface = ( mdcSurface_t * )( (byte *)surface + surface->ofsEnd );

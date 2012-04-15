@@ -325,7 +325,7 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, int dlightBits)
 		dlightBits = (dlightBits != 0);
 	}
 
-	R_AddDrawSurf(surf->data, surf->shader, surf->fogIndex, dlightBits);
+	R_AddDrawSurf(surf->data, surf->shader, surf->fogIndex, dlightBits, 0, 0);
 }
 
 /*

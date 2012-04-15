@@ -732,7 +732,8 @@ int R_CullLocalPointAndRadius(vec3_t pt, float radius)
 //
 //==========================================================================
 
-void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap)
+void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex,
+	int dlightMap, int frontFace, int atiTess)
 {
 	// instead of checking for overflow, we just mask the index
 	// so it wraps around
@@ -962,7 +963,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 					continue;
 				}
 				shader_t* shader = R_GetShaderByHandle(ent->e.customShader);
-				R_AddDrawSurf(&entitySurface, shader, R_SpriteFogNum(ent), 0);
+				R_AddDrawSurf(&entitySurface, shader, R_SpriteFogNum(ent), 0, 0, 0);
 			}
 			else
 			{
@@ -979,7 +980,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 			{
 				if (GGameType & GAME_Quake3)
 				{
-					R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0);
+					R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0, 0, 0);
 				}
 				else
 				{
@@ -997,7 +998,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 						{
 							break;
 						}
-						R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0);
+						R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0, 0, 0);
 					}
 					else
 					{
@@ -1171,7 +1172,7 @@ static void R_AddPolygonSurfaces()
 	for (int i = 0; i < tr.refdef.numPolys; i++, poly++)
 	{
 		shader_t* sh = R_GetShaderByHandle(poly->hShader);
-		R_AddDrawSurf((surfaceType_t*)poly, sh, poly->fogIndex, false);
+		R_AddDrawSurf((surfaceType_t*)poly, sh, poly->fogIndex, false, 0, 0);
 	}
 }
 

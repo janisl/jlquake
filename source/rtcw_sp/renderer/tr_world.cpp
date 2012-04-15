@@ -301,7 +301,7 @@ static void R_AddWorldSurface( mbrush46_surface_t *surf, int dlightBits ) {
 	}
 
 // GR - not tessellated
-	R_AddDrawSurf( surf->data, surf->shader, surf->fogIndex, dlightBits, ATI_TESS_NONE );
+	R_AddDrawSurf( surf->data, surf->shader, surf->fogIndex, dlightBits, 0, ATI_TESS_NONE );
 }
 
 /*

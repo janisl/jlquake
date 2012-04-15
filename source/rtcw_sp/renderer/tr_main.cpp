@@ -789,28 +789,6 @@ recurse:
 
 /*
 =================
-R_AddDrawSurf
-=================
-*/
-void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader,
-					int fogIndex, int dlightMap, int atiTess ) {
-	int index;
-
-	// instead of checking for overflow, we just mask the index
-	// so it wraps around
-	index = tr.refdef.numDrawSurfs & DRAWSURF_MASK;
-	// the sort data is packed into a single 32 bit value so it can be
-	// compared quickly during the qsorting process
-// GR - add tesselation flag to the sort
-	tr.refdef.drawSurfs[index].sort = ( shader->sortedIndex << QSORT_SHADERNUM_SHIFT )
-									  | ( atiTess << QSORT_ATI_TESS_SHIFT )
-									  | tr.shiftedEntityNum | ( fogIndex << QSORT_FOGNUM_SHIFT ) | (int)dlightMap;
-	tr.refdef.drawSurfs[index].surface = surface;
-	tr.refdef.numDrawSurfs++;
-}
-
-/*
-=================
 R_SortDrawSurfs
 =================
 */
@@ -920,7 +898,7 @@ void R_AddEntitySurfaces( void ) {
 			}
 			shader = R_GetShaderByHandle( ent->e.customShader );
 // GR - these entities are not tessellated
-			R_AddDrawSurf( &entitySurface, shader, R_SpriteFogNum( ent ), 0, ATI_TESS_NONE );
+			R_AddDrawSurf( &entitySurface, shader, R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE );
 			break;
 
 		case RT_MODEL:
@@ -930,7 +908,7 @@ void R_AddEntitySurfaces( void ) {
 			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 			if ( !tr.currentModel ) {
 // GR - not tessellated
-				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, ATI_TESS_NONE );
+				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
 			} else {
 				switch ( tr.currentModel->type ) {
 				case MOD_MESH3:
@@ -953,7 +931,7 @@ void R_AddEntitySurfaces( void ) {
 					}
 					shader = R_GetShaderByHandle( ent->e.customShader );
 // GR - not tessellated
-					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, ATI_TESS_NONE );
+					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
 					break;
 				default:
 					ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad modeltype" );
