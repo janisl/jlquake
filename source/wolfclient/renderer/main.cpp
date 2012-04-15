@@ -606,7 +606,6 @@ void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_CullLocalBox
@@ -639,7 +638,7 @@ int R_CullLocalBox(vec3_t bounds[2])
 
 	// check against frustum planes
 	bool anyBack = false;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < (GGameType & GAME_ET ? 5 : 4); i++)
 	{
 		cplane_t* frust = &tr.viewParms.frustum[i];
 
@@ -692,7 +691,7 @@ int R_CullPointAndRadius(vec3_t pt, float radius)
 
 	// check against frustum planes
 	bool mightBeClipped = false;
-	for (int i = 0; i < 4; i++) 
+	for (int i = 0; i < (GGameType & GAME_ET ? 5 : 4); i++) 
 	{
 		cplane_t* frust = &tr.viewParms.frustum[i];
 
@@ -730,6 +729,7 @@ int R_CullLocalPointAndRadius(vec3_t pt, float radius)
 	return R_CullPointAndRadius(transformed, radius);
 }
 
+#if 0
 //==========================================================================
 //
 //	R_AddDrawSurf

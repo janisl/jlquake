@@ -714,10 +714,10 @@ void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const fl
 void R_TransformClipToWindow(const vec4_t clip, const viewParms_t* view, vec4_t normalized, vec4_t window);
 void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
 	orientationr_t* orient);
-#if 0
 int R_CullLocalBox(vec3_t bounds[2]);
 int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
+#if 0
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 void R_RenderView(viewParms_t* parms);
 #endif
