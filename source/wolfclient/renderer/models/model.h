@@ -945,16 +945,12 @@ void R_DrawSp2Model(trRefEntity_t* e);
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
-#if 0
 void R_DrawMdlModel(trRefEntity_t* e);
 bool R_MdlHasHexen2Transparency(model_t* Model);
-#endif
 
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
-#if 0
 void R_DrawMd2Model(trRefEntity_t* e);
-#endif
 
 bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);

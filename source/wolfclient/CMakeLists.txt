@@ -16,11 +16,11 @@ set(WOLFCLIENT_FILES
 	../client/renderer/models/bsp29.cpp
 	../client/renderer/models/bsp38.cpp
 	../client/renderer/models/bsp46.cpp
-	renderer/models/md2.cpp
+	../client/renderer/models/md2.cpp
 	renderer/models/md3.cpp
 	renderer/models/md4.cpp
 	../client/renderer/models/mdc.cpp
-	renderer/models/mdl.cpp
+	../client/renderer/models/mdl.cpp
 	../client/renderer/models/mdm.cpp
 	../client/renderer/models/mds.cpp
 	../client/renderer/models/model.cpp
