@@ -388,7 +388,7 @@ static float ProjectRadius(float r, vec3_t location)
 
 	vec3_t p;
 	p[0] = 0;
-	p[1] = fabs(r);
+	p[1] = Q_fabs(r);
 	p[2] = -dist;
 
 	float projected[4];
@@ -532,6 +532,12 @@ static int R_ComputeLOD(trRefEntity_t* ent)
 		// multiple LODs exist, so compute projected bounding sphere
 		// and use that as a criteria for selecting LOD
 
+		// RF, checked for a forced lowest LOD
+		if (ent->e.reFlags & REFLAG_FORCE_LOD)
+		{
+			return tr.currentModel->q3_numLods - 1;
+		}
+
 		md3Frame_t* frame = (md3Frame_t*)(((byte*)tr.currentModel->q3_md3[0]) + tr.currentModel->q3_md3[0]->ofsFrames);
 
 		frame += ent->e.frame;
@@ -641,14 +647,19 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 	}
 
 	//
+	// compute LOD
+	//
+	int lod = ent->e.renderfx & RF_FORCENOLOD ? 0 : R_ComputeLOD(ent);
+
+	//
 	// Validate the frames so there is no chance of a crash.
 	// This will write directly into the entity structure, so
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
 	//
-	if ((ent->e.frame >= tr.currentModel->q3_md3[0]->numFrames) ||
+	if ((ent->e.frame >= tr.currentModel->q3_md3[lod]->numFrames) ||
 		(ent->e.frame < 0) ||
-		(ent->e.oldframe >= tr.currentModel->q3_md3[0]->numFrames) ||
+		(ent->e.oldframe >= tr.currentModel->q3_md3[lod]->numFrames) ||
 		(ent->e.oldframe < 0))
 	{
 		Log::develWrite(S_COLOR_RED "R_AddMD3Surfaces: no such frame %d to %d for '%s'\n",
@@ -656,11 +667,6 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 		ent->e.frame = 0;
 		ent->e.oldframe = 0;
 	}
-
-	//
-	// compute LOD
-	//
-	int lod = R_ComputeLOD(ent);
 
 	md3Header_t* header = tr.currentModel->q3_md3[lod];
 
@@ -693,6 +699,19 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 	md3Surface_t* surface = (md3Surface_t*)((byte*)header + header->ofsSurfaces);
 	for (int i = 0; i < header->numSurfaces; i++)
 	{
+		//	blink will change to be an overlay rather than replacing the head texture.
+		// think of it like batman's mask.  the polygons that have eye texture are duplicated
+		// and the 'lids' rendered with polygonoffset shader parm over the top of the open eyes.  this gives
+		// minimal overdraw/alpha blending/texture use without breaking the model and causing seams
+		if (GGameType & GAME_WolfSP && !String::ICmp(surface->name, "h_blink"))
+		{
+			if (!(ent->e.renderfx & RF_BLINK))
+			{
+				surface = (md3Surface_t*)((byte*)surface + surface->ofsEnd);
+				continue;
+			}
+		}
+
 		shader_t* shader;
 		if (ent->e.customShader)
 		{
@@ -704,15 +723,45 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 
 			// match the surface name to something in the skin file
 			shader = tr.defaultShader;
-			for (int j = 0; j < skin->numSurfaces; j++)
+
+			//----(SA)	added blink
+			if (GGameType & (GAME_WolfMP | GAME_ET) && ent->e.renderfx & RF_BLINK)
 			{
-				// the names have both been lowercased
-				if (!String::Cmp(skin->surfaces[j]->name, surface->name))
+				const char *s = va("%s_b", surface->name);	// append '_b' for 'blink'
+				int hash = Com_HashKey(s, String::Length(s));
+				for (int j = 0; j < skin->numSurfaces; j++)
 				{
-					shader = skin->surfaces[j]->shader;
-					break;
+					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, s))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
 				}
 			}
+
+			if (shader == tr.defaultShader)
+			{
+				// blink reference in skin was not found
+				int hash = Com_HashKey(surface->name, sizeof(surface->name));
+				for (int j = 0; j < skin->numSurfaces; j++)
+				{
+					// the names have both been lowercased
+					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, surface->name))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+
 			if (shader == tr.defaultShader)
 			{
 				Log::develWrite(S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name);
@@ -742,22 +791,29 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 			!(ent->e.renderfx & (RF_NOSHADOW | RF_DEPTHHACK)) &&
 			shader->sort == SS_OPAQUE)
 		{
-			R_AddDrawSurf((surfaceType_t*)surface, tr.shadowShader, 0, false, 0, 0);
+			R_AddDrawSurf((surfaceType_t*)surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess);
 		}
 
 		// projection shadows work fine with personal models
-		if (r_shadows->integer == 3 &&
+		if (!(GGameType & GAME_WolfSP) &&
+			r_shadows->integer == 3 &&
 			fogNum == 0 &&
 			(ent->e.renderfx & RF_SHADOW_PLANE) &&
 			shader->sort == SS_OPAQUE)
 		{
-			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, false, 0, 0);
+			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess);
+		}
+
+		// for testing polygon shadows (on /all/ models)
+		if (GGameType & (GAME_WolfMP | GAME_ET) && r_shadows->integer == 4)
+		{
+			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, 0, 0, 0);
 		}
 
 		// don't add third_person objects if not viewing through a portal
 		if (!personalModel)
 		{
-			R_AddDrawSurf((surfaceType_t*)surface, shader, fogNum, false, 0, 0);
+			R_AddDrawSurf((surfaceType_t*)surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess);
 		}
 
 		surface = (md3Surface_t*)((byte*)surface + surface->ofsEnd);

@@ -49,7 +49,7 @@
 #include "../../client/renderer/qgl.h"
 #include "../../client/renderer/images/image.h"
 #include "../../client/renderer/shader.h"
-#include "models/model.h"
+#include "../../client/renderer/models/model.h"
 #include "../../client/renderer/state.h"
 #include "../../client/renderer/cvars.h"
 

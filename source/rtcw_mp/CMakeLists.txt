@@ -33,7 +33,6 @@ set(WOLFMP_FILES
 	renderer/tr_init.cpp
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp
-	renderer/tr_mesh.cpp
 	renderer/tr_model.cpp
 	renderer/tr_scene.cpp
 	renderer/tr_world.cpp
