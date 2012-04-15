@@ -293,10 +293,10 @@ void R_SetupFrustum()
 	if (GGameType & GAME_ET)
 	{
 		// ydnar: farplane (testing! use farplane for real)
-		VectorScale( tr.viewParms.orient.axis[ 0 ], -1, tr.viewParms.frustum[ 4 ].normal );
-		tr.viewParms.frustum[ 4 ].dist = DotProduct( tr.viewParms.orient.origin, tr.viewParms.frustum[ 4 ].normal ) - tr.viewParms.zFar;
-		tr.viewParms.frustum[ 4 ].type = PLANE_NON_AXIAL;
-		SetPlaneSignbits( &tr.viewParms.frustum[ 4 ] );
+		VectorScale(tr.viewParms.orient.axis[0], -1, tr.viewParms.frustum[4].normal);
+		tr.viewParms.frustum[4].dist = DotProduct(tr.viewParms.orient.origin, tr.viewParms.frustum[4].normal) - tr.viewParms.zFar;
+		tr.viewParms.frustum[4].type = PLANE_NON_AXIAL;
+		SetPlaneSignbits(&tr.viewParms.frustum[4]);
 	}
 }
 

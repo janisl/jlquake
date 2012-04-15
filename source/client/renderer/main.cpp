@@ -172,7 +172,7 @@ void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
 
 static void SetFarClip()
 {
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		tr.viewParms.zFar = 4096;
 		return;
@@ -183,6 +183,18 @@ static void SetFarClip()
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 	{
 		tr.viewParms.zFar = 2048;
+		return;
+	}
+
+	//	This lets you use r_zfar from the command line to experiment with different
+	// distances, but setting it back to 0 uses the map (or procedurally generated) default
+	if (r_zfar->value)
+	{
+		tr.viewParms.zFar = r_zfar->integer;
+		if (r_speeds->integer == 5)
+		{
+			common->Printf("r_zfar value forcing farclip at: %f\n", tr.viewParms.zFar);
+		}
 		return;
 	}
 
@@ -231,54 +243,12 @@ static void SetFarClip()
 		}
 	}
 	tr.viewParms.zFar = sqrt(farthestCornerDistance);
-}
 
-//==========================================================================
-//
-//	R_SetupProjection
-//
-//==========================================================================
-
-void R_SetupProjection()
-{
-	// dynamically compute far clip plane distance
-	SetFarClip();
-
-	//
-	// set up projection matrix
-	//
-	float zNear	= r_znear->value;
-	float zFar	= tr.viewParms.zFar;
-
-	float ymax = zNear * tan(tr.viewParms.fovY * M_PI / 360.0f);
-	float ymin = -ymax;
-
-	float xmax = zNear * tan(tr.viewParms.fovX * M_PI / 360.0f);
-	float xmin = -xmax;
-
-	float width = xmax - xmin;
-	float height = ymax - ymin;
-	float depth = zFar - zNear;
-
-	tr.viewParms.projectionMatrix[0] = 2 * zNear / width;
-	tr.viewParms.projectionMatrix[4] = 0;
-	tr.viewParms.projectionMatrix[8] = (xmax + xmin) / width;	// normally 0
-	tr.viewParms.projectionMatrix[12] = 0;
-
-	tr.viewParms.projectionMatrix[1] = 0;
-	tr.viewParms.projectionMatrix[5] = 2 * zNear / height;
-	tr.viewParms.projectionMatrix[9] = (ymax + ymin) / height;	// normally 0
-	tr.viewParms.projectionMatrix[13] = 0;
-
-	tr.viewParms.projectionMatrix[2] = 0;
-	tr.viewParms.projectionMatrix[6] = 0;
-	tr.viewParms.projectionMatrix[10] = -(zFar + zNear) / depth;
-	tr.viewParms.projectionMatrix[14] = -2 * zFar * zNear / depth;
-
-	tr.viewParms.projectionMatrix[3] = 0;
-	tr.viewParms.projectionMatrix[7] = 0;
-	tr.viewParms.projectionMatrix[11] = -1;
-	tr.viewParms.projectionMatrix[15] = 0;
+	// ydnar: add global q3 fog
+	if (tr.world != NULL && tr.world->globalFog >= 0 && tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque < tr.viewParms.zFar)
+	{
+		tr.viewParms.zFar = tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque;
+	}
 }
 
 //==========================================================================
@@ -317,6 +287,78 @@ static void R_SetupFrustum()
 		tr.viewParms.frustum[i].dist = DotProduct(tr.viewParms.orient.origin, tr.viewParms.frustum[i].normal);
 		SetPlaneSignbits(&tr.viewParms.frustum[i]);
 	}
+
+	if (GGameType & GAME_ET)
+	{
+		// ydnar: farplane (testing! use farplane for real)
+		VectorScale(tr.viewParms.orient.axis[0], -1, tr.viewParms.frustum[4].normal);
+		tr.viewParms.frustum[4].dist = DotProduct(tr.viewParms.orient.origin, tr.viewParms.frustum[4].normal) - tr.viewParms.zFar;
+		tr.viewParms.frustum[4].type = PLANE_NON_AXIAL;
+		SetPlaneSignbits(&tr.viewParms.frustum[4]);
+	}
+}
+
+//==========================================================================
+//
+//	R_SetupProjection
+//
+//==========================================================================
+
+void R_SetupProjection()
+{
+	// dynamically compute far clip plane distance
+	SetFarClip();
+
+	if (GGameType & GAME_ET)
+	{
+		// ydnar: set frustum planes (this happens here because of zfar manipulation)
+		R_SetupFrustum();
+	}
+
+	//
+	// set up projection matrix
+	//
+	float zNear	= r_znear->value;
+	float zFar	= tr.viewParms.zFar;
+
+	// ydnar: high fov values let players see through walls
+	// solution is to move z near plane inward, which decreases zbuffer precision
+	// but if a player wants to play with fov 160, then they can deal with z-fighting
+	// assume fov 90 = scale 1, fov 180 = scale 1/16th
+	if (GGameType & GAME_ET && tr.refdef.fov_x > 90.0f)
+	{
+		zNear /= ((tr.refdef.fov_x - 90.0f) * 0.09f + 1.0f);
+	}
+
+	float ymax = zNear * tan(tr.viewParms.fovY * M_PI / 360.0f);
+	float ymin = -ymax;
+
+	float xmax = zNear * tan(tr.viewParms.fovX * M_PI / 360.0f);
+	float xmin = -xmax;
+
+	float width = xmax - xmin;
+	float height = ymax - ymin;
+	float depth = zFar - zNear;
+
+	tr.viewParms.projectionMatrix[0] = 2 * zNear / width;
+	tr.viewParms.projectionMatrix[4] = 0;
+	tr.viewParms.projectionMatrix[8] = (xmax + xmin) / width;	// normally 0
+	tr.viewParms.projectionMatrix[12] = 0;
+
+	tr.viewParms.projectionMatrix[1] = 0;
+	tr.viewParms.projectionMatrix[5] = 2 * zNear / height;
+	tr.viewParms.projectionMatrix[9] = (ymax + ymin) / height;	// normally 0
+	tr.viewParms.projectionMatrix[13] = 0;
+
+	tr.viewParms.projectionMatrix[2] = 0;
+	tr.viewParms.projectionMatrix[6] = 0;
+	tr.viewParms.projectionMatrix[10] = -(zFar + zNear) / depth;
+	tr.viewParms.projectionMatrix[14] = -2 * zFar * zNear / depth;
+
+	tr.viewParms.projectionMatrix[3] = 0;
+	tr.viewParms.projectionMatrix[7] = 0;
+	tr.viewParms.projectionMatrix[11] = -1;
+	tr.viewParms.projectionMatrix[15] = 0;
 }
 
 //==========================================================================
@@ -593,7 +635,7 @@ int R_CullLocalBox(vec3_t bounds[2])
 
 	// check against frustum planes
 	bool anyBack = false;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < (GGameType & GAME_ET ? 5 : 4); i++)
 	{
 		cplane_t* frust = &tr.viewParms.frustum[i];
 
@@ -646,7 +688,7 @@ int R_CullPointAndRadius(vec3_t pt, float radius)
 
 	// check against frustum planes
 	bool mightBeClipped = false;
-	for (int i = 0; i < 4; i++) 
+	for (int i = 0; i < (GGameType & GAME_ET ? 5 : 4); i++) 
 	{
 		cplane_t* frust = &tr.viewParms.frustum[i];
 
