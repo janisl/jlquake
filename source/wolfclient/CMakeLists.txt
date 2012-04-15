@@ -32,7 +32,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/driver_glx.cpp
 	../client/renderer/flares.cpp
 	renderer/init.cpp
-	renderer/light.cpp
+	../client/renderer/light.cpp
 	renderer/main.cpp
 	../client/renderer/noise.cpp
 	../client/renderer/particle.cpp

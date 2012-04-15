@@ -754,7 +754,6 @@ void R_FreeBackEndData();
 void RB_BeginDrawingView();
 void RB_SetGL2D();
 void RB_ShowImages();
-void RB_SwapBuffersCommon();
 void RB_ExecuteRenderCommands(const void* data);
 void RB_RenderThread();
 
@@ -812,6 +811,7 @@ void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node);
 void R_PushDlightsQ2();
 void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient);
 void R_DlightBmodel(mbrush46_model_t* bmodel);
+void R_CullDlights();
 
 /*
 ====================================================================
