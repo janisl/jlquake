@@ -212,13 +212,6 @@ void R_InitFreeType();
 void R_DoneFreeType();
 void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 
-//------------------------------------------------------------------------------
-// Ridah, mesh compression
-
-void R_AddMDCSurfaces( trRefEntity_t *ent );
-// done.
-//------------------------------------------------------------------------------
-
 /*
 ============================================================
 

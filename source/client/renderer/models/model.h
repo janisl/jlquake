@@ -966,6 +966,7 @@ void RB_SurfaceAnim(md4Surface_t* surfType);
 bool R_LoadMdc(model_t* mod, void* buffer);
 void R_FreeMdc(model_t* mod);
 void R_RegisterMdcShaders(model_t* mod, int lod);
+void R_AddMDCSurfaces(trRefEntity_t* ent);
 void RB_SurfaceCMesh(mdcSurface_t *surface);
 
 bool R_LoadMds(model_t* mod, const void* buffer);

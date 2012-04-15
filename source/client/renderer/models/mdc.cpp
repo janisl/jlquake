@@ -373,6 +373,425 @@ void R_RegisterMdcShaders(model_t* mod, int lod)
 	}
 }
 
+static float ProjectRadius(float r, vec3_t location)
+{
+	float c = DotProduct(tr.viewParms.orient.axis[0], tr.viewParms.orient.origin);
+	float dist = DotProduct(tr.viewParms.orient.axis[0], location) - c;
+
+	if (dist <= 0)
+	{
+		return 0;
+	}
+
+	vec3_t p;
+	p[0] = 0;
+	p[1] = Q_fabs(r);
+	p[2] = -dist;
+
+	float projected[4];
+	projected[0] = p[0] * tr.viewParms.projectionMatrix[0] +
+				   p[1] * tr.viewParms.projectionMatrix[4] +
+				   p[2] * tr.viewParms.projectionMatrix[8] +
+				   tr.viewParms.projectionMatrix[12];
+
+	projected[1] = p[0] * tr.viewParms.projectionMatrix[1] +
+				   p[1] * tr.viewParms.projectionMatrix[5] +
+				   p[2] * tr.viewParms.projectionMatrix[9] +
+				   tr.viewParms.projectionMatrix[13];
+
+	projected[2] = p[0] * tr.viewParms.projectionMatrix[2] +
+				   p[1] * tr.viewParms.projectionMatrix[6] +
+				   p[2] * tr.viewParms.projectionMatrix[10] +
+				   tr.viewParms.projectionMatrix[14];
+
+	projected[3] = p[0] * tr.viewParms.projectionMatrix[3] +
+				   p[1] * tr.viewParms.projectionMatrix[7] +
+				   p[2] * tr.viewParms.projectionMatrix[11] +
+				   tr.viewParms.projectionMatrix[15];
+
+
+	float pr = projected[1] / projected[3];
+
+	if (pr > 1.0f)
+	{
+		pr = 1.0f;
+	}
+
+	return pr;
+}
+
+static int R_CullModel(mdcHeader_t* header, trRefEntity_t* ent)
+{
+	// compute frame pointers
+	md3Frame_t* newFrame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.frame;
+	md3Frame_t* oldFrame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.oldframe;
+
+	// cull bounding sphere ONLY if this is not an upscaled entity
+	if (!ent->e.nonNormalizedAxes)
+	{
+		if (ent->e.frame == ent->e.oldframe)
+		{
+			switch (R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius))
+			{
+			case CULL_OUT:
+				tr.pc.c_sphere_cull_md3_out++;
+				return CULL_OUT;
+
+			case CULL_IN:
+				tr.pc.c_sphere_cull_md3_in++;
+				return CULL_IN;
+
+			case CULL_CLIP:
+				tr.pc.c_sphere_cull_md3_clip++;
+				break;
+			}
+		}
+		else
+		{
+			int sphereCull  = R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius);
+			int sphereCullB;
+			if (newFrame == oldFrame)
+			{
+				sphereCullB = sphereCull;
+			}
+			else
+			{
+				sphereCullB = R_CullLocalPointAndRadius(oldFrame->localOrigin, oldFrame->radius);
+			}
+
+			if (sphereCull == sphereCullB)
+			{
+				if (sphereCull == CULL_OUT)
+				{
+					tr.pc.c_sphere_cull_md3_out++;
+					return CULL_OUT;
+				}
+				else if (sphereCull == CULL_IN)
+				{
+					tr.pc.c_sphere_cull_md3_in++;
+					return CULL_IN;
+				}
+				else
+				{
+					tr.pc.c_sphere_cull_md3_clip++;
+				}
+			}
+		}
+	}
+
+	// calculate a bounding box in the current coordinate system
+	vec3_t bounds[2];
+	for (int i = 0; i < 3; i++)
+	{
+		bounds[0][i] = oldFrame->bounds[0][i] < newFrame->bounds[0][i] ? oldFrame->bounds[0][i] : newFrame->bounds[0][i];
+		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
+	}
+
+	switch (R_CullLocalBox(bounds))
+	{
+	case CULL_IN:
+		tr.pc.c_box_cull_md3_in++;
+		return CULL_IN;
+	case CULL_CLIP:
+		tr.pc.c_box_cull_md3_clip++;
+		return CULL_CLIP;
+	case CULL_OUT:
+	default:
+		tr.pc.c_box_cull_md3_out++;
+		return CULL_OUT;
+	}
+}
+
+static int R_ComputeLOD(trRefEntity_t* ent)
+{
+	int lod;
+	if (tr.currentModel->q3_numLods < 2)
+	{
+		// model has only 1 LOD level, skip computations and bias
+		lod = 0;
+	}
+	else
+	{
+		// multiple LODs exist, so compute projected bounding sphere
+		// and use that as a criteria for selecting LOD
+
+		// RF, checked for a forced lowest LOD
+		if (ent->e.reFlags & REFLAG_FORCE_LOD)
+		{
+			return (tr.currentModel->q3_numLods - 1);
+		}
+
+		md3Frame_t* frame = (md3Frame_t*)(((unsigned char*)tr.currentModel->q3_mdc[0]) + tr.currentModel->q3_mdc[0]->ofsFrames);
+
+		frame += ent->e.frame;
+
+		float radius = RadiusFromBounds(frame->bounds[0], frame->bounds[1]);
+
+		//----(SA)	testing
+		if (ent->e.reFlags & REFLAG_ORIENT_LOD)
+		{
+			// right now this is for trees, and pushes the lod distance way in.
+			// this is not the intended purpose, but is helpful for the new
+			// terrain level that has loads of trees
+//			radius = radius/2.0f;
+		}
+		//----(SA)	end
+
+		float projectedRadius;
+		float flod;
+		if ((projectedRadius = ProjectRadius(radius, ent->e.origin)) != 0)
+		{
+			float lodscale = r_lodscale->value;
+			if (lodscale > 20)
+			{
+				lodscale = 20;
+			}
+			flod = 1.0f - projectedRadius * lodscale;
+		}
+		else
+		{
+			// object intersects near view plane, e.g. view weapon
+			flod = 0;
+		}
+
+		flod *= tr.currentModel->q3_numLods;
+		lod = Q_ftol(flod);
+
+		if (lod < 0)
+		{
+			lod = 0;
+		}
+		else if (lod >= tr.currentModel->q3_numLods)
+		{
+			lod = tr.currentModel->q3_numLods - 1;
+		}
+	}
+
+	lod += r_lodbias->integer;
+
+	if (lod >= tr.currentModel->q3_numLods)
+	{
+		lod = tr.currentModel->q3_numLods - 1;
+	}
+	if (lod < 0)
+	{
+		lod = 0;
+	}
+
+	return lod;
+}
+
+static int R_ComputeFogNum(mdcHeader_t* header, trRefEntity_t* ent)
+{
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		return 0;
+	}
+
+	// FIXME: non-normalized axis issues
+	md3Frame_t* md3Frame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.frame;
+	vec3_t localOrigin;
+	VectorAdd(ent->e.origin, md3Frame->localOrigin, localOrigin);
+	for (int i = 1; i < tr.world->numfogs; i++)
+	{
+		mbrush46_fog_t* fog = &tr.world->fogs[i];
+		int j;
+		for (j = 0; j < 3; j++)
+		{
+			if (localOrigin[j] - md3Frame->radius >= fog->bounds[1][j])
+			{
+				break;
+			}
+			if (localOrigin[j] + md3Frame->radius <= fog->bounds[0][j])
+			{
+				break;
+			}
+		}
+		if (j == 3)
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+void R_AddMDCSurfaces(trRefEntity_t* ent)
+{
+	// don't add third_person objects if not in a portal
+	bool personalModel = (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal;
+
+	if (ent->e.renderfx & RF_WRAP_FRAMES)
+	{
+		ent->e.frame %= tr.currentModel->q3_mdc[0]->numFrames;
+		ent->e.oldframe %= tr.currentModel->q3_mdc[0]->numFrames;
+	}
+
+	//
+	// Validate the frames so there is no chance of a crash.
+	// This will write directly into the entity structure, so
+	// when the surfaces are rendered, they don't need to be
+	// range checked again.
+	//
+	if ((ent->e.frame >= tr.currentModel->q3_mdc[0]->numFrames) ||
+		(ent->e.frame < 0) ||
+		(ent->e.oldframe >= tr.currentModel->q3_mdc[0]->numFrames) ||
+		(ent->e.oldframe < 0))
+	{
+		common->DPrintf(S_COLOR_RED "R_AddMDCSurfaces: no such frame %d to %d for '%s'\n",
+			ent->e.oldframe, ent->e.frame, tr.currentModel->name);
+		ent->e.frame = 0;
+		ent->e.oldframe = 0;
+	}
+
+	//
+	// compute LOD
+	//
+	int lod = ent->e.renderfx & RF_FORCENOLOD ? 0 : R_ComputeLOD(ent);
+
+	mdcHeader_t* header = tr.currentModel->q3_mdc[lod];
+
+	//
+	// cull the entire model if merged bounding box of both frames
+	// is outside the view frustum.
+	//
+	int cull = R_CullModel(header, ent);
+	if (cull == CULL_OUT)
+	{
+		return;
+	}
+
+	//
+	// set up lighting now that we know we aren't culled
+	//
+	if (!personalModel || r_shadows->integer > 1)
+	{
+		R_SetupEntityLighting(&tr.refdef, ent);
+	}
+
+	//
+	// see if we are in a fog volume
+	//
+	int fogNum = R_ComputeFogNum(header, ent);
+
+	//
+	// draw all surfaces
+	//
+	mdcSurface_t* surface = (mdcSurface_t*)((byte*)header + header->ofsSurfaces);
+	for (int i = 0; i < header->numSurfaces; i++)
+	{
+		//	blink will change to be an overlay rather than replacing the head texture.
+		// think of it like batman's mask.  the polygons that have eye texture are duplicated
+		// and the 'lids' rendered with polygonoffset over the top of the open eyes.  this gives
+		// minimal overdraw/alpha blending/texture use without breaking the model and causing seams
+		if (GGameType & GAME_WolfSP && !String::ICmp(surface->name, "h_blink"))
+		{
+			if (!(ent->e.renderfx & RF_BLINK))
+			{
+				surface = (mdcSurface_t*)((byte*)surface + surface->ofsEnd);
+				continue;
+			}
+		}
+
+		shader_t* shader;
+		if (ent->e.customShader)
+		{
+			shader = R_GetShaderByHandle(ent->e.customShader);
+		}
+		else if (ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins)
+		{
+			skin_t* skin = R_GetSkinByHandle(ent->e.customSkin);
+
+			// match the surface name to something in the skin file
+			shader = tr.defaultShader;
+			//----(SA)	added blink
+			if (GGameType & (GAME_WolfMP | GAME_ET) && ent->e.renderfx & RF_BLINK)
+			{
+				const char* s = va("%s_b", surface->name);	// append '_b' for 'blink'
+				int hash = Com_HashKey(s, String::Length(s));
+				for (int j = 0; j < skin->numSurfaces; j++)
+				{
+					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, s))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+
+			if (shader == tr.defaultShader)        // blink reference in skin was not found
+			{
+				int hash = Com_HashKey(surface->name, sizeof(surface->name));
+				for (int j = 0; j < skin->numSurfaces; j++)
+				{
+					// the names have both been lowercased
+					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, surface->name))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+		}
+		else if (surface->numShaders <= 0)
+		{
+			shader = tr.defaultShader;
+		}
+		else
+		{
+			md3Shader_t* md3Shader = (md3Shader_t*)((byte*)surface + surface->ofsShaders);
+			md3Shader += ent->e.skinNum % surface->numShaders;
+			shader = tr.shaders[md3Shader->shaderIndex];
+		}
+
+		// we will add shadows even if the main object isn't visible in the view
+
+		// stencil shadows can't do personal models unless I polyhedron clip
+		if (!personalModel
+			&& r_shadows->integer == 2
+			&& fogNum == 0
+			&& !(ent->e.renderfx & (RF_NOSHADOW | RF_DEPTHHACK))
+			&& shader->sort == SS_OPAQUE)
+		{
+			// GR - tessellate according to model capabilities
+			R_AddDrawSurf((surfaceType_t*)surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess);
+		}
+
+		// projection shadows work fine with personal models
+		if (!(GGameType & GAME_WolfSP) &&
+			r_shadows->integer == 3 &&
+			fogNum == 0 &&
+			(ent->e.renderfx & RF_SHADOW_PLANE) &&
+			shader->sort == SS_OPAQUE)
+		{
+			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, false, 0, 0);
+		}
+
+		//----(SA)	for testing polygon shadows (on /all/ models)
+		if (GGameType & (GAME_WolfMP | GAME_ET) && r_shadows->integer == 4)
+		{
+			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, false, 0, 0);
+		}
+
+		// don't add third_person objects if not viewing through a portal
+		if (!personalModel)
+		{
+			// GR - tessellate according to model capabilities
+			R_AddDrawSurf((surfaceType_t*)surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess);
+		}
+
+		surface = (mdcSurface_t*)((byte*)surface + surface->ofsEnd);
+	}
+}
+
 static void LerpCMeshVertexes(mdcSurface_t* surf, float backlerp)
 {
 	float* outXyz = tess.xyz[tess.numVertexes];
