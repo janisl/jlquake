@@ -281,7 +281,6 @@ void QDECL Com_Error( int code, const char *fmt, ... );
 void        Com_Quit_f( void );
 int         Com_EventLoop( void );
 int         Com_Milliseconds( void );   // will be journaled properly
-int         Com_HashKey( char *string, int maxlen );
 int         Com_RealTime( qtime_t *qtime );
 qboolean    Com_SafeMode( void );
 

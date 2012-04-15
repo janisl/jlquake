@@ -693,3 +693,14 @@ void COM_InitCommonCvars()
 	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
 }
+
+int Com_HashKey(const char *string, int maxlen)
+{
+	int hash = 0;
+	for (int i = 0; i < maxlen && string[i] != '\0'; i++)
+	{
+		hash += string[i] * (119 + i);
+	}
+	hash = (hash ^ (hash >> 10) ^ (hash >> 20));
+	return hash;
+}

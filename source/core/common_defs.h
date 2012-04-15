@@ -211,3 +211,5 @@ extern int		GGameType;
 //==========================================================================
 
 void COM_InitCommonCvars();
+
+int Com_HashKey(const char* string, int maxlen);
