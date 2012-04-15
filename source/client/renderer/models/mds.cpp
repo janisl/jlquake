@@ -144,7 +144,7 @@ bool R_LoadMds(model_t* mod, const void* buffer)
 				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
 				frame->parentOffset[j] = LittleFloat(frame->parentOffset[j]);
 			}
-			for (int j = 0; j < mds->numBones * sizeof(mdsBoneFrameCompressed_t) / sizeof(short); j++)
+			for (int j = 0; j < mds->numBones * (int)(sizeof(mdsBoneFrameCompressed_t) / sizeof(short)); j++)
 			{
 				((short*)frame->bones)[j] = LittleShort(((short*)frame->bones)[j]);
 			}
@@ -282,6 +282,253 @@ bool R_LoadMds(model_t* mod, const void* buffer)
 void R_FreeMds(model_t* mod)
 {
 	Mem_Free(mod->q3_mds);
+}
+
+static int R_CullModel(mdsHeader_t* header, trRefEntity_t* ent)
+{
+	int frameSize = (int)(sizeof(mdsFrame_t) - sizeof(mdsBoneFrameCompressed_t) + header->numBones * sizeof(mdsBoneFrameCompressed_t));
+
+	// compute frame pointers
+	mdsFrame_t* newFrame = (mdsFrame_t*)((byte*)header + header->ofsFrames + ent->e.frame * frameSize);
+	mdsFrame_t* oldFrame = (mdsFrame_t*)((byte*)header + header->ofsFrames + ent->e.oldframe * frameSize);
+
+	// cull bounding sphere ONLY if this is not an upscaled entity
+	if (!ent->e.nonNormalizedAxes)
+	{
+		if (ent->e.frame == ent->e.oldframe)
+		{
+			switch (R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius))
+			{
+			case CULL_OUT:
+				tr.pc.c_sphere_cull_md3_out++;
+				return CULL_OUT;
+
+			case CULL_IN:
+				tr.pc.c_sphere_cull_md3_in++;
+				return CULL_IN;
+
+			case CULL_CLIP:
+				tr.pc.c_sphere_cull_md3_clip++;
+				break;
+			}
+		}
+		else
+		{
+			int sphereCull, sphereCullB;
+
+			sphereCull  = R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius);
+			if (newFrame == oldFrame)
+			{
+				sphereCullB = sphereCull;
+			}
+			else
+			{
+				sphereCullB = R_CullLocalPointAndRadius(oldFrame->localOrigin, oldFrame->radius);
+			}
+
+			if (sphereCull == sphereCullB)
+			{
+				if (sphereCull == CULL_OUT)
+				{
+					tr.pc.c_sphere_cull_md3_out++;
+					return CULL_OUT;
+				}
+				else if (sphereCull == CULL_IN)
+				{
+					tr.pc.c_sphere_cull_md3_in++;
+					return CULL_IN;
+				}
+				else
+				{
+					tr.pc.c_sphere_cull_md3_clip++;
+				}
+			}
+		}
+	}
+
+	// calculate a bounding box in the current coordinate system
+	vec3_t bounds[2];
+	for (int i = 0; i < 3; i++)
+	{
+		bounds[0][i] = oldFrame->bounds[0][i] < newFrame->bounds[0][i] ? oldFrame->bounds[0][i] : newFrame->bounds[0][i];
+		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
+	}
+
+	switch (R_CullLocalBox(bounds))
+	{
+	case CULL_IN:
+		tr.pc.c_box_cull_md3_in++;
+		return CULL_IN;
+	case CULL_CLIP:
+		tr.pc.c_box_cull_md3_clip++;
+		return CULL_CLIP;
+	case CULL_OUT:
+	default:
+		tr.pc.c_box_cull_md3_out++;
+		return CULL_OUT;
+	}
+}
+
+static int R_ComputeFogNum(mdsHeader_t* header, trRefEntity_t* ent)
+{
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		return 0;
+	}
+
+	// FIXME: non-normalized axis issues
+	mdsFrame_t* mdsFrame = (mdsFrame_t*)((byte*)header + header->ofsFrames + (sizeof(mdsFrame_t) + sizeof(mdsBoneFrameCompressed_t) * (header->numBones - 1)) * ent->e.frame);
+	vec3_t localOrigin;
+	VectorAdd(ent->e.origin, mdsFrame->localOrigin, localOrigin);
+	for (int i = 1; i < tr.world->numfogs; i++)
+	{
+		mbrush46_fog_t* fog = &tr.world->fogs[i];
+		int j;
+		for (j = 0; j < 3; j++)
+		{
+			if (localOrigin[j] - mdsFrame->radius >= fog->bounds[1][j])
+			{
+				break;
+			}
+			if (localOrigin[j] + mdsFrame->radius <= fog->bounds[0][j])
+			{
+				break;
+			}
+		}
+		if (j == 3)
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+void R_AddMdsAnimSurfaces(trRefEntity_t* ent)
+{
+	mdsHeader_t* header;
+	mdsSurface_t* surface;
+	shader_t* shader = 0;
+	int i, fogNum, cull;
+	qboolean personalModel;
+
+	// don't add third_person objects if not in a portal
+	personalModel = (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal;
+
+	header = tr.currentModel->q3_mds;
+
+	//
+	// cull the entire model if merged bounding box of both frames
+	// is outside the view frustum.
+	//
+	cull = R_CullModel(header, ent);
+	if (cull == CULL_OUT)
+	{
+		return;
+	}
+
+	//
+	// set up lighting now that we know we aren't culled
+	//
+	if (!personalModel || r_shadows->integer > 1)
+	{
+		R_SetupEntityLighting(&tr.refdef, ent);
+	}
+
+	//
+	// see if we are in a fog volume
+	//
+	fogNum = R_ComputeFogNum(header, ent);
+
+	surface = (mdsSurface_t*)((byte*)header + header->ofsSurfaces);
+	for (i = 0; i < header->numSurfaces; i++)
+	{
+		//----(SA)	blink will change to be an overlay rather than replacing the head texture.
+		//		think of it like batman's mask.  the polygons that have eye texture are duplicated
+		//		and the 'lids' rendered with polygonoffset over the top of the open eyes.  this gives
+		//		minimal overdraw/alpha blending/texture use without breaking the model and causing seams
+		if (GGameType & GAME_WolfSP && !String::ICmp(surface->name, "h_blink"))
+		{
+			if (!(ent->e.renderfx & RF_BLINK))
+			{
+				surface = (mdsSurface_t*)((byte*)surface + surface->ofsEnd);
+				continue;
+			}
+		}
+
+		if (ent->e.customShader)
+		{
+			shader = R_GetShaderByHandle(ent->e.customShader);
+		}
+		else if (ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins)
+		{
+			skin_t* skin;
+			int j;
+
+			skin = R_GetSkinByHandle(ent->e.customSkin);
+
+			// match the surface name to something in the skin file
+			shader = tr.defaultShader;
+
+			if (GGameType & (GAME_WolfMP | GAME_ET) && ent->e.renderfx & RF_BLINK)
+			{
+				const char* s = va("%s_b", surface->name);	// append '_b' for 'blink'
+				int hash = Com_HashKey(s, String::Length(s));
+				for (j = 0; j < skin->numSurfaces; j++)
+				{
+					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, s))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+
+			if (shader == tr.defaultShader)        // blink reference in skin was not found
+			{
+				int hash = Com_HashKey(surface->name, sizeof(surface->name));
+				for (j = 0; j < skin->numSurfaces; j++)
+				{
+					// the names have both been lowercased
+					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
+					{
+						continue;
+					}
+					if (!String::Cmp(skin->surfaces[j]->name, surface->name))
+					{
+						shader = skin->surfaces[j]->shader;
+						break;
+					}
+				}
+			}
+
+			if (shader == tr.defaultShader)
+			{
+				common->DPrintf(S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name);
+			}
+			else if (shader->defaultShader)
+			{
+				common->DPrintf(S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name);
+			}
+		}
+		else
+		{
+			shader = R_GetShaderByHandle(surface->shaderIndex);
+		}
+
+		// don't add third_person objects if not viewing through a portal
+		if (!personalModel)
+		{
+			// GR - always tessellate these objects
+			R_AddDrawSurf((surfaceType_t*)surface, shader, fogNum, false, 0, ATI_TESS_TRUFORM);
+		}
+
+		surface = (mdsSurface_t*)((byte*)surface + surface->ofsEnd);
+	}
 }
 
 static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneNum)

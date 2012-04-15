@@ -148,17 +148,6 @@ void RE_RenderScene( const refdef_t *fd );
 /*
 =============================================================
 
-ANIMATED MODELS
-
-=============================================================
-*/
-
-void R_MakeAnimModel( model_t *model );
-void R_AddMdsAnimSurfaces( trRefEntity_t *ent );
-
-/*
-=============================================================
-
 RENDERER BACK END COMMAND QUEUE
 
 =============================================================

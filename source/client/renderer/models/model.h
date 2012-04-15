@@ -971,6 +971,7 @@ void RB_SurfaceCMesh(mdcSurface_t *surface);
 
 bool R_LoadMds(model_t* mod, const void* buffer);
 void R_FreeMds(model_t* mod);
+void R_AddMdsAnimSurfaces( trRefEntity_t *ent );
 void RB_SurfaceAnimMds(mdsSurface_t *surfType);
 int R_GetBoneTagMds(orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName);
 
