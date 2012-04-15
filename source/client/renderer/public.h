@@ -450,6 +450,8 @@ bool R_LoadDynamicShader(const char* shadername, const char* shadertext);
 
 qhandle_t R_RegisterSkin(const char* Name);
 image_t* R_RegisterSkinQ2(const char* name);
+bool R_GetSkinModel(qhandle_t skinid, const char* type, char* name);
+qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap);
 
 void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
 

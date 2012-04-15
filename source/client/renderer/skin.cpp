@@ -46,7 +46,7 @@
 //
 //==========================================================================
 
-static char* CommaParse(char** data_p)
+static const char* CommaParse(char** data_p)
 {
 	int c = 0, len;
 	char *data;
@@ -194,19 +194,39 @@ qhandle_t R_RegisterSkin(const char* name)
 		Log::write(S_COLOR_YELLOW "WARNING: R_RegisterSkin( '%s' ) MAX_SKINS hit\n", name);
 		return 0;
 	}
-	tr.numSkins++;
-	skin_t* skin = new skin_t;
-	Com_Memset(skin, 0, sizeof(skin_t));
-	tr.skins[hSkin] = skin;
-	String::NCpyZ(skin->name, name, sizeof(skin->name));
-	skin->numSurfaces = 0;
+
+	//----(SA)	moved things around slightly to fix the problem where you restart
+	//			a map that has ai characters who had invalid skin names entered
+	//			in thier "skin" or "head" field
+
+	skin_t* skin;
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+	{
+		tr.numSkins++;
+		skin = new skin_t;
+		Com_Memset(skin, 0, sizeof(skin_t));
+		tr.skins[hSkin] = skin;
+		String::NCpyZ(skin->name, name, sizeof(skin->name));
+		skin->numSurfaces = 0;
+		skin->numModels = 0;
+	}
 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
 	// If not a .skin file, load as a single shader
-	if (String::Cmp(name + String::Length(name) - 5, ".skin"))
+	if (!(GGameType & GAME_ET) && String::Cmp(name + String::Length(name) - 5, ".skin"))
 	{
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+		{
+			tr.numSkins++;
+			skin = new skin_t;
+			Com_Memset(skin, 0, sizeof(skin_t));
+			tr.skins[hSkin] = skin;
+			String::NCpyZ(skin->name, name, sizeof(skin->name));
+			skin->numSurfaces = 0;
+			skin->numModels = 0;
+		}
 		skin->numSurfaces = 1;
 		skin->surfaces[0] = new skinSurface_t;
 		skin->surfaces[0]->name[0] = 0;
@@ -222,11 +242,22 @@ qhandle_t R_RegisterSkin(const char* name)
 		return 0;
 	}
 
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		tr.numSkins++;
+		skin = new skin_t;
+		Com_Memset(skin, 0, sizeof(skin_t));
+		tr.skins[hSkin] = skin;
+		String::NCpyZ(skin->name, name, sizeof(skin->name));
+		skin->numSurfaces = 0;
+		skin->numModels = 0;
+	}
+
 	char* text_p = text;
 	while (text_p && *text_p)
 	{
 		// get surface name
-		char* token = CommaParse(&text_p);
+		const char* token = CommaParse(&text_p);
 		char surfName[MAX_QPATH];
 		String::NCpyZ(surfName, token, sizeof(surfName));
 
@@ -242,8 +273,33 @@ qhandle_t R_RegisterSkin(const char* name)
 			text_p++;
 		}
 
-		if (strstr(token, "tag_"))
+		if (!String::NICmp(token, "tag_", 4))
 		{
+			continue;
+		}
+
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) && !String::NICmp(token, "md3_", 4))
+		{
+			// this is specifying a model
+			skinModel_t* model = skin->models[skin->numModels] = new skinModel_t;
+			String::NCpyZ(model->type, token, sizeof(model->type));
+			model->hash = Com_HashKey(model->type, sizeof(model->type));
+
+			// get the model name
+			token = CommaParse(&text_p);
+
+			String::NCpyZ(model->model, token, sizeof(model->model));
+
+			skin->numModels++;
+			continue;
+		}
+
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP) && strstr(token, "playerscale"))
+		{
+			token = CommaParse(&text_p);
+			skin->scale[0] = String::Atof(token);	// uniform scaling for now
+			skin->scale[1] = String::Atof(token);
+			skin->scale[2] = String::Atof(token);
 			continue;
 		}
 
@@ -253,6 +309,7 @@ qhandle_t R_RegisterSkin(const char* name)
 		skinSurface_t* surf = new skinSurface_t;
 		skin->surfaces[skin->numSurfaces] = surf;
 		String::NCpyZ(surf->name, surfName, sizeof(surf->name));
+		surf->hash = Com_HashKey(surf->name, sizeof(surf->name));
 		surf->shader = R_FindShader(token, LIGHTMAP_NONE, true);
 		skin->numSurfaces++;
 	}
@@ -262,7 +319,12 @@ qhandle_t R_RegisterSkin(const char* name)
 	// never let a skin have 0 shaders
 	if (skin->numSurfaces == 0)
 	{
-		return 0;		// use default skin
+		//----(SA)	allow this for the (current) special case of the loper's upper body
+		//			(it's upper body has no surfaces, only tags)
+		if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)) || !(strstr(name, "loper") && strstr(name, "upper")))
+		{
+			return 0;		// use default skin
+		}
 	}
 
 	return hSkin;
@@ -414,4 +476,88 @@ byte* R_LoadQuakeWorldSkinData(const char* name)
 	delete[] pixels;
 
 	return out;
+}
+
+//----(SA) added so client can see what model or scale for the model was specified in a skin
+bool R_GetSkinModel(qhandle_t skinid, const char* type, char* name)
+{
+	skin_t* skin = tr.skins[skinid];
+	int hash = Com_HashKey((char*)type, String::Length(type));
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP) && !String::ICmp(type, "playerscale"))
+	{
+		// client is requesting scale from the skin rather than a model
+		String::Sprintf(name, MAX_QPATH, "%.2f %.2f %.2f", skin->scale[0], skin->scale[1], skin->scale[2]);
+		return true;
+	}
+
+	for (int i = 0; i < skin->numModels; i++)
+	{
+		if (GGameType & GAME_ET && hash != skin->models[i]->hash)
+		{
+			continue;
+		}
+		if (!String::ICmp(skin->models[i]->type, type))
+		{
+			// (SA) whoops, should've been this way
+			String::NCpyZ(name, skin->models[i]->model, sizeof(skin->models[i]->model));
+			return true;
+		}
+	}
+	return false;
+}
+
+//	Return a shader index for a given model's surface
+// 'withlightmap' set to '0' will create a new shader that is a copy of the one found
+// on the model, without the lighmap stage, if the shader has a lightmap stage
+//	NOTE: only works for bmodels right now.  Could modify for other models (md3's etc.)
+qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap)
+{
+	if (surfnum < 0)
+	{
+		surfnum = 0;
+	}
+
+	model_t* model = R_GetModelByHandle(modelid);    // (SA) should be correct now
+
+	if (model)
+	{
+		mbrush46_model_t* bmodel  = model->q3_bmodel;
+		if (bmodel && bmodel->firstSurface)
+		{
+			if (surfnum >= bmodel->numSurfaces)     // if it's out of range, return the first surface
+			{
+				surfnum = 0;
+			}
+
+			mbrush46_surface_t* surf = bmodel->firstSurface + surfnum;
+			// RF, check for null shader (can happen on func_explosive's with botclips attached)
+			if (!surf->shader)
+			{
+				return 0;
+			}
+			shader_t* shd;
+			if (surf->shader->lightmapIndex > LIGHTMAP_NONE)
+			{
+				bool mip = true;   // mip generation on by default
+
+				// get mipmap info for original texture
+				image_t* image = R_FindImage(surf->shader->name);
+				if (image)
+				{
+					mip = image->mipmap;
+				}
+				shd = R_FindShader(surf->shader->name, LIGHTMAP_NONE, mip);
+				shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new
+			}
+			else
+			{
+				shd = surf->shader;
+			}
+
+			return shd->index;
+		}
+	}
+
+	return 0;
 }
