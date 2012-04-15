@@ -352,7 +352,6 @@ static void SetFarClip( void ) {
 	if ( r_zfar->value ) {
 
 		tr.viewParms.zFar = r_zfar->integer;
-		R_SetFrameFog();
 
 		if ( r_speeds->integer == 5 ) {
 			ri.Printf( PRINT_ALL, "r_zfar value forcing farclip at: %f\n", tr.viewParms.zFar );
@@ -402,7 +401,6 @@ static void SetFarClip( void ) {
 	}
 
 	tr.viewParms.zFar = sqrt( farthestCornerDistance );
-	R_SetFrameFog();
 }
 
 
@@ -1345,6 +1343,11 @@ void R_GenerateDrawSurfs( void ) {
 	// added, because they use the projection
 	// matrix for lod calculation
 	R_SetupProjection();
+
+	if (!(tr.refdef.rdflags & RDF_NOWORLDMODEL))
+	{
+		R_SetFrameFog();
+	}
 
 	R_AddEntitySurfaces();
 }
