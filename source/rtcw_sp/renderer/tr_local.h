@@ -90,9 +90,6 @@ void R_AddPolygonSurfaces( void );
 // GR - add tessellation flag
 void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogIndex, int dlightMap, int atiTess );
 
-
-void R_LocalNormalToWorld( vec3_t local, vec3_t world );
-void R_LocalPointToWorld( vec3_t local, vec3_t world );
 int R_CullLocalBox( vec3_t bounds[2] );
 int R_CullPointAndRadius( vec3_t origin, float radius );
 int R_CullLocalPointAndRadius( vec3_t origin, float radius );

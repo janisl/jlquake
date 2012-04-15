@@ -165,7 +165,6 @@ void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
 	*atiTess = (sort >> QSORT_ATI_TESS_SHIFT) & 1;
 }
 
-#if 0
 //==========================================================================
 //
 //	SetFarClip
@@ -174,7 +173,7 @@ void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
 
 static void SetFarClip()
 {
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		tr.viewParms.zFar = 4096;
 		return;
@@ -185,6 +184,18 @@ static void SetFarClip()
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 	{
 		tr.viewParms.zFar = 2048;
+		return;
+	}
+
+	//	This lets you use r_zfar from the command line to experiment with different
+	// distances, but setting it back to 0 uses the map (or procedurally generated) default
+	if (r_zfar->value)
+	{
+		tr.viewParms.zFar = r_zfar->integer;
+		if (r_speeds->integer == 5)
+		{
+			common->Printf("r_zfar value forcing farclip at: %f\n", tr.viewParms.zFar);
+		}
 		return;
 	}
 
@@ -233,6 +244,60 @@ static void SetFarClip()
 		}
 	}
 	tr.viewParms.zFar = sqrt(farthestCornerDistance);
+
+	// ydnar: add global q3 fog
+	if (tr.world != NULL && tr.world->globalFog >= 0 && tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque < tr.viewParms.zFar)
+	{
+		tr.viewParms.zFar = tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque;
+	}
+}
+
+//==========================================================================
+//
+//	R_SetupFrustum
+//
+//	Setup that culling frustum planes for the current view
+//
+//==========================================================================
+
+//static 
+void R_SetupFrustum()
+{
+	float ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
+	float xs = sin(ang);
+	float xc = cos(ang);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[0].normal);
+	VectorMA(tr.viewParms.frustum[0].normal, xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[0].normal);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal);
+	VectorMA(tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal);
+
+	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
+	xs = sin(ang);
+	xc = cos(ang);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[2].normal);
+	VectorMA(tr.viewParms.frustum[2].normal, xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[2].normal);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[3].normal);
+	VectorMA(tr.viewParms.frustum[3].normal, -xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[3].normal);
+
+	for (int i = 0; i < 4; i++)
+	{
+		tr.viewParms.frustum[i].type = PLANE_NON_AXIAL;
+		tr.viewParms.frustum[i].dist = DotProduct(tr.viewParms.orient.origin, tr.viewParms.frustum[i].normal);
+		SetPlaneSignbits(&tr.viewParms.frustum[i]);
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		// ydnar: farplane (testing! use farplane for real)
+		VectorScale( tr.viewParms.orient.axis[ 0 ], -1, tr.viewParms.frustum[ 4 ].normal );
+		tr.viewParms.frustum[ 4 ].dist = DotProduct( tr.viewParms.orient.origin, tr.viewParms.frustum[ 4 ].normal ) - tr.viewParms.zFar;
+		tr.viewParms.frustum[ 4 ].type = PLANE_NON_AXIAL;
+		SetPlaneSignbits( &tr.viewParms.frustum[ 4 ] );
+	}
 }
 
 //==========================================================================
@@ -246,11 +311,26 @@ void R_SetupProjection()
 	// dynamically compute far clip plane distance
 	SetFarClip();
 
+	if (GGameType & GAME_ET)
+	{
+		// ydnar: set frustum planes (this happens here because of zfar manipulation)
+		R_SetupFrustum();
+	}
+
 	//
 	// set up projection matrix
 	//
 	float zNear	= r_znear->value;
 	float zFar	= tr.viewParms.zFar;
+
+	// ydnar: high fov values let players see through walls
+	// solution is to move z near plane inward, which decreases zbuffer precision
+	// but if a player wants to play with fov 160, then they can deal with z-fighting
+	// assume fov 90 = scale 1, fov 180 = scale 1/16th
+	if (GGameType & GAME_ET && tr.refdef.fov_x > 90.0f)
+	{
+		zNear /= ((tr.refdef.fov_x - 90.0f) * 0.09f + 1.0f);
+	}
 
 	float ymax = zNear * tan(tr.viewParms.fovY * M_PI / 360.0f);
 	float ymin = -ymax;
@@ -285,51 +365,14 @@ void R_SetupProjection()
 
 //==========================================================================
 //
-//	R_SetupFrustum
-//
-//	Setup that culling frustum planes for the current view
-//
-//==========================================================================
-
-static void R_SetupFrustum()
-{
-	float ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
-	float xs = sin(ang);
-	float xc = cos(ang);
-
-	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[0].normal);
-	VectorMA(tr.viewParms.frustum[0].normal, xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[0].normal);
-
-	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal);
-	VectorMA(tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal);
-
-	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
-	xs = sin(ang);
-	xc = cos(ang);
-
-	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[2].normal);
-	VectorMA(tr.viewParms.frustum[2].normal, xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[2].normal);
-
-	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[3].normal);
-	VectorMA(tr.viewParms.frustum[3].normal, -xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[3].normal);
-
-	for (int i = 0; i < 4; i++)
-	{
-		tr.viewParms.frustum[i].type = PLANE_NON_AXIAL;
-		tr.viewParms.frustum[i].dist = DotProduct(tr.viewParms.orient.origin, tr.viewParms.frustum[i].normal);
-		SetPlaneSignbits(&tr.viewParms.frustum[i]);
-	}
-}
-
-//==========================================================================
-//
 //	R_RotateForViewer
 //
 //	Sets up the modelview matrix for a given viewParm
 //
 //==========================================================================
 
-static void R_RotateForViewer()
+//static 
+void R_RotateForViewer()
 {
 	Com_Memset(&tr.orient, 0, sizeof(tr.orient));
 	tr.orient.axis[0][0] = 1;
@@ -395,7 +438,6 @@ void R_LocalPointToWorld(vec3_t local, vec3_t world)
 	world[1] = local[0] * tr.orient.axis[0][1] + local[1] * tr.orient.axis[1][1] + local[2] * tr.orient.axis[2][1] + tr.orient.origin[1];
 	world[2] = local[0] * tr.orient.axis[0][2] + local[1] * tr.orient.axis[1][2] + local[2] * tr.orient.axis[2][2] + tr.orient.origin[2];
 }
-#endif
 
 //==========================================================================
 //
