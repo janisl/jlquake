@@ -432,8 +432,8 @@ bool R_GetEntityToken(char* Buffer, int Size);
 #if 0
 int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
 	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
-int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 #endif
+int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 
 qhandle_t R_RegisterModel(const char* Name);
 void R_ModelBounds(qhandle_t Handle, vec3_t Mins, vec3_t Maxs);
@@ -470,9 +470,9 @@ void R_AddPolyToScene(qhandle_t hShader , int NumVerts, const polyVert_t* Verts,
 void R_AddLightStyleToScene(int style, float r, float g, float b);
 void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture);
 void R_RenderScene(const refdef_t* fd);
+#endif
 
 float R_CalcEntityLight(refEntity_t* e);
-#endif
 void R_SetSky(const char* name, float rotate, vec3_t axis);
 
 void R_SetColor(const float* rgba);

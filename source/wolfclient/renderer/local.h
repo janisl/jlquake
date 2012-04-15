@@ -808,17 +808,14 @@ LIGHTS
 
 int R_LightPointQ1(vec3_t p);
 void R_LightPointQ2(vec3_t p, vec3_t color);
-#if 0
 void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent);
-#endif
 void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node);
 void R_PushDlightsQ1();
 void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node);
 void R_PushDlightsQ2();
 void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient);
-#if 0
 void R_DlightBmodel(mbrush46_model_t* bmodel);
-#endif
+void R_CullDlights();
 
 /*
 ====================================================================

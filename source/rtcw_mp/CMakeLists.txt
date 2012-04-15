@@ -31,7 +31,6 @@ set(WOLFMP_FILES
 	renderer/tr_cmesh.cpp
 	renderer/tr_font.cpp
 	renderer/tr_init.cpp
-	renderer/tr_light.cpp
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp
 	renderer/tr_mesh.cpp

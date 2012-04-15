@@ -343,7 +343,6 @@ void R_LightPointQ2(vec3_t p, vec3_t color)
 	VectorScale(color, r_modulate->value, color);
 }
 
-#if 0
 //==========================================================================
 //
 //	R_SetupEntityLightingGrid
@@ -468,6 +467,16 @@ static void R_SetupEntityLightingGrid(trRefEntity_t* ent)
 	VectorScale(ent->ambientLight, r_ambientScale->value, ent->ambientLight);
 	VectorScale(ent->directedLight, r_directedScale->value, ent->directedLight);
 
+	//	cheats?  check for single player?
+	if (tr.lightGridMulDirected)
+	{
+		VectorScale(ent->directedLight, tr.lightGridMulDirected, ent->directedLight);
+	}
+	if (tr.lightGridMulAmbient)
+	{
+		VectorScale(ent->ambientLight, tr.lightGridMulAmbient, ent->ambientLight);
+	}
+
 	VectorNormalize2(direction, ent->lightDir);
 }
 
@@ -542,9 +551,22 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 	}
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
-	if (!(refdef->rdflags & RDF_NOWORLDMODEL) && tr.world->lightGridData)
+	if (tr.world && tr.world->lightGridData &&
+		(!(refdef->rdflags & RDF_NOWORLDMODEL) ||
+		(GGameType & GAME_ET && (refdef->rdflags & RDF_NOWORLDMODEL) && (ent->e.renderfx & RF_LIGHTING_ORIGIN))))
 	{
 		R_SetupEntityLightingGrid(ent);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		ent->ambientLight[0] = tr.identityLight * 64;
+		ent->ambientLight[1] = tr.identityLight * 64;
+		ent->ambientLight[2] = tr.identityLight * 96;
+		ent->directedLight[0] = tr.identityLight * 255;
+		ent->directedLight[1] = tr.identityLight * 232;
+		ent->directedLight[2] = tr.identityLight * 224;
+		VectorSet(ent->lightDir, -1, 1, 1.25);
+		VectorNormalize(ent->lightDir);
 	}
 	else
 	{
@@ -556,12 +578,28 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 	}
 
 	// bonus items and view weapons have a fixed minimum add
-	if (1 /* ent->e.renderfx & RF_MINLIGHT */)
+	if (ent->e.hilightIntensity)
+	{
+		// level of intensity was set because the item was looked at
+		ent->ambientLight[0] += tr.identityLight * 128 * ent->e.hilightIntensity;
+		ent->ambientLight[1] += tr.identityLight * 128 * ent->e.hilightIntensity;
+		ent->ambientLight[2] += tr.identityLight * 128 * ent->e.hilightIntensity;
+	}
+	else if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)) || ent->e.renderfx & RF_MINLIGHT)
 	{
 		// give everything a minimum light add
 		ent->ambientLight[0] += tr.identityLight * 32;
 		ent->ambientLight[1] += tr.identityLight * 32;
 		ent->ambientLight[2] += tr.identityLight * 32;
+	}
+
+	if (refdef->rdflags & RDF_SNOOPERVIEW &&
+		((GGameType & GAME_WolfSP && ent->e.entityNum < MAX_CLIENTS_WS) ||
+		(GGameType & GAME_WolfMP && ent->e.entityNum < MAX_CLIENTS_WM) ||
+		(GGameType & GAME_ET && ent->e.entityNum < MAX_CLIENTS_ET)))
+	{
+		// allow a little room for flicker from directed light
+		VectorSet(ent->ambientLight, 245, 245, 245);
 	}
 
 	//
@@ -574,19 +612,53 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 	for (int i = 0; i < refdef->num_dlights; i++)
 	{
 		dlight_t* dl = &refdef->dlights[i];
-		vec3_t dir;
-		VectorSubtract(dl->origin, lightOrigin, dir);
-		d = VectorNormalize(dir);
-
-		float power = DLIGHT_AT_RADIUS * (dl->radius * dl->radius);
-		if (d < DLIGHT_MINIMUM_RADIUS)
+		if (dl->shader)
 		{
-			d = DLIGHT_MINIMUM_RADIUS;
+			//	if the dlight has a diff shader specified, you don't know
+			// what it does, so don't let it affect entities lighting
+			continue;
 		}
-		d = power / (d * d);
 
-		VectorMA(ent->directedLight, d, dl->color, ent->directedLight);
-		VectorMA(lightDir, d, dir, lightDir);
+		float modulate;
+		vec3_t dir;
+		if (!(GGameType & GAME_ET))
+		{
+			VectorSubtract(dl->origin, lightOrigin, dir);
+			d = VectorNormalize(dir);
+
+			float power = DLIGHT_AT_RADIUS * (dl->radius * dl->radius);
+			if (d < DLIGHT_MINIMUM_RADIUS)
+			{
+				d = DLIGHT_MINIMUM_RADIUS;
+			}
+			modulate = power / (d * d);
+		}
+		else
+		{
+			// directional dlight, origin is a directional normal
+			if (dl->flags & REF_DIRECTED_DLIGHT)
+			{
+				modulate = dl->intensity * 255.0;
+				VectorCopy(dl->origin, dir);
+			}
+			else
+			{
+				// ball dlight
+				VectorSubtract(dl->origin, lightOrigin, dir);
+				d = dl->radius - VectorNormalize(dir);
+				if (d <= 0.0)
+				{
+					modulate = 0;
+				}
+				else
+				{
+					modulate = dl->intensity * d;
+				}
+			}
+		}
+
+		VectorMA(ent->directedLight, modulate, dl->color, ent->directedLight);
+		VectorMA(lightDir, modulate, dir, lightDir);
 	}
 
 	// clamp ambient
@@ -608,12 +680,38 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 	((byte*)&ent->ambientLightInt)[1] = Q_ftol(ent->ambientLight[1]);
 	((byte*)&ent->ambientLightInt)[2] = Q_ftol(ent->ambientLight[2]);
 	((byte*)&ent->ambientLightInt)[3] = 0xff;
-	
+
+	if (GGameType & GAME_ET)
+	{
+		// ydnar: save out the light table
+		d = 0.0f;
+		byte* entityLight = (byte*)ent->entityLightInt;
+		float modulate = 1.0f / (ENTITY_LIGHT_STEPS - 1);
+		for (int i = 0; i < ENTITY_LIGHT_STEPS; i++)
+		{
+			vec3_t lightValue;
+			VectorMA(ent->ambientLight, d, ent->directedLight, lightValue);
+			entityLight[0] = lightValue[0] > 255.0f ? 255 : Q_ftol(lightValue[0]);
+			entityLight[1] = lightValue[1] > 255.0f ? 255 : Q_ftol(lightValue[1]);
+			entityLight[2] = lightValue[2] > 255.0f ? 255 : Q_ftol(lightValue[2]);
+			entityLight[3] = 0xFF;
+
+			d += modulate;
+			entityLight += 4;
+		}
+	}
+
 	// transform the direction to local space
 	VectorNormalize(lightDir);
 	ent->lightDir[0] = DotProduct(lightDir, ent->e.axis[0]);
 	ent->lightDir[1] = DotProduct(lightDir, ent->e.axis[1]);
 	ent->lightDir[2] = DotProduct(lightDir, ent->e.axis[2]);
+
+	// ydnar: renormalize if necessary
+	if (GGameType & GAME_ET && ent->e.nonNormalizedAxes)
+	{
+		VectorNormalize(ent->lightDir);
+	}
 }
 
 //==========================================================================
@@ -640,7 +738,6 @@ int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec
 
 	return true;
 }
-#endif
 
 /*
 =============================================================================
@@ -788,7 +885,6 @@ void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_DlightBmodel
@@ -807,29 +903,33 @@ void R_DlightBmodel(mbrush46_model_t* bmodel)
 	{
 		dlight_t* dl = &tr.refdef.dlights[i];
 
-		// see if the point is close enough to the bounds to matter
-		int j;
-		for (j = 0; j < 3; j++)
+		// ydnar: parallel dlights affect all entities
+		if (!(GGameType & GAME_ET) || !(dl->flags & REF_DIRECTED_DLIGHT))
 		{
-			if (dl->transformed[j] - bmodel->bounds[1][j] > dl->radius)
+			// see if the point is close enough to the bounds to matter
+			int j;
+			for (j = 0; j < 3; j++)
 			{
-				break;
+				if (dl->transformed[j] - bmodel->bounds[1][j] > dl->radius)
+				{
+					break;
+				}
+				if (bmodel->bounds[0][j] - dl->transformed[j] > dl->radius)
+				{
+					break;
+				}
 			}
-			if (bmodel->bounds[0][j] - dl->transformed[j] > dl->radius)
+			if (j < 3)
 			{
-				break;
+				continue;
 			}
-		}
-		if (j < 3)
-		{
-			continue;
 		}
 
 		// we need to check this light
 		mask |= 1 << i;
 	}
 
-	tr.currentEntity->needDlights = (mask != 0);
+	tr.currentEntity->needDlights = mask;
 
 	// set the dlight bits in all the surfaces
 	for (int i = 0; i < bmodel->numSurfaces; i++)
@@ -848,6 +948,38 @@ void R_DlightBmodel(mbrush46_model_t* bmodel)
 		{
 			((srfTriangles_t*)surf->data)->dlightBits[tr.smpFrame] = mask;
 		}
+		else if (*surf->data == SF_FOLIAGE)
+		{
+			((srfFoliage_t*)surf->data)->dlightBits[tr.smpFrame] = mask;
+		}
 	}
 }
-#endif
+
+//	frustum culls dynamic lights
+void R_CullDlights()
+{
+	//	limit
+	if (tr.refdef.num_dlights > MAX_DLIGHTS)
+	{
+		tr.refdef.num_dlights = MAX_DLIGHTS;
+	}
+
+	//	walk dlight list
+	int numDlights = 0;
+	int dlightBits = 0;
+	dlight_t* dl = tr.refdef.dlights;
+	for (int i = 0; i < tr.refdef.num_dlights; i++, dl++)
+	{
+		if ((dl->flags & REF_DIRECTED_DLIGHT) || R_CullPointAndRadius(dl->origin, dl->radius) != CULL_OUT)
+		{
+			numDlights = i + 1;
+			dlightBits |= (1 << i);
+		}
+	}
+
+	//	reset count
+	tr.refdef.num_dlights = numDlights;
+
+	//	set bits
+	tr.refdef.dlightBits = dlightBits;
+}
