@@ -148,10 +148,10 @@ static int R_ComputeFogNum( mdsHeader_t *header, trRefEntity_t *ent ) {
 
 /*
 ==============
-R_AddAnimSurfaces
+R_AddMdsAnimSurfaces
 ==============
 */
-void R_AddAnimSurfaces( trRefEntity_t *ent ) {
+void R_AddMdsAnimSurfaces( trRefEntity_t *ent ) {
 	mdsHeader_t     *header;
 	mdsSurface_t    *surface;
 	shader_t        *shader = 0;

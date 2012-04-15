@@ -208,7 +208,7 @@ ANIMATED MODELS
 */
 
 void R_MakeAnimModel( model_t *model );
-void R_AddAnimSurfaces( trRefEntity_t *ent );
+void R_AddMdsAnimSurfaces( trRefEntity_t *ent );
 
 //
 // MDM / MDX

@@ -18,7 +18,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/models/bsp46.cpp
 	../client/renderer/models/md2.cpp
 	renderer/models/md3.cpp
-	renderer/models/md4.cpp
+	../client/renderer/models/md4.cpp
 	../client/renderer/models/mdc.cpp
 	../client/renderer/models/mdl.cpp
 	../client/renderer/models/mdm.cpp

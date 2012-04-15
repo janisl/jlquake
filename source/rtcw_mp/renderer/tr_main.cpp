@@ -911,7 +911,7 @@ void R_AddEntitySurfaces( void ) {
 					break;
 					// done.
 				case MOD_MDS:
-					R_AddAnimSurfaces( ent );
+					R_AddMdsAnimSurfaces( ent );
 					break;
 				case MOD_BRUSH46:
 					R_AddBrushModelSurfaces( ent );
