@@ -533,7 +533,7 @@ void R_AddBrushModelSurfaces(trRefEntity_t* ent)
 
 	for (int i = 0; i < bmodel->numSurfaces; i++)
 	{
-		R_AddWorldSurface(bmodel->firstSurface + i, tr.currentEntity->needDlights);
+		R_AddWorldSurface(bmodel->firstSurface + i, tr.currentEntity->dlightBits);
 	}
 }
 

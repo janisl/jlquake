@@ -532,7 +532,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 				R_RotateForEntity(backEnd.currentEntity, &backEnd.viewParms, &backEnd.orient);
 
 				// set up the dynamic lighting if needed
-				if (backEnd.currentEntity->needDlights)
+				if (backEnd.currentEntity->dlightBits)
 				{
 					R_TransformDlights(backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orient);
 				}

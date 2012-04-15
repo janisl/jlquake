@@ -193,7 +193,7 @@ struct trRefEntity_t
 
 	float		axisLength;		// compensate for non-normalized axis
 
-	bool		needDlights;	// true for bmodels that touch a dlight
+	int dlightBits;				// for bmodels that touch a dlight
 	bool		lightingCalculated;
 	vec3_t		lightDir;		// normalized direction towards light
 	vec3_t		ambientLight;	// color normalized to 0-255

@@ -655,9 +655,9 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 		( bmodel->firstSurface + i )->fogIndex = fognum;
 		// Arnout: custom shader support for brushmodels
 		if ( ent->e.customShader ) {
-			R_AddWorldSurface( bmodel->firstSurface + i, R_GetShaderByHandle( ent->e.customShader ), tr.currentEntity->needDlights, decalBits );
+			R_AddWorldSurface( bmodel->firstSurface + i, R_GetShaderByHandle( ent->e.customShader ), tr.currentEntity->dlightBits, decalBits );
 		} else {
-			R_AddWorldSurface( bmodel->firstSurface + i, ( ( mbrush46_surface_t * )( bmodel->firstSurface + i ) )->shader, tr.currentEntity->needDlights, decalBits );
+			R_AddWorldSurface( bmodel->firstSurface + i, ( ( mbrush46_surface_t * )( bmodel->firstSurface + i ) )->shader, tr.currentEntity->dlightBits, decalBits );
 		}
 	}
 

@@ -858,7 +858,7 @@ void R_AddEntitySurfaces( void ) {
 		  tr.currentEntityNum++ ) {
 		ent = tr.currentEntity = &tr.refdef.entities[tr.currentEntityNum];
 
-		ent->needDlights = qfalse;
+		ent->dlightBits = 0;
 
 		// preshift the value we are going to OR into the drawsurf sort
 		tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;

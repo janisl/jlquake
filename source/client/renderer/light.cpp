@@ -929,7 +929,7 @@ void R_DlightBmodel(mbrush46_model_t* bmodel)
 		mask |= 1 << i;
 	}
 
-	tr.currentEntity->needDlights = mask;
+	tr.currentEntity->dlightBits = mask;
 
 	// set the dlight bits in all the surfaces
 	for (int i = 0; i < bmodel->numSurfaces; i++)

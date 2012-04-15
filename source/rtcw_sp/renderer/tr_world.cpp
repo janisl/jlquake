@@ -387,7 +387,7 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent ) {
 
 	for ( i = 0 ; i < bmodel->numSurfaces ; i++ ) {
 		( bmodel->firstSurface + i )->fogIndex = fognum;
-		R_AddWorldSurface( bmodel->firstSurface + i, tr.currentEntity->needDlights );
+		R_AddWorldSurface( bmodel->firstSurface + i, tr.currentEntity->dlightBits);
 	}
 //----(SA) end
 }
