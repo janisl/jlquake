@@ -222,9 +222,6 @@ typedef struct botlib_import_s
 	// Arnout: removed again, botlibsetup already has a parameter 'singleplayer'
 	//qboolean	(*BotGameIsSinglePlayer) ( void );
 
-
-	// Gordon: direct hookup into rendering, stop using this silly debugpoly faff
-	void ( *BotDrawPolygon )( int color, int numPoints, float *points );
 } botlib_import_t;
 
 typedef struct aas_export_s

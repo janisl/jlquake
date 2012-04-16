@@ -637,19 +637,6 @@ void SV_BotInitCvars( void ) {
 	bot_enable = Cvar_VariableIntegerValue( "bot_enable" );
 }
 
-#ifndef DEDICATED
-void BotImport_DrawPolygon( int color, int numpoints, float* points );
-#else
-/*
-==================
-BotImport_DrawPolygon
-==================
-*/
-void BotImport_DrawPolygon( int color, int numpoints, float* points ) {
-	Com_DPrintf( "BotImport_DrawPolygon stub\n" );
-}
-#endif
-
 /*
 ==================
 SV_BotInitBotLib
@@ -702,8 +689,6 @@ void SV_BotInitBotLib( void ) {
 	//bot routines
 	botlib_import.BotVisibleFromPos =   BotImport_BotVisibleFromPos;
 	botlib_import.BotCheckAttackAtPos = BotImport_BotCheckAttackAtPos;
-
-	botlib_import.BotDrawPolygon =      BotImport_DrawPolygon;
 
 	// singleplayer check
 	// Arnout: no need for this

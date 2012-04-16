@@ -591,8 +591,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 
 	re.RegisterFont     = RE_RegisterFont;
 
-	re.DrawDebugPolygon = R_DebugPolygon;
-
 	re.AddPolyBufferToScene =   RE_AddPolyBufferToScene;
 
 	re.SetGlobalFog     = RE_SetGlobalFog;

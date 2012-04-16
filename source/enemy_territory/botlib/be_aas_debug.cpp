@@ -96,6 +96,28 @@ bot_debugpoly_t* AAS_GetDebugPolygon( void ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
+void AAS_ShowPolygon(int color, int numpoints, vec3_t *points)
+{
+	int i;
+
+	for (i = 0; i < MAX_DEBUGPOLYS; i++)
+	{
+		if (!debugpolygons[i])
+		{
+			debugpolygons[i] = botimport.DebugPolygonGetFree();
+			debugpolygons[i]->color = color;
+			debugpolygons[i]->numPoints = numpoints;
+			Com_Memcpy(debugpolygons[i]->points, points, numpoints * sizeof(vec3_t));
+			break;
+		} //end if
+	} //end for
+} //end of the function AAS_ShowPolygon
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 void AAS_ClearShownDebugLines( void ) {
 	int i;
 
@@ -365,7 +387,7 @@ void AAS_ShowFacePolygon( int facenum, int color, int flip ) {
 		}
 	}
 
-	botimport.BotDrawPolygon( color, numpoints, (float*) points );
+	AAS_ShowPolygon(color, numpoints, points);
 } //end of the function AAS_ShowFacePolygon
 //===========================================================================
 //
