@@ -37,7 +37,6 @@
 
 // CODE --------------------------------------------------------------------
 
-#if 0
 //==========================================================================
 //
 //	R_CullTriSurf
@@ -70,11 +69,11 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 	int sphereCull;
 	if (tr.currentEntityNum != REF_ENTITYNUM_WORLD)
 	{
-		sphereCull = R_CullLocalPointAndRadius(cv->localOrigin, cv->meshRadius);
+		sphereCull = R_CullLocalPointAndRadius(cv->localOrigin, cv->radius);
 	}
 	else
 	{
-		sphereCull = R_CullPointAndRadius(cv->localOrigin, cv->meshRadius);
+		sphereCull = R_CullPointAndRadius(cv->localOrigin, cv->radius);
 	}
 
 	// check for trivial reject
@@ -88,7 +87,7 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 	{
 		tr.pc.c_sphere_cull_patch_clip++;
 
-		int boxCull = R_CullLocalBox(cv->meshBounds);
+		int boxCull = R_CullLocalBox(cv->bounds);
 
 		if (boxCull == CULL_OUT) 
 		{
@@ -112,6 +111,96 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 	return false;
 }
 
+static bool R_CullSurfaceET(surfaceType_t* surface, shader_t* shader, int* frontFace)
+{
+	// force to non-front facing
+	*frontFace = 0;
+
+	if (r_nocull->integer)
+	{
+		return false;
+	}
+
+	// ydnar: made surface culling generic, inline with q3map2 surface classification
+	switch (*surface)
+	{
+	case SF_FACE:
+	case SF_TRIANGLES:
+		break;
+	case SF_GRID:
+		if (r_nocurves->integer)
+		{
+			return true;
+		}
+		break;
+	case SF_FOLIAGE:
+		if (!r_drawfoliage->value)
+		{
+			return true;
+		}
+		break;
+
+	default:
+		return true;
+	}
+
+	// get generic surface
+	srfGeneric_t* gen = (srfGeneric_t*)surface;
+
+	// plane cull
+	if (gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer)
+	{
+		float d = DotProduct(tr.orient.viewOrigin, gen->plane.normal) - gen->plane.dist;
+		if (d > 0.0f)
+		{
+			*frontFace = 1;
+		}
+
+		// don't cull exactly on the plane, because there are levels of rounding
+		// through the BSP, ICD, and hardware that may cause pixel gaps if an
+		// epsilon isn't allowed here
+		if (shader->cullType == CT_FRONT_SIDED)
+		{
+			if (d < -8.0f)
+			{
+				tr.pc.c_plane_cull_out++;
+				return true;
+			}
+		}
+		else if (shader->cullType == CT_BACK_SIDED)
+		{
+			if (d > 8.0f)
+			{
+				tr.pc.c_plane_cull_out++;
+				return true;
+			}
+		}
+
+		tr.pc.c_plane_cull_in++;
+	}
+
+	// try sphere cull
+	int cull;
+	if (tr.currentEntityNum != REF_ENTITYNUM_WORLD)
+	{
+		cull = R_CullLocalPointAndRadius(gen->localOrigin, gen->radius);
+	}
+	else
+	{
+		cull = R_CullPointAndRadius(gen->localOrigin, gen->radius);
+	}
+	if (cull == CULL_OUT)
+	{
+		tr.pc.c_sphere_cull_out++;
+		return true;
+	}
+
+	tr.pc.c_sphere_cull_in++;
+
+	// must be visible
+	return false;
+}
+
 //==========================================================================
 //
 //	R_CullSurface
@@ -123,8 +212,13 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 //
 //==========================================================================
 
-static bool R_CullSurface(surfaceType_t* surface, shader_t* shader)
+static bool R_CullSurface(surfaceType_t* surface, shader_t* shader, int* frontFace)
 {
+	if (GGameType & GAME_ET)
+	{
+		return R_CullSurfaceET(surface, shader, frontFace);
+	}
+
 	if (r_nocull->integer)
 	{
 		return false;
@@ -227,12 +321,12 @@ static int R_DlightGrid(srfGridMesh_t* grid, int dlightBits)
 			continue;
 		}
 		dlight_t* dl = &tr.refdef.dlights[i];
-		if (dl->origin[0] - dl->radius > grid->meshBounds[1][0] ||
-			dl->origin[0] + dl->radius < grid->meshBounds[0][0] ||
-			dl->origin[1] - dl->radius > grid->meshBounds[1][1] ||
-			dl->origin[1] + dl->radius < grid->meshBounds[0][1] ||
-			dl->origin[2] - dl->radius > grid->meshBounds[1][2] ||
-			dl->origin[2] + dl->radius < grid->meshBounds[0][2])
+		if (dl->origin[0] - dl->radius > grid->bounds[1][0] ||
+			dl->origin[0] + dl->radius < grid->bounds[0][0] ||
+			dl->origin[1] - dl->radius > grid->bounds[1][1] ||
+			dl->origin[1] + dl->radius < grid->bounds[0][1] ||
+			dl->origin[2] - dl->radius > grid->bounds[1][2] ||
+			dl->origin[2] + dl->radius < grid->bounds[0][2])
 		{
 			// dlight doesn't reach the bounds
 			dlightBits &= ~(1 << i);
@@ -261,6 +355,89 @@ static int R_DlightTrisurf(srfTriangles_t* surf, int dlightBits)
 	return dlightBits;
 }
 
+// ydnar: made this use generic surface
+static int R_DlightSurfaceET(mbrush46_surface_t* surface, int dlightBits)
+{
+	int i;
+	vec3_t origin;
+	float radius;
+	srfGeneric_t* gen;
+
+
+	// get generic surface
+	gen = (srfGeneric_t*)surface->data;
+
+	// ydnar: made surface dlighting generic, inline with q3map2 surface classification
+	switch ((surfaceType_t)*surface->data)
+	{
+	case SF_FACE:
+	case SF_TRIANGLES:
+	case SF_GRID:
+	case SF_FOLIAGE:
+		break;
+
+	default:
+		gen->dlightBits[tr.smpFrame] = 0;
+		return 0;
+	}
+
+	// debug code
+	//%	gen->dlightBits[ tr.smpFrame ] = dlightBits;
+	//%	return dlightBits;
+
+	// try to cull out dlights
+	for (i = 0; i < tr.refdef.num_dlights; i++)
+	{
+		if (!(dlightBits & (1 << i)))
+		{
+			continue;
+		}
+
+		// junior dlights don't affect world surfaces
+		if (tr.refdef.dlights[i].flags & REF_JUNIOR_DLIGHT)
+		{
+			dlightBits &= ~(1 << i);
+			continue;
+		}
+
+		// lightning dlights affect all surfaces
+		if (tr.refdef.dlights[i].flags & REF_DIRECTED_DLIGHT)
+		{
+			continue;
+		}
+
+		// test surface bounding sphere against dlight bounding sphere
+		VectorCopy(tr.refdef.dlights[i].transformed, origin);
+		radius = tr.refdef.dlights[i].radius;
+
+		if ((gen->localOrigin[0] + gen->radius) < (origin[0] - radius) ||
+			(gen->localOrigin[0] - gen->radius) > (origin[0] + radius) ||
+			(gen->localOrigin[1] + gen->radius) < (origin[1] - radius) ||
+			(gen->localOrigin[1] - gen->radius) > (origin[1] + radius) ||
+			(gen->localOrigin[2] + gen->radius) < (origin[2] - radius) ||
+			(gen->localOrigin[2] - gen->radius) > (origin[2] + radius))
+		{
+			dlightBits &= ~(1 << i);
+		}
+	}
+
+	// Com_Printf( "Surf: 0x%08X dlightBits: 0x%08X\n", srf, dlightBits );
+
+	// set counters
+	if (dlightBits == 0)
+	{
+		tr.pc.c_dlightSurfacesCulled++;
+	}
+	else
+	{
+		tr.pc.c_dlightSurfaces++;
+	}
+
+	// set surface dlight bits and return
+	gen->dlightBits[tr.smpFrame] = dlightBits;
+	return dlightBits;
+}
+
 //==========================================================================
 //
 //	R_DlightSurface
@@ -272,6 +449,11 @@ static int R_DlightTrisurf(srfTriangles_t* surf, int dlightBits)
 
 static int R_DlightSurface(mbrush46_surface_t* surf, int dlightBits)
 {
+	if (GGameType & GAME_ET)
+	{
+		return R_DlightSurfaceET(surf, dlightBits);
+	}
+
 	if (*surf->data == SF_FACE)
 	{
 		dlightBits = R_DlightFace((srfSurfaceFace_t*)surf->data, dlightBits);
@@ -303,7 +485,8 @@ static int R_DlightSurface(mbrush46_surface_t* surf, int dlightBits)
 //
 //==========================================================================
 
-static void R_AddWorldSurface(mbrush46_surface_t* surf, int dlightBits)
+//static 
+void R_AddWorldSurface(mbrush46_surface_t* surf, shader_t* shader, int dlightBits, int decalBits)
 {
 	if (surf->viewCount == tr.viewCount)
 	{
@@ -314,7 +497,8 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, int dlightBits)
 	// FIXME: bmodel fog?
 
 	// try to cull before dlighting or adding
-	if (R_CullSurface(surf->data, surf->shader))
+	int frontFace;
+	if (R_CullSurface(surf->data, shader, &frontFace))
 	{
 		return;
 	}
@@ -326,9 +510,21 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, int dlightBits)
 		dlightBits = (dlightBits != 0);
 	}
 
-	R_AddDrawSurf(surf->data, surf->shader, surf->fogIndex, dlightBits);
+	// add decals
+	if (decalBits)
+	{
+		// ydnar: project any decals
+		for (int i = 0; i < tr.refdef.numDecalProjectors; i++)
+		{
+			if (decalBits & (1 << i))
+			{
+				R_ProjectDecalOntoSurface(&tr.refdef.decalProjectors[i], surf, tr.currentBModel);
+			}
+		}
+	}
+
+	R_AddDrawSurf(surf->data, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE);
 }
-#endif
 
 /*
 =============================================================
