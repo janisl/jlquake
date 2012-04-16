@@ -709,7 +709,36 @@ void R_DrawBrushModelQ2(trRefEntity_t* e)
 	qglPopMatrix();
 }
 
-#if 0
+//	See if a sprite is inside a fog volume
+// Return positive with /any part/ of the brush falling within a fog volume
+static int R_BmodelFogNum(trRefEntity_t* re, mbrush46_model_t* bmodel)
+{
+	int i, j;
+	mbrush46_fog_t* fog;
+
+	for (i = 1; i < tr.world->numfogs; i++)
+	{
+		fog = &tr.world->fogs[i];
+		for (j = 0; j < 3; j++)
+		{
+			if (re->e.origin[j] + bmodel->bounds[0][j] >= fog->bounds[1][j])
+			{
+				break;
+			}
+			if (re->e.origin[j] + bmodel->bounds[1][j] <= fog->bounds[0][j])
+			{
+				break;
+			}
+		}
+		if (j == 3)
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
 //==========================================================================
 //
 //	R_AddBrushModelSurfaces
@@ -727,15 +756,86 @@ void R_AddBrushModelSurfaces(trRefEntity_t* ent)
 	{
 		return;
 	}
-	
+
+	// ydnar: set current brush model to world
+	tr.currentBModel = bmodel;
+
+	// ydnar: set model state for decals and dynamic fog
+	VectorCopy(ent->e.origin, bmodel->orientation[tr.smpFrame].origin);
+	VectorCopy(ent->e.axis[0], bmodel->orientation[tr.smpFrame].axis[0]);
+	VectorCopy(ent->e.axis[1], bmodel->orientation[tr.smpFrame].axis[1]);
+	VectorCopy(ent->e.axis[2], bmodel->orientation[tr.smpFrame].axis[2]);
+	bmodel->visible[tr.smpFrame] = true;
+	bmodel->entityNum[tr.smpFrame] = tr.currentEntityNum;
+
 	R_DlightBmodel(bmodel);
 
+	// determine if in fog
+	int fognum = R_BmodelFogNum(ent, bmodel);
+
+	// ydnar: project any decals
+	int decalBits = 0;
+	decalProjector_t localProjectors[MAX_DECAL_PROJECTORS];
+	int numLocalProjectors = 0;
+	for (int i = 0; i < tr.refdef.numDecalProjectors; i++)
+	{
+		// early out
+		if (tr.refdef.decalProjectors[i].shader == NULL)
+		{
+			continue;
+		}
+
+		// transform entity bbox (fixme: rotated entities have invalid bounding boxes)
+		vec3_t mins, maxs;
+		VectorAdd(bmodel->bounds[0], tr.orient.origin, mins);
+		VectorAdd(bmodel->bounds[1], tr.orient.origin, maxs);
+
+		// set bit
+		if (R_TestDecalBoundingBox(&tr.refdef.decalProjectors[i], mins, maxs))
+		{
+			R_TransformDecalProjector(&tr.refdef.decalProjectors[i], tr.orient.axis, tr.orient.origin, &localProjectors[numLocalProjectors]);
+			numLocalProjectors++;
+			decalBits <<= 1;
+			decalBits |= 1;
+		}
+	}
+
+	// ydnar: save old decal projectors
+	int savedNumDecalProjectors = tr.refdef.numDecalProjectors;
+	decalProjector_t* savedDecalProjectors = tr.refdef.decalProjectors;
+
+	// set local decal projectors
+	tr.refdef.numDecalProjectors = numLocalProjectors;
+	tr.refdef.decalProjectors = localProjectors;
+
+	// add model surfaces
 	for (int i = 0; i < bmodel->numSurfaces; i++)
 	{
-		R_AddWorldSurface(bmodel->firstSurface + i, tr.currentEntity->dlightBits);
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			(bmodel->firstSurface + i)->fogIndex = fognum;
+		}
+		// Arnout: custom shader support for brushmodels
+		if (GGameType & (GAME_WolfMP | GAME_ET) && ent->e.customShader)
+		{
+			R_AddWorldSurface(bmodel->firstSurface + i, R_GetShaderByHandle(ent->e.customShader), tr.currentEntity->dlightBits, decalBits);
+		}
+		else
+		{
+			R_AddWorldSurface(bmodel->firstSurface + i, (bmodel->firstSurface + i)->shader, tr.currentEntity->dlightBits, 0);
+		}
 	}
+
+	// ydnar: restore old decal projectors
+	tr.refdef.numDecalProjectors = savedNumDecalProjectors;
+	tr.refdef.decalProjectors = savedDecalProjectors;
+
+	// ydnar: add decal surfaces
+	R_AddDecalSurfaces(bmodel);
+
+	// ydnar: clear current brush model
+	tr.currentBModel = NULL;
 }
-#endif
 
 /*
 =============================================================

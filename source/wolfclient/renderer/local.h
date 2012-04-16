@@ -928,8 +928,8 @@ void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent);
 void R_DrawWorldQ1();
 void R_DrawBrushModelQ2(trRefEntity_t* e);
 void R_DrawWorldQ2();
-#if 0
 void R_AddBrushModelSurfaces(trRefEntity_t* e);
+#if 0
 void R_AddWorldSurfaces();
 #endif
 
