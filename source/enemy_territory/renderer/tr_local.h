@@ -96,17 +96,6 @@ float       R_ProcessLightmap( byte *pic, int in_padding, int width, int height,
 void        R_Init( void );
 
 /*
-============================================================
-
-MARKERS, POLYGON PROJECTION ON WORLD POLYGONS
-
-============================================================
-*/
-
-int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t projection,
-					 int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-
-/*
 =============================================================
 
 RENDERER BACK END COMMAND QUEUE

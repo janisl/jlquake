@@ -666,7 +666,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		CM_TransformedBoxTraceQ3( (q3trace_t*)VMA( 1 ), (float*)VMA( 2 ), (float*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[6], args[7], (float*)VMA( 8 ), (float*)VMA( 9 ), /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_MARKFRAGMENTS:
-		return re.MarkFragments( args[1], (const vec3_t*)VMA( 2 ), (float*)VMA( 3 ), args[4], (float*)VMA( 5 ), args[6], (markFragment_t*)VMA( 7 ) );
+		return R_MarkFragmentsWolf( args[1], (const vec3_t*)VMA( 2 ), (float*)VMA( 3 ), args[4], (float*)VMA( 5 ), args[6], (markFragment_t*)VMA( 7 ) );
 	case CG_S_STARTSOUND:
 		S_StartSound( (float*)VMA( 1 ), args[2], args[3], args[4], 0.5 );
 		return 0;

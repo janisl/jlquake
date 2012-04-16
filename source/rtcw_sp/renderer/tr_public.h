@@ -56,9 +56,6 @@ typedef struct {
 	void ( *EndRegistration )( void );
 
 	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
-
-	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
-							int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 } refexport_t;
 
 //

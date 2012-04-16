@@ -321,8 +321,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.BeginRegistration = RE_BeginRegistration;
 	re.EndRegistration  = RE_EndRegistration;
 
-	re.MarkFragments    = R_MarkFragments;
-
 	re.inPVS = R_inPVS;
 
 	re.purgeCache       = R_PurgeCache;

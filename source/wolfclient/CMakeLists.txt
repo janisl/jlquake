@@ -36,6 +36,7 @@ set(WOLFCLIENT_FILES
 	renderer/init.cpp
 	../client/renderer/light.cpp
 	../client/renderer/main.cpp
+	renderer/marks.cpp
 	../client/renderer/noise.cpp
 	../client/renderer/particle.cpp
 	../client/renderer/qgl.cpp
