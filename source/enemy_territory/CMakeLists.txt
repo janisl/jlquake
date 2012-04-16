@@ -33,7 +33,6 @@ set (ET_FILES
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp
 	renderer/tr_model.cpp
-	renderer/tr_scene.cpp
 	renderer/tr_world.cpp
 
 	server/sv_bot.cpp

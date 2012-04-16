@@ -969,7 +969,7 @@ DECALS - ydnar
 ============================================================
 */
 
-void R_AddModelShadow(refEntity_t* ent);
+void R_AddModelShadow(const refEntity_t* ent);
 void R_TransformDecalProjector(decalProjector_t* in, vec3_t axis[3], vec3_t origin, decalProjector_t* out);
 bool R_TestDecalBoundingBox(decalProjector_t* dp, vec3_t mins, vec3_t maxs);
 void R_ProjectDecalOntoSurface(decalProjector_t* dp, mbrush46_surface_t* surf, mbrush46_model_t* bmodel);

@@ -110,31 +110,6 @@ int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t project
 					 int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
 /*
-============================================================
-
-SCENE GENERATION
-
-============================================================
-*/
-
-void RE_ClearScene( void );
-void RE_AddRefEntityToScene( const refEntity_t *ent );
-void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts );
-// Ridah
-void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys );
-// done.
-void RE_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer );
-// ydnar: modified dlight system to support seperate radius & intensity
-// void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
-void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags );
-//----(SA)
-void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
-//----(SA)
-void RE_RenderScene( const refdef_t *fd );
-void RE_SaveViewParms();
-void RE_RestoreViewParms();
-
-/*
 =============================================================
 
 RENDERER BACK END COMMAND QUEUE

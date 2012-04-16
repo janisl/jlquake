@@ -55,20 +55,7 @@ typedef struct {
 	// them to be loaded into card memory
 	void ( *EndRegistration )( void );
 
-	// a scene is built up by calls to R_ClearScene and the various R_Add functions.
-	// Nothing is drawn until R_RenderScene is called.
-	void ( *ClearScene )( void );
-	void ( *AddRefEntityToScene )( const refEntity_t *re );
 	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
-	void ( *AddPolyToScene )( qhandle_t hShader, int numVerts, const polyVert_t *verts );
-	// Ridah
-	void ( *AddPolysToScene )( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys );
-	// done.
-	void ( *AddLightToScene )( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
-//----(SA)
-	void ( *AddCoronaToScene )( const vec3_t org, float r, float g, float b, float scale, int id, int flags );
-//----(SA)
-	void ( *RenderScene )( const refdef_t *fd );
 
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
 							int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );

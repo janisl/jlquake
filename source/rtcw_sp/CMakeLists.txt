@@ -25,7 +25,6 @@ set(WOLFSP_FILES
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp
 	renderer/tr_model.cpp
-	renderer/tr_scene.cpp
 
 	client/cl_cgame.cpp
 	client/cl_cin.cpp

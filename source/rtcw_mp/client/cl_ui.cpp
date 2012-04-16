@@ -881,7 +881,7 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return R_RegisterShaderNoMip( (char*)VMA( 1 ) );
 
 	case UI_R_CLEARSCENE:
-		re.ClearScene();
+		R_ClearScene();
 		return 0;
 
 	case UI_R_ADDREFENTITYTOSCENE:
@@ -889,21 +889,21 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_R_ADDPOLYTOSCENE:
-		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ) );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), 1 );
 		return 0;
 
 		// Ridah
 	case UI_R_ADDPOLYSTOSCENE:
-		re.AddPolysToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
 		return 0;
 		// done.
 
 	case UI_R_ADDLIGHTTOSCENE:
-		re.AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6] );
+		R_AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6] );
 		return 0;
 
 	case UI_R_ADDCORONATOSCENE:
-		re.AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
+		R_AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
 		return 0;
 
 	case UI_R_RENDERSCENE:

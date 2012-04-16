@@ -289,7 +289,7 @@ void R_ProjectDecal(qhandle_t hShader, int numPoints, vec3_t* points, vec4_t pro
 }
 
 //	adds a simple shadow projector to the scene
-void R_AddModelShadow(refEntity_t* ent)
+void R_AddModelShadow(const refEntity_t* ent)
 {
 	//	shadows?
 	if (!r_drawentities->integer || r_shadows->integer != 1 || ent->renderfx & RF_NOSHADOW)

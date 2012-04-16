@@ -564,18 +564,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 
 	re.MarkFragments    = R_MarkFragments;
 
-	re.ClearScene       = RE_ClearScene;
-	re.AddRefEntityToScene = RE_AddRefEntityToScene;
-	re.AddPolyToScene   = RE_AddPolyToScene;
-	// Ridah
-	re.AddPolysToScene  = RE_AddPolysToScene;
-	// done.
-	re.AddLightToScene  = RE_AddLightToScene;
-//----(SA)
-	re.AddCoronaToScene = RE_AddCoronaToScene;
-//----(SA)
-	re.RenderScene      = RE_RenderScene;
-
 	re.RegisterFont     = RE_RegisterFont;
 
 	return &re;

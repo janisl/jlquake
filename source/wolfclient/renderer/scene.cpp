@@ -52,18 +52,22 @@ int			r_firstSceneParticle;
 int skyboxportal;
 int drawskyboxportal;
 
-int r_numcoronas;
-int r_firstSceneCorona;
+static int r_numcoronas;
+static int r_firstSceneCorona;
 
-int r_firstScenePolybuffer;
-int r_numpolybuffers;
+static int r_firstScenePolybuffer;
+static int r_numpolybuffers;
 
-int r_firstSceneDecalProjector;
+static int r_firstSceneDecalProjector;
 int r_numDecalProjectors;
-int r_firstSceneDecal;
-int r_numDecals;
+static int r_firstSceneDecal;
+static int r_numDecals;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+// Temp storage for saving view paramters.  Drawing the animated head in the corner
+// was creaming important view info.
+static viewParms_t g_oldViewParms;
 
 // CODE --------------------------------------------------------------------
 
@@ -116,7 +120,6 @@ void R_ToggleSmpFrame()
 	r_firstSceneDecal = 0;
 }
 
-#if 0
 //==========================================================================
 //
 //	R_ClearScene
@@ -125,9 +128,20 @@ void R_ToggleSmpFrame()
 
 void R_ClearScene()
 {
+	// ydnar: clear model stuff for dynamic fog
+	if (tr.world != NULL)
+	{
+		for (int i = 0; i < tr.world->numBModels; i++)
+		{
+			tr.world->bmodels[i].visible[tr.smpFrame] = false;
+		}
+	}
+
 	r_firstSceneEntity = r_numentities;
 	r_firstSceneDlight = r_numdlights;
+	r_firstSceneCorona = r_numcoronas;
 	r_firstScenePoly = r_numpolys;
+	r_firstScenePolybuffer = r_numpolybuffers;
 	r_firstSceneParticle = r_numparticles;
 }
 
@@ -156,6 +170,9 @@ void R_AddRefEntityToScene(const refEntity_t* ent)
 	backEndData[tr.smpFrame]->entities[r_numentities].lightingCalculated = false;
 
 	r_numentities++;
+
+	// ydnar: add projected shadows for this model
+	R_AddModelShadow(ent);
 }
 
 //==========================================================================
@@ -207,6 +224,123 @@ void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, floa
 void R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float g, float b)
 {
 	R_AddDynamicLightToScene(org, intensity, r, g, b, true);
+}
+
+// Ridah, added support for overdraw field
+void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, float b, int overdraw)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	if (r_numdlights >= MAX_DLIGHTS)
+	{
+		return;
+	}
+	if (intensity <= 0)
+	{
+		return;
+	}
+	// RF, allow us to force some dlights under all circumstances
+	if (!(overdraw & REF_FORCE_DLIGHT))
+	{
+		if (r_dynamiclight->integer == 0)
+		{
+			return;
+		}
+		if (r_dynamiclight->integer == 2 && !(backEndData[tr.smpFrame]->dlights[r_numdlights].forced))
+		{
+			return;
+		}
+	}
+
+	if (r_dlightScale->value <= 0)     //----(SA)	added
+	{
+		return;
+	}
+
+	overdraw &= ~REF_FORCE_DLIGHT;
+	overdraw &= ~REF_JUNIOR_DLIGHT;
+
+	dlight_t* dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
+	VectorCopy(org, dl->origin);
+	dl->radius = intensity * r_dlightScale->value;  //----(SA)	modified
+	dl->color[0] = r;
+	dl->color[1] = g;
+	dl->color[2] = b;
+	dl->shader = NULL;
+	dl->overdraw = 0;
+
+	if (overdraw == 10)     // sorry, hijacking 10 for a quick hack (SA)
+	{
+		dl->shader = R_GetShaderByHandle(R_RegisterShader("negdlightshader"));
+	}
+	else if (overdraw == 11)       // 11 is flames
+	{
+		dl->shader = R_GetShaderByHandle(R_RegisterShader("flamedlightshader"));
+	}
+	else
+	{
+		dl->overdraw = overdraw;
+	}
+}
+
+//	ydnar: modified dlight system to support seperate radius and intensity
+void R_AddLightToScene(const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags)
+{
+	// early out
+	if (!tr.registered || r_numdlights >= MAX_DLIGHTS || radius <= 0 || intensity <= 0)
+	{
+		return;
+	}
+
+	// RF, allow us to force some dlights under all circumstances
+	if (!(flags & REF_FORCE_DLIGHT))
+	{
+		if (r_dynamiclight->integer == 0)
+		{
+			return;
+		}
+	}
+
+	// set up a new dlight
+	dlight_t* dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
+	VectorCopy(org, dl->origin);
+	VectorCopy(org, dl->transformed);
+	dl->radius = radius;
+	dl->radiusInverseCubed = (1.0 / dl->radius);
+	dl->radiusInverseCubed = dl->radiusInverseCubed * dl->radiusInverseCubed * dl->radiusInverseCubed;
+	dl->intensity = intensity;
+	dl->color[0] = r;
+	dl->color[1] = g;
+	dl->color[2] = b;
+	dl->shader = R_GetShaderByHandle(hShader);
+	if (dl->shader == tr.defaultShader)
+	{
+		dl->shader = NULL;
+	}
+	dl->flags = flags;
+}
+
+void R_AddCoronaToScene(const vec3_t org, float r, float g, float b, float scale, int id, int flags)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	if (r_numcoronas >= MAX_CORONAS)
+	{
+		return;
+	}
+
+	corona_t* cor = &backEndData[tr.smpFrame]->coronas[r_numcoronas++];
+	VectorCopy(org, cor->origin);
+	cor->color[0] = r;
+	cor->color[1] = g;
+	cor->color[2] = b;
+	cor->scale = scale;
+	cor->id = id;
+	cor->flags = flags;
 }
 
 //==========================================================================
@@ -295,6 +429,49 @@ void R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t* verts, 
 		}
 		poly->fogIndex = fogIndex;
 	}
+}
+
+//JL Saving a pointer - another reason for fucked up SMP.
+void R_AddPolyBufferToScene(polyBuffer_t* pPolyBuffer)
+{
+	if (r_numpolybuffers >= MAX_POLYS)
+	{
+		return;
+	}
+
+	srfPolyBuffer_t* pPolySurf = &backEndData[tr.smpFrame]->polybuffers[r_numpolybuffers];
+	r_numpolybuffers++;
+
+	pPolySurf->surfaceType = SF_POLYBUFFER;
+	pPolySurf->pPolyBuffer = pPolyBuffer;
+
+	vec3_t bounds[2];
+	VectorCopy(pPolyBuffer->xyz[0], bounds[0]);
+	VectorCopy(pPolyBuffer->xyz[0], bounds[1]);
+	for (int i = 1; i < pPolyBuffer->numVerts; i++)
+	{
+		AddPointToBounds(pPolyBuffer->xyz[i], bounds[0], bounds[1]);
+	}
+	int fogIndex;
+	for (fogIndex = 1; fogIndex < tr.world->numfogs; fogIndex++)
+	{
+		mbrush46_fog_t* fog = &tr.world->fogs[fogIndex];
+		if (bounds[1][0] >= fog->bounds[0][0] &&
+			bounds[1][1] >= fog->bounds[0][1] &&
+			bounds[1][2] >= fog->bounds[0][2] &&
+			bounds[0][0] <= fog->bounds[1][0] &&
+			bounds[0][1] <= fog->bounds[1][1] &&
+			bounds[0][2] <= fog->bounds[1][2])
+		{
+			break;
+		}
+	}
+	if (fogIndex == tr.world->numfogs)
+	{
+		fogIndex = 0;
+	}
+
+	pPolySurf->fogIndex = fogIndex;
 }
 
 //==========================================================================
@@ -398,7 +575,7 @@ void R_RenderScene(const refdef_t* fd)
 	{
 		return;
 	}
-	QGL_LogComment("====== RE_RenderScene =====\n");
+	QGL_LogComment("====== R_RenderScene =====\n");
 
 	if (r_norefresh->integer)
 	{
@@ -428,6 +605,20 @@ void R_RenderScene(const refdef_t* fd)
 
 	tr.refdef.time = fd->time;
 	tr.refdef.rdflags = fd->rdflags;
+
+	if (fd->rdflags & RDF_SKYBOXPORTAL)
+	{
+		skyboxportal = 1;
+	}
+
+	if (fd->rdflags & RDF_DRAWSKYBOX)
+	{
+		drawskyboxportal = 1;
+	}
+	else
+	{
+		drawskyboxportal = 0;
+	}
 
 	// copy the areamask data over and note if it has changed, which
 	// will force a reset of the visible leafs even if the view hasn't moved
@@ -462,9 +653,22 @@ void R_RenderScene(const refdef_t* fd)
 
 	tr.refdef.num_dlights = r_numdlights - r_firstSceneDlight;
 	tr.refdef.dlights = &backEndData[tr.smpFrame]->dlights[r_firstSceneDlight];
+	tr.refdef.dlightBits = 0;
+
+	tr.refdef.num_coronas = r_numcoronas - r_firstSceneCorona;
+	tr.refdef.coronas = &backEndData[tr.smpFrame]->coronas[r_firstSceneCorona];
 
 	tr.refdef.numPolys = r_numpolys - r_firstScenePoly;
 	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
+
+	tr.refdef.numPolyBuffers = r_numpolybuffers - r_firstScenePolybuffer;
+	tr.refdef.polybuffers = &backEndData[tr.smpFrame]->polybuffers[r_firstScenePolybuffer];
+
+	tr.refdef.numDecalProjectors = r_numDecalProjectors - r_firstSceneDecalProjector;
+	tr.refdef.decalProjectors = &backEndData[tr.smpFrame]->decalProjectors[r_firstSceneDecalProjector];
+
+	tr.refdef.numDecals = r_numDecals - r_firstSceneDecal;
+	tr.refdef.decals = &backEndData[tr.smpFrame]->decals[r_firstSceneDecal];
 
 	tr.refdef.lightstyles = backEndData[tr.smpFrame]->lightstyles;
 
@@ -473,7 +677,8 @@ void R_RenderScene(const refdef_t* fd)
 
 	// turn off dynamic lighting globally by clearing all the
 	// dlights if it needs to be disabled or if vertex lighting is enabled
-	if (r_dynamiclight->integer == 0 || r_vertexLight->integer == 1)
+	if (!(GGameType & (GAME_WolfMP | GAME_ET)) &&
+		((!(GGameType & GAME_WolfSP) && r_dynamiclight->integer == 0) || r_vertexLight->integer == 1))
 	{
 		tr.refdef.num_dlights = 0;
 	}
@@ -532,4 +737,19 @@ void R_RenderScene(const refdef_t* fd)
 
 	tr.frontEndMsec += CL_ScaledMilliseconds() - startTime;
 }
-#endif
+
+//	Save out the old render info to a temp place so we don't kill the LOD system
+// when we do a second render.
+void R_SaveViewParms()
+{
+	// save old viewParms so we can return to it after the mirror view
+	g_oldViewParms = tr.viewParms;
+}
+
+//	Restore the old render info so we don't kill the LOD system
+// when we do a second render.
+void R_RestoreViewParms()
+{
+	// This was killing the LOD computation
+	tr.viewParms = g_oldViewParms;
+}

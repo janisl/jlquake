@@ -651,7 +651,7 @@ void CL_AddRefEntityToScene(const etrefEntity_t* ent)
 {
 	refEntity_t refent;
 	CL_GameRefEntToEngine(ent, &refent);
-	re.AddRefEntityToScene(&refent);
+	R_AddRefEntityToScene(&refent);
 }
 
 void CL_RenderScene(const etrefdef_t* gameRefdef)
@@ -683,7 +683,6 @@ void CL_RenderScene(const etrefdef_t* gameRefdef)
 	rd.glfog.registered = gameRefdef->glfog.registered;
 	rd.glfog.drawsky = gameRefdef->glfog.drawsky;
 	rd.glfog.clearscreen = gameRefdef->glfog.clearscreen;
-	re.RenderScene(&rd);
 }
 
 int CL_LerpTag(orientation_t *tag,  const etrefEntity_t *gameRefent, const char *tagName, int startIndex)
@@ -911,34 +910,33 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_R_REGISTERSHADERNOMIP:
 		return R_RegisterShaderNoMip( (char*)VMA( 1 ) );
 	case CG_R_CLEARSCENE:
-		re.ClearScene();
+		R_ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
 		CL_AddRefEntityToScene( (etrefEntity_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
-		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ) );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), 1 );
 		return 0;
 		// Ridah
 	case CG_R_ADDPOLYSTOSCENE:
-		re.AddPolysToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
 		return 0;
 	case CG_R_ADDPOLYBUFFERTOSCENE:
-		re.AddPolyBufferToScene( (polyBuffer_t*)VMA( 1 ) );
+		R_AddPolyBufferToScene( (polyBuffer_t*)VMA( 1 ) );
 		break;
 		// done.
 //	case CG_R_LIGHTFORPOINT:
 //		return re.LightForPoint( VMA(1), VMA(2), VMA(3), VMA(4) );
 	case CG_R_ADDLIGHTTOSCENE:
 		// ydnar: new dlight code
-		//%	re.AddLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6] );
-		re.AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[7], args[8] );
+		R_AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[7], args[8] );
 		return 0;
 //	case CG_R_ADDADDITIVELIGHTTOSCENE:
 //		re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 //		return 0;
 	case CG_R_ADDCORONATOSCENE:
-		re.AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
+		R_AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
 		return 0;
 	case CG_R_SETFOG:
 		R_SetFog( args[1], args[2], args[3], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
@@ -950,10 +948,10 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		CL_RenderScene( (etrefdef_t*)VMA( 1 ) );
 		return 0;
 	case CG_R_SAVEVIEWPARMS:
-		re.SaveViewParms();
+		R_SaveViewParms();
 		return 0;
 	case CG_R_RESTOREVIEWPARMS:
-		re.RestoreViewParms();
+		R_RestoreViewParms();
 		return 0;
 	case CG_R_SETCOLOR:
 		R_SetColor( (float*)VMA( 1 ) );
