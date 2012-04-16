@@ -460,11 +460,18 @@ void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
 void R_ClearScene();
 void R_AddRefEntityToScene(const refEntity_t* Entity);
 void R_AddLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
+void R_AddLightToScene(const vec3_t origin, float intensity, float r, float g, float b, int overdraw);
+void R_AddLightToScene(const vec3_t origin, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags);
 void R_AddAdditiveLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
+void R_AddCoronaToScene(const vec3_t org, float r, float g, float b, float scale, int id, int flags);
 void R_AddPolyToScene(qhandle_t hShader , int NumVerts, const polyVert_t* Verts, int Num);
+void R_AddPolyBufferToScene(polyBuffer_t* pPolyBuffer);
 void R_AddLightStyleToScene(int style, float r, float g, float b);
 void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture);
 void R_RenderScene(const refdef_t* fd);
+void R_SaveViewParms();
+void R_RestoreViewParms();
+void R_SetGlobalFog(bool restore, int duration, float r, float g, float b, float depthForOpaque);
 
 float R_CalcEntityLight(refEntity_t* e);
 void R_SetSky(const char* name, float rotate, vec3_t axis);

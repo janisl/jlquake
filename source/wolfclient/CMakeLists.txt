@@ -38,7 +38,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/noise.cpp
 	../client/renderer/particle.cpp
 	../client/renderer/qgl.cpp
-	renderer/scene.cpp
+	../client/renderer/scene.cpp
 	renderer/screenshot.cpp
 	../client/renderer/shade.cpp
 	../client/renderer/shade_calculate.cpp
