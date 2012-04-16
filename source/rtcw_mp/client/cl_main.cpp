@@ -2397,34 +2397,6 @@ void CL_SetRecommended_f( void ) {
 	Com_SetRecommended();
 }
 
-
-
-/*
-================
-CL_RefPrintf
-
-DLL glue
-================
-*/
-void QDECL CL_RefPrintf( int print_level, const char *fmt, ... ) {
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-
-	va_start( argptr,fmt );
-	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
-	va_end( argptr );
-
-	if ( print_level == PRINT_ALL ) {
-		Com_Printf( "%s", msg );
-	} else if ( print_level == PRINT_WARNING ) {
-		Com_Printf( S_COLOR_YELLOW "%s", msg );       // yellow
-	} else if ( print_level == PRINT_DEVELOPER ) {
-		Com_DPrintf( S_COLOR_RED "%s", msg );     // red
-	}
-}
-
-
-
 /*
 ============
 CL_ShutdownRef
@@ -2618,77 +2590,17 @@ void CL_GetAutoUpdate( void ) {
 
 /*
 ============
-CL_RefMalloc
-============
-*/
-#ifdef ZONE_DEBUG
-void *CL_RefMallocDebug( int size, char *label, char *file, int line ) {
-	return Z_TagMallocDebug( size, TAG_RENDERER, label, file, line );
-}
-#else
-void *CL_RefMalloc( int size ) {
-	return Z_TagMalloc( size, TAG_RENDERER );
-}
-#endif
-
-/*
-============
-CL_RefTagFree
-============
-*/
-void CL_RefTagFree( void ) {
-	Z_FreeTags( TAG_RENDERER );
-	return;
-}
-
-/*
-============
 CL_InitRef
 ============
 */
 void CL_InitRef( void ) {
-	refimport_t ri;
 	refexport_t *ret;
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
-	ri.Cmd_AddCommand = Cmd_AddCommand;
-	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-	ri.Printf = CL_RefPrintf;
-	ri.Error = Com_Error;
-	ri.Milliseconds = CL_ScaledMilliseconds;
-#ifdef ZONE_DEBUG
-	ri.Z_MallocDebug = CL_RefMallocDebug;
-#else
-	ri.Z_Malloc = CL_RefMalloc;
-#endif
-	ri.Free = Z_Free;
-	ri.Tag_Free = CL_RefTagFree;
-	ri.Hunk_Clear = Hunk_ClearToMark;
-#ifdef HUNK_DEBUG
-	ri.Hunk_AllocDebug = Hunk_AllocDebug;
-#else
-	ri.Hunk_Alloc = Hunk_Alloc;
-#endif
-	ri.Hunk_AllocateTempMemory = Hunk_AllocateTempMemory;
-	ri.Hunk_FreeTempMemory = Hunk_FreeTempMemory;
-	ri.CM_DrawDebugSurface = CM_DrawDebugSurface;
-	ri.FS_ReadFile = FS_ReadFile;
-	ri.FS_FreeFile = FS_FreeFile;
-	ri.FS_WriteFile = FS_WriteFile;
-	ri.FS_FreeFileList = FS_FreeFileList;
-	ri.FS_ListFiles = FS_ListFiles;
-	ri.FS_FileIsInPAK = FS_FileIsInPAK;
-	ri.FS_FileExists = FS_FileExists;
-	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
-
-	ret = GetRefAPI( REF_API_VERSION, &ri );
+	ret = GetRefAPI( REF_API_VERSION);
 
 	Com_Printf( "-------------------------------\n" );
 

@@ -2221,35 +2221,6 @@ void CL_SetRecommended_f( void ) {
 
 }
 
-
-
-/*
-================
-CL_RefPrintf
-
-DLL glue
-================
-*/
-void QDECL CL_RefPrintf( int print_level, const char *fmt, ... ) {
-	va_list argptr;
-	char msg[MAXPRINTMSG*8];
-
-	va_start( argptr,fmt );
-	vsprintf( msg,fmt,argptr );
-	va_end( argptr );
-	msg[MAXPRINTMSG - 1] = 0;
-
-	if ( print_level == PRINT_ALL ) {
-		Com_Printf( "%s", msg );
-	} else if ( print_level == PRINT_WARNING ) {
-		Com_Printf( S_COLOR_YELLOW "%s", msg );       // yellow
-	} else if ( print_level == PRINT_DEVELOPER ) {
-		Com_DPrintf( S_COLOR_RED "%s", msg );     // red
-	}
-}
-
-
-
 /*
 ============
 CL_ShutdownRef
@@ -2326,41 +2297,13 @@ CL_InitRef
 ============
 */
 void CL_InitRef( void ) {
-	refimport_t ri;
 	refexport_t *ret;
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
-	ri.Cmd_AddCommand = Cmd_AddCommand;
-	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-	ri.Printf = CL_RefPrintf;
-	ri.Error = Com_Error;
-	ri.Milliseconds = CL_ScaledMilliseconds;
-	ri.Hunk_Clear = Hunk_ClearToMark;
-#ifdef HUNK_DEBUG
-	ri.Hunk_AllocDebug = Hunk_AllocDebug;
-#else
-	ri.Hunk_Alloc = Hunk_Alloc;
-#endif
-	ri.Hunk_AllocateTempMemory = Hunk_AllocateTempMemory;
-	ri.Hunk_FreeTempMemory = Hunk_FreeTempMemory;
-	ri.CM_DrawDebugSurface = CM_DrawDebugSurface;
-	ri.FS_ReadFile = FS_ReadFile;
-	ri.FS_FreeFile = FS_FreeFile;
-	ri.FS_WriteFile = FS_WriteFile;
-	ri.FS_FreeFileList = FS_FreeFileList;
-	ri.FS_ListFiles = FS_ListFiles;
-	ri.FS_FileIsInPAK = FS_FileIsInPAK;
-	ri.FS_FileExists = FS_FileExists;
-	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
-
-	ret = GetRefAPI( REF_API_VERSION, &ri );
+	ret = GetRefAPI( REF_API_VERSION);
 
 	Com_Printf( "-------------------------------\n" );
 

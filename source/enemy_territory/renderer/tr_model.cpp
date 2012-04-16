@@ -34,8 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 ** RE_BeginRegistration
 */
 void RE_BeginRegistration( glconfig_t *glconfigOut ) {
-	ri.Hunk_Clear();    // (SA) MEM NOTE: not in missionpack
-
 	R_Init();
 	*glconfigOut = glConfig;
 

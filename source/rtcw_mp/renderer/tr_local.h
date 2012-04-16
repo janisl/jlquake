@@ -37,8 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
 
-extern refimport_t ri;
-
 /*
 ** GL wrapper/helper functions
 */

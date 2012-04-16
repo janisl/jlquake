@@ -117,7 +117,7 @@ void GL_SetDefaultState( void ) {
 #endif
 		// cap if necessary
 		if ( r_ati_truform_tess->value > maxtess ) {
-			ri.Cvar_Set( "r_ati_truform_tess", va( "%d", maxtess ) );
+			Cvar_Set( "r_ati_truform_tess", va( "%d", maxtess ) );
 		}
 
 		// set Wolf defaults
@@ -146,7 +146,7 @@ void R_Init( void ) {
 	int err;
 	int i;
 
-	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
+	common->Printf("----- R_Init -----\n" );
 
 	// clear all our internal state
 	memset( &tr, 0, sizeof( tr ) );
@@ -204,10 +204,10 @@ void R_Init( void ) {
 
 	err = qglGetError();
 	if ( err != GL_NO_ERROR ) {
-		ri.Printf( PRINT_ALL, "glGetError() = 0x%x\n", err );
+		common->Printf("glGetError() = 0x%x\n", err );
 	}
 
-	ri.Printf( PRINT_ALL, "----- finished R_Init -----\n" );
+	common->Printf("----- finished R_Init -----\n" );
 }
 
 void R_PurgeCache( void ) {
@@ -223,20 +223,20 @@ RE_Shutdown
 */
 void RE_Shutdown( qboolean destroyWindow ) {
 
-	ri.Printf( PRINT_ALL, "RE_Shutdown( %i )\n", destroyWindow );
+	common->Printf("RE_Shutdown( %i )\n", destroyWindow );
 
-	ri.Cmd_RemoveCommand( "modellist" );
-	ri.Cmd_RemoveCommand( "screenshotJPEG" );
-	ri.Cmd_RemoveCommand( "screenshot" );
-	ri.Cmd_RemoveCommand( "imagelist" );
-	ri.Cmd_RemoveCommand( "shaderlist" );
-	ri.Cmd_RemoveCommand( "skinlist" );
-	ri.Cmd_RemoveCommand( "gfxinfo" );
-	ri.Cmd_RemoveCommand( "modelist" );
-	ri.Cmd_RemoveCommand( "shaderstate" );
+	Cmd_RemoveCommand( "modellist" );
+	Cmd_RemoveCommand( "screenshotJPEG" );
+	Cmd_RemoveCommand( "screenshot" );
+	Cmd_RemoveCommand( "imagelist" );
+	Cmd_RemoveCommand( "shaderlist" );
+	Cmd_RemoveCommand( "skinlist" );
+	Cmd_RemoveCommand( "gfxinfo" );
+	Cmd_RemoveCommand( "modelist" );
+	Cmd_RemoveCommand( "shaderstate" );
 
 	// Ridah
-	ri.Cmd_RemoveCommand( "cropimages" );
+	Cmd_RemoveCommand( "cropimages" );
 	// done.
 
 	R_ShutdownCommandBuffers();
@@ -273,8 +273,6 @@ void RE_Shutdown( qboolean destroyWindow ) {
 
 		// shutdown QGL subsystem
 		QGL_Shutdown();
-
-		ri.Tag_Free();  // wipe all render alloc'd zone memory
 	}
 
 	tr.registered = qfalse;
@@ -301,15 +299,13 @@ GetRefAPI
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
+refexport_t *GetRefAPI( int apiVersion) {
 	static refexport_t re;
-
-	ri = *rimp;
 
 	memset( &re, 0, sizeof( re ) );
 
 	if ( apiVersion != REF_API_VERSION ) {
-		ri.Printf( PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n",
+		common->Printf("Mismatched REF_API_VERSION: expected %i, got %i\n",
 				   REF_API_VERSION, apiVersion );
 		return NULL;
 	}

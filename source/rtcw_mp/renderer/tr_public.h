@@ -58,69 +58,9 @@ typedef struct {
 	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 } refexport_t;
 
-//
-// these are the functions imported by the refresh module
-//
-typedef struct {
-	// print message on the local console
-	void ( QDECL * Printf )( int printLevel, const char *fmt, ... );
-
-	// abort the game
-	void ( QDECL * Error )( int errorLevel, const char *fmt, ... );
-
-	// milliseconds should only be used for profiling, never
-	// for anything game related.  Get time from the refdef
-	int ( *Milliseconds )( void );
-
-	// stack based memory allocation for per-level things that
-	// won't be freed
-	void ( *Hunk_Clear )( void );
-#ifdef HUNK_DEBUG
-	void    *( *Hunk_AllocDebug )( int size, ha_pref pref, char *label, char *file, int line );
-#else
-	void    *( *Hunk_Alloc )( int size, ha_pref pref );
-#endif
-	void    *( *Hunk_AllocateTempMemory )( int size );
-	void ( *Hunk_FreeTempMemory )( void *block );
-
-	// dynamic memory allocator for things that need to be freed
-#ifdef ZONE_DEBUG
-	void    *( *Z_MallocDebug )( int bytes, char *label, char *file, int line );
-#else
-	void    *( *Z_Malloc )( int bytes );
-#endif
-	void ( *Free )( void *buf );
-	void ( *Tag_Free )( void );
-
-	Cvar  *( *Cvar_Get )( const char *name, const char *value, int flags );
-	Cvar* ( *Cvar_Set )( const char *name, const char *value );
-
-	void ( *Cmd_AddCommand )( const char *name, void( *cmd ) ( void ) );
-	void ( *Cmd_RemoveCommand )( const char *name );
-
-	int ( *Cmd_Argc )( void );
-	char    *( *Cmd_Argv )( int i );
-
-	void ( *Cmd_ExecuteText )( int exec_when, const char *text );
-
-	// visualization for debugging collision detection
-	void ( *CM_DrawDebugSurface )( void( *drawPoly ) ( int color, int numPoints, float *points ) );
-
-	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existance
-	int ( *FS_FileIsInPAK )( const char *name, int *pChecksum );
-	int ( *FS_ReadFile )( const char *name, void **buf );
-	void ( *FS_FreeFile )( void *buf );
-	char ** ( *FS_ListFiles )( const char *name, const char *extension, int *numfilesfound );
-	void ( *FS_FreeFileList )( char **filelist );
-	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
-	bool ( *FS_FileExists )( const char *file );
-} refimport_t;
-
-
 // this is the only function actually exported at the linker level
 // If the module can't init to a valid rendering state, NULL will be
 // returned.
-refexport_t*GetRefAPI( int apiVersion, refimport_t *rimp );
+refexport_t*GetRefAPI( int apiVersion);
 
 #endif  // __TR_PUBLIC_H

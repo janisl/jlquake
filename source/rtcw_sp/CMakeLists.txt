@@ -21,7 +21,6 @@ add_library(splines-wolfsp STATIC
 
 set(WOLFSP_FILES
 	renderer/tr_init.cpp
-	renderer/tr_main.cpp
 	renderer/tr_model.cpp
 
 	client/cl_cgame.cpp
