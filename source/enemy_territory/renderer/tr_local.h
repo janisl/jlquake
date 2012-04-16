@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #define TR_LOCAL_H
 
 #include "../../wolfclient/client.h"
-#include "../../wolfclient/renderer/local.h"
+#include "../../client/renderer/local.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
