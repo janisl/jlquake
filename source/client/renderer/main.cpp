@@ -164,6 +164,146 @@ void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
 	*atiTess = (sort >> QSORT_ATI_TESS_SHIFT) & 1;
 }
 
+static void R_SetFrameFog()
+{
+	// Arnout: new style global fog transitions
+	if (tr.world->globalFogTransEndTime)
+	{
+		if (tr.world->globalFogTransEndTime >= tr.refdef.time)
+		{
+			int fadeTime = tr.world->globalFogTransEndTime - tr.world->globalFogTransStartTime;
+			float lerpPos = (float)(tr.refdef.time - tr.world->globalFogTransStartTime) / (float)fadeTime;
+			if (lerpPos > 1)
+			{
+				lerpPos = 1;
+			}
+
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] = tr.world->globalTransStartFog[ 0 ] + ((tr.world->globalTransEndFog[0] - tr.world->globalTransStartFog[0]) * lerpPos);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] = tr.world->globalTransStartFog[ 1 ] + ((tr.world->globalTransEndFog[1] - tr.world->globalTransStartFog[1]) * lerpPos);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] = tr.world->globalTransStartFog[ 2 ] + ((tr.world->globalTransEndFog[2] - tr.world->globalTransStartFog[2]) * lerpPos);
+
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.colorInt = ColorBytes4(tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] * tr.identityLight,
+																						tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] * tr.identityLight,
+																						tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] * tr.identityLight, 1.0);
+
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque = tr.world->globalTransStartFog[3] + ((tr.world->globalTransEndFog[3] - tr.world->globalTransStartFog[3]) * lerpPos);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.tcScale = 1.0f / (tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque * 8);
+		}
+		else
+		{
+			// transition complete
+			VectorCopy(tr.world->globalTransEndFog, tr.world->fogs[tr.world->globalFog].shader->fogParms.color);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.colorInt = ColorBytes4(tr.world->globalTransEndFog[0] * tr.identityLight,
+																						tr.world->globalTransEndFog[1] * tr.identityLight,
+																						tr.world->globalTransEndFog[2] * tr.identityLight, 1.0);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque = tr.world->globalTransEndFog[3];
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.tcScale = 1.0f / (tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque * 8);
+
+			tr.world->globalFogTransEndTime = 0;
+		}
+	}
+
+	if (r_speeds->integer == 5)
+	{
+		if (!glfogsettings[FOG_TARGET].registered)
+		{
+			common->Printf("no fog - calc zFar: %0.1f\n", tr.viewParms.zFar);
+			return;
+		}
+	}
+
+	// DHM - Nerve :: If fog is not valid, don't use it
+	if (!glfogsettings[FOG_TARGET].registered)
+	{
+		return;
+	}
+
+	// still fading
+	if (glfogsettings[FOG_TARGET].finishTime && glfogsettings[FOG_TARGET].finishTime >= tr.refdef.time)
+	{
+		// transitioning from density to distance
+		if (glfogsettings[FOG_LAST].mode == GL_EXP && glfogsettings[FOG_TARGET].mode == GL_LINEAR)
+		{
+			// for now just fast transition to the target when dissimilar fogs are
+			Com_Memcpy(&glfogsettings[FOG_CURRENT], &glfogsettings[FOG_TARGET], sizeof(glfog_t));
+			glfogsettings[FOG_TARGET].finishTime = 0;
+		}
+		// transitioning from distance to density
+		else if (glfogsettings[FOG_LAST].mode == GL_LINEAR && glfogsettings[FOG_TARGET].mode == GL_EXP)
+		{
+			Com_Memcpy(&glfogsettings[FOG_CURRENT], &glfogsettings[FOG_TARGET], sizeof(glfog_t));
+			glfogsettings[FOG_TARGET].finishTime = 0;
+		}
+		// transitioning like fog modes
+		else
+		{
+			int fadeTime = glfogsettings[FOG_TARGET].finishTime - glfogsettings[FOG_TARGET].startTime;
+			if (fadeTime <= 0)
+			{
+				fadeTime = 1;   // avoid divide by zero
+			}
+			float lerpPos = (float)(tr.refdef.time - glfogsettings[FOG_TARGET].startTime) / (float)fadeTime;
+			if (lerpPos > 1)
+			{
+				lerpPos = 1;
+			}
+
+			// lerp near/far
+			glfogsettings[FOG_CURRENT].start = glfogsettings[FOG_LAST].start + ((glfogsettings[FOG_TARGET].start - glfogsettings[FOG_LAST].start) * lerpPos);
+			glfogsettings[FOG_CURRENT].end = glfogsettings[FOG_LAST].end + ((glfogsettings[FOG_TARGET].end - glfogsettings[FOG_LAST].end) * lerpPos);
+
+			// lerp color
+			glfogsettings[FOG_CURRENT].color[0] = glfogsettings[FOG_LAST].color[0] + ((glfogsettings[FOG_TARGET].color[0] - glfogsettings[FOG_LAST].color[0]) * lerpPos);
+			glfogsettings[FOG_CURRENT].color[1] = glfogsettings[FOG_LAST].color[1] + ((glfogsettings[FOG_TARGET].color[1] - glfogsettings[FOG_LAST].color[1]) * lerpPos);
+			glfogsettings[FOG_CURRENT].color[2] = glfogsettings[FOG_LAST].color[2] + ((glfogsettings[FOG_TARGET].color[2] - glfogsettings[FOG_LAST].color[2]) * lerpPos);
+
+			glfogsettings[FOG_CURRENT].density = glfogsettings[FOG_TARGET].density;
+			glfogsettings[FOG_CURRENT].mode = glfogsettings[FOG_TARGET].mode;
+			glfogsettings[FOG_CURRENT].registered = true;
+
+			// if either fog in the transition clears the screen, clear the background this frame to avoid hall of mirrors
+			glfogsettings[FOG_CURRENT].clearscreen = (glfogsettings[FOG_TARGET].clearscreen || glfogsettings[FOG_LAST].clearscreen);
+		}
+
+		glfogsettings[FOG_CURRENT].dirty = 1;
+	}
+	else
+	{
+		// probably usually not necessary to copy the whole thing.
+		// potential FIXME: since this is the most common occurance, diff first and only set changes
+		Com_Memcpy(&glfogsettings[FOG_CURRENT], &glfogsettings[FOG_TARGET], sizeof(glfog_t));
+		glfogsettings[FOG_CURRENT].dirty = 0;
+	}
+
+	// shorten the far clip if the fog opaque distance is closer than the procedural farcip dist
+
+	if (glfogsettings[FOG_CURRENT].mode == GL_LINEAR)
+	{
+		if (glfogsettings[FOG_CURRENT].end < tr.viewParms.zFar)
+		{
+			tr.viewParms.zFar = glfogsettings[FOG_CURRENT].end;
+		}
+		if (GGameType & GAME_WolfSP && backEnd.refdef.rdflags & RDF_SNOOPERVIEW)
+		{
+			tr.viewParms.zFar += 1000;  // zfar out slightly further for snooper.  this works fine with our maps, but could be 'funky' with later maps
+		}
+	}
+//	else
+//		glfogsettings[FOG_CURRENT].end = 5;
+
+	if (r_speeds->integer == 5)
+	{
+		if (glfogsettings[FOG_CURRENT].mode == GL_LINEAR)
+		{
+			common->Printf("farclip fog - den: %0.1f  calc zFar: %0.1f  fog zfar: %0.1f\n", glfogsettings[FOG_CURRENT].density, tr.viewParms.zFar, glfogsettings[FOG_CURRENT].end);
+		}
+		else
+		{
+			common->Printf("density fog - den: %0.6f  calc zFar: %0.1f  fog zFar: %0.1f\n", glfogsettings[FOG_CURRENT].density, tr.viewParms.zFar, glfogsettings[FOG_CURRENT].end);
+		}
+	}
+}
+
 //==========================================================================
 //
 //	SetFarClip
@@ -191,6 +331,7 @@ static void SetFarClip()
 	if (r_zfar->value)
 	{
 		tr.viewParms.zFar = r_zfar->integer;
+		R_SetFrameFog();
 		if (r_speeds->integer == 5)
 		{
 			common->Printf("r_zfar value forcing farclip at: %f\n", tr.viewParms.zFar);
@@ -249,6 +390,8 @@ static void SetFarClip()
 	{
 		tr.viewParms.zFar = tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque;
 	}
+
+	R_SetFrameFog();
 }
 
 //==========================================================================
@@ -741,7 +884,9 @@ void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex,
 	// the sort data is packed into a single 32 bit value so it can be
 	// compared quickly during the qsorting process
 	tr.refdef.drawSurfs[index].sort = (shader->sortedIndex << QSORT_SHADERNUM_SHIFT) |
-		tr.shiftedEntityNum | (fogIndex << QSORT_FOGNUM_SHIFT) | (int)dlightMap;
+		tr.shiftedEntityNum | (atiTess << QSORT_ATI_TESS_SHIFT) |
+		(fogIndex << QSORT_FOGNUM_SHIFT) | dlightMap |
+		(GGameType & GAME_ET ? (frontFace << QSORT_FRONTFACE_SHIFT) : 0);
 	tr.refdef.drawSurfs[index].surface = surface;
 	tr.refdef.numDrawSurfs++;
 }
@@ -949,11 +1094,13 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 			break;		// don't draw anything
 
 		case RT_SPRITE:
+		case RT_SPLASH:
 		case RT_BEAM:
 		case RT_LIGHTNING:
 		case RT_RAIL_CORE:
+		case RT_RAIL_CORE_TAPER:
 		case RT_RAIL_RINGS:
-			if (GGameType & GAME_Quake3)
+			if (GGameType & GAME_Tech3)
 			{
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3
@@ -963,7 +1110,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 					continue;
 				}
 				shader_t* shader = R_GetShaderByHandle(ent->e.customShader);
-				R_AddDrawSurf(&entitySurface, shader, R_SpriteFogNum(ent), 0, 0, 0);
+				R_AddDrawSurf(&entitySurface, shader, R_SpriteFogNum(ent), 0, 0, ATI_TESS_NONE);
 			}
 			else
 			{
@@ -978,9 +1125,9 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 			tr.currentModel = R_GetModelByHandle(ent->e.hModel);
 			if (!tr.currentModel)
 			{
-				if (GGameType & GAME_Quake3)
+				if (GGameType & GAME_Tech3)
 				{
-					R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0, 0, 0);
+					R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE);
 				}
 				else
 				{
@@ -992,13 +1139,13 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 				switch (tr.currentModel->type)
 				{
 				case MOD_BAD:
-					if (GGameType & GAME_Quake3)
+					if (GGameType & GAME_Tech3)
 					{
 						if ((ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
 						{
 							break;
 						}
-						R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0, 0, 0);
+						R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE);
 					}
 					else
 					{
@@ -1053,6 +1200,18 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 
 				case MOD_MD4:
 					R_AddAnimSurfaces(ent);
+					break;
+
+				case MOD_MDC:
+					R_AddMDCSurfaces(ent);
+					break;
+
+				case MOD_MDS:
+					R_AddMdsAnimSurfaces(ent);
+					break;
+
+				case MOD_MDM:
+					R_MDM_AddAnimSurfaces(ent);
 					break;
 
 				case MOD_BRUSH46:
@@ -1172,7 +1331,20 @@ static void R_AddPolygonSurfaces()
 	for (int i = 0; i < tr.refdef.numPolys; i++, poly++)
 	{
 		shader_t* sh = R_GetShaderByHandle(poly->hShader);
-		R_AddDrawSurf((surfaceType_t*)poly, sh, poly->fogIndex, false, 0, 0);
+		R_AddDrawSurf((surfaceType_t*)poly, sh, poly->fogIndex, false, 0, ATI_TESS_NONE);
+	}
+}
+
+static void R_AddPolygonBufferSurfaces()
+{
+	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
+	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
+
+	srfPolyBuffer_t* polybuffer = tr.refdef.polybuffers;
+	for (int i = 0; i < tr.refdef.numPolyBuffers ; i++, polybuffer++)
+	{
+		shader_t* sh = R_GetShaderByHandle(polybuffer->pPolyBuffer->shader);
+		R_AddDrawSurf((surfaceType_t*)polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE);
 	}
 }
 
@@ -1184,7 +1356,7 @@ static void R_AddPolygonSurfaces()
 
 static void R_GenerateDrawSurfs()
 {
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		R_SetupProjection();
 
@@ -1196,6 +1368,28 @@ static void R_GenerateDrawSurfs()
 		GL_Cull(CT_FRONT_SIDED);
 	}
 
+	if (GGameType & GAME_ET)
+	{
+		// set the projection matrix (and view frustum) here
+		// first with max or fog distance so we can have proper
+		// arbitrary frustum farplane culling optimization
+		if (tr.refdef.rdflags & RDF_NOWORLDMODEL || tr.world == NULL)
+		{
+			VectorSet(tr.viewParms.visBounds[0], MIN_WORLD_COORD, MIN_WORLD_COORD, MIN_WORLD_COORD);
+			VectorSet(tr.viewParms.visBounds[1], MAX_WORLD_COORD, MAX_WORLD_COORD, MAX_WORLD_COORD);
+		}
+		else
+		{
+			VectorCopy(tr.world->nodes->mins, tr.viewParms.visBounds[0]);
+			VectorCopy(tr.world->nodes->maxs, tr.viewParms.visBounds[1]);
+		}
+
+		R_SetupProjection();
+
+		R_CullDecalProjectors();
+		R_CullDlights();
+	}
+
 	if (GGameType & GAME_QuakeHexen)
 	{
 		R_DrawWorldQ1();
@@ -1204,24 +1398,26 @@ static void R_GenerateDrawSurfs()
 	{
 		R_DrawWorldQ2();
 	}
-	else if (GGameType & GAME_Quake3)
+	else if (GGameType & GAME_Tech3)
 	{
 		R_AddWorldSurfaces();
 	}
-
-	R_AddPolygonSurfaces();
 
 	// set the projection matrix with the minimum zfar
 	// now that we have the world bounded
 	// this needs to be done before entities are
 	// added, because they use the projection
 	// matrix for lod calculation
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		R_SetupProjection();
 	}
 
 	R_AddEntitySurfaces(false);
+
+	R_AddPolygonSurfaces();
+
+	R_AddPolygonBufferSurfaces();
 
 	if (GGameType & GAME_Quake2)
 	{
@@ -2038,6 +2234,9 @@ static void R_DebugGraphics()
 		return;
 	}
 
+	// moved this in here to keep from /always/ doing the fog state change
+	R_FogOff();
+
 	// the render thread can't make callbacks to the main thread
 	R_SyncRenderThread();
 
@@ -2052,6 +2251,8 @@ static void R_DebugGraphics()
 	{
 		BotDrawDebugPolygonsFunc(R_DebugPolygon, r_debugSurface->integer);
 	}
+
+	R_FogOn();
 }
 
 //==========================================================================
@@ -2069,6 +2270,19 @@ void R_RenderView(viewParms_t* parms)
 		return;
 	}
 
+	// Ridah, purge media that were left over from the last level
+	if (r_cache->integer)
+	{
+		static int lastTime;
+		if ((lastTime > tr.refdef.time) || (lastTime < (tr.refdef.time - 200)))
+		{
+			R_PurgeShaders();
+			R_PurgeBackupImages(1);
+			R_PurgeModels(1);
+			lastTime = tr.refdef.time;
+		}
+	}
+
 	tr.viewParms = *parms;
 	tr.viewParms.frameSceneNum = tr.frameSceneNum;
 	tr.viewParms.frameCount = tr.frameCount;
@@ -2080,11 +2294,16 @@ void R_RenderView(viewParms_t* parms)
 	// set viewParms.world
 	R_RotateForViewer();
 
-	R_SetupFrustum();
+	// ydnar: removed this because we do a full frustum/projection setup
+	// based on world bounds zfar or fog bounds
+	if (!(GGameType & GAME_ET))
+	{
+		R_SetupFrustum();
+	}
 
 	R_GenerateDrawSurfs();
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		R_SortDrawSurfs(tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf);
 	}

@@ -34,7 +34,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/flares.cpp
 	renderer/init.cpp
 	../client/renderer/light.cpp
-	renderer/main.cpp
+	../client/renderer/main.cpp
 	../client/renderer/noise.cpp
 	../client/renderer/particle.cpp
 	../client/renderer/qgl.cpp
