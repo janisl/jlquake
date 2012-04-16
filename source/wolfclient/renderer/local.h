@@ -949,10 +949,8 @@ Screenshots
 */
 
 const void* RB_TakeScreenshotCmd(const void* data);
-#if 0
 void R_ScreenShot_f();
 void R_ScreenShotJPEG_f();
-#endif
 
 /*
 ============================================================

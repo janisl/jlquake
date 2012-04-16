@@ -93,9 +93,6 @@ void        RE_Shutdown( qboolean destroyWindow );
 
 void        R_Init( void );
 
-void    R_ScreenShot_f( void );
-void    R_ScreenShotJPEG_f( void );
-
 /*
 ============================================================
 

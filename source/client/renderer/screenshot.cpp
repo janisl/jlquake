@@ -277,7 +277,7 @@ void R_ScreenShot_f()
 		}
 	}
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false);
 	}
@@ -328,7 +328,7 @@ void R_ScreenShotJPEG_f()
  		}
 	}
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true);
 	}

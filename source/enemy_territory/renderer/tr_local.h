@@ -95,9 +95,6 @@ float       R_ProcessLightmap( byte *pic, int in_padding, int width, int height,
 
 void        R_Init( void );
 
-void    R_ScreenShot_f( void );
-void    R_ScreenShotJPEG_f( void );
-
 /*
 ============================================================
 
