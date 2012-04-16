@@ -37,57 +37,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
 
-#define MAX_SHADER_STATES 2048
-#define MAX_STATE_NAME 32
-
-// can't be increased without changing bit packing for drawsurfs
-
-
-/*
-==============================================================================
-
-SURFACES
-
-==============================================================================
-*/
-
-#define MAX_FACE_POINTS     64
-
-/*
-==============================================================================
-
-BRUSH MODELS
-
-==============================================================================
-*/
-
-
-//
-// in memory representation
-//
-
-#define SIDE_FRONT  0
-#define SIDE_BACK   1
-#define SIDE_ON     2
-
-//====================================================
 extern refimport_t ri;
-
-//====================================================================
-
-void R_SwapBuffers( int );
-
-void R_AddNullModelSurfaces( trRefEntity_t *e );
-void R_AddBeamSurfaces( trRefEntity_t *e );
-void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
-void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 /*
 ** GL wrapper/helper functions
 */
 void    GL_SetDefaultState( void );
 
-void        R_BeginFrame( stereoFrame_t stereoFrame );
 void        RE_BeginRegistration( glconfig_t *glconfig );
 void        RE_Shutdown( qboolean destroyWindow );
 
