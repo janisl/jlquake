@@ -683,6 +683,7 @@ void CL_RenderScene(const etrefdef_t* gameRefdef)
 	rd.glfog.registered = gameRefdef->glfog.registered;
 	rd.glfog.drawsky = gameRefdef->glfog.drawsky;
 	rd.glfog.clearscreen = gameRefdef->glfog.clearscreen;
+	R_RenderScene(&rd);
 }
 
 int CL_LerpTag(orientation_t *tag,  const etrefEntity_t *gameRefent, const char *tagName, int startIndex)
