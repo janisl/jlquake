@@ -333,8 +333,6 @@ extern vec4_t g_color_table[8];
 #define CHECK_NAN_VEC
 #endif
 
-#define Vector4Set( v, x, y, z, n )   ( ( v )[0] = ( x ),( v )[1] = ( y ),( v )[2] = ( z ),( v )[3] = ( n ) )
-
 unsigned ColorBytes3( float r, float g, float b );
 
 float NormalizeColor( const vec3_t in, vec3_t out );

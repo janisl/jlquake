@@ -58,6 +58,7 @@ set(CLIENT_FILES
 	renderer/backend.cpp
 	renderer/commands.cpp
 	renderer/curve.cpp
+	renderer/decals.cpp
 	renderer/driver_glx.cpp
 	renderer/flares.cpp
 	renderer/font.cpp

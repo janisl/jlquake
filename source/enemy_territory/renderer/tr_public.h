@@ -78,9 +78,6 @@ typedef struct {
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
 							int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
-	void ( *ProjectDecal )( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
-	void ( *ClearDecals )( void );
-
 	void ( *DrawDebugPolygon )( int color, int numpoints, float* points );
 
 	void ( *AddPolyBufferToScene )( polyBuffer_t* pPolyBuffer );

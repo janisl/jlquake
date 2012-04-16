@@ -824,10 +824,10 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return re.MarkFragments( args[1], (const vec3_t*)VMA( 2 ), (float*)VMA( 3 ), args[4], (float*)VMA( 5 ), args[6], (markFragment_t*)VMA( 7 ) );
 
 	case CG_R_PROJECTDECAL:
-		re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[ 6 ], args[ 7 ] );
+		R_ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*)VMA( 3 ), (float*)VMA( 4 ), (float*)VMA( 5 ), args[ 6 ], args[ 7 ] );
 		return 0;
 	case CG_R_CLEARDECALS:
-		re.ClearDecals();
+		R_ClearDecals();
 		return 0;
 
 	case CG_S_STARTSOUND:

@@ -125,31 +125,6 @@ MARKERS, POLYGON PROJECTION ON WORLD POLYGONS
 int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t projection,
 					 int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
-
-/*
-============================================================
-
-DECALS - ydnar
-
-============================================================
-*/
-
-void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
-void RE_ClearDecals( void );
-
-void R_AddModelShadow( refEntity_t *ent );
-
-void R_TransformDecalProjector( decalProjector_t * in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t * out );
-qboolean R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs );
-qboolean R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 );
-
-void R_ProjectDecalOntoSurface( decalProjector_t *dp, mbrush46_surface_t *surf, mbrush46_model_t *bmodel );
-
-void R_AddDecalSurface( mbrush46_decal_t *decal );
-void R_AddDecalSurfaces( mbrush46_model_t *bmodel );
-void R_CullDecalProjectors( void );
-
-
 /*
 ============================================================
 

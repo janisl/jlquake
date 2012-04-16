@@ -574,8 +574,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 	re.EndRegistration  = RE_EndRegistration;
 
 	re.MarkFragments    = R_MarkFragments;
-	re.ProjectDecal     = RE_ProjectDecal;
-	re.ClearDecals      = RE_ClearDecals;
 
 	re.ClearScene       = RE_ClearScene;
 	re.AddRefEntityToScene = RE_AddRefEntityToScene;

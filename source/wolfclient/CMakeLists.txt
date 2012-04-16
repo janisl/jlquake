@@ -29,6 +29,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/backend.cpp
 	../client/renderer/commands.cpp
 	../client/renderer/curve.cpp
+	../client/renderer/decals.cpp
 	../client/renderer/driver_glx.cpp
 	../client/renderer/flares.cpp
 	renderer/init.cpp
