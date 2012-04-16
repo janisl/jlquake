@@ -485,8 +485,7 @@ static int R_DlightSurface(mbrush46_surface_t* surf, int dlightBits)
 //
 //==========================================================================
 
-//static 
-void R_AddWorldSurface(mbrush46_surface_t* surf, shader_t* shader, int dlightBits, int decalBits)
+static void R_AddWorldSurface(mbrush46_surface_t* surf, shader_t* shader, int dlightBits, int decalBits)
 {
 	if (surf->viewCount == tr.viewCount)
 	{
@@ -1356,14 +1355,57 @@ void R_DrawWorldQ2()
 	R_DrawTriangleOutlines();
 }
 
-#if 0
+static void R_AddLeafSurfacesQ3(mbrush46_node_t* node, int dlightBits, int decalBits)
+{
+	tr.pc.c_leafs++;
+
+	// add to z buffer bounds
+	if (node->mins[0] < tr.viewParms.visBounds[0][0])
+	{
+		tr.viewParms.visBounds[0][0] = node->mins[0];
+	}
+	if (node->mins[1] < tr.viewParms.visBounds[0][1])
+	{
+		tr.viewParms.visBounds[0][1] = node->mins[1];
+	}
+	if (node->mins[2] < tr.viewParms.visBounds[0][2])
+	{
+		tr.viewParms.visBounds[0][2] = node->mins[2];
+	}
+
+	if (node->maxs[0] > tr.viewParms.visBounds[1][0])
+	{
+		tr.viewParms.visBounds[1][0] = node->maxs[0];
+	}
+	if (node->maxs[1] > tr.viewParms.visBounds[1][1])
+	{
+		tr.viewParms.visBounds[1][1] = node->maxs[1];
+	}
+	if (node->maxs[2] > tr.viewParms.visBounds[1][2])
+	{
+		tr.viewParms.visBounds[1][2] = node->maxs[2];
+	}
+
+	// add the individual surfaces
+	mbrush46_surface_t** mark = node->firstmarksurface;
+	int c = node->nummarksurfaces;
+	while (c--)
+	{
+		// the surface may have already been added if it
+		// spans multiple leafs
+		mbrush46_surface_t* surf = *mark;
+		R_AddWorldSurface(surf, surf->shader, dlightBits, decalBits);
+		mark++;
+	}
+}
+
 //==========================================================================
 //
 //	R_RecursiveWorldNodeQ3
 //
 //==========================================================================
 
-static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dlightBits)
+static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dlightBits, int decalBits)
 {
 	do
 	{
@@ -1430,11 +1472,20 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 				}
 			}
 
-		}
-
-		if (node->contents != -1)
-		{
-			break;
+			// ydnar: farplane culling
+			if (planeBits & 16)
+			{
+				int r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[4]);
+				if (r == 2)
+				{
+					return;                     // culled
+				}
+				if (r == 1)
+				{
+					//JL WTF?
+					planeBits &= ~8;            // all descendants will also be in front
+				}
+			}
 		}
 
 		// node is just a decision point, so go down both sides
@@ -1442,31 +1493,92 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 
 		// determine which dlights are needed
 		int newDlights[2];
-		newDlights[0] = 0;
-		newDlights[1] = 0;
-		if (dlightBits)
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP))
 		{
-			for (int i = 0; i < tr.refdef.num_dlights; i++)
+			// RF, hack, dlight elimination above is unreliable
+			newDlights[0] = 0xffffffff;
+			newDlights[1] = 0xffffffff;
+		}
+		else if (GGameType & GAME_ET)
+		{
+			// ydnar: cull dlights
+			if (dlightBits)      //%	&& node->contents != -1 )
 			{
-				if (dlightBits & (1 << i))
+				for (int i = 0; i < tr.refdef.num_dlights; i++)
 				{
-					dlight_t* dl = &tr.refdef.dlights[i];
-					float dist = DotProduct(dl->origin, node->plane->normal) - node->plane->dist;
-					
-					if (dist > -dl->radius)
+					if (dlightBits & (1 << i))
 					{
-						newDlights[0] |= (1 << i);
+						// directional dlights don't get culled
+						if (tr.refdef.dlights[i].flags & REF_DIRECTED_DLIGHT)
+						{
+							continue;
+						}
+
+						// test dlight bounds against node surface bounds
+						dlight_t* dl = &tr.refdef.dlights[i];
+						if (node->surfMins[0] >= (dl->origin[0] + dl->radius) || node->surfMaxs[0] <= (dl->origin[0] - dl->radius) ||
+							node->surfMins[1] >= (dl->origin[1] + dl->radius) || node->surfMaxs[1] <= (dl->origin[1] - dl->radius) ||
+							node->surfMins[2] >= (dl->origin[2] + dl->radius) || node->surfMaxs[2] <= (dl->origin[2] - dl->radius))
+						{
+							dlightBits &= ~(1 << i);
+						}
 					}
-					if (dist < dl->radius)
+				}
+			}
+			newDlights[0] = dlightBits;
+			newDlights[1] = dlightBits;
+		}
+		else
+		{
+			newDlights[0] = 0;
+			newDlights[1] = 0;
+			if (dlightBits)
+			{
+				for (int i = 0; i < tr.refdef.num_dlights; i++)
+				{
+					if (dlightBits & (1 << i))
 					{
-						newDlights[1] |= (1 << i);
+						dlight_t* dl = &tr.refdef.dlights[i];
+						float dist = DotProduct(dl->origin, node->plane->normal) - node->plane->dist;
+						
+						if (dist > -dl->radius)
+						{
+							newDlights[0] |= (1 << i);
+						}
+						if (dist < dl->radius)
+						{
+							newDlights[1] |= (1 << i);
+						}
 					}
 				}
 			}
 		}
 
+		// ydnar: cull decals
+		if (decalBits)
+		{
+			for (int i = 0; i < tr.refdef.numDecalProjectors; i++)
+			{
+				if (decalBits & (1 << i))
+				{
+					// test decal bounds against node surface bounds
+					if (tr.refdef.decalProjectors[i].shader == NULL ||
+						!R_TestDecalBoundingBox(&tr.refdef.decalProjectors[i], node->surfMins, node->surfMaxs))
+					{
+						decalBits &= ~(1 << i);
+					}
+				}
+			}
+		}
+
+		// handle leaf nodes
+		if (node->contents != -1)
+		{
+			break;
+		}
+
 		// recurse down the children, front side first
-		R_RecursiveWorldNodeQ3(node->children[0], planeBits, newDlights[0]);
+		R_RecursiveWorldNodeQ3(node->children[0], planeBits, newDlights[0], decalBits);
 
 		// tail recurse
 		node = node->children[1];
@@ -1474,47 +1586,13 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 	}
 	while (1);
 
-	// leaf node, so add mark surfaces
-	tr.pc.c_leafs++;
-
-	// add to z buffer bounds
-	if (node->mins[0] < tr.viewParms.visBounds[0][0])
+	// short circuit
+	if (node->nummarksurfaces == 0)
 	{
-		tr.viewParms.visBounds[0][0] = node->mins[0];
-	}
-	if (node->mins[1] < tr.viewParms.visBounds[0][1])
-	{
-		tr.viewParms.visBounds[0][1] = node->mins[1];
-	}
-	if (node->mins[2] < tr.viewParms.visBounds[0][2])
-	{
-		tr.viewParms.visBounds[0][2] = node->mins[2];
+		return;
 	}
 
-	if (node->maxs[0] > tr.viewParms.visBounds[1][0])
-	{
-		tr.viewParms.visBounds[1][0] = node->maxs[0];
-	}
-	if (node->maxs[1] > tr.viewParms.visBounds[1][1])
-	{
-		tr.viewParms.visBounds[1][1] = node->maxs[1];
-	}
-	if (node->maxs[2] > tr.viewParms.visBounds[1][2])
-	{
-		tr.viewParms.visBounds[1][2] = node->maxs[2];
-	}
-
-	// add the individual surfaces
-	mbrush46_surface_t** mark = node->firstmarksurface;
-	int c = node->nummarksurfaces;
-	while (c--)
-	{
-		// the surface may have already been added if it
-		// spans multiple leafs
-		mbrush46_surface_t* surf = *mark;
-		R_AddWorldSurface(surf, dlightBits);
-		mark++;
-	}
+	R_AddLeafSurfacesQ3(node, dlightBits, decalBits);
 }
 
 //==========================================================================
@@ -1594,6 +1672,19 @@ static void R_MarkLeavesQ3()
 			continue;		// not visible
 		}
 
+		// ydnar: don't want to walk the entire bsp to add skybox surfaces
+		if (GGameType & GAME_ET && tr.refdef.rdflags & RDF_SKYBOXPORTAL)
+		{
+			// this only happens once, as game/cgame know the origin of the skybox
+			// this also means the skybox portal cannot move, as this list is calculated once and never again
+			if (tr.world->numSkyNodes < WORLD_MAX_SKY_NODES)
+			{
+				tr.world->skyNodes[tr.world->numSkyNodes++] = leaf;
+			}
+			R_AddLeafSurfacesQ3(leaf, 0, 0);
+			continue;
+		}
+
 		mbrush46_node_t* parent = leaf;
 		do
 		{
@@ -1629,17 +1720,40 @@ void R_AddWorldSurfaces()
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
-	// determine which leaves are in the PVS / areamask
-	R_MarkLeavesQ3();
+	// ydnar: set current brush model to world
+	tr.currentBModel = &tr.world->bmodels[0];
 
 	// clear out the visible min/max
 	ClearBounds(tr.viewParms.visBounds[0], tr.viewParms.visBounds[1]);
 
-	// perform frustum culling and add all the potentially visible surfaces
-	if (tr.refdef.num_dlights > 32)
+	// render sky or world?
+	if (GGameType & GAME_ET && tr.refdef.rdflags & RDF_SKYBOXPORTAL && tr.world->numSkyNodes > 0)
 	{
-		tr.refdef.num_dlights = 32;
+		mbrush46_node_t** node = tr.world->skyNodes;
+		for (int i = 0; i < tr.world->numSkyNodes; i++, node++)
+		{
+			R_AddLeafSurfacesQ3(*node, tr.refdef.dlightBits, 0);      // no decals on skybox nodes
+		}
 	}
-	R_RecursiveWorldNodeQ3(tr.world->nodes, 15, (1 << tr.refdef.num_dlights) - 1);
+	else
+	{
+		// determine which leaves are in the PVS / areamask
+		R_MarkLeavesQ3();
+
+		// perform frustum culling and add all the potentially visible surfaces
+		if (GGameType & GAME_ET)
+		{
+			R_RecursiveWorldNodeQ3(tr.world->nodes, 31, tr.refdef.dlightBits, tr.refdef.decalBits);
+		}
+		else
+		{
+			R_RecursiveWorldNodeQ3(tr.world->nodes, 15, (1 << tr.refdef.num_dlights) - 1, 0);
+		}
+
+		// ydnar: add decal surfaces
+		R_AddDecalSurfaces(tr.world->bmodels);
+	}
+
+	// clear brush model
+	tr.currentBModel = NULL;
 }
-#endif
