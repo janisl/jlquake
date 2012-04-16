@@ -545,8 +545,6 @@ void RE_EndRegistration( void ) {
 	}
 }
 
-void R_DebugPolygon( int color, int numPoints, float *points );
-
 /*
 @@@@@@@@@@@@@@@@@@@@@
 GetRefAPI

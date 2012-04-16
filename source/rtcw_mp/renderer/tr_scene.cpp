@@ -55,27 +55,6 @@ DISCRETE POLYS
 
 /*
 =====================
-R_AddPolygonSurfaces
-
-Adds all the scene's polys into this view's drawsurf list
-=====================
-*/
-void R_AddPolygonSurfaces( void ) {
-	int i;
-	shader_t    *sh;
-	srfPoly_t   *poly;
-
-	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
-	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
-
-	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys ; i++, poly++ ) {
-		sh = R_GetShaderByHandle( poly->hShader );
-		R_AddDrawSurf( ( surfaceType_t* )poly, sh, poly->fogIndex, qfalse, 0, 0 );
-	}
-}
-
-/*
-=====================
 RE_AddPolyToScene
 
 =====================

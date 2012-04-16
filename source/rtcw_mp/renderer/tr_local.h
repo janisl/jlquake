@@ -77,14 +77,10 @@ extern refimport_t ri;
 
 void R_SwapBuffers( int );
 
-void R_RenderView( viewParms_t *parms );
-
 void R_AddNullModelSurfaces( trRefEntity_t *e );
 void R_AddBeamSurfaces( trRefEntity_t *e );
 void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
 void R_AddLightningBoltSurfaces( trRefEntity_t *e );
-
-void R_AddPolygonSurfaces( void );
 
 /*
 ** GL wrapper/helper functions
