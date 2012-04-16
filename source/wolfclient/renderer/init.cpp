@@ -316,14 +316,14 @@ static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeI
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	GfxInfo_f
 //
 //==========================================================================
 
-static void GfxInfo_f()
+//static 
+void GfxInfo_f()
 {
 	const char* fsstrings[] =
 	{
@@ -343,6 +343,16 @@ static void GfxInfo_f()
 	Log::writeLine("GL_EXTENSIONS:");
 	Array<String> Exts;
 	String(glConfig.extensions_string).Split(' ', Exts);
+	for (int i = 0; i < Exts.Num(); i++)
+	{
+		Log::writeLine(" %s", *Exts[i]);
+	}
+#ifdef _WIN32
+	common->Printf("WGL_EXTENSIONS:\n");
+#else
+	common->Printf("GLX_EXTENSIONS:\n");
+#endif
+	String(gl_system_extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
 		Log::writeLine(" %s", *Exts[i]);
@@ -403,11 +413,25 @@ static void GfxInfo_f()
 
 	Log::write("texturemode: %s\n", r_textureMode->string);
 	Log::write("picmip: %d\n", r_picmip->integer);
+	common->Printf("picmip2: %d\n", r_picmip2->integer);
 	Log::write("texture bits: %d\n", r_texturebits->integer);
 	Log::write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
 	Log::write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ]);
 	Log::write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
 	Log::write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
+	common->Printf("anisotropy: %s\n", r_textureAnisotropy->string);
+	common->Printf("ATI truform: %s\n", enablestrings[qglPNTrianglesiATI != 0]);
+	if (qglPNTrianglesiATI)
+	{
+		common->Printf("Truform Tess: %d\n", r_ati_truform_tess->integer);
+		common->Printf("Truform Point Mode: %s\n", r_ati_truform_pointmode->string);
+		common->Printf("Truform Normal Mode: %s\n", r_ati_truform_normalmode->string);
+	}
+	common->Printf("NV distance fog: %s\n", enablestrings[glConfig.NVFogAvailable != 0]);
+	if (glConfig.NVFogAvailable)
+	{
+		common->Printf("Fog Mode: %s\n", r_nv_fogdist_mode->string);
+	}
 	if (r_vertexLight->integer)
 	{
 		Log::write("HACK: using vertex lightmap approximation\n");
@@ -421,7 +445,6 @@ static void GfxInfo_f()
 		Log::write("Forcing glFinish\n");
 	}
 }
-#endif
 
 //==========================================================================
 //
@@ -429,8 +452,8 @@ static void GfxInfo_f()
 //
 //==========================================================================
 
-//static void R_Register()
-void R_Register_()
+//static 
+void R_Register()
 {
 	//
 	// latched and archived variables
@@ -620,13 +643,11 @@ void R_Register_()
 	Cmd_AddCommand("modelist", R_ModeList_f);
 	Cmd_AddCommand("imagelist", R_ImageList_f);
 	Cmd_AddCommand("shaderlist", R_ShaderList_f);
-#if 0
 	Cmd_AddCommand("skinlist", R_SkinList_f);
 	Cmd_AddCommand("screenshot", R_ScreenShot_f);
 	Cmd_AddCommand("screenshotJPEG", R_ScreenShotJPEG_f);
 	Cmd_AddCommand("gfxinfo", GfxInfo_f);
 	Cmd_AddCommand("modellist", R_Modellist_f);
-#endif
 }
 
 //==========================================================================
