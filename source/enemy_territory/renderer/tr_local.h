@@ -122,8 +122,6 @@ RENDERER BACK END COMMAND QUEUE
 
 void RB_ExecuteRenderCommands( const void *data );
 
-void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
-
 // font stuff
 void R_InitFreeType();
 void R_DoneFreeType();

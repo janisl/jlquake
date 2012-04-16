@@ -575,8 +575,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 
 	re.RegisterFont     = RE_RegisterFont;
 
-	re.SetGlobalFog     = RE_SetGlobalFog;
-
 	re.inPVS = R_inPVS;
 
 	re.purgeCache       = R_PurgeCache;

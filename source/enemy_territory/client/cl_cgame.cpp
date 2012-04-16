@@ -942,7 +942,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		R_SetFog( args[1], args[2], args[3], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
 		return 0;
 	case CG_R_SETGLOBALFOG:
-		re.SetGlobalFog( args[1], args[2], VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ) );
+		R_SetGlobalFog( args[1], args[2], VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ) );
 		return 0;
 	case CG_R_RENDERSCENE:
 		CL_RenderScene( (etrefdef_t*)VMA( 1 ) );

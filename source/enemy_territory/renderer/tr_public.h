@@ -62,8 +62,6 @@ typedef struct {
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
 							int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
-	void ( *SetGlobalFog )( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
-
 	qboolean ( *inPVS )( const vec3_t p1, const vec3_t p2 );
 
 	void ( *purgeCache )( void );

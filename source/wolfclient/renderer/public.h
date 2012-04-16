@@ -477,6 +477,7 @@ void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QP
 void R_RenderScene(const refdef_t* fd);
 void R_SaveViewParms();
 void R_RestoreViewParms();
+void R_SetGlobalFog(bool restore, int duration, float r, float g, float b, float depthForOpaque);
 
 float R_CalcEntityLight(refEntity_t* e);
 void R_SetSky(const char* name, float rotate, vec3_t axis);
