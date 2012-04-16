@@ -768,14 +768,9 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 	case CG_RB_ZOMBIEFXADDNEWHIT:
 		return 0;
 		// done.
-//	case CG_R_LIGHTFORPOINT:
-//		return re.LightForPoint( VMA(1), VMA(2), VMA(3), VMA(4) );
 	case CG_R_ADDLIGHTTOSCENE:
 		R_AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6] );
 		return 0;
-//	case CG_R_ADDADDITIVELIGHTTOSCENE:
-//		re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
-//		return 0;
 	case CG_R_ADDCORONATOSCENE:
 		R_AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
 		return 0;

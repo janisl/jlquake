@@ -50,13 +50,10 @@ typedef struct {
 	// and height, which can be used by the client to intelligently
 	// size display elements
 	void ( *BeginRegistration )( glconfig_t *config );
-	qhandle_t ( *RegisterModelAllLODs )( const char *name );
 
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory
 	void ( *EndRegistration )( void );
-
-	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
 	qboolean ( *inPVS )( const vec3_t p1, const vec3_t p2 );
 

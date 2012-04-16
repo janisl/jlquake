@@ -54,8 +54,6 @@ typedef struct {
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory
 	void ( *EndRegistration )( void );
-
-	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 } refexport_t;
 
 // this is the only function actually exported at the linker level
