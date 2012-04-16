@@ -59,8 +59,6 @@ typedef struct {
 
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
 							int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-
-	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 } refexport_t;
 
 //

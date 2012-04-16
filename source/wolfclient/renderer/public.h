@@ -457,9 +457,7 @@ image_t* R_RegisterSkinQ2(const char* name);
 bool R_GetSkinModel(qhandle_t skinid, const char* type, char* name);
 qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap);
 
-#if 0
 void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
-#endif
 
 // a scene is built up by calls to R_ClearScene and the various R_Add functions.
 // Nothing is drawn until R_RenderScene is called.

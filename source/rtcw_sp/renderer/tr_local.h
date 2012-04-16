@@ -104,17 +104,4 @@ MARKERS, POLYGON PROJECTION ON WORLD POLYGONS
 int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t projection,
 					 int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
-/*
-=============================================================
-
-RENDERER BACK END COMMAND QUEUE
-
-=============================================================
-*/
-
-// font stuff
-void R_InitFreeType();
-void R_DoneFreeType();
-void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
-
 #endif //TR_LOCAL_H (THIS MUST BE LAST!!)

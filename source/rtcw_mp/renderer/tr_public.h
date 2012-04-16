@@ -50,7 +50,6 @@ typedef struct {
 	// and height, which can be used by the client to intelligently
 	// size display elements
 	void ( *BeginRegistration )( glconfig_t *config );
-	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory

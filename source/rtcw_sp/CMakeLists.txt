@@ -20,7 +20,6 @@ add_library(splines-wolfsp STATIC
 
 
 set(WOLFSP_FILES
-	renderer/tr_font.cpp
 	renderer/tr_init.cpp
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp

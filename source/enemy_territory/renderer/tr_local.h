@@ -119,11 +119,6 @@ RENDERER BACK END COMMAND QUEUE
 
 void RB_ExecuteRenderCommands( const void *data );
 
-// font stuff
-void R_InitFreeType();
-void R_DoneFreeType();
-void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
-
 /*
 ============================================================
 

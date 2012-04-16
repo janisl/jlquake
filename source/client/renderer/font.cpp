@@ -74,7 +74,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_FONTS	6
+#define MAX_FONTS	10
 
 #define _FLOOR(x)	((x) & -64)
 #define _CEIL(x)	(((x)+63) & -64)
@@ -353,7 +353,14 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 	}
 
 	char name[1024];
-	String::Sprintf(name, sizeof(name), "fonts/fontImage_%i.dat", pointSize);
+	if (GGameType & GAME_ET)
+	{
+		String::Sprintf(name, sizeof(name), "fonts/%s_%i.dat", fontName, pointSize);
+	}
+	else
+	{
+		String::Sprintf(name, sizeof(name), "fonts/fontImage_%i.dat", pointSize);
+	}
 	for (int i = 0; i < registeredFontCount; i++)
 	{
 		if (String::ICmp(name, registeredFont[i].name) == 0)

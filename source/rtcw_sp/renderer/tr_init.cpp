@@ -319,8 +319,6 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp ) {
 
 	re.MarkFragments    = R_MarkFragments;
 
-	re.RegisterFont     = RE_RegisterFont;
-
 	return &re;
 }
 

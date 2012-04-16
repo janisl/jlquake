@@ -51,7 +51,6 @@ typedef struct {
 	// size display elements
 	void ( *BeginRegistration )( glconfig_t *config );
 	qhandle_t ( *RegisterModelAllLODs )( const char *name );
-	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
 
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory
