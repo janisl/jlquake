@@ -51,7 +51,7 @@ set(WOLFCLIENT_FILES
 	../client/renderer/surface2.cpp
 	../client/renderer/surface3.cpp
 	../client/renderer/wad.cpp
-	renderer/world.cpp
+	../client/renderer/world.cpp
 	../client/sound/audiocd/linux.cpp
 	../client/sound/midi/null.cpp
 	../client/sound/driver_alsa.cpp
