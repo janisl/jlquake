@@ -288,9 +288,7 @@ Touch all images to make sure they are resident
 */
 void RE_EndRegistration( void ) {
 	R_SyncRenderThread();
-	if ( !Sys_LowPhysicalMemory() ) {
 //		RB_ShowImages();
-	}
 }
 
 /*
@@ -316,8 +314,6 @@ refexport_t *GetRefAPI( int apiVersion) {
 
 	re.BeginRegistration = RE_BeginRegistration;
 	re.EndRegistration  = RE_EndRegistration;
-
-	re.inPVS = R_inPVS;
 
 	re.purgeCache       = R_PurgeCache;
 

@@ -47,6 +47,4 @@ void        RE_Shutdown( qboolean destroyWindow );
 
 void        R_Init( void );
 
-qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
-
 #endif //TR_LOCAL_H (THIS MUST BE LAST!!)

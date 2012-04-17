@@ -55,8 +55,6 @@ typedef struct {
 	// them to be loaded into card memory
 	void ( *EndRegistration )( void );
 
-	qboolean ( *inPVS )( const vec3_t p1, const vec3_t p2 );
-
 	void ( *purgeCache )( void );
 } refexport_t;
 

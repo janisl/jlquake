@@ -693,6 +693,14 @@ int CL_LerpTag(orientation_t *tag,  const etrefEntity_t *gameRefent, const char 
 	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
+bool R_inPVS(const vec3_t p1, const vec3_t p2)
+{
+	int cluster = CM_LeafCluster(CM_PointLeafnum(p1));
+	byte* vis = CM_ClusterPVS(cluster);
+	cluster = CM_LeafCluster(CM_PointLeafnum(p2));
+	return !!(vis[cluster >> 3] & (1 << (cluster & 7)));
+}
+
 /*
 ====================
 CL_ShutdonwCGame
@@ -1145,7 +1153,7 @@ qintptr CL_CgameSystemCalls( qintptr* args ) {
 		return 0;
 
 	case CG_R_INPVS:
-		return re.inPVS( (float*)VMA( 1 ), (float*)VMA( 2 ) );
+		return R_inPVS( (float*)VMA( 1 ), (float*)VMA( 2 ) );
 
 	case CG_GETHUNKDATA:
 		Com_GetHunkInfo( (int*)VMA( 1 ), (int*)VMA( 2 ) );
@@ -1324,9 +1332,7 @@ void CL_InitCGame( void ) {
 	re.EndRegistration();
 
 	// make sure everything is paged in
-	if ( !Sys_LowPhysicalMemory() ) {
-		Com_TouchMemory();
-	}
+	Com_TouchMemory();
 
 	// clear anything that got printed
 	Con_ClearNotify();

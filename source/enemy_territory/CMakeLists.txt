@@ -29,7 +29,6 @@ add_library(splines-et STATIC
 set (ET_FILES
 	renderer/tr_init.cpp
 	renderer/tr_model.cpp
-	renderer/tr_world.cpp
 
 	server/sv_bot.cpp
 	server/sv_ccmds.cpp
