@@ -233,6 +233,8 @@ static vidmode_t r_vidModes[] =
 };
 static int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
+const char* gl_system_extensions_string;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -344,6 +346,16 @@ static void GfxInfo_f()
 	{
 		Log::writeLine(" %s", *Exts[i]);
 	}
+#ifdef _WIN32
+	common->Printf("WGL_EXTENSIONS:\n");
+#else
+	common->Printf("GLX_EXTENSIONS:\n");
+#endif
+	String(gl_system_extensions_string).Split(' ', Exts);
+	for (int i = 0; i < Exts.Num(); i++)
+	{
+		Log::writeLine(" %s", *Exts[i]);
+	}
 
 	Log::write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
 	Log::write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
@@ -400,11 +412,25 @@ static void GfxInfo_f()
 
 	Log::write("texturemode: %s\n", r_textureMode->string);
 	Log::write("picmip: %d\n", r_picmip->integer);
+	common->Printf("picmip2: %d\n", r_picmip2->integer);
 	Log::write("texture bits: %d\n", r_texturebits->integer);
 	Log::write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
 	Log::write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ]);
 	Log::write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
 	Log::write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
+	common->Printf("anisotropy: %s\n", r_textureAnisotropy->string);
+	common->Printf("ATI truform: %s\n", enablestrings[qglPNTrianglesiATI != 0]);
+	if (qglPNTrianglesiATI)
+	{
+		common->Printf("Truform Tess: %d\n", r_ati_truform_tess->integer);
+		common->Printf("Truform Point Mode: %s\n", r_ati_truform_pointmode->string);
+		common->Printf("Truform Normal Mode: %s\n", r_ati_truform_normalmode->string);
+	}
+	common->Printf("NV distance fog: %s\n", enablestrings[glConfig.NVFogAvailable != 0]);
+	if (glConfig.NVFogAvailable)
+	{
+		common->Printf("Fog Mode: %s\n", r_nv_fogdist_mode->string);
+	}
 	if (r_vertexLight->integer)
 	{
 		Log::write("HACK: using vertex lightmap approximation\n");
@@ -425,7 +451,7 @@ static void GfxInfo_f()
 //
 //==========================================================================
 
-static void R_Register() 
+static void R_Register()
 {
 	//
 	// latched and archived variables
@@ -747,8 +773,15 @@ static void InitOpenGLSubsystem()
 	//	Get our config strings.
 	String::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
 	String::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
+	if (*glConfig.renderer_string && glConfig.renderer_string[String::Length(glConfig.renderer_string) - 1] == '\n')
+	{
+		glConfig.renderer_string[String::Length(glConfig.renderer_string) - 1] = 0;
+	}
 	String::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
 	String::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+
+	//bani - glx extensions string
+	gl_system_extensions_string = GLimp_GetSystemExtensionsString();
 
 	// OpenGL driver constants
 	GLint temp;
@@ -789,6 +822,7 @@ static void GL_SetDefaultState()
 	{
 		GL_SelectTexture(1);
 		GL_TextureMode(r_textureMode->string);
+		GL_TextureAnisotropy(r_textureAnisotropy->value);
 		GL_TexEnv(GL_MODULATE);
 		qglDisable(GL_TEXTURE_2D);
 		GL_SelectTexture(0);
@@ -796,6 +830,7 @@ static void GL_SetDefaultState()
 
 	qglEnable(GL_TEXTURE_2D);
 	GL_TextureMode(r_textureMode->string);
+	GL_TextureAnisotropy(r_textureAnisotropy->value);
 	GL_TexEnv(GL_MODULATE);
 
 	qglShadeModel(GL_SMOOTH);
@@ -830,6 +865,30 @@ static void GL_SetDefaultState()
 		qglPointParameterfEXT(GL_POINT_SIZE_MIN_EXT, r_particle_min_size->value);
 		qglPointParameterfEXT(GL_POINT_SIZE_MAX_EXT, r_particle_max_size->value);
 		qglPointParameterfvEXT(GL_DISTANCE_ATTENUATION_EXT, attenuations);
+	}
+
+	// ATI pn_triangles
+	if (qglPNTrianglesiATI)
+	{
+		int maxtess;
+		// get max supported tesselation
+		qglGetIntegerv(GL_MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI, (GLint*)&maxtess);
+		glConfig.ATIMaxTruformTess = maxtess;
+		// cap if necessary
+		if (r_ati_truform_tess->value > maxtess)
+		{
+			Cvar_Set("r_ati_truform_tess", va("%d", maxtess));
+		}
+
+		// set Wolf defaults
+		qglPNTrianglesiATI(GL_PN_TRIANGLES_TESSELATION_LEVEL_ATI, r_ati_truform_tess->value);
+	}
+
+	if (glConfig.anisotropicAvailable)
+	{
+		float maxAnisotropy;
+		qglGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+		glConfig.maxAnisotropy = maxAnisotropy;
 	}
 }
 
@@ -984,7 +1043,7 @@ void R_BeginRegistration(glconfig_t *glconfigOut)
 
 	tr.registered = true;
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		// NOTE: this sucks, for some reason the first stretch pic is never drawn
 		// without this we'd see a white flash on a level load because the very
@@ -1011,6 +1070,13 @@ void R_EndRegistration()
 	RB_ShowImages();
 }
 
+void R_PurgeCache()
+{
+	R_PurgeShaders();
+	R_PurgeBackupImages(9999999);
+	R_PurgeModels(9999999);
+}
+
 //==========================================================================
 //
 //	R_Shutdown
@@ -1019,7 +1085,7 @@ void R_EndRegistration()
 
 void R_Shutdown(bool destroyWindow)
 {
-	Log::write("RE_Shutdown( %i )\n", destroyWindow);
+	Log::write("R_Shutdown( %i )\n", destroyWindow);
 
 	Cmd_RemoveCommand("modellist");
 	Cmd_RemoveCommand("imagelist");
@@ -1029,6 +1095,16 @@ void R_Shutdown(bool destroyWindow)
 	Cmd_RemoveCommand("screenshotJPEG");
 	Cmd_RemoveCommand("gfxinfo");
 	Cmd_RemoveCommand("modelist");
+
+	// Ridah, keep a backup of the current images if possible
+	// clean out any remaining unused media from the last backup
+	R_PurgeCache();
+	if (r_cache->integer && tr.registered && !destroyWindow)
+	{
+		R_BackupModels();
+		R_BackupShaders();
+		R_BackupImages();
+	}
 
 	if (tr.registered)
 	{

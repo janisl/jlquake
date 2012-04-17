@@ -393,6 +393,7 @@ struct glconfig_t
 
 void R_BeginRegistration(glconfig_t* glconfig);
 void R_EndRegistration();
+void R_PurgeCache();
 void R_Shutdown(bool destroyWindow);
 
 void R_BeginFrame(stereoFrame_t stereoFrame);
@@ -429,6 +430,8 @@ void R_LoadWorld(const char* Name);
 bool R_GetEntityToken(char* Buffer, int Size);
 int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
 	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
+int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t projection,
+	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer);
 int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 
 qhandle_t R_RegisterModel(const char* Name);

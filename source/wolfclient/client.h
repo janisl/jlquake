@@ -21,7 +21,7 @@
 #include "../core/file_formats/bsp38.h"
 
 #include "../client/sound/public.h"
-#include "renderer/public.h"
+#include "../client/renderer/public.h"
 #include "../client/input/keycodes.h"
 #include "../client/input/public.h"
 #include "../client/cinematic/public.h"
