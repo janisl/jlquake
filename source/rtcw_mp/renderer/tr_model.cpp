@@ -31,9 +31,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 /*
-** RE_BeginRegistration
+** R_BeginRegistration
 */
-void RE_BeginRegistration( glconfig_t *glconfigOut ) {
+void R_BeginRegistration( glconfig_t *glconfigOut ) {
 	R_Init();
 	*glconfigOut = glConfig;
 
@@ -43,7 +43,7 @@ void RE_BeginRegistration( glconfig_t *glconfigOut ) {
 	R_ClearFlares();
 	R_ClearScene();
 
-	tr.registered = qtrue;
+	tr.registered = true;
 
 	// NOTE: this sucks, for some reason the first stretch pic is never drawn
 	// without this we'd see a white flash on a level load because the very

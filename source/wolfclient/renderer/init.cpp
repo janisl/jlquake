@@ -1056,7 +1056,7 @@ void R_EndRegistration()
 
 void R_Shutdown(bool destroyWindow)
 {
-	Log::write("RE_Shutdown( %i )\n", destroyWindow);
+	Log::write("R_Shutdown( %i )\n", destroyWindow);
 
 	Cmd_RemoveCommand("modellist");
 	Cmd_RemoveCommand("imagelist");

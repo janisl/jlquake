@@ -29,38 +29,9 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __TR_PUBLIC_H
 #define __TR_PUBLIC_H
 
-#define REF_API_VERSION     8
-
-//
-// these are the functions exported by the refresh module
-//
-typedef struct {
-	// called before the library is unloaded
-	// if the system is just reconfiguring, pass destroyWindow = qfalse,
-	// which will keep the screen from flashing to the desktop.
-	void ( *Shutdown )( qboolean destroyWindow );
-
-	// All data that will be used in a level should be
-	// registered before rendering any frames to prevent disk hits,
-	// but they can still be registered at a later time
-	// if necessary.
-	//
-	// BeginRegistration makes any existing media pointers invalid
-	// and returns the current gl configuration, including screen width
-	// and height, which can be used by the client to intelligently
-	// size display elements
-	void ( *BeginRegistration )( glconfig_t *config );
-
-	// EndRegistration will draw a tiny polygon with each texture, forcing
-	// them to be loaded into card memory
-	void ( *EndRegistration )( void );
-
-	void ( *purgeCache )( void );
-} refexport_t;
-
-// this is the only function actually exported at the linker level
-// If the module can't init to a valid rendering state, NULL will be
-// returned.
-refexport_t*GetRefAPI( int apiVersion);
+void        R_BeginRegistration( glconfig_t *glconfig );
+void R_EndRegistration( void );
+void        R_Shutdown( qboolean destroyWindow );
+void R_PurgeCache( void );
 
 #endif  // __TR_PUBLIC_H

@@ -152,7 +152,7 @@ void R_Init( void ) {
 	memset( &tess, 0, sizeof( tess ) );
 
 	if ( (qintptr)tess.xyz & 15 ) {
-		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
+		common->Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
 	}
 	memset( tess.constantColor255, 255, sizeof( tess.constantColor255 ) );
 
@@ -210,12 +210,12 @@ void R_Init( void ) {
 
 /*
 ===============
-RE_Shutdown
+R_Shutdown
 ===============
 */
-void RE_Shutdown( qboolean destroyWindow ) {
+void R_Shutdown( qboolean destroyWindow ) {
 
-	common->Printf("RE_Shutdown( %i )\n", destroyWindow );
+	common->Printf("R_Shutdown( %i )\n", destroyWindow );
 
 	Cmd_RemoveCommand( "modellist" );
 	Cmd_RemoveCommand( "screenshotJPEG" );
@@ -269,47 +269,18 @@ void RE_Shutdown( qboolean destroyWindow ) {
 		QGL_Shutdown();
 	}
 
-	tr.registered = qfalse;
+	tr.registered = false;
 }
 
 
 /*
 =============
-RE_EndRegistration
+R_EndRegistration
 
 Touch all images to make sure they are resident
 =============
 */
-void RE_EndRegistration( void ) {
+void R_EndRegistration( void ) {
 	R_SyncRenderThread();
 	RB_ShowImages();
 }
-
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-GetRefAPI
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-refexport_t *GetRefAPI( int apiVersion) {
-	static refexport_t re;
-
-	memset( &re, 0, sizeof( re ) );
-
-	if ( apiVersion != REF_API_VERSION ) {
-		common->Printf("Mismatched REF_API_VERSION: expected %i, got %i\n",
-				   REF_API_VERSION, apiVersion );
-		return NULL;
-	}
-
-	// the RE_ functions are Renderer Entry points
-
-	re.Shutdown = RE_Shutdown;
-
-	re.BeginRegistration = RE_BeginRegistration;
-	re.EndRegistration  = RE_EndRegistration;
-
-	return &re;
-}
-

@@ -97,9 +97,6 @@ Cvar  *cl_updatefiles;
 
 vm_t                *cgvm;
 
-// Structure containing functions exported from refresh DLL
-refexport_t re;
-
 ping_t cl_pinglist[MAX_PINGREQUESTS];
 
 typedef struct serverStatus_s
@@ -672,9 +669,7 @@ void CL_ShutdownAll( void ) {
 	CL_ShutdownUI();
 
 	// shutdown the renderer
-	if ( re.Shutdown ) {
-		re.Shutdown( qfalse );      // don't destroy window or context
-	}
+	R_Shutdown( qfalse );      // don't destroy window or context
 
 	cls.q3_uiStarted = qfalse;
 	cls.q3_cgameStarted = qfalse;
@@ -2403,11 +2398,7 @@ CL_ShutdownRef
 ============
 */
 void CL_ShutdownRef( void ) {
-	if ( !re.Shutdown ) {
-		return;
-	}
-	re.Shutdown( qtrue );
-	memset( &re, 0, sizeof( re ) );
+	R_Shutdown( qtrue );
 }
 
 /*
@@ -2417,7 +2408,7 @@ CL_InitRenderer
 */
 void CL_InitRenderer( void ) {
 	// this sets up the renderer and calls R_Init
-	re.BeginRegistration( &cls.glconfig );
+	R_BeginRegistration( &cls.glconfig );
 
 	// load character sets
 	cls.charSetShader = R_RegisterShader( "gfx/2d/hudchars" );
@@ -2594,21 +2585,11 @@ CL_InitRef
 ============
 */
 void CL_InitRef( void ) {
-	refexport_t *ret;
-
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
-	ret = GetRefAPI( REF_API_VERSION);
-
 	Com_Printf( "-------------------------------\n" );
-
-	if ( !ret ) {
-		Com_Error( ERR_FATAL, "Couldn't initialize refresh" );
-	}
-
-	re = *ret;
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
