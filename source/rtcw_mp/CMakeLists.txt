@@ -27,8 +27,6 @@ add_library(splines-wolfmp STATIC
 )
 
 set(WOLFMP_FILES
-	renderer/tr_init.cpp
-
 	client/cl_cgame.cpp
 	client/cl_cin.cpp
 	client/cl_console.cpp

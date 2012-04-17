@@ -60,7 +60,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../client/client.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../renderer/tr_public.h"
 #include "../../core/system_unix.h"
 
 #include "linux_local.h" // bk001204

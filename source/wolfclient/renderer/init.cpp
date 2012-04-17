@@ -1052,7 +1052,6 @@ void R_BeginRegistration(glconfig_t *glconfigOut)
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	R_EndRegistration
@@ -1069,6 +1068,13 @@ void R_EndRegistration()
 	}
 	R_SyncRenderThread();
 	RB_ShowImages();
+}
+
+void R_PurgeCache()
+{
+	R_PurgeShaders();
+	R_PurgeBackupImages(9999999);
+	R_PurgeModels(9999999);
 }
 
 //==========================================================================
@@ -1089,6 +1095,16 @@ void R_Shutdown(bool destroyWindow)
 	Cmd_RemoveCommand("screenshotJPEG");
 	Cmd_RemoveCommand("gfxinfo");
 	Cmd_RemoveCommand("modelist");
+
+	// Ridah, keep a backup of the current images if possible
+	// clean out any remaining unused media from the last backup
+	R_PurgeCache();
+	if (r_cache->integer && tr.registered && !destroyWindow)
+	{
+		R_BackupModels();
+		R_BackupShaders();
+		R_BackupImages();
+	}
 
 	if (tr.registered)
 	{
@@ -1117,4 +1133,3 @@ void R_Shutdown(bool destroyWindow)
 
 	tr.registered = false;
 }
-#endif

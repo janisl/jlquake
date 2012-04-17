@@ -392,10 +392,9 @@ struct glconfig_t
 };
 
 void R_BeginRegistration(glconfig_t* glconfig);
-#if 0
 void R_EndRegistration();
+void R_PurgeCache();
 void R_Shutdown(bool destroyWindow);
-#endif
 
 void R_BeginFrame(stereoFrame_t stereoFrame);
 void R_EndFrame(int* frontEndMsec, int* backEndMsec);
