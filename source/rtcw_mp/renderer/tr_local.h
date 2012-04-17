@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../wolfclient/client.h"
 #include "../../client/renderer/local.h"
 #include "../game/q_shared.h"
-#include "../qcommon/qcommon.h"
+//#include "../qcommon/qcommon.h"
 #include "tr_public.h"
 
 /*

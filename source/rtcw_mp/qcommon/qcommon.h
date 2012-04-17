@@ -516,7 +516,6 @@ qboolean    Sys_CheckCD( void );
 void    Sys_BeginProfiling( void );
 void    Sys_EndProfiling( void );
 
-qboolean Sys_LowPhysicalMemory();
 unsigned int Sys_ProcessorCount();
 
 // NOTE TTimo - on win32 the cwd is prepended .. non portable behaviour

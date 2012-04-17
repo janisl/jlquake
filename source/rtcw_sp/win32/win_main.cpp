@@ -49,21 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 //#define	CD_EXE_LINUX "wolf"
 #define CD_EXE_LINUX "setup\\setup"
 
-#define MEM_THRESHOLD 96 * 1024 * 1024
-
 static char sys_cmdline[MAX_STRING_CHARS];
-
-/*
-==================
-Sys_LowPhysicalMemory()
-==================
-*/
-
-qboolean Sys_LowPhysicalMemory() {
-	MEMORYSTATUS stat;
-	GlobalMemoryStatus( &stat );
-	return ( stat.dwTotalPhys <= MEM_THRESHOLD ) ? qtrue : qfalse;
-}
 
 //NOTE TTimo: heavily NON PORTABLE, PLZ DON'T USE
 //  show_bug.cgi?id=447

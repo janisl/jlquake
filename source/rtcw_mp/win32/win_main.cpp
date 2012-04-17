@@ -44,21 +44,8 @@ If you have questions concerning this license or the applicable additional terms
 #define CD_EXE      "wolf.exe"
 #define CD_BASEDIR_LINUX    "bin\\x86\\glibc-2.1"
 #define CD_EXE_LINUX "wolf"
-#define MEM_THRESHOLD 96 * 1024 * 1024
 
 static char sys_cmdline[MAX_STRING_CHARS];
-
-/*
-==================
-Sys_LowPhysicalMemory()
-==================
-*/
-
-qboolean Sys_LowPhysicalMemory() {
-	MEMORYSTATUS stat;
-	GlobalMemoryStatus( &stat );
-	return ( stat.dwTotalPhys <= MEM_THRESHOLD ) ? qtrue : qfalse;
-}
 
 /*
 ==================

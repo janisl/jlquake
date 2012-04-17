@@ -465,7 +465,6 @@ qboolean    Sys_CheckCD( void );
 void    Sys_BeginProfiling( void );
 void    Sys_EndProfiling( void );
 
-qboolean Sys_LowPhysicalMemory();
 unsigned int Sys_ProcessorCount();
 
 void Sys_StartProcess( char *exeName, qboolean doexit );            // NERVE - SMF

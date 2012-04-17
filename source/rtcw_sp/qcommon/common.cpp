@@ -1702,10 +1702,8 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 void Com_SetRecommended( qboolean vidrestart ) {
 	qboolean goodVideo;
 	qboolean goodCPU;
-	qboolean lowMemory;
 	goodVideo = true;
 	goodCPU = Sys_GetHighQualityCPU();
-	lowMemory = Sys_LowPhysicalMemory();
 
 	if ( goodVideo && goodCPU ) {
 		Com_Printf( "Found high quality video and CPU\n" );
@@ -1725,10 +1723,6 @@ void Com_SetRecommended( qboolean vidrestart ) {
 	Cvar_Set( "ui_glCustom", "999" );   // 'recommended'
 
 
-	if ( lowMemory ) {
-		Com_Printf( "Found minimum memory requirement\n" );
-		Cvar_Set( "s_khz", "11" );
-	}
 	if ( vidrestart ) {
 		Cbuf_AddText( "vid_restart\n" );
 	}
