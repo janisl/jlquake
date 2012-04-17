@@ -391,8 +391,8 @@ struct glconfig_t
 	qboolean				smpActive;		// dual processor
 };
 
-#if 0
 void R_BeginRegistration(glconfig_t* glconfig);
+#if 0
 void R_EndRegistration();
 void R_Shutdown(bool destroyWindow);
 #endif

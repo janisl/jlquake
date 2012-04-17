@@ -29,7 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __TR_PUBLIC_H
 #define __TR_PUBLIC_H
 
-void        R_BeginRegistration( glconfig_t *glconfig );
 void R_EndRegistration( void );
 void        R_Shutdown( qboolean destroyWindow );
 void R_PurgeCache( void );

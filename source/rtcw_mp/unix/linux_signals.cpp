@@ -31,7 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #ifndef DEDICATED
-#include "../renderer/tr_local.h"
+#include "../../wolfclient/client.h"
+#include "../../client/renderer/local.h"
 #endif
 
 static qboolean signalcaught = qfalse;;

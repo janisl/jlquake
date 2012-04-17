@@ -322,8 +322,7 @@ static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeI
 //
 //==========================================================================
 
-//static 
-void GfxInfo_f()
+static void GfxInfo_f()
 {
 	const char* fsstrings[] =
 	{
@@ -452,8 +451,7 @@ void GfxInfo_f()
 //
 //==========================================================================
 
-//static 
-void R_Register()
+static void R_Register()
 {
 	//
 	// latched and archived variables
@@ -758,8 +756,7 @@ static void R_SetMode()
 //
 //==========================================================================
 
-//static 
-void InitOpenGLSubsystem()
+static void InitOpenGLSubsystem()
 {	
 	Log::write("Initializing OpenGL subsystem\n");
 
@@ -807,7 +804,6 @@ void InitOpenGLSubsystem()
 	}
 }
 
-#if 0
 //==========================================================================
 //
 //	GL_SetDefaultState
@@ -826,6 +822,7 @@ static void GL_SetDefaultState()
 	{
 		GL_SelectTexture(1);
 		GL_TextureMode(r_textureMode->string);
+		GL_TextureAnisotropy(r_textureAnisotropy->value);
 		GL_TexEnv(GL_MODULATE);
 		qglDisable(GL_TEXTURE_2D);
 		GL_SelectTexture(0);
@@ -833,6 +830,7 @@ static void GL_SetDefaultState()
 
 	qglEnable(GL_TEXTURE_2D);
 	GL_TextureMode(r_textureMode->string);
+	GL_TextureAnisotropy(r_textureAnisotropy->value);
 	GL_TexEnv(GL_MODULATE);
 
 	qglShadeModel(GL_SMOOTH);
@@ -867,6 +865,30 @@ static void GL_SetDefaultState()
 		qglPointParameterfEXT(GL_POINT_SIZE_MIN_EXT, r_particle_min_size->value);
 		qglPointParameterfEXT(GL_POINT_SIZE_MAX_EXT, r_particle_max_size->value);
 		qglPointParameterfvEXT(GL_DISTANCE_ATTENUATION_EXT, attenuations);
+	}
+
+	// ATI pn_triangles
+	if (qglPNTrianglesiATI)
+	{
+		int maxtess;
+		// get max supported tesselation
+		qglGetIntegerv(GL_MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI, (GLint*)&maxtess);
+		glConfig.ATIMaxTruformTess = maxtess;
+		// cap if necessary
+		if (r_ati_truform_tess->value > maxtess)
+		{
+			Cvar_Set("r_ati_truform_tess", va("%d", maxtess));
+		}
+
+		// set Wolf defaults
+		qglPNTrianglesiATI(GL_PN_TRIANGLES_TESSELATION_LEVEL_ATI, r_ati_truform_tess->value);
+	}
+
+	if (glConfig.anisotropicAvailable)
+	{
+		float maxAnisotropy;
+		qglGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+		glConfig.maxAnisotropy = maxAnisotropy;
 	}
 }
 
@@ -1021,7 +1043,7 @@ void R_BeginRegistration(glconfig_t *glconfigOut)
 
 	tr.registered = true;
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		// NOTE: this sucks, for some reason the first stretch pic is never drawn
 		// without this we'd see a white flash on a level load because the very
@@ -1030,6 +1052,7 @@ void R_BeginRegistration(glconfig_t *glconfigOut)
 	}
 }
 
+#if 0
 //==========================================================================
 //
 //	R_EndRegistration
