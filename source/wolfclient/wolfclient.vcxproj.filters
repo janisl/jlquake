@@ -25,6 +25,15 @@
     <Filter Include="renderer">
       <UniqueIdentifier>{6e056d90-5274-4aa0-8081-afe164440cca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="renderer\models">
+      <UniqueIdentifier>{15ef832d-2000-4907-b69c-54ece31ce6da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer\images">
+      <UniqueIdentifier>{6ec52e82-b8b3-44f4-89ff-bc828c4461dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cinematic">
+      <UniqueIdentifier>{b52c2fb7-0ec8-484b-bf83-32c709129a9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\client\input\keys.cpp">
@@ -54,37 +63,205 @@
     <ClCompile Include="..\client\sound\main.cpp">
       <Filter>sound</Filter>
     </ClCompile>
-    <ClCompile Include="renderer\init.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="renderer\main.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\input\windows.cpp">
       <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="renderer\state.cpp">
+    <ClCompile Include="..\client\renderer\backend.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\commands.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\curve.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\decals.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\client\renderer\driver_wgl.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="renderer\qgl.cpp">
+    <ClCompile Include="..\client\renderer\flares.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\font.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\init.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\light.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\main.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\marks.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\noise.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\particle.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\qgl.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\scene.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\screenshot.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\shade.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\shade_calculate.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\shader.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\shadows.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\skin.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\sky.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\state.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\surface1.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\surface2.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\surface3.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\wad.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\world.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\bsp29.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\bsp38.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\bsp46.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\md2.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\md3.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\md4.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\mdc.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\mdl.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\mdm.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\mds.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\model.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\sp2.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\models\spr.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\bmp.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\image.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\jpg.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\pcx.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\pic.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\tga.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\renderer\images\wal.cpp">
+      <Filter>renderer\images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cinematic\cin.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cinematic\main.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cinematic\pcx.cpp">
+      <Filter>cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cinematic\roq.cpp">
+      <Filter>cinematic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="renderer\cvars.h">
+    <ClInclude Include="..\client\renderer\cvars.h">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="renderer\local.h">
+    <ClInclude Include="..\client\renderer\local.h">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="renderer\public.h">
+    <ClInclude Include="..\client\renderer\public.h">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="renderer\state.h">
+    <ClInclude Include="..\client\renderer\qgl.h">
       <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\qgl_functions.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\shader.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\state.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\models\anorms256.h">
+      <Filter>renderer\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\models\model.h">
+      <Filter>renderer\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\models\skeletal_model_inlines.h">
+      <Filter>renderer\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\renderer\images\image.h">
+      <Filter>renderer\images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\cinematic\local.h">
+      <Filter>cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\cinematic\public.h">
+      <Filter>cinematic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

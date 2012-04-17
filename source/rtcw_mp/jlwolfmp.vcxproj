@@ -149,10 +149,6 @@
       <Project>{4e5f4e34-0e6a-4200-916f-d33805505b54}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="renderer\renderer-wolfmp.vcxproj">
-      <Project>{544c7ef5-2a74-4206-8b74-24d4fad83048}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="splines\splines-wolfmp.vcxproj">
       <Project>{b6842d42-fba7-4494-a393-802ca7e94351}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

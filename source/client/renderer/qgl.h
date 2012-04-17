@@ -136,3 +136,8 @@ typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat para
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE					0x812F
 #endif
+
+#ifndef GL_GENERATE_MIPMAP_SGIS
+#define GL_GENERATE_MIPMAP_SGIS				0x8191
+#define GL_GENERATE_MIPMAP_HINT_SGIS		0x8192
+#endif

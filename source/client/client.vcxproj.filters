@@ -316,6 +316,18 @@
     <ClCompile Include="client_main.cpp" />
     <ClCompile Include="system_windows.cpp" />
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="renderer\decals.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\mdc.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\mdm.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\models\mds.cpp">
+      <Filter>renderer\models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer\cvars.h">
