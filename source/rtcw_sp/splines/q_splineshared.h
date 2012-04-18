@@ -267,12 +267,6 @@ typedef const mat3_t &mat3_c;       // for passing matrices as const function ar
 #define TINYCHAR_WIDTH      ( SMALLCHAR_WIDTH )
 #define TINYCHAR_HEIGHT     ( SMALLCHAR_HEIGHT / 2 )
 
-#define SMALLCHAR_WIDTH     8
-#define SMALLCHAR_HEIGHT    16
-
-#define BIGCHAR_WIDTH       16
-#define BIGCHAR_HEIGHT      16
-
 #define GIANTCHAR_WIDTH     32
 #define GIANTCHAR_HEIGHT    48
 
@@ -287,8 +281,6 @@ extern idVec4 colorWhite;
 extern idVec4 colorLtGrey;
 extern idVec4 colorMdGrey;
 extern idVec4 colorDkGrey;
-
-extern idVec4 g_color_table[8];
 
 #define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a

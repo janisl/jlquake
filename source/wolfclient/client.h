@@ -25,9 +25,7 @@
 #include "../client/input/keycodes.h"
 #include "../client/input/public.h"
 #include "../client/cinematic/public.h"
-#if 0
-#include "ui/ui.h"
-#endif
+#include "../client/ui/ui.h"
 #include "../client/ui/console.h"
 #include "../client/quakeclientdefs.h"
 #include "../client/hexen2clientdefs.h"

@@ -147,7 +147,7 @@ void CIN_DrawCinematic( int handle ) {
 	w = cinTable[handle]->Width;
 	h = cinTable[handle]->Height;
 	buf = cinTable[handle]->Cin->OutputFrame;
-	SCR_AdjustFrom640( &x, &y, &w, &h );
+	UI_AdjustFromVirtualScreen( &x, &y, &w, &h );
 
 
 	if ( cinTable[handle]->letterBox ) {

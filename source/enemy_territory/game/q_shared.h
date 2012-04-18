@@ -337,12 +337,6 @@ MATHLIB
 #define MINICHAR_WIDTH      8
 #define MINICHAR_HEIGHT     12
 
-#define SMALLCHAR_WIDTH     8
-#define SMALLCHAR_HEIGHT    16
-
-#define BIGCHAR_WIDTH       16
-#define BIGCHAR_HEIGHT      16
-
 #define GIANTCHAR_WIDTH     32
 #define GIANTCHAR_HEIGHT    48
 
@@ -378,8 +372,6 @@ extern vec4_t clrBrownLineFull;
 
 #define GAME_INIT_FRAMES    6
 #define FRAMETIME           100                 // msec
-
-extern vec4_t g_color_table[32];
 
 #define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a

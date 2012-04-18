@@ -36,7 +36,7 @@ struct viddef_t
 
 extern viddef_t		viddef;				// global video state
 
-extern vec4_t g_color_table[8];
+extern vec4_t g_color_table[32];
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
