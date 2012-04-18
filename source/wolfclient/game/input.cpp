@@ -1124,7 +1124,6 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("-prone", IN_Button15Up);
 	}
 
-#if 0
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
@@ -1140,7 +1139,7 @@ void CL_InitInputCommon()
 #endif
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
 	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "1", CVAR_ARCHIVE);
@@ -1165,11 +1164,10 @@ void CL_InitInputCommon()
 		cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
 		cl_run = Cvar_Get("cl_run", "0", CVAR_ARCHIVE);
 	}
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		cl_run = Cvar_Get("cl_run", "1", CVAR_ARCHIVE);
 		m_forward = Cvar_Get("m_forward", "0.25", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "0.25", CVAR_ARCHIVE);
 	}
-#endif
 }
