@@ -27,23 +27,39 @@ struct kbutton_t
 
 unsigned frame_msec;
 
+//static 
+kbutton_t in_left;
+//static 
+kbutton_t in_right;
+//static 
+kbutton_t in_forward;
+//static 
+kbutton_t in_back;
+//static 
+kbutton_t in_lookup;
+//static 
+kbutton_t in_lookdown;
+//static 
+kbutton_t in_moveleft;
+//static 
+kbutton_t in_moveright;
+//static 
+kbutton_t in_strafe;
+//static 
+kbutton_t in_speed;
+//static 
+kbutton_t in_up;
+//static 
+kbutton_t in_down;
+//static 
+kbutton_t in_buttons[16];
+//static 
+kbutton_t in_kick;
+
+//static 
+bool in_mlooking;
+
 #if 0
-static kbutton_t in_left;
-static kbutton_t in_right;
-static kbutton_t in_forward;
-static kbutton_t in_back;
-static kbutton_t in_lookup;
-static kbutton_t in_lookdown;
-static kbutton_t in_moveleft;
-static kbutton_t in_moveright;
-static kbutton_t in_strafe;
-static kbutton_t in_speed;
-static kbutton_t in_up;
-static kbutton_t in_down;
-static kbutton_t in_buttons[16];
-
-static bool in_mlooking;
-
 static Cvar* cl_yawspeed;
 static Cvar* cl_pitchspeed;
 static Cvar* cl_anglespeedkey;

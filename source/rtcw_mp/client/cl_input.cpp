@@ -52,14 +52,28 @@ at the same time.
 ===============================================================================
 */
 
-static kbutton_t kb[NUM_BUTTONS];
+extern kbutton_t in_left;
+extern kbutton_t in_right;
+extern kbutton_t in_forward;
+extern kbutton_t in_back;
+extern kbutton_t in_lookup;
+extern kbutton_t in_lookdown;
+extern kbutton_t in_moveleft;
+extern kbutton_t in_moveright;
+extern kbutton_t in_strafe;
+extern kbutton_t in_speed;
+extern kbutton_t in_up;
+extern kbutton_t in_down;
+extern kbutton_t in_buttons[16];
+extern kbutton_t in_kick;
+extern bool in_mlooking;
 
 void IN_MLookDown( void ) {
-	kb[KB_MLOOK].active = qtrue;
+	in_mlooking = qtrue;
 }
 
 void IN_MLookUp( void ) {
-	kb[KB_MLOOK].active = qfalse;
+	in_mlooking = qfalse;
 	if ( !cl_freelook->integer ) {
 		IN_CenterView();
 	}
@@ -186,42 +200,42 @@ float CL_KeyState( kbutton_t *key ) {
 
 
 
-void IN_UpDown( void ) {IN_KeyDown( &kb[KB_UP] );}
-void IN_UpUp( void ) {IN_KeyUp( &kb[KB_UP] );}
-void IN_DownDown( void ) {IN_KeyDown( &kb[KB_DOWN] );}
-void IN_DownUp( void ) {IN_KeyUp( &kb[KB_DOWN] );}
-void IN_LeftDown( void ) {IN_KeyDown( &kb[KB_LEFT] );}
-void IN_LeftUp( void ) {IN_KeyUp( &kb[KB_LEFT] );}
-void IN_RightDown( void ) {IN_KeyDown( &kb[KB_RIGHT] );}
-void IN_RightUp( void ) {IN_KeyUp( &kb[KB_RIGHT] );}
-void IN_ForwardDown( void ) {IN_KeyDown( &kb[KB_FORWARD] );}
-void IN_ForwardUp( void ) {IN_KeyUp( &kb[KB_FORWARD] );}
-void IN_BackDown( void ) {IN_KeyDown( &kb[KB_BACK] );}
-void IN_BackUp( void ) {IN_KeyUp( &kb[KB_BACK] );}
-void IN_LookupDown( void ) {IN_KeyDown( &kb[KB_LOOKUP] );}
-void IN_LookupUp( void ) {IN_KeyUp( &kb[KB_LOOKUP] );}
-void IN_LookdownDown( void ) {IN_KeyDown( &kb[KB_LOOKDOWN] );}
-void IN_LookdownUp( void ) {IN_KeyUp( &kb[KB_LOOKDOWN] );}
-void IN_MoveleftDown( void ) {IN_KeyDown( &kb[KB_MOVELEFT] );}
-void IN_MoveleftUp( void ) {IN_KeyUp( &kb[KB_MOVELEFT] );}
-void IN_MoverightDown( void ) {IN_KeyDown( &kb[KB_MOVERIGHT] );}
-void IN_MoverightUp( void ) {IN_KeyUp( &kb[KB_MOVERIGHT] );}
+void IN_UpDown( void ) {IN_KeyDown( &in_up );}
+void IN_UpUp( void ) {IN_KeyUp( &in_up );}
+void IN_DownDown( void ) {IN_KeyDown( &in_down );}
+void IN_DownUp( void ) {IN_KeyUp( &in_down );}
+void IN_LeftDown( void ) {IN_KeyDown( &in_left );}
+void IN_LeftUp( void ) {IN_KeyUp( &in_left );}
+void IN_RightDown( void ) {IN_KeyDown( &in_right );}
+void IN_RightUp( void ) {IN_KeyUp( &in_right );}
+void IN_ForwardDown( void ) {IN_KeyDown( &in_forward );}
+void IN_ForwardUp( void ) {IN_KeyUp( &in_forward );}
+void IN_BackDown( void ) {IN_KeyDown( &in_back );}
+void IN_BackUp( void ) {IN_KeyUp( &in_back );}
+void IN_LookupDown( void ) {IN_KeyDown( &in_lookup );}
+void IN_LookupUp( void ) {IN_KeyUp( &in_lookup );}
+void IN_LookdownDown( void ) {IN_KeyDown( &in_lookdown );}
+void IN_LookdownUp( void ) {IN_KeyUp( &in_lookdown );}
+void IN_MoveleftDown( void ) {IN_KeyDown( &in_moveleft );}
+void IN_MoveleftUp( void ) {IN_KeyUp( &in_moveleft );}
+void IN_MoverightDown( void ) {IN_KeyDown( &in_moveright );}
+void IN_MoverightUp( void ) {IN_KeyUp( &in_moveright );}
 
-void IN_SpeedDown( void ) {IN_KeyDown( &kb[KB_SPEED] );}
-void IN_SpeedUp( void ) {IN_KeyUp( &kb[KB_SPEED] );}
-void IN_StrafeDown( void ) {IN_KeyDown( &kb[KB_STRAFE] );}
-void IN_StrafeUp( void ) {IN_KeyUp( &kb[KB_STRAFE] );}
+void IN_SpeedDown( void ) {IN_KeyDown( &in_speed );}
+void IN_SpeedUp( void ) {IN_KeyUp( &in_speed );}
+void IN_StrafeDown( void ) {IN_KeyDown( &in_strafe );}
+void IN_StrafeUp( void ) {IN_KeyUp( &in_strafe );}
 
-void IN_Button0Down( void ) {IN_KeyDown( &kb[KB_BUTTONS0] );}
-void IN_Button0Up( void ) {IN_KeyUp( &kb[KB_BUTTONS0] );}
-void IN_Button1Down( void ) {IN_KeyDown( &kb[KB_BUTTONS1] );}
-void IN_Button1Up( void ) {IN_KeyUp( &kb[KB_BUTTONS1] );}
-void IN_UseItemDown( void ) {IN_KeyDown( &kb[KB_BUTTONS2] );}
-void IN_UseItemUp( void ) {IN_KeyUp( &kb[KB_BUTTONS2] );}
-void IN_Button3Down( void ) {IN_KeyDown( &kb[KB_BUTTONS3] );}
-void IN_Button3Up( void ) {IN_KeyUp( &kb[KB_BUTTONS3] );}
-void IN_Button4Down( void ) {IN_KeyDown( &kb[KB_BUTTONS4] );}
-void IN_Button4Up( void ) {IN_KeyUp( &kb[KB_BUTTONS4] );}
+void IN_Button0Down( void ) {IN_KeyDown( &in_buttons[0] );}
+void IN_Button0Up( void ) {IN_KeyUp( &in_buttons[0] );}
+void IN_Button1Down( void ) {IN_KeyDown( &in_buttons[1] );}
+void IN_Button1Up( void ) {IN_KeyUp( &in_buttons[1] );}
+void IN_UseItemDown( void ) {IN_KeyDown( &in_buttons[2] );}
+void IN_UseItemUp( void ) {IN_KeyUp( &in_buttons[2] );}
+void IN_Button3Down( void ) {IN_KeyDown( &in_buttons[3] );}
+void IN_Button3Up( void ) {IN_KeyUp( &in_buttons[3] );}
+void IN_Button4Down( void ) {IN_KeyDown( &in_buttons[4] );}
+void IN_Button4Up( void ) {IN_KeyUp( &in_buttons[4] );}
 // void IN_Button5Down(void) {IN_KeyDown(&kb[KB_BUTTONS5]);}
 // void IN_Button5Up(void) {IN_KeyUp(&kb[KB_BUTTONS5]);}
 
@@ -229,50 +243,50 @@ void IN_Button4Up( void ) {IN_KeyUp( &kb[KB_BUTTONS4] );}
 // void IN_Button6Up(void) {IN_KeyUp(&kb[KB_BUTTONS6]);}
 
 // Rafael activate
-void IN_ActivateDown( void ) {IN_KeyDown( &kb[KB_BUTTONS6] );}
-void IN_ActivateUp( void ) {IN_KeyUp( &kb[KB_BUTTONS6] );}
+void IN_ActivateDown( void ) {IN_KeyDown( &in_buttons[6] );}
+void IN_ActivateUp( void ) {IN_KeyUp( &in_buttons[6] );}
 // done.
 
 // Rafael Kick
-void IN_KickDown( void ) {IN_KeyDown( &kb[KB_KICK] );}
-void IN_KickUp( void ) {IN_KeyUp( &kb[KB_KICK] );}
+void IN_KickDown( void ) {IN_KeyDown( &in_kick );}
+void IN_KickUp( void ) {IN_KeyUp( &in_kick );}
 // done.
 
-void IN_SprintDown( void ) {IN_KeyDown( &kb[KB_BUTTONS5] );}
-void IN_SprintUp( void ) {IN_KeyUp( &kb[KB_BUTTONS5] );}
+void IN_SprintDown( void ) {IN_KeyDown( &in_buttons[5] );}
+void IN_SprintUp( void ) {IN_KeyUp( &in_buttons[5] );}
 
 
 // wbuttons (wolf buttons)
-void IN_Wbutton0Down( void )  { IN_KeyDown( &kb[KB_WBUTTONS0] );    }   //----(SA) secondary fire button
-void IN_Wbutton0Up( void )    { IN_KeyUp( &kb[KB_WBUTTONS0] );  }
-void IN_ZoomDown( void )      { IN_KeyDown( &kb[KB_WBUTTONS1] );    }   //----(SA)	zoom key
-void IN_ZoomUp( void )        { IN_KeyUp( &kb[KB_WBUTTONS1] );  }
-void IN_QuickGrenDown( void ) { IN_KeyDown( &kb[KB_WBUTTONS2] );    }   //----(SA)	"Quickgrenade"
-void IN_QuickGrenUp( void )   { IN_KeyUp( &kb[KB_WBUTTONS2] );  }
-void IN_ReloadDown( void )    { IN_KeyDown( &kb[KB_WBUTTONS3] );    }   //----(SA)	manual weapon re-load
-void IN_ReloadUp( void )      { IN_KeyUp( &kb[KB_WBUTTONS3] );  }
-void IN_LeanLeftDown( void )  { IN_KeyDown( &kb[KB_WBUTTONS4] );    }   //----(SA)	lean left
-void IN_LeanLeftUp( void )    { IN_KeyUp( &kb[KB_WBUTTONS4] );  }
-void IN_LeanRightDown( void ) { IN_KeyDown( &kb[KB_WBUTTONS5] );    }   //----(SA)	lean right
-void IN_LeanRightUp( void )   { IN_KeyUp( &kb[KB_WBUTTONS5] );  }
+void IN_Wbutton0Down( void )  { IN_KeyDown( &in_buttons[8] );    }   //----(SA) secondary fire button
+void IN_Wbutton0Up( void )    { IN_KeyUp( &in_buttons[8] );  }
+void IN_ZoomDown( void )      { IN_KeyDown( &in_buttons[9] );    }   //----(SA)	zoom key
+void IN_ZoomUp( void )        { IN_KeyUp( &in_buttons[9] );  }
+void IN_QuickGrenDown( void ) { IN_KeyDown( &in_buttons[10] );    }   //----(SA)	"Quickgrenade"
+void IN_QuickGrenUp( void )   { IN_KeyUp( &in_buttons[10] );  }
+void IN_ReloadDown( void )    { IN_KeyDown( &in_buttons[11] );    }   //----(SA)	manual weapon re-load
+void IN_ReloadUp( void )      { IN_KeyUp( &in_buttons[11] );  }
+void IN_LeanLeftDown( void )  { IN_KeyDown( &in_buttons[12] );    }   //----(SA)	lean left
+void IN_LeanLeftUp( void )    { IN_KeyUp( &in_buttons[12] );  }
+void IN_LeanRightDown( void ) { IN_KeyDown( &in_buttons[13] );    }   //----(SA)	lean right
+void IN_LeanRightUp( void )   { IN_KeyUp( &in_buttons[13] );  }
 
 // JPW NERVE
-void IN_MP_DropWeaponDown( void ) {IN_KeyDown( &kb[KB_WBUTTONS6] );}
-void IN_MP_DropWeaponUp( void ) {IN_KeyUp( &kb[KB_WBUTTONS6] );}
+void IN_MP_DropWeaponDown( void ) {IN_KeyDown( &in_buttons[14] );}
+void IN_MP_DropWeaponUp( void ) {IN_KeyUp( &in_buttons[14] );}
 // jpw
 
 // unused
-void IN_Wbutton7Down( void )  { IN_KeyDown( &kb[KB_WBUTTONS7] );    }
-void IN_Wbutton7Up( void )    { IN_KeyUp( &kb[KB_WBUTTONS7] );  }
+void IN_Wbutton7Down( void )  { IN_KeyDown( &in_buttons[15] );    }
+void IN_Wbutton7Up( void )    { IN_KeyUp( &in_buttons[15] );  }
 
 
 
 
 void IN_ButtonDown( void ) {
-	IN_KeyDown( &kb[KB_BUTTONS1] );
+	IN_KeyDown( &in_buttons[1] );
 }
 void IN_ButtonUp( void ) {
-	IN_KeyUp( &kb[KB_BUTTONS1] );
+	IN_KeyUp( &in_buttons[1] );
 }
 
 void IN_CenterView( void ) {
@@ -325,19 +339,19 @@ Moves the local angle positions
 void CL_AdjustAngles( void ) {
 	float speed;
 
-	if ( kb[KB_SPEED].active ) {
+	if ( in_speed.active ) {
 		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
 	} else {
 		speed = 0.001 * cls.frametime;
 	}
 
-	if ( !kb[KB_STRAFE].active ) {
-		cl.viewangles[YAW] -= speed * cl_yawspeed->value * CL_KeyState( &kb[KB_RIGHT] );
-		cl.viewangles[YAW] += speed * cl_yawspeed->value * CL_KeyState( &kb[KB_LEFT] );
+	if ( !in_strafe.active ) {
+		cl.viewangles[YAW] -= speed * cl_yawspeed->value * CL_KeyState( &in_right );
+		cl.viewangles[YAW] += speed * cl_yawspeed->value * CL_KeyState( &in_left );
 	}
 
-	cl.viewangles[PITCH] -= speed * cl_pitchspeed->value * CL_KeyState( &kb[KB_LOOKUP] );
-	cl.viewangles[PITCH] += speed * cl_pitchspeed->value * CL_KeyState( &kb[KB_LOOKDOWN] );
+	cl.viewangles[PITCH] -= speed * cl_pitchspeed->value * CL_KeyState( &in_lookup );
+	cl.viewangles[PITCH] += speed * cl_pitchspeed->value * CL_KeyState( &in_lookdown );
 }
 
 /*
@@ -359,7 +373,7 @@ void CL_KeyMove( wmusercmd_t *cmd ) {
 	// the walking flag is to keep animations consistant
 	// even during acceleration and develeration
 	//
-	if ( kb[KB_SPEED].active ^ cl_run->integer ) {
+	if ( in_speed.active ^ cl_run->integer ) {
 		movespeed = 127;
 		cmd->buttons &= ~Q3BUTTON_WALKING;
 	} else {
@@ -370,13 +384,13 @@ void CL_KeyMove( wmusercmd_t *cmd ) {
 	forward = 0;
 	side = 0;
 	up = 0;
-	if ( kb[KB_STRAFE].active ) {
-		side += movespeed * CL_KeyState( &kb[KB_RIGHT] );
-		side -= movespeed * CL_KeyState( &kb[KB_LEFT] );
+	if ( in_strafe.active ) {
+		side += movespeed * CL_KeyState( &in_right );
+		side -= movespeed * CL_KeyState( &in_left );
 	}
 
-	side += movespeed * CL_KeyState( &kb[KB_MOVERIGHT] );
-	side -= movespeed * CL_KeyState( &kb[KB_MOVELEFT] );
+	side += movespeed * CL_KeyState( &in_moveright );
+	side -= movespeed * CL_KeyState( &in_moveleft );
 
 //----(SA)	added
 	if ( cmd->buttons & BUTTON_ACTIVATE ) {
@@ -390,14 +404,14 @@ void CL_KeyMove( wmusercmd_t *cmd ) {
 	}
 //----(SA)	end
 
-	up += movespeed * CL_KeyState( &kb[KB_UP] );
-	up -= movespeed * CL_KeyState( &kb[KB_DOWN] );
+	up += movespeed * CL_KeyState( &in_up );
+	up -= movespeed * CL_KeyState( &in_down );
 
-	forward += movespeed * CL_KeyState( &kb[KB_FORWARD] );
-	forward -= movespeed * CL_KeyState( &kb[KB_BACK] );
+	forward += movespeed * CL_KeyState( &in_forward );
+	forward -= movespeed * CL_KeyState( &in_back );
 
 	// Rafael Kick
-	kick = CL_KeyState( &kb[KB_KICK] );
+	kick = CL_KeyState( &in_kick );
 	// done
 
 	if ( !( cl.wm_snap.ps.persistant[PERS_HWEAPON_USE] ) ) {
@@ -459,14 +473,14 @@ void CL_JoystickMove( wmusercmd_t *cmd ) {
 	int movespeed;
 	float anglespeed;
 
-	if ( kb[KB_SPEED].active ^ cl_run->integer ) {
+	if ( in_speed.active ^ cl_run->integer ) {
 		movespeed = 2;
 	} else {
 		movespeed = 1;
 		cmd->buttons |= Q3BUTTON_WALKING;
 	}
 
-	if ( kb[KB_SPEED].active ) {
+	if ( in_speed.active ) {
 		anglespeed = 0.001 * cls.frametime * cl_anglespeedkey->value;
 	} else {
 		anglespeed = 0.001 * cls.frametime;
@@ -475,13 +489,13 @@ void CL_JoystickMove( wmusercmd_t *cmd ) {
 #ifdef __MACOS__
 	cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
 #else
-	if ( !kb[KB_STRAFE].active ) {
+	if ( !in_strafe.active ) {
 		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.joystickAxis[AXIS_SIDE];
 	} else {
 		cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
 	}
 #endif
-	if ( kb[KB_MLOOK].active ) {
+	if ( in_mlooking ) {
 		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.joystickAxis[AXIS_FORWARD];
 	} else {
 		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[AXIS_FORWARD] );
@@ -549,13 +563,13 @@ void CL_MouseMove( wmusercmd_t *cmd ) {
 	}
 
 	// add mouse X/Y movement to cmd
-	if ( kb[KB_STRAFE].active ) {
+	if ( in_strafe.active ) {
 		cmd->rightmove = ClampChar( cmd->rightmove + m_side->value * mx );
 	} else {
 		cl.viewangles[YAW] -= m_yaw->value * mx;
 	}
 
-	if ( ( kb[KB_MLOOK].active || cl_freelook->integer ) && !kb[KB_STRAFE].active ) {
+	if ( ( in_mlooking || cl_freelook->integer ) && !in_strafe.active ) {
 		cl.viewangles[PITCH] += m_pitch->value * my;
 	} else {
 		cmd->forwardmove = ClampChar( cmd->forwardmove - m_forward->value * my );
@@ -577,17 +591,17 @@ void CL_CmdButtons( wmusercmd_t *cmd ) {
 	// less than a frame
 	//
 	for ( i = 0 ; i < 7 ; i++ ) {
-		if ( kb[KB_BUTTONS0 + i].active || kb[KB_BUTTONS0 + i].wasPressed ) {
+		if ( in_buttons[i].active || in_buttons[i].wasPressed ) {
 			cmd->buttons |= 1 << i;
 		}
-		kb[KB_BUTTONS0 + i].wasPressed = qfalse;
+		in_buttons[i].wasPressed = qfalse;
 	}
 
 	for ( i = 0 ; i < 7 ; i++ ) {
-		if ( kb[KB_WBUTTONS0 + i].active || kb[KB_WBUTTONS0 + i].wasPressed ) {
+		if ( in_buttons[8 + i].active || in_buttons[8 + i].wasPressed ) {
 			cmd->wbuttons |= 1 << i;
 		}
-		kb[KB_WBUTTONS0 + i].wasPressed = qfalse;
+		in_buttons[8 + i].wasPressed = qfalse;
 	}
 
 	if ( in_keyCatchers && !cl_bypassMouseInput->integer ) {
@@ -1060,5 +1074,19 @@ CL_ClearKeys
 ============
 */
 void CL_ClearKeys( void ) {
-	memset( kb, 0, sizeof( kb ) );
+	Com_Memset(&in_left, 0, sizeof(in_left));
+	Com_Memset(&in_right, 0, sizeof(in_right));
+	Com_Memset(&in_forward, 0, sizeof(in_forward));
+	Com_Memset(&in_back, 0, sizeof(in_back));
+	Com_Memset(&in_lookup, 0, sizeof(in_lookup));
+	Com_Memset(&in_lookdown, 0, sizeof(in_lookdown));
+	Com_Memset(&in_moveleft, 0, sizeof(in_moveleft));
+	Com_Memset(&in_moveright, 0, sizeof(in_moveright));
+	Com_Memset(&in_strafe, 0, sizeof(in_strafe));
+	Com_Memset(&in_speed, 0, sizeof(in_speed));
+	Com_Memset(&in_up, 0, sizeof(in_up));
+	Com_Memset(&in_down, 0, sizeof(in_down));
+	Com_Memset(in_buttons, 0, sizeof(in_buttons));
+	Com_Memset(&in_kick, 0, sizeof(in_kick));
+	in_mlooking = false;
 }

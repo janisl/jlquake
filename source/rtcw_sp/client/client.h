@@ -144,42 +144,6 @@ typedef struct {
 	bool wasPressed;        // set when down, not cleared when up
 } kbutton_t;
 
-typedef enum {
-	KB_LEFT,
-	KB_RIGHT,
-	KB_FORWARD,
-	KB_BACK,
-	KB_LOOKUP,
-	KB_LOOKDOWN,
-	KB_MOVELEFT,
-	KB_MOVERIGHT,
-	KB_STRAFE,
-	KB_SPEED,
-	KB_UP,
-	KB_DOWN,
-	KB_BUTTONS0,
-	KB_BUTTONS1,
-	KB_BUTTONS2,
-	KB_BUTTONS3,
-	KB_BUTTONS4,
-	KB_BUTTONS5,
-	KB_BUTTONS6,
-	KB_BUTTONS7,
-	KB_WBUTTONS0,
-	KB_WBUTTONS1,
-	KB_WBUTTONS2,
-	KB_WBUTTONS3,
-	KB_WBUTTONS4,
-	KB_WBUTTONS5,
-	KB_WBUTTONS6,
-	KB_WBUTTONS7,
-	KB_MLOOK,
-	KB_KICK,
-
-	NUM_BUTTONS
-} kbuttons_t;
-
-
 void CL_InitInput( void );
 void CL_SendCmd( void );
 void CL_ClearState( void );
