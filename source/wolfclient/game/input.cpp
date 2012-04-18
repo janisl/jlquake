@@ -59,10 +59,12 @@ kbutton_t in_kick;
 //static 
 bool in_mlooking;
 
-#if 0
-static Cvar* cl_yawspeed;
-static Cvar* cl_pitchspeed;
-static Cvar* cl_anglespeedkey;
+//static 
+Cvar* cl_yawspeed;
+//static 
+Cvar* cl_pitchspeed;
+//static 
+Cvar* cl_anglespeedkey;
 Cvar* cl_forwardspeed;
 static Cvar* cl_backspeed;
 static Cvar* cl_sidespeed;
@@ -71,18 +73,25 @@ static Cvar* cl_movespeedkey;
 Cvar* cl_run;
 Cvar* cl_freelook;
 Cvar* cl_sensitivity;
-static Cvar* cl_mouseAccel;
-static Cvar* cl_showMouseRate;
-static Cvar* m_filter;
+//static 
+Cvar* cl_mouseAccel;
+//static 
+Cvar* cl_showMouseRate;
+//static 
+Cvar* m_filter;
 Cvar* m_pitch;
-static Cvar* m_yaw;
-static Cvar* m_forward;
-static Cvar* m_side;
+//static 
+Cvar* m_yaw;
+//static 
+Cvar* m_forward;
+//static 
+Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
 
 int in_impulse;
 
+#if 0
 static void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);

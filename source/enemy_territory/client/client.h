@@ -73,7 +73,6 @@ extern Cvar  *cl_freezeDemo;
 
 extern Cvar  *cl_yawspeed;
 extern Cvar  *cl_pitchspeed;
-extern Cvar  *cl_run;
 extern Cvar  *cl_anglespeedkey;
 
 extern Cvar  *cl_recoilPitch;     // RF
@@ -82,13 +81,9 @@ extern Cvar  *cl_bypassMouseInput;    // NERVE - SMF
 
 extern Cvar  *cl_doubletapdelay;
 
-extern Cvar  *cl_sensitivity;
-extern Cvar  *cl_freelook;
-
 extern Cvar  *cl_mouseAccel;
 extern Cvar  *cl_showMouseRate;
 
-extern Cvar  *m_pitch;
 extern Cvar  *m_yaw;
 extern Cvar  *m_forward;
 extern Cvar  *m_side;

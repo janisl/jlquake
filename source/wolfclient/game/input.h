@@ -23,7 +23,6 @@ struct in_usercmd_t
 };
 
 extern unsigned frame_msec;
-#if 0
 extern int in_impulse;
 
 extern Cvar* cl_forwardspeed;
@@ -34,6 +33,7 @@ extern Cvar* m_pitch;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
+#if 0
 void CL_JoystickEvent(int axis, int value, int time);
 void CLQH_StartPitchDrift();
 void CL_InitInputCommon();

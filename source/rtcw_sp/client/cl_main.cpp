@@ -53,18 +53,6 @@ Cvar  *cl_timedemo;
 Cvar  *cl_avidemo;
 Cvar  *cl_forceavidemo;
 
-Cvar  *cl_freelook;
-Cvar  *cl_sensitivity;
-
-Cvar  *cl_mouseAccel;
-Cvar  *cl_showMouseRate;
-
-Cvar  *m_pitch;
-Cvar  *m_yaw;
-Cvar  *m_forward;
-Cvar  *m_side;
-Cvar  *m_filter;
-
 Cvar  *cl_activeAction;
 
 Cvar  *cl_motdString;

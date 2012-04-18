@@ -306,17 +306,6 @@ void IN_Help( void ) {
 
 //==========================================================================
 
-Cvar  *cl_upspeed;
-Cvar  *cl_forwardspeed;
-Cvar  *cl_sidespeed;
-
-Cvar  *cl_yawspeed;
-Cvar  *cl_pitchspeed;
-
-Cvar  *cl_run;
-
-Cvar  *cl_anglespeedkey;
-
 Cvar  *cl_recoilPitch;
 
 /*
