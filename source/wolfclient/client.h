@@ -34,10 +34,10 @@
 #include "../client/quake2clientdefs.h"
 #include "../client/quake3clientdefs.h"
 #include "../client/wolfclientdefs.h"
+#include "../client/game/particles.h"
+#include "../client/game/dynamic_lights.h"
+#include "../client/game/light_styles.h"
 #if 0
-#include "game/particles.h"
-#include "game/dynamic_lights.h"
-#include "game/light_styles.h"
 #include "game/input.h"
 #endif
 

@@ -3,6 +3,27 @@ set(WOLFCLIENT_FILES
 	../client/cinematic/main.cpp
 	../client/cinematic/pcx.cpp
 	../client/cinematic/roq.cpp
+	../client/game/hexen2/chunk.cpp
+	../client/game/hexen2/effects.cpp
+	../client/game/hexen2/entities.cpp
+	../client/game/hexen2/explosion.cpp
+	../client/game/hexen2/light_effects.cpp
+	../client/game/hexen2/particle_effects.cpp
+	../client/game/hexen2/projectiles.cpp
+	../client/game/hexen2/stream.cpp
+	../client/game/hexen2/temporary_entities.cpp
+	../client/game/quake2/beam.cpp
+	../client/game/quake2/effects.cpp
+	../client/game/quake2/explosion.cpp
+	../client/game/quake2/laser.cpp
+	../client/game/quake2/light_effects.cpp
+	../client/game/quake2/main.cpp
+	../client/game/quake2/particle_effects.cpp
+	../client/game/quake2/sustain.cpp
+	../client/game/quake2/temporary_entities.cpp
+	../client/game/dynamic_lights.cpp
+	../client/game/light_styles.cpp
+	../client/game/particles.cpp
 	../client/input/keys.cpp
 	../client/input/main.cpp
 	../client/input/unix.cpp
