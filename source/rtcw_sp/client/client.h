@@ -140,8 +140,8 @@ typedef struct {
 	int down[2];                // key nums holding it down
 	unsigned downtime;          // msec timestamp
 	unsigned msec;              // msec down this frame if both a down and up happened
-	qboolean active;            // current state
-	qboolean wasPressed;        // set when down, not cleared when up
+	bool active;            // current state
+	bool wasPressed;        // set when down, not cleared when up
 } kbutton_t;
 
 typedef enum {
@@ -179,8 +179,6 @@ typedef enum {
 	NUM_BUTTONS
 } kbuttons_t;
 
-
-void CL_ClearKeys( void );
 
 void CL_InitInput( void );
 void CL_SendCmd( void );

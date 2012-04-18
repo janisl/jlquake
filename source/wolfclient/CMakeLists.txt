@@ -29,6 +29,7 @@ set(WOLFCLIENT_FILES
 	../client/game/quake2/sustain.cpp
 	../client/game/quake2/temporary_entities.cpp
 	../client/game/dynamic_lights.cpp
+	game/input.cpp
 	../client/game/light_styles.cpp
 	../client/game/particles.cpp
 	../client/input/keys.cpp

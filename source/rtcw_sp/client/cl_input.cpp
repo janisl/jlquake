@@ -30,7 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-unsigned frame_msec;
 int old_com_frameTime;
 
 /*
@@ -1024,14 +1023,4 @@ void CL_InitInput( void ) {
 
 	cl_nodelta = Cvar_Get( "cl_nodelta", "0", 0 );
 	cl_debugMove = Cvar_Get( "cl_debugMove", "0", 0 );
-}
-
-
-/*
-============
-CL_ClearKeys
-============
-*/
-void CL_ClearKeys( void ) {
-	memset( kb, 0, sizeof( kb ) );
 }
