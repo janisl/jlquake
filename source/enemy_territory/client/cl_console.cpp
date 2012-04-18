@@ -35,8 +35,6 @@ int g_console_field_width = 78;
 
 #define COLNSOLE_COLOR  COLOR_WHITE //COLOR_BLACK
 
-console_t con;
-
 Cvar      *con_debug;
 Cvar      *con_conspeed;
 Cvar      *con_notifytime;
@@ -210,22 +208,6 @@ void Con_Dump_f( void ) {
 
 	FS_FCloseFile( f );
 }
-
-
-/*
-================
-Con_ClearNotify
-================
-*/
-void Con_ClearNotify( void ) {
-	int i;
-
-	for ( i = 0 ; i < NUM_CON_TIMES ; i++ ) {
-		con.times[i] = 0;
-	}
-}
-
-
 
 /*
 ================

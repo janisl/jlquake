@@ -33,6 +33,7 @@ struct console_t
 
 	float	displayFrac;	// aproaches finalFrac at scr_conspeed
 	float	finalFrac;		// 0.0 to 1.0 lines of console to display
+	float desiredFrac;		// ydnar: for variable console heights
 
 	int		vislines;		// in scanlines
 
@@ -43,6 +44,8 @@ struct console_t
 	int		ormask;			// high bit mask for colored characters
 
 	float	cursorspeed;
+
+	int acLength;			// Arnout: autocomplete buffer length
 };
 
 extern console_t con;

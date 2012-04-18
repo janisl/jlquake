@@ -81,6 +81,7 @@ set(WOLFCLIENT_FILES
 	../client/sound/main.cpp
 	../client/sound/memory.cpp
 	../client/sound/mix.cpp
+	../client/ui/console.cpp
 	../client/chase.cpp
 	../client/client_main.cpp
 	../client/system_unix.cpp

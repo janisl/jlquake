@@ -35,38 +35,6 @@ int g_console_field_width = 78;
 
 #define COLNSOLE_COLOR  COLOR_WHITE //COLOR_BLACK
 
-#define NUM_CON_TIMES 4
-
-//#define		CON_TEXTSIZE	32768
-#define     CON_TEXTSIZE    65536   // (SA) DM want's more console...
-
-typedef struct {
-	qboolean initialized;
-
-	short text[CON_TEXTSIZE];
-	int current;            // line where next message will be printed
-	int x;                  // offset in current line for next print
-	int display;            // bottom of console displays this line
-
-	int linewidth;          // characters across screen
-	int totallines;         // total lines in console scrollback
-
-	float xadjust;          // for wide aspect screens
-
-	float displayFrac;      // aproaches finalFrac at scr_conspeed
-	float finalFrac;        // 0.0 to 1.0 lines of console to display
-
-	int vislines;           // in scanlines
-
-	int times[NUM_CON_TIMES];       // cls.realtime time the line was generated
-	// for transparent notify lines
-	vec4_t color;
-} console_t;
-
-extern console_t con;
-
-console_t con;
-
 Cvar      *con_debug;
 Cvar      *con_conspeed;
 Cvar      *con_notifytime;
@@ -265,22 +233,6 @@ void Con_Dump_f( void ) {
 
 	FS_FCloseFile( f );
 }
-
-
-/*
-================
-Con_ClearNotify
-================
-*/
-void Con_ClearNotify( void ) {
-	int i;
-
-	for ( i = 0 ; i < NUM_CON_TIMES ; i++ ) {
-		con.times[i] = 0;
-	}
-}
-
-
 
 /*
 ================

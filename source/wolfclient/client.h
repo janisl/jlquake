@@ -27,8 +27,8 @@
 #include "../client/cinematic/public.h"
 #if 0
 #include "ui/ui.h"
-#include "ui/console.h"
 #endif
+#include "../client/ui/console.h"
 #include "../client/quakeclientdefs.h"
 #include "../client/hexen2clientdefs.h"
 #include "../client/quake2clientdefs.h"
