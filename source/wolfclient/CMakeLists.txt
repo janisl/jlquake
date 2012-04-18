@@ -12,6 +12,13 @@ set(WOLFCLIENT_FILES
 	../client/game/hexen2/projectiles.cpp
 	../client/game/hexen2/stream.cpp
 	../client/game/hexen2/temporary_entities.cpp
+	../client/game/quake/connection.cpp
+	../client/game/quake/entities.cpp
+	../client/game/quake/light_effects.cpp
+	../client/game/quake/particle_effects.cpp
+	../client/game/quake/projectiles.cpp
+	../client/game/quake/skin.cpp
+	../client/game/quake/temporary_entities.cpp
 	../client/game/quake2/beam.cpp
 	../client/game/quake2/effects.cpp
 	../client/game/quake2/explosion.cpp
