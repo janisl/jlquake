@@ -16,6 +16,8 @@
 
 #include "../client.h"
 
+void IN_CenterViewWMP();
+
 struct kbutton_t
 {
 	int down[2];		// key nums holding it down
@@ -91,7 +93,6 @@ Cvar* lookspring;
 
 int in_impulse;
 
-#if 0
 static void IN_KeyDown(kbutton_t* b)
 {
 	const char* c = Cmd_Argv(1);
@@ -461,8 +462,29 @@ static void IN_Button14Up()
 	IN_KeyUp(&in_buttons[14]);
 }
 
+static void IN_Button15Down()
+{
+	IN_KeyDown(&in_buttons[15]);
+}
+
+static void IN_Button15Up()
+{
+	IN_KeyUp(&in_buttons[15]);
+}
+
+static void IN_KickDown()
+{
+	IN_KeyDown(&in_kick);
+}
+
+static void IN_KickUp()
+{
+	IN_KeyUp(&in_kick);
+}
+
 //	Returns the fraction of the frame that the key was down
-static float CL_KeyState(kbutton_t* key)
+//static 
+float CL_KeyState(kbutton_t* key)
 {
 	int msec = key->msec;
 	key->msec = 0;
@@ -515,7 +537,8 @@ static void CLQH_StopPitchDrift()
 	cl.qh_pitchvel = 0;
 }
 
-static void IN_CenterView()
+//static 
+void IN_CenterView()
 {
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -529,6 +552,16 @@ static void IN_CenterView()
 	{
 		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q3_snap.ps.delta_angles[PITCH]);
 	}
+	if (GGameType & GAME_WolfSP)
+	{
+		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.ws_snap.ps.delta_angles[PITCH]);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		//	Needs cgame QVM.
+		IN_CenterViewWMP();
+	}
+	//	Nothing for Enemy-territory
 }
 
 static void IN_MLookDown()
@@ -539,7 +572,7 @@ static void IN_MLookDown()
 static void IN_MLookUp()
 {
 	in_mlooking = false;
-	if (!cl_freelook->value && (!(GGameType & GAME_Quake3) || lookspring->value))
+	if (!cl_freelook->value && (!(GGameType & GAME_Tech3) || lookspring->value))
 	{
 		IN_CenterView();
 	}
@@ -555,6 +588,7 @@ static void IN_Impulse()
 	in_impulse = String::Atoi(Cmd_Argv(1));
 }
 
+#if 0
 static void CLH2_SetIdealRoll(float delta)
 {
 	// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
@@ -951,6 +985,7 @@ in_usercmd_t CL_CreateCmdCommon()
 
 	return cmd;
 }
+#endif
 
 void CL_InitInputCommon()
 {
@@ -982,8 +1017,11 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("-attack", IN_Button0Up);
 	Cmd_AddCommand("+mlook", IN_MLookDown);
 	Cmd_AddCommand("-mlook", IN_MLookUp);
-	Cmd_AddCommand("centerview",IN_CenterView);
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_ET))
+	{
+		Cmd_AddCommand("centerview", IN_CenterView);
+	}
+	if (!(GGameType & GAME_Tech3))
 	{
 		Cmd_AddCommand("impulse", IN_Impulse);
 	}
@@ -1036,7 +1074,57 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("+button14", IN_Button14Down);
 		Cmd_AddCommand("-button14", IN_Button14Up);
 	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		Cmd_AddCommand("+button1", IN_Button1Down);
+		Cmd_AddCommand("-button1", IN_Button1Up);
+		Cmd_AddCommand("+useitem", IN_Button2Down);
+		Cmd_AddCommand("-useitem", IN_Button2Up);
+		Cmd_AddCommand("+salute", IN_Button3Down);
+		Cmd_AddCommand("-salute", IN_Button3Up);
+		Cmd_AddCommand("+button4", IN_Button4Down);
+		Cmd_AddCommand("-button4", IN_Button4Up);
+		Cmd_AddCommand("+sprint", IN_Button5Down);
+		Cmd_AddCommand("-sprint", IN_Button5Up);
+		Cmd_AddCommand("+activate", IN_Button6Down);
+		Cmd_AddCommand("-activate", IN_Button6Up);
+		Cmd_AddCommand("+attack2", IN_Button8Down);
+		Cmd_AddCommand("-attack2", IN_Button8Up);
+		Cmd_AddCommand("+zoom", IN_Button9Down);
+		Cmd_AddCommand("-zoom", IN_Button9Up);
+		Cmd_AddCommand("+reload", IN_Button11Down);
+		Cmd_AddCommand("-reload", IN_Button11Up);
+		Cmd_AddCommand("+leanleft", IN_Button12Down);
+		Cmd_AddCommand("-leanleft", IN_Button12Up);
+		Cmd_AddCommand("+leanright", IN_Button13Down);
+		Cmd_AddCommand("-leanright", IN_Button13Up);
+	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		Cmd_AddCommand("+quickgren", IN_Button10Down);
+		Cmd_AddCommand("-quickgren", IN_Button10Up);
+		Cmd_AddCommand("+wbutton7", IN_Button15Down);
+		Cmd_AddCommand("-wbutton7", IN_Button15Up);
+		Cmd_AddCommand("+kick", IN_KickDown);
+		Cmd_AddCommand("-kick", IN_KickUp);
+	}
+	if (GGameType & GAME_WolfSP)
+	{
+		Cmd_AddCommand("+wbutton6", IN_Button14Down);
+		Cmd_AddCommand("-wbutton6", IN_Button14Up);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		Cmd_AddCommand("+dropweapon", IN_Button14Down);
+		Cmd_AddCommand("-dropweapon", IN_Button14Up);
+	}
+	if (GGameType & GAME_ET)
+	{
+		Cmd_AddCommand("+prone", IN_Button15Down);
+		Cmd_AddCommand("-prone", IN_Button15Up);
+	}
 
+#if 0
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
@@ -1083,5 +1171,5 @@ void CL_InitInputCommon()
 		m_forward = Cvar_Get("m_forward", "0.25", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "0.25", CVAR_ARCHIVE);
 	}
-}
 #endif
+}

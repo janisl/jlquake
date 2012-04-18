@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../wolfclient/client.h"
 #include <setjmp.h>
 
 #define MIN_DEDICATED_COMHUNKMEGS 1

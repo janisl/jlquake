@@ -478,8 +478,6 @@ void CL_CharEvent( int key );
 
 void CL_MouseEvent( int dx, int dy, int time );
 
-void CL_JoystickEvent( int axis, int value, int time );
-
 void CL_PacketEvent( netadr_t from, QMsg *msg );
 
 void CL_ConsolePrint( char *text );
