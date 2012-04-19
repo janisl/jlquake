@@ -1373,7 +1373,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 	char cmd[1024];
 	int activeMenu = 0;
 
-	// update auto-repeat status and WSBUTTON_ANY status
+	// update auto-repeat status and WOLFBUTTON_ANY status
 	keys[key].down = down;
 
 	if ( down ) {

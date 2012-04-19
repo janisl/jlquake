@@ -588,7 +588,6 @@ static void IN_Impulse()
 	in_impulse = String::Atoi(Cmd_Argv(1));
 }
 
-#if 0
 static void CLH2_SetIdealRoll(float delta)
 {
 	// FIXME: This is a cheap way of doing this, it belongs in V_CalcViewRoll
@@ -614,7 +613,8 @@ static void CLH2_SetIdealRoll(float delta)
 }
 
 //	Moves the local angle positions
-static void CL_AdjustAngles()
+//static 
+void CL_AdjustAngles()
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -651,6 +651,7 @@ static void CL_AdjustAngles()
 	}
 }
 
+#if 0
 static void CL_KeyMove(in_usercmd_t* cmd)
 {
 	float forwardspeed;

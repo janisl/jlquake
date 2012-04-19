@@ -1451,7 +1451,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		break;
 	}
 
-	// update auto-repeat status and ETBUTTON_ANY status
+	// update auto-repeat status and WOLFBUTTON_ANY status
 	keys[key].down = down;
 
 	if ( down ) {

@@ -97,30 +97,7 @@ Cvar  *cl_recoilPitch;
 
 Cvar  *cl_bypassMouseInput;       // NERVE - SMF
 
-/*
-================
-CL_AdjustAngles
-
-Moves the local angle positions
-================
-*/
-void CL_AdjustAngles( void ) {
-	float speed;
-
-	if ( in_speed.active ) {
-		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
-	} else {
-		speed = 0.001 * cls.frametime;
-	}
-
-	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] -= speed * cl_yawspeed->value * CL_KeyState( &in_right );
-		cl.viewangles[YAW] += speed * cl_yawspeed->value * CL_KeyState( &in_left );
-	}
-
-	cl.viewangles[PITCH] -= speed * cl_pitchspeed->value * CL_KeyState( &in_lookup );
-	cl.viewangles[PITCH] += speed * cl_pitchspeed->value * CL_KeyState( &in_lookdown );
-}
+void CL_AdjustAngles( void );
 
 /*
 ================
@@ -161,7 +138,7 @@ void CL_KeyMove( wmusercmd_t *cmd ) {
 	side -= movespeed * CL_KeyState( &in_moveleft );
 
 //----(SA)	added
-	if ( cmd->buttons & BUTTON_ACTIVATE ) {
+	if ( cmd->buttons & WOLFBUTTON_ACTIVATE ) {
 		if ( side > 0 ) {
 			cmd->wbuttons |= WBUTTON_LEANRIGHT;
 		} else if ( side < 0 ) {
@@ -365,7 +342,7 @@ void CL_CmdButtons( wmusercmd_t *cmd ) {
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
 	if ( anykeydown && ( !in_keyCatchers || cl_bypassMouseInput->integer ) ) {
-		cmd->buttons |= WMBUTTON_ANY;
+		cmd->buttons |= WOLFBUTTON_ANY;
 	}
 }
 

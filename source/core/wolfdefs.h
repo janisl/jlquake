@@ -819,8 +819,10 @@ struct etentityState_t
 // with very long names
 #define MAX_NAME_LENGTH_ET     36      // max length of a client name
 
-#define WSBUTTON_ANY          128         // any key whatsoever
-#define WMBUTTON_ANY          128         // any key whatsoever
-#define ETBUTTON_ANY          128         // any key whatsoever
+// in_usercmd_t->button bits
+#define WOLFBUTTON_ACTIVATE		BIT(6)
+#define WOLFBUTTON_ANY			BIT(7)		// any key whatsoever
+#define WOLFBUTTON_LEANLEFT		BIT(12)
+#define WOLFBUTTON_LEANRIGHT	BIT(13)
 
 #define MAX_BINARY_MESSAGE_ET  32768   // max length of binary message
