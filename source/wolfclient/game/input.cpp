@@ -830,10 +830,10 @@ void CL_MouseMove(in_usercmd_t* cmd)
 	}
 }
 
-#if 0
-static void CL_JoystickMove(in_usercmd_t* cmd)
+//static 
+void CL_JoystickMove(in_usercmd_t* cmd)
 {
-	float movespeed = (GGameType & GAME_Quake3) ? 1 : 400.0 / 127.0;
+	float movespeed = (GGameType & GAME_Tech3) ? 1 : 400.0 / 127.0;
 	float anglespeed;
 	if (in_speed.active)
 	{
@@ -865,6 +865,7 @@ static void CL_JoystickMove(in_usercmd_t* cmd)
 	cmd->upmove += cl.joystickAxis[AXIS_UP];
 }
 
+#if 0
 static void CL_ClampAngles(float oldPitch)
 {
 	if (GGameType & GAME_QuakeHexen)

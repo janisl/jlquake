@@ -92,6 +92,7 @@ Cvar  *cl_recoilPitch;
 void CL_AdjustAngles( void );
 void CL_KeyMove(in_usercmd_t* cmd);
 void CL_MouseMove(in_usercmd_t* cmd);
+void CL_JoystickMove(in_usercmd_t* cmd);
 
 /*
 ================
@@ -171,38 +172,17 @@ CL_JoystickMove
 =================
 */
 void CL_JoystickMove( wsusercmd_t *cmd ) {
-	int movespeed;
-	float anglespeed;
-
-	if ( in_speed.active ^ cl_run->integer ) {
-		movespeed = 2;
-	} else {
-		movespeed = 1;
-		cmd->buttons |= Q3BUTTON_WALKING;
-	}
-
-	if ( in_speed.active ) {
-		anglespeed = 0.001 * cls.frametime * cl_anglespeedkey->value;
-	} else {
-		anglespeed = 0.001 * cls.frametime;
-	}
-
-#ifdef __MACOS__
-	cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
-#else
-	if ( !in_strafe.active ) {
-		cl.viewangles[YAW] += anglespeed * cl_yawspeed->value * cl.joystickAxis[AXIS_SIDE];
-	} else {
-		cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );
-	}
-#endif
-	if ( in_mlooking ) {
-		cl.viewangles[PITCH] += anglespeed * cl_pitchspeed->value * cl.joystickAxis[AXIS_FORWARD];
-	} else {
-		cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[AXIS_FORWARD] );
-	}
-
-	cmd->upmove = ClampChar( cmd->upmove + cl.joystickAxis[AXIS_UP] );
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = cmd->forwardmove;
+	inCmd.sidemove = cmd->rightmove;
+	inCmd.upmove = cmd->upmove;
+	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
+	CL_JoystickMove(&inCmd);
+	cmd->forwardmove = ClampChar(inCmd.forwardmove);
+	cmd->rightmove = ClampChar(inCmd.sidemove);
+	cmd->upmove = ClampChar(inCmd.upmove);
+	cmd->buttons = inCmd.buttons & 0xff;
+	cmd->wbuttons = inCmd.buttons >> 8;
 }
 
 /*
