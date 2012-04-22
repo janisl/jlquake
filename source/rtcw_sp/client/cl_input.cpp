@@ -52,18 +52,12 @@ at the same time.
 ===============================================================================
 */
 
-extern kbutton_t in_left;
-extern kbutton_t in_right;
 extern kbutton_t in_forward;
 extern kbutton_t in_back;
-extern kbutton_t in_lookup;
-extern kbutton_t in_lookdown;
 extern kbutton_t in_moveleft;
 extern kbutton_t in_moveright;
-extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 extern kbutton_t in_up;
-extern kbutton_t in_down;
 extern kbutton_t in_buttons[16];
 extern kbutton_t in_kick;
 extern bool in_mlooking;

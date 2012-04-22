@@ -37,3 +37,4 @@ void CL_JoystickEvent(int axis, int value, int time);
 void CLQH_StartPitchDrift();
 void CL_InitInputCommon();
 in_usercmd_t CL_CreateCmdCommon();
+void CL_ClearKeys();

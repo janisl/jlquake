@@ -52,18 +52,12 @@ at the same time.
 ===============================================================================
 */
 
-extern kbutton_t in_left;
-extern kbutton_t in_right;
 extern kbutton_t in_forward;
 extern kbutton_t in_back;
-extern kbutton_t in_lookup;
-extern kbutton_t in_lookdown;
 extern kbutton_t in_moveleft;
 extern kbutton_t in_moveright;
-extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 extern kbutton_t in_up;
-extern kbutton_t in_down;
 extern kbutton_t in_buttons[16];
 extern kbutton_t in_kick;
 extern bool in_mlooking;
@@ -552,27 +546,4 @@ void CL_InitInput( void ) {
 
 	cl_nodelta = Cvar_Get( "cl_nodelta", "0", 0 );
 	cl_debugMove = Cvar_Get( "cl_debugMove", "0", 0 );
-}
-
-/*
-============
-CL_ClearKeys
-============
-*/
-void CL_ClearKeys( void ) {
-	Com_Memset(&in_left, 0, sizeof(in_left));
-	Com_Memset(&in_right, 0, sizeof(in_right));
-	Com_Memset(&in_forward, 0, sizeof(in_forward));
-	Com_Memset(&in_back, 0, sizeof(in_back));
-	Com_Memset(&in_lookup, 0, sizeof(in_lookup));
-	Com_Memset(&in_lookdown, 0, sizeof(in_lookdown));
-	Com_Memset(&in_moveleft, 0, sizeof(in_moveleft));
-	Com_Memset(&in_moveright, 0, sizeof(in_moveright));
-	Com_Memset(&in_strafe, 0, sizeof(in_strafe));
-	Com_Memset(&in_speed, 0, sizeof(in_speed));
-	Com_Memset(&in_up, 0, sizeof(in_up));
-	Com_Memset(&in_down, 0, sizeof(in_down));
-	Com_Memset(in_buttons, 0, sizeof(in_buttons));
-	Com_Memset(&in_kick, 0, sizeof(in_kick));
-	in_mlooking = false;
 }

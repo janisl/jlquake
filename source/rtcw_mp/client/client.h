@@ -160,8 +160,6 @@ typedef struct {
 	bool wasPressed;        // set when down, not cleared when up
 } kbutton_t;
 
-void CL_ClearKeys( void );
-
 void CL_InitInput( void );
 void CL_SendCmd( void );
 void CL_ClearState( void );
