@@ -83,7 +83,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
 set_target_properties(jlwolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlwolfmp botlib-wolfmp splines-wolfmp ${WOLF_CLIENTS_LIBS})
+target_link_libraries(jlwolfmp botlib-wolfmp splines-wolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp

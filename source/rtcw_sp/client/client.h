@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // client.h -- primary header for client
 
 #include "../game/q_shared.h"
-#include "../../wolfclient/client.h"
+#include "../../client/client.h"
 #include "../qcommon/qcommon.h"
 #include "../ui/ui_public.h"
 #include "keys.h"

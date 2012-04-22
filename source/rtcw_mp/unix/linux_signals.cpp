@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #ifndef DEDICATED
-#include "../../wolfclient/client.h"
+#include "../../client/client.h"
 #include "../../client/renderer/local.h"
 #endif
 

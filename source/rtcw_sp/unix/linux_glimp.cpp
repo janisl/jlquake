@@ -44,7 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <signal.h>
 #include <execinfo.h>
 
-#include "../../wolfclient/client.h"
+#include "../../client/client.h"
 #include "../../client/renderer/local.h"
 #include "../client/client.h"
 #include "linux_local.h" // bk001130

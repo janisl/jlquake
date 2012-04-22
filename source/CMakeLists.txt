@@ -5,13 +5,11 @@ set(ALL_CFLAGS ${DEBUG_CFLAGS})
 
 set(CLIENTS_LIBS client core z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
 set(SERVERS_LIBS core z dl)
-set(WOLF_CLIENTS_LIBS wolfclient core z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
 
 include_directories(/usr/include/freetype2)
 
 add_subdirectory(core)
 add_subdirectory(client)
-add_subdirectory(wolfclient)
 add_subdirectory(progsvm)
 add_subdirectory(botlib)
 
