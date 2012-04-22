@@ -109,79 +109,6 @@ void CL_MouseMove(in_usercmd_t* cmd);
 void CL_JoystickMove(in_usercmd_t* cmd);
 
 /*
-================
-CL_KeyMove
-
-Sets the etusercmd_t based on key states
-================
-*/
-void CL_KeyMove( etusercmd_t *cmd ) {
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = 0;
-	inCmd.sidemove = 0;
-	inCmd.upmove = 0;
-	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
-	CL_KeyMove(&inCmd);
-	cmd->buttons = inCmd.buttons & 0xff;
-	cmd->wbuttons = inCmd.buttons >> 8;
-
-	//
-	// adjust for speed key / running
-	// the walking flag is to keep animations consistant
-	// even during acceleration and develeration
-	//
-	if ( in_speed.active ^ cl_run->integer ) {
-		cmd->buttons &= ~Q3BUTTON_WALKING;
-	} else {
-		cmd->buttons |= Q3BUTTON_WALKING;
-	}
-
-//----(SA)	added
-	if ( cmd->buttons & WOLFBUTTON_ACTIVATE ) {
-		if ( inCmd.sidemove > 0 ) {
-			cmd->wbuttons |= WBUTTON_LEANRIGHT;
-		} else if ( inCmd.sidemove < 0 ) {
-			cmd->wbuttons |= WBUTTON_LEANLEFT;
-		}
-
-		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
-	}
-//----(SA)	end
-
-	cmd->forwardmove = ClampChar( inCmd.forwardmove );
-	cmd->rightmove = ClampChar( inCmd.sidemove );
-	cmd->upmove = ClampChar( inCmd.upmove );
-
-	// Arnout: double tap
-	cmd->doubleTap = ETDT_NONE; // reset
-	if ( com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime ) {   // double tap only once every 500 msecs (add
-																											 // frametime for low(-ish) fps situations)
-		int i;
-		qboolean key_down;
-
-		for ( i = 1; i < ETDT_NUM; i++ ) {
-			key_down = dtmapping[i]->active || dtmapping[i]->wasPressed;
-
-			if ( key_down && !cl.et_doubleTap.pressedTime[i] ) {
-				cl.et_doubleTap.pressedTime[i] = com_frameTime;
-			} else if ( !key_down && !cl.et_doubleTap.releasedTime[i]
-						&& ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
-				cl.et_doubleTap.releasedTime[i] = com_frameTime;
-			} else if ( key_down && ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime )
-						&& ( com_frameTime - cl.et_doubleTap.releasedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
-				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
-				cmd->doubleTap = i;
-				cl.et_doubleTap.lastdoubleTap = com_frameTime;
-			} else if ( !key_down && ( cl.et_doubleTap.pressedTime[i] || cl.et_doubleTap.releasedTime[i] ) ) {
-				if ( com_frameTime - cl.et_doubleTap.pressedTime[i] >= ( cl_doubletapdelay->integer + cls.frametime ) ) {
-					cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
-				}
-			}
-		}
-	}
-}
-
-/*
 =================
 CL_MouseEvent
 =================
@@ -209,45 +136,6 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 		cl.mouseDy[cl.mouseIndex] += dy;
 	}
 }
-
-/*
-=================
-CL_JoystickMove
-=================
-*/
-void CL_JoystickMove( etusercmd_t *cmd ) {
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd->forwardmove;
-	inCmd.sidemove = cmd->rightmove;
-	inCmd.upmove = cmd->upmove;
-	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
-	CL_JoystickMove(&inCmd);
-	cmd->forwardmove = ClampChar(inCmd.forwardmove);
-	cmd->rightmove = ClampChar(inCmd.sidemove);
-	cmd->upmove = ClampChar(inCmd.upmove);
-	cmd->buttons = inCmd.buttons & 0xff;
-	cmd->wbuttons = inCmd.buttons >> 8;
-}
-
-/*
-=================
-CL_MouseMove
-=================
-*/
-void CL_MouseMove( etusercmd_t *cmd ) {
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd->forwardmove;
-	inCmd.sidemove = cmd->rightmove;
-	inCmd.upmove = cmd->upmove;
-	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
-	CL_MouseMove(&inCmd);
-	cmd->forwardmove = ClampChar(inCmd.forwardmove);
-	cmd->rightmove = ClampChar(inCmd.sidemove);
-	cmd->upmove = ClampChar(inCmd.upmove);
-	cmd->buttons = inCmd.buttons & 0xff;
-	cmd->wbuttons = inCmd.buttons >> 8;
-}
-
 
 /*
 ==============
@@ -335,16 +223,79 @@ etusercmd_t CL_CreateCmd( void ) {
 
 	memset( &cmd, 0, sizeof( cmd ) );
 
-	CL_CmdButtons( &cmd );
-
 	// get basic movement from keyboard
-	CL_KeyMove( &cmd );
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = 0;
+	inCmd.sidemove = 0;
+	inCmd.upmove = 0;
+	inCmd.buttons = 0;
+	CL_KeyMove(&inCmd);
 
 	// get basic movement from mouse
-	CL_MouseMove( &cmd );
+	CL_MouseMove(&inCmd);
 
 	// get basic movement from joystick
-	CL_JoystickMove( &cmd );
+	CL_JoystickMove(&inCmd);
+	cmd.buttons = inCmd.buttons & 0xff;
+	cmd.wbuttons = inCmd.buttons >> 8;
+
+	CL_CmdButtons( &cmd );
+
+	//
+	// adjust for speed key / running
+	// the walking flag is to keep animations consistant
+	// even during acceleration and develeration
+	//
+	if ( in_speed.active ^ cl_run->integer ) {
+		cmd.buttons &= ~Q3BUTTON_WALKING;
+	} else {
+		cmd.buttons |= Q3BUTTON_WALKING;
+	}
+
+//----(SA)	added
+	if ( cmd.buttons & WOLFBUTTON_ACTIVATE ) {
+		if ( inCmd.sidemove > 0 ) {
+			cmd.wbuttons |= WBUTTON_LEANRIGHT;
+		} else if ( inCmd.sidemove < 0 ) {
+			cmd.wbuttons |= WBUTTON_LEANLEFT;
+		}
+
+		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
+	}
+//----(SA)	end
+
+
+	cmd.forwardmove = ClampChar( inCmd.forwardmove );
+	cmd.rightmove = ClampChar( inCmd.sidemove );
+	cmd.upmove = ClampChar( inCmd.upmove );
+
+	// Arnout: double tap
+	cmd.doubleTap = ETDT_NONE; // reset
+	if ( com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime ) {   // double tap only once every 500 msecs (add
+																											 // frametime for low(-ish) fps situations)
+		int i;
+		qboolean key_down;
+
+		for ( i = 1; i < ETDT_NUM; i++ ) {
+			key_down = dtmapping[i]->active || dtmapping[i]->wasPressed;
+
+			if ( key_down && !cl.et_doubleTap.pressedTime[i] ) {
+				cl.et_doubleTap.pressedTime[i] = com_frameTime;
+			} else if ( !key_down && !cl.et_doubleTap.releasedTime[i]
+						&& ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
+				cl.et_doubleTap.releasedTime[i] = com_frameTime;
+			} else if ( key_down && ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime )
+						&& ( com_frameTime - cl.et_doubleTap.releasedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
+				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
+				cmd.doubleTap = i;
+				cl.et_doubleTap.lastdoubleTap = com_frameTime;
+			} else if ( !key_down && ( cl.et_doubleTap.pressedTime[i] || cl.et_doubleTap.releasedTime[i] ) ) {
+				if ( com_frameTime - cl.et_doubleTap.pressedTime[i] >= ( cl_doubletapdelay->integer + cls.frametime ) ) {
+					cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
+				}
+			}
+		}
+	}
 
 	// check to make sure the angles haven't wrapped
 	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {

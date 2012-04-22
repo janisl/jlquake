@@ -95,62 +95,6 @@ void CL_MouseMove(in_usercmd_t* cmd);
 void CL_JoystickMove(in_usercmd_t* cmd);
 
 /*
-================
-CL_KeyMove
-
-Sets the wsusercmd_t based on key states
-================
-*/
-void CL_KeyMove( wsusercmd_t *cmd ) {
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = 0;
-	inCmd.sidemove = 0;
-	inCmd.upmove = 0;
-	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
-	CL_KeyMove(&inCmd);
-	cmd->buttons = inCmd.buttons & 0xff;
-	cmd->wbuttons = inCmd.buttons >> 8;
-
-	//
-	// adjust for speed key / running
-	// the walking flag is to keep animations consistant
-	// even during acceleration and develeration
-	//
-	if ( in_speed.active ^ cl_run->integer ) {
-		cmd->buttons &= ~Q3BUTTON_WALKING;
-	} else {
-		cmd->buttons |= Q3BUTTON_WALKING;
-	}
-
-//----(SA)	added
-	if ( cmd->buttons & WOLFBUTTON_ACTIVATE ) {
-		if ( inCmd.sidemove > 0 ) {
-			cmd->wbuttons |= WBUTTON_LEANRIGHT;
-		} else if ( inCmd.sidemove < 0 ) {
-			cmd->wbuttons |= WBUTTON_LEANLEFT;
-		}
-
-		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
-	}
-//----(SA)	end
-
-	// Rafael Kick
-	int kick = CL_KeyState( &in_kick );
-	// done
-
-	if ( !( cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE] ) ) {
-		cmd->forwardmove = ClampChar( inCmd.forwardmove );
-		cmd->rightmove = ClampChar( inCmd.sidemove );
-		cmd->upmove = ClampChar( inCmd.upmove );
-
-		// Rafael - Kick
-		cmd->wolfkick = ClampChar( kick );
-		// done
-
-	}
-}
-
-/*
 =================
 CL_MouseEvent
 =================
@@ -165,45 +109,6 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 		cl.mouseDy[cl.mouseIndex] += dy;
 	}
 }
-
-/*
-=================
-CL_JoystickMove
-=================
-*/
-void CL_JoystickMove( wsusercmd_t *cmd ) {
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd->forwardmove;
-	inCmd.sidemove = cmd->rightmove;
-	inCmd.upmove = cmd->upmove;
-	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
-	CL_JoystickMove(&inCmd);
-	cmd->forwardmove = ClampChar(inCmd.forwardmove);
-	cmd->rightmove = ClampChar(inCmd.sidemove);
-	cmd->upmove = ClampChar(inCmd.upmove);
-	cmd->buttons = inCmd.buttons & 0xff;
-	cmd->wbuttons = inCmd.buttons >> 8;
-}
-
-/*
-=================
-CL_MouseMove
-=================
-*/
-void CL_MouseMove( wsusercmd_t *cmd ) {
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = cmd->forwardmove;
-	inCmd.sidemove = cmd->rightmove;
-	inCmd.upmove = cmd->upmove;
-	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
-	CL_MouseMove(&inCmd);
-	cmd->forwardmove = ClampChar(inCmd.forwardmove);
-	cmd->rightmove = ClampChar(inCmd.sidemove);
-	cmd->upmove = ClampChar(inCmd.upmove);
-	cmd->buttons = inCmd.buttons & 0xff;
-	cmd->wbuttons = inCmd.buttons >> 8;
-}
-
 
 /*
 ==============
@@ -284,16 +189,61 @@ wsusercmd_t CL_CreateCmd( void ) {
 
 	memset( &cmd, 0, sizeof( cmd ) );
 
-	CL_CmdButtons( &cmd );
-
 	// get basic movement from keyboard
-	CL_KeyMove( &cmd );
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = 0;
+	inCmd.sidemove = 0;
+	inCmd.upmove = 0;
+	inCmd.buttons = 0;
+	CL_KeyMove(&inCmd);
 
 	// get basic movement from mouse
-	CL_MouseMove( &cmd );
+	CL_MouseMove(&inCmd);
 
 	// get basic movement from joystick
-	CL_JoystickMove( &cmd );
+	CL_JoystickMove(&inCmd);
+	cmd.buttons = inCmd.buttons & 0xff;
+	cmd.wbuttons = inCmd.buttons >> 8;
+
+	CL_CmdButtons( &cmd );
+
+	//
+	// adjust for speed key / running
+	// the walking flag is to keep animations consistant
+	// even during acceleration and develeration
+	//
+	if ( in_speed.active ^ cl_run->integer ) {
+		cmd.buttons &= ~Q3BUTTON_WALKING;
+	} else {
+		cmd.buttons |= Q3BUTTON_WALKING;
+	}
+
+//----(SA)	added
+	if ( cmd.buttons & WOLFBUTTON_ACTIVATE ) {
+		if ( inCmd.sidemove > 0 ) {
+			cmd.wbuttons |= WBUTTON_LEANRIGHT;
+		} else if ( inCmd.sidemove < 0 ) {
+			cmd.wbuttons |= WBUTTON_LEANLEFT;
+		}
+
+		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
+	}
+//----(SA)	end
+
+	// Rafael Kick
+	int kick = CL_KeyState( &in_kick );
+	// done
+
+	if ( !( cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE] ) ) {
+		cmd.forwardmove = ClampChar( inCmd.forwardmove );
+		cmd.rightmove = ClampChar( inCmd.sidemove );
+		cmd.upmove = ClampChar( inCmd.upmove );
+
+		// Rafael - Kick
+		cmd.wolfkick = ClampChar( kick );
+		// done
+
+	}
 
 	// check to make sure the angles haven't wrapped
 	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {
