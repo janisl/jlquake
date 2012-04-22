@@ -136,7 +136,7 @@ void CL_KeyMove( wsusercmd_t *cmd ) {
 	int kick = CL_KeyState( &in_kick );
 	// done
 
-	if ( !( cl.ws_snap.ps.persistant[PERS_HWEAPON_USE] ) ) {
+	if ( !( cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE] ) ) {
 		cmd->forwardmove = ClampChar( inCmd.forwardmove );
 		cmd->rightmove = ClampChar( inCmd.sidemove );
 		cmd->upmove = ClampChar( inCmd.upmove );
@@ -249,7 +249,7 @@ void CL_MouseMove( wsusercmd_t *cmd ) {
 // Ridah, experimenting with a slow tracking gun
 
 	// Rafael - mg42
-	if ( cl.ws_snap.ps.persistant[PERS_HWEAPON_USE] ) {
+	if ( cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE] ) {
 		mx *= 2.5; //(accelSensitivity * 0.1);
 		my *= 2; //(accelSensitivity * 0.075);
 	} else

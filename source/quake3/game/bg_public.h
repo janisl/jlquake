@@ -57,15 +57,3 @@ typedef enum {
 	PM_INTERMISSION,	// no movement or status bar
 	PM_SPINTERMISSION	// no movement or status bar
 } pmtype_t;
-
-//===================================================================================
-
-
-// player_state->persistant[] indexes
-// these fields are the only part of player_state that isn't
-// cleared on respawn
-// NOTE: may not have more than 16
-typedef enum {
-	PERS_SCORE,						// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-	// ... the rest are game specific.
-} persEnum_t;

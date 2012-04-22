@@ -826,3 +826,27 @@ struct etentityState_t
 #define WOLFBUTTON_LEANRIGHT	BIT(13)
 
 #define MAX_BINARY_MESSAGE_ET  32768   // max length of binary message
+
+// player_state->persistant[] indexes
+// these fields are the only part of player_state that isn't
+// cleared on respawn
+enum
+{
+	WSPERS_SCORE = 0,		// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+	// Rafael - mg42		// (SA) I don't understand these here.  can someone explain?
+	WSPERS_HWEAPON_USE = 14,
+};
+
+enum
+{
+	WMPERS_SCORE = 0,		// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+	// Rafael - mg42		// (SA) I don't understand these here.  can someone explain?
+	WMPERS_HWEAPON_USE = 12,
+};
+
+enum
+{
+	ETPERS_SCORE = 0,		// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+	// Rafael - mg42		// (SA) I don't understand these here.  can someone explain?
+	ETPERS_HWEAPON_USE = 12,
+};

@@ -275,3 +275,13 @@ struct orientation_t
 	vec3_t origin;
 	vec3_t axis[3];
 };
+
+// player_state->persistant[] indexes
+// these fields are the only part of player_state that isn't
+// cleared on respawn
+// NOTE: may not have more than 16
+enum
+{
+	Q3PERS_SCORE,						// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+	// ... the rest are game specific.
+};

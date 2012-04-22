@@ -293,7 +293,7 @@ void CL_MouseMove( etusercmd_t *cmd ) {
 // Ridah, experimenting with a slow tracking gun
 
 	// Rafael - mg42
-	if ( cl.et_snap.ps.persistant[PERS_HWEAPON_USE] ) {
+	if ( cl.et_snap.ps.persistant[ETPERS_HWEAPON_USE] ) {
 		mx *= 2.5; //(accelSensitivity * 0.1);
 		my *= 2; //(accelSensitivity * 0.075);
 	} else

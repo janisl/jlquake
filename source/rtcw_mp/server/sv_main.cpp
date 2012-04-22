@@ -407,7 +407,7 @@ void SVC_Status( netadr_t from ) {
 		if ( cl->state >= CS_CONNECTED ) {
 			ps = SV_GameClientNum( i );
 			String::Sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
-						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
+						 ps->persistant[WMPERS_SCORE], cl->ping, cl->name );
 			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more
@@ -466,7 +466,7 @@ void SVC_GameCompleteStatus( netadr_t from ) {
 		if ( cl->state >= CS_CONNECTED ) {
 			ps = SV_GameClientNum( i );
 			String::Sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
-						 ps->persistant[PERS_SCORE], cl->ping, cl->name );
+						 ps->persistant[WMPERS_SCORE], cl->ping, cl->name );
 			playerLength = String::Length( player );
 			if ( statusLength + playerLength >= sizeof( status ) ) {
 				break;      // can't hold any more

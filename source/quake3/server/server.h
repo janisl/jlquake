@@ -28,9 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //=============================================================================
 
-#define	PERS_SCORE				0		// !!! MUST NOT CHANGE, SERVER AND
-										// GAME BOTH REFERENCE !!!
-
 #define	MAX_ENT_CLUSTERS	16
 
 typedef struct svEntity_s {

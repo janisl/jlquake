@@ -559,32 +559,6 @@ typedef enum {
 	STAT_XP,                        // Gordon: "realtime" version of xp that doesnt need to go thru the scoreboard
 } statIndex_t;
 
-// player_state->persistant[] indexes
-// these fields are the only part of player_state that isn't
-// cleared on respawn
-typedef enum {
-	PERS_SCORE,                     // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-	PERS_HITS,                      // total points damage inflicted so damage beeps can sound on change
-	PERS_RANK,
-	PERS_TEAM,
-	PERS_SPAWN_COUNT,               // incremented every respawn
-	PERS_ATTACKER,                  // clientnum of last damage inflicter
-	PERS_KILLED,                    // count of the number of times you died
-	// these were added for single player awards tracking
-	PERS_RESPAWNS_LEFT,             // DHM - Nerve :: number of remaining respawns
-	PERS_RESPAWNS_PENALTY,          // how many respawns you have to sit through before respawning again
-
-	PERS_REVIVE_COUNT,
-	PERS_BLEH_2,
-	PERS_BLEH_3,
-
-	// Rafael - mg42		// (SA) I don't understand these here.  can someone explain?
-	PERS_HWEAPON_USE,
-	// Rafael wolfkick
-	PERS_WOLFKICK
-} persEnum_t;
-
-
 // etentityState_t->eFlags
 #define EF_DEAD             0x00000001      // don't draw a foe marker over players with EF_DEAD
 #define EF_NONSOLID_BMODEL  0x00000002      // bmodel is visible, but not solid

@@ -35,9 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-#define PERS_SCORE              0       // !!! MUST NOT CHANGE, SERVER AND
-										// GAME BOTH REFERENCE !!!
-
 #define MAX_ENT_CLUSTERS    16
 
 #define MAX_BPS_WINDOW      20          // NERVE - SMF - net debugging

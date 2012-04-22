@@ -959,7 +959,7 @@ static void SV_Status_f( void ) {
 		}
 		Com_Printf( "%3i ", i );
 		ps = SV_GameClientNum( i );
-		Com_Printf( "%5i ", ps->persistant[PERS_SCORE] );
+		Com_Printf( "%5i ", ps->persistant[ETPERS_SCORE] );
 
 		if ( cl->state == CS_CONNECTED ) {
 			Com_Printf( "CNCT " );

@@ -338,36 +338,6 @@ typedef enum {
 	STAT_PLAYER_CLASS               // DHM - Nerve :: player class in multiplayer
 } statIndex_t;
 
-
-// player_state->persistant[] indexes
-// these fields are the only part of player_state that isn't
-// cleared on respawn
-typedef enum {
-	PERS_SCORE,                     // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-	PERS_HITS,                      // total points damage inflicted so damage beeps can sound on change
-	PERS_RANK,
-	PERS_TEAM,
-	PERS_SPAWN_COUNT,               // incremented every respawn
-	PERS_REWARD_COUNT,              // incremented for each reward sound
-	PERS_REWARD,                    // a reward_t
-	PERS_ATTACKER,                  // clientnum of last damage inflicter
-	PERS_KILLED,                    // count of the number of times you died
-	// these were added for single player awards tracking
-	PERS_IMPRESSIVE_COUNT,
-	PERS_EXCELLENT_COUNT,
-	PERS_GAUNTLET_FRAG_COUNT,
-	PERS_ACCURACY_SHOTS,
-	PERS_ACCURACY_HITS,
-
-
-	// Rafael - mg42		// (SA) I don't understand these here.  can someone explain?
-	PERS_HWEAPON_USE,
-	// Rafael wolfkick
-	PERS_WOLFKICK
-
-} persEnum_t;
-
-
 // wsentityState_t->eFlags
 #define EF_DEAD             0x00000001      // don't draw a foe marker over players with EF_DEAD
 #define EF_NONSOLID_BMODEL  0x00000002      // bmodel is visible, but not solid

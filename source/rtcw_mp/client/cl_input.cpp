@@ -144,7 +144,7 @@ void CL_KeyMove( wmusercmd_t *cmd ) {
 	int kick = CL_KeyState( &in_kick );
 	// done
 
-	if ( !( cl.wm_snap.ps.persistant[PERS_HWEAPON_USE] ) ) {
+	if ( !( cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE] ) ) {
 		cmd->forwardmove = ClampChar( inCmd.forwardmove );
 		cmd->rightmove = ClampChar( inCmd.sidemove );
 		cmd->upmove = ClampChar( inCmd.upmove );
@@ -265,7 +265,7 @@ void CL_MouseMove( wmusercmd_t *cmd ) {
 // Ridah, experimenting with a slow tracking gun
 
 	// Rafael - mg42
-	if ( cl.wm_snap.ps.persistant[PERS_HWEAPON_USE] ) {
+	if ( cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE] ) {
 		mx *= 2.5; //(accelSensitivity * 0.1);
 		my *= 2; //(accelSensitivity * 0.075);
 	} else
@@ -694,7 +694,6 @@ void CL_InitInput( void ) {
 	cl_nodelta = Cvar_Get( "cl_nodelta", "0", 0 );
 	cl_debugMove = Cvar_Get( "cl_debugMove", "0", 0 );
 }
-
 
 /*
 ============
