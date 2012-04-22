@@ -21,6 +21,7 @@ struct in_usercmd_t
 	int upmove;
 	int buttons;
 	int doubleTap;
+	int kick;
 };
 
 extern unsigned frame_msec;

@@ -138,14 +138,6 @@ void CL_OpenURL( const char *url ); // TTimo
 //
 // cl_input
 //
-typedef struct {
-	int down[2];                // key nums holding it down
-	unsigned downtime;          // msec timestamp
-	unsigned msec;              // msec down this frame if both a down and up happened
-	bool active;            // current state
-	bool wasPressed;        // set when down, not cleared when up
-} kbutton_t;
-
 void CL_InitInput( void );
 void CL_SendCmd( void );
 void CL_ClearState( void );
@@ -161,7 +153,6 @@ void IN_Salute( void );
 
 void CL_VerifyCode( void );
 
-float CL_KeyState( kbutton_t *key );
 const char *Key_KeynumToString( int keynum, qboolean bTranslate );
 
 //

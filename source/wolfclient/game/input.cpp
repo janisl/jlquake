@@ -42,8 +42,7 @@ static kbutton_t in_speed;
 static kbutton_t in_up;
 static kbutton_t in_down;
 static kbutton_t in_buttons[16];
-//static 
-kbutton_t in_kick;
+static kbutton_t in_kick;
 
 static bool in_mlooking;
 
@@ -475,8 +474,7 @@ static void IN_KickUp()
 }
 
 //	Returns the fraction of the frame that the key was down
-//static 
-float CL_KeyState(kbutton_t* key)
+static float CL_KeyState(kbutton_t* key)
 {
 	int msec = key->msec;
 	key->msec = 0;
@@ -1037,6 +1035,15 @@ void CL_DoubleTap(in_usercmd_t* cmd)
 	}
 }
 
+static void CL_Kick(in_usercmd_t* cmd)
+{
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
+	{
+		return;
+	}
+	cmd->kick = CL_KeyState(&in_kick);
+}
+
 in_usercmd_t CL_CreateCmdCommon()
 {
 	vec3_t oldAngles;
@@ -1065,6 +1072,8 @@ in_usercmd_t CL_CreateCmdCommon()
 	CL_CmdButtons(&cmd);
 
 	CL_DoubleTap(&cmd);
+
+	CL_Kick(&cmd);
 
 	return cmd;
 }

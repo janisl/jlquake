@@ -52,8 +52,6 @@ at the same time.
 ===============================================================================
 */
 
-extern kbutton_t in_kick;
-
 void IN_CenterViewWMP( void ) {
 	qboolean ok = qtrue;
 	if ( cgvm ) {
@@ -150,17 +148,13 @@ wmusercmd_t CL_CreateCmd( void ) {
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
 
-	// Rafael Kick
-	int kick = CL_KeyState( &in_kick );
-	// done
-
 	if ( !( cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE] ) ) {
 		cmd.forwardmove = ClampChar( inCmd.forwardmove );
 		cmd.rightmove = ClampChar( inCmd.sidemove );
 		cmd.upmove = ClampChar( inCmd.upmove );
 
 		// Rafael - Kick
-		cmd.wolfkick = ClampChar( kick );
+		cmd.wolfkick = ClampChar( inCmd.kick );
 		// done
 
 	}
