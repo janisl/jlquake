@@ -231,3 +231,7 @@ void CL_SendCmd (void)
 }
 
 
+
+void IN_CenterViewWMP()
+{
+}

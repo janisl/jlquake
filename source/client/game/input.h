@@ -20,6 +20,8 @@ struct in_usercmd_t
 	int sidemove;
 	int upmove;
 	int buttons;
+	int doubleTap;
+	int kick;
 };
 
 extern unsigned frame_msec;
@@ -32,8 +34,10 @@ extern Cvar* cl_sensitivity;
 extern Cvar* m_pitch;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
+extern Cvar* cl_bypassMouseInput;
 
 void CL_JoystickEvent(int axis, int value, int time);
 void CLQH_StartPitchDrift();
 void CL_InitInputCommon();
 in_usercmd_t CL_CreateCmdCommon();
+void CL_ClearKeys();

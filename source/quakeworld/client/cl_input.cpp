@@ -220,3 +220,7 @@ void CL_InitInput (void)
 
 	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
 }
+
+void IN_CenterViewWMP()
+{
+}

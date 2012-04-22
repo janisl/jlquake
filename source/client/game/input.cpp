@@ -16,6 +16,8 @@
 
 #include "../client.h"
 
+void IN_CenterViewWMP();
+
 struct kbutton_t
 {
 	int down[2];		// key nums holding it down
@@ -40,6 +42,7 @@ static kbutton_t in_speed;
 static kbutton_t in_up;
 static kbutton_t in_down;
 static kbutton_t in_buttons[16];
+static kbutton_t in_kick;
 
 static bool in_mlooking;
 
@@ -63,8 +66,23 @@ static Cvar* m_forward;
 static Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
+Cvar* cl_bypassMouseInput;
+static Cvar* cl_doubletapdelay;
 
 int in_impulse;
+
+// Arnout: doubleTap button mapping
+static kbutton_t* dtmapping[] =
+{
+	NULL,				// ETDT_NONE
+	&in_moveleft,		// ETDT_MOVELEFT
+	&in_moveright,		// ETDT_MOVERIGHT
+	&in_forward,		// ETDT_FORWARD
+	&in_back,			// ETDT_BACK
+	&in_buttons[12],	// ETDT_LEANLEFT
+	&in_buttons[13],	// ETDT_LEANRIGHT
+	&in_up				// ETDT_UP
+};
 
 static void IN_KeyDown(kbutton_t* b)
 {
@@ -435,6 +453,26 @@ static void IN_Button14Up()
 	IN_KeyUp(&in_buttons[14]);
 }
 
+static void IN_Button15Down()
+{
+	IN_KeyDown(&in_buttons[15]);
+}
+
+static void IN_Button15Up()
+{
+	IN_KeyUp(&in_buttons[15]);
+}
+
+static void IN_KickDown()
+{
+	IN_KeyDown(&in_kick);
+}
+
+static void IN_KickUp()
+{
+	IN_KeyUp(&in_kick);
+}
+
 //	Returns the fraction of the frame that the key was down
 static float CL_KeyState(kbutton_t* key)
 {
@@ -503,6 +541,16 @@ static void IN_CenterView()
 	{
 		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.q3_snap.ps.delta_angles[PITCH]);
 	}
+	if (GGameType & GAME_WolfSP)
+	{
+		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.ws_snap.ps.delta_angles[PITCH]);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		//	Needs cgame QVM.
+		IN_CenterViewWMP();
+	}
+	//	Nothing for Enemy-territory
 }
 
 static void IN_MLookDown()
@@ -513,7 +561,7 @@ static void IN_MLookDown()
 static void IN_MLookUp()
 {
 	in_mlooking = false;
-	if (!cl_freelook->value && (!(GGameType & GAME_Quake3) || lookspring->value))
+	if (!cl_freelook->value && (!(GGameType & GAME_Tech3) || lookspring->value))
 	{
 		IN_CenterView();
 	}
@@ -713,7 +761,7 @@ static void CL_MouseMove(in_usercmd_t* cmd)
 	float rate = sqrt(mx * mx + my * my) / (float)frame_msec;
 	float accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		// scale by FOV
 		accelSensitivity *= cl.q3_cgameSensitivity;
@@ -724,8 +772,19 @@ static void CL_MouseMove(in_usercmd_t* cmd)
 		common->Printf("%f : %f\n", rate, accelSensitivity);
 	}
 
-	mx *= accelSensitivity;
-	my *= accelSensitivity;
+	// Rafael - mg42
+	if ((GGameType & GAME_WolfSP && cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE]) ||
+		(GGameType & GAME_WolfMP && cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE]) ||
+		(GGameType & GAME_ET && cl.et_snap.ps.persistant[ETPERS_HWEAPON_USE]))
+	{
+		mx *= 2.5;
+		my *= 2;
+	}
+	else
+	{
+		mx *= accelSensitivity;
+		my *= accelSensitivity;
+	}
 
 	if (!mx && !my)
 	{
@@ -759,7 +818,7 @@ static void CL_MouseMove(in_usercmd_t* cmd)
 
 static void CL_JoystickMove(in_usercmd_t* cmd)
 {
-	float movespeed = (GGameType & GAME_Quake3) ? 1 : 400.0 / 127.0;
+	float movespeed = (GGameType & GAME_Tech3) ? 1 : 400.0 / 127.0;
 	float anglespeed;
 	if (in_speed.active)
 	{
@@ -851,7 +910,8 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	int numButtons = (GGameType & (GAME_Quake | GAME_Quake2)) ? 2 :
-		(GGameType & GAME_Hexen2) ? 3 : 15;
+		(GGameType & GAME_Hexen2) ? 3 :
+		(GGameType & GAME_ET) ? 16 : 15;
 	for (int i = 0; i < numButtons; i++)
 	{
 		if (in_buttons[i].active || in_buttons[i].wasPressed)
@@ -869,18 +929,11 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 		}
 	}
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
-		if (in_keyCatchers)
+		if (in_keyCatchers && (!(GGameType & (GAME_WolfMP | GAME_ET)) || !cl_bypassMouseInput->integer))
 		{
 			cmd->buttons |= Q3BUTTON_TALK;
-		}
-
-		// allow the game to know if any key at all is
-		// currently pressed, even if it isn't bound to anything
-		if (anykeydown && !in_keyCatchers)
-		{
-			cmd->buttons |= Q3BUTTON_ANY;
 		}
 
 		// the walking flag is to keep animations consistant
@@ -894,6 +947,101 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 			cmd->buttons |= Q3BUTTON_WALKING;
 		}
 	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		// allow the game to know if any key at all is
+		// currently pressed, even if it isn't bound to anything
+		if (anykeydown && !in_keyCatchers)
+		{
+			cmd->buttons |= Q3BUTTON_ANY;
+		}
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// allow the game to know if any key at all is
+		// currently pressed, even if it isn't bound to anything
+		if (anykeydown && (!in_keyCatchers ||
+			(GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput->integer)))
+		{
+			cmd->buttons |= WOLFBUTTON_ANY;
+		}
+
+		if (cmd->buttons & WOLFBUTTON_ACTIVATE)
+		{
+			if (cmd->sidemove > 0)
+			{
+				cmd->buttons |= WOLFBUTTON_LEANRIGHT;
+			}
+			else if (cmd->sidemove < 0)
+			{
+				cmd->buttons |= WOLFBUTTON_LEANLEFT;
+			}
+			// disallow the strafe when holding 'activate'
+			cmd->sidemove = 0;
+		}
+	}
+}
+
+void CL_DoubleTap(in_usercmd_t* cmd)
+{
+	if (!(GGameType & GAME_ET))
+	{
+		return;
+	}
+
+	// Arnout: clear 'waspressed' from double tap buttons
+	for (int i = 1; i < ETDT_NUM; i++)
+	{
+		dtmapping[i]->wasPressed = false;
+	}
+
+	// Arnout: double tap
+	cmd->doubleTap = ETDT_NONE; // reset
+	if (com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime)
+	{
+		// double tap only once every 500 msecs (add
+		// frametime for low(-ish) fps situations)
+		for (int i = 1; i < ETDT_NUM; i++)
+		{
+			bool key_down = dtmapping[i]->active || dtmapping[i]->wasPressed;
+
+			if (key_down && !cl.et_doubleTap.pressedTime[i])
+			{
+				cl.et_doubleTap.pressedTime[i] = com_frameTime;
+			}
+			else if (!key_down && !cl.et_doubleTap.releasedTime[i] &&
+				(com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
+			{
+				cl.et_doubleTap.releasedTime[i] = com_frameTime;
+			}
+			else if (key_down &&
+				(com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime) &&
+				(com_frameTime - cl.et_doubleTap.releasedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
+			{
+				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
+				cmd->doubleTap = i;
+				cl.et_doubleTap.lastdoubleTap = com_frameTime;
+			}
+			else if (!key_down && (cl.et_doubleTap.pressedTime[i] || cl.et_doubleTap.releasedTime[i]))
+			{
+				if (com_frameTime - cl.et_doubleTap.pressedTime[i] >= (cl_doubletapdelay->integer + cls.frametime))
+				{
+					cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
+				}
+			}
+		}
+	}
+}
+
+static void CL_Kick(in_usercmd_t* cmd)
+{
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
+	{
+		return;
+	}
+	cmd->kick = CL_KeyState(&in_kick);
 }
 
 in_usercmd_t CL_CreateCmdCommon()
@@ -922,6 +1070,10 @@ in_usercmd_t CL_CreateCmdCommon()
 	}
 
 	CL_CmdButtons(&cmd);
+
+	CL_DoubleTap(&cmd);
+
+	CL_Kick(&cmd);
 
 	return cmd;
 }
@@ -956,8 +1108,11 @@ void CL_InitInputCommon()
 	Cmd_AddCommand("-attack", IN_Button0Up);
 	Cmd_AddCommand("+mlook", IN_MLookDown);
 	Cmd_AddCommand("-mlook", IN_MLookUp);
-	Cmd_AddCommand("centerview",IN_CenterView);
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_ET))
+	{
+		Cmd_AddCommand("centerview", IN_CenterView);
+	}
+	if (!(GGameType & GAME_Tech3))
 	{
 		Cmd_AddCommand("impulse", IN_Impulse);
 	}
@@ -1010,6 +1165,55 @@ void CL_InitInputCommon()
 		Cmd_AddCommand("+button14", IN_Button14Down);
 		Cmd_AddCommand("-button14", IN_Button14Up);
 	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		Cmd_AddCommand("+button1", IN_Button1Down);
+		Cmd_AddCommand("-button1", IN_Button1Up);
+		Cmd_AddCommand("+useitem", IN_Button2Down);
+		Cmd_AddCommand("-useitem", IN_Button2Up);
+		Cmd_AddCommand("+salute", IN_Button3Down);
+		Cmd_AddCommand("-salute", IN_Button3Up);
+		Cmd_AddCommand("+button4", IN_Button4Down);
+		Cmd_AddCommand("-button4", IN_Button4Up);
+		Cmd_AddCommand("+sprint", IN_Button5Down);
+		Cmd_AddCommand("-sprint", IN_Button5Up);
+		Cmd_AddCommand("+activate", IN_Button6Down);
+		Cmd_AddCommand("-activate", IN_Button6Up);
+		Cmd_AddCommand("+attack2", IN_Button8Down);
+		Cmd_AddCommand("-attack2", IN_Button8Up);
+		Cmd_AddCommand("+zoom", IN_Button9Down);
+		Cmd_AddCommand("-zoom", IN_Button9Up);
+		Cmd_AddCommand("+reload", IN_Button11Down);
+		Cmd_AddCommand("-reload", IN_Button11Up);
+		Cmd_AddCommand("+leanleft", IN_Button12Down);
+		Cmd_AddCommand("-leanleft", IN_Button12Up);
+		Cmd_AddCommand("+leanright", IN_Button13Down);
+		Cmd_AddCommand("-leanright", IN_Button13Up);
+	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		Cmd_AddCommand("+quickgren", IN_Button10Down);
+		Cmd_AddCommand("-quickgren", IN_Button10Up);
+		Cmd_AddCommand("+wbutton7", IN_Button15Down);
+		Cmd_AddCommand("-wbutton7", IN_Button15Up);
+		Cmd_AddCommand("+kick", IN_KickDown);
+		Cmd_AddCommand("-kick", IN_KickUp);
+	}
+	if (GGameType & GAME_WolfSP)
+	{
+		Cmd_AddCommand("+wbutton6", IN_Button14Down);
+		Cmd_AddCommand("-wbutton6", IN_Button14Up);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		Cmd_AddCommand("+dropweapon", IN_Button14Down);
+		Cmd_AddCommand("-dropweapon", IN_Button14Up);
+	}
+	if (GGameType & GAME_ET)
+	{
+		Cmd_AddCommand("+prone", IN_Button15Down);
+		Cmd_AddCommand("-prone", IN_Button15Up);
+	}
 
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
@@ -1026,7 +1230,7 @@ void CL_InitInputCommon()
 #endif
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
 	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "1", CVAR_ARCHIVE);
@@ -1051,10 +1255,37 @@ void CL_InitInputCommon()
 		cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
 		cl_run = Cvar_Get("cl_run", "0", CVAR_ARCHIVE);
 	}
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		cl_run = Cvar_Get("cl_run", "1", CVAR_ARCHIVE);
 		m_forward = Cvar_Get("m_forward", "0.25", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "0.25", CVAR_ARCHIVE);
 	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		cl_bypassMouseInput = Cvar_Get("cl_bypassMouseInput", "0", 0);
+	}
+	if (GGameType & GAME_ET)
+	{
+		cl_doubletapdelay = Cvar_Get("cl_doubletapdelay", "350", CVAR_ARCHIVE);
+	}
+}
+
+void CL_ClearKeys()
+{
+	Com_Memset(&in_left, 0, sizeof(in_left));
+	Com_Memset(&in_right, 0, sizeof(in_right));
+	Com_Memset(&in_forward, 0, sizeof(in_forward));
+	Com_Memset(&in_back, 0, sizeof(in_back));
+	Com_Memset(&in_lookup, 0, sizeof(in_lookup));
+	Com_Memset(&in_lookdown, 0, sizeof(in_lookdown));
+	Com_Memset(&in_moveleft, 0, sizeof(in_moveleft));
+	Com_Memset(&in_moveright, 0, sizeof(in_moveright));
+	Com_Memset(&in_strafe, 0, sizeof(in_strafe));
+	Com_Memset(&in_speed, 0, sizeof(in_speed));
+	Com_Memset(&in_up, 0, sizeof(in_up));
+	Com_Memset(&in_down, 0, sizeof(in_down));
+	Com_Memset(in_buttons, 0, sizeof(in_buttons));
+	Com_Memset(&in_kick, 0, sizeof(in_kick));
+	in_mlooking = false;
 }
