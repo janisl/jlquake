@@ -52,27 +52,6 @@ at the same time.
 ===============================================================================
 */
 
-extern kbutton_t in_forward;
-extern kbutton_t in_back;
-extern kbutton_t in_moveleft;
-extern kbutton_t in_moveright;
-extern kbutton_t in_speed;
-extern kbutton_t in_up;
-extern kbutton_t in_buttons[16];
-extern bool in_mlooking;
-
-// Arnout: doubleTap button mapping
-static kbutton_t* dtmapping[] = {
-	NULL,                 // ETDT_NONE
-	&in_moveleft,        // ETDT_MOVELEFT
-	&in_moveright,       // ETDT_MOVERIGHT
-	&in_forward,         // ETDT_FORWARD
-	&in_back,            // ETDT_BACK
-	&in_buttons[12],       // ETDT_LEANLEFT
-	&in_buttons[13],       // ETDT_LEANRIGHT
-	&in_up               // ETDT_UP
-};
-
 void IN_Notebook( void ) {
 	//if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
 	//VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NOTEBOOK);	// startup notebook
@@ -92,8 +71,6 @@ void IN_CenterViewWMP()
 //==========================================================================
 
 Cvar  *cl_recoilPitch;
-
-Cvar  *cl_doubletapdelay;
 
 /*
 =================
@@ -148,7 +125,6 @@ void CL_FinishMove( etusercmd_t *cmd ) {
 	}
 }
 
-
 /*
 =================
 CL_CreateCmd
@@ -171,39 +147,7 @@ etusercmd_t CL_CreateCmd( void ) {
 	cmd.forwardmove = ClampChar( inCmd.forwardmove );
 	cmd.rightmove = ClampChar( inCmd.sidemove );
 	cmd.upmove = ClampChar( inCmd.upmove );
-
-	// Arnout: clear 'waspressed' from double tap buttons
-	for (int i = 1; i < ETDT_NUM; i++ ) {
-		dtmapping[i]->wasPressed = qfalse;
-	}
-
-	// Arnout: double tap
-	cmd.doubleTap = ETDT_NONE; // reset
-	if ( com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime ) {   // double tap only once every 500 msecs (add
-																											 // frametime for low(-ish) fps situations)
-		int i;
-		qboolean key_down;
-
-		for ( i = 1; i < ETDT_NUM; i++ ) {
-			key_down = dtmapping[i]->active || dtmapping[i]->wasPressed;
-
-			if ( key_down && !cl.et_doubleTap.pressedTime[i] ) {
-				cl.et_doubleTap.pressedTime[i] = com_frameTime;
-			} else if ( !key_down && !cl.et_doubleTap.releasedTime[i]
-						&& ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
-				cl.et_doubleTap.releasedTime[i] = com_frameTime;
-			} else if ( key_down && ( com_frameTime - cl.et_doubleTap.pressedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime )
-						&& ( com_frameTime - cl.et_doubleTap.releasedTime[i] ) < ( cl_doubletapdelay->integer + cls.frametime ) ) {
-				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
-				cmd.doubleTap = i;
-				cl.et_doubleTap.lastdoubleTap = com_frameTime;
-			} else if ( !key_down && ( cl.et_doubleTap.pressedTime[i] || cl.et_doubleTap.releasedTime[i] ) ) {
-				if ( com_frameTime - cl.et_doubleTap.pressedTime[i] >= ( cl_doubletapdelay->integer + cls.frametime ) ) {
-					cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
-				}
-			}
-		}
-	}
+	cmd.doubleTap = inCmd.doubleTap;
 
 	// RF, set the kickAngles so aiming is effected
 	recoilAdd = cl_recoilPitch->value;

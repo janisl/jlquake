@@ -20,6 +20,7 @@ struct in_usercmd_t
 	int sidemove;
 	int upmove;
 	int buttons;
+	int doubleTap;
 };
 
 extern unsigned frame_msec;

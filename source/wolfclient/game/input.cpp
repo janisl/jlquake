@@ -31,36 +31,25 @@ unsigned frame_msec;
 
 static kbutton_t in_left;
 static kbutton_t in_right;
-//static 
-kbutton_t in_forward;
-//static 
-kbutton_t in_back;
+static kbutton_t in_forward;
+static kbutton_t in_back;
 static kbutton_t in_lookup;
 static kbutton_t in_lookdown;
-//static 
-kbutton_t in_moveleft;
-//static 
-kbutton_t in_moveright;
+static kbutton_t in_moveleft;
+static kbutton_t in_moveright;
 static kbutton_t in_strafe;
-//static 
-kbutton_t in_speed;
-//static 
-kbutton_t in_up;
+static kbutton_t in_speed;
+static kbutton_t in_up;
 static kbutton_t in_down;
-//static 
-kbutton_t in_buttons[16];
+static kbutton_t in_buttons[16];
 //static 
 kbutton_t in_kick;
 
-//static 
-bool in_mlooking;
+static bool in_mlooking;
 
-//static 
-Cvar* cl_yawspeed;
-//static 
-Cvar* cl_pitchspeed;
-//static 
-Cvar* cl_anglespeedkey;
+static Cvar* cl_yawspeed;
+static Cvar* cl_pitchspeed;
+static Cvar* cl_anglespeedkey;
 Cvar* cl_forwardspeed;
 static Cvar* cl_backspeed;
 static Cvar* cl_sidespeed;
@@ -69,24 +58,32 @@ static Cvar* cl_movespeedkey;
 Cvar* cl_run;
 Cvar* cl_freelook;
 Cvar* cl_sensitivity;
-//static 
-Cvar* cl_mouseAccel;
-//static 
-Cvar* cl_showMouseRate;
-//static 
-Cvar* m_filter;
+static Cvar* cl_mouseAccel;
+static Cvar* cl_showMouseRate;
+static Cvar* m_filter;
 Cvar* m_pitch;
-//static 
-Cvar* m_yaw;
-//static 
-Cvar* m_forward;
-//static 
-Cvar* m_side;
+static Cvar* m_yaw;
+static Cvar* m_forward;
+static Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
 Cvar* cl_bypassMouseInput;
+static Cvar* cl_doubletapdelay;
 
 int in_impulse;
+
+// Arnout: doubleTap button mapping
+static kbutton_t* dtmapping[] =
+{
+	NULL,				// ETDT_NONE
+	&in_moveleft,		// ETDT_MOVELEFT
+	&in_moveright,		// ETDT_MOVERIGHT
+	&in_forward,		// ETDT_FORWARD
+	&in_back,			// ETDT_BACK
+	&in_buttons[12],	// ETDT_LEANLEFT
+	&in_buttons[13],	// ETDT_LEANRIGHT
+	&in_up				// ETDT_UP
+};
 
 static void IN_KeyDown(kbutton_t* b)
 {
@@ -989,6 +986,57 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 	}
 }
 
+void CL_DoubleTap(in_usercmd_t* cmd)
+{
+	if (!(GGameType & GAME_ET))
+	{
+		return;
+	}
+
+	// Arnout: clear 'waspressed' from double tap buttons
+	for (int i = 1; i < ETDT_NUM; i++)
+	{
+		dtmapping[i]->wasPressed = false;
+	}
+
+	// Arnout: double tap
+	cmd->doubleTap = ETDT_NONE; // reset
+	if (com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime)
+	{
+		// double tap only once every 500 msecs (add
+		// frametime for low(-ish) fps situations)
+		for (int i = 1; i < ETDT_NUM; i++)
+		{
+			bool key_down = dtmapping[i]->active || dtmapping[i]->wasPressed;
+
+			if (key_down && !cl.et_doubleTap.pressedTime[i])
+			{
+				cl.et_doubleTap.pressedTime[i] = com_frameTime;
+			}
+			else if (!key_down && !cl.et_doubleTap.releasedTime[i] &&
+				(com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
+			{
+				cl.et_doubleTap.releasedTime[i] = com_frameTime;
+			}
+			else if (key_down &&
+				(com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime) &&
+				(com_frameTime - cl.et_doubleTap.releasedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
+			{
+				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
+				cmd->doubleTap = i;
+				cl.et_doubleTap.lastdoubleTap = com_frameTime;
+			}
+			else if (!key_down && (cl.et_doubleTap.pressedTime[i] || cl.et_doubleTap.releasedTime[i]))
+			{
+				if (com_frameTime - cl.et_doubleTap.pressedTime[i] >= (cl_doubletapdelay->integer + cls.frametime))
+				{
+					cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
+				}
+			}
+		}
+	}
+}
+
 in_usercmd_t CL_CreateCmdCommon()
 {
 	vec3_t oldAngles;
@@ -1015,6 +1063,8 @@ in_usercmd_t CL_CreateCmdCommon()
 	}
 
 	CL_CmdButtons(&cmd);
+
+	CL_DoubleTap(&cmd);
 
 	return cmd;
 }
@@ -1205,6 +1255,10 @@ void CL_InitInputCommon()
 	if (GGameType & (GAME_WolfMP | GAME_ET))
 	{
 		cl_bypassMouseInput = Cvar_Get("cl_bypassMouseInput", "0", 0);
+	}
+	if (GGameType & GAME_ET)
+	{
+		cl_doubletapdelay = Cvar_Get("cl_doubletapdelay", "350", CVAR_ARCHIVE);
 	}
 }
 

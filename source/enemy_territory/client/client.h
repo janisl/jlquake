@@ -71,21 +71,7 @@ extern Cvar  *cl_timeNudge;
 extern Cvar  *cl_showTimeDelta;
 extern Cvar  *cl_freezeDemo;
 
-extern Cvar  *cl_yawspeed;
-extern Cvar  *cl_pitchspeed;
-extern Cvar  *cl_anglespeedkey;
-
 extern Cvar  *cl_recoilPitch;     // RF
-
-extern Cvar  *cl_doubletapdelay;
-
-extern Cvar  *cl_mouseAccel;
-extern Cvar  *cl_showMouseRate;
-
-extern Cvar  *m_yaw;
-extern Cvar  *m_forward;
-extern Cvar  *m_side;
-extern Cvar  *m_filter;
 
 extern Cvar  *cl_timedemo;
 

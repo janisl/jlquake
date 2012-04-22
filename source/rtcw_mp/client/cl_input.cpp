@@ -52,15 +52,7 @@ at the same time.
 ===============================================================================
 */
 
-extern kbutton_t in_forward;
-extern kbutton_t in_back;
-extern kbutton_t in_moveleft;
-extern kbutton_t in_moveright;
-extern kbutton_t in_speed;
-extern kbutton_t in_up;
-extern kbutton_t in_buttons[16];
 extern kbutton_t in_kick;
-extern bool in_mlooking;
 
 void IN_CenterViewWMP( void ) {
 	qboolean ok = qtrue;
