@@ -854,7 +854,6 @@ static void CL_JoystickMove(in_usercmd_t* cmd)
 	cmd->upmove += cl.joystickAxis[AXIS_UP];
 }
 
-#if 0
 static void CL_ClampAngles(float oldPitch)
 {
 	if (GGameType & GAME_QuakeHexen)
@@ -909,6 +908,7 @@ static void CL_ClampAngles(float oldPitch)
 	}
 }
 
+#if 0
 static void CL_CmdButtons(in_usercmd_t* cmd)
 {
 	// figure button bits
@@ -983,9 +983,7 @@ in_usercmd_t CL_CreateCmdCommon()
 		// get basic movement from joystick
 		CL_JoystickMove(&cmd);
 
-#if 0
 		CL_ClampAngles(oldAngles[PITCH]);
-#endif
 	}
 
 #if 0

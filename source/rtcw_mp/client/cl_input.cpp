@@ -239,13 +239,6 @@ wmusercmd_t CL_CreateCmd( void ) {
 
 	}
 
-	// check to make sure the angles haven't wrapped
-	if ( cl.viewangles[PITCH] - oldAngles[PITCH] > 90 ) {
-		cl.viewangles[PITCH] = oldAngles[PITCH] + 90;
-	} else if ( oldAngles[PITCH] - cl.viewangles[PITCH] > 90 ) {
-		cl.viewangles[PITCH] = oldAngles[PITCH] - 90;
-	}
-
 	// RF, set the kickAngles so aiming is effected
 	recoilAdd = cl_recoilPitch->value;
 	if ( fabs( cl.viewangles[PITCH] + recoilAdd ) < 40 ) {
