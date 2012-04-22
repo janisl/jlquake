@@ -651,8 +651,8 @@ void CL_AdjustAngles()
 	}
 }
 
-#if 0
-static void CL_KeyMove(in_usercmd_t* cmd)
+//static 
+void CL_KeyMove(in_usercmd_t* cmd)
 {
 	float forwardspeed;
 	float backspeed;
@@ -747,6 +747,7 @@ static void CL_KeyMove(in_usercmd_t* cmd)
 	cmd->forwardmove -= backspeed * CL_KeyState(&in_back);
 }
 
+#if 0
 static void CL_MouseMove(in_usercmd_t* cmd)
 {
 	if ((GGameType & GAME_QuakeHexen) && (in_mlooking || cl_freelook->integer))

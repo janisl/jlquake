@@ -104,6 +104,7 @@ Cvar  *cl_bypassMouseInput;       // NERVE - SMF
 Cvar  *cl_doubletapdelay;
 
 void CL_AdjustAngles( void );
+void CL_KeyMove(in_usercmd_t* cmd);
 
 /*
 ================
@@ -113,8 +114,14 @@ Sets the etusercmd_t based on key states
 ================
 */
 void CL_KeyMove( etusercmd_t *cmd ) {
-	int movespeed;
-	int forward, side, up;
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = 0;
+	inCmd.sidemove = 0;
+	inCmd.upmove = 0;
+	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
+	CL_KeyMove(&inCmd);
+	cmd->buttons = inCmd.buttons & 0xff;
+	cmd->wbuttons = inCmd.buttons >> 8;
 
 	//
 	// adjust for speed key / running
@@ -122,49 +129,26 @@ void CL_KeyMove( etusercmd_t *cmd ) {
 	// even during acceleration and develeration
 	//
 	if ( in_speed.active ^ cl_run->integer ) {
-		movespeed = 127;
 		cmd->buttons &= ~Q3BUTTON_WALKING;
 	} else {
 		cmd->buttons |= Q3BUTTON_WALKING;
-		movespeed = 64;
 	}
-
-	forward = 0;
-	side = 0;
-	up = 0;
-	if ( in_strafe.active ) {
-		side += movespeed * CL_KeyState( &in_right );
-		side -= movespeed * CL_KeyState( &in_left );
-	}
-
-	side += movespeed * CL_KeyState( &in_moveright );
-	side -= movespeed * CL_KeyState( &in_moveleft );
 
 //----(SA)	added
 	if ( cmd->buttons & WOLFBUTTON_ACTIVATE ) {
-		if ( side > 0 ) {
+		if ( inCmd.sidemove > 0 ) {
 			cmd->wbuttons |= WBUTTON_LEANRIGHT;
-		} else if ( side < 0 ) {
+		} else if ( inCmd.sidemove < 0 ) {
 			cmd->wbuttons |= WBUTTON_LEANLEFT;
 		}
 
-		side = 0;   // disallow the strafe when holding 'activate'
+		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
 	}
 //----(SA)	end
 
-	up += movespeed * CL_KeyState( &in_up );
-	up -= movespeed * CL_KeyState( &in_down );
-
-	forward += movespeed * CL_KeyState( &in_forward );
-	forward -= movespeed * CL_KeyState( &in_back );
-
-	// fretn - moved this to bg_pmove.c
-	//if (!(cl.et_snap.ps.persistant[PERS_HWEAPON_USE]))
-	//{
-	cmd->forwardmove = ClampChar( forward );
-	cmd->rightmove = ClampChar( side );
-	cmd->upmove = ClampChar( up );
-	//}
+	cmd->forwardmove = ClampChar( inCmd.forwardmove );
+	cmd->rightmove = ClampChar( inCmd.sidemove );
+	cmd->upmove = ClampChar( inCmd.upmove );
 
 	// Arnout: double tap
 	cmd->doubleTap = ETDT_NONE; // reset
