@@ -537,8 +537,7 @@ static void CLQH_StopPitchDrift()
 	cl.qh_pitchvel = 0;
 }
 
-//static 
-void IN_CenterView()
+static void IN_CenterView()
 {
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -613,8 +612,7 @@ static void CLH2_SetIdealRoll(float delta)
 }
 
 //	Moves the local angle positions
-//static 
-void CL_AdjustAngles()
+static void CL_AdjustAngles()
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -651,8 +649,7 @@ void CL_AdjustAngles()
 	}
 }
 
-//static 
-void CL_KeyMove(in_usercmd_t* cmd)
+static void CL_KeyMove(in_usercmd_t* cmd)
 {
 	float forwardspeed;
 	float backspeed;
@@ -747,8 +744,7 @@ void CL_KeyMove(in_usercmd_t* cmd)
 	cmd->forwardmove -= backspeed * CL_KeyState(&in_back);
 }
 
-//static 
-void CL_MouseMove(in_usercmd_t* cmd)
+static void CL_MouseMove(in_usercmd_t* cmd)
 {
 	if ((GGameType & GAME_QuakeHexen) && (in_mlooking || cl_freelook->integer))
 	{
@@ -830,8 +826,7 @@ void CL_MouseMove(in_usercmd_t* cmd)
 	}
 }
 
-//static 
-void CL_JoystickMove(in_usercmd_t* cmd)
+static void CL_JoystickMove(in_usercmd_t* cmd)
 {
 	float movespeed = (GGameType & GAME_Tech3) ? 1 : 400.0 / 127.0;
 	float anglespeed;
@@ -970,6 +965,7 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 		}
 	}
 }
+#endif
 
 in_usercmd_t CL_CreateCmdCommon()
 {
@@ -993,14 +989,17 @@ in_usercmd_t CL_CreateCmdCommon()
 		// get basic movement from joystick
 		CL_JoystickMove(&cmd);
 
+#if 0
 		CL_ClampAngles(oldAngles[PITCH]);
+#endif
 	}
 
+#if 0
 	CL_CmdButtons(&cmd);
+#endif
 
 	return cmd;
 }
-#endif
 
 void CL_InitInputCommon()
 {

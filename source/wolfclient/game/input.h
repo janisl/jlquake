@@ -34,10 +34,6 @@ extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 
 void CL_JoystickEvent(int axis, int value, int time);
-#if 0
 void CLQH_StartPitchDrift();
-#endif
 void CL_InitInputCommon();
-#if 0
 in_usercmd_t CL_CreateCmdCommon();
-#endif

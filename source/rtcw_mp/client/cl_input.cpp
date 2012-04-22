@@ -97,11 +97,6 @@ Cvar  *cl_recoilPitch;
 
 Cvar  *cl_bypassMouseInput;       // NERVE - SMF
 
-void CL_AdjustAngles( void );
-void CL_KeyMove(in_usercmd_t* cmd);
-void CL_MouseMove(in_usercmd_t* cmd);
-void CL_JoystickMove(in_usercmd_t* cmd);
-
 /*
 =================
 CL_MouseEvent
@@ -203,24 +198,10 @@ wmusercmd_t CL_CreateCmd( void ) {
 
 	VectorCopy( cl.viewangles, oldAngles );
 
-	// keyboard angle adjustment
-	CL_AdjustAngles();
-
 	memset( &cmd, 0, sizeof( cmd ) );
 
-	// get basic movement from keyboard
-	in_usercmd_t inCmd;
-	inCmd.forwardmove = 0;
-	inCmd.sidemove = 0;
-	inCmd.upmove = 0;
-	inCmd.buttons = 0;
-	CL_KeyMove(&inCmd);
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
 
-	// get basic movement from mouse
-	CL_MouseMove(&inCmd);
-
-	// get basic movement from joystick
-	CL_JoystickMove(&inCmd);
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
 
