@@ -747,8 +747,8 @@ void CL_KeyMove(in_usercmd_t* cmd)
 	cmd->forwardmove -= backspeed * CL_KeyState(&in_back);
 }
 
-#if 0
-static void CL_MouseMove(in_usercmd_t* cmd)
+//static 
+void CL_MouseMove(in_usercmd_t* cmd)
 {
 	if ((GGameType & GAME_QuakeHexen) && (in_mlooking || cl_freelook->integer))
 	{
@@ -775,7 +775,7 @@ static void CL_MouseMove(in_usercmd_t* cmd)
 	float rate = sqrt(mx * mx + my * my) / (float)frame_msec;
 	float accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		// scale by FOV
 		accelSensitivity *= cl.q3_cgameSensitivity;
@@ -786,8 +786,19 @@ static void CL_MouseMove(in_usercmd_t* cmd)
 		common->Printf("%f : %f\n", rate, accelSensitivity);
 	}
 
-	mx *= accelSensitivity;
-	my *= accelSensitivity;
+	// Rafael - mg42
+	if ((GGameType & GAME_WolfSP && cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE]) ||
+		(GGameType & GAME_WolfMP && cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE]) ||
+		(GGameType & GAME_ET && cl.et_snap.ps.persistant[ETPERS_HWEAPON_USE]))
+	{
+		mx *= 2.5;
+		my *= 2;
+	}
+	else
+	{
+		mx *= accelSensitivity;
+		my *= accelSensitivity;
+	}
 
 	if (!mx && !my)
 	{
@@ -819,6 +830,7 @@ static void CL_MouseMove(in_usercmd_t* cmd)
 	}
 }
 
+#if 0
 static void CL_JoystickMove(in_usercmd_t* cmd)
 {
 	float movespeed = (GGameType & GAME_Quake3) ? 1 : 400.0 / 127.0;

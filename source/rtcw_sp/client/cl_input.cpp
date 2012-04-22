@@ -91,6 +91,7 @@ Cvar  *cl_recoilPitch;
 
 void CL_AdjustAngles( void );
 void CL_KeyMove(in_usercmd_t* cmd);
+void CL_MouseMove(in_usercmd_t* cmd);
 
 /*
 ================
@@ -210,70 +211,17 @@ CL_MouseMove
 =================
 */
 void CL_MouseMove( wsusercmd_t *cmd ) {
-	float mx, my;
-	float accelSensitivity;
-	float rate;
-
-	// allow mouse smoothing
-	if ( m_filter->integer ) {
-		mx = ( cl.mouseDx[0] + cl.mouseDx[1] ) * 0.5;
-		my = ( cl.mouseDy[0] + cl.mouseDy[1] ) * 0.5;
-	} else {
-		mx = cl.mouseDx[cl.mouseIndex];
-		my = cl.mouseDy[cl.mouseIndex];
-	}
-	cl.mouseIndex ^= 1;
-	cl.mouseDx[cl.mouseIndex] = 0;
-	cl.mouseDy[cl.mouseIndex] = 0;
-
-	rate = sqrt( mx * mx + my * my ) / (float)frame_msec;
-	accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
-
-	// scale by FOV
-	accelSensitivity *= cl.q3_cgameSensitivity;
-
-/*	NERVE - SMF - this has moved to CG_CalcFov to fix zoomed-in/out transition movement bug
-	if ( cl.ws_snap.ps.stats[STAT_ZOOMED_VIEW] ) {
-		if(cl.ws_snap.ps.weapon == WP_SNIPERRIFLE) {
-			accelSensitivity *= 0.1;
-		}
-		else if(cl.ws_snap.ps.weapon == WP_SNOOPERSCOPE) {
-			accelSensitivity *= 0.2;
-		}
-	}
-*/
-	if ( rate && cl_showMouseRate->integer ) {
-		Com_Printf( "%f : %f\n", rate, accelSensitivity );
-	}
-
-// Ridah, experimenting with a slow tracking gun
-
-	// Rafael - mg42
-	if ( cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE] ) {
-		mx *= 2.5; //(accelSensitivity * 0.1);
-		my *= 2; //(accelSensitivity * 0.075);
-	} else
-	{
-		mx *= accelSensitivity;
-		my *= accelSensitivity;
-	}
-
-	if ( !mx && !my ) {
-		return;
-	}
-
-	// add mouse X/Y movement to cmd
-	if ( in_strafe.active ) {
-		cmd->rightmove = ClampChar( cmd->rightmove + m_side->value * mx );
-	} else {
-		cl.viewangles[YAW] -= m_yaw->value * mx;
-	}
-
-	if ( ( in_mlooking || cl_freelook->integer ) && !in_strafe.active ) {
-		cl.viewangles[PITCH] += m_pitch->value * my;
-	} else {
-		cmd->forwardmove = ClampChar( cmd->forwardmove - m_forward->value * my );
-	}
+	in_usercmd_t inCmd;
+	inCmd.forwardmove = cmd->forwardmove;
+	inCmd.sidemove = cmd->rightmove;
+	inCmd.upmove = cmd->upmove;
+	inCmd.buttons = cmd->buttons | (cmd->wbuttons << 8);
+	CL_MouseMove(&inCmd);
+	cmd->forwardmove = ClampChar(inCmd.forwardmove);
+	cmd->rightmove = ClampChar(inCmd.sidemove);
+	cmd->upmove = ClampChar(inCmd.upmove);
+	cmd->buttons = inCmd.buttons & 0xff;
+	cmd->wbuttons = inCmd.buttons >> 8;
 }
 
 
