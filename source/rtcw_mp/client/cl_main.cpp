@@ -2704,8 +2704,6 @@ void CL_Init( void ) {
 	// RF
 	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
-	cl_bypassMouseInput = Cvar_Get( "cl_bypassMouseInput", "0", 0 ); //CVAR_ROM );			// NERVE - SMF
-
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
 
 	Cvar_Get( "cl_maxPing", "800", CVAR_ARCHIVE );

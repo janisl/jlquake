@@ -101,45 +101,6 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 
 /*
 ==============
-CL_CmdButtons
-==============
-*/
-void CL_CmdButtons( wsusercmd_t *cmd ) {
-	int i;
-
-	//
-	// figure button bits
-	// send a button bit even if the key was pressed and released in
-	// less than a frame
-	//
-	for ( i = 0 ; i < 7 ; i++ ) {
-		if ( in_buttons[i].active || in_buttons[i].wasPressed ) {
-			cmd->buttons |= 1 << i;
-		}
-		in_buttons[i].wasPressed = qfalse;
-	}
-
-	for ( i = 0 ; i < 7 ; i++ ) {
-		if ( in_buttons[8 + i].active || in_buttons[8 + i].wasPressed ) {
-			cmd->wbuttons |= 1 << i;
-		}
-		in_buttons[8 + i].wasPressed = qfalse;
-	}
-
-	if ( in_keyCatchers ) {
-		cmd->buttons |= Q3BUTTON_TALK;
-	}
-
-	// allow the game to know if any key at all is
-	// currently pressed, even if it isn't bound to anything
-	if ( anykeydown && !in_keyCatchers ) {
-		cmd->buttons |= WOLFBUTTON_ANY;
-	}
-}
-
-
-/*
-==============
 CL_FinishMove
 ==============
 */
@@ -179,31 +140,6 @@ wsusercmd_t CL_CreateCmd( void ) {
 
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
-
-	CL_CmdButtons( &cmd );
-
-	//
-	// adjust for speed key / running
-	// the walking flag is to keep animations consistant
-	// even during acceleration and develeration
-	//
-	if ( in_speed.active ^ cl_run->integer ) {
-		cmd.buttons &= ~Q3BUTTON_WALKING;
-	} else {
-		cmd.buttons |= Q3BUTTON_WALKING;
-	}
-
-//----(SA)	added
-	if ( cmd.buttons & WOLFBUTTON_ACTIVATE ) {
-		if ( inCmd.sidemove > 0 ) {
-			cmd.wbuttons |= WBUTTON_LEANRIGHT;
-		} else if ( inCmd.sidemove < 0 ) {
-			cmd.wbuttons |= WBUTTON_LEANLEFT;
-		}
-
-		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
-	}
-//----(SA)	end
 
 	// Rafael Kick
 	int kick = CL_KeyState( &in_kick );

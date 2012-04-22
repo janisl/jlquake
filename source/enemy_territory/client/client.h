@@ -77,8 +77,6 @@ extern Cvar  *cl_anglespeedkey;
 
 extern Cvar  *cl_recoilPitch;     // RF
 
-extern Cvar  *cl_bypassMouseInput;    // NERVE - SMF
-
 extern Cvar  *cl_doubletapdelay;
 
 extern Cvar  *cl_mouseAccel;

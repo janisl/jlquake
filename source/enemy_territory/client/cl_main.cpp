@@ -3208,8 +3208,6 @@ void CL_Init( void ) {
 	// RF
 	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
-	cl_bypassMouseInput = Cvar_Get( "cl_bypassMouseInput", "0", 0 ); //CVAR_ROM );			// NERVE - SMF
-
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "350", CVAR_ARCHIVE ); // Arnout: double tap
 
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );

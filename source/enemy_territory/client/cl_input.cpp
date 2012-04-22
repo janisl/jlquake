@@ -93,8 +93,6 @@ void IN_CenterViewWMP()
 
 Cvar  *cl_recoilPitch;
 
-Cvar  *cl_bypassMouseInput;       // NERVE - SMF
-
 Cvar  *cl_doubletapdelay;
 
 /*
@@ -125,50 +123,6 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 		cl.mouseDy[cl.mouseIndex] += dy;
 	}
 }
-
-/*
-==============
-CL_CmdButtons
-==============
-*/
-void CL_CmdButtons( etusercmd_t *cmd ) {
-	int i;
-
-	//
-	// figure button bits
-	// send a button bit even if the key was pressed and released in
-	// less than a frame
-	//
-	for ( i = 0 ; i < 7 ; i++ ) {
-		if ( in_buttons[i].active || in_buttons[i].wasPressed ) {
-			cmd->buttons |= 1 << i;
-		}
-		in_buttons[i].wasPressed = qfalse;
-	}
-
-	for ( i = 0 ; i < 8 ; i++ ) {     // Arnout: this was i < 7, but there are 8 wbuttons
-		if ( in_buttons[8 + i].active || in_buttons[8 + i].wasPressed ) {
-			cmd->wbuttons |= 1 << i;
-		}
-		in_buttons[8 + i].wasPressed = qfalse;
-	}
-
-	if ( in_keyCatchers && !cl_bypassMouseInput->integer ) {
-		cmd->buttons |= Q3BUTTON_TALK;
-	}
-
-	// allow the game to know if any key at all is
-	// currently pressed, even if it isn't bound to anything
-	if ( anykeydown && ( !in_keyCatchers || cl_bypassMouseInput->integer ) ) {
-		cmd->buttons |= WOLFBUTTON_ANY;
-	}
-
-	// Arnout: clear 'waspressed' from double tap buttons
-	for ( i = 1; i < ETDT_NUM; i++ ) {
-		dtmapping[i]->wasPressed = qfalse;
-	}
-}
-
 
 /*
 ==============
@@ -214,35 +168,14 @@ etusercmd_t CL_CreateCmd( void ) {
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
 
-	CL_CmdButtons( &cmd );
-
-	//
-	// adjust for speed key / running
-	// the walking flag is to keep animations consistant
-	// even during acceleration and develeration
-	//
-	if ( in_speed.active ^ cl_run->integer ) {
-		cmd.buttons &= ~Q3BUTTON_WALKING;
-	} else {
-		cmd.buttons |= Q3BUTTON_WALKING;
-	}
-
-//----(SA)	added
-	if ( cmd.buttons & WOLFBUTTON_ACTIVATE ) {
-		if ( inCmd.sidemove > 0 ) {
-			cmd.wbuttons |= WBUTTON_LEANRIGHT;
-		} else if ( inCmd.sidemove < 0 ) {
-			cmd.wbuttons |= WBUTTON_LEANLEFT;
-		}
-
-		inCmd.sidemove = 0;   // disallow the strafe when holding 'activate'
-	}
-//----(SA)	end
-
-
 	cmd.forwardmove = ClampChar( inCmd.forwardmove );
 	cmd.rightmove = ClampChar( inCmd.sidemove );
 	cmd.upmove = ClampChar( inCmd.upmove );
+
+	// Arnout: clear 'waspressed' from double tap buttons
+	for (int i = 1; i < ETDT_NUM; i++ ) {
+		dtmapping[i]->wasPressed = qfalse;
+	}
 
 	// Arnout: double tap
 	cmd.doubleTap = ETDT_NONE; // reset

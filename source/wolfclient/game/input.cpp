@@ -84,6 +84,7 @@ Cvar* m_forward;
 Cvar* m_side;
 Cvar* v_centerspeed;
 Cvar* lookspring;
+Cvar* cl_bypassMouseInput;
 
 int in_impulse;
 
@@ -908,14 +909,14 @@ static void CL_ClampAngles(float oldPitch)
 	}
 }
 
-#if 0
 static void CL_CmdButtons(in_usercmd_t* cmd)
 {
 	// figure button bits
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	int numButtons = (GGameType & (GAME_Quake | GAME_Quake2)) ? 2 :
-		(GGameType & GAME_Hexen2) ? 3 : 15;
+		(GGameType & GAME_Hexen2) ? 3 :
+		(GGameType & GAME_ET) ? 16 : 15;
 	for (int i = 0; i < numButtons; i++)
 	{
 		if (in_buttons[i].active || in_buttons[i].wasPressed)
@@ -933,18 +934,11 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 		}
 	}
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
-		if (in_keyCatchers)
+		if (in_keyCatchers && (!(GGameType & (GAME_WolfMP | GAME_ET)) || !cl_bypassMouseInput->integer))
 		{
 			cmd->buttons |= Q3BUTTON_TALK;
-		}
-
-		// allow the game to know if any key at all is
-		// currently pressed, even if it isn't bound to anything
-		if (anykeydown && !in_keyCatchers)
-		{
-			cmd->buttons |= Q3BUTTON_ANY;
 		}
 
 		// the walking flag is to keep animations consistant
@@ -958,8 +952,42 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 			cmd->buttons |= Q3BUTTON_WALKING;
 		}
 	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		// allow the game to know if any key at all is
+		// currently pressed, even if it isn't bound to anything
+		if (anykeydown && !in_keyCatchers)
+		{
+			cmd->buttons |= Q3BUTTON_ANY;
+		}
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		// allow the game to know if any key at all is
+		// currently pressed, even if it isn't bound to anything
+		if (anykeydown && (!in_keyCatchers ||
+			(GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput->integer)))
+		{
+			cmd->buttons |= WOLFBUTTON_ANY;
+		}
+
+		if (cmd->buttons & WOLFBUTTON_ACTIVATE)
+		{
+			if (cmd->sidemove > 0)
+			{
+				cmd->buttons |= WOLFBUTTON_LEANRIGHT;
+			}
+			else if (cmd->sidemove < 0)
+			{
+				cmd->buttons |= WOLFBUTTON_LEANLEFT;
+			}
+			// disallow the strafe when holding 'activate'
+			cmd->sidemove = 0;
+		}
+	}
 }
-#endif
 
 in_usercmd_t CL_CreateCmdCommon()
 {
@@ -986,9 +1014,7 @@ in_usercmd_t CL_CreateCmdCommon()
 		CL_ClampAngles(oldAngles[PITCH]);
 	}
 
-#if 0
 	CL_CmdButtons(&cmd);
-#endif
 
 	return cmd;
 }
@@ -1175,6 +1201,10 @@ void CL_InitInputCommon()
 		cl_run = Cvar_Get("cl_run", "1", CVAR_ARCHIVE);
 		m_forward = Cvar_Get("m_forward", "0.25", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "0.25", CVAR_ARCHIVE);
+	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		cl_bypassMouseInput = Cvar_Get("cl_bypassMouseInput", "0", 0);
 	}
 }
 
