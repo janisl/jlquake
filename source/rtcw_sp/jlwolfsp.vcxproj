@@ -139,11 +139,11 @@
     <ClInclude Include="win32\win_local.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\client\client.vcxproj">
+      <Project>{e1056fe2-3d8c-4778-b075-f4da1c35858d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\core\core.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\wolfclient\wolfclient.vcxproj">
-      <Project>{ebc63dde-a074-48e5-8815-feac614b04f4}</Project>
     </ProjectReference>
     <ProjectReference Include="botlib\botlib-wolfsp.vcxproj">
       <Project>{86691fdd-e0c6-4d71-9ffd-e0f30f19aa3e}</Project>
