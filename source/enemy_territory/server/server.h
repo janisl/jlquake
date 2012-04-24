@@ -349,7 +349,7 @@ extern Cvar *sv_fullmsg;
 //
 // sv_main.c
 //
-void SV_FinalCommand( char *cmd, qboolean disconnect ); // ydnar: added disconnect flag so map changes can use this function as well
+void SV_FinalCommand( const char *cmd, qboolean disconnect ); // ydnar: added disconnect flag so map changes can use this function as well
 void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... );
 
 

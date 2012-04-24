@@ -837,7 +837,7 @@ void Z_CheckHeap( void ) {
 Z_LogZoneHeap
 ========================
 */
-void Z_LogZoneHeap( memzone_t *zone, char *name ) {
+void Z_LogZoneHeap( memzone_t *zone, const char *name ) {
 #ifdef ZONE_DEBUG
 	char dump[32], *ptr;
 	int i, j;
@@ -1306,7 +1306,7 @@ Com_InitZoneMemory
 void Com_InitHunkMemory( void ) {
 	Cvar  *cv;
 	int nMinAlloc;
-	char *pMsg = NULL;
+	const char *pMsg = NULL;
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded

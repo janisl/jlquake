@@ -364,7 +364,7 @@ int Sys_GetHighQualityCPU() {
 
 //============================================
 
-char *Sys_GetCurrentUser( void ) {
+const char *Sys_GetCurrentUser( void ) {
 	static char s_userName[1024];
 	unsigned long size = sizeof( s_userName );
 

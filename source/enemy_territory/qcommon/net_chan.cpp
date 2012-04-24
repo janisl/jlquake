@@ -70,7 +70,7 @@ static Cvar* net_noudp;
 
 static int ip_socket;
 
-static char *netsrcString[2] = {
+static const char *netsrcString[2] = {
 	"client",
 	"server"
 };

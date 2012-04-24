@@ -631,7 +631,7 @@ SV_BotGetConsoleMessage
 int SV_BotGetConsoleMessage( int client, char *buf, int size ) {
 	client_t    *cl;
 	int index;
-	char        *msg;
+	const char        *msg;
 
 	cl = &svs.clients[client];
 	cl->lastPacketTime = svs.time;

@@ -3501,7 +3501,7 @@ CL_ServerInfoPacket
 void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	int i, type;
 	char info[MAX_INFO_STRING_Q3];
-	char*   str;
+	const char*   str;
 	const char    *infoString;
 	int prot;
 	const char    *gameName;
@@ -3850,7 +3850,7 @@ CL_LocalServers_f
 ==================
 */
 void CL_LocalServers_f( void ) {
-	char        *message;
+	const char        *message;
 	int i, j;
 	netadr_t to;
 

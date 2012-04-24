@@ -851,7 +851,7 @@ Com_InitZoneMemory
 void Com_InitHunkMemory( void ) {
 	Cvar  *cv;
 	int nMinAlloc;
-	char *pMsg = NULL;
+	const char *pMsg = NULL;
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded

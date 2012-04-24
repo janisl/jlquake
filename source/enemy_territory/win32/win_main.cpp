@@ -54,7 +54,7 @@ Sys_StartProcess
 NERVE - SMF
 ==================
 */
-void Sys_StartProcess( char *exeName, qboolean doexit ) {
+void Sys_StartProcess( const char *exeName, qboolean doexit ) {
 	TCHAR szPathOrig[_MAX_PATH];
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;

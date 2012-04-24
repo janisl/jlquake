@@ -85,7 +85,7 @@ int Sys_GetHighQualityCPU() {
 	return 0;
 }
 
-char *Sys_GetCurrentUser( void ) {
+const char *Sys_GetCurrentUser( void ) {
 	struct passwd *p;
 
 	if ( ( p = getpwuid( getuid() ) ) == NULL ) {

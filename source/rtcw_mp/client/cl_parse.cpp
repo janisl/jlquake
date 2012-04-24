@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-char *svc_strings[256] = {
+const char *svc_strings[256] = {
 	"q3svc_bad",
 
 	"q3svc_nop",
@@ -42,7 +42,7 @@ char *svc_strings[256] = {
 	"q3svc_snapshot"
 };
 
-void SHOWNET( QMsg *msg, char *s ) {
+void SHOWNET( QMsg *msg, const char *s ) {
 	if ( cl_shownet->integer >= 2 ) {
 		Com_Printf( "%3i:%s\n", msg->readcount - 1, s );
 	}

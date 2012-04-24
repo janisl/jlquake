@@ -256,7 +256,7 @@ extern Cvar  *sv_reloading;   //----(SA)	added
 //
 // sv_main.c
 //
-void SV_FinalMessage( char *message );
+void SV_FinalMessage( const char *message );
 void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... );
 
 
@@ -283,7 +283,7 @@ void SV_ChangeMaxClients( void );
 void SV_SpawnServer( char *server, qboolean killBots );
 
 //RF, reliable commands
-char *SV_GetReliableCommand( client_t *cl, int index );
+const char *SV_GetReliableCommand( client_t *cl, int index );
 void SV_FreeAcknowledgedReliableCommands( client_t *cl );
 qboolean SV_AddReliableCommand( client_t *cl, int index, const char *cmd );
 void SV_InitReliableCommandsForClient( client_t *cl, int commands );

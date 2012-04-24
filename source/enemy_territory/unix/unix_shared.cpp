@@ -87,7 +87,7 @@ float Sys_GetCPUSpeed( void ) {
 	return (float) ( ( t1 - t0 ) / 1000000.0 );
 }
 
-char *Sys_GetCurrentUser( void ) {
+const char *Sys_GetCurrentUser( void ) {
 	struct passwd *p;
 
 	if ( ( p = getpwuid( getuid() ) ) == NULL ) {

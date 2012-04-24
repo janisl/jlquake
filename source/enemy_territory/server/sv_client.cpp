@@ -1445,7 +1445,7 @@ static void SV_UpdateUserinfo_f( client_t *cl ) {
 }
 
 typedef struct {
-	char        *name;
+	const char        *name;
 	void ( *func )( client_t *cl );
 	qboolean allowedpostmapchange;
 } ucmd_t;

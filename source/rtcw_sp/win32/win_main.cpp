@@ -105,7 +105,7 @@ int Sys_ShellExecute( char *op, char *file, qboolean doexit, char *params, char 
 Sys_StartProcess
 ==================
 */
-void Sys_StartProcess( char *exeName, qboolean doexit ) {           // NERVE - SMF
+void Sys_StartProcess( const char *exeName, qboolean doexit ) {           // NERVE - SMF
 	TCHAR szPathOrig[_MAX_PATH];
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;

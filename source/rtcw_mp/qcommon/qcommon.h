@@ -451,7 +451,7 @@ void SCR_DebugGraph( float value, int color );   // FIXME: move logging to commo
 // server interface
 //
 void SV_Init( void );
-void SV_Shutdown( char *finalmsg );
+void SV_Shutdown( const char *finalmsg );
 void SV_Frame( int msec );
 void SV_PacketEvent( netadr_t from, QMsg *msg );
 qboolean SV_GameCommand( void );
@@ -495,7 +495,7 @@ void    *Sys_GetUIAPI( void );
 void    Sys_UnloadBotLib( void );
 void    *Sys_GetBotLibAPI( void *parms );
 
-char    *Sys_GetCurrentUser( void );
+const char    *Sys_GetCurrentUser( void );
 
 void QDECL Sys_Error( const char *error, ... );
 void    Sys_Quit( void );
@@ -517,7 +517,7 @@ void    Sys_EndProfiling( void );
 unsigned int Sys_ProcessorCount();
 
 // NOTE TTimo - on win32 the cwd is prepended .. non portable behaviour
-void Sys_StartProcess( char *exeName, qboolean doexit );            // NERVE - SMF
+void Sys_StartProcess( const char *exeName, qboolean doexit );            // NERVE - SMF
 void Sys_OpenURL( const char *url, qboolean doexit );                       // NERVE - SMF
 int Sys_GetHighQualityCPU();
 

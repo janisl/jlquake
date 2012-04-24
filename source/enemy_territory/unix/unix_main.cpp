@@ -91,7 +91,7 @@ void Sys_In_Restart_f( void ) {
 
 #define MAX_CMD 1024
 static char exit_cmdline[MAX_CMD] = "";
-void Sys_DoStartProcess( char *cmdline );
+void Sys_DoStartProcess( const char *cmdline );
 
 // single exit point (regular exit or in case of signal fault)
 void Sys_Exit( int ex ) {
@@ -661,7 +661,7 @@ UGLY HACK:
   The clean solution would be Sys_StartProcess and Sys_StartProcess_Args..
 ==================
 */
-void Sys_DoStartProcess( char *cmdline ) {
+void Sys_DoStartProcess( const char *cmdline ) {
 	switch ( fork() )
 	{
 	case - 1:
@@ -688,7 +688,7 @@ otherwise, push it for execution at exit
 NOTE: might even want to add a small delay?
 ==================
 */
-void Sys_StartProcess( char *cmdline, qboolean doexit ) {
+void Sys_StartProcess( const char *cmdline, qboolean doexit ) {
 
 	if ( doexit ) {
 		Com_DPrintf( "Sys_StartProcess %s (delaying to final exit)\n", cmdline );
