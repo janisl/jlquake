@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="clip_map">
+      <UniqueIdentifier>{ad7df657-c00f-40eb-8b78-69de4c534b10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="clip_map\bsp29">
+      <UniqueIdentifier>{b4fd2603-84f7-4021-9560-991e1433cf8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="clip_map\bsp38">
+      <UniqueIdentifier>{2b8e4630-bd18-47cb-abc2-5b68c9b68189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="clip_map\bsp46">
+      <UniqueIdentifier>{9b649dd1-ff09-4b0e-b481-21b9dfee574f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file_formats">
+      <UniqueIdentifier>{e65d8ddb-da0d-40c9-8fe4-a086e135f867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="virtual_machine">
+      <UniqueIdentifier>{3c51eabe-da80-4113-8f3a-ad041c1fda45}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="clip_map\local.h">
+      <Filter>clip_map</Filter>
+    </ClInclude>
+    <ClInclude Include="clip_map\public.h">
+      <Filter>clip_map</Filter>
+    </ClInclude>
+    <ClInclude Include="clip_map\bsp29\local.h">
+      <Filter>clip_map\bsp29</Filter>
+    </ClInclude>
+    <ClInclude Include="clip_map\bsp38\local.h">
+      <Filter>clip_map\bsp38</Filter>
+    </ClInclude>
+    <ClInclude Include="clip_map\bsp46\local.h">
+      <Filter>clip_map\bsp46</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\bsp29.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\bsp38.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\bsp46.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\md2.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\md3.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\md4.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\mdl.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\qvm.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\sp2.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_formats\spr.h">
+      <Filter>file_formats</Filter>
+    </ClInclude>
+    <ClInclude Include="virtual_machine\local.h">
+      <Filter>virtual_machine</Filter>
+    </ClInclude>
+    <ClInclude Include="virtual_machine\public.h">
+      <Filter>virtual_machine</Filter>
+    </ClInclude>
+    <ClInclude Include="array.h" />
+    <ClInclude Include="command_buffer.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="common_defs.h" />
+    <ClInclude Include="console_variable.h" />
+    <ClInclude Include="crc.h" />
+    <ClInclude Include="endian.h" />
+    <ClInclude Include="event_queue.h" />
+    <ClInclude Include="exception.h" />
+    <ClInclude Include="files.h" />
+    <ClInclude Include="huffman.h" />
+    <ClInclude Include="info_string.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="mathlib.h" />
+    <ClInclude Include="md4.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="message.h" />
+    <ClInclude Include="player_move.h" />
+    <ClInclude Include="qcommon.h" />
+    <ClInclude Include="socket.h" />
+    <ClInclude Include="socket_local.h" />
+    <ClInclude Include="strings.h" />
+    <ClInclude Include="system.h" />
+    <ClInclude Include="system_windows.h" />
+    <ClInclude Include="unzip.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="clip_map\main.cpp">
+      <Filter>clip_map</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\non_map.cpp">
+      <Filter>clip_map</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp29\load.cpp">
+      <Filter>clip_map\bsp29</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp29\main.cpp">
+      <Filter>clip_map\bsp29</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp29\test.cpp">
+      <Filter>clip_map\bsp29</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp29\trace.cpp">
+      <Filter>clip_map\bsp29</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp38\load.cpp">
+      <Filter>clip_map\bsp38</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp38\main.cpp">
+      <Filter>clip_map\bsp38</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp38\test.cpp">
+      <Filter>clip_map\bsp38</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp38\trace.cpp">
+      <Filter>clip_map\bsp38</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp46\load.cpp">
+      <Filter>clip_map\bsp46</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp46\main.cpp">
+      <Filter>clip_map\bsp46</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp46\patch.cpp">
+      <Filter>clip_map\bsp46</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp46\polylib.cpp">
+      <Filter>clip_map\bsp46</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp46\test.cpp">
+      <Filter>clip_map\bsp46</Filter>
+    </ClCompile>
+    <ClCompile Include="clip_map\bsp46\trace.cpp">
+      <Filter>clip_map\bsp46</Filter>
+    </ClCompile>
+    <ClCompile Include="virtual_machine\interpreted.cpp">
+      <Filter>virtual_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="virtual_machine\main.cpp">
+      <Filter>virtual_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="virtual_machine\x86.cpp">
+      <Filter>virtual_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="command_buffer.cpp" />
+    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="common_defs.cpp" />
+    <ClCompile Include="console_variable.cpp" />
+    <ClCompile Include="crc.cpp" />
+    <ClCompile Include="endian.cpp" />
+    <ClCompile Include="event_queue.cpp" />
+    <ClCompile Include="exception.cpp" />
+    <ClCompile Include="files.cpp" />
+    <ClCompile Include="huffman.cpp" />
+    <ClCompile Include="info_string.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="mathlib.cpp" />
+    <ClCompile Include="md4.cpp" />
+    <ClCompile Include="memory.cpp" />
+    <ClCompile Include="message.cpp" />
+    <ClCompile Include="player_move.cpp" />
+    <ClCompile Include="player_move1.cpp" />
+    <ClCompile Include="socket.cpp" />
+    <ClCompile Include="socket_windows.cpp" />
+    <ClCompile Include="strings.cpp" />
+    <ClCompile Include="system_console_windows.cpp" />
+    <ClCompile Include="system_windows.cpp" />
+    <ClCompile Include="unzip.cpp" />
+    <ClCompile Include="virtual_machine\none.cpp">
+      <Filter>virtual_machine</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

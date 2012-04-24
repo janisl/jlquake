@@ -97,11 +97,6 @@
     <ProjectReference Include="..\botlib\botlib.vcxproj">
       <Project>{a410161f-ae9f-485d-a01f-5294891430a6}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\core\core.vcxproj">
-      <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="qcommon\cmd.cpp" />

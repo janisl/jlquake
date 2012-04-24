@@ -153,9 +153,8 @@
     <ClInclude Include="..\client\zone.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\core.vcxproj">
+    <ProjectReference Include="..\..\common\common.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\progsvm\progsvm.vcxproj">
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>

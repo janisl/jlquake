@@ -122,9 +122,6 @@
     <ClInclude Include="win32\win_local.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\core.vcxproj">
-      <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
-    </ProjectReference>
     <ProjectReference Include="botlib\botlib-wolfmp.vcxproj">
       <Project>{4e5f4e34-0e6a-4200-916f-d33805505b54}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

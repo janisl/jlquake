@@ -94,6 +94,11 @@
     <ClInclude Include="progs_file.h" />
     <ClInclude Include="progsvm.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\common\common.vcxproj">
+      <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
