@@ -538,13 +538,7 @@ char* Cvar_InfoString(int bit, int MaxSize, int MaxKeySize, int MaxValSize,
 	return info;
 }
 
-void Cvar_InfoStringBuffer(int bit, int MaxSize, char* buff, int buffsize)
-{
-	String::NCpyZ(buff, Cvar_InfoString(bit, MaxSize), buffsize);
-}
-
-//	basically a slightly modified Cvar_Get for the interpreted modules
-void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultValue, int flags)
+static int ConvertTech3GameFlags(int flags)
 {
 	//	For Quake 2 compatibility some flags have been moved around,
 	// so map them to new values. Also clear unknown flags.
@@ -562,6 +556,18 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 	{
 		flags |= CVAR_LATCH2;
 	}
+	return flags;
+}
+
+void Cvar_InfoStringBuffer(int bit, int MaxSize, char* buff, int buffsize)
+{
+	String::NCpyZ(buff, Cvar_InfoString(ConvertTech3GameFlags(bit), MaxSize), buffsize);
+}
+
+//	basically a slightly modified Cvar_Get for the interpreted modules
+void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultValue, int flags)
+{
+	flags = ConvertTech3GameFlags(flags);
 
 	Cvar* cv = Cvar_Get(varName, defaultValue, flags);
 	if (!vmCvar)
