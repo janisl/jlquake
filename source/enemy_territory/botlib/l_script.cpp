@@ -218,7 +218,7 @@ void PS_CreatePunctuationTable( script_t *script, punctuation_t *punctuations ) 
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-char *PunctuationFromNum( script_t *script, int num ) {
+const char *PunctuationFromNum( script_t *script, int num ) {
 	int i;
 
 	for ( i = 0; script->punctuations[i].p; i++ )
@@ -235,7 +235,7 @@ char *PunctuationFromNum( script_t *script, int num ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL ScriptError( script_t *script, char *str, ... ) {
+void QDECL ScriptError( script_t *script, const char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -262,7 +262,7 @@ void QDECL ScriptError( script_t *script, char *str, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL ScriptWarning( script_t *script, char *str, ... ) {
+void QDECL ScriptWarning( script_t *script, const char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -798,7 +798,7 @@ int PS_ReadLiteral( script_t *script, token_t *token ) {
 //============================================================================
 int PS_ReadPunctuation( script_t *script, token_t *token ) {
 	int len;
-	char *p;
+	const char *p;
 	punctuation_t *punc;
 
 #ifdef PUNCTABLE
@@ -1386,7 +1386,7 @@ script_t *LoadScriptFile( const char *filename ) {
 // Returns:				-
 // Changes Globals:		-
 //============================================================================
-script_t *LoadScriptMemory( char *ptr, int length, char *name ) {
+script_t *LoadScriptMemory( char *ptr, int length, const char *name ) {
 	void *buffer;
 	script_t *script;
 
@@ -1435,7 +1435,7 @@ void FreeScript( script_t *script ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PS_SetBaseFolder( char *path ) {
+void PS_SetBaseFolder( const char *path ) {
 #ifdef BSPC
 	sprintf( basefolder, path );
 #else

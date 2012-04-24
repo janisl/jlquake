@@ -205,7 +205,7 @@ void BotDefaultCharacteristics( bot_character_t *ch, bot_character_t *defaultch 
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
+bot_character_t *BotLoadCharacterFromFile( const char *charfile, int skill ) {
 	int indent, index, foundcharacter;
 	bot_character_t *ch;
 	source_t *source;
@@ -237,7 +237,7 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 				return NULL;
 			} //end if
 			  //if it's the correct skill
-			if ( skill < 0 || token.intvalue == skill ) {
+			if ( skill < 0 || (int)token.intvalue == skill ) {
 				foundcharacter = qtrue;
 				ch->skill = token.intvalue;
 				while ( PC_ExpectAnyToken( source, &token ) )
@@ -344,7 +344,7 @@ bot_character_t *BotLoadCharacterFromFile( char *charfile, int skill ) {
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotFindCachedCharacter( char *charfile, int skill ) {
+int BotFindCachedCharacter( const char *charfile, int skill ) {
 	int handle;
 
 	for ( handle = 1; handle <= MAX_CLIENTS_WS; handle++ )
@@ -365,7 +365,7 @@ int BotFindCachedCharacter( char *charfile, int skill ) {
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotLoadCachedCharacter( char *charfile, int skill, int reload ) {
+int BotLoadCachedCharacter( const char *charfile, int skill, int reload ) {
 	int handle, cachedhandle;
 	bot_character_t *ch = NULL;
 #ifdef DEBUG

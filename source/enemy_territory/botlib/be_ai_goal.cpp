@@ -245,7 +245,7 @@ void BotMutateGoalFuzzyLogic( int goalstate, float range ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-itemconfig_t *LoadItemConfig( char *filename ) {
+itemconfig_t *LoadItemConfig( const char *filename ) {
 	int max_iteminfo;
 	token_t token;
 	char path[MAX_PATH];
@@ -1581,7 +1581,7 @@ void BotFreeGoalState( int handle ) {
 // removed gametype, added single player
 int BotSetupGoalAI( qboolean singleplayer ) {
 // END	Arnout changes, 28-08-2002.
-	char *filename;
+	const char *filename;
 
 	//check if teamplay is on
 // START	Arnout changes, 28-08-2002.

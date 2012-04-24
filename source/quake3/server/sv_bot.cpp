@@ -420,7 +420,7 @@ void BotImport_DebugLineShow(int line, vec3_t start, vec3_t end, int color) {
 SV_BotClientCommand
 ==================
 */
-void BotClientCommand( int client, char *command ) {
+void BotClientCommand( int client, const char *command ) {
 	SV_ExecuteClientCommand( &svs.clients[client], command, qtrue );
 }
 

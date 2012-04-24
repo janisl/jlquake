@@ -189,7 +189,7 @@ typedef struct bot_entitystate_s
 typedef struct botlib_import_s
 {
 	//print messages from the bot library
-	void ( QDECL * Print )( int type, char *fmt, ... );
+	void ( QDECL * Print )( int type, const char *fmt, ... );
 	//trace a bbox through the world
 	void ( *Trace )( bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask );
 	//trace a bbox against a specific entity
@@ -203,7 +203,7 @@ typedef struct botlib_import_s
 	//
 	void ( *BSPModelMinsMaxsOrigin )( int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin );
 	//send a bot client command
-	void ( *BotClientCommand )( int client, char *command );
+	void ( *BotClientCommand )( int client, const char *command );
 	//memory allocation
 	void        *( *GetMemory )( int size );
 	void ( *FreeMemory )( void *ptr );
@@ -251,10 +251,10 @@ typedef struct aas_export_s
 	//--------------------------------------------
 	int ( *AAS_PointContents )( vec3_t point );
 	int ( *AAS_NextBSPEntity )( int ent );
-	int ( *AAS_ValueForBSPEpairKey )( int ent, char *key, char *value, int size );
-	int ( *AAS_VectorForBSPEpairKey )( int ent, char *key, vec3_t v );
-	int ( *AAS_FloatForBSPEpairKey )( int ent, char *key, float *value );
-	int ( *AAS_IntForBSPEpairKey )( int ent, char *key, int *value );
+	int ( *AAS_ValueForBSPEpairKey )( int ent, const char *key, char *value, int size );
+	int ( *AAS_VectorForBSPEpairKey )( int ent, const char *key, vec3_t v );
+	int ( *AAS_FloatForBSPEpairKey )( int ent, const char *key, float *value );
+	int ( *AAS_IntForBSPEpairKey )( int ent, const char *key, int *value );
 	//--------------------------------------------
 	// be_aas_reach.c
 	//--------------------------------------------
@@ -302,7 +302,7 @@ typedef struct ea_export_s
 	void ( *EA_UseInv )( int client, char *inv );
 	void ( *EA_DropInv )( int client, char *inv );
 	void ( *EA_Gesture )( int client );
-	void ( *EA_Command )( int client, char *command );
+	void ( *EA_Command )( int client, const char *command );
 	//regular elementary actions
 	void ( *EA_SelectWeapon )( int client, int weapon );
 	void ( *EA_Talk )( int client );
@@ -440,7 +440,7 @@ typedef struct botlib_export_s
 	//shutdown the bot library, returns BLERR_
 	int ( *BotLibShutdown )( void );
 	//sets a library variable returns BLERR_
-	int ( *BotLibVarSet )( char *var_name, char *value );
+	int ( *BotLibVarSet )( const char *var_name, const char *value );
 	//gets a library variable returns BLERR_
 	int ( *BotLibVarGet )( char *var_name, char *value, int size );
 

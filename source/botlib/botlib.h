@@ -185,7 +185,7 @@ typedef struct botlib_import_s
 	//
 	void		(*BSPModelMinsMaxsOrigin)(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin);
 	//send a bot client command
-	void		(*BotClientCommand)(int client, char *command);
+	void		(*BotClientCommand)(int client, const char *command);
 	//memory allocation
 	void		*(*GetMemory)(int size);		// allocate from Zone
 	void		(*FreeMemory)(void *ptr);		// free memory from Zone
