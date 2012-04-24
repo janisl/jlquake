@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#include "../../core/core.h"
+#include "../../common/qcommon.h"
 
 #define Q3_VERSION      "Wolf 1.41"
 // ver 1.0.0	- release

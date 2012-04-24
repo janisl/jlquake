@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for server
 
-#include "../../core/core.h"
+#include "../../common/qcommon.h"
 
 //define	PARANOID			// speed sapping error checking
 

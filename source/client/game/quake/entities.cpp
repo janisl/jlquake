@@ -15,7 +15,7 @@
 //**************************************************************************
 
 #include "../../client.h"
-#include "../../../core/file_formats/spr.h"
+#include "../../../common/file_formats/spr.h"
 #include "local.h"
 
 Cvar* cl_doubleeyes;

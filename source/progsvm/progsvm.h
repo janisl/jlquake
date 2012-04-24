@@ -17,7 +17,7 @@
 #ifndef _PROGSVM_H
 #define _PROGSVM_H
 
-#include "../core/core.h"
+#include "../common/qcommon.h"
 
 #include "progs_file.h"
 #include "edict.h"

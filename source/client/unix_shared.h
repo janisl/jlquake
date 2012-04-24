@@ -17,7 +17,7 @@
 #ifndef _UNIX_SHARED_H
 #define _UNIX_SHARED_H
 
-#include "../core/system_unix.h"
+#include "../common/system_unix.h"
 
 #include <X11/Xlib.h>
 

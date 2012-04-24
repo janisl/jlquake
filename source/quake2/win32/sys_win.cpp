@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sys_win.h
 
 #include "../qcommon/qcommon.h"
-#include "../../core/system_windows.h"
+#include "../../common/system_windows.h"
 #ifndef DEDICATED_ONLY
 #include "../../client/windows_shared.h"
 #endif

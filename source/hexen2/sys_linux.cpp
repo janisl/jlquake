@@ -1,5 +1,5 @@
 #include "quakedef.h"
-#include "../core/system_unix.h"
+#include "../common/system_unix.h"
 
 #include <unistd.h>
 #include <signal.h>

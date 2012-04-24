@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <execinfo.h>
 
 #include "quakedef.h"
-#include "../../core/system_unix.h"
+#include "../../common/system_unix.h"
 
 int noconinput = 0;
 int nostdout = 0;

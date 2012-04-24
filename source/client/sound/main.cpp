@@ -22,7 +22,7 @@
 
 #include "../client.h"
 #include "local.h"
-#include "../../core/file_formats/bsp29.h"
+#include "../../common/file_formats/bsp29.h"
 
 // MACROS ------------------------------------------------------------------
 

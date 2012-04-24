@@ -17,8 +17,8 @@
 #ifndef _CLIENT_H
 #define _CLIENT_H
 
-#include "../core/core.h"
-#include "../core/file_formats/bsp38.h"
+#include "../common/qcommon.h"
+#include "../common/file_formats/bsp38.h"
 
 #include "sound/public.h"
 #include "renderer/public.h"

@@ -38,7 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../core/system_unix.h"
+#include "../../common/system_unix.h"
 
 //=============================================================================
 

@@ -48,7 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-#include "../../core/file_formats/bsp47.h"
+#include "../../common/file_formats/bsp47.h"
 
 extern int Sys_MilliSeconds( void );
 

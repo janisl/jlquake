@@ -5,7 +5,7 @@
  */
 
 #include "quakedef.h"
-#include "../core/file_formats/spr.h"
+#include "../common/file_formats/spr.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif

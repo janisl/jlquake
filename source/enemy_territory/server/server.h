@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../game/g_public.h"
 #include "../game/bg_public.h"
-#include "../../core/file_formats/md3.h"
+#include "../../common/file_formats/md3.h"
 #include "../qcommon/qfiles.h"
 
 //=============================================================================

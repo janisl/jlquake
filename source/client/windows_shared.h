@@ -17,7 +17,7 @@
 #ifndef _WIN_SHARED_H
 #define _WIN_SHARED_H
 
-#include "../core/system_windows.h"
+#include "../common/system_windows.h"
 
 void SNDDMA_Activate();
 

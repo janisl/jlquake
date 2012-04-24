@@ -36,7 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // A user mod should never modify this file
 
-#include "../../core/core.h"
+#include "../../common/qcommon.h"
 
 #include <assert.h>
 #include <time.h>

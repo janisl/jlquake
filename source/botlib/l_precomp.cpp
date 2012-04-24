@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //Notes:			fix: PC_StringizeTokens
 
 #include <time.h>
-#include "../core/core.h"
+#include "../common/qcommon.h"
 #include "botlib.h"
 #include "be_interface.h"
 #include "l_memory.h"

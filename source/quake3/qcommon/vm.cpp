@@ -33,10 +33,10 @@ and one exported function: Perform
 
 */
 
-#include "../../core/core.h"
+#include "../../common/qcommon.h"
 #include "../game/q_shared.h"
 #include "qcommon.h"
-#include "../../core/virtual_machine/local.h"
+#include "../../common/virtual_machine/local.h"
 
 
 vm_t	*lastVM    = NULL; // bk001212

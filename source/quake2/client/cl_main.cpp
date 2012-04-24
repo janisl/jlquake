@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
-#include "../../core/file_formats/md2.h"
+#include "../../common/file_formats/md2.h"
 
 Cvar	*adr0;
 Cvar	*adr1;

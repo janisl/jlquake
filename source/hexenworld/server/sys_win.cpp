@@ -1,6 +1,6 @@
 #include <sys/timeb.h>
 #include "qwsvdef.h"
-#include "../../core/system_windows.h"
+#include "../../common/system_windows.h"
 
 
 /*
