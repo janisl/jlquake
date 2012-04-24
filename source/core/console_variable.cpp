@@ -15,11 +15,7 @@
 //**************************************************************************
 // cvar.c -- dynamic variable tracking
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "core.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define	MAX_CVARS			2048
 
@@ -27,25 +23,11 @@
 
 #define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
 void Cvar_Changed(Cvar* var);
 const char* Cvar_TranslateString(const char* string);
 
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 Cvar*		cvar_vars;
 int			cvar_modifiedFlags;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static Cvar*		cvar_cheats;
 
@@ -54,16 +36,7 @@ static int			cvar_numIndexes;
 
 static Cvar*		cvar_hashTable[FILE_HASH_SIZE];
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Cvar_GenerateHashValue
-//
 //	Return a hash value for the filename
-//
-//==========================================================================
-
 static long Cvar_GenerateHashValue(const char *fname)
 {
 	if (!fname)
@@ -80,24 +53,12 @@ static long Cvar_GenerateHashValue(const char *fname)
 	return hash;
 }
 
-//==========================================================================
-//
-//	__CopyString
-//
-//==========================================================================
-
 char* __CopyString(const char* in)
 {
 	char* out = (char*)Mem_Alloc(String::Length(in) + 1);
 	String::Cpy(out, in);
 	return out;
 }
-
-//==========================================================================
-//
-//	Cvar_FindVar
-//
-//==========================================================================
 
 Cvar* Cvar_FindVar(const char* VarName)
 {
@@ -113,12 +74,6 @@ Cvar* Cvar_FindVar(const char* VarName)
 
 	return NULL;
 }
-
-//==========================================================================
-//
-//	Cvar_ValidateString
-//
-//==========================================================================
 
 static bool Cvar_ValidateString(const char* S)
 {
@@ -159,12 +114,6 @@ static char* Cvar_ClearForeignCharacters(const char* value)
 
 	return clean;
 }
-
-//==========================================================================
-//
-//	Cvar_Set2
-//
-//==========================================================================
 
 static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 {
@@ -305,33 +254,15 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 	return var;
 }
 
-//==========================================================================
-//
-//	Cvar_Set
-//
-//==========================================================================
-
 Cvar* Cvar_Set(const char *var_name, const char *value)
 {
 	return Cvar_Set2(var_name, value, true);
 }
 
-//==========================================================================
-//
-//	Cvar_SetLatched
-//
-//==========================================================================
-
 Cvar* Cvar_SetLatched(const char *var_name, const char *value)
 {
 	return Cvar_Set2(var_name, value, false);
 }
-
-//==========================================================================
-//
-//	Cvar_SetValue
-//
-//==========================================================================
 
 void Cvar_SetValue(const char* var_name, float value)
 {
@@ -348,12 +279,6 @@ void Cvar_SetValue(const char* var_name, float value)
 	Cvar_Set(var_name, val);
 }
 
-//==========================================================================
-//
-//	Cvar_SetValueLatched
-//
-//==========================================================================
-
 void Cvar_SetValueLatched(const char* var_name, float value)
 {
 	char	val[32];
@@ -369,15 +294,8 @@ void Cvar_SetValueLatched(const char* var_name, float value)
 	Cvar_SetLatched(var_name, val);
 }
 
-//==========================================================================
-//
-//	Cvar_Get
-//
 //	If the variable already exists, the value will not be set.
 // The flags will be or'ed in if the variable exists.
-//
-//==========================================================================
-
 Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 {
 	if (!VarName || (!(GGameType & GAME_Quake2) && !VarValue))
@@ -511,12 +429,6 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	return var;
 }
 
-//==========================================================================
-//
-//	Cvar_VariableValue
-//
-//==========================================================================
-
 float Cvar_VariableValue(const char* var_name)
 {
 	Cvar* var = Cvar_FindVar(var_name);
@@ -526,12 +438,6 @@ float Cvar_VariableValue(const char* var_name)
 	}
 	return var->value;
 }
-
-//==========================================================================
-//
-//	Cvar_VariableIntegerValue
-//
-//==========================================================================
 
 int Cvar_VariableIntegerValue(const char* var_name)
 {
@@ -543,12 +449,6 @@ int Cvar_VariableIntegerValue(const char* var_name)
 	return var->integer;
 }
 
-//==========================================================================
-//
-//	Cvar_VariableString
-//
-//==========================================================================
-
 const char* Cvar_VariableString(const char* var_name)
 {
 	Cvar* var = Cvar_FindVar(var_name);
@@ -558,12 +458,6 @@ const char* Cvar_VariableString(const char* var_name)
 	}
 	return var->string;
 }
-
-//==========================================================================
-//
-//	Cvar_VariableStringBuffer
-//
-//==========================================================================
 
 void Cvar_VariableStringBuffer(const char* var_name, char* buffer, int bufsize)
 {
@@ -598,14 +492,7 @@ void Cvar_LatchedVariableStringBuffer(const char* var_name, char* buffer, int bu
 	}
 }
 
-//==========================================================================
-//
-//	Cvar_Command
-//
 //	Handles variable inspection and changing from the console
-//
-//==========================================================================
-
 bool Cvar_Command()
 {
 	// check variables
@@ -632,14 +519,7 @@ bool Cvar_Command()
 	return true;
 }
 
-//==========================================================================
-//
-//	Cvar_InfoString
-//
 //	Handles large info strings ( Q3CS_SYSTEMINFO )
-//
-//==========================================================================
-
 char* Cvar_InfoString(int bit, int MaxSize, int MaxKeySize, int MaxValSize,
 	bool NoHighChars, bool LowerCaseVal)
 {
@@ -658,25 +538,12 @@ char* Cvar_InfoString(int bit, int MaxSize, int MaxKeySize, int MaxValSize,
 	return info;
 }
 
-//==========================================================================
-//
-//	Cvar_InfoStringBuffer
-//
-//==========================================================================
-
 void Cvar_InfoStringBuffer(int bit, int MaxSize, char* buff, int buffsize)
 {
 	String::NCpyZ(buff, Cvar_InfoString(bit, MaxSize), buffsize);
 }
 
-//==========================================================================
-//
-//	Cvar_Register
-//
 //	basically a slightly modified Cvar_Get for the interpreted modules
-//
-//==========================================================================
-
 void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultValue, int flags)
 {
 	//	For Quake 2 compatibility some flags have been moved around,
@@ -706,14 +573,7 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 	Cvar_Update(vmCvar);
 }
 
-//==========================================================================
-//
-//	Cvar_Update
-//
 //	updates an interpreted modules' version of a cvar
-//
-//==========================================================================
-
 void Cvar_Update(vmCvar_t* vmCvar)
 {
 	qassert(vmCvar); // bk
@@ -755,12 +615,6 @@ void Cvar_Update(vmCvar_t* vmCvar)
 	vmCvar->integer = cv->integer;
 }
 
-//==========================================================================
-//
-//	Cvar_CompleteVariable
-//
-//==========================================================================
-
 const char* Cvar_CompleteVariable(const char* partial)
 {
 	int len = String::Length(partial);
@@ -791,12 +645,6 @@ const char* Cvar_CompleteVariable(const char* partial)
 	return NULL;
 }
 
-//==========================================================================
-//
-//	Cvar_CommandCompletion
-//
-//==========================================================================
-
 void Cvar_CommandCompletion(void(*callback)(const char* s))
 {
 	for (Cvar* cvar = cvar_vars; cvar; cvar = cvar->next)
@@ -805,14 +653,7 @@ void Cvar_CommandCompletion(void(*callback)(const char* s))
 	}
 }
 
-//==========================================================================
-//
-//	Cvar_SetCheatState
-//
 //	Any testing variables will be reset to the safe values
-//
-//==========================================================================
-
 void Cvar_SetCheatState()
 {
 	// set all default vars to the safe value
@@ -835,25 +676,12 @@ void Cvar_SetCheatState()
 	}
 }
 
-//==========================================================================
-//
-//	Cvar_Reset
-//
-//==========================================================================
-
 void Cvar_Reset(const char* var_name)
 {
 	Cvar_Set2(var_name, NULL, false);
 }
 
-//==========================================================================
-//
-//	Cvar_Toggle_f
-//
 //	Toggles a cvar for easy single key binding
-//
-//==========================================================================
-
 static void Cvar_Toggle_f()
 {
 	if (Cmd_Argc() != 2)
@@ -917,15 +745,8 @@ static void Cvar_Cycle_f()
 	Cvar_Set2(Cmd_Argv(1), va("%i", value), false);
 }
 
-//==========================================================================
-//
-//	Cvar_Set_f
-//
 //	Allows setting and defining of arbitrary cvars from console, even if they
 // weren't declared in C code.
-//
-//==========================================================================
-
 static void Cvar_Set_f()
 {
 	int c = Cmd_Argc();
@@ -965,14 +786,7 @@ static void Cvar_Set_f()
 	Cvar_Set2(Cmd_Argv(1), *combined, false);
 }
 
-//==========================================================================
-//
-//	Cvar_SetU_f
-//
 //	As Cvar_Set, but also flags it as userinfo
-//
-//==========================================================================
-
 static void Cvar_SetU_f()
 {
 	if (Cmd_Argc() < 3)
@@ -996,14 +810,7 @@ static void Cvar_SetU_f()
 	v->flags |= CVAR_USERINFO;
 }
 
-//==========================================================================
-//
-//	Cvar_SetS_f
-//
-//	As Cvar_Set, but also flags it as userinfo
-//
-//==========================================================================
-
+//	As Cvar_Set, but also flags it as serverinfo
 static void Cvar_SetS_f()
 {
 	if (Cmd_Argc() < 3)
@@ -1027,14 +834,7 @@ static void Cvar_SetS_f()
 	v->flags |= CVAR_SERVERINFO;
 }
 
-//==========================================================================
-//
-//	Cvar_SetA_f
-//
 //	As Cvar_Set, but also flags it as archived
-//
-//==========================================================================
-
 static void Cvar_SetA_f()
 {
 	if (Cmd_Argc() < 3)
@@ -1058,12 +858,6 @@ static void Cvar_SetA_f()
 	v->flags |= CVAR_ARCHIVE;
 }
 
-//==========================================================================
-//
-//	Cvar_Reset_f
-//
-//==========================================================================
-
 static void Cvar_Reset_f()
 {
 	if (Cmd_Argc() != 2)
@@ -1073,12 +867,6 @@ static void Cvar_Reset_f()
 	}
 	Cvar_Reset(Cmd_Argv(1));
 }
-
-//==========================================================================
-//
-//	Cvar_List_f
-//
-//==========================================================================
 
 static void Cvar_List_f()
 {
@@ -1165,14 +953,7 @@ static void Cvar_List_f()
 	Log::write("%i cvar indexes\n", cvar_numIndexes);
 }
 
-//==========================================================================
-//
-//	Cvar_Restart_f
-//
 //	Resets all cvars to their hardcoded values
-//
-//==========================================================================
-
 static void Cvar_Restart_f()
 {
 	Cvar** prev = &cvar_vars;
@@ -1226,12 +1007,6 @@ static void Cvar_Restart_f()
 	}
 }
 
-//==========================================================================
-//
-//	Cvar_Init
-//
-//==========================================================================
-
 void Cvar_Init()
 {
 	if (GGameType & GAME_WolfSP)
@@ -1260,15 +1035,8 @@ void Cvar_Init()
 	}
 }
 
-//==========================================================================
-//
-//	Cvar_WriteVariables
-//
 //	Appends lines containing "set variable value" for all variables with the
 // archive flag set to true.
-//
-//==========================================================================
-
 void Cvar_WriteVariables(fileHandle_t f)
 {
 	char	buffer[1024];
@@ -1308,12 +1076,6 @@ void Cvar_WriteVariables(fileHandle_t f)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Cvar_UpdateIfExists
-//
-//==========================================================================
 
 void Cvar_UpdateIfExists(const char* name, const char* value)
 {
