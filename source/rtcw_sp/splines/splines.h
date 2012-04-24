@@ -35,14 +35,8 @@ If you have questions concerning this license or the applicable additional terms
 
 typedef int fileHandle_t;
 
-static idVec4 blue( 0, 0, 1, 1 );
-static idVec4 red( 1, 0, 0, 1 );
-
 class idPointListInterface {
 public:
-idPointListInterface() {
-	selectedPoints.Clear();
-};
 virtual ~idPointListInterface() {
 };
 
@@ -54,101 +48,6 @@ virtual void addPoint( const float x, const float y, const float z ) {}
 virtual void addPoint( const idVec3 &v ) {}
 virtual void removePoint( int index ) {}
 virtual idVec3 *getPoint( int index ) { return NULL; }
-
-int selectPointByRay( float ox, float oy, float oz, float dx, float dy, float dz, bool single ) {
-	idVec3 origin( ox, oy, oz );
-	idVec3 dir( dx, dy, dz );
-	return selectPointByRay( origin, dir, single );
-}
-
-int selectPointByRay( const idVec3 origin, const idVec3 direction, bool single ) {
-	int i, besti, count;
-	float d, bestd;
-	idVec3 temp, temp2;
-
-	// find the point closest to the ray
-	besti = -1;
-	bestd = 8;
-	count = numPoints();
-
-	for ( i = 0; i < count; i++ ) {
-		temp = *getPoint( i );
-		temp2 = temp;
-		temp -= origin;
-		d = DotProduct( temp, direction );
-		__VectorMA( origin, d, direction, temp );
-		temp2 -= temp;
-		d = temp2.Length();
-		if ( d <= bestd ) {
-			bestd = d;
-			besti = i;
-		}
-	}
-
-	if ( besti >= 0 ) {
-		selectPoint( besti, single );
-	}
-
-	return besti;
-}
-
-int isPointSelected( int index ) {
-	int count = selectedPoints.Num();
-	for ( int i = 0; i < count; i++ ) {
-		if ( selectedPoints[i] == index ) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-int selectPoint( int index, bool single ) {
-	if ( index >= 0 && index < numPoints() ) {
-		if ( single ) {
-			deselectAll();
-		} else {
-			if ( isPointSelected( index ) >= 0 ) {
-				selectedPoints.Remove( index );
-			}
-		}
-		return selectedPoints.Append( index );
-	}
-	return -1;
-}
-
-void selectAll() {
-	selectedPoints.Clear();
-	for ( int i = 0; i < numPoints(); i++ ) {
-		selectedPoints.Append( i );
-	}
-}
-
-void deselectAll() {
-	selectedPoints.Clear();
-}
-
-int numSelectedPoints();
-
-idVec3 *getSelectedPoint( int index ) {
-	assert( index >= 0 && index < numSelectedPoints() );
-	return getPoint( selectedPoints[index] );
-}
-
-virtual void updateSelection( float x, float y, float z ) {
-	idVec3 move( x, y, z );
-	updateSelection( move );
-}
-
-virtual void updateSelection( const idVec3 &move ) {
-	int count = selectedPoints.Num();
-	for ( int i = 0; i < count; i++ ) {
-		*getPoint( selectedPoints[i] ) += move;
-	}
-}
-
-protected:
-idList<int> selectedPoints;
-
 };
 
 
@@ -184,7 +83,6 @@ void clearSpline() {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 void clear() {
 	clearControl();
@@ -204,8 +102,6 @@ void initPosition( long startTime, long totalTime );
 const idVec3 *getPosition( long time );
 
 
-void addToRenderer();
-
 void setSelectedPoint( idVec3 *p );
 idVec3 *getSelectedPoint() {
 	return selected;
@@ -220,8 +116,6 @@ void addPoint( float x, float y, float z ) {
 	controlPoints.Append( new idVec3( x, y, z ) );
 	dirty = true;
 }
-
-void updateSelection( const idVec3 &move );
 
 void startEdit() {
 	editMode = true;
@@ -434,7 +328,6 @@ virtual const idVec3 *getPosition( long t ) {
 }
 
 virtual void parse( const char *( *text ) ) {};
-virtual void write( fileHandle_t file, const char *name );
 virtual bool parseToken( const char *key, const char *( *text ) );
 
 const char *getName() {
@@ -508,7 +401,6 @@ virtual const idVec3 *getPosition( long t ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 virtual int numPoints() {
 	return 1;
@@ -552,7 +444,6 @@ idInterpolatedPosition( idVec3 start, idVec3 end, long time ) : idCameraPosition
 virtual const idVec3 *getPosition( long t );
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 virtual int numPoints() {
 	return 2;
@@ -631,12 +522,7 @@ virtual void start( long t ) {
 
 virtual const idVec3 *getPosition( long t );
 
-void addControlPoint( idVec3 &v ) {
-	target.addPoint( v );
-}
-
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 virtual int numPoints() {
 	return target.numPoints();
@@ -652,11 +538,6 @@ virtual void addPoint( const idVec3 &v ) {
 
 virtual void addPoint( const float x, const float y, const float z ) {
 	target.addPoint( x, y, z );
-}
-
-virtual void updateSelection( const idVec3 &move ) {
-	idCameraPosition::updateSelection( move );
-	target.buildSpline();
 }
 
 protected:
@@ -725,7 +606,6 @@ void reset( float startfov, float endfov, int start, float len ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 protected:
 float fov;
@@ -797,7 +677,6 @@ void setTime( long n ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 void setTriggered( bool b ) {
 	triggered = b;
@@ -877,7 +756,6 @@ idCameraEvent *getEvent( int index ) {
 
 void parse( const char *( *text ) );
 bool load( const char *filename );
-void save( const char *filename );
 
 void buildCamera();
 
@@ -948,8 +826,6 @@ void startCamera( long t );
 void stopCamera() {
 	cameraRunning = true;
 }
-void getActiveSegmentInfo( int segment, idVec3 &origin, idVec3 &direction, float *fv );
-
 bool getCameraInfo( long time, idVec3 &origin, idVec3 &direction, float *fv );
 bool getCameraInfo( long time, float *origin, float *direction, float *fv ) {
 	idVec3 org, dir;
@@ -1042,8 +918,5 @@ bool editMode;
 };
 
 extern bool g_splineMode;
-
-extern idCameraDef *g_splineList;
-
 
 #endif

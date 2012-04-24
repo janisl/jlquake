@@ -88,15 +88,6 @@ void Com_EndParseSession( void ) {
 
 /*
 ===================
-Com_GetCurrentParseLine
-===================
-*/
-int Com_GetCurrentParseLine( void ) {
-	return pi->lines;
-}
-
-/*
-===================
 Com_ScriptError
 
 Prints the script name and line number in the message
@@ -406,78 +397,6 @@ void Com_MatchToken( const char *( *buf_p ), const char *match, qboolean warning
 		}
 	}
 }
-
-
-/*
-=================
-Com_SkipBracedSection
-
-The next token should be an open brace.
-Skips until a matching close brace is found.
-Internal brace depths are properly skipped.
-=================
-*/
-void Com_SkipBracedSection( const char *( *program ) ) {
-	const char          *token;
-	int depth;
-
-	depth = 0;
-	do {
-		token = Com_Parse( program );
-		if ( token[1] == 0 ) {
-			if ( token[0] == '{' ) {
-				depth++;
-			} else if ( token[0] == '}' )     {
-				depth--;
-			}
-		}
-	} while ( depth && *program );
-}
-
-/*
-=================
-Com_SkipRestOfLine
-=================
-*/
-void Com_SkipRestOfLine( const char *( *data ) ) {
-	const char  *p;
-	int c;
-
-	p = *data;
-	while ( ( c = *p++ ) != 0 ) {
-		if ( c == '\n' ) {
-			pi->lines++;
-			break;
-		}
-	}
-
-	*data = p;
-}
-
-/*
-====================
-Com_ParseRestOfLine
-====================
-*/
-const char *Com_ParseRestOfLine( const char *( *data_p ) ) {
-	static char line[MAX_TOKEN_CHARS_Q3];
-	const char *token;
-
-	line[0] = 0;
-	while ( 1 ) {
-		token = Com_ParseOnLine( data_p );
-		if ( !token[0] ) {
-			break;
-		}
-		if ( line[0] ) {
-			String::Cat( line, sizeof( line ), " " );
-		}
-		String::Cat( line, sizeof( line ), token );
-	}
-
-	return line;
-}
-
 
 float Com_ParseFloat( const char *( *buf_p ) ) {
 	const char      *token;

@@ -43,8 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 
 idVec3 vec_zero( 0.0f, 0.0f, 0.0f );
 
-Bounds boundsZero;
-
 float idVec3::toYaw( void ) {
 	float yaw;
 
@@ -80,36 +78,6 @@ float idVec3::toPitch( void ) {
 
 	return pitch;
 }
-
-/*
-angles_t idVec3::toAngles( void ) {
-	float forward;
-	float yaw;
-	float pitch;
-
-	if ( ( x == 0 ) && ( y == 0 ) ) {
-		yaw = 0;
-		if ( z > 0 ) {
-			pitch = 90;
-		} else {
-			pitch = 270;
-		}
-	} else {
-		yaw = atan2( y, x ) * 180 / M_PI;
-		if ( yaw < 0 ) {
-			yaw += 360;
-		}
-
-		forward = ( float )idSqrt( x * x + y * y );
-		pitch = atan2( z, forward ) * 180 / M_PI;
-		if ( pitch < 0 ) {
-			pitch += 360;
-		}
-	}
-
-	return angles_t( -pitch, yaw, 0 );
-}
-*/
 
 idVec3 LerpVector( idVec3 &w1, idVec3 &w2, const float t ) {
 	float omega, cosom, sinom, scale0, scale1;

@@ -43,8 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 
 idVec3 vec_zero( 0.0f, 0.0f, 0.0f );
 
-Bounds boundsZero;
-
 float idVec3::toYaw( void ) {
 	float yaw;
 

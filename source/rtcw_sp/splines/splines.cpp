@@ -82,90 +82,7 @@ void startCamera( int camNum, int time ) {
 }
 
 
-//#include "../shared/windings.h"
-//#include "../qcommon/qcommon.h"
-//#include "../sys/sys_public.h"
-//#include "../game/game_entity.h"
-
-idCameraDef splineList;
-idCameraDef *g_splineList = &splineList;
-
 idVec3 idSplineList::zero( 0,0,0 );
-
-void splineTest() {
-	//g_splineList->load("p:/doom/base/maps/test_base1.camera");
-}
-
-void splineDraw() {
-	//g_splineList->addToRenderer();
-}
-
-
-//extern void D_DebugLine( const idVec3 &color, const idVec3 &start, const idVec3 &end );
-
-void debugLine( idVec3 &color, float x, float y, float z, float x2, float y2, float z2 ) {
-//	idVec3 from(x, y, z);
-//	idVec3 to(x2, y2, z2);
-	//D_DebugLine(color, from, to);
-}
-
-void idSplineList::addToRenderer() {
-
-	if ( controlPoints.Num() == 0 ) {
-		return;
-	}
-
-	idVec3 mins, maxs;
-	idVec3 yellow( 1.0, 1.0, 0 );
-	idVec3 white( 1.0, 1.0, 1.0 );
-	int i;
-
-	for ( i = 0; i < controlPoints.Num(); i++ ) {
-		VectorCopy( *controlPoints[i], mins );
-		VectorCopy( mins, maxs );
-		mins[0] -= 8;
-		mins[1] += 8;
-		mins[2] -= 8;
-		maxs[0] += 8;
-		maxs[1] -= 8;
-		maxs[2] += 8;
-		debugLine( yellow, mins[0], mins[1], mins[2], maxs[0], mins[1], mins[2] );
-		debugLine( yellow, maxs[0], mins[1], mins[2], maxs[0], maxs[1], mins[2] );
-		debugLine( yellow, maxs[0], maxs[1], mins[2], mins[0], maxs[1], mins[2] );
-		debugLine( yellow, mins[0], maxs[1], mins[2], mins[0], mins[1], mins[2] );
-
-		debugLine( yellow, mins[0], mins[1], maxs[2], maxs[0], mins[1], maxs[2] );
-		debugLine( yellow, maxs[0], mins[1], maxs[2], maxs[0], maxs[1], maxs[2] );
-		debugLine( yellow, maxs[0], maxs[1], maxs[2], mins[0], maxs[1], maxs[2] );
-		debugLine( yellow, mins[0], maxs[1], maxs[2], mins[0], mins[1], maxs[2] );
-
-	}
-
-	int step = 0;
-	idVec3 step1;
-	for ( i = 3; i < controlPoints.Num(); i++ ) {
-		for ( float tension = 0.0f; tension < 1.001f; tension += 0.1f ) {
-			float x = 0;
-			float y = 0;
-			float z = 0;
-			for ( int j = 0; j < 4; j++ ) {
-				x += controlPoints[i - ( 3 - j )]->x * calcSpline( j, tension );
-				y += controlPoints[i - ( 3 - j )]->y * calcSpline( j, tension );
-				z += controlPoints[i - ( 3 - j )]->z * calcSpline( j, tension );
-			}
-			if ( step == 0 ) {
-				step1[0] = x;
-				step1[1] = y;
-				step1[2] = z;
-				step = 1;
-			} else {
-				debugLine( white, step1[0], step1[1], step1[2], x, y, z );
-				step = 0;
-			}
-
-		}
-	}
-}
 
 void idSplineList::buildSpline() {
 	//int start = Sys_Milliseconds();
@@ -255,16 +172,6 @@ float idSplineList::calcSpline( int step, float tension ) {
 	}
 	return 0.0;
 }
-
-
-
-void idSplineList::updateSelection( const idVec3 &move ) {
-	if ( selected ) {
-		dirty = true;
-		VectorAdd( *selected, move, *selected );
-	}
-}
-
 
 void idSplineList::setSelectedPoint( idVec3 *p ) {
 	if ( p ) {
@@ -359,59 +266,6 @@ void idSplineList::parse( const char *( *text )  ) {
 	//Com_UngetToken();
 	//Com_MatchToken( text, "}" );
 	dirty = true;
-}
-
-void idSplineList::write( fileHandle_t file, const char *p ) {
-	idStr s = va( "\t\t%s {\n", p );
-	FS_Write( s.c_str(), s.length(), file );
-	//s = va("\t\tname %s\n", name.c_str());
-	//FS_Write(s.c_str(), s.length(), file);
-	s = va( "\t\t\tgranularity %f\n", granularity );
-	FS_Write( s.c_str(), s.length(), file );
-	int count = controlPoints.Num();
-	for ( int i = 0; i < count; i++ ) {
-		s = va( "\t\t\t( %f %f %f )\n", controlPoints[i]->x, controlPoints[i]->y, controlPoints[i]->z );
-		FS_Write( s.c_str(), s.length(), file );
-	}
-	s = "\t\t}\n";
-	FS_Write( s.c_str(), s.length(), file );
-}
-
-
-void idCameraDef::getActiveSegmentInfo( int segment, idVec3 &origin, idVec3 &direction, float *fov ) {
-#if 0
-	if ( !cameraSpline.validTime() ) {
-		buildCamera();
-	}
-	double d = (double)segment / numSegments();
-	getCameraInfo( d * totalTime * 1000, origin, direction, fov );
-#endif
-/*
-	if (!cameraSpline.validTime()) {
-		buildCamera();
-	}
-	origin = *cameraSpline.getSegmentPoint(segment);
-
-
-	idVec3 temp;
-
-	int numTargets = getTargetSpline()->controlPoints.Num();
-	int count = cameraSpline.splineTime.Num();
-	if (numTargets == 0) {
-		// follow the path
-		if (cameraSpline.getActiveSegment() < count - 1) {
-			temp = *cameraSpline.splinePoints[cameraSpline.getActiveSegment()+1];
-		}
-	} else if (numTargets == 1) {
-		temp = *getTargetSpline()->controlPoints[0];
-	} else {
-		temp = *getTargetSpline()->getSegmentPoint(segment);
-	}
-
-	temp -= origin;
-	temp.Normalize();
-	direction = temp;
-*/
 }
 
 bool idCameraDef::getCameraInfo( long time, idVec3 &origin, idVec3 &direction, float *fv ) {
@@ -738,33 +592,6 @@ bool idCameraDef::load( const char *filename ) {
 	return true;
 }
 
-void idCameraDef::save( const char *filename ) {
-	fileHandle_t file = FS_FOpenFileWrite( filename );
-	if ( file ) {
-		int i;
-		idStr s = "cameraPathDef { \n";
-		FS_Write( s.c_str(), s.length(), file );
-		s = va( "\ttime %f\n", baseTime );
-		FS_Write( s.c_str(), s.length(), file );
-
-		cameraPosition->write( file, va( "camera_%s",cameraPosition->typeStr() ) );
-
-		for ( i = 0; i < numTargets(); i++ ) {
-			targetPositions[i]->write( file, va( "target_%s", targetPositions[i]->typeStr() ) );
-		}
-
-		for ( i = 0; i < events.Num(); i++ ) {
-			events[i]->write( file, "event" );
-		}
-
-		fov.write( file, "fov" );
-
-		s = "}\n";
-		FS_Write( s.c_str(), s.length(), file );
-	}
-	FS_FCloseFile( file );
-}
-
 int idCameraDef::sortEvents( const void *p1, const void *p2 ) {
 	idCameraEvent *ev1 = ( idCameraEvent* )( p1 );
 	idCameraEvent *ev2 = ( idCameraEvent* )( p2 );
@@ -849,20 +676,6 @@ void idCameraEvent::parse( const char *( *text )  ) {
 	Com_UngetToken();
 	Com_MatchToken( text, "}" );
 }
-
-void idCameraEvent::write( fileHandle_t file, const char *name ) {
-	idStr s = va( "\t%s {\n", name );
-	FS_Write( s.c_str(), s.length(), file );
-	s = va( "\t\ttype %d\n", static_cast<int>( type ) );
-	FS_Write( s.c_str(), s.length(), file );
-	s = va( "\t\tparam \"%s\"\n", paramStr.c_str() );
-	FS_Write( s.c_str(), s.length(), file );
-	s = va( "\t\ttime %d\n", time );
-	FS_Write( s.c_str(), s.length(), file );
-	s = "\t}\n";
-	FS_Write( s.c_str(), s.length(), file );
-}
-
 
 const char *idCameraPosition::positionStr[] = {
 	"Fixed",
@@ -1130,81 +943,6 @@ void idSplinePosition::parse( const char *( *text )  ) {
 
 	Com_UngetToken();
 	Com_MatchToken( text, "}" );
-}
-
-
-
-void idCameraFOV::write( fileHandle_t file, const char *p ) {
-	idStr s = va( "\t%s {\n", p );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\tfov %f\n", fov );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\tstartFOV %f\n", startFOV );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\tendFOV %f\n", endFOV );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\ttime %i\n", time );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = "\t}\n";
-	FS_Write( s.c_str(), s.length(), file );
-}
-
-
-void idCameraPosition::write( fileHandle_t file, const char *p ) {
-
-	idStr s = va( "\t\ttime %i\n", time );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\ttype %i\n", static_cast<int>( type ) );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\tname %s\n", name.c_str() );
-	FS_Write( s.c_str(), s.length(), file );
-
-	s = va( "\t\tbaseVelocity %f\n", baseVelocity );
-	FS_Write( s.c_str(), s.length(), file );
-
-	for ( int i = 0; i < velocities.Num(); i++ ) {
-		s = va( "\t\tvelocity %i %i %f\n", velocities[i]->startTime, velocities[i]->time, velocities[i]->speed );
-		FS_Write( s.c_str(), s.length(), file );
-	}
-
-}
-
-void idFixedPosition::write( fileHandle_t file, const char *p ) {
-	idStr s = va( "\t%s {\n", p );
-	FS_Write( s.c_str(), s.length(), file );
-	idCameraPosition::write( file, p );
-	s = va( "\t\tpos ( %f %f %f )\n", pos.x, pos.y, pos.z );
-	FS_Write( s.c_str(), s.length(), file );
-	s = "\t}\n";
-	FS_Write( s.c_str(), s.length(), file );
-}
-
-void idInterpolatedPosition::write( fileHandle_t file, const char *p ) {
-	idStr s = va( "\t%s {\n", p );
-	FS_Write( s.c_str(), s.length(), file );
-	idCameraPosition::write( file, p );
-	s = va( "\t\tstartPos ( %f %f %f )\n", startPos.x, startPos.y, startPos.z );
-	FS_Write( s.c_str(), s.length(), file );
-	s = va( "\t\tendPos ( %f %f %f )\n", endPos.x, endPos.y, endPos.z );
-	FS_Write( s.c_str(), s.length(), file );
-	s = "\t}\n";
-	FS_Write( s.c_str(), s.length(), file );
-}
-
-void idSplinePosition::write( fileHandle_t file, const char *p ) {
-	idStr s = va( "\t%s {\n", p );
-	FS_Write( s.c_str(), s.length(), file );
-	idCameraPosition::write( file, p );
-	target.write( file, "target" );
-	s = "\t}\n";
-	FS_Write( s.c_str(), s.length(), file );
 }
 
 void idCameraDef::addTarget( const char *name, idCameraPosition::positionType type ) {

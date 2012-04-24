@@ -35,9 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 typedef int fileHandle_t;
 
-static idVec4 blue( 0, 0, 1, 1 );
-static idVec4 red( 1, 0, 0, 1 );
-
 class idPointListInterface {
 public:
 idPointListInterface() {
@@ -54,43 +51,6 @@ virtual void addPoint( const float x, const float y, const float z ) {}
 virtual void addPoint( const idVec3 &v ) {}
 virtual void removePoint( int index ) {}
 virtual idVec3 *getPoint( int index ) { return NULL; }
-
-int selectPointByRay( float ox, float oy, float oz, float dx, float dy, float dz, bool single ) {
-	idVec3 origin( ox, oy, oz );
-	idVec3 dir( dx, dy, dz );
-	return selectPointByRay( origin, dir, single );
-}
-
-int selectPointByRay( const idVec3 origin, const idVec3 direction, bool single ) {
-	int i, besti, count;
-	float d, bestd;
-	idVec3 temp, temp2;
-
-	// find the point closest to the ray
-	besti = -1;
-	bestd = 8;
-	count = numPoints();
-
-	for ( i = 0; i < count; i++ ) {
-		temp = *getPoint( i );
-		temp2 = temp;
-		temp -= origin;
-		d = DotProduct( temp, direction );
-		__VectorMA( origin, d, direction, temp );
-		temp2 -= temp;
-		d = temp2.Length();
-		if ( d <= bestd ) {
-			bestd = d;
-			besti = i;
-		}
-	}
-
-	if ( besti >= 0 ) {
-		selectPoint( besti, single );
-	}
-
-	return besti;
-}
 
 int isPointSelected( int index ) {
 	int count = selectedPoints.Num();
@@ -184,7 +144,6 @@ void clearSpline() {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 void clear() {
 	clearControl();
@@ -434,7 +393,6 @@ virtual const idVec3 *getPosition( long t ) {
 }
 
 virtual void parse( const char *( *text ) ) {};
-virtual void write( fileHandle_t file, const char *name );
 virtual bool parseToken( const char *key, const char *( *text ) );
 
 const char *getName() {
@@ -509,7 +467,6 @@ virtual const idVec3 *getPosition( long t ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 virtual int numPoints() {
 	return 1;
@@ -553,7 +510,6 @@ idInterpolatedPosition( idVec3 start, idVec3 end, long time ) : idCameraPosition
 virtual const idVec3 *getPosition( long t );
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 virtual int numPoints() {
 	return 2;
@@ -643,7 +599,6 @@ void addControlPoint( idVec3 &v ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 virtual int numPoints() {
 	return target.numPoints();
@@ -732,7 +687,6 @@ void reset( float startfov, float endfov, int start, float len ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 protected:
 float fov;
@@ -804,7 +758,6 @@ void setTime( long n ) {
 }
 
 void parse( const char *( *text ) );
-void write( fileHandle_t file, const char *name );
 
 void setTriggered( bool b ) {
 	triggered = b;
@@ -884,7 +837,6 @@ idCameraEvent *getEvent( int index ) {
 
 void parse( const char *( *text ) );
 bool load( const char *filename );
-void save( const char *filename );
 
 void buildCamera();
 

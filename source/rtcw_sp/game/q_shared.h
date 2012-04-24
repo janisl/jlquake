@@ -232,37 +232,6 @@ typedef enum {
 	ERR_ENDGAME                 // not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
 } errorParm_t;
 
-
-// font rendering values used by ui and cgame
-
-#define PROP_GAP_WIDTH          3
-#define PROP_SPACE_WIDTH        8
-#define PROP_HEIGHT             27
-#define PROP_SMALL_SIZE_SCALE   0.75
-
-#define BLINK_DIVISOR           200
-#define PULSE_DIVISOR           75
-
-#define UI_LEFT         0x00000000  // default
-#define UI_CENTER       0x00000001
-#define UI_RIGHT        0x00000002
-#define UI_FORMATMASK   0x00000007
-#define UI_SMALLFONT    0x00000010
-#define UI_BIGFONT      0x00000020  // default
-#define UI_GIANTFONT    0x00000040
-#define UI_DROPSHADOW   0x00000800
-#define UI_BLINK        0x00001000
-#define UI_INVERSE      0x00002000
-#define UI_PULSE        0x00004000
-// JOSEPH 10-24-99
-#define UI_MENULEFT     0x00008000
-#define UI_MENURIGHT    0x00010000
-#define UI_EXSMALLFONT  0x00020000
-#define UI_MENUFULL     0x00080000
-// END JOSEPH
-
-#define UI_SMALLFONT75  0x00100000
-
 #if defined( _DEBUG ) && !defined( BSPC )
 	#define HUNK_DEBUG
 #endif
@@ -293,12 +262,6 @@ MATHLIB
 // and will be automatically scaled to the real resolution
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
-
-#define TINYCHAR_WIDTH      ( SMALLCHAR_WIDTH )
-#define TINYCHAR_HEIGHT     ( SMALLCHAR_HEIGHT / 2 )
-
-#define GIANTCHAR_WIDTH     32
-#define GIANTCHAR_HEIGHT    48
 
 extern vec4_t colorBlack;
 extern vec4_t colorRed;

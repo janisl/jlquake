@@ -38,23 +38,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../core/core.h"
 
-#define Q3_VERSION      "ET"
-
-// alignment macros for SIMD
-#define ALIGN_ON
-#define ALIGN_OFF
-
 #include <assert.h>
 #include <time.h>
 #include <ctype.h>
-#ifdef WIN32                // mac doesn't have malloc.h
-#include <malloc.h>          // for _alloca()
-#endif
-#ifdef _WIN32
-
-//#pragma intrinsic( memset, memcpy )
-
-#endif
 
 // for windows fastcall option
 
@@ -64,105 +50,25 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef WIN32
 
-#define MAC_STATIC
-
 #undef QDECL
 #define QDECL   __cdecl
-
-// buildstring will be incorporated into the version string
-#ifdef NDEBUG
-#ifdef _M_IX86
-#define CPUSTRING   "win-x86"
-#elif defined _M_ALPHA
-#define CPUSTRING   "win-AXP"
-#endif
-#else
-#ifdef _M_IX86
-#define CPUSTRING   "win-x86-debug"
-#elif defined _M_ALPHA
-#define CPUSTRING   "win-AXP-debug"
-#endif
-#endif
 
 #endif
 
 //======================= MAC DEFINES =================================
 
-#ifdef __MACOS__
-
-//DAJ #define	MAC_STATIC static
-#define MAC_STATIC
-
-#define CPUSTRING   "MacOS-PPC"
-
-void Sys_PumpEvents( void );
-
-#endif
-
 #ifdef __MRC__
-
-#define MAC_STATIC
-
-#define CPUSTRING   "MacOS-PPC"
-
-void Sys_PumpEvents( void );
 
 #undef QDECL
 #define QDECL   __cdecl
-
-#define _alloca alloca
-#endif
-
-//======================= LINUX DEFINES =================================
-
-// the mac compiler can't handle >32k of locals, so we
-// just waste space and make big arrays static...
-#ifdef __linux__
-
-#define MAC_STATIC
-
-#ifdef __i386__
-#define CPUSTRING   "linux-i386"
-#elif defined __axp__
-#define CPUSTRING   "linux-alpha"
-#else
-#define CPUSTRING   "linux-other"
-#endif
 
 #endif
 
 //=============================================================
 
-
-
-typedef enum {qfalse, qtrue};
+enum {qfalse, qtrue};
 
 #define EQUAL_EPSILON   0.001
-
-typedef enum {
-	INVALID_JOINT = -1
-} jointHandle_t;
-
-#ifndef NULL
-#define NULL ( (void *)0 )
-#endif
-
-#define MAX_QINT            0x7fffffff
-#define MIN_QINT            ( -MAX_QINT - 1 )
-
-#ifndef max
-#define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
-#define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
-#endif
-
-#ifndef sign
-#define sign( f )   ( ( f > 0 ) ? 1 : ( ( f < 0 ) ? -1 : 0 ) )
-#endif
-
-//
-// these aren't needed by any of the VMs.  put in another header?
-//
-#define MAX_MAP_AREA_BYTES      32      // bit vector of area visibility
 
 #undef ERR_FATAL                        // malloc.h on unix
 
@@ -171,32 +77,7 @@ typedef enum {
 	ERR_NONE,
 	ERR_FATAL,                  // exit the entire game with a popup window
 	ERR_DROP,                   // print to console and disconnect from game
-	ERR_DISCONNECT,             // don't kill server
-	ERR_NEED_CD                 // pop up the need-cd dialog
 } errorParm_t;
-
-
-// font rendering values used by ui and cgame
-
-#define PROP_GAP_WIDTH          3
-#define PROP_SPACE_WIDTH        8
-#define PROP_HEIGHT             27
-#define PROP_SMALL_SIZE_SCALE   0.75
-
-#define BLINK_DIVISOR           200
-#define PULSE_DIVISOR           75
-
-#define UI_LEFT         0x00000000  // default
-#define UI_CENTER       0x00000001
-#define UI_RIGHT        0x00000002
-#define UI_FORMATMASK   0x00000007
-#define UI_SMALLFONT    0x00000010
-#define UI_BIGFONT      0x00000020  // default
-#define UI_GIANTFONT    0x00000040
-#define UI_DROPSHADOW   0x00000800
-#define UI_BLINK        0x00001000
-#define UI_INVERSE      0x00002000
-#define UI_PULSE        0x00004000
 
 /*
 ==============================================================
@@ -205,102 +86,21 @@ MATHLIB
 
 ==============================================================
 */
-#ifdef __cplusplus          // so we can include this in C code
-#define Q_PI    3.14159265358979323846
 
 #include "math_vector.h"
 #include "math_angles.h"
 #include "math_matrix.h"
 #include "math_quaternion.h"
 
-class idVec3;                       // for defining vectors
 typedef idVec3 &vec3_p;             // for passing vectors as function arguments
-typedef const idVec3 &vec3_c;       // for passing vectors as const function arguments
-
-class angles_t;                     // for defining angle vectors
-typedef angles_t &angles_p;         // for passing angles as function arguments
-typedef const angles_t &angles_c;   // for passing angles as const function arguments
-
-class mat3_t;                       // for defining matrices
-typedef mat3_t &mat3_p;             // for passing matrices as function arguments
-typedef const mat3_t &mat3_c;       // for passing matrices as const function arguments
-
-
-
-// all drawing is done to a 640*480 virtual screen size
-// and will be automatically scaled to the real resolution
-#define SCREEN_WIDTH        640
-#define SCREEN_HEIGHT       480
-
-#define TINYCHAR_WIDTH      ( SMALLCHAR_WIDTH )
-#define TINYCHAR_HEIGHT     ( SMALLCHAR_HEIGHT / 2 )
-
-#define GIANTCHAR_WIDTH     32
-#define GIANTCHAR_HEIGHT    48
-
-extern idVec4 colorBlack;
-extern idVec4 colorRed;
-extern idVec4 colorGreen;
-extern idVec4 colorBlue;
-extern idVec4 colorYellow;
-extern idVec4 colorMagenta;
-extern idVec4 colorCyan;
-extern idVec4 colorWhite;
-extern idVec4 colorLtGrey;
-extern idVec4 colorMdGrey;
-extern idVec4 colorDkGrey;
-
-#define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
-#define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a
-
-extern idVec4 vec4_origin;
 
 // TTimo
 // handy stuff when tracking isnan problems
 #ifndef NDEBUG
-#define CHECK_NAN( x ) assert( !IS_NAN( x ) )
 #define CHECK_NAN_VEC( v ) assert( !IS_NAN( v[0] ) && !IS_NAN( v[1] ) && !IS_NAN( v[2] ) )
 #else
-#define CHECK_NAN
 #define CHECK_NAN_VEC
 #endif
-
-float NormalizeColor( vec3_c in, vec3_p out );
-
-void VectorPolar( vec3_p v, float radius, float theta, float phi );
-void VectorSnap( vec3_p v );
-void Vector53Copy( const idVec5_t &in, vec3_p out );
-void Vector5Scale( const idVec5_t &v, float scale, idVec5_t &out );
-void Vector5Add( const idVec5_t &va, const idVec5_t &vb, idVec5_t &out );
-void VectorRotate3( vec3_c vIn, vec3_c vRotation, vec3_p out );
-void VectorRotate3Origin( vec3_c vIn, vec3_c vRotation, vec3_c vOrigin, vec3_p out );
-
-
-int     Q_rand( int *seed );
-float   Q_random( int *seed );
-float   Q_crandom( int *seed );
-
-float Q_rint( float in );
-
-void vectoangles( vec3_c value1, angles_p angles );
-
-qboolean AxisRotated( mat3_c in );          // assumes a non-degenerate axis
-
-int SignbitsForNormal( vec3_c normal );
-
-void MatrixInverseMultiply( mat3_c in1, mat3_c in2, mat3_p out );   // in2 is transposed during multiply
-void MatrixTransformVector( vec3_c in, mat3_c matrix, vec3_p out );
-void MatrixProjectVector( vec3_c in, mat3_c matrix, vec3_p out ); // Places the vector into a new coordinate system.
-
-float TriangleArea( vec3_c a, vec3_c b, vec3_c c );
-#endif                                      // __cplusplus
-
-//=============================================
-
-float Com_Clamp( float min, float max, float value );
-
-#define FILE_HASH_SIZE      1024
-int Com_HashString( const char *fname );
 
 /*
 =====================================================================================
@@ -314,8 +114,6 @@ SCRIPT PARSING
 void Com_BeginParseSession( const char *filename );
 void Com_EndParseSession( void );
 
-int Com_GetCurrentParseLine( void );
-
 // Will never return NULL, just empty strings.
 // An empty string will only be returned at end of file.
 // ParseOnLine will return empty if there isn't another token on this line
@@ -323,126 +121,17 @@ int Com_GetCurrentParseLine( void );
 // this funny typedef just means a moving pointer into a const char * buffer
 const char *Com_Parse( const char *( *data_p ) );
 const char *Com_ParseOnLine( const char *( *data_p ) );
-const char *Com_ParseRestOfLine( const char *( *data_p ) );
 
 void Com_UngetToken( void );
 
-#ifdef __cplusplus
 void Com_MatchToken( const char *( *buf_p ), const char *match, qboolean warning = qfalse );
-#else
-void Com_MatchToken( const char *( *buf_p ), const char *match, qboolean warning );
-#endif
 
 void Com_ScriptError( const char *msg, ... );
 void Com_ScriptWarning( const char *msg, ... );
 
-void Com_SkipBracedSection( const char *( *program ) );
-void Com_SkipRestOfLine( const char *( *data ) );
-
 float Com_ParseFloat( const char *( *buf_p ) );
-int Com_ParseInt( const char *( *buf_p ) );
 
 void Com_Parse1DMatrix( const char *( *buf_p ), int x, float *m );
-void Com_Parse2DMatrix( const char *( *buf_p ), int y, int x, float *m );
-void Com_Parse3DMatrix( const char *( *buf_p ), int z, int y, int x, float *m );
-
-//=====================================================================================
-
-// String::Length that discounts Quake color sequences
-int Q_PrintStrlen( const char *string );
-// removes color sequences from string
-char *Q_CleanStr( char *string );
-
-//=============================================
-
-#ifdef __cplusplus
-//
-// mapfile parsing
-//
-typedef struct ePair_s {
-	char    *key;
-	char    *value;
-} ePair_t;
-
-typedef struct mapSide_s {
-	char material[MAX_QPATH];
-	idVec4 plane;
-	idVec4 textureVectors[2];
-} mapSide_t;
-
-typedef struct {
-	int numSides;
-	mapSide_t   **sides;
-} mapBrush_t;
-
-typedef struct {
-	idVec3 xyz;
-	float st[2];
-} patchVertex_t;
-
-typedef struct {
-	char material[MAX_QPATH];
-	int width, height;
-	patchVertex_t   *patchVerts;
-} mapPatch_t;
-
-typedef struct {
-	char modelName[MAX_QPATH];
-	float matrix[16];
-} mapModel_t;
-
-typedef struct mapPrimitive_s {
-	int numEpairs;
-	ePair_t         **ePairs;
-
-	// only one of these will be non-NULL
-	mapBrush_t      *brush;
-	mapPatch_t      *patch;
-	mapModel_t      *model;
-} mapPrimitive_t;
-
-typedef struct mapEntity_s {
-	int numPrimitives;
-	mapPrimitive_t  **primitives;
-
-	int numEpairs;
-	ePair_t         **ePairs;
-} mapEntity_t;
-
-typedef struct {
-	int numEntities;
-	mapEntity_t     **entities;
-} mapFile_t;
-
-
-// the order of entities, brushes, and sides will be maintained, the
-// lists won't be swapped on each load or save
-mapFile_t *ParseMapFile( const char *text );
-void FreeMapFile( mapFile_t *mapFile );
-void WriteMapFile( const mapFile_t *mapFile, FILE *f );
-
-// key names are case-insensitive
-const char  *ValueForMapEntityKey( const mapEntity_t *ent, const char *key );
-float   FloatForMapEntityKey( const mapEntity_t *ent, const char *key );
-qboolean    GetVectorForMapEntityKey( const mapEntity_t *ent, const char *key, idVec3 &vec );
-
-typedef struct {
-	idVec3 xyz;
-	idVec2 st;
-	idVec3 normal;
-	idVec3 tangents[2];
-	byte smoothing[4];              // colors for silhouette smoothing
-} bsp46_drawVert_t;
-
-typedef struct {
-	int width, height;
-	bsp46_drawVert_t  *verts;
-} drawVertMesh_t;
-
-// Tesselate a map patch into smoothed, drawable vertexes
-// MaxError of around 4 is reasonable
-drawVertMesh_t *SubdivideMapPatch( const mapPatch_t *patch, float maxError );
-#endif          // __cplusplus
 
 //=========================================
 
