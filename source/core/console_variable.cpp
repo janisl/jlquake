@@ -543,7 +543,7 @@ static int ConvertTech3GameFlags(int flags)
 	//	For Quake 2 compatibility some flags have been moved around,
 	// so map them to new values. Also clear unknown flags.
 	int TmpFlags = flags;
-	flags &= 0x07c7;
+	flags &= 0x3fc7;
 	if (TmpFlags & 8)
 	{
 		flags |= CVAR_SYSTEMINFO;
