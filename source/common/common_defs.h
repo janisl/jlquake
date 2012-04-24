@@ -29,7 +29,7 @@
 //#pragma warning(disable : 4214)
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4142)		// benign redefinition
-//#pragma warning(disable : 4305)		// truncation from const double to float
+#pragma warning(disable : 4305)		// truncation from const double to float
 //#pragma warning(disable : 4310)		// cast truncates constant value
 //#pragma warning(disable:  4505) 	// unreferenced local function has been removed
 #pragma warning(disable : 4514)

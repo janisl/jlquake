@@ -1737,7 +1737,7 @@ int FS_Read(void *buffer, int len, fileHandle_t f)
 		while (remaining)
 		{
 			int block = remaining;
-			int read = fread(buf, 1, block, fsh[f].handleFiles.file.o);
+			int read = (int)fread(buf, 1, block, fsh[f].handleFiles.file.o);
 			if (read == 0)
 			{
 				// we might have been trying to read from a CD, which
@@ -1789,7 +1789,7 @@ int FS_Write(const void* buffer, int len, fileHandle_t h)
 	while (remaining)
 	{
 		int block = remaining;
-		int written = fwrite(buf, 1, block, f);
+		int written = (int)fwrite(buf, 1, block, f);
 		if (written == 0)
 		{
 			if (!tries)
@@ -2818,7 +2818,7 @@ int FS_GetModList(char* listbuf, int bufsize)
 				FILE *file;
 				file = FS_FileForHandle(descHandle);
 				Com_Memset(descPath, 0, sizeof(descPath));
-				nDescLen = fread(descPath, 1, 48, file);
+				nDescLen = (int)fread(descPath, 1, 48, file);
 				if (nDescLen >= 0)
 				{
 					descPath[nDescLen] = '\0';

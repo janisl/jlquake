@@ -30,7 +30,7 @@ void Mem_Free(void* ptr, const char* FileName, int LineNumber);
 
 inline void* operator new(size_t Size, const char* FileName, int LineNumber)
 {
-	return Mem_Alloc(Size, FileName, LineNumber);
+	return Mem_Alloc((int)Size, FileName, LineNumber);
 }
 
 inline void operator delete(void* Ptr, const char* FileName, int LineNumber)
@@ -40,7 +40,7 @@ inline void operator delete(void* Ptr, const char* FileName, int LineNumber)
 
 inline void* operator new[](size_t Size, const char* FileName, int LineNumber)
 {
-	return Mem_Alloc(Size, FileName, LineNumber);
+	return Mem_Alloc((int)Size, FileName, LineNumber);
 }
 
 inline void operator delete[](void* Ptr, const char* FileName, int LineNumber)
@@ -50,7 +50,7 @@ inline void operator delete[](void* Ptr, const char* FileName, int LineNumber)
 
 inline void* operator new(size_t Size)
 {
-	return Mem_Alloc(Size, "", 0);
+	return Mem_Alloc((int)Size, "", 0);
 }
 
 inline void operator delete(void* Ptr)
@@ -60,7 +60,7 @@ inline void operator delete(void* Ptr)
 
 inline void* operator new[](size_t Size)
 {
-	return Mem_Alloc(Size, "", 0);
+	return Mem_Alloc((int)Size, "", 0);
 }
 
 inline void operator delete[](void* Ptr)
@@ -84,7 +84,7 @@ void Mem_Free(void* ptr);
 
 inline void* operator new(size_t Size)
 {
-	return Mem_Alloc(Size);
+	return Mem_Alloc((int)Size);
 }
 
 inline void operator delete(void* Ptr)
@@ -94,7 +94,7 @@ inline void operator delete(void* Ptr)
 
 inline void* operator new[](size_t Size)
 {
-	return Mem_Alloc(Size);
+	return Mem_Alloc((int)Size);
 }
 
 inline void operator delete[](void* Ptr)
