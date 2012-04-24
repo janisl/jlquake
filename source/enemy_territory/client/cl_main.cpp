@@ -1700,7 +1700,7 @@ void CL_DownloadsComplete( void ) {
 	// DHM - Nerve :: Auto-update (not finished yet)
 	if ( autoupdateStarted ) {
 
-		if ( autoupdateFilename && ( String::Length( autoupdateFilename ) > 4 ) ) {
+		if ( ( String::Length( autoupdateFilename ) > 4 ) ) {
 #ifdef _WIN32
 			// win32's Sys_StartProcess prepends the current dir
 			fn = va( "%s/%s", FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT ), autoupdateFilename );
@@ -2041,7 +2041,7 @@ void CL_DisconnectPacket( netadr_t from ) {
 	if ( !cls.et_bWWWDlDisconnected ) {
 		// drop the connection
 		message = "Server disconnected for unknown reason";
-		Com_Printf( message );
+		Com_Printf( "%s", message );
 		Cvar_Set( "com_errorMessage", message );
 		CL_Disconnect( qtrue );
 	} else {
@@ -2100,18 +2100,18 @@ void CL_PrintPacket( netadr_t from, QMsg *msg ) {
 	if ( !String::NICmp( s, "[err_dialog]", 12 ) ) {
 		String::NCpyZ( clc.q3_serverMessage, s + 12, sizeof( clc.q3_serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
-		Com_Error( ERR_DROP, clc.q3_serverMessage );
+		Com_Error( ERR_DROP, "%s", clc.q3_serverMessage );
 	} else if ( !String::NICmp( s, "[err_prot]", 10 ) )       {
 		String::NCpyZ( clc.q3_serverMessage, s + 10, sizeof( clc.q3_serverMessage ) );
 		// Cvar_Set("com_errorMessage", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
-		Com_Error( ERR_DROP, CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
+		Com_Error( ERR_DROP, "%s", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
 	} else if ( !String::NICmp( s, "[err_update]", 12 ) )       {
 		String::NCpyZ( clc.q3_serverMessage, s + 12, sizeof( clc.q3_serverMessage ) );
-		Com_Error( ERR_AUTOUPDATE, clc.q3_serverMessage );
+		Com_Error( ERR_AUTOUPDATE, "%s", clc.q3_serverMessage );
 	} else if ( !String::NICmp( s, "ET://", 5 ) )       { // fretn
 		String::NCpyZ( clc.q3_serverMessage, s, sizeof( clc.q3_serverMessage ) );
 		Cvar_Set( "com_errorMessage", clc.q3_serverMessage );
-		Com_Error( ERR_DROP, clc.q3_serverMessage );
+		Com_Error( ERR_DROP, "%s", clc.q3_serverMessage );
 	} else {
 		String::NCpyZ( clc.q3_serverMessage, s, sizeof( clc.q3_serverMessage ) );
 	}
@@ -2555,7 +2555,7 @@ void CL_WWWDownload( void ) {
 		} else {
 			CL_AddReliableCommand( "wwwdl done" );
 			// tracking potential web redirects leading us to wrong checksum - only works in connected mode
-			if ( String::Length( clc.et_redirectedList ) + String::Length( cls.et_originalDownloadName ) + 1 >= sizeof( clc.et_redirectedList ) ) {
+			if ( String::Length( clc.et_redirectedList ) + String::Length( cls.et_originalDownloadName ) + 1 >= (int)sizeof( clc.et_redirectedList ) ) {
 				// just to be safe
 				Com_Printf( "ERROR: redirectedList overflow (%s)\n", clc.et_redirectedList );
 			} else {
@@ -2573,7 +2573,7 @@ void CL_WWWDownload( void ) {
 			const char *error = va( "Download failure while getting '%s'\n", cls.et_downloadName ); // get the msg before clearing structs
 			cls.et_bWWWDlDisconnected = qfalse; // need clearing structs before ERR_DROP, or it goes into endless reload
 			CL_ClearStaticDownload();
-			Com_Error( ERR_DROP, error );
+			Com_Error( ERR_DROP, "%s", error );
 		} else {
 			// see CL_ParseDownload, same abort strategy
 			Com_Printf( "Download failure while getting '%s'\n", cls.et_downloadName );
@@ -2600,7 +2600,7 @@ bool CL_WWWBadChecksum( const char *pakname ) {
 	if ( strstr( clc.et_redirectedList, va( "@%s", pakname ) ) ) {
 		Com_Printf( "WARNING: file %s obtained through download redirect has wrong checksum\n", pakname );
 		Com_Printf( "         this likely means the server configuration is broken\n" );
-		if ( String::Length( clc.et_badChecksumList ) + String::Length( pakname ) + 1 >= sizeof( clc.et_badChecksumList ) ) {
+		if ( String::Length( clc.et_badChecksumList ) + String::Length( pakname ) + 1 >= (int)sizeof( clc.et_badChecksumList ) ) {
 			Com_Printf( "ERROR: badChecksumList overflowed (%s)\n", clc.et_badChecksumList );
 			return qfalse;
 		}
@@ -5026,7 +5026,7 @@ CL_OpenURLForCvar
 */
 void CL_OpenURL( const char *url ) {
 	if ( !url || !String::Length( url ) ) {
-		Com_Printf( CL_TranslateStringBuf( "invalid/empty URL\n" ) );
+		Com_Printf( "%s", CL_TranslateStringBuf( "invalid/empty URL\n" ) );
 		return;
 	}
 	Sys_OpenURL( url, qtrue );

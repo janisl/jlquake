@@ -89,7 +89,7 @@ void FS_CopyFileOS( char *from, char *to ) {
 	// we are using direct malloc instead of Z_Malloc here, so it
 	// probably won't work on a mac... Its only for developers anyway...
 	buf = (byte*)malloc( len );
-	if ( fread( buf, 1, len, f ) != len ) {
+	if ( (int)fread( buf, 1, len, f ) != len ) {
 		Com_Error( ERR_FATAL, "Short read in FS_Copyfiles()\n" );
 	}
 	fclose( f );
@@ -102,7 +102,7 @@ void FS_CopyFileOS( char *from, char *to ) {
 	if ( !f ) {
 		return;
 	}
-	if ( fwrite( buf, 1, len, f ) != len ) {
+	if ( (int)fwrite( buf, 1, len, f ) != len ) {
 		Com_Error( ERR_FATAL, "Short write in FS_Copyfiles()\n" );
 	}
 	fclose( f );

@@ -477,7 +477,7 @@ unsigned int FS_ChecksumOSPath( char *OSPath ) {
 	fseek( f, 0, SEEK_SET );
 
 	buf = (byte*)malloc( len );
-	if ( fread( buf, 1, len, f ) != len ) {
+	if ( (int)fread( buf, 1, len, f ) != len ) {
 		Com_Error( ERR_FATAL, "short read in FS_ChecksumOSPath\n" );
 	}
 	fclose( f );

@@ -426,7 +426,7 @@ void CL_ParseSnapshot( QMsg *msg ) {
 	// read areamask
 	len = msg->ReadByte();
 
-	if ( len > sizeof( newSnap.areamask ) ) {
+	if ( len > (int)sizeof( newSnap.areamask ) ) {
 		Com_Error( ERR_DROP,"CL_ParseSnapshot: Invalid size %d for areamask.", len );
 		return;
 	}
@@ -736,13 +736,13 @@ void CL_ParseDownload( QMsg *msg ) {
 		Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 
 		if ( clc.downloadSize < 0 ) {
-			Com_Error( ERR_DROP, msg->ReadString() );
+			Com_Error( ERR_DROP, "%s", msg->ReadString() );
 			return;
 		}
 	}
 
 	size = msg->ReadShort();
-	if ( size < 0 || size > sizeof( data ) ) {
+	if ( size < 0 || size > (int)sizeof( data ) ) {
 		Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
 		return;
 	}

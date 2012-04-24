@@ -119,7 +119,7 @@ qintptr QDECL VM_DllSyscall( int arg, ... ) {
 	args[0] = arg;
 
 	va_start( ap, arg );
-	for ( i = 1; i < sizeof( args ) / sizeof( args[i] ); i++ )
+	for ( i = 1; i < (int)sizeof( args ) / (int)sizeof( args[i] ); i++ )
 		args[i] = va_arg( ap, qintptr );
 	va_end( ap );
 
@@ -168,7 +168,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	}
 
 	// byte swap the header
-	for ( i = 0 ; i < sizeof( *header ) / 4 ; i++ ) {
+	for ( i = 0 ; i < (int)sizeof( *header ) / 4 ; i++ ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 	}
 
@@ -277,7 +277,7 @@ vm_t *VM_Create( const char *module, qintptr ( *systemCalls )(qintptr *),
 	}
 
 	// byte swap the header
-	for ( i = 0 ; i < sizeof( *header ) / 4 ; i++ ) {
+	for ( i = 0 ; i < (int)sizeof( *header ) / 4 ; i++ ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 	}
 
@@ -433,7 +433,7 @@ qintptr QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 		//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
 #if !id386
 		va_start( ap, callnum );
-		for ( i = 0; i < sizeof( args ) / sizeof( args[i] ); i++ )
+		for ( i = 0; i < (int)sizeof( args ) / (int)sizeof( args[i] ); i++ )
 			args[i] = va_arg( ap, qintptr );
 		va_end( ap );
 

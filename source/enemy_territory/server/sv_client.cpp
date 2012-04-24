@@ -659,7 +659,7 @@ void SV_SendClientGameState( client_t *client ) {
 	msg.WriteLong( sv.checksumFeed );
 
 	// NERVE - SMF - debug info
-	Com_DPrintf( "Sending %i bytes in gamestate to client: %i\n", msg.cursize, client - svs.clients );
+	Com_DPrintf( "Sending %i bytes in gamestate to client: %i\n", msg.cursize, (int)(client - svs.clients) );
 
 	// deliver this to the client
 	SV_SendMessageToClient( &msg, client );
@@ -736,7 +736,7 @@ Abort a download if in progress
 */
 void SV_StopDownload_f( client_t *cl ) {
 	if ( *cl->downloadName ) {
-		Com_DPrintf( "clientDownload: %d : file \"%s\" aborted\n", cl - svs.clients, cl->downloadName );
+		Com_DPrintf( "clientDownload: %d : file \"%s\" aborted\n", (int)(cl - svs.clients), cl->downloadName );
 	}
 
 	SV_CloseDownload( cl );
@@ -767,11 +767,11 @@ void SV_NextDownload_f( client_t *cl ) {
 	int block = String::Atoi( Cmd_Argv( 1 ) );
 
 	if ( block == cl->downloadClientBlock ) {
-		Com_DPrintf( "clientDownload: %d : client acknowledge of block %d\n", cl - svs.clients, block );
+		Com_DPrintf( "clientDownload: %d : client acknowledge of block %d\n", (int)(cl - svs.clients), block );
 
 		// Find out if we are done.  A zero-length block indicates EOF
 		if ( cl->downloadBlockSize[cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW] == 0 ) {
-			Com_Printf( "clientDownload: %d : file \"%s\" completed\n", cl - svs.clients, cl->downloadName );
+			Com_Printf( "clientDownload: %d : file \"%s\" completed\n", (int)(cl - svs.clients), cl->downloadName );
 			SV_CloseDownload( cl );
 			return;
 		}
@@ -943,7 +943,7 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 		//bani - prevent duplicate download notifications
 		if ( cl->downloadnotify & DLNOTIFY_BEGIN ) {
 			cl->downloadnotify &= ~DLNOTIFY_BEGIN;
-			Com_Printf( "clientDownload: %d : beginning \"%s\"\n", cl - svs.clients, cl->downloadName );
+			Com_Printf( "clientDownload: %d : beginning \"%s\"\n", (int)(cl - svs.clients), cl->downloadName );
 		}
 
 		idPack = FS_idPak( cl->downloadName, BASEGAME );
@@ -952,10 +952,10 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 		if ( !sv_allowDownload->integer || idPack ) {
 			// cannot auto-download file
 			if ( idPack ) {
-				Com_Printf( "clientDownload: %d : \"%s\" cannot download id pk3 files\n", cl - svs.clients, cl->downloadName );
+				Com_Printf( "clientDownload: %d : \"%s\" cannot download id pk3 files\n", (int)(cl - svs.clients), cl->downloadName );
 				String::Sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
 			} else {
-				Com_Printf( "clientDownload: %d : \"%s\" download disabled", cl - svs.clients, cl->downloadName );
+				Com_Printf( "clientDownload: %d : \"%s\" download disabled", (int)(cl - svs.clients), cl->downloadName );
 				if ( sv_pure->integer ) {
 					String::Sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																	   "You will need to get this file elsewhere before you "
@@ -1029,7 +1029,7 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 		cl->bWWWDl = qfalse;
 		cl->downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &cl->download );
 		if ( cl->downloadSize <= 0 ) {
-			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", cl - svs.clients, cl->downloadName );
+			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", (int)(cl - svs.clients), cl->downloadName );
 			String::Sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName );
 			SV_BadDownload( cl, msg );
 			msg->WriteString( errorMessage ); // (could SV_DropClient isntead?)
@@ -1149,7 +1149,7 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 			msg->WriteData( cl->downloadBlocks[curindex], cl->downloadBlockSize[curindex] );
 		}
 
-		Com_DPrintf( "clientDownload: %d : writing block %d\n", cl - svs.clients, cl->downloadXmitBlock );
+		Com_DPrintf( "clientDownload: %d : writing block %d\n", (int)(cl - svs.clients), cl->downloadXmitBlock );
 
 		// Move on to the next block
 		// It will get sent with next snap shot.  The rate will keep us in line.
@@ -1836,7 +1836,7 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	}
 
 	if ( c != q3clc_EOF ) {
-		Com_Printf( "WARNING: bad command byte for client %i\n", cl - svs.clients );
+		Com_Printf( "WARNING: bad command byte for client %i\n", (int)(cl - svs.clients) );
 	}
 
 	SV_ParseBinaryMessage( cl, msg );

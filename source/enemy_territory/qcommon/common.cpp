@@ -1664,7 +1664,7 @@ void Hunk_FreeTempMemory( void *buf ) {
 
 
 	hdr = ( (hunkHeader_t *)buf ) - 1;
-	if ( hdr->magic != HUNK_MAGIC ) {
+	if ( hdr->magic != (int)HUNK_MAGIC ) {
 		Com_Error( ERR_FATAL, "Hunk_FreeTempMemory: bad magic" );
 	}
 

@@ -1403,7 +1403,7 @@ void CL_DownloadsComplete( void ) {
 	// DHM - Nerve :: Auto-update (not finished yet)
 	if ( autoupdateStarted ) {
 
-		if ( autoupdateFilename && ( String::Length( autoupdateFilename ) > 4 ) ) {
+		if ( ( String::Length( autoupdateFilename ) > 4 ) ) {
 #ifdef _WIN32
 			// win32's Sys_StartProcess prepends the current dir
 			fn = va( "%s/%s", FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT ), autoupdateFilename );
@@ -4056,7 +4056,7 @@ void CL_SaveTransTable( const char *fileName, qboolean newOnly ) {
 				len = String::Length( buf );
 				FS_Write( buf, len, f );
 
-				buf = va( "}\n", t->original );
+				buf = va( "}\n");
 				len = String::Length( buf );
 				FS_Write( buf, len, f );
 			}

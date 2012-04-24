@@ -975,7 +975,7 @@ void Sys_SendKeyEvents()
 
 		case ClientMessage:
 			if (event.xclient.message_type == wm_protocols &&
-				event.xclient.data.l[0] == wm_delete_window)
+				(Atom)event.xclient.data.l[0] == wm_delete_window)
 			{
 				Cbuf_ExecuteText(EXEC_APPEND, "quit");
 			}
