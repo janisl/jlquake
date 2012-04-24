@@ -1108,10 +1108,7 @@ void S_StartBackgroundTrack(const char* intro, const char* loop, int fadeupTime)
 	FS_FOpenFileRead(ss->name, &fh, true);
 	if (!fh)
 	{
-		if (GGameType & GAME_Quake3)
-			Log::write(S_COLOR_YELLOW "WARNING: couldn't open music file %s\n", ss->name);
-		else
-			Log::write("WARNING: couldn't open music file %s\n", ss->name);
+		Log::write(S_COLOR_YELLOW "WARNING: couldn't open music file %s\n", ss->name);
 		return;
 	}
 
@@ -1754,13 +1751,9 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		{
 			common->Error("S_AddLoopingSound: handle %i out of range", sfxHandle);
 		}
-		else if (GGameType & GAME_Quake3)
-		{
-			Log::write(S_COLOR_YELLOW "S_AddLoopingSound: handle %i out of range\n", sfxHandle);
-		}
 		else
 		{
-			Log::write("S_AddLoopingSound: handle %i out of range\n", sfxHandle);
+			Log::write(S_COLOR_YELLOW "S_AddLoopingSound: handle %i out of range\n", sfxHandle);
 		}
 		return;
 	}
@@ -2668,14 +2661,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 
 	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
 	{
-		if (GGameType & GAME_Quake3)
-		{
-			Log::write(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
-		}
-		else
-		{
-			Log::write("S_StartSound: handle %i out of range\n", sfxHandle);
-		}
+		Log::write(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
 		return;
 	}
 

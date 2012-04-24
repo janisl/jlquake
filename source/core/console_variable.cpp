@@ -618,16 +618,8 @@ bool Cvar_Command()
 	// perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		if (GGameType & GAME_Quake3)
-		{
-			Log::write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
-				v->name, v->string, v->resetString);
-		}
-		else
-		{
-			Log::write("\"%s\" is:\"%s\" default:\"%s\"\n",
-				v->name, v->string, v->resetString);
-		}
+		Log::write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
+			v->name, v->string, v->resetString);
 		if (v->latchedString)
 		{
 			Log::write("latched: \"%s\"\n", v->latchedString);

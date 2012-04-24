@@ -97,7 +97,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 		{
 			throw Exception("SZ_GetSpace: overflow without allowoverflow set");
 		}
-		if (!(GGameType & GAME_Quake3))
+		if (!(GGameType & GAME_Tech3))
 		{
 			Log::writeLine("SZ_GetSpace: overflow");
 			Clear(); 

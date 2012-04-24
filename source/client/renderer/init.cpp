@@ -481,7 +481,7 @@ static void R_Register()
 		AssertCvarRange(r_overBrightBits, 0, 1, true);	// ydnar: limit to overbrightbits 1 (sorry 1337 players)
 	}
 	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_picmip = Cvar_Get("r_picmip", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_picmip = Cvar_Get("r_picmip", (GGameType & GAME_Tech3) ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	AssertCvarRange(r_picmip, 0, 16, true);
 	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);

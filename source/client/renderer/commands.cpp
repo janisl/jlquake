@@ -46,7 +46,7 @@
 void R_InitCommandBuffers()
 {
 	glConfig.smpActive = false;
-	if ((GGameType & GAME_Quake3) && r_smp->integer)
+	if ((GGameType & GAME_Tech3) && r_smp->integer)
 	{
 		Log::write("Trying SMP acceleration...\n");
 		if (GLimp_SpawnRenderThread(RB_RenderThread))
@@ -704,7 +704,7 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 	}
 
 	//FIXME Temporary hack
-	if (!(GGameType & GAME_Quake3))
+	if (!(GGameType & GAME_Tech3))
 	{
 		R_IssueRenderCommands(false);
 	}

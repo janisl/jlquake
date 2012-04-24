@@ -200,7 +200,7 @@ void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int 
 		return;
 	}
 
-	if (GGameType & GAME_Quake3)
+	if (GGameType & GAME_Tech3)
 	{
 		int c = (*width) * (*height);
 		byte* pic32 = *pic = new byte[4 * c];
