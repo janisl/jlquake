@@ -32,14 +32,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 //projectile flags
-#define PFL_WINDOWDAMAGE			1		//projectile damages through window
-#define PFL_RETURN					2		//set when projectile returns to owner
+#define PFL_WINDOWDAMAGE            1		//projectile damages through window
+#define PFL_RETURN                  2		//set when projectile returns to owner
 //weapon flags
-#define WFL_FIRERELEASED			1		//set when projectile is fired with key-up event
+#define WFL_FIRERELEASED            1		//set when projectile is fired with key-up event
 //damage types
-#define DAMAGETYPE_IMPACT			1		//damage on impact
-#define DAMAGETYPE_RADIAL			2		//radial damage
-#define DAMAGETYPE_VISIBLE			4		//damage to all entities visible to the projectile
+#define DAMAGETYPE_IMPACT           1		//damage on impact
+#define DAMAGETYPE_RADIAL           2		//radial damage
+#define DAMAGETYPE_VISIBLE          4		//damage to all entities visible to the projectile
 
 typedef struct projectileinfo_s
 {
@@ -92,11 +92,11 @@ int BotSetupWeaponAI(void);
 //shut down the weapon AI
 void BotShutdownWeaponAI(void);
 //returns the best weapon to fight with
-int BotChooseBestFightWeapon(int weaponstate, int *inventory);
+int BotChooseBestFightWeapon(int weaponstate, int* inventory);
 //returns the information of the current weapon
-void BotGetWeaponInfo(int weaponstate, int weapon, weaponinfo_t *weaponinfo);
+void BotGetWeaponInfo(int weaponstate, int weapon, weaponinfo_t* weaponinfo);
 //loads the weapon weights
-int BotLoadWeaponWeights(int weaponstate, char *filename);
+int BotLoadWeaponWeights(int weaponstate, char* filename);
 //returns a handle to a newly allocated weapon state
 int BotAllocWeaponState(void);
 //frees the weapon state

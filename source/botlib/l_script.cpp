@@ -115,7 +115,7 @@ punctuation_t default_punctuations[] =
 	{"#",P_PRECOMP, NULL},
 #ifdef DOLLAR
 	{"$",P_DOLLAR, NULL},
-#endif //DOLLAR
+#endif	//DOLLAR
 	{NULL, 0}
 };
 
@@ -127,107 +127,143 @@ char basefolder[MAX_QPATH];
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void PS_CreatePunctuationTable(script_t *script, punctuation_t *punctuations)
+void PS_CreatePunctuationTable(script_t* script, punctuation_t* punctuations)
 {
 	int i;
-	punctuation_t *p, *lastp, *newp;
+	punctuation_t* p, * lastp, * newp;
 
 	//get memory for the table
-	if (!script->punctuationtable) script->punctuationtable = (punctuation_t **)
-												GetMemory(256 * sizeof(punctuation_t *));
-	Com_Memset(script->punctuationtable, 0, 256 * sizeof(punctuation_t *));
+	if (!script->punctuationtable)
+	{
+		script->punctuationtable = (punctuation_t**)
+								   GetMemory(256 * sizeof(punctuation_t*));
+	}
+	Com_Memset(script->punctuationtable, 0, 256 * sizeof(punctuation_t*));
 	//add the punctuations in the list to the punctuation table
 	for (i = 0; punctuations[i].p; i++)
 	{
 		newp = &punctuations[i];
 		lastp = NULL;
 		//sort the punctuations in this table entry on length (longer punctuations first)
-		for (p = script->punctuationtable[(unsigned int) newp->p[0]]; p; p = p->next)
+		for (p = script->punctuationtable[(unsigned int)newp->p[0]]; p; p = p->next)
 		{
 			if (String::Length(p->p) < String::Length(newp->p))
 			{
 				newp->next = p;
-				if (lastp) lastp->next = newp;
-				else script->punctuationtable[(unsigned int) newp->p[0]] = newp;
+				if (lastp)
+				{
+					lastp->next = newp;
+				}
+				else
+				{
+					script->punctuationtable[(unsigned int)newp->p[0]] = newp;
+				}
 				break;
-			} //end if
+			}	//end if
 			lastp = p;
-		} //end for
+		}	//end for
 		if (!p)
 		{
 			newp->next = NULL;
-			if (lastp) lastp->next = newp;
-			else script->punctuationtable[(unsigned int) newp->p[0]] = newp;
-		} //end if
-	} //end for
-} //end of the function PS_CreatePunctuationTable
+			if (lastp)
+			{
+				lastp->next = newp;
+			}
+			else
+			{
+				script->punctuationtable[(unsigned int)newp->p[0]] = newp;
+			}
+		}	//end if
+	}	//end for
+}	//end of the function PS_CreatePunctuationTable
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-const char *PunctuationFromNum(script_t *script, int num)
+const char* PunctuationFromNum(script_t* script, int num)
 {
 	int i;
 
 	for (i = 0; script->punctuations[i].p; i++)
 	{
-		if (script->punctuations[i].n == num) return script->punctuations[i].p;
-	} //end for
+		if (script->punctuations[i].n == num)
+		{
+			return script->punctuations[i].p;
+		}
+	}	//end for
 	return "unkown punctuation";
-} //end of the function PunctuationFromNum
+}	//end of the function PunctuationFromNum
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void ScriptError(script_t *script, const char *str, ...)
+void ScriptError(script_t* script, const char* str, ...)
 {
 	char text[1024];
 	va_list ap;
 
-	if (script->flags & SCFL_NOERRORS) return;
+	if (script->flags & SCFL_NOERRORS)
+	{
+		return;
+	}
 
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
 	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", script->filename, script->line, text);
-} //end of the function ScriptError
+}	//end of the function ScriptError
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void ScriptWarning(script_t *script, const char *str, ...)
+void ScriptWarning(script_t* script, const char* str, ...)
 {
 	char text[1024];
 	va_list ap;
 
-	if (script->flags & SCFL_NOWARNINGS) return;
+	if (script->flags & SCFL_NOWARNINGS)
+	{
+		return;
+	}
 
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
 	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", script->filename, script->line, text);
-} //end of the function ScriptWarning
+}	//end of the function ScriptWarning
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void SetScriptPunctuations(script_t *script, punctuation_t *p)
+void SetScriptPunctuations(script_t* script, punctuation_t* p)
 {
 #ifdef PUNCTABLE
-	if (p) PS_CreatePunctuationTable(script, p);
-	else  PS_CreatePunctuationTable(script, default_punctuations);
-#endif //PUNCTABLE
-	if (p) script->punctuations = p;
-	else script->punctuations = default_punctuations;
-} //end of the function SetScriptPunctuations
+	if (p)
+	{
+		PS_CreatePunctuationTable(script, p);
+	}
+	else
+	{
+		PS_CreatePunctuationTable(script, default_punctuations);
+	}
+#endif	//PUNCTABLE
+	if (p)
+	{
+		script->punctuations = p;
+	}
+	else
+	{
+		script->punctuations = default_punctuations;
+	}
+}	//end of the function SetScriptPunctuations
 //============================================================================
 // Reads spaces, tabs, C-like comments etc.
 // When a newline character is found the scripts line counter is increased.
@@ -236,57 +272,81 @@ void SetScriptPunctuations(script_t *script, punctuation_t *p)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadWhiteSpace(script_t *script)
+int PS_ReadWhiteSpace(script_t* script)
 {
-	while(1)
+	while (1)
 	{
 		//skip white space
-		while(*script->script_p <= ' ')
+		while (*script->script_p <= ' ')
 		{
-			if (!*script->script_p) return 0;
-			if (*script->script_p == '\n') script->line++;
+			if (!*script->script_p)
+			{
+				return 0;
+			}
+			if (*script->script_p == '\n')
+			{
+				script->line++;
+			}
 			script->script_p++;
-		} //end while
-		//skip comments
+		}	//end while
+			//skip comments
 		if (*script->script_p == '/')
 		{
 			//comments //
-			if (*(script->script_p+1) == '/')
+			if (*(script->script_p + 1) == '/')
 			{
 				script->script_p++;
 				do
 				{
 					script->script_p++;
-					if (!*script->script_p) return 0;
-				} //end do
-				while(*script->script_p != '\n');
+					if (!*script->script_p)
+					{
+						return 0;
+					}
+				}	//end do
+				while (*script->script_p != '\n');
 				script->line++;
 				script->script_p++;
-				if (!*script->script_p) return 0;
+				if (!*script->script_p)
+				{
+					return 0;
+				}
 				continue;
-			} //end if
-			//comments /* */
-			else if (*(script->script_p+1) == '*')
+			}	//end if
+				//comments /* */
+			else if (*(script->script_p + 1) == '*')
 			{
 				script->script_p++;
 				do
 				{
 					script->script_p++;
-					if (!*script->script_p) return 0;
-					if (*script->script_p == '\n') script->line++;
-				} //end do
-				while(!(*script->script_p == '*' && *(script->script_p+1) == '/'));
+					if (!*script->script_p)
+					{
+						return 0;
+					}
+					if (*script->script_p == '\n')
+					{
+						script->line++;
+					}
+				}	//end do
+				while (!(*script->script_p == '*' && *(script->script_p + 1) == '/'));
 				script->script_p++;
-				if (!*script->script_p) return 0;
+				if (!*script->script_p)
+				{
+					return 0;
+				}
 				script->script_p++;
-				if (!*script->script_p) return 0;
+				if (!*script->script_p)
+				{
+					return 0;
+				}
 				continue;
-			} //end if
-		} //end if
+			}	//end if
+		}	//end if
 		break;
-	} //end while
+	}	//end while
 	return 1;
-} //end of the function PS_ReadWhiteSpace
+}	//end of the function PS_ReadWhiteSpace
 //============================================================================
 // Reads an escape character.
 //
@@ -295,74 +355,95 @@ int PS_ReadWhiteSpace(script_t *script)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadEscapeCharacter(script_t *script, char *ch)
+int PS_ReadEscapeCharacter(script_t* script, char* ch)
 {
 	int c, val, i;
 
 	//step over the leading '\\'
 	script->script_p++;
 	//determine the escape character
-	switch(*script->script_p)
+	switch (*script->script_p)
 	{
-		case '\\': c = '\\'; break;
-		case 'n': c = '\n'; break;
-		case 'r': c = '\r'; break;
-		case 't': c = '\t'; break;
-		case 'v': c = '\v'; break;
-		case 'b': c = '\b'; break;
-		case 'f': c = '\f'; break;
-		case 'a': c = '\a'; break;
-		case '\'': c = '\''; break;
-		case '\"': c = '\"'; break;
-		case '\?': c = '\?'; break;
-		case 'x':
+	case '\\': c = '\\'; break;
+	case 'n': c = '\n'; break;
+	case 'r': c = '\r'; break;
+	case 't': c = '\t'; break;
+	case 'v': c = '\v'; break;
+	case 'b': c = '\b'; break;
+	case 'f': c = '\f'; break;
+	case 'a': c = '\a'; break;
+	case '\'': c = '\''; break;
+	case '\"': c = '\"'; break;
+	case '\?': c = '\?'; break;
+	case 'x':
+	{
+		script->script_p++;
+		for (i = 0, val = 0;; i++, script->script_p++)
 		{
-			script->script_p++;
-			for (i = 0, val = 0; ; i++, script->script_p++)
+			c = *script->script_p;
+			if (c >= '0' && c <= '9')
 			{
-				c = *script->script_p;
-				if (c >= '0' && c <= '9') c = c - '0';
-				else if (c >= 'A' && c <= 'Z') c = c - 'A' + 10;
-				else if (c >= 'a' && c <= 'z') c = c - 'a' + 10;
-				else break;
-				val = (val << 4) + c;
-			} //end for
-			script->script_p--;
-			if (val > 0xFF)
+				c = c - '0';
+			}
+			else if (c >= 'A' && c <= 'Z')
 			{
-				ScriptWarning(script, "too large value in escape character");
-				val = 0xFF;
-			} //end if
-			c = val;
-			break;
-		} //end case
-		default: //NOTE: decimal ASCII code, NOT octal
+				c = c - 'A' + 10;
+			}
+			else if (c >= 'a' && c <= 'z')
+			{
+				c = c - 'a' + 10;
+			}
+			else
+			{
+				break;
+			}
+			val = (val << 4) + c;
+		}		//end for
+		script->script_p--;
+		if (val > 0xFF)
 		{
-			if (*script->script_p < '0' || *script->script_p > '9') ScriptError(script, "unknown escape char");
-			for (i = 0, val = 0; ; i++, script->script_p++)
+			ScriptWarning(script, "too large value in escape character");
+			val = 0xFF;
+		}		//end if
+		c = val;
+		break;
+	}		//end case
+	default:	//NOTE: decimal ASCII code, NOT octal
+	{
+		if (*script->script_p < '0' || *script->script_p > '9')
+		{
+			ScriptError(script, "unknown escape char");
+		}
+		for (i = 0, val = 0;; i++, script->script_p++)
+		{
+			c = *script->script_p;
+			if (c >= '0' && c <= '9')
 			{
-				c = *script->script_p;
-				if (c >= '0' && c <= '9') c = c - '0';
-				else break;
-				val = val * 10 + c;
-			} //end for
-			script->script_p--;
-			if (val > 0xFF)
+				c = c - '0';
+			}
+			else
 			{
-				ScriptWarning(script, "too large value in escape character");
-				val = 0xFF;
-			} //end if
-			c = val;
-			break;
-		} //end default
-	} //end switch
-	//step over the escape character or the last digit of the number
+				break;
+			}
+			val = val * 10 + c;
+		}		//end for
+		script->script_p--;
+		if (val > 0xFF)
+		{
+			ScriptWarning(script, "too large value in escape character");
+			val = 0xFF;
+		}		//end if
+		c = val;
+		break;
+	}		//end default
+	}	//end switch
+		//step over the escape character or the last digit of the number
 	script->script_p++;
 	//store the escape character
 	*ch = c;
 	//succesfully read escape character
 	return 1;
-} //end of the function PS_ReadEscapeCharacter
+}	//end of the function PS_ReadEscapeCharacter
 //============================================================================
 // Reads C-like string. Escape characters are interpretted.
 // Quotes are included with the string.
@@ -373,44 +454,53 @@ int PS_ReadEscapeCharacter(script_t *script, char *ch)
 // Returns:					qtrue when a string was read succesfully
 // Changes Globals:		-
 //============================================================================
-int PS_ReadString(script_t *script, token_t *token, int quote)
+int PS_ReadString(script_t* script, token_t* token, int quote)
 {
 	int len, tmpline;
-	char *tmpscript_p;
+	char* tmpscript_p;
 
-	if (quote == '\"') token->type = TT_STRING;
-	else token->type = TT_LITERAL;
+	if (quote == '\"')
+	{
+		token->type = TT_STRING;
+	}
+	else
+	{
+		token->type = TT_LITERAL;
+	}
 
 	len = 0;
 	//leading quote
 	token->string[len++] = *script->script_p++;
 	//
-	while(1)
+	while (1)
 	{
 		//minus 2 because trailing double quote and zero have to be appended
 		if (len >= MAX_TOKEN - 2)
 		{
 			ScriptError(script, "string longer than MAX_TOKEN = %d", MAX_TOKEN);
 			return 0;
-		} //end if
-		//if there is an escape character and
-		//if escape characters inside a string are allowed
+		}	//end if
+			//if there is an escape character and
+			//if escape characters inside a string are allowed
 		if (*script->script_p == '\\' && !(script->flags & SCFL_NOSTRINGESCAPECHARS))
 		{
 			if (!PS_ReadEscapeCharacter(script, &token->string[len]))
 			{
 				token->string[len] = 0;
 				return 0;
-			} //end if
+			}	//end if
 			len++;
-		} //end if
-		//if a trailing quote
+		}	//end if
+			//if a trailing quote
 		else if (*script->script_p == quote)
 		{
 			//step over the double quote
 			script->script_p++;
 			//if white spaces in a string are not allowed
-			if (script->flags & SCFL_NOSTRINGWHITESPACES) break;
+			if (script->flags & SCFL_NOSTRINGWHITESPACES)
+			{
+				break;
+			}
 			//
 			tmpscript_p = script->script_p;
 			tmpline = script->line;
@@ -420,17 +510,17 @@ int PS_ReadString(script_t *script, token_t *token, int quote)
 				script->script_p = tmpscript_p;
 				script->line = tmpline;
 				break;
-			} //end if
-			//if there's no leading double qoute
+			}	//end if
+				//if there's no leading double qoute
 			if (*script->script_p != quote)
 			{
 				script->script_p = tmpscript_p;
 				script->line = tmpline;
 				break;
-			} //end if
-			//step over the new leading double quote
+			}	//end if
+				//step over the new leading double quote
 			script->script_p++;
-		} //end if
+		}	//end if
 		else
 		{
 			if (*script->script_p == '\0')
@@ -438,31 +528,31 @@ int PS_ReadString(script_t *script, token_t *token, int quote)
 				token->string[len] = 0;
 				ScriptError(script, "missing trailing quote");
 				return 0;
-			} //end if
-	      if (*script->script_p == '\n')
+			}	//end if
+			if (*script->script_p == '\n')
 			{
 				token->string[len] = 0;
 				ScriptError(script, "newline inside string %s", token->string);
 				return 0;
-			} //end if
+			}	//end if
 			token->string[len++] = *script->script_p++;
-		} //end else
-	} //end while
-	//trailing quote
+		}	//end else
+	}	//end while
+		//trailing quote
 	token->string[len++] = quote;
 	//end string with a zero
 	token->string[len] = '\0';
 	//the sub type is the length of the string
 	token->subtype = len;
 	return 1;
-} //end of the function PS_ReadString
+}	//end of the function PS_ReadString
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadName(script_t *script, token_t *token)
+int PS_ReadName(script_t* script, token_t* token)
 {
 	int len = 0;
 	char c;
@@ -475,25 +565,26 @@ int PS_ReadName(script_t *script, token_t *token)
 		{
 			ScriptError(script, "name longer than MAX_TOKEN = %d", MAX_TOKEN);
 			return 0;
-		} //end if
+		}	//end if
 		c = *script->script_p;
-   } while ((c >= 'a' && c <= 'z') ||
-				(c >= 'A' && c <= 'Z') ||
-				(c >= '0' && c <= '9') ||
-				c == '_');
+	}
+	while ((c >= 'a' && c <= 'z') ||
+		   (c >= 'A' && c <= 'Z') ||
+		   (c >= '0' && c <= '9') ||
+		   c == '_');
 	token->string[len] = '\0';
 	//the sub type is the length of the name
 	token->subtype = len;
 	return 1;
-} //end of the function PS_ReadName
+}	//end of the function PS_ReadName
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void NumberValue(char *string, int subtype, unsigned long int *intvalue,
-															long double *floatvalue)
+void NumberValue(char* string, int subtype, unsigned long int* intvalue,
+	long double* floatvalue)
 {
 	unsigned long int dotfound = 0;
 
@@ -502,69 +593,84 @@ void NumberValue(char *string, int subtype, unsigned long int *intvalue,
 	//floating point number
 	if (subtype & TT_FLOAT)
 	{
-		while(*string)
+		while (*string)
 		{
 			if (*string == '.')
 			{
-				if (dotfound) return;
+				if (dotfound)
+				{
+					return;
+				}
 				dotfound = 10;
 				string++;
-			} //end if
+			}	//end if
 			if (dotfound)
 			{
-				*floatvalue = *floatvalue + (long double) (*string - '0') /
-																	(long double) dotfound;
+				*floatvalue = *floatvalue + (long double)(*string - '0') /
+							  (long double)dotfound;
 				dotfound *= 10;
-			} //end if
+			}	//end if
 			else
 			{
-				*floatvalue = *floatvalue * 10.0 + (long double) (*string - '0');
-			} //end else
+				*floatvalue = *floatvalue * 10.0 + (long double)(*string - '0');
+			}	//end else
 			string++;
-		} //end while
-		*intvalue = (unsigned long) *floatvalue;
-	} //end if
+		}	//end while
+		*intvalue = (unsigned long)*floatvalue;
+	}	//end if
 	else if (subtype & TT_DECIMAL)
 	{
-		while(*string) *intvalue = *intvalue * 10 + (*string++ - '0');
+		while (*string)
+			*intvalue = *intvalue * 10 + (*string++ - '0');
 		*floatvalue = *intvalue;
-	} //end else if
+	}	//end else if
 	else if (subtype & TT_HEX)
 	{
 		//step over the leading 0x or 0X
 		string += 2;
-		while(*string)
+		while (*string)
 		{
 			*intvalue <<= 4;
-			if (*string >= 'a' && *string <= 'f') *intvalue += *string - 'a' + 10;
-			else if (*string >= 'A' && *string <= 'F') *intvalue += *string - 'A' + 10;
-			else *intvalue += *string - '0';
+			if (*string >= 'a' && *string <= 'f')
+			{
+				*intvalue += *string - 'a' + 10;
+			}
+			else if (*string >= 'A' && *string <= 'F')
+			{
+				*intvalue += *string - 'A' + 10;
+			}
+			else
+			{
+				*intvalue += *string - '0';
+			}
 			string++;
-		} //end while
+		}	//end while
 		*floatvalue = *intvalue;
-	} //end else if
+	}	//end else if
 	else if (subtype & TT_OCTAL)
 	{
 		//step over the first zero
 		string += 1;
-		while(*string) *intvalue = (*intvalue << 3) + (*string++ - '0');
+		while (*string)
+			*intvalue = (*intvalue << 3) + (*string++ - '0');
 		*floatvalue = *intvalue;
-	} //end else if
+	}	//end else if
 	else if (subtype & TT_BINARY)
 	{
 		//step over the leading 0b or 0B
 		string += 2;
-		while(*string) *intvalue = (*intvalue << 1) + (*string++ - '0');
+		while (*string)
+			*intvalue = (*intvalue << 1) + (*string++ - '0');
 		*floatvalue = *intvalue;
-	} //end else if
-} //end of the function NumberValue
+	}	//end else if
+}	//end of the function NumberValue
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadNumber(script_t *script, token_t *token)
+int PS_ReadNumber(script_t* script, token_t* token)
 {
 	int len = 0, i;
 	int octal, dot;
@@ -576,103 +682,127 @@ int PS_ReadNumber(script_t *script, token_t *token)
 	//check for a hexadecimal number
 	if (*script->script_p == '0' &&
 		(*(script->script_p + 1) == 'x' ||
-		*(script->script_p + 1) == 'X'))
+		 *(script->script_p + 1) == 'X'))
 	{
 		token->string[len++] = *script->script_p++;
 		token->string[len++] = *script->script_p++;
 		c = *script->script_p;
 		//hexadecimal
-		while((c >= '0' && c <= '9') ||
-					(c >= 'a' && c <= 'f') ||
-					(c >= 'A' && c <= 'A'))
+		while ((c >= '0' && c <= '9') ||
+			   (c >= 'a' && c <= 'f') ||
+			   (c >= 'A' && c <= 'A'))
 		{
 			token->string[len++] = *script->script_p++;
 			if (len >= MAX_TOKEN)
 			{
 				ScriptError(script, "hexadecimal number longer than MAX_TOKEN = %d", MAX_TOKEN);
 				return 0;
-			} //end if
+			}	//end if
 			c = *script->script_p;
-		} //end while
+		}	//end while
 		token->subtype |= TT_HEX;
-	} //end if
+	}	//end if
 #ifdef BINARYNUMBERS
 	//check for a binary number
 	else if (*script->script_p == '0' &&
-		(*(script->script_p + 1) == 'b' ||
-		*(script->script_p + 1) == 'B'))
+			 (*(script->script_p + 1) == 'b' ||
+			  *(script->script_p + 1) == 'B'))
 	{
 		token->string[len++] = *script->script_p++;
 		token->string[len++] = *script->script_p++;
 		c = *script->script_p;
 		//binary
-		while(c == '0' || c == '1')
+		while (c == '0' || c == '1')
 		{
 			token->string[len++] = *script->script_p++;
 			if (len >= MAX_TOKEN)
 			{
 				ScriptError(script, "binary number longer than MAX_TOKEN = %d", MAX_TOKEN);
 				return 0;
-			} //end if
+			}	//end if
 			c = *script->script_p;
-		} //end while
+		}	//end while
 		token->subtype |= TT_BINARY;
-	} //end if
-#endif //BINARYNUMBERS
-	else //decimal or octal integer or floating point number
+	}	//end if
+#endif	//BINARYNUMBERS
+	else//decimal or octal integer or floating point number
 	{
 		octal = false;
 		dot = false;
-		if (*script->script_p == '0') octal = true;
-		while(1)
+		if (*script->script_p == '0')
+		{
+			octal = true;
+		}
+		while (1)
 		{
 			c = *script->script_p;
-			if (c == '.') dot = true;
-			else if (c == '8' || c == '9') octal = false;
-			else if (c < '0' || c > '9') break;
+			if (c == '.')
+			{
+				dot = true;
+			}
+			else if (c == '8' || c == '9')
+			{
+				octal = false;
+			}
+			else if (c < '0' || c > '9')
+			{
+				break;
+			}
 			token->string[len++] = *script->script_p++;
 			if (len >= MAX_TOKEN - 1)
 			{
 				ScriptError(script, "number longer than MAX_TOKEN = %d", MAX_TOKEN);
 				return 0;
-			} //end if
-		} //end while
-		if (octal) token->subtype |= TT_OCTAL;
-		else token->subtype |= TT_DECIMAL;
-		if (dot) token->subtype |= TT_FLOAT;
-	} //end else
+			}	//end if
+		}	//end while
+		if (octal)
+		{
+			token->subtype |= TT_OCTAL;
+		}
+		else
+		{
+			token->subtype |= TT_DECIMAL;
+		}
+		if (dot)
+		{
+			token->subtype |= TT_FLOAT;
+		}
+	}	//end else
 	for (i = 0; i < 2; i++)
 	{
 		c = *script->script_p;
 		//check for a LONG number
-		if ( (c == 'l' || c == 'L') // bk001204 - brackets 
-		     && !(token->subtype & TT_LONG))
+		if ((c == 'l' || c == 'L') &&	// bk001204 - brackets
+			!(token->subtype & TT_LONG))
 		{
 			script->script_p++;
 			token->subtype |= TT_LONG;
-		} //end if
-		//check for an UNSIGNED number
-		else if ( (c == 'u' || c == 'U') // bk001204 - brackets 
-			  && !(token->subtype & (TT_UNSIGNED | TT_FLOAT)))
+		}	//end if
+			//check for an UNSIGNED number
+		else if ((c == 'u' || c == 'U') &&	// bk001204 - brackets
+				 !(token->subtype & (TT_UNSIGNED | TT_FLOAT)))
 		{
 			script->script_p++;
 			token->subtype |= TT_UNSIGNED;
-		} //end if
-	} //end for
+		}	//end if
+	}	//end for
 	token->string[len] = '\0';
 #ifdef NUMBERVALUE
 	NumberValue(token->string, token->subtype, &token->intvalue, &token->floatvalue);
-#endif //NUMBERVALUE
-	if (!(token->subtype & TT_FLOAT)) token->subtype |= TT_INTEGER;
+#endif	//NUMBERVALUE
+	if (!(token->subtype & TT_FLOAT))
+	{
+		token->subtype |= TT_INTEGER;
+	}
 	return 1;
-} //end of the function PS_ReadNumber
+}	//end of the function PS_ReadNumber
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadLiteral(script_t *script, token_t *token)
+int PS_ReadLiteral(script_t* script, token_t* token)
 {
 	token->type = TT_LITERAL;
 	//first quote
@@ -682,29 +812,35 @@ int PS_ReadLiteral(script_t *script, token_t *token)
 	{
 		ScriptError(script, "end of file before trailing \'");
 		return 0;
-	} //end if
-	//if it is an escape character
+	}	//end if
+		//if it is an escape character
 	if (*script->script_p == '\\')
 	{
-		if (!PS_ReadEscapeCharacter(script, &token->string[1])) return 0;
-	} //end if
+		if (!PS_ReadEscapeCharacter(script, &token->string[1]))
+		{
+			return 0;
+		}
+	}	//end if
 	else
 	{
 		token->string[1] = *script->script_p++;
-	} //end else
-	//check for trailing quote
+	}	//end else
+		//check for trailing quote
 	if (*script->script_p != '\'')
 	{
 		ScriptWarning(script, "too many characters in literal, ignored");
-		while(*script->script_p &&
-				*script->script_p != '\'' &&
-				*script->script_p != '\n')
+		while (*script->script_p &&
+			   *script->script_p != '\'' &&
+			   *script->script_p != '\n')
 		{
 			script->script_p++;
-		} //end while
-		if (*script->script_p == '\'') script->script_p++;
-	} //end if
-	//store the trailing quote
+		}	//end while
+		if (*script->script_p == '\'')
+		{
+			script->script_p++;
+		}
+	}	//end if
+		//store the trailing quote
 	token->string[2] = *script->script_p++;
 	//store trailing zero to end the string
 	token->string[3] = '\0';
@@ -712,18 +848,18 @@ int PS_ReadLiteral(script_t *script, token_t *token)
 	token->subtype = token->string[1];
 	//
 	return 1;
-} //end of the function PS_ReadLiteral
+}	//end of the function PS_ReadLiteral
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadPunctuation(script_t *script, token_t *token)
+int PS_ReadPunctuation(script_t* script, token_t* token)
 {
 	int len;
-	const char *p;
-	punctuation_t *punc;
+	const char* p;
+	punctuation_t* punc;
 
 #ifdef PUNCTABLE
 	for (punc = script->punctuationtable[(unsigned int)*script->script_p]; punc; punc = punc->next)
@@ -734,7 +870,7 @@ int PS_ReadPunctuation(script_t *script, token_t *token)
 	for (i = 0; script->punctuations[i].p; i++)
 	{
 		punc = &script->punctuations[i];
-#endif //PUNCTABLE
+#endif	//PUNCTABLE
 		p = punc->p;
 		len = String::Length(p);
 		//if the script contains at least as much characters as the punctuation
@@ -749,44 +885,44 @@ int PS_ReadPunctuation(script_t *script, token_t *token)
 				//sub type is the number of the punctuation
 				token->subtype = punc->n;
 				return 1;
-			} //end if
-		} //end if
-	} //end for
+			}	//end if
+		}	//end if
+	}	//end for
 	return 0;
-} //end of the function PS_ReadPunctuation
+}	//end of the function PS_ReadPunctuation
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadPrimitive(script_t *script, token_t *token)
+int PS_ReadPrimitive(script_t* script, token_t* token)
 {
 	int len;
 
 	len = 0;
-	while(*script->script_p > ' ' && *script->script_p != ';')
+	while (*script->script_p > ' ' && *script->script_p != ';')
 	{
 		if (len >= MAX_TOKEN)
 		{
 			ScriptError(script, "primitive token longer than MAX_TOKEN = %d", MAX_TOKEN);
 			return 0;
-		} //end if
+		}	//end if
 		token->string[len++] = *script->script_p++;
-	} //end while
+	}	//end while
 	token->string[len] = 0;
 	//copy the token into the script structure
 	Com_Memcpy(&script->token, token, sizeof(token_t));
 	//primitive reading successfull
 	return 1;
-} //end of the function PS_ReadPrimitive
+}	//end of the function PS_ReadPrimitive
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ReadToken(script_t *script, token_t *token)
+int PS_ReadToken(script_t* script, token_t* token)
 {
 	//if there is a token available (from UnreadToken)
 	if (script->tokenavailable)
@@ -794,8 +930,8 @@ int PS_ReadToken(script_t *script, token_t *token)
 		script->tokenavailable = 0;
 		Com_Memcpy(token, &script->token, sizeof(token_t));
 		return 1;
-	} //end if
-	//save script pointer
+	}	//end if
+		//save script pointer
 	script->lastscript_p = script->script_p;
 	//save line counter
 	script->lastline = script->line;
@@ -805,7 +941,10 @@ int PS_ReadToken(script_t *script, token_t *token)
 	script->whitespace_p = script->script_p;
 	token->whitespace_p = script->script_p;
 	//read unusefull stuff
-	if (!PS_ReadWhiteSpace(script)) return 0;
+	if (!PS_ReadWhiteSpace(script))
+	{
+		return 0;
+	}
 	//end of the white space
 	script->endwhitespace_p = script->script_p;
 	token->endwhitespace_p = script->script_p;
@@ -816,51 +955,63 @@ int PS_ReadToken(script_t *script, token_t *token)
 	//if there is a leading double quote
 	if (*script->script_p == '\"')
 	{
-		if (!PS_ReadString(script, token, '\"')) return 0;
-	} //end if
-	//if an literal
+		if (!PS_ReadString(script, token, '\"'))
+		{
+			return 0;
+		}
+	}	//end if
+		//if an literal
 	else if (*script->script_p == '\'')
 	{
 		//if (!PS_ReadLiteral(script, token)) return 0;
-		if (!PS_ReadString(script, token, '\'')) return 0;
-	} //end if
-	//if there is a number
+		if (!PS_ReadString(script, token, '\''))
+		{
+			return 0;
+		}
+	}	//end if
+		//if there is a number
 	else if ((*script->script_p >= '0' && *script->script_p <= '9') ||
-				(*script->script_p == '.' &&
-				(*(script->script_p + 1) >= '0' && *(script->script_p + 1) <= '9')))
+			 (*script->script_p == '.' &&
+			  (*(script->script_p + 1) >= '0' && *(script->script_p + 1) <= '9')))
 	{
-		if (!PS_ReadNumber(script, token)) return 0;
-	} //end if
-	//if this is a primitive script
+		if (!PS_ReadNumber(script, token))
+		{
+			return 0;
+		}
+	}	//end if
+		//if this is a primitive script
 	else if (script->flags & SCFL_PRIMITIVE)
 	{
 		return PS_ReadPrimitive(script, token);
-	} //end else if
-	//if there is a name
+	}	//end else if
+		//if there is a name
 	else if ((*script->script_p >= 'a' && *script->script_p <= 'z') ||
-		(*script->script_p >= 'A' && *script->script_p <= 'Z') ||
-		*script->script_p == '_')
+			 (*script->script_p >= 'A' && *script->script_p <= 'Z') ||
+			 *script->script_p == '_')
 	{
-		if (!PS_ReadName(script, token)) return 0;
-	} //end if
-	//check for punctuations
+		if (!PS_ReadName(script, token))
+		{
+			return 0;
+		}
+	}	//end if
+		//check for punctuations
 	else if (!PS_ReadPunctuation(script, token))
 	{
 		ScriptError(script, "can't read token");
 		return 0;
-	} //end if
-	//copy the token into the script structure
+	}	//end if
+		//copy the token into the script structure
 	Com_Memcpy(&script->token, token, sizeof(token_t));
 	//succesfully read a token
 	return 1;
-} //end of the function PS_ReadToken
+}	//end of the function PS_ReadToken
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ExpectTokenString(script_t *script, char *string)
+int PS_ExpectTokenString(script_t* script, char* string)
 {
 	token_t token;
 
@@ -868,22 +1019,22 @@ int PS_ExpectTokenString(script_t *script, char *string)
 	{
 		ScriptError(script, "couldn't find expected %s", string);
 		return 0;
-	} //end if
+	}	//end if
 
 	if (String::Cmp(token.string, string))
 	{
 		ScriptError(script, "expected %s, found %s", string, token.string);
 		return 0;
-	} //end if
+	}	//end if
 	return 1;
-} //end of the function PS_ExpectToken
+}	//end of the function PS_ExpectToken
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ExpectTokenType(script_t *script, int type, int subtype, token_t *token)
+int PS_ExpectTokenType(script_t* script, int type, int subtype, token_t* token)
 {
 	char str[MAX_TOKEN];
 
@@ -891,144 +1042,195 @@ int PS_ExpectTokenType(script_t *script, int type, int subtype, token_t *token)
 	{
 		ScriptError(script, "couldn't read expected token");
 		return 0;
-	} //end if
+	}	//end if
 
 	if (token->type != type)
 	{
-		if (type == TT_STRING) String::Cpy(str, "string");
-		if (type == TT_LITERAL) String::Cpy(str, "literal");
-		if (type == TT_NUMBER) String::Cpy(str, "number");
-		if (type == TT_NAME) String::Cpy(str, "name");
-		if (type == TT_PUNCTUATION) String::Cpy(str, "punctuation");
+		if (type == TT_STRING)
+		{
+			String::Cpy(str, "string");
+		}
+		if (type == TT_LITERAL)
+		{
+			String::Cpy(str, "literal");
+		}
+		if (type == TT_NUMBER)
+		{
+			String::Cpy(str, "number");
+		}
+		if (type == TT_NAME)
+		{
+			String::Cpy(str, "name");
+		}
+		if (type == TT_PUNCTUATION)
+		{
+			String::Cpy(str, "punctuation");
+		}
 		ScriptError(script, "expected a %s, found %s", str, token->string);
 		return 0;
-	} //end if
+	}	//end if
 	if (token->type == TT_NUMBER)
 	{
 		if ((token->subtype & subtype) != subtype)
 		{
-			if (subtype & TT_DECIMAL) String::Cpy(str, "decimal");
-			if (subtype & TT_HEX) String::Cpy(str, "hex");
-			if (subtype & TT_OCTAL) String::Cpy(str, "octal");
-			if (subtype & TT_BINARY) String::Cpy(str, "binary");
-			if (subtype & TT_LONG) String::Cat(str, sizeof(str), " long");
-			if (subtype & TT_UNSIGNED) String::Cat(str, sizeof(str), " unsigned");
-			if (subtype & TT_FLOAT) String::Cat(str, sizeof(str), " float");
-			if (subtype & TT_INTEGER) String::Cat(str, sizeof(str), " integer");
+			if (subtype & TT_DECIMAL)
+			{
+				String::Cpy(str, "decimal");
+			}
+			if (subtype & TT_HEX)
+			{
+				String::Cpy(str, "hex");
+			}
+			if (subtype & TT_OCTAL)
+			{
+				String::Cpy(str, "octal");
+			}
+			if (subtype & TT_BINARY)
+			{
+				String::Cpy(str, "binary");
+			}
+			if (subtype & TT_LONG)
+			{
+				String::Cat(str, sizeof(str), " long");
+			}
+			if (subtype & TT_UNSIGNED)
+			{
+				String::Cat(str, sizeof(str), " unsigned");
+			}
+			if (subtype & TT_FLOAT)
+			{
+				String::Cat(str, sizeof(str), " float");
+			}
+			if (subtype & TT_INTEGER)
+			{
+				String::Cat(str, sizeof(str), " integer");
+			}
 			ScriptError(script, "expected %s, found %s", str, token->string);
 			return 0;
-		} //end if
-	} //end if
+		}	//end if
+	}	//end if
 	else if (token->type == TT_PUNCTUATION)
 	{
 		if (subtype < 0)
 		{
 			ScriptError(script, "BUG: wrong punctuation subtype");
 			return 0;
-		} //end if
+		}	//end if
 		if (token->subtype != subtype)
 		{
 			ScriptError(script, "expected %s, found %s",
-							script->punctuations[subtype], token->string);
+				script->punctuations[subtype], token->string);
 			return 0;
-		} //end if
-	} //end else if
+		}	//end if
+	}	//end else if
 	return 1;
-} //end of the function PS_ExpectTokenType
+}	//end of the function PS_ExpectTokenType
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_ExpectAnyToken(script_t *script, token_t *token)
+int PS_ExpectAnyToken(script_t* script, token_t* token)
 {
 	if (!PS_ReadToken(script, token))
 	{
 		ScriptError(script, "couldn't read expected token");
 		return 0;
-	} //end if
+	}	//end if
 	else
 	{
 		return 1;
-	} //end else
-} //end of the function PS_ExpectAnyToken
+	}	//end else
+}	//end of the function PS_ExpectAnyToken
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_CheckTokenString(script_t *script, char *string)
+int PS_CheckTokenString(script_t* script, char* string)
 {
 	token_t tok;
 
-	if (!PS_ReadToken(script, &tok)) return 0;
+	if (!PS_ReadToken(script, &tok))
+	{
+		return 0;
+	}
 	//if the token is available
-	if (!String::Cmp(tok.string, string)) return 1;
+	if (!String::Cmp(tok.string, string))
+	{
+		return 1;
+	}
 	//token not available
 	script->script_p = script->lastscript_p;
 	return 0;
-} //end of the function PS_CheckTokenString
+}	//end of the function PS_CheckTokenString
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_CheckTokenType(script_t *script, int type, int subtype, token_t *token)
+int PS_CheckTokenType(script_t* script, int type, int subtype, token_t* token)
 {
 	token_t tok;
 
-	if (!PS_ReadToken(script, &tok)) return 0;
+	if (!PS_ReadToken(script, &tok))
+	{
+		return 0;
+	}
 	//if the type matches
 	if (tok.type == type &&
-			(tok.subtype & subtype) == subtype)
+		(tok.subtype & subtype) == subtype)
 	{
 		Com_Memcpy(token, &tok, sizeof(token_t));
 		return 1;
-	} //end if
-	//token is not available
+	}	//end if
+		//token is not available
 	script->script_p = script->lastscript_p;
 	return 0;
-} //end of the function PS_CheckTokenType
+}	//end of the function PS_CheckTokenType
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PS_SkipUntilString(script_t *script, char *string)
+int PS_SkipUntilString(script_t* script, char* string)
 {
 	token_t token;
 
-	while(PS_ReadToken(script, &token))
+	while (PS_ReadToken(script, &token))
 	{
-		if (!String::Cmp(token.string, string)) return 1;
-	} //end while
+		if (!String::Cmp(token.string, string))
+		{
+			return 1;
+		}
+	}	//end while
 	return 0;
-} //end of the function PS_SkipUntilString
+}	//end of the function PS_SkipUntilString
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PS_UnreadLastToken(script_t *script)
+void PS_UnreadLastToken(script_t* script)
 {
 	script->tokenavailable = 1;
-} //end of the function UnreadLastToken
+}	//end of the function UnreadLastToken
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PS_UnreadToken(script_t *script, token_t *token)
+void PS_UnreadToken(script_t* script, token_t* token)
 {
 	Com_Memcpy(&script->token, token, sizeof(token_t));
 	script->tokenavailable = 1;
-} //end of the function UnreadToken
+}	//end of the function UnreadToken
 //============================================================================
 // returns the next character of the read white space, returns NULL if none
 //
@@ -1036,58 +1238,58 @@ void PS_UnreadToken(script_t *script, token_t *token)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-char PS_NextWhiteSpaceChar(script_t *script)
+char PS_NextWhiteSpaceChar(script_t* script)
 {
 	if (script->whitespace_p != script->endwhitespace_p)
 	{
 		return *script->whitespace_p++;
-	} //end if
+	}	//end if
 	else
 	{
 		return 0;
-	} //end else
-} //end of the function PS_NextWhiteSpaceChar
+	}	//end else
+}	//end of the function PS_NextWhiteSpaceChar
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void StripDoubleQuotes(char *string)
+void StripDoubleQuotes(char* string)
 {
 	if (*string == '\"')
 	{
 		memmove(string, string + 1, String::Length(string));
-	} //end if
-	if (string[String::Length(string)-1] == '\"')
+	}	//end if
+	if (string[String::Length(string) - 1] == '\"')
 	{
-		string[String::Length(string)-1] = '\0';
-	} //end if
-} //end of the function StripDoubleQuotes
+		string[String::Length(string) - 1] = '\0';
+	}	//end if
+}	//end of the function StripDoubleQuotes
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void StripSingleQuotes(char *string)
+void StripSingleQuotes(char* string)
 {
 	if (*string == '\'')
 	{
 		memmove(string, string + 1, String::Length(string));
-	} //end if
-	if (string[String::Length(string)-1] == '\'')
+	}	//end if
+	if (string[String::Length(string) - 1] == '\'')
 	{
-		string[String::Length(string)-1] = '\0';
-	} //end if
-} //end of the function StripSingleQuotes
+		string[String::Length(string) - 1] = '\0';
+	}	//end if
+}	//end of the function StripSingleQuotes
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-long double ReadSignedFloat(script_t *script)
+long double ReadSignedFloat(script_t* script)
 {
 	token_t token;
 	long double sign = 1;
@@ -1097,20 +1299,20 @@ long double ReadSignedFloat(script_t *script)
 	{
 		sign = -1;
 		PS_ExpectTokenType(script, TT_NUMBER, 0, &token);
-	} //end if
+	}	//end if
 	else if (token.type != TT_NUMBER)
 	{
 		ScriptError(script, "expected float value, found %s\n", token.string);
-	} //end else if
+	}	//end else if
 	return sign * token.floatvalue;
-} //end of the function ReadSignedFloat
+}	//end of the function ReadSignedFloat
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-signed long int ReadSignedInt(script_t *script)
+signed long int ReadSignedInt(script_t* script)
 {
 	token_t token;
 	signed long int sign = 1;
@@ -1120,40 +1322,40 @@ signed long int ReadSignedInt(script_t *script)
 	{
 		sign = -1;
 		PS_ExpectTokenType(script, TT_NUMBER, TT_INTEGER, &token);
-	} //end if
+	}	//end if
 	else if (token.type != TT_NUMBER || token.subtype == TT_FLOAT)
 	{
 		ScriptError(script, "expected integer value, found %s\n", token.string);
-	} //end else if
+	}	//end else if
 	return sign * token.intvalue;
-} //end of the function ReadSignedInt
+}	//end of the function ReadSignedInt
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void SetScriptFlags(script_t *script, int flags)
+void SetScriptFlags(script_t* script, int flags)
 {
 	script->flags = flags;
-} //end of the function SetScriptFlags
+}	//end of the function SetScriptFlags
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int GetScriptFlags(script_t *script)
+int GetScriptFlags(script_t* script)
 {
 	return script->flags;
-} //end of the function GetScriptFlags
+}	//end of the function GetScriptFlags
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void ResetScript(script_t *script)
+void ResetScript(script_t* script)
 {
 	//pointer in script buffer
 	script->script_p = script->buffer;
@@ -1170,7 +1372,7 @@ void ResetScript(script_t *script)
 	script->lastline = 1;
 	//clear the saved token
 	Com_Memset(&script->token, 0, sizeof(token_t));
-} //end of the function ResetScript
+}	//end of the function ResetScript
 //============================================================================
 // returns true if at the end of the script
 //
@@ -1178,27 +1380,27 @@ void ResetScript(script_t *script)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int EndOfScript(script_t *script)
+int EndOfScript(script_t* script)
 {
 	return script->script_p >= script->end_p;
-} //end of the function EndOfScript
+}	//end of the function EndOfScript
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int NumLinesCrossed(script_t *script)
+int NumLinesCrossed(script_t* script)
 {
 	return script->line - script->lastline;
-} //end of the function NumLinesCrossed
+}	//end of the function NumLinesCrossed
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int ScriptSkipTo(script_t *script, char *value)
+int ScriptSkipTo(script_t* script, char* value)
 {
 	int len;
 	char firstchar;
@@ -1207,43 +1409,54 @@ int ScriptSkipTo(script_t *script, char *value)
 	len = String::Length(value);
 	do
 	{
-		if (!PS_ReadWhiteSpace(script)) return 0;
+		if (!PS_ReadWhiteSpace(script))
+		{
+			return 0;
+		}
 		if (*script->script_p == firstchar)
 		{
 			if (!String::NCmp(script->script_p, value, len))
 			{
 				return 1;
-			} //end if
-		} //end if
+			}	//end if
+		}	//end if
 		script->script_p++;
-	} while(1);
-} //end of the function ScriptSkipTo
+	}
+	while (1);
+}	//end of the function ScriptSkipTo
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-script_t *LoadScriptFile(const char *filename)
+script_t* LoadScriptFile(const char* filename)
 {
 	fileHandle_t fp;
 	char pathname[MAX_QPATH];
 	int length;
-	void *buffer;
-	script_t *script;
+	void* buffer;
+	script_t* script;
 
 	if (String::Length(basefolder))
+	{
 		String::Sprintf(pathname, sizeof(pathname), "%s/%s", basefolder, filename);
+	}
 	else
+	{
 		String::Sprintf(pathname, sizeof(pathname), "%s", filename);
-	length = botimport.FS_FOpenFile( pathname, &fp, FS_READ );
-	if (!fp) return NULL;
+	}
+	length = botimport.FS_FOpenFile(pathname, &fp, FS_READ);
+	if (!fp)
+	{
+		return NULL;
+	}
 
 	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
-	script = (script_t *) buffer;
+	script = (script_t*)buffer;
 	Com_Memset(script, 0, sizeof(script_t));
 	String::Cpy(script->filename, filename);
-	script->buffer = (char *) buffer + sizeof(script_t);
+	script->buffer = (char*)buffer + sizeof(script_t);
 	script->buffer[length] = 0;
 	script->length = length;
 	//pointer in script buffer
@@ -1266,23 +1479,23 @@ script_t *LoadScriptFile(const char *filename)
 	script->length = String::Compress(script->buffer);
 
 	return script;
-} //end of the function LoadScriptFile
+}	//end of the function LoadScriptFile
 //============================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //============================================================================
-script_t *LoadScriptMemory(const char *ptr, int length, const char *name)
+script_t* LoadScriptMemory(const char* ptr, int length, const char* name)
 {
-	void *buffer;
-	script_t *script;
+	void* buffer;
+	script_t* script;
 
 	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
-	script = (script_t *) buffer;
+	script = (script_t*)buffer;
 	Com_Memset(script, 0, sizeof(script_t));
 	String::Cpy(script->filename, name);
-	script->buffer = (char *) buffer + sizeof(script_t);
+	script->buffer = (char*)buffer + sizeof(script_t);
 	script->buffer[length] = 0;
 	script->length = length;
 	//pointer in script buffer
@@ -1302,27 +1515,30 @@ script_t *LoadScriptMemory(const char *ptr, int length, const char *name)
 	Com_Memcpy(script->buffer, ptr, length);
 	//
 	return script;
-} //end of the function LoadScriptMemory
+}	//end of the function LoadScriptMemory
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void FreeScript(script_t *script)
+void FreeScript(script_t* script)
 {
 #ifdef PUNCTABLE
-	if (script->punctuationtable) FreeMemory(script->punctuationtable);
-#endif //PUNCTABLE
+	if (script->punctuationtable)
+	{
+		FreeMemory(script->punctuationtable);
+	}
+#endif	//PUNCTABLE
 	FreeMemory(script);
-} //end of the function FreeScript
+}	//end of the function FreeScript
 //============================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PS_SetBaseFolder(const char *path)
+void PS_SetBaseFolder(const char* path)
 {
 	String::Sprintf(basefolder, sizeof(basefolder), path);
-} //end of the function PS_SetBaseFolder
+}	//end of the function PS_SetBaseFolder

@@ -23,15 +23,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __UI_PUBLIC_H__
 #define __UI_PUBLIC_H__
 
-#define UI_API_VERSION	6
+#define UI_API_VERSION  6
 
-typedef struct {
-	connstate_t		connState;
-	int				connectPacketCount;
-	int				clientNum;
-	char			servername[MAX_STRING_CHARS];
-	char			updateInfoString[MAX_STRING_CHARS];
-	char			messageString[MAX_STRING_CHARS];
+typedef struct
+{
+	connstate_t connState;
+	int connectPacketCount;
+	int clientNum;
+	char servername[MAX_STRING_CHARS];
+	char updateInfoString[MAX_STRING_CHARS];
+	char messageString[MAX_STRING_CHARS];
 } uiClientState_t;
 
 typedef enum {
@@ -146,12 +147,12 @@ typedef enum {
 	UIMENU_POSTGAME
 } uiMenuCommand_t;
 
-#define SORT_HOST			0
-#define SORT_MAP			1
-#define SORT_CLIENTS		2
-#define SORT_GAME			3
-#define SORT_PING			4
-#define SORT_PUNKBUSTER		5
+#define SORT_HOST           0
+#define SORT_MAP            1
+#define SORT_CLIENTS        2
+#define SORT_GAME           3
+#define SORT_PING           4
+#define SORT_PUNKBUSTER     5
 
 typedef enum {
 	UI_GETAPIVERSION = 0,	// system reserved

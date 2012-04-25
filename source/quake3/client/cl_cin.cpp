@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/sound/local.h"
 #include "../../client/cinematic/local.h"
 
-static int				CL_handle = -1;
+static int CL_handle = -1;
 
 void CIN_CloseAllVideos()
 {
@@ -69,7 +69,7 @@ SCR_StopCinematic
 */
 e_status CIN_StopCinematic(int Handle)
 {
-	if (Handle < 0 || Handle>= MAX_VIDEO_HANDLES || !cinTable[Handle])
+	if (Handle < 0 || Handle >= MAX_VIDEO_HANDLES || !cinTable[Handle])
 	{
 		return FMV_EOF;
 	}
@@ -111,8 +111,9 @@ bool CIN_IsInCinematicState()
 void CIN_StartedPlayback()
 {
 	// close the menu
-	if ( uivm ) {
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+	if (uivm)
+	{
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE);
 	}
 
 	cls.state = CA_CINEMATIC;
@@ -122,8 +123,12 @@ void CIN_StartedPlayback()
 	s_rawend[0] = s_soundtime;
 }
 
-void CIN_SetExtents (int handle, int x, int y, int w, int h) {
-	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || !cinTable[handle]) return;
+void CIN_SetExtents(int handle, int x, int y, int w, int h)
+{
+	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle])
+	{
+		return;
+	}
 	cinTable[handle]->SetExtents(x, y, w, h);
 }
 
@@ -133,11 +138,15 @@ SCR_DrawCinematic
 
 ==================
 */
-void CIN_DrawCinematic (int handle) {
-	float	x, y, w, h;
-	byte	*buf;
+void CIN_DrawCinematic(int handle)
+{
+	float x, y, w, h;
+	byte* buf;
 
-	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || !cinTable[handle]) return;
+	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle])
+	{
+		return;
+	}
 
 	if (!cinTable[handle]->Cin->OutputFrame)
 	{
@@ -149,61 +158,73 @@ void CIN_DrawCinematic (int handle) {
 	w = cinTable[handle]->Width;
 	h = cinTable[handle]->Height;
 	buf = cinTable[handle]->Cin->OutputFrame;
-	UI_AdjustFromVirtualScreen( &x, &y, &w, &h );
+	UI_AdjustFromVirtualScreen(&x, &y, &w, &h);
 
-	R_StretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty);
+	R_StretchRaw(x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty);
 	cinTable[handle]->Cin->Dirty = false;
 }
 
-void CL_PlayCinematic_f(void) {
-	char	*arg, *s;
-	qboolean	holdatend;
+void CL_PlayCinematic_f(void)
+{
+	char* arg, * s;
+	qboolean holdatend;
 	int bits = CIN_system;
 
 	Com_DPrintf("CL_PlayCinematic_f\n");
-	if (cls.state == CA_CINEMATIC) {
+	if (cls.state == CA_CINEMATIC)
+	{
 		SCR_StopCinematic();
 	}
 
-	arg = Cmd_Argv( 1 );
+	arg = Cmd_Argv(1);
 	s = Cmd_Argv(2);
 
 	holdatend = qfalse;
-	if ((s && s[0] == '1') || String::ICmp(arg,"demoend.roq")==0 || String::ICmp(arg,"end.roq")==0) {
+	if ((s && s[0] == '1') || String::ICmp(arg,"demoend.roq") == 0 || String::ICmp(arg,"end.roq") == 0)
+	{
 		bits |= CIN_hold;
 	}
-	if (s && s[0] == '2') {
+	if (s && s[0] == '2')
+	{
 		bits |= CIN_loop;
 	}
 
-	S_StopAllSounds ();
+	S_StopAllSounds();
 
-	CL_handle = CIN_PlayCinematic( arg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, bits );
-	if (CL_handle >= 0) {
-		do {
+	CL_handle = CIN_PlayCinematic(arg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, bits);
+	if (CL_handle >= 0)
+	{
+		do
+		{
 			SCR_RunCinematic();
-		} while (cinTable[CL_handle]->Cin->OutputFrame == NULL && cinTable[CL_handle]->Status == FMV_PLAY);		// wait for first frame (load codebook and sound)
+		}
+		while (cinTable[CL_handle]->Cin->OutputFrame == NULL && cinTable[CL_handle]->Status == FMV_PLAY);		// wait for first frame (load codebook and sound)
 	}
 }
 
 
-void SCR_DrawCinematic (void) {
-	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES) {
+void SCR_DrawCinematic(void)
+{
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES)
+	{
 		CIN_DrawCinematic(CL_handle);
 	}
 }
 
-void SCR_RunCinematic (void)
+void SCR_RunCinematic(void)
 {
-	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES) {
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES)
+	{
 		CIN_RunCinematic(CL_handle);
 	}
 }
 
-void SCR_StopCinematic(void) {
-	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES) {
+void SCR_StopCinematic(void)
+{
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES)
+	{
 		CIN_StopCinematic(CL_handle);
-		S_StopAllSounds ();
+		S_StopAllSounds();
 		CL_handle = -1;
 	}
 }

@@ -23,11 +23,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // q_shared.c -- stateless support routines that are included in each code dll
 #include "q_shared.h"
 
-float Com_Clamp( float min, float max, float value ) {
-	if ( value < min ) {
+float Com_Clamp(float min, float max, float value)
+{
+	if (value < min)
+	{
 		return min;
 	}
-	if ( value > max ) {
+	if (value > max)
+	{
 		return max;
 	}
 	return value;
@@ -37,23 +40,27 @@ float Com_Clamp( float min, float max, float value ) {
 /*
 ============================================================================
 
-					LIBRARY REPLACEMENT FUNCTIONS
+                    LIBRARY REPLACEMENT FUNCTIONS
 
 ============================================================================
 */
 
-int Q_PrintStrlen( const char *string ) {
-	int			len;
-	const char	*p;
+int Q_PrintStrlen(const char* string)
+{
+	int len;
+	const char* p;
 
-	if( !string ) {
+	if (!string)
+	{
 		return 0;
 	}
 
 	len = 0;
 	p = string;
-	while( *p ) {
-		if( Q_IsColorString( p ) ) {
+	while (*p)
+	{
+		if (Q_IsColorString(p))
+		{
 			p += 2;
 			continue;
 		}
@@ -65,18 +72,22 @@ int Q_PrintStrlen( const char *string ) {
 }
 
 
-char *Q_CleanStr( char *string ) {
-	char*	d;
-	char*	s;
-	int		c;
+char* Q_CleanStr(char* string)
+{
+	char* d;
+	char* s;
+	int c;
 
 	s = string;
 	d = string;
-	while ((c = *s) != 0 ) {
-		if ( Q_IsColorString( s ) ) {
+	while ((c = *s) != 0)
+	{
+		if (Q_IsColorString(s))
+		{
 			s++;
-		}		
-		else if ( c >= 0x20 && c <= 0x7E ) {
+		}
+		else if (c >= 0x20 && c <= 0x7E)
+		{
 			*d++ = c;
 		}
 		s++;

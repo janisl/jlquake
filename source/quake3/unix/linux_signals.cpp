@@ -31,49 +31,51 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static qboolean signalcaught = qfalse;;
 
-void Sys_Exit(int); // bk010104 - abstraction
+void Sys_Exit(int);	// bk010104 - abstraction
 
-static void signal_handler(int sig, siginfo_t *info, void *secret) // bk010104 - replace this... (NOTE TTimo huh?)
+static void signal_handler(int sig, siginfo_t* info, void* secret)	// bk010104 - replace this... (NOTE TTimo huh?)
 {
-	void *trace[64];
-	char **messages = (char **)NULL;
+	void* trace[64];
+	char** messages = (char**)NULL;
 	int i, trace_size = 0;
 
 #if id386
 	/* Do something useful with siginfo_t */
 	ucontext_t* uc = (ucontext_t*)secret;
 	if (sig == SIGSEGV)
+	{
 		printf("Received signal %d, faulty address is %p, "
-			"from %p\n", sig, info->si_addr, 
+			   "from %p\n", sig, info->si_addr,
 			uc->uc_mcontext.gregs[REG_EIP]);
+	}
 	else
 #endif
-		printf("Received signal %d, exiting...\n", sig);
-		
+	printf("Received signal %d, exiting...\n", sig);
+
 	trace_size = backtrace(trace, 64);
 #if id386
 	/* overwrite sigaction with caller's address */
-	trace[1] = (void *) uc->uc_mcontext.gregs[REG_EIP];
+	trace[1] = (void*)uc->uc_mcontext.gregs[REG_EIP];
 #endif
 
 	messages = backtrace_symbols(trace, trace_size);
 	/* skip first stack frame (points here) */
 	printf("[bt] Execution path:\n");
-	for (i=1; i<trace_size; ++i)
+	for (i = 1; i < trace_size; ++i)
 		printf("[bt] %s\n", messages[i]);
 
-  if (signalcaught)
-  {
-    printf("DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig);
-    Sys_Exit(1); // bk010104 - abstraction
-  }
+	if (signalcaught)
+	{
+		printf("DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig);
+		Sys_Exit(1);// bk010104 - abstraction
+	}
 
-  signalcaught = qtrue;
-  printf("Received signal %d, exiting...\n", sig);
+	signalcaught = qtrue;
+	printf("Received signal %d, exiting...\n", sig);
 #ifndef DEDICATED
-  GLimp_Shutdown(); // bk010104 - shouldn't this be CL_Shutdown
+	GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown
 #endif
-  Sys_Exit(0); // bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
+	Sys_Exit(0);// bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
 }
 
 void InitSig(void)

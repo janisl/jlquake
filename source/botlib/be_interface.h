@@ -54,4 +54,3 @@ extern int bot_developer;					//true if developer is on
 
 //
 int Sys_MilliSeconds(void);
-

@@ -27,31 +27,34 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
 =============================================================================
 
-					COMMAND EXECUTION
+                    COMMAND EXECUTION
 
 =============================================================================
 */
 
 bool Cmd_HandleNullCommand(const char* text)
 {
-    // let the cgame or game handle it
+	// let the cgame or game handle it
 	return false;
 }
 
 void Cmd_HandleUnknownCommand()
 {
 	// check client game commands
-	if ( com_cl_running && com_cl_running->integer && CL_GameCommand() ) {
+	if (com_cl_running && com_cl_running->integer && CL_GameCommand())
+	{
 		return;
 	}
 
 	// check server game commands
-	if ( com_sv_running && com_sv_running->integer && SV_GameCommand() ) {
+	if (com_sv_running && com_sv_running->integer && SV_GameCommand())
+	{
 		return;
 	}
 
 	// check ui commands
-	if ( com_cl_running && com_cl_running->integer && UI_GameCommand() ) {
+	if (com_cl_running && com_cl_running->integer && UI_GameCommand())
+	{
 		return;
 	}
 
@@ -65,7 +68,7 @@ void Cmd_HandleUnknownCommand()
 Cmd_Init
 ============
 */
-void Cmd_Init (void)
+void Cmd_Init(void)
 {
 	Cmd_SharedInit();
 }

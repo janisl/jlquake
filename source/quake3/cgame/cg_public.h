@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //
 
-#define MAX_ENTITIES_IN_SNAPSHOT_Q3	256
+#define MAX_ENTITIES_IN_SNAPSHOT_Q3 256
 
 // snapshots are a view of the server at a given time
 
@@ -84,7 +84,7 @@ struct q3refEntity_t
 	byte shaderRGBA[4];		// colors used by rgbgen entity shaders
 	float shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
 	float shaderTime;			// subtracted from refdef time to control effect start times
-										// Also used for synctime
+	// Also used for synctime
 
 	// extra sprite information
 	float radius;
@@ -221,7 +221,7 @@ typedef enum {
 	CG_KEY_GETCATCHER,
 	CG_KEY_SETCATCHER,
 	CG_KEY_GETKEY,
- 	CG_PC_ADD_GLOBAL_DEFINE,
+	CG_PC_ADD_GLOBAL_DEFINE,
 	CG_PC_LOAD_SOURCE,
 	CG_PC_FREE_SOURCE,
 	CG_PC_READ_TOKEN,
@@ -251,9 +251,9 @@ typedef enum {
 	CG_FS_SEEK,
 
 /*
-	CG_LOADCAMERA,
-	CG_STARTCAMERA,
-	CG_GETCAMERAINFO,
+    CG_LOADCAMERA,
+    CG_STARTCAMERA,
+    CG_GETCAMERAINFO,
 */
 
 	CG_MEMSET = 100,
@@ -311,7 +311,7 @@ typedef enum {
 	CG_LAST_ATTACKER,
 //	int (*CG_LastAttacker)( void );
 
-	CG_KEY_EVENT, 
+	CG_KEY_EVENT,
 //	void	(*CG_KeyEvent)( int key, qboolean down );
 
 	CG_MOUSE_EVENT,

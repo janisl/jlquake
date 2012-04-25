@@ -32,20 +32,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //debugging on
 #define AAS_DEBUG
 
-#define DF_AASENTNUMBER(x)		(x - aasworld.entities)
-#define DF_NUMBERAASENT(x)		(&aasworld.entities[x])
-#define DF_AASENTCLIENT(x)		(x - aasworld.entities - 1)
-#define DF_CLIENTAASENT(x)		(&aasworld.entities[x + 1])
+#define DF_AASENTNUMBER(x)      (x - aasworld.entities)
+#define DF_NUMBERAASENT(x)      (&aasworld.entities[x])
+#define DF_AASENTCLIENT(x)      (x - aasworld.entities - 1)
+#define DF_CLIENTAASENT(x)      (&aasworld.entities[x + 1])
 
 #ifndef MAX_PATH
-	#define MAX_PATH				MAX_QPATH
+	#define MAX_PATH                MAX_QPATH
 #endif
 
 //string index (for model, sound and image index)
 typedef struct aas_stringindex_s
 {
 	int numindexes;
-	char **index;
+	char** index;
 } aas_stringindex_t;
 
 //structure to link entities to areas and areas to entities
@@ -53,8 +53,8 @@ typedef struct aas_link_s
 {
 	int entnum;
 	int areanum;
-	struct aas_link_s *next_ent, *prev_ent;
-	struct aas_link_s *next_area, *prev_area;
+	struct aas_link_s* next_ent, * prev_ent;
+	struct aas_link_s* next_area, * prev_area;
 } aas_link_t;
 
 //structure to link entities to leaves and leaves to entities
@@ -62,8 +62,8 @@ typedef struct bsp_link_s
 {
 	int entnum;
 	int leafnum;
-	struct bsp_link_s *next_ent, *prev_ent;
-	struct bsp_link_s *next_leaf, *prev_leaf;
+	struct bsp_link_s* next_ent, * prev_ent;
+	struct bsp_link_s* next_leaf, * prev_leaf;
 } bsp_link_t;
 
 typedef struct bsp_entdata_s
@@ -82,9 +82,9 @@ typedef struct aas_entity_s
 	//entity info
 	aas_entityinfo_t i;
 	//links into the AAS areas
-	aas_link_t *areas;
+	aas_link_t* areas;
 	//links into the BSP leaves
-	bsp_link_t *leaves;
+	bsp_link_t* leaves;
 } aas_entity_t;
 
 typedef struct aas_settings_s
@@ -128,8 +128,8 @@ typedef struct aas_settings_s
 	float rs_maxjumpfallheight;
 } aas_settings_t;
 
-#define CACHETYPE_PORTAL		0
-#define CACHETYPE_AREA			1
+#define CACHETYPE_PORTAL        0
+#define CACHETYPE_AREA          1
 
 //routing cache
 typedef struct aas_routingcache_s
@@ -142,9 +142,9 @@ typedef struct aas_routingcache_s
 	vec3_t origin;								//origin within the area
 	float starttraveltime;						//travel time to start with
 	int travelflags;							//combinations of the travel flags
-	struct aas_routingcache_s *prev, *next;
-	struct aas_routingcache_s *time_prev, *time_next;
-	unsigned char *reachabilities;				//reachabilities used for routing
+	struct aas_routingcache_s* prev, * next;
+	struct aas_routingcache_s* time_prev, * time_next;
+	unsigned char* reachabilities;				//reachabilities used for routing
 	unsigned short int traveltimes[1];			//travel time for every area (variable sized)
 } aas_routingcache_t;
 
@@ -155,10 +155,10 @@ typedef struct aas_routingupdate_s
 	int areanum;								//area number of the update
 	vec3_t start;								//start point the area was entered
 	unsigned short int tmptraveltime;			//temporary travel time
-	unsigned short int *areatraveltimes;		//travel times within the area
+	unsigned short int* areatraveltimes;		//travel times within the area
 	qboolean inlist;							//true if the update is in the list
-	struct aas_routingupdate_s *next;
-	struct aas_routingupdate_s *prev;
+	struct aas_routingupdate_s* next;
+	struct aas_routingupdate_s* prev;
 } aas_routingupdate_t;
 
 //reversed reachability link
@@ -166,14 +166,14 @@ typedef struct aas_reversedlink_s
 {
 	int linknum;								//the aas_areareachability_t
 	int areanum;								//reachable from this area
-	struct aas_reversedlink_s *next;			//next link
+	struct aas_reversedlink_s* next;			//next link
 } aas_reversedlink_t;
 
 //reversed area reachability
 typedef struct aas_reversedreachability_s
 {
 	int numlinks;
-	aas_reversedlink_t *first;
+	aas_reversedlink_t* first;
 } aas_reversedreachability_t;
 
 //areas a reachability goes through
@@ -196,85 +196,85 @@ typedef struct aas_s
 	char mapname[MAX_PATH];
 	//bounding boxes
 	int numbboxes;
-	aas_bbox_t *bboxes;
+	aas_bbox_t* bboxes;
 	//vertexes
 	int numvertexes;
-	aas_vertex_t *vertexes;
+	aas_vertex_t* vertexes;
 	//planes
 	int numplanes;
-	aas_plane_t *planes;
+	aas_plane_t* planes;
 	//edges
 	int numedges;
-	aas_edge_t *edges;
+	aas_edge_t* edges;
 	//edge index
 	int edgeindexsize;
-	aas_edgeindex_t *edgeindex;
+	aas_edgeindex_t* edgeindex;
 	//faces
 	int numfaces;
-	aas_face_t *faces;
+	aas_face_t* faces;
 	//face index
 	int faceindexsize;
-	aas_faceindex_t *faceindex;
+	aas_faceindex_t* faceindex;
 	//convex areas
 	int numareas;
-	aas_area_t *areas;
+	aas_area_t* areas;
 	//convex area settings
 	int numareasettings;
-	aas_areasettings_t *areasettings;
+	aas_areasettings_t* areasettings;
 	//reachablity list
 	int reachabilitysize;
-	aas_reachability_t *reachability;
+	aas_reachability_t* reachability;
 	//nodes of the bsp tree
 	int numnodes;
-	aas_node_t *nodes;
+	aas_node_t* nodes;
 	//cluster portals
 	int numportals;
-	aas_portal_t *portals;
+	aas_portal_t* portals;
 	//cluster portal index
 	int portalindexsize;
-	aas_portalindex_t *portalindex;
+	aas_portalindex_t* portalindex;
 	//clusters
 	int numclusters;
-	aas_cluster_t *clusters;
+	aas_cluster_t* clusters;
 	//
 	int numreachabilityareas;
 	float reachabilitytime;
 	//enities linked in the areas
-	aas_link_t *linkheap;						//heap with link structures
+	aas_link_t* linkheap;						//heap with link structures
 	int linkheapsize;							//size of the link heap
-	aas_link_t *freelinks;						//first free link
-	aas_link_t **arealinkedentities;			//entities linked into areas
+	aas_link_t* freelinks;						//first free link
+	aas_link_t** arealinkedentities;			//entities linked into areas
 	//entities
 	int maxentities;
 	int maxclients;
-	aas_entity_t *entities;
+	aas_entity_t* entities;
 	//string indexes
-	char *configstrings[MAX_CONFIGSTRINGS_Q3];
+	char* configstrings[MAX_CONFIGSTRINGS_Q3];
 	int indexessetup;
 	//index to retrieve travel flag for a travel type
 	int travelflagfortype[MAX_TRAVELTYPES];
 	//travel flags for each area based on contents
-	int *areacontentstravelflags;
+	int* areacontentstravelflags;
 	//routing update
-	aas_routingupdate_t *areaupdate;
-	aas_routingupdate_t *portalupdate;
+	aas_routingupdate_t* areaupdate;
+	aas_routingupdate_t* portalupdate;
 	//number of routing updates during a frame (reset every frame)
 	int frameroutingupdates;
 	//reversed reachability links
-	aas_reversedreachability_t *reversedreachability;
+	aas_reversedreachability_t* reversedreachability;
 	//travel times within the areas
-	unsigned short ***areatraveltimes;
+	unsigned short*** areatraveltimes;
 	//array of size numclusters with cluster cache
-	aas_routingcache_t ***clusterareacache;
-	aas_routingcache_t **portalcache;
+	aas_routingcache_t*** clusterareacache;
+	aas_routingcache_t** portalcache;
 	//cache list sorted on time
-	aas_routingcache_t *oldestcache;		// start of cache list sorted on time
-	aas_routingcache_t *newestcache;		// end of cache list sorted on time
+	aas_routingcache_t* oldestcache;		// start of cache list sorted on time
+	aas_routingcache_t* newestcache;		// end of cache list sorted on time
 	//maximum travel time through portal areas
-	int *portalmaxtraveltimes;
+	int* portalmaxtraveltimes;
 	//areas the reachabilities go through
-	int *reachabilityareaindex;
-	aas_reachabilityareas_t *reachabilityareas;
+	int* reachabilityareaindex;
+	aas_reachabilityareas_t* reachabilityareas;
 } aas_t;
 
 #define AASINTERN
