@@ -1,34 +1,22 @@
-/*
-===========================================================================
-
-Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
-
-Wolf ET Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wolf ET Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
-*/
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
 #include "../../common/qcommon.h"
-#include "../../client/splines/q_parse.h"
-#include "../../client/splines/splines.h"
+#include "q_parse.h"
+#include "splines.h"
 
 // TTimo
 // handy stuff when tracking isnan problems
@@ -193,25 +181,6 @@ float idSplineList::calcSpline(int step, float tension)
 	return 0.0;
 }
 
-void idSplineList::setSelectedPoint(idVec3* p)
-{
-	if (p)
-	{
-		p->Snap();
-		for (int i = 0; i < controlPoints.Num(); i++)
-		{
-			if (*p == *controlPoints[i])
-			{
-				selected = controlPoints[i];
-			}
-		}
-	}
-	else
-	{
-		selected = NULL;
-	}
-}
-
 const idVec3* idSplineList::getPosition(long t)
 {
 	static idVec3 interpolatedPos;
@@ -252,7 +221,7 @@ const idVec3* idSplineList::getPosition(long t)
 	return splinePoints[count - 1];
 }
 
-void idSplineList::parse(const char*(*text))
+void idSplineList::parse(const char** text)
 {
 	const char* token;
 	//Com_MatchToken( text, "{" );
@@ -409,17 +378,6 @@ bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, floa
 
 	return true;
 }
-
-bool idCameraDef::waitEvent(int index)
-{
-	//for (int i = 0; i < events.Num(); i++) {
-	//	if (events[i]->getSegment() == index && events[i]->getType() == idCameraEvent::EVENT_WAIT) {
-	//		return true;
-	//	}
-	//}
-	return false;
-}
-
 
 #define NUM_CCELERATION_SEGS 10
 #define CELL_AMT 5
@@ -595,7 +553,7 @@ void idCameraDef::startCamera(long t)
 }
 
 
-void idCameraDef::parse(const char*(*text))
+void idCameraDef::parse(const char** text)
 {
 
 	const char* token;
@@ -696,28 +654,11 @@ bool idCameraDef::load(const char* filename)
 	return true;
 }
 
-int idCameraDef::sortEvents(const void* p1, const void* p2)
-{
-	idCameraEvent* ev1 = (idCameraEvent*)(p1);
-	idCameraEvent* ev2 = (idCameraEvent*)(p2);
-
-	if (ev1->getTime() > ev2->getTime())
-	{
-		return -1;
-	}
-	if (ev1->getTime() < ev2->getTime())
-	{
-		return 1;
-	}
-	return 0;
-}
-
 void idCameraDef::addEvent(idCameraEvent* event)
 {
 	events.Append(event);
-	//events.Sort(&sortEvents);
-
 }
+
 void idCameraDef::addEvent(idCameraEvent::eventType t, const char* param, long time)
 {
 	addEvent(new idCameraEvent(t, param, time));
@@ -725,24 +666,7 @@ void idCameraDef::addEvent(idCameraEvent::eventType t, const char* param, long t
 }
 
 
-const char* idCameraEvent::eventStr[] = {
-	"NA",
-	"WAIT",
-	"TARGETWAIT",
-	"SPEED",
-	"TARGET",
-	"SNAPTARGET",
-	"FOV",
-	"CMD",
-	"TRIGGER",
-	"STOP",
-	"CAMERA",
-	"FADEOUT",
-	"FADEIN",
-	"FEATHER"
-};
-
-void idCameraEvent::parse(const char*(*text))
+void idCameraEvent::parse(const char** text)
 {
 	const char* token;
 	Com_MatchToken(text, "{");
@@ -800,14 +724,6 @@ void idCameraEvent::parse(const char*(*text))
 	Com_MatchToken(text, "}");
 }
 
-const char* idCameraPosition::positionStr[] = {
-	"Fixed",
-	"Interpolated",
-	"Spline",
-};
-
-
-
 const idVec3* idInterpolatedPosition::getPosition(long t)
 {
 	static idVec3 interpolatedPos;
@@ -857,7 +773,7 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 }
 
 
-void idCameraFOV::parse(const char*(*text))
+void idCameraFOV::parse(const char** text)
 {
 	const char* token;
 	Com_MatchToken(text, "{");
@@ -919,7 +835,7 @@ void idCameraFOV::parse(const char*(*text))
 	Com_MatchToken(text, "}");
 }
 
-bool idCameraPosition::parseToken(const char* key, const char*(*text))
+bool idCameraPosition::parseToken(const char* key, const char** text)
 {
 	const char* token = Com_Parse(text);
 	if (String::ICmp(key, "time") == 0)
@@ -963,7 +879,7 @@ bool idCameraPosition::parseToken(const char* key, const char*(*text))
 
 
 
-void idFixedPosition::parse(const char*(*text))
+void idFixedPosition::parse(const char** text)
 {
 	const char* token;
 	Com_MatchToken(text, "{");
@@ -1020,7 +936,7 @@ void idFixedPosition::parse(const char*(*text))
 	Com_MatchToken(text, "}");
 }
 
-void idInterpolatedPosition::parse(const char*(*text))
+void idInterpolatedPosition::parse(const char** text)
 {
 	const char* token;
 	Com_MatchToken(text, "{");
@@ -1083,7 +999,7 @@ void idInterpolatedPosition::parse(const char*(*text))
 }
 
 
-void idSplinePosition::parse(const char*(*text))
+void idSplinePosition::parse(const char** text)
 {
 	const char* token;
 	Com_MatchToken(text, "{");

@@ -1,63 +1,30 @@
-/*
-===========================================================================
-
-Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
-
-Wolf ET Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wolf ET Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
-*/
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
 #ifndef __SPLINES_H
 #define __SPLINES_H
 
 #include <assert.h>
-#include "../../client/splines/util_list.h"
-#include "../../client/splines/util_str.h"
-#include "../../client/splines/math_vector.h"
+#include "util_list.h"
+#include "util_str.h"
+#include "math_vector.h"
 
-typedef int fileHandle_t;
-
-class idPointListInterface {
+class idSplineList
+{
 public:
-	virtual ~idPointListInterface()
-	{
-	};
-
-	virtual int numPoints()
-	{
-		return 0;
-	}
-
-	virtual void addPoint(const float x, const float y, const float z) {}
-	virtual void addPoint(const idVec3&v) {}
-	virtual void removePoint(int index) {}
-	virtual idVec3* getPoint(int index) { return NULL; }
-};
-
-
-class idSplineList {
-
-public:
-
 	idSplineList()
 	{
 		clear();
@@ -92,7 +59,7 @@ public:
 		splinePoints.Clear();
 	}
 
-	void parse(const char*(*text));
+	void parse(const char** text);
 
 	void clear()
 	{
@@ -113,32 +80,10 @@ public:
 	const idVec3* getPosition(long time);
 
 
-	void setSelectedPoint(idVec3* p);
-	idVec3* getSelectedPoint()
-	{
-		return selected;
-	}
-
-	void addPoint(const idVec3&v)
-	{
-		controlPoints.Append(new idVec3(v));
-		dirty = true;
-	}
-
 	void addPoint(float x, float y, float z)
 	{
 		controlPoints.Append(new idVec3(x, y, z));
 		dirty = true;
-	}
-
-	void startEdit()
-	{
-		editMode = true;
-	}
-
-	void stopEdit()
-	{
-		editMode = false;
 	}
 
 	void buildSpline();
@@ -151,17 +96,6 @@ public:
 	float getGranularity()
 	{
 		return granularity;
-	}
-
-	int numPoints()
-	{
-		return controlPoints.Num();
-	}
-
-	idVec3* getPoint(int index)
-	{
-		assert(index >= 0 && index < controlPoints.Num());
-		return controlPoints[index];
 	}
 
 	idVec3* getSegmentPoint(int index)
@@ -256,7 +190,6 @@ protected:
 	idVec3* selected;
 	idVec3 pathColor, segmentColor, controlColor, activeColor;
 	float granularity;
-	bool editMode;
 	bool dirty;
 	int activeSegment;
 	long baseTime;
@@ -281,7 +214,8 @@ struct idVelocity
 
 // can either be a look at or origin position for a camera
 //
-class idCameraPosition : public idPointListInterface {
+class idCameraPosition
+{
 public:
 
 	virtual void clearVelocities()
@@ -296,7 +230,6 @@ public:
 
 	virtual void clear()
 	{
-		editMode = false;
 		clearVelocities();
 	}
 
@@ -377,8 +310,8 @@ public:
 		return NULL;
 	}
 
-	virtual void parse(const char*(*text)) {};
-	virtual bool parseToken(const char* key, const char*(*text));
+	virtual void parse(const char** text) {};
+	virtual bool parseToken(const char* key, const char** text);
 
 	const char* getName()
 	{
@@ -388,21 +321,6 @@ public:
 	void setName(const char* p)
 	{
 		name = p;
-	}
-
-	virtual void startEdit()	//DAJ added void
-	{
-		editMode = true;
-	}
-
-	virtual void stopEdit()		//DAJ added void
-	{
-		editMode = false;
-	}
-
-	const char* typeStr()
-	{
-		return positionStr[static_cast<int>(type)];
 	}
 
 	void calcVelocity(float distance)
@@ -415,19 +333,17 @@ public:
 	}
 
 protected:
-	static const char* positionStr[POSITION_COUNT];
 	long startTime;
 	long time;
 	idCameraPosition::positionType type;
 	idStr name;
-	bool editMode;
 	idList<idVelocity*> velocities;
 	float baseVelocity;
 };
 
-class idFixedPosition : public idCameraPosition {
+class idFixedPosition : public idCameraPosition
+{
 public:
-
 	void init()
 	{
 		pos.Zero();
@@ -445,11 +361,6 @@ public:
 		pos = p;
 	}
 
-	virtual void addPoint(const idVec3&v)
-	{
-		pos = v;
-	}
-
 	virtual void addPoint(const float x, const float y, const float z)
 	{
 		pos.set(x, y, z);
@@ -465,30 +376,15 @@ public:
 		return &pos;
 	}
 
-	void parse(const char*(*text));
-
-	virtual int numPoints()
-	{
-		return 1;
-	}
-
-	virtual idVec3* getPoint(int index)
-	{
-		if (index != 0)
-		{
-			assert(true);
-		}
-		;
-		return &pos;
-	}
+	void parse(const char** text);
 
 protected:
 	idVec3 pos;
 };
 
-class idInterpolatedPosition : public idCameraPosition {
+class idInterpolatedPosition : public idCameraPosition
+{
 public:
-
 	void init()
 	{
 		type = idCameraPosition::INTERPOLATED;
@@ -515,22 +411,7 @@ public:
 
 	virtual const idVec3* getPosition(long t);
 
-	void parse(const char*(*text));
-
-	virtual int numPoints()
-	{
-		return 2;
-	}
-
-	virtual idVec3* getPoint(int index)
-	{
-		assert(index >= 0 && index < 2);
-		if (index == 0)
-		{
-			return &startPos;
-		}
-		return &endPos;
-	}
+	void parse(const char** text);
 
 	virtual void addPoint(const float x, const float y, const float z)
 	{
@@ -542,20 +423,6 @@ public:
 		else
 		{
 			endPos.set(x, y, z);
-			first = true;
-		}
-	}
-
-	virtual void addPoint(const idVec3&v)
-	{
-		if (first)
-		{
-			startPos = v;
-			first = false;
-		}
-		else
-		{
-			endPos = v;
 			first = true;
 		}
 	}
@@ -578,9 +445,9 @@ protected:
 	float distSoFar;
 };
 
-class idSplinePosition : public idCameraPosition {
+class idSplinePosition : public idCameraPosition
+{
 public:
-
 	void init()
 	{
 		type = idCameraPosition::SPLINE;
@@ -611,22 +478,7 @@ public:
 
 	virtual const idVec3* getPosition(long t);
 
-	void parse(const char*(*text));
-
-	virtual int numPoints()
-	{
-		return target.numPoints();
-	}
-
-	virtual idVec3* getPoint(int index)
-	{
-		return target.getPoint(index);
-	}
-
-	virtual void addPoint(const idVec3&v)
-	{
-		target.addPoint(v);
-	}
+	void parse(const char** text);
 
 	virtual void addPoint(const float x, const float y, const float z)
 	{
@@ -639,9 +491,9 @@ protected:
 	float distSoFar;
 };
 
-class idCameraFOV {
+class idCameraFOV
+{
 public:
-
 	idCameraFOV()
 	{
 		time = 0;
@@ -711,7 +563,7 @@ public:
 		length = len * 1000;
 	}
 
-	void parse(const char*(*text));
+	void parse(const char** text);
 
 protected:
 	float fov;
@@ -722,12 +574,11 @@ protected:
 	float length;
 };
 
-
-
-
-class idCameraEvent {
+class idCameraEvent
+{
 public:						// parameters
-	enum eventType {
+	enum eventType
+	{
 		EVENT_NA = 0x00,
 		EVENT_WAIT,			//
 		EVENT_TARGETWAIT,	//
@@ -744,8 +595,6 @@ public:						// parameters
 		EVENT_FEATHER,		//
 		EVENT_COUNT
 	};
-
-	static const char* eventStr[EVENT_COUNT];
 
 	idCameraEvent()
 	{
@@ -770,11 +619,6 @@ public:						// parameters
 		return type;
 	}
 
-	const char* typeStr()
-	{
-		return eventStr[static_cast<int>(type)];
-	}
-
 	const char* getParam()
 	{
 		return paramStr.c_str();
@@ -790,7 +634,7 @@ public:						// parameters
 		time = n;
 	}
 
-	void parse(const char*(*text));
+	void parse(const char** text);
 
 	void setTriggered(bool b)
 	{
@@ -807,12 +651,11 @@ protected:
 	idStr paramStr;
 	long time;
 	bool triggered;
-
 };
 
-class idCameraDef {
+class idCameraDef
+{
 public:
-
 	void clear()
 	{
 		currentCameraPosition = 0;
@@ -837,24 +680,6 @@ public:
 		targetPositions.Clear();
 	}
 
-	idCameraPosition* startNewCamera(idCameraPosition::positionType type)
-	{
-		clear();
-		if (type == idCameraPosition::SPLINE)
-		{
-			cameraPosition = new idSplinePosition();
-		}
-		else if (type == idCameraPosition::INTERPOLATED)
-		{
-			cameraPosition = new idInterpolatedPosition();
-		}
-		else
-		{
-			cameraPosition = new idFixedPosition();
-		}
-		return cameraPosition;
-	}
-
 	idCameraDef()
 	{
 		cameraPosition = NULL;
@@ -870,20 +695,7 @@ public:
 
 	void addEvent(idCameraEvent* event);
 
-	static int sortEvents(const void* p1, const void* p2);
-
-	int numEvents()
-	{
-		return events.Num();
-	}
-
-	idCameraEvent* getEvent(int index)
-	{
-		assert(index >= 0 && index < events.Num());
-		return events[index];
-	}
-
-	void parse(const char*(*text));
+	void parse(const char** text);
 	bool load(const char* filename);
 
 	void buildCamera();
@@ -947,31 +759,7 @@ public:
 		activeTarget = index;
 	}
 
-	void setRunning(bool b)
-	{
-		cameraRunning = b;
-	}
-
-	void setBaseTime(float f)
-	{
-		baseTime = f;
-	}
-
-	float getBaseTime()
-	{
-		return baseTime;
-	}
-
-	float getTotalTime()
-	{
-		return totalTime;
-	}
-
 	void startCamera(long t);
-	void stopCamera()
-	{
-		cameraRunning = true;
-	}
 	bool getCameraInfo(long time, idVec3&origin, idVec3&direction, float* fv);
 	bool getCameraInfo(long time, float* origin, float* direction, float* fv)
 	{
@@ -992,77 +780,6 @@ public:
 		return b;
 	}
 
-	int numPoints()
-	{
-		if (cameraEdit)
-		{
-			return cameraPosition->numPoints();
-		}
-		return getActiveTarget()->numPoints();
-	}
-
-	const idVec3* getPoint(int index)
-	{
-		if (cameraEdit)
-		{
-			return cameraPosition->getPoint(index);
-		}
-		return getActiveTarget()->getPoint(index);
-	}
-
-	void stopEdit()
-	{
-		editMode = false;
-		if (cameraEdit)
-		{
-			cameraPosition->stopEdit();
-		}
-		else
-		{
-			getActiveTarget()->stopEdit();
-		}
-	}
-
-	void startEdit(bool camera)
-	{
-		cameraEdit = camera;
-		if (camera)
-		{
-			cameraPosition->startEdit();
-			for (int i = 0; i < targetPositions.Num(); i++)
-			{
-				targetPositions[i]->stopEdit();
-			}
-		}
-		else
-		{
-			getActiveTarget()->startEdit();
-			cameraPosition->stopEdit();
-		}
-		editMode = true;
-	}
-
-	bool waitEvent(int index);
-
-	const char* getName()
-	{
-		return name.c_str();
-	}
-
-	void setName(const char* p)
-	{
-		name = p;
-	}
-
-	idCameraPosition* getPositionObj()
-	{
-		if (cameraPosition == NULL)
-		{
-			cameraPosition = new idFixedPosition();
-		}
-		return cameraPosition;
-	}
-
 protected:
 	idStr name;
 	int currentCameraPosition;
@@ -1076,11 +793,6 @@ protected:
 	float totalTime;
 	float baseTime;
 	long startTime;
-
-	bool cameraEdit;
-	bool editMode;
 };
-
-extern bool g_splineMode;
 
 #endif
