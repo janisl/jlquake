@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __SPLINES_H
 #define __SPLINES_H
 
-#include "util_list.h"
+#include "../../client/splines/util_list.h"
 #include "util_str.h"
 #include "../../client/splines/math_vector.h"
 
@@ -64,26 +64,6 @@ public:
 			{
 				return i;
 			}
-		}
-		return -1;
-	}
-
-	int selectPoint(int index, bool single)
-	{
-		if (index >= 0 && index < numPoints())
-		{
-			if (single)
-			{
-				deselectAll();
-			}
-			else
-			{
-				if (isPointSelected(index) >= 0)
-				{
-					selectedPoints.Remove(index);
-				}
-			}
-			return selectedPoints.Append(index);
 		}
 		return -1;
 	}
