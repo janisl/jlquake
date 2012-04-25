@@ -33,7 +33,7 @@ union eval_t
 	func_t function;
 	int _int;
 	int edict;
-};	
+};
 
 struct prstack_t
 {

@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#define MAX_ENT_LEAFS	16
+#define MAX_ENT_LEAFS   16
 
 class idEntVarDef
 {
@@ -181,13 +181,13 @@ struct qhedict_t
 {
 	bool free;
 	qhlink_t area;			// linked to a division node or leaf
-	
+
 	int num_leafs;
 	int LeafNums[MAX_ENT_LEAFS];
 
 	q1entity_state_t q1_baseline;
 	h2entity_state_t h2_baseline;
-	
+
 	float freetime;			// sv.time when the object was freed
 	float alloctime;		// sv.time when the object was allocated
 	entvars_t v;			// C exported fields from progs
@@ -201,13 +201,13 @@ struct qhedict_t
 	void SetVectorField(idEntVarDef& field, vec3_t value);
 
 #define FIELD_FLOAT(name) \
-	float Get ## name() \
+	float Get ## name()	\
 	{ \
-		return GetFloatField(entField ## name); \
+		return GetFloatField(entField ## name);	\
 	} \
 	void Set ## name(float value) \
 	{ \
-		SetFloatField(entField ## name, value); \
+		SetFloatField(entField ## name, value);	\
 	}
 #define FIELD_VECTOR(name) \
 	float* Get ## name() \
@@ -241,7 +241,7 @@ struct qhedict_t
 	{ \
 		return GetIntField(entField ## name); \
 	} \
-	void Set ## name(int value) \
+	void Set ## name(int value)	\
 	{ \
 		SetIntField(entField ## name, value); \
 	}

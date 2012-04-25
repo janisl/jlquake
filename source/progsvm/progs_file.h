@@ -196,7 +196,7 @@ struct dstatement_t
 struct ddef_t
 {
 	quint16 type;		// if DEF_SAVEGLOBGAL bit is set
-							// the variable needs to be saved in savegames
+						// the variable needs to be saved in savegames
 	quint16 ofs;
 	qint32 s_name;
 };
@@ -206,12 +206,12 @@ struct dfunction_t
 	qint32 first_statement;	// negative numbers are builtins
 	qint32 parm_start;
 	qint32 locals;				// total ints of parms + locals
-	
+
 	qint32 profile;		// runtime
-	
+
 	qint32 s_name;
 	qint32 s_file;			// source file defined in
-	
+
 	qint32 numparms;
 	quint8 parm_size[MAX_PARMS];
 };
