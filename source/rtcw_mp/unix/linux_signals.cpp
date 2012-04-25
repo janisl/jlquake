@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,30 +37,33 @@ If you have questions concerning this license or the applicable additional terms
 
 static qboolean signalcaught = qfalse;;
 
-void Sys_Exit( int ); // bk010104 - abstraction
+void Sys_Exit(int);		// bk010104 - abstraction
 
-static void signal_handler( int sig ) { // bk010104 - replace this... (NOTE TTimo huh?)
-	if ( signalcaught ) {
-		printf( "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig );
-		Sys_Exit( 1 ); // bk010104 - abstraction
+static void signal_handler(int sig)		// bk010104 - replace this... (NOTE TTimo huh?)
+{
+	if (signalcaught)
+	{
+		printf("DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig);
+		Sys_Exit(1);	// bk010104 - abstraction
 	}
 
 	signalcaught = qtrue;
-	printf( "Received signal %d, exiting...\n", sig );
+	printf("Received signal %d, exiting...\n", sig);
 #ifndef DEDICATED
-	GLimp_Shutdown(); // bk010104 - shouldn't this be CL_Shutdown
+	GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown
 #endif
-	Sys_Exit( 0 ); // bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
+	Sys_Exit(0);	// bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
 }
 
-void InitSig( void ) {
-	signal( SIGHUP, signal_handler );
-	signal( SIGQUIT, signal_handler );
-	signal( SIGILL, signal_handler );
-	signal( SIGTRAP, signal_handler );
-	signal( SIGIOT, signal_handler );
-	signal( SIGBUS, signal_handler );
-	signal( SIGFPE, signal_handler );
-	signal( SIGSEGV, signal_handler );
-	signal( SIGTERM, signal_handler );
+void InitSig(void)
+{
+	signal(SIGHUP, signal_handler);
+	signal(SIGQUIT, signal_handler);
+	signal(SIGILL, signal_handler);
+	signal(SIGTRAP, signal_handler);
+	signal(SIGIOT, signal_handler);
+	signal(SIGBUS, signal_handler);
+	signal(SIGFPE, signal_handler);
+	signal(SIGSEGV, signal_handler);
+	signal(SIGTERM, signal_handler);
 }

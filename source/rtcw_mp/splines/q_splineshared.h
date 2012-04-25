@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -69,13 +69,13 @@ enum {qfalse, qtrue};
 
 #define EQUAL_EPSILON   0.001
 
-#undef ERR_FATAL                        // malloc.h on unix
+#undef ERR_FATAL						// malloc.h on unix
 
 // parameters to the main Error routine
 typedef enum {
 	ERR_NONE,
-	ERR_FATAL,                  // exit the entire game with a popup window
-	ERR_DROP,                   // print to console and disconnect from game
+	ERR_FATAL,					// exit the entire game with a popup window
+	ERR_DROP,					// print to console and disconnect from game
 } errorParm_t;
 
 /*
@@ -101,32 +101,32 @@ SCRIPT PARSING
 */
 
 // this just controls the comment printing, it doesn't actually load a file
-void Com_BeginParseSession( const char *filename );
-void Com_EndParseSession( void );
+void Com_BeginParseSession(const char* filename);
+void Com_EndParseSession(void);
 
 // Will never return NULL, just empty strings.
 // An empty string will only be returned at end of file.
 // ParseOnLine will return empty if there isn't another token on this line
 
 // this funny typedef just means a moving pointer into a const char * buffer
-const char *Com_Parse( const char *( *data_p ) );
-const char *Com_ParseOnLine( const char *( *data_p ) );
+const char* Com_Parse(const char*(*data_p));
+const char* Com_ParseOnLine(const char*(*data_p));
 
-void Com_UngetToken( void );
+void Com_UngetToken(void);
 
-void Com_MatchToken( const char *( *buf_p ), const char *match, qboolean warning = qfalse );
+void Com_MatchToken(const char*(*buf_p), const char* match, qboolean warning = qfalse);
 
-void Com_ScriptError( const char *msg, ... );
-void Com_ScriptWarning( const char *msg, ... );
+void Com_ScriptError(const char* msg, ...);
+void Com_ScriptWarning(const char* msg, ...);
 
-float Com_ParseFloat( const char *( *buf_p ) );
+float Com_ParseFloat(const char*(*buf_p));
 
-void Com_Parse1DMatrix( const char *( *buf_p ), int x, float *m );
+void Com_Parse1DMatrix(const char*(*buf_p), int x, float* m);
 
 //=========================================
 
-void QDECL Com_Error( int level, const char *error, ... );
-void QDECL Com_Printf( const char *msg, ... );
-void QDECL Com_DPrintf( const char *msg, ... );
+void QDECL Com_Error(int level, const char* error, ...);
+void QDECL Com_Printf(const char* msg, ...);
+void QDECL Com_DPrintf(const char* msg, ...);
 
-#endif  // __Q_SHARED_H
+#endif	// __Q_SHARED_H

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,38 +37,38 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef AASINTERN
 //initialize calculating the reachabilities
-void AAS_InitReachability( void );
+void AAS_InitReachability(void);
 //continue calculating the reachabilities
-int AAS_ContinueInitReachability( float time );
+int AAS_ContinueInitReachability(float time);
 //
-int AAS_BestReachableLinkArea( aas_link_t *areas );
-#endif //AASINTERN
+int AAS_BestReachableLinkArea(aas_link_t* areas);
+#endif	//AASINTERN
 
 //returns true if the are has reachabilities to other areas
-int AAS_AreaReachability( int areanum );
+int AAS_AreaReachability(int areanum);
 //returns the best reachable area and goal origin for a bounding box at the given origin
-int AAS_BestReachableArea( vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin );
+int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin);
 //returns the next reachability using the given model
-int AAS_NextModelReachability( int num, int modelnum );
+int AAS_NextModelReachability(int num, int modelnum);
 //returns the total area of the ground faces of the given area
-float AAS_AreaGroundFaceArea( int areanum );
+float AAS_AreaGroundFaceArea(int areanum);
 //returns true if the area is crouch only
-int AAS_AreaCrouch( int areanum );
+int AAS_AreaCrouch(int areanum);
 //returns true if a player can swim in this area
-int AAS_AreaSwim( int areanum );
+int AAS_AreaSwim(int areanum);
 //returns true if the area is filled with a liquid
-int AAS_AreaLiquid( int areanum );
+int AAS_AreaLiquid(int areanum);
 //returns true if the area contains lava
-int AAS_AreaLava( int areanum );
+int AAS_AreaLava(int areanum);
 //returns true if the area contains slime
-int AAS_AreaSlime( int areanum );
+int AAS_AreaSlime(int areanum);
 //returns true if the area has one or more ground faces
-int AAS_AreaGrounded( int areanum );
+int AAS_AreaGrounded(int areanum);
 //returns true if the area has one or more ladder faces
-int AAS_AreaLadder( int areanum );
+int AAS_AreaLadder(int areanum);
 //returns true if the area is a jump pad
-int AAS_AreaJumpPad( int areanum );
+int AAS_AreaJumpPad(int areanum);
 //returns true if the area is donotenter
-int AAS_AreaDoNotEnter( int areanum );
+int AAS_AreaDoNotEnter(int areanum);
 //returns true if the area is donotenterlarge
-int AAS_AreaDoNotEnterLarge( int areanum );
+int AAS_AreaDoNotEnterLarge(int areanum);

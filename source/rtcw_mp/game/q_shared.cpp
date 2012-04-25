@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,20 +32,25 @@ If you have questions concerning this license or the applicable additional terms
 // os x game bundles have no standard library links, and the defines are not always defined!
 
 #ifdef MACOS_X
-int qmax( int x, int y ) {
-	return ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) );
+int qmax(int x, int y)
+{
+	return (((x) > (y)) ? (x) : (y));
 }
 
-int qmin( int x, int y ) {
-	return ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) );
+int qmin(int x, int y)
+{
+	return (((x) < (y)) ? (x) : (y));
 }
 #endif
 
-float Com_Clamp( float min, float max, float value ) {
-	if ( value < min ) {
+float Com_Clamp(float min, float max, float value)
+{
+	if (value < min)
+	{
 		return min;
 	}
-	if ( value > max ) {
+	if (value > max)
+	{
 		return max;
 	}
 	return value;
@@ -59,16 +64,18 @@ COM_BitCheck
   Allows bit-wise checks on arrays with more than one item (> 32 bits)
 ==================
 */
-qboolean COM_BitCheck( const int array[], int bitNum ) {
+qboolean COM_BitCheck(const int array[], int bitNum)
+{
 	int i;
 
 	i = 0;
-	while ( bitNum > 31 ) {
+	while (bitNum > 31)
+	{
 		i++;
 		bitNum -= 32;
 	}
 
-	return ( ( array[i] & ( 1 << bitNum ) ) != 0 );  // (SA) heh, whoops. :)
+	return ((array[i] & (1 << bitNum)) != 0);		// (SA) heh, whoops. :)
 }
 
 /*
@@ -78,16 +85,18 @@ COM_BitSet
   Allows bit-wise SETS on arrays with more than one item (> 32 bits)
 ==================
 */
-void COM_BitSet( int array[], int bitNum ) {
+void COM_BitSet(int array[], int bitNum)
+{
 	int i;
 
 	i = 0;
-	while ( bitNum > 31 ) {
+	while (bitNum > 31)
+	{
 		i++;
 		bitNum -= 32;
 	}
 
-	array[i] |= ( 1 << bitNum );
+	array[i] |= (1 << bitNum);
 }
 
 /*
@@ -97,39 +106,45 @@ COM_BitClear
   Allows bit-wise CLEAR on arrays with more than one item (> 32 bits)
 ==================
 */
-void COM_BitClear( int array[], int bitNum ) {
+void COM_BitClear(int array[], int bitNum)
+{
 	int i;
 
 	i = 0;
-	while ( bitNum > 31 ) {
+	while (bitNum > 31)
+	{
 		i++;
 		bitNum -= 32;
 	}
 
-	array[i] &= ~( 1 << bitNum );
+	array[i] &= ~(1 << bitNum);
 }
 //============================================================================
 
 /*
 ============================================================================
 
-					LIBRARY REPLACEMENT FUNCTIONS
+                    LIBRARY REPLACEMENT FUNCTIONS
 
 ============================================================================
 */
 
-int Q_PrintStrlen( const char *string ) {
+int Q_PrintStrlen(const char* string)
+{
 	int len;
-	const char  *p;
+	const char* p;
 
-	if ( !string ) {
+	if (!string)
+	{
 		return 0;
 	}
 
 	len = 0;
 	p = string;
-	while ( *p ) {
-		if ( Q_IsColorString( p ) ) {
+	while (*p)
+	{
+		if (Q_IsColorString(p))
+		{
 			p += 2;
 			continue;
 		}
@@ -141,17 +156,22 @@ int Q_PrintStrlen( const char *string ) {
 }
 
 
-char *Q_CleanStr( char *string ) {
-	char*   d;
-	char*   s;
+char* Q_CleanStr(char* string)
+{
+	char* d;
+	char* s;
 	int c;
 
 	s = string;
 	d = string;
-	while ( ( c = *s ) != 0 ) {
-		if ( Q_IsColorString( s ) ) {
+	while ((c = *s) != 0)
+	{
+		if (Q_IsColorString(s))
+		{
 			s++;
-		} else if ( c >= 0x20 && c <= 0x7E )   {
+		}
+		else if (c >= 0x20 && c <= 0x7E)
+		{
 			*d++ = c;
 		}
 		s++;
@@ -173,30 +193,33 @@ Ridah, modified this into a circular list, to further prevent stepping on
 previous strings
 ============
 */
-char    * QDECL va( char *format, ... ) {
+char* QDECL va(char* format, ...)
+{
 	va_list argptr;
 	#define MAX_VA_STRING   32000
 	static char temp_buffer[MAX_VA_STRING];
-	static char string[MAX_VA_STRING];      // in case va is called by nested functions
+	static char string[MAX_VA_STRING];		// in case va is called by nested functions
 	static int index = 0;
-	char    *buf;
+	char* buf;
 	int len;
 
 
-	va_start( argptr, format );
-	vsprintf( temp_buffer, format,argptr );
-	va_end( argptr );
+	va_start(argptr, format);
+	vsprintf(temp_buffer, format,argptr);
+	va_end(argptr);
 
-	if ( ( len = String::Length( temp_buffer ) ) >= MAX_VA_STRING ) {
-		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()\n" );
+	if ((len = String::Length(temp_buffer)) >= MAX_VA_STRING)
+	{
+		Com_Error(ERR_DROP, "Attempted to overrun string in call to va()\n");
 	}
 
-	if ( len + index >= MAX_VA_STRING - 1 ) {
+	if (len + index >= MAX_VA_STRING - 1)
+	{
 		index = 0;
 	}
 
 	buf = &string[index];
-	memcpy( buf, temp_buffer, len + 1 );
+	memcpy(buf, temp_buffer, len + 1);
 
 	index += len + 1;
 
@@ -213,15 +236,16 @@ This is just a convenience function
 for making temporary vectors for function calls
 =============
 */
-float   *tv( float x, float y, float z ) {
+float* tv(float x, float y, float z)
+{
 	static int index;
 	static vec3_t vecs[8];
-	float   *v;
+	float* v;
 
 	// use an array so that multiple tempvectors won't collide
 	// for a while
 	v = vecs[index];
-	index = ( index + 1 ) & 7;
+	index = (index + 1) & 7;
 
 	v[0] = x;
 	v[1] = y;

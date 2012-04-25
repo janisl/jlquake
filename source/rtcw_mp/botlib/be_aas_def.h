@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -42,16 +42,16 @@ If you have questions concerning this license or the applicable additional terms
 //#define	MAX_MODELS_Q3			256		// these are sent over the net as 8 bits
 //#define	MAX_SOUNDS			256		// so they cannot be blindly increased
 //#define	MAX_CONFIGSTRINGS_WM	1024
-#define MAX_CONFIGSTRINGS_WM   2048    //----(SA)	upped
+#define MAX_CONFIGSTRINGS_WM   2048		//----(SA)	upped
 
 //#define	CS_SCORES			32
 //#define	CS_MODELS			(CS_SCORES+MAX_CLIENTS_WM)
 //#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS_Q3)
 
-#define DF_AASENTNUMBER( x )      ( x - ( *aasworlds ).entities )
-#define DF_NUMBERAASENT( x )      ( &( *aasworlds ).entities[x] )
-#define DF_AASENTCLIENT( x )      ( x - ( *aasworlds ).entities - 1 )
-#define DF_CLIENTAASENT( x )      ( &( *aasworlds ).entities[x + 1] )
+#define DF_AASENTNUMBER(x)      (x - (*aasworlds).entities)
+#define DF_NUMBERAASENT(x)      (&(*aasworlds).entities[x])
+#define DF_AASENTCLIENT(x)      (x - (*aasworlds).entities - 1)
+#define DF_CLIENTAASENT(x)      (&(*aasworlds).entities[x + 1])
 
 #ifndef MAX_PATH
 	#define MAX_PATH                MAX_QPATH
@@ -61,7 +61,7 @@ If you have questions concerning this license or the applicable additional terms
 typedef struct aas_stringindex_s
 {
 	int numindexes;
-	char **index;
+	char** index;
 } aas_stringindex_t;
 
 //structure to link entities to areas and areas to entities
@@ -69,8 +69,8 @@ typedef struct aas_link_s
 {
 	int entnum;
 	int areanum;
-	struct aas_link_s *next_ent, *prev_ent;
-	struct aas_link_s *next_area, *prev_area;
+	struct aas_link_s* next_ent, * prev_ent;
+	struct aas_link_s* next_area, * prev_area;
 } aas_link_t;
 
 //structure to link entities to leaves and leaves to entities
@@ -78,8 +78,8 @@ typedef struct bsp_link_s
 {
 	int entnum;
 	int leafnum;
-	struct bsp_link_s *next_ent, *prev_ent;
-	struct bsp_link_s *next_leaf, *prev_leaf;
+	struct bsp_link_s* next_ent, * prev_ent;
+	struct bsp_link_s* next_leaf, * prev_leaf;
 } bsp_link_t;
 
 typedef struct bsp_entdata_s
@@ -98,9 +98,9 @@ typedef struct aas_entity_s
 	//entity info
 	aas_entityinfo_t i;
 	//links into the AAS areas
-	aas_link_t *areas;
+	aas_link_t* areas;
 	//links into the BSP leaves
-	bsp_link_t *leaves;
+	bsp_link_t* leaves;
 } aas_entity_t;
 
 typedef struct aas_settings_s
@@ -127,44 +127,44 @@ typedef struct aas_settings_s
 //routing cache
 typedef struct aas_routingcache_s
 {
-	int size;                                   //size of the routing cache
-	float time;                                 //last time accessed or updated
-	int cluster;                                //cluster the cache is for
-	int areanum;                                //area the cache is created for
-	vec3_t origin;                              //origin within the area
-	float starttraveltime;                      //travel time to start with
-	int travelflags;                            //combinations of the travel flags
-	struct aas_routingcache_s *prev, *next;
-	unsigned char *reachabilities;              //reachabilities used for routing
-	unsigned short int traveltimes[1];          //travel time for every area (variable sized)
+	int size;									//size of the routing cache
+	float time;									//last time accessed or updated
+	int cluster;								//cluster the cache is for
+	int areanum;								//area the cache is created for
+	vec3_t origin;								//origin within the area
+	float starttraveltime;						//travel time to start with
+	int travelflags;							//combinations of the travel flags
+	struct aas_routingcache_s* prev, * next;
+	unsigned char* reachabilities;				//reachabilities used for routing
+	unsigned short int traveltimes[1];			//travel time for every area (variable sized)
 } aas_routingcache_t;
 
 //fields for the routing algorithm
 typedef struct aas_routingupdate_s
 {
 	int cluster;
-	int areanum;                                //area number of the update
-	vec3_t start;                               //start point the area was entered
-	unsigned short int tmptraveltime;           //temporary travel time
-	unsigned short int *areatraveltimes;        //travel times within the area
-	qboolean inlist;                            //true if the update is in the list
-	struct aas_routingupdate_s *next;
-	struct aas_routingupdate_s *prev;
+	int areanum;								//area number of the update
+	vec3_t start;								//start point the area was entered
+	unsigned short int tmptraveltime;			//temporary travel time
+	unsigned short int* areatraveltimes;		//travel times within the area
+	qboolean inlist;							//true if the update is in the list
+	struct aas_routingupdate_s* next;
+	struct aas_routingupdate_s* prev;
 } aas_routingupdate_t;
 
 //reversed reachability link
 typedef struct aas_reversedlink_s
 {
-	int linknum;                                //the aas_areareachability_t
-	int areanum;                                //reachable from this area
-	struct aas_reversedlink_s *next;            //next link
+	int linknum;								//the aas_areareachability_t
+	int areanum;								//reachable from this area
+	struct aas_reversedlink_s* next;			//next link
 } aas_reversedlink_t;
 
 //reversed area reachability
 typedef struct aas_reversedreachability_s
 {
 	int numlinks;
-	aas_reversedlink_t *first;
+	aas_reversedlink_t* first;
 } aas_reversedreachability_t;
 
 // Ridah, route-tables
@@ -173,9 +173,9 @@ typedef struct aas_reversedreachability_s
 
 typedef struct aas_s
 {
-	int loaded;                                 //true when an AAS file is loaded
-	int initialized;                            //true when AAS has been initialized
-	int savefile;                               //set true when file should be saved
+	int loaded;									//true when an AAS file is loaded
+	int initialized;							//true when AAS has been initialized
+	int savefile;								//set true when file should be saved
 	int bspchecksum;
 	//current time
 	float time;
@@ -185,90 +185,90 @@ typedef struct aas_s
 	char mapname[MAX_PATH];
 	//bounding boxes
 	int numbboxes;
-	aas_bbox_t *bboxes;
+	aas_bbox_t* bboxes;
 	//vertexes
 	int numvertexes;
-	aas_vertex_t *vertexes;
+	aas_vertex_t* vertexes;
 	//planes
 	int numplanes;
-	aas_plane_t *planes;
+	aas_plane_t* planes;
 	//edges
 	int numedges;
-	aas_edge_t *edges;
+	aas_edge_t* edges;
 	//edge index
 	int edgeindexsize;
-	aas_edgeindex_t *edgeindex;
+	aas_edgeindex_t* edgeindex;
 	//faces
 	int numfaces;
-	aas_face_t *faces;
+	aas_face_t* faces;
 	//face index
 	int faceindexsize;
-	aas_faceindex_t *faceindex;
+	aas_faceindex_t* faceindex;
 	//convex areas
 	int numareas;
-	aas_area_t *areas;
+	aas_area_t* areas;
 	//convex area settings
 	int numareasettings;
-	aas_areasettings_t *areasettings;
+	aas_areasettings_t* areasettings;
 	//reachablity list
 	int reachabilitysize;
-	aas_reachability_t *reachability;
+	aas_reachability_t* reachability;
 	//nodes of the bsp tree
 	int numnodes;
-	aas_node_t *nodes;
+	aas_node_t* nodes;
 	//cluster portals
 	int numportals;
-	aas_portal_t *portals;
+	aas_portal_t* portals;
 	//cluster portal index
 	int portalindexsize;
-	aas_portalindex_t *portalindex;
+	aas_portalindex_t* portalindex;
 	//clusters
 	int numclusters;
-	aas_cluster_t *clusters;
+	aas_cluster_t* clusters;
 	//
 	int reachabilityareas;
 	float reachabilitytime;
 	//enities linked in the areas
-	aas_link_t *linkheap;                       //heap with link structures
-	int linkheapsize;                           //size of the link heap
-	aas_link_t *freelinks;                      //first free link
-	aas_link_t **arealinkedentities;            //entities linked into areas
+	aas_link_t* linkheap;						//heap with link structures
+	int linkheapsize;							//size of the link heap
+	aas_link_t* freelinks;						//first free link
+	aas_link_t** arealinkedentities;			//entities linked into areas
 	//entities
 	int maxentities;
 	int maxclients;
-	aas_entity_t *entities;
+	aas_entity_t* entities;
 	//string indexes
-	char *configstrings[MAX_CONFIGSTRINGS_WM];
+	char* configstrings[MAX_CONFIGSTRINGS_WM];
 	int indexessetup;
 	//index to retrieve travel flag for a travel type
 	int travelflagfortype[MAX_TRAVELTYPES];
 	//routing update
-	aas_routingupdate_t *areaupdate;
-	aas_routingupdate_t *portalupdate;
+	aas_routingupdate_t* areaupdate;
+	aas_routingupdate_t* portalupdate;
 	//number of routing updates during a frame (reset every frame)
 	int frameroutingupdates;
 	//reversed reachability links
-	aas_reversedreachability_t *reversedreachability;
+	aas_reversedreachability_t* reversedreachability;
 	//travel times within the areas
-	unsigned short ***areatraveltimes;
+	unsigned short*** areatraveltimes;
 	//array of size numclusters with cluster cache
-	aas_routingcache_t ***clusterareacache;
-	aas_routingcache_t **portalcache;
+	aas_routingcache_t*** clusterareacache;
+	aas_routingcache_t** portalcache;
 	//maximum travel time through portals
-	int *portalmaxtraveltimes;
+	int* portalmaxtraveltimes;
 	// Ridah, pointer to Route-Table information
-	aas_rt_t    *routetable;
+	aas_rt_t* routetable;
 	//hide travel times
-	unsigned short int *hidetraveltimes;
+	unsigned short int* hidetraveltimes;
 	//vis data
-	byte *decompressedvis;
+	byte* decompressedvis;
 	int decompressedvisarea;
-	byte **areavisibility;
+	byte** areavisibility;
 	// done.
 	// Ridah, store the area's waypoint for hidepos calculations (center traced downwards)
-	vec3_t *areawaypoints;
+	vec3_t* areawaypoints;
 	// Ridah, so we can cache the areas that have already been tested for visibility/attackability
-	byte *visCache;
+	byte* visCache;
 } aas_t;
 
 #define AASINTERN
@@ -291,4 +291,4 @@ typedef struct aas_s
 // Ridah, route-tables
 #include "be_aas_routetable.h"
 
-#endif //BSPCINCLUDE
+#endif	//BSPCINCLUDE

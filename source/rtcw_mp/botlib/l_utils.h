@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#define Vector2Angles( v,a )      vectoangles( v,a )
+#define Vector2Angles(v,a)      vectoangles(v,a)
 #define MAX_PATH                MAX_QPATH
-#define Maximum( x,y )            ( x > y ? x : y )
-#define Minimum( x,y )            ( x < y ? x : y )
+#define Maximum(x,y)            (x > y ? x : y)
+#define Minimum(x,y)            (x < y ? x : y)

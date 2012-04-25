@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
 
 RTCW MP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,46 +44,56 @@ vec4_t colorDkGrey = {0.25, 0.25, 0.25, 1};
 
 //==============================================================
 
-int     Q_rand( int *seed ) {
-	*seed = ( 69069 * *seed + 1 );
+int     Q_rand(int* seed)
+{
+	*seed = (69069 * *seed + 1);
 	return *seed;
 }
 
-float   Q_random( int *seed ) {
-	return ( Q_rand( seed ) & 0xffff ) / (float)0x10000;
+float   Q_random(int* seed)
+{
+	return (Q_rand(seed) & 0xffff) / (float)0x10000;
 }
 
-float   Q_crandom( int *seed ) {
-	return 2.0 * ( Q_random( seed ) - 0.5 );
+float   Q_crandom(int* seed)
+{
+	return 2.0 * (Q_random(seed) - 0.5);
 }
 
 
 //=======================================================
 
-unsigned ColorBytes3( float r, float g, float b ) {
+unsigned ColorBytes3(float r, float g, float b)
+{
 	unsigned i;
 
-	( (byte *)&i )[0] = r * 255;
-	( (byte *)&i )[1] = g * 255;
-	( (byte *)&i )[2] = b * 255;
+	((byte*)&i)[0] = r * 255;
+	((byte*)&i)[1] = g * 255;
+	((byte*)&i)[2] = b * 255;
 
 	return i;
 }
 
-float NormalizeColor( const vec3_t in, vec3_t out ) {
+float NormalizeColor(const vec3_t in, vec3_t out)
+{
 	float max;
 
 	max = in[0];
-	if ( in[1] > max ) {
+	if (in[1] > max)
+	{
 		max = in[1];
 	}
-	if ( in[2] > max ) {
+	if (in[2] > max)
+	{
 		max = in[2];
 	}
 
-	if ( !max ) {
-		VectorClear( out );
-	} else {
+	if (!max)
+	{
+		VectorClear(out);
+	}
+	else
+	{
 		out[0] = in[0] / max;
 		out[1] = in[1] / max;
 		out[2] = in[2] / max;
@@ -91,32 +101,46 @@ float NormalizeColor( const vec3_t in, vec3_t out ) {
 	return max;
 }
 
-void vectoangles( const vec3_t value1, vec3_t angles ) {
+void vectoangles(const vec3_t value1, vec3_t angles)
+{
 	float forward;
 	float yaw, pitch;
 
-	if ( value1[1] == 0 && value1[0] == 0 ) {
+	if (value1[1] == 0 && value1[0] == 0)
+	{
 		yaw = 0;
-		if ( value1[2] > 0 ) {
+		if (value1[2] > 0)
+		{
 			pitch = 90;
-		} else {
+		}
+		else
+		{
 			pitch = 270;
 		}
-	} else {
-		if ( value1[0] ) {
-			yaw = ( atan2( value1[1], value1[0] ) * 180 / M_PI );
-		} else if ( value1[1] > 0 )   {
+	}
+	else
+	{
+		if (value1[0])
+		{
+			yaw = (atan2(value1[1], value1[0]) * 180 / M_PI);
+		}
+		else if (value1[1] > 0)
+		{
 			yaw = 90;
-		} else {
+		}
+		else
+		{
 			yaw = 270;
 		}
-		if ( yaw < 0 ) {
+		if (yaw < 0)
+		{
 			yaw += 360;
 		}
 
-		forward = sqrt( value1[0] * value1[0] + value1[1] * value1[1] );
-		pitch = ( atan2( value1[2], forward ) * 180 / M_PI );
-		if ( pitch < 0 ) {
+		forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
+		pitch = (atan2(value1[2], forward) * 180 / M_PI);
+		if (pitch < 0)
+		{
 			pitch += 360;
 		}
 	}
@@ -134,14 +158,15 @@ void vectoangles( const vec3_t value1, vec3_t angles ) {
 ProjectPointOntoVector
 ================
 */
-void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj ) {
+void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj)
+{
 	vec3_t pVec, vec;
 
-	VectorSubtract( point, vStart, pVec );
-	VectorSubtract( vEnd, vStart, vec );
-	VectorNormalize( vec );
+	VectorSubtract(point, vStart, pVec);
+	VectorSubtract(vEnd, vStart, vec);
+	VectorNormalize(vec);
 	// project onto the directional vector for this segment
-	VectorMA( vStart, DotProduct( pVec, vec ), vec, vProj );
+	VectorMA(vStart, DotProduct(pVec, vec), vec, vProj);
 }
 
 /*
@@ -154,36 +179,42 @@ AxisToAngles
   using this during gameplay
 =================
 */
-void AxisToAngles( vec3_t axis[3], vec3_t angles ) {
+void AxisToAngles(vec3_t axis[3], vec3_t angles)
+{
 	vec3_t right, roll_angles, tvec;
 
 	// first get the pitch and yaw from the forward vector
-	vectoangles( axis[0], angles );
+	vectoangles(axis[0], angles);
 
 	// now get the roll from the right vector
-	VectorCopy( axis[1], right );
+	VectorCopy(axis[1], right);
 	// get the angle difference between the tmpAxis[2] and axis[2] after they have been reverse-rotated
-	RotatePointAroundVector( tvec, axisDefault[2], right, -angles[YAW] );
-	RotatePointAroundVector( right, axisDefault[1], tvec, -angles[PITCH] );
+	RotatePointAroundVector(tvec, axisDefault[2], right, -angles[YAW]);
+	RotatePointAroundVector(right, axisDefault[1], tvec, -angles[PITCH]);
 	// now find the angles, the PITCH is effectively our ROLL
-	vectoangles( right, roll_angles );
-	roll_angles[PITCH] = AngleNormalize180( roll_angles[PITCH] );
+	vectoangles(right, roll_angles);
+	roll_angles[PITCH] = AngleNormalize180(roll_angles[PITCH]);
 	// if the yaw is more than 90 degrees difference, we should adjust the pitch
-	if ( DotProduct( right, axisDefault[1] ) < 0 ) {
-		if ( roll_angles[PITCH] < 0 ) {
-			roll_angles[PITCH] = -90 + ( -90 - roll_angles[PITCH] );
-		} else {
-			roll_angles[PITCH] =  90 + ( 90 - roll_angles[PITCH] );
+	if (DotProduct(right, axisDefault[1]) < 0)
+	{
+		if (roll_angles[PITCH] < 0)
+		{
+			roll_angles[PITCH] = -90 + (-90 - roll_angles[PITCH]);
+		}
+		else
+		{
+			roll_angles[PITCH] =  90 + (90 - roll_angles[PITCH]);
 		}
 	}
 
 	angles[ROLL] = -roll_angles[PITCH];
 }
 
-float VectorDistance( vec3_t v1, vec3_t v2 ) {
+float VectorDistance(vec3_t v1, vec3_t v2)
+{
 	vec3_t dir;
 
-	VectorSubtract( v2, v1, dir );
-	return VectorLength( dir );
+	VectorSubtract(v2, v1, dir);
+	return VectorLength(dir);
 }
 // done.
