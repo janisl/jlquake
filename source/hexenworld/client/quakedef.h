@@ -35,11 +35,11 @@
 
 typedef struct
 {
-	const char	*basedir;
-	int		argc;
-	char	**argv;
-	void	*membase;
-	int		memsize;
+	const char* basedir;
+	int argc;
+	char** argv;
+	void* membase;
+	int memsize;
 } quakeparms_t;
 
 
@@ -48,34 +48,34 @@ typedef struct
 //
 // host
 //
-extern	quakeparms_t host_parms;
+extern quakeparms_t host_parms;
 
-extern	Cvar*	password;
-extern	Cvar*  talksounds;
+extern Cvar* password;
+extern Cvar* talksounds;
 
-extern	qboolean	host_initialized;		// true if into command execution
-extern	double		host_frametime;
-extern	int			host_framecount;	// incremented every frame, never reset
-extern	double		realtime;			// not bounded in any way, changed at
+extern qboolean host_initialized;			// true if into command execution
+extern double host_frametime;
+extern int host_framecount;				// incremented every frame, never reset
+extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
-void Host_ServerFrame (void);
-void Host_InitCommands (void);
-void Host_Init (quakeparms_t *parms);
+void Host_ServerFrame(void);
+void Host_InitCommands(void);
+void Host_Init(quakeparms_t* parms);
 void Host_Shutdown(void);
-void Host_FatalError (const char *error, ...);
-void Host_EndGame (const char *message, ...);
-void Host_Frame (float time);
-void Host_Quit_f (void);
-void Host_ShutdownServer (qboolean crash);
+void Host_FatalError(const char* error, ...);
+void Host_EndGame(const char* message, ...);
+void Host_Frame(float time);
+void Host_Quit_f(void);
+void Host_ShutdownServer(qboolean crash);
 
-extern qboolean		msg_suppress_1;		// suppresses resolution and cache size console output
+extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
 
-extern	unsigned int			defLosses;	// Defenders losses in Siege
-extern	unsigned int			attLosses;	// Attackers Losses in Siege
+extern unsigned int defLosses;				// Defenders losses in Siege
+extern unsigned int attLosses;				// Attackers Losses in Siege
 
-extern int			cl_keyholder;
-extern int			cl_doc;
+extern int cl_keyholder;
+extern int cl_doc;
 
 void PR_LoadStrings(void);

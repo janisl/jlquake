@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,17 +27,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int noconinput = 0;
 int nostdout = 0;
 
-const char *basedir = ".";
+const char* basedir = ".";
 
 // =======================================================================
 // General routines
 // =======================================================================
 
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
 	Host_Shutdown();
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	exit(0);
 }
 
@@ -45,29 +45,29 @@ void Sys_Init(void)
 {
 }
 
-void Sys_Error (const char *error, ...)
-{ 
-    va_list     argptr;
-    char        string[1024];
+void Sys_Error(const char* error, ...)
+{
+	va_list argptr;
+	char string[1024];
 
 // change stdin to non blocking
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 
 	if (ttycon_on)
 	{
 		tty_Hide();
 	}
 
-    va_start (argptr,error);
-    Q_vsnprintf(string, 1024, error, argptr);
-    va_end (argptr);
+	va_start(argptr,error);
+	Q_vsnprintf(string, 1024, error, argptr);
+	va_end(argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
 	Sys_ConsoleInputShutdown();
-	Host_Shutdown ();
-	exit (1);
+	Host_Shutdown();
+	exit(1);
 
-} 
+}
 
 void signal_handler(int sig)
 {
@@ -90,14 +90,14 @@ void InitSig(void)
 	signal(SIGTERM, signal_handler);
 }
 
-int main (int c, char **v)
+int main(int c, char** v)
 {
 
-	double		time, oldtime, newtime;
+	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int j;
 
-	InitSig(); // trap evil signals
+	InitSig();	// trap evil signals
 
 	Com_Memset(&parms, 0, sizeof(parms));
 
@@ -105,37 +105,43 @@ int main (int c, char **v)
 	parms.argc = c;
 	parms.argv = v;
 
-	parms.memsize = 16*1024*1024;
+	parms.memsize = 16 * 1024 * 1024;
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (String::Atof(COM_Argv(j+1)) * 1024 * 1024);
-	parms.membase = malloc (parms.memsize);
+	{
+		parms.memsize = (int)(String::Atof(COM_Argv(j + 1)) * 1024 * 1024);
+	}
+	parms.membase = malloc(parms.memsize);
 
 	parms.basedir = basedir;
 
 	noconinput = COM_CheckParm("-noconinput");
 	if (!noconinput)
-		fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
+	{
+		fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
+	}
 
 	if (COM_CheckParm("-nostdout"))
+	{
 		nostdout = 1;
+	}
 
 	Sys_Init();
 
-    Host_Init(&parms);
+	Host_Init(&parms);
 
 	Sys_ConsoleInputInit();
 
-    oldtime = Sys_DoubleTime ();
-    while (1)
-    {
+	oldtime = Sys_DoubleTime();
+	while (1)
+	{
 // find time spent rendering last frame
-        newtime = Sys_DoubleTime ();
-        time = newtime - oldtime;
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
 
 		Host_Frame(time);
 		oldtime = newtime;
-    }
+	}
 
 }

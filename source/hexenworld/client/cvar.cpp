@@ -1,6 +1,6 @@
 // cvar.c -- dynamic variable tracking
 
-#ifdef SERVERONLY 
+#ifdef SERVERONLY
 #include "qwsvdef.h"
 #else
 #include "quakedef.h"
@@ -13,7 +13,7 @@ void Cvar_Changed(Cvar* var)
 	{
 		Info_SetValueForKey(svs.info, var->name, var->string, MAX_SERVERINFO_STRING,
 			64, 64, !sv_highchars || !sv_highchars->value, false);
-		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
+		SV_BroadcastCommand("fullserverinfo \"%s\"\n", svs.info);
 	}
 #else
 	if (var->flags & CVAR_USERINFO && var->name[0] != '*')

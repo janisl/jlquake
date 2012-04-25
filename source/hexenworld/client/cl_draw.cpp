@@ -4,14 +4,14 @@
 
 #include "quakedef.h"
 
-image_t*	draw_backtile;
+image_t* draw_backtile;
 
-image_t*	char_texture;
-image_t*	cs_texture; // crosshair texture
-image_t*	char_smalltexture;
-image_t*	char_menufonttexture;
+image_t* char_texture;
+image_t* cs_texture;	// crosshair texture
+image_t* char_smalltexture;
+image_t* char_menufonttexture;
 
-image_t		*conback;
+image_t* conback;
 
 //=============================================================================
 /* Support Routines */
@@ -21,7 +21,7 @@ image_t		*conback;
 Draw_Init
 ===============
 */
-void Draw_Init (void)
+void Draw_Init(void)
 {
 	char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
 	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
@@ -45,13 +45,15 @@ It can be clipped to the top of the screen to allow the console to be
 smoothly scrolled off.
 ================
 */
-void Draw_Character (int x, int y, unsigned int num)
+void Draw_Character(int x, int y, unsigned int num)
 {
 	num &= 511;
 
 	if (num == 32)
+	{
 		return;		// space
 
+	}
 	UI_DrawChar(x, y, num, 8, 8, char_texture, 32, 16);
 }
 
@@ -60,21 +62,21 @@ void Draw_Character (int x, int y, unsigned int num)
 Draw_String
 ================
 */
-void Draw_String (int x, int y, const char *str)
+void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, *str);
+		Draw_Character(x, y, *str);
 		str++;
 		x += 8;
 	}
 }
 
-void Draw_RedString (int x, int y, const char *str)
+void Draw_RedString(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, ((unsigned char)(*str))+256);
+		Draw_Character(x, y, ((unsigned char)(*str)) + 256);
 		str++;
 		x += 8;
 	}
@@ -86,17 +88,21 @@ void Draw_Crosshair(void)
 	extern Cvar* cl_crossx;
 	extern Cvar* cl_crossy;
 	int x, y;
-	extern vrect_t		scr_vrect;
+	extern vrect_t scr_vrect;
 
-	if (crosshair->value == 2) {
-		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
-		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
+	if (crosshair->value == 2)
+	{
+		x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value;
+		y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
 
 		UI_DrawStretchPic(x - 4, y - 4, 16, 16, cs_texture);
-	} else if (crosshair->value)
-		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
-			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy->value, 
+	}
+	else if (crosshair->value)
+	{
+		Draw_Character(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
+			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value,
 			'+');
+	}
 }
 
 
@@ -108,17 +114,17 @@ void Draw_Crosshair(void)
 // screen.
 //
 //==========================================================================
-void Draw_SmallCharacter (int x, int y, int num)
+void Draw_SmallCharacter(int x, int y, int num)
 {
-	if(num < 32)
+	if (num < 32)
 	{
 		num = 0;
 	}
-	else if(num >= 'a' && num <= 'z')
+	else if (num >= 'a' && num <= 'z')
 	{
 		num -= 64;
 	}
-	else if(num > '_')
+	else if (num > '_')
 	{
 		num = 0;
 	}
@@ -127,7 +133,10 @@ void Draw_SmallCharacter (int x, int y, int num)
 		num -= 32;
 	}
 
-	if (num == 0) return;
+	if (num == 0)
+	{
+		return;
+	}
 
 	UI_DrawChar(x, y, num, 8, 8, char_smalltexture, 16, 4);
 }
@@ -137,38 +146,60 @@ void Draw_SmallCharacter (int x, int y, int num)
 // Draw_SmallString
 //
 //==========================================================================
-void Draw_SmallString(int x, int y, const char *str)
+void Draw_SmallString(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_SmallCharacter (x, y, *str);
+		Draw_SmallCharacter(x, y, *str);
 		str++;
 		x += 6;
 	}
 }
 
-int M_DrawBigCharacter (int x, int y, int num, int numNext)
+int M_DrawBigCharacter(int x, int y, int num, int numNext)
 {
-	int				add;
+	int add;
 
-	if (num == ' ') return 32;
+	if (num == ' ')
+	{
+		return 32;
+	}
 
-	if (num == '/') num = 26;
-	else num -= 65;
+	if (num == '/')
+	{
+		num = 26;
+	}
+	else
+	{
+		num -= 65;
+	}
 
-	if (num < 0 || num >= 27)  // only a-z and /
+	if (num < 0 || num >= 27)	// only a-z and /
+	{
 		return 0;
+	}
 
-	if (numNext == '/') numNext = 26;
-	else numNext -= 65;
+	if (numNext == '/')
+	{
+		numNext = 26;
+	}
+	else
+	{
+		numNext -= 65;
+	}
 
 	UI_DrawChar(x, y, num, 20, 20, char_menufonttexture, 8, 4);
 
-	if (numNext < 0 || numNext >= 27) return 0;
+	if (numNext < 0 || numNext >= 27)
+	{
+		return 0;
+	}
 
 	add = 0;
-	if (num == (int)'C'-65 && numNext == (int)'P'-65)
+	if (num == (int)'C' - 65 && numNext == (int)'P' - 65)
+	{
 		add = 3;
+	}
 
 	return BigCharWidth[num][numNext] + add;
 }
@@ -210,9 +241,9 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen (void)
+void Draw_FadeScreen(void)
 {
-	UI_Fill(0, 0, viddef.width, viddef.height, 208.0/255.0, 180.0/255.0, 80.0/255.0, 0.2);
+	UI_Fill(0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2);
 	for (int c = 0; c < 40; c++)
 	{
 		int x = rand() % viddef.width - 20;
@@ -225,8 +256,8 @@ void Draw_FadeScreen (void)
 
 #define NET_GRAPHHEIGHT 32
 
-#define	NET_TIMINGS	256
-static	int	packet_latency[NET_TIMINGS];
+#define NET_TIMINGS 256
+static int packet_latency[NET_TIMINGS];
 
 static void R_LineGraph(int x, int y, int h)
 {
@@ -273,23 +304,31 @@ static void R_LineGraph(int x, int y, int h)
 R_NetGraph
 ==============
 */
-void R_NetGraph (void)
+void R_NetGraph(void)
 {
-	int		x, y;
-	hwframe_t	*frame;
+	int x, y;
+	hwframe_t* frame;
 	char st[80];
 
 	for (int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++)
 	{
-		frame = &cl.hw_frames[i&UPDATE_MASK_HW];
+		frame = &cl.hw_frames[i & UPDATE_MASK_HW];
 		if (frame->receivedtime == -1)
-			packet_latency[i&255] = 9999;	// dropped
+		{
+			packet_latency[i & 255] = 9999;		// dropped
+		}
 		else if (frame->receivedtime == -2)
-			packet_latency[i&255] = 10000;	// choked
+		{
+			packet_latency[i & 255] = 10000;	// choked
+		}
 		else if (frame->invalid)
-			packet_latency[i&255] = 9998;	// invalid delta
+		{
+			packet_latency[i & 255] = 9998;		// invalid delta
+		}
 		else
-			packet_latency[i&255] = (frame->receivedtime - frame->senttime)*20;
+		{
+			packet_latency[i & 255] = (frame->receivedtime - frame->senttime) * 20;
+		}
 	}
 
 	x = 0;
@@ -303,7 +342,7 @@ void R_NetGraph (void)
 		}
 	}
 
-	x =	-((viddef.width - 320) >> 1);
+	x = -((viddef.width - 320) >> 1);
 	y = viddef.height - sb_lines - 24 - NET_GRAPHHEIGHT - 1;
 
 	M_DrawTextBox(x, y, NET_TIMINGS / 8, NET_GRAPHHEIGHT / 8 + 1);
@@ -320,7 +359,7 @@ void R_NetGraph (void)
 	}
 }
 
-void R_DrawName(vec3_t origin, char *Name, int Red)
+void R_DrawName(vec3_t origin, char* Name, int Red)
 {
 	if (!Name)
 	{
@@ -336,30 +375,38 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 
 	u -= String::Length(Name) * 4;
 
-	if(cl_siege)
+	if (cl_siege)
 	{
-		if(Red>10)
+		if (Red > 10)
 		{
-			Red-=10;
-			Draw_Character (u, v, 145);//key
-			u+=8;
+			Red -= 10;
+			Draw_Character(u, v, 145);	//key
+			u += 8;
 		}
-		if(Red>0&&Red<3)//def
+		if (Red > 0 && Red < 3)	//def
 		{
-			if(Red==true)
-				Draw_Character (u, v, 143);//shield
+			if (Red == true)
+			{
+				Draw_Character(u, v, 143);	//shield
+			}
 			else
-				Draw_Character (u, v, 130);//crown
-			Draw_RedString(u+8, v, Name);
+			{
+				Draw_Character(u, v, 130);	//crown
+			}
+			Draw_RedString(u + 8, v, Name);
 		}
-		else if(!Red)
+		else if (!Red)
 		{
-			Draw_Character (u, v, 144);//sword
-			Draw_String (u+8, v, Name);
+			Draw_Character(u, v, 144);	//sword
+			Draw_String(u + 8, v, Name);
 		}
 		else
-			Draw_String (u+8, v, Name);
+		{
+			Draw_String(u + 8, v, Name);
+		}
 	}
 	else
-		Draw_String (u, v, Name);
+	{
+		Draw_String(u, v, Name);
+	}
 }

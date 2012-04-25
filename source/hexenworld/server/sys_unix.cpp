@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -35,13 +35,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include <fcntl.h>
 
-Cvar*	sys_nostdout;
-Cvar*	sys_extrasleep;
+Cvar* sys_nostdout;
+Cvar* sys_extrasleep;
 
 /*
 ===============================================================================
 
-				REQUIRED SYS FUNCTIONS
+                REQUIRED SYS FUNCTIONS
 
 ===============================================================================
 */
@@ -51,24 +51,24 @@ Cvar*	sys_extrasleep;
 Sys_Error
 ================
 */
-void Sys_Error (const char *error, ...)
+void Sys_Error(const char* error, ...)
 {
-	va_list		argptr;
-	char		string[1024];
+	va_list argptr;
+	char string[1024];
 
-	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	if (ttycon_on)
 	{
 		tty_Hide();
 	}
 
-	va_start (argptr,error);
+	va_start(argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
-	va_end (argptr);
-	printf ("Fatal error: %s\n",string);
-	
+	va_end(argptr);
+	printf("Fatal error: %s\n",string);
+
 	Sys_ConsoleInputShutdown();
-	exit (1);
+	exit(1);
 }
 
 /*
@@ -76,11 +76,11 @@ void Sys_Error (const char *error, ...)
 Sys_Quit
 ================
 */
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
-	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
-	exit (0);		// appkit isn't running
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
+	exit(0);		// appkit isn't running
 }
 
 /*
@@ -91,7 +91,7 @@ Quake calls this so the system can register variables before host_hunklevel
 is marked
 =============
 */
-void Sys_Init (void)
+void Sys_Init(void)
 {
 	sys_nostdout = Cvar_Get("sys_nostdout", "0", 0);
 	sys_extrasleep = Cvar_Get("sys_extrasleep","0", 0);
@@ -102,63 +102,69 @@ void Sys_Init (void)
 main
 =============
 */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-	double			time, oldtime, newtime;
-	quakeparms_t	parms;
-	extern	int		net_socket;
+	double time, oldtime, newtime;
+	quakeparms_t parms;
+	extern int net_socket;
 	int j;
 
 	Com_Memset(&parms, 0, sizeof(parms));
 
-	COM_InitArgv2(argc, argv);	
+	COM_InitArgv2(argc, argv);
 	parms.argc = argc;
 	parms.argv = argv;
 
-	parms.memsize = 16*1024*1024;
+	parms.memsize = 16 * 1024 * 1024;
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (String::Atof(COM_Argv(j+1)) * 1024 * 1024);
-	if ((parms.membase = malloc (parms.memsize)) == NULL)
+	{
+		parms.memsize = (int)(String::Atof(COM_Argv(j + 1)) * 1024 * 1024);
+	}
+	if ((parms.membase = malloc(parms.memsize)) == NULL)
+	{
 		Sys_Error("Can't allocate %ld\n", parms.memsize);
+	}
 
 	parms.basedir = ".";
 
-	SV_Init (&parms);
+	SV_Init(&parms);
 
 // run one frame immediately for first heartbeat
-	SV_Frame (0.1);		
+	SV_Frame(0.1);
 
 	Sys_ConsoleInputInit();
 
-	fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
-	
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
+
 //
 // main loop
 //
-	oldtime = Sys_DoubleTime () - 0.1;
+	oldtime = Sys_DoubleTime() - 0.1;
 	while (1)
 	{
-	// select on the net socket and stdin
-	// the only reason we have a timeout at all is so that if the last
-	// connected client times out, the message would not otherwise
-	// be printed until the next event.
+		// select on the net socket and stdin
+		// the only reason we have a timeout at all is so that if the last
+		// connected client times out, the message would not otherwise
+		// be printed until the next event.
 		if (!SOCK_Sleep(net_socket, 1000))
 		{
 			continue;
 		}
 
-	// find time passed since last cycle
-		newtime = Sys_DoubleTime ();
+		// find time passed since last cycle
+		newtime = Sys_DoubleTime();
 		time = newtime - oldtime;
 		oldtime = newtime;
-		
-		SV_Frame (time);		
-		
-	// extrasleep is just a way to generate a fucked up connection on purpose
+
+		SV_Frame(time);
+
+		// extrasleep is just a way to generate a fucked up connection on purpose
 		if (sys_extrasleep->value)
-			usleep (sys_extrasleep->value);
+		{
+			usleep(sys_extrasleep->value);
+		}
 	}
 	return 0;
 }

@@ -5,16 +5,16 @@
 #define MAX_DISC 18
 
 struct image_t;
-extern image_t		*draw_backtile;
+extern image_t* draw_backtile;
 
-void Draw_Init (void);
-void Draw_Character (int x, int y, unsigned int num);
+void Draw_Init(void);
+void Draw_Character(int x, int y, unsigned int num);
 void Draw_SmallCharacter(int x, int y, int num);
-void Draw_SmallString(int x, int y, const char *str);
-void Draw_ConsoleBackground (int lines);
-void Draw_FadeScreen (void);
-void Draw_String (int x, int y, const char *str);
+void Draw_SmallString(int x, int y, const char* str);
+void Draw_ConsoleBackground(int lines);
+void Draw_FadeScreen(void);
+void Draw_String(int x, int y, const char* str);
 void Draw_Crosshair(void);
-void Draw_RedString (int x, int y, const char *str);
+void Draw_RedString(int x, int y, const char* str);
 
-void R_NetGraph (void);
+void R_NetGraph(void);

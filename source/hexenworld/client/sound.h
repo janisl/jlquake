@@ -3,6 +3,6 @@
 #ifndef __SOUND__
 #define __SOUND__
 
-void S_InitPaintChannels (void);
+void S_InitPaintChannels(void);
 
 #endif
