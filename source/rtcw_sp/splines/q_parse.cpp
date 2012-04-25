@@ -67,7 +67,7 @@ void Com_BeginParseSession(const char* filename)
 {
 	if (parseInfoNum == MAX_PARSE_INFO - 1)
 	{
-		Com_Error(ERR_FATAL, "Com_BeginParseSession: session overflow");
+		common->FatalError("Com_BeginParseSession: session overflow");
 	}
 	parseInfoNum++;
 	pi = &parseInfo[parseInfoNum];
@@ -85,7 +85,7 @@ void Com_EndParseSession(void)
 {
 	if (parseInfoNum == 0)
 	{
-		Com_Error(ERR_FATAL, "Com_EndParseSession: session underflow");
+		common->FatalError("Com_EndParseSession: session underflow");
 	}
 	parseInfoNum--;
 	pi = &parseInfo[parseInfoNum];
@@ -107,7 +107,7 @@ void Com_ScriptError(const char* msg, ...)
 	vsprintf(string, msg,argptr);
 	va_end(argptr);
 
-	Com_Error(ERR_DROP, "File %s, line %i: %s", pi->parseFile, pi->lines, string);
+	common->Error("File %s, line %i: %s", pi->parseFile, pi->lines, string);
 }
 
 void Com_ScriptWarning(const char* msg, ...)
@@ -119,7 +119,7 @@ void Com_ScriptWarning(const char* msg, ...)
 	vsprintf(string, msg,argptr);
 	va_end(argptr);
 
-	Com_Printf("File %s, line %i: %s", pi->parseFile, pi->lines, string);
+	common->Printf("File %s, line %i: %s", pi->parseFile, pi->lines, string);
 }
 
 
@@ -137,7 +137,7 @@ void Com_UngetToken(void)
 	{
 		Com_ScriptError("UngetToken called twice");
 	}
-	pi->ungetToken = qtrue;
+	pi->ungetToken = true;
 }
 
 
@@ -154,7 +154,7 @@ static const char* SkipWhitespace(const char(*data), qboolean* hasNewLines)
 		if (c == '\n')
 		{
 			pi->lines++;
-			*hasNewLines = qtrue;
+			*hasNewLines = true;
 		}
 		data++;
 	}
@@ -178,13 +178,13 @@ a newline.
 static char* Com_ParseExt(const char*(*data_p), qboolean allowLineBreaks)
 {
 	int c = 0, len;
-	qboolean hasNewLines = qfalse;
+	qboolean hasNewLines = false;
 	const char* data;
 	const char** punc;
 
 	if (!data_p)
 	{
-		Com_Error(ERR_FATAL, "Com_ParseExt: NULL data_p");
+		common->FatalError("Com_ParseExt: NULL data_p");
 	}
 
 	data = *data_p;
@@ -415,10 +415,10 @@ const char* Com_Parse(const char*(*data_p))
 {
 	if (pi->ungetToken)
 	{
-		pi->ungetToken = qfalse;
+		pi->ungetToken = false;
 		return pi->token;
 	}
-	return Com_ParseExt(data_p, qtrue);
+	return Com_ParseExt(data_p, true);
 }
 
 /*
@@ -430,10 +430,10 @@ const char* Com_ParseOnLine(const char*(*data_p))
 {
 	if (pi->ungetToken)
 	{
-		pi->ungetToken = qfalse;
+		pi->ungetToken = false;
 		return pi->token;
 	}
-	return Com_ParseExt(data_p, qfalse);
+	return Com_ParseExt(data_p, false);
 }
 
 

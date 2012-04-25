@@ -29,6 +29,14 @@ If you have questions concerning this license or the applicable additional terms
 #include "q_splineshared.h"
 #include "splines.h"
 
+// TTimo
+// handy stuff when tracking isnan problems
+#ifndef NDEBUG
+#define CHECK_NAN_VEC(v) assert(!IS_NAN(v[0]) && !IS_NAN(v[1]) && !IS_NAN(v[2]))
+#else
+#define CHECK_NAN_VEC
+#endif
+
 int FS_Write(const void* buffer, int len, fileHandle_t h);
 int FS_ReadFile(const char* qpath, void** buffer);
 void FS_FreeFile(void* buffer);
@@ -50,7 +58,7 @@ qboolean loadCamera(int camNum, const char* name)
 {
 	if (camNum < 0 || camNum >= MAX_CAMERAS)
 	{
-		return qfalse;
+		return false;
 	}
 	camera[camNum].clear();
 	// TTimo static_cast confused gcc, went for C-style casting
@@ -62,7 +70,7 @@ qboolean getCameraInfo(int camNum, int time, float* origin, float* angles, float
 	idVec3 dir, org;
 	if (camNum < 0 || camNum >= MAX_CAMERAS)
 	{
-		return qfalse;
+		return false;
 	}
 	org[0] = origin[0];
 	org[1] = origin[1];
@@ -74,9 +82,9 @@ qboolean getCameraInfo(int camNum, int time, float* origin, float* angles, float
 		origin[2] = org[2];
 		angles[1] = atan2(dir[1], dir[0]) * 180 / 3.14159;
 		angles[0] = asin(dir[2]) * 180 / 3.14159;
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 void startCamera(int camNum, int time)
@@ -112,7 +120,6 @@ void idSplineList::buildSpline()
 		}
 	}
 	dirty = false;
-	//Com_Printf("Spline build took %f seconds\n", (float)(Sys_Milliseconds() - start) / 1000);
 }
 
 
@@ -224,7 +231,6 @@ const idVec3* idSplineList::getPosition(long t)
 		return &zero;
 	}
 
-//	Com_Printf("Time: %d\n", t);
 	assert(splineTime.Num() == splinePoints.Num());
 
 	while (activeSegment < count)
@@ -334,7 +340,6 @@ bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, floa
 			{
 				setActiveTargetByName(events[i]->getParam());
 				getActiveTarget()->start(startTime + events[i]->getTime());
-				//Com_Printf("Triggered event switch to target: %s\n",events[i]->getParam());
 			}
 			else if (events[i]->getType() == idCameraEvent::EVENT_TRIGGER)
 			{
@@ -672,7 +677,7 @@ void idCameraDef::parse(const char*(*text))
 
 	if (!cameraPosition)
 	{
-		Com_Printf("no camera position specified\n");
+		common->Printf("no camera position specified\n");
 		// prevent a crash later on
 		cameraPosition = new idFixedPosition();
 	}

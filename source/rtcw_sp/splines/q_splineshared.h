@@ -29,75 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
-// q_splineshared.h -- included first by ALL program modules.
-// these are the definitions that have no dependance on
-// central system services, and can be used by any part
-// of the program without any state issues.
-
-// A user mod should never modify this file
-
 #include "../../common/qcommon.h"
-
-#include <assert.h>
-#include <time.h>
-
-// for windows fastcall option
-
-#define QDECL
-
-//======================= WIN32 DEFINES =================================
-
-#ifdef WIN32
-
-#undef QDECL
-#define QDECL   __cdecl
-
-#endif
-
-//======================= MAC DEFINES =================================
-
-#ifdef __MRC__
-
-#undef QDECL
-#define QDECL   __cdecl
-
-#endif
-
-//=============================================================
-
-
-
-enum {qfalse, qtrue};
-
-#define EQUAL_EPSILON   0.001
-
-#undef ERR_FATAL						// malloc.h on unix
-
-// parameters to the main Error routine
-typedef enum {
-	ERR_NONE,
-	ERR_FATAL,					// exit the entire game with a popup window
-	ERR_DROP,					// print to console and disconnect from game
-} errorParm_t;
-
-/*
-==============================================================
-
-MATHLIB
-
-==============================================================
-*/
-#include "../../client/splines/math_vector.h"
-
-typedef idVec3&vec3_p;				// for passing vectors as function arguments
-
-// TTimo
-// handy stuff when tracking isnan problems
-#ifndef NDEBUG
-#define CHECK_NAN_VEC(v) assert(!IS_NAN(v[0]) && !IS_NAN(v[1]) && !IS_NAN(v[2]))
-#else
-#define CHECK_NAN_VEC
-#endif
 
 /*
 =====================================================================================
@@ -121,7 +53,7 @@ const char* Com_ParseOnLine(const char*(*data_p));
 
 void Com_UngetToken(void);
 
-void Com_MatchToken(const char*(*buf_p), const char* match, qboolean warning = qfalse);
+void Com_MatchToken(const char*(*buf_p), const char* match, qboolean warning = false);
 
 void Com_ScriptError(const char* msg, ...);
 void Com_ScriptWarning(const char* msg, ...);
@@ -129,11 +61,5 @@ void Com_ScriptWarning(const char* msg, ...);
 float Com_ParseFloat(const char*(*buf_p));
 
 void Com_Parse1DMatrix(const char*(*buf_p), int x, float* m);
-
-//=========================================
-
-void QDECL Com_Error(int level, const char* error, ...);
-void QDECL Com_Printf(const char* msg, ...);
-void QDECL Com_DPrintf(const char* msg, ...);
 
 #endif	// __Q_SHARED_H

@@ -278,16 +278,6 @@ extern vec4_t colorDkGrey;
 #define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
-// TTimo
-// handy stuff when tracking isnan problems
-#ifndef NDEBUG
-#define CHECK_NAN(x) assert(!IS_NAN(x))
-#define CHECK_NAN_VEC(v) assert(!IS_NAN(v[0]) && !IS_NAN(v[1]) && !IS_NAN(v[2]))
-#else
-#define CHECK_NAN
-#define CHECK_NAN_VEC
-#endif
-
 unsigned ColorBytes3(float r, float g, float b);
 
 float NormalizeColor(const vec3_t in, vec3_t out);
