@@ -87,7 +87,7 @@ MATHLIB
 */
 #define Q_PI    3.14159265358979323846
 
-#include "math_vector.h"
+#include "../../client/splines/math_vector.h"
 
 /*
 =====================================================================================

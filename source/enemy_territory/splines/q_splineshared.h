@@ -87,7 +87,7 @@ MATHLIB
 ==============================================================
 */
 
-#include "math_vector.h"
+#include "../../client/splines/math_vector.h"
 
 typedef idVec3&vec3_p;				// for passing vectors as function arguments
 

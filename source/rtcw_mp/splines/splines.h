@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "util_list.h"
 #include "util_str.h"
-#include "math_vector.h"
+#include "../../client/splines/math_vector.h"
 
 typedef int fileHandle_t;
 
