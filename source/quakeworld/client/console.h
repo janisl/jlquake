@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,20 +21,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // console
 //
-extern byte *con_chars;
+extern byte* con_chars;
 
-void Con_DrawCharacter (int cx, int line, int num);
+void Con_DrawCharacter(int cx, int line, int num);
 
-void Con_CheckResize (void);
-void Con_Init (void);
-void Con_DrawConsole (int lines);
-void Con_Print (const char *txt);
-void Con_Printf (const char *fmt, ...);
-void Con_DPrintf (const char *fmt, ...);
-void Con_SafePrintf (const char *fmt, ...);
-void Con_Clear_f (void);
-void Con_DrawNotify (void);
-void Con_ToggleConsole_f (void);
+void Con_CheckResize(void);
+void Con_Init(void);
+void Con_DrawConsole(int lines);
+void Con_Print(const char* txt);
+void Con_Printf(const char* fmt, ...);
+void Con_DPrintf(const char* fmt, ...);
+void Con_SafePrintf(const char* fmt, ...);
+void Con_Clear_f(void);
+void Con_DrawNotify(void);
+void Con_ToggleConsole_f(void);
 
-void Con_NotifyBox (const char *text);	// during startup for sound / cd warnings
-
+void Con_NotifyBox(const char* text);	// during startup for sound / cd warnings

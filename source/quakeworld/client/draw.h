@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -22,14 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // to touch the vid buffer
 
 struct image_t;
-extern image_t		*draw_backtile;
+extern image_t* draw_backtile;
 
-void Draw_Init (void);
-void Draw_Character (int x, int y, int num);
-void Draw_ConsoleBackground (int lines);
-void Draw_FadeScreen (void);
-void Draw_String (int x, int y, const char *str);
-void Draw_Alt_String (int x, int y, char *str);
+void Draw_Init(void);
+void Draw_Character(int x, int y, int num);
+void Draw_ConsoleBackground(int lines);
+void Draw_FadeScreen(void);
+void Draw_String(int x, int y, const char* str);
+void Draw_Alt_String(int x, int y, char* str);
 void Draw_Crosshair(void);
 
-void R_NetGraph (void);
+void R_NetGraph(void);

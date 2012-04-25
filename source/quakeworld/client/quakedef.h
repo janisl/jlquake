@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -60,11 +60,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	const char	*basedir;
-	int		argc;
-	char	**argv;
-	void	*membase;
-	int		memsize;
+	const char* basedir;
+	int argc;
+	char** argv;
+	void* membase;
+	int memsize;
 } quakeparms_t;
 
 
@@ -73,27 +73,26 @@ typedef struct
 //
 // host
 //
-extern	quakeparms_t host_parms;
+extern quakeparms_t host_parms;
 
-extern	Cvar*	password;
+extern Cvar* password;
 
-extern	qboolean	host_initialized;		// true if into command execution
-extern	double		host_frametime;
-extern	int			host_framecount;	// incremented every frame, never reset
-extern	double		realtime;			// not bounded in any way, changed at
+extern qboolean host_initialized;			// true if into command execution
+extern double host_frametime;
+extern int host_framecount;				// incremented every frame, never reset
+extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
-void Host_ServerFrame (void);
-void Host_InitCommands (void);
-void Host_Init (quakeparms_t *parms);
+void Host_ServerFrame(void);
+void Host_InitCommands(void);
+void Host_Init(quakeparms_t* parms);
 void Host_Shutdown(void);
-void Host_FatalError (const char *error, ...);
-void Host_EndGame (const char *message, ...);
+void Host_FatalError(const char* error, ...);
+void Host_EndGame(const char* message, ...);
 qboolean Host_SimulationTime(float time);
-void Host_Frame (float time);
-void Host_Quit_f (void);
-void Host_ShutdownServer (qboolean crash);
+void Host_Frame(float time);
+void Host_Quit_f(void);
+void Host_ShutdownServer(qboolean crash);
 
-extern qboolean		msg_suppress_1;		// suppresses resolution and cache size console output
+extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
-

@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-Cvar*	cl_nodelta;
+Cvar* cl_nodelta;
 
 /*
 ===============================================================================
@@ -52,13 +52,17 @@ void CL_MouseEvent(int mx, int my)
 	cl.mouseDy[cl.mouseIndex] += my;
 }
 
-int MakeChar (int i)
+int MakeChar(int i)
 {
 	i &= ~3;
-	if (i < -127*4)
-		i = -127*4;
-	if (i > 127*4)
-		i = 127*4;
+	if (i < -127 * 4)
+	{
+		i = -127 * 4;
+	}
+	if (i > 127 * 4)
+	{
+		i = 127 * 4;
+	}
 	return i;
 }
 
@@ -67,25 +71,29 @@ int MakeChar (int i)
 CL_FinishMove
 ==============
 */
-void CL_FinishMove (qwusercmd_t *cmd)
+void CL_FinishMove(qwusercmd_t* cmd)
 {
-	int		i;
-	int		ms;
+	int i;
+	int ms;
 
 //
 // allways dump the first two message, because it may contain leftover inputs
 // from the last level
 //
 	if (++cl.qh_movemessages <= 2)
+	{
 		return;
+	}
 
 	// send milliseconds of time to apply the move
 	ms = host_frametime * 1000;
 	if (ms > 250)
+	{
 		ms = 100;		// time was unreasonable
+	}
 	cmd->msec = ms;
 
-	VectorCopy (cl.viewangles, cmd->angles);
+	VectorCopy(cl.viewangles, cmd->angles);
 
 	cmd->impulse = in_impulse;
 	in_impulse = 0;
@@ -94,12 +102,12 @@ void CL_FinishMove (qwusercmd_t *cmd)
 //
 // chop down so no extra bits are kept that the server wouldn't get
 //
-	cmd->forwardmove = MakeChar (cmd->forwardmove);
-	cmd->sidemove = MakeChar (cmd->sidemove);
-	cmd->upmove = MakeChar (cmd->upmove);
+	cmd->forwardmove = MakeChar(cmd->forwardmove);
+	cmd->sidemove = MakeChar(cmd->sidemove);
+	cmd->upmove = MakeChar(cmd->upmove);
 
-	for (i=0 ; i<3 ; i++)
-		cmd->angles[i] = ((int)(cmd->angles[i]*65536.0/360)&65535) * (360.0/65536.0);
+	for (i = 0; i < 3; i++)
+		cmd->angles[i] = ((int)(cmd->angles[i] * 65536.0 / 360) & 65535) * (360.0 / 65536.0);
 }
 
 /*
@@ -107,19 +115,21 @@ void CL_FinishMove (qwusercmd_t *cmd)
 CL_SendCmd
 =================
 */
-void CL_SendCmd (void)
+void CL_SendCmd(void)
 {
-	QMsg		buf;
-	byte		data[128];
-	int			i;
-	qwusercmd_t	*cmd, *oldcmd;
-	int			checksumIndex;
-	int			lost;
-	int			seq_hash;
+	QMsg buf;
+	byte data[128];
+	int i;
+	qwusercmd_t* cmd, * oldcmd;
+	int checksumIndex;
+	int lost;
+	int seq_hash;
 
 	if (clc.demoplaying)
-		return; // sendcmds come from the demo
+	{
+		return;	// sendcmds come from the demo
 
+	}
 	// save this command off for prediction
 	i = clc.netchan.outgoingSequence & UPDATE_MASK_QW;
 	cmd = &cl.qw_frames[i].cmd;
@@ -130,7 +140,7 @@ void CL_SendCmd (void)
 	seq_hash = clc.netchan.outgoingSequence;
 
 	// get basic movement from keyboard
-	// grab frame time 
+	// grab frame time
 	com_frameTime = Sys_Milliseconds();
 
 	frame_msec = (unsigned)(host_frametime * 1000);
@@ -142,12 +152,14 @@ void CL_SendCmd (void)
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
-	
-	VectorCopy (cl.viewangles, cmd->angles);
+
+	VectorCopy(cl.viewangles, cmd->angles);
 
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)
+	{
 		Cam_Track(cmd);
+	}
 
 	CL_FinishMove(cmd);
 
@@ -167,19 +179,19 @@ void CL_SendCmd (void)
 	lost = CL_CalcNet();
 	buf.WriteByte((byte)lost);
 
-	i = (clc.netchan.outgoingSequence-2) & UPDATE_MASK_QW;
+	i = (clc.netchan.outgoingSequence - 2) & UPDATE_MASK_QW;
 	cmd = &cl.qw_frames[i].cmd;
-	MSGQW_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
+	MSGQW_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (clc.netchan.outgoingSequence-1) & UPDATE_MASK_QW;
+	i = (clc.netchan.outgoingSequence - 1) & UPDATE_MASK_QW;
 	cmd = &cl.qw_frames[i].cmd;
-	MSGQW_WriteDeltaUsercmd (&buf, oldcmd, cmd);
+	MSGQW_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
 	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_QW;
 	cmd = &cl.qw_frames[i].cmd;
-	MSGQW_WriteDeltaUsercmd (&buf, oldcmd, cmd);
+	MSGQW_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
 	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
@@ -187,26 +199,32 @@ void CL_SendCmd (void)
 		seq_hash);
 
 	// request delta compression of entities
-	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_QW-1)
+	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_QW - 1)
+	{
 		cl.qh_validsequence = 0;
+	}
 
 	if (cl.qh_validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
 		!clc.demorecording)
 	{
-		cl.qw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = cl.qh_validsequence;
+		cl.qw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_QW].delta_sequence = cl.qh_validsequence;
 		buf.WriteByte(qwclc_delta);
-		buf.WriteByte(cl.qh_validsequence&255);
+		buf.WriteByte(cl.qh_validsequence & 255);
 	}
 	else
-		cl.qw_frames[clc.netchan.outgoingSequence&UPDATE_MASK_QW].delta_sequence = -1;
+	{
+		cl.qw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_QW].delta_sequence = -1;
+	}
 
 	if (clc.demorecording)
+	{
 		CL_WriteDemoCmd(cmd);
+	}
 
 //
 // deliver the message
 //
-	Netchan_Transmit (&clc.netchan, buf.cursize, buf._data);	
+	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
 }
 
 /*
@@ -214,7 +232,7 @@ void CL_SendCmd (void)
 CL_InitInput
 ============
 */
-void CL_InitInput (void)
+void CL_InitInput(void)
 {
 	CL_InitInputCommon();
 

@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -47,11 +47,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	const char	*basedir;
-	int		argc;
-	char	**argv;
-	void	*membase;
-	int		memsize;
+	const char* basedir;
+	int argc;
+	char** argv;
+	void* membase;
+	int memsize;
 } quakeparms_t;
 
 
@@ -60,16 +60,15 @@ typedef struct
 //
 // host
 //
-extern	quakeparms_t host_parms;
+extern quakeparms_t host_parms;
 
-extern	qboolean	host_initialized;		// true if into command execution
-extern	double		host_frametime;
-extern	double		realtime;			// not bounded in any way, changed at
+extern qboolean host_initialized;			// true if into command execution
+extern double host_frametime;
+extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
-void SV_Error (const char *error, ...);
-void SV_Init (quakeparms_t *parms);
+void SV_Error(const char* error, ...);
+void SV_Init(quakeparms_t* parms);
 
-void Con_Printf (const char *fmt, ...);
-void Con_DPrintf (const char *fmt, ...);
-
+void Con_Printf(const char* fmt, ...);
+void Con_DPrintf(const char* fmt, ...);

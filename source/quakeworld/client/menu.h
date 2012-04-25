@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -22,27 +22,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // the net drivers should just set the apropriate bits in m_activenet,
 // instead of having the menu code look through their internal tables
 //
-#define	MNET_IPX		1
-#define	MNET_TCP		2
+#define MNET_IPX        1
+#define MNET_TCP        2
 
 enum menu_state_t
 {
-    m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist
+	m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist
 };
 
 extern menu_state_t m_state;
-extern menu_state_t	m_return_state;
+extern menu_state_t m_return_state;
 
-extern	int	m_activenet;
+extern int m_activenet;
 
 //
 // menus
 //
-void M_Init (void);
-void M_Keydown (int key);
-void M_Draw (void);
-void M_ToggleMenu_f (void);
-void M_DrawTextBox (int x, int y, int width, int lines);
-void M_Menu_Quit_f (void);
-
-
+void M_Init(void);
+void M_Keydown(int key);
+void M_Draw(void);
+void M_ToggleMenu_f(void);
+void M_DrawTextBox(int x, int y, int width, int lines);
+void M_Menu_Quit_f(void);

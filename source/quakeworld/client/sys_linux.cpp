@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -28,17 +28,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int noconinput = 0;
 int nostdout = 0;
 
-const char *basedir = ".";
+const char* basedir = ".";
 
 // =======================================================================
 // General routines
 // =======================================================================
 
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
 	Host_Shutdown();
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	exit(0);
 }
 
@@ -46,57 +46,59 @@ void Sys_Init(void)
 {
 }
 
-void Sys_Error (const char *error, ...)
-{ 
-    va_list     argptr;
-    char        string[1024];
+void Sys_Error(const char* error, ...)
+{
+	va_list argptr;
+	char string[1024];
 
 // change stdin to non blocking
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 
 	if (ttycon_on)
 	{
 		tty_Hide();
 	}
 
-    va_start (argptr,error);
-    Q_vsnprintf(string, 1024, error, argptr);
-    va_end (argptr);
+	va_start(argptr,error);
+	Q_vsnprintf(string, 1024, error, argptr);
+	va_end(argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
 	Sys_ConsoleInputShutdown();
-	Host_Shutdown ();
-	exit (1);
+	Host_Shutdown();
+	exit(1);
 
-} 
+}
 
-static void signal_handler(int sig, siginfo_t *info, void *secret)
+static void signal_handler(int sig, siginfo_t* info, void* secret)
 {
-	void *trace[64];
-	char **messages = (char **)NULL;
+	void* trace[64];
+	char** messages = (char**)NULL;
 	int i, trace_size = 0;
 
 	/* Do something useful with siginfo_t */
 #if id386
-	ucontext_t *uc = (ucontext_t *)secret;
+	ucontext_t* uc = (ucontext_t*)secret;
 	if (sig == SIGSEGV)
+	{
 		printf("Received signal %d, faulty address is %p, "
-			"from %p\n", sig, info->si_addr, 
+			   "from %p\n", sig, info->si_addr,
 			uc->uc_mcontext.gregs[REG_EIP]);
+	}
 	else
 #endif
-		printf("Received signal %d, exiting...\n", sig);
-		
+	printf("Received signal %d, exiting...\n", sig);
+
 	trace_size = backtrace(trace, 64);
 #if id386
 	/* overwrite sigaction with caller's address */
-	trace[1] = (void *) uc->uc_mcontext.gregs[REG_EIP];
+	trace[1] = (void*)uc->uc_mcontext.gregs[REG_EIP];
 #endif
 
 	messages = backtrace_symbols(trace, trace_size);
 	/* skip first stack frame (points here) */
 	printf("[bt] Execution path:\n");
-	for (i=1; i<trace_size; ++i)
+	for (i = 1; i < trace_size; ++i)
 		printf("[bt] %s\n", messages[i]);
 
 	Sys_Quit();
@@ -123,14 +125,14 @@ void InitSig(void)
 	sigaction(SIGTERM, &sa, NULL);
 }
 
-int main (int c, char **v)
+int main(int c, char** v)
 {
 
-	double		time, oldtime, newtime;
+	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int j;
 
-	InitSig(); // trap evil signals
+	InitSig();	// trap evil signals
 
 	Com_Memset(&parms, 0, sizeof(parms));
 
@@ -138,37 +140,43 @@ int main (int c, char **v)
 	parms.argc = c;
 	parms.argv = v;
 
-	parms.memsize = 16*1024*1024;
+	parms.memsize = 16 * 1024 * 1024;
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (String::Atof(COM_Argv(j+1)) * 1024 * 1024);
-	parms.membase = malloc (parms.memsize);
+	{
+		parms.memsize = (int)(String::Atof(COM_Argv(j + 1)) * 1024 * 1024);
+	}
+	parms.membase = malloc(parms.memsize);
 
 	parms.basedir = basedir;
 
 	noconinput = COM_CheckParm("-noconinput");
 	if (!noconinput)
-		fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
+	{
+		fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
+	}
 
 	if (COM_CheckParm("-nostdout"))
+	{
 		nostdout = 1;
+	}
 
 	Sys_Init();
 
-    Host_Init(&parms);
+	Host_Init(&parms);
 
 	Sys_ConsoleInputInit();
 
-    oldtime = Sys_DoubleTime ();
-    while (1)
-    {
+	oldtime = Sys_DoubleTime();
+	while (1)
+	{
 // find time spent rendering last frame
-        newtime = Sys_DoubleTime ();
-        time = newtime - oldtime;
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
 
 		Host_Frame(time);
 		oldtime = newtime;
-    }
+	}
 
 }

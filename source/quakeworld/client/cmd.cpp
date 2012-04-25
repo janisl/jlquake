@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -26,7 +26,7 @@ Cvar* cl_warncmd;
 /*
 =============================================================================
 
-					COMMAND EXECUTION
+                    COMMAND EXECUTION
 
 =============================================================================
 */
@@ -41,17 +41,19 @@ things like godmode, noclip, etc, are commands directed to the server,
 so when they are typed in at the console, they will need to be forwarded.
 ===================
 */
-void Cmd_ForwardToServer (void)
+void Cmd_ForwardToServer(void)
 {
 	if (cls.state == CA_DISCONNECTED)
 	{
-		Con_Printf ("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
 	}
-	
+
 	if (clc.demoplaying)
+	{
 		return;		// not really connected
 
+	}
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	clc.netchan.message.Print(Cmd_Argv(0));
 	if (Cmd_Argc() > 1)
@@ -62,22 +64,25 @@ void Cmd_ForwardToServer (void)
 }
 
 // don't forward the first argument
-void Cmd_ForwardToServer_f (void)
+void Cmd_ForwardToServer_f(void)
 {
 	if (cls.state == CA_DISCONNECTED)
 	{
-		Con_Printf ("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
 	}
 
-	if (String::ICmp(Cmd_Argv(1), "snap") == 0) {
-		Cbuf_InsertText ("snap\n");
+	if (String::ICmp(Cmd_Argv(1), "snap") == 0)
+	{
+		Cbuf_InsertText("snap\n");
 		return;
 	}
-	
+
 	if (clc.demoplaying)
+	{
 		return;		// not really connected
 
+	}
 	if (Cmd_Argc() > 1)
 	{
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
@@ -85,7 +90,7 @@ void Cmd_ForwardToServer_f (void)
 	}
 }
 #else
-void Cmd_ForwardToServer (void)
+void Cmd_ForwardToServer(void)
 {
 }
 #endif
@@ -93,13 +98,15 @@ void Cmd_ForwardToServer (void)
 bool Cmd_HandleNullCommand(const char* text)
 {
 	Cmd_ForwardToServer();
-    return true;
+	return true;
 }
 
 void Cmd_HandleUnknownCommand()
 {
-    if (cl_warncmd->value || com_developer->value)
-		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
+	if (cl_warncmd->value || com_developer->value)
+	{
+		Con_Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+	}
 }
 
 /*
@@ -107,13 +114,12 @@ void Cmd_HandleUnknownCommand()
 Cmd_Init
 ============
 */
-void Cmd_Init (void)
+void Cmd_Init(void)
 {
 	Cmd_SharedInit();
 #ifndef SERVERONLY
-	Cmd_AddCommand ("cmd", Cmd_ForwardToServer_f);
+	Cmd_AddCommand("cmd", Cmd_ForwardToServer_f);
 #endif
 
 	cl_warncmd = Cvar_Get("cl_warncmd", "0", 0);
 }
-

@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // server.h
 
-#define	QW_SERVER
+#define QW_SERVER
 
-#define	MAX_MASTERS	8				// max recipients for heartbeat packets
+#define MAX_MASTERS 8				// max recipients for heartbeat packets
 
-#define	MAX_SIGNON_BUFFERS	8
+#define MAX_SIGNON_BUFFERS  8
 
 typedef enum {
 	ss_dead,			// no map loaded
@@ -35,60 +35,60 @@ typedef enum {
 
 typedef struct
 {
-	qboolean	active;				// false when server is going down
-	server_state_t	state;			// precache commands are only valid during load
+	qboolean active;				// false when server is going down
+	server_state_t state;			// precache commands are only valid during load
 
-	double		time;
-	
-	int			lastcheck;			// used by PF_checkclient
-	double		lastchecktime;		// for monster ai 
+	double time;
 
-	qboolean	paused;				// are we paused?
+	int lastcheck;					// used by PF_checkclient
+	double lastchecktime;			// for monster ai
+
+	qboolean paused;				// are we paused?
 
 	//check player/eyes models for hacks
-	unsigned	model_player_checksum;
-	unsigned	eyes_player_checksum;
-	
-	char		name[64];			// map name
-	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	const char*	model_precache[MAX_MODELS_Q1];	// NULL terminated
-	const char*	sound_precache[MAX_SOUNDS_Q1];	// NULL terminated
-	const char*	lightstyles[MAX_LIGHTSTYLES_Q1];
-	clipHandle_t	models[MAX_MODELS_Q1];
+	unsigned model_player_checksum;
+	unsigned eyes_player_checksum;
 
-	int			num_edicts;			// increases towards MAX_EDICTS_Q1
-	qhedict_t		*edicts;			// can NOT be array indexed, because
-									// qhedict_t is variable sized, but can
-									// be used to reference the world ent
+	char name[64];					// map name
+	char modelname[MAX_QPATH];				// maps/<name>.bsp, for model_precache[0]
+	const char* model_precache[MAX_MODELS_Q1];	// NULL terminated
+	const char* sound_precache[MAX_SOUNDS_Q1];	// NULL terminated
+	const char* lightstyles[MAX_LIGHTSTYLES_Q1];
+	clipHandle_t models[MAX_MODELS_Q1];
+
+	int num_edicts;					// increases towards MAX_EDICTS_Q1
+	qhedict_t* edicts;					// can NOT be array indexed, because
+	// qhedict_t is variable sized, but can
+	// be used to reference the world ent
 
 	// added to every client's unreliable buffer each frame, then cleared
-	QMsg		datagram;
-	byte		datagram_buf[MAX_DATAGRAM_QW];
+	QMsg datagram;
+	byte datagram_buf[MAX_DATAGRAM_QW];
 
 	// added to every client's reliable buffer each frame, then cleared
-	QMsg		reliable_datagram;
-	byte		reliable_datagram_buf[MAX_MSGLEN_QW];
+	QMsg reliable_datagram;
+	byte reliable_datagram_buf[MAX_MSGLEN_QW];
 
 	// the multicast buffer is used to send a message to a set of clients
-	QMsg		multicast;
-	byte		multicast_buf[MAX_MSGLEN_QW];
+	QMsg multicast;
+	byte multicast_buf[MAX_MSGLEN_QW];
 
 	// the master buffer is used for building log packets
-	QMsg		master;
-	byte		master_buf[MAX_DATAGRAM_QW];
+	QMsg master;
+	byte master_buf[MAX_DATAGRAM_QW];
 
 	// the signon buffer will be sent to each client as they connect
 	// includes the entity baselines, the static entities, etc
-	// large levels will have >MAX_DATAGRAM_QW sized signons, so 
+	// large levels will have >MAX_DATAGRAM_QW sized signons, so
 	// multiple signon messages are kept
-	QMsg		signon;
-	int			num_signon_buffers;
-	int			signon_buffer_size[MAX_SIGNON_BUFFERS];
-	byte		signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_QW];
+	QMsg signon;
+	int num_signon_buffers;
+	int signon_buffer_size[MAX_SIGNON_BUFFERS];
+	byte signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_QW];
 } server_t;
 
 
-#define	NUM_SPAWN_PARMS			16
+#define NUM_SPAWN_PARMS         16
 
 typedef enum
 {
@@ -104,88 +104,88 @@ typedef struct
 	// received from client
 
 	// reply
-	double				senttime;
-	float				ping_time;
-	qwpacket_entities_t	entities;
+	double senttime;
+	float ping_time;
+	qwpacket_entities_t entities;
 } client_frame_t;
 
 #define MAX_BACK_BUFFERS 4
 
 typedef struct client_s
 {
-	client_state_t	state;
+	client_state_t state;
 
-	int				spectator;			// non-interactive
+	int spectator;						// non-interactive
 
-	qboolean		sendinfo;			// at end of frame, send info to all
+	qboolean sendinfo;					// at end of frame, send info to all
 										// this prevents malicious multiple broadcasts
-	float			lastnametime;		// time of last name change
-	int				lastnamecount;		// time of last name change
-	unsigned		checksum;			// checksum for calcs
-	qboolean		drop;				// lose this guy next opportunity
-	int				lossage;			// loss percentage
+	float lastnametime;					// time of last name change
+	int lastnamecount;					// time of last name change
+	unsigned checksum;					// checksum for calcs
+	qboolean drop;						// lose this guy next opportunity
+	int lossage;						// loss percentage
 
-	int				userid;							// identifying number
-	char			userinfo[MAX_INFO_STRING_QW];		// infostring
+	int userid;										// identifying number
+	char userinfo[MAX_INFO_STRING_QW];					// infostring
 
-	qwusercmd_t		lastcmd;			// for filling in big drops and partial predictions
-	double			localtime;			// of last message
-	int				oldbuttons;
+	qwusercmd_t lastcmd;				// for filling in big drops and partial predictions
+	double localtime;					// of last message
+	int oldbuttons;
 
-	float			maxspeed;			// localized maxspeed
-	float			entgravity;			// localized ent gravity
+	float maxspeed;						// localized maxspeed
+	float entgravity;					// localized ent gravity
 
-	qhedict_t			*edict;				// EDICT_NUM(clientnum+1)
-	char			name[32];			// for printing to other people
+	qhedict_t* edict;						// EDICT_NUM(clientnum+1)
+	char name[32];						// for printing to other people
 										// extracted from userinfo
-	int				messagelevel;		// for filtering printed messages
+	int messagelevel;					// for filtering printed messages
 
 	// the datagram is written to after every frame, but only cleared
 	// when it is sent out to the client.  overflow is tolerated.
-	QMsg		datagram;
-	byte			datagram_buf[MAX_DATAGRAM_QW];
+	QMsg datagram;
+	byte datagram_buf[MAX_DATAGRAM_QW];
 
 	// back buffers for client reliable data
-	QMsg	backbuf;
-	int			num_backbuf;
-	int			backbuf_size[MAX_BACK_BUFFERS];
-	byte		backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN_QW];
+	QMsg backbuf;
+	int num_backbuf;
+	int backbuf_size[MAX_BACK_BUFFERS];
+	byte backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN_QW];
 
-	double			connection_started;	// or time of disconnect for zombies
-	qboolean		send_message;		// set on frames a datagram arived on
+	double connection_started;			// or time of disconnect for zombies
+	qboolean send_message;				// set on frames a datagram arived on
 
 // spawn parms are carried from level to level
-	float			spawn_parms[NUM_SPAWN_PARMS];
+	float spawn_parms[NUM_SPAWN_PARMS];
 
-// client known data for deltas	
-	int				old_frags;
-	
-	int				stats[MAX_CL_STATS];
+// client known data for deltas
+	int old_frags;
+
+	int stats[MAX_CL_STATS];
 
 
-	client_frame_t	frames[UPDATE_BACKUP_QW];	// updates can be deltad from here
+	client_frame_t frames[UPDATE_BACKUP_QW];	// updates can be deltad from here
 
-	fileHandle_t	download;			// file being downloaded
-	int				downloadsize;		// total bytes
-	int				downloadcount;		// bytes sent
+	fileHandle_t download;				// file being downloaded
+	int downloadsize;					// total bytes
+	int downloadcount;					// bytes sent
 
-	int				spec_track;			// entnum of player tracking
+	int spec_track;						// entnum of player tracking
 
-	double			whensaid[10];       // JACK: For floodprots
- 	int			whensaidhead;       // Head value for floodprots
- 	double			lockedtill;
+	double whensaid[10];				// JACK: For floodprots
+	int whensaidhead;				// Head value for floodprots
+	double lockedtill;
 
-	qboolean		upgradewarn;		// did we warn him?
+	qboolean upgradewarn;				// did we warn him?
 
-	fileHandle_t	upload;
-	char			uploadfn[MAX_QPATH];
-	netadr_t		snap_from;
-	qboolean		remote_snap;
- 
+	fileHandle_t upload;
+	char uploadfn[MAX_QPATH];
+	netadr_t snap_from;
+	qboolean remote_snap;
+
 //===== NETWORK ============
-	int				chokecount;
-	int				delta_sequence;		// -1 = no compression
-	netchan_t		netchan;
+	int chokecount;
+	int delta_sequence;					// -1 = no compression
+	netchan_t netchan;
 } client_t;
 
 // a client can leave the server in one of four ways:
@@ -197,242 +197,242 @@ typedef struct client_s
 //=============================================================================
 
 
-#define	STATFRAMES	100
+#define STATFRAMES  100
 typedef struct
 {
-	double	active;
-	double	idle;
-	int		count;
-	int		packets;
+	double active;
+	double idle;
+	int count;
+	int packets;
 
-	double	latched_active;
-	double	latched_idle;
-	int		latched_packets;
+	double latched_active;
+	double latched_idle;
+	int latched_packets;
 } svstats_t;
 
 // MAX_CHALLENGES is made large to prevent a denial
 // of service attack that could cycle all of them
 // out before legitimate users connected
-#define	MAX_CHALLENGES	1024
+#define MAX_CHALLENGES  1024
 
 typedef struct
 {
-	netadr_t	adr;
-	int			challenge;
-	int			time;
+	netadr_t adr;
+	int challenge;
+	int time;
 } challenge_t;
 
 typedef struct
 {
-	int			spawncount;			// number of servers spawned since start,
+	int spawncount;					// number of servers spawned since start,
 									// used to check late spawns
-	client_t	clients[MAX_CLIENTS_QW];
-	int			serverflags;		// episode completion information
-	
-	double		last_heartbeat;
-	int			heartbeat_sequence;
-	svstats_t	stats;
+	client_t clients[MAX_CLIENTS_QW];
+	int serverflags;				// episode completion information
 
-	char		info[MAX_SERVERINFO_STRING];
+	double last_heartbeat;
+	int heartbeat_sequence;
+	svstats_t stats;
+
+	char info[MAX_SERVERINFO_STRING];
 
 	// log messages are used so that fraglog processes can get stats
-	int			logsequence;	// the message currently being filled
-	double		logtime;		// time of last swap
-	QMsg		log[2];
-	byte		log_buf[2][MAX_DATAGRAM_QW];
+	int logsequence;			// the message currently being filled
+	double logtime;				// time of last swap
+	QMsg log[2];
+	byte log_buf[2][MAX_DATAGRAM_QW];
 
-	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
+	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
 } server_static_t;
 
 //=============================================================================
 
 // edict->solid values
-#define	SOLID_NOT				0		// no interaction with other objects
-#define	SOLID_TRIGGER			1		// touch on edge, but not blocking
-#define	SOLID_BBOX				2		// touch on edge, block
-#define	SOLID_SLIDEBOX			3		// touch on edge, but not an onground
-#define	SOLID_BSP				4		// bsp clip, touch on edge, block
+#define SOLID_NOT               0		// no interaction with other objects
+#define SOLID_TRIGGER           1		// touch on edge, but not blocking
+#define SOLID_BBOX              2		// touch on edge, block
+#define SOLID_SLIDEBOX          3		// touch on edge, but not an onground
+#define SOLID_BSP               4		// bsp clip, touch on edge, block
 
 // edict->deadflag values
-#define	DEAD_NO					0
-#define	DEAD_DYING				1
-#define	DEAD_DEAD				2
+#define DEAD_NO                 0
+#define DEAD_DYING              1
+#define DEAD_DEAD               2
 
-#define	DAMAGE_NO				0
-#define	DAMAGE_YES				1
-#define	DAMAGE_AIM				2
+#define DAMAGE_NO               0
+#define DAMAGE_YES              1
+#define DAMAGE_AIM              2
 
 // edict->flags
-#define	FL_FLY					1
-#define	FL_SWIM					2
-#define	FL_GLIMPSE				4
-#define	FL_CLIENT				8
-#define	FL_INWATER				16
-#define	FL_MONSTER				32
-#define	FL_GODMODE				64
-#define	FL_NOTARGET				128
-#define	FL_ITEM					256
-#define	FL_ONGROUND				512
-#define	FL_PARTIALGROUND		1024	// not all corners are valid
-#define	FL_WATERJUMP			2048	// player jumping out of water
+#define FL_FLY                  1
+#define FL_SWIM                 2
+#define FL_GLIMPSE              4
+#define FL_CLIENT               8
+#define FL_INWATER              16
+#define FL_MONSTER              32
+#define FL_GODMODE              64
+#define FL_NOTARGET             128
+#define FL_ITEM                 256
+#define FL_ONGROUND             512
+#define FL_PARTIALGROUND        1024	// not all corners are valid
+#define FL_WATERJUMP            2048	// player jumping out of water
 
 
-#define	SPAWNFLAG_NOT_EASY			256
-#define	SPAWNFLAG_NOT_MEDIUM		512
-#define	SPAWNFLAG_NOT_HARD			1024
-#define	SPAWNFLAG_NOT_DEATHMATCH	2048
+#define SPAWNFLAG_NOT_EASY          256
+#define SPAWNFLAG_NOT_MEDIUM        512
+#define SPAWNFLAG_NOT_HARD          1024
+#define SPAWNFLAG_NOT_DEATHMATCH    2048
 
-#define	MULTICAST_ALL			0
-#define	MULTICAST_PHS			1
-#define	MULTICAST_PVS			2
+#define MULTICAST_ALL           0
+#define MULTICAST_PHS           1
+#define MULTICAST_PVS           2
 
-#define	MULTICAST_ALL_R			3
-#define	MULTICAST_PHS_R			4
-#define	MULTICAST_PVS_R			5
+#define MULTICAST_ALL_R         3
+#define MULTICAST_PHS_R         4
+#define MULTICAST_PVS_R         5
 
 //============================================================================
 
-extern	Cvar*	sv_mintic;
-extern	Cvar*	sv_maxtic;
-extern	Cvar*	sv_maxspeed;
-extern Cvar* 	sv_highchars;
+extern Cvar* sv_mintic;
+extern Cvar* sv_maxtic;
+extern Cvar* sv_maxspeed;
+extern Cvar* sv_highchars;
 
-extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
+extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
-extern	Cvar*	spawn;
-extern	Cvar*	teamplay;
-extern	Cvar*	deathmatch;
-extern	Cvar*	fraglimit;
-extern	Cvar*	timelimit;
+extern Cvar* spawn;
+extern Cvar* teamplay;
+extern Cvar* deathmatch;
+extern Cvar* fraglimit;
+extern Cvar* timelimit;
 
-extern	server_static_t	svs;				// persistant server info
-extern	server_t		sv;					// local server
+extern server_static_t svs;					// persistant server info
+extern server_t sv;							// local server
 
-extern	client_t	*host_client;
+extern client_t* host_client;
 
-extern	qhedict_t		*sv_player;
+extern qhedict_t* sv_player;
 
-extern	char		localmodels[MAX_MODELS_Q1][5];	// inline model names for precache
+extern char localmodels[MAX_MODELS_Q1][5];			// inline model names for precache
 
-extern	char		localinfo[MAX_LOCALINFO_STRING+1];
+extern char localinfo[MAX_LOCALINFO_STRING + 1];
 
-extern	int			host_hunklevel;
-extern	fileHandle_t	sv_logfile;
-extern	fileHandle_t	sv_fraglogfile;
+extern int host_hunklevel;
+extern fileHandle_t sv_logfile;
+extern fileHandle_t sv_fraglogfile;
 
-extern int			sv_net_port;
+extern int sv_net_port;
 
 //===========================================================
 
 //
 // sv_main.c
 //
-void SV_Shutdown (void);
-void SV_Frame (float time);
-void SV_FinalMessage (const char *message);
-void SV_DropClient (client_t *drop);
+void SV_Shutdown(void);
+void SV_Frame(float time);
+void SV_FinalMessage(const char* message);
+void SV_DropClient(client_t* drop);
 
-int SV_CalcPing (client_t *cl);
-void SV_FullClientUpdate (client_t *client, QMsg *buf);
+int SV_CalcPing(client_t* cl);
+void SV_FullClientUpdate(client_t* client, QMsg* buf);
 
-int SV_ModelIndex (const char *name);
+int SV_ModelIndex(const char* name);
 
-qboolean SV_CheckBottom (qhedict_t *ent);
-qboolean SV_movestep (qhedict_t *ent, vec3_t move, qboolean relink);
+qboolean SV_CheckBottom(qhedict_t* ent);
+qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink);
 
-void SV_WriteClientdataToMessage (client_t *client, QMsg *msg);
+void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
-void SV_MoveToGoal (void);
+void SV_MoveToGoal(void);
 
-void SV_SaveSpawnparms (void);
+void SV_SaveSpawnparms(void);
 
-void SV_Physics_Client (qhedict_t	*ent);
+void SV_Physics_Client(qhedict_t* ent);
 
-void SV_ExecuteUserCommand (char *s);
-void SV_InitOperatorCommands (void);
+void SV_ExecuteUserCommand(char* s);
+void SV_InitOperatorCommands(void);
 
-void SV_SendServerinfo (client_t *client);
-void SV_ExtractFromUserinfo (client_t *cl);
+void SV_SendServerinfo(client_t* client);
+void SV_ExtractFromUserinfo(client_t* cl);
 
 
-void Master_Heartbeat (void);
-void Master_Packet (void);
+void Master_Heartbeat(void);
+void Master_Packet(void);
 
 //
 // sv_init.c
 //
-void SV_SpawnServer (char *server);
-void SV_FlushSignon (void);
+void SV_SpawnServer(char* server);
+void SV_FlushSignon(void);
 
 
 //
 // sv_phys.c
 //
-void SV_ProgStartFrame (void);
-void SV_Physics (void);
-void SV_CheckVelocity (qhedict_t *ent);
-void SV_AddGravity (qhedict_t *ent, float scale);
-qboolean SV_RunThink (qhedict_t *ent);
-void SV_Physics_Toss (qhedict_t *ent);
-void SV_RunNewmis (void);
-void SV_Impact (qhedict_t *e1, qhedict_t *e2);
+void SV_ProgStartFrame(void);
+void SV_Physics(void);
+void SV_CheckVelocity(qhedict_t* ent);
+void SV_AddGravity(qhedict_t* ent, float scale);
+qboolean SV_RunThink(qhedict_t* ent);
+void SV_Physics_Toss(qhedict_t* ent);
+void SV_RunNewmis(void);
+void SV_Impact(qhedict_t* e1, qhedict_t* e2);
 void SV_SetMoveVars(void);
 
 //
 // sv_send.c
 //
-void SV_SendClientMessages (void);
+void SV_SendClientMessages(void);
 
-void SV_Multicast (vec3_t origin, int to);
-void SV_StartSound (qhedict_t *entity, int channel, const char *sample, int volume,
-    float attenuation);
-void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...);
-void SV_BroadcastPrintf (int level, const char *fmt, ...);
-void SV_BroadcastCommand (const char *fmt, ...);
-void SV_SendMessagesToAll (void);
-void SV_FindModelNumbers (void);
+void SV_Multicast(vec3_t origin, int to);
+void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+	float attenuation);
+void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...);
+void SV_BroadcastPrintf(int level, const char* fmt, ...);
+void SV_BroadcastCommand(const char* fmt, ...);
+void SV_SendMessagesToAll(void);
+void SV_FindModelNumbers(void);
 
 //
 // sv_user.c
 //
-void SV_ExecuteClientMessage (client_t *cl);
-void SV_UserInit (void);
-void SV_TogglePause (const char *msg);
+void SV_ExecuteClientMessage(client_t* cl);
+void SV_UserInit(void);
+void SV_TogglePause(const char* msg);
 
 
 //
 // svonly.c
 //
 typedef enum {RD_NONE, RD_CLIENT, RD_PACKET} redirect_t;
-void SV_BeginRedirect (redirect_t rd);
-void SV_EndRedirect (void);
+void SV_BeginRedirect(redirect_t rd);
+void SV_EndRedirect(void);
 
 //
 // sv_ccmds.c
 //
-void SV_Status_f (void);
+void SV_Status_f(void);
 
 //
 // sv_ents.c
 //
-void SV_WriteEntitiesToClient (client_t *client, QMsg *msg);
+void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
 
 //
 // sv_nchan.c
 //
 
-void ClientReliableCheckBlock(client_t *cl, int maxsize);
-void ClientReliable_FinishWrite(client_t *cl);
-void ClientReliableWrite_Begin(client_t *cl, int c, int maxsize);
-void ClientReliableWrite_Angle(client_t *cl, float f);
-void ClientReliableWrite_Angle16(client_t *cl, float f);
-void ClientReliableWrite_Byte(client_t *cl, int c);
-void ClientReliableWrite_Char(client_t *cl, int c);
-void ClientReliableWrite_Float(client_t *cl, float f);
-void ClientReliableWrite_Coord(client_t *cl, float f);
-void ClientReliableWrite_Long(client_t *cl, int c);
-void ClientReliableWrite_Short(client_t *cl, int c);
-void ClientReliableWrite_String(client_t *cl, const char *s);
-void ClientReliableWrite_SZ(client_t *cl, void *data, int len);
+void ClientReliableCheckBlock(client_t* cl, int maxsize);
+void ClientReliable_FinishWrite(client_t* cl);
+void ClientReliableWrite_Begin(client_t* cl, int c, int maxsize);
+void ClientReliableWrite_Angle(client_t* cl, float f);
+void ClientReliableWrite_Angle16(client_t* cl, float f);
+void ClientReliableWrite_Byte(client_t* cl, int c);
+void ClientReliableWrite_Char(client_t* cl, int c);
+void ClientReliableWrite_Float(client_t* cl, float f);
+void ClientReliableWrite_Coord(client_t* cl, float f);
+void ClientReliableWrite_Long(client_t* cl, int c);
+void ClientReliableWrite_Short(client_t* cl, int c);
+void ClientReliableWrite_String(client_t* cl, const char* s);
+void ClientReliableWrite_SZ(client_t* cl, void* data, int len);
 
-void SV_FullClientUpdateToClient (client_t *client, client_t *cl);
+void SV_FullClientUpdateToClient(client_t* client, client_t* cl);

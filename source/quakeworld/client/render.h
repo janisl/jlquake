@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // refresh.h -- public interface to refresh functions
 
 
-void CL_InitRenderStuff (void);
-void V_RenderScene (void);		// must set cl.refdef first
-void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
-								// called whenever cl.refdef or vid change
+void CL_InitRenderStuff(void);
+void V_RenderScene(void);		// must set cl.refdef first
+void R_ViewChanged(vrect_t* pvrect, int lineadj, float aspect);
+// called whenever cl.refdef or vid change
 
-void R_ParseParticleEffect (void);
+void R_ParseParticleEffect(void);

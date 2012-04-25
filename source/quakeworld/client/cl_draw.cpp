@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -23,24 +23,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-extern Cvar*	crosshair;
-extern Cvar*	cl_crossx;
-extern Cvar*	cl_crossy;
-extern Cvar*	crosshaircolor;
+extern Cvar* crosshair;
+extern Cvar* cl_crossx;
+extern Cvar* cl_crossy;
+extern Cvar* crosshaircolor;
 
-image_t		*draw_backtile;
+image_t* draw_backtile;
 
-image_t*	char_texture;
-image_t*	cs_texture; // crosshair texture
+image_t* char_texture;
+image_t* cs_texture;	// crosshair texture
 
-image_t		*conback;
+image_t* conback;
 
 /*
 ===============
 Draw_Init
 ===============
 */
-void Draw_Init (void)
+void Draw_Init(void)
 {
 	char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
 
@@ -63,13 +63,15 @@ It can be clipped to the top of the screen to allow the console to be
 smoothly scrolled off.
 ================
 */
-void Draw_Character (int x, int y, int num)
+void Draw_Character(int x, int y, int num)
 {
 	num &= 255;
 
 	if (num == 32)
+	{
 		return;		// space
 
+	}
 	UI_DrawChar(x, y, num, 8, 8, char_texture, 16, 16);
 }
 
@@ -78,11 +80,11 @@ void Draw_Character (int x, int y, int num)
 Draw_String
 ================
 */
-void Draw_String (int x, int y, const char *str)
+void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, *str);
+		Draw_Character(x, y, *str);
 		str++;
 		x += 8;
 	}
@@ -93,11 +95,11 @@ void Draw_String (int x, int y, const char *str)
 Draw_Alt_String
 ================
 */
-void Draw_Alt_String (int x, int y, char *str)
+void Draw_Alt_String(int x, int y, char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, (*str) | 0x80);
+		Draw_Character(x, y, (*str) | 0x80);
 		str++;
 		x += 8;
 	}
@@ -106,19 +108,19 @@ void Draw_Alt_String (int x, int y, char *str)
 void Draw_Crosshair(void)
 {
 	int x, y;
-	extern vrect_t		scr_vrect;
-	unsigned char *pColor;
+	extern vrect_t scr_vrect;
+	unsigned char* pColor;
 
 	if (crosshair->value == 2)
 	{
-		x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value; 
+		x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value;
 		y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
 		pColor = r_palette[crosshaircolor->integer];
 		UI_DrawStretchPicWithColour(x - 4, y - 4, 16, 16, cs_texture, pColor);
 	}
 	else if (crosshair->value)
 	{
-		Draw_Character(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value, 
+		Draw_Character(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
 	}
 }
@@ -159,9 +161,9 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen (void)
+void Draw_FadeScreen(void)
 {
-	UI_Fill(0 ,0, viddef.width, viddef.height, 0, 0, 0, 0.8);
+	UI_Fill(0,0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 }
 
 #define NET_GRAPHHEIGHT 32
@@ -211,18 +213,18 @@ static void R_LineGraph(int x, int y, int h)
 R_NetGraph
 ==============
 */
-void R_NetGraph (void)
+void R_NetGraph(void)
 {
-	int		x, y;
+	int x, y;
 	char st[80];
 
 	x = 0;
 	int lost = CL_CalcNet();
 
-	x =	-((viddef.width - 320)>>1);
+	x = -((viddef.width - 320) >> 1);
 	y = viddef.height - sb_lines - 24 - NET_GRAPHHEIGHT - 1;
 
-	M_DrawTextBox (x, y, NET_TIMINGS/8, NET_GRAPHHEIGHT/8 + 1);
+	M_DrawTextBox(x, y, NET_TIMINGS / 8, NET_GRAPHHEIGHT / 8 + 1);
 	y += 8;
 
 	sprintf(st, "%3i%% packet loss", lost);

@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -22,11 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // system IO
 //
-void Sys_Error (const char *error, ...);
+void Sys_Error(const char* error, ...);
 // an error will cause the entire program to exit
 
-void Sys_Quit (void);
+void Sys_Quit(void);
 
-void Sys_Sleep (void);
+void Sys_Sleep(void);
 // called to yield for a little bit so as
 // not to hog cpu when paused or debugging
