@@ -49,12 +49,12 @@ float Q_acos(float c);
 extern "C"
 {
 #endif
-long Q_ftol(float f);
+int Q_ftol(float f);
 #ifndef _MSC_VER
 }
 #endif
 #else
-#define Q_ftol(f)       (long)(f)
+#define Q_ftol(f)       (int)(f)
 #endif
 
 #define SQRTFAST(x)     ((x) * Q_rsqrt(x))

@@ -129,7 +129,7 @@ void FS_Printf(fileHandle_t f, const char* fmt, ...);
 
 void FS_Flush(fileHandle_t f);
 
-int FS_Seek(fileHandle_t f, long offset, int origin);
+int FS_Seek(fileHandle_t f, int offset, int origin);
 // seek on a file (doesn't work for zip files!!!!!!!!)
 
 int FS_FTell(fileHandle_t f);

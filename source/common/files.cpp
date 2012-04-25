@@ -260,10 +260,10 @@ struct searchpath_t
 	directory_t* dir;
 
 	searchpath_t()
-		: next(NULL),
-		pack(NULL),
-		pack3(NULL),
-		dir(NULL)
+	: next(NULL)
+	, pack(NULL)
+	, pack3(NULL)
+	, dir(NULL)
 	{}
 };
 
@@ -359,9 +359,9 @@ static int fs_filter_flag = 0;
 //**************************************************************************
 
 //	Return a hash value for the filename
-static long FS_HashFileName(const char* fname, int hashSize)
+static int FS_HashFileName(const char* fname, int hashSize)
 {
-	long hash = 0;
+	int hash = 0;
 	int i = 0;
 	while (fname[i] != '\0')
 	{
@@ -378,7 +378,7 @@ static long FS_HashFileName(const char* fname, int hashSize)
 		{
 			letter = '/';		// damn path names
 		}
-		hash += (long)(letter) * (i + 119);
+		hash += (int)(letter) * (i + 119);
 		i++;
 	}
 	hash = (hash ^ (hash >> 10) ^ (hash >> 20));
@@ -760,7 +760,7 @@ static pack3_t* FS_LoadZipFile(const char* zipfile, const char* basename)
 	char filename_inzip[MAX_ZPATH];
 	unz_file_info file_info;
 	int i, len;
-	long hash;
+	int hash;
 	int fs_numHeaderLongs;
 	int* fs_headerLongs;
 	char* namePtr;
@@ -1071,7 +1071,7 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 					continue;
 				}
 
-				long hash = FS_HashFileName(filename, search->pack3->hashSize);
+				int hash = FS_HashFileName(filename, search->pack3->hashSize);
 				if (!search->pack3->hashTable[hash])
 				{
 					continue;
@@ -1198,7 +1198,7 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 				continue;
 			}
 
-			long hash = FS_HashFileName(filename, search->pack3->hashSize);
+			int hash = FS_HashFileName(filename, search->pack3->hashSize);
 			if (!search->pack3->hashTable[hash])
 			{
 				continue;
@@ -1839,7 +1839,7 @@ void FS_Flush(fileHandle_t f)
 	fflush(fsh[f].handleFiles.file.o);
 }
 
-int FS_Seek(fileHandle_t f, long offset, int origin)
+int FS_Seek(fileHandle_t f, int offset, int origin)
 {
 	if (!fs_searchpaths)
 	{
@@ -1952,7 +1952,7 @@ int FS_FileIsInPAK(const char* filename, int* pChecksum)
 		// is the element a pak file?
 		if (search->pack3)
 		{
-			long hash = FS_HashFileName(filename, search->pack3->hashSize);
+			int hash = FS_HashFileName(filename, search->pack3->hashSize);
 			if (!search->pack3->hashTable[hash])
 			{
 				continue;

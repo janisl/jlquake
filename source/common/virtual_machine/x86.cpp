@@ -1098,7 +1098,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 	{
 		int psize = getpagesize();
 
-		unsigned long addr = ((int)vm->codeBase & ~(psize - 1)) - psize;
+		unsigned int addr = ((int)vm->codeBase & ~(psize - 1)) - psize;
 
 		int r = mprotect((char*)addr, vm->codeLength + (int)vm->codeBase - addr + psize,
 			PROT_READ | PROT_WRITE | PROT_EXEC);

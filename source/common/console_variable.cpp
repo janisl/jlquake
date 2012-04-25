@@ -37,17 +37,17 @@ static int cvar_numIndexes;
 static Cvar* cvar_hashTable[FILE_HASH_SIZE];
 
 //	Return a hash value for the filename
-static long Cvar_GenerateHashValue(const char* fname)
+static int Cvar_GenerateHashValue(const char* fname)
 {
 	if (!fname)
 	{
 		common->Error("null name in Cvar_GenerateHashValue");
 	}
-	long hash = 0;
+	int hash = 0;
 	for (int i = 0; fname[i] != '\0'; i++)
 	{
 		char letter = String::ToLower(fname[i]);
-		hash += (long)(letter) * (i + 119);
+		hash += (int)(letter) * (i + 119);
 	}
 	hash &= (FILE_HASH_SIZE - 1);
 	return hash;
@@ -62,7 +62,7 @@ char* __CopyString(const char* in)
 
 Cvar* Cvar_FindVar(const char* VarName)
 {
-	long hash = Cvar_GenerateHashValue(VarName);
+	int hash = Cvar_GenerateHashValue(VarName);
 
 	for (Cvar* var = cvar_hashTable[hash]; var; var = var->hashNext)
 	{
@@ -417,7 +417,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 
 	var->flags = Flags;
 
-	long hash = Cvar_GenerateHashValue(VarName);
+	int hash = Cvar_GenerateHashValue(VarName);
 	var->hashNext = cvar_hashTable[hash];
 	cvar_hashTable[hash] = var;
 
