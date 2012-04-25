@@ -7,12 +7,6 @@
 
 add_subdirectory(botlib)
 
-# splines
-add_library(splines-wolfsp STATIC
-	splines/splines.cpp
-)
-
-
 set(WOLFSP_FILES
 	client/cl_cgame.cpp
 	client/cl_cin.cpp
@@ -70,4 +64,4 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfsp ${WOLFSP_FILES})
 set_target_properties(jlwolfsp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlwolfsp botlib-wolfsp splines-wolfsp ${CLIENTS_LIBS})
+target_link_libraries(jlwolfsp botlib-wolfsp ${CLIENTS_LIBS})

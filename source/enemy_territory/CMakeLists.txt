@@ -16,10 +16,6 @@
 
 add_subdirectory(botlib)
 
-add_library(splines-et STATIC
-	splines/splines.cpp
-)
-
 set (ET_FILES
 	server/sv_bot.cpp
 	server/sv_ccmds.cpp
@@ -76,7 +72,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlet ${ET_FILES})
 set_target_properties(jlet PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlet botlib-et splines-et ${CLIENTS_LIBS} curl)
+target_link_libraries(jlet botlib-et ${CLIENTS_LIBS} curl)
 
 #local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
 

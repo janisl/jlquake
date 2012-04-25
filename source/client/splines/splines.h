@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Return to Castle Wolfenstein multiplayer GPL Source Code
+Wolfenstein: Enemy Territory GPL Source Code
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
-RTCW MP Source Code is free software: you can redistribute it and/or modify
+Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-RTCW MP Source Code is distributed in the hope that it will be useful,
+Wolf ET Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with RTCW MP Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the RTCW MP Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the RTCW MP Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -38,10 +38,6 @@ typedef int fileHandle_t;
 
 class idPointListInterface {
 public:
-	idPointListInterface()
-	{
-		selectedPoints.Clear();
-	};
 	virtual ~idPointListInterface()
 	{
 	};
@@ -55,60 +51,6 @@ public:
 	virtual void addPoint(const idVec3&v) {}
 	virtual void removePoint(int index) {}
 	virtual idVec3* getPoint(int index) { return NULL; }
-
-	int isPointSelected(int index)
-	{
-		int count = selectedPoints.Num();
-		for (int i = 0; i < count; i++)
-		{
-			if (selectedPoints[i] == index)
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	void selectAll()
-	{
-		selectedPoints.Clear();
-		for (int i = 0; i < numPoints(); i++)
-		{
-			selectedPoints.Append(i);
-		}
-	}
-
-	void deselectAll()
-	{
-		selectedPoints.Clear();
-	}
-
-	int numSelectedPoints();
-
-	idVec3* getSelectedPoint(int index)
-	{
-		assert(index >= 0 && index < numSelectedPoints());
-		return getPoint(selectedPoints[index]);
-	}
-
-	virtual void updateSelection(float x, float y, float z)
-	{
-		idVec3 move(x, y, z);
-		updateSelection(move);
-	}
-
-	virtual void updateSelection(const idVec3&move)
-	{
-		int count = selectedPoints.Num();
-		for (int i = 0; i < count; i++)
-		{
-			*getPoint(selectedPoints[i]) += move;
-		}
-	}
-
-protected:
-	idList<int> selectedPoints;
-
 };
 
 
@@ -171,8 +113,6 @@ public:
 	const idVec3* getPosition(long time);
 
 
-	void addToRenderer();
-
 	void setSelectedPoint(idVec3* p);
 	idVec3* getSelectedPoint()
 	{
@@ -190,8 +130,6 @@ public:
 		controlPoints.Append(new idVec3(x, y, z));
 		dirty = true;
 	}
-
-	void updateSelection(const idVec3&move);
 
 	void startEdit()
 	{
@@ -346,15 +284,20 @@ struct idVelocity
 class idCameraPosition : public idPointListInterface {
 public:
 
-	virtual void clear()
+	virtual void clearVelocities()
 	{
-		editMode = false;
 		for (int i = 0; i < velocities.Num(); i++)
 		{
 			delete velocities[i];
 			velocities[i] = NULL;
 		}
 		velocities.Clear();
+	}
+
+	virtual void clear()
+	{
+		editMode = false;
+		clearVelocities();
 	}
 
 	idCameraPosition(const char* p)
@@ -447,12 +390,12 @@ public:
 		name = p;
 	}
 
-	virtual void startEdit()
+	virtual void startEdit()	//DAJ added void
 	{
 		editMode = true;
 	}
 
-	virtual void stopEdit()
+	virtual void stopEdit()		//DAJ added void
 	{
 		editMode = false;
 	}
@@ -666,18 +609,7 @@ public:
 		calcVelocity(target.totalDistance());
 	}
 
-//virtual const idVec3 *getPosition(long t) {
-//	return target.getPosition(t);
-//}
 	virtual const idVec3* getPosition(long t);
-
-
-//virtual const idVec3 *getPosition(long t) const {
-
-	void addControlPoint(idVec3&v)
-	{
-		target.addPoint(v);
-	}
 
 	void parse(const char*(*text));
 
@@ -699,12 +631,6 @@ public:
 	virtual void addPoint(const float x, const float y, const float z)
 	{
 		target.addPoint(x, y, z);
-	}
-
-	virtual void updateSelection(const idVec3&move)
-	{
-		idCameraPosition::updateSelection(move);
-		target.buildSpline();
 	}
 
 protected:
@@ -772,7 +698,7 @@ public:
 		return fov;
 	}
 
-	void start(long t)		//DAJ was returning int
+	void start(long t)
 	{
 		startTime = t;
 	}
@@ -800,21 +726,22 @@ protected:
 
 
 class idCameraEvent {
-public:
+public:						// parameters
 	enum eventType {
 		EVENT_NA = 0x00,
-		EVENT_WAIT,
-		EVENT_TARGETWAIT,
-		EVENT_SPEED,
-		EVENT_TARGET,
-		EVENT_SNAPTARGET,
-		EVENT_FOV,
-		EVENT_CMD,
-		EVENT_TRIGGER,
-		EVENT_STOP,
-		EVENT_CAMERA,
-		EVENT_FADEOUT,
-		EVENT_FADEIN,
+		EVENT_WAIT,			//
+		EVENT_TARGETWAIT,	//
+		EVENT_SPEED,		//
+		EVENT_TARGET,		// char(name)
+		EVENT_SNAPTARGET,	//
+		EVENT_FOV,			// int(time), int(targetfov)
+		EVENT_CMD,			//
+		EVENT_TRIGGER,		//
+		EVENT_STOP,			//
+		EVENT_CAMERA,		//
+		EVENT_FADEOUT,		// int(time)
+		EVENT_FADEIN,		// int(time)
+		EVENT_FEATHER,		//
 		EVENT_COUNT
 	};
 
@@ -961,10 +888,6 @@ public:
 
 	void buildCamera();
 
-//idSplineList *getcameraPosition() {
-//	return &cameraPosition;
-//}
-
 	static idCameraPosition* newFromType(idCameraPosition::positionType t)
 	{
 		switch (t)
@@ -1049,8 +972,6 @@ public:
 	{
 		cameraRunning = true;
 	}
-	void getActiveSegmentInfo(int segment, idVec3&origin, idVec3&direction, float* fv);
-
 	bool getCameraInfo(long time, idVec3&origin, idVec3&direction, float* fv);
 	bool getCameraInfo(long time, float* origin, float* direction, float* fv)
 	{
@@ -1071,29 +992,6 @@ public:
 		return b;
 	}
 
-/*
-    int numSegments() {
-        if (cameraEdit) {
-            return cameraPosition.numSegments();
-        }
-        return getTargetSpline()->numSegments();
-    }
-
-    int getActiveSegment() {
-        if (cameraEdit) {
-            return cameraPosition.getActiveSegment();
-        }
-        return getTargetSpline()->getActiveSegment();
-    }
-
-    void setActiveSegment(int i) {
-        if (cameraEdit) {
-            cameraPosition.setActiveSegment(i);
-        } else {
-            getTargetSpline()->setActiveSegment(i);
-        }
-    }
-*/
 	int numPoints()
 	{
 		if (cameraEdit)
@@ -1184,8 +1082,5 @@ protected:
 };
 
 extern bool g_splineMode;
-
-extern idCameraDef* g_splineList;
-
 
 #endif

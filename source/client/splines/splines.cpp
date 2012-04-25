@@ -1,46 +1,42 @@
 /*
 ===========================================================================
 
-Return to Castle Wolfenstein multiplayer GPL Source Code
+Wolfenstein: Enemy Territory GPL Source Code
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
-RTCW MP Source Code is free software: you can redistribute it and/or modify
+Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-RTCW MP Source Code is distributed in the hope that it will be useful,
+Wolf ET Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with RTCW MP Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the RTCW MP Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the RTCW MP Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-
-//#include "stdafx.h"
-//#include "qe3.h"
-
 #include "../../common/qcommon.h"
 #include "../../client/splines/q_parse.h"
-#include "splines.h"
+#include "../../client/splines/splines.h"
 
-int FS_Write(const void* buffer, int len, fileHandle_t h);
-int FS_ReadFile(const char* qpath, void** buffer);
-void FS_FreeFile(void* buffer);
-fileHandle_t FS_FOpenFileWrite(const char* filename);
-void FS_FCloseFile(fileHandle_t f);
-void Cbuf_AddText(const char* text);
-void Cbuf_Execute(void);
+// TTimo
+// handy stuff when tracking isnan problems
+#ifndef NDEBUG
+#define CHECK_NAN_VEC(v) assert(!IS_NAN(v[0]) && !IS_NAN(v[1]) && !IS_NAN(v[2]))
+#else
+#define CHECK_NAN_VEC
+#endif
 
 // (SA) making a list of cameras so I can use
 //		the splines as targets for other things.
@@ -51,7 +47,7 @@ void Cbuf_Execute(void);
 
 idCameraDef camera[MAX_CAMERAS];
 
-qboolean loadCamera(int camNum, const char* name)
+bool loadCamera(int camNum, const char* name)
 {
 	if (camNum < 0 || camNum >= MAX_CAMERAS)
 	{
@@ -59,10 +55,10 @@ qboolean loadCamera(int camNum, const char* name)
 	}
 	camera[camNum].clear();
 	// TTimo static_cast confused gcc, went for C-style casting
-	return (qboolean)(camera[camNum].load(name));
+	return camera[camNum].load(name);
 }
 
-qboolean getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov)
+bool getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov)
 {
 	idVec3 dir, org;
 	if (camNum < 0 || camNum >= MAX_CAMERAS)
@@ -93,103 +89,7 @@ void startCamera(int camNum, int time)
 	camera[camNum].startCamera(time);
 }
 
-
-//#include "../shared/windings.h"
-//#include "../qcommon/qcommon.h"
-//#include "../sys/sys_public.h"
-//#include "../game/game_entity.h"
-
-idCameraDef splineList;
-idCameraDef* g_splineList = &splineList;
-
 idVec3 idSplineList::zero(0,0,0);
-
-void splineTest()
-{
-	//g_splineList->load("p:/doom/base/maps/test_base1.camera");
-}
-
-void splineDraw()
-{
-	//g_splineList->addToRenderer();
-}
-
-
-//extern void D_DebugLine( const idVec3 &color, const idVec3 &start, const idVec3 &end );
-
-void debugLine(idVec3&color, float x, float y, float z, float x2, float y2, float z2)
-{
-//	idVec3 from(x, y, z);
-//	idVec3 to(x2, y2, z2);
-	//D_DebugLine(color, from, to);
-}
-
-void idSplineList::addToRenderer()
-{
-
-	if (controlPoints.Num() == 0)
-	{
-		return;
-	}
-
-	idVec3 mins, maxs;
-	idVec3 yellow(1.0, 1.0, 0);
-	idVec3 white(1.0, 1.0, 1.0);
-	int i;
-
-	for (i = 0; i < controlPoints.Num(); i++)
-	{
-		VectorCopy(*controlPoints[i], mins);
-		VectorCopy(mins, maxs);
-		mins[0] -= 8;
-		mins[1] += 8;
-		mins[2] -= 8;
-		maxs[0] += 8;
-		maxs[1] -= 8;
-		maxs[2] += 8;
-		debugLine(yellow, mins[0], mins[1], mins[2], maxs[0], mins[1], mins[2]);
-		debugLine(yellow, maxs[0], mins[1], mins[2], maxs[0], maxs[1], mins[2]);
-		debugLine(yellow, maxs[0], maxs[1], mins[2], mins[0], maxs[1], mins[2]);
-		debugLine(yellow, mins[0], maxs[1], mins[2], mins[0], mins[1], mins[2]);
-
-		debugLine(yellow, mins[0], mins[1], maxs[2], maxs[0], mins[1], maxs[2]);
-		debugLine(yellow, maxs[0], mins[1], maxs[2], maxs[0], maxs[1], maxs[2]);
-		debugLine(yellow, maxs[0], maxs[1], maxs[2], mins[0], maxs[1], maxs[2]);
-		debugLine(yellow, mins[0], maxs[1], maxs[2], mins[0], mins[1], maxs[2]);
-
-	}
-
-	int step = 0;
-	idVec3 step1;
-	for (i = 3; i < controlPoints.Num(); i++)
-	{
-		for (float tension = 0.0f; tension < 1.001f; tension += 0.1f)
-		{
-			float x = 0;
-			float y = 0;
-			float z = 0;
-			for (int j = 0; j < 4; j++)
-			{
-				x += controlPoints[i - (3 - j)]->x * calcSpline(j, tension);
-				y += controlPoints[i - (3 - j)]->y * calcSpline(j, tension);
-				z += controlPoints[i - (3 - j)]->z * calcSpline(j, tension);
-			}
-			if (step == 0)
-			{
-				step1[0] = x;
-				step1[1] = y;
-				step1[2] = z;
-				step = 1;
-			}
-			else
-			{
-				debugLine(white, step1[0], step1[1], step1[2], x, y, z);
-				step = 0;
-			}
-
-		}
-	}
-}
 
 void idSplineList::buildSpline()
 {
@@ -212,7 +112,6 @@ void idSplineList::buildSpline()
 		}
 	}
 	dirty = false;
-	//Com_Printf("Spline build took %f seconds\n", (float)(Sys_Milliseconds() - start) / 1000);
 }
 
 
@@ -294,18 +193,6 @@ float idSplineList::calcSpline(int step, float tension)
 	return 0.0;
 }
 
-
-
-void idSplineList::updateSelection(const idVec3&move)
-{
-	if (selected)
-	{
-		dirty = true;
-		VectorAdd(*selected, move, *selected);
-	}
-}
-
-
 void idSplineList::setSelectedPoint(idVec3* p)
 {
 	if (p)
@@ -328,7 +215,6 @@ void idSplineList::setSelectedPoint(idVec3* p)
 const idVec3* idSplineList::getPosition(long t)
 {
 	static idVec3 interpolatedPos;
-//	static long lastTime = -1;
 
 	int count = splineTime.Num();
 	if (count == 0)
@@ -336,7 +222,6 @@ const idVec3* idSplineList::getPosition(long t)
 		return &zero;
 	}
 
-//	Com_Printf("Time: %d\n", t);
 	assert(splineTime.Num() == splinePoints.Num());
 
 	while (activeSegment < count)
@@ -426,44 +311,6 @@ void idSplineList::parse(const char*(*text))
 	dirty = true;
 }
 
-void idCameraDef::getActiveSegmentInfo(int segment, idVec3&origin, idVec3&direction, float* fov)
-{
-#if 0
-	if (!cameraSpline.validTime())
-	{
-		buildCamera();
-	}
-	double d = (double)segment / numSegments();
-	getCameraInfo(d * totalTime * 1000, origin, direction, fov);
-#endif
-/*
-    if (!cameraSpline.validTime()) {
-        buildCamera();
-    }
-    origin = *cameraSpline.getSegmentPoint(segment);
-
-
-    idVec3 temp;
-
-    int numTargets = getTargetSpline()->controlPoints.Num();
-    int count = cameraSpline.splineTime.Num();
-    if (numTargets == 0) {
-        // follow the path
-        if (cameraSpline.getActiveSegment() < count - 1) {
-            temp = *cameraSpline.splinePoints[cameraSpline.getActiveSegment()+1];
-        }
-    } else if (numTargets == 1) {
-        temp = *getTargetSpline()->controlPoints[0];
-    } else {
-        temp = *getTargetSpline()->getSegmentPoint(segment);
-    }
-
-    temp -= origin;
-    temp.Normalize();
-    direction = temp;
-*/
-}
-
 bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, float* fv)
 {
 
@@ -484,16 +331,10 @@ bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, floa
 			{
 				setActiveTargetByName(events[i]->getParam());
 				getActiveTarget()->start(startTime + events[i]->getTime());
-				//Com_Printf("Triggered event switch to target: %s\n",events[i]->getParam());
 			}
 			else if (events[i]->getType() == idCameraEvent::EVENT_TRIGGER)
 			{
-				//idEntity *ent = NULL;
-				//ent = level.FindTarget( ent, events[i]->getParam());
-				//if (ent) {
-				//	ent->signal( SIG_TRIGGER );
-				//	ent->ProcessEvent( &EV_Activate, world );
-				//}
+				// empty!
 			}
 			else if (events[i]->getType() == idCameraEvent::EVENT_FOV)
 			{
@@ -546,6 +387,8 @@ bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, floa
 
 	origin = *cameraPosition->getPosition(time);
 
+	CHECK_NAN_VEC(origin);
+
 	*fv = fov.getFOV(time);
 
 	idVec3 temp = origin;
@@ -553,18 +396,7 @@ bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, floa
 	int numTargets = targetPositions.Num();
 	if (numTargets == 0)
 	{
-/*
-        // follow the path
-        if (cameraSpline.getActiveSegment() < count - 1) {
-            temp = *cameraSpline.splinePoints[cameraSpline.getActiveSegment()+1];
-            if (temp == origin) {
-                int index = cameraSpline.getActiveSegment() + 2;
-                while (temp == origin && index < count - 1) {
-                    temp = *cameraSpline.splinePoints[index++];
-                }
-            }
-        }
-*/
+		// empty!
 	}
 	else
 	{
@@ -595,7 +427,6 @@ bool idCameraDef::waitEvent(int index)
 void idCameraDef::buildCamera()
 {
 	int i;
-//	int lastSwitch = 0;
 	idList<float> waits;
 	idList<int> targets;
 
@@ -605,13 +436,47 @@ void idCameraDef::buildCamera()
 	// now we need to layer on any wait or speed changes
 	for (i = 0; i < events.Num(); i++)
 	{
-//		idCameraEvent *ev = events[i];
 		events[i]->setTriggered(false);
 		switch (events[i]->getType())
 		{
 		case idCameraEvent::EVENT_TARGET: {
 			targets.Append(i);
 			break;
+		}
+		case idCameraEvent::EVENT_FEATHER: {
+			long startTime = 0;
+			float speed = 0;
+			long loopTime = 10;
+			float stepGoal = cameraPosition->getBaseVelocity() / (1000 / loopTime);
+			while (startTime <= 1000)
+			{
+				cameraPosition->addVelocity(startTime, loopTime, speed);
+				speed += stepGoal;
+				if (speed > cameraPosition->getBaseVelocity())
+				{
+					speed = cameraPosition->getBaseVelocity();
+				}
+				startTime += loopTime;
+			}
+
+			// TTimo gcc warns: assignment to `long int' from `float'
+			// more efficient to do (long int)(totalTime) * 1000 - 1000
+			// safer to (long int)(totalTime * 1000 - 1000)
+			startTime = (long int)(totalTime * 1000 - 1000);
+			long endTime = startTime + 1000;
+			speed = cameraPosition->getBaseVelocity();
+			while (startTime < endTime)
+			{
+				speed -= stepGoal;
+				if (speed < 0)
+				{
+					speed = 0;
+				}
+				cameraPosition->addVelocity(startTime, loopTime, speed);
+				startTime += loopTime;
+			}
+			break;
+
 		}
 		case idCameraEvent::EVENT_WAIT: {
 			waits.Append(String::Atof(events[i]->getParam()));
@@ -718,8 +583,9 @@ void idCameraDef::buildCamera()
 
 void idCameraDef::startCamera(long t)
 {
-	buildCamera();
+	cameraPosition->clearVelocities();
 	cameraPosition->start(t);
+	buildCamera();
 	fov.reset(90, 90, t, 0);
 	//for (int i = 0; i < targetPositions.Num(); i++) {
 	//	targetPositions[i]->
@@ -872,7 +738,8 @@ const char* idCameraEvent::eventStr[] = {
 	"STOP",
 	"CAMERA",
 	"FADEOUT",
-	"FADEIN"
+	"FADEIN",
+	"FEATHER"
 };
 
 void idCameraEvent::parse(const char*(*text))
@@ -944,7 +811,7 @@ const char* idCameraPosition::positionStr[] = {
 const idVec3* idInterpolatedPosition::getPosition(long t)
 {
 	static idVec3 interpolatedPos;
-
+	float percent = 0.0;
 	float velocity = getVelocity(t);
 	float timePassed = t - lastTime;
 	lastTime = t;
@@ -959,7 +826,14 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 	float distance = temp.Length();
 
 	distSoFar += distToTravel;
-	float percent = (float)(distSoFar) / distance;
+
+	// TTimo
+	// show_bug.cgi?id=409
+	// avoid NaN on fixed cameras
+	if (distance != 0.0)		//DAJ added to protect DBZ
+	{
+		percent = (float)(distSoFar) / distance;
+	}
 
 	if (percent > 1.0)
 	{
@@ -1265,11 +1139,8 @@ void idSplinePosition::parse(const char*(*text))
 	Com_MatchToken(text, "}");
 }
 
-
-
 void idCameraDef::addTarget(const char* name, idCameraPosition::positionType type)
 {
-	//const char *text = (name == NULL) ? va("target0%d", numTargets()+1) : name;
 	idCameraPosition* pos = newFromType(type);
 	if (pos)
 	{
@@ -1310,7 +1181,7 @@ const idVec3* idSplinePosition::getPosition(long t)
 	//FIXME: calc distances on spline build
 	idVec3 temp;
 	int count = target.numSegments();
-	// TTimo fixed MSVCism: for(int i = 1; ...
+	// TTimo fixed MSVCism
 	int i;
 	for (i = 1; i < count; i++)
 	{

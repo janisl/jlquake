@@ -91,6 +91,7 @@ set(CLIENT_FILES
 	sound/memory.cpp
 	sound/mix.cpp
 	splines/q_parse.cpp
+	splines/splines.cpp
 	splines/util_str.cpp
 	ui/console.cpp
 	ui/draw.cpp

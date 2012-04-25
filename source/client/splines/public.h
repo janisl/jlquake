@@ -14,6 +14,6 @@
 //**
 //**************************************************************************
 
-extern qboolean loadCamera(int camNum, const char* name);
+extern bool loadCamera(int camNum, const char* name);
 extern void startCamera(int camNum, int time);
-extern qboolean getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov);
+extern bool getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov);

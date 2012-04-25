@@ -15,11 +15,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wc++-compat")
 
 add_subdirectory(botlib)
 
-# splines
-add_library(splines-wolfmp STATIC
-	splines/splines.cpp
-)
-
 set(WOLFMP_FILES
 	client/cl_cgame.cpp
 	client/cl_cin.cpp
@@ -77,7 +72,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
 set_target_properties(jlwolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlwolfmp botlib-wolfmp splines-wolfmp ${CLIENTS_LIBS})
+target_link_libraries(jlwolfmp botlib-wolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
