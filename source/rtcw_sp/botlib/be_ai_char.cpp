@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,13 +63,13 @@ union cvalue
 {
 	int integer;
 	float _float;
-	char *string;
+	char* string;
 };
 //a characteristic
 typedef struct bot_characteristic_s
 {
-	char type;                      //characteristic type
-	union cvalue value;             //characteristic value
+	char type;						//characteristic type
+	union cvalue value;				//characteristic value
 } bot_characteristic_t;
 
 //a bot character
@@ -77,10 +77,10 @@ typedef struct bot_character_s
 {
 	char filename[MAX_QPATH];
 	int skill;
-	bot_characteristic_t c[1];      //variable sized
+	bot_characteristic_t c[1];		//variable sized
 } bot_character_t;
 
-bot_character_t *botcharacters[MAX_CLIENTS_WS + 1];
+bot_character_t* botcharacters[MAX_CLIENTS_WS + 1];
 
 //========================================================================
 //
@@ -88,678 +88,780 @@ bot_character_t *botcharacters[MAX_CLIENTS_WS + 1];
 // Returns:				-
 // Changes Globals:		-
 //========================================================================
-bot_character_t *BotCharacterFromHandle( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS_WS ) {
-		botimport.Print( PRT_FATAL, "character handle %d out of range\n", handle );
+bot_character_t* BotCharacterFromHandle(int handle)
+{
+	if (handle <= 0 || handle > MAX_CLIENTS_WS)
+	{
+		botimport.Print(PRT_FATAL, "character handle %d out of range\n", handle);
 		return NULL;
-	} //end if
-	if ( !botcharacters[handle] ) {
-		botimport.Print( PRT_FATAL, "invalid character %d\n", handle );
+	}	//end if
+	if (!botcharacters[handle])
+	{
+		botimport.Print(PRT_FATAL, "invalid character %d\n", handle);
 		return NULL;
-	} //end if
+	}	//end if
 	return botcharacters[handle];
-} //end of the function BotCharacterFromHandle
+}	//end of the function BotCharacterFromHandle
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void BotDumpCharacter( bot_character_t *ch ) {
+void BotDumpCharacter(bot_character_t* ch)
+{
 	int i;
 
-	Log_Write( "%s", ch->filename );
-	Log_Write( "skill %d\n", ch->skill );
-	Log_Write( "{\n" );
-	for ( i = 0; i < MAX_CHARACTERISTICS; i++ )
+	Log_Write("%s", ch->filename);
+	Log_Write("skill %d\n", ch->skill);
+	Log_Write("{\n");
+	for (i = 0; i < MAX_CHARACTERISTICS; i++)
 	{
-		switch ( ch->c[i].type )
+		switch (ch->c[i].type)
 		{
-		case CT_INTEGER: Log_Write( " %4d %d\n", i, ch->c[i].value.integer ); break;
-		case CT_FLOAT: Log_Write( " %4d %f\n", i, ch->c[i].value._float ); break;
-		case CT_STRING: Log_Write( " %4d %s\n", i, ch->c[i].value.string ); break;
-		} //end case
-	} //end for
-	Log_Write( "}\n" );
-} //end of the function BotDumpCharacter
+		case CT_INTEGER: Log_Write(" %4d %d\n", i, ch->c[i].value.integer); break;
+		case CT_FLOAT: Log_Write(" %4d %f\n", i, ch->c[i].value._float); break;
+		case CT_STRING: Log_Write(" %4d %s\n", i, ch->c[i].value.string); break;
+		}	//end case
+	}	//end for
+	Log_Write("}\n");
+}	//end of the function BotDumpCharacter
 //========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //========================================================================
-void BotFreeCharacterStrings( bot_character_t *ch ) {
+void BotFreeCharacterStrings(bot_character_t* ch)
+{
 	int i;
 
-	for ( i = 0; i < MAX_CHARACTERISTICS; i++ )
+	for (i = 0; i < MAX_CHARACTERISTICS; i++)
 	{
-		if ( ch->c[i].type == CT_STRING ) {
-			FreeMemory( ch->c[i].value.string );
-		} //end if
-	} //end for
-} //end of the function BotFreeCharacterStrings
+		if (ch->c[i].type == CT_STRING)
+		{
+			FreeMemory(ch->c[i].value.string);
+		}	//end if
+	}	//end for
+}	//end of the function BotFreeCharacterStrings
 //========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //========================================================================
-void BotFreeCharacter2( int handle ) {
-	if ( handle <= 0 || handle > MAX_CLIENTS_WS ) {
-		botimport.Print( PRT_FATAL, "character handle %d out of range\n", handle );
+void BotFreeCharacter2(int handle)
+{
+	if (handle <= 0 || handle > MAX_CLIENTS_WS)
+	{
+		botimport.Print(PRT_FATAL, "character handle %d out of range\n", handle);
 		return;
-	} //end if
-	if ( !botcharacters[handle] ) {
-		botimport.Print( PRT_FATAL, "invalid character %d\n", handle );
+	}	//end if
+	if (!botcharacters[handle])
+	{
+		botimport.Print(PRT_FATAL, "invalid character %d\n", handle);
 		return;
-	} //end if
-	BotFreeCharacterStrings( botcharacters[handle] );
-	FreeMemory( botcharacters[handle] );
+	}	//end if
+	BotFreeCharacterStrings(botcharacters[handle]);
+	FreeMemory(botcharacters[handle]);
 	botcharacters[handle] = NULL;
-} //end of the function BotFreeCharacter2
+}	//end of the function BotFreeCharacter2
 //========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //========================================================================
-void BotFreeCharacter( int handle ) {
-	if ( !LibVarGetValue( "bot_reloadcharacters" ) ) {
+void BotFreeCharacter(int handle)
+{
+	if (!LibVarGetValue("bot_reloadcharacters"))
+	{
 		return;
 	}
-	BotFreeCharacter2( handle );
-} //end of the function BotFreeCharacter
+	BotFreeCharacter2(handle);
+}	//end of the function BotFreeCharacter
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void BotDefaultCharacteristics( bot_character_t *ch, bot_character_t *defaultch ) {
+void BotDefaultCharacteristics(bot_character_t* ch, bot_character_t* defaultch)
+{
 	int i;
 
-	for ( i = 0; i < MAX_CHARACTERISTICS; i++ )
+	for (i = 0; i < MAX_CHARACTERISTICS; i++)
 	{
-		if ( ch->c[i].type ) {
+		if (ch->c[i].type)
+		{
 			continue;
 		}
 		//
-		if ( defaultch->c[i].type == CT_FLOAT ) {
+		if (defaultch->c[i].type == CT_FLOAT)
+		{
 			ch->c[i].type = CT_FLOAT;
 			ch->c[i].value._float = defaultch->c[i].value._float;
-		} //end if
-		else if ( defaultch->c[i].type == CT_INTEGER ) {
+		}	//end if
+		else if (defaultch->c[i].type == CT_INTEGER)
+		{
 			ch->c[i].type = CT_INTEGER;
 			ch->c[i].value.integer = defaultch->c[i].value.integer;
-		} //end else if
-		else if ( defaultch->c[i].type == CT_STRING ) {
+		}	//end else if
+		else if (defaultch->c[i].type == CT_STRING)
+		{
 			ch->c[i].type = CT_STRING;
-			ch->c[i].value.string = (char *) GetMemory( String::Length( defaultch->c[i].value.string ) + 1 );
-			String::Cpy( ch->c[i].value.string, defaultch->c[i].value.string );
-		} //end else if
-	} //end for
-} //end of the function BotDefaultCharacteristics
+			ch->c[i].value.string = (char*)GetMemory(String::Length(defaultch->c[i].value.string) + 1);
+			String::Cpy(ch->c[i].value.string, defaultch->c[i].value.string);
+		}	//end else if
+	}	//end for
+}	//end of the function BotDefaultCharacteristics
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-bot_character_t *BotLoadCharacterFromFile( const char *charfile, int skill ) {
+bot_character_t* BotLoadCharacterFromFile(const char* charfile, int skill)
+{
 	int indent, index, foundcharacter;
-	bot_character_t *ch;
-	source_t *source;
+	bot_character_t* ch;
+	source_t* source;
 	token_t token;
 
 	foundcharacter = qfalse;
 	//a bot character is parsed in two phases
-	source = LoadSourceFile( charfile );
-	if ( !source ) {
-		botimport.Print( PRT_ERROR, "counldn't load %s\n", charfile );
-		return NULL;
-	} //end if
-	ch = (bot_character_t *) GetClearedMemory( sizeof( bot_character_t ) +
-											   MAX_CHARACTERISTICS * sizeof( bot_characteristic_t ) );
-	String::Cpy( ch->filename, charfile );
-	while ( PC_ReadToken( source, &token ) )
+	source = LoadSourceFile(charfile);
+	if (!source)
 	{
-		if ( !String::Cmp( token.string, "skill" ) ) {
-			if ( !PC_ExpectTokenType( source, TT_NUMBER, 0, &token ) ) {
-				FreeSource( source );
-				BotFreeCharacterStrings( ch );
-				FreeMemory( ch );
+		botimport.Print(PRT_ERROR, "counldn't load %s\n", charfile);
+		return NULL;
+	}	//end if
+	ch = (bot_character_t*)GetClearedMemory(sizeof(bot_character_t) +
+		MAX_CHARACTERISTICS * sizeof(bot_characteristic_t));
+	String::Cpy(ch->filename, charfile);
+	while (PC_ReadToken(source, &token))
+	{
+		if (!String::Cmp(token.string, "skill"))
+		{
+			if (!PC_ExpectTokenType(source, TT_NUMBER, 0, &token))
+			{
+				FreeSource(source);
+				BotFreeCharacterStrings(ch);
+				FreeMemory(ch);
 				return NULL;
-			} //end if
-			if ( !PC_ExpectTokenString( source, "{" ) ) {
-				FreeSource( source );
-				BotFreeCharacterStrings( ch );
-				FreeMemory( ch );
+			}	//end if
+			if (!PC_ExpectTokenString(source, "{"))
+			{
+				FreeSource(source);
+				BotFreeCharacterStrings(ch);
+				FreeMemory(ch);
 				return NULL;
-			} //end if
-			  //if it's the correct skill
-			if ( skill < 0 || (int)token.intvalue == skill ) {
+			}	//end if
+				//if it's the correct skill
+			if (skill < 0 || (int)token.intvalue == skill)
+			{
 				foundcharacter = qtrue;
 				ch->skill = token.intvalue;
-				while ( PC_ExpectAnyToken( source, &token ) )
+				while (PC_ExpectAnyToken(source, &token))
 				{
-					if ( !String::Cmp( token.string, "}" ) ) {
+					if (!String::Cmp(token.string, "}"))
+					{
 						break;
 					}
-					if ( token.type != TT_NUMBER || !( token.subtype & TT_INTEGER ) ) {
-						SourceError( source, "expected integer index, found %s\n", token.string );
-						FreeSource( source );
-						BotFreeCharacterStrings( ch );
-						FreeMemory( ch );
+					if (token.type != TT_NUMBER || !(token.subtype & TT_INTEGER))
+					{
+						SourceError(source, "expected integer index, found %s\n", token.string);
+						FreeSource(source);
+						BotFreeCharacterStrings(ch);
+						FreeMemory(ch);
 						return NULL;
-					} //end if
+					}	//end if
 					index = token.intvalue;
-					if ( index < 0 || index > MAX_CHARACTERISTICS ) {
-						SourceError( source, "characteristic index out of range [0, %d]\n", MAX_CHARACTERISTICS );
-						FreeSource( source );
-						BotFreeCharacterStrings( ch );
-						FreeMemory( ch );
+					if (index < 0 || index > MAX_CHARACTERISTICS)
+					{
+						SourceError(source, "characteristic index out of range [0, %d]\n", MAX_CHARACTERISTICS);
+						FreeSource(source);
+						BotFreeCharacterStrings(ch);
+						FreeMemory(ch);
 						return NULL;
-					} //end if
-					if ( ch->c[index].type ) {
-						SourceError( source, "characteristic %d already initialized\n", index );
-						FreeSource( source );
-						BotFreeCharacterStrings( ch );
-						FreeMemory( ch );
+					}	//end if
+					if (ch->c[index].type)
+					{
+						SourceError(source, "characteristic %d already initialized\n", index);
+						FreeSource(source);
+						BotFreeCharacterStrings(ch);
+						FreeMemory(ch);
 						return NULL;
-					} //end if
-					if ( !PC_ExpectAnyToken( source, &token ) ) {
-						FreeSource( source );
-						BotFreeCharacterStrings( ch );
-						FreeMemory( ch );
+					}	//end if
+					if (!PC_ExpectAnyToken(source, &token))
+					{
+						FreeSource(source);
+						BotFreeCharacterStrings(ch);
+						FreeMemory(ch);
 						return NULL;
-					} //end if
-					if ( token.type == TT_NUMBER ) {
-						if ( token.subtype & TT_FLOAT ) {
+					}	//end if
+					if (token.type == TT_NUMBER)
+					{
+						if (token.subtype & TT_FLOAT)
+						{
 							ch->c[index].value._float = token.floatvalue;
 							ch->c[index].type = CT_FLOAT;
-						} //end if
+						}	//end if
 						else
 						{
 							ch->c[index].value.integer = token.intvalue;
 							ch->c[index].type = CT_INTEGER;
-						} //end else
-					} //end if
-					else if ( token.type == TT_STRING ) {
-						StripDoubleQuotes( token.string );
-						ch->c[index].value.string = (char*)GetMemory( String::Length( token.string ) + 1 );
-						String::Cpy( ch->c[index].value.string, token.string );
+						}	//end else
+					}	//end if
+					else if (token.type == TT_STRING)
+					{
+						StripDoubleQuotes(token.string);
+						ch->c[index].value.string = (char*)GetMemory(String::Length(token.string) + 1);
+						String::Cpy(ch->c[index].value.string, token.string);
 						ch->c[index].type = CT_STRING;
-					} //end else if
+					}	//end else if
 					else
 					{
-						SourceError( source, "expected integer, float or string, found %s\n", token.string );
-						FreeSource( source );
-						BotFreeCharacterStrings( ch );
-						FreeMemory( ch );
+						SourceError(source, "expected integer, float or string, found %s\n", token.string);
+						FreeSource(source);
+						BotFreeCharacterStrings(ch);
+						FreeMemory(ch);
 						return NULL;
-					} //end else
-				} //end if
+					}	//end else
+				}	//end if
 				break;
-			} //end if
+			}	//end if
 			else
 			{
 				indent = 1;
-				while ( indent )
+				while (indent)
 				{
-					if ( !PC_ExpectAnyToken( source, &token ) ) {
-						FreeSource( source );
-						BotFreeCharacterStrings( ch );
-						FreeMemory( ch );
+					if (!PC_ExpectAnyToken(source, &token))
+					{
+						FreeSource(source);
+						BotFreeCharacterStrings(ch);
+						FreeMemory(ch);
 						return NULL;
-					} //end if
-					if ( !String::Cmp( token.string, "{" ) ) {
+					}	//end if
+					if (!String::Cmp(token.string, "{"))
+					{
 						indent++;
-					} else if ( !String::Cmp( token.string, "}" ) ) {
+					}
+					else if (!String::Cmp(token.string, "}"))
+					{
 						indent--;
 					}
-				} //end while
-			} //end else
-		} //end if
+				}	//end while
+			}	//end else
+		}	//end if
 		else
 		{
-			SourceError( source, "unknown definition %s\n", token.string );
-			FreeSource( source );
-			BotFreeCharacterStrings( ch );
-			FreeMemory( ch );
+			SourceError(source, "unknown definition %s\n", token.string);
+			FreeSource(source);
+			BotFreeCharacterStrings(ch);
+			FreeMemory(ch);
 			return NULL;
-		} //end else
-	} //end while
-	FreeSource( source );
+		}	//end else
+	}	//end while
+	FreeSource(source);
 	//
-	if ( !foundcharacter ) {
-		BotFreeCharacterStrings( ch );
-		FreeMemory( ch );
+	if (!foundcharacter)
+	{
+		BotFreeCharacterStrings(ch);
+		FreeMemory(ch);
 		return NULL;
-	} //end if
+	}	//end if
 	return ch;
-} //end of the function BotLoadCharacterFromFile
+}	//end of the function BotLoadCharacterFromFile
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotFindCachedCharacter( const char *charfile, int skill ) {
+int BotFindCachedCharacter(const char* charfile, int skill)
+{
 	int handle;
 
-	for ( handle = 1; handle <= MAX_CLIENTS_WS; handle++ )
+	for (handle = 1; handle <= MAX_CLIENTS_WS; handle++)
 	{
-		if ( !botcharacters[handle] ) {
+		if (!botcharacters[handle])
+		{
 			continue;
 		}
-		if ( String::Cmp( botcharacters[handle]->filename, charfile ) == 0 &&
-			 ( skill < 0 || botcharacters[handle]->skill == skill ) ) {
+		if (String::Cmp(botcharacters[handle]->filename, charfile) == 0 &&
+			(skill < 0 || botcharacters[handle]->skill == skill))
+		{
 			return handle;
-		} //end if
-	} //end for
+		}	//end if
+	}	//end for
 	return 0;
-} //end of the function BotFindCachedCharacter
+}	//end of the function BotFindCachedCharacter
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotLoadCachedCharacter( const char *charfile, int skill, int reload ) {
+int BotLoadCachedCharacter(const char* charfile, int skill, int reload)
+{
 	int handle, cachedhandle;
-	bot_character_t *ch = NULL;
+	bot_character_t* ch = NULL;
 #ifdef DEBUG
 	int starttime;
 
 	starttime = Sys_MilliSeconds();
-#endif //DEBUG
+#endif	//DEBUG
 
 	//find a free spot for a character
-	for ( handle = 1; handle <= MAX_CLIENTS_WS; handle++ )
+	for (handle = 1; handle <= MAX_CLIENTS_WS; handle++)
 	{
-		if ( !botcharacters[handle] ) {
+		if (!botcharacters[handle])
+		{
 			break;
 		}
-	} //end for
-	if ( handle > MAX_CLIENTS_WS ) {
+	}	//end for
+	if (handle > MAX_CLIENTS_WS)
+	{
 		return 0;
 	}
 	//try to load a cached character with the given skill
-	if ( !reload ) {
-		cachedhandle = BotFindCachedCharacter( charfile, skill );
-		if ( cachedhandle ) {
-			botimport.Print( PRT_MESSAGE, "loaded cached skill %d from %s\n", skill, charfile );
+	if (!reload)
+	{
+		cachedhandle = BotFindCachedCharacter(charfile, skill);
+		if (cachedhandle)
+		{
+			botimport.Print(PRT_MESSAGE, "loaded cached skill %d from %s\n", skill, charfile);
 			return cachedhandle;
-		} //end if
-	} //end else
-	  //try to load the character with the given skill
-	ch = BotLoadCharacterFromFile( charfile, skill );
-	if ( ch ) {
+		}	//end if
+	}	//end else
+		//try to load the character with the given skill
+	ch = BotLoadCharacterFromFile(charfile, skill);
+	if (ch)
+	{
 		botcharacters[handle] = ch;
 		//
-		botimport.Print( PRT_MESSAGE, "loaded skill %d from %s\n", skill, charfile );
+		botimport.Print(PRT_MESSAGE, "loaded skill %d from %s\n", skill, charfile);
 #ifdef DEBUG
-		if ( bot_developer ) {
-			botimport.Print( PRT_MESSAGE, "skill %d loaded in %d msec from %s\n", skill, Sys_MilliSeconds() - starttime, charfile );
-		} //end if
-#endif //DEBUG
+		if (bot_developer)
+		{
+			botimport.Print(PRT_MESSAGE, "skill %d loaded in %d msec from %s\n", skill, Sys_MilliSeconds() - starttime, charfile);
+		}	//end if
+#endif	//DEBUG
 		return handle;
-	} //end if
-	  //
-	botimport.Print( PRT_WARNING, "couldn't find skill %d in %s\n", skill, charfile );
+	}	//end if
+		//
+	botimport.Print(PRT_WARNING, "couldn't find skill %d in %s\n", skill, charfile);
 	//
-	if ( !reload ) {
+	if (!reload)
+	{
 		//try to load a cached default character with the given skill
-		cachedhandle = BotFindCachedCharacter( "bots/default_c.c", skill );
-		if ( cachedhandle ) {
-			botimport.Print( PRT_MESSAGE, "loaded cached default skill %d from %s\n", skill, charfile );
+		cachedhandle = BotFindCachedCharacter("bots/default_c.c", skill);
+		if (cachedhandle)
+		{
+			botimport.Print(PRT_MESSAGE, "loaded cached default skill %d from %s\n", skill, charfile);
 			return cachedhandle;
-		} //end if
-	} //end if
-	  //try to load the default character with the given skill
-	ch = BotLoadCharacterFromFile( DEFAULT_CHARACTER, skill );
-	if ( ch ) {
+		}	//end if
+	}	//end if
+		//try to load the default character with the given skill
+	ch = BotLoadCharacterFromFile(DEFAULT_CHARACTER, skill);
+	if (ch)
+	{
 		botcharacters[handle] = ch;
-		botimport.Print( PRT_MESSAGE, "loaded default skill %d from %s\n", skill, charfile );
+		botimport.Print(PRT_MESSAGE, "loaded default skill %d from %s\n", skill, charfile);
 		return handle;
-	} //end if
-	  //
-	if ( !reload ) {
+	}	//end if
+		//
+	if (!reload)
+	{
 		//try to load a cached character with any skill
-		cachedhandle = BotFindCachedCharacter( charfile, -1 );
-		if ( cachedhandle ) {
-			botimport.Print( PRT_MESSAGE, "loaded cached skill %d from %s\n", botcharacters[cachedhandle]->skill, charfile );
+		cachedhandle = BotFindCachedCharacter(charfile, -1);
+		if (cachedhandle)
+		{
+			botimport.Print(PRT_MESSAGE, "loaded cached skill %d from %s\n", botcharacters[cachedhandle]->skill, charfile);
 			return cachedhandle;
-		} //end if
-	} //end if
-	  //try to load a character with any skill
-	ch = BotLoadCharacterFromFile( charfile, -1 );
-	if ( ch ) {
+		}	//end if
+	}	//end if
+		//try to load a character with any skill
+	ch = BotLoadCharacterFromFile(charfile, -1);
+	if (ch)
+	{
 		botcharacters[handle] = ch;
-		botimport.Print( PRT_MESSAGE, "loaded skill %d from %s\n", ch->skill, charfile );
+		botimport.Print(PRT_MESSAGE, "loaded skill %d from %s\n", ch->skill, charfile);
 		return handle;
-	} //end if
-	  //
-	if ( !reload ) {
+	}	//end if
+		//
+	if (!reload)
+	{
 		//try to load a cached character with any skill
-		cachedhandle = BotFindCachedCharacter( DEFAULT_CHARACTER, -1 );
-		if ( cachedhandle ) {
-			botimport.Print( PRT_MESSAGE, "loaded cached default skill %d from %s\n", botcharacters[cachedhandle]->skill, charfile );
+		cachedhandle = BotFindCachedCharacter(DEFAULT_CHARACTER, -1);
+		if (cachedhandle)
+		{
+			botimport.Print(PRT_MESSAGE, "loaded cached default skill %d from %s\n", botcharacters[cachedhandle]->skill, charfile);
 			return cachedhandle;
-		} //end if
-	} //end if
-	  //try to load a character with any skill
-	ch = BotLoadCharacterFromFile( DEFAULT_CHARACTER, -1 );
-	if ( ch ) {
+		}	//end if
+	}	//end if
+		//try to load a character with any skill
+	ch = BotLoadCharacterFromFile(DEFAULT_CHARACTER, -1);
+	if (ch)
+	{
 		botcharacters[handle] = ch;
-		botimport.Print( PRT_MESSAGE, "loaded default skill %d from %s\n", ch->skill, charfile );
+		botimport.Print(PRT_MESSAGE, "loaded default skill %d from %s\n", ch->skill, charfile);
 		return handle;
-	} //end if
-	  //
-	botimport.Print( PRT_WARNING, "couldn't load any skill from %s\n", charfile );
+	}	//end if
+		//
+	botimport.Print(PRT_WARNING, "couldn't load any skill from %s\n", charfile);
 	//couldn't load any character
 	return 0;
-} //end of the function BotLoadCachedCharacter
+}	//end of the function BotLoadCachedCharacter
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotLoadCharacterSkill( char *charfile, int skill ) {
+int BotLoadCharacterSkill(char* charfile, int skill)
+{
 	int ch, defaultch;
 
-	defaultch = BotLoadCachedCharacter( DEFAULT_CHARACTER, skill, qfalse );
-	ch = BotLoadCachedCharacter( charfile, skill, LibVarGetValue( "bot_reloadcharacters" ) );
+	defaultch = BotLoadCachedCharacter(DEFAULT_CHARACTER, skill, qfalse);
+	ch = BotLoadCachedCharacter(charfile, skill, LibVarGetValue("bot_reloadcharacters"));
 
-	if ( defaultch && ch ) {
-		BotDefaultCharacteristics( botcharacters[ch], botcharacters[defaultch] );
-	} //end if
+	if (defaultch && ch)
+	{
+		BotDefaultCharacteristics(botcharacters[ch], botcharacters[defaultch]);
+	}	//end if
 
 	return ch;
-} //end of the function BotLoadCharacterSkill
+}	//end of the function BotLoadCharacterSkill
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotInterpolateCharacters( int handle1, int handle2, int desiredskill ) {
-	bot_character_t *ch1, *ch2, *out;
+int BotInterpolateCharacters(int handle1, int handle2, int desiredskill)
+{
+	bot_character_t* ch1, * ch2, * out;
 	int i, handle;
 	float scale;
 
-	ch1 = BotCharacterFromHandle( handle1 );
-	ch2 = BotCharacterFromHandle( handle2 );
-	if ( !ch1 || !ch2 ) {
+	ch1 = BotCharacterFromHandle(handle1);
+	ch2 = BotCharacterFromHandle(handle2);
+	if (!ch1 || !ch2)
+	{
 		return 0;
 	}
 	//find a free spot for a character
-	for ( handle = 1; handle <= MAX_CLIENTS_WS; handle++ )
+	for (handle = 1; handle <= MAX_CLIENTS_WS; handle++)
 	{
-		if ( !botcharacters[handle] ) {
+		if (!botcharacters[handle])
+		{
 			break;
 		}
-	} //end for
-	if ( handle > MAX_CLIENTS_WS ) {
+	}	//end for
+	if (handle > MAX_CLIENTS_WS)
+	{
 		return 0;
 	}
-	out = (bot_character_t *) GetClearedMemory( sizeof( bot_character_t ) +
-												MAX_CHARACTERISTICS * sizeof( bot_characteristic_t ) );
+	out = (bot_character_t*)GetClearedMemory(sizeof(bot_character_t) +
+		MAX_CHARACTERISTICS * sizeof(bot_characteristic_t));
 	out->skill = desiredskill;
-	String::Cpy( out->filename, ch1->filename );
+	String::Cpy(out->filename, ch1->filename);
 	botcharacters[handle] = out;
 
-	scale = (float) ( desiredskill - 1 ) / ( ch2->skill - ch1->skill );
-	for ( i = 0; i < MAX_CHARACTERISTICS; i++ )
+	scale = (float)(desiredskill - 1) / (ch2->skill - ch1->skill);
+	for (i = 0; i < MAX_CHARACTERISTICS; i++)
 	{
 		//
-		if ( ch1->c[i].type == CT_FLOAT && ch2->c[i].type == CT_FLOAT ) {
+		if (ch1->c[i].type == CT_FLOAT && ch2->c[i].type == CT_FLOAT)
+		{
 			out->c[i].type = CT_FLOAT;
 			out->c[i].value._float = ch1->c[i].value._float +
-									 ( ch2->c[i].value._float - ch1->c[i].value._float ) * scale;
-		} //end if
-		else if ( ch1->c[i].type == CT_INTEGER ) {
+									 (ch2->c[i].value._float - ch1->c[i].value._float) * scale;
+		}	//end if
+		else if (ch1->c[i].type == CT_INTEGER)
+		{
 			out->c[i].type = CT_INTEGER;
 			out->c[i].value.integer = ch1->c[i].value.integer;
-		} //end else if
-		else if ( ch1->c[i].type == CT_STRING ) {
+		}	//end else if
+		else if (ch1->c[i].type == CT_STRING)
+		{
 			out->c[i].type = CT_STRING;
-			out->c[i].value.string = (char *) GetMemory( String::Length( ch1->c[i].value.string ) + 1 );
-			String::Cpy( out->c[i].value.string, ch1->c[i].value.string );
-		} //end else if
-	} //end for
+			out->c[i].value.string = (char*)GetMemory(String::Length(ch1->c[i].value.string) + 1);
+			String::Cpy(out->c[i].value.string, ch1->c[i].value.string);
+		}	//end else if
+	}	//end for
 	return handle;
-} //end of the function BotInterpolateCharacters
+}	//end of the function BotInterpolateCharacters
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotLoadCharacter( char *charfile, int skill ) {
+int BotLoadCharacter(char* charfile, int skill)
+{
 	int skill1, skill4, handle;
 
 	//make sure the skill is in the valid range
-	if ( skill < 1 ) {
+	if (skill < 1)
+	{
 		skill = 1;
-	} else if ( skill > 5 ) {
+	}
+	else if (skill > 5)
+	{
 		skill = 5;
 	}
 	//skill 1, 4 and 5 should be available in the character files
-	if ( skill == 1 || skill == 4 || skill == 5 ) {
-		return BotLoadCharacterSkill( charfile, skill );
-	} //end if
-	  //check if there's a cached skill 2 or 3
-	handle = BotFindCachedCharacter( charfile, skill );
-	if ( handle ) {
-		botimport.Print( PRT_MESSAGE, "loaded cached skill %d from %s\n", skill, charfile );
+	if (skill == 1 || skill == 4 || skill == 5)
+	{
+		return BotLoadCharacterSkill(charfile, skill);
+	}	//end if
+		//check if there's a cached skill 2 or 3
+	handle = BotFindCachedCharacter(charfile, skill);
+	if (handle)
+	{
+		botimport.Print(PRT_MESSAGE, "loaded cached skill %d from %s\n", skill, charfile);
 		return handle;
-	} //end if
-	  //load skill 1 and 4
-	skill1 = BotLoadCharacterSkill( charfile, 1 );
-	if ( !skill1 ) {
+	}	//end if
+		//load skill 1 and 4
+	skill1 = BotLoadCharacterSkill(charfile, 1);
+	if (!skill1)
+	{
 		return 0;
 	}
-	skill4 = BotLoadCharacterSkill( charfile, 4 );
-	if ( !skill4 ) {
+	skill4 = BotLoadCharacterSkill(charfile, 4);
+	if (!skill4)
+	{
 		return skill1;
 	}
 	//interpolate between 1 and 4 to create skill 2 or 3
-	handle = BotInterpolateCharacters( skill1, skill4, skill );
-	if ( !handle ) {
+	handle = BotInterpolateCharacters(skill1, skill4, skill);
+	if (!handle)
+	{
 		return 0;
 	}
 	//write the character to the log file
-	BotDumpCharacter( botcharacters[handle] );
+	BotDumpCharacter(botcharacters[handle]);
 	//
 	return handle;
-} //end of the function BotLoadCharacter
+}	//end of the function BotLoadCharacter
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int CheckCharacteristicIndex( int character, int index ) {
-	bot_character_t *ch;
+int CheckCharacteristicIndex(int character, int index)
+{
+	bot_character_t* ch;
 
-	ch = BotCharacterFromHandle( character );
-	if ( !ch ) {
+	ch = BotCharacterFromHandle(character);
+	if (!ch)
+	{
 		return qfalse;
 	}
-	if ( index < 0 || index >= MAX_CHARACTERISTICS ) {
-		botimport.Print( PRT_ERROR, "characteristic %d does not exist\n", index );
+	if (index < 0 || index >= MAX_CHARACTERISTICS)
+	{
+		botimport.Print(PRT_ERROR, "characteristic %d does not exist\n", index);
 		return qfalse;
-	} //end if
-	if ( !ch->c[index].type ) {
-		botimport.Print( PRT_ERROR, "characteristic %d is not initialized\n", index );
+	}	//end if
+	if (!ch->c[index].type)
+	{
+		botimport.Print(PRT_ERROR, "characteristic %d is not initialized\n", index);
 		return qfalse;
-	} //end if
+	}	//end if
 	return qtrue;
-} //end of the function CheckCharacteristicIndex
+}	//end of the function CheckCharacteristicIndex
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-float Characteristic_Float( int character, int index ) {
-	bot_character_t *ch;
+float Characteristic_Float(int character, int index)
+{
+	bot_character_t* ch;
 
-	ch = BotCharacterFromHandle( character );
-	if ( !ch ) {
+	ch = BotCharacterFromHandle(character);
+	if (!ch)
+	{
 		return 0;
 	}
 	//check if the index is in range
-	if ( !CheckCharacteristicIndex( character, index ) ) {
+	if (!CheckCharacteristicIndex(character, index))
+	{
 		return 0;
 	}
 	//an integer will be converted to a float
-	if ( ch->c[index].type == CT_INTEGER ) {
-		return (float) ch->c[index].value.integer;
-	} //end if
-	  //floats are just returned
-	else if ( ch->c[index].type == CT_FLOAT ) {
+	if (ch->c[index].type == CT_INTEGER)
+	{
+		return (float)ch->c[index].value.integer;
+	}	//end if
+		//floats are just returned
+	else if (ch->c[index].type == CT_FLOAT)
+	{
 		return ch->c[index].value._float;
-	} //end else if
-	  //cannot convert a string pointer to a float
+	}	//end else if
+		//cannot convert a string pointer to a float
 	else
 	{
-		botimport.Print( PRT_ERROR, "characteristic %d is not a float\n", index );
+		botimport.Print(PRT_ERROR, "characteristic %d is not a float\n", index);
 		return 0;
-	} //end else if
+	}	//end else if
 //	return 0;
-} //end of the function Characteristic_Float
+}	//end of the function Characteristic_Float
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-float Characteristic_BFloat( int character, int index, float min, float max ) {
+float Characteristic_BFloat(int character, int index, float min, float max)
+{
 	float value;
-	bot_character_t *ch;
+	bot_character_t* ch;
 
-	ch = BotCharacterFromHandle( character );
-	if ( !ch ) {
+	ch = BotCharacterFromHandle(character);
+	if (!ch)
+	{
 		return 0;
 	}
-	if ( min > max ) {
-		botimport.Print( PRT_ERROR, "cannot bound characteristic %d between %f and %f\n", index, min, max );
+	if (min > max)
+	{
+		botimport.Print(PRT_ERROR, "cannot bound characteristic %d between %f and %f\n", index, min, max);
 		return 0;
-	} //end if
-	value = Characteristic_Float( character, index );
-	if ( value < min ) {
+	}	//end if
+	value = Characteristic_Float(character, index);
+	if (value < min)
+	{
 		return min;
 	}
-	if ( value > max ) {
+	if (value > max)
+	{
 		return max;
 	}
 	return value;
-} //end of the function Characteristic_BFloat
+}	//end of the function Characteristic_BFloat
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int Characteristic_Integer( int character, int index ) {
-	bot_character_t *ch;
+int Characteristic_Integer(int character, int index)
+{
+	bot_character_t* ch;
 
-	ch = BotCharacterFromHandle( character );
-	if ( !ch ) {
+	ch = BotCharacterFromHandle(character);
+	if (!ch)
+	{
 		return 0;
 	}
 	//check if the index is in range
-	if ( !CheckCharacteristicIndex( character, index ) ) {
+	if (!CheckCharacteristicIndex(character, index))
+	{
 		return 0;
 	}
 	//an integer will just be returned
-	if ( ch->c[index].type == CT_INTEGER ) {
+	if (ch->c[index].type == CT_INTEGER)
+	{
 		return ch->c[index].value.integer;
-	} //end if
-	  //floats are casted to integers
-	else if ( ch->c[index].type == CT_FLOAT ) {
-		return (int) ch->c[index].value._float;
-	} //end else if
+	}	//end if
+		//floats are casted to integers
+	else if (ch->c[index].type == CT_FLOAT)
+	{
+		return (int)ch->c[index].value._float;
+	}	//end else if
 	else
 	{
-		botimport.Print( PRT_ERROR, "characteristic %d is not a integer\n", index );
+		botimport.Print(PRT_ERROR, "characteristic %d is not a integer\n", index);
 		return 0;
-	} //end else if
+	}	//end else if
 //	return 0;
-} //end of the function Characteristic_Integer
+}	//end of the function Characteristic_Integer
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int Characteristic_BInteger( int character, int index, int min, int max ) {
+int Characteristic_BInteger(int character, int index, int min, int max)
+{
 	int value;
-	bot_character_t *ch;
+	bot_character_t* ch;
 
-	ch = BotCharacterFromHandle( character );
-	if ( !ch ) {
+	ch = BotCharacterFromHandle(character);
+	if (!ch)
+	{
 		return 0;
 	}
-	if ( min > max ) {
-		botimport.Print( PRT_ERROR, "cannot bound characteristic %d between %d and %d\n", index, min, max );
+	if (min > max)
+	{
+		botimport.Print(PRT_ERROR, "cannot bound characteristic %d between %d and %d\n", index, min, max);
 		return 0;
-	} //end if
-	value = Characteristic_Integer( character, index );
-	if ( value < min ) {
+	}	//end if
+	value = Characteristic_Integer(character, index);
+	if (value < min)
+	{
 		return min;
 	}
-	if ( value > max ) {
+	if (value > max)
+	{
 		return max;
 	}
 	return value;
-} //end of the function Characteristic_BInteger
+}	//end of the function Characteristic_BInteger
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void Characteristic_String( int character, int index, char *buf, int size ) {
-	bot_character_t *ch;
+void Characteristic_String(int character, int index, char* buf, int size)
+{
+	bot_character_t* ch;
 
-	ch = BotCharacterFromHandle( character );
-	if ( !ch ) {
+	ch = BotCharacterFromHandle(character);
+	if (!ch)
+	{
 		return;
 	}
 	//check if the index is in range
-	if ( !CheckCharacteristicIndex( character, index ) ) {
+	if (!CheckCharacteristicIndex(character, index))
+	{
 		return;
 	}
 	//an integer will be converted to a float
-	if ( ch->c[index].type == CT_STRING ) {
-		String::NCpy( buf, ch->c[index].value.string, size - 1 );
+	if (ch->c[index].type == CT_STRING)
+	{
+		String::NCpy(buf, ch->c[index].value.string, size - 1);
 		buf[size - 1] = '\0';
 		return;
-	} //end if
+	}	//end if
 	else
 	{
-		botimport.Print( PRT_ERROR, "characteristic %d is not a string\n", index );
+		botimport.Print(PRT_ERROR, "characteristic %d is not a string\n", index);
 		return;
-	} //end else if
+	}	//end else if
 	return;
-} //end of the function Characteristic_String
+}	//end of the function Characteristic_String
 //===========================================================================
 //
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void BotShutdownCharacters( void ) {
+void BotShutdownCharacters(void)
+{
 	int handle;
 
-	for ( handle = 1; handle <= MAX_CLIENTS_WS; handle++ )
+	for (handle = 1; handle <= MAX_CLIENTS_WS; handle++)
 	{
-		if ( botcharacters[handle] ) {
-			BotFreeCharacter2( handle );
-		} //end if
-	} //end for
-} //end of the function BotShutdownCharacters
+		if (botcharacters[handle])
+		{
+			BotFreeCharacter2(handle);
+		}	//end if
+	}	//end for
+}	//end of the function BotShutdownCharacters

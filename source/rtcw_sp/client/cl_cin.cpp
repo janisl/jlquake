@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,12 +34,15 @@ If you have questions concerning this license or the applicable additional terms
 
 static int CL_handle = -1;
 
-void CIN_CloseAllVideos( void ) {
+void CIN_CloseAllVideos(void)
+{
 	int i;
 
-	for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-		if ( cinTable[i] ) {
-			CIN_StopCinematic( i );
+	for (i = 0; i < MAX_VIDEO_HANDLES; i++)
+	{
+		if (cinTable[i])
+		{
+			CIN_StopCinematic(i);
 		}
 	}
 }
@@ -59,10 +62,11 @@ void CIN_FinishCinematic()
 	// if we are aborting the intro cinematic with
 	// a devmap command, nextmap would be valid by
 	// the time it was referenced
-	const char* s = Cvar_VariableString( "nextmap" );
-	if ( s[0] ) {
-		Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
-		Cvar_Set( "nextmap", "" );
+	const char* s = Cvar_VariableString("nextmap");
+	if (s[0])
+	{
+		Cbuf_ExecuteText(EXEC_APPEND, va("%s\n", s));
+		Cvar_Set("nextmap", "");
 	}
 	CL_handle = -1;
 }
@@ -72,28 +76,34 @@ void CIN_FinishCinematic()
 SCR_StopCinematic
 ==================
 */
-e_status CIN_StopCinematic( int handle ) {
+e_status CIN_StopCinematic(int handle)
+{
 
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
+	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF)
+	{
 		return FMV_EOF;
 	}
 
-	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[handle]->Cin->Name );
+	Com_DPrintf("trFMV::stop(), closing %s\n", cinTable[handle]->Cin->Name);
 
-	if ( !cinTable[handle]->Cin->OutputFrame ) {
+	if (!cinTable[handle]->Cin->OutputFrame)
+	{
 		return FMV_EOF;
 	}
 
-	if ( cinTable[handle]->AlterGameState ) {
-		if (!CIN_IsInCinematicState()) {
+	if (cinTable[handle]->AlterGameState)
+	{
+		if (!CIN_IsInCinematicState())
+		{
 			return cinTable[handle]->Status;
 		}
 	}
 	cinTable[handle]->Status = FMV_EOF;
-	Com_DPrintf( "finished cinematic\n" );
+	Com_DPrintf("finished cinematic\n");
 	cinTable[handle]->Status = FMV_IDLE;
 
-	if ( cinTable[handle]->AlterGameState ) {
+	if (cinTable[handle]->AlterGameState)
+	{
 		CIN_FinishCinematic();
 	}
 	delete cinTable[handle];
@@ -105,20 +115,23 @@ e_status CIN_StopCinematic( int handle ) {
 void CIN_StartedPlayback()
 {
 	// close the menu
-	if ( uivm ) {
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+	if (uivm)
+	{
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE);
 	}
 
 	cls.state = CA_CINEMATIC;
 
 	Con_Close();
 
-	Com_DPrintf( "Setting rawend to %i\n", s_soundtime );
+	Com_DPrintf("Setting rawend to %i\n", s_soundtime);
 	s_rawend[CIN_STREAM] = s_soundtime;
 }
 
-void CIN_SetExtents( int handle, int x, int y, int w, int h ) {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle] || cinTable[handle]->Status == FMV_EOF ) {
+void CIN_SetExtents(int handle, int x, int y, int w, int h)
+{
+	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle] || cinTable[handle]->Status == FMV_EOF)
+	{
 		return;
 	}
 	cinTable[handle]->SetExtents(x, y, w, h);
@@ -130,15 +143,18 @@ SCR_DrawCinematic
 
 ==================
 */
-void CIN_DrawCinematic( int handle ) {
-	float x, y, w, h;  //, barheight;
-	byte    *buf; \
+void CIN_DrawCinematic(int handle)
+{
+	float x, y, w, h;	//, barheight;
+	byte* buf; \
 
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF ) {
+	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[handle]->Status == FMV_EOF)
+	{
 		return;
 	}
 
-	if ( !cinTable[handle]->Cin->OutputFrame ) {
+	if (!cinTable[handle]->Cin->OutputFrame)
+	{
 		return;
 	}
 
@@ -147,25 +163,26 @@ void CIN_DrawCinematic( int handle ) {
 	w = cinTable[handle]->Width;
 	h = cinTable[handle]->Height;
 	buf = cinTable[handle]->Cin->OutputFrame;
-	UI_AdjustFromVirtualScreen( &x, &y, &w, &h );
+	UI_AdjustFromVirtualScreen(&x, &y, &w, &h);
 
 
-	if ( cinTable[handle]->letterBox ) {
+	if (cinTable[handle]->letterBox)
+	{
 		float barheight;
 		float vh;
 		vh = (float)cls.glconfig.vidHeight;
 
-		barheight = ( (float)LETTERBOX_OFFSET / 480.0f ) * vh;  //----(SA)	added
+		barheight = ((float)LETTERBOX_OFFSET / 480.0f) * vh;	//----(SA)	added
 
-		R_SetColor( &colorBlack[0] );
+		R_SetColor(&colorBlack[0]);
 //		R_StretchPic( 0, 0, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
 //		R_StretchPic( 0, SCREEN_HEIGHT-LETTERBOX_OFFSET, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
 		//----(SA)	adjust for 640x480
-		R_StretchPic( 0, 0, w, barheight, 0, 0, 0, 0, cls.whiteShader );
-		R_StretchPic( 0, vh - barheight - 1, w, barheight + 1, 0, 0, 0, 0, cls.whiteShader );
+		R_StretchPic(0, 0, w, barheight, 0, 0, 0, 0, cls.whiteShader);
+		R_StretchPic(0, vh - barheight - 1, w, barheight + 1, 0, 0, 0, 0, cls.whiteShader);
 	}
 
-	R_StretchRaw( x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty );
+	R_StretchRaw(x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty);
 	cinTable[handle]->Cin->Dirty = qfalse;
 }
 
@@ -179,63 +196,80 @@ bool CIN_IsInCinematicState()
 CL_PlayCinematic_f
 ==============
 */
-void CL_PlayCinematic_f( void ) {
-	char    *arg, *s;
+void CL_PlayCinematic_f(void)
+{
+	char* arg, * s;
 	qboolean holdatend;
 	int bits = CIN_system;
 
-	Com_DPrintf( "CL_PlayCinematic_f\n" );
-	if (CIN_IsInCinematicState()) {
+	Com_DPrintf("CL_PlayCinematic_f\n");
+	if (CIN_IsInCinematicState())
+	{
 		SCR_StopCinematic();
 	}
 
-	arg = Cmd_Argv( 1 );
-	s = Cmd_Argv( 2 );
+	arg = Cmd_Argv(1);
+	s = Cmd_Argv(2);
 
 	holdatend = qfalse;
-	if ( ( s && s[0] == '1' ) || String::ICmp( arg,"demoend.roq" ) == 0 || String::ICmp( arg,"end.roq" ) == 0 ) {
+	if ((s && s[0] == '1') || String::ICmp(arg,"demoend.roq") == 0 || String::ICmp(arg,"end.roq") == 0)
+	{
 		bits |= CIN_hold;
 	}
-	if ( s && s[0] == '2' ) {
+	if (s && s[0] == '2')
+	{
 		bits |= CIN_loop;
 	}
-	if ( s && s[0] == '3' ) {
+	if (s && s[0] == '3')
+	{
 		bits |= CIN_letterBox;
 	}
 
 	S_StopAllSounds();
 	// make sure volume is up for cine
-	S_FadeAllSounds( 1, 0, false );
+	S_FadeAllSounds(1, 0, false);
 
-	if ( bits & CIN_letterBox ) {
-		CL_handle = CIN_PlayCinematic( arg, 0, LETTERBOX_OFFSET, SCREEN_WIDTH, SCREEN_HEIGHT - ( LETTERBOX_OFFSET * 2 ), bits );
-	} else {
-		CL_handle = CIN_PlayCinematic( arg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, bits );
+	if (bits & CIN_letterBox)
+	{
+		CL_handle = CIN_PlayCinematic(arg, 0, LETTERBOX_OFFSET, SCREEN_WIDTH, SCREEN_HEIGHT - (LETTERBOX_OFFSET * 2), bits);
+	}
+	else
+	{
+		CL_handle = CIN_PlayCinematic(arg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, bits);
 	}
 
-	if ( CL_handle >= 0 ) {
-		do {
+	if (CL_handle >= 0)
+	{
+		do
+		{
 			SCR_RunCinematic();
-		} while ( cinTable[CL_handle]->Cin->OutputFrame == NULL && cinTable[CL_handle]->Status == FMV_PLAY );        // wait for first frame (load codebook and sound)
+		}
+		while (cinTable[CL_handle]->Cin->OutputFrame == NULL && cinTable[CL_handle]->Status == FMV_PLAY);			// wait for first frame (load codebook and sound)
 	}
 }
 
 
-void SCR_DrawCinematic( void ) {
-	if ( CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES ) {
-		CIN_DrawCinematic( CL_handle );
+void SCR_DrawCinematic(void)
+{
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES)
+	{
+		CIN_DrawCinematic(CL_handle);
 	}
 }
 
-void SCR_RunCinematic( void ) {
-	if ( CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES ) {
-		CIN_RunCinematic( CL_handle );
+void SCR_RunCinematic(void)
+{
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES)
+	{
+		CIN_RunCinematic(CL_handle);
 	}
 }
 
-void SCR_StopCinematic( void ) {
-	if ( CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES ) {
-		CIN_StopCinematic( CL_handle );
+void SCR_StopCinematic(void)
+{
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES)
+	{
+		CIN_StopCinematic(CL_handle);
 		S_StopAllSounds();
 		CL_handle = -1;
 	}

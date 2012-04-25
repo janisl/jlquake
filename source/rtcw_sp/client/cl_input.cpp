@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -52,16 +52,20 @@ at the same time.
 ===============================================================================
 */
 
-void IN_Notebook( void ) {
-	if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-		Cvar_Set( "cg_youGotMail", "0" ); // clear icon	//----(SA)	added
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NOTEBOOK );    // startup notebook
+void IN_Notebook(void)
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		Cvar_Set("cg_youGotMail", "0");		// clear icon	//----(SA)	added
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NOTEBOOK);		// startup notebook
 	}
 }
 
-void IN_Help( void ) {
-	if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_HELP );        // startup help system
+void IN_Help(void)
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_HELP);			// startup help system
 	}
 }
 
@@ -71,19 +75,25 @@ void IN_CenterViewWMP()
 
 //==========================================================================
 
-Cvar  *cl_recoilPitch;
+Cvar* cl_recoilPitch;
 
 /*
 =================
 CL_MouseEvent
 =================
 */
-void CL_MouseEvent( int dx, int dy, int time ) {
-	if ( in_keyCatchers & KEYCATCH_UI ) {
-		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
-	} else if ( in_keyCatchers & KEYCATCH_CGAME ) {
-		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
-	} else {
+void CL_MouseEvent(int dx, int dy, int time)
+{
+	if (in_keyCatchers & KEYCATCH_UI)
+	{
+		VM_Call(uivm, UI_MOUSE_EVENT, dx, dy);
+	}
+	else if (in_keyCatchers & KEYCATCH_CGAME)
+	{
+		VM_Call(cgvm, CG_MOUSE_EVENT, dx, dy);
+	}
+	else
+	{
 		cl.mouseDx[cl.mouseIndex] += dx;
 		cl.mouseDy[cl.mouseIndex] += dy;
 	}
@@ -94,20 +104,22 @@ void CL_MouseEvent( int dx, int dy, int time ) {
 CL_FinishMove
 ==============
 */
-void CL_FinishMove( wsusercmd_t *cmd ) {
+void CL_FinishMove(wsusercmd_t* cmd)
+{
 	int i;
 
 	// copy the state that the cgame is currently sending
 	cmd->weapon = cl.q3_cgameUserCmdValue;
 
-	cmd->holdable = cl.wb_cgameUserHoldableValue;  //----(SA)	modified
+	cmd->holdable = cl.wb_cgameUserHoldableValue;	//----(SA)	modified
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
 	cmd->serverTime = cl.serverTime;
 
-	for ( i = 0 ; i < 3 ; i++ ) {
-		cmd->angles[i] = ANGLE2SHORT( cl.viewangles[i] );
+	for (i = 0; i < 3; i++)
+	{
+		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
 	}
 }
 
@@ -117,53 +129,59 @@ void CL_FinishMove( wsusercmd_t *cmd ) {
 CL_CreateCmd
 =================
 */
-wsusercmd_t CL_CreateCmd( void ) {
+wsusercmd_t CL_CreateCmd(void)
+{
 	wsusercmd_t cmd;
 	vec3_t oldAngles;
 	float recoilAdd;
 
-	VectorCopy( cl.viewangles, oldAngles );
+	VectorCopy(cl.viewangles, oldAngles);
 
-	memset( &cmd, 0, sizeof( cmd ) );
+	memset(&cmd, 0, sizeof(cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
 
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
 
-	if ( !( cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE] ) ) {
-		cmd.forwardmove = ClampChar( inCmd.forwardmove );
-		cmd.rightmove = ClampChar( inCmd.sidemove );
-		cmd.upmove = ClampChar( inCmd.upmove );
+	if (!(cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE]))
+	{
+		cmd.forwardmove = ClampChar(inCmd.forwardmove);
+		cmd.rightmove = ClampChar(inCmd.sidemove);
+		cmd.upmove = ClampChar(inCmd.upmove);
 
 		// Rafael - Kick
-		cmd.wolfkick = ClampChar( inCmd.kick );
+		cmd.wolfkick = ClampChar(inCmd.kick);
 		// done
 
 	}
 
 	// RF, set the kickAngles so aiming is effected
 	recoilAdd = cl_recoilPitch->value;
-	if ( fabs( cl.viewangles[PITCH] + recoilAdd ) < 40 ) {
+	if (fabs(cl.viewangles[PITCH] + recoilAdd) < 40)
+	{
 		cl.viewangles[PITCH] += recoilAdd;
 	}
 	// the recoilPitch has been used, so clear it out
 	cl_recoilPitch->value = 0;
 
 	// store out the final values
-	CL_FinishMove( &cmd );
+	CL_FinishMove(&cmd);
 
 	// draw debug graphs of turning for mouse testing
-	if ( cl_debugMove->integer ) {
-		if ( cl_debugMove->integer == 1 ) {
-			SCR_DebugGraph( abs( cl.viewangles[YAW] - oldAngles[YAW] ), 0 );
+	if (cl_debugMove->integer)
+	{
+		if (cl_debugMove->integer == 1)
+		{
+			SCR_DebugGraph(abs(cl.viewangles[YAW] - oldAngles[YAW]), 0);
 		}
-		if ( cl_debugMove->integer == 2 ) {
-			SCR_DebugGraph( abs( cl.viewangles[PITCH] - oldAngles[PITCH] ), 0 );
+		if (cl_debugMove->integer == 2)
+		{
+			SCR_DebugGraph(abs(cl.viewangles[PITCH] - oldAngles[PITCH]), 0);
 		}
 	}
 
-	cmd.cld = cl.ws_cgameCld;          // NERVE - SMF
+	cmd.cld = cl.ws_cgameCld;			// NERVE - SMF
 
 	return cmd;
 }
@@ -176,12 +194,14 @@ CL_CreateNewCommands
 Create a new wsusercmd_t structure for this frame
 =================
 */
-void CL_CreateNewCommands( void ) {
-	wsusercmd_t   *cmd;
+void CL_CreateNewCommands(void)
+{
+	wsusercmd_t* cmd;
 	int cmdNum;
 
 	// no need to create usercmds until we have a gamestate
-	if ( cls.state < CA_PRIMED ) {
+	if (cls.state < CA_PRIMED)
+	{
 		return;
 	}
 
@@ -189,7 +209,8 @@ void CL_CreateNewCommands( void ) {
 
 	// if running less than 5fps, truncate the extra time to prevent
 	// unexpected moves after a hitch
-	if ( frame_msec > 200 ) {
+	if (frame_msec > 200)
+	{
 		frame_msec = 200;
 	}
 	old_com_frameTime = com_frameTime;
@@ -213,49 +234,59 @@ delivered in the next packet, but saving a header and
 getting more delta compression will reduce total bandwidth.
 =================
 */
-qboolean CL_ReadyToSendPacket( void ) {
+qboolean CL_ReadyToSendPacket(void)
+{
 	int oldPacketNum;
 	int delta;
 
 	// don't send anything if playing back a demo
-	if ( clc.demoplaying || cls.state == CA_CINEMATIC ) {
+	if (clc.demoplaying || cls.state == CA_CINEMATIC)
+	{
 		return qfalse;
 	}
 
 	// If we are downloading, we send no less than 50ms between packets
-	if ( *clc.downloadTempName &&
-		 cls.realtime - clc.q3_lastPacketSentTime < 50 ) {
+	if (*clc.downloadTempName &&
+		cls.realtime - clc.q3_lastPacketSentTime < 50)
+	{
 		return qfalse;
 	}
 
 	// if we don't have a valid gamestate yet, only send
 	// one packet a second
-	if ( cls.state != CA_ACTIVE &&
-		 cls.state != CA_PRIMED &&
-		 !*clc.downloadTempName &&
-		 cls.realtime - clc.q3_lastPacketSentTime < 1000 ) {
+	if (cls.state != CA_ACTIVE &&
+		cls.state != CA_PRIMED &&
+		!*clc.downloadTempName &&
+		cls.realtime - clc.q3_lastPacketSentTime < 1000)
+	{
 		return qfalse;
 	}
 
 	// send every frame for loopbacks
-	if ( clc.netchan.remoteAddress.type == NA_LOOPBACK ) {
+	if (clc.netchan.remoteAddress.type == NA_LOOPBACK)
+	{
 		return qtrue;
 	}
 
 	// send every frame for LAN
-	if ( SOCK_IsLANAddress( clc.netchan.remoteAddress ) ) {
+	if (SOCK_IsLANAddress(clc.netchan.remoteAddress))
+	{
 		return qtrue;
 	}
 
 	// check for exceeding cl_maxpackets
-	if ( cl_maxpackets->integer < 15 ) {
-		Cvar_Set( "cl_maxpackets", "15" );
-	} else if ( cl_maxpackets->integer > 100 ) {
-		Cvar_Set( "cl_maxpackets", "100" );
+	if (cl_maxpackets->integer < 15)
+	{
+		Cvar_Set("cl_maxpackets", "15");
 	}
-	oldPacketNum = ( clc.netchan.outgoingSequence - 1 ) & PACKET_MASK_Q3;
-	delta = cls.realtime -  cl.q3_outPackets[ oldPacketNum ].p_realtime;
-	if ( delta < 1000 / cl_maxpackets->integer ) {
+	else if (cl_maxpackets->integer > 100)
+	{
+		Cvar_Set("cl_maxpackets", "100");
+	}
+	oldPacketNum = (clc.netchan.outgoingSequence - 1) & PACKET_MASK_Q3;
+	delta = cls.realtime -  cl.q3_outPackets[oldPacketNum].p_realtime;
+	if (delta < 1000 / cl_maxpackets->integer)
+	{
 		// the accumulated commands will go out in the next packet
 		return qfalse;
 	}
@@ -284,88 +315,101 @@ During normal gameplay, a client packet will contain something like:
 
 ===================
 */
-void CL_WritePacket( void ) {
+void CL_WritePacket(void)
+{
 	QMsg buf;
 	byte data[MAX_MSGLEN_WOLF];
 	int i, j;
-	wsusercmd_t   *cmd, *oldcmd;
+	wsusercmd_t* cmd, * oldcmd;
 	wsusercmd_t nullcmd;
 	int packetNum;
 	int oldPacketNum;
 	int count, key;
 
 	// don't send anything if playing back a demo
-	if ( clc.demoplaying || cls.state == CA_CINEMATIC ) {
+	if (clc.demoplaying || cls.state == CA_CINEMATIC)
+	{
 		return;
 	}
 
-	memset( &nullcmd, 0, sizeof( nullcmd ) );
+	memset(&nullcmd, 0, sizeof(nullcmd));
 	oldcmd = &nullcmd;
 
-	MSG_Init( &buf, data, sizeof( data ) );
+	MSG_Init(&buf, data, sizeof(data));
 
 	buf.Bitstream();
 	// write the current serverId so the server
 	// can tell if this is from the current gameState
-	buf.WriteLong( cl.q3_serverId );
+	buf.WriteLong(cl.q3_serverId);
 
 	// write the last message we received, which can
 	// be used for delta compression, and is also used
 	// to tell if we dropped a gamestate
-	buf.WriteLong( clc.q3_serverMessageSequence );
+	buf.WriteLong(clc.q3_serverMessageSequence);
 
 	// write the last reliable message we received
-	buf.WriteLong( clc.q3_serverCommandSequence );
+	buf.WriteLong(clc.q3_serverCommandSequence);
 
 	// write any unacknowledged clientCommands
-	for ( i = clc.q3_reliableAcknowledge + 1 ; i <= clc.q3_reliableSequence ; i++ ) {
-		buf.WriteByte( q3clc_clientCommand );
-		buf.WriteLong( i );
-		buf.WriteString( clc.q3_reliableCommands[ i & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ] );
+	for (i = clc.q3_reliableAcknowledge + 1; i <= clc.q3_reliableSequence; i++)
+	{
+		buf.WriteByte(q3clc_clientCommand);
+		buf.WriteLong(i);
+		buf.WriteString(clc.q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WS - 1)]);
 	}
 
 	// we want to send all the usercmds that were generated in the last
 	// few packet, so even if a couple packets are dropped in a row,
 	// all the cmds will make it to the server
-	if ( cl_packetdup->integer < 0 ) {
-		Cvar_Set( "cl_packetdup", "0" );
-	} else if ( cl_packetdup->integer > 5 ) {
-		Cvar_Set( "cl_packetdup", "5" );
+	if (cl_packetdup->integer < 0)
+	{
+		Cvar_Set("cl_packetdup", "0");
 	}
-	oldPacketNum = ( clc.netchan.outgoingSequence - 1 - cl_packetdup->integer ) & PACKET_MASK_Q3;
-	count = cl.q3_cmdNumber - cl.q3_outPackets[ oldPacketNum ].p_cmdNumber;
-	if ( count > MAX_PACKET_USERCMDS ) {
+	else if (cl_packetdup->integer > 5)
+	{
+		Cvar_Set("cl_packetdup", "5");
+	}
+	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer) & PACKET_MASK_Q3;
+	count = cl.q3_cmdNumber - cl.q3_outPackets[oldPacketNum].p_cmdNumber;
+	if (count > MAX_PACKET_USERCMDS)
+	{
 		count = MAX_PACKET_USERCMDS;
-		Com_Printf( "MAX_PACKET_USERCMDS\n" );
+		Com_Printf("MAX_PACKET_USERCMDS\n");
 	}
-	if ( count >= 1 ) {
-		if ( cl_showSend->integer ) {
-			Com_Printf( "(%i)", count );
+	if (count >= 1)
+	{
+		if (cl_showSend->integer)
+		{
+			Com_Printf("(%i)", count);
 		}
 
 		// begin a client move command
-		if ( cl_nodelta->integer || !cl.ws_snap.valid || clc.q3_demowaiting
-			 || clc.q3_serverMessageSequence != cl.ws_snap.messageNum ) {
-			buf.WriteByte( q3clc_moveNoDelta );
-		} else {
-			buf.WriteByte( q3clc_move );
+		if (cl_nodelta->integer || !cl.ws_snap.valid || clc.q3_demowaiting ||
+			clc.q3_serverMessageSequence != cl.ws_snap.messageNum)
+		{
+			buf.WriteByte(q3clc_moveNoDelta);
+		}
+		else
+		{
+			buf.WriteByte(q3clc_move);
 		}
 
 		// write the command count
-		buf.WriteByte( count );
+		buf.WriteByte(count);
 
 		// use the checksum feed in the key
 		key = clc.q3_checksumFeed;
 		// also use the message acknowledge
 		key ^= clc.q3_serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= Com_HashKey( clc.q3_serverCommands[ clc.q3_serverCommandSequence & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ], 32 );
+		key ^= Com_HashKey(clc.q3_serverCommands[clc.q3_serverCommandSequence & (MAX_RELIABLE_COMMANDS_WS - 1)], 32);
 
 		// write all the commands, including the predicted command
-		for ( i = 0 ; i < count ; i++ ) {
-			j = ( cl.q3_cmdNumber - count + i + 1 ) & CMD_MASK_Q3;
+		for (i = 0; i < count; i++)
+		{
+			j = (cl.q3_cmdNumber - count + i + 1) & CMD_MASK_Q3;
 			cmd = &cl.ws_cmds[j];
-			MSG_WriteDeltaUsercmdKey( &buf, key, oldcmd, cmd );
+			MSG_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
 			oldcmd = cmd;
 		}
 	}
@@ -374,22 +418,24 @@ void CL_WritePacket( void ) {
 	// deliver the message
 	//
 	packetNum = clc.netchan.outgoingSequence & PACKET_MASK_Q3;
-	cl.q3_outPackets[ packetNum ].p_realtime = cls.realtime;
-	cl.q3_outPackets[ packetNum ].p_serverTime = oldcmd->serverTime;
-	cl.q3_outPackets[ packetNum ].p_cmdNumber = cl.q3_cmdNumber;
+	cl.q3_outPackets[packetNum].p_realtime = cls.realtime;
+	cl.q3_outPackets[packetNum].p_serverTime = oldcmd->serverTime;
+	cl.q3_outPackets[packetNum].p_cmdNumber = cl.q3_cmdNumber;
 	clc.q3_lastPacketSentTime = cls.realtime;
 
-	if ( cl_showSend->integer ) {
-		Com_Printf( "%i ", buf.cursize );
+	if (cl_showSend->integer)
+	{
+		Com_Printf("%i ", buf.cursize);
 	}
 //	Netchan_Transmit (&clc.netchan, buf.cursize, buf.data);
-	CL_Netchan_Transmit( &clc.netchan, &buf );
+	CL_Netchan_Transmit(&clc.netchan, &buf);
 
 	// clients never really should have messages large enough
 	// to fragment, but in case they do, fire them all off
 	// at once
-	while ( clc.netchan.unsentFragments ) {
-		CL_Netchan_TransmitNextFragment( &clc.netchan );
+	while (clc.netchan.unsentFragments)
+	{
+		CL_Netchan_TransmitNextFragment(&clc.netchan);
 	}
 }
 
@@ -400,14 +446,17 @@ CL_SendCmd
 Called every frame to builds and sends a command packet to the server.
 =================
 */
-void CL_SendCmd( void ) {
+void CL_SendCmd(void)
+{
 	// don't send any message if not connected
-	if ( cls.state < CA_CONNECTED ) {
+	if (cls.state < CA_CONNECTED)
+	{
 		return;
 	}
 
 	// don't send commands if paused
-	if ( com_sv_running->integer && sv_paused->integer && cl_paused->integer ) {
+	if (com_sv_running->integer && sv_paused->integer && cl_paused->integer)
+	{
 		return;
 	}
 
@@ -415,9 +464,11 @@ void CL_SendCmd( void ) {
 	CL_CreateNewCommands();
 
 	// don't send a packet if the last packet was sent too recently
-	if ( !CL_ReadyToSendPacket() ) {
-		if ( cl_showSend->integer ) {
-			Com_Printf( ". " );
+	if (!CL_ReadyToSendPacket())
+	{
+		if (cl_showSend->integer)
+		{
+			Com_Printf(". ");
 		}
 		return;
 	}
@@ -430,12 +481,13 @@ void CL_SendCmd( void ) {
 CL_InitInput
 ============
 */
-void CL_InitInput( void ) {
+void CL_InitInput(void)
+{
 	CL_InitInputCommon();
 
-	Cmd_AddCommand( "notebook",IN_Notebook );
+	Cmd_AddCommand("notebook",IN_Notebook);
 //	Cmd_AddCommand ("help",IN_Help);
 
-	cl_nodelta = Cvar_Get( "cl_nodelta", "0", 0 );
-	cl_debugMove = Cvar_Get( "cl_debugMove", "0", 0 );
+	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
+	cl_debugMove = Cvar_Get("cl_debugMove", "0", 0);
 }

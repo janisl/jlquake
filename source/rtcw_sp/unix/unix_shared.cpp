@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -42,53 +42,60 @@ If you have questions concerning this license or the applicable additional terms
 //=============================================================================
 
 //#if 0 // bk001215 - see snapvector.nasm for replacement
-#if ( defined __APPLE__ ) || defined __x86_64__ // rcg010206 - using this for PPC builds...
-long fastftol( float f ) { // bk001213 - from win32/win_shared.c
-	//static int tmp;
+#if (defined __APPLE__) || defined __x86_64__	// rcg010206 - using this for PPC builds...
+long fastftol(float f)		// bk001213 - from win32/win_shared.c
+{	//static int tmp;
 	//	__asm fld f
 	//__asm fistp tmp
 	//__asm mov eax, tmp
 	return (long)f;
 }
 
-void Sys_SnapVector( float *v ) { // bk001213 - see win32/win_shared.c
-	// bk001213 - old linux
-	v[0] = rint( v[0] );
-	v[1] = rint( v[1] );
-	v[2] = rint( v[2] );
+void Sys_SnapVector(float* v)		// bk001213 - see win32/win_shared.c
+{	// bk001213 - old linux
+	v[0] = rint(v[0]);
+	v[1] = rint(v[1]);
+	v[2] = rint(v[2]);
 }
 #endif
 
 
-char *strlwr( char *s ) {
-	if ( s == NULL ) { // bk001204 - paranoia
-		assert( 0 );
+char* strlwr(char* s)
+{
+	if (s == NULL)		// bk001204 - paranoia
+	{
+		assert(0);
 		return s;
 	}
-	while ( *s ) {
-		*s = tolower( *s );
+	while (*s)
+	{
+		*s = tolower(*s);
 		s++;
 	}
-	return s; // bk001204 - duh
+	return s;	// bk001204 - duh
 }
 
 //============================================
 
-int Sys_GetProcessorId( void ) {
+int Sys_GetProcessorId(void)
+{
 	// TODO TTimo add better CPU identification?
 	// see Sys_GetHighQualityCPU
 	return CPUID_GENERIC;
 }
 
-int Sys_GetHighQualityCPU() {
+int Sys_GetHighQualityCPU()
+{
 	// TODO TTimo see win_shared.c IsP3 || IsAthlon
 	return 0;
 }
 
-const char *Sys_GetCurrentUser( void ) {
-	struct passwd *p;
+const char* Sys_GetCurrentUser(void)
+{
+	struct passwd* p;
 
-	if ( ( p = getpwuid( getuid() ) ) == NULL ) {
+	if ((p = getpwuid(getuid())) == NULL)
+	{
 		return "player";
 	}
 	return p->pw_name;

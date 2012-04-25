@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,19 +47,21 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/client.h"
 #include "../../client/renderer/local.h"
 #include "../client/client.h"
-#include "linux_local.h" // bk001130
+#include "linux_local.h"// bk001130
 
 static qboolean signalcaught = qfalse;;
 
-void Sys_Exit( int ); // bk010104 - abstraction
+void Sys_Exit(int);		// bk010104 - abstraction
 
-static void signal_handler(int sig, siginfo_t *info, void *secret) { // bk010104 - replace this... (NOTE TTimo huh?)
-	void *trace[64];
-	char **messages = (char **)NULL;
+static void signal_handler(int sig, siginfo_t* info, void* secret)	// bk010104 - replace this... (NOTE TTimo huh?)
+{
+	void* trace[64];
+	char** messages = (char**)NULL;
 	int i, trace_size = 0;
-	if ( signalcaught ) {
-		printf( "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig );
-		Sys_Exit( 1 ); // bk010104 - abstraction
+	if (signalcaught)
+	{
+		printf("DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig);
+		Sys_Exit(1);	// bk010104 - abstraction
 	}
 
 	signalcaught = qtrue;
@@ -67,43 +69,46 @@ static void signal_handler(int sig, siginfo_t *info, void *secret) { // bk010104
 	/* Do something useful with siginfo_t */
 	ucontext_t* uc = (ucontext_t*)secret;
 	if (sig == SIGSEGV)
+	{
 		printf("Received signal %d, faulty address is %p, "
-			"from %p\n", sig, info->si_addr, 
+			   "from %p\n", sig, info->si_addr,
 			uc->uc_mcontext.gregs[REG_EIP]);
+	}
 	else
 #endif
-		printf( "Received signal %d, exiting...\n", sig );
-		
+	printf("Received signal %d, exiting...\n", sig);
+
 	trace_size = backtrace(trace, 64);
 #if id386
 	/* overwrite sigaction with caller's address */
-	trace[1] = (void *) uc->uc_mcontext.gregs[REG_EIP];
+	trace[1] = (void*)uc->uc_mcontext.gregs[REG_EIP];
 #endif
 
 	messages = backtrace_symbols(trace, trace_size);
 	/* skip first stack frame (points here) */
 	printf("[bt] Execution path:\n");
-	for (i=1; i<trace_size; ++i)
+	for (i = 1; i < trace_size; ++i)
 		printf("[bt] %s\n", messages[i]);
 
-	GLimp_Shutdown(); // bk010104 - shouldn't this be CL_Shutdown
-	Sys_Exit( 0 ); // bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
+	GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown
+	Sys_Exit(0);	// bk010104 - abstraction NOTE TTimo send a 0 to avoid DOUBLE SIGNAL FAULT
 }
 
-void InitSig( void ) {
+void InitSig(void)
+{
 	struct sigaction sa;
 
 	sa.sa_sigaction = signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART | SA_SIGINFO;
 
-	sigaction( SIGHUP, &sa, NULL);
-	sigaction( SIGQUIT, &sa, NULL);
-	sigaction( SIGILL, &sa, NULL);
-	sigaction( SIGTRAP, &sa, NULL);
-	sigaction( SIGIOT, &sa, NULL);
-	sigaction( SIGBUS, &sa, NULL);
-	sigaction( SIGFPE, &sa, NULL);
-	sigaction( SIGSEGV, &sa, NULL);
-	sigaction( SIGTERM, &sa, NULL);
+	sigaction(SIGHUP, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGILL, &sa, NULL);
+	sigaction(SIGTRAP, &sa, NULL);
+	sigaction(SIGIOT, &sa, NULL);
+	sigaction(SIGBUS, &sa, NULL);
+	sigaction(SIGFPE, &sa, NULL);
+	sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGTERM, &sa, NULL);
 }

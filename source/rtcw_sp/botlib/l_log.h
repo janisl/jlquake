@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,19 +36,18 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 //open a log file
-void Log_Open( const char *filename );
+void Log_Open(const char* filename);
 //
-void Log_AlwaysOpen( const char *filename );
+void Log_AlwaysOpen(const char* filename);
 //close the current log file
-void Log_Close( void );
+void Log_Close(void);
 //close log file if present
-void Log_Shutdown( void );
+void Log_Shutdown(void);
 //write to the current opened log file
-void QDECL Log_Write( const char *fmt, ... );
+void QDECL Log_Write(const char* fmt, ...);
 //write to the current opened log file with a time stamp
-void QDECL Log_WriteTimeStamped( char *fmt, ... );
+void QDECL Log_WriteTimeStamped(char* fmt, ...);
 //returns a pointer to the log file
-FILE *Log_FilePointer( void );
+FILE* Log_FilePointer(void);
 //flush log file
-void Log_Flush( void );
-
+void Log_Flush(void);

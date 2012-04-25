@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ If you have questions concerning this license or the applicable additional terms
 #define NEW_ANIMS
 #define MAX_TEAMNAME    32
 
-#if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
+#if defined(ppc) || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)
 #define idppc 1
 #endif
 
@@ -123,7 +123,7 @@ If you have questions concerning this license or the applicable additional terms
 
 //======================= MAC OS X SERVER DEFINES =====================
 
-#if defined( __MACH__ ) && defined( __APPLE__ )
+#if defined(__MACH__) && defined(__APPLE__)
 
 #define MAC_STATIC
 
@@ -157,7 +157,7 @@ If you have questions concerning this license or the applicable additional terms
 #define UI_HARD_LINKED
 #define BOTLIB_HARD_LINKED
 
-void Sys_PumpEvents( void );
+void Sys_PumpEvents(void);
 
 #endif
 
@@ -193,46 +193,46 @@ enum {qfalse, qtrue};
 #endif
 
 #ifndef NULL
-#define NULL ( (void *)0 )
+#define NULL ((void*)0)
 #endif
 
 #define MAX_QINT            0x7fffffff
-#define MIN_QINT            ( -MAX_QINT - 1 )
+#define MIN_QINT            (-MAX_QINT - 1)
 
 
 #ifndef max
-#define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
-#define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+#define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
-#define MAX_SP_CLIENTS      64      // increasing this will increase memory usage significantly
+#define MAX_SP_CLIENTS      64		// increasing this will increase memory usage significantly
 
 #define MAX_SAY_TEXT        150
 
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
 	PRINT_ALL,
-	PRINT_DEVELOPER,        // only print when "developer 1"
+	PRINT_DEVELOPER,		// only print when "developer 1"
 	PRINT_WARNING,
 	PRINT_ERROR
 } printParm_t;
 
 #ifdef  ERR_FATAL
-#undef  ERR_FATAL               // this is be defined in malloc.h
+#undef  ERR_FATAL				// this is be defined in malloc.h
 #endif
 
 // parameters to the main Error routine
 typedef enum {
-	ERR_FATAL,                  // exit the entire game with a popup window
-	ERR_DROP,                   // print to console and disconnect from game
-	ERR_SERVERDISCONNECT,       // don't kill server
-	ERR_DISCONNECT,             // client disconnected from the server
-	ERR_NEED_CD,                // pop up the need-cd dialog
-	ERR_ENDGAME                 // not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
+	ERR_FATAL,					// exit the entire game with a popup window
+	ERR_DROP,					// print to console and disconnect from game
+	ERR_SERVERDISCONNECT,		// don't kill server
+	ERR_DISCONNECT,				// client disconnected from the server
+	ERR_NEED_CD,				// pop up the need-cd dialog
+	ERR_ENDGAME					// not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
 } errorParm_t;
 
-#if defined( _DEBUG ) && !defined( BSPC )
+#if defined(_DEBUG) && !defined(BSPC)
 	#define HUNK_DEBUG
 #endif
 
@@ -243,10 +243,10 @@ typedef enum {
 } ha_pref;
 
 #ifdef HUNK_DEBUG
-#define Hunk_Alloc( size, preference )              Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
+#define Hunk_Alloc(size, preference)              Hunk_AllocDebug(size, preference, # size, __FILE__, __LINE__)
+void* Hunk_AllocDebug(int size, ha_pref preference, char* label, char* file, int line);
 #else
-void *Hunk_Alloc( int size, ha_pref preference );
+void* Hunk_Alloc(int size, ha_pref preference);
 #endif
 
 /*
@@ -275,55 +275,55 @@ extern vec4_t colorLtGrey;
 extern vec4_t colorMdGrey;
 extern vec4_t colorDkGrey;
 
-#define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
-#define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a
+#define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
+#define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
 // TTimo
 // handy stuff when tracking isnan problems
 #ifndef NDEBUG
-#define CHECK_NAN( x ) assert( !IS_NAN( x ) )
-#define CHECK_NAN_VEC( v ) assert( !IS_NAN( v[0] ) && !IS_NAN( v[1] ) && !IS_NAN( v[2] ) )
+#define CHECK_NAN(x) assert(!IS_NAN(x))
+#define CHECK_NAN_VEC(v) assert(!IS_NAN(v[0]) && !IS_NAN(v[1]) && !IS_NAN(v[2]))
 #else
 #define CHECK_NAN
 #define CHECK_NAN_VEC
 #endif
 
-unsigned ColorBytes3( float r, float g, float b );
+unsigned ColorBytes3(float r, float g, float b);
 
-float NormalizeColor( const vec3_t in, vec3_t out );
+float NormalizeColor(const vec3_t in, vec3_t out);
 
-int     Q_rand( int *seed );
-float   Q_random( int *seed );
-float   Q_crandom( int *seed );
+int     Q_rand(int* seed);
+float   Q_random(int* seed);
+float   Q_crandom(int* seed);
 
-void vectoangles( const vec3_t value1, vec3_t angles );
+void vectoangles(const vec3_t value1, vec3_t angles);
 // TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
-void AxisToAngles( /*const*/ vec3_t axis[3], vec3_t angles );
-float VectorDistance( vec3_t v1, vec3_t v2 );
+void AxisToAngles(/*const*/ vec3_t axis[3], vec3_t angles);
+float VectorDistance(vec3_t v1, vec3_t v2);
 
 // Ridah
-void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
+void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
 // done.
 
 //=============================================
 
-float Com_Clamp( float min, float max, float value );
+float Com_Clamp(float min, float max, float value);
 
 // TTimo
-qboolean COM_BitCheck( const int array[], int bitNum );
-void COM_BitSet( int array[], int bitNum );
-void COM_BitClear( int array[], int bitNum );
+qboolean COM_BitCheck(const int array[], int bitNum);
+void COM_BitSet(int array[], int bitNum);
+void COM_BitClear(int array[], int bitNum);
 
 #define MAX_TOKENLENGTH     1024
 
 #ifndef TT_STRING
 //token types
-#define TT_STRING                   1           // string
-#define TT_LITERAL                  2           // literal
-#define TT_NUMBER                   3           // number
-#define TT_NAME                     4           // name
-#define TT_PUNCTUATION              5           // punctuation
+#define TT_STRING                   1			// string
+#define TT_LITERAL                  2			// literal
+#define TT_NUMBER                   3			// number
+#define TT_NAME                     4			// name
+#define TT_PUNCTUATION              5			// punctuation
 #endif
 
 typedef struct pc_token_s
@@ -344,9 +344,9 @@ typedef struct pc_token_s
 #endif
 
 // strlen that discounts Quake color sequences
-int Q_PrintStrlen( const char *string );
+int Q_PrintStrlen(const char* string);
 // removes color sequences from string
-char *Q_CleanStr( char *string );
+char* Q_CleanStr(char* string);
 //=============================================
 
 // 64-bit integers for global rankings interface
@@ -365,13 +365,13 @@ typedef struct
 
 //=============================================
 
-float   *tv( float x, float y, float z );
+float* tv(float x, float y, float z);
 
 //=============================================
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL Com_Error( int level, const char *error, ... );
-void QDECL Com_Printf( const char *msg, ... );
+void QDECL Com_Error(int level, const char* error, ...);
+void QDECL Com_Printf(const char* msg, ...);
 
 
 /*
@@ -379,14 +379,14 @@ void QDECL Com_Printf( const char *msg, ... );
 
 SAVE
 
-	12 -
-	13 - (SA) added 'episode' tracking to savegame
-	14 - RF added 'skill'
-	15 - (SA) moved time info above the main game reading
-	16 - (SA) added fog
-	17 - (SA) rats, changed fog.
+    12 -
+    13 - (SA) added 'episode' tracking to savegame
+    14 - RF added 'skill'
+    15 - (SA) moved time info above the main game reading
+    16 - (SA) added fog
+    17 - (SA) rats, changed fog.
   18 - TTimo targetdeath fix
-	   show_bug.cgi?id=434
+       show_bug.cgi?id=434
 
 ==============================================================
 */
@@ -420,20 +420,20 @@ SAVE
 #define ANIM_BITS       10
 
 #define SNAPFLAG_RATE_DELAYED   1
-#define SNAPFLAG_NOT_ACTIVE     2   // snapshot used during connection and for zombies
-#define SNAPFLAG_SERVERCOUNT    4   // toggled every map_restart so transitions can be detected
+#define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
+#define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
 
 //
 // per-level limits
 //
 #define MAX_LOCATIONS       64
 
-#define MAX_SOUNDS          256     // so they cannot be blindly increased
+#define MAX_SOUNDS          256		// so they cannot be blindly increased
 
 
 #define MAX_PARTICLES_AREAS     128
 
-#define MAX_MULTI_SPAWNTARGETS  16 // JPW NERVE
+#define MAX_MULTI_SPAWNTARGETS  16	// JPW NERVE
 
 #define MAX_DLIGHT_CONFIGSTRINGS    128
 #define MAX_CLIPBOARD_CONFIGSTRINGS 64
@@ -449,7 +449,7 @@ SAVE
 #define PARTICLE_BUBBLE32   6
 #define PARTICLE_BUBBLE64   7
 
-#define RESERVED_CONFIGSTRINGS  2   // game can't modify below this, only the system can
+#define RESERVED_CONFIGSTRINGS  2	// game can't modify below this, only the system can
 
 //=========================================================
 // shared by AI and animation scripting
@@ -486,23 +486,24 @@ typedef enum
 //===================================================================
 
 // RF, put this here so we have a central means of defining a Zombie (kind of a hack, but this is to minimize bandwidth usage)
-#define SET_FLAMING_ZOMBIE( x,y ) ( x.frame = y )
-#define IS_FLAMING_ZOMBIE( x )    ( x.frame == 1 )
+#define SET_FLAMING_ZOMBIE(x,y) (x.frame = y)
+#define IS_FLAMING_ZOMBIE(x)    (x.frame == 1)
 
 // real time
 //=============================================
 
 
-typedef struct qtime_s {
-	int tm_sec;     /* seconds after the minute - [0,59] */
-	int tm_min;     /* minutes after the hour - [0,59] */
-	int tm_hour;    /* hours since midnight - [0,23] */
-	int tm_mday;    /* day of the month - [1,31] */
-	int tm_mon;     /* months since January - [0,11] */
-	int tm_year;    /* years since 1900 */
-	int tm_wday;    /* days since Sunday - [0,6] */
-	int tm_yday;    /* days since January 1 - [0,365] */
-	int tm_isdst;   /* daylight savings time flag */
+typedef struct qtime_s
+{
+	int tm_sec;		/* seconds after the minute - [0,59] */
+	int tm_min;		/* minutes after the hour - [0,59] */
+	int tm_hour;	/* hours since midnight - [0,23] */
+	int tm_mday;	/* day of the month - [1,31] */
+	int tm_mon;		/* months since January - [0,11] */
+	int tm_year;	/* years since 1900 */
+	int tm_wday;	/* days since Sunday - [0,6] */
+	int tm_yday;	/* days since January 1 - [0,365] */
+	int tm_isdst;	/* daylight savings time flag */
 } qtime_t;
 
 
@@ -514,9 +515,9 @@ typedef struct qtime_s {
 
 typedef enum _flag_status {
 	FLAG_ATBASE = 0,
-	FLAG_TAKEN,         // CTF
-	FLAG_TAKEN_RED,     // One Flag CTF
-	FLAG_TAKEN_BLUE,    // One Flag CTF
+	FLAG_TAKEN,			// CTF
+	FLAG_TAKEN_RED,		// One Flag CTF
+	FLAG_TAKEN_BLUE,	// One Flag CTF
 	FLAG_DROPPED
 } flagStatus_t;
 
@@ -532,4 +533,4 @@ typedef enum _flag_status {
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
 
-#endif  // __Q_SHARED_H
+#endif	// __Q_SHARED_H

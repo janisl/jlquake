@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,41 +46,48 @@ SV_GetPlayerByName
 Returns the player with name from Cmd_Argv(1)
 ==================
 */
-static client_t *SV_GetPlayerByName( void ) {
-	client_t    *cl;
+static client_t* SV_GetPlayerByName(void)
+{
+	client_t* cl;
 	int i;
-	char        *s;
+	char* s;
 	char cleanName[64];
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
+	if (!com_sv_running->integer)
+	{
 		return NULL;
 	}
 
-	if ( Cmd_Argc() < 2 ) {
-		Com_Printf( "No player specified.\n" );
+	if (Cmd_Argc() < 2)
+	{
+		Com_Printf("No player specified.\n");
 		return NULL;
 	}
 
-	s = Cmd_Argv( 1 );
+	s = Cmd_Argv(1);
 
 	// check for a name match
-	for ( i = 0, cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
-		if ( !cl->state ) {
+	for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (!cl->state)
+		{
 			continue;
 		}
-		if ( !String::ICmp( cl->name, s ) ) {
+		if (!String::ICmp(cl->name, s))
+		{
 			return cl;
 		}
 
-		String::NCpyZ( cleanName, cl->name, sizeof( cleanName ) );
-		Q_CleanStr( cleanName );
-		if ( !String::ICmp( cleanName, s ) ) {
+		String::NCpyZ(cleanName, cl->name, sizeof(cleanName));
+		Q_CleanStr(cleanName);
+		if (!String::ICmp(cleanName, s))
+		{
 			return cl;
 		}
 	}
 
-	Com_Printf( "Player %s is not on the server\n", s );
+	Com_Printf("Player %s is not on the server\n", s);
 
 	return NULL;
 }
@@ -92,39 +99,46 @@ SV_GetPlayerByNum
 Returns the player with idnum from Cmd_Argv(1)
 ==================
 */
-static client_t *SV_GetPlayerByNum( void ) {
-	client_t    *cl;
+static client_t* SV_GetPlayerByNum(void)
+{
+	client_t* cl;
 	int i;
 	int idnum;
-	char        *s;
+	char* s;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
+	if (!com_sv_running->integer)
+	{
 		return NULL;
 	}
 
-	if ( Cmd_Argc() < 2 ) {
-		Com_Printf( "No player specified.\n" );
+	if (Cmd_Argc() < 2)
+	{
+		Com_Printf("No player specified.\n");
 		return NULL;
 	}
 
-	s = Cmd_Argv( 1 );
+	s = Cmd_Argv(1);
 
-	for ( i = 0; s[i]; i++ ) {
-		if ( s[i] < '0' || s[i] > '9' ) {
-			Com_Printf( "Bad slot number: %s\n", s );
+	for (i = 0; s[i]; i++)
+	{
+		if (s[i] < '0' || s[i] > '9')
+		{
+			Com_Printf("Bad slot number: %s\n", s);
 			return NULL;
 		}
 	}
-	idnum = String::Atoi( s );
-	if ( idnum < 0 || idnum >= sv_maxclients->integer ) {
-		Com_Printf( "Bad client slot: %i\n", idnum );
+	idnum = String::Atoi(s);
+	if (idnum < 0 || idnum >= sv_maxclients->integer)
+	{
+		Com_Printf("Bad client slot: %i\n", idnum);
 		return NULL;
 	}
 
 	cl = &svs.clients[idnum];
-	if ( !cl->state ) {
-		Com_Printf( "Client %i is not active\n", idnum );
+	if (!cl->state)
+	{
+		Com_Printf("Client %i is not active\n", idnum);
 		return NULL;
 	}
 	return cl;
@@ -142,149 +156,176 @@ SV_Map_f
 Restart the server on a different map
 ==================
 */
-static void SV_Map_f( void ) {
-	char        *cmd;
-	char        *map;
+static void SV_Map_f(void)
+{
+	char* cmd;
+	char* map;
 	char smapname[MAX_QPATH];
 	char mapname[MAX_QPATH];
 	qboolean killBots, cheat, buildScript;
 	char expanded[MAX_QPATH];
 	int savegameTime = -1;
 
-	map = Cmd_Argv( 1 );
-	if ( !map ) {
+	map = Cmd_Argv(1);
+	if (!map)
+	{
 		return;
 	}
 
-	buildScript = Cvar_VariableIntegerValue( "com_buildScript" );
+	buildScript = Cvar_VariableIntegerValue("com_buildScript");
 
-	if ( !buildScript && sv_reloading->integer && sv_reloading->integer != RELOAD_NEXTMAP ) {  // game is in 'reload' mode, don't allow starting new maps yet.
+	if (!buildScript && sv_reloading->integer && sv_reloading->integer != RELOAD_NEXTMAP)		// game is in 'reload' mode, don't allow starting new maps yet.
+	{
 		return;
 	}
 
 	// Ridah: trap a savegame load
-	if ( strstr( map, ".svg" ) ) {
+	if (strstr(map, ".svg"))
+	{
 		// open the savegame, read the mapname, and copy it to the map string
 		char savemap[MAX_QPATH];
-		byte *buffer;
+		byte* buffer;
 		int size, csize;
 
-		if ( !( strstr( map, "save/" ) == map ) ) {
-			String::Sprintf( savemap, sizeof( savemap ), "save/%s", map );
-		} else {
-			String::Cpy( savemap, map );
+		if (!(strstr(map, "save/") == map))
+		{
+			String::Sprintf(savemap, sizeof(savemap), "save/%s", map);
+		}
+		else
+		{
+			String::Cpy(savemap, map);
 		}
 
-		size = FS_ReadFile( savemap, NULL );
-		if ( size < 0 ) {
-			Com_Printf( "Can't find savegame %s\n", savemap );
+		size = FS_ReadFile(savemap, NULL);
+		if (size < 0)
+		{
+			Com_Printf("Can't find savegame %s\n", savemap);
 			return;
 		}
 
 		//buffer = Hunk_AllocateTempMemory(size);
-		FS_ReadFile( savemap, (void **)&buffer );
+		FS_ReadFile(savemap, (void**)&buffer);
 
-		if ( String::ICmp( savemap, "save/current.svg" ) != 0 ) {
+		if (String::ICmp(savemap, "save/current.svg") != 0)
+		{
 			// copy it to the current savegame file
-			FS_WriteFile( "save/current.svg", buffer, size );
+			FS_WriteFile("save/current.svg", buffer, size);
 			// make sure it is the correct size
-			csize = FS_ReadFile( "save/current.svg", NULL );
-			if ( csize != size ) {
-				FS_FreeFile( buffer );
-				FS_Delete( "save/current.svg" );
+			csize = FS_ReadFile("save/current.svg", NULL);
+			if (csize != size)
+			{
+				FS_FreeFile(buffer);
+				FS_Delete("save/current.svg");
 // TTimo
 #ifdef __linux__
-				Com_Error( ERR_DROP, "Unable to save game.\n\nPlease check that you have at least 5mb free of disk space in your home directory." );
+				Com_Error(ERR_DROP, "Unable to save game.\n\nPlease check that you have at least 5mb free of disk space in your home directory.");
 #else
-				Com_Error( ERR_DROP, "Insufficient free disk space.\n\nPlease free at least 5mb of free space on game drive." );
+				Com_Error(ERR_DROP, "Insufficient free disk space.\n\nPlease free at least 5mb of free space on game drive.");
 #endif
 				return;
 			}
 		}
 
 		// set the cvar, so the game knows it needs to load the savegame once the clients have connected
-		Cvar_Set( "savegame_loading", "1" );
+		Cvar_Set("savegame_loading", "1");
 		// set the filename
-		Cvar_Set( "savegame_filename", savemap );
+		Cvar_Set("savegame_filename", savemap);
 
 		// the mapname is at the very start of the savegame file
-		String::Sprintf( savemap, sizeof( savemap ), ( char * )( buffer + sizeof( int ) ) );  // skip the version
-		String::NCpyZ( smapname, savemap, sizeof( smapname ) );
+		String::Sprintf(savemap, sizeof(savemap), (char*)(buffer + sizeof(int)));				// skip the version
+		String::NCpyZ(smapname, savemap, sizeof(smapname));
 		map = smapname;
 
-		savegameTime = *( int * )( buffer + sizeof( int ) + MAX_QPATH );
+		savegameTime = *(int*)(buffer + sizeof(int) + MAX_QPATH);
 
-		if ( savegameTime >= 0 ) {
+		if (savegameTime >= 0)
+		{
 			svs.time = savegameTime;
 		}
 
-		FS_FreeFile( buffer );
-	} else {
-		Cvar_Set( "savegame_loading", "0" );  // make sure it's turned off
+		FS_FreeFile(buffer);
+	}
+	else
+	{
+		Cvar_Set("savegame_loading", "0");		// make sure it's turned off
 		// set the filename
-		Cvar_Set( "savegame_filename", "" );
+		Cvar_Set("savegame_filename", "");
 	}
 	// done.
 
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game
-	String::Sprintf( expanded, sizeof( expanded ), "maps/%s.bsp", map );
-	if ( FS_ReadFile( expanded, NULL ) == -1 ) {
-		Com_Printf( "Can't find map %s\n", expanded );
+	String::Sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
+	if (FS_ReadFile(expanded, NULL) == -1)
+	{
+		Com_Printf("Can't find map %s\n", expanded);
 		return;
 	}
 
 	// force latched values to get set
-	Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2 );
+	Cvar_Get("g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2);
 
 	// Rafael gameskill
-	Cvar_Get( "g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH2 );
+	Cvar_Get("g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH2);
 	// done
 
-	Cvar_SetValue( "g_episode", 0 ); //----(SA) added
+	Cvar_SetValue("g_episode", 0);	//----(SA) added
 
-	cmd = Cmd_Argv( 0 );
-	if ( String::NICmp( cmd, "sp", 2 ) == 0 ) {
-		Cvar_SetValue( "g_gametype", GT_SINGLE_PLAYER );
-		Cvar_SetValue( "g_doWarmup", 0 );
+	cmd = Cmd_Argv(0);
+	if (String::NICmp(cmd, "sp", 2) == 0)
+	{
+		Cvar_SetValue("g_gametype", GT_SINGLE_PLAYER);
+		Cvar_SetValue("g_doWarmup", 0);
 		// may not set sv_maxclients directly, always set latched
-		Cvar_SetLatched( "sv_maxclients", "32" ); // Ridah, modified this
+		Cvar_SetLatched("sv_maxclients", "32");		// Ridah, modified this
 		cmd += 2;
 		killBots = qtrue;
-		if ( !String::ICmp( cmd, "devmap" ) ) {
+		if (!String::ICmp(cmd, "devmap"))
+		{
 			cheat = qtrue;
-		} else {
+		}
+		else
+		{
 			cheat = qfalse;
 		}
-	} else {
-		if ( !String::ICmp( cmd, "devmap" ) ) {
+	}
+	else
+	{
+		if (!String::ICmp(cmd, "devmap"))
+		{
 			cheat = qtrue;
 			killBots = qtrue;
-		} else {
+		}
+		else
+		{
 			cheat = qfalse;
 			killBots = qfalse;
 		}
-		if ( sv_gametype->integer == GT_SINGLE_PLAYER ) {
-			Cvar_SetValue( "g_gametype", GT_FFA );
+		if (sv_gametype->integer == GT_SINGLE_PLAYER)
+		{
+			Cvar_SetValue("g_gametype", GT_FFA);
 		}
 	}
 
 
 	// save the map name here cause on a map restart we reload the q3config.cfg
 	// and thus nuke the arguments of the map command
-	String::NCpyZ( mapname, map, sizeof( mapname ) );
+	String::NCpyZ(mapname, map, sizeof(mapname));
 
 	// start up the map
-	SV_SpawnServer( mapname, killBots );
+	SV_SpawnServer(mapname, killBots);
 
 	// set the cheat value
 	// if the level was started with "map <levelname>", then
 	// cheats will not be allowed.  If started with "devmap <levelname>"
 	// then cheats will be allowed
-	if ( cheat ) {
-		Cvar_Set( "sv_cheats", "1" );
-	} else {
-		Cvar_Set( "sv_cheats", "0" );
+	if (cheat)
+	{
+		Cvar_Set("sv_cheats", "1");
+	}
+	else
+	{
+		Cvar_Set("sv_cheats", "0");
 	}
 
 }
@@ -297,80 +338,95 @@ Completely restarts a level, but doesn't send a new gamestate to the clients.
 This allows fair starts with variable load times.
 ================
 */
-static void SV_MapRestart_f( void ) {
+static void SV_MapRestart_f(void)
+{
 	int i;
-	client_t    *client;
-	char        *denied;
+	client_t* client;
+	char* denied;
 	qboolean isBot;
 	int delay;
 
 	// make sure we aren't restarting twice in the same frame
-	if ( com_frameTime == sv.serverId ) {
+	if (com_frameTime == sv.serverId)
+	{
 		return;
 	}
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( sv.restartTime ) {
+	if (sv.restartTime)
+	{
 		return;
 	}
 
-	if ( Cmd_Argc() > 1 ) {
-		delay = String::Atoi( Cmd_Argv( 1 ) );
-	} else {
-		if ( sv_gametype->integer == GT_SINGLE_PLAYER ) { // (SA) no pause by default in sp
+	if (Cmd_Argc() > 1)
+	{
+		delay = String::Atoi(Cmd_Argv(1));
+	}
+	else
+	{
+		if (sv_gametype->integer == GT_SINGLE_PLAYER)		// (SA) no pause by default in sp
+		{
 			delay = 0;
-		} else {
+		}
+		else
+		{
 			delay = 5;
 		}
 	}
-	if ( delay && !Cvar_VariableValue( "g_doWarmup" ) ) {
+	if (delay && !Cvar_VariableValue("g_doWarmup"))
+	{
 		sv.restartTime = svs.time + delay * 1000;
-		SV_SetConfigstring( Q3CS_WARMUP, va( "%i", sv.restartTime ) );
+		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.restartTime));
 		return;
 	}
 
 	// check for changes in variables that can't just be restarted
 	// check for maxclients change
-	if ( sv_maxclients->modified || sv_gametype->modified ) {
+	if (sv_maxclients->modified || sv_gametype->modified)
+	{
 		char mapname[MAX_QPATH];
 
-		Com_Printf( "variable change -- restarting.\n" );
+		Com_Printf("variable change -- restarting.\n");
 		// restart the map the slow way
-		String::NCpyZ( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
+		String::NCpyZ(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
 
-		SV_SpawnServer( mapname, qfalse );
+		SV_SpawnServer(mapname, qfalse);
 		return;
 	}
 
 	// Ridah, check for loading a saved game
-	if ( Cvar_VariableIntegerValue( "savegame_loading" ) ) {
+	if (Cvar_VariableIntegerValue("savegame_loading"))
+	{
 		// open the current savegame, and find out what the time is, everything else we can ignore
-		const char *savemap = "save/current.svg";
-		byte *buffer;
+		const char* savemap = "save/current.svg";
+		byte* buffer;
 		int size, savegameTime;
 
-		size = FS_ReadFile( savemap, NULL );
-		if ( size < 0 ) {
-			Com_Printf( "Can't find savegame %s\n", savemap );
+		size = FS_ReadFile(savemap, NULL);
+		if (size < 0)
+		{
+			Com_Printf("Can't find savegame %s\n", savemap);
 			return;
 		}
 
 		//buffer = Hunk_AllocateTempMemory(size);
-		FS_ReadFile( savemap, (void **)&buffer );
+		FS_ReadFile(savemap, (void**)&buffer);
 
 		// the mapname is at the very start of the savegame file
-		savegameTime = *( int * )( buffer + sizeof( int ) + MAX_QPATH );
+		savegameTime = *(int*)(buffer + sizeof(int) + MAX_QPATH);
 
-		if ( savegameTime >= 0 ) {
+		if (savegameTime >= 0)
+		{
 			svs.time = savegameTime;
 		}
 
-		FS_FreeFile( buffer );
+		FS_FreeFile(buffer);
 	}
 	// done.
 
@@ -381,7 +437,7 @@ static void SV_MapRestart_f( void ) {
 	// generate a new serverid
 	sv.restartedServerId = sv.serverId;
 	sv.serverId = com_frameTime;
-	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
+	Cvar_Set("sv_serverid", va("%i", sv.serverId));
 
 	// reset all the vm data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
@@ -392,8 +448,9 @@ static void SV_MapRestart_f( void ) {
 	SV_RestartGameProgs();
 
 	// run a few frames to allow everything to settle
-	for ( i = 0 ; i < 3 ; i++ ) {
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+	for (i = 0; i < 3; i++)
+	{
+		VM_Call(gvm, GAME_RUN_FRAME, svs.time);
 		svs.time += 100;
 	}
 
@@ -401,40 +458,46 @@ static void SV_MapRestart_f( void ) {
 	sv.restarting = qfalse;
 
 	// connect and begin all the clients
-	for ( i = 0 ; i < sv_maxclients->integer ; i++ ) {
+	for (i = 0; i < sv_maxclients->integer; i++)
+	{
 		client = &svs.clients[i];
 
 		// send the new gamestate to all connected clients
-		if ( client->state < CS_CONNECTED ) {
+		if (client->state < CS_CONNECTED)
+		{
 			continue;
 		}
 
-		if ( client->netchan.remoteAddress.type == NA_BOT ) {
+		if (client->netchan.remoteAddress.type == NA_BOT)
+		{
 			isBot = qtrue;
-		} else {
+		}
+		else
+		{
 			isBot = qfalse;
 		}
 
 		// add the map_restart command
-		SV_AddServerCommand( client, "map_restart\n" );
+		SV_AddServerCommand(client, "map_restart\n");
 
 		// connect the client again, without the firstTime flag
-		denied = (char*)VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
-		if ( denied ) {
+		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot));
+		if (denied)
+		{
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
-			SV_DropClient( client, denied );
-			Com_Printf( "SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i ); // bk010125
+			SV_DropClient(client, denied);
+			Com_Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
 			continue;
 		}
 
 		client->state = CS_ACTIVE;
 
-		SV_ClientEnterWorld( client, &client->lastUsercmd );
+		SV_ClientEnterWorld(client, &client->lastUsercmd);
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+	VM_Call(gvm, GAME_RUN_FRAME, svs.time);
 	svs.time += 100;
 }
 
@@ -443,78 +506,92 @@ static void SV_MapRestart_f( void ) {
 SV_LoadGame_f
 =================
 */
-void    SV_LoadGame_f( void ) {
+void    SV_LoadGame_f(void)
+{
 	char filename[MAX_QPATH], mapname[MAX_QPATH];
-	byte *buffer;
+	byte* buffer;
 	int size;
 
 	// dont allow command if another loadgame is pending
-	if ( Cvar_VariableIntegerValue( "savegame_loading" ) ) {
+	if (Cvar_VariableIntegerValue("savegame_loading"))
+	{
 		return;
 	}
-	if ( sv_reloading->integer ) {
+	if (sv_reloading->integer)
+	{
 		// (SA) disabling
 //	if(sv_reloading->integer && sv_reloading->integer != RELOAD_FAILED )	// game is in 'reload' mode, don't allow starting new maps yet.
 		return;
 	}
 
-	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof( filename ) );
-	if ( !filename[0] ) {
-		Com_Printf( "You must specify a savegame to load\n" );
+	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
+	if (!filename[0])
+	{
+		Com_Printf("You must specify a savegame to load\n");
 		return;
 	}
-	if ( String::NCmp( filename, "save/", 5 ) && String::NCmp( filename, "save\\", 5 ) ) {
-		String::NCpyZ( filename, va( "save/%s", filename ), sizeof( filename ) );
+	if (String::NCmp(filename, "save/", 5) && String::NCmp(filename, "save\\", 5))
+	{
+		String::NCpyZ(filename, va("save/%s", filename), sizeof(filename));
 	}
 	// enforce .svg extension
-	if ( !strstr( filename, "." ) || String::NCmp( strstr( filename, "." ) + 1, "svg", 3 ) ) {
-		String::Cat( filename, sizeof( filename ), ".svg" );
+	if (!strstr(filename, ".") || String::NCmp(strstr(filename, ".") + 1, "svg", 3))
+	{
+		String::Cat(filename, sizeof(filename), ".svg");
 	}
 	// use '/' instead of '\' for directories
-	while ( strstr( filename, "\\" ) ) {
-		*(char *)strstr( filename, "\\" ) = '/';
+	while (strstr(filename, "\\"))
+	{
+		*(char*)strstr(filename, "\\") = '/';
 	}
 
-	size = FS_ReadFile( filename, NULL );
-	if ( size < 0 ) {
-		Com_Printf( "Can't find savegame %s\n", filename );
+	size = FS_ReadFile(filename, NULL);
+	if (size < 0)
+	{
+		Com_Printf("Can't find savegame %s\n", filename);
 		return;
 	}
 
 	//buffer = Hunk_AllocateTempMemory(size);
-	FS_ReadFile( filename, (void **)&buffer );
+	FS_ReadFile(filename, (void**)&buffer);
 
 	// read the mapname, if it is the same as the current map, then do a fast load
-	String::Sprintf( mapname, sizeof( mapname ), (const char*)( buffer + sizeof( int ) ) );
+	String::Sprintf(mapname, sizeof(mapname), (const char*)(buffer + sizeof(int)));
 
-	if ( com_sv_running->integer && ( com_frameTime != sv.serverId ) ) {
+	if (com_sv_running->integer && (com_frameTime != sv.serverId))
+	{
 		// check mapname
-		if ( !String::ICmp( mapname, sv_mapname->string ) ) {    // same
+		if (!String::ICmp(mapname, sv_mapname->string))			// same
 
-			if ( String::ICmp( filename, "save/current.svg" ) != 0 ) {
+		{
+			if (String::ICmp(filename, "save/current.svg") != 0)
+			{
 				// copy it to the current savegame file
-				FS_WriteFile( "save/current.svg", buffer, size );
+				FS_WriteFile("save/current.svg", buffer, size);
 			}
 
-			FS_FreeFile( buffer );
+			FS_FreeFile(buffer);
 
-			Cvar_Set( "savegame_loading", "2" );  // 2 means it's a restart, so stop rendering until we are loaded
+			Cvar_Set("savegame_loading", "2");		// 2 means it's a restart, so stop rendering until we are loaded
 			// set the filename
-			Cvar_Set( "savegame_filename", filename );
+			Cvar_Set("savegame_filename", filename);
 			// quick-restart the server
-			SV_MapRestart_f();  // savegame will be loaded after restart
+			SV_MapRestart_f();	// savegame will be loaded after restart
 
 			return;
 		}
 	}
 
-	FS_FreeFile( buffer );
+	FS_FreeFile(buffer);
 
 	// otherwise, do a slow load
-	if ( Cvar_VariableIntegerValue( "sv_cheats" ) ) {
-		Cbuf_ExecuteText( EXEC_APPEND, va( "spdevmap %s", filename ) );
-	} else {    // no cheats
-		Cbuf_ExecuteText( EXEC_APPEND, va( "spmap %s", filename ) );
+	if (Cvar_VariableIntegerValue("sv_cheats"))
+	{
+		Cbuf_ExecuteText(EXEC_APPEND, va("spdevmap %s", filename));
+	}
+	else		// no cheats
+	{
+		Cbuf_ExecuteText(EXEC_APPEND, va("spmap %s", filename));
 	}
 }
 
@@ -527,56 +604,70 @@ SV_Kick_f
 Kick a user off of the server  FIXME: move to game
 ==================
 */
-static void SV_Kick_f( void ) {
-	client_t    *cl;
+static void SV_Kick_f(void)
+{
+	client_t* cl;
 	int i;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( Cmd_Argc() != 2 ) {
+	if (Cmd_Argc() != 2)
+	{
 //		Com_Printf ("Usage: kick <player name>\nkick all = kick everyone\nkick allbots = kick all bots\n");
-		Com_Printf( "Usage: kick <player name>\nkick all = kick everyone\n" );
+		Com_Printf("Usage: kick <player name>\nkick all = kick everyone\n");
 		return;
 	}
 
 	cl = SV_GetPlayerByName();
-	if ( !cl ) {
-		if ( !String::ICmp( Cmd_Argv( 1 ), "all" ) ) {
-			for ( i = 0, cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
-				if ( !cl->state ) {
+	if (!cl)
+	{
+		if (!String::ICmp(Cmd_Argv(1), "all"))
+		{
+			for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+			{
+				if (!cl->state)
+				{
 					continue;
 				}
-				if ( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
+				if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+				{
 					continue;
 				}
-				SV_DropClient( cl, "was kicked" );
-				cl->lastPacketTime = svs.time;  // in case there is a funny zombie
+				SV_DropClient(cl, "was kicked");
+				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
-		} else if ( !String::ICmp( Cmd_Argv( 1 ), "allbots" ) )        {
-			for ( i = 0, cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
-				if ( !cl->state ) {
+		}
+		else if (!String::ICmp(Cmd_Argv(1), "allbots"))
+		{
+			for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+			{
+				if (!cl->state)
+				{
 					continue;
 				}
-				if ( cl->netchan.remoteAddress.type != NA_BOT ) {
+				if (cl->netchan.remoteAddress.type != NA_BOT)
+				{
 					continue;
 				}
-				SV_DropClient( cl, "was kicked" );
-				cl->lastPacketTime = svs.time;  // in case there is a funny zombie
+				SV_DropClient(cl, "was kicked");
+				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
 		}
 		return;
 	}
-	if ( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		SV_SendServerCommand( NULL, "print \"%s\"", "Cannot kick host player\n" );
+	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+	{
+		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
-	SV_DropClient( cl, "was kicked" );
-	cl->lastPacketTime = svs.time;  // in case there is a funny zombie
+	SV_DropClient(cl, "was kicked");
+	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 }
 
 /*
@@ -587,50 +678,58 @@ Ban a user from being able to play on this server through the auth
 server
 ==================
 */
-static void SV_Ban_f( void ) {
-	client_t    *cl;
+static void SV_Ban_f(void)
+{
+	client_t* cl;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "Usage: banUser <player name>\n" );
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: banUser <player name>\n");
 		return;
 	}
 
 	cl = SV_GetPlayerByName();
 
-	if ( !cl ) {
+	if (!cl)
+	{
 		return;
 	}
 
-	if ( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		SV_SendServerCommand( NULL, "print \"%s\"", "Cannot kick host player\n" );
+	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+	{
+		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
 	// look up the authorize server's IP
-	if ( !svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD ) {
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
-		if ( !SOCK_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE ) ) {
-			Com_Printf( "Couldn't resolve address\n" );
+	if (!svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD)
+	{
+		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE))
+		{
+			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-					svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-					svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-					BigShort( svs.authorizeAddress.port ) );
+		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
+			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
+			BigShort(svs.authorizeAddress.port));
 	}
 
 	// otherwise send their ip to the authorize server
-	if ( svs.authorizeAddress.type != NA_BAD ) {
-		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
-							"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
-							cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3] );
-		Com_Printf( "%s was banned from coming back\n", cl->name );
+	if (svs.authorizeAddress.type != NA_BAD)
+	{
+		NET_OutOfBandPrint(NS_SERVER, svs.authorizeAddress,
+			"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
+			cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3]);
+		Com_Printf("%s was banned from coming back\n", cl->name);
 	}
 }
 
@@ -642,48 +741,56 @@ Ban a user from being able to play on this server through the auth
 server
 ==================
 */
-static void SV_BanNum_f( void ) {
-	client_t    *cl;
+static void SV_BanNum_f(void)
+{
+	client_t* cl;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "Usage: banClient <client number>\n" );
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: banClient <client number>\n");
 		return;
 	}
 
 	cl = SV_GetPlayerByNum();
-	if ( !cl ) {
+	if (!cl)
+	{
 		return;
 	}
-	if ( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		SV_SendServerCommand( NULL, "print \"%s\"", "Cannot kick host player\n" );
+	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+	{
+		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
 	// look up the authorize server's IP
-	if ( !svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD ) {
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
-		if ( !SOCK_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE ) ) {
-			Com_Printf( "Couldn't resolve address\n" );
+	if (!svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD)
+	{
+		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE))
+		{
+			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-					svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-					svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-					BigShort( svs.authorizeAddress.port ) );
+		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
+			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
+			BigShort(svs.authorizeAddress.port));
 	}
 
 	// otherwise send their ip to the authorize server
-	if ( svs.authorizeAddress.type != NA_BAD ) {
-		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
-							"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
-							cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3] );
-		Com_Printf( "%s was banned from coming back\n", cl->name );
+	if (svs.authorizeAddress.type != NA_BAD)
+	{
+		NET_OutOfBandPrint(NS_SERVER, svs.authorizeAddress,
+			"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
+			cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3]);
+		Com_Printf("%s was banned from coming back\n", cl->name);
 	}
 }
 
@@ -694,31 +801,36 @@ SV_KickNum_f
 Kick a user off of the server  FIXME: move to game
 ==================
 */
-static void SV_KickNum_f( void ) {
-	client_t    *cl;
+static void SV_KickNum_f(void)
+{
+	client_t* cl;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "Usage: kicknum <client number>\n" );
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: kicknum <client number>\n");
 		return;
 	}
 
 	cl = SV_GetPlayerByNum();
-	if ( !cl ) {
+	if (!cl)
+	{
 		return;
 	}
-	if ( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		SV_SendServerCommand( NULL, "print \"%s\"", "Cannot kick host player\n" );
+	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+	{
+		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
-	SV_DropClient( cl, "was kicked" );
-	cl->lastPacketTime = svs.time;  // in case there is a funny zombie
+	SV_DropClient(cl, "was kicked");
+	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 }
 
 /*
@@ -726,62 +838,69 @@ static void SV_KickNum_f( void ) {
 SV_Status_f
 ================
 */
-static void SV_Status_f( void ) {
+static void SV_Status_f(void)
+{
 	int i, j, l;
-	client_t    *cl;
-	wsplayerState_t   *ps;
-	const char      *s;
+	client_t* cl;
+	wsplayerState_t* ps;
+	const char* s;
 	int ping;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	Com_Printf( "map: %s\n", sv_mapname->string );
+	Com_Printf("map: %s\n", sv_mapname->string);
 
-	Com_Printf( "num score ping name            lastmsg address               qport rate\n" );
-	Com_Printf( "--- ----- ---- --------------- ------- --------------------- ----- -----\n" );
-	for ( i = 0,cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ )
+	Com_Printf("num score ping name            lastmsg address               qport rate\n");
+	Com_Printf("--- ----- ---- --------------- ------- --------------------- ----- -----\n");
+	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
 	{
-		if ( !cl->state ) {
+		if (!cl->state)
+		{
 			continue;
 		}
-		Com_Printf( "%3i ", i );
-		ps = SV_GameClientNum( i );
-		Com_Printf( "%5i ", ps->persistant[WSPERS_SCORE] );
+		Com_Printf("%3i ", i);
+		ps = SV_GameClientNum(i);
+		Com_Printf("%5i ", ps->persistant[WSPERS_SCORE]);
 
-		if ( cl->state == CS_CONNECTED ) {
-			Com_Printf( "CNCT " );
-		} else if ( cl->state == CS_ZOMBIE ) {
-			Com_Printf( "ZMBI " );
-		} else
+		if (cl->state == CS_CONNECTED)
+		{
+			Com_Printf("CNCT ");
+		}
+		else if (cl->state == CS_ZOMBIE)
+		{
+			Com_Printf("ZMBI ");
+		}
+		else
 		{
 			ping = cl->ping < 9999 ? cl->ping : 9999;
-			Com_Printf( "%4i ", ping );
+			Com_Printf("%4i ", ping);
 		}
 
-		Com_Printf( "%s", cl->name );
-		l = 16 - String::Length( cl->name );
-		for ( j = 0 ; j < l ; j++ )
-			Com_Printf( " " );
+		Com_Printf("%s", cl->name);
+		l = 16 - String::Length(cl->name);
+		for (j = 0; j < l; j++)
+			Com_Printf(" ");
 
-		Com_Printf( "%7i ", svs.time - cl->lastPacketTime );
+		Com_Printf("%7i ", svs.time - cl->lastPacketTime);
 
-		s = SOCK_AdrToString( cl->netchan.remoteAddress );
-		Com_Printf( "%s", s );
-		l = 22 - String::Length( s );
-		for ( j = 0 ; j < l ; j++ )
-			Com_Printf( " " );
+		s = SOCK_AdrToString(cl->netchan.remoteAddress);
+		Com_Printf("%s", s);
+		l = 22 - String::Length(s);
+		for (j = 0; j < l; j++)
+			Com_Printf(" ");
 
-		Com_Printf( "%5i", cl->netchan.qport );
+		Com_Printf("%5i", cl->netchan.qport);
 
-		Com_Printf( " %5i", cl->rate );
+		Com_Printf(" %5i", cl->rate);
 
-		Com_Printf( "\n" );
+		Com_Printf("\n");
 	}
-	Com_Printf( "\n" );
+	Com_Printf("\n");
 }
 
 /*
@@ -789,31 +908,35 @@ static void SV_Status_f( void ) {
 SV_ConSay_f
 ==================
 */
-static void SV_ConSay_f( void ) {
-	char    *p;
+static void SV_ConSay_f(void)
+{
+	char* p;
 	char text[1024];
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( Cmd_Argc() < 2 ) {
+	if (Cmd_Argc() < 2)
+	{
 		return;
 	}
 
-	String::Cpy( text, "console: " );
+	String::Cpy(text, "console: ");
 	p = Cmd_Args();
 
-	if ( *p == '"' ) {
+	if (*p == '"')
+	{
 		p++;
-		p[String::Length( p ) - 1] = 0;
+		p[String::Length(p) - 1] = 0;
 	}
 
-	strcat( text, p );
+	strcat(text, p);
 
-	SV_SendServerCommand( NULL, "chat \"%s\n\"", text );
+	SV_SendServerCommand(NULL, "chat \"%s\n\"", text);
 }
 
 
@@ -824,7 +947,8 @@ SV_Heartbeat_f
 Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer
 ==================
 */
-void SV_Heartbeat_f( void ) {
+void SV_Heartbeat_f(void)
+{
 	svs.nextHeartbeatTime = -9999999;
 }
 
@@ -836,9 +960,10 @@ SV_Serverinfo_f
 Examine the serverinfo string
 ===========
 */
-static void SV_Serverinfo_f( void ) {
-	Com_Printf( "Server info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING_Q3 ) );
+static void SV_Serverinfo_f(void)
+{
+	Com_Printf("Server info settings:\n");
+	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3));
 }
 
 
@@ -849,9 +974,10 @@ SV_Systeminfo_f
 Examine or change the serverinfo string
 ===========
 */
-static void SV_Systeminfo_f( void ) {
-	Com_Printf( "System info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, MAX_INFO_STRING_Q3 ) );
+static void SV_Systeminfo_f(void)
+{
+	Com_Printf("System info settings:\n");
+	Info_Print(Cvar_InfoString(CVAR_SYSTEMINFO, MAX_INFO_STRING_Q3));
 }
 
 
@@ -862,28 +988,32 @@ SV_DumpUser_f
 Examine all a users info strings FIXME: move to game
 ===========
 */
-static void SV_DumpUser_f( void ) {
-	client_t    *cl;
+static void SV_DumpUser_f(void)
+{
+	client_t* cl;
 
 	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
+	if (!com_sv_running->integer)
+	{
+		Com_Printf("Server is not running.\n");
 		return;
 	}
 
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "Usage: info <userid>\n" );
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: info <userid>\n");
 		return;
 	}
 
 	cl = SV_GetPlayerByName();
-	if ( !cl ) {
+	if (!cl)
+	{
 		return;
 	}
 
-	Com_Printf( "userinfo\n" );
-	Com_Printf( "--------\n" );
-	Info_Print( cl->userinfo );
+	Com_Printf("userinfo\n");
+	Com_Printf("--------\n");
+	Info_Print(cl->userinfo);
 }
 
 
@@ -892,8 +1022,9 @@ static void SV_DumpUser_f( void ) {
 SV_KillServer
 =================
 */
-static void SV_KillServer_f( void ) {
-	SV_Shutdown( "killserver" );
+static void SV_KillServer_f(void)
+{
+	SV_Shutdown("killserver");
 }
 
 //===========================================================
@@ -903,35 +1034,38 @@ static void SV_KillServer_f( void ) {
 SV_AddOperatorCommands
 ==================
 */
-void SV_AddOperatorCommands( void ) {
+void SV_AddOperatorCommands(void)
+{
 	static qboolean initialized;
 
-	if ( initialized ) {
+	if (initialized)
+	{
 		return;
 	}
 	initialized = qtrue;
 
-	Cmd_AddCommand( "heartbeat", SV_Heartbeat_f );
-	Cmd_AddCommand( "kick", SV_Kick_f );
-	Cmd_AddCommand( "banUser", SV_Ban_f );
-	Cmd_AddCommand( "banClient", SV_BanNum_f );
-	Cmd_AddCommand( "clientkick", SV_KickNum_f );
-	Cmd_AddCommand( "status", SV_Status_f );
-	Cmd_AddCommand( "serverinfo", SV_Serverinfo_f );
-	Cmd_AddCommand( "systeminfo", SV_Systeminfo_f );
-	Cmd_AddCommand( "dumpuser", SV_DumpUser_f );
-	Cmd_AddCommand( "map_restart", SV_MapRestart_f );
-	Cmd_AddCommand( "sectorlist", SV_SectorList_f );
-	Cmd_AddCommand( "spmap", SV_Map_f );
+	Cmd_AddCommand("heartbeat", SV_Heartbeat_f);
+	Cmd_AddCommand("kick", SV_Kick_f);
+	Cmd_AddCommand("banUser", SV_Ban_f);
+	Cmd_AddCommand("banClient", SV_BanNum_f);
+	Cmd_AddCommand("clientkick", SV_KickNum_f);
+	Cmd_AddCommand("status", SV_Status_f);
+	Cmd_AddCommand("serverinfo", SV_Serverinfo_f);
+	Cmd_AddCommand("systeminfo", SV_Systeminfo_f);
+	Cmd_AddCommand("dumpuser", SV_DumpUser_f);
+	Cmd_AddCommand("map_restart", SV_MapRestart_f);
+	Cmd_AddCommand("sectorlist", SV_SectorList_f);
+	Cmd_AddCommand("spmap", SV_Map_f);
 #ifndef WOLF_SP_DEMO
-	Cmd_AddCommand( "map", SV_Map_f );
-	Cmd_AddCommand( "devmap", SV_Map_f );
-	Cmd_AddCommand( "spdevmap", SV_Map_f );
+	Cmd_AddCommand("map", SV_Map_f);
+	Cmd_AddCommand("devmap", SV_Map_f);
+	Cmd_AddCommand("spdevmap", SV_Map_f);
 #endif
-	Cmd_AddCommand( "loadgame", SV_LoadGame_f );
-	Cmd_AddCommand( "killserver", SV_KillServer_f );
-	if ( com_dedicated->integer ) {
-		Cmd_AddCommand( "say", SV_ConSay_f );
+	Cmd_AddCommand("loadgame", SV_LoadGame_f);
+	Cmd_AddCommand("killserver", SV_KillServer_f);
+	if (com_dedicated->integer)
+	{
+		Cmd_AddCommand("say", SV_ConSay_f);
 	}
 }
 
@@ -940,20 +1074,20 @@ void SV_AddOperatorCommands( void ) {
 SV_RemoveOperatorCommands
 ==================
 */
-void SV_RemoveOperatorCommands( void ) {
+void SV_RemoveOperatorCommands(void)
+{
 #if 0
 	// removing these won't let the server start again
-	Cmd_RemoveCommand( "heartbeat" );
-	Cmd_RemoveCommand( "kick" );
-	Cmd_RemoveCommand( "banUser" );
-	Cmd_RemoveCommand( "banClient" );
-	Cmd_RemoveCommand( "status" );
-	Cmd_RemoveCommand( "serverinfo" );
-	Cmd_RemoveCommand( "systeminfo" );
-	Cmd_RemoveCommand( "dumpuser" );
-	Cmd_RemoveCommand( "map_restart" );
-	Cmd_RemoveCommand( "sectorlist" );
-	Cmd_RemoveCommand( "say" );
+	Cmd_RemoveCommand("heartbeat");
+	Cmd_RemoveCommand("kick");
+	Cmd_RemoveCommand("banUser");
+	Cmd_RemoveCommand("banClient");
+	Cmd_RemoveCommand("status");
+	Cmd_RemoveCommand("serverinfo");
+	Cmd_RemoveCommand("systeminfo");
+	Cmd_RemoveCommand("dumpuser");
+	Cmd_RemoveCommand("map_restart");
+	Cmd_RemoveCommand("sectorlist");
+	Cmd_RemoveCommand("say");
 #endif
 }
-

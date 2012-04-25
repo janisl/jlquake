@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,21 +33,22 @@ If you have questions concerning this license or the applicable additional terms
 // Snapshots are generated at regular time intervals by the server,
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
-typedef struct {
-	int snapFlags;                      // SNAPFLAG_RATE_DELAYED, etc
+typedef struct
+{
+	int snapFlags;						// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
 
-	int serverTime;                 // server time the message is valid for (in msec)
+	int serverTime;					// server time the message is valid for (in msec)
 
-	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
+	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
 
-	wsplayerState_t ps;                       // complete information about the current player at this time
+	wsplayerState_t ps;							// complete information about the current player at this time
 
-	int numEntities;                        // all of the entities that need to be presented
-	wsentityState_t entities[MAX_ENTITIES_IN_SNAPSHOT];   // at the time of this snapshot
+	int numEntities;						// all of the entities that need to be presented
+	wsentityState_t entities[MAX_ENTITIES_IN_SNAPSHOT];		// at the time of this snapshot
 
-	int numServerCommands;                  // text based server commands to execute when this
-	int serverCommandSequence;              // snapshot becomes current
+	int numServerCommands;					// text based server commands to execute when this
+	int serverCommandSequence;				// snapshot becomes current
 } snapshot_t;
 
 enum {
@@ -58,44 +59,44 @@ enum {
 };
 
 //	Overlaps with RF_WRAP_FRAMES
-#define WSRF_BLINK            ( 1 << 9 )  // eyes in 'blink' state
+#define WSRF_BLINK            (1 << 9)		// eyes in 'blink' state
 
 struct wsrefEntity_t
 {
 	refEntityType_t reType;
 	int renderfx;
 
-	qhandle_t hModel;               // opaque type outside refresh
+	qhandle_t hModel;				// opaque type outside refresh
 
 	// most recent data
-	vec3_t lightingOrigin;          // so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
-	float shadowPlane;              // projection shadows go here, stencils go slightly lower
+	vec3_t lightingOrigin;			// so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
+	float shadowPlane;				// projection shadows go here, stencils go slightly lower
 
-	vec3_t axis[3];                 // rotation vectors
-	vec3_t torsoAxis[3];            // rotation vectors for torso section of skeletal animation
-	qboolean nonNormalizedAxes;     // axis are not normalized, i.e. they have scale
-	float origin[3];                // also used as MODEL_BEAM's "from"
-	int frame;                      // also used as MODEL_BEAM's diameter
-	int torsoFrame;                 // skeletal torso can have frame independant of legs frame
+	vec3_t axis[3];					// rotation vectors
+	vec3_t torsoAxis[3];			// rotation vectors for torso section of skeletal animation
+	qboolean nonNormalizedAxes;		// axis are not normalized, i.e. they have scale
+	float origin[3];				// also used as MODEL_BEAM's "from"
+	int frame;						// also used as MODEL_BEAM's diameter
+	int torsoFrame;					// skeletal torso can have frame independant of legs frame
 
-	vec3_t scale;       //----(SA)	added
+	vec3_t scale;		//----(SA)	added
 
 	// previous data for frame interpolation
-	float oldorigin[3];             // also used as MODEL_BEAM's "to"
+	float oldorigin[3];				// also used as MODEL_BEAM's "to"
 	int oldframe;
 	int oldTorsoFrame;
-	float backlerp;                 // 0.0 = current, 1.0 = old
+	float backlerp;					// 0.0 = current, 1.0 = old
 	float torsoBacklerp;
 
 	// texturing
-	int skinNum;                    // inline skin index
-	qhandle_t customSkin;           // NULL for default skin
-	qhandle_t customShader;         // use one image for the entire thing
+	int skinNum;					// inline skin index
+	qhandle_t customSkin;			// NULL for default skin
+	qhandle_t customShader;			// use one image for the entire thing
 
 	// misc
-	byte shaderRGBA[4];             // colors used by rgbgen entity shaders
-	float shaderTexCoord[2];        // texture coordinates used by tcMod entity modifiers
-	float shaderTime;               // subtracted from refdef time to control effect start times
+	byte shaderRGBA[4];				// colors used by rgbgen entity shaders
+	float shaderTexCoord[2];		// texture coordinates used by tcMod entity modifiers
+	float shaderTime;				// subtracted from refdef time to control effect start times
 
 	// extra sprite information
 	float radius;
@@ -107,43 +108,43 @@ struct wsrefEntity_t
 	// Ridah, entity fading (gibs, debris, etc)
 	int fadeStartTime, fadeEndTime;
 
-	float hilightIntensity;         //----(SA)	added
+	float hilightIntensity;			//----(SA)	added
 
 	int reFlags;
 
-	int entityNum;                  // currentState.number, so we can attach rendering effects to specific entities (Zombie)
+	int entityNum;					// currentState.number, so we can attach rendering effects to specific entities (Zombie)
 };
 
 struct wsglfog_t
 {
-	int mode;                   // GL_LINEAR, GL_EXP
-	int hint;                   // GL_DONT_CARE
-	int startTime;              // in ms
-	int finishTime;             // in ms
+	int mode;					// GL_LINEAR, GL_EXP
+	int hint;					// GL_DONT_CARE
+	int startTime;				// in ms
+	int finishTime;				// in ms
 	float color[4];
-	float start;                // near
-	float end;                  // far
-	qboolean useEndForClip;     // use the 'far' value for the far clipping plane
-	float density;              // 0.0-1.0
-	qboolean registered;        // has this fog been set up?
-	qboolean drawsky;           // draw skybox
-	qboolean clearscreen;       // clear the GL color buffer
+	float start;				// near
+	float end;					// far
+	qboolean useEndForClip;		// use the 'far' value for the far clipping plane
+	float density;				// 0.0-1.0
+	qboolean registered;		// has this fog been set up?
+	qboolean drawsky;			// draw skybox
+	qboolean clearscreen;		// clear the GL color buffer
 
 	int dirty;
 };
 
 //	Overlaps with RDF_UNDERWATER
-#define WSRDF_DRAWSKYBOX	16
+#define WSRDF_DRAWSKYBOX    16
 
 struct wsrefdef_t
 {
 	int x, y, width, height;
 	float fov_x, fov_y;
 	vec3_t vieworg;
-	vec3_t viewaxis[3];             // transformation matrix
+	vec3_t viewaxis[3];				// transformation matrix
 
-	int time;           // time in milliseconds for shader effects and other time dependent rendering issues
-	int rdflags;                    // RDF_NOWORLDMODEL, etc
+	int time;			// time in milliseconds for shader effects and other time dependent rendering issues
+	int rdflags;					// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
 	byte areamask[MAX_MAP_AREA_BYTES];
@@ -160,10 +161,10 @@ struct wsglconfig_t
 	char renderer_string[MAX_STRING_CHARS];
 	char vendor_string[MAX_STRING_CHARS];
 	char version_string[MAX_STRING_CHARS];
-	char extensions_string[4 * MAX_STRING_CHARS];                       // this is actually too short for many current cards/drivers  // (SA) doubled from 2x to 4x MAX_STRING_CHARS
+	char extensions_string[4 * MAX_STRING_CHARS];						// this is actually too short for many current cards/drivers  // (SA) doubled from 2x to 4x MAX_STRING_CHARS
 
-	int maxTextureSize;                             // queried from GL
-	int maxActiveTextures;                          // multitexture ability
+	int maxTextureSize;								// queried from GL
+	int maxActiveTextures;							// multitexture ability
 
 	int colorBits, depthBits, stencilBits;
 
@@ -173,17 +174,17 @@ struct wsglconfig_t
 	qboolean deviceSupportsGamma;
 	int textureCompression;
 	qboolean textureEnvAddAvailable;
-	qboolean anisotropicAvailable;                  //----(SA)	added
-	float maxAnisotropy;                            //----(SA)	added
+	qboolean anisotropicAvailable;					//----(SA)	added
+	float maxAnisotropy;							//----(SA)	added
 
 	// vendor-specific support
 	// NVidia
-	qboolean NVFogAvailable;                    //----(SA)	added
-	int NVFogMode;                                  //----(SA)	added
+	qboolean NVFogAvailable;					//----(SA)	added
+	int NVFogMode;									//----(SA)	added
 	// ATI
-	int ATIMaxTruformTess;                          // for truform support
-	int ATINormalMode;                          // for truform support
-	int ATIPointMode;                           // for truform support
+	int ATIMaxTruformTess;							// for truform support
+	int ATINormalMode;							// for truform support
+	int ATIPointMode;							// for truform support
 
 
 	int vidWidth, vidHeight;
@@ -199,9 +200,9 @@ struct wsglconfig_t
 	// used CDS.
 	qboolean isFullscreen;
 	qboolean stereoEnabled;
-	qboolean smpActive;                     // dual processor
+	qboolean smpActive;						// dual processor
 
-	qboolean textureFilterAnisotropicAvailable;                 //DAJ
+	qboolean textureFilterAnisotropicAvailable;					//DAJ
 };
 
 /*
@@ -249,7 +250,7 @@ typedef enum {
 // done.
 	CG_CM_MARKFRAGMENTS,
 	CG_S_STARTSOUND,
-	CG_S_STARTSOUNDEX,  //----(SA)	added
+	CG_S_STARTSOUNDEX,	//----(SA)	added
 	CG_S_STARTLOCALSOUND,
 	CG_S_CLEARLOOPINGSOUNDS,
 	CG_S_ADDLOOPINGSOUND,
@@ -260,16 +261,16 @@ typedef enum {
 	CG_S_RESPATIALIZE,
 	CG_S_REGISTERSOUND,
 	CG_S_STARTBACKGROUNDTRACK,
-	CG_S_FADESTREAMINGSOUND,    //----(SA)	modified
-	CG_S_FADEALLSOUNDS,         //----(SA)	added for fading out everything
+	CG_S_FADESTREAMINGSOUND,	//----(SA)	modified
+	CG_S_FADEALLSOUNDS,			//----(SA)	added for fading out everything
 	CG_S_STARTSTREAMINGSOUND,
 	CG_R_LOADWORLDMAP,
 	CG_R_REGISTERMODEL,
 	CG_R_REGISTERSKIN,
 	CG_R_REGISTERSHADER,
 
-	CG_R_GETSKINMODEL,      // client allowed to view what the .skin loaded so they can set their model appropriately
-	CG_R_GETMODELSHADER,    // client allowed the shader handle for given model/surface (for things like debris inheriting shader from explosive)
+	CG_R_GETSKINMODEL,		// client allowed to view what the .skin loaded so they can set their model appropriately
+	CG_R_GETMODELSHADER,	// client allowed the shader handle for given model/surface (for things like debris inheriting shader from explosive)
 
 	CG_R_REGISTERFONT,
 	CG_R_CLEARSCENE,
@@ -288,7 +289,7 @@ typedef enum {
 	CG_R_RENDERSCENE,
 	CG_R_SETCOLOR,
 	CG_R_DRAWSTRETCHPIC,
-	CG_R_DRAWSTRETCHPIC_GRADIENT,   //----(SA)	added
+	CG_R_DRAWSTRETCHPIC_GRADIENT,	//----(SA)	added
 	CG_R_MODELBOUNDS,
 	CG_R_LERPTAG,
 	CG_GETGLCONFIG,
@@ -328,11 +329,11 @@ typedef enum {
 	CG_R_REMAP_SHADER,
 //	CG_S_ADDREALLOOPINGSOUND,	// not currently used (sorry, trying to keep CG_MEMSET @ 100)
 	CG_S_STOPLOOPINGSOUND,
-	CG_S_STOPSTREAMINGSOUND,    //----(SA)	added
+	CG_S_STOPSTREAMINGSOUND,	//----(SA)	added
 
 	CG_LOADCAMERA,
 	CG_STARTCAMERA,
-	CG_STOPCAMERA,  //----(SA)	added
+	CG_STOPCAMERA,	//----(SA)	added
 	CG_GETCAMERAINFO,
 
 	CG_MEMSET = 110,
@@ -349,9 +350,9 @@ typedef enum {
 	CG_TESTPRINTFLOAT,
 	CG_ACOS,
 
-	CG_INGAME_POPUP,        //----(SA)	added
-	CG_INGAME_CLOSEPOPUP,   // NERVE - SMF
-	CG_LIMBOCHAT,           // NERVE - SMF
+	CG_INGAME_POPUP,		//----(SA)	added
+	CG_INGAME_CLOSEPOPUP,	// NERVE - SMF
+	CG_LIMBOCHAT,			// NERVE - SMF
 
 	CG_GETMODELINFO
 } cgameImport_t;

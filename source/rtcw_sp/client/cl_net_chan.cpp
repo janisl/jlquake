@@ -2,9 +2,9 @@
 ===========================================================================
 
 Return to Castle Wolfenstein single player GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).  
+This file is part of the Return to Castle Wolfenstein single player GPL Source Code (RTCW SP Source Code).
 
 RTCW SP Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,19 +36,21 @@ If you have questions concerning this license or the applicable additional terms
 ==============
 CL_Netchan_Encode
 
-	// first 12 bytes of the data are always:
-	long serverId;
-	long messageAcknowledge;
-	long reliableAcknowledge;
+    // first 12 bytes of the data are always:
+    long serverId;
+    long messageAcknowledge;
+    long reliableAcknowledge;
 
 ==============
 */
-static void CL_Netchan_Encode( QMsg *msg ) {
+static void CL_Netchan_Encode(QMsg* msg)
+{
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
-	byte key, *string;
+	byte key, * string;
 
-	if ( msg->cursize <= CL_ENCODE_START ) {
+	if (msg->cursize <= CL_ENCODE_START)
+	{
 		return;
 	}
 
@@ -60,31 +62,36 @@ static void CL_Netchan_Encode( QMsg *msg ) {
 	msg->readcount = 0;
 	msg->oob = 0;
 
-	serverId = MSG_ReadLong( msg );
-	messageAcknowledge = MSG_ReadLong( msg );
-	reliableAcknowledge = MSG_ReadLong( msg );
+	serverId = MSG_ReadLong(msg);
+	messageAcknowledge = MSG_ReadLong(msg);
+	reliableAcknowledge = MSG_ReadLong(msg);
 
 	msg->oob = soob;
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte *)clc.serverCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ];
+	string = (byte*)clc.serverCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WS - 1)];
 	index = 0;
 	//
 	key = clc.q3_challenge ^ serverId ^ messageAcknowledge;
-	for ( i = CL_ENCODE_START; i < msg->cursize; i++ ) {
+	for (i = CL_ENCODE_START; i < msg->cursize; i++)
+	{
 		// modify the key with the last received now acknowledged server command
-		if ( !string[index] ) {
+		if (!string[index])
+		{
 			index = 0;
 		}
-		if ( string[index] > 127 || string[index] == '%' ) {
-			key ^= '.' << ( i & 1 );
-		} else {
-			key ^= string[index] << ( i & 1 );
+		if (string[index] > 127 || string[index] == '%')
+		{
+			key ^= '.' << (i & 1);
+		}
+		else
+		{
+			key ^= string[index] << (i & 1);
 		}
 		index++;
 		// encode the data with this key
-		*( msg->data + i ) = ( *( msg->data + i ) ) ^ key;
+		*(msg->data + i) = (*(msg->data + i)) ^ key;
 	}
 }
 
@@ -92,14 +99,15 @@ static void CL_Netchan_Encode( QMsg *msg ) {
 ==============
 CL_Netchan_Decode
 
-	// first four bytes of the data are always:
-	long reliableAcknowledge;
+    // first four bytes of the data are always:
+    long reliableAcknowledge;
 
 ==============
 */
-static void CL_Netchan_Decode( QMsg *msg ) {
+static void CL_Netchan_Decode(QMsg* msg)
+{
 	long reliableAcknowledge, i, index;
-	byte key, *string;
+	byte key, * string;
 	int srdc, sbit, soob;
 
 	srdc = msg->readcount;
@@ -108,29 +116,34 @@ static void CL_Netchan_Decode( QMsg *msg ) {
 
 	msg->oob = 0;
 
-	reliableAcknowledge = MSG_ReadLong( msg );
+	reliableAcknowledge = MSG_ReadLong(msg);
 
 	msg->oob = soob;
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = clc.reliableCommands[ reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WS - 1 ) ];
+	string = clc.reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WS - 1)];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
-	key = clc.q3_challenge ^ LittleLong( *(unsigned *)msg->data );
-	for ( i = msg->readcount + CL_DECODE_START; i < msg->cursize; i++ ) {
+	key = clc.q3_challenge ^ LittleLong(*(unsigned*)msg->data);
+	for (i = msg->readcount + CL_DECODE_START; i < msg->cursize; i++)
+	{
 		// modify the key with the last sent and with this message acknowledged client command
-		if ( !string[index] ) {
+		if (!string[index])
+		{
 			index = 0;
 		}
-		if ( string[index] > 127 || string[index] == '%' ) {
-			key ^= '.' << ( i & 1 );
-		} else {
-			key ^= string[index] << ( i & 1 );
+		if (string[index] > 127 || string[index] == '%')
+		{
+			key ^= '.' << (i & 1);
+		}
+		else
+		{
+			key ^= string[index] << (i & 1);
 		}
 		index++;
 		// decode the data with this key
-		*( msg->data + i ) = *( msg->data + i ) ^ key;
+		*(msg->data + i) = *(msg->data + i) ^ key;
 	}
 }
 #endif
@@ -140,8 +153,9 @@ static void CL_Netchan_Decode( QMsg *msg ) {
 CL_Netchan_TransmitNextFragment
 =================
 */
-void CL_Netchan_TransmitNextFragment( netchan_t *chan ) {
-	Netchan_TransmitNextFragment( chan );
+void CL_Netchan_TransmitNextFragment(netchan_t* chan)
+{
+	Netchan_TransmitNextFragment(chan);
 }
 
 //byte chksum[65536];
@@ -151,18 +165,19 @@ void CL_Netchan_TransmitNextFragment( netchan_t *chan ) {
 CL_Netchan_Transmit
 ================
 */
-void CL_Netchan_Transmit( netchan_t *chan, QMsg* msg ) {
+void CL_Netchan_Transmit(netchan_t* chan, QMsg* msg)
+{
 //	int i;
-	msg->WriteByte( q3clc_EOF );
+	msg->WriteByte(q3clc_EOF);
 //	for(i=CL_ENCODE_START;i<msg->cursize;i++) {
 //		chksum[i-CL_ENCODE_START] = msg->data[i];
 //	}
 
 //	Huff_Compress( msg, CL_ENCODE_START );
 #if DO_NET_ENCODE
-	CL_Netchan_Encode( msg );
+	CL_Netchan_Encode(msg);
 #endif
-	Netchan_Transmit( chan, msg->cursize, msg->_data );
+	Netchan_Transmit(chan, msg->cursize, msg->_data);
 }
 
 int newsize = 0;
@@ -172,17 +187,19 @@ int newsize = 0;
 CL_Netchan_Process
 =================
 */
-qboolean CL_Netchan_Process( netchan_t *chan, QMsg *msg ) {
+qboolean CL_Netchan_Process(netchan_t* chan, QMsg* msg)
+{
 	int ret;
 //	int i;
 //	static		int newsize = 0;
 
-	ret = Netchan_Process( chan, msg );
-	if ( !ret ) {
+	ret = Netchan_Process(chan, msg);
+	if (!ret)
+	{
 		return qfalse;
 	}
 #if DO_NET_ENCODE
-	CL_Netchan_Decode( msg );
+	CL_Netchan_Decode(msg);
 #endif
 	newsize += msg->cursize;
 	return qtrue;
