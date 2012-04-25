@@ -52,7 +52,7 @@ up to five or more times in a frame with 3D status bar icons).
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_FLARES		128
+#define MAX_FLARES      128
 
 // TYPES -------------------------------------------------------------------
 
@@ -60,25 +60,25 @@ up to five or more times in a frame with 3D status bar icons).
 // layers: view, mirror, menu
 struct flare_t
 {
-	flare_t*	next;		// for active chain
+	flare_t* next;			// for active chain
 
-	int			addedFrame;
+	int addedFrame;
 
-	bool		inPortal;				// true if in a portal view of the scene
-	int			frameSceneNum;
-	void		*surface;
-	int			fogNum;
+	bool inPortal;						// true if in a portal view of the scene
+	int frameSceneNum;
+	void* surface;
+	int fogNum;
 
-	int			fadeTime;
+	int fadeTime;
 
 	int flags;						// for coronas, the client determines current visibility, but it's still inserted so it will fade out properly
-	bool		visible;			// state of last test
-	float		drawIntensity;		// may be non 0 even if !visible due to fading
+	bool visible;					// state of last test
+	float drawIntensity;			// may be non 0 even if !visible due to fading
 
-	int			windowX, windowY;
-	float		eyeZ;
+	int windowX, windowY;
+	float eyeZ;
 
-	vec3_t		color;
+	vec3_t color;
 	float scale;
 
 	int id;
@@ -96,9 +96,9 @@ struct flare_t
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static flare_t		r_flareStructs[MAX_FLARES];
-static flare_t*		r_activeFlares;
-static flare_t*		r_inactiveFlares;
+static flare_t r_flareStructs[MAX_FLARES];
+static flare_t* r_activeFlares;
+static flare_t* r_inactiveFlares;
 
 // CODE --------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ static void RB_AddFlare(void* surface, int fogNum, vec3_t point, vec3_t color, f
 	// if the point is off the screen, don't bother adding it
 	// calculate screen coordinates and depth
 	vec4_t eye, clip;
-	R_TransformModelToClip(point, backEnd.orient.modelMatrix, 
+	R_TransformModelToClip(point, backEnd.orient.modelMatrix,
 		backEnd.viewParms.projectionMatrix, eye, clip);
 
 	// check to see if the point is completely off screen
@@ -237,9 +237,9 @@ static void RB_AddDlightFlares()
 	int id = 0;
 	dlight_t* l = backEnd.refdef.dlights;
 	mbrush46_fog_t* fog = tr.world->fogs;
-	for (int i = 0 ; i < backEnd.refdef.num_dlights; i++, l++)
+	for (int i = 0; i < backEnd.refdef.num_dlights; i++, l++)
 	{
-		// find which fog volume the light is in 
+		// find which fog volume the light is in
 		int j;
 		for (j = 1; j < tr.world->numfogs; j++)
 		{
@@ -328,8 +328,8 @@ static void RB_TestFlare(flare_t* f)
 	float depth;
 	qglReadPixels(f->windowX, f->windowY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 
-	float screenZ = backEnd.viewParms.projectionMatrix[14] / 
-		((2 * depth - 1) * backEnd.viewParms.projectionMatrix[11] - backEnd.viewParms.projectionMatrix[10]);
+	float screenZ = backEnd.viewParms.projectionMatrix[14] /
+					((2 * depth - 1) * backEnd.viewParms.projectionMatrix[11] - backEnd.viewParms.projectionMatrix[10]);
 
 	bool visible = (-f->eyeZ - -screenZ) < 24;
 #endif
@@ -343,7 +343,7 @@ static void RB_TestFlare(flare_t* f)
 			f->visible = true;
 			f->fadeTime = backEnd.refdef.time - 1;
 		}
-		fade = ((backEnd.refdef.time - f->fadeTime) /1000.0f) * r_flareFade->value;
+		fade = ((backEnd.refdef.time - f->fadeTime) / 1000.0f) * r_flareFade->value;
 	}
 	else
 	{
@@ -530,10 +530,10 @@ void RB_RenderFlares()
 	}
 
 	qglPushMatrix();
-    qglLoadIdentity();
+	qglLoadIdentity();
 	qglMatrixMode(GL_PROJECTION);
 	qglPushMatrix();
-    qglLoadIdentity();
+	qglLoadIdentity();
 	qglOrtho(backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
 		backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
 		-99999, 99999);

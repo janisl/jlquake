@@ -33,7 +33,7 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-glstate_t	glState;
+glstate_t glState;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -350,8 +350,8 @@ void GL_Cull(int cullType)
 	if (cullType == CT_TWO_SIDED)
 	{
 		qglDisable(GL_CULL_FACE);
-	} 
-	else 
+	}
+	else
 	{
 		qglEnable(GL_CULL_FACE);
 

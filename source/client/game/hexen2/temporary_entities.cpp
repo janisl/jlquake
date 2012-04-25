@@ -356,7 +356,7 @@ static void CLHW_ParseSwordExplosion(QMsg& message)
 	h2entity_state_t* state = CLH2_FindState(ent);
 	if (state)
 	{
-		if(rand() & 1)
+		if (rand() & 1)
 		{
 			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning1, 1, 1);
 		}
@@ -429,7 +429,7 @@ static void CLHW_ParseCubeBeam(QMsg& message)
 		vec3_t dest;
 		if (state2)
 		{
-			VectorCopy(state2->origin, dest);//in case they're both valid, copy me again
+			VectorCopy(state2->origin, dest);	//in case they're both valid, copy me again
 			dest[2] += 30;
 		}
 		else//don't know where the damn victim is--prolly won't see beam anyway then, so put it all at the cube
@@ -592,7 +592,7 @@ void CLHW_ParseTEnt(QMsg& message)
 	case H2TE_LIGHTNING3:
 		CLH2_ParseBeam(message);
 		break;
-	case H2TE_LAVASPLASH:	
+	case H2TE_LAVASPLASH:
 		CLH2_ParseLavaSplash(message);
 		break;
 	case H2TE_TELEPORT:

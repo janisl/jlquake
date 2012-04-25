@@ -58,8 +58,8 @@ frame.
 // FIXME: do we really need this?
 struct mdxBoneFrame_t
 {
-	float matrix[3][3];             // 3x3 rotation
-	vec3_t translation;             // translation vector
+	float matrix[3][3];				// 3x3 rotation
+	vec3_t translation;				// translation vector
 };
 
 static float frontlerp, backlerp;
@@ -81,11 +81,11 @@ static mdxFrame_t* oldFrame, * oldTorsoFrame;
 static int frameSize;
 static short* sh, * sh2;
 static float* pf;
-static int ingles[3], tingles[3];                   // ydnar
-static vec3_t angles, tangles, torsoParentOffset, torsoAxis[3];           //, tmpAxis[3];	// rain - unused
+static int ingles[3], tingles[3];					// ydnar
+static vec3_t angles, tangles, torsoParentOffset, torsoAxis[3];				//, tmpAxis[3];	// rain - unused
 static float* tempVert, * tempNormal;
 static vec3_t vec, v2, dir;
-static float diff;            //, a1, a2;	// rain - unused
+static float diff;				//, a1, a2;	// rain - unused
 static int render_count;
 static float lodRadius, lodScale;
 static int* collapse_map, * pCollapseMap;
@@ -96,7 +96,7 @@ static vec4_t m1[4], m2[4];
 static vec3_t t;
 static refEntity_t lastBoneEntity;
 
-static int totalrv, totalrt, totalv, totalt;                //----(SA)
+static int totalrv, totalrt, totalv, totalt;				//----(SA)
 
 //-----------------------------------------------------------------------------
 
@@ -360,11 +360,11 @@ static int R_CullModel(trRefEntity_t* ent)
 
 	// compute frame pointers
 	mdxFrame_t* newFrame = (mdxFrame_t*)((byte*)newFrameHeader + newFrameHeader->ofsFrames +
-		ent->e.frame * (int)(sizeof(mdxBoneFrameCompressed_t)) * newFrameHeader->numBones +
-		ent->e.frame * sizeof(mdxFrame_t));
+										 ent->e.frame * (int)(sizeof(mdxBoneFrameCompressed_t)) * newFrameHeader->numBones +
+										 ent->e.frame * sizeof(mdxFrame_t));
 	mdxFrame_t* oldFrame = (mdxFrame_t*)((byte*)oldFrameHeader + oldFrameHeader->ofsFrames +
-		ent->e.oldframe * (int)(sizeof(mdxBoneFrameCompressed_t)) * oldFrameHeader->numBones +
-		ent->e.oldframe * sizeof(mdxFrame_t));
+										 ent->e.oldframe * (int)(sizeof(mdxBoneFrameCompressed_t)) * oldFrameHeader->numBones +
+										 ent->e.oldframe * sizeof(mdxFrame_t));
 
 	// cull bounding sphere ONLY if this is not an upscaled entity
 	if (!ent->e.nonNormalizedAxes)
@@ -454,8 +454,8 @@ static int R_ComputeFogNum(trRefEntity_t* ent)
 
 	// compute frame pointers
 	mdxFrame_t* mdxFrame = (mdxFrame_t*)((byte*)header + header->ofsFrames +
-		ent->e.frame * (int)(sizeof(mdxBoneFrameCompressed_t)) * header->numBones +
-		ent->e.frame * sizeof(mdxFrame_t));
+										 ent->e.frame * (int)(sizeof(mdxBoneFrameCompressed_t)) * header->numBones +
+										 ent->e.frame * sizeof(mdxFrame_t));
 
 	// FIXME: non-normalized axis issues
 	vec3_t localOrigin;
@@ -531,7 +531,7 @@ void R_MDM_AddAnimSurfaces(trRefEntity_t* ent)
 
 			if (ent->e.renderfx & RF_BLINK)
 			{
-				char* s = va("%s_b", surface->name);   // append '_b' for 'blink'
+				char* s = va("%s_b", surface->name);	// append '_b' for 'blink'
 				int hash = Com_HashKey(s, String::Length(s));
 				for (int j = 0; j < skin->numSurfaces; j++)
 				{
@@ -547,7 +547,7 @@ void R_MDM_AddAnimSurfaces(trRefEntity_t* ent)
 				}
 			}
 
-			if (shader == tr.defaultShader)      // blink reference in skin was not found
+			if (shader == tr.defaultShader)		// blink reference in skin was not found
 			{
 				int hash = Com_HashKey(surface->name, sizeof(surface->name));
 				for (int j = 0; j < skin->numSurfaces; j++)
@@ -805,20 +805,20 @@ static void R_CalcBone(const int torsoParent, const refEntity_t* refent, int bon
 				VectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 
 			}
-			else        // legs bone
+			else		// legs bone
 			{
 				VectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 			}
 		}
 	}
-	else        // just use the frame position
+	else		// just use the frame position
 	{
 		bonePtr->translation[0] = frame->parentOffset[0];
 		bonePtr->translation[1] = frame->parentOffset[1];
 		bonePtr->translation[2] = frame->parentOffset[2];
 	}
 	//
-	if (boneNum == torsoParent)     // this is the torsoParent
+	if (boneNum == torsoParent)		// this is the torsoParent
 	{
 		VectorCopy(bonePtr->translation, torsoParentOffset);
 	}
@@ -1027,23 +1027,23 @@ static void R_CalcBoneLerp(const int torsoParent, const refEntity_t* refent, int
 		*(pf++) = SHORT2ANGLE(*(sh++));
 		*(pf++) = SHORT2ANGLE(*(sh++));
 		*(pf++) = 0;
-		LocalAngleVector(angles, v2);           // new
+		LocalAngleVector(angles, v2);			// new
 
 		pf = angles;
 		*(pf++) = SHORT2ANGLE(*(sh2++));
 		*(pf++) = SHORT2ANGLE(*(sh2++));
 		*(pf++) = 0;
-		LocalAngleVector(angles, vec);          // old
+		LocalAngleVector(angles, vec);			// old
 		#else
 		ingles[0] = sh[0];
 		ingles[1] = sh[1];
 		ingles[2] = 0;
-		LocalIngleVector(ingles, v2);           // new
+		LocalIngleVector(ingles, v2);			// new
 
 		ingles[0] = sh2[0];
 		ingles[1] = sh2[1];
 		ingles[2] = 0;
-		LocalIngleVector(ingles, vec);          // old
+		LocalIngleVector(ingles, vec);			// old
 		#endif
 
 		// blend the angles together
@@ -1057,9 +1057,9 @@ static void R_CalcBoneLerp(const int torsoParent, const refEntity_t* refent, int
 		}
 
 		// translation
-		if (!fullTorso && isTorso)        // partial legs/torso, need to lerp according to torsoWeight
+		if (!fullTorso && isTorso)			// partial legs/torso, need to lerp according to torsoWeight
 
-		{   // calc the torso frame
+		{	// calc the torso frame
 			sh = (short*)cTBonePtr->ofsAngles;
 			sh2 = (short*)cOldTBonePtr->ofsAngles;
 
@@ -1068,23 +1068,23 @@ static void R_CalcBoneLerp(const int torsoParent, const refEntity_t* refent, int
 			*(pf++) = SHORT2ANGLE(*(sh++));
 			*(pf++) = SHORT2ANGLE(*(sh++));
 			*(pf++) = 0;
-			LocalAngleVector(angles, v2);           // new
+			LocalAngleVector(angles, v2);			// new
 
 			pf = angles;
 			*(pf++) = SHORT2ANGLE(*(sh2++));
 			*(pf++) = SHORT2ANGLE(*(sh2++));
 			*(pf++) = 0;
-			LocalAngleVector(angles, vec);          // old
+			LocalAngleVector(angles, vec);			// old
 			#else
 			ingles[0] = sh[0];
 			ingles[1] = sh[1];
 			ingles[2] = 0;
-			LocalIngleVector(ingles, v2);           // new
+			LocalIngleVector(ingles, v2);			// new
 
 			ingles[0] = sh[0];
 			ingles[1] = sh[1];
 			ingles[2] = 0;
-			LocalIngleVector(ingles, vec);          // old
+			LocalIngleVector(ingles, vec);			// old
 			#endif
 
 			// blend the angles together
@@ -1098,7 +1098,7 @@ static void R_CalcBoneLerp(const int torsoParent, const refEntity_t* refent, int
 		VectorMA(parentBone->translation, thisBoneInfo->parentDist, dir, bonePtr->translation);
 
 	}
-	else        // just interpolate the frame positions
+	else		// just interpolate the frame positions
 
 	{
 		bonePtr->translation[0] = frontlerp * frame->parentOffset[0] + backlerp * oldFrame->parentOffset[0];
@@ -1107,7 +1107,7 @@ static void R_CalcBoneLerp(const int torsoParent, const refEntity_t* refent, int
 
 	}
 	//
-	if (boneNum == torsoParent)     // this is the torsoParent
+	if (boneNum == torsoParent)		// this is the torsoParent
 	{
 		VectorCopy(bonePtr->translation, torsoParentOffset);
 	}
@@ -1315,7 +1315,7 @@ static void R_CalcBones(const refEntity_t* refent, int* boneList, int numBones)
 		}
 
 	}
-	else        // interpolated
+	else		// interpolated
 
 	{
 		cOldBoneList = (mdxBoneFrameCompressed_t*)((byte*)mdxOldFrameHeader + mdxOldFrameHeader->ofsFrames +
@@ -1423,7 +1423,7 @@ static float R_CalcMDMLod(refEntity_t* refent, vec3_t origin, float radius, floa
 
 //		ri.Printf (PRINT_ALL, "projected radius: %f\n", projectedRadius);
 
-		lodScale = r_lodscale->value;   // fudge factor since MDS uses a much smoother method of LOD
+		lodScale = r_lodscale->value;	// fudge factor since MDS uses a much smoother method of LOD
 		flod = projectedRadius * lodScale * modelScale;
 	}
 	else
@@ -1499,7 +1499,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 //----(SA)	modification to allow dead skeletal bodies to go below minlod (experiment)
 	if (refent->reFlags & REFLAG_DEAD_LOD)
 	{
-		if (lodScale < 0.35)       // allow dead to lod down to 35% (even if below surf->minLod) (%35 is arbitrary and probably not good generally.  worked for the blackguard/infantry as a test though)
+		if (lodScale < 0.35)		// allow dead to lod down to 35% (even if below surf->minLod) (%35 is arbitrary and probably not good generally.  worked for the blackguard/infantry as a test though)
 		{
 			lodScale = 0.35;
 		}
@@ -1691,7 +1691,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 				mdxHeader_t* mdxHeader = R_GetModelByHandle(refent->frameModel)->q3_mdx;
 				boneRefs = (int*)((byte*)surface + surface->ofsBoneReferences);
 
-				qglDepthRange(0, 0);        // never occluded
+				qglDepthRange(0, 0);		// never occluded
 				qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 				for (i = 0; i < surface->numBoneReferences; i++, boneRefs++)
@@ -1714,7 +1714,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 					qglEnd();
 					qglDisable(GL_BLEND);
 
-					R_DebugText(vec, 1.f, 1.f, 1.f, mdxBoneInfo->name, false);         // qfalse, as there is no reason to set depthrange again
+					R_DebugText(vec, 1.f, 1.f, 1.f, mdxBoneInfo->name, false);			// qfalse, as there is no reason to set depthrange again
 				}
 
 				qglDepthRange(0, 1);
@@ -1726,7 +1726,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 				{
 					mdmTag_t* pTag = (mdmTag_t*)((byte*)header + header->ofsTags);
 
-					qglDepthRange(0, 0);    // never occluded
+					qglDepthRange(0, 0);	// never occluded
 					qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 					for (i = 0; i < header->numTags; i++)
@@ -1773,7 +1773,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 						qglEnd();
 						qglDisable(GL_BLEND);
 
-						R_DebugText(vec, 1.f, 1.f, 1.f, pTag->name, false);    // qfalse, as there is no reason to set depthrange again
+						R_DebugText(vec, 1.f, 1.f, 1.f, pTag->name, false);		// qfalse, as there is no reason to set depthrange again
 
 						pTag = (mdmTag_t*)((byte*)pTag + pTag->ofsEnd);
 					}

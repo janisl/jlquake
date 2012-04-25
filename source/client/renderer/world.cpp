@@ -89,7 +89,7 @@ static bool R_CullGrid(srfGridMesh_t* cv)
 
 		int boxCull = R_CullLocalBox(cv->bounds);
 
-		if (boxCull == CULL_OUT) 
+		if (boxCull == CULL_OUT)
 		{
 			tr.pc.c_box_cull_patch_out++;
 			return true;
@@ -258,7 +258,7 @@ static bool R_CullSurface(surfaceType_t* surface, shader_t* shader, int* frontFa
 
 	// don't cull exactly on the plane, because there are levels of rounding
 	// through the BSP, ICD, and hardware that may cause pixel gaps if an
-	// epsilon isn't allowed here 
+	// epsilon isn't allowed here
 	if (shader->cullType == CT_FRONT_SIDED)
 	{
 		if (d < sface->plane.dist - 8)
@@ -326,9 +326,9 @@ static int R_DlightGrid(srfGridMesh_t* grid, int dlightBits)
 		dlight_t* dl = &tr.refdef.dlights[i];
 		if (dl->origin[0] - dl->radius > grid->bounds[1][0] ||
 			dl->origin[0] + dl->radius < grid->bounds[0][0] ||
-			dl->origin[1] - dl->radius > grid->bounds[1][1] ||
+										 dl->origin[1] - dl->radius > grid->bounds[1][1] ||
 			dl->origin[1] + dl->radius < grid->bounds[0][1] ||
-			dl->origin[2] - dl->radius > grid->bounds[1][2] ||
+										 dl->origin[2] - dl->radius > grid->bounds[1][2] ||
 			dl->origin[2] + dl->radius < grid->bounds[0][2])
 		{
 			// dlight doesn't reach the bounds
@@ -531,7 +531,7 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, shader_t* shader, int dl
 /*
 =============================================================
 
-	BRUSH MODELS
+    BRUSH MODELS
 
 =============================================================
 */
@@ -559,7 +559,7 @@ void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent)
 	qglColor3f(1, 1, 1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-    qglPushMatrix();
+	qglPushMatrix();
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	mbrush29_surface_t* psurf = &clmodel->brush29_surfaces[clmodel->brush29_firstmodelsurface];
@@ -703,7 +703,7 @@ void R_DrawBrushModelQ2(trRefEntity_t* e)
 	qglColor3f(1, 1, 1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
-    qglPushMatrix();
+	qglPushMatrix();
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	R_DrawInlineBModel();
@@ -842,7 +842,7 @@ void R_AddBrushModelSurfaces(trRefEntity_t* ent)
 /*
 =============================================================
 
-	WORLD MODEL
+    WORLD MODEL
 
 =============================================================
 */
@@ -868,7 +868,7 @@ static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 	{
 		return;
 	}
-	
+
 	// if a leaf node, draw stuff
 	if (node->contents < 0)
 	{
@@ -908,7 +908,7 @@ static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 		dot = tr.orient.viewOrigin[2] - plane->dist;
 		break;
 	default:
-		dot = DotProduct (tr.orient.viewOrigin, plane->normal) - plane->dist;
+		dot = DotProduct(tr.orient.viewOrigin, plane->normal) - plane->dist;
 		break;
 	}
 
@@ -932,7 +932,7 @@ static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 	{
 		mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 
-		if (dot < 0 -BACKFACE_EPSILON)
+		if (dot < 0 - BACKFACE_EPSILON)
 		{
 			side = BRUSH29_SURF_PLANEBACK;
 		}
@@ -949,8 +949,8 @@ static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 
 			// don't backface underwater surfaces, because they warp
 			if (!(((r_viewleaf->contents == BSP29CONTENTS_EMPTY && (surf->flags & BRUSH29_SURF_UNDERWATER)) ||
-				(r_viewleaf->contents != BSP29CONTENTS_EMPTY && !(surf->flags & BRUSH29_SURF_UNDERWATER))) &&
-				!(surf->flags & BRUSH29_SURF_DONTWARP)) && ((dot < 0) ^ !!(surf->flags & BRUSH29_SURF_PLANEBACK)))
+				   (r_viewleaf->contents != BSP29CONTENTS_EMPTY && !(surf->flags & BRUSH29_SURF_UNDERWATER))) &&
+				  !(surf->flags & BRUSH29_SURF_DONTWARP)) && ((dot < 0) ^ !!(surf->flags & BRUSH29_SURF_PLANEBACK)))
 			{
 				continue;		// wrong side
 			}
@@ -998,7 +998,7 @@ static void R_MarkLeavesQ1()
 	{
 		return;
 	}
-	
+
 	tr.visCount++;
 	r_oldviewleaf = r_viewleaf;
 
@@ -1078,7 +1078,7 @@ static void R_RecursiveWorldNodeQ2(mbrush38_node_t* node)
 	{
 		return;
 	}
-	
+
 	// if a leaf node, draw stuff
 	if (node->contents != -1)
 	{
@@ -1099,7 +1099,8 @@ static void R_RecursiveWorldNodeQ2(mbrush38_node_t* node)
 			{
 				(*mark)->visframe = tr.viewCount;
 				mark++;
-			} while (--c);
+			}
+			while (--c);
 		}
 
 		return;
@@ -1218,7 +1219,7 @@ static void R_FindViewCluster()
 	else
 	{
 		// look up a bit
-		vec3_t	temp;
+		vec3_t temp;
 		VectorCopy(tr.viewParms.orient.origin, temp);
 		temp[2] += 16;
 		leaf = Mod_PointInLeafQ2(temp, tr.worldModel);
@@ -1273,7 +1274,7 @@ static void R_MarkLeavesQ2()
 	}
 
 	byte* vis = Mod_ClusterPVS(r_viewcluster, tr.worldModel);
-	byte fatvis[BSP38MAX_MAP_LEAFS/8];
+	byte fatvis[BSP38MAX_MAP_LEAFS / 8];
 	// may have to combine two clusters because of solid water boundaries
 	if (r_viewcluster2 != r_viewcluster)
 	{
@@ -1352,7 +1353,7 @@ void R_DrawWorldQ2()
 	*/
 	DrawTextureChainsQ2();
 	R_BlendLightmapsQ2();
-	
+
 	R_DrawSkyBoxQ2();
 
 	R_DrawTriangleOutlines();
@@ -1481,12 +1482,12 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 				int r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[4]);
 				if (r == 2)
 				{
-					return;                     // culled
+					return;						// culled
 				}
 				if (r == 1)
 				{
 					//JL WTF?
-					planeBits &= ~8;            // all descendants will also be in front
+					planeBits &= ~8;			// all descendants will also be in front
 				}
 			}
 		}
@@ -1510,7 +1511,7 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 		else if (GGameType & GAME_ET)
 		{
 			// ydnar: cull dlights
-			if (dlightBits)      //%	&& node->contents != -1 )
+			if (dlightBits)		//%	&& node->contents != -1 )
 			{
 				for (int i = 0; i < tr.refdef.num_dlights; i++)
 				{
@@ -1548,7 +1549,7 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 					{
 						dlight_t* dl = &tr.refdef.dlights[i];
 						float dist = DotProduct(dl->origin, node->plane->normal) - node->plane->dist;
-						
+
 						if (dist > -dl->radius)
 						{
 							newDlights[0] |= (1 << i);
@@ -1627,7 +1628,7 @@ static void R_MarkLeavesQ3()
 	// if the cluster is the same and the area visibility matrix
 	// hasn't changed, we don't need to mark everything again
 
-	// if r_showcluster was just turned on, remark everything 
+	// if r_showcluster was just turned on, remark everything
 	if (tr.viewCluster == cluster && !tr.refdef.areamaskModified && !r_showcluster->modified)
 	{
 		return;
@@ -1740,7 +1741,7 @@ void R_AddWorldSurfaces()
 		mbrush46_node_t** node = tr.world->skyNodes;
 		for (int i = 0; i < tr.world->numSkyNodes; i++, node++)
 		{
-			R_AddLeafSurfacesQ3(*node, tr.refdef.dlightBits, 0);      // no decals on skybox nodes
+			R_AddLeafSurfacesQ3(*node, tr.refdef.dlightBits, 0);		// no decals on skybox nodes
 		}
 	}
 	else

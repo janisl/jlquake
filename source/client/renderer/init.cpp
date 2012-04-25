@@ -25,10 +25,10 @@
 
 struct vidmode_t
 {
-	const char*	description;
-	int         width;
-	int			height;
-	float		pixelAspect;		// pixel width / height
+	const char* description;
+	int width;
+	int height;
+	float pixelAspect;				// pixel width / height
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -41,144 +41,144 @@ struct vidmode_t
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Cvar*		r_logFile;
+Cvar* r_logFile;
 
-Cvar*		r_mode;
-Cvar*		r_fullscreen;
-Cvar*		r_customwidth;
-Cvar*		r_customheight;
-Cvar*		r_customaspect;
+Cvar* r_mode;
+Cvar* r_fullscreen;
+Cvar* r_customwidth;
+Cvar* r_customheight;
+Cvar* r_customaspect;
 
-Cvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
-Cvar*		r_stencilbits;
-Cvar*		r_depthbits;
-Cvar*		r_colorbits;
-Cvar*		r_stereo;
-Cvar*		r_displayRefresh;
-Cvar*		r_swapInterval;
-Cvar*		r_drawBuffer;
+Cvar* r_allowSoftwareGL;			// don't abort out if the pixelformat claims software
+Cvar* r_stencilbits;
+Cvar* r_depthbits;
+Cvar* r_colorbits;
+Cvar* r_stereo;
+Cvar* r_displayRefresh;
+Cvar* r_swapInterval;
+Cvar* r_drawBuffer;
 
-Cvar*		r_verbose;
+Cvar* r_verbose;
 
-Cvar*		r_ext_compressed_textures;
-Cvar*		r_ext_multitexture;
-Cvar*		r_ext_texture_env_add;
-Cvar*		r_ext_gamma_control;
-Cvar*		r_ext_compiled_vertex_array;
-Cvar*		r_ext_point_parameters;
+Cvar* r_ext_compressed_textures;
+Cvar* r_ext_multitexture;
+Cvar* r_ext_texture_env_add;
+Cvar* r_ext_gamma_control;
+Cvar* r_ext_compiled_vertex_array;
+Cvar* r_ext_point_parameters;
 Cvar* r_ext_NV_fog_dist;
 Cvar* r_ext_texture_filter_anisotropic;
 Cvar* r_ext_ATI_pntriangles;
 
-Cvar*		r_gamma;
-Cvar*		r_ignorehwgamma;
-Cvar*		r_intensity;
-Cvar*		r_overBrightBits;
+Cvar* r_gamma;
+Cvar* r_ignorehwgamma;
+Cvar* r_intensity;
+Cvar* r_overBrightBits;
 
-Cvar*		r_wateralpha;
-Cvar*		r_roundImagesDown;
-Cvar*		r_picmip;
-Cvar*		r_texturebits;
-Cvar*		r_colorMipLevels;
-Cvar*		r_simpleMipMaps;
-Cvar*		r_textureMode;
+Cvar* r_wateralpha;
+Cvar* r_roundImagesDown;
+Cvar* r_picmip;
+Cvar* r_texturebits;
+Cvar* r_colorMipLevels;
+Cvar* r_simpleMipMaps;
+Cvar* r_textureMode;
 
-Cvar*		r_ignoreGLErrors;
+Cvar* r_ignoreGLErrors;
 
-Cvar*		r_nobind;
+Cvar* r_nobind;
 
-Cvar*		r_mapOverBrightBits;
-Cvar*		r_vertexLight;
-Cvar*		r_lightmap;
-Cvar*		r_fullbright;
-Cvar*		r_singleShader;
+Cvar* r_mapOverBrightBits;
+Cvar* r_vertexLight;
+Cvar* r_lightmap;
+Cvar* r_fullbright;
+Cvar* r_singleShader;
 
-Cvar*		r_subdivisions;
+Cvar* r_subdivisions;
 
-Cvar*		r_ignoreFastPath;
-Cvar*		r_detailTextures;
-Cvar*		r_uiFullScreen;
-Cvar*		r_printShaders;
+Cvar* r_ignoreFastPath;
+Cvar* r_detailTextures;
+Cvar* r_uiFullScreen;
+Cvar* r_printShaders;
 
-Cvar*		r_saveFontData;
+Cvar* r_saveFontData;
 
-Cvar*		r_smp;
-Cvar*		r_maxpolys;
-Cvar*		r_maxpolyverts;
+Cvar* r_smp;
+Cvar* r_maxpolys;
+Cvar* r_maxpolyverts;
 
-Cvar*		r_dynamiclight;
-Cvar*		r_znear;
+Cvar* r_dynamiclight;
+Cvar* r_znear;
 
-Cvar*		r_nocull;
+Cvar* r_nocull;
 
-Cvar*		r_primitives;
-Cvar*		r_vertex_arrays;
-Cvar*		r_lerpmodels;
-Cvar*		r_shadows;
-Cvar*		r_debugSort;
-Cvar*		r_showtris;
-Cvar*		r_shownormals;
-Cvar*		r_offsetFactor;
-Cvar*		r_offsetUnits;
-Cvar*		r_clear;
+Cvar* r_primitives;
+Cvar* r_vertex_arrays;
+Cvar* r_lerpmodels;
+Cvar* r_shadows;
+Cvar* r_debugSort;
+Cvar* r_showtris;
+Cvar* r_shownormals;
+Cvar* r_offsetFactor;
+Cvar* r_offsetUnits;
+Cvar* r_clear;
 
-Cvar*		r_modulate;
-Cvar*		r_ambientScale;
-Cvar*		r_directedScale;
-Cvar*		r_debugLight;
+Cvar* r_modulate;
+Cvar* r_ambientScale;
+Cvar* r_directedScale;
+Cvar* r_debugLight;
 
-Cvar*		r_lightlevel;	// FIXME: This is a HACK to get the client's light level
+Cvar* r_lightlevel;			// FIXME: This is a HACK to get the client's light level
 
-Cvar*		r_lodbias;
-Cvar*		r_lodscale;
+Cvar* r_lodbias;
+Cvar* r_lodscale;
 
-Cvar*		r_skymip;
-Cvar*		r_fastsky;
-Cvar*		r_showsky;
-Cvar*		r_drawSun;
+Cvar* r_skymip;
+Cvar* r_fastsky;
+Cvar* r_showsky;
+Cvar* r_drawSun;
 
-Cvar*		r_lodCurveError;
+Cvar* r_lodCurveError;
 
-Cvar*		r_ignore;
+Cvar* r_ignore;
 
-Cvar*		r_keeptjunctions;
-Cvar*		r_texsort;
-Cvar*		r_dynamic;
-Cvar*		r_saturatelighting;
+Cvar* r_keeptjunctions;
+Cvar* r_texsort;
+Cvar* r_dynamic;
+Cvar* r_saturatelighting;
 
-Cvar*		r_nocurves;
-Cvar*		r_facePlaneCull;
-Cvar*		r_novis;
-Cvar*		r_lockpvs;
-Cvar*		r_showcluster;
-Cvar*		r_drawworld;
-Cvar*		r_measureOverdraw;
-Cvar*		r_finish;
-Cvar*		r_showImages;
-Cvar*		r_speeds;
-Cvar*		r_showSmp;
-Cvar*		r_skipBackEnd;
-Cvar*		r_drawentities;
-Cvar*		r_debugSurface;
-Cvar*		r_norefresh;
+Cvar* r_nocurves;
+Cvar* r_facePlaneCull;
+Cvar* r_novis;
+Cvar* r_lockpvs;
+Cvar* r_showcluster;
+Cvar* r_drawworld;
+Cvar* r_measureOverdraw;
+Cvar* r_finish;
+Cvar* r_showImages;
+Cvar* r_speeds;
+Cvar* r_showSmp;
+Cvar* r_skipBackEnd;
+Cvar* r_drawentities;
+Cvar* r_debugSurface;
+Cvar* r_norefresh;
 
-Cvar*		r_railWidth;
-Cvar*		r_railCoreWidth;
-Cvar*		r_railSegmentLength;
+Cvar* r_railWidth;
+Cvar* r_railCoreWidth;
+Cvar* r_railSegmentLength;
 
-Cvar*		r_flares;
-Cvar*		r_flareSize;
-Cvar*		r_flareFade;
+Cvar* r_flares;
+Cvar* r_flareSize;
+Cvar* r_flareFade;
 
-Cvar*		r_particle_size;
-Cvar*		r_particle_min_size;
-Cvar*		r_particle_max_size;
-Cvar*		r_particle_att_a;
-Cvar*		r_particle_att_b;
-Cvar*		r_particle_att_c;
+Cvar* r_particle_size;
+Cvar* r_particle_min_size;
+Cvar* r_particle_max_size;
+Cvar* r_particle_att_a;
+Cvar* r_particle_att_b;
+Cvar* r_particle_att_c;
 
-Cvar*		r_noportals;
-Cvar*		r_portalOnly;
+Cvar* r_noportals;
+Cvar* r_portalOnly;
 
 Cvar* r_nv_fogdist_mode;
 
@@ -218,20 +218,20 @@ Cvar* r_buildScript;
 
 static vidmode_t r_vidModes[] =
 {
-	{ "Mode  0: 320x240",		320,	240,	1 },
-	{ "Mode  1: 400x300",		400,	300,	1 },
-	{ "Mode  2: 512x384",		512,	384,	1 },
-	{ "Mode  3: 640x480",		640,	480,	1 },
-	{ "Mode  4: 800x600",		800,	600,	1 },
-	{ "Mode  5: 960x720",		960,	720,	1 },
-	{ "Mode  6: 1024x768",		1024,	768,	1 },
-	{ "Mode  7: 1152x864",		1152,	864,	1 },
-	{ "Mode  8: 1280x1024",		1280,	1024,	1 },
-	{ "Mode  9: 1600x1200",		1600,	1200,	1 },
-	{ "Mode 10: 2048x1536",		2048,	1536,	1 },
-	{ "Mode 11: 856x480 (wide)",856,	480,	1 }
+	{ "Mode  0: 320x240",       320,    240,    1 },
+	{ "Mode  1: 400x300",       400,    300,    1 },
+	{ "Mode  2: 512x384",       512,    384,    1 },
+	{ "Mode  3: 640x480",       640,    480,    1 },
+	{ "Mode  4: 800x600",       800,    600,    1 },
+	{ "Mode  5: 960x720",       960,    720,    1 },
+	{ "Mode  6: 1024x768",      1024,   768,    1 },
+	{ "Mode  7: 1152x864",      1152,   864,    1 },
+	{ "Mode  8: 1280x1024",     1280,   1024,   1 },
+	{ "Mode  9: 1600x1200",     1600,   1200,   1 },
+	{ "Mode 10: 2048x1536",     2048,   1536,   1 },
+	{ "Mode 11: 856x480 (wide)",856,    480,    1 }
 };
-static int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
+static int s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
 const char* gl_system_extensions_string;
 
@@ -245,9 +245,9 @@ const char* gl_system_extensions_string;
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 {
-    if (mode < -1)
+	if (mode < -1)
 	{
-        return false;
+		return false;
 	}
 	if (mode >= s_numVidModes)
 	{
@@ -280,7 +280,7 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 static void R_ModeList_f()
 {
 	Log::write("\n");
-	for (int i = 0; i < s_numVidModes; i++ )
+	for (int i = 0; i < s_numVidModes; i++)
 	{
 		Log::write("%s\n", r_vidModes[i].description);
 	}
@@ -415,7 +415,7 @@ static void GfxInfo_f()
 	common->Printf("picmip2: %d\n", r_picmip2->integer);
 	Log::write("texture bits: %d\n", r_texturebits->integer);
 	Log::write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
-	Log::write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ]);
+	Log::write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0]);
 	Log::write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
 	Log::write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
 	common->Printf("anisotropy: %s\n", r_textureAnisotropy->string);
@@ -491,9 +491,9 @@ static void R_Register()
 	r_detailTextures = Cvar_Get("r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	//	Disabled until I fix it on Linux.
 	r_smp = Cvar_Get("r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);
-	r_picmip2 = Cvar_Get("r_picmip2", "2", CVAR_ARCHIVE | CVAR_LATCH2);   // used for character skins picmipping at a different level from the rest of the game
+	r_picmip2 = Cvar_Get("r_picmip2", "2", CVAR_ARCHIVE | CVAR_LATCH2);		// used for character skins picmipping at a different level from the rest of the game
 	AssertCvarRange(r_picmip2, 0, 16, true);
-	r_clampToEdge = Cvar_Get("r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE); // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
+	r_clampToEdge = Cvar_Get("r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_UNSAFE);	// ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
 	//
 	// temporary latched variables that can only change over a restart
@@ -523,7 +523,7 @@ static void R_Register()
 	}
 	// TTimo show_bug.cgi?id=440
 	//   with r_cache enabled, non-win32 OSes were leaking 24Mb per R_Init..
-	r_cache = Cvar_Get("r_cache", "1", CVAR_LATCH2);  // leaving it as this for backwards compability. but it caches models and shaders also
+	r_cache = Cvar_Get("r_cache", "1", CVAR_LATCH2);	// leaving it as this for backwards compability. but it caches models and shaders also
 	r_cacheShaders = Cvar_Get("r_cacheShaders", "1", CVAR_LATCH2);
 	r_cacheModels = Cvar_Get("r_cacheModels", "1", CVAR_LATCH2);
 
@@ -564,7 +564,7 @@ static void R_Register()
 	r_particle_att_a = Cvar_Get("r_particle_att_a", "0.01", CVAR_ARCHIVE);
 	r_particle_att_b = Cvar_Get("r_particle_att_b", "0.0", CVAR_ARCHIVE);
 	r_particle_att_c = Cvar_Get("r_particle_att_c", "0.01", CVAR_ARCHIVE);
-	r_nv_fogdist_mode = Cvar_Get("r_nv_fogdist_mode", "GL_EYE_RADIAL_NV", CVAR_ARCHIVE | CVAR_UNSAFE);  // default to 'looking good'
+	r_nv_fogdist_mode = Cvar_Get("r_nv_fogdist_mode", "GL_EYE_RADIAL_NV", CVAR_ARCHIVE | CVAR_UNSAFE);	// default to 'looking good'
 	r_textureAnisotropy = Cvar_Get("r_textureAnisotropy", "1.0", CVAR_ARCHIVE);
 	r_ati_truform_tess = Cvar_Get("r_ati_truform_tess", "1", CVAR_ARCHIVE);
 	r_ati_truform_normalmode = Cvar_Get("r_ati_truform_normalmode", "QUADRATIC", CVAR_ARCHIVE);
@@ -741,7 +741,7 @@ static void R_SetMode()
 	}
 
 	Log::write("...WARNING: could not revert to safe mode\n");
-	throw Exception("R_SetMode() - could not initialise OpenGL subsystem\n" );
+	throw Exception("R_SetMode() - could not initialise OpenGL subsystem\n");
 }
 
 //==========================================================================
@@ -757,13 +757,13 @@ static void R_SetMode()
 //==========================================================================
 
 static void InitOpenGLSubsystem()
-{	
+{
 	Log::write("Initializing OpenGL subsystem\n");
 
 	//	Ceate the window and set up the context.
 	R_SetMode();
 
-	// 	Initialise our QGL dynamic bindings
+	//  Initialise our QGL dynamic bindings
 	QGL_Init();
 
 	//	Needed for Quake 3 UI vm.
@@ -904,7 +904,7 @@ static void GL_SetDefaultState()
 //==========================================================================
 
 static void InitOpenGL()
-{	
+{
 	//
 	// initialize OS specific portions of the renderer
 	//
@@ -915,7 +915,7 @@ static void InitOpenGL()
 	//		- r_ignorehwgamma
 	//		- r_gamma
 	//
-	
+
 	if (glConfig.vidWidth == 0)
 	{
 		InitOpenGLSubsystem();
@@ -953,7 +953,7 @@ static void R_InitFunctionTables()
 		{
 			if (i < FUNCTABLE_SIZE / 4)
 			{
-				tr.triangleTable[i] = (float) i / (FUNCTABLE_SIZE / 4);
+				tr.triangleTable[i] = (float)i / (FUNCTABLE_SIZE / 4);
 			}
 			else
 			{
@@ -1025,7 +1025,7 @@ static void R_Init()
 //
 //==========================================================================
 
-void R_BeginRegistration(glconfig_t *glconfigOut)
+void R_BeginRegistration(glconfig_t* glconfigOut)
 {
 	R_Init();
 

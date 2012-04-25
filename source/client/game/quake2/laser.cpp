@@ -45,7 +45,7 @@ void CLQ2_NewLaser(vec3_t start, vec3_t end, int colors)
 			VectorCopy(start, laser->entity.origin);
 			VectorCopy(end, laser->entity.oldorigin);
 			laser->entity.shaderRGBA[3] = 76;
-			laser->entity.skinNum = (colors >> ((rand() % 4)*8)) & 0xff;
+			laser->entity.skinNum = (colors >> ((rand() % 4) * 8)) & 0xff;
 			laser->entity.hModel = 0;
 			laser->entity.frame = 4;
 			laser->endTime = cl.serverTime + 100;

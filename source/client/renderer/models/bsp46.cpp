@@ -21,9 +21,9 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define LIGHTMAP_SIZE		128
+#define LIGHTMAP_SIZE       128
 
-#define MAX_FACE_POINTS		64
+#define MAX_FACE_POINTS     64
 
 // TYPES -------------------------------------------------------------------
 
@@ -37,11 +37,11 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-world_t		s_worldData;
+world_t s_worldData;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte*		fileBase;
+static byte* fileBase;
 
 // CODE --------------------------------------------------------------------
 
@@ -112,7 +112,7 @@ static void R_ColorShiftLightingBytes(byte in[4], byte out[4])
 	int r = in[0] << shift;
 	int g = in[1] << shift;
 	int b = in[2] << shift;
-	
+
 	// normalize by color instead of saturating to white
 	if ((r | g | b) > 255)
 	{
@@ -237,7 +237,7 @@ static void R_LoadLightmaps(bsp46_lump_t* l)
 		{
 			maxIntensity = intensity;
 		}
-		tr.lightmaps[i] = R_CreateImage(va("*lightmap%d",i), image, 
+		tr.lightmaps[i] = R_CreateImage(va("*lightmap%d",i), image,
 			LIGHTMAP_SIZE, LIGHTMAP_SIZE, false, false, GL_CLAMP, false);
 	}
 
@@ -259,7 +259,7 @@ static void R_LoadVisibility(bsp46_lump_t* l)
 	s_worldData.novis = new byte[len];
 	Com_Memset(s_worldData.novis, 0xff, len);
 
-    len = l->filelen;
+	len = l->filelen;
 	if (!len)
 	{
 		return;
@@ -366,7 +366,7 @@ static void ParseFace(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_su
 	int numIndexes = LittleLong(ds->numIndexes);
 
 	// create the srfSurfaceFace_t
-	int sfaceSize = (qintptr)&((srfSurfaceFace_t *)0)->points[numPoints];
+	int sfaceSize = (qintptr) & ((srfSurfaceFace_t*)0)->points[numPoints];
 	int ofsIndexes = sfaceSize;
 	sfaceSize += sizeof(int) * numIndexes;
 
@@ -509,7 +509,7 @@ static void ParseTriSurf(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46
 	tri->verts = (bsp46_drawVert_t*)(tri + 1);
 	tri->indexes = (int*)(tri->verts + tri->numVerts);
 
-	surf->data = (surfaceType_t *)tri;
+	surf->data = (surfaceType_t*)tri;
 
 	// copy vertexes
 	ClearBounds(tri->bounds[0], tri->bounds[1]);
@@ -535,7 +535,7 @@ static void ParseTriSurf(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46
 	indexes += LittleLong(ds->firstIndex);
 	for (int i = 0; i < numIndexes; i++)
 	{
-		tri->indexes[i] = LittleLong( indexes[i] );
+		tri->indexes[i] = LittleLong(indexes[i]);
 		if (tri->indexes[i] < 0 || tri->indexes[i] >= numVerts)
 		{
 			throw DropException("Bad index in triangle surface");
@@ -569,7 +569,7 @@ static void ParseFlare(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 
 	surf->data = (surfaceType_t*)flare;
 
-	for (int i = 0; i < 3 ; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		flare->origin[i] = LittleFloat(ds->lightmapOrigin[i]);
 		flare->color[i] = LittleFloat(ds->lightmapVecs[0][i]);
@@ -601,9 +601,9 @@ static void ParseFoliage(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46
 	// calculate size
 	srfFoliage_t* foliage;
 	int size = sizeof(*foliage) +
-		numVerts * (sizeof(foliage->xyz[0]) + sizeof(foliage->normal[0]) + sizeof(foliage->texCoords[0]) + sizeof(foliage->lmTexCoords[0])) +
-		numIndexes * sizeof(foliage->indexes[0]) +
-		numInstances * sizeof(foliage->instances[0]);
+			   numVerts * (sizeof(foliage->xyz[0]) + sizeof(foliage->normal[0]) + sizeof(foliage->texCoords[0]) + sizeof(foliage->lmTexCoords[0])) +
+			   numIndexes * sizeof(foliage->indexes[0]) +
+			   numInstances * sizeof(foliage->instances[0]);
 
 	// get memory
 	foliage = (srfFoliage_t*)Mem_Alloc(size);
@@ -823,13 +823,13 @@ static void R_FixSharedVertexLodError_r(int start, srfGridMesh_t* grid1)
 			{
 				continue;
 			}
-			for (k = 1; k < grid1->width-1; k++)
+			for (k = 1; k < grid1->width - 1; k++)
 			{
 				for (m = 0; m < 2; m++)
 				{
 					if (m)
 					{
-						offset2 = (grid2->height-1) * grid2->width;
+						offset2 = (grid2->height - 1) * grid2->width;
 					}
 					else
 					{
@@ -839,7 +839,7 @@ static void R_FixSharedVertexLodError_r(int start, srfGridMesh_t* grid1)
 					{
 						continue;
 					}
-					for (l = 1; l < grid2->width-1; l++)
+					for (l = 1; l < grid2->width - 1; l++)
 					{
 						if (Q_fabs(grid1->verts[k + offset1].xyz[0] - grid2->verts[l + offset2].xyz[0]) > .1)
 						{
@@ -907,13 +907,13 @@ static void R_FixSharedVertexLodError_r(int start, srfGridMesh_t* grid1)
 			{
 				continue;
 			}
-			for (k = 1; k < grid1->height-1; k++)
+			for (k = 1; k < grid1->height - 1; k++)
 			{
 				for (m = 0; m < 2; m++)
 				{
 					if (m)
 					{
-						offset2 = (grid2->height-1) * grid2->width;
+						offset2 = (grid2->height - 1) * grid2->width;
 					}
 					else
 					{
@@ -956,7 +956,7 @@ static void R_FixSharedVertexLodError_r(int start, srfGridMesh_t* grid1)
 					{
 						continue;
 					}
-					for (l = 1; l < grid2->height-1; l++)
+					for (l = 1; l < grid2->height - 1; l++)
 					{
 						if (Q_fabs(grid1->verts[grid1->width * k + offset1].xyz[0] - grid2->verts[grid2->width * l + offset2].xyz[0]) > .1)
 						{
@@ -980,7 +980,7 @@ static void R_FixSharedVertexLodError_r(int start, srfGridMesh_t* grid1)
 		if (touch)
 		{
 			grid2->lodFixed = 2;
-			R_FixSharedVertexLodError_r( start, grid2);
+			R_FixSharedVertexLodError_r(start, grid2);
 			//NOTE: this would be correct but makes things really slow
 			//grid2->lodFixed = 1;
 		}
@@ -1001,7 +1001,7 @@ static void R_FixSharedVertexLodError()
 {
 	for (int i = 0; i < s_worldData.numsurfaces; i++)
 	{
-		srfGridMesh_t* grid1 = (srfGridMesh_t*) s_worldData.surfaces[i].data;
+		srfGridMesh_t* grid1 = (srfGridMesh_t*)s_worldData.surfaces[i].data;
 		// if this surface is not a grid
 		if (grid1->surfaceType != SF_GRID)
 		{
@@ -1033,7 +1033,7 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 		int offset1;
 		if (n)
 		{
-			offset1 = (grid1->height-1) * grid1->width;
+			offset1 = (grid1->height - 1) * grid1->width;
 		}
 		else
 		{
@@ -1043,7 +1043,7 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 		{
 			continue;
 		}
-		for (int k = 0; k < grid1->width-2; k += 2)
+		for (int k = 0; k < grid1->width - 2; k += 2)
 		{
 			for (int m = 0; m < 2; m++)
 			{
@@ -1054,16 +1054,16 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				int offset2;
 				if (m)
 				{
-					offset2 = (grid2->height-1) * grid2->width;
+					offset2 = (grid2->height - 1) * grid2->width;
 				}
 				else
 				{
 					offset2 = 0;
 				}
-				for (int l = 0; l < grid2->width-1; l++)
+				for (int l = 0; l < grid2->width - 1; l++)
 				{
-					float *v1 = grid1->verts[k + offset1].xyz;
-					float *v2 = grid2->verts[l + offset2].xyz;
+					float* v1 = grid1->verts[k + offset1].xyz;
+					float* v2 = grid2->verts[l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1136,8 +1136,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->height - 1; l++)
 				{
-					float *v1 = grid1->verts[k + offset1].xyz;
-					float *v2 = grid2->verts[grid2->width * l + offset2].xyz;
+					float* v1 = grid1->verts[k + offset1].xyz;
+					float* v2 = grid2->verts[grid2->width * l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1228,8 +1228,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->width - 1; l++)
 				{
-					float *v1 = grid1->verts[grid1->width * k + offset1].xyz;
-					float *v2 = grid2->verts[l + offset2].xyz;
+					float* v1 = grid1->verts[grid1->width * k + offset1].xyz;
+					float* v2 = grid2->verts[l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1259,7 +1259,7 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 					}
 					v1 = grid2->verts[l + offset2].xyz;
 					v2 = grid2->verts[(l + 1) + offset2].xyz;
-					if ( Q_fabs(v1[0] - v2[0]) < .01 &&
+					if (Q_fabs(v1[0] - v2[0]) < .01 &&
 						Q_fabs(v1[1] - v2[1]) < .01 &&
 						Q_fabs(v1[2] - v2[2]) < .01)
 					{
@@ -1301,8 +1301,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->height - 1; l++)
 				{
-					float *v1 = grid1->verts[grid1->width * k + offset1].xyz;
-					float *v2 = grid2->verts[grid2->width * l + offset2].xyz;
+					float* v1 = grid1->verts[grid1->width * k + offset1].xyz;
+					float* v2 = grid2->verts[grid2->width * l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1393,8 +1393,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->width - 1; l++)
 				{
-					float *v1 = grid1->verts[k + offset1].xyz;
-					float *v2 = grid2->verts[l + offset2].xyz;
+					float* v1 = grid1->verts[k + offset1].xyz;
+					float* v2 = grid2->verts[l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1466,8 +1466,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->height - 1; l++)
 				{
-					float *v1 = grid1->verts[k + offset1].xyz;
-					float *v2 = grid2->verts[grid2->width * l + offset2].xyz;
+					float* v1 = grid1->verts[k + offset1].xyz;
+					float* v2 = grid2->verts[grid2->width * l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1554,7 +1554,7 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				int offset2;
 				if (m)
 				{
-					offset2 = (grid2->height-1) * grid2->width;
+					offset2 = (grid2->height - 1) * grid2->width;
 				}
 				else
 				{
@@ -1562,8 +1562,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->width - 1; l++)
 				{
-					float *v1 = grid1->verts[grid1->width * k + offset1].xyz;
-					float *v2 = grid2->verts[l + offset2].xyz;
+					float* v1 = grid1->verts[grid1->width * k + offset1].xyz;
+					float* v2 = grid2->verts[l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1635,8 +1635,8 @@ static bool R_StitchPatches(int grid1num, int grid2num)
 				}
 				for (int l = 0; l < grid2->height - 1; l++)
 				{
-					float *v1 = grid1->verts[grid1->width * k + offset1].xyz;
-					float *v2 = grid2->verts[grid2->width * l + offset2].xyz;
+					float* v1 = grid1->verts[grid1->width * k + offset1].xyz;
+					float* v2 = grid2->verts[grid2->width * l + offset2].xyz;
 					if (Q_fabs(v1[0] - v2[0]) > .1)
 					{
 						continue;
@@ -1799,14 +1799,14 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 	}
 	int count = surfs->filelen / sizeof(*in);
 
-	bsp46_drawVert_t* dv = (bsp46_drawVert_t *)(fileBase + verts->fileofs);
+	bsp46_drawVert_t* dv = (bsp46_drawVert_t*)(fileBase + verts->fileofs);
 	if (verts->filelen % sizeof(*dv))
 	{
 		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
 	}
 
 	int* indexes = (int*)(fileBase + indexLump->fileofs);
-	if ( indexLump->filelen % sizeof(*indexes))
+	if (indexLump->filelen % sizeof(*indexes))
 	{
 		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
 	}
@@ -1851,7 +1851,7 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 			ParseFlare(in, dv, out, indexes);
 			numFlares++;
 			break;
-		case BSP47MST_FOLIAGE:   // ydnar
+		case BSP47MST_FOLIAGE:	// ydnar
 			ParseFoliage(in, dv, out, indexes);
 			numFoliage++;
 			break;
@@ -1864,7 +1864,7 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 
 	R_FixSharedVertexLodError();
 
-	Log::write("...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n", 
+	Log::write("...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
 		numFaces, numMeshes, numTriSurfs, numFlares, numFoliage);
 }
 
@@ -1885,7 +1885,7 @@ static void R_SetParent(mbrush46_node_t* node, mbrush46_node_t* parent)
 			// add node surfaces to bounds
 			mbrush46_surface_t** mark = node->firstmarksurface;
 			int c = node->nummarksurfaces;
-			while ( c-- )
+			while (c--)
 			{
 				srfGeneric_t* gen = (srfGeneric_t*)(**mark).data;
 				if (gen->surfaceType != SF_FACE &&
@@ -1994,9 +1994,9 @@ static void R_LoadNodesAndLeafs(bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump)
 		}
 
 		out->firstmarksurface = s_worldData.marksurfaces +
-			LittleLong(inLeaf->firstLeafSurface);
+								LittleLong(inLeaf->firstLeafSurface);
 		out->nummarksurfaces = LittleLong(inLeaf->numLeafSurfaces);
-	}	
+	}
 
 	// chain decendants
 	R_SetParent(s_worldData.nodes, NULL);
@@ -2009,7 +2009,7 @@ static void R_LoadNodesAndLeafs(bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump)
 //==========================================================================
 
 static void R_LoadShaders(bsp46_lump_t* l)
-{	
+{
 	bsp46_dshader_t* in = (bsp46_dshader_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
@@ -2037,7 +2037,7 @@ static void R_LoadShaders(bsp46_lump_t* l)
 //==========================================================================
 
 static void R_LoadMarksurfaces(bsp46_lump_t* l)
-{	
+{
 	int* in = (int*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
@@ -2098,7 +2098,7 @@ static void R_LoadPlanes(bsp46_lump_t* l)
 
 unsigned ColorBytes4(float r, float g, float b, float a)
 {
-	unsigned	i;
+	unsigned i;
 
 	((byte*)&i)[0] = r * 255;
 	((byte*)&i)[1] = g * 255;
@@ -2190,7 +2190,7 @@ static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t*
 
 			// brushes are always sorted with the axial sides first
 			int sideNum = firstSide + 0;
-			int planeNum = LittleLong(sides[ sideNum ].planeNum);
+			int planeNum = LittleLong(sides[sideNum].planeNum);
 			out->bounds[0][0] = -s_worldData.planes[planeNum].dist;
 
 			sideNum = firstSide + 1;
@@ -2222,8 +2222,8 @@ static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t*
 		// Arnout: colorInt is now set in the shader so we can modify it
 		out->shader = shader;
 
-		out->colorInt = ColorBytes4(shader->fogParms.color[0] * tr.identityLight, 
-			shader->fogParms.color[1] * tr.identityLight, 
+		out->colorInt = ColorBytes4(shader->fogParms.color[0] * tr.identityLight,
+			shader->fogParms.color[1] * tr.identityLight,
 			shader->fogParms.color[2] * tr.identityLight, 1.0);
 
 		float d = shader->fogParms.depthForOpaque < 1 ? 1 : shader->fogParms.depthForOpaque;
@@ -2328,7 +2328,7 @@ static void R_LoadEntities(bsp46_lump_t* l)
 
 	// only parse the world spawn
 	while (1)
-	{	
+	{
 		// parse key
 		token = String::ParseExt(&p, true);
 
@@ -2465,8 +2465,8 @@ void R_LoadBrush46Model(void* buffer)
 	int version = LittleLong(header->version);
 	if (version != BSP46_VERSION && version != BSP47_VERSION)
 	{
-		throw DropException(va("RE_LoadWorldMap: %s has wrong version number (%i should be %i)", 
-			s_worldData.name, version, BSP46_VERSION));
+		throw DropException(va("RE_LoadWorldMap: %s has wrong version number (%i should be %i)",
+				s_worldData.name, version, BSP46_VERSION));
 	}
 
 	// swap all the lumps

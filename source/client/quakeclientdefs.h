@@ -17,17 +17,17 @@
 //	Model effects
 enum
 {
-	Q1MDLEF_ROCKET	= 1,	// leave a trail
-	Q1MDLEF_GRENADE	= 2,	// leave a trail
-	Q1MDLEF_GIB		= 4,	// leave a trail
-	Q1MDLEF_ROTATE	= 8,	// rotate (bonus items)
-	Q1MDLEF_TRACER	= 16,	// green split trail
-	Q1MDLEF_ZOMGIB	= 32,	// small blood trail
-	Q1MDLEF_TRACER2	= 64,	// orange split trail + rotate
-	Q1MDLEF_TRACER3	= 128,	// purple trail
+	Q1MDLEF_ROCKET  = 1,	// leave a trail
+	Q1MDLEF_GRENADE = 2,	// leave a trail
+	Q1MDLEF_GIB     = 4,	// leave a trail
+	Q1MDLEF_ROTATE  = 8,	// rotate (bonus items)
+	Q1MDLEF_TRACER  = 16,	// green split trail
+	Q1MDLEF_ZOMGIB  = 32,	// small blood trail
+	Q1MDLEF_TRACER2 = 64,	// orange split trail + rotate
+	Q1MDLEF_TRACER3 = 128,	// purple trail
 };
 
-#define MAX_SCOREBOARDNAME_Q1	32
+#define MAX_SCOREBOARDNAME_Q1   32
 
 struct q1entity_t
 {
@@ -35,7 +35,7 @@ struct q1entity_t
 	float syncbase;			// for client-side animations
 
 	double msgtime;			// time of last update
-	vec3_t msg_origins[2];	// last two updates (0 is newest)	
+	vec3_t msg_origins[2];	// last two updates (0 is newest)
 	vec3_t msg_angles[2];	// last two updates (0 is newest)
 };
 
@@ -46,7 +46,7 @@ struct qwplayer_state_t
 	int messagenum;		// all player's won't be updated each frame
 
 	double state_time;		// not the same as the packet time,
-								// because player commands come asyncronously
+	// because player commands come asyncronously
 	qwusercmd_t command;		// last command for prediction
 
 	vec3_t origin;
@@ -76,7 +76,7 @@ struct qwframe_t
 	// received from server
 	double receivedtime;	// time message was received, or -1
 	qwplayer_state_t playerstate[MAX_CLIENTS_QW];	// message received that reflects performing
-							// the usercmd
+	// the usercmd
 	qwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid
 };

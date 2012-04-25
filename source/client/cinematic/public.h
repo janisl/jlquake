@@ -30,12 +30,12 @@ enum e_status
 	FMV_ID_WAIT
 };
 
-#define CIN_system	1
-#define CIN_loop	2
-#define CIN_hold	4
-#define CIN_silent	8
-#define CIN_shader	16
-#define CIN_letterBox	BIT(5)
+#define CIN_system  1
+#define CIN_loop    2
+#define CIN_hold    4
+#define CIN_silent  8
+#define CIN_shader  16
+#define CIN_letterBox   BIT(5)
 
 int CIN_PlayCinematic(const char* Name, int XPos, int YPos, int Width, int Height, int Bits);
 e_status CIN_RunCinematic(int Handle);

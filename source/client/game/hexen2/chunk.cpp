@@ -35,7 +35,7 @@ static void CLH2_InitChunkGlass(float final, qhandle_t* model)
 	{
 		*model = R_RegisterModel("models/shard4.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/shard5.mdl");
 	}
@@ -95,7 +95,7 @@ static void CLH2_InitChunkMetal(float final, qhandle_t* model)
 	{
 		*model = R_RegisterModel("models/metlchk3.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/metlchk4.mdl");
 	}
@@ -131,7 +131,7 @@ static void CLH2_InitChunkGreyStone(float final, qhandle_t* model, int* skinNum)
 	{
 		*model = R_RegisterModel("models/schunk3.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/schunk4.mdl");
 	}
@@ -158,7 +158,7 @@ static void CLH2_InitChunkClay(float final, qhandle_t* model)
 	{
 		*model = R_RegisterModel("models/clshard3.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/clshard4.mdl");
 	}
@@ -316,7 +316,7 @@ static void CLH2_InitChunkWoodAndStone(float final, qhandle_t* model)
 	{
 		*model = R_RegisterModel("models/splnter4.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/schunk4.mdl");
 	}
@@ -352,7 +352,7 @@ static void CLH2_InitChunkMetalAndStone(float final, qhandle_t* model)
 	{
 		*model = R_RegisterModel("models/metlchk4.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/schunk4.mdl");
 	}
@@ -384,7 +384,7 @@ static void CLH2_InitChunkMetalAndCloth(float final, qhandle_t* model)
 	{
 		*model = R_RegisterModel("models/clthchk3.mdl");
 	}
-	else 
+	else
 	{
 		*model = R_RegisterModel("models/metlchk4.mdl");
 	}
@@ -393,7 +393,7 @@ static void CLH2_InitChunkMetalAndCloth(float final, qhandle_t* model)
 static void CLH2_InitChunkIce(qhandle_t* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight)
 {
 	*model = R_RegisterModel("models/shard.mdl");
-	*skinNum=0;
+	*skinNum = 0;
 	*frame = rand() % 2;
 	*drawFlags |= H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 	*absoluteLight = 0.5;
@@ -462,7 +462,7 @@ void CLH2_InitChunkModel(int chunkType, int* model, int* skinNumber, int* drawFl
 		CLH2_InitChunkFlesh(final, model);
 	}
 	else if (chunkType == H2THINGTYPE_BROWNSTONE ||
-		((GGameType & GAME_HexenWorld) && chunkType == H2THINGTYPE_DIRT))
+			 ((GGameType & GAME_HexenWorld) && chunkType == H2THINGTYPE_DIRT))
 	{
 		CLH2_InitChunkBrownStone(final, model, skinNumber);
 	}
@@ -572,7 +572,7 @@ void CLH2_InitChunkEffect(h2EffectT& effect)
 			VectorCopy(effect.Chunk.origin, ent->state.origin);
 			CLH2_InitChunkVelocity(effect.Chunk.srcVel, effect.Chunk.velocity[i]);
 			CLH2_InitChunkAngles(ent->state.angles);
-			ent->state.scale = effect.Chunk.aveScale + rand()%40;
+			ent->state.scale = effect.Chunk.aveScale + rand() % 40;
 			CLH2_InitChunkModel(effect.Chunk.type, &ent->model, &ent->state.skinnum,
 				&ent->state.drawflags, &ent->state.frame, &ent->state.abslight);
 		}

@@ -17,13 +17,13 @@
 #include "../../client.h"
 #include "../local.h"
 
-#define NUMMDCVERTEXNORMALS	256
+#define NUMMDCVERTEXNORMALS 256
 
-#define MDC_DIST_SCALE		0.05    // lower for more accuracy, but less range
+#define MDC_DIST_SCALE      0.05	// lower for more accuracy, but less range
 
 // note: we are locked in at 8 or less bits since changing to byte-encoded normals
-#define MDC_BITS_PER_AXIS	8
-#define MDC_MAX_OFS			127.0   // to be safe
+#define MDC_BITS_PER_AXIS   8
+#define MDC_MAX_OFS         127.0	// to be safe
 
 #define R_MDC_DecodeXyzCompressed(ofsVec, out, normal) \
 	(out)[0] = ((float)((ofsVec) & 255) - MDC_MAX_OFS) * MDC_DIST_SCALE; \
@@ -141,12 +141,12 @@ static bool R_LoadMdcLod(model_t* mod, int lod, void* buffer, const char* mod_na
 		if (surf->numVerts > SHADER_MAX_VERTEXES)
 		{
 			common->Error("R_LoadMdcLod: %s has more than %i verts on a surface (%i)",
-						  mod_name, SHADER_MAX_VERTEXES, surf->numVerts);
+				mod_name, SHADER_MAX_VERTEXES, surf->numVerts);
 		}
 		if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
 		{
 			common->Error("R_LoadMdcLod: %s has more than %i triangles on a surface (%i)",
-						  mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles);
+				mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles);
 		}
 
 		// change to surface identifier
@@ -723,7 +723,7 @@ void R_AddMDCSurfaces(trRefEntity_t* ent)
 				}
 			}
 
-			if (shader == tr.defaultShader)        // blink reference in skin was not found
+			if (shader == tr.defaultShader)			// blink reference in skin was not found
 			{
 				int hash = Com_HashKey(surface->name, sizeof(surface->name));
 				for (int j = 0; j < skin->numSurfaces; j++)
@@ -755,11 +755,11 @@ void R_AddMDCSurfaces(trRefEntity_t* ent)
 		// we will add shadows even if the main object isn't visible in the view
 
 		// stencil shadows can't do personal models unless I polyhedron clip
-		if (!personalModel
-			&& r_shadows->integer == 2
-			&& fogNum == 0
-			&& !(ent->e.renderfx & (RF_NOSHADOW | RF_DEPTHHACK))
-			&& shader->sort == SS_OPAQUE)
+		if (!personalModel &&
+			r_shadows->integer == 2 &&
+			fogNum == 0 &&
+			!(ent->e.renderfx & (RF_NOSHADOW | RF_DEPTHHACK)) &&
+			shader->sort == SS_OPAQUE)
 		{
 			// GR - tessellate according to model capabilities
 			R_AddDrawSurf((surfaceType_t*)surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess);
@@ -810,7 +810,7 @@ static void LerpCMeshVertexes(mdcSurface_t* surf, float backlerp)
 		if (*newComp >= 0)
 		{
 			newXyzComp = (mdcXyzCompressed_t*)((byte*)surf + surf->ofsXyzCompressed) +
-				(*newComp * surf->numVerts);
+						 (*newComp * surf->numVerts);
 		}
 	}
 
@@ -825,7 +825,7 @@ static void LerpCMeshVertexes(mdcSurface_t* surf, float backlerp)
 		// just copy the vertexes
 		//
 		for (int vertNum = 0; vertNum < numVerts; vertNum++,
-			newXyz += 4, newNormals += 4, outXyz += 4, outNormal += 4)
+			 newXyz += 4, newNormals += 4, outXyz += 4, outNormal += 4)
 		{
 			outXyz[0] = newXyz[0] * newXyzScale;
 			outXyz[1] = newXyz[1] * newXyzScale;
@@ -869,7 +869,7 @@ static void LerpCMeshVertexes(mdcSurface_t* surf, float backlerp)
 			if (*oldComp >= 0)
 			{
 				oldXyzComp = (mdcXyzCompressed_t*)((byte*)surf + surf->ofsXyzCompressed) +
-					(*oldComp * surf->numVerts);
+							 (*oldComp * surf->numVerts);
 			}
 		}
 
@@ -877,8 +877,8 @@ static void LerpCMeshVertexes(mdcSurface_t* surf, float backlerp)
 		float oldNormalScale = backlerp;
 
 		for (int vertNum = 0; vertNum < numVerts; vertNum++,
-			oldXyz += 4, newXyz += 4, oldNormals += 4, newNormals += 4,
-			outXyz += 4, outNormal += 4)
+			 oldXyz += 4, newXyz += 4, oldNormals += 4, newNormals += 4,
+			 outXyz += 4, outNormal += 4)
 		{
 			// interpolate the xyz
 			outXyz[0] = oldXyz[0] * oldXyzScale + newXyz[0] * newXyzScale;

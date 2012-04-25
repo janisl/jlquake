@@ -72,7 +72,7 @@ static q2explosion_t* CLQ2_AllocExplosion()
 	{
 		if (q2cl_explosions[i].type == ex_free)
 		{
-			Com_Memset(&q2cl_explosions[i], 0, sizeof (q2cl_explosions[i]));
+			Com_Memset(&q2cl_explosions[i], 0, sizeof(q2cl_explosions[i]));
 			return &q2cl_explosions[i];
 		}
 	}
@@ -88,7 +88,7 @@ static q2explosion_t* CLQ2_AllocExplosion()
 			index = i;
 		}
 	}
-	Com_Memset(&q2cl_explosions[index], 0, sizeof (q2cl_explosions[index]));
+	Com_Memset(&q2cl_explosions[index], 0, sizeof(q2cl_explosions[index]));
 	return &q2cl_explosions[index];
 }
 
@@ -155,7 +155,7 @@ void CLQ2_GrenadeExplosion(vec3_t pos)
 	explosion->entity.hModel = clq2_mod_explo4;
 	explosion->frames = 19;
 	explosion->baseFrame = 30;
-	vec3_t	angles;
+	vec3_t angles;
 	angles[0] = 0;
 	angles[1] = rand() % 360;
 	angles[2] = 0;

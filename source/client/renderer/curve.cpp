@@ -285,7 +285,7 @@ static void InvertErrorTable(float errorTable[2][MAX_GRID_SIZE], int width, int 
 		errorTable[1][i] = copy[0][i];	//[width-1-i];
 	}
 
-	for (int i = 0 ; i < height; i++)
+	for (int i = 0; i < height; i++)
 	{
 		errorTable[0][i] = copy[1][height - 1 - i];
 	}
@@ -424,7 +424,7 @@ srfGridMesh_t* R_SubdividePatchToGrid(int width, int height,
 				vec3_t midxyz;
 				for (int l = 0; l < 3; l++)
 				{
-					midxyz[l] = (ctrl[i][j].xyz[l] + ctrl[i][j+1].xyz[l] * 2 + ctrl[i][j + 2].xyz[l]) * 0.25f;
+					midxyz[l] = (ctrl[i][j].xyz[l] + ctrl[i][j + 1].xyz[l] * 2 + ctrl[i][j + 2].xyz[l]) * 0.25f;
 				}
 
 				// see how far off the line it is
@@ -433,7 +433,7 @@ srfGridMesh_t* R_SubdividePatchToGrid(int width, int height,
 				// dist-from-midpoint
 				vec3_t dir;
 				VectorSubtract(midxyz, ctrl[i][j].xyz, midxyz);
-				VectorSubtract(ctrl[i][j+2].xyz, ctrl[i][j].xyz, dir);
+				VectorSubtract(ctrl[i][j + 2].xyz, ctrl[i][j].xyz, dir);
 				VectorNormalize(dir);
 
 				float d = DotProduct(midxyz, dir);
@@ -478,7 +478,7 @@ srfGridMesh_t* R_SubdividePatchToGrid(int width, int height,
 			{
 				bsp46_drawVert_t prev, next, mid;
 				LerpDrawVert(&ctrl[i][j], &ctrl[i][j + 1], &prev);
-				LerpDrawVert(&ctrl[i][j + 1], &ctrl[i][j+2], &next);
+				LerpDrawVert(&ctrl[i][j + 1], &ctrl[i][j + 2], &next);
 				LerpDrawVert(&prev, &next, &mid);
 
 				for (int k = width - 1; k > j + 3; k--)
@@ -528,7 +528,7 @@ srfGridMesh_t* R_SubdividePatchToGrid(int width, int height,
 		{
 			continue;
 		}
-		for (int j = i + 1 ; j < height; j++)
+		for (int j = i + 1; j < height; j++)
 		{
 			for (int k = 0; k < width; k++)
 			{

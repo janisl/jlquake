@@ -21,16 +21,16 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define ON_EPSILON		0.1f			// point on plane side epsilon
+#define ON_EPSILON      0.1f			// point on plane side epsilon
 
-#define SIDE_FRONT		0
-#define SIDE_BACK		1
-#define SIDE_ON			2
+#define SIDE_FRONT      0
+#define SIDE_BACK       1
+#define SIDE_ON         2
 
-#define MAX_CLIP_VERTS	64
+#define MAX_CLIP_VERTS  64
 
-#define SKY_SUBDIVISIONS		8
-#define HALF_SKY_SUBDIVISIONS	(SKY_SUBDIVISIONS / 2)
+#define SKY_SUBDIVISIONS        8
+#define HALF_SKY_SUBDIVISIONS   (SKY_SUBDIVISIONS / 2)
 
 // TYPES -------------------------------------------------------------------
 
@@ -44,22 +44,22 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-float				speedscale;		// for top sky and bottom sky
+float speedscale;					// for top sky and bottom sky
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static char			skyname[MAX_QPATH];
-static float		skyrotate;
-static vec3_t		skyaxis;
-static image_t*		sky_images[6];
+static char skyname[MAX_QPATH];
+static float skyrotate;
+static vec3_t skyaxis;
+static image_t* sky_images[6];
 
-static float		sky_mins[2][6], sky_maxs[2][6];
-static float		sky_min, sky_max;
+static float sky_mins[2][6], sky_maxs[2][6];
+static float sky_min, sky_max;
 
-static float		s_cloudTexCoords[6][SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
+static float s_cloudTexCoords[6][SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
 
-static vec3_t		s_skyPoints[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1];
-static float		s_skyTexCoords[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
+static vec3_t s_skyPoints[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1];
+static float s_skyTexCoords[SKY_SUBDIVISIONS + 1][SKY_SUBDIVISIONS + 1][2];
 
 // 3dstudio environment map names
 static const char* suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
@@ -71,7 +71,7 @@ static vec3_t sky_clip[6] =
 	{0,-1,1},
 	{0,1,1},
 	{1,0,1},
-	{-1,0,1} 
+	{-1,0,1}
 };
 
 // 1 = s, 2 = t, 3 = 2048
@@ -287,7 +287,7 @@ void R_DrawSkyChain(mbrush29_surface_t* s)
 //
 //==========================================================================
 
-void R_SetSky(const char *name, float rotate, vec3_t axis)
+void R_SetSky(const char* name, float rotate, vec3_t axis)
 {
 	String::NCpy(skyname, name, sizeof(skyname) - 1);
 	skyrotate = rotate;
@@ -317,7 +317,7 @@ void R_SetSky(const char *name, float rotate, vec3_t axis)
 			sky_min = 1.0 / 256;
 			sky_max = 255.0 / 256;
 		}
-		else	
+		else
 		{
 			sky_min = 1.0 / 512;
 			sky_max = 511.0 / 512;
@@ -597,7 +597,7 @@ static void RB_ClipSkyPolygons(shaderCommands_t* input)
 	for (int i = 0; i < input->numIndexes; i += 3)
 	{
 		vec3_t p[5];	// need one extra point for clipping
-		for (int j = 0; j < 3; j++) 
+		for (int j = 0; j < 3; j++)
 		{
 			VectorSubtract(input->xyz[input->indexes[i + j]], backEnd.viewParms.orient.origin, p[j]);
 		}
@@ -687,7 +687,7 @@ static void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ
 static void EmitSkyVertex(float s, float t, int axis)
 {
 	vec3_t v;
-	float St[2];	
+	float St[2];
 	MakeSkyVec(s, t, axis, St, v);
 	qglTexCoord2f(St[0], St[1]);
 	qglVertex3fv(v);
@@ -779,7 +779,7 @@ static void DrawSkySide(image_t* image, const int mins[2], const int maxs[2])
 	}
 }
 
-static void DrawSkySideInner(image_t *image, const int mins[2], const int maxs[2])
+static void DrawSkySideInner(image_t* image, const int mins[2], const int maxs[2])
 {
 	GL_Bind(image);
 
@@ -896,7 +896,7 @@ static void DrawSkyBoxInner(shader_t* shader)
 		sky_maxs[0][i] = ceil(sky_maxs[0][i] * HALF_SKY_SUBDIVISIONS) / HALF_SKY_SUBDIVISIONS;
 		sky_maxs[1][i] = ceil(sky_maxs[1][i] * HALF_SKY_SUBDIVISIONS) / HALF_SKY_SUBDIVISIONS;
 
-		if ((sky_mins[0][i] >= sky_maxs[0][i])||
+		if ((sky_mins[0][i] >= sky_maxs[0][i]) ||
 			(sky_mins[1][i] >= sky_maxs[1][i]))
 		{
 			continue;
@@ -996,14 +996,14 @@ void R_InitSkyTexCoords(float heightCloud)
 
 				// compute parametric value 'p' that intersects with cloud layer
 				float p = (1.0f / (2 * DotProduct(skyVec, skyVec))) *
-					(-2 * skyVec[2] * radiusWorld + 
-					2 * sqrt(Square(skyVec[2]) * Square(radiusWorld) + 
-						2 * Square(skyVec[0]) * radiusWorld * heightCloud +
-						Square(skyVec[0]) * Square(heightCloud) + 
-						2 * Square(skyVec[1]) * radiusWorld * heightCloud +
-						Square(skyVec[1]) * Square(heightCloud) + 
-						2 * Square(skyVec[2]) * radiusWorld * heightCloud +
-						Square(skyVec[2]) * Square(heightCloud)));
+						  (-2 * skyVec[2] * radiusWorld +
+						   2 * sqrt(Square(skyVec[2]) * Square(radiusWorld) +
+							   2 * Square(skyVec[0]) * radiusWorld * heightCloud +
+							   Square(skyVec[0]) * Square(heightCloud) +
+							   2 * Square(skyVec[1]) * radiusWorld * heightCloud +
+							   Square(skyVec[1]) * Square(heightCloud) +
+							   2 * Square(skyVec[2]) * radiusWorld * heightCloud +
+							   Square(skyVec[2]) * Square(heightCloud)));
 
 				// compute intersection point based on p
 				vec3_t v;
@@ -1060,7 +1060,7 @@ static void FillCloudySkySide(const int mins[2], const int maxs[2], bool addInde
 			throw DropException("SHADER_MAX_INDEXES hit in FillCloudySkySide()\n");
 		}
 		for (int t = 0; t < tHeight - 1; t++)
-		{	
+		{
 			for (int s = 0; s < sWidth - 1; s++)
 			{
 				tess.indexes[tess.numIndexes] = vertexStart + s + t * sWidth;
@@ -1092,7 +1092,7 @@ static void FillCloudBox(const shader_t* shader, int stage)
 	for (int i = 0; i < 6; i++)
 	{
 		float MIN_T;
-		if (1) // FIXME? shader->sky.fullClouds )
+		if (1)	// FIXME? shader->sky.fullClouds )
 		{
 			MIN_T = -HALF_SKY_SUBDIVISIONS;
 
@@ -1299,7 +1299,7 @@ void RB_StageIteratorSky()
 	if (tess.shader->sky.outerbox[0] && tess.shader->sky.outerbox[0] != tr.defaultImage)
 	{
 		qglColor3f(tr.identityLight, tr.identityLight, tr.identityLight);
-		
+
 		qglPushMatrix();
 		GL_State(0);
 		qglTranslatef(backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1], backEnd.viewParms.orient.origin[2]);

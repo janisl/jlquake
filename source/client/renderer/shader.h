@@ -18,24 +18,24 @@
 //**
 //**************************************************************************
 
-#define GL_INDEX_TYPE		GL_UNSIGNED_INT
+#define GL_INDEX_TYPE       GL_UNSIGNED_INT
 typedef unsigned int glIndex_t;
 
 // surface geometry should not exceed these limits
-#define SHADER_MAX_VERTEXES	4000//1000
-#define SHADER_MAX_INDEXES	(6 * SHADER_MAX_VERTEXES)
+#define SHADER_MAX_VERTEXES 4000//1000
+#define SHADER_MAX_INDEXES  (6 * SHADER_MAX_VERTEXES)
 
-#define MAX_IMAGE_ANIMATIONS	16
-#define TR_MAX_TEXMODS			4
-#define NUM_TEXTURE_BUNDLES		2
-#define MAX_SHADER_STAGES		8
-#define MAX_SHADER_DEFORMS		3
-#define MAX_STATES_PER_SHADER	32
+#define MAX_IMAGE_ANIMATIONS    16
+#define TR_MAX_TEXMODS          4
+#define NUM_TEXTURE_BUNDLES     2
+#define MAX_SHADER_STAGES       8
+#define MAX_SHADER_DEFORMS      3
+#define MAX_STATES_PER_SHADER   32
 
-#define LIGHTMAP_2D				-4		// shader is for 2D rendering
-#define LIGHTMAP_BY_VERTEX		-3		// pre-lit triangle models
-#define LIGHTMAP_WHITEIMAGE		-2
-#define LIGHTMAP_NONE			-1
+#define LIGHTMAP_2D             -4		// shader is for 2D rendering
+#define LIGHTMAP_BY_VERTEX      -3		// pre-lit triangle models
+#define LIGHTMAP_WHITEIMAGE     -2
+#define LIGHTMAP_NONE           -1
 
 enum shaderSort_t
 {
@@ -72,8 +72,8 @@ enum genFunc_t
 	GF_SIN,
 	GF_SQUARE,
 	GF_TRIANGLE,
-	GF_SAWTOOTH, 
-	GF_INVERSE_SAWTOOTH, 
+	GF_SAWTOOTH,
+	GF_INVERSE_SAWTOOTH,
 
 	GF_NOISE
 };
@@ -178,216 +178,216 @@ enum fogPass_t
 
 struct waveForm_t
 {
-	genFunc_t	func;
+	genFunc_t func;
 
-	float		base;
-	float		amplitude;
-	float		phase;
-	float		frequency;
+	float base;
+	float amplitude;
+	float phase;
+	float frequency;
 };
 
 struct texModInfo_t
 {
-	texMod_t		type;
+	texMod_t type;
 
 	// used for TMOD_TURBULENT and TMOD_STRETCH
-	waveForm_t		wave;
+	waveForm_t wave;
 
 	// used for TMOD_TRANSFORM
-	float			matrix[2][2];		// s' = s * m[0][0] + t * m[1][0] + trans[0]
-	float			translate[2];		// t' = s * m[0][1] + t * m[0][1] + trans[1]
+	float matrix[2][2];					// s' = s * m[0][0] + t * m[1][0] + trans[0]
+	float translate[2];					// t' = s * m[0][1] + t * m[0][1] + trans[1]
 
 	// used for TMOD_SCALE
-	float			scale[2];			// s *= scale[0]
-	                                    // t *= scale[1]
+	float scale[2];						// s *= scale[0]
+										// t *= scale[1]
 
 	// used for TMOD_SCROLL
-	float			scroll[2];			// s' = s + scroll[0] * time
+	float scroll[2];					// s' = s + scroll[0] * time
 										// t' = t + scroll[1] * time
 
 	// + = clockwise
 	// - = counterclockwise
-	float			rotateSpeed;
+	float rotateSpeed;
 };
 
 struct textureBundle_t
 {
-	image_t*		image[MAX_IMAGE_ANIMATIONS];
-	int				numImageAnimations;
-	float			imageAnimationSpeed;
+	image_t* image[MAX_IMAGE_ANIMATIONS];
+	int numImageAnimations;
+	float imageAnimationSpeed;
 
-	texCoordGen_t	tcGen;
-	vec3_t			tcGenVectors[2];
+	texCoordGen_t tcGen;
+	vec3_t tcGenVectors[2];
 
-	int				numTexMods;
-	texModInfo_t*	texMods;
+	int numTexMods;
+	texModInfo_t* texMods;
 
-	int				videoMapHandle;
-	bool			isLightmap;
-	bool			vertexLightmap;
-	bool			isVideoMap;
+	int videoMapHandle;
+	bool isLightmap;
+	bool vertexLightmap;
+	bool isVideoMap;
 };
 
 struct shaderStage_t
 {
-	bool			active;
-	
-	textureBundle_t	bundle[NUM_TEXTURE_BUNDLES];
+	bool active;
 
-	waveForm_t		rgbWave;
-	colorGen_t		rgbGen;
+	textureBundle_t bundle[NUM_TEXTURE_BUNDLES];
 
-	waveForm_t		alphaWave;
-	alphaGen_t		alphaGen;
+	waveForm_t rgbWave;
+	colorGen_t rgbGen;
 
-	byte			constantColor[4];			// for CGEN_CONST and AGEN_CONST
+	waveForm_t alphaWave;
+	alphaGen_t alphaGen;
 
-	unsigned		stateBits;					// GLS_xxxx mask
+	byte constantColor[4];						// for CGEN_CONST and AGEN_CONST
 
-	acff_t			adjustColorsForFog;
+	unsigned stateBits;							// GLS_xxxx mask
+
+	acff_t adjustColorsForFog;
 
 	float zFadeBounds[2];
 
-	bool			isDetail;
+	bool isDetail;
 	bool isFogged;								// used only for shaders that have fog disabled, so we can enable it for individual stages
 };
 
 struct deformStage_t
 {
-	deform_t	deformation;			// vertex coordinate modification type
+	deform_t deformation;				// vertex coordinate modification type
 
-	vec3_t		moveVector;
-	waveForm_t	deformationWave;
-	float		deformationSpread;
+	vec3_t moveVector;
+	waveForm_t deformationWave;
+	float deformationSpread;
 
-	float		bulgeWidth;
-	float		bulgeHeight;
-	float		bulgeSpeed;
+	float bulgeWidth;
+	float bulgeHeight;
+	float bulgeSpeed;
 };
 
 struct skyParms_t
 {
-	float		cloudHeight;
-	image_t*	outerbox[6];
-	image_t*	innerbox[6];
+	float cloudHeight;
+	image_t* outerbox[6];
+	image_t* innerbox[6];
 };
 
 struct fogParms_t
 {
-	vec3_t	color;
-	float	depthForOpaque;
-	unsigned colorInt;                  // in packed byte format
-	float tcScale;                      // texture coordinate vector scales
+	vec3_t color;
+	float depthForOpaque;
+	unsigned colorInt;					// in packed byte format
+	float tcScale;						// texture coordinate vector scales
 };
 
 struct shader_t
 {
-	char		name[MAX_QPATH];		// game path, including extension
-	int			lightmapIndex;			// for a shader to match, both name and lightmapIndex must match
+	char name[MAX_QPATH];				// game path, including extension
+	int lightmapIndex;					// for a shader to match, both name and lightmapIndex must match
 
-	int			index;					// this shader == tr.shaders[index]
-	int			sortedIndex;			// this shader == tr.sortedShaders[sortedIndex]
+	int index;							// this shader == tr.shaders[index]
+	int sortedIndex;					// this shader == tr.sortedShaders[sortedIndex]
 
-	float		sort;					// lower numbered shaders draw before higher numbered
+	float sort;							// lower numbered shaders draw before higher numbered
 
-	bool		defaultShader;			// we want to return index 0 if the shader failed to
+	bool defaultShader;					// we want to return index 0 if the shader failed to
 										// load for some reason, but R_FindShader should
 										// still keep a name allocated for it, so if
 										// something calls RE_RegisterShader again with
 										// the same name, we don't try looking for it again
 
-	bool		explicitlyDefined;		// found in a .shader file
+	bool explicitlyDefined;				// found in a .shader file
 
-	int			surfaceFlags;			// if explicitlyDefined, this will have SURF_* flags
-	int			contentFlags;
+	int surfaceFlags;					// if explicitlyDefined, this will have SURF_* flags
+	int contentFlags;
 
-	bool		entityMergable;			// merge across entites optimizable (smoke, blood)
+	bool entityMergable;				// merge across entites optimizable (smoke, blood)
 
-	bool		isSky;
-	skyParms_t	sky;
-	fogParms_t	fogParms;
+	bool isSky;
+	skyParms_t sky;
+	fogParms_t fogParms;
 
-	float		portalRange;			// distance to fog out at
+	float portalRange;					// distance to fog out at
 
-	int			multitextureEnv;		// 0, GL_MODULATE, GL_ADD (FIXME: put in stage)
+	int multitextureEnv;				// 0, GL_MODULATE, GL_ADD (FIXME: put in stage)
 
-	cullType_t	cullType;				// CT_FRONT_SIDED, CT_BACK_SIDED, or CT_TWO_SIDED
-	bool		polygonOffset;			// set for decals and other items that must be offset 
-	bool		noMipMaps;				// for console fonts, 2D elements, etc.
-	bool		noPicMip;				// for images that must always be full resolution
+	cullType_t cullType;				// CT_FRONT_SIDED, CT_BACK_SIDED, or CT_TWO_SIDED
+	bool polygonOffset;					// set for decals and other items that must be offset
+	bool noMipMaps;						// for console fonts, 2D elements, etc.
+	bool noPicMip;						// for images that must always be full resolution
 	bool characterMip;					// use r_picmip2 rather than r_picmip
 
-	fogPass_t	fogPass;				// draw a blended pass, possibly with depth test equals
+	fogPass_t fogPass;					// draw a blended pass, possibly with depth test equals
 
-	bool		needsNormal;			// not all shaders will need all data to be gathered
-	bool		needsST1;
-	bool		needsST2;
-	bool		needsColor;
+	bool needsNormal;					// not all shaders will need all data to be gathered
+	bool needsST1;
+	bool needsST2;
+	bool needsColor;
 
 	bool noFog;
 
-	vec4_t distanceCull;                // ydnar: opaque alpha range for foliage (inner, outer, alpha threshold, 1/(outer-inner))
+	vec4_t distanceCull;				// ydnar: opaque alpha range for foliage (inner, outer, alpha threshold, 1/(outer-inner))
 
-	int			numDeforms;
-	deformStage_t	deforms[MAX_SHADER_DEFORMS];
+	int numDeforms;
+	deformStage_t deforms[MAX_SHADER_DEFORMS];
 
-	int			numUnfoggedPasses;
-	shaderStage_t	*stages[MAX_SHADER_STAGES];		
+	int numUnfoggedPasses;
+	shaderStage_t* stages[MAX_SHADER_STAGES];
 
-	void		(*optimalStageIteratorFunc)();
+	void (* optimalStageIteratorFunc)();
 
-	float		clampTime;				// time this shader is clamped to
-	float		timeOffset;				// current time offset for this shader
+	float clampTime;					// time this shader is clamped to
+	float timeOffset;					// current time offset for this shader
 
-	int			numStates;				// if non-zero this is a state shader
-	shader_t*	currentShader;			// current state if this is a state shader
-	shader_t*	parentShader;			// current state if this is a state shader
-	int			currentState;			// current state index for cycle purposes
-	long		expireTime;				// time in milliseconds this expires
+	int numStates;						// if non-zero this is a state shader
+	shader_t* currentShader;			// current state if this is a state shader
+	shader_t* parentShader;				// current state if this is a state shader
+	int currentState;					// current state index for cycle purposes
+	long expireTime;					// time in milliseconds this expires
 
-	shader_t*	remappedShader;			// current shader this one is remapped too
+	shader_t* remappedShader;			// current shader this one is remapped too
 
-	int			shaderStates[MAX_STATES_PER_SHADER];	// index to valid shader states
+	int shaderStates[MAX_STATES_PER_SHADER];			// index to valid shader states
 
-	shader_t*	next;
+	shader_t* next;
 };
 
 typedef byte color4ub_t[4];
 
 struct stageVars_t
 {
-	color4ub_t	colors[SHADER_MAX_VERTEXES];
-	vec2_t		texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
+	color4ub_t colors[SHADER_MAX_VERTEXES];
+	vec2_t texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
 };
 
 struct shaderCommands_t
 {
-	glIndex_t	indexes[SHADER_MAX_INDEXES];
-	vec4_t		xyz[SHADER_MAX_VERTEXES];
-	vec4_t		normal[SHADER_MAX_VERTEXES];
-	vec2_t		texCoords[SHADER_MAX_VERTEXES][2];
-	color4ub_t	vertexColors[SHADER_MAX_VERTEXES];
-	int			vertexDlightBits[SHADER_MAX_VERTEXES];
+	glIndex_t indexes[SHADER_MAX_INDEXES];
+	vec4_t xyz[SHADER_MAX_VERTEXES];
+	vec4_t normal[SHADER_MAX_VERTEXES];
+	vec2_t texCoords[SHADER_MAX_VERTEXES][2];
+	color4ub_t vertexColors[SHADER_MAX_VERTEXES];
+	int vertexDlightBits[SHADER_MAX_VERTEXES];
 
-	stageVars_t	svars;
+	stageVars_t svars;
 
-	color4ub_t	constantColor255[SHADER_MAX_VERTEXES];
+	color4ub_t constantColor255[SHADER_MAX_VERTEXES];
 
-	shader_t*	shader;
-	float		shaderTime;
-	int			fogNum;
+	shader_t* shader;
+	float shaderTime;
+	int fogNum;
 
-	int			dlightBits;	// or together of all vertexDlightBits
+	int dlightBits;			// or together of all vertexDlightBits
 
-	int			numIndexes;
-	int			numVertexes;
+	int numIndexes;
+	int numVertexes;
 
 	bool ATI_tess;
 
 	// info extracted from current shader
-	int			numPasses;
-	void		(*currentStageIteratorFunc)( void );
-	shaderStage_t**	xstages;
+	int numPasses;
+	void (* currentStageIteratorFunc)(void);
+	shaderStage_t** xstages;
 };
 
 void R_InitShaders();
@@ -399,7 +399,7 @@ void R_ShaderList_f();
 void R_PurgeShaders();
 void R_BackupShaders();
 
-void RB_BeginSurface(shader_t* shader, int fogNum );
+void RB_BeginSurface(shader_t* shader, int fogNum);
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();
 void RB_StageIteratorLightmappedMultitexture();
@@ -419,5 +419,5 @@ void RB_ProjectionShadowDeform();
 void RB_ShadowTessEnd();
 void RB_ShadowFinish();
 
-extern shaderCommands_t		tess;
-extern bool	setArraysOnce;
+extern shaderCommands_t tess;
+extern bool setArraysOnce;

@@ -14,10 +14,10 @@
 //**
 //**************************************************************************
 
-/* 
-============================================================================== 
- 
-						SCREEN SHOTS 
+/*
+==============================================================================
+
+                        SCREEN SHOTS
 
 NOTE TTimo
 some thoughts about the screenshots system:
@@ -30,8 +30,8 @@ we use statics to store a count and start writing the first screenshot/screensho
 (with FS_FileExists / FS_FOpenFileWrite calls)
 FIXME: the statics don't get a reinit between fs_game changes
 
-============================================================================== 
-*/ 
+==============================================================================
+*/
 
 // HEADER FILES ------------------------------------------------------------
 
@@ -40,8 +40,8 @@ FIXME: the statics don't get a reinit between fs_game changes
 
 // MACROS ------------------------------------------------------------------
 
-#define RSSHOT_WIDTH	320
-#define RSSHOT_HEIGHT	200
+#define RSSHOT_WIDTH    320
+#define RSSHOT_HEIGHT   200
 
 // TYPES -------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ static bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, c
 
 static void R_TakeScreenshot(int x, int y, int width, int height, const char* name, bool jpeg)
 {
-	static char fileName[MAX_OSPATH]; // bad things if two screenshots per frame?
+	static char fileName[MAX_OSPATH];	// bad things if two screenshots per frame?
 
 	screenshotCommand_t* cmd = (screenshotCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
 	if (!cmd)
@@ -170,7 +170,7 @@ const void* RB_TakeScreenshotCmd(const void* data)
 
 	RB_TakeScreenshot(cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName, cmd->jpeg);
 
-	return (const void*)(cmd + 1);	
+	return (const void*)(cmd + 1);
 }
 
 //==========================================================================
@@ -290,7 +290,7 @@ void R_ScreenShot_f()
 	{
 		Log::write("Wrote %s\n", checkname);
 	}
-} 
+}
 
 //==========================================================================
 //
@@ -325,7 +325,7 @@ void R_ScreenShotJPEG_f()
 		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "jpg"))
 		{
 			return;
- 		}
+		}
 	}
 
 	if (GGameType & GAME_Tech3)
@@ -341,7 +341,7 @@ void R_ScreenShotJPEG_f()
 	{
 		Log::write("Wrote %s\n", checkname);
 	}
-} 
+}
 
 //==========================================================================
 //
@@ -452,13 +452,13 @@ void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const c
 			int dex = (x + 1) * fracw;
 			if (dex == dx)
 			{
-				dex++; // at least one
+				dex++;	// at least one
 			}
 			int dy = y * frach;
 			int dey = (y + 1) * frach;
 			if (dey == dy)
 			{
-				dey++; // at least one
+				dey++;	// at least one
 			}
 
 			int count = 0;

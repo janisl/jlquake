@@ -33,27 +33,27 @@ enum
 
 struct image_t
 {
-	char		imgName[MAX_QPATH];			// game path, including extension
-	int			width, height;				// source image
-	int			uploadWidth, uploadHeight;	// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
-	GLuint		texnum;						// gl texture binding
+	char imgName[MAX_QPATH];				// game path, including extension
+	int width, height;						// source image
+	int uploadWidth, uploadHeight;			// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
+	GLuint texnum;							// gl texture binding
 
-	int			frameUsed;					// for texture usage in frame statistics
+	int frameUsed;							// for texture usage in frame statistics
 
-	int			internalFormat;
+	int internalFormat;
 
-	bool		mipmap;
-	bool		allowPicmip;
+	bool mipmap;
+	bool allowPicmip;
 	bool characterMIP;						// independant 'character' mip scale
-	GLenum		wrapClampMode;				// GL_CLAMP or GL_REPEAT
+	GLenum wrapClampMode;					// GL_CLAMP or GL_REPEAT
 
 	int hash;								// for fast building of the backupHash
-	image_t*	next;
+	image_t* next;
 
-	float		sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
-	bool		scrap;
+	float sl, tl, sh, th;					// 0,0 - 1,1 unless part of the scrap
+	bool scrap;
 
-	struct mbrush38_surface_t*	texturechain;	// for sort-by-texture world drawing
+	struct mbrush38_surface_t* texturechain;	// for sort-by-texture world drawing
 };
 
 void R_InitQ1Palette();
@@ -96,7 +96,7 @@ void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool Hav
 
 void R_LoadWAL(const char* FileName, byte** Pic, int* Width, int* Height);
 
-extern byte			host_basepal[768];
-extern unsigned*	d_8to24table;
+extern byte host_basepal[768];
+extern unsigned* d_8to24table;
 
-extern bool			scrap_dirty;
+extern bool scrap_dirty;

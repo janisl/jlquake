@@ -21,20 +21,20 @@
 
 #include <X11/Xlib.h>
 
-#define KEY_MASK	(KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK	(ButtonPressMask | ButtonReleaseMask | \
-					PointerMotionMask | ButtonMotionMask)
-#define X_MASK		(KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask )
+#define KEY_MASK    (KeyPressMask | KeyReleaseMask)
+#define MOUSE_MASK  (ButtonPressMask | ButtonReleaseMask | \
+					 PointerMotionMask | ButtonMotionMask)
+#define X_MASK      (KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask)
 
-extern Display*		dpy;
-extern Window		win;
+extern Display* dpy;
+extern Window win;
 extern Atom wm_protocols;
 extern Atom wm_delete_window;
 
-extern Cvar*		in_dgamouse; // user pref for dga mouse
-extern Cvar*		in_nograb; // this is strictly for developers
+extern Cvar* in_dgamouse;		// user pref for dga mouse
+extern Cvar* in_nograb;			// this is strictly for developers
 
-extern Cvar*		in_joystick;
+extern Cvar* in_joystick;
 
 void IN_ActivateMouse();
 void IN_DeactivateMouse();

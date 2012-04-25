@@ -49,8 +49,8 @@
 static const char* CommaParse(char** data_p)
 {
 	int c = 0, len;
-	char *data;
-	static	char	com_token[MAX_TOKEN_CHARS_Q3];
+	char* data;
+	static char com_token[MAX_TOKEN_CHARS_Q3];
 
 	data = *data_p;
 	len = 0;
@@ -115,7 +115,7 @@ static const char* CommaParse(char** data_p)
 		while (1)
 		{
 			c = *data++;
-			if (c=='\"' || !c)
+			if (c == '\"' || !c)
 			{
 				com_token[len] = 0;
 				*data_p = data;
@@ -236,7 +236,7 @@ qhandle_t R_RegisterSkin(const char* name)
 
 	// load and parse the skin file
 	char* text;
-    FS_ReadFile(name, (void**)&text);
+	FS_ReadFile(name, (void**)&text);
 	if (!text)
 	{
 		return 0;
@@ -405,7 +405,7 @@ image_t* R_RegisterSkinQ2(const char* name)
 //
 //==========================================================================
 
-static void R_CreateOrUpdateTranslatedModelSkin(image_t*& image, const char* name, qhandle_t modelHandle, byte* pixels, byte *translation)
+static void R_CreateOrUpdateTranslatedModelSkin(image_t*& image, const char* name, qhandle_t modelHandle, byte* pixels, byte* translation)
 {
 	if (!modelHandle)
 	{
@@ -431,7 +431,7 @@ static void R_CreateOrUpdateTranslatedModelSkin(image_t*& image, const char* nam
 //
 //==========================================================================
 
-void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation)
+void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte* translation)
 {
 	R_CreateOrUpdateTranslatedModelSkin(image, name, modelHandle, q1_player_8bit_texels, translation);
 }
@@ -442,7 +442,7 @@ void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qh
 //
 //==========================================================================
 
-void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation, int classIndex)
+void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex)
 {
 	R_CreateOrUpdateTranslatedModelSkin(image, name, modelHandle, h2_player_8bit_texels[classIndex], translation);
 }
@@ -518,14 +518,14 @@ qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap)
 		surfnum = 0;
 	}
 
-	model_t* model = R_GetModelByHandle(modelid);    // (SA) should be correct now
+	model_t* model = R_GetModelByHandle(modelid);	// (SA) should be correct now
 
 	if (model)
 	{
 		mbrush46_model_t* bmodel  = model->q3_bmodel;
 		if (bmodel && bmodel->firstSurface)
 		{
-			if (surfnum >= bmodel->numSurfaces)     // if it's out of range, return the first surface
+			if (surfnum >= bmodel->numSurfaces)		// if it's out of range, return the first surface
 			{
 				surfnum = 0;
 			}
@@ -539,7 +539,7 @@ qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap)
 			shader_t* shd;
 			if (surf->shader->lightmapIndex > LIGHTMAP_NONE)
 			{
-				bool mip = true;   // mip generation on by default
+				bool mip = true;	// mip generation on by default
 
 				// get mipmap info for original texture
 				image_t* image = R_FindImage(surf->shader->name);
@@ -548,7 +548,7 @@ qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap)
 					mip = image->mipmap;
 				}
 				shd = R_FindShader(surf->shader->name, LIGHTMAP_NONE, mip);
-				shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new
+				shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE;	// (SA) new
 			}
 			else
 			{

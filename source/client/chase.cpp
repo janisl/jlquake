@@ -67,4 +67,3 @@ void Chase_Update()
 	// move towards destination
 	VectorCopy(chase_dest, cl.refdef.vieworg);
 }
-

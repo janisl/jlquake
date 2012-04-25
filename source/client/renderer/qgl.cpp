@@ -38,20 +38,20 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-#define GLF_0(r, n)				r (APIENTRY * qgl##n)();
-#define GLF_V0(n)				void (APIENTRY * qgl##n)();
-#define GLF_1(r, n, t1, p1)		r (APIENTRY * qgl##n)(t1 p1);
-#define GLF_V1(n, t1, p1)		void (APIENTRY * qgl##n)(t1 p1);
-#define GLF_V2(n, t1, p1, t2, p2)	void (APIENTRY * qgl##n)(t1 p1, t2 p2);
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	r (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3);
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3);
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4);
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5);
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6);
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7);
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8);
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9);
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)	void (APIENTRY * qgl##n)(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10);
+#define GLF_0(r, n)             r(APIENTRY * qgl ## n) ();
+#define GLF_V0(n)               void(APIENTRY * qgl ## n) ();
+#define GLF_1(r, n, t1, p1)     r(APIENTRY * qgl ## n) (t1 p1);
+#define GLF_V1(n, t1, p1)       void(APIENTRY * qgl ## n) (t1 p1);
+#define GLF_V2(n, t1, p1, t2, p2)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2);
+#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) r(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3);
+#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3);
+#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4);
+#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5);
+#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6);
+#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7);
+#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8);
+#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9);
+#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10);
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -68,28 +68,28 @@
 #undef GLF_V9
 #undef GLF_V10
 
-void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
+void (APIENTRY* qglMultiTexCoord2fARB)(GLenum texture, GLfloat s, GLfloat t);
+void (APIENTRY* qglActiveTextureARB)(GLenum texture);
+void (APIENTRY* qglClientActiveTextureARB)(GLenum texture);
 
-void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
+void (APIENTRY* qglLockArraysEXT)(GLint, GLint);
+void (APIENTRY* qglUnlockArraysEXT)(void);
 
-void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
+void (APIENTRY* qglPointParameterfEXT)(GLenum param, GLfloat value);
+void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
 
-void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
-void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
+void (APIENTRY* qglPNTrianglesiATI)(GLenum pname, GLint param);
+void (APIENTRY* qglPNTrianglesfATI)(GLenum pname, GLfloat param);
 
 #ifdef _WIN32
-BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
+BOOL (WINAPI* qwglSwapIntervalEXT)(int interval);
 #else
-int ( *qglXSwapIntervalSGI )( int interval );
+int (* qglXSwapIntervalSGI)(int interval);
 #endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static fileHandle_t		log_fp;
+static fileHandle_t log_fp;
 
 // CODE --------------------------------------------------------------------
 
@@ -101,9 +101,9 @@ static fileHandle_t		log_fp;
 
 static void QGL_Log(const char* Fmt, ...)
 {
-	va_list		ArgPtr;
-	char		string[1024];
-	
+	va_list ArgPtr;
+	char string[1024];
+
 	va_start(ArgPtr, Fmt);
 	Q_vsnprintf(string, 1024, Fmt, ArgPtr);
 	va_end(ArgPtr);
@@ -117,94 +117,94 @@ static void QGL_Log(const char* Fmt, ...)
 //
 //==========================================================================
 
-#define GLF_0(r, n) \
-static r APIENTRY log##n() \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	return gl##n(); \
-}
+#define GLF_0(r, n)	\
+	static r APIENTRY log ## n() \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		return gl ## n(); \
+	}
 #define GLF_V0(n) \
-static void APIENTRY log##n() \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(); \
-}
-#define GLF_1(r, n, t1, p1) \
-static r APIENTRY log##n(t1 p1) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	return gl##n(p1); \
-}
+	static void APIENTRY log ## n()	\
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(); \
+	}
+#define GLF_1(r, n, t1, p1)	\
+	static r APIENTRY log ## n(t1 p1) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		return gl ## n(p1);	\
+	}
 #define GLF_V1(n, t1, p1) \
-static void APIENTRY log##n(t1 p1) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1); \
-}
+	static void APIENTRY log ## n(t1 p1) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1); \
+	}
 #define GLF_V1_X(n, t1, p1)
 #define GLF_V2(n, t1, p1, t2, p2) \
-static void APIENTRY log##n(t1 p1, t2 p2) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2)	\
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2); \
+	}
 #define GLF_V2_X(n, t1, p1, t2, p2)
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) \
-static r APIENTRY log##n(t1 p1, t2 p2, t3 p3) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	return gl##n(p1, p2, p3); \
-}
+#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	\
+	static r APIENTRY log ## n(t1 p1, t2 p2, t3 p3)	\
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		return gl ## n(p1, p2, p3);	\
+	}
 #define GLF_V3(n, t1, p1, t2, p2, t3, p3) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3); \
+	}
 #define GLF_V3_X(n, t1, p1, t2, p2, t3, p3)
 #define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4); \
+	}
 #define GLF_V4_X(n, t1, p1, t2, p2, t3, p3, t4, p4)
 #define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4, p5); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4, p5); \
+	}
 #define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4, p5, p6); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6)	\
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4, p5, p6); \
+	}
 #define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4, p5, p6, p7); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4, p5, p6, p7); \
+	}
 #define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4, p5, p6, p7, p8); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4, p5, p6, p7, p8); \
+	}
 #define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4, p5, p6, p7, p8, p9); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4, p5, p6, p7, p8, p9); \
+	}
 #define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10) \
-static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10) \
-{ \
-	QGL_Log("gl" #n "\n"); \
-	gl##n(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); \
-}
+	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10) \
+	{ \
+		QGL_Log("gl" # n "\n");	\
+		gl ## n(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); \
+	}
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -234,9 +234,13 @@ static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 
 static const char* BooleanToString(GLboolean b)
 {
 	if (b == GL_FALSE)
+	{
 		return "GL_FALSE";
+	}
 	if (b == GL_TRUE)
+	{
 		return "GL_TRUE";
+	}
 	return "OUT OF RANGE FOR BOOLEAN";
 }
 
@@ -281,28 +285,50 @@ static const char* PrimToString(GLenum mode)
 {
 	static char prim[1024];
 
-	if ( mode == GL_TRIANGLES )
+	if (mode == GL_TRIANGLES)
+	{
 		return "GL_TRIANGLES";
-	else if ( mode == GL_TRIANGLE_STRIP )
+	}
+	else if (mode == GL_TRIANGLE_STRIP)
+	{
 		return "GL_TRIANGLE_STRIP";
-	else if ( mode == GL_TRIANGLE_FAN )
+	}
+	else if (mode == GL_TRIANGLE_FAN)
+	{
 		return "GL_TRIANGLE_FAN";
-	else if ( mode == GL_QUADS )
+	}
+	else if (mode == GL_QUADS)
+	{
 		return "GL_QUADS";
-	else if ( mode == GL_QUAD_STRIP )
+	}
+	else if (mode == GL_QUAD_STRIP)
+	{
 		return "GL_QUAD_STRIP";
-	else if ( mode == GL_POLYGON )
+	}
+	else if (mode == GL_POLYGON)
+	{
 		return "GL_POLYGON";
-	else if ( mode == GL_POINTS )
+	}
+	else if (mode == GL_POINTS)
+	{
 		return "GL_POINTS";
-	else if ( mode == GL_LINES )
+	}
+	else if (mode == GL_LINES)
+	{
 		return "GL_LINES";
-	else if ( mode == GL_LINE_STRIP )
+	}
+	else if (mode == GL_LINE_STRIP)
+	{
 		return "GL_LINE_STRIP";
-	else if ( mode == GL_LINE_LOOP )
+	}
+	else if (mode == GL_LINE_LOOP)
+	{
 		return "GL_LINE_LOOP";
+	}
 	else
+	{
 		sprintf(prim, "0x%x", mode);
+	}
 
 	return prim;
 }
@@ -439,7 +465,7 @@ static void APIENTRY logBlendFunc(GLenum sfactor, GLenum dfactor)
 	BlendToName(df, dfactor);
 
 	QGL_Log("glBlendFunc( %s, %s )\n", sf, df);
-	glBlendFunc( sfactor, dfactor );
+	glBlendFunc(sfactor, dfactor);
 }
 
 static void APIENTRY logCallList(GLuint list)
@@ -453,13 +479,21 @@ static void APIENTRY logClear(GLbitfield mask)
 	QGL_Log("glClear( 0x%x = ", mask);
 
 	if (mask & GL_COLOR_BUFFER_BIT)
+	{
 		QGL_Log("GL_COLOR_BUFFER_BIT ");
-	if ( mask & GL_DEPTH_BUFFER_BIT )
+	}
+	if (mask & GL_DEPTH_BUFFER_BIT)
+	{
 		QGL_Log("GL_DEPTH_BUFFER_BIT ");
-	if ( mask & GL_STENCIL_BUFFER_BIT )
+	}
+	if (mask & GL_STENCIL_BUFFER_BIT)
+	{
 		QGL_Log("GL_STENCIL_BUFFER_BIT ");
-	if ( mask & GL_ACCUM_BUFFER_BIT )
+	}
+	if (mask & GL_ACCUM_BUFFER_BIT)
+	{
 		QGL_Log("GL_ACCUM_BUFFER_BIT ");
+	}
 
 	QGL_Log(")\n");
 	glClear(mask);
@@ -489,7 +523,7 @@ static void APIENTRY logColor4fv(const GLfloat* v)
 	glColor4fv(v);
 }
 
-static void APIENTRY logColorPointer(GLint size, GLenum type, GLsizei stride, const void *pointer)
+static void APIENTRY logColorPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
 	QGL_Log("glColorPointer( %d, %s, %d, MEM )\n", size, TypeToString(type), stride);
 	glColorPointer(size, type, stride, pointer);
@@ -531,7 +565,7 @@ static void APIENTRY logDisableClientState(GLenum array)
 	glDisableClientState(array);
 }
 
-static void APIENTRY logDrawElements(GLenum mode, GLsizei count, GLenum type, const void *indices)
+static void APIENTRY logDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
 {
 	QGL_Log("glDrawElements( %s, %d, %s, MEM )\n", PrimToString(mode), count, TypeToString(type));
 	glDrawElements(mode, count, type, indices);
@@ -552,7 +586,7 @@ static void APIENTRY logEnableClientState(GLenum array)
 static void APIENTRY logHint(GLenum target, GLenum mode)
 {
 	QGL_Log("glHint( 0x%x, 0x%x )\n", target, mode);
-	glHint( target, mode);
+	glHint(target, mode);
 }
 
 static void APIENTRY logPolygonMode(GLenum face, GLenum mode)
@@ -567,7 +601,7 @@ static void APIENTRY logScissor(GLint x, GLint y, GLsizei width, GLsizei height)
 	glScissor(x, y, width, height);
 }
 
-static void APIENTRY logTexCoordPointer(GLint size, GLenum type, GLsizei stride, const void *pointer)
+static void APIENTRY logTexCoordPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
 	QGL_Log("glTexCoordPointer( %d, %s, %d, MEM )\n", size, TypeToString(type), stride);
 	glTexCoordPointer(size, type, stride, pointer);
@@ -597,7 +631,7 @@ static void APIENTRY logTexParameteri(GLenum target, GLenum pname, GLint param)
 	glTexParameteri(target, pname, param);
 }
 
-static void APIENTRY logVertexPointer(GLint size, GLenum type, GLsizei stride, const void *pointer)
+static void APIENTRY logVertexPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
 	QGL_Log("glVertexPointer( %d, %s, %d, MEM )\n", size, TypeToString(type), stride);
 	glVertexPointer(size, type, stride, pointer);
@@ -656,20 +690,20 @@ void QGL_Init()
 {
 	Log::write("...initializing QGL\n");
 
-#define GLF_0(r, n)				qgl##n = gl##n;
-#define GLF_V0(n)				qgl##n = gl##n;
-#define GLF_1(r, n, t1, p1)		qgl##n = gl##n;
-#define GLF_V1(n, t1, p1)		qgl##n = gl##n;
-#define GLF_V2(n, t1, p1, t2, p2)	qgl##n = gl##n;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	qgl##n = gl##n;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)	qgl##n = gl##n;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)	qgl##n = gl##n;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)	qgl##n = gl##n;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)	qgl##n = gl##n;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)	qgl##n = gl##n;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)	qgl##n = gl##n;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)	qgl##n = gl##n;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)	qgl##n = gl##n;
+#define GLF_0(r, n)             qgl ## n = gl ## n;
+#define GLF_V0(n)               qgl ## n = gl ## n;
+#define GLF_1(r, n, t1, p1)     qgl ## n = gl ## n;
+#define GLF_V1(n, t1, p1)       qgl ## n = gl ## n;
+#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = gl ## n;
+#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = gl ## n;
+#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = gl ## n;
+#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = gl ## n;
+#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = gl ## n;
+#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = gl ## n;
+#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = gl ## n;
+#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = gl ## n;
+#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = gl ## n;
+#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = gl ## n;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -889,7 +923,7 @@ void QGL_Init()
 		{
 			glConfig.NVFogAvailable = true;
 			common->Printf("...using GL_NV_fog_distance\n");
-		} 
+		}
 		else
 		{
 			common->Printf("...ignoring GL_NV_fog_distance\n");
@@ -967,20 +1001,20 @@ void QGL_Shutdown()
 		log_fp = 0;
 	}
 
-#define GLF_0(r, n)				qgl##n = NULL;
-#define GLF_V0(n)				qgl##n = NULL;
-#define GLF_1(r, n, t1, p1)		qgl##n = NULL;
-#define GLF_V1(n, t1, p1)		qgl##n = NULL;
-#define GLF_V2(n, t1, p1, t2, p2)	qgl##n = NULL;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	qgl##n = NULL;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)	qgl##n = NULL;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)	qgl##n = NULL;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)	qgl##n = NULL;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)	qgl##n = NULL;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)	qgl##n = NULL;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)	qgl##n = NULL;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)	qgl##n = NULL;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)	qgl##n = NULL;
+#define GLF_0(r, n)             qgl ## n = NULL;
+#define GLF_V0(n)               qgl ## n = NULL;
+#define GLF_1(r, n, t1, p1)     qgl ## n = NULL;
+#define GLF_V1(n, t1, p1)       qgl ## n = NULL;
+#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = NULL;
+#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = NULL;
+#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = NULL;
+#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = NULL;
+#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = NULL;
+#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = NULL;
+#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = NULL;
+#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = NULL;
+#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = NULL;
+#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = NULL;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -1048,7 +1082,7 @@ void QGL_EnableLogging(bool enable)
 	{
 		if (!log_fp)
 		{
-			struct tm *newtime;
+			struct tm* newtime;
 			time_t aclock;
 
 			time(&aclock);
@@ -1059,20 +1093,20 @@ void QGL_EnableLogging(bool enable)
 			QGL_Log("%s\n", asctime(newtime));
 		}
 
-#define GLF_0(r, n)				qgl##n = log##n;
-#define GLF_V0(n)				qgl##n = log##n;
-#define GLF_1(r, n, t1, p1)		qgl##n = log##n;
-#define GLF_V1(n, t1, p1)		qgl##n = log##n;
-#define GLF_V2(n, t1, p1, t2, p2)	qgl##n = log##n;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	qgl##n = log##n;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)	qgl##n = log##n;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)	qgl##n = log##n;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)	qgl##n = log##n;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)	qgl##n = log##n;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)	qgl##n = log##n;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)	qgl##n = log##n;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)	qgl##n = log##n;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)	qgl##n = log##n;
+#define GLF_0(r, n)             qgl ## n = log ## n;
+#define GLF_V0(n)               qgl ## n = log ## n;
+#define GLF_1(r, n, t1, p1)     qgl ## n = log ## n;
+#define GLF_V1(n, t1, p1)       qgl ## n = log ## n;
+#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = log ## n;
+#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = log ## n;
+#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = log ## n;
+#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = log ## n;
+#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = log ## n;
+#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = log ## n;
+#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = log ## n;
+#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = log ## n;
+#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = log ## n;
+#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = log ## n;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -1098,20 +1132,20 @@ void QGL_EnableLogging(bool enable)
 			log_fp = 0;
 		}
 
-#define GLF_0(r, n)				qgl##n = gl##n;
-#define GLF_V0(n)				qgl##n = gl##n;
-#define GLF_1(r, n, t1, p1)		qgl##n = gl##n;
-#define GLF_V1(n, t1, p1)		qgl##n = gl##n;
-#define GLF_V2(n, t1, p1, t2, p2)	qgl##n = gl##n;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	qgl##n = gl##n;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)	qgl##n = gl##n;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)	qgl##n = gl##n;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)	qgl##n = gl##n;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)	qgl##n = gl##n;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)	qgl##n = gl##n;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)	qgl##n = gl##n;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)	qgl##n = gl##n;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)	qgl##n = gl##n;
+#define GLF_0(r, n)             qgl ## n = gl ## n;
+#define GLF_V0(n)               qgl ## n = gl ## n;
+#define GLF_1(r, n, t1, p1)     qgl ## n = gl ## n;
+#define GLF_V1(n, t1, p1)       qgl ## n = gl ## n;
+#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = gl ## n;
+#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = gl ## n;
+#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = gl ## n;
+#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = gl ## n;
+#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = gl ## n;
+#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = gl ## n;
+#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = gl ## n;
+#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = gl ## n;
+#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = gl ## n;
+#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = gl ## n;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0

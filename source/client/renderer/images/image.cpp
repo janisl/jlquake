@@ -22,20 +22,20 @@
 // MACROS ------------------------------------------------------------------
 
 //#define IMAGE_HASH_SIZE		1024
-#define IMAGE_HASH_SIZE		4096
+#define IMAGE_HASH_SIZE     4096
 
-#define SCRAP_BLOCK_WIDTH	256
-#define SCRAP_BLOCK_HEIGHT	256
+#define SCRAP_BLOCK_WIDTH   256
+#define SCRAP_BLOCK_HEIGHT  256
 
-#define DEFAULT_SIZE		16
+#define DEFAULT_SIZE        16
 
 // TYPES -------------------------------------------------------------------
 
 struct textureMode_t
 {
-	const char*		name;
-	GLenum			minimize;
-	GLenum			maximize;
+	const char* name;
+	GLenum minimize;
+	GLenum maximize;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -48,9 +48,9 @@ struct textureMode_t
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-byte		host_basepal[768];
-byte		r_palette[256][4];
-unsigned*	d_8to24table;
+byte host_basepal[768];
+byte r_palette[256][4];
+unsigned* d_8to24table;
 
 int ColorIndex[16] =
 {
@@ -62,26 +62,26 @@ unsigned ColorPercent[16] =
 	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
 };
 
-bool		scrap_dirty;
+bool scrap_dirty;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte			s_gammatable[256];
-static byte			s_intensitytable[256];
+static byte s_gammatable[256];
+static byte s_intensitytable[256];
 
-static image_t*		ImageHashTable[IMAGE_HASH_SIZE];
+static image_t* ImageHashTable[IMAGE_HASH_SIZE];
 
 static int numBackupImages = 0;
 static image_t* backupHashTable[IMAGE_HASH_SIZE];
 
-static int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
-static int			gl_filter_max = GL_LINEAR;
+static int gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
+static int gl_filter_max = GL_LINEAR;
 
 static float gl_anisotropy = 1.0;
 
-static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
-static byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
-static int			scrap_uploads;
+static int scrap_allocated[SCRAP_BLOCK_WIDTH];
+static byte scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
+static int scrap_uploads;
 
 static byte mipBlendColors[16][4] =
 {
@@ -212,7 +212,7 @@ static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 			break;
 		}
 
-	byte fillcolor = *skin; // assume this is the pixel to fill
+	byte fillcolor = *skin;	// assume this is the pixel to fill
 
 	// can't fill to filled color or to transparent color (used as visited marker)
 	if ((fillcolor == filledcolor) || (fillcolor == 255))
@@ -230,7 +230,7 @@ static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 
 	struct floodfill_t
 	{
-		short		x, y;
+		short x, y;
 	};
 
 	int inpt = 0;
@@ -249,20 +249,20 @@ static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 
 		outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
 
-#define FLOODFILL_STEP( off, dx, dy ) \
-{ \
-	if (pos[off] == fillcolor) \
+#define FLOODFILL_STEP(off, dx, dy)	\
 	{ \
-		pos[off] = 255; \
-		fifo[inpt].x = x + (dx); \
-		fifo[inpt].y = y + (dy); \
-		inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
-	} \
-	else if (pos[off] != 255) \
-	{ \
-		fdc = pos[off]; \
-	} \
-}
+		if (pos[off] == fillcolor) \
+		{ \
+			pos[off] = 255;	\
+			fifo[inpt].x = x + (dx); \
+			fifo[inpt].y = y + (dy); \
+			inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
+		} \
+		else if (pos[off] != 255) \
+		{ \
+			fdc = pos[off];	\
+		} \
+	}
 
 		if (x > 0)
 		{
@@ -452,12 +452,12 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 
 	if (!String::ICmp(name + len - 4, ".tga"))
 	{
-		R_LoadTGA(name, pic, width, height);            // try tga first
+		R_LoadTGA(name, pic, width, height);			// try tga first
 		if (!*pic)
-		{                                    //
-			char altname[MAX_QPATH];                      // try jpg in place of tga 
-			String::Cpy(altname, name);                      
-			len = String::Length(altname);                  
+		{									//
+			char altname[MAX_QPATH];						// try jpg in place of tga
+			String::Cpy(altname, name);
+			len = String::Length(altname);
 			altname[len - 3] = 'j';
 			altname[len - 2] = 'p';
 			altname[len - 1] = 'g';
@@ -569,9 +569,9 @@ static void R_MipMap2(byte* in, int inWidth, int inHeight)
 		for (int j = 0; j < outWidth; j++)
 		{
 			byte* outpix = &temp[(i * outWidth + j) * 4];
-			for (int k = 0; k < 4 ; k++)
+			for (int k = 0; k < 4; k++)
 			{
-				int total = 
+				int total =
 					1 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2 - 1) & inWidthMask)) * 4 + k] +
 					2 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2) & inWidthMask)) * 4 + k] +
 					2 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2 + 1) & inWidthMask)) * 4 + k] +
@@ -642,10 +642,10 @@ static void R_MipMap(byte* in, int width, int height)
 	{
 		for (int j = 0; j < width; j++, out += 4, in += 8)
 		{
-			out[0] = (in[0] + in[4] + in[row+0] + in[row+4]) >> 2;
-			out[1] = (in[1] + in[5] + in[row+1] + in[row+5]) >> 2;
-			out[2] = (in[2] + in[6] + in[row+2] + in[row+6]) >> 2;
-			out[3] = (in[3] + in[7] + in[row+3] + in[row+7]) >> 2;
+			out[0] = (in[0] + in[4] + in[row + 0] + in[row + 4]) >> 2;
+			out[1] = (in[1] + in[5] + in[row + 1] + in[row + 5]) >> 2;
+			out[2] = (in[2] + in[6] + in[row + 2] + in[row + 6]) >> 2;
+			out[3] = (in[3] + in[7] + in[row + 3] + in[row + 7]) >> 2;
 		}
 	}
 }
@@ -665,7 +665,7 @@ static void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean on
 		if (!glConfig.deviceSupportsGamma)
 		{
 			byte* p = in;
-			int c = inwidth*inheight;
+			int c = inwidth * inheight;
 			for (int i = 0; i < c; i++, p += 4)
 			{
 				p[0] = s_gammatable[p[0]];
@@ -745,27 +745,27 @@ static void GL_CheckErrors()
 	char s[64];
 	switch (err)
 	{
-		case GL_INVALID_ENUM:
-			String::Cpy(s, "GL_INVALID_ENUM");
-			break;
-		case GL_INVALID_VALUE:
-			String::Cpy(s, "GL_INVALID_VALUE");
-			break;
-		case GL_INVALID_OPERATION:
-			String::Cpy(s, "GL_INVALID_OPERATION");
-			break;
-		case GL_STACK_OVERFLOW:
-			String::Cpy(s, "GL_STACK_OVERFLOW");
-			break;
-		case GL_STACK_UNDERFLOW:
-			String::Cpy(s, "GL_STACK_UNDERFLOW");
-			break;
-		case GL_OUT_OF_MEMORY:
-			String::Cpy(s, "GL_OUT_OF_MEMORY");
-			break;
-		default:
-			String::Sprintf(s, sizeof(s), "%i", err);
-			break;
+	case GL_INVALID_ENUM:
+		String::Cpy(s, "GL_INVALID_ENUM");
+		break;
+	case GL_INVALID_VALUE:
+		String::Cpy(s, "GL_INVALID_VALUE");
+		break;
+	case GL_INVALID_OPERATION:
+		String::Cpy(s, "GL_INVALID_OPERATION");
+		break;
+	case GL_STACK_OVERFLOW:
+		String::Cpy(s, "GL_STACK_OVERFLOW");
+		break;
+	case GL_STACK_UNDERFLOW:
+		String::Cpy(s, "GL_STACK_UNDERFLOW");
+		break;
+	case GL_OUT_OF_MEMORY:
+		String::Cpy(s, "GL_OUT_OF_MEMORY");
+		break;
+	default:
+		String::Sprintf(s, sizeof(s), "%i", err);
+		break;
 	}
 
 	throw Exception(va("GL_CheckErrors: %s", s));
@@ -1091,9 +1091,9 @@ void R_ScrapUpload()
 
 static long generateHashValue(const char* fname)
 {
-	int		i;
-	long	hash;
-	char	letter;
+	int i;
+	long hash;
+	char letter;
 
 	hash = 0;
 	i = 0;
@@ -1104,7 +1104,7 @@ static long generateHashValue(const char* fname)
 		{
 			break;				// don't include extension
 		}
-		if (letter =='\\')
+		if (letter == '\\')
 		{
 			letter = '/';		// damn path names
 		}
@@ -1269,15 +1269,15 @@ bool R_TouchImage(image_t* inImage)
 	if (inImage == tr.dlightImage ||
 		inImage == tr.whiteImage ||
 		inImage == tr.defaultImage ||
-		inImage->imgName[0] == '*') // can't use lightmaps since they might have the same name, but different maps will have different actual lightmap pixels
+		inImage->imgName[0] == '*')	// can't use lightmaps since they might have the same name, but different maps will have different actual lightmap pixels
 	{
 		return false;
 	}
 
 	int hash = inImage->hash;
 
-	image_t *bImage = backupHashTable[hash];
-	image_t *bImagePrev = NULL;
+	image_t* bImage = backupHashTable[hash];
+	image_t* bImagePrev = NULL;
 	while (bImage)
 	{
 		if (bImage == inImage)
@@ -1326,7 +1326,7 @@ bool R_TouchImage(image_t* inImage)
 image_t* R_FindImage(const char* name)
 {
 	long hash = generateHashValue(name);
-	for (image_t* image = ImageHashTable[hash]; image; image=image->next)
+	for (image_t* image = ImageHashTable[hash]; image; image = image->next)
 	{
 		if (!String::ICmp(name, image->imgName))
 		{
@@ -1349,7 +1349,7 @@ static image_t* R_FindCachedImage(const char* name)
 	}
 
 	int hash = generateHashValue(name);
-	for (image_t *bImage = backupHashTable[hash]; bImage; bImage = bImage->next)
+	for (image_t* bImage = backupHashTable[hash]; bImage; bImage = bImage->next)
 	{
 		if (!String::ICmp(name, bImage->imgName))
 		{
@@ -1605,24 +1605,24 @@ static void R_CreateDefaultImage()
 	for (int x = 0; x < DEFAULT_SIZE; x++)
 	{
 		data[0][x][0] =
-		data[0][x][1] =
-		data[0][x][2] =
-		data[0][x][3] = 255;
+			data[0][x][1] =
+				data[0][x][2] =
+					data[0][x][3] = 255;
 
 		data[x][0][0] =
-		data[x][0][1] =
-		data[x][0][2] =
-		data[x][0][3] = 255;
+			data[x][0][1] =
+				data[x][0][2] =
+					data[x][0][3] = 255;
 
-		data[DEFAULT_SIZE-1][x][0] =
-		data[DEFAULT_SIZE-1][x][1] =
-		data[DEFAULT_SIZE-1][x][2] =
-		data[DEFAULT_SIZE-1][x][3] = 255;
+		data[DEFAULT_SIZE - 1][x][0] =
+			data[DEFAULT_SIZE - 1][x][1] =
+				data[DEFAULT_SIZE - 1][x][2] =
+					data[DEFAULT_SIZE - 1][x][3] = 255;
 
-		data[x][DEFAULT_SIZE-1][0] =
-		data[x][DEFAULT_SIZE-1][1] =
-		data[x][DEFAULT_SIZE-1][2] =
-		data[x][DEFAULT_SIZE-1][3] = 255;
+		data[x][DEFAULT_SIZE - 1][0] =
+			data[x][DEFAULT_SIZE - 1][1] =
+				data[x][DEFAULT_SIZE - 1][2] =
+					data[x][DEFAULT_SIZE - 1][3] = 255;
 	}
 	tr.defaultImage = R_CreateImage("*default", (byte*)data, DEFAULT_SIZE, DEFAULT_SIZE, true, false, GL_REPEAT, false);
 }
@@ -1644,7 +1644,7 @@ static void R_CreateDlightImage()
 		for (int y = 0; y < DLIGHT_SIZE; y++)
 		{
 			float d = (DLIGHT_SIZE / 2 - 0.5f - x) * (DLIGHT_SIZE / 2 - 0.5f - x) +
-				(DLIGHT_SIZE / 2 - 0.5f - y) * (DLIGHT_SIZE / 2 - 0.5f - y);
+					  (DLIGHT_SIZE / 2 - 0.5f - y) * (DLIGHT_SIZE / 2 - 0.5f - y);
 			int b = (int)(4000 / d);
 			if (b > 255)
 			{
@@ -1654,10 +1654,10 @@ static void R_CreateDlightImage()
 			{
 				b = 0;
 			}
-			data[y][x][0] = 
-			data[y][x][1] = 
-			data[y][x][2] = b;
-			data[y][x][3] = 255;			
+			data[y][x][0] =
+				data[y][x][1] =
+					data[y][x][2] = b;
+			data[y][x][3] = 255;
 		}
 	}
 	tr.dlightImage = R_CreateImage("*dlight", (byte*)data, DLIGHT_SIZE, DLIGHT_SIZE, false, false, GL_CLAMP, false);
@@ -1738,9 +1738,9 @@ static void R_CreateFogImage()
 		{
 			float d = R_FogFactor((x + 0.5f) / FOG_S, (y + 0.5f) / FOG_T);
 
-			data[(y * FOG_S + x) * 4 + 0] = 
-			data[(y * FOG_S + x) * 4 + 1] = 
-			data[(y * FOG_S + x) * 4 + 2] = 255;
+			data[(y * FOG_S + x) * 4 + 0] =
+				data[(y * FOG_S + x) * 4 + 1] =
+					data[(y * FOG_S + x) * 4 + 2] = 255;
 			data[(y * FOG_S + x) * 4 + 3] = 255 * d;
 		}
 	}
@@ -1775,8 +1775,8 @@ static void R_CreateFogImageET()
 	{
 		for (int y = 0; y < FOG_T; y++)
 		{
-			int alpha = 270 * ((float)x / FOG_S) * ((float)y / FOG_T);    // need slop room for fp round to 0
-			if (alpha < 0 )
+			int alpha = 270 * ((float)x / FOG_S) * ((float)y / FOG_T);		// need slop room for fp round to 0
+			if (alpha < 0)
 			{
 				alpha = 0;
 			}
@@ -1796,8 +1796,8 @@ static void R_CreateFogImageET()
 			}
 
 			data[(y * FOG_S + x) * 4 + 0] =
-			data[(y * FOG_S + x) * 4 + 1] =
-			data[(y * FOG_S + x) * 4 + 2] = 255;
+				data[(y * FOG_S + x) * 4 + 1] =
+					data[(y * FOG_S + x) * 4 + 2] = 255;
 			data[(y * FOG_S + x) * 4 + 3] = alpha;
 		}
 	}
@@ -1805,7 +1805,7 @@ static void R_CreateFogImageET()
 	// standard openGL clamping doesn't really do what we want -- it includes
 	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
 	// what we want.
-	tr.fogImage = R_CreateImage("*fog", (byte *)data, FOG_S, FOG_T, false, false, GL_CLAMP, false, false);
+	tr.fogImage = R_CreateImage("*fog", (byte*)data, FOG_S, FOG_T, false, false, GL_CLAMP, false, false);
 	delete[] data;
 
 	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
@@ -1863,7 +1863,7 @@ static void R_LoadCacheImages()
 	}
 
 	int len = FS_ReadFile("image.cache", NULL);
-	if ( len <= 0 )
+	if (len <= 0)
 	{
 		return;
 	}
@@ -2015,7 +2015,7 @@ void GL_TextureAnisotropy(float anisotropy)
 	}
 
 	// change all the existing texture objects
-	for (int i = 0; i < tr.numImages ; i++)
+	for (int i = 0; i < tr.numImages; i++)
 	{
 		image_t* glt = tr.images[i];
 		GL_Bind(glt);
@@ -2043,7 +2043,7 @@ void R_ImageList_f()
 	{
 		image_t* image = tr.images[i];
 
-		texels += image->uploadWidth*image->uploadHeight;
+		texels += image->uploadWidth * image->uploadHeight;
 		Log::write("%4i: %4i %4i  %s ", i, image->uploadWidth, image->uploadHeight, yesno[image->mipmap]);
 		switch (image->internalFormat)
 		{
@@ -2090,7 +2090,7 @@ void R_ImageList_f()
 			Log::write("%4i ", image->wrapClampMode);
 			break;
 		}
-		
+
 		Log::write(" %s\n", image->imgName);
 	}
 	Log::write(" ---------\n");
@@ -2153,7 +2153,7 @@ const char* R_GetImageName(qhandle_t Handle)
 //
 //==========================================================================
 
-void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool dirty)
+void R_UploadCinematic(int cols, int rows, const byte* data, int client, bool dirty)
 {
 	GL_Bind(tr.scratchImage[client]);
 
@@ -2186,7 +2186,7 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);	
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	}
 	else
 	{
@@ -2210,7 +2210,7 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 //
 //==========================================================================
 
-static void R_CreateOrUpdateTranslatedImageEx(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height, bool allowPicMip, int mode)
+static void R_CreateOrUpdateTranslatedImageEx(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height, bool allowPicMip, int mode)
 {
 	byte* translated = new byte[width * height];
 	int c = width * height;
@@ -2239,7 +2239,7 @@ static void R_CreateOrUpdateTranslatedImageEx(image_t*& image, const char* name,
 //
 //==========================================================================
 
-void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height)
+void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height)
 {
 	R_CreateOrUpdateTranslatedImageEx(image, name, pixels, translation, width, height, false, IMG8MODE_Normal);
 }
@@ -2250,7 +2250,7 @@ void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pi
 //
 //==========================================================================
 
-void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height)
+void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height)
 {
 	R_CreateOrUpdateTranslatedImageEx(image, name, pixels, translation, width, height, true, IMG8MODE_Skin);
 }
@@ -2380,7 +2380,7 @@ image_t* R_CachePicRepeat(const char* path)
 //
 //==========================================================================
 
-image_t* R_CachePicWithTransPixels(const char *path, byte* TransPixels)
+image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels)
 {
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
 	if (!pic)
@@ -2544,7 +2544,7 @@ void R_PurgeBackupImages(int purgeCount)
 	R_SyncRenderThread();
 
 	int cnt = 0;
-	for (int i = lastPurged; i < IMAGE_HASH_SIZE;)
+	for (int i = lastPurged; i < IMAGE_HASH_SIZE; )
 	{
 		lastPurged = i;
 		image_t* image = backupHashTable[i];
@@ -2562,7 +2562,7 @@ void R_PurgeBackupImages(int purgeCount)
 		}
 		else
 		{
-			i++;    // no images in this slot, so move to the next one
+			i++;	// no images in this slot, so move to the next one
 		}
 	}
 

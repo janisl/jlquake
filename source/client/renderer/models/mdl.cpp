@@ -21,15 +21,15 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_LBM_HEIGHT		480
+#define MAX_LBM_HEIGHT      480
 
-#define ALIAS_BASE_SIZE_RATIO		(1.0 / 11.0)
-					// normalizing factor so player model works out to about
-					//  1 pixel per triangle
+#define ALIAS_BASE_SIZE_RATIO       (1.0 / 11.0)
+// normalizing factor so player model works out to about
+//  1 pixel per triangle
 
-#define MAXALIASFRAMES		256
-#define MAXALIASVERTS		2000
-#define MAXALIASTRIS		2048
+#define MAXALIASFRAMES      256
+#define MAXALIASVERTS       2000
+#define MAXALIASTRIS        2048
 
 // TYPES -------------------------------------------------------------------
 
@@ -43,49 +43,49 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-byte					q1_player_8bit_texels[320 * 200];
-byte					h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
+byte q1_player_8bit_texels[320 * 200];
+byte h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static float			aliastransform[3][4];
+static float aliastransform[3][4];
 
-static vec3_t			mins;
-static vec3_t			maxs;
+static vec3_t mins;
+static vec3_t maxs;
 
-static int				posenum;
-static mesh1hdr_t*		pheader;
+static int posenum;
+static mesh1hdr_t* pheader;
 
 // a pose is a single set of vertexes.  a frame may be
 // an animating sequence of poses
-static const dmdl_trivertx_t*	poseverts[MAXALIASFRAMES];
-static dmdl_stvert_t			stverts[MAXALIASVERTS];
-static mmesh1triangle_t			triangles[MAXALIASTRIS];
+static const dmdl_trivertx_t* poseverts[MAXALIASFRAMES];
+static dmdl_stvert_t stverts[MAXALIASVERTS];
+static mmesh1triangle_t triangles[MAXALIASTRIS];
 
-static model_t*			aliasmodel;
-static mesh1hdr_t*		paliashdr;
+static model_t* aliasmodel;
+static mesh1hdr_t* paliashdr;
 
-static qboolean			used[8192];
+static qboolean used[8192];
 
 // the command list holds counts and s/t values that are valid for
 // every frame
-static int				commands[8192];
-static int				numcommands;
+static int commands[8192];
+static int numcommands;
 
 // all frames will have their vertexes rearranged and expanded
 // so they are in the order expected by the command list
-static int				vertexorder[8192];
-static int				numorder;
+static int vertexorder[8192];
+static int numorder;
 
-static int				stripverts[128];
-static int				striptris[128];
-static int				stripstverts[128];
-static int				stripcount;
+static int stripverts[128];
+static int striptris[128];
+static int stripstverts[128];
+static int stripcount;
 
-static int				lastposenum;
-static float			shadelight;
-static float			ambientlight;
-static float			model_constant_alpha;
+static int lastposenum;
+static float shadelight;
+static float ambientlight;
+static float model_constant_alpha;
 
 // CODE --------------------------------------------------------------------
 
@@ -158,7 +158,7 @@ static const void* Mod_LoadAliasFrame(const void* pin, mmesh1framedesc_t* frame)
 
 	pinframe += pheader->numverts;
 
-	return (const void *)pinframe;
+	return (const void*)pinframe;
 }
 
 //==========================================================================
@@ -267,52 +267,66 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE)
 		{
-			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
+			byte* pic32 = R_ConvertImage8To32((byte*)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 
 			// save 8 bit texels for the player model to remap
 			if ((GGameType & GAME_Quake) && !String::Cmp(loadmodel->name,"progs/player.mdl"))
 			{
 				if (s > (int)sizeof(q1_player_8bit_texels))
+				{
 					throw Exception("Player skin too large");
-				Com_Memcpy(q1_player_8bit_texels, (byte *)(pskintype + 1), s);
+				}
+				Com_Memcpy(q1_player_8bit_texels, (byte*)(pskintype + 1), s);
 			}
 			else if (GGameType & GAME_Hexen2)
 			{
 				if (!String::Cmp(loadmodel->name,"models/paladin.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[0]))
+					{
 						throw Exception("Player skin too large");
-					Com_Memcpy(h2_player_8bit_texels[0], (byte *)(pskintype + 1), s);
+					}
+					Com_Memcpy(h2_player_8bit_texels[0], (byte*)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/crusader.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[1]))
+					{
 						throw Exception("Player skin too large");
-					Com_Memcpy(h2_player_8bit_texels[1], (byte *)(pskintype + 1), s);
+					}
+					Com_Memcpy(h2_player_8bit_texels[1], (byte*)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/necro.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[2]))
+					{
 						throw Exception("Player skin too large");
-					Com_Memcpy(h2_player_8bit_texels[2], (byte *)(pskintype + 1), s);
+					}
+					Com_Memcpy(h2_player_8bit_texels[2], (byte*)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/assassin.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[3]))
+					{
 						throw Exception("Player skin too large");
-					Com_Memcpy(h2_player_8bit_texels[3], (byte *)(pskintype + 1), s);
+					}
+					Com_Memcpy(h2_player_8bit_texels[3], (byte*)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/succubus.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[4]))
+					{
 						throw Exception("Player skin too large");
-					Com_Memcpy(h2_player_8bit_texels[4], (byte *)(pskintype + 1), s);
+					}
+					Com_Memcpy(h2_player_8bit_texels[4], (byte*)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/hank.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[5]))
+					{
 						throw Exception("Player skin too large");
-					Com_Memcpy(h2_player_8bit_texels[5], (byte *)(pskintype + 1), s);
+					}
+					Com_Memcpy(h2_player_8bit_texels[5], (byte*)(pskintype + 1), s);
 				}
 			}
 
@@ -320,12 +334,12 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 			sprintf(name, "%s_%i", loadmodel->name, i);
 
 			pheader->gl_texture[i][0] =
-			pheader->gl_texture[i][1] =
-			pheader->gl_texture[i][2] =
-			pheader->gl_texture[i][3] =
-				R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
+				pheader->gl_texture[i][1] =
+					pheader->gl_texture[i][2] =
+						pheader->gl_texture[i][3] =
+							R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 			delete[] pic32;
-			pskintype = (dmdl_skintype_t *)((byte *)(pskintype+1) + s);
+			pskintype = (dmdl_skintype_t*)((byte*)(pskintype + 1) + s);
 		}
 		else
 		{
@@ -342,21 +356,21 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 			{
 				char name[32];
 				sprintf(name, "%s_%i_%i", loadmodel->name, i, j);
-				
+
 				byte* pic32 = R_ConvertImage8To32((byte*)pskintype, pheader->skinwidth, pheader->skinheight, texture_mode);
-				pheader->gl_texture[i][j&3] = R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
+				pheader->gl_texture[i][j & 3] = R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 				delete[] pic32;
 				pskintype = (dmdl_skintype_t*)((byte*)pskintype + s);
 			}
 			int k = j;
 			for (/* */; j < 4; j++)
 			{
-				pheader->gl_texture[i][j & 3] = pheader->gl_texture[i][j - k]; 
+				pheader->gl_texture[i][j & 3] = pheader->gl_texture[i][j - k];
 			}
 		}
 	}
 
-	return (void *)pskintype;
+	return (void*)pskintype;
 }
 
 //==========================================================================
@@ -390,7 +404,7 @@ static int StripLength(int starttri, int startv)
 
 	// look for a matching triangle
 nexttri:
-	mmesh1triangle_t* check = &triangles[starttri + 1];
+	mmesh1triangle_t * check = &triangles[starttri + 1];
 	for (int j = starttri + 1; j < pheader->numtris; j++, check++)
 	{
 		if (check->facesfront != last->facesfront)
@@ -491,7 +505,7 @@ static int FanLength(int starttri, int startv)
 
 	// look for a matching triangle
 nexttri:
-	mmesh1triangle_t* check = &triangles[starttri + 1];
+	mmesh1triangle_t * check = &triangles[starttri + 1];
 	for (int j = starttri + 1; j < pheader->numtris; j++, check++)
 	{
 		if (check->facesfront != last->facesfront)
@@ -584,16 +598,16 @@ static void BuildTris()
 		int beststverts[1024];
 		for (int type = 0; type < 2; type++)
 		{
-			for (int startv = 0; startv < 3 ; startv++)
+			for (int startv = 0; startv < 3; startv++)
 			{
 				int len;
 				if (type == 1)
 				{
-					len = StripLength (i, startv);
+					len = StripLength(i, startv);
 				}
 				else
 				{
-					len = FanLength (i, startv);
+					len = FanLength(i, startv);
 				}
 				if (len > bestlen)
 				{
@@ -750,7 +764,7 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 	if (version != MESH1_VERSION)
 	{
 		throw Exception(va("%s has wrong version number (%i should be %i)",
-			mod->name, version, MESH1_VERSION));
+				mod->name, version, MESH1_VERSION));
 	}
 
 	//
@@ -794,7 +808,7 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 		throw Exception(va("model %s has no triangles", mod->name));
 	}
 
-	pheader->numframes = LittleLong (pinmodel->numframes);
+	pheader->numframes = LittleLong(pinmodel->numframes);
 	int numframes = pheader->numframes;
 	if (numframes < 1)
 	{
@@ -802,7 +816,7 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 	}
 
 	pheader->size = LittleFloat(pinmodel->size) * ALIAS_BASE_SIZE_RATIO;
-	mod->q1_synctype = (synctype_t)LittleLong (pinmodel->synctype);
+	mod->q1_synctype = (synctype_t)LittleLong(pinmodel->synctype);
 	mod->q1_numframes = pheader->numframes;
 
 	for (int i = 0; i < 3; i++)
@@ -840,8 +854,8 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 
 		for (int j = 0; j < 3; j++)
 		{
-			triangles[i].vertindex[j] =	LittleLong(pintriangles[i].vertindex[j]);
-			triangles[i].stindex[j]	  = triangles[i].vertindex[j];
+			triangles[i].vertindex[j] = LittleLong(pintriangles[i].vertindex[j]);
+			triangles[i].stindex[j]   = triangles[i].vertindex[j];
 		}
 	}
 
@@ -911,7 +925,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	if (version != MESH1_NEWVERSION)
 	{
 		throw Exception(va("%s has wrong version number (%i should be %i)",
-			mod->name, version, MESH1_NEWVERSION));
+				mod->name, version, MESH1_NEWVERSION));
 	}
 
 	//
@@ -921,7 +935,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	int size = sizeof(mesh1hdr_t) + (LittleLong(pinmodel->numframes) - 1) * sizeof(pheader->frames[0]);
 	pheader = (mesh1hdr_t*)Mem_Alloc(size);
 
-	mod->q1_flags = LittleLong (pinmodel->flags);
+	mod->q1_flags = LittleLong(pinmodel->flags);
 
 	//
 	// endian-adjust and copy the data, starting with the alias model header
@@ -938,7 +952,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 
 	pheader->numverts = LittleLong(pinmodel->numverts);
 	pheader->version = LittleLong(pinmodel->num_st_verts);	//hide num_st in version
-	
+
 	if (pheader->numverts <= 0)
 	{
 		throw Exception(va("model %s has no vertices", mod->name));
@@ -1342,7 +1356,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 	// draw all the triangles
 	//
 
-    qglPushMatrix();
+	qglPushMatrix();
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);

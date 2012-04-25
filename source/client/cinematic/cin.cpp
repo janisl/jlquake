@@ -284,7 +284,7 @@ byte* QCinematicCin::ReadNextFrame()
 	{
 		throw DropException("Bad compressed frame size");
 	}
-	FS_Read (compressed, size, cinematic_file);
+	FS_Read(compressed, size, cinematic_file);
 
 	// read sound
 	int start = cinematicframe * s_rate / 14;

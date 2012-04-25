@@ -22,13 +22,13 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_VERTS_ON_POLY		64
+#define MAX_VERTS_ON_POLY       64
 
-#define MARKER_OFFSET			0	// 1
+#define MARKER_OFFSET           0	// 1
 
-#define SIDE_FRONT	0
-#define SIDE_BACK	1
-#define SIDE_ON		2
+#define SIDE_FRONT  0
+#define SIDE_BACK   1
+#define SIDE_ON     2
 
 // TYPES -------------------------------------------------------------------
 
@@ -55,7 +55,7 @@
 //==========================================================================
 
 static void R_ChopPolyBehindPlane(int numInPoints, vec3_t inPoints[MAX_VERTS_ON_POLY],
-	int *numOutPoints, vec3_t outPoints[MAX_VERTS_ON_POLY], 
+	int* numOutPoints, vec3_t outPoints[MAX_VERTS_ON_POLY],
 	vec3_t normal, vec_t dist, vec_t epsilon)
 {
 	// don't clip if it might overflow
@@ -110,14 +110,14 @@ static void R_ChopPolyBehindPlane(int numInPoints, vec3_t inPoints[MAX_VERTS_ON_
 	{
 		float* p1 = inPoints[i];
 		float* clip = outPoints[*numOutPoints];
-		
+
 		if (sides[i] == SIDE_ON)
 		{
 			VectorCopy(p1, clip);
 			(*numOutPoints)++;
 			continue;
 		}
-	
+
 		if (sides[i] == SIDE_FRONT)
 		{
 			VectorCopy(p1, clip);
@@ -161,12 +161,12 @@ static void R_ChopPolyBehindPlane(int numInPoints, vec3_t inPoints[MAX_VERTS_ON_
 //
 //==========================================================================
 
-static void R_BoxSurfaces_r(mbrush46_node_t *node, vec3_t mins, vec3_t maxs,
-	surfaceType_t **list, int listsize, int *listlength, vec3_t dir)
+static void R_BoxSurfaces_r(mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
+	surfaceType_t** list, int listsize, int* listlength, vec3_t dir)
 {
 	// RF, if this node hasn't been rendered recently, ignore it
 	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) &&
-		node->visframe < tr.visCount - 2)     // allow us to be a few frames behind
+		node->visframe < tr.visCount - 2)		// allow us to be a few frames behind
 	{
 		return;
 	}
@@ -225,9 +225,9 @@ static void R_BoxSurfaces_r(mbrush46_node_t *node, vec3_t mins, vec3_t maxs,
 					surf->viewCount = tr.viewCount;
 				}
 				else if ((!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)) &&
-					DotProduct(((srfSurfaceFace_t*)surf->data)->plane.normal, dir) > -0.5) ||
-					(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) &&
-					DotProduct(((srfSurfaceFace_t*)surf->data)->plane.normal, dir) < -0.5))
+						  DotProduct(((srfSurfaceFace_t*)surf->data)->plane.normal, dir) > -0.5) ||
+						 (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) &&
+						  DotProduct(((srfSurfaceFace_t*)surf->data)->plane.normal, dir) < -0.5))
 				{
 					// don't add faces that make sharp angles with the projection direction
 					surf->viewCount = tr.viewCount;
@@ -235,7 +235,7 @@ static void R_BoxSurfaces_r(mbrush46_node_t *node, vec3_t mins, vec3_t maxs,
 			}
 		}
 		else if (*(surfaceType_t*)(surf->data) != SF_GRID &&
-			(!(GGameType & GAME_ET) || *(surfaceType_t*)(surf->data) != SF_TRIANGLES))
+				 (!(GGameType & GAME_ET) || *(surfaceType_t*)(surf->data) != SF_TRIANGLES))
 		{
 			surf->viewCount = tr.viewCount;
 		}
@@ -258,10 +258,10 @@ static void R_BoxSurfaces_r(mbrush46_node_t *node, vec3_t mins, vec3_t maxs,
 //==========================================================================
 
 static void R_AddMarkFragments(int numClipPoints, vec3_t clipPoints[2][MAX_VERTS_ON_POLY],
-	int numPlanes, vec3_t *normals, float *dists,
+	int numPlanes, vec3_t* normals, float* dists,
 	int maxPoints, vec3_t pointBuffer,
-	int maxFragments, markFragment_t *fragmentBuffer,
-	int *returnedPoints, int *returnedFragments,
+	int maxFragments, markFragment_t* fragmentBuffer,
+	int* returnedPoints, int* returnedFragments,
 	vec3_t mins, vec3_t maxs)
 {
 	// chop the surface by all the bounding planes of the to be projected polygon
@@ -314,8 +314,8 @@ static void R_AddMarkFragments(int numClipPoints, vec3_t clipPoints[2][MAX_VERTS
 //
 //==========================================================================
 
-int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection,
-	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer)
+int R_MarkFragments(int numPoints, const vec3_t* points, const vec3_t projection,
+	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer)
 {
 	//increment view count for double check prevention
 	tr.viewCount++;
@@ -344,7 +344,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 	// create the bounding planes for the to be projected polygon
 	vec3_t normals[MAX_VERTS_ON_POLY + 2];
 	float dists[MAX_VERTS_ON_POLY + 2];
-	for (int i = 0 ; i < numPoints ; i++)
+	for (int i = 0; i < numPoints; i++)
 	{
 		vec3_t v1, v2;
 		VectorSubtract(points[(i + 1) % numPoints], points[i], v1);
@@ -377,7 +377,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 		if (*surfaces[i] == SF_GRID)
 		{
 			srfGridMesh_t* cv = (srfGridMesh_t*)surfaces[i];
-			for (int m = 0 ; m < cv->height - 1; m++)
+			for (int m = 0; m < cv->height - 1; m++)
 			{
 				for (int n = 0; n < cv->width - 1; n++)
 				{
@@ -439,8 +439,8 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 					VectorMA(clipPoints[0][0], MARKER_OFFSET, dv[1].normal, clipPoints[0][0]);
 					VectorCopy(dv[cv->width].xyz, clipPoints[0][1]);
 					VectorMA(clipPoints[0][1], MARKER_OFFSET, dv[cv->width].normal, clipPoints[0][1]);
-					VectorCopy(dv[cv->width+1].xyz, clipPoints[0][2]);
-					VectorMA(clipPoints[0][2], MARKER_OFFSET, dv[cv->width+1].normal, clipPoints[0][2]);
+					VectorCopy(dv[cv->width + 1].xyz, clipPoints[0][2]);
+					VectorMA(clipPoints[0][2], MARKER_OFFSET, dv[cv->width + 1].normal, clipPoints[0][2]);
 					// check the normal of this triangle
 					VectorSubtract(clipPoints[0][0], clipPoints[0][1], v1);
 					VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
@@ -482,7 +482,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 					VectorMA(v, MARKER_OFFSET, surf->plane.normal, clipPoints[0][j]);
 				}
 				// add the fragments of this face
-				R_AddMarkFragments(3 , clipPoints,
+				R_AddMarkFragments(3, clipPoints,
 					numPlanes, normals, dists,
 					maxPoints, pointBuffer,
 					maxFragments, fragmentBuffer,
@@ -528,11 +528,11 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 	vec3_t v1, v2;
 	int* indexes;
 	float radius;
-	vec3_t center;          // center of original mark
+	vec3_t center;			// center of original mark
 	//vec3_t			bestCenter;	// center point projected onto the closest surface
 	float texCoordScale;
 	//float			dot;
-	int numPoints = 4;              // Ridah, we were only ever passing in 4, so I made this local and used the parameter for the orientation
+	int numPoints = 4;				// Ridah, we were only ever passing in 4, so I made this local and used the parameter for the orientation
 	qboolean oldMapping = false;
 
 	//increment view count for double check prevention
@@ -663,7 +663,7 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 
 						if (returnedFragments == maxFragments)
 						{
-							return returnedFragments;   // not enough space for more fragments
+							return returnedFragments;	// not enough space for more fragments
 						}
 					}
 
@@ -689,7 +689,7 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 
 						if (returnedFragments == maxFragments)
 						{
-							return returnedFragments;   // not enough space for more fragments
+							return returnedFragments;	// not enough space for more fragments
 						}
 					}
 				}
@@ -827,14 +827,14 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 
 					if (returnedFragments == maxFragments)
 					{
-						return returnedFragments;   // not enough space for more fragments
+						return returnedFragments;	// not enough space for more fragments
 					}
 				}
 
 			}
-			else        // old mapping
+			else		// old mapping
 
-			{   // check the normal of this face
+			{	// check the normal of this face
 				indexes = (int*)((byte*)surf + surf->ofsIndices);
 				for (k = 0; k < surf->numIndices; k += 3)
 				{
@@ -851,7 +851,7 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 						&returnedPoints, &returnedFragments, mins, maxs);
 					if (returnedFragments == maxFragments)
 					{
-						return returnedFragments;   // not enough space for more fragments
+						return returnedFragments;	// not enough space for more fragments
 					}
 				}
 			}
@@ -898,7 +898,7 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 
 					if (returnedFragments == maxFragments)
 					{
-						return returnedFragments;   // not enough space for more fragments
+						return returnedFragments;	// not enough space for more fragments
 					}
 				}
 			}
@@ -921,7 +921,7 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 
 					if (returnedFragments == maxFragments)
 					{
-						return returnedFragments;   // not enough space for more fragments
+						return returnedFragments;	// not enough space for more fragments
 					}
 				}
 			}

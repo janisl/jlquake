@@ -21,7 +21,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define POWERSUIT_SCALE			4.0F
+#define POWERSUIT_SCALE         4.0F
 
 // TYPES -------------------------------------------------------------------
 
@@ -37,8 +37,8 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static float	md2_shadelight[3];
-static vec4_t	s_lerped[MAX_MD2_VERTS];
+static float md2_shadelight[3];
+static vec4_t s_lerped[MAX_MD2_VERTS];
 
 // CODE --------------------------------------------------------------------
 
@@ -56,11 +56,11 @@ void Mod_LoadMd2Model(model_t* mod, const void* buffer)
 	if (version != MESH2_VERSION)
 	{
 		throw DropException(va("%s has wrong version number (%i should be %i)",
-			mod->name, version, MESH2_VERSION));
+				mod->name, version, MESH2_VERSION));
 	}
 
 	dmd2_t* pheader = (dmd2_t*)Mem_Alloc(LittleLong(pinmodel->ofs_end));
-	
+
 	// byte swap the header fields and sanity check
 	for (int i = 0; i < (int)sizeof(dmd2_t) / 4; i++)
 	{
@@ -125,9 +125,9 @@ void Mod_LoadMd2Model(model_t* mod, const void* buffer)
 	for (int i = 0; i < pheader->num_frames; i++)
 	{
 		const dmd2_frame_t* pinframe = (const dmd2_frame_t*)((byte*)pinmodel +
-			pheader->ofs_frames + i * pheader->framesize);
+															 pheader->ofs_frames + i * pheader->framesize);
 		dmd2_frame_t* poutframe = (dmd2_frame_t*)((byte*)pheader +
-			pheader->ofs_frames + i * pheader->framesize);
+												  pheader->ofs_frames + i * pheader->framesize);
 
 		Com_Memcpy(poutframe->name, pinframe->name, sizeof(poutframe->name));
 		for (int j = 0; j < 3; j++)
@@ -156,7 +156,7 @@ void Mod_LoadMd2Model(model_t* mod, const void* buffer)
 
 	// register all skins
 	Com_Memcpy((char*)pheader + pheader->ofs_skins, (char*)pinmodel + pheader->ofs_skins,
-		pheader->num_skins*MAX_MD2_SKINNAME);
+		pheader->num_skins * MAX_MD2_SKINNAME);
 	for (int i = 0; i < pheader->num_skins; i++)
 	{
 		mod->q2_skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME,
@@ -199,7 +199,7 @@ static void GL_LerpVerts(int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dm
 
 			lerp[0] = move[0] + ov->v[0] * backv[0] + v->v[0] * frontv[0] + normal[0] * POWERSUIT_SCALE;
 			lerp[1] = move[1] + ov->v[1] * backv[1] + v->v[1] * frontv[1] + normal[1] * POWERSUIT_SCALE;
-			lerp[2] = move[2] + ov->v[2] * backv[2] + v->v[2] * frontv[2] + normal[2] * POWERSUIT_SCALE; 
+			lerp[2] = move[2] + ov->v[2] * backv[2] + v->v[2] * frontv[2] + normal[2] * POWERSUIT_SCALE;
 		}
 	}
 	else
@@ -225,12 +225,12 @@ static void GL_LerpVerts(int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dm
 static void GL_DrawMd2FrameLerp(dmd2_t* paliashdr, float backlerp)
 {
 	dmd2_frame_t* frame = (dmd2_frame_t*)((byte*)paliashdr + paliashdr->ofs_frames +
-		tr.currentEntity->e.frame * paliashdr->framesize);
+										  tr.currentEntity->e.frame * paliashdr->framesize);
 	dmd2_trivertx_t* verts = frame->verts;
 	dmd2_trivertx_t* v = verts;
 
 	dmd2_frame_t* oldframe = (dmd2_frame_t*)((byte*)paliashdr + paliashdr->ofs_frames +
-		tr.currentEntity->e.oldframe * paliashdr->framesize);
+											 tr.currentEntity->e.oldframe * paliashdr->framesize);
 	dmd2_trivertx_t* ov = oldframe->verts;
 
 	int* order = (int*)((byte*)paliashdr + paliashdr->ofs_glcmds);
@@ -407,7 +407,7 @@ static void GL_DrawMd2FrameLerp(dmd2_t* paliashdr, float backlerp)
 
 					// normals and vertexes come from the frame list
 					float l = shadedots[verts[index_xyz].lightnormalindex];
-					
+
 					qglColor4f(l * md2_shadelight[0], l * md2_shadelight[1], l * md2_shadelight[2], alpha);
 					qglVertex3fv(s_lerped[index_xyz]);
 				}
@@ -470,7 +470,7 @@ static void GL_DrawMd2Shadow(dmd2_t* paliashdr, int posenum)
 		while (--count);
 
 		qglEnd();
-	}	
+	}
 }
 
 //==========================================================================
@@ -485,22 +485,22 @@ static bool R_CullMd2Model(trRefEntity_t* e)
 
 	if ((e->e.frame >= paliashdr->num_frames) || (e->e.frame < 0))
 	{
-		Log::write("R_CullMd2Model %s: no such frame %d\n", 
+		Log::write("R_CullMd2Model %s: no such frame %d\n",
 			tr.currentModel->name, e->e.frame);
 		e->e.frame = 0;
 	}
 	if ((e->e.oldframe >= paliashdr->num_frames) || (e->e.oldframe < 0))
 	{
-		Log::write("R_CullMd2Model %s: no such oldframe %d\n", 
+		Log::write("R_CullMd2Model %s: no such oldframe %d\n",
 			tr.currentModel->name, e->e.oldframe);
 		e->e.oldframe = 0;
 	}
 
-	dmd2_frame_t* pframe = (dmd2_frame_t*)((byte*)paliashdr + 
-		paliashdr->ofs_frames + e->e.frame * paliashdr->framesize);
+	dmd2_frame_t* pframe = (dmd2_frame_t*)((byte*)paliashdr +
+										   paliashdr->ofs_frames + e->e.frame * paliashdr->framesize);
 
-	dmd2_frame_t* poldframe = (dmd2_frame_t*)((byte*)paliashdr + 
-		paliashdr->ofs_frames + e->e.oldframe * paliashdr->framesize);
+	dmd2_frame_t* poldframe = (dmd2_frame_t*)((byte*)paliashdr +
+											  paliashdr->ofs_frames + e->e.oldframe * paliashdr->framesize);
 
 	/*
 	** compute axially aligned mins and maxs
@@ -665,12 +665,12 @@ void R_DrawMd2Model(trRefEntity_t* e)
 		md2_shadelight[1] = 0.0;
 		md2_shadelight[2] = 0.0;
 	}
-	// PGM	
+	// PGM
 	// =================
 
 	float tmp_yaw = VecToYaw(e->e.axis[0]);
 	shadedots = r_avertexnormal_dots[((int)(tmp_yaw * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
-	
+
 	VectorCopy(e->e.axis[0], shadevector);
 	shadevector[2] = 1;
 	VectorNormalize(shadevector);
@@ -684,7 +684,7 @@ void R_DrawMd2Model(trRefEntity_t* e)
 	//
 	// draw all the triangles
 	//
-	if (tr.currentEntity->e.renderfx & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
+	if (tr.currentEntity->e.renderfx & RF_DEPTHHACK)// hack the depth range to prevent view model from poking into walls
 	{
 		qglDepthRange(0, 0.3);
 	}

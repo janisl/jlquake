@@ -19,7 +19,7 @@
 All bones should be an identity orientation to display the mesh exactly
 as it is specified.
 
-For all other frames, the bones represent the transformation from the 
+For all other frames, the bones represent the transformation from the
 orientation of the bone in the base frame to the orientation in this
 frame.
 
@@ -32,7 +32,7 @@ frame.
 
 // MACROS ------------------------------------------------------------------
 
-#define	LL(x) x=LittleLong(x)
+#define LL(x) x = LittleLong(x)
 
 // TYPES -------------------------------------------------------------------
 
@@ -128,12 +128,12 @@ bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name)
 			if (surf->numVerts > SHADER_MAX_VERTEXES)
 			{
 				throw DropException(va("R_LoadMD3: %s has more than %i verts on a surface (%i)",
-					mod_name, SHADER_MAX_VERTEXES, surf->numVerts));
+						mod_name, SHADER_MAX_VERTEXES, surf->numVerts));
 			}
-			if (surf->numTriangles*3 > SHADER_MAX_INDEXES)
+			if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
 			{
 				throw DropException(va("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
-					mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles));
+						mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles));
 			}
 
 			// change to surface identifier
@@ -250,7 +250,7 @@ void RB_SurfaceAnim(md4Surface_t* surface)
 		backlerp = 0;
 		frontlerp = 1;
 	}
-	else 
+	else
 	{
 		backlerp = backEnd.currentEntity->e.backlerp;
 		frontlerp = 1.0f - backlerp;
@@ -259,10 +259,10 @@ void RB_SurfaceAnim(md4Surface_t* surface)
 
 	int frameSize = (qintptr)(&((md4Frame_t*)0)->bones[header->numBones]);
 
-	md4Frame_t* frame = (md4Frame_t*)((byte*)header + header->ofsFrames + 
-		backEnd.currentEntity->e.frame * frameSize);
-	md4Frame_t* oldFrame = (md4Frame_t*)((byte*)header + header->ofsFrames + 
-		backEnd.currentEntity->e.oldframe * frameSize);
+	md4Frame_t* frame = (md4Frame_t*)((byte*)header + header->ofsFrames +
+									  backEnd.currentEntity->e.frame * frameSize);
+	md4Frame_t* oldFrame = (md4Frame_t*)((byte*)header + header->ofsFrames +
+										 backEnd.currentEntity->e.oldframe * frameSize);
 
 	RB_CheckOverflow(surface->numVerts, surface->numTriangles * 3);
 
@@ -292,7 +292,7 @@ void RB_SurfaceAnim(md4Surface_t* surface)
 		for (int i = 0; i < header->numBones * 12; i++)
 		{
 			((float*)bonePtr)[i] = frontlerp * ((float*)frame->bones)[i] +
-				backlerp * ((float*)oldFrame->bones)[i];
+								   backlerp * ((float*)oldFrame->bones)[i];
 		}
 	}
 
@@ -304,7 +304,7 @@ void RB_SurfaceAnim(md4Surface_t* surface)
 	// This makes TFC's skeletons work.  Shouldn't be necessary anymore, but left
 	// in for reference.
 	//v = (md4Vertex_t *) ((byte *)surface + surface->ofsVerts + 12);
-	md4Vertex_t* v = (md4Vertex_t*) ((byte*)surface + surface->ofsVerts);
+	md4Vertex_t* v = (md4Vertex_t*)((byte*)surface + surface->ofsVerts);
 	for (int j = 0; j < numVerts; j++)
 	{
 		vec3_t tempVert, tempNormal;

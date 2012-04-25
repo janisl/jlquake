@@ -17,7 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 
-#define MAX_CACHED_SKINS		128
+#define MAX_CACHED_SKINS        128
 
 Cvar* clqw_baseskin;
 Cvar* clqw_noskins;
@@ -88,9 +88,9 @@ byte* CLQW_SkinCache(qw_skin_t* skin)
 		return NULL;		// use base until downloaded
 	}
 
-	if (clqw_noskins->value == 1) // JACK: So NOSKINS > 1 will show skins, but
+	if (clqw_noskins->value == 1)	// JACK: So NOSKINS > 1 will show skins, but
 	{
-		return NULL;	  // not download new ones.
+		return NULL;		// not download new ones.
 	}
 
 	if (skin->failedload)
@@ -137,8 +137,8 @@ byte* CLQW_SkinCache(qw_skin_t* skin)
 
 void CLQW_SkinNextDownload()
 {
-	q1player_info_t	*sc;
-	int			i;
+	q1player_info_t* sc;
+	int i;
 
 	if (clc.downloadNumber == 0)
 	{
@@ -208,5 +208,5 @@ void CLQW_SkinSkins_f()
 void CLQW_SkinAllSkins_f()
 {
 	String::Cpy(allskins, Cmd_Argv(1));
-	CLQW_SkinSkins_f ();
+	CLQW_SkinSkins_f();
 }

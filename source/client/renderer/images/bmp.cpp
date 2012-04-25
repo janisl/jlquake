@@ -29,22 +29,22 @@
 
 struct BMPHeader_t
 {
-	char		id[2];
-	quint32		fileSize;
-	quint32		reserved0;
-	quint32		bitmapDataOffset;
-	quint32		bitmapHeaderSize;
-	quint32		width;
-	quint32		height;
-	quint16		planes;
-	quint16		bitsPerPixel;
-	quint32		compression;
-	quint32		bitmapDataSize;
-	quint32		hRes;
-	quint32		vRes;
-	quint32		colors;
-	quint32		importantColors;
-	quint8		palette[256][4];
+	char id[2];
+	quint32 fileSize;
+	quint32 reserved0;
+	quint32 bitmapDataOffset;
+	quint32 bitmapHeaderSize;
+	quint32 width;
+	quint32 height;
+	quint16 planes;
+	quint16 bitsPerPixel;
+	quint32 compression;
+	quint32 bitmapDataSize;
+	quint32 hRes;
+	quint32 vRes;
+	quint32 colors;
+	quint32 importantColors;
+	quint8 palette[256][4];
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -122,7 +122,7 @@ void R_LoadBMP(const char* name, byte** pic, int* width, int* height)
 		buf_p += 1024;
 	}
 
-	if (bmpHeader.id[0] != 'B' && bmpHeader.id[1] != 'M') 
+	if (bmpHeader.id[0] != 'B' && bmpHeader.id[1] != 'M')
 	{
 		throw DropException(va("LoadBMP: only Windows-style BMP files supported (%s)\n", name));
 	}
@@ -147,7 +147,7 @@ void R_LoadBMP(const char* name, byte** pic, int* width, int* height)
 	}
 	int numPixels = columns * rows;
 
-	if (width) 
+	if (width)
 	{
 		*width = columns;
 	}

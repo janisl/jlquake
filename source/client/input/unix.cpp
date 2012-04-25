@@ -32,7 +32,7 @@
 
 //#define KBD_DBG
 
-#define MOUSE_RESET_DELAY	50
+#define MOUSE_RESET_DELAY   50
 
 // TYPES -------------------------------------------------------------------
 
@@ -46,37 +46,37 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Cvar*					in_dgamouse;	// user pref for dga mouse
-Cvar*					in_nograb;		// this is strictly for developers
+Cvar* in_dgamouse;						// user pref for dga mouse
+Cvar* in_nograb;						// this is strictly for developers
 
-Cvar*					in_joystick;
+Cvar* in_joystick;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static Cvar* in_shiftedkeys;
 
-static bool				mouse_avail;
-static bool				mouse_active;
-static int				mwx, mwy;
-static int				mx = 0, my = 0;
+static bool mouse_avail;
+static bool mouse_active;
+static int mwx, mwy;
+static int mx = 0, my = 0;
 
-static Cvar*			in_mouse;
+static Cvar* in_mouse;
 
-static Cvar*			in_subframe;
+static Cvar* in_subframe;
 
-static int				mouse_accel_numerator;
-static int				mouse_accel_denominator;
-static int				mouse_threshold;    
+static int mouse_accel_numerator;
+static int mouse_accel_denominator;
+static int mouse_threshold;
 
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
-static int				mouseResetTime = 0;
+static int mouseResetTime = 0;
 
-static Cvar*			in_joystickDebug;
-static Cvar*			joy_threshold;
+static Cvar* in_joystickDebug;
+static Cvar* joy_threshold;
 
 #ifdef __linux__
 //	Our file descriptor for the joystick device.
-static int				joy_fd = -1;
+static int joy_fd = -1;
 
 //	We translate axes movement into keypresses.
 static int joy_keys[16] =
@@ -137,10 +137,10 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		common->Printf("XLookupString ret (shiftless): %d buf: %s keysym: %x\n", XLookupRet, shiftlessbuf, keysym);
 #endif
 	}
-  
+
 	switch (keysym)
 	{
-	case XK_KP_Page_Up: 
+	case XK_KP_Page_Up:
 	case XK_KP_9:
 		key = K_KP_PGUP;
 		break;
@@ -148,7 +148,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = K_PGUP;
 		break;
 
-	case XK_KP_Page_Down: 
+	case XK_KP_Page_Down:
 	case XK_KP_3:
 		key = K_KP_PGDN;
 		break;
@@ -196,7 +196,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = K_DOWNARROW;
 		break;
 
-	case XK_KP_Up:   
+	case XK_KP_Up:
 	case XK_KP_8:
 		key = K_KP_UPARROW;
 		break;
@@ -288,15 +288,15 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = K_SHIFT;
 		break;
 
-	case XK_Execute: 
-	case XK_Control_L: 
+	case XK_Execute:
+	case XK_Control_L:
 	case XK_Control_R:
 		key = K_CTRL;
 		break;
 
-	case XK_Alt_L:  
-	case XK_Meta_L: 
-	case XK_Alt_R:  
+	case XK_Alt_L:
+	case XK_Meta_L:
+	case XK_Alt_R:
 	case XK_Meta_R:
 		key = K_ALT;
 		break;
@@ -358,7 +358,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = '0';
 		break;
 
-		// rain - handle some previously unhandled keys...
+	// rain - handle some previously unhandled keys...
 	case XK_Caps_Lock:
 		key = K_CAPSLOCK;
 		break;
@@ -369,8 +369,8 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = K_KP_EQUALS;
 		break;
 
-		// these are unlikely, but we have keys for them from the mac port,
-		// so we might as well...
+	// these are unlikely, but we have keys for them from the mac port,
+	// so we might as well...
 	case XK_F13:
 		key = K_F13;
 		break;
@@ -381,8 +381,8 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		key = K_F15;
 		break;
 
-		// this is to fix Ctrl-`, which is otherwise picked up by the default
-		// case as a NUL, which kept the mini-console from working.
+	// this is to fix Ctrl-`, which is otherwise picked up by the default
+	// case as a NUL, which kept the mini-console from working.
 	case XK_grave:
 		key = '~';
 		break;
@@ -445,7 +445,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 // The benefit of this approach over the quite badly behaved XAutoRepeatOn/Off
 // is that you get focus handling for free, which is a major win with debug
 // and windowed mode. It rests on the assumption that the X server will use
-// the same timestamp on press/release event pairs for key repeats. 
+// the same timestamp on press/release event pairs for key repeats.
 //
 //==========================================================================
 
@@ -500,7 +500,7 @@ static bool repeated_press(XEvent* event)
 			(peekevent.xkey.time == event->xkey.time))
 		{
 			repeated = true;
-			XNextEvent(dpy, &peekevent);  // skip event.
+			XNextEvent(dpy, &peekevent);	// skip event.
 		}
 	}
 
@@ -521,9 +521,9 @@ static bool repeated_press(XEvent* event)
 //
 //==========================================================================
 
-static Cursor CreateNullCursor(Display *display, Window root)
+static Cursor CreateNullCursor(Display* display, Window root)
 {
-	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
+	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1 /*depth*/);
 	XGCValues xgc;
 	xgc.function = GXclear;
 	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
@@ -553,7 +553,7 @@ static void install_grabs()
 
 	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
 
-	XGrabPointer(dpy, win, // bk010108 - do this earlier?
+	XGrabPointer(dpy, win,	// bk010108 - do this earlier?
 		False,
 		MOUSE_MASK,
 		GrabModeAsync, GrabModeAsync,
@@ -622,7 +622,7 @@ static void uninstall_grabs()
 		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
 	}
 
-	XChangePointerControl(dpy, True, True, mouse_accel_numerator, 
+	XChangePointerControl(dpy, True, True, mouse_accel_numerator,
 		mouse_accel_denominator, mouse_threshold);
 
 	XUngrabPointer(dpy, CurrentTime);
@@ -640,7 +640,7 @@ static void uninstall_grabs()
 //
 //==========================================================================
 
-void IN_ActivateMouse() 
+void IN_ActivateMouse()
 {
 	if (!mouse_avail || !dpy || !win)
 	{
@@ -653,7 +653,7 @@ void IN_ActivateMouse()
 		{
 			install_grabs();
 		}
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		else if (in_dgamouse->value)// force dga mouse to 0 if using nograb
 		{
 			Cvar_Set("in_dgamouse", "0");
 		}
@@ -667,7 +667,7 @@ void IN_ActivateMouse()
 //
 //==========================================================================
 
-void IN_DeactivateMouse() 
+void IN_DeactivateMouse()
 {
 	if (!mouse_avail || !dpy || !win)
 	{
@@ -680,7 +680,7 @@ void IN_DeactivateMouse()
 		{
 			uninstall_grabs();
 		}
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		else if (in_dgamouse->value)// force dga mouse to 0 if using nograb
 		{
 			Cvar_Set("in_dgamouse", "0");
 		}
@@ -715,7 +715,7 @@ void IN_DeactivateMouse()
 static int Sys_XTimeToSysTime(unsigned long xtime)
 {
 	int ret, time, test;
-	
+
 	if (!in_subframe->value)
 	{
 		// if you don't want to do any event times corrections
@@ -723,7 +723,7 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 	}
 
 	// test the wrap issue
-#if 0	
+#if 0
 	// reference values for test: sys_timeBase 0x3dc7b5e9 xtime 0x541ea451 (read these from a test run)
 	// xtime will wrap in 0xabe15bae ms >~ 0x2c0056 s (33 days from Nov 5 2002 -> 8 Dec)
 	//   NOTE: date -d '1970-01-01 UTC 1039384002 seconds' +%c
@@ -734,9 +734,9 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 	int test;
 //	Com_Printf("sys_timeBase: %p\n", sys_timeBase);
 //	Com_Printf("xtime: %p\n", xtime);
-	xtime_aux = 500; // 500 ms after wrap
-	base_aux = 0x3df3b63f; // the base a few seconds before wrap
-	test = xtime_aux - (unsigned long)(base_aux*1000);
+	xtime_aux = 500;// 500 ms after wrap
+	base_aux = 0x3df3b63f;	// the base a few seconds before wrap
+	test = xtime_aux - (unsigned long)(base_aux * 1000);
 	Com_Printf("xtime wrap test: %d\n", test);
 #endif
 
@@ -747,7 +747,7 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 	time = Sys_Milliseconds();
 	test = time - ret;
 	//printf("delta: %d\n", test);
-	if (test < 0 || test > 30) // in normal conditions I've never seen this go above
+	if (test < 0 || test > 30)	// in normal conditions I've never seen this go above
 	{
 		return time;
 	}
@@ -800,7 +800,7 @@ void Sys_SendKeyEvents()
 			// bk001206 - handle key repeat w/o XAutRepatOn/Off
 			//            also: not done if console/menu is active.
 			// From Ryan's Fakk2.
-			// see game/q_shared.h, KEYCATCH_* . 0 == in 3d game.  
+			// see game/q_shared.h, KEYCATCH_* . 0 == in 3d game.
 			if (in_keyCatchers == 0)
 			{
 				// FIXME: KEYCATCH_NONE
@@ -829,23 +829,23 @@ void Sys_SendKeyEvents()
 				int b = -1;
 				if (event.xbutton.button == 1)
 				{
-					b = 0; // K_MOUSE1
+					b = 0;	// K_MOUSE1
 				}
 				else if (event.xbutton.button == 2)
 				{
-					b = 2; // K_MOUSE3
+					b = 2;	// K_MOUSE3
 				}
 				else if (event.xbutton.button == 3)
 				{
-					b = 1; // K_MOUSE2
+					b = 1;	// K_MOUSE2
 				}
 				else if (event.xbutton.button == 6)
 				{
-					b = 3; // K_MOUSE4
+					b = 3;	// K_MOUSE4
 				}
 				else if (event.xbutton.button == 7)
 				{
-					b = 4; // K_MOUSE5
+					b = 4;	// K_MOUSE5
 				}
 				if (b >= 0)
 				{
@@ -881,11 +881,11 @@ void Sys_SendKeyEvents()
 				}
 				else if (event.xbutton.button == 6)
 				{
-					b = 3; // K_MOUSE4
+					b = 3;	// K_MOUSE4
 				}
 				else if (event.xbutton.button == 7)
 				{
-					b = 4; // K_MOUSE5
+					b = 4;	// K_MOUSE5
 				}
 				if (b >= 0)
 				{
@@ -1013,7 +1013,7 @@ static void IN_StartupJoystick()
 		return;
 	}
 
-	for (int i = 0; i < 4; i++ )
+	for (int i = 0; i < 4; i++)
 	{
 		char filename[PATH_MAX];
 
@@ -1035,7 +1035,8 @@ static void IN_StartupJoystick()
 				{
 					break;
 				}
-			} while (event.type & JS_EVENT_INIT);
+			}
+			while (event.type & JS_EVENT_INIT);
 
 			//	Get joystick statistics.
 			char axes = 0;
@@ -1049,9 +1050,9 @@ static void IN_StartupJoystick()
 				String::NCpy(name, "Unknown", sizeof(name));
 			}
 
-			Log::write( "Name:    %s\n", name );
-			Log::write( "Axes:    %d\n", axes );
-			Log::write( "Buttons: %d\n", buttons );
+			Log::write("Name:    %s\n", name);
+			Log::write("Axes:    %d\n", axes);
+			Log::write("Buttons: %d\n", buttons);
 
 			//	Our work here is done.
 			return;
@@ -1115,7 +1116,8 @@ static void IN_JoyMove()
 			Log::write("Unknown joystick event type\n");
 		}
 
-	} while (1);
+	}
+	while (1);
 
 	//	Translate our instantaneous state to bits.
 	unsigned int axes = 0;
@@ -1211,7 +1213,7 @@ void IN_Init()
 	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	// bk001130 - changed this to match win32
 	in_joystickDebug = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
-	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE); // FIXME: in_joythreshold
+	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE);// FIXME: in_joythreshold
 
 	in_shiftedkeys = Cvar_Get("in_shiftedkeys", "1", CVAR_ARCHIVE);
 
@@ -1249,12 +1251,12 @@ void IN_Shutdown()
 void IN_Frame()
 {
 	// bk001130 - from cvs 1.17 (mkv)
-	IN_JoyMove(); // FIXME: disable if on desktop?
+	IN_JoyMove();	// FIXME: disable if on desktop?
 
 	// temporarily deactivate if not in the game and running on the desktop
 	if (in_keyCatchers & KEYCATCH_CONSOLE && r_fullscreen->integer == 0)
 	{
-		IN_DeactivateMouse ();
+		IN_DeactivateMouse();
 		return;
 	}
 

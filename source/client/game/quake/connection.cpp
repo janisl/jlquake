@@ -30,24 +30,24 @@ void CLQ1_SignonReply()
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("prespawn");
 		break;
-		
-	case 2:		
+
+	case 2:
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		clc.netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
-	
+
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		clc.netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
-	
+
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		sprintf(str, "spawn %s", cls.qh_spawnparms);
 		clc.netchan.message.WriteString2(str);
 		break;
-		
-	case 3:	
+
+	case 3:
 		clc.netchan.message.WriteByte(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("begin");
 		break;
-		
+
 	case 4:
 		SCR_EndLoadingPlaque();		// allow normal screen updates
 		break;
@@ -58,7 +58,7 @@ void CLQ1_SignonReply()
 // to start a download from the server.
 bool CLQW_CheckOrDownloadFile(const char* filename)
 {
-	fileHandle_t	f;
+	fileHandle_t f;
 
 	if (strstr(filename, ".."))
 	{

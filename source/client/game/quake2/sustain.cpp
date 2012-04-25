@@ -31,7 +31,7 @@ struct q2cl_sustain_t
 	int color;
 	int count;
 	int magnitude;
-	void (*think)(q2cl_sustain_t* self);
+	void (* think)(q2cl_sustain_t* self);
 };
 
 static q2cl_sustain_t clq2_sustains[MAX_SUSTAINS_Q2];
@@ -135,7 +135,7 @@ static void CLQ2_Widowbeamout(q2cl_sustain_t* self)
 		dir[1] = crand();
 		dir[2] = crand();
 		VectorNormalize(dir);
-	
+
 		VectorMA(self->org, (45.0 * ratio), dir, p->org);
 	}
 }
@@ -180,7 +180,7 @@ static void CLQ2_Nukeblast(q2cl_sustain_t* self)
 		dir[1] = crand();
 		dir[2] = crand();
 		VectorNormalize(dir);
-	
+
 		VectorMA(self->org, (200.0 * ratio), dir, p->org);
 	}
 }

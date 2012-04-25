@@ -105,7 +105,7 @@ int CLH2_NewEffectEntity()
 	int counter;
 	for (counter = 0; counter < MAX_EFFECT_ENTITIES_H2; counter++)
 	{
-		if (!EntityUsed[counter]) 
+		if (!EntityUsed[counter])
 		{
 			break;
 		}
@@ -460,7 +460,7 @@ static void CLH2_ParseEffectFountain(int index, QMsg& message)
 	cl.h2_Effects[index].Fountain.color = message.ReadShort();
 	cl.h2_Effects[index].Fountain.cnt = message.ReadByte();
 
-	AngleVectors(cl.h2_Effects[index].Fountain.angle, 
+	AngleVectors(cl.h2_Effects[index].Fountain.angle,
 		cl.h2_Effects[index].Fountain.vforward,
 		cl.h2_Effects[index].Fountain.vright,
 		cl.h2_Effects[index].Fountain.vup);
@@ -942,7 +942,7 @@ static void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
 	cl.h2_Effects[index].Teleporter.framelength = .05;
 	int dir = 0;
 	for (int i = 0; i < 8; i++)
-	{		
+	{
 		if ((cl.h2_Effects[index].Teleporter.entity_index[i] = CLH2_NewEffectEntity()) == -1)
 		{
 			continue;
@@ -972,7 +972,7 @@ static void CLH2_ParseEffectTeleporterBody(int index, QMsg& message)
 	cl.h2_Effects[index].Teleporter.velocity[0][1] = message.ReadFloat();
 	cl.h2_Effects[index].Teleporter.velocity[0][2] = message.ReadFloat();
 	float skinnum = message.ReadFloat();
-	
+
 	cl.h2_Effects[index].Teleporter.framelength = .05;
 	if ((cl.h2_Effects[index].Teleporter.entity_index[0] = CLH2_NewEffectEntity()) == -1)
 	{
@@ -1102,7 +1102,7 @@ static void CLHW_ParseEffectDeathBubbles(int index, QMsg& message)
 	cl.h2_Effects[index].Bubble.offset[0] = message.ReadByte();
 	cl.h2_Effects[index].Bubble.offset[1] = message.ReadByte();
 	cl.h2_Effects[index].Bubble.offset[2] = message.ReadByte();
-	cl.h2_Effects[index].Bubble.count = message.ReadByte();//num of bubbles
+	cl.h2_Effects[index].Bubble.count = message.ReadByte();	//num of bubbles
 	cl.h2_Effects[index].Bubble.time_amount = 0;
 }
 
@@ -1145,7 +1145,7 @@ static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 	cl.h2_Effects[index].Xbow.bolts = message.ReadByte();
 	cl.h2_Effects[index].Xbow.randseed = message.ReadByte();
 	cl.h2_Effects[index].Xbow.turnedbolts = message.ReadByte();
-	cl.h2_Effects[index].Xbow.activebolts= message.ReadByte();
+	cl.h2_Effects[index].Xbow.activebolts = message.ReadByte();
 
 	setseed(cl.h2_Effects[index].Xbow.randseed);
 
@@ -1180,7 +1180,7 @@ static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 			VectorScale(forward, 800 + seedrand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
 
 			vec3_t vtemp;
-			VectorScale(right, i * 100 - (cl.h2_Effects[index].Xbow.bolts- 1) * 50, vtemp);
+			VectorScale(right, i * 100 - (cl.h2_Effects[index].Xbow.bolts - 1) * 50, vtemp);
 
 			//this should only be done for deathmatch:
 			VectorScale(vtemp, 0.333, vtemp);
@@ -1207,7 +1207,7 @@ static void CLHW_ParseEffectSheepinator(int index, QMsg& message)
 	vec3_t origin;
 	CLHW_ParseEffectXBowCommon(index, message, origin);
 	cl.h2_Effects[index].Xbow.turnedbolts = message.ReadByte();
-	cl.h2_Effects[index].Xbow.activebolts= message.ReadByte();
+	cl.h2_Effects[index].Xbow.activebolts = message.ReadByte();
 	cl.h2_Effects[index].Xbow.bolts = 5;
 	cl.h2_Effects[index].Xbow.randseed = 0;
 
@@ -1279,7 +1279,7 @@ static bool CLHW_ParseEffectScarabChain(int index, QMsg& message)
 
 	cl.h2_Effects[index].Chain.sound_time = cl.serverTime * 0.001;
 
-	cl.h2_Effects[index].Chain.state = 0;//state 0: move slowly toward owner
+	cl.h2_Effects[index].Chain.state = 0;	//state 0: move slowly toward owner
 
 	S_StartSound(cl.h2_Effects[index].Chain.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabwhoosh, 1, 1);
 
@@ -1894,7 +1894,7 @@ void CLHW_ParseMultiEffect(QMsg& message)
 	}
 }
 
-static void CLHW_XbowImpactPuff(const vec3_t origin, int material)//hopefully can use this with xbow & chain both
+static void CLHW_XbowImpactPuff(const vec3_t origin, int material)	//hopefully can use this with xbow & chain both
 {
 	int part_color;
 	switch (material)
@@ -1979,7 +1979,7 @@ static void CLHW_ParseReviseEffectXBowDirectionChange(QMsg& message, int index, 
 	vec3_t angles;
 	CLHW_ParseDirectionChangeAngles(message, angles);
 
-	if (revisionCode & 128)//new origin
+	if (revisionCode & 128)	//new origin
 	{
 		message.ReadPos(cl.h2_Effects[index].Xbow.origin[curEnt]);
 	}
@@ -2006,11 +2006,11 @@ static void CLHW_ParseReviseEffectXBowShoot(QMsg& message, int index)
 
 
 	int curEnt = (revisionCode >> 4) & 7;
-	if (revisionCode & 1)//impact effect: 
+	if (revisionCode & 1)	//impact effect:
 	{
 		cl.h2_Effects[index].Xbow.activebolts &= ~(1 << curEnt);
 		float dist = message.ReadCoord();
-		if (cl.h2_Effects[index].Xbow.ent[curEnt]!= -1)
+		if (cl.h2_Effects[index].Xbow.ent[curEnt] != -1)
 		{
 			effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[curEnt]];
 
@@ -2032,7 +2032,7 @@ static void CLHW_ParseReviseEffectXBowShoot(QMsg& message, int index)
 			{
 				cl.h2_Effects[index].Xbow.gonetime[curEnt] += cl.serverTime / 1000.0;
 			}
-			
+
 			VectorCopy(cl.h2_Effects[index].Xbow.vel[curEnt], forward);
 			VectorNormalize(forward);
 			VectorScale(forward, 8, forward);
@@ -2069,10 +2069,10 @@ static void CLHW_ParseReviseEffectSheepinator(QMsg& message, int index)
 {
 	int revisionCode = message.ReadByte();
 	int curEnt = (revisionCode >> 4) & 7;
-	if (revisionCode & 1)//impact
+	if (revisionCode & 1)	//impact
 	{
 		float dist = message.ReadCoord();
-		cl.h2_Effects[index].Xbow.activebolts &= ~(1<<curEnt);
+		cl.h2_Effects[index].Xbow.activebolts &= ~(1 << curEnt);
 		if (cl.h2_Effects[index].Xbow.ent[curEnt] != -1)
 		{
 			effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[curEnt]];
@@ -2083,7 +2083,7 @@ static void CLHW_ParseReviseEffectSheepinator(QMsg& message, int index)
 			VectorNormalize(forward);
 			VectorScale(forward,dist,forward);
 			VectorAdd(cl.h2_Effects[index].Xbow.origin[curEnt],forward,ent->state.origin);
-			CLH2_ColouredParticleExplosion(ent->state.origin,(rand()%16)+144/*(144,159)*/,20,30);
+			CLH2_ColouredParticleExplosion(ent->state.origin,(rand() % 16) + 144 /*(144,159)*/,20,30);
 		}
 	}
 	else
@@ -2095,7 +2095,7 @@ static void CLHW_ParseReviseEffectSheepinator(QMsg& message, int index)
 static void CLHW_ParseReviseEffectDrilla(QMsg& message, int index)
 {
 	int revisionCode = message.ReadByte();
-	if (revisionCode == 0)//impact
+	if (revisionCode == 0)	//impact
 	{
 		vec3_t pos;
 		message.ReadPos(pos);
@@ -2108,7 +2108,7 @@ static void CLHW_ParseReviseEffectDrilla(QMsg& message, int index)
 		{
 			//meaty sound and some chunks too
 			S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_fxsfx_drillameat, 1, 1);
-			
+
 			//todo: the chunks
 		}
 
@@ -2165,7 +2165,7 @@ static void CLHW_SkipReviseEffectScarabChain(QMsg& message)
 static void CLHW_SkipReviseEffectXBowShoot(QMsg& message)
 {
 	int revisionCode = message.ReadByte();
-	if (revisionCode & 1)//impact effect: 
+	if (revisionCode & 1)	//impact effect:
 	{
 		message.ReadCoord();
 	}
@@ -2173,7 +2173,7 @@ static void CLHW_SkipReviseEffectXBowShoot(QMsg& message)
 	{
 		message.ReadAngle();
 		message.ReadAngle();
-		if (revisionCode & 128)//new origin
+		if (revisionCode & 128)	//new origin
 		{
 			message.ReadCoord();
 			message.ReadCoord();
@@ -2185,7 +2185,7 @@ static void CLHW_SkipReviseEffectXBowShoot(QMsg& message)
 static void CLHW_SkipReviseEffectSheepinator(QMsg& message)
 {
 	int revisionCode = message.ReadByte();
-	if (revisionCode & 1)//impact
+	if (revisionCode & 1)	//impact
 	{
 		message.ReadCoord();
 	}
@@ -2193,7 +2193,7 @@ static void CLHW_SkipReviseEffectSheepinator(QMsg& message)
 	{
 		message.ReadAngle();
 		message.ReadAngle();
-		if (revisionCode & 128)//new origin
+		if (revisionCode & 128)	//new origin
 		{
 			message.ReadCoord();
 			message.ReadCoord();
@@ -2205,7 +2205,7 @@ static void CLHW_SkipReviseEffectSheepinator(QMsg& message)
 static void CLHW_SkipReviseEffectDrilla(QMsg& message)
 {
 	int revisionCode = message.ReadByte();
-	if (revisionCode == 0)//impact
+	if (revisionCode == 0)	//impact
 	{
 		message.ReadCoord();
 		message.ReadCoord();
@@ -2418,28 +2418,28 @@ static void CLH2_UpdateEffectFountain(int index)
 {
 	vec3_t mymin;
 	mymin[0] = (-3 * cl.h2_Effects[index].Fountain.vright[0] * cl.h2_Effects[index].Fountain.movedir[0]) +
-				(-3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
-				(2 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
+			   (-3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
+			   (2 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
 	mymin[1] = (-3 * cl.h2_Effects[index].Fountain.vright[1] * cl.h2_Effects[index].Fountain.movedir[0]) +
-				(-3 * cl.h2_Effects[index].Fountain.vforward[1] * cl.h2_Effects[index].Fountain.movedir[1]) +
-				(2 * cl.h2_Effects[index].Fountain.vup[1] * cl.h2_Effects[index].Fountain.movedir[2]);
+			   (-3 * cl.h2_Effects[index].Fountain.vforward[1] * cl.h2_Effects[index].Fountain.movedir[1]) +
+			   (2 * cl.h2_Effects[index].Fountain.vup[1] * cl.h2_Effects[index].Fountain.movedir[2]);
 	mymin[2] = (-3 * cl.h2_Effects[index].Fountain.vright[2] * cl.h2_Effects[index].Fountain.movedir[0]) +
-				(-3 * cl.h2_Effects[index].Fountain.vforward[2] * cl.h2_Effects[index].Fountain.movedir[1]) +
-				(2 * cl.h2_Effects[index].Fountain.vup[2] * cl.h2_Effects[index].Fountain.movedir[2]);
+			   (-3 * cl.h2_Effects[index].Fountain.vforward[2] * cl.h2_Effects[index].Fountain.movedir[1]) +
+			   (2 * cl.h2_Effects[index].Fountain.vup[2] * cl.h2_Effects[index].Fountain.movedir[2]);
 	mymin[0] *= 15;
 	mymin[1] *= 15;
 	mymin[2] *= 15;
 
 	vec3_t mymax;
 	mymax[0] = (3 * cl.h2_Effects[index].Fountain.vright[0] * cl.h2_Effects[index].Fountain.movedir[0]) +
-				(3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
-				(10 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
+			   (3 * cl.h2_Effects[index].Fountain.vforward[0] * cl.h2_Effects[index].Fountain.movedir[1]) +
+			   (10 * cl.h2_Effects[index].Fountain.vup[0] * cl.h2_Effects[index].Fountain.movedir[2]);
 	mymax[1] = (3 * cl.h2_Effects[index].Fountain.vright[1] * cl.h2_Effects[index].Fountain.movedir[0]) +
-				(3 * cl.h2_Effects[index].Fountain.vforward[1] * cl.h2_Effects[index].Fountain.movedir[1]) +
-				(10 * cl.h2_Effects[index].Fountain.vup[1] * cl.h2_Effects[index].Fountain.movedir[2]);
+			   (3 * cl.h2_Effects[index].Fountain.vforward[1] * cl.h2_Effects[index].Fountain.movedir[1]) +
+			   (10 * cl.h2_Effects[index].Fountain.vup[1] * cl.h2_Effects[index].Fountain.movedir[2]);
 	mymax[2] = (3 * cl.h2_Effects[index].Fountain.vright[2] * cl.h2_Effects[index].Fountain.movedir[0]) +
-				(3 * cl.h2_Effects[index].Fountain.vforward[2] * cl.h2_Effects[index].Fountain.movedir[1]) +
-				(10 * cl.h2_Effects[index].Fountain.vup[2] * cl.h2_Effects[index].Fountain.movedir[2]);
+			   (3 * cl.h2_Effects[index].Fountain.vforward[2] * cl.h2_Effects[index].Fountain.movedir[1]) +
+			   (10 * cl.h2_Effects[index].Fountain.vup[2] * cl.h2_Effects[index].Fountain.movedir[2]);
 	mymax[0] *= 15;
 	mymax[1] *= 15;
 	mymax[2] *= 15;
@@ -2608,7 +2608,7 @@ static void CLH2_UpdateEffectFlash(int index, float frametime)
 	{
 		if (!cl.h2_Effects[index].Flash.reverse)
 		{
-			if (ent->state.frame >= R_ModelNumFrames(ent->model) - 1)  // Ran through forward animation
+			if (ent->state.frame >= R_ModelNumFrames(ent->model) - 1)	// Ran through forward animation
 			{
 				cl.h2_Effects[index].Flash.reverse = 1;
 				ent->state.frame--;
@@ -2617,7 +2617,7 @@ static void CLH2_UpdateEffectFlash(int index, float frametime)
 			{
 				ent->state.frame++;
 			}
-		}	
+		}
 		else
 		{
 			ent->state.frame--;
@@ -2787,11 +2787,11 @@ static void CLHW_UpdateEffectXBowShot(int index, float frametime)
 	cl.h2_Effects[index].Xbow.time_amount += frametime;
 	for (int i = 0; i < cl.h2_Effects[index].Xbow.bolts; i++)
 	{
-		if (cl.h2_Effects[index].Xbow.ent[i] == -1)//only update valid effect ents
+		if (cl.h2_Effects[index].Xbow.ent[i] == -1)	//only update valid effect ents
 		{
 			continue;
 		}
-		if (cl.h2_Effects[index].Xbow.activebolts & (1 << i))//bolt in air, simply update position
+		if (cl.h2_Effects[index].Xbow.activebolts & (1 << i))	//bolt in air, simply update position
 		{
 			effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
 
@@ -2801,11 +2801,11 @@ static void CLHW_UpdateEffectXBowShot(int index, float frametime)
 
 			CLH2_LinkEffectEntity(ent);
 		}
-		else if (cl.h2_Effects[index].Xbow.bolts == 5)//fiery bolts don't just go away
+		else if (cl.h2_Effects[index].Xbow.bolts == 5)	//fiery bolts don't just go away
 		{
 			if (cl.h2_Effects[index].Xbow.state[i] == 0)//waiting to explode state
 			{
-				if (cl.h2_Effects[index].Xbow.gonetime[i] > cl.serverTime * 0.001)//fiery bolts stick around for a while
+				if (cl.h2_Effects[index].Xbow.gonetime[i] > cl.serverTime * 0.001)	//fiery bolts stick around for a while
 				{
 					effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
 					CLH2_LinkEffectEntity(ent);
@@ -2835,7 +2835,7 @@ static void CLHW_UpdateEffectXBowShot(int index, float frametime)
 					CLH2_LinkEffectEntity(ent);
 				}
 			}
-			else if (cl.h2_Effects[index].Xbow.state[i] == 1)//fiery bolt exploding state
+			else if (cl.h2_Effects[index].Xbow.state[i] == 1)	//fiery bolt exploding state
 			{
 				effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
 
@@ -2849,7 +2849,7 @@ static void CLHW_UpdateEffectXBowShot(int index, float frametime)
 
 				if (ent->state.frame >= R_ModelNumFrames(ent->model))
 				{
-					cl.h2_Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
+					cl.h2_Effects[index].Xbow.state[i] = 2;	//if anim is over, set me to inactive state
 				}
 				else
 				{
@@ -2865,11 +2865,11 @@ static void CLHW_UpdateEffectSheepinator(int index, float frametime)
 	cl.h2_Effects[index].Xbow.time_amount += frametime;
 	for (int i = 0; i < cl.h2_Effects[index].Xbow.bolts; i++)
 	{
-		if (cl.h2_Effects[index].Xbow.ent[i] == -1)//only update valid effect ents
+		if (cl.h2_Effects[index].Xbow.ent[i] == -1)	//only update valid effect ents
 		{
 			continue;
 		}
-		if (cl.h2_Effects[index].Xbow.activebolts & (1 << i))//bolt in air, simply update position
+		if (cl.h2_Effects[index].Xbow.activebolts & (1 << i))	//bolt in air, simply update position
 		{
 			effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Xbow.ent[i]];
 
@@ -2877,7 +2877,7 @@ static void CLHW_UpdateEffectSheepinator(int index, float frametime)
 			ent->state.origin[1] += frametime * cl.h2_Effects[index].Xbow.vel[i][1];
 			ent->state.origin[2] += frametime * cl.h2_Effects[index].Xbow.vel[i][2];
 
-			CLH2_RunParticleEffect4(ent->state.origin, 7, (rand() % 15) + 144, pt_h2explode2, (rand() %5) + 1);
+			CLH2_RunParticleEffect4(ent->state.origin, 7, (rand() % 15) + 144, pt_h2explode2, (rand() % 5) + 1);
 
 			CLH2_LinkEffectEntity(ent);
 		}
@@ -2887,7 +2887,7 @@ static void CLHW_UpdateEffectSheepinator(int index, float frametime)
 static void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
 {
 	cl.h2_Effects[index].Bubble.time_amount += frametime;
-	if (cl.h2_Effects[index].Bubble.time_amount > 0.1)//10 bubbles a sec
+	if (cl.h2_Effects[index].Bubble.time_amount > 0.1)	//10 bubbles a sec
 	{
 		cl.h2_Effects[index].Bubble.time_amount = 0;
 		cl.h2_Effects[index].Bubble.count--;
@@ -2898,7 +2898,7 @@ static void CLHW_UpdateEffectDeathBubbles(int index, float frametime)
 			VectorCopy(es->origin, org);
 			VectorAdd(org, cl.h2_Effects[index].Bubble.offset, org);
 
-			if (CM_PointContentsQ1(org, 0) != BSP29CONTENTS_WATER) 
+			if (CM_PointContentsQ1(org, 0) != BSP29CONTENTS_WATER)
 			{
 				//not in water anymore
 				CLH2_FreeEffect(index);
@@ -2924,7 +2924,7 @@ static void CLHW_UpdateEffectScarabChain(int index, float frametime)
 	h2entity_state_t* es;
 	switch (cl.h2_Effects[index].Chain.state)
 	{
-	case 0://zooming in toward owner
+	case 0:	//zooming in toward owner
 		es = CLH2_FindState(cl.h2_Effects[index].Chain.owner);
 		if (cl.h2_Effects[index].Chain.sound_time * 1000 <= cl.serverTime)
 		{
@@ -2952,7 +2952,7 @@ static void CLHW_UpdateEffectScarabChain(int index, float frametime)
 			}
 		}
 		break;
-	case 1://attached--snap to owner's pos
+	case 1:	//attached--snap to owner's pos
 		es = CLH2_FindState(cl.h2_Effects[index].Chain.owner);
 		if (es)
 		{
@@ -2960,12 +2960,12 @@ static void CLHW_UpdateEffectScarabChain(int index, float frametime)
 			ent->state.origin[2] += cl.h2_Effects[index].Chain.height;
 		}
 		break;
-	case 2://unattaching, server needs to set this state
-		{
+	case 2:	//unattaching, server needs to set this state
+	{
 		vec3_t org;
 		VectorCopy(ent->state.origin,org);
 		VectorSubtract(cl.h2_Effects[index].Chain.origin, org, org);
-		if (fabs(VectorNormalize(org)) > 350 * frametime)//closer than 30 is too close?
+		if (fabs(VectorNormalize(org)) > 350 * frametime)	//closer than 30 is too close?
 		{
 			VectorScale(org, 350 * frametime, org);
 			VectorAdd(ent->state.origin, org, ent->state.origin);
@@ -2981,8 +2981,8 @@ static void CLHW_UpdateEffectScarabChain(int index, float frametime)
 			ent->state.frame = 0;
 			ent->state.drawflags = H2DRF_TRANSLUCENT;
 		}
-		}
-		break;
+	}
+	break;
 	}
 
 	CLH2_LinkEffectEntity(ent);
@@ -3036,7 +3036,7 @@ static void CLHW_UpdateEffectEidolonStar(int index, float frametime)
 			cl.h2_Effects[index].Star.scaleDir = 1;
 		}
 	}
-	
+
 	cl.h2_Effects[index].Star.time_amount += frametime;
 	effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Star.entity_index];
 
@@ -3049,7 +3049,7 @@ static void CLHW_UpdateEffectEidolonStar(int index, float frametime)
 	ent->state.origin[2] += frametime * cl.h2_Effects[index].Star.velocity[2];
 
 	CLH2_LinkEffectEntity(ent);
-	
+
 	if (cl.h2_Effects[index].Star.ent1 != -1)
 	{
 		effect_entity_t* ent2 = &EffectEntities[cl.h2_Effects[index].Star.ent1];
@@ -3059,7 +3059,7 @@ static void CLHW_UpdateEffectEidolonStar(int index, float frametime)
 		ent2->state.angles[2] += frametime * 400;
 		CLH2_LinkEffectEntity(ent2);
 	}
-	if (rand() % 10 < 3)		
+	if (rand() % 10 < 3)
 	{
 		CLH2_RunParticleEffect4(ent->state.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
 	}
@@ -3100,7 +3100,7 @@ static void CLH2_UpdateEffectChunk(int index, float frametime)
 		ent->state.origin[2] += frametime * cl.h2_Effects[index].Chunk.velocity[i][2];
 
 		bool moving = true;
-		if (CM_PointContentsQ1(ent->state.origin, 0) != BSP29CONTENTS_EMPTY) //||in_solid==true
+		if (CM_PointContentsQ1(ent->state.origin, 0) != BSP29CONTENTS_EMPTY)//||in_solid==true
 		{
 			// bouncing prolly won't work...
 			VectorCopy(oldorg, ent->state.origin);
@@ -3126,7 +3126,7 @@ static void CLH2_UpdateEffectChunk(int index, float frametime)
 
 		CLH2_LinkEffectEntity(ent);
 
-		cl.h2_Effects[index].Chunk.velocity[i][2] -= frametime * 500; // apply gravity
+		cl.h2_Effects[index].Chunk.velocity[i][2] -= frametime * 500;	// apply gravity
 
 		switch (cl.h2_Effects[index].Chunk.type)
 		{
@@ -3220,14 +3220,14 @@ static void CLH2_UpdateEffectRiderDeath(int index, float frametime)
 	{
 		// To set the rider's origin point for the particles
 		CLH2_RiderParticles(0, org);
-		if (cl.h2_Effects[index].RD.stage == 7) 
+		if (cl.h2_Effects[index].RD.stage == 7)
 		{
 			cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;
 			cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 255;
 			cl.qh_cshifts[CSHIFT_BONUS].destcolor[2] = 255;
 			cl.qh_cshifts[CSHIFT_BONUS].percent = 256;
 		}
-		else if (cl.h2_Effects[index].RD.stage > 13) 
+		else if (cl.h2_Effects[index].RD.stage > 13)
 		{
 			CLH2_FreeEffect(index);
 		}

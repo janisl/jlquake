@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
-#define H2STREAM_ATTACHED			16
+#define H2STREAM_ATTACHED           16
 
-#define MAX_STATIC_ENTITIES_H2		256			// torches, etc
+#define MAX_STATIC_ENTITIES_H2      256			// torches, etc
 
-#define MAX_EFFECT_ENTITIES_H2		256
+#define MAX_EFFECT_ENTITIES_H2      256
 
 struct effect_entity_t
 {
@@ -44,7 +44,7 @@ void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
-void CLH2_TranslatePlayerSkin (int playernum);
+void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 
 void CLH2_ClearStreams();
@@ -63,8 +63,8 @@ int CLH2_TempSoundChannel();
 h2entity_state_t* CLH2_FindState(int EntNum);
 void CLH2_ParseTEnt(QMsg& message);
 void CLHW_ParseTEnt(QMsg& message);
-void CLHW_UpdateHammer(refEntity_t *ent, int edict_num);
-void CLHW_UpdateBug(refEntity_t *ent);
+void CLHW_UpdateHammer(refEntity_t* ent, int edict_num);
+void CLHW_UpdateBug(refEntity_t* ent);
 void CLH2_UpdateTEnts();
 
 void CLHW_InitEffects();
@@ -133,9 +133,9 @@ void CLHW_ChainLightningExplosion(const vec3_t pos);
 void CLHW_CreateExplosionWithSound(const vec3_t pos);
 void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles);
 void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles);
-void CLHW_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num);
-void CLHW_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
-void CLHW_UpdateIceStorm(refEntity_t *ent, int edict_num);
+void CLHW_UpdateOnFire(refEntity_t* ent, vec3_t angles, int edict_num);
+void CLHW_UpdatePowerFlameBurn(refEntity_t* ent, int edict_num);
+void CLHW_UpdateIceStorm(refEntity_t* ent, int edict_num);
 void CLH2_UpdateExplosions();
 void CLHW_ClearTarget();
 void CLHW_ParseTarget(QMsg& message);

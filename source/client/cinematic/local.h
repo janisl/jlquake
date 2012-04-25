@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#define CIN_STREAM	0	//	Const for the sound stream used for cinematics
+#define CIN_STREAM  0	//	Const for the sound stream used for cinematics
 
 //
 //	Base class for cinematics.
@@ -22,12 +22,12 @@
 class QCinematic : public Interface
 {
 public:
-	char		Name[MAX_OSPATH];
-	int			Width;
-	int			Height;
-	byte*		OutputFrame;
-	bool		Dirty;
-	bool		Silent;
+	char Name[MAX_OSPATH];
+	int Width;
+	int Height;
+	byte* OutputFrame;
+	bool Dirty;
+	bool Silent;
 
 	QCinematic()
 	: Width(0)
@@ -52,29 +52,29 @@ class QCinematicCin : public QCinematic
 private:
 	struct cblock_t
 	{
-		byte*	data;
-		int		count;
+		byte* data;
+		int count;
 	};
 
-	fileHandle_t	cinematic_file;
+	fileHandle_t cinematic_file;
 
-	int		cinematicframe;
+	int cinematicframe;
 
-	byte	cinematicpalette[768];
-	byte*	pic;
-	byte*	pic_pending;
-	byte*	pic32;
+	byte cinematicpalette[768];
+	byte* pic;
+	byte* pic_pending;
+	byte* pic32;
 
-	int		s_rate;
-	int		s_width;
-	int		s_channels;
+	int s_rate;
+	int s_width;
+	int s_channels;
 
-	int		h_used[512];
-	int		h_count[512];
+	int h_used[512];
+	int h_count[512];
 
 	// order 1 huffman stuff
-	int*	hnodes1;	// [256][256][2];
-	int		numhnodes1[256];
+	int* hnodes1;		// [256][256][2];
+	int numhnodes1[256];
 
 	void Huff1TableInit();
 	int SmallestNode1(int numhnodes);
@@ -127,36 +127,36 @@ private:
 		DEFAULT_CIN_HEIGHT = 512,
 	};
 
-	long				samplesPerLine;
-	long				normalBuffer0;
-	long				screenDelta;
-	long				onQuad;
-	unsigned int		maxsize;
-	unsigned int		minsize;
-	long				t[2];
-	long				ROQSize;
-	long				RoQPlayed;
-	unsigned int		RoQFrameSize;
-	unsigned int		roq_id;
-	long				roq_flags;
-	long				roqF0;
-	long				roqF1;
-	int					inMemory;
-	long				roqFPS;
-	fileHandle_t		iFile;
-	long				numQuads;
+	long samplesPerLine;
+	long normalBuffer0;
+	long screenDelta;
+	long onQuad;
+	unsigned int maxsize;
+	unsigned int minsize;
+	long t[2];
+	long ROQSize;
+	long RoQPlayed;
+	unsigned int RoQFrameSize;
+	unsigned int roq_id;
+	long roq_flags;
+	long roqF0;
+	long roqF1;
+	int inMemory;
+	long roqFPS;
+	fileHandle_t iFile;
+	long numQuads;
 	bool sound;
 
-	byte				file[65536];
+	byte file[65536];
 
-	byte				linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 4 * 2];
-	byte*				qStatus[2][32768];
+	byte linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 4 * 2];
+	byte* qStatus[2][32768];
 
-	unsigned short		vq2[256 * 16 * 4];
-	unsigned short		vq4[256 * 64 * 4];
-	unsigned short		vq8[256 * 256 * 4];
+	unsigned short vq2[256 * 16 * 4];
+	unsigned short vq4[256 * 64 * 4];
+	unsigned short vq8[256 * 256 * 4];
 
-	int					mcomp[256];
+	int mcomp[256];
 
 	void init();
 	void recurseQuad(long startX, long startY, long quadSize);
@@ -201,20 +201,20 @@ public:
 class QCinematicPlayer
 {
 public:
-	QCinematic*		Cin;
-	int				XPos;
-	int				YPos;
-	int				Width;
-	int				Height;
-	bool			AlterGameState;
-	bool			Looping;
-	bool			HoldAtEnd;
-	bool			Shader;
+	QCinematic* Cin;
+	int XPos;
+	int YPos;
+	int Width;
+	int Height;
+	bool AlterGameState;
+	bool Looping;
+	bool HoldAtEnd;
+	bool Shader;
 	bool letterBox;
-	e_status		Status;
-	unsigned int	StartTime;
-	unsigned int	LastTime;
-	int				PlayOnWalls;
+	e_status Status;
+	unsigned int StartTime;
+	unsigned int LastTime;
+	int PlayOnWalls;
 
 	QCinematicPlayer(QCinematic* ACin, int x, int y, int w, int h, int SystemBits)
 	: Cin(ACin)
@@ -251,6 +251,6 @@ void CIN_MakeFullName(const char* Name, char* FullName);
 QCinematic* CIN_Open(const char* Name);
 int CIN_HandleForVideo();
 
-#define MAX_VIDEO_HANDLES	16
+#define MAX_VIDEO_HANDLES   16
 
-extern QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
+extern QCinematicPlayer* cinTable[MAX_VIDEO_HANDLES];

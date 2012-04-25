@@ -32,7 +32,7 @@
 //	Minimum extension version required
 #define GAMMA_MINMAJOR 2
 #define GAMMA_MINMINOR 0
-  
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -45,26 +45,26 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Display*				dpy = NULL;
-Window					win;
+Display* dpy = NULL;
+Window win;
 
 Atom wm_protocols;
 Atom wm_delete_window;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int						scrnum;
-static GLXContext				ctx = NULL;
+static int scrnum;
+static GLXContext ctx = NULL;
 
-static XF86VidModeModeInfo**	vidmodes;
-static int						num_vidmodes;
-static bool						vidmode_active = false;
-static bool						vidmode_ext = false;
-static int						vidmode_MajorVersion = 0; // major and minor of XF86VidExtensions
-static int						vidmode_MinorVersion = 0;
+static XF86VidModeModeInfo** vidmodes;
+static int num_vidmodes;
+static bool vidmode_active = false;
+static bool vidmode_ext = false;
+static int vidmode_MajorVersion = 0;						// major and minor of XF86VidExtensions
+static int vidmode_MinorVersion = 0;
 
 // gamma value of the X display before we start playing with it
-static XF86VidModeGamma			vidmode_InitialGamma;
+static XF86VidModeGamma vidmode_InitialGamma;
 
 static bool fontbase_init = false;
 
@@ -73,17 +73,17 @@ static sem_t renderCommandsEvent;
 static sem_t renderCompletedEvent;
 static sem_t renderActiveEvent;
 #else
-static pthread_mutex_t			smpMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t smpMutex = PTHREAD_MUTEX_INITIALIZER;
 
-static pthread_cond_t			renderCommandsEvent = PTHREAD_COND_INITIALIZER;
-static pthread_cond_t			renderCompletedEvent = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t renderCommandsEvent = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t renderCompletedEvent = PTHREAD_COND_INITIALIZER;
 #endif
 
-static void (*glimpRenderThread)();
+static void (* glimpRenderThread)();
 
-static volatile void*			smpData = NULL;
+static volatile void* smpData = NULL;
 #ifndef WOLF_SMP
-static volatile bool			smpDataReady;
+static volatile bool smpDataReady;
 #endif
 
 // CODE --------------------------------------------------------------------
@@ -105,7 +105,7 @@ static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
 	XGetErrorText(dpy, ev->error_code, buf, 1024);
 	Log::write("X Error of failed request: %s\n", buf);
 	Log::write("  Major opcode of failed request: %d\n", ev->request_code, buf);
-	Log::write("  Minor opcode of failed request: %d\n", ev->minor_code);  
+	Log::write("  Minor opcode of failed request: %d\n", ev->minor_code);
 	Log::write("  Serial number of failed request: %d\n", ev->serial);
 	return 0;
 }
@@ -186,7 +186,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		Log::write("Fullscreen not allowed with in_nograb 1\n");
 		Cvar_Set("r_fullscreen", "0");
 		r_fullscreen->modified = false;
-		fullscreen = false;		
+		fullscreen = false;
 	}
 
 	Log::write("...setting mode %d:", mode);
@@ -204,7 +204,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		fprintf(stderr, "Error couldn't open the X display\n");
 		return RSERR_INVALID_MODE;
 	}
-  
+
 	scrnum = DefaultScreen(dpy);
 	Window root = RootWindow(dpy, scrnum);
 
@@ -219,7 +219,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		vidmode_ext = true;
 	}
 
-	// Check for DGA	
+	// Check for DGA
 	int dga_MajorVersion = 0;
 	int dga_MinorVersion = 0;
 	if (in_dgamouse->value)
@@ -255,7 +255,9 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			{
 				if (glConfig.vidWidth > vidmodes[i]->hdisplay ||
 					glConfig.vidHeight > vidmodes[i]->vdisplay)
+				{
 					continue;
+				}
 
 				x = glConfig.vidWidth - vidmodes[i]->hdisplay;
 				y = glConfig.vidHeight - vidmodes[i]->vdisplay;
@@ -295,7 +297,9 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	}
 
 	if (!colorbits)
+	{
 		colorbits = !r_colorbits->value ? 24 : r_colorbits->value;
+	}
 	int depthbits = !r_depthbits->value ? 24 : r_depthbits->value;
 	int stencilbits = r_stencilbits->value;
 
@@ -311,13 +315,13 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			// one pass, reduce
 			switch (i / 4)
 			{
-			case 2 :
+			case 2:
 				if (colorbits == 24)
 				{
 					colorbits = 16;
 				}
 				break;
-			case 1 :
+			case 1:
 				if (depthbits == 24)
 				{
 					depthbits = 16;
@@ -327,7 +331,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 					depthbits = 8;
 				}
 				break;
-			case 3 :
+			case 3:
 				if (stencilbits == 24)
 				{
 					stencilbits = 16;
@@ -385,13 +389,13 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 
 		int attrib[] =
 		{
-			GLX_RGBA,         // 0
-			GLX_RED_SIZE, 4,      // 1, 2
-			GLX_GREEN_SIZE, 4,      // 3, 4
-			GLX_BLUE_SIZE, 4,     // 5, 6
-			GLX_DOUBLEBUFFER,     // 7
-			GLX_DEPTH_SIZE, 1,      // 8, 9
-			GLX_STENCIL_SIZE, 1,    // 10, 11
+			GLX_RGBA,			// 0
+			GLX_RED_SIZE, 4,		// 1, 2
+			GLX_GREEN_SIZE, 4,		// 3, 4
+			GLX_BLUE_SIZE, 4,		// 5, 6
+			GLX_DOUBLEBUFFER,		// 7
+			GLX_DEPTH_SIZE, 1,		// 8, 9
+			GLX_STENCIL_SIZE, 1,	// 10, 11
 			//GLX_SAMPLES_SGIS, 4, /* for better AA */
 			None
 		};
@@ -419,7 +423,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			attrib[ATTR_BLUE_IDX] = 4;
 		}
 
-		attrib[ATTR_DEPTH_IDX] = tdepthbits; // default to 24 depth
+		attrib[ATTR_DEPTH_IDX] = tdepthbits;// default to 24 depth
 		attrib[ATTR_STENCIL_IDX] = tstencilbits;
 
 		visinfo = glXChooseVisual(dpy, scrnum, attrib);
@@ -428,7 +432,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			continue;
 		}
 
-		Log::write("Using %d/%d/%d Color bits, %d depth, %d stencil display.\n", 
+		Log::write("Using %d/%d/%d Color bits, %d depth, %d stencil display.\n",
 			attrib[ATTR_RED_IDX], attrib[ATTR_GREEN_IDX], attrib[ATTR_BLUE_IDX],
 			attrib[ATTR_DEPTH_IDX], attrib[ATTR_STENCIL_IDX]);
 
@@ -453,8 +457,8 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	attr.event_mask = X_MASK;
 	if (vidmode_active)
 	{
-		mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore | 
-			CWEventMask | CWOverrideRedirect;
+		mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore |
+			   CWEventMask | CWOverrideRedirect;
 		attr.override_redirect = True;
 		attr.backing_store = NotUseful;
 		attr.save_under = False;
@@ -464,8 +468,8 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 	}
 
-	win = XCreateWindow(dpy, root, 0, 0, 
-		actualWidth, actualHeight, 
+	win = XCreateWindow(dpy, root, 0, 0,
+		actualWidth, actualHeight,
 		0, visinfo->depth, InputOutput,
 		visinfo->visual, mask, &attr);
 
@@ -498,9 +502,9 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 
 	XFlush(dpy);
 
-	XSync(dpy, False); // bk001130 - from cvs1.17 (mkv)
+	XSync(dpy, False);	// bk001130 - from cvs1.17 (mkv)
 	ctx = glXCreateContext(dpy, visinfo, NULL, True);
-	XSync(dpy, False); // bk001130 - from cvs1.17 (mkv)
+	XSync(dpy, False);	// bk001130 - from cvs1.17 (mkv)
 
 	/* GH: Free the visinfo after we're done with it */
 	XFree(visinfo);
@@ -510,7 +514,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	glConfig.deviceSupportsGamma = false;
 	if (vidmode_ext)
 	{
-		if (vidmode_MajorVersion < GAMMA_MINMAJOR || 
+		if (vidmode_MajorVersion < GAMMA_MINMAJOR ||
 			(vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR))
 		{
 			Log::write("XF86 Gamma extension not supported in this version\n");
@@ -658,7 +662,7 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 
 void GLimp_SwapBuffers()
 {
-    glXSwapBuffers(dpy, win);
+	glXSwapBuffers(dpy, win);
 }
 
 //**************************************************************************
@@ -673,7 +677,7 @@ void GLimp_SwapBuffers()
 //
 //==========================================================================
 
-static void* GLimp_RenderThreadWrapper(void *arg)
+static void* GLimp_RenderThreadWrapper(void* arg)
 {
 	Log::write("Render thread starting\n");
 
@@ -692,7 +696,7 @@ static void* GLimp_RenderThreadWrapper(void *arg)
 //
 //==========================================================================
 
-bool GLimp_SpawnRenderThread(void (*function)())
+bool GLimp_SpawnRenderThread(void (* function)())
 {
 #ifdef WOLF_SMP
 	sem_init(&renderCommandsEvent, 0, 0);

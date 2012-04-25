@@ -179,4 +179,4 @@ enum
 // The menu code needs to get both key and char events, but
 // to avoid duplicating the paths, the char events are just
 // distinguished by or'ing in K_CHAR_FLAG (ugly)
-#define K_CHAR_FLAG		1024
+#define K_CHAR_FLAG     1024

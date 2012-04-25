@@ -21,7 +21,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	LL(x) x=LittleLong(x)
+#define LL(x) x = LittleLong(x)
 
 // TYPES -------------------------------------------------------------------
 
@@ -156,12 +156,12 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 		if (surf->numVerts > SHADER_MAX_VERTEXES)
 		{
 			throw DropException(va("R_LoadMD3: %s has more than %i verts on a surface (%i)",
-				mod_name, SHADER_MAX_VERTEXES, surf->numVerts));
+					mod_name, SHADER_MAX_VERTEXES, surf->numVerts));
 		}
 		if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
 		{
 			throw DropException(va("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
-				mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles));
+					mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles));
 		}
 
 		// change to surface identifier
@@ -212,7 +212,7 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 
 		// swap all the XyzNormals
 		md3XyzNormal_t* xyz = (md3XyzNormal_t*)((byte*)surf + surf->ofsXyzNormals);
-		for (int j = 0; j < surf->numVerts * surf->numFrames; j++, xyz++) 
+		for (int j = 0; j < surf->numVerts * surf->numFrames; j++, xyz++)
 		{
 			xyz->xyz[0] = LittleShort(xyz->xyz[0]);
 			xyz->xyz[1] = LittleShort(xyz->xyz[1]);
@@ -392,23 +392,23 @@ static float ProjectRadius(float r, vec3_t location)
 	p[2] = -dist;
 
 	float projected[4];
-	projected[0] = p[0] * tr.viewParms.projectionMatrix[0] + 
-		           p[1] * tr.viewParms.projectionMatrix[4] +
+	projected[0] = p[0] * tr.viewParms.projectionMatrix[0] +
+				   p[1] * tr.viewParms.projectionMatrix[4] +
 				   p[2] * tr.viewParms.projectionMatrix[8] +
 				   tr.viewParms.projectionMatrix[12];
 
-	projected[1] = p[0] * tr.viewParms.projectionMatrix[1] + 
-		           p[1] * tr.viewParms.projectionMatrix[5] +
+	projected[1] = p[0] * tr.viewParms.projectionMatrix[1] +
+				   p[1] * tr.viewParms.projectionMatrix[5] +
 				   p[2] * tr.viewParms.projectionMatrix[9] +
 				   tr.viewParms.projectionMatrix[13];
 
-	projected[2] = p[0] * tr.viewParms.projectionMatrix[2] + 
-		           p[1] * tr.viewParms.projectionMatrix[6] +
+	projected[2] = p[0] * tr.viewParms.projectionMatrix[2] +
+				   p[1] * tr.viewParms.projectionMatrix[6] +
 				   p[2] * tr.viewParms.projectionMatrix[10] +
 				   tr.viewParms.projectionMatrix[14];
 
-	projected[3] = p[0] * tr.viewParms.projectionMatrix[3] + 
-		           p[1] * tr.viewParms.projectionMatrix[7] +
+	projected[3] = p[0] * tr.viewParms.projectionMatrix[3] +
+				   p[1] * tr.viewParms.projectionMatrix[7] +
 				   p[2] * tr.viewParms.projectionMatrix[11] +
 				   tr.viewParms.projectionMatrix[15];
 
@@ -490,7 +490,7 @@ static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
 
 	// calculate a bounding box in the current coordinate system
 	vec3_t bounds[2];
-	for (int i = 0 ; i < 3 ; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		bounds[0][i] = oldFrame->bounds[0][i] < newFrame->bounds[0][i] ? oldFrame->bounds[0][i] : newFrame->bounds[0][i];
 		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
@@ -727,7 +727,7 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 			//----(SA)	added blink
 			if (GGameType & (GAME_WolfMP | GAME_ET) && ent->e.renderfx & RF_BLINK)
 			{
-				const char *s = va("%s_b", surface->name);	// append '_b' for 'blink'
+				const char* s = va("%s_b", surface->name);	// append '_b' for 'blink'
 				int hash = Com_HashKey(s, String::Length(s));
 				for (int j = 0; j < skin->numSurfaces; j++)
 				{
@@ -851,7 +851,7 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 	float* outNormal = tess.normal[tess.numVertexes];
 
 	short* newXyz = (short*)((byte*)surf + surf->ofsXyzNormals) +
-		(backEnd.currentEntity->e.frame * surf->numVerts * 4);
+					(backEnd.currentEntity->e.frame * surf->numVerts * 4);
 	short* newNormals = newXyz + 3;
 
 	float newXyzScale = MD3_XYZ_SCALE * (1.0 - backlerp);
@@ -865,8 +865,8 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 		// just copy the vertexes
 		//
 		for (int vertNum = 0; vertNum < numVerts; vertNum++,
-			newXyz += 4, newNormals += 4,
-			outXyz += 4, outNormal += 4) 
+			 newXyz += 4, newNormals += 4,
+			 outXyz += 4, outNormal += 4)
 		{
 			outXyz[0] = newXyz[0] * newXyzScale;
 			outXyz[1] = newXyz[1] * newXyzScale;
@@ -892,15 +892,15 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 		// interpolate and copy the vertex and normal
 		//
 		short* oldXyz = (short*)((byte*)surf + surf->ofsXyzNormals) +
-			(backEnd.currentEntity->e.oldframe * surf->numVerts * 4);
+						(backEnd.currentEntity->e.oldframe * surf->numVerts * 4);
 		short* oldNormals = oldXyz + 3;
 
 		float oldXyzScale = MD3_XYZ_SCALE * backlerp;
 		float oldNormalScale = backlerp;
 
 		for (int vertNum = 0; vertNum < numVerts; vertNum++,
-			oldXyz += 4, newXyz += 4, oldNormals += 4, newNormals += 4,
-			outXyz += 4, outNormal += 4) 
+			 oldXyz += 4, newXyz += 4, oldNormals += 4, newNormals += 4,
+			 outXyz += 4, outNormal += 4)
 		{
 			// interpolate the xyz
 			outXyz[0] = oldXyz[0] * oldXyzScale + newXyz[0] * newXyzScale;
@@ -916,9 +916,9 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 				unsigned lng = Q_ftol(((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
 					((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
 
-				outNormal[ 0 ] = tr.sinTable[ ( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
-				outNormal[ 1 ] = tr.sinTable[ lat ] * tr.sinTable[ lng ];
-				outNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
+				outNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
+				outNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
+				outNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
 			}
 			else
 			{

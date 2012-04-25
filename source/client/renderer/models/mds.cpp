@@ -48,8 +48,8 @@ frame.
 
 struct mdsBoneFrame_t
 {
-	float matrix[3][3];             // 3x3 rotation
-	vec3_t translation;             // translation vector
+	float matrix[3][3];				// 3x3 rotation
+	vec3_t translation;				// translation vector
 };
 
 static float frontlerp, backlerp;
@@ -85,7 +85,7 @@ static vec4_t m1[4], m2[4];
 static vec3_t t;
 static refEntity_t lastBoneEntity;
 
-static int totalrv, totalrt, totalv, totalt;    //----(SA)
+static int totalrv, totalrt, totalv, totalt;	//----(SA)
 
 bool R_LoadMds(model_t* mod, const void* buffer)
 {
@@ -488,7 +488,7 @@ void R_AddMdsAnimSurfaces(trRefEntity_t* ent)
 				}
 			}
 
-			if (shader == tr.defaultShader)        // blink reference in skin was not found
+			if (shader == tr.defaultShader)			// blink reference in skin was not found
 			{
 				int hash = Com_HashKey(surface->name, sizeof(surface->name));
 				for (j = 0; j < skin->numSurfaces; j++)
@@ -653,7 +653,7 @@ static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneN
 
 			}
 			else
-			{    // legs bone
+			{	// legs bone
 				LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 			}
 		}
@@ -683,14 +683,14 @@ static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneN
 				LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 			}
 			else
-			{    // legs bone
+			{	// legs bone
 				LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 			}
 		}
 #endif
 	}
 	else
-	{    // just use the frame position
+	{	// just use the frame position
 		bonePtr->translation[0] = frame->parentOffset[0];
 		bonePtr->translation[1] = frame->parentOffset[1];
 		bonePtr->translation[2] = frame->parentOffset[2];
@@ -821,13 +821,13 @@ static void R_CalcBoneLerp(mdsHeader_t* header, const refEntity_t* refent, int b
 		*(pf++) = SHORT2ANGLE(*(sh++));
 		*(pf++) = SHORT2ANGLE(*(sh++));
 		*(pf++) = 0;
-		LocalAngleVector(angles, v2);     // new
+		LocalAngleVector(angles, v2);		// new
 
 		pf = angles;
 		*(pf++) = SHORT2ANGLE(*(sh2++));
 		*(pf++) = SHORT2ANGLE(*(sh2++));
 		*(pf++) = 0;
-		LocalAngleVector(angles, vec);    // old
+		LocalAngleVector(angles, vec);		// old
 
 		// blend the angles together
 		if (fullTorso)
@@ -851,13 +851,13 @@ static void R_CalcBoneLerp(mdsHeader_t* header, const refEntity_t* refent, int b
 			*(pf++) = SHORT2ANGLE(*(sh++));
 			*(pf++) = SHORT2ANGLE(*(sh++));
 			*(pf++) = 0;
-			LocalAngleVector(angles, v2);     // new
+			LocalAngleVector(angles, v2);		// new
 
 			pf = angles;
 			*(pf++) = SHORT2ANGLE(*(sh2++));
 			*(pf++) = SHORT2ANGLE(*(sh2++));
 			*(pf++) = 0;
-			LocalAngleVector(angles, vec);    // old
+			LocalAngleVector(angles, vec);		// old
 
 			// blend the angles together
 			SLerp_Normal(vec, v2, torsoFrontlerp, v2);
@@ -869,7 +869,7 @@ static void R_CalcBoneLerp(mdsHeader_t* header, const refEntity_t* refent, int b
 		LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, dir, bonePtr->translation);
 	}
 	else
-	{    // just interpolate the frame positions
+	{	// just interpolate the frame positions
 		bonePtr->translation[0] = frontlerp * frame->parentOffset[0] + backlerp * oldFrame->parentOffset[0];
 		bonePtr->translation[1] = frontlerp * frame->parentOffset[1] + backlerp * oldFrame->parentOffset[1];
 		bonePtr->translation[2] = frontlerp * frame->parentOffset[2] + backlerp * oldFrame->parentOffset[2];
@@ -1038,8 +1038,8 @@ static void R_CalcBones(mdsHeader_t* header, const refEntity_t* refent, int* bon
 				Matrix4MultiplyInto3x3AndTranslation(m2, m1, bonePtr->matrix, bonePtr->translation);
 			}
 			else
-			{    // tag's require special handling
-				 // rotate each of the axis by the torsoAngles
+			{	// tag's require special handling
+				// rotate each of the axis by the torsoAngles
 				LocalScaledMatrixTransformVector(bonePtr->matrix[0], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[0]);
 				LocalScaledMatrixTransformVector(bonePtr->matrix[1], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[1]);
 				LocalScaledMatrixTransformVector(bonePtr->matrix[2], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[2]);
@@ -1116,7 +1116,7 @@ static float R_CalcMDSLod(refEntity_t* refent, vec3_t origin, float radius, floa
 	float flod;
 	if (projectedRadius != 0)
 	{
-		float lodScale = r_lodscale->value;   // fudge factor since MDS uses a much smoother method of LOD
+		float lodScale = r_lodscale->value;		// fudge factor since MDS uses a much smoother method of LOD
 		flod = projectedRadius * lodScale * modelScale;
 	}
 	else

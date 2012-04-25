@@ -15,25 +15,25 @@
 //**************************************************************************
 
 //!!!!!!! Used in cgame QVM, do not change !!!!!!!
-#define CMD_BACKUP_Q3		64	
-#define CMD_MASK_Q3			(CMD_BACKUP_Q3 - 1)
+#define CMD_BACKUP_Q3       64
+#define CMD_MASK_Q3         (CMD_BACKUP_Q3 - 1)
 // allow a lot of command backups for very fast systems
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP_Q3
 
-#define MAX_GLOBAL_SERVERS_Q3				4096
-#define MAX_GLOBAL_SERVERS_WS				2048
-#define MAX_GLOBAL_SERVERS_WM				2048
-#define MAX_GLOBAL_SERVERS_ET				4096
-#define BIGGEST_MAX_GLOBAL_SERVERS			4096
-#define MAX_OTHER_SERVERS_Q3				128
+#define MAX_GLOBAL_SERVERS_Q3               4096
+#define MAX_GLOBAL_SERVERS_WS               2048
+#define MAX_GLOBAL_SERVERS_WM               2048
+#define MAX_GLOBAL_SERVERS_ET               4096
+#define BIGGEST_MAX_GLOBAL_SERVERS          4096
+#define MAX_OTHER_SERVERS_Q3                128
 
 #define MAX_AUTOUPDATE_SERVERS  5
 
 // the parseEntities array must be large enough to hold PACKET_BACKUP_Q3 frames of
 // entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original 
-#define MAX_PARSE_ENTITIES_Q3	2048
+// it can be un-deltad from the original
+#define MAX_PARSE_ENTITIES_Q3   2048
 
 // snapshots are a view of the server at a given time
 struct q3clSnapshot_t
@@ -58,7 +58,7 @@ struct q3clSnapshot_t
 							// making the snapshot current
 };
 
-#define MAX_GAMESTATE_CHARS_Q3	16000
+#define MAX_GAMESTATE_CHARS_Q3  16000
 
 struct q3gameState_t
 {
@@ -90,11 +90,11 @@ struct q3serverInfo_t
 	qboolean visible;
 	int punkbuster;
 	int allowAnonymous;
-	int friendlyFire;               // NERVE - SMF
-	int maxlives;                   // NERVE - SMF
-	int tourney;                    // NERVE - SMF
-	int antilag;         // TTimo
-	char gameName[MAX_NAME_LENGTH_ET];         // Arnout
+	int friendlyFire;				// NERVE - SMF
+	int maxlives;					// NERVE - SMF
+	int tourney;					// NERVE - SMF
+	int antilag;		// TTimo
+	char gameName[MAX_NAME_LENGTH_ET];			// Arnout
 	int load;
 	int needpass;
 	int weaprestrict;

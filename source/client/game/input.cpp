@@ -668,7 +668,7 @@ static void CL_KeyMove(in_usercmd_t* cmd)
 
 		// adjust for speed key (but not if always runs has been chosen)
 		if ((((GGameType & GAME_HexenWorld) && cl.qh_spectator) ||
-			cl_forwardspeed->value > 200 || in_speed.active) && cl.h2_v.hasted <= 1)
+			 cl_forwardspeed->value > 200 || in_speed.active) && cl.h2_v.hasted <= 1)
 		{
 			speedAdjust *= cl_movespeedkey->value;
 		}
@@ -910,8 +910,8 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	int numButtons = (GGameType & (GAME_Quake | GAME_Quake2)) ? 2 :
-		(GGameType & GAME_Hexen2) ? 3 :
-		(GGameType & GAME_ET) ? 16 : 15;
+					 (GGameType & GAME_Hexen2) ? 3 :
+					 (GGameType & GAME_ET) ? 16 : 15;
 	for (int i = 0; i < numButtons; i++)
 	{
 		if (in_buttons[i].active || in_buttons[i].wasPressed)
@@ -963,7 +963,7 @@ static void CL_CmdButtons(in_usercmd_t* cmd)
 		// allow the game to know if any key at all is
 		// currently pressed, even if it isn't bound to anything
 		if (anykeydown && (!in_keyCatchers ||
-			(GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput->integer)))
+						   (GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput->integer)))
 		{
 			cmd->buttons |= WOLFBUTTON_ANY;
 		}
@@ -998,7 +998,7 @@ void CL_DoubleTap(in_usercmd_t* cmd)
 	}
 
 	// Arnout: double tap
-	cmd->doubleTap = ETDT_NONE; // reset
+	cmd->doubleTap = ETDT_NONE;	// reset
 	if (com_frameTime - cl.et_doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime)
 	{
 		// double tap only once every 500 msecs (add
@@ -1012,13 +1012,13 @@ void CL_DoubleTap(in_usercmd_t* cmd)
 				cl.et_doubleTap.pressedTime[i] = com_frameTime;
 			}
 			else if (!key_down && !cl.et_doubleTap.releasedTime[i] &&
-				(com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
+					 (com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
 			{
 				cl.et_doubleTap.releasedTime[i] = com_frameTime;
 			}
 			else if (key_down &&
-				(com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime) &&
-				(com_frameTime - cl.et_doubleTap.releasedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
+					 (com_frameTime - cl.et_doubleTap.pressedTime[i]) < (cl_doubletapdelay->integer + cls.frametime) &&
+					 (com_frameTime - cl.et_doubleTap.releasedTime[i]) < (cl_doubletapdelay->integer + cls.frametime))
 			{
 				cl.et_doubleTap.pressedTime[i] = cl.et_doubleTap.releasedTime[i] = 0;
 				cmd->doubleTap = i;
@@ -1056,7 +1056,7 @@ in_usercmd_t CL_CreateCmdCommon()
 	{
 		// keyboard angle adjustment
 		CL_AdjustAngles();
-		
+
 		// get basic movement from keyboard
 		CL_KeyMove(&cmd);
 

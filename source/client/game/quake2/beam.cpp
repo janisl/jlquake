@@ -169,7 +169,7 @@ void CLQ2_AddBeams()
 		if (b->model == clq2_mod_lightning)
 		{
 			model_length = 35.0;
-			d-= 20.0;  // correction so it doesn't end in middle of tesla
+			d -= 20.0;	// correction so it doesn't end in middle of tesla
 		}
 		else
 		{
@@ -190,7 +190,7 @@ void CLQ2_AddBeams()
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
-			angles[2] = rand()%360;
+			angles[2] = rand() % 360;
 			AnglesToAxis(angles, ent.axis);
 			R_AddRefEntityToScene(&ent);
 			return;
@@ -245,7 +245,7 @@ void CLQ2_AddPlayerBeams()
 			hand_multiplier = 1;
 		}
 	}
-	else 
+	else
 	{
 		hand_multiplier = 1;
 	}
@@ -269,7 +269,7 @@ void CLQ2_AddPlayerBeams()
 				q2player_state_t* ps = &cl.q2_frame.playerstate;
 				int j = (cl.q2_frame.serverframe - 1) & UPDATE_MASK_Q2;
 				q2frame_t* oldframe = &cl.q2_frames[j];
-				if (oldframe->serverframe != cl.q2_frame.serverframe-1 || !oldframe->valid)
+				if (oldframe->serverframe != cl.q2_frame.serverframe - 1 || !oldframe->valid)
 				{
 					oldframe = &cl.q2_frame;		// previous frame was dropped or involid
 				}
@@ -277,7 +277,7 @@ void CLQ2_AddPlayerBeams()
 				for (j = 0; j < 3; j++)
 				{
 					b->start[j] = cl.refdef.vieworg[j] + ops->gunoffset[j]
-						+ cl.q2_lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
+								  + cl.q2_lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
 				}
 				VectorMA(b->start, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], org);
 				VectorMA(org, b->offset[1], cl.refdef.viewaxis[0], org);
@@ -377,7 +377,7 @@ void CLQ2_AddPlayerBeams()
 		else if (b->model == clq2_mod_lightning)
 		{
 			model_length = 35.0;
-			d-= 20.0;  // correction so it doesn't end in middle of tesla
+			d -= 20.0;	// correction so it doesn't end in middle of tesla
 		}
 		else
 		{
@@ -391,7 +391,7 @@ void CLQ2_AddPlayerBeams()
 		// through the tesla mine (instead it goes through the target)
 		if ((b->model == clq2_mod_lightning) && (d <= model_length))
 		{
-			VectorCopy (b->end, ent.origin);
+			VectorCopy(b->end, ent.origin);
 			ent.hModel = b->model;
 			ent.renderfx = RF_ABSOLUTE_LIGHT;
 			ent.radius = 1;
@@ -432,7 +432,7 @@ void CLQ2_AddPlayerBeams()
 				angles[2] = rand() % 360;
 			}
 			AnglesToAxis(angles, ent.axis);
-			
+
 			R_AddRefEntityToScene(&ent);
 
 			for (int j = 0; j < 3; j++)

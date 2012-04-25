@@ -33,13 +33,13 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-backEndData_t*	backEndData[SMP_FRAMES];
-backEndState_t	backEnd;
+backEndData_t* backEndData[SMP_FRAMES];
+backEndState_t backEnd;
 
-int				max_polys;
-int				max_polyverts;
+int max_polys;
+int max_polyverts;
 
-volatile bool	renderThreadActive;
+volatile bool renderThreadActive;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -162,9 +162,9 @@ static void SetViewportAndScissor()
 	qglMatrixMode(GL_MODELVIEW);
 
 	// set the window clipping
-	qglViewport(backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
+	qglViewport(backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight);
-	qglScissor(backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
+	qglScissor(backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight);
 }
 
@@ -238,7 +238,7 @@ void RB_BeginDrawingView()
 
 		if (GGameType & (GAME_WolfSP | GAME_WolfMP) && r_uiFullScreen->integer)
 		{
-			clearBits = GL_DEPTH_BUFFER_BIT;    // (SA) always just clear depth for menus
+			clearBits = GL_DEPTH_BUFFER_BIT;	// (SA) always just clear depth for menus
 
 		}
 		else if (GGameType & GAME_ET && tr.world && tr.world->globalFog >= 0)
@@ -293,7 +293,7 @@ void RB_BeginDrawingView()
 			else
 			{
 				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
-				clearBits |= GL_DEPTH_BUFFER_BIT;   // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
+				clearBits |= GL_DEPTH_BUFFER_BIT;	// this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
 
 				if (glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered)
 				{
@@ -343,11 +343,11 @@ void RB_BeginDrawingView()
 				{
 					if (GGameType & GAME_WolfSP)
 					{
-						qglClearColor( 0.5, 0.5, 0.5, 1.0 );
+						qglClearColor(0.5, 0.5, 0.5, 1.0);
 					}
 					else
 					{
-						qglClearColor( 0.05, 0.05, 0.05, 1.0 );  // JPW NERVE changed per id req was 0.5s
+						qglClearColor(0.05, 0.05, 0.05, 1.0);	// JPW NERVE changed per id req was 0.5s
 					}
 				}
 			}
@@ -414,13 +414,13 @@ void RB_BeginDrawingView()
 	// clip to the plane of the portal
 	if (backEnd.viewParms.isPortal)
 	{
-		float	plane[4];
+		float plane[4];
 		plane[0] = backEnd.viewParms.portalPlane.normal[0];
 		plane[1] = backEnd.viewParms.portalPlane.normal[1];
 		plane[2] = backEnd.viewParms.portalPlane.normal[2];
 		plane[3] = backEnd.viewParms.portalPlane.dist;
 
-		double	plane2[4];
+		double plane2[4];
 		plane2[0] = DotProduct(backEnd.viewParms.orient.axis[0], plane);
 		plane2[1] = DotProduct(backEnd.viewParms.orient.axis[1], plane);
 		plane2[2] = DotProduct(backEnd.viewParms.orient.axis[2], plane);
@@ -609,7 +609,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 	}
 
 	// darken down any stencil shadows
-	RB_ShadowFinish();		
+	RB_ShadowFinish();
 
 	// add light flares on lights that aren't obscured
 	RB_RenderFlares();
@@ -653,10 +653,10 @@ void RB_SetGL2D()
 	qglViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
 	qglScissor(0, 0, glConfig.vidWidth, glConfig.vidHeight);
 	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity();
+	qglLoadIdentity();
 	qglOrtho(0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1);
 	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity();
+	qglLoadIdentity();
 
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
@@ -706,7 +706,7 @@ static const void* RB_StretchPic(const void* data)
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
 
-	tess.indexes[numIndexes ] = numVerts + 3;
+	tess.indexes[numIndexes] = numVerts + 3;
 	tess.indexes[numIndexes + 1] = numVerts + 0;
 	tess.indexes[numIndexes + 2] = numVerts + 2;
 	tess.indexes[numIndexes + 3] = numVerts + 2;
@@ -715,8 +715,8 @@ static const void* RB_StretchPic(const void* data)
 
 	*(int*)tess.vertexColors[numVerts] =
 		*(int*)tess.vertexColors[numVerts + 1] =
-		*(int*)tess.vertexColors[numVerts + 2] =
-		*(int*)tess.vertexColors[numVerts + 3] = *(int*)backEnd.color2D;
+			*(int*)tess.vertexColors[numVerts + 2] =
+				*(int*)tess.vertexColors[numVerts + 3] = *(int*)backEnd.color2D;
 
 	tess.xyz[numVerts][0] = cmd->x;
 	tess.xyz[numVerts][1] = cmd->y;
@@ -1081,7 +1081,7 @@ static const void* RB_SwapBuffers(const void* data)
 		r_swapInterval->modified = false;
 
 		if (!glConfig.stereoEnabled)	// why?
-		{	
+		{
 #ifdef _WIN32
 			if (qwglSwapIntervalEXT)
 			{

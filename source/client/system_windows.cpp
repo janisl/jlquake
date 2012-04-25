@@ -33,9 +33,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-HWND			GMainWindow;
-bool			Minimized;
-bool			ActiveApp;
+HWND GMainWindow;
+bool Minimized;
+bool ActiveApp;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -62,7 +62,7 @@ char* Sys_GetClipboardData()
 				data = new char[GlobalSize(hClipboardData) + 1];
 				String::NCpyZ(data, clipText, GlobalSize(hClipboardData));
 				GlobalUnlock(hClipboardData);
-				
+
 				strtok(data, "\n\r\b");
 			}
 		}

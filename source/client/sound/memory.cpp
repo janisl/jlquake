@@ -45,11 +45,11 @@ struct waveFormat_t
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte*	data_p;
-static byte*	iff_end;
-static byte*	last_chunk;
-static byte*	iff_data;
-static int		iff_chunk_len;
+static byte* data_p;
+static byte* iff_end;
+static byte* last_chunk;
+static byte* iff_data;
+static int iff_chunk_len;
 
 static waveFormat_t waveFormats[] = {
 	{ "Windows PCM", 1 },
@@ -137,7 +137,7 @@ static int GetLittleLong()
 //
 //==========================================================================
 
-static void FindNextChunk(const char *name)
+static void FindNextChunk(const char* name)
 {
 	while (1)
 	{
@@ -158,7 +158,7 @@ static void FindNextChunk(const char *name)
 			return;
 		}
 		data_p -= 8;
-		last_chunk = data_p + 8 + ( (iff_chunk_len + 1) & ~1 );
+		last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
 		if (!String::NCmp((char*)data_p, name, 4))
 		{
 			return;
@@ -172,7 +172,7 @@ static void FindNextChunk(const char *name)
 //
 //==========================================================================
 
-static void FindChunk(const char *name)
+static void FindChunk(const char* name)
 {
 	last_chunk = iff_data;
 	FindNextChunk(name);
@@ -199,7 +199,7 @@ static const char* GetWaveFormatName(const int format)
 
 static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 {
-	wavinfo_t	info;
+	wavinfo_t info;
 
 	Com_Memset(&info, 0, sizeof(info));
 
@@ -232,7 +232,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 	info.format = GetLittleShort();
 	info.channels = GetLittleShort();
 	info.rate = GetLittleLong();
-	data_p += 4+2;
+	data_p += 4 + 2;
 	info.width = GetLittleShort() / 8;
 
 	if (info.format != 1)

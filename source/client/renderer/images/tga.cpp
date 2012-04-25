@@ -29,18 +29,18 @@
 
 struct TargaHeader
 {
-	quint8		id_length;
-	quint8		colormap_type;
-	quint8		image_type;
-	quint16		colormap_index;
-	quint16		colormap_length;
-	quint8		colormap_size;
-	quint16		x_origin;
-	quint16		y_origin;
-	quint16		width;
-	quint16		height;
-	quint8		pixel_size;
-	quint8		attributes;
+	quint8 id_length;
+	quint8 colormap_type;
+	quint8 image_type;
+	quint16 colormap_index;
+	quint16 colormap_length;
+	quint8 colormap_size;
+	quint16 x_origin;
+	quint16 y_origin;
+	quint16 width;
+	quint16 height;
+	quint8 pixel_size;
+	quint8 attributes;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -71,7 +71,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 	// load the file
 	//
 	byte* buffer;
-	FS_ReadFile(name, (void **)&buffer);
+	FS_ReadFile(name, (void**)&buffer);
 	if (!buffer)
 	{
 		return;
@@ -133,19 +133,19 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 
 	if (targa_header.id_length != 0)
 	{
-		buf_p += targa_header.id_length;  // skip TARGA image comment
+		buf_p += targa_header.id_length;	// skip TARGA image comment
 	}
-	
-	if (targa_header.image_type==2 || targa_header.image_type == 3)
-	{ 
+
+	if (targa_header.image_type == 2 || targa_header.image_type == 3)
+	{
 		// Uncompressed RGB or gray scale image
-		for (int row = rows - 1; row >= 0; row--) 
+		for (int row = rows - 1; row >= 0; row--)
 		{
 			byte* pixbuf = targa_rgba + row * columns * 4;
-			for (int column = 0; column < columns; column++) 
+			for (int column = 0; column < columns; column++)
 			{
 				byte red, green, blue, alphabyte;
-				switch (targa_header.pixel_size) 
+				switch (targa_header.pixel_size)
 				{
 				case 8:
 					blue = *buf_p++;
@@ -195,7 +195,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 		for (int row = rows - 1; row >= 0; row--)
 		{
 			byte* pixbuf = targa_rgba + row * columns * 4;
-			for (int column = 0; column < columns;)
+			for (int column = 0; column < columns; )
 			{
 				byte packetHeader = *buf_p++;
 				byte packetSize = 1 + (packetHeader & 0x7f);
@@ -221,7 +221,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 					default:
 						throw DropException(va("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name));
 					}
-	
+
 					for (int j = 0; j < packetSize; j++)
 					{
 						*pixbuf++ = red;
@@ -294,28 +294,30 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 					}
 				}
 			}
-			breakOut:;
+breakOut:;
 		}
 	}
 
-#if 0 
-  // TTimo: this is the chunk of code to ensure a behavior that meets TGA specs 
-  // bk0101024 - fix from Leonardo
-  // bit 5 set => top-down
-  if (targa_header.attributes & 0x20) {
-    unsigned char *flip = (unsigned char*)malloc (columns*4);
-    unsigned char *src, *dst;
+#if 0
+	// TTimo: this is the chunk of code to ensure a behavior that meets TGA specs
+	// bk0101024 - fix from Leonardo
+	// bit 5 set => top-down
+	if (targa_header.attributes & 0x20)
+	{
+		unsigned char* flip = (unsigned char*)malloc(columns * 4);
+		unsigned char* src, * dst;
 
-    for (row = 0; row < rows/2; row++) {
-      src = targa_rgba + row * 4 * columns;
-      dst = targa_rgba + (rows - row - 1) * 4 * columns;
+		for (row = 0; row < rows / 2; row++)
+		{
+			src = targa_rgba + row * 4 * columns;
+			dst = targa_rgba + (rows - row - 1) * 4 * columns;
 
-      Com_Memcpy(flip, src, columns*4);
-      Com_Memcpy(src, dst, columns*4);
-      Com_Memcpy(dst, flip, columns*4);
-    }
-    free (flip);
-  }
+			Com_Memcpy(flip, src, columns * 4);
+			Com_Memcpy(src, dst, columns * 4);
+			Com_Memcpy(dst, flip, columns * 4);
+		}
+		free(flip);
+	}
 #endif
 	// instead we just print a warning
 	if (targa_header.attributes & 0x20)

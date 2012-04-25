@@ -97,7 +97,7 @@ static void R_PerformanceCounters()
 
 	if (GGameType & GAME_Quake)
 	{
-		Log::write("%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys); 
+		Log::write("%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys);
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 		return;
@@ -123,7 +123,7 @@ static void R_PerformanceCounters()
 	{
 		Log::write("%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
 			backEnd.pc.c_shaders, backEnd.pc.c_surfaces, tr.pc.c_leafs, backEnd.pc.c_vertexes,
-			backEnd.pc.c_indexes/3, backEnd.pc.c_totalIndexes/3,
+			backEnd.pc.c_indexes / 3, backEnd.pc.c_totalIndexes / 3,
 			R_SumOfUsedImages() / 1000000.0f, backEnd.pc.c_overDraw / (float)(glConfig.vidWidth * glConfig.vidHeight));
 	}
 	else if (r_speeds->integer == 2)
@@ -136,7 +136,7 @@ static void R_PerformanceCounters()
 			tr.pc.c_box_cull_md3_in, tr.pc.c_box_cull_md3_clip, tr.pc.c_box_cull_md3_out);
 		common->Printf("(gen) %i sin %i sout %i pin %i pout\n",
 			tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out,
-			tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
+			tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out);
 	}
 	else if (r_speeds->integer == 3)
 	{
@@ -146,18 +146,18 @@ static void R_PerformanceCounters()
 	{
 		if (backEnd.pc.c_dlightVertexes)
 		{
-			Log::write("dlight srf:%i  culled:%i  verts:%i  tris:%i\n", 
+			Log::write("dlight srf:%i  culled:%i  verts:%i  tris:%i\n",
 				tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
 				backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3);
 		}
-	} 
+	}
 	else if (r_speeds->integer == 5)
 	{
 		Log::write("zFar: %.0f\n", tr.viewParms.zFar);
 	}
 	else if (r_speeds->integer == 6)
 	{
-		Log::write("flare adds:%i tests:%i renders:%i\n", 
+		Log::write("flare adds:%i tests:%i renders:%i\n",
 			backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders);
 	}
 	else if (r_speeds->integer == 7)
@@ -179,7 +179,7 @@ static void R_PerformanceCounters()
 void R_IssueRenderCommands(bool runPerformanceCounters)
 {
 	renderCommandList_t* cmdList = &backEndData[tr.smpFrame]->commands;
-	qassert(cmdList); // bk001205
+	qassert(cmdList);	// bk001205
 
 	// add an end-of-list command
 	*(int*)(cmdList->cmds + cmdList->used) = RC_END_OF_LIST;
@@ -346,7 +346,7 @@ void R_SetColor(const float* rgba)
 //
 //==========================================================================
 
-void R_StretchPic(float x, float y, float w, float h, 
+void R_StretchPic(float x, float y, float w, float h,
 	float s1, float t1, float s2, float t2, qhandle_t hShader)
 {
 	if (!tr.registered)
@@ -371,7 +371,7 @@ void R_StretchPic(float x, float y, float w, float h,
 }
 
 void R_StretchPicGradient(float x, float y, float w, float h,
-	float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType)
+	float s1, float t1, float s2, float t2, qhandle_t hShader, const float* gradientColor, int gradientType)
 {
 	if (!tr.registered)
 	{

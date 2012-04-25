@@ -30,26 +30,27 @@
 
 struct my_source_mgr
 {
-	jpeg_source_mgr	pub;
+	jpeg_source_mgr pub;
 
-	unsigned char*	infile;
-	int				bytes_left;
-	JOCTET*			buffer;
-	bool			start_of_file;
+	unsigned char* infile;
+	int bytes_left;
+	JOCTET* buffer;
+	bool start_of_file;
 };
 
-typedef my_source_mgr * my_src_ptr;
+typedef my_source_mgr* my_src_ptr;
 
 #define INPUT_BUF_SIZE  4096	/* choose an efficiently fread'able size */
 
-typedef struct {
-  struct jpeg_destination_mgr pub; /* public fields */
+typedef struct
+{
+	struct jpeg_destination_mgr pub;/* public fields */
 
-  byte* outfile;		/* target stream */
-  int	size;
+	byte* outfile;		/* target stream */
+	int size;
 } my_destination_mgr;
 
-typedef my_destination_mgr * my_dest_ptr;
+typedef my_destination_mgr* my_dest_ptr;
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -63,7 +64,7 @@ typedef my_destination_mgr * my_dest_ptr;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int		hackSize;
+static int hackSize;
 
 // CODE --------------------------------------------------------------------
 
@@ -153,7 +154,7 @@ static boolean my_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
 
 static void my_jpeg_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 {
-	my_src_ptr src = (my_src_ptr) cinfo->src;
+	my_src_ptr src = (my_src_ptr)cinfo->src;
 	if (num_bytes > 0)
 	{
 		while (num_bytes > (long)src->pub.bytes_in_buffer)
@@ -192,15 +193,15 @@ static void my_jpeg_src(j_decompress_ptr cinfo, byte* infile, int size)
 	if (cinfo->src == NULL)
 	{
 		cinfo->src = (jpeg_source_mgr*)
-			(*cinfo->mem->alloc_small)((j_common_ptr)cinfo, JPOOL_PERMANENT,
+					 (*cinfo->mem->alloc_small)((j_common_ptr)cinfo, JPOOL_PERMANENT,
 			sizeof(my_source_mgr));
 		src = (my_src_ptr)cinfo->src;
-		src->buffer = (JOCTET *)
-			(*cinfo->mem->alloc_small)((j_common_ptr) cinfo, JPOOL_PERMANENT,
+		src->buffer = (JOCTET*)
+					  (*cinfo->mem->alloc_small)((j_common_ptr)cinfo, JPOOL_PERMANENT,
 			INPUT_BUF_SIZE * sizeof(JOCTET));
 	}
 
-	src = (my_src_ptr) cinfo->src;
+	src = (my_src_ptr)cinfo->src;
 	src->pub.init_source = my_jpeg_init_source;
 	src->pub.fill_input_buffer = my_jpeg_fill_input_buffer;
 	src->pub.skip_input_data = my_jpeg_skip_input_data;
@@ -221,7 +222,7 @@ static void my_jpeg_src(j_decompress_ptr cinfo, byte* infile, int size)
 void R_LoadJPG(const char* filename, unsigned char** pic, int* width, int* height)
 {
 	byte* fbuffer;
- 	int FileSize = FS_ReadFile((char*)filename, (void**)&fbuffer);
+	int FileSize = FS_ReadFile((char*)filename, (void**)&fbuffer);
 	if (!fbuffer)
 	{
 		return;
@@ -279,7 +280,7 @@ void R_LoadJPG(const char* filename, unsigned char** pic, int* width, int* heigh
 
 static void init_destination(j_compress_ptr cinfo)
 {
-	my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+	my_dest_ptr dest = (my_dest_ptr)cinfo->dest;
 
 	dest->pub.next_output_byte = dest->outfile;
 	dest->pub.free_in_buffer = dest->size;
@@ -323,7 +324,7 @@ void jpegDest(j_compress_ptr cinfo, byte* outfile, int size)
 	if (cinfo->dest == NULL)
 	{
 		cinfo->dest = (jpeg_destination_mgr*)
-			(*cinfo->mem->alloc_small)((j_common_ptr)cinfo, JPOOL_PERMANENT,
+					  (*cinfo->mem->alloc_small)((j_common_ptr)cinfo, JPOOL_PERMANENT,
 			sizeof(my_destination_mgr));
 	}
 

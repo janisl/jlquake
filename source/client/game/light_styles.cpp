@@ -96,7 +96,7 @@ void CL_RunLightStyles()
 		{
 			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[locusHz[ls->rate] % ls->length];
 		}
-	}	
+	}
 }
 
 void CL_AddLightStyles()

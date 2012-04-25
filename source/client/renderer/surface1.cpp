@@ -33,30 +33,30 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-mbrush29_glpoly_t*	lightmap_polys[MAX_LIGHTMAPS];
+mbrush29_glpoly_t* lightmap_polys[MAX_LIGHTMAPS];
 
-mbrush29_leaf_t*			r_viewleaf;
-mbrush29_leaf_t*			r_oldviewleaf;
+mbrush29_leaf_t* r_viewleaf;
+mbrush29_leaf_t* r_oldviewleaf;
 
 // For r_texsort 0
-mbrush29_surface_t  *skychain = NULL;
-mbrush29_surface_t  *waterchain = NULL;
+mbrush29_surface_t* skychain = NULL;
+mbrush29_surface_t* waterchain = NULL;
 
-int			skytexturenum;
+int skytexturenum;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int					allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
-static bool					lightmap_modified[MAX_LIGHTMAPS];
-static glRect_t				lightmap_rectchange[MAX_LIGHTMAPS];
+static int allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
+static bool lightmap_modified[MAX_LIGHTMAPS];
+static glRect_t lightmap_rectchange[MAX_LIGHTMAPS];
 
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly
-static byte					lightmaps[4 * MAX_LIGHTMAPS * BLOCK_WIDTH * BLOCK_HEIGHT];
+static byte lightmaps[4 * MAX_LIGHTMAPS * BLOCK_WIDTH * BLOCK_HEIGHT];
 
-static unsigned				blocklights_q1[18 * 18];
+static unsigned blocklights_q1[18 * 18];
 
-static mbrush29_vertex_t*	r_pcurrentvertbase;
+static mbrush29_vertex_t* r_pcurrentvertbase;
 
 // CODE --------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 		float rad = tr.refdef.dlights[lnum].radius;
 		float dist = DotProduct(tr.refdef.dlights[lnum].origin, surf->plane->normal) - surf->plane->dist;
 		rad -= Q_fabs(dist);
-		float minlight = 0;//tr.refdef.dlights[lnum].minlight;
+		float minlight = 0;	//tr.refdef.dlights[lnum].minlight;
 		if (rad < minlight)
 		{
 			continue;
@@ -163,7 +163,7 @@ static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 
 		local[0] -= surf->texturemins[0];
 		local[1] -= surf->texturemins[1];
-		
+
 		for (int t = 0; t < tmax; t++)
 		{
 			int td = local[1] - t * 16;
@@ -205,61 +205,67 @@ static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 
 static void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride)
 {
-	int			smax, tmax;
-	int			t;
-	int			i, j, size;
-	byte		*lightmap;
-	unsigned	scale;
-	int			maps;
-	unsigned	*bl;
+	int smax, tmax;
+	int t;
+	int i, j, size;
+	byte* lightmap;
+	unsigned scale;
+	int maps;
+	unsigned* bl;
 
 	surf->cached_dlight = (surf->dlightframe == tr.frameCount);
 
-	smax = (surf->extents[0]>>4)+1;
-	tmax = (surf->extents[1]>>4)+1;
-	size = smax*tmax;
+	smax = (surf->extents[0] >> 4) + 1;
+	tmax = (surf->extents[1] >> 4) + 1;
+	size = smax * tmax;
 	lightmap = surf->samples;
 
 // set to full bright if no light data
 	if (!tr.worldModel->brush29_lightdata)
 	{
-		for (i=0 ; i<size ; i++)
-			blocklights_q1[i] = 255*256;
+		for (i = 0; i < size; i++)
+			blocklights_q1[i] = 255 * 256;
 		goto store;
 	}
 
 // clear to no light
-	for (i=0 ; i<size ; i++)
+	for (i = 0; i < size; i++)
 		blocklights_q1[i] = 0;
 
 // add all the lightmaps
 	if (lightmap)
-		for (maps = 0 ; maps < BSP29_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
+	{
+		for (maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->styles[maps] != 255;
 			 maps++)
 		{
 			scale = tr.refdef.lightstyles[surf->styles[maps]].rgb[0] * 256;
 			surf->cached_light[maps] = scale;	// 8.8 fraction
-			for (i=0 ; i<size ; i++)
+			for (i = 0; i < size; i++)
 				blocklights_q1[i] += lightmap[i] * scale;
 			lightmap += size;	// skip to next lightmap
 		}
+	}
 
 // add all the dynamic lights
 	if (surf->dlightframe == tr.frameCount)
-		R_AddDynamicLightsQ1 (surf);
+	{
+		R_AddDynamicLightsQ1(surf);
+	}
 
 // bound, invert, and shift
 store:
-	stride -= (smax<<2);
+	stride -= (smax << 2);
 	bl = blocklights_q1;
-	for (i=0 ; i<tmax ; i++, dest += stride)
+	for (i = 0; i < tmax; i++, dest += stride)
 	{
-		for (j=0 ; j<smax ; j++)
+		for (j = 0; j < smax; j++)
 		{
 			t = *bl++;
 			t >>= 7;
 			if (t > 255)
+			{
 				t = 255;
+			}
 			dest[0] = t;
 			dest[1] = t;
 			dest[2] = t;
@@ -344,13 +350,13 @@ static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
 		s -= fa->texturemins[0];
 		s += fa->light_s * 16;
 		s += 8;
-		s /= BLOCK_WIDTH * 16; //fa->texinfo->texture->width;
+		s /= BLOCK_WIDTH * 16;	//fa->texinfo->texture->width;
 
 		t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
 		t -= fa->texturemins[1];
 		t += fa->light_t * 16;
 		t += 8;
-		t /= BLOCK_HEIGHT * 16; //fa->texinfo->texture->height;
+		t /= BLOCK_HEIGHT * 16;	//fa->texinfo->texture->height;
 
 		poly->verts[i][5] = s;
 		poly->verts[i][6] = t;
@@ -364,7 +370,7 @@ static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
 		for (int i = 0; i < lnumverts; ++i)
 		{
 			vec3_t v1, v2;
-			float *prev, *thisv, *next;
+			float* prev, * thisv, * next;
 
 			prev = poly->verts[(i + lnumverts - 1) % lnumverts];
 			thisv = poly->verts[i];
@@ -378,7 +384,7 @@ static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
 			// skip co-linear points
 			#define COLINEAR_EPSILON 0.001
 			if ((Q_fabs(v1[0] - v2[0]) <= COLINEAR_EPSILON) &&
-				(Q_fabs(v1[1] - v2[1]) <= COLINEAR_EPSILON) && 
+				(Q_fabs(v1[1] - v2[1]) <= COLINEAR_EPSILON) &&
 				(Q_fabs(v1[2] - v2[2]) <= COLINEAR_EPSILON))
 			{
 				for (int j = i + 1; j < lnumverts; ++j)
@@ -424,7 +430,7 @@ void GL_BuildLightmaps()
 	{
 		for (int i = 0; i < MAX_LIGHTMAPS; i++)
 		{
-			tr.lightmaps[i] = R_CreateImage(va("*lightmap%d", i), lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
+			tr.lightmaps[i] = R_CreateImage(va("*lightmap%d", i), lightmaps + i * BLOCK_WIDTH * BLOCK_HEIGHT * 4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 		}
 	}
 
@@ -495,7 +501,7 @@ static mbrush29_texture_t* R_TextureAnimationQ1(mbrush29_texture_t* base)
 			base = base->alternate_anims;
 		}
 	}
-	
+
 	if (!base->anim_total)
 	{
 		return base;
@@ -503,7 +509,7 @@ static mbrush29_texture_t* R_TextureAnimationQ1(mbrush29_texture_t* base)
 
 	int reletive = (int)(tr.refdef.floatTime * 10) % base->anim_total;
 
-	int count = 0;	
+	int count = 0;
 	while (base->anim_min > reletive || base->anim_max <= reletive)
 	{
 		base = base->anim_next;
@@ -549,8 +555,8 @@ static void R_RenderDynamicLightmaps(mbrush29_surface_t* fa)
 		}
 	}
 
-	if (fa->dlightframe == tr.frameCount	// dynamic this frame
-		|| fa->cached_dlight)				// dynamic previously
+	if (fa->dlightframe == tr.frameCount ||	// dynamic this frame
+		fa->cached_dlight)					// dynamic previously
 	{
 dynamic:
 		if (r_dynamic->value)
@@ -716,19 +722,19 @@ void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override)
 		GL_TexEnv(GL_MODULATE);
 		intensity = tr.currentEntity->e.radius;
 	}
-	
+
 	if (!override)
 	{
 		qglColor4f(intensity, intensity, intensity, alpha_val);
 	}
-		
+
 	if (fa->flags & BRUSH29_SURF_DRAWSKY)
 	{
 		// warp texture, no lightmaps
 		EmitBothSkyLayers(fa);
 		return;
 	}
-		
+
 	mbrush29_texture_t* t = R_TextureAnimationQ1(fa->texinfo->texture);
 	GL_Bind(t->gl_texture);
 
@@ -739,9 +745,9 @@ void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override)
 		return;
 	}
 
-	if (((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (fa->flags & BRUSH29_SURF_UNDERWATER)) ||
-		(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(fa->flags & BRUSH29_SURF_UNDERWATER)))
-		&& !(fa->flags & BRUSH29_SURF_DONTWARP))
+	if (((r_viewleaf->contents == BSP29CONTENTS_EMPTY && (fa->flags & BRUSH29_SURF_UNDERWATER)) ||
+		 (r_viewleaf->contents != BSP29CONTENTS_EMPTY && !(fa->flags & BRUSH29_SURF_UNDERWATER))) &&
+		!(fa->flags & BRUSH29_SURF_DONTWARP))
 	{
 		DrawGLWaterPoly(fa->polys);
 	}
@@ -764,8 +770,8 @@ void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override)
 		}
 	}
 
-	if (fa->dlightframe == tr.frameCount	// dynamic this frame
-		|| fa->cached_dlight)				// dynamic previously
+	if (fa->dlightframe == tr.frameCount ||	// dynamic this frame
+		fa->cached_dlight)					// dynamic previously
 	{
 dynamic:
 		if (r_dynamic->value)
@@ -805,7 +811,7 @@ dynamic:
 	}
 
 	if ((tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
-	    (tr.currentEntity->e.renderfx & RF_WATERTRANS))
+		(tr.currentEntity->e.renderfx & RF_WATERTRANS))
 	{
 		GL_TexEnv(GL_REPLACE);
 	}
@@ -852,7 +858,7 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 			{
 				lightmap_modified[i] = false;
 				glRect_t* theRect = &lightmap_rectchange[i];
-				qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
+				qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t,
 					BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
 					lightmaps + (i * BLOCK_HEIGHT + theRect->t) * BLOCK_WIDTH * 4);
 				theRect->l = BLOCK_WIDTH;
@@ -986,7 +992,7 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 		{
 			lightmap_modified[i] = false;
 			glRect_t* theRect = &lightmap_rectchange[i];
-			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
+			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t,
 				BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
 				lightmaps + (i * BLOCK_HEIGHT + theRect->t) * BLOCK_WIDTH * 4);
 			theRect->l = BLOCK_WIDTH;
@@ -1064,7 +1070,7 @@ void R_BlendLightmapsQ1()
 		{
 			lightmap_modified[i] = false;
 			glRect_t* theRect = &lightmap_rectchange[i];
-			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
+			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t,
 				BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
 				lightmaps + (i * BLOCK_HEIGHT + theRect->t) * BLOCK_WIDTH * 4);
 			theRect->l = BLOCK_WIDTH;
@@ -1075,8 +1081,8 @@ void R_BlendLightmapsQ1()
 		for (; p; p = p->chain)
 		{
 			if (((r_viewleaf->contents == BSP29CONTENTS_EMPTY && (p->flags & BRUSH29_SURF_UNDERWATER)) ||
-				(r_viewleaf->contents != BSP29CONTENTS_EMPTY && !(p->flags & BRUSH29_SURF_UNDERWATER)))
-				&& !(p->flags & BRUSH29_SURF_DONTWARP))
+				 (r_viewleaf->contents != BSP29CONTENTS_EMPTY && !(p->flags & BRUSH29_SURF_UNDERWATER))) &&
+				!(p->flags & BRUSH29_SURF_DONTWARP))
 			{
 				DrawGLWaterPolyLightmap(p);
 			}
@@ -1114,7 +1120,7 @@ void DrawTextureChainsQ1()
 		}
 
 		return;
-	} 
+	}
 
 	for (int i = 0; i < tr.worldModel->brush29_numtextures; i++)
 	{
@@ -1203,7 +1209,7 @@ void R_DrawWaterSurfaces()
 			GL_Bind(s->texinfo->texture->gl_texture);
 			EmitWaterPolysQ1(s);
 		}
-		
+
 		waterchain = NULL;
 	}
 	else

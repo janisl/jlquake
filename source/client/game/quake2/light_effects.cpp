@@ -22,8 +22,8 @@ void CLQ2_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles, float radius, 
 	VectorCopy(origin,  dl->origin);
 	vec3_t fv, rv;
 	AngleVectors(angles, fv, rv, NULL);
-	VectorMA (dl->origin, 18, fv, dl->origin);
-	VectorMA (dl->origin, 16, rv, dl->origin);
+	VectorMA(dl->origin, 18, fv, dl->origin);
+	VectorMA(dl->origin, 16, rv, dl->origin);
 	dl->radius = radius;
 	dl->minlight = 32;
 	dl->die = cl.serverTime + delay;

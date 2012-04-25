@@ -21,10 +21,10 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define DLIGHT_AT_RADIUS		16
+#define DLIGHT_AT_RADIUS        16
 // at the edge of a dlight's influence, this amount of light will be added
 
-#define DLIGHT_MINIMUM_RADIUS	16
+#define DLIGHT_MINIMUM_RADIUS   16
 // never calculate a range less than this to prevent huge light numbers
 
 // TYPES -------------------------------------------------------------------
@@ -39,11 +39,11 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-vec3_t			lightspot;
+vec3_t lightspot;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static vec3_t	pointcolor;
+static vec3_t pointcolor;
 
 // CODE --------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ static int RecursiveLightPointQ1(mbrush29_node_t* node, vec3_t start, vec3_t end
 	float front = DotProduct(start, plane->normal) - plane->dist;
 	float back = DotProduct(end, plane->normal) - plane->dist;
 	int side = front < 0;
-	
+
 	if ((back < 0) == side)
 	{
 		return RecursiveLightPointQ1(node->children[side], start, end);
@@ -86,14 +86,14 @@ static int RecursiveLightPointQ1(mbrush29_node_t* node, vec3_t start, vec3_t end
 	mid[0] = start[0] + (end[0] - start[0]) * frac;
 	mid[1] = start[1] + (end[1] - start[1]) * frac;
 	mid[2] = start[2] + (end[2] - start[2]) * frac;
-	
-	// go down front side	
+
+	// go down front side
 	int r = RecursiveLightPointQ1(node->children[side], start, mid);
 	if (r >= 0)
 	{
 		return r;		// hit something
 	}
-		
+
 	if ((back < 0) == side)
 	{
 		return -1;		// didn't hit anuthing
@@ -119,10 +119,10 @@ static int RecursiveLightPointQ1(mbrush29_node_t* node, vec3_t start, vec3_t end
 		{
 			continue;
 		}
-		
+
 		int ds = s - surf->texturemins[0];
 		int dt = t - surf->texturemins[1];
-		
+
 		if (ds > surf->extents[0] || dt > surf->extents[1])
 		{
 			continue;
@@ -141,7 +141,7 @@ static int RecursiveLightPointQ1(mbrush29_node_t* node, vec3_t start, vec3_t end
 		if (lightmap)
 		{
 
-			lightmap += dt * ((surf->extents[0]>>4)+1) + ds;
+			lightmap += dt * ((surf->extents[0] >> 4) + 1) + ds;
 
 			for (int maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->styles[maps] != 255; maps++)
 			{
@@ -174,9 +174,9 @@ int R_LightPointQ1(vec3_t p)
 	end[0] = p[0];
 	end[1] = p[1];
 	end[2] = p[2] - 2048;
-	
+
 	int r = RecursiveLightPointQ1(tr.worldModel->brush29_nodes, p, end);
-	
+
 	if (r == -1)
 	{
 		r = 0;
@@ -191,13 +191,13 @@ int R_LightPointQ1(vec3_t p)
 //
 //==========================================================================
 
-static int RecursiveLightPointQ2 (mbrush38_node_t *node, vec3_t start, vec3_t end)
+static int RecursiveLightPointQ2(mbrush38_node_t* node, vec3_t start, vec3_t end)
 {
 	if (node->contents != -1)
 	{
 		return -1;		// didn't hit anything
 	}
-	
+
 	// calculate mid point
 
 	// FIXME: optimize for axial
@@ -205,7 +205,7 @@ static int RecursiveLightPointQ2 (mbrush38_node_t *node, vec3_t start, vec3_t en
 	float front = DotProduct(start, plane->normal) - plane->dist;
 	float back = DotProduct(end, plane->normal) - plane->dist;
 	int side = front < 0;
-	
+
 	if ((back < 0) == side)
 	{
 		return RecursiveLightPointQ2(node->children[side], start, end);
@@ -216,14 +216,14 @@ static int RecursiveLightPointQ2 (mbrush38_node_t *node, vec3_t start, vec3_t en
 	mid[0] = start[0] + (end[0] - start[0]) * frac;
 	mid[1] = start[1] + (end[1] - start[1]) * frac;
 	mid[2] = start[2] + (end[2] - start[2]) * frac;
-	
-	// go down front side	
+
+	// go down front side
 	int r = RecursiveLightPointQ2(node->children[side], start, mid);
 	if (r >= 0)
 	{
 		return r;		// hit something
 	}
-		
+
 	if ((back < 0) == side)
 	{
 		return -1;		// didn't hit anuthing
@@ -252,7 +252,7 @@ static int RecursiveLightPointQ2 (mbrush38_node_t *node, vec3_t start, vec3_t en
 
 		int ds = s - surf->texturemins[0];
 		int dt = t - surf->texturemins[1];
-		
+
 		if (ds > surf->extents[0] || dt > surf->extents[1])
 		{
 			continue;
@@ -312,9 +312,9 @@ void R_LightPointQ2(vec3_t p, vec3_t color)
 	end[0] = p[0];
 	end[1] = p[1];
 	end[2] = p[2] - 2048;
-	
+
 	int r = RecursiveLightPointQ2(tr.worldModel->brush38_nodes, p, end);
-	
+
 	if (r == -1)
 	{
 		VectorCopy(vec3_origin, color);
@@ -389,7 +389,7 @@ static void R_SetupEntityLightingGrid(trRefEntity_t* ent)
 	vec3_t direction;
 	VectorClear(direction);
 
-	qassert(tr.world->lightGridData); // bk010103 - NULL with -nolight maps
+	qassert(tr.world->lightGridData);	// bk010103 - NULL with -nolight maps
 
 	// trilerp the light value
 	int gridStep[3];
@@ -397,11 +397,11 @@ static void R_SetupEntityLightingGrid(trRefEntity_t* ent)
 	gridStep[1] = 8 * tr.world->lightGridBounds[0];
 	gridStep[2] = 8 * tr.world->lightGridBounds[0] * tr.world->lightGridBounds[1];
 	byte* gridData = tr.world->lightGridData + pos[0] * gridStep[0] +
-		pos[1] * gridStep[1] + pos[2] * gridStep[2];
+					 pos[1] * gridStep[1] + pos[2] * gridStep[2];
 	int GridDataSize = tr.world->lightGridBounds[0] * tr.world->lightGridBounds[1] * tr.world->lightGridBounds[2] * 8;
 
 	float totalFactor = 0;
-	for (int i = 0; i < 8 ; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		float factor = 1.0;
 		byte* data = gridData;
@@ -452,7 +452,7 @@ static void R_SetupEntityLightingGrid(trRefEntity_t* ent)
 		vec3_t normal;
 		normal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
 		normal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-		normal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE  /4)) & FUNCTABLE_MASK];
+		normal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE  / 4)) & FUNCTABLE_MASK];
 
 		VectorMA(direction, factor, normal, direction);
 	}
@@ -527,7 +527,7 @@ static void LogLight(trRefEntity_t* ent)
 
 void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 {
-	// lighting calculations 
+	// lighting calculations
 	if (ent->lightingCalculated)
 	{
 		return;
@@ -553,7 +553,7 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
 	if (tr.world && tr.world->lightGridData &&
 		(!(refdef->rdflags & RDF_NOWORLDMODEL) ||
-		(GGameType & GAME_ET && (refdef->rdflags & RDF_NOWORLDMODEL) && (ent->e.renderfx & RF_LIGHTING_ORIGIN))))
+		 (GGameType & GAME_ET && (refdef->rdflags & RDF_NOWORLDMODEL) && (ent->e.renderfx & RF_LIGHTING_ORIGIN))))
 	{
 		R_SetupEntityLightingGrid(ent);
 	}
@@ -570,10 +570,10 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 	}
 	else
 	{
-		ent->ambientLight[0] = ent->ambientLight[1] = 
-			ent->ambientLight[2] = tr.identityLight * 150;
-		ent->directedLight[0] = ent->directedLight[1] = 
-			ent->directedLight[2] = tr.identityLight * 150;
+		ent->ambientLight[0] = ent->ambientLight[1] =
+								   ent->ambientLight[2] = tr.identityLight * 150;
+		ent->directedLight[0] = ent->directedLight[1] =
+									ent->directedLight[2] = tr.identityLight * 150;
 		VectorCopy(tr.sunDirection, ent->lightDir);
 	}
 
@@ -595,8 +595,8 @@ void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent)
 
 	if (refdef->rdflags & RDF_SNOOPERVIEW &&
 		((GGameType & GAME_WolfSP && ent->e.entityNum < MAX_CLIENTS_WS) ||
-		(GGameType & GAME_WolfMP && ent->e.entityNum < MAX_CLIENTS_WM) ||
-		(GGameType & GAME_ET && ent->e.entityNum < MAX_CLIENTS_ET)))
+		 (GGameType & GAME_WolfMP && ent->e.entityNum < MAX_CLIENTS_WM) ||
+		 (GGameType & GAME_ET && ent->e.entityNum < MAX_CLIENTS_ET)))
 	{
 		// allow a little room for flicker from directed light
 		VectorSet(ent->ambientLight, 245, 245, 245);
@@ -762,7 +762,7 @@ void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node)
 
 	cplane_t* splitplane = node->plane;
 	float dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
-	
+
 	if (dist > light->radius)
 	{
 		R_MarkLightsQ1(light, bit, node->children[0]);
@@ -773,7 +773,7 @@ void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node)
 		R_MarkLightsQ1(light, bit, node->children[1]);
 		return;
 	}
-		
+
 	// mark the polygons
 	mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for (int i = 0; i < node->numsurfaces; i++, surf++)
@@ -821,7 +821,7 @@ void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node)
 
 	cplane_t* splitplane = node->plane;
 	float dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
-	
+
 	if (dist > light->radius - DLIGHT_CUTOFF)
 	{
 		R_MarkLightsQ2(light, bit, node->children[0]);
@@ -832,7 +832,7 @@ void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node)
 		R_MarkLightsQ2(light, bit, node->children[1]);
 		return;
 	}
-		
+
 	// mark the polygons
 	mbrush38_surface_t* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
 	for (int i = 0; i < node->numsurfaces; i++, surf++)

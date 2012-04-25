@@ -194,8 +194,8 @@ void CLQ1_TeleportSplash(const vec3_t origin)
 				p->org[0] = origin[0] + i + (rand() & 3);
 				p->org[1] = origin[1] + j + (rand() & 3);
 				p->org[2] = origin[2] + k + (rand() & 3);
-	
-				VectorNormalize(dir);						
+
+				VectorNormalize(dir);
 				float vel = 50 + (rand() & 63);
 				VectorScale(dir, vel, p->vel);
 			}
@@ -249,48 +249,50 @@ void CLQ1_BrightFieldParticles(const vec3_t origin)
 
 void CLQ1_TrailParticles(vec3_t start, const vec3_t end, int type)
 {
-	vec3_t		vec;
-	float		len;
-	int			j;
-	cparticle_t	*p;
-	static int	tracercount;
+	vec3_t vec;
+	float len;
+	int j;
+	cparticle_t* p;
+	static int tracercount;
 
-	VectorSubtract (end, start, vec);
-	len = VectorNormalize (vec);
+	VectorSubtract(end, start, vec);
+	len = VectorNormalize(vec);
 	while (len > 0)
 	{
 		len -= 3;
 
 		p = CL_AllocParticle();
 		if (!p)
+		{
 			return;
-		
-		VectorCopy (vec3_origin, p->vel);
+		}
+
+		VectorCopy(vec3_origin, p->vel);
 		p->die = cl.serverTime + 2000;
 
 		switch (type)
 		{
 		case 0:	// rocket trail
-			p->ramp = (rand()&3);
+			p->ramp = (rand() & 3);
 			p->color = q1ramp3[(int)p->ramp];
 			p->type = pt_q1fire;
-			for (j=0 ; j<3 ; j++)
-				p->org[j] = start[j] + ((rand()%6)-3);
+			for (j = 0; j < 3; j++)
+				p->org[j] = start[j] + ((rand() % 6) - 3);
 			break;
 
 		case 1:	// smoke smoke
-			p->ramp = (rand()&3) + 2;
+			p->ramp = (rand() & 3) + 2;
 			p->color = q1ramp3[(int)p->ramp];
 			p->type = pt_q1fire;
-			for (j=0 ; j<3 ; j++)
-				p->org[j] = start[j] + ((rand()%6)-3);
+			for (j = 0; j < 3; j++)
+				p->org[j] = start[j] + ((rand() % 6) - 3);
 			break;
 
 		case 2:	// blood
 			p->type = GGameType & GAME_QuakeWorld ? pt_q1slowgrav : pt_q1grav;
-			p->color = 67 + (rand()&3);
-			for (j=0 ; j<3 ; j++)
-				p->org[j] = start[j] + ((rand()%6)-3);
+			p->color = 67 + (rand() & 3);
+			for (j = 0; j < 3; j++)
+				p->org[j] = start[j] + ((rand() % 6) - 3);
 			break;
 
 		case 3:
@@ -298,43 +300,47 @@ void CLQ1_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->die = cl.serverTime + 500;
 			p->type = pt_q1static;
 			if (type == 3)
-				p->color = 52 + ((tracercount&4)<<1);
-			else
-				p->color = 230 + ((tracercount&4)<<1);
-		
-			tracercount++;
-
-			VectorCopy (start, p->org);
-			if (tracercount & 1)
 			{
-				p->vel[0] = 30*vec[1];
-				p->vel[1] = 30*-vec[0];
+				p->color = 52 + ((tracercount & 4) << 1);
 			}
 			else
 			{
-				p->vel[0] = 30*-vec[1];
-				p->vel[1] = 30*vec[0];
+				p->color = 230 + ((tracercount & 4) << 1);
+			}
+
+			tracercount++;
+
+			VectorCopy(start, p->org);
+			if (tracercount & 1)
+			{
+				p->vel[0] = 30 * vec[1];
+				p->vel[1] = 30 * -vec[0];
+			}
+			else
+			{
+				p->vel[0] = 30 * -vec[1];
+				p->vel[1] = 30 * vec[0];
 			}
 			break;
 
 		case 4:	// slight blood
 			p->type = GGameType & GAME_QuakeWorld ? pt_q1slowgrav : pt_q1grav;
-			p->color = 67 + (rand()&3);
-			for (j=0 ; j<3 ; j++)
-				p->org[j] = start[j] + ((rand()%6)-3);
+			p->color = 67 + (rand() & 3);
+			for (j = 0; j < 3; j++)
+				p->org[j] = start[j] + ((rand() % 6) - 3);
 			len -= 3;
 			break;
 
 		case 6:	// voor trail
-			p->color = 9*16 + 8 + (rand()&3);
+			p->color = 9 * 16 + 8 + (rand() & 3);
 			p->type = pt_q1static;
 			p->die = cl.serverTime + 300;
-			for (j=0 ; j<3 ; j++)
-				p->org[j] = start[j] + ((rand()&15)-8);
+			for (j = 0; j < 3; j++)
+				p->org[j] = start[j] + ((rand() & 15) - 8);
 			break;
 		}
-		
 
-		VectorAdd (start, vec, start);
+
+		VectorAdd(start, vec, start);
 	}
 }

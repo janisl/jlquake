@@ -33,14 +33,14 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_EDGE_DEFS	32
+#define MAX_EDGE_DEFS   32
 
 // TYPES -------------------------------------------------------------------
 
 struct edgeDef_t
 {
-	int		i2;
-	int		facing;
+	int i2;
+	int facing;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -55,9 +55,9 @@ struct edgeDef_t
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static edgeDef_t	edgeDefs[SHADER_MAX_VERTEXES][MAX_EDGE_DEFS];
-static int			numEdgeDefs[SHADER_MAX_VERTEXES];
-static int			facing[SHADER_MAX_INDEXES / 3];
+static edgeDef_t edgeDefs[SHADER_MAX_VERTEXES][MAX_EDGE_DEFS];
+static int numEdgeDefs[SHADER_MAX_VERTEXES];
+static int facing[SHADER_MAX_INDEXES / 3];
 
 // CODE --------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ static void R_RenderShadowEdges()
 	int c_edges = 0;
 	int c_rejected = 0;
 
-	for (int i = 0 ; i < tess.numVertexes; i++)
+	for (int i = 0; i < tess.numVertexes; i++)
 	{
 		int c = numEdgeDefs[i];
 		for (int j = 0; j < c; j++)
@@ -194,9 +194,9 @@ static void R_RenderShadowEdges()
 			if (hit[1] == 0)
 			{
 				qglBegin(GL_TRIANGLE_STRIP);
-				qglVertex3fv(tess.xyz[i] );
+				qglVertex3fv(tess.xyz[i]);
 				qglVertex3fv(tess.xyz[i + tess.numVertexes]);
-				qglVertex3fv(tess.xyz[i2] );
+				qglVertex3fv(tess.xyz[i2]);
 				qglVertex3fv(tess.xyz[i2 + tess.numVertexes]);
 				qglEnd();
 				c_edges++;
@@ -224,9 +224,9 @@ static void R_RenderShadowEdges()
 
 void RB_ShadowTessEnd()
 {
-	int		i;
-	int		numTris;
-	vec3_t	lightDir;
+	int i;
+	int numTris;
+	vec3_t lightDir;
 
 	// we can only do this if we have enough space in the vertex buffers
 	if (tess.numVertexes >= SHADER_MAX_VERTEXES / 2)
@@ -337,7 +337,7 @@ void RB_ShadowFinish()
 
 	GL_Bind(tr.whiteImage);
 
-    qglLoadIdentity();
+	qglLoadIdentity();
 
 	qglColor3f(0.6f, 0.6f, 0.6f);
 	GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO);

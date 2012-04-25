@@ -21,7 +21,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	SUBDIVIDE_SIZE	64
+#define SUBDIVIDE_SIZE  64
 
 // TYPES -------------------------------------------------------------------
 
@@ -37,11 +37,11 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte*				mod_base;
+static byte* mod_base;
 
-static mbrush38_surface_t*	warpface;
+static mbrush38_surface_t* warpface;
 
-static byte					mod_novis[BSP38MAX_MAP_LEAFS / 8];
+static byte mod_novis[BSP38MAX_MAP_LEAFS / 8];
 
 // CODE --------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ static void Mod_LoadVisibility(bsp38_lump_t* l)
 		loadmodel->brush38_vis = NULL;
 		return;
 	}
-	loadmodel->brush38_vis = (bsp38_dvis_t*)Mem_Alloc(l->filelen);	
+	loadmodel->brush38_vis = (bsp38_dvis_t*)Mem_Alloc(l->filelen);
 	Com_Memcpy(loadmodel->brush38_vis, mod_base + l->fileofs, l->filelen);
 
 	loadmodel->brush38_vis->numclusters = LittleLong(loadmodel->brush38_vis->numclusters);
@@ -129,7 +129,7 @@ static void Mod_LoadEdges(bsp38_lump_t* l)
 	int count = l->filelen / sizeof(*in);
 	//JL What's the extra edge?
 	mbrush38_edge_t* out = new mbrush38_edge_t[count + 1];
-	Com_Memset(out, 0, sizeof (mbrush38_edge_t) * (count + 1));
+	Com_Memset(out, 0, sizeof(mbrush38_edge_t) * (count + 1));
 
 	loadmodel->brush38_edges = out;
 	loadmodel->brush38_numedges = count;
@@ -175,7 +175,7 @@ static void Mod_LoadTexinfo(bsp38_lump_t* l)
 		}
 		else
 		{
-		    out->next = NULL;
+			out->next = NULL;
 		}
 		char name[MAX_QPATH];
 		String::Sprintf(name, sizeof(name), "textures/%s.wal", in->texture);
@@ -193,7 +193,7 @@ static void Mod_LoadTexinfo(bsp38_lump_t* l)
 	{
 		out = &loadmodel->brush38_texinfo[i];
 		out->numframes = 1;
-		for (mbrush38_texinfo_t* step = out->next; step && step != out ; step=step->next)
+		for (mbrush38_texinfo_t* step = out->next; step && step != out; step = step->next)
 		{
 			out->numframes++;
 		}
@@ -216,7 +216,7 @@ static void CalcSurfaceExtents(mbrush38_surface_t* s)
 	maxs[0] = maxs[1] = -99999;
 
 	mbrush38_texinfo_t* tex = s->texinfo;
-	
+
 	for (int i = 0; i < s->numedges; i++)
 	{
 		int e = loadmodel->brush38_surfedges[s->firstedge + i];
@@ -229,13 +229,13 @@ static void CalcSurfaceExtents(mbrush38_surface_t* s)
 		{
 			v = &loadmodel->brush38_vertexes[loadmodel->brush38_edges[-e].v[1]];
 		}
-		
+
 		for (int j = 0; j < 2; j++)
 		{
-			float val = v->position[0] * tex->vecs[j][0] + 
-				v->position[1] * tex->vecs[j][1] +
-				v->position[2] * tex->vecs[j][2] +
-				tex->vecs[j][3];
+			float val = v->position[0] * tex->vecs[j][0] +
+						v->position[1] * tex->vecs[j][1] +
+						v->position[2] * tex->vecs[j][2] +
+						tex->vecs[j][3];
 			if (val < mins[j])
 			{
 				mins[j] = val;
@@ -249,7 +249,7 @@ static void CalcSurfaceExtents(mbrush38_surface_t* s)
 
 	int bmins[2], bmaxs[2];
 	for (int i = 0; i < 2; i++)
-	{	
+	{
 		bmins[i] = floor(mins[i] / 16);
 		bmaxs[i] = ceil(maxs[i] / 16);
 
@@ -293,7 +293,7 @@ static void SubdividePolygon(int numverts, float* verts)
 	for (int i = 0; i < 3; i++)
 	{
 		float m = (mins[i] + maxs[i]) * 0.5;
-		m = SUBDIVIDE_SIZE * floor (m / SUBDIVIDE_SIZE + 0.5);
+		m = SUBDIVIDE_SIZE * floor(m / SUBDIVIDE_SIZE + 0.5);
 		if (maxs[i] - m < 8)
 		{
 			continue;
@@ -306,7 +306,7 @@ static void SubdividePolygon(int numverts, float* verts)
 		// cut it
 		float* v = verts + i;
 		float dist[64];
-		for (int j = 0; j < numverts; j++, v+= 3)
+		for (int j = 0; j < numverts; j++, v += 3)
 		{
 			dist[j] = *v - m;
 		}
@@ -340,9 +340,9 @@ static void SubdividePolygon(int numverts, float* verts)
 			{
 				// clip point
 				float frac = dist[j] / (dist[j] - dist[j + 1]);
-				for (int k = 0 ; k < 3; k++)
+				for (int k = 0; k < 3; k++)
 				{
-					front[f][k] = back[b][k] = v[k] + frac*(v[3+k] - v[k]);
+					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
 				}
 				f++;
 				b++;
@@ -364,7 +364,7 @@ static void SubdividePolygon(int numverts, float* verts)
 	VectorClear(total);
 	float total_s = 0;
 	float total_t = 0;
-	for (int i = 0 ; i < numverts; i++, verts += 3)
+	for (int i = 0; i < numverts; i++, verts += 3)
 	{
 		VectorCopy(verts, poly->verts[i + 1]);
 		float s = DotProduct(verts, warpface->texinfo->vecs[0]);
@@ -482,13 +482,13 @@ static void GL_BuildPolygonFromSurface(mbrush38_surface_t* fa)
 		s -= fa->texturemins[0];
 		s += fa->light_s * 16;
 		s += 8;
-		s /= BLOCK_WIDTH * 16; //fa->texinfo->texture->width;
+		s /= BLOCK_WIDTH * 16;	//fa->texinfo->texture->width;
 
 		t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
 		t -= fa->texturemins[1];
 		t += fa->light_t * 16;
 		t += 8;
-		t /= BLOCK_HEIGHT * 16; //fa->texinfo->texture->height;
+		t /= BLOCK_HEIGHT * 16;	//fa->texinfo->texture->height;
 
 		poly->verts[i][5] = s;
 		poly->verts[i][6] = t;
@@ -525,7 +525,7 @@ static void Mod_LoadFaces(bsp38_lump_t* l)
 	for (int surfnum = 0; surfnum < count; surfnum++, in++, out++)
 	{
 		out->firstedge = LittleLong(in->firstedge);
-		out->numedges = LittleShort(in->numedges);		
+		out->numedges = LittleShort(in->numedges);
 		out->flags = 0;
 		out->polys = NULL;
 
@@ -546,7 +546,7 @@ static void Mod_LoadFaces(bsp38_lump_t* l)
 		out->texinfo = loadmodel->brush38_texinfo + ti;
 
 		CalcSurfaceExtents(out);
-				
+
 		// lighting info
 
 		for (int i = 0; i < BSP38_MAXLIGHTMAPS; i++)
@@ -633,9 +633,9 @@ static void Mod_LoadNodes(bsp38_lump_t* l)
 		for (int j = 0; j < 3; j++)
 		{
 			out->minmaxs[j] = LittleShort(in->mins[j]);
-			out->minmaxs[3+j] = LittleShort(in->maxs[j]);
+			out->minmaxs[3 + j] = LittleShort(in->maxs[j]);
 		}
-	
+
 		int p = LittleLong(in->planenum);
 		out->plane = loadmodel->brush38_planes + p;
 
@@ -656,8 +656,8 @@ static void Mod_LoadNodes(bsp38_lump_t* l)
 			}
 		}
 	}
-	
-	Mod_SetParent (loadmodel->brush38_nodes, NULL);	// sets nodes and leafs
+
+	Mod_SetParent(loadmodel->brush38_nodes, NULL);	// sets nodes and leafs
 }
 
 //==========================================================================
@@ -695,7 +695,7 @@ static void Mod_LoadLeafs(bsp38_lump_t* l)
 		out->area = LittleShort(in->area);
 
 		out->firstmarksurface = loadmodel->brush38_marksurfaces +
-			LittleShort(in->firstleafface);
+								LittleShort(in->firstleafface);
 		out->nummarksurfaces = LittleShort(in->numleaffaces);
 	}
 }
@@ -747,7 +747,7 @@ static void Mod_LoadSurfedges(bsp38_lump_t* l)
 	if (count < 1 || count >= BSP38MAX_MAP_SURFEDGES)
 	{
 		throw DropException(va("MOD_LoadBmodel: bad surfedges count in %s: %i",
-			loadmodel->name, count));
+				loadmodel->name, count));
 	}
 
 	int* out = new int[count];
@@ -778,7 +778,7 @@ static void Mod_LoadPlanes(bsp38_lump_t* l)
 	//JL Why 2 times more?
 	cplane_t* out = new cplane_t[count * 2];
 	Com_Memset(out, 0, sizeof(cplane_t) * count * 2);
-	
+
 	loadmodel->brush38_planes = out;
 	loadmodel->brush38_numplanes = count;
 
@@ -895,7 +895,7 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 			*starmod = *loadmodel;
 			starmod->index = saved_index;
 			String::Sprintf(starmod->name, sizeof(starmod->name), "*%d", i);
-	
+
 			starmod->brush38_numleafs = bm->visleafs;
 		}
 
@@ -964,9 +964,9 @@ void Mod_FreeBsp38(model_t* mod)
 
 static byte* Mod_DecompressVis(byte* in, model_t* model)
 {
-	static byte	decompressed[BSP38MAX_MAP_LEAFS / 8];
+	static byte decompressed[BSP38MAX_MAP_LEAFS / 8];
 
-	int row = (model->brush38_vis->numclusters + 7) >> 3;	
+	int row = (model->brush38_vis->numclusters + 7) >> 3;
 	byte* out = decompressed;
 
 	if (!in)
@@ -977,7 +977,7 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 			*out++ = 0xff;
 			row--;
 		}
-		return decompressed;		
+		return decompressed;
 	}
 
 	do
@@ -995,7 +995,8 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 			*out++ = 0;
 			c--;
 		}
-	} while (out - decompressed < row);
+	}
+	while (out - decompressed < row);
 
 	return decompressed;
 }
@@ -1006,7 +1007,7 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 //
 //==========================================================================
 
-byte* Mod_ClusterPVS (int cluster, model_t *model)
+byte* Mod_ClusterPVS(int cluster, model_t* model)
 {
 	if (cluster == -1 || !model->brush38_vis)
 	{

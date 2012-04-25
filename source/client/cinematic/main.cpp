@@ -33,7 +33,7 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
+QCinematicPlayer* cinTable[MAX_VIDEO_HANDLES];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -135,7 +135,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 
 	if (!(systemBits & CIN_system))
 	{
-		for (int i = 0; i < MAX_VIDEO_HANDLES; i++ )
+		for (int i = 0; i < MAX_VIDEO_HANDLES; i++)
 		{
 			if (cinTable[i] && !String::ICmp(cinTable[i]->Cin->Name, name))
 			{
@@ -179,7 +179,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 
 e_status CIN_RunCinematic(int handle)
 {
-	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || !cinTable[handle])
+	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle])
 	{
 		return FMV_EOF;
 	}
@@ -273,7 +273,7 @@ e_status QCinematicPlayer::Run()
 		StartTime += thisTime - LastTime;
 	}
 	if (!Cin->Update(CL_ScaledMilliseconds() - StartTime))
-	{ 
+	{
 		if (!HoldAtEnd)
 		{
 			if (Looping)

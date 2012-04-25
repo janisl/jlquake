@@ -18,36 +18,36 @@
 
 #include "../client.h"
 #include "../windows_shared.h"
-#define	DIRECTINPUT_VERSION	0x0300
+#define DIRECTINPUT_VERSION 0x0300
 #include <dinput.h>
 
 // MACROS ------------------------------------------------------------------
 
 // TYPES -------------------------------------------------------------------
 
-#define DINPUT_BUFFERSIZE		16
+#define DINPUT_BUFFERSIZE       16
 
-#define NUM_OBJECTS				(sizeof(rgodf) / sizeof(rgodf[0]))
+#define NUM_OBJECTS             (sizeof(rgodf) / sizeof(rgodf[0]))
 
 struct MYDATA
 {
-	LONG		lX;			// X axis goes here
-	LONG		lY;			// Y axis goes here
-	LONG		lZ;			// Z axis goes here
-	BYTE		bButtonA;	// One button goes here
-	BYTE		bButtonB;	// Another button goes here
-	BYTE		bButtonC;	// Another button goes here
-	BYTE		bButtonD;	// Another button goes here
-	BYTE bButtonE;              // Another button goes here
-	BYTE bButtonF;              // Another button goes here
-	BYTE bButtonG;              // Another button goes here
-	BYTE bButtonH;              // Another button goes here
+	LONG lX;				// X axis goes here
+	LONG lY;				// Y axis goes here
+	LONG lZ;				// Z axis goes here
+	BYTE bButtonA;			// One button goes here
+	BYTE bButtonB;			// Another button goes here
+	BYTE bButtonC;			// Another button goes here
+	BYTE bButtonD;			// Another button goes here
+	BYTE bButtonE;				// Another button goes here
+	BYTE bButtonF;				// Another button goes here
+	BYTE bButtonG;				// Another button goes here
+	BYTE bButtonH;				// Another button goes here
 };
 
 //
 // MIDI definitions
 //
-#define MAX_MIDIIN_DEVICES	8
+#define MAX_MIDIIN_DEVICES  8
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -57,54 +57,54 @@ struct MYDATA
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern Cvar *r_fullscreen;
+extern Cvar* r_fullscreen;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte s_scantokey[128] =
-{ 
-//  0           1       2       3       4       5       6       7 
-//  8           9       A       B       C       D       E       F 
-	0  ,    27,     '1',    '2',    '3',    '4',    '5',    '6', 
-	'7',    '8',    '9',    '0',    '-',    '=',    K_BACKSPACE, 9, // 0 
-	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i', 
-	'o',    'p',    '[',    ']',    13 ,    K_CTRL,'a',  's',      // 1 
-	'd',    'f',    'g',    'h',    'j',    'k',    'l',    ';', 
-	'\'' ,    '`',    K_SHIFT,'\\',  'z',    'x',    'c',    'v',      // 2 
-	'b',    'n',    'm',    ',',    '.',    '/',    K_SHIFT,'*', 
-	K_ALT,' ',   K_CAPSLOCK  ,    K_F1, K_F2, K_F3, K_F4, K_F5,   // 3 
-	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0  , K_HOME, 
-	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4 
-	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             0,              K_F11, 
-	K_F12,0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0,        // 5
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0, 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0,        // 6 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0, 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
-}; 
+{
+//  0           1       2       3       4       5       6       7
+//  8           9       A       B       C       D       E       F
+	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
+	'7',    '8',    '9',    '0',    '-',    '=',    K_BACKSPACE, 9,	// 0
+	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i',
+	'o',    'p',    '[',    ']',    13,    K_CTRL,'a',  's',		// 1
+	'd',    'f',    'g',    'h',    'j',    'k',    'l',    ';',
+	'\'',    '`',    K_SHIFT,'\\',  'z',    'x',    'c',    'v',		// 2
+	'b',    'n',    'm',    ',',    '.',    '/',    K_SHIFT,'*',
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,		// 3
+	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END,	//4
+	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             0,              K_F11,
+	K_F12,0,    0,    0,    0,    0,    0,    0,					// 5
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0,						// 6
+	0,    0,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,    0,    0,    0,    0,    0							// 7
+};
 
 static byte s_scantokey_german[128] =
 {
 //  0           1       2       3       4       5       6       7
 //  8           9       A       B       C       D       E       F
 	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
-	'7',    '8',    '9',    '0',    '?',    '\'',    K_BACKSPACE, 9, // 0
+	'7',    '8',    '9',    '0',    '?',    '\'',    K_BACKSPACE, 9,// 0
 	'q',    'w',    'e',    'r',    't',    'z',    'u',    'i',
-	'o',    'p',    '=',    '+',    13,    K_CTRL, 'a',  's',      // 1
+	'o',    'p',    '=',    '+',    13,    K_CTRL, 'a',  's',		// 1
 	'd',    'f',    'g',    'h',    'j',    'k',    'l',    '[',
-	']',    '`',    K_SHIFT,'#',  'y',    'x',    'c',    'v',      // 2
+	']',    '`',    K_SHIFT,'#',  'y',    'x',    'c',    'v',		// 2
 	'b',    'n',    'm',    ',',    '.',    '-',    K_SHIFT,'*',
-	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,	// 3
 	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
-	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END,	//4
 	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
-	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	K_F12,0,    0,    0,    0,    0,    0,    0,					// 5
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,						// 6
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+	0,    0,    0,    0,    0,    0,    0,    0							// 7
 };
 
 static byte s_scantokey_french[128] =
@@ -112,21 +112,21 @@ static byte s_scantokey_french[128] =
 //  0           1       2       3       4       5       6       7
 //  8           9       A       B       C       D       E       F
 	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
-	'7',    '8',    '9',    '0',    ')',    '=',    K_BACKSPACE, 9, // 0
+	'7',    '8',    '9',    '0',    ')',    '=',    K_BACKSPACE, 9,	// 0
 	'a',    'z',    'e',    'r',    't',    'y',    'u',    'i',
-	'o',    'p',    '^',    '$',    13,    K_CTRL, 'q',  's',      // 1
+	'o',    'p',    '^',    '$',    13,    K_CTRL, 'q',  's',		// 1
 	'd',    'f',    'g',    'h',    'j',    'k',    'l',    'm',
-	'%',    '`',    K_SHIFT,'*',  'w',    'x',    'c',    'v',      // 2
+	'%',    '`',    K_SHIFT,'*',  'w',    'x',    'c',    'v',		// 2
 	'b',    'n',    ',',    ';',    ':',    '!',    K_SHIFT,'*',
-	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,	// 3
 	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
-	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END,	//4
 	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
-	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	K_F12,0,    0,    0,    0,    0,    0,    0,					// 5
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,						// 6
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+	0,    0,    0,    0,    0,    0,    0,    0							// 7
 };
 
 static byte s_scantokey_spanish[128] =
@@ -134,21 +134,21 @@ static byte s_scantokey_spanish[128] =
 //  0           1       2       3       4       5       6       7
 //  8           9       A       B       C       D       E       F
 	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
-	'7',    '8',    '9',    '0',    '\'',    '!',    K_BACKSPACE, 9, // 0
+	'7',    '8',    '9',    '0',    '\'',    '!',    K_BACKSPACE, 9,// 0
 	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i',
-	'o',    'p',    '[',    ']',    13,    K_CTRL, 'a',  's',      // 1
+	'o',    'p',    '[',    ']',    13,    K_CTRL, 'a',  's',		// 1
 	'd',    'f',    'g',    'h',    'j',    'k',    'l',    '=',
-	'{',    '`',    K_SHIFT,'}',  'z',    'x',    'c',    'v',      // 2
+	'{',    '`',    K_SHIFT,'}',  'z',    'x',    'c',    'v',		// 2
 	'b',    'n',    'm',    ',',    '.',    '-',    K_SHIFT,'*',
-	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,	// 3
 	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
-	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END,	//4
 	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
-	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	K_F12,0,    0,    0,    0,    0,    0,    0,					// 5
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,						// 6
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+	0,    0,    0,    0,    0,    0,    0,    0							// 7
 };
 
 static byte s_scantokey_italian[128] =
@@ -156,77 +156,77 @@ static byte s_scantokey_italian[128] =
 //  0           1       2       3       4       5       6       7
 //  8           9       A       B       C       D       E       F
 	0,    27,     '1',    '2',    '3',    '4',    '5',    '6',
-	'7',    '8',    '9',    '0',    '\'',    '^',    K_BACKSPACE, 9, // 0
+	'7',    '8',    '9',    '0',    '\'',    '^',    K_BACKSPACE, 9,// 0
 	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i',
-	'o',    'p',    '[',    ']',    13,    K_CTRL, 'a',  's',      // 1
+	'o',    'p',    '[',    ']',    13,    K_CTRL, 'a',  's',		// 1
 	'd',    'f',    'g',    'h',    'j',    'k',    'l',    '@',
-	'#',    '`',    K_SHIFT,'=',  'z',    'x',    'c',    'v',      // 2
+	'#',    '`',    K_SHIFT,'=',  'z',    'x',    'c',    'v',		// 2
 	'b',    'n',    'm',    ',',    '.',    '-',    K_SHIFT,'*',
-	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,    // 3
+	K_ALT,' ',   K_CAPSLOCK,    K_F1, K_F2, K_F3, K_F4, K_F5,	// 3
 	K_F6, K_F7, K_F8, K_F9, K_F10,  K_PAUSE,    0, K_HOME,
-	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END, //4
+	K_UPARROW,K_PGUP,K_KP_MINUS,K_LEFTARROW,K_KP_5,K_RIGHTARROW, K_KP_PLUS,K_END,	//4
 	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             '<',              K_F11,
-	K_F12,0,    0,    0,    0,    0,    0,    0,                    // 5
+	K_F12,0,    0,    0,    0,    0,    0,    0,					// 5
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0,                      // 6
+	0,    0,    0,    0,    0,    0,    0,    0,						// 6
 	0,    0,    0,    0,    0,    0,    0,    0,
-	0,    0,    0,    0,    0,    0,    0,    0                       // 7
+	0,    0,    0,    0,    0,    0,    0,    0							// 7
 };
 
-static Cvar*			in_mouse;
+static Cvar* in_mouse;
 
-static int				window_center_x;
-static int				window_center_y;
+static int window_center_x;
+static int window_center_y;
 
-static int				mouse_oldButtonState;
-static bool				mouse_active;
-static bool				mouse_initialized;
-static bool				mouse_startupDelayed; // delay mouse init to try DI again when we have a window
+static int mouse_oldButtonState;
+static bool mouse_active;
+static bool mouse_initialized;
+static bool mouse_startupDelayed;				// delay mouse init to try DI again when we have a window
 
-static HRESULT (WINAPI *pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
-	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter);
+static HRESULT (WINAPI* pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
+	LPDIRECTINPUT* lplpDirectInput, LPUNKNOWN punkOuter);
 
-static HINSTANCE			hInstDI;
-static LPDIRECTINPUT		g_pdi;
-static LPDIRECTINPUTDEVICE	g_pMouse;
+static HINSTANCE hInstDI;
+static LPDIRECTINPUT g_pdi;
+static LPDIRECTINPUTDEVICE g_pMouse;
 
 static DIOBJECTDATAFORMAT rgodf[] =
 {
-  { &GUID_XAxis,    FIELD_OFFSET(MYDATA, lX),       DIDFT_AXIS | DIDFT_ANYINSTANCE,   0,},
-  { &GUID_YAxis,    FIELD_OFFSET(MYDATA, lY),       DIDFT_AXIS | DIDFT_ANYINSTANCE,   0,},
-  { &GUID_ZAxis,    FIELD_OFFSET(MYDATA, lZ),       0x80000000 | DIDFT_AXIS | DIDFT_ANYINSTANCE,   0,},
-  { 0,              FIELD_OFFSET(MYDATA, bButtonA), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
-  { 0,              FIELD_OFFSET(MYDATA, bButtonB), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
-  { 0,              FIELD_OFFSET(MYDATA, bButtonC), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
-  { 0,              FIELD_OFFSET(MYDATA, bButtonD), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ &GUID_XAxis,    FIELD_OFFSET(MYDATA, lX),       DIDFT_AXIS | DIDFT_ANYINSTANCE,   0,},
+	{ &GUID_YAxis,    FIELD_OFFSET(MYDATA, lY),       DIDFT_AXIS | DIDFT_ANYINSTANCE,   0,},
+	{ &GUID_ZAxis,    FIELD_OFFSET(MYDATA, lZ),       0x80000000 | DIDFT_AXIS | DIDFT_ANYINSTANCE,   0,},
+	{ 0,              FIELD_OFFSET(MYDATA, bButtonA), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0,              FIELD_OFFSET(MYDATA, bButtonB), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0,              FIELD_OFFSET(MYDATA, bButtonC), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
+	{ 0,              FIELD_OFFSET(MYDATA, bButtonD), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
 	{ 0, FIELD_OFFSET(MYDATA, bButtonE), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
 	{ 0, FIELD_OFFSET(MYDATA, bButtonF), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
 	{ 0, FIELD_OFFSET(MYDATA, bButtonG), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
 	{ 0, FIELD_OFFSET(MYDATA, bButtonH), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,},
 };
 
-// NOTE TTimo: would be easier using c_dfDIMouse or c_dfDIMouse2 
+// NOTE TTimo: would be easier using c_dfDIMouse or c_dfDIMouse2
 static DIDATAFORMAT df =
 {
-	sizeof(DIDATAFORMAT),       // this structure
-	sizeof(DIOBJECTDATAFORMAT), // size of object data format
-	DIDF_RELAXIS,               // absolute axis coordinates
-	sizeof(MYDATA),             // device data size
-	NUM_OBJECTS,                // number of objects
-	rgodf,                      // and here they are
+	sizeof(DIDATAFORMAT),		// this structure
+	sizeof(DIOBJECTDATAFORMAT),	// size of object data format
+	DIDF_RELAXIS,				// absolute axis coordinates
+	sizeof(MYDATA),				// device data size
+	NUM_OBJECTS,				// number of objects
+	rgodf,						// and here they are
 };
 
-Cvar*				in_joystick;
-static Cvar*		in_debugJoystick;
-static Cvar*		in_joyBallScale;
-static Cvar*		joy_threshold;
+Cvar* in_joystick;
+static Cvar* in_debugJoystick;
+static Cvar* in_joyBallScale;
+static Cvar* joy_threshold;
 
-static bool			joy_avail;
-static int			joy_id;			// joystick number
-static JOYCAPS		joy_jc;
-static int			joy_oldbuttonstate;
-static int			joy_oldpovstate;
-static JOYINFOEX	joy_ji;
+static bool joy_avail;
+static int joy_id;					// joystick number
+static JOYCAPS joy_jc;
+static int joy_oldbuttonstate;
+static int joy_oldpovstate;
+static JOYINFOEX joy_ji;
 
 static int joyDirectionKeys[16] =
 {
@@ -241,16 +241,16 @@ static int joyDirectionKeys[16] =
 	K_JOY26, K_JOY27
 };
 
-static Cvar*		in_midi;
-static Cvar*		in_midiport;
-static Cvar*		in_midichannel;
-static Cvar*		in_mididevice;
+static Cvar* in_midi;
+static Cvar* in_midiport;
+static Cvar* in_midichannel;
+static Cvar* in_mididevice;
 
-static int			midi_numDevices;
-static MIDIINCAPS	midi_caps[MAX_MIDIIN_DEVICES];
-static HMIDIIN		midi_hMidiIn;
+static int midi_numDevices;
+static MIDIINCAPS midi_caps[MAX_MIDIIN_DEVICES];
+static HMIDIIN midi_hMidiIn;
 
-static bool			in_appactive;
+static bool in_appactive;
 
 // CODE --------------------------------------------------------------------
 
@@ -364,7 +364,7 @@ static void IN_MouseEvent(int mstate)
 		{
 			Sys_QueEvent(sysMsgTime, SE_KEY, K_MOUSE1 + i, false, 0, NULL);
 		}
-	}	
+	}
 
 	mouse_oldButtonState = mstate;
 }
@@ -377,7 +377,7 @@ static void IN_MouseEvent(int mstate)
 //
 //==========================================================================
 
-bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam)
+bool IN_HandleInputMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
@@ -406,31 +406,31 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam)
 	case WM_XBUTTONDOWN:
 	case WM_XBUTTONUP:
 	case WM_MOUSEMOVE:
+	{
+		int temp = 0;
+		if (wParam & MK_LBUTTON)
 		{
-			int	temp = 0;
-			if (wParam & MK_LBUTTON)
-			{
-				temp |= 1;
-			}
-			if (wParam & MK_RBUTTON)
-			{
-				temp |= 2;
-			}
-			if (wParam & MK_MBUTTON)
-			{
-				temp |= 4;
-			}
-			if (wParam & MK_XBUTTON1)
-			{
-				temp |= 8;
-			}
-			if (wParam & MK_XBUTTON2)
-			{
-				temp |= 16;
-			}
-			IN_MouseEvent(temp);
+			temp |= 1;
 		}
-		break;
+		if (wParam & MK_RBUTTON)
+		{
+			temp |= 2;
+		}
+		if (wParam & MK_MBUTTON)
+		{
+			temp |= 4;
+		}
+		if (wParam & MK_XBUTTON1)
+		{
+			temp |= 8;
+		}
+		if (wParam & MK_XBUTTON2)
+		{
+			temp |= 16;
+		}
+		IN_MouseEvent(temp);
+	}
+	break;
 
 	case WM_MOUSEWHEEL:
 		// only relevant for non-DI input and when console is toggled in window mode
@@ -573,7 +573,7 @@ static bool IN_InitDIMouse()
 	if (!pDirectInputCreate)
 	{
 		pDirectInputCreate = (HRESULT (WINAPI*)(HINSTANCE, DWORD, IDirectInputA**, IUnknown*))
-			GetProcAddress(hInstDI,"DirectInputCreateA");
+							 GetProcAddress(hInstDI,"DirectInputCreateA");
 
 		if (!pDirectInputCreate)
 		{
@@ -618,15 +618,15 @@ static bool IN_InitDIMouse()
 		return false;
 	}
 
-	DIPROPDWORD	dipdw =
+	DIPROPDWORD dipdw =
 	{
 		{
-			sizeof(DIPROPDWORD),        // diph.dwSize
-			sizeof(DIPROPHEADER),       // diph.dwHeaderSize
-			0,                          // diph.dwObj
-			DIPH_DEVICE,                // diph.dwHow
+			sizeof(DIPROPDWORD),		// diph.dwSize
+			sizeof(DIPROPHEADER),		// diph.dwHeaderSize
+			0,							// diph.dwObj
+			DIPH_DEVICE,				// diph.dwHow
 		},
-		DINPUT_BUFFERSIZE,              // dwData
+		DINPUT_BUFFERSIZE,				// dwData
 	};
 
 	// set the buffer size to DINPUT_BUFFERSIZE elements.
@@ -640,10 +640,10 @@ static bool IN_InitDIMouse()
 	}
 
 	// clear any pending samples
-	for (;;)
+	for (;; )
 	{
 		DWORD dwElements = 1;
-		DIDEVICEOBJECTDATA	od;
+		DIDEVICEOBJECTDATA od;
 		hr = g_pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od, &dwElements, 0);
 		if (FAILED(hr))
 		{
@@ -669,13 +669,13 @@ static bool IN_InitDIMouse()
 
 static void IN_ShutdownDIMouse()
 {
-    if (g_pMouse)
+	if (g_pMouse)
 	{
 		g_pMouse->Release();
 		g_pMouse = NULL;
 	}
 
-    if (g_pdi)
+	if (g_pdi)
 	{
 		g_pdi->Release();
 		g_pdi = NULL;
@@ -738,10 +738,10 @@ static void IN_DIMouse(int* mx, int* my)
 	HRESULT hr;
 
 	// fetch new events
-	for (;;)
+	for (;; )
 	{
 		DWORD dwElements = 1;
-		DIDEVICEOBJECTDATA	od;
+		DIDEVICEOBJECTDATA od;
 
 		hr = g_pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od, &dwElements, 0);
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
@@ -805,7 +805,7 @@ static void IN_DIMouse(int* mx, int* my)
 			{
 				Sys_QueEvent(od.dwTimeStamp, SE_KEY, K_MOUSE4, false, 0, NULL);
 			}
-			break;      
+			break;
 
 		case DIMOFS_Z:
 			if ((int)od.dwData < 0)
@@ -888,7 +888,7 @@ static void IN_StartupMouse()
 //
 //==========================================================================
 
-static void IN_ActivateMouse() 
+static void IN_ActivateMouse()
 {
 	if (!mouse_initialized)
 	{
@@ -976,9 +976,9 @@ static void IN_MouseMove()
 //==========================================================================
 
 static void IN_StartupJoystick()
-{ 
+{
 	// assume no joystick
-	joy_avail = false; 
+	joy_avail = false;
 
 	if (!in_joystick->integer)
 	{
@@ -1007,7 +1007,7 @@ static void IN_StartupJoystick()
 		{
 			break;
 		}
-	} 
+	}
 
 	// abort startup if we didn't find a valid joystick
 	if (mmr != JOYERR_NOERROR)
@@ -1022,7 +1022,7 @@ static void IN_StartupJoystick()
 	mmr = joyGetDevCaps(joy_id, &joy_jc, sizeof(joy_jc));
 	if (mmr != JOYERR_NOERROR)
 	{
-		Log::write("joystick not found -- invalid joystick capabilities (%x)\n", mmr); 
+		Log::write("joystick not found -- invalid joystick capabilities (%x)\n", mmr);
 		return;
 	}
 
@@ -1048,7 +1048,7 @@ static void IN_StartupJoystick()
 	joy_oldpovstate = 0;
 
 	// mark the joystick as available
-	joy_avail = true; 
+	joy_avail = true;
 }
 
 //==========================================================================
@@ -1059,12 +1059,12 @@ static void IN_StartupJoystick()
 
 static float JoyToF(int value)
 {
-	float	fValue;
+	float fValue;
 
 	// move centerpoint to zero
 	value -= 32768;
 
-	// convert range from -32768..32767 to -1..1 
+	// convert range from -32768..32767 to -1..1
 	fValue = (float)value / 32768.0;
 
 	if (fValue < -1)
@@ -1103,7 +1103,7 @@ static void IN_JoyMove()
 	// verify joystick is available and that the user wants to use it
 	if (!joy_avail)
 	{
-		return; 
+		return;
 	}
 
 	// collect the joystick data, if possible
@@ -1123,7 +1123,7 @@ static void IN_JoyMove()
 
 	if (in_debugJoystick->integer)
 	{
-		Log::write("%8x %5i %5.2f %5.2f %5.2f %5.2f %6i %6i\n", 
+		Log::write("%8x %5i %5.2f %5.2f %5.2f %5.2f %6i %6i\n",
 			joy_ji.dwButtons,
 			joy_ji.dwPOV,
 			JoyToF(joy_ji.dwXpos), JoyToF(joy_ji.dwYpos),
@@ -1269,8 +1269,8 @@ static void MIDI_NoteOn(int note, int velocity)
 //
 //==========================================================================
 
-static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance, 
-	DWORD dwParam1, DWORD dwParam2 )
+static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance,
+	DWORD dwParam1, DWORD dwParam2)
 {
 	int message;
 
@@ -1291,7 +1291,7 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance,
 				MIDI_NoteOn((dwParam1 & 0xff00) >> 8, (dwParam1 & 0xff0000) >> 16);
 			}
 		}
-		else if (( message & 0xf0) == 0x80)
+		else if ((message & 0xf0) == 0x80)
 		{
 			if (((message & 0x0f) + 1) == in_midichannel->integer)
 			{
@@ -1368,9 +1368,9 @@ static void IN_StartupMIDI()
 	// open the MIDI IN port
 	//
 	if (midiInOpen(&midi_hMidiIn, in_mididevice->integer,
-		(DWORD_PTR)MidiInProc, (DWORD_PTR)NULL, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+			(DWORD_PTR)MidiInProc, (DWORD_PTR)NULL, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
 	{
-		Log::write("WARNING: could not open MIDI device %d: '%s'\n", in_mididevice->integer , midi_caps[(int)in_mididevice->value]);
+		Log::write("WARNING: could not open MIDI device %d: '%s'\n", in_mididevice->integer, midi_caps[(int)in_mididevice->value]);
 		return;
 	}
 

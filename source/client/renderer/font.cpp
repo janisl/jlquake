@@ -15,50 +15,50 @@
 //**************************************************************************
 //
 // The font system uses FreeType 2.x to render TrueType fonts for use within the game.
-// As of this writing ( Nov, 2000 ) Team Arena uses these fonts for all of the ui and 
-// about 90% of the cgame presentation. A few areas of the CGAME were left uses the old 
+// As of this writing ( Nov, 2000 ) Team Arena uses these fonts for all of the ui and
+// about 90% of the cgame presentation. A few areas of the CGAME were left uses the old
 // fonts since the code is shared with standard Q3A.
 //
 // If you include this font rendering code in a commercial product you MUST include the
 // following somewhere with your product, see www.freetype.org for specifics or changes.
-// The Freetype code also uses some hinting techniques that MIGHT infringe on patents 
+// The Freetype code also uses some hinting techniques that MIGHT infringe on patents
 // held by apple so be aware of that also.
 //
 // As of Q3A 1.25+ and Team Arena, we are shipping the game with the font rendering code
-// disabled. This removes any potential patent issues and it keeps us from having to 
+// disabled. This removes any potential patent issues and it keeps us from having to
 // distribute an actual TrueTrype font which is 1. expensive to do and 2. seems to require
-// an act of god to accomplish. 
+// an act of god to accomplish.
 //
 // What we did was pre-render the fonts using FreeType ( which is why we leave the FreeType
-// credit in the credits ) and then saved off the glyph data and then hand touched up the 
+// credit in the credits ) and then saved off the glyph data and then hand touched up the
 // font bitmaps so they scale a bit better in GL.
 //
-// There are limitations in the way fonts are saved and reloaded in that it is based on 
+// There are limitations in the way fonts are saved and reloaded in that it is based on
 // point size and not name. So if you pre-render Helvetica in 18 point and Impact in 18 point
-// you will end up with a single 18 point data file and image set. Typically you will want to 
+// you will end up with a single 18 point data file and image set. Typically you will want to
 // choose 3 sizes to best approximate the scaling you will be doing in the ui scripting system
-// 
+//
 // In the UI Scripting code, a scale of 1.0 is equal to a 48 point font. In Team Arena, we
-// use three or four scales, most of them exactly equaling the specific rendered size. We 
-// rendered three sizes in Team Arena, 12, 16, and 20. 
+// use three or four scales, most of them exactly equaling the specific rendered size. We
+// rendered three sizes in Team Arena, 12, 16, and 20.
 //
 // To generate new font data you need to go through the following steps.
 // 1. delete the fontImage_x_xx.tga files and fontImage_xx.dat files from the fonts path.
-// 2. in a ui script, specificy a font, smallFont, and bigFont keyword with font name and 
+// 2. in a ui script, specificy a font, smallFont, and bigFont keyword with font name and
 //    point size. the original TrueType fonts must exist in fonts at this point.
 // 3. run the game, you should see things normally.
-// 4. Exit the game and there will be three dat files and at least three tga files. The 
-//    tga's are in 256x256 pages so if it takes three images to render a 24 point font you 
+// 4. Exit the game and there will be three dat files and at least three tga files. The
+//    tga's are in 256x256 pages so if it takes three images to render a 24 point font you
 //    will end up with fontImage_0_24.tga through fontImage_2_24.tga
 // 5. You will need to flip the tga's in Photoshop as the tga output code writes them upside
 //    down.
 // 6. In future runs of the game, the system looks for these images and data files when a s
-//    specific point sized font is rendered and loads them for use. 
+//    specific point sized font is rendered and loads them for use.
 // 7. Because of the original beta nature of the FreeType code you will probably want to hand
 //    touch the font bitmaps.
-// 
-// Currently a define in the project turns on or off the FreeType code which is currently 
-// defined out. To pre-render new fonts you need enable the define ( BUILD_FREETYPE ) and 
+//
+// Currently a define in the project turns on or off the FreeType code which is currently
+// defined out. To pre-render new fonts you need enable the define ( BUILD_FREETYPE ) and
 // uncheck the exclude from build check box in the FreeType2 area of the Renderer project.
 //
 //**************************************************************************
@@ -74,11 +74,11 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_FONTS	10
+#define MAX_FONTS   10
 
-#define _FLOOR(x)	((x) & -64)
-#define _CEIL(x)	(((x)+63) & -64)
-#define _TRUNC(x)	((x) >> 6)
+#define _FLOOR(x)   ((x) & - 64)
+#define _CEIL(x)    (((x) + 63) & - 64)
+#define _TRUNC(x)   ((x) >> 6)
 
 // TYPES -------------------------------------------------------------------
 
@@ -94,13 +94,13 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static FT_Library	ftLibrary = NULL;
+static FT_Library ftLibrary = NULL;
 
-static int			registeredFontCount = 0;
-static fontInfo_t	registeredFont[MAX_FONTS];
+static int registeredFontCount = 0;
+static fontInfo_t registeredFont[MAX_FONTS];
 
-static int			fdOffset;
-static byte*		fdFile;
+static int fdOffset;
+static byte* fdFile;
 
 // CODE --------------------------------------------------------------------
 
@@ -120,7 +120,7 @@ static void R_GetGlyphInfo(FT_GlyphSlot glyph, int* left, int* right, int* width
 	*top = _CEIL(glyph->metrics.horiBearingY);
 	*bottom = _FLOOR(glyph->metrics.horiBearingY - glyph->metrics.height);
 	*height = _TRUNC(*top - *bottom);
-	*pitch  = (*width + 3) & -4;
+	*pitch  = (*width + 3) & - 4;
 }
 
 //==========================================================================
@@ -141,7 +141,7 @@ static FT_Bitmap* R_RenderGlyph(FT_GlyphSlot glyph, glyphInfo_t* glyphOut)
 		return NULL;
 	}
 
-	size   = pitch*height; 
+	size   = pitch * height;
 
 	FT_Bitmap* bit2 = new FT_Bitmap;
 
@@ -242,8 +242,8 @@ static glyphInfo_t* RE_ConstructGlyphInfo(unsigned char* imageOut, int* xOut, in
 			for (int i = 0; i < glyph.height; i++)
 			{
 				int j;
-				unsigned char *_src = src;
-				unsigned char *_dst = dst;
+				unsigned char* _src = src;
+				unsigned char* _dst = dst;
 				unsigned char mask = 0x80;
 				unsigned char val = *_src;
 				for (j = 0; j < glyph.pitch; j++)
@@ -257,7 +257,7 @@ static glyphInfo_t* RE_ConstructGlyphInfo(unsigned char* imageOut, int* xOut, in
 						*_dst = 0xff;
 					}
 					mask >>= 1;
-		
+
 					if (mask == 0)
 					{
 						mask = 0x80;
@@ -280,7 +280,7 @@ static glyphInfo_t* RE_ConstructGlyphInfo(unsigned char* imageOut, int* xOut, in
 			}
 		}
 
-		// we now have an 8 bit per pixel grey scale bitmap 
+		// we now have an 8 bit per pixel grey scale bitmap
 		// that is width wide and pf->ftSize->metrics.y_ppem tall
 
 		glyph.imageHeight = scaled_height;
@@ -412,7 +412,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 		return;
 	}
 
-	void *faceData;
+	void* faceData;
 	len = FS_ReadFile(fontName, &faceData);
 	if (len <= 0)
 	{
@@ -434,7 +434,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 		return;
 	}
 
-	// make a 256x256 image buffer, once it is full, register it, clean it and keep going 
+	// make a 256x256 image buffer, once it is full, register it, clean it and keep going
 	// until all glyphs are rendered
 
 	byte* out = new byte[1024 * 1024];
@@ -463,7 +463,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 		{
 			// ran out of room
 			// we need to create an image from the bitmap, set all the handles in the glyphs to this point
-			// 
+			//
 
 			int scaledSize = 256 * 256;
 			int newSize = scaledSize * 4;
@@ -492,7 +492,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 				imageBuff[left++] = ((float)out[k] * max);
 			}
 
-			String::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
+			String::Sprintf(name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
 			if (r_saveFontData->integer)
 			{
 				R_SaveTGA(name, imageBuff, 256, 256, true);
@@ -529,7 +529,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 	}
 
 	delete[] out;
-	
+
 	FS_FreeFile(faceData);
 }
 

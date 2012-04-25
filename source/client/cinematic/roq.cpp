@@ -22,18 +22,18 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAXSIZE				8
-#define MINSIZE				4
+#define MAXSIZE             8
+#define MINSIZE             4
 
-#define ROQ_QUAD			0x1000
-#define ROQ_QUAD_INFO		0x1001
-#define ROQ_CODEBOOK		0x1002
-#define ROQ_QUAD_VQ			0x1011
-#define ROQ_QUAD_JPEG		0x1012
-#define ROQ_QUAD_HANG		0x1013
-#define ROQ_PACKET			0x1030
-#define ZA_SOUND_MONO		0x1020
-#define ZA_SOUND_STEREO		0x1021
+#define ROQ_QUAD            0x1000
+#define ROQ_QUAD_INFO       0x1001
+#define ROQ_CODEBOOK        0x1002
+#define ROQ_QUAD_VQ         0x1011
+#define ROQ_QUAD_JPEG       0x1012
+#define ROQ_QUAD_HANG       0x1013
+#define ROQ_PACKET          0x1030
+#define ZA_SOUND_MONO       0x1020
+#define ZA_SOUND_STEREO     0x1021
 
 // TYPES -------------------------------------------------------------------
 
@@ -49,13 +49,13 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static long				ROQ_YY_tab[256];
-static long				ROQ_UB_tab[256];
-static long				ROQ_UG_tab[256];
-static long				ROQ_VG_tab[256];
-static long				ROQ_VR_tab[256];
+static long ROQ_YY_tab[256];
+static long ROQ_UB_tab[256];
+static long ROQ_UG_tab[256];
+static long ROQ_VG_tab[256];
+static long ROQ_VR_tab[256];
 
-static short			sqrTable[256];
+static short sqrTable[256];
 
 // CODE --------------------------------------------------------------------
 
@@ -89,9 +89,9 @@ static void ROQ_GenYUVTables()
 	for (int i = 0; i < 256; i++)
 	{
 		float x = (float)(2 * i - 255);
-	
-		ROQ_UB_tab[i] = (long)(( t_ub * x) + (1 << 5));
-		ROQ_VR_tab[i] = (long)(( t_vr * x) + (1 << 5));
+
+		ROQ_UB_tab[i] = (long)((t_ub * x) + (1 << 5));
+		ROQ_VR_tab[i] = (long)((t_vr * x) + (1 << 5));
 		ROQ_UG_tab[i] = (long)((-t_ug * x));
 		ROQ_VG_tab[i] = (long)((-t_vg * x) + (1 << 5));
 		ROQ_YY_tab[i] = (long)((i << 6) | (i >> 2));
@@ -171,7 +171,7 @@ void QCinematicRoq::init()
 
 	//	get frame rate
 	roqFPS = file[6] + file[7] * 256;
-	
+
 	if (!roqFPS)
 	{
 		roqFPS = 30;
@@ -235,7 +235,7 @@ void QCinematicRoq::readQuadInfo(byte* qData)
 	Height = qData[2] + qData[3] * 256;
 	maxsize = qData[4] + qData[5] * 256;
 	minsize = qData[6] + qData[7] * 256;
-	
+
 	samplesPerLine = Width * 4;
 	screenDelta = Height * samplesPerLine;
 
@@ -253,11 +253,11 @@ void QCinematicRoq::setupQuad()
 {
 	long numQuadCels = (Width * Height) / 16;
 	numQuadCels += numQuadCels / 4;
-	numQuadCels += 64;							  // for overflow
+	numQuadCels += 64;								// for overflow
 
 	onQuad = 0;
 
-	for (int y = 0; y < Height; y+=16)
+	for (int y = 0; y < Height; y += 16)
 	{
 		for (int x = 0; x < Width; x += 16)
 		{
@@ -267,8 +267,8 @@ void QCinematicRoq::setupQuad()
 
 	for (long i = (numQuadCels - 64); i < numQuadCels; i++)
 	{
-		qStatus[0][i] = NULL;			  // eoq
-		qStatus[1][i] = NULL;			  // eoq
+		qStatus[0][i] = NULL;				// eoq
+		qStatus[1][i] = NULL;				// eoq
 	}
 }
 
@@ -322,7 +322,7 @@ static long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int s
 	{
 		prev =  flag - 0x8000;
 	}
-	else 
+	else
 	{
 		prev = flag;
 	}
@@ -332,7 +332,7 @@ static long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int s
 		prev = (short)(prev + sqrTable[from[z]]);
 		to[z * 2 + 0] = to[z * 2 + 1] = (short)prev;
 	}
-	
+
 	return size;	// * 2 * sizeof(short));
 }
 
@@ -369,13 +369,13 @@ static long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int
 	unsigned char* zz = from;
 	for (unsigned int z = 0; z < size; z += 2)
 	{
-		prevL = (short)(prevL + sqrTable[*zz++]); 
+		prevL = (short)(prevL + sqrTable[*zz++]);
 		prevR = (short)(prevR + sqrTable[*zz++]);
 		to[z + 0] = (short)(prevL);
 		to[z + 1] = (short)(prevR);
 	}
-	
-	return (size>>1);	//*sizeof(short));
+
+	return (size >> 1);		//*sizeof(short));
 }
 
 //==========================================================================
@@ -393,7 +393,7 @@ void QCinematicRoq::RoQPrepMcomp(long xoff, long yoff)
 		j = j + j;
 		i = i + i;
 	}
-	
+
 	for (long y = 0; y < 16; y++)
 	{
 		long temp2 = (y + yoff - 8) * i;
@@ -534,7 +534,7 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 	unsigned int index = 0;
 
 	int spl = samplesPerLine;
-        
+
 	do
 	{
 		if (!newd)
@@ -575,7 +575,7 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 				}
 
 				code = (unsigned short)(celdata & 0xc000);
-				celdata <<= 2; 
+				celdata <<= 2;
 
 				switch (code)
 				{											// code in top two bits of code
@@ -615,7 +615,7 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 	}
 	while (status[index] != NULL);
 }
- 
+
 //==========================================================================
 //
 //	yuv_to_rgb24
@@ -623,13 +623,13 @@ void QCinematicRoq::blitVQQuad32fs(byte** status, unsigned char* data)
 //==========================================================================
 
 static void yuv_to_rgb24(long y, long u, long v, byte* out)
-{ 
+{
 	long YY = (long)ROQ_YY_tab[y];
 
 	long r = (YY + ROQ_VR_tab[v]) >> 6;
 	long g = (YY + ROQ_UG_tab[u] + ROQ_VG_tab[v]) >> 6;
 	long b = (YY + ROQ_UB_tab[u]) >> 6;
-	
+
 	if (r < 0)
 	{
 		r = 0;
@@ -654,7 +654,7 @@ static void yuv_to_rgb24(long y, long u, long v, byte* out)
 	{
 		b = 255;
 	}
-	
+
 	out[0] = r;
 	out[1] = g;
 	out[2] = b;
@@ -706,27 +706,27 @@ void QCinematicRoq::decodeCodeBook(byte* input)
 	unsigned int* idptr = (unsigned int*)vq8;
 
 #define VQ2TO4(a,b,c,d) { \
-   	*c++ = a[0];	\
-	*d++ = a[0];	\
-	*d++ = a[0];	\
-	*c++ = a[1];	\
-	*d++ = a[1];	\
-	*d++ = a[1];	\
-	*c++ = b[0];	\
-	*d++ = b[0];	\
-	*d++ = b[0];	\
-	*c++ = b[1];	\
-	*d++ = b[1];	\
-	*d++ = b[1];	\
-	*d++ = a[0];	\
-	*d++ = a[0];	\
-	*d++ = a[1];	\
-	*d++ = a[1];	\
-	*d++ = b[0];	\
-	*d++ = b[0];	\
-	*d++ = b[1];	\
-	*d++ = b[1];	\
-	a += 2; b += 2; }
+		*c++ = a[0];	\
+		*d++ = a[0];	\
+		*d++ = a[0];	\
+		*c++ = a[1];	\
+		*d++ = a[1];	\
+		*d++ = a[1];	\
+		*c++ = b[0];	\
+		*d++ = b[0];	\
+		*d++ = b[0];	\
+		*c++ = b[1];	\
+		*d++ = b[1];	\
+		*d++ = b[1];	\
+		*d++ = a[0];	\
+		*d++ = a[0];	\
+		*d++ = a[1];	\
+		*d++ = a[1];	\
+		*d++ = b[0];	\
+		*d++ = b[0];	\
+		*d++ = b[1];	\
+		*d++ = b[1];	\
+		a += 2; b += 2; }
 
 	for (int i = 0; i < four; i++)
 	{
@@ -749,12 +749,12 @@ bool QCinematicRoq::ReadFrame()
 {
 	FS_Read(file, RoQFrameSize + 8, iFile);
 	if (RoQPlayed >= ROQSize)
-	{ 
+	{
 		return false;
 	}
 
 	short sbuf[32768];
-        
+
 	byte* framedata = file;
 //
 // new frame is ready
@@ -827,7 +827,7 @@ redump:
 
 	case ROQ_PACKET:
 		inMemory = roq_flags;
-		RoQFrameSize = 0;           // for header
+		RoQFrameSize = 0;			// for header
 		break;
 
 	case ROQ_QUAD_HANG:

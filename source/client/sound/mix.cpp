@@ -25,7 +25,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define TALK_FUTURE_SEC 0.25        // go this far into the future (seconds)
+#define TALK_FUTURE_SEC 0.25		// go this far into the future (seconds)
 
 // TYPES -------------------------------------------------------------------
 
@@ -46,11 +46,11 @@ unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 extern "C"
 {
-int*			snd_p;
-int				snd_linear_count;
-short*			snd_out;
+int* snd_p;
+int snd_linear_count;
+short* snd_out;
 }
-static int		snd_vol;
+static int snd_vol;
 
 // CODE --------------------------------------------------------------------
 
@@ -65,43 +65,43 @@ static __declspec(naked) void S_WriteLinearBlastStereo16()
 {
 	__asm {
 
- push edi
- push ebx
- mov ecx,ds:dword ptr[snd_linear_count]
- mov ebx,ds:dword ptr[snd_p]
- mov edi,ds:dword ptr[snd_out]
-LWLBLoopTop:
- mov eax,ds:dword ptr[-8+ebx+ecx*4]
- sar eax,8
- cmp eax,07FFFh
- jg LClampHigh
- cmp eax,0FFFF8000h
- jnl LClampDone
- mov eax,0FFFF8000h
- jmp LClampDone
-LClampHigh:
- mov eax,07FFFh
-LClampDone:
- mov edx,ds:dword ptr[-4+ebx+ecx*4]
- sar edx,8
- cmp edx,07FFFh
- jg LClampHigh2
- cmp edx,0FFFF8000h
- jnl LClampDone2
- mov edx,0FFFF8000h
- jmp LClampDone2
-LClampHigh2:
- mov edx,07FFFh
-LClampDone2:
- shl edx,16
- and eax,0FFFFh
- or edx,eax
- mov ds:dword ptr[-4+edi+ecx*2],edx
- sub ecx,2
- jnz LWLBLoopTop
- pop ebx
- pop edi
- ret
+		push edi
+		push ebx
+		mov ecx,ds : dword ptr[snd_linear_count]
+		mov ebx,ds : dword ptr[snd_p]
+		mov edi,ds : dword ptr[snd_out]
+		LWLBLoopTop :
+		mov eax,ds : dword ptr[-8 + ebx + ecx * 4]
+		sar eax,8
+		cmp eax,07FFFh
+		jg LClampHigh
+		cmp eax,0FFFF 8000h
+		jnl LClampDone
+		mov eax,0FFFF 8000h
+		jmp LClampDone
+			LClampHigh :
+		mov eax,07FFFh
+		LClampDone :
+		mov edx,ds : dword ptr[-4 + ebx + ecx * 4]
+		sar edx,8
+		cmp edx,07FFFh
+		jg LClampHigh2
+		cmp edx,0FFFF 8000h
+		jnl LClampDone2
+		mov edx,0FFFF 8000h
+		jmp LClampDone2
+			LClampHigh2 :
+		mov edx,07FFFh
+		LClampDone2 :
+		shl edx,16
+		and eax,0FFFFh
+		or edx,eax
+		mov ds : dword ptr[-4 + edi + ecx * 2],edx
+		sub ecx,2
+		jnz LWLBLoopTop
+		pop ebx
+		pop edi
+			ret
 	}
 }
 #elif id386 && defined __GNUC__
@@ -110,7 +110,7 @@ extern "C" void S_WriteLinearBlastStereo16();
 #else
 static void S_WriteLinearBlastStereo16()
 {
-	for (int i = 0; i < snd_linear_count; i+=2)
+	for (int i = 0; i < snd_linear_count; i += 2)
 	{
 		int val = snd_p[i] >> 8;
 		if (val > 0x7fff)
@@ -197,7 +197,7 @@ static void S_TransferPaintBuffer(int endtime)
 		for (int i = 0; i < count; i++)
 		{
 			paintbuffer[i].left = paintbuffer[i].right =
-				sin((s_paintedtime + i) * 0.1) * 20000 * 256;
+									  sin((s_paintedtime + i) * 0.1) * 20000 * 256;
 		}
 	}
 
@@ -211,17 +211,17 @@ static void S_TransferPaintBuffer(int endtime)
 		// general case
 		int* p = (int*)paintbuffer;
 		int count = (endtime - s_paintedtime) * dma.channels;
-		int out_mask = dma.samples - 1; 
+		int out_mask = dma.samples - 1;
 		int out_idx = s_paintedtime * dma.channels & out_mask;
 		int step = 3 - dma.channels;
 
 		if (dma.samplebits == 16)
 		{
-			short *out = (short*)dma.buffer;
+			short* out = (short*)dma.buffer;
 			while (count--)
 			{
 				int val = *p >> 8;
-				p+= step;
+				p += step;
 				if (val > 0x7fff)
 				{
 					val = 0x7fff;
@@ -240,7 +240,7 @@ static void S_TransferPaintBuffer(int endtime)
 			while (count--)
 			{
 				int val = *p >> 8;
-				p+= step;
+				p += step;
 				if (val > 0x7fff)
 				{
 					val = 0x7fff;
@@ -266,7 +266,7 @@ static void S_SetVoiceAmplitudeFrom16(const sfx_t* sc, int sampleOffset, int cou
 {
 	if (count <= 0)
 	{
-		return; // must have gone ahead of the end of the sound
+		return;	// must have gone ahead of the end of the sound
 	}
 	int sfx_count = 0;
 	short* samples = sc->Data;
@@ -320,7 +320,7 @@ int S_GetVoiceAmplitude(int entityNum)
 //
 //==========================================================================
 
-static void S_PaintChannelFrom16(channel_t *ch, const sfx_t* sc, int count,
+static void S_PaintChannelFrom16(channel_t* ch, const sfx_t* sc, int count,
 	int sampleOffset, int bufferOffset)
 {
 	portable_samplepair_t* samp = &paintbuffer[bufferOffset];
@@ -372,13 +372,13 @@ static void S_PaintChannelFrom16(channel_t *ch, const sfx_t* sc, int count,
 
 void S_PaintChannels(int endtime)
 {
-	int 	i, si;
-	int 	end;
-	channel_t *ch;
-	sfx_t	*sc;
-	int		ltime, count;
-	int		sampleOffset;
-	streamingSound_t *ss;
+	int i, si;
+	int end;
+	channel_t* ch;
+	sfx_t* sc;
+	int ltime, count;
+	int sampleOffset;
+	streamingSound_t* ss;
 	bool firstPass = true;
 
 	if (s_mute->value)
@@ -459,7 +459,7 @@ void S_PaintChannels(int endtime)
 					// we need to go into the future, since the interpolated behaviour of the facial
 					// animation creates lag in the time it takes to display the current facial frame
 					talktime = s_paintedtime + (int)(TALK_FUTURE_SEC * (float)s_khz->integer * 1000);
-					vstop = (talktime + 100 < s_rawend[si] ) ? talktime + 100 : s_rawend[si];
+					vstop = (talktime + 100 < s_rawend[si]) ? talktime + 100 : s_rawend[si];
 					talkcnt = 1;
 					sfx_count = 0;
 
@@ -494,7 +494,7 @@ void S_PaintChannels(int endtime)
 		{
 			if (ch->startSample == START_SAMPLE_IMMEDIATE || !ch->sfx ||
 				(!ch->leftvol && !ch->rightvol))
-				//(ch->leftvol < 0.25 && ch->rightvol < 0.25))
+			//(ch->leftvol < 0.25 && ch->rightvol < 0.25))
 			{
 				continue;
 			}
@@ -592,7 +592,7 @@ void S_PaintChannels(int endtime)
 						int talkofs, talkcnt, talktime;
 						// we need to go into the future, since the interpolated behaviour of the facial
 						// animation creates lag in the time it takes to display the current facial frame
-						talktime = ltime + (int)( TALK_FUTURE_SEC * (float)s_khz->integer * 1000 );
+						talktime = ltime + (int)(TALK_FUTURE_SEC * (float)s_khz->integer * 1000);
 						talkofs = talktime % sc->Length;
 						talkcnt = 100;
 						if (talkofs + talkcnt < sc->Length)

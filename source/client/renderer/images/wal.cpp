@@ -21,19 +21,19 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	MIPLEVELS	4
+#define MIPLEVELS   4
 
 // TYPES -------------------------------------------------------------------
 
 struct miptex_t
 {
-	char		name[32];
-	unsigned	width, height;
-	unsigned	offsets[MIPLEVELS];		// four mip maps stored
-	char		animname[32];			// next frame in animation chain
-	int			flags;
-	int			contents;
-	int			value;
+	char name[32];
+	unsigned width, height;
+	unsigned offsets[MIPLEVELS];		// four mip maps stored
+	char animname[32];					// next frame in animation chain
+	int flags;
+	int contents;
+	int value;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -67,9 +67,9 @@ void R_LoadWAL(const char* FileName, byte** Pic, int* WidthPtr, int* HeightPtr)
 		return;
 	}
 
-	int width = LittleLong (mt->width);
-	int height = LittleLong (mt->height);
-	int ofs = LittleLong (mt->offsets[0]);
+	int width = LittleLong(mt->width);
+	int height = LittleLong(mt->height);
+	int ofs = LittleLong(mt->offsets[0]);
 	if (WidthPtr)
 	{
 		*WidthPtr = width;

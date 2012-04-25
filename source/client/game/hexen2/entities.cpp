@@ -17,7 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 
-#define H2MAX_EXTRA_TEXTURES 156   // 255-100+1
+#define H2MAX_EXTRA_TEXTURES 156	// 255-100+1
 
 h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
@@ -31,7 +31,7 @@ static float BTint[256];
 qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
 static image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];	// color translated skins
 
-static image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];   // generic textures for models
+static image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];	// generic textures for models
 
 void CLH2_InitColourShadeTables()
 {
@@ -45,7 +45,7 @@ void CLH2_InitColourShadeTables()
 
 		for (int p = 0; p < 16; p++)
 		{
-			RTint[i * 16 + p] = ((float)r) / ((float)ColorPercent[15 - p]) ;
+			RTint[i * 16 + p] = ((float)r) / ((float)ColorPercent[15 - p]);
 			GTint[i * 16 + p] = ((float)g) / ((float)ColorPercent[15 - p]);
 			BTint[i * 16 + p] = ((float)b) / ((float)ColorPercent[15 - p]);
 		}
@@ -90,7 +90,7 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 
 			AnglesToAxis(angles, entity->axis);
 		}
-		else 
+		else
 		{
 			if (R_ModelFlags(entity->hModel) & H2MDLEF_ROTATE)
 			{
@@ -261,12 +261,12 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
 {
 	if (entity->skinNum >= 100)
 	{
-		if (entity->skinNum > 255) 
+		if (entity->skinNum > 255)
 		{
 			throw Exception("skinnum > 255");
 		}
 
-		if (!clh2_extra_textures[entity->skinNum - 100])  // Need to load it in
+		if (!clh2_extra_textures[entity->skinNum - 100])	// Need to load it in
 		{
 			char temp[40];
 			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", entity->skinNum);

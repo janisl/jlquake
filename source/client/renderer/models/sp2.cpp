@@ -55,13 +55,13 @@ void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen)
 	if (sprout->version != SPRITE2_VERSION)
 	{
 		throw DropException(va("%s has wrong version number (%i should be %i)",
-				 mod->name, sprout->version, SPRITE2_VERSION));
+				mod->name, sprout->version, SPRITE2_VERSION));
 	}
 
 	if (sprout->numframes > MAX_MD2_SKINS)
 	{
 		throw DropException(va("%s has too many frames (%i > %i)",
-			mod->name, sprout->numframes, MAX_MD2_SKINS));
+				mod->name, sprout->numframes, MAX_MD2_SKINS));
 	}
 
 	// byte swap everything
@@ -104,12 +104,12 @@ void R_DrawSp2Model(trRefEntity_t* e)
 		return;
 	}
 
-	vec3_t	point;
+	vec3_t point;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	dsprite2_t* psprite = (dsprite2_t *)tr.currentModel->q2_extradata;
+	dsprite2_t* psprite = (dsprite2_t*)tr.currentModel->q2_extradata;
 
 	e->e.frame %= psprite->numframes;
 
@@ -135,7 +135,7 @@ void R_DrawSp2Model(trRefEntity_t* e)
 
 	qglColor4f(1, 1, 1, alpha);
 
-    GL_Bind(tr.currentModel->q2_skins[e->e.frame]);
+	GL_Bind(tr.currentModel->q2_skins[e->e.frame]);
 
 	GL_TexEnv(GL_MODULATE);
 
@@ -160,7 +160,7 @@ void R_DrawSp2Model(trRefEntity_t* e)
 	VectorMA(e->e.origin, -frame->origin_y, up, point);
 	VectorMA(point, -(frame->width - frame->origin_x), left, point);
 	qglVertex3fv(point);
-	
+
 	qglEnd();
 
 	GL_State(GLS_DEFAULT);

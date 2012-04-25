@@ -63,7 +63,7 @@ void MIDI_Cleanup()
 //
 //==========================================================================
 
-void MIDI_Play(char *Name)
+void MIDI_Play(char* Name)
 {
 }
 

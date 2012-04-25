@@ -68,8 +68,8 @@ keyname_t keynames[] =
 	{"MOUSE4", K_MOUSE4},
 	{"MOUSE5", K_MOUSE5},
 
-	{"MWHEELUP",	K_MWHEELUP },
-	{"MWHEELDOWN",	K_MWHEELDOWN },
+	{"MWHEELUP",    K_MWHEELUP },
+	{"MWHEELDOWN",  K_MWHEELDOWN },
 
 	{"JOY1", K_JOY1},
 	{"JOY2", K_JOY2},
@@ -137,27 +137,27 @@ keyname_t keynames[] =
 	{"AUX31", K_AUX31},
 	{"AUX32", K_AUX32},
 
-	{"KP_HOME",			K_KP_HOME },
-	{"KP_UPARROW",		K_KP_UPARROW },
-	{"KP_PGUP",			K_KP_PGUP },
-	{"KP_LEFTARROW",	K_KP_LEFTARROW },
-	{"KP_5",			K_KP_5 },
-	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
-	{"KP_END",			K_KP_END },
-	{"KP_DOWNARROW",	K_KP_DOWNARROW },
-	{"KP_PGDN",			K_KP_PGDN },
-	{"KP_ENTER",		K_KP_ENTER },
-	{"KP_INS",			K_KP_INS },
-	{"KP_DEL",			K_KP_DEL },
-	{"KP_SLASH",		K_KP_SLASH },
-	{"KP_MINUS",		K_KP_MINUS },
-	{"KP_PLUS",			K_KP_PLUS },
-	{"KP_NUMLOCK",		K_KP_NUMLOCK },
-	{"KP_STAR",			K_KP_STAR },
-	{"KP_EQUALS",		K_KP_EQUALS },
+	{"KP_HOME",         K_KP_HOME },
+	{"KP_UPARROW",      K_KP_UPARROW },
+	{"KP_PGUP",         K_KP_PGUP },
+	{"KP_LEFTARROW",    K_KP_LEFTARROW },
+	{"KP_5",            K_KP_5 },
+	{"KP_RIGHTARROW",   K_KP_RIGHTARROW },
+	{"KP_END",          K_KP_END },
+	{"KP_DOWNARROW",    K_KP_DOWNARROW },
+	{"KP_PGDN",         K_KP_PGDN },
+	{"KP_ENTER",        K_KP_ENTER },
+	{"KP_INS",          K_KP_INS },
+	{"KP_DEL",          K_KP_DEL },
+	{"KP_SLASH",        K_KP_SLASH },
+	{"KP_MINUS",        K_KP_MINUS },
+	{"KP_PLUS",         K_KP_PLUS },
+	{"KP_NUMLOCK",      K_KP_NUMLOCK },
+	{"KP_STAR",         K_KP_STAR },
+	{"KP_EQUALS",       K_KP_EQUALS },
 
 	{"PAUSE", K_PAUSE},
-	
+
 	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
 
 	{NULL,0}

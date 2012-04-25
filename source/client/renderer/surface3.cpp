@@ -84,7 +84,7 @@ void RB_CheckOverflow(int verts, int indexes)
 //
 //==========================================================================
 
-void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte *color, float s1, float t1, float s2, float t2)
+void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2)
 {
 	RB_CHECKOVERFLOW(4, 6);
 
@@ -122,7 +122,7 @@ void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte *color, floa
 	tess.normal[ndx][0] = tess.normal[ndx + 1][0] = tess.normal[ndx + 2][0] = tess.normal[ndx + 3][0] = normal[0];
 	tess.normal[ndx][1] = tess.normal[ndx + 1][1] = tess.normal[ndx + 2][1] = tess.normal[ndx + 3][1] = normal[1];
 	tess.normal[ndx][2] = tess.normal[ndx + 1][2] = tess.normal[ndx + 2][2] = tess.normal[ndx + 3][2] = normal[2];
-	
+
 	// standard square texture coordinates
 	tess.texCoords[ndx][0][0] = tess.texCoords[ndx][1][0] = s1;
 	tess.texCoords[ndx][0][1] = tess.texCoords[ndx][1][1] = t1;
@@ -138,11 +138,11 @@ void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte *color, floa
 
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
-	*(unsigned int*) &tess.vertexColors[ndx] = 
-	*(unsigned int*) &tess.vertexColors[ndx + 1] = 
-	*(unsigned int*) &tess.vertexColors[ndx + 2] = 
-	*(unsigned int*) &tess.vertexColors[ndx + 3] = 
-		*(unsigned int*)color;
+	*(unsigned int*)&tess.vertexColors[ndx] =
+		*(unsigned int*)&tess.vertexColors[ndx + 1] =
+			*(unsigned int*)&tess.vertexColors[ndx + 2] =
+				*(unsigned int*)&tess.vertexColors[ndx + 3] =
+					*(unsigned int*)color;
 
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
@@ -247,12 +247,12 @@ static float LodErrorForVolume(vec3_t local, float radius)
 	}
 
 	vec3_t world;
-	world[0] = local[0] * backEnd.orient.axis[0][0] + local[1] * backEnd.orient.axis[1][0] + 
-		local[2] * backEnd.orient.axis[2][0] + backEnd.orient.origin[0];
-	world[1] = local[0] * backEnd.orient.axis[0][1] + local[1] * backEnd.orient.axis[1][1] + 
-		local[2] * backEnd.orient.axis[2][1] + backEnd.orient.origin[1];
-	world[2] = local[0] * backEnd.orient.axis[0][2] + local[1] * backEnd.orient.axis[1][2] + 
-		local[2] * backEnd.orient.axis[2][2] + backEnd.orient.origin[2];
+	world[0] = local[0] * backEnd.orient.axis[0][0] + local[1] * backEnd.orient.axis[1][0] +
+			   local[2] * backEnd.orient.axis[2][0] + backEnd.orient.origin[0];
+	world[1] = local[0] * backEnd.orient.axis[0][1] + local[1] * backEnd.orient.axis[1][1] +
+			   local[2] * backEnd.orient.axis[2][1] + backEnd.orient.origin[1];
+	world[2] = local[0] * backEnd.orient.axis[0][2] + local[1] * backEnd.orient.axis[1][2] +
+			   local[2] * backEnd.orient.axis[2][2] + backEnd.orient.origin[2];
 
 	VectorSubtract(world, backEnd.viewParms.orient.origin, world);
 	float d = DotProduct(world, backEnd.viewParms.orient.axis[0]);
@@ -394,9 +394,9 @@ static void RB_SurfaceGrid(srfGridMesh_t* cv)
 		int h = rows - 1;
 		int w = lodWidth - 1;
 		int numIndexes = tess.numIndexes;
-		for (int i = 0 ; i < h ; i++)
+		for (int i = 0; i < h; i++)
 		{
-			for (int j = 0 ; j < w ; j++)
+			for (int j = 0; j < w; j++)
 			{
 				// vertex order to be reckognized as tristrips
 				int v1 = numVertexes + i * lodWidth + j + 1;
@@ -407,7 +407,7 @@ static void RB_SurfaceGrid(srfGridMesh_t* cv)
 				tess.indexes[numIndexes] = v2;
 				tess.indexes[numIndexes + 1] = v3;
 				tess.indexes[numIndexes + 2] = v1;
-				
+
 				tess.indexes[numIndexes + 3] = v1;
 				tess.indexes[numIndexes + 4] = v3;
 				tess.indexes[numIndexes + 5] = v4;
@@ -708,7 +708,7 @@ static void RB_SurfaceFlare(srfFlare_t* surf)
 	left[0] = r_ignore->value;
 
 	up[1] = r_ignore->value;
-	
+
 	RB_AddQuadStampExt(surf->origin, left, up, color, 0, 0, 1, 1);
 #endif
 }
@@ -755,7 +755,7 @@ static void RB_SurfaceSprite()
 //
 //==========================================================================
 
-static void RB_SurfaceBeam() 
+static void RB_SurfaceBeam()
 {
 	refEntity_t* e = &backEnd.currentEntity->e;
 
@@ -932,7 +932,7 @@ static void RB_SurfaceRailCore()
 //
 //==========================================================================
 
-static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, const vec3_t right, const vec3_t up )
+static void DoRailDiscs(int numSegs, const vec3_t start, const vec3_t dir, const vec3_t right, const vec3_t up)
 {
 	if (numSegs > 1)
 	{
@@ -1068,13 +1068,14 @@ static void RB_SurfaceSplash()
 	// calculate the xyz locations for the four corners
 	radius = backEnd.currentEntity->e.radius;
 
-	VectorSet( left, -radius, 0, 0 );
-	VectorSet( up, 0, radius, 0 );
-	if ( backEnd.viewParms.isMirror ) {
-		VectorSubtract( vec3_origin, left, left );
+	VectorSet(left, -radius, 0, 0);
+	VectorSet(up, 0, radius, 0);
+	if (backEnd.viewParms.isMirror)
+	{
+		VectorSubtract(vec3_origin, left, left);
 	}
 
-	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );
+	RB_AddQuadStamp(backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA);
 }
 
 //==========================================================================
@@ -1113,7 +1114,7 @@ static void RB_SurfaceAxis()
 
 static void RB_SurfaceEntity(surfaceType_t* surfType)
 {
-	switch(backEnd.currentEntity->e.reType)
+	switch (backEnd.currentEntity->e.reType)
 	{
 	case RT_SPRITE:
 		RB_SurfaceSprite();
@@ -1158,7 +1159,7 @@ static void RB_SurfaceDisplayList(srfDisplayList_t* surf)
 	qglCallList(surf->listNum);
 }
 
-static void RB_SurfacePolyBuffer(srfPolyBuffer_t *surf)
+static void RB_SurfacePolyBuffer(srfPolyBuffer_t* surf)
 {
 	RB_EndSurface();
 
@@ -1209,23 +1210,23 @@ static void RB_SurfaceDecal(srfDecal_t* srf)
 	tess.numVertexes = numv;
 }
 
-void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])( void *) =
+void(*rb_surfaceTable[SF_NUM_SURFACE_TYPES]) (void*) =
 {
-	(void(*)(void*))RB_SurfaceBad,			// SF_BAD, 
-	(void(*)(void*))RB_SurfaceSkip,			// SF_SKIP, 
-	(void(*)(void*))RB_SurfaceFace,			// SF_FACE,
-	(void(*)(void*))RB_SurfaceGrid,			// SF_GRID,
-	(void(*)(void*))RB_SurfaceTriangles,	// SF_TRIANGLES,
-	(void(*)(void*))RB_SurfaceFoliage,		// SF_FOLIAGE,
-	(void(*)(void*))RB_SurfacePolychain,	// SF_POLY,
-	(void(*)(void*))RB_SurfaceMesh,			// SF_MD3,
-	(void(*)(void*))RB_SurfaceAnim,			// SF_MD4,
-	(void(*)(void*))RB_SurfaceCMesh,		// SF_MDC,
-	(void(*)(void*))RB_SurfaceAnimMds,		// SF_MDS,
-	(void(*)(void*))RB_MDM_SurfaceAnim,		// SF_MDM,
-	(void(*)(void*))RB_SurfaceFlare,		// SF_FLARE,
-	(void(*)(void*))RB_SurfaceEntity,		// SF_ENTITY
-	(void(*)(void*))RB_SurfaceDisplayList,	// SF_DISPLAY_LIST
-	(void(*)(void*))RB_SurfacePolyBuffer,	// SF_POLYBUFFER
-	(void(*)(void*))RB_SurfaceDecal,		// SF_DECAL
+	(void (*)(void*))RB_SurfaceBad,			// SF_BAD,
+	(void (*)(void*))RB_SurfaceSkip,		// SF_SKIP,
+	(void (*)(void*))RB_SurfaceFace,		// SF_FACE,
+	(void (*)(void*))RB_SurfaceGrid,		// SF_GRID,
+	(void (*)(void*))RB_SurfaceTriangles,	// SF_TRIANGLES,
+	(void (*)(void*))RB_SurfaceFoliage,		// SF_FOLIAGE,
+	(void (*)(void*))RB_SurfacePolychain,	// SF_POLY,
+	(void (*)(void*))RB_SurfaceMesh,		// SF_MD3,
+	(void (*)(void*))RB_SurfaceAnim,		// SF_MD4,
+	(void (*)(void*))RB_SurfaceCMesh,		// SF_MDC,
+	(void (*)(void*))RB_SurfaceAnimMds,		// SF_MDS,
+	(void (*)(void*))RB_MDM_SurfaceAnim,	// SF_MDM,
+	(void (*)(void*))RB_SurfaceFlare,		// SF_FLARE,
+	(void (*)(void*))RB_SurfaceEntity,		// SF_ENTITY
+	(void (*)(void*))RB_SurfaceDisplayList,	// SF_DISPLAY_LIST
+	(void (*)(void*))RB_SurfacePolyBuffer,	// SF_POLYBUFFER
+	(void (*)(void*))RB_SurfaceDecal,		// SF_DECAL
 };

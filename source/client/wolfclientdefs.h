@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#define LIMBOCHAT_WIDTH_WA     140     // NERVE - SMF
-#define LIMBOCHAT_HEIGHT_WA    7       // NERVE - SMF
+#define LIMBOCHAT_WIDTH_WA     140		// NERVE - SMF
+#define LIMBOCHAT_HEIGHT_WA    7		// NERVE - SMF
 
 // Arnout: doubleTap buttons - ETDT_NUM can be max 8
 enum
@@ -34,69 +34,69 @@ enum
 // snapshots are a view of the server at a given time
 struct wsclSnapshot_t
 {
-	qboolean valid;                 // cleared if delta parsing was invalid
-	int snapFlags;                  // rate delayed and dropped commands
+	qboolean valid;					// cleared if delta parsing was invalid
+	int snapFlags;					// rate delayed and dropped commands
 
-	int serverTime;                 // server time the message is valid for (in msec)
+	int serverTime;					// server time the message is valid for (in msec)
 
-	int messageNum;                 // copied from netchan->incoming_sequence
-	int deltaNum;                   // messageNum the delta is from
-	int ping;                       // time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
+	int messageNum;					// copied from netchan->incoming_sequence
+	int deltaNum;					// messageNum the delta is from
+	int ping;						// time from when cmdNum-1 was sent to time packet was reeceived
+	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
 
-	int cmdNum;                     // the next cmdNum the server is expecting
-	wsplayerState_t ps;                       // complete information about the current player at this time
+	int cmdNum;						// the next cmdNum the server is expecting
+	wsplayerState_t ps;							// complete information about the current player at this time
 
-	int numEntities;                        // all of the entities that need to be presented
-	int parseEntitiesNum;                   // at the time of this snapshot
+	int numEntities;						// all of the entities that need to be presented
+	int parseEntitiesNum;					// at the time of this snapshot
 
-	int serverCommandNum;                   // execute all commands up to this before
+	int serverCommandNum;					// execute all commands up to this before
 											// making the snapshot current
 };
 
 // snapshots are a view of the server at a given time
 struct wmclSnapshot_t
 {
-	qboolean valid;                 // cleared if delta parsing was invalid
-	int snapFlags;                  // rate delayed and dropped commands
+	qboolean valid;					// cleared if delta parsing was invalid
+	int snapFlags;					// rate delayed and dropped commands
 
-	int serverTime;                 // server time the message is valid for (in msec)
+	int serverTime;					// server time the message is valid for (in msec)
 
-	int messageNum;                 // copied from netchan->incoming_sequence
-	int deltaNum;                   // messageNum the delta is from
-	int ping;                       // time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
+	int messageNum;					// copied from netchan->incoming_sequence
+	int deltaNum;					// messageNum the delta is from
+	int ping;						// time from when cmdNum-1 was sent to time packet was reeceived
+	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
 
-	int cmdNum;                     // the next cmdNum the server is expecting
-	wmplayerState_t ps;                       // complete information about the current player at this time
+	int cmdNum;						// the next cmdNum the server is expecting
+	wmplayerState_t ps;							// complete information about the current player at this time
 
-	int numEntities;                        // all of the entities that need to be presented
-	int parseEntitiesNum;                   // at the time of this snapshot
+	int numEntities;						// all of the entities that need to be presented
+	int parseEntitiesNum;					// at the time of this snapshot
 
-	int serverCommandNum;                   // execute all commands up to this before
+	int serverCommandNum;					// execute all commands up to this before
 											// making the snapshot current
 };
 
 // snapshots are a view of the server at a given time
 struct etclSnapshot_t
 {
-	qboolean valid;                 // cleared if delta parsing was invalid
-	int snapFlags;                  // rate delayed and dropped commands
+	qboolean valid;					// cleared if delta parsing was invalid
+	int snapFlags;					// rate delayed and dropped commands
 
-	int serverTime;                 // server time the message is valid for (in msec)
+	int serverTime;					// server time the message is valid for (in msec)
 
-	int messageNum;                 // copied from netchan->incoming_sequence
-	int deltaNum;                   // messageNum the delta is from
-	int ping;                       // time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
+	int messageNum;					// copied from netchan->incoming_sequence
+	int deltaNum;					// messageNum the delta is from
+	int ping;						// time from when cmdNum-1 was sent to time packet was reeceived
+	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
 
-	int cmdNum;                     // the next cmdNum the server is expecting
-	etplayerState_t ps;                       // complete information about the current player at this time
+	int cmdNum;						// the next cmdNum the server is expecting
+	etplayerState_t ps;							// complete information about the current player at this time
 
-	int numEntities;                        // all of the entities that need to be presented
-	int parseEntitiesNum;                   // at the time of this snapshot
+	int numEntities;						// all of the entities that need to be presented
+	int parseEntitiesNum;					// at the time of this snapshot
 
-	int serverCommandNum;                   // execute all commands up to this before
+	int serverCommandNum;					// execute all commands up to this before
 											// making the snapshot current
 };
 

@@ -21,13 +21,13 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define NOISE_SIZE			256
-#define NOISE_MASK			(NOISE_SIZE - 1)
+#define NOISE_SIZE          256
+#define NOISE_MASK          (NOISE_SIZE - 1)
 
-#define VAL(a)				s_noise_perm[(a) & (NOISE_MASK)]
-#define INDEX(x, y, z, t)	VAL(x + VAL(y + VAL(z + VAL(t))))
+#define VAL(a)              s_noise_perm[(a) & (NOISE_MASK)]
+#define INDEX(x, y, z, t)   VAL(x + VAL(y + VAL(z + VAL(t))))
 
-#define LERP(a, b, w)		(a * (1.0f - w) + b * w)
+#define LERP(a, b, w)       (a * (1.0f - w) + b * w)
 
 // TYPES -------------------------------------------------------------------
 
@@ -43,8 +43,8 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static float	s_noise_table[NOISE_SIZE];
-static int		s_noise_perm[NOISE_SIZE];
+static float s_noise_table[NOISE_SIZE];
+static int s_noise_perm[NOISE_SIZE];
 
 // CODE --------------------------------------------------------------------
 
@@ -108,12 +108,12 @@ float R_NoiseGet4f(float x, float y, float z, float t)
 		back[0] = GetNoiseValue(ix, iy, iz + 1, it + i);
 		back[1] = GetNoiseValue(ix + 1, iy, iz + 1, it + i);
 		back[2] = GetNoiseValue(ix, iy + 1, iz + 1, it + i);
-		back[3] = GetNoiseValue(ix + 1, iy+1, iz + 1, it + i);
+		back[3] = GetNoiseValue(ix + 1, iy + 1, iz + 1, it + i);
 
 		float fvalue = LERP(LERP(front[0], front[1], fx), LERP(front[2], front[3], fx), fy);
 		float bvalue = LERP(LERP(back[0], back[1], fx), LERP(back[2], back[3], fx), fy);
 
-		value[i] = LERP( fvalue, bvalue, fz );
+		value[i] = LERP(fvalue, bvalue, fz);
 	}
 
 	float finalvalue = LERP(value[0], value[1], ft);

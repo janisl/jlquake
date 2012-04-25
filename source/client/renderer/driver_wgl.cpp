@@ -22,13 +22,13 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define WINDOW_CLASS_NAME	"JLQuake"
+#define WINDOW_CLASS_NAME   "JLQuake"
 
 enum
 {
-	TRY_PFD_SUCCESS		= 0,
-	TRY_PFD_FAIL_SOFT	= 1,
-	TRY_PFD_FAIL_HARD	= 2,
+	TRY_PFD_SUCCESS     = 0,
+	TRY_PFD_FAIL_SOFT   = 1,
+	TRY_PFD_FAIL_HARD   = 2,
 };
 
 // TYPES -------------------------------------------------------------------
@@ -45,37 +45,37 @@ enum
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static HDC		maindc;
-static HGLRC	baseRC;
+static HDC maindc;
+static HGLRC baseRC;
 
-static bool		s_alttab_disabled;
+static bool s_alttab_disabled;
 
-static int		desktopBitsPixel;
-static int		desktopWidth;
-static int		desktopHeight;
+static int desktopBitsPixel;
+static int desktopWidth;
+static int desktopHeight;
 
-static bool		s_classRegistered = false;
-static bool		pixelFormatSet;
-static bool		cdsFullscreen;
+static bool s_classRegistered = false;
+static bool pixelFormatSet;
+static bool cdsFullscreen;
 
-static Cvar*	vid_xpos;			// X coordinate of window position
-static Cvar*	vid_ypos;			// Y coordinate of window position
+static Cvar* vid_xpos;				// X coordinate of window position
+static Cvar* vid_ypos;				// Y coordinate of window position
 
 static bool fontbase_init = false;
 
-static quint16	s_oldHardwareGamma[3][256];
+static quint16 s_oldHardwareGamma[3][256];
 
-static HANDLE	renderCommandsEvent;
-static HANDLE	renderCompletedEvent;
-static HANDLE	renderActiveEvent;
+static HANDLE renderCommandsEvent;
+static HANDLE renderCompletedEvent;
+static HANDLE renderActiveEvent;
 
-static void		(*glimpRenderThread)();
+static void (* glimpRenderThread)();
 
-static HANDLE	renderThreadHandle;
-static DWORD	renderThreadId;
+static HANDLE renderThreadHandle;
+static DWORD renderThreadId;
 
-static void*	smpData;
-static int		wglErrors;
+static void* smpData;
+static int wglErrors;
 
 // CODE --------------------------------------------------------------------
 
@@ -182,8 +182,8 @@ static LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 	case WM_MOVE:
 		if (!r_fullscreen->integer)
 		{
-			int xPos = (short)LOWORD(lParam);    // horizontal position 
-			int yPos = (short)HIWORD(lParam);    // vertical position 
+			int xPos = (short)LOWORD(lParam);	// horizontal position
+			int yPos = (short)HIWORD(lParam);	// vertical position
 
 			RECT r;
 			r.left   = 0;
@@ -226,7 +226,7 @@ static LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		break;
 
 	case MM_MCINOTIFY:
-		if (CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam) == 0)
+		if (CDAudio_MessageHandler(hWnd, uMsg, wParam, lParam) == 0)
 		{
 			return 0;
 		}
@@ -238,7 +238,7 @@ static LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		return 0;
 	}
 
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 //==========================================================================
@@ -279,7 +279,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 		//
 		// make sure this has hardware acceleration
 		//
-		if ((pfds[i].dwFlags & PFD_GENERIC_FORMAT ) != 0)
+		if ((pfds[i].dwFlags & PFD_GENERIC_FORMAT) != 0)
 		{
 			if (!r_allowSoftwareGL->integer)
 			{
@@ -323,7 +323,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 
 		//
 		// selection criteria (in order of priority):
-		// 
+		//
 		//  PFD_STEREO
 		//  colorBits
 		//  depthBits
@@ -337,7 +337,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 				bestMatch = i;
 				continue;
 			}
-			
+
 			if (!(pfds[i].dwFlags & PFD_STEREO) && (pfds[bestMatch].dwFlags & PFD_STEREO) && (pPFD->dwFlags & PFD_STEREO))
 			{
 				bestMatch = i;
@@ -389,7 +389,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 				}
 				// otherwise if this PFD has more bits than our best, use it
 				else if ((pfds[i].cStencilBits > pfds[bestMatch].cStencilBits) &&
-					 (pPFD->cStencilBits > 0))
+						 (pPFD->cStencilBits > 0))
 				{
 					bestMatch = i;
 					continue;
@@ -401,7 +401,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 			bestMatch = i;
 		}
 	}
-	
+
 	if (!bestMatch)
 	{
 		return 0;
@@ -443,7 +443,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 
 static void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, int stencilbits, bool stereo)
 {
-	PIXELFORMATDESCRIPTOR src = 
+	PIXELFORMATDESCRIPTOR src =
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd
 		1,								// version number
@@ -456,8 +456,8 @@ static void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthb
 		0,								// no alpha buffer
 		0,								// shift bit ignored
 		0,								// no accumulation buffer
-		0, 0, 0, 0, 					// accum bits ignored
-		24,								// 24-bit z-buffer	
+		0, 0, 0, 0,						// accum bits ignored
+		24,								// 24-bit z-buffer
 		8,								// 8-bit stencil buffer
 		0,								// no auxiliary buffer
 		PFD_MAIN_PLANE,					// main layer
@@ -471,7 +471,7 @@ static void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthb
 
 	if (stereo)
 	{
-		Log::write( "...attempting to use stereo\n");
+		Log::write("...attempting to use stereo\n");
 		src.dwFlags |= PFD_STEREO;
 		glConfig.stereoEnabled = true;
 	}
@@ -676,7 +676,7 @@ static bool GLW_InitDriver(int colorbits)
 		//
 		//	Report if stereo is desired but unavailable.
 		//
-		if (!(pfd.dwFlags & PFD_STEREO) && (r_stereo->integer != 0)) 
+		if (!(pfd.dwFlags & PFD_STEREO) && (r_stereo->integer != 0))
 		{
 			Log::write("...failed to select stereo pixel format\n");
 			glConfig.stereoEnabled = false;
@@ -710,9 +710,9 @@ static void WG_CheckHardwareGamma()
 		return;
 	}
 
-	HDC hDC = GetDC( GetDesktopWindow() );
-	glConfig.deviceSupportsGamma = GetDeviceGammaRamp( hDC, s_oldHardwareGamma );
-	ReleaseDC( GetDesktopWindow(), hDC );
+	HDC hDC = GetDC(GetDesktopWindow());
+	glConfig.deviceSupportsGamma = GetDeviceGammaRamp(hDC, s_oldHardwareGamma);
+	ReleaseDC(GetDesktopWindow(), hDC);
 
 	if (!glConfig.deviceSupportsGamma)
 	{
@@ -767,20 +767,20 @@ static void GLW_GenDefaultLists()
 	}
 
 	hfont = CreateFont(
-		12, // logical height of font
-		6,  // logical average character width
-		0,  // angle of escapement
-		0,  // base-line orientation angle
-		0,  // font weight
-		0,  // italic attribute flag
-		0,  // underline attribute flag
-		0,  // strikeout attribute flag
-		0,  // character set identifier
-		0,  // output precision
-		0,  // clipping precision
-		0,  // output quality
-		0,  // pitch and family
-		""); // pointer to typeface name string
+		12,	// logical height of font
+		6,	// logical average character width
+		0,	// angle of escapement
+		0,	// base-line orientation angle
+		0,	// font weight
+		0,	// italic attribute flag
+		0,	// underline attribute flag
+		0,	// strikeout attribute flag
+		0,	// character set identifier
+		0,	// output precision
+		0,	// clipping precision
+		0,	// output quality
+		0,	// pitch and family
+		"");// pointer to typeface name string
 
 	if (!hfont)
 	{
@@ -862,7 +862,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 		else
 		{
 			exstyle = 0;
-			stylebits = WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE | WS_SYSMENU;// | WS_MINIMIZEBOX
+			stylebits = WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE | WS_SYSMENU;	// | WS_MINIMIZEBOX
 			AdjustWindowRect(&r, stylebits, FALSE);
 		}
 
@@ -880,7 +880,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 			x = vid_xpos->integer;
 			y = vid_ypos->integer;
 
-			// adjust window coordinates if necessary 
+			// adjust window coordinates if necessary
 			// so that the window is completely on screen
 			if (x < 0)
 			{
@@ -1013,13 +1013,13 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		if (colorbits == 0 || (!cdsFullscreen && colorbits >= 15))
 		{
 			if (MessageBox(NULL,
-				"It is highly unlikely that a correct\n"
-				"windowed display can be initialized with\n"
-				"the current desktop display depth.  Select\n"
-				"'OK' to try anyway.  Press 'Cancel' if you otherwise\n"
-				"wish to quit.",
-				"Low Desktop Color Depth",
-				MB_OKCANCEL | MB_ICONEXCLAMATION) != IDOK)
+					"It is highly unlikely that a correct\n"
+					"windowed display can be initialized with\n"
+					"the current desktop display depth.  Select\n"
+					"'OK' to try anyway.  Press 'Cancel' if you otherwise\n"
+					"wish to quit.",
+					"Low Desktop Color Depth",
+					MB_OKCANCEL | MB_ICONEXCLAMATION) != IDOK)
 			{
 				return RSERR_INVALID_MODE;
 			}
@@ -1032,7 +1032,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	if (fullscreen)
 	{
 		Com_Memset(&dm, 0, sizeof(dm));
-		
+
 		dm.dmSize = sizeof(dm);
 
 		dm.dmPelsWidth = glConfig.vidWidth;
@@ -1044,7 +1044,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			dm.dmDisplayFrequency = r_displayRefresh->integer;
 			dm.dmFields |= DM_DISPLAYFREQUENCY;
 		}
-		
+
 		// try to change color depth if possible
 		if (colorbits != 0)
 		{
@@ -1092,7 +1092,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 					ChangeDisplaySettings(0, 0);
 					return RSERR_INVALID_MODE;
 				}
-				
+
 				cdsFullscreen = true;
 			}
 			else
@@ -1105,11 +1105,11 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 				// the exact mode failed, so scan EnumDisplaySettings for the next largest mode
 				//
 				Log::write("...trying next higher resolution:");
-				
+
 				// we could do a better matching job here...
 				DEVMODE devmode;
 				int modeNum;
-				for (modeNum = 0; ;modeNum++)
+				for (modeNum = 0;; modeNum++)
 				{
 					if (!EnumDisplaySettings(NULL, modeNum, &devmode))
 					{
@@ -1137,18 +1137,18 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 						ChangeDisplaySettings(0, 0);
 						return RSERR_INVALID_MODE;
 					}
-					
+
 					cdsFullscreen = true;
 				}
 				else
 				{
 					Log::write(" failed, ");
-					
+
 					PrintCDSError(cdsRet);
-					
+
 					Log::write("...restoring display settings\n");
 					ChangeDisplaySettings(0, 0);
-					
+
 					cdsFullscreen = false;
 					glConfig.isFullscreen = false;
 					if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, false))
@@ -1212,7 +1212,7 @@ static void GLW_DeleteDefaultLists()
 
 void GLimp_Shutdown()
 {
-	const char *success[] = { "failed", "success" };
+	const char* success[] = { "failed", "success" };
 
 	Log::write("Shutting down OpenGL subsystem\n");
 
@@ -1384,7 +1384,7 @@ static DWORD WINAPI GLimp_RenderThreadWrapper(LPVOID)
 //
 //==========================================================================
 
-bool GLimp_SpawnRenderThread(void (*function)())
+bool GLimp_SpawnRenderThread(void (* function)())
 {
 	renderCommandsEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	renderCompletedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);

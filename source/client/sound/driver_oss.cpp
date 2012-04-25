@@ -45,13 +45,13 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int			audio_fd;
-static int			snd_inited;
+static int audio_fd;
+static int snd_inited;
 
-static Cvar*		snddevice;
+static Cvar* snddevice;
 
 //	Some devices may work only with 48000
-static int			tryrates[] = { 44100, 22050, 11025, 48000, 8000 };
+static int tryrates[] = { 44100, 22050, 11025, 48000, 8000 };
 
 // CODE --------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ bool SNDDMA_Init()
 		}
 	}
 
-	if (ioctl(audio_fd, SNDCTL_DSP_RESET, 0) < 0)//Not in Q3
+	if (ioctl(audio_fd, SNDCTL_DSP_RESET, 0) < 0)	//Not in Q3
 	{
 		perror(snddevice->string);
 		Log::write("Could not reset %s\n", snddevice->string);
@@ -222,15 +222,15 @@ bool SNDDMA_Init()
 	}
 
 	audio_buf_info info;
-	if (ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info)==-1)
-	{   
+	if (ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info) == -1)
+	{
 		perror("GETOSPACE");
 		Log::write("Um, can't do GETOSPACE?\n");
 		close(audio_fd);
 		return 0;
 	}
 
-	dma.samples = info.fragstotal * info.fragsize / (dma.samplebits/8);
+	dma.samples = info.fragstotal * info.fragsize / (dma.samplebits / 8);
 	dma.submission_chunk = 1;
 
 	// memory map the dma buffer

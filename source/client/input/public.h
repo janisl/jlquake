@@ -18,10 +18,10 @@
 // if none of the catchers are active, bound key strings will be executed
 enum
 {
-	KEYCATCH_CONSOLE		= 0x0001,
-	KEYCATCH_UI				= 0x0002,
-	KEYCATCH_MESSAGE		= 0x0004,
-	KEYCATCH_CGAME			= 0x0008,
+	KEYCATCH_CONSOLE        = 0x0001,
+	KEYCATCH_UI             = 0x0002,
+	KEYCATCH_MESSAGE        = 0x0004,
+	KEYCATCH_CGAME          = 0x0008,
 };
 
 enum

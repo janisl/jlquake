@@ -25,8 +25,8 @@
 
 struct sortedent_t
 {
-	trRefEntity_t*	ent;
-	vec_t 			len;
+	trRefEntity_t* ent;
+	vec_t len;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -39,21 +39,21 @@ struct sortedent_t
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-glconfig_t	glConfig;
+glconfig_t glConfig;
 
-trGlobals_t	tr;
+trGlobals_t tr;
 
-int			c_brush_polys;
-int			c_alias_polys;
-int			c_visible_textures;
-int			c_visible_lightmaps;
+int c_brush_polys;
+int c_alias_polys;
+int c_visible_textures;
+int c_visible_lightmaps;
 
-int				cl_numtransvisedicts;
-int				cl_numtranswateredicts;
+int cl_numtransvisedicts;
+int cl_numtranswateredicts;
 
-void (*BotDrawDebugPolygonsFunc)(void (*drawPoly)(int color, int numPoints, float *points), int value);
+void (* BotDrawDebugPolygonsFunc)(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
-float	s_flipMatrix[16] =
+float s_flipMatrix[16] =
 {
 	// convert from our coordinate system (looking down X)
 	// to OpenGL's coordinate system (looking down -Z)
@@ -64,7 +64,7 @@ float	s_flipMatrix[16] =
 };
 
 // speed up sin calculations - Ed
-float	r_turbsin[] =
+float r_turbsin[] =
 {
 	0, 0.19633, 0.392541, 0.588517, 0.784137, 0.979285, 1.17384, 1.3677,
 	1.56072, 1.75281, 1.94384, 2.1337, 2.32228, 2.50945, 2.69512, 2.87916,
@@ -109,12 +109,12 @@ bool fogIsOn = false;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static sortedent_t		cl_transvisedicts[MAX_ENTITIES];
-static sortedent_t		cl_transwateredicts[MAX_ENTITIES];
+static sortedent_t cl_transvisedicts[MAX_ENTITIES];
+static sortedent_t cl_transwateredicts[MAX_ENTITIES];
 
 // entities that will have procedurally generated surfaces will just
 // point at this for their sorting surface
-static surfaceType_t	entitySurface = SF_ENTITY;
+static surfaceType_t entitySurface = SF_ENTITY;
 
 // CODE --------------------------------------------------------------------
 
@@ -145,7 +145,7 @@ void myGlMultMatrix(const float* a, const float* b, float* out)
 //
 //==========================================================================
 
-void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader, 
+void R_DecomposeSort(unsigned sort, int* entityNum, shader_t** shader,
 	int* fogNum, int* dlightMap, int* frontFace, int* atiTess)
 {
 	*fogNum = (sort >> QSORT_FOGNUM_SHIFT) & 31;
@@ -178,13 +178,13 @@ static void R_SetFrameFog()
 				lerpPos = 1;
 			}
 
-			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] = tr.world->globalTransStartFog[ 0 ] + ((tr.world->globalTransEndFog[0] - tr.world->globalTransStartFog[0]) * lerpPos);
-			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] = tr.world->globalTransStartFog[ 1 ] + ((tr.world->globalTransEndFog[1] - tr.world->globalTransStartFog[1]) * lerpPos);
-			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] = tr.world->globalTransStartFog[ 2 ] + ((tr.world->globalTransEndFog[2] - tr.world->globalTransStartFog[2]) * lerpPos);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] = tr.world->globalTransStartFog[0] + ((tr.world->globalTransEndFog[0] - tr.world->globalTransStartFog[0]) * lerpPos);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] = tr.world->globalTransStartFog[1] + ((tr.world->globalTransEndFog[1] - tr.world->globalTransStartFog[1]) * lerpPos);
+			tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] = tr.world->globalTransStartFog[2] + ((tr.world->globalTransEndFog[2] - tr.world->globalTransStartFog[2]) * lerpPos);
 
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.colorInt = ColorBytes4(tr.world->fogs[tr.world->globalFog].shader->fogParms.color[0] * tr.identityLight,
-																						tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] * tr.identityLight,
-																						tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] * tr.identityLight, 1.0);
+				tr.world->fogs[tr.world->globalFog].shader->fogParms.color[1] * tr.identityLight,
+				tr.world->fogs[tr.world->globalFog].shader->fogParms.color[2] * tr.identityLight, 1.0);
 
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque = tr.world->globalTransStartFog[3] + ((tr.world->globalTransEndFog[3] - tr.world->globalTransStartFog[3]) * lerpPos);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.tcScale = 1.0f / (tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque * 8);
@@ -194,8 +194,8 @@ static void R_SetFrameFog()
 			// transition complete
 			VectorCopy(tr.world->globalTransEndFog, tr.world->fogs[tr.world->globalFog].shader->fogParms.color);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.colorInt = ColorBytes4(tr.world->globalTransEndFog[0] * tr.identityLight,
-																						tr.world->globalTransEndFog[1] * tr.identityLight,
-																						tr.world->globalTransEndFog[2] * tr.identityLight, 1.0);
+				tr.world->globalTransEndFog[1] * tr.identityLight,
+				tr.world->globalTransEndFog[2] * tr.identityLight, 1.0);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque = tr.world->globalTransEndFog[3];
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.tcScale = 1.0f / (tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque * 8);
 
@@ -240,7 +240,7 @@ static void R_SetFrameFog()
 			int fadeTime = glfogsettings[FOG_TARGET].finishTime - glfogsettings[FOG_TARGET].startTime;
 			if (fadeTime <= 0)
 			{
-				fadeTime = 1;   // avoid divide by zero
+				fadeTime = 1;	// avoid divide by zero
 			}
 			float lerpPos = (float)(tr.refdef.time - glfogsettings[FOG_TARGET].startTime) / (float)fadeTime;
 			if (lerpPos > 1)
@@ -285,7 +285,7 @@ static void R_SetFrameFog()
 		}
 		if (GGameType & GAME_WolfSP && backEnd.refdef.rdflags & RDF_SNOOPERVIEW)
 		{
-			tr.viewParms.zFar += 1000;  // zfar out slightly further for snooper.  this works fine with our maps, but could be 'funky' with later maps
+			tr.viewParms.zFar += 1000;	// zfar out slightly further for snooper.  this works fine with our maps, but could be 'funky' with later maps
 		}
 	}
 //	else
@@ -346,7 +346,7 @@ static void SetFarClip()
 	for (int i = 0; i < 8; i++)
 	{
 		vec3_t v;
-		if ( i & 1 )
+		if (i & 1)
 		{
 			v[0] = tr.viewParms.visBounds[0][0];
 		}
@@ -355,7 +355,7 @@ static void SetFarClip()
 			v[0] = tr.viewParms.visBounds[1][0];
 		}
 
-		if ( i & 2 )
+		if (i & 2)
 		{
 			v[1] = tr.viewParms.visBounds[0][1];
 		}
@@ -364,7 +364,7 @@ static void SetFarClip()
 			v[1] = tr.viewParms.visBounds[1][1];
 		}
 
-		if ( i & 4 )
+		if (i & 4)
 		{
 			v[2] = tr.viewParms.visBounds[0][2];
 		}
@@ -461,8 +461,8 @@ void R_SetupProjection()
 	//
 	// set up projection matrix
 	//
-	float zNear	= r_znear->value;
-	float zFar	= tr.viewParms.zFar;
+	float zNear = r_znear->value;
+	float zFar  = tr.viewParms.zFar;
 
 	// ydnar: high fov values let players see through walls
 	// solution is to move z near plane inward, which decreases zbuffer precision
@@ -585,7 +585,7 @@ void R_LocalPointToWorld(vec3_t local, vec3_t world)
 //
 //==========================================================================
 
-void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
+void R_TransformModelToClip(const vec3_t src, const float* modelMatrix, const float* projectionMatrix,
 	vec4_t eye, vec4_t dst)
 {
 	for (int i = 0; i < 4; i++)
@@ -599,7 +599,7 @@ void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const fl
 
 	for (int i = 0; i < 4; i++)
 	{
-		dst[i] = 
+		dst[i] =
 			eye[0] * projectionMatrix[i + 0 * 4] +
 			eye[1] * projectionMatrix[i + 1 * 4] +
 			eye[2] * projectionMatrix[i + 2 * 4] +
@@ -831,7 +831,7 @@ int R_CullPointAndRadius(vec3_t pt, float radius)
 
 	// check against frustum planes
 	bool mightBeClipped = false;
-	for (int i = 0; i < (GGameType & GAME_ET ? 5 : 4); i++) 
+	for (int i = 0; i < (GGameType & GAME_ET ? 5 : 4); i++)
 	{
 		cplane_t* frust = &tr.viewParms.frustum[i];
 
@@ -884,9 +884,9 @@ void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex,
 	// the sort data is packed into a single 32 bit value so it can be
 	// compared quickly during the qsorting process
 	tr.refdef.drawSurfs[index].sort = (shader->sortedIndex << QSORT_SHADERNUM_SHIFT) |
-		tr.shiftedEntityNum | (atiTess << QSORT_ATI_TESS_SHIFT) |
-		(fogIndex << QSORT_FOGNUM_SHIFT) | dlightMap |
-		(GGameType & GAME_ET ? (frontFace << QSORT_FRONTFACE_SHIFT) : 0);
+									  tr.shiftedEntityNum | (atiTess << QSORT_ATI_TESS_SHIFT) |
+									  (fogIndex << QSORT_FOGNUM_SHIFT) | dlightMap |
+									  (GGameType & GAME_ET ? (frontFace << QSORT_FRONTFACE_SHIFT) : 0);
 	tr.refdef.drawSurfs[index].surface = surface;
 	tr.refdef.numDrawSurfs++;
 }
@@ -1017,7 +1017,7 @@ static void R_DrawNullModel()
 		R_LightPointQ2(tr.currentEntity->e.origin, shadelight);
 	}
 
-    qglPushMatrix();
+	qglPushMatrix();
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	qglDisable(GL_TEXTURE_2D);
@@ -1037,7 +1037,7 @@ static void R_DrawNullModel()
 	{
 		qglVertex3f(16 * cos(i * M_PI / 2), 16 * sin(i * M_PI / 2), 0);
 	}
-	qglEnd ();
+	qglEnd();
 
 	qglColor3f(1, 1, 1);
 	qglPopMatrix();
@@ -1077,7 +1077,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 
 		//
 		// the weapon model must be handled special --
-		// we don't want the hacked weapon position showing in 
+		// we don't want the hacked weapon position showing in
 		// mirrors, because the true body position will already be drawn
 		//
 		if ((ent->e.renderfx & RF_FIRST_PERSON) && tr.viewParms.isPortal)
@@ -1156,7 +1156,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 					if (GGameType & GAME_Hexen2)
 					{
 						item_trans = (ent->e.renderfx & RF_WATERTRANS) ||
-							R_MdlHasHexen2Transparency(tr.currentModel);
+									 R_MdlHasHexen2Transparency(tr.currentModel);
 					}
 					if (!item_trans)
 					{
@@ -1230,7 +1230,7 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 
 		if ((GGameType & GAME_Hexen2) && item_trans)
 		{
-			mbrush29_leaf_t* pLeaf = Mod_PointInLeafQ1 (tr.currentEntity->e.origin, tr.worldModel);
+			mbrush29_leaf_t* pLeaf = Mod_PointInLeafQ1(tr.currentEntity->e.origin, tr.worldModel);
 			if (pLeaf->contents != BSP29CONTENTS_WATER)
 			{
 				cl_transvisedicts[cl_numtransvisedicts++].ent = tr.currentEntity;
@@ -1266,7 +1266,7 @@ static int transCompare(const void* arg1, const void* arg2)
 {
 	const sortedent_t* a1 = (const sortedent_t*)arg1;
 	const sortedent_t* a2 = (const sortedent_t*)arg2;
-	return (a2->len - a1->len); // Sorted in reverse order.  Neat, huh?
+	return (a2->len - a1->len);	// Sorted in reverse order.  Neat, huh?
 }
 
 //==========================================================================
@@ -1341,7 +1341,7 @@ static void R_AddPolygonBufferSurfaces()
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
 	srfPolyBuffer_t* polybuffer = tr.refdef.polybuffers;
-	for (int i = 0; i < tr.refdef.numPolyBuffers ; i++, polybuffer++)
+	for (int i = 0; i < tr.refdef.numPolyBuffers; i++, polybuffer++)
 	{
 		shader_t* sh = R_GetShaderByHandle(polybuffer->pPolyBuffer->shader);
 		R_AddDrawSurf((surfaceType_t*)polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE);
@@ -1432,7 +1432,7 @@ static void R_GenerateDrawSurfs()
 	}
 	else if (GGameType & GAME_Hexen2)
 	{
-		R_DrawTransEntitiesOnList(r_viewleaf->contents == BSP29CONTENTS_EMPTY); // This restores the depth mask
+		R_DrawTransEntitiesOnList(r_viewleaf->contents == BSP29CONTENTS_EMPTY);	// This restores the depth mask
 
 		R_DrawWaterSurfaces();
 
@@ -1454,7 +1454,7 @@ static void R_PlaneForSurface(surfaceType_t* surfType, cplane_t* plane)
 {
 	if (!surfType)
 	{
-		Com_Memset (plane, 0, sizeof(*plane));
+		Com_Memset(plane, 0, sizeof(*plane));
 		plane->normal[0] = 1;
 		return;
 	}
@@ -1489,7 +1489,7 @@ static void R_PlaneForSurface(surfaceType_t* surfType, cplane_t* plane)
 
 	default:
 		Com_Memset(plane, 0, sizeof(*plane));
-		plane->normal[0] = 1;		
+		plane->normal[0] = 1;
 		return;
 	}
 }
@@ -1508,7 +1508,7 @@ static bool IsMirror(const drawSurf_t* drawSurf, int entityNum)
 
 	// rotate the plane if necessary
 	cplane_t plane;
-	if (entityNum != REF_ENTITYNUM_WORLD) 
+	if (entityNum != REF_ENTITYNUM_WORLD)
 	{
 		tr.currentEntityNum = entityNum;
 		tr.currentEntity = &tr.refdef.entities[entityNum];
@@ -1523,8 +1523,8 @@ static bool IsMirror(const drawSurf_t* drawSurf, int entityNum)
 
 		// translate the original plane
 		originalPlane.dist = originalPlane.dist + DotProduct(originalPlane.normal, tr.orient.origin);
-	} 
-	else 
+	}
+	else
 	{
 		plane = originalPlane;
 	}
@@ -1547,8 +1547,8 @@ static bool IsMirror(const drawSurf_t* drawSurf, int entityNum)
 		}
 
 		// if the entity is just a mirror, don't use as a camera point
-		if (e->e.oldorigin[0] == e->e.origin[0] && 
-			e->e.oldorigin[1] == e->e.origin[1] && 
+		if (e->e.oldorigin[0] == e->e.origin[0] &&
+			e->e.oldorigin[1] == e->e.origin[1] &&
 			e->e.oldorigin[2] == e->e.origin[2])
 		{
 			return true;
@@ -1626,7 +1626,7 @@ static bool SurfIsOffscreen(const drawSurf_t* drawSurf, vec4_t clipDest[128])
 	int numTriangles = tess.numIndexes / 3;
 
 	float shortest = 100000000;
-	for (int i = 0; i < tess.numIndexes; i += 3 )
+	for (int i = 0; i < tess.numIndexes; i += 3)
 	{
 		vec3_t normal;
 		VectorSubtract(tess.xyz[tess.indexes[i]], tr.viewParms.orient.origin, normal);
@@ -1673,7 +1673,7 @@ static bool SurfIsOffscreen(const drawSurf_t* drawSurf, vec4_t clipDest[128])
 //
 //==========================================================================
 
-static bool R_GetPortalOrientations(drawSurf_t* drawSurf, int entityNum, 
+static bool R_GetPortalOrientations(drawSurf_t* drawSurf, int entityNum,
 	orientation_t* surface, orientation_t* camera,
 	vec3_t pvsOrigin, bool* mirror)
 {
@@ -1729,8 +1729,8 @@ static bool R_GetPortalOrientations(drawSurf_t* drawSurf, int entityNum,
 		VectorCopy(e->e.oldorigin, pvsOrigin);
 
 		// if the entity is just a mirror, don't use as a camera point
-		if (e->e.oldorigin[0] == e->e.origin[0] && 
-			e->e.oldorigin[1] == e->e.origin[1] && 
+		if (e->e.oldorigin[0] == e->e.origin[0] &&
+			e->e.oldorigin[1] == e->e.origin[1] &&
 			e->e.oldorigin[2] == e->e.origin[2])
 		{
 			VectorScale(plane.normal, plane.dist, surface->origin);
@@ -1747,7 +1747,7 @@ static bool R_GetPortalOrientations(drawSurf_t* drawSurf, int entityNum,
 		// an origin point we can rotate around
 		d = DotProduct(e->e.origin, plane.normal) - plane.dist;
 		VectorMA(e->e.origin, -d, surface->axis[0], surface->origin);
-			
+
 		// now get the camera origin and orientation
 		VectorCopy(e->e.oldorigin, camera->origin);
 		AxisCopy(e->e.axis, camera->axis);
@@ -1877,8 +1877,8 @@ static bool R_MirrorViewBySurface(drawSurf_t* drawSurf, int entityNum)
 	viewParms_t newParms = tr.viewParms;
 	newParms.isPortal = true;
 	orientation_t surface, camera;
-	if (!R_GetPortalOrientations(drawSurf, entityNum, &surface, &camera, 
-		newParms.pvsOrigin, &newParms.isMirror))
+	if (!R_GetPortalOrientations(drawSurf, entityNum, &surface, &camera,
+			newParms.pvsOrigin, &newParms.isMirror))
 	{
 		return false;		// bad portal, no portalentity
 	}
@@ -1887,7 +1887,7 @@ static bool R_MirrorViewBySurface(drawSurf_t* drawSurf, int entityNum)
 
 	VectorSubtract(vec3_origin, camera.axis[0], newParms.portalPlane.normal);
 	newParms.portalPlane.dist = DotProduct(camera.origin, newParms.portalPlane.normal);
-	
+
 	R_MirrorVector(oldParms.orient.axis[0], &surface, &camera, newParms.orient.axis[0]);
 	R_MirrorVector(oldParms.orient.axis[1], &surface, &camera, newParms.orient.axis[1]);
 	R_MirrorVector(oldParms.orient.axis[2], &surface, &camera, newParms.orient.axis[2]);
@@ -1916,13 +1916,13 @@ qsort replacement
 
 =================
 */
-#define	SWAP_DRAW_SURF(a,b) temp=*(drawSurf_t*)a; *(drawSurf_t*)a=*(drawSurf_t*)b; *(drawSurf_t*)b=temp;
+#define SWAP_DRAW_SURF(a,b) temp = *(drawSurf_t*)a; *(drawSurf_t*)a = *(drawSurf_t*)b; *(drawSurf_t*)b = temp;
 
 /* this parameter defines the cutoff between using quick sort and
    insertion sort for arrays; arrays with lengths shorter or equal to the
    below value use insertion sort */
 
-#define CUTOFF 8            /* testing shows that this is good value */
+#define CUTOFF 8			/* testing shows that this is good value */
 
 //==========================================================================
 //
@@ -1960,33 +1960,33 @@ static void shortsort(drawSurf_t* lo, drawSurf_t* hi)
 
 static void qsortFast(void* base, unsigned num, unsigned width)
 {
-	char *lo, *hi;              /* ends of sub-array currently sorting */
-	char *mid;                  /* points to middle of subarray */
-	char *loguy, *higuy;        /* traveling pointers for partition step */
-	unsigned size;              /* size of the sub-array */
-	char *lostk[30], *histk[30];
-	int stkptr;                 /* stack for saving sub-array to be processed */
-	drawSurf_t	temp;
+	char* lo, * hi;				/* ends of sub-array currently sorting */
+	char* mid;					/* points to middle of subarray */
+	char* loguy, * higuy;		/* traveling pointers for partition step */
+	unsigned size;				/* size of the sub-array */
+	char* lostk[30], * histk[30];
+	int stkptr;					/* stack for saving sub-array to be processed */
+	drawSurf_t temp;
 
 	/* Note: the number of stack entries required is no more than
-		1 + log2(size), so 30 is sufficient for any array */
+	    1 + log2(size), so 30 is sufficient for any array */
 
 	if (num < 2 || width == 0)
 	{
-		return;                 /* nothing to do */
+		return;					/* nothing to do */
 	}
 
-	stkptr = 0;                 /* initialize stack */
+	stkptr = 0;					/* initialize stack */
 
 	lo = (char*)base;
-	hi = (char*)base + width * (num - 1);        /* initialize limits */
+	hi = (char*)base + width * (num - 1);		/* initialize limits */
 
 	/* this entry point is for pseudo-recursion calling: setting
-		lo and hi and jumping to here is like recursion, but stkptr is
-		prserved, locals aren't, so we preserve stuff on the stack */
+	    lo and hi and jumping to here is like recursion, but stkptr is
+	    prserved, locals aren't, so we preserve stuff on the stack */
 recurse:
 
-	size = (hi - lo) / width + 1;        /* number of el's to sort */
+	size = (hi - lo) / width + 1;		/* number of el's to sort */
 
 	/* below a certain size, it is faster to use a O(n^2) sorting method */
 	if (size <= CUTOFF)
@@ -1996,33 +1996,33 @@ recurse:
 	else
 	{
 		/* First we pick a partititioning element.  The efficiency of the
-			algorithm demands that we find one that is approximately the
-			median of the values, but also that we select one fast.  Using
-			the first one produces bad performace if the array is already
-			sorted, so we use the middle one, which would require a very
-			wierdly arranged array for worst case performance.  Testing shows
-			that a median-of-three algorithm does not, in general, increase
-			performance. */
+		    algorithm demands that we find one that is approximately the
+		    median of the values, but also that we select one fast.  Using
+		    the first one produces bad performace if the array is already
+		    sorted, so we use the middle one, which would require a very
+		    wierdly arranged array for worst case performance.  Testing shows
+		    that a median-of-three algorithm does not, in general, increase
+		    performance. */
 
-		mid = lo + (size / 2) * width;      /* find middle element */
-		SWAP_DRAW_SURF(mid, lo);               /* swap it to beginning of array */
+		mid = lo + (size / 2) * width;		/* find middle element */
+		SWAP_DRAW_SURF(mid, lo);				/* swap it to beginning of array */
 
 		/* We now wish to partition the array into three pieces, one
-			consisiting of elements <= partition element, one of elements
-			equal to the parition element, and one of element >= to it.  This
-			is done below; comments indicate conditions established at every
-			step. */
+		    consisiting of elements <= partition element, one of elements
+		    equal to the parition element, and one of element >= to it.  This
+		    is done below; comments indicate conditions established at every
+		    step. */
 
 		loguy = lo;
 		higuy = hi + width;
 
 		/* Note that higuy decreases and loguy increases on every iteration,
-			so loop must terminate. */
-		for (;;)
+		    so loop must terminate. */
+		for (;; )
 		{
 			/* lo <= loguy < hi, lo < higuy <= hi + 1,
-				A[i] <= A[lo] for lo <= i <= loguy,
-				A[i] >= A[lo] for higuy <= i <= hi */
+			    A[i] <= A[lo] for lo <= i <= loguy,
+			    A[i] >= A[lo] for higuy <= i <= hi */
 
 			do
 			{
@@ -2031,16 +2031,16 @@ recurse:
 			while (loguy <= hi && (((drawSurf_t*)loguy)->sort <= ((drawSurf_t*)lo)->sort));
 
 			/* lo < loguy <= hi+1, A[i] <= A[lo] for lo <= i < loguy,
-				either loguy > hi or A[loguy] > A[lo] */
+			    either loguy > hi or A[loguy] > A[lo] */
 
 			do
 			{
 				higuy -= width;
 			}
-			while (higuy > lo && (((drawSurf_t*)higuy)->sort >= ((drawSurf_t *)lo)->sort));
+			while (higuy > lo && (((drawSurf_t*)higuy)->sort >= ((drawSurf_t*)lo)->sort));
 
 			/* lo-1 <= higuy <= hi, A[i] >= A[lo] for higuy < i <= hi,
-				either higuy <= lo or A[higuy] < A[lo] */
+			    either higuy <= lo or A[higuy] < A[lo] */
 
 			if (higuy < loguy)
 			{
@@ -2048,34 +2048,34 @@ recurse:
 			}
 
 			/* if loguy > hi or higuy <= lo, then we would have exited, so
-				A[loguy] > A[lo], A[higuy] < A[lo],
-				loguy < hi, highy > lo */
+			    A[loguy] > A[lo], A[higuy] < A[lo],
+			    loguy < hi, highy > lo */
 
 			SWAP_DRAW_SURF(loguy, higuy);
 
 			/* A[loguy] < A[lo], A[higuy] > A[lo]; so condition at top
-				of loop is re-established */
+			    of loop is re-established */
 		}
 
 		/*     A[i] >= A[lo] for higuy < i <= hi,
-				A[i] <= A[lo] for lo <= i < loguy,
-				higuy < loguy, lo <= higuy <= hi
-			implying:
-				A[i] >= A[lo] for loguy <= i <= hi,
-				A[i] <= A[lo] for lo <= i <= higuy,
-				A[i] = A[lo] for higuy < i < loguy */
+		        A[i] <= A[lo] for lo <= i < loguy,
+		        higuy < loguy, lo <= higuy <= hi
+		    implying:
+		        A[i] >= A[lo] for loguy <= i <= hi,
+		        A[i] <= A[lo] for lo <= i <= higuy,
+		        A[i] = A[lo] for higuy < i < loguy */
 
-		SWAP_DRAW_SURF(lo, higuy);     /* put partition element in place */
+		SWAP_DRAW_SURF(lo, higuy);		/* put partition element in place */
 
 		/* OK, now we have the following:
-				A[i] >= A[higuy] for loguy <= i <= hi,
-				A[i] <= A[higuy] for lo <= i < higuy
-				A[i] = A[lo] for higuy <= i < loguy    */
+		        A[i] >= A[higuy] for loguy <= i <= hi,
+		        A[i] <= A[higuy] for lo <= i < higuy
+		        A[i] = A[lo] for higuy <= i < loguy    */
 
 		/* We've finished the partition, now we want to sort the subarrays
-			[lo, higuy-1] and [loguy, hi].
-			We do the smaller one first to minimize stack usage.
-			We only sort arrays of length 2 or more.*/
+		    [lo, higuy-1] and [loguy, hi].
+		    We do the smaller one first to minimize stack usage.
+		    We only sort arrays of length 2 or more.*/
 
 		if (higuy - 1 - lo >= hi - loguy)
 		{
@@ -2084,12 +2084,12 @@ recurse:
 				lostk[stkptr] = lo;
 				histk[stkptr] = higuy - width;
 				++stkptr;
-			}                           /* save big recursion for later */
+			}							/* save big recursion for later */
 
 			if (loguy < hi)
 			{
 				lo = loguy;
-				goto recurse;           /* do small recursion */
+				goto recurse;			/* do small recursion */
 			}
 		}
 		else
@@ -2098,26 +2098,26 @@ recurse:
 			{
 				lostk[stkptr] = loguy;
 				histk[stkptr] = hi;
-				++stkptr;               /* save big recursion for later */
+				++stkptr;				/* save big recursion for later */
 			}
 
 			if (lo + width < higuy)
 			{
 				hi = higuy - width;
-				goto recurse;           /* do small recursion */
+				goto recurse;			/* do small recursion */
 			}
 		}
 	}
 
 	/* We have sorted the array, except for any pending sorts on the stack.
-		Check if there are any, and do them. */
+	    Check if there are any, and do them. */
 
 	--stkptr;
 	if (stkptr >= 0)
 	{
 		lo = lostk[stkptr];
 		hi = histk[stkptr];
-		goto recurse;           /* pop subarray from stack */
+		goto recurse;			/* pop subarray from stack */
 	}
 }
 
@@ -2360,7 +2360,7 @@ void R_Draw2DQuad(float x, float y, float width, float height,
 	qglTexCoord2f(s2, t1);
 	qglVertex2f(x + width, y);
 	qglTexCoord2f(s2, t2);
-	qglVertex2f (x + width, y + height);
+	qglVertex2f(x + width, y + height);
 	qglTexCoord2f(s1, t2);
 	qglVertex2f(x, y + height);
 	qglEnd();
@@ -2625,7 +2625,7 @@ void R_DebugText(const vec3_t org, float r, float g, float b, const char* text, 
 {
 	if (neverOcclude)
 	{
-		qglDepthRange(0, 0);  // never occluded
+		qglDepthRange(0, 0);	// never occluded
 
 	}
 	qglColor3f(r, g, b);

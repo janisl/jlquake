@@ -37,22 +37,22 @@
 
 static byte dottexture[16][16] =
 {
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},//1
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//1
 	{0,0,0,1,0,1,0,0,0,0,0,0,1,1,0,0},
 	{0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0},
-	{0,1,0,1,1,1,0,1,0,0,0,1,1,1,1,0},//4
+	{0,1,0,1,1,1,0,1,0,0,0,1,1,1,1,0},	//4
 	{0,0,1,1,1,1,1,0,0,0,0,0,1,1,0,0},
 	{0,1,0,1,1,1,0,1,0,0,0,0,0,0,0,0},
 	{0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0},//8
+	{0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0},	//8
 	{0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
 	{0,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0},
 	{0,0,0,0,0,0,0,0,1,1,0,1,1,0,1,0},
-	{0,0,0,1,0,0,0,0,1,1,1,1,1,0,1,0},//12
+	{0,0,0,1,0,0,0,0,1,1,1,1,1,0,1,0},	//12
 	{0,1,1,1,0,0,0,0,1,1,0,1,1,0,1,0},
 	{0,0,1,1,1,0,0,0,0,1,1,1,0,1,0,0},
 	{0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},//16
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//16
 };
 
 // CODE --------------------------------------------------------------------
@@ -92,9 +92,9 @@ static void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t ri
 	float s1, float t1, float s2, float t2)
 {
 	// hack a scale up to keep particles from disapearing
-	float scale = (p->origin[0] - tr.viewParms.orient.origin[0]) * tr.viewParms.orient.axis[0][0] + 
-		(p->origin[1] - tr.viewParms.orient.origin[1]) * tr.viewParms.orient.axis[0][1] +
-		(p->origin[2] - tr.viewParms.orient.origin[2]) * tr.viewParms.orient.axis[0][2];
+	float scale = (p->origin[0] - tr.viewParms.orient.origin[0]) * tr.viewParms.orient.axis[0][0] +
+				  (p->origin[1] - tr.viewParms.orient.origin[1]) * tr.viewParms.orient.axis[0][1] +
+				  (p->origin[2] - tr.viewParms.orient.origin[2]) * tr.viewParms.orient.axis[0][2];
 
 	if (scale < 20)
 	{
@@ -125,7 +125,7 @@ static void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t ri
 
 static void R_DrawParticleTriangles()
 {
-    GL_Bind(tr.particleImage);
+	GL_Bind(tr.particleImage);
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);	// no z buffering
 	GL_TexEnv(GL_MODULATE);
 	qglBegin(GL_TRIANGLES);

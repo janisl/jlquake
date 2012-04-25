@@ -35,10 +35,10 @@ char* __CopyString(const char* in);
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-model_t*		loadmodel;
+model_t* loadmodel;
 
 // precalculated dot products for quantized angles
-float			r_avertexnormal_dots[SHADEDOT_QUANT][256] =
+float r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 {
 	{1.23,1.30,1.47,1.35,1.56,1.71,1.37,1.38,1.59,1.60,1.79,1.97,1.88,1.92,1.79,1.02,0.93,1.07,0.82,0.87,0.88,0.94,0.96,1.14,1.11,0.82,0.83,0.89,0.89,0.86,0.94,0.91,1.00,1.21,0.98,1.48,1.30,1.57,0.96,1.07,1.14,1.60,1.61,1.40,1.37,1.72,1.78,1.79,1.93,1.99,1.90,1.68,1.71,1.86,1.60,1.68,1.78,1.86,1.93,1.99,1.97,1.44,1.22,1.49,0.93,0.99,0.99,1.23,1.22,1.44,1.49,0.89,0.89,0.97,0.91,0.98,1.19,0.82,0.76,0.82,0.71,0.72,0.73,0.76,0.79,0.86,0.83,0.72,0.76,0.76,0.89,0.82,0.89,0.82,0.89,0.91,0.83,0.96,1.14,0.97,1.40,1.19,0.98,0.94,1.00,1.07,1.37,1.21,1.48,1.30,1.57,1.61,1.37,0.86,0.83,0.91,0.82,0.82,0.88,0.89,0.96,1.14,0.98,0.87,0.93,0.94,1.02,1.30,1.07,1.35,1.38,1.11,1.56,1.92,1.79,1.79,1.59,1.60,1.72,1.90,1.79,0.80,0.85,0.79,0.93,0.80,0.85,0.77,0.74,0.72,0.77,0.74,0.72,0.70,0.70,0.71,0.76,0.73,0.79,0.79,0.73,0.76,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00},
 	{1.26,1.26,1.48,1.23,1.50,1.71,1.14,1.19,1.38,1.46,1.64,1.94,1.87,1.84,1.71,1.02,0.92,1.00,0.79,0.85,0.84,0.91,0.90,0.98,0.99,0.77,0.77,0.83,0.82,0.79,0.86,0.84,0.92,0.99,0.91,1.24,1.03,1.33,0.88,0.94,0.97,1.41,1.39,1.18,1.11,1.51,1.61,1.59,1.80,1.91,1.76,1.54,1.65,1.76,1.70,1.70,1.85,1.85,1.97,1.99,1.93,1.28,1.09,1.39,0.92,0.97,0.99,1.18,1.26,1.52,1.48,0.83,0.85,0.90,0.88,0.93,1.00,0.77,0.73,0.78,0.72,0.71,0.74,0.75,0.79,0.86,0.81,0.75,0.81,0.79,0.96,0.88,0.94,0.86,0.93,0.92,0.85,1.08,1.33,1.05,1.55,1.31,1.01,1.05,1.27,1.31,1.60,1.47,1.70,1.54,1.76,1.76,1.57,0.93,0.90,0.99,0.88,0.88,0.95,0.97,1.11,1.39,1.20,0.92,0.97,1.01,1.10,1.39,1.22,1.51,1.58,1.32,1.64,1.97,1.85,1.91,1.77,1.74,1.88,1.99,1.91,0.79,0.86,0.80,0.94,0.84,0.88,0.74,0.74,0.71,0.82,0.77,0.76,0.70,0.73,0.72,0.73,0.70,0.74,0.85,0.77,0.82,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00},
@@ -58,8 +58,8 @@ float			r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 	{1.26,1.39,1.48,1.51,1.64,1.71,1.60,1.58,1.77,1.74,1.91,1.94,1.87,1.97,1.85,1.10,0.97,1.22,0.88,0.92,0.95,1.01,1.11,1.39,1.32,0.88,0.90,0.97,0.96,0.93,1.05,0.99,1.27,1.47,1.20,1.70,1.54,1.76,1.08,1.31,1.33,1.70,1.76,1.55,1.57,1.88,1.85,1.91,1.97,1.99,1.99,1.70,1.65,1.85,1.41,1.54,1.61,1.76,1.80,1.91,1.93,1.52,1.26,1.48,0.92,0.99,0.97,1.18,1.09,1.28,1.39,0.94,0.93,1.05,0.92,1.01,1.31,0.88,0.81,0.86,0.72,0.75,0.74,0.79,0.79,0.86,0.85,0.71,0.73,0.75,0.82,0.77,0.83,0.78,0.85,0.88,0.81,0.88,0.97,0.90,1.18,1.00,0.93,0.86,0.92,0.94,1.14,0.99,1.24,1.03,1.33,1.39,1.11,0.79,0.77,0.84,0.79,0.77,0.84,0.83,0.90,0.98,0.91,0.85,0.92,0.91,1.02,1.26,1.00,1.23,1.19,0.99,1.50,1.84,1.71,1.64,1.38,1.46,1.51,1.76,1.59,0.84,0.88,0.80,0.94,0.79,0.86,0.82,0.77,0.76,0.74,0.74,0.71,0.73,0.70,0.72,0.82,0.77,0.85,0.74,0.70,0.73,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00}
 };
 
-vec3_t			shadevector;
-float*			shadedots = r_avertexnormal_dots[0];
+vec3_t shadevector;
+float* shadedots = r_avertexnormal_dots[0];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -321,7 +321,7 @@ void R_LoadWorld(const char* name)
 	}
 	else if (GGameType & GAME_Quake2)
 	{
-		switch (LittleLong(*(unsigned *)buffer))
+		switch (LittleLong(*(unsigned*)buffer))
 		{
 		case BSP38_HEADER:
 			Mod_LoadBrush38Model(mod, buffer);
@@ -407,7 +407,7 @@ static void R_LoadModelShadow(model_t* mod)
 
 	// load file
 	char* buf;
-	FS_ReadFile(filename, (void**) &buf);
+	FS_ReadFile(filename, (void**)&buf);
 	if (!buf)
 	{
 		return;
@@ -506,7 +506,7 @@ static bool R_FindCachedModel(const char* name, model_t* newmod)
 				}
 				break;
 			default:
-				return false;  // not supported yet
+				return false;	// not supported yet
 			}
 
 			delete *mod;
@@ -595,7 +595,7 @@ int R_RegisterModel(const char* name)
 		return mod->index;
 	}
 
-	R_LoadModelShadow( mod );
+	R_LoadModelShadow(mod);
 
 	void* buf;
 	int modfilelen = FS_ReadFile(name, &buf);
@@ -742,7 +742,7 @@ void R_ModelBounds(qhandle_t handle, vec3_t mins, vec3_t maxs)
 		VectorCopy(frame->bounds[0], mins);
 		VectorCopy(frame->bounds[1], maxs);
 	}
-		break;
+	break;
 
 	case MOD_MDC:
 	{
@@ -751,7 +751,7 @@ void R_ModelBounds(qhandle_t handle, vec3_t mins, vec3_t maxs)
 		VectorCopy(frame->bounds[0], mins);
 		VectorCopy(frame->bounds[1], maxs);
 	}
-		break;
+	break;
 
 	default:
 		VectorClear(mins);
@@ -835,8 +835,8 @@ bool R_IsMeshModel(qhandle_t Handle)
 {
 	model_t* Model = R_GetModelByHandle(Handle);
 	return Model->type == MOD_MESH1 || Model->type == MOD_MESH2 ||
-		Model->type == MOD_MESH3 || Model->type == MOD_MD4 ||
-		Model->type == MOD_MDC || Model->type == MOD_MDS || Model->type == MOD_MDM;
+		   Model->type == MOD_MESH3 || Model->type == MOD_MD4 ||
+		   Model->type == MOD_MDC || Model->type == MOD_MDS || Model->type == MOD_MDM;
 }
 
 //==========================================================================
@@ -864,7 +864,7 @@ int R_ModelSyncType(qhandle_t Handle)
 	case MOD_SPRITE:
 	case MOD_MESH1:
 		return Model->q1_synctype;
-	
+
 	default:
 		return 0;
 	}
@@ -919,17 +919,20 @@ void R_CalculateModelScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, f
 
 static md3Tag_t* R_GetTag(md3Header_t* mod, int frame, const char* tagName)
 {
-	md3Tag_t		*tag;
-	int				i;
+	md3Tag_t* tag;
+	int i;
 
-	if ( frame >= mod->numFrames ) {
+	if (frame >= mod->numFrames)
+	{
 		// it is possible to have a bad frame while changing models, so don't error
 		frame = mod->numFrames - 1;
 	}
 
-	tag = (md3Tag_t *)((byte *)mod + mod->ofsTags) + frame * mod->numTags;
-	for ( i = 0 ; i < mod->numTags ; i++, tag++ ) {
-		if ( !String::Cmp( tag->name, tagName ) ) {
+	tag = (md3Tag_t*)((byte*)mod + mod->ofsTags) + frame * mod->numTags;
+	for (i = 0; i < mod->numTags; i++, tag++)
+	{
+		if (!String::Cmp(tag->name, tagName))
+		{
 			return tag;	// found it
 		}
 	}
@@ -943,11 +946,11 @@ static md3Tag_t* R_GetTag(md3Header_t* mod, int frame, const char* tagName)
 //
 //==========================================================================
 
-bool R_LerpTag(orientation_t* tag, qhandle_t handle, int startFrame, int endFrame, 
+bool R_LerpTag(orientation_t* tag, qhandle_t handle, int startFrame, int endFrame,
 	float frac, const char* tagName)
 {
-	int		i;
-	float		frontLerp, backLerp;
+	int i;
+	float frontLerp, backLerp;
 
 	model_t* model = R_GetModelByHandle(handle);
 	if (!model->q3_md3[0])
@@ -1004,7 +1007,7 @@ static int R_GetTag(byte* mod, int frame, const char* tagName, int startTagIndex
 		if ((i >= startTagIndex) && !String::Cmp(tag->name, tagName))
 		{
 			*outTag = tag;
-			return i;   // found it
+			return i;	// found it
 		}
 	}
 
@@ -1258,7 +1261,7 @@ void R_BackupModels()
 
 	if (numBackupModels)
 	{
-		R_PurgeModels(numBackupModels + 1); // get rid of them all
+		R_PurgeModels(numBackupModels + 1);	// get rid of them all
 	}
 
 	// copy each model in memory across to the backupModels

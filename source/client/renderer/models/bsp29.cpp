@@ -21,9 +21,9 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define ANIM_CYCLE		2
+#define ANIM_CYCLE      2
 
-#define SUBDIVIDE_SIZE	64
+#define SUBDIVIDE_SIZE  64
 
 // TYPES -------------------------------------------------------------------
 
@@ -37,15 +37,15 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-mbrush29_texture_t*		r_notexture_mip;
+mbrush29_texture_t* r_notexture_mip;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte*				mod_base;
+static byte* mod_base;
 
-static mbrush29_surface_t*	warpface;
+static mbrush29_surface_t* warpface;
 
-static byte					mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+static byte mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
 // CODE --------------------------------------------------------------------
 
@@ -59,13 +59,13 @@ void R_InitBsp29NoTextureMip()
 {
 	// create a simple checkerboard texture for the default
 	r_notexture_mip = (mbrush29_texture_t*)Mem_Alloc(sizeof(mbrush29_texture_t) + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2);
-	
+
 	r_notexture_mip->width = r_notexture_mip->height = 16;
 	r_notexture_mip->offsets[0] = sizeof(mbrush29_texture_t);
 	r_notexture_mip->offsets[1] = r_notexture_mip->offsets[0] + 16 * 16;
 	r_notexture_mip->offsets[2] = r_notexture_mip->offsets[1] + 8 * 8;
 	r_notexture_mip->offsets[3] = r_notexture_mip->offsets[2] + 4 * 4;
-	
+
 	for (int m = 0; m < 4; m++)
 	{
 		byte* dest = (byte*)r_notexture_mip + r_notexture_mip->offsets[m];
@@ -119,9 +119,9 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 		mt->height = LittleLong(mt->height);
 		for (int j = 0; j < BSP29_MIPLEVELS; j++)
 		{
-			mt->offsets[j] = LittleLong (mt->offsets[j]);
+			mt->offsets[j] = LittleLong(mt->offsets[j]);
 		}
-		
+
 		if ((mt->width & 15) || (mt->height & 15))
 		{
 			throw Exception(va("Texture %s is not 16 aligned", mt->name));
@@ -247,7 +247,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 				throw Exception(va("Bad animating texture %s", tx->name));
 			}
 		}
-		
+
 		// link them all together
 		for (int j = 0; j < max; j++)
 		{
@@ -437,7 +437,7 @@ static void Mod_LoadTexinfo(bsp29_lump_t* l)
 
 		int miptex = LittleLong(in->miptex);
 		out->flags = LittleLong(in->flags);
-	
+
 		if (!loadmodel->brush29_textures)
 		{
 			out->texture = r_notexture_mip;	// checkerboard texture
@@ -452,7 +452,7 @@ static void Mod_LoadTexinfo(bsp29_lump_t* l)
 			out->texture = loadmodel->brush29_textures[miptex];
 			if (!out->texture)
 			{
-				out->texture = r_notexture_mip; // texture not found
+				out->texture = r_notexture_mip;	// texture not found
 				out->flags = 0;
 			}
 		}
@@ -490,10 +490,10 @@ static void CalcSurfaceExtents(mbrush29_surface_t* s)
 
 		for (int j = 0; j < 2; j++)
 		{
-			float val = v->position[0] * tex->vecs[j][0] + 
-				v->position[1] * tex->vecs[j][1] +
-				v->position[2] * tex->vecs[j][2] +
-				tex->vecs[j][3];
+			float val = v->position[0] * tex->vecs[j][0] +
+						v->position[1] * tex->vecs[j][1] +
+						v->position[2] * tex->vecs[j][2] +
+						tex->vecs[j][3];
 			if (val < mins[j])
 			{
 				mins[j] = val;
@@ -507,7 +507,7 @@ static void CalcSurfaceExtents(mbrush29_surface_t* s)
 
 	int bmins[2], bmaxs[2];
 	for (int i = 0; i < 2; i++)
-	{	
+	{
 		bmins[i] = floor(mins[i] / 16);
 		bmaxs[i] = ceil(maxs[i] / 16);
 
@@ -556,7 +556,7 @@ static void SubdividePolygon(int numverts, float* verts)
 	for (int i = 0; i < 3; i++)
 	{
 		float m = (mins[i] + maxs[i]) * 0.5;
-		m = SUBDIVIDE_SIZE * floor (m / SUBDIVIDE_SIZE + 0.5);
+		m = SUBDIVIDE_SIZE * floor(m / SUBDIVIDE_SIZE + 0.5);
 		if (maxs[i] - m < 8)
 		{
 			continue;
@@ -569,7 +569,7 @@ static void SubdividePolygon(int numverts, float* verts)
 		// cut it
 		float* v = verts + i;
 		float dist[64];
-		for (int j = 0; j < numverts; j++, v+= 3)
+		for (int j = 0; j < numverts; j++, v += 3)
 		{
 			dist[j] = *v - m;
 		}
@@ -583,7 +583,7 @@ static void SubdividePolygon(int numverts, float* verts)
 		int b = 0;
 		v = verts;
 		vec3_t front[64], back[64];
-		for (int j = 0; j < numverts; j++, v+= 3)
+		for (int j = 0; j < numverts; j++, v += 3)
 		{
 			if (dist[j] >= 0)
 			{
@@ -595,7 +595,7 @@ static void SubdividePolygon(int numverts, float* verts)
 				VectorCopy(v, back[b]);
 				b++;
 			}
-			if (dist[j] == 0 || dist[j+1] == 0)
+			if (dist[j] == 0 || dist[j + 1] == 0)
 			{
 				continue;
 			}
@@ -694,7 +694,7 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 	for (int surfnum = 0; surfnum < count; surfnum++, in++, out++)
 	{
 		out->firstedge = LittleLong(in->firstedge);
-		out->numedges = LittleShort(in->numedges);		
+		out->numedges = LittleShort(in->numedges);
 		out->flags = 0;
 
 		int planenum = LittleShort(in->planenum);
@@ -734,7 +734,7 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 			GL_SubdivideSurface(out);	// cut up polygon for warps
 			continue;
 		}
-		
+
 		if (out->texinfo->texture->name[0] == '*')		// turbulent
 		{
 			out->flags |= (BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED);
@@ -747,7 +747,7 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 
 			if ((GGameType & GAME_Hexen2) &&
 				(!String::NICmp(out->texinfo->texture->name, "*rtex078", 8) ||
-				!String::NICmp(out->texinfo->texture->name, "*lowlight", 9)))
+				 !String::NICmp(out->texinfo->texture->name, "*lowlight", 9)))
 			{
 				out->flags |= BRUSH29_SURF_TRANSLUCENT;
 			}
@@ -799,7 +799,7 @@ static void Mod_LoadNodes(bsp29_lump_t* l)
 		for (int j = 0; j < 3; j++)
 		{
 			out->minmaxs[j] = LittleShort(in->mins[j]);
-			out->minmaxs[3+j] = LittleShort(in->maxs[j]);
+			out->minmaxs[3 + j] = LittleShort(in->maxs[j]);
 		}
 
 		int p = LittleLong(in->planenum);
@@ -807,7 +807,7 @@ static void Mod_LoadNodes(bsp29_lump_t* l)
 
 		out->firstsurface = LittleShort(in->firstface);
 		out->numsurfaces = LittleShort(in->numfaces);
-		
+
 		for (int j = 0; j < 2; j++)
 		{
 			p = LittleShort(in->children[j]);
@@ -817,7 +817,7 @@ static void Mod_LoadNodes(bsp29_lump_t* l)
 			}
 			else
 			{
-				out->children[j] = (mbrush29_node_t *)(loadmodel->brush29_leafs + (-1 - p));
+				out->children[j] = (mbrush29_node_t*)(loadmodel->brush29_leafs + (-1 - p));
 			}
 		}
 	}
@@ -865,9 +865,9 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 		out->contents = p;
 
 		out->firstmarksurface = loadmodel->brush29_marksurfaces +
-			(quint16)LittleShort(in->firstmarksurface);
+								(quint16)LittleShort(in->firstmarksurface);
 		out->nummarksurfaces = LittleShort(in->nummarksurfaces);
-		
+
 		p = LittleLong(in->visofs);
 		if (p == -1)
 		{
@@ -877,7 +877,7 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 		{
 			out->compressed_vis = loadmodel->brush29_visdata + p;
 		}
-		
+
 		for (int j = 0; j < 4; j++)
 		{
 			out->ambient_sound_level[j] = in->ambient_level[j];
@@ -898,7 +898,7 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 				out->firstmarksurface[j]->flags |= BRUSH29_SURF_DONTWARP;
 			}
 		}
-	}	
+	}
 }
 
 //==========================================================================
@@ -908,7 +908,7 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 //==========================================================================
 
 static void Mod_LoadMarksurfaces(bsp29_lump_t* l)
-{	
+{
 	short* in = (short*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
@@ -1071,7 +1071,7 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 
 	loadmodel->type = MOD_BRUSH29;
 
-	bsp29_dheader_t* header = (bsp29_dheader_t *)buffer;
+	bsp29_dheader_t* header = (bsp29_dheader_t*)buffer;
 
 	int version = LittleLong(header->version);
 	if (version != BSP29_VERSION)
@@ -1080,7 +1080,7 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 	}
 
 	// swap all the lumps
-	mod_base = (byte *)header;
+	mod_base = (byte*)header;
 
 	for (int i = 0; i < (int)sizeof(bsp29_dheader_t) / 4; i++)
 	{
@@ -1124,14 +1124,14 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 		mod->brush29_firstmodelsurface = bm->firstface;
 		mod->brush29_nummodelsurfaces = bm->numfaces;
 
-		VectorCopy (bm->maxs, mod->q1_maxs);
-		VectorCopy (bm->mins, mod->q1_mins);
+		VectorCopy(bm->maxs, mod->q1_maxs);
+		VectorCopy(bm->mins, mod->q1_mins);
 
-		mod->q1_radius = RadiusFromBounds (mod->q1_mins, mod->q1_maxs);
+		mod->q1_radius = RadiusFromBounds(mod->q1_mins, mod->q1_maxs);
 
 		mod->brush29_numleafs = bm->visleafs;
 
-		if (i < mod->brush29_numsubmodels-1)
+		if (i < mod->brush29_numsubmodels - 1)
 		{
 			// duplicate the basic information
 			loadmodel = R_AllocModel();
@@ -1212,7 +1212,7 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 {
 	static byte decompressed[BSP29_MAX_MAP_LEAFS / 8];
 
-	int row = (model->brush29_numleafs + 7) >> 3;	
+	int row = (model->brush29_numleafs + 7) >> 3;
 	byte* out = decompressed;
 
 	if (!in)
@@ -1223,7 +1223,7 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 			*out++ = 0xff;
 			row--;
 		}
-		return decompressed;		
+		return decompressed;
 	}
 
 	do
@@ -1241,7 +1241,8 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 			*out++ = 0;
 			c--;
 		}
-	} while (out - decompressed < row);
+	}
+	while (out - decompressed < row);
 
 	return decompressed;
 }

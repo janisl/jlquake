@@ -137,14 +137,14 @@ void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* tr
 float CLQH_LerpPoint()
 {
 	float f = cl.qh_mtime[0] - cl.qh_mtime[1];
-	
+
 	if (!f || clqh_nolerp->value || cls.qh_timedemo || CL_IsServerActive())
 	{
 		cl.qh_serverTimeFloat = cl.qh_mtime[0];
 		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
 		return 1;
 	}
-		
+
 	if (f > 0.1)
 	{
 		// dropped packet, or start of demo

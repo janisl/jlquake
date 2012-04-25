@@ -31,19 +31,19 @@
 
 struct pcx_t
 {
-	char	manufacturer;
-	char	version;
-	char	encoding;
-	char	bits_per_pixel;
-	quint16	xmin,ymin,xmax,ymax;
-	quint16	hres,vres;
-	quint8	palette[48];
-	char	reserved;
-	char	color_planes;
-	quint16	bytes_per_line;
-	quint16	palette_type;
-	char	filler[58];
-	quint8	data;			// unbounded
+	char manufacturer;
+	char version;
+	char encoding;
+	char bits_per_pixel;
+	quint16 xmin,ymin,xmax,ymax;
+	quint16 hres,vres;
+	quint8 palette[48];
+	char reserved;
+	char color_planes;
+	quint16 bytes_per_line;
+	quint16 palette_type;
+	char filler[58];
+	quint8 data;			// unbounded
 };
 
 #pragma pack(pop)
@@ -204,7 +204,7 @@ void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int 
 	{
 		int c = (*width) * (*height);
 		byte* pic32 = *pic = new byte[4 * c];
-		for (int i = 0 ; i < c ; i++)
+		for (int i = 0; i < c; i++)
 		{
 			int p = pic8[i];
 			pic32[0] = palette[p * 3];
@@ -234,10 +234,10 @@ void R_SavePCXMem(Array<byte>& buffer, byte* data, int width, int height, byte* 
 {
 	buffer.SetNum(width * height * 2 + 1000);
 	pcx_t* pcx = (pcx_t*)buffer.Ptr();
- 
+
 	pcx->manufacturer = 0x0a;	// PCX id
 	pcx->version = 5;			// 256 color
- 	pcx->encoding = 1;		// uncompressed
+	pcx->encoding = 1;		// uncompressed
 	pcx->bits_per_pixel = 8;		// 256 color
 	pcx->xmin = 0;
 	pcx->ymin = 0;
@@ -273,13 +273,13 @@ void R_SavePCXMem(Array<byte>& buffer, byte* data, int width, int height, byte* 
 
 		data -= width * 2;
 	}
-			
+
 	// write the palette
 	*pack++ = 0x0c;	// palette ID byte
 	for (int i = 0; i < 768; i++)
 	{
 		*pack++ = *palette++;
 	}
-		
+
 	buffer.SetNum(pack - (byte*)pcx);
 }

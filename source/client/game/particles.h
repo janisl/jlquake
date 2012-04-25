@@ -20,7 +20,7 @@ enum
 	PARTICLE_GRAVITY = 40,
 };
 
-#define INSTANT_PARTICLE	-10000.0
+#define INSTANT_PARTICLE    -10000.0
 
 enum ptype_t
 {

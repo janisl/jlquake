@@ -22,8 +22,8 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define BUFFER_SAMPLES		4096
-#define SUBMISSION_CHUNK	BUFFER_SAMPLES / 2
+#define BUFFER_SAMPLES      4096
+#define SUBMISSION_CHUNK    BUFFER_SAMPLES / 2
 
 // TYPES -------------------------------------------------------------------
 
@@ -39,13 +39,13 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static snd_pcm_t*			pcm_handle;
-static snd_pcm_hw_params_t*	hw_params;
+static snd_pcm_t* pcm_handle;
+static snd_pcm_hw_params_t* hw_params;
 
-static int					sample_bytes;
-static int					buffer_bytes;
+static int sample_bytes;
+static int buffer_bytes;
 
-static Cvar*				snddevice;
+static Cvar* snddevice;
 
 //	The sample rates which will be attempted.
 static int RATES[] =
@@ -103,7 +103,7 @@ bool SNDDMA_Init()
 	if (dma.samplebits != 8)
 	{
 		//try 16 by default
-		dma.samplebits = 16;  //ensure this is set for other calculations
+		dma.samplebits = 16;	//ensure this is set for other calculations
 		err = snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_S16);
 		if (err < 0)
 		{
@@ -196,7 +196,7 @@ bool SNDDMA_Init()
 	dma.channels = s_channels_cv->integer;
 	if (dma.channels < 1 || dma.channels > 2)
 	{
-		dma.channels = 2;  //ensure either stereo or mono
+		dma.channels = 2;	//ensure either stereo or mono
 	}
 
 	err = snd_pcm_hw_params_set_channels(pcm_handle, hw_params, dma.channels);
@@ -245,7 +245,7 @@ bool SNDDMA_Init()
 	sample_bytes = dma.samplebits / 8;
 	buffer_bytes = BUFFER_SAMPLES * sample_bytes;
 
-	dma.buffer = new byte[buffer_bytes];  //allocate pcm frame buffer
+	dma.buffer = new byte[buffer_bytes];	//allocate pcm frame buffer
 	Com_Memset(dma.buffer, 0, buffer_bytes);
 
 	dma.samplepos = 0;
@@ -351,15 +351,15 @@ void SNDDMA_Submit()
 		if (w < 0)
 		{
 			//write to card
-			snd_pcm_prepare(pcm_handle);  //xrun occured
+			snd_pcm_prepare(pcm_handle);	//xrun occured
 			return;
 		}
 
-		dma.samplepos += w * dma.channels;  //mark progress
+		dma.samplepos += w * dma.channels;	//mark progress
 
 		if (dma.samplepos >= dma.samples)
 		{
-			dma.samplepos = 0;  //wrap buffer
+			dma.samplepos = 0;	//wrap buffer
 		}
 		Submitted += w;
 	}

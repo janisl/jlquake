@@ -46,7 +46,7 @@ q1entity_t* CLQ1_EntityNum(int number)
 	return &clq1_entities[number];
 }
 
-static void CLQ1_ParseBaseline(QMsg& message, q1entity_state_t *es)
+static void CLQ1_ParseBaseline(QMsg& message, q1entity_state_t* es)
 {
 	es->modelindex = message.ReadByte();
 	es->frame = message.ReadByte();
@@ -93,7 +93,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 	{
 		// first update is the final signon stage
 		clc.qh_signon = SIGNONS;
-		CLQ1_SignonReply ();
+		CLQ1_SignonReply();
 	}
 
 	if (bits & Q1U_MOREBITS)
@@ -167,7 +167,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 			CLQ1_TranslatePlayerSkin(num - 1);
 		}
 	}
-	
+
 	if (bits & Q1U_FRAME)
 	{
 		ent->state.frame = message.ReadByte();
@@ -317,7 +317,7 @@ static void CLQW_ParseDelta(QMsg& message, q1entity_state_t* from, q1entity_stat
 	{
 		to->modelindex = message.ReadByte();
 	}
-		
+
 	if (bits & QWU_FRAME)
 	{
 		to->frame = message.ReadByte();
@@ -342,7 +342,7 @@ static void CLQW_ParseDelta(QMsg& message, q1entity_state_t* from, q1entity_stat
 	{
 		to->origin[0] = message.ReadCoord();
 	}
-		
+
 	if (bits & QWU_ANGLE1)
 	{
 		to->angles[0] = message.ReadAngle();
@@ -352,7 +352,7 @@ static void CLQW_ParseDelta(QMsg& message, q1entity_state_t* from, q1entity_stat
 	{
 		to->origin[1] = message.ReadCoord();
 	}
-		
+
 	if (bits & QWU_ANGLE2)
 	{
 		to->angles[1] = message.ReadAngle();
@@ -362,7 +362,7 @@ static void CLQW_ParseDelta(QMsg& message, q1entity_state_t* from, q1entity_stat
 	{
 		to->origin[2] = message.ReadCoord();
 	}
-		
+
 	if (bits & QWU_ANGLE3)
 	{
 		to->angles[2] = message.ReadAngle();
@@ -382,7 +382,7 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.qh_validsequence = 0;		// can't render a frame
-	cl.qw_frames[clc.netchan.incomingSequence&UPDATE_MASK_QW].invalid = true;
+	cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW].invalid = true;
 
 	// read it all, but ignore it
 	while (1)
@@ -396,10 +396,12 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 		}
 
 		if (!word)
+		{
 			break;	// done
 
+		}
 		q1entity_state_t newe;
-		CLQW_ParseDelta (message, &olde, &newe, word);
+		CLQW_ParseDelta(message, &olde, &newe, word);
 	}
 }
 
@@ -775,7 +777,7 @@ static void CLQ1_HandleRefEntColormap(refEntity_t* entity, int colourMap)
 	// seperately for the players.  Heads are just uncolored.
 	if (colourMap && !String::Cmp(R_ModelName(entity->hModel), "progs/player.mdl"))
 	{
-	    entity->customSkin = R_GetImageHandle(clq1_playertextures[colourMap - 1]);
+		entity->customSkin = R_GetImageHandle(clq1_playertextures[colourMap - 1]);
 	}
 }
 
@@ -793,7 +795,7 @@ void CLQW_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 
 void CLQ1_RelinkEntities()
 {
-	// determine partial update time	
+	// determine partial update time
 	float frac = CLQH_LerpPoint();
 
 	R_ClearScene();
@@ -803,13 +805,13 @@ void CLQ1_RelinkEntities()
 	//
 	for (int i = 0; i < 3; i++)
 	{
-		cl.qh_velocity[i] = cl.qh_mvelocity[1][i] + 
-			frac * (cl.qh_mvelocity[0][i] - cl.qh_mvelocity[1][i]);
+		cl.qh_velocity[i] = cl.qh_mvelocity[1][i] +
+							frac * (cl.qh_mvelocity[0][i] - cl.qh_mvelocity[1][i]);
 	}
 
 	if (clc.demoplaying)
 	{
-		// interpolate the angles	
+		// interpolate the angles
 		for (int j = 0; j < 3; j++)
 		{
 			float d = cl.qh_mviewangles[0][j] - cl.qh_mviewangles[1][j];
@@ -875,7 +877,7 @@ void CLQ1_RelinkEntities()
 			}
 			ent->state.angles[j] = ent->msg_angles[1][j] + f * d;
 		}
-		
+
 
 		int ModelFlags = R_ModelFlags(cl.model_draw[ent->state.modelindex]);
 		// rotate binary objects locally
@@ -897,7 +899,7 @@ void CLQ1_RelinkEntities()
 			CLQ1_BrightLight(i, ent->state.origin);
 		}
 		if (ent->state.effects & Q1EF_DIMLIGHT)
-		{			
+		{
 			CLQ1_DimLight(i, ent->state.origin, 0);
 		}
 
@@ -998,7 +1000,7 @@ void CLQW_LinkPacketEntities()
 
 		qhandle_t model = cl.model_draw[s1->modelindex];
 		ent.hModel = model;
-	
+
 		// set colormap
 		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == clq1_playerindex)
 		{
@@ -1007,7 +1009,7 @@ void CLQW_LinkPacketEntities()
 
 		// set skin
 		ent.skinNum = s1->skinnum;
-		
+
 		// set frame
 		ent.frame = s1->frame;
 
@@ -1070,7 +1072,7 @@ void CLQW_LinkPacketEntities()
 
 		for (i = 0; i < 3; i++)
 		{
-			if ( abs(old_origin[i] - ent.origin[i]) > 128)
+			if (abs(old_origin[i] - ent.origin[i]) > 128)
 			{
 				// no trail if too far
 				VectorCopy(ent.origin, old_origin);

@@ -17,7 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 
-#define MAX_PROJECTILES_Q1	32
+#define MAX_PROJECTILES_Q1  32
 
 struct q1projectile_t
 {

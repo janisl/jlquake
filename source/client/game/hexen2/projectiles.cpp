@@ -17,8 +17,8 @@
 #include "../../client.h"
 #include "local.h"
 
-#define MAX_PROJECTILES_H2	32
-#define MAX_MISSILES_H2		32
+#define MAX_PROJECTILES_H2  32
+#define MAX_MISSILES_H2     32
 
 struct h2projectile_t
 {
@@ -57,9 +57,9 @@ void CLH2_ClearMissiles()
 {
 	clh2_num_missiles = 0;
 }
-	
+
 //	Nails are passed as efficient temporary entities
-// Note: all references to these functions have been replaced with 
+// Note: all references to these functions have been replaced with
 //	calls to the Missile functions below
 void CLHW_ParseNails(QMsg& message)
 {
@@ -146,14 +146,16 @@ void CLHW_ParsePackMissiles(QMsg& message)
 
 void CLH2_LinkProjectiles()
 {
-	int		i;
-	h2projectile_t	*pr;
+	int i;
+	h2projectile_t* pr;
 
-	for (i=0, pr=clh2_projectiles ; i<clh2_num_projectiles ; i++, pr++)
+	for (i = 0, pr = clh2_projectiles; i < clh2_num_projectiles; i++, pr++)
 	{
 		// grab an entity to fill in
 		if (pr->modelindex < 1)
+		{
 			continue;
+		}
 		refEntity_t ent;
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
@@ -179,7 +181,7 @@ void CLH2_LinkMissiles()
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		VectorCopy (pr->origin, ent.origin);
+		VectorCopy(pr->origin, ent.origin);
 		if (pr->type == 1)
 		{
 			//ball
@@ -192,7 +194,7 @@ void CLH2_LinkMissiles()
 			ent.hModel = cl.model_draw[clh2_missilestarindex];
 			CLH2_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER);
 		}
-		if (rand() % 10 < 3)		
+		if (rand() % 10 < 3)
 		{
 			CLH2_RunParticleEffect4(ent.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
 		}

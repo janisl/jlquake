@@ -25,20 +25,20 @@
 
 struct wadinfo_t
 {
-	char		identification[4];		// should be WAD2 or 2DAW
-	int			numlumps;
-	int			infotableofs;
+	char identification[4];				// should be WAD2 or 2DAW
+	int numlumps;
+	int infotableofs;
 };
 
 struct lumpinfo_t
 {
-	int			filepos;
-	int			disksize;
-	int			size;					// uncompressed
-	char		type;
-	char		compression;
-	char		pad1, pad2;
-	char		name[16];				// must be null terminated
+	int filepos;
+	int disksize;
+	int size;							// uncompressed
+	char type;
+	char compression;
+	char pad1, pad2;
+	char name[16];						// must be null terminated
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -53,9 +53,9 @@ struct lumpinfo_t
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int			wad_numlumps;
-static lumpinfo_t*	wad_lumps;
-static Array<byte>	wad_base;
+static int wad_numlumps;
+static lumpinfo_t* wad_lumps;
+static Array<byte>  wad_base;
 
 // CODE --------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ static void CleanupName(const char* in, char* out)
 		}
 		out[i] = c;
 	}
-	
+
 	for (; i < 16; i++)
 	{
 		out[i] = 0;
@@ -107,7 +107,7 @@ void R_LoadWadFile()
 	}
 
 	wadinfo_t* header = (wadinfo_t*)wad_base.Ptr();
-	
+
 	if (header->identification[0] != 'W' ||
 		header->identification[1] != 'A' ||
 		header->identification[2] != 'D' ||
@@ -166,9 +166,9 @@ static image_t* R_PicFromWad(const char* name, GLenum WrapClampMode)
 	int height;
 	byte* pic;
 	R_LoadPICMem(qpic, &pic, &width, &height);
-	
+
 	image_t* image = R_CreateImage(va("gfx.wad:%s", name), pic, width, height, false, false, WrapClampMode, true);
-	
+
 	delete[] pic;
 
 	return image;

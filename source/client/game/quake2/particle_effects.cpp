@@ -473,7 +473,7 @@ void CLQ2_RocketTrail(vec3_t start, vec3_t end, q2centity_t* old)
 				return;
 			}
 			p->type = pt_q2static;
-			
+
 			VectorClear(p->accel);
 
 			p->alpha = 1.0;
@@ -512,7 +512,7 @@ void CLQ2_RailTrail(vec3_t start, vec3_t end)
 		}
 
 		p->type = pt_q2static;
-		
+
 		VectorClear(p->accel);
 
 		float d = i * 0.1;
@@ -590,7 +590,7 @@ void CLQ2_IonripperTrail(vec3_t start, vec3_t ent)
 			return;
 		}
 		p->type = pt_q2static;
-		VectorClear (p->accel);
+		VectorClear(p->accel);
 
 		p->alpha = 0.5;
 		p->alphavel = -1.0 / (0.3 + frand() * 0.2);
@@ -606,7 +606,7 @@ void CLQ2_IonripperTrail(vec3_t start, vec3_t ent)
 			left = false;
 			p->vel[0] = 10;
 		}
-		else 
+		else
 		{
 			left = true;
 			p->vel[0] = -10;
@@ -828,7 +828,7 @@ void CLQ2_TrapParticles(vec3_t origin)
 
 				p->alpha = 1.0;
 				p->alphavel = -1.0 / (0.3 + (rand() & 7) * 0.02);
-				
+
 				p->org[0] = org[0] + i + ((rand() & 23) * crand());
 				p->org[1] = org[1] + j + ((rand() & 23) * crand());
 				p->org[2] = org[2] + k + ((rand() & 23) * crand());
@@ -838,7 +838,7 @@ void CLQ2_TrapParticles(vec3_t origin)
 				dir[1] = i * 8;
 				dir[2] = k * 8;
 
-				VectorNormalize(dir);						
+				VectorNormalize(dir);
 				float vel = 50 + (rand() & 63);
 				VectorScale(dir, vel, p->vel);
 
@@ -1061,7 +1061,7 @@ void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward)
 	float rstep = M_PI / 10.0;
 	for (int i = start_pt; i < len; i += step)
 	{
-		if (i > step * 5) // don't bother after the 5th ring
+		if (i > step * 5)	// don't bother after the 5th ring
 		{
 			break;
 		}
@@ -1075,7 +1075,7 @@ void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward)
 			}
 
 			p->type = pt_q2static;
-			
+
 			VectorClear(p->accel);
 			float variance = 0.5;
 			float c = cos(rot) * variance;
@@ -1210,7 +1210,7 @@ void CLQ2_Tracker_Shell(vec3_t origin)
 		dir[1] = crand();
 		dir[2] = crand();
 		VectorNormalize(dir);
-	
+
 		VectorMA(origin, 40, dir, p->org);
 	}
 }
@@ -1236,7 +1236,7 @@ void CLQ2_MonsterPlasma_Shell(vec3_t origin)
 		dir[1] = crand();
 		dir[2] = crand();
 		VectorNormalize(dir);
-	
+
 		VectorMA(origin, 10, dir, p->org);
 	}
 }
@@ -1385,7 +1385,7 @@ void CLQ2_ParticleSmokeEffect(vec3_t origin, vec3_t direction, int colour, int c
 		{
 			p->org[j] = origin[j] + magnitude * 0.1 * crand();
 		}
-		VectorScale (direction, magnitude, p->vel);
+		VectorScale(direction, magnitude, p->vel);
 		float d = crand() * magnitude / 3;
 		VectorMA(p->vel, d, r, p->vel);
 		d = crand() * magnitude / 3;

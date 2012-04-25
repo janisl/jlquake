@@ -814,7 +814,7 @@ static void R_AddDecalSurface(mbrush46_decal_t* decal)
 	if (decal->fadeStartTime < tr.refdef.time && decal->fadeStartTime < decal->fadeEndTime)
 	{
 		float fade = (float)(decal->fadeEndTime - tr.refdef.time) /
-			   (float)(decal->fadeEndTime - decal->fadeStartTime);
+					 (float)(decal->fadeEndTime - decal->fadeStartTime);
 		for (int i = 0; i < decal->numVerts; i++)
 		{
 			decal->verts[i].modulate[0] *= fade;

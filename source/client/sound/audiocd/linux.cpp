@@ -51,22 +51,22 @@ void CDAudio_Pause();
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 qboolean cdValid = false;
-qboolean	playing = false;
-qboolean	wasPlaying = false;
-qboolean	initialized = false;
-qboolean	enabled = true;
+qboolean playing = false;
+qboolean wasPlaying = false;
+qboolean initialized = false;
+qboolean enabled = true;
 qboolean playLooping = false;
-float	cdvolume;
-byte 	remap[100];
-byte		playTrack;
-byte		maxTrack;
+float cdvolume;
+byte remap[100];
+byte playTrack;
+byte maxTrack;
 
 int cdfile = -1;
 static char cd_dev_old[64] = "/dev/cdrom";
 
-Cvar	*cd_volume;
-Cvar *cd_nocd;
-Cvar *cd_dev;
+Cvar* cd_volume;
+Cvar* cd_nocd;
+Cvar* cd_dev;
 
 // CODE --------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ void CDAudio_Eject()
 {
 	if (cdfile == -1 || !enabled)
 	{
-		return; // no cd init'd
+		return;	// no cd init'd
 	}
 
 	if (ioctl(cdfile, CDROMEJECT) == -1)
@@ -100,7 +100,7 @@ void CDAudio_CloseDoor()
 {
 	if (cdfile == -1 || !enabled)
 	{
-		return; // no cd init'd
+		return;	// no cd init'd
 	}
 
 	if (ioctl(cdfile, CDROMCLOSETRAY) == -1)
@@ -175,7 +175,7 @@ void CDAudio_Play(int track, qboolean looping)
 	// don't try to play a non-audio track
 	entry.cdte_track = track;
 	entry.cdte_format = CDROM_MSF;
-    if (ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
+	if (ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
 	{
 		Log::develWrite("ioctl cdromreadtocentry failed\n");
 		return;
@@ -201,10 +201,10 @@ void CDAudio_Play(int track, qboolean looping)
 	ti.cdti_ind1 = 99;
 
 	if (ioctl(cdfile, CDROMPLAYTRKIND, &ti) == -1)
-    {
+	{
 		Log::develWrite("ioctl cdromplaytrkind failed\n");
 		return;
-    }
+	}
 
 	if (ioctl(cdfile, CDROMRESUME) == -1)
 	{
@@ -323,9 +323,9 @@ void CDAudio_Resume()
 
 void CD_f()
 {
-	char	*command;
-	int		ret;
-	int		n;
+	char* command;
+	int ret;
+	int n;
 
 	if (Cmd_Argc() < 2)
 	{
@@ -381,7 +381,7 @@ void CD_f()
 		}
 		for (n = 1; n <= ret; n++)
 		{
-			remap[n] = String::Atoi(Cmd_Argv (n+1));
+			remap[n] = String::Atoi(Cmd_Argv(n + 1));
 		}
 		return;
 	}
@@ -404,13 +404,13 @@ void CD_f()
 
 	if (String::ICmp(command, "play") == 0)
 	{
-		CDAudio_Play(String::Atoi(Cmd_Argv (2)), false);
+		CDAudio_Play(String::Atoi(Cmd_Argv(2)), false);
 		return;
 	}
 
 	if (String::ICmp(command, "loop") == 0)
 	{
-		CDAudio_Play(String::Atoi(Cmd_Argv (2)), true);
+		CDAudio_Play(String::Atoi(Cmd_Argv(2)), true);
 		return;
 	}
 
@@ -514,9 +514,9 @@ void CDAudio_Update()
 
 	if (playing && lastchk < time(NULL))
 	{
-		lastchk = time(NULL) + 2; //two seconds between chks
+		lastchk = time(NULL) + 2;	//two seconds between chks
 		subchnl.cdsc_format = CDROM_MSF;
-		if (ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1 )
+		if (ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1)
 		{
 			Log::develWrite("ioctl cdromsubchnl failed\n");
 			playing = false;

@@ -16,17 +16,17 @@
 
 #include "../../client.h"
 
-int h2ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
-int h2ramp2[8] = { 384+4,384+6,384+8,384+10,384+12,384+13,384+14,384+15};
+int h2ramp1[8] = { 416,416 + 2,416 + 4,416 + 6,416 + 8,416 + 10,416 + 12,416 + 14};
+int h2ramp2[8] = { 384 + 4,384 + 6,384 + 8,384 + 10,384 + 12,384 + 13,384 + 14,384 + 15};
 int h2ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
-int h2ramp4[16] = { 416,416+1,416+2,416+3,416+4,416+5,416+6,416+7,416+8,416+9,416+10,416+11,416+12,416+13,416+14,416+15};
-int h2ramp5[16] = { 400,400+1,400+2,400+3,400+4,400+5,400+6,400+7,400+8,400+9,400+10,400+11,400+12,400+13,400+14,400+15};
-int h2ramp6[16] = { 256,256+1,256+2,256+3,256+4,256+5,256+6,256+7,256+8,256+9,256+10,256+11,256+12,256+13,256+14,256+15};
-int h2ramp7[16] = { 384,384+1,384+2,384+3,384+4,384+5,384+6,384+7,384+8,384+9,384+10,384+11,384+12,384+13,384+14,384+15};
+int h2ramp4[16] = { 416,416 + 1,416 + 2,416 + 3,416 + 4,416 + 5,416 + 6,416 + 7,416 + 8,416 + 9,416 + 10,416 + 11,416 + 12,416 + 13,416 + 14,416 + 15};
+int h2ramp5[16] = { 400,400 + 1,400 + 2,400 + 3,400 + 4,400 + 5,400 + 6,400 + 7,400 + 8,400 + 9,400 + 10,400 + 11,400 + 12,400 + 13,400 + 14,400 + 15};
+int h2ramp6[16] = { 256,256 + 1,256 + 2,256 + 3,256 + 4,256 + 5,256 + 6,256 + 7,256 + 8,256 + 9,256 + 10,256 + 11,256 + 12,256 + 13,256 + 14,256 + 15};
+int h2ramp7[16] = { 384,384 + 1,384 + 2,384 + 3,384 + 4,384 + 5,384 + 6,384 + 7,384 + 8,384 + 9,384 + 10,384 + 11,384 + 12,384 + 13,384 + 14,384 + 15};
 int h2ramp8[16] = {175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 13, 14, 15, 16, 17, 18};
-int h2ramp9[16] = { 416,416+1,416+2,416+3,416+4,416+5,416+6,416+7,416+8,416+9,416+10,416+11,416+12,416+13,416+14,416+15};
-int h2ramp10[16] = { 432,432+1,432+2,432+3,432+4,432+5,432+6,432+7,432+8,432+9,432+10,432+11,432+12,432+13,432+14,432+15};
-int h2ramp11[8] = { 424,424+1,424+2,424+3,424+4,424+5,424+6,424+7};
+int h2ramp9[16] = { 416,416 + 1,416 + 2,416 + 3,416 + 4,416 + 5,416 + 6,416 + 7,416 + 8,416 + 9,416 + 10,416 + 11,416 + 12,416 + 13,416 + 14,416 + 15};
+int h2ramp10[16] = { 432,432 + 1,432 + 2,432 + 3,432 + 4,432 + 5,432 + 6,432 + 7,432 + 8,432 + 9,432 + 10,432 + 11,432 + 12,432 + 13,432 + 14,432 + 15};
+int h2ramp11[8] = { 424,424 + 1,424 + 2,424 + 3,424 + 4,424 + 5,424 + 6,424 + 7};
 int h2ramp12[8] = { 136,137,138,139,140,141,142,143};
 int h2ramp13[16] = { 144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159};
 
@@ -396,7 +396,7 @@ void CLH2_RiderParticles(int count, const vec3_t origin)
 		float radius = 300 + (rand() & 255);
 		p->org[0] += sin(angle) * radius;
 		p->org[1] += cos(angle) * radius;
-		p->org[2] += (rand() & 255) - 30; 
+		p->org[2] += (rand() & 255) - 30;
 
 		p->vel[0] = (rand() & 255) - 127;
 		p->vel[1] = (rand() & 255) - 127;
@@ -407,17 +407,19 @@ void CLH2_RiderParticles(int count, const vec3_t origin)
 //	Not present in HexenWorld
 void CLH2_GravityWellParticle(int count, const vec3_t origin, int colour)
 {
-	int			i;
-	cparticle_t	*p;
+	int i;
+	cparticle_t* p;
 	float radius,angle;
 
 	VectorCopy(origin, rider_origin);
 
-	for (i=0 ; i<count ; i++)
+	for (i = 0; i < count; i++)
 	{
 		p = CL_AllocParticle();
 		if (!p)
+		{
 			return;
+		}
 
 		p->die = cl.serverTime + 4000;
 		p->color = colour + (rand() & 15);
@@ -430,7 +432,7 @@ void CLH2_GravityWellParticle(int count, const vec3_t origin, int colour)
 		radius = 300 + (rand() & 255);
 		p->org[0] += sin(angle) * radius;
 		p->org[1] += cos(angle) * radius;
-		p->org[2] += (rand() & 255) - 30; 
+		p->org[2] += (rand() & 255) - 30;
 
 		p->vel[0] = (rand() & 255) - 127;
 		p->vel[1] = (rand() & 255) - 127;
@@ -447,7 +449,7 @@ void CLH2_RainEffect(const vec3_t origin, const vec3_t size, int xDirection, int
 		{
 			return;
 		}
-		p->vel[0] = xDirection;  //X and Y motion
+		p->vel[0] = xDirection;	//X and Y motion
 		p->vel[1] = yDirection;
 		p->vel[2] = -(rand() % 956);
 		if (p->vel[2] > -256)
@@ -479,7 +481,7 @@ void CLH2_RainEffect2(const vec3_t org, const vec3_t e_size, int x_dir, int y_di
 		{
 			return;
 		}
-		p->vel[0] = x_dir;  //X and Y motion
+		p->vel[0] = x_dir;	//X and Y motion
 		p->vel[1] = y_dir;
 		p->vel[2] = -(rand() % 500);
 		if (p->vel[2] > -128)
@@ -511,19 +513,19 @@ void CLH2_SnowEffect(const vec3_t minOrigin, const vec3_t maxOrigin, int flags, 
 		{
 			return;
 		}
-		p->vel[0] = direction[0];  //X and Y motion
+		p->vel[0] = direction[0];	//X and Y motion
 		p->vel[1] = direction[1];
 		p->vel[2] = direction[2] * ((rand() & 15) + 7) / 10;
 
 		p->flags = flags;
 
-		if ((rand() & 0x7f) <= 1)//have a console variable 'happy_snow' that makes all snowflakes happy snow!
+		if ((rand() & 0x7f) <= 1)	//have a console variable 'happy_snow' that makes all snowflakes happy snow!
 		{
 			p->count = 69;	//happy snow!
 		}
 		else if (flags & SFL_FLUFFY || (flags & SFL_MIXED && (rand() & 3)))
 		{
-			p->count = (rand() & 31) + 10;//From 10 to 41 scale, will be divided
+			p->count = (rand() & 31) + 10;	//From 10 to 41 scale, will be divided
 		}
 		else
 		{
@@ -644,13 +646,13 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 		{
 			return;
 		}
-		
+
 		VectorCopy(vec3_origin, p->vel);
 		p->die = cl.serverTime + lifetime * 1000;
 
 		switch (type)
 		{
-		case rt_grensmoke: //smoke trail for grenade
+		case rt_grensmoke:	//smoke trail for grenade
 			p->color = 283 + (rand() & 3);
 			p->type = pt_h2grensmoke;
 			for (int j = 0; j < 3; j++)
@@ -659,7 +661,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			}
 			break;
 
-		case rt_rocket_trail: // rocket trail
+		case rt_rocket_trail:	// rocket trail
 			p->ramp = (rand() & 3);
 			p->color = h2ramp3[(int)p->ramp];
 			p->type = pt_h2fire;
@@ -669,7 +671,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			}
 			break;
 
-		case rt_smoke: // smoke smoke
+		case rt_smoke:	// smoke smoke
 			p->ramp = (rand() & 3) + 2;
 			p->color = h2ramp3[(int)p->ramp];
 			p->type = pt_h2fire;
@@ -679,7 +681,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			}
 			break;
 
-		case rt_blood: // blood
+		case rt_blood:	// blood
 			if (GGameType & GAME_HexenWorld)
 			{
 				p->type = pt_h2darken;
@@ -729,7 +731,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			}
 			break;
 
-		case rt_slight_blood:// slight blood
+		case rt_slight_blood:	// slight blood
 			p->type = pt_h2slowgrav;
 			if (GGameType & GAME_HexenWorld)
 			{
@@ -746,7 +748,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			len -= size;
 			break;
 
-		case rt_bloodshot:// bloodshot trail
+		case rt_bloodshot:	// bloodshot trail
 			p->type = pt_h2darken;
 			p->color = 136 + (rand() & 5);
 			for (int j = 0; j < 3; j++)
@@ -756,7 +758,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			len -= size;
 			break;
 
-		case rt_voor_trail:// voor trail
+		case rt_voor_trail:	// voor trail
 			p->color = 9 * 16 + 8 + (rand() & 3);
 			p->type = pt_h2static;
 			p->die = cl.serverTime + 300;
@@ -766,7 +768,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			}
 			break;
 
-		case rt_fireball: // Fireball
+		case rt_fireball:	// Fireball
 			p->ramp = rand() & 3;
 			p->color = h2ramp4[(int)(p->ramp)];
 			p->type = pt_h2fireball;
@@ -774,13 +776,13 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			{
 				p->org[j] = start[j] + ((rand() & 3) - 2);
 			}
-			p->org[2] += 2; // compensate for model
+			p->org[2] += 2;	// compensate for model
 			p->vel[0] = (rand() % 200) - 100;
 			p->vel[1] = (rand() % 200) - 100;
 			p->vel[2] = (rand() % 200) - 100;
 			break;
 
-		case rt_acidball: // Acid ball
+		case rt_acidball:	// Acid ball
 			p->ramp = rand() & 3;
 			p->color = h2ramp10[(int)(p->ramp)];
 			p->type = pt_h2acidball;
@@ -792,7 +794,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			{
 				p->org[j] = start[j] + ((rand() & 3) - 2);
 			}
-			p->org[2] += 2; // compensate for model
+			p->org[2] += 2;	// compensate for model
 			if (GGameType & GAME_HexenWorld)
 			{
 				p->vel[0] = (rand() % 20) - 10;
@@ -807,7 +809,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			}
 			break;
 
-		case rt_ice: // Ice
+		case rt_ice:// Ice
 			p->ramp = rand() & 3;
 			p->color = h2ramp5[(int)(p->ramp)];
 			p->type = pt_h2ice;
@@ -815,13 +817,13 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			{
 				p->org[j] = start[j] + ((rand() & 3) - 2);
 			}
-			p->org[2] += 2; // compensate for model
+			p->org[2] += 2;	// compensate for model
 			p->vel[0] = (rand() % 16) - 8;
 			p->vel[1] = (rand() % 16) - 8;
 			p->vel[2] = (rand() % 20) - 40;
 			break;
 
-		case rt_spit: // Spit
+		case rt_spit:	// Spit
 			p->ramp = rand() & 3;
 			p->color = h2ramp6[(int)(p->ramp)];
 			p->type = pt_h2spit;
@@ -829,13 +831,13 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			{
 				p->org[j] = start[j] + ((rand() & 3) - 2);
 			}
-			p->org[2] += 2; // compensate for model
+			p->org[2] += 2;	// compensate for model
 			p->vel[0] = (rand() % 10) - 5;
 			p->vel[1] = (rand() % 10) - 5;
 			p->vel[2] = (rand() % 10);
 			break;
 
-		case rt_spell: // Spell
+		case rt_spell:	// Spell
 			p->ramp = rand() & 3;
 			p->color = h2ramp6[(int)(p->ramp)];
 			p->type = pt_h2spell;
@@ -851,7 +853,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->vel[2] = vec[2] * -10;
 			break;
 
-		case rt_vorpal: // vorpal missile
+		case rt_vorpal:	// vorpal missile
 			p->type = pt_h2vorpal;
 			p->color = 44 + (rand() & 3) + 256;
 			for (int j = 0; j < 2; j++)
@@ -861,7 +863,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->org[2] = start[2] + ((rand() & 15) - 8);
 			break;
 
-		case rt_setstaff: // set staff
+		case rt_setstaff:	// set staff
 			p->type = pt_h2setstaff;
 			p->color = h2ramp9[0];
 			p->ramp = rand() & 3;
@@ -873,11 +875,11 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 
 			p->org[2] = start[2] + ((rand() % 10) - 5);
 
-			p->vel[0] = (rand() &7) - 4;
-			p->vel[1] = (rand() &7) - 4;
+			p->vel[0] = (rand() & 7) - 4;
+			p->vel[1] = (rand() & 7) - 4;
 			break;
 
-		case rt_purify: // purifier
+		case rt_purify:	// purifier
 			p->type = pt_h2setstaff;
 			p->color = h2ramp9[0];
 			p->ramp = rand() & 3;
@@ -891,7 +893,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->vel[1] = 0;
 			break;
 
-		case rt_magicmissile: // magic missile
+		case rt_magicmissile:	// magic missile
 			p->type = pt_h2magicmissile;
 			p->color = 148 + (rand() & 11);
 			p->ramp = rand() & 3;
@@ -904,7 +906,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->vel[2] = -((rand() & 15) + 8);
 			break;
 
-		case rt_boneshard: // bone shard
+		case rt_boneshard:	// bone shard
 			p->type = pt_h2boneshard;
 			p->color = 368 + (rand() & 16);
 			for (int j = 0; j < 2; j++)
@@ -916,7 +918,7 @@ void CLH2_TrailParticles(vec3_t start, const vec3_t end, int type)
 			p->vel[2] = -((rand() & 15) + 8);
 			break;
 
-		case rt_scarab: // scarab staff
+		case rt_scarab:	// scarab staff
 			p->type = pt_h2scarab;
 			p->color = 250 + (rand() & 3);
 			for (int j = 0; j < 3; j++)
@@ -1013,7 +1015,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 		p->die = cl.serverTime + 2000;
 		p->color = 416;
 		p->type = pt_h2fireball;
-		
+
 		p->org[0] = org[0] + forward[0] + rand() % 4 - 2;
 		p->org[1] = org[1] + forward[1] + rand() % 4 - 2;
 		p->org[2] = org[2] + forward[2] + rand() % 4 - 2;
@@ -1035,7 +1037,7 @@ void CLHW_SuccubusInvincibleParticles(vec3_t origin)
 		p->die = cl.serverTime + 2000;
 		p->color = 135;
 		p->type = pt_h2redfire;
-		
+
 		p->org[0] = org[0] + forward[0] + rand() % 4 - 2;
 		p->org[1] = org[1] + forward[1] + rand() % 4 - 2;
 		p->org[2] = org[2] + forward[2] + rand() % 4 - 2;

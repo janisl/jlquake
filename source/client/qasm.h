@@ -20,14 +20,13 @@
 #ifdef ELF
 #define C(label) label
 #else
-#define C(label) _##label
+#define C(label) _ ## label
 #endif
 
 #ifdef __i386__
-#define id386	1
+#define id386   1
 #else
-#define id386	0
+#define id386   0
 #endif
 
 #endif
-

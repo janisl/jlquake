@@ -99,8 +99,8 @@ static void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 			beam->entity = entity;
 			beam->model = model;
 			beam->endtime = cl.serverTime * 0.001 + 0.2;
-			VectorCopy (start, beam->start);
-			VectorCopy (end, beam->end);
+			VectorCopy(start, beam->start);
+			VectorCopy(end, beam->end);
 			return;
 		}
 	}

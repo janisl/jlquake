@@ -25,28 +25,28 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define SHADER_HASH_SIZE	4096
-#define MAX_SHADERTEXT_HASH	2048
-#define MAX_SHADER_FILES	4096
-#define MAX_SHADER_STRING_POINTERS	100000
+#define SHADER_HASH_SIZE    4096
+#define MAX_SHADERTEXT_HASH 2048
+#define MAX_SHADER_FILES    4096
+#define MAX_SHADER_STRING_POINTERS  100000
 
 // TYPES -------------------------------------------------------------------
 
 struct infoParm_t
 {
-	const char	*name;
-	int			clearSolid;
-	int			surfaceFlags;
-	int			contents;
+	const char* name;
+	int clearSolid;
+	int surfaceFlags;
+	int contents;
 };
 
 struct collapse_t
 {
-	int		blendA;
-	int		blendB;
+	int blendA;
+	int blendB;
 
-	int		multitextureEnv;
-	int		multitextureBlend;
+	int multitextureEnv;
+	int multitextureBlend;
 };
 
 // Ridah
@@ -77,21 +77,21 @@ struct dynamicshader_t
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
+static shader_t* ShaderHashTable[SHADER_HASH_SIZE];
 
 // the shader is parsed into these global variables, then copied into
 // dynamically allocated memory if it is valid.
-static shader_t			shader;
-static shaderStage_t	stages[MAX_SHADER_STAGES];
-static texModInfo_t		texMods[MAX_SHADER_STAGES][TR_MAX_TEXMODS];
+static shader_t shader;
+static shaderStage_t stages[MAX_SHADER_STAGES];
+static texModInfo_t texMods[MAX_SHADER_STAGES][TR_MAX_TEXMODS];
 
 // ydnar: these are here because they are only referenced while parsing a shader
 static char implicitMap[MAX_QPATH];
 static unsigned implicitStateBits;
 static cullType_t implicitCullType;
 
-static char*			s_shaderText;
-static const char**		shaderTextHashTable[MAX_SHADERTEXT_HASH];
+static char* s_shaderText;
+static const char** shaderTextHashTable[MAX_SHADERTEXT_HASH];
 static shaderStringPointer_t shaderChecksumLookup[SHADER_HASH_SIZE];
 static shaderStringPointer_t shaderStringPointerList[MAX_SHADER_STRING_POINTERS];
 
@@ -109,99 +109,99 @@ static bool purgeallshaders = false;
 static infoParm_t infoParms[] =
 {
 	// server relevant contents
-	{"water",		1,	0,	BSP46CONTENTS_WATER },
-	{"slime",		1,	0,	BSP46CONTENTS_SLIME },		// mildly damaging
-	{"slag",		1,	0,	BSP46CONTENTS_SLIME },		// uses the BSP46CONTENTS_SLIME flag, but the shader reference is changed to 'slag'
+	{"water",       1,  0,  BSP46CONTENTS_WATER },
+	{"slime",       1,  0,  BSP46CONTENTS_SLIME },		// mildly damaging
+	{"slag",        1,  0,  BSP46CONTENTS_SLIME },		// uses the BSP46CONTENTS_SLIME flag, but the shader reference is changed to 'slag'
 														// to idendify that this doesn't work the same as 'slime' did.
 														// (slime hurts instantly, slag doesn't)
-	{"lava",		1,	0,	BSP46CONTENTS_LAVA },		// very damaging
-	{"playerclip",	1,	0,	BSP46CONTENTS_PLAYERCLIP },
-	{"monsterclip",	1,	0,	BSP46CONTENTS_MONSTERCLIP },
-	{"clipmissile",	1,	0,	BSP47CONTENTS_MISSILECLIP},	// impact only specific weapons (rl, gl)
-	{"nodrop",		1,	0,	BSP46CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
-	{"nonsolid",	1,	BSP46SURF_NONSOLID,	0},						// clears the solid flag
-	{"ai_nosight",	1,	0,	BSP47CONTENTS_AI_NOSIGHT },
-	{"clipshot",	1,	0,	BSP47CONTENTS_CLIPSHOT },         // stops bullets
+	{"lava",        1,  0,  BSP46CONTENTS_LAVA },		// very damaging
+	{"playerclip",  1,  0,  BSP46CONTENTS_PLAYERCLIP },
+	{"monsterclip", 1,  0,  BSP46CONTENTS_MONSTERCLIP },
+	{"clipmissile", 1,  0,  BSP47CONTENTS_MISSILECLIP},	// impact only specific weapons (rl, gl)
+	{"nodrop",      1,  0,  BSP46CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
+	{"nonsolid",    1,  BSP46SURF_NONSOLID, 0},						// clears the solid flag
+	{"ai_nosight",  1,  0,  BSP47CONTENTS_AI_NOSIGHT },
+	{"clipshot",    1,  0,  BSP47CONTENTS_CLIPSHOT },			// stops bullets
 
 	// utility relevant attributes
-	{"origin",		1,	0,	BSP46CONTENTS_ORIGIN },			// center of rotating brushes
-	{"trans",		0,	0,	BSP46CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
-	{"detail",		0,	0,	BSP46CONTENTS_DETAIL },			// don't include in structural bsp
-	{"structural",	0,	0,	BSP46CONTENTS_STRUCTURAL },		// force into structural bsp even if trnas
-	{"areaportal",	1,	0,	BSP46CONTENTS_AREAPORTAL },		// divides areas
+	{"origin",      1,  0,  BSP46CONTENTS_ORIGIN },			// center of rotating brushes
+	{"trans",       0,  0,  BSP46CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
+	{"detail",      0,  0,  BSP46CONTENTS_DETAIL },			// don't include in structural bsp
+	{"structural",  0,  0,  BSP46CONTENTS_STRUCTURAL },		// force into structural bsp even if trnas
+	{"areaportal",  1,  0,  BSP46CONTENTS_AREAPORTAL },		// divides areas
 	{"clusterportal", 1,0,  BSP46CONTENTS_CLUSTERPORTAL },	// for bots
 	{"donotenter",  1,  0,  BSP46CONTENTS_DONOTENTER },		// for bots
 	{"donotenterlarge", 1, 0, BSP47CONTENTS_DONOTENTER_LARGE },	// for larger bots
 
-	{"fog",			1,	0,	BSP46CONTENTS_FOG},			// carves surfaces entering
-	{"sky",			0,	BSP46SURF_SKY,		0 },		// emit light from an environment map
-	{"lightfilter",	0,	BSP46SURF_LIGHTFILTER, 0 },		// filter light going through it
-	{"alphashadow",	0,	BSP46SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
-	{"hint",		0,	BSP46SURF_HINT,		0 },		// use as a primary splitter
+	{"fog",         1,  0,  BSP46CONTENTS_FOG},			// carves surfaces entering
+	{"sky",         0,  BSP46SURF_SKY,      0 },		// emit light from an environment map
+	{"lightfilter", 0,  BSP46SURF_LIGHTFILTER, 0 },		// filter light going through it
+	{"alphashadow", 0,  BSP46SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
+	{"hint",        0,  BSP46SURF_HINT,     0 },		// use as a primary splitter
 
 	// server attributes
-	{"slick",		0,	BSP46SURF_SLICK,		0 },
-	{"monsterslick", 0,	BSP47SURF_MONSTERSLICK, 0 },	// surf only slick for monsters
+	{"slick",       0,  BSP46SURF_SLICK,        0 },
+	{"monsterslick", 0, BSP47SURF_MONSTERSLICK, 0 },	// surf only slick for monsters
 	{"monsterslicknorth", 0, BSP47SURF_MONSLICK_N, 0 },
 	{"monsterslickeast", 0, BSP47SURF_MONSLICK_E, 0 },
 	{"monsterslicksouth", 0, BSP47SURF_MONSLICK_S, 0 },
 	{"monsterslickwest", 0, BSP47SURF_MONSLICK_W, 0 },
-	{"noimpact",	0,	BSP46SURF_NOIMPACT,	0 },		// don't make impact explosions or marks
-	{"nomarks",		0,	BSP46SURF_NOMARKS,	0 },		// don't make impact marks, but still explode
-	{"ladder",		0,	BSP46SURF_LADDER,	0 },
-	{"nodamage",	0,	BSP46SURF_NODAMAGE,	0 },
-	{"glass",		0,	BSP47SURF_GLASS,	0 },
-	{"ceramic",		0,	BSP47SURF_CERAMIC,	0 },
-	{"rubble",		0,	BSP47SURF_RUBBLE,	0 },
+	{"noimpact",    0,  BSP46SURF_NOIMPACT, 0 },		// don't make impact explosions or marks
+	{"nomarks",     0,  BSP46SURF_NOMARKS,  0 },		// don't make impact marks, but still explode
+	{"ladder",      0,  BSP46SURF_LADDER,   0 },
+	{"nodamage",    0,  BSP46SURF_NODAMAGE, 0 },
+	{"glass",       0,  BSP47SURF_GLASS,    0 },
+	{"ceramic",     0,  BSP47SURF_CERAMIC,  0 },
+	{"rubble",      0,  BSP47SURF_RUBBLE,   0 },
 
 	// steps
-	{"metalsteps",	0,	BSP46SURF_METALSTEPS,0 },
-	{"flesh",		0,	BSP46SURF_FLESH,		0 },
-	{"nosteps",		0,	BSP46SURF_NOSTEPS,	0 },
-	{"metal",		0,	BSP46SURF_METALSTEPS,	0 },
-	{"woodsteps",	0,	BSP47SURF_WOOD,		0 },
-	{"grasssteps",	0,	BSP47SURF_GRASS,	0 },
-	{"gravelsteps",	0,	BSP47SURF_GRAVEL,	0 },
-	{"carpetsteps",	0,	BSP47SURF_CARPET,	0 },
-	{"snowsteps",	0,	BSP47SURF_SNOW,		0 },
-	{"roofsteps",	0,	BSP47SURF_ROOF,		0 },	// tile roof
+	{"metalsteps",  0,  BSP46SURF_METALSTEPS,0 },
+	{"flesh",       0,  BSP46SURF_FLESH,        0 },
+	{"nosteps",     0,  BSP46SURF_NOSTEPS,  0 },
+	{"metal",       0,  BSP46SURF_METALSTEPS,   0 },
+	{"woodsteps",   0,  BSP47SURF_WOOD,     0 },
+	{"grasssteps",  0,  BSP47SURF_GRASS,    0 },
+	{"gravelsteps", 0,  BSP47SURF_GRAVEL,   0 },
+	{"carpetsteps", 0,  BSP47SURF_CARPET,   0 },
+	{"snowsteps",   0,  BSP47SURF_SNOW,     0 },
+	{"roofsteps",   0,  BSP47SURF_ROOF,     0 },	// tile roof
 
 	// drawsurf attributes
-	{"nodraw",		0,	BSP46SURF_NODRAW,	0 },	// don't generate a drawsurface (or a lightmap)
-	{"pointlight",	0,	BSP46SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
-	{"nolightmap",	0,	BSP46SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
-	{"nodlight",	0,	BSP46SURF_NODLIGHT, 0 },	// don't ever add dynamic lights
-	{"dust",		0,	BSP46SURF_DUST, 0}			// leave a dust trail when walking on this surface
+	{"nodraw",      0,  BSP46SURF_NODRAW,   0 },	// don't generate a drawsurface (or a lightmap)
+	{"pointlight",  0,  BSP46SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
+	{"nolightmap",  0,  BSP46SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
+	{"nodlight",    0,  BSP46SURF_NODLIGHT, 0 },	// don't ever add dynamic lights
+	{"dust",        0,  BSP46SURF_DUST, 0}			// leave a dust trail when walking on this surface
 };
 
 static collapse_t collapse[] =
 {
-	{ 0, GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO,	
-		GL_MODULATE, 0 },
+	{ 0, GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO,
+	  GL_MODULATE, 0 },
 
 	{ 0, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR,
-		GL_MODULATE, 0 },
+	  GL_MODULATE, 0 },
 
 	{ GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR,
-		GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
+	  GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
 
 	{ GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR,
-		GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
+	  GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
 
 	{ GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR, GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO,
-		GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
+	  GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
 
 	{ GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO, GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO,
-		GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
+	  GL_MODULATE, GLS_DSTBLEND_ZERO | GLS_SRCBLEND_DST_COLOR },
 
 	{ 0, GLS_DSTBLEND_ONE | GLS_SRCBLEND_ONE,
-		GL_ADD, 0 },
+	  GL_ADD, 0 },
 
 	{ GLS_DSTBLEND_ONE | GLS_SRCBLEND_ONE, GLS_DSTBLEND_ONE | GLS_SRCBLEND_ONE,
-		GL_ADD, GLS_DSTBLEND_ONE | GLS_SRCBLEND_ONE },
+	  GL_ADD, GLS_DSTBLEND_ONE | GLS_SRCBLEND_ONE },
 #if 0
 	{ 0, GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_SRCBLEND_SRC_ALPHA,
-		GL_DECAL, 0 },
+	  GL_DECAL, 0 },
 #endif
 	{ -1 }
 };
@@ -252,7 +252,7 @@ static bool ParseVector(const char** text, int count, float* v)
 //==========================================================================
 
 static unsigned NameToAFunc(const char* funcname)
-{	
+{
 	if (!String::ICmp(funcname, "GT0"))
 	{
 		return GLS_ATEST_GT_0;
@@ -553,9 +553,9 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 	//
 	// stretch
 	//
-	else if (!String::ICmp( token, "stretch"))
+	else if (!String::ICmp(token, "stretch"))
 	{
-		token = String::ParseExt( text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			Log::write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
@@ -594,7 +594,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 			return;
 		}
 		tmi->wave.frequency = String::Atof(token);
-		
+
 		tmi->type = TMOD_STRETCH;
 	}
 	//
@@ -720,11 +720,11 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			// only use this texture if 16 bit color depth
 			if (glConfig.colorBits <= 16)
 			{
-				token = "map";   // use this map
+				token = "map";	// use this map
 			}
-			else 
+			else
 			{
-				String::ParseExt(text, false);   // ignore the map
+				String::ParseExt(text, false);	// ignore the map
 				continue;
 			}
 		}
@@ -733,11 +733,11 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			// only use this texture if 16 bit color depth
 			if (glConfig.colorBits > 16)
 			{
-				token = "map";   // use this map
+				token = "map";	// use this map
 			}
 			else
 			{
-				String::ParseExt(text, false);   // ignore the map
+				String::ParseExt(text, false);	// ignore the map
 				continue;
 			}
 		}
@@ -746,11 +746,11 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			// only use this texture if compression is enabled
 			if (glConfig.textureCompression && r_ext_compressed_textures->integer)
 			{
-				token = "map";   // use this map
+				token = "map";	// use this map
 			}
 			else
 			{
-				String::ParseExt(text, false);   // ignore the map
+				String::ParseExt(text, false);	// ignore the map
 				continue;
 			}
 		}
@@ -759,11 +759,11 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			// only use this texture if compression is not available or disabled
 			if (!glConfig.textureCompression)
 			{
-				token = "map";   // use this map
+				token = "map";	// use this map
 			}
 			else
 			{
-				String::ParseExt(text, false);   // ignore the map
+				String::ParseExt(text, false);	// ignore the map
 				continue;
 			}
 		}
@@ -772,13 +772,13 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			// only use this texture if compression is enabled
 			if (glConfig.textureCompression && r_ext_compressed_textures->integer)
 			{
-				token = "animmap";   // use this map
+				token = "animmap";	// use this map
 			}
 			else
 			{
 				while (token[0])
 				{
-					String::ParseExt(text, false);   // ignore the map
+					String::ParseExt(text, false);	// ignore the map
 				}
 				continue;
 			}
@@ -788,13 +788,13 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			// only use this texture if compression is not available or disabled
 			if (!glConfig.textureCompression)
 			{
-				token = "animmap";   // use this map
+				token = "animmap";	// use this map
 			}
 			else
 			{
 				while (token[0])
 				{
-					String::ParseExt(text, false);   // ignore the map
+					String::ParseExt(text, false);	// ignore the map
 				}
 				continue;
 			}
@@ -812,7 +812,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			}
 
 			//	Fixes startup error and allows polygon shadows to work again
-			if (!String::ICmp( token, "$whiteimage") || !String::ICmp(token, "*white"))
+			if (!String::ICmp(token, "$whiteimage") || !String::ICmp(token, "*white"))
 			{
 				stage->bundle[0].image[0] = tr.whiteImage;
 				continue;
@@ -882,7 +882,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				stage->bundle[0].image[0] = tr.whiteImage;
 				continue;
 			}
-			else if (!String::ICmp( token, "$dlight"))
+			else if (!String::ICmp(token, "$dlight"))
 			{
 				stage->bundle[0].image[0] = tr.dlightImage;
 				continue;
@@ -965,7 +965,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		else if (!String::ICmp(token, "alphaFunc"))
 		{
-			token = String::ParseExt( text, false);
+			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
 				Log::write(S_COLOR_YELLOW "WARNING: missing parameter for 'alphaFunc' keyword in shader '%s'\n", shader.name);
@@ -1019,7 +1019,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				common->Printf(S_COLOR_YELLOW "WARNING: missing parm for fog in shader '%s'\n", shader.name);
 				continue;
 			}
-			if (!String::ICmp( token, "on"))
+			if (!String::ICmp(token, "on"))
 			{
 				stage->isFogged = true;
 			}
@@ -1041,17 +1041,17 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				continue;
 			}
 			// check for "simple" blends first
-			if (!String::ICmp( token, "add"))
+			if (!String::ICmp(token, "add"))
 			{
 				blendSrcBits = GLS_SRCBLEND_ONE;
 				blendDstBits = GLS_DSTBLEND_ONE;
 			}
-			else if (!String::ICmp( token, "filter"))
+			else if (!String::ICmp(token, "filter"))
 			{
 				blendSrcBits = GLS_SRCBLEND_DST_COLOR;
 				blendDstBits = GLS_DSTBLEND_ZERO;
 			}
-			else if (!String::ICmp( token, "blend"))
+			else if (!String::ICmp(token, "blend"))
 			{
 				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
 				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
@@ -1088,14 +1088,14 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				continue;
 			}
 
-			if (!String::ICmp( token, "wave"))
+			if (!String::ICmp(token, "wave"))
 			{
 				ParseWaveForm(text, &stage->rgbWave);
 				stage->rgbGen = CGEN_WAVEFORM;
 			}
 			else if (!String::ICmp(token, "const"))
 			{
-				vec3_t	color;
+				vec3_t color;
 
 				ParseVector(text, 3, color);
 				stage->constantColor[0] = 255 * color[0];
@@ -1147,7 +1147,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			}
 		}
 		//
-		// alphaGen 
+		// alphaGen
 		//
 		else if (!String::ICmp(token, "alphaGen"))
 		{
@@ -1197,14 +1197,14 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				token = String::ParseExt(text, false);
 				if (token[0])
 				{
-					stage->zFadeBounds[0] = String::Atof(token);    // lower range
+					stage->zFadeBounds[0] = String::Atof(token);	// lower range
 					token = String::ParseExt(text, false);
-					stage->zFadeBounds[1] = String::Atof(token);    // upper range
+					stage->zFadeBounds[1] = String::Atof(token);	// upper range
 				}
 				else
 				{
-					stage->zFadeBounds[0] = -1.0;   // lower range
-					stage->zFadeBounds[1] =  1.0;   // upper range
+					stage->zFadeBounds[0] = -1.0;	// lower range
+					stage->zFadeBounds[1] =  1.0;	// upper range
 				}
 			}
 			else if (!String::ICmp(token, "vertex"))
@@ -1242,7 +1242,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// tcGen <function>
 		//
-		else if (!String::ICmp(token, "texgen") || !String::ICmp(token, "tcGen")) 
+		else if (!String::ICmp(token, "texgen") || !String::ICmp(token, "tcGen"))
 		{
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
@@ -1251,7 +1251,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				continue;
 			}
 
-			if (!String::ICmp( token, "environment"))
+			if (!String::ICmp(token, "environment"))
 			{
 				stage->bundle[0].tcGen = TCGEN_ENVIRONMENT_MAPPED;
 			}
@@ -1259,7 +1259,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			{
 				stage->bundle[0].tcGen = TCGEN_FIRERISEENV_MAPPED;
 			}
-			else if (!String::ICmp( token, "lightmap"))
+			else if (!String::ICmp(token, "lightmap"))
 			{
 				stage->bundle[0].tcGen = TCGEN_LIGHTMAP;
 			}
@@ -1267,14 +1267,14 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			{
 				stage->bundle[0].tcGen = TCGEN_TEXTURE;
 			}
-			else if (!String::ICmp( token, "vector"))
+			else if (!String::ICmp(token, "vector"))
 			{
 				ParseVector(text, 3, stage->bundle[0].tcGenVectors[0]);
 				ParseVector(text, 3, stage->bundle[0].tcGenVectors[1]);
 
 				stage->bundle[0].tcGen = TCGEN_VECTOR;
 			}
-			else 
+			else
 			{
 				Log::write(S_COLOR_YELLOW "WARNING: unknown texgen parm in shader '%s'\n", shader.name);
 			}
@@ -1324,7 +1324,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 	if (stage->rgbGen == CGEN_BAD)
 	{
 		if (blendSrcBits == 0 ||
-			blendSrcBits == GLS_SRCBLEND_ONE || 
+			blendSrcBits == GLS_SRCBLEND_ONE ||
 			blendSrcBits == GLS_SRCBLEND_SRC_ALPHA)
 		{
 			stage->rgbGen = CGEN_IDENTITY_LIGHTING;
@@ -1365,9 +1365,9 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 	//
 	// compute state bits
 	//
-	stage->stateBits = depthMaskBits | 
-		               blendSrcBits | blendDstBits | 
-					   atestBits | 
+	stage->stateBits = depthMaskBits |
+					   blendSrcBits | blendDstBits |
+					   atestBits |
 					   depthFuncBits;
 
 	return true;
@@ -1474,7 +1474,7 @@ static void ParseDeform(const char** text)
 			return;
 		}
 
-		if (String::Atof( token ) != 0)
+		if (String::Atof(token) != 0)
 		{
 			ds->deformationSpread = 1.0f / String::Atof(token);
 		}
@@ -1548,7 +1548,7 @@ static void ParseSkyParms(const char** text)
 	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
+		Log::write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
 		return;
 	}
 	if (String::Cmp(token, "-"))
@@ -1618,7 +1618,7 @@ static void ParseSort(const char** text)
 		return;
 	}
 
-	if (!String::ICmp( token, "portal"))
+	if (!String::ICmp(token, "portal"))
 	{
 		shader.sort = SS_PORTAL;
 	}
@@ -1750,7 +1750,7 @@ static bool ParseShader(const char** text)
 		// sun parms
 		else if (!String::ICmp(token, "q3map_sun"))
 		{
-			float	a, b;
+			float a, b;
 
 			token = String::ParseExt(text, false);
 			tr.sunLight[0] = String::Atof(token);
@@ -1758,7 +1758,7 @@ static bool ParseShader(const char** text)
 			tr.sunLight[1] = String::Atof(token);
 			token = String::ParseExt(text, false);
 			tr.sunLight[2] = String::Atof(token);
-			
+
 			VectorNormalize(tr.sunLight);
 
 			token = String::ParseExt(text, false);
@@ -1842,7 +1842,7 @@ static bool ParseShader(const char** text)
 			continue;
 		}
 		// fogParms
-		else if (!String::ICmp(token, "fogParms")) 
+		else if (!String::ICmp(token, "fogParms"))
 		{
 			if (!ParseVector(text, 3, shader.fogParms.color))
 			{
@@ -1850,8 +1850,8 @@ static bool ParseShader(const char** text)
 			}
 
 			shader.fogParms.colorInt = ColorBytes4(shader.fogParms.color[0] * tr.identityLight,
-													shader.fogParms.color[1] * tr.identityLight,
-													shader.fogParms.color[2] * tr.identityLight, 1.0);
+				shader.fogParms.color[1] * tr.identityLight,
+				shader.fogParms.color[2] * tr.identityLight, 1.0);
 
 			token = String::ParseExt(text, false);
 			if (!token[0])
@@ -1984,7 +1984,7 @@ static bool ParseShader(const char** text)
 					String::Sprintf(fogString, sizeof(fogString), "0 %d 1.1 %f %f %f 200", (int)fogvar, watercolor[0], watercolor[1], watercolor[2]);
 				}
 				else
-				{                      // density "exp" fog
+				{						// density "exp" fog
 					String::Sprintf(fogString, sizeof(fogString), "0 5 %f %f %f %f 200", fogvar, watercolor[0], watercolor[1], watercolor[2]);
 				}
 				Cvar_Set("r_waterFogColor", fogString);
@@ -2021,7 +2021,7 @@ static bool ParseShader(const char** text)
 			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
-				common->Printf(S_COLOR_YELLOW "WARNING: missing density value for the fog\n" );
+				common->Printf(S_COLOR_YELLOW "WARNING: missing density value for the fog\n");
 				continue;
 			}
 
@@ -2140,7 +2140,7 @@ static bool ParseShader(const char** text)
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_ATEST_GE_80;
 				implicitCullType = CT_TWO_SIDED;
 			}
-			else    // "implicitMap"
+			else	// "implicitMap"
 			{
 				implicitStateBits = GLS_DEPTHMASK_TRUE;
 				implicitCullType = CT_FRONT_SIDED;
@@ -2252,7 +2252,7 @@ static void VertexLightingCollapse()
 		{
 			stages[0].rgbGen = CGEN_EXACT_VERTEX;
 		}
-		stages[0].alphaGen = AGEN_SKIP;		
+		stages[0].alphaGen = AGEN_SKIP;
 	}
 	else
 	{
@@ -2470,7 +2470,7 @@ static void ComputeStageIteratorFunc()
 	{
 		if ((stages[0].rgbGen == CGEN_IDENTITY) && (stages[0].alphaGen == AGEN_IDENTITY))
 		{
-			if (stages[0].bundle[0].tcGen == TCGEN_TEXTURE && 
+			if (stages[0].bundle[0].tcGen == TCGEN_TEXTURE &&
 				stages[0].bundle[1].tcGen == TCGEN_LIGHTMAP)
 			{
 				if (!shader.polygonOffset)
@@ -2515,28 +2515,28 @@ static void FixRenderCommandList(int newShader)
 		switch (*(const int*)curCmd)
 		{
 		case RC_SET_COLOR:
-			{
+		{
 			const setColorCommand_t* sc_cmd = (const setColorCommand_t*)curCmd;
 			curCmd = (const void*)(sc_cmd + 1);
 			break;
-			}
+		}
 		case RC_STRETCH_PIC:
 		case RC_STRETCH_PIC_GRADIENT:
 		case RC_ROTATED_PIC:
-			{
+		{
 			const stretchPicCommand_t* sp_cmd = (const stretchPicCommand_t*)curCmd;
 			curCmd = (const void*)(sp_cmd + 1);
 			break;
-			}
+		}
 		case RC_2DPOLYS:
-			{
+		{
 			const poly2dCommand_t* sp_cmd = (const poly2dCommand_t*)curCmd;
 			curCmd = (const void*)(sp_cmd + 1);
 			break;
-			}
+		}
 		case RC_DRAW_SURFS:
-			{
-			const drawSurfsCommand_t *ds_cmd =  (const drawSurfsCommand_t *)curCmd;
+		{
+			const drawSurfsCommand_t* ds_cmd =  (const drawSurfsCommand_t*)curCmd;
 			drawSurf_t* drawSurf = ds_cmd->drawSurfs;
 			for (int i = 0; i < ds_cmd->numDrawSurfs; i++, drawSurf++)
 			{
@@ -2552,46 +2552,46 @@ static void FixRenderCommandList(int newShader)
 				{
 					sortedIndex++;
 					drawSurf->sort = (sortedIndex << QSORT_SHADERNUM_SHIFT) |
-						(entityNum << QSORT_ENTITYNUM_SHIFT) |
-						(atiTess << QSORT_ATI_TESS_SHIFT) |
-						(fogNum << QSORT_FOGNUM_SHIFT) |
-						(frontFace << QSORT_FRONTFACE_SHIFT) |
-						dlightMap;
+									 (entityNum << QSORT_ENTITYNUM_SHIFT) |
+									 (atiTess << QSORT_ATI_TESS_SHIFT) |
+									 (fogNum << QSORT_FOGNUM_SHIFT) |
+									 (frontFace << QSORT_FRONTFACE_SHIFT) |
+									 dlightMap;
 				}
 			}
 			curCmd = (const void*)(ds_cmd + 1);
 			break;
-			}
+		}
 		case RC_DRAW_BUFFER:
-			{
+		{
 			const drawBufferCommand_t* db_cmd = (const drawBufferCommand_t*)curCmd;
 			curCmd = (const void*)(db_cmd + 1);
 			break;
-			}
+		}
 		case RC_SWAP_BUFFERS:
-			{
+		{
 			const swapBuffersCommand_t* sb_cmd = (const swapBuffersCommand_t*)curCmd;
-			curCmd = (const void *)(sb_cmd + 1);
+			curCmd = (const void*)(sb_cmd + 1);
 			break;
-			}
+		}
 		case RC_RENDERTOTEXTURE:
-			{
+		{
 			const renderToTextureCommand_t* sb_cmd = (const renderToTextureCommand_t*)curCmd;
-			curCmd = (const void *)(sb_cmd + 1);
+			curCmd = (const void*)(sb_cmd + 1);
 			break;
-			}
+		}
 		case RC_FINISH:
-			{
+		{
 			const renderFinishCommand_t* sb_cmd = (const renderFinishCommand_t*)curCmd;
-			curCmd = (const void *)(sb_cmd + 1);
+			curCmd = (const void*)(sb_cmd + 1);
 			break;
-			}
+		}
 		case RC_SCREENSHOT:
-			{
+		{
 			const screenshotCommand_t* sb_cmd = (const screenshotCommand_t*)curCmd;
-			curCmd = (const void *)(sb_cmd + 1);
+			curCmd = (const void*)(sb_cmd + 1);
 			break;
-			}
+		}
 		case RC_END_OF_LIST:
 		default:
 			return;
@@ -2698,7 +2698,7 @@ static shader_t* GeneratePermanentShader()
 
 	tr.shaders[tr.numShaders] = newShader;
 	newShader->index = tr.numShaders;
-	
+
 	tr.sortedShaders[tr.numShaders] = newShader;
 	newShader->sortedIndex = tr.numShaders;
 
@@ -2742,8 +2742,8 @@ static shader_t* GeneratePermanentShader()
 static shader_t* FinishShader()
 {
 	int stage;
-	qboolean		hasLightmapStage;
-	qboolean		vertexLightmap;
+	qboolean hasLightmapStage;
+	qboolean vertexLightmap;
 
 	hasLightmapStage = false;
 	vertexLightmap = false;
@@ -2803,7 +2803,7 @@ static shader_t* FinishShader()
 							break;
 						}
 					}
-					stage--;    // the next stage is now the current stage, so check it again
+					stage--;	// the next stage is now the current stage, so check it again
 				}
 				else
 				{
@@ -2933,7 +2933,7 @@ static shader_t* FinishShader()
 		else
 		{
 			Log::develWrite(S_COLOR_RED "WARNING: shader '%s' has lightmap but no lightmap stage!\n", shader.name);
-  			shader.lightmapIndex = LIGHTMAP_NONE;
+			shader.lightmapIndex = LIGHTMAP_NONE;
 		}
 	}
 
@@ -3240,7 +3240,7 @@ static shader_t* R_FindCachedShader(const char* name, int lightmapIndex, int has
 			sh->next = ShaderHashTable[hash];
 			ShaderHashTable[hash] = sh;
 
-			backupShaders[sh->index] = NULL;    // make sure we don't try and free it
+			backupShaders[sh->index] = NULL;	// make sure we don't try and free it
 
 			// set the index up, and add it to the current list
 			tr.shaders[tr.numShaders] = sh;
@@ -3284,7 +3284,7 @@ static void SetImplicitShaderStages(image_t* image)
 		stages[0].stateBits = implicitStateBits;
 	}
 	else if (shader.lightmapIndex == LIGHTMAP_BY_VERTEX ||
-		(GGameType & GAME_ET && shader.lightmapIndex == LIGHTMAP_WHITEIMAGE))
+			 (GGameType & GAME_ET && shader.lightmapIndex == LIGHTMAP_WHITEIMAGE))
 	{
 		// explicit colors at vertexes
 		stages[0].bundle[0].image[0] = image;
@@ -3301,8 +3301,8 @@ static void SetImplicitShaderStages(image_t* image)
 		stages[0].rgbGen = CGEN_VERTEX;
 		stages[0].alphaGen = AGEN_VERTEX;
 		stages[0].stateBits = GLS_DEPTHTEST_DISABLE |
-			  GLS_SRCBLEND_SRC_ALPHA |
-			  GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+							  GLS_SRCBLEND_SRC_ALPHA |
+							  GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	}
 	else if (shader.lightmapIndex == LIGHTMAP_WHITEIMAGE)
 	{
@@ -3339,7 +3339,7 @@ static void SetImplicitShaderStages(image_t* image)
 		stages[0].bundle[0].isLightmap = true;
 		stages[0].active = true;
 		stages[0].rgbGen = CGEN_IDENTITY;	// lightmaps are scaled on creation
-													// for identitylight
+		// for identitylight
 		stages[0].stateBits = GLS_DEFAULT;
 
 		stages[1].bundle[0].image[0] = image;
@@ -3419,7 +3419,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 			// index by name
 			// ydnar: the original way was correct
 			if (sh->lightmapIndex == lightmapIndex &&
-				!String::ICmp( sh->name, strippedName))
+				!String::ICmp(sh->name, strippedName))
 			{
 				// match found
 				return sh;
@@ -3557,7 +3557,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 qhandle_t R_RegisterShaderFromImage(const char* name, int lightmapIndex, image_t* image, bool mipRawImage)
 {
 	int hash = GenerateShaderHashValue(name, SHADER_HASH_SIZE);
-	
+
 	//
 	// see if the shader is already loaded
 	//
@@ -3605,7 +3605,7 @@ qhandle_t R_RegisterShaderFromImage(const char* name, int lightmapIndex, image_t
 	SetImplicitShaderStages(image);
 
 	shader_t* sh = FinishShader();
-	return sh->index; 
+	return sh->index;
 }
 
 //==========================================================================
@@ -3869,7 +3869,7 @@ static void BuildShaderChecksumLookup()
 		else
 		{
 			// create a new list item
-			shaderStringPointer_t *newStrPtr;
+			shaderStringPointer_t* newStrPtr;
 
 			if (numShaderStringPointers >= MAX_SHADER_STRING_POINTERS)
 			{
@@ -3944,7 +3944,7 @@ static void ScanAndLoadShaderFiles()
 	// Gordon: optimised to not use strcat/String::Length which can be VERY slow for the large strings we're using here
 	char* p = s_shaderText;
 	// free in reverse order, so the temp files are all dumped
-	for (int i = numShaders - 1; i >= 0 ; i--)
+	for (int i = numShaders - 1; i >= 0; i--)
 	{
 		if (GGameType & GAME_ET)
 		{
@@ -4226,7 +4226,7 @@ shader_t* R_GetShaderByHandle(qhandle_t hShader)
 
 void R_ShaderList_f()
 {
-	shader_t	*shader;
+	shader_t* shader;
 
 	Log::write("-----------------------\n");
 
@@ -4367,7 +4367,7 @@ static void R_PurgeLightmapShaders()
 					shPrev->next = sh->next;
 				}
 
-				backupShaders[sh->index] = NULL;    // make sure we don't try and free it
+				backupShaders[sh->index] = NULL;	// make sure we don't try and free it
 
 				numBackupShaders--;
 
@@ -4444,7 +4444,7 @@ void R_BackupShaders()
 //	returns qtrue if request was successful, qfalse if the gods were angered
 bool R_LoadDynamicShader(const char* shadername, const char* shadertext)
 {
-	const char *func_err = "WARNING: R_LoadDynamicShader";
+	const char* func_err = "WARNING: R_LoadDynamicShader";
 
 	if (!shadername && shadertext)
 	{

@@ -151,7 +151,7 @@ static void CL_AddParticle(cparticle_t* p, cparticle_t*& active, cparticle_t*& t
 	}
 	else
 	{
-		colour = (byte *)&d_8to24TranslucentTable[p->color - 256];
+		colour = (byte*)&d_8to24TranslucentTable[p->color - 256];
 		theAlpha = colour[3];
 	}
 
@@ -173,15 +173,15 @@ static void CL_AddParticle(cparticle_t* p, cparticle_t*& active, cparticle_t*& t
 	float size;
 	if (p->type == pt_h2snow)
 	{
-		if (p->count>=69)
+		if (p->count >= 69)
 		{
 			texture = PARTTEX_Snow1;
 		}
-		else if (p->count>=40)
+		else if (p->count >= 40)
 		{
 			texture = PARTTEX_Snow2;
 		}
-		else if (p->count>=30)
+		else if (p->count >= 30)
 		{
 			texture = PARTTEX_Snow3;
 		}
@@ -237,7 +237,7 @@ static void CL_UpdateShowParticle(cparticle_t* p, int killTime, float frametime)
 	if (p->vel[0] == 0 && p->vel[1] == 0 && p->vel[2] == 0)
 	{
 		//Stopped moving
-		if (p->color == 256 + 31)//Most translucent white
+		if (p->color == 256 + 31)	//Most translucent white
 		{
 			//Go away
 			p->die = killTime;
@@ -246,9 +246,9 @@ static void CL_UpdateShowParticle(cparticle_t* p, int killTime, float frametime)
 		{
 			//Count fifty and fade in translucency once each time
 			p->ramp += 1;
-			if(p->ramp >= 7)
+			if (p->ramp >= 7)
 			{
-				p->color += 1;//Get more translucent
+				p->color += 1;	//Get more translucent
 				p->ramp = 0;
 			}
 		}
@@ -261,7 +261,7 @@ static void CL_UpdateShowParticle(cparticle_t* p, int killTime, float frametime)
 		if (Cvar_VariableValue("snow_flurry") == 1 && (rand() & 31))
 		{
 			//Add flurry movement
-			float snow_speed = p->vel[0] * p->vel[0] + p->vel[1] * p->vel[1] + p->vel[2]*p->vel[2];
+			float snow_speed = p->vel[0] * p->vel[0] + p->vel[1] * p->vel[1] + p->vel[2] * p->vel[2];
 			snow_speed = sqrt(snow_speed);
 
 			vec3_t save_vel;
@@ -274,13 +274,13 @@ static void CL_UpdateShowParticle(cparticle_t* p, int killTime, float frametime)
 				save_vel[2] += ((rand() * (2.0 / RAND_MAX)) - 1) * 30;
 			}
 			VectorNormalize(save_vel);
-			VectorScale(save_vel, snow_speed, p->vel);//retain speed but use new dir
+			VectorScale(save_vel, snow_speed, p->vel);	//retain speed but use new dir
 		}
 
 		vec3_t diff;
 		VectorScale(p->vel, frametime, diff);
 		VectorAdd(p->org, diff, p->org);
-		
+
 		if (p->flags & SFL_IN_BOUNDS)
 		{
 			//Always stay inside the boundry!
@@ -332,9 +332,9 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 {
 	if (p->type != pt_h2snow && p->type != pt_q2static)
 	{
-		p->org[0] += p->vel[0]*frametime;
-		p->org[1] += p->vel[1]*frametime;
-		p->org[2] += p->vel[2]*frametime;
+		p->org[0] += p->vel[0] * frametime;
+		p->org[1] += p->vel[1] * frametime;
+		p->org[2] += p->vel[2] * frametime;
 	}
 
 	switch (p->type)
@@ -635,7 +635,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		}
 
 		p->ramp += percent;
-		if ((int)p->ramp > 50) 
+		if ((int)p->ramp > 50)
 		{
 			p->ramp = 50;
 			p->die = killTime;
@@ -660,7 +660,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		}
 
 		p->ramp += percent;
-		if ((int)p->ramp > 35) 
+		if ((int)p->ramp > 35)
 		{
 			p->ramp = 35;
 			p->die = killTime;
@@ -678,7 +678,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		break;
 
 	case pt_h2vorpal:
-		--p->color; 
+		--p->color;
 		if (p->color <= 37 + 256)
 		{
 			p->die = killTime;
@@ -734,7 +734,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		break;
 
 	case pt_h2magicmissile:
-		--p->color; 
+		--p->color;
 		if (p->color < 149)
 		{
 			p->color = 149;
@@ -747,7 +747,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		break;
 
 	case pt_h2boneshard:
-		--p->color; 
+		--p->color;
 		if (p->color < 368)
 		{
 			p->die = killTime;
@@ -755,7 +755,7 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		break;
 
 	case pt_h2scarab:
-		--p->color; 
+		--p->color;
 		if (p->color < 250)
 		{
 			p->die = killTime;
@@ -763,38 +763,38 @@ static void CL_UpdateParticle(cparticle_t* p, float frametime, float time1, floa
 		break;
 
 	case pt_h2darken:
+	{
+		if (GGameType & GAME_HexenWorld)
 		{
-			if (GGameType & GAME_HexenWorld)
+			p->vel[2] -= grav * 2;		//Also gravity
+			if (rand() & 1)
 			{
-				p->vel[2] -= grav * 2;	//Also gravity
-				if (rand() & 1)
-				{
-					--p->color;
-				}
+				--p->color;
+			}
+		}
+		else
+		{
+			p->vel[2] -= grav;		//Also gravity
+			--p->color;
+		}
+		int colindex = 0;
+		while (colindex < 224)
+		{
+			if (colindex == 192 || colindex == 200)
+			{
+				colindex += 8;
 			}
 			else
 			{
-				p->vel[2] -= grav;	//Also gravity
-				--p->color;
+				colindex += 16;
 			}
-			int colindex = 0;
-			while (colindex < 224)
+			if (p->color == colindex)
 			{
-				if (colindex == 192 || colindex == 200)
-				{
-					colindex += 8;
-				}
-				else
-				{
-					colindex += 16;
-				}
-				if (p->color == colindex)
-				{
-					p->die = killTime;
-				}
+				p->die = killTime;
 			}
 		}
-		break;
+	}
+	break;
 
 	case pt_h2grensmoke:
 		p->vel[0] += time3 * ((rand() % 3) - 1);

@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
-#define MAX_CLIENTWEAPONMODELS_Q2		20		// PGM -- upped from 16 to fit the chainfist vwep
+#define MAX_CLIENTWEAPONMODELS_Q2       20		// PGM -- upped from 16 to fit the chainfist vwep
 
-#define CMD_BACKUP_Q2		64	// allow a lot of command backups for very fast systems
+#define CMD_BACKUP_Q2       64	// allow a lot of command backups for very fast systems
 
 struct q2centity_t
 {

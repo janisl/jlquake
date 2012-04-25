@@ -33,21 +33,21 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-int			r_firstSceneDrawSurf;
+int r_firstSceneDrawSurf;
 
-int			r_numentities;
-int			r_firstSceneEntity;
+int r_numentities;
+int r_firstSceneEntity;
 
-int			r_numdlights;
-int			r_firstSceneDlight;
+int r_numdlights;
+int r_firstSceneDlight;
 
-int			r_numpolys;
-int			r_firstScenePoly;
+int r_numpolys;
+int r_firstScenePoly;
 
-int			r_numpolyverts;
+int r_numpolyverts;
 
-int			r_numparticles;
-int			r_firstSceneParticle;
+int r_numparticles;
+int r_firstSceneParticle;
 
 int skyboxportal;
 int drawskyboxportal;
@@ -196,7 +196,7 @@ static void R_AddDynamicLightToScene(const vec3_t org, float intensity, float r,
 		return;
 	}
 	dlight_t* dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
-	VectorCopy (org, dl->origin);
+	VectorCopy(org, dl->origin);
 	dl->radius = intensity;
 	dl->color[0] = r;
 	dl->color[1] = g;
@@ -254,7 +254,7 @@ void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, floa
 		}
 	}
 
-	if (r_dlightScale->value <= 0)     //----(SA)	added
+	if (r_dlightScale->value <= 0)		//----(SA)	added
 	{
 		return;
 	}
@@ -264,18 +264,18 @@ void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, floa
 
 	dlight_t* dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
 	VectorCopy(org, dl->origin);
-	dl->radius = intensity * r_dlightScale->value;  //----(SA)	modified
+	dl->radius = intensity * r_dlightScale->value;	//----(SA)	modified
 	dl->color[0] = r;
 	dl->color[1] = g;
 	dl->color[2] = b;
 	dl->shader = NULL;
 	dl->overdraw = 0;
 
-	if (overdraw == 10)     // sorry, hijacking 10 for a quick hack (SA)
+	if (overdraw == 10)		// sorry, hijacking 10 for a quick hack (SA)
 	{
 		dl->shader = R_GetShaderByHandle(R_RegisterShader("negdlightshader"));
 	}
-	else if (overdraw == 11)       // 11 is flames
+	else if (overdraw == 11)		// 11 is flames
 	{
 		dl->shader = R_GetShaderByHandle(R_RegisterShader("flamedlightshader"));
 	}
@@ -411,7 +411,7 @@ void R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t* verts, 
 			}
 			for (fogIndex = 1; fogIndex < tr.world->numfogs; fogIndex++)
 			{
-				mbrush46_fog_t* fog = &tr.world->fogs[fogIndex]; 
+				mbrush46_fog_t* fog = &tr.world->fogs[fogIndex];
 				if (bounds[1][0] >= fog->bounds[0][0] &&
 					bounds[1][1] >= fog->bounds[0][1] &&
 					bounds[1][2] >= fog->bounds[0][2] &&
@@ -531,7 +531,7 @@ static void R_SetLightLevel()
 	// save off light value for server to look at (BIG HACK!)
 
 	vec3_t shadelight;
-	R_LightPointQ2 (tr.refdef.vieworg, shadelight);
+	R_LightPointQ2(tr.refdef.vieworg, shadelight);
 
 	// pick the greatest component, which should be the same
 	// as the mono value returned by software
@@ -755,11 +755,11 @@ void R_RestoreViewParms()
 }
 
 /*
-	rgb = colour
-	depthForOpaque is depth for opaque
+    rgb = colour
+    depthForOpaque is depth for opaque
 
-	the restore flag can be used to restore the original level fog
-	duration can be set to fade over a certain period
+    the restore flag can be used to restore the original level fog
+    duration can be set to fade over a certain period
 */
 void R_SetGlobalFog(bool restore, int duration, float r, float g, float b, float depthForOpaque)
 {
@@ -779,8 +779,8 @@ void R_SetGlobalFog(bool restore, int duration, float r, float g, float b, float
 		{
 			VectorCopy(tr.world->globalOriginalFog, tr.world->fogs[tr.world->globalFog].shader->fogParms.color);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.colorInt = ColorBytes4(tr.world->globalOriginalFog[0] * tr.identityLight,
-																						tr.world->globalOriginalFog[1] * tr.identityLight,
-																						tr.world->globalOriginalFog[2] * tr.identityLight, 1.0);
+				tr.world->globalOriginalFog[1] * tr.identityLight,
+				tr.world->globalOriginalFog[2] * tr.identityLight, 1.0);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque = tr.world->globalOriginalFog[3];
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.tcScale = 1.0f / (tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque);
 		}
@@ -802,8 +802,8 @@ void R_SetGlobalFog(bool restore, int duration, float r, float g, float b, float
 		{
 			VectorSet(tr.world->fogs[tr.world->globalFog].shader->fogParms.color, r, g, b);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.colorInt = ColorBytes4(r * tr.identityLight,
-																						g * tr.identityLight,
-																						b * tr.identityLight, 1.0);
+				g * tr.identityLight,
+				b * tr.identityLight, 1.0);
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque = depthForOpaque < 1 ? 1 : depthForOpaque;
 			tr.world->fogs[tr.world->globalFog].shader->fogParms.tcScale = 1.0f / (tr.world->fogs[tr.world->globalFog].shader->fogParms.depthForOpaque);
 		}

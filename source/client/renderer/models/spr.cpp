@@ -53,7 +53,7 @@ static void* Mod_LoadSpriteFrame(void* pin, msprite1frame_t** ppframe, int frame
 
 	msprite1frame_t* pspriteframe = new msprite1frame_t;
 
-	Com_Memset(pspriteframe, 0, sizeof (msprite1frame_t));
+	Com_Memset(pspriteframe, 0, sizeof(msprite1frame_t));
 
 	*ppframe = pspriteframe;
 
@@ -90,7 +90,7 @@ static void* Mod_LoadSpriteGroup(void* pin, msprite1frame_t** ppframe, int frame
 	int numframes = LittleLong(pingroup->numframes);
 
 	msprite1group_t* pspritegroup = (msprite1group_t*)Mem_Alloc(sizeof(msprite1group_t) +
-				(numframes - 1) * sizeof(pspritegroup->frames[0]));
+		(numframes - 1) * sizeof(pspritegroup->frames[0]));
 
 	pspritegroup->numframes = numframes;
 
@@ -138,12 +138,12 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 	if (version != SPRITE1_VERSION)
 	{
 		throw Exception(va("%s has wrong version number "
-			"(%i should be %i)", mod->name, version, SPRITE1_VERSION));
+						   "(%i should be %i)", mod->name, version, SPRITE1_VERSION));
 	}
 
 	int numframes = LittleLong(pin->numframes);
 
-	int size = sizeof(msprite1_t) +	(numframes - 1) * sizeof(msprite1framedesc_t);
+	int size = sizeof(msprite1_t) + (numframes - 1) * sizeof(msprite1framedesc_t);
 
 	msprite1_t* psprite = (msprite1_t*)Mem_Alloc(size);
 
@@ -281,7 +281,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 		return;
 	}
 
-	vec3_t	point;
+	vec3_t point;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
@@ -315,7 +315,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 		tvec[0] = -tr.viewParms.orient.origin[0];
 		tvec[1] = -tr.viewParms.orient.origin[1];
 		tvec[2] = -tr.viewParms.orient.origin[2];
-		VectorNormalize (tvec);
+		VectorNormalize(tvec);
 		float dot = tvec[2];	// same as DotProduct (tvec, r_spritedesc.vup) because
 								//  r_spritedesc.vup is 0, 0, 1
 		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
@@ -347,7 +347,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 		// vectors and starts to approach an undefined state, so we don't draw if
 		// the two vectors are less than 1 degree apart
 		float dot = tr.viewParms.orient.axis[0][2];	// same as DotProduct (vpn, r_spritedesc.vup) because
-						//  r_spritedesc.vup is 0, 0, 1
+		//  r_spritedesc.vup is 0, 0, 1
 		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
 		{
 			return;
@@ -401,7 +401,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 		throw Exception(va("R_DrawSprite: Bad sprite type %d", psprite->type));
 	}
 
-    GL_Bind(frame->gl_texture);
+	GL_Bind(frame->gl_texture);
 
 	qglBegin(GL_QUADS);
 
@@ -424,7 +424,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 	VectorMA(e->e.origin, frame->down, up, point);
 	VectorMA(point, frame->right, right, point);
 	qglVertex3fv(point);
-	
+
 	qglEnd();
 
 	GL_State(GLS_DEFAULT);

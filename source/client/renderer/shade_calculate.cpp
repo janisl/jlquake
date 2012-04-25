@@ -251,7 +251,7 @@ static void RB_CalcDeformVertexes(deformStage_t* ds)
 		{
 			float off = (xyz[0] + xyz[1] + xyz[2]) * ds->deformationSpread;
 
-			float scale = WAVEVALUE(table, ds->deformationWave.base, 
+			float scale = WAVEVALUE(table, ds->deformationWave.base,
 				ds->deformationWave.amplitude,
 				ds->deformationWave.phase + off,
 				ds->deformationWave.frequency);
@@ -275,7 +275,7 @@ static void RB_CalcDeformVertexes(deformStage_t* ds)
 static void RB_CalcBulgeVertexes(deformStage_t* ds)
 {
 	const float* st = (const float*)tess.texCoords[0];
-	float* xyz = (float*) tess.xyz;
+	float* xyz = (float*)tess.xyz;
 	float* normal = (float*)tess.normal;
 
 	float now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
@@ -304,7 +304,7 @@ static void RB_CalcMoveVertexes(deformStage_t* ds)
 {
 	float* table = TableForFunc(ds->deformationWave.func);
 
-	float scale = WAVEVALUE(table, ds->deformationWave.base, 
+	float scale = WAVEVALUE(table, ds->deformationWave.base,
 		ds->deformationWave.amplitude,
 		ds->deformationWave.phase,
 		ds->deformationWave.frequency);
@@ -519,7 +519,7 @@ static void Autosprite2Deform()
 	// this is a lot of work for two triangles...
 	// we could precalculate a lot of it is an issue, but it would mess up
 	// the shader abstraction
-	for (int i = 0, indexes = 0; i < tess.numVertexes; i+=4, indexes += 6)
+	for (int i = 0, indexes = 0; i < tess.numVertexes; i += 4, indexes += 6)
 	{
 		// find the midpoint
 		float* xyz = tess.xyz[i];
@@ -572,7 +572,7 @@ static void Autosprite2Deform()
 		vec3_t minor;
 		CrossProduct(major, forward, minor);
 		VectorNormalize(minor);
-		
+
 		// re-project the points
 		for (int j = 0; j < 2; j++)
 		{
@@ -580,7 +580,7 @@ static void Autosprite2Deform()
 			float* v2 = xyz + 4 * edgeVerts[nums[j]][1];
 
 			float l = 0.5 * sqrt(lengths[j]);
-			
+
 			// we need to see which direction this edge
 			// is used to determine direction of projection
 			int k;
@@ -678,33 +678,38 @@ COLORS
 // saves about 1-2ms per frame on my machine with 64 x 1000 triangle models in scene
 static void RB_CalcDiffuseColorET(unsigned char* colors)
 {
-	int i, dp, *colorsInt;
-	float           *normal;
-	trRefEntity_t   *ent;
+	int i, dp, * colorsInt;
+	float* normal;
+	trRefEntity_t* ent;
 	vec3_t lightDir;
 	int numVertexes;
 
 	ent = backEnd.currentEntity;
-	VectorCopy( ent->lightDir, lightDir );
+	VectorCopy(ent->lightDir, lightDir);
 
-	normal = tess.normal[ 0 ];
-	colorsInt = (int*) colors;
+	normal = tess.normal[0];
+	colorsInt = (int*)colors;
 
 	numVertexes = tess.numVertexes;
-	for ( i = 0; i < numVertexes; i++, normal += 4, colorsInt++ )
+	for (i = 0; i < numVertexes; i++, normal += 4, colorsInt++)
 	{
-		dp = Q_ftol( ENTITY_LIGHT_STEPS * DotProduct( normal, lightDir ) );
+		dp = Q_ftol(ENTITY_LIGHT_STEPS * DotProduct(normal, lightDir));
 
 		// ydnar: enable this for twosided lighting
 		//%	if( tess.shader->cullType == CT_TWO_SIDED )
 		//%		dp = fabs( dp );
 
-		if ( dp <= 0 ) {
-			*colorsInt = ent->entityLightInt[ 0 ];
-		} else if ( dp >= ENTITY_LIGHT_STEPS ) {
-			*colorsInt = ent->entityLightInt[ ENTITY_LIGHT_STEPS - 1 ];
-		} else {
-			*colorsInt = ent->entityLightInt[ dp ];
+		if (dp <= 0)
+		{
+			*colorsInt = ent->entityLightInt[0];
+		}
+		else if (dp >= ENTITY_LIGHT_STEPS)
+		{
+			*colorsInt = ent->entityLightInt[ENTITY_LIGHT_STEPS - 1];
+		}
+		else
+		{
+			*colorsInt = ent->entityLightInt[dp];
 		}
 	}
 }
@@ -745,7 +750,7 @@ void RB_CalcDiffuseColor(byte* colors)
 		{
 			*(int*)&colors[i * 4] = ambientLightInt;
 			continue;
-		} 
+		}
 		int j = Q_ftol(ambientLight[0] + incoming * directedLight[0]);
 		if (j > 255)
 		{
@@ -788,7 +793,7 @@ static void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors)
 	{
 		glow = EvalWaveForm(wf) * tr.identityLight;
 	}
-	
+
 	if (glow < 0)
 	{
 		glow = 0;
@@ -1255,15 +1260,15 @@ void ComputeColors(shaderStage_t* pStage)
 		break;
 
 	case CGEN_FOG:
-		{
-			mbrush46_fog_t* fog = tr.world->fogs + tess.fogNum;
+	{
+		mbrush46_fog_t* fog = tr.world->fogs + tess.fogNum;
 
-			for (int i = 0; i < tess.numVertexes; i++)
-			{
-				*(int*)&tess.svars.colors[i] = GGameType & GAME_ET ? fog->shader->fogParms.colorInt : fog->colorInt;
-			}
+		for (int i = 0; i < tess.numVertexes; i++)
+		{
+			*(int*)&tess.svars.colors[i] = GGameType & GAME_ET ? fog->shader->fogParms.colorInt : fog->colorInt;
 		}
-		break;
+	}
+	break;
 
 	case CGEN_WAVEFORM:
 		RB_CalcWaveColor(&pStage->rgbWave, (byte*)tess.svars.colors);
@@ -1319,7 +1324,7 @@ void ComputeColors(shaderStage_t* pStage)
 		break;
 
 	case AGEN_ENTITY:
-		RB_CalcAlphaFromEntity(( byte*)tess.svars.colors);
+		RB_CalcAlphaFromEntity((byte*)tess.svars.colors);
 		break;
 
 	case AGEN_ONE_MINUS_ENTITY:
@@ -1332,66 +1337,90 @@ void ComputeColors(shaderStage_t* pStage)
 		vec3_t worldUp;
 		qboolean zombieEffect = false;
 
-		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) ) {
-			VectorSet( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
+		if (VectorCompare(backEnd.currentEntity->e.fireRiseDir, vec3_origin))
+		{
+			VectorSet(backEnd.currentEntity->e.fireRiseDir, 0, 0, 1);
 		}
 
-		if ( backEnd.currentEntity->e.hModel ) {    // world surfaces dont have an axis
-			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
-		} else {
-			VectorCopy( backEnd.currentEntity->e.fireRiseDir, worldUp );
+		if (backEnd.currentEntity->e.hModel)		// world surfaces dont have an axis
+		{
+			VectorRotate(backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp);
+		}
+		else
+		{
+			VectorCopy(backEnd.currentEntity->e.fireRiseDir, worldUp);
 		}
 
 		lowest = pStage->zFadeBounds[0];
-		if ( lowest == -1000 ) {    // use entity alpha
+		if (lowest == -1000)		// use entity alpha
+		{
 			lowest = backEnd.currentEntity->e.shaderTime;
 			zombieEffect = true;
 		}
 		highest = pStage->zFadeBounds[1];
-		if ( highest == -1000 ) {   // use entity alpha
+		if (highest == -1000)		// use entity alpha
+		{
 			highest = backEnd.currentEntity->e.shaderTime;
 			zombieEffect = true;
 		}
 		range = highest - lowest;
-		for (int i = 0; i < tess.numVertexes; i++ ) {
-			dot = DotProduct( tess.normal[i], worldUp );
+		for (int i = 0; i < tess.numVertexes; i++)
+		{
+			dot = DotProduct(tess.normal[i], worldUp);
 
 			// special handling for Zombie fade effect
-			if ( zombieEffect ) {
-				alpha = (float)backEnd.currentEntity->e.shaderRGBA[3] * ( dot + 1.0 ) / 2.0;
-				alpha += ( 2.0 * (float)backEnd.currentEntity->e.shaderRGBA[3] ) * ( 1.0 - ( dot + 1.0 ) / 2.0 );
-				if ( alpha > 255.0 ) {
+			if (zombieEffect)
+			{
+				alpha = (float)backEnd.currentEntity->e.shaderRGBA[3] * (dot + 1.0) / 2.0;
+				alpha += (2.0 * (float)backEnd.currentEntity->e.shaderRGBA[3]) * (1.0 - (dot + 1.0) / 2.0);
+				if (alpha > 255.0)
+				{
 					alpha = 255.0;
-				} else if ( alpha < 0.0 ) {
+				}
+				else if (alpha < 0.0)
+				{
 					alpha = 0.0;
 				}
-				tess.svars.colors[i][3] = (byte)( alpha );
+				tess.svars.colors[i][3] = (byte)(alpha);
 				continue;
 			}
 
-			if ( dot < highest ) {
-				if ( dot > lowest ) {
-					if ( dot < lowest + range / 2 ) {
-						alpha = ( (float)pStage->constantColor[3] * ( ( dot - lowest ) / ( range / 2 ) ) );
-					} else {
-						alpha = ( (float)pStage->constantColor[3] * ( 1.0 - ( ( dot - lowest - range / 2 ) / ( range / 2 ) ) ) );
+			if (dot < highest)
+			{
+				if (dot > lowest)
+				{
+					if (dot < lowest + range / 2)
+					{
+						alpha = ((float)pStage->constantColor[3] * ((dot - lowest) / (range / 2)));
 					}
-					if ( alpha > 255.0 ) {
+					else
+					{
+						alpha = ((float)pStage->constantColor[3] * (1.0 - ((dot - lowest - range / 2) / (range / 2))));
+					}
+					if (alpha > 255.0)
+					{
 						alpha = 255.0;
-					} else if ( alpha < 0.0 ) {
+					}
+					else if (alpha < 0.0)
+					{
 						alpha = 0.0;
 					}
 
 					// finally, scale according to the entity's alpha
-					if ( backEnd.currentEntity->e.hModel ) {
+					if (backEnd.currentEntity->e.hModel)
+					{
 						alpha *= (float)backEnd.currentEntity->e.shaderRGBA[3] / 255.0;
 					}
 
-					tess.svars.colors[i][3] = (byte)( alpha );
-				} else {
+					tess.svars.colors[i][3] = (byte)(alpha);
+				}
+				else
+				{
 					tess.svars.colors[i][3] = 0;
 				}
-			} else {
+			}
+			else
+			{
 				tess.svars.colors[i][3] = 0;
 			}
 		}
@@ -1416,7 +1445,7 @@ void ComputeColors(shaderStage_t* pStage)
 		break;
 
 	case AGEN_PORTAL:
-		for (int i = 0; i < tess.numVertexes; i++ )
+		for (int i = 0; i < tess.numVertexes; i++)
 		{
 			vec3_t v;
 			VectorSubtract(tess.xyz[i], backEnd.viewParms.orient.origin, v);
@@ -1515,11 +1544,11 @@ static void RB_CalcFogTexCoordsET(float* st)
 		if (fog->hasSurface)
 		{
 			fogDepthVector[0] = fogSurface[0] * backEnd.orient.axis[0][0] +
-								  fogSurface[1] * backEnd.orient.axis[0][1] + fogSurface[2] * backEnd.orient.axis[0][2];
+								fogSurface[1] * backEnd.orient.axis[0][1] + fogSurface[2] * backEnd.orient.axis[0][2];
 			fogDepthVector[1] = fogSurface[0] * backEnd.orient.axis[1][0] +
-								  fogSurface[1] * backEnd.orient.axis[1][1] + fogSurface[2] * backEnd.orient.axis[1][2];
+								fogSurface[1] * backEnd.orient.axis[1][1] + fogSurface[2] * backEnd.orient.axis[1][2];
 			fogDepthVector[2] = fogSurface[0] * backEnd.orient.axis[2][0] +
-								  fogSurface[1] * backEnd.orient.axis[2][1] + fogSurface[2] * backEnd.orient.axis[2][2];
+								fogSurface[1] * backEnd.orient.axis[2][1] + fogSurface[2] * backEnd.orient.axis[2][2];
 			fogDepthVector[3] = -fogSurface[3] + DotProduct(backEnd.orient.origin, fogSurface);
 
 			// scale the fog vectors based on the fog's thickness
@@ -1532,12 +1561,12 @@ static void RB_CalcFogTexCoordsET(float* st)
 		}
 		else
 		{
-			eyeT = 1;   // non-surface fog always has eye inside
+			eyeT = 1;	// non-surface fog always has eye inside
 			// Gordon: rarrrrr, stop stupid msvc debug thing
-			fogDepthVector[ 0 ] = 0;
-			fogDepthVector[ 1 ] = 0;
-			fogDepthVector[ 2 ] = 0;
-			fogDepthVector[ 3 ] = 0;
+			fogDepthVector[0] = 0;
+			fogDepthVector[1] = 0;
+			fogDepthVector[2] = 0;
+			fogDepthVector[3] = 0;
 		}
 		// see if the viewpoint is outside
 		bool eyeInside = eyeT >= 0;
@@ -1614,12 +1643,12 @@ void RB_CalcFogTexCoords(float* st)
 	float eyeT;
 	if (fog->hasSurface)
 	{
-		fogDepthVector[0] = fog->surface[0] * backEnd.orient.axis[0][0] + 
-			fog->surface[1] * backEnd.orient.axis[0][1] + fog->surface[2] * backEnd.orient.axis[0][2];
-		fogDepthVector[1] = fog->surface[0] * backEnd.orient.axis[1][0] + 
-			fog->surface[1] * backEnd.orient.axis[1][1] + fog->surface[2] * backEnd.orient.axis[1][2];
-		fogDepthVector[2] = fog->surface[0] * backEnd.orient.axis[2][0] + 
-			fog->surface[1] * backEnd.orient.axis[2][1] + fog->surface[2] * backEnd.orient.axis[2][2];
+		fogDepthVector[0] = fog->surface[0] * backEnd.orient.axis[0][0] +
+							fog->surface[1] * backEnd.orient.axis[0][1] + fog->surface[2] * backEnd.orient.axis[0][2];
+		fogDepthVector[1] = fog->surface[0] * backEnd.orient.axis[1][0] +
+							fog->surface[1] * backEnd.orient.axis[1][1] + fog->surface[2] * backEnd.orient.axis[1][2];
+		fogDepthVector[2] = fog->surface[0] * backEnd.orient.axis[2][0] +
+							fog->surface[1] * backEnd.orient.axis[2][1] + fog->surface[2] * backEnd.orient.axis[2][2];
 		fogDepthVector[3] = -fog->surface[3] + DotProduct(backEnd.orient.origin, fog->surface);
 
 		eyeT = DotProduct(backEnd.orient.viewOrigin, fogDepthVector) + fogDepthVector[3];
@@ -1658,7 +1687,7 @@ void RB_CalcFogTexCoords(float* st)
 		float s = DotProduct(v, fogDistanceVector) + fogDistanceVector[3];
 		float t = DotProduct(v, fogDepthVector) + fogDepthVector[3];
 
-		// partially clipped fogs use the T axis		
+		// partially clipped fogs use the T axis
 		if (eyeOutside)
 		{
 			if (t < 1.0)
@@ -1691,51 +1720,51 @@ void RB_CalcFogTexCoords(float* st)
 static void RB_CalcEnvironmentTexCoordsET(float* st)
 {
 	int i;
-	float d2, *v, *normal, sAdjust, tAdjust;
+	float d2, * v, * normal, sAdjust, tAdjust;
 	vec3_t viewOrigin, ia1, ia2, viewer, reflected;
 
 
 	// setup
-	v = tess.xyz[ 0 ];
-	normal = tess.normal[ 0 ];
-	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
+	v = tess.xyz[0];
+	normal = tess.normal[0];
+	VectorCopy(backEnd.orient.viewOrigin, viewOrigin);
 
 	// ydnar: origin of entity affects its environment map (every 256 units)
 	// this is similar to racing game hacks where the env map seems to move
 	// as the car passes through the world
-	sAdjust = VectorLength( backEnd.orient.origin ) * 0.00390625;
+	sAdjust = VectorLength(backEnd.orient.origin) * 0.00390625;
 	//%	 sAdjust = backEnd.orient.origin[ 0 ] * 0.00390625;
-	sAdjust = 0.5 -  ( sAdjust - floor( sAdjust ) );
+	sAdjust = 0.5 -  (sAdjust - floor(sAdjust));
 
-	tAdjust = backEnd.orient.origin[ 2 ] * 0.00390625;
-	tAdjust = 0.5 - ( tAdjust - floor( tAdjust ) );
+	tAdjust = backEnd.orient.origin[2] * 0.00390625;
+	tAdjust = 0.5 - (tAdjust - floor(tAdjust));
 
 	// ydnar: the final reflection vector must be converted into world-space again
 	// we just assume here that all transformations are rotations, so the inverse
 	// of the transform matrix (the 3x3 part) is just the transpose
 	// additionally, we don't need all 3 rows, so we just calculate 2
 	// and we also scale by 0.5 to eliminate two per-vertex multiplies
-	ia1[ 0 ] = backEnd.orient.axis[ 0 ][ 1 ] * 0.5;
-	ia1[ 1 ] = backEnd.orient.axis[ 1 ][ 1 ] * 0.5;
-	ia1[ 2 ] = backEnd.orient.axis[ 2 ][ 1 ] * 0.5;
-	ia2[ 0 ] = backEnd.orient.axis[ 0 ][ 2 ] * 0.5;
-	ia2[ 1 ] = backEnd.orient.axis[ 1 ][ 2 ] * 0.5;
-	ia2[ 2 ] = backEnd.orient.axis[ 2 ][ 2 ] * 0.5;
+	ia1[0] = backEnd.orient.axis[0][1] * 0.5;
+	ia1[1] = backEnd.orient.axis[1][1] * 0.5;
+	ia1[2] = backEnd.orient.axis[2][1] * 0.5;
+	ia2[0] = backEnd.orient.axis[0][2] * 0.5;
+	ia2[1] = backEnd.orient.axis[1][2] * 0.5;
+	ia2[2] = backEnd.orient.axis[2][2] * 0.5;
 
 	// walk verts
-	for ( i = 0; i < tess.numVertexes; i++, v += 4, normal += 4, st += 2 )
+	for (i = 0; i < tess.numVertexes; i++, v += 4, normal += 4, st += 2)
 	{
-		VectorSubtract( viewOrigin, v, viewer );
-		VectorNormalizeFast( viewer );
+		VectorSubtract(viewOrigin, v, viewer);
+		VectorNormalizeFast(viewer);
 
-		d2 = 2.0 * DotProduct( normal, viewer );
+		d2 = 2.0 * DotProduct(normal, viewer);
 
-		reflected[ 0 ] = normal[ 0 ] * d2 - viewer[ 0 ];
-		reflected[ 1 ] = normal[ 1 ] * d2 - viewer[ 1 ];
-		reflected[ 2 ] = normal[ 2 ] * d2 - viewer[ 2 ];
+		reflected[0] = normal[0] * d2 - viewer[0];
+		reflected[1] = normal[1] * d2 - viewer[1];
+		reflected[2] = normal[2] * d2 - viewer[2];
 
-		st[ 0 ] = sAdjust + DotProduct( reflected, ia1 );
-		st[ 1 ] = tAdjust - DotProduct( reflected, ia2 );
+		st[0] = sAdjust + DotProduct(reflected, ia1);
+		st[1] = tAdjust - DotProduct(reflected, ia2);
 	}
 }
 
@@ -1745,7 +1774,7 @@ static void RB_CalcEnvironmentTexCoordsET(float* st)
 //
 //==========================================================================
 
-static void RB_CalcEnvironmentTexCoords(float* st) 
+static void RB_CalcEnvironmentTexCoords(float* st)
 {
 	if (GGameType & GAME_ET)
 	{
@@ -1932,7 +1961,7 @@ static void RB_CalcSwapTexCoords(float* st)
 		float t = st[1];
 
 		st[0] = t;
-		st[1] = 1.0 - s;    // err, flaming effect needs this
+		st[1] = 1.0 - s;	// err, flaming effect needs this
 	}
 }
 
@@ -1998,7 +2027,7 @@ void ComputeTexCoords(shaderStage_t* pStage)
 		//
 		// alter texture coordinates
 		//
-		for (int tm = 0; tm < pStage->bundle[b].numTexMods ; tm++)
+		for (int tm = 0; tm < pStage->bundle[b].numTexMods; tm++)
 		{
 			switch (pStage->bundle[b].texMods[tm].type)
 			{
@@ -2007,7 +2036,7 @@ void ComputeTexCoords(shaderStage_t* pStage)
 				break;
 
 			case TMOD_TURBULENT:
-				RB_CalcTurbulentTexCoords(&pStage->bundle[b].texMods[tm].wave, 
+				RB_CalcTurbulentTexCoords(&pStage->bundle[b].texMods[tm].wave,
 					(float*)tess.svars.texcoords[b]);
 				break;
 
@@ -2025,9 +2054,9 @@ void ComputeTexCoords(shaderStage_t* pStage)
 				RB_CalcScaleTexCoords(pStage->bundle[b].texMods[tm].scale,
 					(float*)tess.svars.texcoords[b]);
 				break;
-			
+
 			case TMOD_STRETCH:
-				RB_CalcStretchTexCoords(&pStage->bundle[b].texMods[tm].wave, 
+				RB_CalcStretchTexCoords(&pStage->bundle[b].texMods[tm].wave,
 					(float*)tess.svars.texcoords[b]);
 				break;
 
@@ -2047,7 +2076,7 @@ void ComputeTexCoords(shaderStage_t* pStage)
 
 			default:
 				throw DropException(va("ERROR: unknown texmod '%d' in shader '%s'\n",
-					pStage->bundle[b].texMods[tm].type, tess.shader->name));
+						pStage->bundle[b].texMods[tm].type, tess.shader->name));
 				break;
 			}
 		}

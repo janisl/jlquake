@@ -43,9 +43,9 @@ enum
 	H2MDLEF_BLOODSHOT = 8388608,	// Blood rain shot trail
 };
 
-#define MAX_INVENTORY_H2			15		// Max inventory array size
+#define MAX_INVENTORY_H2            15		// Max inventory array size
 
-#define H2MAX_SCOREBOARDNAME	32
+#define H2MAX_SCOREBOARDNAME    32
 struct h2player_info_t
 {
 	// scoreboard information
@@ -81,7 +81,7 @@ struct hwplayer_state_t
 	int messagenum;		// all player's won't be updated each frame
 
 	double state_time;		// not the same as the packet time,
-								// because player commands come asyncronously
+	// because player commands come asyncronously
 	hwusercmd_t command;		// last command for prediction
 
 	vec3_t origin;
@@ -114,7 +114,7 @@ struct hwframe_t
 	// received from server
 	double receivedtime;	// time message was received, or -1
 	hwplayer_state_t playerstate[HWMAX_CLIENTS];	// message received that reflects performing
-							// the usercmd
+	// the usercmd
 	hwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid
 };
@@ -125,7 +125,7 @@ struct h2entity_t
 	float syncbase;			// for client-side animations
 
 	double msgtime;			// time of last update
-	vec3_t msg_origins[2];	// last two updates (0 is newest)	
+	vec3_t msg_origins[2];	// last two updates (0 is newest)
 	vec3_t msg_angles[2];	// last two updates (0 is newest)
 };
 

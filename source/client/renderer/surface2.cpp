@@ -33,15 +33,15 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-gllightmapstate_t	gl_lms;
+gllightmapstate_t gl_lms;
 
-mbrush38_surface_t*	r_alpha_surfaces;
+mbrush38_surface_t* r_alpha_surfaces;
 
-int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static float	s_blocklights_q2[34 * 34 * 3];
+static float s_blocklights_q2[34 * 34 * 3];
 
 // CODE --------------------------------------------------------------------
 
@@ -223,7 +223,7 @@ static void R_AddDynamicLightsQ2(mbrush38_surface_t* surf)
 
 		float* pfBL = s_blocklights_q2;
 		float ftacc = 0;
-		for (int t = 0; t < tmax ; t++, ftacc += 16)
+		for (int t = 0; t < tmax; t++, ftacc += 16)
 		{
 			int td = local[1] - ftacc;
 			if (td < 0)
@@ -381,7 +381,7 @@ static void R_BuildLightMapQ2(mbrush38_surface_t* surf, byte* dest, int stride)
 	}
 
 	// put into texture format
-	stride -= (smax<<2);
+	stride -= (smax << 2);
 	float* bl = s_blocklights_q2;
 
 	for (int i = 0; i < tmax; i++, dest += stride)
@@ -521,7 +521,7 @@ void GL_CreateSurfaceLightmapQ2(mbrush38_surface_t* surf)
 	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
 
 	R_SetCacheState(surf);
-	R_BuildLightMapQ2(surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
+	R_BuildLightMapQ2(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
 }
 
 //==========================================================================
@@ -565,11 +565,11 @@ static void EmitWaterPolysQ2(mbrush38_surface_t* fa)
 			float os = v[3];
 			float ot = v[4];
 
-			float s = os + r_turbsin[Q_ftol( ((ot * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
+			float s = os + r_turbsin[Q_ftol(((ot * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
 			s += scroll;
 			s *= (1.0 / 64);
 
-			float t = ot + r_turbsin[Q_ftol( ((os * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
+			float t = ot + r_turbsin[Q_ftol(((os * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
 			t *= (1.0 / 64);
 
 			qglTexCoord2f(s, t);
@@ -663,7 +663,7 @@ void R_RenderBrushPolyQ2(mbrush38_surface_t* fa)
 	image_t* image = R_TextureAnimationQ2(fa->texinfo);
 
 	if (fa->flags & BRUSH38_SURF_DRAWTURB)
-	{	
+	{
 		GL_Bind(image);
 
 		// warp texture, no lightmaps
@@ -755,7 +755,7 @@ dynamic:
 
 void DrawTextureChainsQ2()
 {
-	int		i;
+	int i;
 
 	c_visible_textures = 0;
 
@@ -967,8 +967,8 @@ void R_BlendLightmapsQ2()
 				{
 					if (drawsurf->polys)
 					{
-						DrawGLPolyChainQ2(drawsurf->polys, 
-							(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0), 
+						DrawGLPolyChainQ2(drawsurf->polys,
+							(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0),
 							(drawsurf->light_t - drawsurf->dlight_t) * (1.0 / 128.0));
 					}
 				}
@@ -1034,13 +1034,13 @@ static void GL_MBind(int target, image_t* image)
 
 void GL_RenderLightmappedPoly(mbrush38_surface_t* surf)
 {
-	int		i, nv = surf->polys->numverts;
-	int		map;
-	float	*v;
-	image_t *image = R_TextureAnimationQ2( surf->texinfo );
+	int i, nv = surf->polys->numverts;
+	int map;
+	float* v;
+	image_t* image = R_TextureAnimationQ2(surf->texinfo);
 	qboolean is_dynamic = false;
 	unsigned lmtex = surf->lightmaptexturenum;
-	mbrush38_glpoly_t *p;
+	mbrush38_glpoly_t* p;
 
 	GL_SelectTexture(0);
 	GL_TexEnv(GL_REPLACE);
@@ -1053,7 +1053,7 @@ void GL_RenderLightmappedPoly(mbrush38_surface_t* surf)
 	{
 		GL_TexEnv(GL_REPLACE);
 	}
-	else 
+	else
 	{
 		GL_TexEnv(GL_MODULATE);
 	}
@@ -1081,8 +1081,8 @@ dynamic:
 
 	if (is_dynamic)
 	{
-		unsigned	temp[128*128];
-		int			smax, tmax;
+		unsigned temp[128 * 128];
+		int smax, tmax;
 
 		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && (surf->dlightframe != tr.frameCount))
 		{
@@ -1110,7 +1110,7 @@ dynamic:
 
 			lmtex = 0;
 
-			qglTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax, 
+			qglTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
 				GL_RGBA, GL_UNSIGNED_BYTE, temp);
 		}
 
@@ -1223,7 +1223,7 @@ void R_DrawAlphaSurfaces()
 	//
 	// go back to the world matrix
 	//
-    qglLoadMatrixf(tr.viewParms.world.modelMatrix);
+	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv(GL_MODULATE);

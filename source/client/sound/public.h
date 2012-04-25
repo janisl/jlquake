@@ -14,16 +14,16 @@
 //**
 //**************************************************************************
 
-typedef int		sfxHandle_t;
+typedef int sfxHandle_t;
 
 //!!!!!!!! Used by Wolf QVMs, do not change !!!!!!!!!!!
 //#define SND_NORMAL		0x000	// (default) Allow sound to be cut off only by the same sound on this channel
-#define SND_OKTOCUT			0x001   // Allow sound to be cut off by any following sounds on this channel
-#define SND_REQUESTCUT		0x002   // Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
-#define SND_CUTOFF			0x004   // Cut off sounds on this channel that are marked 'SND_REQUESTCUT'
-#define SND_CUTOFF_ALL		0x008   // Cut off all sounds on this channel
-#define SND_NOCUT			0x010   // Don't cut off.  Always let finish (overridden by SND_CUTOFF_ALL)
-#define SND_NO_ATTENUATION	0x020   // don't attenuate (even though the sound is in voice channel, for example)
+#define SND_OKTOCUT         0x001	// Allow sound to be cut off by any following sounds on this channel
+#define SND_REQUESTCUT      0x002	// Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
+#define SND_CUTOFF          0x004	// Cut off sounds on this channel that are marked 'SND_REQUESTCUT'
+#define SND_CUTOFF_ALL      0x008	// Cut off all sounds on this channel
+#define SND_NOCUT           0x010	// Don't cut off.  Always let finish (overridden by SND_CUTOFF_ALL)
+#define SND_NO_ATTENUATION  0x020	// don't attenuate (even though the sound is in voice channel, for example)
 
 //	RegisterSound will allways return a valid sample, even if it
 // has to create a placeholder.  This prevents continuous filesystem
@@ -87,7 +87,7 @@ int S_GetCurrentSoundTime();
 
 qboolean MIDI_Init();
 void MIDI_Cleanup();
-void MIDI_Play(char *Name);
+void MIDI_Play(char* Name);
 void MIDI_Stop();
 void MIDI_Pause(int mode);
 void MIDI_Loop(int NewValue);
@@ -101,6 +101,6 @@ void CDAudio_Shutdown();
 void CDAudio_Update();
 void CDAudio_Activate(qboolean active);
 
-extern	Cvar* s_volume;
-extern	Cvar* bgmvolume;
-extern	Cvar* bgmtype;
+extern Cvar* s_volume;
+extern Cvar* bgmvolume;
+extern Cvar* bgmtype;

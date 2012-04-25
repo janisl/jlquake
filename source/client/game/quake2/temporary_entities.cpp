@@ -65,7 +65,7 @@ void CLQ2_RegisterTEntSounds()
 
 	clq2_sfx_lightning = S_RegisterSound("weapons/tesla.wav");
 	clq2_sfx_disrexp = S_RegisterSound("weapons/disrupthit.wav");
-}	
+}
 
 void CLQ2_RegisterTEntModels()
 {
@@ -456,7 +456,7 @@ static void CLQ2_ParseFlechette(QMsg& message)
 	vec3_t dir;
 	message.ReadDir(dir);
 
-	CLQ2_BlasterParticles2(pos, dir, 0x6f); // 75
+	CLQ2_BlasterParticles2(pos, dir, 0x6f);	// 75
 	CLQ2_FlechetteExplosion(pos, dir);
 	S_StartSound(pos, 0, 0, clq2_sfx_lashit, 1, ATTN_NORM, 0);
 }
@@ -559,12 +559,12 @@ static void CLQ2_ParseSteam(QMsg& message)
 	int r = message.ReadByte();
 	int magnitude = message.ReadShort();
 
-	if (id != -1) // sustains
+	if (id != -1)	// sustains
 	{
 		int interval = message.ReadLong();
 		CLQ2_SustainParticleStream(id, cnt, pos, dir, r, magnitude, interval);
 	}
-	else // instant
+	else// instant
 	{
 		int color = r & 0xff;
 		CLQ2_ParticleSteamEffect(pos, dir, color, cnt, magnitude);
@@ -707,7 +707,7 @@ void CLQ2_ParseTEnt(QMsg& message)
 	case Q2TE_BLASTER:			// blaster hitting wall
 		CLQ2_ParseBlaster(message);
 		break;
-		
+
 	case Q2TE_RAILTRAIL:			// railgun effect
 		CLQ2_ParseRailTrail(message);
 		break;
@@ -725,7 +725,7 @@ void CLQ2_ParseTEnt(QMsg& message)
 	case Q2TE_PLASMA_EXPLOSION:
 		CLQ2_ParsePlasmaExplosion(message);
 		break;
-	
+
 	case Q2TE_EXPLOSION1:
 	case Q2TE_ROCKET_EXPLOSION:
 		CLQ2_ParseRocketExplosion(message);
@@ -820,7 +820,7 @@ void CLQ2_ParseTEnt(QMsg& message)
 	case Q2TE_HEATBEAM_SPARKS:
 		CLQ2_ParseHeatBeamSparks(message);
 		break;
-	
+
 	case Q2TE_HEATBEAM_STEAM:
 		CLQ2_ParseHeatBeamSteam(message);
 		break;

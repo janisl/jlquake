@@ -28,11 +28,11 @@
 // MACROS ------------------------------------------------------------------
 
 // Hex Color string support
-#define gethex( ch ) ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
-#define ishex( ch )  ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
+#define gethex(ch) ((ch) > '9' ? ((ch) >= 'a' ? ((ch) - 'a' + 10) : ((ch) - '7')) : ((ch) - '0'))
+#define ishex(ch)  ((ch) && (((ch) >= '0' && (ch) <= '9') || ((ch) >= 'A' && (ch) <= 'F') || ((ch) >= 'a' && (ch) <= 'f')))
 // check if it's format rrggbb r,g,b e {0..9} U {A...F}
-#define Q_IsHexColorString( p ) ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
-#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
+#define Q_IsHexColorString(p) (ishex(*(p)) && ishex(*((p) + 1)) && ishex(*((p) + 2)) && ishex(*((p) + 3)) && ishex(*((p) + 4)) && ishex(*((p) + 5)))
+#define Q_HexColorStringHasAlpha(p) (ishex(*((p) + 6)) && ishex(*((p) + 7)))
 
 // TYPES -------------------------------------------------------------------
 
@@ -46,9 +46,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-shaderCommands_t	tess;
+shaderCommands_t tess;
 
-bool	setArraysOnce;
+bool setArraysOnce;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -83,7 +83,7 @@ static void APIENTRY R_ArrayElementDiscrete(GLint index)
 //
 //==========================================================================
 
-static void R_DrawStripElements(int numIndexes, const glIndex_t *indexes, void (APIENTRY*element)(GLint))
+static void R_DrawStripElements(int numIndexes, const glIndex_t* indexes, void (APIENTRY* element)(GLint))
 {
 	if (numIndexes <= 0)
 	{
@@ -203,7 +203,7 @@ static void R_DrawElements(int numIndexes, const glIndex_t* indexes)
 		R_DrawStripElements(numIndexes,  indexes, qglArrayElement);
 		return;
 	}
-	
+
 	if (primitives == 3)
 	{
 		R_DrawStripElements(numIndexes,  indexes, R_ArrayElementDiscrete);
@@ -416,7 +416,7 @@ static void DrawNormals(shaderCommands_t* input)
 	{
 		// ydnar: normals drawing
 		qglBegin(GL_LINES);
-		for (int i = 0 ; i < input->numVertexes ; i++)
+		for (int i = 0; i < input->numVertexes; i++)
 		{
 			qglVertex3fv(input->xyz[i]);
 			vec3_t temp;
@@ -480,7 +480,7 @@ static void DrawMultitextured(shaderCommands_t* input, int stage)
 	}
 	else if (tess.shader->noFog && !pStage->isFogged)
 	{
-		R_FogOff(); // turn it back off
+		R_FogOff();	// turn it back off
 	}
 	else
 	{
@@ -594,10 +594,10 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 			}
 			else if (tess.shader->noFog && !pStage->isFogged)
 			{
-				R_FogOff(); // turn it back off
+				R_FogOff();	// turn it back off
 			}
 			else
-			{    // make sure it's on
+			{	// make sure it's on
 				R_FogOn();
 			}
 
@@ -613,7 +613,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 				else
 				{
 					if (fadeEnd < tr.refdef.time)
-					{     // entity faded out completely
+					{		// entity faded out completely
 						continue;
 					}
 
@@ -640,7 +640,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 			{
 				// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
 				unsigned int stateBits = (pStage->stateBits & ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) |
-					(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);
+										 (GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);
 				GL_State(stateBits);
 			}
 			else
@@ -797,7 +797,7 @@ static void ProjectDlightTexture()
 		{
 			for (int i = 0; i < dls->numUnfoggedPasses; i++)
 			{
-				shaderStage_t *stage = dls->stages[i];
+				shaderStage_t* stage = dls->stages[i];
 				R_BindAnimatedImage(&dls->stages[i]->bundle[0]);
 				GL_State(stage->stateBits | GLS_DEPTHFUNC_EQUAL);
 				R_DrawElements(numIndexes, hitIndexes);
@@ -1167,7 +1167,7 @@ static void RB_FogPass()
 
 	for (int i = 0; i < tess.numVertexes; i++)
 	{
-		*(int*)&tess.svars.colors[i] = GGameType & GAME_ET ? fog->shader->fogParms.colorInt: fog->colorInt;
+		*(int*)&tess.svars.colors[i] = GGameType & GAME_ET ? fog->shader->fogParms.colorInt : fog->colorInt;
 	}
 
 	RB_CalcFogTexCoords((float*)tess.svars.texcoords[0]);
@@ -1247,7 +1247,7 @@ void RB_StageIteratorGeneric()
 	//
 	// log this call
 	//
-	if (r_logFile->integer) 
+	if (r_logFile->integer)
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -1261,7 +1261,7 @@ void RB_StageIteratorGeneric()
 	{
 		// RF< so we can send the normals as an array
 		qglEnableClientState(GL_NORMAL_ARRAY);
-		qglEnable(GL_PN_TRIANGLES_ATI); // ATI PN-Triangles extension
+		qglEnable(GL_PN_TRIANGLES_ATI);	// ATI PN-Triangles extension
 	}
 
 	//
@@ -1331,7 +1331,7 @@ void RB_StageIteratorGeneric()
 	//
 	RB_IterateStagesGeneric(input);
 
-	// 
+	//
 	// now do any dynamic lighting needed
 	//
 	//
@@ -1369,10 +1369,10 @@ void RB_StageIteratorGeneric()
 		RB_FogPass();
 	}
 
-	// 
+	//
 	// unlock arrays
 	//
-	if (qglUnlockArraysEXT) 
+	if (qglUnlockArraysEXT)
 	{
 		qglUnlockArraysEXT();
 		QGL_LogComment("glUnlockArraysEXT\n");
@@ -1389,7 +1389,7 @@ void RB_StageIteratorGeneric()
 	// turn truform back off
 	if (qglPNTrianglesiATI && tess.ATI_tess)
 	{
-		qglDisable(GL_PN_TRIANGLES_ATI);    // ATI PN-Triangles extension
+		qglDisable(GL_PN_TRIANGLES_ATI);	// ATI PN-Triangles extension
 		qglDisableClientState(GL_NORMAL_ARRAY);
 	}
 }
@@ -1412,7 +1412,7 @@ void RB_StageIteratorVertexLitTexture()
 	//
 	// log this call
 	//
-	if (r_logFile->integer) 
+	if (r_logFile->integer)
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -1435,8 +1435,8 @@ void RB_StageIteratorVertexLitTexture()
 
 	if (qglPNTrianglesiATI && tess.ATI_tess)
 	{
-		qglEnable(GL_PN_TRIANGLES_ATI); // ATI PN-Triangles extension
-		qglEnableClientState(GL_NORMAL_ARRAY);         // RF< so we can send the normals as an array
+		qglEnable(GL_PN_TRIANGLES_ATI);	// ATI PN-Triangles extension
+		qglEnableClientState(GL_NORMAL_ARRAY);			// RF< so we can send the normals as an array
 		qglNormalPointer(GL_FLOAT, 16, input->normal);
 	}
 
@@ -1457,7 +1457,7 @@ void RB_StageIteratorVertexLitTexture()
 	GL_State(tess.xstages[0]->stateBits);
 	R_DrawElements(input->numIndexes, input->indexes);
 
-	// 
+	//
 	// now do any dynamic lighting needed
 	//
 	if (GGameType & GAME_ET)
@@ -1491,10 +1491,10 @@ void RB_StageIteratorVertexLitTexture()
 		RB_FogPass();
 	}
 
-	// 
+	//
 	// unlock arrays
 	//
-	if (qglUnlockArraysEXT) 
+	if (qglUnlockArraysEXT)
 	{
 		qglUnlockArraysEXT();
 		QGL_LogComment("glUnlockArraysEXT\n");
@@ -1601,7 +1601,7 @@ void RB_StageIteratorLightmappedMultitexture()
 
 	GL_SelectTexture(0);
 
-	// 
+	//
 	// now do any dynamic lighting needed
 	//
 	if (GGameType & GAME_ET)
@@ -1668,7 +1668,7 @@ void RB_EndSurface()
 	if (input->indexes[SHADER_MAX_INDEXES - 1] != 0)
 	{
 		throw DropException("RB_EndSurface() - SHADER_MAX_INDEXES hit");
-	}	
+	}
 	if (input->xyz[SHADER_MAX_VERTEXES - 1][0] != 0)
 	{
 		throw DropException("RB_EndSurface() - SHADER_MAX_VERTEXES hit");
