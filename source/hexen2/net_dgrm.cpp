@@ -6,28 +6,28 @@
 #include "quakedef.h"
 #include "net_dgrm.h"
 
-int  UDP_Init (void);
-void UDP_Shutdown (void);
-void UDP_Listen (qboolean state);
-int  UDP_OpenSocket (int port);
-int  UDP_CloseSocket (int socket);
-int  UDP_Read (int socket, byte *buf, int len, netadr_t* addr);
-int  UDP_Write (int socket, byte *buf, int len, netadr_t* addr);
-int  UDP_Broadcast (int socket, byte *buf, int len);
-int  UDP_GetNameFromAddr (netadr_t* addr, char *name);
-int  UDP_GetAddrFromName (const char *name, netadr_t* addr);
-int  UDP_AddrCompare (netadr_t* addr1, netadr_t* addr2);
+int  UDP_Init(void);
+void UDP_Shutdown(void);
+void UDP_Listen(qboolean state);
+int  UDP_OpenSocket(int port);
+int  UDP_CloseSocket(int socket);
+int  UDP_Read(int socket, byte* buf, int len, netadr_t* addr);
+int  UDP_Write(int socket, byte* buf, int len, netadr_t* addr);
+int  UDP_Broadcast(int socket, byte* buf, int len);
+int  UDP_GetNameFromAddr(netadr_t* addr, char* name);
+int  UDP_GetAddrFromName(const char* name, netadr_t* addr);
+int  UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2);
 
 /* statistic counters */
-int	packetsSent = 0;
-int	packetsReSent = 0;
+int packetsSent = 0;
+int packetsReSent = 0;
 int packetsReceived = 0;
 int receivedDuplicateCount = 0;
 int shortPacketCount = 0;
 int droppedDatagrams;
 
-static int			udp_controlSock;
-static qboolean		udp_initialized;
+static int udp_controlSock;
+static qboolean udp_initialized;
 
 static int net_acceptsocket = -1;		// socket for fielding new connections
 static int net_controlsocket;
@@ -36,9 +36,9 @@ static int myDriverLevel;
 
 static struct
 {
-	unsigned int	length;
-	unsigned int	sequence;
-	byte			data[MAX_DATAGRAM_H2];
+	unsigned int length;
+	unsigned int sequence;
+	byte data[MAX_DATAGRAM_H2];
 } packetBuffer;
 
 extern qboolean m_return_onerror;
@@ -49,17 +49,17 @@ extern char m_return_reason[32];
 netadr_t banAddr;
 netadr_t banMask;
 
-void NET_Ban_f (void)
+void NET_Ban_f(void)
 {
-	char	addrStr [32];
-	char	maskStr [32];
-	void	(*print) (const char *fmt, ...);
+	char addrStr [32];
+	char maskStr [32];
+	void (* print)(const char* fmt, ...);
 
 	if (cmd_source == src_command)
 	{
 		if (!sv.active)
 		{
-			Cmd_ForwardToServer ();
+			Cmd_ForwardToServer();
 			return;
 		}
 		print = Con_Printf;
@@ -67,59 +67,73 @@ void NET_Ban_f (void)
 	else
 	{
 		if (pr_global_struct->deathmatch && !host_client->privileged)
+		{
 			return;
+		}
 		print = SV_ClientPrintf;
 	}
 
-	switch (Cmd_Argc ())
+	switch (Cmd_Argc())
 	{
-		case 1:
-			if (banAddr.type == NA_IP)
-			{
-				String::Cpy(addrStr, SOCK_BaseAdrToString(banAddr));
-				String::Cpy(maskStr, SOCK_BaseAdrToString(banMask));
-				print("Banning %s [%s]\n", addrStr, maskStr);
-			}
-			else
-				print("Banning not active\n");
-			break;
+	case 1:
+		if (banAddr.type == NA_IP)
+		{
+			String::Cpy(addrStr, SOCK_BaseAdrToString(banAddr));
+			String::Cpy(maskStr, SOCK_BaseAdrToString(banMask));
+			print("Banning %s [%s]\n", addrStr, maskStr);
+		}
+		else
+		{
+			print("Banning not active\n");
+		}
+		break;
 
-		case 2:
-			if (String::ICmp(Cmd_Argv(1), "off") == 0)
-				Com_Memset(&banAddr, 0, sizeof(banAddr));
-			else
-				UDP_GetAddrFromName(Cmd_Argv(1), &banAddr);
-			*(int*)banMask.ip = 0xffffffff;
-			break;
-
-		case 3:
+	case 2:
+		if (String::ICmp(Cmd_Argv(1), "off") == 0)
+		{
+			Com_Memset(&banAddr, 0, sizeof(banAddr));
+		}
+		else
+		{
 			UDP_GetAddrFromName(Cmd_Argv(1), &banAddr);
-			UDP_GetAddrFromName(Cmd_Argv(1), &banMask);
-			break;
+		}
+		*(int*)banMask.ip = 0xffffffff;
+		break;
 
-		default:
-			print("BAN ip_address [mask]\n");
-			break;
+	case 3:
+		UDP_GetAddrFromName(Cmd_Argv(1), &banAddr);
+		UDP_GetAddrFromName(Cmd_Argv(1), &banMask);
+		break;
+
+	default:
+		print("BAN ip_address [mask]\n");
+		break;
 	}
 }
 #endif
 
 
-int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
+int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 {
-	unsigned int	packetLen;
-	unsigned int	dataLen;
-	unsigned int	eom;
+	unsigned int packetLen;
+	unsigned int dataLen;
+	unsigned int eom;
 
 #ifdef DEBUG
 	if (data->cursize == 0)
+	{
 		Sys_Error("Datagram_SendMessage: zero length message\n");
+	}
 
 	if (data->cursize > MAX_MSGLEN_H2)
+	{
 		Sys_Error("Datagram_SendMessage: message too big %u\n", data->cursize);
+	}
 
 	if (sock->canSend == false)
+	{
 		Sys_Error("SendMessage: called with canSend == false\n");
+	}
 #endif
 
 	Com_Memcpy(chan->reliableOrUnsentBuffer, data->_data, data->cursize);
@@ -143,8 +157,10 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 
 	sock->canSend = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	{
 		return -1;
+	}
 
 	chan->lastSent = net_time * 1000;
 	packetsSent++;
@@ -152,11 +168,11 @@ int Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
 }
 
 
-int SendMessageNext (qsocket_t *sock, netchan_t* chan)
+int SendMessageNext(qsocket_t* sock, netchan_t* chan)
 {
-	unsigned int	packetLen;
-	unsigned int	dataLen;
-	unsigned int	eom;
+	unsigned int packetLen;
+	unsigned int dataLen;
+	unsigned int eom;
 
 	if (chan->reliableOrUnsentLength <= MAX_DATAGRAM_H2)
 	{
@@ -176,8 +192,10 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 
 	sock->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	{
 		return -1;
+	}
 
 	chan->lastSent = net_time * 1000;
 	packetsSent++;
@@ -185,11 +203,11 @@ int SendMessageNext (qsocket_t *sock, netchan_t* chan)
 }
 
 
-int ReSendMessage (qsocket_t *sock, netchan_t* chan)
+int ReSendMessage(qsocket_t* sock, netchan_t* chan)
 {
-	unsigned int	packetLen;
-	unsigned int	dataLen;
-	unsigned int	eom;
+	unsigned int packetLen;
+	unsigned int dataLen;
+	unsigned int eom;
 
 	if (chan->reliableOrUnsentLength <= MAX_DATAGRAM_H2)
 	{
@@ -209,8 +227,10 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 
 	sock->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	{
 		return -1;
+	}
 
 	chan->lastSent = net_time * 1000;
 	packetsReSent++;
@@ -218,31 +238,37 @@ int ReSendMessage (qsocket_t *sock, netchan_t* chan)
 }
 
 
-qboolean Datagram_CanSendMessage (qsocket_t *sock, netchan_t* chan)
+qboolean Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 {
 	if (sock->sendNext)
-		SendMessageNext (sock, chan);
+	{
+		SendMessageNext(sock, chan);
+	}
 
 	return sock->canSend;
 }
 
 
-qboolean Datagram_CanSendUnreliableMessage (qsocket_t *sock)
+qboolean Datagram_CanSendUnreliableMessage(qsocket_t* sock)
 {
 	return true;
 }
 
 
-int Datagram_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data)
+int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 {
-	int 	packetLen;
+	int packetLen;
 
 #ifdef DEBUG
 	if (data->cursize == 0)
+	{
 		Sys_Error("Datagram_SendUnreliableMessage: zero length message\n");
+	}
 
 	if (data->cursize > MAX_DATAGRAM_H2)
+	{
 		Sys_Error("Datagram_SendUnreliableMessage: message too big %u\n", data->cursize);
+	}
 #endif
 
 	packetLen = NET_HEADERSIZE + data->cursize;
@@ -251,36 +277,44 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data
 	packetBuffer.sequence = BigLong(chan->outgoingSequence++);
 	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	{
 		return -1;
+	}
 
 	packetsSent++;
 	return 1;
 }
 
 
-int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
+int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan)
 {
-	int				length;
-	unsigned int	flags;
-	int				ret = 0;
+	int length;
+	unsigned int flags;
+	int ret = 0;
 	netadr_t readaddr;
-	unsigned int	sequence;
-	unsigned int	count;
+	unsigned int sequence;
+	unsigned int count;
 
 	if (!sock->canSend)
+	{
 		if ((net_time * 1000 - chan->lastSent) > 1000)
-			ReSendMessage (sock, chan);
+		{
+			ReSendMessage(sock, chan);
+		}
+	}
 
-	while(1)
-	{	
-		length = UDP_Read(sock->socket, (byte *)&packetBuffer, NET_DATAGRAMSIZE, &readaddr);
+	while (1)
+	{
+		length = UDP_Read(sock->socket, (byte*)&packetBuffer, NET_DATAGRAMSIZE, &readaddr);
 
 //	if ((rand() & 255) > 220)
 //		continue;
 
 		if (length == 0)
+		{
 			break;
+		}
 
 		if (length == -1)
 		{
@@ -309,7 +343,9 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 		length &= NETFLAG_LENGTH_MASK;
 
 		if (flags & NETFLAG_CTL)
+		{
 			continue;
+		}
 
 		sequence = BigLong(packetBuffer.sequence);
 		packetsReceived++;
@@ -350,7 +386,9 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 			{
 				chan->incomingReliableAcknowledged++;
 				if (chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
+				{
 					Con_DPrintf("ack sequencing error\n");
+				}
 			}
 			else
 			{
@@ -360,7 +398,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 			chan->reliableOrUnsentLength -= MAX_DATAGRAM_H2;
 			if (chan->reliableOrUnsentLength > 0)
 			{
-				Com_Memcpy(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentBuffer+MAX_DATAGRAM_H2, chan->reliableOrUnsentLength);
+				Com_Memcpy(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentBuffer + MAX_DATAGRAM_H2, chan->reliableOrUnsentLength);
 				sock->sendNext = true;
 			}
 			else
@@ -375,7 +413,7 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 		{
 			packetBuffer.length = BigLong(NET_HEADERSIZE | NETFLAG_ACK);
 			packetBuffer.sequence = BigLong(sequence);
-			UDP_Write(sock->socket, (byte *)&packetBuffer, NET_HEADERSIZE, &readaddr);
+			UDP_Write(sock->socket, (byte*)&packetBuffer, NET_HEADERSIZE, &readaddr);
 
 			if (sequence != chan->incomingReliableSequence)
 			{
@@ -404,13 +442,15 @@ int	Datagram_GetMessage (qsocket_t *sock, netchan_t* chan)
 	}
 
 	if (sock->sendNext)
-		SendMessageNext (sock, chan);
+	{
+		SendMessageNext(sock, chan);
+	}
 
 	return ret;
 }
 
 
-void PrintStats(qsocket_t *s)
+void PrintStats(qsocket_t* s)
 {
 	Con_Printf("canSend = %4u   \n", s->canSend);
 //	Con_Printf("sendSeq = %4u   ", s->outgoingReliableSequence);
@@ -418,11 +458,11 @@ void PrintStats(qsocket_t *s)
 	Con_Printf("\n");
 }
 
-void NET_Stats_f (void)
+void NET_Stats_f(void)
 {
-	qsocket_t	*s;
+	qsocket_t* s;
 
-	if (Cmd_Argc () == 1)
+	if (Cmd_Argc() == 1)
 	{
 		Con_Printf("unreliable messages sent   = %i\n", unreliableMessagesSent);
 		Con_Printf("unreliable messages recv   = %i\n", unreliableMessagesReceived);
@@ -446,57 +486,75 @@ void NET_Stats_f (void)
 	{
 		for (s = net_activeSockets; s; s = s->next)
 			if (String::ICmp(Cmd_Argv(1), s->address) == 0)
+			{
 				break;
+			}
 		if (s == NULL)
+		{
 			for (s = net_freeSockets; s; s = s->next)
 				if (String::ICmp(Cmd_Argv(1), s->address) == 0)
+				{
 					break;
+				}
+		}
 		if (s == NULL)
+		{
 			return;
+		}
 		PrintStats(s);
 	}
 }
 
 
 static qboolean testInProgress = false;
-static int		testPollCount;
-static int		testSocket;
+static int testPollCount;
+static int testSocket;
 
 static void Test_Poll(void);
-PollProcedure	testPollProcedure = {NULL, 0.0, Test_Poll};
+PollProcedure testPollProcedure = {NULL, 0.0, Test_Poll};
 
 static void Test_Poll(void)
 {
 	netadr_t clientaddr;
-	int		control;
-	int		len;
-	char	name[32];
-	char	address[64];
-	int		colors;
-	int		frags;
-	int		connectTime;
-	byte	playerNumber;
+	int control;
+	int len;
+	char name[32];
+	char address[64];
+	int colors;
+	int frags;
+	int connectTime;
+	byte playerNumber;
 
 	while (1)
 	{
 		len = UDP_Read(testSocket, net_message._data, net_message.maxsize, &clientaddr);
 		if (len < (int)sizeof(int))
+		{
 			break;
+		}
 
 		net_message.cursize = len;
 
 		net_message.BeginReadingOOB();
-		control = BigLong(*((int *)net_message._data));
+		control = BigLong(*((int*)net_message._data));
 		net_message.ReadLong();
 		if (control == -1)
+		{
 			break;
+		}
 		if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
+		{
 			break;
+		}
 		if ((control & NETFLAG_LENGTH_MASK) != len)
+		{
 			break;
+		}
 
 		if (net_message.ReadByte() != CCREP_PLAYER_INFO)
+		{
 			Sys_Error("Unexpected repsonse to Player Info request\n");
+		}
 
 		playerNumber = net_message.ReadByte();
 		String::Cpy(name, net_message.ReadString2());
@@ -520,17 +578,19 @@ static void Test_Poll(void)
 	}
 }
 
-static void Test_f (void)
+static void Test_f(void)
 {
-	char	*host;
-	int		n;
-	int		max = H2MAX_CLIENTS;
+	char* host;
+	int n;
+	int max = H2MAX_CLIENTS;
 	netadr_t sendaddr;
 
 	if (testInProgress)
+	{
 		return;
+	}
 
-	host = Cmd_Argv (1);
+	host = Cmd_Argv(1);
 
 	if (host && hostCacheCount)
 	{
@@ -538,26 +598,36 @@ static void Test_f (void)
 			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
 				if (hostcache[n].driver != myDriverLevel)
+				{
 					continue;
+				}
 				max = hostcache[n].maxusers;
 				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(netadr_t));
 				break;
 			}
 		if (n < hostCacheCount)
+		{
 			goto JustDoIt;
+		}
 	}
 
 	if (!udp_initialized)
+	{
 		return;
+	}
 
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
+	{
 		return;
+	}
 
 JustDoIt:
 	testSocket = UDP_OpenSocket(0);
 	if (testSocket == -1)
+	{
 		return;
+	}
 
 	testInProgress = true;
 	testPollCount = 20;
@@ -569,7 +639,7 @@ JustDoIt:
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREQ_PLAYER_INFO);
 		net_message.WriteByte(n);
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(testSocket, net_message._data, net_message.cursize, &sendaddr);
 	}
 	net_message.Clear();
@@ -578,43 +648,55 @@ JustDoIt:
 
 
 static qboolean test2InProgress = false;
-static int		test2Socket;
+static int test2Socket;
 
 static void Test2_Poll(void);
-PollProcedure	test2PollProcedure = {NULL, 0.0, Test2_Poll};
+PollProcedure test2PollProcedure = {NULL, 0.0, Test2_Poll};
 
 static void Test2_Poll(void)
 {
 	netadr_t clientaddr;
-	int		control;
-	int		len;
-	char	name[256];
-	char	value[256];
+	int control;
+	int len;
+	char name[256];
+	char value[256];
 
 	name[0] = 0;
 
 	len = UDP_Read(test2Socket, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < (int)sizeof(int))
+	{
 		goto Reschedule;
+	}
 
 	net_message.cursize = len;
 
 	net_message.BeginReadingOOB();
-	control = BigLong(*((int *)net_message._data));
+	control = BigLong(*((int*)net_message._data));
 	net_message.ReadLong();
 	if (control == -1)
+	{
 		goto Error;
+	}
 	if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
+	{
 		goto Error;
+	}
 	if ((control & NETFLAG_LENGTH_MASK) != len)
+	{
 		goto Error;
+	}
 
 	if (net_message.ReadByte() != CCREP_RULE_INFO)
+	{
 		goto Error;
+	}
 
 	String::Cpy(name, net_message.ReadString2());
 	if (name[0] == 0)
+	{
 		goto Done;
+	}
 	String::Cpy(value, net_message.ReadString2());
 
 	Con_Printf("%-16.16s  %-16.16s\n", name, value);
@@ -624,7 +706,7 @@ static void Test2_Poll(void)
 	net_message.WriteLong(0);
 	net_message.WriteByte(CCREQ_RULE_INFO);
 	net_message.WriteString2(name);
-	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+	*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 	UDP_Write(test2Socket, net_message._data, net_message.cursize, &clientaddr);
 	net_message.Clear();
 
@@ -640,16 +722,18 @@ Done:
 	return;
 }
 
-static void Test2_f (void)
+static void Test2_f(void)
 {
-	char	*host;
-	int		n;
+	char* host;
+	int n;
 	netadr_t sendaddr;
 
 	if (test2InProgress)
+	{
 		return;
+	}
 
-	host = Cmd_Argv (1);
+	host = Cmd_Argv(1);
 
 	if (host && hostCacheCount)
 	{
@@ -657,25 +741,35 @@ static void Test2_f (void)
 			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
 				if (hostcache[n].driver != myDriverLevel)
+				{
 					continue;
+				}
 				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(netadr_t));
 				break;
 			}
 		if (n < hostCacheCount)
+		{
 			goto JustDoIt;
+		}
 	}
 
 	if (!udp_initialized)
+	{
 		return;
+	}
 
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
+	{
 		return;
+	}
 
 JustDoIt:
 	test2Socket = UDP_OpenSocket(0);
 	if (test2Socket == -1)
+	{
 		return;
+	}
 
 	test2InProgress = true;
 
@@ -684,20 +778,22 @@ JustDoIt:
 	net_message.WriteLong(0);
 	net_message.WriteByte(CCREQ_RULE_INFO);
 	net_message.WriteString2("");
-	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+	*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 	UDP_Write(test2Socket, net_message._data, net_message.cursize, &sendaddr);
 	net_message.Clear();
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
 }
 
 
-int Datagram_Init (void)
+int Datagram_Init(void)
 {
 	myDriverLevel = net_driverlevel;
-	Cmd_AddCommand ("net_stats", NET_Stats_f);
+	Cmd_AddCommand("net_stats", NET_Stats_f);
 
 	if (COM_CheckParm("-nolan"))
+	{
 		return -1;
+	}
 
 	int csock = UDP_Init();
 	if (csock != -1)
@@ -707,16 +803,16 @@ int Datagram_Init (void)
 	}
 
 #ifdef BAN_TEST
-	Cmd_AddCommand ("ban", NET_Ban_f);
+	Cmd_AddCommand("ban", NET_Ban_f);
 #endif
-	Cmd_AddCommand ("test", Test_f);
-	Cmd_AddCommand ("test2", Test2_f);
+	Cmd_AddCommand("test", Test_f);
+	Cmd_AddCommand("test2", Test2_f);
 
 	return 0;
 }
 
 
-void Datagram_Shutdown (void)
+void Datagram_Shutdown(void)
 {
 //
 // shutdown the lan drivers
@@ -729,58 +825,72 @@ void Datagram_Shutdown (void)
 }
 
 
-void Datagram_Close (qsocket_t *sock, netchan_t* chan)
+void Datagram_Close(qsocket_t* sock, netchan_t* chan)
 {
 	UDP_OpenSocket(sock->socket);
 }
 
 
-void Datagram_Listen (qboolean state)
+void Datagram_Listen(qboolean state)
 {
 	if (udp_initialized)
+	{
 		UDP_Listen(state);
+	}
 }
 
 
-static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
+static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 {
 	netadr_t clientaddr;
 	netadr_t newaddr;
-	int			newsock;
-	int			acceptsock;
-	qsocket_t	*sock;
-	qsocket_t	*s;
-	int			len;
-	int			command;
-	int			control;
-	int			ret;
+	int newsock;
+	int acceptsock;
+	qsocket_t* sock;
+	qsocket_t* s;
+	int len;
+	int command;
+	int control;
+	int ret;
 
 	acceptsock = net_acceptsocket;
 	if (acceptsock == -1)
+	{
 		return NULL;
+	}
 
 	net_message.Clear();
 
 	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < (int)sizeof(int))
+	{
 		return NULL;
+	}
 	net_message.cursize = len;
 
 	net_message.BeginReadingOOB();
-	control = BigLong(*((int *)net_message._data));
+	control = BigLong(*((int*)net_message._data));
 	net_message.ReadLong();
 	if (control == -1)
+	{
 		return NULL;
+	}
 	if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
+	{
 		return NULL;
+	}
 	if ((control & NETFLAG_LENGTH_MASK) != len)
+	{
 		return NULL;
+	}
 
 	command = net_message.ReadByte();
 	if (command == CCREQ_SERVER_INFO)
 	{
 		if (String::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
+		{
 			return NULL;
+		}
 
 		net_message.Clear();
 		// save space for the header, filled in later
@@ -794,7 +904,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteByte(net_activeconnections);
 		net_message.WriteByte(svs.maxclients);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 		return NULL;
@@ -802,11 +912,11 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 
 	if (command == CCREQ_PLAYER_INFO)
 	{
-		int			playerNumber;
-		int			activeNumber;
-		int			clientNumber;
-		client_t	*client;
-		
+		int playerNumber;
+		int activeNumber;
+		int clientNumber;
+		client_t* client;
+
 		playerNumber = net_message.ReadByte();
 		activeNumber = -1;
 		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
@@ -815,11 +925,15 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 			{
 				activeNumber++;
 				if (activeNumber == playerNumber)
+				{
 					break;
+				}
 			}
 		}
 		if (clientNumber == svs.maxclients)
+		{
 			return NULL;
+		}
 
 		net_message.Clear();
 		// save space for the header, filled in later
@@ -831,7 +945,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteLong((int)client->edict->GetFrags());
 		net_message.WriteLong((int)(net_time - client->netconnection->connecttime));
 		net_message.WriteString2(client->netconnection->address);
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 
@@ -840,26 +954,32 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 
 	if (command == CCREQ_RULE_INFO)
 	{
-		char	*prevCvarName;
-		Cvar	*var;
+		char* prevCvarName;
+		Cvar* var;
 
 		// find the search start location
 		prevCvarName = const_cast<char*>(net_message.ReadString2());
 		if (*prevCvarName)
 		{
-			var = Cvar_FindVar (prevCvarName);
+			var = Cvar_FindVar(prevCvarName);
 			if (!var)
+			{
 				return NULL;
+			}
 			var = var->next;
 		}
 		else
+		{
 			var = cvar_vars;
+		}
 
 		// search for the next server cvar
 		while (var)
 		{
 			if (var->flags & CVAR_SERVERINFO)
+			{
 				break;
+			}
 			var = var->next;
 		}
 
@@ -874,7 +994,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 			net_message.WriteString2(var->name);
 			net_message.WriteString2(var->string);
 		}
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 
@@ -882,10 +1002,14 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 	}
 
 	if (command != CCREQ_CONNECT)
+	{
 		return NULL;
+	}
 
 	if (String::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
+	{
 		return NULL;
+	}
 
 	if (net_message.ReadByte() != NET_PROTOCOL_VERSION)
 	{
@@ -894,7 +1018,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_REJECT);
 		net_message.WriteString2("Incompatible version.\n");
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 		return NULL;
@@ -912,7 +1036,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 			net_message.WriteLong(0);
 			net_message.WriteByte(CCREP_REJECT);
 			net_message.WriteString2("You have been banned.\n");
-			*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+			*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 			UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 			net_message.Clear();
 			return NULL;
@@ -925,12 +1049,18 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 	for (int i = 0; i < svs.maxclients; i++, client++)
 	{
 		if (!client->netconnection)
+		{
 			continue;
+		}
 		if (!client->active)
+		{
 			continue;
+		}
 		s = client->netconnection;
 		if (s->driver != net_driverlevel)
+		{
 			continue;
+		}
 		ret = UDP_AddrCompare(&clientaddr, &client->netchan.remoteAddress);
 		if (ret >= 0)
 		{
@@ -944,7 +1074,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 				net_message.WriteByte(CCREP_ACCEPT);
 				SOCK_GetAddr(s->socket, &newaddr);
 				net_message.WriteLong(SOCK_GetPort(&newaddr));
-				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+				*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 				net_message.Clear();
 				return NULL;
@@ -957,7 +1087,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 	}
 
 	// allocate a QSocket
-	sock = NET_NewQSocket ();
+	sock = NET_NewQSocket();
 	if (sock == NULL)
 	{
 		// no room; try to let him know
@@ -966,7 +1096,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_REJECT);
 		net_message.WriteString2("Server is full.\n");
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 		return NULL;
@@ -980,7 +1110,7 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 		return NULL;
 	}
 
-	// everything is allocated, just fill in the details	
+	// everything is allocated, just fill in the details
 	sock->socket = newsock;
 	*outaddr = clientaddr;
 	String::Cpy(sock->address, SOCK_AdrToString(clientaddr));
@@ -993,30 +1123,32 @@ static qsocket_t *_Datagram_CheckNewConnections(netadr_t* outaddr)
 	SOCK_GetAddr(newsock, &newaddr);
 	net_message.WriteLong(SOCK_GetPort(&newaddr));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
-	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+	*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 	net_message.Clear();
 
 	return sock;
 }
 
-qsocket_t *Datagram_CheckNewConnections(netadr_t* outaddr)
+qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 {
-	qsocket_t *ret = NULL;
+	qsocket_t* ret = NULL;
 
 	if (udp_initialized)
+	{
 		ret = _Datagram_CheckNewConnections(outaddr);
+	}
 	return ret;
 }
 
 
-static void _Datagram_SearchForHosts (qboolean xmit)
+static void _Datagram_SearchForHosts(qboolean xmit)
 {
-	int		ret;
-	int		n;
-	int		i;
+	int ret;
+	int n;
+	int i;
 	netadr_t readaddr;
-	int		control;
+	int control;
 
 	if (xmit)
 	{
@@ -1026,7 +1158,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.WriteByte(CCREQ_SERVER_INFO);
 		net_message.WriteString2(NET_NAME_ID);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Broadcast(udp_controlSock, net_message._data, net_message.cursize);
 		net_message.Clear();
 	}
@@ -1034,25 +1166,37 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
 	{
 		if (ret < (int)sizeof(int))
+		{
 			continue;
+		}
 		net_message.cursize = ret;
 
 		// is the cache full?
 		if (hostCacheCount == HOSTCACHESIZE)
+		{
 			continue;
+		}
 
 		net_message.BeginReadingOOB();
-		control = BigLong(*((int *)net_message._data));
+		control = BigLong(*((int*)net_message._data));
 		net_message.ReadLong();
 		if (control == -1)
+		{
 			continue;
+		}
 		if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
+		{
 			continue;
+		}
 		if ((control & NETFLAG_LENGTH_MASK) != ret)
+		{
 			continue;
+		}
 
 		if (net_message.ReadByte() != CCREP_SERVER_INFO)
+		{
 			continue;
+		}
 
 		//	This is server's IP, or more exatly what server thinks is it's IP.
 		// Originally this string was converted into readaddr and that address
@@ -1072,7 +1216,9 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 
 		// is it already there?
 		if (n < hostCacheCount)
+		{
 			continue;
+		}
 
 		// add it
 		hostCacheCount++;
@@ -1095,57 +1241,69 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		for (i = 0; i < hostCacheCount; i++)
 		{
 			if (i == n)
+			{
 				continue;
+			}
 			if (String::ICmp(hostcache[n].name, hostcache[i].name) == 0)
 			{
 				i = String::Length(hostcache[n].name);
-				if (i < 15 && hostcache[n].name[i-1] > '8')
+				if (i < 15 && hostcache[n].name[i - 1] > '8')
 				{
 					hostcache[n].name[i] = '0';
-					hostcache[n].name[i+1] = 0;
+					hostcache[n].name[i + 1] = 0;
 				}
 				else
-					hostcache[n].name[i-1]++;
+				{
+					hostcache[n].name[i - 1]++;
+				}
 				i = -1;
 			}
 		}
 	}
 }
 
-void Datagram_SearchForHosts (qboolean xmit)
+void Datagram_SearchForHosts(qboolean xmit)
 {
 	if (udp_initialized)
-		_Datagram_SearchForHosts (xmit);
+	{
+		_Datagram_SearchForHosts(xmit);
+	}
 }
 
 
-static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
+static qsocket_t* _Datagram_Connect(const char* host, netchan_t* chan)
 {
 	netadr_t sendaddr;
 	netadr_t readaddr;
-	qsocket_t	*sock;
-	int			newsock;
-	int			ret;
-	int			reps;
-	double		start_time;
-	int			control;
-	const char	*reason;
+	qsocket_t* sock;
+	int newsock;
+	int ret;
+	int reps;
+	double start_time;
+	int control;
+	const char* reason;
 
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
+	{
 		return NULL;
+	}
 
 	newsock = UDP_OpenSocket(0);
 	if (newsock == -1)
+	{
 		return NULL;
+	}
 
-	sock = NET_NewQSocket ();
+	sock = NET_NewQSocket();
 	if (sock == NULL)
+	{
 		goto ErrorReturn2;
+	}
 	sock->socket = newsock;
 
 	// send the connection request
-	Con_Printf("trying...\n"); SCR_UpdateScreen ();
+	Con_Printf("trying...\n"); SCR_UpdateScreen();
 	start_time = net_time;
 
 	for (reps = 0; reps < 3; reps++)
@@ -1156,7 +1314,7 @@ static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 		net_message.WriteByte(CCREQ_CONNECT);
 		net_message.WriteString2(NET_NAME_ID);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(newsock, net_message._data, net_message.cursize, &sendaddr);
 		net_message.Clear();
 		do
@@ -1172,7 +1330,7 @@ static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 					Con_Printf("wrong reply address\n");
 					Con_Printf("Expected: %s\n", SOCK_AdrToString(sendaddr));
 					Con_Printf("Received: %s\n", SOCK_AdrToString(readaddr));
-					SCR_UpdateScreen ();
+					SCR_UpdateScreen();
 #endif
 					ret = 0;
 					continue;
@@ -1187,7 +1345,7 @@ static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 				net_message.cursize = ret;
 				net_message.BeginReadingOOB();
 
-				control = BigLong(*((int *)net_message._data));
+				control = BigLong(*((int*)net_message._data));
 				net_message.ReadLong();
 				if (control == -1)
 				{
@@ -1208,8 +1366,10 @@ static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 		}
 		while (ret == 0 && (SetNetTime() - start_time) < 2.5);
 		if (ret)
+		{
 			break;
-		Con_Printf("still trying...\n"); SCR_UpdateScreen ();
+		}
+		Con_Printf("still trying...\n"); SCR_UpdateScreen();
 		start_time = SetNetTime();
 	}
 
@@ -1253,7 +1413,7 @@ static qsocket_t *_Datagram_Connect (const char *host, netchan_t* chan)
 
 	UDP_GetNameFromAddr(&sendaddr, sock->address);
 
-	Con_Printf ("Connection accepted\n");
+	Con_Printf("Connection accepted\n");
 	chan->lastReceived = SetNetTime() * 1000;
 
 	m_return_onerror = false;
@@ -1272,12 +1432,14 @@ ErrorReturn2:
 	return NULL;
 }
 
-qsocket_t *Datagram_Connect (const char *host, netchan_t* chan)
+qsocket_t* Datagram_Connect(const char* host, netchan_t* chan)
 {
-	qsocket_t *ret = NULL;
+	qsocket_t* ret = NULL;
 
 	if (udp_initialized)
-		ret = _Datagram_Connect (host, chan);
+	{
+		ret = _Datagram_Connect(host, chan);
+	}
 	return ret;
 }
 
@@ -1298,7 +1460,7 @@ int UDP_Init()
 	// determine my name & address
 	SOCK_GetLocalAddress();
 
-	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
+	if ((net_controlsocket = UDP_OpenSocket(PORT_ANY)) == -1)
 	{
 		Con_Printf("UDP_Init: Unable to open control socket\n");
 		SOCK_Shutdown();
@@ -1312,47 +1474,55 @@ int UDP_Init()
 
 //=============================================================================
 
-void UDP_Shutdown (void)
+void UDP_Shutdown(void)
 {
-	UDP_Listen (false);
-	UDP_CloseSocket (net_controlsocket);
+	UDP_Listen(false);
+	UDP_CloseSocket(net_controlsocket);
 	SOCK_Shutdown();
 }
 
 //=============================================================================
 
-void UDP_Listen (qboolean state)
+void UDP_Listen(qboolean state)
 {
 	// enable listening
 	if (state)
 	{
 		if (net_acceptsocket != -1)
+		{
 			return;
-		if ((net_acceptsocket = UDP_OpenSocket (net_hostport)) == -1)
-			Sys_Error ("UDP_Listen: Unable to open accept socket\n");
+		}
+		if ((net_acceptsocket = UDP_OpenSocket(net_hostport)) == -1)
+		{
+			Sys_Error("UDP_Listen: Unable to open accept socket\n");
+		}
 		return;
 	}
 
 	// disable listening
 	if (net_acceptsocket == -1)
+	{
 		return;
-	UDP_CloseSocket (net_acceptsocket);
+	}
+	UDP_CloseSocket(net_acceptsocket);
 	net_acceptsocket = -1;
 }
 
 //=============================================================================
 
-int UDP_OpenSocket (int port)
+int UDP_OpenSocket(int port)
 {
 	int newsocket = SOCK_Open(NULL, port);
 	if (newsocket == 0)
+	{
 		return -1;
+	}
 	return newsocket;
 }
 
 //=============================================================================
 
-int UDP_CloseSocket (int socket)
+int UDP_CloseSocket(int socket)
 {
 	SOCK_Close(socket);
 	return 0;
@@ -1360,7 +1530,7 @@ int UDP_CloseSocket (int socket)
 
 //=============================================================================
 
-int UDP_Read (int socket, byte* buf, int len, netadr_t* addr)
+int UDP_Read(int socket, byte* buf, int len, netadr_t* addr)
 {
 	int ret = SOCK_Recv(socket, buf, len, addr);
 	if (ret == SOCKRECV_NO_DATA)
@@ -1376,17 +1546,19 @@ int UDP_Read (int socket, byte* buf, int len, netadr_t* addr)
 
 //=============================================================================
 
-int UDP_Write (int socket, byte *buf, int len, netadr_t* addr)
+int UDP_Write(int socket, byte* buf, int len, netadr_t* addr)
 {
 	int ret = SOCK_Send(socket, buf, len, addr);
 	if (ret == SOCKSEND_WOULDBLOCK)
+	{
 		return 0;
+	}
 	return ret;
 }
 
 //=============================================================================
 
-int UDP_Broadcast (int socket, byte *buf, int len)
+int UDP_Broadcast(int socket, byte* buf, int len)
 {
 	netadr_t to;
 	Com_Memset(&to, 0, sizeof(to));
@@ -1394,16 +1566,20 @@ int UDP_Broadcast (int socket, byte *buf, int len)
 	to.port = BigShort(net_hostport);
 	int ret = SOCK_Send(socket, buf, len, &to);
 	if (ret == SOCKSEND_WOULDBLOCK)
+	{
 		return 0;
+	}
 	return ret;
 }
 
 //=============================================================================
 
-int UDP_GetAddrFromName(const char *name, netadr_t* addr)
+int UDP_GetAddrFromName(const char* name, netadr_t* addr)
 {
 	if (!SOCK_StringToAdr(name, addr, 0))
+	{
 		return -1;
+	}
 
 	addr->port = BigShort(net_hostport);
 
@@ -1415,10 +1591,14 @@ int UDP_GetAddrFromName(const char *name, netadr_t* addr)
 int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 {
 	if (SOCK_CompareAdr(*addr1, *addr2))
+	{
 		return 0;
+	}
 
 	if (SOCK_CompareBaseAdr(*addr1, *addr2))
+	{
 		return 1;
+	}
 
 	return -1;
 }

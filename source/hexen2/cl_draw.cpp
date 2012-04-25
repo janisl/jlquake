@@ -8,20 +8,20 @@
 
 #include "quakedef.h"
 
-image_t		*draw_backtile;
+image_t* draw_backtile;
 
-image_t*	char_texture;
-image_t*	char_smalltexture;
-image_t*	char_menufonttexture;
+image_t* char_texture;
+image_t* char_smalltexture;
+image_t* char_menufonttexture;
 
-image_t		*conback;
+image_t* conback;
 
 /*
 ===============
 Draw_Init
 ===============
 */
-void Draw_Init (void)
+void Draw_Init(void)
 {
 	char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
 	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
@@ -41,13 +41,15 @@ It can be clipped to the top of the screen to allow the console to be
 smoothly scrolled off.
 ================
 */
-void Draw_Character (int x, int y, unsigned int num)
+void Draw_Character(int x, int y, unsigned int num)
 {
 	num &= 511;
 
 	if (num == 32)
-		return; 	// space
+	{
+		return;		// space
 
+	}
 	UI_DrawChar(x, y, num, 8, 8, char_texture, 32, 16);
 }
 
@@ -56,21 +58,21 @@ void Draw_Character (int x, int y, unsigned int num)
 Draw_String
 ================
 */
-void Draw_String (int x, int y, const char *str)
+void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, *str);
+		Draw_Character(x, y, *str);
 		str++;
 		x += 8;
 	}
 }
 
-void Draw_RedString (int x, int y, const char *str)
+void Draw_RedString(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, ((unsigned char)(*str))+256);
+		Draw_Character(x, y, ((unsigned char)(*str)) + 256);
 		str++;
 		x += 8;
 	}
@@ -84,17 +86,17 @@ void Draw_RedString (int x, int y, const char *str)
 // screen.
 //
 //==========================================================================
-void Draw_SmallCharacter (int x, int y, int num)
+void Draw_SmallCharacter(int x, int y, int num)
 {
-	if(num < 32)
+	if (num < 32)
 	{
 		num = 0;
 	}
-	else if(num >= 'a' && num <= 'z')
+	else if (num >= 'a' && num <= 'z')
 	{
 		num -= 64;
 	}
-	else if(num > '_')
+	else if (num > '_')
 	{
 		num = 0;
 	}
@@ -103,7 +105,10 @@ void Draw_SmallCharacter (int x, int y, int num)
 		num -= 32;
 	}
 
-	if (num == 0) return;
+	if (num == 0)
+	{
+		return;
+	}
 
 	UI_DrawChar(x, y, num, 8, 8, char_smalltexture, 16, 4);
 }
@@ -113,38 +118,60 @@ void Draw_SmallCharacter (int x, int y, int num)
 // Draw_SmallString
 //
 //==========================================================================
-void Draw_SmallString(int x, int y, const char *str)
+void Draw_SmallString(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_SmallCharacter (x, y, *str);
+		Draw_SmallCharacter(x, y, *str);
 		str++;
 		x += 6;
 	}
 }
 
-int M_DrawBigCharacter (int x, int y, int num, int numNext)
+int M_DrawBigCharacter(int x, int y, int num, int numNext)
 {
-	int				add;
+	int add;
 
-	if (num == ' ') return 32;
+	if (num == ' ')
+	{
+		return 32;
+	}
 
-	if (num == '/') num = 26;
-	else num -= 65;
+	if (num == '/')
+	{
+		num = 26;
+	}
+	else
+	{
+		num -= 65;
+	}
 
-	if (num < 0 || num >= 27)  // only a-z and /
+	if (num < 0 || num >= 27)	// only a-z and /
+	{
 		return 0;
+	}
 
-	if (numNext == '/') numNext = 26;
-	else numNext -= 65;
+	if (numNext == '/')
+	{
+		numNext = 26;
+	}
+	else
+	{
+		numNext -= 65;
+	}
 
 	UI_DrawChar(x, y, num, 20, 20, char_menufonttexture, 8, 4);
 
-	if (numNext < 0 || numNext >= 27) return 0;
+	if (numNext < 0 || numNext >= 27)
+	{
+		return 0;
+	}
 
 	add = 0;
-	if (num == (int)'C'-65 && numNext == (int)'P'-65)
+	if (num == (int)'C' - 65 && numNext == (int)'P' - 65)
+	{
 		add = 3;
+	}
 
 	return BigCharWidth[num][numNext] + add;
 }
@@ -174,15 +201,15 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen (void)
+void Draw_FadeScreen(void)
 {
-	UI_Fill(0, 0, viddef.width, viddef.height, 208.0/255.0, 180.0/255.0, 80.0/255.0, 0.2);
+	UI_Fill(0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2);
 	for (int c = 0; c < 40; c++)
 	{
 		int x = rand() % viddef.width - 20;
 		int y = rand() % viddef.height - 20;
 		int w = (rand() % 40) + 20;
 		int h = (rand() % 40) + 20;
-		UI_Fill(x, y, w, h, 208.0/255.0, 180.0/255.0, 80.0/255.0, 0.035);
+		UI_Fill(x, y, w, h, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035);
 	}
 }

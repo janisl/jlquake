@@ -1,34 +1,34 @@
 // world.h
 
-#define	MOVE_NORMAL		0
-#define	MOVE_NOMONSTERS	1
-#define	MOVE_MISSILE	2
-#define	MOVE_WATER		3
-#define	MOVE_PHASE		4
+#define MOVE_NORMAL     0
+#define MOVE_NOMONSTERS 1
+#define MOVE_MISSILE    2
+#define MOVE_WATER      3
+#define MOVE_PHASE      4
 
 
-void SV_ClearWorld (void);
+void SV_ClearWorld(void);
 // called after the world model has been loaded, before linking any entities
 
-void SV_UnlinkEdict (qhedict_t *ent);
+void SV_UnlinkEdict(qhedict_t* ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 // flags ent->v.modified
 
-void SV_LinkEdict (qhedict_t *ent, qboolean touch_triggers);
+void SV_LinkEdict(qhedict_t* ent, qboolean touch_triggers);
 // Needs to be called any time an entity changes origin, mins, maxs, or solid
 // flags ent->v.modified
 // sets ent->v.absmin and ent->v.absmax
 // if touchtriggers, calls prog functions for the intersected triggers
 
-int SV_PointContents (vec3_t p);
+int SV_PointContents(vec3_t p);
 // returns the CONTENTS_* value from the world at the given point.
 // does not check any entities at all
 // the non-true version remaps the water current contents to content_water
 
-qhedict_t	*SV_TestEntityPosition (qhedict_t *ent);
+qhedict_t* SV_TestEntityPosition(qhedict_t* ent);
 
-q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, qhedict_t *passedict);
+q1trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, qhedict_t* passedict);
 // mins and maxs are reletive
 
 // if the entire move stays in a solid volume, trace.allsolid will be set

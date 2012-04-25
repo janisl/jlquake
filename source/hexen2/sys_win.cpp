@@ -7,21 +7,21 @@
 #include "quakedef.h"
 #include "../client/windows_shared.h"
 
-#define MINIMUM_WIN_MEMORY		0x1000000
-#define MAXIMUM_WIN_MEMORY		0x1800000
+#define MINIMUM_WIN_MEMORY      0x1000000
+#define MAXIMUM_WIN_MEMORY      0x1800000
 
-#define PAUSE_SLEEP		50				// sleep time on pause or minimization
-#define NOT_FOCUS_SLEEP	20				// sleep time when not focus
+#define PAUSE_SLEEP     50				// sleep time on pause or minimization
+#define NOT_FOCUS_SLEEP 20				// sleep time when not focus
 
-#define MAX_NUM_ARGVS	50
+#define MAX_NUM_ARGVS   50
 
-qboolean			isDedicated;
+qboolean isDedicated;
 
-static HANDLE	tevent;
+static HANDLE tevent;
 
-Cvar*		sys_delay;
+Cvar* sys_delay;
 
-volatile int					sys_checksum;
+volatile int sys_checksum;
 
 
 /*
@@ -29,22 +29,22 @@ volatile int					sys_checksum;
 Sys_PageIn
 ================
 */
-void Sys_PageIn (void *ptr, int size)
+void Sys_PageIn(void* ptr, int size)
 {
-	byte	*x;
-	int		j, m, n;
+	byte* x;
+	int j, m, n;
 
 // touch all the memory to make sure it's there. The 16-page skip is to
 // keep Win 95 from thinking we're trying to page ourselves in (we are
 // doing that, of course, but there's no reason we shouldn't)
-	x = (byte *)ptr;
+	x = (byte*)ptr;
 
-	for (n=0 ; n<4 ; n++)
+	for (n = 0; n < 4; n++)
 	{
-		for (m=0 ; m<(size - 16 * 0x1000) ; m += 4)
+		for (m = 0; m < (size - 16 * 0x1000); m += 4)
 		{
-			sys_checksum += *(int *)&x[m];
-			sys_checksum += *(int *)&x[m + 16 * 0x1000];
+			sys_checksum += *(int*)&x[m];
+			sys_checksum += *(int*)&x[m + 16 * 0x1000];
 		}
 	}
 }
@@ -63,20 +63,20 @@ SYSTEM IO
 Sys_Init
 ================
 */
-void Sys_Init (void)
+void Sys_Init(void)
 {
 	timeBeginPeriod(1);
 }
 
 
-void Sys_Error (const char *error, ...)
+void Sys_Error(const char* error, ...)
 {
-	va_list		argptr;
-	char		text[1024];
+	va_list argptr;
+	char text[1024];
 
-	va_start (argptr, error);
+	va_start(argptr, error);
 	Q_vsnprintf(text, 1024, error, argptr);
-	va_end (argptr);
+	va_end(argptr);
 
 	Sys_Print(text);
 	Sys_Print("\n");
@@ -84,50 +84,54 @@ void Sys_Error (const char *error, ...)
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
 
-	Host_Shutdown ();
+	Host_Shutdown();
 
 	// wait for the user to quit
-    MSG msg;
+	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
-      	DispatchMessage(&msg);
+		DispatchMessage(&msg);
 	}
 
 	Sys_DestroyConsole();
-	exit (1);
+	exit(1);
 }
 
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
 	Host_Shutdown();
 
 	if (tevent)
-		CloseHandle (tevent);
+	{
+		CloseHandle(tevent);
+	}
 
 	Sys_DestroyConsole();
-	exit (0);
+	exit(0);
 }
 
-static void Sys_Sleep (void)
+static void Sys_Sleep(void)
 {
-	Sleep (1);
+	Sleep(1);
 }
 
 
-void Sys_SendKeyEvents (void)
+void Sys_SendKeyEvents(void)
 {
-    MSG        msg;
+	MSG msg;
 
-	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-		if (!GetMessage (&msg, NULL, 0, 0))
-			Sys_Quit ();
+		if (!GetMessage(&msg, NULL, 0, 0))
+		{
+			Sys_Quit();
+		}
 		// save the msg time, because wndprocs don't have access to the timestamp
 		sysMsgTime = msg.time;
 
-      	TranslateMessage (&msg);
-      	DispatchMessage (&msg);
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 }
 
@@ -146,7 +150,7 @@ void Sys_SendKeyEvents (void)
 WinMain
 ==================
 */
-void SleepUntilInput (int time)
+void SleepUntilInput(int time)
 {
 
 	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
@@ -158,35 +162,41 @@ void SleepUntilInput (int time)
 WinMain
 ==================
 */
-char		*argv[MAX_NUM_ARGVS];
-static char	*empty_string = "";
+char* argv[MAX_NUM_ARGVS];
+static char* empty_string = "";
 
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    MSG				msg;
-	quakeparms_t	parms;
-	double			time, oldtime, newtime;
-	MEMORYSTATUS	lpBuffer;
-	static	char	cwd[1024];
-	int				t;
+	MSG msg;
+	quakeparms_t parms;
+	double time, oldtime, newtime;
+	MEMORYSTATUS lpBuffer;
+	static char cwd[1024];
+	int t;
 
-    /* previous instances do not exist in Win32 */
-    if (hPrevInstance)
-        return 0;
+	/* previous instances do not exist in Win32 */
+	if (hPrevInstance)
+	{
+		return 0;
+	}
 
 	CL_RemoveGIPFiles(NULL);
 
 	global_hInstance = hInstance;
 
 	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
-	GlobalMemoryStatus (&lpBuffer);
+	GlobalMemoryStatus(&lpBuffer);
 
-	if (!GetCurrentDirectory (sizeof(cwd), cwd))
-		Sys_Error ("Couldn't determine current directory");
+	if (!GetCurrentDirectory(sizeof(cwd), cwd))
+	{
+		Sys_Error("Couldn't determine current directory");
+	}
 
-	if (cwd[String::Length(cwd)-1] == '/')
-		cwd[String::Length(cwd)-1] = 0;
+	if (cwd[String::Length(cwd) - 1] == '/')
+	{
+		cwd[String::Length(cwd) - 1] = 0;
+	}
 
 	parms.basedir = cwd;
 
@@ -211,7 +221,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 				*lpCmdLine = 0;
 				lpCmdLine++;
 			}
-			
+
 		}
 	}
 
@@ -219,7 +229,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	COM_InitArgv2(parms.argc, parms.argv);
 
-	isDedicated = (COM_CheckParm ("-dedicated") != 0);
+	isDedicated = (COM_CheckParm("-dedicated") != 0);
 
 	if (!isDedicated)
 	{
@@ -232,85 +242,99 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	parms.memsize = lpBuffer.dwAvailPhys;
 
 	if (parms.memsize < MINIMUM_WIN_MEMORY)
+	{
 		parms.memsize = MINIMUM_WIN_MEMORY;
+	}
 
 	if (parms.memsize < (lpBuffer.dwTotalPhys >> 1))
+	{
 		parms.memsize = lpBuffer.dwTotalPhys >> 1;
+	}
 
 	if (parms.memsize > MAXIMUM_WIN_MEMORY)
+	{
 		parms.memsize = MAXIMUM_WIN_MEMORY;
+	}
 
-	if (COM_CheckParm ("-heapsize"))
+	if (COM_CheckParm("-heapsize"))
 	{
 		t = COM_CheckParm("-heapsize") + 1;
 
 		if (t < COM_Argc())
-			parms.memsize = String::Atoi (COM_Argv(t)) * 1024;
+		{
+			parms.memsize = String::Atoi(COM_Argv(t)) * 1024;
+		}
 	}
 
-	parms.membase = malloc (parms.memsize);
+	parms.membase = malloc(parms.memsize);
 
 	if (!parms.membase)
-		Sys_Error ("Not enough memory free; check disk space\n");
-
-	if(COM_CheckParm("-nopagein") == 0)
 	{
-		Sys_PageIn (parms.membase, parms.memsize);
+		Sys_Error("Not enough memory free; check disk space\n");
+	}
+
+	if (COM_CheckParm("-nopagein") == 0)
+	{
+		Sys_PageIn(parms.membase, parms.memsize);
 	}
 
 	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
 
 	if (!tevent)
-		Sys_Error ("Couldn't create event");
+	{
+		Sys_Error("Couldn't create event");
+	}
 
-	Sys_Init ();
+	Sys_Init();
 
-	Con_Printf ("Host_Init\n");
-	Host_Init (&parms);
+	Con_Printf("Host_Init\n");
+	Host_Init(&parms);
 
-	oldtime = Sys_DoubleTime ();
+	oldtime = Sys_DoubleTime();
 
 	sys_delay = Cvar_Get("sys_delay", "0", CVAR_ARCHIVE);
 
-    /* main window message loop */
+	/* main window message loop */
 	while (1)
 	{
 		if (isDedicated)
 		{
-			newtime = Sys_DoubleTime ();
+			newtime = Sys_DoubleTime();
 			time = newtime - oldtime;
 
-			while (time < sys_ticrate->value )
+			while (time < sys_ticrate->value)
 			{
 				Sys_Sleep();
-				newtime = Sys_DoubleTime ();
+				newtime = Sys_DoubleTime();
 				time = newtime - oldtime;
 			}
 		}
 		else
 		{
-		// yield the CPU for a little while when paused, minimized, or not the focus
+			// yield the CPU for a little while when paused, minimized, or not the focus
 			if ((cl.qh_paused && !ActiveApp) || Minimized)
 			{
-				SleepUntilInput (PAUSE_SLEEP);
+				SleepUntilInput(PAUSE_SLEEP);
 			}
 			else if (!ActiveApp)
 			{
-				SleepUntilInput (NOT_FOCUS_SLEEP);
+				SleepUntilInput(NOT_FOCUS_SLEEP);
 			}
 
-			newtime = Sys_DoubleTime ();
+			newtime = Sys_DoubleTime();
 			time = newtime - oldtime;
 		}
 
-		if (sys_delay->value) 
+		if (sys_delay->value)
+		{
 			Sleep(sys_delay->value);
+		}
 
-		Host_Frame (time);
+		Host_Frame(time);
 		oldtime = newtime;
 
 	}
 
-    /* return success of application */
-    return TRUE;
+	/* return success of application */
+	return TRUE;
 }
