@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -25,12 +25,12 @@ Com_PageInMemory
 
 ===============
 */
-int	paged_total;
+int paged_total;
 
-void Com_PageInMemory (byte *buffer, int size)
+void Com_PageInMemory(byte* buffer, int size)
 {
-	int		i;
+	int i;
 
-	for (i=size-1 ; i>0 ; i-=4096)
+	for (i = size - 1; i > 0; i -= 4096)
 		paged_total += buffer[i];
 }

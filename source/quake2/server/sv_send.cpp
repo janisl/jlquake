@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -31,11 +31,11 @@ Com_Printf redirection
 
 char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
-void SV_FlushRedirect (int sv_redirected, char *outputbuf)
+void SV_FlushRedirect(int sv_redirected, char* outputbuf)
 {
 	if (sv_redirected == RD_PACKET)
 	{
-		Netchan_OutOfBandPrint (NS_SERVER, net_from, "print\n%s", outputbuf);
+		Netchan_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
@@ -62,18 +62,20 @@ SV_ClientPrintf
 Sends text across to be displayed if the level passes
 =================
 */
-void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...)
+void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...)
 {
-	va_list		argptr;
-	char		string[1024];
-	
+	va_list argptr;
+	char string[1024];
+
 	if (level < cl->messagelevel)
+	{
 		return;
-	
-	va_start (argptr,fmt);
+	}
+
+	va_start(argptr,fmt);
 	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end (argptr);
-	
+	va_end(argptr);
+
 	cl->netchan.message.WriteByte(q2svc_print);
 	cl->netchan.message.WriteByte(level);
 	cl->netchan.message.WriteString2(string);
@@ -86,36 +88,40 @@ SV_BroadcastPrintf
 Sends text to all active clients
 =================
 */
-void SV_BroadcastPrintf (int level, const char *fmt, ...)
+void SV_BroadcastPrintf(int level, const char* fmt, ...)
 {
-	va_list		argptr;
-	char		string[2048];
-	client_t	*cl;
-	int			i;
+	va_list argptr;
+	char string[2048];
+	client_t* cl;
+	int i;
 
-	va_start (argptr,fmt);
+	va_start(argptr,fmt);
 	Q_vsnprintf(string, 2048, fmt, argptr);
-	va_end (argptr);
-	
+	va_end(argptr);
+
 	// echo to console
 	if (com_dedicated->value)
 	{
-		char	copy[1024];
-		int		i;
-		
+		char copy[1024];
+		int i;
+
 		// mask off high bits
-		for (i=0 ; i<1023 && string[i] ; i++)
-			copy[i] = string[i]&127;
+		for (i = 0; i < 1023 && string[i]; i++)
+			copy[i] = string[i] & 127;
 		copy[i] = 0;
-		Com_Printf ("%s", copy);
+		Com_Printf("%s", copy);
 	}
 
-	for (i=0, cl = svs.clients ; i<maxclients->value; i++, cl++)
+	for (i = 0, cl = svs.clients; i < maxclients->value; i++, cl++)
 	{
 		if (level < cl->messagelevel)
+		{
 			continue;
+		}
 		if (cl->state != cs_spawned)
+		{
 			continue;
+		}
 		cl->netchan.message.WriteByte(q2svc_print);
 		cl->netchan.message.WriteByte(level);
 		cl->netchan.message.WriteString2(string);
@@ -129,20 +135,22 @@ SV_BroadcastCommand
 Sends text to all active clients
 =================
 */
-void SV_BroadcastCommand (const char *fmt, ...)
+void SV_BroadcastCommand(const char* fmt, ...)
 {
-	va_list		argptr;
-	char		string[1024];
-	
+	va_list argptr;
+	char string[1024];
+
 	if (!sv.state)
+	{
 		return;
-	va_start (argptr,fmt);
+	}
+	va_start(argptr,fmt);
 	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end (argptr);
+	va_end(argptr);
 
 	sv.multicast.WriteByte(q2svc_stufftext);
 	sv.multicast.WriteString2(string);
-	SV_Multicast (NULL, MULTICAST_ALL_R);
+	SV_Multicast(NULL, MULTICAST_ALL_R);
 }
 
 
@@ -158,21 +166,21 @@ MULTICAST_PVS	send to clients potentially visible from org
 MULTICAST_PHS	send to clients potentially hearable from org
 =================
 */
-void SV_Multicast (vec3_t origin, multicast_t to)
+void SV_Multicast(vec3_t origin, multicast_t to)
 {
-	client_t	*client;
-	byte		*mask;
-	int			leafnum, cluster;
-	int			j;
-	qboolean	reliable;
-	int			area1, area2;
+	client_t* client;
+	byte* mask;
+	int leafnum, cluster;
+	int j;
+	qboolean reliable;
+	int area1, area2;
 
 	reliable = false;
 
 	if (to != MULTICAST_ALL_R && to != MULTICAST_ALL)
 	{
-		leafnum = CM_PointLeafnum (origin);
-		area1 = CM_LeafArea (leafnum);
+		leafnum = CM_PointLeafnum(origin);
+		area1 = CM_LeafArea(leafnum);
 	}
 	else
 	{
@@ -182,8 +190,10 @@ void SV_Multicast (vec3_t origin, multicast_t to)
 
 	// if doing a serverrecord, store everything
 	if (svs.demofile)
+	{
 		svs.demo_multicast.WriteData(sv.multicast._data, sv.multicast.cursize);
-	
+	}
+
 	switch (to)
 	{
 	case MULTICAST_ALL_R:
@@ -196,54 +206,66 @@ void SV_Multicast (vec3_t origin, multicast_t to)
 	case MULTICAST_PHS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PHS:
-		leafnum = CM_PointLeafnum (origin);
-		cluster = CM_LeafCluster (leafnum);
-		mask = CM_ClusterPHS (cluster);
+		leafnum = CM_PointLeafnum(origin);
+		cluster = CM_LeafCluster(leafnum);
+		mask = CM_ClusterPHS(cluster);
 		break;
 
 	case MULTICAST_PVS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PVS:
-		leafnum = CM_PointLeafnum (origin);
-		cluster = CM_LeafCluster (leafnum);
-		mask = CM_ClusterPVS (cluster);
+		leafnum = CM_PointLeafnum(origin);
+		cluster = CM_LeafCluster(leafnum);
+		mask = CM_ClusterPVS(cluster);
 		break;
 
 	default:
 		mask = NULL;
-		Com_Error (ERR_FATAL, "SV_Multicast: bad to:%i", to);
+		Com_Error(ERR_FATAL, "SV_Multicast: bad to:%i", to);
 	}
 
 	// send the data to all relevent clients
 	for (j = 0, client = svs.clients; j < maxclients->value; j++, client++)
 	{
 		if (client->state == cs_free || client->state == cs_zombie)
+		{
 			continue;
+		}
 		if (client->state != cs_spawned && !reliable)
+		{
 			continue;
+		}
 
 		if (mask)
 		{
-			leafnum = CM_PointLeafnum (client->edict->s.origin);
-			cluster = CM_LeafCluster (leafnum);
-			area2 = CM_LeafArea (leafnum);
-			if (!CM_AreasConnected (area1, area2))
+			leafnum = CM_PointLeafnum(client->edict->s.origin);
+			cluster = CM_LeafCluster(leafnum);
+			area2 = CM_LeafArea(leafnum);
+			if (!CM_AreasConnected(area1, area2))
+			{
 				continue;
-			if ( mask && (!(mask[cluster>>3] & (1<<(cluster&7)) ) ) )
+			}
+			if (mask && (!(mask[cluster >> 3] & (1 << (cluster & 7)))))
+			{
 				continue;
+			}
 		}
 
 		if (reliable)
+		{
 			client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
+		}
 		else
+		{
 			client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
+		}
 	}
 
 	sv.multicast.Clear();
 }
 
 
-/*  
+/*
 ==================
 SV_StartSound
 
@@ -268,29 +290,35 @@ later in the frame than they normally would.
 If origin is NULL, the origin is determined from the entity origin
 or the midpoint of the entity box for bmodels.
 ==================
-*/  
-void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
-					int soundindex, float volume,
-					float attenuation, float timeofs)
-{       
-	int			sendchan;
-    int			flags;
-    int			i;
-	int			ent;
-	vec3_t		origin_v;
-	qboolean	use_phs;
+*/
+void SV_StartSound(vec3_t origin, edict_t* entity, int channel,
+	int soundindex, float volume,
+	float attenuation, float timeofs)
+{
+	int sendchan;
+	int flags;
+	int i;
+	int ent;
+	vec3_t origin_v;
+	qboolean use_phs;
 
 	if (volume < 0 || volume > 1.0)
-		Com_Error (ERR_FATAL, "SV_StartSound: volume = %f", volume);
+	{
+		Com_Error(ERR_FATAL, "SV_StartSound: volume = %f", volume);
+	}
 
 	if (attenuation < 0 || attenuation > 4)
-		Com_Error (ERR_FATAL, "SV_StartSound: attenuation = %f", attenuation);
+	{
+		Com_Error(ERR_FATAL, "SV_StartSound: attenuation = %f", attenuation);
+	}
 
 //	if (channel < 0 || channel > 15)
 //		Com_Error (ERR_FATAL, "SV_StartSound: channel = %i", channel);
 
 	if (timeofs < 0 || timeofs > 0.255)
-		Com_Error (ERR_FATAL, "SV_StartSound: timeofs = %f", timeofs);
+	{
+		Com_Error(ERR_FATAL, "SV_StartSound: timeofs = %f", timeofs);
+	}
 
 	ent = NUM_FOR_EDICT(entity);
 
@@ -300,28 +328,38 @@ void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 		channel &= 7;
 	}
 	else
+	{
 		use_phs = true;
+	}
 
-	sendchan = (ent<<3) | (channel&7);
+	sendchan = (ent << 3) | (channel & 7);
 
 	flags = 0;
 	if (volume != DEFAULT_SOUND_PACKET_VOLUME)
+	{
 		flags |= SND_VOLUME;
+	}
 	if (attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
+	{
 		flags |= SND_ATTENUATION;
+	}
 
 	// the client doesn't know that bmodels have weird origins
 	// the origin can also be explicitly set
-	if ( (entity->svflags & SVF_NOCLIENT)
-		|| (entity->solid == SOLID_BSP) 
-		|| origin )
+	if ((entity->svflags & SVF_NOCLIENT) ||
+		(entity->solid == SOLID_BSP) ||
+		origin)
+	{
 		flags |= SND_POS;
+	}
 
 	// always send the entity number for channel overrides
 	flags |= SND_ENT;
 
 	if (timeofs)
+	{
 		flags |= SND_OFFSET;
+	}
 
 	// use the entity origin unless it is a bmodel or explicitly specified
 	if (!origin)
@@ -329,12 +367,12 @@ void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 		origin = origin_v;
 		if (entity->solid == SOLID_BSP)
 		{
-			for (i=0 ; i<3 ; i++)
-				origin_v[i] = entity->s.origin[i]+0.5*(entity->mins[i]+entity->maxs[i]);
+			for (i = 0; i < 3; i++)
+				origin_v[i] = entity->s.origin[i] + 0.5 * (entity->mins[i] + entity->maxs[i]);
 		}
 		else
 		{
-			VectorCopy (entity->s.origin, origin_v);
+			VectorCopy(entity->s.origin, origin_v);
 		}
 	}
 
@@ -343,38 +381,58 @@ void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 	sv.multicast.WriteByte(soundindex);
 
 	if (flags & SND_VOLUME)
-		sv.multicast.WriteByte(volume*255);
+	{
+		sv.multicast.WriteByte(volume * 255);
+	}
 	if (flags & SND_ATTENUATION)
-		sv.multicast.WriteByte(attenuation*64);
+	{
+		sv.multicast.WriteByte(attenuation * 64);
+	}
 	if (flags & SND_OFFSET)
-		sv.multicast.WriteByte(timeofs*1000);
+	{
+		sv.multicast.WriteByte(timeofs * 1000);
+	}
 
 	if (flags & SND_ENT)
+	{
 		sv.multicast.WriteShort(sendchan);
+	}
 
 	if (flags & SND_POS)
-		MSG_WritePos (&sv.multicast, origin);
+	{
+		MSG_WritePos(&sv.multicast, origin);
+	}
 
 	// if the sound doesn't attenuate,send it to everyone
 	// (global radio chatter, voiceovers, etc)
 	if (attenuation == ATTN_NONE)
+	{
 		use_phs = false;
+	}
 
 	if (channel & Q2CHAN_RELIABLE)
 	{
 		if (use_phs)
-			SV_Multicast (origin, MULTICAST_PHS_R);
+		{
+			SV_Multicast(origin, MULTICAST_PHS_R);
+		}
 		else
-			SV_Multicast (origin, MULTICAST_ALL_R);
+		{
+			SV_Multicast(origin, MULTICAST_ALL_R);
+		}
 	}
 	else
 	{
 		if (use_phs)
-			SV_Multicast (origin, MULTICAST_PHS);
+		{
+			SV_Multicast(origin, MULTICAST_PHS);
+		}
 		else
-			SV_Multicast (origin, MULTICAST_ALL);
+		{
+			SV_Multicast(origin, MULTICAST_ALL);
+		}
 	}
-}           
+}
 
 
 /*
@@ -392,38 +450,42 @@ FRAME UPDATES
 SV_SendClientDatagram
 =======================
 */
-qboolean SV_SendClientDatagram (client_t *client)
+qboolean SV_SendClientDatagram(client_t* client)
 {
-	byte		msg_buf[MAX_MSGLEN_Q2];
-	QMsg		msg;
+	byte msg_buf[MAX_MSGLEN_Q2];
+	QMsg msg;
 
-	SV_BuildClientFrame (client);
+	SV_BuildClientFrame(client);
 
 	msg.InitOOB(msg_buf, sizeof(msg_buf));
 	msg.allowoverflow = true;
 
 	// send over all the relevant q2entity_state_t
 	// and the q2player_state_t
-	SV_WriteFrameToClient (client, &msg);
+	SV_WriteFrameToClient(client, &msg);
 
 	// copy the accumulated multicast datagram
 	// for this client out to the message
 	// it is necessary for this to be after the WriteEntities
 	// so that entity references will be current
 	if (client->datagram.overflowed)
-		Com_Printf ("WARNING: datagram overflowed for %s\n", client->name);
+	{
+		Com_Printf("WARNING: datagram overflowed for %s\n", client->name);
+	}
 	else
+	{
 		msg.WriteData(client->datagram._data, client->datagram.cursize);
+	}
 	client->datagram.Clear();
 
 	if (msg.overflowed)
 	{	// must have room left for the packet header
-		Com_Printf ("WARNING: msg overflowed for %s\n", client->name);
+		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 	}
 
 	// send the datagram
-	Netchan_Transmit (&client->netchan, msg.cursize, msg._data);
+	Netchan_Transmit(&client->netchan, msg.cursize, msg._data);
 
 	// record the size for rate estimation
 	client->message_size[sv.framenum % RATE_MESSAGES] = msg.cursize;
@@ -437,14 +499,14 @@ qboolean SV_SendClientDatagram (client_t *client)
 SV_DemoCompleted
 ==================
 */
-void SV_DemoCompleted (void)
+void SV_DemoCompleted(void)
 {
 	if (sv.demofile)
 	{
-		FS_FCloseFile (sv.demofile);
+		FS_FCloseFile(sv.demofile);
 		sv.demofile = 0;
 	}
-	SV_Nextserver ();
+	SV_Nextserver();
 }
 
 
@@ -456,18 +518,20 @@ Returns true if the client is over its current
 bandwidth estimation and should not be sent another packet
 =======================
 */
-qboolean SV_RateDrop (client_t *c)
+qboolean SV_RateDrop(client_t* c)
 {
-	int		total;
-	int		i;
+	int total;
+	int i;
 
 	// never drop over the loopback
 	if (c->netchan.remoteAddress.type == NA_LOOPBACK)
+	{
 		return false;
+	}
 
 	total = 0;
 
-	for (i = 0 ; i < RATE_MESSAGES ; i++)
+	for (i = 0; i < RATE_MESSAGES; i++)
 	{
 		total += c->message_size[i];
 	}
@@ -487,13 +551,13 @@ qboolean SV_RateDrop (client_t *c)
 SV_SendClientMessages
 =======================
 */
-void SV_SendClientMessages (void)
+void SV_SendClientMessages(void)
 {
-	int			i;
-	client_t	*c;
-	int			msglen;
-	byte		msgbuf[MAX_MSGLEN_Q2];
-	int			r;
+	int i;
+	client_t* c;
+	int msglen;
+	byte msgbuf[MAX_MSGLEN_Q2];
+	int r;
 
 	msglen = 0;
 
@@ -501,67 +565,78 @@ void SV_SendClientMessages (void)
 	if (sv.state == ss_demo && sv.demofile)
 	{
 		if (sv_paused->value)
+		{
 			msglen = 0;
+		}
 		else
 		{
 			// get the next message
-			r = FS_Read (&msglen, 4, sv.demofile);
+			r = FS_Read(&msglen, 4, sv.demofile);
 			if (r != 4)
 			{
-				SV_DemoCompleted ();
+				SV_DemoCompleted();
 				return;
 			}
-			msglen = LittleLong (msglen);
+			msglen = LittleLong(msglen);
 			if (msglen == -1)
 			{
-				SV_DemoCompleted ();
+				SV_DemoCompleted();
 				return;
 			}
 			if (msglen > MAX_MSGLEN_Q2)
-				Com_Error (ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN_Q2");
-			r = FS_Read (msgbuf, msglen, sv.demofile);
+			{
+				Com_Error(ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN_Q2");
+			}
+			r = FS_Read(msgbuf, msglen, sv.demofile);
 			if (r != msglen)
 			{
-				SV_DemoCompleted ();
+				SV_DemoCompleted();
 				return;
 			}
 		}
 	}
 
 	// send a message to each connected client
-	for (i=0, c = svs.clients ; i<maxclients->value; i++, c++)
+	for (i = 0, c = svs.clients; i < maxclients->value; i++, c++)
 	{
 		if (!c->state)
+		{
 			continue;
+		}
 		// if the reliable message overflowed,
 		// drop the client
 		if (c->netchan.message.overflowed)
 		{
 			c->netchan.message.Clear();
 			c->datagram.Clear();
-			SV_BroadcastPrintf (PRINT_HIGH, "%s overflowed\n", c->name);
-			SV_DropClient (c);
+			SV_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
+			SV_DropClient(c);
 		}
 
-		if (sv.state == ss_cinematic 
-			|| sv.state == ss_demo 
-			|| sv.state == ss_pic
+		if (sv.state == ss_cinematic ||
+			sv.state == ss_demo ||
+			sv.state == ss_pic
 			)
-			Netchan_Transmit (&c->netchan, msglen, msgbuf);
+		{
+			Netchan_Transmit(&c->netchan, msglen, msgbuf);
+		}
 		else if (c->state == cs_spawned)
 		{
 			// don't overrun bandwidth
-			if (SV_RateDrop (c))
+			if (SV_RateDrop(c))
+			{
 				continue;
+			}
 
-			SV_SendClientDatagram (c);
+			SV_SendClientDatagram(c);
 		}
 		else
 		{
-	// just update reliable	if needed
-			if (c->netchan.message.cursize	|| curtime - c->netchan.lastSent > 1000 )
-				Netchan_Transmit (&c->netchan, 0, NULL);
+			// just update reliable	if needed
+			if (c->netchan.message.cursize  || curtime - c->netchan.lastSent > 1000)
+			{
+				Netchan_Transmit(&c->netchan, 0, NULL);
+			}
 		}
 	}
 }
-

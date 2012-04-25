@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,27 +21,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
-void Cmd_ForwardToServer (void);
+void Cmd_ForwardToServer(void);
 
 /*
 =============================================================================
 
-					COMMAND EXECUTION
+                    COMMAND EXECUTION
 
 =============================================================================
 */
 
 bool Cmd_HandleNullCommand(const char* text)
 {
-    // forward to server command
+	// forward to server command
 	Cmd_ExecuteString(va("cmd %s", text));
-    return true;
+	return true;
 }
 
 void Cmd_HandleUnknownCommand()
 {
 	// send it as a server command if we are connected
-	Cmd_ForwardToServer ();
+	Cmd_ForwardToServer();
 }
 
 /*
@@ -49,8 +49,7 @@ void Cmd_HandleUnknownCommand()
 Cmd_Init
 ============
 */
-void Cmd_Init (void)
+void Cmd_Init(void)
 {
 	Cmd_SharedInit();
 }
-

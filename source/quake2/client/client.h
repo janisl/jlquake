@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -40,171 +40,171 @@ extern int num_cl_weaponmodels;
 //
 // cvars
 //
-extern	Cvar	*cl_stereo_separation;
+extern Cvar* cl_stereo_separation;
 
-extern	Cvar	*cl_gun;
-extern	Cvar	*cl_add_blend;
-extern	Cvar	*cl_add_particles;
-extern	Cvar	*cl_add_entities;
-extern	Cvar	*cl_predict;
-extern	Cvar	*cl_noskins;
-extern	Cvar	*cl_autoskins;
+extern Cvar* cl_gun;
+extern Cvar* cl_add_blend;
+extern Cvar* cl_add_particles;
+extern Cvar* cl_add_entities;
+extern Cvar* cl_predict;
+extern Cvar* cl_noskins;
+extern Cvar* cl_autoskins;
 
-extern	Cvar	*cl_shownet;
-extern	Cvar	*cl_showmiss;
-extern	Cvar	*cl_showclamp;
+extern Cvar* cl_shownet;
+extern Cvar* cl_showmiss;
+extern Cvar* cl_showclamp;
 
-extern	Cvar	*cl_lightlevel;	// FIXME HACK
+extern Cvar* cl_lightlevel;		// FIXME HACK
 
-extern	Cvar	*cl_paused;
-extern	Cvar	*cl_timedemo;
+extern Cvar* cl_paused;
+extern Cvar* cl_timedemo;
 
-extern	Cvar	*cl_vwep;
+extern Cvar* cl_vwep;
 
 // the cl_parse_entities must be large enough to hold UPDATE_BACKUP_Q2 frames of
 // entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original 
-#define	MAX_PARSE_ENTITIES	1024
-extern	q2entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
+// it can be un-deltad from the original
+#define MAX_PARSE_ENTITIES  1024
+extern q2entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
 //=============================================================================
 
-extern	netadr_t	net_from;
-extern	QMsg		net_message;
+extern netadr_t net_from;
+extern QMsg net_message;
 
-void DrawString (int x, int y, const char *s);
-void DrawAltString (int x, int y, const char *s);	// toggle high bit
-qboolean	CL_CheckOrDownloadFile (char *filename);
+void DrawString(int x, int y, const char* s);
+void DrawAltString(int x, int y, const char* s);	// toggle high bit
+qboolean    CL_CheckOrDownloadFile(char* filename);
 
-void CL_AddNetgraph (void);
+void CL_AddNetgraph(void);
 
 //=================================================
 
-#define BLASTER_PARTICLE_COLOR		0xe0
+#define BLASTER_PARTICLE_COLOR      0xe0
 // ========
 
-int CL_ParseEntityBits (unsigned *bits);
-void CL_ParseDelta (q2entity_state_t *from, q2entity_state_t *to, int number, int bits);
-void CL_ParseFrame (void);
+int CL_ParseEntityBits(unsigned* bits);
+void CL_ParseDelta(q2entity_state_t* from, q2entity_state_t* to, int number, int bits);
+void CL_ParseFrame(void);
 
-void CL_ParseConfigString (void);
+void CL_ParseConfigString(void);
 
 void CL_CalcViewValues();
-void CL_AddPacketEntities(q2frame_t *frame);
+void CL_AddPacketEntities(q2frame_t* frame);
 
 //=================================================
 
-void CL_PrepRefresh (void);
-void CL_RegisterSounds (void);
+void CL_PrepRefresh(void);
+void CL_RegisterSounds(void);
 
-void CL_Quit_f (void);
+void CL_Quit_f(void);
 
-void IN_Accumulate (void);
+void IN_Accumulate(void);
 
-void CL_ParseLayout (void);
+void CL_ParseLayout(void);
 
 void CL_InitRenderStuff();
 
 //
 // cl_main
 //
-void CL_Init (void);
+void CL_Init(void);
 
 void CL_FixUpGender(void);
-void CL_Disconnect (void);
-void CL_Disconnect_f (void);
-void CL_GetChallengePacket (void);
-void CL_PingServers_f (void);
-void CL_Snd_Restart_f (void);
-void CL_RequestNextDownload (void);
+void CL_Disconnect(void);
+void CL_Disconnect_f(void);
+void CL_GetChallengePacket(void);
+void CL_PingServers_f(void);
+void CL_Snd_Restart_f(void);
+void CL_RequestNextDownload(void);
 
 //
 // cl_input
 //
-void CL_InitInput (void);
-void CL_SendCmd (void);
-void CL_SendMove (q2usercmd_t *cmd);
+void CL_InitInput(void);
+void CL_SendCmd(void);
+void CL_SendMove(q2usercmd_t* cmd);
 
-void CL_ClearState (void);
+void CL_ClearState(void);
 
-void CL_ReadPackets (void);
+void CL_ReadPackets(void);
 
-int  CL_ReadFromServer (void);
-void CL_WriteToServer (q2usercmd_t *cmd);
+int  CL_ReadFromServer(void);
+void CL_WriteToServer(q2usercmd_t* cmd);
 void CL_MouseEvent(int mx, int my);
 
-const char *Key_KeynumToString (int keynum);
+const char* Key_KeynumToString(int keynum);
 
 //
 // cl_demo.c
 //
-void CL_WriteDemoMessage (void);
-void CL_Stop_f (void);
-void CL_Record_f (void);
+void CL_WriteDemoMessage(void);
+void CL_Stop_f(void);
+void CL_Record_f(void);
 
 //
 // cl_parse.c
 //
-extern	const char *svc_strings[256];
+extern const char* svc_strings[256];
 
-void CL_ParseServerMessage (void);
-void CL_LoadClientinfo (q2clientinfo_t *ci, const char *s);
-void SHOWNET(const char *s);
-void CL_ParseClientinfo (int player);
-void CL_Download_f (void);
+void CL_ParseServerMessage(void);
+void CL_LoadClientinfo(q2clientinfo_t* ci, const char* s);
+void SHOWNET(const char* s);
+void CL_ParseClientinfo(int player);
+void CL_Download_f(void);
 
 //
 // cl_view.c
 //
-extern	int			gun_frame;
-extern	qhandle_t	gun_model;
+extern int gun_frame;
+extern qhandle_t gun_model;
 
-extern float		v_blend[4];
+extern float v_blend[4];
 
-void V_Init (void);
-void V_RenderView( float stereo_separation );
+void V_Init(void);
+void V_RenderView(float stereo_separation);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized
-void CL_GetEntitySoundOrigin (int ent, vec3_t org);
+void CL_GetEntitySoundOrigin(int ent, vec3_t org);
 
 
 //
 // cl_pred.c
 //
-void CL_InitPrediction (void);
-void CL_PredictMove (void);
-void CL_CheckPredictionError (void);
+void CL_InitPrediction(void);
+void CL_PredictMove(void);
+void CL_CheckPredictionError(void);
 
 //
 // menus
 //
-void M_Init (void);
-void M_Keydown (int key);
-void M_Draw (void);
-void M_Menu_Main_f (void);
-void M_ForceMenuOff (void);
-void M_AddToServerList (netadr_t adr, char *info);
+void M_Init(void);
+void M_Keydown(int key);
+void M_Draw(void);
+void M_Menu_Main_f(void);
+void M_ForceMenuOff(void);
+void M_AddToServerList(netadr_t adr, char* info);
 
 //
 // cl_inv.c
 //
-void CL_ParseInventory (void);
-void CL_KeyInventory (int key);
-void CL_DrawInventory (void);
+void CL_ParseInventory(void);
+void CL_KeyInventory(int key);
+void CL_DrawInventory(void);
 
 //
 // cl_pred.c
 //
-void CL_PredictMovement (void);
+void CL_PredictMovement(void);
 
 void CIN_SkipCinematic();
 
 #if id386
-void x86_TimerStart( void );
-void x86_TimerStop( void );
-void x86_TimerInit( unsigned long smallest, unsigned longest );
-unsigned long *x86_TimerGetHistogram( void );
+void x86_TimerStart(void);
+void x86_TimerStop(void);
+void x86_TimerInit(unsigned long smallest, unsigned longest);
+unsigned long* x86_TimerGetHistogram(void);
 #endif
 
 void Draw_InitLocal();

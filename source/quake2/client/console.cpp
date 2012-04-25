@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,37 +21,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-Cvar		*con_notifytime;
+Cvar* con_notifytime;
 
 
-#define		MAXCMDLINE	256
-extern	char	key_lines[32][MAXCMDLINE];
-extern	int		edit_line;
-extern	int		key_linepos;
-		
+#define     MAXCMDLINE  256
+extern char key_lines[32][MAXCMDLINE];
+extern int edit_line;
+extern int key_linepos;
 
-void DrawString (int x, int y, const char *s)
+
+void DrawString(int x, int y, const char* s)
 {
 	while (*s)
 	{
-		Draw_Char (x, y, *s);
-		x+=8;
+		Draw_Char(x, y, *s);
+		x += 8;
 		s++;
 	}
 }
 
-void DrawAltString (int x, int y, const char *s)
+void DrawAltString(int x, int y, const char* s)
 {
 	while (*s)
 	{
-		Draw_Char (x, y, *s ^ 0x80);
-		x+=8;
+		Draw_Char(x, y, *s ^ 0x80);
+		x += 8;
 		s++;
 	}
 }
 
 
-void Key_ClearTyping (void)
+void Key_ClearTyping(void)
 {
 	key_lines[edit_line][1] = 0;	// clear any typing
 	key_linepos = 1;
@@ -62,39 +62,41 @@ void Key_ClearTyping (void)
 Con_ToggleConsole_f
 ================
 */
-void Con_ToggleConsole_f (void)
+void Con_ToggleConsole_f(void)
 {
-	SCR_EndLoadingPlaque ();	// get rid of loading plaque
+	SCR_EndLoadingPlaque();		// get rid of loading plaque
 
 	if (cl.q2_attractloop)
 	{
-		Cbuf_AddText ("killserver\n");
+		Cbuf_AddText("killserver\n");
 		return;
 	}
 
 	if (cls.state == CA_DISCONNECTED)
 	{	// start the demo loop again
-		Cbuf_AddText ("d1\n");
+		Cbuf_AddText("d1\n");
 		return;
 	}
 
-	Key_ClearTyping ();
-	Con_ClearNotify ();
+	Key_ClearTyping();
+	Con_ClearNotify();
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		in_keyCatchers &= ~KEYCATCH_CONSOLE;	
-		M_ForceMenuOff ();
+		in_keyCatchers &= ~KEYCATCH_CONSOLE;
+		M_ForceMenuOff();
 		Cvar_SetLatched("paused", "0");
 	}
 	else
 	{
-		M_ForceMenuOff ();
-		in_keyCatchers |= KEYCATCH_CONSOLE;	
+		M_ForceMenuOff();
+		in_keyCatchers |= KEYCATCH_CONSOLE;
 
-		if (Cvar_VariableValue ("maxclients") == 1 
-			&& Com_ServerState ())
+		if (Cvar_VariableValue("maxclients") == 1 &&
+			Com_ServerState())
+		{
 			Cvar_SetLatched("paused", "1");
+		}
 	}
 }
 
@@ -103,22 +105,24 @@ void Con_ToggleConsole_f (void)
 Con_ToggleChat_f
 ================
 */
-void Con_ToggleChat_f (void)
+void Con_ToggleChat_f(void)
 {
-	Key_ClearTyping ();
+	Key_ClearTyping();
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
 		if (cls.state == CA_ACTIVE)
 		{
-			M_ForceMenuOff ();
+			M_ForceMenuOff();
 			in_keyCatchers &= ~KEYCATCH_CONSOLE;
 		}
 	}
 	else
+	{
 		in_keyCatchers |= KEYCATCH_CONSOLE;
-	
-	Con_ClearNotify ();
+	}
+
+	Con_ClearNotify();
 }
 
 /*
@@ -126,13 +130,13 @@ void Con_ToggleChat_f (void)
 Con_Clear_f
 ================
 */
-void Con_Clear_f (void)
+void Con_Clear_f(void)
 {
 	for (int i = 0; i < CON_TEXTSIZE; i++)
 		con.text[i] = ' ';
 }
 
-						
+
 /*
 ================
 Con_Dump_f
@@ -140,59 +144,67 @@ Con_Dump_f
 Save the console contents out to a file
 ================
 */
-void Con_Dump_f (void)
+void Con_Dump_f(void)
 {
-	int		l, x;
-	short	*line;
-	fileHandle_t	f;
-	char	buffer[1024];
-	char	name[MAX_OSPATH];
+	int l, x;
+	short* line;
+	fileHandle_t f;
+	char buffer[1024];
+	char name[MAX_OSPATH];
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf ("usage: condump <filename>\n");
+		Com_Printf("usage: condump <filename>\n");
 		return;
 	}
 
-	String::Sprintf (name, sizeof(name), "%s.txt", Cmd_Argv(1));
+	String::Sprintf(name, sizeof(name), "%s.txt", Cmd_Argv(1));
 
-	Com_Printf ("Dumped console text to %s.\n", name);
+	Com_Printf("Dumped console text to %s.\n", name);
 	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
-		Com_Printf ("ERROR: couldn't open.\n");
+		Com_Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
 	// skip empty lines
-	for (l = con.current - con.totallines + 1 ; l <= con.current ; l++)
+	for (l = con.current - con.totallines + 1; l <= con.current; l++)
 	{
-		line = con.text + (l%con.totallines)*con.linewidth;
-		for (x=0 ; x<con.linewidth ; x++)
+		line = con.text + (l % con.totallines) * con.linewidth;
+		for (x = 0; x < con.linewidth; x++)
 			if (line[x] != ' ')
+			{
 				break;
+			}
 		if (x != con.linewidth)
+		{
 			break;
+		}
 	}
 
 	// write the remaining lines
 	buffer[con.linewidth] = 0;
-	for ( ; l <= con.current ; l++)
+	for (; l <= con.current; l++)
 	{
-		line = con.text + (l%con.totallines)*con.linewidth;
+		line = con.text + (l % con.totallines) * con.linewidth;
 		for (int i = 0; i < con.linewidth; i++)
 			buffer[i] = line[i] & 0xff;
-		for (x=con.linewidth-1 ; x>=0 ; x--)
+		for (x = con.linewidth - 1; x >= 0; x--)
 		{
 			if (buffer[x] == ' ')
+			{
 				buffer[x] = 0;
+			}
 			else
+			{
 				break;
+			}
 		}
-		for (x=0; buffer[x]; x++)
+		for (x = 0; buffer[x]; x++)
 			buffer[x] &= 0x7f;
 
-		FS_Printf (f, "%s\n", buffer);
+		FS_Printf(f, "%s\n", buffer);
 	}
 
 	FS_FCloseFile(f);
@@ -203,7 +215,7 @@ void Con_Dump_f (void)
 Con_MessageMode_f
 ================
 */
-void Con_MessageMode_f (void)
+void Con_MessageMode_f(void)
 {
 	chat_team = false;
 	in_keyCatchers |= KEYCATCH_MESSAGE;
@@ -214,7 +226,7 @@ void Con_MessageMode_f (void)
 Con_MessageMode2_f
 ================
 */
-void Con_MessageMode2_f (void)
+void Con_MessageMode2_f(void)
 {
 	chat_team = true;
 	in_keyCatchers |= KEYCATCH_MESSAGE;
@@ -227,15 +239,17 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize (void)
+void Con_CheckResize(void)
 {
-	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	short	tbuf[CON_TEXTSIZE];
+	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
+	short tbuf[CON_TEXTSIZE];
 
 	width = (viddef.width >> 3) - 2;
 
 	if (width == con.linewidth)
+	{
 		return;
+	}
 
 	if (width < 1)			// video hasn't been initialized yet
 	{
@@ -254,28 +268,32 @@ void Con_CheckResize (void)
 		numlines = oldtotallines;
 
 		if (con.totallines < numlines)
+		{
 			numlines = con.totallines;
+		}
 
 		numchars = oldwidth;
-	
+
 		if (con.linewidth < numchars)
+		{
 			numchars = con.linewidth;
+		}
 
 		Com_Memcpy(tbuf, con.text, 2 * CON_TEXTSIZE);
 		for (i = 0; i < CON_TEXTSIZE; i++)
 			con.text[i] = ' ';
 
-		for (i=0 ; i<numlines ; i++)
+		for (i = 0; i < numlines; i++)
 		{
-			for (j=0 ; j<numchars ; j++)
+			for (j = 0; j < numchars; j++)
 			{
 				con.text[(con.totallines - 1 - i) * con.linewidth + j] =
-						tbuf[((con.current - i + oldtotallines) %
-							  oldtotallines) * oldwidth + j];
+					tbuf[((con.current - i + oldtotallines) %
+						  oldtotallines) * oldwidth + j];
 			}
 		}
 
-		Con_ClearNotify ();
+		Con_ClearNotify();
 	}
 
 	con.current = con.totallines - 1;
@@ -288,25 +306,25 @@ void Con_CheckResize (void)
 Con_Init
 ================
 */
-void Con_Init (void)
+void Con_Init(void)
 {
 	con.linewidth = -1;
 
-	Con_CheckResize ();
-	
-	Com_Printf ("Console initialized.\n");
+	Con_CheckResize();
+
+	Com_Printf("Console initialized.\n");
 
 //
 // register our commands
 //
-	con_notifytime = Cvar_Get ("con_notifytime", "3", 0);
+	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
 
-	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand ("togglechat", Con_ToggleChat_f);
-	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
-	Cmd_AddCommand ("clear", Con_Clear_f);
-	Cmd_AddCommand ("condump", Con_Dump_f);
+	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
+	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
+	Cmd_AddCommand("messagemode", Con_MessageMode_f);
+	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
+	Cmd_AddCommand("clear", Con_Clear_f);
+	Cmd_AddCommand("condump", Con_Dump_f);
 	con.initialized = true;
 }
 
@@ -316,14 +334,16 @@ void Con_Init (void)
 Con_Linefeed
 ===============
 */
-void Con_Linefeed (void)
+void Con_Linefeed(void)
 {
 	con.x = 0;
 	if (con.display == con.current)
+	{
 		con.display++;
+	}
 	con.current++;
 	for (int i = 0; i < con.linewidth; i++)
-		con.text[(con.current%con.totallines)*con.linewidth + i] = ' ';
+		con.text[(con.current % con.totallines) * con.linewidth + i] = ' ';
 }
 
 /*
@@ -335,15 +355,17 @@ All console printing must go through this in order to be logged to disk
 If no console is visible, the text will appear at the top of the game window
 ================
 */
-void Con_Print (const char *txt)
+void Con_Print(const char* txt)
 {
-	int		y;
-	int		c, l;
-	static int	cr;
-	int		mask;
+	int y;
+	int c, l;
+	static int cr;
+	int mask;
 
 	if (!con.initialized)
+	{
 		return;
+	}
 
 	if (txt[0] == 1 || txt[0] == 2)
 	{
@@ -351,19 +373,25 @@ void Con_Print (const char *txt)
 		txt++;
 	}
 	else
-		mask = 0;
-
-
-	while ( (c = *txt) )
 	{
-	// count word length
-		for (l=0 ; l< con.linewidth ; l++)
-			if ( txt[l] <= ' ')
-				break;
+		mask = 0;
+	}
 
-	// word wrap
-		if (l != con.linewidth && (con.x + l > con.linewidth) )
+
+	while ((c = *txt))
+	{
+		// count word length
+		for (l = 0; l < con.linewidth; l++)
+			if (txt[l] <= ' ')
+			{
+				break;
+			}
+
+		// word wrap
+		if (l != con.linewidth && (con.x + l > con.linewidth))
+		{
 			con.x = 0;
+		}
 
 		txt++;
 
@@ -373,13 +401,15 @@ void Con_Print (const char *txt)
 			cr = false;
 		}
 
-		
+
 		if (!con.x)
 		{
-			Con_Linefeed ();
-		// mark time for transparent overlay
+			Con_Linefeed();
+			// mark time for transparent overlay
 			if (con.current >= 0)
+			{
 				con.times[con.current % NUM_CON_TIMES] = cls.realtime;
+			}
 		}
 
 		switch (c)
@@ -395,13 +425,15 @@ void Con_Print (const char *txt)
 
 		default:	// display character and advance
 			y = con.current % con.totallines;
-			con.text[y*con.linewidth+con.x] = c | mask | con.ormask;
+			con.text[y * con.linewidth + con.x] = c | mask | con.ormask;
 			con.x++;
 			if (con.x >= con.linewidth)
+			{
 				con.x = 0;
+			}
 			break;
 		}
-		
+
 	}
 }
 
@@ -411,19 +443,21 @@ void Con_Print (const char *txt)
 Con_CenteredPrint
 ==============
 */
-void Con_CenteredPrint (char *text)
+void Con_CenteredPrint(char* text)
 {
-	int		l;
-	char	buffer[1024];
+	int l;
+	char buffer[1024];
 
 	l = String::Length(text);
-	l = (con.linewidth-l)/2;
+	l = (con.linewidth - l) / 2;
 	if (l < 0)
+	{
 		l = 0;
+	}
 	Com_Memset(buffer, ' ', l);
-	String::Cpy(buffer+l, text);
+	String::Cpy(buffer + l, text);
 	String::Cat(buffer, sizeof(buffer), "\n");
-	Con_Print (buffer);
+	Con_Print(buffer);
 }
 
 /*
@@ -442,35 +476,41 @@ Con_DrawInput
 The input line scrolls horizontally if typing goes beyond the right edge
 ================
 */
-void Con_DrawInput (void)
+void Con_DrawInput(void)
 {
-	int		y;
-	int		i;
-	char	*text;
+	int y;
+	int i;
+	char* text;
 
 	if (in_keyCatchers & KEYCATCH_UI)
+	{
 		return;
+	}
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == CA_ACTIVE)
+	{
 		return;		// don't draw anything (always draw if not active)
 
+	}
 	text = key_lines[edit_line];
-	
+
 // add the cursor frame
-	text[key_linepos] = 10+((int)(cls.realtime>>8)&1);
-	
+	text[key_linepos] = 10 + ((int)(cls.realtime >> 8) & 1);
+
 // fill out remainder with spaces
-	for (i=key_linepos+1 ; i< con.linewidth ; i++)
+	for (i = key_linepos + 1; i < con.linewidth; i++)
 		text[i] = ' ';
-		
+
 //	prestep if horizontally scrolling
 	if (key_linepos >= con.linewidth)
+	{
 		text += 1 + key_linepos - con.linewidth;
-		
-// draw it
-	y = con.vislines-16;
+	}
 
-	for (i=0 ; i<con.linewidth ; i++)
-		Draw_Char ( (i+1)<<3, con.vislines - 22, text[i]);
+// draw it
+	y = con.vislines - 16;
+
+	for (i = 0; i < con.linewidth; i++)
+		Draw_Char((i + 1) << 3, con.vislines - 22, text[i]);
 
 // remove cursor
 	key_lines[edit_line][key_linepos] = 0;
@@ -484,30 +524,36 @@ Con_DrawNotify
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify (void)
+void Con_DrawNotify(void)
 {
-	int		x, v;
-	short	*text;
-	int		i;
-	int		time;
-	char	*s;
-	int		skip;
+	int x, v;
+	short* text;
+	int i;
+	int time;
+	char* s;
+	int skip;
 
 	v = 0;
-	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
+	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
 	{
 		if (i < 0)
+		{
 			continue;
+		}
 		time = con.times[i % NUM_CON_TIMES];
 		if (time == 0)
+		{
 			continue;
+		}
 		time = cls.realtime - time;
-		if (time > con_notifytime->value*1000)
+		if (time > con_notifytime->value * 1000)
+		{
 			continue;
-		text = con.text + (i % con.totallines)*con.linewidth;
-		
-		for (x = 0 ; x < con.linewidth ; x++)
-			Draw_Char ( (x+1)<<3, v, text[x] & 0xff);
+		}
+		text = con.text + (i % con.totallines) * con.linewidth;
+
+		for (x = 0; x < con.linewidth; x++)
+			Draw_Char((x + 1) << 3, v, text[x] & 0xff);
 
 		v += 8;
 	}
@@ -517,25 +563,27 @@ void Con_DrawNotify (void)
 	{
 		if (chat_team)
 		{
-			DrawString (8, v, "say_team:");
+			DrawString(8, v, "say_team:");
 			skip = 11;
 		}
 		else
 		{
-			DrawString (8, v, "say:");
+			DrawString(8, v, "say:");
 			skip = 5;
 		}
 
 		s = chat_buffer;
-		if (chat_bufferlen > (viddef.width>>3)-(skip+1))
-			s += chat_bufferlen - ((viddef.width>>3)-(skip+1));
-		x = 0;
-		while(s[x])
+		if (chat_bufferlen > (viddef.width >> 3) - (skip + 1))
 		{
-			Draw_Char ( (x+skip)<<3, v, s[x]);
+			s += chat_bufferlen - ((viddef.width >> 3) - (skip + 1));
+		}
+		x = 0;
+		while (s[x])
+		{
+			Draw_Char((x + skip) << 3, v, s[x]);
 			x++;
 		}
-		Draw_Char ( (x+skip)<<3, v, 10+((cls.realtime>>8)&1));
+		Draw_Char((x + skip) << 3, v, 10 + ((cls.realtime >> 8) & 1));
 		v += 8;
 	}
 }
@@ -547,38 +595,42 @@ Con_DrawConsole
 Draws the console with the solid background
 ================
 */
-void Con_DrawConsole (float frac)
+void Con_DrawConsole(float frac)
 {
-	int				i, j, x, y, n;
-	int				rows;
-	int				row;
-	int				lines;
-	char			version[64];
-	char			dlbar[1024];
+	int i, j, x, y, n;
+	int rows;
+	int row;
+	int lines;
+	char version[64];
+	char dlbar[1024];
 
 	lines = viddef.height * frac;
 	if (lines <= 0)
+	{
 		return;
+	}
 
 	if (lines > viddef.height)
+	{
 		lines = viddef.height;
+	}
 
 // draw the background
-	UI_DrawStretchNamedPic (0, -viddef.height+lines, viddef.width, viddef.height, "conback");
+	UI_DrawStretchNamedPic(0, -viddef.height + lines, viddef.width, viddef.height, "conback");
 
-	String::Sprintf (version, sizeof(version), "v%4.2f", VERSION);
-	for (x=0 ; x<5 ; x++)
-		Draw_Char (viddef.width-44+x*8, lines-12, 128 + version[x] );
+	String::Sprintf(version, sizeof(version), "v%4.2f", VERSION);
+	for (x = 0; x < 5; x++)
+		Draw_Char(viddef.width - 44 + x * 8, lines - 12, 128 + version[x]);
 
 // draw the text
 	con.vislines = lines;
-	
+
 #if 0
-	rows = (lines-8)>>3;		// rows of text to draw
+	rows = (lines - 8) >> 3;		// rows of text to draw
 
 	y = lines - 24;
 #else
-	rows = (lines-22)>>3;		// rows of text to draw
+	rows = (lines - 22) >> 3;		// rows of text to draw
 
 	y = lines - 30;
 #endif
@@ -586,26 +638,30 @@ void Con_DrawConsole (float frac)
 // draw from the bottom up
 	if (con.display != con.current)
 	{
-	// draw arrows to show the buffer is backscrolled
-		for (x=0 ; x<con.linewidth ; x+=4)
-			Draw_Char ( (x+1)<<3, y, '^');
-	
+		// draw arrows to show the buffer is backscrolled
+		for (x = 0; x < con.linewidth; x += 4)
+			Draw_Char((x + 1) << 3, y, '^');
+
 		y -= 8;
 		rows--;
 	}
-	
+
 	row = con.display;
-	for (i=0 ; i<rows ; i++, y-=8, row--)
+	for (i = 0; i < rows; i++, y -= 8, row--)
 	{
 		if (row < 0)
+		{
 			break;
+		}
 		if (con.current - row >= con.totallines)
+		{
 			break;		// past scrollback wrap point
-			
-		short* text = con.text + (row % con.totallines)*con.linewidth;
 
-		for (x=0 ; x<con.linewidth ; x++)
-			Draw_Char ( (x+1)<<3, y, text[x] & 0xff);
+		}
+		short* text = con.text + (row % con.totallines) * con.linewidth;
+
+		for (x = 0; x < con.linewidth; x++)
+			Draw_Char((x + 1) << 3, y, text[x] & 0xff);
 	}
 
 //ZOID
@@ -615,48 +671,62 @@ void Con_DrawConsole (float frac)
 	{
 		char* text = String::RChr(clc.downloadName, '/');
 		if (text)
+		{
 			text++;
+		}
 		else
+		{
 			text = clc.downloadName;
+		}
 
 		x = con.linewidth - ((con.linewidth * 7) / 40);
 		y = x - String::Length(text) - 8;
-		i = con.linewidth/3;
-		if (String::Length(text) > i) {
+		i = con.linewidth / 3;
+		if (String::Length(text) > i)
+		{
 			y = x - i - 11;
 			String::NCpy(dlbar, text, i);
 			dlbar[i] = 0;
 			String::Cat(dlbar, sizeof(dlbar), "...");
-		} else
+		}
+		else
+		{
 			String::Cpy(dlbar, text);
+		}
 		String::Cat(dlbar, sizeof(dlbar), ": ");
 		i = String::Length(dlbar);
 		dlbar[i++] = '\x80';
 		// where's the dot go?
 		if (clc.downloadPercent == 0)
+		{
 			n = 0;
+		}
 		else
+		{
 			n = y * clc.downloadPercent / 100;
-			
+		}
+
 		for (j = 0; j < y; j++)
 			if (j == n)
+			{
 				dlbar[i++] = '\x83';
+			}
 			else
+			{
 				dlbar[i++] = '\x81';
+			}
 		dlbar[i++] = '\x82';
 		dlbar[i] = 0;
 
 		sprintf(dlbar + String::Length(dlbar), " %02d%%", clc.downloadPercent);
 
 		// draw it
-		y = con.vislines-12;
+		y = con.vislines - 12;
 		for (i = 0; i < String::Length(dlbar); i++)
-			Draw_Char ( (i+1)<<3, y, dlbar[i]);
+			Draw_Char((i + 1) << 3, y, dlbar[i]);
 	}
 //ZOID
 
 // draw the input prompt, user text, and cursor if desired
-	Con_DrawInput ();
+	Con_DrawInput();
 }
-
-

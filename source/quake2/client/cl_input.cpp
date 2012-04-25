@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-Cvar	*cl_nodelta;
+Cvar* cl_nodelta;
 
-unsigned	old_sys_frame_time;
+unsigned old_sys_frame_time;
 
 /*
 ===============================================================================
@@ -64,18 +64,20 @@ void CL_MouseEvent(int mx, int my)
 CL_FinishMove
 ==============
 */
-void CL_FinishMove (q2usercmd_t *cmd)
+void CL_FinishMove(q2usercmd_t* cmd)
 {
-	int		ms;
-	int		i;
+	int ms;
+	int i;
 
 	// send milliseconds of time to apply the move
 	ms = cls.q2_frametimeFloat * 1000;
 	if (ms > 250)
+	{
 		ms = 100;		// time was unreasonable
+	}
 	cmd->msec = ms;
 
-	for (i=0 ; i<3 ; i++)
+	for (i = 0; i < 3; i++)
 		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
 
 	cmd->impulse = in_impulse;
@@ -90,19 +92,23 @@ void CL_FinishMove (q2usercmd_t *cmd)
 CL_CreateCmd
 =================
 */
-q2usercmd_t CL_CreateCmd (void)
+q2usercmd_t CL_CreateCmd(void)
 {
-	q2usercmd_t	cmd;
+	q2usercmd_t cmd;
 
-	// grab frame time 
+	// grab frame time
 	com_frameTime = Sys_Milliseconds_();
 
 	frame_msec = com_frameTime - old_sys_frame_time;
 	if (frame_msec < 1)
+	{
 		frame_msec = 1;
+	}
 	if (frame_msec > 200)
+	{
 		frame_msec = 200;
-	
+	}
+
 	Com_Memset(&cmd, 0, sizeof(cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
@@ -111,9 +117,9 @@ q2usercmd_t CL_CreateCmd (void)
 	cmd.upmove = inCmd.upmove;
 	cmd.buttons = inCmd.buttons;
 
-	VectorCopy (cl.viewangles, cmd.angles);
+	VectorCopy(cl.viewangles, cmd.angles);
 
-	CL_FinishMove (&cmd);
+	CL_FinishMove(&cmd);
 
 	old_sys_frame_time = com_frameTime;
 
@@ -128,11 +134,11 @@ q2usercmd_t CL_CreateCmd (void)
 CL_InitInput
 ============
 */
-void CL_InitInput (void)
+void CL_InitInput(void)
 {
 	CL_InitInputCommon();
 
-	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
+	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
 
 
@@ -142,31 +148,35 @@ void CL_InitInput (void)
 CL_SendCmd
 =================
 */
-void CL_SendCmd (void)
+void CL_SendCmd(void)
 {
-	QMsg		buf;
-	byte		data[128];
-	int			i;
-	q2usercmd_t	*cmd, *oldcmd;
-	q2usercmd_t	nullcmd;
-	int			checksumIndex;
+	QMsg buf;
+	byte data[128];
+	int i;
+	q2usercmd_t* cmd, * oldcmd;
+	q2usercmd_t nullcmd;
+	int checksumIndex;
 
 	// build a command even if not connected
 
 	// save this command off for prediction
-	i = clc.netchan.outgoingSequence & (CMD_BACKUP_Q2-1);
+	i = clc.netchan.outgoingSequence & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
 	cl.q2_cmd_time[i] = cls.realtime;	// for netgraph ping calculation
 
-	*cmd = CL_CreateCmd ();
+	*cmd = CL_CreateCmd();
 
 	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
-		return;
-
-	if ( cls.state == CA_CONNECTED)
 	{
-		if (clc.netchan.message.cursize	|| curtime - clc.netchan.lastSent > 1000 )
-			Netchan_Transmit (&clc.netchan, 0, clc.netchan.message._data);	
+		return;
+	}
+
+	if (cls.state == CA_CONNECTED)
+	{
+		if (clc.netchan.message.cursize || curtime - clc.netchan.lastSent > 1000)
+		{
+			Netchan_Transmit(&clc.netchan, 0, clc.netchan.message._data);
+		}
 		return;
 	}
 
@@ -177,7 +187,7 @@ void CL_SendCmd (void)
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
 		clc.netchan.message.WriteByte(q2clc_userinfo);
 		clc.netchan.message.WriteString2(Cvar_InfoString(
-			CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY, MAX_INFO_VALUE, true, false));
+				CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY, MAX_INFO_VALUE, true, false));
 	}
 
 	buf.InitOOB(data, sizeof(data));
@@ -198,26 +208,30 @@ void CL_SendCmd (void)
 	// let the server know what the last frame we
 	// got was, so the next message can be delta compressed
 	if (cl_nodelta->value || !cl.q2_frame.valid || cls.q2_demowaiting)
+	{
 		buf.WriteLong(-1);	// no compression
+	}
 	else
+	{
 		buf.WriteLong(cl.q2_frame.serverframe);
+	}
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
-	i = (clc.netchan.outgoingSequence-2) & (CMD_BACKUP_Q2-1);
+	i = (clc.netchan.outgoingSequence - 2) & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
-	MSG_WriteDeltaUsercmd (&buf, &nullcmd, cmd);
+	MSG_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
-	i = (clc.netchan.outgoingSequence-1) & (CMD_BACKUP_Q2-1);
+	i = (clc.netchan.outgoingSequence - 1) & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
-	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
+	MSG_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
-	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP_Q2-1);
+	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
-	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
+	MSG_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
 	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
@@ -227,7 +241,7 @@ void CL_SendCmd (void)
 	//
 	// deliver the message
 	//
-	Netchan_Transmit (&clc.netchan, buf.cursize, buf._data);	
+	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
 }
 
 

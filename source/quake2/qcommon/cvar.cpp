@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -31,11 +31,11 @@ Cvar_GetLatchedVars
 Any variables with latched values will now be updated
 ============
 */
-void Cvar_GetLatchedVars (void)
+void Cvar_GetLatchedVars(void)
 {
-	Cvar	*var;
+	Cvar* var;
 
-	for (var = cvar_vars ; var ; var = var->next)
+	for (var = cvar_vars; var; var = var->next)
 	{
 		if (!var->latchedString)
 		{
@@ -46,14 +46,14 @@ void Cvar_GetLatchedVars (void)
 		{
 			continue;
 		}
-		Mem_Free (var->string);
+		Mem_Free(var->string);
 		var->string = var->latchedString;
 		var->latchedString = NULL;
 		var->value = String::Atof(var->string);
 		if (!String::Cmp(var->name, "game"))
 		{
-			FS_SetGamedir (var->string);
-			FS_ExecAutoexec ();
+			FS_SetGamedir(var->string);
+			FS_ExecAutoexec();
 		}
 	}
 }

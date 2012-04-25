@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -74,13 +74,13 @@ then a packet only needs to be delivered if there is something in the
 unacknowledged reliable
 */
 
-Cvar		*showpackets;
-Cvar		*showdrop;
-Cvar		*qport;
+Cvar* showpackets;
+Cvar* showdrop;
+Cvar* qport;
 
-netadr_t	net_from;
-QMsg		net_message;
-byte		net_message_buffer[MAX_MSGLEN_Q2];
+netadr_t net_from;
+QMsg net_message;
+byte net_message_buffer[MAX_MSGLEN_Q2];
 
 /*
 ===============
@@ -88,16 +88,16 @@ Netchan_Init
 
 ===============
 */
-void Netchan_Init (void)
+void Netchan_Init(void)
 {
-	int		port;
+	int port;
 
 	// pick a port value that should be nice and random
 	port = Sys_Milliseconds_() & 0xffff;
 
-	showpackets = Cvar_Get ("showpackets", "0", 0);
-	showdrop = Cvar_Get ("showdrop", "0", 0);
-	qport = Cvar_Get ("qport", va("%i", port), CVAR_INIT);
+	showpackets = Cvar_Get("showpackets", "0", 0);
+	showdrop = Cvar_Get("showdrop", "0", 0);
+	qport = Cvar_Get("qport", va("%i", port), CVAR_INIT);
 }
 
 /*
@@ -107,19 +107,19 @@ Netchan_OutOfBand
 Sends an out-of-band datagram
 ================
 */
-void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data)
+void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data)
 {
-	QMsg		send;
-	byte		send_buf[MAX_MSGLEN_Q2];
+	QMsg send;
+	byte send_buf[MAX_MSGLEN_Q2];
 
 // write the packet header
 	send.InitOOB(send_buf, sizeof(send_buf));
-	
+
 	send.WriteLong(-1);	// -1 sequence means out of band
 	send.WriteData(data, length);
 
 // send the datagram
-	NET_SendPacket ((netsrc_t)net_socket, send.cursize, send._data, adr);
+	NET_SendPacket((netsrc_t)net_socket, send.cursize, send._data, adr);
 }
 
 /*
@@ -129,16 +129,16 @@ Netchan_OutOfBandPrint
 Sends a text message in an out-of-band datagram
 ================
 */
-void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, const char *format, ...)
+void Netchan_OutOfBandPrint(int net_socket, netadr_t adr, const char* format, ...)
 {
-	va_list		argptr;
-	static char		string[MAX_MSGLEN_Q2 - 4];
-	
-	va_start (argptr, format);
-	Q_vsnprintf(string, sizeof(string), format, argptr);
-	va_end (argptr);
+	va_list argptr;
+	static char string[MAX_MSGLEN_Q2 - 4];
 
-	Netchan_OutOfBand (net_socket, adr, String::Length(string), (byte *)string);
+	va_start(argptr, format);
+	Q_vsnprintf(string, sizeof(string), format, argptr);
+	va_end(argptr);
+
+	Netchan_OutOfBand(net_socket, adr, String::Length(string), (byte*)string);
 }
 
 
@@ -149,10 +149,10 @@ Netchan_Setup
 called to open a channel to a remote system
 ==============
 */
-void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
+void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
 {
 	Com_Memset(chan, 0, sizeof(*chan));
-	
+
 	chan->sock = sock;
 	chan->remoteAddress = adr;
 	chan->qport = qport;
@@ -172,24 +172,28 @@ Netchan_CanReliable
 Returns true if the last reliable message has acked
 ================
 */
-qboolean Netchan_CanReliable (netchan_t *chan)
+qboolean Netchan_CanReliable(netchan_t* chan)
 {
 	if (chan->reliableOrUnsentLength)
+	{
 		return false;			// waiting for ack
+	}
 	return true;
 }
 
 
-qboolean Netchan_NeedReliable (netchan_t *chan)
+qboolean Netchan_NeedReliable(netchan_t* chan)
 {
-	qboolean	send_reliable;
+	qboolean send_reliable;
 
 // if the remote side dropped the last reliable message, resend it
 	send_reliable = false;
 
-	if (chan->incomingAcknowledged > chan->lastReliableSequence
-	&& chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
+	if (chan->incomingAcknowledged > chan->lastReliableSequence &&
+		chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
+	{
 		send_reliable = true;
+	}
 
 // if the reliable transmit buffer is empty, copy the current message out
 	if (!chan->reliableOrUnsentLength && chan->message.cursize)
@@ -210,22 +214,22 @@ transmition / retransmition of the reliable messages.
 A 0 length will still generate a packet and deal with the reliable messages.
 ================
 */
-void Netchan_Transmit (netchan_t *chan, int length, byte *data)
+void Netchan_Transmit(netchan_t* chan, int length, byte* data)
 {
-	QMsg		send;
-	byte		send_buf[MAX_MSGLEN_Q2];
-	qboolean	send_reliable;
-	unsigned	w1, w2;
+	QMsg send;
+	byte send_buf[MAX_MSGLEN_Q2];
+	qboolean send_reliable;
+	unsigned w1, w2;
 
 // check for message overflow
 	if (chan->message.overflowed)
 	{
-		Com_Printf ("%s:Outgoing message overflow\n"
-			, SOCK_AdrToString (chan->remoteAddress));
+		Com_Printf("%s:Outgoing message overflow\n",
+			SOCK_AdrToString(chan->remoteAddress));
 		return;
 	}
 
-	send_reliable = Netchan_NeedReliable (chan);
+	send_reliable = Netchan_NeedReliable(chan);
 
 	if (!chan->reliableOrUnsentLength && chan->message.cursize)
 	{
@@ -239,8 +243,8 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 // write the packet header
 	send.InitOOB(send_buf, sizeof(send_buf));
 
-	w1 = ( chan->outgoingSequence & ~(1<<31) ) | (send_reliable<<31);
-	w2 = ( chan->incomingSequence & ~(1<<31) ) | (chan->incomingReliableSequence<<31);
+	w1 = (chan->outgoingSequence & ~(1 << 31)) | (send_reliable << 31);
+	w2 = (chan->incomingSequence & ~(1 << 31)) | (chan->incomingReliableSequence << 31);
 
 	chan->outgoingSequence++;
 	chan->lastSent = curtime;
@@ -250,7 +254,9 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 	// send the qport if we are a client
 	if (chan->sock == NS_CLIENT)
+	{
 		send.WriteShort(qport->value);
+	}
 
 // copy the reliable message to the packet first
 	if (send_reliable)
@@ -258,31 +264,39 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 		send.WriteData(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentLength);
 		chan->lastReliableSequence = chan->outgoingSequence;
 	}
-	
+
 // add the unreliable part if space is available
 	if (send.maxsize - send.cursize >= length)
+	{
 		send.WriteData(data, length);
+	}
 	else
-		Com_Printf ("Netchan_Transmit: dumped unreliable\n");
+	{
+		Com_Printf("Netchan_Transmit: dumped unreliable\n");
+	}
 
 // send the datagram
-	NET_SendPacket (chan->sock, send.cursize, send._data, chan->remoteAddress);
+	NET_SendPacket(chan->sock, send.cursize, send._data, chan->remoteAddress);
 
 	if (showpackets->value)
 	{
 		if (send_reliable)
-			Com_Printf ("send %4i : s=%i reliable=%i ack=%i rack=%i\n"
-				, send.cursize
-				, chan->outgoingSequence - 1
-				, chan->outgoingReliableSequence
-				, chan->incomingSequence
-				, chan->incomingReliableSequence);
+		{
+			Com_Printf("send %4i : s=%i reliable=%i ack=%i rack=%i\n",
+				send.cursize,
+				chan->outgoingSequence - 1,
+				chan->outgoingReliableSequence,
+				chan->incomingSequence,
+				chan->incomingReliableSequence);
+		}
 		else
-			Com_Printf ("send %4i : s=%i ack=%i rack=%i\n"
-				, send.cursize
-				, chan->outgoingSequence - 1
-				, chan->incomingSequence
-				, chan->incomingReliableSequence);
+		{
+			Com_Printf("send %4i : s=%i ack=%i rack=%i\n",
+				send.cursize,
+				chan->outgoingSequence - 1,
+				chan->incomingSequence,
+				chan->incomingReliableSequence);
+		}
 	}
 }
 
@@ -294,42 +308,48 @@ called when the current net_message is from remote_address
 modifies net_message so that it points to the packet payload
 =================
 */
-qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
+qboolean Netchan_Process(netchan_t* chan, QMsg* msg)
 {
-	int			sequence, sequence_ack;
-	int			reliable_ack, reliable_message;
-	int			qport;
+	int sequence, sequence_ack;
+	int reliable_ack, reliable_message;
+	int qport;
 
-// get sequence numbers		
+// get sequence numbers
 	msg->BeginReadingOOB();
 	sequence = msg->ReadLong();
 	sequence_ack = msg->ReadLong();
 
 	// read the qport if we are a server
 	if (chan->sock == NS_SERVER)
+	{
 		qport = msg->ReadShort();
+	}
 
 	reliable_message = (unsigned)sequence >> 31;
 	reliable_ack = (unsigned)sequence_ack >> 31;
 
-	sequence &= ~(1<<31);
-	sequence_ack &= ~(1<<31);	
+	sequence &= ~(1 << 31);
+	sequence_ack &= ~(1 << 31);
 
 	if (showpackets->value)
 	{
 		if (reliable_message)
-			Com_Printf ("recv %4i : s=%i reliable=%i ack=%i rack=%i\n"
-				, msg->cursize
-				, sequence
-				, chan->incomingReliableSequence ^ 1
-				, sequence_ack
-				, reliable_ack);
+		{
+			Com_Printf("recv %4i : s=%i reliable=%i ack=%i rack=%i\n",
+				msg->cursize,
+				sequence,
+				chan->incomingReliableSequence ^ 1,
+				sequence_ack,
+				reliable_ack);
+		}
 		else
-			Com_Printf ("recv %4i : s=%i ack=%i rack=%i\n"
-				, msg->cursize
-				, sequence
-				, sequence_ack
-				, reliable_ack);
+		{
+			Com_Printf("recv %4i : s=%i ack=%i rack=%i\n",
+				msg->cursize,
+				sequence,
+				sequence_ack,
+				reliable_ack);
+		}
 	}
 
 //
@@ -338,24 +358,28 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	if (sequence <= chan->incomingSequence)
 	{
 		if (showdrop->value)
-			Com_Printf ("%s:Out of order packet %i at %i\n"
-				, SOCK_AdrToString (chan->remoteAddress)
-				,  sequence
-				, chan->incomingSequence);
+		{
+			Com_Printf("%s:Out of order packet %i at %i\n",
+				SOCK_AdrToString(chan->remoteAddress),
+				sequence,
+				chan->incomingSequence);
+		}
 		return false;
 	}
 
 //
 // dropped packets don't keep the message from being used
 //
-	chan->dropped = sequence - (chan->incomingSequence+1);
+	chan->dropped = sequence - (chan->incomingSequence + 1);
 	if (chan->dropped > 0)
 	{
 		if (showdrop->value)
-			Com_Printf ("%s:Dropped %i packets at %i\n"
-			, SOCK_AdrToString (chan->remoteAddress)
-			, chan->dropped
-			, sequence);
+		{
+			Com_Printf("%s:Dropped %i packets at %i\n",
+				SOCK_AdrToString(chan->remoteAddress),
+				chan->dropped,
+				sequence);
+		}
 	}
 
 //
@@ -363,10 +387,12 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 // clear the buffer to make way for the next
 //
 	if (reliable_ack == chan->outgoingReliableSequence)
+	{
 		chan->reliableOrUnsentLength = 0;	// it has been received
-	
+
+	}
 //
-// if this message contains a reliable message, bump incoming_reliable_sequence 
+// if this message contains a reliable message, bump incoming_reliable_sequence
 //
 	chan->incomingSequence = sequence;
 	chan->incomingAcknowledged = sequence_ack;
@@ -392,36 +418,40 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 =============================================================================
 */
 
-#define	MAX_LOOPBACK	4
+#define MAX_LOOPBACK    4
 
 struct loopmsg_t
 {
-	byte	data[MAX_PACKETLEN];
-	int		datalen;
+	byte data[MAX_PACKETLEN];
+	int datalen;
 };
 
 struct loopback_t
 {
-	loopmsg_t	msgs[MAX_LOOPBACK];
-	int			get, send;
+	loopmsg_t msgs[MAX_LOOPBACK];
+	int get, send;
 };
 
-static loopback_t	loopbacks[2];
+static loopback_t loopbacks[2];
 
-static bool NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
+static bool NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
 {
-	int		i;
-	loopback_t	*loop;
+	int i;
+	loopback_t* loop;
 
 	loop = &loopbacks[sock];
 
 	if (loop->send - loop->get > MAX_LOOPBACK)
+	{
 		loop->get = loop->send - MAX_LOOPBACK;
+	}
 
 	if (loop->get >= loop->send)
+	{
 		return false;
+	}
 
-	i = loop->get & (MAX_LOOPBACK-1);
+	i = loop->get & (MAX_LOOPBACK - 1);
 	loop->get++;
 
 	Com_Memcpy(net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen);
@@ -432,14 +462,14 @@ static bool NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_mess
 
 }
 
-static void NET_SendLoopPacket(netsrc_t sock, int length, void *data, netadr_t to)
+static void NET_SendLoopPacket(netsrc_t sock, int length, void* data, netadr_t to)
 {
-	int		i;
-	loopback_t	*loop;
+	int i;
+	loopback_t* loop;
 
-	loop = &loopbacks[sock^1];
+	loop = &loopbacks[sock ^ 1];
 
-	i = loop->send & (MAX_LOOPBACK-1);
+	i = loop->send & (MAX_LOOPBACK - 1);
 	loop->send++;
 
 	Com_Memcpy(loop->msgs[i].data, data, length);
@@ -448,22 +478,26 @@ static void NET_SendLoopPacket(netsrc_t sock, int length, void *data, netadr_t t
 
 //=============================================================================
 
-int			ip_sockets[2];
+int ip_sockets[2];
 
 //=============================================================================
 
-qboolean NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
+qboolean NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
 {
-	int 	ret;
-	int		net_socket;
+	int ret;
+	int net_socket;
 
-	if (NET_GetLoopPacket (sock, net_from, net_message))
+	if (NET_GetLoopPacket(sock, net_from, net_message))
+	{
 		return true;
+	}
 
 	net_socket = ip_sockets[sock];
 
 	if (!net_socket)
+	{
 		return false;
+	}
 
 	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
 	if (ret == SOCKRECV_NO_DATA)
@@ -473,13 +507,15 @@ qboolean NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	if (ret == SOCKRECV_ERROR)
 	{
 		if (!com_dedicated->value)	// let dedicated servers continue after errors
+		{
 			Com_Error(ERR_DROP, "NET_GetPacket failed");
+		}
 		return false;
 	}
 
 	if (ret == net_message->maxsize)
 	{
-		Com_Printf ("Oversize packet from %s\n", SOCK_AdrToString (*net_from));
+		Com_Printf("Oversize packet from %s\n", SOCK_AdrToString(*net_from));
 		return false;
 	}
 
@@ -489,13 +525,13 @@ qboolean NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 
 //=============================================================================
 
-void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
+void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to)
 {
-	int		net_socket;
+	int net_socket;
 
-	if ( to.type == NA_LOOPBACK )
+	if (to.type == NA_LOOPBACK)
 	{
-		NET_SendLoopPacket (sock, length, data, to);
+		NET_SendLoopPacket(sock, length, data, to);
 		return;
 	}
 
@@ -503,16 +539,22 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	{
 		net_socket = ip_sockets[sock];
 		if (!net_socket)
+		{
 			return;
+		}
 	}
 	else if (to.type == NA_IP)
 	{
 		net_socket = ip_sockets[sock];
 		if (!net_socket)
+		{
 			return;
+		}
 	}
 	else
-		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
+	{
+		Com_Error(ERR_FATAL, "NET_SendPacket: bad address type");
+	}
 
 	int ret = SOCK_Send(net_socket, data, length, &to);
 	if (ret == SOCKSEND_ERROR)
@@ -526,7 +568,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 //=============================================================================
 
-static Cvar	*noudp;
+static Cvar* noudp;
 
 /*
 ====================
@@ -552,12 +594,16 @@ static void NET_OpenIP()
 		}
 		ip_sockets[NS_SERVER] = SOCK_Open(ip->string, port);
 		if (!ip_sockets[NS_SERVER] && dedicated)
-			Com_Error (ERR_FATAL, "Couldn't allocate dedicated server IP port");
+		{
+			Com_Error(ERR_FATAL, "Couldn't allocate dedicated server IP port");
+		}
 	}
 
 	// dedicated servers don't need client ports
 	if (dedicated)
+	{
 		return;
+	}
 
 	if (!ip_sockets[NS_CLIENT])
 	{
@@ -566,11 +612,15 @@ static void NET_OpenIP()
 		{
 			port = Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_INIT)->integer;
 			if (!port)
+			{
 				port = PORT_ANY;
+			}
 		}
 		ip_sockets[NS_CLIENT] = SOCK_Open(ip->string, port);
 		if (!ip_sockets[NS_CLIENT])
-			ip_sockets[NS_CLIENT] = SOCK_Open (ip->string, PORT_ANY);
+		{
+			ip_sockets[NS_CLIENT] = SOCK_Open(ip->string, PORT_ANY);
+		}
 	}
 }
 
@@ -581,19 +631,21 @@ NET_Config
 A single player game will only use the loopback code
 ====================
 */
-void	NET_Config (qboolean multiplayer)
+void    NET_Config(qboolean multiplayer)
 {
-	int		i;
-	static	qboolean	old_config;
+	int i;
+	static qboolean old_config;
 
 	if (old_config == multiplayer)
+	{
 		return;
+	}
 
 	old_config = multiplayer;
 
 	if (!multiplayer)
 	{	// shut down any existing sockets
-		for (i=0 ; i<2 ; i++)
+		for (i = 0; i < 2; i++)
 		{
 			if (ip_sockets[i])
 			{
@@ -605,7 +657,9 @@ void	NET_Config (qboolean multiplayer)
 	else
 	{	// open sockets
 		if (!noudp->value)
-			NET_OpenIP ();
+		{
+			NET_OpenIP();
+		}
 	}
 }
 
@@ -645,7 +699,7 @@ void NET_Sleep(int msec)
 {
 	if (!com_dedicated || !com_dedicated->value)
 	{
-		return; // we're not a server, just run full speed
+		return;	// we're not a server, just run full speed
 	}
 
 	SOCK_Sleep(ip_sockets[NS_SERVER], msec);

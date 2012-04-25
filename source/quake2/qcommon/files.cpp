@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -22,13 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // if a packfile directory differs from this, it is assumed to be hacked
 // Full version
-#define	PAK0_CHECKSUM	0x40e614e0
+#define PAK0_CHECKSUM   0x40e614e0
 // Demo
 //#define	PAK0_CHECKSUM	0xb2c6d7ea
 // OEM
 //#define	PAK0_CHECKSUM	0x78e135c
 
-Cvar	*fs_gamedirvar;
+Cvar* fs_gamedirvar;
 
 
 /*
@@ -38,7 +38,7 @@ FS_Gamedir
 Called to find where to write a file (demos, savegames, etc)
 ============
 */
-char *FS_Gamedir (void)
+char* FS_Gamedir(void)
 {
 	return fs_gamedir;
 }
@@ -48,18 +48,24 @@ char *FS_Gamedir (void)
 FS_ExecAutoexec
 =============
 */
-void FS_ExecAutoexec (void)
+void FS_ExecAutoexec(void)
 {
-	const char *dir;
+	const char* dir;
 	char name [MAX_QPATH];
 
 	dir = Cvar_VariableString("gamedir");
 	if (*dir)
-		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, dir); 
+	{
+		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, dir);
+	}
 	else
-		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, BASEDIRNAME); 
+	{
+		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, BASEDIRNAME);
+	}
 	if (Sys_FindFirst(name, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM))
-		Cbuf_AddText ("exec autoexec.cfg\n");
+	{
+		Cbuf_AddText("exec autoexec.cfg\n");
+	}
 	Sys_FindClose();
 }
 
@@ -71,12 +77,12 @@ FS_SetGamedir
 Sets the gamedir and path to a different directory.
 ================
 */
-void FS_SetGamedir (char *dir)
+void FS_SetGamedir(char* dir)
 {
-	if (strstr(dir, "..") || strstr(dir, "/")
-		|| strstr(dir, "\\") || strstr(dir, ":") )
+	if (strstr(dir, "..") || strstr(dir, "/") ||
+		strstr(dir, "\\") || strstr(dir, ":"))
 	{
-		Com_Printf ("Gamedir should be a single filename, not a path\n");
+		Com_Printf("Gamedir should be a single filename, not a path\n");
 		return;
 	}
 
@@ -89,9 +95,11 @@ void FS_SetGamedir (char *dir)
 	// flush all data, so it will be forced to reload
 	//
 	if (com_dedicated && !com_dedicated->value)
-		Cbuf_AddText ("vid_restart\nsnd_restart\n");
+	{
+		Cbuf_AddText("vid_restart\nsnd_restart\n");
+	}
 
-	String::Sprintf (fs_gamedir, sizeof(fs_gamedir), "%s", dir);
+	String::Sprintf(fs_gamedir, sizeof(fs_gamedir), "%s", dir);
 
 	if (!String::Cmp(dir,BASEDIRNAME) || (*dir == 0))
 	{
@@ -102,55 +110,63 @@ void FS_SetGamedir (char *dir)
 	{
 		Cvar_Set("gamedir", dir);
 		if (fs_cdpath->string[0])
-			FS_AddGameDirectory (fs_cdpath->string, dir, ADDPACKS_First10);
-		FS_AddGameDirectory (fs_basepath->string, dir, ADDPACKS_First10);
+		{
+			FS_AddGameDirectory(fs_cdpath->string, dir, ADDPACKS_First10);
+		}
+		FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_First10);
 		if (fs_homepath->string[0])
-			FS_AddGameDirectory (fs_homepath->string, dir, ADDPACKS_First10);
+		{
+			FS_AddGameDirectory(fs_homepath->string, dir, ADDPACKS_First10);
+		}
 	}
 }
 
 /*
 ** FS_ListFiles
 */
-char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
+char** FS_ListFiles(char* findname, int* numfiles, unsigned musthave, unsigned canthave)
 {
-	char *s;
+	char* s;
 	int nfiles = 0;
-	char **list = 0;
+	char** list = 0;
 
-	s = Sys_FindFirst( findname, musthave, canthave );
-	while ( s )
+	s = Sys_FindFirst(findname, musthave, canthave);
+	while (s)
 	{
-		if ( s[String::Length(s)-1] != '.' )
+		if (s[String::Length(s) - 1] != '.')
+		{
 			nfiles++;
-		s = Sys_FindNext( musthave, canthave );
+		}
+		s = Sys_FindNext(musthave, canthave);
 	}
-	Sys_FindClose ();
+	Sys_FindClose();
 
-	if ( !nfiles )
+	if (!nfiles)
+	{
 		return NULL;
+	}
 
-	nfiles++; // add space for a guard
+	nfiles++;	// add space for a guard
 	*numfiles = nfiles;
 
-	list = (char**)malloc( sizeof( char * ) * nfiles );
-	Com_Memset( list, 0, sizeof( char * ) * nfiles );
+	list = (char**)malloc(sizeof(char*) * nfiles);
+	Com_Memset(list, 0, sizeof(char*) * nfiles);
 
-	s = Sys_FindFirst( findname, musthave, canthave );
+	s = Sys_FindFirst(findname, musthave, canthave);
 	nfiles = 0;
-	while ( s )
+	while (s)
 	{
-		if ( s[String::Length(s)-1] != '.' )
+		if (s[String::Length(s) - 1] != '.')
 		{
-			list[nfiles] = strdup( s );
+			list[nfiles] = strdup(s);
 #ifdef _WIN32
-			String::ToLower( list[nfiles] );
+			String::ToLower(list[nfiles]);
 #endif
 			nfiles++;
 		}
-		s = Sys_FindNext( musthave, canthave );
+		s = Sys_FindNext(musthave, canthave);
 	}
-	Sys_FindClose ();
+	Sys_FindClose();
 
 	return list;
 }
@@ -161,7 +177,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 FS_InitFilesystem
 ================
 */
-void FS_InitFilesystem (void)
+void FS_InitFilesystem(void)
 {
 	FS_SharedStartup();
 
@@ -172,27 +188,33 @@ void FS_InitFilesystem (void)
 
 	//
 	// cddir <path>
-	// Logically concatenates the cddir after the basedir for 
+	// Logically concatenates the cddir after the basedir for
 	// allows the game to run from outside the data tree
 	//
 	if (fs_cdpath->string[0])
-		FS_AddGameDirectory (fs_cdpath->string, BASEDIRNAME, ADDPACKS_First10);
+	{
+		FS_AddGameDirectory(fs_cdpath->string, BASEDIRNAME, ADDPACKS_First10);
+	}
 
 	//
 	// start up with baseq2 by default
 	//
-	FS_AddGameDirectory (fs_basepath->string, BASEDIRNAME, ADDPACKS_First10);
+	FS_AddGameDirectory(fs_basepath->string, BASEDIRNAME, ADDPACKS_First10);
 	if (fs_homepath->string[0])
-		FS_AddGameDirectory (fs_homepath->string, BASEDIRNAME, ADDPACKS_First10);
+	{
+		FS_AddGameDirectory(fs_homepath->string, BASEDIRNAME, ADDPACKS_First10);
+	}
 
 	// any set gamedirs will be freed up to here
 	FS_SetSearchPathBase();
 
 	// check for game override
-	Cvar_Get("gamedir", "", CVAR_SERVERINFO|CVAR_INIT);
-	fs_gamedirvar = Cvar_Get("game", "", CVAR_LATCH|CVAR_SERVERINFO);
+	Cvar_Get("gamedir", "", CVAR_SERVERINFO | CVAR_INIT);
+	fs_gamedirvar = Cvar_Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
 	if (fs_gamedirvar->string[0])
-		FS_SetGamedir (fs_gamedirvar->string);
+	{
+		FS_SetGamedir(fs_gamedirvar->string);
+	}
 }
 
 

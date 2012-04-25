@@ -23,14 +23,14 @@
 
 #include "../../common/system_unix.h"
 
-Cvar *nostdout;
+Cvar* nostdout;
 
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
-	CL_Shutdown ();
-	Qcommon_Shutdown ();
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	CL_Shutdown();
+	Qcommon_Shutdown();
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	_exit(0);
 }
 
@@ -41,44 +41,46 @@ void Sys_Init(void)
 #endif
 }
 
-void Sys_Error (const char *error, ...)
-{ 
-    va_list     argptr;
-    char        string[1024];
+void Sys_Error(const char* error, ...)
+{
+	va_list argptr;
+	char string[1024];
 
 // change stdin to non blocking
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 
 	if (ttycon_on)
 	{
 		tty_Hide();
 	}
 
-    va_start (argptr,error);
-    Q_vsnprintf(string, 1024, error, argptr);
-    va_end (argptr);
+	va_start(argptr,error);
+	Q_vsnprintf(string, 1024, error, argptr);
+	va_end(argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
 	Sys_ConsoleInputShutdown();
-	CL_Shutdown ();
-	Qcommon_Shutdown ();
-	_exit (1);
+	CL_Shutdown();
+	Qcommon_Shutdown();
+	_exit(1);
 
-} 
+}
 
 /*****************************************************************************/
 
-static void *game_library;
+static void* game_library;
 
 /*
 =================
 Sys_UnloadGame
 =================
 */
-void Sys_UnloadGame (void)
+void Sys_UnloadGame(void)
 {
-	if (game_library) 
-		dlclose (game_library);
+	if (game_library)
+	{
+		dlclose(game_library);
+	}
 	game_library = NULL;
 }
 
@@ -89,16 +91,16 @@ Sys_GetGameAPI
 Loads the game dll
 =================
 */
-void *Sys_GetGameAPI (void *parms)
+void* Sys_GetGameAPI(void* parms)
 {
 #ifndef REF_HARD_LINKED
-	void	*(*GetGameAPI) (void *);
+	void*(*GetGameAPI)(void*);
 
-	char	name[MAX_OSPATH];
-	char	curpath[MAX_OSPATH];
-	char	*path;
+	char name[MAX_OSPATH];
+	char curpath[MAX_OSPATH];
+	char* path;
 #ifdef __sgi
-	const char *gamename = "gamemips.so";
+	const char* gamename = "gamemips.so";
 #else
 #error Unknown arch
 #endif
@@ -107,7 +109,9 @@ void *Sys_GetGameAPI (void *parms)
 	setegid(getgid());
 
 	if (game_library)
-		Com_Error (ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
+	{
+		Com_Error(ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
+	}
 
 	getcwd(curpath, sizeof(curpath));
 
@@ -117,35 +121,37 @@ void *Sys_GetGameAPI (void *parms)
 	path = NULL;
 	while (1)
 	{
-		path = FS_NextPath (path);
+		path = FS_NextPath(path);
 		if (!path)
+		{
 			return NULL;		// couldn't find one anywhere
-		sprintf (name, "%s/%s/%s", curpath, path, gamename);
-		Com_Printf ("Trying to load library (%s)\n",name);
-		game_library = dlopen (name, RTLD_NOW );
+		}
+		sprintf(name, "%s/%s/%s", curpath, path, gamename);
+		Com_Printf("Trying to load library (%s)\n",name);
+		game_library = dlopen(name, RTLD_NOW);
 		if (game_library)
 		{
-			Com_DPrintf ("LoadLibrary (%s)\n",name);
+			Com_DPrintf("LoadLibrary (%s)\n",name);
 			break;
 		}
 	}
 
-	GetGameAPI = (void *)dlsym (game_library, "GetGameAPI");
+	GetGameAPI = (void*)dlsym(game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
-		Sys_UnloadGame ();		
+		Sys_UnloadGame();
 		return NULL;
 	}
 
-	return GetGameAPI (parms);
+	return GetGameAPI(parms);
 #else
-	return (void *)GetGameAPI (parms);
+	return (void*)GetGameAPI(parms);
 #endif
 }
 
 /*****************************************************************************/
 
-void Sys_AppActivate (void)
+void Sys_AppActivate(void)
 {
 }
 
@@ -160,16 +166,16 @@ static void signal_handler(int sig)
 
 static void InitSig(void)
 {
-        struct sigaction sa;
+	struct sigaction sa;
 	sigaction(SIGINT, 0, &sa);
 	sa.sa_handler = signal_handler;
 	sigaction(SIGINT, &sa, 0);
 	sigaction(SIGTERM, &sa, 0);
 }
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
-	int 	time, oldtime, newtime;
+	int time, oldtime, newtime;
 
 	InitSig();
 
@@ -178,26 +184,29 @@ int main (int argc, char **argv)
 
 	Qcommon_Init(argc, argv);
 
-/* 	fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY); */
+/*  fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY); */
 
 	nostdout = Cvar_Get("nostdout", "0", 0);
-	if (!nostdout->value) {
-/* 		fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY); */
+	if (!nostdout->value)
+	{
+/*      fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY); */
 //		printf ("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
 	}
 
 	Sys_ConsoleInputInit();
 
-    oldtime = Sys_Milliseconds_ ();
-    while (1)
-    {
+	oldtime = Sys_Milliseconds_();
+	while (1)
+	{
 // find time spent rendering last frame
-		do {
-			newtime = Sys_Milliseconds_ ();
+		do
+		{
+			newtime = Sys_Milliseconds_();
 			time = newtime - oldtime;
-		} while (time < 1);
-		Qcommon_Frame (time);
+		}
+		while (time < 1);
+		Qcommon_Frame(time);
 		oldtime = newtime;
-    }
+	}
 
 }

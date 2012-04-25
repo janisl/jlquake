@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,19 +21,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "../../client/sound/local.h"
 
-sfx_t *S_RegisterSexedSound(int entnum, char *base)
+sfx_t* S_RegisterSexedSound(int entnum, char* base)
 {
-	int				n;
-	char			*p;
-	sfx_t*			sfx;
-	fileHandle_t	f;
-	char			model[MAX_QPATH];
-	char			sexedFilename[MAX_QPATH];
-	char			maleFilename[MAX_QPATH];
+	int n;
+	char* p;
+	sfx_t* sfx;
+	fileHandle_t f;
+	char model[MAX_QPATH];
+	char sexedFilename[MAX_QPATH];
+	char maleFilename[MAX_QPATH];
 
 	// determine what model the client is using
 	model[0] = 0;
-	q2entity_state_t *ent = &clq2_entities[entnum].current;
+	q2entity_state_t* ent = &clq2_entities[entnum].current;
 	n = Q2CS_PLAYERSKINS + ent->number - 1;
 	if (cl.q2_configstrings[n][0])
 	{
@@ -44,16 +44,20 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 			String::Cpy(model, p);
 			p = strchr(model, '/');
 			if (p)
+			{
 				*p = 0;
+			}
 		}
 	}
 	// if we can't figure it out, they're male
 	if (!model[0])
+	{
 		String::Cpy(model, "male");
+	}
 
 	// see if we already know of the model specific sound
-	String::Sprintf (sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base+1);
-	sfx = S_FindName (sexedFilename, false);
+	String::Sprintf(sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base + 1);
+	sfx = S_FindName(sexedFilename, false);
 
 	if (!sfx)
 	{
@@ -62,14 +66,14 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 		if (f)
 		{
 			// yes, close the file and register it
-			FS_FCloseFile (f);
-			sfx = s_knownSfx + S_RegisterSound (sexedFilename);
+			FS_FCloseFile(f);
+			sfx = s_knownSfx + S_RegisterSound(sexedFilename);
 		}
 		else
 		{
 			// no, revert to the male sound in the pak0.pak
-			String::Sprintf (maleFilename, sizeof(maleFilename), "player/%s/%s", "male", base+1);
-			sfx = S_AliasName (sexedFilename, maleFilename);
+			String::Sprintf(maleFilename, sizeof(maleFilename), "player/%s/%s", "male", base + 1);
+			sfx = S_AliasName(sexedFilename, maleFilename);
 		}
 	}
 

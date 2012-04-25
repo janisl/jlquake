@@ -1,1 +1,1 @@
-int glob_match(char *pattern, char *text);
+int glob_match(char* pattern, char* text);
