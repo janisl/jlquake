@@ -27,10 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern botlib_export_t* botlib_export;
 
-extern qboolean loadCamera(const char* name);
-extern void startCamera(int time);
-extern qboolean getCameraInfo(int time, vec3_t* origin, vec3_t* angles);
-
 /*
 ====================
 CL_GetGameState
@@ -842,17 +838,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
-/*
-    case CG_LOADCAMERA:
-        return loadCamera(VMA(1));
-
-    case CG_STARTCAMERA:
-        startCamera(args[1]);
-        return 0;
-
-    case CG_GETCAMERAINFO:
-        return getCameraInfo(args[1], VMA(2), VMA(3));
-*/
 	case CG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
 	case CG_R_INPVS:

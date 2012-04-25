@@ -36,6 +36,7 @@
 #include "game/dynamic_lights.h"
 #include "game/light_styles.h"
 #include "game/input.h"
+#include "splines/public.h"
 
 #define CSHIFT_CONTENTS 0
 #define CSHIFT_DAMAGE   1
