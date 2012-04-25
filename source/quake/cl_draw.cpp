@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -23,18 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-image_t*	draw_backtile;
+image_t* draw_backtile;
 
-image_t*	char_texture;
+image_t* char_texture;
 
-image_t*	conback;
+image_t* conback;
 
 /*
 ===============
 Draw_Init
 ===============
 */
-void Draw_Init (void)
+void Draw_Init(void)
 {
 	char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
 
@@ -55,13 +55,15 @@ It can be clipped to the top of the screen to allow the console to be
 smoothly scrolled off.
 ================
 */
-void Draw_Character (int x, int y, int num)
+void Draw_Character(int x, int y, int num)
 {
 	num &= 255;
 
 	if (num == 32)
+	{
 		return;		// space
 
+	}
 	UI_DrawChar(x, y, num, 8, 8, char_texture, 16, 16);
 }
 
@@ -70,11 +72,11 @@ void Draw_Character (int x, int y, int num)
 Draw_String
 ================
 */
-void Draw_String (int x, int y, const char *str)
+void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, *str);
+		Draw_Character(x, y, *str);
 		str++;
 		x += 8;
 	}
@@ -85,11 +87,11 @@ void Draw_String (int x, int y, const char *str)
 Draw_Alt_String
 ================
 */
-void Draw_Alt_String (int x, int y, char *str)
+void Draw_Alt_String(int x, int y, char* str)
 {
 	while (*str)
 	{
-		Draw_Character (x, y, (*str) | 0x80);
+		Draw_Character(x, y, (*str) | 0x80);
 		str++;
 		x += 8;
 	}
@@ -128,7 +130,7 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen (void)
+void Draw_FadeScreen(void)
 {
 	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 }

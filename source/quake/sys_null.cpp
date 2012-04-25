@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -22,32 +22,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "errno.h"
 
-void Sys_Error (const char *error, ...)
+void Sys_Error(const char* error, ...)
 {
-	va_list         argptr;
+	va_list argptr;
 
-	printf ("Sys_Error: ");   
-	va_start (argptr,error);
-	vprintf (error,argptr);
-	va_end (argptr);
-	printf ("\n");
+	printf("Sys_Error: ");
+	va_start(argptr,error);
+	vprintf(error,argptr);
+	va_end(argptr);
+	printf("\n");
 
-	exit (1);
+	exit(1);
 }
 
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
-	exit (0);
+	exit(0);
 }
 
 //=============================================================================
 
-void main (int argc, char **argv)
+void main(int argc, char** argv)
 {
-	static quakeparms_t    parms;
+	static quakeparms_t parms;
 
-	parms.memsize = 8*1024*1024;
-	parms.membase = malloc (parms.memsize);
+	parms.memsize = 8 * 1024 * 1024;
+	parms.membase = malloc(parms.memsize);
 	parms.basedir = ".";
 
 	COM_InitArgv2(argc, argv);
@@ -55,12 +55,10 @@ void main (int argc, char **argv)
 	parms.argc = c;
 	parms.argv = v;
 
-	printf ("Host_Init\n");
-	Host_Init (&parms);
+	printf("Host_Init\n");
+	Host_Init(&parms);
 	while (1)
 	{
-		Host_Frame (0.1);
+		Host_Frame(0.1);
 	}
 }
-
-

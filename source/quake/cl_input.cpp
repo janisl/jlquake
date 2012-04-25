@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -58,52 +58,56 @@ void CL_MouseEvent(int mx, int my)
 CL_SendMove
 ==============
 */
-static void CL_SendMove (q1usercmd_t *cmd, in_usercmd_t* inCmd)
+static void CL_SendMove(q1usercmd_t* cmd, in_usercmd_t* inCmd)
 {
-	int		i;
-	QMsg	buf;
-	byte	data[128];
-	
+	int i;
+	QMsg buf;
+	byte data[128];
+
 	buf.InitOOB(data, 128);
-	
+
 	cl.q1_cmd = *cmd;
 
 //
 // send the movement message
 //
-    buf.WriteByte(q1clc_move);
+	buf.WriteByte(q1clc_move);
 
 	buf.WriteFloat(cl.qh_mtime[0]);	// so server can get ping times
 
-	for (i=0 ; i<3 ; i++)
+	for (i = 0; i < 3; i++)
 		buf.WriteAngle(cl.viewangles[i]);
-	
-    buf.WriteShort(cmd->forwardmove);
-    buf.WriteShort(cmd->sidemove);
-    buf.WriteShort(cmd->upmove);
 
-    buf.WriteByte(inCmd->buttons);
+	buf.WriteShort(cmd->forwardmove);
+	buf.WriteShort(cmd->sidemove);
+	buf.WriteShort(cmd->upmove);
 
-    buf.WriteByte(in_impulse);
+	buf.WriteByte(inCmd->buttons);
+
+	buf.WriteByte(in_impulse);
 	in_impulse = 0;
 
 //
 // deliver the message
 //
 	if (clc.demoplaying)
+	{
 		return;
+	}
 
 //
 // allways dump the first two message, because it may contain leftover inputs
 // from the last level
 //
 	if (++cl.qh_movemessages <= 2)
-		return;
-	
-	if (NET_SendUnreliableMessage (cls.qh_netcon, &clc.netchan, &buf) == -1)
 	{
-		Con_Printf ("CL_SendMove: lost server connection\n");
-		CL_Disconnect ();
+		return;
+	}
+
+	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
+	{
+		Con_Printf("CL_SendMove: lost server connection\n");
+		CL_Disconnect();
 	}
 }
 
@@ -112,7 +116,7 @@ static void CL_SendMove (q1usercmd_t *cmd, in_usercmd_t* inCmd)
 CL_InitInput
 ============
 */
-void CL_InitInput (void)
+void CL_InitInput(void)
 {
 	CL_InitInputCommon();
 }
@@ -123,31 +127,33 @@ void CL_InitInput (void)
 CL_SendCmd
 =================
 */
-void CL_SendCmd (void)
+void CL_SendCmd(void)
 {
-	q1usercmd_t		cmd;
+	q1usercmd_t cmd;
 
 	if (cls.state != CA_CONNECTED)
+	{
 		return;
+	}
 
 	if (clc.qh_signon == SIGNONS)
 	{
 		// get basic movement from keyboard
-		// grab frame time 
+		// grab frame time
 		com_frameTime = Sys_Milliseconds();
 
 		frame_msec = (unsigned)(host_frametime * 1000);
 
 		Com_Memset(&cmd, 0, sizeof(cmd));
-		
+
 		in_usercmd_t inCmd = CL_CreateCmdCommon();
 		cmd.forwardmove = inCmd.forwardmove;
 		cmd.sidemove = inCmd.sidemove;
 		cmd.upmove = inCmd.upmove;
-	
-	// send the unreliable message
-		CL_SendMove (&cmd, &inCmd);
-	
+
+		// send the unreliable message
+		CL_SendMove(&cmd, &inCmd);
+
 	}
 
 	if (clc.demoplaying)
@@ -155,19 +161,23 @@ void CL_SendCmd (void)
 		clc.netchan.message.Clear();
 		return;
 	}
-	
+
 // send the reliable message
 	if (!clc.netchan.message.cursize)
-		return;		// no message at all
-	
-	if (!NET_CanSendMessage (cls.qh_netcon, &clc.netchan))
 	{
-		Con_DPrintf ("CL_WriteToServer: can't send\n");
+		return;		// no message at all
+
+	}
+	if (!NET_CanSendMessage(cls.qh_netcon, &clc.netchan))
+	{
+		Con_DPrintf("CL_WriteToServer: can't send\n");
 		return;
 	}
 
-	if (NET_SendMessage (cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
-		Host_Error ("CL_WriteToServer: lost server connection");
+	if (NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
+	{
+		Host_Error("CL_WriteToServer: lost server connection");
+	}
 
 	clc.netchan.message.Clear();
 }

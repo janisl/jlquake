@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,17 +27,17 @@ R_ParseParticleEffect
 Parse an effect out of the server message
 ===============
 */
-void R_ParseParticleEffect (void)
+void R_ParseParticleEffect(void)
 {
-	vec3_t		org, dir;
-	int			i, count, color;
-	
-	for (i=0 ; i<3 ; i++)
+	vec3_t org, dir;
+	int i, count, color;
+
+	for (i = 0; i < 3; i++)
 		org[i] = net_message.ReadCoord();
-	for (i=0 ; i<3 ; i++)
-		dir[i] = net_message.ReadChar () * (1.0/16);
-	count = net_message.ReadByte ();
-	color = net_message.ReadByte ();
+	for (i = 0; i < 3; i++)
+		dir[i] = net_message.ReadChar() * (1.0 / 16);
+	count = net_message.ReadByte();
+	color = net_message.ReadByte();
 
 	if (count == 255)
 	{
@@ -46,6 +46,6 @@ void R_ParseParticleEffect (void)
 	}
 	else
 	{
-		CLQ1_RunParticleEffect (org, dir, color, count);
+		CLQ1_RunParticleEffect(org, dir, color, count);
 	}
 }

@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -20,20 +20,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // net.h -- quake's interface to the networking layer
 
 
-#define NET_HEADERSIZE		(2 * sizeof(unsigned int))
-#define NET_DATAGRAMSIZE	(MAX_DATAGRAM_Q1 + NET_HEADERSIZE)
+#define NET_HEADERSIZE      (2 * sizeof(unsigned int))
+#define NET_DATAGRAMSIZE    (MAX_DATAGRAM_Q1 + NET_HEADERSIZE)
 
 // NetHeader flags
-#define NETFLAG_LENGTH_MASK	0x0000ffff
-#define NETFLAG_DATA		0x00010000
-#define NETFLAG_ACK			0x00020000
-#define NETFLAG_NAK			0x00040000
-#define NETFLAG_EOM			0x00080000
-#define NETFLAG_UNRELIABLE	0x00100000
-#define NETFLAG_CTL			0x80000000
+#define NETFLAG_LENGTH_MASK 0x0000ffff
+#define NETFLAG_DATA        0x00010000
+#define NETFLAG_ACK         0x00020000
+#define NETFLAG_NAK         0x00040000
+#define NETFLAG_EOM         0x00080000
+#define NETFLAG_UNRELIABLE  0x00100000
+#define NETFLAG_CTL         0x80000000
 
 
-#define NET_PROTOCOL_VERSION	3
+#define NET_PROTOCOL_VERSION    3
 
 // This is the network info/connection protocol.  It is used to find Quake
 // servers, get info about them, and connect to them.  Once connected, the
@@ -96,73 +96,73 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //		a full address and port in a string.  It is used for returning the
 //		address of a server that is not running locally.
 
-#define CCREQ_CONNECT		0x01
-#define CCREQ_SERVER_INFO	0x02
-#define CCREQ_PLAYER_INFO	0x03
-#define CCREQ_RULE_INFO		0x04
+#define CCREQ_CONNECT       0x01
+#define CCREQ_SERVER_INFO   0x02
+#define CCREQ_PLAYER_INFO   0x03
+#define CCREQ_RULE_INFO     0x04
 
-#define CCREP_ACCEPT		0x81
-#define CCREP_REJECT		0x82
-#define CCREP_SERVER_INFO	0x83
-#define CCREP_PLAYER_INFO	0x84
-#define CCREP_RULE_INFO		0x85
+#define CCREP_ACCEPT        0x81
+#define CCREP_REJECT        0x82
+#define CCREP_SERVER_INFO   0x83
+#define CCREP_PLAYER_INFO   0x84
+#define CCREP_RULE_INFO     0x85
 
-extern qsocket_t	*net_activeSockets;
-extern qsocket_t	*net_freeSockets;
-extern int			net_numsockets;
+extern qsocket_t* net_activeSockets;
+extern qsocket_t* net_freeSockets;
+extern int net_numsockets;
 
-#define	MAX_NET_DRIVERS		8
+#define MAX_NET_DRIVERS     8
 
 typedef struct
 {
-	const char	*name;
-	qboolean	initialized;
-	int			(*Init) (void);
-	void		(*Listen) (qboolean state);
-	void		(*SearchForHosts) (qboolean xmit);
-	qsocket_t	*(*Connect) (const char *host, netchan_t* chan);
-	qsocket_t 	*(*CheckNewConnections) (netadr_t* outaddr);
-	int			(*QGetMessage) (qsocket_t *sock, netchan_t* chan);
-	int			(*QSendMessage) (qsocket_t *sock, netchan_t* chan, QMsg *data);
-	int			(*SendUnreliableMessage) (qsocket_t *sock, netchan_t* chan, QMsg *data);
-	qboolean	(*CanSendMessage) (qsocket_t *sock, netchan_t* chan);
-	qboolean	(*CanSendUnreliableMessage) (qsocket_t *sock);
-	void		(*Close) (qsocket_t *sock, netchan_t* chan);
-	void		(*Shutdown) (void);
-	int			controlSock;
+	const char* name;
+	qboolean initialized;
+	int (* Init)(void);
+	void (* Listen)(qboolean state);
+	void (* SearchForHosts)(qboolean xmit);
+	qsocket_t*(*Connect)(const char* host, netchan_t * chan);
+	qsocket_t*(*CheckNewConnections)(netadr_t * outaddr);
+	int (* QGetMessage)(qsocket_t* sock, netchan_t* chan);
+	int (* QSendMessage)(qsocket_t* sock, netchan_t* chan, QMsg* data);
+	int (* SendUnreliableMessage)(qsocket_t* sock, netchan_t* chan, QMsg* data);
+	qboolean (* CanSendMessage)(qsocket_t* sock, netchan_t* chan);
+	qboolean (* CanSendUnreliableMessage)(qsocket_t* sock);
+	void (* Close)(qsocket_t* sock, netchan_t* chan);
+	void (* Shutdown)(void);
+	int controlSock;
 } net_driver_t;
 
-extern int			net_numdrivers;
-extern net_driver_t	net_drivers[MAX_NET_DRIVERS];
+extern int net_numdrivers;
+extern net_driver_t net_drivers[MAX_NET_DRIVERS];
 
-extern int			DEFAULTnet_hostport;
-extern int			net_hostport;
+extern int DEFAULTnet_hostport;
+extern int net_hostport;
 
 extern int net_driverlevel;
-extern Cvar*		hostname;
-extern char			playername[];
-extern int			playercolor;
+extern Cvar* hostname;
+extern char playername[];
+extern int playercolor;
 
-extern int		messagesSent;
-extern int		messagesReceived;
-extern int		unreliableMessagesSent;
-extern int		unreliableMessagesReceived;
+extern int messagesSent;
+extern int messagesReceived;
+extern int unreliableMessagesSent;
+extern int unreliableMessagesReceived;
 
-qsocket_t *NET_NewQSocket (void);
-void NET_FreeQSocket(qsocket_t *);
+qsocket_t* NET_NewQSocket(void);
+void NET_FreeQSocket(qsocket_t*);
 double SetNetTime(void);
 
 
-#define HOSTCACHESIZE	8
+#define HOSTCACHESIZE   8
 
 typedef struct
 {
-	char	name[16];
-	char	map[16];
-	char	cname[32];
-	int		users;
-	int		maxusers;
-	int		driver;
+	char name[16];
+	char map[16];
+	char cname[32];
+	int users;
+	int maxusers;
+	int driver;
 	netadr_t addr;
 } hostcache_t;
 
@@ -179,42 +179,42 @@ qboolean IsID(netadr_t* addr);
 //
 //============================================================================
 
-extern	double		net_time;
-extern	QMsg		net_message;
-extern	int			net_activeconnections;
+extern double net_time;
+extern QMsg net_message;
+extern int net_activeconnections;
 
-void		NET_Init (void);
-void		NET_Shutdown (void);
+void        NET_Init(void);
+void        NET_Shutdown(void);
 
-qsocket_t* NET_CheckNewConnections (netadr_t* outaddr);
+qsocket_t* NET_CheckNewConnections(netadr_t* outaddr);
 // returns a new connection number if there is one pending, else -1
 
-qsocket_t* NET_Connect (const char *host, netchan_t* chan);
+qsocket_t* NET_Connect(const char* host, netchan_t* chan);
 // called by client to connect to a host.  Returns -1 if not able to
 
-qboolean NET_CanSendMessage (qsocket_t *sock, netchan_t* chan);
+qboolean NET_CanSendMessage(qsocket_t* sock, netchan_t* chan);
 // Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
 
-int			NET_GetMessage (qsocket_t* sock, netchan_t* chan);
+int         NET_GetMessage(qsocket_t* sock, netchan_t* chan);
 // returns data in net_message sizebuf
 // returns 0 if no data is waiting
 // returns 1 if a message was received
 // returns 2 if an unreliable message was received
 // returns -1 if the connection died
 
-int			NET_SendMessage (qsocket_t* sock, netchan_t* chan, QMsg *data);
-int			NET_SendUnreliableMessage (qsocket_t* sock, netchan_t* chan, QMsg *data);
+int         NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int         NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
 // returns 0 if the message connot be delivered reliably, but the connection
 //		is still considered valid
 // returns 1 if the message was sent properly
 // returns -1 if the connection died
 
-int			NET_SendToAll(QMsg *data, int blocktime);
+int         NET_SendToAll(QMsg* data, int blocktime);
 // This is a reliable *blocking* send to all attached clients.
 
 
-void		NET_Close (qsocket_t* sock, netchan_t* chan);
+void        NET_Close(qsocket_t* sock, netchan_t* chan);
 // if a dead connection is returned by a get or send function, this function
 // should be called when it is convenient
 
@@ -228,18 +228,18 @@ void NET_Poll(void);
 
 typedef struct _PollProcedure
 {
-	struct _PollProcedure	*next;
-	double					nextTime;
-	void					(*procedure)();
-	void					*arg;
+	struct _PollProcedure* next;
+	double nextTime;
+	void (* procedure)();
+	void* arg;
 } PollProcedure;
 
-void SchedulePollProcedure(PollProcedure *pp, double timeOffset);
+void SchedulePollProcedure(PollProcedure* pp, double timeOffset);
 
-extern	qboolean	tcpipAvailable;
+extern qboolean tcpipAvailable;
 
-extern	qboolean	slistInProgress;
-extern	qboolean	slistSilent;
-extern	qboolean	slistLocal;
+extern qboolean slistInProgress;
+extern qboolean slistSilent;
+extern qboolean slistLocal;
 
-void NET_Slist_f (void);
+void NET_Slist_f(void);

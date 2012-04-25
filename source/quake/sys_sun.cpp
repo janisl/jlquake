@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -34,32 +34,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/mman.h>
 #include <stdio.h>
 
-qboolean			isDedicated;
+qboolean isDedicated;
 
-void Sys_Error (const char *error, ...)
+void Sys_Error(const char* error, ...)
 {
-    va_list         argptr;
+	va_list argptr;
 
 	if (ttycon_on)
 	{
 		tty_Hide();
 	}
 
-    printf ("Sys_Error: ");   
-    va_start (argptr,error);
-    vprintf (error,argptr);
-    va_end (argptr);
-    printf ("\n");
+	printf("Sys_Error: ");
+	va_start(argptr,error);
+	vprintf(error,argptr);
+	va_end(argptr);
+	printf("\n");
 	Sys_ConsoleInputShutdown();
-    Host_Shutdown();
-    exit (1);
+	Host_Shutdown();
+	exit(1);
 }
 
-void Sys_Quit (void)
+void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
-    Host_Shutdown();
-    exit (0);
+	Host_Shutdown();
+	exit(0);
 }
 
 void Sys_Init(void)
@@ -68,41 +68,37 @@ void Sys_Init(void)
 
 //=============================================================================
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
-    static quakeparms_t    parms;
-    float time, oldtime, newtime;
-    
-    parms.memsize = 16*1024*1024;
-    parms.membase = malloc (parms.memsize);
-    parms.basedir = ".";
+	static quakeparms_t parms;
+	float time, oldtime, newtime;
 
-    COM_InitArgv2(argc, argv);
+	parms.memsize = 16 * 1024 * 1024;
+	parms.membase = malloc(parms.memsize);
+	parms.basedir = ".";
 
-    parms.argc = c;
-    parms.argv = v;
+	COM_InitArgv2(argc, argv);
 
-    printf ("Host_Init\n");
-    Host_Init (&parms);
+	parms.argc = c;
+	parms.argv = v;
+
+	printf("Host_Init\n");
+	Host_Init(&parms);
 
 	Sys_Init();
 
-    // unroll the simulation loop to give the video side a chance to see _vid_default_mode
-    Host_Frame( 0.1 );
-    VID_SetDefaultMode();
+	// unroll the simulation loop to give the video side a chance to see _vid_default_mode
+	Host_Frame(0.1);
+	VID_SetDefaultMode();
 
 	Sys_ConsoleInputInit();
 
-    oldtime = Sys_DoubleTime();
-    while (1)
-    {
+	oldtime = Sys_DoubleTime();
+	while (1)
+	{
 		newtime = Sys_DoubleTime();
-		Host_Frame (newtime - oldtime);
+		Host_Frame(newtime - oldtime);
 		oldtime = newtime;
-    }
+	}
 	return 0;
 }
-
-
-
-

@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -20,15 +20,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // net_dgrm.h
 
 
-int			Datagram_Init (void);
-void		Datagram_Listen (qboolean state);
-void		Datagram_SearchForHosts (qboolean xmit);
-qsocket_t	*Datagram_Connect (const char *host, netchan_t* chan);
-qsocket_t 	*Datagram_CheckNewConnections (netadr_t* outaddr);
-int			Datagram_GetMessage (qsocket_t *sock, netchan_t* chan);
-int			Datagram_SendMessage (qsocket_t *sock, netchan_t* chan, QMsg *data);
-int			Datagram_SendUnreliableMessage (qsocket_t *sock, netchan_t* chan, QMsg *data);
-qboolean	Datagram_CanSendMessage (qsocket_t *sock, netchan_t* chan);
-qboolean	Datagram_CanSendUnreliableMessage (qsocket_t *sock);
-void		Datagram_Close (qsocket_t *sock, netchan_t* chan);
-void		Datagram_Shutdown (void);
+int         Datagram_Init(void);
+void        Datagram_Listen(qboolean state);
+void        Datagram_SearchForHosts(qboolean xmit);
+qsocket_t* Datagram_Connect(const char* host, netchan_t* chan);
+qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr);
+int         Datagram_GetMessage(qsocket_t* sock, netchan_t* chan);
+int         Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int         Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+qboolean    Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan);
+qboolean    Datagram_CanSendUnreliableMessage(qsocket_t* sock);
+void        Datagram_Close(qsocket_t* sock, netchan_t* chan);
+void        Datagram_Shutdown(void);
