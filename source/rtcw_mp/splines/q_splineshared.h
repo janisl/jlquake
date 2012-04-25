@@ -88,9 +88,6 @@ MATHLIB
 #define Q_PI    3.14159265358979323846
 
 #include "math_vector.h"
-#include "math_angles.h"
-#include "math_matrix.h"
-#include "math_quaternion.h"
 
 /*
 =====================================================================================

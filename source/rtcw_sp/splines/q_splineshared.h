@@ -88,9 +88,6 @@ MATHLIB
 ==============================================================
 */
 #include "math_vector.h"
-#include "math_angles.h"
-#include "math_matrix.h"
-#include "math_quaternion.h"
 
 typedef idVec3&vec3_p;				// for passing vectors as function arguments
 

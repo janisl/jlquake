@@ -39,8 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning(disable : 4710)	// function 'blah' not inlined
 #endif
 
-void TestStringClass();
-
 class strdata
 {
 public:

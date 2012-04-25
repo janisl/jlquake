@@ -17,9 +17,6 @@
 add_subdirectory(botlib)
 
 add_library(splines-et STATIC
-	splines/math_angles.cpp
-	splines/math_matrix.cpp
-	splines/math_quaternion.cpp
 	splines/math_vector.cpp
 	splines/q_parse.cpp
 	splines/splines.cpp

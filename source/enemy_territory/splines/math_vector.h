@@ -50,7 +50,6 @@ float Q_fabs(float f);
 #endif
 #endif
 
-class angles_t;
 #ifdef __ppc__
 // Vanilla PPC code, but since PPC has a reciprocal square root estimate instruction,
 // runs *much* faster than calling sqrt(). We'll use two Newton-Raphson
@@ -144,7 +143,6 @@ public:
 
 	float           toYaw(void);
 	float           toPitch(void);
-	angles_t        toAngles(void);
 	friend idVec3   LerpVector(const idVec3&w1, const idVec3&w2, const float t);
 
 	char* string(void);
