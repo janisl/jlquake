@@ -19,7 +19,6 @@ add_subdirectory(botlib)
 add_library(splines-et STATIC
 	splines/q_parse.cpp
 	splines/splines.cpp
-	splines/util_str.cpp
 )
 
 set (ET_FILES

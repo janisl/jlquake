@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #define __SPLINES_H
 
 #include "../../client/splines/util_list.h"
-#include "util_str.h"
+#include "../../client/splines/util_str.h"
 #include "../../client/splines/math_vector.h"
 
 typedef int fileHandle_t;
