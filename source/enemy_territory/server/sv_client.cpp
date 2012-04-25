@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-static void SV_CloseDownload( client_t *cl );
+static void SV_CloseDownload(client_t* cl);
 
 /*
 =================
@@ -50,19 +50,22 @@ When an authorizeip is returned, a challenge response will be
 sent to that ip.
 =================
 */
-void SV_GetChallenge( netadr_t from ) {
+void SV_GetChallenge(netadr_t from)
+{
 	int i;
 	int oldest;
 	int oldestTime;
-	challenge_t *challenge;
+	challenge_t* challenge;
 
 	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() ) {
+	if (SV_GameIsSinglePlayer())
+	{
 		return;
 	}
 
-	if ( SV_TempBanIsBanned( from ) ) {
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string );
+	if (SV_TempBanIsBanned(from))
+	{
+		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string);
 		return;
 	}
 
@@ -71,21 +74,25 @@ void SV_GetChallenge( netadr_t from ) {
 
 	// see if we already have a challenge for this ip
 	challenge = &svs.challenges[0];
-	for ( i = 0 ; i < MAX_CHALLENGES ; i++, challenge++ ) {
-		if ( !challenge->connected && SOCK_CompareAdr( from, challenge->adr ) ) {
+	for (i = 0; i < MAX_CHALLENGES; i++, challenge++)
+	{
+		if (!challenge->connected && SOCK_CompareAdr(from, challenge->adr))
+		{
 			break;
 		}
-		if ( challenge->time < oldestTime ) {
+		if (challenge->time < oldestTime)
+		{
 			oldestTime = challenge->time;
 			oldest = i;
 		}
 	}
 
-	if ( i == MAX_CHALLENGES ) {
+	if (i == MAX_CHALLENGES)
+	{
 		// this is the first time this client has asked for a challenge
 		challenge = &svs.challenges[oldest];
 
-		challenge->challenge = ( ( rand() << 16 ) ^ rand() ) ^ svs.time;
+		challenge->challenge = ((rand() << 16) ^ rand()) ^ svs.time;
 		challenge->adr = from;
 		challenge->firstTime = svs.time;
 		challenge->firstPing = 0;
@@ -94,73 +101,86 @@ void SV_GetChallenge( netadr_t from ) {
 		i = oldest;
 	}
 
-#if !defined( AUTHORIZE_SUPPORT )
+#if !defined(AUTHORIZE_SUPPORT)
 	// FIXME: deal with restricted filesystem
-	if ( 1 ) {
+	if (1)
+	{
 #else
 	// if they are on a lan address, send the challengeResponse immediately
-	if ( SOCK_IsLANAddress( from ) ) {
+	if (SOCK_IsLANAddress(from))
+	{
 #endif
 		challenge->pingTime = svs.time;
-		if ( sv_onlyVisibleClients->integer ) {
-			NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer );
-		} else {
-			NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
+		if (sv_onlyVisibleClients->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "challengeResponse %i", challenge->challenge);
 		}
 		return;
 	}
 
 #ifdef AUTHORIZE_SUPPORT
 	// look up the authorize server's IP
-	if ( !svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD ) {
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
-		if ( !SOCK_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE ) ) {
-			Com_Printf( "Couldn't resolve address\n" );
+	if (!svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD)
+	{
+		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE))
+		{
+			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-					svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-					svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-					BigShort( svs.authorizeAddress.port ) );
+		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
+			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
+			BigShort(svs.authorizeAddress.port));
 	}
 
 	// if they have been challenging for a long time and we
 	// haven't heard anything from the authoirze server, go ahead and
 	// let them in, assuming the id server is down
-	if ( svs.time - challenge->firstTime > AUTHORIZE_TIMEOUT ) {
-		Com_DPrintf( "authorize server timed out\n" );
+	if (svs.time - challenge->firstTime > AUTHORIZE_TIMEOUT)
+	{
+		Com_DPrintf("authorize server timed out\n");
 
 		challenge->pingTime = svs.time;
-		if ( sv_onlyVisibleClients->integer ) {
-			NET_OutOfBandPrint( NS_SERVER, challenge->adr,
-								"challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer );
-		} else {
-			NET_OutOfBandPrint( NS_SERVER, challenge->adr,
-								"challengeResponse %i", challenge->challenge );
+		if (sv_onlyVisibleClients->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, challenge->adr,
+				"challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, challenge->adr,
+				"challengeResponse %i", challenge->challenge);
 		}
 
 		return;
 	}
 
 	// otherwise send their ip to the authorize server
-	if ( svs.authorizeAddress.type != NA_BAD ) {
-		Cvar  *fs;
+	if (svs.authorizeAddress.type != NA_BAD)
+	{
+		Cvar* fs;
 		char game[1024];
 
 		game[0] = 0;
-		fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-		if ( fs && fs->string[0] != 0 ) {
-			String::Cpy( game, fs->string );
+		fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
+		if (fs && fs->string[0] != 0)
+		{
+			String::Cpy(game, fs->string);
 		}
-		Com_DPrintf( "sending getIpAuthorize for %s\n", SOCK_AdrToString( from ) );
-		fs = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
+		Com_DPrintf("sending getIpAuthorize for %s\n", SOCK_AdrToString(from));
+		fs = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
 
 		// NERVE - SMF - fixed parsing on sv_allowAnonymous
-		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
-							"getIpAuthorize %i %i.%i.%i.%i %s %i",  svs.challenges[i].challenge,
-							from.ip[0], from.ip[1], from.ip[2], from.ip[3], game, fs->integer );
+		NET_OutOfBandPrint(NS_SERVER, svs.authorizeAddress,
+			"getIpAuthorize %i %i.%i.%i.%i %s %i",  svs.challenges[i].challenge,
+			from.ip[0], from.ip[1], from.ip[2], from.ip[3], game, fs->integer);
 	}
-#endif // AUTHORIZE_SUPPORT
+#endif	// AUTHORIZE_SUPPORT
 }
 
 #ifdef AUTHORIZE_SUPPORT
@@ -173,82 +193,100 @@ If we have a challenge adr for that ip, send the
 challengeResponse to it
 ====================
 */
-void SV_AuthorizeIpPacket( netadr_t from ) {
+void SV_AuthorizeIpPacket(netadr_t from)
+{
 	int challenge;
 	int i;
-	char    *s;
-	char    *r;
+	char* s;
+	char* r;
 	char ret[1024];
 
-	if ( !SOCK_CompareBaseAdr( from, svs.authorizeAddress ) ) {
-		Com_Printf( "SV_AuthorizeIpPacket: not from authorize server\n" );
+	if (!SOCK_CompareBaseAdr(from, svs.authorizeAddress))
+	{
+		Com_Printf("SV_AuthorizeIpPacket: not from authorize server\n");
 		return;
 	}
 
-	challenge = String::Atoi( Cmd_Argv( 1 ) );
+	challenge = String::Atoi(Cmd_Argv(1));
 
-	for ( i = 0 ; i < MAX_CHALLENGES ; i++ ) {
-		if ( svs.challenges[i].challenge == challenge ) {
+	for (i = 0; i < MAX_CHALLENGES; i++)
+	{
+		if (svs.challenges[i].challenge == challenge)
+		{
 			break;
 		}
 	}
-	if ( i == MAX_CHALLENGES ) {
-		Com_Printf( "SV_AuthorizeIpPacket: challenge not found\n" );
+	if (i == MAX_CHALLENGES)
+	{
+		Com_Printf("SV_AuthorizeIpPacket: challenge not found\n");
 		return;
 	}
 
 	// send a packet back to the original client
 	svs.challenges[i].pingTime = svs.time;
-	s = Cmd_Argv( 2 );
-	r = Cmd_Argv( 3 );          // reason
+	s = Cmd_Argv(2);
+	r = Cmd_Argv(3);			// reason
 
-	if ( !String::ICmp( s, "ettest" ) ) {
-		if ( Cvar_VariableValue( "fs_restrict" ) ) {
+	if (!String::ICmp(s, "ettest"))
+	{
+		if (Cvar_VariableValue("fs_restrict"))
+		{
 			// a demo client connecting to a demo server
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
-								"challengeResponse %i", svs.challenges[i].challenge );
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr,
+				"challengeResponse %i", svs.challenges[i].challenge);
 			return;
 		}
 		// they are a demo client trying to connect to a real server
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nServer is not a demo server\n" );
+		NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\nServer is not a demo server\n");
 		// clear the challenge record so it won't timeout and let them through
-		memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
+		memset(&svs.challenges[i], 0, sizeof(svs.challenges[i]));
 		return;
 	}
-	if ( !String::ICmp( s, "accept" ) ) {
-		if ( sv_onlyVisibleClients->integer ) {
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
-								"challengeResponse %i %i", svs.challenges[i].challenge, sv_onlyVisibleClients->integer );
-		} else {
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr,
-								"challengeResponse %i", svs.challenges[i].challenge );
+	if (!String::ICmp(s, "accept"))
+	{
+		if (sv_onlyVisibleClients->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr,
+				"challengeResponse %i %i", svs.challenges[i].challenge, sv_onlyVisibleClients->integer);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr,
+				"challengeResponse %i", svs.challenges[i].challenge);
 		}
 		return;
 	}
-	if ( !String::ICmp( s, "unknown" ) ) {
-		if ( !r ) {
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n" );
-		} else {
-			sprintf( ret, "print\n%s\n", r );
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, ret );
+	if (!String::ICmp(s, "unknown"))
+	{
+		if (!r)
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n");
+		}
+		else
+		{
+			sprintf(ret, "print\n%s\n", r);
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, ret);
 		}
 		// clear the challenge record so it won't timeout and let them through
-		memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
+		memset(&svs.challenges[i], 0, sizeof(svs.challenges[i]));
 		return;
 	}
 
 	// authorization failed
-	if ( !r ) {
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nSomeone is using this CD Key\n" );
-	} else {
-		sprintf( ret, "print\n%s\n", r );
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, ret );
+	if (!r)
+	{
+		NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\nSomeone is using this CD Key\n");
+	}
+	else
+	{
+		sprintf(ret, "print\n%s\n", r);
+		NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, ret);
 	}
 
 	// clear the challenge record so it won't timeout and let them through
-	memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
+	memset(&svs.challenges[i], 0, sizeof(svs.challenges[i]));
 }
-#endif // AUTHORIZE_SUPPORT
+#endif	// AUTHORIZE_SUPPORT
 
 /*
 ==================
@@ -257,54 +295,60 @@ SV_DirectConnect
 A "connect" OOB command has been received
 ==================
 */
-void SV_DirectConnect( netadr_t from ) {
+void SV_DirectConnect(netadr_t from)
+{
 	char userinfo[MAX_INFO_STRING_Q3];
 	int i;
-	client_t    *cl, *newcl;
+	client_t* cl, * newcl;
 	MAC_STATIC client_t temp;
-	sharedEntity_t *ent;
+	sharedEntity_t* ent;
 	int clientNum;
 	int version;
 	int qport;
 	int challenge;
-	const char        *password;
+	const char* password;
 	int startIndex;
 	qintptr denied;
 	int count;
 
-	Com_DPrintf( "SVC_DirectConnect ()\n" );
+	Com_DPrintf("SVC_DirectConnect ()\n");
 
-	String::NCpyZ( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	String::NCpyZ(userinfo, Cmd_Argv(1), sizeof(userinfo));
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
-	version = String::Atoi( Info_ValueForKey( userinfo, "protocol" ) );
-	if ( version != PROTOCOL_VERSION ) {
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_prot]" PROTOCOL_MISMATCH_ERROR );
-		Com_DPrintf( "    rejected connect from version %i\n", version );
+	version = String::Atoi(Info_ValueForKey(userinfo, "protocol"));
+	if (version != PROTOCOL_VERSION)
+	{
+		NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_prot]" PROTOCOL_MISMATCH_ERROR);
+		Com_DPrintf("    rejected connect from version %i\n", version);
 		return;
 	}
 
-	challenge = String::Atoi( Info_ValueForKey( userinfo, "challenge" ) );
-	qport = String::Atoi( Info_ValueForKey( userinfo, "qport" ) );
+	challenge = String::Atoi(Info_ValueForKey(userinfo, "challenge"));
+	qport = String::Atoi(Info_ValueForKey(userinfo, "qport"));
 
-	if ( SV_TempBanIsBanned( from ) ) {
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string );
+	if (SV_TempBanIsBanned(from))
+	{
+		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string);
 		return;
 	}
 
 	// quick reject
-	for ( i = 0,cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
+	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+	{
 		// DHM - Nerve :: This check was allowing clients to reconnect after zombietime(2 secs)
 		//if ( cl->state == CS_FREE ) {
 		//continue;
 		//}
-		if ( SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress )
-			 && ( cl->netchan.qport == qport
-				  || from.port == cl->netchan.remoteAddress.port ) ) {
-			if ( ( svs.time - cl->lastConnectTime )
-				 < ( sv_reconnectlimit->integer * 1000 ) ) {
-				Com_DPrintf( "%s:reconnect rejected : too soon\n", SOCK_AdrToString( from ) );
+		if (SOCK_CompareBaseAdr(from, cl->netchan.remoteAddress) &&
+			(cl->netchan.qport == qport ||
+			 from.port == cl->netchan.remoteAddress.port))
+		{
+			if ((svs.time - cl->lastConnectTime)
+				< (sv_reconnectlimit->integer * 1000))
+			{
+				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(from));
 				return;
 			}
 			break;
@@ -312,64 +356,80 @@ void SV_DirectConnect( netadr_t from ) {
 	}
 
 	// see if the challenge is valid (local clients don't need to challenge)
-	if ( !SOCK_IsLocalAddress( from ) ) {
+	if (!SOCK_IsLocalAddress(from))
+	{
 		int ping;
 
 
-		for ( i = 0 ; i < MAX_CHALLENGES ; i++ ) {
-			if ( SOCK_CompareAdr( from, svs.challenges[i].adr ) ) {
-				if ( challenge == svs.challenges[i].challenge ) {
-					break;      // good
+		for (i = 0; i < MAX_CHALLENGES; i++)
+		{
+			if (SOCK_CompareAdr(from, svs.challenges[i].adr))
+			{
+				if (challenge == svs.challenges[i].challenge)
+				{
+					break;		// good
 				}
 			}
 		}
-		if ( i == MAX_CHALLENGES ) {
-			NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address.\n" );
+		if (i == MAX_CHALLENGES)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address.\n");
 			return;
 		}
 		// force the IP key/value pair so the game can filter based on ip
-		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(from), MAX_INFO_STRING_Q3);
 
-		if ( svs.challenges[i].firstPing == 0 ) {
+		if (svs.challenges[i].firstPing == 0)
+		{
 			ping = svs.time - svs.challenges[i].pingTime;
 			svs.challenges[i].firstPing = ping;
-		} else {
+		}
+		else
+		{
 			ping = svs.challenges[i].firstPing;
 		}
 
-		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
+		Com_Printf("Client %i connecting with %i challenge ping\n", i, ping);
 		svs.challenges[i].connected = qtrue;
 
 		// never reject a LAN client based on ping
-		if ( !SOCK_IsLANAddress( from ) ) {
-			if ( sv_minPing->value && ping < sv_minPing->value ) {
-				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for high pings only\n" );
-				Com_DPrintf( "Client %i rejected on a too low ping\n", i );
+		if (!SOCK_IsLANAddress(from))
+		{
+			if (sv_minPing->value && ping < sv_minPing->value)
+			{
+				NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]Server is for high pings only\n");
+				Com_DPrintf("Client %i rejected on a too low ping\n", i);
 				return;
 			}
-			if ( sv_maxPing->value && ping > sv_maxPing->value ) {
-				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for low pings only\n" );
-				Com_DPrintf( "Client %i rejected on a too high ping: %i\n", i, ping );
+			if (sv_maxPing->value && ping > sv_maxPing->value)
+			{
+				NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]Server is for low pings only\n");
+				Com_DPrintf("Client %i rejected on a too high ping: %i\n", i, ping);
 				return;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		// force the "ip" info key to "localhost"
-		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey(userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
 	}
 
 	newcl = &temp;
-	memset( newcl, 0, sizeof( client_t ) );
+	memset(newcl, 0, sizeof(client_t));
 
 	// if there is already a slot for this ip, reuse it
-	for ( i = 0,cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
-		if ( cl->state == CS_FREE ) {
+	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (cl->state == CS_FREE)
+		{
 			continue;
 		}
-		if ( SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress )
-			 && ( cl->netchan.qport == qport
-				  || from.port == cl->netchan.remoteAddress.port ) ) {
-			Com_Printf( "%s:reconnect\n", SOCK_AdrToString( from ) );
+		if (SOCK_CompareBaseAdr(from, cl->netchan.remoteAddress) &&
+			(cl->netchan.qport == qport ||
+			 from.port == cl->netchan.remoteAddress.port))
+		{
+			Com_Printf("%s:reconnect\n", SOCK_AdrToString(from));
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -393,43 +453,57 @@ void SV_DirectConnect( netadr_t from ) {
 	// servers so we can play without having to kick people.
 
 	// check for privateClient password
-	password = Info_ValueForKey( userinfo, "password" );
-	if ( !String::Cmp( password, sv_privatePassword->string ) ) {
+	password = Info_ValueForKey(userinfo, "password");
+	if (!String::Cmp(password, sv_privatePassword->string))
+	{
 		startIndex = 0;
-	} else {
+	}
+	else
+	{
 		// skip past the reserved slots
 		startIndex = sv_privateClients->integer;
 	}
 
 	newcl = NULL;
-	for ( i = startIndex; i < sv_maxclients->integer ; i++ ) {
+	for (i = startIndex; i < sv_maxclients->integer; i++)
+	{
 		cl = &svs.clients[i];
-		if ( cl->state == CS_FREE ) {
+		if (cl->state == CS_FREE)
+		{
 			newcl = cl;
 			break;
 		}
 	}
 
-	if ( !newcl ) {
-		if ( SOCK_IsLocalAddress( from ) ) {
+	if (!newcl)
+	{
+		if (SOCK_IsLocalAddress(from))
+		{
 			count = 0;
-			for ( i = startIndex; i < sv_maxclients->integer ; i++ ) {
+			for (i = startIndex; i < sv_maxclients->integer; i++)
+			{
 				cl = &svs.clients[i];
-				if ( cl->netchan.remoteAddress.type == NA_BOT ) {
+				if (cl->netchan.remoteAddress.type == NA_BOT)
+				{
 					count++;
 				}
 			}
 			// if they're all bots
-			if ( count >= sv_maxclients->integer - startIndex ) {
-				SV_DropClient( &svs.clients[sv_maxclients->integer - 1], "only bots on server" );
+			if (count >= sv_maxclients->integer - startIndex)
+			{
+				SV_DropClient(&svs.clients[sv_maxclients->integer - 1], "only bots on server");
 				newcl = &svs.clients[sv_maxclients->integer - 1];
-			} else {
-				Com_Error( ERR_FATAL, "server is full on local connect\n" );
+			}
+			else
+			{
+				Com_Error(ERR_FATAL, "server is full on local connect\n");
 				return;
 			}
-		} else {
-			NET_OutOfBandPrint( NS_SERVER, from, va( "print\n%s\n", sv_fullmsg->string ) );
-			Com_DPrintf( "Rejected a connection.\n" );
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, va("print\n%s\n", sv_fullmsg->string));
+			Com_DPrintf("Rejected a connection.\n");
 			return;
 		}
 	}
@@ -444,39 +518,40 @@ gotnewcl:
 	// this is the only place a client_t is ever initialized
 	*newcl = temp;
 	clientNum = newcl - svs.clients;
-	ent = SV_GentityNum( clientNum );
+	ent = SV_GentityNum(clientNum);
 	newcl->gentity = ent;
 
 	// save the challenge
 	newcl->challenge = challenge;
 
 	// save the address
-	Netchan_Setup( NS_SERVER, &newcl->netchan, from, qport );
+	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport);
 	// init the netchan queue
 
 	// save the userinfo
-	String::NCpyZ( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
+	String::NCpyZ(newcl->userinfo, userinfo, sizeof(newcl->userinfo));
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = VM_Call( gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse ); // firstTime = qtrue
-	if ( denied ) {
+	denied = VM_Call(gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse);	// firstTime = qtrue
+	if (denied)
+	{
 		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
-		char* denied_str = (char*)VM_ExplicitArgPtr( gvm, denied );
+		char* denied_str = (char*)VM_ExplicitArgPtr(gvm, denied);
 
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s\n", denied_str );
-		Com_DPrintf( "Game rejected a connection: %s.\n", denied_str );
+		NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]%s\n", denied_str);
+		Com_DPrintf("Game rejected a connection: %s.\n", denied_str);
 		return;
 	}
 
-	SV_UserinfoChanged( newcl );
+	SV_UserinfoChanged(newcl);
 
 	// DHM - Nerve :: Clear out firstPing now that client is connected
 	svs.challenges[i].firstPing = 0;
 
 	// send the connect packet to the client
-	NET_OutOfBandPrint( NS_SERVER, from, "connectResponse" );
+	NET_OutOfBandPrint(NS_SERVER, from, "connectResponse");
 
-	Com_DPrintf( "Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name );
+	Com_DPrintf("Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name);
 
 	newcl->state = CS_CONNECTED;
 	newcl->nextSnapshotTime = svs.time;
@@ -491,12 +566,15 @@ gotnewcl:
 	// if this was the first client on the server, or the last client
 	// the server can hold, send a heartbeat to the master.
 	count = 0;
-	for ( i = 0,cl = svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
-		if ( svs.clients[i].state >= CS_CONNECTED ) {
+	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED)
+		{
 			count++;
 		}
 	}
-	if ( count == 1 || count == sv_maxclients->integer ) {
+	if (count == 1 || count == sv_maxclients->integer)
+	{
 		SV_Heartbeat_f();
 	}
 }
@@ -510,78 +588,93 @@ or unwillingly.  This is NOT called if the entire server is quiting
 or crashing -- SV_FinalCommand() will handle that
 =====================
 */
-void SV_DropClient( client_t *drop, const char *reason ) {
+void SV_DropClient(client_t* drop, const char* reason)
+{
 	int i;
-	challenge_t *challenge;
+	challenge_t* challenge;
 	qboolean isBot = qfalse;
 
-	if ( drop->state == CS_ZOMBIE ) {
-		return;     // already dropped
+	if (drop->state == CS_ZOMBIE)
+	{
+		return;		// already dropped
 	}
 
-	if ( drop->gentity && ( drop->gentity->r.svFlags & SVF_BOT ) ) {
+	if (drop->gentity && (drop->gentity->r.svFlags & SVF_BOT))
+	{
 		isBot = qtrue;
-	} else {
-		if ( drop->netchan.remoteAddress.type == NA_BOT ) {
+	}
+	else
+	{
+		if (drop->netchan.remoteAddress.type == NA_BOT)
+		{
 			isBot = qtrue;
 		}
 	}
 
-	if ( !isBot ) {
+	if (!isBot)
+	{
 		// see if we already have a challenge for this ip
 		challenge = &svs.challenges[0];
 
-		for ( i = 0 ; i < MAX_CHALLENGES ; i++, challenge++ ) {
-			if ( SOCK_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) ) {
+		for (i = 0; i < MAX_CHALLENGES; i++, challenge++)
+		{
+			if (SOCK_CompareAdr(drop->netchan.remoteAddress, challenge->adr))
+			{
 				challenge->connected = qfalse;
 				break;
 			}
 		}
 
 		// Kill any download
-		SV_CloseDownload( drop );
+		SV_CloseDownload(drop);
 	}
 
-	if ( ( !SV_GameIsSinglePlayer() ) || ( !isBot ) ) {
+	if ((!SV_GameIsSinglePlayer()) || (!isBot))
+	{
 		// tell everyone why they got dropped
 
 		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "cpm \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason );
+		SV_SendServerCommand(NULL, "cpm \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason);
 //		SV_SendServerCommand( NULL, "print \"[lof]%s" S_COLOR_WHITE " [lon]%s\n\"", drop->name, reason );
 	}
 
-	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
-	drop->state = CS_ZOMBIE;        // become free in a few seconds
+	Com_DPrintf("Going to CS_ZOMBIE for %s\n", drop->name);
+	drop->state = CS_ZOMBIE;		// become free in a few seconds
 
-	if ( drop->download ) {
-		FS_FCloseFile( drop->download );
+	if (drop->download)
+	{
+		FS_FCloseFile(drop->download);
 		drop->download = 0;
 	}
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
-	VM_Call( gvm, GAME_CLIENT_DISCONNECT, drop - svs.clients );
+	VM_Call(gvm, GAME_CLIENT_DISCONNECT, drop - svs.clients);
 
 	// add the disconnect command
-	SV_SendServerCommand( drop, "disconnect \"%s\"\n", reason );
+	SV_SendServerCommand(drop, "disconnect \"%s\"\n", reason);
 
-	if ( drop->netchan.remoteAddress.type == NA_BOT ) {
-		SV_BotFreeClient( drop - svs.clients );
+	if (drop->netchan.remoteAddress.type == NA_BOT)
+	{
+		SV_BotFreeClient(drop - svs.clients);
 	}
 
 	// nuke user info
-	SV_SetUserinfo( drop - svs.clients, "" );
+	SV_SetUserinfo(drop - svs.clients, "");
 
 	// if this was the last client on the server, send a heartbeat
 	// to the master so it is known the server is empty
 	// send a heartbeat now so the master will get up to date info
 	// if there is already a slot for this ip, reuse it
-	for ( i = 0 ; i < sv_maxclients->integer ; i++ ) {
-		if ( svs.clients[i].state >= CS_CONNECTED ) {
+	for (i = 0; i < sv_maxclients->integer; i++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED)
+		{
 			break;
 		}
 	}
-	if ( i == sv_maxclients->integer ) {
+	if (i == sv_maxclients->integer)
+	{
 		SV_Heartbeat_f();
 	}
 }
@@ -597,15 +690,16 @@ It will be resent if the client acknowledges a later message but has
 the wrong gamestate.
 ================
 */
-void SV_SendClientGameState( client_t *client ) {
+void SV_SendClientGameState(client_t* client)
+{
 	int start;
-	etentityState_t   *base, nullstate;
+	etentityState_t* base, nullstate;
 	QMsg msg;
 	byte msgBuffer[MAX_MSGLEN_WOLF];
 
 
-	Com_DPrintf( "SV_SendClientGameState() for %s\n", client->name );
-	Com_DPrintf( "Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name );
+	Com_DPrintf("SV_SendClientGameState() for %s\n", client->name);
+	Com_DPrintf("Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name);
 	client->state = CS_PRIMED;
 	client->pureAuthentic = 0;
 	client->gotCP = qfalse;
@@ -615,54 +709,58 @@ void SV_SendClientGameState( client_t *client ) {
 	// gamestate message was not just sent, forcing a retransmit
 	client->gamestateMessageNum = client->netchan.outgoingSequence;
 
-	MSG_Init( &msg, msgBuffer, sizeof( msgBuffer ) );
+	MSG_Init(&msg, msgBuffer, sizeof(msgBuffer));
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
-	msg.WriteLong( client->lastClientCommand );
+	msg.WriteLong(client->lastClientCommand);
 
 	// send any server commands waiting to be sent first.
 	// we have to do this cause we send the client->reliableSequence
 	// with a gamestate and it sets the clc.serverCommandSequence at
 	// the client side
-	SV_UpdateServerCommandsToClient( client, &msg );
+	SV_UpdateServerCommandsToClient(client, &msg);
 
 	// send the gamestate
-	msg.WriteByte( q3svc_gamestate );
-	msg.WriteLong( client->reliableSequence );
+	msg.WriteByte(q3svc_gamestate);
+	msg.WriteLong(client->reliableSequence);
 
 	// write the configstrings
-	for ( start = 0 ; start < MAX_CONFIGSTRINGS_ET ; start++ ) {
-		if ( sv.configstrings[start][0] ) {
-			msg.WriteByte( q3svc_configstring );
-			msg.WriteShort( start );
-			msg.WriteBigString( sv.configstrings[start] );
+	for (start = 0; start < MAX_CONFIGSTRINGS_ET; start++)
+	{
+		if (sv.configstrings[start][0])
+		{
+			msg.WriteByte(q3svc_configstring);
+			msg.WriteShort(start);
+			msg.WriteBigString(sv.configstrings[start]);
 		}
 	}
 
 	// write the baselines
-	memset( &nullstate, 0, sizeof( nullstate ) );
-	for ( start = 0 ; start < MAX_GENTITIES_Q3; start++ ) {
+	memset(&nullstate, 0, sizeof(nullstate));
+	for (start = 0; start < MAX_GENTITIES_Q3; start++)
+	{
 		base = &sv.svEntities[start].baseline;
-		if ( !base->number ) {
+		if (!base->number)
+		{
 			continue;
 		}
-		msg.WriteByte( q3svc_baseline );
-		MSG_WriteDeltaEntity( &msg, &nullstate, base, qtrue );
+		msg.WriteByte(q3svc_baseline);
+		MSG_WriteDeltaEntity(&msg, &nullstate, base, qtrue);
 	}
 
-	msg.WriteByte( q3svc_EOF );
+	msg.WriteByte(q3svc_EOF);
 
-	msg.WriteLong( client - svs.clients );
+	msg.WriteLong(client - svs.clients);
 
 	// write the checksum feed
-	msg.WriteLong( sv.checksumFeed );
+	msg.WriteLong(sv.checksumFeed);
 
 	// NERVE - SMF - debug info
-	Com_DPrintf( "Sending %i bytes in gamestate to client: %i\n", msg.cursize, (int)(client - svs.clients) );
+	Com_DPrintf("Sending %i bytes in gamestate to client: %i\n", msg.cursize, (int)(client - svs.clients));
 
 	// deliver this to the client
-	SV_SendMessageToClient( &msg, client );
+	SV_SendMessageToClient(&msg, client);
 }
 
 
@@ -671,25 +769,26 @@ void SV_SendClientGameState( client_t *client ) {
 SV_ClientEnterWorld
 ==================
 */
-void SV_ClientEnterWorld( client_t *client, etusercmd_t *cmd ) {
+void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
+{
 	int clientNum;
-	sharedEntity_t *ent;
+	sharedEntity_t* ent;
 
-	Com_DPrintf( "Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name );
+	Com_DPrintf("Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name);
 	client->state = CS_ACTIVE;
 
 	// set up the entity for the client
 	clientNum = client - svs.clients;
-	ent = SV_GentityNum( clientNum );
+	ent = SV_GentityNum(clientNum);
 	ent->s.number = clientNum;
 	client->gentity = ent;
 
 	client->deltaMessage = -1;
-	client->nextSnapshotTime = svs.time;    // generate a snapshot immediately
+	client->nextSnapshotTime = svs.time;	// generate a snapshot immediately
 	client->lastUsercmd = *cmd;
 
 	// call the game begin function
-	VM_Call( gvm, GAME_CLIENT_BEGIN, client - svs.clients );
+	VM_Call(gvm, GAME_CLIENT_BEGIN, client - svs.clients);
 }
 
 /*
@@ -707,20 +806,24 @@ SV_CloseDownload
 clear/free any download vars
 ==================
 */
-static void SV_CloseDownload( client_t *cl ) {
+static void SV_CloseDownload(client_t* cl)
+{
 	int i;
 
 	// EOF
-	if ( cl->download ) {
-		FS_FCloseFile( cl->download );
+	if (cl->download)
+	{
+		FS_FCloseFile(cl->download);
 	}
 	cl->download = 0;
 	*cl->downloadName = 0;
 
 	// Free the temporary buffer space
-	for ( i = 0; i < MAX_DOWNLOAD_WINDOW; i++ ) {
-		if ( cl->downloadBlocks[i] ) {
-			Z_Free( cl->downloadBlocks[i] );
+	for (i = 0; i < MAX_DOWNLOAD_WINDOW; i++)
+	{
+		if (cl->downloadBlocks[i])
+		{
+			Z_Free(cl->downloadBlocks[i]);
 			cl->downloadBlocks[i] = NULL;
 		}
 	}
@@ -734,12 +837,14 @@ SV_StopDownload_f
 Abort a download if in progress
 ==================
 */
-void SV_StopDownload_f( client_t *cl ) {
-	if ( *cl->downloadName ) {
-		Com_DPrintf( "clientDownload: %d : file \"%s\" aborted\n", (int)(cl - svs.clients), cl->downloadName );
+void SV_StopDownload_f(client_t* cl)
+{
+	if (*cl->downloadName)
+	{
+		Com_DPrintf("clientDownload: %d : file \"%s\" aborted\n", (int)(cl - svs.clients), cl->downloadName);
 	}
 
-	SV_CloseDownload( cl );
+	SV_CloseDownload(cl);
 }
 
 /*
@@ -749,10 +854,11 @@ SV_DoneDownload_f
 Downloads are finished
 ==================
 */
-void SV_DoneDownload_f( client_t *cl ) {
-	Com_DPrintf( "clientDownload: %s Done\n", cl->name );
+void SV_DoneDownload_f(client_t* cl)
+{
+	Com_DPrintf("clientDownload: %s Done\n", cl->name);
 	// resend the game state to update any clients that entered during the download
-	SV_SendClientGameState( cl );
+	SV_SendClientGameState(cl);
 }
 
 /*
@@ -763,16 +869,19 @@ The argument will be the last acknowledged block from the client, it should be
 the same as cl->downloadClientBlock
 ==================
 */
-void SV_NextDownload_f( client_t *cl ) {
-	int block = String::Atoi( Cmd_Argv( 1 ) );
+void SV_NextDownload_f(client_t* cl)
+{
+	int block = String::Atoi(Cmd_Argv(1));
 
-	if ( block == cl->downloadClientBlock ) {
-		Com_DPrintf( "clientDownload: %d : client acknowledge of block %d\n", (int)(cl - svs.clients), block );
+	if (block == cl->downloadClientBlock)
+	{
+		Com_DPrintf("clientDownload: %d : client acknowledge of block %d\n", (int)(cl - svs.clients), block);
 
 		// Find out if we are done.  A zero-length block indicates EOF
-		if ( cl->downloadBlockSize[cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW] == 0 ) {
-			Com_Printf( "clientDownload: %d : file \"%s\" completed\n", (int)(cl - svs.clients), cl->downloadName );
-			SV_CloseDownload( cl );
+		if (cl->downloadBlockSize[cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW] == 0)
+		{
+			Com_Printf("clientDownload: %d : file \"%s\" completed\n", (int)(cl - svs.clients), cl->downloadName);
+			SV_CloseDownload(cl);
 			return;
 		}
 
@@ -783,7 +892,7 @@ void SV_NextDownload_f( client_t *cl ) {
 	// We aren't getting an acknowledge for the correct block, drop the client
 	// FIXME: this is bad... the client will never parse the disconnect message
 	//			because the cgame isn't loaded yet
-	SV_DropClient( cl, "broken download" );
+	SV_DropClient(cl, "broken download");
 }
 
 /*
@@ -791,19 +900,21 @@ void SV_NextDownload_f( client_t *cl ) {
 SV_BeginDownload_f
 ==================
 */
-void SV_BeginDownload_f( client_t *cl ) {
+void SV_BeginDownload_f(client_t* cl)
+{
 
 	// Kill any existing download
-	SV_CloseDownload( cl );
+	SV_CloseDownload(cl);
 
 	//bani - stop us from printing dupe messages
-	if ( String::Cmp( cl->downloadName, Cmd_Argv( 1 ) ) ) {
+	if (String::Cmp(cl->downloadName, Cmd_Argv(1)))
+	{
 		cl->downloadnotify = DLNOTIFY_ALL;
 	}
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	String::NCpyZ( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
+	String::NCpyZ(cl->downloadName, Cmd_Argv(1), sizeof(cl->downloadName));
 }
 
 /*
@@ -811,69 +922,82 @@ void SV_BeginDownload_f( client_t *cl ) {
 SV_WWWDownload_f
 ==================
 */
-void SV_WWWDownload_f( client_t *cl ) {
+void SV_WWWDownload_f(client_t* cl)
+{
 
-	char *subcmd = Cmd_Argv( 1 );
+	char* subcmd = Cmd_Argv(1);
 
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
-	if ( !cl->bWWWDl ) {
-		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
-		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
+	if (!cl->bWWWDl)
+	{
+		Com_Printf("SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name);
+		SV_DropClient(cl, va("SV_WWWDownload: unexpected wwwdl %s", subcmd));
 		return;
 	}
 
-	if ( !String::ICmp( subcmd, "ack" ) ) {
-		if ( cl->bWWWing ) {
-			Com_Printf( "WARNING: dupe wwwdl ack from client '%s'\n", cl->name );
+	if (!String::ICmp(subcmd, "ack"))
+	{
+		if (cl->bWWWing)
+		{
+			Com_Printf("WARNING: dupe wwwdl ack from client '%s'\n", cl->name);
 		}
 		cl->bWWWing = qtrue;
 		return;
-	} else if ( !String::ICmp( subcmd, "bbl8r" ) ) {
-		SV_DropClient( cl, "acking disconnected download mode" );
+	}
+	else if (!String::ICmp(subcmd, "bbl8r"))
+	{
+		SV_DropClient(cl, "acking disconnected download mode");
 		return;
 	}
 
 	// below for messages that only happen during/after download
-	if ( !cl->bWWWing ) {
-		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
-		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
+	if (!cl->bWWWing)
+	{
+		Com_Printf("SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name);
+		SV_DropClient(cl, va("SV_WWWDownload: unexpected wwwdl %s", subcmd));
 		return;
 	}
 
-	if ( !String::ICmp( subcmd, "done" ) ) {
+	if (!String::ICmp(subcmd, "done"))
+	{
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		return;
-	} else if ( !String::ICmp( subcmd, "fail" ) )        {
+	}
+	else if (!String::ICmp(subcmd, "fail"))
+	{
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
 		// send a reconnect
-		SV_SendClientGameState( cl );
+		SV_SendClientGameState(cl);
 		return;
-	} else if ( !String::ICmp( subcmd, "chkfail" ) )        {
-		Com_Printf( "WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n", cl->name, cl->downloadName );
-		Com_Printf( "         you should check your download redirect configuration.\n" );
+	}
+	else if (!String::ICmp(subcmd, "chkfail"))
+	{
+		Com_Printf("WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n", cl->name, cl->downloadName);
+		Com_Printf("         you should check your download redirect configuration.\n");
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
 		// send a reconnect
-		SV_SendClientGameState( cl );
+		SV_SendClientGameState(cl);
 		return;
 	}
 
-	Com_Printf( "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
-	SV_DropClient( cl, va( "SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd ) );
+	Com_Printf("SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name);
+	SV_DropClient(cl, va("SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd));
 }
 
 // abort an attempted download
-void SV_BadDownload( client_t *cl, QMsg *msg ) {
-	msg->WriteByte( q3svc_download );
-	msg->WriteShort( 0 ); // client is expecting block zero
-	msg->WriteLong( -1 ); // illegal file size
+void SV_BadDownload(client_t* cl, QMsg* msg)
+{
+	msg->WriteByte(q3svc_download);
+	msg->WriteShort(0);		// client is expecting block zero
+	msg->WriteLong(-1);		// illegal file size
 
 	*cl->downloadName = 0;
 }
@@ -887,18 +1011,20 @@ return true when a redirect URL message was filled up
 when the cvar is set to something, the download server will effectively never use a legacy download strategy
 ==================
 */
-static qboolean SV_CheckFallbackURL( client_t *cl, QMsg *msg ) {
-	if ( !sv_wwwFallbackURL->string || String::Length( sv_wwwFallbackURL->string ) == 0 ) {
+static qboolean SV_CheckFallbackURL(client_t* cl, QMsg* msg)
+{
+	if (!sv_wwwFallbackURL->string || String::Length(sv_wwwFallbackURL->string) == 0)
+	{
 		return qfalse;
 	}
 
-	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
+	Com_Printf("clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string);
 
-	msg->WriteByte( q3svc_download );
-	msg->WriteShort( -1 ); // block -1 means ftp/http download
-	msg->WriteString( sv_wwwFallbackURL->string );
-	msg->WriteLong( 0 );
-	msg->WriteLong( 2 ); // DL_FLAG_URL
+	msg->WriteByte(q3svc_download);
+	msg->WriteShort(-1);	// block -1 means ftp/http download
+	msg->WriteString(sv_wwwFallbackURL->string);
+	msg->WriteLong(0);
+	msg->WriteLong(2);	// DL_FLAG_URL
 
 	return qtrue;
 }
@@ -911,7 +1037,8 @@ Check to see if the client wants a file, open it if needed and start pumping the
 Fill up msg with data
 ==================
 */
-void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
+void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
+{
 	int curindex;
 	int rate;
 	int blockspersnap;
@@ -919,56 +1046,68 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 	char errorMessage[1024];
 	int download_flag;
 
-	qboolean bTellRate = qfalse; // verbosity
+	qboolean bTellRate = qfalse;// verbosity
 
-	if ( !*cl->downloadName ) {
-		return; // Nothing being downloaded
+	if (!*cl->downloadName)
+	{
+		return;	// Nothing being downloaded
 
 	}
-	if ( cl->bWWWing ) {
-		return; // The client acked and is downloading with ftp/http
+	if (cl->bWWWing)
+	{
+		return;	// The client acked and is downloading with ftp/http
 
 	}
 	// CVE-2006-2082
 	// validate the download against the list of pak files
-	if ( !FS_VerifyPak( cl->downloadName ) ) {
+	if (!FS_VerifyPak(cl->downloadName))
+	{
 		// will drop the client and leave it hanging on the other side. good for him
-		SV_DropClient( cl, "illegal download request" );
+		SV_DropClient(cl, "illegal download request");
 		return;
 	}
 
-	if ( !cl->download ) {
+	if (!cl->download)
+	{
 		// We open the file here
 
 		//bani - prevent duplicate download notifications
-		if ( cl->downloadnotify & DLNOTIFY_BEGIN ) {
+		if (cl->downloadnotify & DLNOTIFY_BEGIN)
+		{
 			cl->downloadnotify &= ~DLNOTIFY_BEGIN;
-			Com_Printf( "clientDownload: %d : beginning \"%s\"\n", (int)(cl - svs.clients), cl->downloadName );
+			Com_Printf("clientDownload: %d : beginning \"%s\"\n", (int)(cl - svs.clients), cl->downloadName);
 		}
 
-		idPack = FS_idPak( cl->downloadName, BASEGAME );
+		idPack = FS_idPak(cl->downloadName, BASEGAME);
 
 		// sv_allowDownload and idPack checks
-		if ( !sv_allowDownload->integer || idPack ) {
+		if (!sv_allowDownload->integer || idPack)
+		{
 			// cannot auto-download file
-			if ( idPack ) {
-				Com_Printf( "clientDownload: %d : \"%s\" cannot download id pk3 files\n", (int)(cl - svs.clients), cl->downloadName );
-				String::Sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
-			} else {
-				Com_Printf( "clientDownload: %d : \"%s\" download disabled", (int)(cl - svs.clients), cl->downloadName );
-				if ( sv_pure->integer ) {
-					String::Sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-																	   "You will need to get this file elsewhere before you "
-																	   "can connect to this pure server.\n", cl->downloadName );
-				} else {
-					String::Sprintf( errorMessage, sizeof( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-																	   "Set autodownload to No in your settings and you might be "
-																	   "able to connect even if you don't have the file.\n", cl->downloadName );
+			if (idPack)
+			{
+				Com_Printf("clientDownload: %d : \"%s\" cannot download id pk3 files\n", (int)(cl - svs.clients), cl->downloadName);
+				String::Sprintf(errorMessage, sizeof(errorMessage), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName);
+			}
+			else
+			{
+				Com_Printf("clientDownload: %d : \"%s\" download disabled", (int)(cl - svs.clients), cl->downloadName);
+				if (sv_pure->integer)
+				{
+					String::Sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+																		"You will need to get this file elsewhere before you "
+																		"can connect to this pure server.\n", cl->downloadName);
+				}
+				else
+				{
+					String::Sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+																		"Set autodownload to No in your settings and you might be "
+																		"able to connect even if you don't have the file.\n", cl->downloadName);
 				}
 			}
 
-			SV_BadDownload( cl, msg );
-			msg->WriteString( errorMessage ); // (could SV_DropClient isntead?)
+			SV_BadDownload(cl, msg);
+			msg->WriteString(errorMessage);		// (could SV_DropClient isntead?)
 
 			return;
 		}
@@ -977,62 +1116,77 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 		// NOTE: this is called repeatedly while a client connects. Maybe we should sort of cache the message or something
 		// FIXME: we need to abstract this to an independant module for maximum configuration/usability by server admins
 		// FIXME: I could rework that, it's crappy
-		if ( sv_wwwDownload->integer ) {
-			if ( cl->bDlOK ) {
-				if ( !cl->bFallback ) {
+		if (sv_wwwDownload->integer)
+		{
+			if (cl->bDlOK)
+			{
+				if (!cl->bFallback)
+				{
 					fileHandle_t handle;
-					int downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &handle );
-					if ( downloadSize ) {
-						FS_FCloseFile( handle ); // don't keep open, we only care about the size
+					int downloadSize = FS_SV_FOpenFileRead(cl->downloadName, &handle);
+					if (downloadSize)
+					{
+						FS_FCloseFile(handle);	// don't keep open, we only care about the size
 
-						String::NCpyZ( cl->downloadURL, va( "%s/%s", sv_wwwBaseURL->string, cl->downloadName ), sizeof( cl->downloadURL ) );
+						String::NCpyZ(cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, cl->downloadName), sizeof(cl->downloadURL));
 
 						//bani - prevent multiple download notifications
-						if ( cl->downloadnotify & DLNOTIFY_REDIRECT ) {
+						if (cl->downloadnotify & DLNOTIFY_REDIRECT)
+						{
 							cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
-							Com_Printf( "Redirecting client '%s' to %s\n", cl->name, cl->downloadURL );
+							Com_Printf("Redirecting client '%s' to %s\n", cl->name, cl->downloadURL);
 						}
 						// once cl->downloadName is set (and possibly we have our listening socket), let the client know
 						cl->bWWWDl = qtrue;
-						msg->WriteByte( q3svc_download );
-						msg->WriteShort( -1 ); // block -1 means ftp/http download
+						msg->WriteByte(q3svc_download);
+						msg->WriteShort(-1);	// block -1 means ftp/http download
 						// compatible with legacy q3svc_download protocol: [size] [size bytes]
 						// download URL, size of the download file, download flags
-						msg->WriteString( cl->downloadURL );
-						msg->WriteLong( downloadSize );
+						msg->WriteString(cl->downloadURL);
+						msg->WriteLong(downloadSize);
 						download_flag = 0;
-						if ( sv_wwwDlDisconnected->integer ) {
-							download_flag |= ( 1 << DL_FLAG_DISCON );
+						if (sv_wwwDlDisconnected->integer)
+						{
+							download_flag |= (1 << DL_FLAG_DISCON);
 						}
-						msg->WriteLong( download_flag ); // flags
+						msg->WriteLong(download_flag);	// flags
 						return;
-					} else {
+					}
+					else
+					{
 						// that should NOT happen - even regular download would fail then anyway
-						Com_Printf( "ERROR: Client '%s': couldn't extract file size for %s\n", cl->name, cl->downloadName );
+						Com_Printf("ERROR: Client '%s': couldn't extract file size for %s\n", cl->name, cl->downloadName);
 					}
-				} else {
+				}
+				else
+				{
 					cl->bFallback = qfalse;
-					if ( SV_CheckFallbackURL( cl, msg ) ) {
+					if (SV_CheckFallbackURL(cl, msg))
+					{
 						return;
 					}
-					Com_Printf( "Client '%s': falling back to regular downloading for failed file %s\n", cl->name, cl->downloadName );
+					Com_Printf("Client '%s': falling back to regular downloading for failed file %s\n", cl->name, cl->downloadName);
 				}
-			} else {
-				if ( SV_CheckFallbackURL( cl, msg ) ) {
+			}
+			else
+			{
+				if (SV_CheckFallbackURL(cl, msg))
+				{
 					return;
 				}
-				Com_Printf( "Client '%s' is not configured for www download\n", cl->name );
+				Com_Printf("Client '%s' is not configured for www download\n", cl->name);
 			}
 		}
 
 		// find file
 		cl->bWWWDl = qfalse;
-		cl->downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &cl->download );
-		if ( cl->downloadSize <= 0 ) {
-			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", (int)(cl - svs.clients), cl->downloadName );
-			String::Sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName );
-			SV_BadDownload( cl, msg );
-			msg->WriteString( errorMessage ); // (could SV_DropClient isntead?)
+		cl->downloadSize = FS_SV_FOpenFileRead(cl->downloadName, &cl->download);
+		if (cl->downloadSize <= 0)
+		{
+			Com_Printf("clientDownload: %d : \"%s\" file not found on server\n", (int)(cl - svs.clients), cl->downloadName);
+			String::Sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName);
+			SV_BadDownload(cl, msg);
+			msg->WriteString(errorMessage);		// (could SV_DropClient isntead?)
 			return;
 		}
 
@@ -1045,18 +1199,21 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 	}
 
 	// Perform any reads that we need to
-	while ( cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW &&
-			cl->downloadSize != cl->downloadCount ) {
+	while (cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW &&
+		   cl->downloadSize != cl->downloadCount)
+	{
 
-		curindex = ( cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW );
+		curindex = (cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW);
 
-		if ( !cl->downloadBlocks[curindex] ) {
-			cl->downloadBlocks[curindex] = (byte*)Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
+		if (!cl->downloadBlocks[curindex])
+		{
+			cl->downloadBlocks[curindex] = (byte*)Z_Malloc(MAX_DOWNLOAD_BLKSIZE);
 		}
 
-		cl->downloadBlockSize[curindex] = FS_Read( cl->downloadBlocks[curindex], MAX_DOWNLOAD_BLKSIZE, cl->download );
+		cl->downloadBlockSize[curindex] = FS_Read(cl->downloadBlocks[curindex], MAX_DOWNLOAD_BLKSIZE, cl->download);
 
-		if ( cl->downloadBlockSize[curindex] < 0 ) {
+		if (cl->downloadBlockSize[curindex] < 0)
+		{
 			// EOF right now
 			cl->downloadCount = cl->downloadSize;
 			break;
@@ -1069,14 +1226,15 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 	}
 
 	// Check to see if we have eof condition and add the EOF block
-	if ( cl->downloadCount == cl->downloadSize &&
-		 !cl->downloadEOF &&
-		 cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW ) {
+	if (cl->downloadCount == cl->downloadSize &&
+		!cl->downloadEOF &&
+		cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW)
+	{
 
 		cl->downloadBlockSize[cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW] = 0;
 		cl->downloadCurrentBlock++;
 
-		cl->downloadEOF = qtrue;  // We have added the EOF block
+		cl->downloadEOF = qtrue;	// We have added the EOF block
 	}
 
 	// Loop up to window size times based on how many blocks we can fit in the
@@ -1089,67 +1247,83 @@ void SV_WriteDownloadToClient( client_t *cl, QMsg *msg ) {
 	// show_bug.cgi?id=509
 	// for autodownload, we use a seperate max rate value
 	// we do this everytime because the client might change it's rate during the download
-	if ( sv_dl_maxRate->integer < rate ) {
+	if (sv_dl_maxRate->integer < rate)
+	{
 		rate = sv_dl_maxRate->integer;
-		if ( bTellRate ) {
-			Com_Printf( "'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer );
+		if (bTellRate)
+		{
+			Com_Printf("'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer);
 		}
-	} else
-	if ( bTellRate ) {
-		Com_Printf( "'%s' downloading at rate %d\n", cl->name, rate );
+	}
+	else
+	if (bTellRate)
+	{
+		Com_Printf("'%s' downloading at rate %d\n", cl->name, rate);
 	}
 
-	if ( !rate ) {
+	if (!rate)
+	{
 		blockspersnap = 1;
-	} else {
-		blockspersnap = ( ( rate * cl->snapshotMsec ) / 1000 + MAX_DOWNLOAD_BLKSIZE ) /
+	}
+	else
+	{
+		blockspersnap = ((rate * cl->snapshotMsec) / 1000 + MAX_DOWNLOAD_BLKSIZE) /
 						MAX_DOWNLOAD_BLKSIZE;
 	}
 
-	if ( blockspersnap < 0 ) {
+	if (blockspersnap < 0)
+	{
 		blockspersnap = 1;
 	}
 
-	while ( blockspersnap-- ) {
+	while (blockspersnap--)
+	{
 
 		// Write out the next section of the file, if we have already reached our window,
 		// automatically start retransmitting
 
-		if ( cl->downloadClientBlock == cl->downloadCurrentBlock ) {
-			return; // Nothing to transmit
+		if (cl->downloadClientBlock == cl->downloadCurrentBlock)
+		{
+			return;	// Nothing to transmit
 
 		}
-		if ( cl->downloadXmitBlock == cl->downloadCurrentBlock ) {
+		if (cl->downloadXmitBlock == cl->downloadCurrentBlock)
+		{
 			// We have transmitted the complete window, should we start resending?
 
 			//FIXME:  This uses a hardcoded one second timeout for lost blocks
 			//the timeout should be based on client rate somehow
-			if ( svs.time - cl->downloadSendTime > 1000 ) {
+			if (svs.time - cl->downloadSendTime > 1000)
+			{
 				cl->downloadXmitBlock = cl->downloadClientBlock;
-			} else {
+			}
+			else
+			{
 				return;
 			}
 		}
 
 		// Send current block
-		curindex = ( cl->downloadXmitBlock % MAX_DOWNLOAD_WINDOW );
+		curindex = (cl->downloadXmitBlock % MAX_DOWNLOAD_WINDOW);
 
-		msg->WriteByte( q3svc_download );
-		msg->WriteShort( cl->downloadXmitBlock );
+		msg->WriteByte(q3svc_download);
+		msg->WriteShort(cl->downloadXmitBlock);
 
 		// block zero is special, contains file size
-		if ( cl->downloadXmitBlock == 0 ) {
-			msg->WriteLong( cl->downloadSize );
+		if (cl->downloadXmitBlock == 0)
+		{
+			msg->WriteLong(cl->downloadSize);
 		}
 
-		msg->WriteShort( cl->downloadBlockSize[curindex] );
+		msg->WriteShort(cl->downloadBlockSize[curindex]);
 
 		// Write the block
-		if ( cl->downloadBlockSize[curindex] ) {
-			msg->WriteData( cl->downloadBlocks[curindex], cl->downloadBlockSize[curindex] );
+		if (cl->downloadBlockSize[curindex])
+		{
+			msg->WriteData(cl->downloadBlocks[curindex], cl->downloadBlockSize[curindex]);
 		}
 
-		Com_DPrintf( "clientDownload: %d : writing block %d\n", (int)(cl - svs.clients), cl->downloadXmitBlock );
+		Com_DPrintf("clientDownload: %d : writing block %d\n", (int)(cl - svs.clients), cl->downloadXmitBlock);
 
 		// Move on to the next block
 		// It will get sent with next snap shot.  The rate will keep us in line.
@@ -1166,8 +1340,9 @@ SV_Disconnect_f
 The client is going to disconnect, so remove the connection immediately  FIXME: move to game?
 =================
 */
-static void SV_Disconnect_f( client_t *cl ) {
-	SV_DropClient( cl, "disconnected" );
+static void SV_Disconnect_f(client_t* cl)
+{
+	SV_DropClient(cl, "disconnected");
 }
 
 /*
@@ -1184,24 +1359,27 @@ This routine would be a bit simpler with a goto but i abstained
 
 =================
 */
-static void SV_VerifyPaks_f( client_t *cl ) {
+static void SV_VerifyPaks_f(client_t* cl)
+{
 	int nChkSum1, nChkSum2, nClientPaks, nServerPaks, i, j, nCurArg;
 	int nClientChkSum[1024];
 	int nServerChkSum[1024];
-	const char *pPaks, *pArg;
+	const char* pPaks, * pArg;
 	qboolean bGood = qtrue;
 
 	// if we are pure, we "expect" the client to load certain things from
 	// certain pk3 files, namely we want the client to have loaded the
 	// ui and cgame that we think should be loaded based on the pure setting
-	if ( sv_pure->integer != 0 ) {
+	if (sv_pure->integer != 0)
+	{
 
 		bGood = qtrue;
 		nChkSum1 = nChkSum2 = 0;
 
-		bGood = ( FS_FileIsInPAK( FS_ShiftStr( SYS_DLLNAME_CGAME, -SYS_DLLNAME_CGAME_SHIFT ), &nChkSum1 ) == 1 );
-		if ( bGood ) {
-			bGood = ( FS_FileIsInPAK( FS_ShiftStr( SYS_DLLNAME_UI, -SYS_DLLNAME_UI_SHIFT ), &nChkSum2 ) == 1 );
+		bGood = (FS_FileIsInPAK(FS_ShiftStr(SYS_DLLNAME_CGAME, -SYS_DLLNAME_CGAME_SHIFT), &nChkSum1) == 1);
+		if (bGood)
+		{
+			bGood = (FS_FileIsInPAK(FS_ShiftStr(SYS_DLLNAME_UI, -SYS_DLLNAME_UI_SHIFT), &nChkSum2) == 1);
 		}
 
 		nClientPaks = Cmd_Argc();
@@ -1209,51 +1387,60 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 		// start at arg 2 ( skip serverId cl_paks )
 		nCurArg = 1;
 
-		pArg = Cmd_Argv( nCurArg++ );
+		pArg = Cmd_Argv(nCurArg++);
 
-		if ( !pArg ) {
+		if (!pArg)
+		{
 			bGood = qfalse;
-		} else
+		}
+		else
 		{
 			// show_bug.cgi?id=475
 			// we may get incoming cp sequences from a previous checksumFeed, which we need to ignore
 			// since serverId is a frame count, it always goes up
-			if ( String::Atoi( pArg ) < sv.checksumFeedServerId ) {
-				Com_DPrintf( "ignoring outdated cp command from client %s\n", cl->name );
+			if (String::Atoi(pArg) < sv.checksumFeedServerId)
+			{
+				Com_DPrintf("ignoring outdated cp command from client %s\n", cl->name);
 				return;
 			}
 		}
 
 		// we basically use this while loop to avoid using 'goto' :)
-		while ( bGood ) {
+		while (bGood)
+		{
 
 			// must be at least 6: "cl_paks cgame ui @ firstref ... numChecksums"
 			// numChecksums is encoded
-			if ( nClientPaks < 6 ) {
+			if (nClientPaks < 6)
+			{
 				bGood = qfalse;
 				break;
 			}
 			// verify first to be the cgame checksum
-			pArg = Cmd_Argv( nCurArg++ );
-			if ( !pArg || *pArg == '@' || String::Atoi( pArg ) != nChkSum1 ) {
+			pArg = Cmd_Argv(nCurArg++);
+			if (!pArg || *pArg == '@' || String::Atoi(pArg) != nChkSum1)
+			{
 				bGood = qfalse;
 				break;
 			}
 			// verify the second to be the ui checksum
-			pArg = Cmd_Argv( nCurArg++ );
-			if ( !pArg || *pArg == '@' || String::Atoi( pArg ) != nChkSum2 ) {
+			pArg = Cmd_Argv(nCurArg++);
+			if (!pArg || *pArg == '@' || String::Atoi(pArg) != nChkSum2)
+			{
 				bGood = qfalse;
 				break;
 			}
 			// should be sitting at the delimeter now
-			pArg = Cmd_Argv( nCurArg++ );
-			if ( *pArg != '@' ) {
+			pArg = Cmd_Argv(nCurArg++);
+			if (*pArg != '@')
+			{
 				bGood = qfalse;
 				break;
 			}
 			// store checksums since tokenization is not re-entrant
-			for ( i = 0; nCurArg < nClientPaks; i++ ) {
-				nClientChkSum[i] = String::Atoi( Cmd_Argv( nCurArg++ ) );
+			for (i = 0; nCurArg < nClientPaks; i++)
+			{
+				nClientChkSum[i] = String::Atoi(Cmd_Argv(nCurArg++));
 			}
 
 			// store number to compare against (minus one cause the last is the number of checksums)
@@ -1261,59 +1448,74 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 
 			// make sure none of the client check sums are the same
 			// so the client can't send 5 the same checksums
-			for ( i = 0; i < nClientPaks; i++ ) {
-				for ( j = 0; j < nClientPaks; j++ ) {
-					if ( i == j ) {
+			for (i = 0; i < nClientPaks; i++)
+			{
+				for (j = 0; j < nClientPaks; j++)
+				{
+					if (i == j)
+					{
 						continue;
 					}
-					if ( nClientChkSum[i] == nClientChkSum[j] ) {
+					if (nClientChkSum[i] == nClientChkSum[j])
+					{
 						bGood = qfalse;
 						break;
 					}
 				}
-				if ( bGood == qfalse ) {
+				if (bGood == qfalse)
+				{
 					break;
 				}
 			}
-			if ( bGood == qfalse ) {
+			if (bGood == qfalse)
+			{
 				break;
 			}
 
 			// get the pure checksums of the pk3 files loaded by the server
 			pPaks = FS_LoadedPakPureChecksums();
-			Cmd_TokenizeString( pPaks );
+			Cmd_TokenizeString(pPaks);
 			nServerPaks = Cmd_Argc();
-			if ( nServerPaks > 1024 ) {
+			if (nServerPaks > 1024)
+			{
 				nServerPaks = 1024;
 			}
 
-			for ( i = 0; i < nServerPaks; i++ ) {
-				nServerChkSum[i] = String::Atoi( Cmd_Argv( i ) );
+			for (i = 0; i < nServerPaks; i++)
+			{
+				nServerChkSum[i] = String::Atoi(Cmd_Argv(i));
 			}
 
 			// check if the client has provided any pure checksums of pk3 files not loaded by the server
-			for ( i = 0; i < nClientPaks; i++ ) {
-				for ( j = 0; j < nServerPaks; j++ ) {
-					if ( nClientChkSum[i] == nServerChkSum[j] ) {
+			for (i = 0; i < nClientPaks; i++)
+			{
+				for (j = 0; j < nServerPaks; j++)
+				{
+					if (nClientChkSum[i] == nServerChkSum[j])
+					{
 						break;
 					}
 				}
-				if ( j >= nServerPaks ) {
+				if (j >= nServerPaks)
+				{
 					bGood = qfalse;
 					break;
 				}
 			}
-			if ( bGood == qfalse ) {
+			if (bGood == qfalse)
+			{
 				break;
 			}
 
 			// check if the number of checksums was correct
 			nChkSum1 = sv.checksumFeed;
-			for ( i = 0; i < nClientPaks; i++ ) {
+			for (i = 0; i < nClientPaks; i++)
+			{
 				nChkSum1 ^= nClientChkSum[i];
 			}
 			nChkSum1 ^= nClientPaks;
-			if ( nChkSum1 != nClientChkSum[nClientPaks] ) {
+			if (nChkSum1 != nClientChkSum[nClientPaks])
+			{
 				bGood = qfalse;
 				break;
 			}
@@ -1324,14 +1526,17 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 
 		cl->gotCP = qtrue;
 
-		if ( bGood ) {
+		if (bGood)
+		{
 			cl->pureAuthentic = 1;
-		} else {
+		}
+		else
+		{
 			cl->pureAuthentic = 0;
 			cl->nextSnapshotTime = -1;
 			cl->state = CS_ACTIVE;
-			SV_SendClientSnapshot( cl );
-			SV_DropClient( cl, "Unpure client detected. Invalid .PK3 files referenced!" );
+			SV_SendClientSnapshot(cl);
+			SV_DropClient(cl, "Unpure client detected. Invalid .PK3 files referenced!");
 		}
 	}
 }
@@ -1341,7 +1546,8 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 SV_ResetPureClient_f
 =================
 */
-static void SV_ResetPureClient_f( client_t *cl ) {
+static void SV_ResetPureClient_f(client_t* cl)
+{
 	cl->pureAuthentic = 0;
 	cl->gotCP = qfalse;
 }
@@ -1354,52 +1560,70 @@ Pull specific info from a newly changed userinfo string
 into a more C friendly form.
 =================
 */
-void SV_UserinfoChanged( client_t *cl ) {
-	const char    *val;
+void SV_UserinfoChanged(client_t* cl)
+{
+	const char* val;
 	int i;
 
 	// name for C code
-	String::NCpyZ( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
+	String::NCpyZ(cl->name, Info_ValueForKey(cl->userinfo, "name"), sizeof(cl->name));
 
 	// rate command
 
 	// if the client is on the same subnet as the server and we aren't running an
 	// internet public server, assume they don't need a rate choke
-	if ( SOCK_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1 ) {
-		cl->rate = 99999;   // lans should not rate limit
-	} else {
-		val = Info_ValueForKey( cl->userinfo, "rate" );
-		if ( String::Length( val ) ) {
-			i = String::Atoi( val );
+	if (SOCK_IsLANAddress(cl->netchan.remoteAddress) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1)
+	{
+		cl->rate = 99999;	// lans should not rate limit
+	}
+	else
+	{
+		val = Info_ValueForKey(cl->userinfo, "rate");
+		if (String::Length(val))
+		{
+			i = String::Atoi(val);
 			cl->rate = i;
-			if ( cl->rate < 1000 ) {
+			if (cl->rate < 1000)
+			{
 				cl->rate = 1000;
-			} else if ( cl->rate > 90000 ) {
+			}
+			else if (cl->rate > 90000)
+			{
 				cl->rate = 90000;
 			}
-		} else {
+		}
+		else
+		{
 			cl->rate = 5000;
 		}
 	}
-	val = Info_ValueForKey( cl->userinfo, "handicap" );
-	if ( String::Length( val ) ) {
-		i = String::Atoi( val );
-		if ( i <= -100 || i > 100 || String::Length( val ) > 4 ) {
-			Info_SetValueForKey( cl->userinfo, "handicap", "0", MAX_INFO_STRING_Q3 );
+	val = Info_ValueForKey(cl->userinfo, "handicap");
+	if (String::Length(val))
+	{
+		i = String::Atoi(val);
+		if (i <= -100 || i > 100 || String::Length(val) > 4)
+		{
+			Info_SetValueForKey(cl->userinfo, "handicap", "0", MAX_INFO_STRING_Q3);
 		}
 	}
 
 	// snaps command
-	val = Info_ValueForKey( cl->userinfo, "snaps" );
-	if ( String::Length( val ) ) {
-		i = String::Atoi( val );
-		if ( i < 1 ) {
+	val = Info_ValueForKey(cl->userinfo, "snaps");
+	if (String::Length(val))
+	{
+		i = String::Atoi(val);
+		if (i < 1)
+		{
 			i = 1;
-		} else if ( i > 30 ) {
+		}
+		else if (i > 30)
+		{
 			i = 30;
 		}
 		cl->snapshotMsec = 1000 / i;
-	} else {
+	}
+	else
+	{
 		cl->snapshotMsec = 50;
 	}
 
@@ -1410,20 +1634,25 @@ void SV_UserinfoChanged( client_t *cl ) {
 	// zinx - modified to always keep this consistent, instead of only
 	// when "ip" is 0-length, so users can't supply their own IP
 	//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
-	if ( !SOCK_IsLocalAddress( cl->netchan.remoteAddress ) ) {
-		Info_SetValueForKey( cl->userinfo, "ip", SOCK_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING_Q3 );
-	} else {
+	if (!SOCK_IsLocalAddress(cl->netchan.remoteAddress))
+	{
+		Info_SetValueForKey(cl->userinfo, "ip", SOCK_AdrToString(cl->netchan.remoteAddress), MAX_INFO_STRING_Q3);
+	}
+	else
+	{
 		// force the "ip" info key to "localhost" for local clients
-		Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING_Q3 );
+		Info_SetValueForKey(cl->userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
 	}
 
 	// TTimo
 	// download prefs of the client
-	val = Info_ValueForKey( cl->userinfo, "cl_wwwDownload" );
+	val = Info_ValueForKey(cl->userinfo, "cl_wwwDownload");
 	cl->bDlOK = qfalse;
-	if ( String::Length( val ) ) {
-		i = String::Atoi( val );
-		if ( i != 0 ) {
+	if (String::Length(val))
+	{
+		i = String::Atoi(val);
+		if (i != 0)
+		{
 			cl->bDlOK = qtrue;
 		}
 	}
@@ -1436,17 +1665,19 @@ void SV_UserinfoChanged( client_t *cl ) {
 SV_UpdateUserinfo_f
 ==================
 */
-static void SV_UpdateUserinfo_f( client_t *cl ) {
-	String::NCpyZ( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
+static void SV_UpdateUserinfo_f(client_t* cl)
+{
+	String::NCpyZ(cl->userinfo, Cmd_Argv(1), sizeof(cl->userinfo));
 
-	SV_UserinfoChanged( cl );
+	SV_UserinfoChanged(cl);
 	// call prog code to allow overrides
-	VM_Call( gvm, GAME_CLIENT_USERINFO_CHANGED, cl - svs.clients );
+	VM_Call(gvm, GAME_CLIENT_USERINFO_CHANGED, cl - svs.clients);
 }
 
-typedef struct {
-	const char        *name;
-	void ( *func )( client_t *cl );
+typedef struct
+{
+	const char* name;
+	void (* func)(client_t* cl);
 	qboolean allowedpostmapchange;
 } ucmd_t;
 
@@ -1470,32 +1701,40 @@ SV_ExecuteClientCommand
 Also called by bot code
 ==================
 */
-void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart ) {
-	ucmd_t  *u;
+void SV_ExecuteClientCommand(client_t* cl, const char* s, qboolean clientOK, qboolean premaprestart)
+{
+	ucmd_t* u;
 	qboolean bProcessed = qfalse;
 
-	Cmd_TokenizeString( s );
+	Cmd_TokenizeString(s);
 
 	// see if it is a server level command
-	for ( u = ucmds ; u->name ; u++ ) {
-		if ( !String::Cmp( Cmd_Argv( 0 ), u->name ) ) {
-			if ( premaprestart && !u->allowedpostmapchange ) {
+	for (u = ucmds; u->name; u++)
+	{
+		if (!String::Cmp(Cmd_Argv(0), u->name))
+		{
+			if (premaprestart && !u->allowedpostmapchange)
+			{
 				continue;
 			}
 
-			u->func( cl );
+			u->func(cl);
 			bProcessed = qtrue;
 			break;
 		}
 	}
 
-	if ( clientOK ) {
+	if (clientOK)
+	{
 		// pass unknown strings to the game
-		if ( !u->name && sv.state == SS_GAME ) {
-			VM_Call( gvm, GAME_CLIENT_COMMAND, cl - svs.clients );
+		if (!u->name && sv.state == SS_GAME)
+		{
+			VM_Call(gvm, GAME_CLIENT_COMMAND, cl - svs.clients);
 		}
-	} else if ( !bProcessed )     {
-		Com_DPrintf( "client text ignored for %s: %s\n", cl->name, Cmd_Argv( 0 ) );
+	}
+	else if (!bProcessed)
+	{
+		Com_DPrintf("client text ignored for %s: %s\n", cl->name, Cmd_Argv(0));
 	}
 }
 
@@ -1504,9 +1743,10 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 SV_ClientCommand
 ===============
 */
-static qboolean SV_ClientCommand( client_t *cl, QMsg *msg, qboolean premaprestart ) {
+static qboolean SV_ClientCommand(client_t* cl, QMsg* msg, qboolean premaprestart)
+{
 	int seq;
-	const char  *s;
+	const char* s;
 	qboolean clientOk = qtrue;
 	qboolean floodprotect = qtrue;
 
@@ -1514,23 +1754,26 @@ static qboolean SV_ClientCommand( client_t *cl, QMsg *msg, qboolean premaprestar
 	s = msg->ReadString();
 
 	// see if we have already executed it
-	if ( cl->lastClientCommand >= seq ) {
+	if (cl->lastClientCommand >= seq)
+	{
 		return qtrue;
 	}
 
-	Com_DPrintf( "clientCommand: %s : %i : %s\n", cl->name, seq, s );
+	Com_DPrintf("clientCommand: %s : %i : %s\n", cl->name, seq, s);
 
 	// drop the connection if we have somehow lost commands
-	if ( seq > cl->lastClientCommand + 1 ) {
-		Com_Printf( "Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1 );
-		SV_DropClient( cl, "Lost reliable commands" );
+	if (seq > cl->lastClientCommand + 1)
+	{
+		Com_Printf("Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1);
+		SV_DropClient(cl, "Lost reliable commands");
 		return qfalse;
 	}
 
 
 	// Gordon: AHA! Need to steal this for some other stuff BOOKMARK
 	// NERVE - SMF - some server game-only commands we cannot have flood protect
-	if ( !String::NCmp( "team", s, 4 ) || !String::NCmp( "setspawnpt", s, 10 ) || !String::NCmp( "score", s, 5 ) || !String::ICmp( "forcetapout", s ) ) {
+	if (!String::NCmp("team", s, 4) || !String::NCmp("setspawnpt", s, 10) || !String::NCmp("score", s, 5) || !String::ICmp("forcetapout", s))
+	{
 //		Com_DPrintf( "Skipping flood protection for: %s\n", s );
 		floodprotect = qfalse;
 	}
@@ -1542,28 +1785,30 @@ static qboolean SV_ClientCommand( client_t *cl, QMsg *msg, qboolean premaprestar
 	// but not other people
 	// We don't do this when the client hasn't been active yet since its
 	// normal to spam a lot of commands when downloading
-	if ( !com_cl_running->integer &&
-		 cl->state >= CS_ACTIVE &&      // (SA) this was commented out in Wolf.  Did we do that?
-		 sv_floodProtect->integer &&
-		 svs.time < cl->nextReliableTime &&
-		 floodprotect ) {
+	if (!com_cl_running->integer &&
+		cl->state >= CS_ACTIVE &&		// (SA) this was commented out in Wolf.  Did we do that?
+		sv_floodProtect->integer &&
+		svs.time < cl->nextReliableTime &&
+		floodprotect)
+	{
 		// ignore any other text messages from this client but let them keep playing
 		// TTimo - moved the ignored verbose to the actual processing in SV_ExecuteClientCommand, only printing if the core doesn't intercept
 		clientOk = qfalse;
 	}
 
 	// don't allow another command for 800 msec
-	if ( floodprotect &&
-		 svs.time >= cl->nextReliableTime ) {
+	if (floodprotect &&
+		svs.time >= cl->nextReliableTime)
+	{
 		cl->nextReliableTime = svs.time + 800;
 	}
 
-	SV_ExecuteClientCommand( cl, s, clientOk, premaprestart );
+	SV_ExecuteClientCommand(cl, s, clientOk, premaprestart);
 
 	cl->lastClientCommand = seq;
-	String::Sprintf( cl->lastClientCommandString, sizeof( cl->lastClientCommandString ), "%s", s );
+	String::Sprintf(cl->lastClientCommandString, sizeof(cl->lastClientCommandString), "%s", s);
 
-	return qtrue;       // continue procesing
+	return qtrue;		// continue procesing
 }
 
 
@@ -1577,14 +1822,16 @@ SV_ClientThink
 Also called by bot code
 ==================
 */
-void SV_ClientThink( client_t *cl, etusercmd_t *cmd ) {
+void SV_ClientThink(client_t* cl, etusercmd_t* cmd)
+{
 	cl->lastUsercmd = *cmd;
 
-	if ( cl->state != CS_ACTIVE ) {
-		return;     // may have been kicked during the last usercmd
+	if (cl->state != CS_ACTIVE)
+	{
+		return;		// may have been kicked during the last usercmd
 	}
 
-	VM_Call( gvm, GAME_CLIENT_THINK, cl - svs.clients );
+	VM_Call(gvm, GAME_CLIENT_THINK, cl - svs.clients);
 }
 
 /*
@@ -1599,28 +1846,34 @@ On very fast clients, there may be multiple usercmd packed into
 each of the backup packets.
 ==================
 */
-static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
+static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
+{
 	int i, key;
 	int cmdCount;
 	etusercmd_t nullcmd;
 	etusercmd_t cmds[MAX_PACKET_USERCMDS];
-	etusercmd_t   *cmd, *oldcmd;
+	etusercmd_t* cmd, * oldcmd;
 
-	if ( delta ) {
+	if (delta)
+	{
 		cl->deltaMessage = cl->messageAcknowledge;
-	} else {
+	}
+	else
+	{
 		cl->deltaMessage = -1;
 	}
 
 	cmdCount = msg->ReadByte();
 
-	if ( cmdCount < 1 ) {
-		Com_Printf( "cmdCount < 1\n" );
+	if (cmdCount < 1)
+	{
+		Com_Printf("cmdCount < 1\n");
 		return;
 	}
 
-	if ( cmdCount > MAX_PACKET_USERCMDS ) {
-		Com_Printf( "cmdCount > MAX_PACKET_USERCMDS\n" );
+	if (cmdCount > MAX_PACKET_USERCMDS)
+	{
+		Com_Printf("cmdCount > MAX_PACKET_USERCMDS\n");
 		return;
 	}
 
@@ -1629,47 +1882,53 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	// also use the message acknowledge
 	key ^= cl->messageAcknowledge;
 	// also use the last acknowledged server command in the key
-	key ^= Com_HashKey( cl->reliableCommands[ cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_ET - 1 ) ], 32 );
+	key ^= Com_HashKey(cl->reliableCommands[cl->reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)], 32);
 
-	memset( &nullcmd, 0, sizeof( nullcmd ) );
+	memset(&nullcmd, 0, sizeof(nullcmd));
 	oldcmd = &nullcmd;
-	for ( i = 0 ; i < cmdCount ; i++ ) {
+	for (i = 0; i < cmdCount; i++)
+	{
 		cmd = &cmds[i];
-		MSG_ReadDeltaUsercmdKey( msg, key, oldcmd, cmd );
+		MSG_ReadDeltaUsercmdKey(msg, key, oldcmd, cmd);
 //		MSG_ReadDeltaUsercmd( msg, oldcmd, cmd );
 		oldcmd = cmd;
 	}
 
 	// save time for ping calculation
-	cl->frames[ cl->messageAcknowledge & PACKET_MASK_Q3 ].messageAcked = svs.time;
+	cl->frames[cl->messageAcknowledge & PACKET_MASK_Q3].messageAcked = svs.time;
 
 	// TTimo
 	// catch the no-cp-yet situation before SV_ClientEnterWorld
 	// if CS_ACTIVE, then it's time to trigger a new gamestate emission
 	// if not, then we are getting remaining parasite usermove commands, which we should ignore
-	if ( sv_pure->integer != 0 && cl->pureAuthentic == 0 && !cl->gotCP ) {
-		if ( cl->state == CS_ACTIVE ) {
+	if (sv_pure->integer != 0 && cl->pureAuthentic == 0 && !cl->gotCP)
+	{
+		if (cl->state == CS_ACTIVE)
+		{
 			// we didn't get a cp yet, don't assume anything and just send the gamestate all over again
-			Com_DPrintf( "%s: didn't get cp command, resending gamestate\n", cl->name );
-			SV_SendClientGameState( cl );
+			Com_DPrintf("%s: didn't get cp command, resending gamestate\n", cl->name);
+			SV_SendClientGameState(cl);
 		}
 		return;
 	}
 
 	// if this is the first usercmd we have received
 	// this gamestate, put the client into the world
-	if ( cl->state == CS_PRIMED ) {
-		SV_ClientEnterWorld( cl, &cmds[0] );
+	if (cl->state == CS_PRIMED)
+	{
+		SV_ClientEnterWorld(cl, &cmds[0]);
 		// the moves can be processed normaly
 	}
 
 	// a bad cp command was sent, drop the client
-	if ( sv_pure->integer != 0 && cl->pureAuthentic == 0 ) {
-		SV_DropClient( cl, "Cannot validate pure client!" );
+	if (sv_pure->integer != 0 && cl->pureAuthentic == 0)
+	{
+		SV_DropClient(cl, "Cannot validate pure client!");
 		return;
 	}
 
-	if ( cl->state != CS_ACTIVE ) {
+	if (cl->state != CS_ACTIVE)
+	{
 		cl->deltaMessage = -1;
 		return;
 	}
@@ -1677,24 +1936,26 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	// usually, the first couple commands will be duplicates
 	// of ones we have previously received, but the servertimes
 	// in the commands will cause them to be immediately discarded
-	for ( i =  0 ; i < cmdCount ; i++ ) {
+	for (i =  0; i < cmdCount; i++)
+	{
 		// if this is a cmd from before a map_restart ignore it
-		if ( cmds[i].serverTime > cmds[cmdCount - 1].serverTime ) {
+		if (cmds[i].serverTime > cmds[cmdCount - 1].serverTime)
+		{
 			continue;
 		}
 		// extremely lagged or cmd from before a map_restart
 		//if ( cmds[i].serverTime > svs.time + 3000 ) {
 		//	continue;
 		//}
-		if ( !SV_GameIsSinglePlayer() ) { // We need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
-			// don't execute if this is an old cmd which is already executed
+		if (!SV_GameIsSinglePlayer())		// We need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+		{	// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
-			if ( cmds[i].serverTime <= cl->lastUsercmd.serverTime ) {   // Q3_MISSIONPACK
-//			if ( cmds[i].serverTime > cmds[cmdCount-1].serverTime ) {
-				continue;   // from just before a map_restart
+			if (cmds[i].serverTime <= cl->lastUsercmd.serverTime)		// Q3_MISSIONPACK
+			{	//			if ( cmds[i].serverTime > cmds[cmdCount-1].serverTime ) {
+				continue;	// from just before a map_restart
 			}
 		}
-		SV_ClientThink( cl, &cmds[ i ] );
+		SV_ClientThink(cl, &cmds[i]);
 	}
 }
 
@@ -1704,17 +1965,19 @@ static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 SV_ParseBinaryMessage
 =====================
 */
-static void SV_ParseBinaryMessage( client_t *cl, QMsg *msg ) {
+static void SV_ParseBinaryMessage(client_t* cl, QMsg* msg)
+{
 	int size;
 
-	MSG_BeginReadingUncompressed( msg );
+	MSG_BeginReadingUncompressed(msg);
 
 	size = msg->cursize - msg->readcount;
-	if ( size <= 0 || size > MAX_BINARY_MESSAGE_ET ) {
+	if (size <= 0 || size > MAX_BINARY_MESSAGE_ET)
+	{
 		return;
 	}
 
-	SV_GameBinaryMessageReceived( cl - svs.clients, (char*)&msg->_data[msg->readcount], size, cl->lastUsercmd.serverTime );
+	SV_GameBinaryMessageReceived(cl - svs.clients, (char*)&msg->_data[msg->readcount], size, cl->lastUsercmd.serverTime);
 }
 
 /*
@@ -1732,7 +1995,8 @@ SV_ExecuteClientMessage
 Parse a client packet
 ===================
 */
-void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
+void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
+{
 	int c;
 	int serverId;
 
@@ -1741,11 +2005,12 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	serverId = msg->ReadLong();
 	cl->messageAcknowledge = msg->ReadLong();
 
-	if ( cl->messageAcknowledge < 0 ) {
+	if (cl->messageAcknowledge < 0)
+	{
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 #ifndef NDEBUG
-		SV_DropClient( cl, "DEBUG: illegible client message" );
+		SV_DropClient(cl, "DEBUG: illegible client message");
 #endif
 		return;
 	}
@@ -1755,11 +2020,12 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	// NOTE: when the client message is fux0red the acknowledgement numbers
 	// can be out of range, this could cause the server to send thousands of server
 	// commands which the server thinks are not yet acknowledged in SV_UpdateServerCommandsToClient
-	if ( cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS_ET ) {
+	if (cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS_ET)
+	{
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 #ifndef NDEBUG
-		SV_DropClient( cl, "DEBUG: illegible client message" );
+		SV_DropClient(cl, "DEBUG: illegible client message");
 #endif
 		cl->reliableAcknowledge = cl->reliableSequence;
 		return;
@@ -1776,70 +2042,88 @@ void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	// don't drop as long as previous command was a nextdl, after a dl is done, downloadName is set back to ""
 	// but we still need to read the next message to move to next download or send gamestate
 	// I don't like this hack though, it must have been working fine at some point, suspecting the fix is somewhere else
-	if ( serverId != sv.serverId && !*cl->downloadName && !strstr( cl->lastClientCommandString, "nextdl" ) ) {
-		if ( serverId >= sv.restartedServerId && serverId < sv.serverId ) { // TTimo - use a comparison here to catch multiple map_restart
-			// they just haven't caught the map_restart yet
-			Com_DPrintf( "%s : ignoring pre map_restart / outdated client message\n", cl->name );
+	if (serverId != sv.serverId && !*cl->downloadName && !strstr(cl->lastClientCommandString, "nextdl"))
+	{
+		if (serverId >= sv.restartedServerId && serverId < sv.serverId)		// TTimo - use a comparison here to catch multiple map_restart
+		{	// they just haven't caught the map_restart yet
+			Com_DPrintf("%s : ignoring pre map_restart / outdated client message\n", cl->name);
 			return;
 		}
 		// if we can tell that the client has dropped the last
 		// gamestate we sent them, resend it
-		if ( cl->messageAcknowledge > cl->gamestateMessageNum ) {
-			Com_DPrintf( "%s : dropped gamestate, resending\n", cl->name );
-			SV_SendClientGameState( cl );
+		if (cl->messageAcknowledge > cl->gamestateMessageNum)
+		{
+			Com_DPrintf("%s : dropped gamestate, resending\n", cl->name);
+			SV_SendClientGameState(cl);
 		}
 
 		// read optional clientCommand strings
-		do {
+		do
+		{
 			c = msg->ReadByte();
-			if ( c == q3clc_EOF ) {
+			if (c == q3clc_EOF)
+			{
 				break;
 			}
-			if ( c != q3clc_clientCommand ) {
+			if (c != q3clc_clientCommand)
+			{
 				break;
 			}
-			if ( !SV_ClientCommand( cl, msg, qtrue ) ) {
-				return; // we couldn't execute it because of the flood protection
+			if (!SV_ClientCommand(cl, msg, qtrue))
+			{
+				return;	// we couldn't execute it because of the flood protection
 			}
-			if ( cl->state == CS_ZOMBIE ) {
-				return; // disconnect command
+			if (cl->state == CS_ZOMBIE)
+			{
+				return;	// disconnect command
 			}
-		} while ( 1 );
+		}
+		while (1);
 
 		return;
 	}
 
 	// read optional clientCommand strings
-	do {
+	do
+	{
 		c = msg->ReadByte();
-		if ( c == q3clc_EOF ) {
+		if (c == q3clc_EOF)
+		{
 			break;
 		}
-		if ( c != q3clc_clientCommand ) {
+		if (c != q3clc_clientCommand)
+		{
 			break;
 		}
-		if ( !SV_ClientCommand( cl, msg, qfalse ) ) {
-			return; // we couldn't execute it because of the flood protection
+		if (!SV_ClientCommand(cl, msg, qfalse))
+		{
+			return;	// we couldn't execute it because of the flood protection
 		}
-		if ( cl->state == CS_ZOMBIE ) {
-			return; // disconnect command
+		if (cl->state == CS_ZOMBIE)
+		{
+			return;	// disconnect command
 		}
-	} while ( 1 );
+	}
+	while (1);
 
 	// read the etusercmd_t
-	if ( c == q3clc_move ) {
-		SV_UserMove( cl, msg, qtrue );
+	if (c == q3clc_move)
+	{
+		SV_UserMove(cl, msg, qtrue);
 		c = msg->ReadByte();
-	} else if ( c == q3clc_moveNoDelta ) {
-		SV_UserMove( cl, msg, qfalse );
+	}
+	else if (c == q3clc_moveNoDelta)
+	{
+		SV_UserMove(cl, msg, qfalse);
 		c = msg->ReadByte();
 	}
 
-	if ( c != q3clc_EOF ) {
-		Com_Printf( "WARNING: bad command byte for client %i\n", (int)(cl - svs.clients) );
+	if (c != q3clc_EOF)
+	{
+		Com_Printf("WARNING: bad command byte for client %i\n", (int)(cl - svs.clients));
 	}
 
-	SV_ParseBinaryMessage( cl, msg );
+	SV_ParseBinaryMessage(cl, msg);
 
 //	if ( msg->readcount != msg->cursize ) {
 //		Com_Printf( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );

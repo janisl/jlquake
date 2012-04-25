@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -82,20 +82,22 @@ int botlibsetup = qfalse;
 //===========================================================================
 // Ridah, faster Win32 code
 #ifdef _WIN32
-#undef MAX_PATH     // this is an ugly hack, to temporarily ignore the current definition, since it's also defined in windows.h
+#undef MAX_PATH		// this is an ugly hack, to temporarily ignore the current definition, since it's also defined in windows.h
 #include <windows.h>
 #undef MAX_PATH
 #define MAX_PATH    MAX_QPATH
 #endif
 
-int Sys_MilliSeconds( void ) {
+int Sys_MilliSeconds(void)
+{
 // Ridah, faster Win32 code
 #ifdef _WIN32
 	int sys_curtime;
 	static qboolean initialized = qfalse;
 	static int sys_timeBase;
 
-	if ( !initialized ) {
+	if (!initialized)
+	{
 		sys_timeBase = timeGetTime();
 		initialized = qtrue;
 	}
@@ -105,94 +107,107 @@ int Sys_MilliSeconds( void ) {
 #else
 	return clock() * 1000 / CLOCKS_PER_SEC;
 #endif
-} //end of the function Sys_MilliSeconds
+}	//end of the function Sys_MilliSeconds
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean ValidClientNumber( int num, char *str ) {
-	if ( num < 0 || num > botlibglobals.maxclients ) {
+qboolean ValidClientNumber(int num, char* str)
+{
+	if (num < 0 || num > botlibglobals.maxclients)
+	{
 		//weird: the disabled stuff results in a crash
-		botimport.Print( PRT_ERROR, "%s: invalid client number %d, [0, %d]\n",
-						 str, num, botlibglobals.maxclients );
+		botimport.Print(PRT_ERROR, "%s: invalid client number %d, [0, %d]\n",
+			str, num, botlibglobals.maxclients);
 		return qfalse;
-	} //end if
+	}	//end if
 	return qtrue;
-} //end of the function BotValidateClientNumber
+}	//end of the function BotValidateClientNumber
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean ValidEntityNumber( int num, const char *str ) {
-	if ( num < 0 || num > botlibglobals.maxentities ) {
-		botimport.Print( PRT_ERROR, "%s: invalid entity number %d, [0, %d]\n",
-						 str, num, botlibglobals.maxentities );
+qboolean ValidEntityNumber(int num, const char* str)
+{
+	if (num < 0 || num > botlibglobals.maxentities)
+	{
+		botimport.Print(PRT_ERROR, "%s: invalid entity number %d, [0, %d]\n",
+			str, num, botlibglobals.maxentities);
 		return qfalse;
-	} //end if
+	}	//end if
 	return qtrue;
-} //end of the function BotValidateClientNumber
+}	//end of the function BotValidateClientNumber
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean BotLibSetup( const char *str ) {
+qboolean BotLibSetup(const char* str)
+{
 //	return qtrue;
 
-	if ( !botlibglobals.botlibsetup ) {
-		botimport.Print( PRT_ERROR, "%s: bot library used before being setup\n", str );
+	if (!botlibglobals.botlibsetup)
+	{
+		botimport.Print(PRT_ERROR, "%s: bot library used before being setup\n", str);
 		return qfalse;
-	} //end if
+	}	//end if
 	return qtrue;
-} //end of the function BotLibSetup
+}	//end of the function BotLibSetup
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-extern define_t *globaldefines;
-int Export_BotLibSetup( qboolean singleplayer ) {
+extern define_t* globaldefines;
+int Export_BotLibSetup(qboolean singleplayer)
+{
 	int errnum;
 
-	bot_developer = LibVarGetValue( "bot_developer" );
-	Log_Open( "botlib.log" );
+	bot_developer = LibVarGetValue("bot_developer");
+	Log_Open("botlib.log");
 	//
-	botimport.Print( PRT_MESSAGE, "------- BotLib Initialization -------\n" );
+	botimport.Print(PRT_MESSAGE, "------- BotLib Initialization -------\n");
 	//
-	botlibglobals.maxclients = (int) LibVarValue( "maxclients", "128" );
-	botlibglobals.maxentities = (int) LibVarValue( "maxentities", "1024" );
+	botlibglobals.maxclients = (int)LibVarValue("maxclients", "128");
+	botlibglobals.maxentities = (int)LibVarValue("maxentities", "1024");
 
-	errnum = AAS_Setup();           //be_aas_main.c
-	if ( errnum != BLERR_NOERROR ) {
+	errnum = AAS_Setup();			//be_aas_main.c
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
-	errnum = EA_Setup();            //be_ea.c
-	if ( errnum != BLERR_NOERROR ) {
+	errnum = EA_Setup();			//be_ea.c
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
-	errnum = BotSetupWeaponAI();    //be_ai_weap.c
-	if ( errnum != BLERR_NOERROR ) {
+	errnum = BotSetupWeaponAI();	//be_ai_weap.c
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
 // START	Arnout changes, 28-08-2002.
 // added single player
-	errnum = BotSetupGoalAI( singleplayer );      //be_ai_goal.c
+	errnum = BotSetupGoalAI(singleplayer);			//be_ai_goal.c
 // END	Arnout changes, 28-08-2002.
-	if ( errnum != BLERR_NOERROR ) {
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
-	errnum = BotSetupChatAI();      //be_ai_chat.c
-	if ( errnum != BLERR_NOERROR ) {
+	errnum = BotSetupChatAI();		//be_ai_chat.c
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
-	errnum = BotSetupMoveAI();      //be_ai_move.c
-	if ( errnum != BLERR_NOERROR ) {
+	errnum = BotSetupMoveAI();		//be_ai_move.c
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
 
@@ -202,31 +217,34 @@ int Export_BotLibSetup( qboolean singleplayer ) {
 	botlibglobals.botlibsetup = qtrue;
 
 	return BLERR_NOERROR;
-} //end of the function Export_BotLibSetup
+}	//end of the function Export_BotLibSetup
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibShutdown( void ) {
+int Export_BotLibShutdown(void)
+{
 	static int recursive = 0;
 
-	if ( !BotLibSetup( "BotLibShutdown" ) ) {
+	if (!BotLibSetup("BotLibShutdown"))
+	{
 		return BLERR_LIBRARYNOTSETUP;
 	}
 	//
-	if ( recursive ) {
+	if (recursive)
+	{
 		return BLERR_NOERROR;
 	}
 	recursive = 1;
 	// shutdown all AI subsystems
-	BotShutdownChatAI();        //be_ai_chat.c
-	BotShutdownMoveAI();        //be_ai_move.c
-	BotShutdownGoalAI();        //be_ai_goal.c
-	BotShutdownWeaponAI();      //be_ai_weap.c
-	BotShutdownWeights();       //be_ai_weight.c
-	BotShutdownCharacters();    //be_ai_char.c
+	BotShutdownChatAI();		//be_ai_chat.c
+	BotShutdownMoveAI();		//be_ai_move.c
+	BotShutdownGoalAI();		//be_ai_goal.c
+	BotShutdownWeaponAI();		//be_ai_weap.c
+	BotShutdownWeights();		//be_ai_weight.c
+	BotShutdownCharacters();	//be_ai_char.c
 	// shutdown AAS
 	AAS_Shutdown();
 	// shutdown bot elemantary actions
@@ -245,156 +263,169 @@ int Export_BotLibShutdown( void ) {
 	PC_CheckOpenSourceHandles();
 	//
 #ifdef _DEBUG
-	Log_AlwaysOpen( "memory.log" );
+	Log_AlwaysOpen("memory.log");
 	PrintMemoryLabels();
 	Log_Shutdown();
 #endif
 	return BLERR_NOERROR;
-} //end of the function Export_BotLibShutdown
+}	//end of the function Export_BotLibShutdown
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibVarSet( const char *var_name, const char *value ) {
-	LibVarSet( var_name, value );
+int Export_BotLibVarSet(const char* var_name, const char* value)
+{
+	LibVarSet(var_name, value);
 	return BLERR_NOERROR;
-} //end of the function Export_BotLibVarSet
+}	//end of the function Export_BotLibVarSet
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibVarGet( char *var_name, char *value, int size ) {
-	const char *varvalue;
+int Export_BotLibVarGet(char* var_name, char* value, int size)
+{
+	const char* varvalue;
 
-	varvalue = LibVarGetString( var_name );
-	String::NCpy( value, varvalue, size - 1 );
+	varvalue = LibVarGetString(var_name);
+	String::NCpy(value, varvalue, size - 1);
 	value[size - 1] = '\0';
 	return BLERR_NOERROR;
-} //end of the function Export_BotLibVarGet
+}	//end of the function Export_BotLibVarGet
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibStartFrame( float time ) {
-	if ( !BotLibSetup( "BotStartFrame" ) ) {
+int Export_BotLibStartFrame(float time)
+{
+	if (!BotLibSetup("BotStartFrame"))
+	{
 		return BLERR_LIBRARYNOTSETUP;
 	}
-	return AAS_StartFrame( time );
-} //end of the function Export_BotLibStartFrame
+	return AAS_StartFrame(time);
+}	//end of the function Export_BotLibStartFrame
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AAS_EnableAllAreas( void );
+void AAS_EnableAllAreas(void);
 
-int Export_BotLibLoadMap( const char *mapname ) {
+int Export_BotLibLoadMap(const char* mapname)
+{
 #ifdef DEBUG
 	int starttime = Sys_MilliSeconds();
 #endif
 	int errnum;
 
-	if ( !BotLibSetup( "BotLoadMap" ) ) {
+	if (!BotLibSetup("BotLoadMap"))
+	{
 		return BLERR_LIBRARYNOTSETUP;
 	}
 	//
 	// if the mapname is NULL, then this is a restart
-	if ( !mapname ) {
+	if (!mapname)
+	{
 		// START	Arnout changes, 29-08-2002.
 		// don't init the heap if no aas loaded, causes "SV_Bot_HunkAlloc: Alloc with marks already set"
-		if ( ( *aasworld ).loaded ) {
+		if ((*aasworld).loaded)
+		{
 			AAS_InitAASLinkHeap();
 			AAS_EnableAllAreas();
 		}
 		// END	Arnout changes, 29-08-2002.
-		( *aasworld ).numframes = 0;
-		memset( ( *aasworld ).arealinkedentities, 0, ( *aasworld ).numareas * sizeof( aas_link_t * ) );
-		memset( ( *aasworld ).entities, 0, ( *aasworld ).maxentities * sizeof( aas_entity_t ) );
+		(*aasworld).numframes = 0;
+		memset((*aasworld).arealinkedentities, 0, (*aasworld).numareas * sizeof(aas_link_t*));
+		memset((*aasworld).entities, 0, (*aasworld).maxentities * sizeof(aas_entity_t));
 		return BLERR_NOERROR;
 	}
 	//
-	botimport.Print( PRT_MESSAGE, "------------ Map Loading ------------\n" );
+	botimport.Print(PRT_MESSAGE, "------------ Map Loading ------------\n");
 	//startup AAS for the current map, model and sound index
-	errnum = AAS_LoadMap( mapname );
-	if ( errnum != BLERR_NOERROR ) {
+	errnum = AAS_LoadMap(mapname);
+	if (errnum != BLERR_NOERROR)
+	{
 		return errnum;
 	}
 	//initialize the items in the level
-	BotInitLevelItems();        //be_ai_goal.h
-	BotSetBrushModelTypes();    //be_ai_move.h
+	BotInitLevelItems();		//be_ai_goal.h
+	BotSetBrushModelTypes();	//be_ai_move.h
 	//
-	botimport.Print( PRT_MESSAGE, "-------------------------------------\n" );
+	botimport.Print(PRT_MESSAGE, "-------------------------------------\n");
 #ifdef DEBUG
-	botimport.Print( PRT_MESSAGE, "map loaded in %d msec\n", Sys_MilliSeconds() - starttime );
+	botimport.Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_MilliSeconds() - starttime);
 #endif
 	//
 	return BLERR_NOERROR;
-} //end of the function Export_BotLibLoadMap
+}	//end of the function Export_BotLibLoadMap
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibUpdateEntity( int ent, bot_entitystate_t *state ) {
-	if ( !BotLibSetup( "BotUpdateEntity" ) ) {
+int Export_BotLibUpdateEntity(int ent, bot_entitystate_t* state)
+{
+	if (!BotLibSetup("BotUpdateEntity"))
+	{
 		return BLERR_LIBRARYNOTSETUP;
 	}
-	if ( !ValidEntityNumber( ent, "BotUpdateEntity" ) ) {
+	if (!ValidEntityNumber(ent, "BotUpdateEntity"))
+	{
 		return BLERR_INVALIDENTITYNUMBER;
 	}
 
-	return AAS_UpdateEntity( ent, state );
-} //end of the function Export_BotLibUpdateEntity
+	return AAS_UpdateEntity(ent, state);
+}	//end of the function Export_BotLibUpdateEntity
 //===========================================================================
 //
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AAS_TestMovementPrediction( int entnum, vec3_t origin, vec3_t dir );
-void ElevatorBottomCenter( aas_reachability_t *reach, vec3_t bottomcenter );
-int BotGetReachabilityToGoal( vec3_t origin, int areanum, int entnum,
-							  int lastgoalareanum, int lastareanum,
-							  int *avoidreach, float *avoidreachtimes, int *avoidreachtries,
-							  bot_goal_t *goal, int travelflags, int movetravelflags );
+void AAS_TestMovementPrediction(int entnum, vec3_t origin, vec3_t dir);
+void ElevatorBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter);
+int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
+	int lastgoalareanum, int lastareanum,
+	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
+	bot_goal_t* goal, int travelflags, int movetravelflags);
 
-int AAS_PointLight( vec3_t origin, int *red, int *green, int *blue );
+int AAS_PointLight(vec3_t origin, int* red, int* green, int* blue);
 
-int AAS_TraceAreas( vec3_t start, vec3_t end, int *areas, vec3_t *points, int maxareas );
+int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int maxareas);
 
-int AAS_Reachability_WeaponJump( int area1num, int area2num );
+int AAS_Reachability_WeaponJump(int area1num, int area2num);
 
-int BotFuzzyPointReachabilityArea( vec3_t origin );
+int BotFuzzyPointReachabilityArea(vec3_t origin);
 
-float BotGapDistance( vec3_t origin, vec3_t hordir, int entnum );
+float BotGapDistance(vec3_t origin, vec3_t hordir, int entnum);
 
-int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos );
+int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
 
-int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float *outpos );
+int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 
-int AAS_ListAreasInRange( vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t *outareas, int maxareas );
+int AAS_ListAreasInRange(vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas);
 
-int AAS_AvoidDangerArea( vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, int travelflags );
+int AAS_AvoidDangerArea(vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, int travelflags);
 
-int AAS_Retreat( int *dangerSpots, int dangerSpotCount, vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags );
+int AAS_Retreat(int* dangerSpots, int dangerSpotCount, vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags);
 
-int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
-							   aas_altroutegoal_t *altroutegoals, int maxaltroutegoals,
-							   int color );
+int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
+	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals,
+	int color);
 
-void AAS_SetAASBlockingEntity( vec3_t absmin, vec3_t absmax, int blocking );
+void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, int blocking);
 
-void AAS_RecordTeamDeathArea( vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags );
+void AAS_RecordTeamDeathArea(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
 
-int BotExportTest( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 ) {
+int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
+{
 	static int area = -1;
 	static int line[2];
 	int newarea, i, highlightarea, bot_testhidepos, hideposarea, bot_debug;
@@ -403,85 +434,97 @@ int BotExportTest( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 ) {
 //	vec3_t mins = {-16, -16, -24};
 //	vec3_t maxs = {16, 16, 32};
 
-	if ( !aasworld->loaded ) {
+	if (!aasworld->loaded)
+	{
 		return 0;
 	}
 
-	AAS_SetCurrentWorld( 0 );
+	AAS_SetCurrentWorld(0);
 
-	for ( i = 0; i < 2; i++ ) {
-		if ( !line[i] ) {
+	for (i = 0; i < 2; i++)
+	{
+		if (!line[i])
+		{
 			line[i] = botimport.DebugLineCreate();
 		}
 	}
 
 //	AAS_ClearShownDebugLines();
-	bot_testhidepos = LibVarGetValue( "bot_testhidepos" );
-	if ( bot_testhidepos ) {
-		VectorCopy( parm2, origin );
-		newarea = BotFuzzyPointReachabilityArea( origin );
+	bot_testhidepos = LibVarGetValue("bot_testhidepos");
+	if (bot_testhidepos)
+	{
+		VectorCopy(parm2, origin);
+		newarea = BotFuzzyPointReachabilityArea(origin);
 
-		if ( parm0 & 1 ) {
+		if (parm0 & 1)
+		{
 			botlibglobals.goalareanum = newarea;
-			VectorCopy( origin, botlibglobals.goalorigin );
-			botimport.Print( PRT_MESSAGE, "new enemy position %2.1f %2.1f %2.1f area %d\n", origin[0], origin[1], origin[2], newarea );
-		} //end if
+			VectorCopy(origin, botlibglobals.goalorigin);
+			botimport.Print(PRT_MESSAGE, "new enemy position %2.1f %2.1f %2.1f area %d\n", origin[0], origin[1], origin[2], newarea);
+		}	//end if
 
 		AAS_ClearShownPolygons();
 		AAS_ClearShownDebugLines();
-		hideposarea = AAS_NearestHideArea( 0, origin, AAS_PointAreaNum( origin ), 0,
-										   botlibglobals.goalorigin, botlibglobals.goalareanum, TFL_DEFAULT, 99999, NULL );
+		hideposarea = AAS_NearestHideArea(0, origin, AAS_PointAreaNum(origin), 0,
+			botlibglobals.goalorigin, botlibglobals.goalareanum, TFL_DEFAULT, 99999, NULL);
 
 		//area we are currently in
-		AAS_ShowAreaPolygons( newarea, 1, qtrue );
+		AAS_ShowAreaPolygons(newarea, 1, qtrue);
 
 		//enemy position
-		AAS_ShowAreaPolygons( botlibglobals.goalareanum, 2, qtrue );
+		AAS_ShowAreaPolygons(botlibglobals.goalareanum, 2, qtrue);
 
 		//area we should go hide
-		AAS_ShowAreaPolygons( hideposarea, 4, qtrue );
+		AAS_ShowAreaPolygons(hideposarea, 4, qtrue);
 
 		return 0;
 	}
 
-	highlightarea = LibVarGetValue( "bot_highlightarea" );
-	if ( highlightarea > 0 ) {
+	highlightarea = LibVarGetValue("bot_highlightarea");
+	if (highlightarea > 0)
+	{
 		newarea = highlightarea;
-	} else {
-		VectorCopy( parm2, origin );
+	}
+	else
+	{
+		VectorCopy(parm2, origin);
 
 		//origin[2] += 0.5;
-		newarea = BotFuzzyPointReachabilityArea( origin );
-	} //end else
+		newarea = BotFuzzyPointReachabilityArea(origin);
+	}	//end else
 
-	bot_debug = LibVarGetValue( "bot_debug" );
-	if ( bot_debug == 9 ) {
+	bot_debug = LibVarGetValue("bot_debug");
+	if (bot_debug == 9)
+	{
 		aas_clientmove_t move;
 		vec3_t dest;
 		qboolean this_success;
 
-		if ( parm0 & 1 ) {
+		if (parm0 & 1)
+		{
 			botlibglobals.goalareanum = newarea;
-			VectorCopy( parm2, botlibglobals.goalorigin );
-			botimport.Print( PRT_MESSAGE, "new goal %2.1f %2.1f %2.1f area %d\n", origin[0], origin[1], origin[2], newarea );
+			VectorCopy(parm2, botlibglobals.goalorigin);
+			botimport.Print(PRT_MESSAGE, "new goal %2.1f %2.1f %2.1f area %d\n", origin[0], origin[1], origin[2], newarea);
 		}
 
-		VectorCopy( parm2, origin );
-		VectorCopy( botlibglobals.goalorigin, dest );
+		VectorCopy(parm2, origin);
+		VectorCopy(botlibglobals.goalorigin, dest);
 
 		// debug direct movement
-		VectorSubtract( dest, origin, forward );
-		VectorNormalize( forward );
-		VectorScale( forward, 300, forward );
+		VectorSubtract(dest, origin, forward);
+		VectorNormalize(forward);
+		VectorScale(forward, 300, forward);
 
-		this_success = AAS_PredictClientMovement( &move, 0, origin,
-												  -1, qfalse,
-												  forward, dest, -1,
-												  40, 0.05, SE_ENTERAREA | SE_HITGROUNDDAMAGE | SE_HITENT | SE_HITGROUNDAREA | SE_STUCK | SE_GAP, botlibglobals.goalareanum,
-												  qtrue );
+		this_success = AAS_PredictClientMovement(&move, 0, origin,
+			-1, qfalse,
+			forward, dest, -1,
+			40, 0.05, SE_ENTERAREA | SE_HITGROUNDDAMAGE | SE_HITENT | SE_HITGROUNDAREA | SE_STUCK | SE_GAP, botlibglobals.goalareanum,
+			qtrue);
 
-		if ( this_success ) {
-			switch ( move.stopevent ) {
+		if (this_success)
+		{
+			switch (move.stopevent)
+			{
 			case SE_ENTERAREA:
 			case SE_HITENT:
 			case SE_HITGROUNDAREA:
@@ -491,106 +534,136 @@ int BotExportTest( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 ) {
 			}
 		}
 
-		if ( this_success != botlibglobals.lastsuccess ) {
-			botimport.Print( PRT_MESSAGE, "DirectMove: %s\n", this_success ? "SUCCESS" : "FAILURE" );
+		if (this_success != botlibglobals.lastsuccess)
+		{
+			botimport.Print(PRT_MESSAGE, "DirectMove: %s\n", this_success ? "SUCCESS" : "FAILURE");
 			botlibglobals.lastsuccess = this_success;
 		}
 
 		return 0;
 	}
 
-	botimport.Print( PRT_MESSAGE, "\rtravel time to goal (%d) = %d  ", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea( newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT ) );
-	if ( newarea != area ) {
-		botimport.Print( PRT_MESSAGE, "origin = %f, %f, %f\n", origin[0], origin[1], origin[2] );
+	botimport.Print(PRT_MESSAGE, "\rtravel time to goal (%d) = %d  ", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT));
+	if (newarea != area)
+	{
+		botimport.Print(PRT_MESSAGE, "origin = %f, %f, %f\n", origin[0], origin[1], origin[2]);
 		area = newarea;
-		botimport.Print( PRT_MESSAGE, "new area %d, cluster %d, presence type %d\n", area, AAS_AreaCluster( area ), AAS_PointPresenceType( origin ) );
+		botimport.Print(PRT_MESSAGE, "new area %d, cluster %d, presence type %d\n", area, AAS_AreaCluster(area), AAS_PointPresenceType(origin));
 
-		if ( aasworld->areasettings[area].areaflags & AREA_LIQUID ) {
-			botimport.Print( PRT_MESSAGE, "liquid area\n" );
-		} //end if
+		if (aasworld->areasettings[area].areaflags & AREA_LIQUID)
+		{
+			botimport.Print(PRT_MESSAGE, "liquid area\n");
+		}	//end if
 
-		botimport.Print( PRT_MESSAGE, "area contents: " );
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_MOVER ) {
-			botimport.Print( PRT_MESSAGE, "mover " );
-		} //end if
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_WATER ) {
-			botimport.Print( PRT_MESSAGE, "water " );
-		} //end if
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_LAVA ) {
-			botimport.Print( PRT_MESSAGE, "lava " );
-		} //end if
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_SLIME ) {
-			botimport.Print( PRT_MESSAGE, "slag " );
-		} //end if
+		botimport.Print(PRT_MESSAGE, "area contents: ");
+		if (aasworld->areasettings[area].contents & AREACONTENTS_MOVER)
+		{
+			botimport.Print(PRT_MESSAGE, "mover ");
+		}	//end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_WATER)
+		{
+			botimport.Print(PRT_MESSAGE, "water ");
+		}	//end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_LAVA)
+		{
+			botimport.Print(PRT_MESSAGE, "lava ");
+		}	//end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_SLIME)
+		{
+			botimport.Print(PRT_MESSAGE, "slag ");
+		}	//end if
 
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_JUMPPAD ) {
-			botimport.Print( PRT_MESSAGE, "jump pad " );
-		} //end if
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_CLUSTERPORTAL ) {
-			botimport.Print( PRT_MESSAGE, "cluster portal " );
-		} //end if
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_DONOTENTER ) {
-			botimport.Print( PRT_MESSAGE, "do not enter " );
-		} //end if
-		if ( aasworld->areasettings[area].contents & AREACONTENTS_DONOTENTER_LARGE ) {
-			botimport.Print( PRT_MESSAGE, "do not enter large " );
-		} //end if
-		if ( !aasworld->areasettings[area].contents ) {
-			botimport.Print( PRT_MESSAGE, "empty " );
-		} //end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_JUMPPAD)
+		{
+			botimport.Print(PRT_MESSAGE, "jump pad ");
+		}	//end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_CLUSTERPORTAL)
+		{
+			botimport.Print(PRT_MESSAGE, "cluster portal ");
+		}	//end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_DONOTENTER)
+		{
+			botimport.Print(PRT_MESSAGE, "do not enter ");
+		}	//end if
+		if (aasworld->areasettings[area].contents & AREACONTENTS_DONOTENTER_LARGE)
+		{
+			botimport.Print(PRT_MESSAGE, "do not enter large ");
+		}	//end if
+		if (!aasworld->areasettings[area].contents)
+		{
+			botimport.Print(PRT_MESSAGE, "empty ");
+		}	//end if
 
-		botimport.Print( PRT_MESSAGE, "\n" );
-		botimport.Print( PRT_MESSAGE, "area flags: " );
+		botimport.Print(PRT_MESSAGE, "\n");
+		botimport.Print(PRT_MESSAGE, "area flags: ");
 
-		if ( aasworld->areasettings[area].areaflags & AREA_LADDER ) {
-			botimport.Print( PRT_MESSAGE, "ladder " );
+		if (aasworld->areasettings[area].areaflags & AREA_LADDER)
+		{
+			botimport.Print(PRT_MESSAGE, "ladder ");
 		}
-		if ( aasworld->areasettings[area].areaflags & AREA_GROUNDED ) {
-			botimport.Print( PRT_MESSAGE, "grounded " );
+		if (aasworld->areasettings[area].areaflags & AREA_GROUNDED)
+		{
+			botimport.Print(PRT_MESSAGE, "grounded ");
 		}
-		if ( aasworld->areasettings[area].areaflags & AREA_LIQUID ) {
-			botimport.Print( PRT_MESSAGE, "liquid " );
+		if (aasworld->areasettings[area].areaflags & AREA_LIQUID)
+		{
+			botimport.Print(PRT_MESSAGE, "liquid ");
 		}
-		if ( aasworld->areasettings[area].areaflags & AREA_DISABLED ) {
-			botimport.Print( PRT_MESSAGE, "DISABLED " );
+		if (aasworld->areasettings[area].areaflags & AREA_DISABLED)
+		{
+			botimport.Print(PRT_MESSAGE, "DISABLED ");
 		}
-		if ( aasworld->areasettings[area].areaflags & AREA_AVOID ) {
-			botimport.Print( PRT_MESSAGE, "AVOID " );
+		if (aasworld->areasettings[area].areaflags & AREA_AVOID)
+		{
+			botimport.Print(PRT_MESSAGE, "AVOID ");
 		}
 
-		botimport.Print( PRT_MESSAGE, "\n" );
-		botimport.Print( PRT_MESSAGE, "travel time to goal (%d) = %d\n", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea( newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT | TFL_ROCKETJUMP ) );
+		botimport.Print(PRT_MESSAGE, "\n");
+		botimport.Print(PRT_MESSAGE, "travel time to goal (%d) = %d\n", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT | TFL_ROCKETJUMP));
 	}
 
-	if ( parm0 & 1 ) {
+	if (parm0 & 1)
+	{
 		botlibglobals.goalareanum = newarea;
-		VectorCopy( parm2, botlibglobals.goalorigin );
-		botimport.Print( PRT_MESSAGE, "new goal %2.1f %2.1f %2.1f area %d\n", origin[0], origin[1], origin[2], newarea );
+		VectorCopy(parm2, botlibglobals.goalorigin);
+		botimport.Print(PRT_MESSAGE, "new goal %2.1f %2.1f %2.1f area %d\n", origin[0], origin[1], origin[2], newarea);
 	}
 
 	AAS_ClearShownPolygons();
 	AAS_ClearShownDebugLines();
 
-	if ( parm0 & 8 ) {
+	if (parm0 & 8)
+	{
 		int jk = 0;
-		if ( parm0 & 16 ) {
-			for ( ; jk < aasworld->numareas; jk++ ) {
-				if ( !( aasworld->areasettings[jk].areaflags & AREA_DISABLED ) ) {
-					AAS_ShowAreaPolygons( jk, 1, parm0 & 4 );
+		if (parm0 & 16)
+		{
+			for (; jk < aasworld->numareas; jk++)
+			{
+				if (!(aasworld->areasettings[jk].areaflags & AREA_DISABLED))
+				{
+					AAS_ShowAreaPolygons(jk, 1, parm0 & 4);
 				}
 			}
-		} else {
-			for ( ; jk < aasworld->numareas; jk++ ) {
-				AAS_ShowAreaPolygons( jk, 1, parm0 & 4 );
+		}
+		else
+		{
+			for (; jk < aasworld->numareas; jk++)
+			{
+				AAS_ShowAreaPolygons(jk, 1, parm0 & 4);
 			}
 		}
-	} else {
-		AAS_ShowAreaPolygons( newarea, 1, parm0 & 4 );
+	}
+	else
+	{
+		AAS_ShowAreaPolygons(newarea, 1, parm0 & 4);
 	}
 
-	if ( parm0 & 2 ) {
-		AAS_ShowReachableAreas( area );
-	} else {
+	if (parm0 & 2)
+	{
+		AAS_ShowReachableAreas(area);
+	}
+	else
+	{
 		static int lastgoalareanum, lastareanum;
 		static int avoidreach[MAX_AVOIDREACH];
 		static float avoidreachtimes[MAX_AVOIDREACH];
@@ -602,24 +675,25 @@ int BotExportTest( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 ) {
 		static int lastreach;
 
 		goal.areanum = botlibglobals.goalareanum;
-		VectorCopy( botlibglobals.goalorigin, goal.origin );
-		reachnum = BotGetReachabilityToGoal( origin, newarea, -1,
-											 lastgoalareanum, lastareanum,
-											 avoidreach, avoidreachtimes, avoidreachtries,
-											 &goal, TFL_DEFAULT | TFL_FUNCBOB, TFL_DEFAULT );
-		AAS_ReachabilityFromNum( reachnum, &reach );
-		if ( lastreach != reachnum ) {
-			botimport.Print( PRT_MESSAGE, "Travel Type: " );
-			AAS_PrintTravelType( reach.traveltype );
-			botimport.Print( PRT_MESSAGE, "\n" );
+		VectorCopy(botlibglobals.goalorigin, goal.origin);
+		reachnum = BotGetReachabilityToGoal(origin, newarea, -1,
+			lastgoalareanum, lastareanum,
+			avoidreach, avoidreachtimes, avoidreachtries,
+			&goal, TFL_DEFAULT | TFL_FUNCBOB, TFL_DEFAULT);
+		AAS_ReachabilityFromNum(reachnum, &reach);
+		if (lastreach != reachnum)
+		{
+			botimport.Print(PRT_MESSAGE, "Travel Type: ");
+			AAS_PrintTravelType(reach.traveltype);
+			botimport.Print(PRT_MESSAGE, "\n");
 		}
 		lastreach = reachnum;
-		AAS_ShowReachability( &reach );
-	} //end else
-	VectorClear( forward );
+		AAS_ShowReachability(&reach);
+	}	//end else
+	VectorClear(forward);
 
 	return 0;
-} //end of the function BotExportTest
+}	//end of the function BotExportTest
 
 
 /*
@@ -627,7 +701,8 @@ int BotExportTest( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 ) {
 Init_AAS_Export
 ============
 */
-static void Init_AAS_Export( aas_export_t *aas ) {
+static void Init_AAS_Export(aas_export_t* aas)
+{
 	//--------------------------------------------
 	// be_aas_entity.c
 	//--------------------------------------------
@@ -698,7 +773,8 @@ static void Init_AAS_Export( aas_export_t *aas ) {
 Init_EA_Export
 ============
 */
-static void Init_EA_Export( ea_export_t *ea ) {
+static void Init_EA_Export(ea_export_t* ea)
+{
 	//ClientCommand elementary actions
 	ea->EA_Say = EA_Say;
 	ea->EA_SayTeam = EA_SayTeam;
@@ -738,7 +814,8 @@ static void Init_EA_Export( ea_export_t *ea ) {
 Init_AI_Export
 ============
 */
-static void Init_AI_Export( ai_export_t *ai ) {
+static void Init_AI_Export(ai_export_t* ai)
+{
 	//-----------------------------------
 	// be_ai_char.h
 	//-----------------------------------
@@ -841,19 +918,21 @@ static void Init_AI_Export( ai_export_t *ai ) {
 GetBotLibAPI
 ============
 */
-botlib_export_t *GetBotLibAPI( int apiVersion, botlib_import_t *import ) {
+botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
+{
 	botimport = *import;
 
-	memset( &be_botlib_export, 0, sizeof( be_botlib_export ) );
+	memset(&be_botlib_export, 0, sizeof(be_botlib_export));
 
-	if ( apiVersion != BOTLIB_API_VERSION ) {
-		botimport.Print( PRT_ERROR, "Mismatched BOTLIB_API_VERSION: expected %i, got %i\n", BOTLIB_API_VERSION, apiVersion );
+	if (apiVersion != BOTLIB_API_VERSION)
+	{
+		botimport.Print(PRT_ERROR, "Mismatched BOTLIB_API_VERSION: expected %i, got %i\n", BOTLIB_API_VERSION, apiVersion);
 		return NULL;
 	}
 
-	Init_AAS_Export( &be_botlib_export.aas );
-	Init_EA_Export( &be_botlib_export.ea );
-	Init_AI_Export( &be_botlib_export.ai );
+	Init_AAS_Export(&be_botlib_export.aas);
+	Init_EA_Export(&be_botlib_export.ea);
+	Init_AI_Export(&be_botlib_export.ai);
 
 	be_botlib_export.BotLibSetup = Export_BotLibSetup;
 	be_botlib_export.BotLibShutdown = Export_BotLibShutdown;

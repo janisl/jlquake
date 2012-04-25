@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,7 +46,8 @@ If you have questions concerning this license or the applicable additional terms
 Sys_SnapVector
 ================
 */
-long fastftol( float f ) {
+long fastftol(float f)
+{
 #if defined _WIN64
 	return (int)f;
 #elif !defined __GNUC__
@@ -61,18 +62,19 @@ long fastftol( float f ) {
 	// zinx - meh, gcc's lrint is sane, so use that. fixed inline asm too, though.
 	/*
 	asm(
-		"fld %1\n\t"
-		"fistp %0\n"
-		: "=m" (tmp) // outputs
-		: "f" (f) // inputs
+	    "fld %1\n\t"
+	    "fistp %0\n"
+	    : "=m" (tmp) // outputs
+	    : "f" (f) // inputs
 	);
 	return tmp;
 	*/
-	return lrint( f );
+	return lrint(f);
 #endif
 }
 
-void Sys_SnapVector( float *v ) {
+void Sys_SnapVector(float* v)
+{
 #if !defined __GNUC__ && !defined _WIN64
 	int i;
 	float f;
@@ -101,11 +103,11 @@ void Sys_SnapVector( float *v ) {
 #else
 	// rain - gcc has different inline asm, but I'm not going to emulate
 	// that here for now...
-	*v = (float)fastftol( *v );
+	*v = (float)fastftol(*v);
 	v++;
-	*v = (float)fastftol( *v );
+	*v = (float)fastftol(*v);
 	v++;
-	*v = (float)fastftol( *v );
+	*v = (float)fastftol(*v);
 #endif
 }
 
@@ -114,7 +116,7 @@ void Sys_SnapVector( float *v ) {
 ** Disable all optimizations temporarily so this code works correctly!
 **
 */
-#ifdef MSVC // rain - MSVC pragma
+#ifdef MSVC	// rain - MSVC pragma
 #pragma optimize( "", off )
 #endif
 
@@ -126,7 +128,8 @@ void Sys_SnapVector( float *v ) {
 ** --------------------------------------------------------------------------------
 */
 #ifndef _WIN64
-static void CPUID( int func, unsigned regs[4] ) {
+static void CPUID(int func, unsigned regs[4])
+{
 #ifndef __GNUC__
 	unsigned regEAX, regEBX, regECX, regEDX;
 
@@ -137,7 +140,7 @@ static void CPUID( int func, unsigned regs[4] ) {
 	__asm mov regECX, ecx
 	__asm mov regEDX, edx
 
-	regs[0] = regEAX;
+			  regs[0] = regEAX;
 	regs[1] = regEBX;
 	regs[2] = regECX;
 	regs[3] = regEDX;
@@ -145,36 +148,37 @@ static void CPUID( int func, unsigned regs[4] ) {
 	// rain - gcc style inline asm
 	asm (
 		"cpuid\n"
-		: "=a" ( regs[0] ), "=b" ( regs[1] ), "=c" ( regs[2] ), "=d" ( regs[3] ) // outputs
-		: "a" ( func ) // inputs
+		: "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])		// outputs
+		: "a" (func)	// inputs
 		);
 #endif
 
 }
 
-static int IsPentium( void ) {
+static int IsPentium(void)
+{
 #ifndef __GNUC__
 	__asm
 	{
-		pushfd                      // save eflags
+		pushfd						// save eflags
 		pop eax
-		test eax, 0x00200000        // check ID bit
-		jz set21                    // bit 21 is not set, so jump to set_21
-		and     eax, 0xffdfffff     // clear bit 21
-		push eax                    // save new value in register
-		popfd                       // store new value in flags
+		test eax, 0x00200000		// check ID bit
+		jz set21					// bit 21 is not set, so jump to set_21
+		and eax, 0xffdfffff			// clear bit 21
+		push eax					// save new value in register
+		popfd						// store new value in flags
 		pushfd
 		pop eax
-		test eax, 0x00200000        // check ID bit
+		test eax, 0x00200000		// check ID bit
 		jz good
-		jmp err                     // cpuid not supported
+		jmp err						// cpuid not supported
 set21:
-		or      eax, 0x00200000     // set ID bit
-		push eax                    // store new value
-		popfd                       // store new value in EFLAGS
+		or eax, 0x00200000			// set ID bit
+		push eax					// store new value
+		popfd						// store new value in EFLAGS
 		pushfd
 		pop eax
-		test eax, 0x00200000        // if bit 21 is on
+		test eax, 0x00200000		// if bit 21 is on
 		jnz good
 		jmp err
 	}
@@ -190,13 +194,14 @@ good:
 #endif
 }
 
-static int Is3DNOW( void ) {
+static int Is3DNOW(void)
+{
 	unsigned regs[4];
 	char pstring[16];
 	char processorString[13];
 
 	// get name of processor
-	CPUID( 0, ( unsigned int * ) pstring );
+	CPUID(0, (unsigned int*)pstring);
 	processorString[0] = pstring[4];
 	processorString[1] = pstring[5];
 	processorString[2] = pstring[6];
@@ -216,82 +221,95 @@ static int Is3DNOW( void ) {
 //		return qfalse;
 
 	// check AMD-specific functions
-	CPUID( 0x80000000, regs );
-	if ( regs[0] < 0x80000000 ) {
+	CPUID(0x80000000, regs);
+	if (regs[0] < 0x80000000)
+	{
 		return qfalse;
 	}
 
 	// bit 31 of EDX denotes 3DNOW! support
-	CPUID( 0x80000001, regs );
-	if ( regs[3] & ( 1 << 31 ) ) {
+	CPUID(0x80000001, regs);
+	if (regs[3] & (1 << 31))
+	{
 		return qtrue;
 	}
 
 	return qfalse;
 }
 
-static int IsKNI( void ) {
+static int IsKNI(void)
+{
 	unsigned regs[4];
 
 	// get CPU feature bits
-	CPUID( 1, regs );
+	CPUID(1, regs);
 
 	// bit 25 of EDX denotes KNI existence
-	if ( regs[3] & ( 1 << 25 ) ) {
+	if (regs[3] & (1 << 25))
+	{
 		return qtrue;
 	}
 
 	return qfalse;
 }
 
-static int IsMMX( void ) {
+static int IsMMX(void)
+{
 	unsigned regs[4];
 
 	// get CPU feature bits
-	CPUID( 1, regs );
+	CPUID(1, regs);
 
 	// bit 23 of EDX denotes MMX existence
-	if ( regs[3] & ( 1 << 23 ) ) {
+	if (regs[3] & (1 << 23))
+	{
 		return qtrue;
 	}
 	return qfalse;
 }
 
-static int IsP3() {
+static int IsP3()
+{
 	unsigned regs[4];
 
 	// get CPU feature bits
-	CPUID( 1, regs );
-	if ( regs[0] < 6 ) {
+	CPUID(1, regs);
+	if (regs[0] < 6)
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x1 ) ) {
-		return qfalse;    // fp
+	if (!(regs[3] & 0x1))
+	{
+		return qfalse;		// fp
 	}
 
-	if ( !( regs[3] & 0x8000 ) ) { // cmov
+	if (!(regs[3] & 0x8000))		// cmov
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x800000 ) ) { // mmx
+	if (!(regs[3] & 0x800000))		// mmx
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x2000000 ) ) { // simd
+	if (!(regs[3] & 0x2000000))			// simd
+	{
 		return qfalse;
 	}
 
 	return qtrue;
 }
 
-static int IsAthlon() {
+static int IsAthlon()
+{
 	unsigned regs[4];
 	char pstring[16];
 	char processorString[13];
 
 	// get name of processor
-	CPUID( 0, ( unsigned int * ) pstring );
+	CPUID(0, (unsigned int*)pstring);
 	processorString[0] = pstring[4];
 	processorString[1] = pstring[5];
 	processorString[2] = pstring[6];
@@ -306,45 +324,54 @@ static int IsAthlon() {
 	processorString[11] = pstring[11];
 	processorString[12] = 0;
 
-	if ( String::Cmp( processorString, "AuthenticAMD" ) ) {
+	if (String::Cmp(processorString, "AuthenticAMD"))
+	{
 		return qfalse;
 	}
 
-	CPUID( 0x80000000, regs );
+	CPUID(0x80000000, regs);
 
-	if ( regs[0] < 0x80000001 ) {
+	if (regs[0] < 0x80000001)
+	{
 		return qfalse;
 	}
 
 	// get CPU feature bits
-	CPUID( 1, regs );
-	if ( regs[0] < 6 ) {
+	CPUID(1, regs);
+	if (regs[0] < 6)
+	{
 		return qfalse;
 	}
 
-	CPUID( 0x80000001, regs );
+	CPUID(0x80000001, regs);
 
-	if ( !( regs[3] & 0x1 ) ) {
-		return qfalse;    // fp
+	if (!(regs[3] & 0x1))
+	{
+		return qfalse;		// fp
 	}
 
-	if ( !( regs[3] & 0x8000 ) ) { // cmov
+	if (!(regs[3] & 0x8000))		// cmov
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x800000 ) ) { // mmx
+	if (!(regs[3] & 0x800000))		// mmx
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x400000 ) ) { // k7 mmx
+	if (!(regs[3] & 0x400000))		// k7 mmx
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x80000000 ) ) { // 3dnow
+	if (!(regs[3] & 0x80000000))		// 3dnow
+	{
 		return qfalse;
 	}
 
-	if ( !( regs[3] & 0x40000000 ) ) { // advanced 3dnow
+	if (!(regs[3] & 0x40000000))		// advanced 3dnow
+	{
 		return qfalse;
 	}
 
@@ -352,7 +379,8 @@ static int IsAthlon() {
 }
 #endif
 
-int Sys_GetProcessorId( void ) {
+int Sys_GetProcessorId(void)
+{
 #if defined _M_ALPHA
 	return CPUID_AXP;
 #elif defined _M_X64
@@ -362,23 +390,27 @@ int Sys_GetProcessorId( void ) {
 #else
 
 	// verify we're at least a Pentium or 486 w/ CPUID support
-	if ( !IsPentium() ) {
+	if (!IsPentium())
+	{
 		return CPUID_INTEL_UNSUPPORTED;
 	}
 
 	// check for MMX
-	if ( !IsMMX() ) {
+	if (!IsMMX())
+	{
 		// Pentium or PPro
 		return CPUID_INTEL_PENTIUM;
 	}
 
 	// see if we're an AMD 3DNOW! processor
-	if ( Is3DNOW() ) {
+	if (Is3DNOW())
+	{
 		return CPUID_AMD_3DNOW;
 	}
 
 	// see if we're an Intel Katmai
-	if ( IsKNI() ) {
+	if (IsKNI())
+	{
 		return CPUID_INTEL_KATMAI;
 	}
 
@@ -388,17 +420,19 @@ int Sys_GetProcessorId( void ) {
 #endif
 }
 
-int Sys_GetHighQualityCPU() {
+int Sys_GetHighQualityCPU()
+{
 #if defined _M_X64
 	return 1;
 #else
-	return ( !IsP3() && !IsAthlon() ) ? 0 : 1;
+	return (!IsP3() && !IsAthlon()) ? 0 : 1;
 #endif
 }
 
 //bani - defined but not used
 #if 0
-static void GetClockTicks( double *t ) {
+static void GetClockTicks(double* t)
+{
 	unsigned long lo, hi;
 
 #ifndef __GNUC__
@@ -412,17 +446,18 @@ static void GetClockTicks( double *t ) {
 	// rain - gcc-style inline asm
 	asm (
 		"rdtsc\n"
-		: "=a" ( lo ), "=d" ( hi ) // outputs
+		: "=a" (lo), "=d" (hi)		// outputs
 		);
 #endif
 
 //	*t = (double) lo + (double) 0xFFFFFFFF * hi ;
 // zinx - 0x100000000
-	*t = (double) lo + (double) 4294967296.0 * hi ;
+	*t = (double)lo + (double)4294967296.0 * hi;
 }
 #endif
 
-float Sys_RealGetCPUSpeed( void ) {
+float Sys_RealGetCPUSpeed(void)
+{
 	LARGE_INTEGER c0, c1, freq;
 	unsigned int stamp0, stamp1, cycles, ticks, tries;
 	unsigned int freq1, freq2, freq3, total;
@@ -431,29 +466,32 @@ float Sys_RealGetCPUSpeed( void ) {
 
 	freq1 = freq2 = freq3 = tries = 0;
 
-	if ( !QueryPerformanceFrequency( &freq ) ) {
+	if (!QueryPerformanceFrequency(&freq))
+	{
 		return .0f;
 	}
 
-	priorityClass = GetPriorityClass( GetCurrentProcess() );
-	threadPriority = GetThreadPriority( GetCurrentThread() );
+	priorityClass = GetPriorityClass(GetCurrentProcess());
+	threadPriority = GetThreadPriority(GetCurrentThread());
 
-	SetPriorityClass( GetCurrentProcess(), REALTIME_PRIORITY_CLASS );
-	SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL );
+	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
 
-	do {
+	do
+	{
 		tries++;
 
 		freq3 = freq2;
 		freq2 = freq1;
 
-		QueryPerformanceCounter( &c0 );
+		QueryPerformanceCounter(&c0);
 
 		c1.LowPart = c0.LowPart;
 		c1.HighPart = c0.HighPart;
 
-		while ( (int)c1.LowPart - (int)c0.LowPart < 50 ) {
-			QueryPerformanceCounter( &c1 );
+		while ((int)c1.LowPart - (int)c0.LowPart < 50)
+		{
+			QueryPerformanceCounter(&c1);
 		}
 
 #ifdef _WIN64
@@ -468,7 +506,7 @@ float Sys_RealGetCPUSpeed( void ) {
 		// rain - gcc-style inline asm
 		asm (
 			"rdtsc\n"
-			: "=a" ( stamp0 ) // outputs
+			: "=a" (stamp0)		// outputs
 			:
 			: "edx"
 			);
@@ -477,8 +515,9 @@ float Sys_RealGetCPUSpeed( void ) {
 		c0.LowPart = c1.LowPart;
 		c0.HighPart = c1.HighPart;
 
-		while ( (int)c1.LowPart - (int)c0.LowPart < 1000 ) {
-			QueryPerformanceCounter( &c1 );
+		while ((int)c1.LowPart - (int)c0.LowPart < 1000)
+		{
+			QueryPerformanceCounter(&c1);
 		}
 
 #ifdef _WIN64
@@ -493,7 +532,7 @@ float Sys_RealGetCPUSpeed( void ) {
 		// rain - gcc-style inline asm
 		asm (
 			"rdtsc\n"
-			: "=a" ( stamp1 ) // outputs
+			: "=a" (stamp1)		// outputs
 			:
 			: "edx"
 			);
@@ -503,48 +542,53 @@ float Sys_RealGetCPUSpeed( void ) {
 		ticks = (int)c1.LowPart - (int)c0.LowPart;
 
 		ticks *= 100000;
-		ticks /= ( freq.LowPart / 10 );
+		ticks /= (freq.LowPart / 10);
 
-		if ( ticks % freq.LowPart > freq.LowPart * .5f ) {
+		if (ticks % freq.LowPart > freq.LowPart * .5f)
+		{
 			ticks++;
 		}
 
 		freq1 = cycles / ticks;
 
-		if ( cycles % ticks > ticks * .5f ) {
+		if (cycles % ticks > ticks * .5f)
+		{
 			freq1++;
 		}
 
 		total = freq1 + freq2 + freq3;
 
-	} while ( ( tries < 3 || tries < 20 ) &&
-			  ( ( abs((int)( 3 * freq1 - total) ) > 3 ) || ( abs( (int)(3 * freq2 - total) ) > 3 ) || ( abs( (int)(3 * freq3 - total) ) > 3 ) ) );
+	}
+	while ((tries < 3 || tries < 20) &&
+		   ((abs((int)(3 * freq1 - total)) > 3) || (abs((int)(3 * freq2 - total)) > 3) || (abs((int)(3 * freq3 - total)) > 3)));
 
-	if ( total / 3 != ( total + 1 ) / 3 ) {
+	if (total / 3 != (total + 1) / 3)
+	{
 		total++;
 	}
 
-	SetPriorityClass( GetCurrentProcess(), priorityClass );
-	SetThreadPriority( GetCurrentThread(), threadPriority );
+	SetPriorityClass(GetCurrentProcess(), priorityClass);
+	SetThreadPriority(GetCurrentThread(), threadPriority);
 
-	return( (float)total / 3.f );
+	return((float)total / 3.f);
 }
 
-float Sys_GetCPUSpeed( void ) {
+float Sys_GetCPUSpeed(void)
+{
 	float cpuSpeed;
 
 #ifndef __GNUC__
 	__try
 #else
-	if ( 1 )
+	if (1)
 #endif
 	{
 		cpuSpeed = Sys_RealGetCPUSpeed();
 	}
 #ifndef __GNUC__
-	__except( EXCEPTION_EXECUTE_HANDLER )
+	__except(EXCEPTION_EXECUTE_HANDLER)
 #else
-	if ( 0 )
+	if (0)
 #endif
 	{
 		cpuSpeed = 100.f;
@@ -558,23 +602,26 @@ float Sys_GetCPUSpeed( void ) {
 ** Re-enable optimizations back to what they were
 **
 */
-#ifdef MSVC // rain - MSVC pragma
+#ifdef MSVC	// rain - MSVC pragma
 #pragma optimize( "", on )
 #endif
 
 //============================================
 
-const char *Sys_GetCurrentUser( void ) {
+const char* Sys_GetCurrentUser(void)
+{
 	static char s_userName[1024];
-	unsigned long size = sizeof( s_userName );
+	unsigned long size = sizeof(s_userName);
 
 
-	if ( !GetUserName( s_userName, &size ) ) {
-		String::Cpy( s_userName, "player" );
+	if (!GetUserName(s_userName, &size))
+	{
+		String::Cpy(s_userName, "player");
 	}
 
-	if ( !s_userName[0] ) {
-		String::Cpy( s_userName, "player" );
+	if (!s_userName[0])
+	{
+		String::Cpy(s_userName, "player");
 	}
 
 	return s_userName;

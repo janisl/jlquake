@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,33 +37,33 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef AASINTERN
 
-extern aas_t( *aasworld );
+extern aas_t(*aasworld);
 
 //AAS error message
-void QDECL AAS_Error( const char *fmt, ... );
+void QDECL AAS_Error(const char* fmt, ...);
 //set AAS initialized
-void AAS_SetInitialized( void );
+void AAS_SetInitialized(void);
 //setup AAS with the given number of entities and clients
-int AAS_Setup( void );
+int AAS_Setup(void);
 //shutdown AAS
-void AAS_Shutdown( void );
+void AAS_Shutdown(void);
 //start a new map
-int AAS_LoadMap( const char *mapname );
+int AAS_LoadMap(const char* mapname);
 //start a new time frame
-int AAS_StartFrame( float time );
-#endif //AASINTERN
+int AAS_StartFrame(float time);
+#endif	//AASINTERN
 
 //returns true if AAS is initialized
-int AAS_Initialized( void );
+int AAS_Initialized(void);
 //returns true if the AAS file is loaded
-int AAS_Loaded( void );
+int AAS_Loaded(void);
 //returns the model name from the given index
-char *AAS_ModelFromIndex( int index );
+char* AAS_ModelFromIndex(int index);
 //returns the index from the given model name
-int AAS_IndexFromModel( const char *modelname );
+int AAS_IndexFromModel(const char* modelname);
 //returns the current time
-float AAS_Time( void );
+float AAS_Time(void);
 
 // Ridah
-void AAS_SetCurrentWorld( int index );
+void AAS_SetCurrentWorld(int index);
 // done.

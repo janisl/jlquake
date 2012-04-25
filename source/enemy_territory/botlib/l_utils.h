@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,9 +35,9 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#define Vector2Angles( v,a )      vectoangles( v,a )
-#ifndef MAX_PATH // LBO 1/25/05
+#define Vector2Angles(v,a)      vectoangles(v,a)
+#ifndef MAX_PATH// LBO 1/25/05
 #define MAX_PATH                MAX_QPATH
 #endif
-#define Maximum( x,y )            ( x > y ? x : y )
-#define Minimum( x,y )            ( x < y ? x : y )
+#define Maximum(x,y)            (x > y ? x : y)
+#define Minimum(x,y)            (x < y ? x : y)

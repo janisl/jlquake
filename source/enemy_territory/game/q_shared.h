@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 #define Q3_VERSION      "ET 2.60d"
 #else
 #define Q3_VERSION      "ET 2.32"
-#endif // PRE_RELEASE_DEMO
+#endif	// PRE_RELEASE_DEMO
 // 2.60d: Mac OSX universal binaries
 // 2.60c: Mac OSX universal binaries
 // 2.60b: CVE-2006-2082 fix
@@ -64,7 +64,7 @@ If you have questions concerning this license or the applicable additional terms
 #define NEW_ANIMS
 #define MAX_TEAMNAME    32
 
-#if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
+#if defined(ppc) || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)
 #define idppc 1
 #endif
 
@@ -94,7 +94,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <time.h>
 #include <ctype.h>
 #include <limits.h>
-#include <sys/stat.h> // rain
+#include <sys/stat.h>	// rain
 #include <float.h>
 #include <stdint.h>
 
@@ -138,7 +138,7 @@ If you have questions concerning this license or the applicable additional terms
 
 //======================= MAC OS X SERVER DEFINES =====================
 
-#if defined( MACOS_X )
+#if defined(MACOS_X)
 
 #error WTF
 
@@ -153,30 +153,32 @@ If you have questions concerning this license or the applicable additional terms
 // This is about 12.4 times faster than sqrt() and according to my testing (not exhaustive)
 // it returns fairly accurate results (error below 1.0e-5 up to 100000.0 in 0.1 increments).
 
-static inline float idSqrt( float x ) {
+static inline float idSqrt(float x)
+{
 	const float half = 0.5;
 	const float one = 1.0;
 	float B, y0, y1;
 
 	// This'll NaN if it hits frsqrte. Handle both +0.0 and -0.0
-	if ( Q_fabs( x ) == 0.0 ) {
+	if (Q_fabs(x) == 0.0)
+	{
 		return x;
 	}
 	B = x;
 
 #ifdef __GNUC__
-	asm ( "frsqrte %0,%1" : "=f" ( y0 ) : "f" ( B ) );
+	asm ("frsqrte %0,%1" : "=f" (y0) : "f" (B));
 #else
-	y0 = __frsqrte( B );
+	y0 = __frsqrte(B);
 #endif
 	/* First refinement step */
 
-	y1 = y0 + half * y0 * ( one - B * y0 * y0 );
+	y1 = y0 + half * y0 * (one - B * y0 * y0);
 
 	/* Second refinement step -- copy the output of the last step to the input of this step */
 
 	y0 = y1;
-	y1 = y0 + half * y0 * ( one - B * y0 * y0 );
+	y1 = y0 + half * y0 * (one - B * y0 * y0);
 
 	/* Get sqrt(x) from x * 1/sqrt(x) */
 	return x * y1;
@@ -194,7 +196,7 @@ static inline float idSqrt( float x ) {
 
 #define CPUSTRING   "OSX-universal"
 
-void Sys_PumpEvents( void );
+void Sys_PumpEvents(void);
 
 #endif
 
@@ -223,54 +225,54 @@ enum {qfalse, qtrue};
 
 
 #ifndef NULL
-#define NULL ( (void *)0 )
+#define NULL ((void*)0)
 #endif
 
 #define MAX_QINT            0x7fffffff
-#define MIN_QINT            ( -MAX_QINT - 1 )
+#define MIN_QINT            (-MAX_QINT - 1)
 
 // TTimo gcc: was missing, added from Q3 source
 #ifndef max
-#define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
-#define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+#define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
-#define MAX_SP_CLIENTS      64      // increasing this will increase memory usage significantly
+#define MAX_SP_CLIENTS      64		// increasing this will increase memory usage significantly
 
 #define MAX_SAY_TEXT        150
 
 typedef enum {
 	MESSAGE_EMPTY = 0,
-	MESSAGE_WAITING,        // rate/packet limited
-	MESSAGE_WAITING_OVERFLOW,   // packet too large with message
+	MESSAGE_WAITING,		// rate/packet limited
+	MESSAGE_WAITING_OVERFLOW,	// packet too large with message
 } messageStatus_t;
 
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
 	PRINT_ALL,
-	PRINT_DEVELOPER,        // only print when "developer 1"
+	PRINT_DEVELOPER,		// only print when "developer 1"
 	PRINT_WARNING,
 	PRINT_ERROR
 } printParm_t;
 
 #ifdef  ERR_FATAL
-#undef  ERR_FATAL               // this is be defined in malloc.h
+#undef  ERR_FATAL				// this is be defined in malloc.h
 #endif
 
 // parameters to the main Error routine
 typedef enum {
-	ERR_FATAL,                  // exit the entire game with a popup window
-	ERR_VID_FATAL,              // exit the entire game with a popup window and doesn't delete profile.pid
-	ERR_DROP,                   // print to console and disconnect from game
-	ERR_SERVERDISCONNECT,       // don't kill server
-	ERR_DISCONNECT,             // client disconnected from the server
-	ERR_NEED_CD,                // pop up the need-cd dialog
+	ERR_FATAL,					// exit the entire game with a popup window
+	ERR_VID_FATAL,				// exit the entire game with a popup window and doesn't delete profile.pid
+	ERR_DROP,					// print to console and disconnect from game
+	ERR_SERVERDISCONNECT,		// don't kill server
+	ERR_DISCONNECT,				// client disconnected from the server
+	ERR_NEED_CD,				// pop up the need-cd dialog
 	ERR_AUTOUPDATE
 } errorParm_t;
 
 
-#if defined( _DEBUG ) && !defined( BSPC )
+#if defined(_DEBUG) && !defined(BSPC)
 	#define HUNK_DEBUG
 #endif
 
@@ -281,10 +283,10 @@ typedef enum {
 } ha_pref;
 
 #ifdef HUNK_DEBUG
-#define Hunk_Alloc( size, preference )              Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
+#define Hunk_Alloc(size, preference)              Hunk_AllocDebug(size, preference, # size, __FILE__, __LINE__)
+void* Hunk_AllocDebug(int size, ha_pref preference, char* label, char* file, int line);
 #else
-void *Hunk_Alloc( int size, ha_pref preference );
+void* Hunk_Alloc(int size, ha_pref preference);
 #endif
 
 /*
@@ -332,51 +334,51 @@ extern vec4_t clrBrownTextLt2;
 extern vec4_t clrBrownLineFull;
 
 #define GAME_INIT_FRAMES    6
-#define FRAMETIME           100                 // msec
+#define FRAMETIME           100					// msec
 
-#define MAKERGB( v, r, g, b ) v[0] = r; v[1] = g; v[2] = b
-#define MAKERGBA( v, r, g, b, a ) v[0] = r; v[1] = g; v[2] = b; v[3] = a
+#define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
+#define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
-unsigned ColorBytes3( float r, float g, float b );
+unsigned ColorBytes3(float r, float g, float b);
 
-float NormalizeColor( const vec3_t in, vec3_t out );
+float NormalizeColor(const vec3_t in, vec3_t out);
 
-int     Q_rand( int *seed );
-float   Q_random( int *seed );
-float   Q_crandom( int *seed );
+int     Q_rand(int* seed);
+float   Q_random(int* seed);
+float   Q_crandom(int* seed);
 
-void vectoangles( const vec3_t value1, vec3_t angles );
-float vectoyaw( const vec3_t vec );
+void vectoangles(const vec3_t value1, vec3_t angles);
+float vectoyaw(const vec3_t vec);
 // TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
-void AxisToAngles( /*const*/ vec3_t axis[3], vec3_t angles );
-float VectorDistance( vec3_t v1, vec3_t v2 );
-float VectorDistanceSquared( vec3_t v1, vec3_t v2 );
+void AxisToAngles(/*const*/ vec3_t axis[3], vec3_t angles);
+float VectorDistance(vec3_t v1, vec3_t v2);
+float VectorDistanceSquared(vec3_t v1, vec3_t v2);
 
 // Ridah
-void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
-void ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
-float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
-float DistanceFromVectorSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
+void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
+void ProjectPointOntoVectorBounded(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
+float DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2);
+float DistanceFromVectorSquared(vec3_t p, vec3_t lp1, vec3_t lp2);
 // done.
 
 //=============================================
 
-float Com_Clamp( float min, float max, float value );
+float Com_Clamp(float min, float max, float value);
 
-qboolean COM_BitCheck( const int array[], int bitNum );
-void COM_BitSet( int array[], int bitNum );
-void COM_BitClear( int array[], int bitNum );
+qboolean COM_BitCheck(const int array[], int bitNum);
+void COM_BitSet(int array[], int bitNum);
+void COM_BitClear(int array[], int bitNum);
 
 #define MAX_TOKENLENGTH     1024
 
 #ifndef TT_STRING
 //token types
-#define TT_STRING                   1           // string
-#define TT_LITERAL                  2           // literal
-#define TT_NUMBER                   3           // number
-#define TT_NAME                     4           // name
-#define TT_PUNCTUATION              5           // punctuation
+#define TT_STRING                   1			// string
+#define TT_LITERAL                  2			// literal
+#define TT_NUMBER                   3			// number
+#define TT_NAME                     4			// name
+#define TT_PUNCTUATION              5			// punctuation
 #endif
 
 typedef struct pc_token_s
@@ -399,11 +401,11 @@ typedef struct pc_token_s
 #endif
 
 // strlen that discounts Quake color sequences
-int Q_PrintStrlen( const char *string );
+int Q_PrintStrlen(const char* string);
 // removes color sequences from string
-char *Q_CleanStr( char *string );
+char* Q_CleanStr(char* string);
 // removes whitespaces and other bad directory characters
-char *Q_CleanDirName( char *dirname );
+char* Q_CleanDirName(char* dirname);
 
 //=============================================
 
@@ -423,13 +425,13 @@ typedef struct
 
 //=============================================
 
-float   *tv( float x, float y, float z );
+float* tv(float x, float y, float z);
 
 //=============================================
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL Com_Error( int level, const char *error, ... ) id_attribute( ( format( printf,2,3 ) ) );
-void QDECL Com_Printf( const char *msg, ... ) id_attribute( ( format( printf,1,2 ) ) );
+void QDECL Com_Error(int level, const char* error, ...) id_attribute((format(printf,2,3)));
+void QDECL Com_Printf(const char* msg, ...) id_attribute((format(printf,1,2)));
 
 /*
 ==========================================================
@@ -466,13 +468,13 @@ COLLISION DETECTION
 #define ANIM_BITS       10
 
 #define SNAPFLAG_RATE_DELAYED   1
-#define SNAPFLAG_NOT_ACTIVE     2   // snapshot used during connection and for zombies
-#define SNAPFLAG_SERVERCOUNT    4   // toggled every map_restart so transitions can be detected
+#define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
+#define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
 
 //
 // per-level limits
 //
-#define MAX_SOUNDS          256     // so they cannot be blindly increased
+#define MAX_SOUNDS          256		// so they cannot be blindly increased
 #define MAX_CS_SKINS        64
 #define MAX_CSSTRINGS       32
 
@@ -480,7 +482,7 @@ COLLISION DETECTION
 #define MAX_SERVER_TAGS     256
 #define MAX_TAG_FILES       64
 
-#define MAX_MULTI_SPAWNTARGETS  16 // JPW NERVE
+#define MAX_MULTI_SPAWNTARGETS  16	// JPW NERVE
 
 #define MAX_DLIGHT_CONFIGSTRINGS    16
 #define MAX_SPLINE_CONFIGSTRINGS    8
@@ -495,7 +497,7 @@ COLLISION DETECTION
 #define PARTICLE_BUBBLE32   6
 #define PARTICLE_BUBBLE64   7
 
-#define RESERVED_CONFIGSTRINGS  2   // game can't modify below this, only the system can
+#define RESERVED_CONFIGSTRINGS  2	// game can't modify below this, only the system can
 
 // xkan, 1/10/2003 - adapted from original SP
 typedef enum
@@ -537,19 +539,19 @@ typedef enum {
 	ET_PUSH_TRIGGER,
 	ET_TELEPORT_TRIGGER,
 	ET_INVISIBLE,
-	ET_CONCUSSIVE_TRIGGER,  // JPW NERVE trigger for concussive dust particles
-	ET_OID_TRIGGER,         // DHM - Nerve :: Objective Info Display
-	ET_EXPLOSIVE_INDICATOR, // NERVE - SMF
+	ET_CONCUSSIVE_TRIGGER,	// JPW NERVE trigger for concussive dust particles
+	ET_OID_TRIGGER,			// DHM - Nerve :: Objective Info Display
+	ET_EXPLOSIVE_INDICATOR,	// NERVE - SMF
 
 	//---- (SA) Wolf
-	ET_EXPLOSIVE,           // brush that will break into smaller bits when damaged
+	ET_EXPLOSIVE,			// brush that will break into smaller bits when damaged
 	ET_EF_SPOTLIGHT,
 	ET_ALARMBOX,
 	ET_CORONA,
 	ET_TRAP,
 
-	ET_GAMEMODEL,           // misc_gamemodel.  similar to misc_model, but it's a dynamic model so we have LOD
-	ET_FOOTLOCKER,  //----(SA)	added
+	ET_GAMEMODEL,			// misc_gamemodel.  similar to misc_model, but it's a dynamic model so we have LOD
+	ET_FOOTLOCKER,	//----(SA)	added
 	//---- end
 
 	ET_FLAMEBARREL,
@@ -560,7 +562,7 @@ typedef enum {
 	ET_FIRE_COLUMN_SMOKE,
 	ET_RAMJET,
 
-	ET_FLAMETHROWER_CHUNK,      // DHM - NERVE :: Used in server side collision detection for flamethrower
+	ET_FLAMETHROWER_CHUNK,		// DHM - NERVE :: Used in server side collision detection for flamethrower
 
 	ET_EXPLO_PART,
 
@@ -583,12 +585,12 @@ typedef enum {
 	// An indicator object created by the bot code to show where the bots are moving to
 	ET_BOTGOAL_INDICATOR,
 	// End - TA - 8/29/2002
-	ET_CORPSE,              // Arnout: dead player
-	ET_SMOKER,              // Arnout: target_smoke entity
+	ET_CORPSE,				// Arnout: dead player
+	ET_SMOKER,				// Arnout: target_smoke entity
 
-	ET_TEMPHEAD,            // Gordon: temporary head for clients for bullet traces
-	ET_MG42_BARREL,         // Arnout: MG42 barrel
-	ET_TEMPLEGS,            // Arnout: temporary leg for clients for bullet traces
+	ET_TEMPHEAD,			// Gordon: temporary head for clients for bullet traces
+	ET_MG42_BARREL,			// Arnout: MG42 barrel
+	ET_TEMPLEGS,			// Arnout: temporary leg for clients for bullet traces
 	ET_TRIGGER_MULTIPLE,
 	ET_TRIGGER_FLAGONLY,
 	ET_TRIGGER_FLAGONLY_MULTIPLE,
@@ -599,16 +601,16 @@ typedef enum {
 	ET_HEALER,
 	ET_SUPPLIER,
 
-	ET_LANDMINE_HINT,       // Gordon: landmine hint for botsetgoalstate filter
-	ET_ATTRACTOR_HINT,      // Gordon: attractor hint for botsetgoalstate filter
-	ET_SNIPER_HINT,         // Gordon: sniper hint for botsetgoalstate filter
-	ET_LANDMINESPOT_HINT,   // Gordon: landminespot hint for botsetgoalstate filter
+	ET_LANDMINE_HINT,		// Gordon: landmine hint for botsetgoalstate filter
+	ET_ATTRACTOR_HINT,		// Gordon: attractor hint for botsetgoalstate filter
+	ET_SNIPER_HINT,			// Gordon: sniper hint for botsetgoalstate filter
+	ET_LANDMINESPOT_HINT,	// Gordon: landminespot hint for botsetgoalstate filter
 
 	ET_COMMANDMAP_MARKER,
 
 	ET_WOLF_OBJECTIVE,
 
-	ET_EVENTS               // any of the EV_* events can be added freestanding
+	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum
 							// this avoids having to set eFlags and eventNum
 } entityType_t;
@@ -617,29 +619,30 @@ typedef enum {
 //=============================================
 
 
-typedef struct qtime_s {
-	int tm_sec;     /* seconds after the minute - [0,59] */
-	int tm_min;     /* minutes after the hour - [0,59] */
-	int tm_hour;    /* hours since midnight - [0,23] */
-	int tm_mday;    /* day of the month - [1,31] */
-	int tm_mon;     /* months since January - [0,11] */
-	int tm_year;    /* years since 1900 */
-	int tm_wday;    /* days since Sunday - [0,6] */
-	int tm_yday;    /* days since January 1 - [0,365] */
-	int tm_isdst;   /* daylight savings time flag */
+typedef struct qtime_s
+{
+	int tm_sec;		/* seconds after the minute - [0,59] */
+	int tm_min;		/* minutes after the hour - [0,59] */
+	int tm_hour;	/* hours since midnight - [0,23] */
+	int tm_mday;	/* day of the month - [1,31] */
+	int tm_mon;		/* months since January - [0,11] */
+	int tm_year;	/* years since 1900 */
+	int tm_wday;	/* days since Sunday - [0,6] */
+	int tm_yday;	/* days since January 1 - [0,365] */
+	int tm_isdst;	/* daylight savings time flag */
 } qtime_t;
 
 
 // server browser sources
 #define AS_LOCAL        0
-#define AS_GLOBAL       1           // NERVE - SMF - modified
+#define AS_GLOBAL       1			// NERVE - SMF - modified
 #define AS_FAVORITES    2
 
 typedef enum _flag_status {
 	FLAG_ATBASE = 0,
-	FLAG_TAKEN,         // CTF
-	FLAG_TAKEN_RED,     // One Flag CTF
-	FLAG_TAKEN_BLUE,    // One Flag CTF
+	FLAG_TAKEN,			// CTF
+	FLAG_TAKEN_RED,		// One Flag CTF
+	FLAG_TAKEN_BLUE,	// One Flag CTF
 	FLAG_DROPPED
 } flagStatus_t;
 
@@ -662,4 +665,4 @@ typedef enum {
 	GS_RESET
 } gamestate_t;
 
-#endif  // __Q_SHARED_H
+#endif	// __Q_SHARED_H

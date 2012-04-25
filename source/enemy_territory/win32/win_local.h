@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@ If you have questions concerning this license or the applicable additional terms
 
 // win_local.h: Win32-specific Quake3 header file
 
-#if defined ( _MSC_VER ) && ( _MSC_VER >= 1200 )
+#if defined (_MSC_VER) && (_MSC_VER >= 1200)
 #pragma warning(disable : 4201)
 #pragma warning( push )
 #endif
 #include "../../client/windows_shared.h"
-#if defined ( _MSC_VER ) && ( _MSC_VER >= 1200 )
+#if defined (_MSC_VER) && (_MSC_VER >= 1200)
 #pragma warning( pop )
 #endif
 

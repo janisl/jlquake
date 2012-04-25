@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,30 +31,31 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/botlib.h"
 
-extern botlib_export_t *botlib_export;
+extern botlib_export_t* botlib_export;
 
-vm_t *uivm;
+vm_t* uivm;
 
 
 // ydnar: can we put this in a header, pls?
-void Key_GetBindingByString( const char* binding, int* key1, int* key2 );
+void Key_GetBindingByString(const char* binding, int* key1, int* key2);
 
-void CL_GetGlconfig( etglconfig_t *config );
+void CL_GetGlconfig(etglconfig_t* config);
 void CL_AddRefEntityToScene(const etrefEntity_t* ent);
 void CL_RenderScene(const etrefdef_t* refdef);
-int CL_LerpTag(orientation_t *tag,  const etrefEntity_t *refent, const char *tagName, int startIndex);
+int CL_LerpTag(orientation_t* tag,  const etrefEntity_t* refent, const char* tagName, int startIndex);
 
 /*
 ====================
 GetClientState
 ====================
 */
-static void GetClientState( uiClientState_t *state ) {
+static void GetClientState(uiClientState_t* state)
+{
 	state->connectPacketCount = clc.q3_connectPacketCount;
 	state->connState = cls.state;
-	String::NCpyZ( state->servername, cls.servername, sizeof( state->servername ) );
-	String::NCpyZ( state->updateInfoString, cls.q3_updateInfoString, sizeof( state->updateInfoString ) );
-	String::NCpyZ( state->messageString, clc.q3_serverMessage, sizeof( state->messageString ) );
+	String::NCpyZ(state->servername, cls.servername, sizeof(state->servername));
+	String::NCpyZ(state->updateInfoString, cls.q3_updateInfoString, sizeof(state->updateInfoString));
+	String::NCpyZ(state->messageString, clc.q3_serverMessage, sizeof(state->messageString));
 	state->clientNum = cl.et_snap.ps.clientNum;
 }
 
@@ -63,7 +64,8 @@ static void GetClientState( uiClientState_t *state ) {
 LAN_LoadCachedServers
 ====================
 */
-void LAN_LoadCachedServers() {
+void LAN_LoadCachedServers()
+{
 	int size;
 	fileHandle_t fileIn;
 	char filename[MAX_QPATH];
@@ -71,26 +73,33 @@ void LAN_LoadCachedServers() {
 	cls.q3_numglobalservers = cls.q3_numfavoriteservers = 0;
 	cls.q3_numGlobalServerAddresses = 0;
 
-	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
-		String::Sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
-	} else {
-		String::NCpyZ( filename, "servercache.dat", sizeof( filename ) );
+	if (com_gameInfo.usesProfiles && cl_profile->string[0])
+	{
+		String::Sprintf(filename, sizeof(filename), "profiles/%s/servercache.dat", cl_profile->string);
+	}
+	else
+	{
+		String::NCpyZ(filename, "servercache.dat", sizeof(filename));
 	}
 
 	// Arnout: moved to mod/profiles dir
 	//if (FS_SV_FOpenFileRead(filename, &fileIn)) {
-	if ( FS_FOpenFileRead( filename, &fileIn, qtrue ) ) {
-		FS_Read( &cls.q3_numglobalservers, sizeof( int ), fileIn );
-		FS_Read( &cls.q3_numfavoriteservers, sizeof( int ), fileIn );
-		FS_Read( &size, sizeof( int ), fileIn );
-		if ( size == sizeof( cls.q3_globalServers ) + sizeof( cls.q3_favoriteServers ) ) {
-			FS_Read( &cls.q3_globalServers, sizeof( cls.q3_globalServers ), fileIn );
-			FS_Read( &cls.q3_favoriteServers, sizeof( cls.q3_favoriteServers ), fileIn );
-		} else {
+	if (FS_FOpenFileRead(filename, &fileIn, qtrue))
+	{
+		FS_Read(&cls.q3_numglobalservers, sizeof(int), fileIn);
+		FS_Read(&cls.q3_numfavoriteservers, sizeof(int), fileIn);
+		FS_Read(&size, sizeof(int), fileIn);
+		if (size == sizeof(cls.q3_globalServers) + sizeof(cls.q3_favoriteServers))
+		{
+			FS_Read(&cls.q3_globalServers, sizeof(cls.q3_globalServers), fileIn);
+			FS_Read(&cls.q3_favoriteServers, sizeof(cls.q3_favoriteServers), fileIn);
+		}
+		else
+		{
 			cls.q3_numglobalservers = cls.q3_numfavoriteservers = 0;
 			cls.q3_numGlobalServerAddresses = 0;
 		}
-		FS_FCloseFile( fileIn );
+		FS_FCloseFile(fileIn);
 	}
 }
 
@@ -99,27 +108,31 @@ void LAN_LoadCachedServers() {
 LAN_SaveServersToCache
 ====================
 */
-void LAN_SaveServersToCache() {
+void LAN_SaveServersToCache()
+{
 	int size;
 	fileHandle_t fileOut;
 	char filename[MAX_QPATH];
 
-	if ( com_gameInfo.usesProfiles && cl_profile->string[0] ) {
-		String::Sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
-	} else {
-		String::NCpyZ( filename, "servercache.dat", sizeof( filename ) );
+	if (com_gameInfo.usesProfiles && cl_profile->string[0])
+	{
+		String::Sprintf(filename, sizeof(filename), "profiles/%s/servercache.dat", cl_profile->string);
+	}
+	else
+	{
+		String::NCpyZ(filename, "servercache.dat", sizeof(filename));
 	}
 
 	// Arnout: moved to mod/profiles dir
 	//fileOut = FS_SV_FOpenFileWrite(filename);
-	fileOut = FS_FOpenFileWrite( filename );
-	FS_Write( &cls.q3_numglobalservers, sizeof( int ), fileOut );
-	FS_Write( &cls.q3_numfavoriteservers, sizeof( int ), fileOut );
-	size = sizeof( cls.q3_globalServers ) + sizeof( cls.q3_favoriteServers );
-	FS_Write( &size, sizeof( int ), fileOut );
-	FS_Write( &cls.q3_globalServers, sizeof( cls.q3_globalServers ), fileOut );
-	FS_Write( &cls.q3_favoriteServers, sizeof( cls.q3_favoriteServers ), fileOut );
-	FS_FCloseFile( fileOut );
+	fileOut = FS_FOpenFileWrite(filename);
+	FS_Write(&cls.q3_numglobalservers, sizeof(int), fileOut);
+	FS_Write(&cls.q3_numfavoriteservers, sizeof(int), fileOut);
+	size = sizeof(cls.q3_globalServers) + sizeof(cls.q3_favoriteServers);
+	FS_Write(&size, sizeof(int), fileOut);
+	FS_Write(&cls.q3_globalServers, sizeof(cls.q3_globalServers), fileOut);
+	FS_Write(&cls.q3_favoriteServers, sizeof(cls.q3_favoriteServers), fileOut);
+	FS_FCloseFile(fileOut);
 }
 
 
@@ -128,12 +141,14 @@ void LAN_SaveServersToCache() {
 LAN_ResetPings
 ====================
 */
-static void LAN_ResetPings( int source ) {
+static void LAN_ResetPings(int source)
+{
 	int count,i;
-	q3serverInfo_t *servers = NULL;
+	q3serverInfo_t* servers = NULL;
 	count = 0;
 
-	switch ( source ) {
+	switch (source)
+	{
 	case AS_LOCAL:
 		servers = &cls.q3_localServers[0];
 		count = MAX_OTHER_SERVERS_Q3;
@@ -147,8 +162,10 @@ static void LAN_ResetPings( int source ) {
 		count = MAX_OTHER_SERVERS_Q3;
 		break;
 	}
-	if ( servers ) {
-		for ( i = 0; i < count; i++ ) {
+	if (servers)
+	{
+		for (i = 0; i < count; i++)
+		{
 			servers[i].ping = -1;
 		}
 	}
@@ -159,14 +176,16 @@ static void LAN_ResetPings( int source ) {
 LAN_AddServer
 ====================
 */
-static int LAN_AddServer( int source, const char *name, const char *address ) {
-	int max, *count, i;
+static int LAN_AddServer(int source, const char* name, const char* address)
+{
+	int max, * count, i;
 	netadr_t adr;
-	q3serverInfo_t *servers = NULL;
+	q3serverInfo_t* servers = NULL;
 	max = MAX_OTHER_SERVERS_Q3;
 	count = 0;
 
-	switch ( source ) {
+	switch (source)
+	{
 	case AS_LOCAL:
 		count = &cls.q3_numlocalservers;
 		servers = &cls.q3_localServers[0];
@@ -181,18 +200,22 @@ static int LAN_AddServer( int source, const char *name, const char *address ) {
 		servers = &cls.q3_favoriteServers[0];
 		break;
 	}
-	if ( servers && *count < max ) {
-		SOCK_StringToAdr( address, &adr, PORT_SERVER );
-		for ( i = 0; i < *count; i++ ) {
-			if ( SOCK_CompareAdr( servers[i].adr, adr ) ) {
+	if (servers && *count < max)
+	{
+		SOCK_StringToAdr(address, &adr, PORT_SERVER);
+		for (i = 0; i < *count; i++)
+		{
+			if (SOCK_CompareAdr(servers[i].adr, adr))
+			{
 				break;
 			}
 		}
-		if ( i >= *count ) {
+		if (i >= *count)
+		{
 			servers[*count].adr = adr;
-			String::NCpyZ( servers[*count].hostName, name, sizeof( servers[*count].hostName ) );
+			String::NCpyZ(servers[*count].hostName, name, sizeof(servers[*count].hostName));
 			servers[*count].visible = qtrue;
-			( *count )++;
+			(*count)++;
 			return 1;
 		}
 		return 0;
@@ -205,11 +228,13 @@ static int LAN_AddServer( int source, const char *name, const char *address ) {
 LAN_RemoveServer
 ====================
 */
-static void LAN_RemoveServer( int source, const char *addr ) {
-	int *count, i;
-	q3serverInfo_t *servers = NULL;
+static void LAN_RemoveServer(int source, const char* addr)
+{
+	int* count, i;
+	q3serverInfo_t* servers = NULL;
 	count = 0;
-	switch ( source ) {
+	switch (source)
+	{
 	case AS_LOCAL:
 		count = &cls.q3_numlocalservers;
 		servers = &cls.q3_localServers[0];
@@ -223,17 +248,21 @@ static void LAN_RemoveServer( int source, const char *addr ) {
 		servers = &cls.q3_favoriteServers[0];
 		break;
 	}
-	if ( servers ) {
+	if (servers)
+	{
 		netadr_t comp;
-		SOCK_StringToAdr( addr, &comp, PORT_SERVER );
-		for ( i = 0; i < *count; i++ ) {
-			if ( SOCK_CompareAdr( comp, servers[i].adr ) ) {
+		SOCK_StringToAdr(addr, &comp, PORT_SERVER);
+		for (i = 0; i < *count; i++)
+		{
+			if (SOCK_CompareAdr(comp, servers[i].adr))
+			{
 				int j = i;
-				while ( j < *count - 1 ) {
-					Com_Memcpy( &servers[j], &servers[j + 1], sizeof( servers[j] ) );
+				while (j < *count - 1)
+				{
+					Com_Memcpy(&servers[j], &servers[j + 1], sizeof(servers[j]));
 					j++;
 				}
-				( *count )--;
+				(*count)--;
 				break;
 			}
 		}
@@ -246,8 +275,10 @@ static void LAN_RemoveServer( int source, const char *addr ) {
 LAN_GetServerCount
 ====================
 */
-static int LAN_GetServerCount( int source ) {
-	switch ( source ) {
+static int LAN_GetServerCount(int source)
+{
+	switch (source)
+	{
 	case AS_LOCAL:
 		return cls.q3_numlocalservers;
 		break;
@@ -266,23 +297,28 @@ static int LAN_GetServerCount( int source ) {
 LAN_GetLocalServerAddressString
 ====================
 */
-static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen ) {
-	switch ( source ) {
+static void LAN_GetServerAddressString(int source, int n, char* buf, int buflen)
+{
+	switch (source)
+	{
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
-			String::NCpyZ( buf, SOCK_AdrToString( cls.q3_localServers[n].adr ), buflen );
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
+			String::NCpyZ(buf, SOCK_AdrToString(cls.q3_localServers[n].adr), buflen);
 			return;
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
-			String::NCpyZ( buf, SOCK_AdrToString( cls.q3_globalServers[n].adr ), buflen );
+		if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+		{
+			String::NCpyZ(buf, SOCK_AdrToString(cls.q3_globalServers[n].adr), buflen);
 			return;
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
-			String::NCpyZ( buf, SOCK_AdrToString( cls.q3_favoriteServers[n].adr ), buflen );
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
+			String::NCpyZ(buf, SOCK_AdrToString(cls.q3_favoriteServers[n].adr), buflen);
 			return;
 		}
 		break;
@@ -295,53 +331,62 @@ static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen
 LAN_GetServerInfo
 ====================
 */
-static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
+static void LAN_GetServerInfo(int source, int n, char* buf, int buflen)
+{
 	char info[MAX_STRING_CHARS];
-	q3serverInfo_t *server = NULL;
+	q3serverInfo_t* server = NULL;
 	info[0] = '\0';
-	switch ( source ) {
+	switch (source)
+	{
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			server = &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+		if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+		{
 			server = &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			server = &cls.q3_favoriteServers[n];
 		}
 		break;
 	}
-	if ( server && buf ) {
+	if (server && buf)
+	{
 		buf[0] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName, MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "serverload", va( "%i", server->load ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "mapname", server->mapName, MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "clients", va( "%i",server->clients ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "sv_maxclients", va( "%i",server->maxClients ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "ping", va( "%i",server->ping ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "minping", va( "%i",server->minPing ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "maxping", va( "%i",server->maxPing ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "gametype", va( "%i",server->gameType ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "nettype", va( "%i",server->netType ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "addr", SOCK_AdrToString( server->adr ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), MAX_INFO_STRING_Q3 );               // NERVE - SMF
-		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ), MAX_INFO_STRING_Q3 );                       // NERVE - SMF
-		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ), MAX_INFO_STRING_Q3 );                       // NERVE - SMF
-		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ), MAX_INFO_STRING_Q3 );                   // DHM - Nerve
-		Info_SetValueForKey( info, "gamename", server->gameName, MAX_INFO_STRING_Q3 );                                // Arnout
-		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ), MAX_INFO_STRING_Q3 ); // TTimo
-		Info_SetValueForKey( info, "weaprestrict", va( "%i", server->weaprestrict ), MAX_INFO_STRING_Q3 );
-		Info_SetValueForKey( info, "balancedteams", va( "%i", server->balancedteams ), MAX_INFO_STRING_Q3 );
-		String::NCpyZ( buf, info, buflen );
-	} else {
-		if ( buf ) {
+		Info_SetValueForKey(info, "hostname", server->hostName, MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "serverload", va("%i", server->load), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "mapname", server->mapName, MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "clients", va("%i",server->clients), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "sv_maxclients", va("%i",server->maxClients), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "ping", va("%i",server->ping), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "minping", va("%i",server->minPing), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "maxping", va("%i",server->maxPing), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "game", server->game, MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "gametype", va("%i",server->gameType), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "nettype", va("%i",server->netType), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "addr", SOCK_AdrToString(server->adr), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "sv_allowAnonymous", va("%i", server->allowAnonymous), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "friendlyFire", va("%i", server->friendlyFire), MAX_INFO_STRING_Q3);					// NERVE - SMF
+		Info_SetValueForKey(info, "maxlives", va("%i", server->maxlives), MAX_INFO_STRING_Q3);							// NERVE - SMF
+		Info_SetValueForKey(info, "needpass", va("%i", server->needpass), MAX_INFO_STRING_Q3);							// NERVE - SMF
+		Info_SetValueForKey(info, "punkbuster", va("%i", server->punkbuster), MAX_INFO_STRING_Q3);						// DHM - Nerve
+		Info_SetValueForKey(info, "gamename", server->gameName, MAX_INFO_STRING_Q3);									// Arnout
+		Info_SetValueForKey(info, "g_antilag", va("%i", server->antilag), MAX_INFO_STRING_Q3);		// TTimo
+		Info_SetValueForKey(info, "weaprestrict", va("%i", server->weaprestrict), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "balancedteams", va("%i", server->balancedteams), MAX_INFO_STRING_Q3);
+		String::NCpyZ(buf, info, buflen);
+	}
+	else
+	{
+		if (buf)
+		{
 			buf[0] = '\0';
 		}
 	}
@@ -352,26 +397,32 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 LAN_GetServerPing
 ====================
 */
-static int LAN_GetServerPing( int source, int n ) {
-	q3serverInfo_t *server = NULL;
-	switch ( source ) {
+static int LAN_GetServerPing(int source, int n)
+{
+	q3serverInfo_t* server = NULL;
+	switch (source)
+	{
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			server = &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+		if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+		{
 			server = &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			server = &cls.q3_favoriteServers[n];
 		}
 		break;
 	}
-	if ( server ) {
+	if (server)
+	{
 		return server->ping;
 	}
 	return -1;
@@ -382,20 +433,25 @@ static int LAN_GetServerPing( int source, int n ) {
 LAN_GetServerPtr
 ====================
 */
-static q3serverInfo_t *LAN_GetServerPtr( int source, int n ) {
-	switch ( source ) {
+static q3serverInfo_t* LAN_GetServerPtr(int source, int n)
+{
+	switch (source)
+	{
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			return &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+		if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+		{
 			return &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			return &cls.q3_favoriteServers[n];
 		}
 		break;
@@ -408,65 +464,86 @@ static q3serverInfo_t *LAN_GetServerPtr( int source, int n ) {
 LAN_CompareServers
 ====================
 */
-static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 ) {
+static int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int s2)
+{
 	int res;
-	q3serverInfo_t *server1, *server2;
-	char name1[ MAX_NAME_LENGTH_ET ], name2[ MAX_NAME_LENGTH_ET ];
+	q3serverInfo_t* server1, * server2;
+	char name1[MAX_NAME_LENGTH_ET], name2[MAX_NAME_LENGTH_ET];
 
-	server1 = LAN_GetServerPtr( source, s1 );
-	server2 = LAN_GetServerPtr( source, s2 );
-	if ( !server1 || !server2 ) {
+	server1 = LAN_GetServerPtr(source, s1);
+	server2 = LAN_GetServerPtr(source, s2);
+	if (!server1 || !server2)
+	{
 		return 0;
 	}
 
 	res = 0;
-	switch ( sortKey ) {
+	switch (sortKey)
+	{
 	case SORT_HOST:
 		//%	res = String::ICmp( server1->hostName, server2->hostName );
-		String::NCpyZ( name1, server1->hostName, sizeof( name1 ) );
-		Q_CleanStr( name1 );
-		String::NCpyZ( name2, server2->hostName, sizeof( name2 ) );
-		Q_CleanStr( name2 );
-		res = String::ICmp( name1, name2 );
+		String::NCpyZ(name1, server1->hostName, sizeof(name1));
+		Q_CleanStr(name1);
+		String::NCpyZ(name2, server2->hostName, sizeof(name2));
+		Q_CleanStr(name2);
+		res = String::ICmp(name1, name2);
 		break;
 
 	case SORT_MAP:
-		res = String::ICmp( server1->mapName, server2->mapName );
+		res = String::ICmp(server1->mapName, server2->mapName);
 		break;
 	case SORT_CLIENTS:
-		if ( server1->clients < server2->clients ) {
+		if (server1->clients < server2->clients)
+		{
 			res = -1;
-		} else if ( server1->clients > server2->clients )     {
+		}
+		else if (server1->clients > server2->clients)
+		{
 			res = 1;
-		} else {
+		}
+		else
+		{
 			res = 0;
 		}
 		break;
 	case SORT_GAME:
-		if ( server1->gameType < server2->gameType ) {
+		if (server1->gameType < server2->gameType)
+		{
 			res = -1;
-		} else if ( server1->gameType > server2->gameType )     {
+		}
+		else if (server1->gameType > server2->gameType)
+		{
 			res = 1;
-		} else {
+		}
+		else
+		{
 			res = 0;
 		}
 		break;
 	case SORT_PING:
-		if ( server1->ping < server2->ping ) {
+		if (server1->ping < server2->ping)
+		{
 			res = -1;
-		} else if ( server1->ping > server2->ping )     {
+		}
+		else if (server1->ping > server2->ping)
+		{
 			res = 1;
-		} else {
+		}
+		else
+		{
 			res = 0;
 		}
 		break;
 	}
 
-	if ( sortDir ) {
-		if ( res < 0 ) {
+	if (sortDir)
+	{
+		if (res < 0)
+		{
 			return 1;
 		}
-		if ( res > 0 ) {
+		if (res > 0)
+		{
 			return -1;
 		}
 		return 0;
@@ -479,8 +556,9 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 LAN_GetPingQueueCount
 ====================
 */
-static int LAN_GetPingQueueCount( void ) {
-	return ( CL_GetPingQueueCount() );
+static int LAN_GetPingQueueCount(void)
+{
+	return (CL_GetPingQueueCount());
 }
 
 /*
@@ -488,8 +566,9 @@ static int LAN_GetPingQueueCount( void ) {
 LAN_ClearPing
 ====================
 */
-static void LAN_ClearPing( int n ) {
-	CL_ClearPing( n );
+static void LAN_ClearPing(int n)
+{
+	CL_ClearPing(n);
 }
 
 /*
@@ -497,8 +576,9 @@ static void LAN_ClearPing( int n ) {
 LAN_GetPing
 ====================
 */
-static void LAN_GetPing( int n, char *buf, int buflen, int *pingtime ) {
-	CL_GetPing( n, buf, buflen, pingtime );
+static void LAN_GetPing(int n, char* buf, int buflen, int* pingtime)
+{
+	CL_GetPing(n, buf, buflen, pingtime);
 }
 
 /*
@@ -506,8 +586,9 @@ static void LAN_GetPing( int n, char *buf, int buflen, int *pingtime ) {
 LAN_GetPingInfo
 ====================
 */
-static void LAN_GetPingInfo( int n, char *buf, int buflen ) {
-	CL_GetPingInfo( n, buf, buflen );
+static void LAN_GetPingInfo(int n, char* buf, int buflen)
+{
+	CL_GetPingInfo(n, buf, buflen);
 }
 
 /*
@@ -515,11 +596,14 @@ static void LAN_GetPingInfo( int n, char *buf, int buflen ) {
 LAN_MarkServerVisible
 ====================
 */
-static void LAN_MarkServerVisible( int source, int n, qboolean visible ) {
-	if ( n == -1 ) {
+static void LAN_MarkServerVisible(int source, int n, qboolean visible)
+{
+	if (n == -1)
+	{
 		int count = MAX_OTHER_SERVERS_Q3;
-		q3serverInfo_t *server = NULL;
-		switch ( source ) {
+		q3serverInfo_t* server = NULL;
+		switch (source)
+		{
 		case AS_LOCAL:
 			server = &cls.q3_localServers[0];
 			break;
@@ -531,26 +615,34 @@ static void LAN_MarkServerVisible( int source, int n, qboolean visible ) {
 			server = &cls.q3_favoriteServers[0];
 			break;
 		}
-		if ( server ) {
-			for ( n = 0; n < count; n++ ) {
+		if (server)
+		{
+			for (n = 0; n < count; n++)
+			{
 				server[n].visible = visible;
 			}
 		}
 
-	} else {
-		switch ( source ) {
+	}
+	else
+	{
+		switch (source)
+		{
 		case AS_LOCAL:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+			{
 				cls.q3_localServers[n].visible = visible;
 			}
 			break;
 		case AS_GLOBAL:
-			if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+			if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+			{
 				cls.q3_globalServers[n].visible = visible;
 			}
 			break;
 		case AS_FAVORITES:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+			if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+			{
 				cls.q3_favoriteServers[n].visible = visible;
 			}
 			break;
@@ -564,20 +656,25 @@ static void LAN_MarkServerVisible( int source, int n, qboolean visible ) {
 LAN_ServerIsVisible
 =======================
 */
-static int LAN_ServerIsVisible( int source, int n ) {
-	switch ( source ) {
+static int LAN_ServerIsVisible(int source, int n)
+{
+	switch (source)
+	{
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			return cls.q3_localServers[n].visible;
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+		if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+		{
 			return cls.q3_globalServers[n].visible;
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			return cls.q3_favoriteServers[n].visible;
 		}
 		break;
@@ -590,8 +687,9 @@ static int LAN_ServerIsVisible( int source, int n ) {
 LAN_UpdateVisiblePings
 =======================
 */
-qboolean LAN_UpdateVisiblePings( int source ) {
-	return CL_UpdateVisiblePings_f( source );
+qboolean LAN_UpdateVisiblePings(int source)
+{
+	return CL_UpdateVisiblePings_f(source);
 }
 
 /*
@@ -599,8 +697,9 @@ qboolean LAN_UpdateVisiblePings( int source ) {
 LAN_GetServerStatus
 ====================
 */
-int LAN_GetServerStatus( char *serverAddress, char *serverStatus, int maxLen ) {
-	return CL_ServerStatus( serverAddress, serverStatus, maxLen );
+int LAN_GetServerStatus(char* serverAddress, char* serverStatus, int maxLen)
+{
+	return CL_ServerStatus(serverAddress, serverStatus, maxLen);
 }
 
 /*
@@ -608,34 +707,42 @@ int LAN_GetServerStatus( char *serverAddress, char *serverStatus, int maxLen ) {
 LAN_ServerIsInFavoriteList
 =======================
 */
-qboolean LAN_ServerIsInFavoriteList( int source, int n ) {
+qboolean LAN_ServerIsInFavoriteList(int source, int n)
+{
 	int i;
-	q3serverInfo_t *server = NULL;
+	q3serverInfo_t* server = NULL;
 
-	switch ( source ) {
+	switch (source)
+	{
 	case AS_LOCAL:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			server = &cls.q3_localServers[n];
 		}
 		break;
 	case AS_GLOBAL:
-		if ( n >= 0 && n < MAX_GLOBAL_SERVERS_ET ) {
+		if (n >= 0 && n < MAX_GLOBAL_SERVERS_ET)
+		{
 			server = &cls.q3_globalServers[n];
 		}
 		break;
 	case AS_FAVORITES:
-		if ( n >= 0 && n < MAX_OTHER_SERVERS_Q3 ) {
+		if (n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+		{
 			return qtrue;
 		}
 		break;
 	}
 
-	if ( !server ) {
+	if (!server)
+	{
 		return qfalse;
 	}
 
-	for ( i = 0; i < cls.q3_numfavoriteservers; i++ ) {
-		if ( SOCK_CompareAdr( cls.q3_favoriteServers[i].adr, server->adr ) ) {
+	for (i = 0; i < cls.q3_numfavoriteservers; i++)
+	{
+		if (SOCK_CompareAdr(cls.q3_favoriteServers[i].adr, server->adr))
+		{
 			return qtrue;
 		}
 	}
@@ -648,17 +755,19 @@ qboolean LAN_ServerIsInFavoriteList( int source, int n ) {
 GetClipboardData
 ====================
 */
-static void GetClipboardData( char *buf, int buflen ) {
-	char    *cbd;
+static void GetClipboardData(char* buf, int buflen)
+{
+	char* cbd;
 
 	cbd = Sys_GetClipboardData();
 
-	if ( !cbd ) {
+	if (!cbd)
+	{
 		*buf = 0;
 		return;
 	}
 
-	String::NCpyZ( buf, cbd, buflen );
+	String::NCpyZ(buf, cbd, buflen);
 
 	delete[] cbd;
 }
@@ -668,8 +777,9 @@ static void GetClipboardData( char *buf, int buflen ) {
 Key_KeynumToStringBuf
 ====================
 */
-void Key_KeynumToStringBuf( int keynum, char *buf, int buflen ) {
-	String::NCpyZ( buf, Key_KeynumToString( keynum, qtrue ), buflen );
+void Key_KeynumToStringBuf(int keynum, char* buf, int buflen)
+{
+	String::NCpyZ(buf, Key_KeynumToString(keynum, qtrue), buflen);
 }
 
 /*
@@ -677,13 +787,17 @@ void Key_KeynumToStringBuf( int keynum, char *buf, int buflen ) {
 Key_GetBindingBuf
 ====================
 */
-void Key_GetBindingBuf( int keynum, char *buf, int buflen ) {
-	const char    *value;
+void Key_GetBindingBuf(int keynum, char* buf, int buflen)
+{
+	const char* value;
 
-	value = Key_GetBinding( keynum );
-	if ( value ) {
-		String::NCpyZ( buf, value, buflen );
-	} else {
+	value = Key_GetBinding(keynum);
+	if (value)
+	{
+		String::NCpyZ(buf, value, buflen);
+	}
+	else
+	{
 		*buf = 0;
 	}
 }
@@ -693,7 +807,8 @@ void Key_GetBindingBuf( int keynum, char *buf, int buflen ) {
 Key_GetCatcher
 ====================
 */
-int Key_GetCatcher( void ) {
+int Key_GetCatcher(void)
+{
 	return in_keyCatchers;
 }
 
@@ -702,11 +817,15 @@ int Key_GetCatcher( void ) {
 Ket_SetCatcher
 ====================
 */
-void Key_SetCatcher( int catcher ) {
+void Key_SetCatcher(int catcher)
+{
 	// NERVE - SMF - console overrides everything
-	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
+	{
 		in_keyCatchers = catcher | KEYCATCH_CONSOLE;
-	} else {
+	}
+	else
+	{
 		in_keyCatchers = catcher;
 	}
 
@@ -718,14 +837,18 @@ void Key_SetCatcher( int catcher ) {
 CLUI_GetCDKey
 ====================
 */
-static void CLUI_GetCDKey( char *buf, int buflen ) {
-	Cvar  *fs;
-	fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-	if ( UI_usesUniqueCDKey() && fs && fs->string[0] != 0 ) {
-		memcpy( buf, &cl_cdkey[16], 16 );
+static void CLUI_GetCDKey(char* buf, int buflen)
+{
+	Cvar* fs;
+	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
+	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	{
+		memcpy(buf, &cl_cdkey[16], 16);
 		buf[16] = 0;
-	} else {
-		memcpy( buf, cl_cdkey, 16 );
+	}
+	else
+	{
+		memcpy(buf, cl_cdkey, 16);
 		buf[16] = 0;
 	}
 }
@@ -736,16 +859,20 @@ static void CLUI_GetCDKey( char *buf, int buflen ) {
 CLUI_SetCDKey
 ====================
 */
-static void CLUI_SetCDKey( char *buf ) {
-	Cvar  *fs;
-	fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-	if ( UI_usesUniqueCDKey() && fs && fs->string[0] != 0 ) {
-		memcpy( &cl_cdkey[16], buf, 16 );
+static void CLUI_SetCDKey(char* buf)
+{
+	Cvar* fs;
+	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
+	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	{
+		memcpy(&cl_cdkey[16], buf, 16);
 		cl_cdkey[32] = 0;
 		// set the flag so the fle will be written at the next opportunity
 		cvar_modifiedFlags |= CVAR_ARCHIVE;
-	} else {
-		memcpy( cl_cdkey, buf, 16 );
+	}
+	else
+	{
+		memcpy(cl_cdkey, buf, 16);
 		// set the flag so the fle will be written at the next opportunity
 		cvar_modifiedFlags |= CVAR_ARCHIVE;
 	}
@@ -757,22 +884,26 @@ static void CLUI_SetCDKey( char *buf ) {
 GetConfigString
 ====================
 */
-static int GetConfigString( int index, char *buf, int size ) {
+static int GetConfigString(int index, char* buf, int size)
+{
 	int offset;
 
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS_ET ) {
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_ET)
+	{
 		return qfalse;
 	}
 
 	offset = cl.et_gameState.stringOffsets[index];
-	if ( !offset ) {
-		if ( size ) {
+	if (!offset)
+	{
+		if (size)
+		{
 			buf[0] = 0;
 		}
 		return qfalse;
 	}
 
-	String::NCpyZ( buf, cl.et_gameState.stringData + offset, size );
+	String::NCpyZ(buf, cl.et_gameState.stringData + offset, size);
 
 	return qtrue;
 }
@@ -782,10 +913,11 @@ static int GetConfigString( int index, char *buf, int size ) {
 FloatAsInt
 ====================
 */
-static int FloatAsInt( float f ) {
+static int FloatAsInt(float f)
+{
 	int temp;
 
-	*(float *)&temp = f;
+	*(float*)&temp = f;
 
 	return temp;
 }
@@ -797,152 +929,154 @@ CL_UISystemCalls
 The ui module is making a system call
 ====================
 */
-qintptr CL_UISystemCalls( qintptr* args ) {
-	switch ( args[0] ) {
+qintptr CL_UISystemCalls(qintptr* args)
+{
+	switch (args[0])
+	{
 	case UI_ERROR:
-		Com_Error( ERR_DROP, "%s", (char *)VMA( 1 ) );
+		Com_Error(ERR_DROP, "%s", (char*)VMA(1));
 		return 0;
 
 	case UI_PRINT:
-		Com_Printf( "%s", (char *)VMA( 1 ) );
+		Com_Printf("%s", (char*)VMA(1));
 		return 0;
 
 	case UI_MILLISECONDS:
 		return Sys_Milliseconds();
 
 	case UI_CVAR_REGISTER:
-		Cvar_Register( (vmCvar_t*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		Cvar_Register((vmCvar_t*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 		return 0;
 
 	case UI_CVAR_UPDATE:
-		Cvar_Update( (vmCvar_t*)VMA( 1 ) );
+		Cvar_Update((vmCvar_t*)VMA(1));
 		return 0;
 
 	case UI_CVAR_SET:
-		Cvar_Set( (char*)VMA( 1 ), (char*)VMA( 2 ) );
+		Cvar_Set((char*)VMA(1), (char*)VMA(2));
 		return 0;
 
 	case UI_CVAR_VARIABLEVALUE:
-		return FloatAsInt( Cvar_VariableValue( (char*)VMA( 1 ) ) );
+		return FloatAsInt(Cvar_VariableValue((char*)VMA(1)));
 
 	case UI_CVAR_VARIABLESTRINGBUFFER:
-		Cvar_VariableStringBuffer( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
+		Cvar_VariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_CVAR_LATCHEDVARIABLESTRINGBUFFER:
-		Cvar_LatchedVariableStringBuffer( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
+		Cvar_LatchedVariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_CVAR_SETVALUE:
-		Cvar_SetValue( (char*)VMA( 1 ), VMF( 2 ) );
+		Cvar_SetValue((char*)VMA(1), VMF(2));
 		return 0;
 
 	case UI_CVAR_RESET:
-		Cvar_Reset( (char*)VMA( 1 ) );
+		Cvar_Reset((char*)VMA(1));
 		return 0;
 
 	case UI_CVAR_CREATE:
-		Cvar_Get( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
+		Cvar_Get((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_CVAR_INFOSTRINGBUFFER:
-		Cvar_InfoStringBuffer( args[1], MAX_INFO_STRING_Q3, (char*)VMA( 2 ), args[3] );
+		Cvar_InfoStringBuffer(args[1], MAX_INFO_STRING_Q3, (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_ARGC:
 		return Cmd_Argc();
 
 	case UI_ARGV:
-		Cmd_ArgvBuffer( args[1], (char*)VMA( 2 ), args[3] );
+		Cmd_ArgvBuffer(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_CMD_EXECUTETEXT:
-		Cbuf_ExecuteText( args[1], (char*)VMA( 2 ) );
+		Cbuf_ExecuteText(args[1], (char*)VMA(2));
 		return 0;
 
 	case UI_ADDCOMMAND:
-		Cmd_AddCommand( (char*)VMA( 1 ), NULL );
+		Cmd_AddCommand((char*)VMA(1), NULL);
 		return 0;
 
 	case UI_FS_FOPENFILE:
-		return FS_FOpenFileByMode( (char*)VMA( 1 ), (fileHandle_t*)VMA( 2 ), (fsMode_t)args[3] );
+		return FS_FOpenFileByMode((char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3]);
 
 	case UI_FS_READ:
-		FS_Read( VMA( 1 ), args[2], args[3] );
+		FS_Read(VMA(1), args[2], args[3]);
 		return 0;
 
 	case UI_FS_WRITE:
-		FS_Write( VMA( 1 ), args[2], args[3] );
+		FS_Write(VMA(1), args[2], args[3]);
 		return 0;
 
 	case UI_FS_FCLOSEFILE:
-		FS_FCloseFile( args[1] );
+		FS_FCloseFile(args[1]);
 		return 0;
 
 	case UI_FS_DELETEFILE:
-		return FS_Delete( (char*)VMA( 1 ) );
+		return FS_Delete((char*)VMA(1));
 
 	case UI_FS_GETFILELIST:
-		return FS_GetFileList( (char*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
 	case UI_R_REGISTERMODEL:
-		return R_RegisterModel( (char*)VMA( 1 ) );
+		return R_RegisterModel((char*)VMA(1));
 
 	case UI_R_REGISTERSKIN:
-		return R_RegisterSkin( (char*)VMA( 1 ) );
+		return R_RegisterSkin((char*)VMA(1));
 
 	case UI_R_REGISTERSHADERNOMIP:
-		return R_RegisterShaderNoMip( (char*)VMA( 1 ) );
+		return R_RegisterShaderNoMip((char*)VMA(1));
 
 	case UI_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
 
 	case UI_R_ADDREFENTITYTOSCENE:
-		CL_AddRefEntityToScene( (etrefEntity_t*)VMA( 1 ) );
+		CL_AddRefEntityToScene((etrefEntity_t*)VMA(1));
 		return 0;
 
 	case UI_R_ADDPOLYTOSCENE:
-		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), 1 );
+		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
 
-		// Ridah
+	// Ridah
 	case UI_R_ADDPOLYSTOSCENE:
-		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA( 3 ), args[4] );
+		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), args[4]);
 		return 0;
-		// done.
+	// done.
 
 	case UI_R_ADDLIGHTTOSCENE:
 		// ydnar: new dlight code
-		R_AddLightToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[7], args[8] );
+		R_AddLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), args[7], args[8]);
 		return 0;
 
 	case UI_R_ADDCORONATOSCENE:
-		R_AddCoronaToScene( (float*)VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[6], args[7] );
+		R_AddCoronaToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 		return 0;
 
 	case UI_R_RENDERSCENE:
-		CL_RenderScene( (etrefdef_t*)VMA( 1 ) );
+		CL_RenderScene((etrefdef_t*)VMA(1));
 		return 0;
 
 	case UI_R_SETCOLOR:
-		R_SetColor( (float*)VMA( 1 ) );
+		R_SetColor((float*)VMA(1));
 		return 0;
 
 	case UI_R_DRAW2DPOLYS:
-		R_2DPolyies( (polyVert_t*)VMA( 1 ), args[2], args[3] );
+		R_2DPolyies((polyVert_t*)VMA(1), args[2], args[3]);
 		return 0;
 
 	case UI_R_DRAWSTRETCHPIC:
-		R_StretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
+		R_StretchPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9]);
 		return 0;
 
 	case UI_R_DRAWROTATEDPIC:
-		R_RotatedPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9], VMF( 10 ) );
+		R_RotatedPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9], VMF(10));
 		return 0;
 
 	case UI_R_MODELBOUNDS:
-		R_ModelBounds( args[1], (float*)VMA( 2 ), (float*)VMA( 3 ) );
+		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 
 	case UI_UPDATESCREEN:
@@ -950,48 +1084,48 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_CM_LERPTAG:
-		return CL_LerpTag( (orientation_t*)VMA( 1 ), (etrefEntity_t*)VMA( 2 ), (char*)VMA( 3 ), args[4] );
+		return CL_LerpTag((orientation_t*)VMA(1), (etrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 
 	case UI_S_REGISTERSOUND:
-		return S_RegisterSound( (char*)VMA( 1 ));
+		return S_RegisterSound((char*)VMA(1));
 
 	case UI_S_STARTLOCALSOUND:
-		S_StartLocalSound( args[1], args[2], args[3] );
+		S_StartLocalSound(args[1], args[2], args[3]);
 		return 0;
 
 	case UI_S_FADESTREAMINGSOUND:
-		S_FadeStreamingSound( VMF( 1 ), args[2], args[3] );
+		S_FadeStreamingSound(VMF(1), args[2], args[3]);
 		return 0;
 
 	case UI_S_FADEALLSOUNDS:
-		S_FadeAllSounds( VMF( 1 ), args[2], args[3] );
+		S_FadeAllSounds(VMF(1), args[2], args[3]);
 		return 0;
 
 	case UI_KEY_KEYNUMTOSTRINGBUF:
-		Key_KeynumToStringBuf( args[1], (char*)VMA( 2 ), args[3] );
+		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_KEY_GETBINDINGBUF:
-		Key_GetBindingBuf( args[1], (char*)VMA( 2 ), args[3] );
+		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_KEY_SETBINDING:
-		Key_SetBinding( args[1], (char*)VMA( 2 ) );
+		Key_SetBinding(args[1], (char*)VMA(2));
 		return 0;
 
 	case UI_KEY_BINDINGTOKEYS:
-		Key_GetBindingByString( (char*)VMA( 1 ), (int*)VMA( 2 ), (int*)VMA( 3 ) );
+		Key_GetBindingByString((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
 		return 0;
 
 
 	case UI_KEY_ISDOWN:
-		return Key_IsDown( args[1] );
+		return Key_IsDown(args[1]);
 
 	case UI_KEY_GETOVERSTRIKEMODE:
 		return Key_GetOverstrikeMode();
 
 	case UI_KEY_SETOVERSTRIKEMODE:
-		Key_SetOverstrikeMode( args[1] );
+		Key_SetOverstrikeMode(args[1]);
 		return 0;
 
 	case UI_KEY_CLEARSTATES:
@@ -1002,23 +1136,23 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return Key_GetCatcher();
 
 	case UI_KEY_SETCATCHER:
-		Key_SetCatcher( args[1] );
+		Key_SetCatcher(args[1]);
 		return 0;
 
 	case UI_GETCLIPBOARDDATA:
-		GetClipboardData( (char*)VMA( 1 ), args[2] );
+		GetClipboardData((char*)VMA(1), args[2]);
 		return 0;
 
 	case UI_GETCLIENTSTATE:
-		GetClientState( (uiClientState_t*)VMA( 1 ) );
+		GetClientState((uiClientState_t*)VMA(1));
 		return 0;
 
 	case UI_GETGLCONFIG:
-		CL_GetGlconfig( (etglconfig_t*)VMA( 1 ) );
+		CL_GetGlconfig((etglconfig_t*)VMA(1));
 		return 0;
 
 	case UI_GETCONFIGSTRING:
-		return GetConfigString( args[1], (char*)VMA( 2 ), args[3] );
+		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 
 	case UI_LAN_LOADCACHEDSERVERS:
 		LAN_LoadCachedServers();
@@ -1029,60 +1163,60 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_LAN_ADDSERVER:
-		return LAN_AddServer( args[1], (char*)VMA( 2 ), (char*)VMA( 3 ) );
+		return LAN_AddServer(args[1], (char*)VMA(2), (char*)VMA(3));
 
 	case UI_LAN_REMOVESERVER:
-		LAN_RemoveServer( args[1], (char*)VMA( 2 ) );
+		LAN_RemoveServer(args[1], (char*)VMA(2));
 		return 0;
 
 	case UI_LAN_GETPINGQUEUECOUNT:
 		return LAN_GetPingQueueCount();
 
 	case UI_LAN_CLEARPING:
-		LAN_ClearPing( args[1] );
+		LAN_ClearPing(args[1]);
 		return 0;
 
 	case UI_LAN_GETPING:
-		LAN_GetPing( args[1], (char*)VMA( 2 ), args[3], (int*)VMA( 4 ) );
+		LAN_GetPing(args[1], (char*)VMA(2), args[3], (int*)VMA(4));
 		return 0;
 
 	case UI_LAN_GETPINGINFO:
-		LAN_GetPingInfo( args[1], (char*)VMA( 2 ), args[3] );
+		LAN_GetPingInfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
 	case UI_LAN_GETSERVERCOUNT:
-		return LAN_GetServerCount( args[1] );
+		return LAN_GetServerCount(args[1]);
 
 	case UI_LAN_GETSERVERADDRESSSTRING:
-		LAN_GetServerAddressString( args[1], args[2], (char*)VMA( 3 ), args[4] );
+		LAN_GetServerAddressString(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
 	case UI_LAN_GETSERVERINFO:
-		LAN_GetServerInfo( args[1], args[2], (char*)VMA( 3 ), args[4] );
+		LAN_GetServerInfo(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
 	case UI_LAN_GETSERVERPING:
-		return LAN_GetServerPing( args[1], args[2] );
+		return LAN_GetServerPing(args[1], args[2]);
 
 	case UI_LAN_MARKSERVERVISIBLE:
-		LAN_MarkServerVisible( args[1], args[2], args[3] );
+		LAN_MarkServerVisible(args[1], args[2], args[3]);
 		return 0;
 
 	case UI_LAN_SERVERISVISIBLE:
-		return LAN_ServerIsVisible( args[1], args[2] );
+		return LAN_ServerIsVisible(args[1], args[2]);
 
 	case UI_LAN_UPDATEVISIBLEPINGS:
-		return LAN_UpdateVisiblePings( args[1] );
+		return LAN_UpdateVisiblePings(args[1]);
 
 	case UI_LAN_RESETPINGS:
-		LAN_ResetPings( args[1] );
+		LAN_ResetPings(args[1]);
 		return 0;
 
 	case UI_LAN_SERVERSTATUS:
-		return LAN_GetServerStatus( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
+		return LAN_GetServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
 
 	case UI_LAN_SERVERISINFAVORITELIST:
-		return LAN_ServerIsInFavoriteList( args[1], args[2] );
+		return LAN_ServerIsInFavoriteList(args[1], args[2]);
 
 	case UI_SET_PBCLSTATUS:
 		return 0;
@@ -1091,113 +1225,113 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 		return 0;
 
 	case UI_LAN_COMPARESERVERS:
-		return LAN_CompareServers( args[1], args[2], args[3], args[4], args[5] );
+		return LAN_CompareServers(args[1], args[2], args[3], args[4], args[5]);
 
 	case UI_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
 
 	case UI_GET_CDKEY:
-		CLUI_GetCDKey( (char*)VMA( 1 ), args[2] );
+		CLUI_GetCDKey((char*)VMA(1), args[2]);
 		return 0;
 
 	case UI_SET_CDKEY:
-		CLUI_SetCDKey( (char*)VMA( 1 ) );
+		CLUI_SetCDKey((char*)VMA(1));
 		return 0;
 
 	case UI_R_REGISTERFONT:
-		R_RegisterFont( (char*)VMA( 1 ), args[2], (fontInfo_t*)VMA( 3 ) );
+		R_RegisterFont((char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
 		return 0;
 
 	case UI_MEMSET:
-		return (qintptr)memset( VMA( 1 ), args[2], args[3] );
+		return (qintptr)memset(VMA(1), args[2], args[3]);
 
 	case UI_MEMCPY:
-		return (qintptr)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
+		return (qintptr)memcpy(VMA(1), VMA(2), args[3]);
 
 	case UI_STRNCPY:
-		String::NCpy( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );
+		String::NCpy((char*)VMA(1), (char*)VMA(2), args[3]);
 		return args[1];
 
 	case UI_SIN:
-		return FloatAsInt( sin( VMF( 1 ) ) );
+		return FloatAsInt(sin(VMF(1)));
 
 	case UI_COS:
-		return FloatAsInt( cos( VMF( 1 ) ) );
+		return FloatAsInt(cos(VMF(1)));
 
 	case UI_ATAN2:
-		return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
+		return FloatAsInt(atan2(VMF(1), VMF(2)));
 
 	case UI_SQRT:
-		return FloatAsInt( sqrt( VMF( 1 ) ) );
+		return FloatAsInt(sqrt(VMF(1)));
 
 	case UI_FLOOR:
-		return FloatAsInt( floor( VMF( 1 ) ) );
+		return FloatAsInt(floor(VMF(1)));
 
 	case UI_CEIL:
-		return FloatAsInt( ceil( VMF( 1 ) ) );
+		return FloatAsInt(ceil(VMF(1)));
 
 	case UI_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine( (char*)VMA( 1 ) );
+		return botlib_export->PC_AddGlobalDefine((char*)VMA(1));
 	case UI_PC_REMOVE_ALL_GLOBAL_DEFINES:
 		botlib_export->PC_RemoveAllGlobalDefines();
 		return 0;
 	case UI_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle( (char*)VMA( 1 ) );
+		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
 	case UI_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle( args[1] );
+		return botlib_export->PC_FreeSourceHandle(args[1]);
 	case UI_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle( args[1], (pc_token_t*)VMA( 2 ) );
+		return botlib_export->PC_ReadTokenHandle(args[1], (pc_token_t*)VMA(2));
 	case UI_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine( args[1], (char*)VMA( 2 ), (int*)VMA( 3 ) );
+		return botlib_export->PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 	case UI_PC_UNREAD_TOKEN:
-		botlib_export->PC_UnreadLastTokenHandle( args[1] );
+		botlib_export->PC_UnreadLastTokenHandle(args[1]);
 		return 0;
 
 	case UI_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
 		return 0;
 	case UI_S_STARTBACKGROUNDTRACK:
-		S_StartBackgroundTrack( (char*)VMA( 1 ), (char*)VMA( 2 ), args[3] );   //----(SA)	added fadeup time
+		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), args[3]);			//----(SA)	added fadeup time
 		return 0;
 
 	case UI_REAL_TIME:
-		return Com_RealTime( (qtime_t*)VMA( 1 ) );
+		return Com_RealTime((qtime_t*)VMA(1));
 
 	case UI_CIN_PLAYCINEMATIC:
-		Com_DPrintf( "UI_CIN_PlayCinematic\n" );
-		return CIN_PlayCinematic( (char*)VMA( 1 ), args[2], args[3], args[4], args[5], args[6] );
+		Com_DPrintf("UI_CIN_PlayCinematic\n");
+		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
 	case UI_CIN_STOPCINEMATIC:
-		return CIN_StopCinematic( args[1] );
+		return CIN_StopCinematic(args[1]);
 
 	case UI_CIN_RUNCINEMATIC:
-		return CIN_RunCinematic( args[1] );
+		return CIN_RunCinematic(args[1]);
 
 	case UI_CIN_DRAWCINEMATIC:
-		CIN_DrawCinematic( args[1] );
+		CIN_DrawCinematic(args[1]);
 		return 0;
 
 	case UI_CIN_SETEXTENTS:
-		CIN_SetExtents( args[1], args[2], args[3], args[4], args[5] );
+		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
 
 	case UI_R_REMAP_SHADER:
-		R_RemapShader( (char*)VMA( 1 ), (char*)VMA( 2 ), (char*)VMA( 3 ) );
+		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
 	case UI_VERIFY_CDKEY:
-		return CL_CDKeyValidate( (char*)VMA( 1 ), (char*)VMA( 2 ) );
+		return CL_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
-		// NERVE - SMF
+	// NERVE - SMF
 	case UI_CL_GETLIMBOSTRING:
-		return CL_GetLimboString( args[1], (char*)VMA( 2 ) );
+		return CL_GetLimboString(args[1], (char*)VMA(2));
 
 	case UI_CL_TRANSLATE_STRING:
-		CL_TranslateString( (char*)VMA( 1 ), (char*)VMA( 2 ) );
+		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
 		return 0;
-		// -NERVE - SMF
+	// -NERVE - SMF
 
-		// DHM - Nerve
+	// DHM - Nerve
 	case UI_CHECKAUTOUPDATE:
 		CL_CheckAutoUpdate();
 		return 0;
@@ -1205,18 +1339,18 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 	case UI_GET_AUTOUPDATE:
 		CL_GetAutoUpdate();
 		return 0;
-		// DHM - Nerve
+	// DHM - Nerve
 
 	case UI_OPENURL:
-		CL_OpenURL( (const char *)VMA( 1 ) );
+		CL_OpenURL((const char*)VMA(1));
 		return 0;
 
 	case UI_GETHUNKDATA:
-		Com_GetHunkInfo( (int*)VMA( 1 ), (int*)VMA( 2 ) );
+		Com_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
 		return 0;
 
 	default:
-		Com_Error( ERR_DROP, "Bad UI system trap: %i", (int)args[0] );
+		Com_Error(ERR_DROP, "Bad UI system trap: %i", (int)args[0]);
 
 	}
 
@@ -1228,14 +1362,16 @@ qintptr CL_UISystemCalls( qintptr* args ) {
 CL_ShutdownUI
 ====================
 */
-void CL_ShutdownUI( void ) {
+void CL_ShutdownUI(void)
+{
 	in_keyCatchers &= ~KEYCATCH_UI;
 	cls.q3_uiStarted = qfalse;
-	if ( !uivm ) {
+	if (!uivm)
+	{
 		return;
 	}
-	VM_Call( uivm, UI_SHUTDOWN );
-	VM_Free( uivm );
+	VM_Call(uivm, UI_SHUTDOWN);
+	VM_Free(uivm);
 	uivm = NULL;
 }
 
@@ -1245,38 +1381,49 @@ CL_InitUI
 ====================
 */
 
-void CL_InitUI( void ) {
+void CL_InitUI(void)
+{
 	int v;
 
-	uivm = VM_Create( "ui", CL_UISystemCalls, VMI_NATIVE );
-	if ( !uivm ) {
-		Com_Error( ERR_FATAL, "VM_Create on UI failed" );
+	uivm = VM_Create("ui", CL_UISystemCalls, VMI_NATIVE);
+	if (!uivm)
+	{
+		Com_Error(ERR_FATAL, "VM_Create on UI failed");
 	}
 
 	// sanity check
-	v = VM_Call( uivm, UI_GETAPIVERSION );
-	if ( v != UI_API_VERSION ) {
-		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
+	v = VM_Call(uivm, UI_GETAPIVERSION);
+	if (v != UI_API_VERSION)
+	{
+		Com_Error(ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION);
 		cls.q3_uiStarted = qfalse;
 	}
 
 	// init for this gamestate
-	VM_Call( uivm, UI_INIT, ( cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE ) );
+	VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 }
 
 
-qboolean UI_usesUniqueCDKey() {
-	if ( uivm ) {
-		return ( VM_Call( uivm, UI_HASUNIQUECDKEY ) == qtrue );
-	} else {
+qboolean UI_usesUniqueCDKey()
+{
+	if (uivm)
+	{
+		return (VM_Call(uivm, UI_HASUNIQUECDKEY) == qtrue);
+	}
+	else
+	{
 		return qfalse;
 	}
 }
 
-qboolean UI_checkKeyExec( int key ) {
-	if ( uivm ) {
-		return VM_Call( uivm, UI_CHECKEXECKEY, key );
-	} else {
+qboolean UI_checkKeyExec(int key)
+{
+	if (uivm)
+	{
+		return VM_Call(uivm, UI_CHECKEXECKEY, key);
+	}
+	else
+	{
 		return qfalse;
 	}
 }
@@ -1288,10 +1435,12 @@ UI_GameCommand
 See if the current console command is claimed by the ui
 ====================
 */
-qboolean UI_GameCommand( void ) {
-	if ( !uivm ) {
+qboolean UI_GameCommand(void)
+{
+	if (!uivm)
+	{
 		return qfalse;
 	}
 
-	return VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
+	return VM_Call(uivm, UI_CONSOLE_COMMAND, cls.realtime);
 }

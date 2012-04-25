@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,10 +28,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #define MAX_KEYS        256
 
-typedef struct {
+typedef struct
+{
 	qboolean down;
-	int repeats;                // if > 1, it is autorepeating
-	char        *binding;
+	int repeats;				// if > 1, it is autorepeating
+	char* binding;
 	int hash;
 } qkey_t;
 
@@ -40,10 +41,10 @@ extern qkey_t keys[MAX_KEYS];
 
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 
-void Field_KeyDownEvent( field_t *edit, int key );
-void Field_CharEvent( field_t *edit, int ch );
-void Field_Draw( field_t *edit, int x, int y, int width, qboolean showCursor );
-void Field_BigDraw( field_t *edit, int x, int y, int width, qboolean showCursor );
+void Field_KeyDownEvent(field_t* edit, int key);
+void Field_CharEvent(field_t* edit, int ch);
+void Field_Draw(field_t* edit, int x, int y, int width, qboolean showCursor);
+void Field_BigDraw(field_t* edit, int x, int y, int width, qboolean showCursor);
 
 #define     COMMAND_HISTORY     32
 extern field_t historyEditLines[COMMAND_HISTORY];
@@ -53,12 +54,12 @@ extern field_t chatField;
 extern qboolean chat_team;
 extern qboolean chat_buddy;
 
-void Key_WriteBindings( fileHandle_t f );
-void Key_SetBinding( int keynum, const char *binding );
-void Key_GetBindingByString( const char* binding, int* key1, int* key2 );
-const char *Key_GetBinding( int keynum );
-qboolean Key_IsDown( int keynum );
-qboolean Key_GetOverstrikeMode( void );
-void Key_SetOverstrikeMode( qboolean state );
-void Key_ClearStates( void );
-int Key_GetKey( const char *binding );
+void Key_WriteBindings(fileHandle_t f);
+void Key_SetBinding(int keynum, const char* binding);
+void Key_GetBindingByString(const char* binding, int* key1, int* key2);
+const char* Key_GetBinding(int keynum);
+qboolean Key_IsDown(int keynum);
+qboolean Key_GetOverstrikeMode(void);
+void Key_SetOverstrikeMode(qboolean state);
+void Key_ClearStates(void);
+int Key_GetKey(const char* binding);

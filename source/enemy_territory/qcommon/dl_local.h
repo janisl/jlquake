@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,13 +32,13 @@ If you have questions concerning this license or the applicable additional terms
 // system API
 // only the restricted subset we need
 
-int Com_VPrintf( const char *fmt, va_list pArgs ) id_attribute( ( format( printf,1,0 ) ) );
-int Com_DPrintf( const char *fmt, ... ) id_attribute( ( format( printf,1,2 ) ) );
-int Com_Printf( const char *fmt, ... ) id_attribute( ( format( printf,1,2 ) ) );
-void Com_Error( int code, const char *fmt, ... ) id_attribute( ( format( printf,2,3 ) ) ); // watch out, we don't define ERR_FATAL and stuff
-void    Cvar_SetValue( const char *var_name, float value );
-void    Cvar_Set( const char *var_name, const char *value );
-char    * va( char *format, ... ) id_attribute( ( format( printf,1,2 ) ) );
+int Com_VPrintf(const char* fmt, va_list pArgs) id_attribute((format(printf,1,0)));
+int Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
+int Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));
+void Com_Error(int code, const char* fmt, ...) id_attribute((format(printf,2,3)));			// watch out, we don't define ERR_FATAL and stuff
+void    Cvar_SetValue(const char* var_name, float value);
+void    Cvar_Set(const char* var_name, const char* value);
+char* va(char* format, ...) id_attribute((format(printf,1,2)));
 
 extern int com_errorEntered;
 

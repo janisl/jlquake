@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,7 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #define UI_API_VERSION  4
 
-typedef struct {
+typedef struct
+{
 	connstate_t connState;
 	int connectPacketCount;
 	int clientNum;
@@ -81,13 +82,13 @@ typedef enum {
 	UI_R_DRAW2DPOLYS,
 	UI_R_DRAWSTRETCHPIC,
 	UI_R_DRAWROTATEDPIC,
-	UI_UPDATESCREEN,        // 30
+	UI_UPDATESCREEN,		// 30
 	UI_CM_LERPTAG,
 	UI_CM_LOADMODEL,
 	UI_S_REGISTERSOUND,
 	UI_S_STARTLOCALSOUND,
-	UI_S_FADESTREAMINGSOUND,    //----(SA)	added
-	UI_S_FADEALLSOUNDS,         //----(SA)	added
+	UI_S_FADESTREAMINGSOUND,	//----(SA)	added
+	UI_S_FADEALLSOUNDS,			//----(SA)	added
 	UI_KEY_KEYNUMTOSTRINGBUF,
 	UI_KEY_GETBINDINGBUF,
 	UI_KEY_SETBINDING,
@@ -104,7 +105,7 @@ typedef enum {
 	UI_GETCONFIGSTRING,
 	UI_LAN_GETLOCALSERVERCOUNT,
 	UI_LAN_GETLOCALSERVERADDRESSSTRING,
-	UI_LAN_GETGLOBALSERVERCOUNT,        // 50
+	UI_LAN_GETGLOBALSERVERCOUNT,		// 50
 	UI_LAN_GETGLOBALSERVERADDRESSSTRING,
 	UI_LAN_GETPINGQUEUECOUNT,
 	UI_LAN_CLEARPING,
@@ -150,13 +151,13 @@ typedef enum {
 	UI_LAN_SERVERISVISIBLE,
 	UI_LAN_COMPARESERVERS,
 	UI_LAN_SERVERISINFAVORITELIST,
-	UI_CL_GETLIMBOSTRING,           // NERVE - SMF
-	UI_SET_PBCLSTATUS,              // DHM - Nerve
-	UI_CHECKAUTOUPDATE,             // DHM - Nerve
-	UI_GET_AUTOUPDATE,              // DHM - Nerve
+	UI_CL_GETLIMBOSTRING,			// NERVE - SMF
+	UI_SET_PBCLSTATUS,				// DHM - Nerve
+	UI_CHECKAUTOUPDATE,				// DHM - Nerve
+	UI_GET_AUTOUPDATE,				// DHM - Nerve
 	UI_CL_TRANSLATE_STRING,
 	UI_OPENURL,
-	UI_SET_PBSVSTATUS,              // TTimo
+	UI_SET_PBSVSTATUS,				// TTimo
 
 	UI_MEMSET = 200,
 	UI_MEMCPY,
@@ -180,7 +181,7 @@ typedef enum {
 #define SORT_FAVOURITES     6
 
 typedef enum {
-	UI_GETAPIVERSION = 0,   // system reserved
+	UI_GETAPIVERSION = 0,	// system reserved
 
 	UI_INIT,
 //	void	UI_Init( void );
@@ -215,7 +216,7 @@ typedef enum {
 // if !overlay, the background will be drawn, otherwise it will be
 // overlayed over whatever the cgame has drawn.
 // a GetClientState syscall will be made to get the current strings
-	UI_CHECKEXECKEY,        // NERVE - SMF
+	UI_CHECKEXECKEY,		// NERVE - SMF
 
 	UI_WANTSBINDKEYS,
 

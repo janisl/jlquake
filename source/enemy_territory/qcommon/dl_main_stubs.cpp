@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,10 +34,12 @@ indent -kr -ut -ts2 -i2 <file>
 #include "dl_public.h"
 
 
-void DL_InitDownload() {
+void DL_InitDownload()
+{
 }
 
-void DL_Shutdown() {
+void DL_Shutdown()
+{
 }
 
 /*
@@ -46,13 +48,15 @@ inspired from http://www.w3.org/Library/Examples/LoadToFile.c
 setup the download, return once we have a connection
 ===============
 */
-int DL_BeginDownload( const char *localName, const char *remoteName, int debug ) {
+int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
+{
 
 	return 1;
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop() {
+dlStatus_t DL_DownloadLoop()
+{
 
 	return DL_DONE;
 }

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,54 +43,61 @@ If you have questions concerning this license or the applicable additional terms
 //=============================================================================
 
 #if defined __x86_64__
-void Sys_SnapVector( float *v ) { // bk001213 - see win32/win_shared.c
-	// bk001213 - old linux
-	v[0] = rint( v[0] );
-	v[1] = rint( v[1] );
-	v[2] = rint( v[2] );
+void Sys_SnapVector(float* v)		// bk001213 - see win32/win_shared.c
+{	// bk001213 - old linux
+	v[0] = rint(v[0]);
+	v[1] = rint(v[1]);
+	v[2] = rint(v[2]);
 }
 #endif
 
-char *strlwr( char *s ) {
-	if ( s == NULL ) { // bk001204 - paranoia
-		assert( 0 );
+char* strlwr(char* s)
+{
+	if (s == NULL)		// bk001204 - paranoia
+	{
+		assert(0);
 		return s;
 	}
-	while ( *s ) {
-		*s = tolower( *s );
+	while (*s)
+	{
+		*s = tolower(*s);
 		s++;
 	}
-	return s; // bk001204 - duh
+	return s;	// bk001204 - duh
 }
 
 //============================================
 
-void GetClockTicks( double *t ) {
+void GetClockTicks(double* t)
+{
 	unsigned long lo, hi;
 
 	__asm__ __volatile__ (
 		"rdtsc ;\
 		movl %%eax, %0 ;\
 		movl %%edx, %1 "
-		: : "m" ( lo ), "m" ( hi ) );
+		: : "m" (lo), "m" (hi));
 
-	*t = (double) lo + (double) 0xFFFFFFFF * hi ;
+	*t = (double)lo + (double)0xFFFFFFFF * hi;
 }
 
-float Sys_GetCPUSpeed( void ) {
+float Sys_GetCPUSpeed(void)
+{
 	double t0, t1;
 
-	GetClockTicks( &t0 );
-	sleep( 1 );
-	GetClockTicks( &t1 );
+	GetClockTicks(&t0);
+	sleep(1);
+	GetClockTicks(&t1);
 
-	return (float) ( ( t1 - t0 ) / 1000000.0 );
+	return (float)((t1 - t0) / 1000000.0);
 }
 
-const char *Sys_GetCurrentUser( void ) {
-	struct passwd *p;
+const char* Sys_GetCurrentUser(void)
+{
+	struct passwd* p;
 
-	if ( ( p = getpwuid( getuid() ) ) == NULL ) {
+	if ((p = getpwuid(getuid())) == NULL)
+	{
 		return "player";
 	}
 	return p->pw_name;
