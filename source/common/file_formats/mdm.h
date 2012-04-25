@@ -18,19 +18,19 @@
 //**
 //**************************************************************************
 
-#define MDM_IDENT			(('W' << 24) + ('M' << 16) + ('D' << 8) + 'M')
-#define MDM_VERSION			3
-#define MDM_MAX_VERTS		6000
-#define MDM_MAX_TRIANGLES	8192
-#define MDM_MAX_SURFACES	32
-#define MDM_MAX_TAGS		128
+#define MDM_IDENT           (('W' << 24) + ('M' << 16) + ('D' << 8) + 'M')
+#define MDM_VERSION         3
+#define MDM_MAX_VERTS       6000
+#define MDM_MAX_TRIANGLES   8192
+#define MDM_MAX_SURFACES    32
+#define MDM_MAX_TAGS        128
 
-#define MDM_TRANSLATION_SCALE	(1.0 / 64)
+#define MDM_TRANSLATION_SCALE   (1.0 / 64)
 
 struct mdmWeight_t
 {
-	int boneIndex;              // these are indexes into the boneReferences,
-	float boneWeight;           // not the global per-frame bone list
+	int boneIndex;				// these are indexes into the boneReferences,
+	float boneWeight;			// not the global per-frame bone list
 	vec3_t offset;
 };
 
@@ -39,7 +39,7 @@ struct mdmVertex_t
 	vec3_t normal;
 	vec2_t texCoords;
 	int numWeights;
-	mdmWeight_t weights[1];     // variable sized
+	mdmWeight_t weights[1];		// variable sized
 };
 
 struct mdmTriangle_t
@@ -51,13 +51,13 @@ struct mdmSurface_t
 {
 	int ident;
 
-	char name[MAX_QPATH];           // polyset name
+	char name[MAX_QPATH];			// polyset name
 	char shader[MAX_QPATH];
-	int shaderIndex;                // for in-game use
+	int shaderIndex;				// for in-game use
 
 	int minLod;
 
-	int ofsHeader;                  // this will be a negative number
+	int ofsHeader;					// this will be a negative number
 
 	int numVerts;
 	int ofsVerts;
@@ -65,7 +65,7 @@ struct mdmSurface_t
 	int numTriangles;
 	int ofsTriangles;
 
-	int ofsCollapseMap;           // numVerts * int
+	int ofsCollapseMap;				// numVerts * int
 
 	// Bone references are a set of ints representing all the bones
 	// present in any vertex weights for this surface.  This is
@@ -75,19 +75,20 @@ struct mdmSurface_t
 	int numBoneReferences;
 	int ofsBoneReferences;
 
-	int ofsEnd;                     // next surface follows
+	int ofsEnd;						// next surface follows
 };
 
-typedef struct {
+typedef struct
+{
 	int numSurfaces;
-	int ofsSurfaces;                // first surface, others follow
-	int ofsEnd;                     // next lod follows
+	int ofsSurfaces;				// first surface, others follow
+	int ofsEnd;						// next lod follows
 } mdmLOD_t;
 
 // Tags always only have one parent bone
 struct mdmTag_t
 {
-	char name[MAX_QPATH];           // name of tag
+	char name[MAX_QPATH];			// name of tag
 	vec3_t axis[3];
 
 	int boneIndex;
@@ -96,7 +97,7 @@ struct mdmTag_t
 	int numBoneReferences;
 	int ofsBoneReferences;
 
-	int ofsEnd;                     // next tag follows
+	int ofsEnd;						// next tag follows
 };
 
 struct mdmHeader_t
@@ -104,7 +105,7 @@ struct mdmHeader_t
 	int ident;
 	int version;
 
-	char name[MAX_QPATH];           // model name
+	char name[MAX_QPATH];			// model name
 
 	float lodScale;
 	float lodBias;
@@ -117,5 +118,5 @@ struct mdmHeader_t
 	int numTags;
 	int ofsTags;
 
-	int ofsEnd;                     // end of file
+	int ofsEnd;						// end of file
 };

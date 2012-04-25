@@ -67,7 +67,7 @@ void QClipMap38::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	CheckSum2 = CheckSum;
 
 	bsp38_dheader_t header = *(bsp38_dheader_t*)Buffer.Ptr();
-	for (int i = 0; i < (int)sizeof(bsp38_dheader_t) / 4 ; i++)
+	for (int i = 0; i < (int)sizeof(bsp38_dheader_t) / 4; i++)
 	{
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
 	}
@@ -75,7 +75,7 @@ void QClipMap38::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	if (header.version != BSP38_VERSION)
 	{
 		throw DropException(va("CMod_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			AName, header.version, BSP38_VERSION));
+				AName, header.version, BSP38_VERSION));
 	}
 
 	const byte* cmod_base = Buffer.Ptr();
@@ -242,7 +242,7 @@ void QClipMap38::LoadLeafBrushes(const quint8* base, const bsp38_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap38::LoadPlanes(const quint8* base, const bsp38_lump_t *l)
+void QClipMap38::LoadPlanes(const quint8* base, const bsp38_lump_t* l)
 {
 	const bsp38_dplane_t* in = (const bsp38_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -260,7 +260,7 @@ void QClipMap38::LoadPlanes(const quint8* base, const bsp38_lump_t *l)
 	Com_Memset(planes, 0, sizeof(cplane_t) * (count + 12));
 	numplanes = count;
 
-	cplane_t* out = planes;	
+	cplane_t* out = planes;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -280,7 +280,7 @@ void QClipMap38::LoadPlanes(const quint8* base, const bsp38_lump_t *l)
 //
 //==========================================================================
 
-void QClipMap38::LoadBrushes(const quint8* base, const bsp38_lump_t *l)
+void QClipMap38::LoadBrushes(const quint8* base, const bsp38_lump_t* l)
 {
 	const bsp38_dbrush_t* in = (const bsp38_dbrush_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -308,7 +308,7 @@ void QClipMap38::LoadBrushes(const quint8* base, const bsp38_lump_t *l)
 //
 //==========================================================================
 
-void QClipMap38::LoadBrushSides(const quint8* base, const bsp38_lump_t *l)
+void QClipMap38::LoadBrushSides(const quint8* base, const bsp38_lump_t* l)
 {
 	const bsp38_dbrushside_t* in = (const bsp38_dbrushside_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -375,9 +375,9 @@ void QClipMap38::LoadNodes(const quint8* base, const bsp38_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap38::LoadAreas(const quint8* base, const bsp38_lump_t *l)
+void QClipMap38::LoadAreas(const quint8* base, const bsp38_lump_t* l)
 {
-	const bsp38_darea_t* in = (const bsp38_darea_t *)(base + l->fileofs);
+	const bsp38_darea_t* in = (const bsp38_darea_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
 		throw DropException("MOD_LoadBmodel: funny lump size");
@@ -450,7 +450,7 @@ void QClipMap38::LoadVisibility(const quint8* base, const bsp38_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap38::LoadEntityString(const quint8* base, const bsp38_lump_t *l)
+void QClipMap38::LoadEntityString(const quint8* base, const bsp38_lump_t* l)
 {
 	numentitychars = l->filelen;
 	entitystring = new char[l->filelen];
@@ -463,7 +463,7 @@ void QClipMap38::LoadEntityString(const quint8* base, const bsp38_lump_t *l)
 //
 //==========================================================================
 
-void QClipMap38::LoadSubmodels(const quint8* base, const bsp38_lump_t *l)
+void QClipMap38::LoadSubmodels(const quint8* base, const bsp38_lump_t* l)
 {
 	const bsp38_dmodel_t* in = (const bsp38_dmodel_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))

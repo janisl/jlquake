@@ -37,14 +37,14 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QClipMap*			CMapShared;
+QClipMap* CMapShared;
 
-int					c_pointcontents;
-int					c_traces;
-int					c_brush_traces;
-int					c_patch_traces;
+int c_pointcontents;
+int c_traces;
+int c_brush_traces;
+int c_patch_traces;
 
-Cvar*				cm_flushmap;
+Cvar* cm_flushmap;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -62,7 +62,7 @@ static QClipMap* GetModel(clipHandle_t Handle)
 	{
 		return CMapShared;
 	}
-	
+
 	int Index = ((Handle & CMH_NON_MAP_MASK) >> CMH_NON_MAP_SHIFT) - 1;
 	if (Index >= CMNonMapModels.Num())
 	{
@@ -140,7 +140,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 		}
 		return;
 	}
-	
+
 	//
 	// load the file
 	//
@@ -152,8 +152,8 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 
 	struct TTestHeader
 	{
-		int		Id;
-		int		Version;
+		int Id;
+		int Version;
 	} TestHeader;
 	TestHeader = *(TTestHeader*)Buffer.Ptr();
 	TestHeader.Id = LittleLong(TestHeader.Id);
@@ -395,7 +395,7 @@ int CM_PointLeafnum(const vec3_t Point)
 //
 //==========================================================================
 
-int CM_BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List, int ListSize, int *TopNode, int *LastLeaf)
+int CM_BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf)
 {
 	return CMapShared->BoxLeafnums(Mins, Maxs, List, ListSize, TopNode, LastLeaf);
 }
@@ -605,7 +605,7 @@ q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 //
 //==========================================================================
 
-void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
+void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, int Capsule)
 {
 	GetModel(Model)->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Capsule);
@@ -617,7 +617,7 @@ void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, co
 //
 //==========================================================================
 
-void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
+void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
 	GetModel(Model)->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles, Capsule);
@@ -629,7 +629,7 @@ void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3
 //
 //==========================================================================
 
-void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+void CM_DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points))
 {
 	if (!CMapShared)
 	{

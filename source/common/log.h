@@ -34,7 +34,7 @@ public:
 	static void develWriteLine(const char* format, ...);
 
 private:
-	enum { MAX_LISTENERS	= 8 };
+	enum { MAX_LISTENERS    = 8 };
 
 	static LogListener* listeners[MAX_LISTENERS];
 

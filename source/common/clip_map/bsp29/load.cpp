@@ -57,7 +57,7 @@ void QClipMap29::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	if (version != BSP29_VERSION)
 	{
 		throw DropException(va("CM_LoadModel: %s has wrong version number (%i should be %i)",
-			AName, version, BSP29_VERSION));
+				AName, version, BSP29_VERSION));
 	}
 
 	// swap all the lumps
@@ -78,15 +78,15 @@ void QClipMap29::LoadMap(const char* AName, const Array<quint8>& Buffer)
 		{
 			continue;
 		}
-		CheckSum ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
-			header.lumps[i].filelen));
+		CheckSum ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs,
+				header.lumps[i].filelen));
 
 		if (i == BSP29LUMP_VISIBILITY || i == BSP29LUMP_LEAFS || i == BSP29LUMP_NODES)
 		{
 			continue;
 		}
-		CheckSum2 ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
-			header.lumps[i].filelen));
+		CheckSum2 ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs,
+				header.lumps[i].filelen));
 	}
 
 	// load into heap

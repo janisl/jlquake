@@ -14,23 +14,23 @@
 //**
 //**************************************************************************
 
-#define MAX_MSGLEN_Q1		8192		// max length of a reliable message
-#define MAX_MSGLEN_QW		1450		// max length of a reliable message
-#define MAX_MSGLEN_H2		16384
-#define MAX_MSGLEN_HW		7500		// max length of a reliable message
-#define MAX_MSGLEN_Q2		1400		// max length of a message
-#define MAX_MSGLEN_Q3		16384		// max length of a message, which may
+#define MAX_MSGLEN_Q1       8192		// max length of a reliable message
+#define MAX_MSGLEN_QW       1450		// max length of a reliable message
+#define MAX_MSGLEN_H2       16384
+#define MAX_MSGLEN_HW       7500		// max length of a reliable message
+#define MAX_MSGLEN_Q2       1400		// max length of a message
+#define MAX_MSGLEN_Q3       16384		// max length of a message, which may
 										// be fragmented into multiple packets
-#define MAX_MSGLEN_WOLF		32768		// increased for larger submodel entity counts
-#define MAX_MSGLEN			32768		// biggest value of all of the above
+#define MAX_MSGLEN_WOLF     32768		// increased for larger submodel entity counts
+#define MAX_MSGLEN          32768		// biggest value of all of the above
 
-#define MAX_DATAGRAM_Q1		1024		// max length of unreliable message
-#define MAX_DATAGRAM_QW		1450		// max length of unreliable message
-#define MAX_DATAGRAM_H2		1024		// max length of unreliable message
-#define MAX_DATAGRAM_HW		1400		// max length of unreliable message
-#define MAX_DATAGRAM		1450		// biggest value of all of the above
+#define MAX_DATAGRAM_Q1     1024		// max length of unreliable message
+#define MAX_DATAGRAM_QW     1450		// max length of unreliable message
+#define MAX_DATAGRAM_H2     1024		// max length of unreliable message
+#define MAX_DATAGRAM_HW     1400		// max length of unreliable message
+#define MAX_DATAGRAM        1450		// biggest value of all of the above
 
-#define MAX_PACKETLEN		1400		// max size of a network packet
+#define MAX_PACKETLEN       1400		// max size of a network packet
 
 enum netsrc_t
 {
@@ -86,20 +86,20 @@ struct netchan_t
 	double rate;				// seconds / byte
 };
 
-#define NET_NAMELEN_Q1			64
+#define NET_NAMELEN_Q1          64
 
 struct qsocket_t
 {
-	qsocket_t*		next;
-	double			connecttime;
+	qsocket_t* next;
+	double connecttime;
 
-	qboolean		disconnected;
-	qboolean		canSend;
-	qboolean		sendNext;
-	
-	int				driver;
-	int				socket;
-	void			*driverdata;
+	qboolean disconnected;
+	qboolean canSend;
+	qboolean sendNext;
 
-	char			address[NET_NAMELEN_Q1];
+	int driver;
+	int socket;
+	void* driverdata;
+
+	char address[NET_NAMELEN_Q1];
 };

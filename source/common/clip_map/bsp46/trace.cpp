@@ -28,9 +28,9 @@
 
 //#define CAPSULE_DEBUG
 
-#define RADIUS_EPSILON		1.0f
+#define RADIUS_EPSILON      1.0f
 
-#define	MAX_POSITION_LEAFS	1024
+#define MAX_POSITION_LEAFS  1024
 
 // TYPES -------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ TRACING
 //
 //==========================================================================
 
-void QClipMap46::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
+void QClipMap46::BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End,
 	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
 	Trace(Results, Start, End, Mins, Maxs, Model, vec3_origin, BrushMask, Capsule, NULL);
@@ -77,7 +77,7 @@ void QClipMap46::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t
 //
 //==========================================================================
 
-void QClipMap46::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
+void QClipMap46::TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start,
 	const vec3_t End, const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
@@ -183,10 +183,10 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	const vec3_t mins, const vec3_t maxs, clipHandle_t model, const vec3_t origin,
 	int brushmask, int capsule, sphere_t* sphere)
 {
-	int			i;
-	traceWork_t	tw;
-	vec3_t		offset;
-	cmodel_t	*cmod;
+	int i;
+	traceWork_t tw;
+	vec3_t offset;
+	cmodel_t* cmod;
 
 	cmod = ClipHandleToModel(model);
 
@@ -195,7 +195,7 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	c_traces++;				// for statistics, may be zeroed
 
 	// fill in a default trace
-	Com_Memset( &tw, 0, sizeof(tw) );
+	Com_Memset(&tw, 0, sizeof(tw));
 	tw.trace.fraction = 1;	// assume it goes the entire distance until shown otherwise
 	VectorCopy(origin, tw.modelOrigin);
 
@@ -222,9 +222,9 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	// adjust so that mins and maxs are always symetric, which
 	// avoids some complications with plane expanding of rotated
 	// bmodels
-	for ( i = 0 ; i < 3 ; i++ )
+	for (i = 0; i < 3; i++)
 	{
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+		offset[i] = (mins[i] + maxs[i]) * 0.5;
 		tw.size[0][i] = mins[i] - offset[i];
 		tw.size[1][i] = maxs[i] - offset[i];
 		tw.start[i] = start[i] + offset[i];
@@ -239,9 +239,9 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	else
 	{
 		tw.sphere.use = capsule;
-		tw.sphere.radius = ( tw.size[1][0] > tw.size[1][2] ) ? tw.size[1][2]: tw.size[1][0];
+		tw.sphere.radius = (tw.size[1][0] > tw.size[1][2]) ? tw.size[1][2] : tw.size[1][0];
 		tw.sphere.halfheight = tw.size[1][2];
-		VectorSet( tw.sphere.offset, 0, 0, tw.size[1][2] - tw.sphere.radius );
+		VectorSet(tw.sphere.offset, 0, 0, tw.size[1][2] - tw.sphere.radius);
 	}
 
 	bool positionTest = start[0] == end[0] && start[1] == end[1] && start[2] == end[2];
@@ -347,9 +347,9 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 		//
 		if (tw.sphere.use)
 		{
-			for (i = 0 ; i < 3 ; i++)
+			for (i = 0; i < 3; i++)
 			{
-				if ( tw.start[i] < tw.end[i] )
+				if (tw.start[i] < tw.end[i])
 				{
 					tw.bounds[0][i] = tw.start[i] - Q_fabs(tw.sphere.offset[i]) - tw.sphere.radius;
 					tw.bounds[1][i] = tw.end[i] + Q_fabs(tw.sphere.offset[i]) + tw.sphere.radius;
@@ -363,9 +363,9 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 		}
 		else
 		{
-			for ( i = 0 ; i < 3 ; i++ )
+			for (i = 0; i < 3; i++)
 			{
-				if ( tw.start[i] < tw.end[i] )
+				if (tw.start[i] < tw.end[i])
 				{
 					tw.bounds[0][i] = tw.start[i] + tw.size[0][i];
 					tw.bounds[1][i] = tw.end[i] + tw.size[1][i];
@@ -384,7 +384,7 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	//
 	if (positionTest)
 	{
-		if ( model )
+		if (model)
 		{
 			if (GGameType & (GAME_WolfSP | GAME_ET))
 			{
@@ -397,34 +397,34 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 			}
 			else
 			{
-#ifdef ALWAYS_BBOX_VS_BBOX // bk010201 - FIXME - compile time flag?
-				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+#ifdef ALWAYS_BBOX_VS_BBOX	// bk010201 - FIXME - compile time flag?
+				if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
 				{
 					tw.sphere.use = false;
-					TestInLeaf( &tw, &cmod->leaf );
+					TestInLeaf(&tw, &cmod->leaf);
 				}
 				else
 #elif defined(ALWAYS_CAPSULE_VS_CAPSULE)
-				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
 				{
-					TestCapsuleInCapsule( &tw, model );
+					TestCapsuleInCapsule(&tw, model);
 				}
 				else
 #endif
-				if ( model == CAPSULE_MODEL_HANDLE )
+				if (model == CAPSULE_MODEL_HANDLE)
 				{
-					if ( tw.sphere.use )
+					if (tw.sphere.use)
 					{
-						TestCapsuleInCapsule( &tw, model );
+						TestCapsuleInCapsule(&tw, model);
 					}
 					else
 					{
-						TestBoundingBoxInCapsule( &tw, model );
+						TestBoundingBoxInCapsule(&tw, model);
 					}
 				}
 				else
 				{
-					TestInLeaf( &tw, &cmod->leaf );
+					TestInLeaf(&tw, &cmod->leaf);
 				}
 			}
 		}
@@ -438,7 +438,7 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 		//
 		// general sweeping through world
 		//
-		if ( model )
+		if (model)
 		{
 			if (GGameType & (GAME_WolfSP | GAME_ET))
 			{
@@ -452,50 +452,50 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 			else
 			{
 #ifdef ALWAYS_BBOX_VS_BBOX
-				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
 				{
 					tw.sphere.use = false;
-					TraceThroughLeaf( &tw, &cmod->leaf );
+					TraceThroughLeaf(&tw, &cmod->leaf);
 				}
 				else
 #elif defined(ALWAYS_CAPSULE_VS_CAPSULE)
-				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
+				if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE)
 				{
-					TraceCapsuleThroughCapsule( &tw, model );
+					TraceCapsuleThroughCapsule(&tw, model);
 				}
 				else
 #endif
-				if ( model == CAPSULE_MODEL_HANDLE )
+				if (model == CAPSULE_MODEL_HANDLE)
 				{
-					if ( tw.sphere.use )
+					if (tw.sphere.use)
 					{
-						TraceCapsuleThroughCapsule( &tw, model );
+						TraceCapsuleThroughCapsule(&tw, model);
 					}
 					else
 					{
-						TraceBoundingBoxThroughCapsule( &tw, model );
+						TraceBoundingBoxThroughCapsule(&tw, model);
 					}
 				}
 				else
 				{
-					TraceThroughLeaf( &tw, &cmod->leaf );
+					TraceThroughLeaf(&tw, &cmod->leaf);
 				}
 			}
 		}
 		else
 		{
-			TraceThroughTree( &tw, 0, 0, 1, tw.start, tw.end );
+			TraceThroughTree(&tw, 0, 0, 1, tw.start, tw.end);
 		}
 	}
 
 	// generate endpos from the original, unmodified start/end
-	if ( tw.trace.fraction == 1 )
+	if (tw.trace.fraction == 1)
 	{
-		VectorCopy (end, tw.trace.endpos);
+		VectorCopy(end, tw.trace.endpos);
 	}
 	else
 	{
-		for ( i=0 ; i<3 ; i++ )
+		for (i = 0; i < 3; i++)
 		{
 			tw.trace.endpos[i] = start[i] + tw.trace.fraction * (end[i] - start[i]);
 		}
@@ -505,8 +505,8 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
 	// Otherwise, the normal on the plane should have unit length
 	qassert(tw.trace.allsolid ||
-			tw.trace.fraction == 1.0 ||
-			VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
+		tw.trace.fraction == 1.0 ||
+		VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
 	*results = tw.trace;
 }
 
@@ -523,14 +523,14 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 
 void QClipMap46::TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f, vec3_t p1, vec3_t p2)
 {
-	cNode_t		*node;
-	cplane_t	*plane;
-	float		t1, t2, offset;
-	float		frac, frac2;
-	float		idist;
-	vec3_t		mid;
-	int			side;
-	float		midf;
+	cNode_t* node;
+	cplane_t* plane;
+	float t1, t2, offset;
+	float frac, frac2;
+	float idist;
+	vec3_t mid;
+	int side;
+	float midf;
 
 	if (tw->trace.fraction <= p1f)
 	{
@@ -540,7 +540,7 @@ void QClipMap46::TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f
 	// if < 0, we are in a leaf node
 	if (num < 0)
 	{
-		TraceThroughLeaf( tw, &leafs[-1-num] );
+		TraceThroughLeaf(tw, &leafs[-1 - num]);
 		return;
 	}
 
@@ -552,23 +552,29 @@ void QClipMap46::TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f
 	plane = node->plane;
 
 	// adjust the plane distance apropriately for mins/maxs
-	if ( plane->type < 3 ) {
+	if (plane->type < 3)
+	{
 		t1 = p1[plane->type] - plane->dist;
 		t2 = p2[plane->type] - plane->dist;
 		offset = tw->extents[plane->type];
-	} else {
-		t1 = DotProduct (plane->normal, p1) - plane->dist;
-		t2 = DotProduct (plane->normal, p2) - plane->dist;
-		if ( tw->isPoint ) {
+	}
+	else
+	{
+		t1 = DotProduct(plane->normal, p1) - plane->dist;
+		t2 = DotProduct(plane->normal, p2) - plane->dist;
+		if (tw->isPoint)
+		{
 			offset = 0;
-		} else {
-#if 0 // bk010201 - DEAD
+		}
+		else
+		{
+#if 0	// bk010201 - DEAD
 			// an axial brush right behind a slanted bsp plane
 			// will poke through when expanded, so adjust
 			// by sqrt(3)
-			offset = fabs(tw->extents[0]*plane->normal[0]) +
-				fabs(tw->extents[1]*plane->normal[1]) +
-				fabs(tw->extents[2]*plane->normal[2]);
+			offset = fabs(tw->extents[0] * plane->normal[0]) +
+					 fabs(tw->extents[1] * plane->normal[1]) +
+					 fabs(tw->extents[2] * plane->normal[2]);
 
 			offset *= 2;
 			offset = tw->maxOffset;
@@ -586,64 +592,75 @@ void QClipMap46::TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f
 	}
 
 	// see which sides we need to consider
-	if ( t1 >= offset + 1 && t2 >= offset + 1 ) {
-		TraceThroughTree( tw, node->children[0], p1f, p2f, p1, p2 );
+	if (t1 >= offset + 1 && t2 >= offset + 1)
+	{
+		TraceThroughTree(tw, node->children[0], p1f, p2f, p1, p2);
 		return;
 	}
-	if ( t1 < -offset - 1 && t2 < -offset - 1 ) {
-		TraceThroughTree( tw, node->children[1], p1f, p2f, p1, p2 );
+	if (t1 < -offset - 1 && t2 < -offset - 1)
+	{
+		TraceThroughTree(tw, node->children[1], p1f, p2f, p1, p2);
 		return;
 	}
 
 	// put the crosspoint SURFACE_CLIP_EPSILON pixels on the near side
-	if ( t1 < t2 ) {
-		idist = 1.0/(t1-t2);
+	if (t1 < t2)
+	{
+		idist = 1.0 / (t1 - t2);
 		side = 1;
-		frac2 = (t1 + offset + SURFACE_CLIP_EPSILON)*idist;
-		frac = (t1 - offset + SURFACE_CLIP_EPSILON)*idist;
-	} else if (t1 > t2) {
-		idist = 1.0/(t1-t2);
+		frac2 = (t1 + offset + SURFACE_CLIP_EPSILON) * idist;
+		frac = (t1 - offset + SURFACE_CLIP_EPSILON) * idist;
+	}
+	else if (t1 > t2)
+	{
+		idist = 1.0 / (t1 - t2);
 		side = 0;
-		frac2 = (t1 - offset - SURFACE_CLIP_EPSILON)*idist;
-		frac = (t1 + offset + SURFACE_CLIP_EPSILON)*idist;
-	} else {
+		frac2 = (t1 - offset - SURFACE_CLIP_EPSILON) * idist;
+		frac = (t1 + offset + SURFACE_CLIP_EPSILON) * idist;
+	}
+	else
+	{
 		side = 0;
 		frac = 1;
 		frac2 = 0;
 	}
 
 	// move up to the node
-	if ( frac < 0 ) {
+	if (frac < 0)
+	{
 		frac = 0;
 	}
-	if ( frac > 1 ) {
+	if (frac > 1)
+	{
 		frac = 1;
 	}
-		
-	midf = p1f + (p2f - p1f)*frac;
 
-	mid[0] = p1[0] + frac*(p2[0] - p1[0]);
-	mid[1] = p1[1] + frac*(p2[1] - p1[1]);
-	mid[2] = p1[2] + frac*(p2[2] - p1[2]);
+	midf = p1f + (p2f - p1f) * frac;
 
-	TraceThroughTree( tw, node->children[side], p1f, midf, p1, mid );
+	mid[0] = p1[0] + frac * (p2[0] - p1[0]);
+	mid[1] = p1[1] + frac * (p2[1] - p1[1]);
+	mid[2] = p1[2] + frac * (p2[2] - p1[2]);
+
+	TraceThroughTree(tw, node->children[side], p1f, midf, p1, mid);
 
 
 	// go past the node
-	if ( frac2 < 0 ) {
+	if (frac2 < 0)
+	{
 		frac2 = 0;
 	}
-	if ( frac2 > 1 ) {
+	if (frac2 > 1)
+	{
 		frac2 = 1;
 	}
-		
-	midf = p1f + (p2f - p1f)*frac2;
 
-	mid[0] = p1[0] + frac2*(p2[0] - p1[0]);
-	mid[1] = p1[1] + frac2*(p2[1] - p1[1]);
-	mid[2] = p1[2] + frac2*(p2[2] - p1[2]);
+	midf = p1f + (p2f - p1f) * frac2;
 
-	TraceThroughTree( tw, node->children[side^1], midf, p2f, mid, p2 );
+	mid[0] = p1[0] + frac2 * (p2[0] - p1[0]);
+	mid[1] = p1[1] + frac2 * (p2[1] - p1[1]);
+	mid[2] = p1[2] + frac2 * (p2[2] - p1[2]);
+
+	TraceThroughTree(tw, node->children[side ^ 1], midf, p2f, mid, p2);
 }
 
 //==========================================================================
@@ -652,26 +669,26 @@ void QClipMap46::TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f
 //
 //==========================================================================
 
-void QClipMap46::TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
+void QClipMap46::TraceThroughLeaf(traceWork_t* tw, cLeaf_t* leaf)
 {
-	int			k;
-	int			brushnum;
-	cbrush_t	*b;
-	cPatch_t	*patch;
+	int k;
+	int brushnum;
+	cbrush_t* b;
+	cPatch_t* patch;
 
 	// trace line against all brushes in the leaf
-	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ )
+	for (k = 0; k < leaf->numLeafBrushes; k++)
 	{
-		brushnum = leafbrushes[leaf->firstLeafBrush+k];
+		brushnum = leafbrushes[leaf->firstLeafBrush + k];
 
 		b = &brushes[brushnum];
-		if ( b->checkcount == checkcount )
+		if (b->checkcount == checkcount)
 		{
 			continue;	// already checked this brush in another leaf
 		}
 		b->checkcount = checkcount;
 
-		if ( !(b->contents & tw->contents) )
+		if (!(b->contents & tw->contents))
 		{
 			continue;
 		}
@@ -686,8 +703,8 @@ void QClipMap46::TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 
 		float fraction = tw->trace.fraction;
 
-		TraceThroughBrush( tw, b );
-		if ( !tw->trace.fraction )
+		TraceThroughBrush(tw, b);
+		if (!tw->trace.fraction)
 		{
 			return;
 		}
@@ -699,22 +716,22 @@ void QClipMap46::TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 	}
 
 	// trace line against all patches in the leaf
-	if ( !cm_noCurves->integer )
+	if (!cm_noCurves->integer)
 	{
-		for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ )
+		for (k = 0; k < leaf->numLeafSurfaces; k++)
 		{
-			patch = surfaces[leafsurfaces[ leaf->firstLeafSurface + k ] ];
-			if ( !patch )
+			patch = surfaces[leafsurfaces[leaf->firstLeafSurface + k]];
+			if (!patch)
 			{
 				continue;
 			}
-			if ( patch->checkcount == checkcount )
+			if (patch->checkcount == checkcount)
 			{
 				continue;	// already checked this patch in another leaf
 			}
 			patch->checkcount = checkcount;
 
-			if ( !(patch->contents & tw->contents) )
+			if (!(patch->contents & tw->contents))
 			{
 				continue;
 			}
@@ -729,8 +746,8 @@ void QClipMap46::TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 
 			float fraction = tw->trace.fraction;
 
-			TraceThroughPatch( tw, patch );
-			if ( !tw->trace.fraction )
+			TraceThroughPatch(tw, patch);
+			if (!tw->trace.fraction)
 			{
 				return;
 			}
@@ -826,8 +843,8 @@ float QClipMap46::BoxDistanceFromPlane(const vec3_t center, const vec3_t extents
 {
 	float d1 = DotProduct(center, plane->normal) - plane->dist;
 	float d2 = Q_fabs(extents[0] * plane->normal[0]) +
-		 Q_fabs(extents[1] * plane->normal[1]) +
-		 Q_fabs(extents[2] * plane->normal[2]);
+			   Q_fabs(extents[1] * plane->normal[1]) +
+			   Q_fabs(extents[2] * plane->normal[2]);
 
 	if (d1 - d2 > 0.0f)
 	{
@@ -846,25 +863,25 @@ float QClipMap46::BoxDistanceFromPlane(const vec3_t center, const vec3_t extents
 //
 //==========================================================================
 
-void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
+void QClipMap46::TraceThroughBrush(traceWork_t* tw, cbrush_t* brush)
 {
-	int			i;
-	cplane_t	*plane, *clipplane;
-	float		dist;
-	float		enterFrac, leaveFrac;
-	float		d1, d2;
-	qboolean	getout, startout;
-	float		f;
-	cbrushside_t	*side, *leadside;
-	float		t;
-	vec3_t		startp;
-	vec3_t		endp;
+	int i;
+	cplane_t* plane, * clipplane;
+	float dist;
+	float enterFrac, leaveFrac;
+	float d1, d2;
+	qboolean getout, startout;
+	float f;
+	cbrushside_t* side, * leadside;
+	float t;
+	vec3_t startp;
+	vec3_t endp;
 
 	enterFrac = -1.0;
 	leaveFrac = 1.0;
 	clipplane = NULL;
 
-	if ( !brush->numsides )
+	if (!brush->numsides)
 	{
 		return;
 	}
@@ -876,7 +893,7 @@ void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 	leadside = NULL;
 
-	if ( tw->sphere.use )
+	if (tw->sphere.use)
 	{
 		//
 		// compare the trace against all planes of the brush
@@ -892,109 +909,134 @@ void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 			dist = plane->dist + tw->sphere.radius;
 
 			// find the closest point on the capsule to the plane
-			t = DotProduct( plane->normal, tw->sphere.offset );
-			if ( t > 0 )
+			t = DotProduct(plane->normal, tw->sphere.offset);
+			if (t > 0)
 			{
-				VectorSubtract( tw->start, tw->sphere.offset, startp );
-				VectorSubtract( tw->end, tw->sphere.offset, endp );
+				VectorSubtract(tw->start, tw->sphere.offset, startp);
+				VectorSubtract(tw->end, tw->sphere.offset, endp);
 			}
 			else
 			{
-				VectorAdd( tw->start, tw->sphere.offset, startp );
-				VectorAdd( tw->end, tw->sphere.offset, endp );
+				VectorAdd(tw->start, tw->sphere.offset, startp);
+				VectorAdd(tw->end, tw->sphere.offset, endp);
 			}
 
-			d1 = DotProduct( startp, plane->normal ) - dist;
-			d2 = DotProduct( endp, plane->normal ) - dist;
+			d1 = DotProduct(startp, plane->normal) - dist;
+			d2 = DotProduct(endp, plane->normal) - dist;
 
-			if (d2 > 0) {
+			if (d2 > 0)
+			{
 				getout = true;	// endpoint is not in solid
 			}
-			if (d1 > 0) {
+			if (d1 > 0)
+			{
 				startout = true;
 			}
 
 			// if completely in front of face, no intersection with the entire brush
-			if (d1 > 0 && ( d2 >= SURFACE_CLIP_EPSILON || d2 >= d1 )  ) {
+			if (d1 > 0 && (d2 >= SURFACE_CLIP_EPSILON || d2 >= d1))
+			{
 				return;
 			}
 
 			// if it doesn't cross the plane, the plane isn't relevent
-			if (d1 <= 0 && d2 <= 0 ) {
+			if (d1 <= 0 && d2 <= 0)
+			{
 				continue;
 			}
 
 			// crosses face
-			if (d1 > d2) {	// enter
-				f = (d1-SURFACE_CLIP_EPSILON) / (d1-d2);
-				if ( f < 0 ) {
+			if (d1 > d2)	// enter
+			{
+				f = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
+				if (f < 0)
+				{
 					f = 0;
 				}
-				if (f > enterFrac) {
+				if (f > enterFrac)
+				{
 					enterFrac = f;
 					clipplane = plane;
 					leadside = side;
 				}
-			} else {	// leave
-				f = (d1+SURFACE_CLIP_EPSILON) / (d1-d2);
-				if ( f > 1 ) {
+			}
+			else		// leave
+			{
+				f = (d1 + SURFACE_CLIP_EPSILON) / (d1 - d2);
+				if (f > 1)
+				{
 					f = 1;
 				}
-				if (f < leaveFrac) {
+				if (f < leaveFrac)
+				{
 					leaveFrac = f;
 				}
 			}
 		}
-	} else {
+	}
+	else
+	{
 		//
 		// compare the trace against all planes of the brush
 		// find the latest time the trace crosses a plane towards the interior
 		// and the earliest time the trace crosses a plane towards the exterior
 		//
-		for (i = 0; i < brush->numsides; i++) {
+		for (i = 0; i < brush->numsides; i++)
+		{
 			side = brush->sides + i;
 			plane = side->plane;
 
 			// adjust the plane distance apropriately for mins/maxs
-			dist = plane->dist - DotProduct( tw->offsets[ plane->signbits ], plane->normal );
+			dist = plane->dist - DotProduct(tw->offsets[plane->signbits], plane->normal);
 
-			d1 = DotProduct( tw->start, plane->normal ) - dist;
-			d2 = DotProduct( tw->end, plane->normal ) - dist;
+			d1 = DotProduct(tw->start, plane->normal) - dist;
+			d2 = DotProduct(tw->end, plane->normal) - dist;
 
-			if (d2 > 0) {
+			if (d2 > 0)
+			{
 				getout = true;	// endpoint is not in solid
 			}
-			if (d1 > 0) {
+			if (d1 > 0)
+			{
 				startout = true;
 			}
 
 			// if completely in front of face, no intersection with the entire brush
-			if (d1 > 0 && ( d2 >= SURFACE_CLIP_EPSILON || d2 >= d1 )  ) {
+			if (d1 > 0 && (d2 >= SURFACE_CLIP_EPSILON || d2 >= d1))
+			{
 				return;
 			}
 
 			// if it doesn't cross the plane, the plane isn't relevent
-			if (d1 <= 0 && d2 <= 0 ) {
+			if (d1 <= 0 && d2 <= 0)
+			{
 				continue;
 			}
 
 			// crosses face
-			if (d1 > d2) {	// enter
-				f = (d1-SURFACE_CLIP_EPSILON) / (d1-d2);
-				if ( f < 0 ) {
+			if (d1 > d2)	// enter
+			{
+				f = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
+				if (f < 0)
+				{
 					f = 0;
 				}
-				if (f > enterFrac) {
+				if (f > enterFrac)
+				{
 					enterFrac = f;
 					clipplane = plane;
 					leadside = side;
 				}
-			} else {	// leave
-				f = (d1+SURFACE_CLIP_EPSILON) / (d1-d2);
-				if ( f > 1 ) {
+			}
+			else		// leave
+			{
+				f = (d1 + SURFACE_CLIP_EPSILON) / (d1 - d2);
+				if (f > 1)
+				{
 					f = 1;
 				}
-				if (f < leaveFrac) {
+				if (f < leaveFrac)
+				{
 					leaveFrac = f;
 				}
 			}
@@ -1005,9 +1047,11 @@ void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 	// all planes have been checked, and the trace was not
 	// completely outside the brush
 	//
-	if (!startout) {	// original point was inside brush
+	if (!startout)		// original point was inside brush
+	{
 		tw->trace.startsolid = true;
-		if (!getout) {
+		if (!getout)
+		{
 			tw->trace.allsolid = true;
 			tw->trace.fraction = 0;
 			if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
@@ -1017,10 +1061,13 @@ void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 		}
 		return;
 	}
-	
-	if (enterFrac < leaveFrac) {
-		if (enterFrac > -1 && enterFrac < tw->trace.fraction) {
-			if (enterFrac < 0) {
+
+	if (enterFrac < leaveFrac)
+	{
+		if (enterFrac > -1 && enterFrac < tw->trace.fraction)
+		{
+			if (enterFrac < 0)
+			{
 				enterFrac = 0;
 			}
 			tw->trace.fraction = enterFrac;
@@ -1037,9 +1084,9 @@ void QClipMap46::TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 //
 //==========================================================================
 
-void QClipMap46::TraceThroughPatch( traceWork_t *tw, cPatch_t *patch )
+void QClipMap46::TraceThroughPatch(traceWork_t* tw, cPatch_t* patch)
 {
-	float		oldFrac;
+	float oldFrac;
 
 	c_patch_traces++;
 
@@ -1047,7 +1094,7 @@ void QClipMap46::TraceThroughPatch( traceWork_t *tw, cPatch_t *patch )
 
 	patch->pc->TraceThrough(tw);
 
-	if ( tw->trace.fraction < oldFrac )
+	if (tw->trace.fraction < oldFrac)
 	{
 		tw->trace.surfaceFlags = patch->surfaceFlags;
 		tw->trace.contents = patch->contents;
@@ -1062,19 +1109,20 @@ void QClipMap46::TraceThroughPatch( traceWork_t *tw, cPatch_t *patch )
 //
 //==========================================================================
 
-void QClipMap46::TraceBoundingBoxThroughCapsule( traceWork_t *tw, clipHandle_t model )
+void QClipMap46::TraceBoundingBoxThroughCapsule(traceWork_t* tw, clipHandle_t model)
 {
 	vec3_t mins, maxs, offset, size[2];
 	clipHandle_t h;
-	cmodel_t *cmod;
+	cmodel_t* cmod;
 	int i;
 
 	// mins maxs of the capsule
 	ModelBounds(model, mins, maxs);
 
 	// offset for capsule center
-	for ( i = 0 ; i < 3 ; i++ ) {
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+	for (i = 0; i < 3; i++)
+	{
+		offset[i] = (mins[i] + maxs[i]) * 0.5;
 		size[0][i] = mins[i] - offset[i];
 		size[1][i] = maxs[i] - offset[i];
 		tw->start[i] -= offset[i];
@@ -1083,15 +1131,15 @@ void QClipMap46::TraceBoundingBoxThroughCapsule( traceWork_t *tw, clipHandle_t m
 
 	// replace the bounding box with the capsule
 	tw->sphere.use = true;
-	tw->sphere.radius = ( size[1][0] > size[1][2] ) ? size[1][2]: size[1][0];
+	tw->sphere.radius = (size[1][0] > size[1][2]) ? size[1][2] : size[1][0];
 	tw->sphere.halfheight = size[1][2];
-	VectorSet( tw->sphere.offset, 0, 0, size[1][2] - tw->sphere.radius );
+	VectorSet(tw->sphere.offset, 0, 0, size[1][2] - tw->sphere.radius);
 
 	// replace the capsule with the bounding box
 	h = TempBoxModel(tw->size[0], tw->size[1], false);
 	// calculate collision
-	cmod = ClipHandleToModel( h );
-	TraceThroughLeaf( tw, &cmod->leaf );
+	cmod = ClipHandleToModel(h);
+	TraceThroughLeaf(tw, &cmod->leaf);
 }
 
 //==========================================================================
@@ -1102,7 +1150,7 @@ void QClipMap46::TraceBoundingBoxThroughCapsule( traceWork_t *tw, clipHandle_t m
 //
 //==========================================================================
 
-void QClipMap46::TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model)
+void QClipMap46::TraceCapsuleThroughCapsule(traceWork_t* tw, clipHandle_t model)
 {
 	int i;
 	vec3_t mins, maxs;
@@ -1112,13 +1160,14 @@ void QClipMap46::TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model)
 
 	ModelBounds(model, mins, maxs);
 	// test trace bounds vs. capsule bounds
-	if ( tw->bounds[0][0] > maxs[0] + RADIUS_EPSILON
-		|| tw->bounds[0][1] > maxs[1] + RADIUS_EPSILON
-		|| tw->bounds[0][2] > maxs[2] + RADIUS_EPSILON
-		|| tw->bounds[1][0] < mins[0] - RADIUS_EPSILON
-		|| tw->bounds[1][1] < mins[1] - RADIUS_EPSILON
-		|| tw->bounds[1][2] < mins[2] - RADIUS_EPSILON
-		) {
+	if (tw->bounds[0][0] > maxs[0] + RADIUS_EPSILON ||
+		tw->bounds[0][1] > maxs[1] + RADIUS_EPSILON ||
+		tw->bounds[0][2] > maxs[2] + RADIUS_EPSILON ||
+		tw->bounds[1][0] < mins[0] - RADIUS_EPSILON ||
+		tw->bounds[1][1] < mins[1] - RADIUS_EPSILON ||
+		tw->bounds[1][2] < mins[2] - RADIUS_EPSILON
+		)
+	{
 		return;
 	}
 	// top origin and bottom origin of each sphere at start and end of trace
@@ -1128,14 +1177,15 @@ void QClipMap46::TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model)
 	VectorSubtract(tw->end, tw->sphere.offset, endbottom);
 
 	// calculate top and bottom of the capsule spheres to collide with
-	for ( i = 0 ; i < 3 ; i++ ) {
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+	for (i = 0; i < 3; i++)
+	{
+		offset[i] = (mins[i] + maxs[i]) * 0.5;
 		symetricSize[0][i] = mins[i] - offset[i];
 		symetricSize[1][i] = maxs[i] - offset[i];
 	}
-	halfwidth = symetricSize[ 1 ][ 0 ];
-	halfheight = symetricSize[ 1 ][ 2 ];
-	radius = ( halfwidth > halfheight ) ? halfheight : halfwidth;
+	halfwidth = symetricSize[1][0];
+	halfheight = symetricSize[1][2];
+	radius = (halfwidth > halfheight) ? halfheight : halfwidth;
 	offs = halfheight - radius;
 	VectorCopy(offset, top);
 	top[2] += offs;
@@ -1149,7 +1199,7 @@ void QClipMap46::TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model)
 		// height of the expanded cylinder is the height of both cylinders minus the radius of both spheres
 		h = halfheight + tw->sphere.halfheight - radius;
 		// if the cylinder has a height
-		if ( h > 0 )
+		if (h > 0)
 		{
 			// test for collisions between the cylinders
 			TraceThroughVerticalCylinder(tw, offset, radius, h, tw->start, tw->end);
@@ -1169,7 +1219,7 @@ void QClipMap46::TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model)
 //
 //==========================================================================
 
-void QClipMap46::TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radius, float halfheight, vec3_t start, vec3_t end)
+void QClipMap46::TraceThroughVerticalCylinder(traceWork_t* tw, vec3_t origin, float radius, float halfheight, vec3_t start, vec3_t end)
 {
 	float length, scale, fraction, l1, l2;
 	float a, b, c, d, sqrtd;
@@ -1181,16 +1231,19 @@ void QClipMap46::TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, fl
 	VectorSet(org2d, origin[0], origin[1], 0);
 	// if between lower and upper cylinder bounds
 	if (start[2] <= origin[2] + halfheight &&
-				start[2] >= origin[2] - halfheight) {
+		start[2] >= origin[2] - halfheight)
+	{
 		// if inside the cylinder
 		VectorSubtract(start2d, org2d, dir);
 		l1 = VectorLengthSquared(dir);
-		if (l1 < Square(radius)) {
+		if (l1 < Square(radius))
+		{
 			tw->trace.fraction = 0;
 			tw->trace.startsolid = true;
 			VectorSubtract(end2d, org2d, dir);
 			l1 = VectorLengthSquared(dir);
-			if (l1 < Square(radius)) {
+			if (l1 < Square(radius))
+			{
 				tw->trace.allsolid = true;
 			}
 			return;
@@ -1204,7 +1257,8 @@ void QClipMap46::TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, fl
 	VectorSubtract(end2d, org2d, v1);
 	l2 = VectorLengthSquared(v1);
 	// if no intersection with the cylinder and the end point is at least an epsilon away
-	if (l1 >= Square(radius) && l2 > Square(radius+SURFACE_CLIP_EPSILON)) {
+	if (l1 >= Square(radius) && l2 > Square(radius + SURFACE_CLIP_EPSILON))
+	{
 		return;
 	}
 	//
@@ -1218,48 +1272,55 @@ void QClipMap46::TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, fl
 	//
 	VectorSubtract(start, origin, v1);
 	// dir is normalized so we can use a = 1
-	a = 1.0f;// * (dir[0] * dir[0] + dir[1] * dir[1]);
+	a = 1.0f;	// * (dir[0] * dir[0] + dir[1] * dir[1]);
 	b = 2.0f * (v1[0] * dir[0] + v1[1] * dir[1]);
-	c = v1[0] * v1[0] + v1[1] * v1[1] - (radius+RADIUS_EPSILON) * (radius+RADIUS_EPSILON);
+	c = v1[0] * v1[0] + v1[1] * v1[1] - (radius + RADIUS_EPSILON) * (radius + RADIUS_EPSILON);
 
-	d = b * b - 4.0f * c;// * a;
-	if (d > 0) {
+	d = b * b - 4.0f * c;	// * a;
+	if (d > 0)
+	{
 		sqrtd = SquareRootFloat(d);
 		// = (- b + sqrtd) * 0.5f;// / (2.0f * a);
-		fraction = (- b - sqrtd) * 0.5f;// / (2.0f * a);
+		fraction = (-b - sqrtd) * 0.5f;	// / (2.0f * a);
 		//
-		if (fraction < 0) {
+		if (fraction < 0)
+		{
 			fraction = 0;
 		}
-		else {
+		else
+		{
 			fraction /= length;
 		}
-		if ( fraction < tw->trace.fraction ) {
+		if (fraction < tw->trace.fraction)
+		{
 			VectorSubtract(end, start, dir);
 			VectorMA(start, fraction, dir, intersection);
 			// if the intersection is between the cylinder lower and upper bound
 			if (intersection[2] <= origin[2] + halfheight &&
-						intersection[2] >= origin[2] - halfheight) {
+				intersection[2] >= origin[2] - halfheight)
+			{
 				//
 				tw->trace.fraction = fraction;
 				VectorSubtract(intersection, origin, dir);
 				dir[2] = 0;
 				#ifdef CAPSULE_DEBUG
-					l2 = VectorLength(dir);
-					if (l2 <= radius) {
-						int bah = 1;
-					}
+				l2 = VectorLength(dir);
+				if (l2 <= radius)
+				{
+					int bah = 1;
+				}
 				#endif
-				scale = 1 / (radius+RADIUS_EPSILON);
+				scale = 1 / (radius + RADIUS_EPSILON);
 				VectorScale(dir, scale, dir);
 				VectorCopy(dir, tw->trace.plane.normal);
-				VectorAdd( tw->modelOrigin, intersection, intersection);
+				VectorAdd(tw->modelOrigin, intersection, intersection);
 				tw->trace.plane.dist = DotProduct(tw->trace.plane.normal, intersection);
 				tw->trace.contents = BSP46CONTENTS_BODY;
 			}
 		}
 	}
-	else if (d == 0) {
+	else if (d == 0)
+	{
 		//t[0] = (- b ) / 2 * a;
 		// slide along the cylinder
 	}
@@ -1274,7 +1335,7 @@ void QClipMap46::TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, fl
 //
 //==========================================================================
 
-void QClipMap46::TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t start, vec3_t end)
+void QClipMap46::TraceThroughSphere(traceWork_t* tw, vec3_t origin, float radius, vec3_t start, vec3_t end)
 {
 	float l1, l2, length, scale, fraction;
 	float a, b, c, d, sqrtd;
@@ -1283,13 +1344,15 @@ void QClipMap46::TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius
 	// if inside the sphere
 	VectorSubtract(start, origin, dir);
 	l1 = VectorLengthSquared(dir);
-	if (l1 < Square(radius)) {
+	if (l1 < Square(radius))
+	{
 		tw->trace.fraction = 0;
 		tw->trace.startsolid = true;
 		// test for allsolid
 		VectorSubtract(end, origin, dir);
 		l1 = VectorLengthSquared(dir);
-		if (l1 < Square(radius)) {
+		if (l1 < Square(radius))
+		{
 			tw->trace.allsolid = true;
 		}
 		return;
@@ -1302,7 +1365,8 @@ void QClipMap46::TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius
 	VectorSubtract(end, origin, v1);
 	l2 = VectorLengthSquared(v1);
 	// if no intersection with the sphere and the end point is at least an epsilon away
-	if (l1 >= Square(radius) && l2 > Square(radius+SURFACE_CLIP_EPSILON)) {
+	if (l1 >= Square(radius) && l2 > Square(radius + SURFACE_CLIP_EPSILON))
+	{
 		return;
 	}
 	//
@@ -1313,42 +1377,48 @@ void QClipMap46::TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius
 	//
 	VectorSubtract(start, origin, v1);
 	// dir is normalized so a = 1
-	a = 1.0f;//dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2];
+	a = 1.0f;	//dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2];
 	b = 2.0f * (dir[0] * v1[0] + dir[1] * v1[1] + dir[2] * v1[2]);
-	c = v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2] - (radius+RADIUS_EPSILON) * (radius+RADIUS_EPSILON);
+	c = v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2] - (radius + RADIUS_EPSILON) * (radius + RADIUS_EPSILON);
 
-	d = b * b - 4.0f * c;// * a;
-	if (d > 0) {
+	d = b * b - 4.0f * c;	// * a;
+	if (d > 0)
+	{
 		sqrtd = SquareRootFloat(d);
 		// = (- b + sqrtd) * 0.5f; // / (2.0f * a);
-		fraction = (- b - sqrtd) * 0.5f; // / (2.0f * a);
+		fraction = (-b - sqrtd) * 0.5f;	// / (2.0f * a);
 		//
-		if (fraction < 0) {
+		if (fraction < 0)
+		{
 			fraction = 0;
 		}
-		else {
+		else
+		{
 			fraction /= length;
 		}
-		if ( fraction < tw->trace.fraction ) {
+		if (fraction < tw->trace.fraction)
+		{
 			tw->trace.fraction = fraction;
 			VectorSubtract(end, start, dir);
 			VectorMA(start, fraction, dir, intersection);
 			VectorSubtract(intersection, origin, dir);
 			#ifdef CAPSULE_DEBUG
-				l2 = VectorLength(dir);
-				if (l2 < radius) {
-					int bah = 1;
-				}
+			l2 = VectorLength(dir);
+			if (l2 < radius)
+			{
+				int bah = 1;
+			}
 			#endif
-			scale = 1 / (radius+RADIUS_EPSILON);
+			scale = 1 / (radius + RADIUS_EPSILON);
 			VectorScale(dir, scale, dir);
 			VectorCopy(dir, tw->trace.plane.normal);
-			VectorAdd( tw->modelOrigin, intersection, intersection);
+			VectorAdd(tw->modelOrigin, intersection, intersection);
 			tw->trace.plane.dist = DotProduct(tw->trace.plane.normal, intersection);
 			tw->trace.contents = BSP46CONTENTS_BODY;
 		}
 	}
-	else if (d == 0) {
+	else if (d == 0)
+	{
 		//t1 = (- b ) / 2;
 		// slide along the sphere
 	}
@@ -1411,49 +1481,57 @@ void QClipMap46::PositionTest(traceWork_t* tw)
 //
 //==========================================================================
 
-void QClipMap46::TestInLeaf(traceWork_t *tw, cLeaf_t *leaf)
+void QClipMap46::TestInLeaf(traceWork_t* tw, cLeaf_t* leaf)
 {
-	int			k;
-	int			brushnum;
-	cbrush_t	*b;
-	cPatch_t	*patch;
+	int k;
+	int brushnum;
+	cbrush_t* b;
+	cPatch_t* patch;
 
 	// test box position against all brushes in the leaf
-	for (k=0 ; k<leaf->numLeafBrushes ; k++)
+	for (k = 0; k < leaf->numLeafBrushes; k++)
 	{
-		brushnum = leafbrushes[leaf->firstLeafBrush+k];
+		brushnum = leafbrushes[leaf->firstLeafBrush + k];
 		b = &brushes[brushnum];
-		if (b->checkcount == checkcount) {
+		if (b->checkcount == checkcount)
+		{
 			continue;	// already checked this brush in another leaf
 		}
 		b->checkcount = checkcount;
 
-		if ( !(b->contents & tw->contents)) {
+		if (!(b->contents & tw->contents))
+		{
 			continue;
 		}
-		
+
 		TestBoxInBrush(tw, b);
-		if ( tw->trace.allsolid ) {
+		if (tw->trace.allsolid)
+		{
 			return;
 		}
 	}
 
 	// test against all patches
-	if ( !cm_noCurves->integer ) {
-		for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ ) {
-			patch = surfaces[ leafsurfaces[ leaf->firstLeafSurface + k ] ];
-			if ( !patch ) {
+	if (!cm_noCurves->integer)
+	{
+		for (k = 0; k < leaf->numLeafSurfaces; k++)
+		{
+			patch = surfaces[leafsurfaces[leaf->firstLeafSurface + k]];
+			if (!patch)
+			{
 				continue;
 			}
-			if ( patch->checkcount == checkcount ) {
+			if (patch->checkcount == checkcount)
+			{
 				continue;	// already checked this brush in another leaf
 			}
 			patch->checkcount = checkcount;
 
-			if ( !(patch->contents & tw->contents)) {
+			if (!(patch->contents & tw->contents))
+			{
 				continue;
 			}
-			
+
 			if (patch->pc->PositionTest(tw))
 			{
 				tw->trace.startsolid = tw->trace.allsolid = true;
@@ -1474,70 +1552,79 @@ void QClipMap46::TestInLeaf(traceWork_t *tw, cLeaf_t *leaf)
 //
 //==========================================================================
 
-void QClipMap46::TestBoxInBrush(traceWork_t *tw, cbrush_t *brush)
+void QClipMap46::TestBoxInBrush(traceWork_t* tw, cbrush_t* brush)
 {
-	int			i;
-	cplane_t	*plane;
-	float		dist;
-	float		d1;
-	cbrushside_t	*side;
-	float		t;
-	vec3_t		startp;
+	int i;
+	cplane_t* plane;
+	float dist;
+	float d1;
+	cbrushside_t* side;
+	float t;
+	vec3_t startp;
 
-	if (!brush->numsides) {
+	if (!brush->numsides)
+	{
 		return;
 	}
 
 	// special test for axial
-	if ( tw->bounds[0][0] > brush->bounds[1][0]
-		|| tw->bounds[0][1] > brush->bounds[1][1]
-		|| tw->bounds[0][2] > brush->bounds[1][2]
-		|| tw->bounds[1][0] < brush->bounds[0][0]
-		|| tw->bounds[1][1] < brush->bounds[0][1]
-		|| tw->bounds[1][2] < brush->bounds[0][2]
-		) {
+	if (tw->bounds[0][0] > brush->bounds[1][0] ||
+		tw->bounds[0][1] > brush->bounds[1][1] ||
+		tw->bounds[0][2] > brush->bounds[1][2] ||
+		tw->bounds[1][0] < brush->bounds[0][0] ||
+		tw->bounds[1][1] < brush->bounds[0][1] ||
+		tw->bounds[1][2] < brush->bounds[0][2]
+		)
+	{
 		return;
 	}
 
-   if ( tw->sphere.use ) {
+	if (tw->sphere.use)
+	{
 		// the first six planes are the axial planes, so we only
 		// need to test the remainder
-		for ( i = 6 ; i < brush->numsides ; i++ ) {
+		for (i = 6; i < brush->numsides; i++)
+		{
 			side = brush->sides + i;
 			plane = side->plane;
 
 			// adjust the plane distance apropriately for radius
 			dist = plane->dist + tw->sphere.radius;
 			// find the closest point on the capsule to the plane
-			t = DotProduct( plane->normal, tw->sphere.offset );
-			if ( t > 0 )
+			t = DotProduct(plane->normal, tw->sphere.offset);
+			if (t > 0)
 			{
-				VectorSubtract( tw->start, tw->sphere.offset, startp );
+				VectorSubtract(tw->start, tw->sphere.offset, startp);
 			}
 			else
 			{
-				VectorAdd( tw->start, tw->sphere.offset, startp );
+				VectorAdd(tw->start, tw->sphere.offset, startp);
 			}
-			d1 = DotProduct( startp, plane->normal ) - dist;
+			d1 = DotProduct(startp, plane->normal) - dist;
 			// if completely in front of face, no intersection
-			if ( d1 > 0 ) {
+			if (d1 > 0)
+			{
 				return;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		// the first six planes are the axial planes, so we only
 		// need to test the remainder
-		for ( i = 6 ; i < brush->numsides ; i++ ) {
+		for (i = 6; i < brush->numsides; i++)
+		{
 			side = brush->sides + i;
 			plane = side->plane;
 
 			// adjust the plane distance apropriately for mins/maxs
-			dist = plane->dist - DotProduct( tw->offsets[ plane->signbits ], plane->normal );
+			dist = plane->dist - DotProduct(tw->offsets[plane->signbits], plane->normal);
 
-			d1 = DotProduct( tw->start, plane->normal ) - dist;
+			d1 = DotProduct(tw->start, plane->normal) - dist;
 
 			// if completely in front of face, no intersection
-			if ( d1 > 0 ) {
+			if (d1 > 0)
+			{
 				return;
 			}
 		}
@@ -1557,19 +1644,20 @@ void QClipMap46::TestBoxInBrush(traceWork_t *tw, cbrush_t *brush)
 //
 //==========================================================================
 
-void QClipMap46::TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model)
+void QClipMap46::TestBoundingBoxInCapsule(traceWork_t* tw, clipHandle_t model)
 {
 	vec3_t mins, maxs, offset, size[2];
 	clipHandle_t h;
-	cmodel_t *cmod;
+	cmodel_t* cmod;
 	int i;
 
 	// mins maxs of the capsule
 	ModelBounds(model, mins, maxs);
 
 	// offset for capsule center
-	for ( i = 0 ; i < 3 ; i++ ) {
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+	for (i = 0; i < 3; i++)
+	{
+		offset[i] = (mins[i] + maxs[i]) * 0.5;
 		size[0][i] = mins[i] - offset[i];
 		size[1][i] = maxs[i] - offset[i];
 		tw->start[i] -= offset[i];
@@ -1578,14 +1666,14 @@ void QClipMap46::TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model)
 
 	// replace the bounding box with the capsule
 	tw->sphere.use = true;
-	tw->sphere.radius = ( size[1][0] > size[1][2] ) ? size[1][2]: size[1][0];
+	tw->sphere.radius = (size[1][0] > size[1][2]) ? size[1][2] : size[1][0];
 	tw->sphere.halfheight = size[1][2];
-	VectorSet( tw->sphere.offset, 0, 0, size[1][2] - tw->sphere.radius );
+	VectorSet(tw->sphere.offset, 0, 0, size[1][2] - tw->sphere.radius);
 
 	// replace the capsule with the bounding box
 	h = TempBoxModel(tw->size[0], tw->size[1], false);
 	// calculate collision
-	cmod = ClipHandleToModel( h );
+	cmod = ClipHandleToModel(h);
 	TestInLeaf(tw, &cmod->leaf);
 }
 
@@ -1597,7 +1685,7 @@ void QClipMap46::TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model)
 //
 //==========================================================================
 
-void QClipMap46::TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model)
+void QClipMap46::TestCapsuleInCapsule(traceWork_t* tw, clipHandle_t model)
 {
 	int i;
 	vec3_t mins, maxs;
@@ -1610,14 +1698,15 @@ void QClipMap46::TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model)
 
 	VectorAdd(tw->start, tw->sphere.offset, top);
 	VectorSubtract(tw->start, tw->sphere.offset, bottom);
-	for ( i = 0 ; i < 3 ; i++ ) {
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+	for (i = 0; i < 3; i++)
+	{
+		offset[i] = (mins[i] + maxs[i]) * 0.5;
 		symetricSize[0][i] = mins[i] - offset[i];
 		symetricSize[1][i] = maxs[i] - offset[i];
 	}
-	halfwidth = symetricSize[ 1 ][ 0 ];
-	halfheight = symetricSize[ 1 ][ 2 ];
-	radius = ( halfwidth > halfheight ) ? halfheight : halfwidth;
+	halfwidth = symetricSize[1][0];
+	halfheight = symetricSize[1][2];
+	radius = (halfwidth > halfheight) ? halfheight : halfwidth;
 	offs = halfheight - radius;
 
 	r = Square(tw->sphere.radius + radius);
@@ -1625,35 +1714,41 @@ void QClipMap46::TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model)
 	VectorCopy(offset, p1);
 	p1[2] += offs;
 	VectorSubtract(p1, top, tmp);
-	if ( VectorLengthSquared(tmp) < r ) {
+	if (VectorLengthSquared(tmp) < r)
+	{
 		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 	VectorSubtract(p1, bottom, tmp);
-	if ( VectorLengthSquared(tmp) < r ) {
+	if (VectorLengthSquared(tmp) < r)
+	{
 		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 	VectorCopy(offset, p2);
 	p2[2] -= offs;
 	VectorSubtract(p2, top, tmp);
-	if ( VectorLengthSquared(tmp) < r ) {
+	if (VectorLengthSquared(tmp) < r)
+	{
 		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 	VectorSubtract(p2, bottom, tmp);
-	if ( VectorLengthSquared(tmp) < r ) {
+	if (VectorLengthSquared(tmp) < r)
+	{
 		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 	// if between cylinder up and lower bounds
-	if ( (top[2] >= p1[2] && top[2] <= p2[2]) ||
-		(bottom[2] >= p1[2] && bottom[2] <= p2[2]) ) {
+	if ((top[2] >= p1[2] && top[2] <= p2[2]) ||
+		(bottom[2] >= p1[2] && bottom[2] <= p2[2]))
+	{
 		// 2d coordinates
 		top[2] = p1[2] = 0;
 		// if the cylinders overlap
 		VectorSubtract(top, p1, tmp);
-		if ( VectorLengthSquared(tmp) < r ) {
+		if (VectorLengthSquared(tmp) < r)
+		{
 			tw->trace.startsolid = tw->trace.allsolid = true;
 			tw->trace.fraction = 0;
 		}
@@ -1680,15 +1775,22 @@ float QClipMap46::DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2, vec3
 	int j;
 
 	ProjectPointOntoVector(p, lp1, dir, proj);
-	for (j = 0; j < 3; j++) 
+	for (j = 0; j < 3; j++)
 		if ((proj[j] > lp1[j] && proj[j] > lp2[j]) ||
 			(proj[j] < lp1[j] && proj[j] < lp2[j]))
+		{
 			break;
-	if (j < 3) {
+		}
+	if (j < 3)
+	{
 		if (Q_fabs(proj[j] - lp1[j]) < Q_fabs(proj[j] - lp2[j]))
+		{
 			VectorSubtract(p, lp1, t);
+		}
 		else
+		{
 			VectorSubtract(p, lp2, t);
+		}
 		return VectorLengthSquared(t);
 	}
 	VectorSubtract(p, proj, t);
@@ -1705,9 +1807,9 @@ void QClipMap46::ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vDir
 {
 	vec3_t pVec;
 
-	VectorSubtract( point, vStart, pVec );
+	VectorSubtract(point, vStart, pVec);
 	// project onto the directional vector for this segment
-	VectorMA( vStart, DotProduct( pVec, vDir ), vDir, vProj );
+	VectorMA(vStart, DotProduct(pVec, vDir), vDir, vProj);
 }
 
 //==========================================================================
@@ -1738,7 +1840,7 @@ float QClipMap46::SquareRootFloat(float number)
 //
 //==========================================================================
 
-bool QClipMap46::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t * trace)
+bool QClipMap46::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
 	throw DropException("Not implemented");
 }

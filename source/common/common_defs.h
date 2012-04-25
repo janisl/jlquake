@@ -15,7 +15,7 @@
 //**************************************************************************
 
 #ifdef _WIN32
-#pragma warning(disable : 4018)     // signed/unsigned mismatch
+#pragma warning(disable : 4018)		// signed/unsigned mismatch
 #pragma warning(disable : 4032)
 #pragma warning(disable : 4051)
 #pragma warning(disable : 4057)		// slightly different base types
@@ -31,12 +31,12 @@
 #pragma warning(disable : 4142)		// benign redefinition
 #pragma warning(disable : 4305)		// truncation from const double to float
 //#pragma warning(disable : 4310)		// cast truncates constant value
-//#pragma warning(disable:  4505) 	// unreferenced local function has been removed
+//#pragma warning(disable:  4505)   // unreferenced local function has been removed
 #pragma warning(disable : 4514)
 #pragma warning(disable : 4702)		// unreachable code
 #pragma warning(disable : 4711)		// selected for automatic inline expansion
 #pragma warning(disable : 4220)		// varargs matches remaining parameters
-#pragma warning(disable : 4291)     // no matching operator delete found
+#pragma warning(disable : 4291)		// no matching operator delete found
 #endif
 
 #ifndef __GNUC__
@@ -50,9 +50,9 @@
 #endif
 
 #if (defined _M_IX86 || defined __i386__) && !defined C_ONLY && !defined __sun__
-#define id386	1
+#define id386   1
 #else
-#define id386	0
+#define id386   0
 #endif
 
 //==========================================================================
@@ -61,44 +61,44 @@
 //
 //==========================================================================
 
-#define MIN_QINT8	((qint8)-128)
-#define MIN_QINT16	((qint16)-32768)
-#define MIN_QINT32	((qint32)-2147483648)
+#define MIN_QINT8   ((qint8) - 128)
+#define MIN_QINT16  ((qint16) - 32768)
+#define MIN_QINT32  ((qint32) - 2147483648)
 
-#define MAX_QINT8	((qint8)0x7f)
-#define MAX_QINT16	((qint16)0x7fff)
-#define MAX_QINT32	((qint32)0x7fffffff)
+#define MAX_QINT8   ((qint8)0x7f)
+#define MAX_QINT16  ((qint16)0x7fff)
+#define MAX_QINT32  ((qint32)0x7fffffff)
 
-#define MAX_QUINT8	((quint8)0xff)
-#define MAX_QUINT16	((quint16)0xffff)
-#define MAX_QUINT32	((quint32)0xffffffff)
+#define MAX_QUINT8  ((quint8)0xff)
+#define MAX_QUINT16 ((quint16)0xffff)
+#define MAX_QUINT32 ((quint32)0xffffffff)
 
-typedef unsigned char 		byte;
+typedef unsigned char byte;
 
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-typedef int8_t				qint8;
-typedef uint8_t				quint8;
-typedef int16_t				qint16;
-typedef uint16_t			quint16;
-typedef int32_t				qint32;
-typedef uint32_t			quint32;
-typedef intptr_t			qintptr;
+typedef int8_t qint8;
+typedef uint8_t quint8;
+typedef int16_t qint16;
+typedef uint16_t quint16;
+typedef int32_t qint32;
+typedef uint32_t quint32;
+typedef intptr_t qintptr;
 #else
-typedef char				qint8;
-typedef unsigned char		quint8;
-typedef short				qint16;
-typedef unsigned short		quint16;
-typedef int					qint32;
-typedef unsigned int		quint32;
+typedef char qint8;
+typedef unsigned char quint8;
+typedef short qint16;
+typedef unsigned short quint16;
+typedef int qint32;
+typedef unsigned int quint32;
 #ifdef _WIN64
-typedef long long			qintptr;
+typedef long long qintptr;
 #else
-typedef int					qintptr;
+typedef int qintptr;
 #endif
 #endif
 
-typedef int					qboolean;
+typedef int qboolean;
 
 //==========================================================================
 //
@@ -136,24 +136,24 @@ public:
 	virtual ~Interface();
 };
 
-#define JLQUAKE_VERSION			1.0
-#define JLQUAKE_VERSION_STRING	"1.0"
+#define JLQUAKE_VERSION         1.0
+#define JLQUAKE_VERSION_STRING  "1.0"
 
 // the game guarantees that no string from the network will ever
 // exceed MAX_STRING_CHARS
-#define MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
+#define MAX_STRING_CHARS    1024	// max length of a string passed to Cmd_TokenizeString
 
 // TTimo
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
-#define MAXPRINTMSG	4096
+#define MAXPRINTMSG 4096
 
-#define ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
-#define SHORT2ANGLE(x)		((x)*(360.0/65536))
+#define ANGLE2SHORT(x)      ((int)((x) * 65536 / 360) & 65535)
+#define SHORT2ANGLE(x)      ((x) * (360.0 / 65536))
 
-#define random()	((rand () & 0x7fff) / ((float)0x7fff))
-#define crandom()	(2.0 * (random() - 0.5))
+#define random()    ((rand() & 0x7fff) / ((float)0x7fff))
+#define crandom()   (2.0 * (random() - 0.5))
 
-#define BIT(num)	(1 << (num))
+#define BIT(num)    (1 << (num))
 
 //==========================================================================
 //
@@ -185,24 +185,24 @@ int COM_CheckParm(const char* parm);
 
 enum
 {
-	GAME_Quake			= 0x01,
-	GAME_Hexen2			= 0x02,
-	GAME_Quake2			= 0x04,
-	GAME_Quake3			= 0x08,
-	GAME_WolfSP			= 0x10,
-	GAME_WolfMP			= 0x20,
-	GAME_ET				= 0x40,
+	GAME_Quake          = 0x01,
+	GAME_Hexen2         = 0x02,
+	GAME_Quake2         = 0x04,
+	GAME_Quake3         = 0x08,
+	GAME_WolfSP         = 0x10,
+	GAME_WolfMP         = 0x20,
+	GAME_ET             = 0x40,
 	//	Aditional flags
-	GAME_QuakeWorld		= 0x80,
-	GAME_HexenWorld		= 0x100,
-	GAME_H2Portals		= 0x200,
+	GAME_QuakeWorld     = 0x80,
+	GAME_HexenWorld     = 0x100,
+	GAME_H2Portals      = 0x200,
 
 	//	Combinations
-	GAME_QuakeHexen		= GAME_Quake | GAME_Hexen2,
-	GAME_Tech3			= GAME_Quake3 | GAME_WolfSP | GAME_WolfMP | GAME_ET,
+	GAME_QuakeHexen     = GAME_Quake | GAME_Hexen2,
+	GAME_Tech3          = GAME_Quake3 | GAME_WolfSP | GAME_WolfMP | GAME_ET,
 };
 
-extern int		GGameType;
+extern int GGameType;
 
 //==========================================================================
 //

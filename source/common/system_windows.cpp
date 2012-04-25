@@ -20,27 +20,27 @@
 #include <io.h>
 #include <sys/stat.h>
 
-#define MAX_FOUND_FILES		0x1000
+#define MAX_FOUND_FILES     0x1000
 
 char* __CopyString(const char* in);
 
-HINSTANCE		global_hInstance;
+HINSTANCE global_hInstance;
 // when we get a windows message, we store the time off so keyboard processing
 // can know the exact time of an event
-unsigned		sysMsgTime;
+unsigned sysMsgTime;
 
-static char		HomePathSuffix[MAX_OSPATH];
+static char HomePathSuffix[MAX_OSPATH];
 
-static double	lastcurtime = 0.0;
-static double		curtime = 0.0;
-static int			lowshift;
-static double		pfreq;
+static double lastcurtime = 0.0;
+static double curtime = 0.0;
+static int lowshift;
+static double pfreq;
 
 //	Test an file given OS path:
 //	returns -1 if not found
 //	returns 1 if directory
 //	returns 0 otherwise
-int Sys_StatFile(const char *ospath)
+int Sys_StatFile(const char* ospath)
 {
 	struct _stat stat;
 	if (_stat(ospath, &stat) == -1)
@@ -87,9 +87,9 @@ const char* Sys_DefaultHomePath()
 static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, const char* filter,
 	char** list, int* numfiles)
 {
-	char		search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
-	char		filename[MAX_OSPATH];
-	int			findhandle;
+	char search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
+	char filename[MAX_OSPATH];
+	int findhandle;
 	struct _finddata_t findinfo;
 
 	if (*numfiles >= MAX_FOUND_FILES - 1)
@@ -140,12 +140,13 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 		}
 		list[*numfiles] = __CopyString(filename);
 		(*numfiles)++;
-	} while (_findnext(findhandle, &findinfo) != -1);
+	}
+	while (_findnext(findhandle, &findinfo) != -1);
 
 	_findclose(findhandle);
 }
 
-static bool strgtr(const char *s0, const char *s1)
+static bool strgtr(const char* s0, const char* s1)
 {
 	int l0 = String::Length(s0);
 	int l1 = String::Length(s1);
@@ -172,14 +173,14 @@ static bool strgtr(const char *s0, const char *s1)
 char** Sys_ListFiles(const char* directory, const char* extension, const char* filter,
 	int* numfiles, bool wantsubs)
 {
-	char		search[MAX_OSPATH];
-	int			nfiles;
-	char		**listCopy;
-	char		*list[MAX_FOUND_FILES];
+	char search[MAX_OSPATH];
+	int nfiles;
+	char** listCopy;
+	char* list[MAX_FOUND_FILES];
 	struct _finddata_t findinfo;
-	int			findhandle;
-	int			flag;
-	int			i;
+	int findhandle;
+	int flag;
+	int i;
 
 	if (filter)
 	{
@@ -190,7 +191,9 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 		*numfiles = nfiles;
 
 		if (!nfiles)
+		{
 			return NULL;
+		}
 
 		listCopy = (char**)Mem_Alloc((nfiles + 1) * sizeof(*listCopy));
 		for (i = 0; i < nfiles; i++)
@@ -232,7 +235,7 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 
 	do
 	{
-		if ((!wantsubs && flag ^ (findinfo.attrib & _A_SUBDIR)) || (wantsubs && findinfo.attrib & _A_SUBDIR) )
+		if ((!wantsubs && flag ^ (findinfo.attrib & _A_SUBDIR)) || (wantsubs && findinfo.attrib & _A_SUBDIR))
 		{
 			if (nfiles == MAX_FOUND_FILES - 1)
 			{
@@ -241,7 +244,8 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 			list[nfiles] = __CopyString(findinfo.name);
 			nfiles++;
 		}
-	} while (_findnext(findhandle, &findinfo) != -1);
+	}
+	while (_findnext(findhandle, &findinfo) != -1);
 
 	list[nfiles] = 0;
 
@@ -255,7 +259,7 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 		return NULL;
 	}
 
-	listCopy = (char**)Mem_Alloc((nfiles + 1 ) * sizeof(*listCopy));
+	listCopy = (char**)Mem_Alloc((nfiles + 1) * sizeof(*listCopy));
 	for (i = 0; i < nfiles; i++)
 	{
 		listCopy[i] = list[i];
@@ -269,13 +273,14 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 		{
 			if (strgtr(listCopy[i - 1], listCopy[i]))
 			{
-				char *temp = listCopy[i];
-				listCopy[i] = listCopy[i-1];
-				listCopy[i-1] = temp;
+				char* temp = listCopy[i];
+				listCopy[i] = listCopy[i - 1];
+				listCopy[i - 1] = temp;
 				flag = 1;
 			}
 		}
-	} while(flag);
+	}
+	while (flag);
 
 	return listCopy;
 }
@@ -297,8 +302,8 @@ void Sys_FreeFileList(char** list)
 
 int Sys_Milliseconds()
 {
-	static int		base;
-	static bool		initialized = false;
+	static int base;
+	static bool initialized = false;
 
 	if (!initialized)
 	{
@@ -312,20 +317,22 @@ double Sys_DoubleTime()
 {
 #if 1
 	//	Method used in Quake, Hexen 2 and HexenWorld client
-	static int			sametimecount;
-	static unsigned int	oldtime;
-	static int			first = 1;
-	LARGE_INTEGER		PerformanceCount;
-	unsigned int		temp, t2;
-	double				time;
+	static int sametimecount;
+	static unsigned int oldtime;
+	static int first = 1;
+	LARGE_INTEGER PerformanceCount;
+	unsigned int temp, t2;
+	double time;
 
 	if (first)
 	{
-		LARGE_INTEGER	PerformanceFreq;
-		unsigned int	lowpart, highpart;
+		LARGE_INTEGER PerformanceFreq;
+		unsigned int lowpart, highpart;
 
-		if (!QueryPerformanceFrequency (&PerformanceFreq))
+		if (!QueryPerformanceFrequency(&PerformanceFreq))
+		{
 			throw Exception("No hardware timer available");
+		}
 
 		// get 32 out of the 64 time bits such that we have around
 		// 1 microsecond resolution
@@ -344,7 +351,7 @@ double Sys_DoubleTime()
 		pfreq = 1.0 / (double)lowpart;
 	}
 
-	QueryPerformanceCounter (&PerformanceCount);
+	QueryPerformanceCounter(&PerformanceCount);
 
 	temp = ((unsigned int)PerformanceCount.LowPart >> lowshift) |
 		   ((unsigned int)PerformanceCount.HighPart << (32 - lowshift));
@@ -389,7 +396,7 @@ double Sys_DoubleTime()
 		}
 	}
 
-    return curtime;
+	return curtime;
 #elif 0
 	//	Method used in QuakeWorld client
 	static DWORD starttime;
@@ -399,31 +406,38 @@ double Sys_DoubleTime()
 
 	now = timeGetTime();
 
-	if (first) {
+	if (first)
+	{
 		first = false;
 		starttime = now;
 		return 0.0;
 	}
-	
-	if (now < starttime) // wrapped?
+
+	if (now < starttime)// wrapped?
+	{
 		return (now / 1000.0) + (LONG_MAX - starttime / 1000.0);
+	}
 
 	if (now - starttime == 0)
+	{
 		return 0.0;
+	}
 
 	return (now - starttime) / 1000.0;
 #else
 	//	Method used in QuakeWorld and HexenWorld servers.
 	double t;
-    struct _timeb tstruct;
-	static int	starttime;
+	struct _timeb tstruct;
+	static int starttime;
 
-	_ftime( &tstruct );
- 
+	_ftime(&tstruct);
+
 	if (!starttime)
+	{
 		starttime = tstruct.time;
-	t = (tstruct.time-starttime) + tstruct.millitm*0.001;
-	
+	}
+	t = (tstruct.time - starttime) + tstruct.millitm * 0.001;
+
 	return t;
 #endif
 }

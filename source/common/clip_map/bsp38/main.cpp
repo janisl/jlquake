@@ -33,9 +33,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-mapsurface_t	QClipMap38::nullsurface;
+mapsurface_t QClipMap38::nullsurface;
 
-Cvar*			map_noareas;
+Cvar* map_noareas;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -319,7 +319,7 @@ void QClipMap38::InitBoxHull()
 
 		// brush sides
 		cbrushside_t* s = &brushsides[numbrushsides + i];
-		s->plane = 	planes + (numplanes + i * 2 + side);
+		s->plane =  planes + (numplanes + i * 2 + side);
 		s->surface = &nullsurface;
 
 		// nodes
@@ -347,7 +347,7 @@ void QClipMap38::InitBoxHull()
 		p->signbits = 0;
 		VectorClear(p->normal);
 		p->normal[i >> 1] = -1;
-	}	
+	}
 }
 
 //==========================================================================
@@ -410,6 +410,6 @@ int QClipMap38::ContentsToQ3(int Contents) const
 //
 //==========================================================================
 
-void QClipMap38::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+void QClipMap38::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points))
 {
 }

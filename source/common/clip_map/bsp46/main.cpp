@@ -33,9 +33,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Cvar*		cm_noAreas;
-Cvar*		cm_noCurves;
-Cvar*		cm_playerCurveClip;
+Cvar* cm_noAreas;
+Cvar* cm_noCurves;
+Cvar* cm_playerCurveClip;
 Cvar* cm_optimize;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -266,8 +266,8 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	}
 	if (Handle < MAX_SUBMODELS)
 	{
-		throw DropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i", 
-			numSubModels, Handle, MAX_SUBMODELS));
+		throw DropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i",
+				numSubModels, Handle, MAX_SUBMODELS));
 	}
 	throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
 }
@@ -319,7 +319,7 @@ void QClipMap46::InitBoxHull()
 		p->normal[i >> 1] = -1;
 
 		SetPlaneSignbits(p);
-	}	
+	}
 }
 
 //==========================================================================

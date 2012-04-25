@@ -68,13 +68,13 @@ inline void operator delete[](void* Ptr)
 	Mem_Free(Ptr, "", 0);
 }
 
-#define Mem_Alloc(size)				Mem_Alloc(size, __FILE__, __LINE__)
-#define Mem_ClearedAlloc(size)		Mem_ClearedAlloc(size, __FILE__, __LINE__)
-#define Mem_Free(ptr)				Mem_Free(ptr, __FILE__, __LINE__)
+#define Mem_Alloc(size)             Mem_Alloc(size, __FILE__, __LINE__)
+#define Mem_ClearedAlloc(size)      Mem_ClearedAlloc(size, __FILE__, __LINE__)
+#define Mem_Free(ptr)               Mem_Free(ptr, __FILE__, __LINE__)
 
-#define MEM_DEBUG_NEW				new(__FILE__, __LINE__)
+#define MEM_DEBUG_NEW               new(__FILE__, __LINE__)
 #undef new
-#define new							MEM_DEBUG_NEW
+#define new                         MEM_DEBUG_NEW
 
 #else
 

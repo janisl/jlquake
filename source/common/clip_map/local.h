@@ -17,27 +17,27 @@
 #ifndef _CM_LOCAL_H
 #define _CM_LOCAL_H
 
-#define CMH_NON_MAP_MASK	0xffff0000
-#define CMH_NON_MAP_SHIFT	16
-#define CMH_MODEL_MASK		0x0000ffff
+#define CMH_NON_MAP_MASK    0xffff0000
+#define CMH_NON_MAP_SHIFT   16
+#define CMH_MODEL_MASK      0x0000ffff
 
 struct leafList_t
 {
-	int		count;
-	int		maxcount;
-	int		*list;
-	vec3_t	bounds[2];
-	int		lastLeaf;		// for overflows where each leaf can't be stored individually
-	int		topnode;
+	int count;
+	int maxcount;
+	int* list;
+	vec3_t bounds[2];
+	int lastLeaf;			// for overflows where each leaf can't be stored individually
+	int topnode;
 };
 
 class QClipMap
 {
 public:
-	String			Name;
+	String Name;
 
-	quint32			CheckSum;
-	quint32			CheckSum2;
+	quint32 CheckSum;
+	quint32 CheckSum2;
 
 	QClipMap();
 	virtual ~QClipMap();
@@ -65,7 +65,7 @@ public:
 	virtual int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
 	virtual int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
 	virtual int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
-	virtual bool HeadnodeVisible(int NodeNum, byte *VisBits) = 0;
+	virtual bool HeadnodeVisible(int NodeNum, byte* VisBits) = 0;
 	virtual byte* ClusterPVS(int Cluster) = 0;
 	virtual byte* ClusterPHS(int Cluster) = 0;
 	virtual void SetAreaPortalState(int PortalNum, qboolean Open) = 0;
@@ -80,19 +80,19 @@ public:
 		int BrushMask, vec3_t Origin, vec3_t Angles) = 0;
 	virtual void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, int Capsule) = 0;
-	virtual void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
+	virtual void TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule) = 0;
-	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
+	virtual void DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points)) = 0;
 };
 
 QClipMap* CM_CreateQClipMap29();
 QClipMap* CM_CreateQClipMap38();
 QClipMap* CM_CreateQClipMap46();
 
-extern QClipMap*			CMapShared;
+extern QClipMap* CMapShared;
 
-extern Array<QClipMap*>	CMNonMapModels;
+extern Array<QClipMap*> CMNonMapModels;
 
-extern Cvar*				cm_flushmap;
+extern Cvar* cm_flushmap;
 
 #endif

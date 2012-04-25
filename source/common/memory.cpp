@@ -26,8 +26,8 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define SMALLID				0x22
-#define LARGEID				0x33
+#define SMALLID             0x22
+#define LARGEID             0x33
 
 // TYPES -------------------------------------------------------------------
 
@@ -36,20 +36,20 @@ enum
 	ALIGN = 4
 };
 
-#define ALIGN_SIZE(bytes)	(((bytes) + ALIGN - 1) & ~(ALIGN - 1))
+#define ALIGN_SIZE(bytes)   (((bytes) + ALIGN - 1) & ~(ALIGN - 1))
 
-#define SMALL_HEADER_SIZE	ALIGN_SIZE(sizeof(byte) + sizeof(byte))
-#define LARGE_HEADER_SIZE	ALIGN_SIZE(sizeof(void*) + sizeof(byte))
+#define SMALL_HEADER_SIZE   ALIGN_SIZE(sizeof(byte) + sizeof(byte))
+#define LARGE_HEADER_SIZE   ALIGN_SIZE(sizeof(void*) + sizeof(byte))
 
-#define SMALL_ALIGN(bytes)	(ALIGN_SIZE((bytes) + SMALL_HEADER_SIZE) - SMALL_HEADER_SIZE)
+#define SMALL_ALIGN(bytes)  (ALIGN_SIZE((bytes) + SMALL_HEADER_SIZE) - SMALL_HEADER_SIZE)
 
 struct MemDebug_t
 {
-	const char*		FileName;
-	int				LineNumber;
-	int				Size;
-	MemDebug_t*		Prev;
-	MemDebug_t*		Next;
+	const char* FileName;
+	int LineNumber;
+	int Size;
+	MemDebug_t* Prev;
+	MemDebug_t* Next;
 };
 
 class QMemHeap
@@ -63,21 +63,21 @@ public:
 private:
 	struct QPage
 	{
-		void*		Data;
-		size_t		Size;
+		void* Data;
+		size_t Size;
 
-		QPage*		Prev;
-		QPage*		Next;
+		QPage* Prev;
+		QPage* Next;
 	};
 
-	size_t			PageSize;
+	size_t PageSize;
 
-	void*			SmallFirstFree[256 / ALIGN + 1];
-	QPage*			SmallPage;
-	size_t			SmallOffset;
-	QPage*			SmallUsedPages;
+	void* SmallFirstFree[256 / ALIGN + 1];
+	QPage* SmallPage;
+	size_t SmallOffset;
+	QPage* SmallUsedPages;
 
-	QPage*			LargeFirstUsedPage;
+	QPage* LargeFirstUsedPage;
 
 	QPage* AllocPage(size_t Bytes);
 	void FreePage(QPage* Page);
@@ -105,9 +105,9 @@ static void Mem_MemDebugDump();
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static QMemHeap		MainHeap;
+static QMemHeap MainHeap;
 #ifdef MEM_DEBUG
-static MemDebug_t*	MemDebug;
+static MemDebug_t* MemDebug;
 #endif
 
 // CODE --------------------------------------------------------------------
@@ -119,11 +119,11 @@ static MemDebug_t*	MemDebug;
 //==========================================================================
 
 QMemHeap::QMemHeap()
-: PageSize(0)
-, SmallPage(NULL)
-, SmallOffset(0)
-, SmallUsedPages(NULL)
-, LargeFirstUsedPage(NULL)
+	: PageSize(0),
+	SmallPage(NULL),
+	SmallOffset(0),
+	SmallUsedPages(NULL),
+	LargeFirstUsedPage(NULL)
 {
 }
 
@@ -343,7 +343,7 @@ void Mem_Shutdown()
 	Mem_MemDebugDump();
 #endif
 }
-	
+
 #ifdef MEM_DEBUG
 
 #undef Mem_Alloc
@@ -356,7 +356,7 @@ void Mem_Shutdown()
 //
 //==========================================================================
 
-void *Mem_Alloc(int size, const char* FileName, int LineNumber)
+void* Mem_Alloc(int size, const char* FileName, int LineNumber)
 {
 	if (!size)
 	{
@@ -376,7 +376,9 @@ void *Mem_Alloc(int size, const char* FileName, int LineNumber)
 	m->Size = size;
 	m->Next = MemDebug;
 	if (MemDebug)
+	{
 		MemDebug->Prev = m;
+	}
 	MemDebug = m;
 
 	return (byte*)ptr + sizeof(MemDebug_t);
@@ -388,7 +390,7 @@ void *Mem_Alloc(int size, const char* FileName, int LineNumber)
 //
 //==========================================================================
 
-void *Mem_ClearedAlloc(int size, const char* FileName, int LineNumber)
+void* Mem_ClearedAlloc(int size, const char* FileName, int LineNumber)
 {
 	void* P = Mem_Alloc(size, FileName, LineNumber);
 	Com_Memset(P, 0, size);
@@ -411,11 +413,17 @@ void Mem_Free(void* ptr, const char* FileName, int LineNumber)
 	//	Unlink debug info.
 	MemDebug_t* m = (MemDebug_t*)((char*)ptr - sizeof(MemDebug_t));
 	if (m->Next)
+	{
 		m->Next->Prev = m->Prev;
+	}
 	if (m == MemDebug)
+	{
 		MemDebug = m->Next;
+	}
 	else
+	{
 		m->Prev->Next = m->Next;
+	}
 
 	MainHeap.Free((char*)ptr - sizeof(MemDebug_t));
 }
@@ -446,7 +454,7 @@ static void Mem_MemDebugDump()
 //
 //==========================================================================
 
-void *Mem_Alloc(int size)
+void* Mem_Alloc(int size)
 {
 	if (!size)
 	{
@@ -468,7 +476,7 @@ void *Mem_Alloc(int size)
 //
 //==========================================================================
 
-void *Mem_ClearedAlloc(int size)
+void* Mem_ClearedAlloc(int size)
 {
 	void* P = Mem_Alloc(size);
 	Com_Memset(P, 0, size);

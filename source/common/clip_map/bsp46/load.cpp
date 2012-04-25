@@ -23,14 +23,14 @@
 
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
-#define BOX_BRUSHES			1
-#define BOX_SIDES			6
-#define BOX_LEAFS			2
-#define BOX_PLANES			12
+#define BOX_BRUSHES         1
+#define BOX_SIDES           6
+#define BOX_LEAFS           2
+#define BOX_PLANES          12
 
-#define VIS_HEADER			8
+#define VIS_HEADER          8
 
-#define MAX_PATCH_VERTS		1024
+#define MAX_PATCH_VERTS     1024
 
 // TYPES -------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ void QClipMap46::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	if (header.version != BSP46_VERSION && header.version != BSP47_VERSION)
 	{
 		throw DropException(va("CM_LoadMap: %s has wrong version number (%i should be %i)",
-			AName, header.version, BSP46_VERSION));
+				AName, header.version, BSP46_VERSION));
 	}
 
 	const byte* cmod_base = Buffer.Ptr();
@@ -141,7 +141,7 @@ void QClipMap46::LoadShaders(const quint8* base, const bsp46_lump_t* l)
 
 	Com_Memcpy(shaders, in, count * sizeof(*shaders));
 
-	bsp46_dshader_t	*out = shaders;
+	bsp46_dshader_t* out = shaders;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		out->contentFlags = LittleLong(out->contentFlags);
@@ -172,7 +172,7 @@ void QClipMap46::LoadLeafs(const quint8* base, const bsp46_lump_t* l)
 	Com_Memset(leafs, 0, sizeof(cLeaf_t) * (BOX_LEAFS + count));
 	numLeafs = count;
 
-	cLeaf_t* out = leafs;	
+	cLeaf_t* out = leafs;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		out->cluster = LittleLong(in->cluster);
@@ -272,7 +272,7 @@ void QClipMap46::LoadPlanes(const quint8* base, const bsp46_lump_t* l)
 	Com_Memset(planes, 0, sizeof(cplane_t) * (BOX_PLANES + count));
 	numPlanes = count;
 
-	cplane_t* out = planes;	
+	cplane_t* out = planes;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -305,12 +305,12 @@ void QClipMap46::LoadBrushSides(const quint8* base, const bsp46_lump_t* l)
 	Com_Memset(brushsides, 0, sizeof(cbrushside_t) * (BOX_SIDES + count));
 	numBrushSides = count;
 
-	cbrushside_t* out = brushsides;	
+	cbrushside_t* out = brushsides;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		int num = LittleLong(in->planeNum);
 		out->plane = &planes[num];
-		out->shaderNum = LittleLong( in->shaderNum );
+		out->shaderNum = LittleLong(in->shaderNum);
 		if (out->shaderNum < 0 || out->shaderNum >= numShaders)
 		{
 			throw DropException(va("CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum));
@@ -344,7 +344,7 @@ void QClipMap46::LoadBrushes(const quint8* base, const bsp46_lump_t* l)
 		out->sides = brushsides + LittleLong(in->firstSide);
 		out->numsides = LittleLong(in->numSides);
 
-		out->shaderNum = LittleLong( in->shaderNum );
+		out->shaderNum = LittleLong(in->shaderNum);
 		if (out->shaderNum < 0 || out->shaderNum >= numShaders)
 		{
 			throw DropException(va("CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum));
@@ -405,10 +405,10 @@ void QClipMap46::LoadNodes(const quint8* base, const bsp46_lump_t* l)
 
 void QClipMap46::LoadVisibility(const quint8* base, const bsp46_lump_t* l)
 {
-    int len = l->filelen;
+	int len = l->filelen;
 	if (!len)
 	{
-		clusterBytes = (numClusters + 31 ) & ~31;
+		clusterBytes = (numClusters + 31) & ~31;
 		visibility = new byte[clusterBytes];
 		Com_Memset(visibility, 255, clusterBytes);
 		return;

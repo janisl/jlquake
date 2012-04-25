@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
-#define BIG_INFO_STRING		8192  // used for system info key only
-#define BIG_INFO_KEY		8192
-#define BIG_INFO_VALUE		8192
+#define BIG_INFO_STRING     8192	// used for system info key only
+#define BIG_INFO_KEY        8192
+#define BIG_INFO_VALUE      8192
 
 //
 // key / value info strings

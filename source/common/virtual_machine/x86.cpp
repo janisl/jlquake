@@ -18,12 +18,12 @@
 #include "../qcommon.h"
 #include "local.h"
 
-#ifdef __FreeBSD__ // rb0101023
+#ifdef __FreeBSD__	// rb0101023
 #include <sys/types.h>
 #endif
 
 #ifndef _WIN32
-#include <sys/mman.h> // for PROT_ stuff
+#include <sys/mman.h>	// for PROT_ stuff
 #endif
 
 /*
@@ -37,7 +37,7 @@
 
 */
 
-// TTimo: initialised the statics, this fixes a crash when entering a compiled VM 
+// TTimo: initialised the statics, this fixes a crash when entering a compiled VM
 static byte* buf = NULL;
 static byte* jused = NULL;
 static int compiledOfs = 0;
@@ -50,7 +50,7 @@ static int* instructionPointers = NULL;
 
 #ifdef _WIN32
 
-#if defined( FTOL_PTR )
+#if defined(FTOL_PTR)
 extern "C" int _ftol(float);
 static int ftolPtr = (int)_ftol;
 #endif
@@ -58,33 +58,33 @@ static int ftolPtr = (int)_ftol;
 void AsmCall();
 static int asmCallPtr = (int)AsmCall;
 
-#else // _WIN32
+#else	// _WIN32
 
-#if defined( FTOL_PTR )
+#if defined(FTOL_PTR)
 // bk001213 - BEWARE: does not work! UI menu etc. broken - stack!
 // bk001119 - added: int gftol( float x ) { return (int)x; }
 
 extern "C"
 {
-int qftol();     // bk001213 - label, see unix/ftol.nasm
-int qftol027F(); // bk001215 - fixed FPU control variants
+int qftol();	// bk001213 - label, see unix/ftol.nasm
+int qftol027F();// bk001215 - fixed FPU control variants
 int qftol037F();
-int qftol0E7F(); // bk010102 - fixed bogus bits (duh)
+int qftol0E7F();// bk010102 - fixed bogus bits (duh)
 int qftol0F7F();
 }
 
 
 static int ftolPtr = (int)qftol0F7F;
-#endif // FTOL_PTR
+#endif	// FTOL_PTR
 
 extern "C" void doAsmCall();
 static int asmCallPtr = (int)doAsmCall;
-#endif // !_WIN32
+#endif	// !_WIN32
 
 
 extern "C"
 {
-int callMask = 0; // bk001213 - init
+int callMask = 0;	// bk001213 - init
 }
 
 static int instruction, pass;
@@ -93,7 +93,7 @@ static int oc0, oc1, pop0, pop1;
 
 enum ELastCommand
 {
-	LAST_COMMAND_NONE	= 0,
+	LAST_COMMAND_NONE   = 0,
 	LAST_COMMAND_MOV_EDI_EAX,
 	LAST_COMMAND_SUB_DI_4,
 	LAST_COMMAND_SUB_DI_8,
@@ -109,38 +109,38 @@ __declspec(naked) void AsmCall()
 	int syscallNum;
 	vm_t* savedVM;
 
-__asm
-{
-	mov		eax, dword ptr [edi]
-	sub		edi, 4
-	or		eax,eax
-	jl		systemCall
-	// calling another vm function
-	shl		eax,2
-	add		eax, dword ptr [instructionPointers]
-	call	dword ptr [eax]
-	mov		eax, dword ptr [edi]
-	and		eax, [callMask]
-	ret
+	__asm
+	{
+		mov eax, dword ptr [edi]
+		sub edi, 4
+		or eax,eax
+		jl systemCall
+		// calling another vm function
+		shl eax,2
+		add eax, dword ptr [instructionPointers]
+		call dword ptr [eax]
+		mov eax, dword ptr [edi]
+		and eax, [callMask]
+		ret
 systemCall:
 
-	// convert negative num to system call number
-	// and store right before the first arg
-	neg		eax
-	dec		eax
+		// convert negative num to system call number
+		// and store right before the first arg
+		neg eax
+		dec eax
 
-	push    ebp
-	mov     ebp, esp
-	sub     esp, __LOCAL_SIZE
+		push ebp
+		mov ebp, esp
+		sub esp, __LOCAL_SIZE
 
-	mov		dword ptr syscallNum, eax	// so C code can get at it
-	mov		dword ptr programStack, esi	// so C code can get at it
-	mov		dword ptr opStack, edi
+		mov dword ptr syscallNum, eax	// so C code can get at it
+		mov dword ptr programStack, esi	// so C code can get at it
+		mov dword ptr opStack, edi
 
-	push	ecx
-	push	esi							// we may call recursively, so the
-	push	edi							// statics aren't guaranteed to be around
-}
+		push ecx
+		push esi						// we may call recursively, so the
+		push edi						// statics aren't guaranteed to be around
+	}
 
 	savedVM = currentVM;
 
@@ -152,21 +152,21 @@ systemCall:
 
 	currentVM = savedVM;
 
-_asm {
-	pop		edi
-	pop		esi
-	pop		ecx
-	add		edi, 4		// we added the return value
+	_asm {
+		pop edi
+		pop esi
+		pop ecx
+		add edi, 4		// we added the return value
 
-	mov     esp, ebp
-	pop     ebp
+		mov esp, ebp
+		pop ebp
 
-	ret
+			ret
+	}
+
 }
 
-}
-
-#else //!_WIN32
+#else	//!_WIN32
 
 static int callProgramStack;
 static int* callOpStack;
@@ -189,7 +189,7 @@ extern "C" void callAsmCall()
 void AsmCall()
 {
 	__asm__(
-		"doAsmCall:      				\n\t" \
+		"doAsmCall:                     \n\t" \
 		"	movl (%%edi),%%eax			\n\t" \
 		"	subl $4,%%edi				\n\t" \
 		"   orl %%eax,%%eax				\n\t" \
@@ -216,10 +216,10 @@ void AsmCall()
 		"	addl $4,%%edi				\n\t" \
 		"doret:							\n\t" \
 		"	ret							\n\t" \
-		: "=rm" (callSyscallNum), "=rm" (callProgramStack), "=rm" (callOpStack) \
+		: "=rm" (callSyscallNum), "=rm" (callProgramStack), "=rm" (callOpStack)	\
 		: "rm" (instructionPointers) \
 		: "ax", "di", "si", "cx" \
-	);
+		);
 }
 #endif
 
@@ -291,18 +291,18 @@ static void EmitString(const char* string)
 
 static void EmitCommand(ELastCommand command)
 {
-	switch(command)
+	switch (command)
 	{
 	case LAST_COMMAND_MOV_EDI_EAX:
-		EmitString( "89 07" );		// mov dword ptr [edi], eax
+		EmitString("89 07");		// mov dword ptr [edi], eax
 		break;
 
 	case LAST_COMMAND_SUB_DI_4:
-		EmitString( "83 EF 04" );	// sub edi, 4
+		EmitString("83 EF 04");		// sub edi, 4
 		break;
 
 	case LAST_COMMAND_SUB_DI_8:
-		EmitString( "83 EF 08" );	// sub edi, 8
+		EmitString("83 EF 08");		// sub edi, 8
 		break;
 
 	default:
@@ -313,14 +313,14 @@ static void EmitCommand(ELastCommand command)
 
 static void EmitAddEDI4(vm_t* vm)
 {
-	if (LastCommand == LAST_COMMAND_SUB_DI_4 && jused[instruction - 1] == 0) 
+	if (LastCommand == LAST_COMMAND_SUB_DI_4 && jused[instruction - 1] == 0)
 	{
 		// sub di,4
 		compiledOfs -= 3;
 		vm->instructionPointers[instruction - 1] = compiledOfs;
 		return;
 	}
-	if (LastCommand == LAST_COMMAND_SUB_DI_8 && jused[instruction - 1] == 0) 
+	if (LastCommand == LAST_COMMAND_SUB_DI_8 && jused[instruction - 1] == 0)
 	{
 		// sub di,8
 		compiledOfs -= 3;
@@ -333,7 +333,7 @@ static void EmitAddEDI4(vm_t* vm)
 
 static void EmitMovEAXEDI(vm_t* vm)
 {
-	if (LastCommand == LAST_COMMAND_MOV_EDI_EAX) 
+	if (LastCommand == LAST_COMMAND_MOV_EDI_EAX)
 	{
 		// mov [edi], eax
 		compiledOfs -= 2;
@@ -345,7 +345,7 @@ static void EmitMovEAXEDI(vm_t* vm)
 	{
 		return;
 	}
-	if (pop1 == OP_CONST && buf[compiledOfs-6] == 0xC7 && buf[compiledOfs-5] == 0x07)
+	if (pop1 == OP_CONST && buf[compiledOfs - 6] == 0xC7 && buf[compiledOfs - 5] == 0x07)
 	{
 		// mov edi, 0x123456
 		compiledOfs -= 6;
@@ -359,7 +359,7 @@ static void EmitMovEAXEDI(vm_t* vm)
 
 static bool EmitMovEBXEDI(vm_t* vm, int andit)
 {
-	if (LastCommand == LAST_COMMAND_MOV_EDI_EAX) 
+	if (LastCommand == LAST_COMMAND_MOV_EDI_EAX)
 	{
 		// mov [edi], eax
 		compiledOfs -= 2;
@@ -369,11 +369,11 @@ static bool EmitMovEBXEDI(vm_t* vm, int andit)
 	}
 	if (pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
 		pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1)
-	{	
+	{
 		EmitString("8B D8");		// mov bx, eax
 		return false;
 	}
-	if (pop1 == OP_CONST && buf[compiledOfs-6] == 0xC7 && buf[compiledOfs-5] == 0x07)
+	if (pop1 == OP_CONST && buf[compiledOfs - 6] == 0xC7 && buf[compiledOfs - 5] == 0x07)
 	{
 		// mov edi, 0x123456
 		compiledOfs -= 6;
@@ -403,7 +403,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 	int maxLength = header->codeLength * 8;
 	buf = new byte[maxLength];
 	jused = new byte[header->instructionCount + 2];
-	
+
 	Com_Memset(jused, 0, header->instructionCount + 2);
 
 	for (pass = 0; pass < 2; pass++)
@@ -488,10 +488,10 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 					opt = EmitMovEBXEDI(vm, (vm->dataMask & ~3));
 					EmitString("B8");			// mov	eax, 0x12345678
 					Emit4(Constant4());
-	//				if (!opt) {
-	//					EmitString( "81 E3" );		// and ebx, 0x12345678
-	//					Emit4( vm->dataMask & ~3 );
-	//				}
+					//				if (!opt) {
+					//					EmitString( "81 E3" );		// and ebx, 0x12345678
+					//					Emit4( vm->dataMask & ~3 );
+					//				}
 					EmitString("89 83");		// mov dword ptr [ebx+0x12345678], eax
 					Emit4((int)vm->dataBase);
 					EmitCommand(LAST_COMMAND_SUB_DI_4);		// sub edi, 4
@@ -504,10 +504,10 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 					opt = EmitMovEBXEDI(vm, (vm->dataMask & ~1));
 					EmitString("B8");			// mov	eax, 0x12345678
 					Emit4(Constant4());
-	//				if (!opt) {
-	//					EmitString( "81 E3" );		// and ebx, 0x12345678
-	//					Emit4( vm->dataMask & ~1 );
-	//				}
+					//				if (!opt) {
+					//					EmitString( "81 E3" );		// and ebx, 0x12345678
+					//					Emit4( vm->dataMask & ~1 );
+					//				}
 					EmitString("66 89 83");	// mov word ptr [ebx+0x12345678], eax
 					Emit4((int)vm->dataBase);
 					EmitCommand(LAST_COMMAND_SUB_DI_4);		// sub edi, 4
@@ -520,10 +520,10 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 					opt = EmitMovEBXEDI(vm, vm->dataMask);
 					EmitString("B8");			// mov	eax, 0x12345678
 					Emit4(Constant4());
-	//				if (!opt) {
-	//					EmitString( "81 E3" );	// and ebx, 0x12345678
-	//					Emit4( vm->dataMask );
-	//				}
+					//				if (!opt) {
+					//					EmitString( "81 E3" );	// and ebx, 0x12345678
+					//					Emit4( vm->dataMask );
+					//				}
 					EmitString("88 83");		// mov byte ptr [ebx+0x12345678], eax
 					Emit4((int)vm->dataBase);
 					EmitCommand(LAST_COMMAND_SUB_DI_4);		// sub edi, 4
@@ -700,30 +700,30 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 				EmitCommand(LAST_COMMAND_MOV_EDI_EAX);		// mov dword ptr [edi], eax
 				break;
 			case OP_STORE4:
-				EmitMovEAXEDI(vm);	
+				EmitMovEAXEDI(vm);
 				EmitString("8B 5F FC");		// mov	ebx, dword ptr [edi-4]
-	//			if (pop1 != OP_CALL) {
-	//				EmitString( "81 E3" );		// and ebx, 0x12345678
-	//				Emit4( vm->dataMask & ~3 );
-	//			}
+				//			if (pop1 != OP_CALL) {
+				//				EmitString( "81 E3" );		// and ebx, 0x12345678
+				//				Emit4( vm->dataMask & ~3 );
+				//			}
 				EmitString("89 83");		// mov dword ptr [ebx+0x12345678], eax
 				Emit4((int)vm->dataBase);
 				EmitCommand(LAST_COMMAND_SUB_DI_8);		// sub edi, 8
 				break;
 			case OP_STORE2:
-				EmitMovEAXEDI(vm);	
+				EmitMovEAXEDI(vm);
 				EmitString("8B 5F FC");		// mov	ebx, dword ptr [edi-4]
-	//			EmitString( "81 E3" );		// and ebx, 0x12345678
-	//			Emit4( vm->dataMask & ~1 );
+				//			EmitString( "81 E3" );		// and ebx, 0x12345678
+				//			Emit4( vm->dataMask & ~1 );
 				EmitString("66 89 83");		// mov word ptr [ebx+0x12345678], eax
 				Emit4((int)vm->dataBase);
 				EmitCommand(LAST_COMMAND_SUB_DI_8);		// sub edi, 8
 				break;
 			case OP_STORE1:
-				EmitMovEAXEDI(vm);	
+				EmitMovEAXEDI(vm);
 				EmitString("8B 5F FC");		// mov	ebx, dword ptr [edi-4]
-	//			EmitString( "81 E3" );		// and ebx, 0x12345678
-	//			Emit4( vm->dataMask );
+				//			EmitString( "81 E3" );		// and ebx, 0x12345678
+				//			Emit4( vm->dataMask );
 				EmitString("88 83");		// mov byte ptr [ebx+0x12345678], eax
 				Emit4((int)vm->dataBase);
 				EmitCommand(LAST_COMMAND_SUB_DI_8);		// sub edi, 8
@@ -1021,11 +1021,11 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 				EmitString("D9 1F");		// fstp dword ptr [edi]
 				break;
 			case OP_CVFI:
-#ifndef FTOL_PTR // WHENHELLISFROZENOVER  // bk001213 - was used in 1.17
+#ifndef FTOL_PTR// WHENHELLISFROZENOVER  // bk001213 - was used in 1.17
 				// not IEEE complient, but simple and fast
-				EmitString( "D9 07" );		// fld dword ptr [edi]
-				EmitString( "DB 1F" );		// fistp dword ptr [edi]
-#else // FTOL_PTR
+				EmitString("D9 07");		// fld dword ptr [edi]
+				EmitString("DB 1F");		// fistp dword ptr [edi]
+#else	// FTOL_PTR
 				// call the library conversion function
 				EmitString("D9 07");		// fld dword ptr [edi]
 				EmitString("FF 15");		// call ftolPtr
@@ -1046,8 +1046,8 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 				// FIXME: range check
 				EmitString("56");			// push esi
 				EmitString("57");			// push edi
-				EmitString("8B 37");		// mov esi,[edi] 
-				EmitString("8B 7F FC");		// mov edi,[edi-4] 
+				EmitString("8B 37");		// mov esi,[edi]
+				EmitString("8B 7F FC");		// mov edi,[edi-4]
 				EmitString("B9");			// mov ecx,0x12345678
 				Emit4(Constant4() >> 2);
 				EmitString("B8");			// mov eax, datamask
@@ -1093,18 +1093,18 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 		vm->instructionPointers[i] += (int)vm->codeBase;
 	}
 
-#if 0 // ndef _WIN32
-	// Must make the newly generated code executable
+#if 0	// ndef _WIN32
+		// Must make the newly generated code executable
 	{
 		int psize = getpagesize();
 
 		unsigned long addr = ((int)vm->codeBase & ~(psize - 1)) - psize;
 
-		int r = mprotect((char*)addr, vm->codeLength + (int)vm->codeBase - addr + psize, 
+		int r = mprotect((char*)addr, vm->codeLength + (int)vm->codeBase - addr + psize,
 			PROT_READ | PROT_WRITE | PROT_EXEC);
 
-// 		if (r < 0)
-			throw Exception("mprotect failed to change PROT_EXEC");
+//      if (r < 0)
+		throw Exception("mprotect failed to change PROT_EXEC");
 	}
 #endif
 }
@@ -1126,7 +1126,7 @@ qintptr VM_CallCompiled(vm_t* vm, int* args)
 	int programStack = vm->programStack;
 	int stackOnEntry = programStack;
 
-	// set up the stack frame 
+	// set up the stack frame
 	byte* image = vm->dataBase;
 
 	programStack -= 48;
@@ -1153,17 +1153,17 @@ qintptr VM_CallCompiled(vm_t* vm, int* args)
 	__asm
 	{
 		pushad
-		mov		esi, programStack;
-		mov		edi, opStack
-		call	entryPoint
-		mov		programStack, esi
-		mov		opStack, edi
-		popad
+		mov esi, programStack;
+		mov edi, opStack
+		call entryPoint
+		mov programStack, esi
+		mov opStack, edi
+			popad
 	}
 #else
 	{
 		/* These registers are used as scratch registers and are destroyed after the
-			* call.  Do not use clobber, so they can be used as input for the asm. */
+		    * call.  Do not use clobber, so they can be used as input for the asm. */
 		unsigned eax;
 		unsigned ebx;
 		unsigned ecx;
@@ -1173,7 +1173,7 @@ qintptr VM_CallCompiled(vm_t* vm, int* args)
 		(
 			"call *%6"
 			: "+S" (programStack), "+D" (opStack),
-				"=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+			"=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
 			: "mr" (vm->codeBase)
 			: "cc", "memory"
 		);

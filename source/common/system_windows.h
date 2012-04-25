@@ -22,8 +22,8 @@
 //	Copied from resources.h
 #define IDI_ICON1                       1
 
-extern HINSTANCE	global_hInstance;
-extern unsigned		sysMsgTime;
+extern HINSTANCE global_hInstance;
+extern unsigned sysMsgTime;
 
 void Sys_CreateConsole(const char* Title);
 void Sys_DestroyConsole();

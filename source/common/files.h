@@ -17,21 +17,21 @@
 struct Cvar;
 
 #if defined __MACOS__
-#define PATH_SEP	':'
+#define PATH_SEP    ':'
 #elif defined _WIN32
-#define PATH_SEP	'\\'
+#define PATH_SEP    '\\'
 #else
-#define PATH_SEP	'/'
+#define PATH_SEP    '/'
 #endif
 
-#define	MAX_QPATH			64		// max length of a quake game pathname
+#define MAX_QPATH           64		// max length of a quake game pathname
 #ifdef PATH_MAX
-#define MAX_OSPATH			PATH_MAX
+#define MAX_OSPATH          PATH_MAX
 #else
-#define	MAX_OSPATH			256		// max length of a filesystem pathname
+#define MAX_OSPATH          256		// max length of a filesystem pathname
 #endif
 
-typedef int		fileHandle_t;
+typedef int fileHandle_t;
 
 enum fsOrigin_t
 {
@@ -42,10 +42,10 @@ enum fsOrigin_t
 
 // referenced flags
 // these are in loop specific order so don't change the order
-#define FS_GENERAL_REF	0x01
-#define FS_UI_REF		0x02
-#define FS_CGAME_REF	0x04
-#define FS_QAGAME_REF	0x08
+#define FS_GENERAL_REF  0x01
+#define FS_UI_REF       0x02
+#define FS_CGAME_REF    0x04
+#define FS_QAGAME_REF   0x08
 
 // mode parm for FS_FOpenFile
 enum fsMode_t
@@ -69,19 +69,19 @@ enum
 #define FS_EXCLUDE_DIR 0x1
 #define FS_EXCLUDE_PK3 0x2
 
-extern bool				com_portals;
+extern bool com_portals;
 
-extern int			fs_packFiles;
+extern int fs_packFiles;
 extern int fs_checksumFeed;
 
 // never load anything from pk3 files that are not present at the server when pure
-extern Cvar		*fs_homepath;
-extern Cvar		*fs_basepath;
-extern Cvar		*fs_cdpath;
+extern Cvar* fs_homepath;
+extern Cvar* fs_basepath;
+extern Cvar* fs_cdpath;
 
-extern bool		fs_ProtectKeyFile;
-extern char		fs_gamedir[MAX_OSPATH];
-extern const char*	fs_PrimaryBaseGame;
+extern bool fs_ProtectKeyFile;
+extern char fs_gamedir[MAX_OSPATH];
+extern const char* fs_PrimaryBaseGame;
 
 void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);
 void FS_SetSearchPathBase();
@@ -97,7 +97,7 @@ char* FS_BuildOSPath(const char* Base, const char* Game, const char* QPath);
 
 bool FS_CreatePath(const char* OSPath);
 
-bool FS_FileExists(const char *file);
+bool FS_FileExists(const char* file);
 
 int FS_FOpenFileRead(const char* FileName, fileHandle_t* File, bool UniqueFile);
 // if uniqueFILE is true, then a new FILE will be fopened even if the file
@@ -119,12 +119,12 @@ int FS_FOpenFileByMode(const char* qpath, fileHandle_t* f, fsMode_t mode);
 
 void FS_FCloseFile(fileHandle_t f);
 
-int FS_Read(void *buffer, int len, fileHandle_t f);
+int FS_Read(void* buffer, int len, fileHandle_t f);
 // properly handles partial reads and reads from other dlls
 
 int FS_Write(const void* buffer, int len, fileHandle_t f);
 
-void FS_Printf(fileHandle_t f, const char *fmt, ...);
+void FS_Printf(fileHandle_t f, const char* fmt, ...);
 // like fprintf
 
 void FS_Flush(fileHandle_t f);
@@ -139,10 +139,10 @@ void FS_Remove(const char* osPath);
 
 void FS_Rename(const char* from, const char* to);
 
-int FS_Delete(const char* filename);    // only works inside the 'save' directory (for deleting savegames/images)
+int FS_Delete(const char* filename);	// only works inside the 'save' directory (for deleting savegames/images)
 
 int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp);
-fileHandle_t FS_SV_FOpenFileWrite(const char *filename);
+fileHandle_t FS_SV_FOpenFileWrite(const char* filename);
 void FS_SV_Rename(const char* from, const char* to);
 
 void FS_ForceFlush(fileHandle_t f);
@@ -185,9 +185,9 @@ const char* FS_LoadedPakPureChecksums();
 const char* FS_ReferencedPakNames();
 const char* FS_ReferencedPakChecksums();
 const char* FS_ReferencedPakPureChecksums();
-// Returns a space separated string containing the checksums of all loaded 
-// AND referenced pk3 files. Servers with sv_pure set will get this string 
-// back from clients for pure validation 
+// Returns a space separated string containing the checksums of all loaded
+// AND referenced pk3 files. Servers with sv_pure set will get this string
+// back from clients for pure validation
 
 void FS_ClearPakReferences(int flags);
 // clears referenced booleans on loaded pk3s

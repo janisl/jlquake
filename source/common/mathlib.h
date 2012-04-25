@@ -19,20 +19,20 @@ static inline float Q_rsqrt(float number)
 {
 	float x = 0.5f * number;
 	float y;
-#ifdef __GNUC__            
-	asm("frsqrte %0,%1" : "=f" (y) : "f" (number));
+#ifdef __GNUC__
+	asm ("frsqrte %0,%1" : "=f" (y) : "f" (number));
 #else
-	y = __frsqrte( number );
+	y = __frsqrte(number);
 #endif
 	return y * (1.5f - (x * y * y));
 }
 
-#ifdef __GNUC__            
+#ifdef __GNUC__
 static inline float Q_fabs(float x)
 {
 	float abs_x;
-    
-	asm("fabs %0,%1" : "=f" (abs_x) : "f" (x));
+
+	asm ("fabs %0,%1" : "=f" (abs_x) : "f" (x));
 	return abs_x;
 }
 #else
@@ -54,20 +54,20 @@ long Q_ftol(float f);
 }
 #endif
 #else
-#define Q_ftol(f)		(long)(f)
+#define Q_ftol(f)       (long)(f)
 #endif
 
-#define SQRTFAST(x)		((x) * Q_rsqrt(x))
+#define SQRTFAST(x)     ((x) * Q_rsqrt(x))
 
 qint8 ClampChar(int i);
 qint16 ClampShort(int i);
 
-#define Square(x) ((x)*(x))
+#define Square(x) ((x) * (x))
 
 // angle indexes
-#define PITCH				0		// up / down
-#define YAW					1		// left / right
-#define ROLL				2		// fall over
+#define PITCH               0		// up / down
+#define YAW                 1		// left / right
+#define ROLL                2		// fall over
 
 typedef float vec_t;
 typedef vec_t vec2_t[2];
@@ -75,34 +75,34 @@ typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 typedef vec_t vec5_t[5];
 
-typedef	int	fixed4_t;
-typedef	int	fixed8_t;
-typedef	int	fixed16_t;
+typedef int fixed4_t;
+typedef int fixed8_t;
+typedef int fixed16_t;
 
 #ifndef M_PI
-#define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
+#define M_PI        3.14159265358979323846	// matches value in gcc v2 math.h
 #endif
 
-extern vec3_t		vec3_origin;
+extern vec3_t vec3_origin;
 
-#define nanmask					(255<<23)
+#define nanmask                 (255 << 23)
 
-#define IS_NAN(x)				(((*(int *)&x)&nanmask)==nanmask)
+#define IS_NAN(x)               (((*(int*)&x) & nanmask) == nanmask)
 
-#define DotProduct(x,y)			((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
-#define VectorSubtract(a,b,c)	((c)[0]=(a)[0]-(b)[0],(c)[1]=(a)[1]-(b)[1],(c)[2]=(a)[2]-(b)[2])
-#define VectorAdd(a,b,c)		((c)[0]=(a)[0]+(b)[0],(c)[1]=(a)[1]+(b)[1],(c)[2]=(a)[2]+(b)[2])
-#define VectorCopy(a,b)			((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2])
-#define VectorScale(v, s, o)	((o)[0]=(v)[0]*(s),(o)[1]=(v)[1]*(s),(o)[2]=(v)[2]*(s))
-#define VectorMA(v, s, b, o)	((o)[0]=(v)[0]+(b)[0]*(s),(o)[1]=(v)[1]+(b)[1]*(s),(o)[2]=(v)[2]+(b)[2]*(s))
-#define VectorClear(a)			((a)[0]=(a)[1]=(a)[2]=0)
-#define VectorNegate(a,b)		((b)[0]=-(a)[0],(b)[1]=-(a)[1],(b)[2]=-(a)[2])
-#define VectorSet(v, x, y, z)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z))
+#define DotProduct(x,y)         ((x)[0] * (y)[0] + (x)[1] * (y)[1] + (x)[2] * (y)[2])
+#define VectorSubtract(a,b,c)   ((c)[0] = (a)[0] - (b)[0],(c)[1] = (a)[1] - (b)[1],(c)[2] = (a)[2] - (b)[2])
+#define VectorAdd(a,b,c)        ((c)[0] = (a)[0] + (b)[0],(c)[1] = (a)[1] + (b)[1],(c)[2] = (a)[2] + (b)[2])
+#define VectorCopy(a,b)         ((b)[0] = (a)[0],(b)[1] = (a)[1],(b)[2] = (a)[2])
+#define VectorScale(v, s, o)    ((o)[0] = (v)[0] * (s),(o)[1] = (v)[1] * (s),(o)[2] = (v)[2] * (s))
+#define VectorMA(v, s, b, o)    ((o)[0] = (v)[0] + (b)[0] * (s),(o)[1] = (v)[1] + (b)[1] * (s),(o)[2] = (v)[2] + (b)[2] * (s))
+#define VectorClear(a)          ((a)[0] = (a)[1] = (a)[2] = 0)
+#define VectorNegate(a,b)       ((b)[0] = -(a)[0],(b)[1] = -(a)[1],(b)[2] = -(a)[2])
+#define VectorSet(v, x, y, z)   ((v)[0] = (x), (v)[1] = (y), (v)[2] = (z))
 
-#define Vector4Copy(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
-#define Vector4Set(v, x, y, z, w)	((v)[0] = (x), (v)[1] = (y), (v)[2] = (z), (v)[3] = (w))
+#define Vector4Copy(a,b)        ((b)[0] = (a)[0],(b)[1] = (a)[1],(b)[2] = (a)[2],(b)[3] = (a)[3])
+#define Vector4Set(v, x, y, z, w)   ((v)[0] = (x), (v)[1] = (y), (v)[2] = (z), (v)[3] = (w))
 
-#define	SnapVector(v)			{v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
+#define SnapVector(v)           {v[0] = ((int)(v[0])); v[1] = ((int)(v[1])); v[2] = ((int)(v[2])); }
 
 // just in case you do't want to use the macros
 vec_t _DotProduct(const vec3_t v1, const vec3_t v2);
@@ -133,7 +133,7 @@ inline vec_t VectorLengthSquared(const vec3_t v)
 
 inline vec_t Distance(const vec3_t p1, const vec3_t p2)
 {
-	vec3_t	v;
+	vec3_t v;
 
 	VectorSubtract(p2, p1, v);
 	return VectorLength(v);
@@ -141,7 +141,7 @@ inline vec_t Distance(const vec3_t p1, const vec3_t p2)
 
 inline vec_t DistanceSquared(const vec3_t p1, const vec3_t p2)
 {
-	vec3_t	v;
+	vec3_t v;
 
 	VectorSubtract(p2, p1, v);
 	return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
@@ -190,10 +190,10 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
 
 void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3]);
 
-#define DEG2RAD(a)		(((a) * M_PI) / 180.0f)
-#define RAD2DEG(a)		(((a) * 180.0f) / M_PI)
+#define DEG2RAD(a)      (((a) * M_PI) / 180.0f)
+#define RAD2DEG(a)      (((a) * 180.0f) / M_PI)
 
-#define AngleMod(a)		AngleNormalize360(a)
+#define AngleMod(a)     AngleNormalize360(a)
 float AngleNormalize360(float angle);
 float AngleNormalize180(float angle);
 float LerpAngle(float a1, float a2, float frac);
@@ -205,26 +205,26 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
-#define PLANE_X				0
-#define PLANE_Y				1
-#define PLANE_Z				2
-#define PLANE_NON_AXIAL		3
-#define PLANE_NON_PLANAR	4
+#define PLANE_X             0
+#define PLANE_Y             1
+#define PLANE_Z             2
+#define PLANE_NON_AXIAL     3
+#define PLANE_NON_PLANAR    4
 
 // 3-5 are non-axial planes snapped to the nearest
-#define PLANE_ANYX		3
-#define PLANE_ANYY		4
-#define PLANE_ANYZ		5
+#define PLANE_ANYX      3
+#define PLANE_ANYY      4
+#define PLANE_ANYZ      5
 
 // plane_t structure
 // !!! if this is changed, it must be changed in asm code too !!!
 struct cplane_t
 {
-	vec3_t	normal;
-	float	dist;
-	byte	type;			// for fast side tests: 0,1,2 = axial, 3 = nonaxial
-	byte	signbits;		// signx + (signy<<1) + (signz<<2), used as lookup during collision
-	byte	pad[2];
+	vec3_t normal;
+	float dist;
+	byte type;				// for fast side tests: 0,1,2 = axial, 3 = nonaxial
+	byte signbits;			// signx + (signy<<1) + (signz<<2), used as lookup during collision
+	byte pad[2];
 };
 
 /*
@@ -236,24 +236,24 @@ PlaneTypeForNormal
 #define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : (x[0] == 0.f && x[1] == 0.f && x[2] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL))))
 
 void SetPlaneSignbits(cplane_t* out);
-extern "C" int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t *plane);
+extern "C" int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t* plane);
 bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c);
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
-	(((p)->type < 3)?						\
-	(										\
-		((p)->dist <= (emins)[(p)->type])?	\
-			1								\
-		:									\
-		(									\
-			((p)->dist >= (emaxs)[(p)->type])?\
-				2							\
-			:								\
-				3							\
-		)									\
-	)										\
-	:										\
-		BoxOnPlaneSide( (emins), (emaxs), (p)))
+	(((p)->type < 3) ?						 \
+	 (										 \
+		 ((p)->dist <= (emins)[(p)->type]) ?  \
+		 1								 \
+		 :									 \
+		 (									 \
+			 ((p)->dist >= (emaxs)[(p)->type]) ? \
+			 2							 \
+			 :								 \
+			 3							 \
+		 )									 \
+	 )										 \
+	 :										 \
+	 BoxOnPlaneSide((emins), (emaxs), (p)))
 
 float VecToYaw(const vec3_t vector);
 void VecToAngles(const vec3_t vector, vec3_t angles);
@@ -261,7 +261,7 @@ void VecToAnglesBuggy(const vec3_t vector, vec3_t angles);
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3]);
 
 void AxisClear(vec3_t axis[3]);
-void AxisCopy(const  vec3_t in[3], vec3_t out[3]);
+void AxisCopy(const vec3_t in[3], vec3_t out[3]);
 
 void RotateAroundDirection(vec3_t axis[3], float yaw);
 void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up);
@@ -270,11 +270,11 @@ void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up);
 void RotatePoint(vec3_t point, const vec3_t matrix[3]);
 void TransposeMatrix(const vec3_t matrix[3], vec3_t transpose[3]);
 
-extern const vec3_t		axisDefault[3];
+extern const vec3_t axisDefault[3];
 
-#define NUMVERTEXNORMALS	162
+#define NUMVERTEXNORMALS    162
 
-extern float			bytedirs[NUMVERTEXNORMALS][3];
+extern float bytedirs[NUMVERTEXNORMALS][3];
 
 int DirToByte(vec3_t dir);
 void ByteToDir(int b, vec3_t dir);

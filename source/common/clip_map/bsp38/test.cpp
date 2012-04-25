@@ -73,7 +73,7 @@ int QClipMap38::PointLeafnum_r(const vec3_t P, int Num) const
 		}
 		else
 		{
-			d = DotProduct (Plane->normal, P) - Plane->dist;
+			d = DotProduct(Plane->normal, P) - Plane->dist;
 		}
 		if (d < 0)
 		{
@@ -117,7 +117,7 @@ void QClipMap38::BoxLeafnums_r(leafList_t* ll, int NodeNum) const
 			ll->list[ll->count++] = LeafNum;
 			return;
 		}
-	
+
 		const cnode_t* node = &nodes[NodeNum];
 		const cplane_t* plane = node->plane;
 		int s = BOX_ON_PLANE_SIDE(ll->bounds[0], ll->bounds[1], plane);
@@ -284,7 +284,7 @@ bool QClipMap38::HeadnodeVisible(int NodeNum, byte* VisBits)
 {
 	if (NodeNum < 0)
 	{
-		int leafnum = -1-NodeNum;
+		int leafnum = -1 - NodeNum;
 		int cluster = leafs[leafnum].cluster;
 		if (cluster == -1)
 		{
@@ -321,7 +321,7 @@ PVS / PHS
 
 void QClipMap38::DecompressVis(const byte* in, byte* out)
 {
-	int row = (numclusters + 7) >> 3;	
+	int row = (numclusters + 7) >> 3;
 	byte* out_p = out;
 
 	if (!in || !numvisibility)
@@ -332,7 +332,7 @@ void QClipMap38::DecompressVis(const byte* in, byte* out)
 			*out_p++ = 0xff;
 			row--;
 		}
-		return;		
+		return;
 	}
 
 	do
@@ -342,7 +342,7 @@ void QClipMap38::DecompressVis(const byte* in, byte* out)
 			*out_p++ = *in++;
 			continue;
 		}
-	
+
 		int c = in[1];
 		in += 2;
 		if ((out_p - out) + c > row)
@@ -355,7 +355,8 @@ void QClipMap38::DecompressVis(const byte* in, byte* out)
 			*out_p++ = 0;
 			c--;
 		}
-	} while (out_p - out < row);
+	}
+	while (out_p - out < row);
 }
 
 //==========================================================================

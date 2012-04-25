@@ -138,7 +138,7 @@ void QClipMap46::BoxLeafnums_r(leafList_t* ll, int nodenum) const
 			StoreLeafs(ll, nodenum);
 			return;
 		}
-	
+
 		const cNode_t* node = &nodes[nodenum];
 		const cplane_t* plane = node->plane;
 		int s = BoxOnPlaneSide(ll->bounds[0], ll->bounds[1], plane);
@@ -169,10 +169,10 @@ void QClipMap46::BoxLeafnums_r(leafList_t* ll, int nodenum) const
 //
 //==========================================================================
 
-int QClipMap46::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List,
-	int ListSize, int *TopNode, int *LastLeaf) const
+int QClipMap46::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List,
+	int ListSize, int* TopNode, int* LastLeaf) const
 {
-	leafList_t	ll;
+	leafList_t ll;
 
 	VectorCopy(Mins, ll.bounds[0]);
 	VectorCopy(Maxs, ll.bounds[1]);
@@ -246,7 +246,7 @@ int QClipMap46::PointContentsQ3(const vec3_t P, clipHandle_t Model)
 	int contents = 0;
 	for (int k = 0; k < leaf->numLeafBrushes; k++)
 	{
-		int brushnum = leafbrushes[leaf->firstLeafBrush+k];
+		int brushnum = leafbrushes[leaf->firstLeafBrush + k];
 		cbrush_t* b = &brushes[brushnum];
 
 		// see if the point is in the brush
@@ -490,7 +490,7 @@ void QClipMap46::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 		areaPortals[Area1 * numAreas + Area2]++;
 		areaPortals[Area2 * numAreas + Area1]++;
 	}
-	else if ((GGameType & GAME_Quake3) || areaPortals[Area2 * numAreas + Area1]) // Ridah, fixes loadgame issue
+	else if ((GGameType & GAME_Quake3) || areaPortals[Area2 * numAreas + Area1])// Ridah, fixes loadgame issue
 	{
 		areaPortals[Area1 * numAreas + Area2]--;
 		areaPortals[Area2 * numAreas + Area1]--;

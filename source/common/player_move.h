@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
-#define STEPSIZE		18
+#define STEPSIZE        18
 
-#define MAX_FLY_MOVE_CLIP_PLANES	5
+#define MAX_FLY_MOVE_CLIP_PLANES    5
 
-#define QHMAX_PHYSENTS	64
+#define QHMAX_PHYSENTS  64
 
 struct movevars_t
 {
@@ -93,7 +93,7 @@ struct qhplayermove_t
 
 	// world state
 	int numphysent;
-	qhphysent_t	physents[QHMAX_PHYSENTS];	// 0 should be the world
+	qhphysent_t physents[QHMAX_PHYSENTS];	// 0 should be the world
 
 	// input
 	qhpmove_usercmd_t cmd;

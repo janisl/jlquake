@@ -21,29 +21,29 @@
 #ifndef _MD3FILE_H
 #define _MD3FILE_H
 
-#define MD3_IDENT			(('3' << 24) + ('P' << 16) + ('D' << 8) + 'I')
-#define MD3_VERSION			15
+#define MD3_IDENT           (('3' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define MD3_VERSION         15
 
 // limits
-#define MD3_MAX_LODS		3
-#define MD3_MAX_SURFACES	32		// per model
+#define MD3_MAX_LODS        3
+#define MD3_MAX_SURFACES    32		// per model
 
 // vertex scales
-#define MD3_XYZ_SCALE		(1.0/64)
+#define MD3_XYZ_SCALE       (1.0 / 64)
 
 struct md3Frame_t
 {
-	vec3_t		bounds[2];
-	vec3_t		localOrigin;
-	float		radius;
-	char		name[16];
+	vec3_t bounds[2];
+	vec3_t localOrigin;
+	float radius;
+	char name[16];
 };
 
 struct md3Tag_t
 {
-	char		name[MAX_QPATH];	// tag name
-	vec3_t		origin;
-	vec3_t		axis[3];
+	char name[MAX_QPATH];			// tag name
+	vec3_t origin;
+	vec3_t axis[3];
 };
 
 /*
@@ -58,68 +58,68 @@ struct md3Tag_t
 */
 struct md3Surface_t
 {
-	int			ident;				// 
+	int ident;						//
 
-	char		name[MAX_QPATH];	// polyset name
+	char name[MAX_QPATH];			// polyset name
 
-	int			flags;
-	int			numFrames;			// all surfaces in a model should have the same
+	int flags;
+	int numFrames;					// all surfaces in a model should have the same
 
-	int			numShaders;			// all surfaces in a model should have the same
-	int			numVerts;
+	int numShaders;					// all surfaces in a model should have the same
+	int numVerts;
 
-	int			numTriangles;
-	int			ofsTriangles;
+	int numTriangles;
+	int ofsTriangles;
 
-	int			ofsShaders;			// offset from start of md3Surface_t
-	int			ofsSt;				// texture coords are common for all frames
-	int			ofsXyzNormals;		// numVerts * numFrames
+	int ofsShaders;					// offset from start of md3Surface_t
+	int ofsSt;						// texture coords are common for all frames
+	int ofsXyzNormals;				// numVerts * numFrames
 
-	int			ofsEnd;				// next surface follows
+	int ofsEnd;						// next surface follows
 };
 
 struct md3Shader_t
 {
-	char		name[MAX_QPATH];
-	int			shaderIndex;	// for in-game use
+	char name[MAX_QPATH];
+	int shaderIndex;			// for in-game use
 };
 
 struct md3Triangle_t
 {
-	int			indexes[3];
+	int indexes[3];
 };
 
 struct md3St_t
 {
-	float		st[2];
+	float st[2];
 };
 
 struct md3XyzNormal_t
 {
-	short		xyz[3];
-	short		normal;
+	short xyz[3];
+	short normal;
 };
 
 struct md3Header_t
 {
-	int			ident;
-	int			version;
+	int ident;
+	int version;
 
-	char		name[MAX_QPATH];	// model name
+	char name[MAX_QPATH];			// model name
 
-	int			flags;
+	int flags;
 
-	int			numFrames;
-	int			numTags;			
-	int			numSurfaces;
+	int numFrames;
+	int numTags;
+	int numSurfaces;
 
-	int			numSkins;
+	int numSkins;
 
-	int			ofsFrames;			// offset for first frame
-	int			ofsTags;			// numFrames * numTags
-	int			ofsSurfaces;		// first surface, others follow
+	int ofsFrames;					// offset for first frame
+	int ofsTags;					// numFrames * numTags
+	int ofsSurfaces;				// first surface, others follow
 
-	int			ofsEnd;				// end of file
+	int ofsEnd;						// end of file
 };
 
 #endif

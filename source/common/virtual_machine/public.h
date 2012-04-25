@@ -20,5 +20,5 @@ void VM_Debug(int level);
 void* VM_ArgPtr(qintptr intValue);
 void* VM_ExplicitArgPtr(vm_t* vm, qintptr intValue);
 
-#define VMA(x)	VM_ArgPtr(args[x])
-#define VMF(x)	(*(float*)(&args[x]))
+#define VMA(x)  VM_ArgPtr(args[x])
+#define VMF(x)  (*(float*)(&args[x]))

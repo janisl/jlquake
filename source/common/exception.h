@@ -17,12 +17,12 @@
 class Exception : public Interface
 {
 private:
-	enum { MAX_ERROR_TEXT_SIZE		= 1024 };
+	enum { MAX_ERROR_TEXT_SIZE      = 1024 };
 
 	char message[MAX_ERROR_TEXT_SIZE];
 
 public:
-	explicit Exception(const char *text);
+	explicit Exception(const char* text);
 	virtual const char* What() const;
 };
 
@@ -33,4 +33,4 @@ public:
 	{}
 };
 
-#define qassert(x)		if (x) {} else throw Exception("Assertion failed");
+#define qassert(x)      if (x) {} else {throw Exception("Assertion failed"); }

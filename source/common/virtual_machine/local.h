@@ -18,9 +18,9 @@
 
 enum opcode_t
 {
-	OP_UNDEF, 
+	OP_UNDEF,
 
-	OP_IGNORE, 
+	OP_IGNORE,
 
 	OP_BREAK,
 
@@ -114,16 +114,16 @@ struct vmSymbol_t
 
 struct vm_t
 {
-    int programStack;		// the vm may be recursively entered
-    qintptr (*systemCall)(qintptr* parms);
+	int programStack;		// the vm may be recursively entered
+	qintptr (* systemCall)(qintptr* parms);
 
 	//------------------------------------
-   
-    char name[MAX_QPATH];
+
+	char name[MAX_QPATH];
 
 	// for dynamic linked modules
 	void* dllHandle;
-	qintptr (*entryPoint)(int callNum, ...);
+	qintptr (* entryPoint)(int callNum, ...);
 
 	// for interpreted modules
 	bool currentlyInterpreting;

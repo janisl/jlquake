@@ -34,26 +34,26 @@
 //**
 //**************************************************************************
 
-#define CVAR_ARCHIVE		BIT(0)	// set to cause it to be saved to vars.rc
+#define CVAR_ARCHIVE        BIT(0)	// set to cause it to be saved to vars.rc
 									// used for system variables, not for player
 									// specific configurations
-#define CVAR_USERINFO		BIT(1)	// sent to server on connect or change
-#define CVAR_SERVERINFO		BIT(2)	// sent in response to front end requests
-#define CVAR_INIT			BIT(3)	// don't allow change from console at all,
+#define CVAR_USERINFO       BIT(1)	// sent to server on connect or change
+#define CVAR_SERVERINFO     BIT(2)	// sent in response to front end requests
+#define CVAR_INIT           BIT(3)	// don't allow change from console at all,
 									// but can be set from the command line
-#define CVAR_LATCH			BIT(4)	// save changes until server restart
-#define CVAR_SYSTEMINFO		BIT(5)	// these cvars will be duplicated on all clients
-#define CVAR_ROM			BIT(6)	// display only, cannot be set by user at all
-#define CVAR_USER_CREATED	BIT(7)	// created by a set command
-#define CVAR_TEMP			BIT(8)	// can be set even when cheats are disabled, but is not archived
-#define CVAR_CHEAT			BIT(9)	// can not be changed if cheats are disabled
-#define CVAR_NORESTART		BIT(10)	// do not clear when a cvar_restart is issued
-#define CVAR_WOLFINFO		BIT(11)	// DHM - NERVE :: Like userinfo, but for wolf multiplayer info
-#define CVAR_UNSAFE			BIT(12)	// ydnar: unsafe system cvars (renderer,
+#define CVAR_LATCH          BIT(4)	// save changes until server restart
+#define CVAR_SYSTEMINFO     BIT(5)	// these cvars will be duplicated on all clients
+#define CVAR_ROM            BIT(6)	// display only, cannot be set by user at all
+#define CVAR_USER_CREATED   BIT(7)	// created by a set command
+#define CVAR_TEMP           BIT(8)	// can be set even when cheats are disabled, but is not archived
+#define CVAR_CHEAT          BIT(9)	// can not be changed if cheats are disabled
+#define CVAR_NORESTART      BIT(10)	// do not clear when a cvar_restart is issued
+#define CVAR_WOLFINFO       BIT(11)	// DHM - NERVE :: Like userinfo, but for wolf multiplayer info
+#define CVAR_UNSAFE         BIT(12)	// ydnar: unsafe system cvars (renderer,
 									// sound settings, anything that might cause a crash)
-#define CVAR_SERVERINFO_NOUPDATE	BIT(13)	// gordon: WONT automatically send this
+#define CVAR_SERVERINFO_NOUPDATE    BIT(13)	// gordon: WONT automatically send this
 									// to clients, but server browsers will see it
-#define CVAR_LATCH2			BIT(14)	// will only change when C code next does
+#define CVAR_LATCH2         BIT(14)	// will only change when C code next does
 									// a Cvar_Get(), so it can't be changed
 									// without proper initialization.  modified
 									// will be set, even though the value hasn't
@@ -64,34 +64,34 @@ struct Cvar
 {
 	//	This class is accessible to Quake 2 game, so the following fields
 	// must remain exactly as they are.
-	char		*name;
-	char		*string;
-	char		*latchedString;		// for CVAR_LATCH vars
-	int			flags;
-	qboolean	modified;			// set each time the cvar is changed
-	float		value;				// atof( string )
-	Cvar*		next;
+	char* name;
+	char* string;
+	char* latchedString;			// for CVAR_LATCH vars
+	int flags;
+	qboolean modified;				// set each time the cvar is changed
+	float value;					// atof( string )
+	Cvar* next;
 
-	char		*resetString;		// cvar_restart will reset to this value
-	int			modificationCount;	// incremented each time the cvar is changed
-	int			integer;			// atoi( string )
-	Cvar*		hashNext;
-	int			Handle;
+	char* resetString;				// cvar_restart will reset to this value
+	int modificationCount;			// incremented each time the cvar is changed
+	int integer;					// atoi( string )
+	Cvar* hashNext;
+	int Handle;
 };
 
-#define MAX_CVAR_VALUE_STRING	256
+#define MAX_CVAR_VALUE_STRING   256
 
-typedef int	cvarHandle_t;
+typedef int cvarHandle_t;
 
 // the modules that run in the virtual machine can't access the Cvar directly,
 // so they must ask for structured updates
 struct vmCvar_t
 {
-	cvarHandle_t	handle;
-	int			modificationCount;
-	float		value;
-	int			integer;
-	char		string[MAX_CVAR_VALUE_STRING];
+	cvarHandle_t handle;
+	int modificationCount;
+	float value;
+	int integer;
+	char string[MAX_CVAR_VALUE_STRING];
 };
 
 Cvar* Cvar_Get(const char* VarName, const char* Value, int Flags);
@@ -103,7 +103,7 @@ Cvar* Cvar_Get(const char* VarName, const char* Value, int Flags);
 Cvar* Cvar_FindVar(const char* VarName);
 
 float Cvar_VariableValue(const char* VarName);
-int	Cvar_VariableIntegerValue(const char* VarName);
+int Cvar_VariableIntegerValue(const char* VarName);
 // returns 0 if not defined or non numeric
 
 const char* Cvar_VariableString(const char* VarName);
@@ -145,7 +145,7 @@ void Cvar_Register(vmCvar_t* VmCvar, const char* VarName, const char* DefaultVal
 void Cvar_Update(vmCvar_t* VmCvar);
 // updates an interpreted modules' version of a cvar
 
-void Cvar_CommandCompletion(void(*Callback)(const char* S));
+void Cvar_CommandCompletion(void (* Callback)(const char* S));
 // callback with each valid string
 
 void Cvar_SetCheatState();
@@ -162,9 +162,9 @@ void Cvar_WriteVariables(fileHandle_t F);
 void Cvar_UpdateIfExists(const char* name, const char* value);
 // For QuakeWorld's and HexenWorld's server info changes.
 
-extern Cvar*		cvar_vars;
+extern Cvar* cvar_vars;
 
-extern int			cvar_modifiedFlags;
+extern int cvar_modifiedFlags;
 // whenever a cvar is modifed, its flags will be OR'd into this, so
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
 // etc, variables have been modified since the last check.  The bit

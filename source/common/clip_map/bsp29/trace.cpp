@@ -22,7 +22,7 @@
 // MACROS ------------------------------------------------------------------
 
 // 1/32 epsilon to keep floating point happy
-#define DIST_EPSILON	(0.03125)
+#define DIST_EPSILON    (0.03125)
 
 // TYPES -------------------------------------------------------------------
 
@@ -46,9 +46,9 @@
 //
 //==========================================================================
 
-bool QClipMap29::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t * trace)
+bool QClipMap29::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
-	chull_t *hull = ClipHandleToHull(Handle);
+	chull_t* hull = ClipHandleToHull(Handle);
 	return RecursiveHullCheck(hull, hull->firstclipnode, 0, 1, p1, p2, trace);
 }
 
@@ -58,8 +58,8 @@ bool QClipMap29::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_
 //
 //==========================================================================
 
-bool QClipMap29::RecursiveHullCheck(chull_t * hull, int num, float p1f,
-	float p2f, vec3_t p1, vec3_t p2, q1trace_t * trace)
+bool QClipMap29::RecursiveHullCheck(chull_t* hull, int num, float p1f,
+	float p2f, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
 	// check for empty
 	if (num < 0)
@@ -92,7 +92,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t * hull, int num, float p1f,
 	// find the point distances
 	//
 	cclipnode_t* node = clipnodes + num;
-	cplane_t *plane = planes + node->planenum;
+	cplane_t* plane = planes + node->planenum;
 
 	float t1, t2;
 	if (plane->type < 3)
@@ -161,7 +161,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t * hull, int num, float p1f,
 	{
 		// go past the node
 		return RecursiveHullCheck(hull, node->children[side ^ 1], midf, p2f,
-								  mid, p2, trace);
+			mid, p2, trace);
 	}
 
 	if (trace->allsolid)
@@ -237,7 +237,7 @@ q2trace_t QClipMap29::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 //
 //==========================================================================
 
-void QClipMap29::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
+void QClipMap29::BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End,
 	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
 	throw DropException("Not implemented");
@@ -249,7 +249,7 @@ void QClipMap29::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t
 //
 //==========================================================================
 
-void QClipMap29::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
+void QClipMap29::TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start,
 	const vec3_t End, const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {

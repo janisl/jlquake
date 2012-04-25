@@ -35,7 +35,7 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-byte			QClipMap29::mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+byte QClipMap29::mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
 // CODE --------------------------------------------------------------------
 
@@ -296,7 +296,7 @@ void QClipMap29::InitBoxHull()
 
 	cplane_t* box_planes = planes + numplanes;
 	cclipnode_t* box_clipnodes = clipnodes + numclipnodes + numnodes;
-	
+
 	for (int i = 0; i < 6; i++)
 	{
 		box_clipnodes[i].planenum = numplanes + i;
@@ -372,6 +372,6 @@ int QClipMap29::ContentsToQ3(int Contents) const
 //
 //==========================================================================
 
-void QClipMap29::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+void QClipMap29::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points))
 {
 }

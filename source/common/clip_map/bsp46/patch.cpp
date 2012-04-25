@@ -48,12 +48,12 @@ properly.
 
 // MACROS ------------------------------------------------------------------
 
-#define SUBDIVIDE_DISTANCE	16	//4	// never more than this units away from curve
-#define WRAP_POINT_EPSILON	0.1
-#define POINT_EPSILON		0.1
+#define SUBDIVIDE_DISTANCE  16	//4	// never more than this units away from curve
+#define WRAP_POINT_EPSILON  0.1
+#define POINT_EPSILON       0.1
 
-#define NORMAL_EPSILON		0.0001
-#define DIST_EPSILON		0.02
+#define NORMAL_EPSILON      0.0001
+#define DIST_EPSILON        0.02
 
 // TYPES -------------------------------------------------------------------
 
@@ -69,16 +69,16 @@ properly.
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int				cm_patch_numFacets;
-static facet_t			cm_patch_facets[MAX_PATCH_PLANES]; //maybe MAX_FACETS ??
+static int cm_patch_numFacets;
+static facet_t cm_patch_facets[MAX_PATCH_PLANES];			//maybe MAX_FACETS ??
 
-static int				cm_patch_numPlanes;
-static patchPlane_t		cm_patch_planes[MAX_PATCH_PLANES];
+static int cm_patch_numPlanes;
+static patchPlane_t cm_patch_planes[MAX_PATCH_PLANES];
 
-static bool						debugBlock;
-static const patchCollide_t*	debugPatchCollide;
-static const facet_t*			debugFacet;
-static vec3_t					debugBlockPoints[4];
+static bool debugBlock;
+static const patchCollide_t* debugPatchCollide;
+static const facet_t* debugFacet;
+static vec3_t debugBlockPoints[4];
 
 // CODE --------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ GRID SUBDIVISION
 void cGrid_t::SetWrapWidth()
 {
 	int i;
-	for (i = 0 ; i < height; i++)
+	for (i = 0; i < height; i++)
 	{
 		int j;
 		for (j = 0; j < 3; j++)
@@ -174,7 +174,7 @@ void cGrid_t::SubdivideColumns()
 			for (j = 0; j < height; j++)
 			{
 				// remove the column
-				for (int k = i + 2 ; k < width; k++)
+				for (int k = i + 2; k < width; k++)
 				{
 					VectorCopy(points[k][j], points[k - 1][j]);
 				}
@@ -192,7 +192,7 @@ void cGrid_t::SubdivideColumns()
 		//
 		for (j = 0; j < height; j++)
 		{
-			vec3_t	prev, mid, next;
+			vec3_t prev, mid, next;
 
 			// save the control points now
 			VectorCopy(points[i][j], prev);
@@ -229,9 +229,9 @@ void cGrid_t::SubdivideColumns()
 
 bool cGrid_t::NeedsSubdivision(vec3_t a, vec3_t b, vec3_t c)
 {
-	vec3_t		cmid;
-	vec3_t		lmid;
-	vec3_t		delta;
+	vec3_t cmid;
+	vec3_t lmid;
+	vec3_t delta;
 
 	// calculate the linear midpoint
 	for (int i = 0; i < 3; i++)
@@ -248,7 +248,7 @@ bool cGrid_t::NeedsSubdivision(vec3_t a, vec3_t b, vec3_t c)
 	// see if the curve is far enough away from the linear mid
 	VectorSubtract(cmid, lmid, delta);
 	float dist = VectorLength(delta);
-	
+
 	return dist >= SUBDIVIDE_DISTANCE;
 }
 
@@ -426,7 +426,7 @@ patchCollide_t* QClipMap46::GeneratePatchCollide(int width, int height, vec3_t* 
 	if (width <= 2 || height <= 2 || !points)
 	{
 		throw DropException(va("CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)",
-			width, height, points));
+				width, height, points));
 	}
 
 	if (!(width & 1) || !(height & 1))
@@ -546,7 +546,7 @@ void patchCollide_t::FromGrid(cGrid_t* grid)
 			else if (grid->wrapHeight)
 			{
 				borders[EN_TOP] = gridPlanes[i][grid->height - 2][1];
-			} 
+			}
 			noAdjust[EN_TOP] = (borders[EN_TOP] == gridPlanes[i][j][0]);
 			if (borders[EN_TOP] == -1 || noAdjust[EN_TOP])
 			{
@@ -646,7 +646,7 @@ void patchCollide_t::FromGrid(cGrid_t* grid)
 						facet->borderPlanes[2] = EdgePlaneNum(grid, gridPlanes, i, j, 4);
 					}
 				}
- 				SetBorderInward(facet, grid, gridPlanes, i, j, 0);
+				SetBorderInward(facet, grid, gridPlanes, i, j, 0);
 				if (ValidateFacet(facet))
 				{
 					AddFacetBevels(facet);
@@ -702,7 +702,7 @@ void patchCollide_t::FromGrid(cGrid_t* grid)
 
 int patchCollide_t::FindPlane(float* p1, float* p2, float* p3)
 {
-	float	plane[4];
+	float plane[4];
 
 	if (!PlaneFromPoints(plane, p1, p2, p3))
 	{
@@ -780,9 +780,9 @@ int patchCollide_t::SignbitsForNormal(vec3_t normal)
 
 int patchCollide_t::EdgePlaneNum(cGrid_t* grid, int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], int i, int j, int k)
 {
-	float	*p1, *p2;
-	vec3_t		up;
-	int			p;
+	float* p1, * p2;
+	vec3_t up;
+	int p;
 
 	switch (k)
 	{
@@ -800,7 +800,7 @@ int patchCollide_t::EdgePlaneNum(cGrid_t* grid, int gridPlanes[MAX_GRID_SIZE][MA
 		VectorMA(p1, 4, cm_patch_planes[p].plane, up);
 		return FindPlane(p2, p1, up);
 
-	case 3: // left border
+	case 3:	// left border
 		p1 = grid->points[i][j];
 		p2 = grid->points[i][j + 1];
 		p = GridPlane(gridPlanes, i, j, 1);
@@ -840,7 +840,7 @@ int patchCollide_t::EdgePlaneNum(cGrid_t* grid, int gridPlanes[MAX_GRID_SIZE][MA
 //
 //==========================================================================
 
-int	patchCollide_t::GridPlane(int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], int i, int j, int tri)
+int patchCollide_t::GridPlane(int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], int i, int j, int tri)
 {
 	int p = gridPlanes[i][j][tri];
 	if (p != -1)
@@ -867,8 +867,8 @@ int	patchCollide_t::GridPlane(int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], i
 void patchCollide_t::SetBorderInward(facet_t* facet, cGrid_t* grid,
 	int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], int i, int j, int which)
 {
-	float*	points[4];
-	int		numPoints;
+	float* points[4];
+	int numPoints;
 
 	switch (which)
 	{
@@ -929,7 +929,7 @@ void patchCollide_t::SetBorderInward(facet_t* facet, cGrid_t* grid,
 		else
 		{
 			// bisecting side border
-			Log::develWrite("WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			Log::develWrite("WARNING: CM_SetBorderInward: mixed plane sides\n");
 			facet->borderInward[k] = false;
 			if (!debugBlock)
 			{
@@ -982,8 +982,8 @@ int patchCollide_t::PointOnPlaneSide(const float* p, int planeNum)
 
 bool patchCollide_t::ValidateFacet(facet_t* facet)
 {
-	float		plane[4];
-	vec3_t		bounds[2];
+	float plane[4];
+	vec3_t bounds[2];
 
 	if (facet->surfacePlane == -1)
 	{
@@ -1016,7 +1016,7 @@ bool patchCollide_t::ValidateFacet(facet_t* facet)
 	// see if the facet is unreasonably large
 	CM46_WindingBounds(w, bounds[0], bounds[1]);
 	CM46_FreeWinding(w);
-	
+
 	for (int j = 0; j < 3; j++)
 	{
 		if (bounds[1][j] - bounds[0][j] > MAX_MAP_BOUNDS)
@@ -1140,7 +1140,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 	// add the edge bevels
 	//
 	// test the non-axial plane edges
-	for (int j = 0 ; j < w->numpoints ; j++ )
+	for (int j = 0; j < w->numpoints; j++)
 	{
 		int k = (j + 1) % w->numpoints;
 		vec3_t vec;
@@ -1151,7 +1151,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 			continue;
 		}
 		CM_SnapVector(vec);
-		for (k = 0; k < 3 ; k++ )
+		for (k = 0; k < 3; k++)
 		{
 			if (vec[k] == -1 || vec[k] == 1 || (vec[k] == 0.0f && vec[(k + 1) % 3] == 0.0f))
 			{
@@ -1185,7 +1185,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 				float minBack = 0.0f;
 				for (l = 0; l < w->numpoints; l++)
 				{
-					float d = DotProduct (w->p[l], plane) - plane[3];
+					float d = DotProduct(w->p[l], plane) - plane[3];
 					if (d > 0.1)
 					{
 						break;	// point in front
@@ -1385,7 +1385,7 @@ TRACE TESTING
 
 void patchCollide_t::TraceThrough(traceWork_t* tw) const
 {
-	static Cvar *cv;
+	static Cvar* cv;
 
 	if (tw->isPoint)
 	{
@@ -1468,7 +1468,8 @@ void patchCollide_t::TraceThrough(traceWork_t* tw) const
 					VectorSubtract(tw->start, tw->sphere.offset, startp);
 					VectorSubtract(tw->end, tw->sphere.offset, endp);
 				}
-				else {
+				else
+				{
 					VectorAdd(tw->start, tw->sphere.offset, startp);
 					VectorAdd(tw->end, tw->sphere.offset, endp);
 				}
@@ -1538,7 +1539,7 @@ void patchCollide_t::TraceThrough(traceWork_t* tw) const
 
 void patchCollide_t::TracePointThrough(traceWork_t* tw) const
 {
-	static Cvar *cv;
+	static Cvar* cv;
 
 	if (GGameType & (GAME_WolfMP | GAME_ET))
 	{
@@ -1579,7 +1580,7 @@ void patchCollide_t::TracePointThrough(traceWork_t* tw) const
 		}
 		else
 		{
-			intersection[i] = d1 / ( d1 - d2 );
+			intersection[i] = d1 / (d1 - d2);
 			if (intersection[i] <= 0)
 			{
 				intersection[i] = 99999;
@@ -1848,7 +1849,7 @@ bool patchCollide_t::PositionTestWolfMP(traceWork_t* tw) const
 	// determine if the box is in front, behind, or crossing each plane
 	int cross[MAX_PATCH_PLANES];
 	const patchPlane_t* planes = this->planes;
-	for (int i = 0 ; i < numPlanes; i++, planes++)
+	for (int i = 0; i < numPlanes; i++, planes++)
 	{
 		float d = DotProduct(tw->start, planes->plane) - planes->plane[3];
 		float offset = Q_fabs(DotProduct(tw->offsets[planes->signbits], planes->plane));
@@ -1869,7 +1870,7 @@ bool patchCollide_t::PositionTestWolfMP(traceWork_t* tw) const
 
 	// see if any of the surface planes are intersected
 	const facet_t* facet = facets;
-	for (int i = 0 ; i < numFacets; i++, facet++)
+	for (int i = 0; i < numFacets; i++, facet++)
 	{
 		// the facet plane must be in a cross state
 		if (cross[facet->surfacePlane] != BOX_CROSS)
@@ -1881,7 +1882,7 @@ bool patchCollide_t::PositionTestWolfMP(traceWork_t* tw) const
 		for (j = 0; j < facet->numBorders; j++)
 		{
 			int k = facet->borderPlanes[j];
-			if (cross[ k ] == BOX_CROSS)
+			if (cross[k] == BOX_CROSS)
 			{
 				continue;
 			}
@@ -1916,47 +1917,54 @@ DEBUGGING
 //
 //==========================================================================
 
-void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+void QClipMap46::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points))
 {
-	static Cvar	*cv;
-	const patchCollide_t	*pc;
-	facet_t			*facet;
-	winding_t		*w;
-	int				i, j, k, n;
-	int				curplanenum, planenum, curinward, inward;
-	float			plane[4];
+	static Cvar* cv;
+	const patchCollide_t* pc;
+	facet_t* facet;
+	winding_t* w;
+	int i, j, k, n;
+	int curplanenum, planenum, curinward, inward;
+	float plane[4];
 	vec3_t mins = {-15, -15, -28}, maxs = {15, 15, 28};
 	//vec3_t mins = {0, 0, 0}, maxs = {0, 0, 0};
 	vec3_t v1, v2;
 
-	if ( !debugPatchCollide ) {
+	if (!debugPatchCollide)
+	{
 		return;
 	}
 
-	if ( !cv ) {
-		cv = Cvar_Get( "cm_debugSize", "2", 0 );
+	if (!cv)
+	{
+		cv = Cvar_Get("cm_debugSize", "2", 0);
 	}
 	pc = debugPatchCollide;
 
-	for ( i = 0, facet = pc->facets ; i < pc->numFacets ; i++, facet++ ) {
+	for (i = 0, facet = pc->facets; i < pc->numFacets; i++, facet++)
+	{
 
-		for ( k = 0 ; k < facet->numBorders + 1; k++ ) {
+		for (k = 0; k < facet->numBorders + 1; k++)
+		{
 			//
-			if (k < facet->numBorders) {
+			if (k < facet->numBorders)
+			{
 				planenum = facet->borderPlanes[k];
 				inward = facet->borderInward[k];
 			}
-			else {
+			else
+			{
 				planenum = facet->surfacePlane;
 				inward = false;
 				//continue;
 			}
 
-			Vector4Copy( pc->planes[ planenum ].plane, plane );
+			Vector4Copy(pc->planes[planenum].plane, plane);
 
 			//planenum = facet->surfacePlane;
-			if ( inward ) {
-				VectorSubtract( vec3_origin, plane, plane );
+			if (inward)
+			{
+				VectorSubtract(vec3_origin, plane, plane);
 				plane[3] = -plane[3];
 			}
 
@@ -1964,77 +1972,102 @@ void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, flo
 			//*
 			for (n = 0; n < 3; n++)
 			{
-				if (plane[n] > 0) v1[n] = maxs[n];
-				else v1[n] = mins[n];
-			} //end for
+				if (plane[n] > 0)
+				{
+					v1[n] = maxs[n];
+				}
+				else
+				{
+					v1[n] = mins[n];
+				}
+			}	//end for
 			VectorNegate(plane, v2);
 			plane[3] += Q_fabs(DotProduct(v1, v2));
 			//*/
 
-			w = CM46_BaseWindingForPlane( plane,  plane[3] );
-			for ( j = 0 ; j < facet->numBorders + 1 && w; j++ ) {
+			w = CM46_BaseWindingForPlane(plane,  plane[3]);
+			for (j = 0; j < facet->numBorders + 1 && w; j++)
+			{
 				//
-				if (j < facet->numBorders) {
+				if (j < facet->numBorders)
+				{
 					curplanenum = facet->borderPlanes[j];
 					curinward = facet->borderInward[j];
 				}
-				else {
+				else
+				{
 					curplanenum = facet->surfacePlane;
 					curinward = false;
 					//continue;
 				}
 				//
-				if (curplanenum == planenum) continue;
+				if (curplanenum == planenum)
+				{
+					continue;
+				}
 
-				Vector4Copy( pc->planes[ curplanenum ].plane, plane );
-				if ( !curinward ) {
-					VectorSubtract( vec3_origin, plane, plane );
+				Vector4Copy(pc->planes[curplanenum].plane, plane);
+				if (!curinward)
+				{
+					VectorSubtract(vec3_origin, plane, plane);
 					plane[3] = -plane[3];
 				}
-		//			if ( !facet->borderNoAdjust[j] ) {
-					plane[3] -= cv->value;
-		//			}
+				//			if ( !facet->borderNoAdjust[j] ) {
+				plane[3] -= cv->value;
+				//			}
 				for (n = 0; n < 3; n++)
 				{
-					if (plane[n] > 0) v1[n] = maxs[n];
-					else v1[n] = mins[n];
-				} //end for
+					if (plane[n] > 0)
+					{
+						v1[n] = maxs[n];
+					}
+					else
+					{
+						v1[n] = mins[n];
+					}
+				}	//end for
 				VectorNegate(plane, v2);
 				plane[3] -= Q_fabs(DotProduct(v1, v2));
 
-				CM46_ChopWindingInPlace( &w, plane, plane[3], 0.1f );
+				CM46_ChopWindingInPlace(&w, plane, plane[3], 0.1f);
 			}
-			if ( w ) {
-				if ( facet == debugFacet ) {
-					drawPoly( 4, w->numpoints, w->p[0] );
+			if (w)
+			{
+				if (facet == debugFacet)
+				{
+					drawPoly(4, w->numpoints, w->p[0]);
 					//Com_Printf("blue facet has %d border planes\n", facet->numBorders);
-				} else {
-					drawPoly( 1, w->numpoints, w->p[0] );
 				}
-				CM46_FreeWinding( w );
+				else
+				{
+					drawPoly(1, w->numpoints, w->p[0]);
+				}
+				CM46_FreeWinding(w);
 			}
 			else
+			{
 				Log::write("winding chopped away by border planes\n");
+			}
 		}
 	}
 
 	// draw the debug block
 	{
-		vec3_t			v[3];
+		vec3_t v[3];
 
-		VectorCopy( debugBlockPoints[0], v[0] );
-		VectorCopy( debugBlockPoints[1], v[1] );
-		VectorCopy( debugBlockPoints[2], v[2] );
-		drawPoly( 2, 3, v[0] );
+		VectorCopy(debugBlockPoints[0], v[0]);
+		VectorCopy(debugBlockPoints[1], v[1]);
+		VectorCopy(debugBlockPoints[2], v[2]);
+		drawPoly(2, 3, v[0]);
 
-		VectorCopy( debugBlockPoints[2], v[0] );
-		VectorCopy( debugBlockPoints[3], v[1] );
-		VectorCopy( debugBlockPoints[0], v[2] );
-		drawPoly( 2, 3, v[0] );
+		VectorCopy(debugBlockPoints[2], v[0]);
+		VectorCopy(debugBlockPoints[3], v[1]);
+		VectorCopy(debugBlockPoints[0], v[2]);
+		drawPoly(2, 3, v[0]);
 	}
 
 #if 0
-	vec3_t			v[4];
+	vec3_t v[4];
 
 	v[0][0] = pc->bounds[1][0];
 	v[0][1] = pc->bounds[1][1];
@@ -2052,6 +2085,6 @@ void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, flo
 	v[3][1] = pc->bounds[1][1];
 	v[3][2] = pc->bounds[1][2];
 
-	drawPoly( 4, v[0] );
+	drawPoly(4, v[0]);
 #endif
 }

@@ -75,7 +75,7 @@ static int ParseHex(const char* text)
 {
 	int value = 0;
 	int c;
-	while (( c = *text++ ) != 0)
+	while ((c = *text++) != 0)
 	{
 		if (c >= '0' && c <= '9')
 		{
@@ -126,7 +126,7 @@ void VM_LoadSymbols(vm_t* vm)
 
 	while (1)
 	{
-		char* token = String::Parse3( &text_p );
+		char* token = String::Parse3(&text_p);
 		if (!token[0])
 		{
 			break;
@@ -201,7 +201,7 @@ void* VM_ArgPtr(qintptr intValue)
 	// bk001220 - currentVM is missing on reconnect
 	if (currentVM == NULL)
 	{
-	  return NULL;
+		return NULL;
 	}
 
 	if (currentVM->entryPoint)

@@ -16,7 +16,7 @@
 
 #include "qcommon.h"
 
-Exception::Exception(const char *text)
+Exception::Exception(const char* text)
 {
 	String::NCpy(message, text, MAX_ERROR_TEXT_SIZE - 1);
 	message[MAX_ERROR_TEXT_SIZE - 1] = 0;

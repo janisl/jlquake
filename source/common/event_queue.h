@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#define MAX_QUED_EVENTS		256
-#define MASK_QUED_EVENTS	(MAX_QUED_EVENTS - 1)
+#define MAX_QUED_EVENTS     256
+#define MASK_QUED_EVENTS    (MAX_QUED_EVENTS - 1)
 
 enum sysEventType_t
 {
@@ -31,16 +31,16 @@ enum sysEventType_t
 
 struct sysEvent_t
 {
-	int				evTime;
-	sysEventType_t	evType;
-	int				evValue;
-	int				evValue2;
-	int				evPtrLength;	// bytes of data pointed to by evPtr, for journaling
-	void*			evPtr;			// this must be manually freed if not NULL
+	int evTime;
+	sysEventType_t evType;
+	int evValue;
+	int evValue2;
+	int evPtrLength;				// bytes of data pointed to by evPtr, for journaling
+	void* evPtr;					// this must be manually freed if not NULL
 };
 
-void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr);
+void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
 sysEvent_t Sys_SharedGetEvent();
 
-extern sysEvent_t	eventQue[MAX_QUED_EVENTS];
-extern int			eventHead, eventTail;
+extern sysEvent_t eventQue[MAX_QUED_EVENTS];
+extern int eventHead, eventTail;

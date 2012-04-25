@@ -51,32 +51,36 @@
 
 const char* Info_ValueForKey(const char* s, const char* key)
 {
-	char	pkey[BIG_INFO_KEY];
-	static	char value[4][BIG_INFO_VALUE];	// use two buffers so compares
+	char pkey[BIG_INFO_KEY];
+	static char value[4][BIG_INFO_VALUE];	// use two buffers so compares
 											// work without stomping on each other
-	static	int	valueindex = 0;
-	char	*o;
-	
+	static int valueindex = 0;
+	char* o;
+
 	if (!s || !key)
 	{
 		return "";
 	}
 
-	if (String::Length( s ) >= BIG_INFO_STRING)
+	if (String::Length(s) >= BIG_INFO_STRING)
 	{
 		throw DropException("Info_ValueForKey: oversize infostring");
 	}
 
 	valueindex = (valueindex + 1) % 4;
 	if (*s == '\\')
+	{
 		s++;
+	}
 	while (1)
 	{
 		o = pkey;
 		while (*s != '\\')
 		{
 			if (!*s)
+			{
 				return "";
+			}
 			*o++ = *s++;
 		}
 		*o = 0;
@@ -90,11 +94,15 @@ const char* Info_ValueForKey(const char* s, const char* key)
 		}
 		*o = 0;
 
-		if (!String::ICmp(key, pkey) )
+		if (!String::ICmp(key, pkey))
+		{
 			return value[valueindex];
+		}
 
 		if (!*s)
+		{
 			break;
+		}
 		s++;
 	}
 
@@ -109,10 +117,10 @@ const char* Info_ValueForKey(const char* s, const char* key)
 
 void Info_RemoveKey(char* s, const char* key, int MaxSize)
 {
-	char	*start;
-	char	pkey[BIG_INFO_KEY];
-	char	value[BIG_INFO_VALUE];
-	char	*o;
+	char* start;
+	char pkey[BIG_INFO_KEY];
+	char value[BIG_INFO_VALUE];
+	char* o;
 
 	if (String::Length(s) >= MaxSize)
 	{
@@ -128,12 +136,16 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 	{
 		start = s;
 		if (*s == '\\')
+		{
 			s++;
+		}
 		o = pkey;
 		while (*s != '\\')
 		{
 			if (!*s)
+			{
 				return;
+			}
 			*o++ = *s++;
 		}
 		*o = 0;
@@ -143,19 +155,23 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 		while (*s != '\\' && *s)
 		{
 			if (!*s)
+			{
 				return;
+			}
 			*o++ = *s++;
 		}
 		*o = 0;
 
-		if (!String::Cmp (key, pkey))
+		if (!String::Cmp(key, pkey))
 		{
-			memmove(start, s, String::Length(s) + 1); // remove this part
+			memmove(start, s, String::Length(s) + 1);	// remove this part
 			return;
 		}
 
 		if (!*s)
+		{
 			return;
+		}
 	}
 }
 
@@ -165,24 +181,28 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 //
 //==========================================================================
 
-void Info_RemovePrefixedKeys(char *start, char prefix, int MaxSize)
+void Info_RemovePrefixedKeys(char* start, char prefix, int MaxSize)
 {
-	char	*s;
-	char	pkey[BIG_INFO_KEY];
-	char	value[BIG_INFO_VALUE];
-	char	*o;
+	char* s;
+	char pkey[BIG_INFO_KEY];
+	char value[BIG_INFO_VALUE];
+	char* o;
 
 	s = start;
 
 	while (1)
 	{
 		if (*s == '\\')
+		{
 			s++;
+		}
 		o = pkey;
 		while (*s != '\\')
 		{
 			if (!*s)
+			{
 				return;
+			}
 			*o++ = *s++;
 		}
 		*o = 0;
@@ -192,19 +212,23 @@ void Info_RemovePrefixedKeys(char *start, char prefix, int MaxSize)
 		while (*s != '\\' && *s)
 		{
 			if (!*s)
+			{
 				return;
+			}
 			*o++ = *s++;
 		}
 		*o = 0;
 
 		if (pkey[0] == prefix)
 		{
-			Info_RemoveKey (start, pkey, MaxSize);
+			Info_RemoveKey(start, pkey, MaxSize);
 			s = start;
 		}
 
 		if (!*s)
+		{
 			return;
+		}
 	}
 }
 
@@ -216,10 +240,10 @@ void Info_RemovePrefixedKeys(char *start, char prefix, int MaxSize)
 //
 //==========================================================================
 
-void Info_SetValueForKey(char *s, const char* key, const char* value,
+void Info_SetValueForKey(char* s, const char* key, const char* value,
 	int MaxSize, int MaxKeySize, int MaxValSize, bool NoHighChars, bool LowerCaseVal)
 {
-	char	newi[BIG_INFO_STRING];
+	char newi[BIG_INFO_STRING];
 
 	if (String::Length(s) >= MaxSize)
 	{
@@ -252,7 +276,9 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 
 	Info_RemoveKey(s, key, MaxSize);
 	if (!value || !String::Length(value))
+	{
 		return;
+	}
 
 	String::Sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
 
@@ -274,12 +300,18 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 			{
 				c &= 127;		// strip high bits
 				if (c < 32 || c >= 127)
+				{
 					continue;
+				}
 				if (LowerCaseVal)
+				{
 					c = String::ToLower(c);
+				}
 			}
 			if (c > 13)
+			{
 				*s++ = c;
+			}
 		}
 		*s = 0;
 	}
@@ -322,8 +354,8 @@ bool Info_Validate(const char* s)
 
 void Info_NextPair(const char** head, char* key, char* value)
 {
-	char*		o;
-	const char*	s;
+	char* o;
+	const char* s;
 
 	s = *head;
 
@@ -366,13 +398,15 @@ void Info_NextPair(const char** head, char* key, char* value)
 
 void Info_Print(const char* s)
 {
-	char	key[512];
-	char	value[512];
-	char	*o;
-	int		l;
+	char key[512];
+	char value[512];
+	char* o;
+	int l;
 
 	if (*s == '\\')
+	{
 		s++;
+	}
 	while (*s)
 	{
 		o = key;
@@ -382,11 +416,13 @@ void Info_Print(const char* s)
 		l = o - key;
 		if (l < 20)
 		{
-			Com_Memset(o, ' ', 20-l);
+			Com_Memset(o, ' ', 20 - l);
 			key[20] = 0;
 		}
 		else
+		{
 			*o = 0;
+		}
 		Log::write("%s", key);
 
 		if (!*s)
@@ -402,7 +438,9 @@ void Info_Print(const char* s)
 		*o = 0;
 
 		if (*s)
+		{
 			s++;
+		}
 		Log::write("%s\n", value);
 	}
 }

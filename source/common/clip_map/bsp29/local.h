@@ -20,43 +20,43 @@
 #include "../local.h"
 #include "../../file_formats/bsp29.h"
 
-#define MAX_MAP_HULLS		8
+#define MAX_MAP_HULLS       8
 
-#define	MAX_MAP_MODELS		256
+#define MAX_MAP_MODELS      256
 
-#define HULL_NUMBER_MASK	(MAX_MAP_HULLS - 1)
-#define MODEL_NUMBER_MASK	(~HULL_NUMBER_MASK)
-#define BOX_HULL_HANDLE		(MAX_MAP_MODELS * MAX_MAP_HULLS)
+#define HULL_NUMBER_MASK    (MAX_MAP_HULLS - 1)
+#define MODEL_NUMBER_MASK   (~HULL_NUMBER_MASK)
+#define BOX_HULL_HANDLE     (MAX_MAP_MODELS * MAX_MAP_HULLS)
 
 struct cnode_t
 {
-	cplane_t*		plane;
-	int				children[2];	
+	cplane_t* plane;
+	int children[2];
 };
 
 struct cleaf_t
 {
-	int				contents;
-	byte*			compressed_vis;
-	byte			ambient_sound_level[BSP29_NUM_AMBIENTS];
+	int contents;
+	byte* compressed_vis;
+	byte ambient_sound_level[BSP29_NUM_AMBIENTS];
 };
 
 struct cclipnode_t
 {
-	int				planenum;
-	int				children[2];	// negative numbers are contents
+	int planenum;
+	int children[2];				// negative numbers are contents
 };
 
 struct chullshared_t
 {
-	vec3_t			clip_mins;
-	vec3_t			clip_maxs;
+	vec3_t clip_mins;
+	vec3_t clip_maxs;
 };
 
 struct chull_t
 {
-	int				firstclipnode;
-	int				lastclipnode;
+	int firstclipnode;
+	int lastclipnode;
 };
 
 struct cmodel_t
@@ -64,10 +64,10 @@ struct cmodel_t
 	//
 	// volume occupied by the model graphics
 	//
-	vec3_t			mins;
-	vec3_t			maxs;
+	vec3_t mins;
+	vec3_t maxs;
 
-	chull_t			hulls[MAX_MAP_HULLS];
+	chull_t hulls[MAX_MAP_HULLS];
 };
 
 class QClipMap29 : public QClipMap
@@ -103,35 +103,35 @@ private:
 		vec3_t p1, vec3_t p2, q1trace_t* trace);
 
 public:
-	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+	static byte mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
-	int					numplanes;
-	cplane_t*			planes;
+	int numplanes;
+	cplane_t* planes;
 
-	int					numnodes;
-	cnode_t*			nodes;
+	int numnodes;
+	cnode_t* nodes;
 
-	int					numleafs;
-	cleaf_t*			leafs;
+	int numleafs;
+	cleaf_t* leafs;
 
-	int					numclusters;
+	int numclusters;
 
-	int					numclipnodes;
-	cclipnode_t*		clipnodes;
+	int numclipnodes;
+	cclipnode_t* clipnodes;
 
-	byte*				visdata;
+	byte* visdata;
 
-	byte*				phs;
+	byte* phs;
 
-	int					entitychars;
-	char*				entitystring;
+	int entitychars;
+	char* entitystring;
 
-	int					numsubmodels;
-	cmodel_t*			map_models;
+	int numsubmodels;
+	cmodel_t* map_models;
 
-	chullshared_t		hullsshared[MAX_MAP_HULLS];
+	chullshared_t hullsshared[MAX_MAP_HULLS];
 
-	cmodel_t			box_model;
+	cmodel_t box_model;
 
 	QClipMap29();
 	~QClipMap29();
@@ -160,7 +160,7 @@ public:
 	int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 	int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
-	bool HeadnodeVisible(int NodeNum, byte *VisBits);
+	bool HeadnodeVisible(int NodeNum, byte* VisBits);
 	byte* ClusterPVS(int Cluster);
 	byte* ClusterPHS(int Cluster);
 	void SetAreaPortalState(int PortalNum, qboolean Open);
@@ -175,9 +175,9 @@ public:
 		int BrushMask, vec3_t Origin, vec3_t Angles);
 	void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, int Capsule);
-	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
+	void TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
-	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
+	void DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points));
 };
 
 #endif

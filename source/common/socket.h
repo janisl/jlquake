@@ -23,19 +23,19 @@ enum netadrtype_t
 	NA_IP,
 };
 
-#define PORT_ANY			-1
+#define PORT_ANY            -1
 
-#define SOCKRECV_ERROR		-1
-#define SOCKRECV_NO_DATA	-2
+#define SOCKRECV_ERROR      -1
+#define SOCKRECV_NO_DATA    -2
 
-#define SOCKSEND_ERROR		-1
-#define SOCKSEND_WOULDBLOCK	-2
+#define SOCKSEND_ERROR      -1
+#define SOCKSEND_WOULDBLOCK -2
 
 struct netadr_t
 {
-	netadrtype_t	type;
-	quint8			ip[4];
-	quint16			port;
+	netadrtype_t type;
+	quint8 ip[4];
+	quint16 port;
 };
 
 bool SOCK_StringToAdr(const char* string, netadr_t* Address, int DefaultPort);
@@ -67,8 +67,8 @@ int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To);
 bool SOCK_Sleep(int Socket, int MiliSeconds);
 bool SOCK_GetAddr(int Socket, netadr_t* Address);
 
-extern Cvar*	net_socksEnabled;
-extern Cvar*	net_socksServer;
-extern Cvar*	net_socksPort;
-extern Cvar*	net_socksUsername;
-extern Cvar*	net_socksPassword;
+extern Cvar* net_socksEnabled;
+extern Cvar* net_socksServer;
+extern Cvar* net_socksPort;
+extern Cvar* net_socksUsername;
+extern Cvar* net_socksPassword;

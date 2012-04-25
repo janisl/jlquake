@@ -16,7 +16,7 @@
 
 #include "qcommon.h"
 
-#define STOP_EPSILON	0.1
+#define STOP_EPSILON    0.1
 
 //	Slide off of the impacting object
 void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce)

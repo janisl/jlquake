@@ -24,25 +24,25 @@
 #include <dirent.h>
 #include <sys/time.h>
 
-#define MAX_FOUND_FILES		0x1000
+#define MAX_FOUND_FILES     0x1000
 
 char* __CopyString(const char* in);
 
 /* base time in seconds, that's our origin
-   timeval:tv_sec is an int: 
+   timeval:tv_sec is an int:
    assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
    using unsigned long data type to work right with Sys_XTimeToSysTime */
-unsigned long	sys_timeBase = 0;
+unsigned long sys_timeBase = 0;
 
-bool			stdin_active = true;
+bool stdin_active = true;
 
-static char		HomePathSuffix[MAX_OSPATH];
+static char HomePathSuffix[MAX_OSPATH];
 
 //	Test an file given OS path:
 //	returns -1 if not found
 //	returns 1 if directory
 //	returns 0 otherwise
-int Sys_StatFile(const char *ospath)
+int Sys_StatFile(const char* ospath)
 {
 	struct stat stat_buf;
 	if (stat(ospath, &stat_buf) == -1)
@@ -66,7 +66,7 @@ int Sys_Rmdir(const char* path)
 	return rmdir(path);
 }
 
-const char* Sys_Cwd() 
+const char* Sys_Cwd()
 {
 	static char cwd[MAX_OSPATH];
 
@@ -96,25 +96,25 @@ const char* Sys_DefaultHomePath()
 		String::Cat(homePath, sizeof(homePath), HomePathSuffix);
 		if (mkdir(homePath, 0777))
 		{
-			if (errno != EEXIST) 
+			if (errno != EEXIST)
 			{
 				throw Exception(va("Unable to create directory \"%s\", error is %s(%d)\n",
-					homePath, strerror(errno), errno));
+						homePath, strerror(errno), errno));
 			}
 		}
 		return homePath;
 	}
-	return ""; // assume current dir
+	return "";	// assume current dir
 }
 
 static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, const char* filter,
 	char** list, int* numfiles)
 {
-	char		search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
-	char		filename[MAX_OSPATH];
-	DIR*		fdir;
-	dirent*		d;
-	struct stat	st;
+	char search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
+	char filename[MAX_OSPATH];
+	DIR* fdir;
+	dirent* d;
+	struct stat st;
 
 	if (*numfiles >= MAX_FOUND_FILES - 1)
 	{
@@ -174,21 +174,21 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 	closedir(fdir);
 }
 
-char** Sys_ListFiles(const char *directory, const char *extension, const char *filter,
-	int *numfiles, bool wantsubs)
+char** Sys_ListFiles(const char* directory, const char* extension, const char* filter,
+	int* numfiles, bool wantsubs)
 {
-	dirent*		d;
-	DIR*		fdir;
-	bool		dironly = wantsubs;
-	char		search[MAX_OSPATH];
-	int			nfiles;
-	char**		listCopy;
-	char*		list[MAX_FOUND_FILES];
+	dirent* d;
+	DIR* fdir;
+	bool dironly = wantsubs;
+	char search[MAX_OSPATH];
+	int nfiles;
+	char** listCopy;
+	char* list[MAX_FOUND_FILES];
 	//int			flag; // bk001204 - unused
-	int			i;
+	int i;
 	struct stat st;
 
-	int			extLen;
+	int extLen;
 
 	if (filter)
 	{
@@ -251,11 +251,11 @@ char** Sys_ListFiles(const char *directory, const char *extension, const char *f
 		if (*extension)
 		{
 			if (String::Length(d->d_name) < String::Length(extension) ||
-				String::ICmp( 
+				String::ICmp(
 					d->d_name + String::Length(d->d_name) - String::Length(extension),
 					extension))
 			{
-				continue; // didn't match
+				continue;	// didn't match
 			}
 		}
 

@@ -33,14 +33,14 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Cvar*		net_socksEnabled;
-Cvar*		net_socksServer;
-Cvar*		net_socksPort;
-Cvar*		net_socksUsername;
-Cvar*		net_socksPassword;
+Cvar* net_socksEnabled;
+Cvar* net_socksServer;
+Cvar* net_socksPort;
+Cvar* net_socksUsername;
+Cvar* net_socksPassword;
 
-int			numIP;
-byte		localIP[MAX_IPS][4];
+int numIP;
+byte localIP[MAX_IPS][4];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -152,7 +152,7 @@ bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 
 const char* SOCK_AdrToString(const netadr_t& a)
 {
-	static	char	s[64];
+	static char s[64];
 
 	if (a.type == NA_LOOPBACK)
 	{
@@ -179,8 +179,8 @@ const char* SOCK_AdrToString(const netadr_t& a)
 
 const char* SOCK_BaseAdrToString(const netadr_t& a)
 {
-	static	char	s[64];
-	
+	static char s[64];
+
 	if (a.type == NA_LOOPBACK)
 	{
 		String::Sprintf(s, sizeof(s), "loopback");

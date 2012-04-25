@@ -19,20 +19,20 @@
 class idCommonLocal : public idCommon
 {
 public:
-	virtual void Printf(const char *format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void DPrintf(const char *format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Error(const char *format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void FatalError(const char *format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
 };
 
 static idCommonLocal commonLocal;
 idCommon* common = &commonLocal;
 
-void idCommonLocal::Printf(const char *format, ...)
+void idCommonLocal::Printf(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
@@ -40,11 +40,11 @@ void idCommonLocal::Printf(const char *format, ...)
 	Log::write("%s", string);
 }
 
-void idCommonLocal::DPrintf(const char *format, ...)
+void idCommonLocal::DPrintf(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
@@ -52,11 +52,11 @@ void idCommonLocal::DPrintf(const char *format, ...)
 	Log::develWrite("%s", string);
 }
 
-void idCommonLocal::Error(const char *format, ...)
+void idCommonLocal::Error(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
@@ -64,15 +64,14 @@ void idCommonLocal::Error(const char *format, ...)
 	throw DropException(string);
 }
 
-void idCommonLocal::FatalError(const char *format, ...)
+void idCommonLocal::FatalError(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
 	throw Exception(string);
 }
-

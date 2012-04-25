@@ -75,7 +75,7 @@ bool Cbuf_AddLateCommands(bool Insert = false);
 //
 //==========================================================================
 
-typedef void (*xcommand_t) (void);
+typedef void (*xcommand_t)(void);
 
 enum cmd_source_t
 {
@@ -113,7 +113,7 @@ char* Cmd_CompleteCommand(const char* partial);
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 
-void Cmd_CommandCompletion(void(*callback)(const char* s));
+void Cmd_CommandCompletion(void (* callback)(const char* s));
 // callback with each valid string
 
 void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
@@ -122,7 +122,7 @@ void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
 
 void Cmd_SharedInit();
 
-extern	cmd_source_t	cmd_source;
+extern cmd_source_t cmd_source;
 
 //==========================================================================
 //
@@ -130,14 +130,14 @@ extern	cmd_source_t	cmd_source;
 //
 //==========================================================================
 
-#define	MAX_EDIT_LINE	256
+#define MAX_EDIT_LINE   256
 
 struct field_t
 {
-	int		cursor;
-	int		scroll;
-	int		widthInChars;
-	char	buffer[MAX_EDIT_LINE];
+	int cursor;
+	int scroll;
+	int widthInChars;
+	char buffer[MAX_EDIT_LINE];
 };
 
 void Field_Clear(field_t* Edit);

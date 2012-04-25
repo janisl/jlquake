@@ -49,8 +49,8 @@ public:
 	//
 	// volume occupied by the model graphics
 	//
-	vec3_t			ModelMins;
-	vec3_t			ModelMaxs;
+	vec3_t ModelMins;
+	vec3_t ModelMaxs;
 
 	void LoadMap(const char* name, const Array<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad)
@@ -98,7 +98,7 @@ public:
 	{ throw QNonBspModelException(); }
 	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 	{ throw QNonBspModelException(); }
-	bool HeadnodeVisible(int NodeNum, byte *VisBits)
+	bool HeadnodeVisible(int NodeNum, byte* VisBits)
 	{ return false; }
 	byte* ClusterPVS(int Cluster)
 	{ return NULL; }
@@ -126,26 +126,26 @@ public:
 	void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, int Capsule)
 	{ throw QNonBspModelException(); }
-	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
+	void TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
 	{ throw QNonBspModelException(); }
-	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+	void DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points))
 	{}
 };
 
 class QMdlBoundsLoader
 {
 public:
-	int			skinwidth;
-	int			skinheight;
-	int			numverts;
-	vec3_t		scale;
-	vec3_t		scale_origin;
+	int skinwidth;
+	int skinheight;
+	int numverts;
+	vec3_t scale;
+	vec3_t scale_origin;
 
-	vec3_t		mins;
-	vec3_t		maxs;
+	vec3_t mins;
+	vec3_t maxs;
 
-	float		aliastransform[3][4];
+	float aliastransform[3][4];
 
 	void LoadAliasModel(QClipMapNonMap* mod, const void* buffer);
 	void LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer);
@@ -165,7 +165,7 @@ public:
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Array<QClipMap*>		CMNonMapModels;
+Array<QClipMap*>        CMNonMapModels;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -208,24 +208,24 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
 	{
 	case BSP29_VERSION:
+	{
+		QClipMap* LoadCMap = CM_CreateQClipMap29();
+		CMNonMapModels.Append(LoadCMap);
+		LoadCMap->LoadMap(Name, Buffer);
+		if (LoadCMap->GetNumInlineModels() > 1)
 		{
-			QClipMap* LoadCMap = CM_CreateQClipMap29();
-			CMNonMapModels.Append(LoadCMap);
-			LoadCMap->LoadMap(Name, Buffer);
-			if (LoadCMap->GetNumInlineModels() > 1)
-			{
-				Log::writeLine("Non-map BSP models are not supposed to have submodels");
-			}
-			break;
+			Log::writeLine("Non-map BSP models are not supposed to have submodels");
 		}
+		break;
+	}
 
 	default:
-		{
-			QClipMapNonMap* LoadCMap = new QClipMapNonMap;
-			CMNonMapModels.Append(LoadCMap);
+	{
+		QClipMapNonMap* LoadCMap = new QClipMapNonMap;
+		CMNonMapModels.Append(LoadCMap);
 
-			LoadCMap->LoadMap(Name, Buffer);
-		}
+		LoadCMap->LoadMap(Name, Buffer);
+	}
 	}
 
 	return CMNonMapModels.Num() << CMH_NON_MAP_SHIFT;
@@ -311,13 +311,13 @@ void QClipMapNonMap::LoadAliasModelNew(const void* buffer)
 
 void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 {
-	mdl_t* pinmodel = (mdl_t *)buffer;
+	mdl_t* pinmodel = (mdl_t*)buffer;
 
-	int version = LittleLong (pinmodel->version);
+	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_VERSION)
 	{
 		throw DropException(va("%s has wrong version number (%i should be %i)",
-			 *mod->Name, version, MESH1_VERSION));
+				*mod->Name, version, MESH1_VERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -325,12 +325,12 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 	skinheight = LittleLong(pinmodel->skinheight);
 	numverts = LittleLong(pinmodel->numverts);
 	int numtris = LittleLong(pinmodel->numtris);
-	int numframes = LittleLong (pinmodel->numframes);
+	int numframes = LittleLong(pinmodel->numframes);
 
 	for (int i = 0; i < 3; i++)
 	{
-		scale[i] = LittleFloat (pinmodel->scale[i]);
-		scale_origin[i] = LittleFloat (pinmodel->scale_origin[i]);
+		scale[i] = LittleFloat(pinmodel->scale[i]);
+		scale_origin[i] = LittleFloat(pinmodel->scale_origin[i]);
 	}
 
 	dmdl_skintype_t* pskintype = (dmdl_skintype_t*)&pinmodel[1];
@@ -372,13 +372,13 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 
 void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer)
 {
-	newmdl_t* pinmodel = (newmdl_t *)buffer;
+	newmdl_t* pinmodel = (newmdl_t*)buffer;
 
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_NEWVERSION)
 	{
 		throw DropException(va("%s has wrong version number (%i should be %i)",
-			*mod->Name, version, MESH1_NEWVERSION));
+				*mod->Name, version, MESH1_NEWVERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -387,12 +387,12 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	numverts = LittleLong(pinmodel->numverts);
 	int numstverts = LittleLong(pinmodel->num_st_verts);	//hide num_st in version
 	int numtris = LittleLong(pinmodel->numtris);
-	int numframes = LittleLong (pinmodel->numframes);
+	int numframes = LittleLong(pinmodel->numframes);
 
 	for (int i = 0; i < 3; i++)
 	{
-		scale[i] = LittleFloat (pinmodel->scale[i]);
-		scale_origin[i] = LittleFloat (pinmodel->scale_origin[i]);
+		scale[i] = LittleFloat(pinmodel->scale[i]);
+		scale_origin[i] = LittleFloat(pinmodel->scale_origin[i]);
 	}
 
 	dmdl_skintype_t* pskintype = (dmdl_skintype_t*)&pinmodel[1];
@@ -405,7 +405,7 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	maxs[0] = maxs[1] = maxs[2] = -32768;
 	for (int i = 0; i < numframes; i++)
 	{
-		mdl_frametype_t frametype = (mdl_frametype_t)LittleLong (pframetype->type);
+		mdl_frametype_t frametype = (mdl_frametype_t)LittleLong(pframetype->type);
 		if (frametype == ALIAS_SINGLE)
 		{
 			pframetype = (dmdl_frametype_t*)LoadAliasFrame(pframetype + 1);
@@ -437,7 +437,7 @@ void* QMdlBoundsLoader::LoadAllSkins(int numskins, dmdl_skintype_t* pskintype)
 		int s = skinwidth * skinheight;
 		pskintype = (dmdl_skintype_t*)((byte*)(pskintype + 1) + s);
 	}
-	return (void *)pskintype;
+	return (void*)pskintype;
 }
 
 //==========================================================================
@@ -490,8 +490,8 @@ void* QMdlBoundsLoader::LoadAliasFrame(void* pin)
 void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 {
 	dmdl_group_t* pingroup = (dmdl_group_t*)pin;
-	int numframes = LittleLong (pingroup->numframes);
-	dmdl_interval_t* pin_intervals = (dmdl_interval_t *)(pingroup + 1);
+	int numframes = LittleLong(pingroup->numframes);
+	dmdl_interval_t* pin_intervals = (dmdl_interval_t*)(pingroup + 1);
 	pin_intervals += numframes;
 	void* ptemp = (void*)pin_intervals;
 
@@ -515,12 +515,16 @@ void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 			for (int k = 0; k < 3; k++)
 			{
 				if (mins[k] > out[k])
+				{
 					mins[k] = out[k];
+				}
 				if (maxs[k] < out[k])
+				{
 					maxs[k] = out[k];
+				}
 			}
 		}
-		ptemp = (dmdl_trivertx_t*)((dmdl_frame_t *)ptemp + 1) + numverts;
+		ptemp = (dmdl_trivertx_t*)((dmdl_frame_t*)ptemp + 1) + numverts;
 	}
 	return ptemp;
 }
@@ -548,7 +552,7 @@ void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 {
 	dsprite1_t* pin = (dsprite1_t*)buffer;
 
-	int version = LittleLong (pin->version);
+	int version = LittleLong(pin->version);
 	if (version != SPRITE1_VERSION)
 	{
 		throw DropException(va("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION));

@@ -34,7 +34,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define TTY_HISTORY		32
+#define TTY_HISTORY     32
 
 // TYPES -------------------------------------------------------------------
 
@@ -52,31 +52,31 @@
 
 // enable/disabled tty input mode
 // NOTE TTimo this is used during startup, cannot be changed during run
-Cvar*		ttycon = NULL;
+Cvar* ttycon = NULL;
 // general flag to tell about tty console mode
-bool		ttycon_on = false;
+bool ttycon_on = false;
 // when printing general stuff to stdout stderr (Sys_Print)
 //   we need to disable the tty console stuff
 // this increments so we can recursively disable
-static int			ttycon_hide = 0;
+static int ttycon_hide = 0;
 // some key codes that the terminal may be using
 // TTimo NOTE: I'm not sure how relevant this is
-static int			tty_erase;
-static int			tty_eof;
+static int tty_erase;
+static int tty_eof;
 
-static termios		tty_tc;
+static termios tty_tc;
 
-static field_t		tty_con;
+static field_t tty_con;
 static int tty_acLength = 0;
 
 // history
 // NOTE TTimo this is a bit duplicate of the graphical console history
 //   but it's safer and faster to write our own here
-static field_t		ttyEditLines[TTY_HISTORY];
-static int			hist_current = -1;
-static int			hist_count = 0;
+static field_t ttyEditLines[TTY_HISTORY];
+static int hist_current = -1;
+static int hist_count = 0;
 
-static char			returnedText[256];
+static char returnedText[256];
 
 // CODE --------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ void Sys_ConsoleInputInit()
 {
 	termios tc;
 
-	// TTimo 
+	// TTimo
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=390
 	// ttycon 0 or 1, if the process is backgrounded (running non interactively)
 	// then SIGTTIN or SIGTOU is emitted, if not catched, turns into a SIGSTP
@@ -106,7 +106,7 @@ void Sys_ConsoleInputInit()
 		ttycon_on = false;
 		return;
 	}
-	
+
 	if (isatty(STDIN_FILENO) != 1)
 	{
 		Log::write("stdin is not a tty, tty console mode failed\n");
@@ -134,7 +134,7 @@ void Sys_ConsoleInputInit()
 	 ISIG: when any of the characters  INTR,  QUIT,  SUSP,  or
 	          DSUSP are received, generate the corresponding sig-
 	          nal
-	*/              
+	*/
 	tc.c_lflag &= ~(ECHO | ICANON);
 	/*
 	 ISTRIP strip off bit 8
@@ -184,7 +184,8 @@ void Sys_ConsoleInputShutdown()
 static void tty_FlushIn()
 {
 	char key;
-	while (read(0, &key, 1) != -1);
+	while (read(0, &key, 1) != -1)
+		;
 }
 
 //==========================================================================
@@ -248,7 +249,7 @@ void tty_Hide()
 void tty_Show()
 {
 	qassert(ttycon_on);
-	qassert(ttycon_hide>0);
+	qassert(ttycon_hide > 0);
 	ttycon_hide--;
 	if (ttycon_hide == 0)
 	{
@@ -284,7 +285,7 @@ static void Hist_Add(field_t* field)
 	{
 		hist_count++;
 	}
-	hist_current = -1; // re-init
+	hist_current = -1;	// re-init
 }
 
 //==========================================================================
@@ -365,7 +366,7 @@ char* Sys_ConsoleInput()
 			}
 			return NULL;
 		}
-		
+
 		// check if this is a control char
 		if (key && key < ' ')
 		{
@@ -475,7 +476,7 @@ char* Sys_ConsoleInput()
 
 		fd_set fdset;
 		FD_ZERO(&fdset);
-		FD_SET(0, &fdset); // stdin
+		FD_SET(0, &fdset);	// stdin
 		timeval timeout;
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 0;
@@ -496,7 +497,7 @@ char* Sys_ConsoleInput()
 		{
 			return NULL;
 		}
-		returnedText[len - 1] = 0;    // rip off the \n and terminate
+		returnedText[len - 1] = 0;		// rip off the \n and terminate
 
 		return returnedText;
 	}

@@ -45,7 +45,7 @@ void Log::write(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
@@ -57,7 +57,7 @@ void Log::writeLine(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
@@ -87,7 +87,7 @@ void Log::develWrite(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
@@ -99,7 +99,7 @@ void Log::develWriteLine(const char* format, ...)
 {
 	va_list argPtr;
 	char string[MAXPRINTMSG];
-	
+
 	va_start(argPtr, format);
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);

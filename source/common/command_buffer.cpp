@@ -20,33 +20,33 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_CMD_LINE		1024
-#define MAX_ARGS			1024
-#define MAX_CMD_BUFFER		131072
-#define MAX_ALIAS_NAME		32
-#define ALIAS_LOOP_COUNT	16
+#define MAX_CMD_LINE        1024
+#define MAX_ARGS            1024
+#define MAX_CMD_BUFFER      131072
+#define MAX_ALIAS_NAME      32
+#define ALIAS_LOOP_COUNT    16
 
 // TYPES -------------------------------------------------------------------
 
 struct QCmd
 {
-	byte*				data;
-	int					maxsize;
-	int					cursize;
+	byte* data;
+	int maxsize;
+	int cursize;
 };
 
 struct cmdalias_t
 {
-	cmdalias_t*			next;
-	char				name[MAX_ALIAS_NAME];
-	char*				value;
+	cmdalias_t* next;
+	char name[MAX_ALIAS_NAME];
+	char* value;
 };
 
 struct cmd_function_t
 {
-	cmd_function_t*		next;
-	char*				name;
-	xcommand_t			function;
+	cmd_function_t* next;
+	char* name;
+	xcommand_t function;
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -65,35 +65,35 @@ char* __CopyString(const char* in);
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-cmd_source_t			cmd_source;
+cmd_source_t cmd_source;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static cmdalias_t*		cmd_alias;
+static cmdalias_t* cmd_alias;
 
-static int				alias_count;		// for detecting runaway loops
+static int alias_count;						// for detecting runaway loops
 
-static int				cmd_wait;
+static int cmd_wait;
 
-static QCmd				cmd_text;
-static byte				cmd_text_buf[MAX_CMD_BUFFER];
+static QCmd cmd_text;
+static byte cmd_text_buf[MAX_CMD_BUFFER];
 
-static byte				defer_text_buf[MAX_CMD_BUFFER];
+static byte defer_text_buf[MAX_CMD_BUFFER];
 
-static cmd_function_t*	cmd_functions;		// possible commands to execute
+static cmd_function_t* cmd_functions;		// possible commands to execute
 
-static int				cmd_argc;
-static char*			cmd_argv[MAX_ARGS];			// points into cmd_tokenized
-static char				cmd_tokenized[8192+1024];	// will have 0 bytes inserted
-static char				cmd_cmd[8192]; // the original command we received (no token processing)
-static char				cmd_args[8192];
+static int cmd_argc;
+static char* cmd_argv[MAX_ARGS];					// points into cmd_tokenized
+static char cmd_tokenized[8192 + 1024];				// will have 0 bytes inserted
+static char cmd_cmd[8192];				// the original command we received (no token processing)
+static char cmd_args[8192];
 
 // CODE --------------------------------------------------------------------
 
 /*
 =============================================================================
 
-						COMMAND BUFFER
+                        COMMAND BUFFER
 
 =============================================================================
 */
@@ -204,7 +204,7 @@ void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 
 void Cbuf_Execute()
 {
-	char	Line[MAX_CMD_LINE];
+	char Line[MAX_CMD_LINE];
 
 	alias_count = 0;		// don't allow infinite alias loops
 
@@ -400,7 +400,7 @@ bool Cbuf_AddLateCommands(bool Insert)
 			Cbuf_AddText(Build);
 		}
 	}
-	
+
 	delete[] Text;
 	delete[] Build;
 
@@ -410,7 +410,7 @@ bool Cbuf_AddLateCommands(bool Insert)
 /*
 ==============================================================================
 
-						SCRIPT COMMANDS
+                        SCRIPT COMMANDS
 
 ==============================================================================
 */
@@ -492,8 +492,8 @@ static void Cmd_Echo_f()
 
 static void Cmd_Alias_f()
 {
-	cmdalias_t	*a;
-	char		cmd[1024];
+	cmdalias_t* a;
+	char cmd[1024];
 
 	if (Cmd_Argc() == 1)
 	{
@@ -556,7 +556,7 @@ static void Cmd_Alias_f()
 
 static void Cmd_Vstr_f()
 {
-	if (Cmd_Argc () != 2)
+	if (Cmd_Argc() != 2)
 	{
 		Log::write("vstr <variablename> : execute a variable command\n");
 		return;
@@ -606,7 +606,7 @@ static void Cmd_Exec_f()
 
 static void Cmd_List_f()
 {
-	char			*match;
+	char* match;
 
 	if (Cmd_Argc() > 1)
 	{
@@ -634,7 +634,7 @@ static void Cmd_List_f()
 /*
 =============================================================================
 
-					COMMAND EXECUTION
+                    COMMAND EXECUTION
 
 =============================================================================
 */
@@ -653,9 +653,13 @@ void Cmd_SharedInit()
 	Cmd_AddCommand("wait", Cmd_Wait_f);
 	Cmd_AddCommand("echo", Cmd_Echo_f);
 	if (GGameType & GAME_QuakeHexen)
+	{
 		Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
+	}
 	if (!(GGameType & GAME_Tech3))
+	{
 		Cmd_AddCommand("alias", Cmd_Alias_f);
+	}
 	Cmd_AddCommand("exec",Cmd_Exec_f);
 	Cmd_AddCommand("vstr", Cmd_Vstr_f);
 	Cmd_AddCommand("cmdlist", Cmd_List_f);
@@ -669,7 +673,7 @@ void Cmd_SharedInit()
 
 void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 {
-	cmd_function_t*		cmd;
+	cmd_function_t* cmd;
 
 	//	Fail if the command already exists.
 	for (cmd = cmd_functions; cmd; cmd = cmd->next)
@@ -786,7 +790,7 @@ char* Cmd_ArgsUnmodified()
 
 char* Cmd_Args()
 {
-	static	char	cmd_args[MAX_STRING_CHARS];
+	static char cmd_args[MAX_STRING_CHARS];
 
 	cmd_args[0] = 0;
 	for (int i = 1; i < cmd_argc; i++)
@@ -811,7 +815,7 @@ char* Cmd_Args()
 
 char* Cmd_ArgsFrom(int Arg)
 {
-	static char		cmd_args[BIG_INFO_STRING];
+	static char cmd_args[BIG_INFO_STRING];
 
 	cmd_args[0] = 0;
 	if (Arg < 0)
@@ -866,7 +870,7 @@ char* Cmd_Cmd()
 
 static const char* Cmd_MacroExpandString(const char* Text)
 {
-	static char		Expanded[MAX_STRING_CHARS];
+	static char Expanded[MAX_STRING_CHARS];
 
 	bool InQuote = false;
 	const char* Scan = Text;
@@ -1004,7 +1008,7 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 			}
 
 			// skip /* */ comments
-			if ((GGameType & GAME_Tech3) && Text[0] == '/' && Text[1] =='*')
+			if ((GGameType & GAME_Tech3) && Text[0] == '/' && Text[1] == '*')
 			{
 				while (*Text && (Text[0] != '*' || Text[1] != '/'))
 				{
@@ -1067,7 +1071,7 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 
 		// parse single characters
 		if ((GGameType & GAME_QuakeHexen) && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) &&
-			(*Text == '{' || *Text == '}'|| *Text == ')'|| *Text == '(' || *Text == '\'' || *Text == ':'))
+			(*Text == '{' || *Text == '}' || *Text == ')' || *Text == '(' || *Text == '\'' || *Text == ':'))
 		{
 			cmd_argv[cmd_argc] = TextOut;
 			cmd_argc++;
@@ -1100,14 +1104,14 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 				}
 
 				// skip /* */ comments
-				if (Text[0] == '/' && Text[1] =='*')
+				if (Text[0] == '/' && Text[1] == '*')
 				{
 					break;
 				}
 			}
 
 			if ((GGameType & GAME_QuakeHexen) && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) &&
-				(*Text == '{' || *Text == '}'|| *Text == ')'|| *Text == '(' || *Text == '\'' || *Text == ':'))
+				(*Text == '{' || *Text == '}' || *Text == ')' || *Text == '(' || *Text == '\'' || *Text == ':'))
 			{
 				break;
 			}
@@ -1180,7 +1184,7 @@ char* Cmd_CompleteCommand(const char* Partial)
 //
 //==========================================================================
 
-void Cmd_CommandCompletion(void(*callback)(const char* s))
+void Cmd_CommandCompletion(void (* callback)(const char* s))
 {
 	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
@@ -1267,11 +1271,11 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 //	command line completion
 //**************************************************************************
 
-static char			completionString[MAX_EDIT_LINE];
-static char			shortestMatch[MAX_EDIT_LINE];
-static int			matchCount;
+static char completionString[MAX_EDIT_LINE];
+static char shortestMatch[MAX_EDIT_LINE];
+static int matchCount;
 // field we are working on, passed to Field_CompleteCommand (&g_consoleCommand for instance)
-static field_t*		completionField;
+static field_t* completionField;
 static int matchIndex;
 static int findMatchIndex;
 
@@ -1354,7 +1358,7 @@ static void PrintMatches(const char* s)
 	}
 }
 
-static void PrintCvarMatches(const char *s)
+static void PrintCvarMatches(const char* s)
 {
 	if (!String::NICmp(s, shortestMatch, String::Length(shortestMatch)))
 	{
@@ -1429,7 +1433,7 @@ static void ConcatRemaining(const char* src, const char* start)
 
 void Field_CompleteCommand(field_t* field, int& acLength)
 {
-	field_t		temp;
+	field_t temp;
 
 	completionField = field;
 

@@ -100,7 +100,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 		if (!(GGameType & GAME_Tech3))
 		{
 			Log::writeLine("SZ_GetSpace: overflow");
-			Clear(); 
+			Clear();
 		}
 		overflowed = true;
 		return;
@@ -188,7 +188,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 
 int QMsg::ReadBits(int NumBits)
 {
-	bool		Sgn;
+	bool Sgn;
 
 	int Value = 0;
 
@@ -267,7 +267,9 @@ void QMsg::WriteChar(int C)
 {
 #ifdef PARANOID
 	if (C < MIN_QINT8 || C > MAX_QINT8)
+	{
 		throw Exception("MSG_WriteChar: range error");
+	}
 #endif
 
 	WriteBits(C, 8);
@@ -277,7 +279,9 @@ void QMsg::WriteByte(int C)
 {
 #ifdef PARANOID
 	if (C < 0 || C > MAX_QUINT8)
+	{
 		throw Exception("MSG_WriteByte: range error");
+	}
 #endif
 
 	WriteBits(C, 8);
@@ -287,7 +291,9 @@ void QMsg::WriteShort(int C)
 {
 #ifdef PARANOID
 	if (C < MIN_QINT16 || c > MAX_QINT16)
+	{
 		throw Exception("QMsg::WriteShort: range error");
+	}
 #endif
 
 	WriteBits(C, 16);
@@ -305,7 +311,7 @@ void QMsg::WriteFloat(float F)
 		float F;
 		int L;
 	} Dat;
-	
+
 	Dat.F = F;
 	WriteBits(Dat.L, 32);
 }
@@ -318,7 +324,7 @@ void QMsg::WriteString(const char* S)
 	}
 	else
 	{
-		char	string[MAX_STRING_CHARS];
+		char string[MAX_STRING_CHARS];
 
 		int L = String::Length(S);
 		if (L >= MAX_STRING_CHARS)
@@ -354,7 +360,7 @@ void QMsg::WriteString2(const char* S)
 	}
 }
 
-void QMsg::WriteBigString(const char *S)
+void QMsg::WriteBigString(const char* S)
 {
 	if (!S)
 	{
@@ -362,7 +368,7 @@ void QMsg::WriteBigString(const char *S)
 	}
 	else
 	{
-		char	string[BIG_INFO_STRING];
+		char string[BIG_INFO_STRING];
 
 		int L = String::Length(S);
 		if (L >= BIG_INFO_STRING)
@@ -512,7 +518,8 @@ const char* QMsg::ReadString()
 
 		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(string) - 1);
+	}
+	while (L < (int)sizeof(string) - 1);
 
 	string[L] = 0;
 
@@ -533,7 +540,8 @@ const char* QMsg::ReadString2()
 		}
 		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(string) - 1);
+	}
+	while (L < (int)sizeof(string) - 1);
 
 	string[L] = 0;
 
@@ -560,7 +568,8 @@ const char* QMsg::ReadBigString()
 
 		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(string) - 1);
+	}
+	while (L < (int)sizeof(string) - 1);
 
 	string[L] = 0;
 
@@ -586,7 +595,8 @@ const char* QMsg::ReadStringLine()
 		}
 		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(string) - 1);
+	}
+	while (L < (int)sizeof(string) - 1);
 
 	string[L] = 0;
 
@@ -607,7 +617,8 @@ const char* QMsg::ReadStringLine2()
 		}
 		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(string) - 1);
+	}
+	while (L < (int)sizeof(string) - 1);
 
 	string[L] = 0;
 
@@ -644,55 +655,87 @@ float QMsg::ReadAngle16()
 
 void QMsg::ReadData(void* Buffer, int Len)
 {
-	for (int i = 0; i < Len ; i++)
+	for (int i = 0; i < Len; i++)
 	{
 		((byte*)Buffer)[i] = ReadByte();
 	}
 }
 
-void MSGQW_WriteDeltaUsercmd(QMsg* buf, qwusercmd_t *from, qwusercmd_t *cmd)
+void MSGQW_WriteDeltaUsercmd(QMsg* buf, qwusercmd_t* from, qwusercmd_t* cmd)
 {
 	//
 	// send the movement message
 	//
 	int bits = 0;
 	if (cmd->angles[0] != from->angles[0])
+	{
 		bits |= QWCM_ANGLE1;
+	}
 	if (cmd->angles[1] != from->angles[1])
+	{
 		bits |= QWCM_ANGLE2;
+	}
 	if (cmd->angles[2] != from->angles[2])
+	{
 		bits |= QWCM_ANGLE3;
+	}
 	if (cmd->forwardmove != from->forwardmove)
+	{
 		bits |= QWCM_FORWARD;
+	}
 	if (cmd->sidemove != from->sidemove)
+	{
 		bits |= QWCM_SIDE;
+	}
 	if (cmd->upmove != from->upmove)
+	{
 		bits |= QWCM_UP;
+	}
 	if (cmd->buttons != from->buttons)
+	{
 		bits |= QWCM_BUTTONS;
+	}
 	if (cmd->impulse != from->impulse)
+	{
 		bits |= QWCM_IMPULSE;
+	}
 
-    buf->WriteByte(bits);
+	buf->WriteByte(bits);
 
 	if (bits & QWCM_ANGLE1)
+	{
 		buf->WriteAngle16(cmd->angles[0]);
+	}
 	if (bits & QWCM_ANGLE2)
+	{
 		buf->WriteAngle16(cmd->angles[1]);
+	}
 	if (bits & QWCM_ANGLE3)
+	{
 		buf->WriteAngle16(cmd->angles[2]);
-	
-	if (bits & QWCM_FORWARD)
-		buf->WriteShort(cmd->forwardmove);
-	if (bits & QWCM_SIDE)
-	  	buf->WriteShort(cmd->sidemove);
-	if (bits & QWCM_UP)
-		buf->WriteShort(cmd->upmove);
+	}
 
- 	if (bits & QWCM_BUTTONS)
-	  	buf->WriteByte(cmd->buttons);
- 	if (bits & QWCM_IMPULSE)
-	    buf->WriteByte(cmd->impulse);
+	if (bits & QWCM_FORWARD)
+	{
+		buf->WriteShort(cmd->forwardmove);
+	}
+	if (bits & QWCM_SIDE)
+	{
+		buf->WriteShort(cmd->sidemove);
+	}
+	if (bits & QWCM_UP)
+	{
+		buf->WriteShort(cmd->upmove);
+	}
+
+	if (bits & QWCM_BUTTONS)
+	{
+		buf->WriteByte(cmd->buttons);
+	}
+	if (bits & QWCM_IMPULSE)
+	{
+		buf->WriteByte(cmd->impulse);
+	}
 	buf->WriteByte(cmd->msec);
 }
 
@@ -701,30 +744,46 @@ void MSGQW_ReadDeltaUsercmd(QMsg* buf, qwusercmd_t* from, qwusercmd_t* move)
 	Com_Memcpy(move, from, sizeof(*move));
 
 	int bits = buf->ReadByte();
-		
+
 // read current angles
 	if (bits & QWCM_ANGLE1)
+	{
 		move->angles[0] = buf->ReadAngle16();
+	}
 	if (bits & QWCM_ANGLE2)
+	{
 		move->angles[1] = buf->ReadAngle16();
+	}
 	if (bits & QWCM_ANGLE3)
+	{
 		move->angles[2] = buf->ReadAngle16();
-		
+	}
+
 // read movement
 	if (bits & QWCM_FORWARD)
+	{
 		move->forwardmove = buf->ReadShort();
+	}
 	if (bits & QWCM_SIDE)
+	{
 		move->sidemove = buf->ReadShort();
+	}
 	if (bits & QWCM_UP)
+	{
 		move->upmove = buf->ReadShort();
-	
+	}
+
 // read buttons
 	if (bits & QWCM_BUTTONS)
-		move->buttons = buf->ReadByte ();
+	{
+		move->buttons = buf->ReadByte();
+	}
 
 	if (bits & QWCM_IMPULSE)
-		move->impulse = buf->ReadByte ();
+	{
+		move->impulse = buf->ReadByte();
+	}
 
 // read time to run command
-	move->msec = buf->ReadByte ();
+	move->msec = buf->ReadByte();
 }

@@ -33,15 +33,15 @@
 #define _SPRFILE_H
 
 //	Little-endian "IDSP"
-#define IDSPRITE1HEADER		(('P' << 24) + ('S' << 16) + ('D' << 8) + 'I')
+#define IDSPRITE1HEADER     (('P' << 24) + ('S' << 16) + ('D' << 8) + 'I')
 
-#define SPRITE1_VERSION		1
+#define SPRITE1_VERSION     1
 
-#define SPR_VP_PARALLEL_UPRIGHT		0
-#define SPR_FACING_UPRIGHT			1
-#define SPR_VP_PARALLEL				2
-#define SPR_ORIENTED				3
-#define SPR_VP_PARALLEL_ORIENTED	4
+#define SPR_VP_PARALLEL_UPRIGHT     0
+#define SPR_FACING_UPRIGHT          1
+#define SPR_VP_PARALLEL             2
+#define SPR_ORIENTED                3
+#define SPR_VP_PARALLEL_ORIENTED    4
 
 // must match definition in modelgen.h
 #ifndef SYNCTYPE_T
@@ -61,37 +61,37 @@ enum sprite1frametype_t
 
 struct dsprite1_t
 {
-	qint32		ident;
-	qint32		version;
-	qint32		type;
-	float		boundingradius;
-	qint32		width;
-	qint32		height;
-	qint32		numframes;
-	float		beamlength;
-	qint32		synctype;
+	qint32 ident;
+	qint32 version;
+	qint32 type;
+	float boundingradius;
+	qint32 width;
+	qint32 height;
+	qint32 numframes;
+	float beamlength;
+	qint32 synctype;
 };
 
 struct dsprite1frame_t
 {
-	qint32		origin[2];
-	qint32		width;
-	qint32		height;
+	qint32 origin[2];
+	qint32 width;
+	qint32 height;
 };
 
 struct dsprite1group_t
 {
-	qint32		numframes;
+	qint32 numframes;
 };
 
 struct dsprite1interval_t
 {
-	float		interval;
+	float interval;
 };
 
 struct dsprite1frametype_t
 {
-	qint32		type;
+	qint32 type;
 };
 
 #endif

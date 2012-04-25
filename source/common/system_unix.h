@@ -22,11 +22,11 @@ void Sys_ConsoleInputShutdown();
 void tty_Hide();
 void tty_Show();
 
-extern bool				stdin_active;
+extern bool stdin_active;
 
-extern unsigned long	sys_timeBase;
+extern unsigned long sys_timeBase;
 
-extern Cvar *ttycon;
-extern bool		ttycon_on;
+extern Cvar* ttycon;
+extern bool ttycon_on;
 
 #endif

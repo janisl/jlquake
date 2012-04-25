@@ -166,7 +166,7 @@ int QClipMap29::HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t
 		{
 			throw Exception("SV_HullPointContents: bad node number");
 		}
-	
+
 		cclipnode_t* node = clipnodes + NodeNum;
 		cplane_t* plane = planes + node->planenum;
 
@@ -321,7 +321,7 @@ bool QClipMap29::HeadnodeVisible(int NodeNum, byte* VisBits)
 
 byte* QClipMap29::DecompressVis(byte* in)
 {
-	static byte		decompressed[BSP29_MAX_MAP_LEAFS / 8];
+	static byte decompressed[BSP29_MAX_MAP_LEAFS / 8];
 
 	if (!in)
 	{
@@ -347,7 +347,8 @@ byte* QClipMap29::DecompressVis(byte* in)
 			*out++ = 0;
 			c--;
 		}
-	} while (out - decompressed < row);
+	}
+	while (out - decompressed < row);
 
 	return decompressed;
 }
@@ -386,7 +387,7 @@ void QClipMap29::CalcPHS()
 	byte* pvs = new byte[rowbytes * num];
 	byte* scan = pvs;
 	int vcount = 0;
-	for (int i = 0 ; i < num; i++, scan += rowbytes)
+	for (int i = 0; i < num; i++, scan += rowbytes)
 	{
 		Com_Memcpy(scan, ClusterPVS(LeafCluster(i)), rowbytes);
 		if (i == 0)

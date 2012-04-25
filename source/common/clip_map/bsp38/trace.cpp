@@ -26,7 +26,7 @@
 // MACROS ------------------------------------------------------------------
 
 // 1/32 epsilon to keep floating point happy
-#define DIST_EPSILON	(0.03125)
+#define DIST_EPSILON    (0.03125)
 
 // TYPES -------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ q2trace_t QClipMap38::BoxTraceQ2(vec3_t Start, vec3_t End,
 	//
 	if (Start[0] == End[0] && Start[1] == End[1] && Start[2] == End[2])
 	{
-		int		leafs[1024];
+		int leafs[1024];
 
 		leafList_t ll;
 
@@ -157,9 +157,9 @@ q2trace_t QClipMap38::BoxTraceQ2(vec3_t Start, vec3_t End,
 //==========================================================================
 
 q2trace_t QClipMap38::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
-											vec3_t Mins, vec3_t Maxs,
-											clipHandle_t Model, int BrushMask,
-											vec3_t Origin, vec3_t Angles)
+	vec3_t Mins, vec3_t Maxs,
+	clipHandle_t Model, int BrushMask,
+	vec3_t Origin, vec3_t Angles)
 {
 	// subtract origin offset
 	vec3_t start_l, end_l;
@@ -219,8 +219,8 @@ q2trace_t QClipMap38::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 
 void QClipMap38::RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2)
 {
-	cnode_t *node;
-	cplane_t *plane;
+	cnode_t* node;
+	cplane_t* plane;
 	float t1, t2, offset;
 	float frac, frac2;
 	float idist;
@@ -265,8 +265,8 @@ void QClipMap38::RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, ve
 		else
 		{
 			offset = fabs(trace_extents[0] * plane->normal[0]) +
-				fabs(trace_extents[1] * plane->normal[1]) +
-				fabs(trace_extents[2] * plane->normal[2]);
+					 fabs(trace_extents[1] * plane->normal[1]) +
+					 fabs(trace_extents[2] * plane->normal[2]);
 		}
 	}
 
@@ -387,14 +387,14 @@ void QClipMap38::TraceToLeaf(int leafnum)
 void QClipMap38::ClipBoxToBrush(vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2, q2trace_t* trace, cbrush_t* brush)
 {
 	int i, j;
-	cplane_t *plane, *clipplane;
+	cplane_t* plane, * clipplane;
 	float dist;
 	float enterfrac, leavefrac;
 	vec3_t ofs;
 	float d1, d2;
 	qboolean getout, startout;
 	float f;
-	cbrushside_t *side, *leadside;
+	cbrushside_t* side, * leadside;
 
 	enterfrac = -1;
 	leavefrac = 1;
@@ -557,11 +557,11 @@ void QClipMap38::TestInLeaf(int leafnum)
 void QClipMap38::TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t* trace, cbrush_t* brush)
 {
 	int i, j;
-	cplane_t *plane;
+	cplane_t* plane;
 	float dist;
 	vec3_t ofs;
 	float d1;
-	cbrushside_t *side;
+	cbrushside_t* side;
 
 	if (!brush->numsides)
 	{
@@ -615,7 +615,7 @@ void QClipMap38::TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t* 
 //
 //==========================================================================
 
-bool QClipMap38::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t * trace)
+bool QClipMap38::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
 	throw DropException("Not implemented");
 }
@@ -626,7 +626,7 @@ bool QClipMap38::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_
 //
 //==========================================================================
 
-void QClipMap38::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
+void QClipMap38::BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End,
 	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
 	throw DropException("Not implemented");
@@ -638,7 +638,7 @@ void QClipMap38::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t
 //
 //==========================================================================
 
-void QClipMap38::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
+void QClipMap38::TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start,
 	const vec3_t End, const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {

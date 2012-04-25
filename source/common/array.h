@@ -212,7 +212,7 @@ public:
 		qassert(ArrData != NULL);
 		qassert(Index >= 0);
 		qassert(Index < ArrNum);
-	
+
 		if (Index < 0 || Index >= ArrNum)
 		{
 			return false;
@@ -238,9 +238,9 @@ public:
 	}
 
 private:
-	int		ArrNum;
-	int		ArrSize;
-	T*		ArrData;
+	int ArrNum;
+	int ArrSize;
+	T* ArrData;
 };
 
 #ifdef MEM_DEBUG_NEW

@@ -18,40 +18,40 @@ typedef int clipHandle_t;
 
 struct q1plane_t
 {
-	vec3_t		normal;
-	float		dist;
+	vec3_t normal;
+	float dist;
 };
 
 struct q1trace_t
 {
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	qboolean	inopen;
-	qboolean	inwater;
-	float		fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t		endpos;			// final position
-	q1plane_t		plane;			// surface normal at impact
-	int			entityNum;			// entity the surface is on
+	qboolean allsolid;		// if true, plane is not valid
+	qboolean startsolid;	// if true, the initial point was in a solid area
+	qboolean inopen;
+	qboolean inwater;
+	float fraction;				// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;				// final position
+	q1plane_t plane;				// surface normal at impact
+	int entityNum;					// entity the surface is on
 };
 
 struct q2csurface_t
 {
-	char		name[16];
-	int			flags;
-	int			value;
+	char name[16];
+	int flags;
+	int value;
 };
 
 // a trace is returned when a box is swept through the world
 struct q2trace_t
 {
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	float		fraction;	// time completed, 1.0 = didn't hit anything
-	vec3_t		endpos;		// final position
-	cplane_t	plane;		// surface normal at impact
-	q2csurface_t	*surface;	// surface hit
-	int			contents;	// contents on other side of surface hit
-	struct edict_t	*ent;		// not set by CM_*() functions
+	qboolean allsolid;		// if true, plane is not valid
+	qboolean startsolid;	// if true, the initial point was in a solid area
+	float fraction;			// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;			// final position
+	cplane_t plane;			// surface normal at impact
+	q2csurface_t* surface;		// surface hit
+	int contents;			// contents on other side of surface hit
+	struct edict_t* ent;		// not set by CM_*() functions
 };
 
 // a trace is returned when a box is swept through the world
@@ -59,14 +59,14 @@ struct q2trace_t
 // or Q3ENTITYNUM_NONE, Q3ENTITYNUM_WORLD
 struct q3trace_t
 {
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	float		fraction;	// time completed, 1.0 = didn't hit anything
-	vec3_t		endpos;		// final position
-	cplane_t	plane;		// surface normal at impact, transformed to world space
-	int			surfaceFlags;	// surface hit
-	int			contents;	// contents on other side of surface hit
-	int			entityNum;	// entity the contacted surface is a part of
+	qboolean allsolid;		// if true, plane is not valid
+	qboolean startsolid;	// if true, the initial point was in a solid area
+	float fraction;			// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;			// final position
+	cplane_t plane;			// surface normal at impact, transformed to world space
+	int surfaceFlags;			// surface hit
+	int contents;			// contents on other side of surface hit
+	int entityNum;			// entity the contacted surface is a part of
 };
 
 void CM_LoadMap(const char* Name, bool ClientLoad, int* CheckSum);
@@ -133,9 +133,9 @@ void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, con
 void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 
-void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
-	
-extern int			c_pointcontents;
-extern int			c_traces;
-extern int			c_brush_traces;
-extern int			c_patch_traces;
+void CM_DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points));
+
+extern int c_pointcontents;
+extern int c_traces;
+extern int c_brush_traces;
+extern int c_patch_traces;

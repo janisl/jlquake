@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-int Sys_StatFile(const char *ospath);
+int Sys_StatFile(const char* ospath);
 void Sys_Mkdir(const char* path);
 int Sys_Rmdir(const char* path);
 const char* Sys_Cwd();

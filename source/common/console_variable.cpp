@@ -17,27 +17,27 @@
 
 #include "qcommon.h"
 
-#define	MAX_CVARS			2048
+#define MAX_CVARS           2048
 
-#define FILE_HASH_SIZE		512
+#define FILE_HASH_SIZE      512
 
 #define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
 
 void Cvar_Changed(Cvar* var);
 const char* Cvar_TranslateString(const char* string);
 
-Cvar*		cvar_vars;
-int			cvar_modifiedFlags;
+Cvar* cvar_vars;
+int cvar_modifiedFlags;
 
-static Cvar*		cvar_cheats;
+static Cvar* cvar_cheats;
 
-static Cvar*		cvar_indexes[MAX_CVARS];
-static int			cvar_numIndexes;
+static Cvar* cvar_indexes[MAX_CVARS];
+static int cvar_numIndexes;
 
-static Cvar*		cvar_hashTable[FILE_HASH_SIZE];
+static Cvar* cvar_hashTable[FILE_HASH_SIZE];
 
 //	Return a hash value for the filename
-static long Cvar_GenerateHashValue(const char *fname)
+static long Cvar_GenerateHashValue(const char* fname)
 {
 	if (!fname)
 	{
@@ -115,7 +115,7 @@ static char* Cvar_ClearForeignCharacters(const char* value)
 	return clean;
 }
 
-static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
+static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 {
 	Log::develWrite("Cvar_Set2: %s %s\n", var_name, value);
 
@@ -254,19 +254,19 @@ static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 	return var;
 }
 
-Cvar* Cvar_Set(const char *var_name, const char *value)
+Cvar* Cvar_Set(const char* var_name, const char* value)
 {
 	return Cvar_Set2(var_name, value, true);
 }
 
-Cvar* Cvar_SetLatched(const char *var_name, const char *value)
+Cvar* Cvar_SetLatched(const char* var_name, const char* value)
 {
 	return Cvar_Set2(var_name, value, false);
 }
 
 void Cvar_SetValue(const char* var_name, float value)
 {
-	char	val[32];
+	char val[32];
 
 	if (value == (int)value)
 	{
@@ -281,7 +281,7 @@ void Cvar_SetValue(const char* var_name, float value)
 
 void Cvar_SetValueLatched(const char* var_name, float value)
 {
-	char	val[32];
+	char val[32];
 
 	if (value == (int)value)
 	{
@@ -329,7 +329,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 			Mem_Free(var->resetString);
 			var->resetString = __CopyString(VarValue);
 
-			// ZOID--needs to be set so that cvars the game sets as 
+			// ZOID--needs to be set so that cvars the game sets as
 			// SERVERINFO get sent to clients
 			cvar_modifiedFlags |= Flags;
 		}
@@ -362,10 +362,10 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		// (for instance, seta name "name-with-foreign-chars" in the config file, and toggle to CVAR_USERINFO happens later in CL_Init)
 		if ((GGameType & (GAME_WolfMP | GAME_ET)) && (Flags & CVAR_USERINFO))
 		{
-			char *cleaned = Cvar_ClearForeignCharacters(var->string); // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
+			char* cleaned = Cvar_ClearForeignCharacters(var->string);	// NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
 			if (String::Cmp(var->string, cleaned))
 			{
-				Cvar_Set2(var->name, var->string, false); // call Cvar_Set2 with the value to be cleaned up for verbosity
+				Cvar_Set2(var->name, var->string, false);	// call Cvar_Set2 with the value to be cleaned up for verbosity
 			}
 		}
 
@@ -396,7 +396,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	//
 	if (cvar_numIndexes >= MAX_CVARS)
 	{
-		throw Exception("MAX_CVARS" );
+		throw Exception("MAX_CVARS");
 	}
 	var = new Cvar;
 	Com_Memset(var, 0, sizeof(*var));
@@ -523,7 +523,7 @@ bool Cvar_Command()
 char* Cvar_InfoString(int bit, int MaxSize, int MaxKeySize, int MaxValSize,
 	bool NoHighChars, bool LowerCaseVal)
 {
-	static char	info[BIG_INFO_STRING];
+	static char info[BIG_INFO_STRING];
 
 	info[0] = 0;
 
@@ -582,11 +582,11 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 //	updates an interpreted modules' version of a cvar
 void Cvar_Update(vmCvar_t* vmCvar)
 {
-	qassert(vmCvar); // bk
+	qassert(vmCvar);// bk
 
 	if ((unsigned)vmCvar->handle >= (unsigned)cvar_numIndexes)
 	{
-		throw DropException("Cvar_Update: handle out of range" );
+		throw DropException("Cvar_Update: handle out of range");
 	}
 
 	Cvar* cv = cvar_indexes[vmCvar->handle];
@@ -608,14 +608,14 @@ void Cvar_Update(vmCvar_t* vmCvar)
 	if (String::Length(cv->string) + 1 > MAX_CVAR_VALUE_STRING)
 	{
 		throw DropException(va("Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
-			cv->string, String::Length(cv->string)));
+				cv->string, String::Length(cv->string)));
 	}
-	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0 
+	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
 	// bk001129 - paranoia. Never trust the destination string.
-	// bk001129 - beware, sizeof(char*) is always 4 (for cv->string). 
+	// bk001129 - beware, sizeof(char*) is always 4 (for cv->string).
 	//            sizeof(vmCvar->string) always MAX_CVAR_VALUE_STRING
 	//Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); // id
-	String::NCpyZ(vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING); 
+	String::NCpyZ(vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING);
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;
@@ -651,7 +651,7 @@ const char* Cvar_CompleteVariable(const char* partial)
 	return NULL;
 }
 
-void Cvar_CommandCompletion(void(*callback)(const char* s))
+void Cvar_CommandCompletion(void (* callback)(const char* s))
 {
 	for (Cvar* cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
@@ -667,7 +667,7 @@ void Cvar_SetCheatState()
 	{
 		if (var->flags & CVAR_CHEAT)
 		{
-			// the CVAR_LATCHED|CVAR_CHEAT vars might escape the reset here 
+			// the CVAR_LATCHED|CVAR_CHEAT vars might escape the reset here
 			// because of a different var->latchedString
 			if (var->latchedString)
 			{
@@ -781,7 +781,7 @@ static void Cvar_Set_f()
 	}
 
 	String combined;
-	for (int i = 2; i < c ; i++)
+	for (int i = 2; i < c; i++)
 	{
 		combined += Cmd_Argv(i);
 		if (i != c - 1)
@@ -799,7 +799,7 @@ static void Cvar_SetU_f()
 	{
 		if (GGameType & GAME_ET)
 		{
-			common->Printf("usage: setu <variable> <value> [unsafe]\n" );
+			common->Printf("usage: setu <variable> <value> [unsafe]\n");
 		}
 		else
 		{
@@ -876,7 +876,7 @@ static void Cvar_Reset_f()
 
 static void Cvar_List_f()
 {
-	const char*		match;
+	const char* match;
 
 	if (Cmd_Argc() > 1)
 	{
@@ -1025,7 +1025,7 @@ void Cvar_Init()
 	}
 
 	Cmd_AddCommand("toggle", Cvar_Toggle_f);
-	Cmd_AddCommand("cycle", Cvar_Cycle_f);  // ydnar
+	Cmd_AddCommand("cycle", Cvar_Cycle_f);	// ydnar
 	Cmd_AddCommand("set", Cvar_Set_f);
 	Cmd_AddCommand("sets", Cvar_SetS_f);
 	Cmd_AddCommand("setu", Cvar_SetU_f);
@@ -1045,7 +1045,7 @@ void Cvar_Init()
 // archive flag set to true.
 void Cvar_WriteVariables(fileHandle_t f)
 {
-	char	buffer[1024];
+	char buffer[1024];
 
 	for (Cvar* var = cvar_vars; var; var = var->next)
 	{
@@ -1085,7 +1085,7 @@ void Cvar_WriteVariables(fileHandle_t f)
 
 void Cvar_UpdateIfExists(const char* name, const char* value)
 {
-	// if this is a cvar, change it too	
+	// if this is a cvar, change it too
 	Cvar* var = Cvar_FindVar(name);
 	if (var)
 	{

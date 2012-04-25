@@ -21,7 +21,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	MAX_POINTS_ON_WINDING	64
+#define MAX_POINTS_ON_WINDING   64
 
 // TYPES -------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ static winding_t* AllocWinding(int points)
 {
 	int s = sizeof(vec_t) * 3 * points + sizeof(int);
 	winding_t* w = (winding_t*)Mem_Alloc(s);
-	Com_Memset(w, 0, s); 
+	Com_Memset(w, 0, s);
 	return w;
 }
 
@@ -61,11 +61,11 @@ static winding_t* AllocWinding(int points)
 
 void CM46_FreeWinding(winding_t* w)
 {
-	if (*(unsigned *)w == 0xdeaddead)
+	if (*(unsigned*)w == 0xdeaddead)
 	{
 		throw Exception("FreeWinding: freed a freed winding");
 	}
-	*(unsigned *)w = 0xdeaddead;
+	*(unsigned*)w = 0xdeaddead;
 
 	Mem_Free(w);
 }
@@ -105,7 +105,7 @@ winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist)
 			max = v;
 		}
 	}
-	if (x==-1)
+	if (x == -1)
 	{
 		throw DropException("BaseWindingForPlane: no axis found");
 	}
@@ -117,10 +117,10 @@ winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist)
 	case 0:
 	case 1:
 		vup[2] = 1;
-		break;		
+		break;
 	case 2:
 		vup[0] = 1;
-		break;		
+		break;
 	}
 
 	vec_t v = DotProduct(vup, normal);
@@ -153,7 +153,7 @@ winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist)
 
 	w->numpoints = 4;
 
-	return w;	
+	return w;
 }
 
 //==========================================================================
@@ -219,21 +219,21 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 			f->numpoints++;
 			continue;
 		}
-	
+
 		if (sides[i] == SIDE_FRONT)
 		{
 			VectorCopy(p1, f->p[f->numpoints]);
 			f->numpoints++;
 		}
 
-		if (sides[i+1] == SIDE_ON || sides[i+1] == sides[i])
+		if (sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i])
 		{
 			continue;
 		}
 
 		// generate a split point
 		vec_t* p2 = in->p[(i + 1) % in->numpoints];
-		
+
 		vec_t dot = dists[i] / (dists[i] - dists[i + 1]);
 		vec3_t mid;
 		for (int j = 0; j < 3; j++)
@@ -256,7 +256,7 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 		VectorCopy(mid, f->p[f->numpoints]);
 		f->numpoints++;
 	}
-	
+
 	if (f->numpoints > maxpts)
 	{
 		throw DropException("ClipWinding: points exceeded estimate");

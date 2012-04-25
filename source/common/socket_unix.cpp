@@ -44,9 +44,9 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static bool		usingSocks = false;
-static int		socks_socket;
-static sockaddr	socksRelayAddr;
+static bool usingSocks = false;
+static int socks_socket;
+static sockaddr socksRelayAddr;
 
 // CODE --------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ bool SOCK_GetAddressByName(const char* s, netadr_t* a)
 	{
 		return false;
 	}
-	
+
 	SockadrToNetadr(&sadr, a);
 
 	return true;
@@ -297,7 +297,7 @@ void SOCK_OpenSocks(int port)
 	{
 	case 0:	// no authentication
 		break;
-	case 2: // username/password authentication
+	case 2:	// username/password authentication
 		break;
 	default:
 		Log::write("SOCK_OpenSocks: request denied\n");
@@ -501,7 +501,7 @@ void SOCK_Close(int Socket)
 
 int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 {
-	sockaddr_in	addr;
+	sockaddr_in addr;
 	socklen_t addrlen = sizeof(addr);
 	int ret;
 	Array<quint8> SocksBuf;
@@ -644,11 +644,11 @@ bool SOCK_Sleep(int socket, int msec)
 	FD_ZERO(&fdset);
 	if (stdin_active)
 	{
-		FD_SET(0, &fdset); // stdin is processed too
+		FD_SET(0, &fdset);	// stdin is processed too
 	}
-	FD_SET(socket, &fdset); // network socket
+	FD_SET(socket, &fdset);	// network socket
 
-    timeval timeout;
+	timeval timeout;
 	timeout.tv_sec = msec / 1000;
 	timeout.tv_usec = (msec % 1000) * 1000;
 

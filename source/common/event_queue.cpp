@@ -34,9 +34,9 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-sysEvent_t		eventQue[MAX_QUED_EVENTS];
-int				eventHead;
-int				eventTail;
+sysEvent_t eventQue[MAX_QUED_EVENTS];
+int eventHead;
+int eventTail;
 
 // CODE --------------------------------------------------------------------
 
@@ -50,9 +50,9 @@ int				eventTail;
 //
 //==========================================================================
 
-void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr)
+void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr)
 {
-	sysEvent_t  *ev;
+	sysEvent_t* ev;
 
 	ev = &eventQue[eventHead & MASK_QUED_EVENTS];
 	if (eventHead - eventTail >= MAX_QUED_EVENTS)
@@ -98,7 +98,7 @@ sysEvent_t Sys_SharedGetEvent()
 
 	// create an empty event to return
 
-	sysEvent_t  ev;
+	sysEvent_t ev;
 	Com_Memset(&ev, 0, sizeof(ev));
 	//	Windows uses timeGetTime();
 	ev.evTime = Sys_Milliseconds();

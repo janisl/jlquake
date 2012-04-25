@@ -37,12 +37,12 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static bool		winsockInitialized = false;
-static WSADATA	winsockdata;
+static bool winsockInitialized = false;
+static WSADATA winsockdata;
 
-static bool		usingSocks = false;
-static SOCKET	socks_socket;
-static sockaddr	socksRelayAddr;
+static bool usingSocks = false;
+static SOCKET socks_socket;
+static sockaddr socksRelayAddr;
 
 // CODE --------------------------------------------------------------------
 
@@ -345,7 +345,7 @@ void SOCK_OpenSocks(int port)
 	{
 	case 0:	// no authentication
 		break;
-	case 2: // username/password authentication
+	case 2:	// username/password authentication
 		break;
 	default:
 		Log::write("SOCK_OpenSocks: request denied\n");
@@ -411,7 +411,7 @@ void SOCK_OpenSocks(int port)
 	}
 
 	// get the response
-	len = recv( socks_socket, (char*)buf, 64, 0 );
+	len = recv(socks_socket, (char*)buf, 64, 0);
 	if (len == SOCKET_ERROR)
 	{
 		Log::write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
@@ -503,7 +503,7 @@ int SOCK_Open(const char* net_interface, int port)
 		return 0;
 	}
 
-	sockaddr_in	address;
+	sockaddr_in address;
 	if (!net_interface || !net_interface[0] || !String::ICmp(net_interface, "localhost"))
 	{
 		address.sin_addr.s_addr = INADDR_ANY;
@@ -688,11 +688,11 @@ bool SOCK_Sleep(int socket, int msec)
 	int i = 0;
 	if (socket)
 	{
-		FD_SET(socket, &fdset); // network socket
+		FD_SET(socket, &fdset);	// network socket
 		i = socket;
 	}
 
-    timeval timeout;
+	timeval timeout;
 	timeout.tv_sec = msec / 1000;
 	timeout.tv_usec = (msec % 1000) * 1000;
 
@@ -711,7 +711,7 @@ bool SOCK_GetAddr(int Socket, netadr_t* Address)
 	int addrlen = sizeof(sadr);
 
 	Com_Memset(&sadr, 0, sizeof(sadr));
-	if (getsockname(Socket, (struct sockaddr *)&sadr, &addrlen) == -1)
+	if (getsockname(Socket, (struct sockaddr*)&sadr, &addrlen) == -1)
 	{
 		Log::write("WARNING: SOCK_GetAddr: getsockname: ", SOCK_ErrorString());
 		return false;

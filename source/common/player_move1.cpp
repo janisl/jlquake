@@ -82,7 +82,7 @@ q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t end)
 			vec3_t mins, maxs;
 			if ((GGameType & GAME_Hexen2) && qh_pmove.crouched)
 			{
-				VectorSubtract (pe->mins, pmqh_player_maxs_crouch, mins);
+				VectorSubtract(pe->mins, pmqh_player_maxs_crouch, mins);
 			}
 			else
 			{
@@ -231,7 +231,7 @@ bool PMQH_TestPlayerPosition(const vec3_t pos)
 static int PMQH_FlyMove()
 {
 	int numbumps = 4;
-	
+
 	int blocked = 0;
 	vec3_t primal_velocity, original_velocity;
 	VectorCopy(qh_pmove.velocity, original_velocity);
@@ -250,7 +250,7 @@ static int PMQH_FlyMove()
 			end[i] = qh_pmove.origin[i] + time_left * qh_pmove.velocity[i];
 		}
 
-		q1trace_t trace = PMQH_TestPlayerMove (qh_pmove.origin, end);
+		q1trace_t trace = PMQH_TestPlayerMove(qh_pmove.origin, end);
 
 		if (trace.startsolid || trace.allsolid)
 		{
@@ -268,7 +268,7 @@ static int PMQH_FlyMove()
 
 		if (trace.fraction == 1)
 		{
-			 break;		// moved the entire distance
+			break;		// moved the entire distance
 		}
 
 		// save entity for contact
@@ -320,7 +320,7 @@ static int PMQH_FlyMove()
 				break;
 			}
 		}
-		
+
 		if (i != numplanes)
 		{	// go along this plane
 		}
@@ -350,7 +350,7 @@ static int PMQH_FlyMove()
 
 	if (qh_pmove.waterjumptime)
 	{
-		VectorCopy (primal_velocity, qh_pmove.velocity);
+		VectorCopy(primal_velocity, qh_pmove.velocity);
 	}
 	return blocked;
 }
@@ -364,10 +364,10 @@ static void PMQH_GroundMove()
 		return;
 	}
 
-	// first try just moving to the destination	
+	// first try just moving to the destination
 	vec3_t dest;
 	dest[0] = qh_pmove.origin[0] + qh_pmove.velocity[0] * qh_pml.frametime;
-	dest[1] = qh_pmove.origin[1] + qh_pmove.velocity[1] * qh_pml.frametime;	
+	dest[1] = qh_pmove.origin[1] + qh_pmove.velocity[1] * qh_pml.frametime;
 	dest[2] = qh_pmove.origin[2];
 
 	// first try moving directly to the next spot
@@ -428,9 +428,9 @@ static void PMQH_GroundMove()
 
 		// decide which one went farther
 		float downdist = (down[0] - original[0]) * (down[0] - original[0]) +
-			(down[1] - original[1]) * (down[1] - original[1]);
-		float updist = (up[0] - original[0])*(up[0] - original[0]) +
-			(up[1] - original[1]) * (up[1] - original[1]);
+						 (down[1] - original[1]) * (down[1] - original[1]);
+		float updist = (up[0] - original[0]) * (up[0] - original[0]) +
+					   (up[1] - original[1]) * (up[1] - original[1]);
 		usedown = downdist > updist;
 	}
 
@@ -439,7 +439,7 @@ static void PMQH_GroundMove()
 		VectorCopy(down, qh_pmove.origin);
 		VectorCopy(downvel, qh_pmove.velocity);
 	}
-	else // copy z value from slide move
+	else// copy z value from slide move
 	{
 		qh_pmove.velocity[2] = downvel[2];
 	}
@@ -456,8 +456,8 @@ static void PMQH_Friction()
 	}
 
 	float* vel = qh_pmove.velocity;
-	
-	float speed = sqrt(vel[0] * vel[0] +vel[1] * vel[1] + vel[2] * vel[2]);
+
+	float speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
 	if (speed < 1)
 	{
 		vel[0] = 0;
@@ -488,11 +488,11 @@ static void PMQH_Friction()
 
 	if (GGameType & GAME_Quake)
 	{
-		if (qh_pmove.waterlevel >= 2) // apply water friction
+		if (qh_pmove.waterlevel >= 2)	// apply water friction
 		{
 			drop += speed * movevars.waterfriction * qh_pmove.waterlevel * qh_pml.frametime;
 		}
-		else if (qh_pmove.onground != -1) // apply ground friction
+		else if (qh_pmove.onground != -1)	// apply ground friction
 		{
 			float control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
 			drop += control * friction * qh_pml.frametime;
@@ -551,7 +551,7 @@ static void PMQH_Accelerate(const vec3_t wishdir, float wishspeed, float accel)
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		qh_pmove.velocity[i] += accelspeed * wishdir[i];	
+		qh_pmove.velocity[i] += accelspeed * wishdir[i];
 	}
 }
 
@@ -626,7 +626,7 @@ static void PMQH_WaterMove()
 				smove = maxspeed;
 			}
 		}
-		
+
 		if (qh_pmove.crouched)
 		{
 			fmove = fmove / 600 * movevars.maxspeed;
@@ -697,7 +697,7 @@ static void PMQH_WaterMove()
 		VectorCopy(trace.endpos, qh_pmove.origin);
 		return;
 	}
-	
+
 	PMQH_FlyMove();
 }
 
@@ -745,7 +745,7 @@ static void PMQH_AirMove()
 				smove = maxspeed;
 			}
 		}
-		
+
 		fmove = fmove / 400 * maxspeed;
 		smove = smove / 400 * maxspeed;
 	}
@@ -774,7 +774,7 @@ static void PMQH_AirMove()
 		VectorScale(wishvel, maxspeed / wishspeed, wishvel);
 		wishspeed = maxspeed;
 	}
-	
+
 	if (qh_pmove.onground != -1)
 	{
 		qh_pmove.velocity[2] = 0;
@@ -848,7 +848,7 @@ static void PMHW_FlyingMove()
 			umove = clamp;
 		}
 	}
-	
+
 	fmove = fmove / 400 * movevars.maxspeed;
 	smove = smove / 400 * movevars.maxspeed;
 	umove = umove / 400 * movevars.maxspeed;
@@ -876,7 +876,7 @@ static void PMQH_CatagorizePosition()
 	// if the player hull point one unit down is solid, the player
 	// is on ground
 
-	// see if standing on something solid	
+	// see if standing on something solid
 	vec3_t point;
 	point[0] = qh_pmove.origin[0];
 	point[1] = qh_pmove.origin[1];
@@ -1011,26 +1011,28 @@ static void PMQH_JumpButton()
 
 static void PMQH_CheckWaterJump()
 {
-	vec3_t	spot;
-	int		cont;
-	vec3_t	flatforward;
+	vec3_t spot;
+	int cont;
+	vec3_t flatforward;
 
 	if (qh_pmove.waterjumptime)
+	{
 		return;
+	}
 
 	// ZOID, don't hop out if we just jumped in
 	if (qh_pmove.velocity[2] < -180)
 	{
-		return; // only hop out if we are moving up
+		return;	// only hop out if we are moving up
 	}
 
 	// see if near an edge
 	flatforward[0] = qh_pml.forward[0];
 	flatforward[1] = qh_pml.forward[1];
 	flatforward[2] = 0;
-	VectorNormalize (flatforward);
+	VectorNormalize(flatforward);
 
-	VectorMA (qh_pmove.origin, 24, flatforward, spot);
+	VectorMA(qh_pmove.origin, 24, flatforward, spot);
 	if (GGameType & GAME_Quake)
 	{
 		spot[2] += 8;
@@ -1053,12 +1055,12 @@ static void PMQH_CheckWaterJump()
 	// jump out of water
 	if (GGameType & GAME_Quake)
 	{
-		VectorScale (flatforward, 50, qh_pmove.velocity);
+		VectorScale(flatforward, 50, qh_pmove.velocity);
 		qh_pmove.velocity[2] = 310;
 	}
 	else
 	{
-		VectorScale (qh_pml.forward, 200, qh_pmove.velocity);
+		VectorScale(qh_pml.forward, 200, qh_pmove.velocity);
 		qh_pmove.velocity[2] = 275;
 	}
 	qh_pmove.waterjumptime = 2;	// safety net
@@ -1101,7 +1103,7 @@ static void PMQH_SpectatorMove()
 	float speed = VectorLength(qh_pmove.velocity);
 	if (speed < 1)
 	{
-		VectorCopy (vec3_origin, qh_pmove.velocity);
+		VectorCopy(vec3_origin, qh_pmove.velocity);
 	}
 	else
 	{
@@ -1109,7 +1111,7 @@ static void PMQH_SpectatorMove()
 
 		float friction = movevars.friction * 1.5;	// extra friction
 		float control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
-		drop += control*friction*qh_pml.frametime;
+		drop += control * friction * qh_pml.frametime;
 
 		// scale the velocity
 		float newspeed = speed - drop;
@@ -1125,7 +1127,7 @@ static void PMQH_SpectatorMove()
 	// accelerate
 	float fmove = qh_pmove.cmd.forwardmove;
 	float smove = qh_pmove.cmd.sidemove;
-	
+
 	VectorNormalize(qh_pml.forward);
 	VectorNormalize(qh_pml.right);
 
@@ -1160,7 +1162,7 @@ static void PMQH_SpectatorMove()
 	{
 		accelspeed = addspeed;
 	}
-	
+
 	for (int i = 0; i < 3; i++)
 	{
 		qh_pmove.velocity[i] += accelspeed * wishdir[i];
@@ -1184,7 +1186,7 @@ void PMQH_PlayerMove()
 		qh_pmove.cmd.buttons = 0;
 		return;
 	}
-	
+
 	AngleVectors(qh_pmove.angles, qh_pml.forward, qh_pml.right, qh_pml.up);
 
 	if (qh_pmove.spectator)
