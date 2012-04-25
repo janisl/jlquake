@@ -9,7 +9,6 @@ add_subdirectory(botlib)
 
 # splines
 add_library(splines-wolfsp STATIC
-	splines/q_parse.cpp
 	splines/splines.cpp
 )
 

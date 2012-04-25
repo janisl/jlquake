@@ -90,6 +90,7 @@ set(CLIENT_FILES
 	sound/main.cpp
 	sound/memory.cpp
 	sound/mix.cpp
+	splines/q_parse.cpp
 	splines/util_str.cpp
 	ui/console.cpp
 	ui/draw.cpp

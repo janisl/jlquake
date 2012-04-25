@@ -1,68 +1,44 @@
-/*
-===========================================================================
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
-Return to Castle Wolfenstein multiplayer GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+#include "../../common/qcommon.h"
+#include "q_parse.h"
 
-This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).
+#define MAX_PARSE_INFO  16
 
-RTCW MP Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-RTCW MP Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with RTCW MP Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the RTCW MP Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the RTCW MP Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
-*/
-
-// q_parse.c -- support for parsing text files
-
-#include "q_splineshared.h"	//DAJ
-
-/*
-============================================================================
-
-PARSING
-
-============================================================================
-*/
-
-// multiple character punctuation tokens
-static const char* punctuation[] = {
-	"+=", "-=",  "*=",  "/=", "&=", "|=", "++", "--",
-	"&&", "||",  "<=",  ">=", "==", "!=",
-	NULL
-};
-
-typedef struct
+struct parseInfo_t
 {
 	char token[MAX_TOKEN_CHARS_Q3];
 	int lines;
 	qboolean ungetToken;
 	char parseFile[MAX_QPATH];
-} parseInfo_t;
+};
 
-#define MAX_PARSE_INFO  16
 static parseInfo_t parseInfo[MAX_PARSE_INFO];
 static int parseInfoNum;
 static parseInfo_t* pi = &parseInfo[0];
 
-/*
-===================
-Com_BeginParseSession
-===================
-*/
+// multiple character punctuation tokens
+static const char* punctuation[] =
+{
+	"+=", "-=",  "*=",  "/=", "&=", "|=", "++", "--",
+	"&&", "||",  "<=",  ">=", "==", "!=",
+	NULL
+};
+
 void Com_BeginParseSession(const char* filename)
 {
 	if (parseInfoNum == MAX_PARSE_INFO - 1)
@@ -76,12 +52,7 @@ void Com_BeginParseSession(const char* filename)
 	String::NCpyZ(pi->parseFile, filename, sizeof(pi->parseFile));
 }
 
-/*
-===================
-Com_EndParseSession
-===================
-*/
-void Com_EndParseSession(void)
+void Com_EndParseSession()
 {
 	if (parseInfoNum == 0)
 	{
@@ -92,11 +63,7 @@ void Com_EndParseSession(void)
 }
 
 /*
-===================
-Com_ScriptError
-
 Prints the script name and line number in the message
-===================
 */
 void Com_ScriptError(const char* msg, ...)
 {
@@ -124,14 +91,10 @@ void Com_ScriptWarning(const char* msg, ...)
 
 
 /*
-===================
-Com_UngetToken
-
 Calling this will make the next Com_Parse return
 the current token instead of advancing the pointer
-===================
 */
-void Com_UngetToken(void)
+void Com_UngetToken()
 {
 	if (pi->ungetToken)
 	{
@@ -141,10 +104,9 @@ void Com_UngetToken(void)
 }
 
 
-static const char* SkipWhitespace(const char(*data), qboolean* hasNewLines)
+static const char* SkipWhitespace(const char* data, bool* hasNewLines)
 {
 	int c;
-
 	while ((c = *data) <= ' ')
 	{
 		if (!c)
@@ -163,9 +125,6 @@ static const char* SkipWhitespace(const char(*data), qboolean* hasNewLines)
 }
 
 /*
-==============
-Com_ParseExt
-
 Parse a token out of a string
 Will never return NULL, just empty strings.
 An empty string will only be returned at end of file.
@@ -173,22 +132,16 @@ An empty string will only be returned at end of file.
 If "allowLineBreaks" is qtrue then an empty
 string will be returned if the next token is
 a newline.
-==============
 */
-static char* Com_ParseExt(const char*(*data_p), qboolean allowLineBreaks)
+static char* Com_ParseExt(const char** data_p, bool allowLineBreaks)
 {
-	int c = 0, len;
-	qboolean hasNewLines = false;
-	const char* data;
-	const char** punc;
-
 	if (!data_p)
 	{
 		common->FatalError("Com_ParseExt: NULL data_p");
 	}
 
-	data = *data_p;
-	len = 0;
+	const char* data = *data_p;
+	int len = 0;
 	pi->token[0] = 0;
 
 	// make sure incoming data is valid
@@ -198,6 +151,8 @@ static char* Com_ParseExt(const char*(*data_p), qboolean allowLineBreaks)
 		return pi->token;
 	}
 
+	int c = 0;
+	bool hasNewLines = false;
 	// skip any leading whitespace
 	while (1)
 	{
@@ -373,7 +328,7 @@ static char* Com_ParseExt(const char*(*data_p), qboolean allowLineBreaks)
 	}
 
 	// check for multi-character punctuation token
-	for (punc = punctuation; *punc; punc++)
+	for (const char** punc = punctuation; *punc; punc++)
 	{
 		int l;
 		int j;
@@ -406,12 +361,7 @@ static char* Com_ParseExt(const char*(*data_p), qboolean allowLineBreaks)
 	return pi->token;
 }
 
-/*
-===================
-Com_Parse
-===================
-*/
-const char* Com_Parse(const char*(*data_p))
+const char* Com_Parse(const char** data_p)
 {
 	if (pi->ungetToken)
 	{
@@ -421,12 +371,7 @@ const char* Com_Parse(const char*(*data_p))
 	return Com_ParseExt(data_p, true);
 }
 
-/*
-===================
-Com_ParseOnLine
-===================
-*/
-const char* Com_ParseOnLine(const char*(*data_p))
+const char* Com_ParseOnLine(const char** data_p)
 {
 	if (pi->ungetToken)
 	{
@@ -436,18 +381,9 @@ const char* Com_ParseOnLine(const char*(*data_p))
 	return Com_ParseExt(data_p, false);
 }
 
-
-
-/*
-==================
-Com_MatchToken
-==================
-*/
-void Com_MatchToken(const char*(*buf_p), const char* match, qboolean warning)
+void Com_MatchToken(const char** buf_p, const char* match, bool warning)
 {
-	const char* token;
-
-	token = Com_Parse(buf_p);
+	const char* token = Com_Parse(buf_p);
 	if (String::Cmp(token, match))
 	{
 		if (warning)
@@ -461,11 +397,9 @@ void Com_MatchToken(const char*(*buf_p), const char* match, qboolean warning)
 	}
 }
 
-float Com_ParseFloat(const char*(*buf_p))
+float Com_ParseFloat(const char** buf_p)
 {
-	const char* token;
-
-	token = Com_Parse(buf_p);
+	const char* token = Com_Parse(buf_p);
 	if (!token[0])
 	{
 		return 0;
@@ -473,59 +407,14 @@ float Com_ParseFloat(const char*(*buf_p))
 	return String::Atof(token);
 }
 
-int Com_ParseInt(const char*(*buf_p))
+void Com_Parse1DMatrix(const char** buf_p, int x, float* m)
 {
-	const char* token;
-
-	token = Com_Parse(buf_p);
-	if (!token[0])
-	{
-		return 0;
-	}
-	return (int)String::Atof(token);
-}
-
-
-
-void Com_Parse1DMatrix(const char*(*buf_p), int x, float* m)
-{
-	const char* token;
-	int i;
-
 	Com_MatchToken(buf_p, "(");
 
-	for (i = 0; i < x; i++)
+	for (int i = 0; i < x; i++)
 	{
-		token = Com_Parse(buf_p);
+		const char* token = Com_Parse(buf_p);
 		m[i] = String::Atof(token);
-	}
-
-	Com_MatchToken(buf_p, ")");
-}
-
-void Com_Parse2DMatrix(const char*(*buf_p), int y, int x, float* m)
-{
-	int i;
-
-	Com_MatchToken(buf_p, "(");
-
-	for (i = 0; i < y; i++)
-	{
-		Com_Parse1DMatrix(buf_p, x, m + i * x);
-	}
-
-	Com_MatchToken(buf_p, ")");
-}
-
-void Com_Parse3DMatrix(const char*(*buf_p), int z, int y, int x, float* m)
-{
-	int i;
-
-	Com_MatchToken(buf_p, "(");
-
-	for (i = 0; i < z; i++)
-	{
-		Com_Parse2DMatrix(buf_p, y, x, m + i * x * y);
 	}
 
 	Com_MatchToken(buf_p, ")");

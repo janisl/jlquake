@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "q_splineshared.h"
+#include "../../common/qcommon.h"
+#include "../../client/splines/q_parse.h"
 #include "splines.h"
 
 // TTimo

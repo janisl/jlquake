@@ -30,7 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 //#include "stdafx.h"
 //#include "qe3.h"
 
-#include "q_splineshared.h"	//DAJ was q_shared.h conflicted with qcommon
+#include "../../common/qcommon.h"
+#include "../../client/splines/q_parse.h"
 #include "splines.h"
 
 // TTimo
