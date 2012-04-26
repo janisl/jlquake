@@ -72,8 +72,6 @@ extern Cvar* cl_timeNudge;
 extern Cvar* cl_showTimeDelta;
 extern Cvar* cl_freezeDemo;
 
-extern Cvar* cl_recoilPitch;		// RF
-
 extern Cvar* cl_timedemo;
 
 extern Cvar* cl_activeAction;

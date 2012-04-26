@@ -73,8 +73,6 @@ void IN_CenterViewWMP()
 
 //==========================================================================
 
-Cvar* cl_recoilPitch;
-
 /*
 =================
 CL_MouseEvent
@@ -151,7 +149,6 @@ etusercmd_t CL_CreateCmd(void)
 {
 	etusercmd_t cmd;
 	vec3_t oldAngles;
-	float recoilAdd;
 
 	VectorCopy(cl.viewangles, oldAngles);
 
@@ -166,15 +163,6 @@ etusercmd_t CL_CreateCmd(void)
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
 	cmd.doubleTap = inCmd.doubleTap;
-
-	// RF, set the kickAngles so aiming is effected
-	recoilAdd = cl_recoilPitch->value;
-	if (Q_fabs(cl.viewangles[PITCH] + recoilAdd) < 40)
-	{
-		cl.viewangles[PITCH] += recoilAdd;
-	}
-	// the recoilPitch has been used, so clear it out
-	cl_recoilPitch->value = 0;
 
 	// store out the final values
 	CL_FinishMove(&cmd);

@@ -75,8 +75,6 @@ void IN_CenterViewWMP()
 
 //==========================================================================
 
-Cvar* cl_recoilPitch;
-
 /*
 =================
 CL_MouseEvent
@@ -133,7 +131,6 @@ wsusercmd_t CL_CreateCmd(void)
 {
 	wsusercmd_t cmd;
 	vec3_t oldAngles;
-	float recoilAdd;
 
 	VectorCopy(cl.viewangles, oldAngles);
 
@@ -155,15 +152,6 @@ wsusercmd_t CL_CreateCmd(void)
 		// done
 
 	}
-
-	// RF, set the kickAngles so aiming is effected
-	recoilAdd = cl_recoilPitch->value;
-	if (fabs(cl.viewangles[PITCH] + recoilAdd) < 40)
-	{
-		cl.viewangles[PITCH] += recoilAdd;
-	}
-	// the recoilPitch has been used, so clear it out
-	cl_recoilPitch->value = 0;
 
 	// store out the final values
 	CL_FinishMove(&cmd);

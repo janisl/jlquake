@@ -68,6 +68,7 @@ Cvar* v_centerspeed;
 Cvar* lookspring;
 Cvar* cl_bypassMouseInput;
 static Cvar* cl_doubletapdelay;
+static Cvar* cl_recoilPitch;
 
 int in_impulse;
 
@@ -1044,6 +1045,23 @@ static void CL_Kick(in_usercmd_t* cmd)
 	cmd->kick = CL_KeyState(&in_kick);
 }
 
+static void CL_RecoilPitch()
+{
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+	{
+		return;
+	}
+
+	// RF, set the kickAngles so aiming is effected
+	float recoilAdd = cl_recoilPitch->value;
+	if (Q_fabs(cl.viewangles[PITCH] + recoilAdd) < 40)
+	{
+		cl.viewangles[PITCH] += recoilAdd;
+	}
+	// the recoilPitch has been used, so clear it out
+	cl_recoilPitch->value = 0;
+}
+
 in_usercmd_t CL_CreateCmdCommon()
 {
 	vec3_t oldAngles;
@@ -1074,6 +1092,8 @@ in_usercmd_t CL_CreateCmdCommon()
 	CL_DoubleTap(&cmd);
 
 	CL_Kick(&cmd);
+
+	CL_RecoilPitch();
 
 	return cmd;
 }
@@ -1260,6 +1280,10 @@ void CL_InitInputCommon()
 		cl_run = Cvar_Get("cl_run", "1", CVAR_ARCHIVE);
 		m_forward = Cvar_Get("m_forward", "0.25", CVAR_ARCHIVE);
 		m_side = Cvar_Get("m_side", "0.25", CVAR_ARCHIVE);
+	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		cl_recoilPitch = Cvar_Get("cg_recoilPitch", "0", CVAR_ROM);
 	}
 	if (GGameType & (GAME_WolfMP | GAME_ET))
 	{
