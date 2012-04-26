@@ -68,10 +68,9 @@ void Cam_CheckHighTarget(void);
 void Cam_FinishMove(qwusercmd_t* cmd)
 {
 	int i;
-	q1player_info_t* s;
 	int end;
 
-	if (cls.state != CA_ACTIVE)
+	if (cls.state != CA_ACTIVE || (GGameType & GAME_HexenWorld && clqh_server_version < 1.57))
 	{
 		return;
 	}
@@ -135,7 +134,7 @@ void Cam_FinishMove(qwusercmd_t* cmd)
 
 	if (locked && autocam)
 	{
-		end = (spec_track + 1) % MAX_CLIENTS_QW;
+		end = (spec_track + 1) % (GGameType & GAME_HexenWorld ? HWMAX_CLIENTS : MAX_CLIENTS_QW);
 	}
 	else
 	{
@@ -144,35 +143,47 @@ void Cam_FinishMove(qwusercmd_t* cmd)
 	i = end;
 	do
 	{
-		s = &cl.q1_players[i];
+		if (GGameType & GAME_HexenWorld)
+		{
+			h2player_info_t* s = &cl.h2_players[i];
+			if (s->name[0] && !s->spectator)
+			{
+				Cam_Lock(i);
+				return;
+			}
+		}
+		else
+		{
+			q1player_info_t* s = &cl.q1_players[i];
+			if (s->name[0] && !s->spectator)
+			{
+				Cam_Lock(i);
+				return;
+			}
+		}
+		i = (i + 1) % (GGameType & GAME_HexenWorld ? HWMAX_CLIENTS : MAX_CLIENTS_QW);
+	}
+	while (i != end);
+	// stay on same guy?
+	i = spec_track;
+	if (GGameType & GAME_HexenWorld)
+	{
+		h2player_info_t* s = &cl.h2_players[i];
 		if (s->name[0] && !s->spectator)
 		{
 			Cam_Lock(i);
 			return;
 		}
-		i = (i + 1) % MAX_CLIENTS_QW;
 	}
-	while (i != end);
-	// stay on same guy?
-	i = spec_track;
-	s = &cl.q1_players[i];
-	if (s->name[0] && !s->spectator)
+	else
 	{
-		Cam_Lock(i);
-		return;
+		q1player_info_t* s = &cl.q1_players[i];
+		if (s->name[0] && !s->spectator)
+		{
+			Cam_Lock(i);
+			return;
+		}
 	}
 	Con_Printf("No target found ...\n");
 	autocam = locked = false;
-}
-
-void Cam_Reset(void)
-{
-	autocam = CAM_NONE;
-	spec_track = 0;
-}
-
-void CL_InitCam(void)
-{
-	cl_hightrack = Cvar_Get("cl_hightrack", "0", 0);
-	cl_chasecam = Cvar_Get("cl_chasecam", "0", 0);
 }

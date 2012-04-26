@@ -621,6 +621,8 @@ extern Cvar* clqh_color;
 extern byte* playerTranslation;
 extern int color_offsets[MAX_PLAYER_CLASS];
 
+extern float clqh_server_version;	// version of server we connected to
+
 extern Cvar* chase_active;
 
 void CL_SharedInit();

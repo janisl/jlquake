@@ -87,8 +87,6 @@ jmp_buf host_abort;
 
 void Master_Connect_f(void);
 
-float server_version = 0;	// version of server we connected to
-
 char emodel_name[] =
 { 'e' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
 char pmodel_name[] =
@@ -560,11 +558,11 @@ void CL_FullServerinfo_f(void)
 		v = String::Atof(p);
 		if (v)
 		{
-			if (!server_version)
+			if (!clqh_server_version)
 			{
 				Con_Printf("Version %1.2f Server\n", v);
 			}
-			server_version = v;
+			clqh_server_version = v;
 		}
 	}
 }

@@ -30,6 +30,18 @@ Cvar* cl_chasecam;
 
 static int cam_lastviewtime;
 
+void CL_InitCam()
+{
+	cl_hightrack = Cvar_Get("cl_hightrack", "0", 0);
+	cl_chasecam = Cvar_Get("cl_chasecam", "0", 0);
+}
+
+void Cam_Reset()
+{
+	autocam = CAM_NONE;
+	spec_track = 0;
+}
+
 void Cam_Lock(int playernum)
 {
 	char st[40];

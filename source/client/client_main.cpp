@@ -44,6 +44,8 @@ int color_offsets[MAX_PLAYER_CLASS] =
 
 int bitcounts[32];	/// just for protocol profiling
 
+float clqh_server_version = 0;	// version of server we connected to
+
 void CL_SharedInit()
 {
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);

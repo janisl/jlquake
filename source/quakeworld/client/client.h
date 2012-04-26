@@ -32,7 +32,6 @@ extern Cvar* name;
 
 
 extern qboolean nomaster;
-extern float server_version;	// version of server we connected to
 
 //=============================================================================
 
@@ -126,7 +125,5 @@ void CL_PredictUsercmd(qwplayer_state_t* from, qwplayer_state_t* to, qwusercmd_t
 qboolean Cam_DrawViewModel(void);
 qboolean Cam_DrawPlayer(int playernum);
 void Cam_FinishMove(qwusercmd_t* cmd);
-void Cam_Reset(void);
-void CL_InitCam(void);
 
 extern int clq1_playerindex, cl_flagindex;

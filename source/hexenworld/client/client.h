@@ -62,8 +62,6 @@ extern Cvar* cl_teamcolor;
 
 extern qboolean nomaster;
 
-extern float server_version;	// version of server we connected to
-
 //
 // cl_main
 //
@@ -134,7 +132,6 @@ void CL_ParsePlayerinfo(void);
 void CL_SavePlayer(void);
 void CL_ParsePacketEntities(qboolean delta);
 void CL_SetSolidEntities(void);
-void CL_InitCam(void);
 void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities(void);
 void CL_WriteDemoCmd(hwusercmd_t* pcmd);
@@ -142,4 +139,3 @@ void CL_PredictUsercmd(hwplayer_state_t* from, hwplayer_state_t* to, hwusercmd_t
 void CL_SendConnectPacket(void);
 void Host_WriteConfiguration(const char* fname);
 void Cam_FinishMove(hwusercmd_t* cmd);
-void Cam_Reset(void);

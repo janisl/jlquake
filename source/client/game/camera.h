@@ -20,4 +20,6 @@
 extern int spec_track;	// player# of who we are tracking
 extern int autocam;
 
+void CL_InitCam();
+void Cam_Reset();
 void Cam_Track(in_usercmd_t* cmd);
