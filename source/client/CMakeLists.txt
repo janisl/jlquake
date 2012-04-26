@@ -28,6 +28,7 @@ set(CLIENT_FILES
 	game/quake2/particle_effects.cpp
 	game/quake2/sustain.cpp
 	game/quake2/temporary_entities.cpp
+	game/camera.cpp
 	game/dynamic_lights.cpp
 	game/input.cpp
 	game/light_styles.cpp

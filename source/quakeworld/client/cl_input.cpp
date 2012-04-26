@@ -148,16 +148,14 @@ void CL_SendCmd(void)
 	Com_Memset(cmd, 0, sizeof(*cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
+
+	// if we are spectator, try autocam
+	Cam_Track(&inCmd);
+
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
-
-	// if we are spectator, try autocam
-	if (cl.qh_spectator)
-	{
-		Cam_Track(cmd);
-	}
 
 	CL_FinishMove(cmd);
 
