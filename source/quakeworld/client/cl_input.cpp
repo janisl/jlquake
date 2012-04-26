@@ -149,9 +149,6 @@ void CL_SendCmd(void)
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
 
-	// if we are spectator, try autocam
-	Cam_Track(&inCmd);
-
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;

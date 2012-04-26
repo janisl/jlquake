@@ -1105,6 +1105,9 @@ in_usercmd_t CL_CreateCmdCommon()
 
 	CL_RecoilPitch();
 
+	// if we are spectator, try autocam
+	Cam_Track(&cmd);
+
 	CL_FinishMove(&cmd);
 
 	return cmd;
