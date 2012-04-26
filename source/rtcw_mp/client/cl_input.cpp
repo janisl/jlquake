@@ -125,9 +125,6 @@ void CL_FinishMove(wmusercmd_t* cmd)
 {
 	int i;
 
-	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.q3_cgameUserCmdValue;
-
 	cmd->holdable = cl.wb_cgameUserHoldableValue;	//----(SA)	modified
 
 	cmd->mpSetup = cl.wm_cgameMpSetup;				// NERVE - SMF
@@ -174,6 +171,7 @@ wmusercmd_t CL_CreateCmd(void)
 		// done
 
 	}
+	cmd.weapon = inCmd.weapon;
 
 	// store out the final values
 	CL_FinishMove(&cmd);

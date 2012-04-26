@@ -153,8 +153,6 @@ void CL_SendCmd(void)
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
 
-	VectorCopy(cl.viewangles, cmd->angles);
-
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)
 	{

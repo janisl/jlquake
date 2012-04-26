@@ -123,9 +123,6 @@ void CL_FinishMove(etusercmd_t* cmd)
 {
 	int i;
 
-	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.q3_cgameUserCmdValue;
-
 	cmd->flags = cl.et_cgameFlags;
 
 	cmd->identClient = cl.wm_cgameMpIdentClient;	// NERVE - SMF
@@ -163,6 +160,7 @@ etusercmd_t CL_CreateCmd(void)
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
 	cmd.doubleTap = inCmd.doubleTap;
+	cmd.weapon = inCmd.weapon;
 
 	// store out the final values
 	CL_FinishMove(&cmd);

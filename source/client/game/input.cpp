@@ -1062,6 +1062,16 @@ static void CL_RecoilPitch()
 	cl_recoilPitch->value = 0;
 }
 
+static void CL_FinishMove(in_usercmd_t* cmd)
+{
+	if (GGameType & GAME_Tech3)
+	{
+		// copy the state that the cgame is currently sending
+		cmd->weapon = cl.q3_cgameUserCmdValue;
+	}
+
+}
+
 in_usercmd_t CL_CreateCmdCommon()
 {
 	vec3_t oldAngles;
@@ -1094,6 +1104,8 @@ in_usercmd_t CL_CreateCmdCommon()
 	CL_Kick(&cmd);
 
 	CL_RecoilPitch();
+
+	CL_FinishMove(&cmd);
 
 	return cmd;
 }

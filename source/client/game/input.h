@@ -22,6 +22,7 @@ struct in_usercmd_t
 	int buttons;
 	int doubleTap;
 	int kick;
+	int weapon;
 };
 
 extern unsigned frame_msec;

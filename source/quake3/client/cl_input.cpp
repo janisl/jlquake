@@ -80,9 +80,6 @@ void CL_FinishMove(q3usercmd_t* cmd)
 {
 	int i;
 
-	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.q3_cgameUserCmdValue;
-
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
 	cmd->serverTime = cl.serverTime;
@@ -113,6 +110,7 @@ q3usercmd_t CL_CreateCmd(void)
 	cmd.rightmove = ClampChar(inCmd.sidemove);
 	cmd.upmove = ClampChar(inCmd.upmove);
 	cmd.buttons = inCmd.buttons;
+	cmd.weapon = inCmd.weapon;
 
 	// store out the final values
 	CL_FinishMove(&cmd);

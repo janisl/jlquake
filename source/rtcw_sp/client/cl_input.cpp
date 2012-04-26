@@ -106,9 +106,6 @@ void CL_FinishMove(wsusercmd_t* cmd)
 {
 	int i;
 
-	// copy the state that the cgame is currently sending
-	cmd->weapon = cl.q3_cgameUserCmdValue;
-
 	cmd->holdable = cl.wb_cgameUserHoldableValue;	//----(SA)	modified
 
 	// send the current server time so the amount of movement
@@ -152,6 +149,7 @@ wsusercmd_t CL_CreateCmd(void)
 		// done
 
 	}
+	cmd.weapon = inCmd.weapon;
 
 	// store out the final values
 	CL_FinishMove(&cmd);

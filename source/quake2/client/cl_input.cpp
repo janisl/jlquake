@@ -117,8 +117,6 @@ q2usercmd_t CL_CreateCmd(void)
 	cmd.upmove = inCmd.upmove;
 	cmd.buttons = inCmd.buttons;
 
-	VectorCopy(cl.viewangles, cmd.angles);
-
 	CL_FinishMove(&cmd);
 
 	old_sys_frame_time = com_frameTime;

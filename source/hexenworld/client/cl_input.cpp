@@ -137,8 +137,6 @@ void CL_SendCmd(void)
 
 	cmd->light_level = (byte)cl_lightlevel->value;
 
-	VectorCopy(cl.viewangles, cmd->angles);
-
 	// if we are spectator, try autocam
 	if (cl.qh_spectator)
 	{
