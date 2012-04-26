@@ -44,7 +44,6 @@ void CL_SendCmd(void);
 void CL_ClearState(void);
 
 int  CL_ReadFromServer(void);
-void CL_WriteToServer(h2usercmd_t* cmd);
 void CL_MouseEvent(int mx, int my);
 
 

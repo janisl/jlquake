@@ -119,11 +119,4 @@ void CL_InitPrediction(void);
 void CL_PredictMove(void);
 void CL_PredictUsercmd(qwplayer_state_t* from, qwplayer_state_t* to, qwusercmd_t* u, qboolean spectator);
 
-//
-// cl_cam.c
-//
-qboolean Cam_DrawViewModel(void);
-qboolean Cam_DrawPlayer(int playernum);
-void Cam_FinishMove(qwusercmd_t* cmd);
-
 extern int clq1_playerindex, cl_flagindex;

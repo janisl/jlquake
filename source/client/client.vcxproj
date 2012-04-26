@@ -476,6 +476,12 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)input\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)input\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="game\camera.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="game\dynamic_lights.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\</ObjectFileName>
@@ -680,6 +686,7 @@
     <ClInclude Include="cinematic\public.h" />
     <ClInclude Include="input\keycodes.h" />
     <ClInclude Include="input\public.h" />
+    <ClInclude Include="game\camera.h" />
     <ClInclude Include="game\dynamic_lights.h" />
     <ClInclude Include="game\input.h" />
     <ClInclude Include="game\light_styles.h" />

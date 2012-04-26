@@ -140,7 +140,7 @@ void CL_SendCmd(void)
 
 	CL_FinishMove(cmd);
 
-	Cam_FinishMove(cmd);
+	Cam_FinishMove(&inCmd);
 
 // send this and the previous cmds in the message, so
 // if the last packet was dropped, it can be recovered

@@ -20,13 +20,12 @@ int spec_track = 0;	// player# of who we are tracking
 int autocam = CAM_NONE;
 
 static vec3_t desired_position;	// where the camera wants to be
-bool locked = false;
-int oldbuttons;
+static bool locked = false;
+static int oldbuttons;
 
 // track high fragger
-Cvar* cl_hightrack;
-
-Cvar* cl_chasecam;
+static Cvar* cl_hightrack;
+static Cvar* cl_chasecam;
 
 static int cam_lastviewtime;
 
@@ -42,7 +41,7 @@ void Cam_Reset()
 	spec_track = 0;
 }
 
-void Cam_Lock(int playernum)
+static void Cam_Lock(int playernum)
 {
 	char st[40];
 	String::Sprintf(st, sizeof(st), "ptrack %i", playernum);
@@ -52,7 +51,7 @@ void Cam_Lock(int playernum)
 	locked = false;
 }
 
-void Cam_Unlock()
+static void Cam_Unlock()
 {
 	if (!autocam)
 	{
@@ -116,7 +115,7 @@ static void Cam_CheckHighTargetHW()
 	}
 }
 
-void Cam_CheckHighTarget()
+static void Cam_CheckHighTarget()
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -412,4 +411,153 @@ void Cam_Track(in_usercmd_t* cmd)
 
 		ExecuteTrack(self->origin, self->weaponframe, player->origin, player->viewangles, player->weaponframe, cmd);
 	}
+}
+
+void Cam_FinishMove(const in_usercmd_t* cmd)
+{
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		return;
+	}
+
+	if (cls.state != CA_ACTIVE || (GGameType & GAME_HexenWorld && clqh_server_version < 1.57))
+	{
+		return;
+	}
+
+	if (!cl.qh_spectator)	// only in spectator mode
+	{
+		return;
+	}
+
+	if (cmd->buttons & QHBUTTON_ATTACK)
+	{
+		if (!(oldbuttons & QHBUTTON_ATTACK))
+		{
+
+			oldbuttons |= QHBUTTON_ATTACK;
+			autocam++;
+
+			if (autocam > CAM_TRACK)
+			{
+				Cam_Unlock();
+				return;
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+	else
+	{
+		oldbuttons &= ~QHBUTTON_ATTACK;
+		if (!autocam)
+		{
+			return;
+		}
+	}
+
+	if (autocam && cl_hightrack->value)
+	{
+		Cam_CheckHighTarget();
+		return;
+	}
+
+	if (locked)
+	{
+		if ((cmd->buttons & QHBUTTON_JUMP) && (oldbuttons & QHBUTTON_JUMP))
+		{
+			return;		// don't pogo stick
+
+		}
+		if (!(cmd->buttons & QHBUTTON_JUMP))
+		{
+			oldbuttons &= ~QHBUTTON_JUMP;
+			return;
+		}
+		oldbuttons |= QHBUTTON_JUMP;	// don't jump again until released
+	}
+
+	int end;
+	if (locked && autocam)
+	{
+		end = (spec_track + 1) % (GGameType & GAME_HexenWorld ? HWMAX_CLIENTS : MAX_CLIENTS_QW);
+	}
+	else
+	{
+		end = spec_track;
+	}
+	int i = end;
+	do
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			h2player_info_t* s = &cl.h2_players[i];
+			if (s->name[0] && !s->spectator)
+			{
+				Cam_Lock(i);
+				return;
+			}
+		}
+		else
+		{
+			q1player_info_t* s = &cl.q1_players[i];
+			if (s->name[0] && !s->spectator)
+			{
+				Cam_Lock(i);
+				return;
+			}
+		}
+		i = (i + 1) % (GGameType & GAME_HexenWorld ? HWMAX_CLIENTS : MAX_CLIENTS_QW);
+	}
+	while (i != end);
+	// stay on same guy?
+	i = spec_track;
+	if (GGameType & GAME_HexenWorld)
+	{
+		h2player_info_t* s = &cl.h2_players[i];
+		if (s->name[0] && !s->spectator)
+		{
+			Cam_Lock(i);
+			return;
+		}
+	}
+	else
+	{
+		q1player_info_t* s = &cl.q1_players[i];
+		if (s->name[0] && !s->spectator)
+		{
+			Cam_Lock(i);
+			return;
+		}
+	}
+	common->Printf("No target found ...\n");
+	autocam = locked = false;
+}
+
+// returns true if weapon model should be drawn in camera mode
+bool Cam_DrawViewModel()
+{
+	if (!cl.qh_spectator)
+	{
+		return true;
+	}
+
+	if (autocam && locked && cl_chasecam->value)
+	{
+		return true;
+	}
+	return false;
+}
+
+// returns true if we should draw this player, we don't if we are chase camming
+bool Cam_DrawPlayer(int playernum)
+{
+	if (cl.qh_spectator && autocam && locked && cl_chasecam->value &&
+		spec_track == playernum)
+	{
+		return false;
+	}
+	return true;
 }

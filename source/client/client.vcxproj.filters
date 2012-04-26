@@ -225,6 +225,9 @@
     <ClCompile Include="input\windows.cpp">
       <Filter>input</Filter>
     </ClCompile>
+    <ClCompile Include="game\camera.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
     <ClCompile Include="game\dynamic_lights.cpp">
       <Filter>game</Filter>
     </ClCompile>
@@ -389,6 +392,9 @@
     </ClInclude>
     <ClInclude Include="input\public.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="game\camera.h">
+      <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="game\dynamic_lights.h">
       <Filter>game</Filter>

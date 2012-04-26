@@ -53,7 +53,6 @@ void CL_ClearState(void);
 
 
 int  CL_ReadFromServer(void);
-void CL_WriteToServer(q1usercmd_t* cmd);
 void CL_MouseEvent(int mx, int my);
 
 

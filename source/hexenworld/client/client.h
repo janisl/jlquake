@@ -138,4 +138,3 @@ void CL_WriteDemoCmd(hwusercmd_t* pcmd);
 void CL_PredictUsercmd(hwplayer_state_t* from, hwplayer_state_t* to, hwusercmd_t* u, qboolean spectator);
 void CL_SendConnectPacket(void);
 void Host_WriteConfiguration(const char* fname);
-void Cam_FinishMove(hwusercmd_t* cmd);

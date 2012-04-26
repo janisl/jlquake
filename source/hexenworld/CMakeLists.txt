@@ -35,7 +35,6 @@ target_link_libraries(jlhwsv progsvm ${SERVERS_LIBS})
 #############################################################################
 
 add_executable(jlhwcl
-	client/cl_cam.cpp
 	client/cl_demo.cpp
 	client/cl_draw.cpp
 	client/cl_ents.cpp

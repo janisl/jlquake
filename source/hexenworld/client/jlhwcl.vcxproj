@@ -99,7 +99,6 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cl_cam.cpp" />
     <ClCompile Include="cl_demo.cpp" />
     <ClCompile Include="cl_draw.cpp" />
     <ClCompile Include="cl_ents.cpp" />
