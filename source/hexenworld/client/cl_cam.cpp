@@ -45,7 +45,6 @@ void Cam_FinishMove(hwusercmd_t* cmd)
 			if (autocam > CAM_TRACK)
 			{
 				Cam_Unlock();
-				VectorCopy(cl.viewangles, cmd->angles);
 				return;
 			}
 		}
