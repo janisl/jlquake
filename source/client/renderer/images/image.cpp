@@ -331,7 +331,7 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 						continue;
 					}
 					// Make sure  that we are accessing a texel in the image, not out of range.
-					if (neighbor_u < 0 || neighbor_u > Width || neighbor_v < 0 || neighbor_v > Height)
+					if (neighbor_u < 0 || neighbor_u >= Width || neighbor_v < 0 || neighbor_v >= Height)
 					{
 						continue;
 					}
