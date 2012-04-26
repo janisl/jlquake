@@ -40,6 +40,9 @@
     <Filter Include="game\quake2">
       <UniqueIdentifier>{aba49e77-8828-4d72-85eb-2720a6ffb061}</UniqueIdentifier>
     </Filter>
+    <Filter Include="splines">
+      <UniqueIdentifier>{1451b093-b9e3-4099-a35d-f11fcbc7a2db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="renderer\backend.cpp">
@@ -328,6 +331,15 @@
     <ClCompile Include="renderer\models\mds.cpp">
       <Filter>renderer\models</Filter>
     </ClCompile>
+    <ClCompile Include="splines\q_parse.cpp">
+      <Filter>splines</Filter>
+    </ClCompile>
+    <ClCompile Include="splines\splines.cpp">
+      <Filter>splines</Filter>
+    </ClCompile>
+    <ClCompile Include="splines\util_str.cpp">
+      <Filter>splines</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer\cvars.h">
@@ -415,5 +427,23 @@
     <ClInclude Include="quake3clientdefs.h" />
     <ClInclude Include="quakeclientdefs.h" />
     <ClInclude Include="wolfclientdefs.h" />
+    <ClInclude Include="splines\math_vector.h">
+      <Filter>splines</Filter>
+    </ClInclude>
+    <ClInclude Include="splines\public.h">
+      <Filter>splines</Filter>
+    </ClInclude>
+    <ClInclude Include="splines\q_parse.h">
+      <Filter>splines</Filter>
+    </ClInclude>
+    <ClInclude Include="splines\splines.h">
+      <Filter>splines</Filter>
+    </ClInclude>
+    <ClInclude Include="splines\util_list.h">
+      <Filter>splines</Filter>
+    </ClInclude>
+    <ClInclude Include="splines\util_str.h">
+      <Filter>splines</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

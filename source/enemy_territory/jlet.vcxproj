@@ -177,10 +177,6 @@
       <Project>{efa65954-05a8-43c4-b4fe-fafe8e678ab7}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="splines\splines-et.vcxproj">
-      <Project>{0c24e6e9-2b9f-43ae-adb7-b7693966f41e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

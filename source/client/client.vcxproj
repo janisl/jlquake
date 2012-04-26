@@ -416,6 +416,24 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)sound\midi\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)sound\midi\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="splines\q_parse.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)splines/</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="splines\splines.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)splines/</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="splines\util_str.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)splines/</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)splines/</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="ui\console.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)ui\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)ui\</ObjectFileName>
@@ -673,6 +691,12 @@
     <ClInclude Include="sound\public.h" />
     <ClInclude Include="sound\midi\midi.h" />
     <ClInclude Include="sound\midi\midstuff.h" />
+    <ClInclude Include="splines\math_vector.h" />
+    <ClInclude Include="splines\public.h" />
+    <ClInclude Include="splines\q_parse.h" />
+    <ClInclude Include="splines\splines.h" />
+    <ClInclude Include="splines\util_list.h" />
+    <ClInclude Include="splines\util_str.h" />
     <ClInclude Include="ui\console.h" />
     <ClInclude Include="ui\screen.h" />
     <ClInclude Include="ui\ui.h" />
