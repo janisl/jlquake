@@ -69,6 +69,7 @@ Cvar* lookspring;
 Cvar* cl_bypassMouseInput;
 static Cvar* cl_doubletapdelay;
 static Cvar* cl_recoilPitch;
+static Cvar* cl_lightlevel;
 
 int in_impulse;
 
@@ -1042,7 +1043,7 @@ static void CL_Kick(in_usercmd_t* cmd)
 	{
 		return;
 	}
-	cmd->kick = CL_KeyState(&in_kick);
+	cmd->kick = ClampChar(CL_KeyState(&in_kick));
 }
 
 static void CL_RecoilPitch()
@@ -1062,14 +1063,115 @@ static void CL_RecoilPitch()
 	cl_recoilPitch->value = 0;
 }
 
+static int MakeChar(int i)
+{
+	i &= ~3;
+	if (i < -127 * 4)
+	{
+		i = -127 * 4;
+	}
+	if (i > 127 * 4)
+	{
+		i = 127 * 4;
+	}
+	return i;
+}
+
 static void CL_FinishMove(in_usercmd_t* cmd)
 {
+	if (GGameType & GAME_HexenWorld && (int)cl.h2_v.artifact_active & HWARTFLAG_FROZEN)
+	{
+		cmd->forwardmove = 0;
+		cmd->sidemove = 0;
+		cmd->upmove = 0;
+	}
+	if ((GGameType & GAME_WolfSP && cl.ws_snap.ps.persistant[WSPERS_HWEAPON_USE]) ||
+		(GGameType & GAME_WolfMP && cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE]))
+	{
+		cmd->forwardmove = 0;
+		cmd->sidemove = 0;
+		cmd->upmove = 0;
+		cmd->kick = 0;
+	}
+
+	VectorCopy(cl.viewangles, cmd->fAngles);
+	for (int i = 0; i < 3; i++)
+	{
+		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		//
+		// chop down so no extra bits are kept that the server wouldn't get
+		//
+		cmd->forwardmove = MakeChar(cmd->forwardmove);
+		cmd->sidemove = MakeChar(cmd->sidemove);
+		cmd->upmove = MakeChar(cmd->upmove);
+
+		for (int i = 0; i < 3; i++)
+		{
+			cmd->fAngles[i] = cmd->angles[i] * (360.0 / 65536.0);
+		}
+	}
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		cmd->impulse = in_impulse;
+		in_impulse = 0;
+	}
+
+	if (GGameType & GAME_QuakeHexen && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		cmd->mtime = cl.qh_mtime[0];	// so server can get ping times
+	}
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+	{
+		// send milliseconds of time to apply the move
+		int ms = cls.frametime;
+		if (ms > 250)
+		{
+			ms = 100;		// time was unreasonable
+		}
+		cmd->msec = ms;
+	}
+
+	if (GGameType & (GAME_Hexen2 | GAME_Quake2))
+	{
+		// send the ambient light level at the player's current position
+		cmd->lightlevel = (byte)cl_lightlevel->value;
+	}
+
 	if (GGameType & GAME_Tech3)
 	{
+		cmd->forwardmove = ClampChar(cmd->forwardmove);
+		cmd->sidemove = ClampChar(cmd->sidemove);
+		cmd->upmove = ClampChar(cmd->upmove);
+
+		// send the current server time so the amount of movement
+		// can be determined without allowing cheating
+		cmd->serverTime = cl.serverTime;
+
 		// copy the state that the cgame is currently sending
 		cmd->weapon = cl.q3_cgameUserCmdValue;
 	}
 
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		cmd->holdable = cl.wb_cgameUserHoldableValue;	//----(SA)	modified
+	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		cmd->identClient = cl.wm_cgameMpIdentClient;	// NERVE - SMF
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		cmd->mpSetup = cl.wm_cgameMpSetup;				// NERVE - SMF
+	}
+	if (GGameType & GAME_ET)
+	{
+		cmd->flags = cl.et_cgameFlags;
+	}
 }
 
 in_usercmd_t CL_CreateCmdCommon()
@@ -1108,6 +1210,7 @@ in_usercmd_t CL_CreateCmdCommon()
 	// if we are spectator, try autocam
 	Cam_Track(&cmd);
 
+	// store out the final values
 	CL_FinishMove(&cmd);
 
 	return cmd;
@@ -1282,6 +1385,10 @@ void CL_InitInputCommon()
 	{
 		cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
 		cl_sidespeed = Cvar_Get("cl_sidespeed","350", 0);
+	}
+	if (GGameType & (GAME_Hexen2 | GAME_Quake2))
+	{
+		cl_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
 	}
 	if (GGameType & GAME_Quake2)
 	{

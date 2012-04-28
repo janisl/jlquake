@@ -15,8 +15,6 @@ extern Cvar* cl_prettylights;
 
 extern Cvar* cl_shownet;
 
-extern Cvar* cl_lightlevel;		// FIXME HACK
-
 //=============================================================================
 
 //

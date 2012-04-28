@@ -22,7 +22,18 @@ struct in_usercmd_t
 	int buttons;
 	int doubleTap;
 	int kick;
+	vec3_t fAngles;
+	int angles[3];
+	int impulse;
 	int weapon;
+	float mtime;
+	int msec;
+	int serverTime;
+	int lightlevel;
+	int holdable;
+	int mpSetup;
+	int identClient;
+	int flags;
 };
 
 extern unsigned frame_msec;

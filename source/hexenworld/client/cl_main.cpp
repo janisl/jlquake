@@ -40,8 +40,6 @@ Cvar* noaim;
 Cvar* talksounds;
 Cvar* msg;
 
-Cvar* cl_lightlevel;
-
 Cvar* cl_teamcolor;
 
 double connect_time = -1;				// for connection retransmits
@@ -1001,8 +999,6 @@ void CL_Init(void)
 	cl_predict_players = Cvar_Get("cl_predict_players", "1", 0);
 	cl_predict_players2 = Cvar_Get("cl_predict_players2", "1", 0);
 	cl_solid_players = Cvar_Get("cl_solid_players", "1", 0);
-
-	cl_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
 
 	//
 	// info mirrors

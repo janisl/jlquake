@@ -117,31 +117,6 @@ void CL_MouseEvent(int dx, int dy, int time)
 }
 
 /*
-==============
-CL_FinishMove
-==============
-*/
-void CL_FinishMove(wmusercmd_t* cmd)
-{
-	int i;
-
-	cmd->holdable = cl.wb_cgameUserHoldableValue;	//----(SA)	modified
-
-	cmd->mpSetup = cl.wm_cgameMpSetup;				// NERVE - SMF
-	cmd->identClient = cl.wm_cgameMpIdentClient;	// NERVE - SMF
-
-	// send the current server time so the amount of movement
-	// can be determined without allowing cheating
-	cmd->serverTime = cl.serverTime;
-
-	for (i = 0; i < 3; i++)
-	{
-		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
-	}
-}
-
-
-/*
 =================
 CL_CreateCmd
 =================
@@ -159,22 +134,19 @@ wmusercmd_t CL_CreateCmd(void)
 
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
-
-	if (!(cl.wm_snap.ps.persistant[WMPERS_HWEAPON_USE]))
-	{
-		cmd.forwardmove = ClampChar(inCmd.forwardmove);
-		cmd.rightmove = ClampChar(inCmd.sidemove);
-		cmd.upmove = ClampChar(inCmd.upmove);
-
-		// Rafael - Kick
-		cmd.wolfkick = ClampChar(inCmd.kick);
-		// done
-
-	}
+	cmd.forwardmove = inCmd.forwardmove;
+	cmd.rightmove = inCmd.sidemove;
+	cmd.upmove = inCmd.upmove;
+	cmd.wolfkick = inCmd.kick;
 	cmd.weapon = inCmd.weapon;
-
-	// store out the final values
-	CL_FinishMove(&cmd);
+	for (int i = 0; i < 3; i++)
+	{
+		cmd.angles[i] = inCmd.angles[i];
+	}
+	cmd.serverTime = inCmd.serverTime;
+	cmd.holdable = inCmd.holdable;
+	cmd.mpSetup = inCmd.mpSetup;
+	cmd.identClient = inCmd.identClient;
 
 	// draw debug graphs of turning for mouse testing
 	if (cl_debugMove->integer)

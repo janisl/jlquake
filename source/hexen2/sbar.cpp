@@ -1345,7 +1345,7 @@ static void DrawActiveArtifacts(void)
 	}
 
 	flag = (int)cl.h2_v.artifact_active;
-	if (flag & ART_TOMEOFPOWER)
+	if (flag & H2ARTFLAG_TOMEOFPOWER)
 	{
 		frame = 1 + ((int)(cl.qh_serverTimeFloat * 16) & 15);
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
@@ -1353,7 +1353,7 @@ static void DrawActiveArtifacts(void)
 		art_col += 50;
 	}
 
-	if (flag & ART_HASTE)
+	if (flag & H2ARTFLAG_HASTE)
 	{
 		frame = 1 + ((int)(cl.qh_serverTimeFloat * 16) & 15);
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
@@ -1361,7 +1361,7 @@ static void DrawActiveArtifacts(void)
 		art_col += 50;
 	}
 
-	if (flag & ART_INVINCIBILITY)
+	if (flag & H2ARTFLAG_INVINCIBILITY)
 	{
 		frame = 1 + ((int)(cl.qh_serverTimeFloat * 16) & 15);
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);

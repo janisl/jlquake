@@ -60,32 +60,7 @@ CL_SendMove
 */
 static void CL_SendMove(q1usercmd_t* cmd, in_usercmd_t* inCmd)
 {
-	int i;
-	QMsg buf;
-	byte data[128];
-
-	buf.InitOOB(data, 128);
-
 	cl.q1_cmd = *cmd;
-
-//
-// send the movement message
-//
-	buf.WriteByte(q1clc_move);
-
-	buf.WriteFloat(cl.qh_mtime[0]);	// so server can get ping times
-
-	for (i = 0; i < 3; i++)
-		buf.WriteAngle(cl.viewangles[i]);
-
-	buf.WriteShort(cmd->forwardmove);
-	buf.WriteShort(cmd->sidemove);
-	buf.WriteShort(cmd->upmove);
-
-	buf.WriteByte(inCmd->buttons);
-
-	buf.WriteByte(in_impulse);
-	in_impulse = 0;
 
 //
 // deliver the message
@@ -103,6 +78,26 @@ static void CL_SendMove(q1usercmd_t* cmd, in_usercmd_t* inCmd)
 	{
 		return;
 	}
+
+	QMsg buf;
+	byte data[128];
+
+	buf.InitOOB(data, 128);
+
+//
+// send the movement message
+//
+	buf.WriteByte(q1clc_move);
+	buf.WriteFloat(inCmd->mtime);
+	for (int i = 0; i < 3; i++)
+	{
+		buf.WriteAngle(inCmd->fAngles[i]);
+	}
+	buf.WriteShort(cmd->forwardmove);
+	buf.WriteShort(cmd->sidemove);
+	buf.WriteShort(cmd->upmove);
+	buf.WriteByte(inCmd->buttons);
+	buf.WriteByte(inCmd->impulse);
 
 	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
 	{

@@ -72,26 +72,6 @@ void CL_MouseEvent(int dx, int dy, int time)
 }
 
 /*
-==============
-CL_FinishMove
-==============
-*/
-void CL_FinishMove(q3usercmd_t* cmd)
-{
-	int i;
-
-	// send the current server time so the amount of movement
-	// can be determined without allowing cheating
-	cmd->serverTime = cl.serverTime;
-
-	for (i = 0; i < 3; i++)
-	{
-		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
-	}
-}
-
-
-/*
 =================
 CL_CreateCmd
 =================
@@ -106,14 +86,16 @@ q3usercmd_t CL_CreateCmd(void)
 	Com_Memset(&cmd, 0, sizeof(cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
-	cmd.forwardmove = ClampChar(inCmd.forwardmove);
-	cmd.rightmove = ClampChar(inCmd.sidemove);
-	cmd.upmove = ClampChar(inCmd.upmove);
+	cmd.forwardmove = inCmd.forwardmove;
+	cmd.rightmove = inCmd.sidemove;
+	cmd.upmove = inCmd.upmove;
 	cmd.buttons = inCmd.buttons;
 	cmd.weapon = inCmd.weapon;
-
-	// store out the final values
-	CL_FinishMove(&cmd);
+	for (int i = 0; i < 3; i++)
+	{
+		cmd.angles[i] = inCmd.angles[i];
+	}
+	cmd.serverTime = inCmd.serverTime;
 
 	// draw debug graphs of turning for mouse testing
 	if (cl_debugMove->integer)

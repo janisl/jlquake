@@ -60,34 +60,6 @@ void CL_MouseEvent(int mx, int my)
 }
 
 /*
-==============
-CL_FinishMove
-==============
-*/
-void CL_FinishMove(q2usercmd_t* cmd)
-{
-	int ms;
-	int i;
-
-	// send milliseconds of time to apply the move
-	ms = cls.q2_frametimeFloat * 1000;
-	if (ms > 250)
-	{
-		ms = 100;		// time was unreasonable
-	}
-	cmd->msec = ms;
-
-	for (i = 0; i < 3; i++)
-		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
-
-	cmd->impulse = in_impulse;
-	in_impulse = 0;
-
-// send the ambient light level at the player's current position
-	cmd->lightlevel = (byte)cl_lightlevel->value;
-}
-
-/*
 =================
 CL_CreateCmd
 =================
@@ -116,8 +88,13 @@ q2usercmd_t CL_CreateCmd(void)
 	cmd.sidemove = inCmd.sidemove;
 	cmd.upmove = inCmd.upmove;
 	cmd.buttons = inCmd.buttons;
-
-	CL_FinishMove(&cmd);
+	for (int i = 0; i < 3; i++)
+	{
+		cmd.angles[i] = inCmd.angles[i];
+	}
+	cmd.impulse = inCmd.impulse;
+	cmd.msec = inCmd.msec;
+	cmd.lightlevel = inCmd.lightlevel;
 
 	old_sys_frame_time = com_frameTime;
 

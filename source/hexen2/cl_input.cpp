@@ -48,7 +48,6 @@ CL_SendMove
 */
 static void CL_SendMove(h2usercmd_t* cmd, in_usercmd_t* inCmd)
 {
-	int i;
 	QMsg buf;
 	byte data[128];
 
@@ -64,24 +63,16 @@ static void CL_SendMove(h2usercmd_t* cmd, in_usercmd_t* inCmd)
 	buf.WriteByte(cl.h2_current_sequence);
 
 	buf.WriteByte(h2clc_move);
-
-	buf.WriteFloat(cl.qh_mtime[0]);	// so server can get ping times
-
-	for (i = 0; i < 3; i++)
-		buf.WriteAngle(cl.viewangles[i]);
-
+	buf.WriteFloat(inCmd->mtime);
+	for (int i = 0; i < 3; i++)
+	{
+		buf.WriteAngle(inCmd->fAngles[i]);
+	}
 	buf.WriteShort(cmd->forwardmove);
 	buf.WriteShort(cmd->sidemove);
 	buf.WriteShort(cmd->upmove);
-
 	buf.WriteByte(inCmd->buttons);
-
-	buf.WriteByte(in_impulse);
-	in_impulse = 0;
-
-//
-// light level
-//
+	buf.WriteByte(inCmd->impulse);
 	buf.WriteByte(cmd->lightlevel);
 
 //
@@ -168,14 +159,10 @@ void CL_SendCmd(void)
 
 		in_usercmd_t inCmd = CL_CreateCmdCommon();
 
-		// light level at player's position including dlights
-		// this is sent back to the server each frame
-		// architectually ugly but it works
-		cmd.lightlevel = (byte)cl_lightlevel->value;
-
 		cmd.forwardmove = inCmd.forwardmove;
 		cmd.sidemove = inCmd.sidemove;
 		cmd.upmove = inCmd.upmove;
+		cmd.lightlevel = inCmd.lightlevel;
 
 		// send the unreliable message
 		CL_SendMove(&cmd, &inCmd);

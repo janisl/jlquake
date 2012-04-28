@@ -21,8 +21,6 @@ Cvar* cl_shownet;
 
 static float save_sensitivity;
 
-Cvar* cl_lightlevel;
-
 /*
 =====================
 CL_ClearState
@@ -692,8 +690,6 @@ void CL_Init(void)
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 
 	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);
-
-	cl_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
 
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);

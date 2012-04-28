@@ -54,8 +54,6 @@ extern Cvar* cl_shownet;
 extern Cvar* cl_showmiss;
 extern Cvar* cl_showclamp;
 
-extern Cvar* cl_lightlevel;		// FIXME HACK
-
 extern Cvar* cl_paused;
 extern Cvar* cl_timedemo;
 

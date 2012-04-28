@@ -94,15 +94,6 @@
 #define IT_SIGIL3               (1 << 30)
 #define IT_SIGIL4               (1 << 31)
 
-#define ART_HASTE                   1
-#define ART_INVINCIBILITY           2
-#define ART_TOMEOFPOWER             4
-#define ART_INVISIBILITY            8
-#define ARTFLAG_FROZEN              16
-#define ARTFLAG_STONED              32
-#define ARTFLAG_DIVINE_INTERVENTION 64
-#define ARTFLAG_BOOTS               128
-
 //
 // print flags
 //

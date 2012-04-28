@@ -1630,7 +1630,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 		{
 			Draw_Character(x + 8, y - 10, 130);	//crown
 		}
-		if ((int)cl.h2_v.artifact_active & ARTFLAG_BOOTS)
+		if ((int)cl.h2_v.artifact_active & HWARTFLAG_BOOTS)
 		{
 			Draw_Character(x + 16, y - 10, 146);//boots
 
@@ -1740,7 +1740,7 @@ static void DrawActiveArtifacts(void)
 	}
 
 	flag = (int)cl.h2_v.artifact_active;
-	if (flag & ART_TOMEOFPOWER)
+	if (flag & HWARTFLAG_TOMEOFPOWER)
 	{
 		frame = 1 + (int)(cl.qh_serverTimeFloat * 16) % 16;
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
@@ -1748,7 +1748,7 @@ static void DrawActiveArtifacts(void)
 		art_col += 50;
 	}
 
-	if (flag & ART_HASTE)
+	if (flag & HWARTFLAG_HASTE)
 	{
 		frame = 1 + (int)(cl.qh_serverTimeFloat * 16) % 16;
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
@@ -1756,7 +1756,7 @@ static void DrawActiveArtifacts(void)
 		art_col += 50;
 	}
 
-	if (flag & ART_INVINCIBILITY)
+	if (flag & HWARTFLAG_INVINCIBILITY)
 	{
 		frame = 1 + (int)(cl.qh_serverTimeFloat * 16) % 16;
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);

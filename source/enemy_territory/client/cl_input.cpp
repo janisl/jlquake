@@ -115,29 +115,6 @@ void CL_MouseEvent(int dx, int dy, int time)
 }
 
 /*
-==============
-CL_FinishMove
-==============
-*/
-void CL_FinishMove(etusercmd_t* cmd)
-{
-	int i;
-
-	cmd->flags = cl.et_cgameFlags;
-
-	cmd->identClient = cl.wm_cgameMpIdentClient;	// NERVE - SMF
-
-	// send the current server time so the amount of movement
-	// can be determined without allowing cheating
-	cmd->serverTime = cl.serverTime;
-
-	for (i = 0; i < 3; i++)
-	{
-		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
-	}
-}
-
-/*
 =================
 CL_CreateCmd
 =================
@@ -155,15 +132,18 @@ etusercmd_t CL_CreateCmd(void)
 
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
-
-	cmd.forwardmove = ClampChar(inCmd.forwardmove);
-	cmd.rightmove = ClampChar(inCmd.sidemove);
-	cmd.upmove = ClampChar(inCmd.upmove);
+	cmd.forwardmove = inCmd.forwardmove;
+	cmd.rightmove = inCmd.sidemove;
+	cmd.upmove = inCmd.upmove;
 	cmd.doubleTap = inCmd.doubleTap;
 	cmd.weapon = inCmd.weapon;
-
-	// store out the final values
-	CL_FinishMove(&cmd);
+	for (int i = 0; i < 3; i++)
+	{
+		cmd.angles[i] = inCmd.angles[i];
+	}
+	cmd.serverTime = inCmd.serverTime;
+	cmd.identClient = inCmd.identClient;
+	cmd.flags = inCmd.flags;
 
 	// draw debug graphs of turning for mouse testing
 	if (cl_debugMove->integer)

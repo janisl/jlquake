@@ -54,8 +54,6 @@ extern Cvar* cl_hudswap;
 extern Cvar* playerclass;
 extern Cvar* spectator;
 
-extern Cvar* cl_lightlevel;		// FIXME HACK
-
 extern Cvar* cl_teamcolor;
 
 //=============================================================================

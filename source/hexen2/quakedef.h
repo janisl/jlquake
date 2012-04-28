@@ -89,14 +89,6 @@
 #define IT_SIGIL3               (1 << 30)
 #define IT_SIGIL4               (1 << 31)
 
-#define ART_HASTE                   1
-#define ART_INVINCIBILITY           2
-#define ART_TOMEOFPOWER             4
-#define ART_INVISIBILITY            8
-#define ARTFLAG_FROZEN              128
-#define ARTFLAG_STONED              256
-#define ARTFLAG_DIVINE_INTERVENTION 512
-
 //===========================================
 
 #ifdef MISSIONPACK

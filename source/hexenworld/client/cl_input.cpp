@@ -33,73 +33,6 @@ void CL_MouseEvent(int mx, int my)
 	cl.mouseDy[cl.mouseIndex] += my;
 }
 
-int MakeChar(int i)
-{
-	i &= ~3;
-	if (i < -127 * 4)
-	{
-		i = -127 * 4;
-	}
-	if (i > 127 * 4)
-	{
-		i = 127 * 4;
-	}
-	return i;
-}
-
-/*
-==============
-CL_FinishMove
-==============
-*/
-void CL_FinishMove(hwusercmd_t* cmd)
-{
-	int i;
-	int ms;
-
-//
-// allways dump the first two message, because it may contain leftover inputs
-// from the last level
-//
-	if (++cl.qh_movemessages <= 2)
-	{
-		return;
-	}
-
-	// send milliseconds of time to apply the move
-	ms = host_frametime * 1000;
-	if (ms > 250)
-	{
-		ms = 100;		// time was unreasonable
-	}
-	cmd->msec = ms;
-
-	VectorCopy(cl.viewangles, cmd->angles);
-
-	cmd->impulse = in_impulse;
-	in_impulse = 0;
-
-
-//
-// chop down so no extra bits are kept that the server wouldn't get
-//
-	if ((int)cl.h2_v.artifact_active & ARTFLAG_FROZEN)
-	{
-		cmd->forwardmove = 0;
-		cmd->sidemove = 0;
-		cmd->upmove = 0;
-	}
-	else
-	{
-		cmd->forwardmove = MakeChar(cmd->forwardmove);
-		cmd->sidemove = MakeChar(cmd->sidemove);
-		cmd->upmove = MakeChar(cmd->upmove);
-	}
-
-	for (i = 0; i < 3; i++)
-		cmd->angles[i] = ((int)(cmd->angles[i] * 65536.0 / 360) & 65535) * (360.0 / 65536.0);
-}
-
 /*
 =================
 CL_SendCmd
@@ -135,12 +68,20 @@ void CL_SendCmd(void)
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
 	cmd->buttons = inCmd.buttons;
-
-	cmd->light_level = (byte)cl_lightlevel->value;
-
-	CL_FinishMove(cmd);
+	cmd->impulse = inCmd.impulse;
+	cmd->msec = inCmd.msec;
+	cmd->light_level = inCmd.lightlevel;
 
 	Cam_FinishMove(&inCmd);
+
+	//
+	// allways dump the first two message, because it may contain leftover inputs
+	// from the last level
+	//
+	if (++cl.qh_movemessages <= 2)
+	{
+		return;
+	}
 
 // send this and the previous cmds in the message, so
 // if the last packet was dropped, it can be recovered

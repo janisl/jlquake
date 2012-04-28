@@ -447,7 +447,7 @@ static void V_CalcPowerupCshift(void)
         cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
     }
 */
-	if ((int)cl.h2_v.artifact_active & ARTFLAG_DIVINE_INTERVENTION)
+	if ((int)cl.h2_v.artifact_active & H2ARTFLAG_DIVINE_INTERVENTION)
 	{
 		cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 255;
@@ -455,14 +455,14 @@ static void V_CalcPowerupCshift(void)
 		cl.qh_cshifts[CSHIFT_BONUS].percent = 256;
 	}
 
-	if ((int)cl.h2_v.artifact_active & ARTFLAG_FROZEN)
+	if ((int)cl.h2_v.artifact_active & H2ARTFLAG_FROZEN)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 20;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 70;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 65;
 	}
-	else if ((int)cl.h2_v.artifact_active & ARTFLAG_STONED)
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_STONED)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 205;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 205;
@@ -470,14 +470,14 @@ static void V_CalcPowerupCshift(void)
 		//cl.qh_cshifts[CSHIFT_POWERUP].percent = 80;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 11000;
 	}
-	else if ((int)cl.h2_v.artifact_active & ART_INVISIBILITY)
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_INVISIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
 	}
-	else if ((int)cl.h2_v.artifact_active & ART_INVINCIBILITY)
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_INVINCIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
