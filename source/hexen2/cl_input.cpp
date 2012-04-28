@@ -46,14 +46,14 @@ void CL_MouseEvent(int mx, int my)
 CL_SendMove
 ==============
 */
-static void CL_SendMove(h2usercmd_t* cmd, in_usercmd_t* inCmd)
+static void CL_SendMove(in_usercmd_t* cmd)
 {
 	QMsg buf;
 	byte data[128];
 
 	buf.InitOOB(data, 128);
 
-	cl.qh_cmd = *inCmd;
+	cl.qh_cmd = *cmd;
 
 //
 // send the movement message
@@ -63,16 +63,16 @@ static void CL_SendMove(h2usercmd_t* cmd, in_usercmd_t* inCmd)
 	buf.WriteByte(cl.h2_current_sequence);
 
 	buf.WriteByte(h2clc_move);
-	buf.WriteFloat(inCmd->mtime);
+	buf.WriteFloat(cmd->mtime);
 	for (int i = 0; i < 3; i++)
 	{
-		buf.WriteAngle(inCmd->fAngles[i]);
+		buf.WriteAngle(cmd->fAngles[i]);
 	}
 	buf.WriteShort(cmd->forwardmove);
 	buf.WriteShort(cmd->sidemove);
 	buf.WriteShort(cmd->upmove);
-	buf.WriteByte(inCmd->buttons);
-	buf.WriteByte(inCmd->impulse);
+	buf.WriteByte(cmd->buttons);
+	buf.WriteByte(cmd->impulse);
 	buf.WriteByte(cmd->lightlevel);
 
 //
@@ -140,8 +140,6 @@ CL_SendCmd
 */
 void CL_SendCmd(void)
 {
-	h2usercmd_t cmd;
-
 	if (cls.state != CA_CONNECTED)
 	{
 		return;
@@ -154,18 +152,10 @@ void CL_SendCmd(void)
 
 		frame_msec = (unsigned)(host_frametime * 1000);
 
-		// get basic movement from keyboard
-		Com_Memset(&cmd, 0, sizeof(cmd));
-
-		in_usercmd_t inCmd = CL_CreateCmdCommon();
-
-		cmd.forwardmove = inCmd.forwardmove;
-		cmd.sidemove = inCmd.sidemove;
-		cmd.upmove = inCmd.upmove;
-		cmd.lightlevel = inCmd.lightlevel;
+		in_usercmd_t cmd = CL_CreateCmdCommon();
 
 		// send the unreliable message
-		CL_SendMove(&cmd, &inCmd);
+		CL_SendMove(&cmd);
 
 	}
 

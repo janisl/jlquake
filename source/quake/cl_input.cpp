@@ -58,9 +58,9 @@ void CL_MouseEvent(int mx, int my)
 CL_SendMove
 ==============
 */
-static void CL_SendMove(q1usercmd_t* cmd, in_usercmd_t* inCmd)
+static void CL_SendMove(in_usercmd_t* cmd)
 {
-	cl.qh_cmd = *inCmd;
+	cl.qh_cmd = *cmd;
 
 //
 // deliver the message
@@ -88,16 +88,16 @@ static void CL_SendMove(q1usercmd_t* cmd, in_usercmd_t* inCmd)
 // send the movement message
 //
 	buf.WriteByte(q1clc_move);
-	buf.WriteFloat(inCmd->mtime);
+	buf.WriteFloat(cmd->mtime);
 	for (int i = 0; i < 3; i++)
 	{
-		buf.WriteAngle(inCmd->fAngles[i]);
+		buf.WriteAngle(cmd->fAngles[i]);
 	}
 	buf.WriteShort(cmd->forwardmove);
 	buf.WriteShort(cmd->sidemove);
 	buf.WriteShort(cmd->upmove);
-	buf.WriteByte(inCmd->buttons);
-	buf.WriteByte(inCmd->impulse);
+	buf.WriteByte(cmd->buttons);
+	buf.WriteByte(cmd->impulse);
 
 	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
 	{
@@ -124,8 +124,6 @@ CL_SendCmd
 */
 void CL_SendCmd(void)
 {
-	q1usercmd_t cmd;
-
 	if (cls.state != CA_CONNECTED)
 	{
 		return;
@@ -139,15 +137,10 @@ void CL_SendCmd(void)
 
 		frame_msec = (unsigned)(host_frametime * 1000);
 
-		Com_Memset(&cmd, 0, sizeof(cmd));
-
-		in_usercmd_t inCmd = CL_CreateCmdCommon();
-		cmd.forwardmove = inCmd.forwardmove;
-		cmd.sidemove = inCmd.sidemove;
-		cmd.upmove = inCmd.upmove;
+		in_usercmd_t cmd = CL_CreateCmdCommon();
 
 		// send the unreliable message
-		CL_SendMove(&cmd, &inCmd);
+		CL_SendMove(&cmd);
 
 	}
 
