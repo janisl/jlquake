@@ -98,8 +98,6 @@ void CL_SendCmd(void)
 	cmd->impulse = inCmd.impulse;
 	cmd->msec = inCmd.msec;
 
-	Cam_FinishMove(&inCmd);
-
 	//
 	// allways dump the first two message, because it may contain leftover inputs
 	// from the last level

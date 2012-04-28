@@ -1213,6 +1213,8 @@ in_usercmd_t CL_CreateCmdCommon()
 	// store out the final values
 	CL_FinishMove(&cmd);
 
+	Cam_FinishMove(&cmd);
+
 	return cmd;
 }
 

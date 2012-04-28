@@ -72,8 +72,6 @@ void CL_SendCmd(void)
 	cmd->msec = inCmd.msec;
 	cmd->light_level = inCmd.lightlevel;
 
-	Cam_FinishMove(&inCmd);
-
 	//
 	// allways dump the first two message, because it may contain leftover inputs
 	// from the last level
