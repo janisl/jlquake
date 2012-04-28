@@ -166,7 +166,7 @@ static void V_DriftPitch(void)
 // don't count small mouse motion
 	if (cl.qh_nodrift)
 	{
-		if (Q_fabs(cl.h2_cmd.forwardmove) < (cl.h2_v.hasted * cl_forwardspeed->value) - 10)
+		if (Q_fabs(cl.qh_cmd.forwardmove) < (cl.h2_v.hasted * cl_forwardspeed->value) - 10)
 		{
 			cl.qh_driftmove = 0;
 		}

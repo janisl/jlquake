@@ -53,7 +53,7 @@ static void CL_SendMove(h2usercmd_t* cmd, in_usercmd_t* inCmd)
 
 	buf.InitOOB(data, 128);
 
-	cl.h2_cmd = *cmd;
+	cl.qh_cmd = *inCmd;
 
 //
 // send the movement message

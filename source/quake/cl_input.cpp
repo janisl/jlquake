@@ -60,7 +60,7 @@ CL_SendMove
 */
 static void CL_SendMove(q1usercmd_t* cmd, in_usercmd_t* inCmd)
 {
-	cl.q1_cmd = *cmd;
+	cl.qh_cmd = *inCmd;
 
 //
 // deliver the message
