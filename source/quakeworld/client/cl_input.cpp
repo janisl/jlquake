@@ -85,8 +85,6 @@ void CL_SendCmd(void)
 	// grab frame time
 	com_frameTime = Sys_Milliseconds();
 
-	frame_msec = (unsigned)(host_frametime * 1000);
-
 	Com_Memset(cmd, 0, sizeof(*cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();

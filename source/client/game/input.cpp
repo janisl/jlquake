@@ -27,7 +27,8 @@ struct kbutton_t
 	bool wasPressed;	// set when down, not cleared when up
 };
 
-unsigned frame_msec;
+static unsigned frame_msec;
+static int old_com_frameTime;
 
 static kbutton_t in_left;
 static kbutton_t in_right;
@@ -1176,6 +1177,15 @@ static void CL_FinishMove(in_usercmd_t* cmd)
 
 in_usercmd_t CL_CreateCmdCommon()
 {
+	frame_msec = com_frameTime - old_com_frameTime;
+	// if running less than 5fps, truncate the extra time to prevent
+	// unexpected moves after a hitch
+	if (frame_msec > 200)
+	{
+		frame_msec = 200;
+	}
+	old_com_frameTime = com_frameTime;
+
 	vec3_t oldAngles;
 	VectorCopy(cl.viewangles, oldAngles);
 

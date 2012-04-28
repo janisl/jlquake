@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Cvar* cl_nodelta;
 
-unsigned old_sys_frame_time;
-
 /*
 ===============================================================================
 
@@ -71,16 +69,6 @@ q2usercmd_t CL_CreateCmd(void)
 	// grab frame time
 	com_frameTime = Sys_Milliseconds_();
 
-	frame_msec = com_frameTime - old_sys_frame_time;
-	if (frame_msec < 1)
-	{
-		frame_msec = 1;
-	}
-	if (frame_msec > 200)
-	{
-		frame_msec = 200;
-	}
-
 	Com_Memset(&cmd, 0, sizeof(cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
@@ -95,10 +83,6 @@ q2usercmd_t CL_CreateCmd(void)
 	cmd.impulse = inCmd.impulse;
 	cmd.msec = inCmd.msec;
 	cmd.lightlevel = inCmd.lightlevel;
-
-	old_sys_frame_time = com_frameTime;
-
-//cmd.impulse = cls.framecount;
 
 	return cmd;
 }

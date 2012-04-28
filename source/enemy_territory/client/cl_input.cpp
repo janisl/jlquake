@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-int old_com_frameTime;
-
 /*
 ===============================================================================
 
@@ -179,17 +177,6 @@ void CL_CreateNewCommands(void)
 	{
 		return;
 	}
-
-	frame_msec = com_frameTime - old_com_frameTime;
-
-	// if running less than 5fps, truncate the extra time to prevent
-	// unexpected moves after a hitch
-	if (frame_msec > 200)
-	{
-		frame_msec = 200;
-	}
-	old_com_frameTime = com_frameTime;
-
 
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
