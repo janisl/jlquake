@@ -95,7 +95,7 @@ void CL_SendCmd(void)
 	// grab frame time
 	com_frameTime = Sys_Milliseconds_();
 
-	in_usercmd_t inCmd = CL_CreateCmdCommon();
+	in_usercmd_t inCmd = CL_CreateCmd();
 	Com_Memset(&cmd, 0, sizeof(*cmd));
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;

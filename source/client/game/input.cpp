@@ -1180,7 +1180,7 @@ static void CL_FinishMove(in_usercmd_t* cmd)
 	}
 }
 
-in_usercmd_t CL_CreateCmdCommon()
+in_usercmd_t CL_CreateCmd()
 {
 	frame_msec = com_frameTime - old_com_frameTime;
 	// if running less than 5fps, truncate the extra time to prevent

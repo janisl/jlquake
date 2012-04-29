@@ -130,7 +130,7 @@ void CL_CreateNewCommands(void)
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
 	int cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
-	in_usercmd_t inCmd = CL_CreateCmdCommon();
+	in_usercmd_t inCmd = CL_CreateCmd();
 	etusercmd_t cmd;
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.buttons = inCmd.buttons & 0xff;

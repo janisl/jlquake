@@ -150,7 +150,7 @@ void CL_SendCmd(void)
 		// grab frame time
 		com_frameTime = Sys_Milliseconds();
 
-		in_usercmd_t cmd = CL_CreateCmdCommon();
+		in_usercmd_t cmd = CL_CreateCmd();
 
 		// send the unreliable message
 		CL_SendMove(&cmd);
