@@ -1166,6 +1166,10 @@ static void CL_FinishMove(in_usercmd_t* cmd)
 	{
 		cmd->identClient = cl.wm_cgameMpIdentClient;	// NERVE - SMF
 	}
+	if (GGameType & GAME_WolfSP)
+	{
+		cmd->cld = cl.ws_cgameCld;			// NERVE - SMF
+	}
 	if (GGameType & GAME_WolfMP)
 	{
 		cmd->mpSetup = cl.wm_cgameMpSetup;				// NERVE - SMF

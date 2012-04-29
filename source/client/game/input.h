@@ -34,6 +34,7 @@ struct in_usercmd_t
 	int mpSetup;
 	int identClient;
 	int flags;
+	int cld;
 };
 
 extern int in_impulse;

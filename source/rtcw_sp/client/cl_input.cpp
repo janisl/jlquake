@@ -119,8 +119,7 @@ wsusercmd_t CL_CreateCmd(void)
 	}
 	cmd.serverTime = inCmd.serverTime;
 	cmd.holdable = inCmd.holdable;
-
-	cmd.cld = cl.ws_cgameCld;			// NERVE - SMF
+	cmd.cld = inCmd.cld;
 
 	return cmd;
 }
