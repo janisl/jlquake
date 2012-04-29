@@ -54,9 +54,6 @@ Cvar* scr_printspeed;
 Cvar* scr_netgraph;
 Cvar* scr_timegraph;
 Cvar* scr_debuggraph;
-Cvar* scr_graphheight;
-Cvar* scr_graphscale;
-Cvar* scr_graphshift;
 
 char crosshair_pic[MAX_QPATH];
 int crosshair_width, crosshair_height;
@@ -110,65 +107,6 @@ void CL_AddNetgraph(void)
 		ping = 30;
 	}
 	SCR_DebugGraph(ping, 0xd0);
-}
-
-
-typedef struct
-{
-	float value;
-	int color;
-} graphsamp_t;
-
-static int current;
-static graphsamp_t values[1024];
-
-/*
-==============
-SCR_DebugGraph
-==============
-*/
-void SCR_DebugGraph(float value, int color)
-{
-	values[current & 1023].value = value;
-	values[current & 1023].color = color;
-	current++;
-}
-
-/*
-==============
-SCR_DrawDebugGraph
-==============
-*/
-void SCR_DrawDebugGraph(void)
-{
-	int a, x, y, w, i, h;
-	float v;
-	int color;
-
-	//
-	// draw the graph
-	//
-	w = scr_vrect.width;
-
-	x = scr_vrect.x;
-	y = scr_vrect.y + scr_vrect.height;
-	UI_FillPal(x, y - scr_graphheight->value,
-		w, scr_graphheight->value, 8);
-
-	for (a = 0; a < w; a++)
-	{
-		i = (current - 1 - a + 1024) & 1023;
-		v = values[i].value;
-		color = values[i].color;
-		v = v * scr_graphscale->value + scr_graphshift->value;
-
-		if (v < 0)
-		{
-			v += scr_graphheight->value * (1 + (int)(-v / scr_graphheight->value));
-		}
-		h = (int)v % (int)scr_graphheight->value;
-		UI_FillPal(x + w - 1 - a, y - h, 1,  h, color);
-	}
 }
 
 /*
@@ -442,9 +380,7 @@ void SCR_Init(void)
 	scr_netgraph = Cvar_Get("netgraph", "0", 0);
 	scr_timegraph = Cvar_Get("timegraph", "0", 0);
 	scr_debuggraph = Cvar_Get("debuggraph", "0", 0);
-	scr_graphheight = Cvar_Get("graphheight", "32", 0);
-	scr_graphscale = Cvar_Get("graphscale", "1", 0);
-	scr_graphshift = Cvar_Get("graphshift", "0", 0);
+	SCR_InitCommon();
 
 //
 // register our commands

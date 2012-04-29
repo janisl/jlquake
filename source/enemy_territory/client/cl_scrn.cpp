@@ -34,9 +34,6 @@ qboolean scr_initialized;			// ready to draw
 
 Cvar* cl_timegraph;
 Cvar* cl_debuggraph;
-Cvar* cl_graphheight;
-Cvar* cl_graphscale;
-Cvar* cl_graphshift;
 
 /*
 ** SCR_Strlen -- skips color escape codes
@@ -89,74 +86,6 @@ void SCR_DrawDemoRecording(void)
 	Cvar_Set("cl_demooffset", va("%d", FS_FTell(clc.demofile)));
 }
 
-
-/*
-===============================================================================
-
-DEBUG GRAPH
-
-===============================================================================
-*/
-
-typedef struct
-{
-	float value;
-	int color;
-} graphsamp_t;
-
-static int current;
-static graphsamp_t values[1024];
-
-/*
-==============
-SCR_DebugGraph
-==============
-*/
-void SCR_DebugGraph(float value, int color)
-{
-	values[current & 1023].value = value;
-	values[current & 1023].color = color;
-	current++;
-}
-
-/*
-==============
-SCR_DrawDebugGraph
-==============
-*/
-void SCR_DrawDebugGraph(void)
-{
-	int a, x, y, w, i, h;
-	float v;
-	int color;
-
-	//
-	// draw the graph
-	//
-	w = cls.glconfig.vidWidth;
-	x = 0;
-	y = cls.glconfig.vidHeight;
-	R_SetColor(g_color_table[0]);
-	R_StretchPic(x, y - cl_graphheight->integer,
-		w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader);
-	R_SetColor(NULL);
-
-	for (a = 0; a < w; a++)
-	{
-		i = (current - 1 - a + 1024) & 1023;
-		v = values[i].value;
-		color = values[i].color;
-		v = v * cl_graphscale->integer + cl_graphshift->integer;
-
-		if (v < 0)
-		{
-			v += cl_graphheight->integer * (1 + (int)(-v / cl_graphheight->integer));
-		}
-		h = (int)v % cl_graphheight->integer;
-		R_StretchPic(x + w - 1 - a, y - h, 1, h, 0, 0, 0, 0, cls.whiteShader);
-	}
-}
-
 //=============================================================================
 
 /*
@@ -168,9 +97,7 @@ void SCR_Init(void)
 {
 	cl_timegraph = Cvar_Get("timegraph", "0", CVAR_CHEAT);
 	cl_debuggraph = Cvar_Get("debuggraph", "0", CVAR_CHEAT);
-	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
-	cl_graphscale = Cvar_Get("graphscale", "1", CVAR_CHEAT);
-	cl_graphshift = Cvar_Get("graphshift", "0", CVAR_CHEAT);
+	SCR_InitCommon();
 
 	scr_initialized = qtrue;
 }

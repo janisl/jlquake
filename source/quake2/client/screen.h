@@ -27,8 +27,6 @@ void    SCR_SizeUp(void);
 void    SCR_SizeDown(void);
 void    SCR_CenterPrint(char* str);
 
-void    SCR_DebugGraph(float value, int color);
-
 void    SCR_TouchPics(void);
 
 void    SCR_RunConsole(void);

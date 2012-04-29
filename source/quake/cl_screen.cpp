@@ -427,6 +427,7 @@ void SCR_Init(void)
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
+	SCR_InitCommon();
 
 //
 // register our commands

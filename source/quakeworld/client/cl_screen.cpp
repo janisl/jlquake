@@ -446,6 +446,7 @@ void SCR_Init(void)
 	scr_showpause = Cvar_Get("showpause","1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed","8", 0);
 	scr_allowsnap = Cvar_Get("scr_allowsnap", "1", 0);
+	SCR_InitCommon();
 
 //
 // register our commands

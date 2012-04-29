@@ -400,6 +400,7 @@ void SCR_Init(void)
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
+	SCR_InitCommon();
 
 //
 // register our commands
