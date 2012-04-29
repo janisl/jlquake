@@ -116,13 +116,23 @@ void CL_MouseEvent(int dx, int dy, int time)
 
 /*
 =================
-CL_CreateCmd
+CL_CreateNewCommands
+
+Create a new wmusercmd_t structure for this frame
 =================
 */
-wmusercmd_t CL_CreateCmd(void)
+void CL_CreateNewCommands(void)
 {
-	in_usercmd_t inCmd = CL_CreateCmdCommon();
+	// no need to create usercmds until we have a gamestate
+	if (cls.state < CA_PRIMED)
+	{
+		return;
+	}
 
+	// generate a command for this frame
+	cl.q3_cmdNumber++;
+	int cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
 	wmusercmd_t cmd;
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.buttons = inCmd.buttons & 0xff;
@@ -140,30 +150,7 @@ wmusercmd_t CL_CreateCmd(void)
 	cmd.holdable = inCmd.holdable;
 	cmd.mpSetup = inCmd.mpSetup;
 	cmd.identClient = inCmd.identClient;
-
-	return cmd;
-}
-
-
-/*
-=================
-CL_CreateNewCommands
-
-Create a new wmusercmd_t structure for this frame
-=================
-*/
-void CL_CreateNewCommands(void)
-{
-	// no need to create usercmds until we have a gamestate
-	if (cls.state < CA_PRIMED)
-	{
-		return;
-	}
-
-	// generate a command for this frame
-	cl.q3_cmdNumber++;
-	int cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
-	cl.wm_cmds[cmdNum] = CL_CreateCmd();
+	cl.wm_cmds[cmdNum] = cmd;
 }
 
 /*

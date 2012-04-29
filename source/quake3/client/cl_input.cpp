@@ -71,32 +71,6 @@ void CL_MouseEvent(int dx, int dy, int time)
 
 /*
 =================
-CL_CreateCmd
-=================
-*/
-q3usercmd_t CL_CreateCmd(void)
-{
-	in_usercmd_t inCmd = CL_CreateCmdCommon();
-
-	q3usercmd_t cmd;
-	Com_Memset(&cmd, 0, sizeof(cmd));
-	cmd.forwardmove = inCmd.forwardmove;
-	cmd.rightmove = inCmd.sidemove;
-	cmd.upmove = inCmd.upmove;
-	cmd.buttons = inCmd.buttons;
-	cmd.weapon = inCmd.weapon;
-	for (int i = 0; i < 3; i++)
-	{
-		cmd.angles[i] = inCmd.angles[i];
-	}
-	cmd.serverTime = inCmd.serverTime;
-
-	return cmd;
-}
-
-
-/*
-=================
 CL_CreateNewCommands
 
 Create a new q3usercmd_t structure for this frame
@@ -113,7 +87,20 @@ void CL_CreateNewCommands(void)
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
 	int cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
-	cl.q3_cmds[cmdNum] = CL_CreateCmd();
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
+	q3usercmd_t cmd;
+	Com_Memset(&cmd, 0, sizeof(cmd));
+	cmd.forwardmove = inCmd.forwardmove;
+	cmd.rightmove = inCmd.sidemove;
+	cmd.upmove = inCmd.upmove;
+	cmd.buttons = inCmd.buttons;
+	cmd.weapon = inCmd.weapon;
+	for (int i = 0; i < 3; i++)
+	{
+		cmd.angles[i] = inCmd.angles[i];
+	}
+	cmd.serverTime = inCmd.serverTime;
+	cl.q3_cmds[cmdNum] = cmd;
 }
 
 /*

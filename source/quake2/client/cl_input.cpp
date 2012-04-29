@@ -58,37 +58,6 @@ void CL_MouseEvent(int mx, int my)
 }
 
 /*
-=================
-CL_CreateCmd
-=================
-*/
-q2usercmd_t CL_CreateCmd(void)
-{
-	q2usercmd_t cmd;
-
-	// grab frame time
-	com_frameTime = Sys_Milliseconds_();
-
-	Com_Memset(&cmd, 0, sizeof(cmd));
-
-	in_usercmd_t inCmd = CL_CreateCmdCommon();
-	cmd.forwardmove = inCmd.forwardmove;
-	cmd.sidemove = inCmd.sidemove;
-	cmd.upmove = inCmd.upmove;
-	cmd.buttons = inCmd.buttons;
-	for (int i = 0; i < 3; i++)
-	{
-		cmd.angles[i] = inCmd.angles[i];
-	}
-	cmd.impulse = inCmd.impulse;
-	cmd.msec = inCmd.msec;
-	cmd.lightlevel = inCmd.lightlevel;
-
-	return cmd;
-}
-
-
-/*
 ============
 CL_InitInput
 ============
@@ -123,7 +92,22 @@ void CL_SendCmd(void)
 	cmd = &cl.q2_cmds[i];
 	cl.q2_cmd_time[i] = cls.realtime;	// for netgraph ping calculation
 
-	*cmd = CL_CreateCmd();
+	// grab frame time
+	com_frameTime = Sys_Milliseconds_();
+
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
+	Com_Memset(&cmd, 0, sizeof(*cmd));
+	cmd->forwardmove = inCmd.forwardmove;
+	cmd->sidemove = inCmd.sidemove;
+	cmd->upmove = inCmd.upmove;
+	cmd->buttons = inCmd.buttons;
+	for (int i = 0; i < 3; i++)
+	{
+		cmd->angles[i] = inCmd.angles[i];
+	}
+	cmd->impulse = inCmd.impulse;
+	cmd->msec = inCmd.msec;
+	cmd->lightlevel = inCmd.lightlevel;
 
 	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
 	{

@@ -114,36 +114,6 @@ void CL_MouseEvent(int dx, int dy, int time)
 
 /*
 =================
-CL_CreateCmd
-=================
-*/
-etusercmd_t CL_CreateCmd(void)
-{
-	in_usercmd_t inCmd = CL_CreateCmdCommon();
-
-	etusercmd_t cmd;
-	memset(&cmd, 0, sizeof(cmd));
-	cmd.buttons = inCmd.buttons & 0xff;
-	cmd.wbuttons = inCmd.buttons >> 8;
-	cmd.forwardmove = inCmd.forwardmove;
-	cmd.rightmove = inCmd.sidemove;
-	cmd.upmove = inCmd.upmove;
-	cmd.doubleTap = inCmd.doubleTap;
-	cmd.weapon = inCmd.weapon;
-	for (int i = 0; i < 3; i++)
-	{
-		cmd.angles[i] = inCmd.angles[i];
-	}
-	cmd.serverTime = inCmd.serverTime;
-	cmd.identClient = inCmd.identClient;
-	cmd.flags = inCmd.flags;
-
-	return cmd;
-}
-
-
-/*
-=================
 CL_CreateNewCommands
 
 Create a new etusercmd_t structure for this frame
@@ -160,7 +130,24 @@ void CL_CreateNewCommands(void)
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
 	int cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
-	cl.et_cmds[cmdNum] = CL_CreateCmd();
+	in_usercmd_t inCmd = CL_CreateCmdCommon();
+	etusercmd_t cmd;
+	memset(&cmd, 0, sizeof(cmd));
+	cmd.buttons = inCmd.buttons & 0xff;
+	cmd.wbuttons = inCmd.buttons >> 8;
+	cmd.forwardmove = inCmd.forwardmove;
+	cmd.rightmove = inCmd.sidemove;
+	cmd.upmove = inCmd.upmove;
+	cmd.doubleTap = inCmd.doubleTap;
+	cmd.weapon = inCmd.weapon;
+	for (int i = 0; i < 3; i++)
+	{
+		cmd.angles[i] = inCmd.angles[i];
+	}
+	cmd.serverTime = inCmd.serverTime;
+	cmd.identClient = inCmd.identClient;
+	cmd.flags = inCmd.flags;
+	cl.et_cmds[cmdNum] = cmd;
 }
 
 /*
