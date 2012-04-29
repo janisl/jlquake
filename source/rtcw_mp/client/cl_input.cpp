@@ -172,9 +172,6 @@ Create a new wmusercmd_t structure for this frame
 */
 void CL_CreateNewCommands(void)
 {
-	wmusercmd_t* cmd;
-	int cmdNum;
-
 	// no need to create usercmds until we have a gamestate
 	if (cls.state < CA_PRIMED)
 	{
@@ -183,9 +180,8 @@ void CL_CreateNewCommands(void)
 
 	// generate a command for this frame
 	cl.q3_cmdNumber++;
-	cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
+	int cmdNum = cl.q3_cmdNumber & CMD_MASK_Q3;
 	cl.wm_cmds[cmdNum] = CL_CreateCmd();
-	cmd = &cl.wm_cmds[cmdNum];
 }
 
 /*
