@@ -76,14 +76,10 @@ CL_CreateCmd
 */
 q3usercmd_t CL_CreateCmd(void)
 {
-	q3usercmd_t cmd;
-	vec3_t oldAngles;
-
-	VectorCopy(cl.viewangles, oldAngles);
-
-	Com_Memset(&cmd, 0, sizeof(cmd));
-
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
+
+	q3usercmd_t cmd;
+	Com_Memset(&cmd, 0, sizeof(cmd));
 	cmd.forwardmove = inCmd.forwardmove;
 	cmd.rightmove = inCmd.sidemove;
 	cmd.upmove = inCmd.upmove;
@@ -94,19 +90,6 @@ q3usercmd_t CL_CreateCmd(void)
 		cmd.angles[i] = inCmd.angles[i];
 	}
 	cmd.serverTime = inCmd.serverTime;
-
-	// draw debug graphs of turning for mouse testing
-	if (cl_debugMove->integer)
-	{
-		if (cl_debugMove->integer == 1)
-		{
-			SCR_DebugGraph(abs(cl.viewangles[YAW] - oldAngles[YAW]), 0);
-		}
-		if (cl_debugMove->integer == 2)
-		{
-			SCR_DebugGraph(abs(cl.viewangles[PITCH] - oldAngles[PITCH]), 0);
-		}
-	}
 
 	return cmd;
 }
@@ -399,7 +382,6 @@ void CL_InitInput(void)
 	CL_InitInputCommon();
 
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
-	cl_debugMove = Cvar_Get("cl_debugMove", "0", 0);
 }
 
 void IN_CenterViewWMP()

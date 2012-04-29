@@ -46,6 +46,7 @@ extern Cvar* m_pitch;
 extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 extern Cvar* cl_bypassMouseInput;
+extern Cvar* cl_debugMove;
 
 void CL_JoystickEvent(int axis, int value, int time);
 void CLQH_StartPitchDrift();

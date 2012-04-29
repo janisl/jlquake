@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 
 Cvar* cl_wavefilerecord;
 Cvar* cl_nodelta;
-Cvar* cl_debugMove;
 
 Cvar* cl_noprint;
 Cvar* cl_motd;

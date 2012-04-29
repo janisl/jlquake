@@ -71,6 +71,7 @@ Cvar* cl_bypassMouseInput;
 static Cvar* cl_doubletapdelay;
 static Cvar* cl_recoilPitch;
 static Cvar* cl_lightlevel;
+Cvar* cl_debugMove;
 
 int in_impulse;
 
@@ -1225,6 +1226,19 @@ in_usercmd_t CL_CreateCmdCommon()
 
 	Cam_FinishMove(&cmd);
 
+	// draw debug graphs of turning for mouse testing
+	if (cl_debugMove->integer)
+	{
+		if (cl_debugMove->integer == 1)
+		{
+			SCR_DebugGraph(abs(cl.viewangles[YAW] - oldAngles[YAW]), 0);
+		}
+		if (cl_debugMove->integer == 2)
+		{
+			SCR_DebugGraph(abs(cl.viewangles[PITCH] - oldAngles[PITCH]), 0);
+		}
+	}
+
 	return cmd;
 }
 
@@ -1380,6 +1394,7 @@ void CL_InitInputCommon()
 #endif
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
 	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
+	cl_debugMove = Cvar_Get("cl_debugMove", "0", 0);
 	if (!(GGameType & GAME_Tech3))
 	{
 		m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);

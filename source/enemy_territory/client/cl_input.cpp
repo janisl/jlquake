@@ -119,15 +119,10 @@ CL_CreateCmd
 */
 etusercmd_t CL_CreateCmd(void)
 {
-	etusercmd_t cmd;
-	vec3_t oldAngles;
-
-	VectorCopy(cl.viewangles, oldAngles);
-
-	memset(&cmd, 0, sizeof(cmd));
-
 	in_usercmd_t inCmd = CL_CreateCmdCommon();
 
+	etusercmd_t cmd;
+	memset(&cmd, 0, sizeof(cmd));
 	cmd.buttons = inCmd.buttons & 0xff;
 	cmd.wbuttons = inCmd.buttons >> 8;
 	cmd.forwardmove = inCmd.forwardmove;
@@ -142,19 +137,6 @@ etusercmd_t CL_CreateCmd(void)
 	cmd.serverTime = inCmd.serverTime;
 	cmd.identClient = inCmd.identClient;
 	cmd.flags = inCmd.flags;
-
-	// draw debug graphs of turning for mouse testing
-	if (cl_debugMove->integer)
-	{
-		if (cl_debugMove->integer == 1)
-		{
-			SCR_DebugGraph(abs(cl.viewangles[YAW] - oldAngles[YAW]), 0);
-		}
-		if (cl_debugMove->integer == 2)
-		{
-			SCR_DebugGraph(abs(cl.viewangles[PITCH] - oldAngles[PITCH]), 0);
-		}
-	}
 
 	return cmd;
 }
@@ -454,5 +436,4 @@ void CL_InitInput(void)
 	Cmd_AddCommand("help",IN_Help);
 
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
-	cl_debugMove = Cvar_Get("cl_debugMove", "0", 0);
 }

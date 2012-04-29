@@ -51,7 +51,6 @@ extern vm_t* uivm;				// interface to ui dll or vm
 // cvars
 //
 extern Cvar* cl_nodelta;
-extern Cvar* cl_debugMove;
 extern Cvar* cl_noprint;
 extern Cvar* cl_timegraph;
 extern Cvar* cl_maxpackets;
