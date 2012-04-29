@@ -95,6 +95,7 @@ void CL_SendCmd(void)
 	cmd->buttons = inCmd.buttons;
 	cmd->impulse = inCmd.impulse;
 	cmd->msec = inCmd.msec;
+	VectorCopy(inCmd.fAngles, cmd->angles);
 
 	//
 	// allways dump the first two message, because it may contain leftover inputs
