@@ -96,7 +96,7 @@ void CL_SendCmd(void)
 	com_frameTime = Sys_Milliseconds_();
 
 	in_usercmd_t inCmd = CL_CreateCmd();
-	Com_Memset(&cmd, 0, sizeof(*cmd));
+	Com_Memset(cmd, 0, sizeof(*cmd));
 	cmd->forwardmove = inCmd.forwardmove;
 	cmd->sidemove = inCmd.sidemove;
 	cmd->upmove = inCmd.upmove;
