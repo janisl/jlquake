@@ -58,9 +58,17 @@ void SCR_DrawDebugGraph()
 	//
 	// draw the graph
 	//
-	w = cls.glconfig.vidWidth;
 	x = 0;
-	y = cls.glconfig.vidHeight;
+	if (GGameType & GAME_Tech3)
+	{
+		w = cls.glconfig.vidWidth;
+		y = cls.glconfig.vidHeight;
+	}
+	else
+	{
+		w = viddef.width;
+		y = viddef.height;
+	}
 	if (GGameType & GAME_Tech3)
 	{
 		R_SetColor(g_color_table[0]);
@@ -90,9 +98,16 @@ void SCR_DrawDebugGraph()
 		{
 			R_StretchPic(x + w - 1 - a, y - h, 1, h, 0, 0, 0, 0, cls.whiteShader);
 		}
-		else
+		else if (GGameType & GAME_Quake2)
 		{
 			UI_FillPal(x + w - 1 - a, y - h, 1,  h, color);
+		}
+		else
+		{
+			float r = (color & 0xff) / 255.0;
+			float g = ((color >> 8) & 0xff) / 255.0;
+			float b = ((color >> 16) & 0xff) / 255.0;
+			UI_Fill(x + w - 1 - a, y - h, 1, h, r, g, b, 1);
 		}
 	}
 }

@@ -259,36 +259,28 @@ void Draw_FadeScreen(void)
 #define NET_TIMINGS 256
 static int packet_latency[NET_TIMINGS];
 
-static void R_LineGraph(int x, int y, int h)
+static void R_LineGraph(int h)
 {
-	int r, g, b;
+	int colour;
 	if (h == 10000)
 	{
 		// yellow
-		r = 1;
-		g = 1;
-		b = 0;
+		colour = 0x00ffff;
 	}
 	else if (h == 9999)
 	{
 		// red
-		r = 1;
-		g = 0;
-		b = 0;
+		colour = 0x0000ff;
 	}
 	else if (h == 9998)
 	{
 		// blue
-		r = 0;
-		g = 0;
-		b = 1;
+		colour = 0xff0000;
 	}
 	else
 	{
 		// white
-		r = 1;
-		g = 1;
-		b = 1;
+		colour = 0xffffff;
 	}
 
 	if (h > NET_GRAPHHEIGHT)
@@ -296,7 +288,7 @@ static void R_LineGraph(int x, int y, int h)
 		h = NET_GRAPHHEIGHT;
 	}
 
-	UI_Fill(8 + x, y + NET_GRAPHHEIGHT - h, 1, h, r, g, b, 1);
+	SCR_DebugGraph(h, colour);
 }
 
 /*
@@ -306,13 +298,11 @@ R_NetGraph
 */
 void R_NetGraph(void)
 {
-	int x, y;
-	hwframe_t* frame;
-	char st[80];
+	static int lastOutgoingSequence = 0;
 
 	for (int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++)
 	{
-		frame = &cl.hw_frames[i & UPDATE_MASK_HW];
+		hwframe_t* frame = &cl.hw_frames[i & UPDATE_MASK_HW];
 		if (frame->receivedtime == -1)
 		{
 			packet_latency[i & 255] = 9999;		// dropped
@@ -331,32 +321,13 @@ void R_NetGraph(void)
 		}
 	}
 
-	x = 0;
-	int lost = 0;
-	for (int a = 0; a < NET_TIMINGS; a++)
+	for (int a = lastOutgoingSequence + 1; a <= clc.netchan.outgoingSequence; a++)
 	{
-		int i = (clc.netchan.outgoingSequence - a) & 255;
-		if (packet_latency[i] == 9999)
-		{
-			lost++;
-		}
+		int i = a & 255;
+		R_LineGraph(packet_latency[i]);
 	}
-
-	x = -((viddef.width - 320) >> 1);
-	y = viddef.height - sb_lines - 24 - NET_GRAPHHEIGHT - 1;
-
-	M_DrawTextBox(x, y, NET_TIMINGS / 8, NET_GRAPHHEIGHT / 8 + 1);
-	y += 8;
-
-	sprintf(st, "%3i%% packet loss", lost * 100 / NET_TIMINGS);
-	Draw_String(8, y, st);
-	y += 8;
-
-	for (int a = 0; a < NET_TIMINGS; a++)
-	{
-		int i = (clc.netchan.outgoingSequence - a) & 255;
-		R_LineGraph(NET_TIMINGS - 1 - a, y, packet_latency[i]);
-	}
+	lastOutgoingSequence = clc.netchan.outgoingSequence;
+	SCR_DrawDebugGraph();
 }
 
 void R_DrawName(vec3_t origin, char* Name, int Red)
