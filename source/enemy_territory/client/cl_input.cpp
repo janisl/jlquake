@@ -262,7 +262,7 @@ void CL_WritePacket(void)
 	memset(&nullcmd, 0, sizeof(nullcmd));
 	oldcmd = &nullcmd;
 
-	MSG_Init(&buf, data, sizeof(data));
+	buf.Init(data, sizeof(data));
 
 	buf.Bitstream();
 	// write the current serverId so the server

@@ -506,7 +506,7 @@ sysEvent_t Sys_GetEvent(void)
 	}
 
 	// check for network packets
-	MSG_Init(&netmsg, sys_packetReceived, sizeof(sys_packetReceived));
+	netmsg.Init(sys_packetReceived, sizeof(sys_packetReceived));
 	if (Sys_GetPacket(&adr, &netmsg))
 	{
 		netadr_t* buf;

@@ -121,7 +121,7 @@ void Netchan_TransmitNextFragment(netchan_t* chan)
 	int fragmentLength;
 
 	// write the packet header
-	MSG_InitOOB(&send, send_buf, sizeof(send_buf));						// <-- only do the oob here
+	send.InitOOB(send_buf, sizeof(send_buf));						// <-- only do the oob here
 
 	send.WriteLong(chan->outgoingSequence | FRAGMENT_BIT);
 
@@ -202,7 +202,7 @@ void Netchan_Transmit(netchan_t* chan, int length, const byte* data)
 	}
 
 	// write the packet header
-	MSG_InitOOB(&send, send_buf, sizeof(send_buf));
+	send.InitOOB(send_buf, sizeof(send_buf));
 
 	send.WriteLong(chan->outgoingSequence);
 	chan->outgoingSequence++;
@@ -711,7 +711,7 @@ void QDECL NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte* format, int len)
 	int i;
 	QMsg mbuf;
 
-	MSG_InitOOB(&mbuf, string, sizeof(string));
+	mbuf.InitOOB(string, sizeof(string));
 
 	// set the header
 	string[0] = 0xff;

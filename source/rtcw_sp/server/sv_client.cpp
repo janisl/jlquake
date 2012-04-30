@@ -632,7 +632,7 @@ void SV_SendClientGameState(client_t* client)
 	// gamestate message was not just sent, forcing a retransmit
 	client->gamestateMessageNum = client->netchan.outgoingSequence;
 
-	MSG_Init(&msg, msgBuffer, sizeof(msgBuffer));
+	msg.Init(msgBuffer, sizeof(msgBuffer));
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received

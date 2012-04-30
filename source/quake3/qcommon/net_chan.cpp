@@ -206,7 +206,7 @@ void Netchan_TransmitNextFragment(netchan_t* chan)
 	int fragmentLength;
 
 	// write the packet header
-	MSG_InitOOB(&send, send_buf, sizeof(send_buf));					// <-- only do the oob here
+	send.InitOOB(send_buf, sizeof(send_buf));					// <-- only do the oob here
 
 	send.WriteLong(chan->outgoingSequence | FRAGMENT_BIT);
 
@@ -286,7 +286,7 @@ void Netchan_Transmit(netchan_t* chan, int length, const byte* data)
 	}
 
 	// write the packet header
-	MSG_InitOOB(&send, send_buf, sizeof(send_buf));
+	send.InitOOB(send_buf, sizeof(send_buf));
 
 	send.WriteLong(chan->outgoingSequence);
 	chan->outgoingSequence++;

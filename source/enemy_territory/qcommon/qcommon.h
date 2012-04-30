@@ -37,8 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //============================================================================
 
-void MSG_Init(QMsg* buf, byte* data, int length);
-void MSG_InitOOB(QMsg* buf, byte* data, int length);
 void* MSG_GetSpace(QMsg* buf, int length);
 void MSG_Uncompressed(QMsg* buf);
 

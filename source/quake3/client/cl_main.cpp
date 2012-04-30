@@ -329,7 +329,7 @@ void CL_Record_f(void)
 	clc.q3_demowaiting = qtrue;
 
 	// write out the gamestate message
-	MSG_Init(&buf, bufData, sizeof(bufData));
+	buf.Init(bufData, sizeof(bufData));
 	buf.Bitstream();
 
 	// NOTE, MRE: all server->client messages now acknowledge
@@ -446,7 +446,7 @@ void CL_ReadDemoMessage(void)
 	clc.q3_serverMessageSequence = LittleLong(s);
 
 	// init the message
-	MSG_Init(&buf, bufData, sizeof(bufData));
+	buf.Init(bufData, sizeof(bufData));
 
 	// get the length
 	r = FS_Read(&buf.cursize, 4, clc.demofile);

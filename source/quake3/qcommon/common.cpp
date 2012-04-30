@@ -2111,7 +2111,7 @@ int Com_EventLoop(void)
 	byte bufData[MAX_MSGLEN_Q3];
 	QMsg buf;
 
-	MSG_Init(&buf, bufData, sizeof(bufData));
+	buf.Init(bufData, sizeof(bufData));
 
 	while (1)
 	{

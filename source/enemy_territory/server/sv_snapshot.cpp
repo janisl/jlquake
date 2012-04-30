@@ -837,8 +837,7 @@ void SV_SendClientIdle(client_t* client)
 	byte msg_buf[MAX_MSGLEN_WOLF];
 	QMsg msg;
 
-	MSG_Init(&msg, msg_buf, sizeof(msg_buf));
-	msg.allowoverflow = qtrue;
+	msg.Init(msg_buf, sizeof(msg_buf));
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
@@ -905,7 +904,7 @@ void SV_SendClientSnapshot(client_t* client)
 		return;
 	}
 
-	MSG_Init(&msg, msg_buf, sizeof(msg_buf));
+	msg.Init(msg_buf, sizeof(msg_buf));
 	msg.allowoverflow = qtrue;
 
 	// NOTE, MRE: all server->client messages now acknowledge

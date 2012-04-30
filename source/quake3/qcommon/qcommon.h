@@ -30,9 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // msg.c
 //
-void MSG_Init(QMsg* buf, byte* data, int length);
-void MSG_InitOOB(QMsg* buf, byte* data, int length);
-
 void MSG_WriteDeltaUsercmd(QMsg* msg, q3usercmd_t* from, q3usercmd_t* to);
 void MSG_ReadDeltaUsercmd(QMsg* msg, q3usercmd_t* from, q3usercmd_t* to);
 

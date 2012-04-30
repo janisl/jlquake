@@ -43,16 +43,6 @@ Handles byte ordering and avoids alignment errors
 ==============================================================================
 */
 
-void MSG_Init(QMsg* buf, byte* data, int length)
-{
-	buf->Init(data, length);
-}
-
-void MSG_InitOOB(QMsg* buf, byte* data, int length)
-{
-	buf->InitOOB(data, length);
-}
-
 void MSG_Uncompressed(QMsg* buf)
 {
 	// align to byte-boundary
