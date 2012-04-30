@@ -389,10 +389,10 @@ sysEvent_t  Sys_GetEvent(void);
 void    Sys_Init(void);
 
 // general development dll loading for virtual machine testing
-// fqpath param added 7/20/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ...),
+// fqpath param added 7/20/02 by T.Ray - Sys_VM_LoadDll is only called in vm.c at this time
+void* Sys_VM_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ...),
 	int (* systemcalls)(qintptr, ...));
-void    Sys_UnloadDll(void* dllHandle);
+void    Sys_VM_UnloadDll(void* dllHandle);
 
 void    Sys_UnloadGame(void);
 void* Sys_GetGameAPI(void* parms);

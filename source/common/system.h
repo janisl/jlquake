@@ -32,3 +32,9 @@ double Sys_DoubleTime();
 void Sys_ShowConsole(int level, bool quitOnClose);
 char* Sys_ConsoleInput();
 void Sys_Print(const char* msg);
+
+char* Sys_GetDllName(const char* name);
+char* Sys_GetMPDllName(const char* name);
+void* Sys_LoadDll(const char* name);
+void* Sys_GetDllFunction(void* handle, const char* name);
+void Sys_UnloadDll(void* handle);

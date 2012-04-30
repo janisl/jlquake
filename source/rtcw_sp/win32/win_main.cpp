@@ -322,32 +322,25 @@ LOAD/UNLOAD DLL
 
 /*
 =================
-Sys_UnloadDll
+Sys_VM_UnloadDll
 
 =================
 */
-void Sys_UnloadDll(void* dllHandle)
+void Sys_VM_UnloadDll(void* dllHandle)
 {
-	if (!dllHandle)
-	{
-		return;
-	}
-	if (!FreeLibrary((HMODULE)dllHandle))
-	{
-		Com_Error(ERR_FATAL, "Sys_UnloadDll FreeLibrary failed");
-	}
+	Sys_UnloadDll(dllHandle);
 }
 
 /*
 =================
-Sys_LoadDll
+Sys_VM_LoadDll
 
 Used to load a development dll instead of a virtual machine
 =================
 */
 extern char* FS_BuildOSPath(const char* base, const char* game, const char* qpath);
 
-void* QDECL Sys_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...),
+void* QDECL Sys_VM_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...),
 	qintptr (QDECL* systemcalls)(int, ...))
 {
 	static int lastWarning = 0;
@@ -363,19 +356,7 @@ void* QDECL Sys_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...
 #endif
 	char filename[MAX_QPATH];
 
-#ifdef _WIN64
-#ifdef WOLF_SP_DEMO
-	String::Sprintf(filename, sizeof(filename), "%sx86_64_d.dll", name);
-#else
-	String::Sprintf(filename, sizeof(filename), "%sx86_64.dll", name);
-#endif
-#else
-#ifdef WOLF_SP_DEMO
-	String::Sprintf(filename, sizeof(filename), "%sx86_d.dll", name);
-#else
-	String::Sprintf(filename, sizeof(filename), "%sx86.dll", name);
-#endif
-#endif
+	String::NCpyZ(filename, Sys_GetDllName(name), sizeof(filename));
 
 
 #ifdef NDEBUG
@@ -404,7 +385,7 @@ void* QDECL Sys_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...
 	// check current folder only if we are a developer
 	if (1)		//----(SA)	always dll
 	{	//	if (Cvar_VariableIntegerValue( "devdll" )) {
-		libHandle = LoadLibrary(filename);
+		libHandle = Sys_LoadDll(filename);
 		if (libHandle)
 		{
 			goto found_dll;
@@ -416,14 +397,14 @@ void* QDECL Sys_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...
 	gamedir = Cvar_VariableString("fs_game");
 
 	fn = FS_BuildOSPath(basepath, gamedir, filename);
-	libHandle = LoadLibrary(fn);
+	libHandle = Sys_LoadDll(fn);
 
 	if (!libHandle)
 	{
 		if (cdpath[0])
 		{
 			fn = FS_BuildOSPath(cdpath, gamedir, filename);
-			libHandle = LoadLibrary(fn);
+			libHandle = Sys_LoadDll(fn);
 		}
 
 		if (!libHandle)
@@ -434,11 +415,11 @@ void* QDECL Sys_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...
 
 found_dll:
 
-	dllEntry = (void (QDECL*)(qintptr (QDECL*)(int, ...)))GetProcAddress(libHandle, "dllEntry");
-	*entryPoint = (qintptr (QDECL*)(int,...))GetProcAddress(libHandle, "vmMain");
+	dllEntry = (void (QDECL*)(qintptr (QDECL*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (QDECL*)(int,...))Sys_GetDllFunction(libHandle, "vmMain");
 	if (!*entryPoint || !dllEntry)
 	{
-		FreeLibrary(libHandle);
+		Sys_UnloadDll(libHandle);
 		return NULL;
 	}
 	dllEntry(systemcalls);

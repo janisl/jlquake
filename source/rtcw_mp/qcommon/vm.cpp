@@ -275,7 +275,7 @@ vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 	if (interpret == VMI_NATIVE)
 	{
 		// try to load as a system dll
-		vm->dllHandle = Sys_LoadDll(module, vm->fqpath, &vm->entryPoint, VM_DllSyscall);
+		vm->dllHandle = Sys_VM_LoadDll(module, vm->fqpath, &vm->entryPoint, VM_DllSyscall);
 		if (vm->dllHandle)
 		{
 			return vm;
@@ -377,7 +377,7 @@ void VM_Free(vm_t* vm)
 
 	if (vm->dllHandle)
 	{
-		Sys_UnloadDll(vm->dllHandle);
+		Sys_VM_UnloadDll(vm->dllHandle);
 		Com_Memset(vm, 0, sizeof(*vm));
 	}
 #if 0	// now automatically freed by hunk
@@ -407,7 +407,7 @@ void VM_Clear(void)
 	{
 		if (vmTable[i].dllHandle)
 		{
-			Sys_UnloadDll(vmTable[i].dllHandle);
+			Sys_VM_UnloadDll(vmTable[i].dllHandle);
 		}
 		Com_Memset(&vmTable[i], 0, sizeof(vm_t));
 	}

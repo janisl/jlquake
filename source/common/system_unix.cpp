@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/time.h>
+#include <dlfcn.h>
 
 #define MAX_FOUND_FILES     0x1000
 
@@ -335,4 +336,67 @@ double Sys_DoubleTime()
 	}
 
 	return (tp.tv_sec - sys_timeBase) + tp.tv_usec / 1000000.0;
+}
+
+static char* Sys_GetDllNameImpl(const char* name, const char* suffix)
+{
+#if defined __i386__
+	return va("%s%si386.so", name, suffix);
+#elif defined __x86_64__
+	return va("%s%sx86_64.so", name, suffix);
+#elif defined __powerpc__
+	return va("%s%sppc.so", name, suffix);
+#elif defined __axp__
+	return va("%s%saxp.so", name, suffix);
+#elif defined __mips__
+	return va("%s%smips.so", name, suffix);
+#elif defined __sun__
+	return va("%s%ssparc.so", name, suffix);
+#else
+#error Unknown arch
+#endif
+}
+
+char* Sys_GetDllName(const char* name)
+{
+	return Sys_GetDllNameImpl(name, "");
+}
+
+char* Sys_GetMPDllName(const char* name)
+{
+	return Sys_GetDllNameImpl(name, ".mp.");
+}
+
+void* Sys_LoadDll(const char* name)
+{
+	void* handle = dlopen(name, RTLD_NOW);
+	if (!handle)
+	{
+		common->Printf("Sys_LoadDll(%s) failed:\n\"%s\"\n", name, dlerror());
+	}
+	return handle;
+}
+
+void* Sys_GetDllFunction(void* handle, const char* name)
+{
+	void* func = dlsym(handle, name);
+	if (!func)
+	{
+		common->Printf("Sys_GetDllFunction: failed dlsym(%s):\n\"%s\" !\n", name, dlerror());
+	}
+	return func;
+}
+
+void Sys_UnloadDll(void* handle)
+{
+	if (!handle)
+	{
+		return;
+	}
+	dlclose(handle);
+	const char* err = dlerror();
+	if (err != NULL)
+	{
+		common->Printf("Sys_UnloadGame failed on dlclose: \"%s\"!\n", err);
+	}
 }

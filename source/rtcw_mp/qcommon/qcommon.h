@@ -449,12 +449,10 @@ sysEvent_t  Sys_GetEvent(void);
 
 void    Sys_Init(void);
 
-// FIXME: wants win32 implementation
-char* Sys_GetDLLName(const char* name);
-// fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-void* QDECL Sys_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPoint) (int, ...),
+// fqpath param added 2/15/02 by T.Ray - Sys_VM_LoadDll is only called in vm.c at this time
+void* QDECL Sys_VM_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPoint) (int, ...),
 	qintptr (QDECL* systemcalls)(int, ...));
-void    Sys_UnloadDll(void* dllHandle);
+void    Sys_VM_UnloadDll(void* dllHandle);
 
 void    Sys_UnloadGame(void);
 void* Sys_GetGameAPI(void* parms);

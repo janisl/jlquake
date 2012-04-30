@@ -78,7 +78,7 @@ void Sys_UnloadGame(void)
 {
 	if (game_library)
 	{
-		dlclose(game_library);
+		Sys_UnloadDll(game_library);
 	}
 	game_library = NULL;
 }
@@ -97,13 +97,7 @@ void* Sys_GetGameAPI(void* parms)
 	char name[MAX_OSPATH];
 	char curpath[MAX_OSPATH];
 	char* path;
-#ifdef __i386__
-	const char* gamename = "gamei386.so";
-#elif defined __sun__
-	const char* gamename = "gamesparc.so";
-#else
-#error Unknown arch
-#endif
+	const char* gamename = Sys_GetDllName("game");
 
 	if (game_library)
 	{
@@ -124,7 +118,7 @@ void* Sys_GetGameAPI(void* parms)
 			return NULL;		// couldn't find one anywhere
 		}
 		sprintf(name, "%s/%s/%s", curpath, path, gamename);
-		game_library = dlopen(name, RTLD_NOW);
+		game_library = Sys_LoadDll(name);
 		if (game_library)
 		{
 			Com_DPrintf("LoadLibrary (%s)\n",name);
@@ -136,7 +130,7 @@ void* Sys_GetGameAPI(void* parms)
 		}
 	}
 
-	GetGameAPI = (void*)dlsym(game_library, "GetGameAPI");
+	GetGameAPI = (void*)Sys_GetDllFunction(game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
 		Sys_UnloadGame();

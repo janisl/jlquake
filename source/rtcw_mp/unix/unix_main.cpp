@@ -267,31 +267,19 @@ void floating_point_exception_handler(int whatever)
 
 /*
 =================
-Sys_UnloadDll
+Sys_VM_UnloadDll
 
 =================
 */
-void Sys_UnloadDll(void* dllHandle)
+void Sys_VM_UnloadDll(void* dllHandle)
 {
-	// bk001206 - verbose error reporting
-	const char* err;// rb010123 - now const
-	if (!dllHandle)
-	{
-		Com_Printf("Sys_UnloadDll(NULL)\n");
-		return;
-	}
-	dlclose(dllHandle);
-	err = dlerror();
-	if (err != NULL)
-	{
-		Com_Printf("Sys_UnloadGame failed on dlclose: \"%s\"!\n", err);
-	}
+	Sys_UnloadDll(dllHandle);
 }
 
 
 /*
 =================
-Sys_LoadDll
+Sys_VM_LoadDll
 
 Used to load a development dll instead of a virtual machine
 
@@ -314,7 +302,7 @@ DLL to the main installation prior to run (sv_pure 1 would have a tendency
 to kill their compiled DLL with extracted ones though :-( )
 
 NOTE T.Ray:
-fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
+fqpath param added 2/15/02 by T.Ray - Sys_VM_LoadDll is only called in vm.c at this time
 fqpath will be empty if dll not loaded, otherwise will hold fully qualified path of dll module loaded
 fqpath buffersize must be at least MAX_QPATH+1 bytes long
 =================
@@ -375,25 +363,7 @@ qboolean CopyDLLForMod(char** p_fn, const char* gamedir, const char* pwdpath, co
 	}
 }
 
-// TTimo - Wolf MP specific, adding .mp. to shared objects
-char* Sys_GetDLLName(const char* name)
-{
-#if defined __i386__
-	return va("%s.mp.i386.so", name);
-#elif defined __x86_64__
-	return va("%s.mp.x86_64.so", name);
-#elif defined __powerpc__
-	return va("%s.mp.ppc.so", name);
-#elif defined __axp__
-	return va("%s.mp.axp.so", name);
-#elif defined __mips__
-	return va("%s.mp.mips.so", name);
-#else
-#error Unknown arch
-#endif
-}
-
-void* Sys_LoadDll(const char* name, char* fqpath,
+void* Sys_VM_LoadDll(const char* name, char* fqpath,
 	qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 {
@@ -415,10 +385,7 @@ void* Sys_LoadDll(const char* name, char* fqpath,
 	// bk001206 - let's have some paranoia
 	assert(name);
 
-	String::NCpyZ(fname, Sys_GetDLLName(name), sizeof(fname));
-
-// bk001129 - was RTLD_LAZY
-#define Q_RTLD    RTLD_NOW
+	String::NCpyZ(fname, Sys_GetMPDllName(name), sizeof(fname));
 
 	pwdpath = Sys_Cwd();
 	homepath = Cvar_VariableString("fs_homepath");
@@ -459,7 +426,7 @@ void* Sys_LoadDll(const char* name, char* fqpath,
 				// we may be dealing with a media-only mod, check wether we can find 'reference' DLLs and copy them over
 				if (!CopyDLLForMod(&fn, gamedir, pwdpath, homepath, basepath, fname))
 				{
-					Com_Error(ERR_FATAL, "Sys_LoadDll(%s) failed, no corresponding .so file found in fs_homepath or fs_basepath\n", name);
+					Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed, no corresponding .so file found in fs_homepath or fs_basepath\n", name);
 				}
 			}
 		}
@@ -473,7 +440,7 @@ void* Sys_LoadDll(const char* name, char* fqpath,
 			// we may be dealing with a media-only mod, check wether we can find 'reference' DLLs and copy them over
 			if (!CopyDLLForMod(&fn, gamedir, pwdpath, homepath, basepath, fname))
 			{
-				Com_Error(ERR_FATAL, "Sys_LoadDll(%s) failed, no corresponding .so file found in fs_homepath or fs_basepath\n", name);
+				Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed, no corresponding .so file found in fs_homepath or fs_basepath\n", name);
 			}
 		}
 	}
@@ -496,35 +463,27 @@ void* Sys_LoadDll(const char* name, char* fqpath,
 
 #ifndef NDEBUG
 	// current directory
-	// NOTE: only for debug build, see Sys_LoadDll discussion
+	// NOTE: only for debug build, see Sys_VM_LoadDll discussion
 	fn = FS_BuildOSPath(pwdpath, gamedir, fname);
-	Com_Printf("Sys_LoadDll(%s)... ", fn);
-	libHandle = dlopen(fn, Q_RTLD);
+	Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+	libHandle = Sys_LoadDll(fn);
 
 	if (!libHandle)
 	{
-		Com_Printf("\nSys_LoadDll(%s) failed:\n\"%s\"\n", fn, dlerror());
 #endif
 
 	// homepath
 	fn = FS_BuildOSPath(homepath, gamedir, fname);
-	Com_Printf("Sys_LoadDll(%s)... ", fn);
-	libHandle = dlopen(fn, Q_RTLD);
+	Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+	libHandle = Sys_LoadDll(fn);
 
 	if (!libHandle)
 	{
-		Com_Printf("\nSys_LoadDll(%s) failed:\n\"%s\"\n", fn, dlerror());
-
 		// basepath
 		fn = FS_BuildOSPath(basepath, gamedir, fname);
-		Com_Printf("Sys_LoadDll(%s)... ", fn);
-		libHandle = dlopen(fn, Q_RTLD);
-		if (!libHandle)
-		{
-			// report any problem
-			Com_Printf("\nSys_LoadDll(%s) failed:\n\"%s\"\n", fn, dlerror());
-		}
-		else
+		Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+		libHandle = Sys_LoadDll(fn);
+		if (libHandle)
 		{
 			Com_Printf("ok\n");
 		}
@@ -533,9 +492,9 @@ void* Sys_LoadDll(const char* name, char* fqpath,
 		if (!libHandle)
 		{
 #ifndef NDEBUG	// in debug abort on failure
-			Com_Error(ERR_FATAL, "Sys_LoadDll(%s) failed dlopen() completely!\n", name);
+			Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
 #else
-			Com_Printf("Sys_LoadDll(%s) failed dlopen() completely!\n", name);
+			Com_Printf("Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
 #endif
 			return NULL;
 		}
@@ -556,27 +515,19 @@ else
 
 	String::NCpyZ(fqpath, fn, MAX_QPATH);				// added 2/15/02 by T.Ray
 
-	dllEntry = (void (*)(qintptr (*)(int, ...)))dlsym(libHandle, "dllEntry");
-	*entryPoint = (qintptr (*)(int, ...))dlsym(libHandle, "vmMain");
+	dllEntry = (void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
 	if (!*entryPoint || !dllEntry)
 	{
-		err = dlerror();
 #ifndef NDEBUG	// in debug abort on failure
-		Com_Error(ERR_FATAL, "Sys_LoadDll(%s) failed dlsym(vmMain):\n\"%s\" !\n", name, err);
-#else
-		Com_Printf("Sys_LoadDll(%s) failed dlsym(vmMain):\n\"%s\" !\n", name, err);
+		Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlsym(vmMain):\n", name);
 #endif
-		dlclose(libHandle);
-		err = dlerror();
-		if (err != NULL)
-		{
-			Com_Printf("Sys_LoadDll(%s) failed dlcose:\n\"%s\"\n", name, err);
-		}
+		Sys_UnloadDll(libHandle);
 		return NULL;
 	}
-	Com_Printf("Sys_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint);
+	Com_Printf("Sys_VM_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint);
 	dllEntry(systemcalls);
-	Com_Printf("Sys_LoadDll(%s) succeeded!\n", name);
+	Com_Printf("Sys_VM_LoadDll(%s) succeeded!\n", name);
 	return libHandle;
 }
 
@@ -808,7 +759,7 @@ void Sys_OpenURL(const char* url, qboolean doexit)
 
 	// do the setup before we fork
 	// search for an openurl.sh script
-	// search procedure taken from Sys_LoadDll
+	// search procedure taken from Sys_VM_LoadDll
 	String::NCpyZ(fname, "openurl.sh", 20);
 
 	pwdpath = Sys_Cwd();

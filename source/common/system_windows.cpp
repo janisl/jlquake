@@ -441,3 +441,58 @@ double Sys_DoubleTime()
 	return t;
 #endif
 }
+
+static char* Sys_GetDllNameImpl(const char* name, const char* suffix)
+{
+#if defined _M_IX86
+	return va("%s%sx86.dll", name, suffix);
+#elif defined _M_X64
+	return va("%s%sx86_64.dll", name, suffix);
+#elif defined _M_ALPHA
+	return va("%s%saxp.dll", name, suffix);
+#else
+#error "Unknown arch"
+#endif
+}
+
+char* Sys_GetDllName(const char* name)
+{
+	return Sys_GetDllNameImpl(name, "");
+}
+
+char* Sys_GetMPDllName(const char* name)
+{
+	return Sys_GetDllNameImpl(name, "_mp_");
+}
+
+void* Sys_LoadDll(const char* name)
+{
+	void* handle = LoadLibrary(name);
+	if (!handle)
+	{
+		common->Printf("Sys_LoadDll(%s) failed.\n", name);
+	}
+	return handle;
+}
+
+void* Sys_GetDllFunction(void* handle, const char* name)
+{
+	void* func = GetProcAddress((HMODULE)handle, name);
+	if (!func)
+	{
+		common->Printf("Sys_GetDllFunction: %s not found\n", name);
+	}
+	return func;
+}
+
+void Sys_UnloadDll(void* handle)
+{
+	if (!handle)
+	{
+		return;
+	}
+	if (!FreeLibrary((HMODULE)handle))
+	{
+		common->FatalError("Sys_VM_UnloadDll FreeLibrary failed");
+	}
+}

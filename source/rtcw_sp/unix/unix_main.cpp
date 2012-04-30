@@ -260,38 +260,25 @@ void floating_point_exception_handler(int whatever)
 
 /*
 =================
-Sys_UnloadDll
+Sys_VM_UnloadDll
 
 =================
 */
-void Sys_UnloadDll(void* dllHandle)
+void Sys_VM_UnloadDll(void* dllHandle)
 {
-	// bk001206 - verbose error reporting
-	const char* err;// rb010123 - now const
-	if (!dllHandle)
-	{
-		Com_Printf("Sys_UnloadDll(NULL)\n");
-		return;
-	}
-	dlclose(dllHandle);
-	err = dlerror();
-	if (err != NULL)
-	{
-		Com_Printf("Sys_UnloadGame failed on dlclose: \"%s\"!\n", err);
-	}
+	Sys_UnloadDll(dllHandle);
 }
-
 
 /*
 =================
-Sys_LoadDll
+Sys_VM_LoadDll
 =================
 */
 extern char* FS_BuildOSPath(const char* base, const char* game, const char* qpath);
 
 // TTimo
 // show_bug.cgi?id=411
-// use DO_LOADDLL_WRAP to wrap a cl_noprint 1 around the call to Sys_LoadDll
+// use DO_LOADDLL_WRAP to wrap a cl_noprint 1 around the call to Sys_VM_LoadDll
 // this is a quick hack to avoid complicated messages on screen
 #ifdef NDEBUG
 #define DO_LOADDLL_WRAP
@@ -302,7 +289,7 @@ void* Sys_LoadDll_Wrapped(const char* name,
 	qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 #else
-void* Sys_LoadDll(const char* name,
+void* Sys_VM_LoadDll(const char* name,
 	qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 #endif
@@ -320,22 +307,7 @@ void* Sys_LoadDll(const char* name,
 	// bk001206 - let's have some paranoia
 	assert(name);
 
-#if defined __i386__
-	snprintf(fname, sizeof(fname), "%si386.so", name);
-#elif defined __x86_64__
-	snprintf(fname, sizeof(fname), "%sx86_64.so", name);
-#elif defined __powerpc__	//rcg010207 - PPC support.
-	snprintf(fname, sizeof(fname), "%sppc.so", name);
-#elif defined __axp__
-	snprintf(fname, sizeof(fname), "%saxp.so", name);
-#elif defined __mips__
-	snprintf(fname, sizeof(fname), "%smips.so", name);
-#else
-#error Unknown arch
-#endif
-
-// bk001129 - was RTLD_LAZY
-#define Q_RTLD    RTLD_NOW
+	String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
 
 	homepath = Cvar_VariableString("fs_homepath");
 	basepath = Cvar_VariableString("fs_basepath");
@@ -344,26 +316,26 @@ void* Sys_LoadDll(const char* name,
 	pwdpath = Sys_Cwd();
 	fn = FS_BuildOSPath(pwdpath, gamedir, fname);
 	// bk001206 - verbose
-	Com_Printf("Sys_LoadDll(%s)... ", fn);
+	Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
 
 	// bk001129 - from cvs1.17 (mkv), was fname not fn
-	libHandle = dlopen(fn, Q_RTLD);
+	libHandle = Sys_LoadDll(fn);
 
 	if (!libHandle)
 	{
 		Com_Printf("failed (%s)\n", dlerror());
 		// homepath
 		fn = FS_BuildOSPath(homepath, gamedir, fname);
-		Com_Printf("Sys_LoadDll(%s)... ", fn);
-		libHandle = dlopen(fn, Q_RTLD);
+		Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+		libHandle = Sys_LoadDll(fn);
 
 		if (!libHandle)
 		{
 			Com_Printf("failed (%s)\n", dlerror());
 			// basepath
 			fn = FS_BuildOSPath(basepath, gamedir, fname);
-			Com_Printf("Sys_LoadDll(%s)... ", fn);
-			libHandle = dlopen(fn, Q_RTLD);
+			Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+			libHandle = Sys_LoadDll(fn);
 
 			if (!libHandle)
 			{
@@ -374,31 +346,26 @@ void* Sys_LoadDll(const char* name,
 				{	// media-only mods: no DLL whatsoever in the fs_game
 					// start the loop again using the hardcoded BASEDIRNAME
 					fn = FS_BuildOSPath(pwdpath, BASEGAME, fname);
-					Com_Printf("Sys_LoadDll(%s)... ", fn);
-					libHandle = dlopen(fn, Q_RTLD);
+					Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+					libHandle = Sys_LoadDll(fn);
 
 					if (!libHandle)
 					{
 						Com_Printf("failed (%s)\n", dlerror());
 						// homepath
 						fn = FS_BuildOSPath(homepath, BASEGAME, fname);
-						Com_Printf("Sys_LoadDll(%s)... ", fn);
-						libHandle = dlopen(fn, Q_RTLD);
+						Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+						libHandle = Sys_LoadDll(fn);
 
 						if (!libHandle)
 						{
 							Com_Printf("failed (%s)\n", dlerror());
 							// homepath
 							fn = FS_BuildOSPath(basepath, BASEGAME, fname);
-							Com_Printf("Sys_LoadDll(%s)... ", fn);
-							libHandle = dlopen(fn, Q_RTLD);
+							Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
+							libHandle = Sys_LoadDll(fn);
 
-							if (!libHandle)
-							{
-								// ok, this time things are really fucked
-								Com_Printf("failed (%s)\n", dlerror());
-							}
-							else
+							if (libHandle)
 							{
 								Com_Printf("ok\n");
 							}
@@ -432,39 +399,31 @@ void* Sys_LoadDll(const char* name,
 	if (!libHandle)
 	{
 #ifndef NDEBUG	// in debug, abort on failure
-		Com_Error(ERR_FATAL, "Sys_LoadDll(%s) failed dlopen() completely!\n", name);
+		Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
 #else
-		Com_Printf("Sys_LoadDll(%s) failed dlopen() completely!\n", name);
+		Com_Printf("Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
 #endif
 		return NULL;
 	}
 
-	dllEntry = (void (*)(qintptr (*)(int, ...)))dlsym(libHandle, "dllEntry");
-	*entryPoint = (qintptr (*)(int, ...))dlsym(libHandle, "vmMain");
+	dllEntry = (void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
 	if (!*entryPoint || !dllEntry)
 	{
-		err = dlerror();
 #ifndef NDEBUG	// bk001206 - in debug abort on failure
-		Com_Error(ERR_FATAL, "Sys_LoadDll(%s) failed dlsym(vmMain):\n\"%s\" !\n", name, err);
-#else
-		Com_Printf("Sys_LoadDll(%s) failed dlsym(vmMain):\n\"%s\" !\n", name, err);
+		Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlsym\n", name);
 #endif
-		dlclose(libHandle);
-		err = dlerror();
-		if (err != NULL)
-		{
-			Com_Printf("Sys_LoadDll(%s) failed dlcose:\n\"%s\"\n", name, err);
-		}
+		Sys_UnloadDll(libHandle);
 		return NULL;
 	}
-	Com_Printf("Sys_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint);	// bk001212
+	Com_Printf("Sys_VM_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint);	// bk001212
 	dllEntry(systemcalls);
-	Com_Printf("Sys_LoadDll(%s) succeeded!\n", name);
+	Com_Printf("Sys_VM_LoadDll(%s) succeeded!\n", name);
 	return libHandle;
 }
 
 #if defined(DO_LOADDLL_WRAP)
-void* Sys_LoadDll(const char* name,
+void* Sys_VM_LoadDll(const char* name,
 	qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 {
@@ -677,7 +636,7 @@ void Sys_OpenURL(char* url, qboolean doexit)
 
 	// do the setup before we fork
 	// search for an openurl.sh script
-	// search procedure taken from Sys_LoadDll
+	// search procedure taken from Sys_VM_LoadDll
 	String::NCpyZ(fname, "openurl.sh", 20);
 
 	pwdpath = Sys_Cwd();

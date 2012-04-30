@@ -154,10 +154,7 @@ Sys_UnloadGame
 */
 void Sys_UnloadGame(void)
 {
-	if (!FreeLibrary(game_library))
-	{
-		Com_Error(ERR_FATAL, "FreeLibrary failed for game library");
-	}
+	Sys_UnloadDll(game_library);
 	game_library = NULL;
 }
 
@@ -174,33 +171,25 @@ void* Sys_GetGameAPI(void* parms)
 	char name[MAX_OSPATH];
 	char* path;
 	char cwd[MAX_OSPATH];
+	const char* gamename = Sys_GetDllName("game");
 #if defined _M_IX86
-	const char* gamename = "gamex86.dll";
-
 #ifdef NDEBUG
 	const char* debugdir = "release";
 #else
 	const char* debugdir = "debug";
 #endif
-
 #elif defined _M_X64
-	const char* gamename = "gamex86_64.dll";
-
 #ifdef NDEBUG
 	const char* debugdir = "release";
 #else
 	const char* debugdir = "debug";
 #endif
-
 #elif defined _M_ALPHA
-	const char* gamename = "gameaxp.dll";
-
 #ifdef NDEBUG
 	const char* debugdir = "releaseaxp";
 #else
 	const char* debugdir = "debugaxp";
 #endif
-
 #endif
 
 	if (game_library)
@@ -211,7 +200,7 @@ void* Sys_GetGameAPI(void* parms)
 	// check the current debug directory first for development purposes
 	_getcwd(cwd, sizeof(cwd));
 	String::Sprintf(name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
-	game_library = LoadLibrary(name);
+	game_library = Sys_LoadDll(name);
 	if (game_library)
 	{
 		Com_DPrintf("LoadLibrary (%s)\n", name);
@@ -220,7 +209,7 @@ void* Sys_GetGameAPI(void* parms)
 	{
 		// check the current directory for other development purposes
 		String::Sprintf(name, sizeof(name), "%s/%s", cwd, gamename);
-		game_library = LoadLibrary(name);
+		game_library = Sys_LoadDll(name);
 		if (game_library)
 		{
 			Com_DPrintf("LoadLibrary (%s)\n", name);
@@ -237,7 +226,7 @@ void* Sys_GetGameAPI(void* parms)
 					return NULL;		// couldn't find one anywhere
 				}
 				String::Sprintf(name, sizeof(name), "%s/%s", path, gamename);
-				game_library = LoadLibrary(name);
+				game_library = Sys_LoadDll(name);
 				if (game_library)
 				{
 					Com_DPrintf("LoadLibrary (%s)\n",name);
@@ -247,7 +236,7 @@ void* Sys_GetGameAPI(void* parms)
 		}
 	}
 
-	GetGameAPI = (void*(*)(void*))GetProcAddress(game_library, "GetGameAPI");
+	GetGameAPI = (void*(*)(void*))Sys_GetDllFunction(game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
 		Sys_UnloadGame();

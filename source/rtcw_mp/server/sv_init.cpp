@@ -494,7 +494,7 @@ void SV_TouchCGameDLL(void)
 	fileHandle_t f;
 	char* filename;
 
-	filename = Sys_GetDLLName("cgame");
+	filename = Sys_GetMPDllName("cgame");
 	FS_FOpenFileRead_Filtered(filename, &f, qfalse, FS_EXCLUDE_DIR);
 	if (f)
 	{

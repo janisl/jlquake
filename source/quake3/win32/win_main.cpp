@@ -109,35 +109,28 @@ LOAD/UNLOAD DLL
 
 /*
 =================
-Sys_UnloadDll
+Sys_VM_UnloadDll
 
 =================
 */
-void Sys_UnloadDll(void* dllHandle)
+void Sys_VM_UnloadDll(void* dllHandle)
 {
-	if (!dllHandle)
-	{
-		return;
-	}
-	if (!FreeLibrary((HMODULE)dllHandle))
-	{
-		Com_Error(ERR_FATAL, "Sys_UnloadDll FreeLibrary failed");
-	}
+	Sys_UnloadDll(dllHandle);
 }
 
 /*
 =================
-Sys_LoadDll
+Sys_VM_LoadDll
 
 Used to load a development dll instead of a virtual machine
 
 TTimo: added some verbosity in debug
 =================
 */
-// fqpath param added 7/20/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
+// fqpath param added 7/20/02 by T.Ray - Sys_VM_LoadDll is only called in vm.c at this time
 // fqpath will be empty if dll not loaded, otherwise will hold fully qualified path of dll module loaded
 // fqpath buffersize must be at least MAX_QPATH+1 bytes long
-void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ...),
+void* Sys_VM_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ...),
 	int (* systemcalls)(qintptr, ...))
 {
 	static int lastWarning = 0;
@@ -155,13 +148,7 @@ void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ..
 
 	*fqpath = 0;		// added 7/20/02 by T.Ray
 
-#if defined _M_IX86
-	String::Sprintf(filename, sizeof(filename), "%sx86.dll", name);
-#elif defined _M_X64
-	String::Sprintf(filename, sizeof(filename), "%sx86_64.dll", name);
-#else
-#error "Unknown arch"
-#endif
+	String::NCpyZ(filename, Sys_GetDllName(name), sizeof(filename));
 
 #ifdef NDEBUG
 	timestamp = Sys_Milliseconds();
@@ -187,7 +174,7 @@ void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ..
 #endif
 
 #ifndef NDEBUG
-	libHandle = LoadLibrary(filename);
+	libHandle = Sys_LoadDll(filename);
 	if (libHandle)
 	{
 		Com_Printf("LoadLibrary '%s' ok\n", filename);
@@ -204,7 +191,7 @@ void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ..
 	gamedir = Cvar_VariableString("fs_game");
 
 	fn = FS_BuildOSPath(basepath, gamedir, filename);
-	libHandle = LoadLibrary(fn);
+	libHandle = Sys_LoadDll(fn);
 #ifndef NDEBUG
 	if (libHandle)
 	{
@@ -221,7 +208,7 @@ void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ..
 		if (cdpath[0])
 		{
 			fn = FS_BuildOSPath(cdpath, gamedir, filename);
-			libHandle = LoadLibrary(fn);
+			libHandle = Sys_LoadDll(fn);
 #ifndef NDEBUG
 			if (libHandle)
 			{
@@ -243,11 +230,11 @@ void* Sys_LoadDll(const char* name, char* fqpath, qintptr(**entryPoint) (int, ..
 }
 #endif
 
-	dllEntry = (void (*)(int (*)(qintptr, ...)))GetProcAddress(libHandle, "dllEntry");
-	*entryPoint = (qintptr (*)(int,...))GetProcAddress(libHandle, "vmMain");
+	dllEntry = (void (*)(int (*)(qintptr, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (*)(int,...))Sys_GetDllFunction(libHandle, "vmMain");
 	if (!*entryPoint || !dllEntry)
 	{
-		FreeLibrary(libHandle);
+		Sys_UnloadDll(libHandle);
 		return NULL;
 	}
 	dllEntry(systemcalls);

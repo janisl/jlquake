@@ -81,7 +81,7 @@ void Sys_UnloadGame(void)
 {
 	if (game_library)
 	{
-		dlclose(game_library);
+		Sys_UnloadDll(game_library);
 	}
 	game_library = NULL;
 }
@@ -100,15 +100,7 @@ void* Sys_GetGameAPI(void* parms)
 	char name[MAX_OSPATH];
 	char curpath[MAX_OSPATH];
 	char* path;
-#ifdef __i386__
-	const char* gamename = "gamei386.so";
-#elif defined __x86_64__
-	const char* gamename = "gamex86_64.so";
-#elif defined __alpha__
-	const char* gamename = "gameaxp.so";
-#else
-#error Unknown arch
-#endif
+	const char* gamename = Sys_GetDllName("game");
 
 	setreuid(getuid(), getuid());
 	setegid(getgid());
@@ -132,7 +124,7 @@ void* Sys_GetGameAPI(void* parms)
 			return NULL;		// couldn't find one anywhere
 		}
 		sprintf(name, "%s/%s", path, gamename);
-		game_library = dlopen(name, RTLD_NOW);
+		game_library = Sys_LoadDll(name);
 		if (game_library)
 		{
 			Com_DPrintf("LoadLibrary (%s)\n",name);
@@ -141,7 +133,7 @@ void* Sys_GetGameAPI(void* parms)
 		Log::develWriteLine("failed:\n\"%s\"\n", dlerror());
 	}
 
-	GetGameAPI = (void* (*)(void*))dlsym(game_library, "GetGameAPI");
+	GetGameAPI = (void* (*)(void*))Sys_GetDllFunction(game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
 		Sys_UnloadGame();

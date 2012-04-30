@@ -266,25 +266,18 @@ LOAD/UNLOAD DLL
 
 /*
 =================
-Sys_UnloadDll
+Sys_VM_UnloadDll
 
 =================
 */
-void Sys_UnloadDll(void* dllHandle)
+void Sys_VM_UnloadDll(void* dllHandle)
 {
-	if (!dllHandle)
-	{
-		return;
-	}
-	if (!FreeLibrary((HMODULE)dllHandle))
-	{
-		Com_Error(ERR_FATAL, "Sys_UnloadDll FreeLibrary failed");
-	}
+	Sys_UnloadDll(dllHandle);
 }
 
 /*
 =================
-Sys_LoadDll
+Sys_VM_LoadDll
 
 Used to load a development dll instead of a virtual machine
 =================
@@ -295,19 +288,10 @@ int cl_connectedToPureServer;
 extern int cl_connectedToPureServer;
 #endif
 
-char* Sys_GetDLLName(const char* name)
-{
-#ifdef _WIN64
-	return va("%s_mp_x86_64.dll", name);
-#else
-	return va("%s_mp_x86.dll", name);
-#endif
-}
-
-// fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
+// fqpath param added 2/15/02 by T.Ray - Sys_VM_LoadDll is only called in vm.c at this time
 // fqpath will be empty if dll not loaded, otherwise will hold fully qualified path of dll module loaded
 // fqpath buffersize must be at least MAX_QPATH+1 bytes long
-void* QDECL Sys_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPoint) (int, ...),
+void* QDECL Sys_VM_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPoint) (int, ...),
 	qintptr (QDECL* systemcalls)(int, ...))
 {
 	static int lastWarning = 0;
@@ -321,7 +305,7 @@ void* QDECL Sys_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPo
 
 	*fqpath = 0;		// added 2/15/02 by T.Ray
 
-	String::NCpyZ(filename, Sys_GetDLLName(name), sizeof(filename));
+	String::NCpyZ(filename, Sys_GetMPDllName(name), sizeof(filename));
 
 	basepath = Cvar_VariableString("fs_basepath");
 	cdpath = Cvar_VariableString("fs_cdpath");
@@ -346,18 +330,18 @@ void* QDECL Sys_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPo
 	}
 #endif
 
-	libHandle = LoadLibrary(fn);
+	libHandle = Sys_LoadDll(fn);
 
 	if (!libHandle)
 	{
 		// First try falling back to "main"
 		fn = FS_BuildOSPath(basepath, "main", filename);
-		libHandle = LoadLibrary(fn);
+		libHandle = Sys_LoadDll(fn);
 
 		if (!libHandle)
 		{
 			// Final fall-back to current directory
-			libHandle = LoadLibrary(filename);
+			libHandle = Sys_LoadDll(filename);
 
 			if (!libHandle)
 			{
@@ -375,11 +359,11 @@ void* QDECL Sys_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPo
 	{
 		String::NCpyZ(fqpath, fn, MAX_QPATH);				// added 2/15/02 by T.Ray
 	}
-	dllEntry = (void (QDECL*)(qintptr (QDECL*)(int, ...)))GetProcAddress(libHandle, "dllEntry");
-	*entryPoint = (qintptr (QDECL*)(int,...))GetProcAddress(libHandle, "vmMain");
+	dllEntry = (void (QDECL*)(qintptr (QDECL*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (QDECL*)(int,...))Sys_GetDllFunction(libHandle, "vmMain");
 	if (!*entryPoint || !dllEntry)
 	{
-		FreeLibrary(libHandle);
+		Sys_UnloadDll(libHandle);
 		return NULL;
 	}
 	dllEntry(systemcalls);

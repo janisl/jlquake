@@ -79,7 +79,7 @@ void Sys_UnloadGame(void)
 {
 	if (game_library)
 	{
-		dlclose(game_library);
+		Sys_UnloadDll(game_library);
 	}
 	game_library = NULL;
 }
@@ -99,11 +99,7 @@ void* Sys_GetGameAPI(void* parms)
 	char name[MAX_OSPATH];
 	char curpath[MAX_OSPATH];
 	char* path;
-#ifdef __sgi
-	const char* gamename = "gamemips.so";
-#else
-#error Unknown arch
-#endif
+	const char* gamename = Sys_GetDllName("game");
 
 	setreuid(getuid(), getuid());
 	setegid(getgid());
@@ -128,7 +124,7 @@ void* Sys_GetGameAPI(void* parms)
 		}
 		sprintf(name, "%s/%s/%s", curpath, path, gamename);
 		Com_Printf("Trying to load library (%s)\n",name);
-		game_library = dlopen(name, RTLD_NOW);
+		game_library = Sys_LoadDll(name);
 		if (game_library)
 		{
 			Com_DPrintf("LoadLibrary (%s)\n",name);
@@ -136,7 +132,7 @@ void* Sys_GetGameAPI(void* parms)
 		}
 	}
 
-	GetGameAPI = (void*)dlsym(game_library, "GetGameAPI");
+	GetGameAPI = (void*)Sys_GetDllFunction(game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
 		Sys_UnloadGame();
