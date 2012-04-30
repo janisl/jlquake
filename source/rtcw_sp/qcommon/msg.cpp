@@ -30,17 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 
 /*
-==============================================================================
-
-            MESSAGE IO FUNCTIONS
-
-Handles byte ordering and avoids alignment errors
-==============================================================================
-*/
-
-extern int oldsize;
-
-/*
 =============================================================================
 
 delta functions
@@ -268,7 +257,6 @@ void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, wsusercmd_t* from, wsusercmd_t
 		from->cld == to->cld)						// NERVE - SMF
 	{
 		msg->WriteBits(0, 1);					// no change
-		oldsize += 7;
 		return;
 	}
 	key ^= to->serverTime;
@@ -638,7 +626,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct wsentityState_t* from, struct wsenti
 //	msg->WriteBits( compressedVector, SMALL_VECTOR_BITS );
 	if (compressedVector == -1)
 	{
-		oldsize += 4;
 		msg->WriteBits(1, 1);			// complete change
 		// we didn't find a fast match so we need to write the entire delta
 		for (i = 0; i + 8 <= numFields; i += 8)
@@ -683,7 +670,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct wsentityState_t* from, struct wsenti
 			if (fullFloat == 0.0f)
 			{
 				msg->WriteBits(0, 1);
-				oldsize += FLOAT_INT_BITS;
 			}
 			else
 			{

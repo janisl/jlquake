@@ -23,17 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 
 /*
-==============================================================================
-
-            MESSAGE IO FUNCTIONS
-
-Handles byte ordering and avoids alignment errors
-==============================================================================
-*/
-
-extern int oldsize;
-
-/*
 =============================================================================
 
 delta functions
@@ -249,7 +238,6 @@ void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, q3usercmd_t* from, q3usercmd_t
 		from->weapon == to->weapon)
 	{
 		msg->WriteBits(0, 1);					// no change
-		oldsize += 7;
 		return;
 	}
 	key ^= to->serverTime;
@@ -462,8 +450,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* to,
 
 	msg->WriteByte(lc);		// # of changes
 
-	oldsize += numFields;
-
 	for (i = 0, field = entityStateFields; i < lc; i++, field++)
 	{
 		fromF = (int*)((byte*)from + field->offset);
@@ -486,7 +472,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* to,
 			if (fullFloat == 0.0f)
 			{
 				msg->WriteBits(0, 1);
-				oldsize += FLOAT_INT_BITS;
 			}
 			else
 			{
@@ -790,8 +775,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t
 
 	msg->WriteByte(lc);		// # of changes
 
-	oldsize += numFields - lc;
-
 	for (i = 0, field = playerStateFields; i < lc; i++, field++)
 	{
 		fromF = (int*)((byte*)from + field->offset);
@@ -873,7 +856,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t
 	if (!statsbits && !persistantbits && !ammobits && !powerupbits)
 	{
 		msg->WriteBits(0, 1);	// no change
-		oldsize += 4;
 		return;
 	}
 	msg->WriteBits(1, 1);	// changed

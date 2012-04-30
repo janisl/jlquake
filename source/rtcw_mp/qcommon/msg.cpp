@@ -30,17 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 
 /*
-==============================================================================
-
-            MESSAGE IO FUNCTIONS
-
-Handles byte ordering and avoids alignment errors
-==============================================================================
-*/
-
-extern int oldsize;
-
-/*
 =============================================================================
 
 delta functions
@@ -271,7 +260,6 @@ void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, wmusercmd_t* from, wmusercmd_t
 		from->identClient == to->identClient)		// NERVE - SMF
 	{
 		msg->WriteBits(0, 1);					// no change
-		oldsize += 7;
 		return;
 	}
 	key ^= to->serverTime;
@@ -524,8 +512,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct wmentityState_t* from, struct wmenti
 
 	msg->WriteByte(lc);		// # of changes
 
-	oldsize += numFields;
-
 	for (i = 0, field = entityStateFields; i < lc; i++, field++)
 	{
 		fromF = (int*)((byte*)from + field->offset);
@@ -548,7 +534,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct wmentityState_t* from, struct wmenti
 			if (fullFloat == 0.0f)
 			{
 				msg->WriteBits(0, 1);
-				oldsize += FLOAT_INT_BITS;
 			}
 			else
 			{
@@ -933,8 +918,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, struct wmplayerState_t* from, struct w
 
 	msg->WriteByte(lc);		// # of changes
 
-	oldsize += numFields - lc;
-
 	for (i = 0, field = playerStateFields; i < lc; i++, field++)
 	{
 		fromF = (int*)((byte*)from + field->offset);
@@ -1099,7 +1082,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, struct wmplayerState_t* from, struct w
 	else
 	{
 		msg->WriteBits(0, 1);	// no change to any
-		oldsize += 4;
 	}
 
 

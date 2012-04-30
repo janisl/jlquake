@@ -22,7 +22,6 @@
 
 #include "qcommon.h"
 
-int oldsize = 0;
 static bool msgInit = false;
 static huffman_t msgHuff;
 
@@ -379,8 +378,6 @@ void QMsg::BeginReadingOOB()
 //	Negative bit values include signs
 void QMsg::WriteBits(int Value, int NumBits)
 {
-	oldsize += NumBits;
-
 	uncompsize += NumBits;
 
 	if (maxsize - cursize < (abs(NumBits) + 7) / 8)

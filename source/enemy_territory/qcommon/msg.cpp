@@ -31,8 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 int wastedbits = 0;
 
-extern int oldsize;
-
 /*
 ==============================================================================
 
@@ -284,7 +282,6 @@ void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, etusercmd_t* from, etusercmd_t
 		from->identClient == to->identClient)		// NERVE - SMF
 	{
 		msg->WriteBits(0, 1);					// no change
-		oldsize += 7;
 		return;
 	}
 	key ^= to->serverTime;
@@ -576,10 +573,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct etentityState_t* from, struct etenti
 
 	msg->WriteByte(lc);		// # of changes
 
-	oldsize += numFields;
-
-//	Com_Printf( "Delta for ent %i: ", to->number );
-
 	for (i = 0, field = entityStateFields; i < lc; i++, field++)
 	{
 		fromF = (int*)((byte*)from + field->offset);
@@ -605,7 +598,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct etentityState_t* from, struct etenti
 			if (fullFloat == 0.0f)
 			{
 				msg->WriteBits(0, 1);
-				oldsize += FLOAT_INT_BITS;
 			}
 			else
 			{
@@ -1038,8 +1030,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct e
 
 	msg->WriteByte(lc);		// # of changes
 
-	oldsize += numFields - lc;
-
 	for (i = 0, field = playerStateFields; i < lc; i++, field++)
 	{
 		fromF = (int*)((byte*)from + field->offset);
@@ -1204,7 +1194,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct e
 	else
 	{
 		msg->WriteBits(0, 1);	// no change to any
-		oldsize += 4;
 	}
 
 
