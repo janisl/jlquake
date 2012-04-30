@@ -400,7 +400,7 @@ void SV_StartSound(vec3_t origin, edict_t* entity, int channel,
 
 	if (flags & SND_POS)
 	{
-		MSG_WritePos(&sv.multicast, origin);
+		sv.multicast.WritePos(origin);
 	}
 
 	// if the sound doesn't attenuate,send it to everyone

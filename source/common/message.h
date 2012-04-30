@@ -54,7 +54,8 @@ public:
 	void WriteString2(const char* S);
 	void WriteBigString(const char* S);
 	void WriteCoord(float F);
-	void WriteDir(vec3_t vector);
+	void WritePos(const vec3_t pos);
+	void WriteDir(const vec3_t vector);
 	void WriteAngle(float F);
 	void WriteAngle16(float F);
 	void WriteData(const void* Buffer, int Length);

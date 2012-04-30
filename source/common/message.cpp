@@ -397,7 +397,14 @@ void QMsg::WriteCoord(float F)
 	WriteShort((int)(F * 8));
 }
 
-void QMsg::WriteDir(vec3_t dir)
+void QMsg::WritePos(const vec3_t pos)
+{
+	WriteCoord(pos[0]);
+	WriteCoord(pos[1]);
+	WriteCoord(pos[2]);
+}
+
+void QMsg::WriteDir(const vec3_t dir)
 {
 	WriteByte(DirToByte(dir));
 }

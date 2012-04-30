@@ -1168,7 +1168,7 @@ void TransposeMatrix(const vec3_t matrix[3], vec3_t transpose[3])
 }
 
 // this isn't a real cheap function to call!
-int DirToByte(vec3_t dir)
+int DirToByte(const vec3_t dir)
 {
 	if (!dir)
 	{

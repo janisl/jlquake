@@ -276,5 +276,5 @@ extern const vec3_t axisDefault[3];
 
 extern float bytedirs[NUMVERTEXNORMALS][3];
 
-int DirToByte(vec3_t dir);
+int DirToByte(const vec3_t dir);
 void ByteToDir(int b, vec3_t dir);

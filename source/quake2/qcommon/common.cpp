@@ -280,18 +280,6 @@ Handles byte ordering and avoids alignment errors
 ==============================================================================
 */
 
-//
-// writing functions
-//
-
-void MSG_WritePos(QMsg* sb, vec3_t pos)
-{
-	sb->WriteShort((int)(pos[0] * 8));
-	sb->WriteShort((int)(pos[1] * 8));
-	sb->WriteShort((int)(pos[2] * 8));
-}
-
-
 void MSG_WriteDeltaUsercmd(QMsg* buf, q2usercmd_t* from, q2usercmd_t* cmd)
 {
 	int bits;

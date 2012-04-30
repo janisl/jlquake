@@ -77,7 +77,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-void MSG_WritePos(QMsg* sb, vec3_t pos);
 void MSG_WriteDeltaUsercmd(QMsg* sb, q2usercmd_t* from, q2usercmd_t* cmd);
 void MSG_WriteDeltaEntity(q2entity_state_t* from, q2entity_state_t* to, QMsg* msg, qboolean force, qboolean newentity);
 
