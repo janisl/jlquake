@@ -43,13 +43,11 @@ extern int oldsize;
 void MSG_Init(QMsg* buf, byte* data, int length)
 {
 	buf->Init(data, length);
-	buf->allowoverflow = true;
 }
 
 void MSG_InitOOB(QMsg* buf, byte* data, int length)
 {
 	buf->InitOOB(data, length);
-	buf->allowoverflow = true;
 }
 
 /*

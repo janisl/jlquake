@@ -312,6 +312,10 @@ void QMsg::Init(byte* NewData, int Length)
 	Com_Memset(this, 0, sizeof(*this));
 	_data = NewData;
 	maxsize = Length;
+	if (GGameType & GAME_Tech3)
+	{
+		allowoverflow = true;
+	}
 }
 
 void QMsg::InitOOB(byte* NewData, int Length)
@@ -324,6 +328,10 @@ void QMsg::InitOOB(byte* NewData, int Length)
 	_data = NewData;
 	maxsize = Length;
 	oob = true;
+	if (GGameType & GAME_Tech3)
+	{
+		allowoverflow = true;
+	}
 }
 
 void QMsg::Clear()
