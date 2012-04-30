@@ -29,8 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-int wastedbits = 0;
-
 /*
 ==============================================================================
 
@@ -581,9 +579,6 @@ void MSG_WriteDeltaEntity(QMsg* msg, struct etentityState_t* from, struct etenti
 		if (*fromF == *toF)
 		{
 			msg->WriteBits(0, 1);	// no change
-
-			wastedbits++;
-
 			continue;
 		}
 
@@ -1037,8 +1032,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct e
 
 		if (*fromF == *toF)
 		{
-			wastedbits++;
-
 			msg->WriteBits(0, 1);	// no change
 			continue;
 		}
