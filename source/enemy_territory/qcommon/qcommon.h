@@ -37,13 +37,8 @@ If you have questions concerning this license or the applicable additional terms
 
 //============================================================================
 
-void* MSG_GetSpace(QMsg* buf, int length);
-void MSG_Uncompressed(QMsg* buf);
-
 struct etentityState_t;
 struct etplayerState_t;
-
-void    MSG_BeginReadingUncompressed(QMsg* msg);
 
 void MSG_WriteDeltaUsercmd(QMsg* msg, struct etusercmd_t* from, struct etusercmd_t* to);
 void MSG_ReadDeltaUsercmd(QMsg* msg, struct etusercmd_t* from, struct etusercmd_t* to);

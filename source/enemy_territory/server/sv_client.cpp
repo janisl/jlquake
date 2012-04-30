@@ -1969,7 +1969,7 @@ static void SV_ParseBinaryMessage(client_t* cl, QMsg* msg)
 {
 	int size;
 
-	MSG_BeginReadingUncompressed(msg);
+	msg->Uncompressed();
 
 	size = msg->cursize - msg->readcount;
 	if (size <= 0 || size > MAX_BINARY_MESSAGE_ET)

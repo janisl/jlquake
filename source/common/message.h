@@ -32,6 +32,7 @@ public:
 	void InitOOB(byte* NewData, int Length);
 	void Clear();
 	void Bitstream();
+	void Uncompressed();
 	void Copy(byte* NewData, int Length, QMsg& Src);
 
 	void BeginReading();

@@ -344,6 +344,13 @@ void QMsg::Bitstream()
 	oob = false;
 }
 
+void QMsg::Uncompressed()
+{
+	// align to byte-boundary
+	bit = (bit + 7) & ~7;
+	oob = true;
+}
+
 //	TTimo
 //	Copy a QMsg in case we need to store it as is for a bit
 // (as I needed this to keep an QMsg from a static var for later use)

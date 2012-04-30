@@ -30,29 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 
 /*
-==============================================================================
-
-            MESSAGE IO FUNCTIONS
-
-Handles byte ordering and avoids alignment errors
-==============================================================================
-*/
-
-void MSG_Uncompressed(QMsg* buf)
-{
-	// align to byte-boundary
-	buf->bit = (buf->bit + 7) & ~7;
-	buf->oob = qtrue;
-}
-
-void MSG_BeginReadingUncompressed(QMsg* buf)
-{
-	// align to byte-boundary
-	buf->bit = (buf->bit + 7) & ~7;
-	buf->oob = qtrue;
-}
-
-/*
 =============================================================================
 
 delta functions

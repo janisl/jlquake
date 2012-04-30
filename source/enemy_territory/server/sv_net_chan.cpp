@@ -193,7 +193,7 @@ static void SV_WriteBinaryMessage(QMsg* msg, client_t* cl)
 		return;
 	}
 
-	MSG_Uncompressed(msg);
+	msg->Uncompressed();
 
 	if ((msg->cursize + cl->binaryMessageLength) >= msg->maxsize)
 	{

@@ -170,7 +170,7 @@ static void CL_WriteBinaryMessage(QMsg* msg)
 		return;
 	}
 
-	MSG_Uncompressed(msg);
+	msg->Uncompressed();
 
 	if ((msg->cursize + clc.et_binaryMessageLength) >= msg->maxsize)
 	{

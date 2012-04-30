@@ -34,8 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //============================================================================
 
-void* MSG_GetSpace(QMsg* buf, int length);
-
 struct wmentityState_t;
 struct wmplayerState_t;
 
