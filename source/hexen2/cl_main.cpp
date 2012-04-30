@@ -17,8 +17,6 @@
 
 Cvar* cl_playerclass;
 
-Cvar* cl_shownet;
-
 static float save_sensitivity;
 
 /*
@@ -686,7 +684,6 @@ void CL_Init(void)
 	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
 	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
 	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
-	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 
 	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);

@@ -46,7 +46,6 @@ Cvar* cl_timeNudge;
 Cvar* cl_showTimeDelta;
 Cvar* cl_freezeDemo;
 
-Cvar* cl_shownet = NULL;		// NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
 Cvar* cl_showSend;
 Cvar* cl_timedemo;
 Cvar* cl_avidemo;
@@ -2638,7 +2637,6 @@ void CL_Init(void)
 	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
 
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
-	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
 	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
 	cl_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);

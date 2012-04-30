@@ -69,6 +69,8 @@ extern Cvar* com_developer;
 
 extern Cvar* com_crashed;
 
+extern Cvar* cl_shownet;
+
 extern fileHandle_t com_journalFile;
 extern fileHandle_t com_journalDataFile;
 

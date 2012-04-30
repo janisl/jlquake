@@ -37,8 +37,6 @@ delta functions
 =============================================================================
 */
 
-extern Cvar* cl_shownet;
-
 #define LOG(x) if (cl_shownet && cl_shownet->integer == 4) { Com_Printf("%s ", x); };
 
 void MSG_WriteDelta(QMsg* msg, int oldV, int newV, int bits)

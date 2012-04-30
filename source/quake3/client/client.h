@@ -55,7 +55,6 @@ extern Cvar* cl_noprint;
 extern Cvar* cl_timegraph;
 extern Cvar* cl_maxpackets;
 extern Cvar* cl_packetdup;
-extern Cvar* cl_shownet;
 extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_showTimeDelta;

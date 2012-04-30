@@ -53,7 +53,6 @@ Cvar* cl_timeNudge;
 Cvar* cl_showTimeDelta;
 Cvar* cl_freezeDemo;
 
-Cvar* cl_shownet = NULL;		// NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
 Cvar* cl_shownuments;			// DHM - Nerve
 Cvar* cl_visibleClients;		// DHM - Nerve
 Cvar* cl_showSend;
@@ -2974,7 +2973,6 @@ void CL_Init(void)
 	cl_wavefilerecord = Cvar_Get("cl_wavefilerecord", "0", CVAR_TEMP);
 
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
-	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
 	cl_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
 	cl_visibleClients = Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
 	cl_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);

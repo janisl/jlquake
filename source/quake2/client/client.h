@@ -50,7 +50,6 @@ extern Cvar* cl_predict;
 extern Cvar* cl_noskins;
 extern Cvar* cl_autoskins;
 
-extern Cvar* cl_shownet;
 extern Cvar* cl_showmiss;
 extern Cvar* cl_showclamp;
 

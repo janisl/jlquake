@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
-Cvar* cl_shownet;
-
 /*
 =====================
 CL_ClearState
@@ -272,7 +270,6 @@ void CL_Init(void)
 	//
 	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
 	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
-	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 
 	cl_doubleeyes = Cvar_Get("cl_doubleeyes", "1", 0);

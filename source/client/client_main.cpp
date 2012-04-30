@@ -49,6 +49,7 @@ float clqh_server_version = 0;	// version of server we connected to
 void CL_SharedInit()
 {
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
+	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
 }
 
 int CL_ScaledMilliseconds()

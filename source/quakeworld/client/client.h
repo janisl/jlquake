@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 extern Cvar* cl_warncmd;
 
-extern Cvar* cl_shownet;
 extern Cvar* cl_sbar;
 extern Cvar* cl_hudswap;
 

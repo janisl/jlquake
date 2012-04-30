@@ -49,7 +49,6 @@ Cvar* cl_add_particles;
 Cvar* cl_add_entities;
 Cvar* cl_add_blend;
 
-Cvar* cl_shownet;
 Cvar* cl_showmiss;
 Cvar* cl_showclamp;
 
@@ -1536,7 +1535,6 @@ void CL_InitLocal(void)
 
 
 
-	cl_shownet = Cvar_Get("cl_shownet", "0", 0);
 	cl_showmiss = Cvar_Get("cl_showmiss", "0", 0);
 	cl_showclamp = Cvar_Get("showclamp", "0", 0);
 	cl_timeout = Cvar_Get("cl_timeout", "120", 0);

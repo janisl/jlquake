@@ -14,8 +14,6 @@ Cvar* rcon_address;
 
 Cvar* cl_timeout;
 
-Cvar* cl_shownet;
-
 Cvar* cl_sbar;
 Cvar* cl_hudswap;
 
@@ -988,7 +986,6 @@ void CL_Init(void)
 
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
 	cl_hudswap  = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
 
