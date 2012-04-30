@@ -33,6 +33,9 @@ set(COMMON_FILES
 	md4.cpp
 	memory.cpp
 	message.cpp
+	message_utils1.cpp
+	message_utils2.cpp
+	message_utils3.cpp
 	network_channel.cpp
 	player_move.cpp
 	player_move1.cpp
