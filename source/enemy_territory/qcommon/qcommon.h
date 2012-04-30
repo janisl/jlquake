@@ -59,9 +59,6 @@ void MSG_ReadDeltaEntity(QMsg* msg, etentityState_t* from, etentityState_t* to,
 void MSG_WriteDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct etplayerState_t* to);
 void MSG_ReadDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct etplayerState_t* to);
 
-
-void MSG_ReportChangeVectors_f(void);
-
 /*
 ==============================================================
 

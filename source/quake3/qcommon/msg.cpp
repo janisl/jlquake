@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-int pcount[256];
-
 /*
 ==============================================================================
 
@@ -314,25 +312,6 @@ q3entityState_t communication
 
 =============================================================================
 */
-
-/*
-=================
-MSG_ReportChangeVectors_f
-
-Prints out a table from the current statistics for copying to code
-=================
-*/
-void MSG_ReportChangeVectors_f(void)
-{
-	int i;
-	for (i = 0; i < 256; i++)
-	{
-		if (pcount[i])
-		{
-			Com_Printf("%d used %d\n", i, pcount[i]);
-		}
-	}
-}
 
 typedef struct
 {
@@ -679,7 +658,6 @@ void MSG_ReadDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* to,
 					}
 				}
 			}
-//			pcount[i]++;
 		}
 	}
 	for (i = lc, field = &entityStateFields[lc]; i < numFields; i++, field++)
@@ -826,7 +804,6 @@ void MSG_WriteDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t
 		}
 
 		msg->WriteBits(1, 1);	// changed
-//		pcount[i]++;
 
 		if (field->bits == 0)
 		{

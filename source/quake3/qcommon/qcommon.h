@@ -44,9 +44,6 @@ void MSG_ReadDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* to,
 void MSG_WriteDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t* to);
 void MSG_ReadDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t* to);
 
-
-void MSG_ReportChangeVectors_f(void);
-
 //============================================================================
 
 /*
