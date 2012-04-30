@@ -146,10 +146,6 @@
       <Project>{4e5f4e34-0e6a-4200-916f-d33805505b54}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="splines\splines-wolfmp.vcxproj">
-      <Project>{b6842d42-fba7-4494-a393-802ca7e94351}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
