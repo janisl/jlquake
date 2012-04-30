@@ -75,16 +75,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #endif
 
-//============================================================================
-
-void MSG_WriteDeltaUsercmd(QMsg* sb, q2usercmd_t* from, q2usercmd_t* cmd);
-void MSG_WriteDeltaEntity(q2entity_state_t* from, q2entity_state_t* to, QMsg* msg, qboolean force, qboolean newentity);
-
-
-void    MSG_ReadDeltaUsercmd(QMsg* sb, q2usercmd_t* from, q2usercmd_t* cmd);
-
-//============================================================================
-
 void COM_Init(void);
 
 char* CopyString(char* in);
@@ -127,20 +117,6 @@ PROTOCOL
 #define PS_WEAPONINDEX      (1 << 12)
 #define PS_WEAPONFRAME      (1 << 13)
 #define PS_RDFLAGS          (1 << 14)
-
-//==============================================
-
-// user_cmd_t communication
-
-// ms and light always sent, the others are optional
-#define CM_ANGLE1   (1 << 0)
-#define CM_ANGLE2   (1 << 1)
-#define CM_ANGLE3   (1 << 2)
-#define CM_FORWARD  (1 << 3)
-#define CM_SIDE     (1 << 4)
-#define CM_UP       (1 << 5)
-#define CM_BUTTONS  (1 << 6)
-#define CM_IMPULSE  (1 << 7)
 
 //==============================================
 

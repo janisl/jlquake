@@ -237,7 +237,7 @@ void CL_Record_f(void)
 		}
 
 		buf.WriteByte(q2svc_spawnbaseline);
-		MSG_WriteDeltaEntity(&nullstate, &clq2_entities[i].baseline, &buf, true, true);
+		MSGQ2_WriteDeltaEntity(&nullstate, &clq2_entities[i].baseline, &buf, true, true);
 	}
 
 	buf.WriteByte(q2svc_stufftext);

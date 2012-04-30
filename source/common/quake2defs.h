@@ -705,3 +705,15 @@ enum
 #define Q2BUTTON_ATTACK     1
 #define Q2BUTTON_USE        2
 #define Q2BUTTON_ANY        128			// any key whatsoever
+
+// user_cmd_t communication
+
+// ms and light always sent, the others are optional
+#define Q2CM_ANGLE1     BIT(0)
+#define Q2CM_ANGLE2     BIT(1)
+#define Q2CM_ANGLE3     BIT(2)
+#define Q2CM_FORWARD    BIT(3)
+#define Q2CM_SIDE       BIT(4)
+#define Q2CM_UP         BIT(5)
+#define Q2CM_BUTTONS    BIT(6)
+#define Q2CM_IMPULSE    BIT(7)

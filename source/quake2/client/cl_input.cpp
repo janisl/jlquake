@@ -164,17 +164,17 @@ void CL_SendCmd(void)
 	i = (clc.netchan.outgoingSequence - 2) & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
-	MSG_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
+	MSGQ2_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
 	oldcmd = cmd;
 
 	i = (clc.netchan.outgoingSequence - 1) & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
-	MSG_WriteDeltaUsercmd(&buf, oldcmd, cmd);
+	MSGQ2_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 	oldcmd = cmd;
 
 	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP_Q2 - 1);
 	cmd = &cl.q2_cmds[i];
-	MSG_WriteDeltaUsercmd(&buf, oldcmd, cmd);
+	MSGQ2_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
 	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(

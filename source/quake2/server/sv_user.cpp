@@ -217,7 +217,7 @@ void SV_Baselines_f(void)
 		if (base->modelindex || base->sound || base->effects)
 		{
 			sv_client->netchan.message.WriteByte(q2svc_spawnbaseline);
-			MSG_WriteDeltaEntity(&nullstate, base, &sv_client->netchan.message, true, true);
+			MSGQ2_WriteDeltaEntity(&nullstate, base, &sv_client->netchan.message, true, true);
 		}
 		start++;
 	}
@@ -630,9 +630,9 @@ void SV_ExecuteClientMessage(client_t* cl)
 			}
 
 			Com_Memset(&nullcmd, 0, sizeof(nullcmd));
-			MSG_ReadDeltaUsercmd(&net_message, &nullcmd, &oldest);
-			MSG_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
-			MSG_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
+			MSGQ2_ReadDeltaUsercmd(&net_message, &nullcmd, &oldest);
+			MSGQ2_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
+			MSGQ2_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
 
 			if (cl->state != cs_spawned)
 			{
