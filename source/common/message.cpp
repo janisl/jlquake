@@ -23,7 +23,6 @@
 #include "qcommon.h"
 
 int oldsize = 0;
-static int overflows;
 static bool msgInit = false;
 static huffman_t msgHuff;
 
@@ -404,25 +403,6 @@ void QMsg::WriteBits(int Value, int NumBits)
 		throw DropException(va("QMsg::WriteBits: bad bits %i", NumBits));
 	}
 
-	// check for overflows
-	if (NumBits != 32)
-	{
-		if (NumBits > 0)
-		{
-			if (Value > ((1 << NumBits) - 1) || Value < 0)
-			{
-				overflows++;
-			}
-		}
-		else
-		{
-			int r = 1 << (NumBits - 1);
-			if (Value >  r - 1 || Value < -r)
-			{
-				overflows++;
-			}
-		}
-	}
 	if (NumBits < 0)
 	{
 		NumBits = -NumBits;
