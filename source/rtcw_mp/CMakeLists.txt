@@ -31,7 +31,6 @@ set(WOLFMP_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/msg.cpp  
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
 
@@ -90,7 +89,6 @@ set(WOLFMPDED_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
 	game/q_math.cpp

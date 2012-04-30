@@ -27,7 +27,6 @@ set(QUAKE3_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
 	game/q_shared.cpp
@@ -75,7 +74,6 @@ set(QUAKE3_DEDICATED_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/msg.cpp
 	qcommon/net_chan.cpp
 	game/q_math.cpp
 	game/q_shared.cpp

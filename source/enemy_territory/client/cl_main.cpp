@@ -441,7 +441,7 @@ void CL_Record(const char* name)
 			continue;
 		}
 		buf.WriteByte(q3svc_baseline);
-		MSG_WriteDeltaEntity(&buf, &nullstate, ent, qtrue);
+		MSGET_WriteDeltaEntity(&buf, &nullstate, ent, qtrue);
 	}
 
 	buf.WriteByte(q3svc_EOF);

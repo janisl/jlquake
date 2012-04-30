@@ -25,27 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //#define	PRE_RELEASE_DEMO
 
-//============================================================================
-
-//
-// msg.c
-//
-void MSG_WriteDeltaUsercmd(QMsg* msg, q3usercmd_t* from, q3usercmd_t* to);
-void MSG_ReadDeltaUsercmd(QMsg* msg, q3usercmd_t* from, q3usercmd_t* to);
-
-void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, q3usercmd_t* from, q3usercmd_t* to);
-void MSG_ReadDeltaUsercmdKey(QMsg* msg, int key, q3usercmd_t* from, q3usercmd_t* to);
-
-void MSG_WriteDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* to,
-	qboolean force);
-void MSG_ReadDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* to,
-	int number);
-
-void MSG_WriteDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t* to);
-void MSG_ReadDeltaPlayerstate(QMsg* msg, q3playerState_t* from, q3playerState_t* to);
-
-//============================================================================
-
 /*
 ==============================================================
 

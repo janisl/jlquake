@@ -338,7 +338,7 @@ void CL_WritePacket(void)
 		{
 			j = (cl.q3_cmdNumber - count + i + 1) & CMD_MASK_Q3;
 			cmd = &cl.et_cmds[j];
-			MSG_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
+			MSGET_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
 			oldcmd = cmd;
 		}
 	}

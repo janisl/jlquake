@@ -289,7 +289,7 @@ void CL_WritePacket(void)
 		{
 			j = (cl.q3_cmdNumber - count + i + 1) & CMD_MASK_Q3;
 			cmd = &cl.q3_cmds[j];
-			MSG_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
+			MSGQ3_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
 			oldcmd = cmd;
 		}
 	}

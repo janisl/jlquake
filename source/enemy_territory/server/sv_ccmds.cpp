@@ -424,13 +424,10 @@ static qboolean SV_TransitionGameState(gamestate_t new_gs, gamestate_t old_gs, i
 	return qtrue;
 }
 
-void MSG_PrioritiseEntitystateFields(void);
-void MSG_PrioritisePlayerStateFields(void);
-
 static void SV_FieldInfo_f(void)
 {
-	MSG_PrioritiseEntitystateFields();
-	MSG_PrioritisePlayerStateFields();
+	MSGET_PrioritiseEntitystateFields();
+	MSGET_PrioritisePlayerStateFields();
 }
 
 /*

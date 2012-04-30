@@ -30,25 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef _QCOMMON_H_
 #define _QCOMMON_H_
 
-//============================================================================
-
-struct wsentityState_t;
-struct wsplayerState_t;
-
-void MSG_WriteDeltaUsercmd(QMsg* msg, struct wsusercmd_t* from, struct wsusercmd_t* to);
-void MSG_ReadDeltaUsercmd(QMsg* msg, struct wsusercmd_t* from, struct wsusercmd_t* to);
-
-void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, wsusercmd_t* from, wsusercmd_t* to);
-void MSG_ReadDeltaUsercmdKey(QMsg* msg, int key, wsusercmd_t* from, wsusercmd_t* to);
-
-void MSG_WriteDeltaEntity(QMsg* msg, struct wsentityState_t* from, struct wsentityState_t* to,
-	qboolean force);
-void MSG_ReadDeltaEntity(QMsg* msg, wsentityState_t* from, wsentityState_t* to,
-	int number);
-
-void MSG_WriteDeltaPlayerstate(QMsg* msg, struct wsplayerState_t* from, struct wsplayerState_t* to);
-void MSG_ReadDeltaPlayerstate(QMsg* msg, struct wsplayerState_t* from, struct wsplayerState_t* to);
-
 /*
 ==============================================================
 

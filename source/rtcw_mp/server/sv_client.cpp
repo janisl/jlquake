@@ -712,7 +712,7 @@ void SV_SendClientGameState(client_t* client)
 			continue;
 		}
 		msg.WriteByte(q3svc_baseline);
-		MSG_WriteDeltaEntity(&msg, &nullstate, base, qtrue);
+		MSGWM_WriteDeltaEntity(&msg, &nullstate, base, qtrue);
 	}
 
 	msg.WriteByte(q3svc_EOF);
@@ -1673,8 +1673,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	for (i = 0; i < cmdCount; i++)
 	{
 		cmd = &cmds[i];
-		MSG_ReadDeltaUsercmdKey(msg, key, oldcmd, cmd);
-//		MSG_ReadDeltaUsercmd( msg, oldcmd, cmd );
+		MSGWM_ReadDeltaUsercmdKey(msg, key, oldcmd, cmd);
 		oldcmd = cmd;
 	}
 

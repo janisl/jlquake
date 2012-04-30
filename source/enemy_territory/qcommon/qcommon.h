@@ -35,25 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #define PRE_RELEASE_DEMO_NODEVMAP
 #endif	// PRE_RELEASE_DEMO
 
-//============================================================================
-
-struct etentityState_t;
-struct etplayerState_t;
-
-void MSG_WriteDeltaUsercmd(QMsg* msg, struct etusercmd_t* from, struct etusercmd_t* to);
-void MSG_ReadDeltaUsercmd(QMsg* msg, struct etusercmd_t* from, struct etusercmd_t* to);
-
-void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, etusercmd_t* from, etusercmd_t* to);
-void MSG_ReadDeltaUsercmdKey(QMsg* msg, int key, etusercmd_t* from, etusercmd_t* to);
-
-void MSG_WriteDeltaEntity(QMsg* msg, struct etentityState_t* from, struct etentityState_t* to,
-	qboolean force);
-void MSG_ReadDeltaEntity(QMsg* msg, etentityState_t* from, etentityState_t* to,
-	int number);
-
-void MSG_WriteDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct etplayerState_t* to);
-void MSG_ReadDeltaPlayerstate(QMsg* msg, struct etplayerState_t* from, struct etplayerState_t* to);
-
 /*
 ==============================================================
 

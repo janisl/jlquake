@@ -1269,10 +1269,6 @@ typedef struct headAnimation_s
 } headAnimation_t;
 // done.
 
-// flip the togglebit every time an animation
-// changes so a restart of the same anim can be detected
-#define ANIM_TOGGLEBIT      (1 << (ANIM_BITS - 1))
-
 // Gordon: renamed these to team_axis/allies, it really was awful....
 typedef enum {
 	TEAM_FREE,

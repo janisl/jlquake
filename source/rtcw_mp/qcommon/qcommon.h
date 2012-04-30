@@ -32,25 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //#define	PRE_RELEASE_DEMO
 
-//============================================================================
-
-struct wmentityState_t;
-struct wmplayerState_t;
-
-void MSG_WriteDeltaUsercmd(QMsg* msg, struct wmusercmd_t* from, struct wmusercmd_t* to);
-void MSG_ReadDeltaUsercmd(QMsg* msg, struct wmusercmd_t* from, struct wmusercmd_t* to);
-
-void MSG_WriteDeltaUsercmdKey(QMsg* msg, int key, wmusercmd_t* from, wmusercmd_t* to);
-void MSG_ReadDeltaUsercmdKey(QMsg* msg, int key, wmusercmd_t* from, wmusercmd_t* to);
-
-void MSG_WriteDeltaEntity(QMsg* msg, struct wmentityState_t* from, struct wmentityState_t* to,
-	qboolean force);
-void MSG_ReadDeltaEntity(QMsg* msg, wmentityState_t* from, wmentityState_t* to,
-	int number);
-
-void MSG_WriteDeltaPlayerstate(QMsg* msg, struct wmplayerState_t* from, struct wmplayerState_t* to);
-void MSG_ReadDeltaPlayerstate(QMsg* msg, struct wmplayerState_t* from, struct wmplayerState_t* to);
-
 /*
 ==============================================================
 

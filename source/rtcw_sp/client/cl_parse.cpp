@@ -82,7 +82,7 @@ void CL_DeltaEntity(QMsg* msg, wsclSnapshot_t* frame, int newnum, wsentityState_
 	}
 	else
 	{
-		MSG_ReadDeltaEntity(msg, old, state, newnum);
+		MSGWS_ReadDeltaEntity(msg, old, state, newnum);
 	}
 
 	if (state->number == (MAX_GENTITIES_Q3 - 1))
@@ -316,11 +316,11 @@ void CL_ParseSnapshot(QMsg* msg)
 	SHOWNET(msg, "playerstate");
 	if (old)
 	{
-		MSG_ReadDeltaPlayerstate(msg, &old->ps, &newSnap.ps);
+		MSGWS_ReadDeltaPlayerstate(msg, &old->ps, &newSnap.ps);
 	}
 	else
 	{
-		MSG_ReadDeltaPlayerstate(msg, NULL, &newSnap.ps);
+		MSGWS_ReadDeltaPlayerstate(msg, NULL, &newSnap.ps);
 	}
 
 	// read packet entities
@@ -501,7 +501,7 @@ void CL_ParseGamestate(QMsg* msg)
 			}
 			memset(&nullstate, 0, sizeof(nullstate));
 			es = &cl.ws_entityBaselines[newnum];
-			MSG_ReadDeltaEntity(msg, &nullstate, es, newnum);
+			MSGWS_ReadDeltaEntity(msg, &nullstate, es, newnum);
 		}
 		else
 		{

@@ -407,8 +407,6 @@ SAVE
 
 ========================================================================
 */
-#define ANIM_BITS       10
-
 #define SNAPFLAG_RATE_DELAYED   1
 #define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
 #define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
