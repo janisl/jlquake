@@ -33,8 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 int g_console_field_width = 78;
 
-#define COLNSOLE_COLOR  COLOR_WHITE	//COLOR_BLACK
-
 Cvar* con_debug;
 Cvar* con_conspeed;
 Cvar* con_notifytime;
@@ -173,7 +171,7 @@ void Con_Clear_f(void)
 
 	for (i = 0; i < CON_TEXTSIZE; i++)
 	{
-		con.text[i] = (ColorIndex(COLNSOLE_COLOR) << 8) | ' ';
+		con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
 	}
 
 	Con_Bottom();		// go to end
@@ -281,7 +279,7 @@ void Con_CheckResize()
 		con.totallines = CON_TEXTSIZE / con.linewidth;
 		for (i = 0; i < CON_TEXTSIZE; i++)
 
-			con.text[i] = (ColorIndex(COLNSOLE_COLOR) << 8) | ' ';
+			con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
 	}
 	else
 	{
@@ -306,7 +304,7 @@ void Con_CheckResize()
 		memcpy(tbuf, con.text, CON_TEXTSIZE * sizeof(short));
 		for (i = 0; i < CON_TEXTSIZE; i++)
 
-			con.text[i] = (ColorIndex(COLNSOLE_COLOR) << 8) | ' ';
+			con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
 
 
 		for (i = 0; i < numlines; i++)
@@ -390,7 +388,7 @@ void Con_Linefeed(qboolean skipnotify)
 	}
 	con.current++;
 	for (i = 0; i < con.linewidth; i++)
-		con.text[(con.current % con.totallines) * con.linewidth + i] = (ColorIndex(COLNSOLE_COLOR) << 8) | ' ';
+		con.text[(con.current % con.totallines) * con.linewidth + i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
 }
 
 /*
@@ -438,7 +436,7 @@ void CL_ConsolePrint(char* txt)
 		con.initialized = qtrue;
 	}
 
-	color = ColorIndex(COLNSOLE_COLOR);
+	color = ColorIndex(COLOR_WHITE);
 
 	while ((c = *txt) != 0)
 	{
@@ -717,7 +715,7 @@ void Con_DrawSolidConsole(float frac)
 
 	// draw the version number
 
-	R_SetColor(g_color_table[ColorIndex(COLNSOLE_COLOR)]);
+	R_SetColor(g_color_table[ColorIndex(COLOR_WHITE)]);
 
 	i = String::Length(Q3_VERSION);
 
