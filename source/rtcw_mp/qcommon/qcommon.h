@@ -210,7 +210,6 @@ int     FS_LoadStack();
 
 #if !defined(DEDICATED)
 extern int cl_connectedToPureServer;
-qboolean FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char* filename);
 #endif
 
 #if defined(DO_LIGHT_DEDICATED)

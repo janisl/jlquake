@@ -208,5 +208,7 @@ bool FS_VerifyPak(const char* pak);
 
 void FS_Path_f();
 
+bool FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char* filename);
+
 void FS_SharedStartup();
 void FS_Shutdown();

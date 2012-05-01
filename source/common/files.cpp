@@ -3810,3 +3810,89 @@ int FS_GetQuake2GameType()
 	}
 	return 0;
 }
+
+/*
+NERVE - SMF - Extracts the latest file from a pak file.
+
+Compares packed file against extracted file. If no differences, does not copy.
+This is necessary for exe/dlls which may or may not be locked.
+
+NOTE TTimo:
+  fullpath gives the full OS path to the dll that will potentially be loaded
+  the dll is extracted to fs_homepath if needed
+
+  the return value doesn't tell wether file was extracted or not, it just says wether it's ok to continue
+  (i.e. either the right file was extracted successfully, or it was already present)
+*/
+bool FS_CL_ExtractFromPakFile(const char* fullpath, const char* gamedir, const char* filename)
+{
+	bool needToCopy = true;
+
+	// read in compressed file
+	unsigned char* srcData;
+	int srcLength = FS_ReadFile(filename, (void**)&srcData);
+
+	// if its not in the pak, we bail
+	if (srcLength == -1)
+	{
+		return false;
+	}
+
+	// read in local file
+	FILE* destHandle = fopen(fullpath, "rb");
+
+	// if we have a local file, we need to compare the two
+	if (destHandle)
+	{
+		fseek(destHandle, 0, SEEK_END);
+		int destLength = ftell(destHandle);
+		fseek(destHandle, 0, SEEK_SET);
+
+		if (destLength > 0)
+		{
+			unsigned char* destData = (unsigned char*)Mem_Alloc(destLength);
+
+			fread(destData, 1, destLength, destHandle);
+
+			// compare files
+			if (destLength == srcLength)
+			{
+				int i;
+				for (i = 0; i < destLength; i++)
+				{
+					if (destData[i] != srcData[i])
+					{
+						break;
+					}
+				}
+
+				if (i == destLength)
+				{
+					needToCopy = false;
+				}
+			}
+
+			Mem_Free(destData);	// TTimo
+		}
+
+		fclose(destHandle);
+	}
+
+	// write file
+	if (needToCopy)
+	{
+		fileHandle_t f = FS_FOpenFileWrite(filename);
+		if (!f)
+		{
+			common->Printf("Failed to open %s\n", filename);
+			return false;
+		}
+
+		FS_Write(srcData, srcLength, f);
+
+		FS_FCloseFile(f);
+	}
+
+	FS_FreeFile(srcData);
+	return true;
+}
