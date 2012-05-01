@@ -267,7 +267,8 @@ void UI_FillPal(int x, int y, int w, int h, int c)
 //
 //==========================================================================
 
-void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns, int numberOfRows)
+void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
+	int numberOfRows, float r, float g, float b, float a)
 {
 	if (y <= -h || y >= viddef.height)
 	{
@@ -283,7 +284,7 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	float fcol = col * xsize;
 	float frow = row * ysize;
 
-	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, 1, 1, 1, 1);
+	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a);
 }
 
 //==========================================================================
