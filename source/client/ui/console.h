@@ -55,3 +55,4 @@ void Con_PageUp();
 void Con_PageDown();
 void Con_Top();
 void Con_Bottom();
+void Con_ClearText();

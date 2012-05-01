@@ -92,8 +92,7 @@ Con_Clear_f
 */
 void Con_Clear_f(void)
 {
-	for (int i = 0; i < CON_TEXTSIZE; i++)
-		con.text[i] = ' ';
+	Con_ClearText();
 }
 
 /*
@@ -142,7 +141,7 @@ void Con_CheckResize()
 		width = 38;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		Con_Clear_f();
+		Con_ClearText();
 	}
 	else
 	{
@@ -165,7 +164,7 @@ void Con_CheckResize()
 		}
 
 		Com_Memcpy(tbuf, con.text, 2 * CON_TEXTSIZE);
-		Con_Clear_f();
+		Con_ClearText();
 
 		for (i = 0; i < numlines; i++)
 		{

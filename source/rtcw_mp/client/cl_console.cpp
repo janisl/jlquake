@@ -167,13 +167,7 @@ Con_Clear_f
 */
 void Con_Clear_f(void)
 {
-	int i;
-
-	for (i = 0; i < CON_TEXTSIZE; i++)
-	{
-		con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
-	}
-
+	Con_ClearText();
 	Con_Bottom();		// go to end
 }
 
@@ -277,9 +271,7 @@ void Con_CheckResize()
 		width = DEFAULT_CONSOLE_WIDTH;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		for (i = 0; i < CON_TEXTSIZE; i++)
-
-			con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
+		Con_ClearText();
 	}
 	else
 	{
@@ -302,10 +294,7 @@ void Con_CheckResize()
 		}
 
 		memcpy(tbuf, con.text, CON_TEXTSIZE * sizeof(short));
-		for (i = 0; i < CON_TEXTSIZE; i++)
-
-			con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
-
+		Con_ClearText();
 
 		for (i = 0; i < numlines; i++)
 		{

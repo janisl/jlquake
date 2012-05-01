@@ -52,8 +52,7 @@ Con_Clear_f
 */
 void Con_Clear_f(void)
 {
-	for (int i = 0; i < CON_TEXTSIZE; i++)
-		con.text[i] = ' ';
+	Con_ClearText();
 }
 
 /*
@@ -106,7 +105,7 @@ void Con_CheckResize()
 		width = 38;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		Con_Clear_f();
+		Con_ClearText();
 	}
 	else
 	{
@@ -129,7 +128,7 @@ void Con_CheckResize()
 		}
 
 		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE << 1);
-		Con_Clear_f();
+		Con_ClearText();
 
 		for (i = 0; i < numlines; i++)
 		{
@@ -165,7 +164,7 @@ void Con_Init(void)
 		FS_FCloseFile(FS_FOpenFileWrite(t2));
 	}
 
-	Con_Clear_f();
+	Con_ClearText();
 	con.linewidth = -1;
 	con.cursorspeed = 4;
 	Con_CheckResize();
