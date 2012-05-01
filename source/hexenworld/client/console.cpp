@@ -101,11 +101,12 @@ void Con_MessageMode2_f(void)
 
 /*
 ================
-Con_Resize
+Con_CheckResize
 
+If the line width has changed, reformat the buffer.
 ================
 */
-void Con_Resize()
+void Con_CheckResize()
 {
 	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	short tbuf[CON_TEXTSIZE];
@@ -163,20 +164,6 @@ void Con_Resize()
 	con.current = con.totallines - 1;
 	con.display = con.current;
 }
-
-
-/*
-================
-Con_CheckResize
-
-If the line width has changed, reformat the buffer.
-================
-*/
-void Con_CheckResize(void)
-{
-	Con_Resize();
-}
-
 
 /*
 ================

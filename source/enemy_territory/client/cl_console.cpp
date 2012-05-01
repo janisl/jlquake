@@ -237,13 +237,11 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize(void)
+void Con_CheckResize()
 {
 	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	MAC_STATIC short tbuf[CON_TEXTSIZE];
+	short tbuf[CON_TEXTSIZE];
 
-	// ydnar: wasn't allowing for larger consoles
-	// width = (SCREEN_WIDTH / SMALLCHAR_WIDTH) - 2;
 	width = (cls.glconfig.vidWidth / SMALLCHAR_WIDTH) - 2;
 
 	if (width == con.linewidth)
