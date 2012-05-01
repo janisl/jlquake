@@ -102,7 +102,7 @@ static int ParseHex(const char* text)
 	return value;
 }
 
-void VM_LoadSymbols(vm_t* vm)
+static void VM_LoadSymbols(vm_t* vm)
 {
 	// don't load symbols if not developer
 	if (!com_developer->integer)
@@ -259,7 +259,7 @@ this should not be a problem for mod makers, since they always copy their
 DLL to the main installation prior to run (sv_pure 1 would have a tendency
 to kill their compiled DLL with extracted ones though :-( )
 */
-void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
+static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 {
 	qassert(name);
@@ -379,7 +379,7 @@ Dlls will call this directly
   For speed, we just grab 15 arguments, and don't worry about exactly
    how many the syscall actually needs; the extra is thrown away.
 */
-qintptr VM_DllSyscall(int arg, ...)
+static qintptr VM_DllSyscall(int arg, ...)
 {
 #if id386
 	return currentVM->systemCall(&arg);
@@ -444,12 +444,6 @@ vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 
 	String::NCpyZ(vm->name, module, sizeof(vm->name));
 	vm->systemCall = systemCalls;
-
-	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
-	{
-		//	Wolf games don't have QVMs.
-		interpret = VMI_NATIVE;
-	}
 
 	// never allow dll loading with a demo
 	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)) && interpret == VMI_NATIVE)
@@ -591,4 +585,251 @@ void VM_Free(vm_t* vm)
 
 	currentVM = NULL;
 	lastVM = NULL;
+}
+
+//	Reload the data, but leave everything else in place
+// This allows a server to do a map_restart without changing memory allocation
+vm_t* VM_Restart(vm_t* vm)
+{
+	vmHeader_t* header;
+	int length;
+	int dataLength;
+	int i;
+	char filename[MAX_QPATH];
+
+	// DLL's can't be restarted in place
+	if (vm->dllHandle)
+	{
+		char name[MAX_QPATH];
+		qintptr (* systemCall)(qintptr* parms);
+
+		systemCall = vm->systemCall;
+		String::NCpyZ(name, vm->name, sizeof(name));
+
+		VM_Free(vm);
+
+		vm = VM_Create(name, systemCall, VMI_NATIVE);
+		return vm;
+	}
+
+	// load the image
+	Log::write("VM_Restart()\n");
+	String::Sprintf(filename, sizeof(filename), "vm/%s.qvm", vm->name);
+	Log::write("Loading vm file %s.\n", filename);
+	length = FS_ReadFile(filename, (void**)&header);
+	if (!header)
+	{
+		throw DropException("VM_Restart failed.\n");
+	}
+
+	// byte swap the header
+	for (i = 0; i < (int)sizeof(*header) / 4; i++)
+	{
+		((int*)header)[i] = LittleLong(((int*)header)[i]);
+	}
+
+	// validate
+	if (header->vmMagic != VM_MAGIC ||
+		header->bssLength < 0 ||
+		header->dataLength < 0 ||
+		header->litLength < 0 ||
+		header->codeLength <= 0)
+	{
+		VM_Free(vm);
+		throw Exception(va("%s has bad header", filename));
+	}
+
+	// round up to next power of 2 so all data operations can
+	// be mask protected
+	dataLength = header->dataLength + header->litLength + header->bssLength;
+	for (i = 0; dataLength > (1 << i); i++)
+	{
+	}
+	dataLength = 1 << i;
+
+	// clear the data
+	Com_Memset(vm->dataBase, 0, dataLength);
+
+	// copy the intialized data
+	Com_Memcpy(vm->dataBase, (byte*)header + header->dataOffset, header->dataLength + header->litLength);
+
+	// byte swap the longs
+	for (i = 0; i < header->dataLength; i += 4)
+	{
+		*(int*)(vm->dataBase + i) = LittleLong(*(int*)(vm->dataBase + i));
+	}
+
+	// free the original file
+	FS_FreeFile(header);
+
+	return vm;
+}
+
+void VM_Clear()
+{
+	for (int i = 0; i < MAX_VM; i++)
+	{
+		VM_Free(&vmTable[i]);
+	}
+	currentVM = NULL;
+	lastVM = NULL;
+}
+
+/*
+Upon a system call, the stack will look like:
+
+sp+32	parm1
+sp+28	parm0
+sp+24	return value
+sp+20	return address
+sp+16	local1
+sp+14	local0
+sp+12	arg1
+sp+8	arg0
+sp+4	return stack
+sp		return address
+
+An interpreted function will immediately execute
+an OP_ENTER instruction, which will subtract space for
+locals from sp
+*/
+qintptr VM_Call(vm_t* vm, int callnum, ...)
+{
+	if (!vm)
+	{
+		common->FatalError("VM_Call with NULL vm");
+	}
+
+	vm_t* oldVM = currentVM;
+	currentVM = vm;
+	lastVM = vm;
+
+	if (vm_debugLevel)
+	{
+		common->Printf("VM_Call( %i )\n", callnum);
+	}
+
+#if id386
+	int* args = &callnum;
+#else
+	//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
+	int args[17];	//	Index 0 is for callnum
+	args[0] = callnum;
+	va_list ap;
+	va_start(ap, callnum);
+	for (int i = 1; i < (int)(sizeof(args) / sizeof(args[i])); i++)
+	{
+		args[i] = va_arg(ap, int);
+	}
+	va_end(ap);
+#endif
+
+	// if we have a dll loaded, call it directly
+	qintptr r;
+	if (vm->entryPoint)
+	{
+		r = vm->entryPoint(callnum,  args[1],  args[2],  args[3], args[4],
+			args[5],  args[6],  args[7], args[8],
+			args[9],  args[10], args[11], args[12],
+			args[13], args[14], args[15], args[16]);
+	}
+	else if (vm->compiled)
+	{
+		r = VM_CallCompiled(vm, args);
+	}
+	else
+	{
+		r = VM_CallInterpreted(vm, args);
+	}
+
+	if (oldVM != NULL)
+	{
+		currentVM = oldVM;
+	}
+	return r;
+}
+
+static int VM_ProfileSort(const void* a, const void* b)
+{
+	vmSymbol_t* sa = *(vmSymbol_t**)a;
+	vmSymbol_t* sb = *(vmSymbol_t**)b;
+
+	if (sa->profileCount < sb->profileCount)
+	{
+		return -1;
+	}
+	if (sa->profileCount > sb->profileCount)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+void VM_VmProfile_f()
+{
+	if (!lastVM)
+	{
+		return;
+	}
+
+	vm_t* vm = lastVM;
+
+	if (!vm->numSymbols)
+	{
+		return;
+	}
+
+	vmSymbol_t** sorted = new vmSymbol_t*[vm->numSymbols];
+	sorted[0] = vm->symbols;
+	double total = sorted[0]->profileCount;
+	for (int i = 1; i < vm->numSymbols; i++)
+	{
+		sorted[i] = sorted[i - 1]->next;
+		total += sorted[i]->profileCount;
+	}
+
+	qsort(sorted, vm->numSymbols, sizeof(*sorted), VM_ProfileSort);
+
+	for (int i = 0; i < vm->numSymbols; i++)
+	{
+		vmSymbol_t* sym = sorted[i];
+
+		int perc = 100 * (float)sym->profileCount / total;
+		common->Printf("%2i%% %9i %s\n", perc, sym->profileCount, sym->symName);
+		sym->profileCount = 0;
+	}
+
+	common->Printf("    %9.0f total\n", total);
+
+	delete[] sorted;
+}
+
+void VM_VmInfo_f()
+{
+	common->Printf("Registered virtual machines:\n");
+	for (int i = 0; i < MAX_VM; i++)
+	{
+		vm_t* vm = &vmTable[i];
+		if (!vm->name[0])
+		{
+			break;
+		}
+		common->Printf("%s : ", vm->name);
+		if (vm->dllHandle)
+		{
+			common->Printf("native\n");
+			continue;
+		}
+		if (vm->compiled)
+		{
+			common->Printf("compiled on load\n");
+		}
+		else
+		{
+			common->Printf("interpreted\n");
+		}
+		common->Printf("    code length : %7i\n", vm->codeLength);
+		common->Printf("    table length: %7i\n", vm->instructionPointersLength);
+		common->Printf("    data length : %7i\n", vm->dataMask + 1);
+	}
 }

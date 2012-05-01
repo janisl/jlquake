@@ -130,11 +130,6 @@ typedef enum {
 
 void    VM_Init(void);
 
-void    VM_Clear(void);
-vm_t* VM_Restart(vm_t* vm);
-
-qintptr VM_Call(vm_t* vm, int callNum, ...);
-
 //===========================================================================
 
 void    Cmd_Init(void);

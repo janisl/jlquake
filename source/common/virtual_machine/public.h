@@ -29,6 +29,9 @@ void* VM_ExplicitArgPtr(vm_t* vm, qintptr intValue);
 vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 	vmInterpret_t interpret);
 void VM_Free(vm_t* vm);
+vm_t* VM_Restart(vm_t* vm);
+void VM_Clear();
+qintptr VM_Call(vm_t* vm, int callNum, ...);
 
 #define VMA(x)  VM_ArgPtr(args[x])
 #define VMF(x)  (*(float*)(&args[x]))

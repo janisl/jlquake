@@ -158,7 +158,6 @@ extern vm_t vmTable[MAX_VM];
 
 const char* VM_ValueToSymbol(vm_t* vm, int value);
 vmSymbol_t* VM_ValueToFunctionSymbol(vm_t* vm, int value);
-void VM_LoadSymbols(vm_t* vm);
 void VM_LogSyscalls(qintptr* args);
 
 void VM_PrepareInterpreter(vm_t* vm, vmHeader_t* header);
@@ -166,7 +165,3 @@ qintptr VM_CallInterpreted(vm_t* vm, int* args);
 
 void VM_Compile(vm_t* vm, vmHeader_t* header);
 qintptr VM_CallCompiled(vm_t* vm, int* args);
-
-void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
-	qintptr (* systemcalls)(int, ...));
-qintptr VM_DllSyscall(int arg, ...);
