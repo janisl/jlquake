@@ -66,47 +66,77 @@ void VM_Init(void)
 	Com_Memset(vmTable, 0, sizeof(vmTable));
 }
 
-//	Used to load a development dll instead of a virtual machine
+/*
+Used to load a development dll instead of a virtual machine
+
+NOTE: DLL checksuming / DLL pk3 and search paths
+
+if we are connecting to an sv_pure server, the .so will be extracted
+from a pk3 and placed in the homepath (i.e. the write area)
+
+since DLLs are looked for in several places, it is important that
+we are sure we are going to load the DLL that was just extracted
+
+in release we start searching directly in fs_homepath then fs_basepath
+(that makes sure we are going to load the DLL we extracted from pk3)
+this should not be a problem for mod makers, since they always copy their
+DLL to the main installation prior to run (sv_pure 1 would have a tendency
+to kill their compiled DLL with extracted ones though :-( )
+*/
 static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 	int (* systemcalls)(qintptr, ...))
 {
 	qassert(name);
 
-	char fname[MAX_OSPATH];
-	String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
-
-	if (!Sys_Quake3DllWarningConfirmation())
+	if (GGameType & GAME_Quake3 && !Sys_Quake3DllWarningConfirmation())
 	{
 		return NULL;
 	}
 
-	const char* basepath = Cvar_VariableString("fs_basepath");
+	char fname[MAX_OSPATH];
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		String::NCpyZ(fname, Sys_GetMPDllName(name), sizeof(fname));
+	}
+	else
+	{
+		String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
+	}
+
 	const char* homepath = Cvar_VariableString("fs_homepath");
+	const char* basepath = Cvar_VariableString("fs_basepath");
 	const char* cdpath = Cvar_VariableString("fs_cdpath");
 	const char* gamedir = Cvar_VariableString("fs_game");
 
 	void* libHandle = NULL;
-	if (homepath[0])
+#ifdef _WIN32
+	if (GGameType & GAME_WolfSP)
 	{
-		char* fn = FS_BuildOSPath(homepath, gamedir, fname);
-		Com_Printf("VM_LoadDll(%s)... \n", fn);
-		libHandle = Sys_LoadDll(fn);
+		// On Windows instalations DLLs are in the same directory as exe file.
+		libHandle = Sys_LoadDll(filename);
 	}
+#endif
 
 	if (!libHandle)
 	{
-		char* fn = FS_BuildOSPath(basepath, gamedir, fname);
+		char* fn = FS_BuildOSPath(homepath, gamedir, fname);
 		libHandle = Sys_LoadDll(fn);
-
-		if (!libHandle && cdpath[0])
-		{
-			fn = FS_BuildOSPath(cdpath, gamedir, fname);
-			libHandle = Sys_LoadDll(fn);
-		}
 
 		if (!libHandle)
 		{
-			return NULL;
+			fn = FS_BuildOSPath(basepath, gamedir, fname);
+			libHandle = Sys_LoadDll(fn);
+
+			if (!libHandle && cdpath[0])
+			{
+				fn = FS_BuildOSPath(cdpath, gamedir, fname);
+				libHandle = Sys_LoadDll(fn);
+			}
+
+			if (!libHandle)
+			{
+				return NULL;
+			}
 		}
 	}
 

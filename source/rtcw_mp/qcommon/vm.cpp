@@ -73,6 +73,8 @@ void VM_Init(void)
 }
 
 /*
+Used to load a development dll instead of a virtual machine
+
 NOTE: DLL checksuming / DLL pk3 and search paths
 
 if we are connecting to an sv_pure server, the .so will be extracted
@@ -86,74 +88,88 @@ in release we start searching directly in fs_homepath then fs_basepath
 this should not be a problem for mod makers, since they always copy their
 DLL to the main installation prior to run (sv_pure 1 would have a tendency
 to kill their compiled DLL with extracted ones though :-( )
-=================
 */
-static void* VM_LoadDll(const char* name,
-	qintptr(**entryPoint) (int, ...),
+static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 {
-	void* libHandle;
-	void (* dllEntry)(qintptr (* syscallptr)(int, ...));
-	char fname[MAX_OSPATH];
-	const char* homepath;
-	const char* basepath;
-	const char* cdpath;
-	const char* gamedir;
-	char* fn;
+	qassert(name);
 
-	// bk001206 - let's have some paranoia
-	assert(name);
-
-	String::NCpyZ(fname, Sys_GetMPDllName(name), sizeof(fname));
-
-	homepath = Cvar_VariableString("fs_homepath");
-	basepath = Cvar_VariableString("fs_basepath");
-	cdpath = Cvar_VariableString("fs_cdpath");
-	gamedir = Cvar_VariableString("fs_game");
-
-	// try homepath first
-	fn = FS_BuildOSPath(homepath, gamedir, fname);
-
-	// NERVE - SMF - extract dlls from pak file for security
-	// we have to handle the game dll a little differently
-	// TTimo - passing the exact path to check against
-	//   (compatibility with other OSes loading procedure)
-	if (cl_connectedToPureServer && String::NCmp(name, "qagame", 6))
+	if (GGameType & GAME_Quake3 && !Sys_Quake3DllWarningConfirmation())
 	{
-		if (!FS_CL_ExtractFromPakFile(fn, gamedir, fname))
-		{
-			Com_Error(ERR_DROP, "Game code(%s) failed Pure Server check", fname);
-		}
+		return NULL;
 	}
 
-	libHandle = Sys_LoadDll(fn);
+	char fname[MAX_OSPATH];
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		String::NCpyZ(fname, Sys_GetMPDllName(name), sizeof(fname));
+	}
+	else
+	{
+		String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
+	}
+
+	const char* homepath = Cvar_VariableString("fs_homepath");
+	const char* basepath = Cvar_VariableString("fs_basepath");
+	const char* cdpath = Cvar_VariableString("fs_cdpath");
+	const char* gamedir = Cvar_VariableString("fs_game");
+
+	void* libHandle = NULL;
+#ifdef _WIN32
+	if (GGameType & GAME_WolfSP)
+	{
+		// On Windows instalations DLLs are in the same directory as exe file.
+		libHandle = Sys_LoadDll(filename);
+	}
+#endif
 
 	if (!libHandle)
 	{
-		// basepath
-		fn = FS_BuildOSPath(basepath, gamedir, fname);
+		// try homepath first
+		char* fn = FS_BuildOSPath(homepath, gamedir, fname);
+
+		// NERVE - SMF - extract dlls from pak file for security
+		// we have to handle the game dll a little differently
+		// TTimo - passing the exact path to check against
+		//   (compatibility with other OSes loading procedure)
+		if (cl_connectedToPureServer && String::NCmp(name, "qagame", 6))
+		{
+			if (!FS_CL_ExtractFromPakFile(fn, gamedir, fname))
+			{
+				Com_Error(ERR_DROP, "Game code(%s) failed Pure Server check", fname);
+			}
+		}
+
 		libHandle = Sys_LoadDll(fn);
 
 		if (!libHandle)
 		{
-			// First try falling back to "main"
-			fn = FS_BuildOSPath(homepath, "main", fname);
+			// basepath
+			fn = FS_BuildOSPath(basepath, gamedir, fname);
 			libHandle = Sys_LoadDll(fn);
 
 			if (!libHandle)
 			{
-				fn = FS_BuildOSPath(basepath, "main", fname);
+				// First try falling back to "main"
+				fn = FS_BuildOSPath(homepath, "main", fname);
 				libHandle = Sys_LoadDll(fn);
 
 				if (!libHandle)
 				{
-					return NULL;
+					fn = FS_BuildOSPath(basepath, "main", fname);
+					libHandle = Sys_LoadDll(fn);
+
+					if (!libHandle)
+					{
+						return NULL;
+					}
 				}
 			}
 		}
 	}
 
-	dllEntry = (void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	void (* dllEntry)(qintptr (* syscallptr)(int, ...)) =
+		(void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
 	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
 	if (!*entryPoint || !dllEntry)
 	{
