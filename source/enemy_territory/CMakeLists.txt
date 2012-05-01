@@ -32,7 +32,6 @@ set (ET_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp
-	qcommon/vm.cpp
 	qcommon/dl_main_curl.cpp
 
 	client/cl_cgame.cpp
@@ -91,7 +90,6 @@ set (ETDED_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp
-	qcommon/vm.cpp
 
 	unix/linux_signals.cpp
 	unix/unix_main.cpp

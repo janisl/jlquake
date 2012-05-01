@@ -17,13 +17,15 @@
 #include "../qcommon.h"
 #include "local.h"
 
+#define MAX_VM      3
+
 #define STACK_SIZE  0x20000
 
 vm_t* currentVM = NULL;
-vm_t* lastVM = NULL;
+static vm_t* lastVM = NULL;
 int vm_debugLevel;
 
-vm_t vmTable[MAX_VM];
+static vm_t vmTable[MAX_VM];
 
 void VM_Debug(int level)
 {
@@ -765,7 +767,7 @@ static int VM_ProfileSort(const void* a, const void* b)
 	return 0;
 }
 
-void VM_VmProfile_f()
+static void VM_VmProfile_f()
 {
 	if (!lastVM)
 	{
@@ -804,7 +806,7 @@ void VM_VmProfile_f()
 	delete[] sorted;
 }
 
-void VM_VmInfo_f()
+static void VM_VmInfo_f()
 {
 	common->Printf("Registered virtual machines:\n");
 	for (int i = 0; i < MAX_VM; i++)
@@ -832,4 +834,19 @@ void VM_VmInfo_f()
 		common->Printf("    table length: %7i\n", vm->instructionPointersLength);
 		common->Printf("    data length : %7i\n", vm->dataMask + 1);
 	}
+}
+
+void VM_Init()
+{
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)))
+	{
+		Cvar_Get("vm_cgame", "2", CVAR_ARCHIVE);	// !@# SHIP WITH SET TO 2
+		Cvar_Get("vm_game", "2", CVAR_ARCHIVE);		// !@# SHIP WITH SET TO 2
+		Cvar_Get("vm_ui", "2", CVAR_ARCHIVE);		// !@# SHIP WITH SET TO 2
+	}
+
+	Cmd_AddCommand("vmprofile", VM_VmProfile_f);
+	Cmd_AddCommand("vminfo", VM_VmInfo_f);
+
+	Com_Memset(vmTable, 0, sizeof(vmTable));
 }

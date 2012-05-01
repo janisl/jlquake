@@ -128,8 +128,6 @@ typedef enum {
 	TRAP_TESTPRINTFLOAT
 } sharedTraps_t;
 
-void    VM_Init(void);
-
 //===========================================================================
 
 void    Cmd_Init(void);

@@ -16,8 +16,6 @@
 
 #include "../file_formats/qvm.h"
 
-#define MAX_VM      3
-
 enum opcode_t
 {
 	OP_UNDEF,
@@ -152,9 +150,6 @@ struct vm_t
 
 extern int vm_debugLevel;
 extern vm_t* currentVM;
-extern vm_t* lastVM;
-
-extern vm_t vmTable[MAX_VM];
 
 const char* VM_ValueToSymbol(vm_t* vm, int value);
 vmSymbol_t* VM_ValueToFunctionSymbol(vm_t* vm, int value);

@@ -24,7 +24,6 @@ set(WOLFSP_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp
-	qcommon/vm.cpp
 
 	client/snd_dma.cpp
 

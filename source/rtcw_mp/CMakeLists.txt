@@ -32,7 +32,6 @@ set(WOLFMP_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp
-	qcommon/vm.cpp
 
 	client/snd_dma.cpp
 
@@ -90,7 +89,6 @@ set(WOLFMPDED_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp
-	qcommon/vm.cpp
 	game/q_math.cpp
 	game/q_shared.cpp
 	unix/unix_main.cpp
