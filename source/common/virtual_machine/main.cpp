@@ -711,37 +711,54 @@ qintptr VM_Call(vm_t* vm, int callnum, ...)
 		common->Printf("VM_Call( %i )\n", callnum);
 	}
 
-#if id386
-	int* args = &callnum;
-#else
-	//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
-	int args[17];	//	Index 0 is for callnum
-	args[0] = callnum;
-	va_list ap;
-	va_start(ap, callnum);
-	for (int i = 1; i < (int)(sizeof(args) / sizeof(args[i])); i++)
-	{
-		args[i] = va_arg(ap, int);
-	}
-	va_end(ap);
-#endif
-
 	// if we have a dll loaded, call it directly
 	qintptr r;
 	if (vm->entryPoint)
 	{
-		r = vm->entryPoint(callnum,  args[1],  args[2],  args[3], args[4],
-			args[5],  args[6],  args[7], args[8],
-			args[9],  args[10], args[11], args[12],
-			args[13], args[14], args[15], args[16]);
-	}
-	else if (vm->compiled)
-	{
-		r = VM_CallCompiled(vm, args);
+#if id386
+		int* args = &callnum;
+#else
+		//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
+		qintptr args[16];
+		va_list ap;
+		va_start(ap, callnum);
+		for (int i = 0; i < (int)(sizeof(args) / sizeof(args[i])); i++)
+		{
+			args[i] = va_arg(ap, qintptr);
+		}
+		va_end(ap);
+#endif
+
+		r = vm->entryPoint(callnum,  args[0],  args[1],  args[2], args[3],
+			args[4],  args[5], args[6], args[7],
+			args[8],  args[9], args[10], args[11],
+			args[12], args[13], args[14], args[15]);
 	}
 	else
 	{
-		r = VM_CallInterpreted(vm, args);
+#if id386
+		int* args = &callnum;
+#else
+		//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
+		int args[17];	//	Index 0 is for callnum
+		args[0] = callnum;
+		va_list ap;
+		va_start(ap, callnum);
+		for (int i = 1; i < (int)(sizeof(args) / sizeof(args[i])); i++)
+		{
+			args[i] = va_arg(ap, int);
+		}
+		va_end(ap);
+#endif
+
+		if (vm->compiled)
+		{
+			r = VM_CallCompiled(vm, args);
+		}
+		else
+		{
+			r = VM_CallInterpreted(vm, args);
+		}
 	}
 
 	if (oldVM != NULL)
