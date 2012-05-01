@@ -14,11 +14,21 @@
 //**
 //**************************************************************************
 
+enum vmInterpret_t
+{
+	VMI_NATIVE,
+	VMI_BYTECODE,
+	VMI_COMPILED
+};
+
 struct vm_t;
 
 void VM_Debug(int level);
 void* VM_ArgPtr(qintptr intValue);
 void* VM_ExplicitArgPtr(vm_t* vm, qintptr intValue);
+vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
+	vmInterpret_t interpret);
+void VM_Free(vm_t* vm);
 
 #define VMA(x)  VM_ArgPtr(args[x])
 #define VMF(x)  (*(float*)(&args[x]))

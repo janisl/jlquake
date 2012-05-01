@@ -17,8 +17,13 @@
 #include "../qcommon.h"
 #include "local.h"
 
+#define STACK_SIZE  0x20000
+
 vm_t* currentVM = NULL;
+vm_t* lastVM = NULL;
 int vm_debugLevel;
+
+vm_t vmTable[MAX_VM];
 
 void VM_Debug(int level)
 {
@@ -392,4 +397,198 @@ qintptr VM_DllSyscall(int arg, ...)
 
 	return currentVM->systemCall(args);
 #endif
+}
+
+//	If image ends in .qvm it will be interpreted, otherwise
+// it will attempt to load as a system dll
+vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
+	vmInterpret_t interpret)
+{
+	vm_t* vm;
+	vmHeader_t* header;
+	int length;
+	int dataLength;
+	int i;
+	char filename[MAX_QPATH];
+
+	if (!module || !module[0] || !systemCalls)
+	{
+		common->FatalError("VM_Create: bad parms");
+	}
+
+	// see if we already have the VM
+	for (i = 0; i < MAX_VM; i++)
+	{
+		if (!String::ICmp(vmTable[i].name, module))
+		{
+			vm = &vmTable[i];
+			return vm;
+		}
+	}
+
+	// find a free vm
+	for (i = 0; i < MAX_VM; i++)
+	{
+		if (!vmTable[i].name[0])
+		{
+			break;
+		}
+	}
+
+	if (i == MAX_VM)
+	{
+		common->FatalError("VM_Create: no free vm_t");
+	}
+
+	vm = &vmTable[i];
+
+	String::NCpyZ(vm->name, module, sizeof(vm->name));
+	vm->systemCall = systemCalls;
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		//	Wolf games don't have QVMs.
+		interpret = VMI_NATIVE;
+	}
+
+	// never allow dll loading with a demo
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)) && interpret == VMI_NATIVE)
+	{
+		if (Cvar_VariableValue("fs_restrict"))
+		{
+			interpret = VMI_COMPILED;
+		}
+	}
+
+	if (interpret == VMI_NATIVE)
+	{
+		// try to load as a system dll
+		common->Printf("Loading dll file %s.\n", vm->name);
+		vm->dllHandle = VM_LoadDll(module, &vm->entryPoint, VM_DllSyscall);
+		if (vm->dllHandle)
+		{
+			return vm;
+		}
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			//	Wolf games don't have QVMs.
+			return NULL;
+		}
+
+		common->Printf("Failed to load dll, looking for qvm.\n");
+		interpret = VMI_COMPILED;
+	}
+
+	// load the image
+	String::Sprintf(filename, sizeof(filename), "vm/%s.qvm", vm->name);
+	common->Printf("Loading vm file %s.\n", filename);
+	length = FS_ReadFile(filename, (void**)&header);
+	if (!header)
+	{
+		common->Printf("Failed.\n");
+		VM_Free(vm);
+		return NULL;
+	}
+
+	// byte swap the header
+	for (i = 0; i < (int)sizeof(*header) / 4; i++)
+	{
+		((int*)header)[i] = LittleLong(((int*)header)[i]);
+	}
+
+	// validate
+	if (header->vmMagic != VM_MAGIC ||
+		header->bssLength < 0 ||
+		header->dataLength < 0 ||
+		header->litLength < 0 ||
+		header->codeLength <= 0)
+	{
+		VM_Free(vm);
+		common->FatalError("%s has bad header", filename);
+	}
+
+	// round up to next power of 2 so all data operations can
+	// be mask protected
+	dataLength = header->dataLength + header->litLength + header->bssLength;
+	for (i = 0; dataLength > (1 << i); i++)
+	{
+	}
+	dataLength = 1 << i;
+
+	// allocate zero filled space for initialized and uninitialized data
+	vm->dataBase = new byte[dataLength];
+	Com_Memset(vm->dataBase, 0, dataLength);
+	vm->dataMask = dataLength - 1;
+
+	// copy the intialized data
+	Com_Memcpy(vm->dataBase, (byte*)header + header->dataOffset, header->dataLength + header->litLength);
+
+	// byte swap the longs
+	for (i = 0; i < header->dataLength; i += 4)
+	{
+		*(int*)(vm->dataBase + i) = LittleLong(*(int*)(vm->dataBase + i));
+	}
+
+	// allocate space for the jump targets, which will be filled in by the compile/prep functions
+	vm->instructionPointersLength = header->instructionCount * 4;
+	vm->instructionPointers = new int[header->instructionCount];
+	Com_Memset(vm->instructionPointers, 0, vm->instructionPointersLength);
+
+	// copy or compile the instructions
+	vm->codeLength = header->codeLength;
+
+	if (interpret >= VMI_COMPILED)
+	{
+		vm->compiled = true;
+		VM_Compile(vm, header);
+	}
+	else
+	{
+		vm->compiled = false;
+		VM_PrepareInterpreter(vm, header);
+	}
+
+	// free the original file
+	FS_FreeFile(header);
+
+	// load the map file
+	VM_LoadSymbols(vm);
+
+	// the stack is implicitly at the end of the image
+	vm->programStack = vm->dataMask + 1;
+	vm->stackBottom = vm->programStack - STACK_SIZE;
+
+	common->Printf("%s loaded\n", module);
+
+	return vm;
+}
+
+void VM_Free(vm_t* vm)
+{
+	if (vm->dllHandle)
+	{
+		Sys_UnloadDll(vm->dllHandle);
+	}
+	if (vm->codeBase)
+	{
+		delete[] vm->codeBase;
+	}
+	if (vm->dataBase)
+	{
+		delete[] vm->dataBase;
+	}
+	if (vm->instructionPointers)
+	{
+		delete[] vm->instructionPointers;
+	}
+	for (vmSymbol_t* sym = vm->symbols; sym; )
+	{
+		vmSymbol_t* next = sym->next;
+		Mem_Free(sym);
+		sym = next;
+	}
+	Com_Memset(vm, 0, sizeof(*vm));
+
+	currentVM = NULL;
+	lastVM = NULL;
 }
