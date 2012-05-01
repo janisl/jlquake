@@ -516,19 +516,6 @@ sysEvent_t  Sys_GetEvent(void);
 void    Sys_Init(void);
 qboolean Sys_IsNumLockDown(void);
 
-void    Sys_UnloadGame(void);
-void* Sys_GetGameAPI(void* parms);
-
-void    Sys_UnloadCGame(void);
-void* Sys_GetCGameAPI(void);
-
-void    Sys_UnloadUI(void);
-void* Sys_GetUIAPI(void);
-
-//bot libraries
-void    Sys_UnloadBotLib(void);
-void* Sys_GetBotLibAPI(void* parms);
-
 const char* Sys_GetCurrentUser(void);
 
 void QDECL Sys_Error(const char* error, ...);
