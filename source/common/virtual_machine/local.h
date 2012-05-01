@@ -161,3 +161,6 @@ qintptr VM_CallInterpreted(vm_t* vm, int* args);
 
 void VM_Compile(vm_t* vm, vmHeader_t* header);
 qintptr VM_CallCompiled(vm_t* vm, int* args);
+
+void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
+	qintptr (* systemcalls)(int, ...));
