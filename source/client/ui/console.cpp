@@ -16,6 +16,8 @@
 
 #include "../client.h"
 
+#define DEFAULT_CONSOLE_WIDTH   78
+
 console_t con;
 
 void Con_ClearNotify()
@@ -24,6 +26,73 @@ void Con_ClearNotify()
 	{
 		con.times[i] = 0;
 	}
+}
+
+//	If the line width has changed, reformat the buffer.
+void Con_CheckResize()
+{
+	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
+	short tbuf[CON_TEXTSIZE];
+
+	if (GGameType & GAME_Tech3)
+	{
+		width = (cls.glconfig.vidWidth / SMALLCHAR_WIDTH) - 2;
+	}
+	else
+	{
+		width = (viddef.width / SMALLCHAR_WIDTH) - 2;
+	}
+
+	if (width == con.linewidth)
+	{
+		return;
+	}
+
+	if (width < 1)			// video hasn't been initialized yet
+	{
+		width = DEFAULT_CONSOLE_WIDTH;
+		con.linewidth = width;
+		con.totallines = CON_TEXTSIZE / con.linewidth;
+		Con_ClearText();
+	}
+	else
+	{
+		oldwidth = con.linewidth;
+		con.linewidth = width;
+		oldtotallines = con.totallines;
+		con.totallines = CON_TEXTSIZE / con.linewidth;
+		numlines = oldtotallines;
+
+		if (con.totallines < numlines)
+		{
+			numlines = con.totallines;
+		}
+
+		numchars = oldwidth;
+
+		if (con.linewidth < numchars)
+		{
+			numchars = con.linewidth;
+		}
+
+		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE * sizeof(short));
+		Con_ClearText();
+
+		for (i = 0; i < numlines; i++)
+		{
+			for (j = 0; j < numchars; j++)
+			{
+				con.text[(con.totallines - 1 - i) * con.linewidth + j] =
+					tbuf[((con.current - i + oldtotallines) %
+						  oldtotallines) * oldwidth + j];
+			}
+		}
+
+		Con_ClearNotify();
+	}
+
+	con.current = con.totallines - 1;
+	con.display = con.current;
 }
 
 void Con_ClearText()

@@ -38,8 +38,6 @@ Cvar* con_debug;
 Cvar* con_conspeed;
 Cvar* con_notifytime;
 
-#define DEFAULT_CONSOLE_WIDTH   78
-
 vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
 
 
@@ -256,73 +254,6 @@ void Con_Dump_f(void)
 
 	FS_FCloseFile(f);
 }
-
-/*
-================
-Con_CheckResize
-
-If the line width has changed, reformat the buffer.
-================
-*/
-void Con_CheckResize()
-{
-	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	short tbuf[CON_TEXTSIZE];
-
-	width = (cls.glconfig.vidWidth / SMALLCHAR_WIDTH) - 2;
-
-	if (width == con.linewidth)
-	{
-		return;
-	}
-
-	if (width < 1)				// video hasn't been initialized yet
-	{
-		width = DEFAULT_CONSOLE_WIDTH;
-		con.linewidth = width;
-		con.totallines = CON_TEXTSIZE / con.linewidth;
-		Con_ClearText();
-	}
-	else
-	{
-		oldwidth = con.linewidth;
-		con.linewidth = width;
-		oldtotallines = con.totallines;
-		con.totallines = CON_TEXTSIZE / con.linewidth;
-		numlines = oldtotallines;
-
-		if (con.totallines < numlines)
-		{
-			numlines = con.totallines;
-		}
-
-		numchars = oldwidth;
-
-		if (con.linewidth < numchars)
-		{
-			numchars = con.linewidth;
-		}
-
-		memcpy(tbuf, con.text, CON_TEXTSIZE * sizeof(short));
-		Con_ClearText();
-
-		for (i = 0; i < numlines; i++)
-		{
-			for (j = 0; j < numchars; j++)
-			{
-				con.text[(con.totallines - 1 - i) * con.linewidth + j] =
-					tbuf[((con.current - i + oldtotallines) %
-						  oldtotallines) * oldwidth + j];
-			}
-		}
-
-		Con_ClearNotify();
-	}
-
-	con.current = con.totallines - 1;
-	con.display = con.current;
-}
-
 
 /*
 ================

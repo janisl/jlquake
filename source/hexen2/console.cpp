@@ -80,74 +80,6 @@ void Con_MessageMode2_f(void)
 	team_message = true;
 }
 
-
-/*
-================
-Con_CheckResize
-
-If the line width has changed, reformat the buffer.
-================
-*/
-void Con_CheckResize()
-{
-	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	short tbuf[CON_TEXTSIZE];
-
-	width = (viddef.width >> 3) - 2;
-
-	if (width == con.linewidth)
-	{
-		return;
-	}
-
-	if (width < 1)			// video hasn't been initialized yet
-	{
-		width = 38;
-		con.linewidth = width;
-		con.totallines = CON_TEXTSIZE / con.linewidth;
-		Con_ClearText();
-	}
-	else
-	{
-		oldwidth = con.linewidth;
-		con.linewidth = width;
-		oldtotallines = con.totallines;
-		con.totallines = CON_TEXTSIZE / con.linewidth;
-		numlines = oldtotallines;
-
-		if (con.totallines < numlines)
-		{
-			numlines = con.totallines;
-		}
-
-		numchars = oldwidth;
-
-		if (con.linewidth < numchars)
-		{
-			numchars = con.linewidth;
-		}
-
-		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE << 1);
-		Con_ClearText();
-
-		for (i = 0; i < numlines; i++)
-		{
-			for (j = 0; j < numchars; j++)
-			{
-				con.text[(con.totallines - 1 - i) * con.linewidth + j] =
-					tbuf[((con.current - i + oldtotallines) %
-						  oldtotallines) * oldwidth + j];
-			}
-		}
-
-		Con_ClearNotify();
-	}
-
-	con.current = con.totallines - 1;
-	con.display = con.current;
-}
-
-
 /*
 ================
 Con_Init
@@ -164,7 +96,6 @@ void Con_Init(void)
 		FS_FCloseFile(FS_FOpenFileWrite(t2));
 	}
 
-	Con_ClearText();
 	con.linewidth = -1;
 	con.cursorspeed = 4;
 	Con_CheckResize();

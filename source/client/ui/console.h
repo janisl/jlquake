@@ -51,8 +51,9 @@ struct console_t
 extern console_t con;
 
 void Con_ClearNotify();
+void Con_ClearText();
+void Con_CheckResize();
 void Con_PageUp();
 void Con_PageDown();
 void Con_Top();
 void Con_Bottom();
-void Con_ClearText();
