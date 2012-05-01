@@ -105,7 +105,6 @@ static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 
 	const char* homepath = Cvar_VariableString("fs_homepath");
 	const char* basepath = Cvar_VariableString("fs_basepath");
-	const char* cdpath = Cvar_VariableString("fs_cdpath");
 	const char* gamedir = Cvar_VariableString("fs_game");
 
 	void* libHandle = NULL;
@@ -119,6 +118,7 @@ static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 
 	if (!libHandle)
 	{
+		// try homepath first
 		char* fn = FS_BuildOSPath(homepath, gamedir, fname);
 		libHandle = Sys_LoadDll(fn);
 
@@ -126,12 +126,6 @@ static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 		{
 			fn = FS_BuildOSPath(basepath, gamedir, fname);
 			libHandle = Sys_LoadDll(fn);
-
-			if (!libHandle && cdpath[0])
-			{
-				fn = FS_BuildOSPath(cdpath, gamedir, fname);
-				libHandle = Sys_LoadDll(fn);
-			}
 
 			if (!libHandle)
 			{

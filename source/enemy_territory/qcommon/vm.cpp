@@ -111,7 +111,6 @@ static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 
 	const char* homepath = Cvar_VariableString("fs_homepath");
 	const char* basepath = Cvar_VariableString("fs_basepath");
-	const char* cdpath = Cvar_VariableString("fs_cdpath");
 	const char* gamedir = Cvar_VariableString("fs_game");
 
 	void* libHandle = NULL;
