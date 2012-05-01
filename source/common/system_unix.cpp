@@ -402,6 +402,6 @@ void Sys_UnloadDll(void* handle)
 	const char* err = dlerror();
 	if (err != NULL)
 	{
-		common->Printf("Sys_UnloadGame failed on dlclose: \"%s\"!\n", err);
+		common->Printf("Sys_UnloadDll: failed on dlclose: \"%s\"!\n", err);
 	}
 }

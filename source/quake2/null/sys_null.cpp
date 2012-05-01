@@ -23,15 +23,6 @@ void Sys_Quit(void)
 	exit(0);
 }
 
-void    Sys_UnloadGame(void)
-{
-}
-
-void* Sys_GetGameAPI(void* parms)
-{
-	return NULL;
-}
-
 void Sys_AppActivate(void)
 {
 }

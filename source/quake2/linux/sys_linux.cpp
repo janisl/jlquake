@@ -1,24 +1,7 @@
 #include <unistd.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
-#include <mntent.h>
 #include <execinfo.h>
-
-#include <dlfcn.h>
 
 #include "../qcommon/qcommon.h"
 
@@ -67,83 +50,6 @@ void Sys_Error(const char* error, ...)
 	_exit(1);
 
 }
-
-/*****************************************************************************/
-
-static void* game_library;
-
-/*
-=================
-Sys_UnloadGame
-=================
-*/
-void Sys_UnloadGame(void)
-{
-	if (game_library)
-	{
-		Sys_UnloadDll(game_library);
-	}
-	game_library = NULL;
-}
-
-/*
-=================
-Sys_GetGameAPI
-
-Loads the game dll
-=================
-*/
-void* Sys_GetGameAPI(void* parms)
-{
-	void*(*GetGameAPI)(void*);
-
-	char name[MAX_OSPATH];
-	char curpath[MAX_OSPATH];
-	char* path;
-	const char* gamename = Sys_GetDllName("game");
-
-	setreuid(getuid(), getuid());
-	setegid(getgid());
-
-	if (game_library)
-	{
-		Com_Error(ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
-	}
-
-	getcwd(curpath, sizeof(curpath));
-
-	Com_Printf("------- Loading %s -------", gamename);
-
-	// now run through the search paths
-	path = NULL;
-	while (1)
-	{
-		path = FS_NextPath(path);
-		if (!path)
-		{
-			return NULL;		// couldn't find one anywhere
-		}
-		sprintf(name, "%s/%s", path, gamename);
-		game_library = Sys_LoadDll(name);
-		if (game_library)
-		{
-			Com_DPrintf("LoadLibrary (%s)\n",name);
-			break;
-		}
-		Log::develWriteLine("failed:\n\"%s\"\n", dlerror());
-	}
-
-	GetGameAPI = (void* (*)(void*))Sys_GetDllFunction(game_library, "GetGameAPI");
-	if (!GetGameAPI)
-	{
-		Sys_UnloadGame();
-		return NULL;
-	}
-
-	return GetGameAPI(parms);
-}
-
-/*****************************************************************************/
 
 void Sys_AppActivate(void)
 {

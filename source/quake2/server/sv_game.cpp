@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 game_export_t* ge;
 
+void* game_library;
+
 
 /*
 ===============
@@ -325,6 +327,12 @@ void PF_StartSound(edict_t* entity, int channel, int sound_num, float volume,
 
 //==============================================
 
+static void SV_UnloadGame()
+{
+	Sys_UnloadDll(game_library);
+	game_library = NULL;
+}
+
 /*
 ===============
 SV_ShutdownGameProgs
@@ -340,8 +348,49 @@ void SV_ShutdownGameProgs(void)
 		return;
 	}
 	ge->Shutdown();
-	Sys_UnloadGame();
+	SV_UnloadGame();
 	ge = NULL;
+}
+
+//	Loads the game dll
+static void* Sys_GetGameAPI(void* parms)
+{
+	void*(*GetGameAPI)(void*);
+	char name[MAX_OSPATH];
+	char* path;
+	const char* gamename = Sys_GetDllName("game");
+
+	if (game_library)
+	{
+		Com_Error(ERR_FATAL, "Sys_GetGameAPI without SV_UnloadGame");
+	}
+
+	// run through the search paths
+	path = NULL;
+	while (1)
+	{
+		path = FS_NextPath(path);
+		if (!path)
+		{
+			return NULL;		// couldn't find one anywhere
+		}
+		String::Sprintf(name, sizeof(name), "%s/%s", path, gamename);
+		game_library = Sys_LoadDll(name);
+		if (game_library)
+		{
+			Com_DPrintf("LoadLibrary (%s)\n",name);
+			break;
+		}
+	}
+
+	GetGameAPI = (void*(*)(void*))Sys_GetDllFunction(game_library, "GetGameAPI");
+	if (!GetGameAPI)
+	{
+		SV_UnloadGame();
+		return NULL;
+	}
+
+	return GetGameAPI(parms);
 }
 
 /*
