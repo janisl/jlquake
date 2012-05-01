@@ -1302,22 +1302,9 @@ CL_InitUI
 void CL_InitUI(void)
 {
 	int v;
-	vmInterpret_t interpret;
-
-	// load the dll or bytecode
-	if (cl_connectedToPureServer != 0)
-	{
-		// if sv_pure is set we only allow qvms to be loaded
-		interpret = VMI_COMPILED;
-	}
-	else
-	{
-		interpret = (vmInterpret_t)Cvar_VariableIntegerValue("vm_ui");
-	}
-
 //----(SA)	always dll
 
-	uivm = VM_Create("ui", CL_UISystemCalls, (vmInterpret_t)Cvar_VariableIntegerValue("vm_ui"));
+	uivm = VM_Create("ui", CL_UISystemCalls, VMI_NATIVE);
 
 	if (!uivm)
 	{
