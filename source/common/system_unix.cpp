@@ -338,6 +338,11 @@ double Sys_DoubleTime()
 	return (tp.tv_sec - sys_timeBase) + tp.tv_usec / 1000000.0;
 }
 
+bool Sys_Quake3DllWarningConfirmation()
+{
+	return true;
+}
+
 static char* Sys_GetDllNameImpl(const char* name, const char* suffix)
 {
 #if defined __i386__

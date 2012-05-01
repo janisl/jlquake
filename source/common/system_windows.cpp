@@ -442,6 +442,34 @@ double Sys_DoubleTime()
 #endif
 }
 
+bool Sys_Quake3DllWarningConfirmation()
+{
+#ifdef NDEBUG
+	static int lastWarning = 0;
+	int timestamp = Sys_Milliseconds();
+	if (((timestamp - lastWarning) > (5 * 60000)) && !Cvar_VariableIntegerValue("dedicated") &&
+		!Cvar_VariableIntegerValue("com_blindlyLoadDLLs"))
+	{
+		if (FS_FileExists(filename))
+		{
+			lastWarning = timestamp;
+			int ret = MessageBoxEx(NULL, "You are about to load a .DLL executable that\n"
+									 "has not been verified for use with Quake III Arena.\n"
+									 "This type of file can compromise the security of\n"
+									 "your computer.\n\n"
+									 "Select 'OK' if you choose to load it anyway.",
+				"Security Warning", MB_OKCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON2 | MB_TOPMOST | MB_SETFOREGROUND,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT));
+			if (ret != IDOK)
+			{
+				return false;
+			}
+		}
+	}
+#endif
+	return true;
+}
+
 static char* Sys_GetDllNameImpl(const char* name, const char* suffix)
 {
 #if defined _M_IX86
@@ -493,6 +521,6 @@ void Sys_UnloadDll(void* handle)
 	}
 	if (!FreeLibrary((HMODULE)handle))
 	{
-		common->FatalError("Sys_VM_UnloadDll FreeLibrary failed");
+		common->FatalError("Sys_UnloadDll FreeLibrary failed");
 	}
 }

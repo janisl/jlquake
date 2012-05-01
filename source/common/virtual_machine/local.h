@@ -146,8 +146,6 @@ struct vm_t
 	int callLevel;			// for debug indenting
 	int breakFunction;		// increment breakCount on function entry to this
 	int breakCount;
-
-	char fqpath[MAX_QPATH + 1];
 };
 
 extern int vm_debugLevel;

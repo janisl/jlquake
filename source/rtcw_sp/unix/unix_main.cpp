@@ -28,18 +28,13 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <unistd.h>
 #include <signal.h>
-#include <stdlib.h>
 #include <limits.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#include <string.h>
 #include <ctype.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
@@ -47,7 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef __linux__// rb010123
   #include <mntent.h>
 #endif
-#include <dlfcn.h>
 
 #ifdef __linux__
   #include <fpu_control.h>	// bk001213 - force dumps on divide by zero
@@ -255,185 +249,6 @@ void floating_point_exception_handler(int whatever)
 {
 	signal(SIGFPE, floating_point_exception_handler);
 }
-
-/*****************************************************************************/
-
-/*
-=================
-Sys_VM_UnloadDll
-
-=================
-*/
-void Sys_VM_UnloadDll(void* dllHandle)
-{
-	Sys_UnloadDll(dllHandle);
-}
-
-/*
-=================
-Sys_VM_LoadDll
-=================
-*/
-extern char* FS_BuildOSPath(const char* base, const char* game, const char* qpath);
-
-// TTimo
-// show_bug.cgi?id=411
-// use DO_LOADDLL_WRAP to wrap a cl_noprint 1 around the call to Sys_VM_LoadDll
-// this is a quick hack to avoid complicated messages on screen
-#ifdef NDEBUG
-#define DO_LOADDLL_WRAP
-#endif
-
-#if defined(DO_LOADDLL_WRAP)
-void* Sys_LoadDll_Wrapped(const char* name,
-	qintptr(**entryPoint) (int, ...),
-	qintptr (* systemcalls)(int, ...))
-#else
-void* Sys_VM_LoadDll(const char* name,
-	qintptr(**entryPoint) (int, ...),
-	qintptr (* systemcalls)(int, ...))
-#endif
-{
-	void* libHandle;
-	void (* dllEntry)(qintptr (* syscallptr)(int, ...));
-	char fname[MAX_OSPATH];
-	const char* homepath;
-	const char* basepath;
-	const char* pwdpath;
-	const char* gamedir;
-	char* fn;
-	const char* err = NULL;	// bk001206 // rb0101023 - now const
-
-	// bk001206 - let's have some paranoia
-	assert(name);
-
-	String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
-
-	homepath = Cvar_VariableString("fs_homepath");
-	basepath = Cvar_VariableString("fs_basepath");
-	gamedir = Cvar_VariableString("fs_game");
-
-	pwdpath = Sys_Cwd();
-	fn = FS_BuildOSPath(pwdpath, gamedir, fname);
-	// bk001206 - verbose
-	Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
-
-	// bk001129 - from cvs1.17 (mkv), was fname not fn
-	libHandle = Sys_LoadDll(fn);
-
-	if (!libHandle)
-	{
-		Com_Printf("failed (%s)\n", dlerror());
-		// homepath
-		fn = FS_BuildOSPath(homepath, gamedir, fname);
-		Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
-		libHandle = Sys_LoadDll(fn);
-
-		if (!libHandle)
-		{
-			Com_Printf("failed (%s)\n", dlerror());
-			// basepath
-			fn = FS_BuildOSPath(basepath, gamedir, fname);
-			Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
-			libHandle = Sys_LoadDll(fn);
-
-			if (!libHandle)
-			{
-				Com_Printf("failed (%s)\n", dlerror());
-
-				if (String::Length(gamedir) && String::ICmp(gamedir, BASEGAME))			// begin BASEGAME != fs_game section
-
-				{	// media-only mods: no DLL whatsoever in the fs_game
-					// start the loop again using the hardcoded BASEDIRNAME
-					fn = FS_BuildOSPath(pwdpath, BASEGAME, fname);
-					Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
-					libHandle = Sys_LoadDll(fn);
-
-					if (!libHandle)
-					{
-						Com_Printf("failed (%s)\n", dlerror());
-						// homepath
-						fn = FS_BuildOSPath(homepath, BASEGAME, fname);
-						Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
-						libHandle = Sys_LoadDll(fn);
-
-						if (!libHandle)
-						{
-							Com_Printf("failed (%s)\n", dlerror());
-							// homepath
-							fn = FS_BuildOSPath(basepath, BASEGAME, fname);
-							Com_Printf("Sys_VM_LoadDll(%s)... ", fn);
-							libHandle = Sys_LoadDll(fn);
-
-							if (libHandle)
-							{
-								Com_Printf("ok\n");
-							}
-						}
-						else
-						{
-							Com_Printf("ok\n");
-						}
-					}
-					else
-					{
-						Com_Printf("ok\n");
-					}
-				}	// end BASEGAME != fs_game section
-			}
-			else
-			{
-				Com_Printf("ok\n");
-			}
-		}
-		else
-		{
-			Com_Printf("ok\n");
-		}
-	}
-	else
-	{
-		Com_Printf("ok\n");
-	}
-
-	if (!libHandle)
-	{
-#ifndef NDEBUG	// in debug, abort on failure
-		Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
-#else
-		Com_Printf("Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
-#endif
-		return NULL;
-	}
-
-	dllEntry = (void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
-	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
-	if (!*entryPoint || !dllEntry)
-	{
-#ifndef NDEBUG	// bk001206 - in debug abort on failure
-		Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlsym\n", name);
-#endif
-		Sys_UnloadDll(libHandle);
-		return NULL;
-	}
-	Com_Printf("Sys_VM_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint);	// bk001212
-	dllEntry(systemcalls);
-	Com_Printf("Sys_VM_LoadDll(%s) succeeded!\n", name);
-	return libHandle;
-}
-
-#if defined(DO_LOADDLL_WRAP)
-void* Sys_VM_LoadDll(const char* name,
-	qintptr(**entryPoint) (int, ...),
-	qintptr (* systemcalls)(int, ...))
-{
-	void* ret;
-	Cvar_Set("cl_noprint", "1");
-	ret = Sys_LoadDll_Wrapped(name, entryPoint, systemcalls);
-	Cvar_Set("cl_noprint", "0");
-	return ret;
-};
-#endif
 
 /*
 ========================================================================

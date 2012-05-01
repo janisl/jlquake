@@ -33,6 +33,7 @@ void Sys_ShowConsole(int level, bool quitOnClose);
 char* Sys_ConsoleInput();
 void Sys_Print(const char* msg);
 
+bool Sys_Quake3DllWarningConfirmation();
 char* Sys_GetDllName(const char* name);
 char* Sys_GetMPDllName(const char* name);
 void* Sys_LoadDll(const char* name);

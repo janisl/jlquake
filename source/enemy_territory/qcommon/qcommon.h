@@ -236,7 +236,7 @@ int     FS_LoadStack();
 
 #if !defined(DEDICATED)
 extern int cl_connectedToPureServer;
-qboolean FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char* filename, const char* cvar_lastVersion);
+qboolean FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char* filename);
 #endif
 
 #if defined(DO_LIGHT_DEDICATED)
@@ -515,11 +515,6 @@ sysEvent_t  Sys_GetEvent(void);
 
 void    Sys_Init(void);
 qboolean Sys_IsNumLockDown(void);
-
-// fqpath param added 2/15/02 by T.Ray - Sys_VM_LoadDll is only called in vm.c at this time
-void* QDECL Sys_VM_LoadDll(const char* name, char* fqpath, qintptr(QDECL * *entryPoint) (int, ...),
-	qintptr (QDECL* systemcalls)(int, ...));
-void    Sys_VM_UnloadDll(void* dllHandle);
 
 void    Sys_UnloadGame(void);
 void* Sys_GetGameAPI(void* parms);

@@ -73,6 +73,103 @@ void VM_Init(void)
 }
 
 /*
+NOTE: DLL checksuming / DLL pk3 and search paths
+
+if we are connecting to an sv_pure server, the .so will be extracted
+from a pk3 and placed in the homepath (i.e. the write area)
+
+since DLLs are looked for in several places, it is important that
+we are sure we are going to load the DLL that was just extracted
+
+in release we start searching directly in fs_homepath then fs_basepath
+(that makes sure we are going to load the DLL we extracted from pk3)
+this should not be a problem for mod makers, since they always copy their
+DLL to the main installation prior to run (sv_pure 1 would have a tendency
+to kill their compiled DLL with extracted ones though :-( )
+=================
+*/
+static void* VM_LoadDll(const char* name,
+	qintptr(**entryPoint) (int, ...),
+	qintptr (* systemcalls)(int, ...))
+{
+	void* libHandle;
+	void (* dllEntry)(qintptr (* syscallptr)(int, ...));
+	char fname[MAX_OSPATH];
+	const char* homepath;
+	const char* basepath;
+	const char* cdpath;
+	const char* gamedir;
+	char* fn;
+
+	// bk001206 - let's have some paranoia
+	assert(name);
+
+	String::NCpyZ(fname, Sys_GetMPDllName(name), sizeof(fname));
+
+	homepath = Cvar_VariableString("fs_homepath");
+	basepath = Cvar_VariableString("fs_basepath");
+	cdpath = Cvar_VariableString("fs_cdpath");
+	gamedir = Cvar_VariableString("fs_game");
+
+	// try homepath first
+	fn = FS_BuildOSPath(homepath, gamedir, fname);
+
+	// TTimo - this is only relevant for full client
+	// if a full client runs a dedicated server, it's not affected by this
+#if !defined(DEDICATED)
+	// NERVE - SMF - extract dlls from pak file for security
+	// we have to handle the game dll a little differently
+	// TTimo - passing the exact path to check against
+	//   (compatibility with other OSes loading procedure)
+	if (cl_connectedToPureServer && String::NCmp(name, "qagame", 6))
+	{
+		if (!FS_CL_ExtractFromPakFile(fn, gamedir, fname))
+		{
+			Com_Error(ERR_DROP, "Game code(%s) failed Pure Server check", fname);
+		}
+	}
+#endif
+
+	libHandle = Sys_LoadDll(fn);
+
+	if (!libHandle)
+	{
+		// basepath
+		fn = FS_BuildOSPath(basepath, gamedir, fname);
+		libHandle = Sys_LoadDll(fn);
+
+		if (!libHandle)
+		{
+			// First try falling back to "main"
+			fn = FS_BuildOSPath(homepath, "main", fname);
+			libHandle = Sys_LoadDll(fn);
+
+			if (!libHandle)
+			{
+				fn = FS_BuildOSPath(basepath, "main", fname);
+				libHandle = Sys_LoadDll(fn);
+
+				if (!libHandle)
+				{
+					return NULL;
+				}
+			}
+		}
+	}
+
+	dllEntry = (void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
+	if (!*entryPoint || !dllEntry)
+	{
+		Sys_UnloadDll(libHandle);
+		return NULL;
+	}
+	dllEntry(systemcalls);
+
+	return libHandle;
+}
+
+/*
 ============
 VM_DllSyscall
 
@@ -275,7 +372,7 @@ vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 	if (interpret == VMI_NATIVE)
 	{
 		// try to load as a system dll
-		vm->dllHandle = Sys_VM_LoadDll(module, vm->fqpath, &vm->entryPoint, VM_DllSyscall);
+		vm->dllHandle = VM_LoadDll(module, &vm->entryPoint, VM_DllSyscall);
 		if (vm->dllHandle)
 		{
 			return vm;
@@ -377,7 +474,7 @@ void VM_Free(vm_t* vm)
 
 	if (vm->dllHandle)
 	{
-		Sys_VM_UnloadDll(vm->dllHandle);
+		Sys_UnloadDll(vm->dllHandle);
 		Com_Memset(vm, 0, sizeof(*vm));
 	}
 #if 0	// now automatically freed by hunk
@@ -407,7 +504,7 @@ void VM_Clear(void)
 	{
 		if (vmTable[i].dllHandle)
 		{
-			Sys_VM_UnloadDll(vmTable[i].dllHandle);
+			Sys_UnloadDll(vmTable[i].dllHandle);
 		}
 		Com_Memset(&vmTable[i], 0, sizeof(vm_t));
 	}

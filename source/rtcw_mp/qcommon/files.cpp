@@ -109,7 +109,7 @@ NOTE TTimo:
 
 ==================
 */
-qboolean FS_CL_ExtractFromPakFile(const char* fullpath, const char* gamedir, const char* filename, const char* cvar_lastVersion)
+qboolean FS_CL_ExtractFromPakFile(const char* fullpath, const char* gamedir, const char* filename)
 {
 	int srcLength;
 	int destLength;
@@ -186,15 +186,6 @@ qboolean FS_CL_ExtractFromPakFile(const char* fullpath, const char* gamedir, con
 		FS_Write(srcData, srcLength, f);
 
 		FS_FCloseFile(f);
-
-#ifdef __linux__
-		// show_bug.cgi?id=463
-		// need to keep track of what versions we extract
-		if (cvar_lastVersion)
-		{
-			Cvar_Set(cvar_lastVersion, Cvar_VariableString("version"));
-		}
-#endif
 	}
 
 	FS_FreeFile(srcData);

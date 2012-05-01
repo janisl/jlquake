@@ -66,6 +66,62 @@ void VM_Init(void)
 	Com_Memset(vmTable, 0, sizeof(vmTable));
 }
 
+//	Used to load a development dll instead of a virtual machine
+static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
+	int (* systemcalls)(qintptr, ...))
+{
+	qassert(name);
+
+	char fname[MAX_OSPATH];
+	String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
+
+	if (!Sys_Quake3DllWarningConfirmation())
+	{
+		return NULL;
+	}
+
+	const char* basepath = Cvar_VariableString("fs_basepath");
+	const char* homepath = Cvar_VariableString("fs_homepath");
+	const char* cdpath = Cvar_VariableString("fs_cdpath");
+	const char* gamedir = Cvar_VariableString("fs_game");
+
+	void* libHandle = NULL;
+	if (homepath[0])
+	{
+		char* fn = FS_BuildOSPath(homepath, gamedir, fname);
+		Com_Printf("VM_LoadDll(%s)... \n", fn);
+		libHandle = Sys_LoadDll(fn);
+	}
+
+	if (!libHandle)
+	{
+		char* fn = FS_BuildOSPath(basepath, gamedir, fname);
+		libHandle = Sys_LoadDll(fn);
+
+		if (!libHandle && cdpath[0])
+		{
+			fn = FS_BuildOSPath(cdpath, gamedir, fname);
+			libHandle = Sys_LoadDll(fn);
+		}
+
+		if (!libHandle)
+		{
+			return NULL;
+		}
+	}
+
+	void (* dllEntry)(int (* syscallptr)(qintptr, ...)) =
+		(void (*)(int (*)(qintptr, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
+	if (!*entryPoint || !dllEntry)
+	{
+		Sys_UnloadDll(libHandle);
+		return NULL;
+	}
+	dllEntry(systemcalls);
+	return libHandle;
+}
+
 /*
 ============
 VM_DllSyscall
@@ -280,7 +336,7 @@ vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 	{
 		// try to load as a system dll
 		Log::write("Loading dll file %s.\n", vm->name);
-		vm->dllHandle = Sys_VM_LoadDll(module, vm->fqpath, &vm->entryPoint, VM_DllSyscall);
+		vm->dllHandle = VM_LoadDll(module, &vm->entryPoint, VM_DllSyscall);
 		if (vm->dllHandle)
 		{
 			return vm;
@@ -383,7 +439,7 @@ void VM_Free(vm_t* vm)
 {
 	if (vm->dllHandle)
 	{
-		Sys_VM_UnloadDll(vm->dllHandle);
+		Sys_UnloadDll(vm->dllHandle);
 	}
 	if (vm->codeBase)
 	{

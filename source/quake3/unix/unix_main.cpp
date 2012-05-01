@@ -20,33 +20,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
 #include <errno.h>
 #ifdef __linux__// rb010123
   #include <mntent.h>
 #endif
-#include <dlfcn.h>
 
 #ifdef __linux__
   #include <fpu_control.h>	// bk001213 - force dumps on divide by zero
 #endif
-
-// FIXME TTimo should we gard this? most *nix system should comply?
-#include <termios.h>
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
@@ -191,116 +173,6 @@ void  Sys_Error(const char* error, ...)
 	fprintf(stderr, "Sys_Error: %s\n", string);
 
 	Sys_Exit(1);// bk010104 - use single exit point.
-}
-
-/*****************************************************************************/
-
-/*
-=================
-Sys_VM_UnloadDll
-
-=================
-*/
-void Sys_VM_UnloadDll(void* dllHandle)
-{
-	Sys_UnloadDll(dllHandle);
-}
-
-/*
-=================
-Sys_VM_LoadDll
-
-Used to load a development dll instead of a virtual machine
-TTimo:
-changed the load procedure to match VFS logic, and allow developer use
-#1 look down current path
-#2 look in fs_homepath
-#3 look in fs_basepath
-=================
-*/
-void* Sys_VM_LoadDll(const char* name, char* fqpath,
-	qintptr(**entryPoint) (int, ...),
-	int (* systemcalls)(qintptr, ...))
-{
-	void* libHandle;
-	void (* dllEntry)(int (* syscallptr)(qintptr, ...));
-	char fname[MAX_OSPATH];
-	const char* basepath;
-	const char* homepath;
-	const char* pwdpath;
-	const char* gamedir;
-	char* fn;
-	const char* err = NULL;
-
-	*fqpath = 0;
-
-	// bk001206 - let's have some paranoia
-	assert(name);
-
-	String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
-
-	pwdpath = Sys_Cwd();
-	basepath = Cvar_VariableString("fs_basepath");
-	homepath = Cvar_VariableString("fs_homepath");
-	gamedir = Cvar_VariableString("fs_game");
-
-	// pwdpath
-	fn = FS_BuildOSPath(pwdpath, gamedir, fname);
-	Com_Printf("Sys_VM_LoadDll(%s)... \n", fn);
-	libHandle = Sys_LoadDll(fn);
-
-	if (!libHandle)
-	{
-		// fs_homepath
-		fn = FS_BuildOSPath(homepath, gamedir, fname);
-		Com_Printf("Sys_VM_LoadDll(%s)... \n", fn);
-		libHandle = Sys_LoadDll(fn);
-
-		if (!libHandle)
-		{
-			// fs_basepath
-			fn = FS_BuildOSPath(basepath, gamedir, fname);
-			Com_Printf("Sys_VM_LoadDll(%s)... \n", fn);
-			libHandle = Sys_LoadDll(fn);
-
-			if (!libHandle)
-			{
-				Com_Printf("Sys_VM_LoadDll(%s) failed dlopen() completely!\n", name);
-				return NULL;
-			}
-			else
-			{
-				Com_Printf("Sys_VM_LoadDll(%s): succeeded ...\n", fn);
-			}
-		}
-		else
-		{
-			Com_Printf("Sys_VM_LoadDll(%s): succeeded ...\n", fn);
-		}
-	}
-	else
-	{
-		Com_Printf("Sys_VM_LoadDll(%s): succeeded ...\n", fn);
-	}
-
-	dllEntry = (void (*)(int (*)(qintptr, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
-	*entryPoint = (qintptr (*)(int, ...))Sys_GetDllFunction(libHandle, "vmMain");
-	if (!*entryPoint || !dllEntry)
-	{
-#ifndef NDEBUG	// bk001206 - in debug abort on failure
-		Com_Error(ERR_FATAL, "Sys_VM_LoadDll(%s) failed dlsym\n", name);
-#endif
-		Sys_UnloadDll(libHandle);
-		return NULL;
-	}
-	Com_Printf("Sys_VM_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint);	// bk001212
-	dllEntry(systemcalls);
-	Com_Printf("Sys_VM_LoadDll(%s) succeeded!\n", name);
-	if (libHandle)
-	{
-		String::NCpyZ(fqpath, fn, MAX_QPATH);						// added 7/20/02 by T.Ray
-	}
-	return libHandle;
 }
 
 /*

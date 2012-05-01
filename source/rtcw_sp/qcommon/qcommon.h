@@ -399,11 +399,6 @@ sysEvent_t  Sys_GetEvent(void);
 
 void    Sys_Init(void);
 
-// general development dll loading for virtual machine testing
-void* QDECL Sys_VM_LoadDll(const char* name, qintptr(QDECL * *entryPoint) (int, ...),
-	qintptr (QDECL* systemcalls)(int, ...));
-void    Sys_VM_UnloadDll(void* dllHandle);
-
 void    Sys_UnloadGame(void);
 void* Sys_GetGameAPI(void* parms);
 

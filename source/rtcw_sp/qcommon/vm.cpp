@@ -72,6 +72,86 @@ void VM_Init(void)
 	Com_Memset(vmTable, 0, sizeof(vmTable));
 }
 
+static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
+	qintptr (* systemcalls)(int, ...))
+{
+	void (* dllEntry)(qintptr (* syscallptr)(int, ...));
+	char* fn;
+
+	qassert(name);
+
+	char fname[MAX_OSPATH];
+	String::NCpyZ(fname, Sys_GetDllName(name), sizeof(fname));
+
+	const char* homepath = Cvar_VariableString("fs_homepath");
+	const char* basepath = Cvar_VariableString("fs_basepath");
+	const char* cdpath = Cvar_VariableString("fs_cdpath");
+	const char* gamedir = Cvar_VariableString("fs_game");
+
+	void* libHandle = NULL;
+#ifdef _WIN32
+	// On Windows instalations DLLs are in the same directory as exe file.
+	libHandle = Sys_LoadDll(filename);
+#endif
+
+	if (!libHandle)
+	{
+		if (homepath[0])
+		{
+			fn = FS_BuildOSPath(homepath, gamedir, fname);
+			libHandle = Sys_LoadDll(fn);
+		}
+
+		if (!libHandle)
+		{
+			fn = FS_BuildOSPath(basepath, gamedir, fname);
+			libHandle = Sys_LoadDll(fn);
+
+			if (!libHandle && cdpath[0])
+			{
+				fn = FS_BuildOSPath(cdpath, gamedir, fname);
+				libHandle = Sys_LoadDll(fn);
+			}
+
+			if (!libHandle && String::Length(gamedir) && String::ICmp(gamedir, BASEGAME))
+			{
+				if (homepath[0])
+				{
+					fn = FS_BuildOSPath(homepath, BASEGAME, fname);
+					libHandle = Sys_LoadDll(fn);
+				}
+
+				if (!libHandle)
+				{
+					fn = FS_BuildOSPath(basepath, BASEGAME, fname);
+					libHandle = Sys_LoadDll(fn);
+				}
+
+				if (!libHandle && cdpath[0])
+				{
+					fn = FS_BuildOSPath(cdpath, BASEGAME, fname);
+					libHandle = Sys_LoadDll(fn);
+				}
+			}
+		}
+	}
+
+	if (!libHandle)
+	{
+		return NULL;
+	}
+
+	dllEntry = (void (*)(qintptr (*)(int, ...)))Sys_GetDllFunction(libHandle, "dllEntry");
+	*entryPoint = (qintptr (*)(int,...))Sys_GetDllFunction(libHandle, "vmMain");
+	if (!*entryPoint || !dllEntry)
+	{
+		Sys_UnloadDll(libHandle);
+		return NULL;
+	}
+	dllEntry(systemcalls);
+
+	return libHandle;
+}
 
 /*
 ============
@@ -294,7 +374,7 @@ vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 	{
 		// try to load as a system dll
 //		Com_Printf( "Loading dll file %s.\n", vm->name );
-		vm->dllHandle = Sys_VM_LoadDll(module, &vm->entryPoint, VM_DllSyscall);
+		vm->dllHandle = VM_LoadDll(module, &vm->entryPoint, VM_DllSyscall);
 		if (vm->dllHandle)
 		{
 			return vm;
@@ -397,7 +477,7 @@ void VM_Free(vm_t* vm)
 
 	if (vm->dllHandle)
 	{
-		Sys_VM_UnloadDll(vm->dllHandle);
+		Sys_UnloadDll(vm->dllHandle);
 		Com_Memset(vm, 0, sizeof(*vm));
 	}
 #if 0	// now automatically freed by hunk
@@ -427,7 +507,7 @@ void VM_Clear(void)
 	{
 		if (vmTable[i].dllHandle)
 		{
-			Sys_VM_UnloadDll(vmTable[i].dllHandle);
+			Sys_UnloadDll(vmTable[i].dllHandle);
 		}
 		Com_Memset(&vmTable[i], 0, sizeof(vm_t));
 	}
