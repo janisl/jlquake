@@ -195,29 +195,25 @@ void Key_Console(int key)
 
 	if (key == K_PGUP || key == K_MWHEELUP)
 	{
-		con.display -= 2;
+		Con_PageUp();
 		return;
 	}
 
 	if (key == K_PGDN || key == K_MWHEELDOWN)
 	{
-		con.display += 2;
-		if (con.display > con.current)
-		{
-			con.display = con.current;
-		}
+		Con_PageDown();
 		return;
 	}
 
 	if (key == K_HOME)
 	{
-		con.display = con.current - con.totallines + 10;
+		Con_Top();
 		return;
 	}
 
 	if (key == K_END)
 	{
-		con.display = con.current;
+		Con_Bottom();
 		return;
 	}
 

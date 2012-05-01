@@ -158,10 +158,6 @@ void Con_ToggleConsole_f(void);
 void Con_DrawNotify(void);
 void Con_RunConsole(void);
 void Con_DrawConsole(void);
-void Con_PageUp(void);
-void Con_PageDown(void);
-void Con_Top(void);
-void Con_Bottom(void);
 void Con_Close(void);
 
 

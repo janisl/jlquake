@@ -25,3 +25,35 @@ void Con_ClearNotify()
 		con.times[i] = 0;
 	}
 }
+
+void Con_PageUp()
+{
+	con.display -= 2;
+	if (con.current - con.display >= con.totallines)
+	{
+		con.display = con.current - con.totallines + 1;
+	}
+}
+
+void Con_PageDown()
+{
+	con.display += 2;
+	if (con.display > con.current)
+	{
+		con.display = con.current;
+	}
+}
+
+void Con_Top()
+{
+	con.display = con.totallines;
+	if (con.current - con.display >= con.totallines)
+	{
+		con.display = con.current - con.totallines + 1;
+	}
+}
+
+void Con_Bottom()
+{
+	con.display = con.current;
+}
