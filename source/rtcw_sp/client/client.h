@@ -133,11 +133,6 @@ void CL_VerifyCode(void);
 
 const char* Key_KeynumToString(int keynum, qboolean bTranslate);
 
-//
-// cl_parse.c
-//
-extern int cl_connectedToPureServer;
-
 void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 

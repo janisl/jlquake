@@ -114,9 +114,6 @@ static void* VM_LoadDll(const char* name,
 	// try homepath first
 	fn = FS_BuildOSPath(homepath, gamedir, fname);
 
-	// TTimo - this is only relevant for full client
-	// if a full client runs a dedicated server, it's not affected by this
-#if !defined(DEDICATED)
 	// NERVE - SMF - extract dlls from pak file for security
 	// we have to handle the game dll a little differently
 	// TTimo - passing the exact path to check against
@@ -128,7 +125,6 @@ static void* VM_LoadDll(const char* name,
 			Com_Error(ERR_DROP, "Game code(%s) failed Pure Server check", fname);
 		}
 	}
-#endif
 
 	libHandle = Sys_LoadDll(fn);
 

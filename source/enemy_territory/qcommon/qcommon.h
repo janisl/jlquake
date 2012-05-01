@@ -234,10 +234,6 @@ qboolean FS_OS_FileExists(const char* file);	// TTimo - test file existence give
 
 int     FS_LoadStack();
 
-#if !defined(DEDICATED)
-extern int cl_connectedToPureServer;
-#endif
-
 #if defined(DO_LIGHT_DEDICATED)
 int FS_RandChecksumFeed();
 #endif

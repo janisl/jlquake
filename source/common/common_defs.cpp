@@ -37,6 +37,8 @@ int GGameType;
 
 int com_frameTime;
 
+int cl_connectedToPureServer;
+
 static int com_argc;
 static const char* com_argv[MAX_NUM_ARGVS + 1];
 

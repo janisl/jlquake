@@ -208,10 +208,6 @@ void    FS_Restart(int checksumFeed);
 
 int     FS_LoadStack();
 
-#if !defined(DEDICATED)
-extern int cl_connectedToPureServer;
-#endif
-
 #if defined(DO_LIGHT_DEDICATED)
 int FS_RandChecksumFeed();
 #endif

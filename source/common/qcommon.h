@@ -76,4 +76,6 @@ extern fileHandle_t com_journalDataFile;
 
 extern int com_frameTime;
 
+extern int cl_connectedToPureServer;
+
 #endif

@@ -377,8 +377,6 @@ void CL_ParseSnapshot(QMsg* msg)
 
 //=====================================================================
 
-int cl_connectedToPureServer;
-
 /*
 ==================
 CL_SystemInfoChanged
