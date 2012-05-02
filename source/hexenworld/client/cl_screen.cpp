@@ -993,7 +993,7 @@ void SCR_UpdateScreen(void)
 		}
 	}
 
-	if (!scr_initialized || !con.initialized || !cls.glconfig.vidWidth)
+	if (!scr_initialized || !cls.glconfig.vidWidth)
 	{
 		return;							// not initialized yet
 

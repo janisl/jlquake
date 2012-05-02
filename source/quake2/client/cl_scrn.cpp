@@ -1292,7 +1292,7 @@ void SCR_UpdateScreen(void)
 		return;
 	}
 
-	if (!scr_initialized || !con.initialized)
+	if (!scr_initialized)
 	{
 		return;				// not initialized yet
 

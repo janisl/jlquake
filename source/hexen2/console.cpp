@@ -186,11 +186,6 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", "%s", msg);
 	}
 
-	if (!con.initialized)
-	{
-		return;
-	}
-
 	if (cls.state == CA_DEDICATED)
 	{
 		return;		// no graphics mode

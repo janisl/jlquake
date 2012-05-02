@@ -180,11 +180,6 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", "%s", msg);
 	}
 
-	if (!con.initialized)
-	{
-		return;
-	}
-
 // write it to the scrollable buffer
 	Con_Print(msg);
 

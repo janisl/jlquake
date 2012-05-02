@@ -822,7 +822,7 @@ void SCR_UpdateScreen(void)
 		}
 	}
 
-	if (!scr_initialized || !con.initialized)
+	if (!scr_initialized)
 	{
 		return;				// not initialized yet
 
