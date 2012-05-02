@@ -28,12 +28,18 @@ void Con_ClearNotify()
 	}
 }
 
+static void Con_ClearText()
+{
+	for (int i = 0; i < CON_TEXTSIZE; i++)
+	{
+		con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
+	}
+}
+
 //	If the line width has changed, reformat the buffer.
 void Con_CheckResize()
 {
-	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	short tbuf[CON_TEXTSIZE];
-
+	int width;
 	if (GGameType & GAME_Tech3)
 	{
 		width = (cls.glconfig.vidWidth / SMALLCHAR_WIDTH) - 2;
@@ -57,34 +63,34 @@ void Con_CheckResize()
 	}
 	else
 	{
-		oldwidth = con.linewidth;
+		int oldwidth = con.linewidth;
 		con.linewidth = width;
-		oldtotallines = con.totallines;
+		int oldtotallines = con.totallines;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		numlines = oldtotallines;
+		int numlines = oldtotallines;
 
 		if (con.totallines < numlines)
 		{
 			numlines = con.totallines;
 		}
 
-		numchars = oldwidth;
+		int numchars = oldwidth;
 
 		if (con.linewidth < numchars)
 		{
 			numchars = con.linewidth;
 		}
 
+		short tbuf[CON_TEXTSIZE];
 		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE * sizeof(short));
 		Con_ClearText();
 
-		for (i = 0; i < numlines; i++)
+		for (int i = 0; i < numlines; i++)
 		{
-			for (j = 0; j < numchars; j++)
+			for (int j = 0; j < numchars; j++)
 			{
 				con.text[(con.totallines - 1 - i) * con.linewidth + j] =
-					tbuf[((con.current - i + oldtotallines) %
-						  oldtotallines) * oldwidth + j];
+					tbuf[((con.current - i + oldtotallines) % oldtotallines) * oldwidth + j];
 			}
 		}
 
@@ -93,14 +99,6 @@ void Con_CheckResize()
 
 	con.current = con.totallines - 1;
 	con.display = con.current;
-}
-
-void Con_ClearText()
-{
-	for (int i = 0; i < CON_TEXTSIZE; i++)
-	{
-		con.text[i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
-	}
 }
 
 void Con_PageUp()
@@ -133,4 +131,10 @@ void Con_Top()
 void Con_Bottom()
 {
 	con.display = con.current;
+}
+
+void Con_Clear_f()
+{
+	Con_ClearText();
+	Con_Bottom();		// go to end
 }

@@ -169,18 +169,6 @@ void Con_StopLimboMode_f(void)
 
 /*
 ================
-Con_Clear_f
-================
-*/
-void Con_Clear_f(void)
-{
-	Con_ClearText();
-	Con_Bottom();		// go to end
-}
-
-
-/*
-================
 Con_Dump_f
 
 Save the console contents out to a file

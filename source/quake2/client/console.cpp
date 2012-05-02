@@ -127,17 +127,6 @@ void Con_ToggleChat_f(void)
 
 /*
 ================
-Con_Clear_f
-================
-*/
-void Con_Clear_f(void)
-{
-	Con_ClearText();
-}
-
-
-/*
-================
 Con_Dump_f
 
 Save the console contents out to a file

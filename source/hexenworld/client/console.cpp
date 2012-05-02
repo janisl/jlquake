@@ -68,16 +68,6 @@ void Con_ToggleChat_f(void)
 
 /*
 ================
-Con_Clear_f
-================
-*/
-void Con_Clear_f(void)
-{
-	Con_ClearText();
-}
-
-/*
-================
 Con_MessageMode_f
 ================
 */

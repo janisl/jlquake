@@ -66,16 +66,6 @@ void Con_ToggleConsole_f(void)
 
 /*
 ================
-Con_Clear_f
-================
-*/
-void Con_Clear_f(void)
-{
-	Con_ClearText();
-}
-
-/*
-================
 Con_MessageMode_f
 ================
 */

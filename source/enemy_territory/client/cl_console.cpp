@@ -139,18 +139,6 @@ void Con_MessageMode3_f(void)
 	in_keyCatchers ^= KEYCATCH_MESSAGE;
 }
 
-
-/*
-================
-Con_Clear_f
-================
-*/
-void Con_Clear_f(void)
-{
-	Con_ClearText();
-	Con_Bottom();		// go to end
-}
-
 /*
 ================
 Con_Dump_f
