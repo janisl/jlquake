@@ -127,14 +127,12 @@ If no console is visible, the notify window will pop up.
 */
 void Con_Print(const char* txt)
 {
-	int y;
-	int c, l;
-	static int cr;
 	int mask;
+	bool skipnotify = false;
 
 	if (txt[0] == 1 || txt[0] == 2)
 	{
-		mask = 128;		// go to colored text
+		mask = 128 << 8;		// go to colored text
 		txt++;
 	}
 	else
@@ -142,59 +140,7 @@ void Con_Print(const char* txt)
 		mask = 0;
 	}
 
-
-	while ((c = *txt))
-	{
-		// count word length
-		for (l = 0; l < con.linewidth; l++)
-			if (txt[l] <= ' ')
-			{
-				break;
-			}
-
-		// word wrap
-		if (l != con.linewidth && (con.x + l > con.linewidth))
-		{
-			con.x = 0;
-		}
-
-		txt++;
-
-		if (cr)
-		{
-			con.current--;
-			cr = false;
-		}
-
-
-		if (!con.x)
-		{
-			Con_Linefeed(false);
-		}
-
-		switch (c)
-		{
-		case '\n':
-			con.x = 0;
-			break;
-
-		case '\r':
-			con.x = 0;
-			cr = 1;
-			break;
-
-		default:	// display character and advance
-			y = con.current % con.totallines;
-			con.text[y * con.linewidth + con.x] = c | ((mask | con.ormask) << 8);
-			con.x++;
-			if (con.x >= con.linewidth)
-			{
-				con.x = 0;
-			}
-			break;
-		}
-
-	}
+	CL_ConsolePrintCommon(txt, skipnotify, mask);
 }
 
 

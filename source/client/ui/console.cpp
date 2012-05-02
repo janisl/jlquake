@@ -166,3 +166,67 @@ void Con_Linefeed(bool skipNotify)
 		con.text[startPos + i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
 	}
 }
+
+void CL_ConsolePrintCommon(const char*& txt, bool skipnotify, int mask)
+{
+	int color = ColorIndex(COLOR_WHITE);
+
+	char c;
+	while ((c = *txt))
+	{
+		if (Q_IsColorString(txt))
+		{
+			if (*(txt + 1) == COLOR_NULL)
+			{
+				color = ColorIndex(COLOR_WHITE);
+			}
+			else
+			{
+				color = ColorIndex(*(txt + 1));
+			}
+			txt += 2;
+			continue;
+		}
+
+		// count word length
+		int l;
+		for (l = 0; l < con.linewidth; l++)
+		{
+			if (txt[l] <= ' ')
+			{
+				break;
+			}
+		}
+
+		// word wrap
+		if (l != con.linewidth && (con.x + l >= con.linewidth))
+		{
+			Con_Linefeed(skipnotify);
+		}
+
+		txt++;
+
+		switch (c)
+		{
+		case '\n':
+			Con_Linefeed(skipnotify);
+			break;
+
+		case '\r':
+			con.x = 0;
+			break;
+
+		default:	// display character and advance
+			int y = con.current % con.totallines;
+			// rain - sign extension caused the character to carry over
+			// into the color info for high ascii chars; casting c to unsigned
+			con.text[y * con.linewidth + con.x] = (color << 8) | (unsigned char)c | mask | con.ormask;
+			con.x++;
+			if (con.x >= con.linewidth)
+			{
+				Con_Linefeed(skipnotify);
+			}
+			break;
+		}
+	}
+}

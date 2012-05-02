@@ -280,11 +280,9 @@ If no console is visible, the text will appear at the top of the game window
 #pragma optimize( "g", off )// SMF - msvc totally screws this function up with optimize on
 #endif
 
-void CL_ConsolePrint(char* txt)
+void CL_ConsolePrint(const char* txt)
 {
-	int y;
-	int c, l;
-	int color;
+	int mask = 0;
 	qboolean skipnotify = qfalse;		// NERVE - SMF
 	int prev;							// NERVE - SMF
 
@@ -312,57 +310,7 @@ void CL_ConsolePrint(char* txt)
 		con.initialized = qtrue;
 	}
 
-	color = ColorIndex(COLOR_WHITE);
-
-	while ((c = *txt) != 0)
-	{
-		if (Q_IsColorString(txt))
-		{
-			color = ColorIndex(*(txt + 1));
-			txt += 2;
-			continue;
-		}
-
-		// count word length
-		for (l = 0; l < con.linewidth; l++)
-		{
-			if (txt[l] <= ' ')
-			{
-				break;
-			}
-
-		}
-
-		// word wrap
-		if (l != con.linewidth && (con.x + l >= con.linewidth))
-		{
-			Con_Linefeed(skipnotify);
-
-		}
-
-		txt++;
-
-		switch (c)
-		{
-		case '\n':
-			Con_Linefeed(skipnotify);
-			break;
-		case '\r':
-			con.x = 0;
-			break;
-		default:	// display character and advance
-			y = con.current % con.totallines;
-			con.text[y * con.linewidth + con.x] = (color << 8) | c;
-			con.x++;
-			if (con.x >= con.linewidth)
-			{
-
-				Con_Linefeed(skipnotify);
-				con.x = 0;
-			}
-			break;
-		}
-	}
+	CL_ConsolePrintCommon(txt, skipnotify, mask);
 
 	// mark time for transparent overlay
 	if (con.current >= 0)

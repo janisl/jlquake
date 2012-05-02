@@ -955,7 +955,7 @@ void CL_IndexedPrint(void)
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		con.ormask = 1;
+		con.ormask = 1 << 8;
 	}
 
 	index = net_message.ReadShort();
@@ -979,7 +979,7 @@ void CL_NamePrint(void)
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		con.ormask = 1;
+		con.ormask = 1 << 8;
 	}
 
 	index = net_message.ReadByte();
@@ -1101,7 +1101,7 @@ void CL_ParseServerMessage(void)
 			if (i == PRINT_CHAT)
 			{
 				S_StartLocalSound("misc/talk.wav");
-				con.ormask = 1;
+				con.ormask = 1 << 8;
 			}
 			else if (i >= PRINT_SOUND)
 			{
@@ -1109,7 +1109,7 @@ void CL_ParseServerMessage(void)
 				{
 					sprintf(temp,"taunt/taunt%.3d.wav",i - PRINT_SOUND + 1);
 					S_StartLocalSound(temp);
-					con.ormask = 1;
+					con.ormask = 1 << 8;
 				}
 				else
 				{
