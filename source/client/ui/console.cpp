@@ -139,12 +139,12 @@ void Con_Clear_f()
 	Con_Bottom();		// go to end
 }
 
-void Con_Linefeed(bool skipnotify)
+void Con_Linefeed(bool skipNotify)
 {
 	// mark time for transparent overlay
 	if (con.current >= 0)
 	{
-		if (skipnotify)
+		if (skipNotify)
 		{
 			con.times[con.current % NUM_CON_TIMES] = 0;
 		}
@@ -160,7 +160,9 @@ void Con_Linefeed(bool skipnotify)
 		con.display++;
 	}
 	con.current++;
-	int j = (con.current % con.totallines) * con.linewidth;
+	int startPos = (con.current % con.totallines) * con.linewidth;
 	for (int i = 0; i < con.linewidth; i++)
-		con.text[j + i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
+	{
+		con.text[startPos + i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
+	}
 }
