@@ -169,10 +169,20 @@ void Con_Linefeed(bool skipNotify)
 
 void CL_ConsolePrintCommon(const char*& txt, int mask)
 {
-	bool skipnotify = false;
+	if (!con.initialized)
+	{
+		con.color[0] =
+			con.color[1] =
+			con.color[2] =
+			con.color[3] = 1.0f;
+		con.linewidth = -1;
+		Con_CheckResize();
+		con.initialized = true;
+	}
 
 	// TTimo - prefix for text that shows up in console but not in notify
 	// backported from RTCW
+	bool skipnotify = false;
 	if (!String::NCmp(txt, "[skipnotify]", 12))
 	{
 		skipnotify = true;

@@ -86,9 +86,7 @@ void Con_Init(void)
 		FS_FCloseFile(FS_FOpenFileWrite(t2));
 	}
 
-	con.linewidth = -1;
 	con.cursorspeed = 4;
-	Con_CheckResize();
 
 	Con_Printf("Console initialized.\n");
 
@@ -101,7 +99,6 @@ void Con_Init(void)
 	Cmd_AddCommand("messagemode", Con_MessageMode_f);
 	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand("clear", Con_Clear_f);
-	con.initialized = true;
 
 	PR_LoadStrings();
 #ifdef MISSIONPACK

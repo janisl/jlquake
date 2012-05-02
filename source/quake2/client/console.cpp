@@ -227,10 +227,6 @@ Con_Init
 */
 void Con_Init(void)
 {
-	con.linewidth = -1;
-
-	Con_CheckResize();
-
 	Com_Printf("Console initialized.\n");
 
 //
@@ -244,7 +240,6 @@ void Con_Init(void)
 	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand("clear", Con_Clear_f);
 	Cmd_AddCommand("condump", Con_Dump_f);
-	con.initialized = true;
 }
 
 /*
@@ -259,11 +254,6 @@ If no console is visible, the text will appear at the top of the game window
 void Con_Print(const char* txt)
 {
 	int mask;
-
-	if (!con.initialized)
-	{
-		return;
-	}
 
 	if (txt[0] == 1 || txt[0] == 2)
 	{
