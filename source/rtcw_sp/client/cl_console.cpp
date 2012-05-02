@@ -275,32 +275,6 @@ void Con_Init(void)
 	Cmd_AddCommand("condump", Con_Dump_f);
 }
 
-
-/*
-===============
-Con_Linefeed
-===============
-*/
-void Con_Linefeed(void)
-{
-	int i;
-
-	// mark time for transparent overlay
-	if (con.current >= 0)
-	{
-		con.times[con.current % NUM_CON_TIMES] = cls.realtime;
-	}
-
-	con.x = 0;
-	if (con.display == con.current)
-	{
-		con.display++;
-	}
-	con.current++;
-	for (i = 0; i < con.linewidth; i++)
-		con.text[(con.current % con.totallines) * con.linewidth + i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
-}
-
 /*
 ================
 CL_ConsolePrint
@@ -357,7 +331,7 @@ void CL_ConsolePrint(char* txt)
 		// word wrap
 		if (l != con.linewidth && (con.x + l >= con.linewidth))
 		{
-			Con_Linefeed();
+			Con_Linefeed(false);
 
 		}
 
@@ -366,7 +340,7 @@ void CL_ConsolePrint(char* txt)
 		switch (c)
 		{
 		case '\n':
-			Con_Linefeed();
+			Con_Linefeed(false);
 			break;
 		case '\r':
 			con.x = 0;
@@ -378,7 +352,7 @@ void CL_ConsolePrint(char* txt)
 			if (con.x >= con.linewidth)
 			{
 
-				Con_Linefeed();
+				Con_Linefeed(false);
 				con.x = 0;
 			}
 			break;

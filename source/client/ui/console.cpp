@@ -138,3 +138,29 @@ void Con_Clear_f()
 	Con_ClearText();
 	Con_Bottom();		// go to end
 }
+
+void Con_Linefeed(bool skipnotify)
+{
+	// mark time for transparent overlay
+	if (con.current >= 0)
+	{
+		if (skipnotify)
+		{
+			con.times[con.current % NUM_CON_TIMES] = 0;
+		}
+		else
+		{
+			con.times[con.current % NUM_CON_TIMES] = cls.realtime;
+		}
+	}
+
+	con.x = 0;
+	if (con.display == con.current)
+	{
+		con.display++;
+	}
+	con.current++;
+	int j = (con.current % con.totallines) * con.linewidth;
+	for (int i = 0; i < con.linewidth; i++)
+		con.text[j + i] = (ColorIndex(COLOR_WHITE) << 8) | ' ';
+}

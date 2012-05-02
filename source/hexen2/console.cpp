@@ -109,26 +109,6 @@ void Con_Init(void)
 #endif
 }
 
-
-/*
-===============
-Con_Linefeed
-===============
-*/
-void Con_Linefeed(void)
-{
-	con.x = 0;
-	if (con.display == con.current)
-	{
-		con.display++;
-	}
-	con.current++;
-
-	int j = (con.current % con.totallines) * con.linewidth;
-	for (int i = 0; i < con.linewidth; i++)
-		con.text[i + j] = ' ';
-}
-
 /*
 ================
 Con_Print
@@ -189,12 +169,7 @@ void Con_Print(const char* txt)
 
 		if (!con.x)
 		{
-			Con_Linefeed();
-			// mark time for transparent overlay
-			if (con.current >= 0)
-			{
-				con.times[con.current % NUM_CON_TIMES] = realtime * 1000;
-			}
+			Con_Linefeed(false);
 		}
 
 		switch (c)
