@@ -28,7 +28,6 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 
 Cvar* cl_nodelta;
 
-Cvar* cl_noprint;
 Cvar* cl_motd;
 
 Cvar* rcon_client_password;

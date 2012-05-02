@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* cl_wavefilerecord;
 Cvar* cl_nodelta;
 
-Cvar* cl_noprint;
 Cvar* cl_motd;
 Cvar* cl_autoupdate;			// DHM - Nerve
 

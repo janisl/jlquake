@@ -50,6 +50,8 @@ struct console_t
 
 extern console_t con;
 
+extern Cvar* cl_noprint;
+
 void Con_ClearNotify();
 void Con_CheckResize();
 void Con_PageUp();

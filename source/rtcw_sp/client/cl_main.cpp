@@ -33,7 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 Cvar* cl_nodelta;
 
-Cvar* cl_noprint;
 Cvar* cl_motd;
 
 Cvar* rcon_client_password;

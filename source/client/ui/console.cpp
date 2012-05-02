@@ -20,6 +20,8 @@
 
 console_t con;
 
+Cvar* cl_noprint;
+
 void Con_ClearNotify()
 {
 	for (int i = 0; i < NUM_CON_TIMES; i++)
@@ -169,6 +171,12 @@ void Con_Linefeed(bool skipNotify)
 
 void CL_ConsolePrintCommon(const char*& txt, int mask)
 {
+	// for some demos we don't want to ever show anything on the console
+	if (cl_noprint && cl_noprint->integer)
+	{
+		return;
+	}
+
 	if (!con.initialized)
 	{
 		con.color[0] =

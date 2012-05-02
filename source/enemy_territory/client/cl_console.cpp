@@ -254,12 +254,6 @@ void CL_ConsolePrint(const char* txt)
 {
 	int mask = 0;
 
-	// for some demos we don't want to ever show anything on the console
-	if (cl_noprint && cl_noprint->integer)
-	{
-		return;
-	}
-
 	CL_ConsolePrintCommon(txt, mask);
 }
 
