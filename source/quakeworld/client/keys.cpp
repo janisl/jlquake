@@ -28,9 +28,6 @@ key up events are sent even if in console mode
 */
 
 
-#define     MAXCMDLINE  256
-char key_lines[32][MAXCMDLINE];
-int key_linepos;
 int shift_down = false;
 int key_lastpress;
 
@@ -60,7 +57,7 @@ qboolean CheckForCommand(void)
 	const char* cmd, * s;
 	int i;
 
-	s = key_lines[edit_line] + 1;
+	s = g_consoleField.buffer;
 
 	for (i = 0; i < 127; i++)
 		if (s[i] <= ' ')
@@ -90,7 +87,7 @@ void CompleteCommand(void)
 	const char* cmd;
 	char* s;
 
-	s = key_lines[edit_line] + 1;
+	s = g_consoleField.buffer;
 	if (*s == '\\' || *s == '/')
 	{
 		s++;
@@ -103,12 +100,12 @@ void CompleteCommand(void)
 	}
 	if (cmd)
 	{
-		key_lines[edit_line][1] = '/';
-		String::Cpy(key_lines[edit_line] + 2, cmd);
-		key_linepos = String::Length(cmd) + 2;
-		key_lines[edit_line][key_linepos] = ' ';
+		g_consoleField.buffer[0] = '/';
+		String::Cpy(g_consoleField.buffer + 1, cmd);
+		int key_linepos = String::Length(cmd) + 1;
+		g_consoleField.buffer[key_linepos] = ' ';
 		key_linepos++;
-		key_lines[edit_line][key_linepos] = 0;
+		g_consoleField.buffer[key_linepos] = 0;
 		return;
 	}
 }
@@ -124,13 +121,13 @@ void Key_Console(int key)
 {
 	if (key == K_ENTER)
 	{	// backslash text are commands, else chat
-		if (key_lines[edit_line][1] == '\\' || key_lines[edit_line][1] == '/')
+		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
 		{
-			Cbuf_AddText(key_lines[edit_line] + 2);	// skip the >
+			Cbuf_AddText(g_consoleField.buffer + 1);	// skip the >
 		}
 		else if (CheckForCommand())
 		{
-			Cbuf_AddText(key_lines[edit_line] + 1);	// valid command
+			Cbuf_AddText(g_consoleField.buffer);	// valid command
 		}
 		else
 		{	// convert to a chat message
@@ -138,15 +135,15 @@ void Key_Console(int key)
 			{
 				Cbuf_AddText("say ");
 			}
-			Cbuf_AddText(key_lines[edit_line] + 1);	// skip the >
+			Cbuf_AddText(g_consoleField.buffer);
 		}
 
 		Cbuf_AddText("\n");
-		Con_Printf("%s\n",key_lines[edit_line]);
+		Con_Printf("]%s\n",g_consoleField.buffer);
+		historyEditLines[edit_line] = g_consoleField;
 		edit_line = (edit_line + 1) & 31;
 		history_line = edit_line;
-		key_lines[edit_line][0] = ']';
-		key_linepos = 1;
+		g_consoleField.buffer[0] = 0;
 		if (cls.state == CA_DISCONNECTED)
 		{
 			SCR_UpdateScreen();		// force an update, because the command
@@ -163,9 +160,10 @@ void Key_Console(int key)
 
 	if (key == K_BACKSPACE || key == K_LEFTARROW)
 	{
-		if (key_linepos > 1)
+		int len = String::Length(g_consoleField.buffer);
+		if (len > 0)
 		{
-			key_linepos--;
+			g_consoleField.buffer[len - 1] = 0;
 		}
 		return;
 	}
@@ -176,14 +174,12 @@ void Key_Console(int key)
 		{
 			history_line = (history_line - 1) & 31;
 		}
-		while (history_line != edit_line &&
-			   !key_lines[history_line][1]);
+		while (history_line != edit_line && !historyEditLines[history_line].buffer[0]);
 		if (history_line == edit_line)
 		{
 			history_line = (edit_line + 1) & 31;
 		}
-		String::Cpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = String::Length(key_lines[edit_line]);
+		g_consoleField = historyEditLines[history_line];
 		return;
 	}
 
@@ -197,17 +193,14 @@ void Key_Console(int key)
 		{
 			history_line = (history_line + 1) & 31;
 		}
-		while (history_line != edit_line &&
-			   !key_lines[history_line][1]);
+		while (history_line != edit_line && !historyEditLines[history_line].buffer[0]);
 		if (history_line == edit_line)
 		{
-			key_lines[edit_line][0] = ']';
-			key_linepos = 1;
+			g_consoleField.buffer[0] = 0;
 		}
 		else
 		{
-			String::Cpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = String::Length(key_lines[edit_line]);
+			g_consoleField = historyEditLines[history_line];
 		}
 		return;
 	}
@@ -242,15 +235,14 @@ void Key_Console(int key)
 		if (textCopied)
 		{
 			int i = String::Length(textCopied);
-			if (i + key_linepos >= MAXCMDLINE)
+			if (i + String::Length(g_consoleField.buffer) >= MAX_EDIT_LINE)
 			{
-				i = MAXCMDLINE - key_linepos;
+				i = MAX_EDIT_LINE - String::Length(g_consoleField.buffer);
 			}
 			if (i > 0)
 			{
 				textCopied[i] = 0;
-				String::Cat(key_lines[edit_line], sizeof(key_lines[edit_line]), textCopied);
-				key_linepos += i;;
+				String::Cat(g_consoleField.buffer, sizeof(g_consoleField.buffer), textCopied);
 			}
 			delete[] textCopied;
 		}
@@ -262,11 +254,12 @@ void Key_Console(int key)
 		return;	// non printable
 
 	}
-	if (key_linepos < MAXCMDLINE - 1)
+	int len = String::Length(g_consoleField.buffer);
+	if (len < MAX_EDIT_LINE - 1)
 	{
-		key_lines[edit_line][key_linepos] = key;
-		key_linepos++;
-		key_lines[edit_line][key_linepos] = 0;
+		g_consoleField.buffer[len] = key;
+		len++;
+		g_consoleField.buffer[len] = 0;
 	}
 
 }
@@ -274,7 +267,7 @@ void Key_Console(int key)
 //============================================================================
 
 qboolean chat_team;
-char chat_buffer[MAXCMDLINE];
+char chat_buffer[MAX_EDIT_LINE];
 int chat_bufferlen = 0;
 
 void Key_Message(int key)
@@ -546,13 +539,6 @@ Key_Init
 void Key_Init(void)
 {
 	int i;
-
-	for (i = 0; i < 32; i++)
-	{
-		key_lines[i][0] = ']';
-		key_lines[i][1] = 0;
-	}
-	key_linepos = 1;
 
 //
 // init ascii characters in console mode

@@ -16,6 +16,7 @@
 
 #define NUM_CON_TIMES   4
 #define CON_TEXTSIZE    32768
+#define COMMAND_HISTORY 32
 
 struct console_t
 {
@@ -49,6 +50,8 @@ struct console_t
 };
 
 extern console_t con;
+extern field_t g_consoleField;
+extern field_t historyEditLines[COMMAND_HISTORY];
 
 extern Cvar* cl_noprint;
 

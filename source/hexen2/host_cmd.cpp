@@ -1766,9 +1766,6 @@ void Host_Spawn_f(void)
 	host_client->sendsignon = true;
 }
 
-#define     MAXCMDLINE  256
-extern char key_lines[32][MAXCMDLINE];
-extern int key_linepos;
 extern int edit_line;
 
 int strdiff(const char* s1, const char* s2)
@@ -1857,9 +1854,8 @@ void Host_Create_f(void)
 
 		if (NumFound != 1)
 		{
-			sprintf(key_lines[edit_line],">create %s",PR_GetString(func->s_name));
-			key_lines[edit_line][Diff + 8] = 0;
-			key_linepos = String::Length(key_lines[edit_line]);
+			sprintf(g_consoleField.buffer,"create %s",PR_GetString(func->s_name));
+			g_consoleField.buffer[Diff + 7] = 0;
 			return;
 		}
 	}

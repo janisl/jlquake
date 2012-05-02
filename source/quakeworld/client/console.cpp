@@ -25,16 +25,12 @@ Cvar* con_notifytime;
 
 qboolean con_debuglog;
 
-#define     MAXCMDLINE  256
-extern char key_lines[32][MAXCMDLINE];
 extern int edit_line;
-extern int key_linepos;
 
 
 void Key_ClearTyping(void)
 {
-	key_lines[edit_line][1] = 0;	// clear any typing
-	key_linepos = 1;
+	g_consoleField.buffer[0] = 0;	// clear any typing
 }
 
 /*
@@ -260,6 +256,10 @@ void Con_DrawInput(void)
 {
 	int y;
 	int i;
+	char buffer[MAX_EDIT_LINE + 1];
+	buffer[0] = ']';
+	String::Cpy(buffer + 1, g_consoleField.buffer);
+	int key_linepos = String::Length(buffer);
 	char* text;
 
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == CA_ACTIVE)
@@ -267,7 +267,7 @@ void Con_DrawInput(void)
 		return;		// don't draw anything (allways draw if not active)
 
 	}
-	text = key_lines[edit_line];
+	text = buffer;
 
 // add the cursor frame
 	text[key_linepos] = 10 + ((int)(realtime * con.cursorspeed) & 1);
@@ -289,7 +289,7 @@ void Con_DrawInput(void)
 		Draw_Character((i + 1) << 3, con.vislines - 22, text[i]);
 
 // remove cursor
-	key_lines[edit_line][key_linepos] = 0;
+	buffer[key_linepos] = 0;
 }
 
 

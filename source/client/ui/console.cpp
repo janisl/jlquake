@@ -19,6 +19,8 @@
 #define DEFAULT_CONSOLE_WIDTH   78
 
 console_t con;
+field_t g_consoleField;
+field_t historyEditLines[COMMAND_HISTORY];
 
 Cvar* cl_noprint;
 

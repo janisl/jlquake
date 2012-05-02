@@ -26,9 +26,6 @@ key up events are sent even if in console mode
 */
 
 
-#define     MAXCMDLINE  256
-char key_lines[32][MAXCMDLINE];
-int key_linepos;
 int shift_down = false;
 int key_lastpress;
 
@@ -66,13 +63,13 @@ void Key_Console(int key)
 
 	if (key == K_ENTER)
 	{
-		Cbuf_AddText(key_lines[edit_line] + 1);	// skip the >
+		Cbuf_AddText(g_consoleField.buffer);
 		Cbuf_AddText("\n");
-		Con_Printf("%s\n",key_lines[edit_line]);
+		Con_Printf("]%s\n",g_consoleField.buffer);
+		historyEditLines[edit_line] = g_consoleField;
 		edit_line = (edit_line + 1) & 31;
 		history_line = edit_line;
-		key_lines[edit_line][0] = ']';
-		key_linepos = 1;
+		g_consoleField.buffer[0] = 0;
 		if (cls.state == CA_DISCONNECTED)
 		{
 			SCR_UpdateScreen();		// force an update, because the command
@@ -83,27 +80,28 @@ void Key_Console(int key)
 
 	if (key == K_TAB)
 	{	// command completion
-		cmd = Cmd_CompleteCommand(key_lines[edit_line] + 1);
+		cmd = Cmd_CompleteCommand(g_consoleField.buffer);
 		if (!cmd)
 		{
-			cmd = Cvar_CompleteVariable(key_lines[edit_line] + 1);
+			cmd = Cvar_CompleteVariable(g_consoleField.buffer);
 		}
 		if (cmd)
 		{
-			String::Cpy(key_lines[edit_line] + 1, cmd);
-			key_linepos = String::Length(cmd) + 1;
-			key_lines[edit_line][key_linepos] = ' ';
-			key_linepos++;
-			key_lines[edit_line][key_linepos] = 0;
+			String::Cpy(g_consoleField.buffer, cmd);
+			int len = String::Length(cmd);
+			g_consoleField.buffer[len] = ' ';
+			len++;
+			g_consoleField.buffer[len] = 0;
 			return;
 		}
 	}
 
 	if (key == K_BACKSPACE || key == K_LEFTARROW)
 	{
-		if (key_linepos > 1)
+		int len = String::Length(g_consoleField.buffer);
+		if (len > 0)
 		{
-			key_linepos--;
+			g_consoleField.buffer[len - 1] = 0;
 		}
 		return;
 	}
@@ -114,14 +112,12 @@ void Key_Console(int key)
 		{
 			history_line = (history_line - 1) & 31;
 		}
-		while (history_line != edit_line &&
-			   !key_lines[history_line][1]);
+		while (history_line != edit_line && !historyEditLines[history_line].buffer[0]);
 		if (history_line == edit_line)
 		{
 			history_line = (edit_line + 1) & 31;
 		}
-		String::Cpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = String::Length(key_lines[edit_line]);
+		g_consoleField = historyEditLines[history_line];
 		return;
 	}
 
@@ -135,17 +131,14 @@ void Key_Console(int key)
 		{
 			history_line = (history_line + 1) & 31;
 		}
-		while (history_line != edit_line &&
-			   !key_lines[history_line][1]);
+		while (history_line != edit_line && !historyEditLines[history_line].buffer[0]);
 		if (history_line == edit_line)
 		{
-			key_lines[edit_line][0] = ']';
-			key_linepos = 1;
+			g_consoleField.buffer[0] = 0;
 		}
 		else
 		{
-			String::Cpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = String::Length(key_lines[edit_line]);
+			g_consoleField = historyEditLines[history_line];
 		}
 		return;
 	}
@@ -179,13 +172,13 @@ void Key_Console(int key)
 		return;	// non printable
 
 	}
-	if (key_linepos < MAXCMDLINE - 1)
+	int len = String::Length(g_consoleField.buffer);
+	if (len < MAX_EDIT_LINE - 1)
 	{
-		key_lines[edit_line][key_linepos] = key;
-		key_linepos++;
-		key_lines[edit_line][key_linepos] = 0;
+		g_consoleField.buffer[len] = key;
+		len++;
+		g_consoleField.buffer[len] = 0;
 	}
-
 }
 
 //============================================================================
@@ -464,13 +457,6 @@ Key_Init
 void Key_Init(void)
 {
 	int i;
-
-	for (i = 0; i < 32; i++)
-	{
-		key_lines[i][0] = ']';
-		key_lines[i][1] = 0;
-	}
-	key_linepos = 1;
 
 //
 // init ascii characters in console mode
