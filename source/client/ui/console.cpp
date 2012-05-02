@@ -21,6 +21,9 @@
 console_t con;
 field_t g_consoleField;
 field_t historyEditLines[COMMAND_HISTORY];
+int nextHistoryLine;		// the last line in the history buffer, not masked
+int historyLine;			// the line being displayed from history buffer
+							// will be <= nextHistoryLine
 
 Cvar* cl_noprint;
 

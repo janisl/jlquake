@@ -8,9 +8,6 @@ Cvar* con_notifytime;
 
 qboolean con_debuglog;
 
-extern int edit_line;
-
-
 extern void M_Menu_Main_f(void);
 
 /*

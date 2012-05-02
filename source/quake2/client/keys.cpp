@@ -28,9 +28,6 @@ key up events are sent even if in console mode
 
 int shift_down = false;
 
-int edit_line = 0;
-int history_line = 0;
-
 int key_waiting;
 char* keybindings[256];
 qboolean consolekeys[256];		// if true, can't be rebound while in console
@@ -181,9 +178,9 @@ void Key_Console(int key)
 		}
 		Cbuf_AddText("\n");
 		Com_Printf("]%s\n",g_consoleField.buffer);
-		historyEditLines[edit_line] = g_consoleField;
-		edit_line = (edit_line + 1) & 31;
-		history_line = edit_line;
+		historyEditLines[nextHistoryLine % COMMAND_HISTORY] = g_consoleField;
+		nextHistoryLine++;
+		historyLine = nextHistoryLine;
 		g_consoleField.buffer[0] = 0;
 		if (cls.state == CA_DISCONNECTED)
 		{
@@ -214,36 +211,36 @@ void Key_Console(int key)
 	{
 		do
 		{
-			history_line = (history_line - 1) & 31;
+			historyLine--;
 		}
-		while (history_line != edit_line && !historyEditLines[history_line].buffer[0]);
-		if (history_line == edit_line)
+		while (historyLine >= 0 && historyLine > nextHistoryLine - COMMAND_HISTORY && !historyEditLines[historyLine % COMMAND_HISTORY].buffer[0]);
+		if (historyLine < 0)
 		{
-			history_line = (edit_line + 1) & 31;
+			historyLine = 0;
 		}
-		g_consoleField = historyEditLines[history_line];
+		g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
 		return;
 	}
 
 	if ((key == K_DOWNARROW) || (key == K_KP_DOWNARROW) ||
 		((key == 'n') && keydown[K_CTRL]))
 	{
-		if (history_line == edit_line)
+		if (historyLine == nextHistoryLine)
 		{
 			return;
 		}
 		do
 		{
-			history_line = (history_line + 1) & 31;
+			historyLine++;
 		}
-		while (history_line != edit_line && !historyEditLines[history_line].buffer[0]);
-		if (history_line == edit_line)
+		while (historyLine < nextHistoryLine && !historyEditLines[historyLine % COMMAND_HISTORY].buffer[0]);
+		if (historyLine == nextHistoryLine)
 		{
 			g_consoleField.buffer[0] = 0;
 		}
 		else
 		{
-			g_consoleField = historyEditLines[history_line];
+			g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
 		}
 		return;
 	}

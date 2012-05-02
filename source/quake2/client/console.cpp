@@ -23,10 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Cvar* con_notifytime;
 
-
-extern int edit_line;
-
-
 void DrawString(int x, int y, const char* s)
 {
 	while (*s)

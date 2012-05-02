@@ -1766,8 +1766,6 @@ void Host_Spawn_f(void)
 	host_client->sendsignon = true;
 }
 
-extern int edit_line;
-
 int strdiff(const char* s1, const char* s2)
 {
 	int L1,L2,i;

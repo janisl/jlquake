@@ -34,10 +34,6 @@ key up events are sent even if in console mode
 
 */
 
-int nextHistoryLine;				// the last line in the history buffer, not masked
-int historyLine;			// the line being displayed from history buffer
-							// will be <= nextHistoryLine
-
 field_t chatField;
 qboolean chat_team;
 qboolean chat_limbo;			// NERVE - SMF

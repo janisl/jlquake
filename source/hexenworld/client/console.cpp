@@ -6,9 +6,6 @@ Cvar* con_notifytime;
 
 qboolean con_debuglog;
 
-extern int edit_line;
-
-
 void Key_ClearTyping(void)
 {
 	g_consoleField.buffer[0] = 0;	// clear any typing
