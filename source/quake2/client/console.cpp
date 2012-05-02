@@ -259,7 +259,6 @@ If no console is visible, the text will appear at the top of the game window
 void Con_Print(const char* txt)
 {
 	int mask;
-	bool skipnotify = false;
 
 	if (!con.initialized)
 	{
@@ -276,7 +275,7 @@ void Con_Print(const char* txt)
 		mask = 0;
 	}
 
-	CL_ConsolePrintCommon(txt, skipnotify, mask);
+	CL_ConsolePrintCommon(txt, mask);
 }
 
 

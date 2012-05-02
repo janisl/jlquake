@@ -167,8 +167,18 @@ void Con_Linefeed(bool skipNotify)
 	}
 }
 
-void CL_ConsolePrintCommon(const char*& txt, bool skipnotify, int mask)
+void CL_ConsolePrintCommon(const char*& txt, int mask)
 {
+	bool skipnotify = false;
+
+	// TTimo - prefix for text that shows up in console but not in notify
+	// backported from RTCW
+	if (!String::NCmp(txt, "[skipnotify]", 12))
+	{
+		skipnotify = true;
+		txt += 12;
+	}
+
 	int color = ColorIndex(COLOR_WHITE);
 
 	char c;
@@ -227,6 +237,26 @@ void CL_ConsolePrintCommon(const char*& txt, bool skipnotify, int mask)
 				Con_Linefeed(skipnotify);
 			}
 			break;
+		}
+	}
+
+	// mark time for transparent overlay
+	if (con.current >= 0)
+	{
+		// NERVE - SMF
+		if (skipnotify)
+		{
+			int prev = con.current % NUM_CON_TIMES - 1;
+			if (prev < 0)
+			{
+				prev = NUM_CON_TIMES - 1;
+			}
+			con.times[prev] = 0;
+		}
+		else
+		{
+			// -NERVE - SMF
+			con.times[con.current % NUM_CON_TIMES] = cls.realtime;
 		}
 	}
 }

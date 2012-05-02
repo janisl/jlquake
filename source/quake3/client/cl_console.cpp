@@ -233,16 +233,6 @@ If no console is visible, the text will appear at the top of the game window
 void CL_ConsolePrint(const char* txt)
 {
 	int mask = 0;
-	qboolean skipnotify = qfalse;		// NERVE - SMF
-	int prev;							// NERVE - SMF
-
-	// TTimo - prefix for text that shows up in console but not in notify
-	// backported from RTCW
-	if (!String::NCmp(txt, "[skipnotify]", 12))
-	{
-		skipnotify = qtrue;
-		txt += 12;
-	}
 
 	// for some demos we don't want to ever show anything on the console
 	if (cl_noprint && cl_noprint->integer)
@@ -261,27 +251,7 @@ void CL_ConsolePrint(const char* txt)
 		con.initialized = qtrue;
 	}
 
-	CL_ConsolePrintCommon(txt, skipnotify, mask);
-
-	// mark time for transparent overlay
-	if (con.current >= 0)
-	{
-		// NERVE - SMF
-		if (skipnotify)
-		{
-			prev = con.current % NUM_CON_TIMES - 1;
-			if (prev < 0)
-			{
-				prev = NUM_CON_TIMES - 1;
-			}
-			con.times[prev] = 0;
-		}
-		else
-		{
-			// -NERVE - SMF
-			con.times[con.current % NUM_CON_TIMES] = cls.realtime;
-		}
-	}
+	CL_ConsolePrintCommon(txt, mask);
 }
 
 

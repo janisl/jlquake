@@ -58,4 +58,4 @@ void Con_Top();
 void Con_Bottom();
 void Con_Clear_f();
 void Con_Linefeed(bool skipnotify);
-void CL_ConsolePrintCommon(const char*& txt, bool skipnotify, int mask);
+void CL_ConsolePrintCommon(const char*& txt, int mask);

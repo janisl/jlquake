@@ -135,7 +135,6 @@ If no console is visible, the notify window will pop up.
 void Con_Print(const char* txt)
 {
 	int mask;
-	bool skipnotify = false;
 
 	if (txt[0] == 1)
 	{
@@ -154,7 +153,7 @@ void Con_Print(const char* txt)
 		mask = 0;
 	}
 
-	CL_ConsolePrintCommon(txt, skipnotify, mask);
+	CL_ConsolePrintCommon(txt, mask);
 }
 
 

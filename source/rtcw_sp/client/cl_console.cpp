@@ -287,7 +287,6 @@ If no console is visible, the text will appear at the top of the game window
 void CL_ConsolePrint(const char* txt)
 {
 	int mask = 0;
-	bool skipnotify = false;
 
 	// for some demos we don't want to ever show anything on the console
 	if (cl_noprint && cl_noprint->integer)
@@ -306,14 +305,7 @@ void CL_ConsolePrint(const char* txt)
 		con.initialized = qtrue;
 	}
 
-	CL_ConsolePrintCommon(txt, skipnotify, mask);
-
-	// mark time for transparent overlay
-
-	if (con.current >= 0)
-	{
-		con.times[con.current % NUM_CON_TIMES] = cls.realtime;
-	}
+	CL_ConsolePrintCommon(txt, mask);
 }
 
 
