@@ -149,9 +149,6 @@ void Key_Console(int key)
 		Con_Bottom();
 		return;
 	}
-
-	int len = String::Length(g_consoleField.buffer);
-	Field_CharEventCommon(&g_consoleField, key, len);
 }
 
 //============================================================================
@@ -196,8 +193,6 @@ void Key_Message(int key)
 		}
 		return;
 	}
-
-	Field_CharEventCommon(&chatField, key, String::Length(chatField.buffer));
 }
 
 //============================================================================
@@ -648,6 +643,17 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 }
 
+void Key_CharEvent(int ch)
+{
+	if (in_keyCatchers & KEYCATCH_MESSAGE)
+	{
+		Field_CharEventCommon(&chatField, ch, String::Length(chatField.buffer));
+	}
+	else if (in_keyCatchers & KEYCATCH_CONSOLE)
+	{
+		Field_CharEventCommon(&g_consoleField, ch, String::Length(g_consoleField.buffer));
+	}
+}
 
 /*
 ===================
@@ -674,6 +680,9 @@ void IN_ProcessEvents()
 		{
 		case SE_KEY:
 			Key_Event(ev.evValue, ev.evValue2, ev.evTime);
+			break;
+		case SE_CHAR:
+			Key_CharEvent(ev.evValue);
 			break;
 		case SE_MOUSE:
 			CL_MouseEvent(ev.evValue, ev.evValue2);
