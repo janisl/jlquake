@@ -71,7 +71,6 @@ typedef struct
 	menucommon_s generic;
 
 	field_t field;
-	int length;
 } menufield_s;
 
 typedef struct

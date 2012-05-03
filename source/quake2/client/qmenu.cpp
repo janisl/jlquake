@@ -208,9 +208,7 @@ qboolean Field_Key(menufield_s* f, int key)
 
 		if ((cbd = Sys_GetClipboardData()) != 0)
 		{
-			strtok(cbd, "\n\r\b");
-
-			String::NCpy(f->field.buffer, cbd, f->length - 1);
+			String::NCpy(f->field.buffer, cbd, f->field.maxLength - 1);
 			f->field.cursor = String::Length(f->field.buffer);
 			f->field.scroll = f->field.cursor - f->field.widthInChars;
 			if (f->field.scroll < 0)
@@ -258,7 +256,7 @@ qboolean Field_Key(menufield_s* f, int key)
 			return false;
 		}
 
-		if (f->field.cursor < f->length)
+		if (f->field.cursor < f->field.maxLength)
 		{
 			f->field.buffer[f->field.cursor++] = key;
 			f->field.buffer[f->field.cursor] = 0;

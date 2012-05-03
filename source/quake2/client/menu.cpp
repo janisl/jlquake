@@ -2883,7 +2883,7 @@ void StartServer_MenuInit(void)
 	s_timelimit_field.generic.x = 0;
 	s_timelimit_field.generic.y = 36;
 	s_timelimit_field.generic.statusbar = "0 = no limit";
-	s_timelimit_field.length = 3;
+	s_timelimit_field.field.maxLength = 3;
 	s_timelimit_field.field.widthInChars = 3;
 	String::Cpy(s_timelimit_field.field.buffer, Cvar_VariableString("timelimit"));
 
@@ -2893,7 +2893,7 @@ void StartServer_MenuInit(void)
 	s_fraglimit_field.generic.x = 0;
 	s_fraglimit_field.generic.y = 54;
 	s_fraglimit_field.generic.statusbar = "0 = no limit";
-	s_fraglimit_field.length = 3;
+	s_fraglimit_field.field.maxLength = 3;
 	s_fraglimit_field.field.widthInChars = 3;
 	String::Cpy(s_fraglimit_field.field.buffer, Cvar_VariableString("fraglimit"));
 
@@ -2909,7 +2909,7 @@ void StartServer_MenuInit(void)
 	s_maxclients_field.generic.x    = 0;
 	s_maxclients_field.generic.y    = 72;
 	s_maxclients_field.generic.statusbar = NULL;
-	s_maxclients_field.length = 3;
+	s_maxclients_field.field.maxLength = 3;
 	s_maxclients_field.field.widthInChars = 3;
 	if (Cvar_VariableValue("maxclients") == 1)
 	{
@@ -2926,7 +2926,7 @@ void StartServer_MenuInit(void)
 	s_hostname_field.generic.x  = 0;
 	s_hostname_field.generic.y  = 90;
 	s_hostname_field.generic.statusbar = NULL;
-	s_hostname_field.length = 12;
+	s_hostname_field.field.maxLength = 12;
 	s_hostname_field.field.widthInChars = 12;
 	String::Cpy(s_hostname_field.field.buffer, Cvar_VariableString("hostname"));
 
@@ -3586,7 +3586,7 @@ void AddressBook_MenuInit(void)
 		s_addressbook_fields[i].generic.y       = i * 18 + 0;
 		s_addressbook_fields[i].generic.localdata[0] = i;
 		s_addressbook_fields[i].field.cursor          = 0;
-		s_addressbook_fields[i].length          = 60;
+		s_addressbook_fields[i].field.maxLength = 60;
 		s_addressbook_fields[i].field.widthInChars = 30;
 
 		String::Cpy(s_addressbook_fields[i].field.buffer, adr->string);
@@ -3987,7 +3987,7 @@ qboolean PlayerConfig_MenuInit(void)
 	s_player_name_field.generic.callback = 0;
 	s_player_name_field.generic.x       = 0;
 	s_player_name_field.generic.y       = 0;
-	s_player_name_field.length  = 20;
+	s_player_name_field.field.maxLength = 20;
 	s_player_name_field.field.widthInChars = 20;
 	String::Cpy(s_player_name_field.field.buffer, name->string);
 	s_player_name_field.field.cursor = String::Length(name->string);

@@ -137,6 +137,7 @@ struct field_t
 	int cursor;
 	int scroll;
 	int widthInChars;
+	int maxLength;
 	char buffer[MAX_EDIT_LINE];
 };
 
