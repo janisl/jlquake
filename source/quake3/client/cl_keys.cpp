@@ -31,8 +31,6 @@ qboolean chat_team;
 
 int chat_playerNum;
 
-qkey_t keys[MAX_KEYS];
-
 /*
 =============================================================================
 

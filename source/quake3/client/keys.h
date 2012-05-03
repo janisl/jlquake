@@ -20,17 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#define MAX_KEYS        256
-
-typedef struct
-{
-	qboolean down;
-	int repeats;				// if > 1, it is autorepeating
-	char* binding;
-} qkey_t;
-
-extern qkey_t keys[MAX_KEYS];
-
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 void Field_KeyDownEvent(field_t* edit, int key);
 void Field_Draw(field_t* edit, int x, int y, int width, qboolean showCursor);

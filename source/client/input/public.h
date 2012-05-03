@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#define MAX_KEYS        256
+
 // in order from highest priority to lowest
 // if none of the catchers are active, bound key strings will be executed
 enum
@@ -41,6 +43,14 @@ struct keyname_t
 	int keynum;
 };
 
+struct qkey_t
+{
+	qboolean down;
+	int repeats;				// if > 1, it is autorepeating
+	char* binding;
+	int hash;
+};
+
 void IN_Init();
 void IN_Shutdown();
 void IN_Frame();
@@ -49,5 +59,7 @@ void Sys_SendKeyEvents();
 
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;
+
+extern qkey_t keys[MAX_KEYS];
 
 extern keyname_t keynames[];

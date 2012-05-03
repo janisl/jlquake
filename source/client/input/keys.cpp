@@ -16,6 +16,8 @@
 
 #include "../client.h"
 
+qkey_t keys[MAX_KEYS];
+
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] =
 {

@@ -39,10 +39,6 @@ qboolean chat_limbo;			// NERVE - SMF
 
 int chat_playerNum;
 
-
-qkey_t keys[MAX_KEYS];
-
-
 qboolean UI_checkKeyExec(int key);			// NERVE - SMF
 
 keyname_t keynames_d[] =	//deutsch
