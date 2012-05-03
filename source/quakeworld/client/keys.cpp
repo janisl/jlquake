@@ -264,8 +264,6 @@ void Key_Console(int key)
 //============================================================================
 
 qboolean chat_team;
-char chat_buffer[MAX_EDIT_LINE];
-int chat_bufferlen = 0;
 
 void Key_Message(int key)
 {
@@ -280,20 +278,20 @@ void Key_Message(int key)
 		{
 			Cbuf_AddText("say \"");
 		}
-		Cbuf_AddText(chat_buffer);
+		Cbuf_AddText(chatField.buffer);
 		Cbuf_AddText("\"\n");
 
 		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
+		chatField.cursor = 0;
+		chatField.buffer[0] = 0;
 		return;
 	}
 
 	if (key == K_ESCAPE)
 	{
 		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
+		chatField.cursor = 0;
+		chatField.buffer[0] = 0;
 		return;
 	}
 
@@ -304,21 +302,21 @@ void Key_Message(int key)
 	}
 	if (key == K_BACKSPACE)
 	{
-		if (chat_bufferlen)
+		if (chatField.cursor)
 		{
-			chat_bufferlen--;
-			chat_buffer[chat_bufferlen] = 0;
+			chatField.cursor--;
+			chatField.buffer[chatField.cursor] = 0;
 		}
 		return;
 	}
 
-	if (chat_bufferlen == sizeof(chat_buffer) - 1)
+	if (chatField.cursor == sizeof(chatField.buffer) - 1)
 	{
 		return;	// all full
 
 	}
-	chat_buffer[chat_bufferlen++] = key;
-	chat_buffer[chat_bufferlen] = 0;
+	chatField.buffer[chatField.cursor++] = key;
+	chatField.buffer[chatField.cursor] = 0;
 }
 
 //============================================================================

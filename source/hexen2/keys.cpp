@@ -162,16 +162,13 @@ void Key_Console(int key)
 
 //============================================================================
 
-char chat_buffer[32];
-qboolean team_message = false;
+qboolean chat_team = false;
 
 void Key_Message(int key)
 {
-	static int chat_bufferlen = 0;
-
 	if (key == K_ENTER)
 	{
-		if (team_message)
+		if (chat_team)
 		{
 			Cbuf_AddText("say_team \"");
 		}
@@ -179,20 +176,20 @@ void Key_Message(int key)
 		{
 			Cbuf_AddText("say \"");
 		}
-		Cbuf_AddText(chat_buffer);
+		Cbuf_AddText(chatField.buffer);
 		Cbuf_AddText("\"\n");
 
 		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
+		chatField.cursor = 0;
+		chatField.buffer[0] = 0;
 		return;
 	}
 
 	if (key == K_ESCAPE)
 	{
 		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
+		chatField.cursor = 0;
+		chatField.buffer[0] = 0;
 		return;
 	}
 
@@ -203,21 +200,21 @@ void Key_Message(int key)
 	}
 	if (key == K_BACKSPACE)
 	{
-		if (chat_bufferlen)
+		if (chatField.cursor)
 		{
-			chat_bufferlen--;
-			chat_buffer[chat_bufferlen] = 0;
+			chatField.cursor--;
+			chatField.buffer[chatField.cursor] = 0;
 		}
 		return;
 	}
 
-	if (chat_bufferlen == 31)
+	if (chatField.cursor == 31)
 	{
 		return;	// all full
 
 	}
-	chat_buffer[chat_bufferlen++] = key;
-	chat_buffer[chat_bufferlen] = 0;
+	chatField.buffer[chatField.cursor++] = key;
+	chatField.buffer[chatField.cursor] = 0;
 }
 
 //============================================================================

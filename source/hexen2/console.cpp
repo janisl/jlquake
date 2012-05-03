@@ -43,12 +43,12 @@ void Con_ToggleConsole_f(void)
 Con_MessageMode_f
 ================
 */
-extern qboolean team_message;
+extern qboolean chat_team;
 
 void Con_MessageMode_f(void)
 {
 	in_keyCatchers |= KEYCATCH_MESSAGE;
-	team_message = false;
+	chat_team = false;
 }
 
 
@@ -60,7 +60,7 @@ Con_MessageMode2_f
 void Con_MessageMode2_f(void)
 {
 	in_keyCatchers |= KEYCATCH_MESSAGE;
-	team_message = true;
+	chat_team = true;
 }
 
 /*
@@ -319,7 +319,6 @@ void Con_DrawNotify(void)
 	int x, v;
 	short* text;
 	int i;
-	extern char chat_buffer[];
 
 	v = 0;
 	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
@@ -352,9 +351,9 @@ void Con_DrawNotify(void)
 		x = 0;
 
 		Draw_String(8, v, "say:");
-		while (chat_buffer[x])
+		while (chatField.buffer[x])
 		{
-			Draw_Character((x + 5) << 3, v, chat_buffer[x]);
+			Draw_Character((x + 5) << 3, v, chatField.buffer[x]);
 			x++;
 		}
 		Draw_Character((x + 5) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));

@@ -325,10 +325,10 @@ void Con_DrawNotify(void)
 			skip = 5;
 		}
 
-		s = chat_buffer;
-		if (chat_bufferlen > ((int)viddef.width >> 3) - (skip + 1))
+		s = chatField.buffer;
+		if (chatField.cursor > ((int)viddef.width >> 3) - (skip + 1))
 		{
-			s += chat_bufferlen - ((viddef.width >> 3) - (skip + 1));
+			s += chatField.cursor - ((viddef.width >> 3) - (skip + 1));
 		}
 		x = 0;
 		while (s[x])

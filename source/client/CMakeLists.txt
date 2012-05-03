@@ -96,6 +96,7 @@ set(CLIENT_FILES
 	splines/util_str.cpp
 	ui/console.cpp
 	ui/draw.cpp
+	ui/field.cpp
 	ui/screen.cpp
 	chase.cpp
 	client_main.cpp

@@ -34,7 +34,6 @@ key up events are sent even if in console mode
 
 */
 
-field_t chatField;
 qboolean chat_team;
 qboolean chat_limbo;			// NERVE - SMF
 
