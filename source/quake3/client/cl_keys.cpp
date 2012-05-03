@@ -162,33 +162,6 @@ void Field_BigDraw(field_t* edit, int x, int y, int width, qboolean showCursor)
 }
 
 /*
-================
-Field_Paste
-================
-*/
-void Field_Paste(field_t* edit)
-{
-	char* cbd;
-	int pasteLen, i;
-
-	cbd = Sys_GetClipboardData();
-
-	if (!cbd)
-	{
-		return;
-	}
-
-	// send as if typed, so insert / overstrike works properly
-	pasteLen = String::Length(cbd);
-	for (i = 0; i < pasteLen; i++)
-	{
-		Field_CharEvent(edit, cbd[i]);
-	}
-
-	delete[] cbd;
-}
-
-/*
 =================
 Field_KeyDownEvent
 
@@ -265,22 +238,6 @@ void Field_KeyDownEvent(field_t* edit, int key)
 		key_overstrikeMode = !key_overstrikeMode;
 		return;
 	}
-}
-
-/*
-==================
-Field_CharEvent
-==================
-*/
-void Field_CharEvent(field_t* edit, int ch)
-{
-	if (ch == 'v' - 'a' + 1)		// ctrl-v is paste
-	{
-		Field_Paste(edit);
-		return;
-	}
-
-	Field_CharEventCommon(edit, ch);
 }
 
 /*

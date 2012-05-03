@@ -219,27 +219,6 @@ void Key_Console(int key)
 		Con_Bottom();
 		return;
 	}
-
-	if ((key == 'V' || key == 'v') && keydown[K_CTRL])
-	{
-		char* textCopied = Sys_GetClipboardData();
-		if (textCopied)
-		{
-			int i = String::Length(textCopied);
-			if (i + String::Length(g_consoleField.buffer) >= MAX_EDIT_LINE)
-			{
-				i = MAX_EDIT_LINE - String::Length(g_consoleField.buffer);
-			}
-			if (i > 0)
-			{
-				textCopied[i] = 0;
-				String::Cat(g_consoleField.buffer, sizeof(g_consoleField.buffer), textCopied);
-				g_consoleField.cursor = String::Length(g_consoleField.buffer);
-			}
-			delete[] textCopied;
-		}
-		return;
-	}
 }
 
 //============================================================================
@@ -727,18 +706,18 @@ void Key_CharEvent(int key)
 	// distribute the key down event to the apropriate handler
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Field_CharEventCommon(&g_consoleField, key);
+		Field_CharEvent(&g_consoleField, key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Field_CharEventCommon(&chatField, key);
+		Field_CharEvent(&chatField, key);
 	}
 	else if (cls.state == CA_DISCONNECTED)
 	{
-		Field_CharEventCommon(&g_consoleField, key);
+		Field_CharEvent(&g_consoleField, key);
 	}
 }
 

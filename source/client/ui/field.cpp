@@ -20,8 +20,36 @@ field_t chatField;
 
 bool key_overstrikeMode;
 
-void Field_CharEventCommon(field_t* edit, int ch)
+void Field_Paste(field_t* edit)
 {
+	char* cbd;
+	int pasteLen, i;
+
+	cbd = Sys_GetClipboardData();
+
+	if (!cbd)
+	{
+		return;
+	}
+
+	// send as if typed, so insert / overstrike works properly
+	pasteLen = String::Length(cbd);
+	for (i = 0; i < pasteLen; i++)
+	{
+		Field_CharEvent(edit, cbd[i]);
+	}
+
+	delete[] cbd;
+}
+
+void Field_CharEvent(field_t* edit, int ch)
+{
+	if (ch == 'v' - 'a' + 1)		// ctrl-v is paste
+	{
+		Field_Paste(edit);
+		return;
+	}
+
 	if (ch == 'c' - 'a' + 1)		// ctrl-c clears the field
 	{
 		Field_Clear(edit);

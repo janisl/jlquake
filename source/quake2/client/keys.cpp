@@ -129,32 +129,9 @@ void Key_Console(int key)
 		break;
 	}
 
-	if ((String::ToUpper(key) == 'V' && keydown[K_CTRL]) ||
-		(((key == K_INS) || (key == K_KP_INS)) && keydown[K_SHIFT]))
+	if (((key == K_INS) || (key == K_KP_INS)) && keydown[K_SHIFT])
 	{
-		char* cbd;
-
-		if ((cbd = Sys_GetClipboardData()) != 0)
-		{
-			int i;
-
-			strtok(cbd, "\n\r\b");
-
-			i = String::Length(cbd);
-			if (i + String::Length(g_consoleField.buffer) >= MAX_EDIT_LINE)
-			{
-				i = MAX_EDIT_LINE - String::Length(g_consoleField.buffer);
-			}
-
-			if (i > 0)
-			{
-				cbd[i] = 0;
-				String::Cat(g_consoleField.buffer, sizeof(g_consoleField.buffer), cbd);
-				g_consoleField.cursor = String::Length(g_consoleField.buffer);
-			}
-			delete[] cbd;
-		}
-
+		Field_Paste(&g_consoleField);
 		return;
 	}
 
@@ -812,18 +789,18 @@ void Key_CharEvent(int key)
 	// distribute the key down event to the apropriate handler
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Field_CharEventCommon(&g_consoleField, key);
+		Field_CharEvent(&g_consoleField, key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Field_CharEventCommon(&chatField, key);
+		Field_CharEvent(&chatField, key);
 	}
 	else if (cls.state == CA_DISCONNECTED)
 	{
-		Field_CharEventCommon(&g_consoleField, key);
+		Field_CharEvent(&g_consoleField, key);
 	}
 }
 

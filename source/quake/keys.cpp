@@ -638,18 +638,18 @@ void Key_CharEvent(int key)
 	// distribute the key down event to the apropriate handler
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Field_CharEventCommon(&g_consoleField, key);
+		Field_CharEvent(&g_consoleField, key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Field_CharEventCommon(&chatField, key);
+		Field_CharEvent(&chatField, key);
 	}
 	else if (cls.state == CA_DISCONNECTED)
 	{
-		Field_CharEventCommon(&g_consoleField, key);
+		Field_CharEvent(&g_consoleField, key);
 	}
 }
 

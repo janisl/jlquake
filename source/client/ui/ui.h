@@ -69,4 +69,5 @@ void SCR_EndLoadingPlaque();
 void SCR_DebugGraph(float value, int color);
 void SCR_DrawDebugGraph();
 
-void Field_CharEventCommon(field_t* edit, int ch);
+void Field_Paste(field_t* edit);
+void Field_CharEvent(field_t* edit, int ch);
