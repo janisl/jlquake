@@ -69,4 +69,4 @@ void SCR_EndLoadingPlaque();
 void SCR_DebugGraph(float value, int color);
 void SCR_DrawDebugGraph();
 
-void Field_CharEventCommon(field_t* edit, int ch, int len);
+void Field_CharEventCommon(field_t* edit, int ch);

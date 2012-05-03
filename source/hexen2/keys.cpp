@@ -76,17 +76,6 @@ void Key_Console(int key)
 		}
 	}
 
-	if (key == K_BACKSPACE || key == K_LEFTARROW)
-	{
-		int len = String::Length(g_consoleField.buffer);
-		if (len > 0)
-		{
-			g_consoleField.buffer[len - 1] = 0;
-			g_consoleField.cursor--;
-		}
-		return;
-	}
-
 	if (key == K_UPARROW)
 	{
 		do
@@ -181,16 +170,6 @@ void Key_Message(int key)
 		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		chatField.cursor = 0;
 		chatField.buffer[0] = 0;
-		return;
-	}
-
-	if (key == K_BACKSPACE)
-	{
-		if (chatField.cursor)
-		{
-			chatField.cursor--;
-			chatField.buffer[chatField.cursor] = 0;
-		}
 		return;
 	}
 }
@@ -654,18 +633,18 @@ void Key_CharEvent(int key)
 	// distribute the key down event to the apropriate handler
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Field_CharEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
+		Field_CharEventCommon(&g_consoleField, key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Field_CharEventCommon(&chatField, key, String::Length(chatField.buffer));
+		Field_CharEventCommon(&chatField, key);
 	}
 	else if (cls.state == CA_DISCONNECTED)
 	{
-		Field_CharEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
+		Field_CharEventCommon(&g_consoleField, key);
 	}
 }
 

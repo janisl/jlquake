@@ -20,8 +20,45 @@ field_t chatField;
 
 bool key_overstrikeMode;
 
-void Field_CharEventCommon(field_t* edit, int ch, int len)
+void Field_CharEventCommon(field_t* edit, int ch)
 {
+	if (ch == 'c' - 'a' + 1)		// ctrl-c clears the field
+	{
+		Field_Clear(edit);
+		return;
+	}
+
+	int len = String::Length(edit->buffer);
+
+	if (ch == 'h' - 'a' + 1)		// ctrl-h is backspace
+	{
+		if (edit->cursor > 0)
+		{
+			memmove(edit->buffer + edit->cursor - 1,
+				edit->buffer + edit->cursor, len + 1 - edit->cursor);
+			edit->cursor--;
+			if (edit->cursor < edit->scroll)
+			{
+				edit->scroll--;
+			}
+		}
+		return;
+	}
+
+	if (ch == 'a' - 'a' + 1)		// ctrl-a is home
+	{
+		edit->cursor = 0;
+		edit->scroll = 0;
+		return;
+	}
+
+	if (ch == 'e' - 'a' + 1)		// ctrl-e is end
+	{
+		edit->cursor = len;
+		edit->scroll = edit->cursor - edit->widthInChars;
+		return;
+	}
+
 	//
 	// ignore any other non printable chars
 	//

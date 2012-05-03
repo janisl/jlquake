@@ -781,52 +781,13 @@ Field_CharEvent
 */
 void Field_CharEvent(field_t* edit, int ch)
 {
-	int len;
-
 	if (ch == 'v' - 'a' + 1)		// ctrl-v is paste
 	{
 		Field_Paste(edit);
 		return;
 	}
 
-	if (ch == 'c' - 'a' + 1)		// ctrl-c clears the field
-	{
-		Field_Clear(edit);
-		return;
-	}
-
-	len = String::Length(edit->buffer);
-
-	if (ch == 'h' - 'a' + 1)			// ctrl-h is backspace
-	{
-		if (edit->cursor > 0)
-		{
-			memmove(edit->buffer + edit->cursor - 1,
-				edit->buffer + edit->cursor, len + 1 - edit->cursor);
-			edit->cursor--;
-			if (edit->cursor < edit->scroll)
-			{
-				edit->scroll--;
-			}
-		}
-		return;
-	}
-
-	if (ch == 'a' - 'a' + 1)		// ctrl-a is home
-	{
-		edit->cursor = 0;
-		edit->scroll = 0;
-		return;
-	}
-
-	if (ch == 'e' - 'a' + 1)		// ctrl-e is end
-	{
-		edit->cursor = len;
-		edit->scroll = edit->cursor - edit->widthInChars;
-		return;
-	}
-
-	Field_CharEventCommon(edit, ch, len);
+	Field_CharEventCommon(edit, ch);
 }
 
 /*
