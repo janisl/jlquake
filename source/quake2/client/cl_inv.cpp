@@ -120,7 +120,7 @@ void CL_DrawInventory(void)
 		String::Sprintf(binding, sizeof(binding), "use %s", cl.q2_configstrings[Q2CS_ITEMS + item]);
 		bind = "";
 		for (j = 0; j < 256; j++)
-			if (keybindings[j] && !String::ICmp(keybindings[j], binding))
+			if (keys[j].binding && !String::ICmp(keys[j].binding, binding))
 			{
 				bind = Key_KeynumToString(j);
 				break;

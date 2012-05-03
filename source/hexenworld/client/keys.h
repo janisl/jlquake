@@ -1,5 +1,4 @@
 
-extern char* keybindings[256];
 extern int key_count;				// incremented every key event
 extern int key_lastpress;
 

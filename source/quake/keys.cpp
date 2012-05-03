@@ -31,7 +31,6 @@ int key_lastpress;
 
 int key_count;				// incremented every key event
 
-char* keybindings[256];
 qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
 int keyshift[256];			// key to map to if shift held down in console
@@ -277,10 +276,10 @@ void Key_SetBinding(int keynum, const char* binding)
 	}
 
 // free old bindings
-	if (keybindings[keynum])
+	if (keys[keynum].binding)
 	{
-		Z_Free(keybindings[keynum]);
-		keybindings[keynum] = NULL;
+		Z_Free(keys[keynum].binding);
+		keys[keynum].binding = NULL;
 	}
 
 // allocate memory for new binding
@@ -288,7 +287,7 @@ void Key_SetBinding(int keynum, const char* binding)
 	new_b = (char*)Z_Malloc(l + 1);
 	String::Cpy(new_b, binding);
 	new_b[l] = 0;
-	keybindings[keynum] = new_b;
+	keys[keynum].binding = new_b;
 }
 
 /*
@@ -321,7 +320,7 @@ void Key_Unbindall_f(void)
 	int i;
 
 	for (i = 0; i < 256; i++)
-		if (keybindings[i])
+		if (keys[i].binding)
 		{
 			Key_SetBinding(i, "");
 		}
@@ -354,9 +353,9 @@ void Key_Bind_f(void)
 
 	if (c == 2)
 	{
-		if (keybindings[b])
+		if (keys[b].binding)
 		{
-			Con_Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keybindings[b]);
+			Con_Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keys[b].binding);
 		}
 		else
 		{
@@ -389,11 +388,11 @@ Writes lines containing "bind key value"
 void Key_WriteBindings(fileHandle_t f)
 {
 	for (int i = 0; i < 256; i++)
-		if (keybindings[i])
+		if (keys[i].binding)
 		{
-			if (*keybindings[i])
+			if (*keys[i].binding)
 			{
-				FS_Printf(f, "bind \"%s\" \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
+				FS_Printf(f, "bind \"%s\" \"%s\"\n", Key_KeynumToString(i), keys[i].binding);
 			}
 		}
 }
@@ -506,7 +505,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 			return;	// ignore most autorepeats
 		}
 
-		if (key >= 200 && !keybindings[key])
+		if (key >= 200 && !keys[key].binding)
 		{
 			Con_Printf("%s is unbound, hit F4 to set.\n", Key_KeynumToString(key));
 		}
@@ -550,7 +549,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 //
 	if (!down)
 	{
-		kb = keybindings[key];
+		kb = keys[key].binding;
 		if (kb && kb[0] == '+')
 		{
 			sprintf(cmd, "-%s %i %d\n", kb + 1, key, time);
@@ -558,7 +557,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		if (keyshift[key] != key)
 		{
-			kb = keybindings[keyshift[key]];
+			kb = keys[keyshift[key]].binding;
 			if (kb && kb[0] == '+')
 			{
 				sprintf(cmd, "-%s %i %d\n", kb + 1, key, time);
@@ -584,7 +583,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 		((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key]) ||
 		(in_keyCatchers == 0 && (!con_forcedup || !consolekeys[key])))
 	{
-		kb = keybindings[key];
+		kb = keys[key].binding;
 		if (kb)
 		{
 			if (kb[0] == '+')

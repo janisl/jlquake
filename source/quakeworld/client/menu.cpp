@@ -652,7 +652,7 @@ void M_FindKeysForCommand(const char* command, int* twokeys)
 
 	for (j = 0; j < 256; j++)
 	{
-		b = keybindings[j];
+		b = keys[j].binding;
 		if (!b)
 		{
 			continue;
@@ -679,7 +679,7 @@ void M_UnbindCommand(const char* command)
 
 	for (j = 0; j < 256; j++)
 	{
-		b = keybindings[j];
+		b = keys[j].binding;
 		if (!b)
 		{
 			continue;
