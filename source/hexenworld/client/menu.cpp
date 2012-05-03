@@ -2993,3 +2993,7 @@ void M_Keydown(int key)
 		break;
 	}
 }
+
+void M_CharEvent(int key)
+{
+}

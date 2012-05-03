@@ -38,6 +38,7 @@ extern menu_state_t m_state, m_return_state;
 //
 void M_Init(void);
 void M_Keydown(int key);
+void M_CharEvent(int key);
 void M_Draw(void);
 void M_ToggleMenu_f(void);
 

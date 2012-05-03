@@ -4364,6 +4364,9 @@ void M_Keydown(int key)
 	}
 }
 
+void M_CharEvent(int key)
+{
+}
 
 void M_ConfigureNetSubsystem(void)
 {

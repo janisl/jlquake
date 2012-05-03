@@ -1331,3 +1331,7 @@ void M_Keydown(int key)
 		return;
 	}
 }
+
+void M_CharEvent(int key)
+{
+}

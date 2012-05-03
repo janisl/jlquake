@@ -688,6 +688,7 @@ void Key_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
+		M_CharEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

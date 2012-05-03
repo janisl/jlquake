@@ -178,6 +178,7 @@ void CL_CheckPredictionError(void);
 //
 void M_Init(void);
 void M_Keydown(int key);
+void M_CharEvent(int key);
 void M_Draw(void);
 void M_Menu_Main_f(void);
 void M_ForceMenuOff(void);

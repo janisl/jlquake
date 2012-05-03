@@ -56,6 +56,7 @@ qboolean m_entersound;			// play after drawing a frame, so caching
 
 void (* m_drawfunc)(void);
 const char*(*m_keyfunc)(int key);
+void (*m_charfunc)(int key);
 
 //=============================================================================
 /* Support Routines */
@@ -67,6 +68,7 @@ typedef struct
 {
 	void (* draw)(void);
 	const char*(*key)(int k);
+	void (*charfunc)(int key);
 } menulayer_t;
 
 menulayer_t m_layers[MAX_MENU_DEPTH];
@@ -80,7 +82,7 @@ static void M_Banner(const char* name)
 	UI_DrawNamedPic(viddef.width / 2 - w / 2, viddef.height / 2 - 110, name);
 }
 
-void M_PushMenu(void (* draw)(void), const char*(*key)(int k))
+void M_PushMenu(void (* draw)(void), const char*(*key)(int k), void (*charfunc)(int key))
 {
 	int i;
 
@@ -107,11 +109,13 @@ void M_PushMenu(void (* draw)(void), const char*(*key)(int k))
 		}
 		m_layers[m_menudepth].draw = m_drawfunc;
 		m_layers[m_menudepth].key = m_keyfunc;
+		m_layers[m_menudepth].charfunc = m_charfunc;
 		m_menudepth++;
 	}
 
 	m_drawfunc = draw;
 	m_keyfunc = key;
+	m_charfunc = charfunc;
 
 	m_entersound = true;
 
@@ -122,6 +126,7 @@ void M_ForceMenuOff(void)
 {
 	m_drawfunc = 0;
 	m_keyfunc = 0;
+	m_charfunc = NULL;
 	in_keyCatchers &= ~KEYCATCH_UI;
 	m_menudepth = 0;
 	Key_ClearStates();
@@ -139,6 +144,7 @@ void M_PopMenu(void)
 
 	m_drawfunc = m_layers[m_menudepth].draw;
 	m_keyfunc = m_layers[m_menudepth].key;
+	m_charfunc = m_layers[m_menudepth].charfunc;
 
 	if (!m_menudepth)
 	{
@@ -507,7 +513,7 @@ const char* M_Main_Key(int key)
 
 void M_Menu_Main_f(void)
 {
-	M_PushMenu(M_Main_Draw, M_Main_Key);
+	M_PushMenu(M_Main_Draw, M_Main_Key, NULL);
 }
 
 /*
@@ -588,7 +594,7 @@ const char* Multiplayer_MenuKey(int key)
 void M_Menu_Multiplayer_f(void)
 {
 	Multiplayer_MenuInit();
-	M_PushMenu(Multiplayer_MenuDraw, Multiplayer_MenuKey);
+	M_PushMenu(Multiplayer_MenuDraw, Multiplayer_MenuKey, NULL);
 }
 
 /*
@@ -1034,7 +1040,7 @@ static const char* Keys_MenuKey(int key)
 void M_Menu_Keys_f(void)
 {
 	Keys_MenuInit();
-	M_PushMenu(Keys_MenuDraw, Keys_MenuKey);
+	M_PushMenu(Keys_MenuDraw, Keys_MenuKey, NULL);
 }
 
 
@@ -1331,7 +1337,7 @@ const char* Options_MenuKey(int key)
 void M_Menu_Options_f(void)
 {
 	Options_MenuInit();
-	M_PushMenu(Options_MenuDraw, Options_MenuKey);
+	M_PushMenu(Options_MenuDraw, Options_MenuKey, NULL);
 }
 
 /*
@@ -1601,7 +1607,7 @@ static const char* VID_MenuKey(int key)
 void M_Menu_Video_f(void)
 {
 	VID_MenuInit();
-	M_PushMenu(VID_MenuDraw, VID_MenuKey);
+	M_PushMenu(VID_MenuDraw, VID_MenuKey, NULL);
 }
 
 /*
@@ -2090,7 +2096,7 @@ void M_Menu_Credits_f(void)
 	}
 
 	credits_start_time = cls.realtime;
-	M_PushMenu(M_Credits_MenuDraw, M_Credits_Key);
+	M_PushMenu(M_Credits_MenuDraw, M_Credits_Key, NULL);
 }
 
 /*
@@ -2235,7 +2241,7 @@ const char* Game_MenuKey(int key)
 void M_Menu_Game_f(void)
 {
 	Game_MenuInit();
-	M_PushMenu(Game_MenuDraw, Game_MenuKey);
+	M_PushMenu(Game_MenuDraw, Game_MenuKey, NULL);
 	m_game_cursor = 1;
 }
 
@@ -2345,7 +2351,7 @@ const char* LoadGame_MenuKey(int key)
 void M_Menu_LoadGame_f(void)
 {
 	LoadGame_MenuInit();
-	M_PushMenu(LoadGame_MenuDraw, LoadGame_MenuKey);
+	M_PushMenu(LoadGame_MenuDraw, LoadGame_MenuKey, NULL);
 }
 
 
@@ -2421,7 +2427,7 @@ void M_Menu_SaveGame_f(void)
 
 	}
 	SaveGame_MenuInit();
-	M_PushMenu(SaveGame_MenuDraw, SaveGame_MenuKey);
+	M_PushMenu(SaveGame_MenuDraw, SaveGame_MenuKey, NULL);
 	Create_Savestrings();
 }
 
@@ -2596,7 +2602,7 @@ const char* JoinServer_MenuKey(int key)
 void M_Menu_JoinServer_f(void)
 {
 	JoinServer_MenuInit();
-	M_PushMenu(JoinServer_MenuDraw, JoinServer_MenuKey);
+	M_PushMenu(JoinServer_MenuDraw, JoinServer_MenuKey, NULL);
 }
 
 
@@ -2981,7 +2987,7 @@ const char* StartServer_MenuKey(int key)
 void M_Menu_StartServer_f(void)
 {
 	StartServer_MenuInit();
-	M_PushMenu(StartServer_MenuDraw, StartServer_MenuKey);
+	M_PushMenu(StartServer_MenuDraw, StartServer_MenuKey, NULL);
 }
 
 /*
@@ -3408,7 +3414,7 @@ const char* DMOptions_MenuKey(int key)
 void M_Menu_DMOptions_f(void)
 {
 	DMOptions_MenuInit();
-	M_PushMenu(DMOptions_MenuDraw, DMOptions_MenuKey);
+	M_PushMenu(DMOptions_MenuDraw, DMOptions_MenuKey, NULL);
 }
 
 /*
@@ -3542,7 +3548,7 @@ const char* DownloadOptions_MenuKey(int key)
 void M_Menu_DownloadOptions_f(void)
 {
 	DownloadOptions_MenuInit();
-	M_PushMenu(DownloadOptions_MenuDraw, DownloadOptions_MenuKey);
+	M_PushMenu(DownloadOptions_MenuDraw, DownloadOptions_MenuKey, NULL);
 }
 /*
 =============================================================================
@@ -3614,7 +3620,7 @@ void AddressBook_MenuDraw(void)
 void M_Menu_AddressBook_f(void)
 {
 	AddressBook_MenuInit();
-	M_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey);
+	M_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey, NULL);
 }
 
 /*
@@ -4184,7 +4190,7 @@ void M_Menu_PlayerConfig_f(void)
 		return;
 	}
 	Menu_SetStatusBar(&s_multiplayer_menu, NULL);
-	M_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey);
+	M_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey, NULL);
 }
 
 
@@ -4249,7 +4255,7 @@ void M_Quit_Draw(void)
 
 void M_Menu_Quit_f(void)
 {
-	M_PushMenu(M_Quit_Draw, M_Quit_Key);
+	M_PushMenu(M_Quit_Draw, M_Quit_Key, NULL);
 }
 
 
@@ -4327,5 +4333,13 @@ void M_Keydown(int key)
 		{
 			S_StartLocalSound((char*)s);
 		}
+	}
+}
+
+void M_CharEvent(int key)
+{
+	if (m_charfunc)
+	{
+		m_charfunc(key);
 	}
 }
