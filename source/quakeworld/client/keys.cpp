@@ -737,15 +737,29 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 }
 
-void Key_CharEvent(int ch)
+void Key_CharEvent(int key)
 {
-	if (in_keyCatchers & KEYCATCH_MESSAGE)
+	// the console key should never be used as a char
+	if (key == '`' || key == '~')
 	{
-		Field_CharEventCommon(&chatField, ch, String::Length(chatField.buffer));
+		return;
 	}
-	else if (in_keyCatchers & KEYCATCH_CONSOLE)
+
+	// distribute the key down event to the apropriate handler
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Field_CharEventCommon(&g_consoleField, ch, String::Length(g_consoleField.buffer));
+		Field_CharEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
+	}
+	else if (in_keyCatchers & KEYCATCH_UI)
+	{
+	}
+	else if (in_keyCatchers & KEYCATCH_MESSAGE)
+	{
+		Field_CharEventCommon(&chatField, key, String::Length(chatField.buffer));
+	}
+	else if (cls.state == CA_DISCONNECTED)
+	{
+		Field_CharEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
 	}
 }
 
