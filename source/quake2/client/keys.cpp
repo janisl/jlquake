@@ -275,20 +275,8 @@ void Key_Console(int key)
 		return;
 	}
 
-	if (key < 32 || key > 127)
-	{
-		return;	// non printable
-
-	}
 	int len = String::Length(g_consoleField.buffer);
-	if (len < MAX_EDIT_LINE - 1)
-	{
-		g_consoleField.buffer[len] = key;
-		len++;
-		g_consoleField.buffer[len] = 0;
-		g_consoleField.cursor++;
-	}
-
+	Field_CharEventCommon(&g_consoleField, key, len);
 }
 
 //============================================================================
@@ -325,11 +313,6 @@ void Key_Message(int key)
 		return;
 	}
 
-	if (key < 32 || key > 127)
-	{
-		return;	// non printable
-
-	}
 	if (key == K_BACKSPACE)
 	{
 		if (chatField.cursor)
@@ -340,13 +323,7 @@ void Key_Message(int key)
 		return;
 	}
 
-	if (chatField.cursor == sizeof(chatField.buffer) - 1)
-	{
-		return;	// all full
-
-	}
-	chatField.buffer[chatField.cursor++] = key;
-	chatField.buffer[chatField.cursor] = 0;
+	Field_CharEventCommon(&chatField, key, String::Length(chatField.buffer));
 }
 
 //============================================================================

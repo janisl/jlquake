@@ -39,6 +39,7 @@ extern viddef_t viddef;					// global video state
 extern vec4_t g_color_table[32];
 
 extern field_t chatField;
+extern bool key_overstrikeMode;
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
@@ -67,3 +68,5 @@ void SCR_InitCommon();
 void SCR_EndLoadingPlaque();
 void SCR_DebugGraph(float value, int color);
 void SCR_DrawDebugGraph();
+
+void Field_CharEventCommon(field_t* edit, int ch, int len);
