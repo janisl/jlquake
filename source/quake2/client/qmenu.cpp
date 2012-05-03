@@ -96,15 +96,15 @@ void Field_Draw(menufield_s* f)
 		Menu_DrawStringR2LDark(f->generic.x + f->generic.parent->x + LCOLUMN_OFFSET, f->generic.y + f->generic.parent->y, f->generic.name);
 	}
 
-	String::NCpy(tempbuffer, f->buffer + f->visible_offset, f->visible_length);
+	String::NCpy(tempbuffer, f->field.buffer + f->field.scroll, f->field.widthInChars);
 
 	Draw_Char(f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y - 4, 18);
 	Draw_Char(f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y + 4, 24);
 
-	Draw_Char(f->generic.x + f->generic.parent->x + 24 + f->visible_length * 8, f->generic.y + f->generic.parent->y - 4, 20);
-	Draw_Char(f->generic.x + f->generic.parent->x + 24 + f->visible_length * 8, f->generic.y + f->generic.parent->y + 4, 26);
+	Draw_Char(f->generic.x + f->generic.parent->x + 24 + f->field.widthInChars * 8, f->generic.y + f->generic.parent->y - 4, 20);
+	Draw_Char(f->generic.x + f->generic.parent->x + 24 + f->field.widthInChars * 8, f->generic.y + f->generic.parent->y + 4, 26);
 
-	for (i = 0; i < f->visible_length; i++)
+	for (i = 0; i < f->field.widthInChars; i++)
 	{
 		Draw_Char(f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y - 4, 19);
 		Draw_Char(f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y + 4, 25);
@@ -116,13 +116,13 @@ void Field_Draw(menufield_s* f)
 	{
 		int offset;
 
-		if (f->visible_offset)
+		if (f->field.scroll)
 		{
-			offset = f->visible_length;
+			offset = f->field.widthInChars;
 		}
 		else
 		{
-			offset = f->cursor;
+			offset = f->field.cursor;
 		}
 
 		if (((int)(Sys_Milliseconds_() / 250)) & 1)
@@ -210,12 +210,12 @@ qboolean Field_Key(menufield_s* f, int key)
 		{
 			strtok(cbd, "\n\r\b");
 
-			String::NCpy(f->buffer, cbd, f->length - 1);
-			f->cursor = String::Length(f->buffer);
-			f->visible_offset = f->cursor - f->visible_length;
-			if (f->visible_offset < 0)
+			String::NCpy(f->field.buffer, cbd, f->length - 1);
+			f->field.cursor = String::Length(f->field.buffer);
+			f->field.scroll = f->field.cursor - f->field.widthInChars;
+			if (f->field.scroll < 0)
 			{
-				f->visible_offset = 0;
+				f->field.scroll = 0;
 			}
 
 			delete[] cbd;
@@ -228,21 +228,21 @@ qboolean Field_Key(menufield_s* f, int key)
 	case K_KP_LEFTARROW:
 	case K_LEFTARROW:
 	case K_BACKSPACE:
-		if (f->cursor > 0)
+		if (f->field.cursor > 0)
 		{
-			memmove(&f->buffer[f->cursor - 1], &f->buffer[f->cursor], String::Length(&f->buffer[f->cursor]) + 1);
-			f->cursor--;
+			memmove(&f->field.buffer[f->field.cursor - 1], &f->field.buffer[f->field.cursor], String::Length(&f->field.buffer[f->field.cursor]) + 1);
+			f->field.cursor--;
 
-			if (f->visible_offset)
+			if (f->field.scroll)
 			{
-				f->visible_offset--;
+				f->field.scroll--;
 			}
 		}
 		break;
 
 	case K_KP_DEL:
 	case K_DEL:
-		memmove(&f->buffer[f->cursor], &f->buffer[f->cursor + 1], String::Length(&f->buffer[f->cursor + 1]) + 1);
+		memmove(&f->field.buffer[f->field.cursor], &f->field.buffer[f->field.cursor + 1], String::Length(&f->field.buffer[f->field.cursor + 1]) + 1);
 		break;
 
 	case K_KP_ENTER:
@@ -258,14 +258,14 @@ qboolean Field_Key(menufield_s* f, int key)
 			return false;
 		}
 
-		if (f->cursor < f->length)
+		if (f->field.cursor < f->length)
 		{
-			f->buffer[f->cursor++] = key;
-			f->buffer[f->cursor] = 0;
+			f->field.buffer[f->field.cursor++] = key;
+			f->field.buffer[f->field.cursor] = 0;
 
-			if (f->cursor > f->visible_length)
+			if (f->field.cursor > f->field.widthInChars)
 			{
-				f->visible_offset++;
+				f->field.scroll++;
 			}
 		}
 	}

@@ -70,11 +70,8 @@ typedef struct
 {
 	menucommon_s generic;
 
-	char buffer[80];
-	int cursor;
+	field_t field;
 	int length;
-	int visible_length;
-	int visible_offset;
 } menufield_s;
 
 typedef struct

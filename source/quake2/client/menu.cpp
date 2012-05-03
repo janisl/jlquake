@@ -2640,9 +2640,9 @@ void RulesChangeFunc(void* self)
 	else if (s_rules_box.curvalue == 1)		// coop				// PGM
 	{
 		s_maxclients_field.generic.statusbar = "4 maximum for cooperative";
-		if (String::Atoi(s_maxclients_field.buffer) > 4)
+		if (String::Atoi(s_maxclients_field.field.buffer) > 4)
 		{
-			String::Cpy(s_maxclients_field.buffer, "4");
+			String::Cpy(s_maxclients_field.field.buffer, "4");
 		}
 		s_startserver_dmoptions_action.generic.statusbar = "N/A for cooperative";
 	}
@@ -2678,14 +2678,14 @@ void StartServerActionFunc(void* self)
 
 	String::Cpy(startmap, strchr(mapnames[s_startmap_list.curvalue], '\n') + 1);
 
-	maxclients  = String::Atoi(s_maxclients_field.buffer);
-	timelimit   = String::Atoi(s_timelimit_field.buffer);
-	fraglimit   = String::Atoi(s_fraglimit_field.buffer);
+	maxclients  = String::Atoi(s_maxclients_field.field.buffer);
+	timelimit   = String::Atoi(s_timelimit_field.field.buffer);
+	fraglimit   = String::Atoi(s_fraglimit_field.field.buffer);
 
 	Cvar_SetValueLatched("maxclients", ClampCvar(0, maxclients, maxclients));
 	Cvar_SetValueLatched("timelimit", ClampCvar(0, timelimit, timelimit));
 	Cvar_SetValueLatched("fraglimit", ClampCvar(0, fraglimit, fraglimit));
-	Cvar_SetLatched("hostname", s_hostname_field.buffer);
+	Cvar_SetLatched("hostname", s_hostname_field.field.buffer);
 //	Cvar_SetValueLatched("deathmatch", !s_rules_box.curvalue );
 //	Cvar_SetValueLatched("coop", s_rules_box.curvalue );
 
@@ -2878,8 +2878,8 @@ void StartServer_MenuInit(void)
 	s_timelimit_field.generic.y = 36;
 	s_timelimit_field.generic.statusbar = "0 = no limit";
 	s_timelimit_field.length = 3;
-	s_timelimit_field.visible_length = 3;
-	String::Cpy(s_timelimit_field.buffer, Cvar_VariableString("timelimit"));
+	s_timelimit_field.field.widthInChars = 3;
+	String::Cpy(s_timelimit_field.field.buffer, Cvar_VariableString("timelimit"));
 
 	s_fraglimit_field.generic.type = MTYPE_FIELD;
 	s_fraglimit_field.generic.name = "frag limit";
@@ -2888,8 +2888,8 @@ void StartServer_MenuInit(void)
 	s_fraglimit_field.generic.y = 54;
 	s_fraglimit_field.generic.statusbar = "0 = no limit";
 	s_fraglimit_field.length = 3;
-	s_fraglimit_field.visible_length = 3;
-	String::Cpy(s_fraglimit_field.buffer, Cvar_VariableString("fraglimit"));
+	s_fraglimit_field.field.widthInChars = 3;
+	String::Cpy(s_fraglimit_field.field.buffer, Cvar_VariableString("fraglimit"));
 
 	/*
 	** maxclients determines the maximum number of players that can join
@@ -2904,14 +2904,14 @@ void StartServer_MenuInit(void)
 	s_maxclients_field.generic.y    = 72;
 	s_maxclients_field.generic.statusbar = NULL;
 	s_maxclients_field.length = 3;
-	s_maxclients_field.visible_length = 3;
+	s_maxclients_field.field.widthInChars = 3;
 	if (Cvar_VariableValue("maxclients") == 1)
 	{
-		String::Cpy(s_maxclients_field.buffer, "8");
+		String::Cpy(s_maxclients_field.field.buffer, "8");
 	}
 	else
 	{
-		String::Cpy(s_maxclients_field.buffer, Cvar_VariableString("maxclients"));
+		String::Cpy(s_maxclients_field.field.buffer, Cvar_VariableString("maxclients"));
 	}
 
 	s_hostname_field.generic.type = MTYPE_FIELD;
@@ -2921,8 +2921,8 @@ void StartServer_MenuInit(void)
 	s_hostname_field.generic.y  = 90;
 	s_hostname_field.generic.statusbar = NULL;
 	s_hostname_field.length = 12;
-	s_hostname_field.visible_length = 12;
-	String::Cpy(s_hostname_field.buffer, Cvar_VariableString("hostname"));
+	s_hostname_field.field.widthInChars = 12;
+	String::Cpy(s_hostname_field.field.buffer, Cvar_VariableString("hostname"));
 
 	s_startserver_dmoptions_action.generic.type = MTYPE_ACTION;
 	s_startserver_dmoptions_action.generic.name = " deathmatch flags";
@@ -3579,11 +3579,11 @@ void AddressBook_MenuInit(void)
 		s_addressbook_fields[i].generic.x       = 0;
 		s_addressbook_fields[i].generic.y       = i * 18 + 0;
 		s_addressbook_fields[i].generic.localdata[0] = i;
-		s_addressbook_fields[i].cursor          = 0;
+		s_addressbook_fields[i].field.cursor          = 0;
 		s_addressbook_fields[i].length          = 60;
-		s_addressbook_fields[i].visible_length  = 30;
+		s_addressbook_fields[i].field.widthInChars = 30;
 
-		String::Cpy(s_addressbook_fields[i].buffer, adr->string);
+		String::Cpy(s_addressbook_fields[i].field.buffer, adr->string);
 
 		Menu_AddItem(&s_addressbook_menu, &s_addressbook_fields[i]);
 	}
@@ -3599,7 +3599,7 @@ const char* AddressBook_MenuKey(int key)
 		for (index = 0; index < NUM_ADDRESSBOOK_ENTRIES; index++)
 		{
 			String::Sprintf(buffer, sizeof(buffer), "adr%d", index);
-			Cvar_SetLatched(buffer, s_addressbook_fields[index].buffer);
+			Cvar_SetLatched(buffer, s_addressbook_fields[index].field.buffer);
 		}
 	}
 	return Default_MenuKey(&s_addressbook_menu, key);
@@ -3982,9 +3982,9 @@ qboolean PlayerConfig_MenuInit(void)
 	s_player_name_field.generic.x       = 0;
 	s_player_name_field.generic.y       = 0;
 	s_player_name_field.length  = 20;
-	s_player_name_field.visible_length = 20;
-	String::Cpy(s_player_name_field.buffer, name->string);
-	s_player_name_field.cursor = String::Length(name->string);
+	s_player_name_field.field.widthInChars = 20;
+	String::Cpy(s_player_name_field.field.buffer, name->string);
+	s_player_name_field.field.cursor = String::Length(name->string);
 
 	s_player_model_title.generic.type = MTYPE_SEPARATOR;
 	s_player_model_title.generic.name = "model";
@@ -4147,7 +4147,7 @@ const char* PlayerConfig_MenuKey(int key)
 	{
 		char scratch[1024];
 
-		Cvar_SetLatched("name", s_player_name_field.buffer);
+		Cvar_SetLatched("name", s_player_name_field.field.buffer);
 
 		String::Sprintf(scratch, sizeof(scratch), "%s/%s",
 			s_pmi[s_player_model_box.curvalue].directory,
