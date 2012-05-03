@@ -271,6 +271,10 @@ qboolean Field_Key(menufield_s* f, int key)
 	return true;
 }
 
+void Field_Char(menufield_s* f, int key)
+{
+}
+
 void Menu_AddItem(menuframework_s* menu, void* item)
 {
 	if (menu->nitems == 0)

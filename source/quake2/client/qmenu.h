@@ -104,6 +104,7 @@ typedef struct
 } menuseparator_s;
 
 qboolean Field_Key(menufield_s* field, int key);
+void Field_Char(menufield_s* f, int key);
 
 void    Menu_AddItem(menuframework_s* menu, void* item);
 void    Menu_AdjustCursor(menuframework_s* menu, int dir);

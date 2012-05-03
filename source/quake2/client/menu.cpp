@@ -273,6 +273,22 @@ const char* Default_MenuKey(menuframework_s* m, int key)
 	return sound;
 }
 
+void Default_MenuChar(menuframework_s* m, int key)
+{
+	menucommon_s* item;
+
+	if (m)
+	{
+		if ((item = (menucommon_s*)Menu_ItemAtCursor(m)) != 0)
+		{
+			if (item->type == MTYPE_FIELD)
+			{
+				Field_Char((menufield_s*)item, key);
+			}
+		}
+	}
+}
+
 //=============================================================================
 
 /*
@@ -2984,10 +3000,15 @@ const char* StartServer_MenuKey(int key)
 	return Default_MenuKey(&s_startserver_menu, key);
 }
 
+static void StartServer_MenuChar(int key)
+{
+	Default_MenuChar(&s_startserver_menu, key);
+}
+
 void M_Menu_StartServer_f(void)
 {
 	StartServer_MenuInit();
-	M_PushMenu(StartServer_MenuDraw, StartServer_MenuKey, NULL);
+	M_PushMenu(StartServer_MenuDraw, StartServer_MenuKey, StartServer_MenuChar);
 }
 
 /*
@@ -3617,10 +3638,15 @@ void AddressBook_MenuDraw(void)
 	Menu_Draw(&s_addressbook_menu);
 }
 
+static void AddressBook_MenuChar(int key)
+{
+	Default_MenuChar(&s_addressbook_menu, key);
+}
+
 void M_Menu_AddressBook_f(void)
 {
 	AddressBook_MenuInit();
-	M_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey, NULL);
+	M_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey, AddressBook_MenuChar);
 }
 
 /*
@@ -4181,6 +4207,10 @@ const char* PlayerConfig_MenuKey(int key)
 	return Default_MenuKey(&s_player_config_menu, key);
 }
 
+static void PlayerConfig_MenuChar(int key)
+{
+	Default_MenuChar(&s_player_config_menu, key);
+}
 
 void M_Menu_PlayerConfig_f(void)
 {
@@ -4190,7 +4220,7 @@ void M_Menu_PlayerConfig_f(void)
 		return;
 	}
 	Menu_SetStatusBar(&s_multiplayer_menu, NULL);
-	M_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey, NULL);
+	M_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey, PlayerConfig_MenuChar);
 }
 
 
