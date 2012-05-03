@@ -47,6 +47,7 @@ void DrawAltString(int x, int y, const char* s)
 void Key_ClearTyping(void)
 {
 	g_consoleField.buffer[0] = 0;	// clear any typing
+	g_consoleField.cursor = 0;
 }
 
 /*

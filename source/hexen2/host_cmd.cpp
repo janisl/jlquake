@@ -1854,6 +1854,7 @@ void Host_Create_f(void)
 		{
 			sprintf(g_consoleField.buffer,"create %s",PR_GetString(func->s_name));
 			g_consoleField.buffer[Diff + 7] = 0;
+			g_consoleField.cursor = Diff + 7;
 			return;
 		}
 	}

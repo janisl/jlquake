@@ -42,6 +42,7 @@ void Con_ToggleConsole_f(void)
 		if (cls.state == CA_CONNECTED)
 		{
 			g_consoleField.buffer[0] = 0;	// clear any typing
+			g_consoleField.cursor = 0;
 		}
 		else
 		{
@@ -317,7 +318,7 @@ void Con_DrawInput(void)
 		Draw_Character((i + 1) << 3, con.vislines - 16, text[i]);
 
 // remove cursor
-	g_consoleField.buffer[key_linepos] = 0;
+	buffer[key_linepos] = 0;
 }
 
 

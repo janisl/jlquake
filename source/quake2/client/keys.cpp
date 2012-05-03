@@ -68,6 +68,7 @@ void CompleteCommand(void)
 		g_consoleField.buffer[key_linepos] = ' ';
 		key_linepos++;
 		g_consoleField.buffer[key_linepos] = 0;
+		g_consoleField.cursor = String::Length(g_consoleField.buffer);
 		return;
 	}
 }
@@ -149,6 +150,7 @@ void Key_Console(int key)
 			{
 				cbd[i] = 0;
 				String::Cat(g_consoleField.buffer, sizeof(g_consoleField.buffer), cbd);
+				g_consoleField.cursor = String::Length(g_consoleField.buffer);
 			}
 			delete[] cbd;
 		}
@@ -182,6 +184,7 @@ void Key_Console(int key)
 		nextHistoryLine++;
 		historyLine = nextHistoryLine;
 		g_consoleField.buffer[0] = 0;
+		g_consoleField.cursor = 0;
 		if (cls.state == CA_DISCONNECTED)
 		{
 			SCR_UpdateScreen();		// force an update, because the command
@@ -202,6 +205,7 @@ void Key_Console(int key)
 		if (len > 0)
 		{
 			g_consoleField.buffer[len - 1] = 0;
+			g_consoleField.cursor--;
 		}
 		return;
 	}
@@ -219,6 +223,7 @@ void Key_Console(int key)
 			historyLine = 0;
 		}
 		g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
+		g_consoleField.cursor = String::Length(g_consoleField.buffer);
 		return;
 	}
 
@@ -242,6 +247,7 @@ void Key_Console(int key)
 		{
 			g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
 		}
+		g_consoleField.cursor = String::Length(g_consoleField.buffer);
 		return;
 	}
 
@@ -280,6 +286,7 @@ void Key_Console(int key)
 		g_consoleField.buffer[len] = key;
 		len++;
 		g_consoleField.buffer[len] = 0;
+		g_consoleField.cursor++;
 	}
 
 }

@@ -23,6 +23,7 @@ void Con_ToggleConsole_f(void)
 		if (cls.state == CA_CONNECTED)
 		{
 			g_consoleField.buffer[0] = 0;	// clear any typing
+			g_consoleField.cursor = 0;
 		}
 		else
 		{
