@@ -95,9 +95,10 @@ void Field_CharEvent(field_t* edit, int ch)
 		return;
 	}
 
+	int maxLen = edit->maxLength ? edit->maxLength : MAX_EDIT_LINE - 1;
 	if (key_overstrikeMode)
 	{
-		if (edit->cursor == MAX_EDIT_LINE - 1)
+		if (edit->cursor == maxLen)
 		{
 			return;
 		}
@@ -106,7 +107,7 @@ void Field_CharEvent(field_t* edit, int ch)
 	}
 	else		// insert mode
 	{
-		if (len == MAX_EDIT_LINE - 1)
+		if (len == maxLen)
 		{
 			return;	// all full
 		}

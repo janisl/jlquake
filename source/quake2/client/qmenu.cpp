@@ -142,102 +142,22 @@ void Field_Draw(menufield_s* f)
 
 qboolean Field_Key(menufield_s* f, int key)
 {
-	switch (key)
-	{
-	case K_KP_SLASH:
-		key = '/';
-		break;
-	case K_KP_MINUS:
-		key = '-';
-		break;
-	case K_KP_PLUS:
-		key = '+';
-		break;
-	case K_KP_HOME:
-		key = '7';
-		break;
-	case K_KP_UPARROW:
-		key = '8';
-		break;
-	case K_KP_PGUP:
-		key = '9';
-		break;
-	case K_KP_LEFTARROW:
-		key = '4';
-		break;
-	case K_KP_5:
-		key = '5';
-		break;
-	case K_KP_RIGHTARROW:
-		key = '6';
-		break;
-	case K_KP_END:
-		key = '1';
-		break;
-	case K_KP_DOWNARROW:
-		key = '2';
-		break;
-	case K_KP_PGDN:
-		key = '3';
-		break;
-	case K_KP_INS:
-		key = '0';
-		break;
-	case K_KP_DEL:
-		key = '.';
-		break;
-	}
-
 	if (key > 127)
 	{
-		switch (key)
-		{
-		case K_DEL:
-		default:
-			return false;
-		}
+		return false;
 	}
 
 	/*
 	** support pasting from the clipboard
 	*/
-	if ((String::ToUpper(key) == 'V' && keys[K_CTRL].down) ||
-		(((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down))
+	if (((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down)
 	{
-		char* cbd;
-
-		if ((cbd = Sys_GetClipboardData()) != 0)
-		{
-			String::NCpy(f->field.buffer, cbd, f->field.maxLength - 1);
-			f->field.cursor = String::Length(f->field.buffer);
-			f->field.scroll = f->field.cursor - f->field.widthInChars;
-			if (f->field.scroll < 0)
-			{
-				f->field.scroll = 0;
-			}
-
-			delete[] cbd;
-		}
+		Field_Paste(&f->field);
 		return true;
 	}
 
 	switch (key)
 	{
-	case K_KP_LEFTARROW:
-	case K_LEFTARROW:
-	case K_BACKSPACE:
-		if (f->field.cursor > 0)
-		{
-			memmove(&f->field.buffer[f->field.cursor - 1], &f->field.buffer[f->field.cursor], String::Length(&f->field.buffer[f->field.cursor]) + 1);
-			f->field.cursor--;
-
-			if (f->field.scroll)
-			{
-				f->field.scroll--;
-			}
-		}
-		break;
-
 	case K_KP_DEL:
 	case K_DEL:
 		memmove(&f->field.buffer[f->field.cursor], &f->field.buffer[f->field.cursor + 1], String::Length(&f->field.buffer[f->field.cursor + 1]) + 1);
@@ -248,24 +168,6 @@ qboolean Field_Key(menufield_s* f, int key)
 	case K_ESCAPE:
 	case K_TAB:
 		return false;
-
-	case K_SPACE:
-	default:
-		if (!String::IsDigit(key) && (f->generic.flags & QMF_NUMBERSONLY))
-		{
-			return false;
-		}
-
-		if (f->field.cursor < f->field.maxLength)
-		{
-			f->field.buffer[f->field.cursor++] = key;
-			f->field.buffer[f->field.cursor] = 0;
-
-			if (f->field.cursor > f->field.widthInChars)
-			{
-				f->field.scroll++;
-			}
-		}
 	}
 
 	return true;
@@ -273,6 +175,11 @@ qboolean Field_Key(menufield_s* f, int key)
 
 void Field_Char(menufield_s* f, int key)
 {
+	if ((f->generic.flags & QMF_NUMBERSONLY) && key >= 32 && !String::IsDigit(key))
+	{
+		return;
+	}
+	Field_CharEvent(&f->field, key);
 }
 
 void Menu_AddItem(menuframework_s* menu, void* item)
