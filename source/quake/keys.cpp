@@ -35,7 +35,6 @@ char* keybindings[256];
 qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
 int keyshift[256];			// key to map to if shift held down in console
-int key_repeats[256];		// if > 1, it is autorepeating
 
 /*
 ==============================================================================
@@ -488,7 +487,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 
 	if (!down)
 	{
-		key_repeats[key] = 0;
+		keys[key].repeats = 0;
 	}
 
 	key_lastpress = key;
@@ -501,8 +500,8 @@ void Key_Event(int key, qboolean down, unsigned time)
 // update auto-repeat status
 	if (down)
 	{
-		key_repeats[key]++;
-		if (key != K_BACKSPACE && key != K_PAUSE && key_repeats[key] > 1)
+		keys[key].repeats++;
+		if (key != K_BACKSPACE && key != K_PAUSE && keys[key].repeats > 1)
 		{
 			return;	// ignore most autorepeats
 		}
@@ -664,7 +663,7 @@ void Key_ClearStates(void)
 	for (i = 0; i < 256; i++)
 	{
 		keys[i].down = false;
-		key_repeats[i] = 0;
+		keys[i].repeats = 0;
 	}
 }
 
