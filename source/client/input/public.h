@@ -45,7 +45,7 @@ struct keyname_t
 
 struct qkey_t
 {
-	qboolean down;
+	bool down;
 	int repeats;				// if > 1, it is autorepeating
 	char* binding;
 	int hash;

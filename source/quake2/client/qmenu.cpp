@@ -142,8 +142,6 @@ void Field_Draw(menufield_s* f)
 
 qboolean Field_Key(menufield_s* f, int key)
 {
-	extern int keydown[];
-
 	switch (key)
 	{
 	case K_KP_SLASH:
@@ -203,8 +201,8 @@ qboolean Field_Key(menufield_s* f, int key)
 	/*
 	** support pasting from the clipboard
 	*/
-	if ((String::ToUpper(key) == 'V' && keydown[K_CTRL]) ||
-		(((key == K_INS) || (key == K_KP_INS)) && keydown[K_SHIFT]))
+	if ((String::ToUpper(key) == 'V' && keys[K_CTRL].down) ||
+		(((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down))
 	{
 		char* cbd;
 

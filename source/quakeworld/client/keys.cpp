@@ -38,7 +38,6 @@ qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
 int keyshift[256];			// key to map to if shift held down in console
 int key_repeats[256];		// if > 1, it is autorepeating
-qboolean keydown[256];
 
 /*
 ==============================================================================
@@ -549,7 +548,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 
 //	Con_Printf ("%i : %i\n", key, down); //@@@
 
-	keydown[key] = down;
+	keys[key].down = down;
 
 	if (!down)
 	{
@@ -732,7 +731,7 @@ void Key_ClearStates(void)
 
 	for (i = 0; i < 256; i++)
 	{
-		keydown[i] = false;
+		keys[i].down = false;
 		key_repeats[i] = false;
 	}
 }

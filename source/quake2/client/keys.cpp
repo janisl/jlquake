@@ -34,7 +34,6 @@ qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
 int keyshift[256];			// key to map to if shift held down in console
 int key_repeats[256];		// if > 1, it is autorepeating
-qboolean keydown[256];
 
 /*
 ==============================================================================
@@ -129,7 +128,7 @@ void Key_Console(int key)
 		break;
 	}
 
-	if (((key == K_INS) || (key == K_KP_INS)) && keydown[K_SHIFT])
+	if (((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down)
 	{
 		Field_Paste(&g_consoleField);
 		return;
@@ -137,7 +136,7 @@ void Key_Console(int key)
 
 	if (key == 'l')
 	{
-		if (keydown[K_CTRL])
+		if (keys[K_CTRL].down)
 		{
 			Cbuf_AddText("clear\n");
 			return;
@@ -177,7 +176,7 @@ void Key_Console(int key)
 	}
 
 	if ((key == K_UPARROW) || (key == K_KP_UPARROW) ||
-		((key == 'p') && keydown[K_CTRL]))
+		((key == 'p') && keys[K_CTRL].down))
 	{
 		do
 		{
@@ -194,7 +193,7 @@ void Key_Console(int key)
 	}
 
 	if ((key == K_DOWNARROW) || (key == K_KP_DOWNARROW) ||
-		((key == 'n') && keydown[K_CTRL]))
+		((key == 'n') && keys[K_CTRL].down))
 	{
 		if (historyLine == nextHistoryLine)
 		{
@@ -686,7 +685,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 
 	// track if any key is down for Q2BUTTON_ANY
-	keydown[key] = down;
+	keys[key].down = down;
 	if (down)
 	{
 		if (key_repeats[key] == 1)
@@ -817,11 +816,11 @@ void Key_ClearStates(void)
 
 	for (i = 0; i < 256; i++)
 	{
-		if (keydown[i] || key_repeats[i])
+		if (keys[i].down || key_repeats[i])
 		{
 			Key_Event(i, false, 0);
 		}
-		keydown[i] = 0;
+		keys[i].down = 0;
 		key_repeats[i] = 0;
 	}
 }
