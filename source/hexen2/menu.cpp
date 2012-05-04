@@ -1532,8 +1532,8 @@ void M_MultiPlayer_Key(int key)
 int setup_cursor = 5;
 int setup_cursor_table[] = {40, 56, 80, 104, 128, 156};
 
-char setup_hostname[16];
-char setup_myname[16];
+field_t setup_hostname;
+field_t setup_myname;
 int setup_oldtop;
 int setup_oldbottom;
 int setup_top;
@@ -1546,8 +1546,14 @@ void M_Menu_Setup_f(void)
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
 	m_entersound = true;
-	String::Cpy(setup_myname, clqh_name->string);
-	String::Cpy(setup_hostname, hostname->string);
+	String::Cpy(setup_myname.buffer, clqh_name->string);
+	setup_myname.cursor = String::Length(setup_myname.buffer);
+	setup_myname.maxLength = 15;
+	setup_myname.widthInChars = 15;
+	String::Cpy(setup_hostname.buffer, hostname->string);
+	setup_hostname.cursor = String::Length(setup_hostname.buffer);
+	setup_hostname.maxLength = 15;
+	setup_hostname.widthInChars = 15;
 	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
 	setup_class = cl_playerclass->value;
@@ -1566,11 +1572,11 @@ void M_Setup_Draw(void)
 
 	M_Print(64, 40, "Hostname");
 	M_DrawTextBox(160, 32, 16, 1);
-	M_Print(168, 40, setup_hostname);
+	M_Print(168, 40, setup_hostname.buffer);
 
 	M_Print(64, 56, "Your name");
 	M_DrawTextBox(160, 48, 16, 1);
-	M_Print(168, 56, setup_myname);
+	M_Print(168, 56, setup_myname.buffer);
 
 	M_Print(64, 80, "Current Class: ");
 	M_Print(88, 88, ClassNames[setup_class - 1]);
@@ -1590,20 +1596,18 @@ void M_Setup_Draw(void)
 
 	if (setup_cursor == 0)
 	{
-		M_DrawCharacter(168 + 8 * String::Length(setup_hostname), setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
+		M_DrawCharacter(168 + 8 * setup_hostname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
 	}
 
 	if (setup_cursor == 1)
 	{
-		M_DrawCharacter(168 + 8 * String::Length(setup_myname), setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
+		M_DrawCharacter(168 + 8 * setup_myname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
 	}
 }
 
 
 void M_Setup_Key(int k)
 {
-	int l;
-
 	switch (k)
 	{
 	case K_ESCAPE:
@@ -1687,13 +1691,13 @@ forward:
 			goto forward;
 		}
 
-		if (String::Cmp(clqh_name->string, setup_myname) != 0)
+		if (String::Cmp(clqh_name->string, setup_myname.buffer) != 0)
 		{
-			Cbuf_AddText(va("name \"%s\"\n", setup_myname));
+			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
 		}
-		if (String::Cmp(hostname->string, setup_hostname) != 0)
+		if (String::Cmp(hostname->string, setup_hostname.buffer) != 0)
 		{
-			Cvar_Set("hostname", setup_hostname);
+			Cvar_Set("hostname", setup_hostname.buffer);
 		}
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 		{
@@ -1703,48 +1707,6 @@ forward:
 		m_entersound = true;
 		M_Menu_MultiPlayer_f();
 		break;
-
-	case K_BACKSPACE:
-		if (setup_cursor == 0)
-		{
-			if (String::Length(setup_hostname))
-			{
-				setup_hostname[String::Length(setup_hostname) - 1] = 0;
-			}
-		}
-
-		if (setup_cursor == 1)
-		{
-			if (String::Length(setup_myname))
-			{
-				setup_myname[String::Length(setup_myname) - 1] = 0;
-			}
-		}
-		break;
-
-	default:
-		if (k < 32 || k > 127)
-		{
-			break;
-		}
-		if (setup_cursor == 0)
-		{
-			l = String::Length(setup_hostname);
-			if (l < 15)
-			{
-				setup_hostname[l + 1] = 0;
-				setup_hostname[l] = k;
-			}
-		}
-		if (setup_cursor == 1)
-		{
-			l = String::Length(setup_myname);
-			if (l < 15)
-			{
-				setup_myname[l + 1] = 0;
-				setup_myname[l] = k;
-			}
-		}
 	}
 
 	if (setup_top > 10)
@@ -1762,6 +1724,18 @@ forward:
 	if (setup_bottom < 0)
 	{
 		setup_bottom = 10;
+	}
+}
+
+void M_Setup_Char(int k)
+{
+	if (setup_cursor == 0)
+	{
+		Field_CharEvent(&setup_hostname, k);
+	}
+	if (setup_cursor == 1)
+	{
+		Field_CharEvent(&setup_myname, k);
 	}
 }
 
@@ -3106,8 +3080,8 @@ int lanConfig_cursor_table [] = {80, 100, 120, 152};
 #define NUM_LANCONFIG_CMDS  4
 
 int lanConfig_port;
-char lanConfig_portname[6];
-char lanConfig_joinname[30];
+field_t lanConfig_portname;
+field_t lanConfig_joinname;
 
 void M_Menu_LanConfig_f(void)
 {
@@ -3130,7 +3104,13 @@ void M_Menu_LanConfig_f(void)
 		lanConfig_cursor = 1;
 	}
 	lanConfig_port = DEFAULTnet_hostport;
-	sprintf(lanConfig_portname, "%u", lanConfig_port);
+	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
+	lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
+	lanConfig_portname.maxLength = 5;
+	lanConfig_portname.widthInChars = 5;
+	Field_Clear(&lanConfig_joinname);
+	lanConfig_joinname.maxLength = 29;
+	lanConfig_joinname.widthInChars = 29;
 
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
@@ -3167,7 +3147,7 @@ void M_LanConfig_Draw(void)
 
 	M_Print(basex, lanConfig_cursor_table[0], "Port");
 	M_DrawTextBox(basex + 8 * 8, lanConfig_cursor_table[0] - 8, 6, 1);
-	M_Print(basex + 9 * 8, lanConfig_cursor_table[0], lanConfig_portname);
+	M_Print(basex + 9 * 8, lanConfig_cursor_table[0], lanConfig_portname.buffer);
 
 	if (JoiningGame)
 	{
@@ -3177,7 +3157,7 @@ void M_LanConfig_Draw(void)
 		M_Print(basex, lanConfig_cursor_table[2], "Search for local games...");
 		M_Print(basex, 136, "Join game at:");
 		M_DrawTextBox(basex, lanConfig_cursor_table[3] - 8, 30, 1);
-		M_Print(basex + 8, lanConfig_cursor_table[3], lanConfig_joinname);
+		M_Print(basex + 8, lanConfig_cursor_table[3], lanConfig_joinname.buffer);
 	}
 	else
 	{
@@ -3189,12 +3169,12 @@ void M_LanConfig_Draw(void)
 
 	if (lanConfig_cursor == 0)
 	{
-		M_DrawCharacter(basex + 9 * 8 + 8 * String::Length(lanConfig_portname), lanConfig_cursor_table [0], 10 + ((int)(realtime * 4) & 1));
+		M_DrawCharacter(basex + 9 * 8 + 8 * lanConfig_portname.cursor, lanConfig_cursor_table [0], 10 + ((int)(realtime * 4) & 1));
 	}
 
 	if (lanConfig_cursor == 3)
 	{
-		M_DrawCharacter(basex + 8 + 8 * String::Length(lanConfig_joinname), lanConfig_cursor_table [3], 10 + ((int)(realtime * 4) & 1));
+		M_DrawCharacter(basex + 8 + 8 * lanConfig_joinname.cursor, lanConfig_cursor_table [3], 10 + ((int)(realtime * 4) & 1));
 	}
 
 	if (*m_return_reason)
@@ -3276,27 +3256,8 @@ void M_LanConfig_Key(int key)
 			m_return_onerror = true;
 			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
-			Cbuf_AddText(va("connect \"%s\"\n", lanConfig_joinname));
+			Cbuf_AddText(va("connect \"%s\"\n", lanConfig_joinname.buffer));
 			break;
-		}
-
-		break;
-
-	case K_BACKSPACE:
-		if (lanConfig_cursor == 0)
-		{
-			if (String::Length(lanConfig_portname))
-			{
-				lanConfig_portname[String::Length(lanConfig_portname) - 1] = 0;
-			}
-		}
-
-		if (lanConfig_cursor == 3)
-		{
-			if (String::Length(lanConfig_joinname))
-			{
-				lanConfig_joinname[String::Length(lanConfig_joinname) - 1] = 0;
-			}
 		}
 		break;
 
@@ -3327,36 +3288,6 @@ void M_LanConfig_Key(int key)
 			setup_class = 0;
 		}
 		break;
-
-	default:
-		if (key < 32 || key > 127)
-		{
-			break;
-		}
-
-		if (lanConfig_cursor == 3)
-		{
-			l = String::Length(lanConfig_joinname);
-			if (l < 29)
-			{
-				lanConfig_joinname[l + 1] = 0;
-				lanConfig_joinname[l] = key;
-			}
-		}
-
-		if (key < '0' || key > '9')
-		{
-			break;
-		}
-		if (lanConfig_cursor == 0)
-		{
-			l = String::Length(lanConfig_portname);
-			if (l < 5)
-			{
-				lanConfig_portname[l + 1] = 0;
-				lanConfig_portname[l] = key;
-			}
-		}
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)
@@ -3371,7 +3302,7 @@ void M_LanConfig_Key(int key)
 		}
 	}
 
-	l =  String::Atoi(lanConfig_portname);
+	l =  String::Atoi(lanConfig_portname.buffer);
 	if (l > 65535)
 	{
 		l = lanConfig_port;
@@ -3380,7 +3311,27 @@ void M_LanConfig_Key(int key)
 	{
 		lanConfig_port = l;
 	}
-	sprintf(lanConfig_portname, "%u", lanConfig_port);
+	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
+	if (lanConfig_portname.cursor > String::Length(lanConfig_portname.buffer))
+	{
+		lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
+	}
+}
+
+void M_LanConfig_Char(int key)
+{
+	if (lanConfig_cursor == 0)
+	{
+		if (key >= 32 && (key < '0' || key > '9'))
+		{
+			return;
+		}
+		Field_CharEvent(&lanConfig_portname, key);
+	}
+	if (lanConfig_cursor == 3)
+	{
+		Field_CharEvent(&lanConfig_joinname, key);
+	}
 }
 
 //=============================================================================
@@ -4366,6 +4317,17 @@ void M_Keydown(int key)
 
 void M_CharEvent(int key)
 {
+	switch (m_state)
+	{
+	case m_setup:
+		M_Setup_Char(key);
+		break;
+	case m_lanconfig:
+		M_LanConfig_Char(key);
+		break;
+	default:
+		break;
+	}
 }
 
 void M_ConfigureNetSubsystem(void)

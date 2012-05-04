@@ -2224,7 +2224,7 @@ void M_MultiPlayer_Key(int key)
 
 #define MAX_HOST_NAMES 10
 #define MAX_HOST_SIZE 80
-char save_names[MAX_HOST_NAMES][MAX_HOST_SIZE];
+field_t save_names[MAX_HOST_NAMES];
 
 Cvar* hostname1;
 Cvar* hostname2;
@@ -2265,22 +2265,27 @@ void M_Menu_Connect_f(void)
 
 	message = NULL;
 
-	String::Cpy(save_names[0],hostname1->string);
-	String::Cpy(save_names[1],hostname2->string);
-	String::Cpy(save_names[2],hostname3->string);
-	String::Cpy(save_names[3],hostname4->string);
-	String::Cpy(save_names[4],hostname5->string);
-	String::Cpy(save_names[5],hostname6->string);
-	String::Cpy(save_names[6],hostname7->string);
-	String::Cpy(save_names[7],hostname8->string);
-	String::Cpy(save_names[8],hostname9->string);
-	String::Cpy(save_names[9],hostname10->string);
+	String::Cpy(save_names[0].buffer,hostname1->string);
+	String::Cpy(save_names[1].buffer,hostname2->string);
+	String::Cpy(save_names[2].buffer,hostname3->string);
+	String::Cpy(save_names[3].buffer,hostname4->string);
+	String::Cpy(save_names[4].buffer,hostname5->string);
+	String::Cpy(save_names[5].buffer,hostname6->string);
+	String::Cpy(save_names[6].buffer,hostname7->string);
+	String::Cpy(save_names[7].buffer,hostname8->string);
+	String::Cpy(save_names[8].buffer,hostname9->string);
+	String::Cpy(save_names[9].buffer,hostname10->string);
+	for (int i = 0; i < MAX_HOST_NAMES; i++)
+	{
+		save_names[i].cursor = String::Length(save_names[i].buffer);
+		save_names[i].maxLength = 80;
+		save_names[i].widthInChars = 33;
+	}
 }
 
 void M_Connect_Draw(void)
 {
-	int length;
-	int i,y;
+	int y;
 	char temp[MAX_HOST_SIZE];
 
 	ScrollTitle("gfx/menu/title4.lmp");
@@ -2289,22 +2294,14 @@ void M_Connect_Draw(void)
 	{
 		M_DrawTextBox(16, 48, 34, 1);
 
-		String::Cpy(temp,save_names[connect_cursor]);
-		length = String::Length(temp);
-		if (length > 33)
-		{
-			i = length - 33;
-		}
-		else
-		{
-			i = 0;
-		}
-		M_Print(24, 56, &temp[i]);
-		M_DrawCharacter(24 + 8 * (length - i), 56, 10 + ((int)(realtime * 4) & 1));
+		String::Cpy(temp, &save_names[connect_cursor].buffer[save_names[connect_cursor].scroll]);
+		temp[33] = 0;
+		M_Print(24, 56, temp);
+		M_DrawCharacter(24 + 8 * (save_names[connect_cursor].cursor - save_names[connect_cursor].scroll), 56, 10 + ((int)(realtime * 4) & 1));
 	}
 
 	y = 72;
-	for (i = 0; i < MAX_HOST_NAMES; i++,y += 8)
+	for (int i = 0; i < MAX_HOST_NAMES; i++,y += 8)
 	{
 		sprintf(temp,"%d.",i + 1);
 		if (i == connect_cursor)
@@ -2316,7 +2313,7 @@ void M_Connect_Draw(void)
 			M_PrintWhite(24,y,temp);
 		}
 
-		String::Cpy(temp,save_names[i]);
+		String::Cpy(temp,save_names[i].buffer);
 		temp[30] = 0;
 		if (i == connect_cursor)
 		{
@@ -2335,8 +2332,6 @@ void M_Connect_Draw(void)
 
 void M_Connect_Key(int k)
 {
-	int l;
-
 	switch (k)
 	{
 	case K_ESCAPE:
@@ -2362,22 +2357,22 @@ void M_Connect_Key(int k)
 		break;
 
 	case K_ENTER:
-		Cvar_Set("host1",save_names[0]);
-		Cvar_Set("host2",save_names[1]);
-		Cvar_Set("host3",save_names[2]);
-		Cvar_Set("host4",save_names[3]);
-		Cvar_Set("host5",save_names[4]);
-		Cvar_Set("host6",save_names[5]);
-		Cvar_Set("host7",save_names[6]);
-		Cvar_Set("host8",save_names[7]);
-		Cvar_Set("host9",save_names[8]);
-		Cvar_Set("host10",save_names[9]);
+		Cvar_Set("host1",save_names[0].buffer);
+		Cvar_Set("host2",save_names[1].buffer);
+		Cvar_Set("host3",save_names[2].buffer);
+		Cvar_Set("host4",save_names[3].buffer);
+		Cvar_Set("host5",save_names[4].buffer);
+		Cvar_Set("host6",save_names[5].buffer);
+		Cvar_Set("host7",save_names[6].buffer);
+		Cvar_Set("host8",save_names[7].buffer);
+		Cvar_Set("host9",save_names[8].buffer);
+		Cvar_Set("host10",save_names[9].buffer);
 
 		if (connect_cursor < MAX_HOST_NAMES)
 		{
 			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
-			Cbuf_AddText(va("connect %s\n", save_names[connect_cursor]));
+			Cbuf_AddText(va("connect %s\n", save_names[connect_cursor].buffer));
 		}
 		else
 		{
@@ -2385,35 +2380,16 @@ void M_Connect_Key(int k)
 			M_Menu_MultiPlayer_f();
 		}
 		break;
-
-	case K_BACKSPACE:
-		if (connect_cursor < MAX_HOST_NAMES)
-		{
-			l = String::Length(save_names[connect_cursor]);
-			if (l)
-			{
-				save_names[connect_cursor][l - 1] = 0;
-			}
-		}
-		break;
-
-	default:
-		if (k < 32 || k > 127)
-		{
-			break;
-		}
-		if (connect_cursor < MAX_HOST_NAMES)
-		{
-			l = String::Length(save_names[connect_cursor]);
-			if (l < MAX_HOST_SIZE - 1)
-			{
-				save_names[connect_cursor][l + 1] = 0;
-				save_names[connect_cursor][l] = k;
-			}
-		}
 	}
 }
 
+void M_Connect_Char(int k)
+{
+	if (connect_cursor < MAX_HOST_NAMES)
+	{
+		Field_CharEvent(&save_names[connect_cursor], k);
+	}
+}
 
 //=============================================================================
 /* SETUP MENU */
@@ -2421,7 +2397,7 @@ void M_Connect_Key(int k)
 int setup_cursor = 6;
 int setup_cursor_table[] = {40, 56, 72, 88, 112, 136, 164};
 
-char setup_myname[16];
+field_t setup_myname;
 int setup_oldtop;
 int setup_oldbottom;
 int setup_top;
@@ -2439,7 +2415,10 @@ void M_Menu_Setup_f(void)
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
 	m_entersound = true;
-	String::Cpy(setup_myname, name->string);
+	String::Cpy(setup_myname.buffer, name->string);
+	setup_myname.cursor = String::Length(setup_myname.buffer);
+	setup_myname.maxLength = 15;
+	setup_myname.widthInChars = 15;
 	setup_top = setup_oldtop = (int)topcolor->value;
 	setup_bottom = setup_oldbottom = (int)bottomcolor->value;
 
@@ -2488,7 +2467,7 @@ void M_Setup_Draw(void)
 
 	M_Print(64, 56, "Your name");
 	M_DrawTextBox(160, 48, 16, 1);
-	M_PrintWhite(168, 56, setup_myname);
+	M_PrintWhite(168, 56, setup_myname.buffer);
 
 	M_Print(64, 72, "Spectator: ");
 	if (spectator->value)
@@ -2587,15 +2566,13 @@ void M_Setup_Draw(void)
 
 	if (setup_cursor == 1)
 	{
-		M_DrawCharacter(168 + 8 * String::Length(setup_myname), setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
+		M_DrawCharacter(168 + 8 * setup_myname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
 	}
 }
 
 
 void M_Setup_Key(int k)
 {
-	int l;
-
 	switch (k)
 	{
 	case K_ESCAPE:
@@ -2708,9 +2685,9 @@ forward:
 			goto forward;
 		}
 
-		if (String::Cmp(name->string, setup_myname) != 0)
+		if (String::Cmp(name->string, setup_myname.buffer) != 0)
 		{
-			Cbuf_AddText(va("name \"%s\"\n", setup_myname));
+			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
 		}
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 		{
@@ -2720,34 +2697,6 @@ forward:
 		m_entersound = true;
 		M_Menu_MultiPlayer_f();
 		break;
-
-	case K_BACKSPACE:
-		if (setup_cursor == 1)
-		{
-			if (String::Length(setup_myname))
-			{
-				setup_myname[String::Length(setup_myname) - 1] = 0;
-			}
-		}
-		break;
-
-	default:
-		if (k < 32 || k > 127)
-		{
-			break;
-		}
-		if (setup_cursor == 0)
-		{
-		}
-		if (setup_cursor == 1)
-		{
-			l = String::Length(setup_myname);
-			if (l < 15)
-			{
-				setup_myname[l + 1] = 0;
-				setup_myname[l] = k;
-			}
-		}
 	}
 
 	if (setup_top > 10)
@@ -2765,6 +2714,14 @@ forward:
 	if (setup_bottom < 0)
 	{
 		setup_bottom = 10;
+	}
+}
+
+void M_Setup_Char(int k)
+{
+	if (setup_cursor == 1)
+	{
+		Field_CharEvent(&setup_myname, k);
 	}
 }
 
@@ -2996,4 +2953,15 @@ void M_Keydown(int key)
 
 void M_CharEvent(int key)
 {
+	switch (m_state)
+	{
+	case m_setup:
+		M_Setup_Char(key);
+		break;
+	case m_mconnect:
+		M_Connect_Char(key);
+		break;
+	default:
+		break;
+	}
 }
