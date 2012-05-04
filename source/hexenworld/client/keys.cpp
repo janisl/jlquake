@@ -197,6 +197,7 @@ void Key_Console(int key)
 		Con_Bottom();
 		return;
 	}
+	Field_KeyDownEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
 }
 
 //============================================================================
@@ -232,6 +233,7 @@ void Key_Message(int key)
 		chatField.buffer[0] = 0;
 		return;
 	}
+	Field_KeyDownEventCommon(&chatField, key, String::Length(chatField.buffer));
 }
 
 //============================================================================

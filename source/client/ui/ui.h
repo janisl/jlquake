@@ -70,4 +70,5 @@ void SCR_DebugGraph(float value, int color);
 void SCR_DrawDebugGraph();
 
 void Field_Paste(field_t* edit);
+bool Field_KeyDownEventCommon(field_t* edit, int key, int len);
 void Field_CharEvent(field_t* edit, int ch);

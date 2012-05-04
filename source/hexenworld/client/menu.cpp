@@ -2381,6 +2381,10 @@ void M_Connect_Key(int k)
 		}
 		break;
 	}
+	if (connect_cursor < MAX_HOST_NAMES)
+	{
+		Field_KeyDownEventCommon(&save_names[connect_cursor], k, String::Length(save_names[connect_cursor].buffer));
+	}
 }
 
 void M_Connect_Char(int k)
@@ -2697,6 +2701,10 @@ forward:
 		m_entersound = true;
 		M_Menu_MultiPlayer_f();
 		break;
+	}
+	if (setup_cursor == 1)
+	{
+		Field_KeyDownEventCommon(&setup_myname, k, String::Length(setup_myname.buffer));
 	}
 
 	if (setup_top > 10)

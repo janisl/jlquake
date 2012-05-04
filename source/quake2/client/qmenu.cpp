@@ -142,6 +142,10 @@ void Field_Draw(menufield_s* f)
 
 qboolean Field_Key(menufield_s* f, int key)
 {
+	if (Field_KeyDownEventCommon(&f->field, key, String::Length(f->field.buffer)))
+	{
+		return true;
+	}
 	if (key > 127)
 	{
 		return false;

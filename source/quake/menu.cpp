@@ -865,6 +865,14 @@ forward:
 		M_Menu_MultiPlayer_f();
 		break;
 	}
+	if (setup_cursor == 0)
+	{
+		Field_KeyDownEventCommon(&setup_hostname, k, String::Length(setup_hostname.buffer));
+	}
+	if (setup_cursor == 1)
+	{
+		Field_KeyDownEventCommon(&setup_myname, k, String::Length(setup_myname.buffer));
+	}
 
 	if (setup_top > 13)
 	{
@@ -1923,6 +1931,14 @@ void M_LanConfig_Key(int key)
 		}
 
 		break;
+	}
+	if (lanConfig_cursor == 0)
+	{
+		Field_KeyDownEventCommon(&lanConfig_portname, key, String::Length(lanConfig_portname.buffer));
+	}
+	if (lanConfig_cursor == 2)
+	{
+		Field_KeyDownEventCommon(&lanConfig_joinname, key, String::Length(lanConfig_joinname.buffer));
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)

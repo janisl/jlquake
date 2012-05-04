@@ -42,6 +42,14 @@ void Field_Paste(field_t* edit)
 	delete[] cbd;
 }
 
+//	Performs the basic line editing functions for the console,
+// in-game talk, and menu fields
+//	Key events are used for non-printable characters, others are gotten from char events.
+bool Field_KeyDownEventCommon(field_t* edit, int key, int len)
+{
+	return false;
+}
+
 void Field_CharEvent(field_t* edit, int ch)
 {
 	if (ch == 'v' - 'a' + 1)		// ctrl-v is paste

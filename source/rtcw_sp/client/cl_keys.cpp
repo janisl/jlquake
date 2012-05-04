@@ -742,6 +742,7 @@ void Field_KeyDownEvent(field_t* edit, int key)
 		key_overstrikeMode = !key_overstrikeMode;
 		return;
 	}
+	Field_KeyDownEventCommon(edit, key, len);
 }
 
 /*
