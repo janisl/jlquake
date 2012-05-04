@@ -79,59 +79,6 @@ Interactive line editing and console scrollback
 */
 void Key_Console(int key)
 {
-
-	switch (key)
-	{
-	case K_KP_SLASH:
-		key = '/';
-		break;
-	case K_KP_MINUS:
-		key = '-';
-		break;
-	case K_KP_PLUS:
-		key = '+';
-		break;
-	case K_KP_HOME:
-		key = '7';
-		break;
-	case K_KP_UPARROW:
-		key = '8';
-		break;
-	case K_KP_PGUP:
-		key = '9';
-		break;
-	case K_KP_LEFTARROW:
-		key = '4';
-		break;
-	case K_KP_5:
-		key = '5';
-		break;
-	case K_KP_RIGHTARROW:
-		key = '6';
-		break;
-	case K_KP_END:
-		key = '1';
-		break;
-	case K_KP_DOWNARROW:
-		key = '2';
-		break;
-	case K_KP_PGDN:
-		key = '3';
-		break;
-	case K_KP_INS:
-		key = '0';
-		break;
-	case K_KP_DEL:
-		key = '.';
-		break;
-	}
-
-	if (((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down)
-	{
-		Field_Paste(&g_consoleField);
-		return;
-	}
-
 	if (key == 'l')
 	{
 		if (keys[K_CTRL].down)
@@ -237,7 +184,7 @@ void Key_Console(int key)
 		Con_Bottom();
 		return;
 	}
-	Field_KeyDownEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
+	Field_KeyDownEvent(&g_consoleField, key);
 }
 
 //============================================================================
@@ -273,7 +220,7 @@ void Key_Message(int key)
 		chatField.buffer[0] = 0;
 		return;
 	}
-	Field_KeyDownEventCommon(&chatField, key, String::Length(chatField.buffer));
+	Field_KeyDownEvent(&chatField, key);
 }
 
 //============================================================================
@@ -538,6 +485,7 @@ void Key_Init(void)
 	consolekeys[K_SHIFT] = true;
 	consolekeys[K_INS] = true;
 	consolekeys[K_KP_INS] = true;
+	consolekeys[K_DEL] = true;
 	consolekeys[K_KP_DEL] = true;
 	consolekeys[K_KP_SLASH] = true;
 	consolekeys[K_KP_PLUS] = true;

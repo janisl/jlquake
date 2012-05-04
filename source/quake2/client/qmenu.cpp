@@ -142,39 +142,7 @@ void Field_Draw(menufield_s* f)
 
 qboolean Field_Key(menufield_s* f, int key)
 {
-	if (Field_KeyDownEventCommon(&f->field, key, String::Length(f->field.buffer)))
-	{
-		return true;
-	}
-	if (key > 127)
-	{
-		return false;
-	}
-
-	/*
-	** support pasting from the clipboard
-	*/
-	if (((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down)
-	{
-		Field_Paste(&f->field);
-		return true;
-	}
-
-	switch (key)
-	{
-	case K_KP_DEL:
-	case K_DEL:
-		memmove(&f->field.buffer[f->field.cursor], &f->field.buffer[f->field.cursor + 1], String::Length(&f->field.buffer[f->field.cursor + 1]) + 1);
-		break;
-
-	case K_KP_ENTER:
-	case K_ENTER:
-	case K_ESCAPE:
-	case K_TAB:
-		return false;
-	}
-
-	return true;
+	return Field_KeyDownEvent(&f->field, key);
 }
 
 void Field_Char(menufield_s* f, int key)

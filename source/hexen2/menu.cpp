@@ -1635,7 +1635,7 @@ void M_Setup_Key(int k)
 	case K_LEFTARROW:
 		if (setup_cursor < 2)
 		{
-			return;
+			break;
 		}
 		S_StartLocalSound("raven/menu3.wav");
 		if (setup_cursor == 2)
@@ -1658,7 +1658,7 @@ void M_Setup_Key(int k)
 	case K_RIGHTARROW:
 		if (setup_cursor < 2)
 		{
-			return;
+			break;
 		}
 forward:
 		S_StartLocalSound("raven/menu3.wav");
@@ -1710,11 +1710,11 @@ forward:
 	}
 	if (setup_cursor == 0)
 	{
-		Field_KeyDownEventCommon(&setup_hostname, k, String::Length(setup_hostname.buffer));
+		Field_KeyDownEvent(&setup_hostname, k);
 	}
 	if (setup_cursor == 1)
 	{
-		Field_KeyDownEventCommon(&setup_myname, k, String::Length(setup_myname.buffer));
+		Field_KeyDownEvent(&setup_myname, k);
 	}
 
 	if (setup_top > 10)
@@ -3299,11 +3299,11 @@ void M_LanConfig_Key(int key)
 	}
 	if (lanConfig_cursor == 0)
 	{
-		Field_KeyDownEventCommon(&lanConfig_portname, key, String::Length(lanConfig_portname.buffer));
+		Field_KeyDownEvent(&lanConfig_portname, key);
 	}
 	if (lanConfig_cursor == 3)
 	{
-		Field_KeyDownEventCommon(&lanConfig_joinname, key, String::Length(lanConfig_joinname.buffer));
+		Field_KeyDownEvent(&lanConfig_joinname, key);
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)

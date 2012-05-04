@@ -197,7 +197,7 @@ void Key_Console(int key)
 		Con_Bottom();
 		return;
 	}
-	Field_KeyDownEventCommon(&g_consoleField, key, String::Length(g_consoleField.buffer));
+	Field_KeyDownEvent(&g_consoleField, key);
 }
 
 //============================================================================
@@ -233,7 +233,7 @@ void Key_Message(int key)
 		chatField.buffer[0] = 0;
 		return;
 	}
-	Field_KeyDownEventCommon(&chatField, key, String::Length(chatField.buffer));
+	Field_KeyDownEvent(&chatField, key);
 }
 
 //============================================================================
@@ -468,6 +468,10 @@ void Key_Init(void)
 	consolekeys[K_END] = true;
 	consolekeys[K_PGUP] = true;
 	consolekeys[K_PGDN] = true;
+	consolekeys[K_INS] = true;
+	consolekeys[K_KP_INS] = true;
+	consolekeys[K_DEL] = true;
+	consolekeys[K_KP_DEL] = true;
 	consolekeys[K_SHIFT] = true;
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;

@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 
-void Field_KeyDownEvent(field_t* edit, int key);
 void Field_Draw(field_t* edit, int x, int y, int width, qboolean showCursor);
 void Field_BigDraw(field_t* edit, int x, int y, int width, qboolean showCursor);
 

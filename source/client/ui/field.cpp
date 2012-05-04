@@ -20,7 +20,7 @@ field_t chatField;
 
 bool key_overstrikeMode;
 
-void Field_Paste(field_t* edit)
+static void Field_Paste(field_t* edit)
 {
 	char* cbd;
 	int pasteLen, i;
@@ -45,8 +45,71 @@ void Field_Paste(field_t* edit)
 //	Performs the basic line editing functions for the console,
 // in-game talk, and menu fields
 //	Key events are used for non-printable characters, others are gotten from char events.
-bool Field_KeyDownEventCommon(field_t* edit, int key, int len)
+bool Field_KeyDownEvent(field_t* edit, int key)
 {
+	// shift-insert is paste
+	if (((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down)
+	{
+		Field_Paste(edit);
+		return true;
+	}
+
+	int len = String::Length(edit->buffer);
+
+	if (key == K_DEL || key == K_KP_DEL)
+	{
+		if (edit->cursor < len)
+		{
+			memmove(edit->buffer + edit->cursor,
+				edit->buffer + edit->cursor + 1, len - edit->cursor);
+		}
+		return true;
+	}
+
+	if (key == K_RIGHTARROW || key == K_KP_RIGHTARROW)
+	{
+		if (edit->cursor < len)
+		{
+			edit->cursor++;
+		}
+
+		if (edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len)
+		{
+			edit->scroll++;
+		}
+		return true;
+	}
+
+	if (key == K_LEFTARROW || key == K_KP_LEFTARROW)
+	{
+		if (edit->cursor > 0)
+		{
+			edit->cursor--;
+		}
+		if (edit->cursor < edit->scroll)
+		{
+			edit->scroll--;
+		}
+		return true;
+	}
+
+	if (key == K_HOME || key == K_KP_HOME || (String::ToLower(key) == 'a' && keys[K_CTRL].down))
+	{
+		edit->cursor = 0;
+		return true;
+	}
+
+	if (key == K_END || key == K_KP_END || (String::ToLower(key) == 'e' && keys[K_CTRL].down))
+	{
+		edit->cursor = len;
+		return true;
+	}
+
+	if (key == K_INS)
+	{
+		key_overstrikeMode = !key_overstrikeMode;
+		return true;
+	}
 	return false;
 }
 
