@@ -27,7 +27,7 @@ void DrawString(int x, int y, const char* s)
 {
 	while (*s)
 	{
-		Draw_Char(x, y, *s);
+		UI_DrawChar(x, y, *s);
 		x += 8;
 		s++;
 	}
@@ -37,7 +37,7 @@ void DrawAltString(int x, int y, const char* s)
 {
 	while (*s)
 	{
-		Draw_Char(x, y, *s ^ 0x80);
+		UI_DrawChar(x, y, *s ^ 0x80);
 		x += 8;
 		s++;
 	}
@@ -338,7 +338,7 @@ void Con_DrawInput(void)
 	y = con.vislines - 16;
 
 	for (i = 0; i < con.linewidth; i++)
-		Draw_Char((i + 1) << 3, con.vislines - 22, text[i]);
+		UI_DrawChar((i + 1) << 3, con.vislines - 22, text[i]);
 
 // remove cursor
 	buffer[key_linepos] = 0;
@@ -381,7 +381,7 @@ void Con_DrawNotify(void)
 		text = con.text + (i % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++)
-			Draw_Char((x + 1) << 3, v, text[x] & 0xff);
+			UI_DrawChar((x + 1) << 3, v, text[x] & 0xff);
 
 		v += 8;
 	}
@@ -408,10 +408,10 @@ void Con_DrawNotify(void)
 		x = 0;
 		while (s[x])
 		{
-			Draw_Char((x + skip) << 3, v, s[x]);
+			UI_DrawChar((x + skip) << 3, v, s[x]);
 			x++;
 		}
-		Draw_Char((x + skip) << 3, v, 10 + ((cls.realtime >> 8) & 1));
+		UI_DrawChar((x + skip) << 3, v, 10 + ((cls.realtime >> 8) & 1));
 		v += 8;
 	}
 }
@@ -448,7 +448,7 @@ void Con_DrawConsole(float frac)
 
 	String::Sprintf(version, sizeof(version), "v%4.2f", VERSION);
 	for (x = 0; x < 5; x++)
-		Draw_Char(viddef.width - 44 + x * 8, lines - 12, 128 + version[x]);
+		UI_DrawChar(viddef.width - 44 + x * 8, lines - 12, 128 + version[x]);
 
 // draw the text
 	con.vislines = lines;
@@ -468,7 +468,7 @@ void Con_DrawConsole(float frac)
 	{
 		// draw arrows to show the buffer is backscrolled
 		for (x = 0; x < con.linewidth; x += 4)
-			Draw_Char((x + 1) << 3, y, '^');
+			UI_DrawChar((x + 1) << 3, y, '^');
 
 		y -= 8;
 		rows--;
@@ -489,7 +489,7 @@ void Con_DrawConsole(float frac)
 		short* text = con.text + (row % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++)
-			Draw_Char((x + 1) << 3, y, text[x] & 0xff);
+			UI_DrawChar((x + 1) << 3, y, text[x] & 0xff);
 	}
 
 //ZOID
@@ -551,7 +551,7 @@ void Con_DrawConsole(float frac)
 		// draw it
 		y = con.vislines - 12;
 		for (i = 0; i < String::Length(dlbar); i++)
-			Draw_Char((i + 1) << 3, y, dlbar[i]);
+			UI_DrawChar((i + 1) << 3, y, dlbar[i]);
 	}
 //ZOID
 

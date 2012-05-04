@@ -168,7 +168,7 @@ Draws one solid graphics character
 */
 void M_DrawCharacter(int cx, int line, int num)
 {
-	Draw_Character(cx + ((viddef.width - 320) >> 1), line, num);
+	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line, num);
 }
 
 void M_Print(int cx, int cy, const char* str)
@@ -183,7 +183,7 @@ void M_Print(int cx, int cy, const char* str)
 
 void M_DrawCharacter2(int cx, int line, int num)
 {
-	Draw_Character(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
+	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
 }
 
 void M_Print2(int cx, int cy, const char* str)
@@ -481,7 +481,7 @@ void M_BuildBigCharWidth(void)
 
 /*
 ================
-Draw_Character
+UI_DrawChar
 
 Draws one 8*8 graphics character with 0 being transparent.
 It can be clipped to the top of the screen to allow the console to be

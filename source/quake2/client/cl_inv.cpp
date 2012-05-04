@@ -44,7 +44,7 @@ void Inv_DrawString(int x, int y, const char* string)
 {
 	while (*string)
 	{
-		Draw_Char(x, y, *string);
+		UI_DrawChar(x, y, *string);
 		x += 8;
 		string++;
 	}
@@ -136,7 +136,7 @@ void CL_DrawInventory(void)
 		{
 			if ((int)(cls.realtime * 10) & 1)
 			{
-				Draw_Char(x - 8, y, 15);
+				UI_DrawChar(x - 8, y, 15);
 			}
 		}
 		Inv_DrawString(x, y, string);

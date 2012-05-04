@@ -1212,11 +1212,11 @@ void Sbar_DeathmatchOverlay(void)
 				Sbar_DrawRedString(x + 160, y, "6");
 				if (s->siege_team == 1)
 				{
-					Draw_Character(x + 152, y, 143);//shield
+					UI_DrawChar(x + 152, y, 143);//shield
 				}
 				else if (s->siege_team == 2)
 				{
-					Draw_Character(x + 152, y, 144);//sword
+					UI_DrawChar(x + 152, y, 144);//sword
 				}
 				else
 				{
@@ -1225,7 +1225,7 @@ void Sbar_DeathmatchOverlay(void)
 				}
 				if (k == cl_keyholder)
 				{
-					Draw_Character(x + 144, y, 145);//key
+					UI_DrawChar(x + 144, y, 145);//key
 				}
 				else
 				{
@@ -1234,7 +1234,7 @@ void Sbar_DeathmatchOverlay(void)
 
 				if (k == cl_doc)
 				{
-					Draw_Character(x + 160, y, 130);//crown
+					UI_DrawChar(x + 160, y, 130);//crown
 				}
 				else
 				{
@@ -1272,17 +1272,17 @@ void Sbar_DeathmatchOverlay(void)
 			f = s->frags;
 			sprintf(num, "%3i",f);
 
-			Draw_Character(x + 10, y - 1, num[0]);	//was 8
-			Draw_Character(x + 18, y - 1, num[1]);	//was 16
-			Draw_Character(x + 26, y - 1, num[2]);	//was 24
+			UI_DrawChar(x + 10, y - 1, num[0]);	//was 8
+			UI_DrawChar(x + 18, y - 1, num[1]);	//was 16
+			UI_DrawChar(x + 26, y - 1, num[2]);	//was 24
 
 			if (k == cl.playernum)
 			{
-				Draw_Character(x, y - 1, 13);
+				UI_DrawChar(x, y - 1, 13);
 			}
 
 //rjr			if(k==sv_kingofhill)
-//rjr				Draw_Character ( x+40 , y-1, 130);
+//rjr				UI_DrawChar ( x+40 , y-1, 130);
 			sprintf(num, "%4d",s->ping);
 			Draw_String(x + 48, y, num);
 
@@ -1461,7 +1461,7 @@ void DrawTime(int x, int y, int disp_time)
 	show_min = (show_min - show_sec) / 60;
 	sprintf(num, "%3d",show_min);
 	Sbar_DrawRedString(x + 8, y, num);
-//	Draw_Character ( x+32 , y, 58);// ":"
+//	UI_DrawChar ( x+32 , y, 58);// ":"
 	sprintf(num, "%2d",show_sec);
 	if (show_sec >= 10)
 	{
@@ -1529,8 +1529,8 @@ void Sbar_SmallDeathmatchOverlay(void)
 		}
 		y = viddef.height - BAR_TOP_HEIGHT - 24;
 		x -= 4;
-		Draw_Character(x, y, 142);	//sundial
-		Draw_Character(x + 32, y, 58);	// ":"
+		UI_DrawChar(x, y, 142);	//sundial
+		UI_DrawChar(x + 32, y, 58);	// ":"
 		if (cl_timelimit > cl.qh_serverTimeFloat + cl_server_time_offset)
 		{
 			DrawTime(x,y,(int)(cl_timelimit - (cl.qh_serverTimeFloat + cl_server_time_offset)));
@@ -1595,28 +1595,28 @@ void Sbar_SmallDeathmatchOverlay(void)
 			/*
 			        if (k != cl.playernum)
 			        {
-			            Draw_Character ( x+2 , y-1, num[0]);
-			            Draw_Character ( x+10 , y-1, num[1]);
-			            Draw_Character ( x+18 , y-1, num[2]);
+			            UI_DrawChar ( x+2 , y-1, num[0]);
+			            UI_DrawChar ( x+10 , y-1, num[1]);
+			            UI_DrawChar ( x+18 , y-1, num[2]);
 			        }
 			        else
 			        {
-			            Draw_Character ( x - 8, y-1, 13);
-			            Draw_Character ( x+2 , y-1, num[0] + 256);
-			            Draw_Character ( x+10 , y-1, num[1] + 256);
-			            Draw_Character ( x+18 , y-1, num[2] + 256);
+			            UI_DrawChar ( x - 8, y-1, 13);
+			            UI_DrawChar ( x+2 , y-1, num[0] + 256);
+			            UI_DrawChar ( x+10 , y-1, num[1] + 256);
+			            UI_DrawChar ( x+18 , y-1, num[2] + 256);
 			        }
 			*/
 
 			if (k == cl.playernum)
 			{
-				Draw_Character(x - 8, y - 1, 13);
+				UI_DrawChar(x - 8, y - 1, 13);
 			}
-			Draw_Character(x + 2, y - 1, num[0]);
-			Draw_Character(x + 10, y - 1, num[1]);
-			Draw_Character(x + 18, y - 1, num[2]);
+			UI_DrawChar(x + 2, y - 1, num[0]);
+			UI_DrawChar(x + 10, y - 1, num[1]);
+			UI_DrawChar(x + 18, y - 1, num[2]);
 			//rjr		if(k==sv_kingofhill)
-			//rjr			Draw_Character ( x+28 , y-1, 130);
+			//rjr			UI_DrawChar ( x+28 , y-1, 130);
 			y += 10;
 		}
 	}
@@ -1624,32 +1624,32 @@ void Sbar_SmallDeathmatchOverlay(void)
 	{
 		if (cl.playernum == cl_keyholder)
 		{
-			Draw_Character(x, y - 10, 145);	//key
+			UI_DrawChar(x, y - 10, 145);	//key
 		}
 		if (cl.playernum == cl_doc)
 		{
-			Draw_Character(x + 8, y - 10, 130);	//crown
+			UI_DrawChar(x + 8, y - 10, 130);	//crown
 		}
 		if ((int)cl.h2_v.artifact_active & HWARTFLAG_BOOTS)
 		{
-			Draw_Character(x + 16, y - 10, 146);//boots
+			UI_DrawChar(x + 16, y - 10, 146);//boots
 
 		}
 		//Print defender losses
-		Draw_Character(x, y + 10, 143);	//shield
+		UI_DrawChar(x, y + 10, 143);	//shield
 		sprintf(num, "%3i",defLosses);
 //		sprintf (num, "%3i",att_frags);
 		Sbar_DrawRedString(x + 8, y + 10, num);
-		Draw_Character(x + 32, y + 10, 47);	// "/"
+		UI_DrawChar(x + 32, y + 10, 47);	// "/"
 		sprintf(num, "%3i",cl_fraglimit);
 		Sbar_DrawRedString(x + 40, y + 10, num);
 
 		//Print attacker losses
-		Draw_Character(x, y + 20, 144);	//sword
+		UI_DrawChar(x, y + 20, 144);	//sword
 		sprintf(num, "%3i",attLosses);
 //		sprintf (num, "%3i",def_frags);
 		Sbar_DrawRedString(x + 8, y + 20, num);
-		Draw_Character(x + 32, y + 20, 47);	// "/"
+		UI_DrawChar(x + 32, y + 20, 47);	// "/"
 		sprintf(num, "%3i",cl_fraglimit * 2);
 		Sbar_DrawRedString(x + 40, y + 20, num);
 	}
@@ -2249,7 +2249,7 @@ static void Sbar_DrawTransPic(int x, int y, image_t* pic)
 
 /*static void Sbar_DrawCharacter(int x, int y, int num)
 {
-    Draw_Character(x+((viddef.width-320)>>1)+4,
+    UI_DrawChar(x+((viddef.width-320)>>1)+4,
         y+viddef.height-(int)BarHeight, num);
 }*/
 
@@ -2268,7 +2268,7 @@ void Sbar_DrawRedString(int cx, int cy, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character(cx, cy, ((unsigned char)(*str)) + 256);
+		UI_DrawChar(cx, cy, ((unsigned char)(*str)) + 256);
 		str++;
 		cx += 8;
 	}

@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 image_t* draw_backtile;
 
-image_t* char_texture;
-
 image_t* conback;
 
 /*
@@ -48,27 +46,6 @@ void Draw_Init(void)
 
 /*
 ================
-Draw_Character
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-void Draw_Character(int x, int y, int num)
-{
-	num &= 255;
-
-	if (num == 32)
-	{
-		return;		// space
-
-	}
-	UI_DrawChar(x, y, num, 8, 8, char_texture, 16, 16);
-}
-
-/*
-================
 Draw_String
 ================
 */
@@ -76,7 +53,7 @@ void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character(x, y, *str);
+		UI_DrawChar(x, y, *str);
 		str++;
 		x += 8;
 	}
@@ -91,7 +68,7 @@ void Draw_Alt_String(int x, int y, char* str)
 {
 	while (*str)
 	{
-		Draw_Character(x, y, (*str) | 0x80);
+		UI_DrawChar(x, y, (*str) | 0x80);
 		str++;
 		x += 8;
 	}

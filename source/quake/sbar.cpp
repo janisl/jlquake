@@ -288,11 +288,11 @@ void Sbar_DrawCharacter(int x, int y, int num)
 {
 	if (cl.qh_gametype == GAME_DEATHMATCH)
 	{
-		Draw_Character(x /*+ ((viddef.width - 320)>>1) */ + 4, y + viddef.height - SBAR_HEIGHT, num);
+		UI_DrawChar(x /*+ ((viddef.width - 320)>>1) */ + 4, y + viddef.height - SBAR_HEIGHT, num);
 	}
 	else
 	{
-		Draw_Character(x + ((viddef.width - 320) >> 1) + 4, y + viddef.height - SBAR_HEIGHT, num);
+		UI_DrawChar(x + ((viddef.width - 320) >> 1) + 4, y + viddef.height - SBAR_HEIGHT, num);
 	}
 }
 
@@ -1212,13 +1212,13 @@ void Sbar_DeathmatchOverlay(void)
 		f = s->frags;
 		sprintf(num, "%3i",f);
 
-		Draw_Character(x + 8, y, num[0]);
-		Draw_Character(x + 16, y, num[1]);
-		Draw_Character(x + 24, y, num[2]);
+		UI_DrawChar(x + 8, y, num[0]);
+		UI_DrawChar(x + 16, y, num[1]);
+		UI_DrawChar(x + 24, y, num[2]);
 
 		if (k == cl.viewentity - 1)
 		{
-			Draw_Character(x - 8, y, 12);
+			UI_DrawChar(x - 8, y, 12);
 		}
 
 #if 0
@@ -1326,14 +1326,14 @@ void Sbar_MiniDeathmatchOverlay(void)
 		f = s->frags;
 		sprintf(num, "%3i",f);
 
-		Draw_Character(x + 8, y, num[0]);
-		Draw_Character(x + 16, y, num[1]);
-		Draw_Character(x + 24, y, num[2]);
+		UI_DrawChar(x + 8, y, num[0]);
+		UI_DrawChar(x + 16, y, num[1]);
+		UI_DrawChar(x + 24, y, num[2]);
 
 		if (k == cl.viewentity - 1)
 		{
-			Draw_Character(x, y, 16);
-			Draw_Character(x + 32, y, 17);
+			UI_DrawChar(x, y, 16);
+			UI_DrawChar(x + 32, y, 17);
 		}
 
 #if 0

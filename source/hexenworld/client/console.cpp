@@ -265,7 +265,7 @@ void Con_DrawInput(void)
 	y = con.vislines - 22;
 
 	for (i = 0; i < con.linewidth; i++)
-		Draw_Character((i + 1) << 3, con.vislines - 22, text[i]);
+		UI_DrawChar((i + 1) << 3, con.vislines - 22, text[i]);
 
 // remove cursor
 	buffer[key_linepos] = 0;
@@ -307,7 +307,7 @@ void Con_DrawNotify(void)
 		text = con.text + (i % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++)
-			Draw_Character((x + 1) << 3, v, text[x]);
+			UI_DrawChar((x + 1) << 3, v, text[x]);
 
 		v += 8;
 	}
@@ -334,10 +334,10 @@ void Con_DrawNotify(void)
 		x = 0;
 		while (s[x])
 		{
-			Draw_Character((x + skip) << 3, v, s[x]);
+			UI_DrawChar((x + skip) << 3, v, s[x]);
 			x++;
 		}
-		Draw_Character((x + skip) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
+		UI_DrawChar((x + skip) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
 		v += 8;
 	}
 }
@@ -377,7 +377,7 @@ void Con_DrawConsole(int lines)
 	{
 		// draw arrows to show the buffer is backscrolled
 		for (x = 0; x < con.linewidth; x += 4)
-			Draw_Character((x + 1) << 3, y, '^');
+			UI_DrawChar((x + 1) << 3, y, '^');
 
 		y -= 8;
 		rows--;
@@ -398,7 +398,7 @@ void Con_DrawConsole(int lines)
 		short* text = con.text + (row % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++)
-			Draw_Character((x + 1) << 3, y, text[x]);
+			UI_DrawChar((x + 1) << 3, y, text[x]);
 	}
 
 	// draw the download bar
@@ -459,7 +459,7 @@ void Con_DrawConsole(int lines)
 		// draw it
 		y = con.vislines - 22 + 8;
 		for (i = 0; i < String::Length(dlbar); i++)
-			Draw_Character((i + 1) << 3, y, dlbar[i]);
+			UI_DrawChar((i + 1) << 3, y, dlbar[i]);
 	}
 
 

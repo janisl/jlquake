@@ -30,7 +30,6 @@ extern Cvar* crosshaircolor;
 
 image_t* draw_backtile;
 
-image_t* char_texture;
 image_t* cs_texture;	// crosshair texture
 
 image_t* conback;
@@ -56,27 +55,6 @@ void Draw_Init(void)
 
 /*
 ================
-Draw_Character
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-void Draw_Character(int x, int y, int num)
-{
-	num &= 255;
-
-	if (num == 32)
-	{
-		return;		// space
-
-	}
-	UI_DrawChar(x, y, num, 8, 8, char_texture, 16, 16);
-}
-
-/*
-================
 Draw_String
 ================
 */
@@ -84,7 +62,7 @@ void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character(x, y, *str);
+		UI_DrawChar(x, y, *str);
 		str++;
 		x += 8;
 	}
@@ -99,7 +77,7 @@ void Draw_Alt_String(int x, int y, char* str)
 {
 	while (*str)
 	{
-		Draw_Character(x, y, (*str) | 0x80);
+		UI_DrawChar(x, y, (*str) | 0x80);
 		str++;
 		x += 8;
 	}
@@ -120,7 +98,7 @@ void Draw_Crosshair(void)
 	}
 	else if (crosshair->value)
 	{
-		Draw_Character(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
+		UI_DrawChar(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
 	}
 }

@@ -58,8 +58,6 @@ Cvar* scr_debuggraph;
 char crosshair_pic[MAX_QPATH];
 int crosshair_width, crosshair_height;
 
-static image_t* draw_chars;
-
 void SCR_TimeRefresh_f(void);
 void SCR_Loading_f(void);
 
@@ -227,7 +225,7 @@ void SCR_DrawCenterString(void)
 		x = (viddef.width - l * 8) / 2;
 		for (j = 0; j < l; j++, x += 8)
 		{
-			Draw_Char(x, y, start[j]);
+			UI_DrawChar(x, y, start[j]);
 			if (!remaining--)
 			{
 				return;
@@ -747,7 +745,7 @@ void DrawHUDString(char* string, int x, int y, int centerwidth, int _xor)
 		}
 		for (i = 0; i < width; i++)
 		{
-			Draw_Char(x, y, line[i] ^ _xor);
+			UI_DrawChar(x, y, line[i] ^ _xor);
 			x += 8;
 		}
 		if (*string)
@@ -1335,26 +1333,5 @@ Draw_InitLocal
 */
 void Draw_InitLocal(void)
 {
-	draw_chars = R_LoadQuake2FontImage("pics/conchars.pcx");
-}
-
-/*
-================
-Draw_Char
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-void Draw_Char(int x, int y, int num)
-{
-	num &= 255;
-
-	if ((num & 127) == 32)
-	{
-		return;		// space
-
-	}
-	UI_DrawChar(x, y, num, 8, 8, draw_chars, 16, 16);
+	char_texture = R_LoadQuake2FontImage("pics/conchars.pcx");
 }

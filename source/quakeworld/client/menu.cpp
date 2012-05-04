@@ -107,7 +107,7 @@ Draws one solid graphics character
 */
 void M_DrawCharacter(int cx, int line, int num)
 {
-	Draw_Character(cx + ((viddef.width - 320) >> 1), line, num);
+	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line, num);
 }
 
 void M_Print(int cx, int cy, const char* str)

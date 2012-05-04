@@ -10,7 +10,6 @@
 
 image_t* draw_backtile;
 
-image_t* char_texture;
 image_t* char_smalltexture;
 image_t* char_menufonttexture;
 
@@ -34,27 +33,6 @@ void Draw_Init(void)
 
 /*
 ================
-Draw_Character
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-void Draw_Character(int x, int y, unsigned int num)
-{
-	num &= 511;
-
-	if (num == 32)
-	{
-		return;		// space
-
-	}
-	UI_DrawChar(x, y, num, 8, 8, char_texture, 32, 16);
-}
-
-/*
-================
 Draw_String
 ================
 */
@@ -62,7 +40,7 @@ void Draw_String(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character(x, y, *str);
+		UI_DrawChar(x, y, *str);
 		str++;
 		x += 8;
 	}
@@ -72,7 +50,7 @@ void Draw_RedString(int x, int y, const char* str)
 {
 	while (*str)
 	{
-		Draw_Character(x, y, ((unsigned char)(*str)) + 256);
+		UI_DrawChar(x, y, ((unsigned char)(*str)) + 256);
 		str++;
 		x += 8;
 	}
@@ -110,7 +88,7 @@ void Draw_SmallCharacter(int x, int y, int num)
 		return;
 	}
 
-	UI_DrawChar(x, y, num, 8, 8, char_smalltexture, 16, 4);
+	UI_DrawCharBase(x, y, num, 8, 8, char_smalltexture, 16, 4);
 }
 
 //==========================================================================
@@ -160,7 +138,7 @@ int M_DrawBigCharacter(int x, int y, int num, int numNext)
 		numNext -= 65;
 	}
 
-	UI_DrawChar(x, y, num, 20, 20, char_menufonttexture, 8, 4);
+	UI_DrawCharBase(x, y, num, 20, 20, char_menufonttexture, 8, 4);
 
 	if (numNext < 0 || numNext >= 27)
 	{

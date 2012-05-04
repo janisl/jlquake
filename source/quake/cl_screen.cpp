@@ -175,7 +175,7 @@ void SCR_DrawCenterString(void)
 		x = (viddef.width - l * 8) / 2;
 		for (j = 0; j < l; j++, x += 8)
 		{
-			Draw_Character(x, y, start[j]);
+			UI_DrawChar(x, y, start[j]);
 			if (!remaining--)
 			{
 				return;
@@ -695,7 +695,7 @@ void SCR_DrawNotifyString(void)
 			}
 		x = (viddef.width - l * 8) / 2;
 		for (j = 0; j < l; j++, x += 8)
-			Draw_Character(x, y, start[j]);
+			UI_DrawChar(x, y, start[j]);
 
 		y += 8;
 
@@ -870,7 +870,7 @@ void SCR_UpdateScreen(void)
 	{
 		if (crosshair->value)
 		{
-			Draw_Character(scr_vrect.x + scr_vrect.width / 2, scr_vrect.y + scr_vrect.height / 2, '+');
+			UI_DrawChar(scr_vrect.x + scr_vrect.width / 2, scr_vrect.y + scr_vrect.height / 2, '+');
 		}
 
 		SCR_DrawNet();

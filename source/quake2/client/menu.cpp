@@ -302,7 +302,7 @@ higher res screens.
 */
 void M_DrawCharacter(int cx, int cy, int num)
 {
-	Draw_Char(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), num);
+	UI_DrawChar(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), num);
 }
 
 void M_Print(int cx, int cy, const char* str)
@@ -734,11 +734,11 @@ static void KeyCursorDrawFunc(menuframework_s* menu)
 {
 	if (bind_grab)
 	{
-		Draw_Char(menu->x, menu->y + menu->cursor * 9, '=');
+		UI_DrawChar(menu->x, menu->y + menu->cursor * 9, '=');
 	}
 	else
 	{
-		Draw_Char(menu->x, menu->y + menu->cursor * 9, 12 + ((int)(Sys_Milliseconds_() / 250) & 1));
+		UI_DrawChar(menu->x, menu->y + menu->cursor * 9, 12 + ((int)(Sys_Milliseconds_() / 250) & 1));
 	}
 }
 
@@ -2020,11 +2020,11 @@ void M_Credits_MenuDraw(void)
 
 			if (bold)
 			{
-				Draw_Char(x, y, credits[i][j + stringoffset] + 128);
+				UI_DrawChar(x, y, credits[i][j + stringoffset] + 128);
 			}
 			else
 			{
-				Draw_Char(x, y, credits[i][j + stringoffset]);
+				UI_DrawChar(x, y, credits[i][j + stringoffset]);
 			}
 		}
 	}

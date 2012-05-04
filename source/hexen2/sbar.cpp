@@ -1054,15 +1054,15 @@ void Sbar_DeathmatchOverlay(void)
 
 		if (k == sv_kingofhill)
 		{
-			Draw_Character(x - 12, y - 1, 130);
+			UI_DrawChar(x - 12, y - 1, 130);
 		}
-		Draw_Character(x + 8, y - 1, num[0]);
-		Draw_Character(x + 16, y - 1, num[1]);
-		Draw_Character(x + 24, y - 1, num[2]);
+		UI_DrawChar(x + 8, y - 1, num[0]);
+		UI_DrawChar(x + 16, y - 1, num[1]);
+		UI_DrawChar(x + 24, y - 1, num[2]);
 
 		if (k == cl.viewentity - 1)
 		{
-			Draw_Character(x - 8, y - 1, 12);
+			UI_DrawChar(x - 8, y - 1, 12);
 		}
 
 		// draw name
@@ -1248,22 +1248,22 @@ void Sbar_SmallDeathmatchOverlay(void)
 
 		if (k != cl.viewentity - 1)
 		{
-			Draw_Character(x + 2, y - 1, num[0]);
-			Draw_Character(x + 10, y - 1, num[1]);
-			Draw_Character(x + 18, y - 1, num[2]);
+			UI_DrawChar(x + 2, y - 1, num[0]);
+			UI_DrawChar(x + 10, y - 1, num[1]);
+			UI_DrawChar(x + 18, y - 1, num[2]);
 			if (k == sv_kingofhill)
 			{
-				Draw_Character(x + 30, y - 1, 130);
+				UI_DrawChar(x + 30, y - 1, 130);
 			}
 		}
 		else
 		{
-			Draw_Character(x + 2, y - 1, num[0] + 256);
-			Draw_Character(x + 10, y - 1, num[1] + 256);
-			Draw_Character(x + 18, y - 1, num[2] + 256);
+			UI_DrawChar(x + 2, y - 1, num[0] + 256);
+			UI_DrawChar(x + 10, y - 1, num[1] + 256);
+			UI_DrawChar(x + 18, y - 1, num[2] + 256);
 			if (k == sv_kingofhill)
 			{
-				Draw_Character(x + 30, y - 1, 130);
+				UI_DrawChar(x + 30, y - 1, 130);
 			}
 		}
 
@@ -1796,7 +1796,7 @@ static void Sbar_DrawTransPic(int x, int y, image_t* pic)
 
 /*static void Sbar_DrawCharacter(int x, int y, int num)
 {
-    Draw_Character(x+((viddef.width-320)>>1)+4,
+    UI_DrawChar(x+((viddef.width-320)>>1)+4,
         y+viddef.height-(int)BarHeight, num);
 }*/
 

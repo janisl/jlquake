@@ -35,7 +35,7 @@ struct viddef_t
 };
 
 extern viddef_t viddef;					// global video state
-
+extern image_t* char_texture;
 extern vec4_t g_color_table[32];
 
 extern field_t chatField;
@@ -52,8 +52,9 @@ void UI_TileClear(int x, int y, int w, int h, image_t* pic);
 void UI_NamedTileClear(int x, int y, int w, int h, const char* name);
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a);
 void UI_FillPal(int x, int y, int w, int h, int c);
-void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
+void UI_DrawCharBase(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
 	int numberOfRows, float r = 1, float g = 1, float b = 1, float a = 1);
+void UI_DrawChar(int x, int y, int num, float r = 1, float g = 1, float b = 1, float a = 1);
 
 void SCR_FillRect(float x, float y, float width, float height, const float* color);
 void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader);

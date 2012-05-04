@@ -935,7 +935,7 @@ void Info_Plaque_Draw(const char* message)
 }
 void I_DrawCharacter(int cx, int line, int num)
 {
-	Draw_Character(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
+	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
 }
 
 void I_Print(int cx, int cy, char* str)
@@ -1242,7 +1242,7 @@ void SCR_UpdateScreen(void)
 	{
 		if (crosshair->value)
 		{
-			Draw_Character(scr_vrect.x + scr_vrect.width / 2, scr_vrect.y + scr_vrect.height / 2, '+');
+			UI_DrawChar(scr_vrect.x + scr_vrect.width / 2, scr_vrect.y + scr_vrect.height / 2, '+');
 		}
 
 		SCR_DrawNet();

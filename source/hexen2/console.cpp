@@ -301,7 +301,7 @@ void Con_DrawInput(void)
 	y = con.vislines - 16;
 
 	for (i = 0; i < con.linewidth; i++)
-		Draw_Character((i + 1) << 3, con.vislines - 16, text[i]);
+		UI_DrawChar((i + 1) << 3, con.vislines - 16, text[i]);
 
 // remove cursor
 	buffer[key_linepos] = 0;
@@ -341,7 +341,7 @@ void Con_DrawNotify(void)
 		text = con.text + (i % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++)
-			Draw_Character((x + 1) << 3, v, text[x]);
+			UI_DrawChar((x + 1) << 3, v, text[x]);
 
 		v += 8;
 	}
@@ -354,10 +354,10 @@ void Con_DrawNotify(void)
 		Draw_String(8, v, "say:");
 		while (chatField.buffer[x])
 		{
-			Draw_Character((x + 5) << 3, v, chatField.buffer[x]);
+			UI_DrawChar((x + 5) << 3, v, chatField.buffer[x]);
 			x++;
 		}
-		Draw_Character((x + 5) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
+		UI_DrawChar((x + 5) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
 		v += 8;
 	}
 }
@@ -401,7 +401,7 @@ void Con_DrawConsole(int lines, qboolean drawinput)
 		text = con.text + (j % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++)
-			Draw_Character((x + 1) << 3, y, text[x]);
+			UI_DrawChar((x + 1) << 3, y, text[x]);
 	}
 
 // draw the input prompt, user text, and cursor if desired

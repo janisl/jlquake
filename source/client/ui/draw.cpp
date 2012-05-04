@@ -14,25 +14,11 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 viddef_t viddef;
+
+image_t* char_texture;
 
 vec4_t g_color_table[32] =
 {
@@ -70,18 +56,7 @@ vec4_t g_color_table[32] =
 	{ 1.0,  1.0,    0.5,    1.0 },		// O				31
 };
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	UI_AdjustFromVirtualScreen
-//
 //	Adjusted for resolution and screen aspect ratio
-//
-//==========================================================================
-
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 {
 	// scale for screen sizes
@@ -105,22 +80,10 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 	}
 }
 
-//==========================================================================
-//
-//	UI_DrawPic
-//
-//==========================================================================
-
 void UI_DrawPic(int x, int y, image_t* pic, float alpha)
 {
 	UI_DrawStretchPic(x, y, R_GetImageWidth(pic), R_GetImageHeight(pic), pic, alpha);
 }
-
-//==========================================================================
-//
-//	UI_DrawNamedPic
-//
-//==========================================================================
 
 void UI_DrawNamedPic(int x, int y, const char* pic)
 {
@@ -133,12 +96,6 @@ void UI_DrawNamedPic(int x, int y, const char* pic)
 	UI_DrawPic(x, y, gl);
 }
 
-//==========================================================================
-//
-//	DoQuad
-//
-//==========================================================================
-
 static void DoQuad(float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
 	float r, float g, float b, float a)
@@ -148,22 +105,10 @@ static void DoQuad(float x, float y, float width, float height,
 	R_Draw2DQuad(x, y, width, height, image, s1, t1, s2, t2, r, g, b, a);
 }
 
-//==========================================================================
-//
-//	UI_DrawStretchPic
-//
-//==========================================================================
-
 void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 {
 	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha);
 }
-
-//==========================================================================
-//
-//	UI_DrawStretchNamedPic
-//
-//==========================================================================
 
 void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 {
@@ -176,22 +121,10 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 	UI_DrawStretchPic(x, y, w, h, gl);
 }
 
-//==========================================================================
-//
-//	UI_DrawStretchPicWithColour
-//
-//==========================================================================
-
 void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte* colour)
 {
 	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, colour[0] / 255.0, colour[1] / 255.0, colour[2] / 255.0, colour[3] / 255.0);
 }
-
-//==========================================================================
-//
-//	UI_DrawSubPic
-//
-//==========================================================================
 
 void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
 {
@@ -204,25 +137,12 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 	DoQuad(x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1);
 }
 
-//==========================================================================
-//
-//	UI_TileClear
-//
 //	This repeats a 64*64 tile graphic to fill the screen around a sized down
 // refresh window.
-//
-//==========================================================================
-
 void UI_TileClear(int x, int y, int w, int h, image_t* pic)
 {
 	DoQuad(x, y, w, h, pic, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0, 1, 1, 1, 1);
 }
-
-//==========================================================================
-//
-//	UI_NamedTileClear
-//
-//==========================================================================
 
 void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 {
@@ -235,22 +155,10 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 	UI_TileClear(x, y, w, h, image);
 }
 
-//==========================================================================
-//
-//	UI_Fill
-//
-//==========================================================================
-
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
 {
 	DoQuad(x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a);
 }
-
-//==========================================================================
-//
-//	UI_FillPal
-//
-//==========================================================================
 
 void UI_FillPal(int x, int y, int w, int h, int c)
 {
@@ -261,13 +169,7 @@ void UI_FillPal(int x, int y, int w, int h, int c)
 	UI_Fill(x, y, w, h, r_palette[c][0] / 255.0, r_palette[c][1] / 255.0, r_palette[c][2] / 255.0, 1);
 }
 
-//==========================================================================
-//
-//	UI_DrawChar
-//
-//==========================================================================
-
-void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
+void UI_DrawCharBase(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
 	int numberOfRows, float r, float g, float b, float a)
 {
 	if (y <= -h || y >= viddef.height)
@@ -287,11 +189,30 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a);
 }
 
-//==========================================================================
-//
-//	SCR_FillRect
-//
-//==========================================================================
+void UI_DrawChar(int x, int y, int num, float r, float g, float b, float a)
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		num &= 511;
+
+		if ((num & 255) == 32)
+		{
+			return;		// space
+
+		}
+		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 32, 16);
+	}
+	else
+	{
+		num &= 255;
+
+		if ((num & 127) == 32)
+		{
+			return;		// space
+		}
+		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 16, 16);
+	}
+}
 
 void SCR_FillRect(float x, float y, float width, float height, const float* color)
 {
@@ -303,23 +224,11 @@ void SCR_FillRect(float x, float y, float width, float height, const float* colo
 	R_SetColor(NULL);
 }
 
-//==========================================================================
-//
-//	SCR_DrawPic
-//
-//==========================================================================
-
 void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader)
 {
 	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
 	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
-
-//==========================================================================
-//
-//	SCR_DrawNamedPic
-//
-//==========================================================================
 
 void SCR_DrawNamedPic(float x, float y, float width, float height, const char* picname)
 {
@@ -328,12 +237,6 @@ void SCR_DrawNamedPic(float x, float y, float width, float height, const char* p
 	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
 	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
-
-//==========================================================================
-//
-//	SCR_DrawChar
-//
-//==========================================================================
 
 static void SCR_DrawChar(int x, int y, float size, int ch)
 {
@@ -365,14 +268,7 @@ static void SCR_DrawChar(int x, int y, float size, int ch)
 	R_StretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
-//==========================================================================
-//
-//	SCR_DrawSmallChar
-//
 //	small chars are drawn at native screen resolution
-//
-//==========================================================================
-
 void SCR_DrawSmallChar(int x, int y, int ch)
 {
 	ch &= 255;
@@ -397,15 +293,8 @@ void SCR_DrawSmallChar(int x, int y, int ch)
 	R_StretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
-//==========================================================================
-//
-//	SCR_DrawBigString[Color]
-//
 //	Draws a multi-colored string with a drop shadow, optionally forcing
 // to a fixed color.
-//
-//==========================================================================
-
 void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setColor, bool forceColor)
 {
 	// draw the drop shadow
@@ -458,12 +347,6 @@ void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setC
 	R_SetColor(NULL);
 }
 
-//==========================================================================
-//
-//	SCR_DrawBigString
-//
-//==========================================================================
-
 void SCR_DrawBigString(int x, int y, const char* s, float alpha)
 {
 	float color[4];
@@ -472,22 +355,10 @@ void SCR_DrawBigString(int x, int y, const char* s, float alpha)
 	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, false);
 }
 
-//==========================================================================
-//
-//	SCR_DrawBigStringColor
-//
-//==========================================================================
-
 void SCR_DrawBigStringColor(int x, int y, const char* s, vec4_t color)
 {
 	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, true);
 }
-
-//==========================================================================
-//
-//	SCR_DrawSmallStringExt
-//
-//==========================================================================
 
 void SCR_DrawSmallStringExt(int x, int y, const char* string, float* setColor, bool forceColor)
 {

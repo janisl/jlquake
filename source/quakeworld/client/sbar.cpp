@@ -257,7 +257,7 @@ Draws one solid graphics character
 */
 void Sbar_DrawCharacter(int x, int y, int num)
 {
-	Draw_Character(x /*+ ((viddef.width - 320)>>1) */ + 4, y + viddef.height - SBAR_HEIGHT, num);
+	UI_DrawChar(x /*+ ((viddef.width - 320)>>1) */ + 4, y + viddef.height - SBAR_HEIGHT, num);
 }
 
 /*
@@ -1059,8 +1059,8 @@ void Sbar_TeamOverlay(void)
 		if (!String::NCmp(Info_ValueForKey(cl.q1_players[cl.playernum].userinfo,
 					"team"), tm->team, 16))
 		{
-			Draw_Character(x + 104 - 8, y, 16);
-			Draw_Character(x + 104 + 32, y, 17);
+			UI_DrawChar(x + 104 - 8, y, 16);
+			UI_DrawChar(x + 104 + 32, y, 17);
 		}
 
 		y += 8;
@@ -1227,14 +1227,14 @@ void Sbar_DeathmatchOverlay(int start)
 		f = s->frags;
 		sprintf(num, "%3i",f);
 
-		Draw_Character(x + 112, y, num[0]);
-		Draw_Character(x + 120, y, num[1]);
-		Draw_Character(x + 128, y, num[2]);
+		UI_DrawChar(x + 112, y, num[0]);
+		UI_DrawChar(x + 120, y, num[1]);
+		UI_DrawChar(x + 128, y, num[2]);
 
 		if (k == cl.playernum)
 		{
-			Draw_Character(x + 104, y, 16);
-			Draw_Character(x + 136, y, 17);
+			UI_DrawChar(x + 104, y, 16);
+			UI_DrawChar(x + 136, y, 17);
 		}
 
 		// team
@@ -1362,14 +1362,14 @@ void Sbar_MiniDeathmatchOverlay(void)
 		f = s->frags;
 		sprintf(num, "%3i",f);
 
-		Draw_Character(x + 8, y, num[0]);
-		Draw_Character(x + 16, y, num[1]);
-		Draw_Character(x + 24, y, num[2]);
+		UI_DrawChar(x + 8, y, num[0]);
+		UI_DrawChar(x + 16, y, num[1]);
+		UI_DrawChar(x + 24, y, num[2]);
 
 		if (k == cl.playernum)
 		{
-			Draw_Character(x, y, 16);
-			Draw_Character(x + 32, y, 17);
+			UI_DrawChar(x, y, 16);
+			UI_DrawChar(x + 32, y, 17);
 		}
 
 		// team
@@ -1403,7 +1403,7 @@ void Sbar_MiniDeathmatchOverlay(void)
 	// draw seperator
 	x += 208;
 	for (y = viddef.height - sb_lines; y < (int)viddef.height - 6; y += 2)
-		Draw_Character(x, y, 14);
+		UI_DrawChar(x, y, 14);
 
 	x += 16;
 
@@ -1425,8 +1425,8 @@ void Sbar_MiniDeathmatchOverlay(void)
 		if (!String::NCmp(Info_ValueForKey(cl.q1_players[cl.playernum].userinfo,
 					"team"), tm->team, 16))
 		{
-			Draw_Character(x - 8, y, 16);
-			Draw_Character(x + 32, y, 17);
+			UI_DrawChar(x - 8, y, 16);
+			UI_DrawChar(x + 32, y, 17);
 		}
 
 		y += 8;

@@ -8,7 +8,6 @@ struct image_t;
 extern image_t* draw_backtile;
 
 void Draw_Init(void);
-void Draw_Character(int x, int y, unsigned int num);
 void Draw_SmallCharacter(int x, int y, int num);
 void Draw_SmallString(int x, int y, const char* str);
 void Draw_ConsoleBackground(int lines);

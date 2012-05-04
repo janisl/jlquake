@@ -795,7 +795,7 @@ void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 
 void I_DrawCharacter(int cx, int line, int num)
 {
-	Draw_Character(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
+	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
 }
 
 void I_Print(int cx, int cy, char* str)
