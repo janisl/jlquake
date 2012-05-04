@@ -109,13 +109,13 @@ bool Field_KeyDownEvent(field_t* edit, int key)
 		return true;
 	}
 
-	if (key == K_HOME || key == K_KP_HOME || (String::ToLower(key) == 'a' && keys[K_CTRL].down))
+	if (key == K_HOME || key == K_KP_HOME)
 	{
 		Field_Home(edit);
 		return true;
 	}
 
-	if (key == K_END || key == K_KP_END || (String::ToLower(key) == 'e' && keys[K_CTRL].down))
+	if (key == K_END || key == K_KP_END)
 	{
 		Field_End(edit, len);
 		return true;
