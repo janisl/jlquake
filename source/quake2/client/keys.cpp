@@ -226,13 +226,13 @@ void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_HOME || key == K_KP_HOME)
+	if ((key == K_HOME || key == K_KP_HOME) && keys[K_CTRL].down)
 	{
 		Con_Top();
 		return;
 	}
 
-	if (key == K_END || key == K_KP_END)
+	if ((key == K_END || key == K_KP_END) && keys[K_CTRL].down)
 	{
 		Con_Bottom();
 		return;
