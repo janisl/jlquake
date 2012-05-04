@@ -55,6 +55,7 @@ void UI_FillPal(int x, int y, int w, int h, int c);
 void UI_DrawCharBase(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
 	int numberOfRows, float r = 1, float g = 1, float b = 1, float a = 1);
 void UI_DrawChar(int x, int y, int num, float r = 1, float g = 1, float b = 1, float a = 1);
+void UI_DrawString(int x, int y, const char* str, int mask = 0);
 
 void SCR_FillRect(float x, float y, float width, float height, const float* color);
 void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader);

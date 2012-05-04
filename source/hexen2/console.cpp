@@ -270,7 +270,6 @@ The input line scrolls horizontally if typing goes beyond the right edge
 void Con_DrawInput(void)
 {
 	int y;
-	int i;
 	char buffer[MAX_EDIT_LINE + 1];
 	buffer[0] = ']';
 	String::Cpy(buffer + 1, g_consoleField.buffer);
@@ -286,10 +285,7 @@ void Con_DrawInput(void)
 
 // add the cursor frame
 	text[key_linepos] = 10 + ((int)(realtime * con.cursorspeed) & 1);
-
-// fill out remainder with spaces
-	for (i = key_linepos + 1; i < con.linewidth; i++)
-		text[i] = ' ';
+	text[key_linepos + 1] = 0;
 
 //	prestep if horizontally scrolling
 	if (key_linepos >= con.linewidth)
@@ -300,11 +296,7 @@ void Con_DrawInput(void)
 // draw it
 	y = con.vislines - 16;
 
-	for (i = 0; i < con.linewidth; i++)
-		UI_DrawChar((i + 1) << 3, con.vislines - 16, text[i]);
-
-// remove cursor
-	buffer[key_linepos] = 0;
+	UI_DrawString(8, y, text);
 }
 
 
@@ -349,15 +341,9 @@ void Con_DrawNotify(void)
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		x = 0;
-
-		Draw_String(8, v, "say:");
-		while (chatField.buffer[x])
-		{
-			UI_DrawChar((x + 5) << 3, v, chatField.buffer[x]);
-			x++;
-		}
-		UI_DrawChar((x + 5) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
+		UI_DrawString(8, v, "say:");
+		UI_DrawString(40, v, chatField.buffer);
+		UI_DrawChar((chatField.cursor + 5) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
 		v += 8;
 	}
 }

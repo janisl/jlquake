@@ -1272,9 +1272,7 @@ void Sbar_DeathmatchOverlay(void)
 			f = s->frags;
 			sprintf(num, "%3i",f);
 
-			UI_DrawChar(x + 10, y - 1, num[0]);	//was 8
-			UI_DrawChar(x + 18, y - 1, num[1]);	//was 16
-			UI_DrawChar(x + 26, y - 1, num[2]);	//was 24
+			UI_DrawString(x + 10, y - 1, num);	//was 8
 
 			if (k == cl.playernum)
 			{
@@ -1284,7 +1282,7 @@ void Sbar_DeathmatchOverlay(void)
 //rjr			if(k==sv_kingofhill)
 //rjr				UI_DrawChar ( x+40 , y-1, 130);
 			sprintf(num, "%4d",s->ping);
-			Draw_String(x + 48, y, num);
+			UI_DrawString(x + 48, y, num);
 
 			if (cl.qh_intermission)
 			{
@@ -1296,12 +1294,12 @@ void Sbar_DeathmatchOverlay(void)
 			}
 			minutes = (int)total / 60;
 			sprintf(num, "%4i", minutes);
-			Draw_String(x + 88, y, num);
+			UI_DrawString(x + 88, y, num);
 
 			// draw name
 			if (cl_siege && s->siege_team == 2)	//attacker
 			{
-				Draw_String(x + 178, y, s->name);
+				UI_DrawString(x + 178, y, s->name);
 			}
 			else
 			{
@@ -1592,31 +1590,11 @@ void Sbar_SmallDeathmatchOverlay(void)
 			f = s->frags;
 			sprintf(num, "%3i",f);
 
-			/*
-			        if (k != cl.playernum)
-			        {
-			            UI_DrawChar ( x+2 , y-1, num[0]);
-			            UI_DrawChar ( x+10 , y-1, num[1]);
-			            UI_DrawChar ( x+18 , y-1, num[2]);
-			        }
-			        else
-			        {
-			            UI_DrawChar ( x - 8, y-1, 13);
-			            UI_DrawChar ( x+2 , y-1, num[0] + 256);
-			            UI_DrawChar ( x+10 , y-1, num[1] + 256);
-			            UI_DrawChar ( x+18 , y-1, num[2] + 256);
-			        }
-			*/
-
 			if (k == cl.playernum)
 			{
 				UI_DrawChar(x - 8, y - 1, 13);
 			}
-			UI_DrawChar(x + 2, y - 1, num[0]);
-			UI_DrawChar(x + 10, y - 1, num[1]);
-			UI_DrawChar(x + 18, y - 1, num[2]);
-			//rjr		if(k==sv_kingofhill)
-			//rjr			UI_DrawChar ( x+28 , y-1, 130);
+			UI_DrawString(x + 2, y - 1, num);
 			y += 10;
 		}
 	}
@@ -2261,17 +2239,12 @@ static void Sbar_DrawTransPic(int x, int y, image_t* pic)
 
 static void Sbar_DrawString(int x, int y, char* str)
 {
-	Draw_String(x + ((viddef.width - 320) >> 1), y + viddef.height - (int)BarHeight, str);
+	UI_DrawString(x + ((viddef.width - 320) >> 1), y + viddef.height - (int)BarHeight, str);
 }
 
 void Sbar_DrawRedString(int cx, int cy, const char* str)
 {
-	while (*str)
-	{
-		UI_DrawChar(cx, cy, ((unsigned char)(*str)) + 256);
-		str++;
-		cx += 8;
-	}
+	UI_DrawString(cx, cy, str, 256);
 }
 
 //==========================================================================

@@ -195,7 +195,6 @@ void SCR_DrawCenterString(void)
 {
 	char* start;
 	int l;
-	int j;
 	int x, y;
 	int remaining;
 
@@ -217,19 +216,26 @@ void SCR_DrawCenterString(void)
 	do
 	{
 		// scan the width of the line
+		char buf[41];
 		for (l = 0; l < 40; l++)
+		{
 			if (start[l] == '\n' || !start[l])
 			{
 				break;
 			}
-		x = (viddef.width - l * 8) / 2;
-		for (j = 0; j < l; j++, x += 8)
-		{
-			UI_DrawChar(x, y, start[j]);
+			buf[l] = start[l];
 			if (!remaining--)
 			{
-				return;
+				break;
 			}
+			remaining--;
+		}
+		buf[l] = 0;
+		x = (viddef.width - l * 8) / 2;
+		UI_DrawString(x, y, buf);
+		if (!remaining)
+		{
+			return;
 		}
 
 		y += 8;
@@ -723,7 +729,6 @@ void DrawHUDString(char* string, int x, int y, int centerwidth, int _xor)
 	int margin;
 	char line[1024];
 	int width;
-	int i;
 
 	margin = x;
 
@@ -743,11 +748,7 @@ void DrawHUDString(char* string, int x, int y, int centerwidth, int _xor)
 		{
 			x = margin;
 		}
-		for (i = 0; i < width; i++)
-		{
-			UI_DrawChar(x, y, line[i] ^ _xor);
-			x += 8;
-		}
+		UI_DrawString(x, y, line, _xor);
 		if (*string)
 		{
 			string++;	// skip the \n
@@ -950,11 +951,11 @@ void SCR_ExecuteLayoutString(const char* s)
 			token = String::Parse2(&s);
 			time = String::Atoi(token);
 
-			DrawAltString(x + 32, y, ci->name);
-			DrawString(x + 32, y + 8,  "Score: ");
-			DrawAltString(x + 32 + 7 * 8, y + 8,  va("%i", score));
-			DrawString(x + 32, y + 16, va("Ping:  %i", ping));
-			DrawString(x + 32, y + 24, va("Time:  %i", time));
+			UI_DrawString(x + 32, y, ci->name, 0x80);
+			UI_DrawString(x + 32, y + 8,  "Score: ");
+			UI_DrawString(x + 32 + 7 * 8, y + 8,  va("%i", score), 0x80);
+			UI_DrawString(x + 32, y + 16, va("Ping:  %i", ping));
+			UI_DrawString(x + 32, y + 24, va("Time:  %i", time));
 
 			if (!ci->icon)
 			{
@@ -996,11 +997,11 @@ void SCR_ExecuteLayoutString(const char* s)
 
 			if (value == cl.playernum)
 			{
-				DrawAltString(x, y, block);
+				UI_DrawString(x, y, block, 0x80);
 			}
 			else
 			{
-				DrawString(x, y, block);
+				UI_DrawString(x, y, block);
 			}
 			continue;
 		}
@@ -1114,7 +1115,7 @@ void SCR_ExecuteLayoutString(const char* s)
 			{
 				Com_Error(ERR_DROP, "Bad stat_string index");
 			}
-			DrawString(x, y, cl.q2_configstrings[index]);
+			UI_DrawString(x, y, cl.q2_configstrings[index]);
 			continue;
 		}
 
@@ -1128,7 +1129,7 @@ void SCR_ExecuteLayoutString(const char* s)
 		if (!String::Cmp(token, "string"))
 		{
 			token = String::Parse2(&s);
-			DrawString(x, y, token);
+			UI_DrawString(x, y, token);
 			continue;
 		}
 
@@ -1142,7 +1143,7 @@ void SCR_ExecuteLayoutString(const char* s)
 		if (!String::Cmp(token, "string2"))
 		{
 			token = String::Parse2(&s);
-			DrawAltString(x, y, token);
+			UI_DrawString(x, y, token, 0x80);
 			continue;
 		}
 

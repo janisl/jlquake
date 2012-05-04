@@ -31,31 +31,6 @@ void Draw_Init(void)
 	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
 }
 
-/*
-================
-Draw_String
-================
-*/
-void Draw_String(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		UI_DrawChar(x, y, *str);
-		str++;
-		x += 8;
-	}
-}
-
-void Draw_RedString(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		UI_DrawChar(x, y, ((unsigned char)(*str)) + 256);
-		str++;
-		x += 8;
-	}
-}
-
 //==========================================================================
 //
 // Draw_SmallCharacter
@@ -168,7 +143,7 @@ void Draw_ConsoleBackground(int lines)
 	char ver[80];
 	sprintf(ver, "JLHexen II %s", JLQUAKE_VERSION_STRING);
 	int x = viddef.width - (String::Length(ver) * 8 + 11);
-	Draw_RedString(x, y, ver);
+	UI_DrawString(x, y, ver, 256);
 }
 
 //=============================================================================

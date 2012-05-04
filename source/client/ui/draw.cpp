@@ -214,6 +214,16 @@ void UI_DrawChar(int x, int y, int num, float r, float g, float b, float a)
 	}
 }
 
+void UI_DrawString(int x, int y, const char* str, int mask)
+{
+	while (*str)
+	{
+		UI_DrawChar(x, y, ((byte)*str) | mask);
+		str++;
+		x += 8;
+	}
+}
+
 void SCR_FillRect(float x, float y, float width, float height, const float* color)
 {
 	R_SetColor(color);

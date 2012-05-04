@@ -12,8 +12,6 @@ void Draw_SmallCharacter(int x, int y, int num);
 void Draw_SmallString(int x, int y, const char* str);
 void Draw_ConsoleBackground(int lines);
 void Draw_FadeScreen(void);
-void Draw_String(int x, int y, const char* str);
 void Draw_Crosshair(void);
-void Draw_RedString(int x, int y, const char* str);
 
 void R_NetGraph(void);

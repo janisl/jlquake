@@ -34,22 +34,6 @@ void CL_ParseInventory(void)
 		cl.q2_inventory[i] = net_message.ReadShort();
 }
 
-
-/*
-================
-Inv_DrawString
-================
-*/
-void Inv_DrawString(int x, int y, const char* string)
-{
-	while (*string)
-	{
-		UI_DrawChar(x, y, *string);
-		x += 8;
-		string++;
-	}
-}
-
 void SetStringHighBit(char* s)
 {
 	while (*s)
@@ -110,8 +94,8 @@ void CL_DrawInventory(void)
 
 	y += 24;
 	x += 24;
-	Inv_DrawString(x, y, "hotkey ### item");
-	Inv_DrawString(x, y + 8, "------ --- ----");
+	UI_DrawString(x, y, "hotkey ### item");
+	UI_DrawString(x, y + 8, "------ --- ----");
 	y += 16;
 	for (i = top; i < num && i < top + DISPLAY_ITEMS; i++)
 	{
@@ -139,7 +123,7 @@ void CL_DrawInventory(void)
 				UI_DrawChar(x - 8, y, 15);
 			}
 		}
-		Inv_DrawString(x, y, string);
+		UI_DrawString(x, y, string);
 		y += 8;
 	}
 

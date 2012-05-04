@@ -46,36 +46,6 @@ void Draw_Init(void)
 
 /*
 ================
-Draw_String
-================
-*/
-void Draw_String(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		UI_DrawChar(x, y, *str);
-		str++;
-		x += 8;
-	}
-}
-
-/*
-================
-Draw_Alt_String
-================
-*/
-void Draw_Alt_String(int x, int y, char* str)
-{
-	while (*str)
-	{
-		UI_DrawChar(x, y, (*str) | 0x80);
-		str++;
-		x += 8;
-	}
-}
-
-/*
-================
 Draw_ConsoleBackground
 
 ================
@@ -96,7 +66,7 @@ void Draw_ConsoleBackground(int lines)
 	char ver[80];
 	sprintf(ver, "JLQuake %s", JLQUAKE_VERSION_STRING);
 	int x = viddef.width - (String::Length(ver) * 8 + 11);
-	Draw_Alt_String(x, y, ver);
+	UI_DrawString(x, y, ver, 0x80);
 }
 
 //=============================================================================

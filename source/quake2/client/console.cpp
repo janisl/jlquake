@@ -23,27 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Cvar* con_notifytime;
 
-void DrawString(int x, int y, const char* s)
-{
-	while (*s)
-	{
-		UI_DrawChar(x, y, *s);
-		x += 8;
-		s++;
-	}
-}
-
-void DrawAltString(int x, int y, const char* s)
-{
-	while (*s)
-	{
-		UI_DrawChar(x, y, *s ^ 0x80);
-		x += 8;
-		s++;
-	}
-}
-
-
 void Key_ClearTyping(void)
 {
 	g_consoleField.buffer[0] = 0;	// clear any typing
@@ -302,8 +281,6 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput(void)
 {
-	int y;
-	int i;
 	char buffer[MAX_EDIT_LINE + 1];
 	buffer[0] = ']';
 	String::Cpy(buffer + 1, g_consoleField.buffer);
@@ -323,10 +300,7 @@ void Con_DrawInput(void)
 
 // add the cursor frame
 	text[key_linepos] = 10 + ((int)(cls.realtime >> 8) & 1);
-
-// fill out remainder with spaces
-	for (i = key_linepos + 1; i < con.linewidth; i++)
-		text[i] = ' ';
+	text[key_linepos + 1] = 0;
 
 //	prestep if horizontally scrolling
 	if (key_linepos >= con.linewidth)
@@ -335,13 +309,7 @@ void Con_DrawInput(void)
 	}
 
 // draw it
-	y = con.vislines - 16;
-
-	for (i = 0; i < con.linewidth; i++)
-		UI_DrawChar((i + 1) << 3, con.vislines - 22, text[i]);
-
-// remove cursor
-	buffer[key_linepos] = 0;
+	UI_DrawString(8, con.vislines - 22, text);
 }
 
 
@@ -391,12 +359,12 @@ void Con_DrawNotify(void)
 	{
 		if (chat_team)
 		{
-			DrawString(8, v, "say_team:");
+			UI_DrawString(8, v, "say_team:");
 			skip = 11;
 		}
 		else
 		{
-			DrawString(8, v, "say:");
+			UI_DrawString(8, v, "say:");
 			skip = 5;
 		}
 
@@ -405,13 +373,8 @@ void Con_DrawNotify(void)
 		{
 			s += chatField.cursor - ((viddef.width >> 3) - (skip + 1));
 		}
-		x = 0;
-		while (s[x])
-		{
-			UI_DrawChar((x + skip) << 3, v, s[x]);
-			x++;
-		}
-		UI_DrawChar((x + skip) << 3, v, 10 + ((cls.realtime >> 8) & 1));
+		UI_DrawString(skip << 3, v, s);
+		UI_DrawChar((chatField.cursor + skip) << 3, v, 10 + ((cls.realtime >> 8) & 1));
 		v += 8;
 	}
 }
@@ -447,8 +410,7 @@ void Con_DrawConsole(float frac)
 	UI_DrawStretchNamedPic(0, -viddef.height + lines, viddef.width, viddef.height, "conback");
 
 	String::Sprintf(version, sizeof(version), "v%4.2f", VERSION);
-	for (x = 0; x < 5; x++)
-		UI_DrawChar(viddef.width - 44 + x * 8, lines - 12, 128 + version[x]);
+	UI_DrawString(viddef.width - 44, lines - 12, version, 128);
 
 // draw the text
 	con.vislines = lines;
@@ -550,8 +512,7 @@ void Con_DrawConsole(float frac)
 
 		// draw it
 		y = con.vislines - 12;
-		for (i = 0; i < String::Length(dlbar); i++)
-			UI_DrawChar((i + 1) << 3, y, dlbar[i]);
+		UI_DrawString(8, y, dlbar);
 	}
 //ZOID
 

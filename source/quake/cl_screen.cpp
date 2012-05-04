@@ -515,7 +515,7 @@ void SCR_DrawFPS(void)
 	sprintf(st, "%3d FPS", lastfps);
 	x = viddef.width - String::Length(st) * 8 - 8;
 	y = viddef.height - sb_lines - 8;
-	Draw_String(x, y, st);
+	UI_DrawString(x, y, st);
 }
 
 /*

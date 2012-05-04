@@ -493,7 +493,7 @@ void SCR_DrawFPS(void)
 	sprintf(st, "%3d FPS", lastfps);
 	x = viddef.width - String::Length(st) * 8 - 8;
 	y = viddef.height - sb_lines - 8;
-	Draw_String(x, y, st);
+	UI_DrawString(x, y, st);
 }
 
 
@@ -792,20 +792,9 @@ void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 	}
 }
 
-
-void I_DrawCharacter(int cx, int line, int num)
-{
-	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
-}
-
 void I_Print(int cx, int cy, char* str)
 {
-	while (*str)
-	{
-		I_DrawCharacter(cx, cy, ((unsigned char)(*str)) + 256);
-		str++;
-		cx += 8;
-	}
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
 }
 
 //==========================================================================

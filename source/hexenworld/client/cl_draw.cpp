@@ -33,31 +33,6 @@ void Draw_Init(void)
 	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
 }
 
-/*
-================
-Draw_String
-================
-*/
-void Draw_String(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		UI_DrawChar(x, y, *str);
-		str++;
-		x += 8;
-	}
-}
-
-void Draw_RedString(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		UI_DrawChar(x, y, ((unsigned char)(*str)) + 256);
-		str++;
-		x += 8;
-	}
-}
-
 void Draw_Crosshair(void)
 {
 	extern Cvar* crosshair;
@@ -205,7 +180,7 @@ void Draw_ConsoleBackground(int lines)
 		char ver[80];
 		sprintf(ver, "JLHexenWorld %s", JLQUAKE_VERSION_STRING);
 		int x = viddef.width - (String::Length(ver) * 8 + 11);
-		Draw_RedString(x, y, ver);
+		UI_DrawString(x, y, ver, 256);
 	}
 }
 
@@ -340,20 +315,20 @@ void R_DrawName(vec3_t origin, char* Name, int Red)
 			{
 				UI_DrawChar(u, v, 130);	//crown
 			}
-			Draw_RedString(u + 8, v, Name);
+			UI_DrawString(u + 8, v, Name, 256);
 		}
 		else if (!Red)
 		{
 			UI_DrawChar(u, v, 144);	//sword
-			Draw_String(u + 8, v, Name);
+			UI_DrawString(u + 8, v, Name);
 		}
 		else
 		{
-			Draw_String(u + 8, v, Name);
+			UI_DrawString(u + 8, v, Name);
 		}
 	}
 	else
 	{
-		Draw_String(u, v, Name);
+		UI_DrawString(u, v, Name);
 	}
 }

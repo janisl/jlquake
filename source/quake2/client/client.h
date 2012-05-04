@@ -69,8 +69,6 @@ extern q2entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 extern netadr_t net_from;
 extern QMsg net_message;
 
-void DrawString(int x, int y, const char* s);
-void DrawAltString(int x, int y, const char* s);	// toggle high bit
 qboolean    CL_CheckOrDownloadFile(char* filename);
 
 void CL_AddNetgraph(void);

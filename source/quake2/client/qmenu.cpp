@@ -56,7 +56,7 @@ void Action_Draw(menuaction_s* a)
 		}
 		else
 		{
-			Menu_DrawString(a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name);
+			UI_DrawString(a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name);
 		}
 	}
 	else
@@ -110,7 +110,7 @@ void Field_Draw(menufield_s* f)
 		UI_DrawChar(f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y + 4, 25);
 	}
 
-	Menu_DrawString(f->generic.x + f->generic.parent->x + 24, f->generic.y + f->generic.parent->y, tempbuffer);
+	UI_DrawString(f->generic.x + f->generic.parent->x + 24, f->generic.y + f->generic.parent->y, tempbuffer);
 
 	if (Menu_ItemAtCursor(f->generic.parent) == f)
 	{
@@ -336,7 +336,7 @@ void Menu_DrawStatusBar(const char* string)
 		int col = maxcol / 2 - l / 2;
 
 		UI_FillPal(0, VID_HEIGHT - 8, VID_WIDTH, 8, 4);
-		Menu_DrawString(col * 8, VID_HEIGHT - 8, string);
+		UI_DrawString(col * 8, VID_HEIGHT - 8, string);
 	}
 	else
 	{
@@ -344,36 +344,19 @@ void Menu_DrawStatusBar(const char* string)
 	}
 }
 
-void Menu_DrawString(int x, int y, const char* string)
-{
-	for (int i = 0; i < String::Length(string); i++)
-	{
-		UI_DrawChar((x + i * 8), y, string[i]);
-	}
-}
-
 void Menu_DrawStringDark(int x, int y, const char* string)
 {
-	for (int i = 0; i < String::Length(string); i++)
-	{
-		UI_DrawChar((x + i * 8), y, string[i] + 128);
-	}
+	UI_DrawString(x, y, string, 128);
 }
 
 void Menu_DrawStringR2L(int x, int y, const char* string)
 {
-	for (int i = 0; i < String::Length(string); i++)
-	{
-		UI_DrawChar((x - i * 8), y, string[String::Length(string) - i - 1]);
-	}
+	UI_DrawString((x - (String::Length(string) - 1) * 8), y, string);
 }
 
 void Menu_DrawStringR2LDark(int x, int y, const char* string)
 {
-	for (int i = 0; i < String::Length(string); i++)
-	{
-		UI_DrawChar((x - i * 8), y, string[String::Length(string) - i - 1] + 128);
-	}
+	UI_DrawString((x - (String::Length(string) - 1) * 8), y, string, 128);
 }
 
 void* Menu_ItemAtCursor(menuframework_s* m)
@@ -591,14 +574,14 @@ void SpinControl_Draw(menulist_s* s)
 	}
 	if (!strchr(s->itemnames[s->curvalue], '\n'))
 	{
-		Menu_DrawString(RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[s->curvalue]);
+		UI_DrawString(RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[s->curvalue]);
 	}
 	else
 	{
 		String::Cpy(buffer, s->itemnames[s->curvalue]);
 		*strchr(buffer, '\n') = 0;
-		Menu_DrawString(RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer);
+		UI_DrawString(RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer);
 		String::Cpy(buffer, strchr(s->itemnames[s->curvalue], '\n') + 1);
-		Menu_DrawString(RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer);
+		UI_DrawString(RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer);
 	}
 }

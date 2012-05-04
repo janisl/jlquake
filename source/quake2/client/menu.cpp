@@ -307,22 +307,12 @@ void M_DrawCharacter(int cx, int cy, int num)
 
 void M_Print(int cx, int cy, const char* str)
 {
-	while (*str)
-	{
-		M_DrawCharacter(cx, cy, (*str) + 128);
-		str++;
-		cx += 8;
-	}
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), str, 128);
 }
 
 void M_PrintWhite(int cx, int cy, const char* str)
 {
-	while (*str)
-	{
-		M_DrawCharacter(cx, cy, *str);
-		str++;
-		cx += 8;
-	}
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), str);
 }
 
 void M_DrawPic(int x, int y, char* pic)
@@ -751,7 +741,7 @@ static void DrawKeyBindingFunc(void* self)
 
 	if (keys[0] == -1)
 	{
-		Menu_DrawString(a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, "???");
+		UI_DrawString(a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, "???");
 	}
 	else
 	{
@@ -760,14 +750,14 @@ static void DrawKeyBindingFunc(void* self)
 
 		name = Key_KeynumToString(keys[0]);
 
-		Menu_DrawString(a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name);
+		UI_DrawString(a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name);
 
 		x = String::Length(name) * 8;
 
 		if (keys[1] != -1)
 		{
-			Menu_DrawString(a->generic.x + a->generic.parent->x + 24 + x, a->generic.y + a->generic.parent->y, "or");
-			Menu_DrawString(a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString(keys[1]));
+			UI_DrawString(a->generic.x + a->generic.parent->x + 24 + x, a->generic.y + a->generic.parent->y, "or");
+			UI_DrawString(a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString(keys[1]));
 		}
 	}
 }
@@ -1993,7 +1983,7 @@ void M_Credits_MenuDraw(void)
 	*/
 	for (i = 0, y = viddef.height - ((cls.realtime - credits_start_time) / 40.0F); credits[i] && y < viddef.height; y += 10, i++)
 	{
-		int j, stringoffset = 0;
+		int stringoffset = 0;
 		int bold = false;
 
 		if (y <= -8)
@@ -2012,20 +2002,14 @@ void M_Credits_MenuDraw(void)
 			stringoffset = 0;
 		}
 
-		for (j = 0; credits[i][j + stringoffset]; j++)
+		int x = (viddef.width - String::Length(&credits[i][stringoffset]) * 8) / 2;
+		if (bold)
 		{
-			int x;
-
-			x = (viddef.width - String::Length(credits[i]) * 8 - stringoffset * 8) / 2 + (j + stringoffset) * 8;
-
-			if (bold)
-			{
-				UI_DrawChar(x, y, credits[i][j + stringoffset] + 128);
-			}
-			else
-			{
-				UI_DrawChar(x, y, credits[i][j + stringoffset]);
-			}
+			UI_DrawString(x, y, &credits[i][stringoffset], 128);
+		}
+		else
+		{
+			UI_DrawString(x, y, &credits[i][stringoffset]);
 		}
 	}
 

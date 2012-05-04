@@ -172,44 +172,17 @@ void M_DrawCharacter(int cx, int line, int num)
 
 void M_Print(int cx, int cy, const char* str)
 {
-	while (*str)
-	{
-		M_DrawCharacter(cx, cy, ((unsigned char)(*str)) + 256);
-		str++;
-		cx += 8;
-	}
-}
-
-/*
-================
-M_DrawCharacter2
-
-Draws one solid graphics character, centered H and V
-================
-*/
-void M_DrawCharacter2(int cx, int line, int num)
-{
-	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line + ((viddef.height - 200) >> 1), num);
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str, 256);
 }
 
 void M_Print2(int cx, int cy, const char* str)
 {
-	while (*str)
-	{
-		M_DrawCharacter2(cx, cy, ((unsigned char)(*str)) + 256);
-		str++;
-		cx += 8;
-	}
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
 }
 
 void M_PrintWhite(int cx, int cy, const char* str)
 {
-	while (*str)
-	{
-		M_DrawCharacter(cx, cy, (unsigned char)*str);
-		str++;
-		cx += 8;
-	}
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str);
 }
 
 void M_DrawTransPic(int x, int y, image_t* pic)
