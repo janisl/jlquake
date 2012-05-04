@@ -42,6 +42,22 @@ static void Field_Paste(field_t* edit)
 	delete[] cbd;
 }
 
+static void Field_Home(field_t* edit)
+{
+	edit->cursor = 0;
+	edit->scroll = 0;
+}
+
+static void Field_End(field_t* edit, int len)
+{
+	edit->cursor = len;
+	edit->scroll = edit->cursor - edit->widthInChars;
+	if (edit->scroll < 0)
+	{
+		edit->scroll = 0;
+	}
+}
+
 //	Performs the basic line editing functions for the console,
 // in-game talk, and menu fields
 //	Key events are used for non-printable characters, others are gotten from char events.
@@ -95,13 +111,13 @@ bool Field_KeyDownEvent(field_t* edit, int key)
 
 	if (key == K_HOME || key == K_KP_HOME || (String::ToLower(key) == 'a' && keys[K_CTRL].down))
 	{
-		edit->cursor = 0;
+		Field_Home(edit);
 		return true;
 	}
 
 	if (key == K_END || key == K_KP_END || (String::ToLower(key) == 'e' && keys[K_CTRL].down))
 	{
-		edit->cursor = len;
+		Field_End(edit, len);
 		return true;
 	}
 
@@ -146,15 +162,13 @@ void Field_CharEvent(field_t* edit, int ch)
 
 	if (ch == 'a' - 'a' + 1)		// ctrl-a is home
 	{
-		edit->cursor = 0;
-		edit->scroll = 0;
+		Field_Home(edit);
 		return;
 	}
 
 	if (ch == 'e' - 'a' + 1)		// ctrl-e is end
 	{
-		edit->cursor = len;
-		edit->scroll = edit->cursor - edit->widthInChars;
+		Field_End(edit, len);
 		return;
 	}
 
