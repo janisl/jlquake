@@ -185,6 +185,23 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	M_DrawTransPic(cx, cy + 8, p);
 }
 
+void M_DrawField(int x, int y, field_t* edit, bool showCursor)
+{
+	M_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
+	if (edit->scroll < 0)
+	{
+		edit->scroll = 0;
+	}
+	char temp[MAX_EDIT_LINE];
+	String::Cpy(temp, &edit->buffer[edit->scroll]);
+	temp[edit->widthInChars] = 0;
+	M_Print(x, y, temp);
+	if (showCursor)
+	{
+		M_DrawCharacter(x + 8 * (edit->cursor - edit->scroll), y, 10 + ((int)(realtime * 4) & 1));
+	}
+}
+
 //=============================================================================
 
 int m_save_demonum;
@@ -716,11 +733,11 @@ void M_Menu_Setup_f(void)
 	String::Cpy(setup_myname.buffer, clqh_name->string);
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
-	setup_myname.widthInChars = 15;
+	setup_myname.widthInChars = 16;
 	String::Cpy(setup_hostname.buffer, hostname->string);
 	setup_hostname.cursor = String::Length(setup_hostname.buffer);
 	setup_hostname.maxLength = 15;
-	setup_hostname.widthInChars = 15;
+	setup_hostname.widthInChars = 16;
 	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
 }
@@ -735,12 +752,10 @@ void M_Setup_Draw(void)
 	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_Print(64, 40, "Hostname");
-	M_DrawTextBox(160, 32, 16, 1);
-	M_Print(168, 40, setup_hostname.buffer);
+	M_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
 
 	M_Print(64, 56, "Your name");
-	M_DrawTextBox(160, 48, 16, 1);
-	M_Print(168, 56, setup_myname.buffer);
+	M_DrawField(168, 56, &setup_myname, setup_cursor == 1);
 
 	M_Print(64, 80, "Shirt color");
 	M_Print(64, 104, "Pants color");
@@ -756,16 +771,6 @@ void M_Setup_Draw(void)
 	M_DrawPic(172, 72, translate_texture);
 
 	M_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
-
-	if (setup_cursor == 0)
-	{
-		M_DrawCharacter(168 + 8 * setup_hostname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
-	}
-
-	if (setup_cursor == 1)
-	{
-		M_DrawCharacter(168 + 8 * setup_myname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
-	}
 }
 
 
@@ -1791,10 +1796,10 @@ void M_Menu_LanConfig_f(void)
 	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
 	lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
 	lanConfig_portname.maxLength = 5;
-	lanConfig_portname.widthInChars = 5;
+	lanConfig_portname.widthInChars = 6;
 	Field_Clear(&lanConfig_joinname);
 	lanConfig_joinname.maxLength = 29;
-	lanConfig_joinname.widthInChars = 21;
+	lanConfig_joinname.widthInChars = 22;
 
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
@@ -1826,15 +1831,13 @@ void M_LanConfig_Draw(void)
 	basex += 8;
 
 	M_Print(basex, lanConfig_cursor_table[0], "Port");
-	M_DrawTextBox(basex + 8 * 8, lanConfig_cursor_table[0] - 8, 6, 1);
-	M_Print(basex + 9 * 8, lanConfig_cursor_table[0], lanConfig_portname.buffer);
+	M_DrawField(basex + 9 * 8, lanConfig_cursor_table[0], &lanConfig_portname, lanConfig_cursor == 0);
 
 	if (JoiningGame)
 	{
 		M_Print(basex, lanConfig_cursor_table[1], "Search for local games...");
 		M_Print(basex, 88, "Join game at:");
-		M_DrawTextBox(basex + 8, lanConfig_cursor_table[2] - 8, 22, 1);
-		M_Print(basex + 16, lanConfig_cursor_table[2], lanConfig_joinname.buffer);
+		M_DrawField(basex + 16, lanConfig_cursor_table[2], &lanConfig_joinname, lanConfig_cursor == 2);
 	}
 	else
 	{
@@ -1843,16 +1846,6 @@ void M_LanConfig_Draw(void)
 	}
 
 	M_DrawCharacter(basex - 8, lanConfig_cursor_table [lanConfig_cursor], 12 + ((int)(realtime * 4) & 1));
-
-	if (lanConfig_cursor == 0)
-	{
-		M_DrawCharacter(basex + 9 * 8 + 8 * lanConfig_portname.cursor, lanConfig_cursor_table [0], 10 + ((int)(realtime * 4) & 1));
-	}
-
-	if (lanConfig_cursor == 2)
-	{
-		M_DrawCharacter(basex + 16 + 8 * lanConfig_joinname.cursor, lanConfig_cursor_table [2], 10 + ((int)(realtime * 4) & 1));
-	}
 
 	if (*m_return_reason)
 	{

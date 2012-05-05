@@ -327,6 +327,23 @@ void M_DrawTextBox2(int x, int y, int width, int lines)
 	M_DrawTransPic2(cx, cy + 8, p);
 }
 
+void M_DrawField(int x, int y, field_t* edit, bool showCursor)
+{
+	M_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
+	if (edit->scroll < 0)
+	{
+		edit->scroll = 0;
+	}
+	char temp[MAX_EDIT_LINE];
+	String::Cpy(temp, &edit->buffer[edit->scroll]);
+	temp[edit->widthInChars] = 0;
+	M_Print(x, y, temp);
+	if (showCursor)
+	{
+		M_DrawCharacter(x + 8 * (edit->cursor - edit->scroll), y, 10 + ((int)(realtime * 4) & 1));
+	}
+}
+
 //=============================================================================
 
 int m_save_demonum;
@@ -2259,7 +2276,7 @@ void M_Menu_Connect_f(void)
 	{
 		save_names[i].cursor = String::Length(save_names[i].buffer);
 		save_names[i].maxLength = 80;
-		save_names[i].widthInChars = 33;
+		save_names[i].widthInChars = 34;
 	}
 }
 
@@ -2272,12 +2289,7 @@ void M_Connect_Draw(void)
 
 	if (connect_cursor < MAX_HOST_NAMES)
 	{
-		M_DrawTextBox(16, 48, 34, 1);
-
-		String::Cpy(temp, &save_names[connect_cursor].buffer[save_names[connect_cursor].scroll]);
-		temp[33] = 0;
-		M_Print(24, 56, temp);
-		M_DrawCharacter(24 + 8 * (save_names[connect_cursor].cursor - save_names[connect_cursor].scroll), 56, 10 + ((int)(realtime * 4) & 1));
+		M_DrawField(24, 56, &save_names[connect_cursor], true);
 	}
 
 	y = 72;
@@ -2402,7 +2414,7 @@ void M_Menu_Setup_f(void)
 	String::Cpy(setup_myname.buffer, name->string);
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
-	setup_myname.widthInChars = 15;
+	setup_myname.widthInChars = 16;
 	setup_top = setup_oldtop = (int)topcolor->value;
 	setup_bottom = setup_oldbottom = (int)bottomcolor->value;
 
@@ -2450,8 +2462,7 @@ void M_Setup_Draw(void)
 	ScrollTitle("gfx/menu/title4.lmp");
 
 	M_Print(64, 56, "Your name");
-	M_DrawTextBox(160, 48, 16, 1);
-	M_PrintWhite(168, 56, setup_myname.buffer);
+	M_DrawField(168, 56, &setup_myname, setup_cursor == 1);
 
 	M_Print(64, 72, "Spectator: ");
 	if (spectator->value)
@@ -2547,11 +2558,6 @@ void M_Setup_Draw(void)
 	M_DrawPic(220, 72, translate_texture[which_class - 1]);
 
 	M_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
-
-	if (setup_cursor == 1)
-	{
-		M_DrawCharacter(168 + 8 * setup_myname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
-	}
 }
 
 

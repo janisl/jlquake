@@ -270,7 +270,6 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	M_DrawTransPic(cx, cy + 8, p);
 }
 
-
 void M_DrawTextBox2(int x, int y, int width, int lines, qboolean bottom)
 {
 	image_t* p,* tm,* bm;
@@ -389,6 +388,23 @@ void M_DrawTextBox2(int x, int y, int width, int lines, qboolean bottom)
 	else
 	{
 		M_DrawTransPic2(cx, cy + 8, p);
+	}
+}
+
+void M_DrawField(int x, int y, field_t* edit, bool showCursor)
+{
+	M_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
+	if (edit->scroll < 0)
+	{
+		edit->scroll = 0;
+	}
+	char temp[MAX_EDIT_LINE];
+	String::Cpy(temp, &edit->buffer[edit->scroll]);
+	temp[edit->widthInChars] = 0;
+	M_Print(x, y, temp);
+	if (showCursor)
+	{
+		M_DrawCharacter(x + 8 * (edit->cursor - edit->scroll), y, 10 + ((int)(realtime * 4) & 1));
 	}
 }
 
@@ -1522,11 +1538,11 @@ void M_Menu_Setup_f(void)
 	String::Cpy(setup_myname.buffer, clqh_name->string);
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
-	setup_myname.widthInChars = 15;
+	setup_myname.widthInChars = 16;
 	String::Cpy(setup_hostname.buffer, hostname->string);
 	setup_hostname.cursor = String::Length(setup_hostname.buffer);
 	setup_hostname.maxLength = 15;
-	setup_hostname.widthInChars = 15;
+	setup_hostname.widthInChars = 16;
 	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
 	setup_class = cl_playerclass->value;
@@ -1544,12 +1560,10 @@ void M_Setup_Draw(void)
 	ScrollTitle("gfx/menu/title4.lmp");
 
 	M_Print(64, 40, "Hostname");
-	M_DrawTextBox(160, 32, 16, 1);
-	M_Print(168, 40, setup_hostname.buffer);
+	M_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
 
 	M_Print(64, 56, "Your name");
-	M_DrawTextBox(160, 48, 16, 1);
-	M_Print(168, 56, setup_myname.buffer);
+	M_DrawField(168, 56, &setup_myname, setup_cursor == 1);
 
 	M_Print(64, 80, "Current Class: ");
 	M_Print(88, 88, ClassNames[setup_class - 1]);
@@ -1566,16 +1580,6 @@ void M_Setup_Draw(void)
 	M_DrawPic(220, 72, translate_texture[setup_class - 1]);
 
 	M_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
-
-	if (setup_cursor == 0)
-	{
-		M_DrawCharacter(168 + 8 * setup_hostname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
-	}
-
-	if (setup_cursor == 1)
-	{
-		M_DrawCharacter(168 + 8 * setup_myname.cursor, setup_cursor_table [setup_cursor], 10 + ((int)(realtime * 4) & 1));
-	}
 }
 
 
@@ -3088,10 +3092,10 @@ void M_Menu_LanConfig_f(void)
 	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
 	lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
 	lanConfig_portname.maxLength = 5;
-	lanConfig_portname.widthInChars = 5;
+	lanConfig_portname.widthInChars = 6;
 	Field_Clear(&lanConfig_joinname);
 	lanConfig_joinname.maxLength = 29;
-	lanConfig_joinname.widthInChars = 29;
+	lanConfig_joinname.widthInChars = 30;
 
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
@@ -3127,8 +3131,7 @@ void M_LanConfig_Draw(void)
 	basex += 8;
 
 	M_Print(basex, lanConfig_cursor_table[0], "Port");
-	M_DrawTextBox(basex + 8 * 8, lanConfig_cursor_table[0] - 8, 6, 1);
-	M_Print(basex + 9 * 8, lanConfig_cursor_table[0], lanConfig_portname.buffer);
+	M_DrawField(basex + 9 * 8, lanConfig_cursor_table[0], &lanConfig_portname, lanConfig_cursor == 0);
 
 	if (JoiningGame)
 	{
@@ -3137,8 +3140,7 @@ void M_LanConfig_Draw(void)
 
 		M_Print(basex, lanConfig_cursor_table[2], "Search for local games...");
 		M_Print(basex, 136, "Join game at:");
-		M_DrawTextBox(basex, lanConfig_cursor_table[3] - 8, 30, 1);
-		M_Print(basex + 8, lanConfig_cursor_table[3], lanConfig_joinname.buffer);
+		M_DrawField(basex + 8, lanConfig_cursor_table[3], &lanConfig_joinname, lanConfig_cursor == 3);
 	}
 	else
 	{
@@ -3147,16 +3149,6 @@ void M_LanConfig_Draw(void)
 	}
 
 	M_DrawCharacter(basex - 8, lanConfig_cursor_table [lanConfig_cursor], 12 + ((int)(realtime * 4) & 1));
-
-	if (lanConfig_cursor == 0)
-	{
-		M_DrawCharacter(basex + 9 * 8 + 8 * lanConfig_portname.cursor, lanConfig_cursor_table [0], 10 + ((int)(realtime * 4) & 1));
-	}
-
-	if (lanConfig_cursor == 3)
-	{
-		M_DrawCharacter(basex + 8 + 8 * lanConfig_joinname.cursor, lanConfig_cursor_table [3], 10 + ((int)(realtime * 4) & 1));
-	}
 
 	if (*m_return_reason)
 	{
