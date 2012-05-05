@@ -44,8 +44,6 @@ struct console_t
 
 	int ormask;				// high bit mask for colored characters
 
-	float cursorspeed;
-
 	int acLength;			// Arnout: autocomplete buffer length
 };
 

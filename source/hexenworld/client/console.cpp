@@ -93,8 +93,6 @@ void Con_Init(void)
 {
 	con_debuglog = COM_CheckParm("-condebug");
 
-	con.cursorspeed = 4;
-
 	Con_Printf("Console initialized.\n");
 
 //
@@ -253,7 +251,7 @@ void Con_DrawInput(void)
 // draw it
 	UI_DrawString(8, con.vislines - 22, "]");
 	UI_DrawString(16, con.vislines - 22, text);
-	UI_DrawChar(16 + (g_consoleField.cursor - g_consoleField.scroll) * 8, con.vislines - 22, 10 + ((int)(realtime * con.cursorspeed) & 1));
+	UI_DrawChar(16 + (g_consoleField.cursor - g_consoleField.scroll) * 8, con.vislines - 22, 10 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -317,7 +315,7 @@ void Con_DrawNotify(void)
 			s += chatField.cursor - ((viddef.width >> 3) - (skip + 1));
 		}
 		UI_DrawString(skip << 3, v, s);
-		UI_DrawChar((chatField.cursor + skip) << 3, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
+		UI_DrawChar((chatField.cursor + skip) << 3, v, 10 + ((int)(realtime * 4) & 1));
 		v += 8;
 	}
 }

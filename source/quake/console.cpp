@@ -101,8 +101,6 @@ void Con_Init(void)
 		FS_FCloseFile(FS_FOpenFileWrite(t2));
 	}
 
-	con.cursorspeed = 4;
-
 	Con_Printf("Console initialized.\n");
 
 //
@@ -303,7 +301,7 @@ void Con_DrawInput(void)
 // draw it
 	UI_DrawString(8, con.vislines - 16, "]");
 	UI_DrawString(16, con.vislines - 16, text);
-	UI_DrawChar(16 + (g_consoleField.cursor - g_consoleField.scroll) * 8, con.vislines - 16, 10 + ((int)(realtime * con.cursorspeed) & 1));
+	UI_DrawChar(16 + (g_consoleField.cursor - g_consoleField.scroll) * 8, con.vislines - 16, 10 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -350,7 +348,7 @@ void Con_DrawNotify(void)
 	{
 		UI_DrawString(8, v, "say:");
 		UI_DrawString(40, v, chatField.buffer);
-		UI_DrawChar(40 + chatField.cursor * 8, v, 10 + ((int)(realtime * con.cursorspeed) & 1));
+		UI_DrawChar(40 + chatField.cursor * 8, v, 10 + ((int)(realtime * 4) & 1));
 		v += 8;
 	}
 }
