@@ -362,7 +362,8 @@ void Con_DrawText(int lines)
 			}
 			if (!(GGameType & GAME_Tech3))
 			{
-				UI_DrawChar((x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff);
+				float* c = g_color_table[currentColor];
+				UI_DrawChar((x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff, c[0], c[1], c[2], c[3]);
 			}
 			else
 			{
