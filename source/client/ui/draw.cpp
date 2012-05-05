@@ -200,7 +200,7 @@ void UI_DrawChar(int x, int y, int num, float r, float g, float b, float a)
 			return;		// space
 
 		}
-		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 32, 16);
+		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 32, 16, r, g, b, a);
 	}
 	else
 	{
@@ -210,15 +210,30 @@ void UI_DrawChar(int x, int y, int num, float r, float g, float b, float a)
 		{
 			return;		// space
 		}
-		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 16, 16);
+		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 16, 16, r, g, b, a);
 	}
 }
 
 void UI_DrawString(int x, int y, const char* str, int mask)
 {
+	vec4_t color;
+	Vector4Set(color, 1, 1, 1, 1);
 	while (*str)
 	{
-		UI_DrawChar(x, y, ((byte)*str) | mask);
+		if (Q_IsColorString(str))
+		{
+			if (*(str + 1) == COLOR_NULL)
+			{
+				Vector4Set(color, 1, 1, 1, 1);
+			}
+			else
+			{
+				Com_Memcpy(color, g_color_table[ColorIndex(*(str + 1))], sizeof(color));
+			}
+			str += 2;
+			continue;
+		}
+		UI_DrawChar(x, y, ((byte)*str) | mask, color[0], color[1], color[2], color[3]);
 		str++;
 		x += 8;
 	}
