@@ -86,17 +86,14 @@ qboolean Field_DoEnter(menufield_s* f)
 	return false;
 }
 
-void Field_Draw(menufield_s* f)
+void M_Field_Draw(menufield_s* f)
 {
 	int i;
-	char tempbuffer[128] = "";
 
 	if (f->generic.name)
 	{
 		Menu_DrawStringR2LDark(f->generic.x + f->generic.parent->x + LCOLUMN_OFFSET, f->generic.y + f->generic.parent->y, f->generic.name);
 	}
-
-	String::NCpy(tempbuffer, f->field.buffer + f->field.scroll, f->field.widthInChars);
 
 	UI_DrawChar(f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y - 4, 18);
 	UI_DrawChar(f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y + 4, 24);
@@ -110,34 +107,8 @@ void Field_Draw(menufield_s* f)
 		UI_DrawChar(f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y + 4, 25);
 	}
 
-	UI_DrawString(f->generic.x + f->generic.parent->x + 24, f->generic.y + f->generic.parent->y, tempbuffer);
-
-	if (Menu_ItemAtCursor(f->generic.parent) == f)
-	{
-		int offset;
-
-		if (f->field.scroll)
-		{
-			offset = f->field.widthInChars;
-		}
-		else
-		{
-			offset = f->field.cursor;
-		}
-
-		if (((int)(Sys_Milliseconds_() / 250)) & 1)
-		{
-			UI_DrawChar(f->generic.x + f->generic.parent->x + (offset + 2) * 8 + 8,
-				f->generic.y + f->generic.parent->y,
-				11);
-		}
-		else
-		{
-			UI_DrawChar(f->generic.x + f->generic.parent->x + (offset + 2) * 8 + 8,
-				f->generic.y + f->generic.parent->y,
-				' ');
-		}
-	}
+	Field_Draw(&f->field, f->generic.x + f->generic.parent->x + 24,
+		f->generic.y + f->generic.parent->y, Menu_ItemAtCursor(f->generic.parent) == f);
 }
 
 qboolean Field_Key(menufield_s* f, int key)
@@ -263,7 +234,7 @@ void Menu_Draw(menuframework_s* menu)
 		switch (((menucommon_s*)menu->items[i])->type)
 		{
 		case MTYPE_FIELD:
-			Field_Draw((menufield_s*)menu->items[i]);
+			M_Field_Draw((menufield_s*)menu->items[i]);
 			break;
 		case MTYPE_SLIDER:
 			Slider_Draw((menuslider_s*)menu->items[i]);

@@ -330,19 +330,7 @@ void M_DrawTextBox2(int x, int y, int width, int lines)
 void M_DrawField(int x, int y, field_t* edit, bool showCursor)
 {
 	M_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
-	x += ((viddef.width - 320) >> 1);
-	if (edit->scroll < 0)
-	{
-		edit->scroll = 0;
-	}
-	char temp[MAX_EDIT_LINE];
-	String::Cpy(temp, &edit->buffer[edit->scroll]);
-	temp[edit->widthInChars] = 0;
-	UI_DrawString(x, y, temp, 256);
-	if (showCursor)
-	{
-		UI_DrawChar(x + 8 * (edit->cursor - edit->scroll), y, 10 + ((int)(realtime * 4) & 1));
-	}
+	Field_Draw(edit, x + ((viddef.width - 320) >> 1), y, showCursor);
 }
 
 //=============================================================================

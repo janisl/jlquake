@@ -212,3 +212,105 @@ void Field_CharEvent(field_t* edit, int ch)
 		edit->buffer[edit->cursor] = 0;
 	}
 }
+
+//	Handles horizontal scrolling and cursor blinking
+static void Field_VariableSizeDraw(field_t* edit, int x, int y, int size, bool showCursor)
+{
+	int drawLen = edit->widthInChars;
+	int len = String::Length(edit->buffer) + 1;
+
+	int prestep;
+	// guarantee that cursor will be visible
+	if (len <= drawLen)
+	{
+		prestep = 0;
+	}
+	else
+	{
+		if (edit->scroll + drawLen > len)
+		{
+			edit->scroll = len - drawLen;
+			if (edit->scroll < 0)
+			{
+				edit->scroll = 0;
+			}
+		}
+		prestep = edit->scroll;
+	}
+
+	if (prestep + drawLen > len)
+	{
+		drawLen = len - prestep;
+	}
+
+	// extract <drawLen> characters from the field at <prestep>
+	if (drawLen >= MAX_STRING_CHARS)
+	{
+		common->Error("drawLen >= MAX_STRING_CHARS");
+	}
+
+	char str[MAX_STRING_CHARS];
+	Com_Memcpy(str, edit->buffer + prestep, drawLen);
+	str[drawLen] = 0;
+
+	// draw it
+	if (!(GGameType & GAME_Tech3))
+	{
+		UI_DrawString(x, y, str);
+	}
+	else if (size == SMALLCHAR_WIDTH)
+	{
+		float color[4];
+		color[0] = color[1] = color[2] = color[3] = 1.0;
+		SCR_DrawSmallStringExt(x, y, str, color, false);
+	}
+	else
+	{
+		// draw big string with drop shadow
+		SCR_DrawBigString(x, y, str, 1.0);
+	}
+
+	// draw the cursor
+	if (!showCursor)
+	{
+		return;
+	}
+
+	if ((cls.realtime >> 8) & 1)
+	{
+		return;		// off blink
+	}
+
+	//	Fonts in older games have space as character 10
+	int cursorChar = (!(GGameType & GAME_Tech3) || key_overstrikeMode) ? 11 : 10;
+
+	if (GGameType & GAME_Tech3)
+	{
+		int i = drawLen - (String::LengthWithoutColours(str) + 1);
+
+		if (size == SMALLCHAR_WIDTH)
+		{
+			SCR_DrawSmallChar(x + (edit->cursor - prestep - i) * size, y, cursorChar);
+		}
+		else
+		{
+			str[0] = cursorChar;
+			str[1] = 0;
+			SCR_DrawBigString(x + (edit->cursor - prestep - i) * size, y, str, 1.0);
+		}
+	}
+	else
+	{
+		UI_DrawChar(x + (edit->cursor - edit->scroll) * 8, y, cursorChar);
+	}
+}
+
+void Field_Draw(field_t* edit, int x, int y, bool showCursor)
+{
+	Field_VariableSizeDraw(edit, x, y, SMALLCHAR_WIDTH, showCursor);
+}
+
+void Field_BigDraw(field_t* edit, int x, int y, bool showCursor)
+{
+	Field_VariableSizeDraw(edit, x, y, BIGCHAR_WIDTH, showCursor);
+}

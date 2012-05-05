@@ -181,6 +181,7 @@ void Con_MessageMode_f(void)
 {
 	chat_team = false;
 	in_keyCatchers |= KEYCATCH_MESSAGE;
+	chatField.widthInChars = (viddef.width >> 3) - 6;
 }
 
 /*
@@ -192,6 +193,7 @@ void Con_MessageMode2_f(void)
 {
 	chat_team = true;
 	in_keyCatchers |= KEYCATCH_MESSAGE;
+	chatField.widthInChars = (viddef.width >> 3) - 12;
 }
 
 /*
@@ -283,11 +285,6 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput(void)
 {
-	char buffer[MAX_EDIT_LINE + 1];
-	String::Cpy(buffer, g_consoleField.buffer + g_consoleField.scroll);
-	int key_linepos = String::Length(buffer);
-	char* text;
-
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
 		return;
@@ -295,17 +292,10 @@ void Con_DrawInput(void)
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == CA_ACTIVE)
 	{
 		return;		// don't draw anything (always draw if not active)
-
 	}
-	text = buffer;
 
-// add the cursor frame
-	text[g_consoleField.widthInChars] = 0;
-
-// draw it
 	UI_DrawString(8, con.vislines - 22, "]");
-	UI_DrawString(16, con.vislines - 22, text);
-	UI_DrawChar(16 + (g_consoleField.cursor - g_consoleField.scroll) * 8, con.vislines - 22, 10 + ((int)(cls.realtime >> 8) & 1));
+	Field_Draw(&g_consoleField, 16, con.vislines - 22, true);
 }
 
 
@@ -322,7 +312,6 @@ void Con_DrawNotify(void)
 	short* text;
 	int i;
 	int time;
-	char* s;
 	int skip;
 
 	v = 0;
@@ -363,15 +352,7 @@ void Con_DrawNotify(void)
 			UI_DrawString(8, v, "say:");
 			skip = 5;
 		}
-
-		s = chatField.buffer;
-		if (chatField.cursor > (viddef.width >> 3) - (skip + 1))
-		{
-			s += chatField.cursor - ((viddef.width >> 3) - (skip + 1));
-		}
-		UI_DrawString(skip << 3, v, s);
-		UI_DrawChar((chatField.cursor + skip) << 3, v, 10 + ((cls.realtime >> 8) & 1));
-		v += 8;
+		Field_Draw(&chatField, skip << 3, v, true);
 	}
 }
 

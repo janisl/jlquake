@@ -269,8 +269,7 @@ void Con_DrawInput(void)
 
 	SCR_DrawSmallChar(con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']');
 
-	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y,
-		SCREEN_WIDTH - 3 * SMALLCHAR_WIDTH, qtrue);
+	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true);
 }
 
 
@@ -355,8 +354,7 @@ void Con_DrawNotify(void)
 			skip = 5;
 		}
 
-		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, v,
-			SCREEN_WIDTH - (skip + 1) * BIGCHAR_WIDTH, qtrue);
+		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, v, true);
 
 		v += BIGCHAR_HEIGHT;
 	}
