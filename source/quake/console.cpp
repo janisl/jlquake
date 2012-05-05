@@ -351,11 +351,6 @@ The typing input line at the bottom should only be drawn if typing is allowed
 */
 void Con_DrawConsole(int lines, qboolean drawinput)
 {
-	int i, x, y;
-	int rows;
-	short* text;
-	int j;
-
 	if (lines <= 0)
 	{
 		return;
@@ -367,21 +362,7 @@ void Con_DrawConsole(int lines, qboolean drawinput)
 // draw the text
 	con.vislines = lines;
 
-	rows = (lines - 16) >> 3;		// rows of text to draw
-	y = lines - 16 - (rows << 3);	// may start slightly negative
-
-	for (i = con.current - rows + 1; i <= con.current; i++, y += 8)
-	{
-		j = i - con.current + con.display;
-		if (j < 0)
-		{
-			j = 0;
-		}
-		text = con.text + (j % con.totallines) * con.linewidth;
-
-		for (x = 0; x < con.linewidth; x++)
-			UI_DrawChar((x + 1) << 3, y, text[x] & 0xff);
-	}
+	Con_DrawText(lines);
 
 // draw the input prompt, user text, and cursor if desired
 	if (drawinput)

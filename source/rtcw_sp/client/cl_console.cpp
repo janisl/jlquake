@@ -426,12 +426,8 @@ Draws the console with the solid background
 void Con_DrawSolidConsole(float frac)
 {
 	int i, x, y;
-	int rows;
-	short* text;
-	int row;
 	int lines;
 //	qhandle_t		conShader;
-	int currentColor;
 	vec4_t color;
 
 	lines = cls.glconfig.vidHeight * frac;
@@ -495,60 +491,8 @@ void Con_DrawSolidConsole(float frac)
 
 	// draw the text
 	con.vislines = lines;
-	rows = (lines - SMALLCHAR_WIDTH) / SMALLCHAR_WIDTH;			// rows of text to draw
 
-	y = lines - (SMALLCHAR_HEIGHT * 3);
-
-	// draw from the bottom up
-	if (con.display != con.current)
-	{
-		// draw arrows to show the buffer is backscrolled
-		R_SetColor(g_color_table[ColorIndex(COLOR_WHITE)]);
-		for (x = 0; x < con.linewidth; x += 4)
-			SCR_DrawSmallChar(con.xadjust + (x + 1) * SMALLCHAR_WIDTH, y, '^');
-		y -= SMALLCHAR_HEIGHT;
-		rows--;
-	}
-
-	row = con.display;
-
-	if (con.x == 0)
-	{
-		row--;
-	}
-
-	currentColor = 7;
-	R_SetColor(g_color_table[currentColor]);
-
-	for (i = 0; i < rows; i++, y -= SMALLCHAR_HEIGHT, row--)
-	{
-		if (row < 0)
-		{
-			break;
-		}
-		if (con.current - row >= con.totallines)
-		{
-			// past scrollback wrap point
-			continue;
-		}
-
-		text = con.text + (row % con.totallines) * con.linewidth;
-
-		for (x = 0; x < con.linewidth; x++)
-		{
-			if ((text[x] & 0xff) == ' ')
-			{
-				continue;
-			}
-
-			if (((text[x] >> 8) & 7) != currentColor)
-			{
-				currentColor = (text[x] >> 8) & 7;
-				R_SetColor(g_color_table[currentColor]);
-			}
-			SCR_DrawSmallChar(con.xadjust + (x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff);
-		}
-	}
+	Con_DrawText(lines);
 
 	// draw the input prompt, user text, and cursor if desired
 	Con_DrawInput();

@@ -146,7 +146,7 @@ void Con_Clear_f()
 	Con_Bottom();		// go to end
 }
 
-void Con_Linefeed(bool skipNotify)
+static void Con_Linefeed(bool skipNotify)
 {
 	// mark time for transparent overlay
 	if (con.current >= 0)
@@ -280,6 +280,94 @@ void CL_ConsolePrintCommon(const char*& txt, int mask)
 		{
 			// -NERVE - SMF
 			con.times[con.current % NUM_CON_TIMES] = cls.realtime;
+		}
+	}
+}
+
+void Con_DrawText(int lines)
+{
+	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
+
+	int rows = (lines - charHeight) / charHeight;		// rows of text to draw
+
+	int y = lines - charHeight * 3;
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+	{
+		y -= 6;
+	}
+
+	// draw from the bottom up
+	if (con.display != con.current)
+	{
+		// draw arrows to show the buffer is backscrolled
+		if (GGameType & GAME_Tech3)
+		{
+			R_SetColor(g_color_table[ColorIndex(COLOR_WHITE)]);
+		}
+		for (int x = 0; x < con.linewidth; x += 4)
+		{
+			if (!(GGameType & GAME_Tech3))
+			{
+				UI_DrawChar((x + 1) * SMALLCHAR_WIDTH, y, '^', 1, 1, 1, 1);
+			}
+			else
+			{
+				SCR_DrawSmallChar(con.xadjust + (x + 1) * SMALLCHAR_WIDTH, y, '^');
+			}
+		}
+		y -= charHeight;
+		rows--;
+	}
+
+	int row = con.display;
+	if (con.x == 0)
+	{
+		row--;
+	}
+
+	int currentColor = 7;
+	if (GGameType & GAME_Tech3)
+	{
+		R_SetColor(g_color_table[currentColor]);
+	}
+
+	for (int i = 0; i < rows; i++, y -= charHeight, row--)
+	{
+		if (row < 0)
+		{
+			break;
+		}
+		if (con.current - row >= con.totallines)
+		{
+			// past scrollback wrap point
+			continue;
+		}
+
+		short* text = con.text + (row % con.totallines) * con.linewidth;
+
+		for (int x = 0; x < con.linewidth; x++)
+		{
+			if ((text[x] & 0xff) == ' ')
+			{
+				continue;
+			}
+
+			if (((text[x] >> 8) & COLOR_BITS) != currentColor)
+			{
+				currentColor = (text[x] >> 8) & COLOR_BITS;
+				if (GGameType & GAME_Tech3)
+				{
+					R_SetColor(g_color_table[currentColor]);
+				}
+			}
+			if (!(GGameType & GAME_Tech3))
+			{
+				UI_DrawChar((x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff);
+			}
+			else
+			{
+				SCR_DrawSmallChar(con.xadjust + (x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff);
+			}
 		}
 	}
 }

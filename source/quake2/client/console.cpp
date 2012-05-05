@@ -366,8 +366,6 @@ Draws the console with the solid background
 void Con_DrawConsole(float frac)
 {
 	int i, j, x, y, n;
-	int rows;
-	int row;
 	int lines;
 	char version[64];
 	char dlbar[1024];
@@ -392,44 +390,7 @@ void Con_DrawConsole(float frac)
 // draw the text
 	con.vislines = lines;
 
-#if 0
-	rows = (lines - 8) >> 3;		// rows of text to draw
-
-	y = lines - 24;
-#else
-	rows = (lines - 22) >> 3;		// rows of text to draw
-
-	y = lines - 30;
-#endif
-
-// draw from the bottom up
-	if (con.display != con.current)
-	{
-		// draw arrows to show the buffer is backscrolled
-		for (x = 0; x < con.linewidth; x += 4)
-			UI_DrawChar((x + 1) << 3, y, '^');
-
-		y -= 8;
-		rows--;
-	}
-
-	row = con.display;
-	for (i = 0; i < rows; i++, y -= 8, row--)
-	{
-		if (row < 0)
-		{
-			break;
-		}
-		if (con.current - row >= con.totallines)
-		{
-			break;		// past scrollback wrap point
-
-		}
-		short* text = con.text + (row % con.totallines) * con.linewidth;
-
-		for (x = 0; x < con.linewidth; x++)
-			UI_DrawChar((x + 1) << 3, y, text[x] & 0xff);
-	}
+	Con_DrawText(lines);
 
 //ZOID
 	// draw the download bar
