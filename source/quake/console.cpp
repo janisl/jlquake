@@ -51,6 +51,8 @@ void Con_ToggleConsole_f(void)
 	}
 	else
 	{
+		g_consoleField.widthInChars = con.linewidth;
+
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 	}
 
@@ -283,10 +285,8 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput(void)
 {
-	int y;
 	char buffer[MAX_EDIT_LINE + 1];
-	buffer[0] = ']';
-	String::Cpy(buffer + 1, g_consoleField.buffer);
+	String::Cpy(buffer, g_consoleField.buffer + g_consoleField.scroll);
 	int key_linepos = String::Length(buffer);
 	char* text;
 
@@ -298,19 +298,12 @@ void Con_DrawInput(void)
 	text = buffer;
 
 // add the cursor frame
-	text[key_linepos] = 10 + ((int)(realtime * con.cursorspeed) & 1);
-	text[key_linepos + 1] = 0;
-
-//	prestep if horizontally scrolling
-	if (key_linepos >= con.linewidth)
-	{
-		text += 1 + key_linepos - con.linewidth;
-	}
+	text[g_consoleField.widthInChars] = 0;
 
 // draw it
-	y = con.vislines - 16;
-
-	UI_DrawString(8, y, text);
+	UI_DrawString(8, con.vislines - 16, "]");
+	UI_DrawString(16, con.vislines - 16, text);
+	UI_DrawChar(16 + (g_consoleField.cursor - g_consoleField.scroll) * 8, con.vislines - 16, 10 + ((int)(realtime * con.cursorspeed) & 1));
 }
 
 
