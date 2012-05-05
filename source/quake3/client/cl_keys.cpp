@@ -134,7 +134,7 @@ void Field_VariableSizeDraw(field_t* edit, int x, int y, int width, int size, qb
 		cursorChar = 10;
 	}
 
-	i = drawLen - (Q_PrintStrlen(str) + 1);
+	i = drawLen - (String::LengthWithoutColours(str) + 1);
 
 	if (size == SMALLCHAR_WIDTH)
 	{

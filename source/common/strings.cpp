@@ -27,12 +27,6 @@
 
 static char com_token[1024];
 
-//==========================================================================
-//
-//	String::String
-//
-//==========================================================================
-
 String::String(const String& InStr, int Start, int Len)
 	: Str(NULL)
 {
@@ -46,12 +40,6 @@ String::String(const String& InStr, int Start, int Len)
 		NCpy(Str, InStr.Str + Start, Len);
 	}
 }
-
-//==========================================================================
-//
-//	String::Resize
-//
-//==========================================================================
 
 void String::Resize(int NewLen)
 {
@@ -89,12 +77,6 @@ void String::Resize(int NewLen)
 	}
 }
 
-//==========================================================================
-//
-//	String::StartsWith
-//
-//==========================================================================
-
 bool String::StartsWith(const char* S) const
 {
 	int l = Length(S);
@@ -104,12 +86,6 @@ bool String::StartsWith(const char* S) const
 	}
 	return NCmp(**this, S, l) == 0;
 }
-
-//==========================================================================
-//
-//	String::StartsWith
-//
-//==========================================================================
 
 bool String::StartsWith(const String& S) const
 {
@@ -121,12 +97,6 @@ bool String::StartsWith(const String& S) const
 	return NCmp(**this, *S, l) == 0;
 }
 
-//==========================================================================
-//
-//	String::EndsWith
-//
-//==========================================================================
-
 bool String::EndsWith(const char* S) const
 {
 	int l = Length(S);
@@ -137,12 +107,6 @@ bool String::EndsWith(const char* S) const
 	return NCmp(**this + Length() - l, S, l) == 0;
 }
 
-//==========================================================================
-//
-//	String::EndsWith
-//
-//==========================================================================
-
 bool String::EndsWith(const String& S) const
 {
 	int l = S.Length();
@@ -152,12 +116,6 @@ bool String::EndsWith(const String& S) const
 	}
 	return NCmp(**this + Length() - l, *S, l) == 0;
 }
-
-//==========================================================================
-//
-//	String::ToLower
-//
-//==========================================================================
 
 String String::ToLower() const
 {
@@ -175,12 +133,6 @@ String String::ToLower() const
 	return Ret;
 }
 
-//==========================================================================
-//
-//	String::ToUpper
-//
-//==========================================================================
-
 String String::ToUpper() const
 {
 	if (!Str)
@@ -197,12 +149,6 @@ String String::ToUpper() const
 	return Ret;
 }
 
-//==========================================================================
-//
-//	String::IndexOf
-//
-//==========================================================================
-
 int String::IndexOf(char C) const
 {
 	int l = Length();
@@ -215,12 +161,6 @@ int String::IndexOf(char C) const
 	}
 	return -1;
 }
-
-//==========================================================================
-//
-//	String::IndexOf
-//
-//==========================================================================
 
 int String::IndexOf(const char* S) const
 {
@@ -240,12 +180,6 @@ int String::IndexOf(const char* S) const
 	return -1;
 }
 
-//==========================================================================
-//
-//	String::IndexOf
-//
-//==========================================================================
-
 int String::IndexOf(const String& S) const
 {
 	int sl = S.Length();
@@ -264,12 +198,6 @@ int String::IndexOf(const String& S) const
 	return -1;
 }
 
-//==========================================================================
-//
-//	String::LastIndexOf
-//
-//==========================================================================
-
 int String::LastIndexOf(char C) const
 {
 	for (int i = Length() - 1; i >= 0; i--)
@@ -281,12 +209,6 @@ int String::LastIndexOf(char C) const
 	}
 	return -1;
 }
-
-//==========================================================================
-//
-//	String::LastIndexOf
-//
-//==========================================================================
 
 int String::LastIndexOf(const char* S) const
 {
@@ -306,12 +228,6 @@ int String::LastIndexOf(const char* S) const
 	return -1;
 }
 
-//==========================================================================
-//
-//	String::LastIndexOf
-//
-//==========================================================================
-
 int String::LastIndexOf(const String& S) const
 {
 	int sl = S.Length();
@@ -329,12 +245,6 @@ int String::LastIndexOf(const String& S) const
 	}
 	return -1;
 }
-
-//==========================================================================
-//
-//	String::Replace
-//
-//==========================================================================
 
 String String::Replace(const char* Search, const char* Replacement) const
 {
@@ -379,12 +289,6 @@ String String::Replace(const char* Search, const char* Replacement) const
 	return Ret;
 }
 
-//==========================================================================
-//
-//	String::Replace
-//
-//==========================================================================
-
 String String::Replace(const String& Search, const String& Replacement) const
 {
 	if (!Length())
@@ -428,12 +332,6 @@ String String::Replace(const String& Search, const String& Replacement) const
 	return Ret;
 }
 
-//==========================================================================
-//
-//	String::Utf8Substring
-//
-//==========================================================================
-
 String String::Utf8Substring(int Start, int Len) const
 {
 	qassert(Start >= 0);
@@ -448,12 +346,6 @@ String String::Utf8Substring(int Start, int Len) const
 	int RealLen = ByteLengthForUtf8(Str, Start + Len) - RealStart;
 	return String(*this, RealStart, RealLen);
 }
-
-//==========================================================================
-//
-//	String::Split
-//
-//==========================================================================
 
 void String::Split(char C, Array<String>& A) const
 {
@@ -476,12 +368,6 @@ void String::Split(char C, Array<String>& A) const
 		}
 	}
 }
-
-//==========================================================================
-//
-//	String::Split
-//
-//==========================================================================
 
 void String::Split(const char* Chars, Array<String>& A) const
 {
@@ -509,12 +395,6 @@ void String::Split(const char* Chars, Array<String>& A) const
 		}
 	}
 }
-
-//==========================================================================
-//
-//	String::IsValidUtf8
-//
-//==========================================================================
 
 bool String::IsValidUtf8() const
 {
@@ -561,12 +441,6 @@ bool String::IsValidUtf8() const
 	return true;
 }
 
-//==========================================================================
-//
-//	String::Latin1ToUtf8
-//
-//==========================================================================
-
 String String::Latin1ToUtf8() const
 {
 	String Ret;
@@ -576,12 +450,6 @@ String String::Latin1ToUtf8() const
 	}
 	return Ret;
 }
-
-//==========================================================================
-//
-//	String::Utf8Length
-//
-//==========================================================================
 
 int String::Utf8Length(const char* S)
 {
@@ -593,12 +461,6 @@ int String::Utf8Length(const char* S)
 		}
 	return Count;
 }
-
-//==========================================================================
-//
-//	String::ByteLengthForUtf8
-//
-//==========================================================================
 
 int String::ByteLengthForUtf8(const char* S, int N)
 {
@@ -618,12 +480,6 @@ int String::ByteLengthForUtf8(const char* S, int N)
 	qassert(N == Count);
 	return c - S;
 }
-
-//==========================================================================
-//
-//	String::GetChar
-//
-//==========================================================================
 
 int String::GetChar(const char*& S)
 {
@@ -666,12 +522,6 @@ int String::GetChar(const char*& S)
 	while (--Cnt);
 	return Val;
 }
-
-//==========================================================================
-//
-//	String::FromChar
-//
-//==========================================================================
 
 String String::FromChar(int C)
 {
@@ -1030,12 +880,6 @@ char* String::RChr(const char* string, int c)
 	return sp;
 }
 
-//==========================================================================
-//
-//	String::Atoi
-//
-//==========================================================================
-
 int String::Atoi(const char* Str)
 {
 	int Sign;
@@ -1102,12 +946,6 @@ int String::Atoi(const char* Str)
 
 	return 0;
 }
-
-//==========================================================================
-//
-//	String::Atof
-//
-//==========================================================================
 
 float String::Atof(const char* Str)
 {
@@ -1193,12 +1031,6 @@ float String::Atof(const char* Str)
 
 	return Val * Sign;
 }
-
-//==========================================================================
-//
-//	String::Sprintf
-//
-//==========================================================================
 
 void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 {
@@ -1315,12 +1147,6 @@ char String::ToLower(char c)
 	return c;
 }
 
-//==========================================================================
-//
-//	String::SkipPath
-//
-//==========================================================================
-
 char* String::SkipPath(char* PathName)
 {
 	char* Last = PathName;
@@ -1335,12 +1161,6 @@ char* String::SkipPath(char* PathName)
 	return Last;
 }
 
-//==========================================================================
-//
-//	String::SkipPath
-//
-//==========================================================================
-
 const char* String::SkipPath(const char* PathName)
 {
 	const char* Last = PathName;
@@ -1354,12 +1174,6 @@ const char* String::SkipPath(const char* PathName)
 	}
 	return Last;
 }
-
-//==========================================================================
-//
-//	String::StripExtension
-//
-//==========================================================================
 
 void String::StripExtension(const char* In, char* Out)
 {
@@ -1381,12 +1195,6 @@ void String::StripExtension2(const char* in, char* out, int destsize)
 	}
 	*out = 0;
 }
-
-//==========================================================================
-//
-//	String::DefaultExtension
-//
-//==========================================================================
 
 void String::DefaultExtension(char* Path, int MaxSize, const char* Extension)
 {
@@ -1413,14 +1221,7 @@ void String::DefaultExtension(char* Path, int MaxSize, const char* Extension)
 	Sprintf(Path, MaxSize, "%s%s", OldPath, Extension);
 }
 
-//==========================================================================
-//
-//	String::FilePath
-//
 //	Returns the path up to, but not including the last /
-//
-//==========================================================================
-
 void String::FilePath(const char* In, char* Out)
 {
 	const char* S = In + Length(In) - 1;
@@ -1431,12 +1232,6 @@ void String::FilePath(const char* In, char* Out)
 	NCpy(Out, In, S - In);
 	Out[S - In] = 0;
 }
-
-//==========================================================================
-//
-//	String::FileBase
-//
-//==========================================================================
 
 void String::FileBase(const char* In, char* Out)
 {
@@ -1461,12 +1256,6 @@ void String::FileBase(const char* In, char* Out)
 		Out[S - S2] = 0;
 	}
 }
-
-//==========================================================================
-//
-//	String::FileExtension
-//
-//==========================================================================
 
 const char* String::FileExtension(const char* In)
 {
@@ -1503,15 +1292,8 @@ void String::FixPath(char* pathname)
 	}
 }
 
-//==========================================================================
-//
-//	String::Parse1
-//
 //	Parse a token out of a string
 //	data is an in/out parm, returns a parsed out token
-//
-//==========================================================================
-
 char* String::Parse1(const char** data_p)
 {
 	int c;
@@ -1607,14 +1389,7 @@ skipwhite:
 	return com_token;
 }
 
-//==========================================================================
-//
-//	String::Parse2
-//
 //	Parse a token out of a string
-//
-//==========================================================================
-
 char* String::Parse2(const char** data_p)
 {
 	int c;
@@ -1696,28 +1471,15 @@ skipwhite:
 	return com_token;
 }
 
-//==========================================================================
-//
-//	String::Parse3
-//
 //	Parse a token out of a string
 //	Will never return NULL, just empty strings
 //
 //	If "allowLineBreaks" is qtrue then an empty string will be returned if
 // the next token is a newline.
-//
-//==========================================================================
-
 char* String::Parse3(const char** data_p)
 {
 	return ParseExt(data_p, true);
 }
-
-//==========================================================================
-//
-//	SkipWhitespace
-//
-//==========================================================================
 
 static const char* SkipWhitespace(const char* data, bool* hasNewLines)
 {
@@ -1738,12 +1500,6 @@ static const char* SkipWhitespace(const char* data, bool* hasNewLines)
 
 	return data;
 }
-
-//==========================================================================
-//
-//	String::ParseExt
-//
-//==========================================================================
 
 char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 {
@@ -1889,12 +1645,6 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 	*data_p = (char*)data;
 	return com_token;
 }
-
-//==========================================================================
-//
-//	String::Compress
-//
-//==========================================================================
 
 int String::Compress(char* data_p)
 {
@@ -2058,15 +1808,8 @@ int String::Compress(char* data_p)
 	return out - data_p;
 }
 
-//==========================================================================
-//
-//	String::SkipBracedSection
-//
 //	The next token should be an open brace. Skips until a matching close
 // brace is found. Internal brace depths are properly skipped.
-//
-//==========================================================================
-
 void String::SkipBracedSection(const char** program)
 {
 	const char* token;
@@ -2091,12 +1834,6 @@ void String::SkipBracedSection(const char** program)
 	while (depth && *program);
 }
 
-//==========================================================================
-//
-//	String::SkipRestOfLine
-//
-//==========================================================================
-
 void String::SkipRestOfLine(const char** data)
 {
 	const char* p;
@@ -2114,11 +1851,6 @@ void String::SkipRestOfLine(const char** data)
 	*data = p;
 }
 
-/*
-============
-Com_StringContains
-============
-*/
 static const char* Com_StringContains(const char* str1, const char* str2, bool casesensitive)
 {
 	int len, i, j;
@@ -2151,11 +1883,6 @@ static const char* Com_StringContains(const char* str1, const char* str2, bool c
 	return NULL;
 }
 
-/*
-============
-Com_Filter
-============
-*/
 bool String::Filter(const char* filter, const char* name, bool casesensitive)
 {
 	char buf[MAX_TOKEN_CHARS_Q3];
@@ -2282,11 +2009,6 @@ bool String::Filter(const char* filter, const char* name, bool casesensitive)
 	return true;
 }
 
-/*
-============
-Com_FilterPath
-============
-*/
 bool String::FilterPath(const char* filter, const char* name, bool casesensitive)
 {
 	int i;
@@ -2320,16 +2042,35 @@ bool String::FilterPath(const char* filter, const char* name, bool casesensitive
 	return Filter(new_filter, new_name, casesensitive);
 }
 
-//==========================================================================
-//
-//	va
-//
+int String::LengthWithoutColours(const char* string)
+{
+	int len;
+	const char* p;
+
+	if (!string)
+	{
+		return 0;
+	}
+
+	len = 0;
+	p = string;
+	while (*p)
+	{
+		if (Q_IsColorString(p))
+		{
+			p += 2;
+			continue;
+		}
+		p++;
+		len++;
+	}
+
+	return len;
+}
+
 //	Does a varargs printf into a temp buffer, so I don't need to have
 // varargs versions of all text functions.
 //	FIXME: make this buffer size safe someday
-//
-//==========================================================================
-
 char* va(const char* format, ...)
 {
 	enum { MAX_VA_STRING = 32000 };

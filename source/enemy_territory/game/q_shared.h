@@ -400,8 +400,6 @@ typedef struct pc_token_s
 #define Q_putenv putenv
 #endif
 
-// strlen that discounts Quake color sequences
-int Q_PrintStrlen(const char* string);
 // removes color sequences from string
 char* Q_CleanStr(char* string);
 // removes whitespaces and other bad directory characters

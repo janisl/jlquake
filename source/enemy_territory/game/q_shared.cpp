@@ -129,33 +129,6 @@ void COM_BitClear(int array[], int bitNum)
 ============================================================================
 */
 
-int Q_PrintStrlen(const char* string)
-{
-	int len;
-	const char* p;
-
-	if (!string)
-	{
-		return 0;
-	}
-
-	len = 0;
-	p = string;
-	while (*p)
-	{
-		if (Q_IsColorString(p))
-		{
-			p += 2;
-			continue;
-		}
-		p++;
-		len++;
-	}
-
-	return len;
-}
-
-
 char* Q_CleanStr(char* string)
 {
 	char* d;
