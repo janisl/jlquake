@@ -291,33 +291,6 @@ DRAWING
 */
 
 /*
-================
-Con_DrawNotifyAndChat
-
-Draws the last few lines of output transparently over the game top
-================
-*/
-void Con_DrawNotifyAndChat(void)
-{
-	int v;
-
-	// NERVE - SMF - we dont want draw notify in limbo mode
-	if (Cvar_VariableIntegerValue("ui_limboMode"))
-	{
-		return;
-	}
-
-	if (cl.wm_snap.ps.pm_type != Q3PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
-	{
-		return;
-	}
-
-	Con_DrawNotify(v);
-
-	Con_DrawChat(v);
-}
-
-/*
 ==================
 Con_DrawConsole
 ==================

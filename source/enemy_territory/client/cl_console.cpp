@@ -263,27 +263,6 @@ DRAWING
 ==============================================================================
 */
 
-/*
-================
-Con_DrawNotifyAndChat
-
-Draws the last few lines of output transparently over the game top
-================
-*/
-void Con_DrawNotifyAndChat(void)
-{
-	int v;
-
-	if (cl.et_snap.ps.pm_type != Q3PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
-	{
-		return;
-	}
-
-	Con_DrawNotify(v);
-
-	Con_DrawChat(v);
-}
-
 extern Cvar* con_drawnotify;
 
 /*

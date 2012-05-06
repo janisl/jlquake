@@ -73,5 +73,4 @@ void Con_Clear_f();
 void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawFullBackground();
 void Con_DrawSolidConsole(float frac);
-void Con_DrawNotify(int& y);
-void Con_DrawChat(int y);
+void Con_DrawNotifyAndChat();

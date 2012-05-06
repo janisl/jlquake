@@ -687,46 +687,8 @@ void Con_DrawSolidConsole(float frac)
 	}
 }
 
-void Con_DrawChat(int y)
-{
-	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
-	{
-		return;
-	}
-
-	if (!(in_keyCatchers & KEYCATCH_MESSAGE))
-	{
-		return;
-	}
-
-	char buf[128];
-	if (chat_team)
-	{
-		CL_TranslateString("say_team:", buf);
-	}
-	else if (chat_buddy)
-	{
-		CL_TranslateString("say_fireteam:", buf);
-	}
-	else
-	{
-		CL_TranslateString("say:", buf);
-	}
-
-	int skip = String::Length(buf) + 2;
-	if (GGameType & GAME_Tech3)
-	{
-		SCR_DrawBigString(8, y, buf, 1.0f);
-		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, y, true);
-	}
-	else
-	{
-		UI_DrawString(8, y, buf);
-		Field_Draw(&chatField, skip << 3, y, true);
-	}
-}
-
-void Con_DrawNotify(int& y)
+//	Draws the last few lines of output transparently over the game top
+static int Con_DrawNotify()
 {
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
@@ -736,7 +698,7 @@ void Con_DrawNotify(int& y)
 		R_SetColor(g_color_table[currentColor]);
 	}
 
-	y = 0;
+	int y = 0;
 	for (int i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
 	{
 		if (i < 0)
@@ -787,4 +749,78 @@ void Con_DrawNotify(int& y)
 	{
 		R_SetColor(NULL);
 	}
+
+	return y;
+}
+
+static void Con_DrawChat(int y)
+{
+	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
+	{
+		return;
+	}
+
+	if (!(in_keyCatchers & KEYCATCH_MESSAGE))
+	{
+		return;
+	}
+
+	char buf[128];
+	if (chat_team)
+	{
+		CL_TranslateString("say_team:", buf);
+	}
+	else if (chat_buddy)
+	{
+		CL_TranslateString("say_fireteam:", buf);
+	}
+	else
+	{
+		CL_TranslateString("say:", buf);
+	}
+
+	int skip = String::Length(buf) + 2;
+	if (GGameType & GAME_Tech3)
+	{
+		SCR_DrawBigString(8, y, buf, 1.0f);
+		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, y, true);
+	}
+	else
+	{
+		UI_DrawString(8, y, buf);
+		Field_Draw(&chatField, skip << 3, y, true);
+	}
+}
+
+void Con_DrawNotifyAndChat()
+{
+	// NERVE - SMF - we dont want draw notify in limbo mode
+	if (GGameType & GAME_WolfMP && Cvar_VariableIntegerValue("ui_limboMode"))
+	{
+		return;
+	}
+
+	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
+	{
+		if (GGameType & GAME_Quake3 && cl.q3_snap.ps.pm_type != Q3PM_INTERMISSION)
+		{
+			return;
+		}
+		if (GGameType & GAME_WolfSP && cl.ws_snap.ps.pm_type != Q3PM_INTERMISSION)
+		{
+			return;
+		}
+		if (GGameType & GAME_WolfMP && cl.wm_snap.ps.pm_type != Q3PM_INTERMISSION)
+		{
+			return;
+		}
+		if (GGameType & GAME_ET && cl.et_snap.ps.pm_type != Q3PM_INTERMISSION)
+		{
+			return;
+		}
+	}
+
+	int y = Con_DrawNotify();
+
+	Con_DrawChat(y);
 }

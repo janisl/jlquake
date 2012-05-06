@@ -272,22 +272,6 @@ DRAWING
 */
 
 /*
-================
-Con_DrawNotifyAndChat
-
-Draws the last few lines of output transparently over the game top
-================
-*/
-void Con_DrawNotifyAndChat(void)
-{
-	int v;
-
-	Con_DrawNotify(v);
-
-	Con_DrawChat(v);
-}
-
-/*
 ==================
 Con_NotifyBox
 ==================
