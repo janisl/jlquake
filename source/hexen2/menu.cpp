@@ -4093,7 +4093,7 @@ void M_Draw(void)
 	{
 		if (scr_con_current)
 		{
-			Draw_ConsoleBackground(viddef.height);
+			Con_DrawFullBackground();
 			S_ExtraUpdate();
 		}
 		else

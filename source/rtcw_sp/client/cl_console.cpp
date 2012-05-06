@@ -425,10 +425,7 @@ Draws the console with the solid background
 
 void Con_DrawSolidConsole(float frac)
 {
-	int i, x, y;
 	int lines;
-//	qhandle_t		conShader;
-	vec4_t color;
 
 	lines = cls.glconfig.vidHeight * frac;
 	if (lines <= 0)
@@ -446,48 +443,7 @@ void Con_DrawSolidConsole(float frac)
 	UI_AdjustFromVirtualScreen(&con.xadjust, NULL, NULL, NULL);
 
 	// draw the background
-	y = frac * SCREEN_HEIGHT - 2;
-	if (y < 1)
-	{
-		y = 0;
-	}
-	else
-	{
-		SCR_DrawPic(0, 0, SCREEN_WIDTH, y, cls.consoleShader);
-
-		if (frac >= 0.5f)		// only draw when the console is down all the way (for now)
-		{
-			color[0] = color[1] = color[2] = frac * 2.0f;
-			color[3] = 1.0f;
-			R_SetColor(color);
-
-			// draw the logo
-			SCR_DrawPic(192, 70, 256, 128, cls.consoleShader2);
-			R_SetColor(NULL);
-		}
-	}
-
-	color[0] = 0;
-	color[1] = 0;
-	color[2] = 0;
-	color[3] = 0.6f;
-	SCR_FillRect(0, y, SCREEN_WIDTH, 2, color);
-
-	// draw the version number
-
-	R_SetColor(g_color_table[ColorIndex(COLOR_WHITE)]);
-
-	i = String::Length(Q3_VERSION);
-
-	for (x = 0; x < i; x++)
-	{
-
-		SCR_DrawSmallChar(cls.glconfig.vidWidth - (i - x) * SMALLCHAR_WIDTH,
-
-			(lines - (SMALLCHAR_HEIGHT + SMALLCHAR_HEIGHT / 2)), Q3_VERSION[x]);
-
-	}
-
+	Con_DrawBackground(frac, lines);
 
 	// draw the text
 	con.vislines = lines;

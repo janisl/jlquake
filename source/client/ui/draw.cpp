@@ -385,7 +385,7 @@ void SCR_DrawBigStringColor(int x, int y, const char* s, vec4_t color)
 	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, true);
 }
 
-void SCR_DrawSmallStringExt(int x, int y, const char* string, float* setColor, bool forceColor)
+static void SCR_DrawSmallStringExt(int x, int y, const char* string, float* setColor, bool forceColor)
 {
 	// draw the colored text
 	const char* s = string;
@@ -417,4 +417,11 @@ void SCR_DrawSmallStringExt(int x, int y, const char* string, float* setColor, b
 		s++;
 	}
 	R_SetColor(NULL);
+}
+
+void SCR_DrawSmallString(int x, int y, const char* string)
+{
+	float color[4];
+	color[0] = color[1] = color[2] = color[3] = 1.0;
+	SCR_DrawSmallStringExt(x, y, string, color, false);
 }

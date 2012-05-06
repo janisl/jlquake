@@ -32,8 +32,6 @@ image_t* draw_backtile;
 
 image_t* cs_texture;	// crosshair texture
 
-image_t* conback;
-
 /*
 ===============
 Draw_Init
@@ -72,36 +70,6 @@ void Draw_Crosshair(void)
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
 	}
 }
-
-/*
-================
-Draw_ConsoleBackground
-
-================
-*/
-void Draw_ConsoleBackground(int lines)
-{
-	int y = (viddef.height * 3) >> 2;
-	if (lines > y)
-	{
-		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
-	}
-	else
-	{
-		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
-	}
-
-	y = lines - 14;
-	if (!clc.download)
-	{
-		char ver[80];
-		sprintf(ver, "JLQuakeWorld %s", JLQUAKE_VERSION_STRING);
-		int x = viddef.width - (String::Length(ver) * 8 + 11);
-		UI_DrawString(x, y, ver, 0x80);
-	}
-}
-
-//=============================================================================
 
 /*
 ================

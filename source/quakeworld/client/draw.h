@@ -25,7 +25,6 @@ struct image_t;
 extern image_t* draw_backtile;
 
 void Draw_Init(void);
-void Draw_ConsoleBackground(int lines);
 void Draw_FadeScreen(void);
 void Draw_Crosshair(void);
 

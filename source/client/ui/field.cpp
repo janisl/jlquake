@@ -260,9 +260,7 @@ static void Field_VariableSizeDraw(field_t* edit, int x, int y, int size, bool s
 	}
 	else if (size == SMALLCHAR_WIDTH)
 	{
-		float color[4];
-		color[0] = color[1] = color[2] = color[3] = 1.0;
-		SCR_DrawSmallStringExt(x, y, str, color, false);
+		SCR_DrawSmallString(x, y, str);
 	}
 	else
 	{

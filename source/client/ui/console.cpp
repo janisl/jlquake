@@ -25,6 +25,8 @@ int nextHistoryLine;		// the last line in the history buffer, not masked
 int historyLine;			// the line being displayed from history buffer
 							// will be <= nextHistoryLine
 
+image_t* conback;
+
 Cvar* cl_noprint;
 
 void Con_ClearNotify()
@@ -282,6 +284,129 @@ void CL_ConsolePrintCommon(const char*& txt, int mask)
 			con.times[con.current % NUM_CON_TIMES] = cls.realtime;
 		}
 	}
+}
+
+void Con_DrawBackground(float frac, int lines)
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		int y = (viddef.height * 3) >> 2;
+		if (lines > y)
+		{
+			UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
+		}
+		else
+		{
+			UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
+		}
+
+		if (!clc.download)
+		{
+			const char* version;
+			if (GGameType & GAME_QuakeWorld)
+			{
+				version = S_COLOR_ORANGE "JLQuakeWorld " JLQUAKE_VERSION_STRING;
+			}
+			else if (GGameType & GAME_Quake)
+			{
+				version = S_COLOR_ORANGE "JLQuake " JLQUAKE_VERSION_STRING;
+			}
+			else if (GGameType & GAME_HexenWorld)
+			{
+				version = S_COLOR_RED "JLHexenWorld " JLQUAKE_VERSION_STRING;
+			}
+			else
+			{
+				version = S_COLOR_RED "JLHexen II " JLQUAKE_VERSION_STRING;
+			}
+			int y = lines - 14;
+			int x = viddef.width - (String::LengthWithoutColours(version) * 8 + 11);
+			UI_DrawString(x, y, version);
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		UI_DrawStretchNamedPic(0, -viddef.height + lines, viddef.width, viddef.height, "conback");
+
+		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
+		UI_DrawString(viddef.width - 4 - String::LengthWithoutColours(version) * 8, lines - 12, version);
+	}
+	else
+	{
+		int y = frac * viddef.height - 2;
+		if (y < 1)
+		{
+			y = 0;
+		}
+		else
+		{
+			SCR_DrawPic(0, 0, viddef.width, y, cls.consoleShader);
+
+			// only draw when the console is down all the way (for now)
+			if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) && frac >= 0.5f)
+			{
+				// draw the logo
+				SCR_DrawPic(192, 70, 256, 128, cls.consoleShader2);
+			}
+		}
+
+		vec4_t color;
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+		{
+			color[0] = 0;
+			color[1] = 0;
+			color[2] = 0;
+			color[3] = 0.6f;
+			SCR_FillRect(0, y, viddef.width, 2, color);
+		}
+		else if (GGameType & GAME_ET)
+		{
+			// ydnar: matching light text
+			color[0] = 0.75;
+			color[1] = 0.75;
+			color[2] = 0.75;
+			color[3] = 1.0f;
+			if (frac < 1.0)
+			{
+				SCR_FillRect(0, y, viddef.width, 1.25, color);
+			}
+		}
+		else
+		{
+			color[0] = 1;
+			color[1] = 0;
+			color[2] = 0;
+			color[3] = 1;
+			SCR_FillRect(0, y, viddef.width, 2, color);
+		}
+
+		// draw the version number
+		const char* version;
+		if (GGameType & GAME_Quake3)
+		{
+			version = S_COLOR_RED "JLQuake III " JLQUAKE_VERSION_STRING;
+		}
+		else if (GGameType & GAME_WolfSP)
+		{
+			version = S_COLOR_WHITE "JLWolfSP " JLQUAKE_VERSION_STRING;
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			version = S_COLOR_WHITE "JLWolfMP " JLQUAKE_VERSION_STRING;
+		}
+		else
+		{
+			version = S_COLOR_WHITE "JLET " JLQUAKE_VERSION_STRING;
+		}
+		int i = String::LengthWithoutColours(version);
+		SCR_DrawSmallString(cls.glconfig.vidWidth - i * SMALLCHAR_WIDTH,
+			(lines - (SMALLCHAR_HEIGHT + SMALLCHAR_HEIGHT / 2)), version);
+	}
+}
+
+void Con_DrawFullBackground()
+{
+	Con_DrawBackground(1, viddef.height);
 }
 
 void Con_DrawText(int lines)

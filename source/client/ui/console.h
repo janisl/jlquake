@@ -55,6 +55,8 @@ extern int historyLine;
 
 extern Cvar* cl_noprint;
 
+extern image_t* conback;
+
 void Con_ClearNotify();
 void Con_CheckResize();
 void Con_PageUp();
@@ -63,4 +65,6 @@ void Con_Top();
 void Con_Bottom();
 void Con_Clear_f();
 void CL_ConsolePrintCommon(const char*& txt, int mask);
+void Con_DrawBackground(float frac, int lines);
+void Con_DrawFullBackground();
 void Con_DrawText(int lines);

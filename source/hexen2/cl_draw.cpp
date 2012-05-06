@@ -13,8 +13,6 @@ image_t* draw_backtile;
 image_t* char_smalltexture;
 image_t* char_menufonttexture;
 
-image_t* conback;
-
 /*
 ===============
 Draw_Init
@@ -128,25 +126,6 @@ int M_DrawBigCharacter(int x, int y, int num, int numNext)
 
 	return BigCharWidth[num][numNext] + add;
 }
-
-/*
-================
-Draw_ConsoleBackground
-
-================
-*/
-void Draw_ConsoleBackground(int lines)
-{
-	UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
-
-	int y = lines - 14;
-	char ver[80];
-	sprintf(ver, "JLHexen II %s", JLQUAKE_VERSION_STRING);
-	int x = viddef.width - (String::Length(ver) * 8 + 11);
-	UI_DrawString(x, y, ver, 256);
-}
-
-//=============================================================================
 
 /*
 ================

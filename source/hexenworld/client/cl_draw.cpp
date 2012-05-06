@@ -10,8 +10,6 @@ image_t* cs_texture;	// crosshair texture
 image_t* char_smalltexture;
 image_t* char_menufonttexture;
 
-image_t* conback;
-
 //=============================================================================
 /* Support Routines */
 
@@ -154,37 +152,6 @@ int M_DrawBigCharacter(int x, int y, int num, int numNext)
 
 	return BigCharWidth[num][numNext] + add;
 }
-
-
-/*
-================
-Draw_ConsoleBackground
-
-================
-*/
-void Draw_ConsoleBackground(int lines)
-{
-	int y = (viddef.height * 3) >> 2;
-	if (lines > y)
-	{
-		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
-	}
-	else
-	{
-		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
-	}
-
-	y = lines - 14;
-	if (!clc.download)
-	{
-		char ver[80];
-		sprintf(ver, "JLHexenWorld %s", JLQUAKE_VERSION_STRING);
-		int x = viddef.width - (String::Length(ver) * 8 + 11);
-		UI_DrawString(x, y, ver, 256);
-	}
-}
-
-//=============================================================================
 
 /*
 ================

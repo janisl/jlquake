@@ -367,7 +367,6 @@ void Con_DrawConsole(float frac)
 {
 	int i, j, x, y, n;
 	int lines;
-	char version[64];
 	char dlbar[1024];
 
 	lines = viddef.height * frac;
@@ -382,10 +381,7 @@ void Con_DrawConsole(float frac)
 	}
 
 // draw the background
-	UI_DrawStretchNamedPic(0, -viddef.height + lines, viddef.width, viddef.height, "conback");
-
-	String::Sprintf(version, sizeof(version), "v%4.2f", VERSION);
-	UI_DrawString(viddef.width - 44, lines - 12, version, 128);
+	Con_DrawBackground(frac, lines);
 
 // draw the text
 	con.vislines = lines;

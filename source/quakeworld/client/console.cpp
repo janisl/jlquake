@@ -338,7 +338,7 @@ void Con_DrawConsole(int lines)
 	}
 
 // draw the background
-	Draw_ConsoleBackground(lines);
+	Con_DrawBackground((float)lines / viddef.height, lines);
 
 // draw the text
 	con.vislines = lines;

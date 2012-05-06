@@ -10,7 +10,6 @@ extern image_t* draw_backtile;
 void Draw_Init(void);
 void Draw_SmallCharacter(int x, int y, int num);
 void Draw_SmallString(int x, int y, const char* str);
-void Draw_ConsoleBackground(int lines);
 void Draw_FadeScreen(void);
 void Draw_Crosshair(void);
 

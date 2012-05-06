@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 image_t* draw_backtile;
 
-image_t* conback;
-
 /*
 ===============
 Draw_Init
@@ -42,31 +40,6 @@ void Draw_Init(void)
 	// get the other pics we need
 	//
 	draw_backtile = R_PicFromWadRepeat("backtile");
-}
-
-/*
-================
-Draw_ConsoleBackground
-
-================
-*/
-void Draw_ConsoleBackground(int lines)
-{
-	int y = (viddef.height * 3) >> 2;
-	if (lines > y)
-	{
-		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
-	}
-	else
-	{
-		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
-	}
-
-	y = lines - 14;
-	char ver[80];
-	sprintf(ver, "JLQuake %s", JLQUAKE_VERSION_STRING);
-	int x = viddef.width - (String::Length(ver) * 8 + 11);
-	UI_DrawString(x, y, ver, 0x80);
 }
 
 //=============================================================================
